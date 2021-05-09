@@ -1,4 +1,4 @@
-import MathlibPrelude.Tactic.Basic
+import Mathlib.Tactic.Basic
 
 open Or in
 theorem or_assoc {a b c} : (a ∨ b) ∨ c ↔ a ∨ (b ∨ c) :=
