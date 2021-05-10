@@ -1,3 +1,5 @@
+import Mathlib.Tactic.Split
+
 open Lean Parser.Tactic
 
 macro mods:declModifiers "lemma" n:declId sig:declSig val:declVal : command =>
@@ -25,10 +27,6 @@ macro "by_cases " h:ident ":" e:term : tactic =>
 set_option hygiene false in
 macro "by_cases " e:term : tactic =>
   `(cases Decidable.em $e with | inl h => ?pos | inr h => ?neg)
-
-syntax "split" : tactic
-macro_rules | `(tactic| split) => `(tactic| apply And.intro)
-macro_rules | `(tactic| split) => `(tactic| apply Iff.intro)
 
 syntax "transitivity" (term)? : tactic
 set_option hygiene false in

@@ -282,12 +282,12 @@ protected lemma min_comm (a b : ℕ) : Nat.min a b = Nat.min b a := by
   simp [Nat.min]
   by_cases h₁ : a ≤ b <;> by_cases h₂ : b ≤ a <;> simp [h₁, h₂]
   case pos => exact Nat.le_antisymm h₁ h₂
-  case neg => exact (not_or_intro h₁ h₂ (Nat.le_or_le _ _)).elim
+  case neg => cases not_or_intro h₁ h₂ (Nat.le_or_le _ _)
 
 protected lemma min_le_left (a b : ℕ) : Nat.min a b ≤ a := by
   simp [Nat.min]; by_cases a ≤ b <;> simp [h]
   case pos => exact Nat.le_refl _
-  case neg => exact _ -- <- is this a bug? I'm not getting an error here
+  case neg => exact Nat.le_of_not_le h
 
 protected lemma min_eq_left (h : a ≤ b) : Nat.min a b = a :=
 by simp [Nat.min, h]
