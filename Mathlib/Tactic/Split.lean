@@ -21,7 +21,7 @@ syntax (name := split) "split" : tactic
 
 @[tactic split] def evalSplit : Tactic := fun _ =>
   withMainContext do
-    let mvarIds'  ← Meta.split (← getMainGoal)
+    let mvarIds' ← Meta.split (← getMainGoal)
     Term.synthesizeSyntheticMVarsNoPostponing
     replaceMainGoal mvarIds'
 
