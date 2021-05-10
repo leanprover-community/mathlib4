@@ -1,6 +1,15 @@
 import Mathlib.Tactic.Split
+import Lean.Elab.Command
 
-open Lean Parser.Tactic
+open Lean Parser.Tactic Elab Command
+
+syntax (name := «variables») "variables" (bracketedBinder)* : command
+
+@[commandElab «variables»] def elabVariables : CommandElab
+  | `(variables%$pos $binders*) => do
+    logWarningAt pos "'variables' has been replaced by 'variable' in lean 4"
+    elabVariable (← `(variable%$pos $binders*))
+  | _ => throwUnsupportedSyntax
 
 macro mods:declModifiers "lemma" n:declId sig:declSig val:declVal : command =>
   `($mods:declModifiers theorem $n $sig $val)
