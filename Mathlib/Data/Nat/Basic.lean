@@ -160,7 +160,7 @@ Nat.le_antisymm (Nat.le_of_mul_le_mul_left (Nat.le_of_eq H) Hn)
 protected lemma add_self_ne_one : ∀ (n : ℕ), n + n ≠ 1
 | n+1, h =>
   have h1 : succ (succ (n + n)) = 1 from succ_add n n ▸ h
-  Nat.noConfusion h1 fun h2 => nomatch h2
+  Nat.noConfusion h1 fun.
 
 /- sub properties -/
 

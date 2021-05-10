@@ -5,6 +5,7 @@ Author: Mario Carneiro
 -/
 import Mathlib.Tactic.Split
 import Mathlib.Tactic.NoMatch
+import Mathlib.Tactic.Block
 import Lean.Elab.Command
 
 open Lean Parser.Tactic Elab Command

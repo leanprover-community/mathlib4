@@ -41,6 +41,8 @@ elab "fun"%tk "." : term <= expectedType =>
       discrs := discrs.push $ Syntax.node ``Lean.Parser.Term.matchDiscr #[mkNullNode, n]
     elabTerm (← `(@fun $binders* => match $discrs,* with.)) (some expectedType)
 
+macro "λ"%tk "." : term => `(fun%$tk .)
+
 end Elab.Term
 
 macro "match " discrs:matchDiscr,* " with" "." : tactic =>

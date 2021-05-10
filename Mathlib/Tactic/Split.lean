@@ -22,13 +22,10 @@ namespace Lean.Elab
 namespace Tactic
 open Meta
 
-syntax (name := split) "split" : tactic
-
-@[tactic split] def evalSplit : Tactic := fun _ =>
-  withMainContext do
-    let mvarIds' ← Meta.split (← getMainGoal)
-    Term.synthesizeSyntheticMVarsNoPostponing
-    replaceMainGoal mvarIds'
+elab "split" : tactic => withMainContext do
+  let mvarIds' ← Meta.split (← getMainGoal)
+  Term.synthesizeSyntheticMVarsNoPostponing
+  replaceMainGoal mvarIds'
 
 end Tactic
 end Lean.Elab
