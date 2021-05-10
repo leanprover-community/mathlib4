@@ -237,7 +237,8 @@ lemma forall_not_of_not_exists {p : α → Prop} (hne : ¬∃ x, p x) (x) : ¬p 
 def Decidable.by_cases := @byCases
 def Decidable.by_contradiction := @byContradiction
 def Decidable.of_not_not := @ofNotNot
-def Decidable.not_and := @notAndIffOrNot
+
+lemma Decidable.not_and [Decidable p] [Decidable q] : ¬ (p ∧ q) ↔ ¬ p ∨ ¬ q := notAndIffOrNot _ _
 
 @[inline] def Or.by_cases [Decidable p] (h : p ∨ q) (h₁ : p → α) (h₂ : q → α) : α :=
 if hp : p then h₁ hp else h₂ (h.resolve_left hp)
@@ -286,3 +287,16 @@ lemma up_down : ∀ (b : plift α), up (down b) = b
 
 lemma down_up (a : α) : down (up a) = a := rfl
 end plift
+
+namespace WellFounded
+
+variable {α : Sort u} {C : α → Sort v} {r : α → α → Prop}
+
+unsafe def fix'.impl (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x :=
+  F x fun y _ => impl hwf F y
+
+set_option codegen false in
+@[implementedBy fix'.impl]
+def fix' (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x := hwf.fix F x
+
+end WellFounded
