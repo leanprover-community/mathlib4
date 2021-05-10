@@ -1,6 +1,14 @@
-import Lean
+/-
+Copyright (c) 2021 Kevin Buzzard. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kevin Buzzard, Mario Carneiro
+-/
+import Lean.Elab.Command
 
-open Lean Lean.Meta
+open Lean Meta Elab Command
+
+namespace Lean
+namespace Meta
 
 deriving instance Inhabited for ConstantInfo -- required for Array.qsort
 
@@ -18,11 +26,36 @@ where
       if ← ϕ cinfo then matches.push cinfo else matches
     else matches
 
-def find (ϕ : ConstantInfo → MetaM Bool) (opts : FindOptions := {}) : MetaM Unit := do
+def find (msg : String)
+  (ϕ : ConstantInfo → MetaM Bool) (opts : FindOptions := {}) : TermElabM String := do
   let cinfos ← findCore ϕ opts
   let cinfos := cinfos.qsort fun p q => p.name.lt q.name
+  let mut msg := msg
   for cinfo in cinfos do
-    println! "{cinfo.name} : {← Meta.ppExpr cinfo.type}"
+    msg := msg ++ s!"{cinfo.name} : {← Meta.ppExpr cinfo.type}\n"
+  msg
 
-macro "#print prefix " name:ident : command =>
-  `(#eval find fun cinfo => $(quote name.getId).isPrefixOf cinfo.name)
+end Meta
+
+namespace Elab.Command
+
+syntax (name := printPrefix) "#print prefix " ident : command
+
+/--
+The command `#print prefix foo` will print all definitions that start with
+the namespace `foo`.
+-/
+@[commandElab printPrefix] def elabPrintPrefix : CommandElab
+| `(#print prefix%$tk $name:ident) => do
+  let name := name.getId
+  liftTermElabM none do
+    let mut msg ← find "" fun cinfo => name.isPrefixOf cinfo.name
+    if msg.isEmpty then
+      if let [name] ← resolveGlobalConst name then
+        msg ← find msg fun cinfo => name.isPrefixOf cinfo.name
+    if !msg.isEmpty then
+      logInfoAt tk msg
+| _ => throwUnsupportedSyntax
+
+end Elab.Command
+end Lean
