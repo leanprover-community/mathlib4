@@ -1,5 +1,8 @@
 PKG = Mathlib
 
+# Disable plugin for now, since this requires a C compiler + libgmp
+ifdef ENABLE_PLUGIN
+
 PLUGINOUT = build/plugin
 LIBMATHLIBPLUGIN = $(PLUGINOUT)/Mathlib_Plugin.so
 
@@ -20,5 +23,11 @@ LEAN_OPTS += --plugin=$(LIBMATHLIBPLUGIN)
 
 $(LIBMATHLIBPLUGIN): $(PLUGINSRCS)
 	$(MAKE) BUILD_PLUGIN=1 OUT=$(PLUGINOUT) $(LIBMATHLIBPLUGIN) LEAN_PATH=:$(PLUGINOUT)
+
+endif
+
+else
+
+include lean.mk
 
 endif
