@@ -339,7 +339,10 @@ by rw [div_eq]; simp [Nat.lt_irrefl]
 lemma le_div_iff_mul_le (k0 : 0 < k) : x ≤ y / k ↔ x * k ≤ y := by
   induction y, k using mod.inductionOn generalizing x with
     (rw [div_eq]; simp [h]; cases x with simp [zero_le] | succ x => ?_)
-  | base y k h => simp [succ_mul, Nat.add_comm]; refine Nat.lt_of_lt_of_le sorry sorry
+  | base y k h =>
+    simp [succ_mul, Nat.add_comm]
+    refine Nat.lt_of_lt_of_le ?_ (Nat.le_add_right _ _)
+    exact Nat.lt_of_not_le fun h' => h ⟨k0, h'⟩
   | ind y k h IH =>
     rw [← add_one, Nat.add_le_add_iff_le_right, IH k0, succ_mul, le_sub_iff_add_le h.2]
 
@@ -617,9 +620,9 @@ lemma sub_mul_div (x n p : ℕ) (h₁ : n*p ≤ x) : (x - n*p) / n = x / n - p :
   | inl h₀ => rw [h₀, Nat.div_zero, Nat.div_zero, Nat.zero_sub]
   | inr h₀ => induction p with
     | zero => rw [Nat.mul_zero, Nat.sub_zero, Nat.sub_zero]
-    | succ p =>
+    | succ p IH =>
       have h₂ : n*p ≤ x by
-        transitivity
+        (transitivity)
         focus apply Nat.mul_le_mul_left; apply le_succ
         apply h₁
       have h₃ : x - n * p ≥ n by
@@ -627,8 +630,8 @@ lemma sub_mul_div (x n p : ℕ) (h₁ : n*p ≤ x) : (x - n*p) / n = x / n - p :
         rw [Nat.sub_add_cancel h₂, Nat.add_comm]
         rw [mul_succ] at h₁
         apply h₁
-      rw [sub_succ, ← p_ih h₂]
-      rw [@div_eq_sub_div (x - n*p) _ h₀ h₃]
+      rw [sub_succ, ← IH h₂]
+      rw [@div_eq_sub_div _ (x - n*p) h₀ h₃]
       simp [add_one, pred_succ, mul_succ, Nat.sub_sub]
 
 lemma div_mul_le_self : ∀ (m n : ℕ), m / n * n ≤ m
