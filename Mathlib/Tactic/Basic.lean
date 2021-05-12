@@ -27,7 +27,8 @@ macro "_" : tactic => `({})
 
 macro_rules | `(tactic| rfl) => `(tactic| exact Iff.rfl)
 
-macro "change" e:term : tactic => `(tactic| show $e)
+macro_rules
+  | `(tactic| change $e:term) => `(tactic| show $e)
 
 macro "sorry" : tactic => `(tactic| admit)
 
