@@ -281,13 +281,13 @@ by rw [← Nat.add_sub_cancel x k, Nat.sub_le_sub_right_iff h, Nat.add_sub_cance
 protected lemma min_comm (a b : ℕ) : Nat.min a b = Nat.min b a := by
   simp [Nat.min]
   by_cases h₁ : a ≤ b <;> by_cases h₂ : b ≤ a <;> simp [h₁, h₂]
-  case pos => exact Nat.le_antisymm h₁ h₂
-  case neg => cases not_or_intro h₁ h₂ (Nat.le_or_le _ _)
+  - (exact Nat.le_antisymm h₁ h₂)
+  - cases not_or_intro h₁ h₂ (Nat.le_or_le _ _)
 
 protected lemma min_le_left (a b : ℕ) : Nat.min a b ≤ a := by
   simp [Nat.min]; by_cases a ≤ b <;> simp [h]
-  case pos => exact Nat.le_refl _
-  case neg => exact Nat.le_of_not_le h
+  - (exact Nat.le_refl _)
+  - exact Nat.le_of_not_le h
 
 protected lemma min_eq_left (h : a ≤ b) : Nat.min a b = a :=
 by simp [Nat.min, h]
@@ -623,8 +623,8 @@ lemma sub_mul_div (x n p : ℕ) (h₁ : n*p ≤ x) : (x - n*p) / n = x / n - p :
     | succ p IH =>
       have h₂ : n*p ≤ x by
         transitivity
-        focus apply Nat.mul_le_mul_left; apply le_succ
-        apply h₁
+        - (apply Nat.mul_le_mul_left; apply le_succ)
+        - apply h₁
       have h₃ : x - n * p ≥ n by
         apply Nat.le_of_add_le_add_right
         rw [Nat.sub_add_cancel h₂, Nat.add_comm]
@@ -684,35 +684,29 @@ Nat.le_antisymm
 lemma mul_sub_div (x n p : ℕ) (h₁ : x < n*p) : (n * p - succ x) / n = p - succ (x / n) := by
   have npos : 0 < n from (eq_zero_or_pos _).resolve_left fun n0 => by
     rw [n0, Nat.zero_mul] at h₁; exact not_lt_zero _ h₁
-  apply Nat.div_eq_of_lt_le
-  case lo =>
-    rw [Nat.mul_sub_right_distrib, Nat.mul_comm]
+  (apply Nat.div_eq_of_lt_le)
+  - rw [Nat.mul_sub_right_distrib, Nat.mul_comm]
     apply Nat.sub_le_sub_left
-    exact (div_lt_iff_lt_mul npos).1 (lt_succ_self _)
-  case hi =>
-    change succ (pred (n * p - x)) ≤ (succ (pred (p - x / n))) * n
+    (exact (div_lt_iff_lt_mul npos).1 (lt_succ_self _))
+  - change succ (pred (n * p - x)) ≤ (succ (pred (p - x / n))) * n
     rw [succ_pred_eq_of_pos (Nat.sub_pos_of_lt h₁),
       fun h => succ_pred_eq_of_pos (Nat.sub_pos_of_lt h)] -- TODO: why is the function needed?
-    focus
-      rw [Nat.mul_sub_right_distrib, Nat.mul_comm]
-      apply Nat.sub_le_sub_left; apply div_mul_le_self
-    focus
-      apply (div_lt_iff_lt_mul npos).2; rwa [Nat.mul_comm]
+    - rw [Nat.mul_sub_right_distrib, Nat.mul_comm]
+      (apply Nat.sub_le_sub_left; apply div_mul_le_self)
+    - apply (div_lt_iff_lt_mul npos).2; rwa [Nat.mul_comm]
 
 protected lemma div_div_eq_div_mul (m n k : ℕ) : m / n / k = m / (n * k) := by
   cases eq_zero_or_pos k with
   | inl k0 => rw [k0, Nat.mul_zero, Nat.div_zero, Nat.div_zero] | inr kpos => ?_
   cases eq_zero_or_pos n with
   | inl n0 => rw [n0, Nat.zero_mul, Nat.div_zero, Nat.zero_div] | inr npos => ?_
-  refine Nat.le_antisymm ?a ?b
-  case a =>
-    apply (le_div_iff_mul_le (Nat.mul_pos npos kpos)).2
+  (apply Nat.le_antisymm)
+  - apply (le_div_iff_mul_le (Nat.mul_pos npos kpos)).2
     rw [Nat.mul_comm n k, ← Nat.mul_assoc]
     apply (le_div_iff_mul_le npos).1
     apply (le_div_iff_mul_le kpos).1
-    apply Nat.le_refl
-  case b =>
-    apply (le_div_iff_mul_le kpos).2
+    (apply Nat.le_refl)
+  - apply (le_div_iff_mul_le kpos).2
     apply (le_div_iff_mul_le npos).2
     rw [Nat.mul_assoc, Nat.mul_comm n k]
     apply (le_div_iff_mul_le (Nat.mul_pos kpos npos)).1
