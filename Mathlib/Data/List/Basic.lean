@@ -35,10 +35,13 @@ theorem get_cons_drop : ∀ (l : List α) i h,
 | _::_, 0, h => rfl
 | _::_, i+1, h => get_cons_drop _ i _
 
-theorem drop_eq_nil_of_le : ∀ {l : List α} {k : Nat} (h : l.length' ≤ k), l.drop k = []
+theorem drop_eq_nil_of_le' : ∀ {l : List α} {k : Nat} (h : l.length' ≤ k), l.drop k = []
 | [], k, _ => by cases k <;> rfl
 | a::l, 0, h => by cases h
-| a::l, k+1, h => drop_eq_nil_of_le (l := l) h
+| a::l, k+1, h => drop_eq_nil_of_le' (l := l) h
+
+theorem drop_eq_nil_of_le {l : List α} {k : Nat} : (h : l.length ≤ k) → l.drop k = [] :=
+by rw [← length'_eq_length]; exact drop_eq_nil_of_le'
 
 /-- List membership. -/
 def mem (a : α) : List α → Prop
