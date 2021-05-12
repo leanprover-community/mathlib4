@@ -2,6 +2,20 @@ import Mathlib.Logic.Basic
 
 namespace List
 
+theorem concat_eq_append : ∀ (l : List α) a, concat l a = l ++ [a]
+| [], a => (append_nil _).symm
+| x::xs, a => by simp [concat, concat_eq_append xs]
+
+theorem get_cons_drop : ∀ (l : List α) i h,
+  List.get l i h :: List.drop (i + 1) l = List.drop i l
+| _::_, 0, h => rfl
+| _::_, i+1, h => get_cons_drop _ i _
+
+theorem drop_eq_nil_of_le : ∀ {l : List α} {k : Nat} (h : l.length ≤ k), l.drop k = []
+| [], k, _ => by cases k <;> rfl
+| a::l, 0, h => by simp at h; exact nomatch h
+| a::l, k+1, h => by simp at h; exact drop_eq_nil_of_le (l := l) h
+
 /-- List membership. -/
 def mem (a : α) : List α → Prop
 | [] => False
