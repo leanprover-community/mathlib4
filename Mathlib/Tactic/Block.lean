@@ -25,6 +25,14 @@ Blocks are a simple way to make it clear where and how goals are produced and di
 Furthermore, errors in one block do not affect the processing of the rest of the proof: every block
 always discharges the goal it is tasked with, and will report a (non-fatal) error if not all
 subgoals are handled.
+
+Note: until https://github.com/leanprover/lean4/issues/451 is resolved, tactics that end in an
+expression will break this parser, so you have to put parentheses around the tactic like so:
+```
+(apply And.intro)
+- subgoal
+- subgoal
+```
 -/
 namespace Lean
 namespace Elab
