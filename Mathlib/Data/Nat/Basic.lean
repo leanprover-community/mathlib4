@@ -608,7 +608,7 @@ lemma sub_mul_mod (x k n : ℕ) (h₁ : n*k ≤ x) : (x - n*k) % n = x % n := by
       apply Nat.le_trans _ h₁
       apply le_add_right _ n
     have h₄ : x - n * k ≥ n by
-      apply @Nat.le_of_add_le_add_right (n*k)
+      apply Nat.le_of_add_le_add_right (k := n*k)
       rw [Nat.sub_add_cancel h₂]
       simp [mul_succ, Nat.add_comm] at h₁; simp [h₁]
     rw [mul_succ, ← Nat.sub_sub, ← mod_eq_sub_mod h₄, IH h₂]
@@ -622,7 +622,7 @@ lemma sub_mul_div (x n p : ℕ) (h₁ : n*p ≤ x) : (x - n*p) / n = x / n - p :
     | zero => rw [Nat.mul_zero, Nat.sub_zero, Nat.sub_zero]
     | succ p IH =>
       have h₂ : n*p ≤ x by
-        (transitivity)
+        transitivity
         focus apply Nat.mul_le_mul_left; apply le_succ
         apply h₁
       have h₃ : x - n * p ≥ n by
@@ -631,7 +631,7 @@ lemma sub_mul_div (x n p : ℕ) (h₁ : n*p ≤ x) : (x - n*p) / n = x / n - p :
         rw [mul_succ] at h₁
         apply h₁
       rw [sub_succ, ← IH h₂]
-      rw [@div_eq_sub_div _ (x - n*p) h₀ h₃]
+      rw [div_eq_sub_div h₀ h₃]
       simp [add_one, pred_succ, mul_succ, Nat.sub_sub]
 
 lemma div_mul_le_self : ∀ (m n : ℕ), m / n * n ≤ m

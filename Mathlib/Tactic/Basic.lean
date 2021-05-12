@@ -44,7 +44,7 @@ set_option hygiene false in
 macro "by_cases " e:term : tactic =>
   `(cases Decidable.em $e with | inl h => ?pos | inr h => ?neg)
 
-syntax "transitivity" (term)? : tactic
+syntax "transitivity" (colGt term)? : tactic
 set_option hygiene false in
 macro_rules
   | `(tactic| transitivity) => `(tactic| apply Nat.le_trans)
