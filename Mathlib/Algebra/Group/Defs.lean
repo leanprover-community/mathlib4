@@ -98,7 +98,9 @@ class AddGroup (A : Type u) extends AddMonoid A, Neg A, Sub A where
 class AddCommGroup (A : Type u) extends AddGroup A where
   add_comm (a b : A) : a + b = b + a
 
-instance (A : Type u) [h : AddCommGroup A] : AddCommMonoid A :=
+-- the automatically generated name is something like instAddCommMonoid
+instance AddCommGroup.toAddCommMonoid (A : Type u) [h : AddCommGroup A] :
+  AddCommMonoid A :=
 { h with }
 
 /-

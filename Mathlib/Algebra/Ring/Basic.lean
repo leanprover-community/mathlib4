@@ -24,6 +24,14 @@ class Ring (R : Type u) extends Monoid R, AddCommGroup R where
   mul_add (a b c : R) : a * (b + c) = a * b + a * c
   add_mul (a b c : R) : (a + b) * c = a * c + b * c
 
+-- workaround for Lean 4 not currently finding the route to AddCommMonoid from h
+instance (R : Type u) [h : Ring R] : Semiring R :=
+{ h with
+  toAddCommMonoid := AddCommGroup.toAddCommMonoid R
+  zero_mul := sorry
+  mul_zero := sorry
+}
+
 /-
 
 Probably need a theory of AddRightCancelMonoids and AddLeftCancelMonoids
@@ -33,18 +41,6 @@ for this:
 
 -- theorem Ring.zero_mul {R : Type u} [Ring R] (a : R) : 0 * a = 0 := by
   
-/- 
-
-Need to think harder about this `h with` issue in the below:
-
--/
-
--- instance (R : Type u) [h : Ring R] : Semiring R :=
--- { h with 
---   zero_mul := sorry
---   mul_zero := sorry
--- }
-
 /- 
 
 TODO
