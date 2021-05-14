@@ -1,0 +1,48 @@
+import Mathlib.Algebra.Group.Defs
+import Mathlib.Logic.Basic
+
+section AddCommSemigroup_lemmas
+
+variable {A : Type u} [AddCommSemigroup A]
+
+lemma add_left_comm (a b c : A) : a + (b + c) = b + (a + c) :=
+by rw [← add_assoc, add_comm a, add_assoc]
+
+lemma add_right_comm (a b c : A) : a + b + c = a + c + b :=
+by rw [add_assoc, add_comm b, add_assoc]
+
+theorem add_add_add_comm (a b c d : A) : (a + b) +(c + d) = (a + c) + (b + d) :=
+by simp [add_left_comm, add_assoc]
+
+end AddCommSemigroup_lemmas
+
+section CommSemigroup_lemmas
+
+variable {M : Type u} [CommSemigroup M]
+
+lemma mul_left_comm (a b c : M) : a * (b * c) = b * (a * c) :=
+by rw [← mul_assoc, mul_comm a, mul_assoc]
+
+-- Funky Lean 3 proof of the above:
+--left_comm has_mul.mul mul_comm mul_assoc
+
+lemma mul_right_comm (a b c : M) : a * b * c = a * c * b :=
+by rw [mul_assoc, mul_comm b c, mul_assoc]
+
+theorem mul_mul_mul_comm (a b c d : M) : (a * b) * (c * d) = (a * c) * (b * d) :=
+by simp [mul_assoc, mul_left_comm]
+
+end CommSemigroup_lemmas
+
+section AddLeftCancelMonoid_lemmas
+-- too lazy to do mul versions and right versions
+
+variable {A : Type u} [AddMonoid A] [IsAddLeftCancel A] {a b : A}
+
+lemma add_right_eq_self : a + b = a ↔ b = 0 :=
+by rw [←add_left_cancel_iff (c := 0), add_zero]
+
+lemma self_eq_add_right : a = a + b ↔ b = 0 :=
+by rw [←add_left_cancel_iff (c := 0), add_zero, eq_comm]
+
+end AddLeftCancelMonoid_lemmas
