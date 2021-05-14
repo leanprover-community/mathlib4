@@ -1,5 +1,9 @@
 /-!
 # Typeclasses for monoids and groups etc
+
+TODO: port all lemmas about semigroups, monoids and groups
+to the Add case
+
 -/
 
 /-
@@ -87,6 +91,9 @@ class AddMonoid (A : Type u) extends AddSemigroup A, Zero A where
 class AddCommMonoid (A : Type u) extends AddMonoid A where
   add_comm (a b : A) : a + b = b + a
 
+class IsAddRightCancel (A : Type u) extends Add A where
+  add_right_cancel (a b c : A) : a + b = c + b → a = c
+
 class AddGroup (A : Type u) extends AddMonoid A, Neg A, Sub A where
   add_left_neg (a : A) : -a + a = 0
   sub_eq_add_neg (a b : A) : a - b = a + -b 
@@ -108,8 +115,63 @@ instance AddCommGroup.toAddCommMonoid (A : Type u) [h : AddCommGroup A] :
 # Multiplicative groups
 
 -/
+
+
+class IsMulLeftCancel (G : Type u) [Mul G] where
+  mul_left_cancel (a b c : G) : a * b = a * c → b = c
+
+class IsMulRightCancel (G : Type u) [Mul G] where
+  mul_right_cancel (a b c : G) : b * a = c * a → b = c
+
 class Semigroup (G : Type u) extends Mul G where
   mul_assoc (a b c : G) : (a * b) * c = a * (b * c)
+
+theorem mul_assoc {G : Type u} [Semigroup G] :
+  ∀ a b c : G, a * b * c = a * (b * c) :=
+Semigroup.mul_assoc
+
+/-
+
+## left and right cancel semigroup lemmas
+
+-/
+
+section MulLeftCancel
+
+variable {G : Type u} [Semigroup G] [IsMulLeftCancel G] {a b c : G}
+
+theorem mul_left_cancel : a * b = a * c → b = c :=
+IsMulLeftCancel.mul_left_cancel a b c
+
+theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
+⟨mul_left_cancel, congrArg _⟩
+
+-- no `function.injective`?
+--theorem mul_right_injective (a : G) : function.injective (c * .) :=
+--λ a b => mul_left_cancel
+
+@[simp] theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
+⟨mul_left_cancel, congrArg _⟩
+
+--theorem mul_ne_mul_right (a : G) {b c : G} : a * b ≠ a * c ↔ b ≠ c :=
+--(mul_right_injective a).ne_iff
+
+end MulLeftCancel
+
+section MulRightCancel
+
+variable {G : Type u} [Semigroup G] [IsMulRightCancel G] {a b c : G}
+
+theorem mul_right_cancel : b * a = c * a → b = c :=
+IsMulRightCancel.mul_right_cancel a b c
+
+theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
+⟨mul_right_cancel, λ h => h ▸ rfl⟩
+
+@[simp] theorem mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
+⟨mul_right_cancel, λ h => h ▸ rfl⟩
+
+end MulRightCancel
 
 class Monoid (M : Type u) extends Semigroup M, One M where
   mul_one (m : M) : m * 1 = m
@@ -118,10 +180,23 @@ class Monoid (M : Type u) extends Semigroup M, One M where
   npow_zero' : ∀ x, npow 0 x = 1 -- fill in with tactic once we can do this
   npow_succ' : ∀ (n : ℕ) x, npow n.succ x = x * npow n x -- fill in with tactic
 
+@[simp] theorem mul_one {M : Type u} [Monoid M] : ∀ (m : M), m * 1 = m :=
+Monoid.mul_one
+
+@[simp] theorem one_mul {M : Type u} [Monoid M] : ∀ (m : M), 1 * m = m :=
+Monoid.one_mul
+
+theorem left_inv_eq_right_inv {M : Type u} [Monoid M] {a b c : M}
+  (hba : b * a = 1) (hac : a * c = 1) : b = c :=
+by rw [←one_mul c, ←hba, mul_assoc, hac, mul_one b]
+
 -- if anyone bothers to make CommSemigroup we need an instance
 -- from CommMonoid to it, as we're no longer extending it
 class CommMonoid (M : Type u) extends Monoid M where
   mul_comm (a b : M) : a * b = b * a
+
+theorem mul_comm {M : Type u} [CommMonoid M] : ∀ a b : M, a * b = b * a :=
+CommMonoid.mul_comm
 
 class Group (G : Type u) extends Monoid G, Inv G, Div G where
   mul_left_inv (a : G) : a⁻¹ * a = 1
@@ -130,6 +205,40 @@ class Group (G : Type u) extends Monoid G, Inv G, Div G where
   gpow_zero' (a : G) : gpow 0 a = 1 -- try rfl
   gpow_succ' (n : ℕ) (a : G) : gpow (Int.ofNat n.succ) a = a * gpow (Int.ofNat n) a 
   gpow_neg' (n : ℕ) (a : G) : gpow (Int.negSucc n) a = (gpow ↑(n.succ) a)⁻¹
+
+/-
+
+# Lemmas about Groups
+
+-/
+section Group
+
+variable {G : Type u} [Group G] {a b c : G}
+
+@[simp] theorem mul_left_inv : ∀ a : G, a⁻¹ * a = 1 :=
+Group.mul_left_inv
+
+theorem inv_mul_self (a : G) : a⁻¹ * a = 1 := mul_left_inv a
+
+@[simp] theorem inv_mul_cancel_left (a b : G) : a⁻¹ * (a * b) = b :=
+by rw [← mul_assoc, mul_left_inv, one_mul]
+
+@[simp] theorem inv_eq_of_mul_eq_one (h : a * b = 1) : a⁻¹ = b :=
+left_inv_eq_right_inv (inv_mul_self a) h
+
+@[simp] theorem inv_inv (a : G) : (a⁻¹)⁻¹ = a :=
+inv_eq_of_mul_eq_one (mul_left_inv a)
+
+@[simp] theorem mul_right_inv (a : G) : a * a⁻¹ = 1 := by
+  rw [←mul_left_inv (a⁻¹), inv_inv]
+
+-- synonym
+theorem mul_inv_self (a : G) : a * a⁻¹ = 1 := mul_right_inv a
+
+@[simp] theorem mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a :=
+by rw [mul_assoc, mul_right_inv, mul_one]
+
+end Group
 
 class CommGroup (G : Type u) extends Group G where
   mul_comm (a b : G) : a * b = b * a
