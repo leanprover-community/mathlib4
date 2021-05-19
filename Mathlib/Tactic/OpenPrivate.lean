@@ -16,14 +16,28 @@ def Meta.collectPrivateIn [Monad m] [MonadEnv m] [MonadError m]
   pure $ Expr.foldConsts c.value! set fun c a =>
     if isPrivateName c then a.insert c else a
 
+def Environment.moduleIdxForModule? (env : Environment) (mod : Name) : Option ModuleIdx :=
+  (env.allImportedModuleNames.indexOf? mod).map fun idx => idx.val
+
+instance : DecidableEq ModuleIdx := instDecidableEqNat
+
+def Environment.declsInModuleIdx (env : Environment) (idx : ModuleIdx) : List Name :=
+  env.const2ModIdx.fold (fun acc n i => if i = idx then n :: acc else acc) []
+
 namespace Elab.Command
 
-def elabOpenPrivateLike (ids tgts : Array Syntax)
+def elabOpenPrivateLike (ids : Array Syntax) (tgts mods : Option (Array Syntax))
   (f : (priv full user : Name) → CommandElabM Name) : CommandElabM Unit := do
   let mut names := NameSet.empty
-  for tgt in tgts do
+  for tgt in tgts.getD #[] do
     let n ← resolveGlobalConstNoOverload tgt.getId
     names ← Meta.collectPrivateIn n names
+  for mod in mods.getD #[] do
+    let some modIdx ← (← getEnv).moduleIdxForModule? mod.getId
+      | throwError "unknown module {mod}"
+    for declName in (← getEnv).declsInModuleIdx modIdx do
+      if isPrivateName declName then
+        names := names.insert declName
   let appendNames (msg : String) : String := do
     let mut msg := msg
     for c in names do
@@ -53,7 +67,7 @@ def elabOpenPrivateLike (ids tgts : Array Syntax)
       openDecls := decl::openDecls
     { scope with openDecls := openDecls }
 
-syntax (name := openPrivate) "open private " ident* " in " ident* : command
+syntax (name := openPrivate) "open private" ident* ("in" ident*)? ("from" ident*)? : command
 
 /--
 The command `open private a b c in foo bar` will look for private definitions named `a`, `b`, `c`
@@ -62,13 +76,16 @@ definitions public, but rather makes them accessible in the current section by t
 instead of the (unnameable) internal name for the private declaration, something like
 `_private.Other.Module.0.Other.Namespace.foo.a`, which cannot be typed directly because of the `0`
 name component.
+
+It is also possible to specify the module instead with
+`open private a b c from Other.Module`.
 -/
 @[commandElab openPrivate] def elabOpenPrivate : CommandElab
-| `(open private $ids* in $tgts*) =>
-  elabOpenPrivateLike ids tgts fun c _ _ => c
+| `(open private $ids* $[in $tgts*]? $[from $mods*]?) =>
+  elabOpenPrivateLike ids tgts mods fun c _ _ => c
 | _ => throwUnsupportedSyntax
 
-syntax (name := exportPrivate) "export private " ident* " in " ident* : command
+syntax (name := exportPrivate) "export private" ident* ("in" ident*)? ("from" ident*)? : command
 
 /--
 The command `export private a b c in foo bar` is similar to `open private`, but instead of opening
@@ -78,10 +95,12 @@ originally.
 
 It will also open the newly created alias definition under the provided short name, like
 `open private`.
+It is also possible to specify the module instead with
+`export private a b c from Other.Module`.
 -/
 @[commandElab exportPrivate] def elabExportPrivate : CommandElab
-| `(export private $ids* in $tgts*) =>
-  elabOpenPrivateLike ids tgts fun c name _ => do
+| `(export private $ids* $[in $tgts*]? $[from $mods*]?) =>
+  elabOpenPrivateLike ids tgts mods fun c name _ => do
     let cinfo ← getConstInfo c
     if (← getEnv).contains name then
       throwError s!"'{name}' has already been declared"
