@@ -1,6 +1,6 @@
 {
 	"Copyright header for mathlib": {
-		"scope": "lean",
+		"scope": "lean4",
 		"prefix": "copyright",
 		"body": [
 			"/-",
