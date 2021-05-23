@@ -193,6 +193,10 @@ instance (A : Type u) [h : AddCommMonoid A] : AddCommSemigroup A :=
 
 ### sub_neg_monoids
 
+Additive groups can "pick up" several equal but not defeq actions of ℤ.
+This trick isolates one such action, `gsmul`, and decrees it to
+be "the canonical one". 
+
 -/
 
 class SubNegMonoid (A : Type u) extends AddMonoid A, Neg A, Sub A :=
