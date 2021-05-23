@@ -4,8 +4,32 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Mem
+/-!
 
--- This is Lean 3 lib/lean/library/init/data/set.lean
+# Sets
+
+This file sets up the theory of subsets of a type.
+
+## Main definitions
+
+* `{a : X | p a} : Set X` : the subset of `X` cut out by the predicate `p : X → Prop`
+* `{a | p a} : Set X` : equal to `{a : X | p a}`
+* `{a ∈ S | p a} : Set X` : the subset of `X` consisting of the elements of `S : set X`
+     which are cut out by `p`.
+
+## Implementation issues
+
+As in Lean 3, `Set X := X → Prop`
+
+I didn't call this file Data.Set.Basic because it contains core Lean 3
+stuff which happens before mathlib3's data.set.basic .
+This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean`.
+
+## TODO
+
+Notation {a,b,c} for finite sets (both parser and prettyprinter).
+
+-/
 
 universes u v
 
@@ -80,8 +104,6 @@ macro_rules
 
 def univ : Set α := {a | True }
 
--- want: {4} : Set Nat and {4,5,6,7} : Set Nat
-
 protected def insert (a : α) (s : Set α) : Set α :=
 {b | b = a ∨ b ∈ s}
 
@@ -110,9 +132,6 @@ def powerset (s : Set α) : Set (Set α) :=
 {t | t ⊆ s}
 
 prefix:100 "𝒫" => powerset
-
--- TODO: {1,2,3} notation
--- TODO: {1,2,3} prettyprint
 
 @[reducible]
 def sUnion (s : Set (Set α)) : Set α := {t | ∃ a ∈ s, t ∈ a}
