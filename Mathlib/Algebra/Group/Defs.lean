@@ -195,7 +195,7 @@ instance (A : Type u) [h : AddCommMonoid A] : AddCommSemigroup A :=
 
 Additive groups can "pick up" several equal but not defeq actions of ℤ.
 This trick isolates one such action, `gsmul`, and decrees it to
-be "the canonical one". 
+be "the canonical one".
 
 -/
 
