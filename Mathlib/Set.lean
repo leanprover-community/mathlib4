@@ -3,6 +3,7 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
+import Mathlib.Mem
 
 -- This is Lean 3 lib/lean/library/init/data/set.lean
 
@@ -12,13 +13,6 @@ def Set (α : Type u) := α → Prop
 
 def setOf {α : Type u} (p : α → Prop) : Set α :=
 p
-
-class Mem (α : outParam $ Type u) (γ : Type v) :=
-(mem : α → γ → Prop)
-
-infix:50 " ∈ " => Mem.mem
-
-notation:50 x "∉" s => ¬ x ∈ s
 
 class Subset (α : Type u) :=
 (subset : α → α → Prop)
@@ -35,7 +29,7 @@ class Inter (α : Type u) :=
 
 infixl:70 " ∩ " => Inter.inter
 
-class Sdiff (α : Type u) := 
+class Sdiff (α : Type u) :=
 (sdiff : α → α → α)
 
 infix:70 " \\ " => Sdiff.sdiff
@@ -67,7 +61,7 @@ syntax ident "∈" term : binderterm
 -- Notation for sets
 syntax "{" binderterm "|" term "}" : term
 
-macro_rules 
+macro_rules
  -- {a : A | p a}
 | `({ $x:ident : $t | $p }) => `(setOf (λ ($x:ident : $t) => $p))
  -- {a | p a}
