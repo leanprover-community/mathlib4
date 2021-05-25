@@ -79,11 +79,11 @@ instance : EmptyCollection (Set α) :=
 
 declare_syntax_cat binderterm -- notation for `a` or `a : A` or `a ∈ S`
 syntax ident : binderterm
-syntax ident ":" term : binderterm
-syntax ident "∈" term : binderterm
+syntax ident " : " term : binderterm
+syntax ident " ∈ " term : binderterm
 
 -- Notation for sets
-syntax "{" binderterm "|" term "}" : term
+syntax "{ " binderterm " | " term " }" : term
 
 macro_rules
  -- {a : A | p a}
@@ -144,11 +144,11 @@ def image (f : α → β) (s : Set α) : Set β :=
 instance : Functor Set :=
 { map := @Set.image }
 
-instance : LawfulFunctor Set :=
-{ id_map := λ s => funext $ λ b => propext ⟨λ ⟨_, sb, rfl⟩ => sb, λ sb => ⟨_, sb, rfl⟩⟩,
-  comp_map := λ g h s => funext $ λ c => propext
+instance : LawfulFunctor Set where
+  id_map s := funext $ λ b => propext ⟨λ ⟨_, sb, rfl⟩ => sb, λ sb => ⟨_, sb, rfl⟩⟩
+  comp_map g h s := funext $ λ c => propext
     ⟨λ ⟨a, ⟨h₁, h₂⟩⟩ => ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
-     λ ⟨b, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩,
-  map_const := rfl }
+     λ ⟨b, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
+  map_const := rfl
 
 end Set
