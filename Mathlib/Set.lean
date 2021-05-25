@@ -38,23 +38,23 @@ def Set (α : Type u) := α → Prop
 def setOf {α : Type u} (p : α → Prop) : Set α :=
 p
 
-class Subset (α : Type u) :=
-(subset : α → α → Prop)
+class Subset (α : Type u) where
+  subset : α → α → Prop
 
 infix:50 " ⊆ " => Subset.subset
 
-class Union (α : Type u) :=
-(union : α → α → α)
+class Union (α : Type u) where
+  union : α → α → α
 
 infixl:65 " ∪ " => Union.union
 
-class Inter (α : Type u) :=
-(inter : α → α → α)
+class Inter (α : Type u) where
+  inter : α → α → α
 
 infixl:70 " ∩ " => Inter.inter
 
-class Sdiff (α : Type u) :=
-(sdiff : α → α → α)
+class Sdiff (α : Type u) where
+  sdiff : α → α → α
 
 infix:70 " \\ " => Sdiff.sdiff
 
