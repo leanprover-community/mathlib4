@@ -8,14 +8,17 @@ import Mathlib.Mem
 
 # Sets
 
-This file sets up the theory of subsets of a type.
+This file sets up the theory of sets whose elements have a given type.
 
 ## Main definitions
 
-* `{a : X | p a} : Set X` : the subset of `X` cut out by the predicate `p : X → Prop`
-* `{a | p a} : Set X` : equal to `{a : X | p a}`
-* `{a ∈ S | p a} : Set X` : the subset of `X` consisting of the elements of `S : set X`
-     which are cut out by `p`.
+Given a type `X` and a predicate `p : X → Prop`:
+
+* `Set X` : the type of sets whose elements have type `X`
+* `{a : X | p a} : Set X` : the set of all elements of `X` satisfying `p`
+* `{a | p a} : Set X` : a more concise notation for `{a : X | p a}`
+* `{a ∈ S | p a} : Set X` : given `S : Set X`, the subset of `S` consisting of 
+   its elements satisfying `p`.
 
 ## Implementation issues
 
