@@ -107,6 +107,9 @@ def univ : Set α := {a | True }
 protected def insert (a : α) (s : Set α) : Set α :=
 {b | b = a ∨ b ∈ s}
 
+protected def singleton (a : α) : Set α :=
+{b | b = a}
+
 protected def union (s₁ s₂ : Set α) : Set α :=
 {a | a ∈ s₁ ∨ a ∈ s₂}
 
@@ -150,5 +153,33 @@ instance : LawfulFunctor Set where
     ⟨λ ⟨a, ⟨h₁, h₂⟩⟩ => ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
      λ ⟨b, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
   map_const := rfl
+
+syntax (priority := high) "{ " term,* " }" : term
+
+open Lean Macro in
+macro_rules
+| `({ $elems:term,* }) => do
+  let n := elems.elemsAndSeps.size
+  if n = 0 then throwUnsupported
+  let rec expandSetLit (i : Nat) (skip : Bool) (result : Syntax) : MacroM Syntax := do
+    match i, skip with
+    | 0, _ => result
+    | i + 1, true => expandSetLit i false result
+    | i + 1, false => expandSetLit i true (← ``(Set.insert $(elems.elemsAndSeps[i]) $result))
+  let some hd ← pure $ elems.elemsAndSeps.back? | throwUnsupported
+  expandSetLit (n - 1) true (← ``(Set.singleton $hd))
+
+@[appUnexpander Set.singleton]
+def singletonUnexpander : Lean.PrettyPrinter.Unexpander
+| `(Set.singleton $a) => `({ $a })
+| _ => throw ()
+
+@[appUnexpander Set.insert]
+def insertUnexpander : Lean.PrettyPrinter.Unexpander
+| `(Set.insert $a { $t }) => `({$a, $t})
+| `(Set.insert $a { $ts,* }) => `({$a, $ts,*})
+| _ => throw ()
+
+variable {α : Type _} {a b c : α}
 
 end Set
