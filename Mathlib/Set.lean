@@ -154,7 +154,7 @@ instance : LawfulFunctor Set where
      λ ⟨b, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
   map_const := rfl
 
-syntax (priority := high) "{ " term,+ " }" : term
+syntax (priority := high) "{" term,+ "}" : term
 
 macro_rules
   | `({$x}) => `(Set.singleton $x)
