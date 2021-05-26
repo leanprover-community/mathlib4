@@ -25,10 +25,6 @@ I didn't call this file Data.Set.Basic because it contains core Lean 3
 stuff which happens before mathlib3's data.set.basic .
 This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean`.
 
-## TODO
-
-Notation {a,b,c} for finite sets (both parser and prettyprinter).
-
 -/
 
 universes u v
@@ -107,6 +103,9 @@ def univ : Set α := {a | True }
 protected def insert (a : α) (s : Set α) : Set α :=
 {b | b = a ∨ b ∈ s}
 
+protected def singleton (a : α) : Set α :=
+{b | b = a}
+
 protected def union (s₁ s₂ : Set α) : Set α :=
 {a | a ∈ s₁ ∨ a ∈ s₂}
 
@@ -150,5 +149,21 @@ instance : LawfulFunctor Set where
     ⟨λ ⟨a, ⟨h₁, h₂⟩⟩ => ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
      λ ⟨b, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
   map_const := rfl
+
+syntax (priority := high) "{" term,+ "}" : term
+
+macro_rules
+  | `({$x}) => `(Set.singleton $x)
+  | `({$x, $xs:term,*}) => `(Set.insert $x {$xs,*})
+
+@[appUnexpander Set.singleton]
+def singletonUnexpander : Lean.PrettyPrinter.Unexpander
+| `(Set.singleton $a) => `({ $a })
+| _ => throw ()
+
+@[appUnexpander Set.insert]
+def insertUnexpander : Lean.PrettyPrinter.Unexpander
+| `(Set.insert $a { $ts,* }) => `({$a, $ts,*})
+| _ => throw ()
 
 end Set
