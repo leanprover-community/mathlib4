@@ -180,6 +180,4 @@ def insertUnexpander : Lean.PrettyPrinter.Unexpander
 | `(Set.insert $a { $ts,* }) => `({$a, $ts,*})
 | _ => throw ()
 
-variable {α : Type _} {a b c : α}
-
 end Set
