@@ -154,20 +154,11 @@ instance : LawfulFunctor Set where
      λ ⟨b, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
   map_const := rfl
 
-syntax (priority := high) "{ " term,* " }" : term
+syntax (priority := high) "{ " term,+ " }" : term
 
-open Lean Macro in
 macro_rules
-| `({ $elems:term,* }) => do
-  let n := elems.elemsAndSeps.size
-  if n = 0 then throwUnsupported
-  let rec expandSetLit (i : Nat) (skip : Bool) (result : Syntax) : MacroM Syntax := do
-    match i, skip with
-    | 0, _ => result
-    | i + 1, true => expandSetLit i false result
-    | i + 1, false => expandSetLit i true (← ``(Set.insert $(elems.elemsAndSeps[i]) $result))
-  let some hd ← pure $ elems.elemsAndSeps.back? | throwUnsupported
-  expandSetLit (n - 1) true (← ``(Set.singleton $hd))
+  | `({$x}) => `(Set.singleton $x)
+  | `({$x, $xs:term,*}) => `(Set.insert $x {$xs,*})
 
 @[appUnexpander Set.singleton]
 def singletonUnexpander : Lean.PrettyPrinter.Unexpander
