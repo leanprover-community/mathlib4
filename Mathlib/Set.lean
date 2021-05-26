@@ -25,6 +25,10 @@ I didn't call this file Data.Set.Basic because it contains core Lean 3
 stuff which happens before mathlib3's data.set.basic .
 This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean`.
 
+## TODO
+
+Notation {a,b,c} for finite sets (both parser and prettyprinter).
+
 -/
 
 universes u v
@@ -172,7 +176,6 @@ def singletonUnexpander : Lean.PrettyPrinter.Unexpander
 
 @[appUnexpander Set.insert]
 def insertUnexpander : Lean.PrettyPrinter.Unexpander
-| `(Set.insert $a { $t }) => `({$a, $t})
 | `(Set.insert $a { $ts,* }) => `({$a, $ts,*})
 | _ => throw ()
 
