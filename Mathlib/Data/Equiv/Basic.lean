@@ -31,17 +31,25 @@ infix:25 " ≃ " => equiv
 
 namespace equiv
 
-/-
-class CoeFun (α : Sort u) (γ : outParam (α → Sort v)) where
-  coe : (a : α) → γ a
--/
 instance : CoeFun (α ≃ β) (λ _ => α → β):=
 ⟨to_fun⟩
 
-def refl : α ≃ α := ⟨id, id, λ _ => rfl, λ _ => rfl⟩
+def refl (α) : α ≃ α := ⟨id, id, λ _ => rfl, λ _ => rfl⟩
 
 def symm (e : α ≃ β) : β ≃ α := ⟨e.inv_fun, e.to_fun, e.right_inv, e.left_inv⟩
 
 def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
 ⟨e₂ ∘ (e₁ : α → β), e₁.symm ∘ (e₂.symm : γ → β),
   e₂.left_inv.comp e₁.left_inv, e₂.right_inv.comp e₁.right_inv⟩
+
+@[simp] theorem apply_symm_apply  (e : α ≃ β) (x : β) : e (e.symm x) = x :=
+e.right_inv x
+
+@[simp] theorem symm_apply_apply (e : α ≃ β) (x : α) : e.symm (e x) = x :=
+e.left_inv x
+
+@[simp] theorem symm_comp_self (e : α ≃ β) : e.symm ∘ (e : α → β) = id := funext e.symm_apply_apply
+
+@[simp] theorem self_comp_symm (e : α ≃ β) : e ∘ (e.symm : β → α) = id := funext e.apply_symm_apply
+
+end equiv
