@@ -16,7 +16,7 @@ theorem ext' : {a b : Array α} → a.data = b.data → a = b
 | ⟨l⟩ => ext' l.toArray_data
 
 theorem toArrayLit_eq (a : Array α) (n : Nat) (hsz : a.size = n) : a = toArrayLit a n hsz := by
-  have _ from aux n
+  have := aux n
   rw [List.drop_eq_nil_of_le (Nat.le_of_eq hsz)] at this
   exact (data_toArray a).symm.trans $ congrArg List.toArray (this _).symm
 where

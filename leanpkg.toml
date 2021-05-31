@@ -1,4 +1,4 @@
 [package]
 name = "mathlib4"
 version = "0.1"
-lean_version = "leanprover/lean4:nightly-2021-05-18"
+lean_version = "leanprover/lean4:nightly-2021-05-31"

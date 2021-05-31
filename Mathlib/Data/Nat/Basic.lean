@@ -159,7 +159,7 @@ Nat.le_antisymm (Nat.le_of_mul_le_mul_left (Nat.le_of_eq H) Hn)
 
 protected lemma add_self_ne_one : ∀ (n : ℕ), n + n ≠ 1
 | n+1, h =>
-  have h1 : succ (succ (n + n)) = 1 from succ_add n n ▸ h
+  have h1 : succ (succ (n + n)) = 1 := succ_add n n ▸ h
   Nat.noConfusion h1 fun.
 
 /- sub properties -/
@@ -260,7 +260,7 @@ protected lemma sub_lt_sub_left : ∀ {k m n : ℕ} (H : k < m) (h : k < n), m -
   exact Nat.sub_lt_sub_left h1 h2
 
 protected lemma sub_lt_left_of_lt_add {n k m : ℕ} (H : n ≤ k) (h : k < n + m) : k - n < m := by
-  have _ from Nat.sub_le_sub_right (succ_le_of_lt h) n
+  have := Nat.sub_le_sub_right (succ_le_of_lt h) n
   rwa [Nat.add_sub_cancel_left, Nat.succ_sub H] at this
 
 protected lemma add_le_of_le_sub_left {n k m : ℕ} (H : m ≤ k) (h : n ≤ k - m) : m + n ≤ k :=
@@ -268,7 +268,7 @@ protected lemma add_le_of_le_sub_left {n k m : ℕ} (H : m ≤ k) (h : n ≤ k -
 
 lemma le_of_le_of_sub_le_sub_right {n m k : ℕ} (h₀ : k ≤ m) (h₁ : n - k ≤ m - k) : n ≤ m :=
   Nat.not_lt.1 fun h' => by
-    have _ from Nat.add_le_of_le_sub_left h₀ h₁
+    have := Nat.add_le_of_le_sub_left h₀ h₁
     rw [Nat.add_sub_cancel'] at this; exact Nat.not_le.2 h' this
     exact Nat.le_trans h₀ (Nat.le_of_lt h')
 
@@ -327,7 +327,7 @@ lemma mod_add_div (m k : ℕ) : m % k + k * (m / k) = m := by
 /- div -/
 
 @[simp] protected lemma div_one (n : ℕ) : n / 1 = n :=
-have n % 1 + 1 * (n / 1) = n from mod_add_div _ _
+have this : n % 1 + 1 * (n / 1) = n := mod_add_div _ _
 by rwa [mod_one, Nat.zero_add, Nat.one_mul] at this
 
 @[simp] protected lemma div_zero (n : ℕ) : n / 0 = 0 :=
@@ -361,7 +361,8 @@ protected lemma div_le_of_le_mul : ∀ {k : ℕ}, m ≤ k * n → m / k ≤ n
 protected lemma div_le_self : ∀ (m n : ℕ), m / n ≤ m
 | m, 0   => by simp [Nat.div_zero]; apply zero_le
 | m, n+1 => Nat.div_le_of_le_mul $ by
-  have _ from Nat.mul_le_mul_right m (succ_pos n); rwa [Nat.one_mul] at this
+  have := Nat.mul_le_mul_right m (succ_pos n)
+  rwa [Nat.one_mul] at this
 
 lemma div_eq_sub_div (h₁ : 0 < b) (h₂ : b ≤ a) : a / b = (a - b) / b + 1 := by
   rw [div_eq a, if_pos]; split <;> assumption
@@ -494,7 +495,7 @@ lemma sub_one_sub_lt (h : i < n) : n - 1 - i < n := by
   apply Nat.zero_lt_succ
 
 lemma pred_inj : ∀ {a b : ℕ}, 0 < a → 0 < b → Nat.pred a = Nat.pred b → a = b
-| a+1, b+1, ha, hb, h => have a = b from h; by rw [this]
+| a+1, b+1, ha, hb, h => by rw [show a = b from h]
 | a+1, 0,   ha, hb, h => absurd hb (Nat.lt_irrefl _)
 | 0,   b+1, ha, hb, h => absurd ha (Nat.lt_irrefl _)
 | 0,   0,   ha, hb, h => rfl
@@ -519,7 +520,7 @@ private def wf_lbp : WellFounded (lbp p) := by
 protected def find_x : {n // p n ∧ ∀ m, m < n → ¬p m} :=
 (wf_lbp p H).fix' (C := fun k => (∀n, n < k → ¬p n) → {n // p n ∧ ∀ m, m < n → ¬p m})
   (fun m IH al => if pm : p m then ⟨m, pm, al⟩ else
-      have ∀ n, n ≤ m → ¬p n from fun n h =>
+      have this : ∀ n, n ≤ m → ¬p n := fun n h =>
         (Nat.lt_or_eq_of_le h).elim (al n) fun e => by rw [e]; exact pm
       IH _ ⟨rfl, this⟩ fun n h => this n $ Nat.le_of_succ_le_succ h)
   0 fun n h => absurd h (Nat.not_lt_zero _)
@@ -587,8 +588,8 @@ else if z0 : z = 0 then
 else by
   induction x using Nat.strong_rec_on with
   | _ n IH =>
-    have y0 : y > 0 from Nat.pos_of_ne_zero y0
-    have z0 : z > 0 from Nat.pos_of_ne_zero z0
+    have y0 : y > 0 := Nat.pos_of_ne_zero y0
+    have z0 : z > 0 := Nat.pos_of_ne_zero z0
     cases Nat.lt_or_le n y with
     | inl yn => rw [mod_eq_of_lt yn, mod_eq_of_lt (Nat.mul_lt_mul_of_pos_left yn z0)]
     | inr yn =>
@@ -603,11 +604,11 @@ lemma sub_mul_mod (x k n : ℕ) (h₁ : n*k ≤ x) : (x - n*k) % n = x % n := by
   induction k with
   | zero => rw [Nat.mul_zero, Nat.sub_zero]
   | succ k IH =>
-    have h₂ : n * k ≤ x by
+    have h₂ : n * k ≤ x := by
       rw [mul_succ] at h₁
       apply Nat.le_trans _ h₁
       apply le_add_right _ n
-    have h₄ : x - n * k ≥ n by
+    have h₄ : x - n * k ≥ n := by
       apply Nat.le_of_add_le_add_right (k := n*k)
       rw [Nat.sub_add_cancel h₂]
       simp [mul_succ, Nat.add_comm] at h₁; simp [h₁]
@@ -621,11 +622,11 @@ lemma sub_mul_div (x n p : ℕ) (h₁ : n*p ≤ x) : (x - n*p) / n = x / n - p :
   | inr h₀ => induction p with
     | zero => rw [Nat.mul_zero, Nat.sub_zero, Nat.sub_zero]
     | succ p IH =>
-      have h₂ : n*p ≤ x by
+      have h₂ : n*p ≤ x := by
         transitivity
         - (apply Nat.mul_le_mul_left; apply le_succ)
         - apply h₁
-      have h₃ : x - n * p ≥ n by
+      have h₃ : x - n * p ≥ n := by
         apply Nat.le_of_add_le_add_right
         rw [Nat.sub_add_cancel h₂, Nat.add_comm]
         rw [mul_succ] at h₁
@@ -675,14 +676,14 @@ by rw [H2, Nat.mul_div_cancel_left _ H1]
 
 protected lemma div_eq_of_lt_le
   (lo : k * n ≤ m) (hi : m < succ k * n) : m / n = k :=
-have npos : 0 < n from (eq_zero_or_pos _).resolve_left fun hn => by
+have npos : 0 < n := (eq_zero_or_pos _).resolve_left fun hn => by
   rw [hn, Nat.mul_zero] at hi lo; exact absurd lo (Nat.not_le_of_gt hi)
 Nat.le_antisymm
   (le_of_lt_succ ((Nat.div_lt_iff_lt_mul npos).2 hi))
   ((Nat.le_div_iff_mul_le npos).2 lo)
 
 lemma mul_sub_div (x n p : ℕ) (h₁ : x < n*p) : (n * p - succ x) / n = p - succ (x / n) := by
-  have npos : 0 < n from (eq_zero_or_pos _).resolve_left fun n0 => by
+  have npos : 0 < n := (eq_zero_or_pos _).resolve_left fun n0 => by
     rw [n0, Nat.zero_mul] at h₁; exact not_lt_zero _ h₁
   (apply Nat.div_eq_of_lt_le)
   - rw [Nat.mul_sub_right_distrib, Nat.mul_comm]
@@ -732,7 +733,7 @@ protected lemma mul_lt_mul' (h1 : a ≤ c) (h2 : b < d) (h3 : 0 < c) : a * b < c
 Nat.lt_of_le_of_lt (Nat.mul_le_mul_of_nonneg_right h1) (Nat.mul_lt_mul_of_pos_left h2 h3)
 
 lemma div_lt_self (h₁ : 0 < n) (h₂ : 1 < m) : n / m < n := by
-  have m_pos : 0 < m from Nat.lt_trans (by rfl) h₂
+  have m_pos : 0 < m := Nat.lt_trans (by rfl) h₂
   suffices 1 * n < m * n by
     rw [Nat.one_mul, Nat.mul_comm] at this
     exact (Nat.div_lt_iff_lt_mul m_pos).2 this
