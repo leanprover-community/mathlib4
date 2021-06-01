@@ -243,9 +243,7 @@ end AddGroup_lemmas
 class AddCommGroup (A : Type u) extends AddGroup A where
   add_comm (a b : A) : a + b = b + a
 
--- the automatically generated name is something like instAddCommMonoid
--- I need to explicitly refer to this later when making Ring.toSemiring
-instance AddCommGroup.toAddCommMonoid (A : Type u) [h : AddCommGroup A] :
+instance (A : Type u) [h : AddCommGroup A] :
   AddCommMonoid A :=
 { h with }
 

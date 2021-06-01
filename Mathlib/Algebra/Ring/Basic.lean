@@ -34,10 +34,9 @@ class Ring (R : Type u) extends Monoid R, AddCommGroup R, Numeric R where
   ofNat_add (a b : Nat) : ofNat (a + b) = ofNat a + ofNat b
   ofNat_mul (a b : Nat) : ofNat (a * b) = ofNat a * ofNat b
 
--- I need to name this instance and I don't know the default name
-instance Ring.toSemiring (R : Type u) [h : Ring R] : Semiring R :=
+instance (R : Type u) [h : Ring R] : Semiring R :=
 { h with
-  toAddCommMonoid := AddCommGroup.toAddCommMonoid R
+  toAddCommMonoid := inferInstance
   zero_mul := λ a => by rw [← add_right_eq_self (a := 0 * a), ← Ring.add_mul, zero_add]
   mul_zero := λ a => by rw [← add_right_eq_self (a := a * 0), ← Ring.mul_add, add_zero]
 }
@@ -46,7 +45,5 @@ class CommRing (R : Type u) extends Ring R where
   mul_comm (a b : R) : a * b = b * a
 
 instance (R : Type u) [h : CommRing R] : CommSemiring R :=
-{ h with
-  toSemiring := Ring.toSemiring R 
-}
+{ h with toSemiring := inferInstance }
 
