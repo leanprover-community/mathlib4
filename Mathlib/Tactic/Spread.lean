@@ -23,15 +23,12 @@ namespace Lean.Term.Elab
 
 @[termElab structInst]
 def elabSpread : TermElab
-  | stx, expectedType => do
-    let fields ← stx[2].getArgs
-
+  | `({ $[$src? with]? $[$fields $[,]?]* $[: $ty?]? }), expectedType => do
     let mut spreads := #[]
     let mut newFieldNames : Std.HashSet Name := {}
     let mut newFields : Array Syntax := {}
 
     for field in fields do
-      let field := field[0] -- wrapped in a group node :-P
       match field with
         | `(structInstField| $name:ident := $arg) =>
           if name.getId.eraseMacroScopes == `__ then do
@@ -72,8 +69,10 @@ def elabSpread : TermElab
         used := true
       if !used then withRef spreadField do throwError "no fields used from spread"
 
-    let stx' := (stx.setArg 2 (stx[2].setArgs (newFields.map fun f => mkGroupNode #[f])))
+    let stx' ← `({ $[$src? with]? $[$newFields]* $[: $ty?]? })
     elabTerm stx' expectedType
+
+  | _, _ => throwUnsupportedSyntax
 
   where
     getStructureName (ty : Expr) : TermElabM Name := do
