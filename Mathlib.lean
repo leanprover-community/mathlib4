@@ -19,4 +19,5 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.Block
 import Mathlib.Tactic.Split
+import Mathlib.Tactic.Spread
 import Mathlib.Tactic.NoMatch

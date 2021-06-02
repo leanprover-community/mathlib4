@@ -1,4 +1,5 @@
 import Mathlib.Data.Nat.Basic -- *only* for notation ℕ which should be in a "prelude"
+import Mathlib.Tactic.Spread
 
 /-!
 
@@ -186,8 +187,8 @@ end AddMonoid_lemmas
 class AddCommMonoid (A : Type u) extends AddMonoid A where
   add_comm (a b : A) : a + b = b + a
 
-instance (A : Type u) [h : AddCommMonoid A] : AddCommSemigroup A :=
-  {h with}
+instance (A : Type u) [AddCommMonoid A] : AddCommSemigroup A where
+  __ := ‹AddCommMonoid A›
 
 /-
 
@@ -243,9 +244,8 @@ end AddGroup_lemmas
 class AddCommGroup (A : Type u) extends AddGroup A where
   add_comm (a b : A) : a + b = b + a
 
-instance (A : Type u) [h : AddCommGroup A] :
-  AddCommMonoid A :=
-{ h with }
+instance (A : Type u) [AddCommGroup A] : AddCommMonoid A where
+  __ := ‹AddCommGroup A›
 
 /-
 
@@ -352,8 +352,8 @@ by rw [←one_mul c, ←hba, mul_assoc, hac, mul_one b]
 class CommMonoid (M : Type u) extends Monoid M where
   mul_comm (a b : M) : a * b = b * a
 
-instance (M : Type u) [h : CommMonoid M] : CommSemigroup M :=
-{ h with }
+instance (M : Type u) [CommMonoid M] : CommSemigroup M where
+  __ := ‹CommMonoid M›
 
 /-
 
@@ -401,5 +401,5 @@ end Group_lemmas
 class CommGroup (G : Type u) extends Group G where
   mul_comm (a b : G) : a * b = b * a
 
-instance (G : Type u) [h : CommGroup G] : CommMonoid G :=
-{ h with }
+instance (G : Type u) [CommGroup G] : CommMonoid G where
+  __ := ‹CommGroup G›

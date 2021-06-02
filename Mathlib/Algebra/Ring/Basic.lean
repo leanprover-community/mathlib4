@@ -1,5 +1,6 @@
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Tactic.Spread
 /-
 
 # Semirings and rings
@@ -19,14 +20,14 @@ class Semiring (R : Type u) extends Monoid R, AddCommMonoid R, Numeric R where
   ofNat_add (a b : Nat) : ofNat (a + b) = ofNat a + ofNat b
   ofNat_mul (a b : Nat) : ofNat (a * b) = ofNat a * ofNat b
 
-instance (R : Type u) [h : Semiring R] : MonoidWithZero R :=
-{ h with }
+instance (R : Type u) [Semiring R] : MonoidWithZero R where
+  __ := ‹Semiring R›
 
 class CommSemiring (R : Type u) extends Semiring R where
   mul_comm (a b : R) : a * b = b * a
 
-instance (R : Type u) [h : CommSemiring R] : CommMonoid R :=
-{ h with }
+instance (R : Type u) [CommSemiring R] : CommMonoid R where
+  __ := ‹CommSemiring R›
 
 class Ring (R : Type u) extends Monoid R, AddCommGroup R, Numeric R where
   mul_add (a b c : R) : a * (b + c) = a * b + a * c
@@ -34,16 +35,15 @@ class Ring (R : Type u) extends Monoid R, AddCommGroup R, Numeric R where
   ofNat_add (a b : Nat) : ofNat (a + b) = ofNat a + ofNat b
   ofNat_mul (a b : Nat) : ofNat (a * b) = ofNat a * ofNat b
 
-instance (R : Type u) [h : Ring R] : Semiring R :=
-{ h with
-  toAddCommMonoid := inferInstance
+instance (R : Type u) [Ring R] : Semiring R where
   zero_mul := λ a => by rw [← add_right_eq_self (a := 0 * a), ← Ring.add_mul, zero_add]
   mul_zero := λ a => by rw [← add_right_eq_self (a := a * 0), ← Ring.mul_add, add_zero]
-}
+  __ := ‹Ring R›
 
 class CommRing (R : Type u) extends Ring R where
   mul_comm (a b : R) : a * b = b * a
 
-instance (R : Type u) [h : CommRing R] : CommSemiring R :=
-{ h with toSemiring := inferInstance }
+instance (R : Type u) [CommRing R] : CommSemiring R where
+  __ := inferInstanceAs (Semiring R)
+  __ := ‹CommRing R›
 
