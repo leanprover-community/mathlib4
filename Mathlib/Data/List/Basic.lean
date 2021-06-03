@@ -49,7 +49,6 @@ def mem (a : α) : List α → Prop
 | (b :: l) => a = b ∨ mem a l
 
 instance : Mem α (List α) := ⟨mem⟩
---infix:50 " ∈ " => mem
 
 @[simp] lemma mem_nil (a : α) : a ∈ [] ↔ False := Iff.rfl
 
