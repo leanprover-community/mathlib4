@@ -4,35 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Lean.Elab.Tactic.Basic
-
-class Numeric (α : Type _) where
-  ofNat : Nat → α
-
-instance Numeric.OfNat (α) [Numeric α] (n) : OfNat α n := ⟨Numeric.ofNat n⟩
-
--- TODO: replace this with the real thing
-class Semiring (α : Type _) extends Add α, Mul α, Numeric α where
-  add_assoc (a b c : α) : a + b + c = a + (b + c)
-  add_zero (a : α) : a + 0 = a
-  add_comm (a : α) : a + b = b + a
-  mul_assoc (a b c : α) : a * b * c = a * (b * c)
-  one_mul (a b c : α) : 1 * a = a
-  mul_one (a b c : α) : a * 1 = a
-  zero_mul (a b c : α) : 0 * a = a
-  mul_zero (a b c : α) : a * 0 = a
-  mul_add (a b c : α) : a * (b + c) = a * b + a * c
-  add_mul (a b c : α) : (a + b) * c = a * c + b * c
-  ofNat_add (a b : Nat) : ofNat (a + b) = ofNat a + ofNat b
-  ofNat_mul (a b : Nat) : ofNat (a * b) = ofNat a * ofNat b
-
-instance Semiring.OfNat (α) [Semiring α] (n) : OfNat α n := Numeric.OfNat _ _
+import Mathlib.Algebra.Ring.Basic
 
 namespace Lean
 namespace Meta
 
+instance Semiring.OfNat [Semiring α] : OfNat α n := Numeric.OfNat
+
 def mkOfNatLit (u : Level) (α sα n : Expr) : Expr :=
-  let inst := mkApp3 (mkConst `Semiring.OfNat [u]) α sα n
-  mkApp3 (mkConst `OfNat.ofNat [u]) α n inst
+  let inst := mkApp3 (mkConst ``Semiring.OfNat [u]) α sα n
+  mkApp3 (mkConst ``OfNat.ofNat [u]) α n inst
 
 namespace NormNum
 
@@ -46,18 +27,18 @@ theorem ofNat_mul {α} [Semiring α] : (a b : α) → (a' b' c : Nat) →
 
 partial def eval : Expr → MetaM (Expr × Expr)
 | e => e.withApp fun f args => do
-  if f.isConstOf `HAdd.hAdd then
-    evalB `NormNum.ofNat_add (·+·) args
-  else if f.isConstOf `HMul.hMul then
-    evalB `NormNum.ofNat_mul (·*·) args
-  else if f.isConstOf `OfNat.ofNat then pure (e, ← mkEqRefl e)
+  if f.isConstOf ``HAdd.hAdd then
+    evalB ``NormNum.ofNat_add (·+·) args
+  else if f.isConstOf ``HMul.hMul then
+    evalB ``NormNum.ofNat_mul (·*·) args
+  else if f.isConstOf ``OfNat.ofNat then pure (e, ← mkEqRefl e)
   else throwError "fail"
 where
   evalB (name : Name) (f : Nat → Nat → Nat)
     (args : Array Expr) : MetaM (Expr × Expr) := do
     if let #[_, _, α, _, a, b] ← args then
       let Level.succ u _ ← getLevel α | throwError "fail"
-      let sα ← synthInstance (mkApp (mkConst `Semiring [u]) α)
+      let sα ← synthInstance (mkApp (mkConst ``Semiring [u]) α)
       let (a', pa) ← eval a
       let (b', pb) ← eval b
       let la := Expr.getRevArg! a' 1

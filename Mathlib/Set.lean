@@ -59,8 +59,6 @@ infix:70 " \\ " => Sdiff.sdiff
 
 namespace Set
 
-variable {α : Type u} {β : Type v}
-
 protected def mem (a : α) (s : Set α) :=
 s a
 
