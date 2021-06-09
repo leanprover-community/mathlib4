@@ -5,10 +5,14 @@ import Mathlib.Algebra.Ring.Basic
 import Mathlib.Data.Array.Basic
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
+import Mathlib.Data.Equiv.Basic
+import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.UInt
+import Mathlib.Function
 import Mathlib.Logic.Basic
+import Mathlib.Logic.Function.Basic
 import Mathlib.Mem
 import Mathlib.Set
 import Mathlib.Tactic.Basic
