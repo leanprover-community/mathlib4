@@ -316,8 +316,8 @@ protected def strong_rec_on {p : ℕ → Sort u}
 Nat.lt_wf.fix' H n
 
 protected def case_strong_rec_on {p : ℕ → Sort u} (a : ℕ)
-  (hz : p 0) (hi : ∀ n, (∀ m, m ≤ n → p m) → p (succ n)) : p a :=
-Nat.strong_rec_on a fun | 0, _ => hz | n+1, ih => hi n ih
+  (base : p 0) (ind : ∀ n, (∀ m, m ≤ n → p m) → p (succ n)) : p a :=
+Nat.strong_rec_on a fun | 0, _ => base | n+1, ih => ind n ih
 
 lemma mod_add_div (m k : ℕ) : m % k + k * (m / k) = m := by
   induction m, k using mod.inductionOn with rw [div_eq, mod_eq]
@@ -738,5 +738,8 @@ lemma div_lt_self (h₁ : 0 < n) (h₂ : 1 < m) : n / m < n := by
     rw [Nat.one_mul, Nat.mul_comm] at this
     exact (Nat.div_lt_iff_lt_mul m_pos).2 this
   exact Nat.mul_lt_mul h₂ (Nat.le_refl _) h₁
+
+lemma div_lt_self' (n b: ℕ) : (n + 1) / (b + 2) < n + 1 :=
+  div_lt_self (succ_pos n) (succ_lt_succ $ succ_pos _)
 
 end Nat

@@ -93,7 +93,7 @@ def digits : ℕ → ℕ → List ℕ
     | (n + 1) => rw [digitsAddTwoAddOne, div_eq_of_lt w₂, digitsZero, mod_eq_of_lt w₂]
 
 lemma digitsAdd (b: ℕ) (h: 2 ≤ b) (x y: ℕ) (w: x < b) (w': 0 < x ∨ 0 < y):
-  digits b ( x + b * y) = x :: digits b y := by
+  digits b (x + b * y) = x :: digits b y := by
   match b with
   | 0 => trivial
   | 1 => trivial
@@ -119,4 +119,60 @@ lemma ofDigitsAppend {b: ℕ} {l1 l2: List ℕ}:
     Monoid.npow_succ' (List.length tl),
     Nat.mul_assoc,
     Nat.add_assoc]
+
+lemma ofDigitsDigits (b n: ℕ) : ofDigits b (digits b n) = n := by
+match b with
+| 0 =>
+  match n with
+  | 0 => rfl
+  | 1 => rfl
+  | (n + 2) => rfl
+| 1 =>
+  induction n with
+  | zero => rfl
+  | succ n hn =>
+    simp at hn
+    simp [hn, Numeric.ofNat]
+    rw [Nat.succ_Eq_add_one, Nat.add_comm]
+| (b + 2) =>
+  induction n using Nat.case_strong_rec_on with
+  | base => simp [ofDigits]
+  | ind n hn =>
+    simp [Nat.succ_Eq_add_one]
+    simp [ofDigits] -- dsimp?
+    rw [hn _ (Nat.div_lt_self' n b)]
+    simp [Numeric.ofNat, Nat.mod_add_div]
+
+/-lemma ofDigitsOne (L: List ℕ) : ofDigits 1 L = L.sum :=
+by induction L with
+| nil => rfl-/
+
+/-!
+### Properties
+This section contains various lemmas of properties relating to `digits` and `ofDigits`.
+-/
+
+lemma digitsEqNilIffEqZero {b n: ℕ} : digits b n = [] ↔ n = 0 :=
+by
+  split
+  intro h
+  rw [(ofDigitsDigits b n).symm, h]
+  simp [ofDigits]
+  intro h; rw [h]; simp
+
+private lemma digitsLastAux {b n: ℕ} (h: 2 ≤ b) (w: 0 < n):
+  digits b n = ((n % b) :: digits b (n / b)) :=
+by match b with
+| 0 => trivial
+| 1 => trivial
+| (b + 2) =>
+  match n with
+  | 0 => trivial
+  | (n + 1) => simp
+
+/-lemma digitsLast {b m: ℕ} (h: 2 ≤ b) (hm: 0 < m) (p q) :
+  (digits b m).last p = (digits b (m/b)).last q :=
+  by simp [digitsLastAux h hm]-/
+
+
 end Nat
