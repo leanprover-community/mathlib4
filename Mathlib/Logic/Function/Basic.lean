@@ -15,3 +15,10 @@ theorem left_inverse.comp {f : α → β} {g : β → α} {h : β → γ} {i : �
 theorem right_inverse.comp {f : α → β} {g : β → α} {h : β → γ} {i : γ → β}
   (hf : right_inverse f g) (hh : right_inverse h i) : right_inverse (h ∘ f) (g ∘ i) :=
 left_inverse.comp hh hf
+
+@[simp] theorem injective.eq_iff {f: α → β} (I: injective f) {a b: α}:
+  f a = f b ↔ a = b := ⟨@I _ _, congr_arg f⟩
+
+theorem injective.eq_iff' {f: α → β} (I: injective f) {a b: α} {c: β} (h: f b = c) :
+  f a = c ↔ a = b :=
+  h ▸ I.eq_iff

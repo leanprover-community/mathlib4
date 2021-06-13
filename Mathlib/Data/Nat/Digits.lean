@@ -7,6 +7,7 @@ import Mathlib.Logic.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Instances
+import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.NormNum
 
 /-!
@@ -151,6 +152,12 @@ by induction L with
 ### Properties
 This section contains various lemmas of properties relating to `digits` and `ofDigits`.
 -/
+
+lemma digits.injective (b: ℕ): Function.injective b.digits :=
+Function.left_inverse.injective (ofDigitsDigits b)
+
+@[simp] lemma digitsInjIff {b n m: ℕ}:
+  b.digits n = b.digits m ↔ n = m := Function.injective.eq_iff (digits.injective b)
 
 lemma digitsEqNilIffEqZero {b n: ℕ} : digits b n = [] ↔ n = 0 :=
 by
