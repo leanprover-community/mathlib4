@@ -106,7 +106,7 @@ def ofDigits {α: Type} [Semiring α] (b: α) : List ℕ → α
 | [] => 0
 | h :: t => Numeric.ofNat h + b * ofDigits b t -- should have auto-coercions?
 
--- @[simp] lemma ofDigitsSingleton {b n: ℕ} : ofDigits b [n] = n := by simp [ofDigits]
+@[simp] lemma ofDigitsSingleton {b n: ℕ} : ofDigits b [n] = n := by simp [ofDigits, Numeric.ofNat]
 @[simp] lemma ofDigitsOneCons {α: Type} [Semiring α] (h: ℕ) (L: List ℕ):
   ofDigits (1: α) (h :: L) = Numeric.ofNat h + ofDigits 1 L := by simp [ofDigits]
 
@@ -144,9 +144,10 @@ match b with
     rw [hn _ (Nat.div_lt_self' n b)]
     simp [Numeric.ofNat, Nat.mod_add_div]
 
-/-lemma ofDigitsOne (L: List ℕ) : ofDigits 1 L = L.sum :=
+lemma ofDigitsOne (L: List ℕ) : ofDigits 1 L = L.sum :=
 by induction L with
-| nil => rfl-/
+| nil => rfl
+| cons hd tl hl => simp [Numeric.ofNat, hl]
 
 /-!
 ### Properties

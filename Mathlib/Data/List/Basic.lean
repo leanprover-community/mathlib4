@@ -1,6 +1,7 @@
 import Mathlib.Logic.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Mem
+import Mathlib.Algebra.Group.Defs
 namespace List
 
 /-- The same as append, but with simpler defeq. (The one in the standard library is more efficient,
@@ -96,5 +97,12 @@ theorem mem_bind {f : α → List β} {b} {l : List α} : b ∈ l.bind f ↔ ∃
 
 @[simp] def repeatSucc (a: α) (n: ℕ): repeat a (n + 1) = a :: repeat a n := rfl
 
+/-! ### sum -/
+
+@[simp] def sum [Add α] [Zero α]: List α -> α
+| [] => (0: α)
+| x :: q => x + sum q
+
+@[simp] def sumCons [Add α] [Zero α] (L: List α) (a: α): sum (a :: L) = a + sum L := rfl
 
 end List
