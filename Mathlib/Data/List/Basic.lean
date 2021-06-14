@@ -96,6 +96,7 @@ theorem mem_bind {f : α → List β} {b} {l : List α} : b ∈ l.bind f ↔ ∃
 | Nat.succ n => a :: repeat a n
 
 @[simp] def repeatSucc (a: α) (n: ℕ): repeat a (n + 1) = a :: repeat a n := rfl
+@[simp] def repeatSingleton (a: α): repeat a 1 = [a] := rfl
 
 /-! ### sum -/
 
