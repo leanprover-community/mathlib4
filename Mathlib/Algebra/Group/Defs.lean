@@ -1,5 +1,6 @@
 import Mathlib.Data.Nat.Basic -- *only* for notation ℕ which should be in a "prelude"
 import Mathlib.Tactic.Spread
+import Mathlib.Logic.Function.Basic
 
 /-!
 
@@ -123,9 +124,8 @@ IsAddLeftCancel.add_left_cancel a b c
 theorem add_left_cancel_iff : a + b = a + c ↔ b = c :=
 ⟨add_left_cancel, congrArg _⟩
 
--- no `function.injective`?
---theorem add_right_injective (a : G) : function.injective (c * .) :=
---λ a b => add_left_cancel
+theorem add_right_injective (a : A) : Function.injective (c + .) :=
+add_left_cancel
 
 @[simp] theorem add_right_inj (a : A) {b c : A} : a + b = a + c ↔ b = c :=
 ⟨add_left_cancel, congrArg _⟩
@@ -293,9 +293,8 @@ IsMulLeftCancel.mul_left_cancel a b c
 theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
 ⟨mul_left_cancel, congrArg _⟩
 
--- no `function.injective`?
---theorem mul_right_injective (a : G) : function.injective (c * .) :=
---λ a b => mul_left_cancel
+theorem mul_right_injective (a : G) : Function.injective (c * .) :=
+mul_left_cancel
 
 @[simp] theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
 ⟨mul_left_cancel, congrArg _⟩
