@@ -154,6 +154,20 @@ by induction L with
 This section contains various lemmas of properties relating to `digits` and `ofDigits`.
 -/
 
+lemma digitsZeroOfEqZero {b : ℕ} (h : 1 ≤ b) {L : List ℕ} (w : ofDigits b L = 0) :
+  ∀ l, l ∈ L -> l = 0 := fun l hmem =>
+  by induction L with
+  | nil => cases l <;> trivial
+  | cons hd tl hl =>
+    simp [ofDigits, Numeric.ofNat] at w
+    match l with
+    | 0 => rfl
+    | (l + 1) =>
+      simp at hmem
+      match hmem with
+      | Or.inl eq_hd => rw [eq_hd, eq_zero_of_add_eq_zero_right w]
+      | Or.inr mem_tl => apply hl _ mem_tl; admit
+
 lemma digits.injective (b: ℕ): Function.injective b.digits :=
 Function.left_inverse.injective (ofDigitsDigits b)
 
