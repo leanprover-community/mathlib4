@@ -1,5 +1,6 @@
 /-
 Ported by Deniz Aydin from the lean3 prelude's data/int/basic.lean.
+Should be in a "prelude"
 
 Original file license:
   Copyright (c) 2016 Jeremy Avigad. All rights reserved.
@@ -70,7 +71,7 @@ protected lemma coe_nat_add (m n : ℕ) : (↑(m + n) : ℤ) = ↑m + ↑n := rf
 protected lemma coe_nat_mul (m n : ℕ) : (↑(m * n) : ℤ) = ↑m * ↑n := rfl
 protected lemma coe_nat_zero : ↑(0 : ℕ) = (0 : ℤ) := rfl
 protected lemma coe_nat_one : ↑(1 : ℕ) = (1 : ℤ) := rfl
-protected lemma coe_nat_succ (n : ℕ) : (↑(succ n) : ℤ) = ↑n + 1 := rfl
+protected lemma coe_nat_succ (n : ℕ) : (↑(succ n) : ℤ) = (↑n : Int) + 1 := rfl
 
 protected lemma coe_nat_add_out (m n : ℕ) : ↑m + ↑n = (m + n : ℤ) := rfl
 protected lemma coe_nat_mul_out (m n : ℕ) : ↑m * ↑n = (↑(m * n) : ℤ) := rfl
@@ -95,6 +96,9 @@ attribute [local simp] of_nat_add_of_nat of_nat_mul_of_nat neg_of_nat_zero neg_o
   mul_neg_succ_of_nat_neg_succ_of_nat
 
 /- ## some basic functions and properties -/
+
+protected lemma coe_nat_inj {m n : ℕ} (h : (↑m : ℤ) = ↑n) : m = n :=
+Int.ofNat.inj h
 
 lemma of_nat_eq_of_nat_iff (m n : ℕ) : ofNat m = ofNat n ↔ m = n :=
 Iff.intro Int.ofNat.inj (congr_arg _)
