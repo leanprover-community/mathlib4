@@ -31,28 +31,28 @@ variable {α : Type u}
 section Preorder
 
 /-!
-### Definition of `preorder` and lemmas about types with a `preorder`
+### Definition of `Preorder` and lemmas about types with a `Preorder`
 -/
 
 /-- A preorder is a reflexive, transitive relation `≤` with `a < b` defined in the obvious way. -/
-class preorder (α : Type u) extends LE α, LT α :=
+class Preorder (α : Type u) extends LE α, LT α :=
 (le_refl : ∀ a : α, a ≤ a)
 (le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c)
 (lt := λ a b => a ≤ b ∧ ¬ b ≤ a)
 (lt_iff_le_not_le : ∀ a b : α, a < b ↔ (a ≤ b ∧ ¬ b ≤ a)) -- . order_laws_tac)
 
-variable [preorder α]
+variable [Preorder α]
 
 /-- The relation `≤` on a preorder is reflexive. -/
 theorem le_refl : ∀ (a : α), a ≤ a :=
-preorder.le_refl
+Preorder.le_refl
 
 /-- The relation `≤` on a preorder is transitive. -/
 theorem le_trans : ∀ {a b c : α}, a ≤ b → b ≤ c → a ≤ c :=
-preorder.le_trans _ _ _
+Preorder.le_trans _ _ _
 
 theorem lt_iff_le_not_le : ∀ {a b : α}, a < b ↔ (a ≤ b ∧ ¬ b ≤ a) :=
-preorder.lt_iff_le_not_le _ _
+Preorder.lt_iff_le_not_le _ _
 
 theorem lt_of_le_not_le : ∀ {a b : α}, a ≤ b → ¬ b ≤ a → a < b
 | a, b, hab, hba => lt_iff_le_not_le.mpr ⟨hab, hba⟩
@@ -134,22 +134,22 @@ instance decidableLt_of_decidableLe [DecidableRel (. ≤ . : α → α → Prop)
   else
     isFalse $ λ hab' => hab (le_of_lt hab')
 
-end preorder
+end Preorder
 
-section partial_order
+section PartialOrder
 
 /-!
-### Definition of `partial_order` and lemmas about types with a partial order
+### Definition of `PartialOrder` and lemmas about types with a partial order
 -/
 
 /-- A partial order is a reflexive, transitive, antisymmetric relation `≤`. -/
-class partial_order (α : Type u) extends preorder α :=
+class PartialOrder (α : Type u) extends Preorder α :=
 (le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b)
 
-variable [partial_order α]
+variable [PartialOrder α]
 
 theorem le_antisymm : ∀ {a b : α}, a ≤ b → b ≤ a → a = b :=
-partial_order.le_antisymm _ _
+PartialOrder.le_antisymm _ _
 
 theorem le_antisymm_iff {a b : α} : a = b ↔ a ≤ b ∧ b ≤ a :=
 ⟨λ e => ⟨le_of_eq e, le_of_eq e.symm⟩, λ ⟨h1, h2⟩ => le_antisymm h1 h2⟩
@@ -190,29 +190,29 @@ theorem lt_or_eq_of_le {a b : α} : a ≤ b → a < b ∨ a = b := Decidable.lt_
 
 theorem le_iff_lt_or_eq {a b : α} : a ≤ b ↔ a < b ∨ a = b := Decidable.le_iff_lt_or_eq
 
-end partial_order
+end PartialOrder
 
-section linear_order
+section LinearOrder
 
 /-!
-### Definition of `linear_order` and lemmas about types with a linear order
+### Definition of `LinearOrder` and lemmas about types with a linear order
 -/
 
 /-- A linear order is reflexive, transitive, antisymmetric and total relation `≤`.
 We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. -/
-class linear_order (α : Type u) extends partial_order α :=
+class LinearOrder (α : Type u) extends PartialOrder α :=
 (le_total : ∀ a b : α, a ≤ b ∨ b ≤ a)
 (decidableLe : DecidableRel (. ≤ . : α → α → Prop))
 (decidableEq : DecidableEq α := @decidableEq_of_decidableLe _ _ decidableLe)
 (decidableLt : DecidableRel (. < . : α → α → Prop) :=
     @decidableLt_of_decidableLe _ _ decidableLe)
 
-variable [linear_order α]
+variable [LinearOrder α]
 
-attribute [local instance] linear_order.decidableLe
+attribute [local instance] LinearOrder.decidableLe
 
 theorem le_total : ∀ a b : α, a ≤ b ∨ b ≤ a :=
-linear_order.le_total
+LinearOrder.le_total
 
 theorem le_of_not_ge {a b : α} : ¬ a ≥ b → a ≤ b :=
 Or.resolve_left (le_total b a)
@@ -276,13 +276,13 @@ theorem lt_iff_not_ge (x y : α) : x < y ↔ ¬ x ≥ y :=
 @[simp] theorem not_le {a b : α} : ¬ a ≤ b ↔ b < a := (lt_iff_not_ge _ _).symm
 
 instance (a b : α) : Decidable (a < b) :=
-linear_order.decidableLt a b
+LinearOrder.decidableLt a b
 
 instance (a b : α) : Decidable (a ≤ b) :=
-linear_order.decidableLe a b
+LinearOrder.decidableLe a b
 
 instance (a b : α) : Decidable (a = b) :=
-linear_order.decidableEq a b
+LinearOrder.decidableEq a b
 
 theorem eq_or_lt_of_not_lt {a b : α} (h : ¬ a < b) : a = b ∨ b < a :=
 if h₁ : a = b then Or.inl h₁
@@ -307,8 +307,8 @@ if h : x < y then h₁ h else
 if h' : y < x then h₃ h' else
 h₂ (le_antisymm (le_of_not_gt h') (le_of_not_gt h))
 
-theorem le_imp_le_of_lt_imp_lt {β} [preorder α] [linear_order β]
+theorem le_imp_le_of_lt_imp_lt {β} [Preorder α] [LinearOrder β]
   {a b : α} {c d : β} (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
 le_of_not_lt $ λ h' => not_le_of_gt (H h') h
 
-end linear_order
+end LinearOrder
