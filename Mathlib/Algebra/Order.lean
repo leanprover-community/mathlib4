@@ -28,7 +28,7 @@ variable {α : Type u}
 
 -- set_option auto_param.check_exists false
 
-section preorder
+section Preorder
 
 /-!
 ### Definition of `preorder` and lemmas about types with a `preorder`
