@@ -1,16 +1,13 @@
 import Mathlib.Data.Nat.Basic
+import Mathlib.Dvd
 import Mathlib.Tactic.Block
 
 namespace Nat
 
 --- TODO all of these dvd preliminaries belong elsewhere.
 
-class Dvd (α : Type u) where dvd : α → α → Prop
-
 instance : Dvd ℕ where
   dvd a b := ∃ c, b = a * c
-
-infix:50 " ∣ " => Dvd.dvd
 
 protected theorem dvd_mul_right (a b : ℕ) : a ∣ a * b := ⟨b, rfl⟩
 protected theorem dvd_mul_left (a b : ℕ) : a ∣ b * a := Exists.intro b (Nat.mul_comm b a)
