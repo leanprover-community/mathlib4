@@ -22,15 +22,13 @@ Iff.intro
   (λ h => match a,b with
           | zero, _ => Or.inl rfl
           | succ n,zero => Or.inr rfl
-          | succ m, succ n => by simp [Nat.succ_mul] at h
+          | succ m, succ n => by rw [Nat.succ_mul] at h
                                  have h1 : m * succ n + succ n = succ (m * succ n + n) := rfl
                                  rw [h1] at h
                                  exact False.elim (Nat.succ_ne_zero (m * succ n + n) h))
   (λ h => match h with
-          | Or.inl ha => by rw [ha]
-                            simp
-          | Or.inr hb => by rw [hb]
-                            simp)
+          | Or.inl ha => by simp [ha]
+          | Or.inr hb => by simp [hb])
 
 protected theorem zero_eq_mul {a b : ℕ} : 0 = a * b ↔ a = 0 ∨ b = 0 :=
 by rw [eq_comm, Nat.mul_eq_zero]
