@@ -18,13 +18,13 @@ structure FindOptions where
 
 def findCore (ϕ : ConstantInfo → MetaM Bool) (opts : FindOptions := {}) :
   MetaM (Array ConstantInfo) := do
-  let matches ← if !opts.stage1 then #[] else (← getEnv).constants.map₁.foldM (init := #[]) check
-  (← getEnv).constants.map₂.foldlM (init := matches) check
+  let matches_ ← if !opts.stage1 then #[] else (← getEnv).constants.map₁.foldM (init := #[]) check
+  (← getEnv).constants.map₂.foldlM (init := matches_) check
 where
-  check matches name cinfo := do
+  check matches_ name cinfo := do
     if opts.checkPrivate || !isPrivateName name then
-      if ← ϕ cinfo then matches.push cinfo else matches
-    else matches
+      if ← ϕ cinfo then matches_.push cinfo else matches_
+    else matches_
 
 def find (msg : String)
   (ϕ : ConstantInfo → MetaM Bool) (opts : FindOptions := {}) : TermElabM String := do
