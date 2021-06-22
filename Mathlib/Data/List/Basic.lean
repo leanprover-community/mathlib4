@@ -88,4 +88,13 @@ theorem mem_bind {f : α → List β} {b} {l : List α} : b ∈ l.bind f ↔ ∃
   simp [List.bind, mem_map, mem_join]
   exact ⟨fun ⟨_, ⟨a, h₁, rfl⟩, h₂⟩ => ⟨a, h₁, h₂⟩, fun ⟨a, h₁, h₂⟩ => ⟨_, ⟨a, h₁, rfl⟩, h₂⟩⟩
 
+/-! ### repeat -/
+
+@[simp] def repeat (a: α): ℕ -> List α
+| 0 => []
+| Nat.succ n => a :: repeat a n
+
+@[simp] def repeatSucc (a: α) (n: ℕ): repeat a (n + 1) = a :: repeat a n := rfl
+
+
 end List
