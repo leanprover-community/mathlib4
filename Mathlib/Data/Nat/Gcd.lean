@@ -149,7 +149,7 @@ theorem gcd_rec (m n : ℕ) : gcd m n = gcd (n % m) m :=
             exact this
   | pm + 1 => by simp [gcd_succ]
 
-theorem gcd_induction
+theorem gcd.induction
   {P : ℕ → ℕ → Prop}
   (m n : ℕ)
   (H0 : ∀n, P 0 n)
@@ -169,7 +169,7 @@ def lcm (m n : ℕ) : ℕ := m * n / gcd m n
 ---
 
 theorem gcd_dvd (m n : ℕ) : (gcd m n ∣ m) ∧ (gcd m n ∣ n) :=
-  @gcd_induction
+  @gcd.induction
    (λ x y => gcd x y ∣ x ∧ gcd x y ∣ y)
    m n
    (λ n => And.intro (Exists.intro 0 (by simp))
@@ -190,7 +190,7 @@ theorem gcd_le_left {m} (n) (h : 0 < m) : gcd m n ≤ m := le_of_dvd h $ gcd_dvd
 theorem gcd_le_right {m} (n) (h : 0 < n) : gcd m n ≤ n := le_of_dvd h $ gcd_dvd_right m n
 
 theorem dvd_gcd {m n k : ℕ} : k ∣ m → k ∣ n → k ∣ gcd m n :=
-  @gcd_induction
+  @gcd.induction
     (λ x y => k ∣ x → k ∣ y → k ∣ gcd x y)
     m n
     (λn _ kn => by rw [gcd_zero_left]
@@ -230,7 +230,7 @@ dvd_antisymm
 Eq.trans (gcd_comm n 1) $ gcd_one_left n
 
 theorem gcd_mul_left (m n k : ℕ) : gcd (m * n) (m * k) = m * gcd n k :=
-@gcd_induction
+@gcd.induction
   (λ x y => gcd (m * x) (m * y) = m * gcd x y)
   n k
   (λk => by simp)
