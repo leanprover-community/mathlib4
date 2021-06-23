@@ -168,18 +168,16 @@ def lcm (m n : ℕ) : ℕ := m * n / gcd m n
 
 ---
 
-theorem gcd_dvd (m n : ℕ) : (gcd m n ∣ m) ∧ (gcd m n ∣ n) :=
-  @gcd.induction
-   (λ x y => gcd x y ∣ x ∧ gcd x y ∣ y)
-   m n
-   (λ n => And.intro (Exists.intro 0 (by simp))
-                     (Exists.intro 1 (by simp)))
-   (λ m n npos ⟨IH₁, IH₂⟩ =>
-     And.intro
-       (by rwa [gcd_rec])
-       (by rw [←gcd_rec] at IH₁
-           rw [←gcd_rec] at IH₂
-           exact (dvd_mod_iff IH₂).1 IH₁))
+theorem gcd_dvd (m n : ℕ) : (gcd m n ∣ m) ∧ (gcd m n ∣ n) := by
+  induction m, n using gcd.induction with
+  | H0 n => exact And.intro (Exists.intro 0 (by simp))
+                            (Exists.intro 1 (by simp))
+  | H1 m n mpos IH =>
+    let ⟨IH₁, IH₂⟩ := IH
+    exact And.intro (by rwa [gcd_rec])
+                    (by rw [←gcd_rec] at IH₁
+                        rw [←gcd_rec] at IH₂
+                        exact (dvd_mod_iff IH₂).1 IH₁)
 
 theorem gcd_dvd_left (m n : ℕ) : gcd m n ∣ m := (gcd_dvd m n).left
 
@@ -189,14 +187,14 @@ theorem gcd_le_left {m} (n) (h : 0 < m) : gcd m n ≤ m := le_of_dvd h $ gcd_dvd
 
 theorem gcd_le_right {m} (n) (h : 0 < n) : gcd m n ≤ n := le_of_dvd h $ gcd_dvd_right m n
 
-theorem dvd_gcd {m n k : ℕ} : k ∣ m → k ∣ n → k ∣ gcd m n :=
-  @gcd.induction
-    (λ x y => k ∣ x → k ∣ y → k ∣ gcd x y)
-    m n
-    (λn _ kn => by rw [gcd_zero_left]
-                   exact kn)
-    (λ n m mpos IH H1 H2 => by rw [gcd_rec]
-                               exact IH ((dvd_mod_iff H1).mpr H2) H1)
+theorem dvd_gcd {m n k : ℕ} : k ∣ m → k ∣ n → k ∣ gcd m n := by
+  induction m, n using gcd.induction with
+  | H0 n => intros _ kn
+            rw [gcd_zero_left]
+            exact kn
+  | H1 m n mpos IH => intros H1 H2
+                      rw [gcd_rec]
+                      exact IH ((dvd_mod_iff H1).mpr H2) H1
 
 theorem dvd_gcd_iff {m n k : ℕ} : k ∣ gcd m n ↔ k ∣ m ∧ k ∣ n :=
 Iff.intro (λ h => And.intro (Nat.dvd_trans h (gcd_dvd m n).left) (Nat.dvd_trans h (gcd_dvd m n).right))
@@ -229,13 +227,10 @@ dvd_antisymm
 @[simp] theorem gcd_one_right (n : ℕ) : gcd n 1 = 1 :=
 Eq.trans (gcd_comm n 1) $ gcd_one_left n
 
-theorem gcd_mul_left (m n k : ℕ) : gcd (m * n) (m * k) = m * gcd n k :=
-@gcd.induction
-  (λ x y => gcd (m * x) (m * y) = m * gcd x y)
-  n k
-  (λk => by simp)
-  (λk n H IH => by simp at IH
-                   rwa [←mul_mod_mul_left, ←gcd_rec, ←gcd_rec] at IH)
+theorem gcd_mul_left (m n k : ℕ) : gcd (m * n) (m * k) = m * gcd n k := by
+  induction n, k using gcd.induction with
+  | H0 k => simp
+  | H1 n k npos IH => rwa [←mul_mod_mul_left, ←gcd_rec, ←gcd_rec] at IH
 
 theorem gcd_mul_right (m n k : ℕ) : gcd (m * n) (k * n) = gcd m k * n :=
 by rw [Nat.mul_comm m n, Nat.mul_comm k n, Nat.mul_comm (gcd m k) n, gcd_mul_left]
