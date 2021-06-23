@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Data.Nat.Basic
 import Mathlib.Dvd
-import Mathlib.Tactic.Block
 
 /-!
 # Definitions and properties of `gcd`, `lcm`, and `coprime`
