@@ -46,7 +46,7 @@ fun n => WellFounded.fix Nat.ltWf (digitsAuxF b h) n
 
 @[simp] theorem digitsAuxZero (b: ℕ) (h: 2 ≤ b): digitsAux b h 0 = List.nil := rfl
 
-lemma digitsAuxDef (b: ℕ) (h: 2 ≤ b) (w: 0 < n):
+lemma digitsAuxDef (b n: ℕ) (h: 2 ≤ b) (w: 0 < n):
   digitsAux b h n = n % b :: digitsAux b h (n / b) := by
   cases n
   { trivial }
@@ -88,7 +88,8 @@ def digits : ℕ → ℕ → List ℕ
 @[simp] lemma digitsOfLt (b x : ℕ) (w₁ : 0 < x) (w₂ : x < b): digits b x = [x] := by
   match b with
   | 0 => trivial
-  | 1 => simp; admit
+  | 1 =>
+    simp; rw [eqZeroOfLeZero w₂] at w₁; exact absurd w₁ (Nat.ltIrrefl _)
   | (b + 2) => match x with
     | 0 => trivial
     | (n + 1) => rw [digitsAddTwoAddOne, div_eq_of_lt w₂, digitsZero, mod_eq_of_lt w₂]
@@ -166,7 +167,9 @@ lemma digitsZeroOfEqZero {b : ℕ} (h : 1 ≤ b) {L : List ℕ} (w : ofDigits b 
       simp at hmem
       match hmem with
       | Or.inl eq_hd => rw [eq_hd, eq_zero_of_add_eq_zero_right w]
-      | Or.inr mem_tl => apply hl _ mem_tl; admit
+      | Or.inr mem_tl =>
+        exact hl ((eq_zero_of_mul_eq_zero $ eq_zero_of_add_eq_zero_left w).resolve_left (
+          fun b_zero => absurd b_zero (Nat.ne_zero_of_pos h))) mem_tl
 
 lemma digits.injective (b: ℕ): Function.injective b.digits :=
 Function.left_inverse.injective (ofDigitsDigits b)

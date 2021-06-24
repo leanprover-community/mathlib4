@@ -106,6 +106,14 @@ protected lemma le_or_le (a b : ℕ) : a ≤ b ∨ b ≤ a := (Nat.lt_or_le _ _)
 
 protected lemma le_of_not_le {a b : ℕ} : ¬ a ≤ b → b ≤ a := (Nat.le_or_le _ _).resolve_left
 
+lemma ne_of_lt {a b: ℕ} (h: a < b): a ≠ b :=
+  fun he => absurd h (he ▸ Nat.lt_irrefl a)
+
+lemma ne_of_gt {a b: ℕ} (h: b < a): a ≠ b :=
+  fun he => absurd h (he ▸ Nat.lt_irrefl a)
+
+lemma ne_zero_of_pos {n: ℕ} : 0 < n → n ≠ 0 := ne_of_gt
+
 @[simp] protected lemma not_lt {n m : ℕ} : ¬ n < m ↔ m ≤ n :=
 ⟨Nat.lt_of_not_le, Nat.not_lt_of_le⟩
 
