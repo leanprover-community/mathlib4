@@ -17,8 +17,8 @@ import Mathlib.Dvd
 import Mathlib.Function
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Basic
-import Mathlib.SetNotation
 import Mathlib.Set
+import Mathlib.SetNotation
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Block
 import Mathlib.Tactic.NoMatch
