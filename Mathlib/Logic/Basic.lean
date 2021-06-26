@@ -1,5 +1,12 @@
 import Mathlib.Tactic.Basic
 
+-- TODO(Jeremy): where is the best place to put these?
+lemma EqIffBeqTrue [DecidableEq α] {a b : α} : a = b ↔ ((a == b) = true) :=
+⟨decideEqTrue, ofDecideEqTrue⟩
+
+lemma NeqIffBeqFalse [DecidableEq α] {a b : α} : a ≠ b ↔ ((a == b) = false) :=
+⟨decideEqFalse, ofDecideEqFalse⟩
+
 lemma optParam_eq (α : Sort u) (default : α) : optParam α default = α := rfl
 
 def not_false := notFalse
@@ -240,6 +247,12 @@ instance forall_prop_decidable {p} (P : p → Prop)
   then decidableOfDecidableOfIff (DP h) ⟨λ h2 _ => h2, λ al => al h⟩
   else isTrue (λ h2 => absurd h2 h)
 
+@[simp] theorem forall_eq {p : α → Prop} {a' : α} : (∀a, a = a' → p a) ↔ p a' :=
+⟨λ h => h a' rfl, λ h a e => e.symm ▸ h⟩
+
+theorem forall_and_distrib {p q : α → Prop} : (∀ x, p x ∧ q x) ↔ (∀ x, p x) ∧ (∀ x, q x) :=
+⟨λ h => ⟨λ x => (h x).left, λ x => (h x).right⟩, λ ⟨h₁, h₂⟩ x => ⟨h₁ x, h₂ x⟩⟩
+
 def Decidable.by_cases := @byCases
 def Decidable.by_contradiction := @byContradiction
 def Decidable.of_not_not := @ofNotNot
@@ -313,3 +326,63 @@ theorem iff_of_eq (e : a = b) : a ↔ b := e ▸ Iff.rfl
 
 def decidable_of_iff (a : Prop) (h : a ↔ b) [D : Decidable a] : Decidable b :=
 decidableOfDecidableOfIff D h
+
+/-
+Stuff from mathlib's logic/basic.lean.
+TODO: import the whole thing.
+-/
+
+theorem or_imp_distrib : (a ∨ b → c) ↔ (a → c) ∧ (b → c) :=
+⟨fun h => ⟨fun ha => h (Or.inl ha), fun hb => h (Or.inr hb)⟩,
+  fun ⟨ha, hb⟩ => Or.rec ha hb⟩
+
+@[simp] theorem and_imp : (a ∧ b → c) ↔ (a → b → c) :=
+Iff.intro (λ h ha hb => h ⟨ha, hb⟩) (λ h ⟨ha, hb⟩ => h ha hb)
+
+@[simp] theorem not_and : ¬ (a ∧ b) ↔ (a → ¬ b) := and_imp
+
+@[simp] theorem exists_imp_distrib {p : α → Prop} : ((∃ x, p x) → b) ↔ ∀ x, p x → b :=
+⟨λ h x hpx => h ⟨x, hpx⟩, λ h ⟨x, hpx⟩ => h x hpx⟩
+
+@[simp] theorem exists_false : ¬ (∃a:α, False) := fun ⟨a, h⟩ => h
+
+@[simp] theorem exists_and_distrib_left {q : Prop} {p : α → Prop} :
+  (∃x, q ∧ p x) ↔ q ∧ (∃x, p x) :=
+⟨λ ⟨x, hq, hp⟩ => ⟨hq, x, hp⟩, λ ⟨hq, x, hp⟩ => ⟨x, hq, hp⟩⟩
+
+@[simp] theorem exists_and_distrib_right {q : Prop} {p : α → Prop} :
+  (∃x, p x ∧ q) ↔ (∃x, p x) ∧ q :=
+by simp [and_comm]
+
+@[simp] theorem exists_eq {a' : α} : ∃ a, a = a' := ⟨_, rfl⟩
+
+@[simp] theorem exists_eq' {a' : α} : ∃ a, a' = a := ⟨_, rfl⟩
+
+@[simp] theorem exists_eq_left {p : α → Prop} {a' : α} : (∃ a, a = a' ∧ p a) ↔ p a' :=
+⟨λ ⟨a, e, h⟩ => e ▸ h, λ h => ⟨_, rfl, h⟩⟩
+
+@[simp] theorem exists_eq_right {p : α → Prop} {a' : α} : (∃ a, p a ∧ a = a') ↔ p a' :=
+(exists_congr $ by exact λ a => and_comm).trans exists_eq_left
+
+@[simp] theorem exists_eq_left' {p : α → Prop} {a' : α} : (∃ a, a' = a ∧ p a) ↔ p a' :=
+by simp [@eq_comm _ a']
+
+protected theorem decidable.not_imp_symm [Decidable a] (h : ¬a → b) (hb : ¬b) : a :=
+Decidable.by_contradiction $ hb ∘ h
+
+theorem not.decidable_imp_symm [Decidable a] : (¬a → b) → ¬b → a := decidable.not_imp_symm
+
+theorem not_forall_of_exists_not {p : α → Prop} : (∃ x, ¬ p x) → ¬ ∀ x, p x
+| ⟨x, hn⟩, h => hn (h x)
+
+protected theorem Decidable.not_forall {p : α → Prop}
+  [Decidable (∃ x, ¬ p x)] [∀ x, Decidable (p x)] : (¬ ∀ x, p x) ↔ ∃ x, ¬ p x :=
+⟨not.decidable_imp_symm $ λ nx x => not.decidable_imp_symm (λ h => ⟨x, h⟩) nx,
+ not_forall_of_exists_not⟩
+
+@[simp] theorem not_exists {p : α → Prop} : (¬ ∃ x, p x) ↔ ∀ x, ¬ p x :=
+exists_imp_distrib
+
+open Classical
+
+@[simp] theorem not_forall {p : α → Prop} : (¬ ∀ x, p x) ↔ ∃ x, ¬ p x := Decidable.not_forall

@@ -98,6 +98,13 @@ lemma eq_zero_of_add_eq_zero_left {n m : ℕ} (h : n + m = 0) : m = 0 :=
 protected lemma pos_of_ne_zero {n : ℕ} : n ≠ 0 → 0 < n :=
 Or.resolve_left (eq_zero_or_pos n)
 
+-- TODO: in mathlib, this is done for ordered monoids
+protected lemma pos_iff_ne_zero {n : ℕ} : 0 < n ↔ n ≠ 0 := by
+  refine ⟨?_, Nat.pos_of_ne_zero⟩
+  cases n with
+  | zero   => intro h; contradiction
+  | succ n => intro _; apply succ_ne_zero
+
 protected lemma not_lt_of_le {n m : ℕ} (h₁ : m ≤ n) : ¬ n < m | h₂ => Nat.not_le_of_gt h₂ h₁
 
 protected lemma lt_of_not_le {a b : ℕ} : ¬ a ≤ b → b < a := (Nat.lt_or_le b a).resolve_right
@@ -369,7 +376,7 @@ protected lemma div_le_self : ∀ (m n : ℕ), m / n ≤ m
   rwa [Nat.one_mul] at this
 
 lemma div_eq_sub_div (h₁ : 0 < b) (h₂ : b ≤ a) : a / b = (a - b) / b + 1 := by
-  rw [div_eq a, if_pos]; split <;> assumption
+ rw [div_eq a, if_pos]; split <;> assumption
 
 lemma div_eq_of_lt (h₀ : a < b) : a / b = 0 := by
   rw [div_eq a, if_neg]
