@@ -202,14 +202,14 @@ section LinearOrder
 We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. -/
 class LinearOrder (α : Type u) extends PartialOrder α :=
 (le_total : ∀ a b : α, a ≤ b ∨ b ≤ a)
-(decidableLe : DecidableRel (. ≤ . : α → α → Prop))
-(decidableEq : DecidableEq α := @decidableEq_of_decidableLe _ _ decidableLe)
-(decidableLt : DecidableRel (. < . : α → α → Prop) :=
-    @decidableLt_of_decidableLe _ _ decidableLe)
+(decidable_le : DecidableRel (. ≤ . : α → α → Prop))
+(decidable_eq : DecidableEq α := @decidableEq_of_decidableLe _ _ decidable_le)
+(decidable_lt : DecidableRel (. < . : α → α → Prop) :=
+    @decidableLt_of_decidableLe _ _ decidable_le)
 
 variable [LinearOrder α]
 
-attribute [local instance] LinearOrder.decidableLe
+attribute [local instance] LinearOrder.decidable_le
 
 theorem le_total : ∀ a b : α, a ≤ b ∨ b ≤ a :=
 LinearOrder.le_total
@@ -276,13 +276,13 @@ theorem lt_iff_not_ge (x y : α) : x < y ↔ ¬ x ≥ y :=
 @[simp] theorem not_le {a b : α} : ¬ a ≤ b ↔ b < a := (lt_iff_not_ge _ _).symm
 
 instance (a b : α) : Decidable (a < b) :=
-LinearOrder.decidableLt a b
+LinearOrder.decidable_lt a b
 
 instance (a b : α) : Decidable (a ≤ b) :=
-LinearOrder.decidableLe a b
+LinearOrder.decidable_le a b
 
 instance (a b : α) : Decidable (a = b) :=
-LinearOrder.decidableEq a b
+LinearOrder.decidable_eq a b
 
 theorem eq_or_lt_of_not_lt {a b : α} (h : ¬ a < b) : a = b ∨ b < a :=
 if h₁ : a = b then Or.inl h₁
