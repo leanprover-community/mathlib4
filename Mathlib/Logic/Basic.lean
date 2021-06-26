@@ -7,6 +7,12 @@ lemma EqIffBeqTrue [DecidableEq α] {a b : α} : a = b ↔ ((a == b) = true) :=
 lemma NeqIffBeqFalse [DecidableEq α] {a b : α} : a ≠ b ↔ ((a == b) = false) :=
 ⟨decideEqFalse, ofDecideEqFalse⟩
 
+lemma decide_eq_true_iff (p : Prop) [Decidable p] : (decide p = true) ↔ p :=
+⟨ofDecideEqTrue, decideEqTrue⟩
+
+lemma decide_eq_false_iff_not (p : Prop) [Decidable p] : (decide p = false) ↔ ¬ p :=
+⟨ofDecideEqFalse, decideEqFalse⟩
+
 lemma optParam_eq (α : Sort u) (default : α) : optParam α default = α := rfl
 
 def not_false := notFalse

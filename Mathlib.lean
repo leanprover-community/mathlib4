@@ -10,6 +10,7 @@ import Mathlib.Data.Equiv.Basic
 import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Card
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Gcd
 import Mathlib.Data.UInt

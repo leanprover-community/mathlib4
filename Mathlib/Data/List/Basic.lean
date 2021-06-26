@@ -596,6 +596,54 @@ fun {x} => by simp only [mem_map, not_and, exists_imp_distrib, and_imp]
 --   cases h hxx', exact hx'
 -- end
 
+@[simp] theorem mem_reverseAux (x : α) : ∀ as bs, x ∈ reverseAux as bs ↔ x ∈ as ∨ x ∈ bs
+  | [], bs => by simp [reverseAux]
+  | a :: as, bs => by simp [reverseAux, mem_reverseAux]; rw [←or_assoc, @or_comm (x = a)]
+
+@[simp] theorem mem_reverse (x : α) (as : List α) : x ∈ reverse as ↔ x ∈ as := by simp [reverse]
+
+-- TODO: better automation needed
+theorem mem_filterAux (x : α) (p : α → Bool) :
+    ∀ as bs, x ∈ filterAux p as bs ↔ (x ∈ as ∧ p x) ∨ x ∈ bs
+  | [], bs => by simp [filterAux]
+  | (a :: as), bs => by
+      simp [filterAux]
+      cases pa : p a with
+      | true =>
+        simp [mem_filterAux x p as (a :: bs)]
+        split; focus
+          intro h'
+          cases h' with
+          | inl h'' => exact Or.inl ⟨Or.inr h''.1, h''.2⟩
+          | inr h'' =>
+            cases h'' with
+            | inl h₃ => exact Or.inl ⟨Or.inl h₃, h₃ ▸ pa⟩
+            | inr h₃ => exact Or.inr h₃
+        intro h'
+        cases h' with
+        | inl h'' =>
+          cases h''.1 with
+          | inl h₃ => exact Or.inr (Or.inl h₃)
+          | inr h₃ => exact Or.inl ⟨h₃, h''.2⟩
+        | inr h'' => exact Or.inr (Or.inr h'')
+      | false =>
+        simp [mem_filterAux x p as bs]
+        split; focus
+          intro h'
+          cases h' with
+          | inl h'' => exact Or.inl ⟨Or.inr h''.1, h''.2⟩
+          | inr h'' => exact Or.inr h''
+        intro h'
+        cases h' with
+        | inl h'' =>
+          cases h''.1 with
+          | inl h₃ => rw [←h₃, h''.2] at pa; contradiction
+          | inr h₃ => exact Or.inl ⟨h₃, h''.2⟩
+        | inr h'' => exact Or.inr h''
+
+theorem mem_filter (as : List α) (p : α → Bool) (x : α) :
+    x ∈ filter p as ↔ x ∈ as ∧ p x = true := by simp [filter, mem_filterAux]
+
 /-! ### append -/
 
 lemma append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L₁ ++ L₂ := rfl
@@ -1038,12 +1086,35 @@ end erase
 
 -- /-! ### union -/
 
-protected def union [DecidableEq α] (l₁ l₂ : List α) : List α :=
+section
+
+variable [DecidableEq α]
+
+protected def union (l₁ l₂ : List α) : List α :=
 foldr insert l₂ l₁
+
+@[simp] theorem nil_union (l : List α) : nil.union l = l := by simp [List.union, foldr]
+
+@[simp] theorem cons_union (a : α) (l₁ l₂ : List α) :
+  (a :: l₁).union l₂ = insert a (l₁.union l₂) := by simp [List.union, foldr]
+
+@[simp] theorem mem_union_iff [DecidableEq α] {x : α} {l₁ l₂ : List α} :
+    x ∈ l₁.union l₂ ↔ x ∈ l₁ ∨ x ∈ l₂ := by
+  induction l₁ with
+  | nil => simp
+  | cons a l' ih => simp [ih, or_assoc]
+
+end
 
 -- /-! ### inter -/
 
 protected def inter [DecidableEq α] (l₁ l₂ : List α) : List α :=
 filter (fun a => a ∈ l₂) l₁
+
+@[simp] theorem mem_inter_iff [DecidableEq α] {x : α} {l₁ l₂ : List α} :
+    x ∈ l₁.inter l₂ ↔ x ∈ l₁ ∧ x ∈ l₂ := by
+  induction l₁ with
+  | nil => simp [List.inter, mem_filter]
+  | cons a l' ih => simp [List.inter, mem_filter, decide_eq_true_iff (x ∈ l₂)]
 
 end List
