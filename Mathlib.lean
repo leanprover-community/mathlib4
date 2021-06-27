@@ -6,6 +6,7 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
+import Mathlib.Data.Int.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Data.ByteArray

@@ -1,4 +1,5 @@
 import Mathlib.Data.Nat.Basic -- *only* for notation ℕ which should be in a "prelude"
+import Mathlib.Data.Int.Basic -- *only* for notation ℤ which should be in a "prelude"
 import Mathlib.Tactic.Spread
 
 /-!
@@ -59,9 +60,6 @@ def npow_rec [One M] [Mul M] : ℕ → M → M
 end nat_action
 
 section int_action
-
--- TODO -- this should be in a prelude
-notation "ℤ" => Int
 
 /-- The fundamental scalar multiplication in an additive group. `gsmul_rec n a = a+a+...+a` n
 times, for integer `n`. Use instead `n • a`, which has better definitional behavior. -/
@@ -198,10 +196,10 @@ instance (A : Type u) [AddCommMonoid A] : AddCommSemigroup A where
 
 class AddGroup (A : Type u) extends AddMonoid A, Neg A, Sub A where
   add_left_neg (a : A) : -a + a = 0
-  sub_eq_add_neg (a b : A) : a - b = a + -b 
+  sub_eq_add_neg (a b : A) : a - b = a + -b
   gsmul : ℤ → A → A := gsmul_rec
   gpow_zero' (a : A) : gsmul 0 a = 0 -- try rfl
-  gpow_succ' (n : ℕ) (a : A) : gsmul (Int.ofNat n.succ) a = a + gsmul (Int.ofNat n) a 
+  gpow_succ' (n : ℕ) (a : A) : gsmul (Int.ofNat n.succ) a = a + gsmul (Int.ofNat n) a
   gpow_neg' (n : ℕ) (a : A) : gsmul (Int.negSucc n) a = -(gsmul ↑(n.succ) a)
 
 section AddGroup_lemmas
@@ -232,7 +230,7 @@ theorem add_neg_self (a : A) : a + -a = 0 := add_right_neg a
 by rw [add_assoc, add_right_neg, add_zero]
 
 instance (A : Type u) [AddGroup A] : IsAddRightCancel A where
-  add_right_cancel a b c h := by 
+  add_right_cancel a b c h := by
   rw [← add_neg_cancel_right b a, h, add_neg_cancel_right]
 
 instance (A : Type u) [AddGroup A] : IsAddLeftCancel A where
@@ -363,10 +361,10 @@ instance (M : Type u) [CommMonoid M] : CommSemigroup M where
 
 class Group (G : Type u) extends Monoid G, Inv G, Div G where
   mul_left_inv (a : G) : a⁻¹ * a = 1
-  div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ 
+  div_eq_mul_inv (a b : G) : a / b = a * b⁻¹
   gpow : ℤ → G → G := gpow_rec
   gpow_zero' (a : G) : gpow 0 a = 1 -- try rfl
-  gpow_succ' (n : ℕ) (a : G) : gpow (Int.ofNat n.succ) a = a * gpow (Int.ofNat n) a 
+  gpow_succ' (n : ℕ) (a : G) : gpow (Int.ofNat n.succ) a = a * gpow (Int.ofNat n) a
   gpow_neg' (n : ℕ) (a : G) : gpow (Int.negSucc n) a = (gpow ↑(n.succ) a)⁻¹
 
 section Group_lemmas
