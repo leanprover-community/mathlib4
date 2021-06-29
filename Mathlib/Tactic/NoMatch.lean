@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Mario Carneiro
 -/
 import Mathlib.Tactic.OpenPrivate
-import Lean.Elab.Match
-import Lean.Elab.Syntax
+import Lean
 
 /-
 This adds support for the alternative syntax `match x with.` instead of `nomatch x`. It is more
