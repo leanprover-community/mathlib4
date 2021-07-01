@@ -144,8 +144,7 @@ Exists.elim H (λ l H1 => by rw [Nat.mul_assoc] at H1
 theorem gcd_rec (m n : ℕ) : gcd m n = gcd (n % m) m :=
   match m with
   | 0 => by have := (mod_zero n).symm
-            simp
-            exact this
+            rwa [gcd_zero_right]
   | pm + 1 => by simp [gcd_succ]
 
 theorem gcd.induction
