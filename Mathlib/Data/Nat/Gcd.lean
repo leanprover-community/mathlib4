@@ -23,22 +23,6 @@ protected theorem dvd_mul_left (a b : ℕ) : a ∣ b * a := Exists.intro b (Nat.
 protected theorem dvd_refl (a : ℕ) : a ∣ a := Exists.intro 1 (by simp)
 protected theorem dvd_zero (a : ℕ) : a ∣ 0 := Exists.intro 0 (by simp)
 
-protected theorem mul_eq_zero {a b : ℕ} : a * b = 0 ↔ a = 0 ∨ b = 0 :=
-Iff.intro
-  (λ h => match a,b with
-          | zero, _ => Or.inl rfl
-          | succ n,zero => Or.inr rfl
-          | succ m, succ n => by rw [Nat.succ_mul] at h
-                                 have h1 : m * succ n + succ n = succ (m * succ n + n) := rfl
-                                 rw [h1] at h
-                                 exact False.elim (Nat.succ_ne_zero (m * succ n + n) h))
-  (λ h => match h with
-          | Or.inl ha => by simp [ha]
-          | Or.inr hb => by simp [hb])
-
-protected theorem zero_eq_mul {a b : ℕ} : 0 = a * b ↔ a = 0 ∨ b = 0 :=
-by rw [eq_comm, Nat.mul_eq_zero]
-
 protected theorem mul_dvd_mul : ∀ {a b c d : ℕ}, a ∣ b → c ∣ d → a * c ∣ b * d
 | a, b, c, d, ⟨e, he⟩, ⟨f, hf⟩ => ⟨e * f, by rw [he, hf,
                                                  Nat.mul_assoc a _,
@@ -382,7 +366,7 @@ theorem lcm_ne_zero {m n : ℕ} (hm : m ≠ 0) (hn : n ≠ 0) : lcm m n ≠ 0 :=
 by intro h
    have h1 := gcd_mul_lcm m n
    rw [h, Nat.mul_zero] at h1
-   match Nat.zero_eq_mul.mp h1 with
+   match eq_zero_of_mul_eq_zero h1.symm with
    | Or.inl hm1 => exact hm hm1
    | Or.inr hn1 => exact hn hn1
 
