@@ -19,5 +19,12 @@ jobs:
 
       - uses: actions/checkout@v2
 
+      - name: update Mathlib.lean
+        run: |
+          find Mathlib/ -not -type d | sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
+
       - name: build mathlib
         run: leanpkg build
+
+      - name: check that all files are imported
+        run: git diff --exit-code
