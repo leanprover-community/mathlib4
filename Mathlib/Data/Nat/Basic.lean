@@ -157,6 +157,10 @@ lemma eq_of_mul_eq_mul_left {m k n : ℕ} (Hn : 0 < n) (H : n * m = n * k) : m =
 Nat.le_antisymm (Nat.le_of_mul_le_mul_left (Nat.le_of_eq H) Hn)
                 (Nat.le_of_mul_le_mul_left (Nat.le_of_eq H.symm) Hn)
 
+lemma eq_of_mul_eq_mul_right {n m k : ℕ} (Hm : 0 < m) (H : n * m = k * m) : n = k :=
+by rw [Nat.mul_comm n m, Nat.mul_comm k m] at H
+   exact Nat.eq_of_mul_eq_mul_left Hm H
+
 protected lemma add_self_ne_one : ∀ (n : ℕ), n + n ≠ 1
 | n+1, h =>
   have h1 : succ (succ (n + n)) = 1 := succ_add n n ▸ h
