@@ -1,6 +1,6 @@
 /-
-Ported by Deniz Aydin from the lean3 prelude's data/int/basic.lean.
-Should be in a "prelude"
+Ported by Deniz Aydin from the lean3 prelude's data/int/basic.lean. Should be in a "prelude"
+https://github.com/leanprover-community/lean/blob/master/library/init/data/int/basic.lean
 
 Original file license:
   Copyright (c) 2016 Jeremy Avigad. All rights reserved.
@@ -18,7 +18,9 @@ notation "-[1+ " n "]" => Int.negSucc n
 
 namespace Int
 
-/- ## Edits to the naming conventions -/
+/-
+## Edits to the naming conventions. TODO: Find out what the lean4 naming convention actually is
+-/
 def neg_of_nat := @negOfNat
 def sub_nat_nat := @subNatNat
 def nonneg := @NonNeg
@@ -138,7 +140,7 @@ lemma sub_nat_nat_elim (m n : ℕ) (P : ℕ → ℕ → ℤ → Prop)
   (hn : ∀i m, P m (m + i + 1) (-[1+ i])) :
   P m n (sub_nat_nat m n) :=
 by
-  have H : ∀k , n - m = k → P m n (@Nat.casesOn (λ _ => ℤ) k (ofNat (m-n)) negSucc) := by
+  have H : ∀ k , n - m = k → P m n (@Nat.casesOn (λ _ => ℤ) k (ofNat (m-n)) negSucc) := by
     intros k h
     cases k with
     | zero =>
@@ -222,7 +224,7 @@ lemma nat_abs_eq : ∀ (a : ℤ), a = nat_abs a ∨ a = -↑(nat_abs a)
 | (ofNat _) => Or.inl rfl
 | -[1+ _]   => Or.inr rfl
 
-lemma eq_coe_or_neg (a : ℤ) : ∃n : ℕ, a = n ∨ a = -↑n := ⟨_, nat_abs_eq a⟩
+lemma eq_x_or_neg (a : ℤ) : ∃n : ℕ, a = n ∨ a = -↑n := ⟨_, nat_abs_eq a⟩
 
 /- ## sign -/
 
@@ -275,9 +277,7 @@ def rem : ℤ → ℤ → ℤ
 /- ## gcd -/
 def gcd (m n : ℤ) : ℕ := Nat.gcd (nat_abs m) (nat_abs n)
 
-/-
-   # ring properties
--/
+/- # ring properties -/
 
 /- addition -/
 
@@ -296,7 +296,6 @@ protected lemma zero_add (a : ℤ) : 0 + a = a := Int.add_comm a 0 ▸ Int.add_z
 lemma sub_nat_nat_sub {m n : ℕ} (h : n ≤ m) (k : ℕ) :
 sub_nat_nat (m - n) k = sub_nat_nat m (k + n) := by
   rwa [← sub_nat_nat_add_add _ _ n, Nat.sub_add_cancel]
-
 
 lemma sub_nat_nat_add (m n k : ℕ) : sub_nat_nat (m + n) k = ofNat m + sub_nat_nat n k :=
 by
@@ -380,14 +379,11 @@ by rw [Int.add_comm, Int.add_left_neg]
 /- ## multiplication -/
 
 protected lemma mul_comm : ∀ a b : ℤ, a * b = b * a
-| (ofNat m), (ofNat n) => by simp [Nat.mul_comm]
-| (ofNat m), -[1+ n]   => by simp [Nat.mul_comm]
-| -[1+ m],   (ofNat n) => by simp [Nat.mul_comm]
-| -[1+ m],   -[1+ n]   => by simp [Nat.mul_comm]
+| a, b => by cases a <;> cases b <;> simp [Nat.mul_comm]
 
 lemma of_nat_mul_neg_of_nat (m : ℕ) : ∀ n, ofNat m * neg_of_nat n = neg_of_nat (m * n)
 | 0        => rfl
-| (succ n) => by simp [neg_of_nat, negOfNat] -- TODO: How to avoid having to simp through renaming definitions to unfold them?
+| (succ n) => rfl
 
 lemma neg_of_nat_mul_of_nat (m n : ℕ) : neg_of_nat m * ofNat n = neg_of_nat (m * n) := by
     rw [Int.mul_comm]
@@ -396,7 +392,7 @@ lemma neg_of_nat_mul_of_nat (m n : ℕ) : neg_of_nat m * ofNat n = neg_of_nat (m
 lemma neg_succ_of_nat_mul_neg_of_nat (m : ℕ) :
   ∀ n, -[1+ m] * neg_of_nat n = ofNat (succ m * n)
 | 0        => rfl
-| (succ n) => by simp [neg_of_nat, negOfNat] -- TODO: How to avoid having to simp through renaming definitions to unfold them?
+| (succ n) => rfl
 
 lemma neg_of_nat_mul_neg_succ_of_nat (m n : ℕ) :
   neg_of_nat n * -[1+ m] = ofNat (n * succ m) := by
@@ -406,14 +402,7 @@ attribute [local simp] of_nat_mul_neg_of_nat neg_of_nat_mul_of_nat
   neg_succ_of_nat_mul_neg_of_nat neg_of_nat_mul_neg_succ_of_nat
 
 protected lemma mul_assoc : ∀ a b c : ℤ, a * b * c = a * (b * c)
-| (ofNat m), (ofNat n), (ofNat k) => by simp [Nat.mul_assoc]
-| (ofNat m), (ofNat n), -[1+ k]   => by simp [Nat.mul_assoc]
-| (ofNat m), -[1+ n],   (ofNat k) => by simp [Nat.mul_assoc]
-| (ofNat m), -[1+ n],   -[1+ k]   => by simp [Nat.mul_assoc]
-| -[1+ m],   (ofNat n), (ofNat k) => by simp [Nat.mul_assoc]
-| -[1+ m],   (ofNat n), -[1+ k]   => by simp [Nat.mul_assoc]
-| -[1+ m],   -[1+ n],   (ofNat k) => by simp [Nat.mul_assoc]
-| -[1+ m],   -[1+ n],   -[1+ k]   => by simp [Nat.mul_assoc]
+| a, b, c => by cases a <;> cases b <;> cases c <;> simp [Nat.mul_assoc]
 
 protected lemma mul_zero : ∀ (a : ℤ), a * 0 = 0
 | (ofNat m) => rfl
@@ -425,8 +414,6 @@ Int.mul_comm a 0 ▸ Int.mul_zero a
 lemma neg_of_nat_eq_sub_nat_nat_zero : ∀ n, neg_of_nat n = sub_nat_nat 0 n
 | 0        => rfl
 | (succ n) => rfl
-
-
 
 lemma of_nat_mul_sub_nat_nat (m n k : ℕ) :
   ofNat m * sub_nat_nat n k = sub_nat_nat (m * n) (m * k) :=
@@ -451,19 +438,11 @@ by
       simp
       rw [Nat.mul_sub_left_distrib]
 
-
-
-lemma neg_of_nat_add (m n : ℕ) : neg_of_nat m + neg_of_nat n = neg_of_nat (m + n) := by
-  cases m
-  cases n
-  simp
-  simp [Nat.zero_add]
-  rfl
-  cases n
-  simp
-  rfl
-  simp [Nat.succ_add]
-  rfl
+lemma neg_of_nat_add : ∀ m n : ℕ, neg_of_nat m + neg_of_nat n = neg_of_nat (m + n)
+| zero,   zero   => by simp
+| zero,   succ n => by simp [Nat.zero_add]; rfl
+| succ m, zero   => by simp; rfl
+| succ m, succ n => by simp [Nat.succ_add]; rfl
 
 lemma neg_succ_of_nat_mul_sub_nat_nat (m n k : ℕ) :
   -[1+ m] * sub_nat_nat n k = sub_nat_nat (succ m * k) (succ m * n) :=
@@ -501,21 +480,21 @@ protected lemma distrib_left : ∀ a b c : ℤ, a * (b + c) = a * b + a * c
 | -[1+ m],   -[1+ n],   (ofNat k) => by simp [neg_of_nat_eq_sub_nat_nat_zero] rw [← sub_nat_nat_add] rfl
 | -[1+ m],   -[1+ n],   -[1+ k]   => by simp rw [← Nat.left_distrib, succ_add] rfl
 
-protected lemma distrib_right (a b c : ℤ) : (a + b) * c = a * c + b * c := by
-  rw [Int.mul_comm, Int.distrib_left]
-  simp [Int.mul_comm]
+protected lemma distrib_right (a b c : ℤ) : (a + b) * c = a * c + b * c :=
+by simp [Int.mul_comm, Int.distrib_left]
 
 protected lemma zero_ne_one : (0 : ℤ) ≠ 1 := λ h => Int.noConfusion h fun.
 
 lemma of_nat_sub {n m : ℕ} (h : m ≤ n) : ofNat (n - m) = ofNat n - ofNat m := by
   show ofNat (n - m) = ofNat n + neg_of_nat m
   match m, h with
-  | 0,      h => rfl
+  | 0, h =>
+    rfl
   | succ m, h =>
-                show ofNat (n - succ m) = sub_nat_nat n (succ m)
-                simp [sub_nat_nat, subNatNat] -- TODO: How to avoid having to simp through rename definitions to unfold them?
-                rw [sub_eq_zero_of_le h]
-                rfl
+    show ofNat (n - succ m) = sub_nat_nat n (succ m)
+    simp [sub_nat_nat, subNatNat] -- TODO: How to avoid having to simp through rename definitions to unfold them?
+    rw [sub_eq_zero_of_le h]
+    rfl
 
 protected lemma add_left_comm (a b c : ℤ) : a + (b + c) = b + (a + c) :=
 by rw [← Int.add_assoc, Int.add_comm a, Int.add_assoc]
