@@ -1,6 +1,7 @@
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.Order
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Data.Array.Basic
 import Mathlib.Data.ByteArray
@@ -10,7 +11,9 @@ import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Gcd
 import Mathlib.Data.UInt
+import Mathlib.Dvd
 import Mathlib.Function
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Basic
