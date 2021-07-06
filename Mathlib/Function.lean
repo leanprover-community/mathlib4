@@ -9,8 +9,6 @@ Author: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 # General operations on functions
 -/
 
-universes u₁ u₂ u₃ u₄
-
 namespace Function
 
 variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₁}

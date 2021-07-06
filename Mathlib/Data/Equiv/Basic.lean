@@ -17,7 +17,6 @@ equivalence, congruence, bijective map
 
 open Function
 
-universes u v w
 variable {α : Sort u} {β : Sort v} {γ : Sort w}
 
 /-- `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. -/

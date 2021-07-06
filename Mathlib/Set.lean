@@ -30,8 +30,6 @@ This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean
 
 -/
 
-universes u v
-
 def Set (α : Type u) := α → Prop
 
 def setOf {α : Type u} (p : α → Prop) : Set α :=
