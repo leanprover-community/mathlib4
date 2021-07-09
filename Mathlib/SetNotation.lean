@@ -27,11 +27,10 @@ infix:70 " \\ " => Sdiff.sdiff
 
 declare_syntax_cat binderterm -- notation for `a` or `a : A` or `a ∈ S`
 syntax ident : binderterm
-syntax ident " : " term : binderterm
 syntax ident " ∈ " term : binderterm
 
-syntax "∀" binderterm "," term : term
-syntax "∃" binderterm "," term : term
+syntax "∀ " binderterm ", " term : term
+syntax "∃ " binderterm ", " term : term
 
 macro_rules
 -- ∀ x ∈ s, p := ∀ x, x ∈ s → p

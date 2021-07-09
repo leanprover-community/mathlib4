@@ -153,7 +153,6 @@ Or.inl rfl
 @[simp] lemma mem_cons_iff (a y : α) (l : List α) : a ∈ y :: l ↔ (a = y ∨ a ∈ l) :=
 Iff.rfl
 
--- used to be @[rsimp]
 lemma mem_cons_eq (a y : α) (l : List α) : (a ∈ y :: l) = (a = y ∨ a ∈ l) :=
 rfl
 
@@ -168,7 +167,6 @@ fun h => h
   | nil => simp
   | cons a s' ih => simp [or_assoc, ih]
 
--- used to be @[rsimp]
 lemma mem_append_eq (a : α) (s t : List α) : (a ∈ s ++ t) = (a ∈ s ∨ a ∈ t) :=
 propext mem_append
 
@@ -203,11 +201,11 @@ Iff.intro
  (fun al => ⟨al a (mem_cons_self _ _), fun x h => al x (mem_cons_of_mem _ h)⟩)
  (fun ⟨pa, al⟩ x o => o.elim (fun e => by rw [e]; exact pa) (al x))
 
-instance DecidableMem [DecidableEq α] (a : α) : ∀ (l : List α), Decidable (a ∈ l)
+instance decidableMem [DecidableEq α] (a : α) : ∀ (l : List α), Decidable (a ∈ l)
   | []     => isFalse notFalse
   | b :: l =>
     if h₁ : a = b then isTrue (Or.inl h₁)
-    else match DecidableMem a l with
+    else match decidableMem a l with
       | isTrue h₂  => isTrue (Or.inr h₂)
       | isFalse h₂ => isFalse (not_or_intro h₁ h₂)
 
