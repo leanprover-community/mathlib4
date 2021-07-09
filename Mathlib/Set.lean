@@ -3,7 +3,7 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Mem
+import Mathlib.SetNotation
 /-!
 
 # Sets
@@ -17,7 +17,7 @@ Given a type `X` and a predicate `p : X → Prop`:
 * `Set X` : the type of sets whose elements have type `X`
 * `{a : X | p a} : Set X` : the set of all elements of `X` satisfying `p`
 * `{a | p a} : Set X` : a more concise notation for `{a : X | p a}`
-* `{a ∈ S | p a} : Set X` : given `S : Set X`, the subset of `S` consisting of 
+* `{a ∈ S | p a} : Set X` : given `S : Set X`, the subset of `S` consisting of
    its elements satisfying `p`.
 
 ## Implementation issues
@@ -34,26 +34,6 @@ def Set (α : Type u) := α → Prop
 
 def setOf {α : Type u} (p : α → Prop) : Set α :=
 p
-
-class Subset (α : Type u) where
-  subset : α → α → Prop
-
-infix:50 " ⊆ " => Subset.subset
-
-class Union (α : Type u) where
-  union : α → α → α
-
-infixl:65 " ∪ " => Union.union
-
-class Inter (α : Type u) where
-  inter : α → α → α
-
-infixl:70 " ∩ " => Inter.inter
-
-class Sdiff (α : Type u) where
-  sdiff : α → α → α
-
-infix:70 " \\ " => Sdiff.sdiff
 
 namespace Set
 
@@ -72,13 +52,10 @@ instance : Subset (Set α) :=
 instance : EmptyCollection (Set α) :=
 ⟨λ a => false⟩
 
-declare_syntax_cat binderterm -- notation for `a` or `a : A` or `a ∈ S`
-syntax ident : binderterm
-syntax ident " : " term : binderterm
-syntax ident " ∈ " term : binderterm
-
 -- Notation for sets
-syntax "{ " binderterm " | " term " }" : term
+syntax "{ " ident " | " term " }" : term
+syntax "{ " ident ":" term " | " term " }" : term
+syntax "{ " ident "∈" term " | " term " }" : term
 
 macro_rules
  -- {a : A | p a}
@@ -87,15 +64,6 @@ macro_rules
 | `({ $x:ident | $p }) => `(setOf (λ ($x:ident) => $p))
  -- {a ∈ s | p a} := {a | a ∈ s ∧ p a}
 | `({ $x:ident ∈ $s | $p }) => `(setOf (λ $x => $x ∈ $s ∧ $p))
-
-syntax "∀" binderterm "," term : term
-syntax "∃" binderterm "," term : term
-
-macro_rules
--- ∀ x ∈ s, p := ∀ x, x ∈ s → p
-| `(∀ $x:ident ∈ $s, $p) => `(∀ $x:ident, $x ∈ $s → $p)
--- ∃ x ∈ s, p := ∃ x, x ∈ s ∧ p
-| `(∃ $x:ident ∈ $s, $p) => `(∃ $x:ident, $x ∈ $s ∧ $p)
 
 def univ : Set α := {a | True }
 
