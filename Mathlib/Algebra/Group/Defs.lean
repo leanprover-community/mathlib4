@@ -1,4 +1,5 @@
 import Mathlib.Data.Nat.Basic -- *only* for notation ℕ which should be in a "prelude"
+import Mathlib.Data.Int.Basic -- *only* for notation ℤ which should be in a "prelude"
 import Mathlib.Tactic.Spread
 
 /-!
@@ -59,9 +60,6 @@ def npow_rec [One M] [Mul M] : ℕ → M → M
 end nat_action
 
 section int_action
-
--- TODO -- this should be in a prelude
-notation "ℤ" => Int
 
 /-- The fundamental scalar multiplication in an additive group. `gsmul_rec n a = a+a+...+a` n
 times, for integer `n`. Use instead `n • a`, which has better definitional behavior. -/
