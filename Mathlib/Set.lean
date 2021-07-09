@@ -53,7 +53,9 @@ instance : EmptyCollection (Set α) :=
 ⟨λ a => false⟩
 
 -- Notation for sets
-syntax "{ " binderterm " | " term " }" : term
+syntax "{ " ident " | " term " }" : term
+syntax "{ " ident ":" term " | " term " }" : term
+syntax "{ " ident "∈" term " | " term " }" : term
 
 macro_rules
  -- {a : A | p a}
