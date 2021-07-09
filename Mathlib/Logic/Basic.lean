@@ -234,6 +234,12 @@ exists_congr fun x => and_congr (h _) $ forall_congr fun y => imp_congr_left (h 
 
 lemma forall_not_of_not_exists {p : α → Prop} (hne : ¬∃ x, p x) (x) : ¬p x | hp => hne ⟨x, hp⟩
 
+instance forall_prop_decidable {p} (P : p → Prop)
+  [Dp : Decidable p] [DP : ∀ h, Decidable (P h)] : Decidable (∀ h, P h) :=
+  if h : p
+  then decidableOfDecidableOfIff (DP h) ⟨λ h2 _ => h2, λ al => al h⟩
+  else isTrue (λ h2 => absurd h2 h)
+
 def Decidable.by_cases := @byCases
 def Decidable.by_contradiction := @byContradiction
 def Decidable.of_not_not := @ofNotNot
@@ -300,3 +306,10 @@ set_option codegen false in
 def fix' (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x := hwf.fix F x
 
 end WellFounded
+
+-- Below are items ported from mathlib/src/logic/basic.lean
+
+theorem iff_of_eq (e : a = b) : a ↔ b := e ▸ Iff.rfl
+
+def decidable_of_iff (a : Prop) (h : a ↔ b) [D : Decidable a] : Decidable b :=
+decidableOfDecidableOfIff D h
