@@ -347,6 +347,18 @@ Iff.intro (λ h ha hb => h ⟨ha, hb⟩) (λ h ⟨ha, hb⟩ => h ha hb)
 
 @[simp] theorem not_and : ¬ (a ∧ b) ↔ (a → ¬ b) := and_imp
 
+section equality
+
+@[simp] lemma eq_rec_constant {α : Sort _} {a a' : α} {β : Sort _} (y : β) (h : a = a') :
+  (@Eq.rec α a (λ α _ => β) y a' h) = y :=
+by cases h
+   exact rfl
+
+end equality
+
+@[simp] theorem forall_const (α : Sort _) [i : Nonempty α] : (α → b) ↔ b :=
+⟨i.elim, λ hb x => hb⟩
+
 @[simp] theorem exists_imp_distrib {p : α → Prop} : ((∃ x, p x) → b) ↔ ∀ x, p x → b :=
 ⟨λ h x hpx => h ⟨x, hpx⟩, λ h ⟨x, hpx⟩ => h x hpx⟩
 
@@ -388,6 +400,9 @@ protected theorem Decidable.not_forall {p : α → Prop}
 
 @[simp] theorem not_exists {p : α → Prop} : (¬ ∃ x, p x) ↔ ∀ x, ¬ p x :=
 exists_imp_distrib
+
+theorem forall_prop_of_true {p : Prop} {q : p → Prop} (h : p) : (∀ h' : p, q h') ↔ q h :=
+@forall_const (q h) p ⟨h⟩
 
 open Classical
 
