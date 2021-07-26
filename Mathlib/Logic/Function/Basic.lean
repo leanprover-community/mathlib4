@@ -419,15 +419,24 @@ dif_neg h
 
 lemma forall_update_iff (f : ∀a, β a) {a : α} {b : β a} (p : ∀a, β a → Prop) :
   (∀ x, p x (update f a b x)) ↔ p a b ∧ ∀ x, x ≠ a → p x (f x) :=
-by have h1 : (∀ x, p x (update f a b x)) ↔ ∀ x, (x = a ∨ x ≠ a) → p x (update f a b x) :=
-     by simp only [Classical.em]
-        have h4: ∀ (x : α), ((True → p x (update f a b x)) ↔ p x (update f a b x)) :=
-          by intro x; rw [forall_const]
-        rw [forall_congr h4]
-   have h3 : (∀ x, (x = a ∨ x ≠ a) → p x (update f a b x)) ↔ p a b ∧ ∀ x, x ≠ a → p x (f x) :=
-     by simp [or_imp_distrib, forall_and_distrib]
-        admit
-   rw [h1, h3]
+Iff.intro
+  (by intro h
+      have h1 := h a
+      have h2 : update f a b a = b := update_same _ _ _
+      rw [h2] at h1
+      refine ⟨h1, ?_⟩
+      intro x hx
+      have h3 := update_noteq hx b f
+      rw [←h3]
+      exact h x)
+  (by intro ⟨hp,h⟩ x
+      have h1 : x = a ∨ x ≠ a := Classical.em _
+      match h1 with
+      | Or.inl he => rw [he, update_same]
+                     exact hp
+      | Or.inr hne => have h4 := update_noteq hne b f
+                      rw [h4]
+                      exact h x hne)
 
 lemma update_eq_iff {a : α} {b : β a} {f g : ∀ a, β a} :
   update f a b = g ↔ b = g a ∧ ∀ x, x ≠ a -> f x = g x :=
