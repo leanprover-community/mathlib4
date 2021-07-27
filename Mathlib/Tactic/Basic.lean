@@ -83,11 +83,10 @@ macro_rules
   | `(tactic| byContra) => `(tactic| (apply Classical.byContradiction; intro))
   | `(tactic| byContra $e) => `(tactic| (apply Classical.byContradiction; intro $e))
 
-syntax (name := guardExprEq) "guardExprEq " term " := " term : tactic
-@[tactic guardExprEq] def evalGuardExprEq : Lean.Elab.Tactic.Tactic := fun stx => do
-  let r ← elabTerm stx[1] none
-  let p ← elabTerm stx[3] none
-  if not (r == p) then throwError m!"failed"
+elab "guardExprEq " r:term " := " p:term : tactic => do
+  let r ← elabTerm r none
+  let p ← elabTerm p none
+  if not (r == p) then throwError "failed: {r} != {p}"
 
 syntax (name := guardTarget) "guardTarget" term : tactic
 @[tactic guardTarget] def evalGuardTarget : Lean.Elab.Tactic.Tactic := fun stx => do
