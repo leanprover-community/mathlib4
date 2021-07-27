@@ -8,7 +8,7 @@ import Mathlib.Tactic.NoMatch
 import Mathlib.Tactic.Block
 import Lean.Elab.Command
 
-open Lean Parser.Tactic Elab Command
+open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
 syntax (name := «variables») "variables" (bracketedBinder)* : command
 
@@ -62,3 +62,41 @@ macro_rules
 macro_rules
   | `(tactic| byContra) => `(tactic| (apply Classical.byContradiction; intro))
   | `(tactic| byContra $e) => `(tactic| (apply Classical.byContradiction; intro $e))
+
+syntax (name := guardExprEq) "guardExprEq " term " := " term : tactic
+@[tactic guardExprEq] def evalGuardExprEq : Lean.Elab.Tactic.Tactic := fun stx => do
+  let r ← elabTerm stx[1] none
+  let p ← elabTerm stx[3] none
+  if not (r == p) then throwError m!"failed"
+
+syntax (name := guardTarget) "guardTarget" term : tactic
+@[tactic guardTarget] def evalGuardTarget : Lean.Elab.Tactic.Tactic := fun stx => do
+  let r ← elabTerm stx[1] none
+  let t ← getMainTarget
+  if not (r == t) then throwError m!"target of main goal is {t}"
+
+syntax (name := guardHyp) "guardHyp " ident (" : " term)? (" := " term)? : tactic
+@[tactic guardHyp] unsafe def evalGuardHyp : Lean.Elab.Tactic.Tactic := fun stx =>
+  match stx with
+  | `(tactic| guardHyp $h $[: $ty]? $[:= $val]?) => do
+    withMainContext do
+      let fvarid ← getFVarId h
+      let lDecl ←
+        match (← getLCtx).find? fvarid with
+        | none => throwError m!"hypothesis {h} not found"
+        | some lDecl => lDecl
+      match ty with
+      | none    => ()
+      | some p  =>
+        let e ← elabTerm p none
+        let hty ← instantiateMVars lDecl.type
+        if not (e == hty) then throwError m!"hypothesis {h} has type {lDecl.type.ctorName} not {e.ctorName}"
+      match lDecl.value?, val with
+      | none, some _        => throwError m!"{h} is not a let binding"
+      | some _, none        => throwError m!"{h} is a let binding"
+      | some hval, some val =>
+          let e ← elabTerm val none
+          let hval ← instantiateMVars hval
+          if not (e == hval) then throwError m!"hypothesis {h} has value {hval} not {e} {e == hval}"
+      | none, none          => ()
+  | _ => throwUnsupportedSyntax
