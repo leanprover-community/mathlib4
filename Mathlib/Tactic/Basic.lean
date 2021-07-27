@@ -58,7 +58,7 @@ macro_rules
 syntax (name := introv) "introv " (colGt ident)* : tactic
 @[tactic introv] partial def evalIntrov : Tactic := fun stx => do
   match stx with
-  | `(tactic| introv)                    => introsDep
+  | `(tactic| introv)                     => introsDep
   | `(tactic| introv $h:ident $hs:ident*) => evalTactic (← `(tactic| introv; intro $h:ident; introv $hs:ident*))
   | _ => throwUnsupportedSyntax
 where
@@ -74,6 +74,20 @@ where
     liftMetaTactic fun mvarId => do
       let (_, mvarId) ← Meta.intro1P mvarId
       pure [mvarId]
+
+macro "assumption'" : tactic => `(allGoals assumption)
+
+syntax (name := exacts) "exacts" (("[" term,* "]") <|> term) : tactic
+def evalExactsAux (s : Array Syntax) : TacticM Unit := do
+  for stx in s do
+    evalTactic (← `(tactic| exact $stx))
+  evalTactic (← `(tactic| done))
+
+@[tactic exacts] def evalExacts : Tactic := fun stx => do
+  match stx with
+  | `(tactic| exacts [$hs:term,*]) => evalExactsAux hs.getElems
+  | `(tactic| exacts $h:term)      => evalExactsAux #[h]
+  | _ => throwUnsupportedSyntax
 
 syntax (name := byContra) "byContra " (colGt ident)? : tactic
 macro_rules
@@ -96,7 +110,7 @@ syntax (name := guardTarget) "guardTarget" term : tactic
   if not (r == t) then throwError m!"target of main goal is {t}"
 
 syntax (name := guardHyp) "guardHyp " ident (" : " term)? (" := " term)? : tactic
-@[tactic guardHyp] unsafe def evalGuardHyp : Lean.Elab.Tactic.Tactic := fun stx =>
+@[tactic guardHyp] def evalGuardHyp : Lean.Elab.Tactic.Tactic := fun stx =>
   match stx with
   | `(tactic| guardHyp $h $[: $ty]? $[:= $val]?) => do
     withMainContext do
