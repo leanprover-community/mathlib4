@@ -55,6 +55,26 @@ macro_rules
   | `(tactic| transitivity) => `(tactic| apply Nat.lt_trans)
   | `(tactic| transitivity $e) => `(tactic| apply Nat.lt_trans (m := $e))
 
+syntax (name := introv) "introv " (colGt ident)* : tactic
+@[tactic introv] partial def evalIntrov : Tactic := fun stx => do
+  match stx with
+  | `(tactic| introv)                    => introsDep
+  | `(tactic| introv $h:ident $hs:ident*) => evalTactic (← `(tactic| introv; intro $h:ident; introv $hs:ident*))
+  | _ => throwUnsupportedSyntax
+where
+  introsDep : TacticM Unit := do
+    let t ← getMainTarget
+    match t with
+    | Expr.forallE _ _ e _ =>
+      if e.hasLooseBVars then
+        intro1PStep
+        introsDep
+    | _ => ()
+  intro1PStep : TacticM Unit :=
+    liftMetaTactic fun mvarId => do
+      let (_, mvarId) ← Meta.intro1P mvarId
+      pure [mvarId]
+
 syntax (name := byContra) "byContra " (colGt ident)? : tactic
 macro_rules
   | `(tactic| byContra) => `(tactic| (apply Decidable.byContradiction; intro))
@@ -90,13 +110,13 @@ syntax (name := guardHyp) "guardHyp " ident (" : " term)? (" := " term)? : tacti
       | some p  =>
         let e ← elabTerm p none
         let hty ← instantiateMVars lDecl.type
-        if not (e == hty) then throwError m!"hypothesis {h} has type {lDecl.type.ctorName} not {e.ctorName}"
+        if not (e == hty) then throwError m!"hypothesis {h} has type {lDecl.type}"
       match lDecl.value?, val with
       | none, some _        => throwError m!"{h} is not a let binding"
       | some _, none        => throwError m!"{h} is a let binding"
       | some hval, some val =>
           let e ← elabTerm val none
           let hval ← instantiateMVars hval
-          if not (e == hval) then throwError m!"hypothesis {h} has value {hval} not {e} {e == hval}"
+          if not (e == hval) then throwError m!"hypothesis {h} has value {hval}"
       | none, none          => ()
   | _ => throwUnsupportedSyntax
