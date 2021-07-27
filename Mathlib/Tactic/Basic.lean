@@ -21,7 +21,7 @@ syntax (name := «variables») "variables" (bracketedBinder)* : command
 macro mods:declModifiers "lemma" n:declId sig:declSig val:declVal : command =>
   `($mods:declModifiers theorem $n $sig $val)
 
-macro "exfalso" : tactic => `(apply False.elim)
+macro "exFalso" : tactic => `(apply False.elim)
 
 macro "_" : tactic => `({})
 
@@ -38,11 +38,11 @@ macro_rules
   | `(tactic| rwa $rws:rwRuleSeq $[$loc:location]?) =>
     `(tactic| rw $rws:rwRuleSeq $[$loc:location]?; assumption)
 
-macro "by_cases " h:ident ":" e:term : tactic =>
+macro "byCases " h:ident ":" e:term : tactic =>
   `(cases Decidable.em $e with | inl $h => ?pos | inr $h => ?neg)
 
 set_option hygiene false in
-macro "by_cases " e:term : tactic =>
+macro "byCases " e:term : tactic =>
   `(cases Decidable.em $e with | inl h => ?pos | inr h => ?neg)
 
 syntax "transitivity" (colGt term)? : tactic
