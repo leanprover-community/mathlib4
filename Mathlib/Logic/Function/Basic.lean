@@ -430,7 +430,7 @@ Iff.intro
       rw [←h3]
       exact h x)
   (by intro ⟨hp,h⟩ x
-      have h1 : x = a ∨ x ≠ a := Classical.em _
+      have h1 : x = a ∨ x ≠ a := Decidable.em _
       match h1 with
       | Or.inl he => rw [he, update_same]
                      exact hp
@@ -508,3 +508,174 @@ by funext b
    by_cases b = a <;> simp [update, h]
 
 end update
+
+section extend
+
+attribute [local instance] Classical.propDecidable
+
+variable {α β γ : Type _} {f : α → β}
+
+/-- `extend f g e'` extends a function `g : α → γ`
+along a function `f : α → β` to a function `β → γ`,
+by using the values of `g` on the range of `f`
+and the values of an auxiliary function `e' : β → γ` elsewhere.
+
+Mostly useful when `f` is injective. -/
+noncomputable def extend (f : α → β) (g : α → γ) (e' : β → γ) : β → γ :=
+λ b => if h : ∃ a, f a = b then g (Classical.choose h) else e' b
+
+lemma extend_def (f : α → β) (g : α → γ) (e' : β → γ) (b : β) [hd : Decidable (∃ a, f a = b)] :
+  extend f g e' b = if h : ∃ a, f a = b then g (Classical.choose h) else e' b :=
+  by rw [Subsingleton.elim hd] -- align the Decidable instances implicitly used by `dite`
+     exact rfl
+
+@[simp] lemma extend_apply (hf : injective f) (g : α → γ) (e' : β → γ) (a : α) :
+  extend f g e' (f a) = g a :=
+by simp only [extend_def, dif_pos, exists_apply_eq_apply]
+   exact congr_arg g (hf $ Classical.chooseSpec (exists_apply_eq_apply f a))
+
+@[simp] lemma extend_comp (hf : injective f) (g : α → γ) (e' : β → γ) :
+  extend f g e' ∘ f = g :=
+funext $ λ a => extend_apply hf g e' a
+
+end extend
+
+lemma uncurry_def {α β γ} (f : α → β → γ) : uncurry f = (λp => f p.1 p.2) :=
+rfl
+
+@[simp] lemma uncurry_apply_pair {α β γ} (f : α → β → γ) (x : α) (y : β) :
+  uncurry f (x, y) = f x y :=
+rfl
+
+@[simp] lemma curry_apply {α β γ} (f : α × β → γ) (x : α) (y : β) :
+  curry f x y = f (x, y) :=
+rfl
+
+section bicomp
+variable {α β γ δ ε : Type _}
+
+/-- Compose a binary function `f` with a pair of unary functions `g` and `h`.
+If both arguments of `f` have the same type and `g = h`, then `bicompl f g g = f on g`. -/
+def bicompl (f : γ → δ → ε) (g : α → γ) (h : β → δ) (a b) :=
+f (g a) (h b)
+
+/-- Compose an unary function `f` with a binary function `g`. -/
+def bicompr (f : γ → δ) (g : α → β → γ) (a b) :=
+f (g a b)
+
+-- Suggested local notation:
+local notation f  " ∘₂ " g => bicompr f g
+
+lemma uncurry_bicompr (f : α → β → γ) (g : γ → δ) :
+  uncurry (g ∘₂ f) = (g ∘ uncurry f) := rfl
+
+lemma uncurry_bicompl (f : γ → δ → ε) (g : α → γ) (h : β → δ) :
+  uncurry (bicompl f g h) = (uncurry f) ∘ (Prod.map g h) :=
+funext (by intro x; cases x; exact rfl)
+
+end bicomp
+
+section uncurry
+
+variable {α β γ δ : Type _}
+
+/-- Records a way to turn an element of `α` into a function from `β` to `γ`. The most generic use
+is to recursively uncurry. For instance `f : α → β → γ → δ` will be turned into
+`↿f : α × β × γ → δ`. One can also add instances for bundled maps. -/
+class has_uncurry (α : Type _) (β : outParam (Type _)) (γ : outParam (Type _)) := (uncurry : α → (β → γ))
+
+/- Uncurrying operator. The most generic use is to recursively uncurry. For instance
+`f : α → β → γ → δ` will be turned into `↿f : α × β × γ → δ`. One can also add instances
+for bundled maps. -/
+notation:max "↿" x:max => has_uncurry.uncurry x
+
+instance has_uncurry_base : has_uncurry (α → β) α β := ⟨id⟩
+
+instance has_uncurry_induction [has_uncurry β γ δ] : has_uncurry (α → β) (α × γ) δ :=
+⟨λ f p => ↿(f p.1) p.2⟩
+
+end uncurry
+
+/-- A function is involutive, if `f ∘ f = id`. -/
+def involutive {α} (f : α → α) : Prop := ∀ x, f (f x) = x
+
+-- TODO: involutive_iff_iter_2_eq_id
+
+namespace involutive
+variable {α : Sort u} {f : α → α} (h : involutive f)
+
+@[simp]
+lemma comp_self : f ∘ f = id := funext h
+
+protected lemma left_inverse : left_inverse f f := h
+protected lemma right_inverse : right_inverse f f := h
+
+protected lemma injective : injective f := h.left_inverse.injective
+protected lemma surjective : surjective f := λ x => ⟨f x, h x⟩
+protected lemma bijective : bijective f := ⟨h.injective, h.surjective⟩
+
+/-- Involuting an `ite` of an involuted value `x : α` negates the `Prop` condition in the `ite`. -/
+protected lemma ite_not (P : Prop) [Decidable P] (x : α) :
+  f (ite P x (f x)) = ite (¬ P) x (f x) :=
+by rw [apply_ite f, h, ite_not]
+
+/-- An involution commutes across an equality. Compare to `function.injective.eq_iff`. -/
+protected lemma eq_iff {x y : α} : f x = y ↔ x = f y :=
+Function.injective.eq_iff' (involutive.injective h) (h y)
+
+end involutive
+
+/-- The property of a binary function `f : α → β → γ` being injective.
+Mathematically this should be thought of as the corresponding function `α × β → γ` being injective.
+-/
+@[reducible] def injective2 {α β γ} (f : α → β → γ) : Prop :=
+∀ {a₁ a₂ b₁ b₂}, f a₁ b₁ = f a₂ b₂ → a₁ = a₂ ∧ b₁ = b₂
+
+namespace injective2
+variable {α β γ : Type _} (f : α → β → γ)
+
+protected lemma left (hf : injective2 f) {a₁ a₂ b₁ b₂} (h : f a₁ b₁ = f a₂ b₂) : a₁ = a₂ :=
+(hf h).1
+
+protected lemma right (hf : injective2 f) {a₁ a₂ b₁ b₂} (h : f a₁ b₁ = f a₂ b₂) : b₁ = b₂ :=
+(hf h).2
+
+lemma eq_iff (hf : injective2 f) {a₁ a₂ b₁ b₂} : f a₁ b₁ = f a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ :=
+⟨λ h => hf h, λ⟨h1, h2⟩ => congr_arg2 f h1 h2⟩
+
+end injective2
+
+section sometimes
+attribute [local instance] Classical.propDecidable
+
+/-- `sometimes f` evaluates to some value of `f`, if it exists. This function is especially
+interesting in the case where `α` is a proposition, in which case `f` is necessarily a
+constant function, so that `sometimes f = f a` for all `a`. -/
+noncomputable def sometimes {α β} [Nonempty β] (f : α → β) : β :=
+if h : Nonempty α then f (Classical.choice h) else Classical.choice ‹_›
+
+theorem sometimes_eq {p : Prop} {α} [Nonempty α] (f : p → α) (a : p) : sometimes f = f a :=
+dif_pos ⟨a⟩
+
+theorem sometimes_spec {p : Prop} {α} [Nonempty α]
+  (P : α → Prop) (f : p → α) (a : p) (h : P (f a)) : P (sometimes f) :=
+by rwa [sometimes_eq]
+
+end sometimes
+
+end Function
+
+/-- `s.piecewise f g` is the function equal to `f` on the set `s`, and to `g` on its complement. -/
+def set.piecewise {α : Type u} {β : α → Sort v} (s : Set α) (f g : ∀i, β i)
+  [∀j, Decidable (j ∈ s)] :
+  ∀i, β i :=
+λi => if i ∈ s then f i else g i
+
+-- TODO: eq_rec_on_bijective, eq_mp_bijective, eq_mpr_bijective, cast_biject, eq_rec_inj, cast_inj
+
+/-- A set of functions "separates points"
+if for each pair of distinct points there is a function taking different values on them. -/
+def set.separates_points {α β : Type _} (A : Set (α → β)) : Prop :=
+∀ {x y : α}, x ≠ y → ∃ f ∈ A, (f x : β) ≠ f y
+
+-- TODO: is_symm_op.flip_eq

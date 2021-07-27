@@ -354,6 +354,12 @@ section equality
 by cases h
    exact rfl
 
+lemma congr_arg2 {α β γ : Type _} (f : α → β → γ) {x x' : α} {y y' : β}
+  (hx : x = x') (hy : y = y') : f x y = f x' y' :=
+by subst hx
+   subst hy
+   exact rfl
+
 end equality
 
 @[simp] theorem forall_const (α : Sort _) [i : Nonempty α] : (α → b) ↔ b :=
@@ -385,6 +391,9 @@ by simp [and_comm]
 @[simp] theorem exists_eq_left' {p : α → Prop} {a' : α} : (∃ a, a' = a ∧ p a) ↔ p a' :=
 by simp [@eq_comm _ a']
 
+@[simp] theorem exists_apply_eq_apply {α β : Type _} (f : α → β) (a' : α) : ∃ a, f a = f a' :=
+⟨a', rfl⟩
+
 protected theorem decidable.not_imp_symm [Decidable a] (h : ¬a → b) (hb : ¬b) : a :=
 Decidable.by_contradiction $ hb ∘ h
 
@@ -403,6 +412,26 @@ exists_imp_distrib
 
 theorem forall_prop_of_true {p : Prop} {q : p → Prop} (h : p) : (∀ h' : p, q h') ↔ q h :=
 @forall_const (q h) p ⟨h⟩
+
+/-- A function applied to a `dite` is a `dite` of that function applied to each of the branches. -/
+lemma apply_dite {α β : Sort _} (f : α → β) (P : Prop) [Decidable P] (x : P → α) (y : ¬ P → α) :
+  f (dite P x y) = dite P (λ h => f (x h)) (λ h => f (y h)) :=
+by by_cases h : P <;> simp[h]
+
+/-- A function applied to a `int` is a `ite` of that function applied to each of the branches. -/
+lemma apply_ite {α β : Sort _} (f : α → β) (P : Prop) [Decidable P] (x y : α) :
+  f (ite P x y) = ite P (f x) (f y) :=
+apply_dite f P (λ _ => x) (λ _ => y)
+
+/-- Negation of the condition `P : Prop` in a `dite` is the same as swapping the branches. -/
+@[simp] lemma dite_not {α : Sort _} (P : Prop) [Decidable P]  (x : ¬ P → α) (y : ¬¬ P → α) :
+  dite (¬ P) x y = dite P (λ h => y (not_not_intro h)) x :=
+by by_cases h : P <;> simp[h]
+
+/-- Negation of the condition `P : Prop` in a `ite` is the same as swapping the branches. -/
+@[simp] lemma ite_not {α : Sort _} (P : Prop) [Decidable P] (x y : α) :
+ ite (¬ P) x y = ite P y x :=
+dite_not P (λ _ => x) (λ _ => y)
 
 open Classical
 
