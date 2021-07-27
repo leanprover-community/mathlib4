@@ -105,9 +105,7 @@ syntax (name := guardHyp) "guardHyp " ident (" : " term)? (" := " term)? : tacti
         match (← getLCtx).find? fvarid with
         | none => throwError m!"hypothesis {h} not found"
         | some lDecl => lDecl
-      match ty with
-      | none    => ()
-      | some p  =>
+      if let some p ← ty then
         let e ← elabTerm p none
         let hty ← instantiateMVars lDecl.type
         if not (e == hty) then throwError m!"hypothesis {h} has type {lDecl.type}"
