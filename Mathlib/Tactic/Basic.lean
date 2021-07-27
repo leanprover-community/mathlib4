@@ -54,3 +54,11 @@ set_option hygiene false in
 macro_rules
   | `(tactic| transitivity) => `(tactic| apply Nat.lt_trans)
   | `(tactic| transitivity $e) => `(tactic| apply Nat.lt_trans (m := $e))
+
+syntax (name := byContra) "byContra " (colGt ident)? : tactic
+macro_rules
+  | `(tactic| byContra) => `(tactic| (apply Decidable.byContradiction; intro))
+  | `(tactic| byContra $e) => `(tactic| (apply Decidable.byContradiction; intro $e))
+macro_rules
+  | `(tactic| byContra) => `(tactic| (apply Classical.byContradiction; intro))
+  | `(tactic| byContra $e) => `(tactic| (apply Classical.byContradiction; intro $e))
