@@ -68,6 +68,10 @@ lemma Or.symm : a ∨ b → b ∨ a
 
 def Iff.elim (f : (a → b) → (b → a) → c) (h : a ↔ b) : c := f h.1 h.2
 
+def Iff.elim_left : (a ↔ b) → a → b := Iff.mp
+
+def Iff.elim_right : (a ↔ b) → b → a := Iff.mpr
+
 lemma iff_comm : (a ↔ b) ↔ (b ↔ a) := ⟨Iff.symm, Iff.symm⟩
 
 lemma iff_iff_implies_and_implies : (a ↔ b) ↔ (a → b) ∧ (b → a) :=
@@ -76,6 +80,11 @@ lemma iff_iff_implies_and_implies : (a ↔ b) ↔ (a → b) ∧ (b → a) :=
 lemma Eq.to_iff : a = b → (a ↔ b) | rfl => Iff.rfl
 
 lemma neq_of_not_iff : ¬(a ↔ b) → a ≠ b := mt Eq.to_iff
+
+lemma not_iff_not_of_iff (h₁ : a ↔ b) : ¬ a ↔ ¬ b :=
+Iff.intro
+  (λ (hna : ¬ a) (hb : b) => hna (Iff.elim_right h₁ hb))
+  (λ (hnb : ¬ b) (ha : a) => hnb (Iff.elim_left h₁ ha))
 
 lemma of_iff_true (h : a ↔ True) : a := h.2 ⟨⟩
 
@@ -264,6 +273,10 @@ def Decidable.by_contradiction := @byContradiction
 def Decidable.of_not_not := @ofNotNot
 
 lemma Decidable.not_and [Decidable p] [Decidable q] : ¬ (p ∧ q) ↔ ¬ p ∨ ¬ q := notAndIffOrNot _ _
+
+def decidable_of_decidable_of_iff {p q : Prop} (hp : Decidable p) (h : p ↔ q) : Decidable q :=
+if hp : p then isTrue (Iff.mp h hp)
+else isFalse (Iff.mp (not_iff_not_of_iff h) hp)
 
 @[inline] def Or.by_cases [Decidable p] (h : p ∨ q) (h₁ : p → α) (h₂ : q → α) : α :=
 if hp : p then h₁ hp else h₂ (h.resolve_left hp)
