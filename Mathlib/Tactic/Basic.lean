@@ -75,20 +75,23 @@ where
       let (_, mvarId) ← Meta.intro1P mvarId
       pure [mvarId]
 
+example : ∀ a b : Nat, a = b → b = a := by
+  introv h
+  exact h.symm
+
 macro "assumption'" : tactic => `(allGoals assumption)
 
-syntax (name := exacts) "exacts" (("[" term,* "]") <|> term) : tactic
-def evalExactsAux (s : Array Syntax) : TacticM Unit := do
-  for stx in s do
+elab "exacts" "[" hs:term,* "]" : tactic => do
+  for stx in hs.getElems do
     evalTactic (← `(tactic| exact $stx))
   evalTactic (← `(tactic| done))
 
-@[tactic exacts] def evalExacts : Tactic := fun stx => do
-  match stx with
-  | `(tactic| exacts [$hs:term,*]) => evalExactsAux hs.getElems
-  | `(tactic| exacts $h:term)      => evalExactsAux #[h]
-  | _ => throwUnsupportedSyntax
+example (n : Nat) : n = n := by
+  induction n
+  exacts [rfl, rfl]
+  exacts []
 
+-- TODO: Target is a not
 syntax (name := byContra) "byContra " (colGt ident)? : tactic
 macro_rules
   | `(tactic| byContra) => `(tactic| (apply Decidable.byContradiction; intro))
@@ -97,16 +100,16 @@ macro_rules
   | `(tactic| byContra) => `(tactic| (apply Classical.byContradiction; intro))
   | `(tactic| byContra $e) => `(tactic| (apply Classical.byContradiction; intro $e))
 
+
 elab "guardExprEq " r:term " := " p:term : tactic => do
   let r ← elabTerm r none
   let p ← elabTerm p none
   if not (r == p) then throwError "failed: {r} != {p}"
 
-syntax (name := guardTarget) "guardTarget" term : tactic
-@[tactic guardTarget] def evalGuardTarget : Lean.Elab.Tactic.Tactic := fun stx => do
-  let r ← elabTerm stx[1] none
+elab "guardTarget" r:term : tactic => do
+  let r ← elabTerm r none
   let t ← getMainTarget
-  if not (r == t) then throwError m!"target of main goal is {t}"
+  if not (← isDefEq r t) then throwError m!"target of main goal is {t}"
 
 syntax (name := guardHyp) "guardHyp " ident (" : " term)? (" := " term)? : tactic
 @[tactic guardHyp] def evalGuardHyp : Lean.Elab.Tactic.Tactic := fun stx =>
@@ -121,13 +124,21 @@ syntax (name := guardHyp) "guardHyp " ident (" : " term)? (" := " term)? : tacti
       if let some p ← ty then
         let e ← elabTerm p none
         let hty ← instantiateMVars lDecl.type
-        if not (e == hty) then throwError m!"hypothesis {h} has type {lDecl.type}"
+        if not (← isDefEq e hty) then throwError m!"hypothesis {h} has type {lDecl.type}"
       match lDecl.value?, val with
       | none, some _        => throwError m!"{h} is not a let binding"
       | some _, none        => throwError m!"{h} is a let binding"
       | some hval, some val =>
           let e ← elabTerm val none
           let hval ← instantiateMVars hval
-          if not (e == hval) then throwError m!"hypothesis {h} has value {hval}"
+          if not (← isDefEq e hval) then throwError m!"hypothesis {h} has value {hval}"
       | none, none          => ()
   | _ => throwUnsupportedSyntax
+
+example (n : Nat) : Nat := by
+  guardHyp n : Nat
+  let m : Nat := 1
+  guardHyp m := 1
+  guardHyp m : Nat := 1
+  guardTarget Nat
+  exact 0
