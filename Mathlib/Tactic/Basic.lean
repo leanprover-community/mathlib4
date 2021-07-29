@@ -101,6 +101,7 @@ macro_rules
   | `(tactic| byContra $e) => `(tactic| (apply Classical.byContradiction; intro $e))
 
 
+--TODO : which expr equality to use?
 elab "guardExprEq " r:term " := " p:term : tactic => do
   let r ← elabTerm r none
   let p ← elabTerm p none
@@ -142,3 +143,9 @@ example (n : Nat) : Nat := by
   guardHyp m : Nat := 1
   guardTarget Nat
   exact 0
+
+elab "matchTarget" t:term : tactic  => do
+  withMainContext do
+    let (val) ← elabTerm t (← inferType (← getMainTarget))
+    if not (← isDefEq val (← getMainTarget)) then
+      throwError "failed"
