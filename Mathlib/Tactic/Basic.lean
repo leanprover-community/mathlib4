@@ -91,16 +91,6 @@ example (n : Nat) : n = n := by
   exacts [rfl, rfl]
   exacts []
 
--- TODO: Target is a not
-syntax (name := byContra) "byContra " (colGt ident)? : tactic
-macro_rules
-  | `(tactic| byContra) => `(tactic| (apply Decidable.byContradiction; intro))
-  | `(tactic| byContra $e) => `(tactic| (apply Decidable.byContradiction; intro $e))
-macro_rules
-  | `(tactic| byContra) => `(tactic| (apply Classical.byContradiction; intro))
-  | `(tactic| byContra $e) => `(tactic| (apply Classical.byContradiction; intro $e))
-
-
 --TODO : which expr equality to use?
 elab "guardExprEq " r:term " := " p:term : tactic => do
   let r ← elabTerm r none
@@ -149,3 +139,29 @@ elab "matchTarget" t:term : tactic  => do
     let (val) ← elabTerm t (← inferType (← getMainTarget))
     if not (← isDefEq val (← getMainTarget)) then
       throwError "failed"
+
+syntax (name := byContra) "byContra " (colGt ident)? : tactic
+macro_rules
+  | `(tactic| byContra) => `(tactic| (matchTarget Not _; intro))
+  | `(tactic| byContra $e) => `(tactic| (matchTarget Not _; intro $e))
+macro_rules
+  | `(tactic| byContra) => `(tactic| (apply Decidable.byContradiction; intro))
+  | `(tactic| byContra $e) => `(tactic| (apply Decidable.byContradiction; intro $e))
+macro_rules
+  | `(tactic| byContra) => `(tactic| (apply Classical.byContradiction; intro))
+  | `(tactic| byContra $e) => `(tactic| (apply Classical.byContradiction; intro $e))
+
+example (a b : Nat) : a ≠ b → ¬ a = b := by
+  intros
+  byContra H
+  contradiction
+
+example (a b : Nat) : ¬¬ a = b → a = b := by
+  intros
+  byContra H
+  contradiction
+
+example (p q : Prop) : ¬¬ p → p := by
+  intros
+  byContra H
+  contradiction
