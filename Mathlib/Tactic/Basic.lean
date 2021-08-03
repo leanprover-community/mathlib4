@@ -165,3 +165,14 @@ example (p q : Prop) : ¬¬ p → p := by
   intros
   byContra H
   contradiction
+
+macro "sorry" : tactic => `(exact sorry)
+
+elab "iterate " n:num seq:tacticSeq : tactic => do
+  for i in [:n.toNat] do
+    evalTactic seq
+
+example (n m : Nat) : Unit := by
+  cases n
+  cases m
+  iterate 3 exact ()
