@@ -198,3 +198,29 @@ example (p q r s : Prop) : p → q → r → s → (p ∧ q) ∧ (r ∧ s ∧ p)
   intros
   repeat' constructor
   repeat' assumption
+
+elab "anyGoals " seq:tacticSeq : tactic => do
+  let mvarIds ← getGoals
+  let mut mvarIdsNew := #[]
+  let mut anySuccess := false
+  for mvarId in mvarIds do
+    unless (← isExprMVarAssigned mvarId) do
+      setGoals [mvarId]
+      try
+        evalTactic seq
+        mvarIdsNew := mvarIdsNew ++ (← getUnsolvedGoals)
+        anySuccess := true
+      catch ex =>
+        mvarIdsNew := mvarIdsNew.push mvarId
+  if not anySuccess then
+    throwError "failed on all goals"
+  setGoals mvarIdsNew.toList
+
+example (p q : Prop) : p → q → (p ∧ q) ∧ (p ∧ q ∧ p) := by
+  intros
+  split
+  failIfSuccess anyGoals assumption
+  allGoals split
+  anyGoals assumption
+  split
+  anyGoals assumption
