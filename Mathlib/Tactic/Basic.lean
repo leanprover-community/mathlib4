@@ -179,3 +179,22 @@ example (n m : Nat) : Unit := by
   cases n
   cases m
   iterate 3 exact ()
+
+partial def repeat'Aux (seq : Syntax) : List MVarId → TacticM Unit
+| []    => ()
+| g::gs => do
+    try
+      let subgs ← evalTacticAt seq g
+      appendGoals subgs
+      repeat'Aux seq (subgs ++ gs)
+    catch _ =>
+      repeat'Aux seq gs
+
+elab "repeat' " seq:tacticSeq : tactic => do
+  let gs ← getGoals
+  repeat'Aux seq gs
+
+example (p q r s : Prop) : p → q → r → s → (p ∧ q) ∧ (r ∧ s ∧ p) ∧ (p ∧ r ∧ q) := by
+  intros
+  repeat' constructor
+  repeat' assumption
