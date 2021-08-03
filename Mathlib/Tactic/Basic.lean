@@ -21,7 +21,7 @@ syntax (name := «variables») "variables" (bracketedBinder)* : command
 macro mods:declModifiers "lemma" n:declId sig:declSig val:declVal : command =>
   `($mods:declModifiers theorem $n $sig $val)
 
-macro "exFalso" : tactic => `(apply False.elim)
+macro "exfalso" : tactic => `(apply False.elim)
 
 macro "_" : tactic => `({})
 
