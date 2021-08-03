@@ -100,7 +100,8 @@ elab "guardExprEq " r:term " := " p:term : tactic => do
 elab "guardTarget" r:term : tactic => do
   let r ← elabTerm r none
   let t ← getMainTarget
-  if not (← isDefEq r t) then throwError m!"target of main goal is {t}"
+  let t ← t.consumeMData
+  if not (r == t) then throwError m!"target of main goal is {t}"
 
 syntax (name := guardHyp) "guardHyp " ident (" : " term)? (" := " term)? : tactic
 @[tactic guardHyp] def evalGuardHyp : Lean.Elab.Tactic.Tactic := fun stx =>
@@ -115,14 +116,16 @@ syntax (name := guardHyp) "guardHyp " ident (" : " term)? (" := " term)? : tacti
       if let some p ← ty then
         let e ← elabTerm p none
         let hty ← instantiateMVars lDecl.type
-        if not (← isDefEq e hty) then throwError m!"hypothesis {h} has type {lDecl.type}"
+        let hty ← hty.consumeMData
+        if not (e == hty) then throwError m!"hypothesis {h} has type {hty}"
       match lDecl.value?, val with
       | none, some _        => throwError m!"{h} is not a let binding"
       | some _, none        => throwError m!"{h} is a let binding"
       | some hval, some val =>
           let e ← elabTerm val none
           let hval ← instantiateMVars hval
-          if not (← isDefEq e hval) then throwError m!"hypothesis {h} has value {hval}"
+          let hval ← hval.consumeMData
+          if not (e == hval) then throwError m!"hypothesis {h} has value {hval}"
       | none, none          => ()
   | _ => throwUnsupportedSyntax
 
