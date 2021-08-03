@@ -349,6 +349,11 @@ Iff.intro (λ h ha hb => h ⟨ha, hb⟩) (λ h ⟨ha, hb⟩ => h ha hb)
 
 section equality
 
+variable {α : Sort _} {a b : α}
+
+@[simp] theorem heq_iff_eq : HEq a b ↔ a = b :=
+⟨eq_of_heq, heq_of_eq⟩
+
 @[simp] lemma eq_rec_constant {α : Sort _} {a a' : α} {β : Sort _} (y : β) (h : a = a') :
   (@Eq.rec α a (λ α _ => β) y a' h) = y :=
 by cases h
