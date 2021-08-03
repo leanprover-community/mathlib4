@@ -68,6 +68,10 @@ lemma Or.symm : a ∨ b → b ∨ a
 
 def Iff.elim (f : (a → b) → (b → a) → c) (h : a ↔ b) : c := f h.1 h.2
 
+def Iff.elim_left : (a ↔ b) → a → b := Iff.mp
+
+def Iff.elim_right : (a ↔ b) → b → a := Iff.mpr
+
 lemma iff_comm : (a ↔ b) ↔ (b ↔ a) := ⟨Iff.symm, Iff.symm⟩
 
 lemma iff_iff_implies_and_implies : (a ↔ b) ↔ (a → b) ∧ (b → a) :=
@@ -76,6 +80,11 @@ lemma iff_iff_implies_and_implies : (a ↔ b) ↔ (a → b) ∧ (b → a) :=
 lemma Eq.to_iff : a = b → (a ↔ b) | rfl => Iff.rfl
 
 lemma neq_of_not_iff : ¬(a ↔ b) → a ≠ b := mt Eq.to_iff
+
+lemma not_iff_not_of_iff (h₁ : a ↔ b) : ¬ a ↔ ¬ b :=
+Iff.intro
+  (λ (hna : ¬ a) (hb : b) => hna (Iff.elim_right h₁ hb))
+  (λ (hnb : ¬ b) (ha : a) => hnb (Iff.elim_left h₁ ha))
 
 lemma of_iff_true (h : a ↔ True) : a := h.2 ⟨⟩
 
@@ -265,6 +274,10 @@ def Decidable.of_not_not := @ofNotNot
 
 lemma Decidable.not_and [Decidable p] [Decidable q] : ¬ (p ∧ q) ↔ ¬ p ∨ ¬ q := notAndIffOrNot _ _
 
+def decidable_of_decidable_of_iff {p q : Prop} (hp : Decidable p) (h : p ↔ q) : Decidable q :=
+if hp : p then isTrue (Iff.mp h hp)
+else isFalse (Iff.mp (not_iff_not_of_iff h) hp)
+
 @[inline] def Or.by_cases [Decidable p] (h : p ∨ q) (h₁ : p → α) (h₂ : q → α) : α :=
 if hp : p then h₁ hp else h₂ (h.resolve_left hp)
 
@@ -347,6 +360,29 @@ Iff.intro (λ h ha hb => h ⟨ha, hb⟩) (λ h ⟨ha, hb⟩ => h ha hb)
 
 @[simp] theorem not_and : ¬ (a ∧ b) ↔ (a → ¬ b) := and_imp
 
+section equality
+
+variable {α : Sort _} {a b : α}
+
+@[simp] theorem heq_iff_eq : HEq a b ↔ a = b :=
+⟨eq_of_heq, heq_of_eq⟩
+
+@[simp] lemma eq_rec_constant {α : Sort _} {a a' : α} {β : Sort _} (y : β) (h : a = a') :
+  (@Eq.rec α a (λ α _ => β) y a' h) = y :=
+by cases h
+   exact rfl
+
+lemma congr_arg2 {α β γ : Type _} (f : α → β → γ) {x x' : α} {y y' : β}
+  (hx : x = x') (hy : y = y') : f x y = f x' y' :=
+by subst hx
+   subst hy
+   exact rfl
+
+end equality
+
+@[simp] theorem forall_const (α : Sort _) [i : Nonempty α] : (α → b) ↔ b :=
+⟨i.elim, λ hb x => hb⟩
+
 @[simp] theorem exists_imp_distrib {p : α → Prop} : ((∃ x, p x) → b) ↔ ∀ x, p x → b :=
 ⟨λ h x hpx => h ⟨x, hpx⟩, λ h ⟨x, hpx⟩ => h x hpx⟩
 
@@ -373,6 +409,9 @@ by simp [and_comm]
 @[simp] theorem exists_eq_left' {p : α → Prop} {a' : α} : (∃ a, a' = a ∧ p a) ↔ p a' :=
 by simp [@eq_comm _ a']
 
+@[simp] theorem exists_apply_eq_apply {α β : Type _} (f : α → β) (a' : α) : ∃ a, f a = f a' :=
+⟨a', rfl⟩
+
 protected theorem decidable.not_imp_symm [Decidable a] (h : ¬a → b) (hb : ¬b) : a :=
 Decidable.by_contradiction $ hb ∘ h
 
@@ -388,6 +427,29 @@ protected theorem Decidable.not_forall {p : α → Prop}
 
 @[simp] theorem not_exists {p : α → Prop} : (¬ ∃ x, p x) ↔ ∀ x, ¬ p x :=
 exists_imp_distrib
+
+theorem forall_prop_of_true {p : Prop} {q : p → Prop} (h : p) : (∀ h' : p, q h') ↔ q h :=
+@forall_const (q h) p ⟨h⟩
+
+/-- A function applied to a `dite` is a `dite` of that function applied to each of the branches. -/
+lemma apply_dite {α β : Sort _} (f : α → β) (P : Prop) [Decidable P] (x : P → α) (y : ¬ P → α) :
+  f (dite P x y) = dite P (λ h => f (x h)) (λ h => f (y h)) :=
+by by_cases h : P <;> simp[h]
+
+/-- A function applied to a `int` is a `ite` of that function applied to each of the branches. -/
+lemma apply_ite {α β : Sort _} (f : α → β) (P : Prop) [Decidable P] (x y : α) :
+  f (ite P x y) = ite P (f x) (f y) :=
+apply_dite f P (λ _ => x) (λ _ => y)
+
+/-- Negation of the condition `P : Prop` in a `dite` is the same as swapping the branches. -/
+@[simp] lemma dite_not {α : Sort _} (P : Prop) [Decidable P]  (x : ¬ P → α) (y : ¬¬ P → α) :
+  dite (¬ P) x y = dite P (λ h => y (not_not_intro h)) x :=
+by by_cases h : P <;> simp[h]
+
+/-- Negation of the condition `P : Prop` in a `ite` is the same as swapping the branches. -/
+@[simp] lemma ite_not {α : Sort _} (P : Prop) [Decidable P] (x y : α) :
+ ite (¬ P) x y = ite P y x :=
+dite_not P (λ _ => x) (λ _ => y)
 
 open Classical
 
