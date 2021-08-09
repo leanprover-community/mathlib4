@@ -19,6 +19,8 @@ class Semiring (R : Type u) extends Monoid R, AddCommMonoid R, Numeric R where
   add_mul (a b c : R) : (a + b) * c = a * c + b * c
   ofNat_add (a b : Nat) : ofNat (a + b) = ofNat a + ofNat b
   ofNat_mul (a b : Nat) : ofNat (a * b) = ofNat a * ofNat b
+  ofNat_one : ofNat (nat_lit 1) = One.one
+  ofNat_zero : ofNat (nat_lit 0) = Zero.zero
 
 instance (R : Type u) [Semiring R] : MonoidWithZero R where
   __ := ‹Semiring R›
@@ -34,6 +36,8 @@ class Ring (R : Type u) extends Monoid R, AddCommGroup R, Numeric R where
   add_mul (a b c : R) : (a + b) * c = a * c + b * c
   ofNat_add (a b : Nat) : ofNat (a + b) = ofNat a + ofNat b
   ofNat_mul (a b : Nat) : ofNat (a * b) = ofNat a * ofNat b
+  ofNat_one : ofNat (nat_lit 1) = One.one
+  ofNat_zero : ofNat (nat_lit 0) = Zero.zero
 
 instance (R : Type u) [Ring R] : Semiring R where
   zero_mul := λ a => by rw [← add_right_eq_self (a := 0 * a), ← Ring.add_mul, zero_add]
@@ -46,4 +50,3 @@ class CommRing (R : Type u) extends Ring R where
 instance (R : Type u) [CommRing R] : CommSemiring R where
   __ := inferInstanceAs (Semiring R)
   __ := ‹CommRing R›
-
