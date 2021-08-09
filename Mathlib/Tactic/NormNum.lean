@@ -23,8 +23,7 @@ theorem ofNat_mul {α} [Semiring α] : (a b : α) → (a' b' c : Nat) →
   a = OfNat.ofNat a' → b = OfNat.ofNat b' → a' * b' = c → a * b = OfNat.ofNat c
 | _, _, _, _, _, rfl, rfl, rfl => (Semiring.ofNat_mul _ _).symm
 
-
-partial def eval : Expr → MetaM (Expr × Expr)
+partial def evalAux : Expr → MetaM (Expr × Expr)
 | e => e.withApp fun f args => do
   if f.isConstOf ``HAdd.hAdd then
     evalB ``NormNum.ofNat_add (·+·) args
@@ -56,8 +55,8 @@ where
       let Level.succ u _ ← getLevel α | throwError "fail"
       let nα ← synthInstance (mkApp (mkConst ``Numeric [u]) α)
       let sα ← synthInstance (mkApp (mkConst ``Semiring [u]) α)
-      let (a', pa) ← eval a
-      let (b', pb) ← eval b
+      let (a', pa) ← evalAux a
+      let (b', pb) ← evalAux b
       let la := Expr.getRevArg! a' 1
       let some na ← la.natLit? | throwError "fail"
       let lb := Expr.getRevArg! b' 1
@@ -67,6 +66,28 @@ where
       pure (c, mkApp10 (mkConst name [u]) α sα a b la lb lc pa pb (← mkEqRefl lc))
     else throwError "fail"
 
+partial def eval (e : Expr) : MetaM (Expr × Expr) := do
+  let (e', p) ← evalAux e
+  e'.withApp fun f args => do
+    if f.isConstOf ``OfNat.ofNat then
+      let #[α,ln,_] ← args | throwError "fail"
+      let some n ← ln.natLit? | throwError "fail"
+      if n = 0 then
+        let Level.succ u _ ← getLevel α | throwError "fail"
+        let sα ← synthInstance (mkApp (mkConst ``Semiring [u]) α)
+        let nα ← synthInstance (mkApp2 (mkConst ``OfNat [u]) α (mkNatLit 0))
+        let e'' ←  mkApp3 (mkConst ``OfNat.ofNat [u]) α (mkNatLit 0) nα
+        let p' ← mkEqTrans p (mkApp2 (mkConst ``Semiring.ofNat_zero [u]) α sα)
+        return (e'',p')
+      else if n = 1 then
+        let Level.succ u _ ← getLevel α | throwError "fail"
+        let sα ← synthInstance (mkApp (mkConst ``Semiring [u]) α)
+        let nα ← synthInstance (mkApp2 (mkConst ``OfNat [u]) α (mkNatLit n))
+        let e'' ←  mkApp3 (mkConst ``OfNat.ofNat [u]) α (mkNatLit 1) nα
+        let p' ← mkEqTrans p (mkApp2 (mkConst ``Semiring.ofNat_one [u]) α sα)
+        return (e'',p')
+      else pure (e',p)
+    else pure (e', p)
 end NormNum
 end Meta
 
@@ -86,6 +107,6 @@ end Lean
 
 -- set_option pp.all true
 variable (α) [Semiring α]
-example : (2 + 2 + 2 + 1 : α) = 7 := by normNum
-example : (0 + (2 + 3) + 7 : α) = 12 := by normNum
+example : (1 + 0 : α) = 1 := by normNum
+example : (0 + (2 + 3) + 1 : α) = 6 := by normNum
 example : (70 * (33 + 2) : α) = 2450 := by normNum
