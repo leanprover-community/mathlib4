@@ -26,7 +26,6 @@ theorem ofNat_mul {α} [Semiring α] : (a b : α) → (a' b' c : Nat) →
 
 partial def eval : Expr → MetaM (Expr × Expr)
 | e => e.withApp fun f args => do
-  println! "X1"
   if f.isConstOf ``HAdd.hAdd then
     evalB ``NormNum.ofNat_add (·+·) args
   else if f.isConstOf ``HMul.hMul then
