@@ -9,10 +9,10 @@ import Mathlib.Algebra.Ring.Basic
 namespace Lean
 namespace Meta
 
-instance Semiring.OfNat [Semiring α] : OfNat α n := Numeric.OfNat
+instance (priority := high) Semiring.OfNat [Semiring α] : OfNat α n := Numeric.OfNat
 
 def mkOfNatLit (u : Level) (α sα n : Expr) : Expr :=
-  let inst := mkApp3 (mkConst ``Semiring.OfNat [u]) α sα n
+  let inst := mkApp3 (mkConst ``Semiring.OfNat [u]) α n sα
   mkApp3 (mkConst ``OfNat.ofNat [u]) α n inst
 
 namespace NormNum
@@ -67,9 +67,8 @@ open Meta Elab Tactic
 
 end Lean
 
-/-
+
 variable (α) [Semiring α]
 example : (2 + 2 + 2 : α) = 6 := by normNum
 example : (0 + (2 + 3) + 7 : α) = 12 := by normNum
 example : (70 * (33 + 2) : α) = 2450 := by normNum
--/
