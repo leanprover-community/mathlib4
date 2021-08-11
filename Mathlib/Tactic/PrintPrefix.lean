@@ -47,9 +47,9 @@ the namespace `foo`.
 -/
 @[commandElab printPrefix] def elabPrintPrefix : CommandElab
 | `(#print prefix%$tk $name:ident) => do
-  let name := name.getId
+  let nameId := name.getId
   liftTermElabM none do
-    let mut msg ← find "" fun cinfo => name.isPrefixOf cinfo.name
+    let mut msg ← find "" fun cinfo => nameId.isPrefixOf cinfo.name
     if msg.isEmpty then
       if let [name] ← resolveGlobalConst name then
         msg ← find msg fun cinfo => name.isPrefixOf cinfo.name
