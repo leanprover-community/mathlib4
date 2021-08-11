@@ -61,14 +61,14 @@ partial def evalAux : Expr → MetaM (Expr × Expr)
       let Level.succ u _ ← getLevel α | throwError "fail"
       let nα ← synthInstance (mkApp (mkConst ``Numeric [u]) α)
       let sα ← synthInstance (mkApp (mkConst ``Semiring [u]) α)
-      let e ← mkOfNatLit u α nα (mkNatLit 0)
+      let e ← mkOfNatLit u α nα (mkRawNatLit 0)
       let p ← mkEqSymm (mkApp2 (mkConst ``Semiring.ofNat_zero [u]) α sα)
       return (e,p)
     else if n = 1 then
       let Level.succ u _ ← getLevel α | throwError "fail"
       let nα ← synthInstance (mkApp (mkConst ``Numeric [u]) α)
       let sα ← synthInstance (mkApp (mkConst ``Semiring [u]) α)
-      let e ← mkOfNatLit u α nα (mkNatLit 1)
+      let e ← mkOfNatLit u α nα (mkRawNatLit 1)
       let p ← mkEqSymm (mkApp2 (mkConst ``Semiring.ofNat_one [u]) α sα)
       return (e,p)
     else pure (e, ← mkEqRefl e)
@@ -87,7 +87,7 @@ where
       let some na ← la.natLit? | throwError "fail"
       let lb := Expr.getRevArg! b' 1
       let some nb ← lb.natLit? | throwError "fail"
-      let lc := mkNatLit (f na nb)
+      let lc := mkRawNatLit (f na nb)
       let c := mkOfNatLit u α nα lc
       pure (c, mkApp10 (mkConst name [u]) α sα a b la lb lc pa pb (← mkEqRefl lc))
     else throwError "fail"
@@ -101,7 +101,7 @@ where
       let la := Expr.getRevArg! a' 1
       let some na ← la.natLit? | throwError "fail"
       let some nn ← n.numeral? | throwError "fail"
-      let lc := mkNatLit (f na nn)
+      let lc := mkRawNatLit (f na nn)
       let c := mkOfNatLit u α nα lc
       pure (c, mkApp8 (mkConst name [u]) α sα a n la lc pa (← mkEqRefl lc))
     else throwError "fail"
@@ -115,15 +115,15 @@ partial def eval (e : Expr) : MetaM (Expr × Expr) := do
       if n = 0 then
         let Level.succ u _ ← getLevel α | throwError "fail"
         let sα ← synthInstance (mkApp (mkConst ``Semiring [u]) α)
-        let nα ← synthInstance (mkApp2 (mkConst ``OfNat [u]) α (mkNatLit 0))
-        let e'' ←  mkApp3 (mkConst ``OfNat.ofNat [u]) α (mkNatLit 0) nα
+        let nα ← synthInstance (mkApp2 (mkConst ``OfNat [u]) α (mkRawNatLit 0))
+        let e'' ←  mkApp3 (mkConst ``OfNat.ofNat [u]) α (mkRawNatLit 0) nα
         let p' ← mkEqTrans p (mkApp2 (mkConst ``Semiring.ofNat_zero [u]) α sα)
         return (e'',p')
       else if n = 1 then
         let Level.succ u _ ← getLevel α | throwError "fail"
         let sα ← synthInstance (mkApp (mkConst ``Semiring [u]) α)
-        let nα ← synthInstance (mkApp2 (mkConst ``OfNat [u]) α (mkNatLit 1))
-        let e'' ←  mkApp3 (mkConst ``OfNat.ofNat [u]) α (mkNatLit 1) nα
+        let nα ← synthInstance (mkApp2 (mkConst ``OfNat [u]) α (mkRawNatLit 1))
+        let e'' ←  mkApp3 (mkConst ``OfNat.ofNat [u]) α (mkRawNatLit 1) nα
         let p' ← mkEqTrans p (mkApp2 (mkConst ``Semiring.ofNat_one [u]) α sα)
         return (e'',p')
       else pure (e',p)
