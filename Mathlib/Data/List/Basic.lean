@@ -202,7 +202,7 @@ Iff.intro
  (fun ⟨pa, al⟩ x o => o.elim (fun e => by rw [e]; exact pa) (al x))
 
 instance decidableMem [DecidableEq α] (a : α) : ∀ (l : List α), Decidable (a ∈ l)
-  | []     => isFalse notFalse
+  | []     => isFalse not_false
   | b :: l =>
     if h₁ : a = b then isTrue (Or.inl h₁)
     else match decidableMem a l with

@@ -299,7 +299,7 @@ sub_nat_nat (m - n) k = sub_nat_nat m (k + n) := by
 
 lemma sub_nat_nat_add (m n k : ℕ) : sub_nat_nat (m + n) k = ofNat m + sub_nat_nat n k :=
 by
-  have h := Nat.lt_or_le n k
+  have h := Nat.lt_or_ge n k
   cases h with
   | inl h' =>
     rw [sub_nat_nat_of_lt h']
@@ -318,7 +318,7 @@ by
 lemma sub_nat_nat_add_neg_succ_of_nat (m n k : ℕ) :
     sub_nat_nat m n + -[1+ k] = sub_nat_nat m (n + succ k) :=
 by
-  have h := Nat.lt_or_le m n
+  have h := Nat.lt_or_ge m n
   cases h with
   | inr h' =>
     rw [sub_nat_nat_of_le h']
@@ -422,7 +422,7 @@ by
   | zero =>
     simp [of_nat_zero, Int.zero_mul, Nat.zero_mul]
   | succ m =>
-    have h := Nat.lt_or_le n k
+    have h := Nat.lt_or_ge n k
     cases h with
     | inl h =>
       have h' : (succ m) * n < (succ m) * k := Nat.mul_lt_mul_of_pos_left h (Nat.succ_pos m)
@@ -447,14 +447,14 @@ lemma neg_of_nat_add : ∀ m n : ℕ, neg_of_nat m + neg_of_nat n = neg_of_nat (
 lemma neg_succ_of_nat_mul_sub_nat_nat (m n k : ℕ) :
   -[1+ m] * sub_nat_nat n k = sub_nat_nat (succ m * k) (succ m * n) :=
 by
-  have h := Nat.lt_or_le n k
+  have h := Nat.lt_or_ge n k
   cases h with
   | inl h =>
     have h' : succ m * n < succ m * k := Nat.mul_lt_mul_of_pos_left h (Nat.succ_pos m)
     rw [sub_nat_nat_of_lt h, sub_nat_nat_of_le (Nat.le_of_lt h')]
     simp [succ_pred_eq_of_pos (Nat.sub_pos_of_lt h), Nat.mul_sub_left_distrib]
   | inr h =>
-    cases Nat.lt_or_le k n with
+    cases Nat.lt_or_ge k n with
     | inl h' =>
 
       have h₁ : succ m * n > succ m * k := Nat.mul_lt_mul_of_pos_left h' (Nat.succ_pos m)

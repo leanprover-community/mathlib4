@@ -2,43 +2,28 @@ import Mathlib.Tactic.Basic
 
 -- TODO(Jeremy): where is the best place to put these?
 lemma EqIffBeqTrue [DecidableEq α] {a b : α} : a = b ↔ ((a == b) = true) :=
-⟨decideEqTrue, ofDecideEqTrue⟩
+⟨decide_eq_true, of_decide_eq_true⟩
 
 lemma NeqIffBeqFalse [DecidableEq α] {a b : α} : a ≠ b ↔ ((a == b) = false) :=
-⟨decideEqFalse, ofDecideEqFalse⟩
+⟨decide_eq_false, of_decide_eq_false⟩
 
 lemma decide_eq_true_iff (p : Prop) [Decidable p] : (decide p = true) ↔ p :=
-⟨ofDecideEqTrue, decideEqTrue⟩
+⟨of_decide_eq_true, decide_eq_true⟩
 
 lemma decide_eq_false_iff_not (p : Prop) [Decidable p] : (decide p = false) ↔ ¬ p :=
-⟨ofDecideEqFalse, decideEqFalse⟩
+⟨of_decide_eq_false, decide_eq_false⟩
 
-lemma optParam_eq (α : Sort u) (default : α) : optParam α default = α := rfl
-
-def not_false := notFalse
 def proof_irrel := @proofIrrel
 def congr_fun := @congrFun
 def congr_arg := @congrArg
-def of_eq_true := @ofEqTrue
 
 lemma not_of_eq_false {p : Prop} (h : p = False) : ¬p := fun hp => h ▸ hp
 
 lemma cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h₂ a := rfl
 
-def cast_eq := @castEq
-
 lemma Ne.def (a b : α) : (a ≠ b) = ¬ (a = b) := rfl
 
-def false_of_ne := @falseOfNe
-def ne_false_of_self := @neFalseOfSelf
-def ne_true_of_not := @neTrueOfNot
-def true_ne_false := trueNeFalse
-def eq_of_heq := @eqOfHEq
-def heq_of_eq := @heqOfEq
-def heq_of_heq_of_eq := @heqOfHEqOfEq
-def heq_of_eq_of_heq := @heqOfEqOfHEq
-def type_eq_of_heq := @typeEqOfHEq
-def eq_rec_heq := @eqRecHEq
+def eq_rec_heq := @eqRec_heq
 
 lemma heq_of_eq_rec_left {φ : α → Sort v} {a a' : α} {p₁ : φ a} {p₂ : φ a'} :
   (e : a = a') → (h₂ : Eq.rec (motive := fun a _ => φ a) p₁ e = p₂) → p₁ ≅ p₂
@@ -49,8 +34,6 @@ lemma heq_of_eq_rec_right {φ : α → Sort v} {a a' : α} {p₁ : φ a} {p₂ :
 | rfl, rfl => HEq.rfl
 
 lemma of_heq_true (h : a ≅ True) : a := of_eq_true (eq_of_heq h)
-
-def cast_heq := @castHEq
 
 def And.elim (f : a → b → α) (h : a ∧ b) : α := f h.1 h.2
 
@@ -73,9 +56,6 @@ def Iff.elim_left : (a ↔ b) → a → b := Iff.mp
 def Iff.elim_right : (a ↔ b) → b → a := Iff.mpr
 
 lemma iff_comm : (a ↔ b) ↔ (b ↔ a) := ⟨Iff.symm, Iff.symm⟩
-
-lemma iff_iff_implies_and_implies : (a ↔ b) ↔ (a → b) ∧ (b → a) :=
-  ⟨fun ⟨ha, hb⟩ => ⟨ha, hb⟩, fun ⟨ha, hb⟩ => ⟨ha, hb⟩⟩
 
 lemma Eq.to_iff : a = b → (a ↔ b) | rfl => Iff.rfl
 
@@ -152,18 +132,8 @@ lemma and_iff_left (hb : b) : a ∧ b ↔ a := ⟨And.left, fun ha => ⟨ha, hb�
 
 lemma and_iff_right (ha : a) : a ∧ b ↔ b := ⟨And.right, fun hb => ⟨ha, hb⟩⟩
 
-lemma and_true : a ∧ True ↔ a := and_iff_left ⟨⟩
-
-lemma true_and : True ∧ a ↔ a := and_iff_right ⟨⟩
-
-lemma and_false : a ∧ False ↔ False := iff_false_intro And.right
-
-lemma false_and : False ∧ a ↔ False := iff_false_intro And.left
-
 lemma and_not_self : ¬(a ∧ ¬a) | ⟨ha, hn⟩ => hn ha
 lemma not_and_self : ¬(¬a ∧ a) | ⟨hn, ha⟩ => hn ha
-
-lemma and_self : a ∧ a ↔ a := ⟨And.left, fun h => ⟨h, h⟩⟩
 
 lemma Or.imp (f : a → c) (g : b → d) (h : a ∨ b) : c ∨ d := h.elim (inl ∘ f) (inr ∘ g)
 
@@ -196,30 +166,10 @@ lemma or_assoc {a b c} : (a ∨ b) ∨ c ↔ a ∨ (b ∨ c) :=
 lemma or_left_comm : a ∨ (b ∨ c) ↔ b ∨ (a ∨ c) :=
 by rw [← or_assoc, ← or_assoc, @or_comm a b]
 
-lemma or_true : a ∨ True ↔ True := iff_true_intro (Or.inr ⟨⟩)
-
-lemma true_or : True ∨ a ↔ True := iff_true_intro (Or.inl ⟨⟩)
-
-lemma or_false : a ∨ False ↔ a := ⟨fun h => h.resolve_right id, Or.inl⟩
-
-lemma false_or : False ∨ a ↔ a := ⟨fun h => h.resolve_left id, Or.inr⟩
-
-lemma or_self : a ∨ a ↔ a := ⟨fun h => h.elim id id, Or.inl⟩
-
 lemma not_or_intro : (na : ¬a) → (nb : ¬b) → ¬(a ∨ b) := Or.elim
 
 lemma not_or (p q) : ¬ (p ∨ q) ↔ ¬ p ∧ ¬ q :=
 ⟨fun H => ⟨mt Or.inl H, mt Or.inr H⟩, fun ⟨hp, hq⟩ pq => pq.elim hp hq⟩
-
-@[simp] lemma iff_true : (a ↔ True) ↔ a := ⟨fun h => h.2 ⟨⟩, iff_true_intro⟩
-
-@[simp] lemma true_iff : (True ↔ a) ↔ a := iff_comm.trans iff_true
-
-@[simp] lemma iff_false : (a ↔ False) ↔ ¬a := ⟨Iff.mp, iff_false_intro⟩
-
-@[simp] lemma false_iff : (False ↔ a) ↔ ¬a := iff_comm.trans iff_false
-
-@[simp] lemma iff_self : (a ↔ a) ↔ True := iff_true_intro Iff.rfl
 
 lemma iff_congr (h₁ : a ↔ c) (h₂ : b ↔ d) : (a ↔ b) ↔ (c ↔ d) :=
 ⟨fun h => h₁.symm.trans $ h.trans h₂, fun h => h₁.trans $ h.trans h₂.symm⟩
@@ -242,7 +192,9 @@ lemma ExistsUnique.unique {p : α → Prop} (h : ∃! x, p x)
   {y₁ y₂ : α} (py₁ : p y₁) (py₂ : p y₂) : y₁ = y₂ :=
 let ⟨x, hx, hy⟩ := h; (hy _ py₁).trans (hy _ py₂).symm
 
-lemma forall_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∀ a, p a) ↔ ∀ a, q a :=
+-- Port note: this is `forall_congr` from Lean 3. In Lean 4, there is already something
+-- with that name and a slightly different type.
+lemma forall_congr' {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∀ a, p a) ↔ ∀ a, q a :=
 ⟨fun H a => (h a).1 (H a), fun H a => (h a).2 (H a)⟩
 
 lemma Exists.imp {p q : α → Prop} (h : ∀ a, p a → q a) : (∃ a, p a) → ∃ a, q a
@@ -252,7 +204,7 @@ lemma exists_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃ a, p a) �
 ⟨Exists.imp fun x => (h x).1, Exists.imp fun x => (h x).2⟩
 
 lemma exists_unique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃! a, p a) ↔ ∃! a, q a :=
-exists_congr fun x => and_congr (h _) $ forall_congr fun y => imp_congr_left (h _)
+exists_congr fun x => and_congr (h _) $ forall_congr' fun y => imp_congr_left (h _)
 
 lemma forall_not_of_not_exists {p : α → Prop} (hne : ¬∃ x, p x) (x) : ¬p x | hp => hne ⟨x, hp⟩
 
@@ -270,9 +222,8 @@ theorem forall_and_distrib {p q : α → Prop} : (∀ x, p x ∧ q x) ↔ (∀ x
 
 def Decidable.by_cases := @byCases
 def Decidable.by_contradiction := @byContradiction
-def Decidable.of_not_not := @ofNotNot
 
-lemma Decidable.not_and [Decidable p] [Decidable q] : ¬ (p ∧ q) ↔ ¬ p ∨ ¬ q := notAndIffOrNot _ _
+lemma Decidable.not_and [Decidable p] [Decidable q] : ¬ (p ∧ q) ↔ ¬ p ∨ ¬ q := not_and_iff_or_not _ _
 
 def decidable_of_decidable_of_iff {p q : Prop} (hp : Decidable p) (h : p ↔ q) : Decidable q :=
 if hp : p then isTrue (Iff.mp h hp)
@@ -286,11 +237,6 @@ if hq : q then h₂ hq else h₁ (h.resolve_right hq)
 
 lemma Exists.nonempty {p : α → Prop} : (∃ x, p x) → Nonempty α | ⟨x, _⟩ => ⟨x⟩
 
-@[simp] def if_pos := @ifPos
-@[simp] def if_neg := @ifNeg
-@[simp] def dif_pos := @difPos
-@[simp] def dif_neg := @difNeg
-
 lemma ite_id [h : Decidable c] {α} (t : α) : (if c then t else t) = t := by cases h <;> rfl
 
 @[simp] lemma if_true {h : Decidable True} (t e : α) : (@ite α True h t e) = t :=
@@ -298,9 +244,6 @@ if_pos trivial
 
 @[simp] lemma if_false {h : Decidable False} (t e : α) : (@ite α False h t e) = e :=
 if_neg not_false
-
-lemma dif_eq_if [h : Decidable c] {α} (t : α) (e : α) : (if h : c then t else e) = ite c t e :=
-by cases h <;> rfl
 
 /-- Universe lifting operation -/
 structure ulift.{r, s} (α : Type s) : Type (max s r) :=

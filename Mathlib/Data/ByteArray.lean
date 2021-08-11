@@ -85,7 +85,7 @@ def String.toAsciiByteArray.loop (s : String) (out : ByteArray) (p : Pos) : Byte
     let c := s.get p
     IH (s.next p) (out := out.push c.toUInt8)
       ⟨Nat.lt_add_of_pos_right (String.csize_pos _),
-      Nat.lt_of_not_le (mt decideEqTrue h)⟩
+      Nat.lt_of_not_le (mt decide_eq_true h)⟩
 
 /-- Convert a string of assumed-ASCII characters into a byte array.
 (If any characters are non-ASCII they will be reduced modulo 256.) -/
