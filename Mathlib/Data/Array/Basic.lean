@@ -15,7 +15,9 @@ theorem ext' : {a b : Array α} → a.data = b.data → a = b
 @[simp] theorem data_toArray : (a : Array α) → a.data.toArray = a
 | ⟨l⟩ => ext' l.toArray_data
 
-theorem toArrayLit_eq (a : Array α) (n : Nat) (hsz : a.size = n) : a = toArrayLit a n hsz := by
+-- Port note: The Lean 4 core library has `toArrayLit_eq` with the same signature as this,
+-- but currently its proof is `sorry`.
+theorem toArrayLit_eq' (a : Array α) (n : Nat) (hsz : a.size = n) : a = toArrayLit a n hsz := by
   have := aux n
   rw [List.drop_eq_nil_of_le (Nat.le_of_eq hsz)] at this
   exact (data_toArray a).symm.trans $ congrArg List.toArray (this _).symm

@@ -37,7 +37,7 @@ class Ring (R : Type u) extends Monoid R, AddCommGroup R, Numeric R where
 
 instance (R : Type u) [Ring R] : Semiring R where
   zero_mul := λ a => by rw [← add_right_eq_self (a := 0 * a), ← Ring.add_mul, zero_add]
-  mul_zero := λ a => by rw [← add_right_eq_self (a := a * 0), ← Ring.mul_add, add_zero]
+  mul_zero := λ a => by rw [← add_right_eq_self (a := a * 0), ← Ring.mul_add]; simp
   __ := ‹Ring R›
 
 class CommRing (R : Type u) extends Ring R where
