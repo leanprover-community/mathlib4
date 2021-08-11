@@ -349,21 +349,44 @@ export Monoid (npow)
 section Monoid
 variable {M : Type u} [Monoid M]
 
-instance : HPow M ℕ M := ⟨λ x n => Monoid.npow n x⟩
+@[defaultInstance high] instance Monoid.HPow : HPow M ℕ M := ⟨λ a n => Monoid.npow n a⟩
 
-@[simp] theorem mul_one : ∀ (m : M), m * 1 = m :=
+@[simp] theorem mul_one : ∀ (a : M), a * 1 = a :=
 Monoid.mul_one
 
-@[simp] theorem one_mul : ∀ (m : M), 1 * m = m :=
+@[simp] theorem one_mul : ∀ (a : M), 1 * a = a :=
 Monoid.one_mul
 
-@[simp] theorem npow_zero' : ∀ (m : M), npow 0 m = (1 : M) :=
+theorem npow_eq_pow (n : ℕ) (a : M) : npow n a = a^n := rfl
+
+@[simp] theorem pow_zero : ∀ (a : M), a ^ (0:ℕ) = 1 :=
 Monoid.npow_zero'
 
-@[simp] theorem npow_succ' : ∀ (n : ℕ) (m : M), npow n.succ m = m * npow n m :=
+theorem pow_succ' : ∀ (n : ℕ) (a : M), a ^ n.succ = a * a ^ n :=
 Monoid.npow_succ'
 
-@[simp] theorem npow_eq_pow (n : ℕ) (x : M) : npow n x = x^n := rfl
+theorem pow_mul_comm (a : M) (n : ℕ) : a^n * a = a * a^n := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp [ih, pow_succ', mul_assoc]
+
+theorem pow_succ (n : ℕ) (a : M) : a ^ n.succ = a ^ n * a :=
+by rw [pow_succ', pow_mul_comm]
+
+@[simp] theorem pow_one (a : M) : a ^ (1:ℕ) = a :=
+by rw [Nat.one_succ_zero, pow_succ, pow_zero, one_mul]
+
+theorem pow_add (a : M) (m n : ℕ) : a^(m + n) = a^m * a^n := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [Nat.add_succ, pow_succ',ih, pow_succ', ← mul_assoc, ← mul_assoc, pow_mul_comm]
+
+theorem pow_mul {M} [Monoid M] (a : M) (m n : ℕ) : a^(m * n) = (a^m)^n := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [Nat.mul_succ, pow_add, ih, pow_succ', pow_mul_comm]
 
 theorem left_inv_eq_right_inv {M : Type u} [Monoid M] {a b c : M}
   (hba : b * a = 1) (hac : a * c = 1) : b = c :=
@@ -380,8 +403,19 @@ end Monoid
 class CommMonoid (M : Type u) extends Monoid M where
   mul_comm (a b : M) : a * b = b * a
 
-instance (M : Type u) [CommMonoid M] : CommSemigroup M where
+section CommMonoid
+variable {M} [CommMonoid M]
+
+instance : CommSemigroup M where
   __ := ‹CommMonoid M›
+
+theorem mul_pow {M} [CommMonoid M] (a b : M) (n : ℕ)  : (a * b)^n= a^n * b^n := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    simp [pow_succ', ih, @mul_comm M _, @mul_assoc M]
+
+end CommMonoid
 
 /-
 
