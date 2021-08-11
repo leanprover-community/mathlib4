@@ -30,7 +30,7 @@ def elabOpenPrivateLike (ids : Array Syntax) (tgts mods : Option (Array Syntax))
   (f : (priv full user : Name) → CommandElabM Name) : CommandElabM Unit := do
   let mut names := NameSet.empty
   for tgt in tgts.getD #[] do
-    let n ← resolveGlobalConstNoOverload tgt.getId
+    let n ← resolveGlobalConstNoOverload tgt
     names ← Meta.collectPrivateIn n names
   for mod in mods.getD #[] do
     let some modIdx ← (← getEnv).moduleIdxForModule? mod.getId
