@@ -22,119 +22,6 @@ def Lean.Expr.getAppFnAndArgs (e : Expr) : Option (Name × Array Expr) :=
   let nargs := e.getAppNumArgs
   getAppFnAndArgsAux e (mkArray nargs dummy) (nargs-1)
 
-/--
-  Return true if `e` is one of the following
-  - A nat literal (numeral)
-  - `Nat.zero`
-  - `Nat.succ x` where `isNumeral x`
-  - `OfNat.ofNat _ x _` where `isNumeral x` -/
-partial def numeral? (e : Expr) : Option Nat :=
-  if let some n := e.natLit? then n
-  else
-    let f := e.getAppFn
-    if !f.isConst then none
-    else
-      let fName := f.constName!
-      if fName == ``Nat.succ && e.getAppNumArgs == 1 then (numeral? e.appArg!).map Nat.succ
-      else if fName == ``OfNat.ofNat && e.getAppNumArgs == 3 then numeral? (e.getArg! 1)
-      else if fName == ``Nat.zero && e.getAppNumArgs == 0 then some 0
-      else none
-
-def spaces (n : Nat) : String := do
-  let mut res := ""
-  for i in [:n] do
-    res := res ++ " "
-  return res
-
-open Expr in
-def rip (k : Nat)(e: Expr) : IO Unit := do
-  IO.print (spaces k)
-  match e with
-  | bvar x _        => println! "bvar {x}"
-  | fvar x _        => println! "fvar {x}"
-  | mvar _ _        => println! "mvar"
-  | Expr.sort u _   => println! "sort {u}"
-  | const n _ _     => println! "const {n}"
-  | app a b _       =>
-    println! "app"
-    rip (k+2) a
-    IO.print (spaces k)
-    println! "to"
-    rip (k+2) b
-  | lam x ty e _    => do
-    println! "lam {x}"
-    rip (k+2) ty
-    rip (k+2) e
-  | forallE x ty e d => do
-    println! "forallE {x} {d.hash}"
-    rip (k+2) ty
-    rip (k+2) e
-  | letE _ _ _ _ _  => println! "letE"
-  | lit _ _         => println! "lit"
-  | mdata _ _ _     => println! "mdata"
-  | proj _ _ _ _    => println! "proj"
-
-
-def test {α : Type} [One α ] (x : α) : α :=  x
-
-def a := TransparencyMode
-
-instance : Numeric Nat := ⟨id⟩
-@[simp] theorem ofNatNat (n : Nat ): Numeric.ofNat n = n := rfl
-
-instance : CommSemiring Nat where
-  mul_comm := Nat.mul_comm
-  mul_add := Nat.mul_add
-  add_mul := Nat.add_mul
-  ofNat_add := by simp
-  ofNat_mul := by simp
-  ofNat_one := rfl
-  ofNat_zero := rfl
-  mul_one := Nat.mul_one
-  one_mul := Nat.one_mul
-  npow := Nat.pow
-  npow_zero' := sorry
-  npow_succ' := sorry
-  one := 1
-  zero := 0
-  mul_assoc := Nat.mul_assoc
-  add_comm := Nat.add_comm
-  add_assoc := Nat.add_assoc
-  add_zero := Nat.add_zero
-  zero_add := Nat.zero_add
-  nsmul := Nat.mul
-  nsmul_zero' := sorry
-  nsmul_succ' := sorry
-  zero_mul := Nat.zero_mul
-  mul_zero := Nat.mul_zero
-
-theorem pow_mul_comm {M} [Monoid M] (a : M) (n : ℕ) : a^n * a = a * a^n := by
-  induction n with
-  | zero => simp
-  | succ n ih => simp [ih, pow_succ, mul_assoc]
-
-theorem pow_add {M} [Monoid M] (a : M) (m n : ℕ) : a^(m + n) = a^m * a^n := by
-  induction n with
-  | zero => simp
-  | succ n ih =>
-    rw [Nat.add_succ, pow_succ,ih, pow_succ, ← mul_assoc, ← mul_assoc, pow_mul_comm]
-    done
-
-theorem mul_add {R} [Semiring R] (a b c : R) : a * (b + c) = a * b + a * c := Semiring.mul_add a b c
-
-theorem add_mul {R} [Semiring R] (a b c : R) : (a + b) * c = a * c + b * c := Semiring.add_mul a b c
-
-@[simp] theorem mul_zero {R} [Semiring R] (a : R) : a * 0 = 0 := Semiring.mul_zero a
-
-@[simp] theorem zero_mul {R} [Semiring R] (a : R) : 0 * a = 0 := Semiring.zero_mul a
-
-
-
-
-def Lean.Expr.pp (e : Expr) : MetaM Format := do
-  return (← PrettyPrinter.ppExpr Name.anonymous [] e)
-
-
 namespace Tactic
 namespace Ring
 
@@ -147,6 +34,8 @@ structure State :=
   atoms : Array Expr := #[]
   numAtoms : Nat     := 0
 
+/-- The monad that `ring` works in. This is a reader monad containing a cache and
+the list of atoms-up-to-defeq encountered thus far, used for atom sorting. -/
 abbrev RingM := ReaderT Cache $ StateRefT State TacticM
 
 def run (e : Expr) {α} (m : RingM α): TacticM α := do
@@ -154,6 +43,8 @@ def run (e : Expr) {α} (m : RingM α): TacticM α := do
   let u ← getLevel ty
   (m {α := ty, univ := u}).run' {}
 
+/-- Get the index corresponding to an atomic expression, if it has already been encountered, or
+put it in the list of atoms and return the new index, otherwise. -/
 def addAtom (e : Expr) : RingM Nat := do
   let c ← get
   for i in [:c.numAtoms] do
@@ -165,18 +56,41 @@ def addAtom (e : Expr) : RingM Nat := do
 /-- The normal form that `ring` uses is mediated by the function `horner a x n b := a * x ^ n + b`.
 The reason we use a definition rather than the (more readable) expression on the right is because
 this expression contains a number of typeclass arguments in different positions, while `horner`
-contains only one `comm_semiring` instance at the top level. See also `horner_expr` for a
+contains only one `CommSemiring` instance at the top level. See also `HornerExpr` for a
 description of normal form. -/
 @[reducible] def horner {α} [CommSemiring α] (a x : α) (n : ℕ) (b : α) := a * (x ^ n) + b
 
+/-- Every expression in the language of commutative semirings can be viewed as a sum of monomials,
+where each monomial is a product of powers of atoms. We fix a global order on atoms (up to
+definitional equality), and then separate the terms according to their smallest atom. So the top
+level expression is `a * x^n + b` where `x` is the smallest atom and `n > 0` is a numeral, and
+`n` is maximal (so `a` contains at least one monomial not containing an `x`), and `b` contains no
+monomials with an `x` (hence all atoms in `b` are larger than `x`).
+
+If there is no `x` satisfying these constraints, then the expression must be a numeral. Even though
+we are working over rings, we allow rational constants when these can be interpreted in the ring,
+so we can solve problems like `x / 3 = 1 / 3 * x` even though these are not technically in the
+language of rings.
+
+These constraints ensure that there is a unique normal form for each ring expression, and so the
+algorithm is simply to calculate the normal form of each side and compare for equality.
+
+To allow us to efficiently pattern match on normal forms, we maintain this inductive type that
+holds a normalized expression together with its structure. All the `Expr`s in this type could be
+removed without loss of information, and conversely the `horner_expr` structure and the `ℕ` and
+`ℚ` values can be recovered from the top level `Expr`, but we keep both in order to keep proof
+producing normalization functions efficient. -/
 inductive HornerExpr : Type
-| const (e : Expr) (coeff : ℕ) : HornerExpr
+| const (e : Expr) (coeff : ℕ) : HornerExpr --TODO : coeff in ℚ
 | xadd (e : Expr) (a : HornerExpr) (x : Expr × ℕ) (n : Expr × ℕ) (b : HornerExpr) : HornerExpr
 
 instance : Inhabited HornerExpr := ⟨HornerExpr.const (mkNatLit 0) 0⟩
 
 namespace HornerExpr
 
+/-- Get the expression corresponding to a `HornerExpr`. This can be calculated recursively from
+the structure, but we cache the exprs in all subterms so that this function can be computed in
+constant time. -/
 def e : HornerExpr → Expr
 | (HornerExpr.const e _) => e
 | (HornerExpr.xadd e _ _ _ _) => e
@@ -188,12 +102,12 @@ def isZero : HornerExpr → Bool
 | (HornerExpr.const _ c) => c = 0
 | _ => false
 
+/-- Construct a `xadd` node -/
 def xadd' (a : HornerExpr) (x : Expr × ℕ) (n : Expr × ℕ) (b : HornerExpr) : RingM HornerExpr := do
   xadd (← mkAppM ``horner #[a, x.1, n.1, b]) a x n b
 
-
+/-- Reflexivity conversion for a `HornerExpr`. -/
 def reflConv (e : HornerExpr) : RingM (HornerExpr × Expr) := do (e, ← mkEqRefl e)
-
 
 /-- Pretty printer for `horner_expr`. -/
 def pp : HornerExpr → TacticM Format
@@ -206,14 +120,33 @@ def pp : HornerExpr → TacticM Format
   let px ← PrettyPrinter.ppExpr Name.anonymous [] x.1
   return "(" ++ pa ++ ") * (" ++ px ++ ")^" ++ toString n ++ " + " ++ pb
 
-
 end HornerExpr
 
 open HornerExpr
 
-theorem horner_atom {α} [CommSemiring α] (x : α) : x = horner 1 x 1 0 := by
-  simp [horner]
-  rw [pow_succ, pow_zero, mul_one]
+theorem zero_horner {α} [CommSemiring α] (x n b) :
+  @horner α _ 0 x n b = b :=
+by simp [horner]
+
+theorem horner_horner {α} [CommSemiring α] (a₁ x n₁ n₂ b n')
+  (h : n₁ + n₂ = n') :
+  @horner α _ (horner a₁ x n₁ 0) x n₂ b = horner a₁ x n' b :=
+by simp [h.symm, horner, pow_add, mul_assoc]
+
+/-- Evaluate `horner a n x b` where `a` and `b` are already in normal form. -/
+def evalHorner : HornerExpr → Expr × ℕ → Expr × ℕ → HornerExpr → RingM (HornerExpr × Expr)
+| ha@(const a coeff), x, n, b => do
+  if coeff = 0 then
+    return (b, ← mkAppM ``zero_horner #[x.1, n.1, b])
+  else (← xadd' ha x n b).reflConv
+| ha@(xadd a a₁ x₁ n₁ b₁), x, n, b => do
+  if x₁.2 = x.2 ∧ b₁.e.numeral? = some 0 then do
+    let n' ← mkNatLit (n₁.2 + n.2)
+    let h ← mkEqRefl n'
+    return (← xadd' a₁ x (n', n₁.2 + n.2) b,
+      ← mkAppM ``horner_horner #[a₁, x.1, n₁.1, n.1, b, n', h])
+  else (← xadd' ha x n b).reflConv
+
 
 theorem const_add_horner {α} [CommSemiring α] (k a x n b b') (h : k + b = b') :
   k + @horner α _ a x n b = horner a x n b' :=
@@ -245,42 +178,6 @@ theorem horner_add_horner_eq {α} [CommSemiring α] (a₁ x n b₁ a₂ b₂ a' 
 by
   rw [← h₃, ← h₁, ← h₂]
   simp [horner, add_mul, @add_comm α _, @add_assoc α]
-
-theorem subst_into_add {α} [Add α] (l r tl tr t)
-  (prl : (l : α) = tl) (prr : r = tr) (prt : tl + tr = t) : l + r = t :=
-by rw [prl, prr, prt]
-
-theorem subst_into_mul {α} [Mul α] (l r tl tr t)
-  (prl : (l : α) = tl) (prr : r = tr) (prt : tl * tr = t) : l * r = t :=
-by rw [prl, prr, prt]
-
-theorem zero_horner {α} [CommSemiring α] (x n b) :
-  @horner α _ 0 x n b = b :=
-by simp [horner]
-
-theorem horner_horner {α} [CommSemiring α] (a₁ x n₁ n₂ b n')
-  (h : n₁ + n₂ = n') :
-  @horner α _ (horner a₁ x n₁ 0) x n₂ b = horner a₁ x n' b :=
-by simp [h.symm, horner, pow_add, mul_assoc]
-
-def evalAtom (e : Expr) : RingM (HornerExpr × Expr) := do
-  let i ← addAtom e
-  let one := const (← mkNumeral (← read).α 1) 1
-  let zero := const (← mkNumeral (← read).α 0)  0
-  return (← xadd' one (e,i) (mkNatLit 1,1) zero, ← mkAppM ``horner_atom #[e])
-
-/-- Evaluate `horner a n x b` where `a` and `b` are already in normal form. -/
-def evalHorner : HornerExpr → Expr × ℕ → Expr × ℕ → HornerExpr → RingM (HornerExpr × Expr)
-| ha@(const a coeff), x, n, b => do
-  if coeff = 0 then
-    return (b, ← mkAppM ``zero_horner #[x.1, n.1, b])
-  else (← xadd' ha x n b).reflConv
-| ha@(xadd a a₁ x₁ n₁ b₁), x, n, b => do
-  if x₁.2 = x.2 ∧ numeral? b₁.e = some 0 then do
-    let (n', h) ← NormNum.eval $ ← mkAdd n₁.1 n.1
-    return (← xadd' a₁ x (n', n₁.2 + n.2) b,
-      ← mkAppM ``horner_horner #[a₁, x.1, n₁.1, n.1, b, n', h])
-  else (← xadd' ha x n b).reflConv
 
 partial def evalAdd : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
 | (const e₁ c₁), (const e₂ c₂) => do
@@ -316,7 +213,7 @@ partial def evalAdd : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
   else if n₁.2 < n₂.2 then do
     let k := n₂.2 - n₁.2
     let ek ← mkNatLit k
-    let (p, h₁) ← NormNum.eval $ ← mkAdd n₁.1 ek
+    let h₁ ← mkEqRefl n₂.1
     let c ← read
     let α0 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkNatLit 0, none]
     let (a', h₂) ← evalAdd a₁ (← xadd' a₂ x₁ (ek, k) (const α0 0))
@@ -326,7 +223,7 @@ partial def evalAdd : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
   else if n₁.2 ≠ n₂.2 then do
     let k := n₁.2 - n₂.2
     let ek ← mkNatLit k
-    let (p, h₁) ← NormNum.eval $ ← mkAdd n₂.1 ek
+    let h₁ ← mkEqRefl n₁.1
     let α0 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkNatLit 0, none]
     let (a', h₂) ← evalAdd (← xadd' a₁ x₁ (ek, k) (const α0 0)) a₂
     let (b', h₃) ← evalAdd b₁ b₂
@@ -353,7 +250,8 @@ by simp [h₂.symm, h₁.symm, horner, add_mul, @mul_right_comm α _]
 /-- Evaluate `k * a` where `k` is a rational numeral and `a` is in normal form. -/
 def evalConstMul (k : Expr × ℕ) : HornerExpr → RingM (HornerExpr × Expr)
 | (const e coeff) => do
-  let (e', p) ← NormNum.eval $ ← mkMul k.1 e
+  let e' ← mkNatLit (k.2 * coeff)
+  let p ← mkEqRefl e'
   return (const e' (k.2 * coeff), p)
 | (xadd e a x n b) => do
   let (a', h₁) ← evalConstMul k a
@@ -426,6 +324,66 @@ partial def evalMul : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
         #[a₁, x₁.1, n₁.1, b₁, a₂, n₂.1, b₂, aa, haa, ab, bb, t, h₁, h₂, h₃, h₄, H])
 
 
+theorem horner_pow {α} [CommSemiring α] (a x : α) (n m n' : ℕ) (a') (h₁ : n * m = n') (h₂ : a ^ m = (a' : α)) :
+  @horner α _ a x n 0 ^ m = horner a' x n' 0 :=
+by
+  simp [h₁.symm, h₂.symm, horner,  mul_pow a, pow_mul]
+
+theorem pow_succ_eq {α} [CommSemiring α] (a : α) (n : ℕ) (b c)
+  (h₁ : a ^ n = b) (h₂ : b * a = c) : a ^ (n + 1) = c :=
+by rw [← h₂, ← h₁, pow_succ]
+
+/-- Evaluate `a ^ n` where `a` is in normal form and `n` is a natural numeral. -/
+partial def evalPow : HornerExpr → Expr × ℕ → RingM (HornerExpr × Expr)
+| e, (_, 0) => do
+  let α1 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkNatLit 1, none]
+  let p ← mkAppM ``pow_zero #[e]
+  return (const α1 1, p)
+| e, (_, 1) => do
+  let p ← mkAppM ``pow_one #[e]
+  return (e, p)
+| (const e coeff), (e₂, m) => do
+  let (e', p) ← NormNum.eval $ ← mkAppM ``HPow.hPow #[e, e₂]
+  return (const e' (coeff ^ m), p)
+| he@(xadd e a x n b), m =>
+  match b.e.numeral? with
+  | some 0 => do
+    let n' ← mkNatLit (n.2 * m.2)
+    let h₁ ← mkEqRefl n'
+    let (a', h₂) ← evalPow a m
+    let α0 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkNatLit 0, none]
+    return (← xadd' a' x (n', n.2 * m.2) (const α0 0),
+      ← mkAppM ``horner_pow #[a, x.1, n.1, m.1, n', a', h₁, h₂])
+  | _ => do
+    let e₂ ← mkNatLit (m.2 - 1)
+    let (tl, hl) ← evalPow he (e₂, m.2-1)
+    let (t, p₂) ← evalMul tl he
+    return (t, ← mkAppM ``pow_succ_eq #[e, e₂, tl, t, hl, p₂])
+
+
+theorem horner_atom {α} [CommSemiring α] (x : α) : x = horner 1 x 1 0 := by
+  simp [horner]
+
+/-- Evaluate `a` where `a` is an atom. -/
+def evalAtom (e : Expr) : RingM (HornerExpr × Expr) := do
+  let i ← addAtom e
+  let zero ← const (← mkAppOptM ``OfNat.ofNat #[(← read).α, mkNatLit 0, none]) 0
+  let one ← const (← mkAppOptM ``OfNat.ofNat #[(← read).α, mkNatLit 1, none]) 1
+  return (← xadd' one (e,i) (mkNatLit 1,1) zero, ← mkAppM ``horner_atom #[e])
+
+
+theorem subst_into_add {α} [Add α] (l r tl tr t)
+  (prl : (l : α) = tl) (prr : r = tr) (prt : tl + tr = t) : l + r = t :=
+by rw [prl, prr, prt]
+
+theorem subst_into_mul {α} [Mul α] (l r tl tr t)
+  (prl : (l : α) = tl) (prr : r = tr) (prt : tl * tr = t) : l * r = t :=
+by rw [prl, prr, prt]
+
+theorem subst_into_pow {α} [Monoid α] (l r tl tr t)
+  (prl : (l : α) = tl) (prr : (r : ℕ) = tr) (prt : tl ^ tr = t) : l ^ r = t :=
+by rw [prl, prr, prt]
+
 partial def eval (e : Expr) : RingM (HornerExpr × Expr) :=
   match e.getAppFnAndArgs with
   | some (``HAdd.hAdd, #[_,_,_,_,e₁,e₂]) => do
@@ -440,8 +398,19 @@ partial def eval (e : Expr) : RingM (HornerExpr × Expr) :=
     let (e', p') ← evalMul e₁' e₂'
     let p ← mkAppM ``subst_into_mul #[e₁, e₂, e₁', e₂', e', p₁, p₂, p']
     return (e', p)
+  | some (``HPow.hPow, #[_,_,_,P,e₁,e₂]) => do
+    -- let (e₂', p₂) ← lift $ norm_num.derive e₂ <|> refl_conv e₂,
+    let (e₂', p₂) ← (e₂, ← mkEqRefl e₂)
+    match e₂'.numeral?, P.getAppFn with
+    | some k, Expr.const ``Monoid.HPow _ _ => do
+      let (e₁', p₁) ← eval e₁
+      let (e', p') ← evalPow e₁' (e₂, k)
+      let p ← mkAppM ``subst_into_pow #[e₁, e₂, e₁', e₂', e', p₁, p₂, p']
+      return (e', p)
+    | _, _ => do ← evalAtom e
+    evalAtom e
   | _ =>
-    match numeral? e with
+    match e.numeral? with
     | some n => (const e n).reflConv
     | _ => (evalAtom e)
 
@@ -459,12 +428,57 @@ elab "ring" : tactic => do
       replaceMainGoal []
     else
       throwError "failed \n{← e₁'.pp}\n{← e₂'.pp}"
-  | _ => throwError "not eq"
+  | _ => throwError "failed: not an equality"
 
-def b := Eq.trans (Tactic.Ring.horner_atom 1) (Eq.symm (Tactic.Ring.horner_atom 1))
--- set_option pp.notation false
--- set_option pp.all true
-def test {α} [CommSemiring α] (x y z : α) : x * y * 2 + x + 2 * y = y * (x + 2) + (y +1) * x := by ring; done
+example (x y : ℕ) : x + y = y + x := by ring
+example (x y : ℕ) : x + y + y = 2 * y + x := by ring
+example (x y : ℕ) : x + id y = y + id x := by ring
+-- example {α} [CommRing α] (x y : α) : x + y + y - x = 2 * y := by ring
+-- example (x y : ℚ) : x / 2 + x / 2 = x := by ring
+example (x y : ℕ) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by ring
+-- example (x y : ℝ) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by ring
+example {α} [CommSemiring α] (x : α) : (x + 1) ^ 6 = (1 + x) ^ 6 := by ring
+example (n : ℕ) : (n / 2) + (n / 2) = 2 * (n / 2) := by ring
+-- example {α} [field α] [char_zero α] (a : α) : a / 2 = a / 2 := by ring
+-- example {α} [linear_ordered_field α] (a b c : α) :
+--   a * (-c / b) * (-c / b) + -c + c = a * (c / b * (c / b)) := by ring
+-- example {α} [linear_ordered_field α] (a b c : α) :
+--   b ^ 2 - 4 * c * a = -(4 * c * a) + b ^ 2 := by ring
+-- example (x : ℚ) : x ^ (2 + 2) = x^4 := by ring_nf -- TODO: ring should work?
+-- example {α} [CommRing α] (x : α) : x ^ (2 : ℤ)  = x * x := by ring
+-- example {α} [linear_ordered_field α] (a b c : α) :
+--   b ^ 2 - 4 * c * a = -(4 * c * a) + b ^ 2 := by ring
+-- example {α} [linear_ordered_field α] (a b c : α) :
+--   b ^ 2 - 4 * a * c = 4 * a * 0 + b * b - 4 * a * c := by ring
+example {α} [CommSemiring α] (x y z : α) (n : ℕ) :
+  (x + y) * (z * (y * y) + (x * x ^ n + (1 + ↑n) * x ^ n * y)) =
+    x * (x * x ^ n) + ((2 + ↑n) * (x * x ^ n) * y + (x * z + (z * y + (1 + ↑n) * x ^ n)) * (y * y)) := by ring
+-- example {α} [CommRing α] (a b c d e : α) :
+--   (-(a * b) + c + d) * e = (c + (d + -a * b)) * e := by ring
+example (a n s: ℕ) : a * (n - s) = (n - s) * a := by ring
 
-#print test
-#print test.proof_1
+-- example (x y z : ℚ) (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
+--   x / (y / z) + y ⁻¹ + 1 / (y * -x) = -1/ (x * y) + (x * z + 1) / y :=
+-- begin
+--   field_simp,
+--   ring
+-- end
+
+-- example (a b c d x y : ℚ) (hx : x ≠ 0) (hy : y ≠ 0) :
+--   a + b / x - c / x^2 + d / x^3 = a + x⁻¹ * (y * b / y + (d / x - c) / x) :=
+-- begin
+--   field_simp,
+--   ring
+-- end
+
+-- example : (876544 : ℤ) * -1 + (1000000 - 123456) = 0 := by ring
+
+-- example (x y : ℝ) (hx : x ≠ 0) (hy : y ≠ 0) :
+--   2 * x ^ 3 * 2 / (24 * x) = x ^ 2 / 6 :=
+-- begin
+--   field_simp,
+--   ring
+-- end
+
+-- -- this proof style is not recommended practice
+-- example (A B : ℕ) (H : B * A = 2) : A * B = 2 := by {ring_nf, exact H}
