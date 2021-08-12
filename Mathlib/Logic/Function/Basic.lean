@@ -170,7 +170,7 @@ lemma bijective_iff_exists_unique (f : α → β) : bijective f ↔
 ⟨ λ hf b => let ⟨a, ha⟩ := hf.surjective b
             ⟨a, ha, λ a' ha' => hf.injective (ha'.trans ha.symm)⟩,
   λ he => ⟨
-    λ {a a'} h => ExistsUnique.unique (he (f a')) h rfl,
+    λ {a a'} h => unique_of_exists_unique (he (f a')) h rfl,
     λ b => ExistsUnique.exists (he b) ⟩⟩
 
 /-- Shorthand for using projection notation with `function.bijective_iff_exists_unique`. -/

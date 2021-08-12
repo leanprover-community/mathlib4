@@ -18,6 +18,7 @@ import Mathlib.Data.Subtype
 import Mathlib.Data.UInt
 import Mathlib.Dvd
 import Mathlib.Function
+import Mathlib.Init.Logic
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Basic
 import Mathlib.Set
