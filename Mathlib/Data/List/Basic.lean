@@ -202,7 +202,7 @@ Iff.intro
  (fun ⟨pa, al⟩ x o => o.elim (fun e => by rw [e]; exact pa) (al x))
 
 instance decidableMem [DecidableEq α] (a : α) : ∀ (l : List α), Decidable (a ∈ l)
-  | []     => isFalse notFalse
+  | []     => isFalse not_false
   | b :: l =>
     if h₁ : a = b then isTrue (Or.inl h₁)
     else match decidableMem a l with
@@ -952,7 +952,9 @@ theorem erasep_map (f : β → α) :
   ∀ (l : List β), (map f l).erasep p = map f (l.erasep (p ∘ f))
 | []     => rfl
 | (b::l) => by
-  byCases h : p (f b) <;> simp [h, erasep_map f l]
+  (byCases h : p (f b))
+  - simp [h, erasep_map f l, @erasep_cons_of_pos β (p ∘ f) _ b l h]
+  - simp [h, erasep_map f l, @erasep_cons_of_neg β (p ∘ f) _ b l h]
 
 -- @[simp] theorem extractp_eq_find_erasep :
 --   ∀ l : List α, extractp p l = (find p l, erasep p l)

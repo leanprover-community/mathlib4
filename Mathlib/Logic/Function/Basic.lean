@@ -145,11 +145,11 @@ theorem surjective.forall {f : α → β} (hf : surjective f) {p : β → Prop} 
 
 theorem surjective.forall₂ {f : α → β} (hf : surjective f) {p : β → β → Prop} :
   (∀ y₁ y₂, p y₁ y₂) ↔ ∀ x₁ x₂, p (f x₁) (f x₂) :=
-hf.forall.trans $ forall_congr $ λ x => hf.forall
+hf.forall.trans $ forall_congr' $ λ x => hf.forall
 
 theorem surjective.forall₃ {f : α → β} (hf : surjective f) {p : β → β → β → Prop} :
   (∀ y₁ y₂ y₃, p y₁ y₂ y₃) ↔ ∀ x₁ x₂ x₃, p (f x₁) (f x₂) (f x₃) :=
-hf.forall.trans $ forall_congr $ λ x => hf.forall₂
+hf.forall.trans $ forall_congr' $ λ x => hf.forall₂
 
 theorem surjective.exists {f : α → β} (hf : surjective f) {p : β → Prop} :
   (∃ y, p y) ↔ ∃ x, p (f x) :=
@@ -272,10 +272,10 @@ theorem partial_inv_of_injective {α β} {f : α → β} (I : injective f) :
         then by rw [hpi, dif_pos h'] at h
                 injection h with h
                 subst h
-                apply Classical.chooseSpec h'
+                apply Classical.choose_spec h'
         else by rw [hpi, dif_neg h'] at h; contradiction,
  λ e => e ▸ have h : ∃ a', f a' = f a := ⟨_, rfl⟩
-            (dif_pos h).trans (congr_arg _ (I $ Classical.chooseSpec h))⟩
+            (dif_pos h).trans (congr_arg _ (I $ Classical.choose_spec h))⟩
 
 theorem partial_inv_left {α β} {f : α → β} (I : injective f) : ∀ x, partial_inv f (f x) = some x :=
 is_partial_inv_left (partial_inv_of_injective I)
@@ -296,7 +296,7 @@ by have h1 : inv_fun_on f s b =
      if h : ∃a, a ∈ s ∧ f a = b then Classical.choose h else Classical.choice n := rfl
    rw [dif_pos h] at h1
    rw [h1]
-   exact Classical.chooseSpec h
+   exact Classical.choose_spec h
 
 theorem inv_fun_on_mem (h : ∃a∈s, f a = b) : inv_fun_on f s b ∈ s := (inv_fun_on_pos h).left
 
@@ -360,7 +360,7 @@ variable {α : Sort u} {β : Sort v} {f : α → β}
   `α` to be inhabited.) -/
 noncomputable def surj_inv {f : α → β} (h : surjective f) (b : β) : α := Classical.choose (h b)
 
-lemma surj_inv_eq (h : surjective f) (b) : f (surj_inv h b) = b := Classical.chooseSpec (h b)
+lemma surj_inv_eq (h : surjective f) (b) : f (surj_inv h b) = b := Classical.choose_spec (h b)
 
 lemma right_inverse_surj_inv (hf : surjective f) : right_inverse (surj_inv hf) f :=
 surj_inv_eq hf
@@ -524,7 +524,7 @@ lemma extend_def (f : α → β) (g : α → γ) (e' : β → γ) (b : β) [hd :
 @[simp] lemma extend_apply (hf : injective f) (g : α → γ) (e' : β → γ) (a : α) :
   extend f g e' (f a) = g a :=
 by simp only [extend_def, dif_pos, exists_apply_eq_apply]
-   exact congr_arg g (hf $ Classical.chooseSpec (exists_apply_eq_apply f a))
+   exact congr_arg g (hf $ Classical.choose_spec (exists_apply_eq_apply f a))
 
 @[simp] lemma extend_comp (hf : injective f) (g : α → γ) (e' : β → γ) :
   extend f g e' ∘ f = g :=

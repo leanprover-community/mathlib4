@@ -75,13 +75,13 @@ theorem le_of_dvd {m n : ℕ} (h : 0 < n) : m ∣ n → m ≤ n :=
    | 0 => intro hn
           simp at hn
    | pk+1 => intro _
-             let t := Nat.mul_le_mul_left m (succPos pk)
+             let t := Nat.mul_le_mul_left m (succ_pos pk)
              rwa [Nat.mul_one] at t
 
 theorem dvd_antisymm : ∀ {m n : ℕ}, m ∣ n → n ∣ m → m = n
 | m,     0, h₁, h₂ => Nat.eq_zero_of_zero_dvd h₂
 | 0,     n, h₁, h₂ => (Nat.eq_zero_of_zero_dvd h₁).symm
-| m+1, n+1, h₁, h₂ => Nat.le_antisymm (le_of_dvd (succPos _) h₁) (le_of_dvd (succPos _) h₂)
+| m+1, n+1, h₁, h₂ => Nat.le_antisymm (le_of_dvd (succ_pos _) h₁) (le_of_dvd (succ_pos _) h₂)
 
 theorem pos_of_dvd_of_pos {m n : ℕ} (H1 : m ∣ n) (H2 : 0 < n) : 0 < m :=
 Nat.pos_of_ne_zero $ λ m0 =>
@@ -91,8 +91,8 @@ Nat.pos_of_ne_zero $ λ m0 =>
 
 theorem eq_one_of_dvd_one {n : ℕ} (H : n ∣ 1) : n = 1 :=
   Nat.le_antisymm
-   (le_of_dvd (ofDecideEqTrue (by trivial)) H)
-   (pos_of_dvd_of_pos H (ofDecideEqTrue (by trivial)))
+   (le_of_dvd (of_decide_eq_true (by trivial)) H)
+   (pos_of_dvd_of_pos H (of_decide_eq_true (by trivial)))
 
 theorem dvd_of_mod_eq_zero {m n : ℕ} (H : n % m = 0) : m ∣ n :=
 Exists.intro
@@ -141,7 +141,7 @@ theorem gcd.induction
     (λ k IH =>
       match k with
       | 0 => H0
-      | pk+1 => λ n => H1 _ _ (succPos _) (IH _ (mod_lt _ (succPos _)) _) )
+      | pk+1 => λ n => H1 _ _ (succ_pos _) (IH _ (mod_lt _ (succ_pos _)) _) )
     n
 
 def lcm (m n : ℕ) : ℕ := m * n / gcd m n
