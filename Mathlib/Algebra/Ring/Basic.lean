@@ -81,8 +81,8 @@ instance : Numeric Nat := ⟨id⟩
 
 instance : CommSemiring Nat where
   mul_comm := Nat.mul_comm
-  mul_add := Nat.mul_add
-  add_mul := Nat.add_mul
+  mul_add := Nat.left_distrib
+  add_mul := Nat.right_distrib
   ofNat_add := by simp
   ofNat_mul := by simp
   ofNat_one := rfl

@@ -1,13 +1,19 @@
 /-
-Copyright (c) 2021 Aurélien Saue. All rights reserved.
+Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aurélien Saue
+Authors: Mario Carneiro
 -/
-
 
 import Lean.Elab.Tactic.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Tactic.NormNum
+
+/-!
+# `ring`
+
+Evaluate expressions in the language of commutative (semi)rings.
+Based on <http://www.cs.ru.nl/~freek/courses/tt-2014/read/10.1.1.61.3041.pdf> .
+-/
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
@@ -163,21 +169,21 @@ theorem horner_add_horner_lt {α} [CommSemiring α] (a₁ x n₁ b₁ a₂ n₂ 
   @horner α _ a₁ x n₁ b₁ + horner a₂ x n₂ b₂ = horner a' x n₁ b' :=
 by
   rw [← h₁, ← h₂, ← h₃]
-  simp [horner, add_mul, mul_assoc, (pow_add x k n₁).symm, add_comm k, @add_comm α _, @add_assoc α ]
+  simp [horner, add_mul, mul_assoc, (pow_add x k n₁).symm, add_comm k, @add_comm α _, @add_assoc α _]
 
 theorem horner_add_horner_gt {α} [CommSemiring α] (a₁ x n₁ b₁ a₂ n₂ b₂ k a' b')
   (h₁ : n₂ + k = n₁) (h₂ : (horner a₁ x k 0 + a₂ : α) = a') (h₃ : b₁ + b₂ = b') :
   @horner α _ a₁ x n₁ b₁ + horner a₂ x n₂ b₂ = horner a' x n₂ b' :=
 by
   rw [← h₁, ← h₂, ← h₃]
-  simp [horner, add_mul, mul_assoc, (pow_add x k n₂).symm, add_comm k, @add_comm α _, @add_assoc α ]
+  simp [horner, add_mul, mul_assoc, (pow_add x k n₂).symm, add_comm k, @add_comm α _, @add_assoc α _]
 
 theorem horner_add_horner_eq {α} [CommSemiring α] (a₁ x n b₁ a₂ b₂ a' b' t)
   (h₁ : a₁ + a₂ = a') (h₂ : b₁ + b₂ = b') (h₃ : horner a' x n b' = t) :
   @horner α _ a₁ x n b₁ + horner a₂ x n b₂ = t :=
 by
   rw [← h₃, ← h₁, ← h₂]
-  simp [horner, add_mul, @add_comm α _, @add_assoc α]
+  simp [horner, add_mul, @add_comm α _, @add_assoc α _]
 
 partial def evalAdd : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
 | (const e₁ c₁), (const e₂ c₂) => do

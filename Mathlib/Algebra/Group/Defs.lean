@@ -413,7 +413,7 @@ theorem mul_pow {M} [CommMonoid M] (a b : M) (n : ℕ)  : (a * b)^n= a^n * b^n :
   induction n with
   | zero => simp
   | succ n ih =>
-    simp [pow_succ', ih, @mul_comm M _, @mul_assoc M]
+    simp [pow_succ', ih, @mul_comm M _, @mul_assoc M _]
 
 end CommMonoid
 
