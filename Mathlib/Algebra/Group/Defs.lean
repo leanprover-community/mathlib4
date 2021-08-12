@@ -344,15 +344,32 @@ class Monoid (M : Type u) extends Semigroup M, One M where
   npow_zero' : ∀ x, npow 0 x = 1 -- fill in with tactic once we can do this
   npow_succ' : ∀ (n : ℕ) x, npow n.succ x = x * npow n x -- fill in with tactic
 
-@[simp] theorem mul_one {M : Type u} [Monoid M] : ∀ (m : M), m * 1 = m :=
+export Monoid (npow)
+
+section Monoid
+variable {M : Type u} [Monoid M]
+
+instance : HPow M ℕ M := ⟨λ x n => Monoid.npow n x⟩
+
+@[simp] theorem mul_one : ∀ (m : M), m * 1 = m :=
 Monoid.mul_one
 
-@[simp] theorem one_mul {M : Type u} [Monoid M] : ∀ (m : M), 1 * m = m :=
+@[simp] theorem one_mul : ∀ (m : M), 1 * m = m :=
 Monoid.one_mul
+
+@[simp] theorem npow_zero' : ∀ (m : M), npow 0 m = (1 : M) :=
+Monoid.npow_zero'
+
+@[simp] theorem npow_succ' : ∀ (n : ℕ) (m : M), npow n.succ m = m * npow n m :=
+Monoid.npow_succ'
+
+@[simp] theorem npow_eq_pow (n : ℕ) (x : M) : npow n x = x^n := rfl
 
 theorem left_inv_eq_right_inv {M : Type u} [Monoid M] {a b c : M}
   (hba : b * a = 1) (hac : a * c = 1) : b = c :=
 by rw [←one_mul c, ←hba, mul_assoc, hac, mul_one b]
+
+end Monoid
 
 /-
 
