@@ -5,78 +5,6 @@ notation "ℕ" => Nat
 
 namespace Nat
 
--- Edits to the naming convention pending upstream
-def eq_of_beq_eq_true := @eqOfBeqEqTrue
-def ne_of_beq_eq_false := @neOfBeqEqFalse
-@[simp] lemma not_succ_le_zero : ∀ n, ¬ succ n ≤ 0 := @notSuccLeZero
-def not_lt_zero := @notLtZero
-def zero_le := @zeroLe
-def succ_le_succ := @succLeSucc
-def zero_lt_succ := @zeroLtSucc
-def le_step := @leStep
-protected def le_trans := @Nat.leTrans
-protected def lt_trans := @Nat.ltTrans
-def le_succ := @leSucc
-def le_succ_of_le := @leSuccOfLe
-protected def eq_or_lt_of_le := @Nat.eqOrLtOfLe
-protected def le_refl := @Nat.leRefl
-protected def lt_or_le : (n m : ℕ) → n < m ∨ m ≤ n := @Nat.ltOrGe
-protected def le_antisymm := @Nat.leAntisymm
-protected def lt_of_le_of_ne := @Nat.ltOfLeAndNe
-def pred_le_pred := @predLePred
-def le_of_succ_le_succ := @leOfSuccLeSucc
-def le_of_lt_succ := @leOfLtSucc
-def zero_eq := @zero_Eq
-def succ_eq_add_one := @succ_Eq_add_one
-protected def mul_add := @Nat.left_distrib
-protected def add_mul := @Nat.right_distrib
-def not_succ_le_self := @notSuccLeSelf
-protected def lt_irrefl := @Nat.ltIrrefl
-def pred_le := @predLe
-def pred_lt := @predLt
-def sub_le := @subLe
-def sub_lt := @subLt
-protected def lt_of_lt_of_le := @Nat.ltOfLtOfLe
-protected def lt_of_lt_of_eq := @Nat.ltOfLtOfEq
-protected def le_of_eq := @Nat.leOfEq
-def le_of_succ_le := @leOfSuccLe
-protected def le_of_lt := @Nat.leOfLt
-def succ_pos := @succPos
-lemma eq_zero_or_pos : (n : ℕ) → n = 0 ∨ 0 < n := @eqZeroOrPos
-def lt_succ_self := @ltSuccSelf
-protected def le_total := @Nat.leTotal
-def eq_zero_of_le_zero := @eqZeroOfLeZero
-def lt_of_succ_lt := @ltOfSuccLt
-def lt_of_succ_le := @ltOfSuccLe
-def succ_le_of_lt := @succLeOfLt
-def lt_or_eq_of_le_succ := @ltOrEqOrLeSucc
-def le_add_right := @leAddRight
-def le_add_left := @leAddLeft
-protected lemma not_le_of_gt : {n m : ℕ} → m < n → ¬ n ≤ m := @Nat.notLeOfGt
-protected lemma lt_of_not_ge : {n m : ℕ} → ¬ n ≤ m → m < n := @Nat.gtOfNotLe
-protected def add_le_add_left := @Nat.addLeAddLeft
-protected def add_le_add_right := @Nat.addLeAddRight
-protected def add_lt_add_left := @Nat.addLtAddLeft
-protected def add_lt_add_right := @Nat.addLtAddRight
-protected def zero_lt_one := @Nat.zeroLtOne
-protected def add_le_add := @Nat.addLeAdd
-protected def add_lt_add := @Nat.addLtAdd
-def nat_zero_eq_zero := @natZeroEqZero
-protected def one_ne_zero := @Nat.oneNeZero
-protected def zero_ne_one := @Nat.zeroNeOne
-def succ_ne_zero := @succNeZero
-protected def mul_le_mul_left := @mulLeMulLeft
-protected def mul_le_mul_right := @mulLeMulRight
-protected def mul_le_mul := @Nat.mulLeMul
-protected def mul_lt_mul_of_pos_left := @Nat.mulLtMulOfPosLeft
-protected def mul_lt_mul_of_pos_right := @Nat.mulLtMulOfPosRight
-protected def mul_pos := @Nat.mulPos
-def pow_succ := @Nat.powSucc
-def pow_zero := @Nat.powZero
-def pow_le_pow_of_le_left := @Nat.powLePowOfLeLeft
-def pow_le_pow_of_le_right := @Nat.powLePowOfLeRight
-def pos_pos_of_pos := @Nat.posPowOfPos
-
 lemma succ_ne_self : ∀ n : ℕ, succ n ≠ n
 | 0,   h => absurd h (Nat.succ_ne_zero 0)
 | n+1, h => succ_ne_self n (Nat.noConfusion h id)
@@ -107,9 +35,9 @@ protected lemma pos_iff_ne_zero {n : ℕ} : 0 < n ↔ n ≠ 0 := by
 
 protected lemma not_lt_of_le {n m : ℕ} (h₁ : m ≤ n) : ¬ n < m | h₂ => Nat.not_le_of_gt h₂ h₁
 
-protected lemma lt_of_not_le {a b : ℕ} : ¬ a ≤ b → b < a := (Nat.lt_or_le b a).resolve_right
+protected lemma lt_of_not_le {a b : ℕ} : ¬ a ≤ b → b < a := (Nat.lt_or_ge b a).resolve_right
 
-protected lemma le_or_le (a b : ℕ) : a ≤ b ∨ b ≤ a := (Nat.lt_or_le _ _).imp_left Nat.le_of_lt
+protected lemma le_or_le (a b : ℕ) : a ≤ b ∨ b ≤ a := (Nat.lt_or_ge _ _).imp_left Nat.le_of_lt
 
 protected lemma le_of_not_le {a b : ℕ} : ¬ a ≤ b → b ≤ a := (Nat.le_or_le _ _).resolve_left
 
@@ -120,13 +48,10 @@ protected lemma le_of_not_le {a b : ℕ} : ¬ a ≤ b → b ≤ a := (Nat.le_or_
 ⟨Nat.lt_of_not_le, Nat.not_lt_of_le⟩
 
 protected lemma lt_or_eq_of_le {n m : ℕ} (h : n ≤ m) : n < m ∨ n = m :=
-(Nat.lt_or_le _ _).imp_right (Nat.le_antisymm h)
-
-protected lemma lt_of_le_of_lt {n m k : ℕ} (h₁ : n ≤ m) : m < k → n < k :=
-Nat.le_trans (succ_le_succ h₁)
+(Nat.lt_or_ge _ _).imp_right (Nat.le_antisymm h)
 
 protected lemma lt_iff_le_not_le {m n : ℕ} : m < n ↔ m ≤ n ∧ ¬ n ≤ m :=
-⟨fun h => ⟨Nat.le_of_lt h, Nat.not_le_of_gt h⟩, fun h => Nat.lt_of_not_ge h.2⟩
+⟨fun h => ⟨Nat.le_of_lt h, Nat.not_le_of_gt h⟩, fun h => Nat.gt_of_not_le h.2⟩
 
 lemma pred_lt_pred : ∀ {n m : ℕ}, n ≠ 0 → n < m → pred n < pred m
 | 0,   _,   h, _ => (h rfl).elim
@@ -262,7 +187,7 @@ protected lemma lt_of_add_lt_add_right {a b c : ℕ} (h : a + b < c + b) : a < c
 
 protected lemma sub_pos_of_lt (h : m < n) : 0 < n - m := by
   apply Nat.lt_of_add_lt_add_right (b := m)
-  rw [Nat.zero_add, Nat.sub_add_cancel (Nat.leOfLt h)]; exact h
+  rw [Nat.zero_add, Nat.sub_add_cancel (Nat.le_of_lt h)]; exact h
 
 protected lemma sub_lt_sub_left : ∀ {k m n : ℕ} (H : k < m) (h : k < n), m - n < m - k
 | 0, m+1, n+1, _, _ => by rw [Nat.add_sub_add_right]; exact lt_succ_of_le (Nat.sub_le _ _)
@@ -351,7 +276,7 @@ lemma le_div_iff_mul_le (k0 : 0 < k) : x ≤ y / k ↔ x * k ≤ y := by
   induction y, k using mod.inductionOn generalizing x with
     (rw [div_eq]; simp [h]; cases x with simp [zero_le] | succ x => ?_)
   | base y k h =>
-    simp [succ_mul, Nat.add_comm]
+    simp [eq_false (not_succ_le_zero x), succ_mul, Nat.add_comm]
     refine Nat.lt_of_lt_of_le ?_ (Nat.le_add_right _ _)
     exact Nat.lt_of_not_le fun h' => h ⟨k0, h'⟩
   | ind y k h IH =>
@@ -601,7 +526,7 @@ else by
   | _ n IH =>
     have y0 : y > 0 := Nat.pos_of_ne_zero y0
     have z0 : z > 0 := Nat.pos_of_ne_zero z0
-    cases Nat.lt_or_le n y with
+    cases Nat.lt_or_ge n y with
     | inl yn => rw [mod_eq_of_lt yn, mod_eq_of_lt (Nat.mul_lt_mul_of_pos_left yn z0)]
     | inr yn =>
       rw [mod_eq_sub_mod yn, mod_eq_sub_mod (Nat.mul_le_mul_left z yn),
