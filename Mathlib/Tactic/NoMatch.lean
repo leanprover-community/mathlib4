@@ -30,7 +30,7 @@ open private elabMatchAux waitExpectedTypeAndDiscrs in elabMatchCore in
   elabMatchAux none discrs #[] mkNullNode expectedType
 | _, _ => throwUnsupportedSyntax
 
-elab "fun"%tk "." : term <= expectedType =>
+elab tk:"fun" "." : term <= expectedType =>
   Meta.forallTelescopeReducing expectedType fun args _ => do
     let mut discrs := #[]
     let mut binders := #[]
@@ -40,7 +40,7 @@ elab "fun"%tk "." : term <= expectedType =>
       discrs := discrs.push $ Syntax.node ``Lean.Parser.Term.matchDiscr #[mkNullNode, n]
     elabTerm (← `(@fun $binders* => match $discrs,* with.)) (some expectedType)
 
-macro "λ"%tk "." : term => `(fun%$tk .)
+macro tk:"λ" "." : term => `(fun%$tk .)
 
 end Elab.Term
 

@@ -59,7 +59,7 @@ def focusAndBlock (tac : TacticM Unit) : TacticM Unit := do
 
 open private evalManyTacticOptSemi in evalTacticSeq1Indented in
 -- TODO: why doesn't `tacticSeq?` work here?
-elab (name := block) "-"%tk tacs:optional(tacticSeq) : tactic =>
+elab (name := block) tk:"-" tacs:optional(tacticSeq) : tactic =>
   withRef tk $ do
     focusAndBlock $ do
     if let some stx := tacs then

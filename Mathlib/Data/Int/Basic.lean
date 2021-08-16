@@ -527,7 +527,7 @@ sub_nat_nat_elim m n (λm n i => i = ↑m - ↑n)
          Int.neg_add, Int.neg_add, Int.neg_add, ← Int.add_assoc,
         ← Int.add_assoc, Int.add_right_neg, Int.zero_add])
 
-theorem to_nat_sub (m n : ℕ) : to_nat (m - n) = m - n := rfl
+theorem to_nat_sub (m n : ℕ) : to_nat (m - n : ℕ) = m - n := rfl
 
 protected lemma one_mul : ∀ (a : ℤ), (1 : ℤ) * a = a
 | (ofNat n) => show ofNat (1 * n) = ofNat n by rw [Nat.one_mul]
