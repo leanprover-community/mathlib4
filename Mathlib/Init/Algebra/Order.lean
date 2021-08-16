@@ -7,7 +7,7 @@ Original file's license:
   Released under Apache 2.0 license as described in the file LICENSE.
   Authors: Leonardo de Moura
 -/
-import Mathlib.Logic.Basic -- Only for Or.elim
+import Mathlib.Init.Logic
 
 /-!
 # Orders

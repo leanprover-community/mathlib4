@@ -344,8 +344,6 @@ class Monoid (M : Type u) extends Semigroup M, One M where
   npow_zero' : ∀ x, npow 0 x = 1 -- fill in with tactic once we can do this
   npow_succ' : ∀ (n : ℕ) x, npow n.succ x = x * npow n x -- fill in with tactic
 
-export Monoid (npow)
-
 section Monoid
 variable {M : Type u} [Monoid M]
 
