@@ -29,6 +29,7 @@ import Mathlib.Tactic.NoMatch
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.OpenPrivate
 import Mathlib.Tactic.PrintPrefix
+import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Split
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
