@@ -355,7 +355,7 @@ Monoid.mul_one
 @[simp] theorem one_mul : ∀ (a : M), 1 * a = a :=
 Monoid.one_mul
 
-theorem npow_eq_pow (n : ℕ) (a : M) : npow n a = a^n := rfl
+theorem npow_eq_pow (n : ℕ) (a : M) : Monoid.npow n a = a^n := rfl
 
 @[simp] theorem pow_zero : ∀ (a : M), a ^ (0:ℕ) = 1 :=
 Monoid.npow_zero'
