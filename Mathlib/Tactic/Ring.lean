@@ -271,7 +271,7 @@ theorem horner_mul_horner_zero {α} [CommSemiring α] (a₁ x n₁ b₁ a₂ n�
   horner a₁ x n₁ b₁ * horner a₂ x n₂ 0 = t :=
 by
   rw [← h₂, ← h₁]
-  simp [horner, mul_add, mul_comm, mul_left_comm, mul_assoc]
+  simp [horner, add_mul, mul_assoc]
 
 theorem horner_mul_horner {α} [CommSemiring α]
   (a₁ x n₁ b₁ a₂ n₂ b₂ aa haa ab bb t)
