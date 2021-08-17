@@ -9,6 +9,7 @@ Original file license:
 -/
 
 import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic.Coe
 open Nat
 
 /- ## Additional notation -/
@@ -28,8 +29,6 @@ protected def dec_eq := @Int.decEq
 def nat_abs := @natAbs
 def to_nat := @toNat
 def nat_mod := @natMod
-
-protected lemma coe_nat_eq (n : ℕ) : ↑n = ofNat n := rfl
 
 -- TODO: use these to instantiate "has zero" and "has one" classes
 -- (which rn seem to be in Mathlib.Algebra.Group.Defs for some reason)
@@ -76,9 +75,9 @@ protected lemma coe_nat_zero : ↑(0 : ℕ) = (0 : ℤ) := rfl
 protected lemma coe_nat_one : ↑(1 : ℕ) = (1 : ℤ) := rfl
 protected lemma coe_nat_succ (n : ℕ) : (↑(succ n) : ℤ) = (↑n : Int) + 1 := rfl
 
-protected lemma coe_nat_add_out (m n : ℕ) : ↑m + ↑n = (m + n : ℤ) := rfl
-protected lemma coe_nat_mul_out (m n : ℕ) : ↑m * ↑n = (↑(m * n) : ℤ) := rfl
-protected lemma coe_nat_add_one_out (n : ℕ) : ↑n + (1 : ℤ) = ↑(succ n) := rfl
+protected lemma coe_nat_add_out (m n : ℕ) : (↑m + ↑n : ℤ) = ↑(m + n) := rfl
+protected lemma coe_nat_mul_out (m n : ℕ) : (↑m * ↑n : ℤ) = ↑(m * n) := rfl
+protected lemma coe_nat_add_one_out (n : ℕ) : n + (1 : ℤ) = ↑(succ n) := rfl
 
 /- ## These are only for internal use -/
 
@@ -514,18 +513,17 @@ by rw [Int.sub_eq_add_neg, ← Int.neg_add]; rfl
 
 protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := of_nat_sub
 
-attribute [local simp] Int.sub_eq_add_neg
-
-protected lemma sub_nat_nat_eq_coe {m n : ℕ} : sub_nat_nat m n = ↑m - ↑n :=
-sub_nat_nat_elim m n (λm n i => i = ↑m - ↑n)
-  (λi n => by
-    simp [Int.coe_nat_add, Int.add_left_comm, Int.add_assoc, Int.add_right_neg]
-    rfl)
-  (λi n => by
-    simp
-    rw [Int.coe_nat_add, Int.coe_nat_add, Int.coe_nat_one, Int.neg_succ_of_nat_eq,
-         Int.neg_add, Int.neg_add, Int.neg_add, ← Int.add_assoc,
-        ← Int.add_assoc, Int.add_right_neg, Int.zero_add])
+protected lemma sub_nat_nat_eq_coe {m n : ℕ} : sub_nat_nat m n = ↑m - ↑n := by
+  refine sub_nat_nat_elim m n (fun m n i => i = ↑m - ↑n) ?p ?n
+  case p =>
+    intros i n
+    simp only [Int.coe_nat_add, Int.add_left_comm, Int.add_assoc, Int.add_right_neg, Int.sub_eq_add_neg]
+    rfl
+  case n =>
+    intros i n
+    simp only [neg_succ_of_nat_coe, of_nat_add, Int.sub_eq_add_neg, Int.neg_add, ← Int.add_assoc]
+    rw [← @Int.sub_eq_add_neg n, ← of_nat_sub, Nat.sub_self, of_nat_zero, Int.zero_add]
+    apply Nat.le_refl
 
 theorem to_nat_sub (m n : ℕ) : to_nat (m - n : ℕ) = m - n := rfl
 

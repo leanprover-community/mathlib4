@@ -25,6 +25,7 @@ import Mathlib.Set
 import Mathlib.SetNotation
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Block
+import Mathlib.Tactic.Coe
 import Mathlib.Tactic.NoMatch
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.OpenPrivate
