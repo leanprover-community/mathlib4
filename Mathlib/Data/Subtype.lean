@@ -7,6 +7,7 @@ Authors: Johannes Hölzl
 import Mathlib.Function
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Coe
 
 open Function
 
@@ -18,8 +19,6 @@ def simps.coe (x: Subtype p) : α := x
 /-- A version of `x.property` or `x.2` where `p` is syntactically applied to the coercion of `x`
   instead of `x.1`. A similar result is `Subtype.mem` in `data.set.basic`. -/
 lemma prop (x : Subtype p) : p x := x.2
-
-@[simp] lemma val_eq_coe {x : Subtype p} : x.1 = ↑x := rfl
 
 @[simp] protected theorem «forall» {q : {a // p a} → Prop} :
   (∀ x, q x) ↔ (∀ a b, q ⟨a, b⟩) :=
@@ -171,8 +170,6 @@ namespace Subtype
 /-! Some facts about sets, which require that `α` is a type. -/
 variable {α : Type _} {β : Type _} {γ : Type _} {p : α → Prop}
 
-@[simp] lemma coe_prop {S : Set α} (a : {a // a ∈ S}) : ↑a ∈ S := a.prop
-
-lemma val_prop {S : Set α} (a : {a // a ∈ S}) : a.val ∈ S := a.property
+@[simp] lemma val_prop {S : Set α} (a : {a // a ∈ S}) : a.val ∈ S := a.property
 
 end Subtype
