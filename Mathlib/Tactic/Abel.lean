@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Aurélien Saue
 import Lean.Elab.Tactic.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.ToExprInt
 
 /-!
 # `ring`
@@ -34,7 +35,6 @@ namespace Abel
 structure Cache :=
   α : Expr
   univ : Level
-  isGrp : Bool
 
 structure State :=
   atoms : Array Expr := #[]
@@ -47,7 +47,7 @@ abbrev AbelM := ReaderT Cache $ StateRefT State TacticM
 def run (e : Expr) {α} (m : AbelM α): TacticM α := do
   let ty ← inferType e
   let u ← getLevel ty
-  (m {α := ty, univ := u, isGrp := false}).run' {} --TODO: define isGrp properly
+  (m {α := ty, univ := u}).run' {} --TODO: define isGrp properly
 
 /-- Get the index corresponding to an atomic expression, if it has already been encountered, or
 put it in the list of atoms and return the new index, otherwise. -/
@@ -118,6 +118,17 @@ def xadd' (n : Expr × ℤ) (x : Expr × ℕ) (b : GrpExpr) : AbelM GrpExpr := d
 /-- Reflexivity conversion for a `HornerExpr`. -/
 def reflConv (e : GrpExpr) : AbelM (GrpExpr × Expr) := do (e, ← mkEqRefl e)
 
+/-- Pretty printer for `horner_expr`. -/
+def pp : GrpExpr → TacticM Format
+| (zero e) => do
+  let pe ← PrettyPrinter.ppExpr Name.anonymous [] e
+  return "[" ++ pe ++ "]"
+| (xadd e (_, n) x b) => do
+  let pb ← b.pp
+  let px ← PrettyPrinter.ppExpr Name.anonymous [] x.1
+  return "(" ++ toString n ++ "•" ++ px ++ " + " ++ pb
+
+
 end GrpExpr
 
 open GrpExpr
@@ -135,23 +146,23 @@ by simp [LC, SubNegMonoid.gsmul_zero']
 def evalLC : Expr × ℤ → Expr × ℕ → GrpExpr → AbelM (GrpExpr × Expr)
 | n, x, b => do (← xadd' n x b).reflConv
 
-theorem const_add_LC {α} [AddCommGroup α] (k x n b b') (h : k + b = b') :
+theorem const_add_LC {α} [AddCommGroup α] (k n x b b') (h : k + b = b') :
   k + @LC α _ n x b = LC n x b' :=
 by simp [LC, h.symm, add_comm k, add_assoc]
 
-theorem LC_add_const {α} [AddCommGroup α] (x n b k b') (h : b + k = b') :
+theorem LC_add_const {α} [AddCommGroup α] (n x b k b') (h : b + k = b') :
   @LC α _ n x b + k = LC n x b' :=
 by simp [LC, h.symm, add_assoc]
 
 /-- Need gsmul_add to prove this -/
-theorem LC_add_LC {α} [AddCommGroup α] (x n₁ b₁ n₂ b₂ k b')
+theorem LC_add_LC {α} [AddCommGroup α] (n₁ x b₁ n₂ b₂ k b')
   (h₁ : n₁ + n₂ = k) (h₂ : b₁ + b₂ = b') :
   @LC α _ n₁ x b₁ + LC n₂ x b₂ = LC k x b' :=
 sorry
 
 /-- Need gsmul_add to prove this -/
 theorem LC_add_LC_zero {α} [AddCommGroup α] (x n₁ b₁ n₂ b₂ b')
-  (h₁ : n₁ + n₂ = 0) (h₂ : b₁ + b₂ = b') :
+  (h₁ : (n₁ : ℤ) + n₂ = 0) (h₂ : b₁ + b₂ = b') :
   @LC α _ n₁ x b₁ + LC n₂ x b₂ = b' :=
 sorry
 
@@ -170,7 +181,7 @@ sorry
 --   simp [horner, add_mul, @add_comm α _, @add_assoc α _]
 
 partial def evalAdd : GrpExpr → GrpExpr → AbelM (GrpExpr × Expr)
-| (zero e₁), (zero e₂) => do (zero e₁, ← mkEqRefl e₁)
+| (zero e₁), (zero e₂) => do (zero e₁, ← mkAppM ``add_zero #[e₁])
 | he₁@(zero e₁), he₂@(xadd e₂ n x b) => do
   let p ← mkAppM ``zero_add #[e₂]
   return (he₂, p)
@@ -192,161 +203,95 @@ partial def evalAdd : GrpExpr → GrpExpr → AbelM (GrpExpr × Expr)
     let k := n₁.2 + n₂.2
     if k = 0 then
       return (b', ← mkAppM ``LC_add_LC_zero #[x₁.1, n₁.1, b₁, n₂.1, b₂, b',
-        ← mkEqRefl (ToExpr (0 : ℤ)), hb])
+        ← mkEqRefl (toExpr (0 : ℤ)), hb])
     else
-      let ke ← mkRawNatLit k
-      return (← xadd' _ _ b', ← mkAppM ``LC_add_LC_zero #[x₁.1, n₁.1, b₁, n₂.1, b₂, b',
-        ← mkEqRefl (mkRawNatLit 0), hb])
+      let ke ← toExpr k
+      return (← xadd' (ke, k) x₁ b',
+        ← mkAppM ``LC_add_LC #[n₁.1, x₁.1, b₁, n₂.1, b₂, ke, b', ← mkEqRefl ke, hb])
 
+/-- Need gsmul_add to prove this -/
+theorem gsmul_LC {α} [AddCommGroup α] (c x n b n' b')
+   (h₁ : c * n = n') (h₂ : SubNegMonoid.gsmul c b = b') :
+   SubNegMonoid.gsmul c (@LC α _ n x b) = LC n' x b' :=
+sorry
 
-theorem horner_const_mul {α} [CommSemiring α] (c a x n b a' b')
-  (h₁ : c * a = a') (h₂ : c * b = b') :
-  c * @horner α _ a x n b = horner a' x n b' :=
-by simp [h₂.symm, h₁.symm, horner, mul_add, mul_assoc]
+-- theorem horner_const_mul {α} [CommSemiring α] (c a x n b a' b')
+--   (h₁ : c * a = a') (h₂ : c * b = b') :
+--   c * @horner α _ a x n b = horner a' x n b' :=
+-- by simp [h₂.symm, h₁.symm, horner, mul_add, mul_assoc]
 
-theorem horner_mul_const {α} [CommSemiring α] (a x n b c a' b')
-  (h₁ : a * c = a') (h₂ : b * c = b') :
-  @horner α _ a x n b * c = horner a' x n b' :=
-by simp [h₂.symm, h₁.symm, horner, add_mul, @mul_right_comm α _]
+-- theorem horner_mul_const {α} [CommSemiring α] (a x n b c a' b')
+--   (h₁ : a * c = a') (h₂ : b * c = b') :
+--   @horner α _ a x n b * c = horner a' x n b' :=
+-- by simp [h₂.symm, h₁.symm, horner, add_mul, @mul_right_comm α _]
+
+lemma gsmul_zero {A} [AddCommGroup A] (n : ℤ) :
+  SubNegMonoid.gsmul n (0 : A) = 0 := sorry
 
 /-- Evaluate `k * a` where `k` is a rational numeral and `a` is in normal form. -/
-def evalConstMul (k : Expr × ℕ) : HornerExpr → RingM (HornerExpr × Expr)
-| (const e coeff) => do
-  let e' ← mkRawNatLit (k.2 * coeff)
-  let p ← mkEqRefl e'
-  return (const e' (k.2 * coeff), p)
-| (xadd e a x n b) => do
-  let (a', h₁) ← evalConstMul k a
-  let (b', h₂) ← evalConstMul k b
-  return (← xadd' a' x n b',
-    ← mkAppM ``horner_const_mul #[k.1, a, x.1, n.1, b, a', b', h₁, h₂])
+def evalGSmul (c : Expr × ℤ) : GrpExpr → AbelM (GrpExpr × Expr)
+| (zero e) => do
+  return (zero e, ← mkAppOptM ``gsmul_zero #[(← read).α, none, c.1])
+| (xadd e n x b) => do
+  let (b', hb) ← evalGSmul c b
+  let n' := c.2 * n.2
+  let n'e := toExpr n'
+  return (← xadd' (n'e, n') x b', ← mkAppM ``gsmul_LC #[c.1, x.1, n.1, b, n'e, b', ← mkEqRefl n'e, hb])
 
+lemma neg_zero {A : Type u} [AddGroup A] : - (0 : A) = 0 := sorry
 
-theorem horner_mul_horner_zero {α} [CommSemiring α] (a₁ x n₁ b₁ a₂ n₂ aa t)
-  (h₁ : @horner α _ a₁ x n₁ b₁ * a₂ = aa)
-  (h₂ : horner aa x n₂ 0 = t) :
-  horner a₁ x n₁ b₁ * horner a₂ x n₂ 0 = t :=
-by
-  rw [← h₂, ← h₁]
-  simp [horner, add_mul, mul_assoc]
+theorem neg_LC {α} [AddCommGroup α] (x n b n' b')
+   (h₁ : -n = n') (h₂ : -(b : α) = b') :
+   -(@LC α _ n x b) = LC n' x b' := sorry
 
-theorem horner_mul_horner {α} [CommSemiring α]
-  (a₁ x n₁ b₁ a₂ n₂ b₂ aa haa ab bb t)
-  (h₁ : @horner α _ a₁ x n₁ b₁ * a₂ = aa)
-  (h₂ : horner aa x n₂ 0 = haa)
-  (h₃ : a₁ * b₂ = ab) (h₄ : b₁ * b₂ = bb)
-  (H : haa + horner ab x n₁ bb = t) :
-  horner a₁ x n₁ b₁ * horner a₂ x n₂ b₂ = t :=
-by
-  rw [← H, ← h₂, ← h₁, ← h₃, ← h₄]
-  simp [horner, mul_add, add_mul, @mul_comm α _, mul_left_comm, mul_assoc]
+def evalNeg : GrpExpr → AbelM (GrpExpr × Expr)
+| (zero e) => do
+  return (zero e, ← mkAppOptM ``neg_zero #[(← read).α, none])
+| (xadd e n x b) => do
+  let (b', hb) ← evalNeg b
+  let n' := - n.2
+  let n'e := toExpr n'
+  return (← xadd' (n'e, n') x b', ← mkAppM ``neg_LC #[x.1, n.1, b, n'e, b', ← mkEqRefl n'e, hb])
 
-/-- Evaluate `a * b` where `a` and `b` are in normal form. -/
-partial def evalMul : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
-| (const e₁ c₁), (const e₂ c₂) => do
-  let (e', p) ← NormNum.eval $ ← mkMul e₁ e₂
-  return (const e' (c₁ * c₂), p)
-| (const e₁ c₁), e₂ =>
-  if c₁ = 0 then do
-    let α0 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]
-    let p ← mkAppM ``zero_mul #[e₂]
-    return (const α0 0, p)
-  else if c₁ = 1 then do
-    let p ←  mkAppM ``one_mul #[e₂]
-    return (e₂, p)
-  else evalConstMul (e₁, c₁) e₂
-| e₁, he₂@(const e₂ c₂) => do
-  let p₁ ← mkAppM ``mul_comm #[e₁, e₂]
-  let (e', p₂) ← evalMul he₂ e₁
-  let p ← mkEqTrans p₁ p₂
-  return (e', p)
-| he₁@(xadd e₁ a₁ x₁ n₁ b₁), he₂@(xadd e₂ a₂ x₂ n₂ b₂) => do
-  if x₁.2 < x₂.2 then do
-    let (a', h₁) ← evalMul a₁ he₂
-    let (b', h₂) ← evalMul b₁ he₂
-    return (← xadd' a' x₁ n₁ b',
-      ← mkAppM ``horner_mul_const #[a₁, x₁.1, n₁.1, b₁, e₂, a', b', h₁, h₂])
-  else if x₁.2 ≠ x₂.2 then do
-    let (a', h₁) ← evalMul he₁ a₂
-    let (b', h₂) ← evalMul he₁ b₂
-    return (← xadd' a' x₂ n₂ b',
-      ← mkAppM ``horner_const_mul #[e₁, a₂, x₂.1, n₂.1, b₂, a', b', h₁, h₂])
-  else do
-    let (aa, h₁) ← evalMul he₁ a₂
-    let α0 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]
-    let (haa, h₂) ← evalHorner aa x₁ n₂ (const α0 0)
-    if b₂.isZero then
-      return (haa, ← mkAppM ``horner_mul_horner_zero
-        #[a₁, x₁.1, n₁.1, b₁, a₂, n₂.1, aa, haa, h₁, h₂])
-    else do
-      let (ab, h₃) ← evalMul a₁ b₂
-      let (bb, h₄) ← evalMul b₁ b₂
-      let (t, H) ← evalAdd haa (← xadd' ab x₁ n₁ bb)
-      return (t, ← mkAppM ``horner_mul_horner
-        #[a₁, x₁.1, n₁.1, b₁, a₂, n₂.1, b₂, aa, haa, ab, bb, t, h₁, h₂, h₃, h₄, H])
+theorem sub_LC {α} [AddCommGroup α] (a b b' c : α)
+  (h₁ : -b = b') (h₂ : a + b' = c) :
+  a - b = c :=
+sorry
 
+def evalSub : GrpExpr → GrpExpr → AbelM (GrpExpr × Expr)
+| a, b => do
+  let (b', hb) ← evalNeg b
+  let (c, hc) ← evalAdd a b'
+  (c, ← mkAppM ``sub_LC #[a, b, b', c, hb, hc])
 
-theorem horner_pow {α} [CommSemiring α] (a x : α) (n m n' : ℕ) (a') (h₁ : n * m = n') (h₂ : a ^ m = (a' : α)) :
-  @horner α _ a x n 0 ^ m = horner a' x n' 0 :=
-by
-  simp [h₁.symm, h₂.symm, horner,  mul_pow a, pow_mul]
-
-theorem pow_succ_eq {α} [CommSemiring α] (a : α) (n : ℕ) (b c)
-  (h₁ : a ^ n = b) (h₂ : b * a = c) : a ^ (n + 1) = c :=
-by rw [← h₂, ← h₁, pow_succ]
-
-/-- Evaluate `a ^ n` where `a` is in normal form and `n` is a natural numeral. -/
-partial def evalPow : HornerExpr → Expr × ℕ → RingM (HornerExpr × Expr)
-| e, (_, 0) => do
-  let α1 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 1, none]
-  let p ← mkAppM ``pow_zero #[e]
-  return (const α1 1, p)
-| e, (_, 1) => do
-  let p ← mkAppM ``pow_one #[e]
-  return (e, p)
-| (const e coeff), (e₂, m) => do
-  let (e', p) ← NormNum.eval $ ← mkAppM ``HPow.hPow #[e, e₂]
-  return (const e' (coeff ^ m), p)
-| he@(xadd e a x n b), m =>
-  match b.e.numeral? with
-  | some 0 => do
-    let n' ← mkRawNatLit (n.2 * m.2)
-    let h₁ ← mkEqRefl n'
-    let (a', h₂) ← evalPow a m
-    let α0 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]
-    return (← xadd' a' x (n', n.2 * m.2) (const α0 0),
-      ← mkAppM ``horner_pow #[a, x.1, n.1, m.1, n', a', h₁, h₂])
-  | _ => do
-    let e₂ ← mkRawNatLit (m.2 - 1)
-    let (tl, hl) ← evalPow he (e₂, m.2-1)
-    let (t, p₂) ← evalMul tl he
-    return (t, ← mkAppM ``pow_succ_eq #[e, e₂, tl, t, hl, p₂])
-
-
-theorem horner_atom {α} [CommSemiring α] (x : α) : x = horner 1 x 1 0 := by
-  simp [horner]
+theorem LC_atom {α} [AddCommGroup α] (x : α) : x = LC 1 x 0 := sorry
 
 /-- Evaluate `a` where `a` is an atom. -/
-def evalAtom (e : Expr) : RingM (HornerExpr × Expr) := do
+def evalAtom (e : Expr) : AbelM (GrpExpr × Expr) := do
   let i ← addAtom e
-  let zero ← const (← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]) 0
-  let one ← const (← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 1, none]) 1
-  return (← xadd' one (e,i) (mkRawNatLit 1,1) zero, ← mkAppM ``horner_atom #[e])
-
+  let zero ← zero (toExpr 0)
+  let one ← (← mkAppOptM ``OfNat.ofNat #[mkConst `Int, mkRawNatLit 1, none])
+  return (← xadd' (one, 1) (e,i) (GrpExpr.zero (← mkAppOptM ``Zero.zero #[(← read).α, none])), ← mkAppM ``LC_atom #[e])
 
 theorem subst_into_add {α} [Add α] (l r tl tr t)
   (prl : (l : α) = tl) (prr : r = tr) (prt : tl + tr = t) : l + r = t :=
 by rw [prl, prr, prt]
 
-theorem subst_into_mul {α} [Mul α] (l r tl tr t)
-  (prl : (l : α) = tl) (prr : r = tr) (prt : tl * tr = t) : l * r = t :=
+theorem subst_into_gsmul {α} [SubNegMonoid α] (r l tr tl t)
+  (prr : (r : ℤ) = tr) (prl : (l : α) = tl) (prt : SubNegMonoid.gsmul tr tl = t) :
+  SubNegMonoid.gsmul r l = t :=
 by rw [prl, prr, prt]
 
-theorem subst_into_pow {α} [Monoid α] (l r tl tr t)
-  (prl : (l : α) = tl) (prr : (r : ℕ) = tr) (prt : tl ^ tr = t) : l ^ r = t :=
+theorem subst_into_neg {α} [Neg α] (l tl t)
+  (prl : (l : α) = tl) (prt : - tl = t) :
+  -l = t :=
+by rw [prl, prt]
+
+theorem subst_into_sub {α} [Sub α] (l r tl tr t)
+  (prl : (l : α) = tl) (prr : r = tr) (prt : tl - tr = t) : l - r = t :=
 by rw [prl, prr, prt]
 
-partial def eval (e : Expr) : RingM (HornerExpr × Expr) :=
+unsafe def eval (e : Expr) : AbelM (GrpExpr × Expr) :=
   match e.getAppFnAndArgs with
   | some (``HAdd.hAdd, #[_,_,_,_,e₁,e₂]) => do
     let (e₁', p₁) ← eval e₁
@@ -354,30 +299,44 @@ partial def eval (e : Expr) : RingM (HornerExpr × Expr) :=
     let (e', p') ← evalAdd e₁' e₂'
     let p ← mkAppM ``subst_into_add #[e₁, e₂, e₁', e₂', e', p₁, p₂, p']
     (e',p)
-  | some (``HMul.hMul, #[_,_,_,_,e₁,e₂]) => do
+  | some (``HSub.hSub, #[_,_,_,_,e₁,e₂]) => do
     let (e₁', p₁) ← eval e₁
     let (e₂', p₂) ← eval e₂
-    let (e', p') ← evalMul e₁' e₂'
-    let p ← mkAppM ``subst_into_mul #[e₁, e₂, e₁', e₂', e', p₁, p₂, p']
+    let (e', p') ← evalSub e₁' e₂'
+    let p ← mkAppM ``subst_into_sub #[e₁, e₂, e₁', e₂', e', p₁, p₂, p']
+    (e',p)
+  | some (``SubNegMonoid.gsmul, #[_,_,e₁,e₂]) => do
+    let n : Option ℤ ← (return (some (← Lean.Elab.Term.evalExpr ℤ `Int e₁)) <|> return none)
+    match n with
+    | some k =>
+    let (e₂', p₂) ← eval e₂
+    let (e', p') ← evalGSmul (e₁, k) e₂'
+    let p ← mkAppM ``subst_into_gsmul #[e₁, e₂, toExpr k, e₂', e', ← mkEqRefl (toExpr k), p₂, p']
     return (e', p)
-  | some (``HPow.hPow, #[_,_,_,P,e₁,e₂]) => do
-    -- let (e₂', p₂) ← lift $ norm_num.derive e₂ <|> refl_conv e₂,
-    let (e₂', p₂) ← (e₂, ← mkEqRefl e₂)
-    match e₂'.numeral?, P.getAppFn with
-    | some k, Expr.const ``Monoid.HPow _ _ => do
-      let (e₁', p₁) ← eval e₁
-      let (e', p') ← evalPow e₁' (e₂, k)
-      let p ← mkAppM ``subst_into_pow #[e₁, e₂, e₁', e₂', e', p₁, p₂, p']
-      return (e', p)
-    | _, _ => do ← evalAtom e
-    evalAtom e
-  | _ =>
-    match e.numeral? with
-    | some n => (const e n).reflConv
-    | _ => (evalAtom e)
+    | _ => evalAtom e
+  | some (``Neg.neg, #[_,_,e₁]) => do
+    let (e₁', p₁) ← eval e₁
+    let (e', p') ← evalNeg e₁'
+    let p ← mkAppM ``subst_into_neg #[e₁, e₁', e', p₁, p']
+    (e', p)
+  | some (``Zero.zero, #[_, h]) => do
+    (GrpExpr.zero e, ← mkEqRefl e)
+  | some (``OfNat.ofNat, #[_, n, _]) =>
+    match n.numeral? with
+    | some 0 => do (GrpExpr.zero e, ← mkEqRefl e)
+    | _ => evalAtom e
+  | _ => evalAtom e
 
+end Abel
+end Tactic
 
-elab "ring" : tactic => do
+namespace Lean
+
+open Tactic.Abel
+
+syntax (name := Parser.Tactic.abel) "abel" : tactic
+
+@[tactic abel] unsafe def evalAbel : Tactic := fun stx => do
   let g ← getMainTarget
   match g.getAppFnAndArgs with
   | some (`Eq, #[ty, e₁, e₂]) =>
@@ -392,55 +351,20 @@ elab "ring" : tactic => do
       throwError "failed \n{← e₁'.pp}\n{← e₂'.pp}"
   | _ => throwError "failed: not an equality"
 
-example (x y : ℕ) : x + y = y + x := by ring
-example (x y : ℕ) : x + y + y = 2 * y + x := by ring
-example (x y : ℕ) : x + id y = y + id x := by ring
--- example {α} [CommRing α] (x y : α) : x + y + y - x = 2 * y := by ring
--- example (x y : ℚ) : x / 2 + x / 2 = x := by ring
-example (x y : ℕ) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by ring
--- example (x y : ℝ) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by ring
-example {α} [CommSemiring α] (x : α) : (x + 1) ^ 6 = (1 + x) ^ 6 := by ring
-example (n : ℕ) : (n / 2) + (n / 2) = 2 * (n / 2) := by ring
--- example {α} [field α] [char_zero α] (a : α) : a / 2 = a / 2 := by ring
--- example {α} [linear_ordered_field α] (a b c : α) :
---   a * (-c / b) * (-c / b) + -c + c = a * (c / b * (c / b)) := by ring
--- example {α} [linear_ordered_field α] (a b c : α) :
---   b ^ 2 - 4 * c * a = -(4 * c * a) + b ^ 2 := by ring
--- example (x : ℚ) : x ^ (2 + 2) = x^4 := by ring_nf -- TODO: ring should work?
--- example {α} [CommRing α] (x : α) : x ^ (2 : ℤ)  = x * x := by ring
--- example {α} [linear_ordered_field α] (a b c : α) :
---   b ^ 2 - 4 * c * a = -(4 * c * a) + b ^ 2 := by ring
--- example {α} [linear_ordered_field α] (a b c : α) :
---   b ^ 2 - 4 * a * c = 4 * a * 0 + b * b - 4 * a * c := by ring
-example {α} [CommSemiring α] (x y z : α) (n : ℕ) :
-  (x + y) * (z * (y * y) + (x * x ^ n + (1 + ↑n) * x ^ n * y)) =
-    x * (x * x ^ n) + ((2 + ↑n) * (x * x ^ n) * y + (x * z + (z * y + (1 + ↑n) * x ^ n)) * (y * y)) := by ring
--- example {α} [CommRing α] (a b c d e : α) :
---   (-(a * b) + c + d) * e = (c + (d + -a * b)) * e := by ring
-example (a n s: ℕ) : a * (n - s) = (n - s) * a := by ring
+end Lean
 
--- example (x y z : ℚ) (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
---   x / (y / z) + y ⁻¹ + 1 / (y * -x) = -1/ (x * y) + (x * z + 1) / y :=
--- begin
---   field_simp,
---   ring
--- end
+variable {α : Type} [AddCommGroup α]
 
--- example (a b c d x y : ℚ) (hx : x ≠ 0) (hy : y ≠ 0) :
---   a + b / x - c / x^2 + d / x^3 = a + x⁻¹ * (y * b / y + (d / x - c) / x) :=
--- begin
---   field_simp,
---   ring
--- end
+instance : AddGroup α := inferInstance
 
--- example : (876544 : ℤ) * -1 + (1000000 - 123456) = 0 := by ring
+example (x y : α) : x + y = y + x := by abel
 
--- example (x y : ℝ) (hx : x ≠ 0) (hy : y ≠ 0) :
---   2 * x ^ 3 * 2 / (24 * x) = x ^ 2 / 6 :=
--- begin
---   field_simp,
---   ring
--- end
+example (x y : α) : SubNegMonoid.gsmul 2 x + y = y + x + x :=
+by abel
 
--- -- this proof style is not recommended practice
--- example (A B : ℕ) (H : B * A = 2) : A * B = 2 := by {ring_nf, exact H}
+example (x y : α) : -y + x = x - y := by abel
+
+example (x : α) : x - x = (Zero.zero) := by abel
+
+example (x y : α) : SubNegMonoid.gsmul (-3) x + y - y + x +
+  SubNegMonoid.gsmul 2 x = 0 := by abel
