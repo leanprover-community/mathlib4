@@ -45,7 +45,7 @@ theorem mem_remove_iff {a b : α} {as : List α} : b ∈ remove a as ↔ b ∈ a
     simp [remove]
     cases Decidable.em (a = a') with
     | inl h =>
-      simp [if_pos h, ih]
+      simp only [if_pos h, ih]
       exact ⟨fun ⟨h1, h2⟩ => ⟨Or.inr h1, h2⟩, fun ⟨h1, h2⟩ => ⟨Or.resolve_left h1 (h ▸ h2), h2⟩⟩
     | inr h =>
       simp [if_neg h, ih]
