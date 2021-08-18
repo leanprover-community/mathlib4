@@ -16,17 +16,6 @@ Based on <http://www.cs.ru.nl/~freek/courses/tt-2014/read/10.1.1.61.3041.pdf> .
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
-open Expr in
-private def getAppFnAndArgsAux : Expr → Array Expr → Nat → Option (Name × Array Expr)
-  | app f a _,   as, i => getAppFnAndArgsAux f (as.set! i a) (i-1)
-  | const n _ _, as, i => some (n,as)
-  | _,           as, _ => none
-
-def Lean.Expr.getAppFnAndArgs (e : Expr) : Option (Name × Array Expr) :=
-  let dummy := mkSort levelZero
-  let nargs := e.getAppNumArgs
-  getAppFnAndArgsAux e (mkArray nargs dummy) (nargs-1)
-
 namespace Tactic
 namespace Ring
 
@@ -41,10 +30,9 @@ structure State :=
 
 /-- The monad that `ring` works in. This is a reader monad containing a cache and
 the list of atoms-up-to-defeq encountered thus far, used for atom sorting. -/
-abbrev RingM := ReaderT Cache $ StateRefT State TacticM
+abbrev RingM := ReaderT Cache $ StateRefT State MetaM
 
-def run (e : Expr) {α} (m : RingM α): TacticM α := do
-  let ty ← inferType e
+def RingM.run (ty : Expr) (m : RingM α) : MetaM α := do
   let u ← getLevel ty
   (m {α := ty, univ := u}).run' {}
 
@@ -115,7 +103,7 @@ def xadd' (a : HornerExpr) (x : Expr × ℕ) (n : Expr × ℕ) (b : HornerExpr) 
 def reflConv (e : HornerExpr) : RingM (HornerExpr × Expr) := do (e, ← mkEqRefl e)
 
 /-- Pretty printer for `horner_expr`. -/
-def pp : HornerExpr → TacticM Format
+def pp : HornerExpr → MetaM Format
 | (const e c) => do
   let pe ← PrettyPrinter.ppExpr Name.anonymous [] e
   return "[" ++ pe ++ ", " ++ toString c ++ "]"
@@ -342,13 +330,13 @@ partial def evalPow : HornerExpr → Expr × ℕ → RingM (HornerExpr × Expr)
 | e, (_, 0) => do
   let α1 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 1, none]
   let p ← mkAppM ``pow_zero #[e]
-  return (const α1 1, p)
+  (const α1 1, p)
 | e, (_, 1) => do
   let p ← mkAppM ``pow_one #[e]
-  return (e, p)
-| (const e coeff), (e₂, m) => do
+  (e, p)
+| const e coeff, (e₂, m) => do
   let (e', p) ← NormNum.eval $ ← mkAppM ``HPow.hPow #[e, e₂]
-  return (const e' (coeff ^ m), p)
+  (const e' (coeff ^ m), p)
 | he@(xadd e a x n b), m =>
   match b.e.numeral? with
   | some 0 => do
@@ -356,13 +344,13 @@ partial def evalPow : HornerExpr → Expr × ℕ → RingM (HornerExpr × Expr)
     let h₁ ← mkEqRefl n'
     let (a', h₂) ← evalPow a m
     let α0 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]
-    return (← xadd' a' x (n', n.2 * m.2) (const α0 0),
+    (← xadd' a' x (n', n.2 * m.2) (const α0 0),
       ← mkAppM ``horner_pow #[a, x.1, n.1, m.1, n', a', h₁, h₂])
   | _ => do
     let e₂ ← mkRawNatLit (m.2 - 1)
     let (tl, hl) ← evalPow he (e₂, m.2-1)
     let (t, p₂) ← evalMul tl he
-    return (t, ← mkAppM ``pow_succ_eq #[e, e₂, tl, t, hl, p₂])
+    (t, ← mkAppM ``pow_succ_eq #[e, e₂, tl, t, hl, p₂])
 
 
 theorem horner_atom {α} [CommSemiring α] (x : α) : x = horner 1 x 1 0 := by
@@ -373,8 +361,7 @@ def evalAtom (e : Expr) : RingM (HornerExpr × Expr) := do
   let i ← addAtom e
   let zero ← const (← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]) 0
   let one ← const (← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 1, none]) 1
-  return (← xadd' one (e,i) (mkRawNatLit 1,1) zero, ← mkAppM ``horner_atom #[e])
-
+  (← xadd' one (e,i) (mkRawNatLit 1,1) zero, ← mkAppM ``horner_atom #[e])
 
 theorem subst_into_add {α} [Add α] (l r tl tr t)
   (prl : (l : α) = tl) (prr : r = tr) (prt : tl + tr = t) : l + r = t :=
@@ -389,20 +376,20 @@ theorem subst_into_pow {α} [Monoid α] (l r tl tr t)
 by rw [prl, prr, prt]
 
 partial def eval (e : Expr) : RingM (HornerExpr × Expr) :=
-  match e.getAppFnAndArgs with
-  | some (``HAdd.hAdd, #[_,_,_,_,e₁,e₂]) => do
+  match e.getAppFnArgs with
+  | (``HAdd.hAdd, #[_,_,_,_,e₁,e₂]) => do
     let (e₁', p₁) ← eval e₁
     let (e₂', p₂) ← eval e₂
     let (e', p') ← evalAdd e₁' e₂'
     let p ← mkAppM ``subst_into_add #[e₁, e₂, e₁', e₂', e', p₁, p₂, p']
     (e',p)
-  | some (``HMul.hMul, #[_,_,_,_,e₁,e₂]) => do
+  | (``HMul.hMul, #[_,_,_,_,e₁,e₂]) => do
     let (e₁', p₁) ← eval e₁
     let (e₂', p₂) ← eval e₂
     let (e', p') ← evalMul e₁' e₂'
     let p ← mkAppM ``subst_into_mul #[e₁, e₂, e₁', e₂', e', p₁, p₂, p']
     return (e', p)
-  | some (``HPow.hPow, #[_,_,_,P,e₁,e₂]) => do
+  | (``HPow.hPow, #[_,_,_,P,e₁,e₂]) => do
     -- let (e₂', p₂) ← lift $ norm_num.derive e₂ <|> refl_conv e₂,
     let (e₂', p₂) ← (e₂, ← mkEqRefl e₂)
     match e₂'.numeral?, P.getAppFn with
@@ -411,24 +398,21 @@ partial def eval (e : Expr) : RingM (HornerExpr × Expr) :=
       let (e', p') ← evalPow e₁' (e₂, k)
       let p ← mkAppM ``subst_into_pow #[e₁, e₂, e₁', e₂', e', p₁, p₂, p']
       return (e', p)
-    | _, _ => do ← evalAtom e
-    evalAtom e
+    | _, _ => evalAtom e
   | _ =>
     match e.numeral? with
     | some n => (const e n).reflConv
-    | _ => (evalAtom e)
-
+    | _ => evalAtom e
 
 elab "ring" : tactic => do
   let g ← getMainTarget
-  match g.getAppFnAndArgs with
-  | some (`Eq, #[ty, e₁, e₂]) =>
-    let ((e₁', p₁), (e₂', p₂)) ← run e₁ $ Prod.mk <$> eval e₁ <*> eval e₂
-    if (← isDefEq e₁' e₂') then
+  match g.getAppFnArgs with
+  | (`Eq, #[ty, e₁, e₂]) =>
+    let ((e₁', p₁), (e₂', p₂)) ← RingM.run ty $ do (← eval e₁, ← eval e₂)
+    if ← isDefEq e₁' e₂' then
       let p ← mkEqTrans p₁ (← mkEqSymm p₂)
       ensureHasNoMVars p
       assignExprMVar (← getMainGoal) p
-
       replaceMainGoal []
     else
       throwError "failed \n{← e₁'.pp}\n{← e₂'.pp}"
@@ -460,6 +444,8 @@ example {α} [CommSemiring α] (x y z : α) (n : ℕ) :
 -- example {α} [CommRing α] (a b c d e : α) :
 --   (-(a * b) + c + d) * e = (c + (d + -a * b)) * e := by ring
 example (a n s: ℕ) : a * (n - s) = (n - s) * a := by ring
+
+example (A : ℕ) : (2 * A) ^ 2 = (2 * A) ^ 2 := by ring
 
 -- example (x y z : ℚ) (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
 --   x / (y / z) + y ⁻¹ + 1 / (y * -x) = -1/ (x * y) + (x * z + 1) / y :=
