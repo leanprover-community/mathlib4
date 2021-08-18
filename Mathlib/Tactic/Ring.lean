@@ -255,8 +255,7 @@ by simp [h₂.symm, h₁.symm, horner, add_mul, @mul_right_comm α _]
 /-- Evaluate `k * a` where `k` is a rational numeral and `a` is in normal form. -/
 def evalConstMul (k : Expr × ℕ) : HornerExpr → RingM (HornerExpr × Expr)
 | (const e coeff) => do
-  let e' ← mkRawNatLit (k.2 * coeff)
-  let p ← mkEqRefl e'
+  let (e', p) ← NormNum.eval $ ← mkMul k.1 e
   return (const e' (k.2 * coeff), p)
 | (xadd e a x n b) => do
   let (a', h₁) ← evalConstMul k a
