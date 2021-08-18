@@ -446,6 +446,8 @@ example {α} [CommSemiring α] (x y z : α) (n : ℕ) :
 --   (-(a * b) + c + d) * e = (c + (d + -a * b)) * e := by ring
 example (a n s: ℕ) : a * (n - s) = (n - s) * a := by ring
 
+example (A : ℕ) : (2 * A) ^ 2 = (2 * A) ^ 2 := by ring
+
 -- example (x y z : ℚ) (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
 --   x / (y / z) + y ⁻¹ + 1 / (y * -x) = -1/ (x * y) + (x * z + 1) / y :=
 -- begin

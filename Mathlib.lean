@@ -26,11 +26,13 @@ import Mathlib.SetNotation
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Block
 import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Core
 import Mathlib.Tactic.NoMatch
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.OpenPrivate
 import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.RunTac
 import Mathlib.Tactic.Split
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
