@@ -190,7 +190,7 @@ lemma And.assoc : (a ∧ b) ∧ c ↔ a ∧ (b ∧ c) :=
 
 lemma and_assoc (a b : Prop) : (a ∧ b) ∧ c ↔ a ∧ (b ∧ c) := And.assoc
 
-lemma and_left_comm : a ∧ (b ∧ c) ↔ b ∧ (a ∧ c) :=
+lemma And.left_comm : a ∧ (b ∧ c) ↔ b ∧ (a ∧ c) :=
 by rw [← and_assoc, ← and_assoc, @And.comm a b]
 
 lemma and_iff_left (hb : b) : a ∧ b ↔ a := ⟨And.left, fun ha => ⟨ha, hb⟩⟩
@@ -386,7 +386,7 @@ section
   else isTrue (λ h2 => absurd h2 h)
 end
 
-lemma bool.ff_ne_tt : false = true → False := Bool.noConfusion
+lemma Bool.ff_ne_tt : false = true → False := Bool.noConfusion
 
 def is_dec_eq {α : Sort u} (p : α → α → Bool) : Prop   := ∀ ⦃x y : α⦄, p x y = true → x = y
 def is_dec_refl {α : Sort u} (p : α → α → Bool) : Prop := ∀ x, p x x = true
