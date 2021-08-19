@@ -50,11 +50,11 @@ theorem ofNat_pow {α} [Semiring α] : (a : α) → (n a' c : Nat) →
   a = OfNat.ofNat a' → a'^n = c → a ^ n = OfNat.ofNat c
 | _, _, _, _, rfl, rfl => (Semiring.ofNat_pow _ _).symm
 
-partial def evalAux (e : Expr) : MetaM (Expr × Expr) := do
+partial def eval' (e : Expr) : MetaM (Expr × Expr) := do
   match e.getAppFnArgs with
-  | (``HAdd.hAdd, #[_, _, α, _, a, b]) => evalB ``NormNum.ofNat_add (·+·) α a b
-  | (``HMul.hMul, #[_, _, α, _, a, b]) => evalB ``NormNum.ofNat_mul (·*·) α a b
-  | (``HPow.hPow, #[_, _, α, _, a, n]) => evalC ``NormNum.ofNat_pow (·^·) α a n
+  | (``HAdd.hAdd, #[_, _, α, _, a, b]) => evalBinOp ``NormNum.ofNat_add (·+·) α a b
+  | (``HMul.hMul, #[_, _, α, _, a, b]) => evalBinOp ``NormNum.ofNat_mul (·*·) α a b
+  | (``HPow.hPow, #[_, _, α, _, a, n]) => evalPow ``NormNum.ofNat_pow (·^·) α a n
   | (``OfNat.ofNat, #[α, ln, _]) =>
     match ← ln.natLit? with
     | some 0 =>
@@ -79,22 +79,22 @@ partial def evalAux (e : Expr) : MetaM (Expr × Expr) := do
        mkApp (mkConst ``ofNat_nat) e)
     else throwError "fail"
 where
-  evalB (name : Name) (f : Nat → Nat → Nat) (α a b : Expr) : MetaM (Expr × Expr) := do
+  evalBinOp (name : Name) (f : Nat → Nat → Nat) (α a b : Expr) : MetaM (Expr × Expr) := do
     let Level.succ u _ ← getLevel α | throwError "fail"
     let nα ← synthInstance (mkApp (mkConst ``Numeric [u]) α)
     let sα ← synthInstance (mkApp (mkConst ``Semiring [u]) α)
-    let (a', pa) ← evalAux a
-    let (b', pb) ← evalAux b
+    let (a', pa) ← eval' a
+    let (b', pb) ← eval' b
     let la := Expr.getRevArg! a' 1
     let lb := Expr.getRevArg! b' 1
     let lc := mkRawNatLit (f la.natLit! lb.natLit!)
     let c := mkOfNatLit u α nα lc
     (c, mkApp10 (mkConst name [u]) α sα a b la lb lc pa pb (← mkEqRefl lc))
-  evalC (name : Name) (f : Nat → Nat → Nat) (α a n : Expr) : MetaM (Expr × Expr) := do
+  evalPow (name : Name) (f : Nat → Nat → Nat) (α a n : Expr) : MetaM (Expr × Expr) := do
     let Level.succ u _ ← getLevel α | throwError "fail"
     let nα ← synthInstance (mkApp (mkConst ``Numeric [u]) α)
     let sα ← synthInstance (mkApp (mkConst ``Semiring [u]) α)
-    let (a', pa) ← evalAux a
+    let (a', pa) ← eval' a
     let la := Expr.getRevArg! a' 1
     let some nn ← n.numeral? | throwError "fail"
     let lc := mkRawNatLit (f la.natLit! nn)
@@ -102,7 +102,7 @@ where
     (c, mkApp8 (mkConst name [u]) α sα a n la lc pa (← mkEqRefl lc))
 
 def eval (e : Expr) : MetaM (Expr × Expr) := do
-  let (e', p) ← evalAux e
+  let (e', p) ← eval' e
   e'.withApp fun f args => do
     if f.isConstOf ``OfNat.ofNat then
       let #[α,ln,_] ← args | throwError "fail"
@@ -123,6 +123,7 @@ def eval (e : Expr) : MetaM (Expr × Expr) := do
         (e'', p')
       else (e', p)
     else (e', p)
+
 end NormNum
 end Meta
 
@@ -133,16 +134,18 @@ open Meta Elab Tactic
 @[tactic normNum] def Tactic.evalNormNum : Tactic := fun stx =>
   liftMetaTactic fun g => do
     let some (α, lhs, rhs) ← matchEq? (← getMVarType g) | throwError "fail"
-    let (lhs2, p) ← NormNum.eval lhs
-    unless ← isDefEq lhs2 rhs do throwError "fail"
+    let (lhs₂, lp) ← NormNum.eval' lhs
+    let (rhs₂, rp) ← NormNum.eval' rhs
+    unless ← isDefEq lhs₂ rhs₂ do throwError "fail"
+    let p ← mkEqTrans lp (← mkEqSymm rp)
     assignExprMVar g p
     pure []
 
 end Lean
 
 variable (α) [Semiring α]
-example : (1 + 0 : α) = 1 := by normNum
+example : (1 + 0 : α) = (0 + 1 : α) := by normNum
 example : (0 + (2 + 3) + 1 : α) = 6 := by normNum
 example : (70 * (33 + 2) : α) = 2450 := by normNum
 example : (8 + 2 ^ 2 * 3 : α) = 20 := by normNum
-example : (2 ^ 2 : ℕ) = 4 := by normNum
+example : ((2 * 1 + 1) ^ 2 : α) = (3 * 3 : α) := by normNum
