@@ -203,8 +203,8 @@ class SubNegMonoid (A : Type u) extends AddMonoid A, Neg A, Sub A :=
 (sub_eq_add_neg : ∀ a b : A, a - b = a + -b)
 (gsmul : ℤ → A → A := gsmul_rec)
 (gsmul_zero' : ∀ (a : A), gsmul 0 a = 0)
-(gpow_succ' (n : ℕ) (a : A) : gsmul (Int.ofNat n.succ) a = a + gsmul (Int.ofNat n) a)
-(gpow_neg' (n : ℕ) (a : A) : gsmul (Int.negSucc n) a = -(gsmul ↑(n.succ) a))
+(gsmul_succ' (n : ℕ) (a : A) : gsmul (Int.ofNat n.succ) a = a + gsmul (Int.ofNat n) a)
+(gsmul_neg' (n : ℕ) (a : A) : gsmul (Int.negSucc n) a = -(gsmul ↑(n.succ) a))
 
 /-
 

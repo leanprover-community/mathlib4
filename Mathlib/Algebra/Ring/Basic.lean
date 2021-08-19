@@ -106,3 +106,52 @@ instance : CommSemiring Nat where
   mul_zero := Nat.mul_zero
 
 end Nat
+
+namespace Int
+
+instance : Numeric ℤ := ⟨Int.ofNat⟩
+
+@[simp] theorem ofNat_eq_ofNat (n : ℕ): Numeric.ofNat n = ofNat n := rfl
+
+instance : CommRing ℤ where
+  mul_comm := Int.mul_comm
+  mul_add := Int.distrib_left
+  add_mul := Int.distrib_right
+  ofNat_add := by simp [ofNat_add]
+  ofNat_mul := by simp [ofNat_mul]
+  ofNat_one := rfl
+  ofNat_zero := rfl
+  mul_one := Int.mul_one
+  one_mul := Int.one_mul
+  npow (n x) := HPow.hPow x n
+  npow_zero' n := rfl
+  npow_succ' n x := by
+    rw [Int.mul_comm]
+    exact rfl
+  one := 1
+  zero := 0
+  mul_assoc := Int.mul_assoc
+  add_comm := Int.add_comm
+  add_assoc := Int.add_assoc
+  add_zero := Int.add_zero
+  zero_add := Int.zero_add
+  add_left_neg := Int.add_left_neg
+  nsmul := (·*·)
+  nsmul_zero' := Int.zero_mul
+  nsmul_succ' n x := by
+    show ofNat (Nat.succ n) * x = x + ofNat n * x
+    rw [Int.ofNat_succ, Int.distrib_right, Int.add_comm, Int.one_mul]
+  sub_eq_add_neg a b := Int.sub_eq_add_neg
+  gsmul := HMul.hMul
+  gsmul_zero' := Int.zero_mul
+  gsmul_succ' n x := by rw [Int.ofNat_succ, Int.distrib_right, Int.add_comm, Int.one_mul]
+  gsmul_neg' n x := by
+    cases x with
+    | ofNat m =>
+      rw [Int.negSucc_ofNat_ofNat, Int.ofNat_mul_ofNat]
+      exact rfl
+    | negSucc m =>
+      rw [Int.mul_negSucc_ofNat_negSucc_ofNat, Int.ofNat_mul_negSucc_ofNat]
+      exact rfl
+
+end Int
