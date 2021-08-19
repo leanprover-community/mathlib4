@@ -23,6 +23,7 @@ namespace Ring
 structure Cache :=
   α : Expr
   univ : Level
+  cs : Expr
 
 structure State :=
   atoms : Array Expr := #[]
@@ -33,8 +34,13 @@ the list of atoms-up-to-defeq encountered thus far, used for atom sorting. -/
 abbrev RingM := ReaderT Cache $ StateRefT State MetaM
 
 def RingM.run (ty : Expr) (m : RingM α) : MetaM α := do
-  let u ← getLevel ty
-  (m {α := ty, univ := u}).run' {}
+  let Level.succ u _ ← getLevel ty | throwError "fail"
+  let inst ← synthInstance (mkApp (mkConst ``CommSemiring [u]) ty)
+  (m {α := ty, univ := u, cs := inst }).run' {}
+
+def mkAppCS (f : Name) (args : Array Expr) : RingM Expr := do
+  let c ← read
+  mkAppN (mkConst f [c.univ]) (#[c.α, c.cs] ++ args)
 
 /-- Get the index corresponding to an atomic expression, if it has already been encountered, or
 put it in the list of atoms and return the new index, otherwise. -/
@@ -97,7 +103,7 @@ def isZero : HornerExpr → Bool
 
 /-- Construct a `xadd` node -/
 def xadd' (a : HornerExpr) (x : Expr × ℕ) (n : Expr × ℕ) (b : HornerExpr) : RingM HornerExpr := do
-  xadd (← mkAppM ``horner #[a, x.1, n.1, b]) a x n b
+  xadd (← mkAppCS ``horner #[a, x.1, n.1, b]) a x n b
 
 /-- Reflexivity conversion for a `HornerExpr`. -/
 def reflConv (e : HornerExpr) : RingM (HornerExpr × Expr) := do (e, ← mkEqRefl e)
@@ -130,14 +136,14 @@ by simp [h.symm, horner, pow_add, mul_assoc]
 def evalHorner : HornerExpr → Expr × ℕ → Expr × ℕ → HornerExpr → RingM (HornerExpr × Expr)
 | ha@(const a coeff), x, n, b => do
   if coeff = 0 then
-    return (b, ← mkAppM ``zero_horner #[x.1, n.1, b])
+    return (b, ← mkAppCS ``zero_horner #[x.1, n.1, b])
   else (← xadd' ha x n b).reflConv
 | ha@(xadd a a₁ x₁ n₁ b₁), x, n, b => do
   if x₁.2 = x.2 ∧ b₁.e.numeral? = some 0 then do
     let n' ← mkRawNatLit (n₁.2 + n.2)
     let h ← mkEqRefl n'
     return (← xadd' a₁ x (n', n₁.2 + n.2) b,
-      ← mkAppM ``horner_horner #[a₁, x.1, n₁.1, n.1, b, n', h])
+      ← mkAppCS ``horner_horner #[a₁, x.1, n₁.1, n.1, b, n', h])
   else (← xadd' ha x n b).reflConv
 
 
@@ -184,7 +190,7 @@ partial def evalAdd : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
   else
     let (b', h) ← evalAdd he₁ b
     return (← xadd' a x n b',
-      ← mkAppM ``const_add_horner #[e₁, a, x.1, n.1, b, b', h])
+      ← mkAppCS ``const_add_horner #[e₁, a, x.1, n.1, b, b', h])
 | he₁@(xadd e₁ a x n b), he₂@(const e₂ c₂) => do
   if c₂ = 0 then
     let p ← mkAppM ``add_zero #[e₁]
@@ -192,17 +198,17 @@ partial def evalAdd : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
   else
     let (b', h) ← evalAdd b he₂
     return (← xadd' a x n b',
-      ← mkAppM ``horner_add_const #[a, x.1, n.1, b, e₂, b', h])
+      ← mkAppCS ``horner_add_const #[a, x.1, n.1, b, e₂, b', h])
 | he₁@(xadd e₁ a₁ x₁ n₁ b₁), he₂@(xadd e₂ a₂ x₂ n₂ b₂) => do
   let c ← get
   if x₁.2 < x₂.2 then
     let (b', h) ← evalAdd b₁ he₂
     return (← xadd' a₁ x₁ n₁ b',
-      ← mkAppM ``horner_add_const #[a₁, x₁.1, n₁.1, b₁, e₂, b', h])
+      ← mkAppCS ``horner_add_const #[a₁, x₁.1, n₁.1, b₁, e₂, b', h])
   else if x₁.2 ≠ x₂.2 then
     let (b', h) ← evalAdd he₁ b₂
     return (← xadd' a₂ x₂ n₂ b',
-      ← mkAppM ``const_add_horner #[e₁, a₂, x₂.1, n₂.1, b₂, b', h])
+      ← mkAppCS ``const_add_horner #[e₁, a₂, x₂.1, n₂.1, b₂, b', h])
   else if n₁.2 < n₂.2 then do
     let k := n₂.2 - n₁.2
     let ek ← mkRawNatLit k
@@ -212,7 +218,7 @@ partial def evalAdd : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
     let (a', h₂) ← evalAdd a₁ (← xadd' a₂ x₁ (ek, k) (const α0 0))
     let (b', h₃) ← evalAdd b₁ b₂
     return (← xadd' a' x₁ n₁ b',
-      ← mkAppM ``horner_add_horner_lt #[a₁, x₁.1, n₁.1, b₁, a₂, n₂.1, b₂, ek, a', b', h₁, h₂, h₃])
+      ← mkAppCS ``horner_add_horner_lt #[a₁, x₁.1, n₁.1, b₁, a₂, n₂.1, b₂, ek, a', b', h₁, h₂, h₃])
   else if n₁.2 ≠ n₂.2 then do
     let k := n₁.2 - n₂.2
     let ek ← mkRawNatLit k
@@ -221,12 +227,12 @@ partial def evalAdd : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
     let (a', h₂) ← evalAdd (← xadd' a₁ x₁ (ek, k) (const α0 0)) a₂
     let (b', h₃) ← evalAdd b₁ b₂
     return (← xadd' a' x₁ n₂ b',
-      ← mkAppM ``horner_add_horner_gt #[a₁, x₁.1, n₁.1, b₁, a₂, n₂.1, b₂, ek, a', b', h₁, h₂, h₃])
+      ← mkAppCS ``horner_add_horner_gt #[a₁, x₁.1, n₁.1, b₁, a₂, n₂.1, b₂, ek, a', b', h₁, h₂, h₃])
   else do
     let (a', h₁) ← evalAdd a₁ a₂
     let (b', h₂) ← evalAdd b₁ b₂
     let (t, h₃) ← evalHorner a' x₁ n₁ b'
-    return (t, ← mkAppM ``horner_add_horner_eq
+    return (t, ← mkAppCS ``horner_add_horner_eq
       #[a₁, x₁.1, n₁.1, b₁, a₂, b₂, a', b', t, h₁, h₂, h₃])
 
 
@@ -249,7 +255,7 @@ def evalConstMul (k : Expr × ℕ) : HornerExpr → RingM (HornerExpr × Expr)
   let (a', h₁) ← evalConstMul k a
   let (b', h₂) ← evalConstMul k b
   return (← xadd' a' x n b',
-    ← mkAppM ``horner_const_mul #[k.1, a, x.1, n.1, b, a', b', h₁, h₂])
+    ← mkAppCS ``horner_const_mul #[k.1, a, x.1, n.1, b, a', b', h₁, h₂])
 
 
 theorem horner_mul_horner_zero {α} [CommSemiring α] (a₁ x n₁ b₁ a₂ n₂ aa t)
@@ -295,24 +301,24 @@ partial def evalMul : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
     let (a', h₁) ← evalMul a₁ he₂
     let (b', h₂) ← evalMul b₁ he₂
     return (← xadd' a' x₁ n₁ b',
-      ← mkAppM ``horner_mul_const #[a₁, x₁.1, n₁.1, b₁, e₂, a', b', h₁, h₂])
+      ← mkAppCS ``horner_mul_const #[a₁, x₁.1, n₁.1, b₁, e₂, a', b', h₁, h₂])
   else if x₁.2 ≠ x₂.2 then do
     let (a', h₁) ← evalMul he₁ a₂
     let (b', h₂) ← evalMul he₁ b₂
     return (← xadd' a' x₂ n₂ b',
-      ← mkAppM ``horner_const_mul #[e₁, a₂, x₂.1, n₂.1, b₂, a', b', h₁, h₂])
+      ← mkAppCS ``horner_const_mul #[e₁, a₂, x₂.1, n₂.1, b₂, a', b', h₁, h₂])
   else do
     let (aa, h₁) ← evalMul he₁ a₂
     let α0 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]
     let (haa, h₂) ← evalHorner aa x₁ n₂ (const α0 0)
     if b₂.isZero then
-      return (haa, ← mkAppM ``horner_mul_horner_zero
+      return (haa, ← mkAppCS ``horner_mul_horner_zero
         #[a₁, x₁.1, n₁.1, b₁, a₂, n₂.1, aa, haa, h₁, h₂])
     else do
       let (ab, h₃) ← evalMul a₁ b₂
       let (bb, h₄) ← evalMul b₁ b₂
       let (t, H) ← evalAdd haa (← xadd' ab x₁ n₁ bb)
-      return (t, ← mkAppM ``horner_mul_horner
+      return (t, ← mkAppCS ``horner_mul_horner
         #[a₁, x₁.1, n₁.1, b₁, a₂, n₂.1, b₂, aa, haa, ab, bb, t, h₁, h₂, h₃, h₄, H])
 
 
@@ -345,12 +351,12 @@ partial def evalPow : HornerExpr → Expr × ℕ → RingM (HornerExpr × Expr)
     let (a', h₂) ← evalPow a m
     let α0 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]
     (← xadd' a' x (n', n.2 * m.2) (const α0 0),
-      ← mkAppM ``horner_pow #[a, x.1, n.1, m.1, n', a', h₁, h₂])
+      ← mkAppCS ``horner_pow #[a, x.1, n.1, m.1, n', a', h₁, h₂])
   | _ => do
     let e₂ ← mkRawNatLit (m.2 - 1)
     let (tl, hl) ← evalPow he (e₂, m.2-1)
     let (t, p₂) ← evalMul tl he
-    (t, ← mkAppM ``pow_succ_eq #[e, e₂, tl, t, hl, p₂])
+    (t, ← mkAppCS ``pow_succ_eq #[e, e₂, tl, t, hl, p₂])
 
 
 theorem horner_atom {α} [CommSemiring α] (x : α) : x = horner 1 x 1 0 := by
@@ -361,7 +367,7 @@ def evalAtom (e : Expr) : RingM (HornerExpr × Expr) := do
   let i ← addAtom e
   let zero ← const (← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]) 0
   let one ← const (← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 1, none]) 1
-  (← xadd' one (e,i) (mkRawNatLit 1,1) zero, ← mkAppM ``horner_atom #[e])
+  (← xadd' one (e,i) (mkRawNatLit 1,1) zero, ← mkAppCS ``horner_atom #[e])
 
 theorem subst_into_add {α} [Add α] (l r tl tr t)
   (prl : (l : α) = tl) (prr : r = tr) (prt : tl + tr = t) : l + r = t :=
