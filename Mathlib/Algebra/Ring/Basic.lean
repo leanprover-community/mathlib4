@@ -111,9 +111,6 @@ namespace Int
 
 instance : Numeric ℤ := ⟨Int.ofNat⟩
 
-theorem pow_succ (n : ℤ) (m : ℕ ) : n^(Nat.succ m) = n^m * n :=
-  rfl
-
 @[simp] theorem ofNat_eq_ofNat (n : ℕ): Numeric.ofNat n = ofNat n := rfl
 
 instance : CommRing ℤ where
