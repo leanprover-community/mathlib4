@@ -39,7 +39,10 @@ theorem get_cons_drop : ∀ (l : List α) i h,
 theorem drop_eq_nil_of_le' : ∀ {l : List α} {k : Nat} (h : l.length' ≤ k), l.drop k = []
 | [], k, _ => by cases k <;> rfl
 | a::l, 0, h => by cases h
-| a::l, k+1, h => drop_eq_nil_of_le' (l := l) h
+| a::l, k+1, h => by have h0 : length' (a :: l) = length' l + 1 := rfl
+                     have h1 : length' l ≤ k := by rw [h0] at h
+                                                   exact Nat.le_of_succ_le_succ h
+                     exact drop_eq_nil_of_le' (l := l) h1
 
 theorem drop_eq_nil_of_le {l : List α} {k : Nat} : (h : l.length ≤ k) → l.drop k = [] :=
 by rw [← length'_eq_length]; exact drop_eq_nil_of_le'
