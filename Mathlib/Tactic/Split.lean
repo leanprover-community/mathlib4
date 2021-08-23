@@ -27,5 +27,8 @@ elab "split" : tactic => withMainContext do
   Term.synthesizeSyntheticMVarsNoPostponing
   replaceMainGoal mvarIds'
 
+-- TODO: we can't implement `fsplit`
+-- until the TODO in `Lean.Meta.apply` (in core) for `ApplyNewGoals` is completed.
+
 end Tactic
 end Lean.Elab
