@@ -33,19 +33,24 @@ protected lemma pos_iff_ne_zero {n : ℕ} : 0 < n ↔ n ≠ 0 := by
   | zero   => intro h; contradiction
   | succ n => intro _; apply succ_ne_zero
 
-protected lemma not_lt_of_le {n m : ℕ} (h₁ : m ≤ n) : ¬ n < m | h₂ => Nat.not_le_of_gt h₂ h₁
+protected lemma not_lt_of_le {n m : ℕ} (h₁ : m ≤ n) : ¬ n < m
+| h₂ => Nat.not_le_of_gt h₂ h₁
+
+protected lemma not_le_of_lt {n m : ℕ} : m < n → ¬ n ≤ m  := Nat.not_le_of_gt
 
 protected lemma lt_of_not_le {a b : ℕ} : ¬ a ≤ b → b < a := (Nat.lt_or_ge b a).resolve_right
+
+protected lemma le_of_not_lt {a b : ℕ} : ¬ a < b → b ≤ a := (Nat.lt_or_ge a b).resolve_left
 
 protected lemma le_or_le (a b : ℕ) : a ≤ b ∨ b ≤ a := (Nat.lt_or_ge _ _).imp_left Nat.le_of_lt
 
 protected lemma le_of_not_le {a b : ℕ} : ¬ a ≤ b → b ≤ a := (Nat.le_or_le _ _).resolve_left
 
 @[simp] protected lemma not_lt {n m : ℕ} : ¬ n < m ↔ m ≤ n :=
-⟨Nat.lt_of_not_le, Nat.not_lt_of_le⟩
+⟨Nat.le_of_not_lt, Nat.not_lt_of_le⟩
 
 @[simp] protected lemma not_le {n m : ℕ} : ¬ n ≤ m ↔ m < n :=
-⟨Nat.lt_of_not_le, Nat.not_lt_of_le⟩
+⟨Nat.lt_of_not_le, Nat.not_le_of_lt⟩
 
 protected lemma lt_or_eq_of_le {n m : ℕ} (h : n ≤ m) : n < m ∨ n = m :=
 (Nat.lt_or_ge _ _).imp_right (Nat.le_antisymm h)
@@ -162,11 +167,8 @@ protected lemma sub_eq_zero_iff_le : n - m = 0 ↔ n ≤ m :=
 lemma add_sub_of_le {n m : ℕ} (h : n ≤ m) : n + (m - n) = m :=
 let ⟨k, hk⟩ := Nat.le.dest h; by rw [← hk, Nat.add_sub_cancel_left]
 
-protected lemma sub_add_cancel : {a b : ℕ} → a ≤ b → b - a + a = b
-| 0, b, _ => rfl
-| a+1, b+1, h => congrArg Nat.succ $ show (b + 1) - (a + 1) + a = b by
-  rw [Nat.add_comm  a, ← Nat.sub_sub]
-  exact Nat.sub_add_cancel h
+protected lemma sub_add_cancel {a b : ℕ} (h: a ≤ b) : b - a + a = b :=
+by rw [Nat.add_comm, Nat.add_sub_of_le h]
 
 protected lemma add_sub_cancel' {n m : ℕ} (h : m ≤ n) : m + (n - m) = n :=
 by rw [Nat.add_comm, Nat.sub_add_cancel h]
@@ -193,14 +195,14 @@ protected lemma sub_lt_sub_left : ∀ {k m n : ℕ} (H : k < m) (h : k < n), m -
 | 0, m+1, n+1, _, _ => by rw [Nat.add_sub_add_right]; exact lt_succ_of_le (Nat.sub_le _ _)
 | k+1, m+1, n+1, h1, h2 => by
   rw [Nat.add_sub_add_right, Nat.add_sub_add_right]
-  exact Nat.sub_lt_sub_left h1 h2
+  exact Nat.sub_lt_sub_left (Nat.lt_of_succ_lt_succ h1) (Nat.lt_of_succ_lt_succ h2)
 
 protected lemma sub_lt_left_of_lt_add {n k m : ℕ} (H : n ≤ k) (h : k < n + m) : k - n < m := by
   have := Nat.sub_le_sub_right (succ_le_of_lt h) n
   rwa [Nat.add_sub_cancel_left, Nat.succ_sub H] at this
 
 protected lemma add_le_of_le_sub_left {n k m : ℕ} (H : m ≤ k) (h : n ≤ k - m) : m + n ≤ k :=
-  Nat.not_lt.1 fun h' => Nat.not_le.2 h (Nat.sub_lt_left_of_lt_add H h')
+  Nat.not_lt.1 fun h' => Nat.not_lt.2 h (Nat.sub_lt_left_of_lt_add H h')
 
 lemma le_of_le_of_sub_le_sub_right {n m k : ℕ} (h₀ : k ≤ m) (h₁ : n - k ≤ m - k) : n ≤ m :=
   Nat.not_lt.1 fun h' => by
@@ -253,7 +255,7 @@ Nat.lt_wf.fix' H n
 
 protected def case_strong_rec_on {p : ℕ → Sort u} (a : ℕ)
   (hz : p 0) (hi : ∀ n, (∀ m, m ≤ n → p m) → p (succ n)) : p a :=
-Nat.strong_rec_on a fun | 0, _ => hz | n+1, ih => hi n ih
+Nat.strong_rec_on a fun | 0, _ => hz | n+1, ih => hi n (λ m w => ih m (lt_succ_of_le w))
 
 lemma mod_add_div (m k : ℕ) : m % k + k * (m / k) = m := by
   induction m, k using mod.inductionOn with rw [div_eq, mod_eq]
@@ -669,7 +671,7 @@ protected lemma mul_lt_mul' (h1 : a ≤ c) (h2 : b < d) (h3 : 0 < c) : a * b < c
 Nat.lt_of_le_of_lt (Nat.mul_le_mul_of_nonneg_right h1) (Nat.mul_lt_mul_of_pos_left h2 h3)
 
 lemma div_lt_self (h₁ : 0 < n) (h₂ : 1 < m) : n / m < n := by
-  have m_pos : 0 < m := Nat.lt_trans (by rfl) h₂
+  have m_pos : 0 < m := Nat.lt_trans Nat.zero_lt_one h₂
   suffices 1 * n < m * n by
     rw [Nat.one_mul, Nat.mul_comm] at this
     exact (Nat.div_lt_iff_lt_mul m_pos).2 this
