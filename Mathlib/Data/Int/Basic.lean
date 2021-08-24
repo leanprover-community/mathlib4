@@ -109,22 +109,18 @@ lemma subNatNat_elim (m n : ℕ) (P : ℕ → ℕ → ℤ → Prop)
   (hn : ∀i m, P m (m + i + 1) (-[1+ i])) :
   P m n (subNatNat m n) :=
 by
-  have H : ∀ k , n - m = k → P m n (@Nat.casesOn (λ _ => ℤ) k (ofNat (m-n)) negSucc) := by
+  have H : ∀ k , n - m = k → P m n (match n - m with | 0 => ofNat (m - n) | succ k => -[1+ k] : ℤ) := by
     intros k h
     cases k with
     | zero =>
-        simp
-        rw [Nat.sub_eq_zero_iff_le] at h
-        let i := m - n
-        -- so the second m-n doesn't get rewritten, don't know if there's a better way of doing that
-        change P m n (ofNat i)
-        rw [← Nat.add_sub_cancel_left n m, Nat.add_sub_assoc h]
+        have ⟨k, h⟩ := (Nat.le.dest (Nat.le_of_sub_eq_zero h))
+        rw [h.symm, Nat.add_sub_cancel_left, sub_self_add]
         apply hp
     | succ k =>
         simp
         have hle : m ≤ n := Nat.le_of_lt (Nat.lt_of_sub_eq_succ h)
         rw [Nat.sub_eq_iff_eq_add hle] at h
-        rw [h, Nat.add_comm]
+        rw [h, Nat.add_comm, Nat.add_sub_cancel_left]
         apply hn
   exact H _ rfl
 

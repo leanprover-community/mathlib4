@@ -116,8 +116,6 @@ lemma iff_true_intro (h : a) : a ↔ True := ⟨fun _ => ⟨⟩, fun _ => h⟩
 
 lemma iff_false_intro (h : ¬a) : a ↔ False := ⟨h, fun h => h.elim⟩
 
-lemma not_not_intro : a → ¬¬a := fun a h => h a
-
 lemma not_iff_false_intro (h : a) : ¬a ↔ False := iff_false_intro (not_not_intro h)
 
 lemma not_non_contradictory_iff_absurd (a : Prop) : ¬¬¬a ↔ ¬a := ⟨mt not_not_intro, not_not_intro⟩
