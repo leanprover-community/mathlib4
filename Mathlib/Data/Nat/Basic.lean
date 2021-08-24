@@ -33,19 +33,24 @@ protected lemma pos_iff_ne_zero {n : ℕ} : 0 < n ↔ n ≠ 0 := by
   | zero   => intro h; contradiction
   | succ n => intro _; apply succ_ne_zero
 
-protected lemma not_lt_of_le {n m : ℕ} (h₁ : m ≤ n) : ¬ n < m | h₂ => Nat.not_le_of_gt h₂ h₁
+protected lemma not_lt_of_le {n m : ℕ} (h₁ : m ≤ n) : ¬ n < m
+| h₂ => Nat.not_le_of_gt h₂ h₁
+
+protected lemma not_le_of_lt {n m : ℕ} : m < n → ¬ n ≤ m  := Nat.not_le_of_gt
 
 protected lemma lt_of_not_le {a b : ℕ} : ¬ a ≤ b → b < a := (Nat.lt_or_ge b a).resolve_right
+
+protected lemma le_of_not_lt {a b : ℕ} : ¬ a < b → b ≤ a := (Nat.lt_or_ge a b).resolve_left
 
 protected lemma le_or_le (a b : ℕ) : a ≤ b ∨ b ≤ a := (Nat.lt_or_ge _ _).imp_left Nat.le_of_lt
 
 protected lemma le_of_not_le {a b : ℕ} : ¬ a ≤ b → b ≤ a := (Nat.le_or_le _ _).resolve_left
 
 @[simp] protected lemma not_lt {n m : ℕ} : ¬ n < m ↔ m ≤ n :=
-⟨λ h => by simp [Nat.le_of_succ_le_succ (Nat.lt_of_not_le h)], Nat.not_lt_of_le⟩
+⟨Nat.le_of_not_lt, Nat.not_lt_of_le⟩
 
 @[simp] protected lemma not_le {n m : ℕ} : ¬ n ≤ m ↔ m < n :=
-⟨Nat.lt_of_not_le, λ h hn => (Nat.not_lt_of_le h) (Nat.succ_le_succ hn)⟩
+⟨Nat.lt_of_not_le, Nat.not_le_of_lt⟩
 
 protected lemma lt_or_eq_of_le {n m : ℕ} (h : n ≤ m) : n < m ∨ n = m :=
 (Nat.lt_or_ge _ _).imp_right (Nat.le_antisymm h)
