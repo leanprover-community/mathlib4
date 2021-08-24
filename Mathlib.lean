@@ -33,8 +33,11 @@ import Mathlib.Tactic.OpenPrivate
 import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.RunTac
+import Mathlib.Tactic.ShowTerm
 import Mathlib.Tactic.Split
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
+import Mathlib.Test.ShowTerm
+import Mathlib.Test.Split
 import Mathlib.Util.Export
 import Mathlib.Util.Time
