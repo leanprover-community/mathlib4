@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Scott Morrison
 -/
 import Lean.Elab.Tactic.Basic
-import Mathlib.Lean.Elab.Tactic
 
 open Lean
 open Lean.Meta
