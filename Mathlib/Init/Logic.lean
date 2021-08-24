@@ -546,4 +546,39 @@ lemma let_eq {α : Sort v} {β : Sort u} {a₁ a₂ : α} {b₁ b₂ : α → β
              a₁ = a₂ → (∀ x, b₁ x = b₂ x) → (let x : α := a₁; b₁ x) = (let x : α := a₂; b₂ x) :=
 λ h₁ h₂ => Eq.recOn (motive := λ a _ => (let x := a₁; b₁ x) = (let x := a; b₂ x)) h₁ (h₂ a₁)
 
--- TODO: `section relation` and `section binary`
+-- TODO: `section relation`
+
+section binary
+variable {α : Type u} {β : Type v}
+variable (f : α → α → α)
+variable (inv : α → α)
+variable (one : α)
+variable (g : α → α → α)
+
+def commutative        := ∀ a b, f a b = f b a
+def associative        := ∀ a b c, f (f a b) c = f a (f b c)
+def left_identity      := ∀ a, f one a = a
+def right_identity     := ∀ a, f a one = a
+def right_inverse      := ∀ a, f a (inv a) = one
+def left_cancelative   := ∀ a b c, f a b = f a c → b = c
+def right_cancelative  := ∀ a b c, f a b = f c b → a = c
+def left_distributive  := ∀ a b c, f a (g b c) = g (f a b) (f a c)
+def right_distributive := ∀ a b c, f (g a b) c = g (f a c) (f b c)
+def right_commutative (h : β → α → β) := ∀ b a₁ a₂, h (h b a₁) a₂ = h (h b a₂) a₁
+def left_commutative  (h : α → β → β) := ∀ a₁ a₂ b, h a₁ (h a₂ b) = h a₂ (h a₁ b)
+
+lemma left_comm : commutative f → associative f → left_commutative f :=
+by intros hcomm hassoc a b c
+   have h1 : f a (f b c) = f (f a b) c := Eq.symm (hassoc a b c)
+   have h2 : f (f a b) c = f (f b a) c := hcomm a b ▸ rfl
+   have h3 : f (f b a) c = f b (f a c) := hassoc b a c
+   rw [←h3, ←h2, ←h1]
+
+lemma right_comm : commutative f → associative f → right_commutative f :=
+by intros hcomm hassoc a b c
+   have h1 : f (f a b) c = f a (f b c) := hassoc a b c
+   have h2 : f a (f b c) = f a (f c b) := hcomm b c ▸ rfl
+   have h3 : f a (f c b) = f (f a c) b := Eq.symm (hassoc a c b)
+   rw [←h3, ←h2, ←h1]
+
+end binary
