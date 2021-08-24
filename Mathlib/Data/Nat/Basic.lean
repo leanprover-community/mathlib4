@@ -255,9 +255,7 @@ Nat.lt_wf.fix' H n
 
 protected def case_strong_rec_on {p : ℕ → Sort u} (a : ℕ)
   (hz : p 0) (hi : ∀ n, (∀ m, m ≤ n → p m) → p (succ n)) : p a :=
-Nat.strong_rec_on a fun | 0, _ => hz | n+1, ih => by
-     have ih' : (m : ℕ) → m ≤ n → p m := λ m hm => ih m (Nat.succ_le_succ hm)
-     exact hi n ih'
+Nat.strong_rec_on a fun | 0, _ => hz | n+1, ih => hi n (λ m w => ih m (lt_succ_of_le w))
 
 lemma mod_add_div (m k : ℕ) : m % k + k * (m / k) = m := by
   induction m, k using mod.inductionOn with rw [div_eq, mod_eq]
