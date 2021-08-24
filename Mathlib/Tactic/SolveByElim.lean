@@ -1,0 +1,34 @@
+/-
+Copyright (c) 2021 Scott Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Author: Scott Morrison
+-/
+import Lean.Meta.Tactic.Apply
+import Lean.Elab.Tactic.Basic
+import Mathlib.Lean.LocalContext
+
+/-!
+A primitive replacement for Lean3's `solve_by_elim` tactic.
+We'll gradually bring it up to feature parity.
+-/
+
+open Lean.Elab.Tactic
+
+/-- Attempt to solve the given metavariable by repeating applying a local hypothesis. -/
+def Lean.Meta.solveByElim : Nat → MVarId → MetaM Unit
+  | 0, mvarId => throwError "fail"
+  | (n+1), mvarId => do
+      -- We attempt to find a local declaration which can be applied,
+      -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
+      (← getLCtx).firstDeclM fun localDecl => do
+        guard ¬ localDecl.isAuxDecl
+        for g in (← apply mvarId localDecl.toExpr) do solveByElim n g
+
+namespace Lean.Elab
+namespace Tactic
+
+elab "solveByElim" : tactic => withMainContext do
+  Meta.solveByElim 6 (← getMainGoal)
+
+end Tactic
+end Lean.Elab
