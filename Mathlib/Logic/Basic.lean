@@ -323,7 +323,7 @@ theorem or_of_or_of_imp_right (h₁ : c ∨ a) (h : a → b) : c ∨ b :=
 Or.imp_right h h₁
 
 theorem Or.elim3 (h : a ∨ b ∨ c) (ha : a → d) (hb : b → d) (hc : c → d) : d :=
-Or.elim_on h ha (λ h₂ => Or.elim_on h₂ hb hc)
+Or.elim h ha (λ h₂ => Or.elim h₂ hb hc)
 
 theorem or_imp_distrib : (a ∨ b → c) ↔ (a → c) ∧ (b → c) :=
 ⟨fun h => ⟨fun ha => h (Or.inl ha), fun hb => h (Or.inr hb)⟩,
@@ -529,7 +529,7 @@ def decidable_of_bool : ∀ (b : Bool) (h : b ↔ a), Decidable a
 /-! ### De Morgan's laws -/
 
 theorem not_and_of_not_or_not (h : ¬ a ∨ ¬ b) : ¬ (a ∧ b)
-| ⟨ha, hb⟩ => Or.elim_on h (absurd ha) (absurd hb)
+| ⟨ha, hb⟩ => Or.elim h (absurd ha) (absurd hb)
 
 -- See Note [decidable namespace]
 protected theorem Decidable.not_and_distrib [Decidable a] : ¬ (a ∧ b) ↔ ¬a ∨ ¬b :=
@@ -552,7 +552,7 @@ not_and.trans imp_not_comm
 conjunction of the negations. -/
 theorem not_or_distrib : ¬ (a ∨ b) ↔ ¬ a ∧ ¬ b :=
 ⟨λ h => ⟨λ ha => h (Or.inl ha), λ hb => h (Or.inr hb)⟩,
- λ ⟨h₁, h₂⟩ h => Or.elim_on h h₁ h₂⟩
+ λ ⟨h₁, h₂⟩ h => Or.elim h h₁ h₂⟩
 
 -- See Note [decidable namespace]
 protected theorem Decidable.or_iff_not_and_not [Decidable a] [Decidable b] : a ∨ b ↔ ¬ (¬a ∧ ¬b) :=

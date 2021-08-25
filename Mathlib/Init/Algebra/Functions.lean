@@ -113,12 +113,12 @@ max_eq_right (le_of_lt h)
 /- these use the fact that it is a linear ordering -/
 
 lemma lt_min {a b c : α} (h₁ : a < b) (h₂ : a < c) : a < min b c :=
-Or.elim_on (le_or_gt b c)
+Or.elim (le_or_gt b c)
   (λ h : b ≤ c => by rwa [min_eq_left h])
   (λ h : b > c => by rwa [min_eq_right_of_lt h])
 
 lemma max_lt {a b c : α} (h₁ : a < c) (h₂ : b < c) : max a b < c :=
-Or.elim_on (le_or_gt a b)
+Or.elim (le_or_gt a b)
   (λ h : a ≤ b => by rwa [max_eq_right h])
   (λ h : a > b => by rwa [max_eq_left_of_lt h])
 
