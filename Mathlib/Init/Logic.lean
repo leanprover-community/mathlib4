@@ -68,14 +68,6 @@ lemma And.symm : a ∧ b → b ∧ a | ⟨ha, hb⟩ => ⟨hb, ha⟩
 
 /- or -/
 
-lemma Or.elim {a b c : Prop} (h₁ : a → c) (h₂ : b → c) : (h : a ∨ b) → c
-| inl ha => h₁ ha
-| inr hb => h₂ hb
-
--- Port note: in Lean 3, this is named Or.elim.
-lemma Or.elim_on (h₁ : a ∨ b) (h₂ : a → c) (h₃ : b → c) : c :=
-Or.rec (motive := λ _ => c) h₂ h₃ h₁
-
 lemma non_contradictory_em (a : Prop) : ¬¬(a ∨ ¬a) :=
 λ not_em : ¬(a ∨ ¬a) =>
   have neg_a : ¬a := λ pos_a : a => absurd (Or.inl pos_a) not_em
@@ -242,12 +234,12 @@ lemma not_or (p q) : ¬ (p ∨ q) ↔ ¬ p ∧ ¬ q :=
 /- or resolution rules -/
 
 lemma Or.resolve_left {a b : Prop} (h: a ∨ b) (na : ¬ a) : b :=
-Or.elim_on h (λ ha => absurd ha na) id
+Or.elim h (λ ha => absurd ha na) id
 
 lemma Or.neg_resolve_left (h : ¬a ∨ b) (ha : a) : b := h.elim (absurd ha) id
 
 lemma Or.resolve_right {a b : Prop} (h: a ∨ b) (nb : ¬ b) : a :=
-Or.elim_on h id (λ hb => absurd hb nb)
+Or.elim h id (λ hb => absurd hb nb)
 
 lemma Or.neg_resolve_right (h : a ∨ ¬b) (nb : b) : a := h.elim id (absurd nb)
 
@@ -341,7 +333,7 @@ namespace Decidable
             match d₂ with
             | isTrue h₂  => False.elim $ h (Or.inr h₂)
             | isFalse h₂ => ⟨h₁, h₂⟩)
-    (λ ⟨np, nq⟩ h => Or.elim_on h np nq)
+    (λ ⟨np, nq⟩ h => Or.elim h np nq)
 
 end Decidable
 
@@ -358,7 +350,7 @@ section
                                    (h : p ∨ q) (h₁ : p → α) (h₂ : q → α) : α :=
   if hp : p then h₁ hp else
     if hq : q then h₂ hq else
-      False.elim (Or.elim_on h hp hq)
+      False.elim (Or.elim h hp hq)
 end
 
 section
