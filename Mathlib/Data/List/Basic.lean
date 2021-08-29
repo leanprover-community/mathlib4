@@ -348,11 +348,6 @@ lemma bind_map {g : α → List β} {f : β → γ} :
 
 /-! ### length -/
 
-@[simp] lemma length_append (s t : List α) : length (s ++ t) = length s + length t := by
-  induction s with
-  | nil => simp
-  | cons a s ih => simp [ih, Nat.add_comm, Nat.add_left_comm, Nat.succ_add]
-
 -- @[simp] lemma length_repeat (a : α) (n : ℕ) : length (repeat a n) = n :=
 -- by induction n; simp [*]; refl
 
