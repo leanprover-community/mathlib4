@@ -43,19 +43,6 @@ lemma Exists.nonempty {p : α → Prop} : (∃ x, p x) → Nonempty α | ⟨x, _
 
 lemma ite_id [h : Decidable c] {α} (t : α) : (if c then t else t) = t := by cases h <;> rfl
 
-namespace WellFounded
-
-variable {α : Sort u} {C : α → Sort v} {r : α → α → Prop}
-
-unsafe def fix'.impl (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x :=
-  F x fun y _ => impl hwf F y
-
-set_option codegen false in
-@[implementedBy fix'.impl]
-def fix' (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x := hwf.fix F x
-
-end WellFounded
-
 end needs_better_home
 
 -- Below are items ported from mathlib3/src/logic/basic.lean.

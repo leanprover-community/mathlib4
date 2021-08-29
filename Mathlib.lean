@@ -19,6 +19,8 @@ import Mathlib.Dvd
 import Mathlib.Function
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
+import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Logic
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Basic
