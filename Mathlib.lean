@@ -17,6 +17,7 @@ import Mathlib.Data.Subtype
 import Mathlib.Data.UInt
 import Mathlib.Dvd
 import Mathlib.Function
+import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Logic
 import Mathlib.Lean.LocalContext
