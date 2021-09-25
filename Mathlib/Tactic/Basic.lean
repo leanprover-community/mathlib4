@@ -79,7 +79,7 @@ example : ∀ a b : Nat, a = b → b = a := by
   introv h
   exact h.symm
 
-macro "assumption'" : tactic => `(allGoals assumption)
+macro "assumption'" : tactic => `(all_goals assumption)
 
 elab "exacts" "[" hs:term,* "]" : tactic => do
   for stx in hs.getElems do
@@ -219,8 +219,8 @@ elab "anyGoals " seq:tacticSeq : tactic => do
 example (p q : Prop) : p → q → (p ∧ q) ∧ (p ∧ q ∧ p) := by
   intros
   split
-  failIfSuccess anyGoals assumption
-  allGoals split
-  anyGoals assumption
+  fail_if_success any_goals assumption
+  all_goals split
+  any_goals assumption
   split
-  anyGoals assumption
+  any_goals assumption

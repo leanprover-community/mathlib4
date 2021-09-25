@@ -31,7 +31,6 @@ lemma subNatNat_of_sub_eq_zero {m n : ℕ} (h : n - m = 0) : subNatNat m n = ofN
   | succ k => -[1+ k]
   ) = ofNat (m - n)
   rw [h]
-  rfl
 
 lemma subNatNat_of_sub_eq_succ {m n k : ℕ} (h : n - m = succ k) : subNatNat m n = -[1+ k] := by
   show (match n - m with
@@ -132,7 +131,6 @@ by
           | succ k => -[1+ k]) = ofNat n
   rw [Nat.sub_eq_zero_of_le (Nat.le_add_right _ _)]
   rw [Nat.add_sub_cancel_left]
-  rfl
 
 lemma subNatNat_add_right {m n : ℕ} : subNatNat m (m + n + 1) = negSucc n := by
   change (match m + n + 1 - m with
@@ -459,7 +457,6 @@ lemma ofNat_sub {n m : ℕ} (h : m ≤ n) : ofNat (n - m) = ofNat n - ofNat m :=
     show ofNat (n - succ m) = subNatNat n (succ m)
     simp [subNatNat, subNatNat] -- TODO: How to avoid having to simp through rename definitions to unfold them?
     rw [sub_eq_zero_of_le h]
-    rfl
 
 protected lemma add_left_comm (a b c : ℤ) : a + (b + c) = b + (a + c) :=
 by rw [← Int.add_assoc, Int.add_comm a, Int.add_assoc]
