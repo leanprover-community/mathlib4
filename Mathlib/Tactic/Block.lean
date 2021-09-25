@@ -57,7 +57,6 @@ def focusAndBlock (tac : TacticM Unit) : TacticM Unit := do
   closeAllOrAdmit
   setGoals mvarIds
 
-open private evalManyTacticOptSemi in evalTacticSeq1Indented in
 -- TODO: why doesn't `tacticSeq?` work here?
 elab (name := block) tk:"-" tacs:optional(tacticSeq) : tactic =>
   withRef tk $ do

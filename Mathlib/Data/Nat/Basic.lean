@@ -247,8 +247,6 @@ if h : n ≥ m then by rw [Nat.min_eq_right h] else by
 @[simp] lemma sub_add_min_cancel (n m : ℕ) : n - m + Nat.min n m = n :=
 by rw [sub_eq_sub_min, Nat.sub_add_cancel (Nat.min_le_left n m)]
 
-protected def lt_wf := @Nat.ltWf
-
 protected def strong_rec_on {p : ℕ → Sort u}
   (n : ℕ) (H : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
 Nat.lt_wf.fix' H n
@@ -494,7 +492,7 @@ def Up (ub a i : ℕ) := i < a ∧ i < ub
 lemma Up.next {ub i} (h : i < ub) : Up ub (i+1) i := ⟨Nat.lt_succ_self _, h⟩
 
 lemma Up.WF (ub) : WellFounded (Up ub) :=
-  Subrelation.wf (h₂ := measureWf (ub - .)) @fun a i ⟨ia, iu⟩ => Nat.sub_lt_sub_left iu ia
+  Subrelation.wf (h₂ := measure (ub - .)) @fun a i ⟨ia, iu⟩ => Nat.sub_lt_sub_left iu ia
 
 /- mod -/
 

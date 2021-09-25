@@ -163,7 +163,7 @@ theorem lex_def (r : α → α → Prop) (s : β → β → Prop)
 instance Lex.decidable [DecidableEq α]
   (r : α → α → Prop) (s : β → β → Prop) [DecidableRel r] [DecidableRel s] :
   DecidableRel (Prod.Lex r s) :=
-λ p q => decidable_of_decidable_of_iff (by inferInstance) (lex_def r s).symm
+λ p q => decidable_of_decidable_of_iff (by infer_instance) (lex_def r s).symm
 
 end Prod
 
@@ -183,4 +183,3 @@ lemma Function.surjective.prod_map {f : α → γ} {g : β → δ} (hf : surject
 λ p => let ⟨x, hx⟩ := hf p.1
        let ⟨y, hy⟩ := hg p.2
        ⟨(x, y), Prod.ext' hx hy⟩
-
