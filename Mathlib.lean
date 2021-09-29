@@ -38,7 +38,7 @@ import Mathlib.Tactic.RunTac
 import Mathlib.Tactic.Split
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
-import Mathlib.Test.Split
 import Mathlib.Test.Find
+import Mathlib.Test.Split
 import Mathlib.Util.Export
 import Mathlib.Util.Time
