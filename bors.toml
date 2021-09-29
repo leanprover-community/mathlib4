@@ -1,0 +1,6 @@
+status = ["Build"]
+use_squash_merge = true
+timeout_sec = 28800
+block_labels = ["not-ready-to-merge", "WIP", "blocked-by-other-PR", "merge-conflict"]
+delete_merged_branches = true
+cut_body_after = "---"
