@@ -15,10 +15,6 @@ namespace Nat
 
 --- TODO all of these dvd preliminaries belong elsewhere.
 
-instance : Dvd ℕ where
-  dvd a b := ∃ c, b = a * c
-
-protected theorem dvd_mul_right (a b : ℕ) : a ∣ a * b := ⟨b, rfl⟩
 protected theorem dvd_mul_left (a b : ℕ) : a ∣ b * a := Exists.intro b (Nat.mul_comm b a)
 protected theorem dvd_refl (a : ℕ) : a ∣ a := Exists.intro 1 (by simp)
 protected theorem dvd_zero (a : ℕ) : a ∣ 0 := Exists.intro 0 (by simp)
@@ -37,91 +33,6 @@ Nat.mul_dvd_mul (Nat.dvd_refl a) h
 protected theorem mul_dvd_mul_right {a b : ℕ} (h: a ∣ b) (c : ℕ) : a * c ∣ b * c :=
 Nat.mul_dvd_mul h (Nat.dvd_refl c)
 
-protected theorem dvd_trans {a b c : ℕ} (h₁ : a ∣ b) (h₂ : b ∣ c) : a ∣ c :=
-match h₁, h₂ with
-| ⟨d, (h₃ : b = a * d)⟩, ⟨e, (h₄ : c = b * e)⟩ =>
-  ⟨d * e, show c = a * (d * e) by simp[h₃,h₄, Nat.mul_assoc]⟩
-
-protected theorem eq_zero_of_zero_dvd {a : ℕ} (h : 0 ∣ a) : a = 0 :=
-  Exists.elim h (λ c (H' : a = 0 * c) => Eq.trans H' (Nat.zero_mul c))
-
-protected theorem dvd_add {a b c : ℕ} (h₁ : a ∣ b) (h₂ : a ∣ c) : a ∣ b + c :=
-  Exists.elim h₁ (λ d hd => Exists.elim h₂ (λ e he => ⟨d + e, by simp[Nat.left_distrib, hd, he]⟩))
-
-protected theorem dvd_add_iff_right {k m n : ℕ} (h : k ∣ m) : k ∣ n ↔ k ∣ m + n :=
-  ⟨Nat.dvd_add h,
-   Exists.elim h $ λd hd =>
-     match m, hd with
-     | _, rfl => λh₂ => Exists.elim h₂ $ λe he =>
-          ⟨e - d, by rw [Nat.mul_sub_left_distrib, ←he, Nat.add_sub_cancel_left]⟩⟩
-
-protected theorem dvd_add_iff_left {k m n : ℕ} (h : k ∣ n) : k ∣ m ↔ k ∣ m + n :=
-  by rw [Nat.add_comm]
-     exact Nat.dvd_add_iff_right h
-
-theorem dvd_sub {k m n : ℕ} (H : n ≤ m) (h₁ : k ∣ m) (h₂ : k ∣ n) : k ∣ m - n :=
-  (Nat.dvd_add_iff_left h₂).mpr $ by rw [Nat.sub_add_cancel H]
-                                        exact h₁
-
-theorem dvd_mod_iff {k m n : ℕ} (h: k ∣ n) : k ∣ m % n ↔ k ∣ m :=
-  let t := @Nat.dvd_add_iff_left _ (m % n) _ (Nat.dvd_trans h (Nat.dvd_mul_right n (m / n)))
-  by rwa [mod_add_div] at t
-
-theorem le_of_dvd {m n : ℕ} (h : 0 < n) : m ∣ n → m ≤ n :=
- λ⟨k,e⟩ => by
-   revert h
-   rw [e]
-   match k with
-   | 0 => intro hn
-          simp at hn
-   | pk+1 => intro _
-             let t := Nat.mul_le_mul_left m (succ_pos pk)
-             rwa [Nat.mul_one] at t
-
-theorem dvd_antisymm : ∀ {m n : ℕ}, m ∣ n → n ∣ m → m = n
-| m,     0, h₁, h₂ => Nat.eq_zero_of_zero_dvd h₂
-| 0,     n, h₁, h₂ => (Nat.eq_zero_of_zero_dvd h₁).symm
-| m+1, n+1, h₁, h₂ => Nat.le_antisymm (le_of_dvd (succ_pos _) h₁) (le_of_dvd (succ_pos _) h₂)
-
-theorem pos_of_dvd_of_pos {m n : ℕ} (H1 : m ∣ n) (H2 : 0 < n) : 0 < m :=
-Nat.pos_of_ne_zero $ λ m0 =>
-  by rw [m0] at H1
-     rw [Nat.eq_zero_of_zero_dvd H1] at H2
-     exact Nat.lt_irrefl _ H2
-
-theorem eq_one_of_dvd_one {n : ℕ} (H : n ∣ 1) : n = 1 :=
-  Nat.le_antisymm
-   (le_of_dvd (of_decide_eq_true (by trivial)) H)
-   (pos_of_dvd_of_pos H (of_decide_eq_true (by trivial)))
-
-theorem dvd_of_mod_eq_zero {m n : ℕ} (H : n % m = 0) : m ∣ n :=
-Exists.intro
-  (n / m)
-  (by have t := (mod_add_div n m).symm
-      rwa [H, Nat.zero_add] at t)
-
-theorem mod_eq_zero_of_dvd {m n : ℕ} (H : m ∣ n) : n % m = 0 :=
-Exists.elim H (λ z H1 => by rw [H1, mul_mod_right])
-
-theorem dvd_iff_mod_eq_zero (m n : ℕ) : m ∣ n ↔ n % m = 0 :=
-Iff.intro mod_eq_zero_of_dvd dvd_of_mod_eq_zero
-
-protected theorem mul_div_cancel' {m n : ℕ} (H : n ∣ m) : n * (m / n) = m :=
- let t := mod_add_div m n
- by rwa [mod_eq_zero_of_dvd H, Nat.zero_add] at t
-
-protected theorem div_mul_cancel {m n : ℕ} (H: n ∣ m) : m / n * n = m :=
-  by rw [Nat.mul_comm, Nat.mul_div_cancel' H]
-
-protected theorem mul_div_assoc (m : ℕ) {n k : ℕ} (H : k ∣ n) : m * n / k = m * (n / k) :=
-match Nat.eq_zero_or_pos k with
-| Or.inl h0 => by rw [h0, Nat.div_zero, Nat.div_zero, Nat.mul_zero]
-| Or.inr hpos => by have h1 : m * n / k = m *(n / k * k) / k := by rw [Nat.div_mul_cancel H]
-                    rw [h1, ← Nat.mul_assoc, Nat.mul_div_cancel _ hpos]
-
-protected theorem dvd_of_mul_dvd_mul_left {m n k : ℕ} (kpos : 0 < k) (H : k * m ∣ k * n) : m ∣ n :=
-Exists.elim H (λ l H1 => by rw [Nat.mul_assoc] at H1
-                            exact ⟨_, Nat.eq_of_mul_eq_mul_left kpos H1⟩)
 ----
 -- Here's where we get into the main gcd results
 
