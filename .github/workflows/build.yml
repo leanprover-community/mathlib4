@@ -5,8 +5,6 @@ on:
       - 'staging.tmp*'
       - 'trying.tmp*'
       - 'staging*.tmp'
-      # ignore staging branch used by bors, this is handled by bors.yml
-      - 'staging'
   pull_request:
 
 name: ci
