@@ -18,13 +18,13 @@ import Mathlib.Tactic.Spread
 class Zero (α : Type u) where
   zero : α
 
-instance [Zero α] : OfNat α (nat_lit 0) where
+instance instOfNatZero [Zero α] : OfNat α (nat_lit 0) where
   ofNat := Zero.zero
 
 class One (α : Type u) where
   one : α
 
-instance [One α] : OfNat α (nat_lit 1) where
+instance instOfNatOne [One α] : OfNat α (nat_lit 1) where
   ofNat := One.one
 
 class Inv (α : Type u) where

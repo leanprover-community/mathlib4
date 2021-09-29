@@ -50,11 +50,11 @@ theorem mem_remove_iff {a b : α} {as : List α} : b ∈ remove a as ↔ b ∈ a
     | inr h =>
       simp [if_neg h, ih]
       split
-        focus
+      { focus
         intro h'
         cases h' with
         | inl h₁ => exact ⟨Or.inl h₁, h₁.symm ▸ (Ne.symm h)⟩
-        | inr h₁ => exact ⟨Or.inr h₁.1, h₁.2⟩
+        | inr h₁ => exact ⟨Or.inr h₁.1, h₁.2⟩ }
       intro ⟨h1, h2⟩
       cases h1 with
       | inl h1' => exact Or.inl h1'

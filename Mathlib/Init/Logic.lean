@@ -44,14 +44,14 @@ lemma cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h₂ 
 def eq_rec_heq := @eqRec_heq
 
 lemma heq_of_eq_rec_left {φ : α → Sort v} {a a' : α} {p₁ : φ a} {p₂ : φ a'} :
-  (e : a = a') → (h₂ : Eq.rec (motive := fun a _ => φ a) p₁ e = p₂) → p₁ ≅ p₂
+  (e : a = a') → (h₂ : Eq.rec (motive := fun a _ => φ a) p₁ e = p₂) → HEq p₁ p₂
 | rfl, rfl => HEq.rfl
 
 lemma heq_of_eq_rec_right {φ : α → Sort v} {a a' : α} {p₁ : φ a} {p₂ : φ a'} :
-  (e : a' = a) → (h₂ : p₁ = Eq.rec (motive := fun a _ => φ a) p₂ e) → p₁ ≅ p₂
+  (e : a' = a) → (h₂ : p₁ = Eq.rec (motive := fun a _ => φ a) p₂ e) → HEq p₁ p₂
 | rfl, rfl => HEq.rfl
 
-lemma of_heq_true (h : a ≅ True) : a := of_eq_true (eq_of_heq h)
+lemma of_heq_true (h : HEq a True) : a := of_eq_true (eq_of_heq h)
 
 -- TODO eq_rec_compose
 
@@ -138,7 +138,7 @@ lemma ne_self_iff_false (a : α) : a ≠ a ↔ False := not_iff_false_intro rfl
 
 @[simp] lemma eq_self_iff_true (a : α) : a = a ↔ True := iff_true_intro rfl
 
-lemma heq_self_iff_true (a : α) : a ≅ a ↔ True := iff_true_intro HEq.rfl
+lemma heq_self_iff_true (a : α) : HEq a a ↔ True := iff_true_intro HEq.rfl
 
 lemma iff_not_self : ¬(a ↔ ¬a) | H => let f h := H.1 h h; f (H.2 f)
 
@@ -527,7 +527,7 @@ lemma let_value_eq {α : Sort u} {β : Sort v} {a₁ a₂ : α} (b : α → β) 
 λ h => Eq.recOn (motive := (λ a _ => (let x : α := a₁; b x) = (let x : α := a; b x))) h rfl
 
 lemma let_value_heq {α : Sort v} {β : α → Sort u} {a₁ a₂ : α} (b : ∀ x : α, β x) :
-                    a₁ = a₂ → (let x : α := a₁; b x) ≅ (let x : α := a₂; b x) :=
+                    a₁ = a₂ → HEq (let x : α := a₁; b x) (let x : α := a₂; b x) :=
 by intro h; rw [h]; exact HEq.refl _
 
 lemma let_body_eq {α : Sort v} {β : α → Sort u} (a : α) {b₁ b₂ : ∀ x : α, β x} :
@@ -574,3 +574,20 @@ by intros hcomm hassoc a b c
    rw [←h3, ←h2, ←h1]
 
 end binary
+
+-- We define a fix' function here because the fix function in the Lean 4 prelude has
+-- `set_option codegen false`.
+
+namespace WellFounded
+
+variable {α : Sort u} {C : α → Sort v} {r : α → α → Prop}
+
+unsafe def fix'.impl (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x :=
+  F x fun y _ => impl hwf F y
+
+set_option codegen false in
+@[implementedBy fix'.impl]
+def fix' (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x := hwf.fix F x
+
+end WellFounded
+
