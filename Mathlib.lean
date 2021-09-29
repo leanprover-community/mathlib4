@@ -22,6 +22,7 @@ import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Logic
+import Mathlib.Lean.LocalContext
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Basic
 import Mathlib.Set
@@ -37,10 +38,12 @@ import Mathlib.Tactic.OpenPrivate
 import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.RunTac
+import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Split
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Test.Find
+import Mathlib.Test.SolveByElim
 import Mathlib.Test.Split
 import Mathlib.Util.Export
 import Mathlib.Util.Time
