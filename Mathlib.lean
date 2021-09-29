@@ -28,6 +28,7 @@ import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Block
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Core
+import Mathlib.Tactic.Find
 import Mathlib.Tactic.NoMatch
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.OpenPrivate
@@ -37,6 +38,7 @@ import Mathlib.Tactic.RunTac
 import Mathlib.Tactic.Split
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
+import Mathlib.Test.Find
 import Mathlib.Test.Split
 import Mathlib.Util.Export
 import Mathlib.Util.Time
