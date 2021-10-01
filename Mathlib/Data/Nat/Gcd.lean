@@ -134,14 +134,10 @@ pos_of_dvd_of_pos (gcd_dvd_left m n) mpos
 theorem gcd_pos_of_pos_right (m : ℕ) {n : ℕ} (npos : 0 < n) : 0 < gcd m n :=
 pos_of_dvd_of_pos (gcd_dvd_right m n) npos
 
--- TODO this belongs elsewhere
-protected lemma ne_of_lt {a b : ℕ} (h : a < b) : a ≠ b :=
-λ he => absurd h (he ▸ Nat.lt_irrefl a)
-
 theorem eq_zero_of_gcd_eq_zero_left {m n : ℕ} (H : gcd m n = 0) : m = 0 :=
 match eq_zero_or_pos m with
 | Or.inl H0 => H0
-| Or.inr H1 => absurd (Eq.symm H) (Nat.ne_of_lt (gcd_pos_of_pos_left _ H1))
+| Or.inr H1 => absurd (Eq.symm H) (ne_of_lt (gcd_pos_of_pos_left _ H1))
 
 theorem eq_zero_of_gcd_eq_zero_right {m n : ℕ} (H : gcd m n = 0) : n = 0 :=
 by rw [gcd_comm] at H
