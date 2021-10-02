@@ -48,7 +48,7 @@ theorem gcd.induction
   (H0 : ∀n, P 0 n)
   (H1 : ∀ m n, 0 < m → P (n % m) m → P m n) :
   P m n :=
-  @WellFounded.induction _ _ lt_wf (λ m => ∀ n, P m n) m
+  @WellFounded.induction _ _ lt_wfRel.wf (λ m => ∀ n, P m n) m
     (λ k IH =>
       match k with
       | 0 => H0

@@ -99,6 +99,6 @@ def Up (ub a i : ℕ) := i < a ∧ i < ub
 lemma Up.next {ub i} (h : i < ub) : Up ub (i+1) i := ⟨Nat.lt_succ_self _, h⟩
 
 lemma Up.WF (ub) : WellFounded (Up ub) :=
-  Subrelation.wf (h₂ := measure (ub - .)) @fun a i ⟨ia, iu⟩ => Nat.sub_lt_sub_left iu ia
+  Subrelation.wf (h₂ := (measure (ub - .)).wf) @fun a i ⟨ia, iu⟩ => Nat.sub_lt_sub_left iu ia
 
 end Nat

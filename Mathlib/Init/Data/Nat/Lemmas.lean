@@ -236,7 +236,7 @@ by rw [sub_eq_sub_min, Nat.sub_add_cancel (min_le_left n m)]
 
 protected def strong_rec_on {p : ℕ → Sort u}
   (n : ℕ) (H : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
-Nat.lt_wf.fix' H n
+Nat.lt_wfRel.wf.fix' H n
 
 protected lemma strong_induction_on {p : Nat → Prop} (n : Nat) (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
 Nat.strong_rec_on n h
