@@ -77,7 +77,7 @@ instance (R : Type u) [CommRing R] : CommSemiring R where
 namespace Nat
 
 instance : Numeric Nat := ⟨id⟩
-@[simp] theorem ofNat_eq_Nat (n : Nat): Numeric.ofNat n = n := rfl
+@[simp] theorem ofNat_eq_Nat (n : Nat) : Numeric.ofNat n = n := rfl
 
 instance : CommSemiring Nat where
   mul_comm := Nat.mul_comm
@@ -89,7 +89,7 @@ instance : CommSemiring Nat where
   ofNat_zero := rfl
   mul_one := Nat.mul_one
   one_mul := Nat.one_mul
-  npow (n x) := HPow.hPow x n
+  npow (n x) := x ^ n
   npow_zero' := Nat.pow_zero
   npow_succ' n x := by simp [Nat.pow_succ, Nat.mul_comm]
   one := 1
@@ -99,7 +99,7 @@ instance : CommSemiring Nat where
   add_assoc := Nat.add_assoc
   add_zero := Nat.add_zero
   zero_add := Nat.zero_add
-  nsmul := HMul.hMul
+  nsmul := (·*·)
   nsmul_zero' := Nat.zero_mul
   nsmul_succ' n x := by simp [Nat.add_comm, (Nat.succ_mul n x)]
   zero_mul := Nat.zero_mul

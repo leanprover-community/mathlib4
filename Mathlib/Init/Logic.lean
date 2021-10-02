@@ -44,14 +44,14 @@ lemma cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h₂ 
 def eq_rec_heq := @eqRec_heq
 
 lemma heq_of_eq_rec_left {φ : α → Sort v} {a a' : α} {p₁ : φ a} {p₂ : φ a'} :
-  (e : a = a') → (h₂ : Eq.rec (motive := fun a _ => φ a) p₁ e = p₂) → p₁ ≅ p₂
+  (e : a = a') → (h₂ : Eq.rec (motive := fun a _ => φ a) p₁ e = p₂) → HEq p₁ p₂
 | rfl, rfl => HEq.rfl
 
 lemma heq_of_eq_rec_right {φ : α → Sort v} {a a' : α} {p₁ : φ a} {p₂ : φ a'} :
-  (e : a' = a) → (h₂ : p₁ = Eq.rec (motive := fun a _ => φ a) p₂ e) → p₁ ≅ p₂
+  (e : a' = a) → (h₂ : p₁ = Eq.rec (motive := fun a _ => φ a) p₂ e) → HEq p₁ p₂
 | rfl, rfl => HEq.rfl
 
-lemma of_heq_true (h : a ≅ True) : a := of_eq_true (eq_of_heq h)
+lemma of_heq_true (h : HEq a True) : a := of_eq_true (eq_of_heq h)
 
 -- TODO eq_rec_compose
 
@@ -67,14 +67,6 @@ lemma and.swap : a ∧ b → b ∧ a :=
 lemma And.symm : a ∧ b → b ∧ a | ⟨ha, hb⟩ => ⟨hb, ha⟩
 
 /- or -/
-
-lemma Or.elim {a b c : Prop} (h₁ : a → c) (h₂ : b → c) : (h : a ∨ b) → c
-| inl ha => h₁ ha
-| inr hb => h₂ hb
-
--- Port note: in Lean 3, this is named Or.elim.
-lemma Or.elim_on (h₁ : a ∨ b) (h₂ : a → c) (h₃ : b → c) : c :=
-Or.rec (motive := λ _ => c) h₂ h₃ h₁
 
 lemma non_contradictory_em (a : Prop) : ¬¬(a ∨ ¬a) :=
 λ not_em : ¬(a ∨ ¬a) =>
@@ -146,7 +138,7 @@ lemma ne_self_iff_false (a : α) : a ≠ a ↔ False := not_iff_false_intro rfl
 
 @[simp] lemma eq_self_iff_true (a : α) : a = a ↔ True := iff_true_intro rfl
 
-lemma heq_self_iff_true (a : α) : a ≅ a ↔ True := iff_true_intro HEq.rfl
+lemma heq_self_iff_true (a : α) : HEq a a ↔ True := iff_true_intro HEq.rfl
 
 lemma iff_not_self : ¬(a ↔ ¬a) | H => let f h := H.1 h h; f (H.2 f)
 
@@ -242,12 +234,12 @@ lemma not_or (p q) : ¬ (p ∨ q) ↔ ¬ p ∧ ¬ q :=
 /- or resolution rules -/
 
 lemma Or.resolve_left {a b : Prop} (h: a ∨ b) (na : ¬ a) : b :=
-Or.elim_on h (λ ha => absurd ha na) id
+Or.elim h (λ ha => absurd ha na) id
 
 lemma Or.neg_resolve_left (h : ¬a ∨ b) (ha : a) : b := h.elim (absurd ha) id
 
 lemma Or.resolve_right {a b : Prop} (h: a ∨ b) (nb : ¬ b) : a :=
-Or.elim_on h id (λ hb => absurd hb nb)
+Or.elim h id (λ hb => absurd hb nb)
 
 lemma Or.neg_resolve_right (h : a ∨ ¬b) (nb : b) : a := h.elim id (absurd nb)
 
@@ -341,7 +333,7 @@ namespace Decidable
             match d₂ with
             | isTrue h₂  => False.elim $ h (Or.inr h₂)
             | isFalse h₂ => ⟨h₁, h₂⟩)
-    (λ ⟨np, nq⟩ h => Or.elim_on h np nq)
+    (λ ⟨np, nq⟩ h => Or.elim h np nq)
 
 end Decidable
 
@@ -358,7 +350,7 @@ section
                                    (h : p ∨ q) (h₁ : p → α) (h₂ : q → α) : α :=
   if hp : p then h₁ hp else
     if hq : q then h₂ hq else
-      False.elim (Or.elim_on h hp hq)
+      False.elim (Or.elim h hp hq)
 end
 
 section
@@ -535,7 +527,7 @@ lemma let_value_eq {α : Sort u} {β : Sort v} {a₁ a₂ : α} (b : α → β) 
 λ h => Eq.recOn (motive := (λ a _ => (let x : α := a₁; b x) = (let x : α := a; b x))) h rfl
 
 lemma let_value_heq {α : Sort v} {β : α → Sort u} {a₁ a₂ : α} (b : ∀ x : α, β x) :
-                    a₁ = a₂ → (let x : α := a₁; b x) ≅ (let x : α := a₂; b x) :=
+                    a₁ = a₂ → HEq (let x : α := a₁; b x) (let x : α := a₂; b x) :=
 by intro h; rw [h]; exact HEq.refl _
 
 lemma let_body_eq {α : Sort v} {β : α → Sort u} (a : α) {b₁ b₂ : ∀ x : α, β x} :
@@ -546,4 +538,56 @@ lemma let_eq {α : Sort v} {β : Sort u} {a₁ a₂ : α} {b₁ b₂ : α → β
              a₁ = a₂ → (∀ x, b₁ x = b₂ x) → (let x : α := a₁; b₁ x) = (let x : α := a₂; b₂ x) :=
 λ h₁ h₂ => Eq.recOn (motive := λ a _ => (let x := a₁; b₁ x) = (let x := a; b₂ x)) h₁ (h₂ a₁)
 
--- TODO: `section relation` and `section binary`
+-- TODO: `section relation`
+
+section binary
+variable {α : Type u} {β : Type v}
+variable (f : α → α → α)
+variable (inv : α → α)
+variable (one : α)
+variable (g : α → α → α)
+
+def commutative        := ∀ a b, f a b = f b a
+def associative        := ∀ a b c, f (f a b) c = f a (f b c)
+def left_identity      := ∀ a, f one a = a
+def right_identity     := ∀ a, f a one = a
+def right_inverse      := ∀ a, f a (inv a) = one
+def left_cancelative   := ∀ a b c, f a b = f a c → b = c
+def right_cancelative  := ∀ a b c, f a b = f c b → a = c
+def left_distributive  := ∀ a b c, f a (g b c) = g (f a b) (f a c)
+def right_distributive := ∀ a b c, f (g a b) c = g (f a c) (f b c)
+def right_commutative (h : β → α → β) := ∀ b a₁ a₂, h (h b a₁) a₂ = h (h b a₂) a₁
+def left_commutative  (h : α → β → β) := ∀ a₁ a₂ b, h a₁ (h a₂ b) = h a₂ (h a₁ b)
+
+lemma left_comm : commutative f → associative f → left_commutative f :=
+by intros hcomm hassoc a b c
+   have h1 : f a (f b c) = f (f a b) c := Eq.symm (hassoc a b c)
+   have h2 : f (f a b) c = f (f b a) c := hcomm a b ▸ rfl
+   have h3 : f (f b a) c = f b (f a c) := hassoc b a c
+   rw [←h3, ←h2, ←h1]
+
+lemma right_comm : commutative f → associative f → right_commutative f :=
+by intros hcomm hassoc a b c
+   have h1 : f (f a b) c = f a (f b c) := hassoc a b c
+   have h2 : f a (f b c) = f a (f c b) := hcomm b c ▸ rfl
+   have h3 : f a (f c b) = f (f a c) b := Eq.symm (hassoc a c b)
+   rw [←h3, ←h2, ←h1]
+
+end binary
+
+-- We define a fix' function here because the fix function in the Lean 4 prelude has
+-- `set_option codegen false`.
+
+namespace WellFounded
+
+variable {α : Sort u} {C : α → Sort v} {r : α → α → Prop}
+
+unsafe def fix'.impl (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x :=
+  F x fun y _ => impl hwf F y
+
+set_option codegen false in
+@[implementedBy fix'.impl]
+def fix' (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x := hwf.fix F x
+
+end WellFounded
+

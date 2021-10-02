@@ -225,15 +225,15 @@ lt_asymm h
 
 theorem lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a :=
 Or.elim
-  (λ h : a ≤ b   => Or.elim
-    (λ h : a < b => Or.inl h)
-    (λ h : a = b => Or.inr (Or.inl h))
-    (Decidable.lt_or_eq_of_le h))
-  (λ h : b ≤ a   => Or.elim
-    (λ h : b < a => Or.inr (Or.inr h))
-    (λ h : b = a => Or.inr (Or.inl h.symm))
-    (Decidable.lt_or_eq_of_le h))
   (le_total a b)
+  (λ h : a ≤ b   => Or.elim
+    (Decidable.lt_or_eq_of_le h)
+    (λ h : a < b => Or.inl h)
+    (λ h : a = b => Or.inr (Or.inl h)))
+  (λ h : b ≤ a   => Or.elim
+    (Decidable.lt_or_eq_of_le h)
+    (λ h : b < a => Or.inr (Or.inr h))
+    (λ h : b = a => Or.inr (Or.inl h.symm)))
 
 theorem le_of_not_lt {a b : α} (h : ¬ b < a) : a ≤ b :=
 match lt_trichotomy a b with
