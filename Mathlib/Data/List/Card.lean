@@ -21,7 +21,9 @@ theorem inj_on_of_subset {f : α → β} {as bs : List α} (h : inj_on f bs) (hs
 protected def equiv (as bs : List α) := ∀ x, x ∈ as ↔ x ∈ bs
 
 theorem equiv_iff_subset_and_subset {as bs : List α} : as.equiv bs ↔ as ⊆ bs ∧ bs ⊆ as :=
-  ⟨fun h => ⟨fun xas => (h _).1 xas, fun xbs => (h _).2 xbs⟩, fun ⟨h1, h2⟩ x => ⟨h1, h2⟩⟩
+Iff.intro
+  (fun h => ⟨fun _ xas => (h _).1 xas, fun _ xbs => (h _).2 xbs⟩)
+  (fun ⟨h1, h2⟩ x => ⟨@h1 x, @h2 x⟩)
 
 theorem insert_equiv_cons [DecidableEq α] (a : α) (as : List α) : (insert a as).equiv (a :: as) :=
   fun x => by simp
@@ -124,7 +126,7 @@ theorem card_subset_le : ∀ {as bs : List α}, as ⊆ bs → card as ≤ card b
   | (a :: as), bs, hsub => by
     cases Decidable.em (a ∈ as) with
     | inl h' =>
-      have hsub' : as ⊆ bs := fun xmem => hsub (mem_cons_of_mem a xmem)
+      have hsub' : as ⊆ bs := fun _ xmem => hsub (mem_cons_of_mem a xmem)
       simp [h', card_subset_le hsub']
     | inr h' =>
       have : a ∈ bs := hsub (Or.inl rfl)
