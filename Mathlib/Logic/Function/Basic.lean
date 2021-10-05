@@ -487,12 +487,12 @@ theorem update_comm {α} [DecidableEq α] {β : α → Sort _}
   update (update f a v) b w = update (update f b w) a v :=
 by funext c
    simp only [update]
-   (by_cases h₁ : c = b <;> by_cases h₂ : c = a)
-   - rw [dif_pos h₁, dif_pos h₂]
-     (cases h (h₂.symm.trans h₁))
-   - rw [dif_pos h₁, dif_pos h₁, dif_neg h₂]
-   - rw [dif_neg h₁, dif_neg h₁, dif_pos h₂]
-   - rw [dif_neg h₁, dif_neg h₁, dif_neg h₂]
+   by_cases h₁ : c = b <;> by_cases h₂ : c = a
+   · rw [dif_pos h₁, dif_pos h₂]
+     cases h (h₂.symm.trans h₁)
+   · rw [dif_pos h₁, dif_pos h₁, dif_neg h₂]
+   · rw [dif_neg h₁, dif_neg h₁, dif_pos h₂]
+   · rw [dif_neg h₁, dif_neg h₁, dif_neg h₂]
 
 @[simp] theorem update_idem {α} [DecidableEq α] {β : α → Sort _}
   {a : α} (v w : β a) (f : ∀a, β a) : update (update f a v) a w = update f a w :=
