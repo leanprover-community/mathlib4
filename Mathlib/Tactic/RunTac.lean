@@ -33,7 +33,3 @@ unsafe def evalRunTacUnsafe (term : Syntax) : TacticM Unit := do
 constant evalRunTac : Syntax → TacticM Unit
 
 elab "runTac" e:term : tactic => evalRunTac e
-
--- example : True := by
---   runTac do
---     evalApplyLikeTactic Meta.apply (← `(True.intro))
