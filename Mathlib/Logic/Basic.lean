@@ -231,6 +231,17 @@ theorem xor_comm (a b) : xor a b = xor b a := by simp [xor, and_comm, or_comm]
 
 /-! ### Declarations about `and` -/
 
+theorem and_symm_right (a b : α) (p : Prop) : p ∧ a = b <-> p ∧ b = a :=
+Iff.intro
+  (fun ⟨hp, a_eq_b⟩ => ⟨hp, a_eq_b.symm⟩)
+  (fun ⟨hp, b_eq_a⟩ => ⟨hp, b_eq_a.symm⟩)
+
+theorem and_symm_left (a b : α) (p : Prop) : a = b ∧ p <-> b = a ∧ p :=
+Iff.intro
+  (fun ⟨a_eq_b, hp⟩ => ⟨a_eq_b.symm, hp⟩)
+  (fun ⟨b_eq_a, hp⟩ => ⟨b_eq_a.symm, hp⟩)
+
+
 theorem and_congr_left (h : c → (a ↔ b)) : a ∧ c ↔ b ∧ c :=
 And.comm.trans $ (and_congr_right h).trans And.comm
 
@@ -688,6 +699,23 @@ by simp [And.comm]
 
 @[simp] theorem exists_eq_left' {p : α → Prop} {a' : α} : (∃ a, a' = a ∧ p a) ↔ p a' :=
 by simp [@eq_comm _ a']
+
+@[simp] theorem exists_eq_right_right {α : Sort _} {p : α → Prop} {b : Prop} {a' : α} :
+(∃ (a : α), p a ∧ b ∧ a = a') ↔ p a' ∧ b :=
+  Iff.intro
+  (fun ⟨_, ⟨p_a, hb, a_eq_a'⟩⟩ => And.intro (a_eq_a' ▸ p_a) hb)
+  (fun ⟨p_a', hb⟩ => Exists.intro a' ⟨p_a', hb, (rfl : a' = a')⟩)
+
+@[simp] theorem exists_eq_right_right' {α : Sort _} {p : α → Prop} {b : Prop} {a' : α} :
+(∃ (a : α), p a ∧ b ∧ a' = a) ↔ p a' ∧ b :=
+  Iff.intro
+  (fun ⟨_, ⟨p_a, hb, a_eq_a'⟩⟩ => And.intro (a_eq_a' ▸ p_a) hb)
+  (fun ⟨p_a', hb⟩ => Exists.intro a' ⟨p_a', hb, (rfl : a' = a')⟩)
+
+
+@[simp]
+theorem exists_prop {p q : Prop} : (∃ h : p, q) ↔ p ∧ q :=
+Iff.intro (fun ⟨hp, hq⟩ => And.intro hp hq) (fun ⟨hp, hq⟩ => Exists.intro hp hq)
 
 @[simp] theorem exists_apply_eq_apply {α β : Type _} (f : α → β) (a' : α) : ∃ a, f a = f a' :=
 ⟨a', rfl⟩

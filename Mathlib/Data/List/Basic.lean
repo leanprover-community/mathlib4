@@ -1117,4 +1117,15 @@ filter (fun a => a ∈ l₂) l₁
   | nil => simp [List.inter, mem_filter]
   | cons a l' ih => simp [List.inter, mem_filter, decide_eq_true_iff (x ∈ l₂)]
 
+def product (l1 : List α) (l2 : List β) : List (α × β) :=
+l1.bind (fun a => l2.map (Prod.mk a))
+
+/--
+List.prod satisfies a specification of cartesian product on lists.
+-/
+theorem product_spec (xs : List α) (ys : List β) (x : α) (y : β) : (x, y) ∈ product xs ys <-> (x ∈ xs ∧ y ∈ ys) := by
+apply Iff.intro
+case mp => simp only [List.product, and_imp, exists_prop, List.mem_map, Prod.mk.injEq, exists_eq_right_right', List.mem_bind]; exact And.intro
+case mpr => simp only [product, mem_bind, mem_map, Prod.mk.injEq, exists_eq_right_right', exists_prop]; exact id
+
 end List
