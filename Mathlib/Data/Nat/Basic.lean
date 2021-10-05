@@ -66,13 +66,13 @@ by rw [← Nat.add_sub_cancel x k, Nat.sub_le_sub_right_iff h, Nat.add_sub_cance
 protected lemma min_comm (a b : ℕ) : Nat.min a b = Nat.min b a := by
   simp [Nat.min]
   by_cases h₁ : a ≤ b <;> by_cases h₂ : b ≤ a <;> simp [h₁, h₂]
-  - (exact Nat.le_antisymm h₁ h₂)
-  - cases not_or_intro h₁ h₂ (Nat.le_or_le _ _)
+  · exact Nat.le_antisymm h₁ h₂
+  · cases not_or_intro h₁ h₂ <| Nat.le_or_le _ _
 
 protected lemma min_le_left (a b : ℕ) : Nat.min a b ≤ a := by
   simp [Nat.min]; by_cases a ≤ b <;> simp [h]
-  - (exact Nat.le_refl _)
-  - exact Nat.le_of_not_le h
+  · exact Nat.le_refl _
+  · exact Nat.le_of_not_le h
 
 protected lemma min_eq_left (h : a ≤ b) : Nat.min a b = a :=
 by simp [Nat.min, h]

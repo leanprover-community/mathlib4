@@ -28,7 +28,6 @@ import Mathlib.Logic.Function.Basic
 import Mathlib.Set
 import Mathlib.SetNotation
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.Block
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.Find

@@ -409,9 +409,9 @@ theorem imp_or_distrib : (a → b ∨ c) ↔ (a → b) ∨ (a → c) := Decidabl
 
 -- See Note [decidable namespace]
 protected theorem Decidable.imp_or_distrib' [Decidable b] : (a → b ∨ c) ↔ (a → b) ∨ (a → c) :=
-by (by_cases b)
-   - simp [h]
-   - rw [eq_false h, false_or]
+by by_cases b
+   · simp [h]
+   · rw [eq_false h, false_or]
      exact Iff.symm (or_iff_right_of_imp (λhx x => False.elim (hx x)))
 
 theorem imp_or_distrib' : (a → b ∨ c) ↔ (a → b) ∨ (a → c) := Decidable.imp_or_distrib'
@@ -468,11 +468,11 @@ theorem iff_not_comm : (a ↔ ¬ b) ↔ (b ↔ ¬ a) := Decidable.iff_not_comm
 protected theorem Decidable.iff_iff_and_or_not_and_not [Decidable b] :
   (a ↔ b) ↔ (a ∧ b) ∨ (¬ a ∧ ¬ b) :=
 by split
-   - intro h; rw [h]
-     (by_cases b)
-     - (exact Or.inl (And.intro h h))
-     - (exact Or.inr (And.intro h h))
-   - intro h
+   · intro h; rw [h]
+     by_cases b
+     · exact Or.inl <| And.intro h h
+     · exact Or.inr <| And.intro h h
+   · intro h
      match h with
      | Or.inl h => exact Iff.intro (λ _ => h.2) (λ _ => h.1)
      | Or.inr h => exact Iff.intro (λ a => False.elim $ h.1 a) (λ b => False.elim $ h.2 b)
