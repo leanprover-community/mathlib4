@@ -42,8 +42,5 @@ import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Split
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
-import Mathlib.Test.Find
-import Mathlib.Test.SolveByElim
-import Mathlib.Test.Split
 import Mathlib.Util.Export
 import Mathlib.Util.Time

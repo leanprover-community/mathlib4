@@ -30,5 +30,8 @@ jobs:
       - name: build mathlib
         run: leanpkg build
 
+      - name: test mathlib
+        run: make test
+
       - name: check that all files are imported
         run: git diff --exit-code

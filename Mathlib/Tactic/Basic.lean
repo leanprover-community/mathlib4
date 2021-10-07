@@ -74,21 +74,12 @@ where
       let (_, mvarId) ← Meta.intro1P mvarId
       pure [mvarId]
 
-example : ∀ a b : Nat, a = b → b = a := by
-  introv h
-  exact h.symm
-
 macro "assumption'" : tactic => `(all_goals assumption)
 
 elab "exacts" "[" hs:term,* "]" : tactic => do
   for stx in hs.getElems do
     evalTactic (← `(tactic| exact $stx))
   evalTactic (← `(tactic| done))
-
-example (n : Nat) : n = n := by
-  induction n
-  exacts [rfl, rfl]
-  exacts []
 
 --TODO : which expr equality to use?
 elab "guardExprEq " r:term " := " p:term : tactic => do
@@ -128,14 +119,6 @@ syntax (name := guardHyp) "guardHyp " ident (" : " term)? (" := " term)? : tacti
       | none, none          => ()
   | _ => throwUnsupportedSyntax
 
-example (n : Nat) : Nat := by
-  guardHyp n : Nat
-  let m : Nat := 1
-  guardHyp m := 1
-  guardHyp m : Nat := 1
-  guardTarget Nat
-  exact 0
-
 elab "matchTarget" t:term : tactic  => do
   withMainContext do
     let (val) ← elabTerm t (← inferType (← getMainTarget))
@@ -153,31 +136,11 @@ macro_rules
   | `(tactic| byContra) => `(tactic| (apply Classical.byContradiction; intro))
   | `(tactic| byContra $e) => `(tactic| (apply Classical.byContradiction; intro $e))
 
-example (a b : Nat) : a ≠ b → ¬ a = b := by
-  intros
-  byContra H
-  contradiction
-
-example (a b : Nat) : ¬¬ a = b → a = b := by
-  intros
-  byContra H
-  contradiction
-
-example (p q : Prop) : ¬¬ p → p := by
-  intros
-  byContra H
-  contradiction
-
 macro "sorry" : tactic => `(exact sorry)
 
 elab "iterate " n:num seq:tacticSeq : tactic => do
   for i in [:n.toNat] do
     evalTactic seq
-
-example (n m : Nat) : Unit := by
-  cases n
-  cases m
-  iterate 3 exact ()
 
 partial def repeat'Aux (seq : Syntax) : List MVarId → TacticM Unit
 | []    => ()
@@ -192,11 +155,6 @@ partial def repeat'Aux (seq : Syntax) : List MVarId → TacticM Unit
 elab "repeat' " seq:tacticSeq : tactic => do
   let gs ← getGoals
   repeat'Aux seq gs
-
-example (p q r s : Prop) : p → q → r → s → (p ∧ q) ∧ (r ∧ s ∧ p) ∧ (p ∧ r ∧ q) := by
-  intros
-  repeat' constructor
-  repeat' assumption
 
 elab "anyGoals " seq:tacticSeq : tactic => do
   let mvarIds ← getGoals
@@ -214,12 +172,3 @@ elab "anyGoals " seq:tacticSeq : tactic => do
   if not anySuccess then
     throwError "failed on all goals"
   setGoals mvarIdsNew.toList
-
-example (p q : Prop) : p → q → (p ∧ q) ∧ (p ∧ q ∧ p) := by
-  intros
-  split
-  fail_if_success any_goals assumption
-  all_goals split
-  any_goals assumption
-  split
-  any_goals assumption
