@@ -511,7 +511,7 @@ Iff.intro or_exists_of_exists_mem_cons
 
 /-! ### List subset -/
 
-protected def subset (l₁ l₂ : List α) := ∀ {a : α}, a ∈ l₁ → a ∈ l₂
+protected def subset (l₁ l₂ : List α) := ∀ {{a : α}}, a ∈ l₁ → a ∈ l₂
 
 instance : Subset (List α) := ⟨List.subset⟩
 
@@ -665,6 +665,12 @@ theorem append_ne_nil_of_ne_nil_right (s t : List α) : t ≠ [] → s ++ t ≠ 
 
 @[simp] lemma nil_eq_append_iff {a b : List α} : [] = a ++ b ↔ a = [] ∧ b = [] :=
 by rw [eq_comm, append_eq_nil]
+
+
+@[simp] lemma append_ne_nil_of_left_ne_nil {A : Type u} (a b : List A) (h0 : a ≠ []) : a ++ b ≠ [] := by
+cases a with
+| nil => exact absurd rfl h0
+| cons h t => simp
 
 -- lemma append_eq_cons_iff {a b c : List α} {x : α} :
 --   a ++ b = x :: c ↔ (a = [] ∧ b = x :: c) ∨ (∃a', a = x :: a' ∧ c = a' ++ b) := by
@@ -950,9 +956,9 @@ theorem erasep_map (f : β → α) :
   ∀ (l : List β), (map f l).erasep p = map f (l.erasep (p ∘ f))
 | []     => rfl
 | (b::l) => by
-  (byCases h : p (f b))
-  - simp [h, erasep_map f l, @erasep_cons_of_pos β (p ∘ f) _ b l h]
-  - simp [h, erasep_map f l, @erasep_cons_of_neg β (p ∘ f) _ b l h]
+  byCases h : p (f b)
+  · simp [h, erasep_map f l, @erasep_cons_of_pos β (p ∘ f) _ b l h]
+  · simp [h, erasep_map f l, @erasep_cons_of_neg β (p ∘ f) _ b l h]
 
 -- @[simp] theorem extractp_eq_find_erasep :
 --   ∀ l : List α, extractp p l = (find p l, erasep p l)
@@ -1116,5 +1122,129 @@ filter (fun a => a ∈ l₂) l₁
   induction l₁ with
   | nil => simp [List.inter, mem_filter]
   | cons a l' ih => simp [List.inter, mem_filter, decide_eq_true_iff (x ∈ l₂)]
+
+def product (l1 : List α) (l2 : List β) : List (α × β) :=
+l1.bind (fun a => l2.map (Prod.mk a))
+
+/--
+List.prod satisfies a specification of cartesian product on lists.
+-/
+theorem product_spec (xs : List α) (ys : List β) (x : α) (y : β) : (x, y) ∈ product xs ys <-> (x ∈ xs ∧ y ∈ ys) := by
+apply Iff.intro
+case mp => simp only [List.product, and_imp, exists_prop, List.mem_map, Prod.mk.injEq, exists_eq_right_right', List.mem_bind]; exact And.intro
+case mpr => simp only [product, mem_bind, mem_map, Prod.mk.injEq, exists_eq_right_right', exists_prop]; exact id
+
+section Pairwise
+
+variable (R : α -> α -> Prop)
+/-- `pairwise R l` means that all the elements with earlier indexes are
+  `R`-related to all the elements with later indexes.
+     pairwise R [1, 2, 3] ↔ R 1 2 ∧ R 1 3 ∧ R 2 3
+  For example if `R = (≠)` then it asserts `l` has no duplicates,
+  and if `R = (<)` then it asserts that `l` is (strictly) sorted. -/
+inductive pairwise : List α → Prop
+| nil : pairwise []
+| cons : ∀ {a : α} {l : List α}, (∀ a', a' ∈ l -> R a a') → pairwise l → pairwise (a::l)
+
+
+variable {R}
+
+@[simp]
+theorem pairwise_cons {a : α} {l : List α} :
+  pairwise R (a::l) ↔ (∀ a', a' ∈ l -> R a a') ∧ pairwise R l :=
+let mp := fun
+| pairwise.cons h1 h2 => And.intro h1 h2
+let mpr := And.elim pairwise.cons
+Iff.intro mp mpr
+
+instance decidableBall
+  (p : α -> Prop)
+  [i: DecidablePred p]
+  (l : List α) :
+  Decidable (∀ x, x ∈ l -> p x) :=
+match l with
+| [] => isTrue $ fun x h => False.elim $ (mem_nil x).mp h
+| hd :: tl =>
+  match i hd with
+  | isFalse hf =>
+    isFalse $ fun hf' => hf $ (hf' hd) (mem_cons_self hd tl)
+  | isTrue ht =>
+    match decidableBall p tl with
+    | isFalse hf =>
+      isFalse $ fun hf' => hf $ fun x x_mem_tl => (hf' x) (mem_cons_of_mem hd x_mem_tl)
+    | isTrue ht' =>
+      isTrue $ fun x elem_hd_tl =>
+      match (mem_cons).mp elem_hd_tl with
+      | Or.inl hl => hl ▸ ht
+      | Or.inr hr => ht' x hr
+
+instance decidableBexi
+  {A : Type u}
+  (p : A -> Prop)
+  [s: DecidablePred p]
+  (l : List A) :
+  Decidable (∃ x ∈ l, p x) :=
+match l with
+| [] => isFalse $ fun ⟨x, ⟨h_mem_nil, _⟩⟩ => False.elim $ (List.mem_nil x).mp h_mem_nil
+| hd :: tl =>
+  match s hd with
+  | isTrue hp => isTrue ⟨hd, And.intro (List.mem_cons_self hd tl) hp⟩
+  | isFalse hf1 =>
+    match decidableBexi p tl with
+    | isFalse hf2 => isFalse $ fun ⟨x, ⟨hl, hr⟩⟩ =>
+      have h_left : x = hd -> False := fun x_eq_hd => (x_eq_hd ▸ hf1 : ¬p x) hr
+      have h_right : x ∈ tl -> False := fun x_mem_tl => hf2 ⟨x, And.intro x_mem_tl hr⟩
+      Or.elim (List.mem_cons.mp hl : x = hd ∨ x ∈ tl) h_left h_right
+    | isTrue ht => isTrue $
+      match ht with
+      | ⟨x, ⟨hl, hr⟩⟩ =>
+        have hl' : x ∈ (hd :: tl) := (@List.mem_cons A x hd tl).mpr (Or.inr hl)
+        ⟨x, ⟨hl', hr⟩⟩
+
+instance decidablePairwise [DecidableRel R] (l : List α) : Decidable (pairwise R l) :=
+match h:l with
+| [] => isTrue pairwise.nil
+| hd :: tl =>
+  match decidablePairwise tl with
+  | isTrue ht =>
+    match decidableBall (R hd) tl with
+    | isFalse hf =>
+      isFalse $ fun hf' =>
+        have hAnd : (∀ a', a' ∈ tl -> R hd a') ∧ pairwise R tl := pairwise_cons.mp hf'
+        hf hAnd.left
+    | isTrue ht' =>  isTrue $ pairwise_cons.mpr (And.intro ht' ht)
+  | isFalse hf => isFalse $
+    fun
+    | pairwise.cons h ih => hf ih
+
+end Pairwise
+
+def nodup : List α → Prop := pairwise (· ≠ ·)
+
+instance nodupDecidable [DecidableEq α] : ∀ l : List α, Decidable (nodup l) :=
+List.decidablePairwise
+
+/-- `pw_filter R l` is a maximal sublist of `l` which is `pairwise R`.
+  `pw_filter (≠)` is the erase duplicates function (cf. `erase_dup`), and `pw_filter (<)` finds
+  a maximal increasing subsequence in `l`. For example,
+     pw_filter (<) [0, 1, 5, 2, 6, 3, 4] = [0, 1, 2, 3, 4] -/
+def pwFilter (R : α → α → Prop) [DecidableRel R] : List α → List α
+| []        => []
+| (x :: xs) =>
+let IH := pwFilter R xs
+if ∀ y ∈ IH, R x y then x :: IH else IH
+
+/-- `erase_dup l` removes duplicates from `l` (taking only the first occurrence).
+  Defined as `pw_filter (≠)`.
+     erase_dup [1, 0, 2, 2, 1] = [0, 2, 1] -/
+def eraseDup [DecidableEq α] : List α → List α := pwFilter (· ≠ ·)
+
+/-- `countp p l` is the number of elements of `l` that satisfy `p`. -/
+def countp (p : α → Prop) [DecidablePred p] : List α → Nat
+| []      => 0
+| (x::xs) => if p x then Nat.succ (countp p xs) else countp p xs
+
+/-- `count a l` is the number of occurrences of `a` in `l`. -/
+def count [DecidableEq α] (a : α) : List α → Nat := countp (Eq a)
 
 end List

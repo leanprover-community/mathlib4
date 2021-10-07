@@ -20,7 +20,6 @@ jobs:
           curl -sSfL https://github.com/leanprover/elan/releases/download/v1.0.3/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
           ./elan-init -y
           echo "$HOME/.elan/bin" >> $GITHUB_PATH
-          echo "short_lean_version=$(~/.elan/bin/lean --run scripts/lean_version.lean)" >> $GITHUB_ENV
 
       - uses: actions/checkout@v2
 
