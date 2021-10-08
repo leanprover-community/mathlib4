@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Sebastian Ullrich
 -/
 import Lean
+import Mathlib.Tactic.Cache
 
 /-!
 # The `#find` command and tactic.
@@ -48,33 +49,25 @@ private def isBlackListed (declName : Name) : MetaM Bool := do
   <||> isRec declName
   <||> isMatcher declName
 
-initialize findCache : IO.Ref (Option (Std.HashMap HeadIndex (Array Name))) ← IO.mkRef none
+initialize findDeclsPerHead : DeclCache (Std.HashMap HeadIndex (Array Name)) ←
+  DeclCache.mk "#find: init cache" {} fun _ c headMap => do
+    if (← isBlackListed c.name) then
+      return headMap
+    -- TODO: this should perhaps use `forallTelescopeReducing` instead,
+    -- to avoid leaking metavariables.
+    let (_, _, ty) ← forallMetaTelescopeReducing c.type
+    let head := ty.toHeadIndex
+    headMap.insert head (headMap.findD head #[] |>.push c.name)
 
 def findType (t : Expr) : TermElabM Unit := withReducible do
-  let env ← getEnv
-  let headMap ← match (← findCache.get) with
-    | some headMap => pure headMap
-    | none => profileitM Exception "#find: init cache" (← getOptions) do
-      let mut headMap := Std.HashMap.empty
-      -- TODO: `ForIn` for `SMap`
-      for (_, c) in env.constants.map₁.toList do
-        if (← isBlackListed c.name) then
-          continue
-        -- TODO: this should perhaps use `forallTelescopeReducing` instead,
-        -- to avoid leaking metavariables.
-        let (_, _, ty) ← forallMetaTelescopeReducing c.type
-        let head := ty.toHeadIndex
-        headMap := headMap.insert head (headMap.findD head #[] |>.push c.name)
-      findCache.set headMap
-      pure headMap
-
   let t ← instantiateMVars t
   let head := (← forallMetaTelescopeReducing t).2.2.toHeadIndex
   let pat ← abstractMVars t
 
+  let env ← getEnv
   let mut numFound := 0
   -- TODO for consistency, we may want to filter the local declarations by head index as well.
-  for n in headMap.findD head #[] ++ env.constants.map₂.toList.toArray.map (·.1) do
+  for n in (← findDeclsPerHead.get).findD head #[] do
     let c := env.find? n |>.get!
     let cTy ← c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
     let found ← forallTelescopeReducing cTy fun cParams cTy' => do
@@ -109,7 +102,7 @@ elab "#find" t:term : command =>
     findType t
 
 /- (Note that you'll get an error trying to run these here:
-   ``cannot evaluate `[init]` declaration 'findCache' in the same module``
+   ``cannot evaluate `[init]` declaration 'findDeclsPerHead' in the same module``
    but they will work fine in a new file!) -/
 -- #find _ + _ = _ + _
 -- #find _ + _ = _ + _
