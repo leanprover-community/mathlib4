@@ -33,6 +33,7 @@ import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.Find
+import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NoMatch
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.OpenPrivate
