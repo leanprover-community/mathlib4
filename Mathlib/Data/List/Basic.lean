@@ -348,8 +348,6 @@ lemma bind_map {g : α → List β} {f : β → γ} :
 
 /-! ### length -/
 
--- @[simp] lemma length_repeat (a : α) (n : ℕ) : length (repeat a n) = n :=
--- by induction n; simp [*]; refl
 
 -- @[simp] lemma length_tail (l : list α) : length (tail l) = length l - 1 :=
 -- by cases l; refl
@@ -785,6 +783,11 @@ cases a with
 theorem exists_of_mem_bind {b : β} {l : List α} {f : α → List β} :
   b ∈ List.bind l f → ∃ a, a ∈ l ∧ b ∈ f a :=
 mem_bind.1
+
+@[simp] lemma length_repeat (a : α) (n : ℕ) : length (repeat a n) = n := by
+induction n with
+| zero => simp
+| succ x ih => simp; assumption
 
 /-! ### insert -/
 section insert
@@ -1246,5 +1249,37 @@ def countp (p : α → Prop) [DecidablePred p] : List α → Nat
 
 /-- `count a l` is the number of occurrences of `a` in `l`. -/
 def count [DecidableEq α] (a : α) : List α → Nat := countp (Eq a)
+
+/-- `isPrefix l₁ l₂` means that `l₁` is a prefix of `l₂`,
+  that is, `l₂` has the form `l₁ ++ t` for some `t`. -/
+def isPrefix (l₁ : List α) (l₂ : List α) : Prop := ∃ t, l₁ ++ t = l₂
+
+/-- `isSuffix l₁ l₂`  means that `l₁` is a suffix of `l₂`,
+  that is, `l₂` has the form `t ++ l₁` for some `t`. -/
+def isSuffix (l₁ : List α) (l₂ : List α) : Prop := ∃ t, t ++ l₁ = l₂
+
+/-- `isInfix l₁ l₂` means that `l₁` is a contiguous
+  substring of `l₂`, that is, `l₂` has the form `s ++ l₁ ++ t` for some `s, t`. -/
+def isInfix (l₁ : List α) (l₂ : List α) : Prop := ∃ s t, s ++ l₁ ++ t = l₂
+
+/-- pad `l : List α` with repeated occurrences of `a : α` until it's of length `n`.
+  If `l` is initially larger than `n`, just return `l`. -/
+def leftpad (n : ℕ) (a : α) (l : List α) : List α :=
+repeat a (n - length l) ++ l
+
+/-- The length of the List returned by `List.leftpad n a l` is equal
+  to the larger of `n` and `l.length` -/
+theorem leftpad_length (n : ℕ) (a : α) (l : List α) : (leftpad n a l).length = max n l.length :=
+by simp only [leftpad, length_append, length_repeat, Nat.sub_add_eq_max]
+
+theorem leftpad_prefix [DecidableEq α] (n : ℕ) (a : α) (l : List α) : isPrefix (repeat a (n - length l)) (leftpad n a l) :=
+by
+  simp only [isPrefix, leftpad]
+  exact Exists.intro l rfl
+
+theorem leftpad_suffix [DecidableEq α] (n : ℕ) (a : α) (l : List α) : isSuffix l (leftpad n a l) :=
+by
+  simp only [isSuffix, leftpad]
+  exact Exists.intro (repeat a (n - length l)) rfl
 
 end List

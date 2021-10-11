@@ -402,6 +402,12 @@ lemma one_pos : 0 < 1 := Nat.zero_lt_one
 
 /- subtraction -/
 
+
+protected lemma sub_add_eq_max {a b : Nat} : a - b + b = max a b := by
+cases (@le_total Nat Nat.instLinearOrderNat a b) with
+| inl hl => rw [max_eq_right hl, Nat.sub_eq_zero_iff_le.mpr hl, Nat.zero_add]
+| inr hr => rw [max_eq_left hr, Nat.sub_add_cancel hr]
+
 protected lemma sub_le_sub_left (k : ℕ) (h : n ≤ m) : k - m ≤ k - n :=
   match m, le.dest h with
   | _, ⟨a, rfl⟩ => by rw [← Nat.sub_sub]; apply sub_le
