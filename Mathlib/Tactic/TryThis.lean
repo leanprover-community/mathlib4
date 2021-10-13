@@ -33,14 +33,14 @@ def delabToRefinableSyntax (e : Expr) : TermElabM Syntax := do
   replaceMVarsByUnderscores stx
 
 def addSuggestion [Monad m] [MonadLog m] [AddMessageContext m]
-    (origTac : Syntax) (suggestion : Syntax) : m Unit :=
+    (origStx : Syntax) (suggestion : Syntax) : m Unit :=
   -- Use obscure Unicode characters to discourage editor implementations.
-  logInfo m!"𝔗𝔯𝔶 𝔱𝔥𝔦𝔰: {suggestion}"
+  logInfoAt origStx m!"𝔗𝔯𝔶 𝔱𝔥𝔦𝔰: {suggestion}"
 
 def addExactSuggestion (origTac : Syntax) (e : Expr) : TacticM Unit := do
   let stx ← delabToRefinableSyntax e
   let tac ← if e.hasExprMVar then `(tactic| refine $stx) else `(tactic| exact $stx)
   addSuggestion origTac tac
 
-def addTermSuggestion (origTac : Syntax) (e : Expr) : TermElabM Unit := do
-  addSuggestion origTac (← delabToRefinableSyntax e)
+def addTermSuggestion (origTerm : Syntax) (e : Expr) : TermElabM Unit := do
+  addSuggestion origTerm (← delabToRefinableSyntax e)
