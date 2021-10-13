@@ -3,7 +3,7 @@ import Mathlib.Tactic.Split
 
 example : (α : Type) × List α := by
   split
-  - exact [0,1]
+  · exact [0,1]
 
 -- example : (α : Type) × List α := by
 --   fsplit

@@ -236,7 +236,7 @@ by rw [sub_eq_sub_min, Nat.sub_add_cancel (min_le_left n m)]
 
 protected def strong_rec_on {p : ℕ → Sort u}
   (n : ℕ) (H : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
-Nat.lt_wf.fix' H n
+Nat.lt_wfRel.wf.fix' H n
 
 protected lemma strong_induction_on {p : Nat → Prop} (n : Nat) (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
 Nat.strong_rec_on n h
@@ -401,6 +401,12 @@ lemma lt_succ_of_lt (h : a < b) : a < succ b := le_succ_of_le h
 lemma one_pos : 0 < 1 := Nat.zero_lt_one
 
 /- subtraction -/
+
+
+protected lemma sub_add_eq_max {a b : Nat} : a - b + b = max a b := by
+cases (@le_total Nat Nat.instLinearOrderNat a b) with
+| inl hl => rw [max_eq_right hl, Nat.sub_eq_zero_iff_le.mpr hl, Nat.zero_add]
+| inr hr => rw [max_eq_left hr, Nat.sub_add_cancel hr]
 
 protected lemma sub_le_sub_left (k : ℕ) (h : n ≤ m) : k - m ≤ k - n :=
   match m, le.dest h with
@@ -580,8 +586,8 @@ lemma sub_mul_div (x n p : ℕ) (h₁ : n*p ≤ x) : (x - n*p) / n = x / n - p :
     | succ p IH =>
       have h₂ : n*p ≤ x := by
         transitivity
-        - (apply Nat.mul_le_mul_left; apply le_succ)
-        - apply h₁
+        · apply Nat.mul_le_mul_left; apply le_succ
+        · apply h₁
       have h₃ : x - n * p ≥ n := by
         apply Nat.le_of_add_le_add_right
         rw [Nat.sub_add_cancel h₂, Nat.add_comm]
@@ -641,29 +647,29 @@ Nat.le_antisymm
 lemma mul_sub_div (x n p : ℕ) (h₁ : x < n*p) : (n * p - succ x) / n = p - succ (x / n) := by
   have npos : 0 < n := (eq_zero_or_pos _).resolve_left fun n0 => by
     rw [n0, Nat.zero_mul] at h₁; exact not_lt_zero _ h₁
-  (apply Nat.div_eq_of_lt_le)
-  - rw [Nat.mul_sub_right_distrib, Nat.mul_comm]
+  apply Nat.div_eq_of_lt_le
+  · rw [Nat.mul_sub_right_distrib, Nat.mul_comm]
     apply Nat.sub_le_sub_left
-    (exact (div_lt_iff_lt_mul npos).1 (lt_succ_self _))
-  - change succ (pred (n * p - x)) ≤ (succ (pred (p - x / n))) * n
+    exact (div_lt_iff_lt_mul npos).1 (lt_succ_self _)
+  · change succ (pred (n * p - x)) ≤ (succ (pred (p - x / n))) * n
     rw [succ_pred_eq_of_pos (Nat.sub_pos_of_lt h₁),
       fun h => succ_pred_eq_of_pos (Nat.sub_pos_of_lt h)] -- TODO: why is the function needed?
-    - rw [Nat.mul_sub_right_distrib, Nat.mul_comm]
-      (apply Nat.sub_le_sub_left; apply div_mul_le_self)
-    - apply (div_lt_iff_lt_mul npos).2; rwa [Nat.mul_comm]
+    · rw [Nat.mul_sub_right_distrib, Nat.mul_comm]
+      apply Nat.sub_le_sub_left; apply div_mul_le_self
+    · apply (div_lt_iff_lt_mul npos).2; rwa [Nat.mul_comm]
 
 protected lemma div_div_eq_div_mul (m n k : ℕ) : m / n / k = m / (n * k) := by
   cases eq_zero_or_pos k with
   | inl k0 => rw [k0, Nat.mul_zero, Nat.div_zero, Nat.div_zero] | inr kpos => ?_
   cases eq_zero_or_pos n with
   | inl n0 => rw [n0, Nat.zero_mul, Nat.div_zero, Nat.zero_div] | inr npos => ?_
-  (apply Nat.le_antisymm)
-  - apply (le_div_iff_mul_le (Nat.mul_pos npos kpos)).2
+  apply Nat.le_antisymm
+  · apply (le_div_iff_mul_le (Nat.mul_pos npos kpos)).2
     rw [Nat.mul_comm n k, ← Nat.mul_assoc]
     apply (le_div_iff_mul_le npos).1
     apply (le_div_iff_mul_le kpos).1
     (apply Nat.le_refl)
-  - apply (le_div_iff_mul_le kpos).2
+  · apply (le_div_iff_mul_le kpos).2
     apply (le_div_iff_mul_le npos).2
     rw [Nat.mul_assoc, Nat.mul_comm n k]
     apply (le_div_iff_mul_le (Nat.mul_pos kpos npos)).1
