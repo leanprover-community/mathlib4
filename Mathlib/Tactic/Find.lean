@@ -66,7 +66,6 @@ def findType (t : Expr) : TermElabM Unit := withReducible do
 
   let env ← getEnv
   let mut numFound := 0
-  -- TODO for consistency, we may want to filter the local declarations by head index as well.
   for n in (← findDeclsPerHead.get).findD head #[] do
     let c := env.find? n |>.get!
     let cTy ← c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
