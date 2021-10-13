@@ -16,3 +16,4 @@ example (n : Nat) : Nat × Nat := by
 
 example (n : Nat) : Nat × Nat := by
   showTerm split
+  repeat exact 42
