@@ -42,6 +42,7 @@ import Mathlib.Tactic.OpenPrivate
 import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.RunTac
+import Mathlib.Tactic.ShowTerm
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Split
 import Mathlib.Tactic.Spread
