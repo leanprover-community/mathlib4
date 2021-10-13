@@ -94,7 +94,7 @@ instance : Inhabited (DeclCache α) :=
 
 /--
 Creates a `DeclCache`.
-The cached structure `α` is initialied with `empty`,
+The cached structure `α` is initialized with `empty`,
 and then `addDecl` is called for every constant in the environment.
 Calls to `addDecl` for imported constants are cached.
 -/
