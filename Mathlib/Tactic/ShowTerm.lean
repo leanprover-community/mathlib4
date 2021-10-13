@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Scott Morrison
 -/
 import Lean.Elab.Tactic.Basic
+import Mathlib.Tactic.TryThis
 
 open Lean
 open Lean.Meta
 open Lean.Elab.Tactic
+open Tactic.TryThis
 
 /-
 TODO: Support for metavariables
@@ -52,6 +54,7 @@ namespace Lean.Elab.Tactic
 elab tk:"showTerm" t:tactic : tactic => withMainContext do
   let g ← getMainGoal
   evalTactic t
-  logInfoAt tk (← refineString (mkMVar g))
+  addExactSuggestion tk/- FIXME: we'd like the range for the whole tactic -/
+    (← instantiateMVars (mkMVar g)).headBeta
 
 end Lean.Elab.Tactic

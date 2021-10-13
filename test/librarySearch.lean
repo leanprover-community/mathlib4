@@ -76,7 +76,7 @@ example : ∀ P : Prop, ¬(P ↔ ¬P) := by librarySearch -- says: `λ (a : Prop
 
 -- TODO example {a b c : ℕ} (h₁ : a ∣ c) (h₂ : a ∣ b + c) : a ∣ b := by librarySearch -- says `exact (nat.dvd_add_left h₁).mp h₂`
 
-example {α : Sort _} (h : Empty) : α := by librarySearch
+example {α : Sort u} (h : Empty) : α := by librarySearch
 example {α : Type _} (h : Empty) : α := by librarySearch
 
 -- TODO example (f : A → C) (g : B → C) : (A ⊕ B) → C := by librarySearch

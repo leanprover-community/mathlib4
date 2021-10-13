@@ -13,3 +13,6 @@ example (n : Nat) : Nat × Nat := by
     { split;
       exact n;
       exact 37 }
+
+example (n : Nat) : Nat × Nat := by
+  showTerm split

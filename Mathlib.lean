@@ -47,5 +47,6 @@ import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Split
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
+import Mathlib.Tactic.TryThis
 import Mathlib.Util.Export
 import Mathlib.Util.Time
