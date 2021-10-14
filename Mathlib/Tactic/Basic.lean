@@ -5,6 +5,7 @@ Author: Mario Carneiro
 -/
 import Mathlib.Tactic.Split
 import Mathlib.Tactic.NoMatch
+import Mathlib.Tactic.AutoExact
 import Lean.Elab.Command
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
@@ -28,8 +29,6 @@ macro_rules | `(tactic| rfl) => `(tactic| exact Iff.rfl)
 
 macro_rules
   | `(tactic| change $e:term) => `(tactic| show $e)
-
-macro "sorry" : tactic => `(tactic| admit)
 
 syntax "rwa " rwRuleSeq (location)? : tactic
 
@@ -135,8 +134,6 @@ macro_rules
 macro_rules
   | `(tactic| byContra) => `(tactic| (apply Classical.byContradiction; intro))
   | `(tactic| byContra $e) => `(tactic| (apply Classical.byContradiction; intro $e))
-
-macro "sorry" : tactic => `(exact sorry)
 
 elab "iterate " n:num seq:tacticSeq : tactic => do
   for i in [:n.toNat] do
