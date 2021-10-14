@@ -1,8 +1,7 @@
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.Split
 
 example : (α : Type) × List α := by
-  split
+  constructor
   · exact [0,1]
 
 -- example : (α : Type) × List α := by
