@@ -6,6 +6,7 @@ Author: Gabriel Ebner
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.OpenPrivate
+import Mathlib.Tactic.TryThis
 
 /-!
 # Library search
@@ -25,7 +26,7 @@ example : Nat := by librarySearch
 namespace Tactic
 namespace LibrarySearch
 
-open Lean Meta
+open Lean Meta TryThis
 
 initialize registerTraceClass `Tactic.librarySearch
 
@@ -92,32 +93,30 @@ def lines (ls : List MessageData) :=
   MessageData.joinSep ls (MessageData.ofFormat Format.line)
 
 open Elab.Tactic Elab Tactic in
-elab "librarySearch" : tactic =>do
+elab tk:"librarySearch" : tactic => do
   withNestedTraces do
   trace[Tactic.librarySearch] "proving {← getMainTarget}"
   let mvar ← getMainGoal
   let (hs, introdMVar) ← intros (← getMainGoal)
   withMVarContext introdMVar do
     if let some suggestions ← librarySearch introdMVar (← librarySearchLemmas.get) then
-      logError <| lines <|<- suggestions.toList.mapM fun (mctx, _) =>
-        withMCtx mctx do addMessageContextFull <|<- do
-          m!"{← mkLambdaFVars (hs.map (mkFVar ·)) <|<-
-            instantiateMVars <| mkMVar introdMVar}"
+      for suggestion in suggestions do
+        addExactSuggestion tk (← instantiateMVars (mkMVar mvar))
+      admitGoal introdMVar
     else
-      logInfo <|<- instantiateMVars <| mkMVar mvar
+      addExactSuggestion tk (← instantiateMVars (mkMVar mvar))
 
 open Elab Term in
-elab "librarySearch%" : term <= expectedType => do
+elab tk:"librarySearch%" : term <= expectedType => do
   withNestedTraces do
   trace[Tactic.librarySearch] "proving {expectedType}"
   let mvar ← mkFreshExprMVar expectedType
   let (hs, introdMVar) ← intros mvar.mvarId!
   withMVarContext introdMVar do
     if let some suggestions ← librarySearch introdMVar (← librarySearchLemmas.get) then
-      throwError "{lines <|<- suggestions.toList.mapM fun (mctx, _) =>
-        withMCtx mctx do addMessageContextFull <|<- do
-          m!"{← mkLambdaFVars (hs.map (mkFVar ·)) <|<-
-            instantiateMVars <| mkMVar introdMVar}"}" -- "
+      for suggestion in suggestions do
+        addTermSuggestion tk (← instantiateMVars mvar)
+      mkSorry expectedType (synthetic := true)
     else
-      logInfo <|<- instantiateMVars <| mvar
-  instantiateMVars mvar
+      addTermSuggestion tk (← instantiateMVars mvar)
+      instantiateMVars mvar
