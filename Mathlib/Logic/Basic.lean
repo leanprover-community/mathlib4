@@ -478,7 +478,7 @@ theorem iff_not_comm : (a ↔ ¬ b) ↔ (b ↔ ¬ a) := Decidable.iff_not_comm
 -- See Note [decidable namespace]
 protected theorem Decidable.iff_iff_and_or_not_and_not [Decidable b] :
   (a ↔ b) ↔ (a ∧ b) ∨ (¬ a ∧ ¬ b) :=
-by split
+by constructor
    · intro h; rw [h]
      by_cases b
      · exact Or.inl <| And.intro h h
