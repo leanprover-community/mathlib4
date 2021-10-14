@@ -308,7 +308,7 @@ protected lemma div_le_self : ∀ (m n : ℕ), m / n ≤ m
   rwa [Nat.one_mul] at this
 
 lemma div_eq_sub_div (h₁ : 0 < b) (h₂ : b ≤ a) : a / b = (a - b) / b + 1 := by
- rw [div_eq a, if_pos]; split <;> assumption
+ rw [div_eq a, if_pos]; constructor <;> assumption
 
 lemma div_eq_of_lt (h₀ : a < b) : a / b = 0 := by
   rw [div_eq a, if_neg]
