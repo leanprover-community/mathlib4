@@ -15,7 +15,7 @@ namespace Lean.Elab.Tactic
 
 /--
 `showTerm tac` runs `tac`, then prints the generated term in the form
-"Try this: exact X Y Z" or "Try this: refine X _ Z" if there are remaining subgoals.
+"Try this: exact X Y Z" or "Try this: refine X ?_ Z" if there are remaining subgoals.
 
 (For some tactics, the printed term will not be human readable.)
 -/

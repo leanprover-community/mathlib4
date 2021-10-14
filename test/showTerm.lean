@@ -6,7 +6,7 @@ Author: Scott Morrison
 import Mathlib.Tactic.Split
 import Mathlib.Tactic.ShowTerm
 
--- TODO can `show_term` be indenting aware, so we don't have to use braces and semicolons?
+-- TODO can `showTerm` be indenting aware, so we don't have to use braces and semicolons?
 
 example (n : Nat) : Nat × Nat := by
   showTerm
