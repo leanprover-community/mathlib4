@@ -87,6 +87,7 @@ by rw [← @mk.eta _ _ p, ← @mk.eta _ _ q, mk.inj_iff]
 
 -- Port note: in mathlib this is named `ext`, but Lean4 has already defined that to be something
 -- with a slightly different signature.
+@[ext]
 lemma ext' {α β} {p q : α × β} (h₁ : p.1 = q.1) (h₂ : p.2 = q.2) : p = q :=
 ext_iff.2 ⟨h₁, h₂⟩
 
