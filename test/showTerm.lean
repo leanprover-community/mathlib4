@@ -10,10 +10,10 @@ import Mathlib.Tactic.ShowTerm
 
 example (n : Nat) : Nat × Nat := by
   showTerm
-    { split;
+    { constructor;
       exact n;
       exact 37 }
 
 example (n : Nat) : Nat × Nat := by
-  showTerm split
+  showTerm constructor
   repeat exact 42
