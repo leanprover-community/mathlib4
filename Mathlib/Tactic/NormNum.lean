@@ -41,8 +41,8 @@ class LawfulOfNat (α) [Semiring α] (n) [OfNat α n] : Prop where
   isNat_ofNat : isNat (OfNat.ofNat n : α) n
 
 instance (α) [Semiring α] : LawfulOfNat α n := ⟨rfl⟩
-instance (α) [Semiring α] : LawfulOfNat α (nat_lit 0) := ⟨Semiring.ofNat_zero.symm⟩
-instance (α) [Semiring α] : LawfulOfNat α (nat_lit 1) := ⟨Semiring.ofNat_one.symm⟩
+instance (α) [Semiring α] : LawfulOfNat α (nat_lit 0) := ⟨rfl⟩
+instance (α) [Semiring α] : LawfulOfNat α (nat_lit 1) := ⟨rfl⟩
 instance : LawfulOfNat Nat n := ⟨rfl⟩
 instance : LawfulOfNat Int n := ⟨rfl⟩
 
@@ -51,24 +51,24 @@ theorem isNat_rawNat (n : ℕ) : isNat n n := rfl
 class LawfulZero (α) [Semiring α] [Zero α] : Prop where
   isNat_zero : isNat (Zero.zero : α) (nat_lit 0)
 
-instance (α) [Semiring α] : LawfulZero α := ⟨Semiring.ofNat_zero.symm⟩
+instance (α) [Semiring α] : LawfulZero α := ⟨rfl⟩
 
 class LawfulOne (α) [Semiring α] [One α] : Prop where
   isNat_one : isNat (One.one : α) (nat_lit 1)
 
-instance (α) [Semiring α] : LawfulOne α := ⟨Semiring.ofNat_one.symm⟩
+instance (α) [Semiring α] : LawfulOne α := ⟨rfl⟩
 
 theorem isNat_add {α} [Semiring α] : (a b : α) → (a' b' c : Nat) →
   isNat a a' → isNat b b' → Nat.add a' b' = c → isNat (a + b) c
-| _, _, _, _, _, rfl, rfl, rfl => (Semiring.ofNat_add _ _).symm
+| _, _, _, _, _, rfl, rfl, rfl => ofNat_add.symm
 
 theorem isNat_mul {α} [Semiring α] : (a b : α) → (a' b' c : Nat) →
   isNat a a' → isNat b b' → Nat.mul a' b' = c → isNat (a * b) c
-| _, _, _, _, _, rfl, rfl, rfl => (Semiring.ofNat_mul _ _).symm
+| _, _, _, _, _, rfl, rfl, rfl => ofNat_mul.symm
 
 theorem isNat_pow {α} [Semiring α] : (a : α) → (b a' b' c : Nat) →
   isNat a a' → isNat b b' → Nat.pow a' b' = c → isNat (a ^ b) c
-| _, _, _, _, _, rfl, rfl, rfl => (Semiring.ofNat_pow _ _).symm
+| _, _, _, _, _, rfl, rfl, rfl => (ofNat_pow _ _).symm
 
 def instSemiringNat : Semiring Nat := inferInstance
 
