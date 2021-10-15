@@ -13,36 +13,63 @@ class Numeric (α : Type u) where
 instance Numeric.OfNat [Numeric α] : OfNat α n := ⟨Numeric.ofNat n⟩
 instance [Numeric α] : Coe ℕ α := ⟨Numeric.ofNat⟩
 
-class Semiring (R : Type u) extends Monoid R, AddCommMonoid R, Numeric R where
+theorem ofNat_eq_ofNat (α) (n : ℕ) [Numeric α] : Numeric.ofNat (α := α) n = OfNat.ofNat n := rfl
+
+class Semiring (R : Type u) extends Semigroup R, AddCommSemigroup R, Numeric R where
+  add_zero (a : R) : a + 0 = a
+  zero_add (a : R) : 0 + a = a
+  nsmul : ℕ → R → R := nsmul_rec
+  nsmul_zero' : ∀ x, nsmul 0 x = 0 -- fill in with tactic once we can do this
+  nsmul_succ' : ∀ (n : ℕ) x, nsmul n.succ x = x + nsmul n x -- fill in with tactic
+
   zero_mul (a : R) : 0 * a = 0
   mul_zero (a : R) : a * 0 = 0
+
+  -- Monoid R
+  one_mul (a : R) : 1 * a = a
+  mul_one (a : R) : a * 1 = a
+  npow : ℕ → R → R := npow_rec
+  npow_zero' : ∀ x, npow 0 x = 1 -- fill in with tactic once we can do this
+  npow_succ' : ∀ (n : ℕ) x, npow n.succ x = x * npow n x -- fill in with tactic
+
   mul_add (a b c : R) : a * (b + c) = a * b + a * c
   add_mul (a b c : R) : (a + b) * c = a * c + b * c
-  ofNat_add (a b : Nat) : ofNat (a + b) = ofNat a + ofNat b
-  ofNat_mul (a b : Nat) : ofNat (a * b) = ofNat a * ofNat b
-  ofNat_one : ofNat (nat_lit 1) = One.one
-  ofNat_zero : ofNat (nat_lit 0) = Zero.zero
+  ofNat_succ (a : Nat) : ofNat (a + 1) = ofNat a + 1
 
 section Semiring
 variable {R} [Semiring R]
+open Numeric
+
 instance : MonoidWithZero R where
   __ := ‹Semiring R›
 
-theorem mul_add  (a b c : R) : a * (b + c) = a * b + a * c := Semiring.mul_add a b c
+instance : AddCommMonoid R where
+  __ := ‹Semiring R›
 
-theorem add_mul {R} [Semiring R] (a b c : R) : (a + b) * c = a * c + b * c := Semiring.add_mul a b c
+theorem mul_add (a b c : R) : a * (b + c) = a * b + a * c := Semiring.mul_add a b c
 
-@[simp] theorem mul_zero {R} [Semiring R] (a : R) : a * 0 = 0 := Semiring.mul_zero a
+theorem add_mul (a b c : R) : (a + b) * c = a * c + b * c := Semiring.add_mul a b c
 
-@[simp] theorem zero_mul {R} [Semiring R] (a : R) : 0 * a = 0 := Semiring.zero_mul a
+@[simp] lemma ofNat_zero : (ofNat 0 : R) = 0 := rfl
+@[simp] lemma ofNat_one : (ofNat 1 : R) = 1 := rfl
 
-theorem Semiring.ofNat_pow (a n : ℕ) : Numeric.ofNat (a^n) = (Numeric.ofNat a : R)^n := by
+@[simp] lemma ofNat_add : ∀ {a b}, (ofNat (a + b) : R) = ofNat a + ofNat b
+  | a, 0 => (add_zero _).symm
+  | a, b + 1 => trans (Semiring.ofNat_succ _)
+    (by simp [Semiring.ofNat_succ, ofNat_add (b := b), add_assoc])
+
+@[simp] lemma ofNat_mul : ∀ {a b}, (ofNat (a * b) : R) = ofNat a * ofNat b
+  | a, 0 => by simp
+  | a, b + 1 => by simp [Nat.mul_succ, mul_add,
+    (show ofNat (a * b) = ofNat a * ofNat b from ofNat_mul)]
+
+@[simp] theorem ofNat_pow (a n : ℕ) : Numeric.ofNat (a^n) = (Numeric.ofNat a : R)^n := by
   induction n with
   | zero =>
-    rw [pow_zero, Nat.pow_zero, Semiring.ofNat_one]
+    rw [pow_zero, Nat.pow_zero]
     exact rfl
   | succ n ih =>
-    rw [pow_succ, Nat.pow_succ, Semiring.ofNat_mul, ih]
+    rw [pow_succ, Nat.pow_succ, ofNat_mul, ih]
 
 end Semiring
 
@@ -52,18 +79,17 @@ class CommSemiring (R : Type u) extends Semiring R where
 instance (R : Type u) [CommSemiring R] : CommMonoid R where
   __ := ‹CommSemiring R›
 
-class Ring (R : Type u) extends Monoid R, AddCommGroup R, Numeric R where
-  mul_add (a b c : R) : a * (b + c) = a * b + a * c
-  add_mul (a b c : R) : (a + b) * c = a * c + b * c
-  ofNat_add (a b : Nat) : ofNat (a + b) = ofNat a + ofNat b
-  ofNat_mul (a b : Nat) : ofNat (a * b) = ofNat a * ofNat b
-  ofNat_one : ofNat (nat_lit 1) = One.one
-  ofNat_zero : ofNat (nat_lit 0) = Zero.zero
+class Ring (R : Type u) extends Semiring R, Neg R, Sub R where
+  -- AddGroup R
+  sub := λ a b => a + -b
+  sub_eq_add_neg : ∀ a b : R, a - b = a + -b
+  gsmul : ℤ → R → R := gsmul_rec
+  gsmul_zero' : ∀ (a : R), gsmul 0 a = 0
+  gsmul_succ' (n : ℕ) (a : R) : gsmul (Int.ofNat n.succ) a = a + gsmul (Int.ofNat n) a
+  gsmul_neg' (n : ℕ) (a : R) : gsmul (Int.negSucc n) a = -(gsmul ↑(n.succ) a)
+  add_left_neg (a : R) : -a + a = 0
 
-instance (R : Type u) [Ring R] : Semiring R where
-  zero_mul := λ a => by rw [← add_right_eq_self (a := 0 * a), ← Ring.add_mul, zero_add]
-  mul_zero := λ a => by rw [← add_right_eq_self (a := a * 0), ← Ring.mul_add]; simp
-  __ := ‹Ring R›
+instance {R} [Ring R] : AddCommGroup R := { ‹Ring R› with }
 
 class CommRing (R : Type u) extends Ring R where
   mul_comm (a b : R) : a * b = b * a
@@ -77,23 +103,19 @@ instance (R : Type u) [CommRing R] : CommSemiring R where
 namespace Nat
 
 instance : Numeric Nat := ⟨id⟩
+
 @[simp] theorem ofNat_eq_Nat (n : Nat) : Numeric.ofNat n = n := rfl
 
 instance : CommSemiring Nat where
   mul_comm := Nat.mul_comm
   mul_add := Nat.left_distrib
   add_mul := Nat.right_distrib
-  ofNat_add := by simp
-  ofNat_mul := by simp
-  ofNat_one := rfl
-  ofNat_zero := rfl
+  ofNat_succ := fun _ => rfl
   mul_one := Nat.mul_one
   one_mul := Nat.one_mul
   npow (n x) := x ^ n
   npow_zero' := Nat.pow_zero
   npow_succ' n x := by simp [Nat.pow_succ, Nat.mul_comm]
-  one := 1
-  zero := 0
   mul_assoc := Nat.mul_assoc
   add_comm := Nat.add_comm
   add_assoc := Nat.add_assoc
@@ -111,25 +133,18 @@ namespace Int
 
 instance : Numeric ℤ := ⟨Int.ofNat⟩
 
-@[simp] theorem ofNat_eq_ofNat (n : ℕ): Numeric.ofNat n = ofNat n := rfl
-
 instance : CommRing ℤ where
+  zero_mul := Int.zero_mul
+  mul_zero := Int.mul_zero
   mul_comm := Int.mul_comm
   mul_add := Int.distrib_left
   add_mul := Int.distrib_right
-  ofNat_add := by simp [ofNat_add]
-  ofNat_mul := by simp [ofNat_mul]
-  ofNat_one := rfl
-  ofNat_zero := rfl
+  ofNat_succ := fun _ => rfl
   mul_one := Int.mul_one
   one_mul := Int.one_mul
   npow (n x) := HPow.hPow x n
   npow_zero' n := rfl
-  npow_succ' n x := by
-    rw [Int.mul_comm]
-    exact rfl
-  one := 1
-  zero := 0
+  npow_succ' n x := by rw [Int.mul_comm]; rfl
   mul_assoc := Int.mul_assoc
   add_comm := Int.add_comm
   add_assoc := Int.add_assoc
