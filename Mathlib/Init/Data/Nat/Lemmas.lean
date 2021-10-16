@@ -308,7 +308,7 @@ protected lemma div_le_self : ∀ (m n : ℕ), m / n ≤ m
   rwa [Nat.one_mul] at this
 
 lemma div_eq_sub_div (h₁ : 0 < b) (h₂ : b ≤ a) : a / b = (a - b) / b + 1 := by
- rw [div_eq a, if_pos]; split <;> assumption
+ rw [div_eq a, if_pos]; constructor <;> assumption
 
 lemma div_eq_of_lt (h₀ : a < b) : a / b = 0 := by
   rw [div_eq a, if_neg]
@@ -401,6 +401,12 @@ lemma lt_succ_of_lt (h : a < b) : a < succ b := le_succ_of_le h
 lemma one_pos : 0 < 1 := Nat.zero_lt_one
 
 /- subtraction -/
+
+
+protected lemma sub_add_eq_max {a b : Nat} : a - b + b = max a b := by
+cases (@le_total Nat Nat.instLinearOrderNat a b) with
+| inl hl => rw [max_eq_right hl, Nat.sub_eq_zero_iff_le.mpr hl, Nat.zero_add]
+| inr hr => rw [max_eq_left hr, Nat.sub_add_cancel hr]
 
 protected lemma sub_le_sub_left (k : ℕ) (h : n ≤ m) : k - m ≤ k - n :=
   match m, le.dest h with

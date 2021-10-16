@@ -51,7 +51,7 @@ theorem mem_remove_iff {a b : α} {as : List α} : b ∈ remove a as ↔ b ∈ a
       exact ⟨fun ⟨h1, h2⟩ => ⟨Or.inr h1, h2⟩, fun ⟨h1, h2⟩ => ⟨Or.resolve_left h1 (h ▸ h2), h2⟩⟩
     | inr h =>
       simp [if_neg h, ih]
-      split
+      constructor
       { focus
         intro h'
         cases h' with

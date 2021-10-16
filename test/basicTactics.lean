@@ -45,9 +45,9 @@ example (p q r s : Prop) : p → q → r → s → (p ∧ q) ∧ (r ∧ s ∧ p)
 
 example (p q : Prop) : p → q → (p ∧ q) ∧ (p ∧ q ∧ p) := by
   intros
-  split
+  constructor
   fail_if_success any_goals assumption
-  all_goals split
+  all_goals constructor
   any_goals assumption
-  split
+  constructor
   any_goals assumption

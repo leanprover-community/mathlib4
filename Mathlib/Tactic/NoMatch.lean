@@ -26,6 +26,12 @@ open private elabMatchCore in elabMatch.elabMatchDefault in
 open private elabMatchAux waitExpectedTypeAndDiscrs in elabMatchCore in
 @[termElab Parser.Term.noMatch] def elabNoMatch' : TermElab
 | stx@`(match $discrs,* with.), expectedType? => do
+  let discrs := discrs.getElems
+  if let some i ← discrs.findIdxM? fun discr =>
+      return (← isAtomicDiscr? discr).isNone then
+    let discr := discrs[i][1]
+    let discrs := discrs.set! i (← `(x))
+    return ← elabTerm (← `(let x := $discr; match $discrs,* with.)) expectedType?
   let expectedType ← waitExpectedTypeAndDiscrs stx expectedType?
   elabMatchAux none discrs #[] mkNullNode expectedType
 | _, _ => throwUnsupportedSyntax

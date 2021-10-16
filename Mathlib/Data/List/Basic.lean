@@ -187,7 +187,7 @@ fun x => False.elim
 
 lemma bex_cons (p : α → Prop) (a : α) (l : List α) :
     (∃ x ∈ (a :: l), p x) ↔ (p a ∨ ∃ x ∈ l, p x) := by
-  split; focus
+  constructor; focus
     intro ⟨x, h, px⟩
     simp at h
     cases h with
@@ -243,7 +243,7 @@ mt mem_append.1 $ (not_or _ _).mpr ⟨h₁, h₂⟩
 
 theorem ne_nil_of_mem {a : α} {l : List α} (h : a ∈ l) : l ≠ [] := by intro e; rw [e] at h; cases h
 
-theorem mem_split {a : α} {l : List α} (h : a ∈ l) : ∃ s t : List α, l = s ++ a :: t := by
+theorem mem_constructor {a : α} {l : List α} (h : a ∈ l) : ∃ s t : List α, l = s ++ a :: t := by
   induction l with
   | nil => cases h --exact ⟨[], l, rfl⟩
   | cons b l ih =>
@@ -305,14 +305,14 @@ theorem mem_map {f : α → β} {b} : ∀ {l : List α}, b ∈ l.map f ↔ ∃ a
 
 lemma forall_mem_map_iff {f : α → β} {l : List α} {P : β → Prop} :
   (∀ i ∈ l.map f, P i) ↔ ∀ j ∈ l, P (f j) := by
-  split
+  constructor
   { intros H j hj; exact H (f j) (mem_map_of_mem f hj) }
     intros H i hi
     match mem_map.1 hi with
     | ⟨j, hj, ji⟩ => rw [ji]; exact H j hj
 
 @[simp] lemma map_eq_nil {f : α → β} {l : List α} : List.map f l = [] ↔ l = [] := by
-  split
+  constructor
   { cases l with
     | nil => intro _; rfl
     | cons b l => intro h; exact List.noConfusion h }
@@ -348,8 +348,6 @@ lemma bind_map {g : α → List β} {f : β → γ} :
 
 /-! ### length -/
 
--- @[simp] lemma length_repeat (a : α) (n : ℕ) : length (repeat a n) = n :=
--- by induction n; simp [*]; refl
 
 -- @[simp] lemma length_tail (l : list α) : length (tail l) = length l - 1 :=
 -- by cases l; refl
@@ -428,7 +426,7 @@ lemma exists_mem_of_ne_nil (l : List α) (h : l ≠ []) : ∃ x, x ∈ l :=
 exists_mem_of_length_pos (length_pos_of_ne_nil h)
 
 theorem length_eq_one {l : List α} : length l = 1 ↔ ∃ a, l = [a] := by
-  split
+  constructor
   { intro h
     match l with
     | nil => contradiction
@@ -443,7 +441,7 @@ lemma exists_of_length_succ {n} :
 
 -- @[simp] lemma length_injective_iff : injective (List.length : List α → ℕ) ↔ subsingleton α :=
 -- begin
---   split,
+--   constructor,
 --   { intro h, refine ⟨fun  x y, _⟩, suffices : [x] = [y], { simpa using this }, apply h, refl },
 --   { intros hα l1 l2 hl, induction l1 generalizing l2; cases l2,
 --     { refl }, { cases hl }, { cases hl },
@@ -567,9 +565,9 @@ fun {a} h => (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
 
 @[simp] theorem append_subset_iff {l₁ l₂ l : List α} :
     l₁ ++ l₂ ⊆ l ↔ l₁ ⊆ l ∧ l₂ ⊆ l := by
-  split
+  constructor
   { intro h; simp only [subset_def] at *
-    split
+    constructor
     { intros; apply h; apply mem_append_left; assumption }
     { intros; apply h; apply mem_append_right; assumption } }
   { intro h; match h with | ⟨h1, h2⟩ => apply append_subset_of_subset_of_subset h1 h2 }
@@ -609,7 +607,7 @@ theorem mem_filterAux (x : α) (p : α → Bool) :
       cases pa : p a with
       | true =>
         simp [mem_filterAux x p as (a :: bs)]
-        split; focus
+        constructor; focus
           intro h'
           cases h' with
           | inl h'' => exact Or.inl ⟨Or.inr h''.1, h''.2⟩
@@ -626,7 +624,7 @@ theorem mem_filterAux (x : α) (p : α → Bool) :
         | inr h'' => exact Or.inr (Or.inr h'')
       | false =>
         simp [mem_filterAux x p as bs]
-        split; focus
+        constructor; focus
           intro h'
           cases h' with
           | inl h'' => exact Or.inl ⟨Or.inr h''.1, h''.2⟩
@@ -678,12 +676,12 @@ cases a with
 --   | nil => simp
 --   | cons a as =>
 --       simp
---       split
+--       constructor
 --         intro h
 --         exact ⟨as, by simp [h]⟩
 --       focus
 --         intro ⟨a', ⟨aeq, aseq⟩, h⟩
---         split; apply aeq
+--         constructor; apply aeq
 --         rw [aseq, h]
 
 -- lemma cons_eq_append_iff {a b c : List α} {x : α} :
@@ -694,7 +692,7 @@ cases a with
 --   a ++ b = c ++ d ↔ (∃a', c = a ++ a' ∧ b = a' ++ d) ∨ (∃c', a = c ++ c' ∧ d = c' ++ b) :=
 -- begin
 --   induction a generalizing c,
---   case nil { rw nil_append, split,
+--   case nil { rw nil_append, constructor,
 --     { rintro rfl, left, exact ⟨_, rfl, rfl⟩ },
 --     { rintro (⟨a', rfl, rfl⟩ | ⟨a', H, rfl⟩), {refl}, {rw [← append_assoc, ← H], refl} } },
 --   case cons : a as ih {
@@ -764,7 +762,7 @@ cases a with
 -- theorem append_left_inj {s₁ s₂ : List α} (t) : s₁ ++ t = s₂ ++ t ↔ s₁ = s₂ :=
 -- (append_left_injective t).eq_iff
 
--- theorem map_eq_append_split {f : α → β} {l : List α} {s₁ s₂ : List β}
+-- theorem map_eq_append_constructor {f : α → β} {l : List α} {s₁ s₂ : List β}
 --   (h : map f l = s₁ ++ s₂) : ∃ l₁ l₂, l = l₁ ++ l₂ ∧ map f l₁ = s₁ ∧ map f l₂ = s₂ :=
 -- begin
 --   have := h, rw [← take_append_drop (length s₁) l] at this ⊢,
@@ -786,6 +784,11 @@ theorem exists_of_mem_bind {b : β} {l : List α} {f : α → List β} :
   b ∈ List.bind l f → ∃ a, a ∈ l ∧ b ∈ f a :=
 mem_bind.1
 
+@[simp] lemma length_repeat (a : α) (n : ℕ) : length (repeat a n) = n := by
+induction n with
+| zero => simp
+| succ x ih => simp; assumption
+
 /-! ### insert -/
 section insert
 variable [DecidableEq α]
@@ -802,7 +805,7 @@ def insert (a : α) (l : List α) := if a ∈ l then l else a :: l
   byCases h : b ∈ l
   focus
     rw [insert_of_mem h]
-    split; apply Or.inr
+    constructor; apply Or.inr
     intro h
     cases h with
     | inl h' => rw [h']; exact h
@@ -1246,5 +1249,37 @@ def countp (p : α → Prop) [DecidablePred p] : List α → Nat
 
 /-- `count a l` is the number of occurrences of `a` in `l`. -/
 def count [DecidableEq α] (a : α) : List α → Nat := countp (Eq a)
+
+/-- `isPrefix l₁ l₂` means that `l₁` is a prefix of `l₂`,
+  that is, `l₂` has the form `l₁ ++ t` for some `t`. -/
+def isPrefix (l₁ : List α) (l₂ : List α) : Prop := ∃ t, l₁ ++ t = l₂
+
+/-- `isSuffix l₁ l₂`  means that `l₁` is a suffix of `l₂`,
+  that is, `l₂` has the form `t ++ l₁` for some `t`. -/
+def isSuffix (l₁ : List α) (l₂ : List α) : Prop := ∃ t, t ++ l₁ = l₂
+
+/-- `isInfix l₁ l₂` means that `l₁` is a contiguous
+  substring of `l₂`, that is, `l₂` has the form `s ++ l₁ ++ t` for some `s, t`. -/
+def isInfix (l₁ : List α) (l₂ : List α) : Prop := ∃ s t, s ++ l₁ ++ t = l₂
+
+/-- pad `l : List α` with repeated occurrences of `a : α` until it's of length `n`.
+  If `l` is initially larger than `n`, just return `l`. -/
+def leftpad (n : ℕ) (a : α) (l : List α) : List α :=
+repeat a (n - length l) ++ l
+
+/-- The length of the List returned by `List.leftpad n a l` is equal
+  to the larger of `n` and `l.length` -/
+theorem leftpad_length (n : ℕ) (a : α) (l : List α) : (leftpad n a l).length = max n l.length :=
+by simp only [leftpad, length_append, length_repeat, Nat.sub_add_eq_max]
+
+theorem leftpad_prefix [DecidableEq α] (n : ℕ) (a : α) (l : List α) : isPrefix (repeat a (n - length l)) (leftpad n a l) :=
+by
+  simp only [isPrefix, leftpad]
+  exact Exists.intro l rfl
+
+theorem leftpad_suffix [DecidableEq α] (n : ℕ) (a : α) (l : List α) : isSuffix l (leftpad n a l) :=
+by
+  simp only [isSuffix, leftpad]
+  exact Exists.intro (repeat a (n - length l)) rfl
 
 end List

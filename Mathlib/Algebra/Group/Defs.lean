@@ -3,29 +3,24 @@ import Mathlib.Data.Int.Basic -- *only* for notation ℤ which should be in a "p
 import Mathlib.Tactic.Spread
 
 /-!
-
 # Typeclasses for monoids and groups etc
-
 -/
 
-/-
+local macro "ofNat_class" Class:ident n:num : command =>
+  let field := Lean.mkIdent <| Class.getId.eraseMacroScopes.getString!.toLower
+  `(class $Class:ident.{u} (α : Type u) where
+    $field:ident : α
 
-## Stuff which was in core Lean 3
+  instance {α} [$Class α] : OfNat α (nat_lit $n) where
+    ofNat := ‹$Class α›.1
 
--- this should also be in a "prelude" -- it is not in mathlib3's algebra.group.defs
--/
+  instance {α} [OfNat α (nat_lit $n)] : $Class α where
+    $field:ident := $n)
 
-class Zero (α : Type u) where
-  zero : α
+example : Nat := 0 -- terminate macro block
 
-instance instOfNatZero [Zero α] : OfNat α (nat_lit 0) where
-  ofNat := Zero.zero
-
-class One (α : Type u) where
-  one : α
-
-instance instOfNatOne [One α] : OfNat α (nat_lit 1) where
-  ofNat := One.one
+ofNat_class Zero 0
+ofNat_class One 1
 
 class Inv (α : Type u) where
   inv : α → α
@@ -198,13 +193,13 @@ be "the canonical one".
 
 -/
 
-class SubNegMonoid (A : Type u) extends AddMonoid A, Neg A, Sub A :=
-(sub := λ a b => a + -b)
-(sub_eq_add_neg : ∀ a b : A, a - b = a + -b)
-(gsmul : ℤ → A → A := gsmul_rec)
-(gsmul_zero' : ∀ (a : A), gsmul 0 a = 0)
-(gsmul_succ' (n : ℕ) (a : A) : gsmul (Int.ofNat n.succ) a = a + gsmul (Int.ofNat n) a)
-(gsmul_neg' (n : ℕ) (a : A) : gsmul (Int.negSucc n) a = -(gsmul ↑(n.succ) a))
+class SubNegMonoid (A : Type u) extends AddMonoid A, Neg A, Sub A where
+  sub := λ a b => a + -b
+  sub_eq_add_neg : ∀ a b : A, a - b = a + -b
+  gsmul : ℤ → A → A := gsmul_rec
+  gsmul_zero' : ∀ (a : A), gsmul 0 a = 0
+  gsmul_succ' (n : ℕ) (a : A) : gsmul (Int.ofNat n.succ) a = a + gsmul (Int.ofNat n) a
+  gsmul_neg' (n : ℕ) (a : A) : gsmul (Int.negSucc n) a = -(gsmul ↑(n.succ) a)
 
 /-
 
