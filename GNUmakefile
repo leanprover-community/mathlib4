@@ -10,4 +10,4 @@ build:
 test: $(addsuffix .run, $(TESTS))
 
 test/%.run: build
-	env LEAN_PATH=build lean test/$*
+	env LEAN_PATH=build/lib lean test/$*
