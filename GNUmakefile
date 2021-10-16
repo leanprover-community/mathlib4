@@ -5,7 +5,7 @@ TESTS = $(wildcard test/*.lean)
 all: build test
 
 build:
-	leanpkg build
+	lake build :oleans
 
 test: $(addsuffix .run, $(TESTS))
 
