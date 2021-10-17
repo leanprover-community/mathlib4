@@ -28,7 +28,7 @@ jobs:
           find Mathlib -not -type d | sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
 
       - name: build mathlib
-        run: lake build :oleans
+        run: lake build
 
       - name: test mathlib
         run: make test
