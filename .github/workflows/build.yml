@@ -17,7 +17,7 @@ jobs:
       - name: install elan
         run: |
           set -o pipefail
-          curl -sSfL https://github.com/leanprover/elan/releases/download/v1.0.3/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v1.1.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
           ./elan-init -y
           echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
@@ -28,7 +28,7 @@ jobs:
           find Mathlib -not -type d | sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
 
       - name: build mathlib
-        run: leanpkg build
+        run: lake build
 
       - name: test mathlib
         run: make test

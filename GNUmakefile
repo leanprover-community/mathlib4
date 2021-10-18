@@ -5,9 +5,9 @@ TESTS = $(wildcard test/*.lean)
 all: build test
 
 build:
-	leanpkg build
+	lake build
 
 test: $(addsuffix .run, $(TESTS))
 
 test/%.run: build
-	env LEAN_PATH=build lean test/$*
+	env LEAN_PATH=build/lib lean test/$*
