@@ -37,7 +37,7 @@ macro_rules
   | `({$x}) => `(Set.singleton $x)
   | `({$x, $xs:term,*}) => `(Set.insert $x {$xs,*})
 
-/- Provided `Set` is in scope, these are all we need for `{1, 2, 3}` to be valid notation to create a literal set -/
+/- Provided `Set` has been imported, these are all we need for `{1, 2, 3}` to be valid notation to create a literal set -/
 
 ```
 
@@ -77,7 +77,7 @@ structure State where
   deriving Inhabited
 ```
 
-As a review/checklist, the three (somtimes only two depending on whether you need a new syntax category) components users need to be concerned with are:
+As a review/checklist, the three (sometimes only two depending on whether you need a new syntax category) components users need to be concerned with are:
 
 0. You may or may not need to declare a new syntax category using `declare_syntax_cat`
 1. Declare a parser with either `syntax` or `macro`
@@ -156,7 +156,7 @@ Separated lists can be constructed like so: `$ts,*` for a comma separated list.
 
 "extended splices" can be constructed as `$[..]`. See the official paper (p. 12) for more details.
 
-Literals are written as double-quoted strings. A literal may use trailing whitespace (see e.g. the `rwa` or `introv` tactics) to tell the pretty-printer how it should be displayed, but such whitespace will not prevent a literal with no trailing whitespace from matching. "The spaces are relevant, but not interpreted literally. When the ParserDescr is turned into a Parser, the actual token matcher [uses the .trim of the provided string](https://github.com/leanprover/lean4/blob/master/src/Lean/Parser/Basic.lean#L1193), but the generated formatter [uses the spaces as specified](https://github.com/leanprover/lean4/blob/master/src/Lean/PrettyPrinter/Formatter.lean#L328), that is, turning the atom "rwa" in the syntax into the string rwa as part of the pretty printed output."
+Literals are written as double-quoted strings. A literal may use trailing whitespace (see e.g. the `rwa` or `introv` tactics) to tell the pretty-printer how it should be displayed, but such whitespace will not prevent a literal with no trailing whitespace from matching. The spaces are relevant, but not interpreted literally. When the ParserDescr is turned into a Parser, the actual token matcher [uses the .trim of the provided string](https://github.com/leanprover/lean4/blob/master/src/Lean/Parser/Basic.lean#L1193), but the generated formatter [uses the spaces as specified](https://github.com/leanprover/lean4/blob/master/src/Lean/PrettyPrinter/Formatter.lean#L328), that is, turning the atom "rwa" in the syntax into the string rwa as part of the pretty printed output.
 
 ## Syntax expansions with `macro_rules`, and how it desugars.
 
@@ -189,6 +189,7 @@ To see the desugared definition of the actual expansion, we can again use `set_o
 
 ```
 
+set_option trace.Elab.definition true in
 macro "exfalso" : tactic => `(apply False.elim)
 
 /-
@@ -232,6 +233,7 @@ fun stx => `(apply False.elim)
 
 Finally, we can view the expansion of the syntax transformer:
 ```
+set_option trace.Elab.definition true in
 syntax (name := myExfalsoParser) "myExfalso" : tactic
 
 @[macro myExfalsoParser] def implMyExfalso : Macro :=
