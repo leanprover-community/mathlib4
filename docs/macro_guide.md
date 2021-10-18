@@ -54,11 +54,13 @@ inductive Syntax where
 
 
 
-For those interested, `MacroM` is a `ReaderT` with the following components:
-
+For those interested, `MacroM` is a `ReaderT`:
 ```
 abbrev MacroM := ReaderT Macro.Context (EStateM Macro.Exception Macro.State)
+```
 
+The other relevant components are defined as follows:
+```
 structure Context where
   methods        : MethodsRef
   mainModule     : Name
@@ -186,7 +188,6 @@ assumption
 ```
 
 To see the desugared definition of the actual expansion, we can again use `set_option trace.Elab.definition true in` and observe the output of the humble `exfalso` tactic defined in Mathlib4:
-
 ```
 
 set_option trace.Elab.definition true in
@@ -221,34 +222,38 @@ fun x =>
 -/
 ```
 
-We can view the expansion of the parser:
-
+We can also create the syntax transformer declaration ourselves instead of using `macro_rules`. We'll need to name our parser and use the attribute `@[macro myExFalsoParser]` to associate our declaration with the parser:
 ```
 syntax (name := myExfalsoParser) "myExfalso" : tactic
 
 -- remember that `Macro` is a synonym for `Syntax -> TacticM Unit`
 @[macro myExfalsoParser] def implMyExfalso : Macro :=
-fun stx => `(apply False.elim)
+fun stx => `(tactic| apply False.elim)
+
+example (p : Prop) (h : p) (f : p -> False) : 3 = 2 := by
+myExfalso
+exact f h
 ```
 
-Finally, we can view the expansion of the syntax transformer:
+In the above example, we're still using the sugar Lean provides for creating quotations, as it saves us a lot of work. It is possible to forego the sugar altogether.
 ```
-set_option trace.Elab.definition true in
 syntax (name := myExfalsoParser) "myExfalso" : tactic
 
-@[macro myExfalsoParser] def implMyExfalso : Macro :=
+@[macro myExfalsoParser] def implMyExfalso : Lean.Macro :=
 fun stx =>
   do
     let info ← Lean.MonadRef.mkInfoFromRefPos
     let scp ← Lean.getCurrMacroScope
     let mainModule ← Lean.getMainModule
     pure
-        (Lean.Syntax.node `Lean.Parser.Term.app
-          #[Lean.Syntax.ident info (String.toSubstring "apply") (Lean.addMacroScope mainModule `apply scp)
-              [(`Lean.Parser.Tactic.apply, []), (`Lean.Meta.apply, [])],
-            Lean.Syntax.node `null
-              #[Lean.Syntax.ident info (String.toSubstring "False.elim") (Lean.addMacroScope mainModule `False.elim scp)
-                  [(`False.elim, [])]]])
+        (Lean.Syntax.node `Lean.Parser.Tactic.apply
+          #[Lean.Syntax.atom info "apply",
+            Lean.Syntax.ident info (String.toSubstring "False.elim") (Lean.addMacroScope mainModule `False.elim scp)
+              [(`False.elim, [])]])
+
+example (p : Prop) (h : p) (f : p -> False) : 3 = 2 := by
+myExfalso
+exact f h
 ```
 
 ## The `macro` keyword
