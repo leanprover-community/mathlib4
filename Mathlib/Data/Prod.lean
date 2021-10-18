@@ -7,6 +7,7 @@ import Mathlib.Function
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Ext
 
 /-!
 # Extra facts about `Prod`
@@ -37,8 +38,10 @@ Prod.exists
 
 @[simp] lemma map_mk (f : α → γ) (g : β → δ) (a : α) (b : β) : map f g (a, b) = (f a, g b) := rfl
 
+@[simp]
 lemma map_fst (f : α → γ) (g : β → δ) (p : α × β) : (map f g p).1 = f (p.1) := by simp
 
+@[simp]
 lemma map_snd (f : α → γ) (g : β → δ) (p : α × β) : (map f g p).2 = g (p.2) := by simp
 
 lemma map_fst' (f : α → γ) (g : β → δ) : (Prod.fst ∘ map f g) = f ∘ Prod.fst :=
@@ -54,7 +57,7 @@ a single `prod.map` of composed functions.
 lemma map_comp_map {ε ζ : Type _}
   (f : α → β) (f' : γ → δ) (g : β → ε) (g' : δ → ζ) :
   Prod.map g g' ∘ Prod.map f f' = Prod.map (g ∘ f) (g' ∘ f') :=
-funext (by intro x; simp)
+by ext x; simp
 
 /--
 Composing a `prod.map` with another `prod.map` is equal to
@@ -70,13 +73,11 @@ lemma map_map {ε ζ : Type _}
 
 lemma mk.inj_left {α β : Type _} (a : α) :
   Function.injective (Prod.mk a : β → α × β) :=
-by intros b₁ b₂ h
-   exact (Prod.mk.inj h).right
+fun h => (Prod.mk.inj h).right
 
 lemma mk.inj_right {α β : Type _} (b : β) :
   Function.injective (λ a => Prod.mk a b : α → α × β) :=
-by intros b₁ b₂ h
-   exact (Prod.mk.inj h).left
+fun h => (Prod.mk.inj h).left
 
 -- Port note: this lemma comes from lean3/library/init/data/prod.lean.
 @[simp] lemma mk.eta : ∀{p : α × β}, (p.1, p.2) = p
@@ -87,11 +88,12 @@ by rw [← @mk.eta _ _ p, ← @mk.eta _ _ q, mk.inj_iff]
 
 -- Port note: in mathlib this is named `ext`, but Lean4 has already defined that to be something
 -- with a slightly different signature.
+@[ext]
 lemma ext' {α β} {p q : α × β} (h₁ : p.1 = q.1) (h₂ : p.2 = q.2) : p = q :=
 ext_iff.2 ⟨h₁, h₂⟩
 
-lemma map_def {f : α → γ} {g : β → δ} : Prod.map f g = λ (p : α × β) => (f p.1, g p.2) :=
-funext (λ p => ext' (map_fst f g p) (map_snd f g p))
+lemma map_def {f : α → γ} {g : β → δ} : Prod.map f g = λ p => (f p.1, g p.2) :=
+by ext <;> simp
 
 lemma id_prod : (λ (p : α × α) => (p.1, p.2)) = id :=
 funext $ λ ⟨a, b⟩ => rfl

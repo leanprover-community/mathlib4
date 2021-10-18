@@ -219,9 +219,9 @@ imp.swap
 
 /-! ### Declarations about `xor` -/
 
-@[simp] theorem xor_true : xor True = Not := funext $ λ a => by simp [xor]
+@[simp] theorem xor_true : xor True = Not := by simp [xor]
 
-@[simp] theorem xor_false : xor False = id := funext $ λ a => by simp [xor]
+@[simp] theorem xor_false : xor False = id := by ext; simp [xor]
 
 theorem xor_comm (a b) : xor a b = xor b a := by simp [xor, and_comm, or_comm]
 

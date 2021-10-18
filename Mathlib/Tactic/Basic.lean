@@ -81,16 +81,16 @@ elab "exacts" "[" hs:term,* "]" : tactic => do
   evalTactic (← `(tactic| done))
 
 --TODO : which expr equality to use?
-elab "guardExprEq " r:term " := " p:term : tactic => do
+elab "guardExprEq " r:term " := " p:term : tactic => withMainContext do
   let r ← elabTerm r none
   let p ← elabTerm p none
   if not (r == p) then throwError "failed: {r} != {p}"
 
-elab "guardTarget" r:term : tactic => do
+elab "guardTarget" r:term : tactic => withMainContext do
   let r ← elabTerm r none
   let t ← getMainTarget
   let t ← t.consumeMData
-  if not (r == t) then throwError m!"target of main goal is {t}"
+  if not (r == t) then throwError m!"target of main goal is {t}, not {r}"
 
 syntax (name := guardHyp) "guardHyp " ident (" : " term)? (" := " term)? : tactic
 @[tactic guardHyp] def evalGuardHyp : Lean.Elab.Tactic.Tactic := fun stx =>

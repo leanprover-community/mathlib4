@@ -8,6 +8,7 @@ import Mathlib.Function
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Ext
 
 open Function
 
