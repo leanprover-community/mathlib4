@@ -18,8 +18,8 @@ import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
 import Mathlib.Data.UInt
-import Mathlib.Dvd
-import Mathlib.Function
+import Mathlib.Init.Dvd
+import Mathlib.Init.Function
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Data.Nat.Basic
@@ -28,8 +28,8 @@ import Mathlib.Init.Logic
 import Mathlib.Lean.LocalContext
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Basic
-import Mathlib.Set
-import Mathlib.SetNotation
+import Mathlib.Init.Set
+import Mathlib.Init.SetNotation
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Coe

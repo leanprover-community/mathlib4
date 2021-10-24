@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Logic.Basic
-import Mathlib.Function
-import Mathlib.Set
-import Mathlib.SetNotation
+import Mathlib.Init.Function
+import Mathlib.Init.Set
+import Mathlib.Init.SetNotation
 
 universe u v w
 
