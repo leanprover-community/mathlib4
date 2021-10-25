@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Init.Logic
-import Mathlib.Function
+import Mathlib.Init.Function
 import Mathlib.Tactic.Basic
 
 section needs_better_home

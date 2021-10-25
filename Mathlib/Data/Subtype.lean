@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 
-import Mathlib.Function
+import Mathlib.Init.Function
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Coe
@@ -61,7 +61,7 @@ lemma ext_iff_val {a1 a2 : {x // p x}} : a1 = a2 ↔ a1.1 = a2.1 :=
 ext_iff
 
 @[simp] theorem coe_eta (a : {a // p a}) (h : p (a : α)) : mk (a : α) h = a := Subtype.ext rfl
-  
+
 @[simp] theorem coe_mk (a h) : (@mk α p a h : α) = a := rfl
 
 @[simp]

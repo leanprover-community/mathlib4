@@ -1,6 +1,6 @@
 import Mathlib.Logic.Basic
 import Mathlib.Data.Nat.Basic
-import Mathlib.SetNotation
+import Mathlib.Init.SetNotation
 import Lean
 namespace List
 
