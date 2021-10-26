@@ -5,6 +5,12 @@ Authors: Mario Carneiro
 -/
 import Lean.Elab.Command
 import Lean.Elab.Quotation
+import Mathlib.Tactic.Ext
+import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.ShowTerm
+import Mathlib.Tactic.SolveByElim
 
 -- To fix upstream:
 -- * bracketedExplicitBinders doesn't support optional types
@@ -267,7 +273,8 @@ syntax (name := rintro) "rintro" (ppSpace rintroPat)* (" : " term)? : tactic
 
 syntax (name := ext1) "ext1" (ppSpace rcasesPat)* : tactic
 syntax (name := ext1?) "ext1?" (ppSpace rcasesPat)* : tactic
-syntax (name := ext) "ext" (ppSpace rcasesPat)* (" : " num)? : tactic
+-- Implemented in Mathlib.Tactic.Ext
+-- syntax (name := ext) "ext" (ppSpace rcasesPat)* (" : " num)? : tactic
 syntax (name := ext?) "ext?" (ppSpace rcasesPat)* (" : " num)? : tactic
 
 syntax (name := apply') "apply' " term : tactic
@@ -336,8 +343,9 @@ syntax (name := revertTargetDeps) "revertTargetDeps" : tactic
 syntax (name := clearValue) "clearValue" (ppSpace (colGt ident))* : tactic
 
 syntax (name := applyAssumption) "applyAssumption" : tactic
-syntax (name := solveByElim) "solveByElim" "*"? (" (" &"config" " := " term ")")?
-  (&" only")? (" [" simpArg,* "]")? (" with " (colGt ident)+)? : tactic
+-- Implemented in Mathlib.Tactic.SolveByElim
+-- syntax (name := solveByElim) "solveByElim" "*"? (" (" &"config" " := " term ")")?
+--   (&" only")? (" [" simpArg,* "]")? (" with " (colGt ident)+)? : tactic
 
 syntax (name := hint) "hint" : tactic
 
@@ -402,7 +410,8 @@ syntax (name := renameVar) "renameVar " ident " → " ident (ppSpace location)? 
 
 syntax (name := assocRw) "assocRw " rwRuleSeq (ppSpace location)? : tactic
 
-syntax (name := showTerm) "showTerm " tacticSeq : tactic
+-- Implemented in Mathlib.Tactic.ShowTerm
+-- syntax (name := showTerm) "showTerm " tacticSeq : tactic
 
 syntax (name := simpRw) "simpRw " rwRuleSeq (ppSpace location)? : tactic
 
@@ -450,8 +459,9 @@ syntax (name := squeezeDSimp?!) "squeezeDSimp?!" (" (" &"config" " := " term ")"
 
 syntax (name := suggest) "suggest" (" (" &"config" " := " term ")")? (ppSpace num)?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " (colGt ident)+)? : tactic
-syntax (name := librarySearch) "librarySearch" (" (" &"config" " := " term ")")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " (colGt ident)+)? : tactic
+-- Implemented in Mathlib.Tactic.LibrarySearch
+-- syntax (name := librarySearch) "librarySearch" (" (" &"config" " := " term ")")?
+--   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " (colGt ident)+)? : tactic
 syntax (name := librarySearch!) "librarySearch!" (" (" &"config" " := " term ")")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " (colGt ident)+)? : tactic
 
@@ -461,6 +471,7 @@ syntax (name := tauto!) "tauto!" (" (" &"config" " := " term ")")? : tactic
 syntax (name := truncCases) "truncCases " term (" with " (colGt binderIdent)+)? : tactic
 
 syntax (name := normNum1) "normNum1" (ppSpace location)? : tactic
+-- Implemented in Mathlib.Tactic.NormNum
 -- syntax (name := normNum) "normNum" (" [" simpArg,* "]")? (ppSpace location)? : tactic
 syntax (name := applyNormed) "applyNormed " term : tactic
 
@@ -474,6 +485,7 @@ syntax (name := ring1!) "ring1!" : tactic
 syntax ringMode := &"SOP" <|> &"raw" <|> &"horner"
 syntax (name := ringNF) "ringNF" (ppSpace ringMode)? (ppSpace location)? : tactic
 syntax (name := ringNF!) "ringNF!" (ppSpace ringMode)? (ppSpace location)? : tactic
+-- Implemented in Mathlib.Tactic.Ring
 -- syntax (name := ring) "ring" : tactic
 syntax (name := ring!) "ring!" : tactic
 
