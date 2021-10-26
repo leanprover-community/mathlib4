@@ -12,4 +12,8 @@ helping it to translate `mathlib` and align declarations and tactics with `mathl
   but there are also many exceptional cases.
 
 `Syntax.lean`
-: Contains unimplented stubs of tactics which need to be migrated from Lean3 to Lean4.
+: Contains unimplemented stubs of tactics which need to be migrated from Lean3 to Lean4.
+  When porting tactics, you can move the relevant stubs to a new file and
+  use them as a starting point.
+  Please make sure this file stays in sync with new tactic implementations
+  (and in particular that the syntax is not defined twice).
