@@ -30,6 +30,10 @@ import Mathlib.Init.SetNotation
 import Mathlib.Lean.LocalContext
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Basic
+import Mathlib.Mathport.Attributes
+import Mathlib.Mathport.Rename
+import Mathlib.Mathport.SpecialNames
+import Mathlib.Mathport.Syntax
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Coe
