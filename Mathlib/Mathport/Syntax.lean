@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Lean.Elab.Command
 import Lean.Elab.Quotation
 import Mathlib.Tactic.Ext
+import Mathlib.Tactic.Find
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
@@ -691,7 +692,8 @@ syntax (name := addTacticDoc) (docComment)? "add_tactic_doc " term : command
 syntax (name := addDeclDoc) docComment "add_decl_doc " ident : command
 
 syntax (name := setupTacticParser) "setup_tactic_parser" : command
-syntax (name := importPrivate) "import_private " ident (" from " ident)? : command
+-- See Mathlib.Tactic.OpenPrivate, which provides an alternative:
+-- syntax (name := importPrivate) "import_private " ident (" from " ident)? : command
 syntax (name := mkSimpAttribute) "mk_simp_attribute " ident
   (" from" (ppSpace ident)+)? (" := " str)? : command
 
@@ -701,7 +703,8 @@ syntax (name := aliasLR) "alias " ident " ↔ " (".." <|> (binderIdent binderIde
 
 syntax (name := explode) "#explode " ident : command
 
-syntax (name := find) "#find " term : command
+-- Implemented in Mathlib.Tactic.Find
+-- syntax (name := find) "#find " term : command
 
 syntax (name := open_locale) "open_locale" (ppSpace ident)* : command
 syntax (name := localized) "localized " "[" ident "] " command : command
