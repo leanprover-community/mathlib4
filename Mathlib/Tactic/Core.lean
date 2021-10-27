@@ -6,6 +6,13 @@ Authors: Mario Carneiro, Aurélien Saue
 
 import Lean.Expr
 
+namespace Lean.Parser.Tactic
+
+-- syntax simpArg := simpStar <|> simpErase <|> simpLemma
+def simpArg := simpStar.binary `orelse (simpErase.binary `orelse simpLemma)
+
+end Lean.Parser.Tactic
+
 namespace Lean.Expr
 
 private def getAppFnArgsAux : Expr → Array Expr → Nat → Name × Array Expr

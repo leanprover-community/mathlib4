@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Lean.Elab.Command
 import Lean.Elab.Quotation
+import Mathlib.Tactic.Core
 import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.LibrarySearch
@@ -185,8 +186,6 @@ syntax (name := right) "right" : tactic
 syntax (name := constructorM) "constructorM" "*"? ppSpace term,* : tactic
 syntax (name := exFalso) "exFalso" : tactic
 syntax (name := injections') "injections" (" with " (colGt (ident <|> "_"))+)? : tactic
--- syntax simpArg := simpStar <|> simpErase <|> simpLemma
-def simpArg := simpStar.binary `orelse (simpErase.binary `orelse simpLemma)
 syntax (name := simp') "simp'" "*"? (" (" &"config" " := " term ")")? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
 syntax (name := simpIntro) "simpIntro" (" (" &"config" " := " term ")")?
@@ -449,7 +448,7 @@ syntax (name := squeezeDSimp?!) "squeezeDSimp?!" (" (" &"config" " := " term ")"
 
 syntax (name := suggest) "suggest" (" (" &"config" " := " term ")")? (ppSpace num)?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " (colGt ident)+)? : tactic
--- Implemented in Mathlib.Tactic.LibrarySearch
+-- Moved to Mathlib.Tactic.LibrarySearch
 -- syntax (name := librarySearch) "librarySearch" (" (" &"config" " := " term ")")?
 --   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " (colGt ident)+)? : tactic
 syntax (name := librarySearch!) "librarySearch!" (" (" &"config" " := " term ")")?
