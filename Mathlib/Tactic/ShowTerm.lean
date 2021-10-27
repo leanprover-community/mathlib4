@@ -13,13 +13,15 @@ open Tactic.TryThis
 
 namespace Lean.Elab.Tactic
 
+syntax (name := showTerm) "showTerm " tacticSeq : tactic
+
 /--
 `showTerm tac` runs `tac`, then prints the generated term in the form
 "Try this: exact X Y Z" or "Try this: refine X ?_ Z" if there are remaining subgoals.
 
 (For some tactics, the printed term will not be human readable.)
 -/
-elab tk:"showTerm" t:tactic : tactic => withMainContext do
+elab tk:"showTerm " t:tacticSeq : tactic => withMainContext do
   let g ← getMainGoal
   evalTactic t
   addExactSuggestion tk/- FIXME: we'd like the range for the whole tactic -/

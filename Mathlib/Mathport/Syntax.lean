@@ -401,7 +401,7 @@ syntax (name := renameVar) "renameVar " ident " → " ident (ppSpace location)? 
 syntax (name := assocRw) "assocRw " rwRuleSeq (ppSpace location)? : tactic
 
 -- Implemented in Mathlib.Tactic.ShowTerm
--- syntax (name := showTerm) "showTerm " tacticSeq : tactic
+syntax (name := showTerm) "showTerm " tacticSeq : tactic
 
 syntax (name := simpRw) "simpRw " rwRuleSeq (ppSpace location)? : tactic
 
