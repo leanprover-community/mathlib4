@@ -254,21 +254,10 @@ syntax (name := letI) "letI " Term.letDecl : tactic
 syntax (name := letI') "letI " Term.haveIdLhs : tactic
 syntax (name := exactI) "exactI " term : tactic
 
-declare_syntax_cat rcasesPat
-syntax rcasesPatMed := sepBy1(rcasesPat, " | ")
-syntax rcasesPatLo := rcasesPatMed (" : " term)?
-syntax (name := rcasesPat.one) ident : rcasesPat
-syntax (name := rcasesPat.ignore) "_" : rcasesPat
-syntax (name := rcasesPat.clear) "-" : rcasesPat
-syntax (name := rcasesPat.tuple) "⟨" rcasesPatLo,* "⟩" : rcasesPat
-syntax (name := rcasesPat.paren) "(" rcasesPatLo ")" : rcasesPat
 syntax (name := rcases?) "rcases?" casesTarget,* (" : " num)? : tactic
 syntax (name := rcases) "rcases" casesTarget,* (" with " rcasesPat)? : tactic
 syntax (name := obtain) "obtain" (ppSpace rcasesPatMed)? (" : " term)? (" := " term,+)? : tactic
 
-declare_syntax_cat rintroPat
-syntax (name := rintroPat.one) rcasesPat : rintroPat
-syntax (name := rintroPat.binder) "(" rintroPat+ (" : " term)? ")" : rintroPat
 syntax (name := rintro?) "rintro?" (" : " num)? : tactic
 syntax (name := rintro) "rintro" (ppSpace rintroPat)* (" : " term)? : tactic
 
