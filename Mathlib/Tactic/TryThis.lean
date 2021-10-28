@@ -22,8 +22,8 @@ partial def replaceMVarsByUnderscores [Monad m] [MonadQuotation m]
     (s : Syntax) : m Syntax := do
   if s matches `(?$mvar:ident) then
     `(?_)
-  else if let Syntax.node kind args := s then
-    Syntax.node kind (← args.mapM replaceMVarsByUnderscores)
+  else if let Syntax.node SourceInfo.none kind args := s then
+    Syntax.node SourceInfo.none kind (← args.mapM replaceMVarsByUnderscores)
   else
     s
 
