@@ -105,10 +105,8 @@ syntax (name := librarySearch') "librarySearch" (" (" &"config" " := " term ")")
 -- For now we only implement the basic functionality.
 -- The full syntax is recognized, but will produce a "Tactic has not been implemented" error.
 
--- FIXME This is creating a duplicate `syntax` declaration. Use `elab_rules` instead?
--- See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Binding.20the.20syntax.20being.20matched.20in.20.60elab_rules.60.3F/near/259825788
 open Elab.Tactic Elab Tactic in
-elab tk:"librarySearch" : tactic => do
+elab_rules : tactic | `(librarySearch%$tk) => do
   withNestedTraces do
   trace[Tactic.librarySearch] "proving {← getMainTarget}"
   let mvar ← getMainGoal
