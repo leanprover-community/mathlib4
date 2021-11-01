@@ -134,5 +134,6 @@ macro_rules | `(tactic| extOrSkip $x $xs*) => `(tactic| intro $x; extOrSkip $xs*
 
 -- TODO: We need to use the following, to support existing uses of `ext` in mathlib3.
 -- syntax (name := ext) "ext" (ppSpace rcasesPat)* (" : " num)? : tactic
+
 syntax "ext" (colGt term:max)* : tactic
 macro_rules | `(tactic| ext $xs*) => `(tactic| applyExtLemma; extOrSkip $xs*)

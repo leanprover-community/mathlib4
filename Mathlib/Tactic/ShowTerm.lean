@@ -22,7 +22,7 @@ namespace Lean.Elab.Tactic
 elab (name := showTerm) tk:"showTerm " t:tacticSeq : tactic => withMainContext do
   let g ← getMainGoal
   evalTactic t
-  addExactSuggestion tk/- FIXME: we'd like the range for the whole tactic -/
+  addExactSuggestion tk /- FIXME: we'd like the range for the whole tactic -/
     (← instantiateMVars (mkMVar g)).headBeta
 
 end Lean.Elab.Tactic

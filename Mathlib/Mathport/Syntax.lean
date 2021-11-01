@@ -262,8 +262,9 @@ syntax (name := rintro) "rintro" (ppSpace rintroPat)* (" : " term)? : tactic
 
 syntax (name := ext1) "ext1" (ppSpace rcasesPat)* : tactic
 syntax (name := ext1?) "ext1?" (ppSpace rcasesPat)* : tactic
--- Implemented in Mathlib.Tactic.Ext
--- syntax (name := ext) "ext" (ppSpace rcasesPat)* (" : " num)? : tactic
+-- The current implementation of `ext` in mathlib4 does not support `rcasesPat`,
+-- and will need to be updated.
+syntax (name := ext) "ext" (ppSpace rcasesPat)* (" : " num)? : tactic
 syntax (name := ext?) "ext?" (ppSpace rcasesPat)* (" : " num)? : tactic
 
 syntax (name := apply') "apply' " term : tactic
