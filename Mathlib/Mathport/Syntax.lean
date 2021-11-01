@@ -680,8 +680,9 @@ syntax (name := addTacticDoc) (docComment)? "add_tactic_doc " term : command
 syntax (name := addDeclDoc) docComment "add_decl_doc " ident : command
 
 syntax (name := setupTacticParser) "setup_tactic_parser" : command
--- See Mathlib.Tactic.OpenPrivate, which provides an alternative:
--- syntax (name := importPrivate) "import_private " ident (" from " ident)? : command
+-- Note that Mathlib.Tactic.OpenPrivate provides an alternative,
+-- which we should later switch to using.
+syntax (name := importPrivate) "import_private " ident (" from " ident)? : command
 syntax (name := mkSimpAttribute) "mk_simp_attribute " ident
   (" from" (ppSpace ident)+)? (" := " str)? : command
 
