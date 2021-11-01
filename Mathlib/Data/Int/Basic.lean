@@ -246,8 +246,8 @@ def gcd (m n : ℤ) : ℕ := Nat.gcd (natAbs m) (natAbs n)
 
 protected lemma add_comm : ∀ a b : ℤ, a + b = b + a
 | (n : ℕ), (m : ℕ) => by simp [Nat.add_comm]
-| (n : ℕ), -[1+ _] => rfl
-| -[1+ _], (m : ℕ) => rfl
+| (_ : ℕ), -[1+ _] => rfl
+| -[1+ _], (_ : ℕ) => rfl
 | -[1+ _], -[1+ _] => by simp [Nat.add_comm]
 
 protected lemma add_zero : ∀ a : ℤ, a + 0 = a

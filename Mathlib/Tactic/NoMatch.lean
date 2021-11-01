@@ -43,7 +43,8 @@ elab tk:"fun" "." : term <= expectedType =>
     for _ in args do
       let n ← mkFreshIdent tk
       binders := binders.push n
-      discrs := discrs.push $ Syntax.node ``Lean.Parser.Term.matchDiscr #[mkNullNode, n]
+      discrs := discrs.push $
+        mkNode ``Lean.Parser.Term.matchDiscr #[mkNullNode, n]
     elabTerm (← `(@fun $binders* => match $discrs,* with.)) (some expectedType)
 
 macro tk:"λ" "." : term => `(fun%$tk .)
