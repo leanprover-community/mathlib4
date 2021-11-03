@@ -144,7 +144,7 @@ open Lean.Parser.Tactic in
 syntax (name := normNum) "normNum" (" [" simpArg,* "]")? (ppSpace location)? : tactic
 
 open Meta Elab.Tactic in
-elab_rules : tactic | `(normNum) => do
+elab_rules : tactic | `(tactic| normNum) => do
   liftMetaTactic fun g => do
     let some (α, lhs, rhs) ← matchEq? (← getMVarType g) | throwError "fail"
     let p ← NormNum.evalEq α lhs rhs

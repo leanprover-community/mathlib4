@@ -6,7 +6,6 @@ Author: Gabriel Ebner
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
-import Mathlib.Tactic.OpenPrivate
 import Mathlib.Tactic.TryThis
 
 /-!
@@ -106,7 +105,7 @@ syntax (name := librarySearch') "librarySearch" (" (" &"config" " := " term ")")
 -- The full syntax is recognized, but will produce a "Tactic has not been implemented" error.
 
 open Elab.Tactic Elab Tactic in
-elab_rules : tactic | `(librarySearch%$tk) => do
+elab_rules : tactic | `(tactic| librarySearch%$tk) => do
   withNestedTraces do
   trace[Tactic.librarySearch] "proving {← getMainTarget}"
   let mvar ← getMainGoal
