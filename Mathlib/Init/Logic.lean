@@ -307,18 +307,6 @@ lemma forall_not_of_not_exists {p : α → Prop} (hne : ¬∃ x, p x) (x) : ¬p 
 
 /- decidable -/
 
-def Decidable.to_bool (p : Prop) [h : Decidable p] : Bool := @Decidable.decide p h
-
-@[simp] lemma to_bool_true_eq_tt (h : Decidable True) : @Decidable.to_bool True h = true :=
-match h with
-| isFalse hf => False.elim (Iff.mp not_true hf)
-| isTrue _ => rfl
-
-@[simp] lemma to_bool_false_eq_ff (h : Decidable False) : @Decidable.to_bool False h = false :=
-match h with
-| isFalse _ => rfl
-| isTrue ht => False.elim ht
-
 namespace Decidable
   variable {p q : Prop}
 

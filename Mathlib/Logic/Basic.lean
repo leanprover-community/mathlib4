@@ -217,6 +217,9 @@ theorem imp.swap : (a → b → c) ↔ (b → a → c) :=
 theorem imp_not_comm : (a → ¬b) ↔ (b → ¬a) :=
 imp.swap
 
+instance Decidable.predToBool {α : Type u} (p : α → Prop) [DecidablePred p] : CoeDep (α → Prop) p (α → Bool) where
+  coe := fun b => decide $ p b
+
 /-! ### Declarations about `xor` -/
 
 @[simp] theorem xor_true : xor True = Not := by simp [xor]
