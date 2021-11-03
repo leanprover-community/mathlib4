@@ -333,7 +333,7 @@ syntax (name := revertTargetDeps) "revertTargetDeps" : tactic
 syntax (name := clearValue) "clearValue" (ppSpace (colGt ident))* : tactic
 
 syntax (name := applyAssumption) "applyAssumption" : tactic
--- Implemented in Mathlib.Tactic.SolveByElim
+-- Moved to Mathlib.Tactic.SolveByElim
 -- syntax (name := solveByElim) "solveByElim" "*"? (" (" &"config" " := " term ")")?
 --   (&" only")? (" [" simpArg,* "]")? (" with " (colGt ident)+)? : tactic
 
@@ -400,8 +400,8 @@ syntax (name := renameVar) "renameVar " ident " → " ident (ppSpace location)? 
 
 syntax (name := assocRw) "assocRw " rwRuleSeq (ppSpace location)? : tactic
 
--- Implemented in Mathlib.Tactic.ShowTerm
-syntax (name := showTerm) "showTerm " tacticSeq : tactic
+-- Moved to Mathlib.Tactic.ShowTerm
+-- syntax (name := showTerm) "showTerm " tacticSeq : tactic
 
 syntax (name := simpRw) "simpRw " rwRuleSeq (ppSpace location)? : tactic
 
@@ -461,7 +461,7 @@ syntax (name := tauto!) "tauto!" (" (" &"config" " := " term ")")? : tactic
 syntax (name := truncCases) "truncCases " term (" with " (colGt binderIdent)+)? : tactic
 
 syntax (name := normNum1) "normNum1" (ppSpace location)? : tactic
--- Implemented in Mathlib.Tactic.NormNum
+-- Moved to Mathlib.Tactic.NormNum
 -- syntax (name := normNum) "normNum" (" [" simpArg,* "]")? (ppSpace location)? : tactic
 syntax (name := applyNormed) "applyNormed " term : tactic
 
@@ -475,7 +475,7 @@ syntax (name := ring1!) "ring1!" : tactic
 syntax ringMode := &"SOP" <|> &"raw" <|> &"horner"
 syntax (name := ringNF) "ringNF" (ppSpace ringMode)? (ppSpace location)? : tactic
 syntax (name := ringNF!) "ringNF!" (ppSpace ringMode)? (ppSpace location)? : tactic
--- Implemented in Mathlib.Tactic.Ring
+-- Moved to Mathlib.Tactic.Ring
 -- syntax (name := ring) "ring" : tactic
 syntax (name := ring!) "ring!" : tactic
 
@@ -693,7 +693,7 @@ syntax (name := aliasLR) "alias " ident " ↔ " (".." <|> (binderIdent binderIde
 
 syntax (name := explode) "#explode " ident : command
 
--- Implemented in Mathlib.Tactic.Find
+-- Moved to Mathlib.Tactic.Find
 -- syntax (name := find) "#find " term : command
 
 syntax (name := open_locale) "open_locale" (ppSpace ident)* : command
