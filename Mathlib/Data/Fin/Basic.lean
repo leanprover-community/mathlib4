@@ -145,4 +145,52 @@ instance : SubNegMonoid (Fin n.succ) where
 instance : AddGroup (Fin n.succ) where
   add_left_neg := Fin.add_left_neg
 
+def Fin.overflowingAdd (a b : Fin n) : (Bool × Fin n) := (n <= a.val + b.val, a + b)
+
+def Fin.overflowingMul (a b : Fin n) : (Bool × Fin n) := (n <= a.val * b.val, a * b)
+
+def Fin.underflowingSub (a b : Fin n) : (Bool × Fin n) := (a.val < b.val, a - b)
+
+def Fin.checkedAdd (a b : Fin n) : Option (Fin n) :=
+  match Fin.overflowingAdd a b with
+  | (true, _) => none
+  | (false, sum) => some (sum)
+
+def Fin.checkedMul (a b : Fin n) : Option (Fin n) :=
+  match Fin.overflowingMul a b with
+  | (true, _) => none
+  | (false, prod) => some (prod)
+
+def Fin.checkedSub (a b : Fin n) : Option (Fin n) :=
+  match Fin.underflowingSub a b with
+  | (true, _) => none
+  | (false, diff) => some (diff)
+
+lemma Fin.checked_add_spec (a b : Fin n) : (Fin.checkedAdd a b).isSome = true <-> a.val + b.val < n := by
+  simp only [checkedAdd, overflowingAdd, Option.isSome]
+  refine Iff.intro ?mp ?mpr <;> intro h
+  case mp =>
+    by_cases hx : n <= a.val + b.val
+    case pos => simp only [(decide_eq_true_iff (n <= a.val + b.val)).mpr hx] at h
+    case neg => exact Nat.lt_of_not_le hx
+  case mpr => simp only [decide_eq_false (Nat.not_le_of_lt h : ¬n <= a.val + b.val)]
+
+lemma Fin.checked_mul_spec (a b : Fin n) : (Fin.checkedMul a b).isSome = true <-> a.val * b.val < n := by
+  simp only [checkedMul, overflowingMul, Option.isSome]
+  refine Iff.intro ?mp ?mpr <;> intro h
+  case mp =>
+    by_cases hx : n <= a.val * b.val
+    case pos => simp only [(decide_eq_true_iff (n <= a.val * b.val)).mpr hx] at h
+    case neg => exact Nat.lt_of_not_le hx
+  case mpr => simp only [decide_eq_false (Nat.not_le_of_lt h : ¬n <= a.val * b.val)]
+
+lemma Fin.checked_sub_spec (a b : Fin n) : (Fin.checkedSub a b).isSome = true <-> b.val <= a.val := by
+  simp only [checkedSub, underflowingSub, Option.isSome]
+  refine Iff.intro ?mp ?mpr <;> intro h
+  case mp =>
+    by_cases hx : a.val < b.val
+    case pos => simp only [(decide_eq_true_iff (a.val < b.val)).mpr hx] at h
+    case neg => exact Nat.le_of_not_lt hx
+  case mpr => simp only [decide_eq_false (Nat.not_lt_of_le h : ¬a.val < b.val)]
+
 end Fin
