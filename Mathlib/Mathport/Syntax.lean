@@ -627,7 +627,7 @@ syntax (name := intro!) "intro!" : attr
 
 syntax (name := nolint) "nolint" (ppSpace ident)* : attr
 
-syntax (name := ext) "ext" (ppSpace ident)? : tactic
+syntax (name := ext) "ext" (ppSpace ident)? : attr
 
 syntax (name := higherOrder) "higherOrder" (ppSpace ident)? : attr
 syntax (name := interactive) "interactive" : attr
