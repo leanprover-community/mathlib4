@@ -83,7 +83,7 @@ elab "exacts" "[" hs:term,* "]" : tactic => do
 /-- Check syntactic equality of two expressions.
 See also `guardExprEq` and `guardExprEq'` for testing
 up to alpha equality and definitional equality. -/
-elab (name := guardExprStrict) "guardExpr " r:term " == " p:term : tactic => withMainContext do
+elab (name := guardExprStrict) "guardExpr " r:term:51 " == " p:term : tactic => withMainContext do
   let r ← elabTerm r none
   let p ← elabTerm p none
   if not (r == p) then throwError "failed: {r} != {p}"
