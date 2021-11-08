@@ -208,12 +208,18 @@ syntax (name := unfold1) "unfold1" (" (" &"config" " := " term ")")?
   (ppSpace (colGt ident))* (ppSpace location)? : tactic
 syntax (name := inferOptParam) "inferOptParam" : tactic
 syntax (name := inferAutoParam) "inferAutoParam" : tactic
-syntax (name := guardExprEq) "guardExpr " term:51 " =ₐ " term : tactic
-syntax (name := guardTarget) "guardTarget" " =ₐ " term : tactic
-syntax (name := guardHyp) "guardHyp " ident
-  ((" : " <|> " :ₐ ") term)? ((" := " <|> " :=ₐ ") term)? : tactic
-syntax (name := matchTarget) "matchTarget " term : tactic
-syntax (name := byCases) "byCases " atomic(ident " : ")? term : tactic
+syntax (name := guardExprEq) "guardExpr " term:51 " =ₐ " term : tactic -- alpha equality
+syntax (name := guardTarget) "guardTarget" " =ₐ " term : tactic -- alpha equality
+-- Moved to Mathlib.Tactic.Basic
+-- syntax (name := guardHyp) "guardHyp " ident
+--   ((" : " <|> " :ₐ ") term)? ((" := " <|> " :=ₐ ") term)? : tactic
+-- Moved to Mathlib.Tactic.Basic
+-- syntax (name := matchTarget) "matchTarget " term : tactic
+
+-- There is already a `byCases` tactic in core (in `src/init/classical.lean`)
+-- so for now we add a primed version to support the optional identifier,
+-- and available `decidable` instances.
+syntax (name := byCases') "byCases' " atomic(ident " : ")? term : tactic
 syntax (name := byContra) "byContra " (colGt ident)? : tactic
 syntax (name := typeCheck) "typeCheck " term : tactic
 syntax (name := rsimp) "rsimp" : tactic
@@ -299,8 +305,10 @@ syntax (name := generalizeHyp) "generalize " atomic(ident " : ")? term:51 " = " 
 syntax (name := clean) "clean " term : tactic
 syntax (name := refineStruct) "refineStruct " term : tactic
 syntax (name := matchHyp) "matchHyp " ("(" &"m" " := " term ") ")? ident " : " term : tactic
-syntax (name := guardExprStrict) "guardExpr " term:51 " == " term : tactic
-syntax (name := guardTargetStrict) "guardTarget" " == " term : tactic
+-- Moved to Mathlib.Tactic.Basic
+-- syntax (name := guardExprStrict) "guardExpr " term:51 " == " term : tactic -- syntactic equality
+-- Moved to Mathlib.Tactic.Basic
+-- syntax (name := guardTargetStrict) "guardTarget" " == " term : tactic -- syntactic equality
 syntax (name := guardHypNums) "guardHypNums " num : tactic
 syntax (name := guardTags) "guardTags" (ppSpace ident)* : tactic
 syntax (name := guardProofTerm) "guardProofTerm " tactic:51 " => " term : tactic
@@ -314,8 +322,8 @@ syntax (name := hGeneralize) "hGeneralize " atomic(binderIdent " : ")? term:51 "
   (" with " binderIdent)? : tactic
 syntax (name := hGeneralize!) "hGeneralize! " atomic(binderIdent " : ")? term:51 " = " ident
   (" with " binderIdent)? : tactic
-syntax (name := guardExprEq') "guardExpr " term:51 " = " term : tactic
-syntax (name := guardTarget') "guardTarget" " = " term : tactic
+syntax (name := guardExprEq') "guardExpr " term:51 " = " term : tactic -- definitional equality
+syntax (name := guardTarget') "guardTarget" " = " term : tactic -- definitional equality
 syntax (name := triv) "triv" : tactic
 syntax (name := use) "use " term,+ : tactic
 syntax (name := clearAuxDecl) "clearAuxDecl" : tactic
