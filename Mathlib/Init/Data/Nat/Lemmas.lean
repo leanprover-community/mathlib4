@@ -821,8 +821,8 @@ lemma mul_mod (a b n : ℕ) : (a * b) % n = ((a % n) * (b % n)) % n := by
     rw [hx]
     done
 
-@[simp] theorem mod_add_mod (m n k : ℕ) : (m % n + k) % n = (m + k) % n :=
-by have := (add_mul_mod_self_left (m % n + k) n (m / n)).symm;
+@[simp] theorem mod_add_mod (m n k : ℕ) : (m % n + k) % n = (m + k) % n := by
+   have := (add_mul_mod_self_left (m % n + k) n (m / n)).symm
    rwa [Nat.add_right_comm, mod_add_div] at this
 
 @[simp] theorem add_mod_mod (m n k : ℕ) : (m + n % k) % k = (m + n) % k :=

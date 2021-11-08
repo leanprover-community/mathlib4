@@ -9,9 +9,8 @@ instance : Zero (Fin n.succ) where
   zero := Fin.ofNat 0
 
 @[simp]
-lemma Fin.val_zero : (0 : Fin n.succ).val = (0 : Nat) := by
-  have h0 : ∀ x, (OfNat.ofNat x : Fin n.succ) = Fin.ofNat x := by simp [OfNat.ofNat]
-  simp only [h0, Fin.ofNat, Nat.zero_mod]
+lemma Fin.val_zero : (0 : Fin n.succ).val = (0 : Nat) :=
+  show (Fin.ofNat 0).val = 0 by simp [Fin.ofNat]
 
 instance : One (Fin n.succ) where
   one := ⟨1 % n.succ, Nat.mod_lt 1 (Nat.zero_lt_succ n)⟩
@@ -76,7 +75,7 @@ apply Fin.eq_of_val_eq
 simp only [Fin.mul_def, Fin.add_def, Nat.mod_add_mod, Nat.add_mod_mod, Nat.add_assoc]
 
 instance : Neg (Fin n) where
-  neg := λ a => ⟨(n - a) % n, Nat.mod_lt _ (lt_of_le_of_lt (Nat.zero_le _) a.isLt)⟩
+  neg a := ⟨(n - a) % n, Nat.mod_lt _ (lt_of_le_of_lt (Nat.zero_le _) a.isLt)⟩
 
 @[simp] lemma Fin.add_left_neg : ∀ (a : Fin n.succ), -a + a = 0
 | ⟨a, isLt⟩ => by
@@ -167,13 +166,8 @@ def Fin.checkedSub (a b : Fin n) : Option (Fin n) :=
   | (false, diff) => some (diff)
 
 lemma Fin.checked_add_spec (a b : Fin n) : (Fin.checkedAdd a b).isSome = true <-> a.val + b.val < n := by
-  simp only [checkedAdd, overflowingAdd, Option.isSome]
-  refine Iff.intro ?mp ?mpr <;> intro h
-  case mp =>
-    by_cases hx : n <= a.val + b.val
-    case pos => simp only [(decide_eq_true_iff (n <= a.val + b.val)).mpr hx] at h
-    case neg => exact Nat.lt_of_not_le hx
-  case mpr => simp only [decide_eq_false (Nat.not_le_of_lt h : ¬n <= a.val + b.val)]
+  by_cases n <= a.val + b.val <;>
+    simp_all [checkedAdd, Option.isSome, overflowingAdd, decide_eq_true, decide_eq_false]
 
 lemma Fin.checked_mul_spec (a b : Fin n) : (Fin.checkedMul a b).isSome = true <-> a.val * b.val < n := by
   simp only [checkedMul, overflowingMul, Option.isSome]
