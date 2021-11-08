@@ -19,10 +19,10 @@ namespace Lean.Elab.Tactic
 
 (For some tactics, the printed term will not be human readable.)
 -/
-elab tk:"showTerm" t:tactic : tactic => withMainContext do
+elab (name := showTerm) tk:"showTerm " t:tacticSeq : tactic => withMainContext do
   let g ← getMainGoal
   evalTactic t
-  addExactSuggestion tk/- FIXME: we'd like the range for the whole tactic -/
+  addExactSuggestion tk /- FIXME: we'd like the range for the whole tactic -/
     (← instantiateMVars (mkMVar g)).headBeta
 
 end Lean.Elab.Tactic

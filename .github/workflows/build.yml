@@ -25,7 +25,7 @@ jobs:
 
       - name: update Mathlib.lean
         run: |
-          find Mathlib -not -type d | sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
+          find Mathlib -name "*.lean" | sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
 
       - name: build mathlib
         run: lake build

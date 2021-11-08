@@ -5,6 +5,7 @@ Author: Scott Morrison
 -/
 import Lean.Meta.Tactic.Apply
 import Lean.Elab.Tactic.Basic
+import Mathlib.Tactic.Core
 import Mathlib.Lean.LocalContext
 
 /-!
@@ -24,11 +25,14 @@ def Lean.Meta.solveByElim : Nat → MVarId → MetaM Unit
         guard ¬ localDecl.isAuxDecl
         for g in (← apply mvarId localDecl.toExpr) do solveByElim n g
 
-namespace Lean.Elab
-namespace Tactic
+namespace Lean.Tactic
 
-elab "solveByElim" : tactic => withMainContext do
+open Lean.Parser.Tactic
+
+syntax (name := solveByElim) "solveByElim" "*"? (" (" &"config" " := " term ")")?
+  (&" only")? (" [" simpArg,* "]")? (" with " (colGt ident)+)? : tactic
+
+elab_rules : tactic | `(tactic| solveByElim) => do withMainContext do
   Meta.solveByElim 6 (← getMainGoal)
 
-end Tactic
-end Lean.Elab
+end Lean.Tactic

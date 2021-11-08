@@ -80,19 +80,33 @@ elab "exacts" "[" hs:term,* "]" : tactic => do
     evalTactic (← `(tactic| exact $stx))
   evalTactic (← `(tactic| done))
 
---TODO : which expr equality to use?
-elab "guardExprEq " r:term " := " p:term : tactic => withMainContext do
+/-- Check syntactic equality of two expressions.
+See also `guardExprEq` and `guardExprEq'` for testing
+up to alpha equality and definitional equality. -/
+elab (name := guardExprStrict) "guardExpr " r:term " == " p:term : tactic => withMainContext do
   let r ← elabTerm r none
   let p ← elabTerm p none
   if not (r == p) then throwError "failed: {r} != {p}"
 
-elab "guardTarget" r:term : tactic => withMainContext do
+/-- Check the target agrees (syntactically) with a given expression.
+See also `guardTarget` and `guardTarget'` for testing
+up to alpha equality and definitional equality. -/
+elab (name := guardTargetStrict) "guardTarget" " == " r:term : tactic => withMainContext do
   let r ← elabTerm r none
   let t ← getMainTarget
   let t ← t.consumeMData
   if not (r == t) then throwError m!"target of main goal is {t}, not {r}"
 
-syntax (name := guardHyp) "guardHyp " ident (" : " term)? (" := " term)? : tactic
+syntax (name := guardHyp) "guardHyp " ident
+  ((" : " <|> " :ₐ ") term)? ((" := " <|> " :=ₐ ") term)? : tactic
+
+/-- Check that a named hypothesis has a given type and/or value.
+
+`guardHyp h : t` checks the type up to syntactic equality,
+while `guardHyp h :ₐ t` checks the type up to alpha equality.
+`guardHyp h := v` checks value up to syntactic equality,
+while `guardHyp h :=ₐ v` checks the value up to alpha equality. -/
+-- TODO implement checking type or value up to alpha equality.
 @[tactic guardHyp] def evalGuardHyp : Lean.Elab.Tactic.Tactic := fun stx =>
   match stx with
   | `(tactic| guardHyp $h $[: $ty]? $[:= $val]?) => do

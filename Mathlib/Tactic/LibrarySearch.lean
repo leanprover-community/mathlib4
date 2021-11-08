@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Gabriel Ebner
 -/
 import Mathlib.Tactic.Cache
+import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
-import Mathlib.Tactic.OpenPrivate
 import Mathlib.Tactic.TryThis
 
 /-!
@@ -92,8 +92,20 @@ def librarySearch (mvarId : MVarId) (lemmas : DiscrTree Name) (solveByElimDepth 
 def lines (ls : List MessageData) :=
   MessageData.joinSep ls (MessageData.ofFormat Format.line)
 
+open Lean.Parser.Tactic
+
+-- TODO: implement the additional options for `library_search` from Lean 3,
+-- in particular including additional lemmas
+-- with `library_search [X, Y, Z]` or `library_search with attr`,
+-- or requiring that a particular hypothesis is used in the solution, with `library_search using h`.
+syntax (name := librarySearch') "librarySearch" (" (" &"config" " := " term ")")?
+  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " (colGt ident)+)? : tactic
+
+-- For now we only implement the basic functionality.
+-- The full syntax is recognized, but will produce a "Tactic has not been implemented" error.
+
 open Elab.Tactic Elab Tactic in
-elab tk:"librarySearch" : tactic => do
+elab_rules : tactic | `(tactic| librarySearch%$tk) => do
   withNestedTraces do
   trace[Tactic.librarySearch] "proving {← getMainTarget}"
   let mvar ← getMainGoal
