@@ -47,7 +47,7 @@ namespace Tactic
 /-- Once-per-file cache. -/
 def Cache (α : Type) :=
   IO.Ref <| Sum (MetaM α) <|
-    Task <| Except IO.Error <| Except Exception α
+    Task <| Except Exception α
 
 instance : Inhabited (Cache α) :=
   inferInstanceAs <| Inhabited (IO.Ref _)
@@ -62,25 +62,26 @@ Calling this function for the first time
 will initialize the cache with the function
 provided in the constructor.
 -/
-def Cache.get [Monad m] [MonadEnv m] [MonadOptions m] [MonadLiftT IO m] [MonadExcept Exception m]
+def Cache.get [Monad m] [MonadEnv m] [MonadOptions m] [MonadLiftT BaseIO m] [MonadExcept Exception m]
     (cache : Cache α) : m α := do
-  let t ← match ← show IO _ from ST.Ref.get cache with
+  -- If https://github.com/leanprover/lean4/pull/772 is merged,
+  -- we can shorten `show BaseIO _ from show EIO Empty _` to `show BaseIO _ from` here and below.
+  let t ← match ← show BaseIO _ from show EIO Empty _ from ST.Ref.get cache with
     | Sum.inr t => t
     | Sum.inl init =>
       let env ← getEnv
       let options ← getOptions -- TODO: sanitize options?
-      let res ← IO.asTask do EIO.toIO' do
+      let res ← EIO.asTask do
         let metaCtx : Meta.Context := {}
         let metaState : Meta.State := {}
         let coreCtx : Core.Context := {options}
         let coreState : Core.State := {env}
         (← ((init ‹_›).run ‹_› ‹_›).run ‹_›).1.1
-      show IO _ from cache.set (Sum.inr res)
+      show BaseIO _ from show EIO Empty _  from cache.set (Sum.inr res)
       pure res
   match t.get with
-    | Except.ok (Except.ok res) => return res
-    | Except.error err => show IO _ from throw err
-    | Except.ok (Except.error err) => throw err
+    | Except.ok res => pure res
+    | Except.error err => throw err
 
 /--
 Cached fold over the environment's declarations,
