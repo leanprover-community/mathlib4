@@ -806,6 +806,31 @@ lemma div_lt_self (h₁ : 0 < n) (h₂ : 1 < m) : n / m < n := by
     exact (Nat.div_lt_iff_lt_mul m_pos).2 this
   exact Nat.mul_lt_mul h₂ (Nat.le_refl _) h₁
 
+@[simp] theorem mod_mod (a n : ℕ) : (a % n) % n = a % n :=
+(eq_zero_or_pos n).elim
+  (λ n0 => by simp [n0, mod_zero])
+  (λ npos => Nat.mod_eq_of_lt (mod_lt _ npos))
+
+
+lemma mul_mod (a b n : ℕ) : (a * b) % n = ((a % n) * (b % n)) % n := by
+    let hy := (a * b) % n
+    have hx : (a * b) % n = hy := rfl
+    rw [←mod_add_div a n, ←mod_add_div b n, Nat.right_distrib, Nat.left_distrib, Nat.left_distrib,
+        Nat.mul_assoc, Nat.mul_assoc, ←Nat.left_distrib n _ _, add_mul_mod_self_left,
+        Nat.mul_comm _ (n * (b / n)), Nat.mul_assoc, add_mul_mod_self_left] at hx
+    rw [hx]
+    done
+
+@[simp] theorem mod_add_mod (m n k : ℕ) : (m % n + k) % n = (m + k) % n := by
+   have := (add_mul_mod_self_left (m % n + k) n (m / n)).symm
+   rwa [Nat.add_right_comm, mod_add_div] at this
+
+@[simp] theorem add_mod_mod (m n k : ℕ) : (m + n % k) % k = (m + n) % k :=
+by rw [Nat.add_comm, mod_add_mod, Nat.add_comm]
+
+lemma add_mod (a b n : ℕ) : (a + b) % n = ((a % n) + (b % n)) % n :=
+by rw [add_mod_mod, mod_add_mod]
+
 lemma to_digits_core_lens_eq_aux (b f : Nat)
   : ∀ (n : Nat) (l1 l2 : List Char) (h0 : l1.length = l2.length), (Nat.toDigitsCore b f n l1).length = (Nat.toDigitsCore b f n l2).length := by
 induction f with
