@@ -64,9 +64,7 @@ provided in the constructor.
 -/
 def Cache.get [Monad m] [MonadEnv m] [MonadOptions m] [MonadLiftT BaseIO m] [MonadExcept Exception m]
     (cache : Cache α) : m α := do
-  -- If https://github.com/leanprover/lean4/pull/772 is merged,
-  -- we can shorten `show BaseIO _ from show EIO Empty _` to `show BaseIO _ from` here and below.
-  let t ← match ← show BaseIO _ from show EIO Empty _ from ST.Ref.get cache with
+  let t ← match ← show BaseIO _ from ST.Ref.get cache with
     | Sum.inr t => t
     | Sum.inl init =>
       let env ← getEnv
@@ -77,7 +75,7 @@ def Cache.get [Monad m] [MonadEnv m] [MonadOptions m] [MonadLiftT BaseIO m] [Mon
         let coreCtx : Core.Context := {options}
         let coreState : Core.State := {env}
         (← ((init ‹_›).run ‹_› ‹_›).run ‹_›).1.1
-      show BaseIO _ from show EIO Empty _  from cache.set (Sum.inr res)
+      show BaseIO _ from cache.set (Sum.inr res)
       pure res
   match t.get with
     | Except.ok res => pure res
