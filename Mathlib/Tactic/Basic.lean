@@ -25,11 +25,12 @@ macro "_" : tactic => `({})
 
 macro_rules | `(tactic| rfl) => `(tactic| exact Iff.rfl)
 
+/-- `change` is a synonym for `show`,
+and can be used to replace a goal with a definitionally equal one. -/
 macro_rules
   | `(tactic| change $e:term) => `(tactic| show $e)
 
-macro "sorry" : tactic => `(tactic| admit)
-
+/-- `rwa` calls `rw`, then closes any remaining goals using `assumption`. -/
 syntax "rwa " rwRuleSeq (location)? : tactic
 
 macro_rules
@@ -53,6 +54,38 @@ macro_rules
   | `(tactic| transitivity) => `(tactic| apply Nat.lt_trans)
   | `(tactic| transitivity $e) => `(tactic| apply Nat.lt_trans (m := $e))
 
+/--
+The tactic `introv` allows the user to automatically introduce the variables of a theorem and
+explicitly name the non-dependent hypotheses.
+Any dependent hypotheses are assigned their default names.
+
+Examples:
+```
+example : ∀ a b : Nat, a = b → b = a := by
+  introv h,
+  exact h.symm
+```
+The state after `introv h` is
+```
+a b : ℕ,
+h : a = b
+⊢ b = a
+```
+
+```
+example : ∀ a b : Nat, a = b → ∀ c, b = c → a = c := by
+  introv h₁ h₂,
+  exact h₁.trans h₂
+```
+The state after `introv h₁ h₂` is
+```
+a b : ℕ,
+h₁ : a = b,
+c : ℕ,
+h₂ : b = c
+⊢ a = c
+```
+-/
 syntax (name := introv) "introv " (colGt ident)* : tactic
 @[tactic introv] partial def evalIntrov : Tactic := fun stx => do
   match stx with
@@ -76,7 +109,10 @@ where
 /-- Try calling `assumption` on all goals; succeeds if it closes at least one goal. -/
 macro "assumption'" : tactic => `(any_goals assumption)
 
-elab "exacts" "[" hs:term,* "]" : tactic => do
+/--
+Like `exact`, but takes a list of terms and checks that all goals are discharged after the tactic.
+-/
+elab (name := exacts) "exacts" "[" hs:term,* "]" : tactic => do
   for stx in hs.getElems do
     evalTactic (← `(tactic| exact $stx))
   evalTactic (← `(tactic| done))
@@ -150,8 +186,9 @@ macro_rules
   | `(tactic| byContra) => `(tactic| (apply Classical.byContradiction; intro))
   | `(tactic| byContra $e) => `(tactic| (apply Classical.byContradiction; intro $e))
 
-macro "sorry" : tactic => `(exact sorry)
+macro (name := «sorry») "sorry" : tactic => `(exact sorry)
 
+-- TODO `n:num` should be an optional argument; if missing, repeat until failure
 elab "iterate " n:num seq:tacticSeq : tactic => do
   for i in [:n.toNat] do
     evalTactic seq
