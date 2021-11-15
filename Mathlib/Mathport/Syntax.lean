@@ -293,7 +293,8 @@ syntax (name := unfoldWf) "unfoldWf" : tactic
 syntax (name := unfoldAux) "unfoldAux" : tactic
 syntax (name := recover) "recover" : tactic
 syntax (name := «continue») "continue " tacticSeq : tactic
-syntax (name := workOnGoal) "workOnGoal " num ppSpace tacticSeq : tactic
+-- Moved to Mathlib.Tactic.Basic
+-- syntax (name := workOnGoal) "workOnGoal " num ppSpace tacticSeq : tactic
 syntax (name := swap) "swap" (ppSpace num)? : tactic
 syntax (name := rotate) "rotate" (ppSpace num)? : tactic
 syntax (name := clear_) "clear_" : tactic
