@@ -156,7 +156,6 @@ syntax (name := fapply) "fapply " term : tactic
 syntax (name := eapply) "eapply " term : tactic
 syntax (name := applyWith) "apply " term " with " term : tactic
 syntax (name := mapply) "mapply " term : tactic
-macro "assumption'" : tactic => `(all_goals assumption)
 syntax (name := exacts) "exacts" " [" term,* "]" : tactic
 syntax (name := toExpr') "toExpr' " term : tactic
 syntax (name := rwa) "rwa " rwRuleSeq (ppSpace location)? : tactic

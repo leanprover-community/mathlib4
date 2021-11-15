@@ -73,7 +73,8 @@ where
       let (_, mvarId) ← Meta.intro1P mvarId
       pure [mvarId]
 
-macro "assumption'" : tactic => `(all_goals assumption)
+/-- Try calling `assumption` on all goals; succeeds if it closes at least one goal. -/
+macro "assumption'" : tactic => `(any_goals assumption)
 
 elab "exacts" "[" hs:term,* "]" : tactic => do
   for stx in hs.getElems do
