@@ -51,3 +51,17 @@ example (p q : Prop) : p → q → (p ∧ q) ∧ (p ∧ q ∧ p) := by
   any_goals assumption
   constructor
   any_goals assumption
+
+-- Verify correct behaviour of `workOnGoal`.
+example (p q r : Prop) : p → q → r → p ∧ q ∧ r := by
+  intros
+  constructor
+  workOnGoal 1
+    guardTarget == q ∧ r
+    constructor
+    assumption
+    -- Note that we have not closed all the subgoals here.
+  guardTarget == p
+  assumption
+  guardTarget == r
+  assumption
