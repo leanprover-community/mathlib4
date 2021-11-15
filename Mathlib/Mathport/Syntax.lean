@@ -157,7 +157,6 @@ syntax (name := fapply) "fapply " term : tactic
 syntax (name := eapply) "eapply " term : tactic
 syntax (name := applyWith) "apply " term " with " term : tactic
 syntax (name := mapply) "mapply " term : tactic
-macro "assumption'" : tactic => `(all_goals assumption)
 -- Moved to Mathlib/Tactic/Basic.lean
 -- syntax (name := exacts) "exacts" " [" term,* "]" : tactic
 syntax (name := toExpr') "toExpr' " term : tactic
@@ -301,7 +300,8 @@ syntax (name := unfoldWf) "unfoldWf" : tactic
 syntax (name := unfoldAux) "unfoldAux" : tactic
 syntax (name := recover) "recover" : tactic
 syntax (name := «continue») "continue " tacticSeq : tactic
-syntax (name := workOnGoal) "workOnGoal " num ppSpace tacticSeq : tactic
+-- Moved to Mathlib.Tactic.Basic
+-- syntax (name := workOnGoal) "workOnGoal " num ppSpace tacticSeq : tactic
 syntax (name := swap) "swap" (ppSpace num)? : tactic
 syntax (name := rotate) "rotate" (ppSpace num)? : tactic
 syntax (name := clear_) "clear_" : tactic

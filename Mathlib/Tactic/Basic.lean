@@ -106,7 +106,8 @@ where
       let (_, mvarId) ← Meta.intro1P mvarId
       pure [mvarId]
 
-macro "assumption'" : tactic => `(all_goals assumption)
+/-- Try calling `assumption` on all goals; succeeds if it closes at least one goal. -/
+macro "assumption'" : tactic => `(any_goals assumption)
 
 /--
 Like `exact`, but takes a list of terms and checks that all goals are discharged after the tactic.
@@ -222,3 +223,18 @@ elab "anyGoals " seq:tacticSeq : tactic => do
   if not anySuccess then
     throwError "failed on all goals"
   setGoals mvarIdsNew.toList
+
+/--
+`workOnGoal n { tac }` creates a block scope for the `n`-th goal (indexed from zero),
+but does not require that the goal be solved at the end of the block
+(any resulting subgoals are inserted back into the list of goals, replacing the `n`-th goal).
+-/
+elab (name := workOnGoal) "workOnGoal " n:num ppSpace seq:tacticSeq : tactic => do
+  let goals ← getGoals
+  let n := n.toNat
+  if h : n < goals.length then
+    setGoals [goals.get n h]
+    evalTactic seq
+    setGoals (goals.take n ++ (← getUnsolvedGoals) ++ goals.drop (n+1))
+  else
+    throwError "not enough goals"
