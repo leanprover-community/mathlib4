@@ -149,7 +149,8 @@ end Tactic
 namespace Tactic
 
 syntax (name := propagateTags) "propagateTags " tacticSeq : tactic
-syntax (name := introv) "introv" (ppSpace binderIdent)* : tactic
+-- Moved to Mathlib/Tactic/Basic.lean
+-- syntax (name := introv) "introv" (ppSpace binderIdent)* : tactic
 syntax renameArg := ident " => " ident
 syntax (name := rename') "rename'" (ppSpace renameArg),+ : tactic
 syntax (name := fapply) "fapply " term : tactic
@@ -157,9 +158,11 @@ syntax (name := eapply) "eapply " term : tactic
 syntax (name := applyWith) "apply " term " with " term : tactic
 syntax (name := mapply) "mapply " term : tactic
 macro "assumption'" : tactic => `(all_goals assumption)
-syntax (name := exacts) "exacts" " [" term,* "]" : tactic
+-- Moved to Mathlib/Tactic/Basic.lean
+-- syntax (name := exacts) "exacts" " [" term,* "]" : tactic
 syntax (name := toExpr') "toExpr' " term : tactic
-syntax (name := rwa) "rwa " rwRuleSeq (ppSpace location)? : tactic
+-- Moved to Mathlib/Tactic/Basic.lean
+-- syntax (name := rwa) "rwa " rwRuleSeq (ppSpace location)? : tactic
 syntax (name := withCases) "withCases " tacticSeq : tactic
 syntax (name := induction') "induction' " casesTarget,+ (" using " ident)?
   (" with " (colGt binderIdent)+)? (" generalizing " (colGt ident)+)? : tactic
@@ -171,9 +174,12 @@ syntax (name := cases') "cases' " casesTarget,+ (" using " ident)?
 syntax (name := casesM) "casesM" "*"? ppSpace term,* : tactic
 syntax (name := casesType) "casesType" "*"? ppSpace ident* : tactic
 syntax (name := casesType!) "casesType!" "*"? ppSpace ident* : tactic
-syntax (name := «sorry») "sorry" : tactic
+-- Moved to Mathlib/Tactic/Basic.lean
+-- syntax (name := «sorry») "sorry" : tactic
+-- Implemented in Mathlib/Tactic/Basic.lean but with different syntax
 syntax (name := iterate) "iterate" (num)? ppSpace tacticSeq : tactic
-syntax (name := repeat') "repeat' " tacticSeq : tactic
+-- Moved to Mathlib/Tactic/Basic.lean
+-- syntax (name := repeat') "repeat' " tacticSeq : tactic
 syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
 syntax (name := have'') "have " Term.haveIdLhs : tactic
 syntax (name := let'') "let " Term.haveIdLhs : tactic
@@ -184,7 +190,8 @@ syntax (name := eConstructor) "econstructor" : tactic
 syntax (name := left) "left" : tactic
 syntax (name := right) "right" : tactic
 syntax (name := constructorM) "constructorM" "*"? ppSpace term,* : tactic
-syntax (name := exFalso) "exFalso" : tactic
+-- Moved to Mathlib/Tactic/Basic.lean (although note casing as `exfalso` there)
+-- syntax (name := exFalso) "exFalso" : tactic
 syntax (name := injections') "injections" (" with " (colGt (ident <|> "_"))+)? : tactic
 syntax (name := simp') "simp'" "*"? (" (" &"config" " := " term ")")? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
@@ -220,7 +227,8 @@ syntax (name := guardTarget) "guardTarget" " =ₐ " term : tactic -- alpha equal
 -- so for now we add a primed version to support the optional identifier,
 -- and available `decidable` instances.
 syntax (name := byCases') "byCases' " atomic(ident " : ")? term : tactic
-syntax (name := byContra) "byContra " (colGt ident)? : tactic
+-- Moved to Mathlib.Tactic.Basic
+-- syntax (name := byContra) "byContra " (colGt ident)? : tactic
 syntax (name := typeCheck) "typeCheck " term : tactic
 syntax (name := rsimp) "rsimp" : tactic
 syntax (name := compVal) "compVal" : tactic
