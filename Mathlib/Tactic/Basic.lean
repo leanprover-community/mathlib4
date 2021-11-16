@@ -188,10 +188,49 @@ macro_rules
 
 macro (name := «sorry») "sorry" : tactic => `(exact sorry)
 
--- TODO `n:num` should be an optional argument; if missing, repeat until failure
-elab "iterate " n:num seq:tacticSeq : tactic => do
-  for i in [:n.toNat] do
-    evalTactic seq
+/--
+`iterate_at_most n t` runs the tactic `t` at most `n` times, or until failure,
+whichever comes first.
+Always succeeds, and returns at list of the succesful results.
+-/
+def iterate_at_most : Nat → TacticM α → TacticM (List α)
+| 0,       t => []
+| (n + 1), t => do
+  try
+    (←t) :: (←iterate_at_most n t)
+  catch _ =>
+    []
+
+/--
+`iterate_at_most' n t` runs the tactic `t` at most `n` times, or until failure,
+whichever comes first, and always succeeds.
+-/
+def iterate_at_most' (n : Nat) (t : TacticM α) : TacticM Unit := do
+  _ ← iterate_at_most n t
+
+/--
+`iterate_exactly n t` runs the tactic `t` at exactly `n` times.
+Fails if any iteration fails, and otherwise returns a list of the `n` successful results.
+-/
+def iterate_exactly : Nat → TacticM α → TacticM (List α)
+| 0, t     => []
+| (n+1), t => do (←t) :: (←iterate_exactly n t)
+
+/--
+`iterate_exactly n t` runs the tactic `t` at exactly `n` times.
+Fails if any iteration fails.
+-/
+def iterate_exactly' (n : Nat) (t : TacticM α) : TacticM Unit := do
+  _ ← iterate_exactly n t
+
+/--
+`iterate n { ... }` runs the tactic block exactly `n` times.
+`iterate { ... }` runs the tactic block repeatedly until failure.
+-/
+elab "iterate " n:(num)? ppSpace seq:tacticSeq : tactic => do
+  match n.getOptional? with
+  | none => iterate_at_most' 10000 (evalTactic seq)
+  | some n => iterate_exactly' n.toNat (evalTactic seq)
 
 partial def repeat'Aux (seq : Syntax) : List MVarId → TacticM Unit
 | []    => ()
