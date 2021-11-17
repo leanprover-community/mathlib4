@@ -11,153 +11,104 @@ lemma UInt32.size_positive : 0 < UInt32.size := by decide
 
 lemma UInt64.size_positive : 0 < UInt64.size := by decide
 
-lemma USize.size_positive : 0 < USize.size := by
-  simp only [USize.size]
-  cases System.Platform.numBits_eq with
-  | inl eq32 => simp [eq32]
-  | inr eq64 => simp [eq64]
+lemma USize.size_positive : 0 < USize.size := usize_size_gt_zero
 
 set_option hygiene false
-macro "genIntDeclars" typeName:ident : command => do
+local macro "genIntDeclars" typeName:ident : command => do
+  let deltaName := Lean.mkIdent $ Lean.Name.mkSimple s!"instOfNat{typeName.getId}"
   `(
     namespace $typeName
-      instance : Zero (Fin size) := (Nat.succ_pred_eq_of_pos size_positive) ▸ inferInstance
+    instance : Inhabited (Fin size) where
+      default := Fin.ofNat' 0 size_positive
 
-      instance : One (Fin size) := (Nat.succ_pred_eq_of_pos size_positive) ▸ inferInstance
+    lemma val_eq_of_lt : a < size → (ofNat a).val = a := Fin.val_eq_of_lt
 
-      instance : Neg (Fin size) := (Nat.succ_pred_eq_of_pos size_positive) ▸ inferInstance
+    lemma sub_def (a b : $typeName) : a - b = ⟨a.val - b.val⟩ := rfl
 
-      instance : AddSemigroup (Fin size) := (Nat.succ_pred_eq_of_pos size_positive) ▸ inferInstance
+    lemma mul_def (a b : $typeName) : a * b = ⟨a.val * b.val⟩ := rfl
 
-      instance : AddMonoid (Fin size) := (Nat.succ_pred_eq_of_pos size_positive) ▸ inferInstance
+    lemma mod_def (a b : $typeName) : a % b = ⟨a.val % b.val⟩ := rfl
 
-      instance : AddCommMonoid (Fin size) := (Nat.succ_pred_eq_of_pos size_positive) ▸ inferInstance
+    lemma add_def (a b : $typeName) : a + b = ⟨a.val + b.val⟩ := rfl
 
-      instance : SubNegMonoid (Fin size) := (Nat.succ_pred_eq_of_pos size_positive) ▸ inferInstance
+    lemma eq_of_val_eq : ∀ {a b : $typeName}, a.val = b.val -> a = b
+    | ⟨f1⟩, ⟨f2⟩, h => congrArg mk h
 
-      instance : AddGroup (Fin size) := (Nat.succ_pred_eq_of_pos size_positive) ▸ inferInstance
+    lemma val_eq_of_eq : ∀ {a b : $typeName}, a = b -> a.val = b.val
+    | ⟨f1⟩, ⟨f2⟩, h => congrArg val h
 
-      instance : Monoid (Fin size) := (Nat.succ_pred_eq_of_pos size_positive) ▸ inferInstance
+    @[simp] lemma mk_val_eq : ∀ (a : $typeName), mk a.val = a
+    | ⟨a, _⟩ => rfl
 
-      instance : CommMonoid (Fin size) := (Nat.succ_pred_eq_of_pos size_positive) ▸ inferInstance
+    instance : AddSemigroup $typeName where
+      add_assoc := fun _ _ _ => congrArg mk (AddSemigroup.add_assoc _ _ _)
 
-      instance : MonoidWithZero (Fin size) := (Nat.succ_pred_eq_of_pos size_positive) ▸ inferInstance
+    instance : AddCommSemigroup $typeName where
+      add_comm := fun _ _ => congrArg mk (AddCommSemigroup.add_comm _ _)
 
-      lemma val_eq_of_lt : a < size → (ofNat a).val = a := Fin.val_eq_of_lt
+    instance : Semigroup $typeName where
+      mul_assoc := fun _ _ _ => congrArg mk (Semigroup.mul_assoc _ _ _)
 
-      lemma sub_def (a b : $typeName) : a - b = ⟨a.val - b.val⟩ := rfl
+    instance : CommSemigroup $typeName where
+      mul_comm := fun _ _ => congrArg mk (CommSemigroup.mul_comm _ _)
 
-      lemma mul_def (a b : $typeName) : a * b = ⟨a.val * b.val⟩ := rfl
-
-      lemma mod_def (a b : $typeName) : a % b = ⟨a.val % b.val⟩ := rfl
-
-      lemma add_def (a b : $typeName) : a + b = ⟨a.val + b.val⟩ := rfl
-
-      lemma eq_of_val_eq : ∀ {a b : $typeName}, a.val = b.val -> a = b
-      | ⟨f1⟩, ⟨f2⟩, h => congrArg mk h
-
-      lemma val_eq_of_eq : ∀ {a b : $typeName}, a = b -> a.val = b.val
-      | ⟨f1⟩, ⟨f2⟩, h => congrArg val h
-
-      @[simp] lemma mk_val_eq (a : $typeName) : mk a.val = a := by
-        cases h:a with
-        | mk aFin =>
-          have _ : a.val = aFin := h ▸ rfl
-          simp only [‹a.val = aFin›]
-
-      lemma add_assoc (a b c : $typeName) : (a + b) + c = a + (b + c) :=
-        congrArg mk (Fin.add_assoc _ _ _)
-
-      lemma mul_comm (a b : $typeName) : a * b = b * a := congrArg mk (Fin.mul_comm _ _)
-
-      lemma add_comm (a b : $typeName) : a + b = b + a := congrArg mk (Fin.add_comm _ _)
-
-      @[simp] lemma add_zero (a : $typeName) : a + 0 = a := by
+    instance : AddMonoid $typeName :=
+      let add_zero_ : ∀ (a : $typeName), a + 0 = a := fun a => by
         have h0 : a.val + (0 : $typeName).val = a.val := AddMonoid.add_zero a.val
         simp only [add_def, h0, mk_val_eq]
+    {
+      add_zero := add_zero_
+      zero_add := fun _ => by rw [add_comm]; exact add_zero_ _
+      nsmul := fun x a => ⟨AddMonoid.nsmul x a.val⟩
+      nsmul_zero' := fun x => congrArg mk (AddMonoid.nsmul_zero' x.val)
+      nsmul_succ' := fun n x => congrArg mk (AddMonoid.nsmul_succ' n x.val)
+    }
 
-      @[simp] lemma zero_add (a : $typeName) : 0 + a = a :=
-        (add_comm _ _) ▸ add_zero _
+    instance : AddCommMonoid $typeName where
+      add_comm := add_comm
 
-      @[simp] lemma zero_mul (a : $typeName) : 0 * a = 0 := by
+    instance : Neg $typeName where
+      neg a := mk (-a.val)
+
+    instance : SubNegMonoid $typeName where
+      sub_eq_add_neg := fun _ _ => congrArg mk (SubNegMonoid.sub_eq_add_neg _ _)
+      gsmul := fun x a => ⟨SubNegMonoid.gsmul x a.val⟩
+      gsmul_zero' := fun a => congrArg mk (SubNegMonoid.gsmul_zero' a.val)
+      gsmul_succ' := fun m a => congrArg mk (SubNegMonoid.gsmul_succ' m a.val)
+      gsmul_neg' := fun m a => congrArg mk (SubNegMonoid.gsmul_neg' m a.val)
+
+    instance : Monoid $typeName :=
+      let mul_one_ : ∀ (a : $typeName), a * (1 : $typeName) = a := fun a => by
+        have h0 : a.val * (1 : $typeName).val = a.val := Monoid.mul_one a.val
+        simp only [mul_def, h0, mk_val_eq]
+    {
+      mul_one := mul_one_
+      one_mul := by intro a; rw [mul_comm]; exact mul_one_ a
+      npow_zero' := fun _ => rfl
+      npow_succ' := fun _ _ => rfl
+    }
+
+    instance : CommMonoid $typeName where
+      mul_comm := mul_comm
+
+    lemma val_zero : (0 : $typeName).val = (0 : Fin size) := by
+      delta OfNat.ofNat
+      delta $deltaName
+      simp only [ofNat, instOfNat, Zero.zero]
+
+    lemma mk_zero_eq_zero : (mk (0 : Fin size)) = (0 : $typeName) := by
+     delta OfNat.ofNat
+     delta $deltaName
+     simp only [ofNat, instOfNat, Zero.zero]
+
+    instance : MonoidWithZero $typeName :=
+      let zero_mul_ : ∀ (a : $typeName), 0 * a = 0 := fun a => by
         have h0 : (0 : $typeName).val * a.val = (0 : Fin size) := MonoidWithZero.zero_mul a.val
-        simp only [mul_def, h0, mk_val_eq]
-
-      @[simp] lemma mul_zero (a : $typeName) : a * 0 = 0 :=
-        (mul_comm a _) ▸ zero_mul _
-
-      @[simp] lemma one_mul (a : $typeName) : 1 * a = a := by
-        have h0 : (1 : $typeName).val * a.val = a.val := Monoid.one_mul a.val
-        simp only [mul_def, h0, mk_val_eq]
-
-      @[simp] lemma mul_one (a : $typeName) : a * 1 = a := (mul_comm _ _) ▸ one_mul _
-
-      instance : Neg $typeName where
-        neg a := mk (-a.val)
-
-      lemma neg_def (a : $typeName) : -a = mk (-a.val) := rfl
-
-      lemma sub_eq_add_neg (a b : $typeName) : a - b = a + -b :=
-        congrArg mk (SubNegMonoid.sub_eq_add_neg _ _)
-
-      def nsmul (x : Nat) (a : $typeName) : $typeName := mk (AddMonoid.nsmul x a.val)
-
-      def gsmul (x : Int) (a : $typeName) : $typeName := mk (SubNegMonoid.gsmul x a.val)
-
-      @[simp] lemma gsmul_zero' (a : $typeName) : gsmul 0 a = (0 : $typeName) :=
-        congrArg mk (SubNegMonoid.gsmul_zero' a.val)
-
-      lemma gsmul_succ' (m : ℕ) (a : $typeName) : gsmul (Int.ofNat m.succ) a = a + gsmul (Int.ofNat m) a :=
-        congrArg mk (SubNegMonoid.gsmul_succ' m a.val)
-
-      lemma gsmul_neg' (m : ℕ) (a : $typeName) : gsmul (Int.negSucc m) a = -(gsmul m.succ a) :=
-        congrArg mk (SubNegMonoid.gsmul_neg' m a.val)
-
-      instance : AddSemigroup $typeName where
-        add_assoc := add_assoc
-
-      @[simp] lemma nsmul_zero' (x : $typeName) : nsmul 0 x = 0 :=
-        congrArg mk (AddMonoid.nsmul_zero' x.val)
-
-      lemma nsmul_succ' (n : ℕ) (x : $typeName) : nsmul n.succ x = x + nsmul n x :=
-        congrArg mk (AddMonoid.nsmul_succ' n x.val)
-
-      @[simp] lemma add_left_neg (a : $typeName) : -a + a = 0 :=
-        congrArg mk (AddGroup.add_left_neg a.val)
-
-      lemma mul_assoc (a b c : $typeName) : (a * b) * c = a * (b * c) :=
-        congrArg mk (Semigroup.mul_assoc _ _ _)
-
-      instance : AddMonoid $typeName where
-        add_zero := add_zero
-        zero_add := zero_add
-        nsmul := nsmul
-        nsmul_zero' := nsmul_zero'
-        nsmul_succ' := nsmul_succ'
-
-      instance : AddCommMonoid $typeName where
-        add_comm := add_comm
-
-      instance : SubNegMonoid $typeName where
-        sub_eq_add_neg := sub_eq_add_neg
-        gsmul := gsmul
-        gsmul_zero' := gsmul_zero'
-        gsmul_succ' := gsmul_succ'
-        gsmul_neg' := gsmul_neg'
-
-      instance : Monoid $typeName where
-        mul_one := mul_one
-        one_mul := one_mul
-        mul_assoc := mul_assoc
-        npow_zero' := fun _ => rfl
-        npow_succ' := fun _ _ => rfl
-
-      instance : CommMonoid $typeName where
-        mul_comm := mul_comm
-
-      instance : MonoidWithZero $typeName where
-        zero_mul := zero_mul
-        mul_zero := mul_zero
+        simp only [mul_def, h0, mk_zero_eq_zero]
+      {
+        zero_mul := zero_mul_
+        mul_zero := by intro a; rw [mul_comm]; exact zero_mul_ a
+      }
 
       def addOverflows? (a b : $typeName) : Bool := size <= a.toNat + b.toNat
 
@@ -221,10 +172,9 @@ genIntDeclars UInt8
 genIntDeclars UInt16
 genIntDeclars UInt32
 genIntDeclars UInt64
---genIntDeclars USize
+genIntDeclars USize
 
 namespace UInt8
-
 
 /-- Is this an uppercase ASCII letter? -/
 def isUpper (c : UInt8) : Bool :=
