@@ -227,10 +227,37 @@ def iterate_exactly' (n : Nat) (t : TacticM α) : TacticM Unit := do
 `iterate n { ... }` runs the tactic block exactly `n` times.
 `iterate { ... }` runs the tactic block repeatedly until failure.
 -/
-elab "iterate " n:(num)? ppSpace seq:tacticSeq : tactic => do
-  match n.getOptional? with
-  | none => iterate_at_most' 10000 (evalTactic seq)
-  | some n => iterate_exactly' n.toNat (evalTactic seq)
+syntax (name := iterate) "iterate" (num)? ppSpace tacticSeq : tactic
+
+elab_rules : tactic
+| `(tactic| iterate $seq:tacticSeq) =>
+   iterate_at_most' 10000 (evalTactic seq)
+| `(tactic| iterate $n $seq:tacticSeq) =>
+   iterate_exactly' n.toNat (evalTactic seq)
+
+
+/-!
+We could alternatively implement `iterate` as
+```
+syntax "iterate " (num)? ppSpace tacticSeq : tactic
+macro_rules
+  | `(tactic|iterate $seq:tacticSeq) =>
+    `(tactic|try ($seq:tacticSeq); iterate $seq:tacticSeq)
+  | `(tactic|iterate $n $seq:tacticSeq) =>
+    match n.toNat with
+    | 0 => `(tactic| skip)
+    | n+1 => `(tactic|($seq:tacticSeq); iterate $(quote n) $seq:tacticSeq)
+```
+and some may find this more idiomatic.
+
+However an implementation like this does not provide the "plumbing" tactics
+(i.e. for `iterate`, the tactics that collect the list of results of the underlying tactic).
+Thus for now we prefer to first implement the plumbing, then connect the porcelain to the plumbing.
+
+For now, this note serves to preserve an example of the "porcelain-only" style,
+which is useful for writing one-off tactics.
+-/
+
 
 partial def repeat'Aux (seq : Syntax) : List MVarId → TacticM Unit
 | []    => ()
