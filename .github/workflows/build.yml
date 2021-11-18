@@ -33,5 +33,8 @@ jobs:
       - name: test mathlib
         run: make test
 
+      - name: lint mathlib
+        run: env LEAN_PATH=build/lib lean scripts/runLinter.lean || true
+
       - name: check that all files are imported
         run: git diff --exit-code

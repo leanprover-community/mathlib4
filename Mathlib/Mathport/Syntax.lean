@@ -641,8 +641,6 @@ namespace Attr
 syntax (name := intro) "intro" : attr
 syntax (name := intro!) "intro!" : attr
 
-syntax (name := nolint) "nolint" (ppSpace ident)* : attr
-
 syntax (name := ext) "ext" (ppSpace ident)? : attr
 
 syntax (name := higherOrder) "higherOrder" (ppSpace ident)? : attr
@@ -685,11 +683,6 @@ syntax opts := (verbosity "*"?) <|> ("*"? (verbosity)?)
 syntax args := opts " only"? ident*
 
 end Lint
-
-syntax (name := lint) "#lint" Lint.args : command
-syntax (name := lintMathlib) "#lint_mathlib" Lint.args : command
-syntax (name := lintAll) "#lint_all" Lint.args : command
-syntax (name := listLinters) "#list_linters" : command
 
 syntax (name := copyDocString) "copy_doc_string " ident " → " ident* : command
 syntax (name := libraryNote) docComment "library_note " str : command
