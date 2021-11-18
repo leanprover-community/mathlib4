@@ -2,6 +2,7 @@ import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Fin.Basic
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.Ring.Basic
 
 lemma UInt8.size_positive : 0 < UInt8.size := by decide
 
@@ -13,157 +14,101 @@ lemma UInt64.size_positive : 0 < UInt64.size := by decide
 
 lemma USize.size_positive : 0 < USize.size := usize_size_gt_zero
 
+lemma UInt8.val_eq_of_lt {a : Nat} : a < UInt8.size -> (ofNat a).val = a := Fin.val_eq_of_lt
+
+lemma UInt16.val_eq_of_lt {a : Nat} : a < UInt16.size -> (ofNat a).val = a := Fin.val_eq_of_lt
+
+lemma UInt32.val_eq_of_lt {a : Nat} : a < UInt32.size -> (ofNat a).val = a := Fin.val_eq_of_lt
+
+lemma UInt64.val_eq_of_lt {a : Nat} : a < UInt64.size -> (ofNat a).val = a := Fin.val_eq_of_lt
+
+lemma USize.val_eq_of_lt {a : Nat} : a < USize.size -> (ofNat a).val = a := Fin.val_eq_of_lt
+
 set_option hygiene false
 local macro "genIntDeclars" typeName:ident : command => do
-  let deltaName := Lean.mkIdent $ Lean.Name.mkSimple s!"instOfNat{typeName.getId}"
   `(
     namespace $typeName
-    instance : Inhabited (Fin size) where
-      default := Fin.ofNat' 0 size_positive
+      instance : Inhabited (Fin size) where
+        default := Fin.ofNat' 0 size_positive
 
-    lemma val_eq_of_lt : a < size → (ofNat a).val = a := Fin.val_eq_of_lt
+      instance : Numeric $typeName where
+        ofNat a := mk (Numeric.ofNat a)
 
-    lemma sub_def (a b : $typeName) : a - b = ⟨a.val - b.val⟩ := rfl
+      instance : AddSemigroup $typeName where
+        add_assoc := fun _ _ _ => congrArg mk (AddSemigroup.add_assoc _ _ _)
 
-    lemma mul_def (a b : $typeName) : a * b = ⟨a.val * b.val⟩ := rfl
+      instance : AddCommSemigroup $typeName where
+        add_comm := fun _ _ => congrArg mk (AddCommSemigroup.add_comm _ _)
 
-    lemma mod_def (a b : $typeName) : a % b = ⟨a.val % b.val⟩ := rfl
+      instance : Semigroup $typeName where
+        mul_assoc := fun _ _ _ => congrArg mk (Semigroup.mul_assoc _ _ _)
 
-    lemma add_def (a b : $typeName) : a + b = ⟨a.val + b.val⟩ := rfl
+      instance : Neg $typeName where
+        neg a := mk (-a.val)
 
-    lemma eq_of_val_eq : ∀ {a b : $typeName}, a.val = b.val -> a = b
-    | ⟨f1⟩, ⟨f2⟩, h => congrArg mk h
+      lemma sub_def (a b : $typeName) : a - b = ⟨a.val - b.val⟩ := rfl
 
-    lemma val_eq_of_eq : ∀ {a b : $typeName}, a = b -> a.val = b.val
-    | ⟨f1⟩, ⟨f2⟩, h => congrArg val h
+      lemma mul_def (a b : $typeName) : a * b = ⟨a.val * b.val⟩ := rfl
 
-    @[simp] lemma mk_val_eq : ∀ (a : $typeName), mk a.val = a
-    | ⟨a, _⟩ => rfl
+      lemma mod_def (a b : $typeName) : a % b = ⟨a.val % b.val⟩ := rfl
 
-    instance : AddSemigroup $typeName where
-      add_assoc := fun _ _ _ => congrArg mk (AddSemigroup.add_assoc _ _ _)
+      lemma add_def (a b : $typeName) : a + b = ⟨a.val + b.val⟩ := rfl
 
-    instance : AddCommSemigroup $typeName where
-      add_comm := fun _ _ => congrArg mk (AddCommSemigroup.add_comm _ _)
+      lemma eq_of_val_eq : ∀ {a b : $typeName}, a.val = b.val -> a = b
+      | ⟨f1⟩, ⟨f2⟩, h => congrArg mk h
 
-    instance : Semigroup $typeName where
-      mul_assoc := fun _ _ _ => congrArg mk (Semigroup.mul_assoc _ _ _)
+      lemma val_eq_of_eq : ∀ {a b : $typeName}, a = b -> a.val = b.val
+      | ⟨f1⟩, ⟨f2⟩, h => congrArg val h
 
-    instance : CommSemigroup $typeName where
-      mul_comm := fun _ _ => congrArg mk (CommSemigroup.mul_comm _ _)
+      @[simp] lemma mk_val_eq : ∀ (a : $typeName), mk a.val = a
+      | ⟨a, _⟩ => rfl
 
-    instance : AddMonoid $typeName :=
-      let add_zero_ : ∀ (a : $typeName), a + 0 = a := fun a => by
-        have h0 : a.val + (0 : $typeName).val = a.val := AddMonoid.add_zero a.val
-        simp only [add_def, h0, mk_val_eq]
-    {
-      add_zero := add_zero_
-      zero_add := fun _ => by rw [add_comm]; exact add_zero_ _
-      nsmul := fun x a => ⟨AddMonoid.nsmul x a.val⟩
-      nsmul_zero' := fun x => congrArg mk (AddMonoid.nsmul_zero' x.val)
-      nsmul_succ' := fun n x => congrArg mk (AddMonoid.nsmul_succ' n x.val)
-    }
+      lemma zero_def : (0 : $typeName) = ⟨0⟩ := rfl
 
-    instance : AddCommMonoid $typeName where
-      add_comm := add_comm
+      lemma neg_def (a : $typeName) : -a = ⟨-a.val⟩ := rfl
 
-    instance : Neg $typeName where
-      neg a := mk (-a.val)
+      lemma one_def : (1 : $typeName) = ⟨1⟩ := rfl
 
-    instance : SubNegMonoid $typeName where
-      sub_eq_add_neg := fun _ _ => congrArg mk (SubNegMonoid.sub_eq_add_neg _ _)
-      gsmul := fun x a => ⟨SubNegMonoid.gsmul x a.val⟩
-      gsmul_zero' := fun a => congrArg mk (SubNegMonoid.gsmul_zero' a.val)
-      gsmul_succ' := fun m a => congrArg mk (SubNegMonoid.gsmul_succ' m a.val)
-      gsmul_neg' := fun m a => congrArg mk (SubNegMonoid.gsmul_neg' m a.val)
+      instance : Semiring $typeName where
+        ofNat_succ a := by
+          apply eq_of_val_eq
+          simp only [add_def, Numeric.ofNat, one_def]
+          have h0 := (@instSemiringFin size).ofNat_succ a
+          simp only [Numeric.ofNat] at h0
+          simp [h0]
+        add_zero := by simp [add_def, zero_def]
+        zero_add := by simp [add_def, zero_def]
+        mul_one  := by simp [mul_def, one_def]
+        one_mul  := by simp [mul_def, one_def]
+        nsmul n a := ⟨Semiring.nsmul n a.val⟩
+        nsmul_zero' x := congrArg mk (Semiring.nsmul_zero' x.val)
+        nsmul_succ' n a := congrArg mk (AddMonoid.nsmul_succ' n a.val)
+        zero_mul := by simp [mul_def, zero_def]
+        mul_zero := by simp [mul_def, zero_def]
+        npow_zero' := fun _ => rfl
+        npow_succ' := fun _ _ => rfl
+        mul_add a b c := by
+          simp only [mul_def, add_def]
+          apply eq_of_val_eq
+          exact Semiring.mul_add a.val b.val c.val
+        add_mul a b c := by
+          simp only [mul_def, add_def]
+          apply eq_of_val_eq
+          exact Semiring.add_mul a.val b.val c.val
 
-    instance : Monoid $typeName :=
-      let mul_one_ : ∀ (a : $typeName), a * (1 : $typeName) = a := fun a => by
-        have h0 : a.val * (1 : $typeName).val = a.val := Monoid.mul_one a.val
-        simp only [mul_def, h0, mk_val_eq]
-    {
-      mul_one := mul_one_
-      one_mul := by intro a; rw [mul_comm]; exact mul_one_ a
-      npow_zero' := fun _ => rfl
-      npow_succ' := fun _ _ => rfl
-    }
+      instance : Ring $typeName where
+        sub_eq_add_neg := fun _ _ => congrArg mk (Ring.sub_eq_add_neg _ _)
+        gsmul := fun x a => mk (Ring.gsmul x a.val)
+        gsmul_zero' := fun a => congrArg mk (Ring.gsmul_zero' a.val)
+        gsmul_succ' := fun x a => congrArg mk (Ring.gsmul_succ' x a.val)
+        gsmul_neg' := fun x a => congrArg mk (SubNegMonoid.gsmul_neg' x a.val)
+        add_left_neg := fun a => by apply eq_of_val_eq; simp [neg_def, add_def, zero_def]
 
-    instance : CommMonoid $typeName where
-      mul_comm := mul_comm
-
-    lemma val_zero : (0 : $typeName).val = (0 : Fin size) := by
-      delta OfNat.ofNat
-      delta $deltaName
-      simp only [ofNat, instOfNat, Zero.zero]
-
-    lemma mk_zero_eq_zero : (mk (0 : Fin size)) = (0 : $typeName) := by
-     delta OfNat.ofNat
-     delta $deltaName
-     simp only [ofNat, instOfNat, Zero.zero]
-
-    instance : MonoidWithZero $typeName :=
-      let zero_mul_ : ∀ (a : $typeName), 0 * a = 0 := fun a => by
-        have h0 : (0 : $typeName).val * a.val = (0 : Fin size) := MonoidWithZero.zero_mul a.val
-        simp only [mul_def, h0, mk_zero_eq_zero]
-      {
-        zero_mul := zero_mul_
-        mul_zero := by intro a; rw [mul_comm]; exact zero_mul_ a
-      }
-
-      def addOverflows? (a b : $typeName) : Bool := size <= a.toNat + b.toNat
-
-      def mulOverflows? (a b : $typeName) : Bool := size <= a.toNat * b.toNat
-
-      def subUnderflows? (a b : $typeName) : Bool := a.toNat < b.toNat
-
-      def overflowingAdd (a b : $typeName) : (Bool × $typeName) := (size <= a.toNat + b.toNat, a + b)
-
-      def overflowingMul (a b : $typeName) : (Bool × $typeName) := (size <= a.toNat * b.toNat, a * b)
-
-      def underflowingSub (a b : $typeName) : (Bool × $typeName) := (a.toNat < b.toNat, a - b)
-
-      def checkedAdd (a b : $typeName) : Option $typeName :=
-        match a.overflowingAdd b with
-        | (true, _) => none
-        | (false, sum) => some (sum)
-
-      def checkedMul (a b : $typeName) : Option $typeName :=
-        match a.overflowingMul b with
-        | (true, _) => none
-        | (false, prod) => some (prod)
-
-      def checkedSub (a b : $typeName) : Option $typeName :=
-        match a.underflowingSub b with
-        | (true, _) => none
-        | (false, diff) => some (diff)
-
-      lemma checked_add_spec (a b : $typeName) : (a.checkedAdd b).isSome = true <-> a.toNat + b.toNat < size := by
-        by_cases size <= a.toNat + b.toNat <;>
-          simp_all [checkedAdd, Option.isSome, overflowingAdd, decide_eq_true, decide_eq_false]
-
-      lemma checked_mul_spec (a b : $typeName) : (a.checkedMul b).isSome = true <-> a.toNat * b.toNat < size := by
-        simp only [checkedMul, overflowingMul, Option.isSome]
-        refine Iff.intro ?mp ?mpr <;> intro h
-        case mp =>
-          by_cases hx : size <= a.toNat * b.toNat
-          case pos => simp only [(decide_eq_true_iff (size <= a.toNat * b.toNat)).mpr hx] at h
-          case neg => exact Nat.lt_of_not_le hx
-        case mpr => simp only [decide_eq_false (Nat.not_le_of_lt h : ¬size <= a.toNat * b.toNat)]
-
-      lemma checked_sub_spec (a b : $typeName) : (a.checkedSub b).isSome = true <-> b.toNat <= a.toNat := by
-        simp only [checkedSub, underflowingSub, Option.isSome]
-        refine Iff.intro ?mp ?mpr <;> intro h
-        case mp =>
-          by_cases hx : a.val < b.val
-          case pos => simp only [(decide_eq_true_iff (a.toNat < b.toNat)).mpr hx] at h
-          case neg => exact Nat.le_of_not_lt hx
-        case mpr => simp only [decide_eq_false (Nat.not_lt_of_le h : ¬a.toNat < b.toNat)]
-
-      lemma mod_lt (x : $typeName) {y : $typeName} : 0 < y -> x % y < y :=
-        fun y_pos => Fin.mod_lt x.val y_pos
-
-      lemma mod_eq_of_lt {a b : $typeName} : a < b -> a % b = a :=
-        fun a_lt_b => eq_of_val_eq (Fin.mod_eq_of_lt a_lt_b)
+      instance : CommRing $typeName where
+        mul_comm := fun _ _ => by
+          apply eq_of_val_eq
+          simp [mul_def, zero_def]
+          exact CommSemiring.mul_comm _ _
 
     end $typeName
   )
