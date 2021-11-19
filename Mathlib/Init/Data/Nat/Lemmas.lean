@@ -527,6 +527,12 @@ end find
 
 /- mod -/
 
+lemma le_of_mod_lt {a b : Nat} (h : a % b < a) : b <= a :=
+  Decidable.byContradiction $ fun hf =>
+  have h0 : a % b = a := Nat.mod_eq_of_lt ((Nat.lt_or_ge a b).resolve_right hf)
+  have h1 : a % b ≠ a := ne_of_lt h
+  False.elim (h1 h0)
+
 @[simp] theorem add_mod_right (x z : ℕ) : (x + z) % z = x % z :=
 by rw [mod_eq_sub_mod (Nat.le_add_left _ _), Nat.add_sub_cancel]
 
