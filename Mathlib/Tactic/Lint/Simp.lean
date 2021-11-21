@@ -63,6 +63,7 @@ def checkAllSimpLemmaInfos (ty : Expr) (k : SimpLemmaInfo → MetaM (Option Mess
 def isSimpLemma (declName : Name) : MetaM Bool := do
   (← getSimpLemmas).lemmaNames.contains declName
 
+-- TODO: trace aux lemmas back to original simp lemma
 def heuristicallyExtractSimpLemmas (prf : Expr) : MetaM (Array Name) :=
   prf.getUsedConstants.filterM isSimpLemma
 
@@ -79,7 +80,6 @@ https://leanprover-community.github.io/mathlib_docs/notes.html#simp-normal%20for
   test := fun declName => do
     unless ← isSimpLemma declName do return none
     -- TODO: equation lemmas
-    -- TODO: timeout
     let ctx ← Simp.Context.mkDefault
     checkAllSimpLemmaInfos (← getConstInfo declName).type fun {lhs, rhs, isConditional, ..} => do
     let ⟨lhs', prf1⟩ ← decorateError "simplify fails on left-hand side:" <| simp lhs ctx

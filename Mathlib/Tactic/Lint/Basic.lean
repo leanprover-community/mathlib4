@@ -14,13 +14,13 @@ namespace Mathlib.Tactic.Lint
 
 This file defines the basic types and attributes used by the linting
 framework.  A linter essentially consists of a function
-`declaration → tactic (option string)`, this function together with some
-metadata is stored in the `linter` structure. We define two attributes:
+`(declaration : Name) → MetaM (Option MessageData)`, this function together with some
+metadata is stored in the `Linter` structure. We define two attributes:
 
- * `@[linter]` applies to a declaration of type `linter` and adds it to the default linter set.
+ * `@[mathlibLinter]` applies to a declaration of type `Linter` and adds it to the default linter set.
 
- * `@[nolint linter_name]` omits the tagged declaration from being checked by
-   the linter with name `linter_name`.
+ * `@[nolint linterName]` omits the tagged declaration from being checked by
+   the linter with name `linterName`.
 -/
 
 syntax (name := nolint) "nolint" (ppSpace ident)+ : attr
