@@ -36,7 +36,9 @@ namespace equiv
 instance : CoeFun (α ≃ β) (λ _ => α → β):=
 ⟨to_fun⟩
 
-@[simp] theorem coe_fn_mk (f : α → β) (g l r) : (equiv.mk f g l r : α → β) = f :=
+-- Does not need to be simp, since the coercion is the projection,
+-- which simp has built-in support for.
+theorem coe_fn_mk (f : α → β) (g l r) : (equiv.mk f g l r : α → β) = f :=
 rfl
 
 def refl (α) : α ≃ α := ⟨id, id, λ _ => rfl, λ _ => rfl⟩
