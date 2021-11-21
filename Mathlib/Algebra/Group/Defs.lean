@@ -222,7 +222,7 @@ theorem neg_add_self (a : A) : -a + a = 0 := add_left_neg a
 @[simp] theorem neg_add_cancel_left (a b : A) : -a + (a + b) = b :=
 by rw [← add_assoc, add_left_neg, zero_add]
 
-@[simp] theorem neg_eq_of_add_eq_zero (h : a + b = 0) : -a = b :=
+theorem neg_eq_of_add_eq_zero (h : a + b = 0) : -a = b :=
 left_neg_eq_right_neg (neg_add_self a) h
 
 @[simp] theorem neg_neg (a : A) : -(-a) = a :=
