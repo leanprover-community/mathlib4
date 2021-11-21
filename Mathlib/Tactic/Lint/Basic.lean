@@ -42,8 +42,23 @@ using `linter`, i.e., if there is no `nolint` attribute. -/
 def shouldBeLinted [Monad m] [MonadEnv m] (linter : Name) (decl : Name) : m Bool := do
   !((← nolintAttr.getParam (← getEnv) decl).getD {}).contains linter
 
-def isAutoDecl (decl : Name) : CoreM Bool :=
-  false -- TODO
+/--
+Returns true if `decl` is an automatically generated declaration.
+
+Also returns true if `decl` is an internal name or created during macro
+expansion.
+-/
+def isAutoDecl (decl : Name) : CoreM Bool := do
+  if decl.hasMacroScopes then return true
+  if decl.isInternal then return true
+  if let Name.str n s _ := decl then
+    if (← getEnv).isConstructor n && ["injEq", "inj", "sizeOf_spec"].any (· == s) then
+      return true
+    if let ConstantInfo.inductInfo _ := (← getEnv).find? n then
+      if [casesOnSuffix, recOnSuffix, brecOnSuffix, binductionOnSuffix, belowSuffix,
+          "ndrec", "ndrecOn", "noConfusionType", "noConfusion"].any (· == s) then
+        return true
+  false
 
 /--
 A linting test for the `#lint` command.
