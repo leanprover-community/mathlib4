@@ -220,7 +220,7 @@ fun this : a ∈ [b] => Or.elim
   (fun this : a = b => this)
   (fun this : a ∈ [] => absurd this (not_mem_nil a))
 
-@[simp 1100] theorem mem_singleton {a b : α} : a ∈ [b] ↔ a = b :=
+@[simp 900] theorem mem_singleton {a b : α} : a ∈ [b] ↔ a = b :=
 ⟨eq_of_mem_singleton, Or.inl⟩
 
 theorem mem_of_mem_cons_of_mem {a b : α} {l : List α} : a ∈ b::l → b ∈ l → a ∈ l :=
@@ -400,7 +400,7 @@ theorem ne_nil_of_length_eq_succ {l : List α} : ∀ {n : Nat}, length l = Nat.s
 theorem length_eq_zero {l : List α} : length l = 0 ↔ l = [] :=
 ⟨eq_nil_of_length_eq_zero, fun h => by rw [h]; rfl⟩
 
-@[simp 1100] lemma length_singleton (a : α) : length [a] = 1 := rfl
+@[simp 900] lemma length_singleton (a : α) : length [a] = 1 := rfl
 
 theorem length_pos_of_mem {a : α} : ∀ {l : List α}, a ∈ l → 0 < length l
 | nil,  h => by cases h
@@ -644,7 +644,7 @@ theorem mem_filter (as : List α) (p : α → Bool) (x : α) :
 
 lemma append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L₁ ++ L₂ := rfl
 
-@[simp 1100] lemma singleton_append {x : α} {l : List α} : [x] ++ l = x :: l := rfl
+@[simp 900] lemma singleton_append {x : α} {l : List α} : [x] ++ l = x :: l := rfl
 
 theorem append_ne_nil_of_ne_nil_left (s t : List α) : s ≠ [] → s ++ t ≠ [] := by
   induction s with
