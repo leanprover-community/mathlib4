@@ -188,12 +188,16 @@ macro_rules
 
 macro (name := «sorry») "sorry" : tactic => `(exact sorry)
 
+section iterate
+
+variable [Monad m] [MonadExcept e m]
+
 /--
 `iterate_at_most n t` runs the tactic `t` at most `n` times, or until failure,
 whichever comes first.
 Always succeeds, and returns at list of the succesful results.
 -/
-def iterate_at_most : Nat → TacticM α → TacticM (List α)
+def iterate_at_most : Nat → m α → m (List α)
 | 0,       t => []
 | (n + 1), t => do
   try
@@ -205,14 +209,14 @@ def iterate_at_most : Nat → TacticM α → TacticM (List α)
 `iterate_at_most' n t` runs the tactic `t` at most `n` times, or until failure,
 whichever comes first, and always succeeds.
 -/
-def iterate_at_most' (n : Nat) (t : TacticM α) : TacticM Unit := do
+def iterate_at_most' (n : Nat) (t : m α) : m Unit := do
   _ ← iterate_at_most n t
 
 /--
 `iterate_exactly n t` runs the tactic `t` at exactly `n` times.
 Fails if any iteration fails, and otherwise returns a list of the `n` successful results.
 -/
-def iterate_exactly : Nat → TacticM α → TacticM (List α)
+def iterate_exactly : Nat → m α → m (List α)
 | 0, t     => []
 | (n+1), t => do (←t) :: (←iterate_exactly n t)
 
@@ -220,7 +224,7 @@ def iterate_exactly : Nat → TacticM α → TacticM (List α)
 `iterate_exactly n t` runs the tactic `t` at exactly `n` times.
 Fails if any iteration fails.
 -/
-def iterate_exactly' (n : Nat) (t : TacticM α) : TacticM Unit := do
+def iterate_exactly' (n : Nat) (t : m α) : m Unit := do
   _ ← iterate_exactly n t
 
 /--
@@ -258,6 +262,7 @@ For now, this note serves to preserve an example of the "porcelain-only" style,
 which is useful for writing one-off tactics.
 -/
 
+end iterate
 
 partial def repeat'Aux (seq : Syntax) : List MVarId → TacticM Unit
 | []    => ()
