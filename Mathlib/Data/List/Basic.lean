@@ -665,10 +665,7 @@ theorem append_ne_nil_of_ne_nil_right (s t : List α) : t ≠ [] → s ++ t ≠ 
 by rw [eq_comm, append_eq_nil]
 
 
-@[simp] lemma append_ne_nil_of_left_ne_nil {A : Type u} (a b : List A) (h0 : a ≠ []) : a ++ b ≠ [] := by
-cases a with
-| nil => exact absurd rfl h0
-| cons h t => simp
+lemma append_ne_nil_of_left_ne_nil (a b : List α) (h0 : a ≠ []) : a ++ b ≠ [] := by simp [*]
 
 -- lemma append_eq_cons_iff {a b c : List α} {x : α} :
 --   a ++ b = x :: c ↔ (a = [] ∧ b = x :: c) ∨ (∃a', a = x :: a' ∧ c = a' ++ b) := by
