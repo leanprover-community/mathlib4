@@ -45,7 +45,7 @@ lemma cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h₂ 
 
 /- ne -/
 
-@[simp] lemma Ne.def {α : Sort u} (a b : α) : (a ≠ b) = ¬ (a = b) := rfl
+lemma Ne.def {α : Sort u} (a b : α) : (a ≠ b) = ¬ (a = b) := rfl
 
 def eq_rec_heq := @eqRec_heq
 
@@ -142,7 +142,7 @@ lemma not_congr (h : a ↔ b) : ¬a ↔ ¬b := ⟨mt h.2, mt h.1⟩
 
 lemma ne_self_iff_false (a : α) : a ≠ a ↔ False := not_iff_false_intro rfl
 
-@[simp] lemma eq_self_iff_true (a : α) : a = a ↔ True := iff_true_intro rfl
+lemma eq_self_iff_true (a : α) : a = a ↔ True := iff_true_intro rfl
 
 lemma heq_self_iff_true (a : α) : HEq a a ↔ True := iff_true_intro HEq.rfl
 

@@ -400,7 +400,6 @@ theorem iff_false_left (ha : ¬a) : (a ↔ b) ↔ ¬b :=
 theorem iff_false_right (ha : ¬a) : (b ↔ a) ↔ ¬b :=
 Iff.comm.trans (iff_false_left ha)
 
-@[simp]
 lemma iff_mpr_iff_true_intro {P : Prop} (h : P) : Iff.mpr (iff_true_intro h) True.intro = h := rfl
 
 -- See Note [decidable namespace]

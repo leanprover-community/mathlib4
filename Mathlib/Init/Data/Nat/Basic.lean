@@ -14,7 +14,4 @@ namespace Nat
 instance : Dvd ℕ where
   dvd a b := ∃ c, b = a * c
 
-@[simp] lemma nat_zero_eq_zero : Nat.zero = 0 :=
-rfl
-
 end Nat
