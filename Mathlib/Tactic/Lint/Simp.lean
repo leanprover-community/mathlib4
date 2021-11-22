@@ -105,6 +105,9 @@ def heuristicallyExtractSimpLemmasCore (ctx : Simp.Context) (constToSimpDecl : H
 def decorateError (msg : MessageData) (k : MetaM α) : MetaM α := do
   try k catch e => throw e
 
+def formatLemmas (lems : Array Name) : CoreM MessageData := do
+  toMessageData <|<- lems.mapM mkConstWithLevelParams
+
 /-- A linter for simp lemmas whose lhs is not in simp-normal form, and which hence never fire. -/
 @[mathlibLinter] def simpNF : Linter where
   noErrorsFound := "All left-hand sides of simp lemmas are in simp-normal form."
@@ -127,7 +130,7 @@ https://leanprover-community.github.io/mathlib_docs/notes.html#simp-normal%20for
       let used_lemmas := heuristicallyExtractSimpLemmas ctx <|
         mkApp (prf1.getD (mkBVar 0)) (prf2.getD (mkBVar 0))
       return m!"simp can prove this:
-  by simp only {used_lemmas}
+  by simp only {← formatLemmas used_lemmas}
 One of the lemmas above could be a duplicate.
 If that's not the case try reordering lemmas or adding @[priority].
 "
@@ -137,7 +140,7 @@ If that's not the case try reordering lemmas or adding @[priority].
 to
   {lhs'}
 using
-  {prf1_lems}
+  {← formatLemmas prf1_lems}
 Try to change the left-hand side to the simplified term!
 "
     else if !isConditional && lhs == lhs' then

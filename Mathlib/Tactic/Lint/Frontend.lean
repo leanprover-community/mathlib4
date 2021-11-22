@@ -111,13 +111,13 @@ def sortResults {α} [Inhabited α] (e : Environment) (results : HashMap Name α
   results.toArray.qsort fun (a, _) (b, _) => key a < key b
 
 /-- Formats a linter warning as `#check` command with comment. -/
-def printWarning (declName : Name) (warning : MessageData) : MessageData :=
-  m!"#check @{declName} /- {warning} -/"
+def printWarning (declName : Name) (warning : MessageData) : CoreM MessageData := do
+  m!"#check @{← mkConstWithLevelParams declName} /- {warning} -/"
 
 /-- Formats a map of linter warnings using `print_warning`, sorted by line number. -/
-def printWarnings (env : Environment) (results : HashMap Name MessageData) : MessageData :=
-  (MessageData.joinSep ·.toList Format.line) <|
-    (sortResults env results).map fun (declName, warning) => printWarning declName warning
+def printWarnings (env : Environment) (results : HashMap Name MessageData) : CoreM MessageData := do
+  (MessageData.joinSep ·.toList Format.line) <|<-
+    (sortResults env results).mapM fun (declName, warning) => printWarning declName warning
 
 /--
 Formats a map of linter warnings grouped by filename with `-- filename` comments.
@@ -131,9 +131,9 @@ def groupedByFilename (results : HashMap Name MessageData) : CoreM MessageData :
     grouped := grouped.insert mod <| grouped.findD mod {} |>.insert declName msg
   let grouped' := grouped.toArray.qsort fun (a, _) (b, _) => toString a < toString b
   let env ← getEnv
-  (MessageData.joinSep · (Format.line ++ Format.line)) <|
-    grouped'.toList.map fun (mod, msgs) =>
-      m!"-- {mod}\n{printWarnings env msgs}"
+  (MessageData.joinSep · (Format.line ++ Format.line)) <|<-
+    grouped'.toList.mapM fun (mod, msgs) => do
+      m!"-- {mod}\n{← printWarnings env msgs}"
 
 /--
 Formats the linter results as Lean code with comments and `#print` commands.
