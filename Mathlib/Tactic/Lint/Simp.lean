@@ -63,9 +63,44 @@ def checkAllSimpLemmaInfos (ty : Expr) (k : SimpLemmaInfo → MetaM (Option Mess
 def isSimpLemma (declName : Name) : MetaM Bool := do
   (← getSimpLemmas).lemmaNames.contains declName
 
--- TODO: trace aux lemmas back to original simp lemma
-def heuristicallyExtractSimpLemmas (prf : Expr) : MetaM (Array Name) :=
-  prf.getUsedConstants.filterM isSimpLemma
+open Lean.Meta.DiscrTree
+partial def trieElements : Trie α → StateT (Array α) Id Unit
+  | Trie.node vs children => do
+    modify (· ++ vs)
+    for (_, child) in children do
+      trieElements child
+
+def elements (d : DiscrTree α) : StateT (Array α) Id Unit := do
+  for (_, child) in d.root.toList do
+    trieElements child
+
+open Std
+
+-- In Lean 4, the simplifier adds auxiliary lemmas if the declaration is not an equation.
+-- For example, for `decl : a ↔ b` it generates `decl._auxLemma.1 : a = b`.
+-- This function computes the map ``{`decl._auxLemma.1 ↦ `decl}``
+def constToSimpDeclMap (ctx : Simp.Context) : HashMap Name Name := Id.run do
+  let mut map : HashMap Name Name := {}
+  for sls in [ctx.simpLemmas.pre, ctx.simpLemmas.post] do
+    for sl in ((elements sls).run #[]).2 do
+      if let some declName := sl.name? then
+        if let some auxDeclName := sl.proof.getAppFn.constName? then
+          map := map.insert auxDeclName declName
+  return map
+
+def heuristicallyExtractSimpLemmasCore (ctx : Simp.Context) (constToSimpDecl : HashMap Name Name) (prf : Expr) : Array Name := Id.run do
+  let mut cnsts : HashSet Name := {}
+  for c in prf.getUsedConstants do
+    if ctx.simpLemmas.toUnfold.contains c then
+      cnsts := cnsts.insert c
+    else if ctx.congrLemmas.lemmas.contains c then
+      cnsts := cnsts.insert c
+    else if let some c' := constToSimpDecl.find? c then
+      cnsts := cnsts.insert c'
+  return cnsts.toArray
+
+@[inline] def heuristicallyExtractSimpLemmas (ctx : Simp.Context) (prf : Expr) : Array Name :=
+  heuristicallyExtractSimpLemmasCore ctx (constToSimpDeclMap ctx) prf
 
 def decorateError (msg : MessageData) (k : MetaM α) : MetaM α := do
   try k catch e => throw e
@@ -83,13 +118,13 @@ https://leanprover-community.github.io/mathlib_docs/notes.html#simp-normal%20for
     let ctx ← Simp.Context.mkDefault
     checkAllSimpLemmaInfos (← getConstInfo declName).type fun {lhs, rhs, isConditional, ..} => do
     let ⟨lhs', prf1⟩ ← decorateError "simplify fails on left-hand side:" <| simp lhs ctx
-    let prf1_lems ← heuristicallyExtractSimpLemmas (prf1.getD (mkBVar 0))
+    let prf1_lems := heuristicallyExtractSimpLemmas ctx (prf1.getD (mkBVar 0))
     if prf1_lems.contains declName then return none
     let ⟨rhs', prf2⟩ ← decorateError "simplify fails on right-hand side:" <| simp rhs ctx
     let lhs'_eq_rhs' ← isSimpEq lhs' rhs'
     let lhs_in_nf ← isSimpEq lhs' lhs
     if lhs'_eq_rhs' then do
-      let used_lemmas ← heuristicallyExtractSimpLemmas <|
+      let used_lemmas := heuristicallyExtractSimpLemmas ctx <|
         mkApp (prf1.getD (mkBVar 0)) (prf2.getD (mkBVar 0))
       return m!"simp can prove this:
   by simp only {used_lemmas}
