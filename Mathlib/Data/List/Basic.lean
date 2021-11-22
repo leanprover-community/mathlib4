@@ -646,20 +646,12 @@ lemma append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L₁ 
 
 @[simp 900] lemma singleton_append {x : α} {l : List α} : [x] ++ l = x :: l := rfl
 
-theorem append_ne_nil_of_ne_nil_left (s t : List α) : s ≠ [] → s ++ t ≠ [] := by
-  induction s with
-  | nil => intros; contradiction
-  | cons a s ih => rw [cons_append]; intros _ h; contradiction
-
-theorem append_ne_nil_of_ne_nil_right (s t : List α) : t ≠ [] → s ++ t ≠ [] := by
-  induction s with
-  | nil => intros; rw [nil_append]; assumption
-  | cons a s ih => rw [cons_append]; intros _ h; contradiction
-
 @[simp] lemma append_eq_nil {p q : List α} : (p ++ q) = [] ↔ p = [] ∧ q = [] := by
-  cases p with
-  | nil => simp
-  | cons a p => simp
+  cases p <;> simp
+
+theorem append_ne_nil_of_ne_nil_left (s t : List α) : s ≠ [] → s ++ t ≠ [] := by simp_all
+
+theorem append_ne_nil_of_ne_nil_right (s t : List α) : t ≠ [] → s ++ t ≠ [] := by simp_all
 
 @[simp] lemma nil_eq_append_iff {a b : List α} : [] = a ++ b ↔ a = [] ∧ b = [] :=
 by rw [eq_comm, append_eq_nil]
