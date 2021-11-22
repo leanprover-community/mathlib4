@@ -7,6 +7,7 @@ import Mathlib.Logic.Basic
 import Mathlib.Init.Function
 import Mathlib.Init.Set
 import Mathlib.Init.SetNotation
+import Mathlib.Tactic.Lint.Basic
 
 universe u v w
 
@@ -26,7 +27,7 @@ lemma comp_apply {α : Sort u} {β : Sort v} {φ : Sort w} (f : β → φ) (g : 
 
 lemma const_def {y : β} : (λ x : α => y) = const α y := rfl
 
-@[simp] lemma const_apply {y : β} {x : α} : const α y x = y := rfl
+@[simp, nolint simpNF] lemma const_apply {y : β} {x : α} : const α y x = y := rfl
 
 @[simp] lemma const_comp {f : α → β} {c : γ} : const β c ∘ f = const α c := rfl
 
