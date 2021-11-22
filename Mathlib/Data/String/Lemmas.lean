@@ -3,8 +3,8 @@ import Mathlib.Data.String.Defs
 
 namespace String
 
-@[simp] lemma congr_append : ∀ (a b : String), a ++ b = String.mk (a.data ++ b.data)
-| ⟨a⟩, ⟨b⟩ => by simp only [HAppend.hAppend, Append.append, String.append]
+lemma congr_append : ∀ (a b : String), a ++ b = String.mk (a.data ++ b.data)
+| ⟨a⟩, ⟨b⟩ => rfl
 
 @[simp] lemma length_append : ∀ (as bs : String), (as ++ bs).length = as.length + bs.length
 | ⟨as⟩, ⟨bs⟩ => by

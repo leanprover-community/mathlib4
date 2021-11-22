@@ -170,6 +170,7 @@ namespace Subtype
 /-! Some facts about sets, which require that `α` is a type. -/
 variable {α : Type _} {β : Type _} {γ : Type _} {p : α → Prop}
 
-@[simp] lemma val_prop {S : Set α} (a : {a // a ∈ S}) : a.val ∈ S := a.property
+-- ∈-notation is reducible in Lean 4, so this won't trigger as a simp-lemma
+lemma val_prop {S : Set α} (a : {a // a ∈ S}) : a.val ∈ S := a.property
 
 end Subtype
