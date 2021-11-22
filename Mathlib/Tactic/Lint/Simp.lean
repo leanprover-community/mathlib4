@@ -7,6 +7,10 @@ import Mathlib.Tactic.Lint.Basic
 import Mathlib.Tactic.OpenPrivate
 open Lean Meta
 
+def Option.mapM [Monad m] (f : α → m β) : Option α → m (Option β)
+  | none => none
+  | some a => f a
+
 namespace Mathlib.Tactic.Lint
 
 /-!
@@ -54,7 +58,7 @@ def isSimpEq (a b : Expr) : MetaM Bool := withReducible do
   isDefEq a b
 
 def checkAllSimpLemmaInfos (ty : Expr) (k : SimpLemmaInfo → MetaM (Option MessageData)) : MetaM (Option MessageData) := do
-  let errors := (← withSimpLemmaInfos ty k).filterMap id
+  let errors := (← withSimpLemmaInfos ty fun i => do (← k i).mapM addMessageContextFull).filterMap id
   if errors.isEmpty then
     return none
   else
