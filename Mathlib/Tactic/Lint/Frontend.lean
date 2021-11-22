@@ -159,8 +159,10 @@ def formatLinterResults
       none
   let mut s := MessageData.joinSep formattedResults.toList Format.line
   let numAutoDecls := (← decls.filterM isAutoDecl).size
+  let failed := results.map (·.2.size) |>.foldl (·+·) 0
   unless verbose matches LintVerbosity.low do
-    s := m!"-- Checking {decls.size - numAutoDecls} declarations (plus {
+    s := m!"-- Found {failed} error{if failed == 1 then "" else "s"
+      } in {decls.size - numAutoDecls} declarations (plus {
       numAutoDecls} automatically generated ones) {whereDesc
       } with {numLinters} linters\n\n{s}"
   unless runSlowLinters do s := m!"{s}-- (slow linters skipped)\n"
