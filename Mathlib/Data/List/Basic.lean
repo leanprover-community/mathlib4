@@ -139,15 +139,15 @@ def mem (a : α) : List α → Prop
 
 instance : Mem α (List α) := ⟨mem⟩
 
-@[simp] lemma mem_nil (a : α) : a ∈ [] ↔ False := Iff.rfl
+lemma mem_nil (a : α) : a ∈ [] ↔ False := Iff.rfl
 
-@[simp] lemma mem_cons {a b : α} {l : List α} :
+lemma mem_cons {a b : α} {l : List α} :
   a ∈ (b :: l) ↔ a = b ∨ a ∈ l := Iff.rfl
 
-lemma mem_nil_iff (a : α) : a ∈ ([] : List α) ↔ False :=
+@[simp] lemma mem_nil_iff (a : α) : a ∈ ([] : List α) ↔ False :=
 Iff.rfl
 
-@[simp] lemma not_mem_nil (a : α) : a ∉ ([] : List α) :=
+lemma not_mem_nil (a : α) : a ∉ ([] : List α) :=
 not_false
 
 lemma mem_cons_self (a : α) (l : List α) : a ∈ a :: l :=
@@ -220,7 +220,7 @@ fun this : a ∈ [b] => Or.elim
   (fun this : a = b => this)
   (fun this : a ∈ [] => absurd this (not_mem_nil a))
 
-@[simp] theorem mem_singleton {a b : α} : a ∈ [b] ↔ a = b :=
+@[simp 900] theorem mem_singleton {a b : α} : a ∈ [b] ↔ a = b :=
 ⟨eq_of_mem_singleton, Or.inl⟩
 
 theorem mem_of_mem_cons_of_mem {a b : α} {l : List α} : a ∈ b::l → b ∈ l → a ∈ l :=
@@ -400,7 +400,7 @@ theorem ne_nil_of_length_eq_succ {l : List α} : ∀ {n : Nat}, length l = Nat.s
 theorem length_eq_zero {l : List α} : length l = 0 ↔ l = [] :=
 ⟨eq_nil_of_length_eq_zero, fun h => by rw [h]; rfl⟩
 
-@[simp] lemma length_singleton (a : α) : length [a] = 1 := rfl
+@[simp 900] lemma length_singleton (a : α) : length [a] = 1 := rfl
 
 theorem length_pos_of_mem {a : α} : ∀ {l : List α}, a ∈ l → 0 < length l
 | nil,  h => by cases h
@@ -644,31 +644,20 @@ theorem mem_filter (as : List α) (p : α → Bool) (x : α) :
 
 lemma append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L₁ ++ L₂ := rfl
 
-@[simp] lemma singleton_append {x : α} {l : List α} : [x] ++ l = x :: l := rfl
-
-theorem append_ne_nil_of_ne_nil_left (s t : List α) : s ≠ [] → s ++ t ≠ [] := by
-  induction s with
-  | nil => intros; contradiction
-  | cons a s ih => rw [cons_append]; intros _ h; contradiction
-
-theorem append_ne_nil_of_ne_nil_right (s t : List α) : t ≠ [] → s ++ t ≠ [] := by
-  induction s with
-  | nil => intros; rw [nil_append]; assumption
-  | cons a s ih => rw [cons_append]; intros _ h; contradiction
+@[simp 900] lemma singleton_append {x : α} {l : List α} : [x] ++ l = x :: l := rfl
 
 @[simp] lemma append_eq_nil {p q : List α} : (p ++ q) = [] ↔ p = [] ∧ q = [] := by
-  cases p with
-  | nil => simp
-  | cons a p => simp
+  cases p <;> simp
+
+theorem append_ne_nil_of_ne_nil_left (s t : List α) : s ≠ [] → s ++ t ≠ [] := by simp_all
+
+theorem append_ne_nil_of_ne_nil_right (s t : List α) : t ≠ [] → s ++ t ≠ [] := by simp_all
 
 @[simp] lemma nil_eq_append_iff {a b : List α} : [] = a ++ b ↔ a = [] ∧ b = [] :=
 by rw [eq_comm, append_eq_nil]
 
 
-@[simp] lemma append_ne_nil_of_left_ne_nil {A : Type u} (a b : List A) (h0 : a ≠ []) : a ++ b ≠ [] := by
-cases a with
-| nil => exact absurd rfl h0
-| cons h t => simp
+lemma append_ne_nil_of_left_ne_nil (a b : List α) (h0 : a ≠ []) : a ++ b ≠ [] := by simp [*]
 
 -- lemma append_eq_cons_iff {a b c : List α} {x : α} :
 --   a ++ b = x :: c ↔ (a = [] ∧ b = x :: c) ∨ (∃a', a = x :: a' ∧ c = a' ++ b) := by
@@ -779,7 +768,7 @@ cases a with
 | 0 => []
 | Nat.succ n => a :: repeat a n
 
-@[simp] def repeatSucc (a: α) (n: ℕ): repeat a (n + 1) = a :: repeat a n := rfl
+theorem repeatSucc (a: α) (n: ℕ) : repeat a (n + 1) = a :: repeat a n := rfl
 theorem exists_of_mem_bind {b : β} {l : List α} {f : α → List β} :
   b ∈ List.bind l f → ∃ a, a ∈ l ∧ b ∈ f a :=
 mem_bind.1
@@ -813,7 +802,7 @@ def insert (a : α) (l : List α) := if a ∈ l then l else a :: l
   focus
     rw [insert_of_not_mem h]; rfl
 
-@[simp] theorem mem_insert_self (a : α) (l : List α) : a ∈ insert a l :=
+@[simp 900] theorem mem_insert_self (a : α) (l : List α) : a ∈ insert a l :=
 mem_insert_iff.2 (Or.inl rfl)
 
 theorem mem_insert_of_mem {a b : α} {l : List α} (h : a ∈ l) : a ∈ insert b l :=
@@ -999,7 +988,6 @@ theorem erase_eq_erasep (a : α) (l : List α) : l.erase a = l.erasep (Eq a) := 
         simp [h]
       simp [h, Ne.symm h, ih]
 
-@[simp]
 theorem erase_of_not_mem {a : α} {l : List α} (h : a ∉ l) : l.erase a = l := by
   induction l with
     | nil => rfl

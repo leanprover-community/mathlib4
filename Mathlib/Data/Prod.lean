@@ -17,10 +17,8 @@ This file defines `Prod.swap : α × β → β × α` and proves various simple 
 
 variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
 
-@[simp] lemma prod_map (f : α → γ) (g : β → δ) (p : α × β) : Prod.map f g p = (f p.1, g p.2) :=
-by have : p = ⟨p.1, p.2⟩ := (Prod.ext _).symm
-   rw [this]
-   exact rfl
+@[simp] lemma prod_map (f : α → γ) (g : β → δ) (p : α × β) : Prod.map f g p = (f p.1, g p.2) := by
+  cases p; rfl
 
 namespace Prod
 
@@ -36,12 +34,10 @@ Prod.forall
 theorem exists' {p : α → β → Prop} : (∃ x : α × β, p x.1 x.2) ↔ ∃ a b, p a b :=
 Prod.exists
 
-@[simp] lemma map_mk (f : α → γ) (g : β → δ) (a : α) (b : β) : map f g (a, b) = (f a, g b) := rfl
+lemma map_mk (f : α → γ) (g : β → δ) (a : α) (b : β) : map f g (a, b) = (f a, g b) := rfl
 
-@[simp]
 lemma map_fst (f : α → γ) (g : β → δ) (p : α × β) : (map f g p).1 = f (p.1) := by simp
 
-@[simp]
 lemma map_snd (f : α → γ) (g : β → δ) (p : α × β) : (map f g p).2 = g (p.2) := by simp
 
 lemma map_fst' (f : α → γ) (g : β → δ) : (Prod.fst ∘ map f g) = f ∘ Prod.fst :=
@@ -67,7 +63,7 @@ lemma map_map {ε ζ : Type _}
   (f : α → β) (f' : γ → δ) (g : β → ε) (g' : δ → ζ) (x : α × γ) :
   Prod.map g g' (Prod.map f f' x) = Prod.map (g ∘ f) (g' ∘ f') x := by simp
 
-@[simp] theorem mk.inj_iff {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b₂) ↔ (a₁ = a₂ ∧ b₁ = b₂) :=
+theorem mk.inj_iff {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b₂) ↔ (a₁ = a₂ ∧ b₁ = b₂) :=
 ⟨Prod.mk.inj,
  by intro hab; rw [hab.left, hab.right]⟩
 
@@ -125,10 +121,10 @@ def swap : α × β → β × α := λp => (p.2, p.1)
 @[simp] lemma swap_swap_eq : swap ∘ swap = @id (α × β) :=
 funext swap_swap
 
-@[simp] lemma swap_left_inverse : Function.left_inverse (@swap α β) swap :=
+lemma swap_left_inverse : Function.left_inverse (@swap α β) swap :=
 swap_swap
 
-@[simp] lemma swap_right_inverse : Function.right_inverse (@swap α β) swap :=
+lemma swap_right_inverse : Function.right_inverse (@swap α β) swap :=
 swap_swap
 
 lemma swap_injective : Function.injective (@swap α β) :=

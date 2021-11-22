@@ -62,9 +62,8 @@ ext_iff
 
 @[simp] theorem coe_eta (a : {a // p a}) (h : p (a : α)) : mk (a : α) h = a := Subtype.ext rfl
 
-@[simp] theorem coe_mk (a h) : (@mk α p a h : α) = a := rfl
+theorem coe_mk (a h) : (@mk α p a h : α) = a := rfl
 
-@[simp]
 theorem mk_eq_mk {a h a' h'} : @mk α p a h = @mk α p a' h' ↔ a = a' :=
 ext_iff
 
@@ -171,6 +170,7 @@ namespace Subtype
 /-! Some facts about sets, which require that `α` is a type. -/
 variable {α : Type _} {β : Type _} {γ : Type _} {p : α → Prop}
 
-@[simp] lemma val_prop {S : Set α} (a : {a // a ∈ S}) : a.val ∈ S := a.property
+-- ∈-notation is reducible in Lean 4, so this won't trigger as a simp-lemma
+lemma val_prop {S : Set α} (a : {a // a ∈ S}) : a.val ∈ S := a.property
 
 end Subtype

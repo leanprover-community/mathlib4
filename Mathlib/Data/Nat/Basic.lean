@@ -28,10 +28,10 @@ protected lemma le_or_le (a b : ℕ) : a ≤ b ∨ b ≤ a := (Nat.lt_or_ge _ _)
 
 protected lemma le_of_not_le {a b : ℕ} : ¬ a ≤ b → b ≤ a := (Nat.le_or_le _ _).resolve_left
 
-@[simp] protected lemma not_lt {n m : ℕ} : ¬ n < m ↔ m ≤ n :=
+protected lemma not_lt {n m : ℕ} : ¬ n < m ↔ m ≤ n :=
 ⟨Nat.le_of_not_lt, Nat.not_lt_of_le⟩
 
-@[simp] protected lemma not_le {n m : ℕ} : ¬ n ≤ m ↔ m < n :=
+protected lemma not_le {n m : ℕ} : ¬ n ≤ m ↔ m < n :=
 ⟨Nat.lt_of_not_le, Nat.not_le_of_lt⟩
 
 protected lemma lt_or_eq_of_le {n m : ℕ} (h : n ≤ m) : n < m ∨ n = m :=
