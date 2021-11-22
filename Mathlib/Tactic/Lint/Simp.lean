@@ -51,9 +51,9 @@ def withSimpLemmaInfos (ty : Expr) (k : SimpLemmaInfo → MetaM α) : MetaM (Arr
 
 /-- Checks whether two expressions are equal for the simplifier. That is,
 they are reducibly-definitional equal, and they have the same head symbol. -/
-def isSimpEq (a b : Expr) : MetaM Bool := withReducible do
-  let a ← whnf a
-  let b ← whnf b
+def isSimpEq (a b : Expr) (whnfFirst := true) : MetaM Bool := withReducible do
+  let a ← if whnfFirst then whnf a else a
+  let b ← if whnfFirst then whnf b else b
   if a.getAppFn.constName? != b.getAppFn.constName? then return false
   isDefEq a b
 
@@ -128,7 +128,7 @@ https://leanprover-community.github.io/mathlib_docs/notes.html#simp-normal%20for
     let prf1_lems := heuristicallyExtractSimpLemmas ctx (prf1.getD (mkBVar 0))
     if prf1_lems.contains declName then return none
     let ⟨rhs', prf2⟩ ← decorateError "simplify fails on right-hand side:" <| simp rhs ctx
-    let lhs'_eq_rhs' ← isSimpEq lhs' rhs'
+    let lhs'_eq_rhs' ← isSimpEq lhs' rhs' (whnfFirst := false)
     let lhs_in_nf ← isSimpEq lhs' lhs
     if lhs'_eq_rhs' then do
       let used_lemmas := heuristicallyExtractSimpLemmas ctx <|
