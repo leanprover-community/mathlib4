@@ -813,7 +813,7 @@ def insert (a : α) (l : List α) := if a ∈ l then l else a :: l
   focus
     rw [insert_of_not_mem h]; rfl
 
-@[simp] theorem mem_insert_self (a : α) (l : List α) : a ∈ insert a l :=
+@[simp 900] theorem mem_insert_self (a : α) (l : List α) : a ∈ insert a l :=
 mem_insert_iff.2 (Or.inl rfl)
 
 theorem mem_insert_of_mem {a b : α} {l : List α} (h : a ∈ l) : a ∈ insert b l :=
