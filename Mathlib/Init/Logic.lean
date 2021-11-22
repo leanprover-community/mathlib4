@@ -14,7 +14,7 @@ import Mathlib.Tactic.Ext
 @[ext] protected lemma Unit.ext (x y : Unit) : x = y := Subsingleton.allEq _ _
 @[ext] protected lemma PUnit.ext (x y : Unit) : x = y := Subsingleton.allEq _ _
 
-@[simp] theorem opt_param_eq (α : Sort u) (default : α) : optParam α default = α := optParam_eq α default
+theorem opt_param_eq (α : Sort u) (default : α) : optParam α default = α := optParam_eq α default
 
 theorem Not.intro {a : Prop} (h : a → False) : ¬ a := h
 
@@ -132,10 +132,12 @@ lemma imp_congr (h₁ : a ↔ c) (h₂ : b ↔ d) : (a → b) ↔ (c → d) := i
 lemma not_of_not_not_not (h : ¬¬¬a) : ¬a :=
 λ ha => absurd (not_not_intro ha) h
 
-@[simp] lemma not_true : (¬ True) ↔ False :=
+-- @[simp] -- Lean 4 has this built-in because it simplifies using decidable instances
+lemma not_true : (¬ True) ↔ False :=
 iff_false_intro (not_not_intro trivial)
 
-@[simp] lemma not_false_iff : (¬ False) ↔ True :=
+-- @[simp] -- Lean 4 has this built-in because it simplifies using decidable instances
+lemma not_false_iff : (¬ False) ↔ True :=
 iff_true_intro not_false
 
 lemma not_congr (h : a ↔ b) : ¬a ↔ ¬b := ⟨mt h.2, mt h.1⟩
