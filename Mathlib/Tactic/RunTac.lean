@@ -7,11 +7,12 @@ import Lean.Elab.SyntheticMVars
 open Lean Elab Tactic
 
 unsafe def evalRunTacUnsafe (term : Syntax) : TacticM Unit := do
+  let term ← `(show TacticM Unit from discard do $term)
   let n := `_runTac
   let type := mkApp (mkConst ``TacticM) (mkConst ``Unit)
   let e ← Term.elabTermEnsuringType term type
-  let e ← Meta.instantiateMVars e
   Term.synthesizeSyntheticMVarsNoPostponing
+  let e ← Meta.instantiateMVars e
   let decl := Declaration.defnDecl {
     name        := n
     levelParams := []
@@ -32,4 +33,4 @@ unsafe def evalRunTacUnsafe (term : Syntax) : TacticM Unit := do
 @[implementedBy evalRunTacUnsafe]
 constant evalRunTac : Syntax → TacticM Unit
 
-elab "runTac" e:term : tactic => evalRunTac e
+elab "runTac" e:doSeq : tactic => evalRunTac e

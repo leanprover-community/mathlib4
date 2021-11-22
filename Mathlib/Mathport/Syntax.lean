@@ -126,23 +126,17 @@ end Elab.Command
 
 namespace Parser.Term
 
--- syntax:lead (name := noMatch) "match " matchDiscr,* " with" "." : term
-syntax (name := noFun) "fun" "." : term
-syntax "{" term,* "}" : term
-syntax "{ " ident (" : " term)? " | " term " }" : term
-syntax "{ " ident " ∈ " term " | " term " }" : term
 syntax (priority := low) "{" term " | " bracketedBinder+ " }" : term
-syntax "quote " term : term
-syntax "pquote " term : term
-syntax "ppquote " term : term
-syntax "%%" term : term
+syntax "quoteₓ " term : term
+syntax "pquoteₓ " term : term
+syntax "ppquoteₓ " term : term
+syntax "%%ₓ" term : term
 
 end Term
 
 namespace Tactic
 
 syntax tactic " <;> " "[" tactic,* "]" : tactic
-syntax "runTac " doSeq : tactic
 
 end Tactic
 
@@ -180,9 +174,6 @@ syntax (name := iterate) "iterate" (num)? ppSpace tacticSeq : tactic
 -- Moved to Mathlib/Tactic/Basic.lean
 -- syntax (name := repeat') "repeat' " tacticSeq : tactic
 syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
-syntax (name := have'') "have " Term.haveIdLhs : tactic
-syntax (name := let'') "let " Term.haveIdLhs : tactic
-syntax (name := suffices') "suffices " Term.haveIdLhs : tactic
 syntax (name := trace) "trace " term : tactic
 syntax (name := existsi) "exists " term,* : tactic
 syntax (name := eConstructor) "econstructor" : tactic
@@ -252,19 +243,6 @@ syntax (name := guardLHS) "guardLHS " " =ₐ " term : conv
 syntax (name := rw) "rw " rwRuleSeq : conv
 
 end Conv
-
-syntax (name := unfreezingI) "unfreezingI " tacticSeq : tactic
-syntax (name := resetI) "resetI" : tactic
-syntax (name := substI) "substI " term : tactic
-syntax (name := casesI) "casesI " casesTarget,+ (" using " ident)?
-  (" with " (colGt binderIdent)+)? : tactic
-syntax (name := introI) "introI" (colGt (ident <|> "_"))* : tactic
-syntax (name := introsI) "introsI" (colGt (ident <|> "_"))* : tactic
-syntax (name := haveI) "haveI " Term.haveDecl : tactic
-syntax (name := haveI') "haveI " Term.haveIdLhs : tactic
-syntax (name := letI) "letI " Term.letDecl : tactic
-syntax (name := letI') "letI " Term.haveIdLhs : tactic
-syntax (name := exactI) "exactI " term : tactic
 
 syntax (name := rcases?) "rcases?" casesTarget,* (" : " num)? : tactic
 syntax (name := rcases) "rcases" casesTarget,* (" with " rcasesPat)? : tactic
@@ -676,23 +654,12 @@ end Attr
 
 namespace Command
 
-namespace Lint
-
-syntax verbosity := "-" <|> "+"
-syntax opts := (verbosity "*"?) <|> ("*"? (verbosity)?)
-syntax args := opts " only"? ident*
-
-end Lint
-
 syntax (name := copyDocString) "copy_doc_string " ident " → " ident* : command
 syntax (name := libraryNote) docComment "library_note " str : command
 syntax (name := addTacticDoc) (docComment)? "add_tactic_doc " term : command
 syntax (name := addDeclDoc) docComment "add_decl_doc " ident : command
 
 syntax (name := setupTacticParser) "setup_tactic_parser" : command
--- Note that Mathlib.Tactic.OpenPrivate provides an alternative,
--- which we should later switch to using.
-syntax (name := importPrivate) "import_private " ident (" from " ident)? : command
 syntax (name := mkSimpAttribute) "mk_simp_attribute " ident
   (" from" (ppSpace ident)+)? (" := " str)? : command
 
