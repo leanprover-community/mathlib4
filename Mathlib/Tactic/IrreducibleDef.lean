@@ -77,16 +77,14 @@ macro_rules
   let n_def := mkIdent <| (·.review) <|
     let scopes := extractMacroScopes n.getId
     { scopes with name := scopes.name.appendAfter "_def" }
-  let value := mkIdent `value
-  let prop := mkIdent `prop
   `(stop_at_first_error
     def definition $declSig:optDeclSig := $val
     structure Wrapper where
-      $value:ident : type_of% @definition
-      $prop:ident : Eq @$value @(delta% @definition)
+      value : type_of% @definition
+      prop : Eq @value @(delta% @definition)
     constant wrapped : Wrapper := ⟨_, rfl⟩
     $mods:declModifiers def $n := value_proj @wrapped
     theorem $n_def : eta_helper Eq @$n:ident @(delta% @definition) := by
       intros
       simp only [$n:ident]
-      rw [(wrapped).$prop])
+      rw [wrapped.prop])
