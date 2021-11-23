@@ -188,61 +188,6 @@ macro_rules
 
 macro (name := «sorry») "sorry" : tactic => `(exact sorry)
 
-section iterate
-
-variable [Monad m] [MonadExcept e m]
-
-/--
-`iterate_at_most n t` runs the tactic `t` at most `n` times, or until failure,
-whichever comes first.
-Always succeeds, and returns at list of the succesful results.
--/
-def iterate_at_most : Nat → m α → m (List α)
-| 0,       t => []
-| (n + 1), t => do
-  try
-    (←t) :: (←iterate_at_most n t)
-  catch _ =>
-    []
-
-/--
-`iterate_at_most' n t` runs the tactic `t` at most `n` times, or until failure,
-whichever comes first, and always succeeds.
--/
-def iterate_at_most' (n : Nat) (t : m α) : m Unit := do
-  _ ← iterate_at_most n t
-
-/--
-`iterate_exactly n t` runs the tactic `t` at exactly `n` times.
-Fails if any iteration fails, and otherwise returns a list of the `n` successful results.
--/
-def iterate_exactly : Nat → m α → m (List α)
-| 0, t     => []
-| (n+1), t => do (←t) :: (←iterate_exactly n t)
-
-/--
-`iterate_exactly n t` runs the tactic `t` at exactly `n` times.
-Fails if any iteration fails.
--/
-def iterate_exactly' (n : Nat) (t : m α) : m Unit := do
-  _ ← iterate_exactly n t
-
-/--
-`iterate n { ... }` runs the tactic block exactly `n` times.
-`iterate { ... }` runs the tactic block repeatedly until failure.
--/
-syntax (name := iterate) "iterate" (num)? ppSpace tacticSeq : tactic
-
-elab_rules : tactic
-| `(tactic| iterate $seq:tacticSeq) =>
-   iterate_at_most' 10000 (evalTactic seq)
-| `(tactic| iterate $n $seq:tacticSeq) =>
-   iterate_exactly' n.toNat (evalTactic seq)
-
-
-/-!
-We could alternatively implement `iterate` as
-```
 syntax "iterate " (num)? ppSpace tacticSeq : tactic
 macro_rules
   | `(tactic|iterate $seq:tacticSeq) =>
@@ -251,18 +196,6 @@ macro_rules
     match n.toNat with
     | 0 => `(tactic| skip)
     | n+1 => `(tactic|($seq:tacticSeq); iterate $(quote n) $seq:tacticSeq)
-```
-and some may find this more idiomatic.
-
-However an implementation like this does not provide the "plumbing" tactics
-(i.e. for `iterate`, the tactics that collect the list of results of the underlying tactic).
-Thus for now we prefer to first implement the plumbing, then connect the porcelain to the plumbing.
-
-For now, this note serves to preserve an example of the "porcelain-only" style,
-which is useful for writing one-off tactics.
--/
-
-end iterate
 
 partial def repeat'Aux (seq : Syntax) : List MVarId → TacticM Unit
 | []    => ()
