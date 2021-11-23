@@ -188,6 +188,10 @@ macro_rules
 
 macro (name := «sorry») "sorry" : tactic => `(exact sorry)
 
+/--
+`iterate n { ... }` runs the tactic block exactly `n` times.
+`iterate { ... }` runs the tactic block repeatedly until failure.
+-/
 syntax "iterate " (num)? ppSpace tacticSeq : tactic
 macro_rules
   | `(tactic|iterate $seq:tacticSeq) =>
