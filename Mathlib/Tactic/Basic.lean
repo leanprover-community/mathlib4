@@ -188,10 +188,18 @@ macro_rules
 
 macro (name := «sorry») "sorry" : tactic => `(exact sorry)
 
--- TODO `n:num` should be an optional argument; if missing, repeat until failure
-elab "iterate " n:num seq:tacticSeq : tactic => do
-  for i in [:n.toNat] do
-    evalTactic seq
+/--
+`iterate n { ... }` runs the tactic block exactly `n` times.
+`iterate { ... }` runs the tactic block repeatedly until failure.
+-/
+syntax "iterate " (num)? ppSpace tacticSeq : tactic
+macro_rules
+  | `(tactic|iterate $seq:tacticSeq) =>
+    `(tactic|try ($seq:tacticSeq); iterate $seq:tacticSeq)
+  | `(tactic|iterate $n $seq:tacticSeq) =>
+    match n.toNat with
+    | 0 => `(tactic| skip)
+    | n+1 => `(tactic|($seq:tacticSeq); iterate $(quote n) $seq:tacticSeq)
 
 partial def repeat'Aux (seq : Syntax) : List MVarId → TacticM Unit
 | []    => ()

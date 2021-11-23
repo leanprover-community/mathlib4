@@ -32,11 +32,21 @@ example (p q : Prop) : ¬¬ p → p := by
   byContra H
   contradiction
 
-
+-- Test `iterate n ...`
 example (n m : Nat) : Unit := by
   cases n
   cases m
   iterate 3 exact ()
+
+-- Test `iterate ...`, which should repeat until failure.
+example (n m : Nat) : Unit := by
+  cases n
+  cases m
+  iterate exact ()
+
+example (n : Nat) : Nat := by
+  iterate exact () -- silently succeeds, after iterating 0 times
+  iterate exact n
 
 example (p q r s : Prop) : p → q → r → s → (p ∧ q) ∧ (r ∧ s ∧ p) ∧ (p ∧ r ∧ q) := by
   intros

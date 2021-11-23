@@ -169,8 +169,8 @@ syntax (name := casesType) "casesType" "*"? ppSpace ident* : tactic
 syntax (name := casesType!) "casesType!" "*"? ppSpace ident* : tactic
 -- Moved to Mathlib/Tactic/Basic.lean
 -- syntax (name := «sorry») "sorry" : tactic
--- Implemented in Mathlib/Tactic/Basic.lean but with different syntax
-syntax (name := iterate) "iterate" (num)? ppSpace tacticSeq : tactic
+-- Moved to Mathlib/Tactic/Basic.lean
+-- syntax (name := iterate) "iterate" (num)? ppSpace tacticSeq : tactic
 -- Moved to Mathlib/Tactic/Basic.lean
 -- syntax (name := repeat') "repeat' " tacticSeq : tactic
 syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
