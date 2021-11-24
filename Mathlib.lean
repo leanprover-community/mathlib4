@@ -55,6 +55,7 @@ import Mathlib.Tactic.Rcases
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.RunTac
 import Mathlib.Tactic.ShowTerm
+import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
