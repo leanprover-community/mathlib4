@@ -18,16 +18,9 @@ variable {α β γ : Sort _} {f : α → β}
 
 /-- Evaluate a function at an argument. Useful if you want to talk about the partially applied
   `Function.eval x : (∀ x, β x) → β x`. -/
-@[reducible] def eval {β : α → Sort _} (x : α) (f : ∀ x, β x) : β x := f x
-
-@[simp] lemma eval_apply {β : α → Sort _} (x : α) (f : ∀ x, β x) : eval x f = f x := rfl
-
-lemma comp_apply {α : Sort u} {β : Sort v} {φ : Sort w} (f : β → φ) (g : α → β) (a : α) :
-  (f ∘ g) a = f (g a) := rfl
+@[reducible, simp] def eval {β : α → Sort _} (x : α) (f : ∀ x, β x) : β x := f x
 
 lemma const_def {y : β} : (λ x : α => y) = const α y := rfl
-
-@[simp, nolint simpNF] lemma const_apply {y : β} {x : α} : const α y x = y := rfl
 
 @[simp] lemma const_comp {f : α → β} {c : γ} : const β c ∘ f = const α c := rfl
 

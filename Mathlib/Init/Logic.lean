@@ -14,6 +14,9 @@ import Mathlib.Tactic.Ext
 @[ext] protected lemma Unit.ext (x y : Unit) : x = y := Subsingleton.allEq _ _
 @[ext] protected lemma PUnit.ext (x y : Unit) : x = y := Subsingleton.allEq _ _
 
+instance {f : α → β} [DecidablePred p] : DecidablePred (p ∘ f) :=
+  inferInstanceAs <| DecidablePred fun x => p (f x)
+
 theorem opt_param_eq (α : Sort u) (default : α) : optParam α default = α := optParam_eq α default
 
 theorem Not.intro {a : Prop} (h : a → False) : ¬ a := h

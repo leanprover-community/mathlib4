@@ -39,8 +39,6 @@ theorem left_id (f : α → β) : id ∘ f = f := rfl
 
 theorem right_id (f : α → β) : f ∘ id = f := rfl
 
-@[simp] theorem comp_app (f : β → φ) (g : α → β) (a : α) : (f ∘ g) a = f (g a) := rfl
-
 theorem comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ (g ∘ h) := rfl
 
 @[simp] theorem comp.left_id (f : α → β) : id ∘ f = f := rfl
