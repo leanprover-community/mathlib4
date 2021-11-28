@@ -98,26 +98,22 @@ def lintCore (decls : Array Name) (linters : Array NamedLinter) :
         msgs := msgs.insert declName msg
     (linter, msgs)
 
-def findDeclarationRanges? (e : Environment) (n : Name) : Option DeclarationRanges :=
-  have : MonadEnv Id := { getEnv := e, modifyEnv := fun _ => () }
-  Id.run do Lean.findDeclarationRanges? n
-
 /-- Sorts a map with declaration keys as names by line number. -/
-def sortResults {α} [Inhabited α] (e : Environment) (results : HashMap Name α) : Array (Name × α) :=
-  let key (n : Name) :=
-    match findDeclarationRanges? e n with
-    | some range => range.range.pos.line
-    | none => 0
-  results.toArray.qsort fun (a, _) (b, _) => key a < key b
+def sortResults {α} [Inhabited α] (results : HashMap Name α) : CoreM <| Array (Name × α) := do
+  let mut key : HashMap Name Nat := {}
+  for (n, _) in results.toArray do
+    if let some range ← findDeclarationRanges? n then
+      key := key.insert n <| range.range.pos.line
+  results.toArray.qsort fun (a, _) (b, _) => key.findD a 0 < key.findD b 0
 
 /-- Formats a linter warning as `#check` command with comment. -/
 def printWarning (declName : Name) (warning : MessageData) : CoreM MessageData := do
   m!"#check @{← mkConstWithLevelParams declName} /- {warning} -/"
 
 /-- Formats a map of linter warnings using `print_warning`, sorted by line number. -/
-def printWarnings (env : Environment) (results : HashMap Name MessageData) : CoreM MessageData := do
+def printWarnings (results : HashMap Name MessageData) : CoreM MessageData := do
   (MessageData.joinSep ·.toList Format.line) <|<-
-    (sortResults env results).mapM fun (declName, warning) => printWarning declName warning
+    (← sortResults results).mapM fun (declName, warning) => printWarning declName warning
 
 /--
 Formats a map of linter warnings grouped by filename with `-- filename` comments.
@@ -130,10 +126,9 @@ def groupedByFilename (results : HashMap Name MessageData) : CoreM MessageData :
     let mod := mod.getD (← getEnv).mainModule
     grouped := grouped.insert mod <| grouped.findD mod {} |>.insert declName msg
   let grouped' := grouped.toArray.qsort fun (a, _) (b, _) => toString a < toString b
-  let env ← getEnv
   (MessageData.joinSep · (Format.line ++ Format.line)) <|<-
     grouped'.toList.mapM fun (mod, msgs) => do
-      m!"-- {mod}\n{← printWarnings env msgs}"
+      m!"-- {mod}\n{← printWarnings msgs}"
 
 /--
 Formats the linter results as Lean code with comments and `#print` commands.
@@ -151,7 +146,7 @@ def formatLinterResults
         if groupByFilename then
           groupedByFilename results
         else
-          printWarnings (← getEnv) results
+          printWarnings results
       some m!"/- The `{linter.name}` linter reports:\n{linter.errorsFound} -/\n{warnings}\n"
     else if verbose = LintVerbosity.high then
       some m!"/- OK: {linter.noErrorsFound} -/"
