@@ -11,8 +11,8 @@ import Mathlib.Tactic.Ext
 @[ext] private def funext' := @funext
 @[ext] private def propext' := @propext
 
-@[ext] protected lemma Unit.ext (x y : Unit) : x = y := Subsingleton.allEq _ _
-@[ext] protected lemma PUnit.ext (x y : Unit) : x = y := Subsingleton.allEq _ _
+@[ext] protected lemma Unit.ext (x y : Unit) : x = y := rfl
+@[ext] protected lemma PUnit.ext (x y : Unit) : x = y := rfl
 
 instance {f : α → β} [DecidablePred p] : DecidablePred (p ∘ f) :=
   inferInstanceAs <| DecidablePred fun x => p (f x)
