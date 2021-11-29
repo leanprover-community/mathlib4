@@ -49,7 +49,7 @@ local elab "eta_helper " t:term : term => do
     mkForallFVars xs <|<- mkEq lhs rhs
 
 /-- `value_proj x` elabs to `@x.value` -/
-local elab "value_proj" e:term : term => do
+local elab "value_proj " e:term : term => do
   let e ← elabTerm e none
   mkProjection e `value
 
@@ -71,20 +71,22 @@ Introduces an irreducible definition.
 a constant `foo : Nat` as well as
 a theorem `foo_def : foo = 42`.
 -/
-syntax declModifiers "irreducible_def" declId optDeclSig " :=\n" term : command
-macro_rules
-| `($mods:declModifiers irreducible_def $n:ident $declSig:optDeclSig := $val) =>
+macro mods:declModifiers "irreducible_def" n_id:declId declSig:optDeclSig val:declVal : command => do
+  let (n, us) ← match n_id with
+    | `(Parser.Command.declId| $n:ident $[.{$us,*}]?) => (n, us)
+    | _ => Macro.throwUnsupported
+  let us' := us.getD (Syntax.SepArray.ofElems #[])
   let n_def := mkIdent <| (·.review) <|
     let scopes := extractMacroScopes n.getId
     { scopes with name := scopes.name.appendAfter "_def" }
   `(stop_at_first_error
-    def definition $declSig:optDeclSig := $val
-    structure Wrapper where
-      value : type_of% @definition
+    def definition$[.{$us,*}]? $declSig:optDeclSig $val
+    structure Wrapper$[.{$us,*}]? where
+      value : type_of% @definition.{$us',*}
       prop : Eq @value @(delta% @definition)
-    constant wrapped : Wrapper := ⟨_, rfl⟩
-    $mods:declModifiers def $n := value_proj @wrapped
-    theorem $n_def : eta_helper Eq @$n:ident @(delta% @definition) := by
+    constant wrapped$[.{$us,*}]? : Wrapper.{$us',*} := ⟨_, rfl⟩
+    $mods:declModifiers def $n:ident$[.{$us,*}]? := value_proj @wrapped.{$us',*}
+    theorem $n_def:ident $[.{$us,*}]? : eta_helper Eq @$n.{$us',*} @(delta% @definition) := by
       intros
       simp only [$n:ident]
       rw [wrapped.prop])

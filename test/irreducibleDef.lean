@@ -9,3 +9,12 @@ example : frobnicate a 0 = a := by
 
 irreducible_def justAsArbitrary [Inhabited α] : α :=
   arbitrary
+
+irreducible_def withoutType := 42
+
+irreducible_def withEquations : Nat → Nat
+  | 0 => 42
+  | (n+1) => 314
+
+irreducible_def withUniv.{u, v} := (Type v, Type u)
+example : withUniv.{u, v} = (Type v, Type u) := by rw [withUniv_def]
