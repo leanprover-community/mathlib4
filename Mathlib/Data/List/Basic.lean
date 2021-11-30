@@ -214,24 +214,19 @@ instance decidableMem [DecidableEq α] (a : α) : ∀ (l : List α), Decidable (
 
 theorem mem_singleton_self (a : α) : a ∈ [a] := mem_cons_self _ _
 
-theorem eq_of_mem_singleton {a b : α} : a ∈ [b] → a = b :=
-fun this : a ∈ [b] => Or.elim
-  (eq_or_mem_of_mem_cons this)
-  (fun this : a = b => this)
-  (fun this : a ∈ [] => absurd this (not_mem_nil a))
+theorem eq_of_mem_singleton {a b : α} (h : a ∈ [b]) : a = b :=
+  (eq_or_mem_of_mem_cons h).elim
+    (fun heq : a = b => heq)
+    (fun hin : a ∈ [] => absurd hin (not_mem_nil a))
 
 @[simp 1100] theorem mem_singleton {a b : α} : a ∈ [b] ↔ a = b :=
 ⟨eq_of_mem_singleton, Or.inl⟩
 
 theorem mem_of_mem_cons_of_mem {a b : α} {l : List α} : a ∈ b::l → b ∈ l → a ∈ l :=
-fun ainbl binl => Or.elim
-  (eq_or_mem_of_mem_cons ainbl)
-  (fun this : a = b => by subst a; exact binl)
-  (fun this : a ∈ l => this)
-
-theorem _root_.decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
-  {a b : α} {l : List α} (h : a ∈ b :: l) : a = b ∨ (a ≠ b ∧ a ∈ l) :=
-Decidable.byCases Or.inl fun this : a ≠ b => h.elim Or.inl $ fun h => Or.inr ⟨this, h⟩
+  fun ainbl binl =>
+    (eq_or_mem_of_mem_cons ainbl).elim
+      (fun heq : a = b => heq ▸ binl)
+      (fun hin : a ∈ l => hin)
 
 theorem eq_or_ne_mem_of_mem {a b : α} {l : List α} : a ∈ b :: l → a = b ∨ (a ≠ b ∧ a ∈ l) := by
   byCases h : a = b
