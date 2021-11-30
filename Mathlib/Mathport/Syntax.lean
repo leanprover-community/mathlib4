@@ -12,6 +12,7 @@ import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.ShowTerm
+import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 
 -- To fix upstream:
@@ -638,8 +639,9 @@ syntax (name := protectProj) "protectProj" (&" without" (ppSpace ident)+)? : att
 
 syntax (name := notationClass) "notationClass" "*"? (ppSpace ident)? : attr
 
-syntax (name := simps) "simps" (" (" &"config" " := " term ")")? (ppSpace ident)* : attr
-syntax (name := simps?) "simps?" (" (" &"config" " := " term ")")? (ppSpace ident)* : attr
+-- Moved to Mathlib/Tactic/Simps.lean, but not yet implemented.
+-- syntax (name := simps) "simps" (" (" &"config" " := " term ")")? (ppSpace ident)* : attr
+-- syntax (name := simps?) "simps?" (" (" &"config" " := " term ")")? (ppSpace ident)* : attr
 
 syntax (name := mono) "mono" (ppSpace Tactic.mono.side)? : attr
 
@@ -691,14 +693,15 @@ syntax (name := restateAxiom) "restate_axiom " ident (ppSpace ident)? : command
 syntax (name := simp) "#simp" (&" only")? (" [" Tactic.simpArg,* "]")?
   (" with " ident+)? " :"? ppSpace term : command
 
-syntax simpsRule.rename := ident " → " ident
-syntax simpsRule.erase := "-" ident
-syntax simpsRule := (simpsRule.rename <|> simpsRule.erase) &" as_prefix"?
-syntax simpsProj := ident (" (" simpsRule,+ ")")?
-syntax (name := initializeSimpsProjections) "initialize_simps_projections"
-  (ppSpace simpsProj)* : command
-syntax (name := initializeSimpsProjections?) "initialize_simps_projections?"
-  (ppSpace simpsProj)* : command
+-- Moved to Mathlib/Tactic/Simps.lean, but not yet implemented.
+-- syntax simpsRule.rename := ident " → " ident
+-- syntax simpsRule.erase := "-" ident
+-- syntax simpsRule := (simpsRule.rename <|> simpsRule.erase) &" as_prefix"?
+-- syntax simpsProj := ident (" (" simpsRule,+ ")")?
+-- syntax (name := initializeSimpsProjections) "initialize_simps_projections"
+--   (ppSpace simpsProj)* : command
+-- syntax (name := initializeSimpsProjections?) "initialize_simps_projections?"
+--   (ppSpace simpsProj)* : command
 
 syntax (name := «where») "#where" : command
 
