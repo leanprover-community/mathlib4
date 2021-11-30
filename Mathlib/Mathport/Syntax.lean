@@ -526,10 +526,6 @@ syntax (name := protectProj) "protectProj" (&" without" (ppSpace ident)+)? : att
 
 syntax (name := notationClass) "notationClass" "*"? (ppSpace ident)? : attr
 
--- Moved to Mathlib/Tactic/Simps.lean, but not yet implemented.
--- syntax (name := simps) "simps" (" (" &"config" " := " term ")")? (ppSpace ident)* : attr
--- syntax (name := simps?) "simps?" (" (" &"config" " := " term ")")? (ppSpace ident)* : attr
-
 syntax (name := mono) "mono" (ppSpace Tactic.mono.side)? : attr
 
 syntax (name := reassoc) "reassoc" (ppSpace ident)? : attr
@@ -576,16 +572,6 @@ syntax (name := restateAxiom) "restate_axiom " ident (ppSpace ident)? : command
 
 syntax (name := simp) "#simp" (&" only")? (" [" Tactic.simpArg,* "]")?
   (" with " ident+)? " :"? ppSpace term : command
-
--- Moved to Mathlib/Tactic/Simps.lean, but not yet implemented.
--- syntax simpsRule.rename := ident " → " ident
--- syntax simpsRule.erase := "-" ident
--- syntax simpsRule := (simpsRule.rename <|> simpsRule.erase) &" as_prefix"?
--- syntax simpsProj := ident (" (" simpsRule,+ ")")?
--- syntax (name := initializeSimpsProjections) "initialize_simps_projections"
---   (ppSpace simpsProj)* : command
--- syntax (name := initializeSimpsProjections?) "initialize_simps_projections?"
---   (ppSpace simpsProj)* : command
 
 syntax (name := «where») "#where" : command
 
