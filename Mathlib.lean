@@ -21,6 +21,7 @@ import Mathlib.Data.Subtype
 import Mathlib.Data.UInt
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
+import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Dvd
