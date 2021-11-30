@@ -65,6 +65,7 @@ import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
+import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.TryThis
 import Mathlib.Util.Eval
 import Mathlib.Util.Export
