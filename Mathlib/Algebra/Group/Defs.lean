@@ -1,4 +1,3 @@
-import Mathlib.Data.Nat.Basic -- *only* for notation ℕ which should be in a "prelude"
 import Mathlib.Data.Int.Basic -- *only* for notation ℤ which should be in a "prelude"
 import Mathlib.Tactic.Spread
 
