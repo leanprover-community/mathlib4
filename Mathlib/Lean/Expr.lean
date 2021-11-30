@@ -75,6 +75,19 @@ end Name
 
 namespace Expr
 
+private def getAppFnArgsAux : Expr → Array Expr → Nat → Name × Array Expr
+  | app f a _,   as, i => getAppFnArgsAux f (as.set! i a) (i-1)
+  | const n _ _, as, i => (n, as)
+  | _,           as, _ => (Name.anonymous, as)
+
+def getAppFnArgs (e : Expr) : Name × Array Expr :=
+  let nargs := e.getAppNumArgs
+  getAppFnArgsAux e (mkArray nargs arbitrary) (nargs-1)
+
+def natLit! : Expr → Nat
+  | lit (Literal.natVal v) _ => v
+  | _                        => panic! "nat literal expected"
+
 /-!
 Some declarations work with open expressions, i.e. an expr that has free variables.
 Terms will free variables are not well-typed, and one should not use them in tactics like
