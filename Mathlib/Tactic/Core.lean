@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Aurélien Saue
 -/
 
 import Lean.Expr
+import Mathlib.Lean.Expr
 
 namespace Lean.Parser.Tactic
 
