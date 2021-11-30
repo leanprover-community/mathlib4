@@ -9,13 +9,9 @@ Original file license:
 -/
 
 import Mathlib.Data.Nat.Basic
+import Mathlib.Init.Data.Int.Basic
 import Mathlib.Tactic.Coe
 open Nat
-
-/- ## Additional notation -/
-
-notation "ℤ" => Int
-notation "-[1+ " n "]" => Int.negSucc n
 
 namespace Int
 
