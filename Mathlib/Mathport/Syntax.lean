@@ -70,8 +70,6 @@ end Tactic
 namespace Tactic
 
 syntax (name := propagateTags) "propagateTags " tacticSeq : tactic
-syntax renameArg := ident " => " ident
-syntax (name := rename') "rename'" (ppSpace renameArg),+ : tactic
 syntax (name := fapply) "fapply " term : tactic
 syntax (name := eapply) "eapply " term : tactic
 syntax (name := applyWith) "apply " term " with " term : tactic
