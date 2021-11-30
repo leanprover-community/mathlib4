@@ -26,7 +26,7 @@ def mapWithIndex (f : ℕ → α → β) (as : List α) : List β :=
   loop 0 as
 
 /-- Applicative variant of `mapWithIndex`. -/
-def mmapWithIndex {m : Type v → Type w} [Applicative m] (f : ℕ → α → m β) (as : List α) :
+def mapWithIndexM {m : Type v → Type w} [Applicative m] (f : ℕ → α → m β) (as : List α) :
   m (List β) :=
   let rec loop : ℕ → List α → m (List β)
   | _,  [] => return []
