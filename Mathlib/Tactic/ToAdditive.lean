@@ -3,10 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn
 -/
-import Mathlib.Data.List.Defs
+import Mathlib.Data.Array.Defs
 import Mathlib.Data.String.Defs
 import Mathlib.Lean.Expr
 import Mathlib.Lean.Syntax
+import Lean.Elab.PreDefinition.Main -- remove
 
 /-!
 # Transport multiplicative to additive
@@ -23,6 +24,8 @@ types and structures) from a multiplicative theory to an additive theory.
 -/
 
 open Lean Meta
+
+#print Lean.Elab.addPreDefinitions
 
 namespace ToAdditive
 
@@ -106,25 +109,23 @@ initialize toAdditiveReorderAttr : ParametricAttribute (List Nat) ←
         | _ => throwError "unexpected toAdditiveReorder syntax {stx}" -- can this code be reached?
   }
 
-  #check @forallTelescope
-  #check MetaM
--- /--
--- Find the first argument of `nm` that has a multiplicative type-class on it.
--- Returns 1 if there are no types with a multiplicative class as arguments.
--- E.g. `Prod.Group` returns 1, and `Pi.One` returns 2.
--- -/
+/--
+Find the first argument of `nm` that has a multiplicative type-class on it.
+Returns 1 if there are no types with a multiplicative class as arguments.
+E.g. `Prod.Group` returns 1, and `Pi.One` returns 2.
+-/
 def firstMultiplicativeArg (nm : Name) (dict : NameMap Name) : CoreM Nat := do
   let env ← getEnv
   let some d ← env.find? nm | throwError "Cannot find declaration {nm}."
   let l ← MetaM.run' $ forallTelescope d.type λ es _ =>
-    es.mapWithIndexM λ n bi => do
-      let tgt := bi.type.piCodomain
-      let n_bi := bi.type.piBinders.1.length
-      let true ← return true /-hasAttribute `toAdditive tgt.get_app_fn.const_name-/ | return none
-      let n2 := tgt.getAppArgs.head.get_app_fn.match_var.map λ m => n + n_bi - m
-      return n2
+    es.mapWithIndexM λ n var => do
+      let varType ← (← getFVarLocalDecl var).type
+      forallTelescope varType λ e2s tgt => do
+        let some fn ← tgt.getAppFn.constName? | return none
+        if dict.contains fn then none else
+          some 1 -- TODO! -- tgt.getAppArgs[0].getAppFn.matchVar.map λ m => n + e2s.length - m
   let l := l.reduceOption
-  return if l.isEmpty then 1 else l.foldr min l.head!
+  return if l.isEmpty then 1 else l.foldr min l[0]
 
 /-- A command that can be used to have future uses of `toAdditive` change the `src` namespace
 to the `tgt` namespace.
@@ -148,7 +149,7 @@ return () -- todo
 `toAdditive.parser` parses the provided arguments:
 * `replaceAll`: replace all multiplicative declarations, do not use the heuristic.
 * `trace`: output the generated additive declaration.
-* `tgt : name`: the name of the target (the additive declaration).
+* `tgt : Name`: the name of the target (the additive declaration).
 * `doc`: an optional doc string.
 * if `allow_auto_name` is `false` (default) then `@[toAdditive]` will check whether the given name
   can be auto-generated.
@@ -203,9 +204,9 @@ String.mapTokens ''' λ s => String.intercalate (String.singleton '_') $ tr fals
 /-- Return the provided target name or autogenerate one if one was not provided. -/
 def targetName (src tgt : Name) (dict : NameMap Name) : CoreM Name := do
   let res ←
-    if tgt.getPrefix != Name.anonymous -- we use `tgt` if it is a full name
-    then return tgt
-    else match src with
+    if tgt.getPrefix != Name.anonymous then -- we use `tgt` if it is a full name
+    return tgt else
+    match src with
     | Name.str pre s d => do
       let tgtAuto := guessName s
       if toString tgt == tgtAuto && tgt != src then
@@ -215,47 +216,212 @@ def targetName (src tgt : Name) (dict : NameMap Name) : CoreM Name := do
       return (Name.mkStr (pre.mapPrefix dict.find?) $
         if tgt == Name.anonymous then tgtAuto else toString tgt)
     | _ => throwError ("toAdditive: can't transport " ++ toString src)
-  if res == src && tgt != src then throwError
+  unless res != src || tgt == src do
+    throwError
     ("toAdditive: can't transport " ++ toString src ++
     " to itself.\nGive the desired additive name explicitly using `@[toAdditive additive_name]`.")
-  else return res
+  return res
 
--- /-- the parser for the arguments to `toAdditive`. -/
--- def parser : lean.parser Config := do
---   let bang ← Option.isSome <$> (tk "!")?
---   let ques ← Option.isSome <$> (tk "?")?
---   let tgt ← (ident)?
---   let e ← (texpr)?
---   let doc ←
---     match e with
---       | some pe => some <$> (to_expr pe >>= eval_expr String : tactic String)
---       | none => return none
---   return ⟨bang, ques, tgt.get_or_else Name.anonymous, doc, false⟩
+/-- Auxilliary definition for proceedFields. -/
+def proceedFieldsAux (src tgt : Name) (f : Name → Array Name) :
+  List (Name × Name) :=
+  let srcFields := f src
+  let tgtFields := f tgt
+  if srcFields.size != tgtFields.size then
+    [] else
+    (srcFields.zip tgtFields).foldr (λ names l =>
+      if names.1.getString! == names.2.getString! then l else
+      (names.1, names.2) :: l) []
 
--- def proceedFieldsAux (src tgt : Name) (prio : ℕ) (f : Name → CoreM (List String)) :
---   CoreM Unit := do
---   let srcFields ← f src
---   let tgtFields ← f tgt
---   if srcFields.length != tgtFields.length then
---     throwError ("Failed to map fields of " ++ toString src)
---   (srcFields.zip tgtFields).mapM λ names =>
---     if names.1 != names.2 then auxAttr (src.append names.1) (tgt.append names.2) tt prio
---     else _
+/--
+Return a list of all the fields and constructors of `src` and `tgt` that should be added to the
+toAdditive dictionary.
+-/
+def proceedFields (env : Environment) (src tgt : Name) : List (Name × Name) :=
+  let l1 := proceedFieldsAux src tgt λ n => ((getStructureInfo? env n).map (·.fieldNames)).getD #[]
+  let l2 := proceedFieldsAux src tgt λ n =>
+    match env.find? n with
+    | some (ConstantInfo.inductInfo val) => val.ctors.toArray
+    | _ => #[]
+  l1 ++ l2
 
--- /-- Add the `auxAttr` attribute to the structure fields of `src`
--- so that future uses of `toAdditive` will map them to the corresponding `tgt` fields. -/
--- def proceed_fields (env : Environment) (src tgt : Name) (prio : ℕ) : CoreM Unit :=
---   let aux := proceed_fields_aux src tgt prio
---   do
---     ((aux fun n => return$ List.map Name.toString$ (env.structureFields n).getOrElse []) >>
---           aux fun n => (List.map fun x : Name => "to_" ++ toString x) <$> getTaggedAncestors n) >>
---         aux
---           fun n =>
---             (env.constructorsOf n).mmap$
---               fun cs =>
---                 match cs with
---                 | Name.str s pre => (guardₓ (pre = n) <|> throwError "Bad constructor name") >> return s
---                 | _ => throwError "Bad constructor name"
+/--
+TODO:
+`copyAttribute' attr_name src tgt p d_name` copy (user) attribute `attr_name` from
+`src` to `tgt` if it is defined for `src`; unlike `copyAttribute` the primed version also copies
+the parameter of the user attribute, in the user attribute case. Make it persistent if `p` is
+`tt`; if `p` is `none`, the copied attribute is made persistent iff it is persistent on `src`.
+-/
+def copyAttribute' (attr_name : Name) (src tgt : Name) (p : Option Bool := none) : CoreM Unit := do
+  return () -- TODO
+  -- let env ← getEnv
+  -- unless (env.find? tgt).isSome do throwError "unknown declaration {tgt}"
+  -- -- if the source doesn't have the attribute we do not error and simply return
+  -- mwhen (succeeds (has_attribute attr_name src)) $
+  --   do (p', prio) ← has_attribute attr_name src,
+  --     let p := p.get_or_else p',
+  --     s ← try_or_report_error (set_basic_attribute attr_name tgt p prio),
+  --     sum.inr msg ← return s | skip,
+  --     if msg =
+  --       (format!("set_basic_attribute tactic failed, '{attr_name}' " ++
+  --         "is not a basic attribute")).to_string
+  --     then do
+  --       user_attr_const ← (get_user_attribute_name attr_name >>= mk_const),
+  --       tac ← eval_pexpr (tactic unit)
+  --       ``(user_attribute.get_param_untyped %%user_attr_const %%src >>=
+  --         λ x, user_attribute.set_untyped %%user_attr_const %%tgt x %%p %%prio),
+  --       tac
+  --     else fail msg
+
+/-- Auxilliary function for `additiveTest`. The Bool argument *only* matters when applied
+to exactly a constant. -/
+def additiveTestAux (f : Name → Option Name) (ignore : NameMap $ List ℕ) : Bool → Expr → Bool
+| _, _ => true -- TODO
+-- | b (var n)                => tt
+-- | b (sort l)               => tt
+-- | b (const n ls)           => b || (f n).is_some
+-- | b (mvar n m t)           => tt
+-- | b (local_const n m bi t) => tt
+-- | b (app e f)              => additiveTestAux tt e &&
+--   -- this might be inefficient.
+--   -- If it becomes a performance problem: we can give this info for the recursive call to `e`.
+--     match ignore.find e.get_app_fn.const_name with
+--     | some l => if e.get_app_num_args + 1 ∈ l then tt else additiveTestAux ff f
+--     | none   => additiveTestAux ff f
+--     end
+-- | b (lam n bi e t)         => additiveTestAux ff t
+-- | b (pi n bi e t)          => additiveTestAux ff t
+-- | b (elet n g e f)         => additiveTestAux ff e && additiveTestAux ff f
+-- | b (macro d args)         => tt
+
+
+open Lean.Elab Lean.Elab.Command
+
+syntax (name := print_prefix) "#print prefix" ident : command
+
+deriving instance Inhabited for ConstantInfo -- required for Array.qsort
+
+@[commandElab print_prefix] def elabPrintPrefix : CommandElab
+  | `(#print prefix%$tk $i) => do
+    let env ← getEnv
+    let occs := env.constants.fold (fun xs name val =>
+      if i.getId.isPrefixOf name then xs.push (name, val) else xs) #[]
+    let occs := occs.qsort (fun p q => p.1.lt q.1)
+    for (name, val) in occs do
+      logInfoAt tk m!"{name} : {val.type}"
+  | _ => throwUnsupportedSyntax
+
+def foo : {x : ℕ // x > 0} := ⟨1, Nat.zero_lt_one⟩
+
+def myadd : (@& Nat) → (@& Nat) → Nat
+| a, Nat.zero   => a
+| a, Nat.succ b => Nat.succ (myadd a b)
+#print prefix ToAdditive.myadd
+#print myadd
+#print myadd._cstage1
+#print Nat.add
+#print Nat.add._sunfold
+#print Nat.add._unsafe_rec
+#print Nat.add.match_1
+#print prefix Nat.add
+-- #print foo
+
+/--
+`additiveTest f replaceAll ignore e` tests whether the expression `e` contains no constant
+`nm` that is not applied to any arguments, and such that `f nm = none`.
+This is used in `@[toAdditive]` for deciding which subexpressions to transform: we only transform
+constants if `additiveTest` applied to their first argument returns `tt`.
+This means we will replace expression applied to e.g. `α` or `α × β`, but not when applied to
+e.g. `ℕ` or `ℝ × α`.
+`f` is the dictionary of declarations that are in the `toAdditive` dictionary.
+We ignore all arguments specified in the `NameMap` `ignore`.
+If `replaceAll` is `tt` the test always return `tt`.
+-/
+def additiveTest (f : Name → Option Name) (replaceAll : Bool) (ignore : NameMap $ List ℕ)
+  (e : Expr) : Bool :=
+if replaceAll then true else additiveTestAux f ignore false e
+/-
+/--
+Transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
+using the dictionary `f`. `replaceAll`, `trace`, `ignore` and `reorder` are configuration options.
+`pre` is the declaration that got the `@[toAdditive]` attribute and `tgtPre` is the target of this
+declaration.
+-/
+def transformDeclWithPrefixFunAux (f : Name → Option Name)
+  (replaceAll trace : Bool) (relevant : NameMap ℕ) (ignore reorder : NameMap $ List ℕ)
+  (pre tgtPre : Name) : Name → CoreM Unit
+| src => do
+  -- if this declaration is not `pre` or an internal declaration, we do nothing.
+  unless src == pre || src.isInternal do
+    if (f src).isSome then return () else throwError ("@[toAdditive] failed.
+The declaration {pre} depends on the declaration {src} which is in the namespace {pre}, but " ++
+"does not have the `@[toAdditive]` attribute. This is not supported. Workaround: move {src} to " ++
+"a different namespace.")
+  let env ← getEnv
+  -- we find the additive name of `src`
+  let tgt := src.mapPrefix λ n => if n == pre then some tgtPre else none
+  -- we skip if we already transformed this declaration before
+  unless !env.contains tgt do return ()
+  let decl ← env.find? src |>.get!
+  -- we first transform all the declarations of the form `pre._proof_i`
+  (decl.type.listNamesWithPrefix pre).mfold () (λ n _ => transformDeclWithPrefixFunAux n)
+  (decl.value.listNamesWithPrefix pre).mfold () (λ n _ => transformDeclWithPrefixFunAux n)
+  -- we transform `decl` using `f` and the configuration options.
+  let newNm := _
+  let decl :=
+    decl.updateWithFun env (name.mapPrefix f) (additiveTest f replaceAll ignore)
+      relevant reorder tgt
+  -- TODO: does this pretty print decl?
+  if trace then IO.println "[toAdditive] > generating\n{decl}"
+  -- TODO: add info to error message
+--   decorateError ("@[toAdditive] failed. Type mismatch in additive declaration.
+-- For help, see the docstring of `toAdditive.attr`, section `Troubleshooting`.
+-- Failed to add declaration\n{ppDecl}
+
+-- Nested error message:\n") $ do
+  if isProtected env src then addDecl decl else addDecl decl
+    -- we test that the declaration value type-checks, so that we get the decorated error message
+    -- without this line, the type-checking might fail outside the `decorate_error`.
+    decorate_error "proof doesn't type-check. " $ type_check decl.value
+
+/--
+Make a new copy of a declaration,
+replacing fragments of the names of identifiers in the type and the body using the function `f`.
+This is used to implement `@[toAdditive]`.
+-/
+def transformDeclWithPrefixFun (f : Name → Option Name) (replaceAll trace : Bool)
+  (relevant : NameMap ℕ) (ignore reorder : NameMap $ List ℕ) (src tgt : Name) (attrs : List Name) :
+  CoreM Unit :=
+do -- In order to ensure that attributes are copied correctly we must transform declarations and
+   -- attributes in the right order:
+   -- first generate the transformed main declaration
+   transformDeclWithPrefixFunAux f replaceAll trace relevant ignore reorder src tgt src
+   ls ← get_eqn_lemmas_for tt src
+   -- now transform all of the equational lemmas
+   ls.mmap' $
+    transformDeclWithPrefixFunAux f replaceAll trace relevant ignore reorder src tgt
+   -- copy attributes for the equational lemmas so that they know if they are refl lemmas
+   ls.mmap' (λ src_eqn, do
+    let tgtEqn := src_eqn.mapPrefix λ n, if n = src then some tgt else none
+    attrs.mmap' (λ n, copyAttribute' n src_eqn tgtEqn))
+   -- set the transformed equation lemmas as equation lemmas for the new declaration
+   ls.mmap' (λ src_eqn, do
+    e ← getEnv
+    let tgtEqn := src_eqn.mapPrefix λ n, if n = src then some tgt else none,
+    set_env (e.add_eqn_lemma tgtEqn)),
+   -- copy attributes for the main declaration, this needs the equational lemmas to exist already
+   attrs.mmap' (λ n, copyAttribute' n src tgt)
+
+/--
+Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
+the body using the dictionary `dict`.
+This is used to implement `@[toAdditive]`.
+-/
+def transformDeclWithPrefixDict (dict : NameMap Name) (replaceAll trace : Bool)
+  (relevant : NameMap ℕ) (ignore reorder : NameMap $ List ℕ) (src tgt : Name) (attrs : List Name)
+  : CoreM Unit :=
+transformDeclWithPrefixFun dict.find? replaceAll trace relevant ignore reorder src tgt attrs
+-/
 
 /-!
 The attribute `toAdditive` can be used to automatically transport theorems
@@ -500,23 +666,28 @@ initialize toAdditiveAttr : PersistentEnvExtension (Name × Name) (Name × Name)
       let env := ext.addEntry env (src, tgt)
       setEnv env
       let dict := ext.getState env
-      let firstMultArg ← firstMultiplicativeArg src dict,
+      let firstMultArg ← firstMultiplicativeArg src dict
+      if firstMultArg != 1 then
+        toAdditiveRelevantArgAttr.attr.add src (quote firstMultArg) AttributeKind.global
+      if env.contains tgt then
+        let env := (proceedFields env src tgt).foldr (λ names env => ext.addEntry env names) env
+        setEnv env else
+
+      return ()
 
 
   /-
-    firstMultArg ← firstMultiplicativeArg src,
-    when (firstMultArg ≠ 1) $ relevant_arg_attr.set src firstMultArg tt,
     if env.contains tgt
-    then proceed_fields env src tgt prio
+    then proceedFields env src tgt prio
     else do
-      transform_decl_with_prefix_dict dict val.replace_all val.trace relevant ignore reorder src tgt
+      transformDeclWithPrefixDict dict val.replaceAll val.trace relevant ignore reorder src tgt
         [`reducible, `_refl_lemma, `simp, `norm_cast, `instance, `refl, `symm, `trans,
           `elab_as_eliminator, `no_rsimp, `continuity, `ext, `ematch, `measurability, `alias,
           `_ext_core, `_ext_lemma_core, `nolint],
       mwhen (has_attribute' `simps src)
-        (trace "Apply the simps attribute after the to_additive attribute"),
+        (trace "Apply the simps attribute after the toAdditive attribute"),
       mwhen (has_attribute' `mono src)
-        (trace $ "to_additive does not work with mono, apply the mono attribute to both" ++
+        (trace $ "toAdditive does not work with mono, apply the mono attribute to both" ++
           "versions after"),
       match val.doc with
       | some doc := add_doc_string tgt doc
@@ -544,7 +715,6 @@ initialize toAdditiveAttr : PersistentEnvExtension (Name × Name) (Name × Name)
   -- }
 
 end ToAdditive
-#print MetaM.run'
 -- attribute [toAdditive] Mul HasOne HasInv Div
 
 -- attribute [toAdditive Empty] Empty
@@ -555,17 +725,14 @@ end ToAdditive
 
 -- attribute [toAdditive Unit] Unit
 
-
-syntax (name := foo) "foo" str : attr
-initialize fooAttr : ParametricAttribute String ←
+syntax (name := bar) ("bar" <|> "bar!") num* : attr
+initialize barAttr : ParametricAttribute (List Nat) ←
   registerParametricAttribute {
-    name := `foo
-    descr := "foo desc."
+    name := `bar
+    descr := "bar desc."
     getParam := λ decl stx =>
       match stx with
-        | `(attr|foo $ns) => do
-          IO.println ns
-          IO.println ns.toString!
-          return ""
-        | _ => throwError "unexpected foo syntax {stx}"
+        | `(attr|bar $[$ns]*) => (ns.map (·.toNat)).toList
+        | `(attr|bar! $[$ns]*) => (ns.map (·.toNat)).toList
+        | _ => throwError "unexpected bar syntax {stx}"
   }
