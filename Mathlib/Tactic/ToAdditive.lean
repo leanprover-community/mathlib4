@@ -3,10 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn
 -/
-import Lean
 import Mathlib.Data.List.Defs
 import Mathlib.Data.String.Defs
 import Mathlib.Lean.Expr
+import Mathlib.Lean.Syntax
 
 /-!
 # Transport multiplicative to additive
@@ -22,9 +22,9 @@ types and structures) from a multiplicative theory to an additive theory.
 
 -/
 
-namespace ToAdditive
-
 open Lean Meta
+
+namespace ToAdditive
 
 syntax (name := toAdditiveIgnoreArgs) "toAdditiveIgnoreArgs" num* : attr
 syntax (name := toAdditiveRelevantArg) "toAdditiveRelevantArg" num : attr
@@ -40,17 +40,15 @@ involved when using `@[toAdditive]`.
 This helps the heuristic of `@[toAdditive]` by also transforming definitions if `ℕ` or another
 fixed type occurs as one of these arguments.
 -/
-initialize toAdditiveIgnoreArgsAttr : ParametricAttribute (List Nat) ←
+initialize toAdditiveIgnoreArgsAttr : ParametricAttribute (Array Nat) ←
   registerParametricAttribute {
     name := `toAdditiveIgnoreArgs
     descr :=
       "Auxiliary attribute for `toAdditive` stating that certain arguments are not additivized."
     getParam := λ decl stx =>
       match stx with
-        | `(attr|toAdditiveIgnoreArgs $[$ns]*) =>
-          if (ns.map (·.isNatLit?)).all (·.isSome) then (ns.map (·.toNat)).toList else
-          throwError "expected a list of (small) natural numbers at {ns}" -- can this code be reached?
-        | _ => throwError "unexpected toAdditiveIgnoreArgs syntax {stx}" -- can this code be reached?
+        | `(attr|toAdditiveIgnoreArgs $[$ns]*) => ns.map (·.toNat)
+        | _ => throwError "unexpected toAdditiveIgnoreArgs syntax {stx}"
   }
 
 /-!
@@ -62,11 +60,11 @@ If this argument contains a fixed type, this declaration will note be additivize
 See the Heuristics section of `toAdditive.attr` for more details.
 
 If a declaration is not tagged, it is presumed that the first argument is relevant.
-`@[toAdditive]` uses the function `toAdditive.first_multiplicative_arg` to automatically tag
+`@[toAdditive]` uses the function `toAdditive.firstMultiplicativeArg` to automatically tag
 declarations. It is ok to update it manually if the automatic tagging made an error.
 
 Implementation note: we only allow exactly 1 relevant argument, even though some declarations
-(like `prod.group`) have multiple arguments with a multiplicative structure on it.
+(like `Prod.Group`) have multiple arguments with a multiplicative structure on it.
 The reason is that whether we additivize a declaration is an all-or-nothing decision, and if
 we will not be able to additivize declarations that (e.g.) talk about multiplication on `ℕ × α`
 anyway.
@@ -82,10 +80,8 @@ initialize toAdditiveRelevantArgAttr : ParametricAttribute Nat ←
       "multiplicative structure."
     getParam := λ decl stx =>
       match stx with
-        | `(attr|toAdditiveRelevantArg $ns) =>
-          if ns.isNatLit?.isSome then ns.toNat else
-          throwError "expected (small) natural number at {ns}" -- can this code be reached?
-        | _ => throwError "unexpected toAdditiveRelevantArg syntax {stx}" -- can this code be reached?
+        | `(attr|toAdditiveRelevantArg $ns) => ns.toNat
+        | _ => throwError "unexpected toAdditiveRelevantArg syntax {stx}"
   }
 
 /-!
@@ -104,59 +100,61 @@ initialize toAdditiveReorderAttr : ParametricAttribute (List Nat) ←
       "Auxiliary attribute for `toAdditive` that stores arguments that need to be reordered."
     getParam := λ decl stx =>
       match stx with
-        -- todo: check that the arguments are indeed numerals
         | `(attr|toAdditiveReorder $[$ns]*) =>
-          if (ns.map (·.isNatLit?)).all λ o => o.isSome && o.get! ≠ 0 then (ns.map (·.toNat)).toList
+          if (ns.map (·.isNatLit?)).all λ o => o.get! ≠ 0 then (ns.map (·.toNat)).toList
           else throwError "expected a list of (small) positive natural numbers at {ns}"
         | _ => throwError "unexpected toAdditiveReorder syntax {stx}" -- can this code be reached?
   }
+
+  #check @forallTelescope
+  #check MetaM
 -- /--
 -- Find the first argument of `nm` that has a multiplicative type-class on it.
 -- Returns 1 if there are no types with a multiplicative class as arguments.
--- E.g. `prod.group` returns 1, and `pi.One` returns 2.
+-- E.g. `Prod.Group` returns 1, and `Pi.One` returns 2.
 -- -/
--- def firstMultiplicativeArg (nm : Name) : CoreM Nat := do
---   let env ← getEnv
---   let some d ← env.find? nm | throwError "Cannot find declaration {nm}."
---   let (es, _) := d.type.piBinders
---   let l ← es.mmapWithIndex λ n bi => do
---     let tgt := bi.type.piCodomain
---     let n_bi := bi.type.piBinders.1.length
---     let true ← return true /-hasAttribute `toAdditive tgt.get_app_fn.const_name-/ | return none
---     let n2 := tgt.getAppArgs.head.get_app_fn.match_var.map λ m => n + n_bi - m
---     return n2
---   let l := l.reduceOption
---   return (if l = [] then 1 else l.foldr min l.head)
+def firstMultiplicativeArg (nm : Name) (dict : NameMap Name) : CoreM Nat := do
+  let env ← getEnv
+  let some d ← env.find? nm | throwError "Cannot find declaration {nm}."
+  let l ← MetaM.run' $ forallTelescope d.type λ es _ =>
+    es.mapWithIndexM λ n bi => do
+      let tgt := bi.type.piCodomain
+      let n_bi := bi.type.piBinders.1.length
+      let true ← return true /-hasAttribute `toAdditive tgt.get_app_fn.const_name-/ | return none
+      let n2 := tgt.getAppArgs.head.get_app_fn.match_var.map λ m => n + n_bi - m
+      return n2
+  let l := l.reduceOption
+  return if l.isEmpty then 1 else l.foldr min l.head!
 
 /-- A command that can be used to have future uses of `toAdditive` change the `src` namespace
 to the `tgt` namespace.
 
 For example:
 ```
-run_cmd toAdditive.map_namespace `quotient_group `quotient_add_group
+run_cmd toAdditive.mapNamespace `quotientGroup `quotientAddGroup
 ```
 
-Later uses of `toAdditive` on declarations in the `quotient_group` namespace will be created
-in the `quotient_add_group` namespaces.
+Later uses of `toAdditive` on declarations in the `quotientGroup` namespace will be created
+in the `quotientAddGroup` namespaces.
 -/
-def map_namespace (src tgt : Name) : CoreM Unit :=
+def mapNamespace (src tgt : Name) : CoreM Unit :=
 return () -- todo
 -- do let n := src.str "_toAdditive"
---    let decl := declaration.thm n [] `(unit) (pure (reflect ()))
+--    let decl := declaration.thm n [] `(unit) (return (reflect ()))
 --    add_decl decl
 --    aux_attr.set n tgt tt
 
-/-- `valueType` is the type of the arguments that can be provided to `toAdditive`.
+/-- `toAdditive.Config` is the type of the arguments that can be provided to `toAdditive`.
 `toAdditive.parser` parses the provided arguments:
-* `replace_all`: replace all multiplicative declarations, do not use the heuristic.
+* `replaceAll`: replace all multiplicative declarations, do not use the heuristic.
 * `trace`: output the generated additive declaration.
 * `tgt : name`: the name of the target (the additive declaration).
 * `doc`: an optional doc string.
 * if `allow_auto_name` is `false` (default) then `@[toAdditive]` will check whether the given name
   can be auto-generated.
 -/
-structure value_type : Type :=
-(replace_all : Bool)
+structure Config : Type :=
+(replaceAll : Bool)
 (trace : Bool)
 (tgt : Name)
 (doc : Option String)
@@ -198,30 +196,32 @@ def tr : Bool → List String → List String
 | true, [] => ["comm"]
 | false, [] => []
 
-/-- Autogenerate target name for `to_additive`. -/
+/-- Autogenerate target name for `toAdditive`. -/
 def guessName : String → String :=
 String.mapTokens ''' λ s => String.intercalate (String.singleton '_') $ tr false (s.splitOn "_")
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
-def targetName (src tgt : Name) (dict : NameMap Name) (allow_auto_name : Bool) : CoreM Name := do
-  let res ← if tgt.getPrefix != Name.anonymous || allow_auto_name then pure tgt else
-      match src with
-      | Name.str pre s d => do
-        let tgt_auto := guessName s
-        if toString tgt == tgt_auto && tgt != src then
-          IO.println $
-            "`to_additive " ++ toString src ++ "`: correctly autogenerated target " ++
-            "name, you may remove the explicit " ++ tgt_auto ++ " argument."
-        return (Name.mkStr (pre.mapPrefix dict.find?) $
-          if tgt == Name.anonymous then tgt_auto else toString tgt)
-      | _ => throwError ("to_additive: can't transport " ++ toString src)
+def targetName (src tgt : Name) (dict : NameMap Name) : CoreM Name := do
+  let res ←
+    if tgt.getPrefix != Name.anonymous -- we use `tgt` if it is a full name
+    then return tgt
+    else match src with
+    | Name.str pre s d => do
+      let tgtAuto := guessName s
+      if toString tgt == tgtAuto && tgt != src then
+        IO.println $
+          "`toAdditive " ++ toString src ++ "`: correctly autogenerated target " ++
+          "name, you may remove the explicit " ++ tgtAuto ++ " argument."
+      return (Name.mkStr (pre.mapPrefix dict.find?) $
+        if tgt == Name.anonymous then tgtAuto else toString tgt)
+    | _ => throwError ("toAdditive: can't transport " ++ toString src)
   if res == src && tgt != src then throwError
-    ("to_additive: can't transport " ++ toString src ++
-    " to itself.\nGive the desired additive name explicitly using `@[to_additive additive_name]`.")
-  else pure res
+    ("toAdditive: can't transport " ++ toString src ++
+    " to itself.\nGive the desired additive name explicitly using `@[toAdditive additive_name]`.")
+  else return res
 
--- /-- the parser for the arguments to `to_additive`. -/
--- def parser : lean.parser value_type := do
+-- /-- the parser for the arguments to `toAdditive`. -/
+-- def parser : lean.parser Config := do
 --   let bang ← Option.isSome <$> (tk "!")?
 --   let ques ← Option.isSome <$> (tk "?")?
 --   let tgt ← (ident)?
@@ -229,7 +229,7 @@ def targetName (src tgt : Name) (dict : NameMap Name) (allow_auto_name : Bool) :
 --   let doc ←
 --     match e with
 --       | some pe => some <$> (to_expr pe >>= eval_expr String : tactic String)
---       | none => pure none
+--       | none => return none
 --   return ⟨bang, ques, tgt.get_or_else Name.anonymous, doc, false⟩
 
 -- def proceedFieldsAux (src tgt : Name) (prio : ℕ) (f : Name → CoreM (List String)) :
@@ -243,83 +243,104 @@ def targetName (src tgt : Name) (dict : NameMap Name) (allow_auto_name : Bool) :
 --     else _
 
 -- /-- Add the `auxAttr` attribute to the structure fields of `src`
--- so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
+-- so that future uses of `toAdditive` will map them to the corresponding `tgt` fields. -/
 -- def proceed_fields (env : Environment) (src tgt : Name) (prio : ℕ) : CoreM Unit :=
 --   let aux := proceed_fields_aux src tgt prio
 --   do
---     ((aux fun n => pure$ List.map Name.toString$ (env.structureFields n).getOrElse []) >>
+--     ((aux fun n => return$ List.map Name.toString$ (env.structureFields n).getOrElse []) >>
 --           aux fun n => (List.map fun x : Name => "to_" ++ toString x) <$> getTaggedAncestors n) >>
 --         aux
 --           fun n =>
 --             (env.constructorsOf n).mmap$
 --               fun cs =>
 --                 match cs with
---                 | Name.str s pre => (guardₓ (pre = n) <|> throwError "Bad constructor name") >> pure s
+--                 | Name.str s pre => (guardₓ (pre = n) <|> throwError "Bad constructor name") >> return s
 --                 | _ => throwError "Bad constructor name"
 
 /-!
 The attribute `toAdditive` can be used to automatically transport theorems
 and definitions (but not inductive types and structures) from a multiplicative
 theory to an additive theory.
+
 To use this attribute, just write:
+
 ```
 @[toAdditive]
-theorem mulComm' {α} [commSemigroup α] (x y : α) : x * y = y * x := commSemigroup.mul_comm
+theorem mul_comm' {α} [CommSemigroup α] (x y : α) : x * y = y * x := CommSemigroup.mul_comm
 ```
-This code will generate a theorem named `addComm'`.  It is also
+
+This code will generate a theorem named `add_comm'`.  It is also
 possible to manually specify the name of the new declaration, and
 provide a documentation string:
+
 ```
-@[toAdditive addFoo "addFoo doc string"]
+@[toAdditive add_foo "add_foo doc string"]
 /-- foo doc string -/
 theorem foo := sorry
 ```
+
 The transport tries to do the right thing in most cases using several
 heuristics described below.  However, in some cases it fails, and
 requires manual intervention.
+
 If the declaration to be transported has attributes which need to be
 copied to the additive version, then `toAdditive` should come last:
+
 ```
-@[simp, toAdditive] lemma mul_one' {G : Type*} [group G] (x : G) : x * 1 = x := mul_one x
+@[simp, toAdditive] lemma mul_one' {G : Type*} [Group G] (x : G) : x * 1 = x := mul_one x
 ```
+
 The following attributes are supported and should be applied correctly by `toAdditive` to
 the new additivized declaration, if they were present on the original one:
 ```
-reducible, _refl_lemma, simp, normCast, instance, refl, symm, trans, elabAsEliminator, noRsimp,
-continuity, ext, ematch, measurability, alias, _extCore, _extLemmaCore, nolint
+reducible, _refl_lemma, simp, norm_cast, instance, refl, symm, trans, elab_as_eliminator, no_rsimp,
+continuity, ext, ematch, measurability, alias, _ext_core, _ext_lemma_core, nolint
 ```
+
 The exception to this rule is the `simps` attribute, which should come after `toAdditive`:
+
 ```
 @[toAdditive, simps]
-instance {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨λ p q, ⟨p.1 * q.1, p.2 * q.2⟩⟩
+instance {M N} [has_mul M] [has_mul N] : has_mul (M × N) := ⟨λ p q, ⟨p.1 * q.1, p.2 * q.2⟩⟩
 ```
+
 Additionally the `mono` attribute is not handled by `toAdditive` and should be applied afterwards
 to both the original and additivized lemma.
+
 ## Implementation notes
+
 The transport process generally works by taking all the names of
 identifiers appearing in the name, type, and body of a declaration and
 creating a new declaration by mapping those names to additive versions
 using a simple string-based dictionary and also using all declarations
 that have previously been labeled with `toAdditive`.
+
 In the `mul_comm'` example above, `toAdditive` maps:
 * `mul_comm'` to `add_comm'`,
-* `comm_semigroup` to `add_comm_semigroup`,
+* `CommSemigroup` to `add_CommSemigroup`,
 * `x * y` to `x + y` and `y * x` to `y + x`, and
-* `comm_semigroup.mul_comm'` to `add_comm_semigroup.add_comm'`.
+* `CommSemigroup.mul_comm'` to `add_CommSemigroup.add_comm'`.
+
 ### Heuristics
+
 `toAdditive` uses heuristics to determine whether a particular identifier has to be
 mapped to its additive version. The basic heuristic is
+
 * Only map an identifier to its additive version if its first argument doesn't
   contain any unapplied identifiers.
+
 Examples:
-* `@Mul.mul ℕ n m` (i.e. `(n * m : ℕ)`) will not change to `+`, since its
+* `@has_mul.mul ℕ n m` (i.e. `(n * m : ℕ)`) will not change to `+`, since its
   first argument is `ℕ`, an identifier not applied to any arguments.
-* `@Mul.mul (α × β) x y` will change to `+`. It's first argument contains only the identifier
+* `@has_mul.mul (α × β) x y` will change to `+`. It's first argument contains only the identifier
   `prod`, but this is applied to arguments, `α` and `β`.
-* `@Mul.mul (α × ℤ) x y` will not change to `+`, since its first argument contains `ℤ`.
+* `@has_mul.mul (α × ℤ) x y` will not change to `+`, since its first argument contains `ℤ`.
+
 The reasoning behind the heuristic is that the first argument is the type which is "additivized",
 and this usually doesn't make sense if this is on a fixed type.
+
 There are some exceptions to this heuristic:
+
 * Identifiers that have the `@[toAdditive]` attribute are ignored.
   For example, multiplication in `↥Semigroup` is replaced by addition in `↥AddSemigroup`.
 * If an identifier `d` has attribute `@[toAdditive_relevant_arg n]` then the argument
@@ -331,12 +352,15 @@ There are some exceptions to this heuristic:
   For example, `times_cont_mdiff_map` has attribute `@[toAdditive_ignore_args 21]`, which means
   that its 21st argument `(n : with_top ℕ)` can contain `ℕ`
   (usually in the form `has_top.top ℕ ...`) and still be additivized.
-  So `@Mul.mul (C^∞⟮I, N; I', G⟯) _ f g` will be additivized.
+  So `@has_mul.mul (C^∞⟮I, N; I', G⟯) _ f g` will be additivized.
+
 ### Troubleshooting
+
 If `@[toAdditive]` fails because the additive declaration raises a type mismatch, there are
 various things you can try.
 The first thing to do is to figure out what `@[toAdditive]` did wrong by looking at the type
 mismatch error.
+
 * Option 1: It additivized a declaration `d` that should remain multiplicative. Solution:
   * Make sure the first argument of `d` is a type with a multiplicative structure. If not, can you
     reorder the (implicit) arguments of `d` so that the first argument becomes a type with a
@@ -371,73 +395,156 @@ mismatch error.
     argument order, since it matches `add_monoid.nsmul n x`.
   * If this is not possible, add the `[toAdditive_reorder k]` to the multiplicative declaration
     to indicate that the `k`-th and `(k+1)`-st arguments are reordered in the additive version.
+
 If neither of these solutions work, and `toAdditive` is unable to automatically generate the
 additive version of a declaration, manually write and prove the additive version.
 Often the proof of a lemma/theorem can just be the multiplicative version of the lemma applied to
 `multiplicative G`.
 Afterwards, apply the attribute manually:
+
 ```
 attribute [toAdditive foo_add_bar] foo_bar
 ```
+
 This will allow future uses of `toAdditive` to recognize that
 `foo_bar` should be replaced with `foo_add_bar`.
+
 ### Handling of hidden definitions
+
 Before transporting the “main” declaration `src`, `toAdditive` first
 scans its type and value for names starting with `src`, and transports
 them. This includes auxiliary definitions like `src._match_1`,
 `src._proof_1`.
+
 In addition to transporting the “main” declaration, `toAdditive` transports
 its equational lemmas and tags them as equational lemmas for the new declaration,
 attributes present on the original equational lemmas are also transferred first (notably
 `_refl_lemma`).
+
 ### Structure fields and constructors
+
 If `src` is a structure, then `toAdditive` automatically adds
 structure fields to its mapping, and similarly for constructors of
 inductive types.
+
 For new structures this means that `toAdditive` automatically handles
 coercions, and for old structures it does the same, if ancestry
 information is present in `@[ancestor]` attributes. The `ancestor`
 attribute must come before the `toAdditive` attribute, and it is
 essential that the order of the base structures passed to `ancestor` matches
 between the multiplicative and additive versions of the structure.
+
 ### Name generation
+
 * If `@[toAdditive]` is called without a `name` argument, then the
   new name is autogenerated.  First, it takes the longest prefix of
   the source name that is already known to `toAdditive`, and replaces
   this prefix with its additive counterpart. Second, it takes the last
   part of the name (i.e., after the last dot), and replaces common
   name parts (“mul”, “one”, “inv”, “prod”) with their additive versions.
+
 * Namespaces can be transformed using `map_namespace`. For example:
   ```
-  run_cmd toAdditive.map_namespace `quotient_group `quotient_add_group
+  run_cmd toAdditive.map_namespace `quotientGroup `quotientAddGroup
   ```
-  Later uses of `toAdditive` on declarations in the `quotient_group`
-  namespace will be created in the `quotient_add_group` namespaces.
+
+  Later uses of `toAdditive` on declarations in the `quotientGroup`
+  namespace will be created in the `quotientAddGroup` namespaces.
+
 * If `@[toAdditive]` is called with a `name` argument `new_name`
   /without a dot/, then `toAdditive` updates the prefix as described
   above, then replaces the last part of the name with `new_name`.
+
 * If `@[toAdditive]` is called with a `name` argument
   `new_namespace.new_name` /with a dot/, then `toAdditive` uses this
   new name as is.
+
 As a safety check, in the first case `toAdditive` double checks
 that the new name differs from the original one.
+
 -/
-initialize toAdditiveAttr : ParametricAttribute Name ←
-  registerParametricAttribute {
-    name := `toAdditive
+/-
+  Note: we cannot use `ParametricAttribute` directly, since there are multiple attributes
+  corresponding to 1 environment extension. However, the implementation is very similar.
+-/
+--× Array AttributeImpl
+initialize toAdditiveAttr : PersistentEnvExtension (Name × Name) (Name × Name) (NameMap Name) ←
+  let ext : PersistentEnvExtension (Name × Name) (Name × Name) (NameMap Name) ←
+    registerPersistentEnvExtension {
+      name            := "toAdditive"
+      mkInitial       := return {}
+      addImportedFn   := λ s => return {}
+      addEntryFn      := λ (s : NameMap Name) (p : Name × Name) => s.insert p.1 p.2
+      exportEntriesFn := λ m =>
+        let r : Array (Name × Name) := m.fold (λ a n p => a.push (n, p)) #[]
+        r.qsort λ a b => Name.quickLt a.1 b.1
+      statsFn         := λ s => "parametric attribute" ++ Format.line ++ "number of local entries: " ++ format s.size
+    }
+  let attrImpl (nm : Name) (replaceAll trace : Bool) : AttributeImpl := {
+    name  := nm
     descr := "Transport multiplicative declarations to additive ones."
-    getParam := λ decl stx => do
-      match stx with
-        | `(attr|toAdditive   $[$ns]? $[$str]?) => return Name.anonymous
-        | `(attr|toAdditive!  $[$ns]? $[$str]?) => return Name.anonymous
-        | `(attr|toAdditive?  $[$ns]? $[$str]?) => return Name.anonymous
-        | `(attr|toAdditive!? $[$ns]? $[$str]?) => return Name.anonymous
-        | _ => throwError "unexpected toAdditive syntax {stx}" -- can this code be reached?
-    afterSet := λ decl val => return ()
+    add   := λ src stx kind => do
+      unless kind == AttributeKind.global do throwError "invalid attribute '{nm}', must be global"
+      let env ← getEnv
+      unless (env.getModuleIdxFor? src).isNone do
+        throwError "invalid attribute '{nm}', declaration is in an imported module"
+      let (val, doc) ← match stx with
+      | `(attr|toAdditive $[$ns]? $[$str]?) =>
+        ((ns.map (·.getId.eraseMacroScopes)).getD Name.anonymous, str.bind (·.isStrLit?))
+      | _ => throwError "unexpected toAdditive syntax {stx}"
+      let dict := ext.getState env
+      let ignore := toAdditiveIgnoreArgsAttr.ext.getState env
+      let relevant := toAdditiveRelevantArgAttr.ext.getState env
+      let reorder := toAdditiveReorderAttr.ext.getState env
+      let tgt ← targetName src val dict
+      let env := ext.addEntry env (src, tgt)
+      setEnv env
+      let dict := ext.getState env
+      let firstMultArg ← firstMultiplicativeArg src dict,
+
+
+  /-
+    firstMultArg ← firstMultiplicativeArg src,
+    when (firstMultArg ≠ 1) $ relevant_arg_attr.set src firstMultArg tt,
+    if env.contains tgt
+    then proceed_fields env src tgt prio
+    else do
+      transform_decl_with_prefix_dict dict val.replace_all val.trace relevant ignore reorder src tgt
+        [`reducible, `_refl_lemma, `simp, `norm_cast, `instance, `refl, `symm, `trans,
+          `elab_as_eliminator, `no_rsimp, `continuity, `ext, `ematch, `measurability, `alias,
+          `_ext_core, `_ext_lemma_core, `nolint],
+      mwhen (has_attribute' `simps src)
+        (trace "Apply the simps attribute after the to_additive attribute"),
+      mwhen (has_attribute' `mono src)
+        (trace $ "to_additive does not work with mono, apply the mono attribute to both" ++
+          "versions after"),
+      match val.doc with
+      | some doc := add_doc_string tgt doc
+      | none := skip
+      end }
+  -/
+
   }
+  registerBuiltinAttribute $ attrImpl "toAdditive" false false
+  registerBuiltinAttribute $ attrImpl "toAdditive!" true false
+  registerBuiltinAttribute $ attrImpl "toAdditive?" false true
+  registerBuiltinAttribute $ attrImpl "toAdditive!?" true true
+  return ext
+  -- registerParametricAttribute {
+  --   name := `toAdditive
+  --   descr := "Transport multiplicative declarations to additive ones."
+  --   getParam := λ decl stx => do
+  --     match stx with
+  --       | `(attr|toAdditive   $[$ns]? $[$str]?) => return Name.anonymous
+  --       | `(attr|toAdditive!  $[$ns]? $[$str]?) => return Name.anonymous
+  --       | `(attr|toAdditive?  $[$ns]? $[$str]?) => return Name.anonymous
+  --       | `(attr|toAdditive!? $[$ns]? $[$str]?) => return Name.anonymous
+  --       | _ => throwError "unexpected toAdditive syntax {stx}" -- can this code be reached?
+  --   afterSet := λ decl val => return ()
+  -- }
 
 end ToAdditive
-
+#print MetaM.run'
 -- attribute [toAdditive] Mul HasOne HasInv Div
 
 -- attribute [toAdditive Empty] Empty
@@ -447,3 +554,18 @@ end ToAdditive
 -- attribute [toAdditive PUnit] PUnit
 
 -- attribute [toAdditive Unit] Unit
+
+
+syntax (name := foo) "foo" str : attr
+initialize fooAttr : ParametricAttribute String ←
+  registerParametricAttribute {
+    name := `foo
+    descr := "foo desc."
+    getParam := λ decl stx =>
+      match stx with
+        | `(attr|foo $ns) => do
+          IO.println ns
+          IO.println ns.toString!
+          return ""
+        | _ => throwError "unexpected foo syntax {stx}"
+  }

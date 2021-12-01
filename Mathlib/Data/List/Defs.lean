@@ -7,10 +7,10 @@ import Lean
 import Mathlib.Init.Data.Nat.Basic
 
 /-!
-## Definitions on lists
+## Definitions on Lists
 
-This file contains various definitions on lists. It does not contain
-proofs about these definitions, those are contained in other files in `data/list`.
+This file contains various definitions on `List`. It does not contain
+proofs about these definitions, those are contained in other files in `Mathlib.Data.List`.
 -/
 
 variable {α β : Type _}
@@ -26,11 +26,15 @@ def mapWithIndex (f : ℕ → α → β) (as : List α) : List β :=
   loop 0 as
 
 /-- Applicative variant of `mapWithIndex`. -/
-def mmapWithIndex {m : Type v → Type w} [Applicative m] (f : ℕ → α → m β) (as : List α) :
+def mapWithIndexM {m : Type v → Type w} [Applicative m] (f : ℕ → α → m β) (as : List α) :
   m (List β) :=
   let rec loop : ℕ → List α → m (List β)
   | _,  [] => return []
   | n, a :: as => List.cons <$> f n a <*> loop (n + 1) as
   loop 0 as
+
+/-- Drop `none`s from a list, and replace each remaining `some a` with `a`. -/
+def reduceOption (l : List (Option α)) : List α :=
+l.filterMap id
 
 end List
