@@ -19,14 +19,14 @@ and the "real" port hasn't started yet
 # Build instructions
 
 * Get the newest version of `elan`. If you already have installed a version of Lean, you can run
-```
-elan self update
-```
-If the above command fails, or if you need to install `elan`, run
-```
-curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh
-```
-If this also fails, follow the instructions under `Regular install` [here](https://leanprover-community.github.io/get_started.html).
+  ```
+  elan self update
+  ```
+  If the above command fails, or if you need to install `elan`, run
+  ```
+  curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh
+  ```
+  If this also fails, follow the instructions under `Regular install` [here](https://leanprover-community.github.io/get_started.html).
 * Install `lake`
 ```
 cd .. # go to a folder where you can clone repositories
