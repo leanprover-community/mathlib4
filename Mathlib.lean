@@ -41,6 +41,7 @@ import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.CommandQuote
+import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find

@@ -136,21 +136,11 @@ syntax (name := async) "async " tacticSeq : tactic
 
 namespace Conv
 
-macro "try " t:convSeq : conv => `(first | $t | skip)
-syntax "runConv " doSeq : conv
-
 open Tactic (simpArg rwRuleSeq)
-syntax (name := traceLHS) "traceLHS" : conv
-syntax (name := toLHS) "toLHS" : conv
-syntax (name := toRHS) "toRHS" : conv
-syntax (name := find) "find " term " => " tacticSeq : conv
 syntax (name := «for») "for " term:max " [" num,* "]" " => " tacticSeq : conv
 syntax (name := dsimp) "dsimp" (" (" &"config" " := " term ")")? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? : conv
-syntax (name := simp') "simp" (" (" &"config" " := " term ")")? (&" only")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? : conv
 syntax (name := guardLHS) "guardLHS " " =ₐ " term : conv
-syntax (name := rw) "rw " rwRuleSeq : conv
 
 end Conv
 
@@ -238,9 +228,6 @@ syntax (name := clear!) "clear!" (ppSpace ident)* : tactic
 
 syntax (name := choose) "choose" (ppSpace ident)+ (" using " term)? : tactic
 syntax (name := choose!) "choose!" (ppSpace ident)+ (" using " term)? : tactic
-
-syntax (name := convLHS) "convLHS" (" at " ident)? (" in " term)? " => " Conv.convSeq : tactic
-syntax (name := convRHS) "convRHS" (" at " ident)? (" in " term)? " => " Conv.convSeq : tactic
 
 syntax (name := congr) "congr" (ppSpace (colGt num))?
   (" with " (colGt rcasesPat)* (" : " num)?)? : tactic
@@ -482,8 +469,6 @@ syntax (name := wittTruncateFunTac) "wittTruncateFunTac" : tactic
 
 namespace Conv
 
-syntax (name := convConv) "conv" " => " Conv.convSeq : conv
-syntax (name := erw) "erw " rwRuleSeq : conv
 syntax (name := applyCongr) "applyCongr" (ppSpace (colGt term))? : conv
 syntax (name := guardTarget) "guardTarget" " =ₐ " term : conv
 
