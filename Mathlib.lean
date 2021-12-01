@@ -25,6 +25,7 @@ import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Dvd
+import Mathlib.Init.ExtendedBinder
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Set

@@ -53,7 +53,6 @@ end Parser.Command
 
 namespace Parser.Term
 
-syntax (priority := low) "{" term " | " bracketedBinder+ " }" : term
 syntax "quoteₓ " term : term
 syntax "pquoteₓ " term : term
 syntax "ppquoteₓ " term : term
