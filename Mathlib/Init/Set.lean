@@ -3,7 +3,9 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
+import Lean.Parser.Term
 import Mathlib.Init.SetNotation
+
 /-!
 
 # Sets
@@ -52,18 +54,24 @@ instance : Subset (Set α) :=
 instance : EmptyCollection (Set α) :=
 ⟨λ a => false⟩
 
--- Notation for sets
-syntax "{ " ident " | " term " }" : term
-syntax "{ " ident ":" term " | " term " }" : term
-syntax "{ " ident "∈" term " | " term " }" : term
+open Mathlib.ExtendedBinder in
+syntax "{ " extBinder " | " term " }" : term
 
 macro_rules
- -- {a : A | p a}
-| `({ $x:ident : $t | $p }) => `(setOf (λ ($x:ident : $t) => $p))
- -- {a | p a}
-| `({ $x:ident | $p }) => `(setOf (λ ($x:ident) => $p))
- -- {a ∈ s | p a} := {a | a ∈ s ∧ p a}
-| `({ $x:ident ∈ $s | $p }) => `(setOf (λ $x => $x ∈ $s ∧ $p))
+  | `({ $x:ident | $p }) => `(setOf fun $x:ident => $p)
+  | `({ $x:ident : $t | $p }) => `(setOf fun $x:ident : $t => $p)
+  | `({ $x:ident $b:binderPred | $p }) =>
+    `(setOf fun $x:ident => satisfiesBinderPred% $x $b ∧ $p)
+
+@[appUnexpander setOf]
+def setOf.unexpander : Lean.PrettyPrinter.Unexpander
+  | `(setOf fun $x:ident => $p) => `({ $x:ident | $p })
+  | `(setOf fun $x:ident : $ty:term => $p) => `({ $x:ident : $ty:term | $p })
+  | _ => throw ()
+
+open Mathlib.ExtendedBinder in
+macro (priority := low) "{ " t:term " | " bs:extBinders " }" : term =>
+  `({ x | ∃ᵉ $bs:extBinders, $t = x })
 
 def univ : Set α := {a | True }
 
@@ -105,7 +113,7 @@ def sUnion (s : Set (Set α)) : Set α := {t | ∃ a ∈ s, t ∈ a}
 prefix:110 "⋃₀" => sUnion
 
 def image (f : α → β) (s : Set α) : Set β :=
-{b | ∃ a, a ∈ s ∧ f a = b}
+  { f a | a ∈ s }
 
 instance : Functor Set :=
 { map := @Set.image }
