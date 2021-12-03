@@ -69,6 +69,11 @@ def Cache.get [Monad m] [MonadEnv m] [MonadOptions m] [MonadLiftT BaseIO m] [Mon
     | Sum.inl init =>
       let env ← getEnv
       let options ← getOptions -- TODO: sanitize options?
+      -- Default heartbeats to a reasonable value.
+      -- otherwise librarySearch times out on mathlib
+      -- TODO: add customization option
+      let options := Core.maxHeartbeats.set options <|
+        options.get? Core.maxHeartbeats.name |>.getD 1000000
       let res ← EIO.asTask do
         let metaCtx : Meta.Context := {}
         let metaState : Meta.State := {}
