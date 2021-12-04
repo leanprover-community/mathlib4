@@ -20,11 +20,11 @@ open Function
 variable {α : Sort u} {β : Sort v} {γ : Sort w}
 
 /-- `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. -/
-structure equiv (α : Sort u) (β : Sort v) :=
-(to_fun    : α → β)
-(inv_fun   : β → α)
-(left_inv  : left_inverse inv_fun to_fun)
-(right_inv : right_inverse inv_fun to_fun)
+structure equiv (α : Sort u) (β : Sort v) where
+  to_fun    : α → β
+  inv_fun   : β → α
+  left_inv  : left_inverse inv_fun to_fun
+  right_inv : right_inverse inv_fun to_fun
 
 infix:25 " ≃ " => equiv
 
@@ -43,11 +43,19 @@ rfl
 
 def refl (α) : α ≃ α := ⟨id, id, λ _ => rfl, λ _ => rfl⟩
 
+instance : Inhabited (α ≃ α) := ⟨equiv.refl α⟩
+
 def symm (e : α ≃ β) : β ≃ α := ⟨e.inv_fun, e.to_fun, e.right_inv, e.left_inv⟩
+
+def simps.symm_apply (e : α ≃ β) : β → α := e.symm
 
 def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
 ⟨e₂ ∘ (e₁ : α → β), e₁.symm ∘ (e₂.symm : γ → β),
   e₂.left_inv.comp e₁.left_inv, e₂.right_inv.comp e₁.right_inv⟩
+
+@[simp] theorem to_fun_as_coe (e : α ≃ β) : e.to_fun = e := rfl
+
+@[simp] theorem inv_fun_as_coe (e : α ≃ β) : e.inv_fun = e.symm := rfl
 
 @[simp] theorem apply_symm_apply  (e : α ≃ β) (x : β) : e (e.symm x) = x :=
 e.right_inv x
