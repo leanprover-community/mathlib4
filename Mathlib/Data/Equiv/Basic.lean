@@ -53,7 +53,7 @@ def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
 ⟨e₂ ∘ (e₁ : α → β), e₁.symm ∘ (e₂.symm : γ → β),
   e₂.left_inv.comp e₁.left_inv, e₂.right_inv.comp e₁.right_inv⟩
 
-@[simp] theorem to_fun_as_coe (e : α ≃ β) : e.to_fun = e := rfl
+theorem to_fun_as_coe (e : α ≃ β) : e.to_fun = e := rfl
 
 @[simp] theorem inv_fun_as_coe (e : α ≃ β) : e.inv_fun = e.symm := rfl
 
