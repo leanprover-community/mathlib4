@@ -20,11 +20,11 @@ open Function
 variable {α : Sort u} {β : Sort v} {γ : Sort w}
 
 /-- `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. -/
-structure equiv (α : Sort u) (β : Sort v) where
-  to_fun    : α → β
-  inv_fun   : β → α
-  left_inv  : left_inverse inv_fun to_fun
-  right_inv : right_inverse inv_fun to_fun
+structure Equiv (α : Sort u) (β : Sort v) where
+  toFun    : α → β
+  invFun   : β → α
+  leftInv  : left_inverse invFun toFun
+  rightInv : right_inverse invFun toFun
 
 infix:25 " ≃ " => equiv
 
@@ -47,7 +47,6 @@ instance : Inhabited (α ≃ α) := ⟨equiv.refl α⟩
 
 def symm (e : α ≃ β) : β ≃ α := ⟨e.inv_fun, e.to_fun, e.right_inv, e.left_inv⟩
 
-def simps.symm_apply (e : α ≃ β) : β → α := e.symm
 
 def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
 ⟨e₂ ∘ (e₁ : α → β), e₁.symm ∘ (e₂.symm : γ → β),
