@@ -26,44 +26,44 @@ structure Equiv (α : Sort u) (β : Sort v) where
   leftInv  : left_inverse invFun toFun
   rightInv : right_inverse invFun toFun
 
-infix:25 " ≃ " => equiv
+infix:25 " ≃ " => Equiv
 
-namespace equiv
+namespace Equiv
 
 /-- `perm α` is the type of bijections from `α` to itself. -/
-@[reducible] def perm (α : Sort u) := equiv α α
+@[reducible] def perm (α : Sort u) := Equiv α α
 
 instance : CoeFun (α ≃ β) (λ _ => α → β):=
-⟨to_fun⟩
+⟨toFun⟩
 
 -- Does not need to be simp, since the coercion is the projection,
 -- which simp has built-in support for.
-theorem coe_fn_mk (f : α → β) (g l r) : (equiv.mk f g l r : α → β) = f :=
+theorem coe_fn_mk (f : α → β) (g l r) : (Equiv.mk f g l r : α → β) = f :=
 rfl
 
 def refl (α) : α ≃ α := ⟨id, id, λ _ => rfl, λ _ => rfl⟩
 
-instance : Inhabited (α ≃ α) := ⟨equiv.refl α⟩
+instance : Inhabited (α ≃ α) := ⟨Equiv.refl α⟩
 
-def symm (e : α ≃ β) : β ≃ α := ⟨e.inv_fun, e.to_fun, e.right_inv, e.left_inv⟩
+def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.rightInv, e.leftInv⟩
 
 
 def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
 ⟨e₂ ∘ (e₁ : α → β), e₁.symm ∘ (e₂.symm : γ → β),
-  e₂.left_inv.comp e₁.left_inv, e₂.right_inv.comp e₁.right_inv⟩
+  e₂.leftInv.comp e₁.leftInv, e₂.rightInv.comp e₁.rightInv⟩
 
-theorem to_fun_as_coe (e : α ≃ β) : e.to_fun = e := rfl
+theorem to_fun_as_coe (e : α ≃ β) : e.toFun = e := rfl
 
-@[simp] theorem inv_fun_as_coe (e : α ≃ β) : e.inv_fun = e.symm := rfl
+@[simp] theorem inv_fun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
 
 @[simp] theorem apply_symm_apply  (e : α ≃ β) (x : β) : e (e.symm x) = x :=
-e.right_inv x
+e.rightInv x
 
 @[simp] theorem symm_apply_apply (e : α ≃ β) (x : α) : e.symm (e x) = x :=
-e.left_inv x
+e.leftInv x
 
 @[simp] theorem symm_comp_self (e : α ≃ β) : e.symm ∘ (e : α → β) = id := funext e.symm_apply_apply
 
 @[simp] theorem self_comp_symm (e : α ≃ β) : e ∘ (e.symm : β → α) = id := funext e.apply_symm_apply
 
-end equiv
+end Equiv
