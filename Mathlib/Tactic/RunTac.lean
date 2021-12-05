@@ -4,33 +4,35 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Sebastian Ullrich
 -/
 import Lean.Elab.SyntheticMVars
-open Lean Elab Tactic
+import Mathlib.Util.TermUnsafe
 
-unsafe def evalRunTacUnsafe (term : Syntax) : TacticM Unit := do
-  let term ← `(show TacticM Unit from discard do $term)
-  let n := `_runTac
-  let type := mkApp (mkConst ``TacticM) (mkConst ``Unit)
-  let e ← Term.elabTermEnsuringType term type
-  Term.synthesizeSyntheticMVarsNoPostponing
-  let e ← Meta.instantiateMVars e
-  let decl := Declaration.defnDecl {
-    name        := n
-    levelParams := []
-    type        := type
-    value       := e
-    hints       := ReducibilityHints.opaque
-    safety      := DefinitionSafety.safe
-  }
-  Term.ensureNoUnassignedMVars decl
-  let env ← getEnv
-  let tac ← try
+namespace Mathlib.RunTac
+open Lean Elab Term Meta
+
+unsafe def evalExpr (α) (expectedType : Expr) (value : Expr) (safety := DefinitionSafety.unsafe) : MetaM α :=
+  withoutModifyingEnv do
+    let name ← mkFreshUserName `_tmp
+    let type ← inferType value
+    unless ← isDefEq type expectedType do
+      throwError "unexpected type at evalExpr: {type} ≠ {expectedType}"
+    let decl := Declaration.defnDecl {
+       name, levelParams := [], type, safety, value
+       hints := ReducibilityHints.opaque
+    }
     addAndCompile decl
-    evalConst (TacticM Unit) n
-  finally
-    setEnv env
-  tac
+    evalConst α name
 
-@[implementedBy evalRunTacUnsafe]
-constant evalRunTac : Syntax → TacticM Unit
+unsafe def evalTerm (α) (type : Expr) (value : Syntax) (safety := DefinitionSafety.unsafe) : TermElabM α := do
+  let v ← Term.elabTermEnsuringType value type
+  synthesizeSyntheticMVarsNoPostponing
+  let v ← instantiateMVars v
+  if ← logUnassignedUsingErrorInfos (← getMVars v) then throwAbortTerm
+  evalExpr α type v safety
 
-elab "runTac" e:doSeq : tactic => evalRunTac e
+
+set_option trace.Elab.step true
+set_option pp.rawOnError true
+open Tactic in
+elab "runTac" e:doSeq : tactic => do
+  ← unsafe evalTerm (TacticM Unit) (mkApp (mkConst ``TacticM) (mkConst ``Unit))
+    (← `(discard do $e))

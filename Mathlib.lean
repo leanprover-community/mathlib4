@@ -67,4 +67,5 @@ import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.TryThis
 import Mathlib.Util.Export
+import Mathlib.Util.TermUnsafe
 import Mathlib.Util.Time

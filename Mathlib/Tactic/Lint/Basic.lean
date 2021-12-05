@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Robert Y. Lewis, Gabriel Ebner
 -/
 
 import Lean
+import Mathlib.Util.TermUnsafe
 open Lean Meta
 
 namespace Mathlib.Tactic.Lint
@@ -82,11 +83,8 @@ structure NamedLinter extends Linter where
 
 def NamedLinter.name (l : NamedLinter) : Name := l.declName.updatePrefix Name.anonymous
 
-private unsafe def getLinterImpl (declName : Name) : CoreM NamedLinter :=
+def getLinter (declName : Name) : CoreM NamedLinter := unsafe
   return { ← evalConstCheck Linter ``Linter declName with declName }
-
-@[implementedBy getLinterImpl]
-constant getLinter (declName : Name) : CoreM NamedLinter
 
 /-- Takes a list of names that resolve to declarations of type `linter`,
 and produces a list of linters. -/
