@@ -29,9 +29,6 @@ unsafe def evalTerm (α) (type : Expr) (value : Syntax) (safety := DefinitionSaf
   if ← logUnassignedUsingErrorInfos (← getMVars v) then throwAbortTerm
   evalExpr α type v safety
 
-
-set_option trace.Elab.step true
-set_option pp.rawOnError true
 open Tactic in
 elab "runTac" e:doSeq : tactic => do
   ← unsafe evalTerm (TacticM Unit) (mkApp (mkConst ``TacticM) (mkConst ``Unit))
