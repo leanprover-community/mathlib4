@@ -16,7 +16,7 @@ def functor.map_equiv (f : Type u → Type v) [functor f] [is_lawful_functor f] 
 
 -/
 
-open equiv
+open Equiv
 
 namespace Functor
 
@@ -29,10 +29,10 @@ theorem map_map (m : α → β) (g : β → γ) (x : f α) :
 
 /-- Apply a functor to an `equiv`. -/
 def map_equiv (h : α ≃ β) : f α ≃ f β where
-  to_fun    := map h
-  inv_fun   := map h.symm
-  left_inv x := by simp [map_map]
-  right_inv x := by simp [map_map]
+  toFun    := map h
+  invFun   := map h.symm
+  leftInv x := by simp [map_map]
+  rightInv x := by simp [map_map]
 
 @[simp]
 lemma map_equiv_apply (h : α ≃ β) (x : f α) :

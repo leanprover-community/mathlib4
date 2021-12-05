@@ -770,7 +770,7 @@ induction n with
 | zero => simp
 | succ x ih => simp; assumption
 
-@[simp] theorem repeat_succ (a: α) (n: ℕ) : repeat a (n + 1) = a :: repeat a n := rfl
+theorem repeat_succ (a: α) (n: ℕ) : repeat a (n + 1) = a :: repeat a n := rfl
 
 theorem exists_of_mem_bind {b : β} {l : List α} {f : α → List β} :
   b ∈ List.bind l f → ∃ a, a ∈ l ∧ b ∈ f a :=
