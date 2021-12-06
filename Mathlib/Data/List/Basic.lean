@@ -86,6 +86,9 @@ fun Peq => List.noConfusion Peq (fun Pheq Pteq => Pteq)
 -- @[simp] theorem cons_injective {a : α} : injective (cons a) :=
 -- assume l₁ l₂, assume Pe, tail_eq_of_cons_eq Pe
 
+-- theorem cons_inj (a : α) {l l' : List α} : a::l = a::l' ↔ l = l' :=
+-- cons_injective.eq_iff
+
 theorem exists_cons_of_ne_nil {l : List α} (h : l ≠ nil) : ∃ b L, l = b :: L := by
   induction l with
     | nil          => contradiction
