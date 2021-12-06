@@ -676,13 +676,16 @@ protected theorem Decidable.not_forall {p : α → Prop}
 theorem forall_and_distrib {p q : α → Prop} : (∀ x, p x ∧ q x) ↔ (∀ x, p x) ∧ (∀ x, q x) :=
 ⟨λ h => ⟨λ x => (h x).left, λ x => (h x).right⟩, λ ⟨h₁, h₂⟩ x => ⟨h₁ x, h₂ x⟩⟩
 
-@[simp] theorem forall_eq {p : α → Prop} {a' : α} : (∀a, a = a' → p a) ↔ p a' :=
+@[simp] theorem forall_eq {p : α → Prop} {a' : α} : (∀ a, a = a' → p a) ↔ p a' :=
 ⟨λ h => h a' rfl, λ h a e => e.symm ▸ h⟩
 
-@[simp] theorem exists_false : ¬ (∃a:α, False) := fun ⟨a, h⟩ => h
+@[simp] theorem forall_eq' {a' : α} : (∀ a, a' = a → p a) ↔ p a' :=
+by simp [@eq_comm _ a']
+
+@[simp] theorem exists_false : ¬ (∃ a : α, False) := fun ⟨a, h⟩ => h
 
 @[simp] theorem exists_and_distrib_left {q : Prop} {p : α → Prop} :
-  (∃x, q ∧ p x) ↔ q ∧ (∃x, p x) :=
+  (∃ x, q ∧ p x) ↔ q ∧ (∃ x, p x) :=
 ⟨λ ⟨x, hq, hp⟩ => ⟨hq, x, hp⟩, λ ⟨hq, x, hp⟩ => ⟨x, hq, hp⟩⟩
 
 @[simp] theorem exists_and_distrib_right {q : Prop} {p : α → Prop} :

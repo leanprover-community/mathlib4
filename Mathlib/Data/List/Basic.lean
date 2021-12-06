@@ -1080,9 +1080,95 @@ by rw [erase_eq_erasep]; exact mem_erasep_of_neg ab.symm
 
 end erase
 
+-- /-! ### disjoint -/
+
+/-- `disjoint l₁ l₂` means that `l₁` and `l₂` have no elements in common. -/
+def disjoint (l₁ l₂ : List α) : Prop := ∀ ⦃a⦄, a ∈ l₁ → a ∈ l₂ → False
+
+section disjoint
+
+variable {α : Type _} {l l₁ l₂ : List α} {p : α → Prop} {a : α}
+
+lemma disjoint_symm (d : disjoint l₁ l₂) : disjoint l₂ l₁ := λ _ i₂ i₁ => d i₁ i₂
+
+lemma disjoint_comm : disjoint l₁ l₂ ↔ disjoint l₂ l₁ := ⟨disjoint_symm, disjoint_symm⟩
+
+lemma disjoint_left : disjoint l₁ l₂ ↔ ∀ ⦃a⦄, a ∈ l₁ → a ∉ l₂ := by simp [disjoint]
+
+lemma disjoint_right : disjoint l₁ l₂ ↔ ∀ ⦃a⦄, a ∈ l₂ → a ∉ l₁ := disjoint_comm
+
+lemma disjoint_iff_ne : disjoint l₁ l₂ ↔ ∀ a ∈ l₁, ∀ b ∈ l₂, a ≠ b :=
+by simp [disjoint_left, imp_not_comm]
+
+lemma disjoint_of_subset_left (ss : l₁ ⊆ l) (d : disjoint l l₂) : disjoint l₁ l₂ :=
+λ x m => d (ss m)
+
+lemma disjoint_of_subset_right (ss : l₂ ⊆ l) (d : disjoint l₁ l) : disjoint l₁ l₂ :=
+λ x m m₁ => d m (ss m₁)
+
+lemma disjoint_of_disjoint_cons_left {l₁ l₂} : disjoint (a :: l₁) l₂ → disjoint l₁ l₂ :=
+disjoint_of_subset_left (List.subset_cons _ _)
+
+lemma disjoint_of_disjoint_cons_right {l₁ l₂} : disjoint l₁ (a :: l₂) → disjoint l₁ l₂ :=
+disjoint_of_subset_right (List.subset_cons _ _)
+
+@[simp] lemma disjoint_nil_left (l : List α) : disjoint [] l := λ a => (not_mem_nil a).elim
+
+@[simp] lemma disjoint_nil_right (l : List α) : disjoint l [] := by
+{ rw [disjoint_comm]; exact disjoint_nil_left _ }
+
+-- TODO: this lemma is marked with simp and priority 1100 in mathlib3
+lemma singleton_disjoint : disjoint [a] l ↔ a ∉ l := by
+simp [disjoint]
+
+-- TODO: this lemma is marked with priority 1100 in mathlib3
+@[simp] lemma disjoint_singleton : disjoint l [a] ↔ a ∉ l := by
+rw [disjoint_comm, singleton_disjoint]
+
+@[simp] lemma disjoint_append_left : disjoint (l₁ ++ l₂) l ↔ disjoint l₁ l ∧ disjoint l₂ l :=
+by simp [disjoint, or_imp_distrib, forall_and_distrib]
+
+-- @[simp] lemma disjoint_append_right : disjoint l (l₁ ++ l₂) ↔ disjoint l l₁ ∧ disjoint l l₂ :=
+-- disjoint_comm.trans $ by simp [disjoint_comm, disjoint_append_left]
+
+@[simp] lemma disjoint_cons_left : disjoint (a::l₁) l₂ ↔ (a ∉ l₂) ∧ disjoint l₁ l₂ :=
+(@disjoint_append_left _ l₂ [a] l₁).trans $ by simp [singleton_disjoint]
+
+-- @[simp] lemma disjoint_cons_right : disjoint l₁ (a :: l₂) ↔ (a ∉ l₁) ∧ disjoint l₁ l₂ :=
+-- disjoint_comm.trans $ by simp [disjoint_comm, disjoint_cons_left]
+
+lemma disjoint_of_disjoint_append_left_left (d : disjoint (l₁ ++ l₂) l) : disjoint l₁ l :=
+(disjoint_append_left.1 d).1
+
+lemma disjoint_of_disjoint_append_left_right (d : disjoint (l₁ ++ l₂) l) : disjoint l₂ l :=
+(disjoint_append_left.1 d).2
+
+-- lemma disjoint_of_disjoint_append_right_left (d : disjoint l (l₁ ++ l₂)) : disjoint l l₁ :=
+-- (disjoint_append_right.1 d).1
+
+-- lemma disjoint_of_disjoint_append_right_right (d : disjoint l (l₁ ++ l₂)) : disjoint l l₂ :=
+-- (disjoint_append_right.1 d).2
+
+-- lemma disjoint_take_drop {m n : ℕ} (hl : l.nodup) (h : m ≤ n) : disjoint (l.take m) (l.drop n) :=
+-- begin
+--   induction l generalizing m n,
+--   case list.nil : m n
+--   { simp },
+--   case list.cons : x xs xs_ih m n
+--   { cases m; cases n; simp only [disjoint_cons_left, mem_cons_iff, disjoint_cons_right, drop,
+--                                  true_or, eq_self_iff_true, not_true, false_and,
+--                                  disjoint_nil_left, take],
+--     { cases h },
+--     cases hl with _ _ h₀ h₁, split,
+--     { intro h, exact h₀ _ (mem_of_mem_drop h) rfl, },
+--     solve_by_elim [le_of_succ_le_succ] { max_depth := 4 } },
+-- end
+
+end disjoint
+
 -- /-! ### union -/
 
-section
+section union
 
 variable [DecidableEq α]
 
@@ -1100,7 +1186,7 @@ foldr insert l₂ l₁
   | nil => simp
   | cons a l' ih => simp [ih, or_assoc]
 
-end
+end union
 
 -- /-! ### inter -/
 
