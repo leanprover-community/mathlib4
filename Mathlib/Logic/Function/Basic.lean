@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Logic.Basic
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
 import Mathlib.Init.Set
 import Mathlib.Init.SetNotation
@@ -585,7 +586,8 @@ end uncurry
 /-- A function is involutive, if `f ∘ f = id`. -/
 def involutive {α} (f : α → α) : Prop := ∀ x, f (f x) = x
 
--- TODO: involutive_iff_iter_2_eq_id
+lemma involutive_iff_iter_2_eq_id {α} {f : α → α} : involutive f ↔ (f^[2] = id) :=
+funext_iff.symm
 
 namespace involutive
 variable {α : Sort u} {f : α → α} (h : involutive f)
