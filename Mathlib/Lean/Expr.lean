@@ -35,23 +35,26 @@ namespace Name
 
 /-- Find the largest prefix `n` of a `Name` such that `f n != none`, then replace this prefix
 with the value of `f n`. -/
-def mapPrefix (f : Name → Option Name) : Name → Name
-| anonymous => anonymous
-| str n' s _ => (f (mkStr n' s)).getD (mkStr (mapPrefix f n') s)
-| num n' nr _ => (f (mkNum n' nr)).getD (mkNum (mapPrefix f n') nr)
+def mapPrefix (f : Name → Option Name) (n : Name) : Name := do
+  if let some n' := f n then return n'
+  match n with
+  | anonymous => anonymous
+  | str n' s _ => mkStr (mapPrefix f n') s
+  | num n' i _ => mkNum (mapPrefix f n') i
 
 end Name
 
 namespace Expr
-private def getAppFnArgsAux : Expr → Array Expr → Nat → Name × Array Expr
-  | app f a _,   as, i => getAppFnArgsAux f (as.set! i a) (i-1)
-  | const n _ _, as, i => (n, as)
-  | _,           as, _ => (Name.anonymous, as)
 
+/-- The name of a constant, if it exists. Otherwise `Name.anonymous`. -/
+def constName (e : Expr) : Name :=
+e.constName?.getD Name.anonymous
+
+/-- The function and arguments of an application. -/
 def getAppFnArgs (e : Expr) : Name × Array Expr :=
-  let nargs := e.getAppNumArgs
-  getAppFnArgsAux e (mkArray nargs arbitrary) (nargs-1)
+  withApp e λ e a => (e.constName, a)
 
+/-- Turn an expression that is a natural number literal into a natural number. -/
 def natLit! : Expr → Nat
   | lit (Literal.natVal v) _ => v
   | _                        => panic! "nat literal expected"

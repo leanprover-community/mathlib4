@@ -3,6 +3,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Data.Array.Basic
+import Mathlib.Data.Array.Defs
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
 import Mathlib.Data.Equiv.Basic
@@ -49,9 +50,9 @@ import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LibrarySearch
-import Mathlib.Tactic.Lint
 import Mathlib.Tactic.Lint.Basic
 import Mathlib.Tactic.Lint.Frontend
+import Mathlib.Tactic.Lint
 import Mathlib.Tactic.Lint.Simp
 import Mathlib.Tactic.NoMatch
 import Mathlib.Tactic.NormNum
@@ -67,7 +68,6 @@ import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
-import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.TryThis
 import Mathlib.Util.Eval
 import Mathlib.Util.Export
