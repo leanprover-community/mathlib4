@@ -9,10 +9,9 @@ import Mathlib.Lean.Expr
 
 namespace Lean
 
+/-- Make `nm` protected. -/
 def setProtected {m : Type → Type} [Monad m] [MonadEnv m] (nm : Name) : m Unit := do
-  let env ← getEnv
-  let env := addProtected env nm
-  setEnv env
+  modifyEnv (addProtected · nm)
 
 namespace Parser.Tactic
 

@@ -13,20 +13,18 @@ This file contains various definitions on `List`. It does not contain
 proofs about these definitions, those are contained in other files in `Mathlib.Data.List`.
 -/
 
-variable {α β : Type _}
-
 namespace List
 
 /-- Given a function `f : ℕ → α → β` and `as : list α`, `as = [a₀, a₁, ...]`, returns the list
 `[f 0 a₀, f 1 a₁, ...]`. -/
-def mapWithIndex (f : ℕ → α → β) (as : List α) : List β :=
+def mapIdx (as : List α) (f : ℕ → α → β) : List β :=
   let rec loop : ℕ → List α → List β
   | _,  [] => return []
   | n, a :: as => f n a :: loop (n + 1) as
   loop 0 as
 
 /-- Applicative variant of `mapWithIndex`. -/
-def mapWithIndexM {m : Type v → Type w} [Applicative m] (f : ℕ → α → m β) (as : List α) :
+def mapIdxM {m : Type v → Type w} [Applicative m] (as : List α) (f : ℕ → α → m β) :
   m (List β) :=
   let rec loop : ℕ → List α → m (List β)
   | _,  [] => return []
