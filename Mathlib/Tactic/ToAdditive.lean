@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.String.Defs
 import Mathlib.Lean.Expr
-import Mathlib.Lean.Syntax
+-- import Mathlib.Lean.Syntax
 import Lean.Elab.PreDefinition.Main -- remove
 
 /-!
@@ -25,7 +25,7 @@ types and structures) from a multiplicative theory to an additive theory.
 
 open Lean Meta
 
-#print Lean.Elab.addPreDefinitions
+#check Lean.Elab.addPreDefinitions
 
 namespace ToAdditive
 
@@ -311,8 +311,8 @@ deriving instance Inhabited for ConstantInfo -- required for Array.qsort
       logInfoAt tk m!"{name} : {val.type}"
   | _ => throwUnsupportedSyntax
 
-def foo : {x : ℕ // x > 0} := ⟨1, Nat.zero_lt_one⟩
-
+-- def foo : {x : ℕ // x > 0} := ⟨1, Nat.zero_lt_one⟩
+/-
 def myadd : (@& Nat) → (@& Nat) → Nat
 | a, Nat.zero   => a
 | a, Nat.succ b => Nat.succ (myadd a b)
@@ -324,7 +324,17 @@ def myadd : (@& Nat) → (@& Nat) → Nat
 #print Nat.add._unsafe_rec
 #print Nat.add.match_1
 #print prefix Nat.add
--- #print foo
+
+def foo : ℕ := 1
+#print foo
+#print prefix ToAdditive.foo
+#eval (do
+  let env ← getEnv
+  let some p ← env.find? `ToAdditive.myadd | ()
+  let some val ← p.value? | ()
+  let f ← MetaM.run' $ ppExpr val
+  IO.println f
+  return () : MetaM Unit)-/
 
 /--
 `additiveTest f replaceAll ignore e` tests whether the expression `e` contains no constant
