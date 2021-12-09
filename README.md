@@ -27,7 +27,7 @@ and the "real" port hasn't started yet
   curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh
   ```
   If this also fails, follow the instructions under `Regular install` [here](https://leanprover-community.github.io/get_started.html).
-* To build `mathlib4` run `make build`. To build and run all tests, run `make`.
+* To build `mathlib4` run `lake build`. To build and run all tests, run `make`.
 * If you added a new file, run the following command to update `Mathlib.lean`
   ```
   find Mathlib -name "*.lean" | sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
