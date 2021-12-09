@@ -14,7 +14,6 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.ShowTerm
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
-import Mathlib.Tactic.ToAdditive
 
 -- To fix upstream:
 -- * bracketedExplicitBinders doesn't support optional types
@@ -516,6 +515,13 @@ syntax (name := reassoc) "reassoc" (ppSpace ident)? : attr
 syntax (name := ancestor) "ancestor" (ppSpace ident)* : attr
 
 syntax (name := elementwise) "elementwise" (ppSpace ident)? : attr
+
+syntax (name := toAdditiveIgnoreArgs) "toAdditiveIgnoreArgs" num* : attr
+syntax (name := toAdditiveReorder) "toAdditiveReorder" num* : attr
+syntax (name := toAdditive) "toAdditive" (ppSpace ident)? (ppSpace str)? : attr
+syntax (name := toAdditive!) "toAdditive!" (ppSpace ident)? (ppSpace str)? : attr
+syntax (name := toAdditive?) "toAdditive?" (ppSpace ident)? (ppSpace str)? : attr
+syntax (name := toAdditive!?) "toAdditive!?" (ppSpace ident)? (ppSpace str)? : attr
 
 end Attr
 
