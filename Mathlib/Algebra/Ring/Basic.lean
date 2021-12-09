@@ -1,6 +1,7 @@
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Tactic.Spread
+import Mathlib.Data.Int.Basic
 /-
 
 # Semirings and rings
@@ -106,7 +107,7 @@ instance : Numeric Nat := ⟨id⟩
 
 @[simp] theorem ofNat_eq_Nat (n : Nat) : Numeric.ofNat n = n := rfl
 
-instance : CommSemiring Nat where
+instance : CommSemiring ℕ where
   mul_comm := Nat.mul_comm
   mul_add := Nat.left_distrib
   add_mul := Nat.right_distrib

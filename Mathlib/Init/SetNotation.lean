@@ -1,3 +1,5 @@
+import Mathlib.Init.ExtendedBinder
+
 class Mem (α : outParam $ Type u) (γ : Type v) where
   mem : α → γ → Prop
 
@@ -25,15 +27,4 @@ class Sdiff (α : Type u) where
 
 infix:70 " \\ " => Sdiff.sdiff
 
-declare_syntax_cat binderterm -- notation for `a` or `a : A` or `a ∈ S`
-syntax ident : binderterm
-syntax ident " ∈ " term : binderterm
-
-syntax "∀ " binderterm ", " term : term
-syntax "∃ " binderterm ", " term : term
-
-macro_rules
--- ∀ x ∈ s, p := ∀ x, x ∈ s → p
-| `(∀ $x:ident ∈ $s, $p) => `(∀ $x:ident, $x ∈ $s → $p)
--- ∃ x ∈ s, p := ∃ x, x ∈ s ∧ p
-| `(∃ $x:ident ∈ $s, $p) => `(∃ $x:ident, $x ∈ $s ∧ $p)
+binder_predicate x " ∈ " y:term => `($x ∈ $y)

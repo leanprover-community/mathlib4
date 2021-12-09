@@ -347,7 +347,7 @@ def discriminate (H1: n = 0 → α) (H2 : ∀m, n = succ m → α) : α :=
   | 0 => H1 e
   | succ m => H2 m e
 
-lemma one_succ_zero : 1 = succ 0 := rfl
+lemma one_eq_succ_zero : 1 = succ 0 := rfl
 
 def two_step_induction {P : ℕ → Sort u} (H1 : P 0) (H2 : P 1)
     (H3 : ∀ (n : ℕ) (IH1 : P n) (IH2 : P (succ n)), P (succ (succ n))) : (a : ℕ) → P a

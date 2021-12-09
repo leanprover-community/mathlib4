@@ -2,6 +2,9 @@ import Mathlib.Logic.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Init.SetNotation
 import Lean
+
+open Function
+
 namespace List
 
 /-- The same as append, but with simpler defeq. (The one in the standard library is more efficient,
@@ -293,10 +296,10 @@ theorem mem_map {f : α → β} {b} : ∀ {l : List α}, b ∈ l.map f ↔ ∃ a
          fun | ⟨_, Or.inl rfl, h⟩ => Or.inl h
              | ⟨l, Or.inr h₁, h₂⟩ => Or.inr ⟨l, h₁, h₂⟩⟩
 
--- theorem mem_map_of_injective {f : α → β} (H : injective f) {a : α} {l : List α} :
---   f a ∈ map f l ↔ a ∈ l :=
--- ⟨fun m => let ⟨a', m', e⟩ := exists_of_mem_map m
---           H e ▸ m', mem_map_of_mem _⟩
+theorem mem_map_of_injective {f : α → β} (H : injective f) {a : α} {l : List α} :
+  f a ∈ map f l ↔ a ∈ l :=
+⟨fun m => let ⟨a', m', e⟩ := exists_of_mem_map m
+          H e ▸ m', mem_map_of_mem _⟩
 
 lemma forall_mem_map_iff {f : α → β} {l : List α} {P : β → Prop} :
   (∀ i ∈ l.map f, P i) ↔ ∀ j ∈ l, P (f j) := by
@@ -763,15 +766,16 @@ lemma append_ne_nil_of_left_ne_nil (a b : List α) (h0 : a ≠ []) : a ++ b ≠ 
 | 0 => []
 | Nat.succ n => a :: repeat a n
 
-theorem repeatSucc (a: α) (n: ℕ) : repeat a (n + 1) = a :: repeat a n := rfl
-theorem exists_of_mem_bind {b : β} {l : List α} {f : α → List β} :
-  b ∈ List.bind l f → ∃ a, a ∈ l ∧ b ∈ f a :=
-mem_bind.1
-
 @[simp] lemma length_repeat (a : α) (n : ℕ) : length (repeat a n) = n := by
 induction n with
 | zero => simp
 | succ x ih => simp; assumption
+
+theorem repeat_succ (a: α) (n: ℕ) : repeat a (n + 1) = a :: repeat a n := rfl
+
+theorem exists_of_mem_bind {b : β} {l : List α} {f : α → List β} :
+  b ∈ List.bind l f → ∃ a, a ∈ l ∧ b ∈ f a :=
+mem_bind.1
 
 /-! ### insert -/
 section insert

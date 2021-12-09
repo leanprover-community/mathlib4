@@ -1,5 +1,5 @@
-import Mathlib.Data.Nat.Basic -- *only* for notation ℕ which should be in a "prelude"
-import Mathlib.Data.Int.Basic -- *only* for notation ℤ which should be in a "prelude"
+import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Data.Int.Basic
 import Mathlib.Tactic.Spread
 
 /-!
@@ -367,7 +367,7 @@ theorem pow_succ (n : ℕ) (a : M) : a ^ n.succ = a ^ n * a :=
 by rw [pow_succ', pow_mul_comm]
 
 @[simp] theorem pow_one (a : M) : a ^ (1:ℕ) = a :=
-by rw [Nat.one_succ_zero, pow_succ, pow_zero, one_mul]
+by rw [Nat.one_eq_succ_zero, pow_succ, pow_zero, one_mul]
 
 theorem pow_add (a : M) (m n : ℕ) : a^(m + n) = a^m * a^n := by
   induction n with
