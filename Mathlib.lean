@@ -50,9 +50,9 @@ import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.Lint
 import Mathlib.Tactic.Lint.Basic
 import Mathlib.Tactic.Lint.Frontend
-import Mathlib.Tactic.Lint
 import Mathlib.Tactic.Lint.Simp
 import Mathlib.Tactic.NoMatch
 import Mathlib.Tactic.NormNum
