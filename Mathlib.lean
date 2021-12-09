@@ -3,6 +3,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Data.Array.Basic
+import Mathlib.Data.Array.Defs
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
 import Mathlib.Data.Equiv.Basic
@@ -11,6 +12,7 @@ import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Card
+import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Perm
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Gcd
@@ -30,6 +32,7 @@ import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Set
 import Mathlib.Init.SetNotation
+import Mathlib.Lean.Expr
 import Mathlib.Lean.LocalContext
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Basic

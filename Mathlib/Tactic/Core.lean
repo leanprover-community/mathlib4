@@ -5,27 +5,18 @@ Authors: Mario Carneiro, Aurélien Saue
 -/
 
 import Lean.Expr
+import Mathlib.Lean.Expr
 
-namespace Lean.Parser.Tactic
+namespace Lean
+
+/-- Make `nm` protected. -/
+def setProtected {m : Type → Type} [Monad m] [MonadEnv m] (nm : Name) : m Unit := do
+  modifyEnv (addProtected · nm)
+
+namespace Parser.Tactic
 
 -- syntax simpArg := simpStar <|> simpErase <|> simpLemma
 def simpArg := simpStar.binary `orelse (simpErase.binary `orelse simpLemma)
 
-end Lean.Parser.Tactic
-
-namespace Lean.Expr
-
-private def getAppFnArgsAux : Expr → Array Expr → Nat → Name × Array Expr
-  | app f a _,   as, i => getAppFnArgsAux f (as.set! i a) (i-1)
-  | const n _ _, as, i => (n, as)
-  | _,           as, _ => (Name.anonymous, as)
-
-def getAppFnArgs (e : Expr) : Name × Array Expr :=
-  let nargs := e.getAppNumArgs
-  getAppFnArgsAux e (mkArray nargs arbitrary) (nargs-1)
-
-def natLit! : Expr → Nat
-  | lit (Literal.natVal v) _ => v
-  | _                        => panic! "nat literal expected"
-
-end Expr
+end Parser.Tactic
+end Lean
