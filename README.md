@@ -27,15 +27,6 @@ and the "real" port hasn't started yet
   curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh
   ```
   If this also fails, follow the instructions under `Regular install` [here](https://leanprover-community.github.io/get_started.html).
-* Install `lake`
-  ```
-  cd .. # go to a folder where you want to clone repositories
-  git clone https://github.com/leanprover/lake.git
-  cd lake
-  lake +Kha/lean4:v4.0.0-bundle-rc build
-  ./build/bin/lake # this should output some usage information
-  cd ../mathlib4
-  ```
 * To build `mathlib4` run `make build`. To build and run all tests, run `make`.
 * If you added a new file, run the following command to update `Mathlib.lean`
   ```
