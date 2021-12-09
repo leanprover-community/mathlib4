@@ -46,11 +46,13 @@ end Name
 
 namespace Expr
 
-/-- The name of a constant, if it exists. Otherwise `Name.anonymous`. -/
+/-! ### Declarations about `Expr` -/
+
+/-- If the expression is a constant, return that name. Otherwise return `Name.anonymous`. -/
 def constName (e : Expr) : Name :=
 e.constName?.getD Name.anonymous
 
-/-- The function and arguments of an application. -/
+/-- Return the function (name) and arguments of an application. -/
 def getAppFnArgs (e : Expr) : Name × Array Expr :=
   withApp e λ e a => (e.constName, a)
 
