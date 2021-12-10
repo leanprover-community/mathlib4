@@ -45,6 +45,18 @@ def mapPrefix (f : Name → Option Name) (n : Name) : Name := do
 
 end Name
 
+namespace ConstantInfo
+
+def isDef : ConstantInfo → Bool
+  | defnInfo _ => true
+  | _          => false
+
+def isThm : ConstantInfo → Bool
+  | thmInfo _ => true
+  | _          => false
+
+end ConstantInfo
+
 namespace Expr
 
 /-! ### Declarations about `Expr` -/

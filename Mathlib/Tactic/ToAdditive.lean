@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.String.Defs
 import Mathlib.Tactic.Core
+import Mathlib.Lean.Expr.ReplaceRec
 -- import Mathlib.Lean.Syntax
 import Lean.Elab.PreDefinition.Main -- remove
 import Mathlib.Tactic.PrintPrefix -- not needed
@@ -24,87 +25,29 @@ types and structures) from a multiplicative theory to an additive theory.
 
 -/
 
-namespace Lean
-namespace Expr
+open Lean Meta Elab Command Expr
 
-/-! We define a more flexible version of `Expr.replace` where we can use recursive calls even when
-  replacing a subexpression. We completely mimic the implementation of `Expr.replace`. -/
-namespace ReplaceRecImpl
+namespace ToAdditive
 
-abbrev cacheSize : USize := 8192
-
-structure State where
-  -- Remark: our "unsafe" implementation relies on the fact that `()` is not a valid Expr
-  keys    : Array Expr
-  results : Array Expr
-
-abbrev ReplaceM := StateM State
-
-@[inline] unsafe def cache (i : USize) (key : Expr) (result : Expr) : ReplaceM Expr := do
-  modify fun ⟨keys, results⟩ => { keys := keys.uset i key lcProof, results := results.uset i result lcProof };
-  pure result
-
-@[inline] unsafe def replaceUnsafeM (f? : Expr → Option (Array Expr × (Array Expr → Expr)))
-  (size : USize) (e : Expr) : ReplaceM Expr := do
-  let rec @[specialize] visit (e : Expr) : ReplaceM Expr := do
-    let c ← get
-    let h := ptrAddrUnsafe e
-    let i := h % size
-    if ptrAddrUnsafe (c.keys.uget i lcProof) == h then
-      pure <| c.results.uget i lcProof
-    else match f? e with
-      | some (es, g) => do
-        let esNew ← es.mapM visit
-        cache i e (g esNew)
-      | none      => match e with
-        | Expr.forallE _ d b _   => cache i e <| e.updateForallE! (← visit d) (← visit b)
-        | Expr.lam _ d b _       => cache i e <| e.updateLambdaE! (← visit d) (← visit b)
-        | Expr.mdata _ b _       => cache i e <| e.updateMData! (← visit b)
-        | Expr.letE _ t v b _    => cache i e <| e.updateLet! (← visit t) (← visit v) (← visit b)
-        | Expr.app f a _         => cache i e <| e.updateApp! (← visit f) (← visit a)
-        | Expr.proj _ _ b _      => cache i e <| e.updateProj! (← visit b)
-        | e                      => pure e
-  visit e
-
-unsafe def initCache : State :=
-  { keys    := mkArray cacheSize.toNat (cast lcProof ()), -- `()` is not a valid `Expr`
-    results := mkArray cacheSize.toNat arbitrary }
-
-@[inline] unsafe def replaceUnsafe (f? : Expr → Option (Array Expr × (Array Expr → Expr)))
-  (e : Expr) : Expr :=
-  (replaceUnsafeM f? cacheSize e).run' initCache
-
-end ReplaceRecImpl
-
-/-- A version of `Expr.replace` where we can use recursive calls even if we replace a subexpression.
-  When reaching a subexpression `e` we first call `g e` to see if we want to do anything with this
-  expression. If `g e = none` we proceed to the children of `e`. If `g e = some [e₁, ..., eₙ]`,
-  we first recursively apply this function on `[e₁, ..., eₙ]` to get new expressions
-  `[f₁, ..., fₙ]`. Then we replace `e` by `f e [f₁, ..., fₙ]`.
-
-  Important: The `[e₁, ..., eₙ]` must all be smaller than `e` according to some measure for
-  this function to terminate. -/
-@[implementedBy ReplaceRecImpl.replaceUnsafe]
-partial def replaceRec (f? : Expr → Option (Array Expr × (Array Expr → Expr))) (e : Expr) :
-  Expr :=
-  /- We don't provide a reference implementation, since there is no safe implementation for general
-  `g`. -/
-  e
-
-
+syntax (name := toAdditiveIgnoreArgs) "toAdditiveIgnoreArgs" num* : attr
+syntax (name := toAdditiveRelevantArg) "toAdditiveRelevantArg" num : attr
+syntax (name := toAdditiveReorder) "toAdditiveReorder" num* : attr
+syntax (name := toAdditive) "toAdditive" (ppSpace ident)? (ppSpace str)? : attr
+syntax (name := toAdditive!) "toAdditive!" (ppSpace ident)? (ppSpace str)? : attr
+syntax (name := toAdditive?) "toAdditive?" (ppSpace ident)? (ppSpace str)? : attr
+syntax (name := toAdditive!?) "toAdditive!?" (ppSpace ident)? (ppSpace str)? : attr
 
 /--
-`e.applyReplacementFun f test` applies `f` to each identifier
-(inductive type, defined function etc) in an expression, unless
+`applyReplacementFun f test relevant reorder e` applies `f` to each identifier in `e`, unless
 * The identifier occurs in an application with first argument `arg`; and
 * `test arg` is false.
-However, if `f` is in the dictionary `relevant`, then the argument `relevant.find f`
-is tested, instead of the first argument.
+If `f` is in the dictionary `relevant`, then the argument `relevant.find f` is tested,
+instead of the first argument.
 
-Reorder contains the information about what arguments to reorder:
-e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorder.find g = some [1]`.
+Furthermore, we reorder some arguments according to the dictionary `reorder`.
+E.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorder.find g = some [1]`.
 We assume that all functions where we want to reorder arguments are fully applied.
-This can be done by applying `expr.eta_expand` first.
+This can be done by applying `Expr.etaExpand` first.
 -/
 partial def applyReplacementFun (f : Name → Name) (test : Expr → Bool)
   (relevant : NameMap ℕ) (reorder : NameMap $ List ℕ) : Expr → Expr :=
@@ -129,50 +72,6 @@ Expr.replaceRec λ e =>
         some (g.getAppArgs.append #[x], λ es => mkAppN f es) else
         none
     | _ => none
-#print Array.getD
-/-- Reorder the last two arguments of every function in the expression. -/
-partial def reorderLastArguments : Expr → Expr :=
-Expr.replaceRec λ e =>
-  let n := e.getAppNumArgs
-  if n ≥ 2 then
-    some (e.getAppArgs, λ es => mkAppN e.getAppFn $ es.swap! (n - 1) (n - 2)) else
-    none
-#print Meta.inferType
-def foo (f : ℕ → ℕ → ℕ) (n₁ n₂ n₃ n₄ : ℕ) : ℕ := f (f n₁ n₂) (f n₃ n₄)
-def bar (f : ℕ → ℕ → ℕ) (n₁ n₂ n₃ n₄ : ℕ) : ℕ := f (f n₄ n₃) (f n₂ n₁)
-#eval (do
-  let d ← getDecl `Lean.Expr.foo
-  let e := d.value!
-  let s ← ppExpr { env := (← getEnv)} e
-  IO.println $ "before: " ++ s
-  let e := reorderLastArguments e
-  let s ← ppExpr { env := (← getEnv)} e
-  IO.println $ "after:  " ++ s
-  let t ← Meta.inferType e
-  let s ← ppExpr { env := (← getEnv)} t
-  IO.println $ "new type: " ++ s
-  let d ← getDecl `Lean.Expr.bar
-  let s ← ppExpr { env := (← getEnv)} d.value!
-  IO.println $ "after:  " ++ s
-  guard $ e == d.value! : MetaM Unit)
-
-end Expr
-
-end Lean
-
-open Lean Meta Elab Command
-
-
-
-namespace ToAdditive
-
-syntax (name := toAdditiveIgnoreArgs) "toAdditiveIgnoreArgs" num* : attr
-syntax (name := toAdditiveRelevantArg) "toAdditiveRelevantArg" num : attr
-syntax (name := toAdditiveReorder) "toAdditiveReorder" num* : attr
-syntax (name := toAdditive) "toAdditive" (ppSpace ident)? (ppSpace str)? : attr
-syntax (name := toAdditive!) "toAdditive!" (ppSpace ident)? (ppSpace str)? : attr
-syntax (name := toAdditive?) "toAdditive?" (ppSpace ident)? (ppSpace str)? : attr
-syntax (name := toAdditive!?) "toAdditive!?" (ppSpace ident)? (ppSpace str)? : attr
 
 /-! An attribute that tells `@[toAdditive]` that certain arguments of this definition are not
 involved when using `@[toAdditive]`.

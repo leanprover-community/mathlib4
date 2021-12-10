@@ -9,6 +9,8 @@ import Mathlib.Lean.Expr
 
 namespace Lean
 
+open Elab
+
 /--
 Return the modifiers of declaration `nm` with (optional) docstring `newDoc`.
 Currently, recursive or partial definitions are not supported, and no attributes are provided.
@@ -16,7 +18,7 @@ Currently, recursive or partial definitions are not supported, and no attributes
 def toModifiers (nm : Name) (newDoc : Option String := none) :
   CoreM Modifiers := do
   let env ← getEnv
-  let d ← getDecl nm
+  let d ← getConstInfo nm
   let mods : Modifiers :=
   { docString? := newDoc
     visibility :=
@@ -40,7 +42,7 @@ Currently only implemented for definitions and theorems. Also see docstring of `
 -/
 def toPreDefinition (nm newNm : Name) (newType newValue : Expr) (newDoc : Option String := none) :
   CoreM PreDefinition := do
-  let d ← getDecl nm
+  let d ← getConstInfo nm
   let mods ← toModifiers nm newDoc
   let predef : PreDefinition :=
   { ref := Syntax.missing
