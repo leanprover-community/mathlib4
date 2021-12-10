@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lewis, Floris van Doorn
 -/
 import Lean
+import Mathlib.Util.TermUnsafe
 
 namespace Lean.Expr
 /-!
@@ -65,8 +66,8 @@ open ReplaceRecImpl
   Important: In order for this function to terminate, the `[e₁, ..., eₙ]` must all be smaller than
   `e` according to some measure  (and this measure must also be strictly decreasing on the w.r.t.
   the structural subterm relation). -/
-unsafe def replaceRec (f? : Expr → Option (Array Expr × (Array Expr → Expr))) (e : Expr) :
+def replaceRec (f? : Expr → Option (Array Expr × (Array Expr → Expr))) (e : Expr) :
   Expr :=
-   (replaceUnsafeM f? cacheSize e).run' initCache
+  unsafe (replaceUnsafeM f? cacheSize e).run' initCache
 
 end Lean.Expr
