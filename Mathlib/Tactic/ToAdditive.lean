@@ -3,12 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn
 -/
-import Mathlib.Data.Array.Defs
-import Mathlib.Data.String.Defs
 import Mathlib.Tactic.Core
--- import Mathlib.Lean.Syntax
-import Lean.Elab.PreDefinition.Main -- remove
-import Mathlib.Tactic.PrintPrefix -- not needed
+import Mathlib.Lean.Expr
 
 /-!
 # Transport multiplicative to additive
@@ -21,7 +17,7 @@ Currently this is a no-op implementation.
 
 -/
 
-open Lean Meta Elab Command
+open Lean Meta Elab Command Expr
 
 namespace ToAdditive
 
@@ -48,12 +44,12 @@ This can be done by applying `expr.eta_expand` first.
 -/
 partial def applyReplacementFun (f : Name → Name) (test : Expr → Bool)
   (relevant : NameMap ℕ) (reorder : NameMap $ List ℕ) : Expr → Expr :=
-Expr.replaceRec λ e =>
+replaceRec λ e =>
   match e with
     | const n ls _ => some (#[], λ es =>
       mkConst (f n) $
       -- if the first two arguments are reordered, we also reorder the first two universe parameters
-      if 1 ∈ (reorder.find? n).getD [] then (ls.get! 1)::ls.head!::ls.drop 2 else ls)
+      if ((reorder.find? n).getD []).contains 1 then (ls.get! 1)::ls.head!::ls.drop 2 else ls)
     | app g x _ =>
       let f := g.getAppFn
       let nm? := f.constName?

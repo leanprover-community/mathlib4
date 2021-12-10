@@ -13,8 +13,7 @@ open Elab
 
 /-- Get the declaration `nm` in the current environment. -/
 def getDecl (nm : Name) : CoreM ConstantInfo := do
-  let env ← getEnv
-  let some d ← env.find? nm | throwError "no such declaration {nm}."
+  let some d ← (← getEnv).find? nm | throwError "no such declaration {nm}."
   return d
 
 /-- Make `nm` protected. -/
