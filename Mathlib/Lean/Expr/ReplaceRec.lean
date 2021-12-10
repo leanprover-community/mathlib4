@@ -66,8 +66,7 @@ open ReplaceRecImpl
   Important: In order for this function to terminate, the `[e₁, ..., eₙ]` must all be smaller than
   `e` according to some measure  (and this measure must also be strictly decreasing on the w.r.t.
   the structural subterm relation). -/
-def replaceRec (f? : Expr → Option (Array Expr × (Array Expr → Expr))) (e : Expr) :
-  Expr :=
+def replaceRec (f? : Expr → Option (Array Expr × (Array Expr → Expr))) (e : Expr) : Expr :=
   unsafe (replaceUnsafeM f? cacheSize e).run' initCache
 
 end Lean.Expr
