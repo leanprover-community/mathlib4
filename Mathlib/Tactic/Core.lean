@@ -9,6 +9,14 @@ import Mathlib.Lean.Expr
 
 namespace Lean
 
+open Elab
+
+/-- Get the declaration `nm` in the current environment. -/
+def getDecl (nm : Name) : CoreM ConstantInfo := do
+  let env ← getEnv
+  let some d ← env.find? nm | throwError "no such declaration {nm}."
+  return d
+
 /-- Make `nm` protected. -/
 def setProtected {m : Type → Type} [Monad m] [MonadEnv m] (nm : Name) : m Unit := do
   modifyEnv (addProtected · nm)
