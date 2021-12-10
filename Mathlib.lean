@@ -33,6 +33,7 @@ import Mathlib.Init.Logic
 import Mathlib.Init.Set
 import Mathlib.Init.SetNotation
 import Mathlib.Lean.Expr
+import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.LocalContext
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Basic
@@ -68,7 +69,6 @@ import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
-import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.TryThis
 import Mathlib.Util.Eval
 import Mathlib.Util.Export
