@@ -1,4 +1,5 @@
-import Mathlib.Tactic.Core
+import Mathlib.Lean.Expr.ReplaceRec
+import Mathlib.Init.Data.Nat.Basic
 
 open Lean Meta Elab
 
@@ -7,7 +8,7 @@ section replaceRec
 
 /-- Reorder the last two arguments of every function in the expression.
   (The resulting term will generally not be a type-correct) -/
-partial def reorderLastArguments : Expr → Expr :=
+unsafe def reorderLastArguments : Expr → Expr :=
 Expr.replaceRec λ e =>
   let n := e.getAppNumArgs
   if n ≥ 2 then
