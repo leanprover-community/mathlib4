@@ -2,6 +2,9 @@ import Mathlib.Tactic.Core
 
 open Lean Meta Elab
 
+section replaceRec
+/-! Test the implementation of `Expr.replaceRec` -/
+
 /-- Reorder the last two arguments of every function in the expression.
   (The resulting term will generally not be a type-correct) -/
 partial def reorderLastArguments : Expr → Expr :=
@@ -28,3 +31,5 @@ def bar (f : ℕ → ℕ → ℕ) (n₁ n₂ n₃ n₄ : ℕ) : ℕ := f (f n₄
   let s ← ppExpr { env := (← getEnv)} d.value!
   IO.println $ "after:  " ++ s
   guard $ e == d.value! : MetaM Unit)
+
+end replaceRec
