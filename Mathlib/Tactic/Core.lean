@@ -9,8 +9,6 @@ import Mathlib.Lean.Expr
 
 namespace Lean
 
-open Elab
-
 /-- Make `nm` protected. -/
 def setProtected {m : Type → Type} [Monad m] [MonadEnv m] (nm : Name) : m Unit := do
   modifyEnv (addProtected · nm)
