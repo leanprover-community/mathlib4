@@ -94,13 +94,13 @@ def String.toAsciiByteArray (s : String) : ByteArray :=
 
 /-- Convert a byte slice into a string. This does not handle non-ASCII characters correctly:
 every byte will become a unicode character with codepoint < 256. -/
-def ByteSlice.toString (bs : ByteSlice) : String := do
+def ByteSlice.toString (bs : ByteSlice) : String := Id.run do
   let mut s := ""
   for c in bs do s := s.push c.toChar
   s
 
 instance : ToString ByteSlice where
-  toString bs := do
+  toString bs := Id.run do
     let mut s := ""
     for c in bs do s := s.push c.toChar
     s

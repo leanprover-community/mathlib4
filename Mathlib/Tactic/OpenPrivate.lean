@@ -38,7 +38,7 @@ def elabOpenPrivateLike (ids : Array Syntax) (tgts mods : Option (Array Syntax))
     for declName in (← getEnv).declsInModuleIdx modIdx do
       if isPrivateName declName then
         names := names.insert declName
-  let appendNames (msg : String) : String := do
+  let appendNames (msg : String) : String := Id.run do
     let mut msg := msg
     for c in names do
       if let some name := privateToUserName? c then
@@ -61,7 +61,7 @@ def elabOpenPrivateLike (ids : Array Syntax) (tgts mods : Option (Array Syntax))
         decls := decls.push (OpenDecl.explicit n new)
       else unreachable!
     | _ => throwError s!"provided name is ambiguous: found {found.map privateToUserName?}"
-  modifyScope fun scope => do
+  modifyScope fun scope => Id.run do
     let mut openDecls := scope.openDecls
     for decl in decls do
       openDecls := decl::openDecls
