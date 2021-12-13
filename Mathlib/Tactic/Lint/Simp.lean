@@ -7,10 +7,6 @@ import Mathlib.Tactic.Lint.Basic
 import Mathlib.Tactic.OpenPrivate
 open Lean Meta
 
-def Option.mapM [Monad m] (f : α → m β) : Option α → m (Option β)
-  | none => none
-  | some a => f a
-
 namespace Mathlib.Tactic.Lint
 
 /-!

@@ -19,7 +19,7 @@ namespace List
 `[f 0 a₀, f 1 a₁, ...]`. -/
 def mapIdx (as : List α) (f : ℕ → α → β) : List β :=
   let rec loop : ℕ → List α → List β
-  | _,  [] => return []
+  | _,  [] => []
   | n, a :: as => f n a :: loop (n + 1) as
   loop 0 as
 
@@ -27,7 +27,7 @@ def mapIdx (as : List α) (f : ℕ → α → β) : List β :=
 def mapIdxM {m : Type v → Type w} [Applicative m] (as : List α) (f : ℕ → α → m β) :
   m (List β) :=
   let rec loop : ℕ → List α → m (List β)
-  | _,  [] => return []
+  | _,  [] => []
   | n, a :: as => List.cons <$> f n a <*> loop (n + 1) as
   loop 0 as
 
