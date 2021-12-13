@@ -12,7 +12,7 @@ class Numeric (α : Type u) where
   ofNat : Nat → α
 
 instance Numeric.OfNat [Numeric α] : OfNat α n := ⟨Numeric.ofNat n⟩
-instance [Numeric α] : Coe ℕ α := ⟨Numeric.ofNat⟩
+instance [Numeric α] : CoeTail ℕ α := ⟨Numeric.ofNat⟩
 
 theorem ofNat_eq_ofNat (α) (n : ℕ) [Numeric α] : Numeric.ofNat (α := α) n = OfNat.ofNat n := rfl
 
