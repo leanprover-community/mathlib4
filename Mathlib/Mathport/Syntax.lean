@@ -32,20 +32,50 @@ syntax identScope := ":" "(" "scoped " ident " => " term ")"
 
 syntax notation3Item := strLit <|> bindersItem <|> (ident (identScope)?)
 
-macro ak:Term.attrKind "notation3 "
-  prec:optPrecedence name:optNamedName prio:optNamedPrio
-  lits:((ppSpace notation3Item)+) " => " val:term : command => do
-  let args ← lits.getArgs.mapM fun lit =>
-    let k := lit[0].getKind
-    if k == strLitKind then `(macroArg| $(lit[0]):strLit)
-    else if k == ``bindersItem then withFreshMacroScope `(macroArg| bi:explicitBinders)
-    else withFreshMacroScope `(macroArg| $(lit[0]):ident:term)
-  `($ak:attrKind macro
-    $[$(prec.getOptional?):precedence]?
-    $[$(name.getOptional?):namedName]?
-    $[$(prio.getOptional?):namedPrio]?
-    $(args[0]):macroArg $[$(args[1:].toArray):macroArg]* : term =>
-    `(sorry))
+local syntax "scoped% " ident " in " explicitBinders "; " term " with " term : term
+macro_rules
+  | `(scoped% $x in $[$ys:ident]* : $ty; $res with $term) =>
+    `(scoped% $x in ($ys* : $ty); $res with $term)
+  | `(scoped% $x in ($y $ys* : $ty) $binders*; $res with $term) =>
+    `(scoped% $x in ($y : $ty) ($ys* : $ty) $binders*; $res with $term)
+  | `(scoped% $x in $[$binders]*; $res with $term) =>
+    if binders.isEmpty then res else Macro.throwUnsupported
+macro_rules
+  | `(scoped% $x in ($y : $ty) $binders*; $res with $term) =>
+    term.replaceM fun x' => do
+      unless x == x' do return none
+      `(fun $y:ident : $ty => scoped% $x in $[$binders]*; $res with $term)
+
+open Parser Term in
+macro ak:Term.attrKind "notation3"
+    prec:optPrecedence name:optNamedName prio:optNamedPrio
+    lits:((ppSpace notation3Item)+) " => " val:term : command => do
+  let mut boundNames : Std.HashMap Name Syntax := {}
+  let mut macroArgs := #[]
+  for item in lits.getArgs do
+    let lit := item[0]
+    if let some _ := lit.isStrLit? then
+      macroArgs := macroArgs.push (← `(macroArg| $lit:strLit))
+    else if lit.isOfKind ``bindersItem then
+      macroArgs := macroArgs.push (← `(macroArg| binders:explicitBinders))
+    else if let Syntax.ident _ _ id .. := lit then
+      macroArgs := macroArgs.push (← `(macroArg| $lit:ident:term))
+      if item[1].getNumArgs == 1 then
+        let scopedId := item[1][0][3]
+        let scopedTerm := item[1][0][5]
+        let scopedTerm ← scopedTerm.replaceM fun
+          | Syntax.ident _ _ id .. => boundNames.find? id
+          | _ => none
+        boundNames := boundNames.insert id <|
+          ← `(scoped% $scopedId:ident in $$binders:explicitBinders; $(lit.mkAntiquotNode) with $scopedTerm:term)
+      else
+        boundNames := boundNames.insert id <| lit.mkAntiquotNode
+  let val ← val.replaceM fun
+    | Syntax.ident _ _ id .. => boundNames.find? id
+    | _ => none
+  `($ak:attrKind macro $[$(prec.getOptional?):precedence]? $[$(name.getOptional?):namedName]?
+      $[$(prio.getOptional?):namedPrio]? $[$macroArgs:macroArg]* : term => do
+    `($val:term))
 
 end Parser.Command
 
