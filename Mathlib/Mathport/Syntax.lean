@@ -34,17 +34,26 @@ syntax notation3Item := strLit <|> bindersItem <|> (ident (identScope)?)
 
 local syntax "scoped% " ident " in " explicitBinders "; " term " with " term : term
 macro_rules
-  | `(scoped% $x in $[$ys:ident]* : $ty; $res with $term) =>
+  | `(scoped% $x in $[$ys:binderIdent]* : $ty; $res with $term) =>
     `(scoped% $x in ($ys* : $ty); $res with $term)
   | `(scoped% $x in ($y $ys* : $ty) $binders*; $res with $term) =>
     `(scoped% $x in ($y : $ty) ($ys* : $ty) $binders*; $res with $term)
   | `(scoped% $x in $[$binders]*; $res with $term) =>
     if binders.isEmpty then res else Macro.throwUnsupported
 macro_rules
+  | `(scoped% $x in $[$binders:ident]*; $res with $term) =>
+    if binders.isEmpty then res else Macro.throwUnsupported
+macro_rules
   | `(scoped% $x in ($y : $ty) $binders*; $res with $term) =>
     term.replaceM fun x' => do
       unless x == x' do return none
-      `(fun $y:ident : $ty => scoped% $x in $[$binders]*; $res with $term)
+      let body ← `(scoped% $x in $[$binders]*; $res with $term)
+      if y.isIdent then `(fun $y:ident : $ty => $body) else `(fun _ : $ty => $body)
+macro_rules
+  | `(scoped% $x in $y:ident $[$ys:ident]*; $res with $term) =>
+    term.replaceM fun x' => do
+      unless x == x' do return none
+      `(fun $y => scoped% $x in $[$ys:ident]*; $res with $term)
 
 open Parser Term in
 macro ak:Term.attrKind "notation3"
