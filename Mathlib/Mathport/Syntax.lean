@@ -45,6 +45,7 @@ macro_rules
     if binders.isEmpty then res else Macro.throwUnsupported
 macro_rules
   | `(scoped% $x in ($y : $ty) $binders*; $res with $term) =>
+    let y := y[0]
     term.replaceM fun x' => do
       unless x == x' do return none
       let body ← `(scoped% $x in $[$binders]*; $res with $term)
