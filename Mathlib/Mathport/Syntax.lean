@@ -26,12 +26,6 @@ elab (name := include) "include " ident+ : command => ()
 elab (name := omit) "omit " ident+ : command => ()
 syntax (name := parameter) "parameter " bracketedBinder+ : command
 
-syntax bindersItem := "(" "..." ")"
-
-syntax identScope := ":" "(" "scoped " ident " => " term ")"
-
-syntax notation3Item := strLit <|> bindersItem <|> (ident (identScope)?)
-
 /--
 Expands binders into nested combinators.
 For example, the familiar exists is given by:
@@ -64,7 +58,9 @@ macro_rules
       unless x == x' do return none
       `(fun $y => expandBinders% ($x => $term) $[$ys:ident]*, $res)
 
-open Parser Term in
+syntax bindersItem := "(" "..." ")"
+syntax identScope := ":" "(" "scoped " ident " => " term ")"
+syntax notation3Item := strLit <|> bindersItem <|> (ident (identScope)?)
 macro ak:Term.attrKind "notation3"
     prec:optPrecedence name:optNamedName prio:optNamedPrio
     lits:((ppSpace notation3Item)+) " => " val:term : command => do
