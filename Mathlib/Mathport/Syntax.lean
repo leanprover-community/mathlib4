@@ -32,29 +32,37 @@ syntax identScope := ":" "(" "scoped " ident " => " term ")"
 
 syntax notation3Item := strLit <|> bindersItem <|> (ident (identScope)?)
 
-local syntax "scoped% " ident " in " explicitBinders "; " term " with " term : term
+/--
+Expands binders into nested combinators.
+For example, the familiar exists is given by:
+`expandBinders% (p => Exists p) x y : Nat, x < y`
+which expands to the same expression as
+`∃ x y : Nat, x < y`
+-/
+syntax "expandBinders% " "(" ident " => " term ")" explicitBinders ", " term : term
+
 macro_rules
-  | `(scoped% $x in $[$ys:binderIdent]* : $ty; $res with $term) =>
-    `(scoped% $x in ($ys* : $ty); $res with $term)
-  | `(scoped% $x in ($y $ys* : $ty) $binders*; $res with $term) =>
-    `(scoped% $x in ($y : $ty) ($ys* : $ty) $binders*; $res with $term)
-  | `(scoped% $x in $[$binders]*; $res with $term) =>
+  | `(expandBinders% ($x => $term) $[$ys:binderIdent]* : $ty, $res) =>
+    `(expandBinders% ($x => $term) ($ys* : $ty), $res)
+  | `(expandBinders% ($x => $term) ($y $ys* : $ty) $binders*, $res) =>
+    `(expandBinders% ($x => $term) ($y : $ty) ($ys* : $ty) $binders*, $res)
+  | `(expandBinders% ($x => $term) $[$binders]*, $res) =>
     if binders.isEmpty then res else Macro.throwUnsupported
 macro_rules
-  | `(scoped% $x in $[$binders:ident]*; $res with $term) =>
+  | `(expandBinders% ($x => $term) $[$binders:ident]*, $res) =>
     if binders.isEmpty then res else Macro.throwUnsupported
 macro_rules
-  | `(scoped% $x in ($y : $ty) $binders*; $res with $term) =>
+  | `(expandBinders% ($x => $term) ($y : $ty) $binders*, $res) =>
     let y := y[0]
     term.replaceM fun x' => do
       unless x == x' do return none
-      let body ← `(scoped% $x in $[$binders]*; $res with $term)
+      let body ← `(expandBinders% ($x => $term) $[$binders]*, $res)
       if y.isIdent then `(fun $y:ident : $ty => $body) else `(fun _ : $ty => $body)
 macro_rules
-  | `(scoped% $x in $y:ident $[$ys:ident]*; $res with $term) =>
+  | `(expandBinders% ($x => $term) $y:ident $[$ys:ident]*, $res) =>
     term.replaceM fun x' => do
       unless x == x' do return none
-      `(fun $y => scoped% $x in $[$ys:ident]*; $res with $term)
+      `(fun $y => expandBinders% ($x => $term) $[$ys:ident]*, $res)
 
 open Parser Term in
 macro ak:Term.attrKind "notation3"
@@ -77,7 +85,8 @@ macro ak:Term.attrKind "notation3"
           | Syntax.ident _ _ id .. => boundNames.find? id
           | _ => none
         boundNames := boundNames.insert id <|
-          ← `(scoped% $scopedId:ident in $$binders:explicitBinders; $(lit.mkAntiquotNode) with $scopedTerm:term)
+          ← `(expandBinders% ($scopedId:ident => $scopedTerm:term) $$binders:explicitBinders,
+            $(lit.mkAntiquotNode))
       else
         boundNames := boundNames.insert id <| lit.mkAntiquotNode
   let val ← val.replaceM fun
