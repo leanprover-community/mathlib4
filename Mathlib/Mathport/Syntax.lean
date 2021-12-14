@@ -26,8 +26,6 @@ elab (name := include) "include " ident+ : command => ()
 elab (name := omit) "omit " ident+ : command => ()
 syntax (name := parameter) "parameter " bracketedBinder+ : command
 
-syntax (name := noncomputableTheory) (docComment)? "noncomputable " "theory" : command
-
 syntax bindersItem := "(" "..." ")"
 
 syntax identScope := ":" "(" "scoped " ident " => " term ")"
