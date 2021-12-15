@@ -26,26 +26,71 @@ elab (name := include) "include " ident+ : command => ()
 elab (name := omit) "omit " ident+ : command => ()
 syntax (name := parameter) "parameter " bracketedBinder+ : command
 
+/--
+Expands binders into nested combinators.
+For example, the familiar exists is given by:
+`expandBinders% (p => Exists p) x y : Nat, x < y`
+which expands to the same expression as
+`∃ x y : Nat, x < y`
+-/
+syntax "expandBinders% " "(" ident " => " term ")" explicitBinders ", " term : term
+
+macro_rules
+  | `(expandBinders% ($x => $term) $[$ys:binderIdent]* : $ty, $res) =>
+    `(expandBinders% ($x => $term) ($ys* : $ty), $res)
+  | `(expandBinders% ($x => $term) ($y $ys* : $ty) $binders*, $res) =>
+    `(expandBinders% ($x => $term) ($y : $ty) ($ys* : $ty) $binders*, $res)
+  | `(expandBinders% ($x => $term) $[$binders]*, $res) =>
+    if binders.isEmpty then res else Macro.throwUnsupported
+macro_rules
+  | `(expandBinders% ($x => $term) $[$binders:ident]*, $res) =>
+    if binders.isEmpty then res else Macro.throwUnsupported
+macro_rules
+  | `(expandBinders% ($x => $term) ($y : $ty) $binders*, $res) =>
+    let y := y[0]
+    term.replaceM fun x' => do
+      unless x == x' do return none
+      let body ← `(expandBinders% ($x => $term) $[$binders]*, $res)
+      if y.isIdent then `(fun $y:ident : $ty => $body) else `(fun _ : $ty => $body)
+macro_rules
+  | `(expandBinders% ($x => $term) $y:ident $[$ys:ident]*, $res) =>
+    term.replaceM fun x' => do
+      unless x == x' do return none
+      `(fun $y => expandBinders% ($x => $term) $[$ys:ident]*, $res)
+
 syntax bindersItem := "(" "..." ")"
-
 syntax identScope := ":" "(" "scoped " ident " => " term ")"
-
 syntax notation3Item := strLit <|> bindersItem <|> (ident (identScope)?)
-
-macro ak:Term.attrKind "notation3 "
-  prec:optPrecedence name:optNamedName prio:optNamedPrio
-  lits:((ppSpace notation3Item)+) " => " val:term : command => do
-  let args ← lits.getArgs.mapM fun lit =>
-    let k := lit[0].getKind
-    if k == strLitKind then `(macroArg| $(lit[0]):strLit)
-    else if k == ``bindersItem then withFreshMacroScope `(macroArg| bi:explicitBinders)
-    else withFreshMacroScope `(macroArg| $(lit[0]):ident:term)
-  `($ak:attrKind macro
-    $[$(prec.getOptional?):precedence]?
-    $[$(name.getOptional?):namedName]?
-    $[$(prio.getOptional?):namedPrio]?
-    $(args[0]):macroArg $[$(args[1:].toArray):macroArg]* : term =>
-    `(sorry))
+macro ak:Term.attrKind "notation3"
+    prec:optPrecedence name:optNamedName prio:optNamedPrio
+    lits:((ppSpace notation3Item)+) " => " val:term : command => do
+  let mut boundNames : Std.HashMap Name Syntax := {}
+  let mut macroArgs := #[]
+  for item in lits.getArgs do
+    let lit := item[0]
+    if let some _ := lit.isStrLit? then
+      macroArgs := macroArgs.push (← `(macroArg| $lit:strLit))
+    else if lit.isOfKind ``bindersItem then
+      macroArgs := macroArgs.push (← `(macroArg| binders:explicitBinders))
+    else if let Syntax.ident _ _ id .. := lit then
+      macroArgs := macroArgs.push (← `(macroArg| $lit:ident:term))
+      if item[1].getNumArgs == 1 then
+        let scopedId := item[1][0][3]
+        let scopedTerm := item[1][0][5]
+        let scopedTerm ← scopedTerm.replaceM fun
+          | Syntax.ident _ _ id .. => boundNames.find? id
+          | _ => none
+        boundNames := boundNames.insert id <|
+          ← `(expandBinders% ($scopedId:ident => $scopedTerm:term) $$binders:explicitBinders,
+            $(lit.mkAntiquotNode))
+      else
+        boundNames := boundNames.insert id <| lit.mkAntiquotNode
+  let val ← val.replaceM fun
+    | Syntax.ident _ _ id .. => boundNames.find? id
+    | _ => none
+  `($ak:attrKind macro $[$(prec.getOptional?):precedence]? $[$(name.getOptional?):namedName]?
+      $[$(prio.getOptional?):namedPrio]? $[$macroArgs:macroArg]* : term => do
+    `($val:term))
 
 end Parser.Command
 
