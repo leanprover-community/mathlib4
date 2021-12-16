@@ -41,8 +41,8 @@ def forIn.loop [Monad m] (f : UInt8 → β → m (ForInStep β))
     | ForInStep.yield b => have := Nat.Up.next h; loop f arr off _end (i+1) b
   else b
 termination_by by
-  iterate 6 refine skipLeft fun _ => ?_
-  exact skipLeft fun _end => generalizeRight (Nat.upRel _end)
+  iterate 6 refine skipLeft' fun _ => ?_
+  exact skipLeft' fun _end => generalizeRight (Nat.upRel _end)
 decreasing_by (iterate 7 apply PSigma.Lex.right); assumption
 
 instance : ForIn m ByteSlice UInt8 :=
@@ -67,7 +67,7 @@ def String.toAsciiByteArray (s : String) : ByteArray :=
       ⟨Nat.lt_add_of_pos_right (String.csize_pos _), Nat.lt_of_not_le (mt decide_eq_true h)⟩
     loop (s.next p) (out.push c.toUInt8)
   loop 0 ByteArray.empty
-termination_by skipLeft fun s => generalizeRight $ Nat.upRel (utf8ByteSize s)
+termination_by skipLeft' fun s => generalizeRight $ Nat.upRel (utf8ByteSize s)
 decreasing_by apply PSigma.Lex.right; assumption
 
 /-- Convert a byte slice into a string. This does not handle non-ASCII characters correctly:

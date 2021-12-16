@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 
-noncomputable def skipLeft {β : α → Sort _}
+noncomputable def skipLeft' {β : α → Sort _}
   (w : (a : α) → WellFoundedRelation (β a)) : WellFoundedRelation ((a : α) ×' β a) :=
   ⟨_, PSigma.lex emptyWf.2 fun b => (w b).2⟩
 
