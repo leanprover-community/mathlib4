@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2021 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro
+-/
 
 noncomputable def skipLeft {β : α → Sort _}
   (w : (a : α) → WellFoundedRelation (β a)) : WellFoundedRelation ((a : α) ×' β a) :=
