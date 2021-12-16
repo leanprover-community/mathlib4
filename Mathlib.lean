@@ -4,6 +4,7 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
+import Mathlib.Data.BinaryHeap
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
 import Mathlib.Data.Equiv.Basic
@@ -32,6 +33,7 @@ import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Set
 import Mathlib.Init.SetNotation
+import Mathlib.Init.WF
 import Mathlib.Lean.Expr
 import Mathlib.Lean.LocalContext
 import Mathlib.Logic.Basic

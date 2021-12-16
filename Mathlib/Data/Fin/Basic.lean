@@ -20,19 +20,24 @@ lemma zero_lt_of_lt {a : Nat} : ∀ {x : Nat}, x < a -> 0 < a
 lemma Fin.val_eq_of_lt {n a : Nat} (h : a < n) : (Fin.ofNat' a (zero_lt_of_lt h)).val = a := by
   simp only [Fin.ofNat', Nat.mod_eq_of_lt h]
 
-lemma Fin.modn_def : ∀ (a : Fin n) (m : Nat), a % m = Fin.mk ((a.val % m) % n) (Nat.mod_lt (a.val % m) (a.size_positive))
+lemma Fin.modn_def : ∀ (a : Fin n) (m : Nat),
+  a % m = Fin.mk ((a.val % m) % n) (Nat.mod_lt (a.val % m) (a.size_positive))
 | ⟨a, pa⟩, m => rfl
 
-lemma Fin.mod_def : ∀ (a m : Fin n), a % m = Fin.mk ((a.val % m.val) % n) (Nat.mod_lt (a.val % m.val) (a.size_positive))
+lemma Fin.mod_def : ∀ (a m : Fin n),
+  a % m = Fin.mk ((a.val % m.val) % n) (Nat.mod_lt (a.val % m.val) (a.size_positive))
 | ⟨a, pa⟩, ⟨m, pm⟩ => rfl
 
-lemma Fin.add_def : ∀ (a b : Fin n), a + b = (Fin.mk ((a.val + b.val) % n) (Nat.mod_lt _ (a.size_positive)))
+lemma Fin.add_def : ∀ (a b : Fin n),
+  a + b = (Fin.mk ((a.val + b.val) % n) (Nat.mod_lt _ (a.size_positive)))
 | ⟨a, pa⟩, ⟨b, pb⟩ => rfl
 
-lemma Fin.mul_def : ∀ (a b : Fin n), a * b = (Fin.mk ((a.val * b.val) % n) (Nat.mod_lt _ (a.size_positive)))
+lemma Fin.mul_def : ∀ (a b : Fin n),
+  a * b = (Fin.mk ((a.val * b.val) % n) (Nat.mod_lt _ (a.size_positive)))
 | ⟨a, pa⟩, ⟨b, pb⟩ => rfl
 
-lemma Fin.sub_def : ∀ (a b : Fin n), a - b = (Fin.mk ((a + (n - b)) % n) (Nat.mod_lt _ (a.size_positive)))
+lemma Fin.sub_def : ∀ (a b : Fin n),
+  a - b = (Fin.mk ((a + (n - b)) % n) (Nat.mod_lt _ (a.size_positive)))
 | ⟨a, pa⟩, ⟨b, pb⟩ => rfl
 
 @[simp] lemma Fin.mod_eq (a : Fin n) : a % n = a := by
@@ -64,24 +69,25 @@ instance : Numeric (Fin n) where
   ofNat a := Fin.ofNat' a Fin.size_positive'
 
 instance : AddSemigroup (Fin n) where
-  add_assoc := fun _ _ _ => by
+  add_assoc _ _ _ := by
     apply Fin.eq_of_val_eq
     simp only [Fin.add_def, Nat.mod_add_mod, Nat.add_mod_mod, Nat.add_assoc]
 
 instance : AddCommSemigroup (Fin n) where
-  add_comm := fun _ _ => by
+  add_comm _ _ := by
     apply Fin.eq_of_val_eq
     simp only [Fin.add_def, Nat.add_comm]
 
 instance : Semigroup (Fin n) where
-  mul_assoc := fun a b c => by
+  mul_assoc a b c := by
     apply Fin.eq_of_val_eq
     simp only [Fin.mul_def]
     generalize lhs : ((a.val * b.val) % n * c.val) % n = l
     generalize rhs : a.val * (b.val * c.val % n) % n = r
-    rw [<- Nat.mod_eq_of_lt c.isLt, (Nat.mul_mod (a.val * b.val) c.val n).symm] at lhs
-    rw [<- Nat.mod_eq_of_lt a.isLt, (Nat.mul_mod a.val (b.val * c.val) n).symm, <- Nat.mul_assoc] at rhs
-    rw [<- lhs, <- rhs]
+    rw [← Nat.mod_eq_of_lt c.isLt, (Nat.mul_mod (a.val * b.val) c.val n).symm] at lhs
+    rw [← Nat.mod_eq_of_lt a.isLt, (Nat.mul_mod a.val (b.val * c.val) n).symm,
+        ← Nat.mul_assoc] at rhs
+    rw [← lhs, ← rhs]
 
 @[simp] lemma Fin.zero_def : (0 : Fin n).val = (0 : Nat) :=
   show (Fin.ofNat' 0 Fin.size_positive').val = (0 : Nat) by simp only [Fin.ofNat', Nat.zero_mod]
@@ -95,14 +101,15 @@ theorem Fin.mod_lt : ∀ (i : Fin n) {m : Fin n}, (0 : Fin n) < m → (i % m) < 
     exact Nat.mod_lt _ zero_lt
 
 /- Aux lemma that makes nsmul_succ' easier -/
-protected lemma Fin.nsmuls_eq (x : Nat) : ∀ (a : Fin n), ((Fin.ofNat' x Fin.size_positive') * a) = Fin.ofNat' (x * a.val) Fin.size_positive'
+protected lemma Fin.nsmuls_eq (x : Nat) : ∀ (a : Fin n),
+  ((Fin.ofNat' x Fin.size_positive') * a) = Fin.ofNat' (x * a.val) Fin.size_positive'
 | ⟨a, isLt⟩ => by
   apply Fin.eq_of_val_eq
   simp only [Fin.ofNat', Fin.mul_def]
   generalize hy : x * a % n = y
-  rw [<- Nat.mod_eq_of_lt isLt, <- Nat.mul_mod, hy]
+  rw [← Nat.mod_eq_of_lt isLt, ← Nat.mul_mod, hy]
 
-@[simp] lemma Fin.one_def: (1 : Fin n).val = (1 % n : Nat) :=
+@[simp] lemma Fin.one_def : (1 : Fin n).val = (1 % n : Nat) :=
   show (Fin.ofNat' 1 Fin.size_positive').val = 1 % n by simp [Fin.ofNat']
 
 def Fin.addOverflows? (a b : Fin n) : Bool := n <= a.val + b.val
@@ -132,11 +139,13 @@ def Fin.checkedSub (a b : Fin n) : Option (Fin n) :=
   | (true, _) => none
   | (false, diff) => some (diff)
 
-lemma Fin.checked_add_spec (a b : Fin n) : (Fin.checkedAdd a b).isSome = true <-> a.val + b.val < n := by
+lemma Fin.checked_add_spec (a b : Fin n) :
+  (Fin.checkedAdd a b).isSome = true ↔ a.val + b.val < n := by
   by_cases n <= a.val + b.val <;>
     simp_all [checkedAdd, Option.isSome, overflowingAdd, decide_eq_true, decide_eq_false]
 
-lemma Fin.checked_mul_spec (a b : Fin n) : (Fin.checkedMul a b).isSome = true <-> a.val * b.val < n := by
+lemma Fin.checked_mul_spec (a b : Fin n) :
+  (Fin.checkedMul a b).isSome = true ↔ a.val * b.val < n := by
   simp only [checkedMul, overflowingMul, Option.isSome]
   refine Iff.intro ?mp ?mpr <;> intro h
   case mp =>
@@ -145,7 +154,8 @@ lemma Fin.checked_mul_spec (a b : Fin n) : (Fin.checkedMul a b).isSome = true <-
     case neg => exact Nat.lt_of_not_le hx
   case mpr => simp only [decide_eq_false (Nat.not_le_of_lt h : ¬n <= a.val * b.val)]
 
-lemma Fin.checked_sub_spec (a b : Fin n) : (Fin.checkedSub a b).isSome = true <-> b.val <= a.val := by
+lemma Fin.checked_sub_spec (a b : Fin n) :
+  (Fin.checkedSub a b).isSome = true ↔ b.val <= a.val := by
   simp only [checkedSub, underflowingSub, Option.isSome]
   refine Iff.intro ?mp ?mpr <;> intro h
   case mp =>
@@ -155,22 +165,23 @@ lemma Fin.checked_sub_spec (a b : Fin n) : (Fin.checkedSub a b).isSome = true <-
   case mpr => simp only [decide_eq_false (Nat.not_lt_of_le h : ¬a.val < b.val)]
 
 instance : Semiring (Fin n) :=
-  let add_zero_ : ∀ (a : Fin n), a + 0 = a := fun a => by
+  let add_zero (a : Fin n) : a + 0 = a := by
     apply Fin.eq_of_val_eq
     simp only [Fin.add_def, Fin.zero_def, Nat.add_zero]
     exact Nat.mod_eq_of_lt a.isLt
-  let zero_mul_ : ∀ (x : Fin n), 0 * x = 0 := fun _ => by
+  let zero_mul (x : Fin n) : 0 * x = 0 := by
     apply Fin.eq_of_val_eq
     simp only [Fin.mul_def, Fin.zero_def, Nat.zero_mul, Nat.zero_mod]
-  let mul_add_ : ∀ (a b c : Fin n), a * (b + c) = a * b + a * c := fun a b c => by
+  let mul_add (a b c : Fin n) : a * (b + c) = a * b + a * c := by
     apply Fin.eq_of_val_eq
     simp [Fin.mul_def, Fin.add_def]
     generalize lhs : a.val * ((b.val + c.val) % n) % n = l
-    rw [(Nat.mod_eq_of_lt a.isLt).symm, <- Nat.mul_mod] at lhs
-    rw [<- lhs, Semiring.mul_add]
-  let mul_comm : ∀ (a b : Fin n), a * b = b * a := fun _ _ => by apply Fin.eq_of_val_eq; simp only [Fin.mul_def, Nat.mul_comm]
+    rw [(Nat.mod_eq_of_lt a.isLt).symm, ← Nat.mul_mod] at lhs
+    rw [← lhs, Semiring.mul_add]
+  let mul_comm (a b : Fin n) : a * b = b * a := by
+    apply Fin.eq_of_val_eq; simp only [Fin.mul_def, Nat.mul_comm]
 
-  let mul_one_ : ∀ (a : Fin n), a * 1 = a := fun a => by
+  let mul_one (a : Fin n) : a * 1 = a := by
     apply Fin.eq_of_val_eq
     simp only [Fin.mul_def, Fin.one_def]
     cases n with
@@ -186,8 +197,8 @@ instance : Semiring (Fin n) :=
       | Or.inr h_eq => simp only [h_eq, Nat.mul_one, Nat.mod_eq_of_lt (a.isLt)]
   {
     ofNat_succ := fun _ => by simp [Numeric.ofNat, Fin.ofNat', Fin.add_def]
-    add_zero := add_zero_
-    zero_add := fun _ => by rw [add_comm]; exact add_zero_ _
+    add_zero
+    zero_add := fun _ => by rw [add_comm]; exact add_zero _
     nsmul := fun x a => (Fin.ofNat' x a.size_positive) * a
     nsmul_zero' := fun _ => by
       apply Fin.eq_of_val_eq
@@ -196,15 +207,15 @@ instance : Semiring (Fin n) :=
       simp only [Fin.nsmuls_eq]
       simp [Fin.ofNat', Fin.add_def]
       exact congrArg (fun x => x % n) (Nat.add_comm (x * a.val) (a.val) ▸ Nat.succ_mul x a.val)
-    zero_mul := zero_mul_
-    mul_zero := fun _ => by rw [mul_comm]; exact zero_mul_ _
-    mul_one := mul_one_
-    one_mul := fun _ => by rw [mul_comm]; exact mul_one_ _
+    zero_mul
+    mul_zero := fun _ => by rw [mul_comm]; exact zero_mul _
+    mul_one
+    one_mul := fun _ => by rw [mul_comm]; exact mul_one _
     npow_zero' := fun _ => rfl
     npow_succ' := fun _ _ => rfl
-    mul_add := mul_add_
+    mul_add
     add_mul := fun a b c => by
-      have h0 := mul_add_ c a b
+      have h0 := mul_add c a b
       have h1 : (a + b) * c = c * (a + b) := mul_comm (a + b) c
       have h2 : a * c = c * a := mul_comm a _
       have h3 : b * c = c * b := mul_comm b _
@@ -215,9 +226,10 @@ instance : Neg (Fin n) where
   neg a := ⟨(n - a) % n, Nat.mod_lt _ (lt_of_le_of_lt (Nat.zero_le _) a.isLt)⟩
 
 instance : Ring (Fin n) :=
-  let sub_eq_add_neg_ : ∀ (a b : Fin n), a - b = a + -b := fun _ _ => by simp [Fin.add_def, Fin.sub_def, Neg.neg]
+  let sub_eq_add_neg :∀ (a b : Fin n), a - b = a + -b := by
+    simp [Fin.add_def, Fin.sub_def, Neg.neg]
   {
-    sub_eq_add_neg := sub_eq_add_neg_
+    sub_eq_add_neg
     gsmul := fun x a =>
       match x with
       | Int.ofNat x' => Semiring.nsmul x' a
@@ -228,12 +240,18 @@ instance : Ring (Fin n) :=
     gsmul_succ' := by simp [Semiring.nsmul_succ']
     gsmul_neg' := by simp [Semiring.nsmul]
     add_left_neg := fun a => by
-      rw [add_comm, <- sub_eq_add_neg_]
+      rw [add_comm, ← sub_eq_add_neg]
       apply Fin.eq_of_val_eq
       simp [Fin.sub_def, (Nat.add_sub_cancel' (Nat.le_of_lt a.isLt)), Nat.mod_self]
   }
 
 instance : CommRing (Fin n) where
-  mul_comm := fun _ _ => by apply Fin.eq_of_val_eq; simp only [Fin.mul_def, Nat.mul_comm]
+  mul_comm _ _ := by apply Fin.eq_of_val_eq; simp only [Fin.mul_def, Nat.mul_comm]
+
+lemma Fin.gt_wf : WellFounded (fun a b : Fin n => b < a) :=
+  Subrelation.wf (@fun a i h => ⟨h, i.2⟩) (invImage (fun i => i.1) (Nat.upRel n)).wf
+
+/-- A well-ordered relation for "upwards" induction on `Fin n`. -/
+def Fin.upRel (n : ℕ) : WellFoundedRelation (Fin n) := ⟨_, gt_wf⟩
 
 end Fin

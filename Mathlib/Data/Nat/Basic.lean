@@ -96,12 +96,15 @@ lemma mul_div_le (m n : ℕ) : n * (m / n) ≤ m := by
 
 /- Up -/
 
-/-- A well-ordered relation for "upwards" induction on the ℕural numbers up to some bound `ub`. -/
+/-- A well-ordered relation for "upwards" induction on the natural numbers up to some bound `ub`. -/
 def Up (ub a i : ℕ) := i < a ∧ i < ub
 
 lemma Up.next {ub i} (h : i < ub) : Up ub (i+1) i := ⟨Nat.lt_succ_self _, h⟩
 
 lemma Up.WF (ub) : WellFounded (Up ub) :=
   Subrelation.wf (h₂ := (measure (ub - .)).wf) @fun a i ⟨ia, iu⟩ => Nat.sub_lt_sub_left iu ia
+
+/-- A well-ordered relation for "upwards" induction on the natural numbers up to some bound `ub`. -/
+def upRel (ub : ℕ) : WellFoundedRelation Nat := ⟨Up ub, Up.WF ub⟩
 
 end Nat
