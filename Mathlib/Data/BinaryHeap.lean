@@ -30,14 +30,11 @@ def heapifyDown (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
   if h : i.1 = j then ⟨a, rfl⟩ else
     let a' := a.swap i j
     let j' := ⟨j, by rw [a.size_swap i j]; exact j.1.2⟩
-    have : (skipLeft Fin.upRel).1 ⟨a'.size, j'⟩ ⟨a.size, i⟩ := by
-      have H {n} (h : n = a.size) (j' : Fin n) (e' : i.1 < j'.1) :
-        (skipLeft Fin.upRel).1 ⟨n, j'⟩ ⟨a.size, i⟩ := by
-        subst n; exact PSigma.Lex.right _ e'
-      exact H (a.size_swap i j) _ (lt_of_le_of_ne j.2 h)
+    have : a'.size - j < a.size - i := by
+      rw [a.size_swap i j]; exact Nat.sub_lt_sub_left i.2 <| Nat.lt_of_le_and_ne j.2 h
     let ⟨a₂, h₂⟩ := heapifyDown lt a' j'
     ⟨a₂, h₂.trans (a.size_swap i j)⟩
-termination_by invImage (fun ⟨_, _, a, i⟩ => (⟨a.size, i⟩ : (n : ℕ) ×' Fin n)) $ skipLeft Fin.upRel
+termination_by measure fun ⟨α, lt, a, i⟩ => a.size - i
 decreasing_by assumption
 
 @[simp] theorem size_heapifyDown (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
@@ -78,12 +75,13 @@ decreasing_by assumption
   (heapifyUp lt a i).1.size = a.size := (heapifyUp lt a i).2
 
 /-- `O(1)`. Build a new empty heap. -/
-@[inline] def empty (lt) : BinaryHeap α lt := ⟨#[]⟩
+def empty (lt) : BinaryHeap α lt := ⟨#[]⟩
 
 instance (lt) : Inhabited (BinaryHeap α lt) := ⟨empty _⟩
+instance (lt) : EmptyCollection (BinaryHeap α lt) := ⟨empty _⟩
 
 /-- `O(1)`. Get the number of elements in a `BinaryHeap`. -/
-@[inline] def size {lt} (self : BinaryHeap α lt) : Nat := self.1.size
+def size {lt} (self : BinaryHeap α lt) : Nat := self.1.size
 
 /-- `O(log n)`. Insert an element into a `BinaryHeap`, preserving the max-heap property. -/
 def insert {lt} (self : BinaryHeap α lt) (x : α) : BinaryHeap α lt where
@@ -113,7 +111,7 @@ def popMaxAux {lt} (self : BinaryHeap α lt) : {a' : BinaryHeap α lt // a'.size
 
 /-- `O(log n)`. Remove the maximum element from a `BinaryHeap`.
 Call `max` first to actually retrieve the maximum element. -/
-@[inline] def popMax {lt} (self : BinaryHeap α lt) : BinaryHeap α lt := self.popMaxAux
+def popMax {lt} (self : BinaryHeap α lt) : BinaryHeap α lt := self.popMaxAux
 
 @[simp] theorem size_popMax {lt} (self : BinaryHeap α lt) :
   self.popMax.size = self.size - 1 := self.popMaxAux.2
@@ -125,11 +123,11 @@ def extractMax {lt} (self : BinaryHeap α lt) : Option α × BinaryHeap α lt :=
 end BinaryHeap
 
 /-- `O(n)`. Convert an unsorted array to a `BinaryHeap`. -/
-@[inline] def Array.toBinaryHeap (lt : α → α → Bool) (a : Array α) : BinaryHeap α lt where
+def Array.toBinaryHeap (lt : α → α → Bool) (a : Array α) : BinaryHeap α lt where
   arr := BinaryHeap.mkHeap lt a
 
 /-- `O(n log n)`. Sort an array using a `BinaryHeap`. -/
-@[inline] def Array.heapSort (a : Array α) (lt : α → α → Bool) : Array α :=
+@[specialize] def Array.heapSort (a : Array α) (lt : α → α → Bool) : Array α :=
   let gt y x := lt x y
   let rec loop (a : BinaryHeap α gt) (out : Array α) : Array α :=
     match e: a.max with
