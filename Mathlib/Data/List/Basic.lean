@@ -715,10 +715,10 @@ section insert
 variable [DecidableEq α]
 
 @[simp] theorem insert_of_mem {a : α} {l : List α} (h : a ∈ l) : insert a l = l := by
-  simp only [insert, ite_true, h]
+  simp only [insert, if_pos h]
 
 @[simp] theorem insert_of_not_mem {a : α} {l : List α} (h : a ∉ l) : insert a l = a :: l := by
-  simp only [insert, ite_false, h]
+  simp only [insert, if_neg h]
 
 @[simp] theorem mem_insert_iff {a b : α} {l : List α} : a ∈ insert b l ↔ a = b ∨ a ∈ l := by
   byCases h : b ∈ l
