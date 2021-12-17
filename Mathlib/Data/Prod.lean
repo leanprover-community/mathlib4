@@ -69,11 +69,11 @@ theorem mk.inj_iff {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b�
 
 lemma mk.inj_left {α β : Type _} (a : α) :
   Function.injective (Prod.mk a : β → α × β) :=
-fun h => (Prod.mk.inj h).right
+fun _ _ h => (Prod.mk.inj h).right
 
 lemma mk.inj_right {α β : Type _} (b : β) :
   Function.injective (λ a => Prod.mk a b : α → α × β) :=
-fun h => (Prod.mk.inj h).left
+fun _ _ h => (Prod.mk.inj h).left
 
 -- Port note: this lemma comes from lean3/library/init/data/prod.lean.
 @[simp] lemma mk.eta : ∀{p : α × β}, (p.1, p.2) = p
