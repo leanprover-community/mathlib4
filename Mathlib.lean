@@ -17,6 +17,8 @@ import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Perm
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Gcd
+import Mathlib.Data.Option.Basic
+import Mathlib.Data.Option.Defs
 import Mathlib.Data.Prod
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
@@ -27,8 +29,11 @@ import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Instances
+import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Data.Option.Basic
+import Mathlib.Init.Data.Option.Instances
 import Mathlib.Init.Dvd
 import Mathlib.Init.ExtendedBinder
 import Mathlib.Init.Function

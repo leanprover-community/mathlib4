@@ -63,9 +63,9 @@ def modifyLast (f : α → α) : List α → List α
 | [x] => [f x]
 | x :: xs => x :: modifyLast f xs
 
-/-- `insert_nth n a l` inserts `a` into the list `l` after the first `n` elements of `l`
- `insert_nth 2 1 [1, 2, 3, 4] = [1, 2, 1, 3, 4]`-/
-def insert_nth (n : ℕ) (a : α) : List α → List α :=
+/-- `insertNth n a l` inserts `a` into the list `l` after the first `n` elements of `l`
+ `insertNth 2 1 [1, 2, 3, 4] = [1, 2, 1, 3, 4]`-/
+def insertNth (n : ℕ) (a : α) : List α → List α :=
   modifyNthTail (cons a) n
 
 /-- Take `n` elements from a list `l`. If `l` has less than `n` elements, append `n - length l`
@@ -304,7 +304,7 @@ def ofFnAux {n} (f : Fin n → α) : ∀ m, m ≤ n → List α → List α
 | m+1, h, l => ofFnAux f m (Nat.le_of_lt h) (f ⟨m, h⟩ :: l)
 
 /-- `ofFn f` with `f : fin n → α` returns the list whose ith element is `f i`
-  `of_fun f = [f 0, f 1, ... , f(n - 1)]` -/
+  `ofFn f = [f 0, f 1, ... , f(n - 1)]` -/
 def ofFn {n} (f : Fin n → α) : List α :=
   ofFnAux f n (Nat.le_refl _) []
 

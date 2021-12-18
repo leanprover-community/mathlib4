@@ -17,15 +17,20 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 namespace List
 
+attribute [simp] get! get? get head? headD head tail! tail? tailD getLast getLast! getLast?
+  getLastD reverseAux eraseIdx isEmpty map map₂ join filterMap dropWhile find? findSome?
+  replace elem lookup drop take takeWhile foldr zipWith unzip rangeAux iota enumFrom init
+  intersperse isPrefixOf isEqv dropLast
+
 def mem (a : α) : List α → Prop
 | [] => False
 | (b :: l) => a = b ∨ mem a l
 
 instance : Mem α (List α) := ⟨mem⟩
 
-theorem mem_nil (a : α) : a ∈ [] ↔ False := Iff.rfl
+@[simp] theorem mem_nil (a : α) : a ∈ [] ↔ False := Iff.rfl
 
-theorem mem_cons {a b : α} {l : List α} :
+@[simp] theorem mem_cons {a b : α} {l : List α} :
   a ∈ (b :: l) ↔ a = b ∨ a ∈ l := Iff.rfl
 
 instance instDecidableMem [DecidableEq α] (a : α) : ∀ l : List α, Decidable (a ∈ l)
