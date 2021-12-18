@@ -23,15 +23,15 @@ protected theorem «exists» {p : Option α → Prop} : (∃ x, p x) ↔ p none 
   ⟨fun | ⟨none, hx⟩ => Or.inl hx | ⟨some x, hx⟩ => Or.inr ⟨x, hx⟩,
     fun h => h.elim (fun h => ⟨_, h⟩) fun ⟨x, hx⟩ => ⟨_, hx⟩⟩
 
-@[simp] theorem get_mem : ∀ {o : Option α} h : isSome o, Option.get h ∈ o
+theorem get_mem : ∀ {o : Option α} (h : isSome o), Option.get h ∈ o
 | some a, _ => rfl
 
-theorem get_of_mem {a : α} : ∀ {o : Option α} h : isSome o, a ∈ o → Option.get h = a
+theorem get_of_mem {a : α} : ∀ {o : Option α} (h : isSome o), a ∈ o → Option.get h = a
 | _, _, rfl => rfl
 
-@[simp] theorem not_mem_none (a : α) : a ∉ (none : Option α) := fun h => Option.noConfusion h
+theorem not_mem_none (a : α) : a ∉ (none : Option α) := fun h => Option.noConfusion h
 
-@[simp] theorem some_get : ∀ {x : Option α} h : isSome x, some (Option.get h) = x
+@[simp] theorem some_get : ∀ {x : Option α} (h : isSome x), some (Option.get h) = x
 | some x, hx => rfl
 
 @[simp] theorem get_some (x : α) (h : isSome (some x)) : Option.get h = x := rfl
@@ -215,9 +215,9 @@ theorem lift_or_get_choice {f : α → α → α} (h : ∀ a b, f a b = a ∨ f 
 @[simp] theorem lift_or_get_some_some {f} {a b : α} :
   lift_or_get f (some a) (some b) = f a b := rfl
 
-@[simp] theorem elim_none (x : β) (f : α → β) : none.elim x f = x := rfl
+theorem elim_none (x : β) (f : α → β) : none.elim x f = x := rfl
 
-@[simp] theorem elim_some (x : β) (f : α → β) (a : α) : (some a).elim x f = f a := rfl
+theorem elim_some (x : β) (f : α → β) (a : α) : (some a).elim x f = f a := rfl
 
 @[simp] theorem getD_map (f : α → β) (x : α) (o : Option α) :
   (o.map f).getD (f x) = f (getD o x) := by cases o <;> rfl

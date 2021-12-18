@@ -531,7 +531,7 @@ theorem map_eq_append_split {f : α → β} {l : List α} {s₁ s₂ : List β}
 
 /-! ### repeat -/
 
-@[simp] theorem repeat_succ (a : α) n : repeat a (n+1) = a :: repeat a n := rfl
+theorem repeat_succ (a : α) n : repeat a (n+1) = a :: repeat a n := rfl
 
 theorem mem_repeat {a b : α} : ∀ {n}, b ∈ repeat a n ↔ n ≠ 0 ∧ b = a
 | 0 => by simp
@@ -542,12 +542,11 @@ theorem eq_of_mem_repeat {a b : α} {n} (h : b ∈ repeat a n) : b = a :=
 
 /-! ### last -/
 
-@[simp] theorem last_cons {a : α} {l : List α} : ∀ (h₁ : a :: l ≠ nil) (h₂ : l ≠ nil),
+theorem last_cons {a : α} {l : List α} : ∀ (h₁ : a :: l ≠ nil) (h₂ : l ≠ nil),
   last (a :: l) h₁ = last l h₂ := by
   induction l <;> intros; {contradiction}; rfl
 
-@[simp]
-theorem last_append {a : α} : ∀ (l : List α) (h : l ++ [a] ≠ []), last (l ++ [a]) h = a
+@[simp] theorem last_append {a : α} : ∀ (l : List α) (h : l ++ [a] ≠ []), last (l ++ [a]) h = a
 | [], _ => rfl
 | a::t, h => by
   show last (_ :: (_ ++ _)) _ = _
@@ -556,7 +555,7 @@ theorem last_append {a : α} : ∀ (l : List α) (h : l ++ [a] ≠ []), last (l 
 theorem last_concat {a : α} (l : List α) : (h : concat l a ≠ []) → last (concat l a) h = a := by
   rw [concat_eq_append]; apply last_append
 
-@[simp] theorem last_singleton (a : α) (h : [a] ≠ []) : last [a] h = a := rfl
+theorem last_singleton (a : α) (h : [a] ≠ []) : last [a] h = a := rfl
 
 /-! ### nth element -/
 
@@ -769,9 +768,6 @@ theorem modifyNthTail_length (f : List α → List α) (H : ∀ l, length (f l) 
 
 @[simp] theorem modify_get?_length (f : α → α) : ∀ n l, length (modifyNth f n l) = length l :=
   modifyNthTail_length _ fun l => by cases l <;> rfl
-
-@[simp] theorem update_getngth (l : List α) n (a : α) : length (set l n a) = length l := by
-  simp only [set_eq_modifyNth, modify_get?_length]
 
 @[simp] theorem nth_modifyNth_eq (f : α → α) (n) (l : List α) :
   (modifyNth f n l).get? n = f <$> l.get? n := by

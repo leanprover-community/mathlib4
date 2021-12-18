@@ -52,11 +52,9 @@ theorem map_singleton (f : α → β) (a : α) : map f [a] = [f a] := rfl
 
 theorem mem_nil_iff (a : α) : a ∈ ([] : List α) ↔ False := Iff.rfl
 
-@[simp] theorem not_mem_nil (a : α) : a ∉ ([] : List α) := not_false
+theorem not_mem_nil (a : α) : a ∉ ([] : List α) := not_false
 
 theorem mem_cons_self (a : α) (l : List α) : a ∈ a :: l := Or.inl rfl
-
-@[simp] theorem mem_cons_iff (a y : α) (l : List α) : a ∈ y :: l ↔ a = y ∨ a ∈ l := Iff.rfl
 
 theorem mem_cons_eq (a y : α) (l : List α) : (a ∈ y :: l) = (a = y ∨ a ∈ l) := rfl
 
