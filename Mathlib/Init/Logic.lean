@@ -258,7 +258,8 @@ lemma iff_congr (h₁ : a ↔ c) (h₂ : b ↔ d) : (a ↔ b) ↔ (c ↔ d) :=
 ⟨fun h => h₁.symm.trans $ h.trans h₂, fun h => h₁.trans $ h.trans h₂.symm⟩
 
 /- implies simp rule -/
-@[simp] lemma implies_true_iff (α : Sort u) : (α → True) ↔ True :=
+-- This is not marked `@[simp]` because we have `implies_true : (α → True) = True` in core.
+lemma implies_true_iff (α : Sort u) : (α → True) ↔ True :=
 Iff.intro (λ h => trivial) (λ ha h => trivial)
 
 lemma false_implies_iff (a : Prop) : (False → a) ↔ True :=
