@@ -769,22 +769,22 @@ theorem modifyNthTail_length (f : List α → List α) (H : ∀ l, length (f l) 
 @[simp] theorem modify_get?_length (f : α → α) : ∀ n l, length (modifyNth f n l) = length l :=
   modifyNthTail_length _ fun l => by cases l <;> rfl
 
-@[simp] theorem nth_modifyNth_eq (f : α → α) (n) (l : List α) :
+@[simp] theorem get?_modifyNth_eq (f : α → α) (n) (l : List α) :
   (modifyNth f n l).get? n = f <$> l.get? n := by
   simp only [get?_modifyNth, if_pos]
 
-@[simp] theorem nth_modifyNth_ne (f : α → α) {m n} (l : List α) (h : m ≠ n) :
+@[simp] theorem get?_modifyNth_ne (f : α → α) {m n} (l : List α) (h : m ≠ n) :
   (modifyNth f m l).get? n = l.get? n := by
   simp only [get?_modifyNth, if_neg h, id_map']
 
-theorem nth_set_eq (a : α) n (l : List α) : (set l n a).get? n = (fun _ => a) <$> l.get? n := by
-  simp only [set_eq_modifyNth, nth_modifyNth_eq]
+theorem get?_set_eq (a : α) (n) (l : List α) : (set l n a).get? n = (fun _ => a) <$> l.get? n := by
+  simp only [set_eq_modifyNth, get?_modifyNth_eq]
 
-theorem nth_set_of_lt (a : α) {n} {l : List α} (h : n < length l) :
-  (set l n a).get? n = some a := by rw [nth_set_eq, get?_eq_get h]; rfl
+theorem get?_set_of_lt (a : α) {n} {l : List α} (h : n < length l) :
+  (set l n a).get? n = some a := by rw [get?_set_eq, get?_eq_get h]; rfl
 
-theorem nth_set_ne (a : α) {m n} (l : List α) (h : m ≠ n) : (set l m a).get? n = l.get? n := by
-  simp only [set_eq_modifyNth, nth_modifyNth_ne _ _ h]
+theorem get?_set_ne (a : α) {m n} (l : List α) (h : m ≠ n) : (set l m a).get? n = l.get? n := by
+  simp only [set_eq_modifyNth, get?_modifyNth_ne _ _ h]
 
 @[simp] theorem set_nil (n : ℕ) (a : α) : [].set n a = [] := rfl
 
@@ -804,12 +804,12 @@ theorem set_comm (a b : α) : ∀ {n m : ℕ} (l : List α) (h : n ≠ m),
 
 @[simp] theorem get_set_eq (l : List α) (i : ℕ) (a : α) (h : i < (l.set i a).length) :
   (l.set i a).get i h = a := by
-  rw [← Option.some_inj, ← get?_eq_get, nth_set_eq, get?_eq_get] <;> simp_all
+  rw [← Option.some_inj, ← get?_eq_get, get?_set_eq, get?_eq_get] <;> simp_all
 
-@[simp] theorem get_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
+@[simp] theorem get_set_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
   (hj : j < (l.set i a).length) :
   (l.set i a).get j hj = l.get j (by simp at hj; exact hj) := by
-  rw [← Option.some_inj, ← List.get?_eq_get, List.nth_set_ne _ _ h, List.get?_eq_get]
+  rw [← Option.some_inj, ← List.get?_eq_get, List.get?_set_ne _ _ h, List.get?_eq_get]
 
 theorem mem_or_eq_of_mem_set : ∀ {l : List α} {n : ℕ} {a b : α} h : a ∈ l.set n b, a ∈ l ∨ a = b
 | [], n, a, b, h => False.elim h
