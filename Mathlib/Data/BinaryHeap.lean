@@ -79,8 +79,14 @@ def empty (lt) : BinaryHeap α lt := ⟨#[]⟩
 instance (lt) : Inhabited (BinaryHeap α lt) := ⟨empty _⟩
 instance (lt) : EmptyCollection (BinaryHeap α lt) := ⟨empty _⟩
 
+/-- `O(1)`. Build a one-element heap. -/
+def singleton (lt) (x : α) : BinaryHeap α lt := ⟨#[x]⟩
+
 /-- `O(1)`. Get the number of elements in a `BinaryHeap`. -/
 def size {lt} (self : BinaryHeap α lt) : Nat := self.1.size
+
+/-- `O(1)`. Get an element in the heap by index. -/
+def get {lt} (self : BinaryHeap α lt) (i : Fin self.size) : α := self.1.get i
 
 /-- `O(log n)`. Insert an element into a `BinaryHeap`, preserving the max-heap property. -/
 def insert {lt} (self : BinaryHeap α lt) (x : α) : BinaryHeap α lt where
@@ -119,6 +125,35 @@ def popMax {lt} (self : BinaryHeap α lt) : BinaryHeap α lt := self.popMaxAux
 def extractMax {lt} (self : BinaryHeap α lt) : Option α × BinaryHeap α lt :=
   (self.max, self.popMax)
 
+theorem size_pos_of_max {lt} {self : BinaryHeap α lt} (e : self.max = some x) : 0 < self.size :=
+  Decidable.of_not_not fun h: ¬ 0 < self.1.size => by simp [BinaryHeap.max, Array.get?, h] at e
+
+/-- `O(log n)`. Equivalent to `extractMax (self.insert x)`, except that extraction cannot fail. -/
+def insertExtractMax {lt} (self : BinaryHeap α lt) (x : α) : α × BinaryHeap α lt :=
+  match e: self.max with
+  | none => (x, self)
+  | some m =>
+    if lt x m then
+      let a := self.1.set ⟨0, size_pos_of_max e⟩ x
+      (m, ⟨heapifyDown lt a ⟨0, by simp; exact size_pos_of_max e⟩⟩)
+    else (x, self)
+
+/-- `O(log n)`. Equivalent to `(self.max, self.popMax.insert x)`. -/
+def replaceMax {lt} (self : BinaryHeap α lt) (x : α) : Option α × BinaryHeap α lt :=
+  match e: self.max with
+  | none => (none, ⟨self.1.push x⟩)
+  | some m =>
+    let a := self.1.set ⟨0, size_pos_of_max e⟩ x
+    (some m, ⟨heapifyDown lt a ⟨0, by simp; exact size_pos_of_max e⟩⟩)
+
+/-- `O(log n)`. Replace the value at index `i` by `x`. Assumes that `x ≤ self.get i`. -/
+def decreaseKey {lt} (self : BinaryHeap α lt) (i : Fin self.size) (x : α) : BinaryHeap α lt where
+  arr := heapifyDown lt (self.1.set i x) ⟨i, by rw [self.1.size_set]; exact i.2⟩
+
+/-- `O(log n)`. Replace the value at index `i` by `x`. Assumes that `self.get i ≤ x`. -/
+def increaseKey {lt} (self : BinaryHeap α lt) (i : Fin self.size) (x : α) : BinaryHeap α lt where
+  arr := heapifyUp lt (self.1.set i x) ⟨i, by rw [self.1.size_set]; exact i.2⟩
+
 end BinaryHeap
 
 /-- `O(n)`. Convert an unsorted array to a `BinaryHeap`. -/
@@ -133,8 +168,7 @@ def Array.toBinaryHeap (lt : α → α → Bool) (a : Array α) : BinaryHeap α 
     | none => out
     | some x =>
       have : a.popMax.size < a.size := by
-        simp; refine Nat.sub_lt (Decidable.of_not_not fun h: ¬ 0 < a.1.size => ?_) Nat.zero_lt_one
-        simp [BinaryHeap.max, Array.get?, h] at e
+        simp; exact Nat.sub_lt (BinaryHeap.size_pos_of_max e) Nat.zero_lt_one
       loop a.popMax (out.push x)
   loop (a.toBinaryHeap gt) #[]
 termination_by measure (·.2.2.1.size)
