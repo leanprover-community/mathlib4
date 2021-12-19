@@ -209,10 +209,12 @@ protected lemma sub_eq_iff_eq_add {a b c : ℕ} (ab : b ≤ a) : a - b = c ↔ a
 protected lemma lt_of_sub_eq_succ (H : m - n = succ l) : n < m :=
 not_le.1 fun H' => by simp [Nat.sub_eq_zero_of_le H'] at H
 
-protected lemma zero_min (a : ℕ) : Nat.min 0 a = 0 :=
+@[simp] protected lemma min_eq_min (a : ℕ) : Nat.min a b = min a b := rfl
+
+protected lemma zero_min (a : ℕ) : min 0 a = 0 :=
 min_eq_left (zero_le a)
 
-protected lemma min_zero (a : ℕ) : Nat.min a 0 = 0 :=
+protected lemma min_zero (a : ℕ) : min a 0 = 0 :=
 min_eq_right (zero_le a)
 
 -- Distribute succ over min

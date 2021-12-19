@@ -5,6 +5,8 @@ import Mathlib.Logic.Basic
 
 namespace Nat
 
+attribute [simp] succ_ne_zero lt_succ_self
+
 -- TODO: in mathlib, this is done for ordered monoids
 protected lemma pos_iff_ne_zero {n : ℕ} : 0 < n ↔ n ≠ 0 := by
   refine ⟨?_, Nat.pos_of_ne_zero⟩
@@ -40,6 +42,15 @@ protected lemma lt_or_eq_of_le {n m : ℕ} (h : n ≤ m) : n < m ∨ n = m :=
 lemma eq_of_mul_eq_mul_right {n m k : ℕ} (Hm : 0 < m) (H : n * m = k * m) : n = k :=
 by rw [Nat.mul_comm n m, Nat.mul_comm k m] at H
    exact Nat.eq_of_mul_eq_mul_left Hm H
+
+theorem le_zero_iff {i : ℕ} : i ≤ 0 ↔ i = 0 :=
+  ⟨Nat.eq_zero_of_le_zero, λ h => h ▸ le_refl i⟩
+
+theorem lt_succ_iff {m n : ℕ} : m < succ n ↔ m ≤ n :=
+⟨le_of_lt_succ, lt_succ_of_le⟩
+
+theorem succ_inj' {n m : ℕ} : succ n = succ m ↔ n = m :=
+⟨succ.inj, congr_arg _⟩
 
 /- sub properties -/
 

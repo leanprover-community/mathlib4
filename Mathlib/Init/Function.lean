@@ -48,11 +48,11 @@ theorem comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) �
 theorem comp_const_right (f : β → φ) (b : β) : f ∘ (const α b) = const α (f b) := rfl
 
 /-- A function `f : α → β` is called injective if `f x = f y` implies `x = y`. -/
-@[reducible] def injective (f : α → β) : Prop := ∀ {a₁ a₂}, f a₁ = f a₂ → a₁ = a₂
+@[reducible] def injective (f : α → β) : Prop := ∀ ⦃a₁ a₂⦄, f a₁ = f a₂ → a₁ = a₂
 
 theorem injective.comp {g : β → φ} {f : α → β} (hg : injective g) (hf : injective f) :
   injective (g ∘ f) :=
-λ h => hf (hg h)
+fun _ _ h => hf (hg h)
 
 /-- A function `f : α → β` is calles surjective if every `b : β` is equal to `f a`
 for some `a : α`. -/
@@ -104,7 +104,7 @@ theorem left_inverse_of_surjective_of_right_inverse {f : α → β} {g : β → 
   let ⟨x, hx⟩ := surjf y
   by rw [← hx, rfg]
 
-theorem injective_id : injective (@id α) := id
+theorem injective_id : injective (@id α) := fun _ _ => id
 
 theorem surjective_id : surjective (@id α) := λ a => ⟨a, rfl⟩
 
