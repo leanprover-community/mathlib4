@@ -141,10 +141,10 @@ end Meta
 namespace Tactic
 
 open Lean.Parser.Tactic in
-syntax (name := normNum) "normNum" (" [" simpArg,* "]")? (ppSpace location)? : tactic
+syntax (name := normNum) "norm_num" (" [" simpArg,* "]")? (ppSpace location)? : tactic
 
 open Meta Elab.Tactic in
-elab_rules : tactic | `(tactic| normNum) => do
+elab_rules : tactic | `(tactic| norm_num) => do
   liftMetaTactic fun g => do
     let some (α, lhs, rhs) ← matchEq? (← getMVarType g) | throwError "fail"
     let p ← NormNum.evalEq α lhs rhs
@@ -156,8 +156,8 @@ end Tactic
 end Lean
 
 variable (α) [Semiring α]
-example : (1 + 0 : α) = (0 + 1 : α) := by normNum
-example : (0 + (2 + 3) + 1 : α) = 6 := by normNum
-example : (70 * (33 + 2) : α) = 2450 := by normNum
-example : (8 + 2 ^ 2 * 3 : α) = 20 := by normNum
-example : ((2 * 1 + 1) ^ 2 : α) = (3 * 3 : α) := by normNum
+example : (1 + 0 : α) = (0 + 1 : α) := by norm_num
+example : (0 + (2 + 3) + 1 : α) = 6 := by norm_num
+example : (70 * (33 + 2) : α) = 2450 := by norm_num
+example : (8 + 2 ^ 2 * 3 : α) = 20 := by norm_num
+example : ((2 * 1 + 1) ^ 2 : α) = (3 * 3 : α) := by norm_num
