@@ -4,5 +4,5 @@ import Mathlib.Tactic.RunTac
 open Lean Elab Tactic
 
 example : True := by
-  runTac do
+  run_tac do
     evalApplyLikeTactic Meta.apply (← `(True.intro))
