@@ -276,7 +276,7 @@ syntax (name := congr) "congr" (ppSpace (colGt num))?
   (" with " (colGt rcasesPat)* (" : " num)?)? : tactic
 syntax (name := rcongr) "rcongr" (ppSpace (colGt rcasesPat))* : tactic
 syntax (name := convert) "convert " "← "? term (" using " num)? : tactic
-syntax (name := convertTo) "convertTo " term (" using " num)? : tactic
+syntax (name := convertTo) "convert_to " term (" using " num)? : tactic
 syntax (name := acChange) "ac_change " term (" using " num)? : tactic
 
 syntax (name := decide!) "decide!" : tactic
@@ -482,7 +482,7 @@ syntax (name := nontriviality) "nontriviality"
 
 syntax (name := filterUpwards) "filter_upwards" " [" term,* "]" (ppSpace (colGt term))? : tactic
 
-syntax (name := isBounded_default) "is_bounded_default" : tactic
+syntax (name := isBounded_default) "isBounded_default" : tactic
 
 syntax (name := opInduction) "op_induction" (ppSpace (colGt term))? : tactic
 
