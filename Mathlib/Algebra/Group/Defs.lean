@@ -17,8 +17,6 @@ local macro "ofNat_class" Class:ident n:num : command =>
   instance {α} [OfNat α (nat_lit $n)] : $Class α where
     $field:ident := $n)
 
-example : Nat := 0 -- terminate macro block
-
 ofNat_class Zero 0
 ofNat_class One 1
 
