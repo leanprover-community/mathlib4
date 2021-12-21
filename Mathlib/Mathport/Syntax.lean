@@ -14,6 +14,7 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.ShowTerm
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
+import Mathlib.Init.ExtendedBinder
 
 -- To fix upstream:
 -- * bracketedExplicitBinders doesn't support optional types
@@ -21,6 +22,7 @@ import Mathlib.Tactic.SolveByElim
 namespace Lean
 
 namespace Parser.Command
+open Mathlib.ExtendedBinder
 
 elab (name := include) "include " ident+ : command => ()
 elab (name := omit) "omit " ident+ : command => ()
@@ -33,30 +35,23 @@ For example, the familiar exists is given by:
 which expands to the same expression as
 `∃ x y : Nat, x < y`
 -/
-syntax "expandBinders% " "(" ident " => " term ")" explicitBinders ", " term : term
+syntax "expandBinders% " "(" ident " => " term ")" extBinders ", " term : term
 
 macro_rules
-  | `(expandBinders% ($x => $term) $[$ys:binderIdent]* : $ty, $res) =>
-    `(expandBinders% ($x => $term) ($ys* : $ty), $res)
-  | `(expandBinders% ($x => $term) ($y $ys* : $ty) $binders*, $res) =>
-    `(expandBinders% ($x => $term) ($y : $ty) ($ys* : $ty) $binders*, $res)
-  | `(expandBinders% ($x => $term) $[$binders]*, $res) =>
-    if binders.isEmpty then res else Macro.throwUnsupported
+  | `(expandBinders% ($x => $term) $y:extBinder, $res) =>
+    `(expandBinders% ($x => $term) ($y:extBinder), $res)
+  | `(expandBinders% ($x => $term), $res) => res
 macro_rules
-  | `(expandBinders% ($x => $term) $[$binders:ident]*, $res) =>
-    if binders.isEmpty then res else Macro.throwUnsupported
-macro_rules
-  | `(expandBinders% ($x => $term) ($y : $ty) $binders*, $res) =>
-    let y := y[0]
+  | `(expandBinders% ($x => $term) ($y:ident $[: $ty]?) $binders*, $res) => do
+    let ty := ty.getD (← `(_))
     term.replaceM fun x' => do
       unless x == x' do return none
-      let body ← `(expandBinders% ($x => $term) $[$binders]*, $res)
-      if y.isIdent then `(fun $y:ident : $ty => $body) else `(fun _ : $ty => $body)
+      `(fun $y:ident : $ty => expandBinders% ($x => $term) $[$binders]*, $res)
 macro_rules
-  | `(expandBinders% ($x => $term) $y:ident $[$ys:ident]*, $res) =>
+  | `(expandBinders% ($x => $term) ($y:ident $pred:binderPred) $binders*, $res) =>
     term.replaceM fun x' => do
       unless x == x' do return none
-      `(fun $y => expandBinders% ($x => $term) $[$ys:ident]*, $res)
+      `(fun $y:ident => expandBinders% ($x => $term) (h : satisfiesBinderPred% $y $pred) $[$binders]*, $res)
 
 syntax bindersItem := "(" "..." ")"
 syntax identScope := ":" "(" "scoped " ident " => " term ")"
@@ -71,7 +66,7 @@ macro ak:Term.attrKind "notation3"
     if let some _ := lit.isStrLit? then
       macroArgs := macroArgs.push (← `(macroArg| $lit:strLit))
     else if lit.isOfKind ``bindersItem then
-      macroArgs := macroArgs.push (← `(macroArg| binders:explicitBinders))
+      macroArgs := macroArgs.push (← `(macroArg| binders:extBinders))
     else if let Syntax.ident _ _ id .. := lit then
       macroArgs := macroArgs.push (← `(macroArg| $lit:ident:term))
       if item[1].getNumArgs == 1 then
@@ -81,7 +76,7 @@ macro ak:Term.attrKind "notation3"
           | Syntax.ident _ _ id .. => boundNames.find? id
           | _ => none
         boundNames := boundNames.insert id <|
-          ← `(expandBinders% ($scopedId:ident => $scopedTerm:term) $$binders:explicitBinders,
+          ← `(expandBinders% ($scopedId:ident => $scopedTerm:term) $$binders:extBinders,
             $(lit.mkAntiquotNode))
       else
         boundNames := boundNames.insert id <| lit.mkAntiquotNode
