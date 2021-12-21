@@ -31,7 +31,7 @@ def withExtHyps (struct : Name) (k : Array Expr → (x y : Expr) → Array (Name
         hyps := hyps.push (field, ← mkHEq x_f y_f)
     k params x y hyps
 
-scoped elab "extType%" struct:ident : term => do
+scoped elab "ext_type%" struct:ident : term => do
   withExtHyps (← resolveGlobalConstNoOverload struct) fun params x y hyps => do
     let mut ty ← mkEq x y
     for (f, h) in hyps.reverse do
@@ -46,33 +46,33 @@ def mkAndN : List Expr → Expr
   | [p, q] => mkAnd p q
   | p :: ps => mkAnd p (mkAndN ps)
 
-scoped elab "extIffType%" struct:ident : term => do
+scoped elab "ext_iff_type%" struct:ident : term => do
   withExtHyps (← resolveGlobalConstNoOverload struct) fun params x y hyps => do
     mkForallFVars (params |>.push x |>.push y) <|
       mkIff (← mkEq x y) <| mkAndN (hyps.map (·.2)).toList
 
-elab "substEqs" : tactic =>
+elab "subst_eqs" : tactic =>
   open Elab.Tactic in
   liftMetaTactic1 fun mvarId => substEqs mvarId
 
-scoped macro "extProof%" : term =>
-  `(fun {..} {..} => by intros; substEqs; rfl)
+scoped macro "ext_proof%" : term =>
+  `(fun {..} {..} => by intros; subst_eqs; rfl)
 
-syntax "splitAnds" : tactic
-macro_rules | `(tactic| splitAnds) => `(tactic| skip)
-macro_rules | `(tactic| splitAnds) => `(tactic| refine And.intro ?_ ?_ <;> splitAnds)
+syntax "split_ands" : tactic
+macro_rules | `(tactic| split_ands) => `(tactic| skip)
+macro_rules | `(tactic| split_ands) => `(tactic| refine And.intro ?_ ?_ <;> split_ands)
 
 macro_rules | `(tactic| rfl) => `(tactic| exact HEq.rfl)
 
-scoped macro "extIffProof%" : term => `(fun {..} {..} =>
-  ⟨fun _ => by substEqs; splitAnds <;> rfl,
-   fun _ => by (repeat cases ‹_ ∧ _›); substEqs; rfl⟩)
+scoped macro "ext_iff_proof%" : term => `(fun {..} {..} =>
+  ⟨fun _ => by subst_eqs; split_ands <;> rfl,
+   fun _ => by (repeat cases ‹_ ∧ _›); subst_eqs; rfl⟩)
 
 scoped macro "declareExtTheoremsFor" struct:ident : command => do
   let extName ← mkIdent <| struct.getId.eraseMacroScopes.mkStr "ext"
   let extIffName ← mkIdent <| struct.getId.eraseMacroScopes.mkStr "ext_iff"
-  `(@[ext] protected theorem $extName:ident : extType% $struct:ident := extProof%
-    protected theorem $extIffName:ident : extIffType% $struct:ident := extIffProof%)
+  `(@[ext] protected theorem $extName:ident : ext_type% $struct:ident := ext_proof%
+    protected theorem $extIffName:ident : ext_iff_type% $struct:ident := ext_iff_proof%)
 
 -- Attributes on structures are not supported yet,
 -- so simulate it via macro expansion.
@@ -114,7 +114,7 @@ initialize extLemmasCache : DeclCache (DiscrTree Name) ←
       lemmas
 
 open Lean.Elab.Tactic in
-elab "applyExtLemma" : tactic => do
+elab "apply_ext_lemma" : tactic => do
   let tgt ← getMainTarget
   unless tgt.isAppOfArity ``Eq 3 do
     throwError "applyExtLemma only applies to equations"
@@ -127,13 +127,13 @@ elab "applyExtLemma" : tactic => do
       s.restore
   throwError "no applicable extensionality lemma found"
 
-scoped syntax "extOrSkip" (colGt term:max)* : tactic
-macro_rules | `(tactic| extOrSkip) => `(tactic| skip)
-macro_rules | `(tactic| extOrSkip $xs*) => `(tactic| applyExtLemma; extOrSkip $xs*)
-macro_rules | `(tactic| extOrSkip $x $xs*) => `(tactic| intro $x; extOrSkip $xs*)
+scoped syntax "ext_or_skip" (colGt term:max)* : tactic
+macro_rules | `(tactic| ext_or_skip) => `(tactic| skip)
+macro_rules | `(tactic| ext_or_skip $xs*) => `(tactic| apply_ext_lemma; ext_or_skip $xs*)
+macro_rules | `(tactic| ext_or_skip $x $xs*) => `(tactic| intro $x; ext_or_skip $xs*)
 
 -- TODO: We need to use the following, to support existing uses of `ext` in mathlib3.
 -- syntax (name := ext) "ext" (ppSpace rcasesPat)* (" : " num)? : tactic
 
 syntax "ext" (colGt term:max)* : tactic
-macro_rules | `(tactic| ext $xs*) => `(tactic| applyExtLemma; extOrSkip $xs*)
+macro_rules | `(tactic| ext $xs*) => `(tactic| apply_ext_lemma; ext_or_skip $xs*)
