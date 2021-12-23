@@ -13,8 +13,7 @@ import Mathlib.Tactic.RunCmd
 This file is currently just a stub that creates a no-operation `@[norm_cast]` attribute.
 Without this, all declarations in the mathport output for mathlib3 that use `@[norm_cast]` fail.
 With the no-operation attribute, the declarations can succeed,
-but of course all later proofs that rely on the existence of the automatically generated lemmas
-will fail.
+but of course the `norm_cast` tactic itself will not work.
 
 Later we will need to port the implementation from mathlib3.
 
@@ -35,7 +34,7 @@ initialize pushCastExtension : SimpExtension ← registerSimpAttr `push_cast $
   "The `push_cast` simp attribute uses `norm_cast` lemmas " ++
   "to move casts toward the leaf nodes of the expression."
 
-/--  The cache for `norm_cast` attribute stores three `SimpLemmas` objects. -/
+/--  The `norm_cast` attribute stores three simp sets. -/
 structure NormCastExtension where
   up : SimpExtension
   down : SimpExtension
