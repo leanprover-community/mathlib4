@@ -22,6 +22,7 @@ Later we will need to port the implementation from mathlib3.
 
 open Lean Meta
 
+namespace Lean.Parser
 namespace Attr
 
 syntax (name := simps) "simps" (" (" &"config" " := " term ")")? (ppSpace ident)* : attr
@@ -41,6 +42,7 @@ syntax (name := initializeSimpsProjections?) "initialize_simps_projections?"
   (ppSpace simpsProj)* : command
 
 end Command
+end Lean.Parser
 
 -- Defines the user attribute `simps` for automatic generation of `@[simp]` lemmas for projections.
 initialize simpsAttr : ParametricAttribute (Array Name) ←
