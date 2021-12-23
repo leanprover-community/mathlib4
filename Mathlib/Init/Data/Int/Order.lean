@@ -129,10 +129,10 @@ protected theorem mul_pos {a b : ℤ} (ha : 0 < a) (hb : 0 < b) : 0 < a * b := b
 protected theorem zero_lt_one : (0 : ℤ) < 1 := ⟨_⟩
 
 protected theorem lt_iff_le_not_le {a b : ℤ} : a < b ↔ a ≤ b ∧ ¬b ≤ a := by
-  simp [Int.lt_iff_le_and_ne]
-  refine fun h => not_congr ⟨fun h' => ?_, fun h' => ?_⟩
-  · subst h'; apply Int.le_refl
+  rw [Int.lt_iff_le_and_ne]
+  constructor <;> refine fun ⟨h, h'⟩ => ⟨h, h'.imp fun h' => ?_⟩
   · exact Int.le_antisymm h h'
+  · subst h'; apply Int.le_refl
 
 instance : LinearOrder Int where
   le := (·≤·)
