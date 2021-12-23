@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Lean.Elab.Command
 import Lean.Elab.Quotation
 import Mathlib.Tactic.Core
+import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.LibrarySearch
@@ -580,7 +581,18 @@ syntax (name := aliasLR) "alias " ident " ↔ " (".." <|> (binderIdent binderIde
 syntax (name := explode) "#explode " ident : command
 
 syntax (name := open_locale) "open_locale" (ppSpace ident)* : command
+macro_rules | `(open_locale $ids:ident*) => `(command| open $[$ids:ident]*)
+
 syntax (name := localized) "localized " "[" ident "] " command : command
+-- The implementation completely ignores the namespace argument, let's just
+-- hope that localized is only used the corresponding namespace. :shrug:
+macro_rules
+  | `(localized [$ns] notation $[$prec:precedence]? $[$n:namedName]? $[$prio:namedPrio]? $sym => $t) =>
+    `(scoped notation $[$prec:precedence]? $[$n:namedName]? $[$prio:namedPrio]? $sym => $t)
+  | `(localized [$ns] $attrKind:attrKind $mixfixKind $prec:precedence $[$n:namedName]? $[$prio:namedPrio]? $sym => $t) =>
+    `(scoped $mixfixKind $prec:precedence $[$n:namedName]? $[$prio:namedPrio]? $sym => $t)
+  | `(localized [$ns] attribute [$attr:attr] $ids*) =>
+    `(attribute [scoped $attr:attr] $ids*)
 
 syntax (name := listUnusedDecls) "#list_unused_decls" : command
 syntax (name := mkIffOfInductiveProp) "mk_iff_of_inductive_prop" ident ident : command
