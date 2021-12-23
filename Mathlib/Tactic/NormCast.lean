@@ -30,9 +30,10 @@ end Lean.Parser.Attr
 
 namespace Tactic.NormCast
 
-initialize pushCastExt : SimpExtension ← registerSimpAttr `push_cast $
-  "The `push_cast` simp attribute uses `norm_cast` lemmas " ++
-  "to move casts toward the leaf nodes of the expression."
+initialize pushCastExt : SimpExtension ←
+  registerSimpAttr `push_cast (extName := `Tactic.NormCast.pushCastExt) $
+    "The `push_cast` simp attribute uses `norm_cast` lemmas " ++
+    "to move casts toward the leaf nodes of the expression."
 
 /--  The `norm_cast` attribute stores three simp sets. -/
 structure NormCastExtension where
