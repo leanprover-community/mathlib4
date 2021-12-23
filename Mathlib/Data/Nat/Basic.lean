@@ -49,6 +49,11 @@ theorem le_zero_iff {i : ℕ} : i ≤ 0 ↔ i = 0 :=
 theorem lt_succ_iff {m n : ℕ} : m < succ n ↔ m ≤ n :=
 ⟨le_of_lt_succ, lt_succ_of_le⟩
 
+/-! ### `succ` -/
+
+lemma succ_eq_one_add (n : ℕ) : n.succ = 1 + n := by
+  rw [Nat.succ_eq_add_one, Nat.add_comm]
+
 theorem succ_inj' {n m : ℕ} : succ n = succ m ↔ n = m :=
 ⟨succ.inj, congr_arg _⟩
 
@@ -85,8 +90,7 @@ protected lemma min_comm (a b : ℕ) : Nat.min a b = Nat.min b a := by
 
 protected lemma min_le_left (a b : ℕ) : Nat.min a b ≤ a := by
   simp [Nat.min]; by_cases a ≤ b <;> simp [h]
-  · exact Nat.le_refl _
-  · exact Nat.le_of_not_le h
+  exact Nat.le_of_not_le h
 
 protected lemma min_eq_left (h : a ≤ b) : Nat.min a b = a :=
 by simp [Nat.min, h]
