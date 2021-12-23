@@ -28,6 +28,12 @@ def non_contradictory (a : Prop) : Prop := ¬¬a
 theorem non_contradictory_intro {a : Prop} (ha : a) : ¬¬a :=
 λ hna : ¬a => absurd ha hna
 
+/-- Ex falso for negation. From `¬ a` and `a` anything follows. This is the same as `absurd` with
+the arguments flipped, but it is in the `not` namespace so that projection notation can be used. -/
+def Not.elim {α : Sort _} (H1 : ¬a) (H2 : a) : α := absurd H2 H1
+
+@[reducible] theorem Not.imp {a b : Prop} (H2 : ¬b) (H1 : a → b) : ¬a := mt H1 H2
+
 /- eq -/
 
 -- proof irrelevance is built in
@@ -300,8 +306,12 @@ let ⟨x, hx, hy⟩ := h; (hy _ py₁).trans (hy _ py₂).symm
 lemma forall_congr' {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∀ a, p a) ↔ ∀ a, q a :=
 ⟨fun H a => (h a).1 (H a), fun H a => (h a).2 (H a)⟩
 
-lemma exists_imp_exists {α : Sort u} {p q : α → Prop} (h : ∀ a, (p a → q a)) (p : ∃ a, p a) : ∃ a, q a :=
+lemma exists_imp_exists {α : Sort u} {p q : α → Prop}
+  (h : ∀ a, (p a → q a)) (p : ∃ a, p a) : ∃ a, q a :=
 Exists.elim p (λ a hp => ⟨a, h a hp⟩)
+
+lemma Exists.imp {α : Sort u} {p q : α → Prop}
+  (h : ∀ a, (p a → q a)) (p : ∃ a, p a) : ∃ a, q a := exists_imp_exists h p
 
 lemma exists_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃ a, p a) ↔ ∃ a, q a :=
 ⟨exists_imp_exists fun x => (h x).1, exists_imp_exists fun x => (h x).2⟩

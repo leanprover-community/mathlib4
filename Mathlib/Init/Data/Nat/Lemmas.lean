@@ -792,12 +792,12 @@ by rw [Nat.mul_comm m k, Nat.mul_comm n k] at H; exact Nat.dvd_of_mul_dvd_mul_le
 /- --- -/
 
 protected lemma mul_le_mul_of_nonneg_left {a b c : ℕ} (h₁ : a ≤ b) : c * a ≤ c * b := by
-  by_cases hba: b ≤ a; { simp [Nat.le_antisymm hba h₁]; apply Nat.le_refl }
+  by_cases hba: b ≤ a; { simp [Nat.le_antisymm hba h₁] }
   by_cases hc0 : c ≤ 0; { simp [Nat.le_antisymm hc0 (zero_le c), Nat.zero_mul] }
   exact Nat.le_of_lt (Nat.mul_lt_mul_of_pos_left (not_le.1 hba) (not_le.1 hc0))
 
 protected lemma mul_le_mul_of_nonneg_right {a b c : ℕ} (h₁ : a ≤ b) : a * c ≤ b * c := by
-  by_cases hba : b ≤ a; { simp [Nat.le_antisymm hba h₁]; apply Nat.le_refl }
+  by_cases hba : b ≤ a; { simp [Nat.le_antisymm hba h₁] }
   by_cases hc0 : c ≤ 0; { simp [Nat.le_antisymm hc0 (zero_le c), Nat.mul_zero] }
   exact Nat.le_of_lt (Nat.mul_lt_mul_of_pos_right (not_le.1 hba) (not_le.1 hc0))
 
