@@ -64,6 +64,7 @@ import Mathlib.Tactic.Lint.Basic
 import Mathlib.Tactic.Lint.Frontend
 import Mathlib.Tactic.Lint.Simp
 import Mathlib.Tactic.NoMatch
+import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.OpenPrivate
 import Mathlib.Tactic.PrintPrefix

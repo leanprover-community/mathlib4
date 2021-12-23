@@ -9,6 +9,7 @@ import Mathlib.Tactic.Core
 import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.ShowTerm
@@ -539,8 +540,6 @@ syntax (name := higherOrder) "higher_order" (ppSpace ident)? : attr
 syntax (name := interactive) "interactive" : attr
 
 syntax (name := mkIff) "mk_iff" (ppSpace ident)? : attr
-
-syntax (name := normCast) "norm_cast" (ppSpace (&"elim" <|> &"move" <|> &"squash"))? : attr
 
 syntax (name := protectProj) "protect_proj" (&" without" (ppSpace ident)+)? : attr
 
