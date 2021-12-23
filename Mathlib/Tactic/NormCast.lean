@@ -30,7 +30,7 @@ end Lean.Parser.Attr
 
 namespace Tactic.NormCast
 
-initialize pushCastExtension : SimpExtension ← registerSimpAttr `push_cast $
+initialize pushCastExt : SimpExtension ← registerSimpAttr `push_cast $
   "The `push_cast` simp attribute uses `norm_cast` lemmas " ++
   "to move casts toward the leaf nodes of the expression."
 
@@ -55,12 +55,14 @@ def addElim (decl : Name)
 /-- `addMove decl` adds `decl` as a `move` lemma to the cache. -/
 def addMove (decl : Name)
   (kind := AttributeKind.global) (prio := eval_prio default) : MetaM Unit := do
+  addSimpLemma pushCastExt decl false (inv := false) kind prio
   addSimpLemma normCastExt.up decl false (inv := true) kind prio
   addSimpLemma normCastExt.down decl false (inv := false) kind prio
 
 /-- `addSquash decl` adds `decl` as a `squash` lemma to the cache. -/
 def addSquash (decl : Name)
   (kind := AttributeKind.global) (prio := eval_prio default) : MetaM Unit := do
+  addSimpLemma pushCastExt decl false (inv := false) kind prio
   addSimpLemma normCastExt.squash decl false (inv := false) kind prio
   addSimpLemma normCastExt.down decl false (inv := false) kind prio
 
@@ -76,14 +78,8 @@ def addInfer (decl : Name)
   -- TODO: not just elim
   addElim decl kind prio
 
-private theorem ge_from_le {α} [LE α] (x y : α) : x ≥ y ↔ y ≤ x := Iff.rfl
-private theorem gt_from_lt {α} [LT α] (x y : α) : x > y ↔ y < x := Iff.rfl
-private theorem ne_from_not_eq {α} (x y : α) : x ≠ y ↔ ¬x = y := Iff.rfl
-
 run_cmd Elab.Command.liftCoreM $ MetaM.run' do
-  addElim ``ge_from_le
-  addElim ``gt_from_lt
-  addElim ``ne_from_not_eq
+  addElim ``ne_eq
 
 initialize registerBuiltinAttribute {
   name := `normCast
