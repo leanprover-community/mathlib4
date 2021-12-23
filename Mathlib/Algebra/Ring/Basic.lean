@@ -1,7 +1,7 @@
+import Mathlib.Init.Data.Int.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Tactic.Spread
-import Mathlib.Data.Int.Basic
 /-
 
 # Semirings and rings
