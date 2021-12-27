@@ -84,3 +84,4 @@ import Mathlib.Util.Eval
 import Mathlib.Util.Export
 import Mathlib.Util.TermUnsafe
 import Mathlib.Util.Time
+import Mathlib.Util.WithWeakNamespace

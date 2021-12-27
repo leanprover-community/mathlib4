@@ -17,6 +17,7 @@ import Mathlib.Tactic.ShowTerm
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Init.ExtendedBinder
+import Mathlib.Util.WithWeakNamespace
 
 -- To fix upstream:
 -- * bracketedExplicitBinders doesn't support optional types
@@ -588,11 +589,16 @@ syntax (name := localized) "localized " "[" ident "] " command : command
 -- hope that localized is only used the corresponding namespace. :shrug:
 macro_rules
   | `(localized [$ns] notation $[$prec:precedence]? $[$n:namedName]? $[$prio:namedPrio]? $sym => $t) =>
-    `(scoped notation $[$prec:precedence]? $[$n:namedName]? $[$prio:namedPrio]? $sym => $t)
+    let ns := mkIdentFrom ns <| rootNamespace ++ ns.getId
+    `(with_weak_namespace $ns
+      scoped notation $[$prec:precedence]? $[$n:namedName]? $[$prio:namedPrio]? $sym => $t)
   | `(localized [$ns] $attrKind:attrKind $mixfixKind $prec:precedence $[$n:namedName]? $[$prio:namedPrio]? $sym => $t) =>
-    `(scoped $mixfixKind $prec:precedence $[$n:namedName]? $[$prio:namedPrio]? $sym => $t)
+    let ns := mkIdentFrom ns <| rootNamespace ++ ns.getId
+    `(with_weak_namespace $ns
+      scoped $mixfixKind $prec:precedence $[$n:namedName]? $[$prio:namedPrio]? $sym => $t)
   | `(localized [$ns] attribute [$attr:attr] $ids*) =>
-    `(attribute [scoped $attr:attr] $ids*)
+    let ns := mkIdentFrom ns <| rootNamespace ++ ns.getId
+    `(with_weak_namespace $ns attribute [scoped $attr:attr] $ids*)
 
 syntax (name := listUnusedDecls) "#list_unused_decls" : command
 syntax (name := mkIffOfInductiveProp) "mk_iff_of_inductive_prop" ident ident : command
