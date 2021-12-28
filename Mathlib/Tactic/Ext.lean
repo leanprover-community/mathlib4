@@ -74,44 +74,54 @@ scoped macro "declareExtTheoremsFor" struct:ident : command => do
   `(@[ext] protected theorem $extName:ident : ext_type% $struct:ident := ext_proof%
     protected theorem $extIffName:ident : ext_iff_type% $struct:ident := ext_iff_proof%)
 
--- Attributes on structures are not supported yet,
--- so simulate it via macro expansion.
-open Parser Term in
-macro_rules
-  | `($[$doc:docComment]? @[$attrs,*]
-    structure $n:ident $binders* $[extends $parents,*]? $[: $ty]? :=
-      $[$mk:ident ::]? $fields) => do
-    for attr in attrs.getElems do
-      if let `(attrInstance| ext) := attr then
-        let attrs := attrs.getElems.filter (· != attr)
-        return ← `($[$doc:docComment]? @[$attrs,*]
-          structure $n:ident $binders* $[extends $parents,*]? $[: $ty]? := $[$mk:ident ::]? $fields
-          declareExtTheoremsFor $n)
-    Macro.throwUnsupported
+open Elab.Command MonadRecDepth in
+def liftCommandElabM (k : CommandElabM α) : AttrM α := do
+  let (a, commandState) ←
+    k.run { fileName := (← getEnv).mainModule.toString, fileMap := arbitrary } |>.run {
+      env := ← getEnv, maxRecDepth := ← getMaxRecDepth,
+      scopes := [{ header := "", opts := ← getOptions }]
+    }
+  modify fun coreState => { coreState with
+    traceState.traces := coreState.traceState.traces ++ commandState.traceState.traces
+    env := commandState.env
+  }
+  if let some err ← commandState.messages.msgs.toArray.find?
+      (·.severity matches MessageSeverity.error) then
+    throwError err.data
+  a
 
-initialize extAttribute : ParametricAttribute (Array DiscrTree.Key) ←
-  registerParametricAttribute {
+initialize extExtension : SimpleScopedEnvExtension (Name × Array DiscrTree.Key) (DiscrTree Name) ←
+  registerSimpleScopedEnvExtension {
     name := `ext
-    descr := "Marks a lemma as extensionality lemma"
-    getParam := fun decl attr => MetaM.run' do
-      let declTy := (← getConstInfo decl).type
-      let (xs, bis, declTy) ← withReducible <| forallMetaTelescopeReducing declTy
-      unless declTy.isAppOfArity ``Eq 3 && (declTy.getArg! 1).isMVar && (declTy.getArg! 2).isMVar do
-        throwError "@[ext] attribute only applies to lemmas proving x = y, got {declTy}"
-      let ty := declTy.getArg! 0
-      if (← withReducible <| whnf ty).isForall then
-        #[DiscrTree.Key.star] -- FIXME: workaround
-      else
-        withReducible <| DiscrTree.mkPath (declTy.getArg! 0)
+    addEntry := fun dt (n, ks) => dt.insertCore ks n
+    initial := {}
   }
 
--- TODO: iterate over extension instead of all declarations
-initialize extLemmasCache : DeclCache (DiscrTree Name) ←
-  DeclCache.mk "ext: initialize cache" {} fun decl ci lemmas => do
-    if let some keys := extAttribute.getParam (← getEnv) decl then
-      lemmas.insertCore keys decl
-    else
-      lemmas
+def extAttribute : AttributeImpl where
+  name := `ext
+  descr := "Marks a lemma as extensionality lemma"
+  add decl stx kind := do
+    if isStructure (← getEnv) decl then
+      liftCommandElabM do
+        Elab.Command.elabCommand <|<- `(declareExtTheoremsFor $(mkIdent decl))
+    else MetaM.run' do
+      let declTy := (← getConstInfo decl).type
+      let (xs, bis, declTy) ← withReducible <| forallMetaTelescopeReducing declTy
+      if declTy.isAppOfArity ``Eq 3 && (declTy.getArg! 1).isMVar && (declTy.getArg! 2).isMVar then
+        let ty := declTy.getArg! 0
+        let key ←
+          if (← withReducible <| whnf ty).isForall then
+            #[DiscrTree.Key.star] -- FIXME: workaround
+          else
+            withReducible <| DiscrTree.mkPath ty
+        extExtension.add (decl, key) kind
+      else
+        throwError "@[ext] attribute only applies to structures or lemmas proving x = y, got {declTy}"
+
+initialize registerBuiltinAttribute extAttribute
+
+def extLemmas (env : Environment) : DiscrTree Name :=
+  extExtension.getState env
 
 open Lean.Elab.Tactic in
 elab "apply_ext_lemma" : tactic => do
@@ -119,7 +129,7 @@ elab "apply_ext_lemma" : tactic => do
   unless tgt.isAppOfArity ``Eq 3 do
     throwError "applyExtLemma only applies to equations"
   let s ← saveState
-  for lem in ← (← extLemmasCache.get).getMatch (tgt.getArg! 0) do
+  for lem in ← (← extLemmas (← getEnv)).getMatch (tgt.getArg! 0) do
     try
       liftMetaTactic (apply · (← mkConstWithFreshMVarLevels lem))
       return
