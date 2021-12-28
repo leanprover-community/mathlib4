@@ -175,6 +175,8 @@ namespace Conv
 
 open Tactic (simpArg rwRuleSeq)
 syntax (name := «for») "for " term:max " [" num,* "]" " => " tacticSeq : conv
+syntax (name := simp') "simp'" (config)? (discharger)? (&" only")?
+  (" [" simpArg,* "]")? (" with " (colGt ident)+)? : conv
 syntax (name := dsimp) "dsimp" (config)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? : conv
 syntax (name := guardLHS) "guard_lhs " " =ₐ " term : conv
