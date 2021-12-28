@@ -200,7 +200,7 @@ syntax (name := ext?) "ext?" (ppSpace rcasesPat)* (" : " num)? : tactic
 syntax (name := apply') "apply' " term : tactic
 syntax (name := fapply') "fapply' " term : tactic
 syntax (name := eapply') "eapply' " term : tactic
-syntax (name := applyWith') "apply_with' " ("(" &"config" " := " term ")")? term : tactic
+syntax (name := applyWith') "apply_with' " (config)? term : tactic
 syntax (name := mapply') "mapply' " term : tactic
 syntax (name := rfl') "rfl'" : tactic
 syntax (name := symm') "symm'" (ppSpace location)? : tactic
