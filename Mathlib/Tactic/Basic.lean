@@ -189,8 +189,6 @@ macro_rules
   | `(tactic| by_contra) => `(tactic| (apply Classical.byContradiction; intro))
   | `(tactic| by_contra $e) => `(tactic| (apply Classical.byContradiction; intro $e))
 
-macro (name := «sorry») "sorry" : tactic => `(exact sorry)
-
 /--
 `iterate n { ... }` runs the tactic block exactly `n` times.
 `iterate { ... }` runs the tactic block repeatedly until failure.
