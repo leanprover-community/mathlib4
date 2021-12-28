@@ -140,26 +140,22 @@ syntax (name := left) "left" : tactic
 syntax (name := right) "right" : tactic
 syntax (name := constructorM) "constructorm" "*"? ppSpace term,* : tactic
 syntax (name := injections') "injections" (" with " (colGt (ident <|> "_"))+)? : tactic
-syntax (name := simp') "simp'" "*"? (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := simp') "simp'" "*"? (config)? (discharger)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
-syntax (name := simpIntro) "simp_intro" (" (" &"config" " := " term ")")?
+syntax (name := simpIntro) "simp_intro" (config)?
   (ppSpace (colGt (ident <|> "_")))* (&" only")? (" [" simpArg,* "]")? (" with " ident+)? : tactic
-syntax (name := dsimp) "dsimp" (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := dsimp) "dsimp" (config)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
 syntax (name := symm) "symm" : tactic
 syntax (name := trans) "trans" (ppSpace (colGt term))? : tactic
 syntax (name := acRfl) "ac_rfl" : tactic
 syntax (name := cc) "cc" : tactic
 syntax (name := substVars) "subst_vars" : tactic
-syntax (name := dUnfold) "dunfold" (" (" &"config" " := " term ")")?
-  (ppSpace (colGt ident))* (ppSpace location)? : tactic
+syntax (name := dUnfold) "dunfold" (config)? (ppSpace (colGt ident))* (ppSpace location)? : tactic
 syntax (name := delta') "delta'" (colGt ident)* (ppSpace location)? : tactic
-syntax (name := unfoldProjs) "unfold_projs" (" (" &"config" " := " term ")")?
-  (ppSpace location)? : tactic
-syntax (name := unfold) "unfold" (" (" &"config" " := " term ")")?
-  (ppSpace (colGt ident))* (ppSpace location)? : tactic
-syntax (name := unfold1) "unfold1" (" (" &"config" " := " term ")")?
-  (ppSpace (colGt ident))* (ppSpace location)? : tactic
+syntax (name := unfoldProjs) "unfold_projs" (config)? (ppSpace location)? : tactic
+syntax (name := unfold) "unfold" (config)? (ppSpace (colGt ident))* (ppSpace location)? : tactic
+syntax (name := unfold1) "unfold1" (config)? (ppSpace (colGt ident))* (ppSpace location)? : tactic
 syntax (name := inferOptParam) "infer_opt_param" : tactic
 syntax (name := inferAutoParam) "infer_auto_param" : tactic
 syntax (name := guardExprEq) "guard_expr " term:51 " =ₐ " term : tactic -- alpha equality
@@ -179,7 +175,7 @@ namespace Conv
 
 open Tactic (simpArg rwRuleSeq)
 syntax (name := «for») "for " term:max " [" num,* "]" " => " tacticSeq : conv
-syntax (name := dsimp) "dsimp" (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := dsimp) "dsimp" (config)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? : conv
 syntax (name := guardLHS) "guard_lhs " " =ₐ " term : conv
 
@@ -237,8 +233,7 @@ syntax (name := failIfSuccess?) "fail_if_success? " str ppSpace tacticSeq : tact
 syntax (name := field) "field " ident " => " tacticSeq : tactic
 syntax (name := haveField) "have_field" : tactic
 syntax (name := applyField) "apply_field" : tactic
-syntax (name := applyRules) "apply_rules" (" (" &"config" " := " term ")")?
-  " [" term,* "]" (ppSpace num)? : tactic
+syntax (name := applyRules) "apply_rules" (config)? " [" term,* "]" (ppSpace num)? : tactic
 syntax (name := hGeneralize) "h_generalize " atomic(binderIdent " : ")? term:51 " = " ident
   (" with " binderIdent)? : tactic
 syntax (name := hGeneralize!) "h_generalize! " atomic(binderIdent " : ")? term:51 " = " ident
@@ -284,11 +279,11 @@ syntax (name := deltaInstance) "delta_instance" (ppSpace ident)* : tactic
 syntax (name := elide) "elide " num (ppSpace location)? : tactic
 syntax (name := unelide) "unelide" (ppSpace location)? : tactic
 
-syntax (name := clarify) "clarify" (" (" &"config" " := " term ")")?
+syntax (name := clarify) "clarify" (config)?
   (" [" Parser.Tactic.simpArg,* "]")? (" using " term,+)? : tactic
-syntax (name := safe) "safe" (" (" &"config" " := " term ")")?
+syntax (name := safe) "safe" (config)?
   (" [" Parser.Tactic.simpArg,* "]")? (" using " term,+)? : tactic
-syntax (name := finish) "finish" (" (" &"config" " := " term ")")?
+syntax (name := finish) "finish" (config)?
   (" [" Parser.Tactic.simpArg,* "]")? (" using " term,+)? : tactic
 
 syntax generalizesArg := (ident " : ")? term:51 " = " ident
@@ -330,50 +325,50 @@ syntax (name := dsimpResult) "dsimp_result " (&"only ")? ("[" Tactic.simpArg,* "
 syntax (name := simpResult) "simp_result " (&"only ")? ("[" Tactic.simpArg,* "]")?
   (" with " ident+)? " => " tacticSeq : tactic
 
-syntax (name := simpa) "simpa" (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := simpa) "simpa" (config)? (discharger)? (&" only")?
   (" [" Tactic.simpArg,* "]")? (" with " (colGt ident)+)? (" using " term)? : tactic
-syntax (name := simpa!) "simpa!" (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := simpa!) "simpa!" (config)? (discharger)? (&" only")?
   (" [" Tactic.simpArg,* "]")? (" with " (colGt ident)+)? (" using " term)? : tactic
-syntax (name := simpa?) "simpa?" (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := simpa?) "simpa?" (config)? (discharger)? (&" only")?
   (" [" Tactic.simpArg,* "]")? (" with " (colGt ident)+)? (" using " term)? : tactic
-syntax (name := simpa!?) "simpa!?" (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := simpa!?) "simpa!?" (config)? (discharger)? (&" only")?
   (" [" Tactic.simpArg,* "]")? (" with " (colGt ident)+)? (" using " term)? : tactic
 
 syntax (name := splitIfs) "split_ifs" (ppSpace location)? (" with " binderIdent+)? : tactic
 
 syntax (name := squeezeScope) "squeeze_scope " tacticSeq : tactic
-syntax (name := squeezeSimp) "squeeze_simp" (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := squeezeSimp) "squeeze_simp" (config)? (discharger)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
-syntax (name := squeezeSimp?) "squeeze_simp?" (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := squeezeSimp?) "squeeze_simp?" (config)? (discharger)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
-syntax (name := squeezeSimp!) "squeeze_simp!" (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := squeezeSimp!) "squeeze_simp!" (config)? (discharger)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
-syntax (name := squeezeSimp?!) "squeeze_simp?!" (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := squeezeSimp?!) "squeeze_simp?!" (config)? (discharger)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
-syntax (name := squeezeSimpa) "squeeze_simpa" (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := squeezeSimpa) "squeeze_simpa" (config)? (discharger)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " term)? : tactic
-syntax (name := squeezeSimpa?) "squeeze_simpa?" (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := squeezeSimpa?) "squeeze_simpa?" (config)? (discharger)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " term)? : tactic
-syntax (name := squeezeSimpa!) "squeeze_simpa!" (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := squeezeSimpa!) "squeeze_simpa!" (config)? (discharger)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " term)? : tactic
-syntax (name := squeezeSimpa?!) "squeeze_simpa?!" (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := squeezeSimpa?!) "squeeze_simpa?!" (config)? (discharger)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " term)? : tactic
-syntax (name := squeezeDSimp) "squeeze_dsimp" (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := squeezeDSimp) "squeeze_dsimp" (config)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
-syntax (name := squeezeDSimp?) "squeeze_dsimp?" (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := squeezeDSimp?) "squeeze_dsimp?" (config)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
-syntax (name := squeezeDSimp!) "squeeze_dsimp!" (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := squeezeDSimp!) "squeeze_dsimp!" (config)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
-syntax (name := squeezeDSimp?!) "squeeze_dsimp?!" (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := squeezeDSimp?!) "squeeze_dsimp?!" (config)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
 
-syntax (name := suggest) "suggest" (" (" &"config" " := " term ")")? (ppSpace num)?
+syntax (name := suggest) "suggest" (config)? (ppSpace num)?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " (colGt ident)+)? : tactic
-syntax (name := librarySearch!) "library_search!" (" (" &"config" " := " term ")")?
+syntax (name := librarySearch!) "library_search!" (config)?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " (colGt ident)+)? : tactic
 
-syntax (name := tauto) "tauto" (" (" &"config" " := " term ")")? : tactic
-syntax (name := tauto!) "tauto!" (" (" &"config" " := " term ")")? : tactic
+syntax (name := tauto) "tauto" (config)? : tactic
+syntax (name := tauto!) "tauto!" (config)? : tactic
 
 syntax (name := truncCases) "trunc_cases " term (" with " (colGt binderIdent)+)? : tactic
 
@@ -399,14 +394,10 @@ syntax (name := ringExp!) "ring_exp!" (ppSpace location)? : tactic
 
 syntax (name := noncommRing) "noncomm_ring" : tactic
 
-syntax (name := linarith) "linarith" (" (" &"config" " := " term ")")?
-  (&" only")? (" [" term,* "]")? : tactic
-syntax (name := linarith!) "linarith!" (" (" &"config" " := " term ")")?
-  (&" only")? (" [" term,* "]")? : tactic
-syntax (name := nlinarith) "nlinarith" (" (" &"config" " := " term ")")?
-  (&" only")? (" [" term,* "]")? : tactic
-syntax (name := nlinarith!) "nlinarith!" (" (" &"config" " := " term ")")?
-  (&" only")? (" [" term,* "]")? : tactic
+syntax (name := linarith) "linarith" (config)? (&" only")? (" [" term,* "]")? : tactic
+syntax (name := linarith!) "linarith!" (config)? (&" only")? (" [" term,* "]")? : tactic
+syntax (name := nlinarith) "nlinarith" (config)? (&" only")? (" [" term,* "]")? : tactic
+syntax (name := nlinarith!) "nlinarith!" (config)? (&" only")? (" [" term,* "]")? : tactic
 
 syntax (name := omega) "omega" (&" manual")? (&" nat" <|> &" int")? : tactic
 
@@ -418,7 +409,7 @@ syntax (name := mono) "mono" "*"? (ppSpace mono.side)?
   (" with " (colGt term),+)? (" using " (colGt simpArg),+)? : tactic
 
 syntax (name := acMono) "ac_mono" ("*" <|> ("^" num))?
-  (" (" &"config" " := " term ")")? ((" : " term) <|> (" := " term))? : tactic
+  (config)? ((" : " term) <|> (" := " term))? : tactic
 
 syntax (name := applyFun) "apply_fun " term (ppSpace location)? (" using " term)? : tactic
 
@@ -446,7 +437,7 @@ syntax (name := transport) "transport" (ppSpace term)? " using " term : tactic
 
 syntax (name := unfoldCases) "unfold_cases " tacticSeq : tactic
 
-syntax (name := fieldSimp) "field_simp" (" (" &"config" " := " term ")")? (&" only")?
+syntax (name := fieldSimp) "field_simp" (config)? (discharger)? (&" only")?
   (" [" Tactic.simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
 
 syntax (name := equivRw) "equiv_rw " ("(" &"config" " := " term ") ")?
@@ -463,8 +454,8 @@ syntax (name := rwSearch?) "rw_search? " ("(" &"config" " := " term ") ")? rwRul
 syntax (name := piInstanceDeriveField) "pi_instance_derive_field" : tactic
 syntax (name := piInstance) "pi_instance" : tactic
 
-syntax (name := tidy) "tidy" (" (" &"config" " := " term ")")? : tactic
-syntax (name := tidy?) "tidy?" (" (" &"config" " := " term ")")? : tactic
+syntax (name := tidy) "tidy" (config)? : tactic
+syntax (name := tidy?) "tidy?" (config)? : tactic
 
 syntax (name := wlog) "wlog" (" (" &"discharger" " := " term ")")?
   (ppSpace (colGt ident))? (" : " term)? (" := " term)? (" using " (ident*),+)? : tactic
@@ -486,18 +477,18 @@ syntax (name := opInduction) "op_induction" (ppSpace (colGt term))? : tactic
 
 syntax (name := mvBisim) "mv_bisim" (ppSpace (colGt term))? (" with " binderIdent+)? : tactic
 
-syntax (name := continuity) "continuity" (" (" &"config" " := " term ")")? : tactic
-syntax (name := continuity!) "continuity!" (" (" &"config" " := " term ")")? : tactic
-syntax (name := continuity?) "continuity?" (" (" &"config" " := " term ")")? : tactic
-syntax (name := continuity!?) "continuity!?" (" (" &"config" " := " term ")")? : tactic
+syntax (name := continuity) "continuity" (config)? : tactic
+syntax (name := continuity!) "continuity!" (config)? : tactic
+syntax (name := continuity?) "continuity?" (config)? : tactic
+syntax (name := continuity!?) "continuity!?" (config)? : tactic
 
 syntax (name := unitInterval) "unit_interval" : tactic
 syntax (name := mfldSetTac) "mfld_set_tac" : tactic
 
-syntax (name := measurability) "measurability" (" (" &"config" " := " term ")")? : tactic
-syntax (name := measurability!) "measurability!" (" (" &"config" " := " term ")")? : tactic
-syntax (name := measurability?) "measurability?" (" (" &"config" " := " term ")")? : tactic
-syntax (name := measurability!?) "measurability!?" (" (" &"config" " := " term ")")? : tactic
+syntax (name := measurability) "measurability" (config)? : tactic
+syntax (name := measurability!) "measurability!" (config)? : tactic
+syntax (name := measurability?) "measurability?" (config)? : tactic
+syntax (name := measurability!?) "measurability!?" (config)? : tactic
 syntax (name := padicIndexSimp) "padic_index_simp" " [" term,* "]" (ppSpace location)? : tactic
 
 syntax (name := uniqueDiffWithinAt_Ici_Iic_univ) "uniqueDiffWithinAt_Ici_Iic_univ" : tactic
