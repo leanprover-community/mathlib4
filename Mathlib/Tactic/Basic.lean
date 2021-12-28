@@ -86,11 +86,14 @@ h₂ : b = c
 ⊢ a = c
 ```
 -/
-syntax (name := introv) "introv " (colGt ident)* : tactic
+syntax (name := introv) "introv " (colGt binderIdent)* : tactic
 @[tactic introv] partial def evalIntrov : Tactic := fun stx => do
   match stx with
   | `(tactic| introv)                     => introsDep
-  | `(tactic| introv $h:ident $hs:ident*) => evalTactic (← `(tactic| introv; intro $h:ident; introv $hs:ident*))
+  | `(tactic| introv $h:ident $hs:binderIdent*) =>
+    evalTactic (← `(tactic| introv; intro $h:ident; introv $hs:binderIdent*))
+  | `(tactic| introv _%$tk $hs:binderIdent*) =>
+    evalTactic (← `(tactic| introv; intro _%$tk; introv $hs:binderIdent*))
   | _ => throwUnsupportedSyntax
 where
   introsDep : TacticM Unit := do
