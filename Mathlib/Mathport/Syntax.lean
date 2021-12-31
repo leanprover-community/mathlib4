@@ -222,7 +222,6 @@ syntax (name := rotate) "rotate" (ppSpace num)? : tactic
 syntax (name := clear_) "clear_" : tactic
 syntax (name := replace) "replace " Term.haveDecl : tactic
 syntax (name := replace') "replace " Term.haveIdLhs : tactic
-syntax (name := classical) "classical" : tactic
 syntax (name := generalizeHyp) "generalize " atomic(ident " : ")? term:51 " = " ident
   ppSpace location : tactic
 syntax (name := clean) "clean " term : tactic
