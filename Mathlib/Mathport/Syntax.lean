@@ -154,7 +154,6 @@ syntax (name := substVars) "subst_vars" : tactic
 syntax (name := dUnfold) "dunfold" (config)? (ppSpace (colGt ident))* (ppSpace location)? : tactic
 syntax (name := delta') "delta'" (colGt ident)* (ppSpace location)? : tactic
 syntax (name := unfoldProjs) "unfold_projs" (config)? (ppSpace location)? : tactic
-syntax (name := unfold) "unfold" (config)? (ppSpace (colGt ident))* (ppSpace location)? : tactic
 syntax (name := unfold1) "unfold1" (config)? (ppSpace (colGt ident))* (ppSpace location)? : tactic
 syntax (name := inferOptParam) "infer_opt_param" : tactic
 syntax (name := inferAutoParam) "infer_auto_param" : tactic
