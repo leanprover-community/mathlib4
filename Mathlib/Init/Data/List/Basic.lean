@@ -19,8 +19,11 @@ namespace List
 
 attribute [simp] get! get? get head? headD head tail! tail? tailD getLast getLast! getLast?
   getLastD reverseAux eraseIdx isEmpty map map₂ join filterMap dropWhile find? findSome?
-  replace elem lookup drop take takeWhile foldr zipWith unzip rangeAux iota enumFrom init
+  replace elem lookup drop take takeWhile foldr zipWith unzip rangeAux enumFrom init
   intersperse isPrefixOf isEqv dropLast
+
+-- https://github.com/leanprover/lean4/issues/945
+-- attribute [simp] iota
 
 def mem (a : α) : List α → Prop
 | [] => False
