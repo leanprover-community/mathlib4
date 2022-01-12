@@ -5,6 +5,7 @@ Author: Leonardo de Moura
 -/
 import Mathlib.Init.SetNotation
 import Mathlib.Init.Logic
+import Mathlib.Tactic.Lint
 
 open Decidable List
 
@@ -17,10 +18,18 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 namespace List
 
-attribute [simp] get! get? get head? headD head tail! tail? tailD getLast getLast! getLast?
+attribute [simp] get! get? head? headD head tail! tail? tailD getLast getLast! getLast?
   getLastD reverseAux eraseIdx isEmpty map map₂ join filterMap dropWhile find? findSome?
   replace elem lookup drop take takeWhile foldr zipWith unzip rangeAux enumFrom init
   intersperse isPrefixOf isEqv dropLast
+
+@[simp] lemma get_cons_zero {as : List α} : (a :: as).get 0 (id <| Nat.zero_lt_succ _) = a := rfl
+@[simp] lemma get_cons_succ {as : List α} {h : i + 1 < (a :: as).length} :
+  (a :: as).get (i+1) h = as.get i (Nat.lt_of_succ_lt_succ h) := rfl
+
+-- The `id <|` above is a workaround to allow Lean to unify get_cons_zero's lhs
+-- in reducible transparency:
+example {as : List α} {h} : (a :: as).get 0 h = a := by simp
 
 -- https://github.com/leanprover/lean4/issues/945
 -- attribute [simp] iota

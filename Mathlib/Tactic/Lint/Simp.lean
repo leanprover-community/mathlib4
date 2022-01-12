@@ -135,6 +135,7 @@ https://leanprover-community.github.io/mathlib_docs/notes.html#simp-normal%20for
     let lhs'_eq_rhs' ← isSimpEq lhs' rhs' (whnfFirst := false)
     let lhs_in_nf ← isSimpEq lhs' lhs
     if lhs'_eq_rhs' then do
+      if prf1.isNone then return none -- TODO: cannot detect used rfl-lemmas
       let used_lemmas := heuristicallyExtractSimpLemmas ctx <|
         mkApp (prf1.getD (mkBVar 0)) (prf2.getD (mkBVar 0))
       return m!"simp can prove this:
