@@ -88,6 +88,12 @@ def constToSimpDeclMap (ctx : Simp.Context) : HashMap Name Name := Id.run do
           map := map.insert auxDeclName declName
   return map
 
+def isEqnLemma? (n : Name) : Option Name :=
+  if n.isStr && n.getString!.startsWith "_eq_" then
+    n.getPrefix
+  else
+    none
+
 def heuristicallyExtractSimpLemmasCore (ctx : Simp.Context) (constToSimpDecl : HashMap Name Name) (prf : Expr) : Array Name := Id.run do
   let mut cnsts : HashSet Name := {}
   for c in prf.getUsedConstants do
@@ -96,6 +102,8 @@ def heuristicallyExtractSimpLemmasCore (ctx : Simp.Context) (constToSimpDecl : H
     else if ctx.congrLemmas.lemmas.contains c then
       cnsts := cnsts.insert c
     else if let some c' := constToSimpDecl.find? c then
+      cnsts := cnsts.insert c'
+    else if let some c' := isEqnLemma? c then
       cnsts := cnsts.insert c'
   return cnsts.toArray
 
