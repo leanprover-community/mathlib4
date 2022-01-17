@@ -151,10 +151,14 @@ syntax (name := trans) "trans" (ppSpace (colGt term))? : tactic
 syntax (name := acRfl) "ac_rfl" : tactic
 syntax (name := cc) "cc" : tactic
 syntax (name := substVars) "subst_vars" : tactic
+
+-- builtin unfold only accepts single ident
+syntax (name := unfold') (priority := low) "unfold" (config)? (ppSpace (colGt ident))* (ppSpace location)? : tactic
 syntax (name := dUnfold) "dunfold" (config)? (ppSpace (colGt ident))* (ppSpace location)? : tactic
 syntax (name := delta') "delta'" (colGt ident)* (ppSpace location)? : tactic
 syntax (name := unfoldProjs) "unfold_projs" (config)? (ppSpace location)? : tactic
 syntax (name := unfold1) "unfold1" (config)? (ppSpace (colGt ident))* (ppSpace location)? : tactic
+
 syntax (name := inferOptParam) "infer_opt_param" : tactic
 syntax (name := inferAutoParam) "infer_auto_param" : tactic
 syntax (name := guardExprEq) "guard_expr " term:51 " =ₐ " term : tactic -- alpha equality
