@@ -1,4 +1,3 @@
-import Mathlib.Init.WF
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Char
 import Mathlib.Data.UInt
@@ -40,10 +39,7 @@ def forIn.loop [Monad m] (f : UInt8 → β → m (ForInStep β))
     | ForInStep.done b => pure b
     | ForInStep.yield b => have := Nat.Up.next h; loop f arr off _end (i+1) b
   else b
-termination_by by
-  iterate 6 refine skipLeft' fun _ => ?_
-  exact skipLeft' fun _end => generalizeRight (Nat.upRel _end)
-decreasing_by (iterate 7 apply PSigma.Lex.right); assumption
+termination_by _ => _end - i
 
 instance : ForIn m ByteSlice UInt8 :=
   ⟨fun ⟨arr, off, len⟩ b f => forIn.loop f arr off (off + len) off b⟩
@@ -63,12 +59,12 @@ def String.toAsciiByteArray (s : String) : ByteArray :=
   let rec loop (p : Pos) (out : ByteArray) : ByteArray :=
     if h : s.atEnd p then out else
     let c := s.get p
-    have : Nat.Up (utf8ByteSize s) (next s p) p :=
-      ⟨Nat.lt_add_of_pos_right (String.csize_pos _), Nat.lt_of_not_le (mt decide_eq_true h)⟩
+    have : utf8ByteSize s - next s p < utf8ByteSize s - p :=
+      Nat.sub_lt_sub_left (Nat.lt_of_not_le <| mt decide_eq_true h)
+        (Nat.lt_add_of_pos_right (String.csize_pos _))
     loop (s.next p) (out.push c.toUInt8)
   loop 0 ByteArray.empty
-termination_by skipLeft' fun s => generalizeRight $ Nat.upRel (utf8ByteSize s)
-decreasing_by apply PSigma.Lex.right; assumption
+termination_by _ => utf8ByteSize s - p
 
 /-- Convert a byte slice into a string. This does not handle non-ASCII characters correctly:
 every byte will become a unicode character with codepoint < 256. -/

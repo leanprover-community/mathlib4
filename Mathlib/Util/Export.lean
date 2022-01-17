@@ -18,7 +18,7 @@ namespace Lean
 namespace Export
 
 /- References -/
-private constant MethodsRefPointed : PointedType.{0}
+private constant MethodsRefPointed : NonemptyType.{0}
 
 private def MethodsRef : Type := MethodsRefPointed.type
 
@@ -194,7 +194,7 @@ where
 
 end
 
-def runExportM (m : ExportM α) : CoreM α := m.run' arbitrary
+def runExportM (m : ExportM α) : CoreM α := m.run' default
 
 -- #eval runExportM (exportDef `Lean.Expr)
 end Export

@@ -79,8 +79,9 @@ def addInfer (decl : Name)
   -- TODO: not just elim
   addElim decl kind prio
 
-run_cmd Elab.Command.liftCoreM $ MetaM.run' do
-  addElim ``ne_eq
+-- FIXME: Lean crashes here now
+-- run_cmd Elab.Command.liftCoreM $ MetaM.run' do
+--   addElim ``ne_eq
 
 initialize registerBuiltinAttribute {
   name := `normCast
