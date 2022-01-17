@@ -77,7 +77,7 @@ scoped macro "declareExtTheoremsFor" struct:ident : command => do
 open Elab.Command MonadRecDepth in
 def liftCommandElabM (k : CommandElabM α) : AttrM α := do
   let (a, commandState) ←
-    k.run { fileName := (← getEnv).mainModule.toString, fileMap := arbitrary } |>.run {
+    k.run { fileName := (← getEnv).mainModule.toString, fileMap := default } |>.run {
       env := ← getEnv, maxRecDepth := ← getMaxRecDepth,
       scopes := [{ header := "", opts := ← getOptions }]
     }

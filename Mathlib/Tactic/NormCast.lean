@@ -42,7 +42,7 @@ structure NormCastExtension where
   squash : SimpExtension
   deriving Inhabited
 
-builtin_initialize normCastExt : NormCastExtension ← pure {
+initialize normCastExt : NormCastExtension ← pure {
   up := ← mkSimpExt `Tactic.NormCast.normCastExt.up
   down := ← mkSimpExt `Tactic.NormCast.normCastExt.down
   squash := ← mkSimpExt `Tactic.NormCast.normCastExt.squash
@@ -79,8 +79,10 @@ def addInfer (decl : Name)
   -- TODO: not just elim
   addElim decl kind prio
 
-run_cmd Elab.Command.liftCoreM $ MetaM.run' do
-  addElim ``ne_eq
+-- FIXME: put this in a different file, because we can't access attributes in
+-- the file they're defined in.
+-- run_cmd Elab.Command.liftCoreM $ MetaM.run' do
+--   addElim ``ne_eq
 
 initialize registerBuiltinAttribute {
   name := `normCast

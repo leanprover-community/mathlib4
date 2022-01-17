@@ -39,7 +39,7 @@ elab "unsafe " t:term : term <= expectedType => do
     name := implName
     type := unsafeDefn.type
     levelParams := unsafeDefn.levelParams
-    value := (← mkArbitrary unsafeDefn.type)
+    value := (← mkOfNonempty unsafeDefn.type)
     hints := ReducibilityHints.opaque
     safety := DefinitionSafety.safe
   }
