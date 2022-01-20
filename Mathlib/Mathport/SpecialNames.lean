@@ -51,6 +51,8 @@ namespace Mathlib.Prelude
 
 -- Generic 'has'-stripping
 -- Note: we don't currently strip automatically for various reasons.
+#align has_zero      Zero
+#align has_one       One
 #align has_add       Add
 #align has_sub       Sub
 #align has_mul       Mul
