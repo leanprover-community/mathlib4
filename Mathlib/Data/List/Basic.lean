@@ -1108,7 +1108,7 @@ lemma disjoint_left : disjoint l₁ l₂ ↔ ∀ ⦃a⦄, a ∈ l₁ → a ∉ l
 lemma disjoint_right : disjoint l₁ l₂ ↔ ∀ ⦃a⦄, a ∈ l₂ → a ∉ l₁ := disjoint_comm
 
 lemma disjoint_iff_ne : disjoint l₁ l₂ ↔ ∀ a ∈ l₁, ∀ b ∈ l₂, a ≠ b :=
-by simp [disjoint_left, imp_not_comm]
+  ⟨fun h a al1 b bl2 ab => h al1 (ab ▸ bl2), fun h a al1 al2 => h _ al1 _ al2 rfl⟩
 
 lemma disjoint_of_subset_left (ss : l₁ ⊆ l) (d : disjoint l l₂) : disjoint l₁ l₂ :=
 λ x m => d (ss m)

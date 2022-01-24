@@ -20,15 +20,6 @@ section CommSemigroup_lemmas
 
 variable {M : Type u} [CommSemigroup M]
 
-lemma mul_left_comm (a b c : M) : a * (b * c) = b * (a * c) :=
-by rw [← mul_assoc, mul_comm a, mul_assoc]
-
--- Funky Lean 3 proof of the above:
---left_comm has_mul.mul mul_comm mul_assoc
-
-lemma mul_right_comm (a b c : M) : a * b * c = a * c * b :=
-by rw [mul_assoc, mul_comm b c, mul_assoc]
-
 theorem mul_mul_mul_comm (a b c d : M) : (a * b) * (c * d) = (a * c) * (b * d) :=
 by simp [mul_assoc, mul_left_comm]
 

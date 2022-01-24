@@ -410,7 +410,7 @@ theorem imp_iff_not_or : (a → b) ↔ (¬ a ∨ b) := Decidable.imp_iff_not_or
 
 -- See Note [decidable namespace]
 protected theorem Decidable.imp_or_distrib [Decidable a] : (a → b ∨ c) ↔ (a → b) ∨ (a → c) :=
-by simp [Decidable.imp_iff_not_or, Or.comm, Or.left_comm]
+by by_cases a <;> simp_all
 
 theorem imp_or_distrib : (a → b ∨ c) ↔ (a → b) ∨ (a → c) := Decidable.imp_or_distrib
 

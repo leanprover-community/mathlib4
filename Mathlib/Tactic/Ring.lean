@@ -162,21 +162,21 @@ theorem horner_add_horner_lt {α} [CommSemiring α] (a₁ x n₁ b₁ a₂ n₂ 
   @horner α _ a₁ x n₁ b₁ + horner a₂ x n₂ b₂ = horner a' x n₁ b' :=
 by
   rw [← h₁, ← h₂, ← h₃]
-  simp [horner, add_mul, mul_assoc, (pow_add x k n₁).symm, add_comm k, @add_comm α _, @add_assoc α _]
+  simp [horner, add_assoc, add_mul, pow_add, mul_assoc, add_comm n₁ k, add_left_comm b₁]
 
 theorem horner_add_horner_gt {α} [CommSemiring α] (a₁ x n₁ b₁ a₂ n₂ b₂ k a' b')
   (h₁ : n₂ + k = n₁) (h₂ : (horner a₁ x k 0 + a₂ : α) = a') (h₃ : b₁ + b₂ = b') :
   @horner α _ a₁ x n₁ b₁ + horner a₂ x n₂ b₂ = horner a' x n₂ b' :=
 by
   rw [← h₁, ← h₂, ← h₃]
-  simp [horner, add_mul, mul_assoc, (pow_add x k n₂).symm, add_comm k, @add_comm α _, @add_assoc α _]
+  simp [horner, add_assoc, mul_assoc, add_mul, add_comm n₂ k, pow_add, add_left_comm b₁]
 
 theorem horner_add_horner_eq {α} [CommSemiring α] (a₁ x n b₁ a₂ b₂ a' b' t)
   (h₁ : a₁ + a₂ = a') (h₂ : b₁ + b₂ = b') (h₃ : horner a' x n b' = t) :
   @horner α _ a₁ x n b₁ + horner a₂ x n b₂ = t :=
 by
   rw [← h₃, ← h₁, ← h₂]
-  simp [horner, add_mul, @add_comm α _, @add_assoc α _]
+  simp only [horner, add_assoc, mul_assoc, add_mul, zero_mul, zero_add, pow_add, add_left_comm b₁]
 
 partial def evalAdd : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
 | (const e₁ c₁), (const e₂ c₂) => do
@@ -244,7 +244,7 @@ by simp [h₂.symm, h₁.symm, horner, mul_add, mul_assoc]
 theorem horner_mul_const {α} [CommSemiring α] (a x n b c a' b')
   (h₁ : a * c = a') (h₂ : b * c = b') :
   @horner α _ a x n b * c = horner a' x n b' :=
-by simp [h₂.symm, h₁.symm, horner, add_mul, @mul_right_comm α _]
+by simp [horner, ← h₁, ← h₂, add_mul, mul_assoc, mul_comm c]
 
 /-- Evaluate `k * a` where `k` is a rational numeral and `a` is in normal form. -/
 def evalConstMul (k : Expr × ℕ) : HornerExpr → RingM (HornerExpr × Expr)
@@ -275,7 +275,7 @@ theorem horner_mul_horner {α} [CommSemiring α]
   horner a₁ x n₁ b₁ * horner a₂ x n₂ b₂ = t :=
 by
   rw [← H, ← h₂, ← h₁, ← h₃, ← h₄]
-  simp [horner, mul_add, add_mul, @mul_comm α _, mul_left_comm, mul_assoc]
+  simp [horner, add_mul, mul_add, mul_assoc, mul_comm b₂]
 
 /-- Evaluate `a * b` where `a` and `b` are in normal form. -/
 partial def evalMul : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)

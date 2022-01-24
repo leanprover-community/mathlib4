@@ -475,8 +475,8 @@ protected lemma subNatNat_eq_coe {m n : ℕ} : subNatNat m n = ↑m - ↑n := by
   refine subNatNat_elim m n (fun m n i => i = ↑m - ↑n) ?p ?n
   case p =>
     intros i n
-    simp only [Int.ofNat_add, Int.add_left_comm, Int.add_assoc, Int.add_right_neg, Int.sub_eq_add_neg]
-    rfl
+    rw [Int.ofNat_add, Int.sub_eq_add_neg, Int.add_assoc, Int.add_left_comm,
+      Int.add_right_neg, Int.add_zero]
   case n =>
     intros i n
     simp only [negSucc_ofNat_coe, ofNat_add, Int.sub_eq_add_neg, Int.neg_add, ← Int.add_assoc]
