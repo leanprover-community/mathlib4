@@ -266,15 +266,21 @@ instance (A : Type u) [AddCommGroup A] : AddCommMonoid A where
 class Semigroup (G : Type u) extends Mul G where
   mul_assoc (a b c : G) : (a * b) * c = a * (b * c)
 
-theorem mul_assoc {G : Type u} [Semigroup G] :
-  ∀ a b c : G, a * b * c = a * (b * c) :=
-Semigroup.mul_assoc
+export Semigroup (mul_assoc)
 
 class CommSemigroup (G : Type u) extends Semigroup G where
   mul_comm (a b : G) : a * b = b * a
 
-theorem mul_comm {M : Type u} [CommSemigroup M] : ∀ a b : M, a * b = b * a :=
-CommSemigroup.mul_comm
+export CommSemigroup (mul_comm)
+
+lemma mul_left_comm {M} [CommSemigroup M] (a b c : M) : a * (b * c) = b * (a * c) :=
+by rw [← mul_assoc, mul_comm a, mul_assoc]
+
+-- Funky Lean 3 proof of the above:
+--left_comm has_mul.mul mul_comm mul_assoc
+
+lemma mul_right_comm {M} [CommSemigroup M] (a b c : M) : a * b * c = a * c * b :=
+by rw [mul_assoc, mul_comm b c, mul_assoc]
 
 /-
 
@@ -400,11 +406,11 @@ variable {M} [CommMonoid M]
 instance : CommSemigroup M where
   __ := ‹CommMonoid M›
 
-theorem mul_pow {M} [CommMonoid M] (a b : M) (n : ℕ)  : (a * b)^n= a^n * b^n := by
+theorem mul_pow (a b : M) (n : ℕ)  : (a * b)^n= a^n * b^n := by
   induction n with
   | zero => simp
   | succ n ih =>
-    simp [pow_succ', ih, @mul_comm M _, @mul_assoc M _]
+    simp only [pow_succ, ih, mul_assoc, mul_left_comm _ a]
 
 end CommMonoid
 
