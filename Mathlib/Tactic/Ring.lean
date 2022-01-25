@@ -110,9 +110,7 @@ def reflConv (e : HornerExpr) : RingM (HornerExpr × Expr) := do (e, ← mkEqRef
 
 /-- Pretty printer for `horner_expr`. -/
 def pp : HornerExpr → MetaM Format
-| (const e c) => do
-  let pe ← PrettyPrinter.ppExpr Name.anonymous [] e
-  return "[" ++ pe ++ ", " ++ toString c ++ "]"
+| (const e c) => toString c
 | (xadd e a x (_, n) b) => do
   let pa ← a.pp
   let pb ← b.pp
@@ -410,16 +408,12 @@ partial def eval (e : Expr) : RingM (HornerExpr × Expr) :=
     | some n => (const e n).reflConv
     | _ => evalAtom e
 
-elab "ring" : tactic => do
-  let g ← getMainTarget
-  match g.getAppFnArgs with
+elab "ring" : tactic => liftMetaMAtMain fun g => do
+  match (← instantiateMVars (← getMVarDecl g).type).getAppFnArgs with
   | (`Eq, #[ty, e₁, e₂]) =>
     let ((e₁', p₁), (e₂', p₂)) ← RingM.run ty $ do (← eval e₁, ← eval e₂)
     if ← isDefEq e₁' e₂' then
-      let p ← mkEqTrans p₁ (← mkEqSymm p₂)
-      ensureHasNoMVars p
-      assignExprMVar (← getMainGoal) p
-      replaceMainGoal []
+      assignExprMVar g (← mkEqTrans p₁ (← mkEqSymm p₂))
     else
-      throwError "failed \n{← e₁'.pp}\n{← e₂'.pp}"
-  | _ => throwError "failed: not an equality"
+      throwError "ring failed, ring expressions not equal: \n{← e₁'.pp}\n  !=\n{← e₂'.pp}"
+  | _ => throwError "ring failed: not an equality"
