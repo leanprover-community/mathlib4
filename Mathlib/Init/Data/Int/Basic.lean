@@ -414,17 +414,12 @@ by
   | inr h =>
     cases Nat.lt_or_ge k n with
     | inl h' =>
-
       have h₁ : succ m * n > succ m * k := Nat.mul_lt_mul_of_pos_left h' (Nat.succ_pos m)
-      rw [subNatNat_of_le h, subNatNat_of_lt h₁]
-      simp [Nat.mul_sub_left_distrib, Nat.mul_comm]
-      rw [Nat.mul_comm k, Nat.mul_comm n, ← succ_pred_eq_of_pos (Nat.sub_pos_of_lt h₁),
-          ← neg_ofNat_of_succ]
+      rw [subNatNat_of_le h, subNatNat_of_lt h₁, negSucc_ofNat_ofNat,
+        Nat.mul_sub_left_distrib, ← succ_pred_eq_of_pos (Nat.sub_pos_of_lt h₁)]
       rfl
     | inr h' =>
-      rw [Nat.le_antisymm h h']
-      simp
-      rfl
+      rw [Nat.le_antisymm h h', sub_nat_self, sub_nat_self, Int.mul_zero]
 
 attribute [local simp] ofNat_mul_subNatNat negOfNat_add negSucc_ofNat_mul_subNatNat
 
