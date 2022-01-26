@@ -473,7 +473,7 @@ syntax (name := mkDecorations) "mk_decorations" : tactic
 syntax (name := nontriviality) "nontriviality"
   (ppSpace (colGt term))? (" using " simpArg,+)? : tactic
 
-syntax (name := filterUpwards) "filter_upwards" " [" term,* "]" (ppSpace (colGt term))? : tactic
+syntax (name := filterUpwards) "filter_upwards" " [" term,* "]" (" with" term:max*)? (" using" term)? : tactic
 
 syntax (name := isBounded_default) "isBounded_default" : tactic
 
