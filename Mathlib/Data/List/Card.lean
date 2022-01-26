@@ -180,7 +180,8 @@ theorem card_append_disjoint : ∀ {as bs : List α},
       simp [h, card_append_disjoint disj']
     | inr h =>
       have h1 : a ∉ bs := fun h' => disj (mem_cons_self a as) h'
-      simp [h, h1, card_append_disjoint disj', Nat.add_right_comm]
+      simp [h, h1, card_append_disjoint disj']
+      rw [Nat.add_right_comm]
 
 theorem card_union_disjoint {as bs : List α} (h : disjoint as bs) :
     card (as.union bs) = card as + card bs := by
