@@ -110,12 +110,6 @@ theorem imp_iff_right (ha : a) : (a → b) ↔ b :=
 
 /-! ### Declarations about `not` -/
 
-/-- Ex falso for negation. From `¬ a` and `a` anything follows. This is the same as `absurd` with
-the arguments flipped, but it is in the `not` namespace so that projection notation can be used. -/
-def Not.elim {α : Sort _} (H1 : ¬a) (H2 : a) : α := absurd H2 H1
-
-@[reducible] theorem Not.imp {a b : Prop} (H2 : ¬b) (H1 : a → b) : ¬a := mt H1 H2
-
 theorem not_not_of_not_imp : ¬(a → b) → ¬¬a :=
 mt Not.elim
 
@@ -416,7 +410,7 @@ theorem imp_iff_not_or : (a → b) ↔ (¬ a ∨ b) := Decidable.imp_iff_not_or
 
 -- See Note [decidable namespace]
 protected theorem Decidable.imp_or_distrib [Decidable a] : (a → b ∨ c) ↔ (a → b) ∨ (a → c) :=
-by simp [Decidable.imp_iff_not_or, Or.comm, Or.left_comm]
+by by_cases a <;> simp_all
 
 theorem imp_or_distrib : (a → b ∨ c) ↔ (a → b) ∨ (a → c) := Decidable.imp_or_distrib
 
@@ -617,8 +611,6 @@ lemma forall₄_congr {γ δ : Sort _} {p q : α → β → γ → δ → Prop}
   (h : ∀ a b c d, p a b c d ↔ q a b c d) :
   (∀ a b c d, p a b c d) ↔ (∀ a b c d, q a b c d) :=
 forall_congr' (λ a => forall₃_congr (h a))
-
-lemma Exists.imp (h : ∀ a, (p a → q a)) (p : ∃ a, p a) : ∃ a, q a := exists_imp_exists h p
 
 lemma exists_imp_exists' {p : α → Prop} {q : β → Prop} (f : α → β) (hpq : ∀ a, p a → q (f a))
   (hp : ∃ a, p a) : ∃ b, q b :=

@@ -10,7 +10,6 @@ import Mathlib.Data.Char
 import Mathlib.Data.Equiv.Basic
 import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Fin.Basic
-import Mathlib.Data.Int.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Card
 import Mathlib.Data.List.Defs
@@ -28,6 +27,7 @@ import Mathlib.Data.UnionFind
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Data.Int.Basic
+import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Instances
 import Mathlib.Init.Data.List.Lemmas
@@ -41,11 +41,11 @@ import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Set
 import Mathlib.Init.SetNotation
-import Mathlib.Init.WF
 import Mathlib.Lean.Expr
 import Mathlib.Lean.LocalContext
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Basic
+import Mathlib.Logic.Nonempty
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Mathport.SpecialNames
@@ -65,6 +65,7 @@ import Mathlib.Tactic.Lint.Basic
 import Mathlib.Tactic.Lint.Frontend
 import Mathlib.Tactic.Lint.Simp
 import Mathlib.Tactic.NoMatch
+import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.OpenPrivate
 import Mathlib.Tactic.PrintPrefix
@@ -79,7 +80,10 @@ import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.TryThis
+import Mathlib.Util.DeclName
 import Mathlib.Util.Eval
 import Mathlib.Util.Export
 import Mathlib.Util.TermUnsafe
 import Mathlib.Util.Time
+import Mathlib.Util.WhatsNew
+import Mathlib.Util.WithWeakNamespace

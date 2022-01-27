@@ -241,8 +241,7 @@ def findAux (self : UnionFind α) (x : Fin self.size) :
       ⟨root.2, ?_⟩, le_of_lt this⟩
     have := show x.1 ≠ root from mt (congrArg _) (ne_of_lt this)
     simp [UFModel.setParent, this, hr]
-termination_by measure fun ⟨α, self, x⟩ => self.rankMax - self.rank x
-decreasing_by assumption
+termination_by _ α self x => self.rankMax - self.rank x
 
 def find (self : UnionFind α) (x : Fin self.size) :
   (s : UnionFind α) × (root : Fin s.size) ×'

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Gabriel Ebner
 -/
 import Lean
+import Mathlib.Logic.Nonempty
 
 /-!
 # Once-per-file cache for tactics
@@ -49,8 +50,8 @@ def Cache (α : Type) :=
   IO.Ref <| Sum (MetaM α) <|
     Task <| Except Exception α
 
-instance : Inhabited (Cache α) :=
-  inferInstanceAs <| Inhabited (IO.Ref _)
+instance : Nonempty (Cache α) :=
+  inferInstanceAs <| Nonempty (IO.Ref _)
 
 /-- Creates a cache with an initialization function. -/
 def Cache.mk (init : MetaM α) : IO (Cache α) :=
@@ -93,8 +94,8 @@ where a given function is applied to `α` for every constant.
 def DeclCache (α : Type) :=
   Cache α × (Name → ConstantInfo → α → MetaM α)
 
-instance : Inhabited (DeclCache α) :=
-  inferInstanceAs <| Inhabited (_ × _)
+instance : Nonempty (DeclCache α) :=
+  inferInstanceAs <| Nonempty (_ × _)
 
 /--
 Creates a `DeclCache`.

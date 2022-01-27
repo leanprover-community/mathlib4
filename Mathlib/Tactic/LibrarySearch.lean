@@ -98,14 +98,14 @@ open Lean.Parser.Tactic
 -- in particular including additional lemmas
 -- with `library_search [X, Y, Z]` or `library_search with attr`,
 -- or requiring that a particular hypothesis is used in the solution, with `library_search using h`.
-syntax (name := librarySearch') "librarySearch" (" (" &"config" " := " term ")")?
+syntax (name := librarySearch') "library_search" (" (" &"config" " := " term ")")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " (colGt ident)+)? : tactic
 
 -- For now we only implement the basic functionality.
 -- The full syntax is recognized, but will produce a "Tactic has not been implemented" error.
 
 open Elab.Tactic Elab Tactic in
-elab_rules : tactic | `(tactic| librarySearch%$tk) => do
+elab_rules : tactic | `(tactic| library_search%$tk) => do
   withNestedTraces do
   trace[Tactic.librarySearch] "proving {← getMainTarget}"
   let mvar ← getMainGoal
@@ -119,7 +119,7 @@ elab_rules : tactic | `(tactic| librarySearch%$tk) => do
       addExactSuggestion tk (← instantiateMVars (mkMVar mvar))
 
 open Elab Term in
-elab tk:"librarySearch%" : term <= expectedType => do
+elab tk:"library_search%" : term <= expectedType => do
   withNestedTraces do
   trace[Tactic.librarySearch] "proving {expectedType}"
   let mvar ← mkFreshExprMVar expectedType

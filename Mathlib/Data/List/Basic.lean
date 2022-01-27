@@ -570,8 +570,7 @@ theorem get?_eq_get : ∀ {l : List α} {n} h, l.get? n = some (get l n h)
 | a :: l, n+1, h => @get?_eq_get _ l n _
 
 theorem get?_len_le : ∀ {l : List α} {n}, length l ≤ n → l.get? n = none
-| [], n, h => by cases n <;> rfl
-  -- rfl -- TODO: lean4#887
+| [], n, h => rfl
 | a :: l, n+1, h => @get?_len_le _ l n $ Nat.le_of_succ_le_succ h
 
 theorem get?_eq_some {l : List α} {n a} : l.get? n = some a ↔ ∃ h, get l n h = a :=
@@ -584,7 +583,7 @@ theorem get?_eq_some {l : List α} {n a} : l.get? n = some a ↔ ∃ h, get l n 
 @[simp] theorem get?_eq_none_iff {l : List α} {n} : l.get? n = none ↔ length l ≤ n := by
   constructor
   · intro h
-    byContra h'
+    by_contra h'
     have h₂ : ∃ h , l.get n h = l.get n (lt_of_not_ge h') := ⟨lt_of_not_ge h', rfl⟩
     rw [← get?_eq_some, h] at h₂
     cases h₂
@@ -610,8 +609,7 @@ theorem mem_iff_get {a} {l : List α} : a ∈ l ↔ ∃ n h, get l n h = a :=
 theorem mem_iff_get? {a} {l : List α} : a ∈ l ↔ ∃ n, l.get? n = some a :=
   mem_iff_get.trans $ exists_congr fun n => get?_eq_some.symm
 
-theorem get?_zero (l : List α) : l.get? 0 = l.head? := by
-  cases l <;> rfl
+theorem get?_zero (l : List α) : l.get? 0 = l.head? := by cases l <;> rfl
 
 theorem get?_injective {α : Type u} {xs : List α} {i j : ℕ}
   (h₀ : i < xs.length)
@@ -633,7 +631,7 @@ theorem get?_injective {α : Type u} {xs : List α} {i j : ℕ}
     exact ⟨_, h₂⟩; exact ⟨_ , h₂.symm⟩
 
 @[simp] theorem get?_map (f : α → β) : ∀ l n, (map f l).get? n = (l.get? n).map f
-| [], n => by cases n <;> rfl
+| [], n => rfl
 | a :: l, 0 => rfl
 | a :: l, n+1 => get?_map f l n
 
@@ -664,7 +662,6 @@ theorem get_zero [Inhabited α] {L : List α} (h : 0 < L.length) : L.get 0 h = L
   cases L; {cases h}; simp
 
 theorem get_append : ∀ {l₁ l₂ : List α} {n : ℕ} hn₁ hn₂, (l₁ ++ l₂).get n hn₁ = l₁.get n hn₂
-| [], _, n, hn₁, hn₂ => (Nat.not_lt_zero _ hn₂).elim
 | a :: l, _, 0, hn₁, hn₂ => rfl
 | a :: l, _, n+1, hn₁, hn₂ => by
   simp only [get, cons_append] <;> exact get_append _ _
@@ -794,7 +791,6 @@ theorem get?_set_ne (a : α) {m n} (l : List α) (h : m ≠ n) : (set l m a).get
 theorem set_comm (a b : α) : ∀ {n m : ℕ} (l : List α) (h : n ≠ m),
   (l.set n a).set m b = (l.set m b).set n a
 | _, _, [], _ => by simp
-| 0, 0, x :: t, h => absurd rfl h
 | n+1, 0, x :: t, h => by simp [set]
 | 0, m+1, x :: t, h => by simp [set]
 | n+1, m+1, x :: t, h => by
@@ -812,7 +808,6 @@ theorem set_comm (a b : α) : ∀ {n m : ℕ} (l : List α) (h : n ≠ m),
   rw [← Option.some_inj, ← List.get?_eq_get, List.get?_set_ne _ _ h, List.get?_eq_get]
 
 theorem mem_or_eq_of_mem_set : ∀ {l : List α} {n : ℕ} {a b : α} h : a ∈ l.set n b, a ∈ l ∨ a = b
-| [], n, a, b, h => False.elim h
 | c :: l, 0, a, b, h => ((mem_cons ..).1 h).elim Or.inr (Or.inl ∘ mem_cons_of_mem _)
 | c :: l, n+1, a, b, h =>
   ((mem_cons ..).1 h).elim (fun h => h ▸ Or.inl (mem_cons_self ..))
@@ -898,8 +893,8 @@ theorem exists_or_eq_self_of_erasep (p : α → Prop) [DecidablePred p] (l : Lis
     l.erasep p = l ∨
       ∃ a l₁ l₂, (∀ b ∈ l₁, ¬ p b) ∧ p a ∧ l = l₁ ++ a :: l₂ ∧ l.erasep p = l₁ ++ l₂ := by
   by_cases h : ∃ a ∈ l, p a
-  · match h with
-    | ⟨a, ha, pa⟩ => exact Or.inr (exists_of_erasep ha pa)
+  · let ⟨a, ha, pa⟩ := h
+    exact Or.inr (exists_of_erasep ha pa)
   · simp at h
     exact Or.inl (erasep_of_forall_not h)
 
@@ -1113,7 +1108,7 @@ lemma disjoint_left : disjoint l₁ l₂ ↔ ∀ ⦃a⦄, a ∈ l₁ → a ∉ l
 lemma disjoint_right : disjoint l₁ l₂ ↔ ∀ ⦃a⦄, a ∈ l₂ → a ∉ l₁ := disjoint_comm
 
 lemma disjoint_iff_ne : disjoint l₁ l₂ ↔ ∀ a ∈ l₁, ∀ b ∈ l₂, a ≠ b :=
-by simp [disjoint_left, imp_not_comm]
+  ⟨fun h a al1 b bl2 ab => h al1 (ab ▸ bl2), fun h a al1 al2 => h _ al1 _ al2 rfl⟩
 
 lemma disjoint_of_subset_left (ss : l₁ ⊆ l) (d : disjoint l l₂) : disjoint l₁ l₂ :=
 λ x m => d (ss m)
