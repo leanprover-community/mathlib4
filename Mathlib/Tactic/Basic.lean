@@ -196,11 +196,11 @@ macro_rules
 `iterate n tac` runs `tac` exactly `n` times.
 `iterate tac` runs `tac` repeatedly until failure.
 
-To run multiple tactics, one can do `iterate (tac1; tac2; ⋯)` or
+To run multiple tactics, one can do `iterate (tac₁; tac₂; ⋯)` or
 ```lean
 iterate
-  tac1
-  tac2
+  tac₁
+  tac₂
   ⋯
 ```
 -/
