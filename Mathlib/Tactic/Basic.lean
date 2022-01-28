@@ -193,8 +193,8 @@ macro_rules
   | `(tactic| by_contra $e) => `(tactic| (apply Classical.byContradiction; intro $e))
 
 /--
-`iterate n { ... }` runs the tactic block exactly `n` times.
-`iterate { ... }` runs the tactic block repeatedly until failure.
+`iterate n ( ... )` runs the tactic block exactly `n` times.
+`iterate ( ... )` runs the tactic block repeatedly until failure.
 -/
 syntax "iterate" (ppSpace num)? ppSpace tacticSeq : tactic
 macro_rules
