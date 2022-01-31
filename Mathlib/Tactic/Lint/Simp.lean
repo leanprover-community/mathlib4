@@ -37,7 +37,8 @@ def isConditionalHyps (eq : Expr) : List Expr → MetaM Bool
 
 open private preprocess from Lean.Meta.Tactic.Simp.SimpLemmas in
 def withSimpLemmaInfos (ty : Expr) (k : SimpLemmaInfo → MetaM α) : MetaM (Array α) := withReducible do
-  (← preprocess (← mkSorry ty true) ty false).toArray.mapM fun (_, ty') => do
+  (← preprocess (← mkSorry ty true) ty (inv := false) (isGlobal := true))
+      |>.toArray.mapM fun (_, ty') => do
     forallTelescopeReducing ty' fun hyps eq => do
       let some (_, lhs, rhs) ← eq.eq? | throwError "not an equality {eq}"
       k {
