@@ -19,9 +19,8 @@ namespace List
 /-- Split a list at an index.
      splitAt 2 [a, b, c] = ([a, b], [c]) -/
 def splitAt : ℕ → List α → List α × List α
-| 0, a => ([], a)
-| n+1, [] => ([], [])
 | n+1, x :: xs => let (l, r) := splitAt n xs; (x :: l, r)
+| _, xs => ([], xs)
 
 /-- An auxiliary function for `splitOnP`. -/
 def splitOnPAux {α : Type u} (P : α → Prop) [DecidablePred P] : List α → (List α → List α) → List (List α)
