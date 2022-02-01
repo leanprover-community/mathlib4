@@ -31,9 +31,6 @@ local macro "genIntDeclars" typeName:ident : command => do
       instance : Inhabited (Fin size) where
         default := Fin.ofNat' 0 size_positive
 
-      -- instance : Numeric $typeName where
-      --   ofNat a := mk (Numeric.ofNat a)
-
       instance : AddSemigroup $typeName where
         add_assoc := fun _ _ _ => congrArg mk (AddSemigroup.add_assoc _ _ _)
 
