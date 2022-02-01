@@ -244,17 +244,23 @@ elab "any_goals " seq:tacticSeq : tactic => do
     throwError "failed on all goals"
   setGoals mvarIdsNew.toList
 
+-- TODO: move these
+def List.splitAux {α : Type} : List α → Nat → List α → List α × List α
+  | h :: t, n + 1, acc => splitAux t n (h :: acc)
+  | l,      _,     acc => (acc.reverse, l)
+
+def List.split {α : Type} (l : List α) (i : Nat) : List α × List α :=
+  l.splitAux i []
+
 /--
 `work_on_goal n { tac }` creates a block scope for the `n`-th goal (indexed from zero),
 but does not require that the goal be solved at the end of the block
 (any resulting subgoals are inserted back into the list of goals, replacing the `n`-th goal).
 -/
 elab (name := workOnGoal) "work_on_goal " n:num ppSpace seq:tacticSeq : tactic => do
-  let goals ← getGoals
-  let n := n.toNat
-  if h : n < goals.length then
-    setGoals [goals.get n h]
-    evalTactic seq
-    setGoals (goals.take n ++ (← getUnsolvedGoals) ++ goals.drop (n+1))
-  else
-    throwError "not enough goals"
+  match (← getGoals).split n.toNat with
+    | (_, []) => throwError "not enough goals"
+    | (gls, g :: grs) =>
+      setGoals [g]
+      evalTactic seq
+      setGoals $ gls ++ (← getUnsolvedGoals) ++ grs
