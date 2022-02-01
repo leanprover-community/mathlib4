@@ -31,9 +31,6 @@ local macro "genIntDeclars" typeName:ident : command => do
       instance : Inhabited (Fin size) where
         default := Fin.ofNat' 0 size_positive
 
-      instance : Numeric $typeName where
-        ofNat a := mk (Numeric.ofNat a)
-
       instance : AddSemigroup $typeName where
         add_assoc := fun _ _ _ => congrArg mk (AddSemigroup.add_assoc _ _ _)
 
@@ -70,18 +67,13 @@ local macro "genIntDeclars" typeName:ident : command => do
       lemma one_def : (1 : $typeName) = ⟨1⟩ := rfl
 
       instance : Semiring $typeName where
-        ofNat_succ a := by
-          apply eq_of_val_eq
-          simp only [add_def, Numeric.ofNat, one_def]
-          have h0 := (@instSemiringFin size).ofNat_succ a
-          simp only [Numeric.ofNat] at h0
-          simp [h0]
         add_zero := by simp [add_def, zero_def]
         zero_add := by simp [add_def, zero_def]
+        add_comm := by simp [add_def, add_comm]
         mul_one  := by simp [mul_def, one_def]
         one_mul  := by simp [mul_def, one_def]
-        nsmul n a := ⟨Semiring.nsmul n a.val⟩
-        nsmul_zero' x := congrArg mk (Semiring.nsmul_zero' x.val)
+        nsmul n a := ⟨AddMonoid.nsmul n a.val⟩
+        nsmul_zero' x := congrArg mk (AddMonoid.nsmul_zero' x.val)
         nsmul_succ' n a := congrArg mk (AddMonoid.nsmul_succ' n a.val)
         zero_mul := by simp [mul_def, zero_def]
         mul_zero := by simp [mul_def, zero_def]

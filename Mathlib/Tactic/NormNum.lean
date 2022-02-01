@@ -29,24 +29,20 @@ partial def Expr.numeral? (e : Expr) : Option Nat :=
 
 namespace Meta
 
-def mkOfNatLit (u : Level) (α sα n : Expr) : Expr :=
-  let inst := mkApp3 (mkConst ``Numeric.OfNat [u]) α n sα
-  mkApp3 (mkConst ``OfNat.ofNat [u]) α n inst
-
 namespace NormNum
 
 def isNat [Semiring α] (a : α) (n : ℕ) := a = OfNat.ofNat n
 
 class LawfulOfNat (α) [Semiring α] (n) [OfNat α n] : Prop where
-  isNat_ofNat : isNat (OfNat.ofNat n : α) n
+  isNat_ofNat : isNat (@OfNat.ofNat _ n ‹_› : α) n
 
 instance (α) [Semiring α] : LawfulOfNat α n := ⟨rfl⟩
 instance (α) [Semiring α] : LawfulOfNat α (nat_lit 0) := ⟨rfl⟩
 instance (α) [Semiring α] : LawfulOfNat α (nat_lit 1) := ⟨rfl⟩
-instance : LawfulOfNat Nat n := ⟨rfl⟩
-instance : LawfulOfNat Int n := ⟨rfl⟩
+instance : LawfulOfNat Nat n := ⟨show n = Nat.cast n by simp⟩
+instance : LawfulOfNat Int n := ⟨show Int.ofNat n = Nat.cast n by simp⟩
 
-theorem isNat_rawNat (n : ℕ) : isNat n n := rfl
+theorem isNat_rawNat (n : ℕ) : isNat n n := LawfulOfNat.isNat_ofNat
 
 class LawfulZero (α) [Semiring α] [Zero α] : Prop where
   isNat_zero : isNat (Zero.zero : α) (nat_lit 0)
@@ -60,15 +56,16 @@ instance (α) [Semiring α] : LawfulOne α := ⟨rfl⟩
 
 theorem isNat_add {α} [Semiring α] : (a b : α) → (a' b' c : Nat) →
   isNat a a' → isNat b b' → Nat.add a' b' = c → isNat (a + b) c
-| _, _, _, _, _, rfl, rfl, rfl => ofNat_add.symm
+| _, _, _, _, _, rfl, rfl, rfl => Nat.cast_add.symm
 
 theorem isNat_mul {α} [Semiring α] : (a b : α) → (a' b' c : Nat) →
   isNat a a' → isNat b b' → Nat.mul a' b' = c → isNat (a * b) c
-| _, _, _, _, _, rfl, rfl, rfl => ofNat_mul.symm
+| _, _, _, _, _, rfl, rfl, rfl => Nat.cast_mul.symm
 
 theorem isNat_pow {α} [Semiring α] : (a : α) → (b a' b' c : Nat) →
   isNat a a' → isNat b b' → Nat.pow a' b' = c → isNat (a ^ b) c
-| _, _, _, _, _, rfl, rfl, rfl => (ofNat_pow _ _).symm
+| _, _, _, _, _, rfl, rfl, rfl => by
+  simp only [OfNat.ofNat, isNat, Nat.cast_Nat, ← Nat.cast_pow]; rfl
 
 def instSemiringNat : Semiring Nat := inferInstance
 

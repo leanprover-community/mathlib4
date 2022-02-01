@@ -175,11 +175,10 @@ end AddMonoid_lemmas
 
 -/
 
-class AddCommMonoid (A : Type u) extends AddMonoid A where
-  add_comm (a b : A) : a + b = b + a
-
-instance (A : Type u) [AddCommMonoid A] : AddCommSemigroup A where
-  __ := ‹AddCommMonoid A›
+class AddCommMonoid (A : Type u) extends AddMonoid A, AddCommSemigroup A where
+  -- TODO: doesn't work
+  zero_add a := (by rw [add_comm, add_zero])
+  add_zero a := (by rw [add_comm, zero_add])
 
 /-
 
@@ -198,6 +197,8 @@ class SubNegMonoid (A : Type u) extends AddMonoid A, Neg A, Sub A where
   gsmul_zero' : ∀ (a : A), gsmul 0 a = 0
   gsmul_succ' (n : ℕ) (a : A) : gsmul (Int.ofNat n.succ) a = a + gsmul (Int.ofNat n) a
   gsmul_neg' (n : ℕ) (a : A) : gsmul (Int.negSucc n) a = -(gsmul ↑(n.succ) a)
+
+export SubNegMonoid (sub_eq_add_neg)
 
 /-
 
@@ -242,6 +243,9 @@ instance (A : Type u) [AddGroup A] : IsAddRightCancel A where
 instance (A : Type u) [AddGroup A] : IsAddLeftCancel A where
   add_left_cancel a b c h := by
   rw [← neg_add_cancel_left a b, h, neg_add_cancel_left]
+
+lemma eq_of_sub_eq_zero' (h : a - b = 0) : a = b :=
+  add_right_cancel <| show a + (-b) = b + (-b) by rw [← sub_eq_add_neg, h, add_neg_self]
 
 end AddGroup_lemmas
 
