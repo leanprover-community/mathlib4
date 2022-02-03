@@ -44,4 +44,6 @@ match stx with
 
 /-- `last` brings the last goal to the front. -/
 elab "last" : tactic => do
-  swapGoal (← getGoals).length
+  let length ← (← getGoals).length
+  if length > 1 then
+    swapGoal length
