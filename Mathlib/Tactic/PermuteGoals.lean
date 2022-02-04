@@ -16,11 +16,13 @@ open Lean Elab Elab.Tactic
 
 See also `Tactic.swap`, which moves the `n`th goal to the front.
 -/
-syntax (name := rotate) "rotate" (ppSpace num)? : tactic
+syntax (name := rotate) "rotate" ppSpace "-"? (num)? : tactic
 @[tactic rotate] def evalRotate : Tactic := fun stx => do
 match stx with
-  | `(tactic|rotate)    => setGoals $ (← getGoals).rotate 1
-  | `(tactic|rotate $n) => setGoals $ (← getGoals).rotate n.toNat
+  | `(tactic|rotate)     => setGoals $ (← getGoals).rotateLeft 1
+  | `(tactic|rotate -)   => setGoals $ (← getGoals).rotateRight 1
+  | `(tactic|rotate $n)  => setGoals $ (← getGoals).rotateLeft n.toNat
+  | `(tactic|rotate -$n) => setGoals $ (← getGoals).rotateRight n.toNat
   | _ => throwUnsupportedSyntax
 
 /--
@@ -29,17 +31,23 @@ match stx with
 `swap` defaults to `swap 2`, which interchanges the first and second goals.
 See also `Tactic.rotate`, which moves the first `n` goals to the back.
 -/
-syntax (name := swap) "swap" (ppSpace num)? : tactic
+syntax (name := swap) "swap" ppSpace ppSpace "-"? (num)? : tactic
 @[tactic swap] def evalSwap : Tactic := fun stx => do
 match stx with
-  | `(tactic|swap)    => swap 2
-  | `(tactic|swap $n) => swap n.toNat
+  | `(tactic|swap)     => swap 2 false
+  | `(tactic|swap -)   => swap 1 true
+  | `(tactic|swap $n)  => swap n.toNat false
+  | `(tactic|swap -$n) => swap n.toNat true
   | _ => throwUnsupportedSyntax
 where
-  swap (n : Nat) : TacticM Unit := do
-    match n with
+  swap (n : Nat) (reverse : Bool) : TacticM Unit := do
+    let goals ← getGoals
+    let nGoals ← goals.length
+    let nth := if ¬reverse then n
+      else if n ≤ nGoals then nGoals - n + 1 else nGoals + 1
+    match nth with
       | 0 => throwError "goals are 1-indexed"
       | n' + 1 =>
-        match (← getGoals).splitAt n' with
+        match goals.splitAt n' with
           | (_, []) => throwError "not enough goals"
           | (gls, g :: grs) => setGoals $ g :: gls ++ grs
