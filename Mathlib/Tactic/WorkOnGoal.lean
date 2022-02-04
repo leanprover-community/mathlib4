@@ -19,9 +19,12 @@ The goal is not required to be solved and any resulting subgoals are inserted ba
 list of goals, replacing the `n`-th goal.
 -/
 elab (name := workOnGoal) "work_on_goal " n:num ppSpace seq:tacticSeq : tactic => do
-  match (← getGoals).splitAt (n.toNat - 1) with
-    | (_, []) => throwError "not enough goals"
-    | (gls, g :: grs) =>
-      setGoals [g]
-      evalTactic seq
-      setGoals $ gls ++ (← getUnsolvedGoals) ++ grs
+  match n.toNat with
+    | 0 => throwError "goals are 1-indexed"
+    | n' + 1 =>
+      match (← getGoals).splitAt n' with
+        | (_, []) => throwError "not enough goals"
+        | (gls, g :: grs) =>
+          setGoals [g]
+          evalTactic seq
+          setGoals $ gls ++ (← getUnsolvedGoals) ++ grs

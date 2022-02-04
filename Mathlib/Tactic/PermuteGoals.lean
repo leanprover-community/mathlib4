@@ -23,12 +23,6 @@ match stx with
   | `(tactic|rotate $n) => setGoals $ (← getGoals).rotate n.toNat
   | _ => throwUnsupportedSyntax
 
-/-- Brings the `n`-th goal to the front -/
-def swapGoal (n : Nat) : TacticM Unit := do
-  match (← getGoals).splitAt (n - 1) with
-    | (_, []) => throwError "not enough goals"
-    | (gls, g :: grs) => setGoals $ g :: gls ++ grs
-
 /--
 `swap n` will move the `n`-th goal to the front.
 
@@ -38,12 +32,14 @@ See also `Tactic.rotate`, which moves the first `n` goals to the back.
 syntax (name := swap) "swap" (ppSpace num)? : tactic
 @[tactic swap] def evalSwap : Tactic := fun stx => do
 match stx with
-  | `(tactic|swap)    => swapGoal 2
-  | `(tactic|swap $n) => swapGoal n.toNat
+  | `(tactic|swap)    => swap 2
+  | `(tactic|swap $n) => swap n.toNat
   | _ => throwUnsupportedSyntax
-
-/-- `last` brings the last goal to the front. -/
-elab "last" : tactic => do
-  let length ← (← getGoals).length
-  if length > 1 then
-    swapGoal length
+where
+  swap (n : Nat) : TacticM Unit := do
+    match n with
+      | 0 => throwError "goals are 1-indexed"
+      | n' + 1 =>
+        match (← getGoals).splitAt n' with
+          | (_, []) => throwError "not enough goals"
+          | (gls, g :: grs) => setGoals $ g :: gls ++ grs
