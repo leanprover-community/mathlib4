@@ -62,23 +62,23 @@ where
 macro "swap" : tactic => `(pick_goal 2)
 
 /--
-`work_on_goal n tacSeq` creates a block scope for the `n`-th goal and tries the sequence
+`on_goal n => tacSeq` creates a block scope for the `n`-th goal and tries the sequence
 of tactics `tacSeq` on it.
 
-`work_on_goal -n tacSeq` does the same, but the `n`-th goal is chosen by counting from the
+`on_goal -n => tacSeq` does the same, but the `n`-th goal is chosen by counting from the
 bottom.
 
 The goal is not required to be solved and any resulting subgoals are inserted back into the
 list of goals, replacing the chosen goal.
 -/
-syntax (name := work_on_goal) "work_on_goal" ppSpace "-"? num ppSpace tacticSeq : tactic
-@[tactic work_on_goal] def evalWorkOnGoal : Tactic := fun stx => do
+syntax (name := on_goal) "on_goal" ppSpace "-"? num ppSpace "=>" ppSpace tacticSeq : tactic
+@[tactic on_goal] def evalOnGoal : Tactic := fun stx => do
 match stx with
-  | `(tactic|work_on_goal $n $seq:tacticSeq)  => workOnGoal n.toNat seq false
-  | `(tactic|work_on_goal -$n $seq:tacticSeq) => workOnGoal n.toNat seq true
+  | `(tactic|on_goal $n => $seq:tacticSeq)  => onGoal n.toNat seq false
+  | `(tactic|on_goal -$n => $seq:tacticSeq) => onGoal n.toNat seq true
   | _ => throwUnsupportedSyntax
 where
-  workOnGoal (n : ℕ) (seq : Syntax) (reverse : Bool) : TacticM Unit := do
+  onGoal (n : ℕ) (seq : Syntax) (reverse : Bool) : TacticM Unit := do
     let (nth, goals) ← roundTripNth n reverse
     match nth with
       | 0 => throwError "goals are 1-indexed"

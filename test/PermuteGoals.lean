@@ -3,7 +3,7 @@ import Mathlib.Tactic.PermuteGoals
 example (p q r : Prop) : p → q → r → p ∧ q ∧ r := by
   intros
   constructor
-  work_on_goal 2
+  on_goal 2 =>
     guard_target == q ∧ r
     constructor
     assumption
