@@ -18,7 +18,7 @@ open Lean Elab Elab.Tactic
 
 See also `Tactic.pick_goal`, which moves the `n`-th goal to the front.
 -/
-syntax (name := rotate_goals) "rotate_goals" ppSpace "-"? (num)? : tactic
+syntax (name := rotate_goals) "rotate_goals " "-"? (num)? : tactic
 @[tactic rotate_goals] def evalRotateGoals : Tactic := fun stx => do
 match stx with
   | `(tactic|rotate_goals)     => setGoals $ (← getGoals).rotateLeft 1
@@ -42,7 +42,7 @@ private def roundTripNth (n : ℕ) (reverse : Bool) : TacticM (ℕ × List MVarI
 
 See also `Tactic.rotate_goals`, which moves goals from the front to the back and vice-versa.
 -/
-syntax (name := pick_goal) "pick_goal" ppSpace ppSpace "-"? num : tactic
+syntax (name := pick_goal) "pick_goal " "-"? num : tactic
 @[tactic pick_goal] def evalPickGoal : Tactic := fun stx => do
 match stx with
   | `(tactic|pick_goal $n)  => pick_goal n.toNat false
@@ -71,7 +71,7 @@ bottom.
 The goal is not required to be solved and any resulting subgoals are inserted back into the
 list of goals, replacing the chosen goal.
 -/
-syntax (name := on_goal) "on_goal" ppSpace "-"? num ppSpace "=>" ppSpace tacticSeq : tactic
+syntax (name := on_goal) "on_goal " "-"? num " => " tacticSeq : tactic
 @[tactic on_goal] def evalOnGoal : Tactic := fun stx => do
 match stx with
   | `(tactic|on_goal $n => $seq:tacticSeq)  => onGoal n.toNat seq false
