@@ -9,7 +9,7 @@ import Mathlib.Data.List.Defs
 
 namespace Mathlib.Tactic
 
-open Lean Elab Elab.Tactic
+open Lean Elab.Tactic
 
 /--
 `rotate_goals` moves the first goal to the back. `rotate_goals n` does this `n` times.
@@ -20,19 +20,28 @@ See also `Tactic.pick_goal`, which moves the `n`-th goal to the front.
 -/
 syntax (name := rotate_goals) "rotate_goals " "-"? (num)? : tactic
 elab_rules : tactic
-  | `(tactic|rotate_goals)     => setGoals $ (← getGoals).rotateLeft 1
-  | `(tactic|rotate_goals -)   => setGoals $ (← getGoals).rotateRight 1
-  | `(tactic|rotate_goals $n)  => setGoals $ (← getGoals).rotateLeft n.toNat
-  | `(tactic|rotate_goals -$n) => setGoals $ (← getGoals).rotateRight n.toNat
-  | _ => throwUnsupportedSyntax
+  | `(tactic|rotate_goals)     => do setGoals $ (← getGoals).rotateLeft 1
+  | `(tactic|rotate_goals -)   => do setGoals $ (← getGoals).rotateRight 1
+  | `(tactic|rotate_goals $n)  => do setGoals $ (← getGoals).rotateLeft n.toNat
+  | `(tactic|rotate_goals -$n) => do setGoals $ (← getGoals).rotateRight n.toNat
 
-/-- Computes the round-tripping `n`-th goal. -/
-private def roundTripNth (n : ℕ) (reverse : Bool) : TacticM (ℕ × List MVarId) := do
+/--
+If the current goals are `g₁ ⋯ gᵢ ⋯ gₙ`, `splitGoalsAndGetNth i` returns
+`(gᵢ, [g₁, ⋯, gᵢ₋₁], [gᵢ₊₁, ⋯, gₙ])`.
+
+If `reverse` is passed as `true`, the `i`-th goal is picked by counting backwards.
+For instance, `splitGoalsAndGetNth 1 true` puts the last goal in the first component
+of the returned term.
+-/
+def splitGoalsAndGetNth (nth : ℕ) (reverse : Bool := false) :
+    TacticM (MVarId × List MVarId × List MVarId) := do
+  if nth = 0 then throwError "goals are 1-indexed"
   let goals ← getGoals
   let nGoals ← goals.length
-  let nth := if ¬reverse then n
-    else if n ≤ nGoals then nGoals - n + 1 else n
-  (nth, goals)
+  if nth > nGoals then throwError "goal index out of bounds"
+  let n := if ¬reverse then nth - 1 else nGoals - nth
+  let (gl, g :: gr) ← goals.splitAt n | throwError "not enough goals"
+  (g, gl, gr)
 
 /--
 `pick_goal n` will move the `n`-th goal to the front.
@@ -42,14 +51,18 @@ private def roundTripNth (n : ℕ) (reverse : Bool) : TacticM (ℕ × List MVarI
 See also `Tactic.rotate_goals`, which moves goals from the front to the back and vice-versa.
 -/
 elab "pick_goal " reverse:"-"? n:num : tactic => do
-  let n := n.toNat
-  let reverse := !reverse.isNone
-    let (n' + 1, goals) ← roundTripNth n reverse | throwError "goals are 1-indexed"
-        let (gls, g :: grs) := goals.splitAt n' | throwError "not enough goals"
-        setGoals $ g :: (gls ++ grs)
+  let (g, gl, gr) ← splitGoalsAndGetNth n.toNat !reverse.isNone
+  setGoals $ g :: (gl ++ gr)
 
 /-- `swap` is a shortcut for `pick_goal 2`, which interchanges the 1st and 2nd goals. -/
 macro "swap" : tactic => `(pick_goal 2)
+
+/-- Applies a sequence of tactics on the chosen goal, replacing it by resulting subgoals. -/
+def onGoal (n : ℕ) (seq : Syntax) (reverse : Bool := false) : TacticM Unit := do
+  let (g, gl, gr) ← splitGoalsAndGetNth n reverse
+  setGoals [g]
+  evalTactic seq
+  setGoals $ gl ++ (← getUnsolvedGoals) ++ gr
 
 /--
 `on_goal n => tacSeq` creates a block scope for the `n`-th goal and tries the sequence
@@ -61,21 +74,5 @@ bottom.
 The goal is not required to be solved and any resulting subgoals are inserted back into the
 list of goals, replacing the chosen goal.
 -/
-syntax (name := on_goal) "on_goal " "-"? num " => " tacticSeq : tactic
-@[tactic on_goal] def evalOnGoal : Tactic := fun stx => do
-match stx with
-  | `(tactic|on_goal $n => $seq:tacticSeq)  => onGoal n.toNat seq false
-  | `(tactic|on_goal -$n => $seq:tacticSeq) => onGoal n.toNat seq true
-  | _ => throwUnsupportedSyntax
-where
-  onGoal (n : ℕ) (seq : Syntax) (reverse : Bool) : TacticM Unit := do
-    let (nth, goals) ← roundTripNth n reverse
-    match nth with
-      | 0 => throwError "goals are 1-indexed"
-      | n' + 1 =>
-        match goals.splitAt n' with
-          | (_, []) => throwError "not enough goals"
-          | (gls, g :: grs) =>
-            setGoals [g]
-            evalTactic seq
-            setGoals $ gls ++ (← getUnsolvedGoals) ++ grs
+elab "on_goal " reverse:"-"? n:num " => " seq:tacticSeq : tactic => do
+  onGoal n.toNat seq !reverse.isNone
