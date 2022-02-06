@@ -437,8 +437,8 @@ elab (name := rcases) tk:"rcases" tgts:casesTarget,* pat:(" with " rcasesPatLo)?
 elab (name := obtain) tk:"obtain"
     pat:(ppSpace rcasesPatMed)? ty:(" : " term)? val:(" := " term,+)? : tactic => do
   let pat ← liftM $ pat.getOptional?.mapM RCasesPatt.parse
-  if val.getNumArgs == 0 then
-    if ty.getNumArgs == 0 then throwError
+  if val.isNone then
+    if ty.isNone then throwError
         ("`obtain` requires either an expected type or a value.\n" ++
         "usage: `obtain ⟨patt⟩? : type (:= val)?` or `obtain ⟨patt⟩? (: type)? := val`")
     let pat := pat.getD (RCasesPatt.one tk `this)
@@ -446,7 +446,7 @@ elab (name := obtain) tk:"obtain"
       replaceMainGoal (← RCases.obtainNone pat ty[1] (← getMainGoal))
   else
     let pat := pat.getD (RCasesPatt.one tk `_)
-    let pat := if ty.getNumArgs == 0 then pat else RCasesPatt.typed tk pat ty[1]
+    let pat := if ty.isNone then pat else RCasesPatt.typed tk pat ty[1]
     let tgts := val[1].getSepArgs.map fun val => (none, val)
     withMainContext do
       replaceMainGoal (← RCases.rcases tgts pat (← getMainGoal))
