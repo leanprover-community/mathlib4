@@ -26,6 +26,17 @@ example (x : (α × β) × γ) : True := by
   guard_hyp c : γ
   trivial
 
+example : @Inhabited.{1} α × Option β ⊕ γ → True := by
+  rintro (⟨⟨a⟩, _ | b⟩ | c)
+  · guard_hyp a : α; trivial
+  · guard_hyp a : α; guard_hyp b : β; trivial
+  · guard_hyp c : γ; trivial
+
+example : cond false Nat Int → cond true Int Nat → Nat ⊕ Unit → True := by
+  rintro (x y : Int) (z | u)
+  · guard_hyp x : Int; guard_hyp y : Int; guard_hyp z : Nat; trivial
+  · guard_hyp x : Int; guard_hyp y : Int; guard_hyp u : Unit; trivial
+
 example (x y : Nat) (h : x = y) : True := by
   rcases x with _|⟨⟩|z
   · guard_hyp h : Nat.zero = y; trivial
@@ -128,3 +139,10 @@ example (h : ∃ x : Nat, x = x ∧ 1 = 1) : True := by
 example (h : True ∨ True ∨ True) : True := by
   rcases h with - | - | -
   iterate 3 · checkNumHyps 0; trivial
+
+example : Bool → False → True
+| false => by rintro ⟨⟩
+| true => by rintro ⟨⟩
+
+example : (b : Bool) → cond b False False → True := by
+  rintro ⟨⟩ ⟨⟩

@@ -148,6 +148,11 @@ def asAlts : RCasesPatt → ListΣ RCasesPatt
 | p         => [p]
 
 /-- Convert a list of patterns to a tuple pattern, but mapping `[p]` to `p` instead of `⟨p⟩`. -/
+def typed? (ref : Syntax) : RCasesPatt → Option Syntax → RCasesPatt
+| p, none => p
+| p, some ty => typed ref p ty
+
+/-- Convert a list of patterns to a tuple pattern, but mapping `[p]` to `p` instead of `⟨p⟩`. -/
 def tuple' : ListΠ RCasesPatt → RCasesPatt
 | [p] => p
 | ps  => tuple (ps.head?.map (·.ref) |>.getD Syntax.missing) ps
@@ -290,13 +295,12 @@ mutual
     match, with updated values for `g` , `fs`, `clears`, and `a`. -/
 partial def rcasesCore (g : MVarId) (fs : FVarSubst) (clears : Array FVarId) (e : FVarId) (a : α)
   (pat : RCasesPatt) (cont : MVarId → FVarSubst → Array FVarId → α → TermElabM α) : TermElabM α :=
-  withRef pat.ref <| withMVarContext g <| do
   let translate e : MetaM _ := do
     let e := fs.get e
     unless e.isFVar do
       throwError "rcases tactic failed: {e} is not a fvar"
     pure e
-  match pat with
+  withRef pat.ref <| withMVarContext g <| match pat with
   | RCasesPatt.one _ `rfl => do
     let (fs, g) ← subst' g (← translate e).fvarId! fs
     cont g fs clears a
@@ -443,6 +447,36 @@ def obtainNone (pat : RCasesPatt) (ty : Syntax) (g : MVarId) : TermElabM (List M
   let gs ← rcasesCore g₂ {} #[] v #[] pat finish
   pure (g₁.mvarId! :: gs.toList)
 
+mutual
+
+partial def rintroCore (g : MVarId) (fs : FVarSubst) (clears : Array FVarId) (a : α)
+  (ref pat : Syntax) (ty? : Option Syntax)
+  (cont : MVarId → FVarSubst → Array FVarId → α → TermElabM α) : TermElabM α := do
+  match pat with
+  | `(rintroPat| $pat:rcasesPat) =>
+    let pat := (← RCasesPatt.parse pat).typed? ref ty?
+    let (v, g) ← intro g (pat.name?.getD `_)
+    rcasesCore g fs clears v a pat cont
+  | `(rintroPat| ($(pats)* $[: $ty?]?)) =>
+    rintroContinue g fs clears pat pats ty? a cont
+  | _ => throwUnsupportedSyntax
+
+partial def rintroContinue (g : MVarId) (fs : FVarSubst) (clears : Array FVarId)
+  (ref : Syntax) (pats : Array Syntax) (ty? : Option Syntax) (a : α)
+  (cont : MVarId → FVarSubst → Array FVarId → α → TermElabM α) : TermElabM α := do
+  withMVarContext g do
+    let rec loop i g fs clears a := do
+      if h : i < pats.size then
+        rintroCore g fs clears a ref (pats.get ⟨i, h⟩) ty? (loop (i+1))
+      else cont g fs clears a
+    loop 0 g fs clears a
+
+end
+
+def rintro (ref : Syntax) (pats : Array Syntax) (ty? : Option Syntax)
+  (g : MVarId) : TermElabM (List MVarId) :=
+  (·.toList) <$> rintroContinue g {} #[] ref pats ty? #[] finish
+
 end Lean.Meta.RCases
 
 namespace Lean.Parser.Tactic
@@ -473,7 +507,15 @@ elab (name := obtain) tk:"obtain"
       replaceMainGoal (← RCases.obtainNone pat ty[1] (← getMainGoal))
   else
     let pat := pat.getD (RCasesPatt.one tk `_)
-    let pat := if ty.isNone then pat else RCasesPatt.typed tk pat ty[1]
+    let pat := pat.typed? tk $ if ty.isNone then none else some ty[1]
     let tgts := val[1].getSepArgs.map fun val => (none, val)
     withMainContext do
       replaceMainGoal (← RCases.rcases tgts pat (← getMainGoal))
+
+elab (name := rintro?) "rintro?" (" : " num)? : tactic =>
+  throwError "unimplemented"
+
+elab (name := rintro) "rintro" pats:(ppSpace colGt rintroPat)+ ty:(" : " term)? : tactic => do
+  let ty? := if ty.isNone then none else some ty[1]
+  withMainContext do
+    replaceMainGoal (← RCases.rintro ty pats.getArgs ty? (← getMainGoal))

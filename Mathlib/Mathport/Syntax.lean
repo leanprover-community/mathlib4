@@ -187,9 +187,6 @@ syntax (name := guardLHS) "guard_lhs " " =ₐ " term : conv
 
 end Conv
 
-syntax (name := rintro?) "rintro?" (" : " num)? : tactic
-syntax (name := rintro) "rintro" (ppSpace rintroPat)* (" : " term)? : tactic
-
 syntax (name := ext1) "ext1" (ppSpace rcasesPat)* : tactic
 syntax (name := ext1?) "ext1?" (ppSpace rcasesPat)* : tactic
 -- The current implementation of `ext` in mathlib4 does not support `rcasesPat`,
