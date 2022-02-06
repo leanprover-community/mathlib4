@@ -411,7 +411,7 @@ def rotate' : List α → ℕ → List α
 
 def mmap {m : Type u → Type v} [Monad m] {α β} (f : α → m β) : List α → m (List β)
 | [] => pure []
-| h :: t => do pure $ (← f h) :: (← mmap f t)
+| h :: t => return (← f h) :: (← mmap f t)
 
 def mmap' {m : Type → Type v} [Monad m] {α β} (f : α → m β) : List α → m Unit
 | [] => pure ()
@@ -436,7 +436,7 @@ Example: suppose `l = [1, 2, 3]`. `mmapUpperTriangle f l` will produce the list
 -/
 def mmapUpperTriangle {m} [Monad m] {α β : Type u} (f : α → α → m β) : List α → m (List β)
 | [] => pure []
-| h :: t => do pure $ (← f h h) :: (← t.mmap (f h)) ++ (← t.mmapUpperTriangle f)
+| h :: t => return (← f h h) :: (← t.mmap (f h)) ++ (← t.mmapUpperTriangle f)
 
 /--
 `mmap'Diag f l` calls `f` on all elements in the upper triangular part of `l × l`.
