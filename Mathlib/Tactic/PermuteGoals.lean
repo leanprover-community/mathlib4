@@ -37,11 +37,11 @@ def splitGoalsAndGetNth (nth : ℕ) (reverse : Bool := false) :
     TacticM (MVarId × List MVarId × List MVarId) := do
   if nth = 0 then throwError "goals are 1-indexed"
   let goals ← getGoals
-  let nGoals ← goals.length
+  let nGoals := goals.length
   if nth > nGoals then throwError "goal index out of bounds"
   let n := if ¬reverse then nth - 1 else nGoals - nth
-  let (gl, g :: gr) ← goals.splitAt n | throwError "not enough goals"
-  (g, gl, gr)
+  let (gl, g :: gr) := goals.splitAt n | throwError "not enough goals"
+  pure (g, gl, gr)
 
 /--
 `pick_goal n` will move the `n`-th goal to the front.
