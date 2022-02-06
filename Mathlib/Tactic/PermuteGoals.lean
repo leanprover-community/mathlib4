@@ -40,7 +40,7 @@ def splitGoalsAndGetNth (nth : ℕ) (reverse : Bool := false) :
   let nGoals := goals.length
   if nth > nGoals then throwError "goal index out of bounds"
   let n := if ¬reverse then nth - 1 else nGoals - nth
-  let (gl, g :: gr) := goals.splitAt n | throwError "not enough goals"
+  let (gl, g :: gr) := goals.splitAt n | throwNoGoalsToBeSolved
   pure (g, gl, gr)
 
 /--
