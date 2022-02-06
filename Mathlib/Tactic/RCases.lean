@@ -30,7 +30,7 @@ the input expression). An `rcases` pattern has the following grammar:
   of nested conjunctions or existentials. For example if the active hypothesis is `a ∧ b ∧ c`,
   then the conjunction will be destructured, and `p1` will be matched against `a`, `p2` against `b`
   and so on.
-* An alteration pattern `p1 | p2 | p3`, which matches an inductive type with multiple constructors,
+* An alternation pattern `p1 | p2 | p3`, which matches an inductive type with multiple constructors,
   or a nested disjunction like `a ∨ b ∨ c`.
 
 The patterns are fairly liberal about the exact shape of the constructors, and will insert
@@ -348,7 +348,7 @@ def tryClearMany' (mvarId : MVarId) (fvarIds : Array FVarId) : MetaM MVarId := d
     else toErase
   tryClearMany mvarId toErase
 
-/-- The terminating contiunation used in `rcasesCore` and `rcasesContinue`. We specialize the type
+/-- The terminating continuation used in `rcasesCore` and `rcasesContinue`. We specialize the type
 `α` to `Array MVarId` to collect the list of goals, and given the list of `clears`, it attempts to
 clear them from the goal and adds the goal to the list. -/
 def finish (g : MVarId) (fs : FVarSubst) (clears : Array FVarId)
