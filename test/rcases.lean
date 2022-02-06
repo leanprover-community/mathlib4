@@ -78,6 +78,12 @@ example (i j : Nat) : (Σ' x, i ≤ x ∧ x ≤ j) → i ≤ j := by
   guard_hyp h' : h = ⟨x, h₀, h₁⟩
   apply Nat.le_trans h₀ h₁
 
+example (x : Quot fun _ _ : α => True) (h : x = x): x = x := by
+  rcases x with ⟨z⟩
+  guard_hyp z : α
+  guard_hyp h : Quot.mk (fun x x => True) z = Quot.mk (fun x x => True) z
+  guard_target == Quot.mk (fun x x => True) z = Quot.mk (fun x x => True) z
+  exact h
 
 example (n : Nat) : True := by
   obtain one_lt_n | n_le_one : 1 < n + 1 ∨ n + 1 ≤ 1 := Nat.lt_or_ge 1 (n + 1)

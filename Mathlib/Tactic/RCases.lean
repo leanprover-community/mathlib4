@@ -264,49 +264,62 @@ mutual
 partial def rcasesCore (g : MVarId) (fs : FVarSubst) (clears : Array FVarId) (e : FVarId) (a : α)
   (pat : RCasesPatt) (cont : MVarId → FVarSubst → Array FVarId → α → TermElabM α) : TermElabM α :=
   withRef pat.ref <| withMVarContext g <| do
+  let translate e : MetaM _ := do
+    let e := fs.get e
+    unless e.isFVar do
+      throwError "rcases tactic failed: {e} is not a fvar"
+    pure e
   match pat with
   | RCasesPatt.one _ `rfl => do
-    let (fs, g) ← substCore g e (fvarSubst := fs)
+    let (fs, g) ← substCore g (← translate e).fvarId! (fvarSubst := fs)
     cont g fs clears a
   | RCasesPatt.one _ _ => cont g fs clears a
   | RCasesPatt.clear _ => cont g fs (clears.push e) a
   | RCasesPatt.typed _ pat ty => do
     let expected ← Term.elabType ty
-    let e := fs.get e
+    let e ← translate e
     let etype ← inferType e
     unless ← isDefEq etype expected do
       Term.throwTypeMismatchError "rcases: scrutinee" expected etype e
-    unless e.isFVar do
-      throwError "rcases tactic failed: {e} is not a fvar"
     let g ← replaceLocalDeclDefEq g e.fvarId! expected
     cont g fs clears a
   | RCasesPatt.alts _ [p] => rcasesCore g fs clears e a p cont
   | _ => do
-    let e := fs.get e
-    unless e.isFVar do
-      throwError "rcases tactic failed: {e} is not a fvar"
+    let e ← translate e
     let type ← whnfD (← inferType e)
     let failK {α} _ : TermElabM α :=
       throwError "rcases tactic failed: {e} : {type} is not an inductive datatype"
-    matchConst type.getAppFn failK fun
+    let (r, subgoals) ← matchConst type.getAppFn failK fun
       | ConstantInfo.quotInfo info, _ => do
         unless info.kind matches QuotKind.type do failK ()
-        throwError "unimplemented"
+        let pat := pat.asAlts.headD default
+        let ([x], ps) := processConstructor pat.ref 1 pat.asTuple | panic! "rcases"
+        let (vars, g) ← Meta.revert g (← getFVarsToGeneralize #[e])
+        withMVarContext g do
+          let elimInfo ← getElimInfo `Quot.ind
+          let res ← ElimApp.mkElimApp `Quot.ind elimInfo #[e] (← getMVarTag g)
+          let elimArgs := res.elimApp.getAppArgs
+          ElimApp.setMotiveArg g elimArgs[elimInfo.motivePos].mvarId! #[e.fvarId!]
+          assignExprMVar g res.elimApp
+          let #[(n, g)] := res.alts | panic! "rcases"
+          let (v, g) ← intro g x
+          let (varsOut, g) ← introNP g vars.size
+          let fs' := (vars.zip varsOut).foldl (init := fs) fun fs (v, w) => fs.insert v (mkFVar w)
+          pure ([(n, ps)], #[⟨⟨g, #[mkFVar v], fs'⟩, n⟩])
       | ConstantInfo.inductInfo info, _ => do
         let (altVarNames, r) ← processConstructors pat.ref info.numParams #[] info.ctors pat.asAlts
-        let subgoals ← cases g e.fvarId! altVarNames
-        let (_, a) ← subgoals.foldlM (init := (r, a)) fun (r, a) ⟨goal, ctorName⟩ => do
-          let rec align
-          | [] => pure ([], a)
-          | (tgt, ps) :: as => do
-            if tgt == ctorName then
-              let fs := fs.append goal.subst
-              (as, ·) <$> rcasesContinue goal.mvarId fs clears a (ps.zip goal.fields.toList) cont
-            else
-              align as
-          align r
-        pure a
+        (r, ·) <$> cases g e.fvarId! altVarNames
       | _, _ => failK ()
+    (·.2) <$> subgoals.foldlM (init := (r, a)) fun (r, a) ⟨goal, ctorName⟩ => do
+      let rec align
+      | [] => pure ([], a)
+      | (tgt, ps) :: as => do
+        if tgt == ctorName then
+          let fs := fs.append goal.subst
+          (as, ·) <$> rcasesContinue goal.mvarId fs clears a (ps.zip goal.fields.toList) cont
+        else
+          align as
+      align r
 
 /-- This will match a list of patterns against a list of hypotheses `e`. The arguments are similar
 to `rcasesCore`, but the patterns and local variables are in `pats`. Because the calls are all
