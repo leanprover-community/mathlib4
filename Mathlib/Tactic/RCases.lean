@@ -246,6 +246,33 @@ def processConstructors (ref : Syntax) (params : Nat) (altVarNames : Array AltVa
 
 open Elab Tactic
 
+-- this belongs in core; it is a variation on subst that passes fvarSubst through
+def subst' (mvarId : MVarId) (hFVarId : FVarId)
+  (fvarSubst : FVarSubst := {}) : MetaM (FVarSubst × MVarId) := do
+  let hLocalDecl ← getLocalDecl hFVarId
+  let error {α} _ : MetaM α := throwTacticEx `subst mvarId
+    m!"invalid equality proof, it is not of the form (x = t) or (t = x){indentExpr hLocalDecl.type}"
+  let some (α, lhs, rhs) ← matchEq? hLocalDecl.type | error ()
+  let substReduced (newType : Expr) (symm : Bool) : MetaM (FVarSubst × MVarId) := do
+    let mvarId ← assert mvarId hLocalDecl.userName newType (mkFVar hFVarId)
+    let (hFVarId', mvarId) ← intro1P mvarId
+    let mvarId ← clear mvarId hFVarId
+    substCore mvarId hFVarId' (symm := symm) (tryToSkip := true) (fvarSubst := fvarSubst)
+  let rhs' ← whnf rhs
+  if rhs'.isFVar then
+    if rhs != rhs' then
+      substReduced (← mkEq lhs rhs') true
+    else
+      substCore mvarId hFVarId (symm := true) (tryToSkip := true) (fvarSubst := fvarSubst)
+  else
+    let lhs' ← whnf lhs
+    if lhs'.isFVar then
+      if lhs != lhs' then
+        substReduced (← mkEq lhs' rhs) false
+      else
+        substCore mvarId hFVarId (symm := false) (tryToSkip := true) (fvarSubst := fvarSubst)
+    else error ()
+
 mutual
 
 /-- This will match a pattern `pat` against a local hypothesis `e`.
@@ -271,7 +298,7 @@ partial def rcasesCore (g : MVarId) (fs : FVarSubst) (clears : Array FVarId) (e 
     pure e
   match pat with
   | RCasesPatt.one _ `rfl => do
-    let (fs, g) ← substCore g (← translate e).fvarId! (fvarSubst := fs)
+    let (fs, g) ← subst' g (← translate e).fvarId! fs
     cont g fs clears a
   | RCasesPatt.one _ _ => cont g fs clears a
   | RCasesPatt.clear _ => cont g fs (clears.push e) a

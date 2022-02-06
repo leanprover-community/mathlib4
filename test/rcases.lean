@@ -33,6 +33,22 @@ example (x y : Nat) (h : x = y) : True := by
   · guard_hyp z : Nat
     guard_hyp h : Nat.succ (Nat.succ z) = y; trivial
 
+example (h : x = 3) (h₂ : x < 4) : x < 4 := by
+  rcases h with ⟨⟩
+  guard_hyp h₂ : 3 < 4; guard_target == 3 < 4; exact h₂
+
+example (h : x = 3) (h₂ : x < 4) : x < 4 := by
+  rcases h with rfl
+  guard_hyp h₂ : 3 < 4; guard_target == 3 < 4; exact h₂
+
+example (h : 3 = x) (h₂ : x < 4) : x < 4 := by
+  rcases h with ⟨⟩
+  guard_hyp h₂ : 3 < 4; guard_target == 3 < 4; exact h₂
+
+example (h : 3 = x) (h₂ : x < 4) : x < 4 := by
+  rcases h with rfl
+  guard_hyp h₂ : 3 < 4; guard_target == 3 < 4; exact h₂
+
 example (s : α ⊕ Empty) : True := by
   rcases s with s|⟨⟨⟩⟩
   guard_hyp s : α; trivial
