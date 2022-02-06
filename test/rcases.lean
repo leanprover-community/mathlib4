@@ -87,20 +87,22 @@ example (n : Nat) : True := by
   obtain one_lt_n | (n_le_one : n + 1 ≤ 1) := Nat.lt_or_ge 1 (n + 1)
   {trivial}; trivial
 
--- TODO(Mario): clear dependent
+open Lean Elab Tactic in
+elab "checkNumHyps " n:num : tactic => liftMetaMAtMain fun g => do
+  -- +1 because the _example recursion decl is in the list
+  guard $ (← getLCtx).foldl (fun i d => i+1) 0 = n.toNat + 1
+
 example (h : ∃ x : Nat, x = x ∧ 1 = 1) : True := by
   rcases h with ⟨-, _⟩
-  -- (do lc ← tactic.local_context, guard lc.empty)
+  checkNumHyps 0
   trivial
 
 example (h : ∃ x : Nat, x = x ∧ 1 = 1) : True := by
   rcases h with ⟨-, _, h⟩
-  -- (do lc ← tactic.local_context, guard (lc.length = 1)),
+  checkNumHyps 1
   guard_hyp h : 1 = 1
   trivial
 
 example (h : True ∨ True ∨ True) : True := by
   rcases h with - | - | -
-  iterate 3
-    -- (do lc ← tactic.local_context, guard lc.empty)
-    · trivial
+  iterate 3 · checkNumHyps 0; trivial

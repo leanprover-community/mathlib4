@@ -326,13 +326,22 @@ partial def rcasesContinue (g : MVarId) (fs : FVarSubst) (clears : Array FVarId)
 
 end
 
+/-- Like `tryClearMany`, but also clears dependent hypotheses if possible -/
+def tryClearMany' (mvarId : MVarId) (fvarIds : Array FVarId) : MetaM MVarId := do
+  let mctx ← getMCtx
+  let toErase := (← getMVarDecl mvarId).lctx.foldl (init := fvarIds) fun toErase localDecl =>
+    if mctx.findLocalDeclDependsOn localDecl toErase.contains then
+      toErase.push localDecl.fvarId
+    else toErase
+  tryClearMany mvarId toErase
+
 /-- The terminating contiunation used in `rcasesCore` and `rcasesContinue`. We specialize the type
 `α` to `Array MVarId` to collect the list of goals, and given the list of `clears`, it attempts to
 clear them from the goal and adds the goal to the list. -/
 def finish (g : MVarId) (fs : FVarSubst) (clears : Array FVarId)
   (gs : Array MVarId) : TermElabM (Array MVarId) := do
   let cs : Array Expr := (clears.map fs.get).filter Expr.isFVar
-  gs.push <$> tryClearMany g (cs.map Expr.fvarId!)
+  gs.push <$> tryClearMany' g (cs.map Expr.fvarId!)
 
 open Elab
 
