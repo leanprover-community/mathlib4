@@ -19,8 +19,7 @@ open Lean Elab Elab.Tactic
 See also `Tactic.pick_goal`, which moves the `n`-th goal to the front.
 -/
 syntax (name := rotate_goals) "rotate_goals " "-"? (num)? : tactic
-@[tactic rotate_goals] def evalRotateGoals : Tactic := fun stx => do
-match stx with
+elab_rules : tactic
   | `(tactic|rotate_goals)     => setGoals $ (← getGoals).rotateLeft 1
   | `(tactic|rotate_goals -)   => setGoals $ (← getGoals).rotateRight 1
   | `(tactic|rotate_goals $n)  => setGoals $ (← getGoals).rotateLeft n.toNat
@@ -42,21 +41,12 @@ private def roundTripNth (n : ℕ) (reverse : Bool) : TacticM (ℕ × List MVarI
 
 See also `Tactic.rotate_goals`, which moves goals from the front to the back and vice-versa.
 -/
-syntax (name := pick_goal) "pick_goal " "-"? num : tactic
-@[tactic pick_goal] def evalPickGoal : Tactic := fun stx => do
-match stx with
-  | `(tactic|pick_goal $n)  => pick_goal n.toNat false
-  | `(tactic|pick_goal -$n) => pick_goal n.toNat true
-  | _ => throwUnsupportedSyntax
-where
-  pick_goal (n : ℕ) (reverse : Bool) : TacticM Unit := do
-    let (nth, goals) ← roundTripNth n reverse
-    match nth with
-      | 0 => throwError "goals are 1-indexed"
-      | n' + 1 =>
-        match goals.splitAt n' with
-          | (_, []) => throwError "not enough goals"
-          | (gls, g :: grs) => setGoals $ g :: (gls ++ grs)
+elab "pick_goal " reverse:"-"? n:num : tactic => do
+  let n := n.toNat
+  let reverse := !reverse.isNone
+    let (n' + 1, goals) ← roundTripNth n reverse | throwError "goals are 1-indexed"
+        let (gls, g :: grs) := goals.splitAt n' | throwError "not enough goals"
+        setGoals $ g :: (gls ++ grs)
 
 /-- `swap` is a shortcut for `pick_goal 2`, which interchanges the 1st and 2nd goals. -/
 macro "swap" : tactic => `(pick_goal 2)
