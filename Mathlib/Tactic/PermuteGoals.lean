@@ -57,7 +57,12 @@ elab "pick_goal " reverse:"-"? n:num : tactic => do
 /-- `swap` is a shortcut for `pick_goal 2`, which interchanges the 1st and 2nd goals. -/
 macro "swap" : tactic => `(pick_goal 2)
 
-/-- Applies a sequence of tactics on the chosen goal, replacing it by resulting subgoals. -/
+/--
+Applies a sequence of tactics on a goal, replacing it by the resulting subgoals.
+
+The target goal is chosen by passing an index (starting from 1). If `reverse` is
+passed as `true`, the counting is done backwards.
+-/
 def onGoal (n : ℕ) (seq : Syntax) (reverse : Bool := false) : TacticM Unit := do
   let (g, gl, gr) ← splitGoalsAndGetNth n reverse
   setGoals [g]
