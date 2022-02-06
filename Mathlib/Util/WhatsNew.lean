@@ -59,7 +59,7 @@ private def printInduct (id : Name) (levelParams : List Name) (numParams : Nat) 
   for ctor in ctors do
     let cinfo ← getConstInfo ctor
     m := m ++ Format.line ++ ctor ++ " : " ++ cinfo.type
-  m
+  pure m
 
 private def printIdCore (id : Name) : ConstantInfo → CoreM MessageData
   | ConstantInfo.axiomInfo { levelParams := us, type := t, isUnsafe := u, .. } =>
@@ -82,12 +82,12 @@ private def printIdCore (id : Name) : ConstantInfo → CoreM MessageData
 def diffExtension (old new : Environment)
     (ext : PersistentEnvExtension EnvExtensionEntry EnvExtensionEntry EnvExtensionState) :
     CoreM (Option MessageData) := unsafe do
-  let oldSt ← ext.toEnvExtension.getState old
-  let newSt ← ext.toEnvExtension.getState new
+  let oldSt := ext.toEnvExtension.getState old
+  let newSt := ext.toEnvExtension.getState new
   if ptrAddrUnsafe oldSt == ptrAddrUnsafe newSt then return none
-  let oldEntries ← ext.exportEntriesFn oldSt.state
-  let newEntries ← ext.exportEntriesFn newSt.state
-  m!"-- {ext.name} extension: {(newEntries.size - oldEntries.size : Int)} new entries"
+  let oldEntries := ext.exportEntriesFn oldSt.state
+  let newEntries := ext.exportEntriesFn newSt.state
+  pure m!"-- {ext.name} extension: {(newEntries.size - oldEntries.size : Int)} new entries"
 
 def whatsNew (old new : Environment) : CoreM MessageData := do
   let mut diffs := #[]
@@ -100,9 +100,9 @@ def whatsNew (old new : Environment) : CoreM MessageData := do
     if let some diff := ← diffExtension old new ext then
       diffs := diffs.push diff
 
-  if diffs.isEmpty then "no new constants" else
+  if diffs.isEmpty then return "no new constants"
 
-  MessageData.joinSep diffs.toList "\n\n"
+  pure $ MessageData.joinSep diffs.toList "\n\n"
 
 /-- `whatsnew in $command` executes the command and then prints the
 declarations that were added to the environment. -/

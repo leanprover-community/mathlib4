@@ -33,7 +33,7 @@ def elabOpenPrivateLike (ids : Array Syntax) (tgts mods : Option (Array Syntax))
     let n ← resolveGlobalConstNoOverload tgt
     names ← Meta.collectPrivateIn n names
   for mod in mods.getD #[] do
-    let some modIdx ← (← getEnv).moduleIdxForModule? mod.getId
+    let some modIdx := (← getEnv).moduleIdxForModule? mod.getId
       | throwError "unknown module {mod}"
     for declName in (← getEnv).declsInModuleIdx modIdx do
       if isPrivateName declName then
@@ -82,7 +82,7 @@ It is also possible to specify the module instead with
 -/
 @[commandElab openPrivate] def elabOpenPrivate : CommandElab
 | `(open private $ids* $[in $tgts*]? $[from $mods*]?) =>
-  elabOpenPrivateLike ids tgts mods fun c _ _ => c
+  elabOpenPrivateLike ids tgts mods fun c _ _ => pure c
 | _ => throwUnsupportedSyntax
 
 syntax (name := exportPrivate) "export private" ident* ("in" ident*)? ("from" ident*)? : command
@@ -114,7 +114,7 @@ It is also possible to specify the module instead with
     }
     addDecl decl
     compileDecl decl
-    name
+    pure name
 | _ => throwUnsupportedSyntax
 
 end Elab.Command

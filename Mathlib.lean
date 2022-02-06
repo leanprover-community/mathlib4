@@ -76,6 +76,7 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.RunTac
 import Mathlib.Tactic.ShowTerm
+import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread

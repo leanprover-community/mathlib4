@@ -27,8 +27,8 @@ namespace Lean
 namespace Parser.Command
 open Mathlib.ExtendedBinder
 
-elab (name := include) "include " ident+ : command => ()
-elab (name := omit) "omit " ident+ : command => ()
+elab (name := include) "include " ident+ : command => pure ()
+elab (name := omit) "omit " ident+ : command => pure ()
 syntax (name := parameter) "parameter " bracketedBinder+ : command
 
 /--
@@ -43,7 +43,7 @@ syntax "expandBinders% " "(" ident " => " term ")" extBinders ", " term : term
 macro_rules
   | `(expandBinders% ($x => $term) $y:extBinder, $res) =>
     `(expandBinders% ($x => $term) ($y:extBinder), $res)
-  | `(expandBinders% ($x => $term), $res) => res
+  | `(expandBinders% ($x => $term), $res) => pure res
 macro_rules
   | `(expandBinders% ($x => $term) ($y:ident $[: $ty]?) $binders*, $res) => do
     let ty := ty.getD (← `(_))
@@ -76,16 +76,16 @@ macro ak:Term.attrKind "notation3"
         let scopedId := item[1][0][3]
         let scopedTerm := item[1][0][5]
         let scopedTerm ← scopedTerm.replaceM fun
-          | Syntax.ident _ _ id .. => boundNames.find? id
-          | _ => none
+          | Syntax.ident _ _ id .. => pure $ boundNames.find? id
+          | _ => pure none
         boundNames := boundNames.insert id <|
           ← `(expandBinders% ($scopedId:ident => $scopedTerm:term) $$binders:extBinders,
             $(lit.mkAntiquotNode))
       else
         boundNames := boundNames.insert id <| lit.mkAntiquotNode
   let val ← val.replaceM fun
-    | Syntax.ident _ _ id .. => boundNames.find? id
-    | _ => none
+    | Syntax.ident _ _ id .. => pure $ boundNames.find? id
+    | _ => pure none
   `($ak:attrKind macro $[$(prec.getOptional?):precedence]? $[$(name.getOptional?):namedName]?
       $[$(prio.getOptional?):namedPrio]? $[$macroArgs:macroArg]* : term => do
     `($val:term))
@@ -319,8 +319,6 @@ syntax (name := contrapose!) "contrapose!" (ppSpace ident (" with " ident)?)? : 
 syntax (name := renameVar) "rename_var " ident " → " ident (ppSpace location)? : tactic
 
 syntax (name := assocRw) "assoc_rw " rwRuleSeq (ppSpace location)? : tactic
-
-syntax (name := simpRw) "simp_rw " rwRuleSeq (ppSpace location)? : tactic
 
 syntax (name := dsimpResult) "dsimp_result " (&"only ")? ("[" Tactic.simpArg,* "]")?
   (" with " ident+)? " => " tacticSeq : tactic

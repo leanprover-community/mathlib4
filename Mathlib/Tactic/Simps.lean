@@ -52,6 +52,6 @@ initialize simpsAttr : ParametricAttribute (Array Name) ←
     getParam := fun decl stx =>
       match stx with
         -- TODO implement support for `config := ...`
-        | `(attr|simps $[$ids]*) => ids.mapM (·.getId.eraseMacroScopes)
+        | `(attr|simps $[$ids]*) => pure $ ids.map (·.getId.eraseMacroScopes)
         | _ => throwError "unexpected simps syntax {stx}"
   }

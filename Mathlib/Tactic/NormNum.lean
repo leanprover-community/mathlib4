@@ -75,19 +75,19 @@ partial def evalIsNat (u : Level) (α sα e : Expr) : MetaM (Expr × Expr) := do
   | (``HMul.hMul, #[_, _, _, _, a, b]) => evalBinOp ``NormNum.isNat_mul (·*·) a b
   | (``HPow.hPow, #[_, _, _, _, a, b]) => evalPow ``NormNum.isNat_pow (·^·) a b
   | (``OfNat.ofNat, #[_, ln, inst]) =>
-    let some n ← ln.natLit? | throwError "fail"
+    let some n := ln.natLit? | throwError "fail"
     let lawful ← synthInstance (mkApp4 (mkConst ``LawfulOfNat [u]) α sα ln inst)
-    (ln, mkApp5 (mkConst ``LawfulOfNat.isNat_ofNat [u]) α sα ln inst lawful)
+    pure (ln, mkApp5 (mkConst ``LawfulOfNat.isNat_ofNat [u]) α sα ln inst lawful)
   | (``Zero.zero, #[_, inst]) =>
     let lawful ← synthInstance (mkApp3 (mkConst ``LawfulZero [u]) α sα inst)
-    (mkNatLit 0, mkApp4 (mkConst ``LawfulZero.isNat_zero [u]) α sα inst lawful)
+    pure (mkNatLit 0, mkApp4 (mkConst ``LawfulZero.isNat_zero [u]) α sα inst lawful)
   | (``One.one, #[_, inst]) =>
     let lawful ← synthInstance (mkApp3 (mkConst ``LawfulOne [u]) α sα inst)
-    (mkNatLit 1, mkApp4 (mkConst ``LawfulOne.isNat_one [u]) α sα inst lawful)
+    pure (mkNatLit 1, mkApp4 (mkConst ``LawfulOne.isNat_one [u]) α sα inst lawful)
   | _ =>
-    if e.isNatLit then (e, mkApp (mkConst ``isNat_rawNat) e)
-    else throwError "fail"
-  (n, mkApp2 (mkConst ``id [levelZero]) (mkApp4 (mkConst ``isNat [u]) α sα e n) p)
+    unless e.isNatLit do throwError "fail"
+    pure (e, mkApp (mkConst ``isNat_rawNat) e)
+  pure (n, mkApp2 (mkConst ``id [levelZero]) (mkApp4 (mkConst ``isNat [u]) α sα e n) p)
 where
   evalBinOp (name : Name) (f : Nat → Nat → Nat) (a b : Expr) : MetaM (Expr × Expr) := do
     let (la, pa) ← evalIsNat u α sα a
@@ -96,7 +96,7 @@ where
     let b' := lb.natLit!
     let c' := f a' b'
     let lc := mkRawNatLit c'
-    (lc, mkApp10 (mkConst name [u]) α sα a b la lb lc pa pb (← mkEqRefl lc))
+    pure (lc, mkApp10 (mkConst name [u]) α sα a b la lb lc pa pb (← mkEqRefl lc))
   evalPow (name : Name) (f : Nat → Nat → Nat) (a b : Expr) : MetaM (Expr × Expr) := do
     let (la, pa) ← evalIsNat u α sα a
     let (lb, pb) ← evalIsNat levelZero (mkConst ``Nat) (mkConst ``instSemiringNat) b
@@ -104,7 +104,7 @@ where
     let b' := lb.natLit!
     let c' := f a' b'
     let lc := mkRawNatLit c'
-    (lc, mkApp10 (mkConst name [u]) α sα a b la lb lc pa pb (← mkEqRefl lc))
+    pure (lc, mkApp10 (mkConst name [u]) α sα a b la lb lc pa pb (← mkEqRefl lc))
 
 theorem eval_of_isNat {α} [Semiring α] (n) [OfNat α n] [LawfulOfNat α n] :
   (a : α) → isNat a n → a = OfNat.ofNat n
@@ -117,8 +117,8 @@ def eval (e : Expr) : MetaM (Expr × Expr) := do
   let (ln, p) ← evalIsNat u α sα e
   let ofNatInst ← synthInstance (mkApp2 (mkConst ``OfNat [u]) α ln)
   let lawfulInst ← synthInstance (mkApp4 (mkConst ``LawfulOfNat [u]) α sα ln ofNatInst)
-  (mkApp3 (mkConst ``OfNat.ofNat [u]) α ln ofNatInst,
-   mkApp7 (mkConst ``eval_of_isNat [u]) α sα ln ofNatInst lawfulInst e p)
+  pure (mkApp3 (mkConst ``OfNat.ofNat [u]) α ln ofNatInst,
+    mkApp7 (mkConst ``eval_of_isNat [u]) α sα ln ofNatInst lawfulInst e p)
 
 theorem eval_eq_of_isNat {α} [Semiring α] :
   (a b : α) → (n : ℕ) → isNat a n → isNat b n → a = b
@@ -130,7 +130,7 @@ def evalEq (α a b : Expr) : MetaM Expr := do
   let (ln, pa) ← evalIsNat u α sα a
   let (ln', pb) ← evalIsNat u α sα b
   guard (ln.natLit! == ln'.natLit!)
-  mkApp7 (mkConst ``eval_eq_of_isNat [u]) α sα a b ln pa pb
+  pure $ mkApp7 (mkConst ``eval_eq_of_isNat [u]) α sα a b ln pa pb
 
 end NormNum
 end Meta

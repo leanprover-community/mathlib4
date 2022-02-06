@@ -50,7 +50,7 @@ syntax extBinders := extBinder <|> extBinderCollection
 
 syntax "∃ᵉ " extBinders ", " term : term
 macro_rules
-  | `(∃ᵉ, $b) => b
+  | `(∃ᵉ, $b) => pure b
   | `(∃ᵉ ($p:extBinder) $[($ps:extBinder)]*, $b) =>
     `(∃ᵉ $p:extBinder, ∃ᵉ $[($ps:extBinder)]*, $b)
 macro_rules -- TODO: merging the two macro_rules breaks expansion
@@ -60,7 +60,7 @@ macro_rules -- TODO: merging the two macro_rules breaks expansion
 
 syntax "∀ᵉ " extBinders ", " term : term
 macro_rules
-  | `(∀ᵉ, $b) => b
+  | `(∀ᵉ, $b) => pure b
   | `(∀ᵉ ($p:extBinder) $[($ps:extBinder)]*, $b) =>
     `(∀ᵉ $p:extBinder, ∀ᵉ $[($ps:extBinder)]*, $b)
 macro_rules -- TODO: merging the two macro_rules breaks expansion
