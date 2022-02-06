@@ -38,7 +38,7 @@ def forIn.loop [Monad m] (f : UInt8 → β → m (ForInStep β))
     match ← f (arr.get! i) b with
     | ForInStep.done b => pure b
     | ForInStep.yield b => have := Nat.Up.next h; loop f arr off _end (i+1) b
-  else b
+  else pure b
 termination_by _ => _end - i
 
 instance : ForIn m ByteSlice UInt8 :=

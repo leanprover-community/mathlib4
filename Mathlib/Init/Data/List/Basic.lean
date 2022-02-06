@@ -83,7 +83,7 @@ def mapIdx (f : Nat → α → β) (as : List α) : List β :=
 def mapIdxM {m : Type v → Type w} [Applicative m] (as : List α) (f : Nat → α → m β) :
   m (List β) :=
   let rec loop : Nat → List α → m (List β)
-  | _,  [] => []
+  | _,  [] => pure []
   | n, a :: as => List.cons <$> f n a <*> loop (n + 1) as
   loop 0 as
 

@@ -36,17 +36,17 @@ elab "delta% " t:term : term <= expectedType => do
   synthesizeSyntheticMVars
   let t ← instantiateMVars t
   let some t ← delta? t | throwError "cannot delta reduce {t}"
-  t
+  pure t
 
 /- `eta_helper f = (· + 3)` elabs to `∀ x, f x = x + 3` -/
 local elab "eta_helper " t:term : term => do
   let t ← elabTerm t none
-  let some (_, lhs, rhs) ← t.eq? | throwError "not an equation: {t}"
+  let some (_, lhs, rhs) := t.eq? | throwError "not an equation: {t}"
   synthesizeSyntheticMVars
   let rhs ← instantiateMVars rhs
   lambdaLetTelescope rhs fun xs rhs => do
-    let lhs := (← mkAppN lhs xs).headBeta
-    mkForallFVars xs <|<- mkEq lhs rhs
+    let lhs := (mkAppN lhs xs).headBeta
+    mkForallFVars xs <|← mkEq lhs rhs
 
 /-- `value_proj x` elabs to `@x.value` -/
 local elab "value_proj " e:term : term => do
@@ -73,7 +73,7 @@ a theorem `foo_def : foo = 42`.
 -/
 macro mods:declModifiers "irreducible_def" n_id:declId declSig:optDeclSig val:declVal : command => do
   let (n, us) ← match n_id with
-    | `(Parser.Command.declId| $n:ident $[.{$us,*}]?) => (n, us)
+    | `(Parser.Command.declId| $n:ident $[.{$us,*}]?) => pure (n, us)
     | _ => Macro.throwUnsupported
   let us' := us.getD (Syntax.SepArray.ofElems #[])
   let n_def := mkIdent <| (·.review) <|

@@ -40,7 +40,7 @@ def RingM.run (ty : Expr) (m : RingM α) : MetaM α := do
 
 def mkAppCS (f : Name) (args : Array Expr) : RingM Expr := do
   let c ← read
-  mkAppN (mkConst f [c.univ]) (#[c.α, c.cs] ++ args)
+  pure $ mkAppN (mkConst f [c.univ]) (#[c.α, c.cs] ++ args)
 
 /-- Get the index corresponding to an atomic expression, if it has already been encountered, or
 put it in the list of atoms and return the new index, otherwise. -/
@@ -103,14 +103,14 @@ def isZero : HornerExpr → Bool
 
 /-- Construct a `xadd` node -/
 def xadd' (a : HornerExpr) (x : Expr × ℕ) (n : Expr × ℕ) (b : HornerExpr) : RingM HornerExpr := do
-  xadd (← mkAppCS ``horner #[a, x.1, n.1, b]) a x n b
+  pure $ xadd (← mkAppCS ``horner #[a, x.1, n.1, b]) a x n b
 
 /-- Reflexivity conversion for a `HornerExpr`. -/
-def reflConv (e : HornerExpr) : RingM (HornerExpr × Expr) := do (e, ← mkEqRefl e)
+def reflConv (e : HornerExpr) : RingM (HornerExpr × Expr) := do pure (e, ← mkEqRefl e)
 
 /-- Pretty printer for `horner_expr`. -/
 def pp : HornerExpr → MetaM Format
-| (const e c) => toString c
+| (const e c) => pure $ toString c
 | (xadd e a x (_, n) b) => do
   let pa ← a.pp
   let pb ← b.pp
@@ -138,7 +138,7 @@ def evalHorner : HornerExpr → Expr × ℕ → Expr × ℕ → HornerExpr → R
   else (← xadd' ha x n b).reflConv
 | ha@(xadd a a₁ x₁ n₁ b₁), x, n, b => do
   if x₁.2 = x.2 ∧ b₁.e.numeral? = some 0 then do
-    let n' ← mkRawNatLit (n₁.2 + n.2)
+    let n' := mkRawNatLit (n₁.2 + n.2)
     let h ← mkEqRefl n'
     return (← xadd' a₁ x (n', n₁.2 + n.2) b,
       ← mkAppCS ``horner_horner #[a₁, x.1, n₁.1, n.1, b, n', h])
@@ -179,7 +179,7 @@ by
 partial def evalAdd : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
 | (const e₁ c₁), (const e₂ c₂) => do
   let (e', p) ← NormNum.eval $ ← mkAdd e₁ e₂
-  (const e' (c₁ + c₂), p)
+  pure (const e' (c₁ + c₂), p)
 | he₁@(const e₁ c₁), he₂@(xadd e₂ a x n b) => do
 
   if c₁ = 0 then
@@ -209,7 +209,7 @@ partial def evalAdd : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
       ← mkAppCS ``const_add_horner #[e₁, a₂, x₂.1, n₂.1, b₂, b', h])
   else if n₁.2 < n₂.2 then do
     let k := n₂.2 - n₁.2
-    let ek ← mkRawNatLit k
+    let ek := mkRawNatLit k
     let h₁ ← mkEqRefl n₂.1
     let c ← read
     let α0 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]
@@ -219,7 +219,7 @@ partial def evalAdd : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
       ← mkAppCS ``horner_add_horner_lt #[a₁, x₁.1, n₁.1, b₁, a₂, n₂.1, b₂, ek, a', b', h₁, h₂, h₃])
   else if n₁.2 ≠ n₂.2 then do
     let k := n₁.2 - n₂.2
-    let ek ← mkRawNatLit k
+    let ek := mkRawNatLit k
     let h₁ ← mkEqRefl n₁.1
     let α0 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]
     let (a', h₂) ← evalAdd (← xadd' a₁ x₁ (ek, k) (const α0 0)) a₂
@@ -334,27 +334,27 @@ partial def evalPow : HornerExpr → Expr × ℕ → RingM (HornerExpr × Expr)
 | e, (_, 0) => do
   let α1 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 1, none]
   let p ← mkAppM ``pow_zero #[e]
-  (const α1 1, p)
+  pure (const α1 1, p)
 | e, (_, 1) => do
   let p ← mkAppM ``pow_one #[e]
-  (e, p)
+  pure (e, p)
 | const e coeff, (e₂, m) => do
   let (e', p) ← NormNum.eval $ ← mkAppM ``HPow.hPow #[e, e₂]
-  (const e' (coeff ^ m), p)
+  pure (const e' (coeff ^ m), p)
 | he@(xadd e a x n b), m =>
   match b.e.numeral? with
   | some 0 => do
-    let n' ← mkRawNatLit (n.2 * m.2)
+    let n' := mkRawNatLit (n.2 * m.2)
     let h₁ ← mkEqRefl n'
     let (a', h₂) ← evalPow a m
     let α0 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]
-    (← xadd' a' x (n', n.2 * m.2) (const α0 0),
+    pure (← xadd' a' x (n', n.2 * m.2) (const α0 0),
       ← mkAppCS ``horner_pow #[a, x.1, n.1, m.1, n', a', h₁, h₂])
   | _ => do
-    let e₂ ← mkRawNatLit (m.2 - 1)
+    let e₂ := mkRawNatLit (m.2 - 1)
     let (tl, hl) ← evalPow he (e₂, m.2-1)
     let (t, p₂) ← evalMul tl he
-    (t, ← mkAppCS ``pow_succ_eq #[e, e₂, tl, t, hl, p₂])
+    pure (t, ← mkAppCS ``pow_succ_eq #[e, e₂, tl, t, hl, p₂])
 
 
 theorem horner_atom {α} [CommSemiring α] (x : α) : x = horner 1 x 1 0 := by
@@ -363,9 +363,9 @@ theorem horner_atom {α} [CommSemiring α] (x : α) : x = horner 1 x 1 0 := by
 /-- Evaluate `a` where `a` is an atom. -/
 def evalAtom (e : Expr) : RingM (HornerExpr × Expr) := do
   let i ← addAtom e
-  let zero ← const (← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]) 0
-  let one ← const (← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 1, none]) 1
-  (← xadd' one (e,i) (mkRawNatLit 1,1) zero, ← mkAppCS ``horner_atom #[e])
+  let zero := const (← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]) 0
+  let one := const (← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 1, none]) 1
+  pure (← xadd' one (e,i) (mkRawNatLit 1,1) zero, ← mkAppCS ``horner_atom #[e])
 
 theorem subst_into_add {α} [Add α] (l r tl tr t)
   (prl : (l : α) = tl) (prr : r = tr) (prt : tl + tr = t) : l + r = t :=
@@ -386,7 +386,7 @@ partial def eval (e : Expr) : RingM (HornerExpr × Expr) :=
     let (e₂', p₂) ← eval e₂
     let (e', p') ← evalAdd e₁' e₂'
     let p ← mkAppM ``subst_into_add #[e₁, e₂, e₁', e₂', e', p₁, p₂, p']
-    (e',p)
+    pure (e', p)
   | (``HMul.hMul, #[_,_,_,_,e₁,e₂]) => do
     let (e₁', p₁) ← eval e₁
     let (e₂', p₂) ← eval e₂
@@ -395,7 +395,7 @@ partial def eval (e : Expr) : RingM (HornerExpr × Expr) :=
     return (e', p)
   | (``HPow.hPow, #[_,_,_,P,e₁,e₂]) => do
     -- let (e₂', p₂) ← lift $ norm_num.derive e₂ <|> refl_conv e₂,
-    let (e₂', p₂) ← (e₂, ← mkEqRefl e₂)
+    let (e₂', p₂) := (e₂, ← mkEqRefl e₂)
     match e₂'.numeral?, P.getAppFn with
     | some k, Expr.const ``Monoid.HPow _ _ => do
       let (e₁', p₁) ← eval e₁
@@ -411,7 +411,7 @@ partial def eval (e : Expr) : RingM (HornerExpr × Expr) :=
 elab "ring" : tactic => liftMetaMAtMain fun g => do
   match (← instantiateMVars (← getMVarDecl g).type).getAppFnArgs with
   | (`Eq, #[ty, e₁, e₂]) =>
-    let ((e₁', p₁), (e₂', p₂)) ← RingM.run ty $ do (← eval e₁, ← eval e₂)
+    let ((e₁', p₁), (e₂', p₂)) ← RingM.run ty $ do pure (← eval e₁, ← eval e₂)
     if ← isDefEq e₁' e₂' then
       assignExprMVar g (← mkEqTrans p₁ (← mkEqSymm p₂))
     else
