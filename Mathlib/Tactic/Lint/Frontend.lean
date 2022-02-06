@@ -72,10 +72,10 @@ If `useOnly` is true, it only uses the linters in `extra`.
 Otherwise, it uses all linters in the environment tagged with `@[linter]`.
 If `slow` is false, it only uses the fast default tests. -/
 def getChecks (slow : Bool) (extra : List Name) (useOnly : Bool) : CoreM (List NamedLinter) := do
-  let default ← if useOnly then [] else
-    getLinters (← mathlibLinterAttr.getDecls (← getEnv)).toList
+  let default ← if useOnly then pure [] else
+    getLinters (mathlibLinterAttr.getDecls (← getEnv)).toList
   let default := if slow then default else default.filter (·.isFast)
-  default ++ (← getLinters extra)
+  pure $ default ++ (← getLinters extra)
 
 def lintCore (decls : Array Name) (linters : Array NamedLinter) :
     CoreM (Array (NamedLinter × HashMap Name MessageData)) := do
@@ -85,19 +85,19 @@ def lintCore (decls : Array Name) (linters : Array NamedLinter) :
   let tasks : Array (NamedLinter × Array (Name × Task (Option MessageData))) ←
     linters.mapM fun linter => do
       let decls ← decls.filterM (shouldBeLinted linter.name)
-      (linter, ·) <|<- decls.mapM fun decl => do (decl, ·) <|<- do
+      (linter, ·) <$> decls.mapM fun decl => do (decl, ·) <$> do
         BaseIO.asTask do
           match ← withCurrHeartbeats (linter.test decl)
               |>.run'.run' {options} {env} |>.toBaseIO with
-          | Except.ok msg? => msg?
-          | Except.error err => m!"LINTER FAILED:\n{err.toMessageData}"
+          | Except.ok msg? => pure msg?
+          | Except.error err => pure m!"LINTER FAILED:\n{err.toMessageData}"
 
   tasks.mapM fun (linter, decls) => do
     let mut msgs : HashMap Name MessageData := {}
     for (declName, msg?) in decls do
       if let some msg := msg?.get then
         msgs := msgs.insert declName msg
-    (linter, msgs)
+    pure (linter, msgs)
 
 /-- Sorts a map with declaration keys as names by line number. -/
 def sortResults {α} [Inhabited α] (results : HashMap Name α) : CoreM <| Array (Name × α) := do
@@ -105,15 +105,15 @@ def sortResults {α} [Inhabited α] (results : HashMap Name α) : CoreM <| Array
   for (n, _) in results.toArray do
     if let some range ← findDeclarationRanges? n then
       key := key.insert n <| range.range.pos.line
-  results.toArray.qsort fun (a, _) (b, _) => key.findD a 0 < key.findD b 0
+  pure $ results.toArray.qsort fun (a, _) (b, _) => key.findD a 0 < key.findD b 0
 
 /-- Formats a linter warning as `#check` command with comment. -/
 def printWarning (declName : Name) (warning : MessageData) : CoreM MessageData := do
-  m!"#check @{← mkConstWithLevelParams declName} /- {warning} -/"
+  pure m!"#check @{← mkConstWithLevelParams declName} /- {warning} -/"
 
 /-- Formats a map of linter warnings using `print_warning`, sorted by line number. -/
 def printWarnings (results : HashMap Name MessageData) : CoreM MessageData := do
-  (MessageData.joinSep ·.toList Format.line) <|<-
+  (MessageData.joinSep ·.toList Format.line) <$>
     (← sortResults results).mapM fun (declName, warning) => printWarning declName warning
 
 /--
@@ -127,9 +127,9 @@ def groupedByFilename (results : HashMap Name MessageData) : CoreM MessageData :
     let mod := mod.getD (← getEnv).mainModule
     grouped := grouped.insert mod <| grouped.findD mod {} |>.insert declName msg
   let grouped' := grouped.toArray.qsort fun (a, _) (b, _) => toString a < toString b
-  (MessageData.joinSep · (Format.line ++ Format.line)) <|<-
+  (MessageData.joinSep · (Format.line ++ Format.line)) <$>
     grouped'.toList.mapM fun (mod, msgs) => do
-      m!"-- {mod}\n{← printWarnings msgs}"
+      pure m!"-- {mod}\n{← printWarnings msgs}"
 
 /--
 Formats the linter results as Lean code with comments and `#print` commands.
@@ -148,11 +148,11 @@ def formatLinterResults
           groupedByFilename results
         else
           printWarnings results
-      some m!"/- The `{linter.name}` linter reports:\n{linter.errorsFound} -/\n{warnings}\n"
+      pure $ some m!"/- The `{linter.name}` linter reports:\n{linter.errorsFound} -/\n{warnings}\n"
     else if verbose = LintVerbosity.high then
-      some m!"/- OK: {linter.noErrorsFound} -/"
+      pure $ some m!"/- OK: {linter.noErrorsFound} -/"
     else
-      none
+      pure none
   let mut s := MessageData.joinSep formattedResults.toList Format.line
   let numAutoDecls := (← decls.filterM isAutoDecl).size
   let failed := results.map (·.2.size) |>.foldl (·+·) 0
@@ -162,13 +162,13 @@ def formatLinterResults
       numAutoDecls} automatically generated ones) {whereDesc
       } with {numLinters} linters\n\n{s}"
   unless runSlowLinters do s := m!"{s}-- (slow linters skipped)\n"
-  s
+  pure s
 
 def getDeclsInCurrModule : CoreM (Array Name) := do
-  (← getEnv).constants.map₂.toList.toArray.map (·.1)
+  pure $ (← getEnv).constants.map₂.toList.toArray.map (·.1)
 
 def getAllDecls : CoreM (Array Name) := do
-  (← getDeclsInCurrModule) ++
+  pure $ (← getDeclsInCurrModule) ++
     (← getEnv).constants.map₁.toArray.map (·.1)
 
 def getDeclsInMathlib : CoreM (Array Name) := do
@@ -177,7 +177,7 @@ def getDeclsInMathlib : CoreM (Array Name) := do
   for (declName, moduleIdx) in (← getEnv).const2ModIdx.toArray do
     if mathlibModules[moduleIdx] then
       decls := decls.push declName
-  decls
+  pure decls
 
 open Elab Command in
 elab "#lint"
@@ -187,14 +187,14 @@ elab "#lint"
     only:(&"only")? linters:(ident)*
     : command => do
   let (decls, whereDesc, groupByFilename) ← match project.getOptional? with
-    | none => do (← liftCoreM getDeclsInCurrModule, "in the current file", false)
-    | some (Syntax.atom _ "mathlib") => do (← liftCoreM getDeclsInMathlib, "in mathlib", true)
-    | some (Syntax.atom _ "all") => do (← liftCoreM getAllDecls, "in all files", true)
+    | none => do pure (← liftCoreM getDeclsInCurrModule, "in the current file", false)
+    | some (Syntax.atom _ "mathlib") => do pure (← liftCoreM getDeclsInMathlib, "in mathlib", true)
+    | some (Syntax.atom _ "all") => do pure (← liftCoreM getAllDecls, "in all files", true)
     | _ => throwUnsupportedSyntax
   let verbosity : LintVerbosity ← match verbosity.getOptional? with
-    | none => LintVerbosity.medium
-    | some (Syntax.atom _ "+") => LintVerbosity.high
-    | some (Syntax.atom _ "-") => LintVerbosity.low
+    | none => pure LintVerbosity.medium
+    | some (Syntax.atom _ "+") => pure LintVerbosity.high
+    | some (Syntax.atom _ "-") => pure LintVerbosity.low
     | _ => throwUnsupportedSyntax
   let fast := fast.getOptional?.isSome
   let only := only.getOptional?.isSome
@@ -221,5 +221,6 @@ elab "#list_linters" : command => do
       then ns.push n else ns
   let linters ← ns.mapM fun n => do
     let b := mathlibLinterAttr.hasTag (← getEnv) n
-    toString (n.updatePrefix Name.anonymous) ++ if b then " (*)" else ""
-  logInfo m!"Available linters (linters marked with (*) are in the default lint set):\n{Format.joinSep linters.toList Format.line}"
+    pure $ toString (n.updatePrefix Name.anonymous) ++ if b then " (*)" else ""
+  logInfo m!"Available linters (linters marked with (*) are in the default lint set):\n{
+    Format.joinSep linters.toList Format.line}"

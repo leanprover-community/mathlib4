@@ -106,7 +106,7 @@ where
       if e.hasLooseBVars then
         intro1PStep
         introsDep
-    | _ => ()
+    | _ => pure ()
   intro1PStep : TacticM Unit :=
     liftMetaTactic fun mvarId => do
       let (_, mvarId) ← Meta.intro1P mvarId
@@ -137,7 +137,7 @@ up to alpha equality and definitional equality. -/
 elab (name := guardTargetStrict) "guard_target" " == " r:term : tactic => withMainContext do
   let r ← elabTerm r none
   let t ← getMainTarget
-  let t ← t.consumeMData
+  let t := t.consumeMData
   if not (r == t) then throwError m!"target of main goal is {t}, not {r}"
 
 syntax (name := guardHyp) "guard_hyp " ident
@@ -158,11 +158,11 @@ while `guardHyp h :=ₐ v` checks the value up to alpha equality. -/
       let lDecl ←
         match (← getLCtx).find? fvarid with
         | none => throwError m!"hypothesis {h} not found"
-        | some lDecl => lDecl
-      if let some p ← ty then
+        | some lDecl => pure lDecl
+      if let some p := ty then
         let e ← elabTerm p none
         let hty ← instantiateMVars lDecl.type
-        let hty ← hty.consumeMData
+        let hty := hty.consumeMData
         if not (e == hty) then throwError m!"hypothesis {h} has type {hty}"
       match lDecl.value?, val with
       | none, some _        => throwError m!"{h} is not a let binding"
@@ -170,9 +170,9 @@ while `guardHyp h :=ₐ v` checks the value up to alpha equality. -/
       | some hval, some val =>
           let e ← elabTerm val none
           let hval ← instantiateMVars hval
-          let hval ← hval.consumeMData
+          let hval := hval.consumeMData
           if not (e == hval) then throwError m!"hypothesis {h} has value {hval}"
-      | none, none          => ()
+      | none, none          => pure ()
   | _ => throwUnsupportedSyntax
 
 elab "match_target" t:term : tactic  => do
@@ -214,7 +214,7 @@ macro_rules
     | n+1 => `(tactic|($seq:tacticSeq); iterate $(quote n) $seq:tacticSeq)
 
 partial def repeat'Aux (seq : Syntax) : List MVarId → TacticM Unit
-| []    => ()
+| []    => pure ()
 | g::gs => do
     try
       let subgs ← evalTacticAt seq g

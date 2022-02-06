@@ -18,13 +18,14 @@ structure FindOptions where
 
 def findCore (ϕ : ConstantInfo → MetaM Bool) (opts : FindOptions := {}) :
   MetaM (Array ConstantInfo) := do
-  let matches_ ← if !opts.stage1 then #[] else (← getEnv).constants.map₁.foldM (init := #[]) check
+  let matches_ ← if !opts.stage1 then pure #[] else
+    (← getEnv).constants.map₁.foldM (init := #[]) check
   (← getEnv).constants.map₂.foldlM (init := matches_) check
 where
   check matches_ name cinfo := do
     if opts.checkPrivate || !isPrivateName name then
-      if ← ϕ cinfo then matches_.push cinfo else matches_
-    else matches_
+      if ← ϕ cinfo then pure $ matches_.push cinfo else pure matches_
+    else pure matches_
 
 def find (msg : String)
   (ϕ : ConstantInfo → MetaM Bool) (opts : FindOptions := {}) : TermElabM String := do
@@ -33,7 +34,7 @@ def find (msg : String)
   let mut msg := msg
   for cinfo in cinfos do
     msg := msg ++ s!"{cinfo.name} : {← Meta.ppExpr cinfo.type}\n"
-  msg
+  pure msg
 
 end Meta
 
@@ -49,10 +50,10 @@ the namespace `foo`.
 | `(#print prefix%$tk $name:ident) => do
   let nameId := name.getId
   liftTermElabM none do
-    let mut msg ← find "" fun cinfo => nameId.isPrefixOf cinfo.name
+    let mut msg ← find "" fun cinfo => pure $ nameId.isPrefixOf cinfo.name
     if msg.isEmpty then
       if let [name] ← resolveGlobalConst name then
-        msg ← find msg fun cinfo => name.isPrefixOf cinfo.name
+        msg ← find msg fun cinfo => pure $ name.isPrefixOf cinfo.name
     if !msg.isEmpty then
       logInfoAt tk msg
 | _ => throwUnsupportedSyntax

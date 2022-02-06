@@ -410,16 +410,16 @@ def rotate' : List α → ℕ → List α
 | a :: l, n+1 => rotate' (l ++ [a]) n
 
 def mmap {m : Type u → Type v} [Monad m] {α β} (f : α → m β) : List α → m (List β)
-| [] => []
-| h :: t => do (← f h) :: (← mmap f t)
+| [] => pure []
+| h :: t => return (← f h) :: (← mmap f t)
 
 def mmap' {m : Type → Type v} [Monad m] {α β} (f : α → m β) : List α → m Unit
-| [] => ()
+| [] => pure ()
 | h :: t => f h *> t.mmap' f
 
 /-- Filters and maps elements of a list -/
 def mmapFilter {m : Type → Type v} [Monad m] {α β} (f : α → m (Option β)) : List α → m (List β)
-| [] => []
+| [] => pure []
 | h :: t => do
   let b ← f h
   let t' ← t.mmapFilter f
@@ -435,8 +435,8 @@ Example: suppose `l = [1, 2, 3]`. `mmapUpperTriangle f l` will produce the list
 `[f 1 1, f 1 2, f 1 3, f 2 2, f 2 3, f 3 3]`.
 -/
 def mmapUpperTriangle {m} [Monad m] {α β : Type u} (f : α → α → m β) : List α → m (List β)
-| [] => []
-| h :: t => do (← f h h) :: (← t.mmap (f h)) ++ (← t.mmapUpperTriangle f)
+| [] => pure []
+| h :: t => return (← f h h) :: (← t.mmap (f h)) ++ (← t.mmapUpperTriangle f)
 
 /--
 `mmap'Diag f l` calls `f` on all elements in the upper triangular part of `l × l`.

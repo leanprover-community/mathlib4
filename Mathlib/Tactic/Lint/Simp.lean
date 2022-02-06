@@ -26,11 +26,11 @@ structure SimpLemmaInfo where
   rhs : Expr
 
 def isConditionalHyps (eq : Expr) : List Expr → MetaM Bool
-  | [] => false
+  | [] => pure false
   | h :: hs => do
     let ldecl ← getFVarLocalDecl h
     if !ldecl.binderInfo.isInstImplicit
-        && !(← hs.anyM fun h' => do (← inferType h').containsFVar h.fvarId!)
+        && !(← hs.anyM fun h' => do pure $ (← inferType h').containsFVar h.fvarId!)
         && !eq.containsFVar h.fvarId! then
       return true
     isConditionalHyps eq hs
@@ -40,7 +40,7 @@ def withSimpLemmaInfos (ty : Expr) (k : SimpLemmaInfo → MetaM α) : MetaM (Arr
   (← preprocess (← mkSorry ty true) ty (inv := false) (isGlobal := true))
       |>.toArray.mapM fun (_, ty') => do
     forallTelescopeReducing ty' fun hyps eq => do
-      let some (_, lhs, rhs) ← eq.eq? | throwError "not an equality {eq}"
+      let some (_, lhs, rhs) := eq.eq? | throwError "not an equality {eq}"
       k {
         hyps, lhs, rhs
         isConditional := ← isConditionalHyps eq hyps.toList
@@ -49,8 +49,8 @@ def withSimpLemmaInfos (ty : Expr) (k : SimpLemmaInfo → MetaM α) : MetaM (Arr
 /-- Checks whether two expressions are equal for the simplifier. That is,
 they are reducibly-definitional equal, and they have the same head symbol. -/
 def isSimpEq (a b : Expr) (whnfFirst := true) : MetaM Bool := withReducible do
-  let a ← if whnfFirst then whnf a else a
-  let b ← if whnfFirst then whnf b else b
+  let a ← if whnfFirst then whnf a else pure a
+  let b ← if whnfFirst then whnf b else pure b
   if a.getAppFn.constName? != b.getAppFn.constName? then return false
   isDefEq a b
 
@@ -62,7 +62,7 @@ def checkAllSimpLemmaInfos (ty : Expr) (k : SimpLemmaInfo → MetaM (Option Mess
     return MessageData.joinSep errors.toList Format.line
 
 def isSimpLemma (declName : Name) : MetaM Bool := do
-  (← getSimpLemmas).lemmaNames.contains declName
+  pure $ (← getSimpLemmas).lemmaNames.contains declName
 
 open Lean.Meta.DiscrTree
 partial def trieElements : Trie α → StateT (Array α) Id Unit
@@ -115,7 +115,7 @@ def decorateError (msg : MessageData) (k : MetaM α) : MetaM α := do
   try k catch e => throw e
 
 def formatLemmas (lems : Array Name) : CoreM MessageData := do
-  toMessageData <|<- lems.mapM mkConstWithLevelParams
+  toMessageData <$> lems.mapM mkConstWithLevelParams
 
 /-- A linter for simp lemmas whose lhs is not in simp-normal form, and which hence never fire. -/
 @[mathlibLinter] def simpNF : Linter where
@@ -234,12 +234,12 @@ Some commutativity lemmas are simp lemmas:"
     unless ← isSimpLemma declName do return none
     let ty := (← getConstInfo declName).type
     forallTelescopeReducing ty fun xs ty => do
-    let some (_, lhs, rhs) ← ty.eq? | none
+    let some (_, lhs, rhs) := ty.eq? | return none
     unless lhs.getAppFn.constName? == rhs.getAppFn.constName? do return none
     let (mvars, bis, ty') ← forallMetaTelescopeReducing ty
-    let some (_, lhs', rhs') ← ty'.eq? | none
+    let some (_, lhs', rhs') := ty'.eq? | return none
     unless ← isDefEq rhs lhs' do return none
     unless ← withNewMCtxDepth (isDefEq rhs lhs') do return none
     -- ensure that the second application makes progress:
     if ← isDefEq lhs' rhs' then return none
-    m!"should not be marked simp"
+    pure m!"should not be marked simp"

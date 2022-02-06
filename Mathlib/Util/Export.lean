@@ -71,15 +71,15 @@ namespace Export
 def alloc {α} [BEq α] [Hashable α] [OfState α] (a : α) : ExportM Nat := do
   let n := (OfState.get (α := α) (← get)).next
   modify $ OfState.modify (α := α) fun s => {map := s.map.insert a n, next := n+1}
-  n
+  pure n
 
 def exportName (n : Name) : ExportM Nat := do
   match (← get).names.map.find? n with
   | some i => pure i
   | none => match n with
     | Name.anonymous => pure 0
-    | Name.num p a _ => let i ← alloc n; IO.println s!"{i} #NI {← exportName p} {a}"; i
-    | Name.str p s _ => let i ← alloc n; IO.println s!"{i} #NS {← exportName p} {s}"; i
+    | Name.num p a _ => let i ← alloc n; IO.println s!"{i} #NI {← exportName p} {a}"; pure i
+    | Name.str p s _ => let i ← alloc n; IO.println s!"{i} #NS {← exportName p} {s}"; pure i
 
 def exportLevel (L : Level) : ExportM Nat := do
   match (← get).levels.map.find? L with
@@ -87,13 +87,13 @@ def exportLevel (L : Level) : ExportM Nat := do
   | none => match L with
     | Level.zero _ => pure 0
     | Level.succ l _ =>
-      let i ← alloc L; IO.println s!"{i} #US {← exportLevel l}"; i
+      let i ← alloc L; IO.println s!"{i} #US {← exportLevel l}"; pure i
     | Level.max l₁ l₂ _ =>
-      let i ← alloc L; IO.println s!"{i} #UM {← exportLevel l₁} {← exportLevel l₂}"; i
+      let i ← alloc L; IO.println s!"{i} #UM {← exportLevel l₁} {← exportLevel l₂}"; pure i
     | Level.imax l₁ l₂ _ =>
-      let i ← alloc L; IO.println s!"{i} #UIM {← exportLevel l₁} {← exportLevel l₂}"; i
+      let i ← alloc L; IO.println s!"{i} #UIM {← exportLevel l₁} {← exportLevel l₂}"; pure i
     | Level.param n _ =>
-      let i ← alloc L; IO.println s!"{i} #UP {← exportName n}"; i
+      let i ← alloc L; IO.println s!"{i} #UP {← exportName n}"; pure i
     | Level.mvar n _ => unreachable!
 
 def biStr : BinderInfo → String
@@ -110,32 +110,32 @@ partial def exportExpr (E : Expr) : ExportM Nat := do
   match (← get).exprs.map.find? E with
   | some i => pure i
   | none => match E with
-    | Expr.bvar n _ => let i ← alloc E; IO.println s!"{i} #EV {n}"; i
+    | Expr.bvar n _ => let i ← alloc E; IO.println s!"{i} #EV {n}"; pure i
     | Expr.fvar _ _ => unreachable!
     | Expr.mvar _ _ => unreachable!
-    | Expr.sort l _ => let i ← alloc E; IO.println s!"{i} #ES {← exportLevel l}"; i
+    | Expr.sort l _ => let i ← alloc E; IO.println s!"{i} #ES {← exportLevel l}"; pure i
     | Expr.const n ls _ =>
       exportDef n
       let i ← alloc E
-      let mut s ← s!"{i} #EC {← exportName n}"
+      let mut s := s!"{i} #EC {← exportName n}"
       for l in ls do s := s ++ s!" {← exportLevel l}"
-      IO.println s; i
+      IO.println s; pure i
     | Expr.app e₁ e₂ _ =>
-      let i ← alloc E; IO.println s!"{i} #EA {← exportExpr e₁} {← exportExpr e₂}"; i
+      let i ← alloc E; IO.println s!"{i} #EA {← exportExpr e₁} {← exportExpr e₂}"; pure i
     | Expr.lam n e₁ e₂ d =>
       let i ← alloc E
-      IO.println s!"{i} #EL {biStr d.binderInfo} {← exportExpr e₁} {← exportExpr e₂}"; i
+      IO.println s!"{i} #EL {biStr d.binderInfo} {← exportExpr e₁} {← exportExpr e₂}"; pure i
     | Expr.forallE n e₁ e₂ d =>
       let i ← alloc E
-      IO.println s!"{i} #EP {biStr d.binderInfo} {← exportExpr e₁} {← exportExpr e₂}"; i
+      IO.println s!"{i} #EP {biStr d.binderInfo} {← exportExpr e₁} {← exportExpr e₂}"; pure i
     | Expr.letE n e₁ e₂ e₃ _ =>
       let i ← alloc E
-      IO.println s!"{i} #EP {← exportExpr e₁} {← exportExpr e₂} {← exportExpr e₃}"; i
-    | Expr.lit (Literal.natVal n) _ => let i ← alloc E; IO.println s!"{i} #EN {n}"; i
-    | Expr.lit (Literal.strVal s) _ => let i ← alloc E; IO.println s!"{i} #ET {s}"; i
+      IO.println s!"{i} #EP {← exportExpr e₁} {← exportExpr e₂} {← exportExpr e₃}"; pure i
+    | Expr.lit (Literal.natVal n) _ => let i ← alloc E; IO.println s!"{i} #EN {n}"; pure i
+    | Expr.lit (Literal.strVal s) _ => let i ← alloc E; IO.println s!"{i} #ET {s}"; pure i
     | Expr.mdata _ e _ => unreachable!
     | Expr.proj n k e _ =>
-      let i ← alloc E; IO.println s!"{i} #EJ {← exportName n} {k} {← exportExpr e}"; i
+      let i ← alloc E; IO.println s!"{i} #EJ {← exportName n} {k} {← exportExpr e}"; pure i
 
 partial def exportDef (n : Name) : ExportM Unit := do
   if (← get).defs.contains n then return
@@ -190,7 +190,7 @@ where
     let mut s := s ++ s!" {← exportName ind} {← exportExpr val.type} {val.ctors.length}"
     for c in val.ctors do
       s := s ++ s!" {← exportName c} {← exportExpr (← getConstInfoCtor c).type}"
-    s
+    pure s
 
 end
 
