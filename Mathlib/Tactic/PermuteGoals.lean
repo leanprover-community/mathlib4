@@ -12,20 +12,6 @@ namespace Mathlib.Tactic
 open Lean Elab.Tactic
 
 /--
-`rotate_goals` moves the first goal to the back. `rotate_goals n` does this `n` times.
-
-`rotate_goals -` moves the last goal to the front. `rotate_goals -n` does this `n` times.
-
-See also `Tactic.pick_goal`, which moves the `n`-th goal to the front.
--/
-syntax (name := rotate_goals) "rotate_goals " "-"? (num)? : tactic
-elab_rules : tactic
-  | `(tactic|rotate_goals)     => do setGoals $ (← getGoals).rotateLeft 1
-  | `(tactic|rotate_goals -)   => do setGoals $ (← getGoals).rotateRight 1
-  | `(tactic|rotate_goals $n)  => do setGoals $ (← getGoals).rotateLeft n.toNat
-  | `(tactic|rotate_goals -$n) => do setGoals $ (← getGoals).rotateRight n.toNat
-
-/--
 If the current goals are `g₁ ⋯ gᵢ ⋯ gₙ`, `splitGoalsAndGetNth i` returns
 `(gᵢ, [g₁, ⋯, gᵢ₋₁], [gᵢ₊₁, ⋯, gₙ])`.
 
@@ -58,18 +44,6 @@ elab "pick_goal " reverse:"-"? n:num : tactic => do
 macro "swap" : tactic => `(pick_goal 2)
 
 /--
-Applies a sequence of tactics on a goal, replacing it by the resulting subgoals.
-
-The target goal is chosen by passing an index (starting from 1). If `reverse` is
-passed as `true`, the counting is done backwards.
--/
-def onGoal (n : ℕ) (seq : Syntax) (reverse : Bool := false) : TacticM Unit := do
-  let (g, gl, gr) ← splitGoalsAndGetNth n reverse
-  setGoals [g]
-  evalTactic seq
-  setGoals $ gl ++ (← getUnsolvedGoals) ++ gr
-
-/--
 `on_goal n => tacSeq` creates a block scope for the `n`-th goal and tries the sequence
 of tactics `tacSeq` on it.
 
@@ -80,4 +54,7 @@ The goal is not required to be solved and any resulting subgoals are inserted ba
 list of goals, replacing the chosen goal.
 -/
 elab "on_goal " reverse:"-"? n:num " => " seq:tacticSeq : tactic => do
-  onGoal n.toNat seq !reverse.isNone
+  let (g, gl, gr) ← splitGoalsAndGetNth n.toNat !reverse.isNone
+  setGoals [g]
+  evalTactic seq
+  setGoals $ gl ++ (← getUnsolvedGoals) ++ gr
