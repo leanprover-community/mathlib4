@@ -319,8 +319,6 @@ syntax (name := renameVar) "rename_var " ident " → " ident (ppSpace location)?
 
 syntax (name := assocRw) "assoc_rw " rwRuleSeq (ppSpace location)? : tactic
 
-syntax (name := simpRw) "simp_rw " rwRuleSeq (ppSpace location)? : tactic
-
 syntax (name := dsimpResult) "dsimp_result " (&"only ")? ("[" Tactic.simpArg,* "]")?
   (" with " ident+)? " => " tacticSeq : tactic
 syntax (name := simpResult) "simp_result " (&"only ")? ("[" Tactic.simpArg,* "]")?
