@@ -12,3 +12,32 @@ example (p q r : Prop) : p → q → r → p ∧ q ∧ r := by
   assumption
   guard_target == r
   assumption
+
+example (p q r : Prop) : p → q → r → p ∧ q ∧ r := by
+  intros a b c
+  constructor
+  fail_if_success on_goal -3 => exact a
+  fail_if_success on_goal -1 => exact a
+  fail_if_success on_goal 0 => exact a
+  fail_if_success on_goal 2 => exact a
+  fail_if_success on_goal 3 => exact a
+  on_goal 1 => exact a
+  constructor
+  swap
+  exact c
+  exact b
+
+example (p q : Prop) : p → q → p ∧ q := by
+  intros a b
+  constructor
+  fail_if_success pick_goal -3
+  fail_if_success pick_goal 0
+  fail_if_success pick_goal 3
+  pick_goal -1
+  exact b
+  exact a
+
+example (p : Prop) : p → p := by
+  intros
+  fail_if_success swap -- can't swap with a single goal
+  assumption
