@@ -117,8 +117,6 @@ syntax (name := applyWith) "apply " term " with " term : tactic
 syntax (name := mapply) "mapply " term : tactic
 syntax (name := toExpr') "to_expr' " term : tactic
 syntax (name := withCases) "with_cases " tacticSeq : tactic
-syntax (name := induction') "induction' " casesTarget,+ (" using " ident)?
-  (" with " (colGt binderIdent)+)? (" generalizing " (colGt ident)+)? : tactic
 syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
 syntax (name := case') "case' " (("[" caseArg,* "]") <|> caseArg) " => " tacticSeq : tactic
 syntax "destruct " term : tactic
