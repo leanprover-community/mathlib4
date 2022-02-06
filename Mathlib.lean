@@ -68,6 +68,7 @@ import Mathlib.Tactic.NoMatch
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.OpenPrivate
+import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.Rcases
 import Mathlib.Tactic.Rename
@@ -81,7 +82,6 @@ import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.TryThis
-import Mathlib.Tactic.WorkOnGoal
 import Mathlib.Util.DeclName
 import Mathlib.Util.Eval
 import Mathlib.Util.Export

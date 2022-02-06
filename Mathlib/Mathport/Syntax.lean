@@ -220,8 +220,6 @@ syntax (name := unfoldWf) "unfold_wf" : tactic
 syntax (name := unfoldAux) "unfold_aux" : tactic
 syntax (name := recover) "recover" : tactic
 syntax (name := «continue») "continue " tacticSeq : tactic
-syntax (name := swap) "swap" (ppSpace num)? : tactic
-syntax (name := rotate) "rotate" (ppSpace num)? : tactic
 syntax (name := clear_) "clear_" : tactic
 syntax (name := replace) "replace " Term.haveDecl : tactic
 syntax (name := replace') "replace " Term.haveIdLhs : tactic
@@ -503,7 +501,9 @@ syntax (name := wittTruncateFunTac) "witt_truncate_fun_tac" : tactic
 
 namespace Conv
 
+-- https://github.com/leanprover-community/mathlib/issues/2882
 syntax (name := applyCongr) "apply_congr" (ppSpace (colGt term))? : conv
+
 syntax (name := guardTarget) "guard_target" " =ₐ " term : conv
 
 syntax (name := normCast) "norm_cast" : conv
