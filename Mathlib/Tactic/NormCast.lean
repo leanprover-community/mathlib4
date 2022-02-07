@@ -51,21 +51,21 @@ initialize normCastExt : NormCastExtension ← pure {
 /-- `addElim decl` adds `decl` as an `elim` lemma to the cache. -/
 def addElim (decl : Name)
   (kind := AttributeKind.global) (prio := eval_prio default) : MetaM Unit :=
-  addSimpLemma normCastExt.up decl false (inv := false) kind prio
+  addSimpTheorem normCastExt.up decl false (inv := false) kind prio
 
 /-- `addMove decl` adds `decl` as a `move` lemma to the cache. -/
 def addMove (decl : Name)
   (kind := AttributeKind.global) (prio := eval_prio default) : MetaM Unit := do
-  addSimpLemma pushCastExt decl false (inv := false) kind prio
-  addSimpLemma normCastExt.up decl false (inv := true) kind prio
-  addSimpLemma normCastExt.down decl false (inv := false) kind prio
+  addSimpTheorem pushCastExt decl false (inv := false) kind prio
+  addSimpTheorem normCastExt.up decl false (inv := true) kind prio
+  addSimpTheorem normCastExt.down decl false (inv := false) kind prio
 
 /-- `addSquash decl` adds `decl` as a `squash` lemma to the cache. -/
 def addSquash (decl : Name)
   (kind := AttributeKind.global) (prio := eval_prio default) : MetaM Unit := do
-  addSimpLemma pushCastExt decl false (inv := false) kind prio
-  addSimpLemma normCastExt.squash decl false (inv := false) kind prio
-  addSimpLemma normCastExt.down decl false (inv := false) kind prio
+  addSimpTheorem pushCastExt decl false (inv := false) kind prio
+  addSimpTheorem normCastExt.squash decl false (inv := false) kind prio
+  addSimpTheorem normCastExt.down decl false (inv := false) kind prio
 
 /-- `addInfer decl` infers the label of `decl` and adds it to the cache.
 
