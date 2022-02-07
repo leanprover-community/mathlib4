@@ -87,6 +87,7 @@ import Mathlib.Util.DeclName
 import Mathlib.Util.Eval
 import Mathlib.Util.Export
 import Mathlib.Util.TermUnsafe
+import Mathlib.Util.LibraryNote
 import Mathlib.Util.Time
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
