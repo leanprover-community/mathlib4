@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Lean.Elab.Command
 import Lean.Elab.Quotation
+import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Ext
@@ -116,13 +117,9 @@ syntax (name := applyWith) "apply " term " with " term : tactic
 syntax (name := mapply) "mapply " term : tactic
 syntax (name := toExpr') "to_expr' " term : tactic
 syntax (name := withCases) "with_cases " tacticSeq : tactic
-syntax (name := induction') "induction' " casesTarget,+ (" using " ident)?
-  (" with " (colGt binderIdent)+)? (" generalizing " (colGt ident)+)? : tactic
 syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
 syntax (name := case') "case' " (("[" caseArg,* "]") <|> caseArg) " => " tacticSeq : tactic
 syntax "destruct " term : tactic
-syntax (name := cases') "cases' " casesTarget,+ (" using " ident)?
-  (" with " (colGt binderIdent)+)? : tactic
 syntax (name := casesM) "casesm" "*"? ppSpace term,* : tactic
 syntax (name := casesType) "cases_type" "*"? ppSpace ident* : tactic
 syntax (name := casesType!) "cases_type!" "*"? ppSpace ident* : tactic

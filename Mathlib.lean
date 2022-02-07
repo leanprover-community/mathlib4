@@ -52,6 +52,7 @@ import Mathlib.Mathport.SpecialNames
 import Mathlib.Mathport.Syntax
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Cache
+import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Conv

@@ -17,10 +17,23 @@ proofs about these definitions, those are contained in other files in `Mathlib.D
 namespace List
 
 /-- Split a list at an index.
-     splitAt 2 [a, b, c] = ([a, b], [c]) -/
+```
+splitAt 2 [a, b, c] = ([a, b], [c])
+``` -/
 def splitAt : ℕ → List α → List α × List α
 | n+1, x :: xs => let (l, r) := splitAt n xs; (x :: l, r)
 | _, xs => ([], xs)
+
+/-- Split a list at an index. Ensures the left list always has the specified length
+by right padding with the provided default element.
+```
+splitAtD 2 [a, b, c] x = ([a, b], [c])
+splitAtD 4 [a, b, c] x = ([a, b, c, x], [])
+``` -/
+def splitAtD : ℕ → List α → α → List α × List α
+| 0, xs, a => ([], xs)
+| n+1, [], a => let (l, r) := splitAtD n [] a; (a :: l, r)
+| n+1, x :: xs, a => let (l, r) := splitAtD n xs a; (x :: l, r)
 
 /-- An auxiliary function for `splitOnP`. -/
 def splitOnPAux {α : Type u} (P : α → Prop) [DecidablePred P] : List α → (List α → List α) → List (List α)
@@ -32,13 +45,17 @@ def splitOnP {α : Type u} (P : α → Prop) [DecidablePred P] (l : List α) : L
   splitOnPAux P l id
 
 /-- Split a list at every occurrence of an element.
-    [1,1,2,3,2,4,4].split_on 2 = [[1,1],[3],[4,4]] -/
+```
+[1,1,2,3,2,4,4].split_on 2 = [[1,1],[3],[4,4]]
+``` -/
 def splitOn {α : Type u} [DecidableEq α] (a : α) (as : List α) : List (List α) :=
   as.splitOnP (· = a)
 
 /-- Apply a function to the nth tail of `l`. Returns the input without
   using `f` if the index is larger than the length of the List.
-     modifyNthTail f 2 [a, b, c] = [a, b] ++ f [c] -/
+```
+modifyNthTail f 2 [a, b, c] = [a, b] ++ f [c]
+``` -/
 @[simp]
 def modifyNthTail (f : List α → List α) : ℕ → List α → List α
 | 0, l => f l
@@ -63,7 +80,9 @@ def modifyLast (f : α → α) : List α → List α
 | x :: xs => x :: modifyLast f xs
 
 /-- `insertNth n a l` inserts `a` into the list `l` after the first `n` elements of `l`
- `insertNth 2 1 [1, 2, 3, 4] = [1, 2, 1, 3, 4]`-/
+```
+insertNth 2 1 [1, 2, 3, 4] = [1, 2, 1, 3, 4]
+``` -/
 def insertNth (n : ℕ) (a : α) : List α → List α :=
   modifyNthTail (cons a) n
 
@@ -75,7 +94,9 @@ def takeD : ∀ n : ℕ, List α → α → List α
 
 /-- Fold a function `f` over the list from the left, returning the list
   of partial results.
-     scanl (+) 0 [1, 2, 3] = [0, 1, 3, 6] -/
+```
+scanl (+) 0 [1, 2, 3] = [0, 1, 3, 6]
+``` -/
 def scanl (f : α → β → α) : α → List β → List α
 | a, [] => [a]
 | a, b :: l => a :: scanl f (f a b) l
@@ -88,9 +109,10 @@ def scanrAux (f : α → β → β) (b : β) : List α → β × List β
   let (b', l') := scanrAux f b l
   (f a b', b' :: l')
 
-/-- Fold a function `f` over the list from the right, returning the list
-  of partial results.
-     scanr (+) 0 [1, 2, 3] = [6, 5, 3, 0] -/
+/-- Fold a function `f` over the list from the right, returning the list of partial results.
+```
+scanr (+) 0 [1, 2, 3] = [6, 5, 3, 0]
+``` -/
 def scanr (f : α → β → β) (b : β) (l : List α) : List β :=
   let (b', l') := scanrAux f b l
   b' :: l'
@@ -142,10 +164,8 @@ def indexesValues (p : α → Prop) [DecidablePred p] (l : List α) : List (ℕ 
   foldrIdx (fun i a l => if p a then (i, a) :: l else l) [] l
 
 /-- `indexesOf a l` is the list of all indexes of `a` in `l`. For example:
-```
-indexesOf a [a, b, a, a] = [0, 2, 3]
-```
--/
+
+    indexesOf a [a, b, a, a] = [0, 2, 3] -/
 def indexesOf [DecidableEq α] (a : α) : List α → List Nat :=
   findIdxs (Eq a)
 
@@ -190,13 +210,17 @@ infixl:50 " <:+ " => isSuffix
 infixl:50 " <:+: " => isInfix
 
 /-- `inits l` is the list of initial segments of `l`.
-     inits [1, 2, 3] = [[], [1], [1, 2], [1, 2, 3]] -/
+```
+inits [1, 2, 3] = [[], [1], [1, 2], [1, 2, 3]]
+``` -/
 @[simp] def inits : List α → List (List α)
 | [] => [[]]
 | a :: l => [] :: map (fun t => a :: t) (inits l)
 
 /-- `tails l` is the list of terminal segments of `l`.
-     tails [1, 2, 3] = [[1, 2, 3], [2, 3], [3], []] -/
+```
+tails [1, 2, 3] = [[1, 2, 3], [2, 3], [3], []]
+``` -/
 @[simp] def tails : List α → List (List α)
 | [] => [[]]
 | a :: l => (a :: l) :: tails l
@@ -209,7 +233,9 @@ def sublists'Aux : List α → (List α → List β) → List (List β) → List
   It differs from `sublists` only in the order of appearance of the sublists;
   `sublists'` uses the first element of the list as the MSB,
   `sublists` uses the first element of the list as the LSB.
-     sublists' [1, 2, 3] = [[], [3], [2], [2, 3], [1], [1, 3], [1, 2], [1, 2, 3]] -/
+```
+sublists' [1, 2, 3] = [[], [3], [2], [2, 3], [1], [1, 3], [1, 2], [1, 2, 3]]
+``` -/
 def sublists' (l : List α) : List (List α) :=
   sublists'Aux l id []
 
@@ -219,7 +245,9 @@ def sublistsAux : List α → (List α → List β → List β) → List β
 
 /-- `sublists l` is the list of all (non-contiguous) sublists of `l`; cf. `sublists'`
   for a different ordering.
-     sublists [1, 2, 3] = [[], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3]] -/
+```
+sublists [1, 2, 3] = [[], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3]]
+``` -/
 def sublists (l : List α) : List (List α) :=
   [] :: sublistsAux l cons
 
@@ -252,7 +280,9 @@ def transposeAux : List α → List (List α) → List (List α)
 | a :: i, l :: ls => (a :: l) :: transposeAux i ls
 
 /-- transpose of a list of lists, treated as a matrix.
-     transpose [[1, 2], [3, 4], [5, 6]] = [[1, 3, 5], [2, 4, 6]] -/
+```
+transpose [[1, 2], [3, 4], [5, 6]] = [[1, 3, 5], [2, 4, 6]]
+``` -/
 def transpose : List (List α) → List (List α)
 | [] => []
 | l :: ls => transposeAux l (transpose ls)
@@ -280,18 +310,23 @@ def extractp (p : α → Prop) [DecidablePred p] : List α → Option α × List
 
 /-- `revzip l` returns a list of pairs of the elements of `l` paired
   with the elements of `l` in reverse order.
-`revzip [1,2,3,4,5] = [(1, 5), (2, 4), (3, 3), (4, 2), (5, 1)]`
- -/
+```
+revzip [1,2,3,4,5] = [(1, 5), (2, 4), (3, 3), (4, 2), (5, 1)]
+``` -/
 def revzip (l : List α) : List (α × α) :=
   zip l l.reverse
 
 /-- `product l₁ l₂` is the list of pairs `(a, b)` where `a ∈ l₁` and `b ∈ l₂`.
-     product [1, 2] [5, 6] = [(1, 5), (1, 6), (2, 5), (2, 6)] -/
+```
+product [1, 2] [5, 6] = [(1, 5), (1, 6), (2, 5), (2, 6)]
+``` -/
 def product (l₁ : List α) (l₂ : List β) : List (α × β) :=
   l₁.bind $ fun a => l₂.map $ Prod.mk a
 
 /-- `sigma l₁ l₂` is the list of dependent pairs `(a, b)` where `a ∈ l₁` and `b ∈ l₂ a`.
-     sigma [1, 2] (λ_, [(5 : ℕ), 6]) = [(1, 5), (1, 6), (2, 5), (2, 6)] -/
+```
+sigma [1, 2] (λ_, [(5 : ℕ), 6]) = [(1, 5), (1, 6), (2, 5), (2, 6)]
+``` -/
 protected def sigma {σ : α → Type _} (l₁ : List α) (l₂ : ∀ a, List (σ a)) : List (Σ a, σ a) :=
   l₁.bind $ fun a => (l₂ a).map $ Sigma.mk a
 
@@ -303,7 +338,9 @@ def ofFnAux {n} (f : Fin n → α) : ∀ m, m ≤ n → List α → List α
 | m+1, h, l => ofFnAux f m (Nat.le_of_lt h) (f ⟨m, h⟩ :: l)
 
 /-- `ofFn f` with `f : fin n → α` returns the list whose ith element is `f i`
-  `ofFn f = [f 0, f 1, ... , f(n - 1)]` -/
+```
+ofFn f = [f 0, f 1, ... , f(n - 1)]
+``` -/
 def ofFn {n} (f : Fin n → α) : List α :=
   ofFnAux f n (Nat.le_refl _) []
 
@@ -347,13 +384,17 @@ section Chain
 variable (R : α → α → Prop)
 
 /-- `Chain R a l` means that `R` holds between adjacent elements of `a::l`.
-     Chain R a [b, c, d] ↔ R a b ∧ R b c ∧ R c d -/
+```
+Chain R a [b, c, d] ↔ R a b ∧ R b c ∧ R c d
+``` -/
 inductive Chain : α → List α → Prop
   | nil {a : α} : Chain a []
   | cons : ∀ {a b : α} {l : List α}, R a b → Chain b l → Chain a (b :: l)
 
 /-- `Chain' R l` means that `R` holds between adjacent elements of `l`.
-     Chain' R [a, b, c, d] ↔ R a b ∧ R b c ∧ R c d -/
+```
+Chain' R [a, b, c, d] ↔ R a b ∧ R b c ∧ R c d
+``` -/
 def Chain' : List α → Prop
 | [] => True
 | a :: l => Chain R a l
@@ -367,7 +408,8 @@ def Nodup : List α → Prop :=
 
 /-- `eraseDup l` removes duplicates from `l` (taking only the first occurrence).
   Defined as `pwFilter (≠)`.
-     eraseDup [1, 0, 2, 2, 1] = [0, 2, 1] -/
+
+    eraseDup [1, 0, 2, 2, 1] = [0, 2, 1] -/
 def eraseDup [DecidableEq α] : List α → List α :=
   pwFilter (· ≠ ·)
 
@@ -398,7 +440,9 @@ def last' {α} : List α → Option α
 | b :: l => last' l
 
 /-- `rotate l n` rotates the elements of `l` to the left by `n`
-     rotate [0, 1, 2, 3, 4, 5] 2 = [2, 3, 4, 5, 0, 1] -/
+```
+rotate [0, 1, 2, 3, 4, 5] 2 = [2, 3, 4, 5, 0, 1]
+``` -/
 def rotate (l : List α) (n : ℕ) : List α :=
   let (l₁, l₂) := List.splitAt (n % l.length) l
   l₂ ++ l₁
@@ -431,9 +475,10 @@ def mmapFilter {m : Type → Type v} [Monad m] {α β} (f : α → m (Option β)
 `mmapUpperTriangle f l` calls `f` on all elements in the upper triangular part of `l × l`.
 That is, for each `e ∈ l`, it will run `f e e` and then `f e e'`
 for each `e'` that appears after `e` in `l`.
-Example: suppose `l = [1, 2, 3]`. `mmapUpperTriangle f l` will produce the list
-`[f 1 1, f 1 2, f 1 3, f 2 2, f 2 3, f 3 3]`.
--/
+```
+mmapUpperTriangle f [1, 2, 3] =
+  return [← f 1 1, ← f 1 2, ← f 1 3, ← f 2 2, ← f 2 3, ← f 3 3]
+``` -/
 def mmapUpperTriangle {m} [Monad m] {α β : Type u} (f : α → α → m β) : List α → m (List β)
 | [] => pure []
 | h :: t => return (← f h h) :: (← t.mmap (f h)) ++ (← t.mmapUpperTriangle f)
@@ -442,9 +487,9 @@ def mmapUpperTriangle {m} [Monad m] {α β : Type u} (f : α → α → m β) : 
 `mmap'Diag f l` calls `f` on all elements in the upper triangular part of `l × l`.
 That is, for each `e ∈ l`, it will run `f e e` and then `f e e'`
 for each `e'` that appears after `e` in `l`.
-Example: suppose `l = [1, 2, 3]`. `mmap'Diag f l` will evaluate, in this order,
-`f 1 1`, `f 1 2`, `f 1 3`, `f 2 2`, `f 2 3`, `f 3 3`.
--/
+```
+mmap'Diag f [1, 2, 3] = do f 1 1; f 1 2; f 1 3; f 2 2; f 2 3; f 3 3
+``` -/
 def mmap'Diag {m} [Monad m] {α} (f : α → α → m Unit) : List α → m Unit
 | [] => return ()
 | h :: t => do f h h; t.mmap' (f h); t.mmap'Diag f
