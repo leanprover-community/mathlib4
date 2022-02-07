@@ -41,3 +41,31 @@ example (p : Prop) : p → p := by
   intros
   fail_if_success swap -- can't swap with a single goal
   assumption
+
+example {P : ℕ → Prop} (h : ∀ n, P n) : P 1 ∧ P 2 ∧ P 3 ∧ P 4 ∧ P 5 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩
+  on_goal 2 => guard_target == P 2
+  on_goal 2 => guard_target == P 2
+  on_goal 1 => guard_target == P 1
+  on_goal 1 3 => apply fun {α} x y : α => x
+  on_goal 1 => guard_target == P 1
+  on_goal 2 => guard_target == P 1
+  on_goal 3 => guard_target == P 2
+  on_goal 4 => guard_target == P 3
+  on_goal 5 => guard_target == P 3
+  on_goal 6 => guard_target == P 4
+  on_goal 7 => guard_target == P 5
+  all_goals apply h
+
+example {P : ℕ → Prop} (h : ∀ n, P n) : P 1 ∧ P 2 ∧ P 3 ∧ P 4 ∧ P 5 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩
+  on_goals 2 4 =>
+    on_goal 1 => guard_target == P 2
+    on_goal 2 => guard_target == P 4
+    swap
+  on_goal 1 => guard_target == P 4
+  on_goal 2 => guard_target == P 2
+  on_goal 3 => guard_target == P 1
+  on_goal 4 => guard_target == P 3
+  on_goal 5 => guard_target == P 5
+  all_goals apply h
