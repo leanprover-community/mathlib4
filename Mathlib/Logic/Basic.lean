@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Init.Logic
 import Mathlib.Init.Function
 import Mathlib.Tactic.Basic
+import Mathlib.Util.LibraryNote
 
 section needs_better_home
 /- This section contains items that have no direct counterpart from Lean 3 / Mathlib 3.
@@ -145,7 +146,7 @@ theorem by_contradiction {p} : (¬p → False) → p := Decidable.by_contradicti
 -- alias by_contradiction ← by_contra
 theorem by_contra {p} : (¬p → False) → p := Decidable.by_contradiction
 
-/-
+library_note "decidable namespace" /--
 In most of mathlib, we use the law of excluded middle (LEM) and the axiom of choice (AC) freely.
 The `decidable` namespace contains versions of lemmas from the root namespace that explicitly
 attempt to avoid the axiom of choice, usually by adding decidability assumptions on the inputs.
@@ -153,9 +154,8 @@ attempt to avoid the axiom of choice, usually by adding decidability assumptions
 You can check if a lemma uses the axiom of choice by using `#print axioms foo` and seeing if
 `classical.choice` appears in the list.
 -/
---library_note "decidable namespace"
 
-/-
+library_note "decidable arguments" /--
 As mathlib is primarily classical,
 if the type signature of a `def` or `lemma` does not require any `decidable` instances to state,
 it is preferable not to introduce any `decidable` instances that are needed in the proof
@@ -165,7 +165,6 @@ In the other direction, when `decidable` instances do appear in the type signatu
 it is better to use explicitly introduced ones rather than allowing Lean to automatically infer
 classical ones, as these may cause instance mismatch errors later.
 -/
---library_note "decidable arguments"
 
 -- See Note [decidable namespace]
 protected theorem Decidable.not_not [Decidable a] : ¬¬a ↔ a :=

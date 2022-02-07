@@ -557,7 +557,6 @@ end Attr
 namespace Command
 
 syntax (name := copyDocString) "copy_doc_string " ident " → " ident* : command
-syntax (name := libraryNote) docComment "library_note " str : command
 syntax (name := addTacticDoc) (docComment)? "add_tactic_doc " term : command
 syntax (name := addDeclDoc) docComment "add_decl_doc " ident : command
 

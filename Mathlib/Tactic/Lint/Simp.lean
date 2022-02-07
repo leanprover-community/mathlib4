@@ -5,6 +5,7 @@ Authors: Gabriel Ebner
 -/
 import Mathlib.Tactic.Lint.Basic
 import Mathlib.Tactic.OpenPrivate
+import Mathlib.Util.LibraryNote
 open Lean Meta
 
 namespace Mathlib.Tactic.Lint
@@ -159,7 +160,7 @@ You need to debug this yourself using `set_option trace.Meta.Tactic.simp.rewrite
     else
       return none
 
-/-
+library_note "simp-normal form" /--
 This note gives you some tips to debug any errors that the simp-normal form linter raises.
 
 The reason that a lemma was considered faulty is because its left-hand side is not in simp-normal
@@ -206,8 +207,6 @@ Here are some tips depending on the error raised by the linter:
      then apply `try_for 10000 { simp }` to the right-hand side.  You will
      see a periodic sequence of lemma applications in the trace message.
 -/
--- library_note "simp-normal form"
--- TODO
 
 /--
 A linter for simp lemmas whose lhs has a variable as head symbol,
