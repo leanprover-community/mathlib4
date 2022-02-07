@@ -6,13 +6,13 @@ Author: Arthur Paulino
 
 import Mathlib.Tactic.Use
 
-example : ∃ x : Nat, x = x := by use [42]
+example : ∃ x : Nat, x = x := by use 42
 
-example : ∃ x : Nat, ∃ y : Nat, x = y := by use [42, 42]
+example : ∃ x : Nat, ∃ y : Nat, x = y := by use 42, 42
 
-example : ∃ x : String × String, x.1 = x.2 := by use [("a", "a")]
+example : ∃ x : String × String, x.1 = x.2 := by use ("a", "a")
 
 example : ∃ x : Nat, x = x := by
-  use [?_]
+  use ?_
   exact 42
   rfl
