@@ -26,6 +26,5 @@ example : ∃ x : Nat, ∃ y : Nat, x = y := by use 42, 42
 example : ∃ x : String × String, x.1 = x.2 := by use ("forty-two", "forty-two")
 ```
 -/
-elab "use " es:term,+ : tactic => do
-  try evalTactic (← `(tactic|(refine ⟨$es,*, ?_⟩; try trivial)))
-  catch e => throwError "use tactic failed: {e.toMessageData}"
+macro "use " es:term,+ : tactic =>
+  `(tactic|(refine ⟨$es,*, ?_⟩; try trivial))
