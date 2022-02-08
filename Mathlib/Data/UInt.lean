@@ -79,14 +79,18 @@ local macro "genIntDeclars" typeName:ident : command => do
         mul_zero := by simp [mul_def, zero_def]
         npow_zero' := fun _ => rfl
         npow_succ' := fun _ _ => rfl
-        mul_add a b c := by
+        mul_assoc a b c := by
+          simp only [mul_def]
+          apply eq_of_val_eq
+          exact mul_assoc a.val b.val c.val
+        right_distrib a b c := by
           simp only [mul_def, add_def]
           apply eq_of_val_eq
-          exact Semiring.mul_add a.val b.val c.val
-        add_mul a b c := by
+          exact right_distrib a.val b.val c.val
+        left_distrib a b c := by
           simp only [mul_def, add_def]
           apply eq_of_val_eq
-          exact Semiring.add_mul a.val b.val c.val
+          exact left_distrib a.val b.val c.val
 
       instance : Ring $typeName where
         sub_eq_add_neg := fun _ _ => congrArg mk (Ring.sub_eq_add_neg _ _)

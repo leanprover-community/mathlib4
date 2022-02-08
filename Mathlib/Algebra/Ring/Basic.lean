@@ -35,22 +35,34 @@ instance (priority := low) [HasNumerals α] : OfNat α n where
 # Semirings and rings
 -/
 
-class Semiring (R : Type u) extends AddCommMonoid R, MonoidWithZero R, HasNumerals R where
-  mul_add (a b c : R) : a * (b + c) = a * b + a * c
-  add_mul (a b c : R) : (a + b) * c = a * c + b * c
+/-- A typeclass stating that multiplication is left and right distributive
+over addition. -/
+class Distrib (R : Type u) extends Mul R, Add R where
+  left_distrib : ∀ a b c : R, a * (b + c) = (a * b) + (a * c)
+  right_distrib : ∀ a b c : R, (a + b) * c = (a * c) + (b * c)
+
+export Distrib (left_distrib right_distrib)
+
+section
+variable {R} [Distrib R]
+theorem mul_add (a b c : R) : a * (b + c) = a * b + a * c := Distrib.left_distrib a b c
+theorem add_mul (a b c : R) : (a + b) * c = a * c + b * c := Distrib.right_distrib a b c
+end
+
+/-- A not-necessarily-unital, not-necessarily-associative semiring. -/
+class NonUnitalNonAssocSemiring (R : Type u) extends
+  AddCommMonoid R, Distrib R, MulZeroClass R, HasNumerals R
+
+/-- An associative but not-necessarily unital semiring. -/
+class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α
+
+/-- A unital but not-necessarily-associative semiring. -/
+class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α
+
+class Semiring (R : Type u) extends NonUnitalSemiring R, NonAssocSemiring R, MonoidWithZero R
 
 section Semiring
 variable {R} [Semiring R]
-
-instance : MonoidWithZero R where
-  __ := ‹Semiring R›
-
-instance : AddCommMonoid R where
-  __ := ‹Semiring R›
-
-theorem mul_add (a b c : R) : a * (b + c) = a * b + a * c := Semiring.mul_add a b c
-
-theorem add_mul (a b c : R) : (a + b) * c = a * c + b * c := Semiring.add_mul a b c
 
 lemma Nat.cast_succ {R} [Semiring R] {n : ℕ} : Nat.cast (n + 1) = (Nat.cast n + 1 : R) := by
   cases n <;> simp [Nat.cast_succ_succ]
@@ -77,37 +89,18 @@ lemma Nat.cast_pow {R} [Semiring R] {m n : ℕ} : (m ^ n).cast = (m.cast ^ n : R
 
 end Semiring
 
-class CommSemiring (R : Type u) extends Semiring R where
-  mul_comm (a b : R) : a * b = b * a
+class CommSemiring (R : Type u) extends Semiring R, CommMonoid R where
   -- TODO: doesn't work
-  add_mul a b c := (by rw [mul_comm, mul_add, mul_comm c, mul_comm c])
+  right_distrib a b c := (by rw [mul_comm, mul_add, mul_comm c, mul_comm c])
 
-instance (R : Type u) [CommSemiring R] : CommMonoid R where
-  __ := ‹CommSemiring R›
-
-class Ring (R : Type u) extends Semiring R, Neg R, Sub R where
-  -- AddGroup R
-  sub := λ a b => a + -b
-  sub_eq_add_neg : ∀ a b : R, a - b = a + -b
-  gsmul : ℤ → R → R := gsmul_rec
-  gsmul_zero' : ∀ (a : R), gsmul 0 a = 0
-  gsmul_succ' (n : ℕ) (a : R) : gsmul (Int.ofNat n.succ) a = a + gsmul (Int.ofNat n) a
-  gsmul_neg' (n : ℕ) (a : R) : gsmul (Int.negSucc n) a = -(gsmul ↑(n.succ) a)
-  add_left_neg (a : R) : -a + a = 0
-
-instance {R} [Ring R] : AddCommGroup R := { ‹Ring R› with }
+class Ring (R : Type u) extends Semiring R, AddCommGroup R
 
 theorem neg_mul_eq_neg_mul {R} [Ring R] (a b : R) : -(a * b) = (-a) * b :=
   Eq.symm <| eq_of_sub_eq_zero' <| by
     rw [sub_eq_add_neg, neg_neg (a * b) /- TODO: why is arg necessary? -/]
     rw [← add_mul, neg_add_self a /- TODO: why is arg necessary? -/, zero_mul]
 
-class CommRing (R : Type u) extends Ring R where
-  mul_comm (a b : R) : a * b = b * a
-
-instance (R : Type u) [CommRing R] : CommSemiring R where
-  __ := inferInstanceAs (Semiring R)
-  __ := ‹CommRing R›
+class CommRing (R : Type u) extends Ring R, CommSemiring R
 
 /- Instances -/
 
@@ -115,8 +108,8 @@ namespace Nat
 
 instance : CommSemiring ℕ where
   mul_comm := Nat.mul_comm
-  mul_add := Nat.left_distrib
-  add_mul := Nat.right_distrib
+  left_distrib := Nat.left_distrib
+  right_distrib := Nat.right_distrib
   mul_one := Nat.mul_one
   one_mul := Nat.one_mul
   npow (n x) := x ^ n
@@ -141,8 +134,8 @@ instance : CommRing ℤ where
   zero_mul := Int.zero_mul
   mul_zero := Int.mul_zero
   mul_comm := Int.mul_comm
-  mul_add := Int.distrib_left
-  add_mul := Int.distrib_right
+  left_distrib := Int.distrib_left
+  right_distrib := Int.distrib_right
   mul_one := Int.mul_one
   one_mul := Int.one_mul
   npow (n x) := HPow.hPow x n
