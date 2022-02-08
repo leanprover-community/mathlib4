@@ -83,6 +83,7 @@ import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.TryThis
+import Mathlib.Tactic.Use
 import Mathlib.Util.DeclName
 import Mathlib.Util.Eval
 import Mathlib.Util.Export

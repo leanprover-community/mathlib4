@@ -240,7 +240,6 @@ syntax (name := hGeneralize!) "h_generalize! " atomic(binderIdent " : ")? term:5
 syntax (name := guardExprEq') "guard_expr " term:51 " = " term : tactic -- definitional equality
 syntax (name := guardTarget') "guard_target" " = " term : tactic -- definitional equality
 syntax (name := triv) "triv" : tactic
-syntax (name := use) "use " term,+ : tactic
 syntax (name := clearAuxDecl) "clear_aux_decl" : tactic
 syntax (name := set) "set " ident (" : " term)? " := " term (" with " "←"? ident)? : tactic
 syntax (name := set!) "set! " ident (" : " term)? " := " term (" with " "←"? ident)? : tactic
