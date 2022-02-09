@@ -13,6 +13,7 @@ import Mathlib.Tactic.Find
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.RCases
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.ShowTerm
 import Mathlib.Tactic.Simps
@@ -182,13 +183,6 @@ syntax (name := dsimp) "dsimp" (config)? (&" only")?
 syntax (name := guardLHS) "guard_lhs " " =ₐ " term : conv
 
 end Conv
-
-syntax (name := rcases?) "rcases?" casesTarget,* (" : " num)? : tactic
-syntax (name := rcases) "rcases" casesTarget,* (" with " rcasesPat)? : tactic
-syntax (name := obtain) "obtain" (ppSpace rcasesPatMed)? (" : " term)? (" := " term,+)? : tactic
-
-syntax (name := rintro?) "rintro?" (" : " num)? : tactic
-syntax (name := rintro) "rintro" (ppSpace rintroPat)* (" : " term)? : tactic
 
 syntax (name := ext1) "ext1" (ppSpace rcasesPat)* : tactic
 syntax (name := ext1?) "ext1?" (ppSpace rcasesPat)* : tactic

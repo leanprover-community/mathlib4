@@ -71,7 +71,7 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.OpenPrivate
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.PrintPrefix
-import Mathlib.Tactic.Rcases
+import Mathlib.Tactic.RCases
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.RunCmd

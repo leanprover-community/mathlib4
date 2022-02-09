@@ -5,7 +5,7 @@ Author: Gabriel Ebner
 -/
 import Lean
 import Mathlib.Tactic.Cache
-import Mathlib.Tactic.Rcases
+import Mathlib.Tactic.RCases
 
 open Tactic
 
