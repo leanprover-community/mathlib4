@@ -24,8 +24,6 @@ inductive Label
   | squash
   deriving DecidableEq, Repr, Inhabited
 
-open Mathlib.Tactic.NormCast
-
 def getSimpArgs (e : Expr) : MetaM (Array Expr) := do
   match ← mkCongrSimp? e.getAppFn with
   | none => return e.getAppArgs
@@ -143,6 +141,56 @@ def addInfer (decl : Name)
 
 namespace Attr
 syntax normCastLabel := &"elim" <|> &"move" <|> &"squash"
+
+
+/--
+The `norm_cast` attribute should be given to lemmas that describe the
+behaviour of a coercion in regard to an operator, a relation, or a particular
+function.
+
+It only concerns equality or iff lemmas involving `↑`, `⇑` and `↥`, describing the behavior of
+the coercion functions.
+It does not apply to the explicit functions that define the coercions.
+
+Examples:
+```lean
+@[norm_cast] theorem coe_nat_inj' {m n : ℕ} : (↑m : ℤ) = ↑n ↔ m = n
+
+@[norm_cast] theorem coe_int_denom (n : ℤ) : (n : ℚ).denom = 1
+
+@[norm_cast] theorem cast_id : ∀ n : ℚ, ↑n = n
+
+@[norm_cast] theorem coe_nat_add (m n : ℕ) : (↑(m + n) : ℤ) = ↑m + ↑n
+
+@[norm_cast] theorem cast_coe_nat (n : ℕ) : ((n : ℤ) : α) = n
+
+@[norm_cast] theorem cast_one : ((1 : ℚ) : α) = 1
+```
+
+Lemmas tagged with `@[norm_cast]` are classified into three categories: `move`, `elim`, and
+`squash`. They are classified roughly as follows:
+
+* elim lemma:   LHS has 0 head coes and ≥ 1 internal coe
+* move lemma:   LHS has 1 head coe and 0 internal coes,    RHS has 0 head coes and ≥ 1 internal coes
+* squash lemma: LHS has ≥ 1 head coes and 0 internal coes, RHS has fewer head coes
+
+`norm_cast` uses `move` and `elim` lemmas to factor coercions toward the root of an expression
+and to cancel them from both sides of an equation or relation. It uses `squash` lemmas to clean
+up the result.
+
+Occasionally you may want to override the automatic classification.
+You can do this by giving an optional `elim`, `move`, or `squash` parameter to the attribute.
+
+```lean
+@[simp, norm_cast elim] lemma nat_cast_re (n : ℕ) : (n : ℂ).re = n := by
+  rw [← of_real_nat_cast, of_real_re]
+```
+
+Don't do this unless you understand what you are doing.
+
+A full description of the tactic, and the use of each lemma category, can be found at
+<https://lean-forward.github.io/norm_cast/norm_cast.pdf>.
+-/
 syntax (name := normCast) "norm_cast" (ppSpace normCastLabel)? (ppSpace num)? : attr
 end Attr
 

@@ -1,7 +1,7 @@
 import Lean
 open Lean Meta Std
 
-namespace Mathlib.Tactic.NormCast
+namespace Tactic.NormCast
 
 structure CoeFnInfo where
   numArgs : Nat
