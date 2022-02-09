@@ -127,16 +127,29 @@ def derive (e : Expr) : MetaM Simp.Result := do
 
   return r
 
-/--
-A small variant of `pushCast` suited for non-interactive use.
+-- #eval `test
 
-`derivePushCast extra_lems e` returns an Expression `e'` and a proof that `e = e'`.
--/
-def derivePushCast (extra_lems : List simp_arg_type) (e : Expr) : MetaM Simp.Result :=
-do (s, _) ← mk_simp_set tt [`pushCast] extra_lems,
-   (e, prf, _) ← simplify (s.erase [`int.coe_nat_succ]) [] e
-                  {fail_if_unchanged := ff} `eq tactic.assumption,
-   return (e, prf)
+-- /--
+-- A small variant of `pushCast` suited for non-interactive use.
+-- `derivePushCast extra_lems e` returns an Expression `e'` and a proof that `e = e'`.
+-- -/
+-- def derivePushCast (extra_lems : List simp_arg_type) (e : Expr) : MetaM Simp.Result :=
+-- do (s, _) ← mk_simp_set tt [`pushCast] extra_lems,
+--    (e, prf, _) ← simplify (s.erase [`int.coe_nat_succ]) [] e
+--                   {fail_if_unchanged := ff} `eq tactic.assumption,
+--    return (e, prf)
+
+open Elab.Term in
+elab "mod_cast " e:term : term <= expectedType => do
+  if (← instantiateMVars expectedType).hasExprMVar then tryPostpone
+  let expectedType' ← derive expectedType
+  let e ← elabTerm e expectedType'.expr
+  synthesizeSyntheticMVars
+  let eTy ← instantiateMVars (← inferType e)
+  if eTy.hasExprMVar then tryPostpone
+  let eTy' ← derive eTy
+  let eTy_eq_expectedType ← (← mkEqTrans eTy' (← mkEqSymm expectedType expectedType')).getProof
+  mkAppM ``cast #[eTy_eq_expectedType, e]
 
 /-- `auxModCast e` runs `normCast` on `e` and returns the result. If `include_goal` is true, it
 also normalizes the goal. -/
@@ -152,19 +165,6 @@ match e with
   replace_at derive [e] include_goal,
   get_local `this
 end
-
-/-- `exactModCast e` runs `normCast` on the goal and `e`, and tries to use `e` to close the
-goal. -/
-meta def exactModCast (e : Expr) : tactic unit :=
-decorate_error "exactModCast failed:" $ do
-  new_e ← auxModCast e,
-  exact new_e
-
-/-- `applyModCast e` runs `normCast` on the goal and `e`, and tries to apply `e`. -/
-meta def applyModCast (e : Expr) : tactic (list (name × Expr)) :=
-decorate_error "applyModCast failed:" $ do
-  new_e ← auxModCast e,
-  apply new_e
 
 /-- `assumptionModCast` runs `normCast` on the goal. For each local hypothesis `h`, it also
 normalizes `h` and tries to use that to close the goal. -/
@@ -215,24 +215,12 @@ decorate_error "rwModCast failed:" $ do
 /--
 Normalize the goal and the given Expression, then close the goal with exact.
 -/
-meta def exactModCast (e : parse texpr) : tactic unit :=
-do
-  e ← iTo_expr e <|> do
-  { ty ← target,
-    e ← iTo_expr_strict ``(%%e : %%ty),
-    pty ← pp ty, ptgt ← pp e,
-    fail ("exactModCast failed, Expression type not directly " ++
-    "inferrable. Try:\n\nexactModCast ...\nshow " ++
-    to_fmt pty ++ ",\nfrom " ++ ptgt : format) },
-  tactic.exactModCast e
+macro "exact_mod_cast " e:term : tactic => `(exact mod_cast $e)
 
 /--
-Normalize the goal and the given Expression, then apply the Expression to the goal.
+Normalize the goal and the given expression, then apply the expression to the goal.
 -/
-meta def applyModCast (e : parse texpr) : tactic unit :=
-do
-  e ← iTo_expr_for_apply e,
-  concat_tags $ tactic.applyModCast e
+macro "apply_mod_cast " e:term : tactic => `(apply mod_cast $e)
 
 /--
 Normalize the goal and every Expression in the local context, then close the goal with assumption.
@@ -251,18 +239,7 @@ meta def normCast : conv unit := replace_lhs derive
 
 end conv.interactive
 
--- TODO: move this elsewhere?
-@[norm_cast] lemma ite_cast {α β} [has_lift_t α β]
-  {c : Prop} [decidable c] {a b : α} :
-  ↑(ite c a b) = ite c (↑a : β) (↑b : β) :=
-by by_cases h : c; simp [h]
-
-@[norm_cast] lemma dite_cast {α β} [has_lift_t α β]
-  {c : Prop} [decidable c] {a : c → α} {b : ¬ c → α} :
-  ↑(dite c a b) = dite c (λ h, (↑(a h) : β)) (λ h, (↑(b h) : β)) :=
-by by_cases h : c; simp [h]
-
-add_hint_tactic "norm_cast at *"
+-- add_hint_tactic "norm_cast at *"
 
 /-
 The `norm_cast` family of tactics is used to normalize casts inside Expressions.
