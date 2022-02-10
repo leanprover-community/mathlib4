@@ -6,10 +6,13 @@ Authors: Paul-Nicolas Madelaine, Robert Y. Lewis, Mario Carneiro, Gabriel Ebner
 
 import Mathlib.Tactic.NormCast.Ext
 import Mathlib.Tactic.OpenPrivate
+import Mathlib.Tactic.SudoSetOption
 
 open Lean Meta
 
 namespace Tactic.NormCast
+
+initialize registerTraceClass `Tactic.librarySearch
 
 open private mkEqTrans from Lean.Meta.Tactic.Simp.Main
 
@@ -18,6 +21,9 @@ def mkEqSymm (e : Expr) (r : Simp.Result) : MetaM Simp.Result :=
   match r.proof? with
   | none => pure none
   | some p => some <$> Meta.mkEqSymm p
+
+def mkCast (r : Simp.Result) (e : Expr) : MetaM Expr := do
+  mkAppM ``cast #[← r.getProof, e]
 
 /-- Prove `a = b` using the given simp set. -/
 def proveEqUsing (s : SimpTheorems) (a b : Expr) : MetaM (Option Simp.Result) := do
@@ -80,7 +86,7 @@ TODO: normCast takes a list of Expressions to use as lemmas for the discharger
 TODO: a tactic to print the results the discharger fails to proove
 -/
 def prove (e : Expr) : SimpM (Option Expr) :=
-  return none -- FIXME assumption
+  return (← findLocalDeclWithType? e).map mkFVar
 
 /--
 Core rewriting function used in the "squash" step, which moves casts upwards
@@ -89,9 +95,8 @@ and eliminates them.
 It tries to rewrite an expression using the elim and move lemmas.
 On failure, it calls the splitting procedure heuristic.
 -/
-def upwardAndElim (e : Expr) : SimpM Simp.Step := do
-  let thms ← getSimpTheorems
-  let r ← Simp.rewrite e thms.post thms.erased prove (tag := "squash")
+def upwardAndElim (up : SimpTheorems) (e : Expr) : SimpM Simp.Step := do
+  let r ← Simp.rewrite e up.post up.erased prove (tag := "squash")
   if r.expr != e then return Simp.Step.visit r
   Simp.Step.visit <$> splittingProcedure e
 
@@ -113,9 +118,8 @@ def derive (e : Expr) : MetaM Simp.Result := do
   let r := {expr := e}
 
   -- step 2: casts are moved upwards and eliminated
-  let r ← mkEqTrans r <|<- Simp.main r.expr
-    { config, congrTheorems, simpTheorems := ← normCastExt.up.getTheorems }
-    { pre := upwardAndElim }
+  let r ← mkEqTrans r <|<- Simp.main r.expr { config, congrTheorems }
+    { pre := upwardAndElim (← normCastExt.up.getTheorems) }
   trace[Tactic.norm_cast] "after upwardAndElim: {r.expr}"
 
   -- step 3: casts are squashed
@@ -127,18 +131,6 @@ def derive (e : Expr) : MetaM Simp.Result := do
 
   return r
 
--- #eval `test
-
--- /--
--- A small variant of `pushCast` suited for non-interactive use.
--- `derivePushCast extra_lems e` returns an Expression `e'` and a proof that `e = e'`.
--- -/
--- def derivePushCast (extra_lems : List simp_arg_type) (e : Expr) : MetaM Simp.Result :=
--- do (s, _) ← mk_simp_set tt [`pushCast] extra_lems,
---    (e, prf, _) ← simplify (s.erase [`int.coe_nat_succ]) [] e
---                   {fail_if_unchanged := ff} `eq tactic.assumption,
---    return (e, prf)
-
 open Elab.Term in
 elab "mod_cast " e:term : term <= expectedType => do
   if (← instantiateMVars expectedType).hasExprMVar then tryPostpone
@@ -148,69 +140,53 @@ elab "mod_cast " e:term : term <= expectedType => do
   let eTy ← instantiateMVars (← inferType e)
   if eTy.hasExprMVar then tryPostpone
   let eTy' ← derive eTy
-  let eTy_eq_expectedType ← (← mkEqTrans eTy' (← mkEqSymm expectedType expectedType')).getProof
-  mkAppM ``cast #[eTy_eq_expectedType, e]
+  let eTy_eq_expectedType ← mkEqTrans eTy' (← mkEqSymm expectedType expectedType')
+  mkCast eTy_eq_expectedType e
 
-/-- `auxModCast e` runs `normCast` on `e` and returns the result. If `include_goal` is true, it
-also normalizes the goal. -/
-meta def auxModCast (e : Expr) (include_goal : bool := tt) : tactic Expr :=
-match e with
-| local_const _ lc _ _ := do
-  e ← get_local lc,
-  replace_at derive [e] include_goal,
-  get_local lc
-| e := do
-  t ← infer_type e,
-  e ← assertv `this t e,
-  replace_at derive [e] include_goal,
-  get_local `this
-end
+open Tactic Parser.Tactic Elab.Tactic
 
-/-- `assumptionModCast` runs `normCast` on the goal. For each local hypothesis `h`, it also
+def normCastTarget : TacticM Unit :=
+  liftMetaTactic1 fun mvarId => do
+    let tgt ← instantiateMVars (← getMVarType mvarId)
+    let prf ← derive tgt
+    applySimpResultToTarget mvarId tgt prf
+
+def normCastHyp (fvarId : FVarId) : TacticM Unit :=
+  liftMetaTactic1 fun mvarId => do
+    let hyp ← instantiateMVars (← getLocalDecl fvarId).type
+    let prf ← derive hyp
+    return (← applySimpResultToLocalDecl mvarId fvarId prf).map (·.snd)
+
+elab "norm_cast0" loc:(ppSpace location)? : tactic =>
+  withMainContext do
+    match expandOptLocation loc with
+    | Location.targets hyps target =>
+      if target then normCastTarget
+      (← getFVarIds hyps).forM normCastHyp
+    | Location.wildcard =>
+      normCastTarget
+      (← getNondepPropHyps (← getMainGoal)).forM normCastHyp
+
+/-- `assumption_mod_cast` runs `norm_cast` on the goal. For each local hypothesis `h`, it also
 normalizes `h` and tries to use that to close the goal. -/
-meta def assumptionModCast : tactic unit :=
-decorate_error "assumptionModCast failed:" $ do
-  let cfg : simp_config :=
-  { fail_if_unchanged := ff,
-    canonize_instances := ff,
-    canonize_proofs := ff,
-    proj := ff },
-  replace_at derive [] tt,
-  ctx ← local_context,
-  ctx.mfirst (λ h, auxModCast h ff >>= tactic.exact)
-
-end tactic
-
-namespace tactic.interactive
-open tactic normCast
+macro "assumption_mod_cast" : tactic => `(norm_cast0 at *; assumption)
 
 /--
 Normalize casts at the given locations by moving them "upwards".
-As opposed to simp, normCast can be used without necessarily closing the goal.
 -/
-meta def normCast (loc : parse location) : tactic unit :=
-do
-  ns ← loc.get_locals,
-  tt ← replace_at derive ns loc.include_goal | fail "normCast failed to simplify",
-  when loc.include_goal $ try tactic.reflexivity,
-  when loc.include_goal $ try tactic.triv,
-  when (¬ ns.empty) $ try tactic.contradiction
+macro "norm_cast" loc:(ppSpace location)? : tactic =>
+  let loc := loc.getOptional?
+  `(tactic| norm_cast0 $[$loc:location]?; try trivial)
 
 /--
 Rewrite with the given rules and normalize casts between steps.
 -/
-meta def rwModCast (rs : parse rw_rules) (loc : parse location) : tactic unit :=
-decorate_error "rwModCast failed:" $ do
-  let cfg_norm : simp_config := {},
-  let cfg_rw : rewrite_cfg := {},
-  ns ← loc.get_locals,
-  monad.mapm' (λ r : rw_rule, do
-    save_info r.pos,
-    replace_at derive ns loc.include_goal,
-    rw ⟨[r], none⟩ loc {}
-  ) rs.rules,
-  replace_at derive ns loc.include_goal,
-  skip
+syntax "rw_mod_cast" (config)? rwRuleSeq (ppSpace location)? : tactic
+macro_rules
+  | `(tactic|rw_mod_cast $[$config:config]? [$rules,*] $[$loc:location]?) => do
+    let tacs ← rules.getElems.mapM fun rule =>
+      `(tactic| norm_cast at *; rw $[$config]? [$rule] $[$loc:location]?)
+    `(tactic| ($[$tacs:tactic]*))
 
 /--
 Normalize the goal and the given Expression, then close the goal with exact.
@@ -222,22 +198,10 @@ Normalize the goal and the given expression, then apply the expression to the go
 -/
 macro "apply_mod_cast " e:term : tactic => `(apply mod_cast $e)
 
-/--
-Normalize the goal and every Expression in the local context, then close the goal with assumption.
--/
-meta def assumptionModCast : tactic unit :=
-tactic.assumptionModCast
-
-end tactic.interactive
-
-namespace conv.interactive
-open conv
-open normCast (derive)
-
-/-- the converter version of `normCast' -/
-meta def normCast : conv unit := replace_lhs derive
-
-end conv.interactive
+syntax (name := convNormCast) "norm_cast" : conv
+@[tactic convNormCast] def evalConvNormCast : Tactic :=
+  open Elab.Tactic.Conv in fun stx => withMainContext do
+    applySimpResult (← derive (← getLhs))
 
 -- add_hint_tactic "norm_cast at *"
 
