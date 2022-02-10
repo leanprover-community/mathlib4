@@ -66,21 +66,21 @@ def classifyType (ty : Expr) : MetaM Label :=
       if ty.isAppOfArity ``Eq 3 then pure (ty.getArg! 1, ty.getArg! 2)
       else if ty.isAppOfArity ``Iff 2 then pure (ty.getArg! 0, ty.getArg! 1)
       else throwError "norm_cast: lemma must be = or ↔, but is{indentExpr ty}"
-    let lhs_coes ← countCoes lhs
-    if lhs_coes = 0 then throwError "norm_cast: badly shaped lemma, lhs must contain at least one coe{indentExpr lhs}"
-    let lhs_head_coes ← countHeadCoes lhs
-    let lhs_internal_coes ← countInternalCoes lhs
-    let rhs_head_coes ← countHeadCoes rhs
-    let rhs_internal_coes ← countInternalCoes rhs
-    if lhs_head_coes = 0 then
+    let lhsCoes ← countCoes lhs
+    if lhsCoes = 0 then throwError "norm_cast: badly shaped lemma, lhs must contain at least one coe{indentExpr lhs}"
+    let lhsHeadCoes ← countHeadCoes lhs
+    let lhsInternalCoes ← countInternalCoes lhs
+    let rhsHeadCoes ← countHeadCoes rhs
+    let rhsInternalCoes ← countInternalCoes rhs
+    if lhsHeadCoes = 0 then
       return Label.elim
-    else if lhs_head_coes = 1 then do
-      unless rhs_head_coes = 0 do throwError "norm_cast: badly shaped lemma, rhs can't start with coe{indentExpr rhs}"
-      if rhs_internal_coes = 0 then
+    else if lhsHeadCoes = 1 then do
+      unless rhsHeadCoes = 0 do throwError "norm_cast: badly shaped lemma, rhs can't start with coe{indentExpr rhs}"
+      if rhsInternalCoes = 0 then
         return Label.squash
       else
         return Label.move
-    else if rhs_head_coes < lhs_head_coes then do
+    else if rhsHeadCoes < lhsHeadCoes then do
       return Label.squash
     else do
       throwError "norm_cast: badly shaped shaped squash lemma, rhs must have fewer head coes than lhs{indentExpr ty}"
