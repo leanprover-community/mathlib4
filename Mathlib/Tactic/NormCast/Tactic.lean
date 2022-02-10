@@ -128,11 +128,11 @@ and eliminates them.
 It tries to rewrite an expression using the elim and move lemmas.
 On failure, it calls the splitting procedure heuristic.
 -/
-partial def upwardAndElim (up : SimpTheorems) (e : Expr) : SimpM Simp.Result := do
+partial def upwardAndElim (up : SimpTheorems) (e : Expr) : SimpM Simp.Step := do
   let r ← Simp.rewrite e up.post up.erased prove (tag := "squash")
   let r ← mkEqTrans r <|<- splittingProcedure r.expr
-  if r.expr == e then return {expr := e}
-  mkEqTrans r <|<- upwardAndElim up r.expr
+  if r.expr == e then return Simp.Step.done {expr := e}
+  return Simp.Step.visit r
 
 /--
 The core simplification routine of `normCast`.
@@ -152,13 +152,11 @@ def derive (e : Expr) : MetaM Simp.Result := do
   let r := {expr := e}
 
   -- step 2: casts are moved upwards and eliminated
-  dbg_trace f!"up = {← normCastExt.up.getTheorems}"
   let r ← mkEqTrans r <|<- Simp.main r.expr { config, congrTheorems }
-    { pre := (Simp.Step.visit <$> upwardAndElim (← normCastExt.up.getTheorems) ·) }
+    { post := upwardAndElim (← normCastExt.up.getTheorems) }
   trace[Tactic.norm_cast] "after upwardAndElim: {r.expr}"
 
   -- step 3: casts are squashed
-  dbg_trace f!"squash = {← normCastExt.up.getTheorems}"
   let r ← mkEqTrans r <|<- simp r.expr {
     simpTheorems := ← normCastExt.squash.getTheorems
     config, congrTheorems
@@ -240,6 +238,46 @@ syntax (name := convNormCast) "norm_cast" : conv
 @[tactic convNormCast] def evalConvNormCast : Tactic :=
   open Elab.Tactic.Conv in fun stx => withMainContext do
     applySimpResult (← derive (← getLhs))
+
+open private mkDischargeWrapper elabSimpArgs from Lean.Elab.Tactic.Simp
+
+open Simp Elab.Tactic Lean.Meta in -- copied from core
+/--
+  If `ctx == false`, the config argument is assumed to have type `Meta.Simp.Config`, and `Meta.Simp.ConfigCtx` otherwise.
+  If `ctx == false`, the `discharge` option must be none -/
+private def mkSimpContext (stx : Syntax) (eraseLocal : Bool) (ctx := false) (ignoreStarArg : Bool := false) : TacticM MkSimpContextResult := do
+  if ctx && !stx[2].isNone then
+    throwError "'simp_all' tactic does not support 'discharger' option"
+  let dischargeWrapper ← mkDischargeWrapper stx[2]
+  let simpOnly := !stx[3].isNone
+  let simpTheorems ←
+    if simpOnly then
+      ({} : SimpTheorems).addConst ``eq_self
+    else
+      getSimpTheorems
+  let congrTheorems ← getSimpCongrTheorems
+  let r ← elabSimpArgs stx[4] (eraseLocal := eraseLocal) {
+    config      := (← elabSimpConfig stx[1] (ctx := ctx))
+    simpTheorems, congrTheorems
+  }
+  if !r.starArg || ignoreStarArg then
+    return { r with fvarIdToLemmaId := {}, dischargeWrapper }
+  else
+    let ctx := r.ctx
+    let erased := ctx.simpTheorems.erased
+    let hs ← getPropHyps
+    let mut ctx := ctx
+    let mut fvarIdToLemmaId := {}
+    for h in hs do
+      let localDecl ← getLocalDecl h
+      unless erased.contains localDecl.userName do
+        let fvarId := localDecl.fvarId
+        let proof  := localDecl.toExpr
+        let id     ← mkFreshUserName `h
+        fvarIdToLemmaId := fvarIdToLemmaId.insert fvarId id
+        let simpTheorems ← ctx.simpTheorems.add #[] proof (name? := id)
+        ctx := { ctx with simpTheorems }
+    return { ctx, fvarIdToLemmaId, dischargeWrapper }
 
 -- add_hint_tactic "norm_cast at *"
 

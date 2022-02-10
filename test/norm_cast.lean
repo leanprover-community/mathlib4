@@ -8,8 +8,8 @@ import Mathlib.Init.Data.Int.Order
 -- import data.complex.basic -- ℕ, ℤ, ℚ, ℝ, ℂ
 -- import data.real.ennreal
 
-set_option trace.Tactic.norm_cast true
-set_option trace.Meta.Tactic.simp true
+-- set_option trace.Tactic.norm_cast true
+-- set_option trace.Meta.Tactic.simp true
 
 variable (an bn cn dn : ℕ) (az bz cz dz : ℤ)
 -- variable (aq bq cq dq : ℚ)
