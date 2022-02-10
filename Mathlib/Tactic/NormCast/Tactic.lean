@@ -7,12 +7,13 @@ Authors: Paul-Nicolas Madelaine, Robert Y. Lewis, Mario Carneiro, Gabriel Ebner
 import Mathlib.Tactic.NormCast.Ext
 import Mathlib.Tactic.OpenPrivate
 import Mathlib.Tactic.SudoSetOption
+import Mathlib.Util.DiscrTree
 
 open Lean Meta
 
 namespace Tactic.NormCast
 
-initialize registerTraceClass `Tactic.librarySearch
+initialize registerTraceClass `Tactic.norm_cast
 
 open private mkEqTrans from Lean.Meta.Tactic.Simp.Main
 
@@ -47,6 +48,13 @@ def mkCoe (e : Expr) (ty : Expr) : MetaM Expr := do
   let coeTInstType := mkAppN (mkConst ``CoeT [u, v]) #[eType, e, ty]
   let inst ← synthInstance coeTInstType
   expandCoe <| mkAppN (mkConst ``CoeT.coe [u, v]) #[eType, e, ty, inst]
+
+def isCoeOf? (e : Expr) : MetaM (Option Expr) := do
+  if let Expr.const fn .. := e.getAppFn then
+    if let some info ← getCoeFnInfo? fn then
+      if e.getAppNumArgs == info.numArgs then
+        return e.getArg! info.coercee
+  return none
 
 /--
 This is the main heuristic used alongside the elim and move lemmas.
@@ -85,7 +93,8 @@ Discharging function used during simplification in the "squash" step.
 TODO: normCast takes a list of Expressions to use as lemmas for the discharger
 TODO: a tactic to print the results the discharger fails to proove
 -/
-def prove (e : Expr) : SimpM (Option Expr) :=
+def prove (e : Expr) : SimpM (Option Expr) := do
+  trace[Tactic.norm_cast] "discharging {e}"
   return (← findLocalDeclWithType? e).map mkFVar
 
 /--
@@ -118,6 +127,7 @@ def derive (e : Expr) : MetaM Simp.Result := do
   let r := {expr := e}
 
   -- step 2: casts are moved upwards and eliminated
+  dbg_trace f!"{← normCastExt.up.getTheorems}"
   let r ← mkEqTrans r <|<- Simp.main r.expr { config, congrTheorems }
     { pre := upwardAndElim (← normCastExt.up.getTheorems) }
   trace[Tactic.norm_cast] "after upwardAndElim: {r.expr}"
@@ -169,14 +179,14 @@ elab "norm_cast0" loc:(ppSpace location)? : tactic =>
 
 /-- `assumption_mod_cast` runs `norm_cast` on the goal. For each local hypothesis `h`, it also
 normalizes `h` and tries to use that to close the goal. -/
-macro "assumption_mod_cast" : tactic => `(norm_cast0 at *; assumption)
+macro "assumption_mod_cast" : tactic => `(norm_cast0 at * <;> assumption)
 
 /--
 Normalize casts at the given locations by moving them "upwards".
 -/
 macro "norm_cast" loc:(ppSpace location)? : tactic =>
   let loc := loc.getOptional?
-  `(tactic| norm_cast0 $[$loc:location]?; try trivial)
+  `(tactic| norm_cast0 $[$loc:location]? <;> try trivial)
 
 /--
 Rewrite with the given rules and normalize casts between steps.
@@ -191,12 +201,12 @@ macro_rules
 /--
 Normalize the goal and the given Expression, then close the goal with exact.
 -/
-macro "exact_mod_cast " e:term : tactic => `(exact mod_cast $e)
+macro "exact_mod_cast " e:term : tactic => `(exact mod_cast ($e : _))
 
 /--
 Normalize the goal and the given expression, then apply the expression to the goal.
 -/
-macro "apply_mod_cast " e:term : tactic => `(apply mod_cast $e)
+macro "apply_mod_cast " e:term : tactic => `(apply mod_cast ($e : _))
 
 syntax (name := convNormCast) "norm_cast" : conv
 @[tactic convNormCast] def evalConvNormCast : Tactic :=

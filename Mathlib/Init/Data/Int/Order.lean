@@ -40,7 +40,7 @@ protected theorem le_total (a b : ℤ) : a ≤ b ∨ b ≤ a :=
   (nonneg_or_nonneg_neg (b - a)).imp_right fun H => by
     rwa [(by simp [Int.add_comm] : -(b - a) = a - b)] at H
 
-@[simp] theorem ofNat_le {m n : ℕ} : (↑m : ℤ) ≤ ↑n ↔ m ≤ n :=
+@[simp, norm_cast] theorem ofNat_le {m n : ℕ} : (↑m : ℤ) ≤ ↑n ↔ m ≤ n :=
   ⟨fun h =>
     let ⟨k, hk⟩ := le.dest h
     Nat.le.intro $ Int.ofNat.inj $ (Int.ofNat_add m k).trans hk,
@@ -67,7 +67,7 @@ theorem lt.dest {a b : ℤ} (h : a < b) : ∃ n : ℕ, a + Nat.succ n = b :=
   (le.dest h).imp fun n h => by
     rwa [Int.add_comm, Int.add_left_comm] at h
 
-@[simp] theorem ofNat_lt {n m : ℕ} : (↑n : ℤ) < ↑m ↔ n < m := by
+@[simp, norm_cast] theorem ofNat_lt {n m : ℕ} : (↑n : ℤ) < ↑m ↔ n < m := by
   rw [lt_iff_add_one_le, ← Int.ofNat_succ, ofNat_le]; rfl
 
 theorem ofNat_nonneg (n : ℕ) : 0 ≤ ofNat n := ⟨_⟩
