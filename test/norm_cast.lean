@@ -5,7 +5,8 @@ Tests for norm_cast
 import Mathlib.Tactic.NormCast
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Order
--- import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Ring
+import Mathlib.Data.Option.Defs
 -- import data.complex.basic -- ℕ, ℤ, ℚ, ℝ, ℂ
 -- import data.real.ennreal
 
@@ -66,28 +67,30 @@ namespace hidden
 
 def WithZero (α) := Option α
 
-instance : CoeTail α (WithZero α) := ⟨some⟩
+@[coe]
+def WithZero.of (a : α) : WithZero α := some a
+
+instance : CoeTail α (WithZero α) := ⟨WithZero.of⟩
 
 instance : Zero (WithZero α) := ⟨none⟩
 
 instance [One α] : One (WithZero α) := ⟨some 1⟩
 
-instance [has_mul α] : mul_zero_class (WithZero α) :=
-{ mul       := λ o₁ o₂, o₁.bind (λ a, o₂.map (λ b, a * b)),
-  zero_mul  := λ a, rfl,
-  mul_zero  := λ a, by cases a; refl,
-  ..hidden.WithZero.has_zero }
+instance [Mul α] : MulZeroClass (WithZero α) where
+  mul o₁ o₂ := o₁.bind fun a => o₂.map fun b => a * b
+  zero_mul a := rfl
+  mul_zero a := by cases a <;> rfl
 
-@[norm_cast] lemma coe_one [has_one α] : ((1 : α) : WithZero α) = 1 := rfl
+@[norm_cast] lemma coe_one [One α] : ((1 : α) : WithZero α) = 1 := rfl
 
 @[norm_cast] lemma coe_inj {a b : α} : (a : WithZero α) = b ↔ a = b :=
-option.some_inj
+  Option.some_inj
 
-@[norm_cast] lemma mul_coe {α : Type*} [has_mul α] (a b : α) :
+@[norm_cast] lemma mul_coe [Mul α] (a b : α) :
   ((a * b : α) : WithZero α) = (a : WithZero α) * b := rfl
 
-example [has_mul α] [has_one α] (x y : α) (h : (x : WithZero α) * y = 1) : x*y = 1 :=
-by exact_mod_cast h
+example [Mul α] [One α] (x y : α) (h : (x : WithZero α) * y = 1) : x * y = 1 := by
+  exact_mod_cast h
 
 end hidden
 
