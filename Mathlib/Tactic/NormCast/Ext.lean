@@ -34,28 +34,25 @@ def getSimpArgs (e : Expr) : MetaM (Array Expr) := do
         args := args.push a
     return args
 
-def isCoeOf? (e : Expr) : MetaM (Option Expr) := do
-  if let Expr.const fn .. := e.getAppFn then
-    if let some info ← getCoeFnInfo? fn then
-      if e.getAppNumArgs == info.numArgs then
-        return e.getArg! info.coercee
-  return none
-
 /-- Count how many coercions are at the top of the expression. -/
 partial def countHeadCoes (e : Expr) : MetaM Nat := do
-  if let some e ← isCoeOf? e then
-    return (← countHeadCoes e) + 1
-  else
-    return 0
+  if let Expr.const fn .. := e.getAppFn then
+    if let some info ← getCoeFnInfo? fn then
+      if e.getAppNumArgs >= info.numArgs then
+        return (← countHeadCoes (e.getArg! info.coercee)) + 1
+  return 0
 
 /-- Count how many coercions are inside the expression, including the top ones. -/
-partial def countCoes (e : Expr) : MetaM Nat := do
-  if let some e ← isCoeOf? e then
-    return (← countCoes e) + 1
-  else
-    -- TODO: function coercions
-    lambdaTelescope e fun xs e =>
-      return (← (← getSimpArgs e).mapM countCoes).foldl (·+·) 0
+partial def countCoes (e : Expr) : MetaM Nat :=
+  lambdaTelescope e fun xs e => do
+    if let Expr.const fn .. := e.getAppFn then
+      if let some info ← getCoeFnInfo? fn then
+        if e.getAppNumArgs >= info.numArgs then
+          let mut coes := (← countHeadCoes (e.getArg! info.coercee)) + 1
+          for i in [info.numArgs:e.getAppNumArgs] do
+            coes := coes + (← countCoes (e.getArg! i))
+          return coes
+    return (← (← getSimpArgs e).mapM countCoes).foldl (·+·) 0
 
 /-- Count how many coercions are inside the expression, excluding the top ones. -/
 def countInternalCoes (e : Expr) : MetaM Nat :=
