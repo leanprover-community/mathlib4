@@ -150,6 +150,8 @@ elab "mod_cast " e:term : term <= expectedType => do
   let eTy ← instantiateMVars (← inferType e)
   if eTy.hasExprMVar then tryPostpone
   let eTy' ← derive eTy
+  unless ← isDefEq eTy'.expr expectedType'.expr do
+    throwTypeMismatchError "mod_cast" expectedType'.expr eTy'.expr e
   let eTy_eq_expectedType ← mkEqTrans eTy' (← mkEqSymm expectedType expectedType')
   mkCast eTy_eq_expectedType e
 
