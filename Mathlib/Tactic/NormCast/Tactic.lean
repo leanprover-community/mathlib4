@@ -56,6 +56,15 @@ def isCoeOf? (e : Expr) : MetaM (Option Expr) := do
         return e.getArg! info.coercee
   return none
 
+def isNumeral? (e : Expr) : Option (Expr × Nat) :=
+  if e.isConstOf ``Nat.zero then
+    (mkConst ``Nat, 0)
+  else if let Expr.app (Expr.app (Expr.app (Expr.const ``OfNat.ofNat ..) α ..)
+      (Expr.lit (Literal.natVal n) ..) ..) .. := e then
+    some (α, n)
+  else
+    none
+
 /--
 This is the main heuristic used alongside the elim and move lemmas.
 The goal is to help casts move past operators by adding intermediate casts.
@@ -70,20 +79,35 @@ def splittingProcedure (expr : Expr) : MetaM Simp.Result := do
   if γ'.hasLooseBVars || ty.hasLooseBVars then return {expr}
   unless ← isDefEq γ γ' do return {expr}
 
-  let some x' ← isCoeOf? x | return {expr}
-  let some y' ← isCoeOf? y | return {expr}
-  let α ← inferType x'
-  let β ← inferType y'
-
-  -- TODO: fast timeout
   try
-    let x2 ← mkCoe (← mkCoe x' β) γ
-    let some x_x2 ← proveEqUsingDown x x2 | failure
-    Simp.mkCongrFun (← Simp.mkCongr {expr := op} x_x2) y
+    let some x' ← isCoeOf? x | failure
+    let some y' ← isCoeOf? y | failure
+    let α ← inferType x'
+    let β ← inferType y'
+
+    -- TODO: fast timeout
+    (try
+      let x2 ← mkCoe (← mkCoe x' β) γ
+      let some x_x2 ← proveEqUsingDown x x2 | failure
+      Simp.mkCongrFun (← Simp.mkCongr {expr := op} x_x2) y
+    catch _ =>
+      let y2 ← mkCoe (← mkCoe y' α) γ
+      let some y_y2 ← proveEqUsingDown y y2 | failure
+      Simp.mkCongr {expr := mkApp op x} y_y2)
   catch _ => try
-    let y2 ← mkCoe (← mkCoe y' α) γ
+    let some (β, n) := isNumeral? y | failure
+    let some x' ← isCoeOf? x | failure
+    let α ← inferType x'
+    let y2 ← mkCoe (← mkNumeral α n) γ
     let some y_y2 ← proveEqUsingDown y y2 | failure
     Simp.mkCongr {expr := mkApp op x} y_y2
+  catch _ => try
+    let some (α, n) := isNumeral? x | failure
+    let some y' ← isCoeOf? y | failure
+    let β ← inferType y'
+    let x2 ← mkCoe (← mkNumeral β n) γ
+    let some x_x2 ← proveEqUsingDown x x2 | failure
+    Simp.mkCongrFun (← Simp.mkCongr {expr := op} x_x2) y
   catch _ =>
     return {expr}
 
@@ -104,10 +128,11 @@ and eliminates them.
 It tries to rewrite an expression using the elim and move lemmas.
 On failure, it calls the splitting procedure heuristic.
 -/
-def upwardAndElim (up : SimpTheorems) (e : Expr) : SimpM Simp.Step := do
+partial def upwardAndElim (up : SimpTheorems) (e : Expr) : SimpM Simp.Result := do
   let r ← Simp.rewrite e up.post up.erased prove (tag := "squash")
-  if r.expr != e then return Simp.Step.visit r
-  Simp.Step.visit <$> splittingProcedure e
+  let r ← mkEqTrans r <|<- splittingProcedure r.expr
+  if r.expr == e then return {expr := e}
+  mkEqTrans r <|<- upwardAndElim up r.expr
 
 /--
 The core simplification routine of `normCast`.
@@ -127,12 +152,13 @@ def derive (e : Expr) : MetaM Simp.Result := do
   let r := {expr := e}
 
   -- step 2: casts are moved upwards and eliminated
-  dbg_trace f!"{← normCastExt.up.getTheorems}"
+  dbg_trace f!"up = {← normCastExt.up.getTheorems}"
   let r ← mkEqTrans r <|<- Simp.main r.expr { config, congrTheorems }
-    { pre := upwardAndElim (← normCastExt.up.getTheorems) }
+    { pre := (Simp.Step.visit <$> upwardAndElim (← normCastExt.up.getTheorems) ·) }
   trace[Tactic.norm_cast] "after upwardAndElim: {r.expr}"
 
   -- step 3: casts are squashed
+  dbg_trace f!"squash = {← normCastExt.up.getTheorems}"
   let r ← mkEqTrans r <|<- simp r.expr {
     simpTheorems := ← normCastExt.squash.getTheorems
     config, congrTheorems
