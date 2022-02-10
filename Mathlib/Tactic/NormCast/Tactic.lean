@@ -68,7 +68,7 @@ def isNumeral? (e : Expr) : Option (Expr × Nat) :=
 /--
 This is the main heuristic used alongside the elim and move lemmas.
 The goal is to help casts move past operators by adding intermediate casts.
-An Expression of the shape: op (↑(x : α) : γ) (↑(y : β) : γ)
+An expression of the shape: op (↑(x : α) : γ) (↑(y : β) : γ)
 is rewritten to:            op (↑(↑(x : α) : β) : γ) (↑(y : β) : γ)
 when (↑(↑(x : α) : β) : γ) = (↑(x : α) : γ) can be proven with a squash lemma
 -/
@@ -114,7 +114,7 @@ def splittingProcedure (expr : Expr) : MetaM Simp.Result := do
 /--
 Discharging function used during simplification in the "squash" step.
 
-TODO: normCast takes a list of Expressions to use as lemmas for the discharger
+TODO: normCast takes a list of expressions to use as lemmas for the discharger
 TODO: a tactic to print the results the discharger fails to proove
 -/
 def prove (e : Expr) : SimpM (Option Expr) := do
@@ -225,7 +225,7 @@ macro_rules
     `(tactic| ($[$tacs:tactic]*))
 
 /--
-Normalize the goal and the given Expression, then close the goal with exact.
+Normalize the goal and the given expression, then close the goal with exact.
 -/
 macro "exact_mod_cast " e:term : tactic => `(exact mod_cast ($e : _))
 
@@ -299,9 +299,9 @@ syntax (name := pushCast) "push_cast " (config)? (discharger)? (&"only ")? ("[" 
 -- add_hint_tactic "norm_cast at *"
 
 /-
-The `norm_cast` family of tactics is used to normalize casts inside Expressions.
+The `norm_cast` family of tactics is used to normalize casts inside expressions.
 It is basically a simp tactic with a specific set of lemmas to move casts
-upwards in the Expression.
+upwards in the expression.
 Therefore it can be used more safely as a non-terminating tactic.
 It also has special handling of numerals.
 
@@ -321,11 +321,11 @@ or `assumption_mod_cast`.
 Writing `exact_mod_cast h` and `apply_mod_cast h` will normalize the goal and
 `h` before using `exact h` or `apply h`.
 Writing `assumption_mod_cast` will normalize the goal and for every
-Expression `h` in the context it will try to normalize `h` and use
+expression `h` in the context it will try to normalize `h` and use
 `exact h`.
 `rw_mod_cast` acts like the `rw` tactic but it applies `norm_cast` between steps.
 
-`push_cast` rewrites the Expression to move casts toward the leaf nodes.
+`push_cast` rewrites the expression to move casts toward the leaf nodes.
 This uses `norm_cast` lemmas in the forward direction.
 For example, `↑(a + b)` will be written to `↑a + ↑b`.
 It is equivalent to `simp only with push_cast`.
