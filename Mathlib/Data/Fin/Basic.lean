@@ -245,14 +245,14 @@ private theorem Fin.mul_add (a b c : Fin n) : a * (b + c) = a * b + a * c := by
     simp [Fin.mul_def, Fin.add_def]
     generalize lhs : a.val * ((b.val + c.val) % n) % n = l
     rw [(Nat.mod_eq_of_lt a.isLt).symm, ← Nat.mul_mod] at lhs
-    rw [← lhs, Semiring.mul_add]
+    rw [← lhs, left_distrib]
 
 instance : CommSemiring (Fin n) where
   __ := inferInstanceAs (MonoidWithZero (Fin n))
   __ := inferInstanceAs (CommSemigroup (Fin n))
   __ := inferInstanceAs (AddCommMonoid (Fin n))
-  mul_add := Fin.mul_add
-  add_mul a b c := (by rw [mul_comm, Fin.mul_add, mul_comm c, mul_comm c])
+  left_distrib := Fin.mul_add
+  right_distrib a b c := (by rw [mul_comm, Fin.mul_add, mul_comm c, mul_comm c])
 
 instance : Neg (Fin n) where
   neg a := ⟨(n - a) % n, Nat.mod_lt _ (lt_of_le_of_lt (Nat.zero_le _) a.isLt)⟩
