@@ -286,6 +286,13 @@ by rw [← mul_assoc, mul_comm a, mul_assoc]
 lemma mul_right_comm {M} [CommSemigroup M] (a b c : M) : a * b * c = a * c * b :=
 by rw [mul_assoc, mul_comm b c, mul_assoc]
 
+
+/-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
+`1 * a = a` and `a * 1 = a` for all `a : M`. -/
+class MulOneClass (M : Type u) extends One M, Mul M where
+  one_mul : ∀ (a : M), 1 * a = a
+  mul_one : ∀ (a : M), a * 1 = a
+
 /-
 
 ### Cancellative semigroups
@@ -340,9 +347,7 @@ end MulRightCancel
 
 -/
 
-class Monoid (M : Type u) extends Semigroup M, One M where
-  mul_one (m : M) : m * 1 = m
-  one_mul (m : M) : 1 * m = m
+class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   npow : ℕ → M → M := npow_rec
   npow_zero' : ∀ x, npow 0 x = 1 -- fill in with tactic once we can do this
   npow_succ' : ∀ (n : ℕ) x, npow n.succ x = x * npow n x -- fill in with tactic
