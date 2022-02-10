@@ -67,6 +67,10 @@ import Mathlib.Tactic.Lint.Frontend
 import Mathlib.Tactic.Lint.Simp
 import Mathlib.Tactic.NoMatch
 import Mathlib.Tactic.NormCast
+import Mathlib.Tactic.NormCast.CoeExt
+import Mathlib.Tactic.NormCast.Ext
+import Mathlib.Tactic.NormCast.Lemmas
+import Mathlib.Tactic.NormCast.Tactic
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.OpenPrivate
 import Mathlib.Tactic.PermuteGoals
@@ -85,6 +89,7 @@ import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.Use
 import Mathlib.Util.DeclName
+import Mathlib.Util.DiscrTree
 import Mathlib.Util.Eval
 import Mathlib.Util.Export
 import Mathlib.Util.LibraryNote
