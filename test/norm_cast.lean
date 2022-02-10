@@ -5,6 +5,7 @@ Tests for norm_cast
 import Mathlib.Tactic.NormCast
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Order
+-- import Mathlib.Tactic.Ring
 -- import data.complex.basic -- ℕ, ℤ, ℚ, ℝ, ℂ
 -- import data.real.ennreal
 
@@ -69,7 +70,7 @@ instance : CoeTail α (WithZero α) := ⟨some⟩
 
 instance : Zero (WithZero α) := ⟨none⟩
 
-instance [has_one α]: has_one (WithZero α) := ⟨some 1⟩
+instance [One α] : One (WithZero α) := ⟨some 1⟩
 
 instance [has_mul α] : mul_zero_class (WithZero α) :=
 { mul       := λ o₁ o₂, o₁.bind (λ a, o₂.map (λ b, a * b)),
@@ -94,7 +95,8 @@ example (k : ℕ) {x y : ℕ} :
   (x * x + y * y : ℤ) - ↑((x * y + 1) * k) = ↑y * ↑y - ↑k * ↑x * ↑y + (↑x * ↑x - ↑k) :=
 by
   push_cast
-  ring
+  sorry
+  -- TODO: ring
 
 example (k : ℕ) {x y : ℕ} (h : ((x + y + k : ℕ) : ℤ) = 0) : x + y + k = 0 :=
 by
@@ -106,7 +108,7 @@ example (a b : ℕ) (h2 : ((a + b + 0 : ℕ) : ℤ) = 10) :
   ((a + b : ℕ) : ℤ) = 10 :=
 by
   push_cast
-  push_cast [int.add_zero] at h2
+  push_cast [Int.add_zero] at h2
   exact h2
 
 -- example {x : ℚ} : ((x + 42 : ℚ) : ℝ) = x + 42 := by push_cast

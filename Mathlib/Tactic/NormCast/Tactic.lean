@@ -239,13 +239,23 @@ syntax (name := convNormCast) "norm_cast" : conv
   open Elab.Tactic.Conv in fun stx => withMainContext do
     applySimpResult (← derive (← getLhs))
 
+/-- Return all propositions in the local context. -/
+def getPropHyps : MetaM (Array FVarId) := do
+  let mut result := #[]
+  for localDecl in (← getLCtx) do
+    unless localDecl.isAuxDecl do
+      if (← isProp localDecl.type) then
+        result := result.push localDecl.fvarId
+  return result
+
 open private mkDischargeWrapper elabSimpArgs from Lean.Elab.Tactic.Simp
 
 open Simp Elab.Tactic Lean.Meta in -- copied from core
 /--
   If `ctx == false`, the config argument is assumed to have type `Meta.Simp.Config`, and `Meta.Simp.ConfigCtx` otherwise.
   If `ctx == false`, the `discharge` option must be none -/
-private def mkSimpContext (stx : Syntax) (eraseLocal : Bool) (ctx := false) (ignoreStarArg : Bool := false) : TacticM MkSimpContextResult := do
+private def mkSimpContext (simpTheorems : SimpTheorems) (stx : Syntax) (eraseLocal : Bool)
+    (ctx := false) (ignoreStarArg : Bool := false) : TacticM MkSimpContextResult := do
   if ctx && !stx[2].isNone then
     throwError "'simp_all' tactic does not support 'discharger' option"
   let dischargeWrapper ← mkDischargeWrapper stx[2]
@@ -254,7 +264,7 @@ private def mkSimpContext (stx : Syntax) (eraseLocal : Bool) (ctx := false) (ign
     if simpOnly then
       ({} : SimpTheorems).addConst ``eq_self
     else
-      getSimpTheorems
+      pure simpTheorems
   let congrTheorems ← getSimpCongrTheorems
   let r ← elabSimpArgs stx[4] (eraseLocal := eraseLocal) {
     config      := (← elabSimpConfig stx[1] (ctx := ctx))
@@ -278,6 +288,13 @@ private def mkSimpContext (stx : Syntax) (eraseLocal : Bool) (ctx := false) (ign
         let simpTheorems ← ctx.simpTheorems.add #[] proof (name? := id)
         ctx := { ctx with simpTheorems }
     return { ctx, fvarIdToLemmaId, dischargeWrapper }
+
+syntax (name := pushCast) "push_cast " (config)? (discharger)? (&"only ")? ("[" (simpStar <|> simpErase <|> simpLemma),* "]")? (location)? : tactic
+@[tactic pushCast] def evalPushCast : Tactic := fun stx => do
+  let { ctx, fvarIdToLemmaId, dischargeWrapper } ← withMainContext do
+    mkSimpContext (← pushCastExt.getTheorems) stx (eraseLocal := false)
+  dischargeWrapper.with fun discharge? =>
+    simpLocation ctx discharge? fvarIdToLemmaId (expandOptLocation stx[5])
 
 -- add_hint_tactic "norm_cast at *"
 
