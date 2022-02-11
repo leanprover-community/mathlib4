@@ -18,7 +18,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 namespace List
 
-attribute [simp] get! get? head? headD head tail! tail? tailD getLast getLast! getLast?
+attribute [simp] get! get? head? headD head tail! tail? tailD getLast! getLast?
   getLastD reverseAux eraseIdx isEmpty map map₂ join filterMap dropWhile find? findSome?
   replace elem lookup drop take takeWhile foldr zipWith unzip rangeAux enumFrom init
   intersperse isPrefixOf isEqv dropLast
@@ -26,6 +26,9 @@ attribute [simp] get! get? head? headD head tail! tail? tailD getLast getLast! g
 @[simp] lemma get_cons_zero {as : List α} : (a :: as).get 0 (id <| Nat.zero_lt_succ _) = a := rfl
 @[simp] lemma get_cons_succ {as : List α} {h : i + 1 < (a :: as).length} :
   (a :: as).get (i+1) h = as.get i (Nat.lt_of_succ_lt_succ h) := rfl
+
+@[simp] lemma getLast_singleton {x : α} : [x].getLast (id (by simp)) = x := rfl
+@[simp] lemma getLast_cons_cons {x : α} : (x::y::ys).getLast (id (by simp)) = (y::ys).getLast (by simp) := rfl
 
 -- The `id <|` above is a workaround to allow Lean to unify get_cons_zero's lhs
 -- in reducible transparency:
@@ -131,11 +134,6 @@ instance [DecidableEq α] : Inter (List α) := ⟨List.inter⟩
 @[simp] def repeat (a : α) : Nat → List α
 | 0 => []
 | succ n => a :: repeat a n
-
-@[simp] def last : ∀ l : List α, l ≠ [] → α
-| [], h => absurd rfl h
-| [a], h => a
-| a :: b :: l, h => last (b :: l) fun h => List.noConfusion h
 
 def last! [Inhabited α] : List α → α
 | [] => panic! "empty list"
