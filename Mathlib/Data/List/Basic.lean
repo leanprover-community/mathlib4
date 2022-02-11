@@ -540,22 +540,20 @@ theorem mem_repeat {a b : α} : ∀ {n}, b ∈ repeat a n ↔ n ≠ 0 ∧ b = a
 theorem eq_of_mem_repeat {a b : α} {n} (h : b ∈ repeat a n) : b = a :=
   (mem_repeat.1 h).2
 
-/-! ### last -/
+/-! ### getLast -/
 
-theorem last_cons {a : α} {l : List α} : ∀ (h₁ : a :: l ≠ nil) (h₂ : l ≠ nil),
-  last (a :: l) h₁ = last l h₂ := by
+theorem getLast_cons {a : α} {l : List α} : ∀ (h₁ : a :: l ≠ nil) (h₂ : l ≠ nil),
+  getLast (a :: l) h₁ = getLast l h₂ := by
   induction l <;> intros; {contradiction}; rfl
 
-@[simp] theorem last_append {a : α} : ∀ (l : List α) (h : l ++ [a] ≠ []), last (l ++ [a]) h = a
+@[simp] theorem getLast_append {a : α} : ∀ (l : List α) (h : l ++ [a] ≠ []), getLast (l ++ [a]) h = a
 | [], _ => rfl
 | a::t, h => by
-  show last (_ :: (_ ++ _)) _ = _
-  rw [last_cons _ fun H => cons_ne_nil _ _ (append_eq_nil.1 H).2, last_append t]
+  show getLast (_ :: (_ ++ _)) _ = _
+  rw [getLast_cons _ fun H => cons_ne_nil _ _ (append_eq_nil.1 H).2, getLast_append t]
 
-theorem last_concat {a : α} (l : List α) : (h : concat l a ≠ []) → last (concat l a) h = a := by
-  rw [concat_eq_append]; apply last_append
-
-theorem last_singleton (a : α) (h : [a] ≠ []) : last [a] h = a := rfl
+theorem getLast_concat {a : α} (l : List α) : (h : concat l a ≠ []) → getLast (concat l a) h = a := by
+  rw [concat_eq_append]; apply getLast_append
 
 /-! ### nth element -/
 
@@ -692,20 +690,20 @@ theorem get?_append {l₁ l₂ : List α} {n : ℕ} (hn : n < l₁.length) :
     rw [length_append] <;> exact Nat.le_add_right _ _
   rw [get?_eq_get hn, get?_eq_get hn', get_append]
 
-theorem last_eq_get : ∀ (l : List α) (h : l ≠ []),
-  last l h = l.get (l.length - 1) (Nat.sub_lt (length_pos_of_ne_nil h) Nat.one_pos)
+theorem getLast_eq_get : ∀ (l : List α) (h : l ≠ []),
+  getLast l h = l.get (l.length - 1) (Nat.sub_lt (length_pos_of_ne_nil h) Nat.one_pos)
 | [], h => rfl
 | [a], h => by
-  rw [last_singleton, get_singleton]
-| a :: b :: l, h => by rw [last_cons, last_eq_get (b :: l)]; {rfl}; exact cons_ne_nil b l
+  rw [getLast_singleton, get_singleton]
+| a :: b :: l, h => by rw [getLast_cons, getLast_eq_get (b :: l)]; {rfl}; exact cons_ne_nil b l
 
 @[simp] theorem get?_concat_length : ∀ (l : List α) a : α, (l ++ [a]).get? l.length = some a
 | [], a => rfl
 | b :: l, a => by rw [cons_append, length_cons]; simp only [get?, get?_concat_length]
 
 theorem get_cons_length (x : α) (xs : List α) (n : ℕ) (h : n = xs.length) :
-  (x :: xs).get n (by simp [h]) = (x :: xs).last (cons_ne_nil x xs) := by
-  rw [last_eq_get]; cases h; rfl
+  (x :: xs).get n (by simp [h]) = (x :: xs).getLast (cons_ne_nil x xs) := by
+  rw [getLast_eq_get]; cases h; rfl
 
 @[ext] theorem ext : ∀ {l₁ l₂ : List α}, (∀ n, l₁.get? n = l₂.get? n) → l₁ = l₂
 | [], [], h => rfl
