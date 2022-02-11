@@ -109,7 +109,7 @@ def sortResults {α} [Inhabited α] (results : HashMap Name α) : CoreM <| Array
 
 /-- Formats a linter warning as `#check` command with comment. -/
 def printWarning (declName : Name) (warning : MessageData) : CoreM MessageData := do
-  pure m!"#check @{← mkConstWithLevelParams declName} /- {warning} -/"
+  pure m!"#check {← mkConstWithLevelParams declName} /- {warning} -/"
 
 /-- Formats a map of linter warnings using `print_warning`, sorted by line number. -/
 def printWarnings (results : HashMap Name MessageData) : CoreM MessageData := do
