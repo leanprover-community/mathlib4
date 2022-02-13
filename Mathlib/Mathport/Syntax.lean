@@ -301,8 +301,6 @@ syntax (name := obviously) "obviously" : tactic
 
 syntax (name := prettyCases) "pretty_cases" : tactic
 
-syntax (name := pushNeg) "push_neg" (ppSpace location)? : tactic
-
 syntax (name := contrapose) "contrapose" (ppSpace ident (" with " ident)?)? : tactic
 syntax (name := contrapose!) "contrapose!" (ppSpace ident (" with " ident)?)? : tactic
 
