@@ -22,12 +22,27 @@ theorem not_or_eq  (h : (¬p) = p') (h' : (¬q) = q') : (¬ (p ∨ q)) = (p' ∧
 theorem not_forall_eq {s s' : α → Prop} (h : ∀x, (¬s x) = s' x) : (¬ ∀x, s x) = (∃ x, s' x) := funext h ▸ propext not_forall
 theorem not_exists_eq {s s' : α → Prop} (h : ∀x, (¬s x) = s' x) : (¬ ∃x, s x) = (∀ x, s' x) := forall_congr h ▸ propext not_exists
 
+/-- This function is used to instantiate the bounded var of a binder and give it a local declaration
+as a free var.\
+We want this to be able to push negations inside binders.
+-/
 def binderTelescope1 (e : Expr) (f : Expr → Expr → MetaM α) : MetaM α := do
 match e with
 | Expr.lam n t b d => withLocalDecl n d.binderInfo t fun x => f x (instantiate1 b x)
 | Expr.forallE n t b d => withLocalDecl n d.binderInfo t fun x => f x (instantiate1 b x)
 | _ => throwError "binder expected{indentExpr e}"
 
+/-- This function takes an expression and create the equivalent expression by pushing negations
+and a proof of the equality
+The function distinguishes 4 cases :
+- If the expression is a binder, then the function instantiates the bounded variable, and pushes possibles
+negations in the subexpression
+- If the expression is a negation, then the function tries to use one of the rewriting theorems,
+if no one is suitable, leave the negation in place and pushes possibles negations in the subexpression
+- If the expression is an application, then the function tries to push possibles negations in
+both subexressions
+- In other cases, the function just returns the expression and the reflexive equality
+-/
 partial def pushNegation (expr : Expr) : MetaM (Expr × Expr) := do
 match expr with
 | Expr.forallE n t b _ =>
@@ -111,6 +126,26 @@ then
 else
   throwError "Pushneg couldn't find a negation to push"
 
+
+/--
+Push negations in the goal of some assumption.
+For instance, a hypothesis `h : ¬ ∀ x, ∃ y, x ≤ y` will be transformed by `push_neg at h` into
+`h : ∃ x, ∀ y, y < x`. Variables names are conserved.
+This tactic pushes negations inside expressions. For instance, given an assumption
+```lean
+h : ¬ ∀ ε > 0, ∃ δ > 0, ∀ x, |x - x₀| ≤ δ → |f x - y₀| ≤ ε)
+```
+writing `push_neg at h` will turn `h` into
+```lean
+h : ∃ ε, ε > 0 ∧ ∀ δ, δ > 0 → (∃ x, |x - x₀| ≤ δ ∧ ε < |f x - y₀|),
+```
+(the pretty printer does *not* use the abreviations `∀ δ > 0` and `∃ ε > 0` but this issue
+has nothing to do with `push_neg`).
+Note that names are conserved by this tactic, contrary to what would happen with `simp`
+using the relevant lemmas. One can also use this tactic at the goal using `push_neg`,
+at every assumption and the goal using `push_neg at *` or at selected assumptions and the goal
+using say `push_neg at h h' ⊢` as usual.
+-/
 elab "push_neg " loc:(ppSpace location)? : tactic => do
 let loc := expandOptLocation loc
 withLocation loc
