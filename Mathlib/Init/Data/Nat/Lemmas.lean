@@ -845,9 +845,9 @@ induction f with
   simp only [Nat.toDigitsCore, List.length] <;> intro n l1 l2 hlen
 | zero => assumption
 | succ f ih =>
-  byCases hx : n / b = 0
-  case inl => simp only [hx, if_true, List.length, congrArg (fun l => l + 1) hlen]
-  case inr =>
+  by_cases hx : n / b = 0
+  case pos => simp only [hx, if_true, List.length, congrArg (fun l => l + 1) hlen]
+  case neg =>
     simp only [hx, if_false]
     specialize ih (n / b) (Nat.digitChar (n % b) :: l1) (Nat.digitChar (n % b) :: l2)
     simp only [List.length, congrArg (fun l => l + 1) hlen] at ih
@@ -857,9 +857,9 @@ lemma to_digits_core_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List C
 induction f with
   intro n c tl <;> simp only [Nat.toDigitsCore, List.length]
 | succ f ih =>
-  byCases hnb : (n / b) = 0
-  case inl => simp only [hnb, if_true, List.length]
-  case inr =>
+  by_cases hnb : (n / b) = 0
+  case pos => simp only [hnb, if_true, List.length]
+  case neg =>
     generalize hx: Nat.digitChar (n % b) = x
     simp only [hx, hnb, if_false] at ih
     simp only [hnb, if_false]
@@ -883,16 +883,16 @@ induction f generalizing n e hlt h_e_pos with
   cases e with
   | zero => exact False.elim (Nat.lt_irrefl 0 h_e_pos)
   | succ e =>
-    byCases h_pred_pos : 0 < e
-    case inl =>
+    by_cases h_pred_pos : 0 < e
+    case pos =>
       have _ : 0 < b := Nat.lt_trans (by decide) h
       specialize ih (n / b) e (nat_repr_len_aux n b e ‹0 < b› hlt) h_pred_pos
-      byCases hdiv_ten : n / b = 0
-      case inl => simp only [hdiv_ten]; exact Nat.le.step h_pred_pos
-      case inr =>
+      by_cases hdiv_ten : n / b = 0
+      case pos => simp only [hdiv_ten]; exact Nat.le.step h_pred_pos
+      case neg =>
         simp only [hdiv_ten, to_digits_core_lens_eq b f (n / b) (Nat.digitChar $ n % b), if_false]
         exact Nat.succ_le_succ ih
-    case inr =>
+    case neg =>
       have _ : e = 0 := Nat.eq_zero_of_nonpos e h_pred_pos
       rw [‹e = 0›]
       have _ : b ^ 1 = b := by simp only [pow_succ, pow_zero, Nat.one_mul]
@@ -907,9 +907,9 @@ cases n with
   intro _ _ <;> simp only [Nat.repr, Nat.toDigits, String.length, List.asString]
 | zero => assumption
 | succ n =>
-  byCases hterm : n.succ / 10 = 0
-  case inl => simp only [hterm, Nat.toDigitsCore]; assumption
-  case inr =>
+  by_cases hterm : n.succ / 10 = 0
+  case pos => simp only [hterm, Nat.toDigitsCore]; assumption
+  case neg =>
     simp only [hterm]
     exact to_digits_core_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e ‹n.succ < 10 ^ e› ‹0 < e›
 
