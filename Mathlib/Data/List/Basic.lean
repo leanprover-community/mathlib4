@@ -87,10 +87,8 @@ theorem mem_of_mem_cons_of_mem {a b : α} {l : List α} : a ∈ b::l → b ∈ l
       (fun heq : a = b => heq ▸ binl)
       (fun hin : a ∈ l => hin)
 
-theorem eq_or_ne_mem_of_mem {a b : α} {l : List α} : a ∈ b :: l → a = b ∨ (a ≠ b ∧ a ∈ l) := by
-  byCases h : a = b
-  { exact fun _ => Or.inl h }
-  exact fun h' => Or.inr ⟨h, Or.resolve_left h' h⟩
+theorem eq_or_ne_mem_of_mem {a b : α} {l : List α} (h' : a ∈ b :: l) : a = b ∨ (a ≠ b ∧ a ∈ l) :=
+  open Classical in if h : a = b then Or.inl h else Or.inr ⟨h, h'.resolve_left h⟩
 
 theorem not_mem_append {a : α} {s t : List α} (h₁ : a ∉ s) (h₂ : a ∉ t) : a ∉ s ++ t :=
 mt mem_append.1 $ (not_or _ _).mpr ⟨h₁, h₂⟩
@@ -1197,9 +1195,7 @@ end union
 
 @[simp] theorem mem_inter_iff [DecidableEq α] {x : α} {l₁ l₂ : List α} :
     x ∈ l₁.inter l₂ ↔ x ∈ l₁ ∧ x ∈ l₂ := by
-  induction l₁ with
-  | nil => simp [List.inter, mem_filter]
-  | cons a l' ih => simp [List.inter, mem_filter]; rw [decide_eq_true_iff (x ∈ l₂)]; intro; rfl
+  cases l₁ <;> simp [List.inter, mem_filter]
 
 /--
 List.prod satisfies a specification of cartesian product on lists.
