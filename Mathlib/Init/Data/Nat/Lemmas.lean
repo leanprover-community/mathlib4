@@ -345,9 +345,9 @@ theorem exists_eq_succ_of_ne_zero {n : ℕ} (H : n ≠ 0) : ∃k : ℕ, n = succ
 
 
 def discriminate (H1: n = 0 → α) (H2 : ∀m, n = succ m → α) : α :=
-  match e: n with
-  | 0 => H1 e
-  | succ m => H2 m e
+  match n with
+  | 0 => H1 rfl
+  | succ m => H2 m rfl
 
 lemma one_eq_succ_zero : 1 = succ 0 := rfl
 

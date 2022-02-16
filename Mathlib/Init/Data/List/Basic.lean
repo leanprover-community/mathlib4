@@ -23,16 +23,16 @@ attribute [simp] get! get? head? headD head tail! tail? tailD getLast! getLast?
   replace elem lookup drop take takeWhile foldr zipWith unzip rangeAux enumFrom init
   intersperse isPrefixOf isEqv dropLast
 
-@[simp] lemma get_cons_zero {as : List α} : (a :: as).get 0 (id <| Nat.zero_lt_succ _) = a := rfl
+@[simp] lemma get_cons_zero {as : List α} : (a :: as).get ⟨0, id <| Nat.zero_lt_succ _⟩ = a := rfl
 @[simp] lemma get_cons_succ {as : List α} {h : i + 1 < (a :: as).length} :
-  (a :: as).get (i+1) h = as.get i (Nat.lt_of_succ_lt_succ h) := rfl
+  (a :: as).get ⟨i+1, h⟩ = as.get ⟨i, Nat.lt_of_succ_lt_succ h⟩ := rfl
 
 @[simp] lemma getLast_singleton {x : α} : [x].getLast (id (by simp)) = x := rfl
 @[simp] lemma getLast_cons_cons {x : α} : (x::y::ys).getLast (id (by simp)) = (y::ys).getLast (by simp) := rfl
 
 -- The `id <|` above is a workaround to allow Lean to unify get_cons_zero's lhs
 -- in reducible transparency:
-example {as : List α} {h} : (a :: as).get 0 h = a := by simp
+example {as : List α} {h} : (a :: as).get ⟨0, h⟩ = a := by simp
 
 -- https://github.com/leanprover/lean4/issues/945
 -- attribute [simp] iota
