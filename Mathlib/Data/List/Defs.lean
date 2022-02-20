@@ -767,4 +767,38 @@ def oneTwo? : Nat → Option Nat
 def choose (chooser : α → Option β) (l : List α) : List α :=
   l.filter (chooser · |>.isSome)
 
+/--
+Auxiliary function for `List.compareWith`
+-/
+def compareWithAux (comparer : α → α → Int) : List α → List α → Int
+  | x::xs, y::ys =>
+    let c := comparer x y
+    if c = 0 then
+      compareWithAux comparer xs ys
+    else c
+  | [], [] => 0
+  | _, [] => 1
+  | [], _ => -1
+
+/--
+`List.compareWith` compares two lists `l₁` and `l₂` with the given function `comparer`,
+element by element.
+Example:
+```
+def compare' (x y : Int) : Int :=
+  if x = y then 0
+  else
+    if x > y then 1
+    else -1
+
+[1, 5].compareWith compare' [1, 8] = -1
+[1, 10].compareWith compare' [1, 10] = 0
+[1, 11].compareWith compare' [1, 13] = 1
+[1, 5].compareWith compare' [1] = -1
+[1].compareWith compare' [1, 8] = 1
+```
+-/
+def compareWith (comparer : α → α → Int) (l₁ l₂ : List α) : Int :=
+  compareWithAux comparer l₁ l₂
+
 end List
