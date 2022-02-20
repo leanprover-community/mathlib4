@@ -127,23 +127,41 @@ open Lean.Elab.Tactic in
 elab "apply_ext_lemma" : tactic => do
   let tgt ← getMainTarget
   unless tgt.isAppOfArity ``Eq 3 do
-    throwError "applyExtLemma only applies to equations"
+    throwError "applyExtLemma only applies to equations, not{indentExpr tgt}"
+  let ty := tgt.getArg! 0
   let s ← saveState
-  for lem in ← (extLemmas (← getEnv)).getMatch (tgt.getArg! 0) do
+  for lem in ← (extLemmas (← getEnv)).getMatch ty do
     try
       liftMetaTactic (apply · (← mkConstWithFreshMVarLevels lem))
       return
     catch e =>
       s.restore
-  throwError "no applicable extensionality lemma found"
+  throwError "no applicable extensionality lemma found for{indentExpr ty}"
 
-scoped syntax "ext_or_skip" (colGt term:max)* : tactic
+scoped syntax "ext_or_skip" (ppSpace rintroPat)* : tactic
 macro_rules | `(tactic| ext_or_skip) => `(tactic| skip)
-macro_rules | `(tactic| ext_or_skip $xs*) => `(tactic| apply_ext_lemma; ext_or_skip $xs*)
-macro_rules | `(tactic| ext_or_skip $x $xs*) => `(tactic| intro $x; ext_or_skip $xs*)
+macro_rules
+| `(tactic| ext_or_skip $xs:rintroPat*) =>
+  `(tactic| apply_ext_lemma; ext_or_skip $xs:rintroPat*)
+macro_rules
+| `(tactic| ext_or_skip $x:rintroPat $xs:rintroPat*) =>
+  `(tactic| rintro $x:rintroPat; ext_or_skip $xs:rintroPat*)
 
--- TODO: We need to use the following, to support existing uses of `ext` in mathlib3.
--- syntax (name := ext) "ext" (ppSpace rcasesPat)* (" : " num)? : tactic
+-- TODO: support `ext : n`
 
-syntax "ext" (colGt term:max)* : tactic
-macro_rules | `(tactic| ext $xs*) => `(tactic| apply_ext_lemma; ext_or_skip $xs*)
+syntax "ext" (colGt ppSpace rintroPat)* (" : " num)? : tactic
+macro_rules
+| `(tactic| ext) => do
+  `(tactic| first | intro; ext | apply_ext_lemma; ext | skip)
+macro_rules
+| `(tactic| ext $xs:rintroPat*) =>
+  `(tactic| apply_ext_lemma; ext_or_skip $xs:rintroPat*)
+
+syntax "ext1" (colGt ppSpace rintroPat)* : tactic
+macro_rules
+| `(tactic| ext1 $xs:rintroPat*) =>
+  `(tactic| apply_ext_lemma; rintro $xs:rintroPat*)
+
+-- TODO
+syntax "ext1?" (colGt ppSpace rintroPat)* : tactic
+syntax "ext?" (colGt ppSpace rintroPat)* (" : " num)? : tactic
