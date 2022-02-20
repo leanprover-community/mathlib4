@@ -765,7 +765,7 @@ def oneTwo? : Nat → Option Nat
 ```
 -/
 def choose (chooser : α → Option β) (l : List α) : List α :=
-  l.filter (chooser · |>.isSome)
+  l.filter (Option.isSome ∘ chooser)
 
 /--
 Auxiliary function for `List.compareWith`
