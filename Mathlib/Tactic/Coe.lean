@@ -13,7 +13,7 @@ Define a `(↑)` notation for coercions equivalent to the eta-reduction of `(↑
 
 namespace Lean.Elab.Term.CoeImpl
 
-elab (priority := low) "↑" : term <= expectedType => do
+elab "(" "↑" ")" : term <= expectedType => do
   let expectedType ← instantiateMVars expectedType
   let Expr.forallE _ a b .. := expectedType | do
     tryPostpone
