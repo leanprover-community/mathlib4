@@ -801,4 +801,11 @@ def compare' (x y : Int) : Int :=
 def compareWith (comparer : α → α → Int) (l₁ l₂ : List α) : Int :=
   compareWithAux comparer l₁ l₂
 
+/--
+`List.sum` sums all of the elements of of list `l`, whose elements
+have instances of `Add` and `OfNat`.
+-/
+def sum [Add α] [OfNat α 0] (l : List α) : α :=
+  l.foldl (.+.) 0
+
 end List
