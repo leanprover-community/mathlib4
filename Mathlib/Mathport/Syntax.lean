@@ -60,7 +60,6 @@ macro_rules
 
 macro (name := expandFoldl) "expandFoldl% "
   "(" x:ident y:ident " => " term:term ")" init:term:max "[" args:term,* "]" : term =>
-  dbg_trace (x,y,term,init,args.1)
   args.getElems.foldlM (init := init) fun res arg => do
     term.replaceM fun e =>
       return if e == x then some res else if e == y then some arg else none
@@ -70,7 +69,6 @@ macro (name := expandFoldr) "expandFoldr% "
     term.replaceM fun e =>
       return if e == x then some arg else if e == y then some res else none
 
-#check fun as : Lean.Syntax.SepArray "." => (as.getElems : Lean.Syntax.SepArray ".")
 syntax bindersItem := atomic("(" "..." ")")
 syntax scopedAction := "scoped " ident " => " term
 syntax foldRep := (strLit "*") <|> ",*"
