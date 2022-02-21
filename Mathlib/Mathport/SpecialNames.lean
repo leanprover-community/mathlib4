@@ -68,6 +68,7 @@ namespace Mathlib.Prelude
 #align has_seq       Seq
 #align has_seq_left  SeqLeft
 #align has_seq_right SeqRight
+#align has_dvd       Dvd
 
 -- Implementation detail
 #align _sorry_placeholder_     _sorry_placeholder_
