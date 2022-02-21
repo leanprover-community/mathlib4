@@ -20,6 +20,7 @@ namespace Mathlib.Prelude
 
 #align heq                     HEq
 
+#align psigma                  PSigma
 #align punit                   PUnit
 #align pprod                   PProd
 
