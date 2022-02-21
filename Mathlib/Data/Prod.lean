@@ -121,17 +121,17 @@ def swap : α × β → β × α := λp => (p.2, p.1)
 @[simp] lemma swap_swap_eq : swap ∘ swap = @id (α × β) :=
 funext swap_swap
 
-lemma swap_left_inverse : Function.left_inverse (@swap α β) swap :=
+lemma swap_LeftInverse : Function.LeftInverse (@swap α β) swap :=
 swap_swap
 
-lemma swap_right_inverse : Function.right_inverse (@swap α β) swap :=
+lemma swap_RightInverse : Function.RightInverse (@swap α β) swap :=
 swap_swap
 
 lemma swap_injective : Function.injective (@swap α β) :=
-swap_left_inverse.injective
+swap_LeftInverse.injective
 
 lemma swap_surjective : Function.surjective (@swap α β) :=
-Function.right_inverse.surjective swap_left_inverse
+Function.RightInverse.surjective swap_LeftInverse
 
 lemma swap_bijective : Function.bijective (@swap α β) :=
 ⟨swap_injective, swap_surjective⟩

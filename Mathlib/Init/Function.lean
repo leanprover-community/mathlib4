@@ -69,37 +69,37 @@ def bijective (f : α → β) := injective f ∧ surjective f
 theorem bijective.comp {g : β → φ} {f : α → β} : bijective g → bijective f → bijective (g ∘ f)
 | ⟨h_ginj, h_gsurj⟩, ⟨h_finj, h_fsurj⟩ => ⟨h_ginj.comp h_finj, h_gsurj.comp h_fsurj⟩
 
-/-- `left_inverse g f` means that g is a left inverse to f. That is, `g ∘ f = id`. -/
-def left_inverse (g : β → α) (f : α → β) : Prop := ∀ x, g (f x) = x
+/-- `LeftInverse g f` means that g is a left inverse to f. That is, `g ∘ f = id`. -/
+def LeftInverse (g : β → α) (f : α → β) : Prop := ∀ x, g (f x) = x
 
-/-- `has_left_inverse f` means that `f` has an unspecified left inverse. -/
-def has_left_inverse (f : α → β) : Prop := ∃ finv : β → α, left_inverse finv f
+/-- `has_LeftInverse f` means that `f` has an unspecified left inverse. -/
+def has_LeftInverse (f : α → β) : Prop := ∃ finv : β → α, LeftInverse finv f
 
-/-- `right_inverse g f` means that g is a right inverse to f. That is, `f ∘ g = id`. -/
-def right_inverse (g : β → α) (f : α → β) : Prop := left_inverse f g
+/-- `RightInverse g f` means that g is a right inverse to f. That is, `f ∘ g = id`. -/
+def RightInverse (g : β → α) (f : α → β) : Prop := LeftInverse f g
 
-/-- `has_right_inverse f` means that `f` has an unspecified right inverse. -/
-def has_right_inverse (f : α → β) : Prop := ∃ finv : β → α, right_inverse finv f
+/-- `has_RightInverse f` means that `f` has an unspecified right inverse. -/
+def has_RightInverse (f : α → β) : Prop := ∃ finv : β → α, RightInverse finv f
 
-theorem left_inverse.injective {g : β → α} {f : α → β} : left_inverse g f → injective f :=
+theorem LeftInverse.injective {g : β → α} {f : α → β} : LeftInverse g f → injective f :=
 λ h a b hf => h a ▸ h b ▸ hf ▸ rfl
 
-theorem has_left_inverse.injective {f : α → β} : has_left_inverse f → injective f :=
+theorem has_LeftInverse.injective {f : α → β} : has_LeftInverse f → injective f :=
 λ h => Exists.elim h (λ finv inv => inv.injective)
 
-theorem right_inverse_of_injective_of_left_inverse {f : α → β} {g : β → α}
-    (injf : injective f) (lfg : left_inverse f g) :
-  right_inverse f g :=
+theorem RightInverse_of_injective_of_LeftInverse {f : α → β} {g : β → α}
+    (injf : injective f) (lfg : LeftInverse f g) :
+  RightInverse f g :=
 λ x => injf $ lfg $ f x
 
-theorem right_inverse.surjective {f : α → β} {g : β → α} (h : right_inverse g f) : surjective f :=
+theorem RightInverse.surjective {f : α → β} {g : β → α} (h : RightInverse g f) : surjective f :=
 λ y => ⟨g y, h y⟩
 
-theorem has_right_inverse.surjective {f : α → β} : has_right_inverse f → surjective f
+theorem has_RightInverse.surjective {f : α → β} : has_RightInverse f → surjective f
 | ⟨finv, inv⟩ => inv.surjective
 
-theorem left_inverse_of_surjective_of_right_inverse {f : α → β} {g : β → α} (surjf : surjective f)
-  (rfg : right_inverse f g) : left_inverse f g :=
+theorem LeftInverse_of_surjective_of_RightInverse {f : α → β} {g : β → α} (surjf : surjective f)
+  (rfg : RightInverse f g) : LeftInverse f g :=
 λ y =>
   let ⟨x, hx⟩ := surjf y
   by rw [← hx, rfg]
@@ -130,10 +130,10 @@ rfl
 @[simp] theorem uncurry_curry (f : α × β → φ) : uncurry (curry f) = f :=
 funext (λ ⟨a, b⟩ => rfl)
 
-protected theorem left_inverse.id {g : β → α} {f : α → β} (h : left_inverse g f) : g ∘ f = id :=
+protected theorem LeftInverse.id {g : β → α} {f : α → β} (h : LeftInverse g f) : g ∘ f = id :=
 funext h
 
-protected theorem right_inverse.id {g : β → α} {f : α → β} (h : right_inverse g f) : f ∘ g = id :=
+protected theorem RightInverse.id {g : β → α} {f : α → β} (h : RightInverse g f) : f ∘ g = id :=
 funext h
 
 end Function
