@@ -24,9 +24,7 @@ protected lemma eq_zero_of_add_eq_zero_right : ∀ {n m : ℕ}, n + m = 0 → n 
 protected lemma eq_zero_of_add_eq_zero_left {n m : ℕ} (h : n + m = 0) : m = 0 :=
 @Nat.eq_zero_of_add_eq_zero_right m n (Nat.add_comm n m ▸ h)
 
-@[simp] lemma pred_zero : pred 0 = 0 := rfl
-
-@[simp] lemma pred_succ (n : ℕ) : pred (succ n) = n := rfl
+attribute [simp] Nat.pred_zero Nat.pred_succ
 
 /-
 
@@ -99,9 +97,7 @@ Nat.le_antisymm (Nat.le_of_mul_le_mul_left (Nat.le_of_eq H) Hn)
 
 /- sub properties -/
 
-@[simp] protected lemma zero_sub : ∀ a : ℕ, 0 - a = 0
-| 0     => rfl
-| succ a => congr_arg pred (Nat.zero_sub a)
+attribute [simp] Nat.zero_sub
 
 lemma sub_lt_succ (a b : ℕ) : a - b < succ a :=
 lt_succ_of_le (sub_le a b)
@@ -118,24 +114,6 @@ protected lemma add_self_ne_one : ∀ (n : ℕ), n + n ≠ 1
   Nat.noConfusion h1 fun.
 
 /- subtraction -/
-
-protected lemma add_sub_add_right : ∀ (n k m : ℕ), (n + k) - (m + k) = n - m
-| n, 0,   m => by rw [Nat.add_zero, Nat.add_zero]
-| n, k+1, m => by rw [add_succ, add_succ, succ_sub_succ, Nat.add_sub_add_right n k m]
-
-protected lemma add_sub_add_left (k n m : ℕ) : (k + n) - (k + m) = n - m :=
-by rw [Nat.add_comm k n, Nat.add_comm k m, Nat.add_sub_add_right]
-
-protected lemma add_sub_cancel (n m : ℕ) : n + m - m = n :=
-suffices n + m - (0 + m) = n by rwa [Nat.zero_add] at this
-by rw [Nat.add_sub_add_right, Nat.sub_zero]
-
-protected lemma add_sub_cancel_left (n m : ℕ) : n + m - n = m :=
-show n + m - (n + 0) = m by rw [Nat.add_sub_add_left, Nat.sub_zero]
-
-protected lemma sub_sub : ∀ (n m k : ℕ), n - m - k = n - (m + k)
-| n, m, 0        => by rw [Nat.add_zero, Nat.sub_zero]
-| n, m, (succ k) => by rw [add_succ, sub_succ, sub_succ, Nat.sub_sub n m k]
 
 protected lemma le_of_le_of_sub_le_sub_right {n m k : ℕ} (h₀ : k ≤ m) (h₁ : n - k ≤ m - k) : n ≤ m := by
   revert k m
@@ -191,16 +169,6 @@ protected theorem eq_zero_of_nonpos : ∀ (n : Nat), ¬0 < n -> n = 0
 
 protected lemma sub_eq_zero_iff_le : n - m = 0 ↔ n ≤ m :=
 ⟨Nat.le_of_sub_eq_zero, Nat.sub_eq_zero_of_le⟩
-
-protected lemma add_sub_of_le {n m : ℕ} (h : n ≤ m) : n + (m - n) = m :=
-let ⟨k, hk⟩ := Nat.le.dest h; by rw [← hk, Nat.add_sub_cancel_left]
-
-protected lemma sub_add_cancel {n m : ℕ} (h : m ≤ n) : n - m + m = n :=
-by rw [Nat.add_comm, Nat.add_sub_of_le h]
-
-protected lemma add_sub_assoc {m k : ℕ} (h : k ≤ m) (n : ℕ) : n + m - k = n + (m - k) :=
-  let ⟨l, hl⟩ := Nat.le.dest h
-  by rw [← hl, Nat.add_sub_cancel_left, Nat.add_comm k, ← Nat.add_assoc, Nat.add_sub_cancel]
 
 protected lemma sub_eq_iff_eq_add {a b c : ℕ} (ab : b ≤ a) : a - b = c ↔ a = c + b :=
 ⟨fun c_eq => by rw [c_eq.symm, Nat.sub_add_cancel ab],
@@ -427,20 +395,6 @@ by rw [Nat.sub_sub, Nat.sub_sub, add_succ, succ_sub_succ]
 protected lemma sub.right_comm (m n k : ℕ) : m - n - k = m - k - n :=
 by rw [Nat.sub_sub, Nat.sub_sub, Nat.add_comm]
 
-lemma mul_pred_left : ∀ (n m : ℕ), pred n * m = n * m - m
-| 0,   m => by simp [Nat.zero_sub, pred_zero, Nat.zero_mul]
-| n+1, m => by rw [pred_succ, succ_mul, Nat.add_sub_cancel]
-
-lemma mul_pred_right (n m : ℕ) : n * pred m = n * m - n :=
-by rw [Nat.mul_comm, mul_pred_left, Nat.mul_comm]
-
-protected lemma mul_sub_right_distrib (n) : ∀ (m k : ℕ), (n - m) * k = n * k - m * k
-| 0,   k => by simp [Nat.sub_zero, Nat.zero_mul]
-| m+1, k => by rw [Nat.sub_succ, mul_pred_left, Nat.mul_sub_right_distrib, succ_mul, Nat.sub_sub]
-
-protected lemma mul_sub_left_distrib (n m k : ℕ) : n * (m - k) = n * m - n * k :=
-by rw [Nat.mul_comm, Nat.mul_sub_right_distrib, Nat.mul_comm m n, Nat.mul_comm n k]
-
 protected lemma mul_self_sub_mul_self_eq (a b : Nat) : a * a - b * b = (a + b) * (a - b) :=
 by rw [Nat.mul_sub_left_distrib, Nat.right_distrib, Nat.right_distrib, Nat.mul_comm b a, Nat.add_comm (a*a) (a*b),
        Nat.add_sub_add_left]
@@ -610,7 +564,7 @@ lemma sub_mul_div (x n p : ℕ) (h₁ : n*p ≤ x) : (x - n*p) / n = x / n - p :
         apply h₁
       rw [sub_succ, ← IH h₂]
       rw [div_eq_sub_div h₀ h₃]
-      simp [add_one, pred_succ, mul_succ, Nat.sub_sub]
+      simp [add_one, Nat.pred_succ, mul_succ, Nat.sub_sub]
 
 lemma div_mul_le_self : ∀ (m n : ℕ), m / n * n ≤ m
 | m, 0   => by simp; apply zero_le

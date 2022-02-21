@@ -287,7 +287,7 @@ by
     have h₃ : m ≤ n + k := le_of_succ_le_succ h₂
     rw [subNatNat_of_lt h', subNatNat_of_lt h₂]
     simp [Nat.add_comm]
-    rw [← add_succ, succ_pred_eq_of_pos (Nat.sub_pos_of_lt h'), add_succ, succ_sub h₃, pred_succ]
+    rw [← add_succ, succ_pred_eq_of_pos (Nat.sub_pos_of_lt h'), add_succ, succ_sub h₃, Nat.pred_succ]
     rw [Nat.add_comm n, Nat.add_sub_assoc (Nat.le_of_lt h')]
 
 lemma add_assoc_aux1 (m n : ℕ) :

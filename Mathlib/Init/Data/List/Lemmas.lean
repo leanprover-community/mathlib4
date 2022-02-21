@@ -10,8 +10,6 @@ namespace List
 
 open Nat
 
-@[simp] theorem append_eq_append (l₁ l₂ : List α) : List.append l₁ l₂ = l₁ ++ l₂ := rfl
-
 @[simp] theorem length_repeat (a : α) (n : Nat) : length (repeat a n) = n := by
   induction n <;> simp_all
 
