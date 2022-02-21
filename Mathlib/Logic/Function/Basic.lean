@@ -558,7 +558,7 @@ lemma uncurry_bicompr (f : α → β → γ) (g : γ → δ) :
 
 lemma uncurry_bicompl (f : γ → δ → ε) (g : α → γ) (h : β → δ) :
   uncurry (bicompl f g h) = (uncurry f) ∘ (Prod.map g h) :=
-by ext (x, y); exact rfl
+by ext ⟨x, y⟩; exact rfl
 
 end bicomp
 

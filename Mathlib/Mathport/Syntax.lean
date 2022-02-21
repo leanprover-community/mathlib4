@@ -221,13 +221,6 @@ syntax (name := guardLHS) "guard_lhs " " =ₐ " term : conv
 
 end Conv
 
-syntax (name := ext1) "ext1" (ppSpace rcasesPat)* : tactic
-syntax (name := ext1?) "ext1?" (ppSpace rcasesPat)* : tactic
--- The current implementation of `ext` in mathlib4 does not support `rcasesPat`,
--- and will need to be updated.
-syntax (name := ext) "ext" (ppSpace rcasesPat)* (" : " num)? : tactic
-syntax (name := ext?) "ext?" (ppSpace rcasesPat)* (" : " num)? : tactic
-
 syntax (name := apply') "apply' " term : tactic
 syntax (name := fapply') "fapply' " term : tactic
 syntax (name := eapply') "eapply' " term : tactic
