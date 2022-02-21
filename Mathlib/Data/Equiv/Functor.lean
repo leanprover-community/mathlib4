@@ -31,8 +31,8 @@ theorem map_map (m : α → β) (g : β → γ) (x : f α) :
 def map_equiv (h : α ≃ β) : f α ≃ f β where
   toFun    := map h
   invFun   := map h.symm
-  leftInv x := by simp [map_map]
-  rightInv x := by simp [map_map]
+  left_inv x := by simp [map_map]
+  right_inv x := by simp [map_map]
 
 @[simp]
 lemma map_equiv_apply (h : α ≃ β) (x : f α) :

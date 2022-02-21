@@ -191,7 +191,7 @@ theorem cantor_surjective {α} (f : α → Set α) : ¬ Function.surjective f
 theorem cantor_injective {α : Type _} (f : (Set α) → α) :
   ¬ Function.injective f
 | i => cantor_surjective (λ a b => ∀ U, a = f U → U b) $
-       right_inverse.surjective
+       RightInverse.surjective
          (λ U => funext $ λ a => propext ⟨λ h => h U rfl, λ h' U' e => i e ▸ h'⟩)
 
 /-- `g` is a partial inverse to `f` (an injective but not necessarily
@@ -211,42 +211,42 @@ theorem injective_of_partial_inv_right {α β} {f : α → β} {g} (H : is_parti
  (x y b) (h₁ : g x = some b) (h₂ : g y = some b) : x = y :=
 ((H _ _).1 h₁).symm.trans ((H _ _).1 h₂)
 
-theorem left_inverse.comp_eq_id {f : α → β} {g : β → α} (h : left_inverse f g) : f ∘ g = id :=
+theorem LeftInverse.comp_eq_id {f : α → β} {g : β → α} (h : LeftInverse f g) : f ∘ g = id :=
 funext h
 
-theorem left_inverse_iff_comp {f : α → β} {g : β → α} : left_inverse f g ↔ f ∘ g = id :=
-⟨left_inverse.comp_eq_id, congr_fun⟩
+theorem LeftInverse_iff_comp {f : α → β} {g : β → α} : LeftInverse f g ↔ f ∘ g = id :=
+⟨LeftInverse.comp_eq_id, congr_fun⟩
 
-theorem right_inverse.comp_eq_id {f : α → β} {g : β → α} (h : right_inverse f g) : g ∘ f = id :=
+theorem RightInverse.comp_eq_id {f : α → β} {g : β → α} (h : RightInverse f g) : g ∘ f = id :=
 funext h
 
-theorem right_inverse_iff_comp {f : α → β} {g : β → α} : right_inverse f g ↔ g ∘ f = id :=
-⟨right_inverse.comp_eq_id, congr_fun⟩
+theorem RightInverse_iff_comp {f : α → β} {g : β → α} : RightInverse f g ↔ g ∘ f = id :=
+⟨RightInverse.comp_eq_id, congr_fun⟩
 
-theorem left_inverse.comp {f : α → β} {g : β → α} {h : β → γ} {i : γ → β}
-  (hf : left_inverse f g) (hh : left_inverse h i) : left_inverse (h ∘ f) (g ∘ i) :=
+theorem LeftInverse.comp {f : α → β} {g : β → α} {h : β → γ} {i : γ → β}
+  (hf : LeftInverse f g) (hh : LeftInverse h i) : LeftInverse (h ∘ f) (g ∘ i) :=
 λ a => show h (f (g (i a))) = a by rw [hf (i a), hh a]
 
-theorem right_inverse.comp {f : α → β} {g : β → α} {h : β → γ} {i : γ → β}
-  (hf : right_inverse f g) (hh : right_inverse h i) : right_inverse (h ∘ f) (g ∘ i) :=
-left_inverse.comp hh hf
+theorem RightInverse.comp {f : α → β} {g : β → α} {h : β → γ} {i : γ → β}
+  (hf : RightInverse f g) (hh : RightInverse h i) : RightInverse (h ∘ f) (g ∘ i) :=
+LeftInverse.comp hh hf
 
-theorem left_inverse.right_inverse {f : α → β} {g : β → α} (h : left_inverse g f) :
-  right_inverse f g := h
+theorem LeftInverse.RightInverse {f : α → β} {g : β → α} (h : LeftInverse g f) :
+  RightInverse f g := h
 
-theorem right_inverse.left_inverse {f : α → β} {g : β → α} (h : right_inverse g f) :
-  left_inverse f g := h
+theorem RightInverse.LeftInverse {f : α → β} {g : β → α} (h : RightInverse g f) :
+  LeftInverse f g := h
 
-theorem left_inverse.surjective {f : α → β} {g : β → α} (h : left_inverse f g) :
+theorem LeftInverse.surjective {f : α → β} {g : β → α} (h : LeftInverse f g) :
   surjective f :=
-h.right_inverse.surjective
+h.RightInverse.surjective
 
-theorem right_inverse.injective {f : α → β} {g : β → α} (h : right_inverse f g) :
+theorem RightInverse.injective {f : α → β} {g : β → α} (h : RightInverse f g) :
   injective f :=
-h.left_inverse.injective
+h.LeftInverse.injective
 
-theorem left_inverse.eq_right_inverse {f : α → β} {g₁ g₂ : β → α} (h₁ : left_inverse g₁ f)
-  (h₂ : Function.right_inverse g₂ f) :
+theorem LeftInverse.eq_RightInverse {f : α → β} {g₁ g₂ : β → α} (h₁ : LeftInverse g₁ f)
+  (h₂ : Function.RightInverse g₂ f) :
   g₁ = g₂ := by
   have h₃ : g₁ = g₁ ∘ f ∘ g₂ := by rw [h₂.comp_eq_id, comp.right_id]
   have h₄ : g₁ ∘ f ∘ g₂ = g₂ := by rw [← comp.assoc, h₁.comp_eq_id, comp.left_id]
@@ -318,33 +318,33 @@ inv_fun_on_eq $ let ⟨a, ha⟩ := h
 lemma inv_fun_neg (h : ¬ ∃ a, f a = b) : inv_fun f b = Classical.choice n :=
 by refine inv_fun_on_neg (mt ?_ h); exact λ ⟨a, _, ha⟩ => ⟨a, ha⟩
 
-theorem inv_fun_eq_of_injective_of_right_inverse {g : β → α}
-  (hf : injective f) (hg : right_inverse g f) : inv_fun f = g :=
+theorem inv_fun_eq_of_injective_of_RightInverse {g : β → α}
+  (hf : injective f) (hg : RightInverse g f) : inv_fun f = g :=
 funext $ λ b => hf (by rw [hg b]
                        exact inv_fun_eq ⟨g b, hg b⟩)
 
-lemma right_inverse_inv_fun (hf : surjective f) : right_inverse (inv_fun f) f :=
+lemma RightInverse_inv_fun (hf : surjective f) : RightInverse (inv_fun f) f :=
 λ b => inv_fun_eq $ hf b
 
-lemma left_inverse_inv_fun (hf : injective f) : left_inverse (inv_fun f) f :=
+lemma LeftInverse_inv_fun (hf : injective f) : LeftInverse (inv_fun f) f :=
 λ b => have : f (inv_fun f (f b)) = f b := inv_fun_eq ⟨b, rfl⟩
        hf this
 
 lemma inv_fun_surjective (hf : injective f) : surjective (inv_fun f) :=
-(left_inverse_inv_fun hf).surjective
+(LeftInverse_inv_fun hf).surjective
 
-lemma inv_fun_comp (hf : injective f) : inv_fun f ∘ f = id := funext $ left_inverse_inv_fun hf
+lemma inv_fun_comp (hf : injective f) : inv_fun f ∘ f = id := funext $ LeftInverse_inv_fun hf
 
 end inv_fun
 
 section inv_fun
 variable {α : Type u} [i : Nonempty α] {β : Sort v} {f : α → β}
 
-lemma injective.has_left_inverse (hf : injective f) : has_left_inverse f :=
-⟨inv_fun f, left_inverse_inv_fun hf⟩
+lemma injective.has_LeftInverse (hf : injective f) : has_LeftInverse f :=
+⟨inv_fun f, LeftInverse_inv_fun hf⟩
 
-lemma injective_iff_has_left_inverse : injective f ↔ has_left_inverse f :=
-⟨injective.has_left_inverse, has_left_inverse.injective⟩
+lemma injective_iff_has_LeftInverse : injective f ↔ has_LeftInverse f :=
+⟨injective.has_LeftInverse, has_LeftInverse.injective⟩
 
 end inv_fun
 
@@ -357,24 +357,24 @@ noncomputable def surj_inv {f : α → β} (h : surjective f) (b : β) : α := C
 
 lemma surj_inv_eq (h : surjective f) (b) : f (surj_inv h b) = b := Classical.choose_spec (h b)
 
-lemma right_inverse_surj_inv (hf : surjective f) : right_inverse (surj_inv hf) f :=
+lemma RightInverse_surj_inv (hf : surjective f) : RightInverse (surj_inv hf) f :=
 surj_inv_eq hf
 
-lemma left_inverse_surj_inv (hf : bijective f) : left_inverse (surj_inv hf.2) f :=
-right_inverse_of_injective_of_left_inverse hf.1 (right_inverse_surj_inv hf.2)
+lemma LeftInverse_surj_inv (hf : bijective f) : LeftInverse (surj_inv hf.2) f :=
+RightInverse_of_injective_of_LeftInverse hf.1 (RightInverse_surj_inv hf.2)
 
-lemma surjective.has_right_inverse (hf : surjective f) : has_right_inverse f :=
-⟨_, right_inverse_surj_inv hf⟩
+lemma surjective.has_RightInverse (hf : surjective f) : has_RightInverse f :=
+⟨_, RightInverse_surj_inv hf⟩
 
-lemma surjective_iff_has_right_inverse : surjective f ↔ has_right_inverse f :=
-⟨surjective.has_right_inverse, has_right_inverse.surjective⟩
+lemma surjective_iff_has_RightInverse : surjective f ↔ has_RightInverse f :=
+⟨surjective.has_RightInverse, has_RightInverse.surjective⟩
 
-lemma bijective_iff_has_inverse : bijective f ↔ ∃ g, left_inverse g f ∧ right_inverse g f :=
-⟨λ hf =>  ⟨_, left_inverse_surj_inv hf, right_inverse_surj_inv hf.2⟩,
+lemma bijective_iff_has_inverse : bijective f ↔ ∃ g, LeftInverse g f ∧ RightInverse g f :=
+⟨λ hf =>  ⟨_, LeftInverse_surj_inv hf, RightInverse_surj_inv hf.2⟩,
  λ ⟨g, gl, gr⟩ => ⟨gl.injective,  gr.surjective⟩⟩
 
 lemma injective_surj_inv (h : surjective f) : injective (surj_inv h) :=
-(right_inverse_surj_inv h).injective
+(RightInverse_surj_inv h).injective
 
 lemma surjective_to_subsingleton [na : Nonempty α] [Subsingleton β] (f : α → β) :
   surjective f :=
@@ -564,21 +564,20 @@ end bicomp
 
 section uncurry
 
-variable {α β γ δ : Type _}
-
 /-- Records a way to turn an element of `α` into a function from `β` to `γ`. The most generic use
 is to recursively uncurry. For instance `f : α → β → γ → δ` will be turned into
 `↿f : α × β × γ → δ`. One can also add instances for bundled maps. -/
-class has_uncurry (α : Type _) (β : outParam (Type _)) (γ : outParam (Type _)) := (uncurry : α → (β → γ))
+class HasUncurry (α : Type u) (β : outParam (Type v)) (γ : outParam (Type w)) where
+  uncurry : α → (β → γ)
 
 /- Uncurrying operator. The most generic use is to recursively uncurry. For instance
 `f : α → β → γ → δ` will be turned into `↿f : α × β × γ → δ`. One can also add instances
 for bundled maps. -/
-notation:max "↿" x:max => has_uncurry.uncurry x
+notation:max "↿" x:max => HasUncurry.uncurry x
 
-instance has_uncurry_base : has_uncurry (α → β) α β := ⟨id⟩
+instance HasUncurry_base : HasUncurry (α → β) α β := ⟨id⟩
 
-instance has_uncurry_induction [has_uncurry β γ δ] : has_uncurry (α → β) (α × γ) δ :=
+instance HasUncurry_induction [HasUncurry β γ δ] : HasUncurry (α → β) (α × γ) δ :=
 ⟨λ f p => ↿(f p.1) p.2⟩
 
 end uncurry
@@ -595,10 +594,10 @@ variable {α : Sort u} {f : α → α} (h : involutive f)
 @[simp]
 lemma comp_self : f ∘ f = id := funext h
 
-protected lemma left_inverse : left_inverse f f := h
-protected lemma right_inverse : right_inverse f f := h
+protected lemma LeftInverse : LeftInverse f f := h
+protected lemma RightInverse : RightInverse f f := h
 
-protected lemma injective : injective f := h.left_inverse.injective
+protected lemma injective : injective f := h.LeftInverse.injective
 protected lemma surjective : surjective f := λ x => ⟨f x, h x⟩
 protected lemma bijective : bijective f := ⟨h.injective, h.surjective⟩
 

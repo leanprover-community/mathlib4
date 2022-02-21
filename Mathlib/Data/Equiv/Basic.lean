@@ -23,8 +23,8 @@ variable {α : Sort u} {β : Sort v} {γ : Sort w}
 structure Equiv (α : Sort u) (β : Sort v) where
   toFun    : α → β
   invFun   : β → α
-  leftInv  : left_inverse invFun toFun
-  rightInv : right_inverse invFun toFun
+  left_inv  : LeftInverse invFun toFun
+  right_inv : RightInverse invFun toFun
 
 infix:25 " ≃ " => Equiv
 
@@ -45,22 +45,22 @@ def refl (α) : α ≃ α := ⟨id, id, λ _ => rfl, λ _ => rfl⟩
 
 instance : Inhabited (α ≃ α) := ⟨Equiv.refl α⟩
 
-def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.rightInv, e.leftInv⟩
+def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.right_inv, e.left_inv⟩
 
 
 def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
 ⟨e₂ ∘ (e₁ : α → β), e₁.symm ∘ (e₂.symm : γ → β),
-  e₂.leftInv.comp e₁.leftInv, e₂.rightInv.comp e₁.rightInv⟩
+  e₂.left_inv.comp e₁.left_inv, e₂.right_inv.comp e₁.right_inv⟩
 
 theorem to_fun_as_coe (e : α ≃ β) : e.toFun = e := rfl
 
 @[simp] theorem inv_fun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
 
 @[simp] theorem apply_symm_apply  (e : α ≃ β) (x : β) : e (e.symm x) = x :=
-e.rightInv x
+e.right_inv x
 
 @[simp] theorem symm_apply_apply (e : α ≃ β) (x : α) : e.symm (e x) = x :=
-e.leftInv x
+e.left_inv x
 
 @[simp] theorem symm_comp_self (e : α ≃ β) : e.symm ∘ (e : α → β) = id := funext e.symm_apply_apply
 
