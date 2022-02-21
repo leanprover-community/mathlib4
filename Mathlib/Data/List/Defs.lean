@@ -808,4 +808,11 @@ have instances of `Add` and `OfNat`.
 def sum [Add α] [OfNat α 0] (l : List α) : α :=
   l.foldl (.+.) 0
 
+/--
+`List.sumBy` sums the results of `f` mapped to each element of `l`. The return type of `f`
+must haave instances of `Add` and `OfNat`.
+-/
+def List.sumBy [Add β] [OfNat β 0] (l : List α) (f : α → β) : β :=
+  l.map f |>.sum
+
 end List
