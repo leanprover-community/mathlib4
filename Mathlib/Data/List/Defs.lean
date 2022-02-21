@@ -812,7 +812,24 @@ def sum [Add α] [OfNat α 0] (l : List α) : α :=
 `List.sumBy` sums the results of `f` mapped to each element of `l`. The return type of `f`
 must haave instances of `Add` and `OfNat`.
 -/
-def List.sumBy [Add β] [OfNat β 0] (l : List α) (f : α → β) : β :=
+def sumBy [Add β] [OfNat β 0] (l : List α) (f : α → β) : β :=
   l.map f |>.sum
+
+/--
+`List.average` computes the average of all the elements in the
+given list.
+-/
+def average [Add α] [HDiv α Nat α] [OfNat α 0] : List α -> α
+  | [] => 0
+  | xs => xs.sum / xs.length
+
+
+/--
+`List.average` computes the average of the given list after
+applying `p` to each element.
+-/
+def averageBy [Add α] [HDiv α Nat α] [HAdd α α $ outParam α] [OfNat α 0] (p: β → α) : List β → α
+  | [] => 0
+  | xs => xs.sumBy p / xs.length
 
 end List
