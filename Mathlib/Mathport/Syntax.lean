@@ -70,7 +70,6 @@ macro (name := expandFoldr) "expandFoldr% "
       return if e == x then some arg else if e == y then some res else none
 
 syntax bindersItem := atomic("(" "..." ")")
-syntax scopedAction := "scoped " ident " => " term
 syntax foldRep := (strLit "*") <|> ",*"
 syntax foldAction := "(" ident foldRep " => "
   (&"foldl" <|> &"foldr") " (" ident ident " => " term ") " term ")"
