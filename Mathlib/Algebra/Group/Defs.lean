@@ -179,6 +179,7 @@ class AddMonoidWithOne (R : Type u) extends AddMonoid R, One R where
 def Nat.cast [AddMonoidWithOne R] : ℕ → R := AddMonoidWithOne.natCast
 
 instance [AddMonoidWithOne R] : CoeTail ℕ R where coe := Nat.cast
+instance [AddMonoidWithOne R] : CoeHTCT ℕ R where coe := Nat.cast
 
 @[simp] theorem Nat.cast_zero [AddMonoidWithOne R] : ((0 : ℕ) : R) = 0 := AddMonoidWithOne.natCast_zero
 @[simp] theorem Nat.cast_succ [AddMonoidWithOne R] : ((Nat.succ n : ℕ) : R) = (n : R) + 1 := AddMonoidWithOne.natCast_succ _
@@ -290,7 +291,6 @@ class AddGroupWithOne (R : Type u) extends AddMonoidWithOne R, AddGroup R where
 
 def Int.cast [AddGroupWithOne R] : ℤ → R := AddGroupWithOne.intCast
 
-attribute [-instance] instCoeNatInt
 instance [AddGroupWithOne R] : CoeTail ℤ R where coe := Int.cast
 
 theorem Int.cast_ofNat [AddGroupWithOne R] : (Int.cast (Int.ofNat n) : R) = Nat.cast n :=
