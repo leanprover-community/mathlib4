@@ -828,7 +828,7 @@ def average [Add α] [HDiv α Nat α] [OfNat α 0] : List α -> α
 `List.average` computes the average of the given list after
 applying `p` to each element.
 -/
-def averageBy [Add α] [HDiv α Nat α] [HAdd α α $ outParam α] [OfNat α 0] (p: β → α) : List β → α
+def averageBy [Add α] [HDiv α Nat α] [OfNat α 0] (p: β → α) : List β → α
   | [] => 0
   | xs => xs.sumBy p / xs.length
 
