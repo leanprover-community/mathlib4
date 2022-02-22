@@ -31,14 +31,14 @@ namespace Meta
 
 namespace NormNum
 
-def isNat [Semiring α] (a : α) (n : ℕ) := a = OfNat.ofNat n
+def isNat [Semiring α] (a : α) (n : ℕ) := a = n
 
 class LawfulOfNat (α) [Semiring α] (n) [OfNat α n] : Prop where
   isNat_ofNat : isNat (@OfNat.ofNat _ n ‹_› : α) n
 
-instance (α) [Semiring α] : LawfulOfNat α n := ⟨rfl⟩
-instance (α) [Semiring α] : LawfulOfNat α (nat_lit 0) := ⟨rfl⟩
-instance (α) [Semiring α] : LawfulOfNat α (nat_lit 1) := ⟨rfl⟩
+instance (α) [Semiring α] [Nat.AtLeastTwo n] : LawfulOfNat α n := ⟨rfl⟩
+instance (α) [Semiring α] : LawfulOfNat α (nat_lit 0) := ⟨Nat.cast_zero.symm⟩
+instance (α) [Semiring α] : LawfulOfNat α (nat_lit 1) := ⟨Nat.cast_one.symm⟩
 instance : LawfulOfNat Nat n := ⟨show n = Nat.cast n by simp⟩
 instance : LawfulOfNat Int n := ⟨show Int.ofNat n = Nat.cast n by simp⟩
 
@@ -47,12 +47,12 @@ theorem isNat_rawNat (n : ℕ) : isNat n n := LawfulOfNat.isNat_ofNat
 class LawfulZero (α) [Semiring α] [Zero α] : Prop where
   isNat_zero : isNat (Zero.zero : α) (nat_lit 0)
 
-instance (α) [Semiring α] : LawfulZero α := ⟨rfl⟩
+instance (α) [Semiring α] : LawfulZero α := ⟨Nat.cast_zero.symm⟩
 
 class LawfulOne (α) [Semiring α] [One α] : Prop where
   isNat_one : isNat (One.one : α) (nat_lit 1)
 
-instance (α) [Semiring α] : LawfulOne α := ⟨rfl⟩
+instance (α) [Semiring α] : LawfulOne α := ⟨Nat.cast_one.symm⟩
 
 theorem isNat_add {α} [Semiring α] : (a b : α) → (a' b' c : Nat) →
   isNat a a' → isNat b b' → Nat.add a' b' = c → isNat (a + b) c
@@ -64,8 +64,7 @@ theorem isNat_mul {α} [Semiring α] : (a b : α) → (a' b' c : Nat) →
 
 theorem isNat_pow {α} [Semiring α] : (a : α) → (b a' b' c : Nat) →
   isNat a a' → isNat b b' → Nat.pow a' b' = c → isNat (a ^ b) c
-| _, _, _, _, _, rfl, rfl, rfl => by
-  simp only [OfNat.ofNat, isNat, Nat.cast_Nat, ← Nat.cast_pow]; rfl
+| _, _, _, _, _, rfl, rfl, rfl => by simp [isNat]
 
 def instSemiringNat : Semiring Nat := inferInstance
 

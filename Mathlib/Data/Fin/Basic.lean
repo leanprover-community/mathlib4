@@ -212,6 +212,12 @@ instance : AddCommMonoid (Fin n) where
     simp [Fin.ofNat', Fin.add_def]
     exact congrArg (fun x => x % n) (Nat.add_comm (x * a.val) (a.val) ▸ Nat.succ_mul x a.val)
 
+instance : AddMonoidWithOne (Fin n) where
+  __ := inferInstanceAs (AddCommMonoid (Fin n))
+  natCast n := Fin.ofNat' n Fin.size_positive'
+  natCast_zero := rfl
+  natCast_succ _ := Fin.ofNat'_succ
+
 private theorem Fin.mul_one (a : Fin n) : a * 1 = a := by
   apply Fin.eq_of_val_eq
   simp only [Fin.mul_def, Fin.one_def]
@@ -251,6 +257,7 @@ instance : CommSemiring (Fin n) where
   __ := inferInstanceAs (MonoidWithZero (Fin n))
   __ := inferInstanceAs (CommSemigroup (Fin n))
   __ := inferInstanceAs (AddCommMonoid (Fin n))
+  __ := inferInstanceAs (AddMonoidWithOne (Fin n))
   left_distrib := Fin.mul_add
   right_distrib a b c := (by rw [mul_comm, Fin.mul_add, mul_comm c, mul_comm c])
 
@@ -271,31 +278,24 @@ private theorem Fin.add_left_neg (a : Fin n) : -a + a = 0 := by
     apply Fin.eq_of_val_eq
     simp [Fin.sub_def, (Nat.add_sub_cancel' (Nat.le_of_lt a.isLt)), Nat.mod_self]
 
-private theorem Fin.neg_mul_eq_neg_mul (a b : Fin n) : -(a * b) = (-a) * b :=
-  let inst : Ring (Fin n) := {
-    sub_eq_add_neg, add_left_neg
-    gsmul_zero' := by simp [gsmul_rec, nsmul_rec]
-    gsmul_succ' := by simp [gsmul_rec, nsmul_rec]
-    gsmul_neg' := by simp [gsmul_rec, nsmul_rec]
-  }
-  _root_.neg_mul_eq_neg_mul a b
+def Fin.ofInt' : ℤ → Fin n
+  | (i : ℕ) => i
+  | (Int.negSucc i) => -↑(i + 1 : ℕ)
 
-instance : Ring (Fin n) where
+instance : AddGroupWithOne (Fin n) where
+  __ := inferInstanceAs (AddMonoidWithOne (Fin n))
+  gsmul_zero' := by simp [gsmul_rec, nsmul_rec]
+  gsmul_succ' := by simp [gsmul_rec, nsmul_rec, -Int.ofNat_eq_cast]
+  gsmul_neg' := by simp [gsmul_rec, nsmul_rec, -Int.ofNat_eq_cast]
   sub_eq_add_neg := Fin.sub_eq_add_neg
-  gsmul (x : Int) (a : Fin n) : Fin n := Fin.ofInt'' x * a
-  gsmul_zero' := fun _ => by
-    apply Fin.eq_of_val_eq
-    simp only [Fin.ofNat', Fin.ofInt'', Fin.mul_def, Nat.zero_mod, Nat.zero_mul, Fin.zero_def]
-  gsmul_succ' k a := by simp only [Fin.ofInt'', Fin.ofNat'_succ, add_mul, one_mul, add_comm a]
-  gsmul_neg' k a := by simp only [Fin.ofInt'', Fin.neg_mul_eq_neg_mul]
-  add_left_neg a := by
-    rw [add_comm, ← Fin.sub_eq_add_neg]
-    apply Fin.eq_of_val_eq
-    simp [Fin.sub_def, (Nat.add_sub_cancel' (Nat.le_of_lt a.isLt)), Nat.mod_self]
+  add_left_neg := Fin.add_left_neg
+  intCast := Fin.ofInt'
+  intCast_ofNat _ := rfl
+  intCast_negSucc _ := rfl
 
 instance : CommRing (Fin n) where
-  __ := inferInstanceAs (CommSemigroup (Fin n))
-  __ := inferInstanceAs (Ring (Fin n))
+  __ := inferInstanceAs (AddGroupWithOne (Fin n))
+  __ := inferInstanceAs (CommSemiring (Fin n))
 
 lemma Fin.gt_wf : WellFounded (fun a b : Fin n => b < a) :=
   Subrelation.wf (@fun a i h => ⟨h, i.2⟩) (invImage (fun i => i.1) (Nat.upRel n)).wf
