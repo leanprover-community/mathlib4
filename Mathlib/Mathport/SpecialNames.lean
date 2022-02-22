@@ -23,6 +23,7 @@ namespace Mathlib.Prelude
 #align psigma                  PSigma
 #align punit                   PUnit
 #align pprod                   PProd
+#align psum                    PSum
 
 #align has_coe Coe
 #align has_coe.coe Coe.coe
