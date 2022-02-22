@@ -24,6 +24,7 @@ namespace Mathlib.Prelude
 #align punit                   PUnit
 #align pprod                   PProd
 #align psum                    PSum
+#align ulift                   ULift
 
 #align has_coe Coe
 #align has_coe.coe Coe.coe
