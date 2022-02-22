@@ -427,8 +427,9 @@ syntax (name := ringExp!) "ring_exp!" (ppSpace location)? : tactic
 
 syntax (name := noncommRing) "noncomm_ring" : tactic
 
-syntax nameAndTerm := " (" ident ", " term ")"
-syntax (name := linearCombination) "linear_combination" (config)? (colGt nameAndTerm)* : tactic
+syntax nameAndTerm := term:71 " * " term:66
+syntax (name := linearCombination) "linear_combination" (config)?
+  sepBy(atomic(nameAndTerm) <|> term:66, " + ") : tactic
 
 syntax (name := linarith) "linarith" (config)? (&" only")? (" [" term,* "]")? : tactic
 syntax (name := linarith!) "linarith!" (config)? (&" only")? (" [" term,* "]")? : tactic

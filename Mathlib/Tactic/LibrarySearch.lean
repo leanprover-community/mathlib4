@@ -99,9 +99,9 @@ open Lean.Parser.Tactic
 -- with `library_search [X, Y, Z]` or `library_search with attr`,
 -- or requiring that a particular hypothesis is used in the solution, with `library_search using h`.
 syntax (name := librarySearch') "library_search" (config)? (" [" simpArg,* "]")?
-  (" with " (colGt binderIdent)+)? (" using " (colGt binderIdent)+)? : tactic
+  (" with " (colGt ident)+)? (" using " (colGt binderIdent)+)? : tactic
 syntax (name := librarySearch!) "library_search!" (config)? (" [" simpArg,* "]")?
-  (" with " (colGt binderIdent)+)? (" using " (colGt binderIdent)+)? : tactic
+  (" with " (colGt ident)+)? (" using " (colGt binderIdent)+)? : tactic
 
 -- For now we only implement the basic functionality.
 -- The full syntax is recognized, but will produce a "Tactic has not been implemented" error.
