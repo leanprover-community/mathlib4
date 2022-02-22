@@ -750,24 +750,6 @@ def mapWithComplement {α β} (f : α → List α → β) : List α → List β 
   mapWithPrefixSuffix fun pref a suff => f a (pref ++ suff)
 
 /--
-`List.choose` filters list `l` of type `List α` with `chooser` which is of type `α → Option β`,
-yet `β` is ignored.
-It keeps the elements where `chooser x` is `some _` and discards the ones that are `none`
-
-Example:
-```
-def oneTwo? : Nat → Option Nat
-  | 1 => some 1
-  | 2 => some 2
-  | _ => none
-
-[1, 2, 3, 5, 1, 4, 2].choose oneTwo? = [1, 2, 1, 2]
-```
--/
-def choose (chooser : α → Option β) (l : List α) : List α :=
-  l.filter (Option.isSome ∘ chooser)
-
-/--
 Auxiliary function for `List.compareWith`
 -/
 def compareWithAux (comparer : α → α → Int) : List α → List α → Int
