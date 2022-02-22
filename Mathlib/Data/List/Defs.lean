@@ -810,7 +810,7 @@ def sum [Add α] [OfNat α 0] (l : List α) : α :=
 
 /--
 `List.sumBy` sums the results of `f` mapped to each element of `l`. The return type of `f`
-must haave instances of `Add` and `OfNat`.
+must have instances of `Add` and `OfNat`.
 -/
 def sumBy [Add β] [OfNat β 0] (l : List α) (f : α → β) : β :=
   l.map f |>.sum
