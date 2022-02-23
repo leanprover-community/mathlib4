@@ -29,8 +29,8 @@ where
     suffices _::_ = _ by rw [this]; apply aux
     apply List.get_cons_drop
 
-theorem get_eq_get (a : Array α) (i : Nat) (h : i < a.size) :
-  a.get ⟨i, h⟩ = a.data.get i h := rfl
+theorem get_eq_get (a : Array α) (i : Fin _) :
+  a.get i = a.data.get i := rfl
 
 theorem get?_eq_get (a : Array α) (i : Nat) (h : i < a.size) :
   a.get? i = some (a.get ⟨i, h⟩) := by simp [get?, h]

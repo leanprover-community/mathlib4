@@ -561,7 +561,7 @@ def commutative        := ∀ a b, f a b = f b a
 def associative        := ∀ a b c, f (f a b) c = f a (f b c)
 def left_identity      := ∀ a, f one a = a
 def right_identity     := ∀ a, f a one = a
-def right_inverse      := ∀ a, f a (inv a) = one
+def RightInverse      := ∀ a, f a (inv a) = one
 def left_cancelative   := ∀ a b c, f a b = f a c → b = c
 def right_cancelative  := ∀ a b c, f a b = f c b → a = c
 def left_distributive  := ∀ a b c, f a (g b c) = g (f a b) (f a c)

@@ -20,8 +20,10 @@ namespace Mathlib.Prelude
 
 #align heq                     HEq
 
+#align psigma                  PSigma
 #align punit                   PUnit
 #align pprod                   PProd
+#align psum                    PSum
 
 #align has_coe Coe
 #align has_coe.coe Coe.coe
@@ -67,6 +69,7 @@ namespace Mathlib.Prelude
 #align has_seq       Seq
 #align has_seq_left  SeqLeft
 #align has_seq_right SeqRight
+#align has_dvd       Dvd
 
 -- Implementation detail
 #align _sorry_placeholder_     _sorry_placeholder_

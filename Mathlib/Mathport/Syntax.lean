@@ -58,9 +58,23 @@ macro_rules
       unless x == x' do return none
       `(fun $y:ident => expandBinders% ($x => $term) (h : satisfiesBinderPred% $y $pred) $[$binders]*, $res)
 
-syntax bindersItem := "(" "..." ")"
+macro (name := expandFoldl) "expandFoldl% "
+  "(" x:ident y:ident " => " term:term ")" init:term:max "[" args:term,* "]" : term =>
+  args.getElems.foldlM (init := init) fun res arg => do
+    term.replaceM fun e =>
+      return if e == x then some res else if e == y then some arg else none
+macro (name := expandFoldr) "expandFoldr% "
+  "(" x:ident y:ident " => " term:term ")" init:term:max "[" args:term,* "]" : term =>
+  args.getElems.foldrM (init := init) fun arg res => do
+    term.replaceM fun e =>
+      return if e == x then some arg else if e == y then some res else none
+
+syntax bindersItem := atomic("(" "..." ")")
+syntax foldRep := (strLit "*") <|> ",*"
+syntax foldAction := "(" ident foldRep " => "
+  (&"foldl" <|> &"foldr") " (" ident ident " => " term ") " term ")"
 syntax identScope := ":" "(" "scoped " ident " => " term ")"
-syntax notation3Item := strLit <|> bindersItem <|> (ident (identScope)?)
+syntax notation3Item := strLit <|> bindersItem <|> (ident (identScope)?) <|> foldAction
 macro ak:Term.attrKind "notation3"
     prec:optPrecedence name:optNamedName prio:optNamedPrio
     lits:((ppSpace notation3Item)+) " => " val:term : command => do
@@ -72,6 +86,29 @@ macro ak:Term.attrKind "notation3"
       macroArgs := macroArgs.push (← `(macroArg| $lit:strLit))
     else if lit.isOfKind ``bindersItem then
       macroArgs := macroArgs.push (← `(macroArg| binders:extBinders))
+    else if lit.isOfKind ``foldAction then
+      let mut sep := lit[2][0]
+      if sep.isAtom then sep := Syntax.mkStrLit $ sep.getAtomVal!.extract 0 1
+      macroArgs := macroArgs.push (← `(macroArg| $(lit[1]):ident:sepBy(term, $sep:strLit)))
+      let scopedTerm ← lit[9].replaceM fun
+        | Syntax.ident _ _ id .. => pure $ boundNames.find? id
+        | _ => pure none
+      let init ← lit[11].replaceM fun
+        | Syntax.ident _ _ id .. => pure $ boundNames.find? id
+        | _ => pure none
+      let id := lit[1]
+      let args := Elab.Command.expandMacroArg.mkSplicePat
+        `sepBy (← `(Syntax.SepArray.ofElems ($id:ident).getElems)) ",*"
+      let args := #[
+        Lean.mkAtom "(", lit[6], lit[7], Lean.mkAtom "=>", scopedTerm, Lean.mkAtom ")", init,
+        Lean.mkAtom "[", args, Lean.mkAtom "]"]
+      let stx ← match lit[4] with
+        | Lean.Syntax.atom _ "foldl" =>
+          pure $ mkNode ``expandFoldl (#[Lean.mkAtom "expandFoldl%"] ++ args)
+        | Lean.Syntax.atom _ "foldr" =>
+          pure $ mkNode ``expandFoldr (#[Lean.mkAtom "expandFoldr%"] ++ args)
+        | _ => throw Lean.Macro.Exception.unsupportedSyntax
+      boundNames := boundNames.insert id.getId stx
     else if let Syntax.ident _ _ id .. := lit then
       macroArgs := macroArgs.push (← `(macroArg| $lit:ident:term))
       if item[1].getNumArgs == 1 then
@@ -183,13 +220,6 @@ syntax (name := dsimp) "dsimp" (config)? (&" only")?
 syntax (name := guardLHS) "guard_lhs " " =ₐ " term : conv
 
 end Conv
-
-syntax (name := ext1) "ext1" (ppSpace rcasesPat)* : tactic
-syntax (name := ext1?) "ext1?" (ppSpace rcasesPat)* : tactic
--- The current implementation of `ext` in mathlib4 does not support `rcasesPat`,
--- and will need to be updated.
-syntax (name := ext) "ext" (ppSpace rcasesPat)* (" : " num)? : tactic
-syntax (name := ext?) "ext?" (ppSpace rcasesPat)* (" : " num)? : tactic
 
 syntax (name := apply') "apply' " term : tactic
 syntax (name := fapply') "fapply' " term : tactic

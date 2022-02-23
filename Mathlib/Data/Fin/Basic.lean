@@ -272,7 +272,7 @@ private theorem Fin.add_left_neg (a : Fin n) : -a + a = 0 := by
     simp [Fin.sub_def, (Nat.add_sub_cancel' (Nat.le_of_lt a.isLt)), Nat.mod_self]
 
 private theorem Fin.neg_mul_eq_neg_mul (a b : Fin n) : -(a * b) = (-a) * b :=
-  let this : Ring (Fin n) := {
+  let inst : Ring (Fin n) := {
     sub_eq_add_neg, add_left_neg
     gsmul_zero' := by simp [gsmul_rec, nsmul_rec]
     gsmul_succ' := by simp [gsmul_rec, nsmul_rec]
