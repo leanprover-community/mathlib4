@@ -13,8 +13,12 @@ namespace Lean
 def Meta.collectPrivateIn [Monad m] [MonadEnv m] [MonadError m]
   (n : Name) (set := NameSet.empty) : m NameSet := do
   let c ← getConstInfo n
-  pure $ Expr.foldConsts c.value! set fun c a =>
-    if isPrivateName c then a.insert c else a
+  let traverse value := Expr.foldConsts value set fun c a =>
+      if isPrivateName c then a.insert c else a
+  if let some value := c.value? then return traverse value
+  if let some c := (← getEnv).find? (n ++ `_cstage1) then
+    if let some value := c.value? then return traverse value
+  return traverse c.type
 
 def Environment.moduleIdxForModule? (env : Environment) (mod : Name) : Option ModuleIdx :=
   (env.allImportedModuleNames.indexOf? mod).map fun idx => idx.val

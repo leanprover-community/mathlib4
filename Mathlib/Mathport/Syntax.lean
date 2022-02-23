@@ -88,7 +88,7 @@ macro ak:Term.attrKind "notation3"
       macroArgs := macroArgs.push (← `(macroArg| binders:extBinders))
     else if lit.isOfKind ``foldAction then
       let mut sep := lit[2][0]
-      if sep.isAtom then sep := Syntax.mkStrLit $ sep.getAtomVal!.extract 0 1
+      if sep.isAtom then sep := Syntax.mkStrLit $ sep.getAtomVal!.extract 0 1 ++ " "
       macroArgs := macroArgs.push (← `(macroArg| $(lit[1]):ident:sepBy(term, $sep:strLit)))
       let scopedTerm ← lit[9].replaceM fun
         | Syntax.ident _ _ id .. => pure $ boundNames.find? id
@@ -314,7 +314,16 @@ syntax (name := generalizes) "generalizes " "[" generalizesArg,* "]" : tactic
 syntax (name := generalizeProofs) "generalize_proofs"
   (ppSpace (colGt binderIdent))* (ppSpace location)? : tactic
 
-syntax (name := itauto) "itauto" : tactic
+syntax withPattern := "-" <|> "_" <|> ident
+syntax (name := cases'') "cases''" casesTarget (" with " (colGt withPattern)+)? : tactic
+syntax fixingClause := " fixing" (" *" <|> (ppSpace ident)+)
+syntax generalizingClause := " generalizing" (ppSpace ident)+
+syntax (name := induction'') "induction''" casesTarget
+  (fixingClause <|> generalizingClause)? (" with " (colGt withPattern)+)? : tactic
+
+syntax termList := " [" term,* "]"
+syntax (name := itauto) "itauto" (" *" <|> termList)? : tactic
+syntax (name := itauto!) "itauto!" (" *" <|> termList)? : tactic
 
 syntax (name := lift) "lift " term " to " term
   (" using " term)? (" with " binderIdent+)? : tactic
@@ -328,7 +337,12 @@ syntax (name := pushNeg) "push_neg" (ppSpace location)? : tactic
 syntax (name := contrapose) "contrapose" (ppSpace ident (" with " ident)?)? : tactic
 syntax (name := contrapose!) "contrapose!" (ppSpace ident (" with " ident)?)? : tactic
 
+syntax (name := byContra') "by_contra'" (ppSpace ident)? Term.optType : tactic
+
 syntax (name := renameVar) "rename_var " ident " → " ident (ppSpace location)? : tactic
+
+syntax swapVarArg := ident " ↔ "? ident
+syntax (name := swapVar) "swap_var " (colGt swapVarArg),+ : tactic
 
 syntax (name := assocRw) "assoc_rw " rwRuleSeq (ppSpace location)? : tactic
 
@@ -375,9 +389,7 @@ syntax (name := squeezeDSimp?!) "squeeze_dsimp?!" (config)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
 
 syntax (name := suggest) "suggest" (config)? (ppSpace num)?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " (colGt ident)+)? : tactic
-syntax (name := librarySearch!) "library_search!" (config)?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " (colGt ident)+)? : tactic
+  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " (colGt binderIdent)+)? : tactic
 
 syntax (name := tauto) "tauto" (config)? : tactic
 syntax (name := tauto!) "tauto!" (config)? : tactic
@@ -388,6 +400,7 @@ syntax (name := normNum1) "norm_num1" (ppSpace location)? : tactic
 syntax (name := applyNormed) "apply_normed " term : tactic
 
 syntax (name := abel1) "abel1" : tactic
+syntax (name := abel1!) "abel1!" : tactic
 syntax (name := abel) "abel" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 syntax (name := abel!) "abel!" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 
@@ -405,6 +418,10 @@ syntax (name := ringExp) "ring_exp" (ppSpace location)? : tactic
 syntax (name := ringExp!) "ring_exp!" (ppSpace location)? : tactic
 
 syntax (name := noncommRing) "noncomm_ring" : tactic
+
+syntax nameAndTerm := term:71 " * " term:66
+syntax (name := linearCombination) "linear_combination" (config)?
+  sepBy(atomic(nameAndTerm) <|> term:66, " + ") : tactic
 
 syntax (name := linarith) "linarith" (config)? (&" only")? (" [" term,* "]")? : tactic
 syntax (name := linarith!) "linarith!" (config)? (&" only")? (" [" term,* "]")? : tactic
@@ -452,16 +469,15 @@ syntax (name := unfoldCases) "unfold_cases " tacticSeq : tactic
 syntax (name := fieldSimp) "field_simp" (config)? (discharger)? (&" only")?
   (" [" Tactic.simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
 
-syntax (name := equivRw) "equiv_rw " ("(" &"config" " := " term ") ")?
-  term (ppSpace location)? : tactic
-syntax (name := equivRwType) "equiv_rw_type " ("(" &"config" " := " term ") ")? term : tactic
+syntax (name := equivRw) "equiv_rw" (config)? (termList <|> term) (ppSpace location)? : tactic
+syntax (name := equivRwType) "equiv_rw_type" (config)? term : tactic
 
 syntax (name := nthRw) "nth_rw " num rwRuleSeq (ppSpace location)? : tactic
 syntax (name := nthRwLHS) "nth_rw_lhs " num rwRuleSeq (ppSpace location)? : tactic
 syntax (name := nthRwRHS) "nth_rw_rhs " num rwRuleSeq (ppSpace location)? : tactic
 
-syntax (name := rwSearch) "rw_search " ("(" &"config" " := " term ") ")? rwRuleSeq : tactic
-syntax (name := rwSearch?) "rw_search? " ("(" &"config" " := " term ") ")? rwRuleSeq : tactic
+syntax (name := rwSearch) "rw_search " (config)? rwRuleSeq : tactic
+syntax (name := rwSearch?) "rw_search? " (config)? rwRuleSeq : tactic
 
 syntax (name := piInstanceDeriveField) "pi_instance_derive_field" : tactic
 syntax (name := piInstance) "pi_instance" : tactic
@@ -481,7 +497,8 @@ syntax (name := mkDecorations) "mk_decorations" : tactic
 syntax (name := nontriviality) "nontriviality"
   (ppSpace (colGt term))? (" using " simpArg,+)? : tactic
 
-syntax (name := filterUpwards) "filter_upwards" " [" term,* "]" (" with" term:max*)? (" using" term)? : tactic
+syntax (name := filterUpwards) "filter_upwards" (termList)?
+  (" with" term:max*)? (" using" term)? : tactic
 
 syntax (name := isBounded_default) "isBounded_default" : tactic
 
@@ -559,6 +576,7 @@ syntax (name := ancestor) "ancestor" (ppSpace ident)* : attr
 syntax (name := elementwise) "elementwise" (ppSpace ident)? : attr
 
 syntax (name := toAdditiveIgnoreArgs) "to_additive_ignore_args" num* : attr
+syntax (name := toAdditiveRelevantArg) "to_additive_relevant_arg" num : attr
 syntax (name := toAdditiveReorder) "to_additive_reorder" num* : attr
 syntax (name := toAdditive) "to_additive" (ppSpace ident)? (ppSpace str)? : attr
 syntax (name := toAdditive!) "to_additive!" (ppSpace ident)? (ppSpace str)? : attr
