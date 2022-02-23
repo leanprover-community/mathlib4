@@ -10,7 +10,7 @@ import Mathlib.Data.Option.Defs
 -- import data.complex.basic -- ℕ, ℤ, ℚ, ℝ, ℂ
 -- import data.real.ennreal
 
--- set_option trace.Tactic.norm_cast true
+set_option trace.Tactic.norm_cast true
 -- set_option trace.Meta.Tactic.simp true
 
 variable (an bn cn dn : ℕ) (az bz cz dz : ℤ)
@@ -52,6 +52,13 @@ example : ((42 : ℕ) : ℤ) = 42 := by norm_cast
 -- example : ((42 : ℕ) : ℂ) = 42 := by norm_cast
 -- example : ((42 : ℤ) : ℚ) = 42 := by norm_cast
 -- example : ((42 : ℚ) : ℝ) = 42 := by norm_cast
+
+structure p (n : ℤ)
+example : p 42 := by
+  norm_cast
+  -- TODO: guard_target_mod_implicit
+  -- guard_target == p 42
+  exact ⟨⟩
 
 -- example (h : (an : ℝ) = 0) : an = 0 := by exact_mod_cast h
 -- example (h : (an : ℝ) = 42) : an = 42 := by exact_mod_cast h
@@ -101,10 +108,10 @@ by
   sorry
   -- TODO: ring
 
-example (k : ℕ) {x y : ℕ} (h : ((x + y + k : ℕ) : ℤ) = 0) : x + y + k = 0 :=
-by
+example (k : ℕ) {x y : ℕ} (h : ((x + y + k : ℕ) : ℤ) = 0) : x + y + k = 0 := by
   push_cast at h
-  guard_hyp h : (x : ℤ) + y + k = 0
+  -- TODO: guard_hyp_mod_implicit
+  -- guard_hyp h : (x : ℤ) + y + k = 0
   assumption_mod_cast
 
 example (a b : ℕ) (h2 : ((a + b + 0 : ℕ) : ℤ) = 10) :

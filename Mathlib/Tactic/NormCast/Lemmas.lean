@@ -14,4 +14,4 @@ local elab "addElim" id:ident : command =>
 
 addElim ne_eq
 
-attribute [coe] Int.ofNat Fin.val Array.ofSubarray
+attribute [coe] Fin.val Array.ofSubarray

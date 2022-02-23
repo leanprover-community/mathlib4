@@ -7,7 +7,7 @@ Authors: Jeremy Avigad, Deniz Aydin, Floris van Doorn
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Coe
-import Mathlib.Tactic.NormCast
+import Mathlib.Tactic.NormCast.Lemmas
 open Nat
 
 namespace Int
@@ -15,10 +15,8 @@ namespace Int
 notation "ℤ" => Int
 notation "-[1+ " n "]" => Int.negSucc n
 
-@[norm_cast]
 lemma ofNat_zero : ofNat (0 : ℕ) = (0 : ℤ) := rfl
 
-@[norm_cast]
 lemma ofNat_one  : ofNat (1 : ℕ) = (1 : ℤ) := rfl
 
 /- ## Definitions of basic functions -/
@@ -39,11 +37,8 @@ lemma subNatNat_of_sub_eq_succ {m n k : ℕ} (h : n - m = succ k) : subNatNat m 
 
 protected lemma neg_zero : -(0:ℤ) = 0 := rfl
 
-@[norm_cast]
 lemma ofNat_add (n m : ℕ) : ofNat (n + m) = ofNat n + ofNat m := rfl
-@[norm_cast]
 lemma ofNat_mul (n m : ℕ) : ofNat (n * m) = ofNat n * ofNat m := rfl
-@[norm_cast 500]
 lemma ofNat_succ (n : ℕ) : ofNat (succ n) = ofNat n + 1 := rfl
 
 lemma neg_ofNat_zero : -(ofNat 0) = 0 := rfl
@@ -82,7 +77,6 @@ attribute [local simp] ofNat_add_ofNat ofNat_mul_ofNat neg_ofNat_zero neg_ofNat_
 protected lemma coe_nat_inj {m n : ℕ} (h : (↑m : ℤ) = ↑n) : m = n :=
 Int.ofNat.inj h
 
-@[norm_cast]
 lemma ofNat_eq_ofNat_iff (m n : ℕ) : ofNat m = ofNat n ↔ m = n :=
 Iff.intro Int.ofNat.inj (congrArg _)
 
@@ -163,7 +157,6 @@ lemma subNatNat_of_lt {m n : ℕ} (h : m < n) : subNatNat m n = -[1+ pred (n - m
 
 /- ## natAbs -/
 
-@[norm_cast]
 lemma natAbs_ofNat (n : ℕ) : natAbs ↑n = n := rfl
 
 lemma eq_zero_ofNatAbs_eq_zero : ∀ {a : ℤ}, natAbs a = 0 → a = 0
@@ -471,9 +464,6 @@ protected lemma neg_add {a b : ℤ} : - (a + b) = -a + -b := by
 
 lemma negSucc_ofNat_coe' (n : ℕ) : -[1+ n] = -↑n - 1 :=
 by rw [Int.sub_eq_add_neg, ← Int.neg_add]; rfl
-
-@[norm_cast]
-protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
 protected lemma subNatNat_eq_coe {m n : ℕ} : subNatNat m n = ↑m - ↑n := by
   refine subNatNat_elim m n (fun m n i => i = ↑m - ↑n) ?p ?n

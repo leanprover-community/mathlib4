@@ -8,6 +8,7 @@ import Mathlib.Tactic.NormCast.Ext
 import Mathlib.Tactic.OpenPrivate
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Util.DiscrTree
+import Mathlib.Algebra.Group.Defs
 
 open Lean Meta
 
@@ -135,6 +136,17 @@ partial def upwardAndElim (up : SimpTheorems) (e : Expr) : SimpM Simp.Step := do
   return Simp.Step.visit r
 
 /--
+If possible, rewrite `(n : α)` to `(Nat.cast n : α)` where `n` is a numeral and `α ≠ ℕ`.
+Returns a pair of the new expression and proof that they are equal.
+-/
+def numeralToCoe (e : Expr) : MetaM Simp.Result := do
+  let some (α, n) := isNumeral? e | failure
+  if (← whnf α).isConstOf ``Nat then failure
+  let newE ← mkAppOptM ``Nat.cast #[α, none, toExpr n]
+  let some pr ← proveEqUsingDown e newE | failure
+  return pr
+
+/--
 The core simplification routine of `normCast`.
 -/
 def derive (e : Expr) : MetaM Simp.Result := do
@@ -150,6 +162,13 @@ def derive (e : Expr) : MetaM Simp.Result := do
   let congrTheorems ← getSimpCongrTheorems
 
   let r := {expr := e}
+
+  trace[Tactic.norm_cast] "before: {r.expr}"
+
+  -- step 1: pre-processing of numerals
+  let r ← mkEqTrans r <|<- Simp.main r.expr { config, congrTheorems }
+    { post := fun e => return Simp.Step.done (← try numeralToCoe e catch _ => pure {expr := e}) }
+  trace[Tactic.norm_cast] "after numeralToCoe: {r.expr}"
 
   -- step 2: casts are moved upwards and eliminated
   let r ← mkEqTrans r <|<- Simp.main r.expr { config, congrTheorems }
