@@ -89,10 +89,10 @@ import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.Use
 import Mathlib.Util.DeclName
-import Mathlib.Util.DiscrTree
 import Mathlib.Util.Eval
 import Mathlib.Util.Export
 import Mathlib.Util.LibraryNote
+import Mathlib.Util.Simp
 import Mathlib.Util.TermUnsafe
 import Mathlib.Util.Time
 import Mathlib.Util.WhatsNew

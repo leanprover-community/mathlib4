@@ -7,25 +7,14 @@ Authors: Paul-Nicolas Madelaine, Robert Y. Lewis, Mario Carneiro, Gabriel Ebner
 import Mathlib.Tactic.NormCast.Ext
 import Mathlib.Tactic.OpenPrivate
 import Mathlib.Tactic.SudoSetOption
-import Mathlib.Util.DiscrTree
+import Mathlib.Util.Simp
 import Mathlib.Algebra.Group.Defs
 
-open Lean Meta
+open Lean Meta Simp
 
 namespace Tactic.NormCast
 
 initialize registerTraceClass `Tactic.norm_cast
-
-open private mkEqTrans from Lean.Meta.Tactic.Simp.Main
-
-def mkEqSymm (e : Expr) (r : Simp.Result) : MetaM Simp.Result :=
-  ({ expr := e, proof? := · }) <$>
-  match r.proof? with
-  | none => pure none
-  | some p => some <$> Meta.mkEqSymm p
-
-def mkCast (r : Simp.Result) (e : Expr) : MetaM Expr := do
-  mkAppM ``cast #[← r.getProof, e]
 
 /-- Prove `a = b` using the given simp set. -/
 def proveEqUsing (s : SimpTheorems) (a b : Expr) : MetaM (Option Simp.Result) := do
@@ -35,7 +24,7 @@ def proveEqUsing (s : SimpTheorems) (a b : Expr) : MetaM (Option Simp.Result) :=
     let b' ← Simp.simp b methods
     unless ← isDefEq a'.expr b'.expr do return none
     mkEqTrans a' (← mkEqSymm b b')
-  withReducible do (go { simpTheorems := s, congrTheorems := ← getSimpCongrTheorems }).run' {}
+  withReducible do (go { simpTheorems := s, congrTheorems := ← Meta.getSimpCongrTheorems }).run' {}
 
 /-- Prove `a = b` by simplifying using move and squash lemmas. -/
 def proveEqUsingDown (a b : Expr) : MetaM (Option Simp.Result) := do
@@ -159,7 +148,7 @@ def derive (e : Expr) : MetaM Simp.Result := do
     proj := false
     iota := false
   }
-  let congrTheorems ← getSimpCongrTheorems
+  let congrTheorems ← Meta.getSimpCongrTheorems
 
   let r := {expr := e}
 
@@ -258,60 +247,10 @@ syntax (name := convNormCast) "norm_cast" : conv
   open Elab.Tactic.Conv in fun stx => withMainContext do
     applySimpResult (← derive (← getLhs))
 
-/-- Return all propositions in the local context. -/
-def getPropHyps : MetaM (Array FVarId) := do
-  let mut result := #[]
-  for localDecl in (← getLCtx) do
-    unless localDecl.isAuxDecl do
-      if (← isProp localDecl.type) then
-        result := result.push localDecl.fvarId
-  return result
-
-open private mkDischargeWrapper elabSimpArgs from Lean.Elab.Tactic.Simp
-
-open Simp Elab.Tactic Lean.Meta in -- copied from core
-/--
-  If `ctx == false`, the config argument is assumed to have type `Meta.Simp.Config`, and `Meta.Simp.ConfigCtx` otherwise.
-  If `ctx == false`, the `discharge` option must be none -/
-private def mkSimpContext (simpTheorems : SimpTheorems) (stx : Syntax) (eraseLocal : Bool)
-    (ctx := false) (ignoreStarArg : Bool := false) : TacticM MkSimpContextResult := do
-  if ctx && !stx[2].isNone then
-    throwError "'simp_all' tactic does not support 'discharger' option"
-  let dischargeWrapper ← mkDischargeWrapper stx[2]
-  let simpOnly := !stx[3].isNone
-  let simpTheorems ←
-    if simpOnly then
-      ({} : SimpTheorems).addConst ``eq_self
-    else
-      pure simpTheorems
-  let congrTheorems ← getSimpCongrTheorems
-  let r ← elabSimpArgs stx[4] (eraseLocal := eraseLocal) {
-    config      := (← elabSimpConfig stx[1] (ctx := ctx))
-    simpTheorems, congrTheorems
-  }
-  if !r.starArg || ignoreStarArg then
-    return { r with fvarIdToLemmaId := {}, dischargeWrapper }
-  else
-    let ctx := r.ctx
-    let erased := ctx.simpTheorems.erased
-    let hs ← getPropHyps
-    let mut ctx := ctx
-    let mut fvarIdToLemmaId := {}
-    for h in hs do
-      let localDecl ← getLocalDecl h
-      unless erased.contains localDecl.userName do
-        let fvarId := localDecl.fvarId
-        let proof  := localDecl.toExpr
-        let id     ← mkFreshUserName `h
-        fvarIdToLemmaId := fvarIdToLemmaId.insert fvarId id
-        let simpTheorems ← ctx.simpTheorems.add #[] proof (name? := id)
-        ctx := { ctx with simpTheorems }
-    return { ctx, fvarIdToLemmaId, dischargeWrapper }
-
 syntax (name := pushCast) "push_cast " (config)? (discharger)? (&"only ")? ("[" (simpStar <|> simpErase <|> simpLemma),* "]")? (location)? : tactic
 @[tactic pushCast] def evalPushCast : Tactic := fun stx => do
   let { ctx, fvarIdToLemmaId, dischargeWrapper } ← withMainContext do
-    mkSimpContext (← pushCastExt.getTheorems) stx (eraseLocal := false)
+    mkSimpContext' (← pushCastExt.getTheorems) stx (eraseLocal := false)
   dischargeWrapper.with fun discharge? =>
     simpLocation ctx discharge? fvarIdToLemmaId (expandOptLocation stx[5])
 
