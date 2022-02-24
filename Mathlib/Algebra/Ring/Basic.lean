@@ -86,7 +86,7 @@ instance : CommSemiring ℕ where
   natCast_zero := rfl
   natCast_succ _ := rfl
 
-@[simp] lemma cast_id : Nat.cast n = n := rfl
+@[simp, norm_cast] lemma cast_id : Nat.cast n = n := rfl
 
 end Nat
 
@@ -133,10 +133,22 @@ instance : CommRing ℤ where
   intCast_ofNat _ := rfl
   intCast_negSucc _ := rfl
 
-@[simp] lemma cast_id : Int.cast n = n := rfl
+@[simp, norm_cast] lemma cast_id : Int.cast n = n := rfl
 
 @[simp] lemma ofNat_eq_cast : Int.ofNat n = n := rfl
 
-@[simp] lemma cast_Nat_cast [AddGroupWithOne R] : (Int.cast (Nat.cast n) : R) = Int.cast n := rfl
+@[simp, norm_cast]
+lemma cast_Nat_cast [AddGroupWithOne R] : (Int.cast (Nat.cast n) : R) = Nat.cast n :=
+  Int.cast_ofNat
+
+@[simp, norm_cast]
+lemma cast_eq_cast_iff_Nat (m n : ℕ) : (m : ℤ) = (n : ℤ) ↔ m = n :=
+  ofNat_eq_ofNat_iff _ _
+
+@[simp, norm_cast]
+lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
+
+@[norm_cast]
+protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
 end Int

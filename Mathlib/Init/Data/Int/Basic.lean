@@ -7,6 +7,7 @@ Authors: Jeremy Avigad, Deniz Aydin, Floris van Doorn
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Coe
+import Mathlib.Tactic.NormCast.Lemmas
 open Nat
 
 namespace Int
@@ -463,8 +464,6 @@ protected lemma neg_add {a b : ℤ} : - (a + b) = -a + -b := by
 
 lemma negSucc_ofNat_coe' (n : ℕ) : -[1+ n] = -↑n - 1 :=
 by rw [Int.sub_eq_add_neg, ← Int.neg_add]; rfl
-
-protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
 protected lemma subNatNat_eq_coe {m n : ℕ} : subNatNat m n = ↑m - ↑n := by
   refine subNatNat_elim m n (fun m n i => i = ↑m - ↑n) ?p ?n

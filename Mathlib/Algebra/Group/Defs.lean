@@ -176,16 +176,19 @@ class AddMonoidWithOne (R : Type u) extends AddMonoid R, One R where
   natCast_zero : natCast 0 = 0
   natCast_succ : ∀ n, natCast (n + 1) = natCast n + 1
 
+@[coe]
 def Nat.cast [AddMonoidWithOne R] : ℕ → R := AddMonoidWithOne.natCast
 
 instance [AddMonoidWithOne R] : CoeTail ℕ R where coe := Nat.cast
 instance [AddMonoidWithOne R] : CoeHTCT ℕ R where coe := Nat.cast
 
-@[simp] theorem Nat.cast_zero [AddMonoidWithOne R] : ((0 : ℕ) : R) = 0 := AddMonoidWithOne.natCast_zero
-@[simp] theorem Nat.cast_succ [AddMonoidWithOne R] : ((Nat.succ n : ℕ) : R) = (n : R) + 1 := AddMonoidWithOne.natCast_succ _
+@[simp, norm_cast] theorem Nat.cast_zero [AddMonoidWithOne R] : ((0 : ℕ) : R) = 0 := AddMonoidWithOne.natCast_zero
+@[simp 500, norm_cast 500]
+theorem Nat.cast_succ [AddMonoidWithOne R] : ((Nat.succ n : ℕ) : R) = (n : R) + 1 := AddMonoidWithOne.natCast_succ _
+@[simp, norm_cast]
 theorem Nat.cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by simp
 
-@[simp] theorem Nat.cast_add [AddMonoidWithOne R] : ((m + n : ℕ) : R) = (m : R) + n := by
+@[simp, norm_cast] theorem Nat.cast_add [AddMonoidWithOne R] : ((m + n : ℕ) : R) = (m : R) + n := by
   induction n <;> simp_all [add_succ, add_assoc]
 
 class Nat.AtLeastTwo (n : Nat) : Prop where
@@ -196,7 +199,7 @@ instance : Nat.AtLeastTwo (n + 2) where
 instance [AddMonoidWithOne R] [Nat.AtLeastTwo n] : OfNat R n where
   ofNat := n.cast
 
-@[simp] theorem Nat.cast_ofNat [AddMonoidWithOne R] [Nat.AtLeastTwo n] :
+@[simp, norm_cast] theorem Nat.cast_ofNat [AddMonoidWithOne R] [Nat.AtLeastTwo n] :
   (Nat.cast (OfNat.ofNat n) : R) = OfNat.ofNat n := rfl
 
 /-
@@ -289,18 +292,20 @@ class AddGroupWithOne (R : Type u) extends AddMonoidWithOne R, AddGroup R where
   intCast_ofNat : ∀ n : ℕ, intCast n = natCast n
   intCast_negSucc : ∀ n : ℕ, intCast (Int.negSucc n) = - natCast (n + 1)
 
+@[coe]
 def Int.cast [AddGroupWithOne R] : ℤ → R := AddGroupWithOne.intCast
 
 instance [AddGroupWithOne R] : CoeTail ℤ R where coe := Int.cast
 
 theorem Int.cast_ofNat [AddGroupWithOne R] : (Int.cast (Int.ofNat n) : R) = Nat.cast n :=
   AddGroupWithOne.intCast_ofNat _
-@[simp] theorem Int.cast_negSucc [AddGroupWithOne R] : (Int.cast (Int.negSucc n) : R) = (-(Nat.cast (n + 1)) : R) :=
+@[simp, norm_cast]
+theorem Int.cast_negSucc [AddGroupWithOne R] : (Int.cast (Int.negSucc n) : R) = (-(Nat.cast (n + 1)) : R) :=
   AddGroupWithOne.intCast_negSucc _
 
-@[simp] theorem Int.cast_zero [AddGroupWithOne R] : ((0 : ℤ) : R) = 0 := by
+@[simp, norm_cast] theorem Int.cast_zero [AddGroupWithOne R] : ((0 : ℤ) : R) = 0 := by
   erw [Int.cast_ofNat, Nat.cast_zero]
-@[simp] theorem Int.cast_one [AddGroupWithOne R] : ((1 : ℤ) : R) = 1 := by
+@[simp, norm_cast] theorem Int.cast_one [AddGroupWithOne R] : ((1 : ℤ) : R) = 1 := by
   erw [Int.cast_ofNat, Nat.cast_one]
 
 /-

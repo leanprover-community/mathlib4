@@ -328,14 +328,6 @@ syntax (name := itauto!) "itauto!" (" *" <|> termList)? : tactic
 syntax (name := lift) "lift " term " to " term
   (" using " term)? (" with " binderIdent+)? : tactic
 
-syntax (name := pushCast) "push_cast"
-  (" [" Parser.Tactic.simpArg,* "]")? (ppSpace location)? : tactic
-syntax (name := normCast) "norm_cast" (ppSpace location)? : tactic
-syntax (name := rwModCast) "rw_mod_cast " rwRuleSeq (ppSpace location)? : tactic
-syntax (name := exactModCast) "exact_mod_cast " term : tactic
-syntax (name := applyModCast) "apply_mod_cast " term : tactic
-syntax (name := assumptionModCast) "assumption_mod_cast" : tactic
-
 syntax (name := obviously) "obviously" : tactic
 
 syntax (name := prettyCases) "pretty_cases" : tactic
@@ -542,8 +534,6 @@ namespace Conv
 syntax (name := applyCongr) "apply_congr" (ppSpace (colGt term))? : conv
 
 syntax (name := guardTarget) "guard_target" " =ₐ " term : conv
-
-syntax (name := normCast) "norm_cast" : conv
 
 syntax (name := normNum1) "norm_num1" : conv
 syntax (name := normNum) "norm_num" (" [" simpArg,* "]")? : conv
