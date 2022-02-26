@@ -752,15 +752,15 @@ def mapWithComplement {α β} (f : α → List α → β) : List α → List β 
 /--
 Auxiliary function for `List.compareWith`
 -/
-def compareWithAux (comparer : α → α → Int) : List α → List α → Int
+def compareWithAux [Ord α] : List α → List α → Ordering
   | x::xs, y::ys =>
-    let c := comparer x y
-    if c = 0 then
-      compareWithAux comparer xs ys
+    let c := compare x y
+    if c == Ordering.eq then
+      compareWithAux xs ys
     else c
-  | [], [] => 0
-  | _, [] => 1
-  | [], _ => -1
+  | [], [] => Ordering.eq
+  | _, [] => Ordering.gt
+  | [], _ => Ordering.lt
 
 /--
 `List.compareWith` compares two lists `l₁` and `l₂` with the given function `comparer`,
@@ -780,8 +780,8 @@ def compare' (x y : Int) : Int :=
 [1].compareWith compare' [1, 8] = 1
 ```
 -/
-def compareWith (comparer : α → α → Int) (l₁ l₂ : List α) : Int :=
-  compareWithAux comparer l₁ l₂
+def compareWith [Ord α] (l₁ l₂ : List α) : Ordering :=
+  compareWithAux l₁ l₂
 
 /--
 `List.sum` sums all of the elements of of list `l`, whose elements
