@@ -763,21 +763,18 @@ def compareWithAux [Ord α] : List α → List α → Ordering
   | [], _ => Ordering.lt
 
 /--
-`List.compareWith` compares two lists `l₁` and `l₂` with the given function `comparer`,
-element by element.
-Example:
-```
-def compare' (x y : Int) : Int :=
-  if x = y then 0
-  else
-    if x > y then 1
-    else -1
+`List.compareWith` compares two lists `l₁` and `l₂` using thee function `compare` from
+the `Ord` typeclass, which means that the type of the list's elements have to have
+an instance of this typeclass. `List.comparewith` returns a contructor from the
+`Ordering` inductive type.
 
-[1, 5].compareWith compare' [1, 8] = -1
-[1, 10].compareWith compare' [1, 10] = 0
-[1, 11].compareWith compare' [1, 13] = 1
-[1, 5].compareWith compare' [1] = -1
-[1].compareWith compare' [1, 8] = 1
+Examples:
+```
+[1, 5].compareWith compare' [1, 8] = Ordering.lt
+[1, 10].compareWith compare' [1, 10] = Ordering.eq
+[1, 11].compareWith compare' [1, 13] = Ordering.gt
+[1, 5].compareWith compare' [1] = Ordering.lt
+[1].compareWith compare' [1, 8] = Ordering.gt
 ```
 -/
 def compareWith [Ord α] (l₁ l₂ : List α) : Ordering :=
