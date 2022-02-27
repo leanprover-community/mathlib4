@@ -816,4 +816,8 @@ theorem eq_one_of_mul_eq_self_left {a b : ℤ} (Hpos : a ≠ 0) (H : b * a = a) 
 theorem eq_one_of_mul_eq_self_right {a b : ℤ} (Hpos : b ≠ 0) (H : b * a = b) : a = 1 :=
   Int.eq_of_mul_eq_mul_left Hpos $ by rw [Int.mul_one, H]
 
+lemma ofNat_natAbs_eq_of_nonneg : ∀ a : ℤ, 0 ≤ a → Int.ofNat (Int.natAbs a) = a
+| (ofNat n), h => rfl
+| -[1+ n],   h => absurd (neg_succ_lt_zero n) (not_lt_of_ge h)
+
 end Int
