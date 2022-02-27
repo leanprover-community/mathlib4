@@ -303,4 +303,22 @@ lemma Fin.gt_wf : WellFounded (fun a b : Fin n => b < a) :=
 /-- A well-ordered relation for "upwards" induction on `Fin n`. -/
 def Fin.upRel (n : ℕ) : WellFoundedRelation (Fin n) := ⟨_, gt_wf⟩
 
+lemma Fin.le_refl (f : Fin n) : f ≤ f := Nat.le_refl _
+lemma Fin.le_trans (a b c : Fin n) : a ≤ b → b ≤ c → a ≤ c := Nat.le_trans
+lemma Fin.lt_iff_le_not_le (a b : Fin n) : a < b ↔ a ≤ b ∧ ¬b ≤ a := Nat.lt_iff_le_not_le
+lemma Fin.le_antisymm (a b : Fin n) : a ≤ b → b ≤ a → a = b := by
+  intro h1 h2
+  apply Fin.eq_of_val_eq
+  exact Nat.le_antisymm h1 h2
+
+lemma Fin.le_total (a b : Fin n) : a ≤ b ∨ b ≤ a := Nat.le_total _ _
+
+instance : LinearOrder (Fin n) where
+  le_refl := Fin.le_refl
+  le_trans := Fin.le_trans
+  lt_iff_le_not_le := Fin.lt_iff_le_not_le
+  le_antisymm := Fin.le_antisymm
+  le_total := Fin.le_total
+  decidable_le := inferInstance
+
 end
