@@ -10,7 +10,7 @@ namespace List
 
 open Nat
 
-@[simp] theorem length_repeat (a : α) (n : Nat) : length (repeat a n) = n := by
+@[simp] theorem length_repeat' (a : α) (n : Nat) : length (repeat' a n) = n := by
   induction n <;> simp_all
 
 @[simp] theorem length_tail (l : List α) : length (tail l) = length l - 1 := by cases l <;> rfl

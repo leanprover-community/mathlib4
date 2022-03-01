@@ -529,14 +529,14 @@ theorem map_eq_append_split {f : α → β} {l : List α} {s₁ s₂ : List β}
 
 /-! ### repeat -/
 
-theorem repeat_succ (a : α) n : repeat a (n+1) = a :: repeat a n := rfl
+theorem repeat'_succ (a : α) n : repeat' a (n+1) = a :: repeat' a n := rfl
 
-theorem mem_repeat {a b : α} : ∀ {n}, b ∈ repeat a n ↔ n ≠ 0 ∧ b = a
+theorem mem_repeat' {a b : α} : ∀ {n}, b ∈ repeat' a n ↔ n ≠ 0 ∧ b = a
 | 0 => by simp
-| n+1 => by simp [mem_repeat]
+| n+1 => by simp [mem_repeat']
 
-theorem eq_of_mem_repeat {a b : α} {n} (h : b ∈ repeat a n) : b = a :=
-  (mem_repeat.1 h).2
+theorem eq_of_mem_repeat' {a b : α} {n} (h : b ∈ repeat' a n) : b = a :=
+  (mem_repeat'.1 h).2
 
 /-! ### getLast -/
 
@@ -671,12 +671,12 @@ theorem get_append_right_aux {l₁ l₂ : List α} {n : ℕ}
   rw [length_append] at h₂
   exact Nat.sub_lt_left_of_lt_add h₁ h₂
 
-theorem get_append_right {l₁ l₂ : List α} {n : ℕ} (h₁ : l₁.length ≤ n) (h₂) :
+theorem get_append_right' {l₁ l₂ : List α} {n : ℕ} (h₁ : l₁.length ≤ n) (h₂) :
     (l₁ ++ l₂).get ⟨n, h₂⟩ = l₂.get ⟨n - l₁.length, id <| get_append_right_aux h₁ h₂⟩ :=
 Option.some.inj $ by rw [← get?_eq_get, ← get?_eq_get, get?_append_right h₁]
 
-@[simp] theorem get_repeat (a : α) {n : ℕ} (m : Fin _) : (List.repeat a n).get m = a :=
-  eq_of_mem_repeat (get_mem _ _ _)
+@[simp] theorem get_repeat' (a : α) {n : ℕ} (m : Fin _) : (List.repeat' a n).get m = a :=
+  eq_of_mem_repeat' (get_mem _ _ _)
 
 theorem get?_append {l₁ l₂ : List α} {n : ℕ} (hn : n < l₁.length) :
   (l₁ ++ l₂).get? n = l₁.get? n := by
@@ -1236,14 +1236,14 @@ List.decidablePairwise
 /-- pad `l : List α` with repeated occurrences of `a : α` until it's of length `n`.
   If `l` is initially larger than `n`, just return `l`. -/
 def leftpad (n : ℕ) (a : α) (l : List α) : List α :=
-repeat a (n - length l) ++ l
+repeat' a (n - length l) ++ l
 
 /-- The length of the List returned by `List.leftpad n a l` is equal
   to the larger of `n` and `l.length` -/
 theorem leftpad_length (n : ℕ) (a : α) (l : List α) : (leftpad n a l).length = max n l.length :=
-by simp only [leftpad, length_append, length_repeat, Nat.sub_add_eq_max]
+by simp only [leftpad, length_append, length_repeat', Nat.sub_add_eq_max]
 
-theorem leftpad_prefix [DecidableEq α] (n : ℕ) (a : α) (l : List α) : isPrefix (repeat a (n - length l)) (leftpad n a l) :=
+theorem leftpad_prefix [DecidableEq α] (n : ℕ) (a : α) (l : List α) : isPrefix (repeat' a (n - length l)) (leftpad n a l) :=
 by
   simp only [isPrefix, leftpad]
   exact Exists.intro l rfl
@@ -1251,6 +1251,6 @@ by
 theorem leftpad_suffix [DecidableEq α] (n : ℕ) (a : α) (l : List α) : isSuffix l (leftpad n a l) :=
 by
   simp only [isSuffix, leftpad]
-  exact Exists.intro (repeat a (n - length l)) rfl
+  exact Exists.intro (repeat' a (n - length l)) rfl
 
 end List
