@@ -568,7 +568,7 @@ section equality
 
 variable {α : Sort _} {a b : α}
 
-@[simp] theorem heq_iff_eq : HEq a b ↔ a = b :=
+theorem heq_iff_eq : HEq a b ↔ a = b :=
 ⟨eq_of_heq, heq_of_eq⟩
 
 theorem proof_irrel_heq {p q : Prop} (hp : p) (hq : q) : HEq hp hq :=
