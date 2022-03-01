@@ -38,8 +38,6 @@ toUnfold: {s.toUnfold.toList}
 erased: {s.erased.toList}
 toUnfoldThms: {s.toUnfoldThms.toList}"
 
-export private mkEqTrans from Lean.Meta.Tactic.Simp.Main
-
 def mkEqSymm (e : Expr) (r : Simp.Result) : MetaM Simp.Result :=
   ({ expr := e, proof? := · }) <$>
   match r.proof? with

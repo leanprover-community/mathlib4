@@ -60,15 +60,6 @@ lemma pred_lt_pred : ∀ {n m : ℕ}, n ≠ 0 → n < m → pred n < pred m
 protected lemma add_left_cancel_iff {n m k : ℕ} : n + m = n + k ↔ m = k :=
 ⟨Nat.add_left_cancel, fun | rfl => rfl⟩
 
-protected lemma le_of_add_le_add_left {k n m : ℕ} (h : k + n ≤ k + m) : n ≤ m := by
-  let ⟨w, hw⟩ := le.dest h
-  rw [Nat.add_assoc, Nat.add_left_cancel_iff] at hw
-  exact Nat.le.intro hw
-
-protected lemma le_of_add_le_add_right {k n m : ℕ} : n + k ≤ m + k → n ≤ m := by
-  rw [Nat.add_comm _ k, Nat.add_comm _ k]
-  apply Nat.le_of_add_le_add_left
-
 protected lemma add_le_add_iff_le_right (k n m : ℕ) : n + k ≤ m + k ↔ n ≤ m :=
 ⟨Nat.le_of_add_le_add_right, fun h => Nat.add_le_add_right h _⟩
 
@@ -87,13 +78,6 @@ Nat.add_lt_add_left h n
 
 protected lemma lt_add_of_pos_left {n k : ℕ} (h : 0 < k) : n < k + n :=
 by rw [Nat.add_comm]; exact Nat.lt_add_of_pos_right h
-
-protected lemma le_of_mul_le_mul_left {a b c : ℕ} (h : c * a ≤ c * b) (hc : 0 < c) : a ≤ b :=
-not_lt.1 fun h1 => not_le.2 (Nat.mul_lt_mul_of_pos_left h1 hc) h
-
-protected theorem eq_of_mul_eq_mul_left {m k n : ℕ} (Hn : 0 < n) (H : n * m = n * k) : m = k :=
-Nat.le_antisymm (Nat.le_of_mul_le_mul_left (Nat.le_of_eq H) Hn)
-                (Nat.le_of_mul_le_mul_left (Nat.le_of_eq H.symm) Hn)
 
 /- sub properties -/
 
@@ -131,9 +115,6 @@ protected lemma le_of_le_of_sub_le_sub_right {n m k : ℕ} (h₀ : k ≤ m) (h�
 protected lemma sub_le_sub_right_iff {n m k : ℕ} (h : k ≤ m) : n - k ≤ m - k ↔ n ≤ m :=
 ⟨Nat.le_of_le_of_sub_le_sub_right h, fun h => Nat.sub_le_sub_right h k⟩
 
-protected theorem sub_self_add (n m : ℕ) : n - (n + m) = 0 :=
-show (n + 0) - (n + m) = 0 by rw [Nat.add_sub_add_left, Nat.zero_sub]
-
 protected theorem add_le_to_le_sub (x : ℕ) {y k : ℕ}
   (h : k ≤ y)
 : x + k ≤ y ↔ x ≤ y - k :=
@@ -152,10 +133,6 @@ rfl
 
 theorem succ_pred_eq_of_pos : ∀ {n : ℕ}, 0 < n → succ (pred n) = n
 | succ k, h => rfl
-
-protected theorem sub_eq_zero_of_le {n m : ℕ} (h : n ≤ m) : n - m = 0 :=
-Exists.elim (Nat.le.dest h)
-  (λ k => λ hk : n + k = m => by rw [← hk, Nat.sub_self_add])
 
 protected theorem le_of_sub_eq_zero : ∀{n m : ℕ}, n - m = 0 → n ≤ m
 | n, 0, H => by rw [Nat.sub_zero] at H; simp [H]
@@ -540,7 +517,7 @@ lemma sub_mul_mod (x k n : ℕ) (h₁ : n*k ≤ x) : (x - n*k) % n = x % n := by
       apply Nat.le_trans _ h₁
       apply le_add_right _ n
     have h₄ : x - n * k ≥ n := by
-      apply Nat.le_of_add_le_add_right (k := n*k)
+      apply Nat.le_of_add_le_add_right (b := n*k)
       rw [Nat.sub_add_cancel h₂]
       simp [mul_succ, Nat.add_comm] at h₁; simp [h₁]
     rw [mul_succ, ← Nat.sub_sub, ← mod_eq_sub_mod h₄, IH h₂]

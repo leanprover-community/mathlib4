@@ -131,9 +131,9 @@ protected def inter [DecidableEq α] (l₁ l₂ : List α) : List α :=
 
 instance [DecidableEq α] : Inter (List α) := ⟨List.inter⟩
 
-@[simp] def repeat (a : α) : Nat → List α
+@[simp] def repeat' (a : α) : Nat → List α
 | 0 => []
-| succ n => a :: repeat a n
+| succ n => a :: repeat' a n
 
 def last! [Inhabited α] : List α → α
 | [] => panic! "empty list"
