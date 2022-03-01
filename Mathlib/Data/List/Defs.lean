@@ -770,11 +770,11 @@ an instance of this typeclass. `List.comparewith` returns a contructor from the
 
 Examples:
 ```
-[1, 5].compareWith compare' [1, 8] = Ordering.lt
-[1, 10].compareWith compare' [1, 10] = Ordering.eq
-[1, 11].compareWith compare' [1, 13] = Ordering.gt
-[1, 5].compareWith compare' [1] = Ordering.lt
-[1].compareWith compare' [1, 8] = Ordering.gt
+[1, 5].compareWith [1, 8] = Ordering.lt
+[1, 10].compareWith  [1, 10] = Ordering.eq
+[1, 11].compareWith  [1, 13] = Ordering.gt
+[1, 5].compareWith [1] = Ordering.lt
+[1].compareWith [1, 8] = Ordering.gt
 ```
 -/
 def compareWith [Ord α] (l₁ l₂ : List α) : Ordering :=
