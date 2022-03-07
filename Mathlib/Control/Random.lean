@@ -27,16 +27,14 @@ inductive Rng where
 | stdGen : StdGen → Rng
 
 /-- A monad to generate random objects using the generic generator type `g` -/
-@[reducible]
-def RandG (g : Type) (α : Type u) := StateM (ULift g) α
+abbrev RandG (g : Type) := StateM (ULift g)
 
 /-- A monad to generate random objects using the generator type `Rng` -/
-@[reducible]
-def Rand (α : Type u) := RandG Rng α
+abbrev Rand (α : Type u) := RandG Rng α
 
 /-- `Random α` gives us machinery to generate values of type `α` -/
 class Random (α : Type u) where
-  random {g : Type} [RandomGen g] : RandG g α
+  random [RandomGen g] : RandG g α
 
 /-- `BoundedRandom α` gives us machinery to generate values of type `α` between certain bounds -/
 class BoundedRandom (α : Type u) [Preorder α] where
@@ -59,7 +57,7 @@ end Rng
 
 namespace Rand
   /-- Generate one more `Nat` -/
-  def next {g : Type} [RandomGen g] : RandG g Nat := do
+  def next [RandomGen g] : RandG g Nat := do
     let rng := (←get).down
     let (res, new) := RandomGen.next rng
     set (ULift.up new)
@@ -139,7 +137,7 @@ instance {n : Nat} : BoundedRandom (Fin n) where
 end Random
 
 
-def IO.runRand (cmd : Rand α) : IO α := do
+def IO.runRand (cmd : Rand α) : BaseIO α := do
   let stdGen ← stdGenRef.get
   let rng := ULift.up <| Rng.stdGen stdGen
   pure <| Prod.fst <| Id.run <| StateT.run cmd rng
