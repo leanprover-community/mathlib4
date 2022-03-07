@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2021 Henrik Böving. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Henrik Böving
+-/
 import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Int.Order
@@ -19,18 +24,11 @@ defining objects that can be created randomly.
   * Similar library in Haskell: https://hackage.haskell.org/package/MonadRandom
 -/
 
-/-- The RNGs that can be used to run a computation inside the `Rand`
-    Monad. Apart from generating random numbers they also have to be
-    capable of running inside IO like `StdGen`.
--/
-inductive Rng where
-| stdGen : StdGen → Rng
-
 /-- A monad to generate random objects using the generic generator type `g` -/
 abbrev RandG (g : Type) := StateM (ULift g)
 
 /-- A monad to generate random objects using the generator type `Rng` -/
-abbrev Rand (α : Type u) := RandG Rng α
+abbrev Rand (α : Type u) := RandG StdGen α
 
 /-- `Random α` gives us machinery to generate values of type `α` -/
 class Random (α : Type u) where
@@ -39,21 +37,6 @@ class Random (α : Type u) where
 /-- `BoundedRandom α` gives us machinery to generate values of type `α` between certain bounds -/
 class BoundedRandom (α : Type u) [Preorder α] where
   randomR {g : Type} (lo hi : α) (h : lo ≤ hi) [RandomGen g] : RandG g {a // lo ≤ a ∧ a ≤ hi}
-
-namespace Rng
-
-def range : Rng → Nat × Nat
-| stdGen gen => RandomGen.range gen
-
-def next : Rng → Nat × Rng
-| stdGen gen => RandomGen.next gen |>.map id stdGen
-
-def split : Rng → Rng × Rng
-| stdGen gen => RandomGen.split gen |>.map stdGen stdGen
-
-instance : RandomGen Rng := ⟨range, next, split⟩
-
-end Rng
 
 namespace Rand
   /-- Generate one more `Nat` -/
@@ -108,11 +91,7 @@ instance : BoundedRandom Nat where
     let z ← rand (Fin (hi - lo).succ)
     pure ⟨
       lo + z.val, Nat.le_add_right _ _,
-      by
-         apply Nat.add_le_of_le_sub_left
-         exact h
-         apply Nat.le_of_succ_le_succ
-         exact z.isLt
+      Nat.add_le_of_le_sub_left h (Nat.le_of_succ_le_succ z.isLt)
     ⟩
 
 instance : BoundedRandom Int where
@@ -136,8 +115,16 @@ instance {n : Nat} : BoundedRandom (Fin n) where
 
 end Random
 
-
+/-- Computes a `Rand α` using the global `stdGenRef` as RNG.
+    Note that:
+    - `stdGenRef` is not necessarily properly seeded on program startup
+      as of now and will therefore be deterministic.
+    - `stdGenRef` is not thread local, hence two threads accessing it
+      at the same time will get the exact same generator.
+-/
 def IO.runRand (cmd : Rand α) : BaseIO α := do
   let stdGen ← stdGenRef.get
-  let rng := ULift.up <| Rng.stdGen stdGen
-  pure <| Prod.fst <| Id.run <| StateT.run cmd rng
+  let rng := ULift.up stdGen
+  let (res, new) := Id.run <| StateT.run cmd rng
+  stdGenRef.set new.down
+  pure res
