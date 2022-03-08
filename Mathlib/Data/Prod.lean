@@ -161,7 +161,7 @@ theorem lex_def (r : α → α → Prop) (s : β → β → Prop)
 instance Lex.decidable [DecidableEq α]
   (r : α → α → Prop) (s : β → β → Prop) [DecidableRel r] [DecidableRel s] :
   DecidableRel (Prod.Lex r s) :=
-λ p q => decidable_of_decidable_of_iff (by infer_instance) (lex_def r s).symm
+λ p q => decidable_of_decidable_of_iff (lex_def r s).symm
 
 end Prod
 
