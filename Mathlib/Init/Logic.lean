@@ -404,12 +404,6 @@ match (h a b) with
 
 -- TODO: rec_subsingleton
 
-@[simp]
-lemma if_t_t (c : Prop) [h : Decidable c] {α : Sort u} (t : α) : (ite c t t) = t :=
-match h with
-| (isTrue hc)   => rfl
-| (isFalse hnc) => rfl
-
 lemma implies_of_if_pos {c t e : Prop} [Decidable c] (h : ite c t e) : c → t :=
 by intro hc
    have hp : ite c t e = t := if_pos hc
