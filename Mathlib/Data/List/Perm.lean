@@ -5,8 +5,8 @@ namespace List
 
 /-- `Perm l₁ l₂` or `l₁ ~ l₂` asserts that `l₁` and `l₂` are Permutations
   of each other. This is defined by induction using pairwise swaps. -/
-inductive Perm : List α → List α → Prop
-| nil   : @Perm α [] []
+inductive Perm {α} : List α → List α → Prop
+| nil   : Perm [] []
 | cons  : ∀ (x : α) {l₁ l₂ : List α}, Perm l₁ l₂ → Perm (x::l₁) (x::l₂)
 | swap  : ∀ (x y : α) (l : List α), Perm (y::x::l) (x::y::l)
 | trans : ∀ {l₁ l₂ l₃ : List α}, Perm l₁ l₂ → Perm l₂ l₃ → Perm l₁ l₃
