@@ -506,12 +506,12 @@ theorem not_and_not_right : ¬(a ∧ ¬b) ↔ (a → b) := Decidable.not_and_not
 kernel will get stuck reducing the usage of `propext` otherwise,
 and `dec_trivial` will not work. -/
 @[inline] def decidable_of_iff (a : Prop) (h : a ↔ b) [D : Decidable a] : Decidable b :=
-decidable_of_decidable_of_iff D h
+decidable_of_decidable_of_iff h
 
 /-- Transfer decidability of `b` to decidability of `a`, if the propositions are equivalent.
 This is the same as `decidable_of_iff` but the iff is flipped. -/
 @[inline] def decidable_of_iff' (b : Prop) (h : a ↔ b) [D : Decidable b] : Decidable a :=
-decidable_of_decidable_of_iff D h.symm
+decidable_of_decidable_of_iff h.symm
 
 /-- Prove that `a` is decidable by constructing a boolean `b` and a proof that `b ↔ a`.
 (This is sometimes taken as an alternate definition of decidability.) -/

@@ -34,27 +34,14 @@ attribute [simp] get! get? head? headD head tail! tail? tailD getLast! getLast?
 -- in reducible transparency:
 example {as : List α} {h} : (a :: as).get ⟨0, h⟩ = a := by simp
 
--- https://github.com/leanprover/lean4/issues/945
--- attribute [simp] iota
+attribute [simp] iota
 
-def mem (a : α) : List α → Prop
-| [] => False
-| (b :: l) => a = b ∨ mem a l
-
-instance : Mem α (List α) := ⟨mem⟩
-
-@[simp] theorem mem_nil (a : α) : a ∈ [] ↔ False := Iff.rfl
+@[simp] theorem not_mem_nil (a : α) : ¬ a ∈ [] := fun.
 
 @[simp] theorem mem_cons {a b : α} {l : List α} :
-  a ∈ (b :: l) ↔ a = b ∨ a ∈ l := Iff.rfl
-
-instance instDecidableMem [DecidableEq α] (a : α) : ∀ l : List α, Decidable (a ∈ l)
-| [] => isFalse not_false
-| b :: l =>
-  if h₁ : a = b then isTrue (Or.inl h₁) else
-    match instDecidableMem a l with
-    | isTrue h₂ => isTrue (Or.inr h₂)
-    | isFalse h₂ => isFalse (not_or_intro h₁ h₂)
+  a ∈ (b :: l) ↔ a = b ∨ a ∈ l :=
+  ⟨fun h => by cases h <;> simp [Membership.mem, *],
+   fun | Or.inl rfl => by constructor | Or.inr h => by constructor; assumption⟩
 
 protected def bagInter {α} [BEq α] : List α → List α → List α
 | [], _ => []

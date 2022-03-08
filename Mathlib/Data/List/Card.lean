@@ -109,7 +109,7 @@ theorem card_remove_of_mem {a : α} : ∀ {as : List α}, a ∈ as → card as =
         have h₃ : a' ∉ as := h' ▸ h''
         simp [card_cons_of_not_mem h₃, remove_eq_of_not_mem h'']
     | inr h' =>
-        have h₃ : a ∈ as := Or.resolve_left h h'
+        have h₃ : a ∈ as := (mem_cons.1 h).resolve_left h'
         simp [remove, h']
         cases Decidable.em (a' ∈ as) with
         | inl h'' =>
@@ -127,7 +127,7 @@ theorem card_subset_le : ∀ {as bs : List α}, as ⊆ bs → card as ≤ card b
       have hsub' : as ⊆ bs := fun _ xmem => hsub (mem_cons_of_mem a xmem)
       simp [h', card_subset_le hsub']
     | inr h' =>
-      have : a ∈ bs := hsub (Or.inl rfl)
+      have : a ∈ bs := hsub (Mem.head ..)
       simp [h', card_remove_of_mem this]
       apply Nat.add_le_add_right
       apply card_subset_le

@@ -79,7 +79,7 @@ theorem eq_of_mem_singleton {a b : α} (h : a ∈ [b]) : a = b :=
     (fun hin : a ∈ [] => absurd hin (not_mem_nil a))
 
 @[simp 1100] theorem mem_singleton {a b : α} : a ∈ [b] ↔ a = b :=
-⟨eq_of_mem_singleton, Or.inl⟩
+⟨eq_of_mem_singleton, by simp⟩
 
 theorem mem_of_mem_cons_of_mem {a b : α} {l : List α} : a ∈ b::l → b ∈ l → a ∈ l :=
   fun ainbl binl =>
@@ -88,7 +88,7 @@ theorem mem_of_mem_cons_of_mem {a b : α} {l : List α} : a ∈ b::l → b ∈ l
       (fun hin : a ∈ l => hin)
 
 theorem eq_or_ne_mem_of_mem {a b : α} {l : List α} (h' : a ∈ b :: l) : a = b ∨ (a ≠ b ∧ a ∈ l) :=
-  open Classical in if h : a = b then Or.inl h else Or.inr ⟨h, h'.resolve_left h⟩
+  open Classical in if h : a = b then Or.inl h else Or.inr ⟨h, (mem_cons.1 h').resolve_left h⟩
 
 theorem not_mem_append {a : α} {s t : List α} (h₁ : a ∉ s) (h₂ : a ∉ t) : a ∉ s ++ t :=
 mt mem_append.1 $ (not_or _ _).mpr ⟨h₁, h₂⟩
@@ -100,8 +100,8 @@ theorem mem_constructor {a : α} {l : List α} (h : a ∈ l) : ∃ s t : List α
   | nil => cases h --exact ⟨[], l, rfl⟩
   | cons b l ih =>
       cases h with
-      | inl heq => rw [heq]; exact ⟨[], l, rfl⟩
-      | inr hmem =>
+      | head => exact ⟨[], l, rfl⟩
+      | tail _ hmem =>
         match ih hmem with
         | ⟨s, t, h'⟩ =>
           refine ⟨b::s, t, ?_⟩
@@ -111,10 +111,10 @@ theorem mem_of_ne_of_mem {a y : α} {l : List α} (h₁ : a ≠ y) (h₂ : a ∈
 Or.elim (eq_or_mem_of_mem_cons h₂) (fun e => absurd e h₁) (fun r => r)
 
 theorem ne_of_not_mem_cons {a b : α} {l : List α} : (a ∉ b::l) → a ≠ b :=
-fun nin aeqb => absurd (Or.inl aeqb) nin
+fun nin aeqb => absurd (aeqb ▸ Mem.head ..) nin
 
 theorem not_mem_of_not_mem_cons {a b : α} {l : List α} : (a ∉ b::l) → a ∉ l :=
-fun nin nainl => absurd (Or.inr nainl) nin
+fun nin nainl => absurd (Mem.tail _ nainl) nin
 
 theorem not_mem_cons_of_ne_of_not_mem {a y : α} {l : List α} : a ≠ y → (a ∉ l) → (a ∉ y::l) :=
 fun p1 p2 => fun Pain => absurd (eq_or_mem_of_mem_cons Pain) ((not_or _ _).mpr ⟨p1, p2⟩)
@@ -126,29 +126,28 @@ theorem mem_map_of_mem (f : α → β) {a : α} {l : List α} (h : a ∈ l) : f 
   induction l with
   | nil => cases h
   | cons b l' ih =>
-      cases h with
-      | inl h' => rw [h']; exact Or.inl rfl
-      | inr h' => exact Or.inr $ ih h'
+    cases h with constructor
+    | tail _ h' => exact ih h'
 
 theorem exists_of_mem_map {f : α → β} {b : β} {l : List α} (h : b ∈ List.map f l) :
     ∃ a, a ∈ l ∧ f a = b := by
   induction l with
   | nil => cases h
   | cons c l' ih =>
-      cases eq_or_mem_of_mem_cons h with
-      | inl h => exact ⟨c, mem_cons_self _ _, h.symm⟩
-      | inr h =>
-        match ih h with
-        | ⟨a, ha₁, ha₂⟩ => exact ⟨a, mem_cons_of_mem _ ha₁, ha₂⟩
+    cases eq_or_mem_of_mem_cons h with
+    | inl h => exact ⟨c, mem_cons_self _ _, h.symm⟩
+    | inr h =>
+      match ih h with
+      | ⟨a, ha₁, ha₂⟩ => exact ⟨a, mem_cons_of_mem _ ha₁, ha₂⟩
 
 theorem mem_map {f : α → β} {b} : ∀ {l : List α}, b ∈ l.map f ↔ ∃ a, a ∈ l ∧ b = f a
 | [] => by simp
 | b :: l => by
   rw [map_cons, mem_cons, mem_map];
-  exact ⟨fun | Or.inl h => ⟨_, Or.inl rfl, h⟩
-             | Or.inr ⟨l, h₁, h₂⟩ => ⟨l, Or.inr h₁, h₂⟩,
-         fun | ⟨_, Or.inl rfl, h⟩ => Or.inl h
-             | ⟨l, Or.inr h₁, h₂⟩ => Or.inr ⟨l, h₁, h₂⟩⟩
+  exact ⟨fun | Or.inl h => ⟨_, Mem.head .., h⟩
+             | Or.inr ⟨l, h₁, h₂⟩ => ⟨l, Mem.tail _ h₁, h₂⟩,
+         fun | ⟨_, Mem.head .., h⟩ => Or.inl h
+             | ⟨l, Mem.tail _ h₁, h₂⟩ => Or.inr ⟨l, h₁, h₂⟩⟩
 
 theorem mem_map_of_injective {f : α → β} (H : injective f) {a : α} {l : List α} :
   f a ∈ map f l ↔ a ∈ l :=
@@ -174,10 +173,10 @@ theorem mem_join {a} : ∀ {L : List (List α)}, a ∈ L.join ↔ ∃ l, l ∈ L
 | [] => by simp
 | b :: l => by
   simp only [join, mem_append, mem_join]
-  exact ⟨fun | Or.inl h => ⟨_, Or.inl rfl, h⟩
-             | Or.inr ⟨l, h₁, h₂⟩ => ⟨l, Or.inr h₁, h₂⟩,
-         fun | ⟨_, Or.inl rfl, h⟩ => Or.inl h
-             | ⟨l, Or.inr h₁, h₂⟩ => Or.inr ⟨l, h₁, h₂⟩⟩
+  exact ⟨fun | Or.inl h => ⟨_, Mem.head .., h⟩
+             | Or.inr ⟨l, h₁, h₂⟩ => ⟨l, Mem.tail _ h₁, h₂⟩,
+         fun | ⟨_, Mem.head .., h⟩ => Or.inl h
+             | ⟨l, Mem.tail _ h₁, h₂⟩ => Or.inr ⟨l, h₁, h₂⟩⟩
 
 theorem exists_of_mem_join {a : α} {L : List (List α)} : a ∈ join L → ∃ l, l ∈ L ∧ a ∈ l :=
 mem_join.1
@@ -313,14 +312,14 @@ theorem exists_mem_cons_of {p : α → Prop} {a : α} (l : List α) (h : p a) :
 
 theorem exists_mem_cons_of_exists {p : α → Prop} {a : α} {l : List α} :
     (∃ x ∈ l, p x) → ∃ x ∈ a :: l, p x
-| ⟨x, h, px⟩ => ⟨x, Or.inr h, px⟩
+| ⟨x, h, px⟩ => ⟨x, Mem.tail _ h, px⟩
 
 theorem or_exists_of_exists_mem_cons {p : α → Prop} {a : α} {l : List α} :
     (∃ x ∈ a :: l, p x) → p a ∨ ∃ x ∈ l, p x
 | ⟨x, xal, px⟩ => by
   cases xal with
-  | inl h => rw [←h]; exact Or.inl px
-  | inr h => exact Or.inr ⟨x, h, px⟩
+  | head => exact Or.inl px
+  | tail _ h => exact Or.inr ⟨x, h, px⟩
 
 theorem exists_mem_cons_iff (p : α → Prop) (a : α) (l : List α) :
   (∃ x ∈ a :: l, p x) ↔ p a ∨ ∃ x ∈ l, p x :=
@@ -360,11 +359,11 @@ fun {a} h => (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
 
 theorem eq_nil_of_subset_nil : ∀ {l : List α}, l ⊆ [] → l = []
 | [],     s => rfl
-| (a::l), s => False.elim $ s $ mem_cons_self a l
+| (a::l), s => nomatch s $ mem_cons_self a l
 
 theorem eq_nil_iff_forall_not_mem {l : List α} : l = [] ↔ ∀ a, a ∉ l :=
-show l = [] ↔ l ⊆ []
-from ⟨fun e => e ▸ subset.refl _, eq_nil_of_subset_nil⟩
+  have : l = [] ↔ l ⊆ [] := ⟨fun e => e ▸ subset.refl _, eq_nil_of_subset_nil⟩
+  by simp [subset_def] at this; exact this
 
 theorem map_subset {l₁ l₂ : List α} (f : α → β) (H : l₁ ⊆ l₂) : map f l₁ ⊆ map f l₂ :=
 fun {x} => by simp only [mem_map, not_and, exists_imp_distrib, and_imp]
@@ -556,8 +555,8 @@ theorem getLast_concat {a : α} (l : List α) : (h : concat l a ≠ []) → getL
 /-! ### nth element -/
 
 theorem get_of_mem : ∀ {a} {l : List α}, a ∈ l → ∃ n, get l n = a
-| a, _ :: l, Or.inl rfl => ⟨⟨0, Nat.succ_pos _⟩, rfl⟩
-| a, b :: l, Or.inr m =>
+| a, _ :: l, Mem.head .. => ⟨⟨0, Nat.succ_pos _⟩, rfl⟩
+| a, b :: l, Mem.tail _ m =>
   let ⟨⟨n, h⟩, e⟩ := get_of_mem m
   ⟨⟨n+1, Nat.succ_lt_succ h⟩, e⟩
 
@@ -822,7 +821,7 @@ variable [DecidableEq α]
     intro
     | Or.inl h' => rw [h']; exact h
     | Or.inr h' => exact h'
-  · rw [insert_of_not_mem h]; rfl
+  · rw [insert_of_not_mem h, mem_cons]
 
 @[simp 1100] theorem mem_insert_self (a : α) (l : List α) : a ∈ insert a l :=
 mem_insert_iff.2 (Or.inl rfl)
@@ -865,7 +864,7 @@ theorem erasep_of_forall_not {l : List α}
   (h : ∀ a, a ∈ l → ¬ p a) : l.erasep p = l := by
   induction l with
   | nil => rfl
-  | cons _ _ ih => simp [h _ (Or.inl rfl), ih (forall_mem_of_forall_mem_cons h)]
+  | cons _ _ ih => simp [h _ (Mem.head ..), ih (forall_mem_of_forall_mem_cons h)]
 
 theorem exists_of_erasep {l : List α} {a} (al : a ∈ l) (pa : p a) :
     ∃ a l₁ l₂, (∀ b ∈ l₁, ¬ p b) ∧ p a ∧ l = l₁ ++ a :: l₂ ∧ l.erasep p = l₁ ++ l₂ := by
@@ -875,8 +874,8 @@ theorem exists_of_erasep {l : List α} {a} (al : a ∈ l) (pa : p a) :
     by_cases pb : p b
     · exact ⟨b, [], l, forall_mem_nil _, pb, by simp [pb]⟩
     · cases al with
-      | inl aeqb => rw [aeqb] at pa; exact False.elim $ pb pa
-      | inr al =>
+      | head => cases pb pa
+      | tail _ al =>
         let ⟨c, l₁, l₂, h₁, h₂, h₃, h₄⟩ := ih al
         exact ⟨c, b::l₁, l₂, forall_mem_cons.2 ⟨pb, h₁⟩,
           h₂, by rw [h₃, cons_append], by simp [pb, h₄]⟩
