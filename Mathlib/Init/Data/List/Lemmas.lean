@@ -157,10 +157,10 @@ theorem length_removeNth : ∀ (l : List α) (i : ℕ),
 -- | a :: l => by
 --   cases pa: p a <;> simp [partition, partitionAux, filter, pa, partition_eq_filter_filter p l]
 
-inductive sublist : List α → List α → Prop
-  | slnil : @sublist α [] []
-  | cons l₁ l₂ a : @sublist α l₁ l₂ → sublist l₁ (a :: l₂)
-  | cons2 l₁ l₂ a : @sublist α l₁ l₂ → sublist (a :: l₁) (a :: l₂)
+inductive sublist {α} : List α → List α → Prop
+  | slnil : sublist [] []
+  | cons l₁ l₂ a : sublist l₁ l₂ → sublist l₁ (a :: l₂)
+  | cons2 l₁ l₂ a : sublist l₁ l₂ → sublist (a :: l₁) (a :: l₂)
 
 infixl:50 " <+ " => sublist
 
