@@ -519,13 +519,15 @@ def parseLRAT : Parsec (Array LRATStep) := many do
 
 end Parser
 
-/-- Main entry point. Given strings `cnf` and `lrat` with unparsed file data, and a name `name`,
-adds `theorem name : type := proof` where `type` is a propositional theorem like
-`∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a ∧ a_1`.
+/-- Core of `fromLRAT`. Constructs the context and main proof definitions,
+but not the reification theorem. Returns:
 
-Also creates auxiliaries named `name.ctx_1` (for the CNF formula)
-and `name.proof_1` (for the LRAT proof), with `name` itself containing the reification proof. -/
-def fromLRAT (cnf lrat : String) (name : Name) : MetaM Unit := do
+  * `nvars`: the number of variables specified in the CNF file
+  * `ctx`: The abbreviated formula, a constant like `foo.ctx_1`
+  * `ctx'`: The definitional expansion of the formula, a tree of `Fmla.and` nodes
+  * `proof`: A proof of `ctx.proof []`
+-/
+def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr × Expr) := do
   let Parsec.ParseResult.success _ (nvars, arr) := Parser.parseDimacs cnf.mkIterator
     | throwError "parse CNF failed"
   if arr.isEmpty then throwError "empty CNF"
@@ -550,7 +552,16 @@ def fromLRAT (cnf lrat : String) (name : Name) : MetaM Unit := do
     type        := mkApp2 (mkConst ``Sat.Fmla.proof) ctx (buildClause #[])
     value       := proof
   }
-  let proof := mkConst declName
+  return (nvars, ctx, ctx', mkConst declName)
+
+/-- Main entry point. Given strings `cnf` and `lrat` with unparsed file data, and a name `name`,
+adds `theorem name : type := proof` where `type` is a propositional theorem like
+`∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a ∧ a_1`.
+
+Also creates auxiliaries named `name.ctx_1` (for the CNF formula)
+and `name.proof_1` (for the LRAT proof), with `name` itself containing the reification proof. -/
+def fromLRAT (cnf lrat : String) (name : Name) : MetaM Unit := do
+  let (nvars, ctx, ctx', proof) ← fromLRATAux cnf lrat name
   let (type, value) := buildReify ctx ctx' proof nvars
   addDecl $ Declaration.thmDecl { name, levelParams := [], type, value }
 
@@ -607,3 +618,39 @@ lrat_proof example
 -- lrat_proof full2
 --   (include_str "full2.cnf")
 --   (include_str "full2.lrat")
+
+/-!
+A macro for producing SAT proofs from CNF / LRAT files.
+These files are commonly used in the SAT community for writing proofs.
+
+The input to the `from_lrat` term syntax is two string expressions with
+the statement (written in CNF format) and the proof (in LRAT format).
+For example:
+```
+def foo := from_lrat
+  "p cnf 2 4  1 2 0  -1 2 0  1 -2 0  -1 -2 0"
+  "5 -2 0 4 3 0  5 d 3 4 0  6 1 0 5 1 0  6 d 1 0  7 0 5 2 6 0"
+```
+produces a theorem:
+```
+foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a ∧ a_1
+```
+
+* You can use this term after `have :=` or in `def foo :=` to produce the term
+  without constraining the type.
+* You can use it when a specific type is expected, but it currently does not
+  pay any attention to the shape of the goal and always produces the same theorem,
+  so you can only use this to do alpha renaming.
+* You can use the `include_str` macro in place of the two strings
+  to load CNF / LRAT files from disk.
+-/
+elab "from_lrat" cnf:term:max lrat:term:max : term => do
+  let cnf ← unsafe (Mathlib.Eval.evalTerm String (mkConst ``String) cnf)
+  let lrat ← unsafe (Mathlib.Eval.evalTerm String (mkConst ``String) lrat)
+  let name ← mkAuxName `lrat
+  fromLRAT cnf lrat name
+  return mkConst name
+
+example : ∀ (a b : Prop), (¬a ∧ ¬b ∨ a ∧ ¬b) ∨ ¬a ∧ b ∨ a ∧ b := from_lrat
+  "p cnf 2 4  1 2 0  -1 2 0  1 -2 0  -1 -2 0"
+  "5 -2 0 4 3 0  5 d 3 4 0  6 1 0 5 1 0  6 d 1 0  7 0 5 2 6 0"
