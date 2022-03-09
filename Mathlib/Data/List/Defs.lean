@@ -795,13 +795,6 @@ def sumBy [Add β] [OfNat β 0] (l : List α) (f : α → β) : β :=
   l.map f |>.sum
 
 /--
-Allows `List.average` and `List.averageBy` to take `Float` as `α`s type,
-not restricting it to `Nat`.
--/
-instance : HDiv Float Nat Float where
-  hDiv f n := f / (UInt64.ofNat n).toFloat
-
-/--
 `List.average` computes the average of all the elements in the
 given list.
 -/
