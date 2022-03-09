@@ -12,6 +12,15 @@ import Mathlib.Util.Eval
 Defines a macro for producing SAT proofs from CNF / LRAT files.
 These files are commonly used in the SAT community for writing proofs.
 
+Most SAT solvers support export to [DRAT](https://arxiv.org/abs/1610.06229) format,
+but this format can be expensive to reconstruct because it requires recomputing all
+unit propagation steps. The [LRAT](https://arxiv.org/abs/1612.02353) format solves this
+issue by attaching a proof to the deduction of each new clause.
+(The L in LRAT stands for Linear time verification.)
+There are several verified checkers for the LRAT format, and the program implemented here
+makes it possible to use the lean kernel as an LRAT checker as well and expose the results
+as a standard propositional theorem.
+
 The input to the `lrat_proof` command is the name of the theorem to define,
 and the statement (written in CNF format) and the proof (in LRAT format).
 For example:
