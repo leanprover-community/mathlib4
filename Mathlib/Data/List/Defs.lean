@@ -752,18 +752,18 @@ def mapWithComplement {α β} (f : α → List α → β) : List α → List β 
 /--
 Auxiliary function for `List.compareWith`
 -/
-def compareWithAux [Ord α] : List α → List α → Ordering
+def compareWithAux (f : α → α → Ordering) : List α → List α → Ordering
   | x::xs, y::ys =>
-    let c := compare x y
+    let c := f x y
     if c == Ordering.eq then
-      compareWithAux xs ys
+      compareWithAux f xs ys
     else c
   | [], [] => Ordering.eq
   | _, [] => Ordering.gt
   | [], _ => Ordering.lt
 
 /--
-`List.compareWith` compares two lists `l₁` and `l₂` using thee function `compare` from
+`List.compareWith` compares two lists `l₁` and `l₂` using the function `compare` from
 the `Ord` typeclass, which means that the type of the list's elements have to have
 an instance of this typeclass. `List.comparewith` returns a contructor from the
 `Ordering` inductive type.
@@ -778,7 +778,15 @@ Examples:
 ```
 -/
 def compareWith [Ord α] (l₁ l₂ : List α) : Ordering :=
-  compareWithAux l₁ l₂
+  compareWithAux compare l₁ l₂
+
+/--
+`List.compareWith'` functions exactly like `List.compareWith`, except you can
+provide your own custom function for it to use as a comparer, of type
+`α → α → Ordering`.
+-/
+def compareWith' (f : α → α → Ordering) (l₁ l₂ : List α) : Ordering :=
+  compareWithAux f l₁ l₂
 
 /--
 `List.sum` sums all of the elements of of list `l`, whose elements
