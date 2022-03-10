@@ -92,6 +92,7 @@ import Mathlib.Tactic.Use
 import Mathlib.Util.DeclName
 import Mathlib.Util.Eval
 import Mathlib.Util.Export
+import Mathlib.Util.IncludeStr
 import Mathlib.Util.LibraryNote
 import Mathlib.Util.Simp
 import Mathlib.Util.TermUnsafe
