@@ -11,12 +11,9 @@ namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab.Tactic
 
 -- move these?
-declare_syntax_cat simpArgs'
-syntax " [" simpArg,+ "] " : simpArgs'
-syntax " only " " [" simpArg,+ "] " : simpArgs'
-
-syntax withStx   := " with " (colGt ident)+
-syntax usingStx  := " using " term
+syntax simpArg' := " only "? " [" simpArg,+ "] "
+syntax withStx  := " with " (colGt ident)+
+syntax usingStx := " using " term
 
 /--
 This is a "finishing" tactic modification of `simp`. It has two forms.
@@ -32,7 +29,7 @@ This is a "finishing" tactic modification of `simp`. It has two forms.
   hypothesis `this` if present in the context, then try to close the goal using
   the `assumption` tactic. -/
 elab (name := simpa) "simpa " cfg?:(config)? disch?:(discharger)?
-    args?:(simpArgs')? wth?:(withStx)? using?:(usingStx)? : tactic => do
+    args?:(simpArg')? wth?:(withStx)? using?:(usingStx)? : tactic => do
   let cfg := cfg?.getOptional?
   let args := args?.getOptional?
   dbg_trace args
@@ -50,7 +47,7 @@ elab (name := simpa) "simpa " cfg?:(config)? disch?:(discharger)?
       evalTactic (← `(tactic|have h := $e; simp $(cfg)? $(args)? at h; exact h))
     | _                    => Elab.throwUnsupportedSyntax
 
-example (p : Nat → Prop) (h : p (1 + 0)) : p 1 := by simpa
+example (p : Nat → Prop) (h : p (1 + 0)) : p 1 := by simpa using h
 
 example (p : Nat → Prop) (h : p (1 + 0)) : p 1 := by simpa only [h]
 
