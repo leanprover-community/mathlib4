@@ -14,6 +14,19 @@ syntax simpArgs' := ((" only ")? " [" simpArg,+ "] ")?
 syntax withStx   := (" with " (colGt ident)+)?
 syntax usingStx  := (" using " term)?
 
+/--
+This is a "finishing" tactic modification of `simp`. It has two forms.
+
+* `simpa [rules, ...] using e` will simplify the goal and the type of
+  `e` using `rules`, then try to close the goal using `e`.
+
+  Simplifying the type of `e` makes it more likely to match the goal
+  (which has also been simplified). This construction also tends to be
+  more robust under changes to the simp lemma set.
+
+* `simpa [rules, ...]` will simplify the goal and the type of a
+  hypothesis `this` if present in the context, then try to close the goal using
+  the `assumption` tactic. -/
 elab (name := simpa) "simpa" cfg?:(config)? disch?:(discharger)?
     args?:simpArgs' wth?:withStx using?:usingStx : tactic => do
   let cfg := cfg?.getOptional?
