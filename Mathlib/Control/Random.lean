@@ -77,7 +77,7 @@ instance {n : Nat} : Random (Fin n.succ) where
   random := randFin
 
 def randBool [RandomGen g] : RandG g Bool := do
-  let fin ← rand (Fin 1)
+  let fin ← rand (Fin 2)
   if fin == 1 then
     pure true
   else
