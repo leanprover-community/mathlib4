@@ -163,6 +163,21 @@ instance Lex.decidable [DecidableEq α]
   DecidableRel (Prod.Lex r s) :=
 λ p q => decidable_of_decidable_of_iff (lex_def r s).symm
 
+/-- Shorthand for simple-motived induction principle on products. -/
+def elim {A B C} : (A → B → C) → (A × B) → C
+| f, (a,b) => f a b
+
+def intro {A B C} : (C → A) → (C → B) → C → (A × B)
+| f, g, c => (f c, g c)
+
+def delta {A} : A → A × A
+| a => (a,a)
+
+abbrev Square (A : Type u) := A × A
+
+instance : Functor Square :=
+{map := fun f => map f f}
+
 end Prod
 
 open Function
