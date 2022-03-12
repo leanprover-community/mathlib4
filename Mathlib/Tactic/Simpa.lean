@@ -10,10 +10,18 @@ namespace Mathlib.Tactic
 
 open Lean Parser.Tactic Elab.Tactic
 
--- move these?
-syntax simpArg' := " only "? " [" simpArg,+ "] "
+syntax simpArgs := " [" simpArg,+ "] "
 syntax withStx  := " with " (colGt ident)+
 syntax usingStx := " using " term
+
+def mkSimpArgs : Syntax → TacticM (Array Syntax)
+  | `(simpArgs|[$args,*]) => pure $ args.getElems
+  | _                     => Elab.throwUnsupportedSyntax
+
+def extractOptionalStx (f : Syntax → α) (optStx : Syntax) (d : α) : α :=
+  match optStx.getOptional? with
+  | none   => d
+  | some s => f s
 
 /--
 This is a "finishing" tactic modification of `simp`. It has two forms.
@@ -29,28 +37,37 @@ This is a "finishing" tactic modification of `simp`. It has two forms.
   hypothesis `this` if present in the context, then try to close the goal using
   the `assumption` tactic. -/
 elab (name := simpa) "simpa " cfg?:(config)? disch?:(discharger)?
-    args?:(simpArg')? wth?:(withStx)? using?:(usingStx)? : tactic => do
+    only?:&" only "? args?:(simpArgs)?
+    wth?:(withStx)? using?:(usingStx)? : tactic => do
   let cfg := cfg?.getOptional?
-  let args := args?.getOptional?
-  dbg_trace args
+  let disch := disch?.getOptional?
+  let only := only?.getOptional?
+  let args : Array Syntax ← extractOptionalStx mkSimpArgs args? default
+  dbg_trace (← `(tactic|simp $(cfg)? $(disch)? $[only%$only]? [$[$args],*]))
   let nGoals := (← getUnsolvedGoals).length
-  try evalTactic (← `(tactic|simp $(cfg)? $(disch?.getOptional?)? $(args)?))
-  catch | _ => throwError "couldn't simplify the goal"
+  evalTactic (← `(tactic|simp $(cfg)? $(disch)? $[only%$only]? [$[$args],*]))
   if (← getUnsolvedGoals).length < nGoals then
     throwError "try 'simp' instead of 'simpa'"
   match using?.getOptional? with
-  | none   =>
-    evalTactic (← `(tactic|try simp $(cfg)? $(args)? at this))
-    evalTactic (← `(tactic|assumption))
+  | none   => pure ()
   | some u => match u with
-    | `(usingStx|using $e) =>
-      evalTactic (← `(tactic|have h := $e; simp $(cfg)? $(args)? at h; exact h))
+    | `(usingStx|using $e) => evalTactic (← `(tactic|have := $e))
     | _                    => Elab.throwUnsupportedSyntax
+  evalTactic (← `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? [$[$args],*] at this))
+  evalTactic (← `(tactic|assumption))
+
+example (p : Nat → Prop) (h : p (1 + 0)) : p 1 := by simpa [h]
+
+example (p : Nat → Prop) (h : p (1 + 0)) : p 1 := by simpa
 
 example (p : Nat → Prop) (h : p (1 + 0)) : p 1 := by simpa using h
 
 example (p : Nat → Prop) (h : p (1 + 0)) : p 1 := by simpa only [h]
 
+example (p : Nat → Prop) (h : p (1 + 0)) : p 1 := by simpa only using h
+
 example (p : Prop) (w : p): p := by simpa only [xx] --??
 
-def q := 1
+def v (a : Nat) : List Nat := [a]
+
+example : v a = [a] := by simpa only [v]
