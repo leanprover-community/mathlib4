@@ -29,7 +29,7 @@ elab (name := simpa) "simpa " cfg?:(config)? disch?:(discharger)?
   let cfg := cfg?.getOptional?
   let disch := disch?.getOptional?
   let only := only?.getOptional?
-  let args ← mkSimpArgs args?.getOptional?
+  let args ← getSimpArgs args?.getOptional?
   let nGoals := (← getUnsolvedGoals).length
   if args.size = 0 then
     evalTacticM `(tactic|simp $(cfg)? $(disch)? $[only%$only]?)

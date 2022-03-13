@@ -24,7 +24,7 @@ syntax simpArgs := " [" simpArg,+ "] "
 syntax withStx  := " with " (colGt ident)+
 syntax usingStx := " using " term
 
-def mkSimpArgs (optStx : Option Syntax) : TacticM (Array Syntax) :=
+def getSimpArgs (optStx : Option Syntax) : TacticM (Array Syntax) :=
   match optStx with
   | none     => default
   | some stx => match stx with
