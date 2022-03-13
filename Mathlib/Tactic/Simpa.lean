@@ -14,14 +14,12 @@ syntax simpArgs := " [" simpArg,+ "] "
 syntax withStx  := " with " (colGt ident)+
 syntax usingStx := " using " term
 
-def mkSimpArgs : Syntax → TacticM (Array Syntax)
-  | `(simpArgs|[$args,*]) => pure $ args.getElems
-  | _                     => Elab.throwUnsupportedSyntax
-
-def extractOptionalStx (f : Syntax → α) (optStx : Syntax) (d : α) : α :=
-  match optStx.getOptional? with
-  | none   => d
-  | some s => f s
+def mkSimpArgs' (optStx : Option Syntax) : TacticM (Array Syntax) :=
+  match optStx with
+  | none     => default
+  | some stx => match stx with
+    | `(simpArgs|[$args,*]) => pure $ args.getElems
+    | _                     => Elab.throwUnsupportedSyntax
 
 /--
 This is a "finishing" tactic modification of `simp`. It has two forms.
@@ -42,10 +40,12 @@ elab (name := simpa) "simpa " cfg?:(config)? disch?:(discharger)?
   let cfg := cfg?.getOptional?
   let disch := disch?.getOptional?
   let only := only?.getOptional?
-  let args : Array Syntax ← extractOptionalStx mkSimpArgs args? default
-  dbg_trace (← `(tactic|simp $(cfg)? $(disch)? $[only%$only]? [$[$args],*]))
+  let args ← mkSimpArgs' args?.getOptional?
   let nGoals := (← getUnsolvedGoals).length
-  evalTactic (← `(tactic|simp $(cfg)? $(disch)? $[only%$only]? [$[$args],*]))
+  if args.size = 0 then
+    evalTactic (← `(tactic|simp $(cfg)? $(disch)? $[only%$only]?))
+  else
+    evalTactic (← `(tactic|simp $(cfg)? $(disch)? $[only%$only]? [$[$args],*]))
   if (← getUnsolvedGoals).length < nGoals then
     throwError "try 'simp' instead of 'simpa'"
   match using?.getOptional? with
@@ -53,7 +53,10 @@ elab (name := simpa) "simpa " cfg?:(config)? disch?:(discharger)?
   | some u => match u with
     | `(usingStx|using $e) => evalTactic (← `(tactic|have := $e))
     | _                    => Elab.throwUnsupportedSyntax
-  evalTactic (← `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? [$[$args],*] at this))
+  if args.size = 0 then
+    evalTactic (← `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? at this))
+  else
+    evalTactic (← `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? [$[$args],*] at this))
   evalTactic (← `(tactic|assumption))
 
 example (p : Nat → Prop) (h : p (1 + 0)) : p 1 := by simpa [h]
