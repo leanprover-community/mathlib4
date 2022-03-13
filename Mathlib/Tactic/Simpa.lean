@@ -22,7 +22,10 @@ This is a "finishing" tactic modification of `simp`. It has two forms.
 
 * `simpa [rules, ⋯]` will simplify the goal and the type of a
   hypothesis `this` if present in the context, then try to close the goal using
-  the `assumption` tactic. -/
+  the `assumption` tactic.
+
+#TODO: implement `with ⋯` behavior
+-/
 elab (name := simpa) "simpa " cfg?:(config)? disch?:(discharger)?
     only?:&" only "? args?:(simpArgs)?
     wth?:(withStx)? using?:(usingStx)? : tactic => do
