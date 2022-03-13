@@ -685,7 +685,6 @@ theorem get?_append {l₁ l₂ : List α} {n : ℕ} (hn : n < l₁.length) :
 
 theorem getLast_eq_get : ∀ (l : List α) (h : l ≠ []),
   getLast l h = l.get ⟨l.length - 1, id <| Nat.sub_lt (length_pos_of_ne_nil h) Nat.one_pos⟩
-| [], h => rfl
 | [a], h => by
   rw [getLast_singleton, get_singleton]
 | a :: b :: l, h => by rw [getLast_cons, getLast_eq_get (b :: l)]; {rfl}; exact cons_ne_nil b l
