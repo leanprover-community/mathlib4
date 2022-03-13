@@ -10,17 +10,6 @@ namespace Mathlib.Tactic
 
 open Lean Parser.Tactic Elab.Tactic
 
-syntax simpArgs := " [" simpArg,+ "] "
-syntax withStx  := " with " (colGt ident)+
-syntax usingStx := " using " term
-
-def mkSimpArgs' (optStx : Option Syntax) : TacticM (Array Syntax) :=
-  match optStx with
-  | none     => default
-  | some stx => match stx with
-    | `(simpArgs|[$args,*]) => pure $ args.getElems
-    | _                     => Elab.throwUnsupportedSyntax
-
 /--
 This is a "finishing" tactic modification of `simp`. It has two forms.
 
@@ -40,37 +29,21 @@ elab (name := simpa) "simpa " cfg?:(config)? disch?:(discharger)?
   let cfg := cfg?.getOptional?
   let disch := disch?.getOptional?
   let only := only?.getOptional?
-  let args ← mkSimpArgs' args?.getOptional?
+  let args ← mkSimpArgs args?.getOptional?
   let nGoals := (← getUnsolvedGoals).length
   if args.size = 0 then
-    evalTactic (← `(tactic|simp $(cfg)? $(disch)? $[only%$only]?))
+    evalTacticM `(tactic|simp $(cfg)? $(disch)? $[only%$only]?)
   else
-    evalTactic (← `(tactic|simp $(cfg)? $(disch)? $[only%$only]? [$[$args],*]))
+    evalTacticM `(tactic|simp $(cfg)? $(disch)? $[only%$only]? [$[$args],*])
   if (← getUnsolvedGoals).length < nGoals then
     throwError "try 'simp' instead of 'simpa'"
   match using?.getOptional? with
   | none   => pure ()
   | some u => match u with
-    | `(usingStx|using $e) => evalTactic (← `(tactic|have := $e))
+    | `(usingStx|using $e) => evalTacticM `(tactic|have := $e)
     | _                    => Elab.throwUnsupportedSyntax
   if args.size = 0 then
-    evalTactic (← `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? at this))
+    evalTacticM `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? at this)
   else
-    evalTactic (← `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? [$[$args],*] at this))
-  evalTactic (← `(tactic|assumption))
-
-example (p : Nat → Prop) (h : p (1 + 0)) : p 1 := by simpa [h]
-
-example (p : Nat → Prop) (h : p (1 + 0)) : p 1 := by simpa
-
-example (p : Nat → Prop) (h : p (1 + 0)) : p 1 := by simpa using h
-
-example (p : Nat → Prop) (h : p (1 + 0)) : p 1 := by simpa only [h]
-
-example (p : Nat → Prop) (h : p (1 + 0)) : p 1 := by simpa only using h
-
-example (p : Prop) (w : p): p := by simpa only [xx] --??
-
-def v (a : Nat) : List Nat := [a]
-
-example : v a = [a] := by simpa only [v]
+    evalTacticM `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? [$[$args],*] at this)
+  evalTacticM `(tactic|assumption)
