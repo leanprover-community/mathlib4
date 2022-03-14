@@ -76,12 +76,8 @@ def randFin {n : Nat} [RandomGen g] : RandG g (Fin n.succ) :=
 instance {n : Nat} : Random (Fin n.succ) where
   random := randFin
 
-def randBool [RandomGen g] : RandG g Bool := do
-  let fin ← rand (Fin 1)
-  if fin == 1 then
-    pure true
-  else
-    pure false
+def randBool [RandomGen g] : RandG g Bool :=
+  return (← rand (Fin 2)) == 1
 
 instance : Random Bool where
   random := randBool
