@@ -28,7 +28,7 @@ This is a "finishing" tactic modification of `simp`. It has two forms.
 -/
 elab "simpa " cfg?:(config)? disch?:(discharger)?
     only?:&" only "? args?:(simpArgs)?
-    wth?:(withStx)? using?:(usingStx)? : tactic => do
+    wth?:(withArgs)? using?:(usingArg)? : tactic => do
   let cfg := cfg?.getOptional?
   let disch := disch?.getOptional?
   let only := only?.getOptional?
@@ -37,13 +37,11 @@ elab "simpa " cfg?:(config)? disch?:(discharger)?
   evalTactic $ ← `(tactic|simp $(cfg)? $(disch)? $[only%$only]? $[[$[$args],*]]?)
   if (← getUnsolvedGoals).length < nGoals then
     throwError "try 'simp' instead of 'simpa'"
-  match using?.getOptional? with
+  match ← using?.getOptional?.mapM getUsingArg with
   | none   =>
     evalTactic $ ← `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? $[[$[$args],*]]? at this)
     evalTactic $ ← `(tactic|assumption)
-  | some u => match u with
-    | `(usingStx|using $e) =>
-      evalTactic $ ← `(tactic|have h := $e)
-      evalTactic $ ← `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? $[[$[$args],*]]? at h)
-      evalTactic $ ← `(tactic|exact h)
-    | _                    => Elab.throwUnsupportedSyntax
+  | some e =>
+    evalTactic $ ← `(tactic|have h := $e)
+    evalTactic $ ← `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? $[[$[$args],*]]? at h)
+    evalTactic $ ← `(tactic|exact h)
