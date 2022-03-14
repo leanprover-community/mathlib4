@@ -43,7 +43,7 @@ elab "simpa " cfg?:(config)? disch?:(discharger)?
     evalTactic <|← `(tactic|assumption)
   | some u => match u with
     | `(usingStx|using $e) =>
-      evalTactic <|← `(tactic|have := $e)
-      evalTactic <|← `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? $[[$[$args],*]]? at this)
-      evalTactic <|← `(tactic|exact this)
+      evalTactic <|← `(tactic|have h := $e)
+      evalTactic <|← `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? $[[$[$args],*]]? at h)
+      evalTactic <|← `(tactic|exact h)
     | _                    => Elab.throwUnsupportedSyntax
