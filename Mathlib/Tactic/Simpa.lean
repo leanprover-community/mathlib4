@@ -32,25 +32,18 @@ elab "simpa " cfg?:(config)? disch?:(discharger)?
   let cfg := cfg?.getOptional?
   let disch := disch?.getOptional?
   let only := only?.getOptional?
-  let args ← getSimpArgs args?.getOptional?
-  let argsSizeIsZero : Bool := args.size = 0
+  let args ← args?.getOptional?.mapM getSimpArgs
   let nGoals := (← getUnsolvedGoals).length
-  if argsSizeIsZero then
-    evalTacticM `(tactic|simp $(cfg)? $(disch)? $[only%$only]?)
-  else
-    evalTacticM `(tactic|simp $(cfg)? $(disch)? $[only%$only]? [$[$args],*])
+  evalTactic <|← `(tactic|simp $(cfg)? $(disch)? $[only%$only]? $[[$[$args],*]]?)
   if (← getUnsolvedGoals).length < nGoals then
     throwError "try 'simp' instead of 'simpa'"
-  let simpAtThisStx := if argsSizeIsZero
-    then `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? at this)
-    else `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? [$[$args],*] at this)
   match using?.getOptional? with
   | none   =>
-    evalTacticM simpAtThisStx
-    evalTacticM `(tactic|assumption)
+    evalTactic <|← `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? $[[$[$args],*]]? at this)
+    evalTactic <|← `(tactic|assumption)
   | some u => match u with
     | `(usingStx|using $e) =>
-      evalTacticM `(tactic|have := $e)
-      evalTacticM simpAtThisStx
-      evalTacticM `(tactic|exact this)
+      evalTactic <|← `(tactic|have := $e)
+      evalTactic <|← `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? $[[$[$args],*]]? at this)
+      evalTactic <|← `(tactic|exact this)
     | _                    => Elab.throwUnsupportedSyntax

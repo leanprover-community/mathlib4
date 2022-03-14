@@ -20,21 +20,13 @@ namespace Parser.Tactic
 -- syntax simpArg := simpStar <|> simpErase <|> simpLemma
 def simpArg := simpStar.binary `orelse (simpErase.binary `orelse simpLemma)
 
-syntax simpArgs := " [" simpArg,+ "] "
+syntax simpArgs := " [" simpArg,* "] "
 syntax withStx  := " with " (colGt ident)+
 syntax usingStx := " using " term
 
-def getSimpArgs (optStx : Option Syntax) : TacticM (Array Syntax) :=
-  match optStx with
-  | none     => default
-  | some stx => match stx with
-    | `(simpArgs|[$args,*]) => pure $ args.getElems
-    | _                     => Elab.throwUnsupportedSyntax
-
-def evalTacticM (tacticStxM : TacticM Syntax) : TacticM PUnit :=
-  match tacticStxM with
-  | `(tactic|$tacticStx) => do evalTactic (← tacticStxM)
-  | _                    => Elab.throwUnsupportedSyntax
+def getSimpArgs : Syntax → TacticM (Array Syntax)
+  | `(simpArgs|[$args,*]) => pure $ args.getElems
+  | _                     => Elab.throwUnsupportedSyntax
 
 end Parser.Tactic
 end Lean
