@@ -26,7 +26,7 @@ This is a "finishing" tactic modification of `simp`. It has two forms.
 
 #TODO: implement `with ⋯` behavior
 -/
-elab (name := simpa) "simpa " cfg?:(config)? disch?:(discharger)?
+elab "simpa " cfg?:(config)? disch?:(discharger)?
     only?:&" only "? args?:(simpArgs)?
     wth?:(withStx)? using?:(usingStx)? : tactic => do
   let cfg := cfg?.getOptional?
