@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Arthur Paulino, Mario Carneiro
+Authors: Arthur Paulino, Gabriel Ebner, Mario Carneiro
 -/
 import Lean
 import Mathlib.Tactic.Core
@@ -34,16 +34,16 @@ elab "simpa " cfg?:(config)? disch?:(discharger)?
   let only := only?.getOptional?
   let args ← args?.getOptional?.mapM getSimpArgs
   let nGoals := (← getUnsolvedGoals).length
-  evalTactic <|← `(tactic|simp $(cfg)? $(disch)? $[only%$only]? $[[$[$args],*]]?)
+  evalTactic $ ← `(tactic|simp $(cfg)? $(disch)? $[only%$only]? $[[$[$args],*]]?)
   if (← getUnsolvedGoals).length < nGoals then
     throwError "try 'simp' instead of 'simpa'"
   match using?.getOptional? with
   | none   =>
-    evalTactic <|← `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? $[[$[$args],*]]? at this)
-    evalTactic <|← `(tactic|assumption)
+    evalTactic $ ← `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? $[[$[$args],*]]? at this)
+    evalTactic $ ← `(tactic|assumption)
   | some u => match u with
     | `(usingStx|using $e) =>
-      evalTactic <|← `(tactic|have h := $e)
-      evalTactic <|← `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? $[[$[$args],*]]? at h)
-      evalTactic <|← `(tactic|exact h)
+      evalTactic $ ← `(tactic|have h := $e)
+      evalTactic $ ← `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? $[[$[$args],*]]? at h)
+      evalTactic $ ← `(tactic|exact h)
     | _                    => Elab.throwUnsupportedSyntax
