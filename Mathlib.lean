@@ -84,6 +84,7 @@ import Mathlib.Tactic.RunTac
 import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.ShowTerm
 import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Simpa
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread
