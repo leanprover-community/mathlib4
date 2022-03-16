@@ -623,8 +623,6 @@ syntax (name := mkIffOfInductiveProp) "mk_iff_of_inductive_prop" ident ident : c
 
 syntax (name := defReplacer) "def_replacer " ident Term.optType : command
 
-syntax (name := restateAxiom) "restate_axiom " ident (ppSpace ident)? : command
-
 syntax (name := simp) "#simp" (&" only")? (" [" Tactic.simpArg,* "]")?
   (" with " ident+)? " :"? ppSpace term : command
 
