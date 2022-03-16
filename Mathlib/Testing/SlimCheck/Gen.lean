@@ -93,6 +93,9 @@ def permutationOf : (xs : List α) → Gen { ys // ys ~ xs }
   let ⟨n, h2, h3⟩ ← choose Nat 0 ys.length (Nat.zero_le _)
   pure ⟨insertNth n x ys, Perm.trans (perm_insertNth h3) (Perm.cons _ h1)⟩
 
+def prodOf (x : Gen α) (y : Gen β) : Gen (Prod α β) := do
+  pure (←x, ←y)
+
 /-- Execute a `Gen` inside the `IO` monad using `size` as the example size-/
 def IO.runGen (x : Gen α) (size : Nat) : BaseIO α :=
   IO.runRand $ ReaderT.run x ⟨size⟩
