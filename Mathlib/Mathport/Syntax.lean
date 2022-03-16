@@ -242,7 +242,6 @@ syntax (name := unfoldAux) "unfold_aux" : tactic
 syntax (name := recover) "recover" : tactic
 syntax (name := «continue») "continue " tacticSeq : tactic
 syntax (name := clear_) "clear_" : tactic
-syntax (name := replace) "replace " Term.haveDecl : tactic
 syntax (name := replace') "replace " Term.haveIdLhs : tactic
 syntax (name := generalizeHyp) "generalize " atomic(ident " : ")? term:51 " = " ident
   ppSpace location : tactic
