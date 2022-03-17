@@ -9,16 +9,7 @@ namespace Mathlib.Tactic
 
 open Lean Elab.Tactic
 
-syntax "replace " (ident)? " this "? (" : " term)? " := " term : tactic
-
-private def replace (name : Name) (t? : Option Syntax) (v : Syntax) : TacticM Unit :=
-  withMainContext do
-    let hId? := (← getLCtx).findFromUserName? name |>.map fun d => d.fvarId
-    let h?   := if name.beq `this then none else some $ mkIdent name
-    evalTactic $ ← `(tactic|have $[$h?]? $[: $t?]? := $v)
-    match hId? with
-    | some hId => replaceMainGoal [← Meta.clear (← getMainGoal) hId]
-    | none     => pure ()
+syntax "replace " haveDecl : tactic
 
 /--
 Acts like `have`, but removes a hypothesis with the same name as
@@ -50,5 +41,14 @@ h : β
 This can be used to simulate the `specialize` and `apply at` tactics of Coq.
 -/
 elab_rules : tactic
-  | `(tactic|replace $h:ident $[: $t:term]? := $v:term) => replace h.getId t v
-  | `(tactic|replace $[this]? $[: $t:term]? := $v:term) => replace `this   t v
+  | `(tactic|replace $[$n?:ident]? $[: $t?:term]? := $v:term) =>
+    withMainContext do
+      let name : Name := match n? with
+      | none   => `this
+      | some n => n.getId
+      let hId? := (← getLCtx).findFromUserName? name |>.map fun d => d.fvarId
+      let h?   := if name.beq `this then none else some $ mkIdent name
+      evalTactic $ ← `(tactic|have $[$h?]? $[: $t?]? := $v)
+      match hId? with
+      | some hId => replaceMainGoal [← Meta.clear (← getMainGoal) hId]
+      | none     => pure ()

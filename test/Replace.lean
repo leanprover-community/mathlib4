@@ -5,7 +5,7 @@ Authors: Arthur Paulino
 -/
 import Mathlib.Tactic.Replace
 
--- tests with explicitly named hipothesis
+-- tests with a explicitly named hipothesis
 
 example (h : Int) : Nat := by
   replace h : Nat := 0
@@ -38,16 +38,4 @@ example : Nat := by
   replace : Int := 0
   fail_if_success assumption -- original `this` is absent now
   replace : Nat := 0
-  assumption
-
-example : Nat := by
-  have : Int := 0
-  replace this : Nat := 0
-  assumption
-
-example : Nat := by
-  have : Nat := 0
-  replace this : Int := 0
-  fail_if_success assumption -- original `this` is absent now
-  replace this : Nat := 0
   assumption
