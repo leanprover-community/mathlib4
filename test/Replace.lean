@@ -45,4 +45,5 @@ example : Nat := by
 example {a : Nat} : a = a := by
   replace a : Int := 0
   have : Nat := by assumption -- old `a` is not gone
+  have : Int := by exact a    -- new `a` is of type `Int`
   simp
