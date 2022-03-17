@@ -10,6 +10,14 @@ namespace Mathlib.Tactic
 
 open Lean Parser.Tactic Elab.Tactic
 
+syntax simpaArgsRest := (config)? (discharger)? &" only "? (simpArgs)? (withArgs)? (usingArg)?
+
+syntax "simpa" "!"? "?"? simpaArgsRest : tactic
+
+macro "simpa!" rest:simpaArgsRest : tactic => `(tactic| simpa ! $rest:simpaArgsRest)
+macro "simpa?" rest:simpaArgsRest : tactic => `(tactic| simpa ? $rest:simpaArgsRest)
+macro "simpa!?" rest:simpaArgsRest : tactic => `(tactic| simpa !? $rest:simpaArgsRest)
+
 /--
 This is a "finishing" tactic modification of `simp`. It has two forms.
 
@@ -28,19 +36,14 @@ This is a "finishing" tactic modification of `simp`. It has two forms.
 #TODO: implement `!`
 #TODO: implement `?`
 -/
-def elabSimpa (cfg disch only args wth usingArg : Syntax) (unfold squeeze := false) :
-  TacticM Unit := do
-  let cfg := cfg.getOptional?
-  let disch := disch.getOptional?
-  let only := only.getOptional?
-  let args ← args.getOptional?.mapM getSimpArgs
-  let wth := wth.getOptional?
-  let usingArg := usingArg.getOptional?
+elab_rules : tactic
+| `(tactic| simpa $[!%$unfold]? $[?%$squeeze]? $[$cfg:config]? $[$disch:discharger]? $[only%$only]?
+      $[[$args,*]]? $[with $wth]? $[using $usingArg]?) => do
   let nGoals := (← getUnsolvedGoals).length
   evalTactic $ ← `(tactic|simp $(cfg)? $(disch)? $[only%$only]? $[[$[$args],*]]?)
   if (← getUnsolvedGoals).length < nGoals then
     throwError "try 'simp' instead of 'simpa'"
-  match ← usingArg.mapM getUsingArg with
+  match usingArg with
   | none   =>
     evalTactic $ ← `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? $[[$[$args],*]]? at this)
     evalTactic $ ← `(tactic|assumption)
@@ -48,16 +51,3 @@ def elabSimpa (cfg disch only args wth usingArg : Syntax) (unfold squeeze := fal
     evalTactic $ ← `(tactic|have h := $e)
     evalTactic $ ← `(tactic|try simp $(cfg)? $(disch)? $[only%$only]? $[[$[$args],*]]? at h)
     evalTactic $ ← `(tactic|exact h)
-
-elab "simpa" unfold:"!"? squeeze:"?"? cfg:(config)? disch:(discharger)?
-  only:&" only "? args:(simpArgs)? wth:(withArgs)? usingArg:(usingArg)? : tactic =>
-  elabSimpa cfg disch only args wth usingArg (!unfold.isNone) (!squeeze.isNone)
-elab "simpa!" cfg:(config)? disch:(discharger)?
-  only:&" only "? args:(simpArgs)? wth:(withArgs)? usingArg:(usingArg)? : tactic =>
-  elabSimpa cfg disch only args wth usingArg true false
-elab "simpa?" cfg:(config)? disch:(discharger)?
-  only:&" only "? args:(simpArgs)? wth:(withArgs)? usingArg:(usingArg)? : tactic =>
-  elabSimpa cfg disch only args wth usingArg false true
-elab "simpa!?" cfg:(config)? disch:(discharger)?
-  only:&" only "? args:(simpArgs)? wth:(withArgs)? usingArg:(usingArg)? : tactic =>
-  elabSimpa cfg disch only args wth usingArg true true
