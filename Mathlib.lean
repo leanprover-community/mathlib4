@@ -79,6 +79,7 @@ import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.RCases
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.Replace
+import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.RunTac
