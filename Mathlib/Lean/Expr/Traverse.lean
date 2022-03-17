@@ -1,8 +1,18 @@
+/-
+Copyright (c) 2022 E.W.Ayers. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: E.W.Ayers
+-/
+
 import Lean
+
+/-!
+# Traversal functions for expressions.
+-/
 
 namespace Lean.Expr
 
-/-- Runs `f` on each immediate child of the given expression. -/
+/-- Maps `f` on each immediate child of the given expression. -/
 def traverseChildren [Applicative M] (f : Expr → M Expr) : Expr → M Expr
 | e@(forallE _ d b _) => pure e.updateForallE! <*> f d <*> f b
 | e@(lam _ d b _)     => pure e.updateLambdaE! <*> f d <*> f b
