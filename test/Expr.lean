@@ -9,7 +9,7 @@ section replaceRec
 /-- Reorder the last two arguments of every function in the expression.
   (The resulting term will generally not be a type-correct) -/
 unsafe def reorderLastArguments : Expr → Expr :=
-Expr.replaceRec λ e =>
+Expr.replaceRecTraversal λ e =>
   let n := e.getAppNumArgs
   if n ≥ 2 then
     some (e.getAppArgs, λ es => mkAppN e.getAppFn $ es.swap! (n - 1) (n - 2)) else
