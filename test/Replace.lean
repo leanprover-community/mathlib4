@@ -39,3 +39,9 @@ example : Nat := by
   fail_if_success assumption -- original `this` is absent now
   replace : Nat := 0
   assumption
+
+-- trying to replace the type of a variable when the goal depends on it
+
+example {a : Nat} : a = a := by
+  fail_if_success replace a : Int := 0 -- tactic 'clear' failed, target depends on 'a'
+  simp
