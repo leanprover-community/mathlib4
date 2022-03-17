@@ -19,9 +19,6 @@ protected lemma not_lt_of_le {n m : ℕ} (h₁ : m ≤ n) : ¬ n < m
 
 protected lemma not_le_of_lt {n m : ℕ} : m < n → ¬ n ≤ m  := Nat.not_le_of_gt
 
-protected lemma ne_of_lt {a b : Nat} : a < b -> a ≠ b :=
-  fun h_lt h_eq => (Nat.not_le_of_lt h_lt : ¬b <= a) (h_eq ▸ Nat.le_refl b : b <= a)
-
 protected lemma lt_of_not_le {a b : ℕ} : ¬ a ≤ b → b < a := (Nat.lt_or_ge b a).resolve_right
 
 protected lemma le_of_not_lt {a b : ℕ} : ¬ a < b → b ≤ a := (Nat.lt_or_ge a b).resolve_left
