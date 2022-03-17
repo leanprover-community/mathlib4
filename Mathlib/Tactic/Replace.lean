@@ -47,8 +47,7 @@ elab_rules : tactic
       | none   => `this
       | some n => n.getId
       let hId? := (← getLCtx).findFromUserName? name |>.map fun d => d.fvarId
-      let h?   := if name.beq `this then none else some $ mkIdent name
-      evalTactic $ ← `(tactic|have $[$h?]? $[: $t?]? := $v)
+      evalTactic $ ← `(tactic|have $[$n?]? $[: $t?]? := $v)
       match hId? with
       | some hId => replaceMainGoal [← Meta.clear (← getMainGoal) hId]
       | none     => pure ()
