@@ -101,5 +101,6 @@ import Mathlib.Util.LibraryNote
 import Mathlib.Util.Simp
 import Mathlib.Util.TermUnsafe
 import Mathlib.Util.Time
+import Mathlib.Util.MemoFix
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
