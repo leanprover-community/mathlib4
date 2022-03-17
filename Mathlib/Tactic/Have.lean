@@ -5,16 +5,11 @@ Authors: Arthur Paulino
 -/
 import Lean
 
-def Lean.Parser.Term.haveIdLhs' :=
-  optional (ident >> many (ppSpace >>
-    checkColGt "expected to be indented" >>
-    (simpleBinderWithoutType <|> bracketedBinder))) >> optType
-
 namespace Mathlib.Tactic
 
-open Lean Elab.Tactic Meta Parser.Term
+open Lean Elab.Tactic Meta
 
-syntax "have " haveIdLhs' : tactic
+syntax "have" (ident)? (" : " term)? : tactic
 
 elab_rules : tactic
 | `(tactic|have $[$n:ident]? $[: $t:term]?) =>
