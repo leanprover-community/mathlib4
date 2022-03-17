@@ -98,9 +98,9 @@ import Mathlib.Util.Eval
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.LibraryNote
+import Mathlib.Util.MemoFix
 import Mathlib.Util.Simp
 import Mathlib.Util.TermUnsafe
 import Mathlib.Util.Time
-import Mathlib.Util.MemoFix
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
