@@ -256,7 +256,7 @@ protected lemma div_le_of_le_mul {m n : ℕ} : ∀ {k}, m ≤ k * n → m / k �
      exact le_trans h1 h3
 
 protected lemma div_le_self : ∀ (m n : ℕ), m / n ≤ m
-| m, 0   => by simp [Nat.div_zero]; apply zero_le
+| m, 0   => by simp [Nat.div_zero]
 | m, n+1 => Nat.div_le_of_le_mul $ by
   have := Nat.mul_le_mul_right m (succ_pos n)
   rwa [Nat.one_mul] at this
@@ -544,7 +544,7 @@ lemma sub_mul_div (x n p : ℕ) (h₁ : n*p ≤ x) : (x - n*p) / n = x / n - p :
       simp [add_one, Nat.pred_succ, mul_succ, Nat.sub_sub]
 
 lemma div_mul_le_self : ∀ (m n : ℕ), m / n * n ≤ m
-| m, 0   => by simp; apply zero_le
+| m, 0   => by simp
 | m, n+1 => (le_div_iff_mul_le (Nat.succ_pos _)).1 (Nat.le_refl _)
 
 @[simp] lemma add_div_right (x : ℕ) {z : ℕ} (H : 0 < z) : (x + z) / z = succ (x / z) :=
