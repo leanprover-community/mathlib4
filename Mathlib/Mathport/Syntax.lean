@@ -351,13 +351,6 @@ syntax (name := dsimpResult) "dsimp_result " (&"only ")? ("[" Tactic.simpArg,* "
 syntax (name := simpResult) "simp_result " (&"only ")? ("[" Tactic.simpArg,* "]")?
   (" with " ident+)? " => " tacticSeq : tactic
 
-syntax (name := simpa!) "simpa!" (config)? (discharger)? (&" only")?
-  (" [" Tactic.simpArg,* "]")? (" with " (colGt ident)+)? (" using " term)? : tactic
-syntax (name := simpa?) "simpa?" (config)? (discharger)? (&" only")?
-  (" [" Tactic.simpArg,* "]")? (" with " (colGt ident)+)? (" using " term)? : tactic
-syntax (name := simpa!?) "simpa!?" (config)? (discharger)? (&" only")?
-  (" [" Tactic.simpArg,* "]")? (" with " (colGt ident)+)? (" using " term)? : tactic
-
 syntax (name := splitIfs) "split_ifs" (ppSpace location)? (" with " binderIdent+)? : tactic
 
 syntax (name := squeezeScope) "squeeze_scope " tacticSeq : tactic

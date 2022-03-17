@@ -25,8 +25,10 @@ This is a "finishing" tactic modification of `simp`. It has two forms.
   the `assumption` tactic.
 
 #TODO: implement `with ⋯` behavior
+#TODO: implement `!`
+#TODO: implement `?`
 -/
-elab "simpa " cfg?:(config)? disch?:(discharger)?
+elab "simpa" unfold:"!"? squeeze:"?"? cfg?:(config)? disch?:(discharger)?
     only?:&" only "? args?:(simpArgs)?
     wth?:(withArgs)? using?:(usingArg)? : tactic => do
   let cfg := cfg?.getOptional?
