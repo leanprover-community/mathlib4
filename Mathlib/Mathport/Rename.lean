@@ -23,7 +23,7 @@ initialize renameExtension : SimplePersistentEnvExtension (Name × Name) RenameM
     addImportedFn := fun es => mkStateFromImportedEntries (RenameMap.insertPair) {} es
   }
 
-def getRenameMap (env : Environment) : RenameMap := do
+def getRenameMap (env : Environment) : RenameMap :=
   renameExtension.getState env
 
 def addNameAlignment (n3 n4 : Name) : CoreM Unit := do

@@ -24,38 +24,51 @@ declare_syntax_cat binderPred
 syntax "satisfiesBinderPred% " term:max binderPred : term
 
 -- Extend ∀ and ∃ to binder predicates.
-macro "∃ " x:ident pred:binderPred ", " p:term : term =>
-  `(∃ $x:ident, satisfiesBinderPred% $x $pred ∧ $p)
-macro "∀ " x:ident pred:binderPred ", " p:term : term =>
-  `(∀ $x:ident, satisfiesBinderPred% $x $pred → $p)
+
+syntax "∃ " binderIdent binderPred ", " term : term
+syntax "∀ " binderIdent binderPred ", " term : term
+
+macro_rules
+  | `(∃ $x:ident $pred:binderPred, $p) =>
+    `(∃ $x:ident, satisfiesBinderPred% $x $pred ∧ $p)
+  | `(∃ _ $pred:binderPred, $p) =>
+    `(∃ x, satisfiesBinderPred% x $pred ∧ $p)
+
+macro_rules
+  | `(∀ $x:ident $pred:binderPred, $p) =>
+    `(∀ $x:ident, satisfiesBinderPred% $x $pred → $p)
+  | `(∀ _ $pred:binderPred, $p) =>
+    `(∀ x, satisfiesBinderPred% x $pred → $p)
 
 -- We also provide special versions of ∀/∃ that take a list of extended binders.
 -- The built-in binders are not reused because that results in overloaded syntax.
 
-syntax extBinder := ident ((" : " term) <|> binderPred)?
+syntax extBinder := binderIdent ((" : " term) <|> binderPred)?
 syntax extBinderParenthesized := " (" extBinder ")" -- TODO: inlining this definition breaks
 syntax extBinderCollection := extBinderParenthesized*
 syntax extBinders := extBinder <|> extBinderCollection
 
 syntax "∃ᵉ " extBinders ", " term : term
 macro_rules
-  | `(∃ᵉ, $b) => b
+  | `(∃ᵉ, $b) => pure b
   | `(∃ᵉ ($p:extBinder) $[($ps:extBinder)]*, $b) =>
     `(∃ᵉ $p:extBinder, ∃ᵉ $[($ps:extBinder)]*, $b)
 macro_rules -- TODO: merging the two macro_rules breaks expansion
-  | `(∃ᵉ $x:ident, $b) => `(∃ $x:ident, $b)
-  | `(∃ᵉ $x:ident : $ty:term, $b) => `(∃ $x:ident : $ty:term, $b)
-  | `(∃ᵉ $x:ident $p:binderPred, $b) => `(∃ $x:ident $p:binderPred, $b)
+  | `(∃ᵉ $x:binderIdent, $b) => `(∃ $x:binderIdent, $b)
+  | `(∃ᵉ $x:binderIdent : $ty:term, $b) => `(∃ $x:binderIdent : $ty:term, $b)
+  | `(∃ᵉ $x:binderIdent $p:binderPred, $b) => `(∃ $x:binderIdent $p:binderPred, $b)
 
 syntax "∀ᵉ " extBinders ", " term : term
 macro_rules
-  | `(∀ᵉ, $b) => b
+  | `(∀ᵉ, $b) => pure b
   | `(∀ᵉ ($p:extBinder) $[($ps:extBinder)]*, $b) =>
     `(∀ᵉ $p:extBinder, ∀ᵉ $[($ps:extBinder)]*, $b)
 macro_rules -- TODO: merging the two macro_rules breaks expansion
+  | `(∀ᵉ _, $b) => `(∀ _, $b)
   | `(∀ᵉ $x:ident, $b) => `(∀ $x:ident, $b)
+  | `(∀ᵉ _ : $ty:term, $b) => `(∀ _ : $ty:term, $b)
   | `(∀ᵉ $x:ident : $ty:term, $b) => `(∀ $x:ident : $ty:term, $b)
-  | `(∀ᵉ $x:ident $p:binderPred, $b) => `(∀ $x:ident $p:binderPred, $b)
+  | `(∀ᵉ $x:binderIdent $p:binderPred, $b) => `(∀ $x:binderIdent $p:binderPred, $b)
 
 open Parser.Command in
 /--

@@ -8,8 +8,8 @@ import Mathlib.Util.Eval
 import Mathlib.Util.TermUnsafe
 
 /-!
-Define a `run_cmd a; b` command which executes code in `CoreM Unit`.
-This is almost the same as `#eval show CoreM Unit from do a; b`,
+Define a `run_cmd a; b` command which executes code in `CommandElabM Unit`.
+This is almost the same as `#eval show CommandElabM Unit from do a; b`,
 except that it doesn't print an empty diagnostic.
 -/
 

@@ -5,20 +5,24 @@ Author: Gabriel Ebner
 -/
 import Lean
 
-open Lean Elab Term
+open Lean Elab Term Meta
 
 /-!
-Redefine the ↑-notation to elaborate in the same way as type annotations
-(i.e., unfolding the coercion instance).
+Define a `(↑)` notation for coercions equivalent to the eta-reduction of `(↑ ·)`.
 -/
 
 namespace Lean.Elab.Term.CoeImpl
 
-scoped elab "coe%" x:term : term <= expectedType => do
-  tryPostponeIfMVar expectedType
-  let x ← elabTerm x none
-  synthesizeSyntheticMVarsUsingDefault
-  ensureHasType expectedType x
-
-macro_rules
-  | `(↑ $x) => `(coe% $x)
+elab "(" "↑" ")" : term <= expectedType => do
+  let expectedType ← instantiateMVars expectedType
+  let Expr.forallE _ a b .. := expectedType | do
+    tryPostpone
+    throwError "(↑) must have a function type, not{indentExpr expectedType}"
+  if b.hasLooseBVars then
+    tryPostpone
+    throwError "(↑) must have a non-dependent function type, not{indentExpr expectedType}"
+  if a.hasExprMVar then tryPostpone
+  if b.hasExprMVar then tryPostpone
+  let f ← withLocalDeclD `x a fun x => do
+    mkLambdaFVars #[x] (← mkCoe b a x)
+  return f.etaExpanded?.getD f

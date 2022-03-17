@@ -6,11 +6,11 @@ Author: Scott Morrison
 import Mathlib.Tactic.ShowTerm
 
 example (n : Nat) : Nat × Nat := by
-  showTerm
+  show_term
     constructor
     exact n
     exact 37
 
 example (n : Nat) : Nat × Nat := by
-  showTerm constructor
+  show_term constructor
   repeat exact 42
