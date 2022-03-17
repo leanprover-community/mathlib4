@@ -12,7 +12,7 @@ open Std ShareCommon
 
 -/
 
-private unsafe def memoFixImpl {α β : Type} [Inhabited β] (f : (α → β) → (α → β)) (a : α) : β := unsafeBaseIO do
+private unsafe def memoFixImpl {α β : Type} [Nonempty β] (f : (α → β) → (α → β)) (a : α) : β := unsafeBaseIO do
   let cache : IO.Ref (@HashMap Object β ⟨Object.ptrEq⟩ ⟨Object.ptrHash⟩) ← ST.mkRef {}
   let rec fix (a : α) : β := unsafeBaseIO do
     if let some b := (← cache.get).find? (unsafeCast a) then
@@ -29,4 +29,4 @@ This is useful for implementing tree traversal functions where
 subtrees may be referenced in multiple places.
 -/
 @[implementedBy memoFixImpl]
-constant memoFix {α β : Type} [Inhabited β] (f : (α → β) → (α → β)) : α → β
+constant memoFix {α β : Type} [Nonempty β] (f : (α → β) → (α → β)) : α → β
