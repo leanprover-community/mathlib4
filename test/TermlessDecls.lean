@@ -7,7 +7,7 @@ import Mathlib.Tactic.TermlessDecls
 
 example : Nat := by
   have h : Nat
-  · exact 5
+  exact 5
   exact h
 
 example : Nat := by
@@ -26,6 +26,8 @@ example {a : Nat} : a = a := by
   exact this
 
 example : True := by
+  let N
+  exact Nat
   have
   · exact 0
   have h : Nat
@@ -34,4 +36,10 @@ example : True := by
   · exact Nat.lt.base x
   have h'' (x : Nat) : x < x + 1
   · exact Nat.lt.base x
+  let m
+  · exact 6
+  let m' x (y : Nat) : x + y = y + x
+  rw [Nat.add_comm]
+  have q
+    · exact 6
   simp

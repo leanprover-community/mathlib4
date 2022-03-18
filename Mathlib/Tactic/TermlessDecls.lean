@@ -6,11 +6,39 @@ Authors: Arthur Paulino, Edward Ayers
 import Lean
 import Mathlib.Data.Array.Defs
 
+/--
+Uses `checkColGt` to prevent
+
+```lean
+have h
+exact Nat
+```
+
+From being interpreted as
+```lean
+have h
+  exact Nat
+```
+-/
 def Lean.Parser.Term.haveIdLhs' : Parser :=
   optional (ident >> many (ppSpace >>
     checkColGt "expected to be indented" >>
     (simpleBinderWithoutType <|> bracketedBinder))) >> optType
 
+/--
+Uses `checkColGt` to prevent
+
+```lean
+let h
+exact Nat
+```
+
+From being interpreted as
+```lean
+let h
+  exact Nat
+```
+-/
 def Lean.Parser.Term.letIdLhs' : Parser :=
   ident >> notFollowedBy (checkNoWsBefore "" >> "[")
     "space is required before instance '[...]' binders to distinguish them from array updates `let x[i] := e; ...`" >>
@@ -68,6 +96,6 @@ elab_rules : tactic
 | `(tactic|let $n:ident $[: $t:term]?)       => withMainContext do
   addToContext n.getId (← elabType t) true
 | `(tactic|let $n:ident $bs* $[: $t:term]?)  => withMainContext do
-    let (name, e) ← getNameAndType (some n) t bs
+    let (name, e) ← getNameAndType (some n) t (some bs)
     addToContext name e true
     introBinders bs
