@@ -3,7 +3,7 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
-import Mathlib.Tactic.Have
+import Mathlib.Tactic.TermlessDecls
 
 example : Nat := by
   have h : Nat
@@ -24,3 +24,14 @@ example {a : Nat} : a = a := by
   have : a = a
   · rfl
   exact this
+
+example : True := by
+  have
+  · exact 0
+  have h : Nat
+  · exact 5
+  have h' x : x < x + 1
+  · exact Nat.lt.base x
+  have h'' (x : Nat) : x < x + 1
+  · exact Nat.lt.base x
+  simp
