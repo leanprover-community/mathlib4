@@ -13,7 +13,7 @@ syntax "replace " haveDecl : tactic
 
 /--
 Acts like `have`, but removes a hypothesis with the same name as
-this one. For example, if the state is:
+this one if possible. For example, if the state is:
 
 ```lean
 f : α → β
@@ -49,5 +49,7 @@ elab_rules : tactic
       let hId? := (← getLCtx).findFromUserName? name |>.map fun d => d.fvarId
       evalTactic $ ← `(tactic|have $[$n?]? $[: $t?]? := $v)
       match hId? with
-      | some hId => replaceMainGoal [← Meta.clear (← getMainGoal) hId]
+      | some hId =>
+        try replaceMainGoal [← Meta.clear (← getMainGoal) hId]
+        catch | _ => pure ()
       | none     => pure ()

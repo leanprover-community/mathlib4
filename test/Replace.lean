@@ -43,5 +43,7 @@ example : Nat := by
 -- trying to replace the type of a variable when the goal depends on it
 
 example {a : Nat} : a = a := by
-  fail_if_success replace a : Int := 0 -- tactic 'clear' failed, target depends on 'a'
+  replace a : Int := 0
+  have : Nat := by assumption -- old `a` is not gone
+  have : Int := by exact a    -- new `a` is of type `Int`
   simp
