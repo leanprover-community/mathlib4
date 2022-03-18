@@ -32,6 +32,7 @@ initialize registerTraceClass `Tactic.librarySearch
 
 -- from Lean.Server.Completion
 private def isBlackListed (declName : Name) : MetaM Bool := do
+  if declName == ``sorryAx then return false
   if declName matches Name.str _ "inj" _ then return false
   if declName matches Name.str _ "noConfusionType" _ then return false
   let env ← getEnv
