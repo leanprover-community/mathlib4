@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lew
 import Lean
 import Mathlib.Util.TermUnsafe
 import Mathlib.Lean.Expr.Traverse
-import Mathlib.Control.Basic
 import Mathlib.Util.MemoFix
 namespace Lean.Expr
 /-!
