@@ -15,6 +15,7 @@ namespace Lean.Expr
 We define a more flexible version of `Expr.replace` where we can use recursive calls even when
 replacing a subexpression. We completely mimic the implementation of `Expr.replace`. -/
 
+@[inline]
 private def replaceRecCoreM [Monad M] (f? : (Expr → M Expr) → Expr → M (Option Expr))
   (r : Expr → M Expr) (e : Expr): M Expr := do
   match ← f? r e with
@@ -35,7 +36,7 @@ If you wish to recursively replace things in the implementation of `f?`, you can
 The function is also memoised, which means that if the
 same expression (by reference) is encountered the cached replacement is used. -/
 def replaceRec (f? : (Expr → Expr) → Expr → Option Expr) (e : Expr) : Expr :=
-replaceRecM (M := id) f? e
+replaceRecM (M := Id) f? e
 
 /-- A version of `Expr.replace` where we can use recursive calls even if we replace a subexpression.
   When reaching a subexpression `e` we call `traversal e` to see if we want to do anything with this
@@ -49,7 +50,7 @@ replaceRecM (M := id) f? e
   the structural subterm relation).
   -/
 def replaceRecTraversal (traversal : Expr → Option (Array Expr × (Array Expr → Expr))) (e : Expr) : Expr :=
-  e.replaceRecM (M := id) $ fun r e =>
+  e.replaceRecM (M := Id) fun r e =>
     match traversal e with
     | none => none
     | some (get, set) => some $ set $ Array.map r $ get

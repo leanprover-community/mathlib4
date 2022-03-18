@@ -17,7 +17,7 @@ Expr.replaceRecTraversal λ e =>
 
 def foo (f : ℕ → ℕ → ℕ) (n₁ n₂ n₃ n₄ : ℕ) : ℕ := f (f n₁ n₂) (f n₃ n₄)
 def bar (f : ℕ → ℕ → ℕ) (n₁ n₂ n₃ n₄ : ℕ) : ℕ := f (f n₄ n₃) (f n₂ n₁)
-#eval (do
+#eval show TermElabM _ from do
   let d ← getConstInfo `foo
   let e := d.value!
   let s ← ppExpr { env := (← getEnv)} e
@@ -31,6 +31,6 @@ def bar (f : ℕ → ℕ → ℕ) (n₁ n₂ n₃ n₄ : ℕ) : ℕ := f (f n₄
   let d ← getConstInfo `bar
   let s ← ppExpr { env := (← getEnv)} d.value!
   IO.println $ "after:  " ++ s
-  guard $ e == d.value! : MetaM Unit)
+  guard $ e == d.value! : MetaM Unit
 
 end replaceRec
