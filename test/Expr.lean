@@ -20,17 +20,13 @@ def bar (f : ℕ → ℕ → ℕ) (n₁ n₂ n₃ n₄ : ℕ) : ℕ := f (f n₄
 #eval show TermElabM _ from do
   let d ← getConstInfo `foo
   let e := d.value!
-  let s ← ppExpr { env := (← getEnv)} e
-  IO.println $ "before: " ++ s
+  logInfo m!"before: {e}"
   let e := reorderLastArguments e
-  let s ← ppExpr { env := (← getEnv)} e
-  IO.println $ "after:  " ++ s
+  logInfo m!"after: {e}"
   let t ← Meta.inferType e
-  let s ← ppExpr { env := (← getEnv)} t
-  IO.println $ "new type: " ++ s
+  logInfo m!"new type: {t}"
   let d ← getConstInfo `bar
-  let s ← ppExpr { env := (← getEnv)} d.value!
-  IO.println $ "after:  " ++ s
-  guard $ e == d.value! : MetaM Unit
+  logInfo m!"after: {d.value!}"
+  guard $ e == d.value!
 
 end replaceRec
