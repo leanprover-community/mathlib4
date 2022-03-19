@@ -58,7 +58,7 @@ private def addToContext (name : Name) (t : Expr) (keepTerm : Bool) : TacticM Un
     let p ← mkFreshExprMVar (userName := name) t
     let mvarIdNew ← declFn mvarId name t p
     let (_, mvarIdNew) ← intro1P mvarIdNew
-    return [p.mvarId!, mvarIdNew]
+    pure [p.mvarId!, mvarIdNew]
 
 private def elabType (t : Option Syntax) : Elab.TermElabM Expr :=
   match t with
