@@ -83,7 +83,7 @@ private def getNameAndType (n t : Option Syntax) (bs : Option (Array Syntax)) :
   pure (name, e)
 
 private def introBinders (bs : Array Syntax) : TacticM Unit := do
-  for binderName in (Array.flatten $ bs.map getBinderNames) do
+  for binderName in bs.map getBinderNames |>.flatten do
     evalTactic $ ← `(tactic|intro $binderName)
 
 elab_rules : tactic
@@ -93,9 +93,9 @@ elab_rules : tactic
     introBinders $ bs.getD #[]
 
 elab_rules : tactic
-| `(tactic|let $n:ident $[: $t:term]?)       => withMainContext do
+| `(tactic|let $n:ident $[: $t:term]?)      => withMainContext do
   addToContext n.getId (← elabType t) true
-| `(tactic|let $n:ident $bs* $[: $t:term]?)  => withMainContext do
+| `(tactic|let $n:ident $bs* $[: $t:term]?) => withMainContext do
     let (name, e) ← getNameAndType (some n) t (some bs)
     addToContext name e true
     introBinders bs
