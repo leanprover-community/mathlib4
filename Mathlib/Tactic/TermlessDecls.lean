@@ -83,8 +83,9 @@ private def getNameAndType (n t : Option Syntax) (bs : Option (Array Syntax)) :
   pure (name, e)
 
 private def introBinders (bs : Array Syntax) : TacticM Unit := do
-  for binderName in bs.map getBinderNames |>.flatten do
-    evalTactic $ ← `(tactic|intro $binderName)
+  let bindersNames := bs.map getBinderNames |>.flatten
+  if ¬ bindersNames.isEmpty then
+    evalTactic $ ← `(tactic|intro $bindersNames*)
 
 elab_rules : tactic
 | `(tactic|have $[$n:ident $bs*]? $[: $t:term]?) => withMainContext do
