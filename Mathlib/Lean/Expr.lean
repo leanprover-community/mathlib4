@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lewis, Floris van Doorn
 -/
 import Lean
+import Mathlib.Lean.Expr.Traverse
 /-!
 # Additional operations on Expr and related types
 
@@ -54,6 +55,27 @@ def isThm : ConstantInfo → Bool
   | thmInfo _ => true
   | _          => false
 
+def updateName : ConstantInfo → Name → ConstantInfo
+  | defnInfo   info, n => defnInfo   {info with name := n}
+  | axiomInfo  info, n => axiomInfo  {info with name := n}
+  | thmInfo    info, n => thmInfo    {info with name := n}
+  | opaqueInfo info, n => opaqueInfo {info with name := n}
+  | quotInfo   info, n => quotInfo   {info with name := n}
+  | inductInfo info, n => inductInfo {info with name := n}
+  | ctorInfo   info, n => ctorInfo   {info with name := n}
+  | recInfo    info, n => recInfo    {info with name := n}
+
+def updateType : ConstantInfo → Expr → ConstantInfo
+  | defnInfo   info, y => defnInfo   {info with type := y}
+  | axiomInfo  info, y => axiomInfo  {info with type := y}
+  | thmInfo    info, y => thmInfo    {info with type := y}
+  | opaqueInfo info, y => opaqueInfo {info with type := y}
+  | quotInfo   info, y => quotInfo   {info with type := y}
+  | inductInfo info, y => inductInfo {info with type := y}
+  | ctorInfo   info, y => ctorInfo   {info with type := y}
+  | recInfo    info, y => recInfo    {info with type := y}
+
+
 end ConstantInfo
 
 namespace Expr
@@ -72,6 +94,13 @@ def getAppFnArgs (e : Expr) : Name × Array Expr :=
 def natLit! : Expr → Nat
   | lit (Literal.natVal v) _ => v
   | _                        => panic! "nat literal expected"
+
+/-- Returns a `NameSet` of all constants in an expression starting with a certain prefix. -/
+def listNamesWithPrefix (pre : Name) (e : Expr) : NameSet :=
+e.fold (fun
+  | l, Expr.const n _ _ => if n.getPrefix == pre then l.insert n else l
+  | l, _ => l
+) NameSet.empty
 
 end Expr
 
