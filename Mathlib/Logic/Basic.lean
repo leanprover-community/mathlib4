@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Init.Logic
 import Mathlib.Init.Function
 import Mathlib.Tactic.Basic
+import Mathlib.Util.LibraryNote
 
 section needs_better_home
 /- This section contains items that have no direct counterpart from Lean 3 / Mathlib 3.
@@ -110,12 +111,6 @@ theorem imp_iff_right (ha : a) : (a → b) ↔ b :=
 
 /-! ### Declarations about `not` -/
 
-/-- Ex falso for negation. From `¬ a` and `a` anything follows. This is the same as `absurd` with
-the arguments flipped, but it is in the `not` namespace so that projection notation can be used. -/
-def Not.elim {α : Sort _} (H1 : ¬a) (H2 : a) : α := absurd H2 H1
-
-@[reducible] theorem Not.imp {a b : Prop} (H2 : ¬b) (H1 : a → b) : ¬a := mt H1 H2
-
 theorem not_not_of_not_imp : ¬(a → b) → ¬¬a :=
 mt Not.elim
 
@@ -151,7 +146,7 @@ theorem by_contradiction {p} : (¬p → False) → p := Decidable.by_contradicti
 -- alias by_contradiction ← by_contra
 theorem by_contra {p} : (¬p → False) → p := Decidable.by_contradiction
 
-/-
+library_note "decidable namespace" /--
 In most of mathlib, we use the law of excluded middle (LEM) and the axiom of choice (AC) freely.
 The `decidable` namespace contains versions of lemmas from the root namespace that explicitly
 attempt to avoid the axiom of choice, usually by adding decidability assumptions on the inputs.
@@ -159,9 +154,8 @@ attempt to avoid the axiom of choice, usually by adding decidability assumptions
 You can check if a lemma uses the axiom of choice by using `#print axioms foo` and seeing if
 `classical.choice` appears in the list.
 -/
---library_note "decidable namespace"
 
-/-
+library_note "decidable arguments" /--
 As mathlib is primarily classical,
 if the type signature of a `def` or `lemma` does not require any `decidable` instances to state,
 it is preferable not to introduce any `decidable` instances that are needed in the proof
@@ -171,7 +165,6 @@ In the other direction, when `decidable` instances do appear in the type signatu
 it is better to use explicitly introduced ones rather than allowing Lean to automatically infer
 classical ones, as these may cause instance mismatch errors later.
 -/
---library_note "decidable arguments"
 
 -- See Note [decidable namespace]
 protected theorem Decidable.not_not [Decidable a] : ¬¬a ↔ a :=
@@ -416,7 +409,7 @@ theorem imp_iff_not_or : (a → b) ↔ (¬ a ∨ b) := Decidable.imp_iff_not_or
 
 -- See Note [decidable namespace]
 protected theorem Decidable.imp_or_distrib [Decidable a] : (a → b ∨ c) ↔ (a → b) ∨ (a → c) :=
-by simp [Decidable.imp_iff_not_or, Or.comm, Or.left_comm]
+by by_cases a <;> simp_all
 
 theorem imp_or_distrib : (a → b ∨ c) ↔ (a → b) ∨ (a → c) := Decidable.imp_or_distrib
 
@@ -513,12 +506,12 @@ theorem not_and_not_right : ¬(a ∧ ¬b) ↔ (a → b) := Decidable.not_and_not
 kernel will get stuck reducing the usage of `propext` otherwise,
 and `dec_trivial` will not work. -/
 @[inline] def decidable_of_iff (a : Prop) (h : a ↔ b) [D : Decidable a] : Decidable b :=
-decidable_of_decidable_of_iff D h
+decidable_of_decidable_of_iff h
 
 /-- Transfer decidability of `b` to decidability of `a`, if the propositions are equivalent.
 This is the same as `decidable_of_iff` but the iff is flipped. -/
 @[inline] def decidable_of_iff' (b : Prop) (h : a ↔ b) [D : Decidable b] : Decidable a :=
-decidable_of_decidable_of_iff D h.symm
+decidable_of_decidable_of_iff h.symm
 
 /-- Prove that `a` is decidable by constructing a boolean `b` and a proof that `b ↔ a`.
 (This is sometimes taken as an alternate definition of decidability.) -/
@@ -575,7 +568,7 @@ section equality
 
 variable {α : Sort _} {a b : α}
 
-@[simp] theorem heq_iff_eq : HEq a b ↔ a = b :=
+theorem heq_iff_eq : HEq a b ↔ a = b :=
 ⟨eq_of_heq, heq_of_eq⟩
 
 theorem proof_irrel_heq {p q : Prop} (hp : p) (hq : q) : HEq hp hq :=
@@ -617,8 +610,6 @@ lemma forall₄_congr {γ δ : Sort _} {p q : α → β → γ → δ → Prop}
   (h : ∀ a b c d, p a b c d ↔ q a b c d) :
   (∀ a b c d, p a b c d) ↔ (∀ a b c d, q a b c d) :=
 forall_congr' (λ a => forall₃_congr (h a))
-
-lemma Exists.imp (h : ∀ a, (p a → q a)) (p : ∃ a, p a) : ∃ a, q a := exists_imp_exists h p
 
 lemma exists_imp_exists' {p : α → Prop} {q : β → Prop} (f : α → β) (hpq : ∀ a, p a → q (f a))
   (hp : ∃ a, p a) : ∃ b, q b :=
@@ -676,13 +667,16 @@ protected theorem Decidable.not_forall {p : α → Prop}
 theorem forall_and_distrib {p q : α → Prop} : (∀ x, p x ∧ q x) ↔ (∀ x, p x) ∧ (∀ x, q x) :=
 ⟨λ h => ⟨λ x => (h x).left, λ x => (h x).right⟩, λ ⟨h₁, h₂⟩ x => ⟨h₁ x, h₂ x⟩⟩
 
-@[simp] theorem forall_eq {p : α → Prop} {a' : α} : (∀a, a = a' → p a) ↔ p a' :=
+@[simp] theorem forall_eq {p : α → Prop} {a' : α} : (∀ a, a = a' → p a) ↔ p a' :=
 ⟨λ h => h a' rfl, λ h a e => e.symm ▸ h⟩
 
-@[simp] theorem exists_false : ¬ (∃a:α, False) := fun ⟨a, h⟩ => h
+@[simp] theorem forall_eq' {a' : α} : (∀ a, a' = a → p a) ↔ p a' :=
+by simp [@eq_comm _ a']
+
+@[simp] theorem exists_false : ¬ (∃ a : α, False) := fun ⟨a, h⟩ => h
 
 @[simp] theorem exists_and_distrib_left {q : Prop} {p : α → Prop} :
-  (∃x, q ∧ p x) ↔ q ∧ (∃x, p x) :=
+  (∃ x, q ∧ p x) ↔ q ∧ (∃ x, p x) :=
 ⟨λ ⟨x, hq, hp⟩ => ⟨hq, x, hp⟩, λ ⟨hq, x, hp⟩ => ⟨x, hq, hp⟩⟩
 
 @[simp] theorem exists_and_distrib_right {q : Prop} {p : α → Prop} :

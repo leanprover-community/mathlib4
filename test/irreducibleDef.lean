@@ -8,7 +8,7 @@ example : frobnicate a 0 = a := by
   simp [frobnicate_def]
 
 irreducible_def justAsArbitrary [Inhabited α] : α :=
-  arbitrary
+  default
 
 irreducible_def withoutType := 42
 

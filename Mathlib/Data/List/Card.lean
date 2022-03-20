@@ -11,8 +11,6 @@ import Mathlib.Data.List.Basic
 
 namespace List
 
-def disjoint (as bs : List α) := ∀ {x}, x ∈ as → x ∈ bs → False
-
 def inj_on (f : α → β) (as : List α) := ∀ {x y}, x ∈ as → y ∈ as → f x = f y → x = y
 
 theorem inj_on_of_subset {f : α → β} {as bs : List α} (h : inj_on f bs) (hsub : as ⊆ bs) :
@@ -111,7 +109,7 @@ theorem card_remove_of_mem {a : α} : ∀ {as : List α}, a ∈ as → card as =
         have h₃ : a' ∉ as := h' ▸ h''
         simp [card_cons_of_not_mem h₃, remove_eq_of_not_mem h'']
     | inr h' =>
-        have h₃ : a ∈ as := Or.resolve_left h h'
+        have h₃ : a ∈ as := (mem_cons.1 h).resolve_left h'
         simp [remove, h']
         cases Decidable.em (a' ∈ as) with
         | inl h'' =>
@@ -122,14 +120,14 @@ theorem card_remove_of_mem {a : α} : ∀ {as : List α}, a ∈ as → card as =
           simp [h'', this, card_remove_of_mem h₃]
 
 theorem card_subset_le : ∀ {as bs : List α}, as ⊆ bs → card as ≤ card bs
-  | [], bs, _ => by simp; apply Nat.zero_le
+  | [], bs, _ => by simp
   | (a :: as), bs, hsub => by
     cases Decidable.em (a ∈ as) with
     | inl h' =>
       have hsub' : as ⊆ bs := fun _ xmem => hsub (mem_cons_of_mem a xmem)
       simp [h', card_subset_le hsub']
     | inr h' =>
-      have : a ∈ bs := hsub (Or.inl rfl)
+      have : a ∈ bs := hsub (Mem.head ..)
       simp [h', card_remove_of_mem this]
       apply Nat.add_le_add_right
       apply card_subset_le
@@ -176,13 +174,14 @@ theorem card_append_disjoint : ∀ {as bs : List α},
     disjoint as bs → card (as ++ bs) = card as + card bs
   | [], bs, disj => by simp
   | a :: as, bs, disj => by
-    have disj' : disjoint as bs := fun h1 h2 => disj (mem_cons_of_mem a h1) h2
+    have disj' : disjoint as bs := fun _ h1 h2 => disj (mem_cons_of_mem a h1) h2
     cases Decidable.em (a ∈ as) with
     | inl h =>
       simp [h, card_append_disjoint disj']
     | inr h =>
       have h1 : a ∉ bs := fun h' => disj (mem_cons_self a as) h'
-      simp [h, h1, card_append_disjoint disj', Nat.add_right_comm]
+      simp [h, h1, card_append_disjoint disj']
+      rw [Nat.add_right_comm]
 
 theorem card_union_disjoint {as bs : List α} (h : disjoint as bs) :
     card (as.union bs) = card as + card bs := by

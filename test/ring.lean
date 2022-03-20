@@ -1,5 +1,8 @@
 import Mathlib.Tactic.Ring
 
+local instance [CommSemiring α] : CoeTail Nat α where
+  coe n := n.cast
+
 example (x y : ℕ) : x + y = y + x := by ring
 example (x y : ℕ) : x + y + y = 2 * y + x := by ring
 example (x y : ℕ) : x + id y = y + id x := by ring

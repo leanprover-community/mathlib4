@@ -11,6 +11,6 @@ namespace Mathlib.RunTac
 open Lean Elab Term Meta Mathlib.Eval
 
 open Tactic in
-elab "runTac" e:doSeq : tactic => do
+elab "run_tac" e:doSeq : tactic => do
   ← unsafe evalTerm (TacticM Unit) (mkApp (mkConst ``TacticM) (mkConst ``Unit))
     (← `(discard do $e))

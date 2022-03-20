@@ -9,8 +9,10 @@ namespace Mathlib.Tactic
 
 open Lean Elab.Tactic Meta
 
+syntax renameArg := term " => " ident
+
 /-- `rename' h => hnew` renames the hypothesis named `h` to `hnew`. -/
-syntax (name := rename') "rename'" (ppSpace term " => " ident),* : tactic
+syntax (name := rename') "rename'" (ppSpace renameArg),* : tactic
 
 elab_rules : tactic
   | `(tactic| rename' $[$as:term => $bs:ident],*) =>

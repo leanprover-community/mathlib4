@@ -31,9 +31,6 @@ local macro "genIntDeclars" typeName:ident : command => do
       instance : Inhabited (Fin size) where
         default := Fin.ofNat' 0 size_positive
 
-      instance : Numeric $typeName where
-        ofNat a := mk (Numeric.ofNat a)
-
       instance : AddSemigroup $typeName where
         add_assoc := fun _ _ _ => congrArg mk (AddSemigroup.add_assoc _ _ _)
 
@@ -70,45 +67,48 @@ local macro "genIntDeclars" typeName:ident : command => do
       lemma one_def : (1 : $typeName) = ⟨1⟩ := rfl
 
       instance : Semiring $typeName where
-        ofNat_succ a := by
-          apply eq_of_val_eq
-          simp only [add_def, Numeric.ofNat, one_def]
-          have h0 := (@instSemiringFin size).ofNat_succ a
-          simp only [Numeric.ofNat] at h0
-          simp [h0]
         add_zero := by simp [add_def, zero_def]
         zero_add := by simp [add_def, zero_def]
+        add_comm := by simp [add_def, add_comm]
         mul_one  := by simp [mul_def, one_def]
         one_mul  := by simp [mul_def, one_def]
-        nsmul n a := ⟨Semiring.nsmul n a.val⟩
-        nsmul_zero' x := congrArg mk (Semiring.nsmul_zero' x.val)
+        nsmul n a := ⟨AddMonoid.nsmul n a.val⟩
+        nsmul_zero' x := congrArg mk (AddMonoid.nsmul_zero' x.val)
         nsmul_succ' n a := congrArg mk (AddMonoid.nsmul_succ' n a.val)
         zero_mul := by simp [mul_def, zero_def]
         mul_zero := by simp [mul_def, zero_def]
         npow_zero' := fun _ => rfl
         npow_succ' := fun _ _ => rfl
-        mul_add a b c := by
+        right_distrib a b c := by
           simp only [mul_def, add_def]
           apply eq_of_val_eq
-          exact Semiring.mul_add a.val b.val c.val
-        add_mul a b c := by
+          exact right_distrib a.val b.val c.val
+        left_distrib a b c := by
           simp only [mul_def, add_def]
           apply eq_of_val_eq
-          exact Semiring.add_mul a.val b.val c.val
+          exact left_distrib a.val b.val c.val
+        natCast n := ⟨n⟩
+        natCast_zero := rfl
+        natCast_succ _ := congrArg mk (Fin.ofNat'_succ)
+        __ := inferInstanceAs (AddCommSemigroup $typeName)
+        __ := inferInstanceAs (Semigroup $typeName)
 
       instance : Ring $typeName where
-        sub_eq_add_neg := fun _ _ => congrArg mk (Ring.sub_eq_add_neg _ _)
+        sub_eq_add_neg := fun _ _ => congrArg mk (sub_eq_add_neg _ _)
         gsmul := fun x a => mk (Ring.gsmul x a.val)
-        gsmul_zero' := fun a => congrArg mk (Ring.gsmul_zero' a.val)
-        gsmul_succ' := fun x a => congrArg mk (Ring.gsmul_succ' x a.val)
+        gsmul_zero' := fun a => congrArg mk (SubNegMonoid.gsmul_zero' a.val)
+        gsmul_succ' := fun x a => congrArg mk (SubNegMonoid.gsmul_succ' x a.val)
         gsmul_neg' := fun x a => congrArg mk (SubNegMonoid.gsmul_neg' x a.val)
         add_left_neg := fun a => by apply eq_of_val_eq; simp [neg_def, add_def, zero_def]
+        intCast n := ⟨n⟩
+        intCast_ofNat _ := rfl
+        intCast_negSucc _ := rfl
 
       instance : CommRing $typeName where
         mul_comm := fun _ _ => by
           apply eq_of_val_eq
           simp [mul_def, zero_def]
-          exact CommSemiring.mul_comm _ _
+          exact mul_comm _ _
 
     end $typeName
   )
