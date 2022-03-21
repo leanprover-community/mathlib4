@@ -63,4 +63,4 @@ elab_rules : tactic
     let hl ← evalTactic (← `(tactic| have $h : $a = $pv := rfl))
   | (some h, some (some r))  =>
     let hl ← evalTactic (← `(tactic| have $h : $pv = $a := rfl))
-  | _    =>  evalTactic (← `(tactic| skip))
+  | _    =>  pure ()
