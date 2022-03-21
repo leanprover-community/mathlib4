@@ -18,3 +18,9 @@ example (x : Nat) (h : x + x - x = 3) : x + x - x = 3 := by
   set a := 3
   set i'm_the_goal : Prop := z + z - z = a
   apply h
+
+example (x : Nat) (h : x - x = 0) : x = x := by
+  set! y := x
+  set! z := y + 1 with ←eq1
+  set! p : x - x = 0 := h with eq2
+  rfl

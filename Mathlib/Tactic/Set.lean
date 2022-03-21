@@ -14,6 +14,12 @@ private def defineV (nm : Name) (tp : Expr) (tme : Expr) : TacticM Unit := do
     withMVarContext h2 do
       return h2
 
+syntax setArgsRest := ident (" : " term)? " := " term (" with " "←"? ident)?
+
+syntax (name := set) "set" "!"? setArgsRest : tactic
+
+macro "set!" rest:setArgsRest : tactic => `(tactic|set ! $rest:setArgsRest)
+
 /--
 `set a := t with h` is a variant of `let a := t`. It adds the hypothesis `h : a = t` to
 the local context and replaces `t` with `a` everywhere it can.
@@ -36,8 +42,6 @@ h2 : x = y
 ```
 
 -/
-
-syntax (name := set) "set" "!"? ident (" : " term)? " := " term (" with " "←"? ident)? : tactic
 elab_rules : tactic
 |`(tactic| set $[!%$rw?]? $a:ident $[: $tp?:term]? := $pv:term $[with $[←%$rev?]? $h?:ident]?) => do
   withMainContext do
