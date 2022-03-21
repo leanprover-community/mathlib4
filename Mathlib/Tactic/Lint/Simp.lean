@@ -99,7 +99,7 @@ def isEqnLemma? (n : Name) : Option Name :=
 def heuristicallyExtractSimpTheoremsCore (ctx : Simp.Context) (constToSimpDecl : HashMap Name Name) (prf : Expr) : Array Name := Id.run do
   let mut cnsts : HashSet Name := {}
   for c in prf.getUsedConstants do
-    if ctx.simpTheorems.toUnfold.contains c then
+    if ctx.simpTheorems.isDeclToUnfold c then
       cnsts := cnsts.insert c
     else if ctx.congrTheorems.lemmas.contains c then
       cnsts := cnsts.insert c
