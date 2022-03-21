@@ -83,11 +83,12 @@ open Std
 -- This function computes the map ``{`decl._auxLemma.1 ↦ `decl}``
 def constToSimpDeclMap (ctx : Simp.Context) : HashMap Name Name := Id.run do
   let mut map : HashMap Name Name := {}
-  for sls in [ctx.simpTheorems.pre, ctx.simpTheorems.post] do
-    for sl in ((elements sls).run #[]).2 do
-      if let some declName := sl.name? then
-        if let some auxDeclName := sl.proof.getAppFn.constName? then
-          map := map.insert auxDeclName declName
+  for sls' in ctx.simpTheorems do
+    for sls in [sls'.pre, sls'.post] do
+      for sl in ((elements sls).run #[]).2 do
+        if let some declName := sl.name? then
+          if let some auxDeclName := sl.proof.getAppFn.constName? then
+            map := map.insert auxDeclName declName
   return map
 
 def isEqnLemma? (n : Name) : Option Name :=
