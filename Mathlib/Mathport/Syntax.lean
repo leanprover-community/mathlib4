@@ -353,30 +353,26 @@ syntax (name := simpResult) "simp_result " (&"only ")? ("[" Tactic.simpArg,* "]"
 syntax (name := splitIfs) "split_ifs" (ppSpace location)? (" with " binderIdent+)? : tactic
 
 syntax (name := squeezeScope) "squeeze_scope " tacticSeq : tactic
-syntax (name := squeezeSimp) "squeeze_simp" (config)? (discharger)? (&" only")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
-syntax (name := squeezeSimp?) "squeeze_simp?" (config)? (discharger)? (&" only")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
-syntax (name := squeezeSimp!) "squeeze_simp!" (config)? (discharger)? (&" only")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
-syntax (name := squeezeSimp?!) "squeeze_simp?!" (config)? (discharger)? (&" only")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
-syntax (name := squeezeSimpa) "squeeze_simpa" (config)? (discharger)? (&" only")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " term)? : tactic
-syntax (name := squeezeSimpa?) "squeeze_simpa?" (config)? (discharger)? (&" only")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " term)? : tactic
-syntax (name := squeezeSimpa!) "squeeze_simpa!" (config)? (discharger)? (&" only")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " term)? : tactic
-syntax (name := squeezeSimpa?!) "squeeze_simpa?!" (config)? (discharger)? (&" only")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " term)? : tactic
-syntax (name := squeezeDSimp) "squeeze_dsimp" (config)? (&" only")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
-syntax (name := squeezeDSimp?) "squeeze_dsimp?" (config)? (&" only")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
-syntax (name := squeezeDSimp!) "squeeze_dsimp!" (config)? (&" only")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
-syntax (name := squeezeDSimp?!) "squeeze_dsimp?!" (config)? (&" only")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
+
+syntax squeezeSimpArgsRest := (config)? (discharger)? (&" only")?
+  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)?
+syntax "squeeze_simp" "!"? "?"? squeezeSimpArgsRest : tactic
+macro "squeeze_simp?" rest:squeezeSimpArgsRest : tactic =>
+  `(tactic| squeeze_simp ? $rest:squeezeSimpArgsRest)
+macro "squeeze_simp!" rest:squeezeSimpArgsRest : tactic =>
+  `(tactic| squeeze_simp ! $rest:squeezeSimpArgsRest)
+macro "squeeze_simp!?" rest:squeezeSimpArgsRest : tactic =>
+  `(tactic| squeeze_simp !? $rest:squeezeSimpArgsRest)
+
+syntax squeezeDSimpArgsRest := (config)? (&" only")?
+  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)?
+syntax "squeeze_dsimp" "!"? "?"? squeezeDSimpArgsRest : tactic
+macro "squeeze_dsimp?" rest:squeezeDSimpArgsRest : tactic =>
+  `(tactic| squeeze_dsimp ? $rest:squeezeDSimpArgsRest)
+macro "squeeze_dsimp!" rest:squeezeDSimpArgsRest : tactic =>
+  `(tactic| squeeze_dsimp ! $rest:squeezeDSimpArgsRest)
+macro "squeeze_dsimp!?" rest:squeezeDSimpArgsRest : tactic =>
+  `(tactic| squeeze_dsimp !? $rest:squeezeDSimpArgsRest)
 
 syntax (name := suggest) "suggest" (config)? (ppSpace num)?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " (colGt binderIdent)+)? : tactic
