@@ -45,15 +45,15 @@ h2 : x = y
 elab_rules : tactic
 |`(tactic| set $[!%$rw?]? $a:ident $[: $tp?:term]? := $pv:term $[with $[←%$rev?]? $h?:ident]?) => do
   withMainContext do
-  match tp? with
-  | some t =>
-    let te ← elabTerm t (none)
-    let pv ← elabTerm pv te
-    defineV a.getId te pv
-  | none     =>
-    let pv ← elabTerm pv (none)
-    let te ← inferType pv
-    defineV a.getId te pv
+    match tp? with
+    | some t =>
+      let te ← elabTerm t (none)
+      let pv ← elabTerm pv te
+      defineV a.getId te pv
+    | none     =>
+      let pv ← elabTerm pv (none)
+      let te ← inferType pv
+      defineV a.getId te pv
   match rw? with
   | some r => evalTactic (← `(tactic| try rw [(id rfl : $pv = $a)] at *))
   | none => evalTactic (← `(tactic| skip))
