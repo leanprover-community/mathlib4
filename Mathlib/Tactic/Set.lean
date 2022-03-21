@@ -37,12 +37,12 @@ h2 : x = y
 
 -/
 
-syntax (name := set) "set" ident (" : " term)? " := " term (" with " "←"? ident)? : tactic
+syntax (name := set) "set" "!"? ident (" : " term)? " := " term (" with " "←"? ident)? : tactic
 elab_rules : tactic
-|`(tactic| set $a:ident $[: $tp?:term]? := $pv:term $[with $[←%$rev?]? $h?:ident]?) => do
+|`(tactic| set $[!%$rw?]? $a:ident $[: $tp?:term]? := $pv:term $[with $[←%$rev?]? $h?:ident]?) => do
   withMainContext do
   match tp? with
-  | (some t) =>
+  | some t =>
     let te ← elabTerm t (none)
     let pv ← elabTerm pv te
     defineV a.getId te pv
@@ -50,29 +50,9 @@ elab_rules : tactic
     let pv ← elabTerm pv (none)
     let te ← inferType pv
     defineV a.getId te pv
-
-  match (h?, rev?) with
-  | (some h, some (none))    =>
-    let hl ← evalTactic (← `(tactic| try rw [(id rfl : $pv = $a)] at *; have $h : $a = $pv := rfl))
-  | (none, none)      =>
-    let hl ← evalTactic (← `(tactic| try rw [(id rfl : $pv = $a)] at *))
-  | (some h, some (some r))  =>
-    let hl ← evalTactic (← `(tactic| try rw [(id rfl : $pv = $a)] at *; have $h : $pv = $a := rfl))
-  | _    =>  evalTactic (← `(tactic| skip))
-
-syntax (name := set!) "set!" ident (" : " term)? " := " term (" with " "←"? ident)? : tactic
-elab_rules : tactic
-|`(tactic| set! $a:ident $[: $tp?:term]? := $pv:term $[with $[←%$rev?]? $h?:ident]?) => do
-  withMainContext do
-  match tp? with
-  | (some t) =>
-    let te ← elabTerm t (none)
-    let pv ← elabTerm pv te
-    defineV a.getId te pv
-  | none     =>
-    let pv ← elabTerm pv (none)
-    let te ← inferType pv
-    defineV a.getId te pv
+  match rw? with
+  | some r => evalTactic (← `(tactic| try rw [(id rfl : $pv = $a)] at *))
+  | none => evalTactic (← `(tactic| skip))
 
   match (h?, rev?) with
   | (some h, some (none))    =>
