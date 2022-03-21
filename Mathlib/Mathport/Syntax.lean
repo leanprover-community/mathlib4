@@ -264,8 +264,6 @@ syntax (name := guardExprEq') "guard_expr " term:51 " = " term : tactic -- defin
 syntax (name := guardTarget') "guard_target" " = " term : tactic -- definitional equality
 syntax (name := triv) "triv" : tactic
 syntax (name := clearAuxDecl) "clear_aux_decl" : tactic
-syntax (name := set) "set " ident (" : " term)? " := " term (" with " "←"? ident)? : tactic
-syntax (name := set!) "set! " ident (" : " term)? " := " term (" with " "←"? ident)? : tactic
 syntax (name := clearExcept) "clear " "*" " - " ident* : tactic
 syntax (name := extractGoal) "extract_goal" (ppSpace ident)?
   (" with" (ppSpace (colGt ident))*)? : tactic
