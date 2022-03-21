@@ -29,10 +29,10 @@ namespace Lean.Tactic
 
 open Lean.Parser.Tactic
 
-syntax (name := solveByElim) "solveByElim" "*"? (" (" &"config" " := " term ")")?
+syntax (name := solveByElim) "solve_by_elim" "*"? (config)?
   (&" only")? (" [" simpArg,* "]")? (" with " (colGt ident)+)? : tactic
 
-elab_rules : tactic | `(tactic| solveByElim) => do withMainContext do
+elab_rules : tactic | `(tactic| solve_by_elim) => do withMainContext do
   Meta.solveByElim 6 (← getMainGoal)
 
 end Lean.Tactic

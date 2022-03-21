@@ -10,26 +10,26 @@ example (n : Nat) : n = n := by
   exacts []
 
 example (n : Nat) : Nat := by
-  guardHyp n : Nat
+  guard_hyp n : Nat
   let m : Nat := 1
-  guardHyp m := 1
-  guardHyp m : Nat := 1
-  guardTarget == Nat
+  guard_hyp m := 1
+  guard_hyp m : Nat := 1
+  guard_target == Nat
   exact 0
 
 example (a b : Nat) : a ≠ b → ¬ a = b := by
   intros
-  byContra H
+  by_contra H
   contradiction
 
 example (a b : Nat) : ¬¬ a = b → a = b := by
   intros
-  byContra H
+  by_contra H
   contradiction
 
 example (p q : Prop) : ¬¬ p → p := by
   intros
-  byContra H
+  by_contra H
   contradiction
 
 -- Test `iterate n ...`
@@ -61,17 +61,3 @@ example (p q : Prop) : p → q → (p ∧ q) ∧ (p ∧ q ∧ p) := by
   any_goals assumption
   constructor
   any_goals assumption
-
--- Verify correct behaviour of `workOnGoal`.
-example (p q r : Prop) : p → q → r → p ∧ q ∧ r := by
-  intros
-  constructor
-  workOnGoal 1
-    guardTarget == q ∧ r
-    constructor
-    assumption
-    -- Note that we have not closed all the subgoals here.
-  guardTarget == p
-  assumption
-  guardTarget == r
-  assumption

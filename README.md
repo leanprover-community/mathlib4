@@ -30,5 +30,5 @@ and the "real" port hasn't started yet
 * To build `mathlib4` run `lake build`. To build and run all tests, run `make`.
 * If you added a new file, run the following command to update `Mathlib.lean`
   ```
-  find Mathlib -name "*.lean" | sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
+  find Mathlib -name "*.lean" | env LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
   ```

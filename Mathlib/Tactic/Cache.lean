@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Gabriel Ebner
 -/
 import Lean
+import Mathlib.Logic.Nonempty
 
 /-!
 # Once-per-file cache for tactics
@@ -49,8 +50,8 @@ def Cache (α : Type) :=
   IO.Ref <| Sum (MetaM α) <|
     Task <| Except Exception α
 
-instance : Inhabited (Cache α) :=
-  inferInstanceAs <| Inhabited (IO.Ref _)
+instance : Nonempty (Cache α) :=
+  inferInstanceAs <| Nonempty (IO.Ref _)
 
 /-- Creates a cache with an initialization function. -/
 def Cache.mk (init : MetaM α) : IO (Cache α) :=
@@ -65,7 +66,7 @@ provided in the constructor.
 def Cache.get [Monad m] [MonadEnv m] [MonadOptions m] [MonadLiftT BaseIO m] [MonadExcept Exception m]
     (cache : Cache α) : m α := do
   let t ← match ← show BaseIO _ from ST.Ref.get cache with
-    | Sum.inr t => t
+    | Sum.inr t => pure t
     | Sum.inl init =>
       let env ← getEnv
       let options ← getOptions -- TODO: sanitize options?
@@ -79,7 +80,7 @@ def Cache.get [Monad m] [MonadEnv m] [MonadOptions m] [MonadLiftT BaseIO m] [Mon
         let metaState : Meta.State := {}
         let coreCtx : Core.Context := {options}
         let coreState : Core.State := {env}
-        (← ((init ‹_›).run ‹_› ‹_›).run ‹_›).1.1
+        pure (← ((init ‹_›).run ‹_› ‹_›).run ‹_›).1.1
       show BaseIO _ from cache.set (Sum.inr res)
       pure res
   match t.get with
@@ -93,8 +94,8 @@ where a given function is applied to `α` for every constant.
 def DeclCache (α : Type) :=
   Cache α × (Name → ConstantInfo → α → MetaM α)
 
-instance : Inhabited (DeclCache α) :=
-  inferInstanceAs <| Inhabited (_ × _)
+instance : Nonempty (DeclCache α) :=
+  inferInstanceAs <| Nonempty (_ × _)
 
 /--
 Creates a `DeclCache`.
@@ -105,11 +106,11 @@ Calls to `addDecl` for imported constants are cached.
 def DeclCache.mk (profilingName : String) (empty : α) (addDecl : Name → ConstantInfo → α → MetaM α) : IO (DeclCache α) := do
   let cache ← Cache.mk do
     profileitM Exception profilingName (← getOptions) do
-    let mut a ← empty
+    let mut a := empty
     for (n, c) in (← getEnv).constants.map₁.toList do
       a ← addDecl n c a
     return a
-  (cache, addDecl)
+  pure (cache, addDecl)
 
 /--
 Access the cache.

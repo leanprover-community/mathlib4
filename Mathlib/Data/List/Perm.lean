@@ -5,7 +5,7 @@ namespace List
 
 /-- `Perm l₁ l₂` or `l₁ ~ l₂` asserts that `l₁` and `l₂` are Permutations
   of each other. This is defined by induction using pairwise swaps. -/
-inductive Perm : List α → List α → Prop
+inductive Perm {α} : List α → List α → Prop
 | nil   : Perm [] []
 | cons  : ∀ (x : α) {l₁ l₂ : List α}, Perm l₁ l₂ → Perm (x::l₁) (x::l₂)
 | swap  : ∀ (x y : α) (l : List α), Perm (y::x::l) (x::y::l)
@@ -50,11 +50,9 @@ induction p with
   intro a
   rw [mem_cons]
   exact fun
-  | Or.inl a_eq_y => Or.inr (Or.inl a_eq_y)
-  | Or.inr eq_or_mem =>
-    match eq_or_mem with
-    | Or.inl a_eq_x => Or.inl a_eq_x
-    | Or.inr a_mem_l => Or.inr (Or.inr a_mem_l)
+  | Or.inl rfl => Mem.tail _ (Mem.head ..)
+  | Or.inr (Mem.head ..) => Mem.head ..
+  | Or.inr (Mem.tail _ a_mem_l) => Mem.tail _ (Mem.tail _ a_mem_l)
 | trans h1 h2 ih₁ ih₂ => exact subset.trans ih₁ ih₂
 
 theorem perm_middle {a : α} : ∀ {l₁ l₂ : List α}, l₁++a::l₂ ~ a::(l₁++l₂)

@@ -5,7 +5,7 @@ Author: Gabriel Ebner
 -/
 import Lean
 import Mathlib.Tactic.Cache
-import Mathlib.Tactic.Rcases
+import Mathlib.Tactic.RCases
 
 open Tactic
 
@@ -24,14 +24,14 @@ def withExtHyps (struct : Name) (k : Array Expr → (x y : Expr) → Array (Name
       let x_f ← mkProjection x field
       let y_f ← mkProjection y field
       if ← isProof x_f then
-        ()
+        pure ()
       else if ← isDefEq (← inferType x_f) (← inferType y_f) then
         hyps := hyps.push (field, ← mkEq x_f y_f)
       else
         hyps := hyps.push (field, ← mkHEq x_f y_f)
     k params x y hyps
 
-scoped elab "extType%" struct:ident : term => do
+scoped elab "ext_type%" struct:ident : term => do
   withExtHyps (← resolveGlobalConstNoOverload struct) fun params x y hyps => do
     let mut ty ← mkEq x y
     for (f, h) in hyps.reverse do
@@ -46,94 +46,122 @@ def mkAndN : List Expr → Expr
   | [p, q] => mkAnd p q
   | p :: ps => mkAnd p (mkAndN ps)
 
-scoped elab "extIffType%" struct:ident : term => do
+scoped elab "ext_iff_type%" struct:ident : term => do
   withExtHyps (← resolveGlobalConstNoOverload struct) fun params x y hyps => do
     mkForallFVars (params |>.push x |>.push y) <|
       mkIff (← mkEq x y) <| mkAndN (hyps.map (·.2)).toList
 
-elab "substEqs" : tactic =>
+elab "subst_eqs" : tactic =>
   open Elab.Tactic in
   liftMetaTactic1 fun mvarId => substEqs mvarId
 
-scoped macro "extProof%" : term =>
-  `(fun {..} {..} => by intros; substEqs; rfl)
+scoped macro "ext_proof%" : term =>
+  `(fun {..} {..} => by intros; subst_eqs; rfl)
 
-syntax "splitAnds" : tactic
-macro_rules | `(tactic| splitAnds) => `(tactic| skip)
-macro_rules | `(tactic| splitAnds) => `(tactic| refine And.intro ?_ ?_ <;> splitAnds)
+syntax "split_ands" : tactic
+macro_rules | `(tactic| split_ands) => `(tactic| skip)
+macro_rules | `(tactic| split_ands) => `(tactic| refine And.intro ?_ ?_ <;> split_ands)
 
 macro_rules | `(tactic| rfl) => `(tactic| exact HEq.rfl)
 
-scoped macro "extIffProof%" : term => `(fun {..} {..} =>
-  ⟨fun _ => by substEqs; splitAnds <;> rfl,
-   fun _ => by (repeat cases ‹_ ∧ _›); substEqs; rfl⟩)
+scoped macro "ext_iff_proof%" : term => `(fun {..} {..} =>
+  ⟨fun _ => by subst_eqs; split_ands <;> rfl,
+   fun _ => by (repeat cases ‹_ ∧ _›); subst_eqs; rfl⟩)
 
 scoped macro "declareExtTheoremsFor" struct:ident : command => do
-  let extName ← mkIdent <| struct.getId.eraseMacroScopes.mkStr "ext"
-  let extIffName ← mkIdent <| struct.getId.eraseMacroScopes.mkStr "ext_iff"
-  `(@[ext] protected theorem $extName:ident : extType% $struct:ident := extProof%
-    protected theorem $extIffName:ident : extIffType% $struct:ident := extIffProof%)
+  let extName := mkIdent <| struct.getId.eraseMacroScopes.mkStr "ext"
+  let extIffName := mkIdent <| struct.getId.eraseMacroScopes.mkStr "ext_iff"
+  `(@[ext] protected theorem $extName:ident : ext_type% $struct:ident := ext_proof%
+    protected theorem $extIffName:ident : ext_iff_type% $struct:ident := ext_iff_proof%)
 
--- Attributes on structures are not supported yet,
--- so simulate it via macro expansion.
-open Parser Term in
-macro_rules
-  | `($[$doc:docComment]? @[$attrs,*]
-    structure $n:ident $binders* $[extends $parents,*]? $[: $ty]? :=
-      $[$mk:ident ::]? $fields) => do
-    for attr in attrs.getElems do
-      if let `(attrInstance| ext) := attr then
-        let attrs := attrs.getElems.filter (· != attr)
-        return ← `($[$doc:docComment]? @[$attrs,*]
-          structure $n:ident $binders* $[extends $parents,*]? $[: $ty]? := $[$mk:ident ::]? $fields
-          declareExtTheoremsFor $n)
-    Macro.throwUnsupported
+open Elab.Command MonadRecDepth in
+def liftCommandElabM (k : CommandElabM α) : AttrM α := do
+  let (a, commandState) ←
+    k.run { fileName := (← getEnv).mainModule.toString, fileMap := default } |>.run {
+      env := ← getEnv, maxRecDepth := ← getMaxRecDepth,
+      scopes := [{ header := "", opts := ← getOptions }]
+    }
+  modify fun coreState => { coreState with
+    traceState.traces := coreState.traceState.traces ++ commandState.traceState.traces
+    env := commandState.env
+  }
+  if let some err := commandState.messages.msgs.toArray.find?
+      (·.severity matches MessageSeverity.error) then
+    throwError err.data
+  pure a
 
-initialize extAttribute : ParametricAttribute (Array DiscrTree.Key) ←
-  registerParametricAttribute {
+initialize extExtension : SimpleScopedEnvExtension (Name × Array DiscrTree.Key) (DiscrTree Name) ←
+  registerSimpleScopedEnvExtension {
     name := `ext
-    descr := "Marks a lemma as extensionality lemma"
-    getParam := fun decl attr => MetaM.run' do
-      let declTy := (← getConstInfo decl).type
-      let (xs, bis, declTy) ← withReducible <| forallMetaTelescopeReducing declTy
-      unless declTy.isAppOfArity ``Eq 3 && (declTy.getArg! 1).isMVar && (declTy.getArg! 2).isMVar do
-        throwError "@[ext] attribute only applies to lemmas proving x = y, got {declTy}"
-      let ty := declTy.getArg! 0
-      if (← withReducible <| whnf ty).isForall then
-        #[DiscrTree.Key.star] -- FIXME: workaround
-      else
-        withReducible <| DiscrTree.mkPath (declTy.getArg! 0)
+    addEntry := fun dt (n, ks) => dt.insertCore ks n
+    initial := {}
   }
 
--- TODO: iterate over extension instead of all declarations
-initialize extLemmasCache : DeclCache (DiscrTree Name) ←
-  DeclCache.mk "ext: initialize cache" {} fun decl ci lemmas => do
-    if let some keys := extAttribute.getParam (← getEnv) decl then
-      lemmas.insertCore keys decl
-    else
-      lemmas
+def extAttribute : AttributeImpl where
+  name := `ext
+  descr := "Marks a lemma as extensionality lemma"
+  add decl stx kind := do
+    if isStructure (← getEnv) decl then
+      liftCommandElabM do
+        Elab.Command.elabCommand <|<- `(declareExtTheoremsFor $(mkIdent decl))
+    else MetaM.run' do
+      let declTy := (← getConstInfo decl).type
+      let (xs, bis, declTy) ← withReducible <| forallMetaTelescopeReducing declTy
+      if declTy.isAppOfArity ``Eq 3 && (declTy.getArg! 1).isMVar && (declTy.getArg! 2).isMVar then
+        let ty := declTy.getArg! 0
+        let key ←
+          if (← withReducible <| whnf ty).isForall then
+            pure #[DiscrTree.Key.star] -- FIXME: workaround
+          else
+            withReducible <| DiscrTree.mkPath ty
+        extExtension.add (decl, key) kind
+      else
+        throwError "@[ext] attribute only applies to structures or lemmas proving x = y, got {declTy}"
+
+initialize registerBuiltinAttribute extAttribute
+
+def extLemmas (env : Environment) : DiscrTree Name :=
+  extExtension.getState env
 
 open Lean.Elab.Tactic in
-elab "applyExtLemma" : tactic => do
+elab "apply_ext_lemma" : tactic => do
   let tgt ← getMainTarget
   unless tgt.isAppOfArity ``Eq 3 do
-    throwError "applyExtLemma only applies to equations"
+    throwError "applyExtLemma only applies to equations, not{indentExpr tgt}"
+  let ty := tgt.getArg! 0
   let s ← saveState
-  for lem in ← (← extLemmasCache.get).getMatch (tgt.getArg! 0) do
+  for lem in ← (extLemmas (← getEnv)).getMatch ty do
     try
       liftMetaTactic (apply · (← mkConstWithFreshMVarLevels lem))
       return
     catch e =>
       s.restore
-  throwError "no applicable extensionality lemma found"
+  throwError "no applicable extensionality lemma found for{indentExpr ty}"
 
-scoped syntax "extOrSkip" (colGt term:max)* : tactic
-macro_rules | `(tactic| extOrSkip) => `(tactic| skip)
-macro_rules | `(tactic| extOrSkip $xs*) => `(tactic| applyExtLemma; extOrSkip $xs*)
-macro_rules | `(tactic| extOrSkip $x $xs*) => `(tactic| intro $x; extOrSkip $xs*)
+scoped syntax "ext_or_skip" (ppSpace rintroPat)* : tactic
+macro_rules | `(tactic| ext_or_skip) => `(tactic| skip)
+macro_rules
+| `(tactic| ext_or_skip $xs:rintroPat*) =>
+  `(tactic| apply_ext_lemma; ext_or_skip $xs:rintroPat*)
+macro_rules
+| `(tactic| ext_or_skip $x:rintroPat $xs:rintroPat*) =>
+  `(tactic| rintro $x:rintroPat; ext_or_skip $xs:rintroPat*)
 
--- TODO: We need to use the following, to support existing uses of `ext` in mathlib3.
--- syntax (name := ext) "ext" (ppSpace rcasesPat)* (" : " num)? : tactic
+-- TODO: support `ext : n`
 
-syntax "ext" (colGt term:max)* : tactic
-macro_rules | `(tactic| ext $xs*) => `(tactic| applyExtLemma; extOrSkip $xs*)
+syntax "ext" (colGt ppSpace rintroPat)* (" : " num)? : tactic
+macro_rules
+| `(tactic| ext) => do
+  `(tactic| first | intro; ext | apply_ext_lemma; ext | skip)
+macro_rules
+| `(tactic| ext $xs:rintroPat*) =>
+  `(tactic| apply_ext_lemma; ext_or_skip $xs:rintroPat*)
+
+syntax "ext1" (colGt ppSpace rintroPat)* : tactic
+macro_rules
+| `(tactic| ext1 $xs:rintroPat*) =>
+  `(tactic| apply_ext_lemma; rintro $xs:rintroPat*)
+
+-- TODO
+syntax "ext1?" (colGt ppSpace rintroPat)* : tactic
+syntax "ext?" (colGt ppSpace rintroPat)* (" : " num)? : tactic

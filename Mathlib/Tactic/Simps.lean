@@ -24,6 +24,7 @@ Later we will need to port the implementation from mathlib3.
 
 open Lean Meta
 
+namespace Lean.Parser
 namespace Attr
 
 syntax (name := simps) "simps" (" (" &"config" " := " term ")")? (ppSpace ident)* : attr
@@ -43,6 +44,7 @@ syntax (name := initializeSimpsProjections?) "initialize_simps_projections?"
   (ppSpace simpsProj)* : command
 
 end Command
+end Lean.Parser
 
 
 builtin_initialize registerTraceClass `Simps.verbose
@@ -81,7 +83,7 @@ initialize simpsAttr : ParametricAttribute (Array Name) ←
     getParam := fun decl stx =>
       match stx with
         -- TODO implement support for `config := ...`
-        | `(attr|simps $[$ids]*) => ids.mapM (·.getId.eraseMacroScopes)
+        | `(attr|simps $[$ids]*) => pure $ ids.map (·.getId.eraseMacroScopes)
         | _ => throwError "unexpected simps syntax {stx}"
   }
 

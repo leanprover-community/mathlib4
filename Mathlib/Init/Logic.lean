@@ -28,6 +28,12 @@ def non_contradictory (a : Prop) : Prop := ¬¬a
 theorem non_contradictory_intro {a : Prop} (ha : a) : ¬¬a :=
 λ hna : ¬a => absurd ha hna
 
+/-- Ex falso for negation. From `¬ a` and `a` anything follows. This is the same as `absurd` with
+the arguments flipped, but it is in the `not` namespace so that projection notation can be used. -/
+def Not.elim {α : Sort _} (H1 : ¬a) (H2 : a) : α := absurd H2 H1
+
+@[reducible] theorem Not.imp {a b : Prop} (H2 : ¬b) (H1 : a → b) : ¬a := mt H1 H2
+
 /- eq -/
 
 -- proof irrelevance is built in
@@ -258,7 +264,8 @@ lemma iff_congr (h₁ : a ↔ c) (h₂ : b ↔ d) : (a ↔ b) ↔ (c ↔ d) :=
 ⟨fun h => h₁.symm.trans $ h.trans h₂, fun h => h₁.trans $ h.trans h₂.symm⟩
 
 /- implies simp rule -/
-@[simp] lemma implies_true_iff (α : Sort u) : (α → True) ↔ True :=
+-- This is not marked `@[simp]` because we have `implies_true : (α → True) = True` in core.
+lemma implies_true_iff (α : Sort u) : (α → True) ↔ True :=
 Iff.intro (λ h => trivial) (λ ha h => trivial)
 
 lemma false_implies_iff (a : Prop) : (False → a) ↔ True :=
@@ -299,8 +306,12 @@ let ⟨x, hx, hy⟩ := h; (hy _ py₁).trans (hy _ py₂).symm
 lemma forall_congr' {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∀ a, p a) ↔ ∀ a, q a :=
 ⟨fun H a => (h a).1 (H a), fun H a => (h a).2 (H a)⟩
 
-lemma exists_imp_exists {α : Sort u} {p q : α → Prop} (h : ∀ a, (p a → q a)) (p : ∃ a, p a) : ∃ a, q a :=
+lemma exists_imp_exists {α : Sort u} {p q : α → Prop}
+  (h : ∀ a, (p a → q a)) (p : ∃ a, p a) : ∃ a, q a :=
 Exists.elim p (λ a hp => ⟨a, h a hp⟩)
+
+lemma Exists.imp {α : Sort u} {p q : α → Prop}
+  (h : ∀ a, (p a → q a)) (p : ∃ a, p a) : ∃ a, q a := exists_imp_exists h p
 
 lemma exists_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃ a, p a) ↔ ∃ a, q a :=
 ⟨exists_imp_exists fun x => (h x).1, exists_imp_exists fun x => (h x).2⟩
@@ -335,16 +346,8 @@ namespace Decidable
     (λ ⟨np, nq⟩ h => Or.elim h np nq)
 
 end Decidable
-
 section
   variable {p q : Prop}
-  def decidable_of_decidable_of_iff (hp : Decidable p) (h : p ↔ q) : Decidable q :=
-  if hp : p then isTrue (Iff.mp h hp)
-  else isFalse (Iff.mp (not_iff_not_of_iff h) hp)
-
-  def decidable_of_decidable_of_eq (hp : Decidable p) (h : p = q) : Decidable q :=
-  decidable_of_decidable_of_iff hp h.to_iff
-
   protected def Or.by_cases [Decidable p] [Decidable q] {α : Sort u}
                                    (h : p ∨ q) (h₁ : p → α) (h₂ : q → α) : α :=
   if hp : p then h₁ hp else
@@ -365,13 +368,13 @@ section
 
   instance exists_prop_decidable {p} (P : p → Prop)
     [Dp : Decidable p] [DP : ∀ h, Decidable (P h)] : Decidable (∃ h, P h) :=
-  if h : p then decidable_of_decidable_of_iff (DP h)
+  if h : p then decidable_of_decidable_of_iff
     ⟨λ h2 => ⟨h, h2⟩, λ⟨h', h2⟩ => h2⟩ else isFalse (mt (λ⟨h, _⟩ => h) h)
 
   instance forall_prop_decidable {p} (P : p → Prop)
     [Dp : Decidable p] [DP : ∀ h, Decidable (P h)] : Decidable (∀ h, P h) :=
   if h : p
-  then decidableOfDecidableOfIff (DP h) ⟨λ h2 _ => h2, λ al => al h⟩
+  then decidable_of_decidable_of_iff ⟨λ h2 _ => h2, λ al => al h⟩
   else isTrue (λ h2 => absurd h2 h)
 end
 
@@ -400,12 +403,6 @@ match (h a b) with
 /- subsingleton -/
 
 -- TODO: rec_subsingleton
-
-@[simp]
-lemma if_t_t (c : Prop) [h : Decidable c] {α : Sort u} (t : α) : (ite c t t) = t :=
-match h with
-| (isTrue hc)   => rfl
-| (isFalse hnc) => rfl
 
 lemma implies_of_if_pos {c t e : Prop} [Decidable c] (h : ite c t e) : c → t :=
 by intro hc
@@ -455,12 +452,12 @@ if_ctx_congr_prop h_c (λ h => h_t) (λ h => h_e)
 
 lemma if_ctx_simp_congr_prop {b c x y u v : Prop} [dec_b : Decidable b]
                                (h_c : b ↔ c) (h_t : c → (x ↔ u)) (h_e : ¬c → (y ↔ v)) :
-        ite b x y ↔ (@ite Prop c (decidable_of_decidable_of_iff dec_b h_c) u v) :=
-@if_ctx_congr_prop b c x y u v dec_b (decidable_of_decidable_of_iff dec_b h_c) h_c h_t h_e
+        ite b x y ↔ (@ite Prop c (decidable_of_decidable_of_iff h_c) u v) :=
+@if_ctx_congr_prop b c x y u v dec_b (decidable_of_decidable_of_iff h_c) h_c h_t h_e
 
 lemma if_simp_congr_prop {b c x y u v : Prop} [dec_b : Decidable b]
                            (h_c : b ↔ c) (h_t : x ↔ u) (h_e : y ↔ v) :
-        ite b x y ↔ (@ite Prop c (decidable_of_decidable_of_iff dec_b h_c) u v) :=
+        ite b x y ↔ (@ite Prop c (decidable_of_decidable_of_iff h_c) u v) :=
 @if_ctx_simp_congr_prop b c x y u v dec_b h_c (λ h => h_t) (λ h => h_e)
 
 lemma dif_ctx_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : Decidable c]
@@ -480,8 +477,8 @@ lemma dif_ctx_simp_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b]
                          (h_c : b ↔ c)
                          (h_t : ∀ (h : c),    x (Iff.mpr h_c h)                      = u h)
                          (h_e : ∀ (h : ¬c),   y (Iff.mpr (not_iff_not_of_iff h_c) h) = v h) :
-        (@dite α b dec_b x y) = (@dite α c (decidable_of_decidable_of_iff dec_b h_c) u v) :=
-@dif_ctx_congr α b c dec_b (decidable_of_decidable_of_iff dec_b h_c) x u y v h_c h_t h_e
+        (@dite α b dec_b x y) = (@dite α c (decidable_of_decidable_of_iff h_c) u v) :=
+@dif_ctx_congr α b c dec_b (decidable_of_decidable_of_iff h_c) x u y v h_c h_t h_e
 
 def as_true (c : Prop) [Decidable c] : Prop :=
 if c then True else False
@@ -550,7 +547,7 @@ def commutative        := ∀ a b, f a b = f b a
 def associative        := ∀ a b c, f (f a b) c = f a (f b c)
 def left_identity      := ∀ a, f one a = a
 def right_identity     := ∀ a, f a one = a
-def right_inverse      := ∀ a, f a (inv a) = one
+def RightInverse      := ∀ a, f a (inv a) = one
 def left_cancelative   := ∀ a b c, f a b = f a c → b = c
 def right_cancelative  := ∀ a b c, f a b = f c b → a = c
 def left_distributive  := ∀ a b c, f a (g b c) = g (f a b) (f a c)
