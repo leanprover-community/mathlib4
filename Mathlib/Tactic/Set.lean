@@ -56,7 +56,7 @@ elab_rules : tactic
       defineV a.getId te pv
   match rw? with
   | some r => evalTactic (← `(tactic| try rw [(id rfl : $pv = $a)] at *))
-  | none => evalTactic (← `(tactic| skip))
+  | none   => pure ()
 
   match (h?, rev?) with
   | (some h, some (none))    =>
