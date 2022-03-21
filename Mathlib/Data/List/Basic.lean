@@ -523,7 +523,7 @@ theorem map_eq_append_split {f : α → β} {l : List α} {s₁ s₂ : List β}
   rw [map_append] at this
   refine' ⟨_, _, rfl, append_inj this _⟩
   rw [length_map, length_take, min_eq_left]
-  rw [←length_map f l, h, length_append]
+  rw [←length_map l f, h, length_append]
   apply Nat.le_add_right
 
 /-! ### repeat -/
@@ -634,7 +634,7 @@ theorem get?_injective {α : Type u} {xs : List α} {i j : ℕ}
 | a :: l, n+1 => get?_map f l n
 
 @[simp]
-theorem get_map (f : α → β) {l n} : get (map f l) n = f (get l ⟨n, length_map f l ▸ n.2⟩) :=
+theorem get_map (f : α → β) {l n} : get (map f l) n = f (get l ⟨n, length_map l f ▸ n.2⟩) :=
   Option.some.inj $ by
     rw [←get?_eq_get, get?_map, get?_eq_get]; rfl
 
