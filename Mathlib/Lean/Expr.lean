@@ -75,6 +75,21 @@ def updateType : ConstantInfo → Expr → ConstantInfo
   | ctorInfo   info, y => ctorInfo   {info with type := y}
   | recInfo    info, y => recInfo    {info with type := y}
 
+def updateValue : ConstantInfo → Expr → ConstantInfo
+  | defnInfo   info, v => defnInfo   {info with value := v}
+  | thmInfo    info, v => thmInfo    {info with value := v}
+  | opaqueInfo info, v => opaqueInfo {info with value := v}
+  | d, v => d
+
+def toDeclaration! : ConstantInfo → Declaration
+  | defnInfo   info => Declaration.defnDecl info
+  | thmInfo    info => Declaration.thmDecl     info
+  | axiomInfo  info => Declaration.axiomDecl   info
+  | opaqueInfo info => Declaration.opaqueDecl  info
+  | quotInfo   info => panic! "toDeclaration for quotInfo not implemented"
+  | inductInfo info => panic! "toDeclaration for inductInfo not implemented"
+  | ctorInfo   info => panic! "toDeclaration for ctorInfo not implemented"
+  | recInfo    info => panic! "toDeclaration for recInfo not implemented"
 
 end ConstantInfo
 

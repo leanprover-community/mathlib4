@@ -11,6 +11,7 @@ import Lean
 import Lean.Data
 
 open Lean
+open Lean.Meta
 open Lean.Elab
 open Lean.Elab.Command
 
@@ -26,7 +27,7 @@ namespace ToAdditive
 
 /-- Context for toAdditive expression traverser. -/
 structure Context where
-  (f : Name → Option Name)
+  (nameFn : Name → Option Name)
   (replaceAll : Bool)
   (trace : Bool)
   (relevant : NameMap Nat)
@@ -35,8 +36,12 @@ structure Context where
 
 variable {M} [Monad M] [MonadReader Context M]
 
-def f [MonadReader Context M]: Name → M (Option Name)
-| n => return Context.f (← read) n
+def getNameFn [MonadReader Context M] : M (Name → Option Name) := Context.nameFn <$> read
+
+def runNameFn [MonadReader Context M]: Name → M (Option Name)
+| n => (Context.nameFn . n) <$> read
+
+def shouldTrace [MonadReader Context M]: M Bool := Context.trace <$> read
 
 def ignore : Name → M (Option (List Nat))
 | n => return NameMap.find? (Context.ignore (← read)) n
@@ -48,10 +53,10 @@ def getReorder : Name →  M (List Nat)
   | some ns => return ns
   | none => return []
 
-def reorder? : Name → Nat → M Bool
+def shouldReorder : Name → Nat → M Bool
 | n, i => return i ∈ (← getReorder n)
 
-def relevant? : Name → Nat → M Bool
+def isRelevant : Name → Nat → M Bool
 | n, i => do
   match NameMap.find? (Context.relevant (← read)) n with
   | some j => return i == j
@@ -62,7 +67,7 @@ def replaceAll : M Bool := return (←read).replaceAll
 /-- Auxilliary function for `additive_test`. The bool argument *only* matters when applied
 to exactly a constant. -/
 private def additiveTestAux : Bool → Expr → M Bool
-  | b, Expr.const n _ _           => return b || (← f n).isSome
+  | b, Expr.const n _ _           => return b || (← runNameFn n).isSome
   | b, (Expr.app e a _) => do
       if (← additiveTestAux true e) then
         return true
@@ -108,59 +113,47 @@ e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorder
 We assume that all functions where we want to reorder arguments are fully applied.
 This can be done by applying `expr.eta_expand` first.
 -/
-def applyReplacementFun (f : Name → Name) (test : Expr → Bool) : Expr → M Expr :=
+def applyReplacementFun : Expr → ReaderT Context MetaM Expr :=
   Lean.Expr.replaceRecM fun r e =>
     match e with
     | Expr.const n ls _ => do
+      let nameFun ← getNameFn
+      let n := Name.mapPrefix nameFun n
       let ls : List Level ← (do
-        if ← reorder? n 1 then
+        if ← shouldReorder n 1 then
             return ls.get! 1::ls.head!::ls.drop 2
         return ls)
-      return some $ e.updateConst! ls
+      return some $ Lean.mkConst n ls
     | Expr.app g x _ => do
       let gf := g.getAppFn
       let nm := gf.constName!
       let nArgs := g.getAppNumArgs
       -- e = `($gf y₁ .. yₙ $x)
-      if ← reorder? nm nArgs then
-          if test g.getAppArgs[0] then
+      if ← shouldReorder nm nArgs then
+          if ← additiveTest g.getAppArgs[0] then
             -- interchange `x` and the last argument of `g`
             let x ← r x
             let gf ← r (g.appFn!)
             let ga ← r (g.appArg!)
             return some $ mkApp2 gf x ga
-      if ← relevant? nm nArgs then
-        if gf.isConst && not (test x) then
+      if ← isRelevant nm nArgs then
+        if gf.isConst && not (← additiveTest x) then
           let x ← r x
           let args ← g.getAppArgs.mapM r
           return some $ mkApp (mkAppN gf args) x
       return none
     | _ => return none
 
-/-- Infer the type of an application of the form `f x1 x2 ... xn`, where `f` is an identifier.
-This also works if `x1, ... xn` contain free variables. -/
-protected def simpleInferType [MonadEnv E] [MonadError E] (e : Expr) : E Expr := do
-  let Expr.const n ls _ := e.getAppFn | throwError "expression is not a constant applied to arguments"
-  let es := e.getAppArgs
-  let decl ← getConstInfo n
-  return $ (d.type.instantiate_pis es).instantiate_univ_params $ d.univ_params.zip ls
+/-- Eta expands `e` at most `n` times.-/
+def etaExpandN (n : Nat) (e : Expr): MetaM Expr := do
+  let t ← inferType e
+  forallBoundedTelescope t (some n) fun xs _ =>
+    mkLambdaFVars xs (mkAppN e xs)
 
-/-- Auxilliary function for `head_eta_expand`. -/
-def head_eta_expand_aux : ℕ → expr → expr → expr
-| (n+1) e (pi x bi d b) :=
-  lam x bi d $ head_eta_expand_aux n e b
-| _ e _ := e
-
-/-- `head_eta_expand n e t` eta-expands `e` `n` times, with the binders info and domains obtained
-  by its type `t`. -/
-def head_eta_expand (n : ℕ) (e t : expr) : expr :=
-((e.liftVars 0 n).mk_app $ (list.range n).reverse.map var).head_eta_expand_aux n t
-
-
-/-- `e.eta_expand` eta-expands all expressions that have as head a constant `n` in
+/-- `e.expand` eta-expands all expressions that have as head a constant `n` in
 `reorder`. They are expanded until they are applied to one more argument than the maximum in
 `reorder.find n`. -/
-protected def etaExpand [MonadEnv M] : Expr → MetaM Expr
+private def expand : Expr → ReaderT Context MetaM Expr
 | e => e.replaceRecM $ fun r e => do
   let e0 := e.getAppFn
   let es := e.getAppArgs
@@ -172,15 +165,23 @@ protected def etaExpand [MonadEnv M] : Expr → MetaM Expr
   if needed_n ≤ es.size then
     return some e'
   else
-    let e'_type ← Meta.inferType e'
-    return some $ head_eta_expand (needed_n - es.length) e' e'_type
+    let e' ← etaExpandN (needed_n - es.size) e'
+    return some $ e'
 
-
-def updateWithFun [MonadEnv E] [Monad E] (f : Name → Name) (test : Expr → Name) (tgt : Name) (decl : ConstantInfo) : E ConstantInfo := do
-  let decl := decl.updateName tgt
-  let e := decl.type.etaExpand
-  let decl := decl.updateType
+def updateWithFun
+  (tgt : Name) (decl : ConstantInfo)
+  : ReaderT Context MetaM ConstantInfo := do
+  let mut decl := decl.updateName tgt
+  decl := decl.updateType $ (← applyReplacementFun (← expand decl.type))
+  if let some v := decl.value? then
+    decl := decl.updateValue (← applyReplacementFun (← expand v))
   return decl
+
+private def liftToMeta (declName? : Option Name := none) : ReaderT Context MetaM α → ReaderT Context CommandElabM α
+| r, ctx => liftTermElabM (declName? := declName?) (r ctx)
+
+private def liftToMeta2 (declName? : Option Name := none) : MetaM α → ReaderT Context CommandElabM α
+| r, _ => liftTermElabM (declName? := declName?) r
 
 
 /-- transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
@@ -188,12 +189,11 @@ using the dictionary `f`.
 `replace_all`, `trace`, `ignore` and `reorder` are configuration options.
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
-def transformDeclWithPrefixFunAux
-  (pre tgt_pre : Name) : Name → ReaderT Context CommandElabM Unit :=
-fun src => do
+partial def transformDeclWithPrefixFunAux
+  (pre tgt_pre : Name) : Name → ReaderT Context CommandElabM Unit := fun src => do
   -- if this declaration is not `pre` or an internal declaration, we do nothing.
   if not (src == pre || src.isInternal) then
-    if (← f src).isSome then
+    if (← runNameFn src).isSome then
       return ()
     else
       throwError "The declaration {pre} depends on the declaration {src} which is in the namespace {pre}, but does not have the `@[to_additive]` attribute. This is not supported. Workaround: move {src} to a different namespace."
@@ -211,55 +211,36 @@ fun src => do
     for n in value.listNamesWithPrefix pre do
       transformDeclWithPrefixFunAux pre tgt_pre n
   -- we transform `decl` using `f` and the configuration options.
-  let decl :=
-    decl.update_with_fun env (name.map_prefix f) (additive_test f replace_all ignore)
-      relevant reorder tgt
+  -- let mx : (α:Type) → _ → ReaderT _ _ _ := monadMap x
+  let decl : ConstantInfo ← liftToMeta (declName? := some tgt) $ updateWithFun tgt decl
+    -- decl.update_with_fun env (name.map_prefix f) (additive_test f replace_all ignore)
+    --   relevant reorder tgt
   -- o ← get_options, set_options $ o.set_bool `pp.all tt, -- print with pp.all (for debugging)
-  let pp_decl ← pp decl
-  if trace then
-    dbg_trace[to_additive] "[to_additive] > generating\n{pp_decl}"
+  if ← shouldTrace then
+    dbg_trace "[to_additive] > generating\n{decl.name}"
 
   -- decorate_error (format!"@[to_additive] failed. Type mismatch in additive declaration. For help, see the docstring of `to_additive.attr`, section `Troubleshooting`. Failed to add declaration\n{pp_decl}
+  let decl : Declaration := decl.toDeclaration!
+  addAndCompile decl
+  if isProtected (← getEnv) src then
+    setEnv $ addProtected (← getEnv) tgt
 
-/--
-`applyReplacementFun f test relevant reorder e` applies `f` to each identifier in `e`, unless
-* The identifier occurs in an application with first argument `arg`; and
-* `test arg` is false.
-If `f` is in the dictionary `relevant`, then the argument `relevant.find f` is tested,
-instead of the first argument.
-
-Furthermore, we reorder some arguments according to the dictionary `reorder`.
-E.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorder.find g = some [1]`.
-We assume that all functions where we want to reorder arguments are fully applied.
-This can be done by applying `Expr.etaExpand` first.
--/
-partial def applyReplacementFun
-  : Expr → AddM Expr :=
-  Expr.replaceRecM fun r e =>
-    match e with
-      | Expr.const n ls _ =>
-        -- if the first two arguments are reordered, we also reorder the first two universe parameters
-        (if 1 ∈ (reorder.find? n).getD [] then (ls.get! 1)::ls.head!::ls.drop 2 else ls)
-        |> mkConst (f n)
-        |> some
-      | e@(Expr.app g x _) =>
-        let f := g.getAppFn
-        let nm? := f.constName?
-        match nm? with
-        | none => none
-        | some nm =>
-          let nArgs := g.getAppNumArgs
-          -- Do we want to reorder the last two arguments of `g`?
-
-          if ((reorder.find? nm).getD []).contains nArgs && ((g.getAppArgs.get? 0).map test).getD true then
-            -- interchange `x` and the last argument of `g`
-            some $ mkApp (r g.appFn!)
-            some (#[g.appFn!, x, g.appArg!], λ es => mkApp es[1] es[2])
-          else if nArgs == (relevant.find? nm).getD 0 && f.isConst && !test x then
-            some (g.getAppArgs.append #[x], λ es => mkAppN f es)
-          else
-            none
-      | _ => none
+def transformDeclWithPrefixFun (src tgt : Name) (attrs : List Name) : ReaderT Context CommandElabM Unit := do
+  transformDeclWithPrefixFunAux src tgt src
+  let eqns? ← liftToMeta2 none (getEqnsFor? src true)
+  -- now transform all of the equational lemmas
+  if let some eqns := eqns? then
+    for src_eqn in eqns do
+      transformDeclWithPrefixFunAux src tgt src_eqn
+      -- -- copy attributes for the equational lemmas so that they know if they are refl lemmas
+      -- let tgt_eqn := Name.mapPrefix (fun n => if n == src then some tgt else none) src_eqn
+      -- for attr in attrs do
+      --   copyAttribute attr src_eqn tgt_eqn
+      -- -- set the transformed equation lemmas as equation lemmas for the new declaration
+      -- addEqnLemma tgt_eqn
+  -- for attr in attrs do
+  --   copyAttributes attr src tgt
+  return ()
 
 /-! An attribute that tells `@[toAdditive]` that certain arguments of this definition are not
 involved when using `@[toAdditive]`.
