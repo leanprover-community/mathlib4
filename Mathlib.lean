@@ -60,6 +60,7 @@ import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
+import Mathlib.Tactic.Have
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lint
@@ -90,7 +91,6 @@ import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
-import Mathlib.Tactic.TermlessDecls
 import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.Use
 import Mathlib.Util.DeclName

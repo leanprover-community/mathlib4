@@ -3,7 +3,7 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
-import Mathlib.Tactic.TermlessDecls
+import Mathlib.Tactic.Have
 
 example : Nat := by
   have h : Nat
