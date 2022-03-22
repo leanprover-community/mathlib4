@@ -120,7 +120,7 @@ theorem card_remove_of_mem {a : α} : ∀ {as : List α}, a ∈ as → card as =
           simp [h'', this, card_remove_of_mem h₃]
 
 theorem card_subset_le : ∀ {as bs : List α}, as ⊆ bs → card as ≤ card bs
-  | [], bs, _ => by simp; apply Nat.zero_le
+  | [], bs, _ => by simp
   | (a :: as), bs, hsub => by
     cases Decidable.em (a ∈ as) with
     | inl h' =>

@@ -72,27 +72,27 @@ def mkSimpContext' (simpTheorems : SimpTheorems) (stx : Syntax) (eraseLocal : Bo
     if simpOnly then
       ({} : SimpTheorems).addConst ``eq_self
     else
-      pure simpTheorems
+      Meta.getSimpTheorems
   let congrTheorems ← Meta.getSimpCongrTheorems
   let r ← elabSimpArgs stx[4] (eraseLocal := eraseLocal) {
-    config      := (← elabSimpConfig stx[1] (ctx := ctx))
-    simpTheorems, congrTheorems
+    config       := (← elabSimpConfig stx[1] (ctx := ctx))
+    simpTheorems := #[simpTheorems], congrTheorems
   }
   if !r.starArg || ignoreStarArg then
     return { r with fvarIdToLemmaId := {}, dischargeWrapper }
   else
     let ctx := r.ctx
-    let erased := ctx.simpTheorems.erased
+    let mut simpTheorems := ctx.simpTheorems
     let hs ← getPropHyps
     let mut ctx := ctx
     let mut fvarIdToLemmaId := {}
     for h in hs do
       let localDecl ← getLocalDecl h
-      unless erased.contains localDecl.userName do
+      unless simpTheorems.isErased localDecl.userName do
         let fvarId := localDecl.fvarId
         let proof  := localDecl.toExpr
         let id     ← mkFreshUserName `h
         fvarIdToLemmaId := fvarIdToLemmaId.insert fvarId id
-        let simpTheorems ← ctx.simpTheorems.add #[] proof (name? := id)
+        simpTheorems ← simpTheorems.addTheorem proof (name? := id)
         ctx := { ctx with simpTheorems }
     return { ctx, fvarIdToLemmaId, dischargeWrapper }

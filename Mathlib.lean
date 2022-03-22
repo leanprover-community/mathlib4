@@ -79,6 +79,7 @@ import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.RCases
 import Mathlib.Tactic.Rename
+import Mathlib.Tactic.Replace
 import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.RunCmd
@@ -98,6 +99,7 @@ import Mathlib.Util.Eval
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.LibraryNote
+import Mathlib.Util.MemoFix
 import Mathlib.Util.Simp
 import Mathlib.Util.TermUnsafe
 import Mathlib.Util.Time

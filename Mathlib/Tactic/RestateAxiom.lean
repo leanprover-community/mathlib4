@@ -48,7 +48,7 @@ elab "restate_axiom " oldName:ident newName:optional(ident) : command => do
         match oldName with
         | Name.str n s _  =>
           if s.back = ''' then
-            Name.mkStr n $ s.extract 0 $ s.length - 1
+            Name.mkStr n $ s.extract 0 (s.endPos - ⟨1⟩)
           else
             Name.mkStr n $ s ++ "_lemma"
         | x => x
