@@ -7,15 +7,14 @@ open Lean Meta Elab
 
 /-- try to close goal using reflexivity and subsingletons -/
 def tryCloseGoal (mvar: MVarId) : MetaM Bool := do
-  let u ← mkFreshLevelMVar
   try
-    let res ←  Meta.apply mvar (mkConst ``Eq.refl [u])
+    let res ←  Meta.apply mvar (← mkConstWithFreshMVarLevels ``Eq.refl)
     unless res.isEmpty do
       throwError "failed to close goal"
     pure true
   catch _ =>
   try
-    let res ←  Meta.apply mvar (mkConst ``Subsingleton.intro [u])
+    let res ←  Meta.apply mvar (← mkConstWithFreshMVarLevels ``Subsingleton.intro)
     unless res.isEmpty do
       throwError "failed to close goal"
     pure true
@@ -24,12 +23,10 @@ def tryCloseGoal (mvar: MVarId) : MetaM Bool := do
 
 /-- apply `congr` after trying to close goal, optionally return result if successful -/
 def congrStep? (mvar: MVarId) : MetaM (Option (List MVarId)) := do
-  let u ← mkFreshLevelMVar
-  let v ← mkFreshLevelMVar
   let closed  ← tryCloseGoal mvar
   if !closed then
     try
-      let res ←  Meta.apply mvar (mkConst ``congr [u, v])
+      let res ←  Meta.apply mvar (← mkConstWithFreshMVarLevels ``congr)
       return some res
     catch e =>
       pure none
