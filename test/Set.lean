@@ -20,7 +20,7 @@ example (x : Nat) (h : x + x - x = 3) : x + x - x = 3 := by
   apply h
 
 example (x : Nat) (h : x - x = 0) : x = x := by
-  set! y : Nat := x
+  set y : Nat := x
   set! z := y + 1 with ←eq1
   set! p : x - x = 0 := h with eq2
   rfl

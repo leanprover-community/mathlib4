@@ -54,13 +54,11 @@ elab_rules : tactic
       let pv ← elabTerm pv (none)
       let te ← inferType pv
       defineV a.getId te pv
-  match rw? with
-  | some r => pure ()
-  | none   => evalTactic (← `(tactic| try rw [(id rfl : $pv = $a)] at *))
-
+  if rw?.isNone then
+    evalTactic (← `(tactic| try rewrite [(id rfl : $pv = $a)] at *))
   match (h?, rev?) with
   | (some h, some (none))    =>
-    let hl ← evalTactic (← `(tactic| have $h : $a = $pv := rfl))
+    evalTactic (← `(tactic| have $h : $a = $pv := rfl))
   | (some h, some (some r))  =>
-    let hl ← evalTactic (← `(tactic| have $h : $pv = $a := rfl))
+    evalTactic (← `(tactic| have $h : $pv = $a := rfl))
   | _    =>  pure ()
