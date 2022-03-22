@@ -72,7 +72,7 @@ def mkSimpContext' (simpTheorems : SimpTheorems) (stx : Syntax) (eraseLocal : Bo
     if simpOnly then
       ({} : SimpTheorems).addConst ``eq_self
     else
-      Meta.getSimpTheorems
+      pure simpTheorems
   let congrTheorems ← Meta.getSimpCongrTheorems
   let r ← elabSimpArgs stx[4] (eraseLocal := eraseLocal) {
     config       := (← elabSimpConfig stx[1] (ctx := ctx))
