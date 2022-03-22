@@ -14,16 +14,12 @@ namespace Lean.Expr
 We define a more flexible version of `Expr.replace` where we can use recursive calls even when
 replacing a subexpression. We completely mimic the implementation of `Expr.replace`. -/
 
-@[inline]
-private def replaceRecCoreM [Monad M] (f? : (Expr → M Expr) → Expr → M (Option Expr))
-  (r : Expr → M Expr) (e : Expr): M Expr := do
-  match ← f? r e with
-  | some x => pure x
-  | none => traverseChildren r e
-
 /-- Same as `replaceRec` except over a monad. -/
 def replaceRecM [Monad M] (f? : (Expr → M Expr) → Expr → M (Option Expr)) : Expr → M Expr :=
-  memoFix $ replaceRecCoreM f?
+  memoFix $ fun r e => do
+    match ← f? r e with
+    | some x => pure x
+    | none => traverseChildren r e
 
 /-- A version of `Expr.replace` where the replacement function is available to the function `f?`.
 
