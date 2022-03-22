@@ -24,7 +24,8 @@ def proveEqUsing (s : SimpTheorems) (a b : Expr) : MetaM (Option Simp.Result) :=
     let b' ← Simp.simp b methods
     unless ← isDefEq a'.expr b'.expr do return none
     mkEqTrans a' (← mkEqSymm b b')
-  withReducible do (go { simpTheorems := s, congrTheorems := ← Meta.getSimpCongrTheorems }).run' {}
+  withReducible do
+    (go { simpTheorems := #[s], congrTheorems := ← Meta.getSimpCongrTheorems }).run' {}
 
 /-- Prove `a = b` by simplifying using move and squash lemmas. -/
 def proveEqUsingDown (a b : Expr) : MetaM (Option Simp.Result) := do
@@ -166,7 +167,7 @@ def derive (e : Expr) : MetaM Simp.Result := do
 
   -- step 3: casts are squashed
   let r ← mkEqTrans r <|<- simp r.expr {
-    simpTheorems := ← normCastExt.squash.getTheorems
+    simpTheorems := #[← normCastExt.squash.getTheorems]
     config, congrTheorems
   }
   trace[Tactic.norm_cast] "after squashing: {r.expr}"
@@ -311,4 +312,3 @@ The implementation and behavior of the `norm_cast` family is described in detail
 --                  ``tactic.interactive.exact_mod_cast, ``tactic.interactive.push_cast],
 --   tags       := ["coercions", "simplification"] }
 -- TODO
-

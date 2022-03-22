@@ -88,7 +88,7 @@ macro ak:Term.attrKind "notation3"
       macroArgs := macroArgs.push (← `(macroArg| binders:extBinders))
     else if lit.isOfKind ``foldAction then
       let mut sep := lit[2][0]
-      if sep.isAtom then sep := Syntax.mkStrLit $ sep.getAtomVal!.extract 0 1 ++ " "
+      if sep.isAtom then sep := Syntax.mkStrLit ", "
       macroArgs := macroArgs.push (← `(macroArg| $(lit[1]):ident:sepBy(term, $sep:strLit)))
       let scopedTerm ← lit[9].replaceM fun
         | Syntax.ident _ _ id .. => pure $ boundNames.find? id

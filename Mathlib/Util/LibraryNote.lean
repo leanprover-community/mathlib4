@@ -20,7 +20,7 @@ initialize libraryNoteExt : SimplePersistentEnvExtension LibraryNoteEntry (Array
 
 def getDocCommentContent (stx : Syntax) : String :=
   let val := stx[1].getAtomVal!
-  val.extract 0 (val.bsize - 2)
+  val.extract 0 (val.endPos - ⟨2⟩)
 
 open Lean Parser Command in
 elab "library_note " title:strLit ppSpace text:docComment : command => do
