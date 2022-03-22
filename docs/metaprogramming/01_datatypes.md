@@ -1,3 +1,4 @@
+Author: E.W.Ayers
 
 # How metaprogramming works. Part 01: Datatypes that Lean uses for metaprogramming
 
@@ -44,6 +45,13 @@ What is each of these constructors doing?
 - `lit` is a __literal__, this is a number or string literal like `4` or `"hello world"`. These are not strictly necessary for the kernel, but they are kept mainly for convenience. (Ie in Lean 3, there were a load of tricks needed to store `11234 : Nat` as something more efficient than `succ $ succ $ succ ... $ succ zero`)
 - `mdata` is just a way of storing extra information on expressions that might be useful, without changing the nature of the expression.
 - `proj` is for projection. Suppose you have a structure such as `p : α × β`, rather that storing the projection `π₁ p` as `app π₁ p`, it is expressed as `proj Prod 0 p`. This is for efficiency reasons ([todo] find link to docstring explaining this).
+
+### Expression Data
+
+If you look at the file where `Expr` is defined, you will see that every constructor also has a `Data` argument to it that I have omitted above. This Data field contains some extra cached information about the expression that is useful for speeding up some common operations.
+These are things like; a hash of the `Expr`, whether or not the `Expr` contains free variables, metavariables or bound variables and also it is where the `BinderInfo` is stored for `forallE` and `lam`.
+
+This data param means that you should _never_ construct instances of `Expr` directly using the `Expr` constructors but instead use the helper methods (`mkLambda`, `mkApp` etc) that compute `Data` for you.
 
 ## de-Bruijn Indexes
 
@@ -137,6 +145,10 @@ We can use backticks `` ` `` to access names from Lean objects.
 * ``` ``some ``` does name resolution at parse time, so it expands to `` `option.some``. It will error if the given name doesn't exist. [todo] check if this is still true in Lean 4.
 
 When you write `namespace x ... end x` in your document, this is the same as using `open x` and prepending `x.` to all of your declarations within the `namespace/end` block.
+
+### Name resolution
+
+[todo] this has changed in Lean 4
 
 ## Getting `Expr`s in Lean.
 

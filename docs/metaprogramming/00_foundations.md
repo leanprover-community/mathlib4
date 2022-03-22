@@ -1,3 +1,5 @@
+Author: E.W.Ayers
+
 # How metaprogramming works. Part 0: Foundations of provers
 
 This document is for a mathematician who wants to gain an understanding of what is going on under the hood rather than for pro type theorists or pro computer scientists.
@@ -18,6 +20,7 @@ I would like to thank Mario Carneiro, Leo de Moura, Gabriel Ebner, Simon Hudon, 
 
 ## What is a logical foundation?
 
+This is based on [thesis chapter](https://edayers.com/thesis/background#prover-arch).
 
 The essential purpose of a proof assistant is to represent mathematical theorems, definitions and proofs in a language that can be robustly checked by a computer. This language is called the __foundation language__. The language defines the set of objects that formally represent mathematical statements and proofs, and the inference rules and axioms provide the valid ways in which these objects can be manipulated.
 Some examples of foundations are [first-order logic (FOL)](https://en.wikipedia.org/wiki/First-order_logic), [higher-order logic (HOL)](https://en.wikipedia.org/wiki/Higher-order_logic), and various forms of dependent type theory (DTT).
