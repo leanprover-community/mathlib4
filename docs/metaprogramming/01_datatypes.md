@@ -127,7 +127,7 @@ inductive ConstantInfo where
   | axiomInfo    (val : AxiomVal)
   | defnInfo     (val : DefinitionVal)
   | thmInfo      (val : TheoremVal)
-  -- ... lots of oterh
+  -- ... lots of other
 ```
 
 When one writes `map succ [4,5,6,7]` in a new Lean file, it doesn't parse, because Lean can't find anything in the environment or context with the name `map` or `succ`. We have to give their full names `List.map Nat.succ [4,5,6,7]`. Alternatively, we can add `open Nat List` above, this tells Lean that if it can't find something called `x`, it should also try out `List.x` and `Nat.x`.
@@ -163,7 +163,7 @@ Lean provides a syntax to quickly convert any Lean expression into an `Expr`.
 
 The process of taking a string of unicode characters and converting them a Lean expression is called __elaboration__. Elaboration is a huge topic that will be covered later ([NOTE] still to do.).
 
-A shorthand for going from an `Expr` `e` to a Lean object is to use `%%e`. This is called  an __anti-quotation__. So for example ```(f $ %%e)`` would create ``expr.app (expr.const `f) e``. [todo] is this still the Lean 4 syntax?
+A shorthand for going from an `Expr` `e` to a Lean object is to use `%%e`. This is called  an __anti-quotation__. So for example ``(f $ %%e)`` would create ``expr.app (expr.const `f) e``. [todo] is this still the Lean 4 syntax?
 
 ## Implicit arguments and `binderInfo`
 
@@ -205,13 +205,11 @@ Now, writing down `Expr` trees is very time consuming, because you have to manua
 For example,
 ```lean
 set_option pp.all true -- show all of the gory details.
-#check (λ x , x + 2 )
+#check ( λ x => x + 2 )
 /- outputs:
-λ (x : nat), @has_add.add.{0} nat nat.has_add x (@bit0.{0} nat nat.has_add (@has_one.one.{0} nat nat.has_one))
+ fun (x : Nat) =>                                                                                                                      @HAdd.hAdd.{0, 0, 0} Nat Nat Nat (@instHAdd.{0} Nat instAddNat) x (@OfNat.ofNat.{0} Nat 2 (instOfNatNat 2)) : Nat → Nat
 -/
 ```
-
-[todo] update above for Lean 4
 
 We don't want to have to write out all of that every single time, so we use an __elaborator__ to figure out what all of the implicit arguments and typeclass arguments are.
 
