@@ -91,7 +91,7 @@ macro_rules
 | `(tactic| congr $(x?)?) => do
     `(tactic|congr_base $(x?)?)
 | `(tactic| congr $(x?)? with $xs) => do
-    `(tactic| focus (congr_base $(x?)?; ext1 $xs))
+    `(tactic| focus (congr_base $(x?)?; ext $xs))
 
 example (x y w: Nat)(f g: Nat → Nat): x * f y = g w * f z := by
   congr
