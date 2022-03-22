@@ -25,32 +25,12 @@ def Lean.Parser.Term.haveIdLhs' : Parser :=
     checkColGt "expected to be indented" >>
     (simpleBinderWithoutType <|> bracketedBinder))) >> optType
 
-/--
-Uses `checkColGt` to prevent
-
-```lean
-let h
-exact Nat
-```
-
-From being interpreted as
-```lean
-let h
-  exact Nat
-```
--/
-def Lean.Parser.Term.letIdLhs' : Parser :=
-  ident >> notFollowedBy (checkNoWsBefore "" >> "[")
-    "space is required before instance '[...]' binders to distinguish them from array updates `let x[i] := e; ...`" >>
-      many (ppSpace >> checkColGt "expected to be indented" >>
-        (simpleBinderWithoutType <|> bracketedBinder)) >> optType
-
 namespace Mathlib.Tactic
 
 open Lean Elab.Tactic Meta
 
 syntax "have" Parser.Term.haveIdLhs' : tactic
-syntax "let " Parser.Term.letIdLhs' : tactic
+syntax "let " Parser.Term.haveIdLhs' : tactic
 syntax "suffices" Parser.Term.haveIdLhs' : tactic
 
 open Elab Term in
@@ -83,6 +63,6 @@ elab_rules : tactic
   replaceMainGoal [mvar2, mvar1]
 
 elab_rules : tactic
-| `(tactic| let $n:ident $bs* $[: $t:term]?) => withMainContext do
-  let (mvar1, mvar2) ← haveLetCore (← getMainGoal) n bs t true
+| `(tactic| let $[$n:ident $bs*]? $[: $t:term]?) => withMainContext do
+  let (mvar1, mvar2) ← haveLetCore (← getMainGoal) n (bs.getD #[]) t true
   replaceMainGoal [mvar1, mvar2]
