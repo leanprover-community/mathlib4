@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Arthur Paulino, Edward Ayers
+Authors: Arthur Paulino, Edward Ayers, Mario Carneiro
 -/
 import Lean
 import Mathlib.Data.Array.Defs
@@ -21,7 +21,7 @@ have h
 ```
 -/
 def Lean.Parser.Term.haveIdLhs' : Parser :=
-  optional (ident >> many (ppSpace >>
+  optional (ppSpace >> ident >> many (ppSpace >>
     checkColGt "expected to be indented" >>
     (simpleBinderWithoutType <|> bracketedBinder))) >> optType
 
@@ -49,54 +49,40 @@ namespace Mathlib.Tactic
 
 open Lean Elab.Tactic Meta
 
-syntax "have " Parser.Term.haveIdLhs' : tactic
-syntax "let "  Parser.Term.letIdLhs'  : tactic
+syntax "have" Parser.Term.haveIdLhs' : tactic
+syntax "let " Parser.Term.letIdLhs' : tactic
+syntax "suffices" Parser.Term.haveIdLhs' : tactic
 
-private def addToContext (name : Name) (t : Expr) (keepTerm : Bool) : TacticM Unit :=
+open Elab Term in
+def haveLetCore (mvarId : MVarId) (name : Option Syntax) (bis : Array Syntax)
+  (t : Option Syntax) (keepTerm : Bool) : TermElabM (MVarId × MVarId) :=
   let declFn := if keepTerm then define else assert
-  liftMetaTactic fun mvarId => do
-    let p ← mkFreshExprMVar (userName := name) t
-    let mvarIdNew ← declFn mvarId name t p
-    let (_, mvarIdNew) ← intro1P mvarIdNew
-    pure [p.mvarId!, mvarIdNew]
-
-private def elabType (t : Option Syntax) : Elab.TermElabM Expr :=
-  match t with
-  | none   => mkFreshTypeMVar
-  | some t => elabTerm t none
-
-private def getBinderNames (b : Syntax) : Array Syntax :=
-  match b.getKind with
-  | `Lean.Parser.Term.simpleBinder   => b[0].getArgs
-  | `Lean.Parser.Term.explicitBinder => b[1].getArgs
-  | _                                => #[]
-
-open Elab.Term in
-private def getNameAndType (n t : Option Syntax) (bs : Option (Array Syntax)) :
-    TacticM (Name × Expr) := do
-  let name := match n with
-    | none   => `this
-    | some n => n.getId
-  let e : Expr ← match bs with
-    | none    => elabType t
-    | some bs => elabBinders bs $ fun es => do mkForallFVars es (← elabType t)
-  pure (name, e)
-
-private def introBinders (bs : Array Syntax) : TacticM Unit := do
-  let bindersNames := bs.map getBinderNames |>.flatten
-  if ¬ bindersNames.isEmpty then
-    evalTactic $ ← `(tactic|intro $bindersNames*)
+  withMVarContext mvarId do
+    let n := if let some n := name then n.getId else `this
+    let elabBinders k := if bis.isEmpty then k #[] else elabBinders bis k
+    let (mvar1, t, p) ← elabBinders fun es => do
+      let t ← match t with
+      | none => mkFreshTypeMVar
+      | some t => Tactic.elabTerm t none
+      let p ← mkFreshExprMVar t MetavarKind.syntheticOpaque n
+      pure (p.mvarId!, ← mkForallFVars es t, ← mkLambdaFVars es p)
+    let (fvar, mvar2) ← intro1P (← declFn mvarId n t p)
+    if let some stx := name then
+      withMVarContext mvar2 do
+        Term.addTermInfo (isBinder := true) stx (mkFVar fvar)
+    pure (mvar1, mvar2)
 
 elab_rules : tactic
-| `(tactic|have $[$n:ident $bs*]? $[: $t:term]?) => withMainContext do
-    let (name, e) ← getNameAndType n t bs
-    addToContext name e false
-    introBinders $ bs.getD #[]
+| `(tactic| have $[$n:ident $bs*]? $[: $t:term]?) => do
+  let (mvar1, mvar2) ← haveLetCore (← getMainGoal) n (bs.getD #[]) t false
+  replaceMainGoal [mvar1, mvar2]
 
 elab_rules : tactic
-| `(tactic|let $n:ident $[: $t:term]?)      => withMainContext do
-  addToContext n.getId (← elabType t) true
-| `(tactic|let $n:ident $bs* $[: $t:term]?) => withMainContext do
-    let (name, e) ← getNameAndType (some n) t (some bs)
-    addToContext name e true
-    introBinders bs
+| `(tactic| suffices $[$n:ident $bs*]? $[: $t:term]?) => do
+  let (mvar1, mvar2) ← haveLetCore (← getMainGoal) n (bs.getD #[]) t false
+  replaceMainGoal [mvar2, mvar1]
+
+elab_rules : tactic
+| `(tactic| let $n:ident $bs* $[: $t:term]?) => withMainContext do
+  let (mvar1, mvar2) ← haveLetCore (← getMainGoal) n bs t true
+  replaceMainGoal [mvar1, mvar2]

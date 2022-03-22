@@ -163,9 +163,6 @@ syntax (name := casesType) "cases_type" "*"? ppSpace ident* : tactic
 syntax (name := casesType!) "cases_type!" "*"? ppSpace ident* : tactic
 syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
 
--- unstructured suffices
-syntax (name := suffices') "suffices " Term.haveIdLhs : tactic
-
 syntax (name := trace) "trace " term : tactic
 syntax (name := existsi) "exists " term,* : tactic
 syntax (name := eConstructor) "econstructor" : tactic
