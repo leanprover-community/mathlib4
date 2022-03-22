@@ -31,7 +31,7 @@ If you wish to recursively replace things in the implementation of `f?`, you can
 The function is also memoised, which means that if the
 same expression (by reference) is encountered the cached replacement is used. -/
 def replaceRec (f? : (Expr → Expr) → Expr → Option Expr) (e : Expr) : Expr :=
-replaceRecM (M := Id) f? e
+  replaceRecM (M := Id) f? e
 
 /-- A version of `Expr.replace` where we can use recursive calls even if we replace a subexpression.
   When reaching a subexpression `e` we call `traversal e` to see if we want to do anything with this
