@@ -53,7 +53,7 @@ They define what it means for a term to be well-typed.
 The statements that the inference rules talk about are sometimes called __judgements__. For example, in Lean, the main judgements are `Γ ⊢ s : α` for expressions `s` and `α`, and also a 'definitional equality judgement' `Γ ⊢ s ≡ t : α`.
 What does the `Γ` do? `Γ` is called a __context__ and consists of an ordered list of typed variables that are in scope. You need to include context for variables, for example if `x` is a variable, then `x : Nat` is not generally true but depends on the type of `x`. So the judgement for typing variables looks like `(Γ, (x : α)) ⊢ x : α`.
 
-[Mario Carneiro's master's thesis](https://github.com/digama0/lean-type-theory/releases/download/v0.21/main.pdf) contains the definitions for the foundations of Lean 3.
+[Mario Carneiro's master's thesis](https://github.com/digama0/lean-type-theory/releases/download/v0.21/main.pdf) contains the definitions for the foundations of Lean 3. You can also read about this in https://leanprover.github.io/lean4/doc/deptypes.html and  https://leanprover.github.io/lean4/doc/expressions.html#axioms
 
 Now we have specified the type theory, we need to write a computer program which will be able to construct elements of this type theory and perform reductions on them.
 

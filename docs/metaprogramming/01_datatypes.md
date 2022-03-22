@@ -4,6 +4,9 @@ Author: E.W.Ayers
 
 I'll now talk about all of the main datatypes in the Lean metaprogramming world.
 
+You should also read:
+- https://leanprover.github.io/lean4/doc/expressions.html There is probably an argument for inserting some of this in there.
+
 ## Expressions
 
 The Lean type `Expr` is just an inductive datatype that you can look at like any other. Let me give a cut down version of the one given in [Lean/Expr.lean](https://github.com/leanprover/lean4/blob/master/src/Lean/Expr.lean) where I throw away some details to add back in later.
@@ -55,21 +58,18 @@ This data param means that you should _never_ construct instances of `Expr` dire
 
 ## de-Bruijn Indexes
 
-Consider the following lambda expression ` (λ f x, f x x) (λ x y, x + y) 5`, we have to be very careful when we reduce this, because we get a clash in the  variable `x`.
-To avoid variable name-clash carnage, `expr`s use a nifty trick called __de-Bruijn indexes__.
-In de-Bruijn indexing, each variable bound by a `lam` or a `pi` is converted into a number `#n`.
-The number says how many binders up the `expr` tree we should look to find the binder which binds this variable.
+Consider the following lambda expression ` (λ f x => f x x) (λ x y => x + y) 5`, we have to be very careful when we reduce this, because we get a clash in the  variable `x`.
+To avoid variable name-clash carnage, `Expr`s use a nifty trick called __de-Bruijn indexes__.
+In de-Bruijn indexing, each variable bound by a `lam` or a `forallE` is converted into a number `#n`.
+The number says how many binders up the `Expr` tree we should look to find the binder which binds this variable.
 So our above example would become (putting wildcards `_` in the type arguments for now for brevity):
 ``app (app (lam `f _ (lam `x _ (app (app #1 #0) #0))) (lam `x _ (lam `y _ (app (app plus #1) #0)))) five``
-Now we don't need to rename variables when we perform β-reduction. We also really easily check if two `expr`s containing bound expressions are equal.
+Now we don't need to rename variables when we perform β-reduction. We also really easily check if two `Expr`s containing bound expressions are equal.
 
-This is why the signature of the `var` case is `nat → expr` and not `name → expr`.
-If in our `expr`, all `var`s are bound, we say that the `expr` is __closed__.
-The process of replacing all instances of an unbound `var` with an `expr` is called __instantiation__.
+This is why the signature of the `bvar` case is `Nat → Expr` and not `Name → Expr`.
+If in our `Expr`, all `bvar`s are bound, we say that the `Expr` is __closed__.
+The process of replacing all instances of an unbound `bvar` with an `Expr` is called __instantiation__.
 Going the other way is called __abstraction__.
-
-
-
 
 ## Type Universes
 
@@ -101,8 +101,7 @@ Because of this, I will try my hardest to omit details about type universes for 
 
 ## Names
 
-
-A name is just a list of strings and numbers `string1.3.string2.string3.55`. We use a list of strings because then we can have things like `namespaces`.
+A name is just a list of strings and numbers `string1.3.string2.string3.55`. We use a list of strings because then we can have things like `namespaces`. See https://leanprover.github.io/lean4/doc/organization.html
 
 
 ```lean
@@ -113,9 +112,9 @@ inductive Name where
   | num : Name → Nat → Name    -- append a number to the name
 ```
 
-
-
 ## Environments and declarations
+
+Reference: https://leanprover.github.io/lean4/doc/declarations.html
 
 When we write a Lean document, Lean constructs an `Environment` that contains all of the axioms, inductive types, theorems and definitions that we we have put in the document.
 You can think of the environment as a giant sequence of things called __constants__.
@@ -127,7 +126,7 @@ inductive ConstantInfo where
   | axiomInfo    (val : AxiomVal)
   | defnInfo     (val : DefinitionVal)
   | thmInfo      (val : TheoremVal)
-  -- ... lots of oterh
+  -- ... lots of other constant types.
 ```
 
 When one writes `map succ [4,5,6,7]` in a new Lean file, it doesn't parse, because Lean can't find anything in the environment or context with the name `map` or `succ`. We have to give their full names `List.map Nat.succ [4,5,6,7]`. Alternatively, we can add `open Nat List` above, this tells Lean that if it can't find something called `x`, it should also try out `List.x` and `Nat.x`.
@@ -142,7 +141,7 @@ You can write your own environment extensions, which I hope to be a topic of a f
 We can use backticks `` ` `` to access names from Lean objects.
 
 * `` `my.name`` is the way to refer to a name. It is essentially a form of string quoting; no checks are done besides parsing dots into namespaced names
-* ``` ``some ``` does name resolution at parse time, so it expands to `` `option.some``. It will error if the given name doesn't exist. [todo] check if this is still true in Lean 4.
+* ``` ``some ``` does name resolution at parse time, so it expands to `` `option.some``. It will error if the given name doesn't exist.
 
 When you write `namespace x ... end x` in your document, this is the same as using `open x` and prepending `x.` to all of your declarations within the `namespace/end` block.
 
@@ -154,18 +153,20 @@ When you write `namespace x ... end x` in your document, this is the same as usi
 
 [todo] update this section for Lean 4
 
-As fun as it would be to type out `Expr`s in terms of `var`, `lam`, etc and doing all of the de-Bruijn index bookkepping yourself,
+As fun as it would be to type out `Expr`s in terms of `bvar`, `lam`, etc and doing all of the de-Bruijn index bookkepping yourself,
 Lean provides a syntax to quickly convert any Lean expression into an `Expr`.
 
 * `` `(my expr)`` constructs an expression at parse time, resolving what it can in the current (of the tactic) namespace
 * ``` ``(my pexpr)``` constructs a pre-expression (an expression where implicit arguments have not been filled in) at parse time, resolving in the current (of the tactic) namespace
 * ```` ```(my pexpr)```` constructs a pexpr, but defers resolution to run time (of the tactic), meaning that any references will be resolved in the namespace of the begin end block of the user of the tactic, rather than the tactic itself
 
-The process of taking a string of unicode characters and converting them a Lean expression is called __elaboration__. Elaboration is a huge topic that will be covered later ([NOTE] still to do.).
+The process of taking a string of unicode characters and converting them a Lean expression is called __elaboration__. See also the [manual docs for Elaboration]().
 
 A shorthand for going from an `Expr` `e` to a Lean object is to use `%%e`. This is called  an __anti-quotation__. So for example ```(f $ %%e)`` would create ``expr.app (expr.const `f) e``. [todo] is this still the Lean 4 syntax?
 
 ## Implicit arguments and `binderInfo`
+
+Reference: https://leanprover.github.io/lean4/doc/expressions.html#implicit-arguments
 
 Lean supports some extra information about binders that lets us write more concise code.
 The two main mechanisms that Lean uses are __implicit arguments__ and __typeclass instances__.

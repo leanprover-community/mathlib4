@@ -15,3 +15,7 @@ Monad transformers are a thing to solve this:
 - `ErrorT ε M α := M (ε ⊕ α)`
 
 Now you can create your monad from a tower of different transformers. You can write `ReaderT MyContext $ StateT MyState $ ErrorT MyError $ Id` and it will create the monad that you want.
+
+# Do Notation
+
+Read this: https://leanprover.github.io/lean4/doc/do.html

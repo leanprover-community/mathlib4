@@ -2,6 +2,10 @@ Author: E.W.Ayers
 
 # How meta works. Part 2: The tactic state
 
+Also read these things please:
+- https://leanprover.github.io/lean4/doc/tactics.html
+- https://leanprover.github.io/theorem_proving_in_lean4/title_page.html
+
 ## How tactics work
 
 Let's look at how tactics work first.
@@ -159,13 +163,15 @@ But alas there are lots of ways to interpret `the same' and we need to use diffe
 
 [TODO] What does Lean do for (undecidable) higher unification problems? It looks like in some special cases it actually has a go at doing it. Eg when guessing the motive for `rec`. I think this is discussed in the `Elaboration in Lean` paper.
 
-[todo] What are unification hints?
+What are unification hints? I don't know but the answer will enventually appear [here](https://leanprover.github.io/lean4/doc/unifhint.html).
 
 [todo] Unification is a huge area of research so I am having some trouble deciding what to include in this doc. I am also finding it difficult to figure out exactly which unification algorithms Lean is using. Eg. It seems to be doing higher order unification in some special cases so I guess it's using something like Huet's algorithm to do this. There are also loads of settings that one can pass to the unifier which I don't understand (eg what exactly does the `approx` setting do in `apply_core`?) [todo] this has potentially all changed in Lean 4
 
 In general, expressions can reduce to gigantic objects, so the definitional equality checker uses heuristics and caching to run in a reasonable amount of time.
 
 ### Reduction in Lean
+
+Reference: https://leanprover.github.io/lean4/doc/expressions.html#computation
 
 Let's write out all of the fundamental reductions we have in Lean's type theory. We write 'equivalence' when we have a reduction which doesn't terminate. So for example we could perform α-equivalence forever.
 - __α-equivalence__ is renaming bound variables. Thanks to de-Bruijn indices this is done automatically.
@@ -188,7 +194,6 @@ You can put an expression in WHNF using the `whnf` tactic. You can see this used
 ### Transparency
 
 In general, expressions can reduce to gigantic objects, so the definitional equality checker uses heuristics and caching to run in a reasonable amount of time. One of these is to give certain constants a 'transparency' setting which tells Lean's definitional equality system how eagerly it should try to expand definitions.
-
 
 You can tell the definitional equality system how keenly to expand these constants by setting the `TransparencyMode`. This is an option that can be set on the `MetaM` ([todo] check?) monad.
 Transparency mode is a parameter representing how aggressively definitions should be unfolded when trying to decide if two terms match, unify or are definitionally equal.
