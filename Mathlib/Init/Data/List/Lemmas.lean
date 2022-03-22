@@ -36,9 +36,6 @@ theorem map_singleton (f : α → β) (a : α) : map f [a] = [f a] := rfl
 @[simp] theorem map_map (g : β → γ) (f : α → β) (l : List α) :
   map g (map f l) = map (g ∘ f) l := by induction l <;> simp_all
 
-@[simp] theorem length_map (f : α → β) (l : List α) : length (map f l) = length l := by
-  induction l <;> simp_all
-
 @[simp] theorem nil_bind (f : α → List β) : List.bind [] f = [] := by simp [join, List.bind]
 
 @[simp] theorem cons_bind x xs (f : α → List β) :

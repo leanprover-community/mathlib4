@@ -13,10 +13,15 @@ open Lean Parser.Tactic Elab.Tactic
 syntax simpaArgsRest := (config)? (discharger)? &" only "? (simpArgs)? (withArgs)? (usingArg)?
 
 syntax "simpa" "!"? "?"? simpaArgsRest : tactic
-
 macro "simpa!" rest:simpaArgsRest : tactic => `(tactic| simpa ! $rest:simpaArgsRest)
 macro "simpa?" rest:simpaArgsRest : tactic => `(tactic| simpa ? $rest:simpaArgsRest)
 macro "simpa!?" rest:simpaArgsRest : tactic => `(tactic| simpa !? $rest:simpaArgsRest)
+
+-- TODO
+syntax "squeeze_simpa" "!"? "?"? simpaArgsRest : tactic
+macro "squeeze_simpa!" rest:simpaArgsRest : tactic => `(tactic| squeeze_simpa ! $rest:simpaArgsRest)
+macro "squeeze_simpa?" rest:simpaArgsRest : tactic => `(tactic| squeeze_simpa ? $rest:simpaArgsRest)
+macro "squeeze_simpa!?" rest:simpaArgsRest : tactic => `(tactic| squeeze_simpa !? $rest:simpaArgsRest)
 
 /--
 This is a "finishing" tactic modification of `simp`. It has two forms.
