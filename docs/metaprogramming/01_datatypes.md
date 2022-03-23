@@ -206,13 +206,14 @@ Now, writing down `Expr` trees is very time consuming, because you have to manua
 For example,
 ```lean
 set_option pp.all true -- show all of the gory details.
-#check (λ x , x + 2 )
+#check (λ x => x + 2)
+
 /- outputs:
-λ (x : nat), @has_add.add.{0} nat nat.has_add x (@bit0.{0} nat nat.has_add (@has_one.one.{0} nat nat.has_one))
+fun (x : Nat) =>
+  @HAdd.hAdd.{0, 0, 0} Nat Nat Nat (@instHAdd.{0} Nat instAddNat) x
+    (@OfNat.ofNat.{0} Nat 2 (instOfNatNat 2)) : Nat → Nat
 -/
 ```
-
-[todo] update above for Lean 4
 
 We don't want to have to write out all of that every single time, so we use an __elaborator__ to figure out what all of the implicit arguments and typeclass arguments are.
 
