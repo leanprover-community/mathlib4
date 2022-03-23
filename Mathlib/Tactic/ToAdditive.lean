@@ -34,39 +34,40 @@ structure Context where
   (ignore : NameMap (List Nat))
   (reorder : NameMap (List Nat))
 
-variable {M} [Monad M] [MonadReader Context M]
+variable {M} [Functor M] [MonadReader Context M]
 
-def getNameFn [MonadReader Context M] : M (Name → Option Name) := Context.nameFn <$> read
+def getNameFn : M (Name → Option Name) := Context.nameFn <$> read
 
-def runNameFn [MonadReader Context M]: Name → M (Option Name)
+def runNameFn : Name → M (Option Name)
 | n => (Context.nameFn . n) <$> read
 
-def shouldTrace [MonadReader Context M]: M Bool := Context.trace <$> read
+def shouldTrace : M Bool := Context.trace <$> read
 
 def ignore : Name → M (Option (List Nat))
-| n => return NameMap.find? (Context.ignore (← read)) n
+| n => read |> Functor.map fun ctx => ctx.ignore.find? n
 
 def getReorder : Name →  M (List Nat)
-| n => do
-  let r := NameMap.find? (Context.reorder (← read)) n
-  match r with
-  | some ns => return ns
-  | none => return []
+| n => read |> Functor.map fun ctx =>
+  match ctx.reorder.find? n with
+  | some ns => ns
+  | none => []
 
 def shouldReorder : Name → Nat → M Bool
-| n, i => return i ∈ (← getReorder n)
+| n, i => (i ∈ .) <$> (getReorder n)
 
 def isRelevant : Name → Nat → M Bool
-| n, i => do
-  match NameMap.find? (Context.relevant (← read)) n with
-  | some j => return i == j
-  | none => return i == 0
+| n, i => read |> Functor.map fun ctx =>
+  match ctx.relevant.find? n with
+  | some j => i == j
+  | none => i == 0
 
-def replaceAll : M Bool := return (←read).replaceAll
+def replaceAll : M Bool := Context.replaceAll <$> read
+
+variable [Monad M]
 
 /-- Auxilliary function for `additive_test`. The bool argument *only* matters when applied
 to exactly a constant. -/
-private def additiveTestAux : Bool → Expr → M Bool
+private def additiveTestAux: Bool → Expr → M Bool
   | b, Expr.const n _ _           => return b || (← runNameFn n).isSome
   | b, (Expr.app e a _) => do
       if (← additiveTestAux true e) then
@@ -98,7 +99,6 @@ def additiveTest (e : Expr) : M Bool := do
     return true
   else
     additiveTestAux false e
-
 
 /--
 `e.apply_replacement_fun f test` applies `f` to each identifier
@@ -241,6 +241,26 @@ def transformDeclWithPrefixFun (src tgt : Name) (attrs : List Name) : ReaderT Co
   -- for attr in attrs do
   --   copyAttributes attr src tgt
   return ()
+
+/--
+Find the first argument of `nm` that has a multiplicative type-class on it.
+Returns 1 if there are no types with a multiplicative class as arguments.
+E.g. `prod.group` returns 1, and `pi.has_one` returns 2.
+-/
+def firstMultiplicativeArg (nm : Name) : M Nat := do
+  let d ← getConstInfo nm
+  let (es, _) := d.type.pi_binders
+  l ← es.mmap_with_index $ fun n bi => do
+  { let tgt := bi.type.pi_codomain,
+    let n_bi := bi.type.pi_binders.fst.length,
+    tt ← has_attribute' `to_additive tgt.get_app_fn.const_name | return none,
+    let n2 := tgt.get_app_args.head.get_app_fn.match_var.map $ λ m, n + n_bi - m,
+    return $ n2 },
+  let l := l.reduce_option,
+  return $ if l = [] then 1 else l.foldr min l.head
+
+
+section Commands
 
 /-! An attribute that tells `@[toAdditive]` that certain arguments of this definition are not
 involved when using `@[toAdditive]`.
