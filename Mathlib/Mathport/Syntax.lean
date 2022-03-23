@@ -282,7 +282,7 @@ syntax (name := choose) "choose" (ppSpace ident)+ (" using " term)? : tactic
 syntax (name := choose!) "choose!" (ppSpace ident)+ (" using " term)? : tactic
 
 syntax (name := congr) "congr" (ppSpace (colGt num))?
-  (" with " (colGt rcasesPat)* (" : " num)?)? : tactic
+  (" with " (colGt rintroPat)* (" : " num)?)? : tactic
 syntax (name := rcongr) "rcongr" (ppSpace (colGt rcasesPat))* : tactic
 syntax (name := convert) "convert " "← "? term (" using " num)? : tactic
 syntax (name := convertTo) "convert_to " term (" using " num)? : tactic

@@ -7,18 +7,22 @@ open Lean Meta Elab
 
 /-- try to close goal using reflexivity and subsingletons -/
 def tryCloseGoal (mvar: MVarId) : MetaM Bool := do
+  let s ← saveState
   try
     let res ←  Meta.apply mvar (← mkConstWithFreshMVarLevels ``Eq.refl)
     unless res.isEmpty do
       throwError "failed to close goal"
     pure true
   catch _ =>
+  s.restore
+  let s ← saveState
   try
     let res ←  Meta.apply mvar (← mkConstWithFreshMVarLevels ``Subsingleton.intro)
     unless res.isEmpty do
       throwError "failed to close goal"
     pure true
   catch _ =>
+    s.restore
     pure false
 
 /-- apply `congr` after trying to close goal, optionally return result if successful -/
@@ -83,12 +87,11 @@ match stx with
     liftMetaTactic (Meta.congr x?)
 | _ => throwIllFormedSyntax
 
--- TODO: use `ext` not `ext1`
 macro_rules
 | `(tactic| congr $(x?)?) => do
     `(tactic|congr_base $(x?)?)
-| `(tactic| congr $(x?)? with $xs) => do
-    `(tactic| focus (congr_base $(x?)?; ext $xs))
+| `(tactic| congr $(x?)? with $[$xs]*) => do
+    `(tactic| focus (congr_base $(x?)? <;> ext $xs:rintroPat*))
 
 example (x y w: Nat)(f g: Nat → Nat): x * f y = g w * f z := by
   congr
@@ -101,3 +104,9 @@ example (x y : Nat)(f g: Nat → Nat): f (g (x + y)) = f (g (y + x)) := by
   congr 2
   have : x + y = y + x := sorry
   assumption
+
+set_option pp.rawOnError true
+example (x y : Nat)(f g: Nat → Nat): g (f (x + y)) = f (g (x + y)) := by
+  congr with x
+  admit
+  admit
