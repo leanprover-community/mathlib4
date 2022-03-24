@@ -6,13 +6,13 @@ Author: Ian Benway.
 
 import Mathlib.Tactic.Set
 
-example (x : Nat) (h : x = x): x = x := by
+example (x : Nat) (h : x = x) : x = x := by
   set! p := h
   set q : x = x := p
   apply q
 
 example (x : Nat) (h : x + x - x = 3) : x + x - x = 3 := by
-  set! y := x with ←h2
+  set! y := x with ← h2
   set w := x
   set z := w with h3
   set a := 3
@@ -21,6 +21,6 @@ example (x : Nat) (h : x + x - x = 3) : x + x - x = 3 := by
 
 example (x : Nat) (h : x - x = 0) : x = x := by
   set y : Nat := x
-  set! z := y + 1 with ←eq1
+  set! z := y + 1 with ← eq1
   set! p : x - x = 0 := h with eq2
   rfl

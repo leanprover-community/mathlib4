@@ -14,7 +14,7 @@ private def defineV (nm : Name) (tp : Expr) (tme : Expr) : TacticM Unit := do
     withMVarContext h2 do
       return h2
 
-syntax setArgsRest := ident (" : " term)? " := " term (" with " "←"? ident)?
+syntax setArgsRest := ppSpace ident (" : " term)? " := " term (" with " "←"? ident)?
 
 syntax (name := set) "set" "!"? setArgsRest : tactic
 
@@ -24,13 +24,13 @@ macro "set!" rest:setArgsRest : tactic => `(tactic|set ! $rest:setArgsRest)
 `set a := t with h` is a variant of `let a := t`. It adds the hypothesis `h : a = t` to
 the local context and replaces `t` with `a` everywhere it can.
 
-`set a := t with ←h` will add `h : t = a` instead.
+`set a := t with ← h` will add `h : t = a` instead.
 
 `set! a := t with h` does not do any replacing.
 
 ```lean
 example (x : Nat) (h : x + x - x = 3) : x + x - x = 3 := by
-  set y := x with ←h2
+  set y := x with ← h2
   sorry
 /-
 x : Nat
