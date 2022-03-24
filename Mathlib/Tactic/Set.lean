@@ -7,13 +7,6 @@ import Lean
 namespace Mathlib.Tactic
 open Lean Elab Elab.Tactic Meta
 
-private def defineV (name : Name) (ty : Expr) (val : Expr) : TacticM Unit := do
-  liftMetaTactic1 fun mvarId => do
-    let h2 ← define mvarId name ty val
-    let (h, h2) ← intro1P h2
-    withMVarContext h2 do
-      return h2
-
 syntax setArgsRest := ppSpace ident (" : " term)? " := " term (" with " "←"? ident)?
 
 syntax (name := set) "set" "!"? setArgsRest : tactic
@@ -45,15 +38,16 @@ h2 : x = y
 elab_rules : tactic
 | `(tactic| set $[!%$rw]? $a:ident $[: $ty:term]? := $val:term $[with $[←%$rev]? $h:ident]?) => do
   withMainContext do
-    match ty with
+    let (ty, val) ← match ty with
     | some ty =>
       let ty ← Term.elabType ty
-      let val ← elabTermEnsuringType val ty
-      defineV a.getId ty val
-    | none     =>
+      pure (ty, ← elabTermEnsuringType val ty)
+    | none =>
       let val ← elabTerm val none
-      let ty ← inferType val
-      defineV a.getId ty val
+      pure (← inferType val, val)
+    liftMetaTactic1 fun mvarId => do
+      let (_, h2) ← intro1P (← define mvarId a.getId ty val)
+      pure h2
   if rw.isNone then
     evalTactic (← `(tactic| try rewrite [(id rfl : $val = $a)] at *))
   match h, rev with
