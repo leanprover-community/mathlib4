@@ -5,7 +5,7 @@ Author: Ian Benway.
 -/
 import Lean
 namespace Mathlib.Tactic
-open Lean Elab.Tactic Meta
+open Lean Elab Elab.Tactic Meta
 
 private def defineV (name : Name) (ty : Expr) (val : Expr) : TacticM Unit := do
   liftMetaTactic1 fun mvarId => do
@@ -43,12 +43,12 @@ h2 : x = y
 
 -/
 elab_rules : tactic
-|`(tactic| set $[!%$rw]? $a:ident $[: $ty:term]? := $val:term $[with $[←%$rev]? $h:ident]?) => do
+| `(tactic| set $[!%$rw]? $a:ident $[: $ty:term]? := $val:term $[with $[←%$rev]? $h:ident]?) => do
   withMainContext do
     match ty with
     | some ty =>
-      let ty ← elabTerm ty none
-      let val ← elabTerm val ty
+      let ty ← Term.elabType ty
+      let val ← elabTermEnsuringType val ty
       defineV a.getId ty val
     | none     =>
       let val ← elabTerm val none
