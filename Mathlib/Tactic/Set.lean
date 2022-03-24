@@ -45,9 +45,11 @@ elab_rules : tactic
     | none =>
       let val ← elabTerm val none
       pure (← inferType val, val)
-    liftMetaTactic1 fun mvarId => do
-      let (_, h2) ← intro1P (← define mvarId a.getId ty val)
-      pure h2
+    let fvar ← liftMetaTacticAux fun mvarId => do
+      let (fvar, mvarId) ← intro1P (← define mvarId a.getId ty val)
+      pure (fvar, [mvarId])
+    withMainContext do
+      Term.addTermInfo (isBinder := true) a (mkFVar fvar)
   if rw.isNone then
     evalTactic (← `(tactic| try rewrite [(id rfl : $val = $a)] at *))
   match h, rev with
