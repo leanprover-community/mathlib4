@@ -7,9 +7,9 @@ import Lean
 namespace Mathlib.Tactic
 open Lean Elab.Tactic Meta
 
-private def defineV (nm : Name) (tp : Expr) (tme : Expr) : TacticM Unit := do
+private def defineV (name : Name) (ty : Expr) (val : Expr) : TacticM Unit := do
   liftMetaTactic1 fun mvarId => do
-    let h2 ← (define mvarId nm tp tme)
+    let h2 ← define mvarId name ty val
     let (h, h2) ← intro1P h2
     withMVarContext h2 do
       return h2
@@ -43,22 +43,22 @@ h2 : x = y
 
 -/
 elab_rules : tactic
-|`(tactic| set $[!%$rw?]? $a:ident $[: $tp?:term]? := $pv:term $[with $[←%$rev?]? $h?:ident]?) => do
+|`(tactic| set $[!%$rw]? $a:ident $[: $ty:term]? := $val:term $[with $[←%$rev]? $h:ident]?) => do
   withMainContext do
-    match tp? with
-    | some t =>
-      let te ← elabTerm t (none)
-      let pv ← elabTerm pv te
-      defineV a.getId te pv
+    match ty with
+    | some ty =>
+      let ty ← elabTerm ty none
+      let val ← elabTerm val ty
+      defineV a.getId ty val
     | none     =>
-      let pv ← elabTerm pv (none)
-      let te ← inferType pv
-      defineV a.getId te pv
-  if rw?.isNone then
-    evalTactic (← `(tactic| try rewrite [(id rfl : $pv = $a)] at *))
-  match (h?, rev?) with
-  | (some h, some (none))    =>
-    evalTactic (← `(tactic| have $h : $a = $pv := rfl))
-  | (some h, some (some r))  =>
-    evalTactic (← `(tactic| have $h : $pv = $a := rfl))
-  | _    =>  pure ()
+      let val ← elabTerm val none
+      let ty ← inferType val
+      defineV a.getId ty val
+  if rw.isNone then
+    evalTactic (← `(tactic| try rewrite [(id rfl : $val = $a)] at *))
+  match h, rev with
+  | some h, some none =>
+    evalTactic (← `(tactic| have $h : $a = $val := rfl))
+  | some h, some (some _) =>
+    evalTactic (← `(tactic| have $h : $val = $a := rfl))
+  | _, _ => pure ()
