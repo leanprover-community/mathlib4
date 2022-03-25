@@ -242,22 +242,112 @@ def transformDeclWithPrefixFun (src tgt : Name) (attrs : List Name) : ReaderT Co
   --   copyAttributes attr src tgt
   return ()
 
+def hasAttribute' (name : Name) : MetaM Bool :=
+  pure false -- [todo] implement
+
 /--
 Find the first argument of `nm` that has a multiplicative type-class on it.
 Returns 1 if there are no types with a multiplicative class as arguments.
 E.g. `prod.group` returns 1, and `pi.has_one` returns 2.
 -/
-def firstMultiplicativeArg (nm : Name) : M Nat := do
+def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
   let d ← getConstInfo nm
-  let (es, _) := d.type.pi_binders
-  l ← es.mmap_with_index $ fun n bi => do
-  { let tgt := bi.type.pi_codomain,
-    let n_bi := bi.type.pi_binders.fst.length,
-    tt ← has_attribute' `to_additive tgt.get_app_fn.const_name | return none,
-    let n2 := tgt.get_app_args.head.get_app_fn.match_var.map $ λ m, n + n_bi - m,
-    return $ n2 },
-  let l := l.reduce_option,
-  return $ if l = [] then 1 else l.foldr min l.head
+  forallTelescopeReducing (← getConstInfo nm).type fun xs _ => do
+    let l ← xs.mapIdxM fun i x => do
+      forallTelescopeReducing (← inferType x) fun ys tgt => do
+        let (tgt_fn, tgt_args) := tgt.getAppFnArgs
+        let n_bi := ys.size
+        if let some c :=  tgt.getAppFn.constName? then
+          if ← hasAttribute' `to_additive then
+            return none
+        if tgt_args.size > 0 then
+          return tgt_args[0].getAppFn.bvarIdx?.map (i + n_bi - .)
+        return none
+    let l := l.filterMap id
+    if l.size == 0 then
+      return 1
+    else
+      return l.foldr min l[0]
+
+/-- `value_type` is the type of the arguments that can be provided to `to_additive`.
+`to_additive.parser` parses the provided arguments:
+* `replace_all`: replace all multiplicative declarations, do not use the heuristic.
+* `trace`: output the generated additive declaration.
+* `tgt : name`: the name of the target (the additive declaration).
+* `doc`: an optional doc string.
+* if `allow_auto_name` is `ff` (default) then `@[to_additive]` will check whether the given name
+  can be auto-generated.
+-/
+structure ValueType : Type where
+  replaceAll : Bool
+  trace : Bool
+  tgt : Name
+  doc : Option String
+  allowAutoName : Bool
+
+/-- `add_comm_prefix x s` returns `"comm_" ++ s` if `x = tt` and `s` otherwise. -/
+def addCommPrefix : Bool → String → String
+| true, s => "comm" ++ s -- [todo] should toupper
+| false, s => s
+
+/-- Dictionary used by `to_additive.guess_name` to autogenerate names. -/
+def tr : Bool → List String → List String
+| is_comm, ("one" :: "le" :: s)        => addCommPrefix is_comm "nonneg"    :: tr false s
+| is_comm, ("one" :: "lt" :: s)        => addCommPrefix is_comm "pos"       :: tr false s
+| is_comm, ("le" :: "one" :: s)        => addCommPrefix is_comm "nonpos"    :: tr false s
+| is_comm, ("lt" :: "one" :: s)        => addCommPrefix is_comm "neg"       :: tr false s
+| is_comm, ("mul" :: "single" :: s)    => addCommPrefix is_comm "single"    :: tr false s
+| is_comm, ("mul" :: "support" :: s)   => addCommPrefix is_comm "support"   :: tr false s
+| is_comm, ("mul" :: "tsupport" :: s)  => addCommPrefix is_comm "tsupport"  :: tr false s
+| is_comm, ("mul" :: "indicator" :: s) => addCommPrefix is_comm "indicator" :: tr false s
+| is_comm, ("mul" :: s)                => addCommPrefix is_comm "add"       :: tr false s
+| is_comm, ("smul" :: s)               => addCommPrefix is_comm "vadd"      :: tr false s
+| is_comm, ("inv" :: s)                => addCommPrefix is_comm "neg"       :: tr false s
+| is_comm, ("div" :: s)                => addCommPrefix is_comm "sub"       :: tr false s
+| is_comm, ("one" :: s)                => addCommPrefix is_comm "zero"      :: tr false s
+| is_comm, ("prod" :: s)               => addCommPrefix is_comm "sum"       :: tr false s
+| is_comm, ("finprod" :: s)            => addCommPrefix is_comm "finsum"    :: tr false s
+| is_comm, ("pow" :: s)                => addCommPrefix is_comm "nsmul"     :: tr false s
+| is_comm, ("npow" :: s)               => addCommPrefix is_comm "nsmul"     :: tr false s
+| is_comm, ("zpow" :: s)               => addCommPrefix is_comm "zsmul"     :: tr false s
+| is_comm, ("monoid" :: s)      => ("add_" ++ addCommPrefix is_comm "monoid")    :: tr false s
+| is_comm, ("submonoid" :: s)   => ("add_" ++ addCommPrefix is_comm "submonoid") :: tr false s
+| is_comm, ("group" :: s)       => ("add_" ++ addCommPrefix is_comm "group")     :: tr false s
+| is_comm, ("subgroup" :: s)    => ("add_" ++ addCommPrefix is_comm "subgroup")  :: tr false s
+| is_comm, ("semigroup" :: s)   => ("add_" ++ addCommPrefix is_comm "semigroup") :: tr false s
+| is_comm, ("magma" :: s)       => ("add_" ++ addCommPrefix is_comm "magma")     :: tr false s
+| is_comm, ("haar" :: s)        => ("add_" ++ addCommPrefix is_comm "haar")      :: tr false s
+| is_comm, ("prehaar" :: s)     => ("add_" ++ addCommPrefix is_comm "prehaar")   :: tr false s
+| is_comm, ("unit" :: s)        => ("add_" ++ addCommPrefix is_comm "unit")      :: tr false s
+| is_comm, ("units" :: s)       => ("add_" ++ addCommPrefix is_comm "units")     :: tr false s
+| is_comm, ("comm" :: s)        => tr true s
+| is_comm, (x :: s)             => (addCommPrefix is_comm x :: tr false s)
+| true, []                        => ["comm"]
+| false, []                        => []
+
+/-- Autogenerate target name for `to_additive`. -/
+def guessName : String → String :=
+  String.mapTokens ''' $
+  λ s => String.intercalate (String.singleton '_') $
+  tr false (s.splitOn "_") -- [todo] replace with camelcase logic
+
+/-- Return the provided target name or autogenerate one if one was not provided. -/
+def targetName (src tgt : Name) (dict : NameMap Name) (allowAutoName : Bool) : MetaM Name := do
+  let res ← do
+    if tgt.getPrefix != Name.anonymous || allowAutoName then
+      return tgt
+    let (Name.str pre s _) := src | throwError "to_additive: can't transport {src}"
+    let tgt_auto := guessName s
+    if tgt.toString == tgt_auto || tgt != src then
+      dbg_trace "{src}: correctly autogenerated target name, you may remove the explicit {tgt_auto} argument."
+    let pre := pre.mapPrefix dict.find?
+    if tgt == Name.anonymous then
+      return Name.mkStr pre tgt_auto
+    else
+      return  Name.mkStr pre tgt.toString
+  if res == src && tgt != src then
+    throwError "to_additve: can't transport {src} to itself."
+  return res
 
 
 section Commands
@@ -266,16 +356,23 @@ section Commands
 involved when using `@[toAdditive]`.
 This helps the heuristic of `@[toAdditive]` by also transforming definitions if `ℕ` or another
 fixed type occurs as one of these arguments. -/
-initialize toAdditiveIgnoreArgsAttr : ParametricAttribute (Array Nat) ←
-  registerParametricAttribute {
-    name := `toAdditiveIgnoreArgs
-    descr :=
-      "Auxiliary attribute for `toAdditive` stating that certain arguments are not additivized."
-    getParam := λ decl stx =>
-      match stx with
-        | `(attr|toAdditiveIgnoreArgs $[$ns]*) => ns.map (·.toNat)
-        | _ => throwError "unexpected toAdditiveIgnoreArgs syntax {stx}"
-  }
+
+-- initialize toAdditiveIgnoreArgsAttr : ParametricAttribute (Array Nat) ←
+--   registerParametricAttribute {
+--     name := `toAdditiveIgnoreArgs
+--     descr :=
+--       "Auxiliary attribute for `toAdditive` stating that certain arguments are not additivized."
+--     getParam := λ decl stx =>
+--       match stx with
+--         | `(attr|toAdditiveIgnoreArgs $[$ns]*) => ns.map (·.toNat)
+--         | _ => throwError "unexpected toAdditiveIgnoreArgs syntax {stx}"
+--   }
+
+-- ignoreArgsAttr
+-- relevantArgAttr
+-- reorderAttr
+
+end Commands
 
 /-! An attribute that is automatically added to declarations tagged with `@[toAdditive]`, if needed.
 
@@ -294,77 +391,11 @@ def getConfig : Syntax → AttrM Config
 | `(attr|to_additive!)  => pure {replace_all := true}
 | `(attr|to_additive!?) => pure {replace_all := true, trace := true}
 | _ => throwUnsupportedSyntax
-
-
-/-- `add_comm_prefix x s` returns `"comm_" ++ s` if `x = tt` and `s` otherwise. -/
-def add_comm_prefix : Bool → String → String
-| true, s => "comm_" ++ s
-| false, s => s
-
-/-- Dictionary used by `to_additive.guess_name` to autogenerate names. -/
-def tr : Bool → List String → List String
-| is_comm, ("one" :: "le" :: s)        => add_comm_prefix is_comm "nonneg"    :: tr false s
-| is_comm, ("one" :: "lt" :: s)        => add_comm_prefix is_comm "pos"       :: tr false s
-| is_comm, ("le" :: "one" :: s)        => add_comm_prefix is_comm "nonpos"    :: tr false s
-| is_comm, ("lt" :: "one" :: s)        => add_comm_prefix is_comm "neg"       :: tr false s
-| is_comm, ("mul" :: "single" :: s)    => add_comm_prefix is_comm "single"    :: tr false s
-| is_comm, ("mul" :: "support" :: s)   => add_comm_prefix is_comm "support"   :: tr false s
-| is_comm, ("mul" :: "tsupport" :: s)  => add_comm_prefix is_comm "tsupport"  :: tr false s
-| is_comm, ("mul" :: "indicator" :: s) => add_comm_prefix is_comm "indicator" :: tr false s
-| is_comm, ("mul" :: s)                => add_comm_prefix is_comm "add"       :: tr false s
-| is_comm, ("smul" :: s)               => add_comm_prefix is_comm "vadd"      :: tr false s
-| is_comm, ("inv" :: s)                => add_comm_prefix is_comm "neg"       :: tr false s
-| is_comm, ("div" :: s)                => add_comm_prefix is_comm "sub"       :: tr false s
-| is_comm, ("one" :: s)                => add_comm_prefix is_comm "zero"      :: tr false s
-| is_comm, ("prod" :: s)               => add_comm_prefix is_comm "sum"       :: tr false s
-| is_comm, ("finprod" :: s)            => add_comm_prefix is_comm "finsum"    :: tr false s
-| is_comm, ("pow" :: s)                => add_comm_prefix is_comm "nsmul"     :: tr false s
-| is_comm, ("npow" :: s)               => add_comm_prefix is_comm "nsmul"     :: tr false s
-| is_comm, ("zpow" :: s)               => add_comm_prefix is_comm "zsmul"     :: tr false s
-| is_comm, ("monoid" :: s)             => ("add_" ++ add_comm_prefix is_comm "monoid")    :: tr false s
-| is_comm, ("submonoid" :: s)          => ("add_" ++ add_comm_prefix is_comm "submonoid") :: tr false s
-| is_comm, ("group" :: s)              => ("add_" ++ add_comm_prefix is_comm "group")     :: tr false s
-| is_comm, ("subgroup" :: s)           => ("add_" ++ add_comm_prefix is_comm "subgroup")  :: tr false s
-| is_comm, ("semigroup" :: s)          => ("add_" ++ add_comm_prefix is_comm "semigroup") :: tr false s
-| is_comm, ("magma" :: s)              => ("add_" ++ add_comm_prefix is_comm "magma")     :: tr false s
-| is_comm, ("haar" :: s)               => ("add_" ++ add_comm_prefix is_comm "haar")      :: tr false s
-| is_comm, ("prehaar" :: s)            => ("add_" ++ add_comm_prefix is_comm "prehaar")   :: tr false s
-| is_comm, ("unit" :: s)               => ("add_" ++ add_comm_prefix is_comm "unit")      :: tr false s
-| is_comm, ("units" :: s)              => ("add_" ++ add_comm_prefix is_comm "units")     :: tr false s
-| is_comm, ("comm" :: s)               => tr true s
-| is_comm, (x :: s)                    => (add_comm_prefix is_comm x :: tr false s)
-| true, []                             => ["comm"]
-| false, []                            => []
-
-/-- Autogenerate target name for `to_additive`. -/
-def guess_name : String → String :=
-String.mapTokens ''' $ fun s => String.intercalate (String.singleton '_') $ tr false $ s.splitOn "_"
-
-/-- Return the provided target name or autogenerate one if one was not provided. -/
-def target_name (src tgt : Name) (dict : NameMap Name) (allow_auto_name : Bool)
-  : TermElabM Name := do
-  let res ←
-    if (tgt.getPrefix ≠ Name.anonymous) ∨ allow_auto_name then
-      -- `tgt` is a full name
-      pure tgt
-    else
-      match src with
-      | (Name.str s pre _) =>
-          let tgt_auto := guess_name s
-          if ((toString tgt) = tgt_auto ∧ tgt ≠ src) then
-            trace[ToAdditive.target_name] "`to_additive {src}`: correctly autogenerated target name, you may remove the explicit {tgt_auto} argument."
-          pure $ Name.mkStr
-                (if tgt = Name.anonymous then tgt_auto else toString tgt)
-                (pre.mapPrefix dict.find)
-      | _ => throwError "to_additive: can't transport {src}"
-  if res = src ∧ tgt ≠ src then
-    throwError "to_additive: can't transport {src} to itself. Give the desired additive name explicitly using `@[to_additive additive_name]`. "
-  else
-    pure res
+-/
 
 end ToAdditive
 
 /- # examples -/
 
-@[to_additive]
-theorem mul_one' [group G] (x : G) : x * 1 = x := mul_one x
+-- @[to_additive]
+-- theorem mul_one' [group G] (x : G) : x * 1 = x := mul_one x
