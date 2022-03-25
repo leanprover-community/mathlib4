@@ -101,6 +101,10 @@ namespace Expr
 def constName (e : Expr) : Name :=
 e.constName?.getD Name.anonymous
 
+def bvarIdx? : Expr → Option Nat
+  | bvar idx _ => some idx
+  | _          => none
+
 /-- Return the function (name) and arguments of an application. -/
 def getAppFnArgs (e : Expr) : Name × Array Expr :=
   withApp e λ e a => (e.constName, a)
