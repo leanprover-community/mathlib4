@@ -8,15 +8,16 @@ section replaceRec
 
 /-- Reorder the last two arguments of every function in the expression.
   (The resulting term will generally not be a type-correct) -/
-unsafe def reorderLastArguments : Expr → Expr :=
-Expr.replaceRecTraversal λ e =>
-  let n := e.getAppNumArgs
-  if n ≥ 2 then
-    some (e.getAppArgs, λ es => mkAppN e.getAppFn $ es.swap! (n - 1) (n - 2)) else
-    none
+def reorderLastArguments : Expr → Expr :=
+  Expr.replaceRecTraversal λ e =>
+    let n := e.getAppNumArgs
+    if n ≥ 2 then
+      some (e.getAppArgs, λ es => mkAppN e.getAppFn $ es.swap! (n - 1) (n - 2)) else
+      none
 
 def foo (f : ℕ → ℕ → ℕ) (n₁ n₂ n₃ n₄ : ℕ) : ℕ := f (f n₁ n₂) (f n₃ n₄)
 def bar (f : ℕ → ℕ → ℕ) (n₁ n₂ n₃ n₄ : ℕ) : ℕ := f (f n₄ n₃) (f n₂ n₁)
+
 #eval show TermElabM _ from do
   let d ← getConstInfo `foo
   let e := d.value!
