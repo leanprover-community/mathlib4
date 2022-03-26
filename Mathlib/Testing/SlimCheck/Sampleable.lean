@@ -4,37 +4,39 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving
 -/
 import Mathlib.Testing.SlimCheck.Gen
-import Mathlib.Tactic.LibrarySearch
-import Mathlib.Tactic.Find
 
 namespace SlimCheck
 
-open Random
+open Random Gen
 
 structure ShrinkFn (α : Type u) [sz : SizeOf α] where
   run : (x : α) → List { y : α // sz.sizeOf y < sz.sizeOf x }
 
-class Sampleable (α : Type u) where
+class Sampleable (α : Type u) [Repr α] where
   sample : Gen α
 
 class Shrinkable (α : Type u) [wf : SizeOf α] where
   shrink : @ShrinkFn α wf
 
 class SampleableExt (α : Sort u) where
-  proxyRepr : Type v
-  [samp : Sampleable proxyRepr]
-  [shrink : Shrinkable proxyRepr]
-  interp : proxyRepr → α
+  proxy : Type v
+  [proxyRepr : Repr proxy]
+  [samp : Sampleable proxy]
+  [shrink : Shrinkable proxy]
+  interp : proxy → α
 
 attribute [instance] SampleableExt.samp
+attribute [instance] SampleableExt.proxyRepr
+attribute [instance] SampleableExt.shrink
 
 section GenericSampleableInstances
 
-instance (priority := low) [Sampleable α] [SizeOf α] : Shrinkable α where
+instance (priority := low) [Repr α] [Sampleable α] [SizeOf α] : Shrinkable α where
   shrink := ⟨λ _ => []⟩
 
-instance SampleableExt.ofSampleable {α : Type u} [Sampleable α] [Shrinkable α] [SizeOf α] : SampleableExt α where
-  proxyRepr := α 
+instance SampleableExt.ofSampleable [Repr α] [Sampleable α] [Shrinkable α] [SizeOf α] : SampleableExt α where
+  proxy := α 
+  proxyRepr := inferInstance
   samp := inferInstance
   shrink := inferInstance
   interp := id
@@ -94,7 +96,7 @@ def Prod.shrink [SizeOf α] [SizeOf β] (shrA : ShrinkFn α) (shrB : ShrinkFn β
   let shrink2 := shrB.run snd |>.map fun ⟨x, _⟩ => ⟨(fst, x), by simp_all_arith⟩
   shrink1 ++ shrink2⟩
 
-instance Prod.sampleable [Sampleable α] [Sampleable β] : Sampleable (Prod α β) where
+instance Prod.sampleable [Repr α] [Repr β] [Sampleable α] [Sampleable β] : Sampleable (Prod α β) where
   sample := prodOf Sampleable.sample Sampleable.sample
 
 instance Prod.shrinkable [SizeOf α] [SizeOf β] [Shrinkable α] [Shrinkable β] : Shrinkable (Prod α β) where
@@ -123,7 +125,7 @@ end ListShrink
 end Shrinkers
 
 instance Prop.sampleableExt : SampleableExt Prop where
-  proxyRepr := Bool 
+  proxy := Bool 
   samp := inferInstance
   shrink := inferInstance
   interp := Coe.coe
@@ -135,9 +137,10 @@ namespace NoShrink
 def mk (x : α) : NoShrink α := x
 def get (x : NoShrink α) : α := x
 
-instance inhabited [Inhabited α] : Inhabited (NoShrink α) := ⟨(default : α)⟩
+instance inhabited [inst : Inhabited α] : Inhabited (NoShrink α) := inst
+instance repr [inst : Repr α] : Repr (NoShrink α) := inst
 
-instance sampleable [Sampleable α] : Sampleable (NoShrink α) where
+instance sampleable [Repr α] [Sampleable α] : Sampleable (NoShrink α) where
   sample := NoShrink.mk <$> Sampleable.sample
 
 instance shrinkable : Shrinkable α where

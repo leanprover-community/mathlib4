@@ -30,6 +30,8 @@ It has a `Nat` parameter so that the caller can decide on the
 size of the examples. -/
 abbrev Gen (α : Type u) := ReaderT (ULift Nat) Rand α
 
+namespace Gen
+
 /-- Lift `Random.random` to the `Gen` monad. -/
 def chooseAny (α : Type u) [Random α] : Gen α :=
   λ _ => rand α
@@ -96,8 +98,11 @@ def permutationOf : (xs : List α) → Gen { ys // ys ~ xs }
 def prodOf (x : Gen α) (y : Gen β) : Gen (Prod α β) := do
   pure (←x, ←y)
 
+end Gen
+
 /-- Execute a `Gen` inside the `IO` monad using `size` as the example size-/
 def IO.runGen (x : Gen α) (size : Nat) : BaseIO α :=
   IO.runRand $ ReaderT.run x ⟨size⟩
+
 
 end SlimCheck
