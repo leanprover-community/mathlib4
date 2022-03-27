@@ -124,3 +124,6 @@ def IO.runRand (cmd : Rand α) : BaseIO α := do
   let (res, new) := Id.run <| StateT.run cmd rng
   stdGenRef.set new.down
   pure res
+
+def IO.runRandWith (seed : Nat) (cmd : Rand α) : BaseIO α := do
+  pure $ (cmd.run (ULift.up $ mkStdGen seed)).1
