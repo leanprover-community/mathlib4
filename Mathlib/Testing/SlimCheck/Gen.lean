@@ -95,6 +95,7 @@ def permutationOf : (xs : List α) → Gen { ys // ys ~ xs }
   let ⟨n, h2, h3⟩ ← choose Nat 0 ys.length (Nat.zero_le _)
   pure ⟨insertNth n x ys, Perm.trans (perm_insertNth h3) (Perm.cons _ h1)⟩
 
+/-- Given two generators produces a tuple consisting out of the result of both -/
 def prodOf (x : Gen α) (y : Gen β) : Gen (Prod α β) := do
   pure (←x, ←y)
 
