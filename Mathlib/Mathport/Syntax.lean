@@ -15,6 +15,7 @@ import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.RCases
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Set
 import Mathlib.Tactic.ShowTerm
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
@@ -149,8 +150,6 @@ end Tactic
 namespace Tactic
 
 syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
-syntax (name := fapply) "fapply " term : tactic
-syntax (name := eapply) "eapply " term : tactic
 syntax (name := applyWith) "apply " term " with " term : tactic
 syntax (name := mapply) "mapply " term : tactic
 syntax (name := toExpr') "to_expr' " term : tactic
@@ -259,8 +258,6 @@ syntax (name := guardExprEq') "guard_expr " term:51 " = " term : tactic -- defin
 syntax (name := guardTarget') "guard_target" " = " term : tactic -- definitional equality
 syntax (name := triv) "triv" : tactic
 syntax (name := clearAuxDecl) "clear_aux_decl" : tactic
-syntax (name := set) "set " ident (" : " term)? " := " term (" with " "←"? ident)? : tactic
-syntax (name := set!) "set! " ident (" : " term)? " := " term (" with " "←"? ident)? : tactic
 syntax (name := clearExcept) "clear " "*" " - " ident* : tactic
 syntax (name := extractGoal) "extract_goal" (ppSpace ident)?
   (" with" (ppSpace (colGt ident))*)? : tactic
