@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lewis, Floris van Doorn, E.W.Ayers
 -/
 import Lean
+import Lean.Meta
 import Mathlib.Util.TermUnsafe
 import Mathlib.Lean.Expr.Traverse
 import Mathlib.Util.MemoFix
@@ -14,13 +15,6 @@ namespace Lean.Expr
 We define a more flexible version of `Expr.replace` where we can use recursive calls even when
 replacing a subexpression. We completely mimic the implementation of `Expr.replace`. -/
 
-/-- Same as `replaceRec` except over a monad. -/
-def replaceRecM [Monad M] (f? : (Expr → M Expr) → Expr → M (Option Expr)) : Expr → M Expr :=
-  memoFix $ fun r e => do
-    match ← f? r e with
-    | some x => pure x
-    | none => traverseChildren r e
-
 /-- A version of `Expr.replace` where the replacement function is available to the function `f?`.
 
 `replaceRec f? e` will call `f? r e` where `r = replaceRec f?`.
@@ -30,8 +24,11 @@ If you wish to recursively replace things in the implementation of `f?`, you can
 
 The function is also memoised, which means that if the
 same expression (by reference) is encountered the cached replacement is used. -/
-def replaceRec (f? : (Expr → Expr) → Expr → Option Expr) (e : Expr) : Expr :=
-  replaceRecM (M := Id) f? e
+def replaceRec (f? : (Expr → Expr) → Expr → Option Expr) : Expr → Expr :=
+  memoFix fun r e =>
+    match f? r e with
+    | some x => x
+    | none   => traverseChildren (M := Id) r e
 
 /-- A version of `Expr.replace` where we can use recursive calls even if we replace a subexpression.
   When reaching a subexpression `e` we call `traversal e` to see if we want to do anything with this
@@ -44,10 +41,10 @@ def replaceRec (f? : (Expr → Expr) → Expr → Option Expr) (e : Expr) : Expr
   `e` according to some measure  (and this measure must also be strictly decreasing on the w.r.t.
   the structural subterm relation).
   -/
-def replaceRecTraversal (traversal : Expr → Option (Array Expr × (Array Expr → Expr))) (e : Expr) : Expr :=
-  e.replaceRecM (M := Id) fun r e =>
+def replaceRecTraversal (traversal : Expr → Option (Array Expr × (Array Expr → Expr))) : Expr → Expr :=
+  replaceRec fun r e =>
     match traversal e with
     | none => none
-    | some (get, set) => some $ set $ Array.map r $ get
+    | some (get, set) => some <| set <| .map r <| get
 
 end Lean.Expr
