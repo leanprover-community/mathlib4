@@ -121,7 +121,7 @@ class PhantomSizeOf (α : Sort u) where
 instance phantomSizeOf [SizeOf α] : PhantomSizeOf α where
   sizeOf := mkSizeOf α
 
-noncomputable instance (priority := high) sizeOfPhantom [ph : PhantomSizeOf α] : SizeOf α where
+noncomputable instance sizeOfPhantom [ph : PhantomSizeOf α] : SizeOf α where
   sizeOf := ph.sizeOf.eval
 
 /-- A specialized `eval_eq` for `SizeOf` instances. -/
