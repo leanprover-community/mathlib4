@@ -253,7 +253,11 @@ instance Nat.shrinkable : Shrinkable Nat where
 /-- `Fin.shrink` works like `Nat.shrink` but instead operates on `Fin`. -/
 def Fin.shrink {n : Nat} (m : Fin n.succ) : List { y : Fin n.succ // sizeOfPhantom.sizeOf y < sizeOfPhantom.sizeOf m } :=
   let shrinks := Nat.shrink m.val
-  shrinks.map (λ x => {x with property := sorry})
+  shrinks.map (λ x => {x with property := by
+    have h := x.property
+    simp [sizeOfPhantom_eq_SizeOf]
+    simp [sizeOfPhantom_eq_SizeOf] at h
+    exact Nat.succ_lt_succ $ lt_of_le_of_lt (Nat.mod_le _ _) h})
 
 instance Fin.shrinkable {n : Nat} : Shrinkable (Fin n.succ) where
   shrink := Fin.shrink
