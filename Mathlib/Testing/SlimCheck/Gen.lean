@@ -13,10 +13,14 @@ import Mathlib.Data.Nat.Basic
 This monad is used to formulate randomized computations with a parameter
 to specify the desired size of the result.
 This is a port of the Haskell QuickCheck library.
+
 ## Main definitions
   * `Gen` monad
+
 ## Tags
+
 random testing
+
 ## References
   * https://hackage.haskell.org/package/QuickCheck
 -/
