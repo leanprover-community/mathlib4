@@ -176,7 +176,7 @@ namespace SampleableExt
 
 def sample (α : Type u) [SampleableExt α] : Gen (SampleableExt.proxy α) := SampleableExt.samp.sample
 
-instance ofSampleable [Repr α] [Sampleable α] [sz : SizeOf α] [PhantomSizeOf α] [Shrinkable α] : SampleableExt α where
+instance ofSampleable [Repr α] [Sampleable α] [PhantomSizeOf α] [Shrinkable α] : SampleableExt α where
   proxy := α 
   phSz := inferInstance
   proxyRepr := inferInstance

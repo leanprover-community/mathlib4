@@ -221,7 +221,8 @@ instance varTestable [SampleableExt α] [∀ x, Testable (β x)] : Testable (Nam
     let r ← Testable.run (β $ SampleableExt.interp x) cfg false
     let ⟨finalX, finalR⟩ ←
       if isFailure r then
-        slimTrace s!"{var} := {repr x} is a failure"
+        if cfg.traceSuccesses then
+          slimTrace s!"{var} := {repr x} is a failure"
         if min then
           minimize cfg var x r
         else
@@ -371,7 +372,10 @@ def Testable.check (p : Prop) (cfg : Configuration := {}) (p' : Decorations.Deco
   | TestResult.gaveUp n => if !cfg.quiet then IO.println s!"Gave up {n} times"
   | TestResult.failure _ xs n => throw (IO.userError $ formatFailureAux "Found problems!" xs n)
 
--- #eval Testable.check (∀ (x y z a : Nat) (h1 : 3 < x) (h2 : 3 < y), x - y = y - x) Configuration.verbose
+-- Works
+-- #eval Testable.check (∀ (x y z a : Nat) (h1 : 3 < x) (h2 : 3 < y), x - y = y - x) { Configuration.verbose with randomSeed := some 10000}
+-- Broken
+-- #eval Testable.check (∀ (x y z a : Nat) (h1 : 3 < x) (h2 : 3 < y), x - y = y - x) { Configuration.verbose with randomSeed := some 1000}
 -- #eval Testable.check (∀ x : Nat, ∀ y : Nat, x + y = y + x) Configuration.verbose
 -- #eval Testable.check (∀ (x : (Nat × Nat)), x.fst - x.snd - 10 = x.snd - x.fst - 10) Configuration.verbose
 -- #eval Testable.check (∀ (x : Nat) (h : 10 < x), 5 < x) Configuration.verbose
