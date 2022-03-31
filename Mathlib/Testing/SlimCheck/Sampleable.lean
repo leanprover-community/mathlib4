@@ -89,6 +89,7 @@ noncomputable def eval (ph : PhantomFunction α β) (x : α) : β := Classical.c
 
 /-- Evaluating the function hidden inside a `PhantomFunction` is equivalent
 to evaluating the original function. -/
+@[simp]
 theorem eval_eq (ph : PhantomFunction α β) : ∀ (x : α) (y : β), ph.eval x = y ↔ ph.f x y := by
   intro x y
   simp [eval]
@@ -116,15 +117,16 @@ def mkSizeOf (α : Type u) [inst : SizeOf α] : PhantomFunction α Nat :=
 unlike the auto generated `SizeOf` instances this one can be stored
 in datatypes for proof purposes. -/
 class PhantomSizeOf (α : Sort u) where
-  sizeOf : PhantomFunction α Nat
+  phSizeOf : PhantomFunction α Nat
 
 instance phantomSizeOf [SizeOf α] : PhantomSizeOf α where
-  sizeOf := mkSizeOf α
+  phSizeOf := mkSizeOf α
 
 noncomputable instance sizeOfPhantom [ph : PhantomSizeOf α] : SizeOf α where
-  sizeOf := ph.sizeOf.eval
+  sizeOf := ph.phSizeOf.eval
 
 /-- A specialized `eval_eq` for `SizeOf` instances. -/
+@[simp]
 theorem sizeOfPhantom_eq_SizeOf [inst : SizeOf α] : @sizeOfPhantom α (@phantomSizeOf α inst) = inst := by
   cases inst
   unfold sizeOfPhantom
