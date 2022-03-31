@@ -52,7 +52,7 @@ def toString : TestResult p → String
 
 instance : ToString (TestResult p) := ⟨toString⟩
 
-def combine : PSum Unit (p → q) → PSum Unit p → PSum Unit q
+def combine {p q : Prop} : PSum Unit (p → q) → PSum Unit p → PSum Unit q
 | PSum.inr f, PSum.inr proof => PSum.inr $ f proof
 | _, _ => PSum.inl ()
 
@@ -372,10 +372,7 @@ def Testable.check (p : Prop) (cfg : Configuration := {}) (p' : Decorations.Deco
   | TestResult.gaveUp n => if !cfg.quiet then IO.println s!"Gave up {n} times"
   | TestResult.failure _ xs n => throw (IO.userError $ formatFailureAux "Found problems!" xs n)
 
--- Works
--- #eval Testable.check (∀ (x y z a : Nat) (h1 : 3 < x) (h2 : 3 < y), x - y = y - x) { Configuration.verbose with randomSeed := some 10000}
--- Broken
--- #eval Testable.check (∀ (x y z a : Nat) (h1 : 3 < x) (h2 : 3 < y), x - y = y - x) { Configuration.verbose with randomSeed := some 1000}
+-- #eval Testable.check (∀ (x y z a : Nat) (h1 : 3 < x) (h2 : 3 < y), x - y = y - x) Configuration.verbose
 -- #eval Testable.check (∀ x : Nat, ∀ y : Nat, x + y = y + x) Configuration.verbose
 -- #eval Testable.check (∀ (x : (Nat × Nat)), x.fst - x.snd - 10 = x.snd - x.fst - 10) Configuration.verbose
 -- #eval Testable.check (∀ (x : Nat) (h : 10 < x), 5 < x) Configuration.verbose
