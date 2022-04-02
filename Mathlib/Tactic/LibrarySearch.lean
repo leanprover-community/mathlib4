@@ -115,11 +115,9 @@ elab_rules : tactic | `(tactic| library_search%$tk) => do
   let (hs, introdMVar) ← intros (← getMainGoal)
   withMVarContext introdMVar do
     if let some suggestions ← librarySearch introdMVar (← librarySearchLemmas.get) then
-      let mctx ← getMCtx
       for suggestion in suggestions do
-        modifyMCtx fun _ => suggestion.1
-        addExactSuggestion tk (← instantiateMVars (mkMVar mvar))
-      modifyMCtx fun _ => mctx
+        withMCtx suggestion.1 do
+          addExactSuggestion tk (← instantiateMVars (mkMVar mvar))
       admitGoal introdMVar
     else
       addExactSuggestion tk (← instantiateMVars (mkMVar mvar))
@@ -132,11 +130,9 @@ elab tk:"library_search%" : term <= expectedType => do
   let (hs, introdMVar) ← intros mvar.mvarId!
   withMVarContext introdMVar do
     if let some suggestions ← librarySearch introdMVar (← librarySearchLemmas.get) then
-      let mctx ← getMCtx
       for suggestion in suggestions do
-        modifyMCtx fun _ => suggestion.1
-        addTermSuggestion tk (← instantiateMVars mvar)
-      modifyMCtx fun _ => mctx
+        withMCtx suggestion.1 do
+          addTermSuggestion tk (← instantiateMVars mvar)
       mkSorry expectedType (synthetic := true)
     else
       addTermSuggestion tk (← instantiateMVars mvar)
