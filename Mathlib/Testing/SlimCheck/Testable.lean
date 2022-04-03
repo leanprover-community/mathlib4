@@ -91,10 +91,10 @@ The constructors are:
      is the number of times that the counter-example was shrunk.
 -/
 inductive TestResult (p : Prop) where
-| success : PSum Unit p → TestResult p
-| gaveUp : Nat → TestResult p
-| failure : ¬p → List String → Nat → TestResult p
-deriving Inhabited
+  | success : PSum Unit p → TestResult p
+  | gaveUp : Nat → TestResult p
+  | failure : ¬ p → List String → Nat → TestResult p
+  deriving Inhabited
 
 /-- Configuration for testing a property. -/
 structure Configuration where
@@ -108,18 +108,19 @@ structure Configuration where
   randomSeed : Option Nat := none
   quiet : Bool := false
   deriving Inhabited
+
 /--
 `PrintableProp p` allows one to print a proposition so that
 `SlimCheck` can indicate how values relate to each other.
 It's basically a poor man's delaborator.
 -/
 class PrintableProp (p : Prop) where
-  printProp : Option String
+  printProp : String
 
 export PrintableProp (printProp)
 
 instance (priority := low) : PrintableProp p where
-  printProp := none
+  printProp := "⋯"
 
 /-- `Testable p` uses random examples to try to disprove `p`. -/
 class Testable (p : Prop) where
@@ -202,12 +203,11 @@ end TestResult
 namespace Configuration
 
 /-- A configuration with all the trace options enabled, useful for debugging. -/
-def verbose : Configuration := {
-  traceDiscarded := true,
-  traceSuccesses := true,
-  traceShrink := true,
+def verbose : Configuration where
+  traceDiscarded := true
+  traceSuccesses := true
+  traceShrink := true
   traceShrinkCandidates := true
-}
 
 end Configuration
 
@@ -349,7 +349,7 @@ instance propVarTestable {β : Prop → Prop} [∀ b : Bool, Testable (β b)] : 
   run := λ cfg min =>
     imp (λ h (b : Bool) => h b) <$> Testable.run (NamedBinder var $ ∀ b : Bool, β b) cfg min
 
-instance (priority := high) unusedVarTestable {β : Prop} [Inhabited α] [Testable β] : Testable (NamedBinder var $ ∀ x : α, β) where
+instance (priority := high) unusedVarTestable [Nonempty α] [Testable β] : Testable (NamedBinder var $ ∀ x : α, β) where
   run := λ cfg min => do
     if cfg.traceDiscarded || cfg.traceSuccesses then
       slimTrace s!"{var} is unused"
@@ -476,8 +476,6 @@ that the goal should be satisfied with a proposition equivalent to `p`
 with added annotations. -/
 abbrev DecorationsOf (p : Prop) := Prop
 
-syntax "mk_decorations" : tactic
-
 open Elab.Tactic
 open Meta
 
@@ -491,10 +489,10 @@ def foo (p : Prop) (p' : Decorations.DecorationsOf p := by mk_decorations) [Test
 `p` is the parameter given by the user, `p'` is a definitionally equivalent
 proposition where the quantifiers are annotated with `NamedBinder`.
 -/
-elab_rules : tactic | `(tactic| mk_decorations) => do
+local elab "mk_decorations" : tactic => do
   let goal ← getMainGoal
   let goalType ← getMVarType goal
-  if let Expr.app (Expr.const `SlimCheck.Decorations.DecorationsOf _ _) body _ := goalType then
+  if let Expr.app (Expr.const ``Decorations.DecorationsOf _ _) body _ := goalType then
     closeMainGoal (addDecorations body)
 
 end Decorations
