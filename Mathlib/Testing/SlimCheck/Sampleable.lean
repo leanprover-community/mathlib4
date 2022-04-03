@@ -208,8 +208,7 @@ instance Bool.sampleable : Sampleable Bool where
 /-- This can be specialized into customized `Sampleable Char` instances.
 The resulting instance has `1 / length` chances of making an unrestricted choice of characters
 and it otherwise chooses a character from `chars` with uniform probabilities.  -/
-def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) : Sampleable Char :=
-  {
+def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) : Sampleable Char where
     sample := do
       let x ← choose Nat 0 length (Nat.zero_le _)
       if x.val == 0 then
@@ -242,8 +241,8 @@ def Nat.shrink (n : Nat) : List { y : Nat // sizeOfPhantom.sizeOf y < sizeOfPhan
     current ::
       rest.map (λ x => {x with property := by
         let h2 := x.property
-        simp [sizeOfPhantom_eq_SizeOf]
-        simp [sizeOfPhantom_eq_SizeOf] at h2
+        simp only [sizeOfPhantom_eq_SizeOf]
+        simp only [sizeOfPhantom_eq_SizeOf] at h2
         exact Nat.lt_trans h2 h
       })
   else
@@ -264,16 +263,13 @@ def Fin.shrink {n : Nat} (m : Fin n.succ) : List { y : Fin n.succ // sizeOfPhant
 instance Fin.shrinkable {n : Nat} : Shrinkable (Fin n.succ) where
   shrink := Fin.shrink
 
-abbrev Int.sizeOfAbs : SizeOf Int := ⟨Int.natAbs⟩
+@[local instance]
+def Int.sizeOfAbs : SizeOf Int := ⟨Int.natAbs⟩
 
-attribute [local instance] Int.sizeOfAbs
-
-/-- `Int.shrink` operates like `Nat.shrink` but also includes the negative variants. -/
-def Int.shrink (n : Int) : List { y : Int // sizeOfPhantom.sizeOf y < sizeOfPhantom.sizeOf n } :=
-  Nat.shrink n.natAbs |>.map λ ⟨x, h⟩ => ⟨-x, (by rw [sizeOfPhantom_eq_SizeOf] at *; simp only [SizeOf.sizeOf]; rw [Int.natAbs_neg]; exact h)⟩
-
+/-- `Int.shrinkable` operates like `Nat.shrinkable` but also includes the negative variants. -/
 instance Int.shrinkable : Shrinkable Int where
-  shrink := Int.shrink
+  shrink n :=
+    Nat.shrink n.natAbs |>.map λ ⟨x, h⟩ => ⟨-x, (by rw [sizeOfPhantom_eq_SizeOf] at *; simp only [SizeOf.sizeOf]; rw [Int.natAbs_neg]; exact h)⟩
 
 instance Bool.shrinkable : Shrinkable Bool := {}
 
@@ -298,7 +294,7 @@ instance Prop.sampleableExt : SampleableExt Prop where
 end Shrinkers
 
 /-- An annotation for values that should never get shrinked. -/
-abbrev NoShrink (α : Type u) := α
+def NoShrink (α : Type u) := α
 
 namespace NoShrink
 

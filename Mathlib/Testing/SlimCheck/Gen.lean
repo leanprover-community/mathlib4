@@ -45,9 +45,8 @@ def choose (α : Type u) [Preorder α] [BoundedRandom α] (lo hi : α) (h : lo �
   λ _ => randBound α lo hi h
 
 lemma chooseNatLt_aux {lo hi : Nat} (a : Nat) (h : Nat.succ lo ≤ a ∧ a ≤ hi) : lo ≤ Nat.pred a ∧ Nat.pred a < hi :=
-  And.intro
-    (Nat.le_pred_of_lt (Nat.lt_of_succ_le h.left))
-    (have : a.pred.succ ≤ hi := by
+  And.intro (Nat.le_pred_of_lt (Nat.lt_of_succ_le h.left)) <|
+    show a.pred.succ ≤ hi by
        rw [Nat.succ_pred_eq_of_pos]
        exact h.right
        exact lt_of_le_of_lt (Nat.zero_le lo) h.left
@@ -60,7 +59,7 @@ def chooseNatLt (lo hi : Nat) (h : lo < hi) : Gen {a // lo ≤ a ∧ a < hi} :=
 
 /-- Get access to the size parameter of the `Gen` monad. -/
 def getSize : Gen Nat :=
-  read >>= pure ∘ ULift.down
+  return (← read).down
 
 /-- Apply a function to the size parameter. -/
 def resize (f : Nat → Nat) (x : Gen α) : Gen α :=
@@ -81,7 +80,7 @@ def listOf (x : Gen α) : Gen (List α) :=
   arrayOf x >>= pure ∘ Array.toList
 
 /-- Given a list of example generators, choose one to create an example. -/
-def oneOf (xs : List (Gen α)) (pos : 0 < xs.length) : Gen α := do
+def oneOf (xs : Array (Gen α)) (pos : 0 < xs.size := by decide) : Gen α := do
   let ⟨x, h1, h2⟩ ← chooseNatLt 0 xs.length pos
   xs.get ⟨x, h2⟩
 
@@ -106,7 +105,7 @@ def prodOf (x : Gen α) (y : Gen β) : Gen (Prod α β) := do
 end Gen
 
 /-- Execute a `Gen` inside the `IO` monad using `size` as the example size-/
-def IO.runGen (x : Gen α) (size : Nat) : BaseIO α :=
+def Gen.run (x : Gen α) (size : Nat) : BaseIO α :=
   IO.runRand $ ReaderT.run x ⟨size⟩
 
 
