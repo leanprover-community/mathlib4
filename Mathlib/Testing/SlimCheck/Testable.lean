@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
 
+import Mathlib.Data.Array.Basic
 import Mathlib.Testing.SlimCheck.Sampleable
 import Lean
 
@@ -68,8 +69,6 @@ random testing
 -/
 
 namespace SlimCheck
-
-variable {β : α → Prop}
 
 /-- Result of trying to disprove `p`
 The constructors are:
@@ -245,14 +244,12 @@ instance decGuardTestable [PrintableProp p] [Decidable p] {β : p → Prop} [∀
   run := λ cfg min => do
     if h : p then
       let res := (run (β h) cfg min)
-      match printProp p with
-      | none => (λ r => imp (· $ h) r (PSum.inr $ λ q _ => q)) <$> res
-      | some s => (λ r => addInfo s!"guard: {s}" (· $ h) r (PSum.inr $ λ q _ => q)) <$> res
+      let s := printProp p
+      (λ r => addInfo s!"guard: {s}" (· $ h) r (PSum.inr $ λ q _ => q)) <$> res
     else if cfg.traceDiscarded || cfg.traceSuccesses then
       let res := (λ _ => pure $ gaveUp 1)
-      match printProp p with
-      | none => slimTrace "discard: Guard does not hold"; res
-      | some s => slimTrace s!"discard: Guard {s} does not hold"; res
+      let s := printProp p
+      slimTrace s!"discard: Guard {s} does not hold"; res
     else
       pure $ gaveUp 1
 
@@ -261,14 +258,6 @@ instance forallTypesTestable {f : Type → Prop} [Testable (f Int)] : Testable (
     let r ← run (f Int) cfg min
     pure $ addVarInfo var "ℤ" (· $ Int) r
 
-/-- Test proposition `p` by randomly selecting one of the provided
-testable instances. -/
-def combine (ts : List (Testable p)) (h : 0 < ts.length) : Testable p := ⟨λ cfg min => do
-  let f := (@Testable.run _ · cfg min)
-  have : 0 < List.length (List.map f ts) := by
-    rw [List.length_map]
-    exact h
-  Gen.oneOf (ts.map f) this⟩
 /--
 Format the counter-examples found in a test failure.
 -/
@@ -295,7 +284,7 @@ candidate that falsifies a property and recursively shrinking that one.
 The process is guaranteed to terminate because `shrink x` produces
 a proof that all the values it produces are smaller (according to `SizeOf`)
 than `x`. -/
-def minimizeAux [SampleableExt α] [∀ x, Testable (β x)] (cfg : Configuration) (var : String)
+def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration) (var : String)
     (x : SampleableExt.proxy α) (n : Nat) : OptionT Gen (Σ x, TestResult (β (SampleableExt.interp x))) := do
   let candidates := SampleableExt.shrink.shrink x
   if cfg.traceShrinkCandidates then
@@ -316,7 +305,7 @@ def minimizeAux [SampleableExt α] [∀ x, Testable (β x)] (cfg : Configuration
 
 /-- Once a property fails to hold on an example, look for smaller counter-examples
 to show the user. -/
-def minimize [SampleableExt α] [∀ x, Testable (β x)] (cfg : Configuration) (var : String)
+def minimize [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration) (var : String)
     (x : SampleableExt.proxy α) (r : TestResult (β $ SampleableExt.interp x)) : Gen (Σ x, TestResult (β $ SampleableExt.interp x)) := do
   if cfg.traceShrink then
      slimTrace "Shrink"
@@ -326,7 +315,7 @@ def minimize [SampleableExt α] [∀ x, Testable (β x)] (cfg : Configuration) (
 
 /-- Test a universal property by creating a sample of the right type and instantiating the
 bound variable with it. -/
-instance varTestable [SampleableExt α] [∀ x, Testable (β x)] : Testable (NamedBinder var $ ∀ x : α, β x) where
+instance varTestable [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] : Testable (NamedBinder var $ ∀ x : α, β x) where
   run := λ cfg min => do
     let x ← SampleableExt.sample α
     if cfg.traceSuccesses || cfg.traceDiscarded then
@@ -355,56 +344,55 @@ instance (priority := high) unusedVarTestable [Nonempty α] [Testable β] : Test
       slimTrace s!"{var} is unused"
     let r ← Testable.run β cfg min
     let finalR := addInfo s!"{var} is irrelevant (unused)" id r
-    pure $ imp (· $ default) finalR (PSum.inr $ λ x _ => x)
+    pure $ imp (· $ Classical.ofNonempty) finalR (PSum.inr $ λ x _ => x)
 
 instance (priority := low) decidableTestable {p : Prop} [PrintableProp p] [Decidable p] : Testable p where
   run := λ cfg min =>
     if h : p then
       pure $ success (PSum.inr h)
     else
-      match printProp p with
-      | some s => pure $ failure h [s!"issue: {s} does not hold"] 0
-      | none => pure $ failure h [] 0
+      let s := printProp p
+      pure $ failure h [s!"issue: {s} does not hold"] 0
 
 end Testable
 
 section PrintableProp
 
 instance Eq.printableProp [Repr α] {x y : α} : PrintableProp (x = y) where
-  printProp := some $ s!"{repr x} = {repr y}"
+  printProp := s!"{repr x} = {repr y}"
 
 instance Ne.printableProp [Repr α] {x y : α} : PrintableProp (x ≠ y) where
-  printProp := some $ s!"{repr x} ≠ {repr y}"
+  printProp := s!"{repr x} ≠ {repr y}"
 
 instance LE.printableProp [Repr α] [LE α] {x y : α} : PrintableProp (x ≤ y) where
-  printProp := some $ s!"{repr x} ≤ {repr y}"
+  printProp := s!"{repr x} ≤ {repr y}"
 
 instance LT.printableProp [Repr α] [LT α] {x y : α} : PrintableProp (x < y) where
-  printProp := some $ s!"{repr x} < {repr y}"
+  printProp := s!"{repr x} < {repr y}"
 
 instance And.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x ∧ y) where
-  printProp := OptionM.run do (pure $ s!"{←printProp x} ∧ {←printProp y}")
+  printProp := s!"{printProp x} ∧ {printProp y}"
 
 instance Or.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x ∨ y) where
-  printProp := OptionM.run do (pure $ s!"{←printProp x} ∨ {←printProp y}")
+  printProp := s!"{printProp x} ∨ {printProp y}"
 
 instance Iff.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x ↔ y) where
-  printProp := OptionM.run do (pure $ s!"{←printProp x} ↔ {←printProp y}")
+  printProp := s!"{printProp x} ↔ {printProp y}"
 
 instance Imp.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x → y) where
-  printProp := OptionM.run do (pure $ s!"{←printProp x} → {←printProp y}")
+  printProp := s!"{printProp x} → {printProp y}"
 
 instance Not.printableProp [PrintableProp x] : PrintableProp (¬x) where
-  printProp := OptionM.run do (pure $ s!"¬{←printProp x}")
+  printProp := s!"¬{printProp x}"
 
 instance True.printableProp : PrintableProp True where
-  printProp := some "True"
+  printProp := "True"
 
 instance False.printableProp : PrintableProp False where
-  printProp := some "False"
+  printProp := "False"
 
 instance Bool.printableProp {b : Bool} : PrintableProp b where
-  printProp := some $ if b then "true" else "false"
+  printProp := if b then "true" else "false"
 
 end PrintableProp
 
@@ -436,7 +424,7 @@ def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) : TestRes
   if cfg.traceSuccesses then
     slimTrace s!"New sample"
     slimTrace s!"Retrying up to {cfg.numRetries} times until guards hold"
-  let x ← retry ((Testable.run p cfg true).run ⟨size⟩) cfg cfg.numRetries
+  let x ← retry (ReaderT.run (Testable.run p cfg true) ⟨size⟩) cfg cfg.numRetries
   match x with
   | (success (PSum.inl ())) => runSuiteAux p cfg r n
   | (gaveUp g) => runSuiteAux p cfg (giveUp g r) n
@@ -489,7 +477,7 @@ def foo (p : Prop) (p' : Decorations.DecorationsOf p := by mk_decorations) [Test
 `p` is the parameter given by the user, `p'` is a definitionally equivalent
 proposition where the quantifiers are annotated with `NamedBinder`.
 -/
-local elab "mk_decorations" : tactic => do
+scoped elab "mk_decorations" : tactic => do
   let goal ← getMainGoal
   let goalType ← getMVarType goal
   if let Expr.app (Expr.const ``Decorations.DecorationsOf _ _) body _ := goalType then
@@ -497,6 +485,7 @@ local elab "mk_decorations" : tactic => do
 
 end Decorations
 
+open Decorations in
 /-- Run a test suite for `p` and throw an exception if `p` does not not hold.-/
 def Testable.check (p : Prop) (cfg : Configuration := {}) (p' : Decorations.DecorationsOf p := by mk_decorations) [Testable p'] : IO PUnit := do
   let x ← Testable.checkIO p' cfg

@@ -216,7 +216,6 @@ def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) 
         pure $ Char.ofNat n
       else
         elements chars pos
-  }
 
 instance Char.sampleableDefault : Sampleable Char :=
   Char.sampleable 3 " 0123abcABC:,;`\\/".toList (by decide)
@@ -263,8 +262,7 @@ def Fin.shrink {n : Nat} (m : Fin n.succ) : List { y : Fin n.succ // sizeOfPhant
 instance Fin.shrinkable {n : Nat} : Shrinkable (Fin n.succ) where
   shrink := Fin.shrink
 
-@[local instance]
-def Int.sizeOfAbs : SizeOf Int := ⟨Int.natAbs⟩
+local instance Int_sizeOfAbs : SizeOf Int := ⟨Int.natAbs⟩
 
 /-- `Int.shrinkable` operates like `Nat.shrinkable` but also includes the negative variants. -/
 instance Int.shrinkable : Shrinkable Int where

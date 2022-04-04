@@ -50,8 +50,6 @@ lemma chooseNatLt_aux {lo hi : Nat} (a : Nat) (h : Nat.succ lo ≤ a ∧ a ≤ h
        rw [Nat.succ_pred_eq_of_pos]
        exact h.right
        exact lt_of_le_of_lt (Nat.zero_le lo) h.left
-     this
-    )
 
 /-- Generate a `Nat` example between `x` and `y` (exclusively). -/
 def chooseNatLt (lo hi : Nat) (h : lo < hi) : Gen {a // lo ≤ a ∧ a < hi} :=
@@ -81,7 +79,7 @@ def listOf (x : Gen α) : Gen (List α) :=
 
 /-- Given a list of example generators, choose one to create an example. -/
 def oneOf (xs : Array (Gen α)) (pos : 0 < xs.size := by decide) : Gen α := do
-  let ⟨x, h1, h2⟩ ← chooseNatLt 0 xs.length pos
+  let ⟨x, h1, h2⟩ ← chooseNatLt 0 xs.size pos
   xs.get ⟨x, h2⟩
 
 /-- Given a list of examples, choose one to create an example. -/
