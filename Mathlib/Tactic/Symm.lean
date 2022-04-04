@@ -33,7 +33,7 @@ def symmAttr : AttributeImpl where
       let declTy := (← getConstInfo decl).type
       let (xs, bis, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
       if xs.size < 1 then
-        throwError "@[symm] attribute only applies to lemmas proving x ∼ y → y ∼ x, got {declTy} with two few arguments"
+        throwError "@[symm] attribute only applies to lemmas proving x ∼ y → y ∼ x, got {declTy} with too few arguments"
       else
         let finalHyp ← inferType xs[xs.size -1]
         match ← relationAppM? targetTy with
