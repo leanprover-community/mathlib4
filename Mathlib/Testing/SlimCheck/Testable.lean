@@ -302,6 +302,7 @@ def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (
   if cfg.traceShrink then
     slimTrace s!"No shrinking possible for {var} := {repr x}"
   failure
+  termination_by minimizeAux cfg var x n => x
 
 /-- Once a property fails to hold on an example, look for smaller counter-examples
 to show the user. -/
