@@ -219,13 +219,13 @@ def slimTrace [Pure m] (s : String) : m PUnit := dbgTrace s!"[SlimCheck: {s}]" (
 
 instance andTestable [Testable p] [Testable q] : Testable (p ∧ q) where
   run := λ cfg min => do
-    let xp ← run p cfg min 
+    let xp ← run p cfg min
     let xq ← run q cfg min
     pure $ and xp xq
 
 instance orTestable [Testable p] [Testable q] : Testable (p ∨ q) where
   run := λ cfg min => do
-    let xp ← run p cfg min 
+    let xp ← run p cfg min
     -- As a little performance optimization we can just not run the second
     -- test if the first succeeds
     match xp with
@@ -238,7 +238,7 @@ instance orTestable [Testable p] [Testable q] : Testable (p ∨ q) where
 instance iffTestable [Testable ((p ∧ q) ∨ (¬ p ∧ ¬ q))] : Testable (p ↔ q) where
   run := λ cfg min => do
     let h ← run ((p ∧ q) ∨ (¬ p ∧ ¬ q)) cfg min
-    pure $ iff iff_iff_and_or_not_and_not h 
+    pure $ iff iff_iff_and_or_not_and_not h
 
 instance decGuardTestable [PrintableProp p] [Decidable p] {β : p → Prop} [∀ h, Testable (β h)] : Testable (NamedBinder var $ ∀ h, β h) where
   run := λ cfg min => do
@@ -329,7 +329,7 @@ instance varTestable [SampleableExt α] {β : α → Prop} [∀ x, Testable (β 
           minimize cfg var x r
         else
           pure $ ⟨x, r⟩
-      else 
+      else
         pure $ ⟨x, r⟩
     pure $ addVarInfo var finalX (· $ SampleableExt.interp finalX) finalR
 
@@ -500,4 +500,3 @@ def Testable.check (p : Prop) (cfg : Configuration := {}) (p' : Decorations.Deco
 -- #eval Testable.check (∀ (x : Nat) (h : 10 < x), 5 < x) Configuration.verbose
 
 end SlimCheck
-
