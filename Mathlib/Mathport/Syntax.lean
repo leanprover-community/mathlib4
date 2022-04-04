@@ -339,6 +339,7 @@ syntax termList := " [" term,* "]"
 
 /- S -/ syntax (name := prettyCases) "pretty_cases" : tactic
 
+-- see also https://github.com/leanprover-community/mathlib4/pull/193
 /- M -/ syntax (name := pushNeg) "push_neg" (ppSpace location)? : tactic
 
 /- M -/ syntax (name := contrapose) "contrapose" (ppSpace ident (" with " ident)?)? : tactic
