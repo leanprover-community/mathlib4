@@ -125,7 +125,7 @@ instance (priority := low) : PrintableProp p where
 class Testable (p : Prop) where
   run {} (cfg : Configuration) (minimize : Bool) : Gen (TestResult p)
 
-abbrev NamedBinder (n : String) (p : Prop) : Prop := p
+def NamedBinder (n : String) (p : Prop) : Prop := p
 
 namespace TestResult
 
