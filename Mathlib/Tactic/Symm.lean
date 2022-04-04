@@ -25,9 +25,9 @@ def relationAppM?(expr: Expr) : MetaM (Option (Expr × Expr × Expr)) :=
         return some (rel, lhs, rhs)
     else pure none
 
-def symmAttribute : AttributeImpl where
+def symmAttr : AttributeImpl where
   name := `symm
-  descr := "Marks a lemma as symmetry lemma"
+  descr := "symmetric relation"
   add decl stx kind := do
     MetaM.run' do
       let declTy := (← getConstInfo decl).type
@@ -46,7 +46,7 @@ def symmAttribute : AttributeImpl where
         | none =>
           throwError "@[symm] attribute only applies to lemmas proving x ∼ y → y ∼ x, got {declTy}"
 
-initialize registerBuiltinAttribute symmAttribute
+initialize registerBuiltinAttribute symmAttr
 
 def symmLemmas (env : Environment) : DiscrTree Name :=
   symmExtension.getState env
