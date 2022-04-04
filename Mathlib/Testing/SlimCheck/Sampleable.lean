@@ -5,7 +5,7 @@ Authors: Henrik Böving, Simon Hudon
 -/
 import Mathlib.Testing.SlimCheck.Gen
 /-!
-# `Sampleable` Class
+# `SampleableExt` Class
 This class permits the creation samples of a given type
 controlling the size of those values using the `Gen` monad`.
 
@@ -14,9 +14,9 @@ This class helps minimize examples by creating smaller versions of
 given values.
 
 When testing a proposition like `∀ n : ℕ, prime n → n ≤ 100`,
-`SlimCheck` requires that `ℕ` have an instance of `Sampleable` and for
-`prime n` to be decidable.  `SlimCheck will then use the instance of
-`Sampleable` to generate small examples of ℕ and progressively increase
+`SlimCheck` requires that `ℕ` have an instance of `SampleableExt` and for
+`prime n` to be decidable.  `SlimCheck` will then use the instance of
+`SampleableExt` to generate small examples of ℕ and progressively increase
 in size. For each example `n`, `prime n` is tested. If it is false,
 the example will be rejected (not a test success nor a failure) and
 `SlimCheck` will move on to other examples. If `prime n` is true, `n
@@ -27,26 +27,28 @@ the test passes and `SlimCheck` moves on to trying more examples.
 This is a port of the Haskell QuickCheck library.
 
 ## Main definitions
-  * `Sampleable` class
-  * `Shrinkable` class
   * `SampleableExt` class
-
-### `Sampleable`
-`Sampleable α` provides ways of creating examples of type `α`,
-
-### `Shrinkable
-Given an example `x : α`, `Shrinkable α` gives us a way to shrink it
-and suggest simpler examples.
+  * `Shrinkable` class
 
 ### `SampleableExt`
-`SampleableExt` generalizes the behavior of `Sampleable` and `Shrinkable`
-and makes it possible to express instances for types that
+`SampleableExt` can be used in two ways. The first (and most common)
+is to simply generate values of a type directly using the `Gen` monad,
+if this is what you want to do then `SampleableExt.mkSelfContained` is
+the way to go.
+
+Furthermore it makes it possible to express generators for types that
 do not lend themselves to introspection, such as `ℕ → ℕ`.
 If we test a quantification over functions the
 counter-examples cannot be shrunken or printed meaningfully.
 For that purpose, `SampleableExt` provides a proxy representation
 `proxy` that can be printed and shrunken as well
-as interpreted (using `interp`) as an object of the right type.
+as interpreted (using `interp`) as an object of the right type. If you
+are using it in the first way, this proxy type will simply be the type
+itself and the `interp` function `id`.
+
+### `Shrinkable
+Given an example `x : α`, `Shrinkable α` gives us a way to shrink it
+and suggest simpler examples.
 
 ## Shrinking
 Shrinking happens when `SlimCheck` find a counter-example to a
@@ -80,8 +82,12 @@ and suggest simpler examples. -/
 class Shrinkable (α : Type u) extends WellFoundedRelation α where
   shrink : (x : α) → List { y : α // WellFoundedRelation.rel y x } := λ _ => []
 
-/-- `SampleableExt` generalizes the behavior of `Sampleable` and `Shrinkable`
-and makes it possible to express instances for types that
+/-- `SampleableExt` can be used in two ways. The first (and most common)
+is to simply generate values of a type directly using the `Gen` monad,
+if this is what you want to do then `SampleableExt.mkSelfContained` is
+the way to go.
+
+Furthermore it makes it possible to express generators for types that
 do not lend themselves to introspection, such as `ℕ → ℕ`.
 If we test a quantification over functions the
 counter-examples cannot be shrunken or printed meaningfully.
@@ -100,12 +106,18 @@ attribute [instance] SampleableExt.shrink
 
 namespace SampleableExt
 
+/-- Use to generate instance whose purpose is to simply generate values
+of a type directly using the `Gen` monad -/
 def mkSelfContained [Repr α] [Shrinkable α] (sample : Gen α) : SampleableExt α where
   proxy := α
   proxyRepr := inferInstance
   shrink := inferInstance
   sample := sample
   interp := id
+
+/-- First samples a proxy value and interprets it. Especially useful if
+the proxy and target type are the same. -/
+def interpSample (α : Type u) [SampleableExt α] : Gen α := SampleableExt.interp <$> SampleableExt.sample α
 
 end SampleableExt
 
@@ -176,7 +188,7 @@ instance Int.sampleableExt : SampleableExt Int :=
 instance Bool.sampleableExt : SampleableExt Bool :=
   mkSelfContained $ chooseAny Bool
 
-/-- This can be specialized into customized `Sampleable Char` instances.
+/-- This can be specialized into customized `SampleableExt Char` instances.
 The resulting instance has `1 / length` chances of making an unrestricted choice of characters
 and it otherwise chooses a character from `chars` with uniform probabilities.  -/
 def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) : SampleableExt Char :=

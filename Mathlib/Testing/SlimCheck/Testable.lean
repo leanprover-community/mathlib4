@@ -16,7 +16,7 @@ together with a proof that they invalidate the proposition.
 This is a port of the Haskell QuickCheck library.
 
 ## Creating Customized Instances
-The type classes `Testable`, `Sampleable` and `Shrinkable` are the
+The type classes `Testable`, `SampleableExt` and `Shrinkable` are the
 means by which `SlimCheck` creates samples and tests them. For instance,
 the proposition `∀ i j : ℕ, i ≤ j` has a `Testable` instance because `ℕ`
 is sampleable and `i ≤ j` is decidable. Once `SlimCheck` finds the `Testable`
@@ -38,23 +38,24 @@ structure MyType where
 How do we test a property about `MyType`? For instance, let us consider
 `Testable.check $ ∀ a b : MyType, a.y ≤ b.x → a.x ≤ b.y`. Writing this
 property as is will give us an error because we do not have an instance
-of `Sampleable MyType`. We can define one as follows:
+of `Shrinkable MyType` and `SampleableExt MyType`. We can define one as follows:
 ```lean
-instance : Sampleable MyType where
-  sample := do
-    let x ← Sampleable.sample Nat
-    let xyDiff ← Sampleable.sample Nat
-    pure $ ⟨x, x + xyDiff, sorrere
+instance : Shrinkable MyType where
   shrink := λ ⟨x,y,h⟩ =>
     let proxy := Shrinkable.shrink (x, y - x)
     proxy.map (λ ⟨⟨fst, snd⟩, ha⟩ => ⟨⟨fst, fst + snd, sorry⟩, sorry⟩)
+
+instance : SampleableExt MyType :=
+  SampleableExt.mkSelfContained do
+    let x ← SampleableExt.interpSample Nat
+    let xyDiff ← SampleableExt.interpSample Nat
+    pure $ ⟨x, x + xyDiff, sorry⟩
 ```
 Again, we take advantage of the fact that other types have useful
 `Shrinkable` implementations, in this case `Prod`. Note that the second
-proof is heavily based on `SizeOf` since its used for termination so
-the first step you want to take is almost always to `simp` in order to
-get through both `SizeOf` abstraction by `SlimCheck` and the auto generated
-`SizeOf` instances.
+proof is heavily based on `WellFoundedRelation` since its used for termination so
+the first step you want to take is almost always to `simp_wf` in order to
+get through the `WellFoundedRelation`.
 
 ## Main definitions
   * `Testable` class
