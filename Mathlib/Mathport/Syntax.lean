@@ -19,6 +19,8 @@ import Mathlib.Tactic.Set
 import Mathlib.Tactic.ShowTerm
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
+import Mathlib.Tactic.Symm
+import Mathlib.Tactic.Trans
 import Mathlib.Init.ExtendedBinder
 import Mathlib.Util.WithWeakNamespace
 
@@ -175,8 +177,7 @@ syntax (name := simpIntro) "simp_intro" (config)?
   (ppSpace (colGt (ident <|> "_")))* (&" only")? (" [" simpArg,* "]")? (" with " ident+)? : tactic
 syntax (name := dsimp) "dsimp" (config)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
-syntax (name := symm) "symm" : tactic
-syntax (name := trans) "trans" (ppSpace (colGt term))? : tactic
+
 syntax (name := acRfl) "ac_rfl" : tactic
 syntax (name := cc) "cc" : tactic
 syntax (name := substVars) "subst_vars" : tactic

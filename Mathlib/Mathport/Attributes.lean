@@ -9,7 +9,6 @@ namespace Lean.Attr
 
 initialize reflAttr : TagAttribute ← registerTagAttribute `refl "reflexive relation"
 
-initialize transAttr : TagAttribute ← registerTagAttribute `trans "transitive relation"
 initialize substAttr : TagAttribute ← registerTagAttribute `subst "substitution"
 
 initialize hintTacticAttr : TagAttribute ←

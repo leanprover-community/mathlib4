@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Symm
 
--- just testing that the attribute is recognized
+-- testing that the attribute is recognized
 @[symm] def eqSymm{α : Type} (a b: α) : a = b → b = a := Eq.symm
 
 example : ∀ (a b : ℕ), a = b → b = a := by
