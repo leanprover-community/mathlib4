@@ -101,13 +101,13 @@ macro ak:Term.attrKind "notation3"
   for item in lits.getArgs do
     let lit := item[0]
     if let some _ := lit.isStrLit? then
-      macroArgs := macroArgs.push (← `(macroArg| $lit:strLit))
+      macroArgs := macroArgs.push (← `(macroArg| $lit:str))
     else if lit.isOfKind ``bindersItem then
       macroArgs := macroArgs.push (← `(macroArg| binders:extBinders))
     else if lit.isOfKind ``foldAction then
       let mut sep := lit[2][0]
       if sep.isAtom then sep := Syntax.mkStrLit ", "
-      macroArgs := macroArgs.push (← `(macroArg| $(lit[1]):ident:sepBy(term, $sep:strLit)))
+      macroArgs := macroArgs.push (← `(macroArg| $(lit[1]):ident:sepBy(term, $sep:str)))
       let scopedTerm ← lit[9].replaceM fun
         | Syntax.ident _ _ id .. => pure $ boundNames.find? id
         | _ => pure none
@@ -171,7 +171,7 @@ namespace Tactic
 /- E -/ syntax (name := mapply) "mapply " term : tactic
 /- M -/ syntax (name := withCases) "with_cases " tacticSeq : tactic
 syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
-/- N -/ syntax (name := case') "case' " (("[" caseArg,* "]") <|> caseArg) " => " tacticSeq : tactic
+/- N -/ syntax (name := case'') "case'' " (("[" caseArg,* "]") <|> caseArg) " => " tacticSeq : tactic
 /- S -/ syntax "destruct " term : tactic
 /- M -/ syntax (name := casesM) "casesm" "*"? ppSpace term,* : tactic
 /- M -/ syntax (name := casesType) "cases_type" "*"? ppSpace ident* : tactic
