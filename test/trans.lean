@@ -15,5 +15,17 @@ example (a b c : Nat): a = b → b = c → a = c := by
 
 example (a b c : Nat): a = b → b = c → a = c := by
     intro h₁ h₂
-    trans h₁
+    trans
     assumption
+    assumption
+
+example : Trans ((. ≤ . : Nat → Nat → Prop))
+        (. ≤ . : Nat → Nat → Prop) (. ≤ . : Nat → Nat → Prop) := inferInstance
+
+example (a b c : Nat): a ≤  b → b ≤  c → a ≤  c := by
+   intro h₁ h₂
+   trans b
+   assumption
+   assumption
+
+#check Trans.trans

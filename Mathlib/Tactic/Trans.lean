@@ -62,9 +62,10 @@ match stx with
   match ← relationAppM? tgt with
   | none =>
     throwError "transitivity lemmas only apply to binary relations, not {indentExpr tgt}"
-  | some (rel, lhs, rhs) =>
+  | some (rel, x, z) =>
     let s ← saveState
-    for lem in ← (transLemmas (← getEnv)).getMatch rel do
+    let α ← inferType x
+    for lem in ← (transLemmas (← getEnv)).getUnify rel do
       try
         liftMetaTactic (apply · (← mkConstWithFreshMVarLevels lem))
         return
@@ -77,18 +78,19 @@ match stx with
   match ← relationAppM? tgt with
   | none =>
     throwError "transitivity lemmas only apply to binary relations, not {indentExpr tgt}"
-  | some (rel, lhs, rhs) =>
+  | some (rel, x, z) =>
     let s ← saveState
-    let t ← elabTerm t none
-    let lems ← (transLemmas (← getEnv)).getMatch rel
+    let y ← elabTerm t none
+    let α ← inferType y
+    let lems ← (transLemmas (← getEnv)).getUnify rel
     for lem in lems do
       try
         let f ← mkConstWithFreshMVarLevels lem
-        let l ← Term.elabAppArgs f #[] #[Term.Arg.expr t] none (explicit := false) (ellipsis := false)
-        Term.synthesizeSyntheticMVarsNoPostponing
+        let l := mkAppN f #[x, y, z]
         liftMetaTactic (apply · l)
         return
       catch e =>
         s.restore
+        logInfo m!"Error in apply : {e.toMessageData}, rel: {rel}, lem: {lem}"
     throwError "no applicable transitivity lemma found for {indentExpr tgt}"
 | _ => throwIllFormedSyntax
