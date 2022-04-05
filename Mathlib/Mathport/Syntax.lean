@@ -166,7 +166,6 @@ end Tactic
 
 namespace Tactic
 
-/- N -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
 /- N -/ syntax (name := applyWith) "apply " term " with " term : tactic
 /- E -/ syntax (name := mapply) "mapply " term : tactic
 /- M -/ syntax (name := withCases) "with_cases " tacticSeq : tactic
