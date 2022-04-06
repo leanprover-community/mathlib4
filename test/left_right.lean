@@ -18,8 +18,8 @@ example : Sum Nat (List Nat) :=
 
 example : Sum Nat (List Nat) :=
   by
-  left
-  exact zero
+  right
+  exact [0]
 
 example : (1 = 1) ∨ (2 = 3) :=
   by
