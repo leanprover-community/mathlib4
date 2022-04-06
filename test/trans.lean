@@ -1,7 +1,7 @@
 import Mathlib.Tactic.Trans
 
 -- testing that the attribute is recognized
-@[trans] def nleqTrans (a b c : Nat) : a ≤ b → b ≤ c → a ≤ c := Nat.le_trans
+@[trans] def nleqTrans {a b c : Nat} : a ≤ b → b ≤ c → a ≤ c := Nat.le_trans
 
 @[trans] def eqTrans {α : Type}{a b c : α}:  a = b → b = c → a = c := by
     intro h₁ h₂
@@ -15,7 +15,7 @@ example (a b c : Nat): a = b → b = c → a = c := by
 
 example (a b c : Nat): a = b → b = c → a = c := by
     intro h₁ h₂
-    trans
+    trans b
     assumption
     assumption
 
@@ -28,4 +28,10 @@ example (a b c : Nat): a ≤  b → b ≤  c → a ≤  c := by
    assumption
    assumption
 
-#check Trans.trans
+example (a b c : Nat): a ≤  b → b ≤  c → a ≤  c := by
+   intro h₁ h₂
+   trans
+   assumption
+   assumption
+
+#check @Trans.trans

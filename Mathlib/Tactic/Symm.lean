@@ -21,7 +21,7 @@ def relationAppM?(expr: Expr) : MetaM (Option (Expr × Expr × Expr)) :=
         let rhs := allArgs[allArgs.size -1]
         if ← isDefEq (← inferType lhs) (← inferType rhs) then
           let mut rel := baseRel
-          for i in [0:allArgs.size - 3] do
+          for i in [0:allArgs.size - 2] do
             rel := mkApp rel allArgs[i]
           return some (rel, lhs, rhs)
         else return none

@@ -51,7 +51,6 @@ initialize registerBuiltinAttribute transAttr
 def transLemmas (env : Environment) : DiscrTree Name :=
   transExtension.getState env
 
-
 syntax (name := trans) "trans" (ppSpace (colGt term))? : tactic
 open Lean.Elab.Tactic
 @[tactic «trans»] def transTacticImpl: Tactic := fun stx =>
@@ -65,7 +64,8 @@ match stx with
   | some (rel, x, z) =>
     let s ← saveState
     let α ← inferType x
-    for lem in ← (transLemmas (← getEnv)).getUnify rel do
+    let lemmas ← (transLemmas (← getEnv)).getUnify rel
+    for lem in lemmas do
       try
         liftMetaTactic (apply · (← mkConstWithFreshMVarLevels lem))
         return
@@ -82,11 +82,20 @@ match stx with
     let s ← saveState
     let y ← elabTerm t none
     let α ← inferType y
-    let lems ← (transLemmas (← getEnv)).getUnify rel
-    for lem in lems do
+    let lemmas ← (transLemmas (← getEnv)).getUnify rel
+    for lem in lemmas do
       try
         let f ← mkConstWithFreshMVarLevels lem
-        let l := mkAppN f #[x, y, z]
+        let r1 := mkAppN rel #[x, y]
+        let r2 := mkAppN rel #[y, z]
+        let l ←
+          withLocalDecl `pf1 BinderInfo.default r1 fun pf1 =>
+          withLocalDecl `pf2 BinderInfo.default r2 fun pf2 => do
+            let pf3 ←
+              Term.elabAppArgs f #[]
+                #[Term.Arg.expr pf1, Term.Arg.expr pf2] none (explicit := false) (ellipsis := false)
+            mkLambdaFVars #[pf1, pf2] pf3
+        -- let l := mkAppN f #[x, y, z]
         liftMetaTactic (apply · l)
         return
       catch e =>
