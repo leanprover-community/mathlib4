@@ -51,6 +51,9 @@ initialize registerBuiltinAttribute transAttr
 def transLemmas (env : Environment) : DiscrTree Name :=
   transExtension.getState env
 
+def simpleTrans {rel : α → α → Prop}{a b c : α}[Trans rel rel rel] :
+    rel a b → rel b c → rel a c  := trans
+
 syntax (name := trans) "trans" (ppSpace (colGt term))? : tactic
 open Lean.Elab.Tactic
 @[tactic «trans»] def transTacticImpl: Tactic := fun stx =>
@@ -65,6 +68,7 @@ match stx with
     let s ← saveState
     let α ← inferType x
     let lemmas ← (transLemmas (← getEnv)).getUnify rel
+    let lemmas := lemmas.push ``simpleTrans
     for lem in lemmas do
       try
         liftMetaTactic (apply · (← mkConstWithFreshMVarLevels lem))
@@ -83,19 +87,19 @@ match stx with
     let y ← elabTerm t none
     let α ← inferType y
     let lemmas ← (transLemmas (← getEnv)).getUnify rel
+    let lemmas := lemmas.push ``simpleTrans
     for lem in lemmas do
       try
-        let f ← mkConstWithFreshMVarLevels lem
-        let r1 := mkAppN rel #[x, y]
-        let r2 := mkAppN rel #[y, z]
+        -- let f ← mkConstWithFreshMVarLevels lem
+        let r1 ←  mkAppM' rel #[x, y]
+        let r2 ←  mkAppM' rel #[y, z]
         let l ←
           withLocalDecl `pf1 BinderInfo.default r1 fun pf1 =>
           withLocalDecl `pf2 BinderInfo.default r2 fun pf2 => do
-            let pf3 ←
-              Term.elabAppArgs f #[]
-                #[Term.Arg.expr pf1, Term.Arg.expr pf2] none (explicit := false) (ellipsis := false)
+            let pf3 ← mkAppM lem #[pf1, pf2]
+              -- Term.elabAppArgs f #[]
+              --   #[Term.Arg.expr pf1, Term.Arg.expr pf2] none (explicit := false) (ellipsis := false)
             mkLambdaFVars #[pf1, pf2] pf3
-        -- let l := mkAppN f #[x, y, z]
         liftMetaTactic (apply · l)
         return
       catch e =>
