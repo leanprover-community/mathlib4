@@ -10,6 +10,7 @@ import Mathlib.Tactic.Core
 import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
+import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
@@ -165,8 +166,6 @@ syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
 syntax (name := trace) "trace " term : tactic
 syntax (name := existsi) "exists " term,* : tactic
 syntax (name := eConstructor) "econstructor" : tactic
-syntax (name := left) "left" : tactic
-syntax (name := right) "right" : tactic
 syntax (name := constructorM) "constructorm" "*"? ppSpace term,* : tactic
 syntax (name := injections') "injections" (" with " (colGt (ident <|> "_"))+)? : tactic
 syntax (name := simp') "simp'" "*"? (config)? (discharger)? (&" only")?
