@@ -243,3 +243,9 @@ elab "any_goals " seq:tacticSeq : tactic => do
   if not anySuccess then
     throwError "failed on all goals"
   setGoals mvarIdsNew.toList
+
+elab "fapply " e:term : tactic =>
+  evalApplyLikeTactic (Meta.apply (cfg := {newGoals := ApplyNewGoals.all})) e
+
+elab "eapply " e:term : tactic =>
+  evalApplyLikeTactic (Meta.apply (cfg := {newGoals := ApplyNewGoals.nonDependentOnly})) e
