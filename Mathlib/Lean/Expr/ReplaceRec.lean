@@ -30,6 +30,13 @@ def replaceRec (f? : (Expr → Expr) → Expr → Option Expr) : Expr → Expr :
     | some x => x
     | none   => traverseChildren (M := Id) r e
 
+/-- replaceRec under a monad. [todo] caching -/
+def replaceRecM [Monad M] (f? : (Expr → M Expr) → Expr → M (Option Expr)) : Expr → M Expr :=
+  fix fun r e => do
+    match ← f? r e with
+    | some x => return x
+    | none => traverseChildren r e
+
 /-- A version of `Expr.replace` where we can use recursive calls even if we replace a subexpression.
   When reaching a subexpression `e` we call `traversal e` to see if we want to do anything with this
   expression. If `traversal e = none` we proceed to the children of `e`. If

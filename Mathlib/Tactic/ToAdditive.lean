@@ -25,41 +25,71 @@ syntax (name := toAdditive!?) "to_additive!?" (ppSpace ident)? (ppSpace str)? : 
 
 namespace ToAdditive
 
+syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)+ : attr
+
+initialize ignore_args_attr : ParametricAttribute (List Nat) ←
+  registerParametricAttribute {
+  name      := `to_additive_ignore_args
+  descr     := "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized.",
+  getParam := fun decl stx => do
+      let ids ← match stx with
+        | `(attr|to_additive_ignore_args $[$ids:num]*) => pure $ ids.map (·.isNatLit?.get!)
+        | _ => throwError "unexpected to_additive_reorder syntax {stx}"
+      return ids.toList
+  }
+
+
+syntax (name := to_additive_reorder) "to_additive_reorder" (ppSpace num)+ : attr
+
+initialize reorder_attr : ParametricAttribute (List Nat) ←
+  registerParametricAttribute {
+    name := `to_additive_reorder
+    descr := "Auxiliary attribute for `to_additive` that stores arguments that need to be reordered."
+    getParam := fun decl stx =>
+      match stx with
+      | `(attr|to_additive_reorder $[$ids:num]*) => pure $ Array.toList $ ids.map (·.isNatLit?.get!)
+      | _ => throwError "unexpected to_additive_reorder syntax {stx}"
+  }
+
+initialize relevant_arg_attr : ParametricAttribute (Nat) ←
+  registerParametricAttribute {
+    name := `to_additive_relevant_arg
+    descr := "Auxiliary attribute for `to_additive` stating which arguments are the types with a multiplicative structure."
+    getParam := fun decl stx =>
+      match stx with
+      | `(attr|to_additive_relevant_arg $id) => pure $ id.isNatLit?.get!
+      | _ => throwError "unexpected to_additive_relevant_arg syntax {stx}"
+  }
+
 /-- Context for toAdditive expression traverser. -/
 structure Context where
-  (nameFn : Name → Option Name)
+  (nameFn : Name → Option Name) -- [todo] called the 'prefix fun'
   (replaceAll : Bool)
   (trace : Bool)
-  (relevant : NameMap Nat)
-  (ignore : NameMap (List Nat))
-  (reorder : NameMap (List Nat))
 
-variable {M} [Functor M] [MonadReader Context M]
+variable {M} [Monad M] [MonadReader Context M] [MonadEnv M]
 
 def getNameFn : M (Name → Option Name) := Context.nameFn <$> read
 
 def runNameFn : Name → M (Option Name)
-| n => (Context.nameFn . n) <$> read
+  | n => (Context.nameFn . n) <$> read
 
 def shouldTrace : M Bool := Context.trace <$> read
 
 def ignore : Name → M (Option (List Nat))
-| n => read |> Functor.map fun ctx => ctx.ignore.find? n
+  | n => do return ignore_args_attr.getParam (← getEnv) n
 
 def getReorder : Name →  M (List Nat)
-| n => read |> Functor.map fun ctx =>
-  match ctx.reorder.find? n with
-  | some ns => ns
-  | none => []
+| n => do return reorder_attr.getParam (← getEnv) n |> (Option.getD · [])
 
 def shouldReorder : Name → Nat → M Bool
 | n, i => (i ∈ .) <$> (getReorder n)
 
 def isRelevant : Name → Nat → M Bool
-| n, i => read |> Functor.map fun ctx =>
-  match ctx.relevant.find? n with
-  | some j => i == j
-  | none => i == 0
+| n, i => do
+  match relevant_arg_attr.getParam (← getEnv) n with
+  | some j => return i == j
+  | none => return i == 0
 
 def replaceAll : M Bool := Context.replaceAll <$> read
 
@@ -177,12 +207,13 @@ def updateWithFun
     decl := decl.updateValue (← applyReplacementFun (← expand v))
   return decl
 
-private def liftToMeta (declName? : Option Name := none) : ReaderT Context MetaM α → ReaderT Context CommandElabM α
-| r, ctx => liftTermElabM (declName? := declName?) (r ctx)
+private def liftToMeta  : ReaderT Context MetaM α → ReaderT Context CoreM α
+| r, ctx => MetaM.run'  (r ctx)
 
-private def liftToMeta2 (declName? : Option Name := none) : MetaM α → ReaderT Context CommandElabM α
-| r, _ => liftTermElabM (declName? := declName?) r
+private def liftToMeta2  : MetaM α → ReaderT Context CoreM α
+| r, _ => MetaM.run' r
 
+initialize to_additive_aux : MapDeclarationExtension Name ← mkMapDeclarationExtension `to_additive_aux
 
 /-- transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
 using the dictionary `f`.
@@ -190,7 +221,7 @@ using the dictionary `f`.
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
 partial def transformDeclWithPrefixFunAux
-  (pre tgt_pre : Name) : Name → ReaderT Context CommandElabM Unit := fun src => do
+  (pre tgt_pre : Name) : Name → ReaderT Context CoreM Unit := fun src => do
   -- if this declaration is not `pre` or an internal declaration, we do nothing.
   if not (src == pre || src.isInternal) then
     if (← runNameFn src).isSome then
@@ -212,7 +243,7 @@ partial def transformDeclWithPrefixFunAux
       transformDeclWithPrefixFunAux pre tgt_pre n
   -- we transform `decl` using `f` and the configuration options.
   -- let mx : (α:Type) → _ → ReaderT _ _ _ := monadMap x
-  let decl : ConstantInfo ← liftToMeta (declName? := some tgt) $ updateWithFun tgt decl
+  let decl : ConstantInfo ← liftToMeta $ updateWithFun tgt decl
     -- decl.update_with_fun env (name.map_prefix f) (additive_test f replace_all ignore)
     --   relevant reorder tgt
   -- o ← get_options, set_options $ o.set_bool `pp.all tt, -- print with pp.all (for debugging)
@@ -225,9 +256,9 @@ partial def transformDeclWithPrefixFunAux
   if isProtected (← getEnv) src then
     setEnv $ addProtected (← getEnv) tgt
 
-def transformDeclWithPrefixFun (src tgt : Name) (attrs : List Name) : ReaderT Context CommandElabM Unit := do
+def transformDeclWithPrefixFun (src tgt : Name) (attrs : List Name) : ReaderT Context CoreM Unit := do
   transformDeclWithPrefixFunAux src tgt src
-  let eqns? ← liftToMeta2 none (getEqnsFor? src true)
+  let eqns? ← liftToMeta2 (getEqnsFor? src true)
   -- now transform all of the equational lemmas
   if let some eqns := eqns? then
     for src_eqn in eqns do
@@ -241,6 +272,7 @@ def transformDeclWithPrefixFun (src tgt : Name) (attrs : List Name) : ReaderT Co
   -- for attr in attrs do
   --   copyAttributes attr src tgt
   return ()
+
 
 def hasAttribute' (name : Name) : MetaM Bool :=
   pure false -- [todo] implement
@@ -279,11 +311,11 @@ def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
   can be auto-generated.
 -/
 structure ValueType : Type where
-  replaceAll : Bool
-  trace : Bool
-  tgt : Name
-  doc : Option String
-  allowAutoName : Bool
+  replaceAll : Bool := false
+  trace : Bool := false
+  tgt : Name := Name.anonymous
+  doc : Option String := none
+  allowAutoName : Bool := false
 
 /-- `add_comm_prefix x s` returns `"comm_" ++ s` if `x = tt` and `s` otherwise. -/
 def addCommPrefix : Bool → String → String
@@ -332,7 +364,7 @@ def guessName : String → String :=
   tr false (s.splitOn "_") -- [todo] replace with camelcase logic
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
-def targetName (src tgt : Name) (dict : NameMap Name) (allowAutoName : Bool) : MetaM Name := do
+def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
   let res ← do
     if tgt.getPrefix != Name.anonymous || allowAutoName then
       return tgt
@@ -340,7 +372,7 @@ def targetName (src tgt : Name) (dict : NameMap Name) (allowAutoName : Bool) : M
     let tgt_auto := guessName s
     if tgt.toString == tgt_auto || tgt != src then
       dbg_trace "{src}: correctly autogenerated target name, you may remove the explicit {tgt_auto} argument."
-    let pre := pre.mapPrefix dict.find?
+    let pre := pre.mapPrefix <| to_additive_aux.find? <| ← getEnv
     if tgt == Name.anonymous then
       return Name.mkStr pre tgt_auto
     else
@@ -349,30 +381,93 @@ def targetName (src tgt : Name) (dict : NameMap Name) (allowAutoName : Bool) : M
     throwError "to_additve: can't transport {src} to itself."
   return res
 
+private def proceedFieldsAux (src tgt : Name) (prio : Nat) (f : Name → CoreM (List String)) : CoreM Unit :=
+do
+  let srcFields ← f src
+  let tgtFields ← f tgt
+  if srcFields.length != tgtFields.length then
+    throwError "Failed to map fields of {src}, {tgt} with {srcFields} ↦ {tgtFields}"
+  for (srcField, tgtField) in List.zip srcFields tgtFields do
+    if srcField != tgtField then
+      setEnv <| to_additive_aux.insert (← getEnv) srcField tgtField -- [todo] what is prio doing? I think it's the scoping?
 
-section Commands
+/-- Add the `aux_attr` attribute to the structure fields of `src`
+so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
+def proceedFields (src tgt : Name) (prio : Nat) : CoreM Unit := do
+  let env : Environment ← getEnv
+  let aux := proceedFieldsAux src tgt prio
+  aux (fun n => do
+    let fields := if isStructure env n then getStructureFields env n else #[]
+    return fields |> .map Name.toString |> Array.toList
+  )
+  -- [todo]
+  -- aux (fun n => (List.map (s!"to_{·}") <$> getTaggedAncestors n))
+  -- aux (fun n => (env.constructorsOf n).mmap $
+  --            fun
+  --                 | (name.mk_string s pre) :=
+  --                   (guard (pre = n) <|> fail "Bad constructor name") >>
+  --                   pure s
+  --                 | _ := fail "Bad constructor name"
+  --                 )
 
-/-! An attribute that tells `@[toAdditive]` that certain arguments of this definition are not
-involved when using `@[toAdditive]`.
-This helps the heuristic of `@[toAdditive]` by also transforming definitions if `ℕ` or another
-fixed type occurs as one of these arguments. -/
 
--- initialize toAdditiveIgnoreArgsAttr : ParametricAttribute (Array Nat) ←
---   registerParametricAttribute {
---     name := `toAdditiveIgnoreArgs
---     descr :=
---       "Auxiliary attribute for `toAdditive` stating that certain arguments are not additivized."
---     getParam := λ decl stx =>
---       match stx with
---         | `(attr|toAdditiveIgnoreArgs $[$ns]*) => ns.map (·.toNat)
---         | _ => throwError "unexpected toAdditiveIgnoreArgs syntax {stx}"
---   }
 
--- ignoreArgsAttr
--- relevantArgAttr
--- reorderAttr
 
-end Commands
+syntax (name := to_additive) "to_additive" "!"? "?"? (ident)? (str)? : attr
+
+def elab_to_additive : Syntax → CoreM ValueType
+  | `(attr| to_additive $[!%$replaceAll]? $[?%$trace]? $[$tgt]? $[$doc]?) => do
+    return {
+      replaceAll := replaceAll.isSome
+      trace := trace.isSome
+      tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
+      doc := doc.bind (·.isStrLit?)
+      allowAutoName := false
+    }
+  | _ => throwUnsupportedSyntax
+
+initialize registerBuiltinAttribute {
+    name := `to_additive
+    descr :="Transport multiplicative to additive"
+    add := fun src stx kind => do
+      -- guard persistent <|> fail "`to_additive` can't be used as a local attribute"
+      let prio := 0 -- [todo] I think this is a function of kind?
+      let env ← getEnv
+      let val ← elab_to_additive stx
+      let ignore := ignore_args_attr.getParam env src
+      let relevant := relevant_arg_attr.getParam env src
+      let reorder := reorder_attr.getParam env src
+      let tgt ← targetName src val.tgt val.allowAutoName
+      let env := to_additive_aux.insert env src tgt
+      setEnv env
+      let firstMultArg ← MetaM.run' <| firstMultiplicativeArg src
+      if (firstMultArg != 1) then
+        proceedFields src tgt prio
+      if env.contains tgt then
+        proceedFields src tgt prio
+      else
+        let ctxt : Context := {
+          nameFn := to_additive_aux.find? env
+          replaceAll := val.replaceAll
+          trace := val.trace
+        }
+        let magicNames := [`reducible, `_refl_lemma, `simp, `norm_cast, `instance, `refl, `symm, `trans, `elab_as_eliminator, `no_rsimp, `continuity, `ext, `ematch, `measurability, `alias, `_ext_core, `_ext_lemma_core, `nolint, `protected]
+        ReaderT.run (transformDeclWithPrefixFun src tgt magicNames) ctxt
+
+
+      return ()
+      -- else
+      --   transform_decl_with_prefix_dict dict val.replace_all val.trace relevant ignore reorder src tgt
+      --
+      --   if ← (has_attribute' `simps src) then
+      --     trace "Apply the simps attribute after the to_additive attribute"
+      --   if ← (has_attribute' `mono src) then
+      --     trace $ "to_additive does not work with mono, apply the mono attribute to both" ++ "versions after"
+      --   match val.doc with
+      --   | some doc => add_doc_string tgt doc
+      --   | none => skip
+
+  }
 
 /-! An attribute that is automatically added to declarations tagged with `@[toAdditive]`, if needed.
 

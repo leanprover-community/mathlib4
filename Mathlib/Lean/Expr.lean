@@ -116,10 +116,7 @@ def natLit! : Expr → Nat
 
 /-- Returns a `NameSet` of all constants in an expression starting with a certain prefix. -/
 def listNamesWithPrefix (pre : Name) (e : Expr) : NameSet :=
-e.fold (fun
-  | l, Expr.const n _ _ => if n.getPrefix == pre then l.insert n else l
-  | l, _ => l
-) NameSet.empty
+  e.foldConsts ∅ fun n l => if n.getPrefix == pre then l.insert n else l
 
 end Expr
 
