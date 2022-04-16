@@ -6,19 +6,23 @@ import Mathlib.Tactic.Spread
 # Typeclasses for monoids and groups etc
 -/
 
-local macro "ofNat_class" Class:ident n:num : command =>
-  let field := Lean.mkIdent <| Class.getId.eraseMacroScopes.getString!.toLower
-  `(class $Class:ident.{u} (α : Type u) where
-    $field:ident : α
+class Zero.{u} (α : Type u) where
+  zero : α
 
-  instance {α} [$Class α] : OfNat α (nat_lit $n) where
-    ofNat := ‹$Class α›.1
+instance Zero.toOfNat0 {α} [Zero α] : OfNat α (nat_lit 0) where
+  ofNat := ‹Zero α›.1
 
-  instance {α} [OfNat α (nat_lit $n)] : $Class α where
-    $field:ident := $n)
+instance Zero.ofOfNat0 {α} [OfNat α (nat_lit 0)] : Zero α where
+  zero := 0
 
-ofNat_class Zero 0
-ofNat_class One 1
+class One.{u} (α : Type u) where
+  one : α
+
+instance One.toOfNat1 {α} [One α] : OfNat α (nat_lit 1) where
+  ofNat := ‹One α›.1
+
+instance One.ofOfNat1 {α} [OfNat α (nat_lit 1)] : One α where
+  one := 1
 
 class Inv (α : Type u) where
   inv : α → α
