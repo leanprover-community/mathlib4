@@ -486,10 +486,9 @@ elab (name := rcases?) "rcases?" tgts:casesTarget,* num:(" : " num)? : tactic =>
   throwError "unimplemented"
 
 elab (name := rcases) tk:"rcases" tgts:casesTarget,* pat:(" with " rcasesPatLo)? : tactic => do
-  let pat ← match pat.getArgs with
-  | #[_, pat] => RCasesPatt.parse pat
-  | #[] => pure $ RCasesPatt.tuple tk []
-  | _ => throwUnsupportedSyntax
+  let pat ← match pat with
+  | some pat => RCasesPatt.parse pat[1]
+  | none => pure $ RCasesPatt.tuple tk []
   let tgts := tgts.getElems.map fun tgt =>
     (if tgt[0].isNone then none else some tgt[0][0].getId, tgt[1])
   withMainContext do
@@ -497,25 +496,26 @@ elab (name := rcases) tk:"rcases" tgts:casesTarget,* pat:(" with " rcasesPatLo)?
 
 elab (name := obtain) tk:"obtain"
     pat:(ppSpace rcasesPatMed)? ty:(" : " term)? val:(" := " term,+)? : tactic => do
-  let pat ← liftM $ pat.getOptional?.mapM RCasesPatt.parse
-  if val.isNone then
-    if ty.isNone then throwError
-        ("`obtain` requires either an expected type or a value.\n" ++
-        "usage: `obtain ⟨patt⟩? : type (:= val)?` or `obtain ⟨patt⟩? (: type)? := val`")
-    let pat := pat.getD (RCasesPatt.one tk `this)
-    withMainContext do
-      replaceMainGoal (← RCases.obtainNone pat ty[1] (← getMainGoal))
-  else
+  let pat ← liftM $ pat.mapM RCasesPatt.parse
+  if let some val := val then
     let pat := pat.getD (RCasesPatt.one tk `_)
-    let pat := pat.typed? tk $ if ty.isNone then none else some ty[1]
+    let pat := pat.typed? tk $ ty.map (Syntax.getOp · 1)
     let tgts := val[1].getSepArgs.map fun val => (none, val)
     withMainContext do
       replaceMainGoal (← RCases.rcases tgts pat (← getMainGoal))
+  else
+    if let some ty := ty then
+      let pat := pat.getD (RCasesPatt.one tk `this)
+      withMainContext do
+        replaceMainGoal (← RCases.obtainNone pat ty[1] (← getMainGoal))
+    else throwError
+      ("`obtain` requires either an expected type or a value.\n" ++
+      "usage: `obtain ⟨patt⟩? : type (:= val)?` or `obtain ⟨patt⟩? (: type)? := val`")
 
 elab (name := rintro?) "rintro?" (" : " num)? : tactic =>
   throwError "unimplemented"
 
-elab (name := rintro) "rintro" pats:(ppSpace colGt rintroPat)+ ty:(" : " term)? : tactic => do
-  let ty? := if ty.isNone then none else some ty[1]
+elab (name := rintro) tk:"rintro" pats:(ppSpace colGt rintroPat)+ ty:(" : " term)? : tactic => do
+  let ty? := ty.map (Syntax.getOp · 1)
   withMainContext do
-    replaceMainGoal (← RCases.rintro ty pats.getArgs ty? (← getMainGoal))
+    replaceMainGoal (← RCases.rintro (ty.getD tk) pats ty? (← getMainGoal))

@@ -28,8 +28,7 @@ partial def replaceMVarsByUnderscores [Monad m] [MonadQuotation m]
     pure s
 
 def delabToRefinableSyntax (e : Expr) : TermElabM Syntax := do
-  let stx ← delab (← readThe Core.Context).currNamespace
-    (← readThe Core.Context).openDecls e
+  let stx ← delab e
   replaceMVarsByUnderscores stx
 
 def addSuggestion [Monad m] [MonadLog m] [AddMessageContext m]
