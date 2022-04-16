@@ -2,8 +2,15 @@ import Mathlib.Algebra.Group.ToAdditiveInstances
 open Lean
 
 -- work in a namespace so that it doesn't matter if names clash
+namespace Test
+
+-- [todo] remove these once tests pass
 set_option trace.to_additive true
 set_option trace.to_additive.replace true
+set_option pp.universes true
+set_option pp.explicit true
+set_option pp.notation false
+
 @[to_additive bar0]
 def foo0 {α} [Mul α] [One α] (x y : α) : α := x * y * 1
 
@@ -22,10 +29,6 @@ instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
 attribute [to_additive_reorder 1] my_has_pow
 attribute [to_additive_reorder 1 4] my_has_pow.pow
 attribute [to_additive my_has_scalar] my_has_pow
-
-set_option pp.universes true
-set_option pp.explicit true
-set_option pp.notation false
 
 
 @[to_additive bar1]
@@ -48,22 +51,26 @@ theorem foo2_works : foo2 2 3 (plift.up 2) = Nat.pow 2 0 := by decide
 theorem bar2_works : bar2 2 3 (plift.up 2) =  2 * (dummy.1 3 (plift.up 2)) := by decide
 
 @[to_additive bar3]
-def foo3 {α} [my_has_pow α ℕ] (x : α) : ℕ → α := @my_has_pow.pow α ℕ _ x
+def foo3 {α} [my_has_pow α ℕ] (x : α) : ℕ → α := @my_has_pow.pow α ℕ _ x -- [fixme]
 
 @[to_additive bar4]
-def foo4 {α : Type u} : Type v → Type (max u v) := @my_has_pow α
+def foo4 {α : Type u} : Type v → Type (max u v) := @my_has_pow α -- [fixme]
 
 @[to_additive bar4_test]
-lemma foo4_test {α β : Type u} : @foo4 α β = @my_has_pow α β := rfl
+lemma foo4_test {α β : Type u} : @foo4 α β = @my_has_pow α β := rfl -- [fixme]
 
 @[to_additive bar5]
-def foo5 {α} [my_has_pow α ℕ] [my_has_pow ℕ ℤ] : True := True.intro
+def foo5 {α} [my_has_pow α ℕ] [my_has_pow ℕ ℤ] : True := True.intro -- [fixme]
 
 @[to_additive bar6]
-def foo6 {α} [my_has_pow α ℕ] : α → ℕ → α := @my_has_pow.pow α ℕ _
+def foo6 {α} [my_has_pow α ℕ] : α → ℕ → α := @my_has_pow.pow α ℕ _ -- [fixme]
 
 @[to_additive bar7]
 def foo7 := @my_has_pow.pow
+
+theorem foo7_works : foo7 2 3 = Nat.pow 2 3 := by decide
+theorem bar7_works : bar7 2 3 =  2 * 3 := by decide
+
 
 /- [TODO] below
 
@@ -128,3 +135,5 @@ def nat_pi_has_one {α : Type*} [has_one α] : has_one (Π x : ℕ, α) := by ap
 def pi_nat_has_one {I : Type*} : has_one (Π x : I, ℕ) := by apply_instance
 
 -/
+
+end Test

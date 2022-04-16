@@ -19,7 +19,7 @@ open Lean.Elab.Command
 syntax (name := toAdditiveIgnoreArgs) "to_additive_ignore_args" num* : attr
 syntax (name := toAdditiveRelevantArg) "to_additive_relevant_arg" num : attr
 syntax (name := toAdditiveReorder) "to_additive_reorder" num* : attr
-syntax (name := to_additive) "to_additive" "!"? "?"? (ppSpace ident)? (ppSpace str)? : attr
+syntax (name := to_additive) "to_additive" "!"? (ppSpace ident)? (ppSpace str)? : attr
 
 namespace ToAdditive
 
@@ -67,46 +67,44 @@ initialize translations : SimplePersistentEnvExtension (Name × Name) (NameMap N
     toArrayFn     := fun es => es.toArray
   }
 
-def insert_translation (src tgt : Name) : CoreM Unit := do
-  (ToAdditive.translations.addEntry (←getEnv)) (src, tgt) |> setEnv
-  trace[to_additive] "Added translation {src} ↦ {tgt}."
-
 def find_translation? (env : Environment) : Name → Option Name :=
   (ToAdditive.translations.getState env).find?
 
-
-
-/-- Context for toAdditive expression traverser. -/
-structure Context where
-  (nameFn : Name → Option Name) -- [todo] called the 'prefix fun'
-  (replaceAll : Bool)
+def insert_translation (src tgt : Name) : CoreM Unit := do
+  if let some tgt' := find_translation? (←getEnv) src then
+    throwError "Already exists translation {src} ↦ {tgt'}"
+  (ToAdditive.translations.addEntry (←getEnv)) (src, tgt) |> setEnv
+  trace[to_additive] "Added translation {src} ↦ {tgt}."
 
 variable {M} [Monad M]
 
-def getNameFn  [MonadReader Context M]  : M (Name → Option Name) := Context.nameFn <$> read
+def getNameFn  [MonadEnv M] : M (Name → Option Name) := do
+  let env ← getEnv
+  return find_translation? env
 
-def runNameFn  [MonadReader Context M] : Name → M (Option Name)
-  | n => (Context.nameFn . n) <$> read
+def runNameFn  [MonadEnv M] : Name → M (Option Name)
+  | n => do return find_translation? (← getEnv) n
 
 def ignore  [MonadEnv M]: Name → M (Option (List Nat))
   | n => do return ignore_args_attr.getParam (← getEnv) n
 
 def getReorder  [MonadEnv M]: Name →  M (List Nat)
-| n => do return reorder_attr.getParam (← getEnv) n |> (Option.getD · [])
+  | n => do return reorder_attr.getParam (← getEnv) n |> (Option.getD · [])
 
 def shouldReorder  [MonadEnv M]: Name → Nat → M Bool
-| n, i => (i ∈ .) <$> (getReorder n)
+  | n, i => (i ∈ .) <$> (getReorder n)
 
 def isRelevant  [MonadEnv M]: Name → Nat → M Bool
-| n, i => do
-  match relevant_arg_attr.getParam (← getEnv) n with
-  | some j => return i == j
-  | none => return i == 0
+  | n, i => do
+    match relevant_arg_attr.getParam (← getEnv) n with
+    | some j => return i == j
+    | none => return i == 0
 
 /-- Get whether or not the replace-all flag is set. -/
-def replaceAll  [MonadReader Context M] : M Bool := Context.replaceAll <$> read
+def replaceAll  [MonadOptions M] : M Bool :=
+  do return (← getOptions).getBool `to_additive.replaceAll
 
-variable [MonadReader Context M] [MonadEnv M]
+variable [MonadOptions M] [MonadEnv M]
 
 /-- Auxilliary function for `additive_test`. The bool argument *only* matters when applied
 to exactly a constant. -/
@@ -156,15 +154,16 @@ e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorder
 We assume that all functions where we want to reorder arguments are fully applied.
 This can be done by applying `expr.eta_expand` first.
 -/
-def applyReplacementFun : Expr → ReaderT Context MetaM Expr :=
+def applyReplacementFun : Expr → MetaM Expr :=
   Lean.Expr.replaceRecM fun r e => do
     match e with
     | Expr.lit (Literal.natVal 1) _    => pure <| mkNatLit 0
     | Expr.const n₀ ls _ => do
       let nameFun ← getNameFn
       let n₁ := Name.mapPrefix nameFun n₀
-      trace[to_additive.replace] "Expr.const {n₀} → {n₁}"
-      let ls : List Level ← (do
+      if n₀ != n₁ then
+        trace[to_additive.replace] "replace {n₀} → {n₁}"
+      let ls : List Level ← (do -- [todo] just get Lean to figure out the levels?
         if ← shouldReorder n₀ 1 then
             return ls.get! 1::ls.head!::ls.drop 2
         return ls)
@@ -198,11 +197,12 @@ def etaExpandN (n : Nat) (e : Expr): MetaM Expr := do
 /-- `e.expand` eta-expands all expressions that have as head a constant `n` in
 `reorder`. They are expanded until they are applied to one more argument than the maximum in
 `reorder.find n`. -/
-private def expand : Expr → ReaderT Context MetaM Expr
+private def expand : Expr → MetaM Expr
 | e => e.replaceRecM $ fun r e => do
   let e0 := e.getAppFn
   let es := e.getAppArgs
-  let reorder ← getReorder e0.constName!
+  let some e0n := e0.constName? | return none
+  let reorder ← getReorder e0n
   if reorder.isEmpty then
     return none
   let e' := mkAppN e0 $ ← es.mapM r
@@ -215,18 +215,13 @@ private def expand : Expr → ReaderT Context MetaM Expr
 
 def updateWithFun
   (tgt : Name) (decl : ConstantInfo)
-  : ReaderT Context MetaM ConstantInfo := do
+  : MetaM ConstantInfo := do
   let mut decl := decl.updateName tgt
   decl := decl.updateType $ (← applyReplacementFun (← expand decl.type))
   if let some v := decl.value? then
     decl := decl.updateValue (← applyReplacementFun (← expand v))
   return decl
 
-private def liftToMeta  : ReaderT Context MetaM α → ReaderT Context CoreM α
-| r, ctx => MetaM.run'  (r ctx)
-
-private def liftToMeta2  : MetaM α → ReaderT Context CoreM α
-| r, _ => MetaM.run' r
 
 /-- transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
 using the dictionary `f`.
@@ -234,7 +229,7 @@ using the dictionary `f`.
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
 partial def transformDeclWithPrefixFunAux
-  (pre tgt_pre : Name) : Name → ReaderT Context CoreM Unit := fun src => do
+  (pre tgt_pre : Name) : Name → CoreM Unit := fun src => do
   -- if this declaration is not `pre` or an internal declaration, we do nothing.
   if not (src == pre || src.isInternal) then
     if (← runNameFn src).isSome then
@@ -255,35 +250,38 @@ partial def transformDeclWithPrefixFunAux
     for n in value.listNamesWithPrefix pre do
       transformDeclWithPrefixFunAux pre tgt_pre n
   -- we transform `decl` using `f` and the configuration options.
-  -- let mx : (α:Type) → _ → ReaderT _ _ _ := monadMap x
-  let decl : ConstantInfo ← liftToMeta $ updateWithFun tgt decl
-    -- decl.update_with_fun env (name.map_prefix f) (additive_test f replace_all ignore)
-    --   relevant reorder tgt
-  -- o ← get_options, set_options $ o.set_bool `pp.all tt, -- print with pp.all (for debugging)
-  trace[to_additive] "generating\n{decl.name}\n{decl.value!}"
-
+  let decl : ConstantInfo ← MetaM.run' $ updateWithFun tgt decl
+  -- [todo] above line is simplified, mathlib3 version reads:
+  -- decl.update_with_fun env (name.map_prefix f) (additive_test f replace_all ignore) relevant reorder tgt
+  trace[to_additive] "generating\n{decl.name} :=\n  {decl.value!}"
+  -- [todo] implement this error:
   -- decorate_error (format!"@[to_additive] failed. Type mismatch in additive declaration. For help, see the docstring of `to_additive.attr`, section `Troubleshooting`. Failed to add declaration\n{pp_decl}
+    -- { if env.is_protected src then add_protected_decl decl else add_decl decl,
+    -- -- we test that the declaration value type-checks, so that we get the decorated error message
+    -- -- without this line, the type-checking might fail outside the `decorate_error`.
+    -- decorate_error "proof doesn't type-check. " $ type_check decl.value }
   addAndCompile decl.toDeclaration!
   if isProtected (← getEnv) src then
     setEnv $ addProtected (← getEnv) tgt
 
-def transformDeclWithPrefixFun (src tgt : Name) (attrs : List Name) : ReaderT Context CoreM Unit := do
+def transformDeclWithPrefixFun (src tgt : Name) (attrs : List Name) : CoreM Unit := do
   transformDeclWithPrefixFunAux src tgt src
-  let eqns? ← liftToMeta2 (getEqnsFor? src true)
+  let eqns? ← MetaM.run' (getEqnsFor? src true)
   -- now transform all of the equational lemmas
   if let some eqns := eqns? then
     for src_eqn in eqns do
       transformDeclWithPrefixFunAux src tgt src_eqn
+      -- [todo] need to implement copyAttribute
       -- -- copy attributes for the equational lemmas so that they know if they are refl lemmas
       -- let tgt_eqn := Name.mapPrefix (fun n => if n == src then some tgt else none) src_eqn
       -- for attr in attrs do
       --   copyAttribute attr src_eqn tgt_eqn
       -- -- set the transformed equation lemmas as equation lemmas for the new declaration
       -- addEqnLemma tgt_eqn
+  -- [todo] need to implement copyAttribute
   -- for attr in attrs do
-  --   copyAttributes attr src tgt
+  --   copyAttribute attr src tgt
   return ()
-
 
 def hasAttribute' (name : Name) : MetaM Bool :=
   pure false -- [todo] implement
@@ -315,7 +313,6 @@ def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
 /-- `value_type` is the type of the arguments that can be provided to `to_additive`.
 `to_additive.parser` parses the provided arguments:
 * `replace_all`: replace all multiplicative declarations, do not use the heuristic.
-* `trace`: output the generated additive declaration.
 * `tgt : name`: the name of the target (the additive declaration).
 * `doc`: an optional doc string.
 * if `allow_auto_name` is `ff` (default) then `@[to_additive]` will check whether the given name
@@ -323,7 +320,6 @@ def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
 -/
 structure ValueType : Type where
   replaceAll : Bool := false
-  trace : Bool := false
   tgt : Name := Name.anonymous
   doc : Option String := none
   allowAutoName : Bool := false
@@ -331,7 +327,7 @@ structure ValueType : Type where
 
 /-- `add_comm_prefix x s` returns `"comm_" ++ s` if `x = tt` and `s` otherwise. -/
 def addCommPrefix : Bool → String → String
-| true, s => "comm" ++ s -- [todo] should toupper
+| true, s => "comm" ++ s -- [todo] should to-upper
 | false, s => s
 
 /-- Dictionary used by `to_additive.guess_name` to autogenerate names. -/
@@ -373,7 +369,7 @@ def tr : Bool → List String → List String
 def guessName : String → String :=
   String.mapTokens ''' $
   λ s => String.intercalate (String.singleton '_') $
-  tr false (s.splitOn "_") -- [todo] replace with camelcase logic
+  tr false (s.splitOn "_") -- [todo] replace with camelcase logic?
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
 def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
@@ -383,6 +379,7 @@ def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
     let (Name.str pre s _) := src | throwError "to_additive: can't transport {src}"
     let tgt_auto := guessName s
     if tgt.toString == tgt_auto then
+      -- [todo] make this a warning?
       dbg_trace "{src}: correctly autogenerated target name {tgt_auto}, you may remove the explicit {tgt} argument."
     let pre := pre.mapPrefix <| find_translation? (← getEnv)
     if tgt == Name.anonymous then
@@ -390,14 +387,13 @@ def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
     else
       return  Name.mkStr pre tgt.toString
   if res == src && tgt != src then
-    throwError "to_additve: can't transport {src} to itself."
+    throwError "to_additive: can't transport {src} to itself."
   return res
 
 private def proceedFieldsAux (src tgt : Name) (prio : Nat) (f : Name → CoreM (List String)) : CoreM Unit :=
 do
   let srcFields ← f src
   let tgtFields ← f tgt
-  trace[to_additive] "proceedFields {src} ↦ {tgt}"
   if srcFields.length != tgtFields.length then
     throwError "Failed to map fields of {src}, {tgt} with {srcFields} ↦ {tgtFields}"
   for (srcField, tgtField) in List.zip srcFields tgtFields do
@@ -406,7 +402,7 @@ do
       insert_translation (src ++ srcField) (tgt ++ tgtField)
       -- [todo] what is prio doing in mathlib3? I think it's the scoping?
 
-/-- Add the `aux_attr` attribute to the structure fields of `src`
+/-- Add the structure fields of `src` to the translations dictionary
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
 def proceedFields (src tgt : Name) (prio : Nat) : CoreM Unit := do
   let env : Environment ← getEnv
@@ -426,10 +422,9 @@ def proceedFields (src tgt : Name) (prio : Nat) : CoreM Unit := do
   --                 )
 
 def elab_to_additive : Syntax → CoreM ValueType
-  | `(attr| to_additive $[!%$replaceAll]? $[?%$trace]? $[$tgt]? $[$doc]?) => do
+  | `(attr| to_additive $[!%$replaceAll]? $[$tgt]? $[$doc]?) => do
     return {
       replaceAll := replaceAll.isSome
-      trace := trace.isSome
       tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
       doc := doc.bind (·.isStrLit?)
       allowAutoName := false
@@ -440,8 +435,9 @@ initialize registerBuiltinAttribute {
     name := `to_additive
     descr :="Transport multiplicative to additive"
     add := fun src stx kind => do
+      -- [todo] what is equiv of persistent in Lean 4?
       -- guard persistent <|> fail "`to_additive` can't be used as a local attribute"
-      let prio := 0 -- [todo] I think this is a function of kind?
+      let prio := 0 -- [todo] I think this is a function of `kind`?
       let val ← elab_to_additive stx
       let ignore := ignore_args_attr.getParam (← getEnv) src
       let relevant := relevant_arg_attr.getParam (← getEnv) src
@@ -456,16 +452,14 @@ initialize registerBuiltinAttribute {
       if (← getEnv).contains tgt then
         proceedFields src tgt prio
       else
-        let ctxt : Context := {
-          nameFn := (ToAdditive.translations.getState (←getEnv)).find?
-          replaceAll := val.replaceAll
-        }
         let magicNames := [`reducible, `_refl_lemma, `simp, `norm_cast, `instance, `refl, `symm, `trans, `elab_as_eliminator, `no_rsimp, `continuity, `ext, `ematch, `measurability, `alias, `_ext_core, `_ext_lemma_core, `nolint, `protected]
-        ReaderT.run (transformDeclWithPrefixFun src tgt magicNames) ctxt
-      --   if ← (has_attribute' `simps src) then
-      --     trace "Apply the simps attribute after the to_additive attribute"
-      --   if ← (has_attribute' `mono src) then
-      --     trace $ "to_additive does not work with mono, apply the mono attribute to both" ++ "versions after"
+        withOptions (fun o => o.setBool `to_additive.replaceAll val.replaceAll)
+          (transformDeclWithPrefixFun src tgt magicNames)
+      -- [todo] port below code
+      --   if ← (hasAttribute' `simps src) then
+      --     dbg_trace "Apply the simps attribute after the to_additive attribute"
+      --   if ← (hasAttribute' `mono src) then
+      --     dbg_trace "to_additive does not work with mono, apply the mono attribute to both versions after"
       --   match val.doc with
       --   | some doc => add_doc_string tgt doc
       --   | none => skip
@@ -474,23 +468,5 @@ initialize registerBuiltinAttribute {
       return ()
   }
 
-/-! An attribute that is automatically added to declarations tagged with `@[toAdditive]`, if needed.
-
-This attribute tells which argument is the type where this declaration uses the multiplicative
-structure. If there are multiple argument, we typically tag the first one.
-If this argument contains a fixed type, this declaration will note be additivized.
-See the Heuristics section of `toAdditive.attr` for more details.
-
-If a declaration is not tagged, it is presumed that the first argument is relevant.
-`@[toAdditive]` uses the function `toAdditive.firstMultiplicativeArg` to automatically tag
-declarations. It is ok to update it manually if the automatic tagging made an error.
-
-def getConfig : Syntax → AttrM Config
-| `(attr|to_additive)   => pure {}
-| `(attr|to_additive?)  => pure {trace := true}
-| `(attr|to_additive!)  => pure {replace_all := true}
-| `(attr|to_additive!?) => pure {replace_all := true, trace := true}
-| _ => throwUnsupportedSyntax
--/
 
 end ToAdditive
