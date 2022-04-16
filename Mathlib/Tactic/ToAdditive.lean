@@ -5,8 +5,9 @@ Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn
 Ported by: E.W.Ayers
 -/
 import Mathlib.Data.String.Defs
-import Mathlib.Lean.Expr
+import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Expr.ReplaceRec
+import Mathlib.Lean.Expr
 import Lean
 import Lean.Data
 
@@ -23,6 +24,7 @@ syntax (name := to_additive) "to_additive" "!"? "?"? (ppSpace ident)? (ppSpace s
 namespace ToAdditive
 
 initialize registerTraceClass `to_additive
+initialize registerTraceClass `to_additive.replace
 
 initialize ignore_args_attr : ParametricAttribute (List Nat) ←
   registerParametricAttribute {
@@ -55,14 +57,23 @@ initialize relevant_arg_attr : ParametricAttribute (Nat) ←
       | _ => throwError "unexpected to_additive_relevant_arg syntax {stx}"
   }
 
+-- [todo] replace with MapDeclarationExtension when https://github.com/leanprover/lean4/issues/1111 is fixed.
 /- Maps multiplicative names to their additive counterparts. -/
-initialize translations : MapDeclarationExtension Name ← mkMapDeclarationExtension `translations
+initialize translations : SimplePersistentEnvExtension (Name × Name) (NameMap Name) ←
+  registerSimplePersistentEnvExtension {
+    name          := `translations,
+    addImportedFn := fun ass => ass.foldl (fun | names, as => as.foldl (fun | names, (a,b) => names.insert a b) names) ∅,
+    addEntryFn    := fun s n => s.insert n.1 n.2 ,
+    toArrayFn     := fun es => es.toArray
+  }
 
-def insert_translation [Monad M] [MonadEnv M] (src tgt : Name) : M Unit := do
-  translations.insert (← getEnv) src tgt |> setEnv
+def insert_translation (src tgt : Name) : CoreM Unit := do
+  (ToAdditive.translations.addEntry (←getEnv)) (src, tgt) |> setEnv
+  trace[to_additive] "Added translation {src} ↦ {tgt}."
 
-def find_translation? [Monad M] [MonadEnv M] (src : Name) : M (Option Name) := do
-  return translations.find? (← getEnv) src
+def find_translation? (env : Environment) : Name → Option Name :=
+  (ToAdditive.translations.getState env).find?
+
 
 
 /-- Context for toAdditive expression traverser. -/
@@ -132,6 +143,13 @@ def additiveTest (e : Expr) : M Bool := do
   else
     additiveTestAux false e
 
+private def setNumLit (i : Nat) (e : Expr) : Expr :=
+  -- assuming it gave some for Lean.Compiler.getNumLit
+  match e with
+  | Expr.lit (Literal.natVal _) _    => mkNatLit i
+  | Expr.app _ _ _ => e.modifyArg (fun _ => mkNatLit i) 1
+  | _ => e
+
 /--
 `e.apply_replacement_fun f test` applies `f` to each identifier
 (inductive type, defined function etc) in an expression, unless
@@ -146,13 +164,14 @@ We assume that all functions where we want to reorder arguments are fully applie
 This can be done by applying `expr.eta_expand` first.
 -/
 def applyReplacementFun : Expr → ReaderT Context MetaM Expr :=
-  Lean.Expr.replaceRecM fun r e =>
+  Lean.Expr.replaceRecM fun r e => do
+    if let some 1 := Lean.Compiler.getNumLit e then
+      return setNumLit 0 e
     match e with
     | Expr.const n₀ ls _ => do
       let nameFun ← getNameFn
       let n₁ := Name.mapPrefix nameFun n₀
-      let n₂ ← find_translation? n₀
-      trace[to_additive] "Expr.const {n₀} → {n₁} --- {n₂}"
+      trace[to_additive.replace] "Expr.const {n₀} → {n₁}"
       let ls : List Level ← (do
         if ← shouldReorder n₁ 1 then
             return ls.get! 1::ls.head!::ls.drop 2
@@ -160,21 +179,21 @@ def applyReplacementFun : Expr → ReaderT Context MetaM Expr :=
       return some $ Lean.mkConst n₁ ls
     | Expr.app g x _ => do
       let gf := g.getAppFn
-      let nm := gf.constName!
-      let nArgs := g.getAppNumArgs
-      -- e = `($gf y₁ .. yₙ $x)
-      if ← shouldReorder nm nArgs then
-          if ← additiveTest g.getAppArgs[0] then
-            -- interchange `x` and the last argument of `g`
+      if let some nm := gf.constName? then
+        let nArgs := g.getAppNumArgs
+        -- e = `($gf y₁ .. yₙ $x)
+        if ← shouldReorder nm nArgs then
+            if ← additiveTest g.getAppArgs[0] then
+              -- interchange `x` and the last argument of `g`
+              let x ← r x
+              let gf ← r (g.appFn!)
+              let ga ← r (g.appArg!)
+              return some $ mkApp2 gf x ga
+        if ← isRelevant nm nArgs then
+          if gf.isConst && not (← additiveTest x) then
             let x ← r x
-            let gf ← r (g.appFn!)
-            let ga ← r (g.appArg!)
-            return some $ mkApp2 gf x ga
-      if ← isRelevant nm nArgs then
-        if gf.isConst && not (← additiveTest x) then
-          let x ← r x
-          let args ← g.getAppArgs.mapM r
-          return some $ mkApp (mkAppN gf args) x
+            let args ← g.getAppArgs.mapM r
+            return some $ mkApp (mkAppN gf args) x
       return none
     | _ => return none
 
@@ -249,7 +268,7 @@ partial def transformDeclWithPrefixFunAux
     -- decl.update_with_fun env (name.map_prefix f) (additive_test f replace_all ignore)
     --   relevant reorder tgt
   -- o ← get_options, set_options $ o.set_bool `pp.all tt, -- print with pp.all (for debugging)
-  trace[toAdditive] "generating\n{decl.name}"
+  trace[to_additive] "generating\n{decl.name}"
 
   -- decorate_error (format!"@[to_additive] failed. Type mismatch in additive declaration. For help, see the docstring of `to_additive.attr`, section `Troubleshooting`. Failed to add declaration\n{pp_decl}
   let decl : Declaration := decl.toDeclaration!
@@ -374,7 +393,7 @@ def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
     let tgt_auto := guessName s
     if tgt.toString == tgt_auto then
       dbg_trace "{src}: correctly autogenerated target name {tgt_auto}, you may remove the explicit {tgt} argument."
-    let pre := pre.mapPrefix <| translations.find? <| ← getEnv
+    let pre := pre.mapPrefix <| find_translation? (← getEnv)
     if tgt == Name.anonymous then
       return Name.mkStr pre tgt_auto
     else
@@ -387,11 +406,14 @@ private def proceedFieldsAux (src tgt : Name) (prio : Nat) (f : Name → CoreM (
 do
   let srcFields ← f src
   let tgtFields ← f tgt
+  trace[to_additive] "proceedFields {src} ↦ {tgt}"
   if srcFields.length != tgtFields.length then
     throwError "Failed to map fields of {src}, {tgt} with {srcFields} ↦ {tgtFields}"
   for (srcField, tgtField) in List.zip srcFields tgtFields do
     if srcField != tgtField then
-      setEnv <| translations.insert (← getEnv) srcField tgtField -- [todo] what is prio doing? I think it's the scoping?
+
+      insert_translation (src ++ srcField) (tgt ++ tgtField)
+      -- [todo] what is prio doing in mathlib3? I think it's the scoping?
 
 /-- Add the `aux_attr` attribute to the structure fields of `src`
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
@@ -412,10 +434,6 @@ def proceedFields (src tgt : Name) (prio : Nat) : CoreM Unit := do
   --                 | _ := fail "Bad constructor name"
   --                 )
 
-
-
-
-
 def elab_to_additive : Syntax → CoreM ValueType
   | `(attr| to_additive $[!%$replaceAll]? $[?%$trace]? $[$tgt]? $[$doc]?) => do
     return {
@@ -433,23 +451,22 @@ initialize registerBuiltinAttribute {
     add := fun src stx kind => do
       -- guard persistent <|> fail "`to_additive` can't be used as a local attribute"
       let prio := 0 -- [todo] I think this is a function of kind?
-      let env ← getEnv
       let val ← elab_to_additive stx
-      let ignore := ignore_args_attr.getParam env src
-      let relevant := relevant_arg_attr.getParam env src
-      let reorder := reorder_attr.getParam env src
+      let ignore := ignore_args_attr.getParam (← getEnv) src
+      let relevant := relevant_arg_attr.getParam (← getEnv) src
+      let reorder := reorder_attr.getParam (← getEnv) src
       let tgt ← targetName src val.tgt val.allowAutoName
-      let env := translations.insert env src tgt
-      setEnv env
-      trace[to_additive] "Added translation {src} ↦ {tgt}."
+      if let some tgt' := find_translation? (← getEnv) src then
+        throwError "{src} already has a to_additive translation {tgt'}."
+      insert_translation src tgt
       let firstMultArg ← MetaM.run' <| firstMultiplicativeArg src
       if (firstMultArg != 1) then
         proceedFields src tgt prio
-      if env.contains tgt then
+      if (← getEnv).contains tgt then
         proceedFields src tgt prio
       else
         let ctxt : Context := {
-          nameFn := translations.find? env
+          nameFn := (ToAdditive.translations.getState (←getEnv)).find?
           replaceAll := val.replaceAll
         }
         let magicNames := [`reducible, `_refl_lemma, `simp, `norm_cast, `instance, `refl, `symm, `trans, `elab_as_eliminator, `no_rsimp, `continuity, `ext, `ematch, `measurability, `alias, `_ext_core, `_ext_lemma_core, `nolint, `protected]

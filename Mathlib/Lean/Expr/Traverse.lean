@@ -5,6 +5,7 @@ Authors: E.W.Ayers
 -/
 
 import Lean
+import Mathlib.Lean.Expr.Basic
 
 /-!
 # Traversal functions for expressions.
