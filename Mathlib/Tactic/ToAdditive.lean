@@ -143,13 +143,6 @@ def additiveTest (e : Expr) : M Bool := do
   else
     additiveTestAux false e
 
-private def setNumLit (i : Nat) (e : Expr) : Expr :=
-  -- assuming it gave some for Lean.Compiler.getNumLit
-  match e with
-  | Expr.lit (Literal.natVal _) _    => mkNatLit i
-  | Expr.app _ _ _ => e.modifyArg (fun _ => mkNatLit i) 1
-  | _ => e
-
 /--
 `e.apply_replacement_fun f test` applies `f` to each identifier
 (inductive type, defined function etc) in an expression, unless
@@ -165,15 +158,14 @@ This can be done by applying `expr.eta_expand` first.
 -/
 def applyReplacementFun : Expr → ReaderT Context MetaM Expr :=
   Lean.Expr.replaceRecM fun r e => do
-    if let some 1 := Lean.Compiler.getNumLit e then
-      return setNumLit 0 e
     match e with
+    | Expr.lit (Literal.natVal 1) _    => pure <| mkNatLit 0
     | Expr.const n₀ ls _ => do
       let nameFun ← getNameFn
       let n₁ := Name.mapPrefix nameFun n₀
       trace[to_additive.replace] "Expr.const {n₀} → {n₁}"
       let ls : List Level ← (do
-        if ← shouldReorder n₁ 1 then
+        if ← shouldReorder n₀ 1 then
             return ls.get! 1::ls.head!::ls.drop 2
         return ls)
       return some $ Lean.mkConst n₁ ls
@@ -268,11 +260,10 @@ partial def transformDeclWithPrefixFunAux
     -- decl.update_with_fun env (name.map_prefix f) (additive_test f replace_all ignore)
     --   relevant reorder tgt
   -- o ← get_options, set_options $ o.set_bool `pp.all tt, -- print with pp.all (for debugging)
-  trace[to_additive] "generating\n{decl.name}"
+  trace[to_additive] "generating\n{decl.name}\n{decl.value!}"
 
   -- decorate_error (format!"@[to_additive] failed. Type mismatch in additive declaration. For help, see the docstring of `to_additive.attr`, section `Troubleshooting`. Failed to add declaration\n{pp_decl}
-  let decl : Declaration := decl.toDeclaration!
-  addAndCompile decl
+  addAndCompile decl.toDeclaration!
   if isProtected (← getEnv) src then
     setEnv $ addProtected (← getEnv) tgt
 
