@@ -57,9 +57,9 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array (Name × MVarId)) (wit
 
 open private getElimNameInfo generalizeTargets generalizeVars in evalInduction in
 elab (name := induction') tk:"induction' " tgts:(casesTarget,+)
-    usingArg:(" using " ident)?
-    withArg:(" with " (colGt binderIdent)+)?
-    genArg:(" generalizing " (colGt ident)+)? : tactic => do
+    usingArg:((" using " ident)?)
+    withArg:((" with " (colGt binderIdent)+)?)
+    genArg:((" generalizing " (colGt ident)+)?) : tactic => do
   let targets ← elabCasesTargets tgts.getSepArgs
   let (elimName, elimInfo) ← getElimNameInfo usingArg targets (induction := true)
   let g ← getMainGoal
@@ -87,8 +87,8 @@ elab (name := induction') tk:"induction' " tgts:(casesTarget,+)
       setGoals (subgoals ++ result.others).toList
 
 open private getElimNameInfo in evalCases in
-elab (name := cases') "cases' " tgts:(casesTarget,+) usingArg:(" using " ident)?
-  withArg:(" with " (colGt binderIdent)+)? : tactic => do
+elab (name := cases') "cases' " tgts:(casesTarget,+) usingArg:((" using " ident)?)
+  withArg:((" with " (colGt binderIdent)+)?) : tactic => do
   let targets ← elabCasesTargets tgts.getSepArgs
   let (elimName, elimInfo) ← getElimNameInfo usingArg targets (induction := false)
   let g ← getMainGoal
