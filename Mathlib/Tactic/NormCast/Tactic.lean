@@ -200,9 +200,9 @@ def normCastHyp (fvarId : FVarId) : TacticM Unit :=
   liftMetaTactic1 fun mvarId => do
     let hyp ← instantiateMVars (← getLocalDecl fvarId).type
     let prf ← derive hyp
-    return (← applySimpResultToLocalDecl mvarId fvarId prf).map (·.snd)
+    return (← applySimpResultToLocalDecl mvarId fvarId prf false).map (·.snd)
 
-elab "norm_cast0" loc:(ppSpace location)? : tactic =>
+elab "norm_cast0" loc:((ppSpace location)?) : tactic =>
   withMainContext do
     match expandOptLocation loc with
     | Location.targets hyps target =>
@@ -220,7 +220,6 @@ macro "assumption_mod_cast" : tactic => `(norm_cast0 at * <;> assumption)
 Normalize casts at the given locations by moving them "upwards".
 -/
 macro "norm_cast" loc:(ppSpace location)? : tactic =>
-  let loc := loc.getOptional?
   `(tactic| norm_cast0 $[$loc:location]? <;> try trivial)
 
 /--
