@@ -49,7 +49,7 @@ def haveLetCore (mvarId : MVarId) (name : Option Syntax) (bis : Array Syntax)
     let (fvar, mvar2) ← intro1P (← declFn mvarId n t p)
     if let some stx := name then
       withMVarContext mvar2 do
-        Term.addTermInfo (isBinder := true) stx (mkFVar fvar)
+        Term.addTermInfo' (isBinder := true) stx (mkFVar fvar)
     pure (mvar1, mvar2)
 
 elab_rules : tactic

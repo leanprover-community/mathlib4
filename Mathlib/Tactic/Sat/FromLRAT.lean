@@ -607,7 +607,7 @@ elab "lrat_proof" n:(ident <|> "example") cnf:term:max lrat:term:max : command =
     let go := do
       fromLRAT cnf lrat name
       withSaveInfoContext do
-        Term.addTermInfo n (mkConst name) (isBinder := true)
+        Term.addTermInfo' n (mkConst name) (isBinder := true)
     if n.isIdent then go else withoutModifyingEnv go
 
 lrat_proof example

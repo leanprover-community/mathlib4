@@ -186,19 +186,19 @@ elab "#lint"
     fast:"*"?
     only:(&"only")? linters:(ident)*
     : command => do
-  let (decls, whereDesc, groupByFilename) ← match project.getOptional? with
+  let (decls, whereDesc, groupByFilename) ← match project with
     | none => do pure (← liftCoreM getDeclsInCurrModule, "in the current file", false)
     | some (Syntax.atom _ "mathlib") => do pure (← liftCoreM getDeclsInMathlib, "in mathlib", true)
     | some (Syntax.atom _ "all") => do pure (← liftCoreM getAllDecls, "in all files", true)
     | _ => throwUnsupportedSyntax
-  let verbosity : LintVerbosity ← match verbosity.getOptional? with
+  let verbosity : LintVerbosity ← match verbosity with
     | none => pure LintVerbosity.medium
     | some (Syntax.atom _ "+") => pure LintVerbosity.high
     | some (Syntax.atom _ "-") => pure LintVerbosity.low
     | _ => throwUnsupportedSyntax
-  let fast := fast.getOptional?.isSome
-  let only := only.getOptional?.isSome
-  let extraLinters ← linters.getArgs.mapM fun id =>
+  let fast := fast.isSome
+  let only := only.isSome
+  let extraLinters ← linters.mapM fun id =>
     withScope ({ · with currNamespace := `Mathlib.Tactic.Lint }) <|
       resolveGlobalConstNoOverload id
   let linters ← liftCoreM <| getChecks (slow := !fast) extraLinters.toList only

@@ -49,7 +49,7 @@ elab_rules : tactic
       let (fvar, mvarId) ← intro1P (← define mvarId a.getId ty val)
       pure (fvar, [mvarId])
     withMainContext do
-      Term.addTermInfo (isBinder := true) a (mkFVar fvar)
+      Term.addTermInfo' (isBinder := true) a (mkFVar fvar)
   if rw.isNone then
     evalTactic (← `(tactic| try rewrite [(id rfl : $val = $a)] at *))
   match h, rev with
