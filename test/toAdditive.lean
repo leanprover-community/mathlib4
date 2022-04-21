@@ -51,19 +51,22 @@ theorem foo2_works : foo2 2 3 (plift.up 2) = Nat.pow 2 0 := by decide
 theorem bar2_works : bar2 2 3 (plift.up 2) =  2 * (dummy.1 3 (plift.up 2)) := by decide
 
 @[to_additive bar3]
-def foo3 {α} [my_has_pow α ℕ] (x : α) : ℕ → α := @my_has_pow.pow α ℕ _ x -- [fixme]
+def foo3 {α} [my_has_pow α ℕ] (x : α) : ℕ → α := @my_has_pow.pow α ℕ _ x
+
+theorem foo3_works : foo3 2 3 = Nat.pow 2 3 := by decide
+theorem bar3_works : bar3 2 3 =  2 * 3 := by decide
 
 @[to_additive bar4]
-def foo4 {α : Type u} : Type v → Type (max u v) := @my_has_pow α -- [fixme]
+def foo4 {α : Type u} : Type v → Type (max u v) := @my_has_pow α
 
 @[to_additive bar4_test]
-lemma foo4_test {α β : Type u} : @foo4 α β = @my_has_pow α β := rfl -- [fixme]
+lemma foo4_test {α β : Type u} : @foo4 α β = @my_has_pow α β := rfl
 
 @[to_additive bar5]
 def foo5 {α} [my_has_pow α ℕ] [my_has_pow ℕ ℤ] : True := True.intro -- [fixme]
 
 @[to_additive bar6]
-def foo6 {α} [my_has_pow α ℕ] : α → ℕ → α := @my_has_pow.pow α ℕ _ -- [fixme]
+def foo6 {α} [my_has_pow α ℕ] : α → ℕ → α := @my_has_pow.pow α ℕ _
 
 @[to_additive bar7]
 def foo7 := @my_has_pow.pow

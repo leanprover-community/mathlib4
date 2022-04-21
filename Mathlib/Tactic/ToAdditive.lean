@@ -125,7 +125,7 @@ private def additiveTestAux: Bool → Expr → M Bool
   | b, _                => return true
 
 /--
-`additive_test f replace_all ignore e` tests whether the expression `e` contains no constant
+`additive_test e` tests whether the expression `e` contains no constant
 `nm` that is not applied to any arguments, and such that `f nm = none`.
 This is used in `@[to_additive]` for deciding which subexpressions to transform: we only transform
 constants if `additive_test` applied to their first argument returns `tt`.
@@ -179,7 +179,9 @@ def applyReplacementFun : Expr → MetaM Expr :=
               let x ← r x
               let gf ← r (g.appFn!)
               let ga ← r (g.appArg!)
-              return some $ mkApp2 gf x ga
+              let e₂ :=  mkApp2 gf x ga
+              trace[to_additive.replace] "reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter:  {e₂}"
+              return some e₂
         if ← isRelevant nm nArgs then
           if gf.isConst && not (← additiveTest x) then
             let x ← r x
@@ -191,27 +193,36 @@ def applyReplacementFun : Expr → MetaM Expr :=
 /-- Eta expands `e` at most `n` times.-/
 def etaExpandN (n : Nat) (e : Expr): MetaM Expr := do
   let t ← inferType e
-  forallBoundedTelescope t (some n) fun xs _ =>
-    mkLambdaFVars xs (mkAppN e xs)
+  let e₂ ← forallBoundedTelescope t (some n) fun xs _ => do
+    let e' ← mkLambdaFVars xs (mkAppN e xs)
+    trace[to_additive] "η-expand({n}):\n{e}\n{xs}\n{(mkAppN e xs)}\n{e'}"
+    return e'
+  trace[to_additive] "η-expand:\nBefore: {e}\nAfter:  {e₂}"
+  return e₂
 
+open TransformStep in
 /-- `e.expand` eta-expands all expressions that have as head a constant `n` in
 `reorder`. They are expanded until they are applied to one more argument than the maximum in
 `reorder.find n`. -/
 private def expand : Expr → MetaM Expr
-| e => e.replaceRecM $ fun r e => do
-  let e0 := e.getAppFn
-  let es := e.getAppArgs
-  let some e0n := e0.constName? | return none
-  let reorder ← getReorder e0n
-  if reorder.isEmpty then
-    return none
-  let e' := mkAppN e0 $ ← es.mapM r
-  let needed_n := reorder.foldr Nat.max 0 + 1
-  if needed_n ≤ es.size then
-    return some e'
-  else
-    let e' ← etaExpandN (needed_n - es.size) e'
-    return some $ e'
+| e => do
+  let e₂ ←e.replaceRecMeta $ fun r e => do
+    let e0 := e.getAppFn
+    let es := e.getAppArgs
+    let some e0n := e0.constName? | return none
+    let reorder ← getReorder e0n
+    if reorder.isEmpty then
+      -- no need of expand if nothing needs reordering
+      return none
+    let e' := mkAppN e0 $ ← es.mapM r
+    let needed_n := reorder.foldr Nat.max 0 + 1
+    if needed_n ≤ es.size then
+      return some e'
+    else
+      let e' ← etaExpandN (needed_n - es.size) e'
+      return some $ e'
+  trace[to_additive] "expand:\nBefore: {e}\nAfter:  {e₂}"
+  return e₂
 
 def updateWithFun
   (tgt : Name) (decl : ConstantInfo)
