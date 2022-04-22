@@ -33,7 +33,7 @@ def elabOpenPrivateLike (ids : Array Syntax) (tgts mods : Option (Array Syntax))
     let n ← resolveGlobalConstNoOverload tgt
     names ← Meta.collectPrivateIn n names
   for mod in mods.getD #[] do
-    let some modIdx ← (← getEnv).moduleIdxForModule? mod.getId
+    let some modIdx := (← getEnv).moduleIdxForModule? mod.getId
       | throwError "unknown module {mod}"
     for declName in (← getEnv).declsInModuleIdx modIdx do
       if isPrivateName declName then
