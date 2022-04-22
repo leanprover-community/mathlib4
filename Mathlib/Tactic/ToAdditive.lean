@@ -200,7 +200,6 @@ def etaExpandN (n : Nat) (e : Expr): MetaM Expr := do
   trace[to_additive] "η-expand:\nBefore: {e}\nAfter:  {e₂}"
   return e₂
 
-open TransformStep in
 /-- `e.expand` eta-expands all expressions that have as head a constant `n` in
 `reorder`. They are expanded until they are applied to one more argument than the maximum in
 `reorder.find n`. -/
@@ -233,7 +232,6 @@ def updateWithFun
     decl := decl.updateValue (← applyReplacementFun (← expand v))
   return decl
 
-
 /-- transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
 using the dictionary `f`.
 `replace_all`, `trace`, `ignore` and `reorder` are configuration options.
@@ -242,11 +240,13 @@ declaration. -/
 partial def transformDeclWithPrefixFunAux
   (pre tgt_pre : Name) : Name → CoreM Unit := fun src => do
   -- if this declaration is not `pre` or an internal declaration, we do nothing.
-  if not (src == pre || src.isInternal) then
-    if (← runNameFn src).isSome then
-      return ()
-    else
-      throwError "The declaration {pre} depends on the declaration {src} which is in the namespace {pre}, but does not have the `@[to_additive]` attribute. This is not supported. Workaround: move {src} to a different namespace."
+  -- [todo] the next section is commented out because Lean 4 makes declarations which are not internal (that is, head string starts with `_`)
+  --   but which should be transformed;; eg `proof_1` in `Lean.Meta.mkAuxDefinitionFor` this might be better fixed in core.
+  -- if not (src == pre || src.isInternal) then
+  --   if (← runNameFn src).isSome then
+  --     return ()
+  --   else
+  --     throwError "The declaration {pre} depends on the declaration {src} which is in the namespace {pre}, but does not have the `@[to_additive]` attribute. This is not supported. Workaround: move {src} to a different namespace."
   let env ← getEnv
   -- we find the additive name of `src`
   let tgt := src.mapPrefix (fun n => if n == pre then some tgt_pre else none)

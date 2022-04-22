@@ -74,7 +74,6 @@ def foo7 := @my_has_pow.pow
 theorem foo7_works : foo7 2 3 = Nat.pow 2 3 := by decide
 theorem bar7_works : bar7 2 3 =  2 * 3 := by decide
 
-
 /- [TODO] below
 
 /- test the eta-expansion applied on `foo6`. -/
