@@ -46,7 +46,7 @@
       {
         inherit project test;
         packages = project // {
-          ${name} = project.executable;
+          ${name} = project.sharedLib;
           test = test.executable;
         };
 

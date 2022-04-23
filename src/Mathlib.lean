@@ -1,38 +1,39 @@
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.Ring.Basic
-import Mathlib.Data.Array.Basic
-import Mathlib.Data.Array.Defs
-import Mathlib.Data.BinaryHeap
-import Mathlib.Data.ByteArray
-import Mathlib.Data.Char
-import Mathlib.Data.Equiv.Basic
-import Mathlib.Data.Equiv.Functor
-import Mathlib.Data.Fin.Basic
-import Mathlib.Data.List.Basic
-import Mathlib.Data.List.Card
-import Mathlib.Data.List.Defs
-import Mathlib.Data.List.Perm
-import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Nat.Gcd
-import Mathlib.Data.Option.Basic
-import Mathlib.Data.Option.Defs
-import Mathlib.Data.Prod
-import Mathlib.Data.String.Defs
-import Mathlib.Data.String.Lemmas
-import Mathlib.Data.Subtype
-import Mathlib.Data.UInt
-import Mathlib.Data.UnionFind
-import Mathlib.Init.Algebra.Functions
-import Mathlib.Init.Algebra.Order
-import Mathlib.Init.Data.Int.Basic
-import Mathlib.Init.Data.Int.Order
-import Mathlib.Init.Data.List.Basic
-import Mathlib.Init.Data.List.Instances
-import Mathlib.Init.Data.List.Lemmas
-import Mathlib.Init.Data.Nat.Basic
+-- import Mathlib.Algebra.Group.Basic
+-- import Mathlib.Algebra.Group.Defs
+-- import Mathlib.Algebra.GroupWithZero.Defs
+-- import Mathlib.Algebra.Ring.Basic
+-- import Mathlib.Data.Array.Basic
+-- import Mathlib.Data.Array.Defs
+-- import Mathlib.Data.BinaryHeap
+-- import Mathlib.Data.ByteArray
+-- import Mathlib.Data.Char
+-- import Mathlib.Data.Equiv.Basic
+-- import Mathlib.Data.Equiv.Functor
+-- import Mathlib.Data.Fin.Basic
+-- import Mathlib.Data.List.Basic
+-- import Mathlib.Data.List.Card
+-- import Mathlib.Data.List.Defs
+-- import Mathlib.Data.List.Perm
+-- import Mathlib.Data.Nat.Basic
+-- import Mathlib.Data.Nat.Gcd
+-- import Mathlib.Data.Option.Basic
+-- import Mathlib.Data.Option.Defs
+-- import Mathlib.Data.Prod
+-- import Mathlib.Data.String.Defs
+-- import Mathlib.Data.String.Lemmas
+-- import Mathlib.Data.Subtype
+-- import Mathlib.Data.UInt
+-- import Mathlib.Data.UnionFind
+-- import Mathlib.Init.Algebra.Functions
+-- import Mathlib.Init.Algebra.Order
+-- import Mathlib.Init.Data.Int.Basic
+-- import Mathlib.Init.Data.Int.Order
+-- import Mathlib.Init.Data.List.Basic
+-- import Mathlib.Init.Data.List.Instances
+-- import Mathlib.Init.Data.List.Lemmas
+-- import Mathlib.Init.Data.Nat.Basic
 -- import Mathlib.Init.Data.Nat.Lemmas
+/-
 import Mathlib.Init.Data.Option.Basic
 import Mathlib.Init.Data.Option.Instances
 import Mathlib.Init.Dvd
@@ -80,10 +81,11 @@ import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.TryThis
+-/
 import Mathlib.Util.DeclName
 import Mathlib.Util.Eval
 import Mathlib.Util.Export
 import Mathlib.Util.TermUnsafe
 import Mathlib.Util.Time
-import Mathlib.Util.WhatsNew
+-- import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
