@@ -26,20 +26,20 @@ structure SimpLemmaInfo where
   rhs : Expr
 
 def isConditionalHyps (eq : Expr) : List Expr → MetaM Bool
-  | [] => false
+  | [] => return false
   | h :: hs => do
     let ldecl ← getFVarLocalDecl h
     if !ldecl.binderInfo.isInstImplicit
-        && !(← hs.anyM fun h' => do (← inferType h').containsFVar h.fvarId!)
+        && !(← hs.anyM fun h' => do pure <| (← inferType h').containsFVar h.fvarId!)
         && !eq.containsFVar h.fvarId! then
       return true
     isConditionalHyps eq hs
 
-open private preprocess from Lean.Meta.Tactic.Simp.SimpLemmas in
+open private preprocess from Lean.Meta.Tactic.Simp.SimpTheorems in
 def withSimpLemmaInfos (ty : Expr) (k : SimpLemmaInfo → MetaM α) : MetaM (Array α) := withReducible do
-  (← preprocess (← mkSorry ty true) ty false).toArray.mapM fun (_, ty') => do
+  (← preprocess (← mkSorry ty true) ty false true).toArray.mapM fun (_, ty') => do
     forallTelescopeReducing ty' fun hyps eq => do
-      let some (_, lhs, rhs) ← eq.eq? | throwError "not an equality {eq}"
+      let some (_, lhs, rhs) ← pure eq.eq? | throwError "not an equality {eq}"
       k {
         hyps, lhs, rhs
         isConditional := ← isConditionalHyps eq hyps.toList
@@ -48,8 +48,8 @@ def withSimpLemmaInfos (ty : Expr) (k : SimpLemmaInfo → MetaM α) : MetaM (Arr
 /-- Checks whether two expressions are equal for the simplifier. That is,
 they are reducibly-definitional equal, and they have the same head symbol. -/
 def isSimpEq (a b : Expr) (whnfFirst := true) : MetaM Bool := withReducible do
-  let a ← if whnfFirst then whnf a else a
-  let b ← if whnfFirst then whnf b else b
+  let a ← if whnfFirst then whnf a else pure a
+  let b ← if whnfFirst then whnf b else pure b
   if a.getAppFn.constName? != b.getAppFn.constName? then return false
   isDefEq a b
 
@@ -61,7 +61,7 @@ def checkAllSimpLemmaInfos (ty : Expr) (k : SimpLemmaInfo → MetaM (Option Mess
     return MessageData.joinSep errors.toList Format.line
 
 def isSimpLemma (declName : Name) : MetaM Bool := do
-  (← getSimpLemmas).lemmaNames.contains declName
+  return (← getSimpTheorems).lemmaNames.contains declName
 
 open Lean.Meta.DiscrTree
 partial def trieElements : Trie α → StateT (Array α) Id Unit
@@ -81,11 +81,12 @@ open Std
 -- This function computes the map ``{`decl._auxLemma.1 ↦ `decl}``
 def constToSimpDeclMap (ctx : Simp.Context) : HashMap Name Name := Id.run do
   let mut map : HashMap Name Name := {}
-  for sls in [ctx.simpLemmas.pre, ctx.simpLemmas.post] do
-    for sl in ((elements sls).run #[]).2 do
-      if let some declName := sl.name? then
-        if let some auxDeclName := sl.proof.getAppFn.constName? then
-          map := map.insert auxDeclName declName
+  for sThms in ctx.simpTheorems do
+    for sls in [sThms.pre, sThms.post] do
+      for sl in ((elements sls).run #[]).2 do
+        if let some declName := sl.name? then
+          if let some auxDeclName := sl.proof.getAppFn.constName? then
+            map := map.insert auxDeclName declName
   return map
 
 def isEqnLemma? (n : Name) : Option Name :=
@@ -94,27 +95,28 @@ def isEqnLemma? (n : Name) : Option Name :=
   else
     none
 
-def heuristicallyExtractSimpLemmasCore (ctx : Simp.Context) (constToSimpDecl : HashMap Name Name) (prf : Expr) : Array Name := Id.run do
+def heuristicallyExtractSimpTheorems (ctx : Simp.Context) (constToSimpDecl : HashMap Name Name) (prf : Expr) : Array Name := Id.run do
   let mut cnsts : HashSet Name := {}
   for c in prf.getUsedConstants do
-    if ctx.simpLemmas.toUnfold.contains c then
-      cnsts := cnsts.insert c
-    else if ctx.congrLemmas.lemmas.contains c then
-      cnsts := cnsts.insert c
-    else if let some c' := constToSimpDecl.find? c then
-      cnsts := cnsts.insert c'
-    else if let some c' := isEqnLemma? c then
-      cnsts := cnsts.insert c'
+    for simpTheorems in ctx.simpTheorems do
+      if simpTheorems.toUnfold.contains c then
+        cnsts := cnsts.insert c
+      else if ctx.congrTheorems.lemmas.contains c then
+        cnsts := cnsts.insert c
+      else if let some c' := constToSimpDecl.find? c then
+        cnsts := cnsts.insert c'
+      else if let some c' := isEqnLemma? c then
+        cnsts := cnsts.insert c'
   return cnsts.toArray
 
-@[inline] def heuristicallyExtractSimpLemmas (ctx : Simp.Context) (prf : Expr) : Array Name :=
-  heuristicallyExtractSimpLemmasCore ctx (constToSimpDeclMap ctx) prf
+@[inline] def heuristicallyExtractSimpTheoremsFromExpr (ctx : Simp.Context) (prf : Expr) : Array Name :=
+   heuristicallyExtractSimpTheorems ctx (constToSimpDeclMap ctx) prf
 
 def decorateError (msg : MessageData) (k : MetaM α) : MetaM α := do
   try k catch e => throw e
 
 def formatLemmas (lems : Array Name) : CoreM MessageData := do
-  toMessageData <|<- lems.mapM mkConstWithLevelParams
+  return toMessageData <|<- lems.mapM mkConstWithLevelParams
 
 /-- A linter for simp lemmas whose lhs is not in simp-normal form, and which hence never fire. -/
 @[mathlibLinter] def simpNF : Linter where
@@ -129,14 +131,14 @@ https://leanprover-community.github.io/mathlib_docs/notes.html#simp-normal%20for
     let ctx ← Simp.Context.mkDefault
     checkAllSimpLemmaInfos (← getConstInfo declName).type fun {lhs, rhs, isConditional, ..} => do
     let ⟨lhs', prf1⟩ ← decorateError "simplify fails on left-hand side:" <| simp lhs ctx
-    let prf1_lems := heuristicallyExtractSimpLemmas ctx (prf1.getD (mkBVar 0))
+    let prf1_lems := heuristicallyExtractSimpTheoremsFromExpr ctx (prf1.getD (mkBVar 0))
     if prf1_lems.contains declName then return none
     let ⟨rhs', prf2⟩ ← decorateError "simplify fails on right-hand side:" <| simp rhs ctx
     let lhs'_eq_rhs' ← isSimpEq lhs' rhs' (whnfFirst := false)
     let lhs_in_nf ← isSimpEq lhs' lhs
     if lhs'_eq_rhs' then do
       if prf1.isNone then return none -- TODO: cannot detect used rfl-lemmas
-      let used_lemmas := heuristicallyExtractSimpLemmas ctx <|
+      let used_lemmas := heuristicallyExtractSimpTheoremsFromExpr ctx <|
         mkApp (prf1.getD (mkBVar 0)) (prf2.getD (mkBVar 0))
       return m!"simp can prove this:
   by simp only {← formatLemmas used_lemmas}
@@ -233,12 +235,12 @@ Some commutativity lemmas are simp lemmas:"
     unless ← isSimpLemma declName do return none
     let ty := (← getConstInfo declName).type
     forallTelescopeReducing ty fun xs ty => do
-    let some (_, lhs, rhs) ← ty.eq? | none
+    let some (_, lhs, rhs) ← pure ty.eq? | pure none
     unless lhs.getAppFn.constName? == rhs.getAppFn.constName? do return none
     let (mvars, bis, ty') ← forallMetaTelescopeReducing ty
-    let some (_, lhs', rhs') ← ty'.eq? | none
+    let some (_, lhs', rhs') ← pure ty'.eq? | pure none
     unless ← isDefEq rhs lhs' do return none
     unless ← withNewMCtxDepth (isDefEq rhs lhs') do return none
     -- ensure that the second application makes progress:
     if ← isDefEq lhs' rhs' then return none
-    m!"should not be marked simp"
+    return m!"should not be marked simp"

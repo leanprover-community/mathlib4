@@ -10,15 +10,15 @@ open Lean Elab
 private def setOption [Monad m] [MonadError m]
     (name val : Syntax) (opts : Options) : m Options := do
   let val ← match val with
-    | Syntax.ident _ _ `true _  => DataValue.ofBool true
-    | Syntax.ident _ _ `false _ => DataValue.ofBool false
+    | Syntax.ident _ _ `true _  => pure <| DataValue.ofBool true
+    | Syntax.ident _ _ `false _ => pure <| DataValue.ofBool false
     | _ => match val.isNatLit? with
-      | some num => DataValue.ofNat num
+      | some num => pure <| DataValue.ofNat num
       | none => match val.isStrLit? with
-        | some str => DataValue.ofString str
+        | some str => pure <| DataValue.ofString str
         | none =>
           throwError "unsupported option value {val}"
-  opts.insert name.getId val
+  pure <| opts.insert name.getId val
 
 /-
 The command `sudo set_option name val` is similar to `set_option name val`,

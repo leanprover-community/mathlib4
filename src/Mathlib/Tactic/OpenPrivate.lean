@@ -82,7 +82,7 @@ It is also possible to specify the module instead with
 -/
 @[commandElab openPrivate] def elabOpenPrivate : CommandElab
 | `(open private $ids* $[in $tgts*]? $[from $mods*]?) =>
-  elabOpenPrivateLike ids tgts mods fun c _ _ => c
+  elabOpenPrivateLike ids tgts mods fun c _ _ => pure c
 | _ => throwUnsupportedSyntax
 
 syntax (name := exportPrivate) "export private" ident* ("in" ident*)? ("from" ident*)? : command
@@ -114,7 +114,7 @@ It is also possible to specify the module instead with
     }
     addDecl decl
     compileDecl decl
-    name
+    pure name
 | _ => throwUnsupportedSyntax
 
 end Elab.Command

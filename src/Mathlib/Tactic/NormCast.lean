@@ -48,6 +48,10 @@ initialize normCastExt : NormCastExtension ← pure {
   squash := ← mkSimpExt `Tactic.NormCast.normCastExt.squash
 }
 
+def addSimpLemma (ext : SimpExtension) (name : Name) (b : Bool) (inv := false) (kind : AttributeKind) (prio := eval_prio default): MetaM Unit :=
+  -- TODO!
+  return ()
+
 /-- `addElim decl` adds `decl` as an `elim` lemma to the cache. -/
 def addElim (decl : Name)
   (kind := AttributeKind.global) (prio := eval_prio default) : MetaM Unit :=

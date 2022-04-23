@@ -23,13 +23,14 @@ partial def replaceMVarsByUnderscores [Monad m] [MonadQuotation m]
   if s matches `(?$mvar:ident) then
     `(?_)
   else if let Syntax.node _ kind args := s then
-    mkNode kind (← args.mapM replaceMVarsByUnderscores)
+    pure <| mkNode kind (← args.mapM replaceMVarsByUnderscores)
   else
-    s
+    return s
 
 def delabToRefinableSyntax (e : Expr) : TermElabM Syntax := do
-  let stx ← delab (← readThe Core.Context).currNamespace
-    (← readThe Core.Context).openDecls e
+  let stx ← delab e
+    --(← readThe Core.Context).currNamespace
+    --(← readThe Core.Context).openDecls
   replaceMVarsByUnderscores stx
 
 def addSuggestion [Monad m] [MonadLog m] [AddMessageContext m]

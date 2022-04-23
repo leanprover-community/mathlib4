@@ -24,7 +24,7 @@ def withExtHyps (struct : Name) (k : Array Expr → (x y : Expr) → Array (Name
       let x_f ← mkProjection x field
       let y_f ← mkProjection y field
       if ← isProof x_f then
-        ()
+        pure ()
       else if ← isDefEq (← inferType x_f) (← inferType y_f) then
         hyps := hyps.push (field, ← mkEq x_f y_f)
       else
@@ -69,15 +69,15 @@ scoped macro "ext_iff_proof%" : term => `(fun {..} {..} =>
    fun _ => by (repeat cases ‹_ ∧ _›); subst_eqs; rfl⟩)
 
 scoped macro "declareExtTheoremsFor" struct:ident : command => do
-  let extName ← mkIdent <| struct.getId.eraseMacroScopes.mkStr "ext"
-  let extIffName ← mkIdent <| struct.getId.eraseMacroScopes.mkStr "ext_iff"
+  let extName ← pure <| mkIdent <| struct.getId.eraseMacroScopes.mkStr "ext"
+  let extIffName ← pure <| mkIdent <| struct.getId.eraseMacroScopes.mkStr "ext_iff"
   `(@[ext] protected theorem $extName:ident : ext_type% $struct:ident := ext_proof%
     protected theorem $extIffName:ident : ext_iff_type% $struct:ident := ext_iff_proof%)
 
 open Elab.Command MonadRecDepth in
 def liftCommandElabM (k : CommandElabM α) : AttrM α := do
   let (a, commandState) ←
-    k.run { fileName := (← getEnv).mainModule.toString, fileMap := default } |>.run {
+    k.run { fileName := (← getEnv).mainModule.toString, fileMap := default, tacticCache? := none } |>.run {
       env := ← getEnv, maxRecDepth := ← getMaxRecDepth,
       scopes := [{ header := "", opts := ← getOptions }]
     }
@@ -85,10 +85,10 @@ def liftCommandElabM (k : CommandElabM α) : AttrM α := do
     traceState.traces := coreState.traceState.traces ++ commandState.traceState.traces
     env := commandState.env
   }
-  if let some err ← commandState.messages.msgs.toArray.find?
+  if let some err ← pure <| commandState.messages.msgs.toArray.find?
       (·.severity matches MessageSeverity.error) then
     throwError err.data
-  a
+  return a
 
 initialize extExtension : SimpleScopedEnvExtension (Name × Array DiscrTree.Key) (DiscrTree Name) ←
   registerSimpleScopedEnvExtension {
@@ -111,7 +111,7 @@ def extAttribute : AttributeImpl where
         let ty := declTy.getArg! 0
         let key ←
           if (← withReducible <| whnf ty).isForall then
-            #[DiscrTree.Key.star] -- FIXME: workaround
+            pure <| #[DiscrTree.Key.star] -- FIXME: workaround
           else
             withReducible <| DiscrTree.mkPath ty
         extExtension.add (decl, key) kind
@@ -129,7 +129,7 @@ elab "apply_ext_lemma" : tactic => do
   unless tgt.isAppOfArity ``Eq 3 do
     throwError "applyExtLemma only applies to equations"
   let s ← saveState
-  for lem in ← (← extLemmas (← getEnv)).getMatch (tgt.getArg! 0) do
+  for lem in ← (extLemmas (← getEnv)).getMatch (tgt.getArg! 0) do
     try
       liftMetaTactic (apply · (← mkConstWithFreshMVarLevels lem))
       return

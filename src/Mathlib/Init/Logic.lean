@@ -345,8 +345,6 @@ namespace Decidable
             | isFalse h₂ => ⟨h₁, h₂⟩)
     (λ ⟨np, nq⟩ h => Or.elim h np nq)
 
-end Decidable
-
 section
   variable {p q : Prop}
   def decidable_of_decidable_of_iff (hp : Decidable p) (h : p ↔ q) : Decidable q :=
@@ -363,6 +361,8 @@ section
       False.elim (Or.elim h hp hq)
 end
 
+end Decidable
+
 section
   variable {p q : Prop}
 
@@ -376,13 +376,13 @@ section
 
   instance exists_prop_decidable {p} (P : p → Prop)
     [Dp : Decidable p] [DP : ∀ h, Decidable (P h)] : Decidable (∃ h, P h) :=
-  if h : p then decidable_of_decidable_of_iff (DP h)
+  if h : p then Decidable.decidable_of_decidable_of_iff (DP h)
     ⟨λ h2 => ⟨h, h2⟩, λ⟨h', h2⟩ => h2⟩ else isFalse (mt (λ⟨h, _⟩ => h) h)
 
   instance forall_prop_decidable {p} (P : p → Prop)
     [Dp : Decidable p] [DP : ∀ h, Decidable (P h)] : Decidable (∀ h, P h) :=
   if h : p
-  then decidableOfDecidableOfIff (DP h) ⟨λ h2 _ => h2, λ al => al h⟩
+  then Decidable.decidable_of_decidable_of_iff (DP h) ⟨λ h2 _ => h2, λ al => al h⟩
   else isTrue (λ h2 => absurd h2 h)
 end
 
@@ -466,12 +466,12 @@ if_ctx_congr_prop h_c (λ h => h_t) (λ h => h_e)
 
 lemma if_ctx_simp_congr_prop {b c x y u v : Prop} [dec_b : Decidable b]
                                (h_c : b ↔ c) (h_t : c → (x ↔ u)) (h_e : ¬c → (y ↔ v)) :
-        ite b x y ↔ (@ite Prop c (decidable_of_decidable_of_iff dec_b h_c) u v) :=
-@if_ctx_congr_prop b c x y u v dec_b (decidable_of_decidable_of_iff dec_b h_c) h_c h_t h_e
+        ite b x y ↔ (@ite Prop c (Decidable.decidable_of_decidable_of_iff dec_b h_c) u v) :=
+@if_ctx_congr_prop b c x y u v dec_b (Decidable.decidable_of_decidable_of_iff dec_b h_c) h_c h_t h_e
 
 lemma if_simp_congr_prop {b c x y u v : Prop} [dec_b : Decidable b]
                            (h_c : b ↔ c) (h_t : x ↔ u) (h_e : y ↔ v) :
-        ite b x y ↔ (@ite Prop c (decidable_of_decidable_of_iff dec_b h_c) u v) :=
+        ite b x y ↔ (@ite Prop c (Decidable.decidable_of_decidable_of_iff dec_b h_c) u v) :=
 @if_ctx_simp_congr_prop b c x y u v dec_b h_c (λ h => h_t) (λ h => h_e)
 
 lemma dif_ctx_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : Decidable c]
@@ -491,8 +491,8 @@ lemma dif_ctx_simp_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b]
                          (h_c : b ↔ c)
                          (h_t : ∀ (h : c),    x (Iff.mpr h_c h)                      = u h)
                          (h_e : ∀ (h : ¬c),   y (Iff.mpr (not_iff_not_of_iff h_c) h) = v h) :
-        (@dite α b dec_b x y) = (@dite α c (decidable_of_decidable_of_iff dec_b h_c) u v) :=
-@dif_ctx_congr α b c dec_b (decidable_of_decidable_of_iff dec_b h_c) x u y v h_c h_t h_e
+        (@dite α b dec_b x y) = (@dite α c (Decidable.decidable_of_decidable_of_iff dec_b h_c) u v) :=
+@dif_ctx_congr α b c dec_b (Decidable.decidable_of_decidable_of_iff dec_b h_c) x u y v h_c h_t h_e
 
 def as_true (c : Prop) [Decidable c] : Prop :=
 if c then True else False

@@ -43,9 +43,9 @@ private partial def matchHyps : List Expr → List Expr → List Expr → MetaM 
 -- from Lean.Server.Completion
 private def isBlackListed (declName : Name) : MetaM Bool := do
   let env ← getEnv
-  declName.isInternal
-  <||> isAuxRecursor env declName
-  <||> isNoConfusion env declName
+  pure declName.isInternal
+  <||> (pure <| isAuxRecursor env declName)
+  <||> pure (isNoConfusion env declName)
   <||> isRec declName
   <||> isMatcher declName
 
@@ -57,7 +57,7 @@ initialize findDeclsPerHead : DeclCache (Std.HashMap HeadIndex (Array Name)) ←
     -- to avoid leaking metavariables.
     let (_, _, ty) ← forallMetaTelescopeReducing c.type
     let head := ty.toHeadIndex
-    headMap.insert head (headMap.findD head #[] |>.push c.name)
+    return headMap.insert head (headMap.findD head #[] |>.push c.name)
 
 def findType (t : Expr) : TermElabM Unit := withReducible do
   let t ← instantiateMVars t
@@ -68,9 +68,9 @@ def findType (t : Expr) : TermElabM Unit := withReducible do
   let mut numFound := 0
   for n in (← findDeclsPerHead.get).findD head #[] do
     let c := env.find? n |>.get!
-    let cTy ← c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
+    let cTy ← pure <| c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
     let found ← forallTelescopeReducing cTy fun cParams cTy' => do
-      let pat ← pat.expr.instantiateLevelParamsArray pat.paramNames (← mkFreshLevelMVars pat.numMVars).toArray
+      let pat ← pure <| pat.expr.instantiateLevelParamsArray pat.paramNames (← mkFreshLevelMVars pat.numMVars).toArray
       let (_, _, pat) ← lambdaMetaTelescope pat
       let (patParams, _, pat) ← forallMetaTelescopeReducing pat
       isDefEq cTy' pat <&&> matchHyps patParams.toList [] cParams.toList
