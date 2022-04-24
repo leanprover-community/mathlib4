@@ -1,4 +1,4 @@
-# mathlib4
+# Mathlib4
 
 Work in progress mathlib port for Lean 4.
 This is not a port.
@@ -16,7 +16,7 @@ We don't want to discourage others from trying to port stuff if it helps us lear
 but please understand that anything that is currently in mathlib4 is subject to change/deletion,
 and the "real" port hasn't started yet
 
-# Build instructions
+# Lake build instructions
 
 * Get the newest version of `elan`. If you already have installed a version of Lean, you can run
   ```
@@ -32,3 +32,18 @@ and the "real" port hasn't started yet
   ```
   find Mathlib -name "*.lean" | env LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
   ```
+  
+# Using Nix
+
+## Develop
+
+Enable auto loading dependencies into the shell with `direnv allow` or manually with `nix develop`.
+
+## Building
+
+Build with `nix build .`
+
+## Tests
+
+Run tests with `nix run .#test`
+

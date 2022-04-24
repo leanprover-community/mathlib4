@@ -1,2 +1,4 @@
+*.olean
+result*
 /build
 /prelude/build
