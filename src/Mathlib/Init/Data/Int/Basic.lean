@@ -7,6 +7,7 @@ Authors: Jeremy Avigad, Deniz Aydin, Floris van Doorn
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Coe
+import Mathlib.Tactic.NormCast.Lemmas
 open Nat
 
 namespace Int
@@ -287,7 +288,7 @@ by
     have h₃ : m ≤ n + k := le_of_succ_le_succ h₂
     rw [subNatNat_of_lt h', subNatNat_of_lt h₂]
     simp [Nat.add_comm]
-    rw [← add_succ, succ_pred_eq_of_pos (Nat.sub_pos_of_lt h'), add_succ, succ_sub h₃, pred_succ]
+    rw [← add_succ, succ_pred_eq_of_pos (Nat.sub_pos_of_lt h'), add_succ, succ_sub h₃, Nat.pred_succ]
     rw [Nat.add_comm n, Nat.add_sub_assoc (Nat.le_of_lt h')]
 
 lemma add_assoc_aux1 (m n : ℕ) :
@@ -463,8 +464,6 @@ protected lemma neg_add {a b : ℤ} : - (a + b) = -a + -b := by
 
 lemma negSucc_ofNat_coe' (n : ℕ) : -[1+ n] = -↑n - 1 :=
 by rw [Int.sub_eq_add_neg, ← Int.neg_add]; rfl
-
-protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
 protected lemma subNatNat_eq_coe {m n : ℕ} : subNatNat m n = ↑m - ↑n := by
   refine subNatNat_elim m n (fun m n i => i = ↑m - ↑n) ?p ?n

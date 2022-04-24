@@ -25,7 +25,7 @@ protected def elim : Option α → β → (α → β) → β
 | some x, y, f => f x
 | none, y, f => y
 
-instance HasMem : Mem α (Option α) :=
+instance : Membership α (Option α) :=
   ⟨fun a b => b = some a⟩
 
 @[simp]
@@ -47,7 +47,7 @@ Try to use `o.is_none` or `o.is_some` instead.
 -/
 @[inline]
 def decidable_eq_none {o : Option α} : Decidable (o = none) :=
-  decidableOfDecidableOfIff (instDecidableEqBool _ _) isNone_iff_eq_none
+  decidable_of_decidable_of_iff isNone_iff_eq_none
 
 instance decidable_forall_mem {p : α → Prop} [DecidablePred p] :
   ∀ o : Option α, Decidable (∀ a ∈ o, p a)
@@ -122,7 +122,7 @@ protected def traverse.{u, v} {F : Type u → Type v} [Applicative F] {α β : T
 there is a naturally associated way to always perform a computation in `m` which maybe produces a
 result. -/
 def maybe.{u, v} {m : Type u → Type v} [Monad m] {α : Type u} : Option (m α) → m (Option α)
-| none => none
+| none => pure none
 | some fn => some <$> fn
 
 /-- Map a monadic function `f : α → m β` over an `o : option α`, maybe producing a result. -/

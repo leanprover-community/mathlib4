@@ -22,7 +22,7 @@ open Lean Meta Elab Term
 def mkAuxName (hint : Name) : TermElabM Name :=
   withFreshMacroScope do
     let name := (← getDeclName?).getD Name.anonymous ++ hint
-    pure <| addMacroScope (← getMainModule) name (← getCurrMacroScope)
+    pure $ addMacroScope (← getMainModule) name (← getCurrMacroScope)
 
 elab "unsafe " t:term : term <= expectedType => do
   let t ← elabTerm t expectedType
@@ -32,7 +32,7 @@ elab "unsafe " t:term : term <= expectedType => do
     instantiateMVars t
   if ← logUnassignedUsingErrorInfos (← getMVars t) then throwAbortTerm
   let t ← mkAuxDefinitionFor (← mkAuxName `unsafe) t
-  let Expr.const unsafeFn unsafeLvls .. ← pure t.getAppFn | unreachable!
+  let Expr.const unsafeFn unsafeLvls .. := t.getAppFn | unreachable!
   let ConstantInfo.defnInfo unsafeDefn ← getConstInfo unsafeFn | unreachable!
   let implName ← mkAuxName `impl
   addDecl <| Declaration.defnDecl {
@@ -44,4 +44,4 @@ elab "unsafe " t:term : term <= expectedType => do
     safety := DefinitionSafety.safe
   }
   setImplementedBy implName unsafeFn
-  return mkAppN (mkConst implName unsafeLvls) t.getAppArgs
+  pure $ mkAppN (mkConst implName unsafeLvls) t.getAppArgs

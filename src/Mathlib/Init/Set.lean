@@ -42,7 +42,7 @@ namespace Set
 protected def mem (a : α) (s : Set α) :=
 s a
 
-instance : Mem α (Set α) :=
+instance : Membership α (Set α) :=
 ⟨Set.mem⟩
 
 protected def subset (s₁ s₂ : Set α) :=

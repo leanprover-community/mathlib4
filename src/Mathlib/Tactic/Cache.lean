@@ -110,7 +110,7 @@ def DeclCache.mk (profilingName : String) (empty : α) (addDecl : Name → Const
     for (n, c) in (← getEnv).constants.map₁.toList do
       a ← addDecl n c a
     return a
-  return (cache, addDecl)
+  pure (cache, addDecl)
 
 /--
 Access the cache.

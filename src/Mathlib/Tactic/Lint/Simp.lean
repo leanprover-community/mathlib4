@@ -5,6 +5,7 @@ Authors: Gabriel Ebner
 -/
 import Mathlib.Tactic.Lint.Basic
 import Mathlib.Tactic.OpenPrivate
+import Mathlib.Util.LibraryNote
 open Lean Meta
 
 namespace Mathlib.Tactic.Lint
@@ -19,27 +20,28 @@ This files defines several linters that prevent common mistakes when declaring s
  * `simpComm` checks that commutativity lemmas are not marked as simplification lemmas.
 -/
 
-structure SimpLemmaInfo where
+structure SimpTheoremInfo where
   hyps : Array Expr
   isConditional : Bool
   lhs : Expr
   rhs : Expr
 
 def isConditionalHyps (eq : Expr) : List Expr → MetaM Bool
-  | [] => return false
+  | [] => pure false
   | h :: hs => do
     let ldecl ← getFVarLocalDecl h
     if !ldecl.binderInfo.isInstImplicit
-        && !(← hs.anyM fun h' => do pure <| (← inferType h').containsFVar h.fvarId!)
+        && !(← hs.anyM fun h' => do pure $ (← inferType h').containsFVar h.fvarId!)
         && !eq.containsFVar h.fvarId! then
       return true
     isConditionalHyps eq hs
 
 open private preprocess from Lean.Meta.Tactic.Simp.SimpTheorems in
-def withSimpLemmaInfos (ty : Expr) (k : SimpLemmaInfo → MetaM α) : MetaM (Array α) := withReducible do
-  (← preprocess (← mkSorry ty true) ty false true).toArray.mapM fun (_, ty') => do
+def withSimpTheoremInfos (ty : Expr) (k : SimpTheoremInfo → MetaM α) : MetaM (Array α) := withReducible do
+  (← preprocess (← mkSorry ty true) ty (inv := false) (isGlobal := true))
+      |>.toArray.mapM fun (_, ty') => do
     forallTelescopeReducing ty' fun hyps eq => do
-      let some (_, lhs, rhs) ← pure eq.eq? | throwError "not an equality {eq}"
+      let some (_, lhs, rhs) := eq.eq? | throwError "not an equality {eq}"
       k {
         hyps, lhs, rhs
         isConditional := ← isConditionalHyps eq hyps.toList
@@ -53,15 +55,15 @@ def isSimpEq (a b : Expr) (whnfFirst := true) : MetaM Bool := withReducible do
   if a.getAppFn.constName? != b.getAppFn.constName? then return false
   isDefEq a b
 
-def checkAllSimpLemmaInfos (ty : Expr) (k : SimpLemmaInfo → MetaM (Option MessageData)) : MetaM (Option MessageData) := do
-  let errors := (← withSimpLemmaInfos ty fun i => do (← k i).mapM addMessageContextFull).filterMap id
+def checkAllSimpTheoremInfos (ty : Expr) (k : SimpTheoremInfo → MetaM (Option MessageData)) : MetaM (Option MessageData) := do
+  let errors := (← withSimpTheoremInfos ty fun i => do (← k i).mapM addMessageContextFull).filterMap id
   if errors.isEmpty then
     return none
   else
     return MessageData.joinSep errors.toList Format.line
 
-def isSimpLemma (declName : Name) : MetaM Bool := do
-  return (← getSimpTheorems).lemmaNames.contains declName
+def isSimpTheorem (declName : Name) : MetaM Bool := do
+  pure $ (← getSimpTheorems).lemmaNames.contains declName
 
 open Lean.Meta.DiscrTree
 partial def trieElements : Trie α → StateT (Array α) Id Unit
@@ -81,8 +83,8 @@ open Std
 -- This function computes the map ``{`decl._auxLemma.1 ↦ `decl}``
 def constToSimpDeclMap (ctx : Simp.Context) : HashMap Name Name := Id.run do
   let mut map : HashMap Name Name := {}
-  for sThms in ctx.simpTheorems do
-    for sls in [sThms.pre, sThms.post] do
+  for sls' in ctx.simpTheorems do
+    for sls in [sls'.pre, sls'.post] do
       for sl in ((elements sls).run #[]).2 do
         if let some declName := sl.name? then
           if let some auxDeclName := sl.proof.getAppFn.constName? then
@@ -95,28 +97,27 @@ def isEqnLemma? (n : Name) : Option Name :=
   else
     none
 
-def heuristicallyExtractSimpTheorems (ctx : Simp.Context) (constToSimpDecl : HashMap Name Name) (prf : Expr) : Array Name := Id.run do
+def heuristicallyExtractSimpTheoremsCore (ctx : Simp.Context) (constToSimpDecl : HashMap Name Name) (prf : Expr) : Array Name := Id.run do
   let mut cnsts : HashSet Name := {}
   for c in prf.getUsedConstants do
-    for simpTheorems in ctx.simpTheorems do
-      if simpTheorems.toUnfold.contains c then
-        cnsts := cnsts.insert c
-      else if ctx.congrTheorems.lemmas.contains c then
-        cnsts := cnsts.insert c
-      else if let some c' := constToSimpDecl.find? c then
-        cnsts := cnsts.insert c'
-      else if let some c' := isEqnLemma? c then
-        cnsts := cnsts.insert c'
+    if ctx.simpTheorems.isDeclToUnfold c then
+      cnsts := cnsts.insert c
+    else if ctx.congrTheorems.lemmas.contains c then
+      cnsts := cnsts.insert c
+    else if let some c' := constToSimpDecl.find? c then
+      cnsts := cnsts.insert c'
+    else if let some c' := isEqnLemma? c then
+      cnsts := cnsts.insert c'
   return cnsts.toArray
 
-@[inline] def heuristicallyExtractSimpTheoremsFromExpr (ctx : Simp.Context) (prf : Expr) : Array Name :=
-   heuristicallyExtractSimpTheorems ctx (constToSimpDeclMap ctx) prf
+@[inline] def heuristicallyExtractSimpTheorems (ctx : Simp.Context) (prf : Expr) : Array Name :=
+  heuristicallyExtractSimpTheoremsCore ctx (constToSimpDeclMap ctx) prf
 
 def decorateError (msg : MessageData) (k : MetaM α) : MetaM α := do
   try k catch e => throw e
 
 def formatLemmas (lems : Array Name) : CoreM MessageData := do
-  return toMessageData <|<- lems.mapM mkConstWithLevelParams
+  toMessageData <$> lems.mapM mkConstWithLevelParams
 
 /-- A linter for simp lemmas whose lhs is not in simp-normal form, and which hence never fire. -/
 @[mathlibLinter] def simpNF : Linter where
@@ -126,19 +127,19 @@ see note [simp-normal form] for tips how to debug this.
 https://leanprover-community.github.io/mathlib_docs/notes.html#simp-normal%20form"
 
   test := fun declName => do
-    unless ← isSimpLemma declName do return none
+    unless ← isSimpTheorem declName do return none
     -- TODO: equation lemmas
     let ctx ← Simp.Context.mkDefault
-    checkAllSimpLemmaInfos (← getConstInfo declName).type fun {lhs, rhs, isConditional, ..} => do
+    checkAllSimpTheoremInfos (← getConstInfo declName).type fun {lhs, rhs, isConditional, ..} => do
     let ⟨lhs', prf1⟩ ← decorateError "simplify fails on left-hand side:" <| simp lhs ctx
-    let prf1_lems := heuristicallyExtractSimpTheoremsFromExpr ctx (prf1.getD (mkBVar 0))
+    let prf1_lems := heuristicallyExtractSimpTheorems ctx (prf1.getD (mkBVar 0))
     if prf1_lems.contains declName then return none
     let ⟨rhs', prf2⟩ ← decorateError "simplify fails on right-hand side:" <| simp rhs ctx
     let lhs'_eq_rhs' ← isSimpEq lhs' rhs' (whnfFirst := false)
     let lhs_in_nf ← isSimpEq lhs' lhs
     if lhs'_eq_rhs' then do
       if prf1.isNone then return none -- TODO: cannot detect used rfl-lemmas
-      let used_lemmas := heuristicallyExtractSimpTheoremsFromExpr ctx <|
+      let used_lemmas := heuristicallyExtractSimpTheorems ctx <|
         mkApp (prf1.getD (mkBVar 0)) (prf2.getD (mkBVar 0))
       return m!"simp can prove this:
   by simp only {← formatLemmas used_lemmas}
@@ -160,7 +161,7 @@ You need to debug this yourself using `set_option trace.Meta.Tactic.simp.rewrite
     else
       return none
 
-/-
+library_note "simp-normal form" /--
 This note gives you some tips to debug any errors that the simp-normal form linter raises.
 
 The reason that a lemma was considered faulty is because its left-hand side is not in simp-normal
@@ -207,8 +208,6 @@ Here are some tips depending on the error raised by the linter:
      then apply `try_for 10000 { simp }` to the right-hand side.  You will
      see a periodic sequence of lemma applications in the trace message.
 -/
--- library_note "simp-normal form"
--- TODO
 
 /--
 A linter for simp lemmas whose lhs has a variable as head symbol,
@@ -220,8 +219,8 @@ and which hence never fire.
   errorsFound := "LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.
 Some simp lemmas have a variable as head symbol of the left-hand side:"
   test := fun declName => do
-    unless ← isSimpLemma declName do return none
-    checkAllSimpLemmaInfos (← getConstInfo declName).type fun {lhs, ..} => do
+    unless ← isSimpTheorem declName do return none
+    checkAllSimpTheoremInfos (← getConstInfo declName).type fun {lhs, ..} => do
     let headSym := lhs.getAppFn
     unless headSym.isFVar do return none
     return m!"Left-hand side has variable as head symbol: {headSym}"
@@ -232,15 +231,15 @@ Some simp lemmas have a variable as head symbol of the left-hand side:"
   errorsFound := "COMMUTATIVITY LEMMA IS SIMP.
 Some commutativity lemmas are simp lemmas:"
   test := fun declName => withReducible do
-    unless ← isSimpLemma declName do return none
+    unless ← isSimpTheorem declName do return none
     let ty := (← getConstInfo declName).type
     forallTelescopeReducing ty fun xs ty => do
-    let some (_, lhs, rhs) ← pure ty.eq? | pure none
+    let some (_, lhs, rhs) := ty.eq? | return none
     unless lhs.getAppFn.constName? == rhs.getAppFn.constName? do return none
     let (mvars, bis, ty') ← forallMetaTelescopeReducing ty
-    let some (_, lhs', rhs') ← pure ty'.eq? | pure none
+    let some (_, lhs', rhs') := ty'.eq? | return none
     unless ← isDefEq rhs lhs' do return none
     unless ← withNewMCtxDepth (isDefEq rhs lhs') do return none
     -- ensure that the second application makes progress:
     if ← isDefEq lhs' rhs' then return none
-    return m!"should not be marked simp"
+    pure m!"should not be marked simp"

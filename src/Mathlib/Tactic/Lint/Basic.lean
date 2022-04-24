@@ -34,14 +34,14 @@ initialize nolintAttr : ParametricAttribute (Array Name) ←
     getParam := fun decl stx =>
       match stx with
         -- TODO: validate linter names
-        | `(attr|nolint $[$ids]*) => ids.mapM (pure ·.getId.eraseMacroScopes)
+        | `(attr|nolint $[$ids]*) => pure $ ids.map (·.getId.eraseMacroScopes)
         | _ => throwError "unexpected nolint syntax {stx}"
   }
 
 /-- Returns true if `decl` should be checked
 using `linter`, i.e., if there is no `nolint` attribute. -/
 def shouldBeLinted [Monad m] [MonadEnv m] (linter : Name) (decl : Name) : m Bool := do
-  return !((nolintAttr.getParam (← getEnv) decl).getD {}).contains linter
+  pure !((nolintAttr.getParam (← getEnv) decl).getD {}).contains linter
 
 /--
 Returns true if `decl` is an automatically generated declaration.
@@ -59,7 +59,7 @@ def isAutoDecl (decl : Name) : CoreM Bool := do
       if [casesOnSuffix, recOnSuffix, brecOnSuffix, binductionOnSuffix, belowSuffix,
           "ndrec", "ndrecOn", "noConfusionType", "noConfusion"].any (· == s) then
         return true
-  return false
+  pure false
 
 /--
 A linting test for the `#lint` command.

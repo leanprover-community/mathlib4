@@ -32,12 +32,13 @@ initialize registerTraceClass `Tactic.librarySearch
 
 -- from Lean.Server.Completion
 private def isBlackListed (declName : Name) : MetaM Bool := do
+  if declName == ``sorryAx then return false
   if declName matches Name.str _ "inj" _ then return false
   if declName matches Name.str _ "noConfusionType" _ then return false
   let env ← getEnv
-  pure declName.isInternal
-  <||> pure (isAuxRecursor env declName)
-  <||> pure (isNoConfusion env declName)
+  pure $ declName.isInternal
+   || isAuxRecursor env declName
+   || isNoConfusion env declName
   <||> isRec declName <||> isMatcher declName
 
 initialize librarySearchLemmas : DeclCache (DiscrTree Name) ←
@@ -47,7 +48,7 @@ initialize librarySearchLemmas : DeclCache (DiscrTree Name) ←
     withNewMCtxDepth do
       let (xs, bis, type) ← withReducible <| forallMetaTelescopeReducing constInfo.type
       let keys ← withReducible <| DiscrTree.mkPath type
-      pure <| lemmas.insertCore keys name
+      pure $ lemmas.insertCore keys name
 
 def librarySearch (mvarId : MVarId) (lemmas : DiscrTree Name) (solveByElimDepth := 6) :
     MetaM <| Option (Array <| MetavarContext × List MVarId) := do
@@ -74,9 +75,9 @@ def librarySearch (mvarId : MVarId) (lemmas : DiscrTree Name) (solveByElimDepth 
             withMVarContext newMVar do
               trace[Tactic.librarySearch] "proving {← addMessageContextFull (mkMVar newMVar)}"
               solveByElim solveByElimDepth newMVar
-          pure <| some (Sum.inr ())
+          pure $ some $ Sum.inr ()
         catch _ =>
-          let res := some (Sum.inl <| (← getMCtx, newMVars))
+          let res := some $ Sum.inl <| (← getMCtx, newMVars)
           set state0
           pure res)
       catch _ =>
@@ -87,7 +88,7 @@ def librarySearch (mvarId : MVarId) (lemmas : DiscrTree Name) (solveByElimDepth 
       | some (Sum.inr ()) => return none
       | some (Sum.inl suggestion) => suggestions := suggestions.push suggestion
 
-  return some suggestions
+  pure $ some suggestions
 
 def lines (ls : List MessageData) :=
   MessageData.joinSep ls (MessageData.ofFormat Format.line)
@@ -98,8 +99,10 @@ open Lean.Parser.Tactic
 -- in particular including additional lemmas
 -- with `library_search [X, Y, Z]` or `library_search with attr`,
 -- or requiring that a particular hypothesis is used in the solution, with `library_search using h`.
-syntax (name := librarySearch') "library_search" (" (" &"config" " := " term ")")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " (colGt ident)+)? : tactic
+syntax (name := librarySearch') "library_search" (config)? (" [" simpArg,* "]")?
+  (" with " (colGt ident)+)? (" using " (colGt binderIdent)+)? : tactic
+syntax (name := librarySearch!) "library_search!" (config)? (" [" simpArg,* "]")?
+  (" with " (colGt ident)+)? (" using " (colGt binderIdent)+)? : tactic
 
 -- For now we only implement the basic functionality.
 -- The full syntax is recognized, but will produce a "Tactic has not been implemented" error.
@@ -113,7 +116,8 @@ elab_rules : tactic | `(tactic| library_search%$tk) => do
   withMVarContext introdMVar do
     if let some suggestions ← librarySearch introdMVar (← librarySearchLemmas.get) then
       for suggestion in suggestions do
-        addExactSuggestion tk (← instantiateMVars (mkMVar mvar))
+        withMCtx suggestion.1 do
+          addExactSuggestion tk (← instantiateMVars (mkMVar mvar))
       admitGoal introdMVar
     else
       addExactSuggestion tk (← instantiateMVars (mkMVar mvar))
@@ -127,7 +131,8 @@ elab tk:"library_search%" : term <= expectedType => do
   withMVarContext introdMVar do
     if let some suggestions ← librarySearch introdMVar (← librarySearchLemmas.get) then
       for suggestion in suggestions do
-        addTermSuggestion tk (← instantiateMVars mvar)
+        withMCtx suggestion.1 do
+          addTermSuggestion tk (← instantiateMVars mvar)
       mkSorry expectedType (synthetic := true)
     else
       addTermSuggestion tk (← instantiateMVars mvar)

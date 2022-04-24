@@ -169,17 +169,49 @@ by rw [←zero_add c, ←hba, add_assoc, hac, add_zero b]
 
 end AddMonoid_lemmas
 
+/-! ### Additive monoids with one -/
+
+class AddMonoidWithOne (R : Type u) extends AddMonoid R, One R where
+  natCast : ℕ → R
+  natCast_zero : natCast 0 = 0
+  natCast_succ : ∀ n, natCast (n + 1) = natCast n + 1
+
+@[coe]
+def Nat.cast [AddMonoidWithOne R] : ℕ → R := AddMonoidWithOne.natCast
+
+instance [AddMonoidWithOne R] : CoeTail ℕ R where coe := Nat.cast
+instance [AddMonoidWithOne R] : CoeHTCT ℕ R where coe := Nat.cast
+
+@[simp, norm_cast] theorem Nat.cast_zero [AddMonoidWithOne R] : ((0 : ℕ) : R) = 0 := AddMonoidWithOne.natCast_zero
+@[simp 500, norm_cast 500]
+theorem Nat.cast_succ [AddMonoidWithOne R] : ((Nat.succ n : ℕ) : R) = (n : R) + 1 := AddMonoidWithOne.natCast_succ _
+@[simp, norm_cast]
+theorem Nat.cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by simp
+
+@[simp, norm_cast] theorem Nat.cast_add [AddMonoidWithOne R] : ((m + n : ℕ) : R) = (m : R) + n := by
+  induction n <;> simp_all [add_succ, add_assoc]
+
+class Nat.AtLeastTwo (n : Nat) : Prop where
+  prop : n ≥ 2
+instance : Nat.AtLeastTwo (n + 2) where
+  prop := Nat.succ_le_succ $ Nat.succ_le_succ $ Nat.zero_le _
+
+instance [AddMonoidWithOne R] [Nat.AtLeastTwo n] : OfNat R n where
+  ofNat := n.cast
+
+@[simp, norm_cast] theorem Nat.cast_ofNat [AddMonoidWithOne R] [Nat.AtLeastTwo n] :
+  (Nat.cast (OfNat.ofNat n) : R) = OfNat.ofNat n := rfl
+
 /-
 
 ### Commutative additive monoids
 
 -/
 
-class AddCommMonoid (A : Type u) extends AddMonoid A where
-  add_comm (a b : A) : a + b = b + a
-
-instance (A : Type u) [AddCommMonoid A] : AddCommSemigroup A where
-  __ := ‹AddCommMonoid A›
+class AddCommMonoid (A : Type u) extends AddMonoid A, AddCommSemigroup A where
+  -- TODO: doesn't work
+  zero_add a := (by rw [add_comm, add_zero])
+  add_zero a := (by rw [add_comm, zero_add])
 
 /-
 
@@ -198,6 +230,8 @@ class SubNegMonoid (A : Type u) extends AddMonoid A, Neg A, Sub A where
   gsmul_zero' : ∀ (a : A), gsmul 0 a = 0
   gsmul_succ' (n : ℕ) (a : A) : gsmul (Int.ofNat n.succ) a = a + gsmul (Int.ofNat n) a
   gsmul_neg' (n : ℕ) (a : A) : gsmul (Int.negSucc n) a = -(gsmul ↑(n.succ) a)
+
+export SubNegMonoid (sub_eq_add_neg)
 
 /-
 
@@ -243,13 +277,36 @@ instance (A : Type u) [AddGroup A] : IsAddLeftCancel A where
   add_left_cancel a b c h := by
   rw [← neg_add_cancel_left a b, h, neg_add_cancel_left]
 
+lemma eq_of_sub_eq_zero' (h : a - b = 0) : a = b :=
+  add_right_cancel <| show a + (-b) = b + (-b) by rw [← sub_eq_add_neg, h, add_neg_self]
+
 end AddGroup_lemmas
 
-class AddCommGroup (A : Type u) extends AddGroup A where
-  add_comm (a b : A) : a + b = b + a
+class AddCommGroup (A : Type u) extends AddGroup A, AddCommMonoid A
 
-instance (A : Type u) [AddCommGroup A] : AddCommMonoid A where
-  __ := ‹AddCommGroup A›
+
+/-! ### Additive groups with one -/
+
+class AddGroupWithOne (R : Type u) extends AddMonoidWithOne R, AddGroup R where
+  intCast : ℤ → R
+  intCast_ofNat : ∀ n : ℕ, intCast n = natCast n
+  intCast_negSucc : ∀ n : ℕ, intCast (Int.negSucc n) = - natCast (n + 1)
+
+@[coe]
+def Int.cast [AddGroupWithOne R] : ℤ → R := AddGroupWithOne.intCast
+
+instance [AddGroupWithOne R] : CoeTail ℤ R where coe := Int.cast
+
+theorem Int.cast_ofNat [AddGroupWithOne R] : (Int.cast (Int.ofNat n) : R) = Nat.cast n :=
+  AddGroupWithOne.intCast_ofNat _
+@[simp, norm_cast]
+theorem Int.cast_negSucc [AddGroupWithOne R] : (Int.cast (Int.negSucc n) : R) = (-(Nat.cast (n + 1)) : R) :=
+  AddGroupWithOne.intCast_negSucc _
+
+@[simp, norm_cast] theorem Int.cast_zero [AddGroupWithOne R] : ((0 : ℤ) : R) = 0 := by
+  erw [Int.cast_ofNat, Nat.cast_zero]
+@[simp, norm_cast] theorem Int.cast_one [AddGroupWithOne R] : ((1 : ℤ) : R) = 1 := by
+  erw [Int.cast_ofNat, Nat.cast_one]
 
 /-
 
@@ -281,6 +338,13 @@ by rw [← mul_assoc, mul_comm a, mul_assoc]
 
 lemma mul_right_comm {M} [CommSemigroup M] (a b c : M) : a * b * c = a * c * b :=
 by rw [mul_assoc, mul_comm b c, mul_assoc]
+
+
+/-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
+`1 * a = a` and `a * 1 = a` for all `a : M`. -/
+class MulOneClass (M : Type u) extends One M, Mul M where
+  one_mul : ∀ (a : M), 1 * a = a
+  mul_one : ∀ (a : M), a * 1 = a
 
 /-
 
@@ -336,9 +400,7 @@ end MulRightCancel
 
 -/
 
-class Monoid (M : Type u) extends Semigroup M, One M where
-  mul_one (m : M) : m * 1 = m
-  one_mul (m : M) : 1 * m = m
+class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   npow : ℕ → M → M := npow_rec
   npow_zero' : ∀ x, npow 0 x = 1 -- fill in with tactic once we can do this
   npow_succ' : ∀ (n : ℕ) x, npow n.succ x = x * npow n x -- fill in with tactic
@@ -427,7 +489,7 @@ class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G :=
 (gpow_succ' :
   ∀ (n : ℕ) (a : G), gpow (Int.ofNat n.succ) a = a * gpow (Int.ofNat n) a)
 (gpow_neg' :
-  ∀ (n : ℕ) (a : G), gpow (Int.negSucc n) a = (gpow n.succ a) ⁻¹)
+  ∀ (n : ℕ) (a : G), gpow (Int.negSucc n) a = (gpow (Int.ofNat n.succ) a) ⁻¹)
 
 /-
 

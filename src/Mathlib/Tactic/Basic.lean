@@ -137,7 +137,7 @@ up to alpha equality and definitional equality. -/
 elab (name := guardTargetStrict) "guard_target" " == " r:term : tactic => withMainContext do
   let r ← elabTerm r none
   let t ← getMainTarget
-  let t ← pure t.consumeMData
+  let t := t.consumeMData
   if not (r == t) then throwError m!"target of main goal is {t}, not {r}"
 
 syntax (name := guardHyp) "guard_hyp " ident
@@ -159,10 +159,10 @@ while `guardHyp h :=ₐ v` checks the value up to alpha equality. -/
         match (← getLCtx).find? fvarid with
         | none => throwError m!"hypothesis {h} not found"
         | some lDecl => pure lDecl
-      if let some p ← pure ty then
+      if let some p := ty then
         let e ← elabTerm p none
         let hty ← instantiateMVars lDecl.type
-        let hty ← pure hty.consumeMData
+        let hty := hty.consumeMData
         if not (e == hty) then throwError m!"hypothesis {h} has type {hty}"
       match lDecl.value?, val with
       | none, some _        => throwError m!"{h} is not a let binding"
@@ -170,7 +170,7 @@ while `guardHyp h :=ₐ v` checks the value up to alpha equality. -/
       | some hval, some val =>
           let e ← elabTerm val none
           let hval ← instantiateMVars hval
-          let hval ← pure hval.consumeMData
+          let hval := hval.consumeMData
           if not (e == hval) then throwError m!"hypothesis {h} has value {hval}"
       | none, none          => pure ()
   | _ => throwUnsupportedSyntax
@@ -193,8 +193,16 @@ macro_rules
   | `(tactic| by_contra $e) => `(tactic| (apply Classical.byContradiction; intro $e))
 
 /--
-`iterate n { ... }` runs the tactic block exactly `n` times.
-`iterate { ... }` runs the tactic block repeatedly until failure.
+`iterate n tac` runs `tac` exactly `n` times.
+`iterate tac` runs `tac` repeatedly until failure.
+
+To run multiple tactics, one can do `iterate (tac₁; tac₂; ⋯)` or
+```lean
+iterate
+  tac₁
+  tac₂
+  ⋯
+```
 -/
 syntax "iterate" (ppSpace num)? ppSpace tacticSeq : tactic
 macro_rules
@@ -236,17 +244,8 @@ elab "any_goals " seq:tacticSeq : tactic => do
     throwError "failed on all goals"
   setGoals mvarIdsNew.toList
 
-/--
-`work_on_goal n { tac }` creates a block scope for the `n`-th goal (indexed from zero),
-but does not require that the goal be solved at the end of the block
-(any resulting subgoals are inserted back into the list of goals, replacing the `n`-th goal).
--/
-elab (name := workOnGoal) "work_on_goal " n:num ppSpace seq:tacticSeq : tactic => do
-  let goals ← getGoals
-  let n := n.toNat
-  if h : n < goals.length then
-    setGoals [goals.get ⟨n, h⟩]
-    evalTactic seq
-    setGoals (goals.take n ++ (← getUnsolvedGoals) ++ goals.drop (n+1))
-  else
-    throwError "not enough goals"
+elab "fapply " e:term : tactic =>
+  evalApplyLikeTactic (Meta.apply (cfg := {newGoals := ApplyNewGoals.all})) e
+
+elab "eapply " e:term : tactic =>
+  evalApplyLikeTactic (Meta.apply (cfg := {newGoals := ApplyNewGoals.nonDependentOnly})) e

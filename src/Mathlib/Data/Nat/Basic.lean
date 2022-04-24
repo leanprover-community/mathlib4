@@ -19,9 +19,6 @@ protected lemma not_lt_of_le {n m : ℕ} (h₁ : m ≤ n) : ¬ n < m
 
 protected lemma not_le_of_lt {n m : ℕ} : m < n → ¬ n ≤ m  := Nat.not_le_of_gt
 
-protected lemma ne_of_lt {a b : Nat} : a < b -> a ≠ b :=
-  fun h_lt h_eq => (Nat.not_le_of_lt h_lt : ¬b <= a) (h_eq ▸ Nat.le_refl b : b <= a)
-
 protected lemma lt_of_not_le {a b : ℕ} : ¬ a ≤ b → b < a := (Nat.lt_or_ge b a).resolve_right
 
 protected lemma le_of_not_lt {a b : ℕ} : ¬ a < b → b ≤ a := (Nat.lt_or_ge a b).resolve_left
@@ -38,10 +35,6 @@ protected lemma not_le {n m : ℕ} : ¬ n ≤ m ↔ m < n :=
 
 protected lemma lt_or_eq_of_le {n m : ℕ} (h : n ≤ m) : n < m ∨ n = m :=
 (Nat.lt_or_ge _ _).imp_right (Nat.le_antisymm h)
-
-lemma eq_of_mul_eq_mul_right {n m k : ℕ} (Hm : 0 < m) (H : n * m = k * m) : n = k :=
-by rw [Nat.mul_comm n m, Nat.mul_comm k m] at H
-   exact Nat.eq_of_mul_eq_mul_left Hm H
 
 theorem le_zero_iff {i : ℕ} : i ≤ 0 ↔ i = 0 :=
   ⟨Nat.eq_zero_of_le_zero, λ h => h ▸ le_refl i⟩
