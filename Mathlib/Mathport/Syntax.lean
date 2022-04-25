@@ -179,7 +179,7 @@ syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
 /- N -/ syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
 
 /- E -/ syntax (name := trace) "trace " term : tactic
-/- E -/ syntax (name := existsi) "exists " term,* : tactic
+/- E -/ syntax (name := existsi) (priority := low) "exists " term,* : tactic
 /- E -/ syntax (name := eConstructor) "econstructor" : tactic
 /- E -/ syntax (name := left) "left" : tactic
 /- E -/ syntax (name := right) "right" : tactic
