@@ -6,7 +6,7 @@ namespace Test
 
 -- [todo] remove these once tests pass
 -- set_option trace.to_additive true
--- set_option trace.to_additive.replace true
+-- set_option trace.to_additive.detail true
 -- set_option pp.universes true
 -- set_option pp.explicit true
 -- set_option pp.notation false

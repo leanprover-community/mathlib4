@@ -3,9 +3,6 @@ import Mathlib.Tactic.ToAdditive
 
 open Lean
 
-set_option trace.to_additive true
-set_option trace.to_additive.replace true
-
 attribute [to_additive Add] Mul
 attribute [to_additive Zero] One
 attribute [to_additive Zero.toOfNat0] One.toOfNat1

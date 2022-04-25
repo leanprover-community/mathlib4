@@ -18,11 +18,11 @@ open Lean.Elab.Command
 
 syntax "to_additive_ignore_args" num* : attr
 syntax "to_additive_relevant_arg" num : attr
-syntax "to_additive_reorder" num* : attr
-syntax "to_additive" (ppSpace ident)? (ppSpace str)? : attr
-syntax "to_additive!" (ppSpace ident)? (ppSpace str)? : attr
-syntax "to_additive?" (ppSpace ident)? (ppSpace str)? : attr
-syntax "to_additive!?" (ppSpace ident)? (ppSpace str)? : attr
+syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
+syntax (name := to_additive) "to_additive" (ppSpace ident)? (ppSpace str)? : attr
+syntax (name := to_additive!) "to_additive!" (ppSpace ident)? (ppSpace str)? : attr
+syntax (name := to_additive?) "to_additive?" (ppSpace ident)? (ppSpace str)? : attr
+syntax (name := to_additive!?) "to_additive!?" (ppSpace ident)? (ppSpace str)? : attr
 
 namespace ToAdditive
 
@@ -31,7 +31,7 @@ initialize registerTraceClass `to_additive.detail
 
 initialize ignoreArgsAttr : ParametricAttribute (List Nat) ←
   registerParametricAttribute {
-    name      := `toAdditiveIgnoreArgs
+    name      := `to_additive_ignore_args
     descr     := "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized.",
     getParam := fun decl stx => do
         let ids ← match stx with
@@ -46,7 +46,7 @@ def ignore [Functor M] [MonadEnv M]: Name → M (Option (List Nat))
 
 initialize reorderAttr : ParametricAttribute (List Nat) ←
   registerParametricAttribute {
-    name := `toAdditiveReorder
+    name := `to_additive_reorder
     descr := "Auxiliary attribute for `to_additive` that stores arguments that need to be reordered."
     getParam := fun decl stx =>
       match stx with
@@ -63,7 +63,7 @@ def shouldReorder [Functor M] [MonadEnv M]: Name → Nat → M Bool
 
 initialize relevantArgAttr : ParametricAttribute (Nat) ←
   registerParametricAttribute {
-    name := `toAdditiveRelevantArg
+    name := `to_additive_relevant_arg
     descr := "Auxiliary attribute for `to_additive` stating which arguments are the types with a multiplicative structure."
     getParam := fun decl stx =>
       match stx with
@@ -153,7 +153,7 @@ We assume that all functions where we want to reorder arguments are fully applie
 This can be done by applying `expr.eta_expand` first.
 -/
 def applyReplacementFun : Expr → MetaM Expr :=
-  Lean.Expr.replaceRecM fun r e => do
+  Lean.Expr.replaceRecMeta fun r e => do
     match e with
     | Expr.lit (Literal.natVal 1) _    => pure <| mkNatLit 0
     | Expr.const n₀ ls _ => do
@@ -184,7 +184,7 @@ def applyReplacementFun : Expr → MetaM Expr :=
             let x ← r x
             let args ← g.getAppArgs.mapM r
             return some $ mkApp (mkAppN gf args) x
-      return none
+      return e.updateApp! (← r g) (← r x)
     | _ => return none
 
 /-- Eta expands `e` at most `n` times.-/
