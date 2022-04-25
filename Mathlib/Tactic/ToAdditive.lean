@@ -16,100 +16,98 @@ open Lean.Meta
 open Lean.Elab
 open Lean.Elab.Command
 
-syntax (name := toAdditiveIgnoreArgs) "to_additive_ignore_args" num* : attr
-syntax (name := toAdditiveRelevantArg) "to_additive_relevant_arg" num : attr
-syntax (name := toAdditiveReorder) "to_additive_reorder" num* : attr
-syntax (name := to_additive) "to_additive" "!"? (ppSpace ident)? (ppSpace str)? : attr
+syntax "to_additive_ignore_args" num* : attr
+syntax "to_additive_relevant_arg" num : attr
+syntax "to_additive_reorder" num* : attr
+syntax "to_additive" (ppSpace ident)? (ppSpace str)? : attr
+syntax "to_additive!" (ppSpace ident)? (ppSpace str)? : attr
+syntax "to_additive?" (ppSpace ident)? (ppSpace str)? : attr
+syntax "to_additive!?" (ppSpace ident)? (ppSpace str)? : attr
 
 namespace ToAdditive
 
 initialize registerTraceClass `to_additive
-initialize registerTraceClass `to_additive.replace
+initialize registerTraceClass `to_additive.detail
 
-initialize ignore_args_attr : ParametricAttribute (List Nat) ←
+initialize ignoreArgsAttr : ParametricAttribute (List Nat) ←
   registerParametricAttribute {
-  name      := `to_additive_ignore_args
-  descr     := "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized.",
-  getParam := fun decl stx => do
-      let ids ← match stx with
-        | `(attr|to_additive_ignore_args $[$ids:num]*) => pure $ ids.map (·.isNatLit?.get!)
-        | _ => throwError "unexpected to_additive_reorder syntax {stx}"
-      return ids.toList
+    name      := `toAdditiveIgnoreArgs
+    descr     := "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized.",
+    getParam := fun decl stx => do
+        let ids ← match stx with
+          | `(attr|to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.isNatLit?.get!)
+          | _ => throwError "unexpected to_additive_ignore_args syntax {stx}"
+        return ids.toList
   }
 
-initialize reorder_attr : ParametricAttribute (List Nat) ←
+/-- Gets the set of arguments that should be ignored for the given name (according to to_additive_ignore_args) -/
+def ignore [Functor M] [MonadEnv M]: Name → M (Option (List Nat))
+  | n => (ignoreArgsAttr.getParam · n) <$> getEnv
+
+initialize reorderAttr : ParametricAttribute (List Nat) ←
   registerParametricAttribute {
     name := `toAdditiveReorder
     descr := "Auxiliary attribute for `to_additive` that stores arguments that need to be reordered."
     getParam := fun decl stx =>
       match stx with
-      | `(attr|to_additive_reorder $[$ids:num]*) => pure $ Array.toList $ ids.map (·.isNatLit?.get!)
+      | `(attr|to_additive_reorder $[$ids:num]*) => pure <| Array.toList <| ids.map (·.isNatLit?.get!)
       | _ => throwError "unexpected to_additive_reorder syntax {stx}"
   }
 
-initialize relevant_arg_attr : ParametricAttribute (Nat) ←
+def getReorder [Functor M] [MonadEnv M]: Name →  M (List Nat)
+  | n => (reorderAttr.getParam · n |>.getD []) <$> getEnv
+
+def shouldReorder [Functor M] [MonadEnv M]: Name → Nat → M Bool
+  | n, i => (i ∈ ·) <$> (getReorder n)
+
+
+initialize relevantArgAttr : ParametricAttribute (Nat) ←
   registerParametricAttribute {
-    name := `to_additive_relevant_arg
+    name := `toAdditiveRelevantArg
     descr := "Auxiliary attribute for `to_additive` stating which arguments are the types with a multiplicative structure."
     getParam := fun decl stx =>
       match stx with
-      | `(attr|to_additive_relevant_arg $id) => pure $ id.isNatLit?.get!
+      | `(attr|to_additive_relevant_arg $id) => pure <| id.isNatLit?.get!
       | _ => throwError "unexpected to_additive_relevant_arg syntax {stx}"
   }
 
--- [todo] replace with MapDeclarationExtension when https://github.com/leanprover/lean4/issues/1111 is fixed.
+  def isRelevant [Functor M] [MonadEnv M]: Name → Nat → M Bool
+  | n, i =>
+    (fun | some j => i == j | none => i == 0)
+    <$> (relevantArgAttr.getParam · n)
+    <$> getEnv
+
 /- Maps multiplicative names to their additive counterparts. -/
 initialize translations : SimplePersistentEnvExtension (Name × Name) (NameMap Name) ←
   registerSimplePersistentEnvExtension {
     name          := `translations,
-    addImportedFn := fun ass => ass.foldl (fun | names, as => as.foldl (fun | names, (a,b) => names.insert a b) names) ∅,
+    addImportedFn := fun ass => ass.foldl (init := ∅) fun
+                       | names, as => as.foldl (init := names) fun
+                         | names, (a,b) => names.insert a b,
     addEntryFn    := fun s n => s.insert n.1 n.2 ,
     toArrayFn     := fun es => es.toArray
   }
 
-def find_translation? (env : Environment) : Name → Option Name :=
+/-- Get the multiplicative → additive translation for the given name. -/
+def findTranslation? (env : Environment) : Name → Option Name :=
   (ToAdditive.translations.getState env).find?
 
-def insert_translation (src tgt : Name) : CoreM Unit := do
-  if let some tgt' := find_translation? (←getEnv) src then
+def insertTranslation (src tgt : Name) : CoreM Unit := do
+  if let some tgt' := findTranslation? (←getEnv) src then
     throwError "Already exists translation {src} ↦ {tgt'}"
   (ToAdditive.translations.addEntry (←getEnv)) (src, tgt) |> setEnv
   trace[to_additive] "Added translation {src} ↦ {tgt}."
 
-variable {M} [Monad M]
-
-def getNameFn  [MonadEnv M] : M (Name → Option Name) := do
-  let env ← getEnv
-  return find_translation? env
-
-def runNameFn  [MonadEnv M] : Name → M (Option Name)
-  | n => do return find_translation? (← getEnv) n
-
-def ignore  [MonadEnv M]: Name → M (Option (List Nat))
-  | n => do return ignore_args_attr.getParam (← getEnv) n
-
-def getReorder  [MonadEnv M]: Name →  M (List Nat)
-  | n => do return reorder_attr.getParam (← getEnv) n |> (Option.getD · [])
-
-def shouldReorder  [MonadEnv M]: Name → Nat → M Bool
-  | n, i => (i ∈ .) <$> (getReorder n)
-
-def isRelevant  [MonadEnv M]: Name → Nat → M Bool
-  | n, i => do
-    match relevant_arg_attr.getParam (← getEnv) n with
-    | some j => return i == j
-    | none => return i == 0
-
 /-- Get whether or not the replace-all flag is set. -/
-def replaceAll  [MonadOptions M] : M Bool :=
-  do return (← getOptions).getBool `to_additive.replaceAll
+def replaceAll [Functor M] [MonadOptions M] : M Bool :=
+  (·.getBool `to_additive.detailAll) <$> getOptions
 
-variable [MonadOptions M] [MonadEnv M]
+variable [Monad M] [MonadOptions M] [MonadEnv M]
 
-/-- Auxilliary function for `additive_test`. The bool argument *only* matters when applied
+/-- Auxilliary function for `additiveTest`. The bool argument *only* matters when applied
 to exactly a constant. -/
 private def additiveTestAux: Bool → Expr → M Bool
-  | b, Expr.const n _ _           => return b || (← runNameFn n).isSome
+  | b, Expr.const n _ _           => return b || (findTranslation? (← getEnv) n).isSome
   | b, (Expr.app e a _) => do
       if (← additiveTestAux true e) then
         return true
@@ -159,10 +157,9 @@ def applyReplacementFun : Expr → MetaM Expr :=
     match e with
     | Expr.lit (Literal.natVal 1) _    => pure <| mkNatLit 0
     | Expr.const n₀ ls _ => do
-      let nameFun ← getNameFn
-      let n₁ := Name.mapPrefix nameFun n₀
+      let n₁ := Name.mapPrefix (findTranslation? <|← getEnv) n₀
       if n₀ != n₁ then
-        trace[to_additive.replace] "replace {n₀} → {n₁}"
+        trace[to_additive.detail] "applyReplacementFun: {n₀} → {n₁}"
       let ls : List Level ← (do -- [todo] just get Lean to figure out the levels?
         if ← shouldReorder n₀ 1 then
             return ls.get! 1::ls.head!::ls.drop 2
@@ -180,7 +177,7 @@ def applyReplacementFun : Expr → MetaM Expr :=
               let gf ← r (g.appFn!)
               let ga ← r (g.appArg!)
               let e₂ :=  mkApp2 gf x ga
-              trace[to_additive.replace] "reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter:  {e₂}"
+              trace[to_additive.detail] "applyReplacementFun: reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter:  {e₂}"
               return some e₂
         if ← isRelevant nm nArgs then
           if gf.isConst && not (← additiveTest x) then
@@ -192,13 +189,7 @@ def applyReplacementFun : Expr → MetaM Expr :=
 
 /-- Eta expands `e` at most `n` times.-/
 def etaExpandN (n : Nat) (e : Expr): MetaM Expr := do
-  let t ← inferType e
-  let e₂ ← forallBoundedTelescope t (some n) fun xs _ => do
-    let e' ← mkLambdaFVars xs (mkAppN e xs)
-    trace[to_additive] "η-expand({n}):\n{e}\n{xs}\n{(mkAppN e xs)}\n{e'}"
-    return e'
-  trace[to_additive] "η-expand:\nBefore: {e}\nAfter:  {e₂}"
-  return e₂
+  forallBoundedTelescope (← inferType e) (some n) fun xs _ => mkLambdaFVars xs (mkAppN e xs)
 
 /-- `e.expand` eta-expands all expressions that have as head a constant `n` in
 `reorder`. They are expanded until they are applied to one more argument than the maximum in
@@ -211,16 +202,18 @@ private def expand : Expr → MetaM Expr
     let some e0n := e0.constName? | return none
     let reorder ← getReorder e0n
     if reorder.isEmpty then
-      -- no need of expand if nothing needs reordering
+      -- no need to expand if nothing needs reordering
       return none
     let e' := mkAppN e0 $ ← es.mapM r
     let needed_n := reorder.foldr Nat.max 0 + 1
     if needed_n ≤ es.size then
       return some e'
     else
+      -- in this case, we need to reorder arguments that are not yet
+      -- applied, so first η-expand the function.
       let e' ← etaExpandN (needed_n - es.size) e'
       return some $ e'
-  trace[to_additive] "expand:\nBefore: {e}\nAfter:  {e₂}"
+  trace[to_additive.detail] "expand:\nBefore: {e}\nAfter:  {e₂}"
   return e₂
 
 def updateWithFun
@@ -321,66 +314,67 @@ def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
     else
       return l.foldr min l[0]
 
-/-- `value_type` is the type of the arguments that can be provided to `to_additive`.
-`to_additive.parser` parses the provided arguments:
-* `replace_all`: replace all multiplicative declarations, do not use the heuristic.
-* `tgt : name`: the name of the target (the additive declaration).
-* `doc`: an optional doc string.
-* if `allow_auto_name` is `ff` (default) then `@[to_additive]` will check whether the given name
-  can be auto-generated.
--/
+/-- `ValueType` is the type of the arguments that can be provided to `to_additive`. -/
 structure ValueType : Type where
+  /-- Replace all multiplicative declarations, do not use the heuristic. -/
   replaceAll : Bool := false
+  /-- View the trace of the to_additive procedure.
+  Equivalent to `set_option trace.to_additive true`. -/
+  trace : Bool := false
+  /-- The name of the target (the additive declaration).-/
   tgt : Name := Name.anonymous
+  /-- An optional doc string.-/
   doc : Option String := none
+  /-- If `allow_auto_name` is `false` (default) then
+  `@[to_additive]` will check whether the given name can be auto-generated. -/
   allowAutoName : Bool := false
   deriving Repr
 
 /-- `add_comm_prefix x s` returns `"comm_" ++ s` if `x = tt` and `s` otherwise. -/
 def addCommPrefix : Bool → String → String
-| true, s => "comm" ++ s -- [todo] should to-upper
+| true, s => "comm" ++ s.capitalize
 | false, s => s
 
 /-- Dictionary used by `to_additive.guess_name` to autogenerate names. -/
-def tr : Bool → List String → List String
-| is_comm, ("one" :: "le" :: s)        => addCommPrefix is_comm "nonneg"    :: tr false s
-| is_comm, ("one" :: "lt" :: s)        => addCommPrefix is_comm "pos"       :: tr false s
-| is_comm, ("le" :: "one" :: s)        => addCommPrefix is_comm "nonpos"    :: tr false s
-| is_comm, ("lt" :: "one" :: s)        => addCommPrefix is_comm "neg"       :: tr false s
-| is_comm, ("mul" :: "single" :: s)    => addCommPrefix is_comm "single"    :: tr false s
-| is_comm, ("mul" :: "support" :: s)   => addCommPrefix is_comm "support"   :: tr false s
-| is_comm, ("mul" :: "tsupport" :: s)  => addCommPrefix is_comm "tsupport"  :: tr false s
-| is_comm, ("mul" :: "indicator" :: s) => addCommPrefix is_comm "indicator" :: tr false s
-| is_comm, ("mul" :: s)                => addCommPrefix is_comm "add"       :: tr false s
-| is_comm, ("smul" :: s)               => addCommPrefix is_comm "vadd"      :: tr false s
-| is_comm, ("inv" :: s)                => addCommPrefix is_comm "neg"       :: tr false s
-| is_comm, ("div" :: s)                => addCommPrefix is_comm "sub"       :: tr false s
-| is_comm, ("one" :: s)                => addCommPrefix is_comm "zero"      :: tr false s
-| is_comm, ("prod" :: s)               => addCommPrefix is_comm "sum"       :: tr false s
-| is_comm, ("finprod" :: s)            => addCommPrefix is_comm "finsum"    :: tr false s
-| is_comm, ("pow" :: s)                => addCommPrefix is_comm "nsmul"     :: tr false s
-| is_comm, ("npow" :: s)               => addCommPrefix is_comm "nsmul"     :: tr false s
-| is_comm, ("zpow" :: s)               => addCommPrefix is_comm "zsmul"     :: tr false s
-| is_comm, ("monoid" :: s)      => ("add_" ++ addCommPrefix is_comm "monoid")    :: tr false s
-| is_comm, ("submonoid" :: s)   => ("add_" ++ addCommPrefix is_comm "submonoid") :: tr false s
-| is_comm, ("group" :: s)       => ("add_" ++ addCommPrefix is_comm "group")     :: tr false s
-| is_comm, ("subgroup" :: s)    => ("add_" ++ addCommPrefix is_comm "subgroup")  :: tr false s
-| is_comm, ("semigroup" :: s)   => ("add_" ++ addCommPrefix is_comm "semigroup") :: tr false s
-| is_comm, ("magma" :: s)       => ("add_" ++ addCommPrefix is_comm "magma")     :: tr false s
-| is_comm, ("haar" :: s)        => ("add_" ++ addCommPrefix is_comm "haar")      :: tr false s
-| is_comm, ("prehaar" :: s)     => ("add_" ++ addCommPrefix is_comm "prehaar")   :: tr false s
-| is_comm, ("unit" :: s)        => ("add_" ++ addCommPrefix is_comm "unit")      :: tr false s
-| is_comm, ("units" :: s)       => ("add_" ++ addCommPrefix is_comm "units")     :: tr false s
-| is_comm, ("comm" :: s)        => tr true s
-| is_comm, (x :: s)             => (addCommPrefix is_comm x :: tr false s)
+private def guessNameDict : Bool → List String → List String
+| is_comm, ("one" :: "le" :: s)        => addCommPrefix is_comm "nonneg"    :: guessNameDict false s
+| is_comm, ("one" :: "lt" :: s)        => addCommPrefix is_comm "pos"       :: guessNameDict false s
+| is_comm, ("le" :: "one" :: s)        => addCommPrefix is_comm "nonpos"    :: guessNameDict false s
+| is_comm, ("lt" :: "one" :: s)        => addCommPrefix is_comm "neg"       :: guessNameDict false s
+| is_comm, ("mul" :: "single" :: s)    => addCommPrefix is_comm "single"    :: guessNameDict false s
+| is_comm, ("mul" :: "support" :: s)   => addCommPrefix is_comm "support"   :: guessNameDict false s
+| is_comm, ("mul" :: "tsupport" :: s)  => addCommPrefix is_comm "tsupport"  :: guessNameDict false s
+| is_comm, ("mul" :: "indicator" :: s) => addCommPrefix is_comm "indicator" :: guessNameDict false s
+| is_comm, ("mul" :: s)                => addCommPrefix is_comm "add"       :: guessNameDict false s
+| is_comm, ("smul" :: s)               => addCommPrefix is_comm "vadd"      :: guessNameDict false s
+| is_comm, ("inv" :: s)                => addCommPrefix is_comm "neg"       :: guessNameDict false s
+| is_comm, ("div" :: s)                => addCommPrefix is_comm "sub"       :: guessNameDict false s
+| is_comm, ("one" :: s)                => addCommPrefix is_comm "zero"      :: guessNameDict false s
+| is_comm, ("prod" :: s)               => addCommPrefix is_comm "sum"       :: guessNameDict false s
+| is_comm, ("finprod" :: s)            => addCommPrefix is_comm "finsum"    :: guessNameDict false s
+| is_comm, ("pow" :: s)                => addCommPrefix is_comm "nsmul"     :: guessNameDict false s
+| is_comm, ("npow" :: s)               => addCommPrefix is_comm "nsmul"     :: guessNameDict false s
+| is_comm, ("zpow" :: s)               => addCommPrefix is_comm "zsmul"     :: guessNameDict false s
+| is_comm, ("monoid" :: s)      => ("add_" ++ addCommPrefix is_comm "monoid")    :: guessNameDict false s
+| is_comm, ("submonoid" :: s)   => ("add_" ++ addCommPrefix is_comm "submonoid") :: guessNameDict false s
+| is_comm, ("group" :: s)       => ("add_" ++ addCommPrefix is_comm "group")     :: guessNameDict false s
+| is_comm, ("subgroup" :: s)    => ("add_" ++ addCommPrefix is_comm "subgroup")  :: guessNameDict false s
+| is_comm, ("semigroup" :: s)   => ("add_" ++ addCommPrefix is_comm "semigroup") :: guessNameDict false s
+| is_comm, ("magma" :: s)       => ("add_" ++ addCommPrefix is_comm "magma")     :: guessNameDict false s
+| is_comm, ("haar" :: s)        => ("add_" ++ addCommPrefix is_comm "haar")      :: guessNameDict false s
+| is_comm, ("prehaar" :: s)     => ("add_" ++ addCommPrefix is_comm "prehaar")   :: guessNameDict false s
+| is_comm, ("unit" :: s)        => ("add_" ++ addCommPrefix is_comm "unit")      :: guessNameDict false s
+| is_comm, ("units" :: s)       => ("add_" ++ addCommPrefix is_comm "units")     :: guessNameDict false s
+| is_comm, ("comm" :: s)        => guessNameDict true s
+| is_comm, (x :: s)             => (addCommPrefix is_comm x :: guessNameDict false s)
 | true, []                        => ["comm"]
 | false, []                        => []
 
 /-- Autogenerate target name for `to_additive`. -/
 def guessName : String → String :=
   String.mapTokens ''' $
-  λ s => String.intercalate (String.singleton '_') $
-  tr false (s.splitOn "_") -- [todo] replace with camelcase logic?
+  fun s => String.intercalate (String.singleton '_') $
+  guessNameDict false (s.splitOn "_") -- [todo] replace with camelcase logic?
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
 def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
@@ -390,9 +384,8 @@ def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
     let (Name.str pre s _) := src | throwError "to_additive: can't transport {src}"
     let tgt_auto := guessName s
     if tgt.toString == tgt_auto then
-      -- [todo] make this a warning?
       dbg_trace "{src}: correctly autogenerated target name {tgt_auto}, you may remove the explicit {tgt} argument."
-    let pre := pre.mapPrefix <| find_translation? (← getEnv)
+    let pre := pre.mapPrefix <| findTranslation? (← getEnv)
     if tgt == Name.anonymous then
       return Name.mkStr pre tgt_auto
     else
@@ -409,8 +402,7 @@ do
     throwError "Failed to map fields of {src}, {tgt} with {srcFields} ↦ {tgtFields}"
   for (srcField, tgtField) in List.zip srcFields tgtFields do
     if srcField != tgtField then
-
-      insert_translation (src ++ srcField) (tgt ++ tgtField)
+      insertTranslation (src ++ srcField) (tgt ++ tgtField)
       -- [todo] what is prio doing in mathlib3? I think it's the scoping?
 
 /-- Add the structure fields of `src` to the translations dictionary
@@ -432,15 +424,24 @@ def proceedFields (src tgt : Name) (prio : Nat) : CoreM Unit := do
   --                 | _ := fail "Bad constructor name"
   --                 )
 
-def elab_to_additive : Syntax → CoreM ValueType
-  | `(attr| to_additive $[!%$replaceAll]? $[$tgt]? $[$doc]?) => do
-    return {
-      replaceAll := replaceAll.isSome
-      tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
-      doc := doc.bind (·.isStrLit?)
-      allowAutoName := false
-    }
+private def elabToAdditiveAux
+  (replaceAll trace : Bool) (tgt : Option Syntax) (doc : Option Syntax) : ValueType :=
+  { replaceAll := replaceAll
+    trace := trace
+    tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
+    doc := doc.bind (·.isStrLit?)
+    allowAutoName := false
+  }
+
+private def elabToAdditive : Syntax → CoreM ValueType
+  | `(attr| to_additive    $[$tgt]? $[$doc]?) => return elabToAdditiveAux false false tgt doc
+  | `(attr| to_additive!   $[$tgt]? $[$doc]?) => return elabToAdditiveAux true  false tgt doc
+  | `(attr| to_additive?   $[$tgt]? $[$doc]?) => return elabToAdditiveAux false true  tgt doc
+  | `(attr| to_additive!?  $[$tgt]? $[$doc]?) => return elabToAdditiveAux true  true  tgt doc
   | _ => throwUnsupportedSyntax
+
+
+private def attributeNames := [`reducible, `_refl_lemma, `simp, `norm_cast, `instance, `refl, `symm, `trans, `elab_as_eliminator, `no_rsimp, `continuity, `ext, `ematch, `measurability, `alias, `_ext_core, `_ext_lemma_core, `nolint, `protected]
 
 initialize registerBuiltinAttribute {
     name := `to_additive
@@ -449,23 +450,23 @@ initialize registerBuiltinAttribute {
       -- [todo] what is equiv of persistent in Lean 4?
       -- guard persistent <|> fail "`to_additive` can't be used as a local attribute"
       let prio := 0 -- [todo] I think this is a function of `kind`?
-      let val ← elab_to_additive stx
-      let ignore := ignore_args_attr.getParam (← getEnv) src
-      let relevant := relevant_arg_attr.getParam (← getEnv) src
-      let reorder := reorder_attr.getParam (← getEnv) src
+      let val ← elabToAdditive stx
+      let ignore := ignoreArgsAttr.getParam (← getEnv) src
+      let relevant := relevantArgAttr.getParam (← getEnv) src
+      let reorder := reorderAttr.getParam (← getEnv) src
       let tgt ← targetName src val.tgt val.allowAutoName
-      if let some tgt' := find_translation? (← getEnv) src then
+      if let some tgt' := findTranslation? (← getEnv) src then
         throwError "{src} already has a to_additive translation {tgt'}."
-      insert_translation src tgt
+      insertTranslation src tgt
       let firstMultArg ← MetaM.run' <| firstMultiplicativeArg src
       if (firstMultArg != 1) then
         proceedFields src tgt prio
       if (← getEnv).contains tgt then
         proceedFields src tgt prio
       else
-        let magicNames := [`reducible, `_refl_lemma, `simp, `norm_cast, `instance, `refl, `symm, `trans, `elab_as_eliminator, `no_rsimp, `continuity, `ext, `ematch, `measurability, `alias, `_ext_core, `_ext_lemma_core, `nolint, `protected]
-        withOptions (fun o => o.setBool `to_additive.replaceAll val.replaceAll)
-          (transformDeclWithPrefixFun src tgt magicNames)
+        let shouldTrace := val.trace || ((← getOptions) |>.getBool `trace.to_additive)
+        withOptions (fun o => o |>.setBool `to_additive.replaceAll val.replaceAll |>.setBool `trace.to_additive shouldTrace)
+          (transformDeclWithPrefixFun src tgt attributeNames)
       -- [todo] port below code
       --   if ← (hasAttribute' `simps src) then
       --     dbg_trace "Apply the simps attribute after the to_additive attribute"

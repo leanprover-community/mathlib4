@@ -37,7 +37,8 @@ def replaceRecM [Monad M] (f? : (Expr → M Expr) → Expr → M (Option Expr)) 
     | some x => return x
     | none => traverseChildren r e
 
-/-- replaceRec except that bound variables are instantiated with free variables. -/
+/-- replaceRec except that bound variables are instantiated with free variables.
+This means that MetaM tactics can be used inside the replacement function. -/
 def replaceRecMeta [Monad M] [MonadLiftT MetaM M] [MonadControlT MetaM M] (f? : (Expr → M Expr) → Expr → M (Option Expr)) : Expr → M Expr :=
   fix fun r e => do
     match ← f? r e with

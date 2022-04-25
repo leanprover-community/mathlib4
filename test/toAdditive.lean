@@ -5,11 +5,11 @@ open Lean
 namespace Test
 
 -- [todo] remove these once tests pass
-set_option trace.to_additive true
-set_option trace.to_additive.replace true
-set_option pp.universes true
-set_option pp.explicit true
-set_option pp.notation false
+-- set_option trace.to_additive true
+-- set_option trace.to_additive.replace true
+-- set_option pp.universes true
+-- set_option pp.explicit true
+-- set_option pp.notation false
 
 @[to_additive bar0]
 def foo0 {α} [Mul α] [One α] (x y : α) : α := x * y * 1
