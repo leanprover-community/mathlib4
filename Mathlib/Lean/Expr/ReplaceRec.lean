@@ -30,7 +30,7 @@ def replaceRec (f? : (Expr → Expr) → Expr → Option Expr) : Expr → Expr :
     | some x => x
     | none   => traverseChildren (M := Id) r e
 
-/-- replaceRec under a monad. [todo] caching -/
+/-- replaceRec under a monad. -/
 def replaceRecM [Monad M] (f? : (Expr → M Expr) → Expr → M (Option Expr)) : Expr → M Expr :=
   fix fun r e => do
     match ← f? r e with
@@ -39,7 +39,8 @@ def replaceRecM [Monad M] (f? : (Expr → M Expr) → Expr → M (Option Expr)) 
 
 /-- replaceRec except that bound variables are instantiated with free variables.
 This means that MetaM tactics can be used inside the replacement function. -/
-def replaceRecMeta [Monad M] [MonadLiftT MetaM M] [MonadControlT MetaM M] (f? : (Expr → M Expr) → Expr → M (Option Expr)) : Expr → M Expr :=
+def replaceRecMeta [Monad M] [MonadLiftT MetaM M] [MonadControlT MetaM M]
+  (f? : (Expr → M Expr) → Expr → M (Option Expr)) : Expr → M Expr :=
   fix fun r e => do
     match ← f? r e with
     | some x => return x
