@@ -225,6 +225,14 @@ def updateWithFun
     decl := decl.updateValue (← applyReplacementFun (← expand v))
   return decl
 
+/-- Lean 4 makes declarations which are not internal
+(that is, head string starts with `_`) but which should be transformed.
+eg `proof_1` in `Lean.Meta.mkAuxDefinitionFor` this might be better fixed in core.
+This is a fix for that. -/
+def isInternal' : Name → Bool
+  | n@(Name.str _ s _) => (s.startsWith "proof_") || (Name.isInternal n)
+  | n => Name.isInternal n
+
 /-- transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
 using the dictionary `f`.
 `replace_all`, `trace`, `ignore` and `reorder` are configuration options.
@@ -233,13 +241,11 @@ declaration. -/
 partial def transformDeclWithPrefixFunAux
   (pre tgt_pre : Name) : Name → CoreM Unit := fun src => do
   -- if this declaration is not `pre` or an internal declaration, we do nothing.
-  -- [todo] the next section is commented out because Lean 4 makes declarations which are not internal (that is, head string starts with `_`)
-  --   but which should be transformed;; eg `proof_1` in `Lean.Meta.mkAuxDefinitionFor` this might be better fixed in core.
-  -- if not (src == pre || src.isInternal) then
-  --   if (← runNameFn src).isSome then
-  --     return ()
-  --   else
-  --     throwError "The declaration {pre} depends on the declaration {src} which is in the namespace {pre}, but does not have the `@[to_additive]` attribute. This is not supported. Workaround: move {src} to a different namespace."
+  if not (src == pre || isInternal' src) then
+    if (findTranslation? (← getEnv) src).isSome then
+      return ()
+    else
+      throwError "The declaration {pre} depends on the declaration {src} which is in the namespace {pre}, but does not have the `@[to_additive]` attribute. This is not supported. Workaround: move {src} to a different namespace."
   let env ← getEnv
   -- we find the additive name of `src`
   let tgt := src.mapPrefix (fun n => if n == pre then some tgt_pre else none)

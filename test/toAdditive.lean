@@ -63,7 +63,7 @@ def foo4 {α : Type u} : Type v → Type (max u v) := @my_has_pow α
 lemma foo4_test {α β : Type u} : @foo4 α β = @my_has_pow α β := rfl
 
 @[to_additive bar5]
-def foo5 {α} [my_has_pow α ℕ] [my_has_pow ℕ ℤ] : True := True.intro -- [fixme]
+def foo5 {α} [my_has_pow α ℕ] [my_has_pow ℕ ℤ] : True := True.intro
 
 @[to_additive bar6]
 def foo6 {α} [my_has_pow α ℕ] : α → ℕ → α := @my_has_pow.pow α ℕ _
