@@ -16,13 +16,10 @@ open Lean.Meta
 open Lean.Elab
 open Lean.Elab.Command
 
-syntax "to_additive_ignore_args" num* : attr
-syntax "to_additive_relevant_arg" num : attr
+syntax (name := to_additive_ignore_args) "to_additive_ignore_args" num* : attr
+syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg" num : attr
 syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
-syntax (name := to_additive) "to_additive" (ppSpace ident)? (ppSpace str)? : attr
-syntax (name := to_additive!) "to_additive!" (ppSpace ident)? (ppSpace str)? : attr
-syntax (name := to_additive?) "to_additive?" (ppSpace ident)? (ppSpace str)? : attr
-syntax (name := to_additive!?) "to_additive!?" (ppSpace ident)? (ppSpace str)? : attr
+syntax (name := to_additive) "to_additive" "!"? "?"? (ppSpace ident)? (ppSpace str)? : attr
 
 namespace ToAdditive
 
@@ -294,6 +291,8 @@ def transformDeclWithPrefixFun (src tgt : Name) (attrs : List Name) : CoreM Unit
   return ()
 
 def hasAttribute' (name : Name) : MetaM Bool :=
+  /- [todo], in Lean 4, there is no place where a dictionary
+  from decl names to attribute names is stored. -/
   pure false -- [todo] implement
 
 /--
@@ -440,10 +439,10 @@ private def elabToAdditiveAux
   }
 
 private def elabToAdditive : Syntax → CoreM ValueType
-  | `(attr| to_additive    $[$tgt]? $[$doc]?) => return elabToAdditiveAux false false tgt doc
-  | `(attr| to_additive!   $[$tgt]? $[$doc]?) => return elabToAdditiveAux true  false tgt doc
-  | `(attr| to_additive?   $[$tgt]? $[$doc]?) => return elabToAdditiveAux false true  tgt doc
-  | `(attr| to_additive!?  $[$tgt]? $[$doc]?) => return elabToAdditiveAux true  true  tgt doc
+  | `(attr| to_additive     $[$tgt]? $[$doc]?) => return elabToAdditiveAux false false tgt doc
+  | `(attr| to_additive !   $[$tgt]? $[$doc]?) => return elabToAdditiveAux true  false tgt doc
+  | `(attr| to_additive ?   $[$tgt]? $[$doc]?) => return elabToAdditiveAux false true  tgt doc
+  | `(attr| to_additive ! ? $[$tgt]? $[$doc]?) => return elabToAdditiveAux true  true  tgt doc
   | _ => throwUnsupportedSyntax
 
 
