@@ -399,8 +399,7 @@ def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
     throwError "to_additive: can't transport {src} to itself."
   return res
 
-private def proceedFieldsAux (src tgt : Name) (prio : Nat) (f : Name → CoreM (List String)) : CoreM Unit :=
-do
+private def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (List String)) : CoreM Unit := do
   let srcFields ← f src
   let tgtFields ← f tgt
   if srcFields.length != tgtFields.length then
@@ -408,13 +407,12 @@ do
   for (srcField, tgtField) in List.zip srcFields tgtFields do
     if srcField != tgtField then
       insertTranslation (src ++ srcField) (tgt ++ tgtField)
-      -- [todo] what is prio doing in mathlib3? I think it's the scoping?
 
 /-- Add the structure fields of `src` to the translations dictionary
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
-def proceedFields (src tgt : Name) (prio : Nat) : CoreM Unit := do
+def proceedFields (src tgt : Name) : CoreM Unit := do
   let env : Environment ← getEnv
-  let aux := proceedFieldsAux src tgt prio
+  let aux := proceedFieldsAux src tgt
   aux (fun n => do
     let fields := if isStructure env n then getStructureFields env n else #[]
     return fields |> .map Name.toString |> Array.toList
@@ -439,12 +437,9 @@ private def elabToAdditiveAux
   }
 
 private def elabToAdditive : Syntax → CoreM ValueType
-  | `(attr| to_additive     $[$tgt]? $[$doc]?) => return elabToAdditiveAux false false tgt doc
-  | `(attr| to_additive !   $[$tgt]? $[$doc]?) => return elabToAdditiveAux true  false tgt doc
-  | `(attr| to_additive ?   $[$tgt]? $[$doc]?) => return elabToAdditiveAux false true  tgt doc
-  | `(attr| to_additive ! ? $[$tgt]? $[$doc]?) => return elabToAdditiveAux true  true  tgt doc
+  | `(attr| to_additive $[!%$replaceAll]? $[?%$trace]? $[$tgt]? $[$doc]?) =>
+    return elabToAdditiveAux replaceAll.isSome trace.isSome tgt doc
   | _ => throwUnsupportedSyntax
-
 
 private def attributeNames := [`reducible, `_refl_lemma, `simp, `norm_cast, `instance, `refl, `symm, `trans, `elab_as_eliminator, `no_rsimp, `continuity, `ext, `ematch, `measurability, `alias, `_ext_core, `_ext_lemma_core, `nolint, `protected]
 
@@ -452,9 +447,8 @@ initialize registerBuiltinAttribute {
     name := `to_additive
     descr :="Transport multiplicative to additive"
     add := fun src stx kind => do
-      -- [todo] what is equiv of persistent in Lean 4?
-      -- guard persistent <|> fail "`to_additive` can't be used as a local attribute"
-      let prio := 0 -- [todo] I think this is a function of `kind`?
+      if (kind != AttributeKind.global) then
+        throwError "`to_additive` can't be used as a local attribute"
       let val ← elabToAdditive stx
       let ignore := ignoreArgsAttr.getParam (← getEnv) src
       let relevant := relevantArgAttr.getParam (← getEnv) src
@@ -465,9 +459,9 @@ initialize registerBuiltinAttribute {
       insertTranslation src tgt
       let firstMultArg ← MetaM.run' <| firstMultiplicativeArg src
       if (firstMultArg != 1) then
-        proceedFields src tgt prio
+        proceedFields src tgt
       if (← getEnv).contains tgt then
-        proceedFields src tgt prio
+        proceedFields src tgt
       else
         let shouldTrace := val.trace || ((← getOptions) |>.getBool `trace.to_additive)
         withOptions (fun o => o |>.setBool `to_additive.replaceAll val.replaceAll |>.setBool `trace.to_additive shouldTrace)
