@@ -120,7 +120,8 @@ It tries to rewrite an expression using the elim and move lemmas.
 On failure, it calls the splitting procedure heuristic.
 -/
 partial def upwardAndElim (up : SimpTheorems) (e : Expr) : SimpM Simp.Step := do
-  let r ← Simp.rewrite e up.post up.erased prove (tag := "squash")
+  let some r ← Simp.rewrite? e up.post up.erased prove (tag := "squash") (rflOnly := false)
+    | throwError "simp rewrite failed"
   let r ← mkEqTrans r <|<- splittingProcedure r.expr
   if r.expr == e then return Simp.Step.done {expr := e}
   return Simp.Step.visit r
