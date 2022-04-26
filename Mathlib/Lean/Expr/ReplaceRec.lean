@@ -37,8 +37,12 @@ def replaceRecM [Monad M] (f? : (Expr → M Expr) → Expr → M (Option Expr)) 
     | some x => return x
     | none => traverseChildren r e
 
-/-- replaceRec except that bound variables are instantiated with free variables.
-This means that MetaM tactics can be used inside the replacement function. -/
+/-- Similar to `replaceRecM` except that bound variables are instantiated with free variables
+(like `Lean.Meta.transform`).
+This means that MetaM tactics can be used inside the replacement function.
+
+If you don't need recursive calling, you should prefer using `Lean.Meta.transform` because it also caches visits.
+ -/
 def replaceRecMeta [Monad M] [MonadLiftT MetaM M] [MonadControlT MetaM M]
   (f? : (Expr → M Expr) → Expr → M (Option Expr)) : Expr → M Expr :=
   fix fun r e => do
