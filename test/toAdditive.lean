@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Group.ToAdditiveInstances
+import Mathlib.Algebra.Group.Defs
 open Lean
 
 -- work in a namespace so that it doesn't matter if names clash
@@ -30,13 +30,11 @@ attribute [to_additive_reorder 1] my_has_pow
 attribute [to_additive_reorder 1 4] my_has_pow.pow
 attribute [to_additive my_has_scalar] my_has_pow
 
-
 @[to_additive bar1]
 def foo1 {α : Type u} [my_has_pow α ℕ] (x : α) (n : ℕ) : α := @my_has_pow.pow α ℕ _ x n
 
 theorem foo1_works : foo1 3 4 = Nat.pow 3 4 := by decide
 theorem bar1_works : bar1 3 4 = 3 * 4 := by decide
-
 
 infix:80 " ^ " => my_has_pow.pow
 

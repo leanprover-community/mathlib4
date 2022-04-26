@@ -1,6 +1,5 @@
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Group.ToAdditiveInstances
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Control.Random
@@ -48,6 +47,7 @@ import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr.Traverse
 import Mathlib.Lean.LocalContext
+import Mathlib.Lean.NameMapAttribute
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nonempty

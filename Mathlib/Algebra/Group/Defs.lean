@@ -1,6 +1,17 @@
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Tactic.Spread
+import Mathlib.Tactic.ToAdditive
+
+attribute [to_additive Add] Mul
+attribute [to_additive Sub] Div
+attribute [to_additive HAdd] HMul
+attribute [to_additive instHAdd]  instHMul
+attribute [to_additive HSub] HDiv
+
+#check @HPow.hPow
+attribute [to_additive_reorder 0 4] HPow.hPow
+attribute [to_additive HMul] HPow
 
 /-!
 # Typeclasses for monoids and groups etc
@@ -15,15 +26,19 @@ instance Zero.toOfNat0 {α} [Zero α] : OfNat α (nat_lit 0) where
 instance Zero.ofOfNat0 {α} [OfNat α (nat_lit 0)] : Zero α where
   zero := 0
 
+@[to_additive Zero]
 class One.{u} (α : Type u) where
   one : α
 
+@[to_additive Zero.toOfNat0]
 instance One.toOfNat1 {α} [One α] : OfNat α (nat_lit 1) where
   ofNat := ‹One α›.1
 
+@[to_additive Zero.ofOfNat0]
 instance One.ofOfNat1 {α} [OfNat α (nat_lit 1)] : One α where
   one := 1
 
+@[to_additive Neg]
 class Inv (α : Type u) where
   inv : α → α
 
@@ -54,6 +69,9 @@ def npow_rec [One M] [Mul M] : ℕ → M → M
 | 0  , a => 1
 | n+1, a => a * npow_rec n a
 
+attribute [to_additive_reorder 3] npow_rec
+attribute [to_additive] npow_rec
+
 end nat_action
 
 section int_action
@@ -70,6 +88,9 @@ def gpow_rec {G : Type u} [One G] [Mul G] [Inv G] : ℤ → G → G
 | (Int.ofNat n)  , a => npow_rec n a
 | (Int.negSucc n), a => (npow_rec n.succ a) ⁻¹
 
+attribute [to_additive_reorder 4] gpow_rec
+attribute [to_additive gsmul_rec] gpow_rec
+
 end int_action
 
 /-
@@ -83,13 +104,12 @@ end int_action
 ### Semigroups
 
 -/
-
 class AddSemigroup (A : Type u) extends Add A where
   add_assoc (a b c : A) : (a + b) + c = a + (b + c)
 
 theorem add_assoc {G : Type u} [AddSemigroup G] :
   ∀ a b c : G, (a + b) + c = a + (b + c) :=
-AddSemigroup.add_assoc
+  AddSemigroup.add_assoc
 
 class AddCommSemigroup (A : Type u) extends AddSemigroup A where
   add_comm (a b : A) : a + b = b + a
@@ -324,22 +344,26 @@ theorem Int.cast_negSucc [AddGroupWithOne R] : (Int.cast (Int.negSucc n) : R) = 
 
 -/
 
+@[to_additive AddSemigroup]
 class Semigroup (G : Type u) extends Mul G where
   mul_assoc (a b c : G) : (a * b) * c = a * (b * c)
 
 export Semigroup (mul_assoc)
 
+@[to_additive AddCommSemigroup]
 class CommSemigroup (G : Type u) extends Semigroup G where
   mul_comm (a b : G) : a * b = b * a
 
 export CommSemigroup (mul_comm)
 
+@[to_additive]
 lemma mul_left_comm {M} [CommSemigroup M] (a b c : M) : a * (b * c) = b * (a * c) :=
 by rw [← mul_assoc, mul_comm a, mul_assoc]
 
 -- Funky Lean 3 proof of the above:
 --left_comm has_mul.mul mul_comm mul_assoc
 
+@[to_additive]
 lemma mul_right_comm {M} [CommSemigroup M] (a b c : M) : a * b * c = a * c * b :=
 by rw [mul_assoc, mul_comm b c, mul_assoc]
 
@@ -365,8 +389,9 @@ section MulLeftCancel
 
 variable {G : Type u} [Semigroup G] [IsMulLeftCancel G] {a b c : G}
 
+@[to_additive]
 theorem mul_left_cancel : a * b = a * c → b = c :=
-IsMulLeftCancel.mul_left_cancel a b c
+  IsMulLeftCancel.mul_left_cancel a b c
 
 theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
 ⟨mul_left_cancel, congrArg _⟩
@@ -404,6 +429,7 @@ end MulRightCancel
 
 -/
 
+@[to_additive AddMonoid]
 class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   npow : ℕ → M → M := npow_rec
   npow_zero' : ∀ x, npow 0 x = 1 -- fill in with tactic once we can do this
@@ -463,6 +489,7 @@ end Monoid
 
 -/
 
+@[to_additive AddCommMonoid]
 class CommMonoid (M : Type u) extends Monoid M where
   mul_comm (a b : M) : a * b = b * a
 
@@ -501,6 +528,7 @@ class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G :=
 
 -/
 
+@[to_additive AddGroup]
 class Group (G : Type u) extends DivInvMonoid G where
   mul_left_inv (a : G) : a⁻¹ * a = 1
 
@@ -513,16 +541,16 @@ Group.mul_left_inv
 
 theorem inv_mul_self (a : G) : a⁻¹ * a = 1 := mul_left_inv a
 
-@[simp] theorem inv_mul_cancel_left (a b : G) : a⁻¹ * (a * b) = b :=
+@[to_additive, simp] theorem inv_mul_cancel_left (a b : G) : a⁻¹ * (a * b) = b :=
 by rw [← mul_assoc, mul_left_inv, one_mul]
 
-@[simp] theorem inv_eq_of_mul_eq_one (h : a * b = 1) : a⁻¹ = b :=
+@[to_additive, simp] theorem inv_eq_of_mul_eq_one (h : a * b = 1) : a⁻¹ = b :=
 left_inv_eq_right_inv (inv_mul_self a) h
 
-@[simp] theorem inv_inv (a : G) : (a⁻¹)⁻¹ = a :=
+@[to_additive, simp] theorem inv_inv (a : G) : (a⁻¹)⁻¹ = a :=
 inv_eq_of_mul_eq_one (mul_left_inv a)
 
-@[simp] theorem mul_right_inv (a : G) : a * a⁻¹ = 1 := by
+@[to_additive ?, simp] theorem mul_right_inv (a : G) : a * a⁻¹ = 1 := by
   rw [←mul_left_inv (a⁻¹), inv_inv]
 
 -- synonym
