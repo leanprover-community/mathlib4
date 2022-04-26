@@ -231,11 +231,11 @@ def isInternal' : Name → Bool
   | n => Name.isInternal n
 
 /-- transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
-using the dictionary `f`.
+using the transforms dictionary.
 `replace_all`, `trace`, `ignore` and `reorder` are configuration options.
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
-partial def transformDeclWithPrefixFunAux
+partial def transformDeclAux
   (pre tgt_pre : Name) : Name → CoreM Unit := fun src => do
   -- if this declaration is not `pre` or an internal declaration, we do nothing.
   if not (src == pre || isInternal' src) then
@@ -252,48 +252,43 @@ partial def transformDeclWithPrefixFunAux
   let decl ← getConstInfo src
   -- we first transform all the declarations of the form `pre._proof_i`
   for n in decl.type.listNamesWithPrefix pre do
-    transformDeclWithPrefixFunAux pre tgt_pre n
+    transformDeclAux pre tgt_pre n
   if let some value := decl.value? then
     for n in value.listNamesWithPrefix pre do
-      transformDeclWithPrefixFunAux pre tgt_pre n
+      transformDeclAux pre tgt_pre n
   -- we transform `decl` using `f` and the configuration options.
   let decl : ConstantInfo ← MetaM.run' $ updateWithFun tgt decl
   -- [todo] above line is simplified, mathlib3 version reads:
-  -- decl.update_with_fun env (name.map_prefix f) (additive_test f replace_all ignore) relevant reorder tgt
+  -- `decl.update_with_fun env (name.map_prefix f) (additive_test f replace_all ignore) relevant reorder tgt`
   trace[to_additive] "generating\n{decl.name} :=\n  {decl.value!}"
-  -- [todo] implement this error:
-  -- decorate_error (format!"@[to_additive] failed. Type mismatch in additive declaration. For help, see the docstring of `to_additive.attr`, section `Troubleshooting`. Failed to add declaration\n{pp_decl}
-    -- { if env.is_protected src then add_protected_decl decl else add_decl decl,
-    -- -- we test that the declaration value type-checks, so that we get the decorated error message
-    -- -- without this line, the type-checking might fail outside the `decorate_error`.
-    -- decorate_error "proof doesn't type-check. " $ type_check decl.value }
+  try
+    discard <| MetaM.run' <| inferType decl.value!
+  catch
+    | Exception.error stx msg => throwError "@[to_additive] failed.
+      Type mismatch in additive declaration. For help, see the docstring
+      of `to_additive.attr`, section `Troubleshooting`.
+      Failed to add declaration\n{decl.name}:\n{msg}"
+    | e => throwError "unreachable"
   addAndCompile decl.toDeclaration!
   if isProtected (← getEnv) src then
     setEnv $ addProtected (← getEnv) tgt
 
-def transformDeclWithPrefixFun (src tgt : Name) (attrs : List Name) : CoreM Unit := do
-  transformDeclWithPrefixFunAux src tgt src
+/--
+Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
+the body using the dictionary `dict`.
+This is used to implement `@[to_additive]`.
+-/
+def transformDecl (src tgt : Name) : CoreM Unit := do
+  transformDeclAux src tgt src
   let eqns? ← MetaM.run' (getEqnsFor? src true)
   -- now transform all of the equational lemmas
   if let some eqns := eqns? then
     for src_eqn in eqns do
-      transformDeclWithPrefixFunAux src tgt src_eqn
-      -- [todo] need to implement copyAttribute
-      -- -- copy attributes for the equational lemmas so that they know if they are refl lemmas
-      -- let tgt_eqn := Name.mapPrefix (fun n => if n == src then some tgt else none) src_eqn
-      -- for attr in attrs do
-      --   copyAttribute attr src_eqn tgt_eqn
-      -- -- set the transformed equation lemmas as equation lemmas for the new declaration
-      -- addEqnLemma tgt_eqn
-  -- [todo] need to implement copyAttribute
-  -- for attr in attrs do
-  --   copyAttribute attr src tgt
+      transformDeclAux src tgt src_eqn
+      -- [todo] copy attributes
+      -- [todo] add equation lemmas to tgt_eqn
+  -- [todo] copy attributes for decl
   return ()
-
-def hasAttribute' (name : Name) : MetaM Bool :=
-  /- [todo], in Lean 4, there is no place where a dictionary
-  from decl names to attribute names is stored. -/
-  pure false -- [todo] implement
 
 /--
 Find the first argument of `nm` that has a multiplicative type-class on it.
@@ -307,8 +302,8 @@ def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
       forallTelescopeReducing (← inferType x) fun ys tgt => do
         let (tgt_fn, tgt_args) := tgt.getAppFnArgs
         let n_bi := ys.size
-        if let some c :=  tgt.getAppFn.constName? then
-          if ← hasAttribute' `to_additive then
+        if let some c := tgt.getAppFn.constName? then
+          if findTranslation? (← getEnv) c |>.isSome then
             return none
         if tgt_args.size > 0 then
           return tgt_args[0].getAppFn.bvarIdx?.map (i + n_bi - .)
@@ -340,7 +335,8 @@ def addCommPrefix : Bool → String → String
 | true, s => "comm" ++ s.capitalize
 | false, s => s
 
-/-- Dictionary used by `to_additive.guess_name` to autogenerate names. -/
+/-- Dictionary used by `to_additive.guess_name` to autogenerate names.
+[todo] update to Lean 4 naming -/
 private def guessNameDict : Bool → List String → List String
 | is_comm, ("one" :: "le" :: s)        => addCommPrefix is_comm "nonneg"    :: guessNameDict false s
 | is_comm, ("one" :: "lt" :: s)        => addCommPrefix is_comm "pos"       :: guessNameDict false s
@@ -377,9 +373,10 @@ private def guessNameDict : Bool → List String → List String
 
 /-- Autogenerate target name for `to_additive`. -/
 def guessName : String → String :=
+  -- [todo] replace with camelcase logic?
   String.mapTokens ''' $
   fun s => String.intercalate (String.singleton '_') $
-  guessNameDict false (s.splitOn "_") -- [todo] replace with camelcase logic?
+  guessNameDict false (s.splitOn "_")
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
 def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
@@ -417,15 +414,10 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
     let fields := if isStructure env n then getStructureFields env n else #[]
     return fields |> .map Name.toString |> Array.toList
   )
-  -- [todo]
+  -- [todo] run to_additive on inherited structures:
   -- aux (fun n => (List.map (s!"to_{·}") <$> getTaggedAncestors n))
-  -- aux (fun n => (env.constructorsOf n).mmap $
-  --            fun
-  --                 | (name.mk_string s pre) :=
-  --                   (guard (pre = n) <|> fail "Bad constructor name") >>
-  --                   pure s
-  --                 | _ := fail "Bad constructor name"
-  --                 )
+  -- [todo] run to_additive on the constructors of n:
+  -- aux (fun n => (env.constructorsOf n).mmap $ ...
 
 private def elabToAdditiveAux
   (replaceAll trace : Bool) (tgt : Option Syntax) (doc : Option Syntax) : ValueType :=
@@ -441,7 +433,7 @@ private def elabToAdditive : Syntax → CoreM ValueType
     return elabToAdditiveAux replaceAll.isSome trace.isSome tgt doc
   | _ => throwUnsupportedSyntax
 
-private def attributeNames := [`reducible, `_refl_lemma, `simp, `norm_cast, `instance, `refl, `symm, `trans, `elab_as_eliminator, `no_rsimp, `continuity, `ext, `ematch, `measurability, `alias, `_ext_core, `_ext_lemma_core, `nolint, `protected]
+-- [todo] copy over large docstring for to_additive.
 
 initialize registerBuiltinAttribute {
     name := `to_additive
@@ -465,17 +457,9 @@ initialize registerBuiltinAttribute {
       else
         let shouldTrace := val.trace || ((← getOptions) |>.getBool `trace.to_additive)
         withOptions (fun o => o |>.setBool `to_additive.replaceAll val.replaceAll |>.setBool `trace.to_additive shouldTrace)
-          (transformDeclWithPrefixFun src tgt attributeNames)
-      -- [todo] port below code
-      --   if ← (hasAttribute' `simps src) then
-      --     dbg_trace "Apply the simps attribute after the to_additive attribute"
-      --   if ← (hasAttribute' `mono src) then
-      --     dbg_trace "to_additive does not work with mono, apply the mono attribute to both versions after"
-      --   match val.doc with
-      --   | some doc => add_doc_string tgt doc
-      --   | none => skip
-
-
+          (transformDecl src tgt)
+      if let some doc := val.doc then
+        addDocString tgt doc
       return ()
   }
 
