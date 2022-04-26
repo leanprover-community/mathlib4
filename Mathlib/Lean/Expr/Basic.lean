@@ -98,7 +98,7 @@ namespace Expr
 
 /-- If the expression is a constant, return that name. Otherwise return `Name.anonymous`. -/
 def constName (e : Expr) : Name :=
-e.constName?.getD Name.anonymous
+  e.constName?.getD Name.anonymous
 
 def bvarIdx? : Expr → Option Nat
   | bvar idx _ => some idx
@@ -118,7 +118,7 @@ def listNamesWithPrefix (pre : Name) (e : Expr) : NameSet :=
   e.foldConsts ∅ fun n l => if n.getPrefix == pre then l.insert n else l
 
 def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M Expr
-  | e@(app f a _) => e.updateApp! f <$> modifier a
+  | app f a _ => mkApp f <$> modifier a
   | e => pure e
 
 def modifyAppArg (modifier : Expr → Expr) : Expr → Expr :=
