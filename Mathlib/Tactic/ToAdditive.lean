@@ -8,6 +8,7 @@ import Mathlib.Data.String.Defs
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr
+import Mathlib.Lean.NameMapAttribute
 import Lean
 import Lean.Data
 
@@ -26,11 +27,11 @@ namespace ToAdditive
 initialize registerTraceClass `to_additive
 initialize registerTraceClass `to_additive.detail
 
-initialize ignoreArgsAttr : ParametricAttribute (List Nat) ←
-  registerParametricAttribute {
+initialize ignoreArgsAttr : NameMapAttribute (List Nat) ←
+  registerNameMapAttribute {
     name      := `to_additive_ignore_args
     descr     := "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized.",
-    getParam := fun decl stx => do
+    add := fun decl stx => do
         let ids ← match stx with
           | `(attr|to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.isNatLit?.get!)
           | _ => throwError "unexpected to_additive_ignore_args syntax {stx}"
@@ -39,30 +40,30 @@ initialize ignoreArgsAttr : ParametricAttribute (List Nat) ←
 
 /-- Gets the set of arguments that should be ignored for the given name (according to to_additive_ignore_args) -/
 def ignore [Functor M] [MonadEnv M]: Name → M (Option (List Nat))
-  | n => (ignoreArgsAttr.getParam · n) <$> getEnv
+  | n => (ignoreArgsAttr.find? · n) <$> getEnv
 
-initialize reorderAttr : ParametricAttribute (List Nat) ←
-  registerParametricAttribute {
+initialize reorderAttr : NameMapAttribute (List Nat) ←
+  registerNameMapAttribute {
     name := `to_additive_reorder
     descr := "Auxiliary attribute for `to_additive` that stores arguments that need to be reordered."
-    getParam := fun decl stx =>
+    add := fun decl stx =>
       match stx with
       | `(attr|to_additive_reorder $[$ids:num]*) => pure <| Array.toList <| ids.map (·.isNatLit?.get!)
       | _ => throwError "unexpected to_additive_reorder syntax {stx}"
   }
 
 def getReorder [Functor M] [MonadEnv M]: Name →  M (List Nat)
-  | n => (reorderAttr.getParam · n |>.getD []) <$> getEnv
+  | n => (reorderAttr.find? · n |>.getD []) <$> getEnv
 
 def shouldReorder [Functor M] [MonadEnv M]: Name → Nat → M Bool
   | n, i => (i ∈ ·) <$> (getReorder n)
 
 
-initialize relevantArgAttr : ParametricAttribute (Nat) ←
-  registerParametricAttribute {
+initialize relevantArgAttr : NameMapAttribute (Nat) ←
+  registerNameMapAttribute {
     name := `to_additive_relevant_arg
     descr := "Auxiliary attribute for `to_additive` stating which arguments are the types with a multiplicative structure."
-    getParam := fun decl stx =>
+    add := fun decl stx =>
       match stx with
       | `(attr|to_additive_relevant_arg $id) => pure <| id.isNatLit?.get!
       | _ => throwError "unexpected to_additive_relevant_arg syntax {stx}"
@@ -71,19 +72,12 @@ initialize relevantArgAttr : ParametricAttribute (Nat) ←
   def isRelevant [Functor M] [MonadEnv M]: Name → Nat → M Bool
   | n, i =>
     (fun | some j => i == j | none => i == 0)
-    <$> (relevantArgAttr.getParam · n)
+    <$> (relevantArgAttr.find? · n)
     <$> getEnv
 
 /- Maps multiplicative names to their additive counterparts. -/
-initialize translations : SimplePersistentEnvExtension (Name × Name) (NameMap Name) ←
-  registerSimplePersistentEnvExtension {
-    name          := `translations,
-    addImportedFn := fun ass => ass.foldl (init := ∅) fun
-                       | names, as => as.foldl (init := names) fun
-                         | names, (a,b) => names.insert a b,
-    addEntryFn    := fun s n => s.insert n.1 n.2 ,
-    toArrayFn     := fun es => es.toArray
-  }
+initialize translations : NameMapExtension Name ←
+  mkNameMapExtension Name `translations
 
 /-- Get the multiplicative → additive translation for the given name. -/
 def findTranslation? (env : Environment) : Name → Option Name :=
@@ -258,8 +252,8 @@ partial def transformDeclAux
       transformDeclAux pre tgt_pre n
   -- we transform `decl` using `f` and the configuration options.
   let decl : ConstantInfo ← MetaM.run' $ updateWithFun tgt decl
-  -- [todo] above line is simplified, mathlib3 version reads:
-  -- `decl.update_with_fun env (name.map_prefix f) (additive_test f replace_all ignore) relevant reorder tgt`
+  if ¬ decl.hasValue then
+    throwError "Expected {decl.name} to have a value."
   trace[to_additive] "generating\n{decl.name} :=\n  {decl.value!}"
   try
     discard <| MetaM.run' <| inferType decl.value!
@@ -442,9 +436,6 @@ initialize registerBuiltinAttribute {
       if (kind != AttributeKind.global) then
         throwError "`to_additive` can't be used as a local attribute"
       let val ← elabToAdditive stx
-      let ignore := ignoreArgsAttr.getParam (← getEnv) src
-      let relevant := relevantArgAttr.getParam (← getEnv) src
-      let reorder := reorderAttr.getParam (← getEnv) src
       let tgt ← targetName src val.tgt val.allowAutoName
       if let some tgt' := findTranslation? (← getEnv) src then
         throwError "{src} already has a to_additive translation {tgt'}."
@@ -456,7 +447,8 @@ initialize registerBuiltinAttribute {
         proceedFields src tgt
       else
         let shouldTrace := val.trace || ((← getOptions) |>.getBool `trace.to_additive)
-        withOptions (fun o => o |>.setBool `to_additive.replaceAll val.replaceAll |>.setBool `trace.to_additive shouldTrace)
+        withOptions (fun o => o |>.setBool `to_additive.replaceAll val.replaceAll
+                                |>.setBool `trace.to_additive shouldTrace)
           (transformDecl src tgt)
       if let some doc := val.doc then
         addDocString tgt doc
