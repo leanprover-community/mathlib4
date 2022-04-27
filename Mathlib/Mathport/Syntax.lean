@@ -189,7 +189,7 @@ syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
 /- N -/ syntax (name := simpIntro) "simp_intro" (config)?
   (ppSpace colGt (ident <|> "_"))* (&" only")? (" [" simpArg,* "]")? (" with " ident+)? : tactic
-/- N -/ syntax (name := dsimp) "dsimp" (config)? (&" only")?
+/- N -/ syntax (name := dsimp') "dsimp'" (config)? (&" only")?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
 /- E -/ syntax (name := symm) "symm" : tactic
 /- E -/ syntax (name := trans) "trans" (ppSpace colGt term)? : tactic
