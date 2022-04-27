@@ -85,7 +85,7 @@ def lintCore (decls : Array Name) (linters : Array NamedLinter) :
   let tasks : Array (NamedLinter × Array (Name × Task (Option MessageData))) ←
     linters.mapM fun linter => do
       let decls ← decls.filterM (shouldBeLinted linter.name)
-      (linter, ·) <$> decls.mapM fun decl => do (decl, ·) <$> do
+      (linter, ·) <$> decls.mapM fun decl => (decl, ·) <$> do
         BaseIO.asTask do
           match ← withCurrHeartbeats (linter.test decl)
               |>.run'.run' {options} {env} |>.toBaseIO with
