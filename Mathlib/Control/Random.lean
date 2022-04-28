@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2021 Henrik Böving. All rights reserved.
+Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving
 -/
@@ -124,3 +124,6 @@ def IO.runRand (cmd : Rand α) : BaseIO α := do
   let (res, new) := Id.run <| StateT.run cmd rng
   stdGenRef.set new.down
   pure res
+
+def IO.runRandWith (seed : Nat) (cmd : Rand α) : BaseIO α := do
+  pure $ (cmd.run (ULift.up $ mkStdGen seed)).1

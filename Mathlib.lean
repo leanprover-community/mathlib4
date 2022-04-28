@@ -98,6 +98,9 @@ import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.Use
+import Mathlib.Testing.SlimCheck.Gen
+import Mathlib.Testing.SlimCheck.Sampleable
+import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Util.DeclName
 import Mathlib.Util.Eval
 import Mathlib.Util.Export
