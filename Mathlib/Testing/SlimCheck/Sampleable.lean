@@ -95,10 +95,10 @@ For that purpose, `SampleableExt` provides a proxy representation
 `proxy` that can be printed and shrunken as well
 as interpreted (using `interp`) as an object of the right type. -/
 class SampleableExt (α : Sort u) where
-  proxy {} : Type v
+  proxy : Type v
   [proxyRepr : Repr proxy]
   [shrink : Shrinkable proxy]
-  sample {} : Gen proxy
+  sample : Gen proxy
   interp : proxy → α
 
 attribute [instance] SampleableExt.proxyRepr
@@ -117,7 +117,7 @@ def mkSelfContained [Repr α] [Shrinkable α] (sample : Gen α) : SampleableExt 
 
 /-- First samples a proxy value and interprets it. Especially useful if
 the proxy and target type are the same. -/
-def interpSample (α : Type u) [SampleableExt α] : Gen α := SampleableExt.interp <$> SampleableExt.sample α
+def interpSample (α : Type u) [SampleableExt α] : Gen α := SampleableExt.interp <$> SampleableExt.sample
 
 end SampleableExt
 
@@ -195,7 +195,7 @@ def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) 
     mkSelfContained do
       let x ← choose Nat 0 length (Nat.zero_le _)
       if x.val == 0 then
-        let n ← sample Nat
+        let n ← interpSample Nat
         pure $ Char.ofNat n
       else
         elements chars pos
@@ -207,13 +207,13 @@ instance Prod.sampleableExt [SampleableExt α] [SampleableExt β] : SampleableEx
   proxy := Prod (proxy α) (proxy β)
   proxyRepr := inferInstance
   shrink := inferInstance
-  sample := prodOf (sample α) (sample β)
+  sample := prodOf sample sample
   interp := Prod.map interp interp
 
 instance Prop.sampleableExt : SampleableExt Prop where
   proxy := Bool
   proxyRepr := inferInstance
-  sample := sample Bool
+  sample := interpSample Bool
   shrink := inferInstance
   interp := Coe.coe
 
@@ -234,7 +234,7 @@ instance shrinkable : Shrinkable (NoShrink α) where
   shrink := λ _ => []
 
 instance sampleableExt [SampleableExt α] [Repr α] : SampleableExt (NoShrink α) :=
-  SampleableExt.mkSelfContained $ (NoShrink.mk ∘ SampleableExt.interp) <$> SampleableExt.sample α
+  SampleableExt.mkSelfContained $ (NoShrink.mk ∘ SampleableExt.interp) <$> SampleableExt.sample
 
 end NoShrink
 

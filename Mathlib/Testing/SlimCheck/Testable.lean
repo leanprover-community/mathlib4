@@ -124,7 +124,7 @@ instance (priority := low) : PrintableProp p where
 
 /-- `Testable p` uses random examples to try to disprove `p`. -/
 class Testable (p : Prop) where
-  run {} (cfg : Configuration) (minimize : Bool) : Gen (TestResult p)
+  run (cfg : Configuration) (minimize : Bool) : Gen (TestResult p)
 
 def NamedBinder (n : String) (p : Prop) : Prop := p
 
@@ -215,36 +215,38 @@ namespace Testable
 
 open TestResult
 
+def runProp (p : Prop) [Testable p] : Configuration → Bool → Gen (TestResult p) := Testable.run
+
 /-- A `dbgTrace` with special formatting -/
 def slimTrace [Pure m] (s : String) : m PUnit := dbgTrace s!"[SlimCheck: {s}]" (λ _ => pure ())
 
 instance andTestable [Testable p] [Testable q] : Testable (p ∧ q) where
   run := λ cfg min => do
-    let xp ← run p cfg min
-    let xq ← run q cfg min
+    let xp ← runProp p cfg min
+    let xq ← runProp q cfg min
     pure $ and xp xq
 
 instance orTestable [Testable p] [Testable q] : Testable (p ∨ q) where
   run := λ cfg min => do
-    let xp ← run p cfg min
+    let xp ← runProp p cfg min
     -- As a little performance optimization we can just not run the second
     -- test if the first succeeds
     match xp with
     | success (PSum.inl h) => pure $ success (PSum.inl h)
     | success (PSum.inr h) => pure $ success (PSum.inr $ Or.inl h)
     | _ =>
-      let xq ← run q cfg min
+      let xq ← runProp q cfg min
       pure $ or xp xq
 
 instance iffTestable [Testable ((p ∧ q) ∨ (¬ p ∧ ¬ q))] : Testable (p ↔ q) where
   run := λ cfg min => do
-    let h ← run ((p ∧ q) ∨ (¬ p ∧ ¬ q)) cfg min
+    let h ← runProp ((p ∧ q) ∨ (¬ p ∧ ¬ q)) cfg min
     pure $ iff iff_iff_and_or_not_and_not h
 
 instance decGuardTestable [PrintableProp p] [Decidable p] {β : p → Prop} [∀ h, Testable (β h)] : Testable (NamedBinder var $ ∀ h, β h) where
   run := λ cfg min => do
     if h : p then
-      let res := (run (β h) cfg min)
+      let res := (runProp (β h) cfg min)
       let s := printProp p
       (λ r => addInfo s!"guard: {s}" (· $ h) r (PSum.inr $ λ q _ => q)) <$> res
     else if cfg.traceDiscarded || cfg.traceSuccesses then
@@ -256,7 +258,7 @@ instance decGuardTestable [PrintableProp p] [Decidable p] {β : p → Prop} [∀
 
 instance forallTypesTestable {f : Type → Prop} [Testable (f Int)] : Testable (NamedBinder var $ ∀ x, f x) where
   run := λ cfg min => do
-    let r ← run (f Int) cfg min
+    let r ← runProp (f Int) cfg min
     pure $ addVarInfo var "ℤ" (· $ Int) r
 
 /--
@@ -293,7 +295,7 @@ def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (
   for ⟨candidate, h⟩ in candidates do
     if cfg.traceShrinkCandidates then
       slimTrace s!"Trying {var} := {repr candidate}"
-    let res ← OptionT.lift $ Testable.run (β (SampleableExt.interp candidate)) cfg true
+    let res ← OptionT.lift $ Testable.runProp (β (SampleableExt.interp candidate)) cfg true
     if res.isFailure then
       if cfg.traceShrink then
         slimTrace s!"{var} shrunk to {repr candidate} from {repr x}"
@@ -319,10 +321,10 @@ def minimize [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg
 bound variable with it. -/
 instance varTestable [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] : Testable (NamedBinder var $ ∀ x : α, β x) where
   run := λ cfg min => do
-    let x ← SampleableExt.sample α
+    let x ← SampleableExt.sample
     if cfg.traceSuccesses || cfg.traceDiscarded then
       slimTrace s!"{var} := {repr x}"
-    let r ← Testable.run (β $ SampleableExt.interp x) cfg false
+    let r ← Testable.runProp (β $ SampleableExt.interp x) cfg false
     let ⟨finalX, finalR⟩ ←
       if isFailure r then
         if cfg.traceSuccesses then
@@ -338,13 +340,13 @@ instance varTestable [SampleableExt α] {β : α → Prop} [∀ x, Testable (β 
 /-- Test a universal property about propositions -/
 instance propVarTestable {β : Prop → Prop} [∀ b : Bool, Testable (β b)] : Testable (NamedBinder var $ ∀ p : Prop, β p) where
   run := λ cfg min =>
-    imp (λ h (b : Bool) => h b) <$> Testable.run (NamedBinder var $ ∀ b : Bool, β b) cfg min
+    imp (λ h (b : Bool) => h b) <$> Testable.runProp (NamedBinder var $ ∀ b : Bool, β b) cfg min
 
 instance (priority := high) unusedVarTestable [Nonempty α] [Testable β] : Testable (NamedBinder var $ ∀ x : α, β) where
   run := λ cfg min => do
     if cfg.traceDiscarded || cfg.traceSuccesses then
       slimTrace s!"{var} is unused"
-    let r ← Testable.run β cfg min
+    let r ← Testable.runProp β cfg min
     let finalR := addInfo s!"{var} is irrelevant (unused)" id r
     pure $ imp (· $ Classical.ofNonempty) finalR (PSum.inr $ λ x _ => x)
 
@@ -426,7 +428,7 @@ def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) : TestRes
   if cfg.traceSuccesses then
     slimTrace s!"New sample"
     slimTrace s!"Retrying up to {cfg.numRetries} times until guards hold"
-  let x ← retry (ReaderT.run (Testable.run p cfg true) ⟨size⟩) cfg cfg.numRetries
+  let x ← retry (ReaderT.run (Testable.runProp p cfg true) ⟨size⟩) cfg cfg.numRetries
   match x with
   | (success (PSum.inl ())) => runSuiteAux p cfg r n
   | (gaveUp g) => runSuiteAux p cfg (giveUp g r) n
