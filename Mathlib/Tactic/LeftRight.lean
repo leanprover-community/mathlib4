@@ -1,0 +1,32 @@
+/-
+Copyright (c) 2022 Siddhartha Gadgil. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Author: Siddhartha Gadgil
+-/
+import Lean
+
+namespace Mathlib.Tactic.LeftRight
+open Lean Meta Elab
+open Tactic
+def leftRightMeta (pickLeft: Bool) (mvarId : MVarId) : MetaM (List MVarId) := do
+  withMVarContext mvarId do
+    let name := if pickLeft then `left else `right
+    checkNotAssigned mvarId name
+    let target ← getMVarType' mvarId
+    matchConstInduct target.getAppFn
+      (fun _ => throwTacticEx `constructor mvarId "target is not an inductive datatype")
+      fun ival us => do
+        unless ival.ctors.length == 2 do
+          throwTacticEx `constructor mvarId s!"{name} target applies for inductive types with exactly two constructors"
+        let ctor := ival.ctors.get! (if pickLeft then 0 else 1)
+        apply mvarId (Lean.mkConst ctor us)
+
+end LeftRight
+
+open LeftRight
+
+elab "left" : tactic => do
+  Lean.Elab.Tactic.liftMetaTactic (leftRightMeta true)
+
+elab "right" : tactic => do
+  Lean.Elab.Tactic.liftMetaTactic (leftRightMeta false)
