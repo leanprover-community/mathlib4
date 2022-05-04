@@ -60,3 +60,13 @@ theorem perm_middle {a : α} : ∀ {l₁ l₂ : List α}, l₁++a::l₂ ~ a::(l�
 | (b::l₁), l₂ =>
   let h2 := @perm_middle α a l₁ l₂
   (h2.cons _).trans (swap a b _)
+
+theorem perm_insertNth {x : α} {l : List α} {n : Nat} (h : n ≤ l.length) : insertNth n x l ~ x :: l :=
+  match l, n with
+  | [], 0 => Perm.refl _
+  | [],  m + 1 => False.elim (Nat.not_succ_le_zero _ h)
+  | y :: ys, 0 => Perm.refl _
+  | y :: ys, m + 1 =>
+    Perm.trans
+      (Perm.cons _ (perm_insertNth (Nat.le_of_succ_le_succ h)))
+      (Perm.swap _ _ _)
