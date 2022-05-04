@@ -30,7 +30,7 @@ initialize ignoreArgsAttr : ParametricAttribute (List Nat) ←
   registerParametricAttribute {
     name      := `to_additive_ignore_args
     descr     := "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized.",
-    getParam := fun decl stx => do
+    getParam decl stx := do
         let ids ← match stx with
           | `(attr|to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.isNatLit?.get!)
           | _ => throwError "unexpected to_additive_ignore_args syntax {stx}"
@@ -58,7 +58,7 @@ def shouldReorder [Functor M] [MonadEnv M]: Name → Nat → M Bool
   | n, i => (i ∈ ·) <$> (getReorder n)
 
 
-initialize relevantArgAttr : ParametricAttribute (Nat) ←
+initialize relevantArgAttr : ParametricAttribute Nat ←
   registerParametricAttribute {
     name := `to_additive_relevant_arg
     descr := "Auxiliary attribute for `to_additive` stating which arguments are the types with a multiplicative structure."
@@ -68,11 +68,11 @@ initialize relevantArgAttr : ParametricAttribute (Nat) ←
       | _ => throwError "unexpected to_additive_relevant_arg syntax {stx}"
   }
 
-  def isRelevant [Functor M] [MonadEnv M]: Name → Nat → M Bool
-  | n, i =>
-    (fun | some j => i == j | none => i == 0)
-    <$> (relevantArgAttr.getParam · n)
-    <$> getEnv
+def isRelevant [Functor M] [MonadEnv M] (n : Name) (i : Nat) : M Bool :=
+do
+  match relevantArgAttr.getParam (← getEnv) n with
+  | some j => i == j
+  | none => i == 0
 
 /- Maps multiplicative names to their additive counterparts. -/
 initialize translations : SimplePersistentEnvExtension (Name × Name) (NameMap Name) ←
@@ -92,7 +92,7 @@ def findTranslation? (env : Environment) : Name → Option Name :=
 def insertTranslation (src tgt : Name) : CoreM Unit := do
   if let some tgt' := findTranslation? (←getEnv) src then
     throwError "Already exists translation {src} ↦ {tgt'}"
-  (ToAdditive.translations.addEntry (←getEnv)) (src, tgt) |> setEnv
+  modifyEnv (ToAdditive.translations.addEntry · (src, tgt))
   trace[to_additive] "Added translation {src} ↦ {tgt}."
 
 /-- Get whether or not the replace-all flag is set. -/
@@ -191,8 +191,7 @@ def etaExpandN (n : Nat) (e : Expr): MetaM Expr := do
 /-- `e.expand` eta-expands all expressions that have as head a constant `n` in
 `reorder`. They are expanded until they are applied to one more argument than the maximum in
 `reorder.find n`. -/
-private def expand : Expr → MetaM Expr
-| e => do
+private def expand (e : Expr) : MetaM Expr := do
   let e₂ ←e.replaceRecMeta $ fun r e => do
     let e0 := e.getAppFn
     let es := e.getAppArgs
