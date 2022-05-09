@@ -25,7 +25,7 @@ syntax (name := to_additive) "to_additive" "!"? "?"? (ppSpace ident)? (ppSpace s
 namespace ToAdditive
 
 initialize registerTraceClass `to_additive
-initialize registerTraceClass `to_additive.detail
+initialize registerTraceClass `to_additive_detail
 
 initialize ignoreArgsAttr : NameMapAttribute (List Nat) ←
   registerNameMapAttribute {
@@ -52,12 +52,12 @@ initialize reorderAttr : NameMapAttribute (List Nat) ←
       | _ => throwError "unexpected to_additive_reorder syntax {stx}"
   }
 
+/-- Get the reorder list (defined using `@[to_additive_reorder]`) for the given decl. -/
 def getReorder [Functor M] [MonadEnv M]: Name →  M (List Nat)
   | n => (reorderAttr.find? · n |>.getD []) <$> getEnv
 
 def shouldReorder [Functor M] [MonadEnv M]: Name → Nat → M Bool
   | n, i => (i ∈ ·) <$> (getReorder n)
-
 
 initialize relevantArgAttr : NameMapAttribute (Nat) ←
   registerNameMapAttribute {
@@ -83,6 +83,7 @@ initialize translations : NameMapExtension Name ←
 def findTranslation? (env : Environment) : Name → Option Name :=
   (ToAdditive.translations.getState env).find?
 
+/-- Add a translation to the translations map. -/
 def insertTranslation (src tgt : Name) : CoreM Unit := do
   if let some tgt' := findTranslation? (←getEnv) src then
     throwError "Already exists translation {src} ↦ {tgt'}"
@@ -91,7 +92,7 @@ def insertTranslation (src tgt : Name) : CoreM Unit := do
 
 /-- Get whether or not the replace-all flag is set. -/
 def replaceAll [Functor M] [MonadOptions M] : M Bool :=
-  (·.getBool `to_additive.detailAll) <$> getOptions
+  (·.getBool `to_additive.replaceAll) <$> getOptions
 
 variable [Monad M] [MonadOptions M] [MonadEnv M]
 
@@ -131,7 +132,7 @@ def additiveTest (e : Expr) : M Bool := do
     additiveTestAux false e
 
 /--
-`e.apply_replacement_fun f test` applies `f` to each identifier
+`e.applyReplacementFun f test` applies `f` to each identifier
 (inductive type, defined function etc) in an expression, unless
 * The identifier occurs in an application with first argument `arg`; and
 * `test arg` is false.
@@ -141,7 +142,7 @@ is tested, instead of the first argument.
 Reorder contains the information about what arguments to reorder:
 e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorder.find g = some [1]`.
 We assume that all functions where we want to reorder arguments are fully applied.
-This can be done by applying `expr.eta_expand` first.
+This can be done by applying `etaExpand` first.
 -/
 def applyReplacementFun : Expr → MetaM Expr :=
   Lean.Expr.replaceRecMeta fun r e => do
@@ -150,7 +151,7 @@ def applyReplacementFun : Expr → MetaM Expr :=
     | Expr.const n₀ ls _ => do
       let n₁ := Name.mapPrefix (findTranslation? <|← getEnv) n₀
       if n₀ != n₁ then
-        trace[to_additive.detail] "applyReplacementFun: {n₀} → {n₁}"
+        trace[to_additive_detail] "applyReplacementFun: {n₀} → {n₁}"
       let ls : List Level ← (do -- [todo] just get Lean to figure out the levels?
         if ← shouldReorder n₀ 1 then
             return ls.get! 1::ls.head!::ls.drop 2
@@ -159,21 +160,23 @@ def applyReplacementFun : Expr → MetaM Expr :=
     | Expr.app g x _ => do
       let gf := g.getAppFn
       if let some nm := gf.constName? then
-        let nArgs := g.getAppNumArgs
-        -- e = `($gf y₁ .. yₙ $x)
-        if ← shouldReorder nm nArgs then
-            if ← additiveTest g.getAppArgs[0] then
-              -- interchange `x` and the last argument of `g`
-              let x ← r x
-              let gf ← r (g.appFn!)
-              let ga ← r (g.appArg!)
-              let e₂ :=  mkApp2 gf x ga
-              trace[to_additive.detail] "applyReplacementFun: reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter:  {e₂}"
-              return some e₂
-        if ← isRelevant nm nArgs then
+        let gArgs := g.getAppArgs
+        -- e = `(nm y₁ .. yₙ x)
+        if gArgs.size > 0 then
+          let c1 ← shouldReorder nm gArgs.size
+          let c2 ← additiveTest gArgs[0]
+          if c1 && c2 then
+            -- interchange `x` and the last argument of `g`
+            let x ← r x
+            let gf ← r g.appFn!
+            let ga ← r g.appArg!
+            let e₂ :=  mkApp2 gf x ga
+            trace[to_additive_detail] "applyReplacementFun: reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter:  {e₂}"
+            return some e₂
+        if ← isRelevant nm gArgs.size then
           if gf.isConst && not (← additiveTest x) then
             let x ← r x
-            let args ← g.getAppArgs.mapM r
+            let args ← gArgs.mapM r
             return some $ mkApp (mkAppN gf args) x
       return e.updateApp! (← r g) (← r x)
     | _ => return none
@@ -203,7 +206,7 @@ private def expand (e : Expr) : MetaM Expr := do
       -- applied, so first η-expand the function.
       let e' ← etaExpandN (needed_n - es.size) e'
       return some $ e'
-  trace[to_additive.detail] "expand:\nBefore: {e}\nAfter:  {e₂}"
+  trace[to_additive_detail] "expand:\nBefore: {e}\nAfter:  {e₂}"
   return e₂
 
 def updateWithFun
@@ -218,7 +221,7 @@ def updateWithFun
 /-- Lean 4 makes declarations which are not internal
 (that is, head string starts with `_`) but which should be transformed.
 eg `proof_1` in `Lean.Meta.mkAuxDefinitionFor` this might be better fixed in core.
-This is a fix for that. -/
+This method is polyfill for that. -/
 def isInternal' : Name → Bool
   | n@(Name.str _ s _) => (s.startsWith "proof_") || (Name.isInternal n)
   | n => Name.isInternal n
@@ -255,16 +258,36 @@ partial def transformDeclAux
     throwError "Expected {decl.name} to have a value."
   trace[to_additive] "generating\n{decl.name} :=\n  {decl.value!}"
   try
+    -- make sure that the type is correct,
+    -- and emit a more helpful error message if it failes
     discard <| MetaM.run' <| inferType decl.value!
   catch
     | Exception.error stx msg => throwError "@[to_additive] failed.
       Type mismatch in additive declaration. For help, see the docstring
       of `to_additive.attr`, section `Troubleshooting`.
       Failed to add declaration\n{decl.name}:\n{msg}"
-    | e => throwError "unreachable"
+    | e => panic! "unreachable"
   addAndCompile decl.toDeclaration!
   if isProtected (← getEnv) src then
     setEnv $ addProtected (← getEnv) tgt
+
+/-- This should copy all of the attributes on src to tgt.
+At the moment it only copies `simp` attributes because attributes
+are not stored by the environment. [todo] add more attributes.
+-/
+def copyAttributes (src tgt : Name) : CoreM Unit := do
+  -- [todo] other simp theorems
+  let some ext ← getSimpExtension? `simp | return ()
+  let thms ← ext.getTheorems
+  if (¬ thms.isLemma src) || thms.isLemma tgt then
+    return ()
+  -- [todo] how to get prio data from SimpTheorems?
+  MetaM.run' $ Lean.Meta.addSimpTheorem ext tgt
+    (post := true)
+    (inv := false)
+    (attrKind := AttributeKind.global)
+    (prio := 1000)
+  return ()
 
 /--
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
@@ -280,7 +303,7 @@ def transformDecl (src tgt : Name) : CoreM Unit := do
       transformDeclAux src tgt src_eqn
       -- [todo] copy attributes
       -- [todo] add equation lemmas to tgt_eqn
-  -- [todo] copy attributes for decl
+  copyAttributes src tgt
   return ()
 
 /--
@@ -389,6 +412,8 @@ def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
     throwError "to_additive: can't transport {src} to itself."
   return res
 
+
+
 private def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (List String)) : CoreM Unit := do
   let srcFields ← f src
   let tgtFields ← f tgt
@@ -404,11 +429,9 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
   let env : Environment ← getEnv
   let aux := proceedFieldsAux src tgt
   aux (fun n => do
-    let fields := if isStructure env n then getStructureFields env n else #[]
+    let fields := if isStructure env n then getStructureFieldsFlattened env n else #[]
     return fields |> .map Name.toString |> Array.toList
   )
-  -- [todo] run to_additive on inherited structures:
-  -- aux (fun n => (List.map (s!"to_{·}") <$> getTaggedAncestors n))
   -- [todo] run to_additive on the constructors of n:
   -- aux (fun n => (env.constructorsOf n).mmap $ ...
 
