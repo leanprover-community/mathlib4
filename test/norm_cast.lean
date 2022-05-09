@@ -102,7 +102,7 @@ example [Mul α] [One α] (x y : α) (h : (x : WithZero α) * y = 1) : x * y = 1
 end hidden
 
 example (k : ℕ) {x y : ℕ} :
-  (x * x + y * y : ℤ) - ↑((x * y + 1) * k) = ↑y * ↑y - ↑k * ↑x * ↑y + (↑x * ↑x - ↑k) :=
+  (x * x + y * y : ℤ) - ↑((x * y + 1) * k) = (y:ℤ) * ↑y - ↑k * ↑x * ↑y + (↑x * ↑x - ↑k) :=
 by
   push_cast
   sorry
