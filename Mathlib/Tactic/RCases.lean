@@ -328,7 +328,7 @@ partial def rcasesCore (g : MVarId) (fs : FVarSubst) (clears : Array FVarId) (e 
         let (vars, g) ← Meta.revert g (← getFVarsToGeneralize #[e])
         withMVarContext g do
           let elimInfo ← getElimInfo `Quot.ind
-          let res ← ElimApp.mkElimApp `Quot.ind elimInfo #[e] (← getMVarTag g)
+          let res ← ElimApp.mkElimApp elimInfo #[e] (← getMVarTag g)
           let elimArgs := res.elimApp.getAppArgs
           ElimApp.setMotiveArg g elimArgs[elimInfo.motivePos].mvarId! #[e.fvarId!]
           assignExprMVar g res.elimApp
