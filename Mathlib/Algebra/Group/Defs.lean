@@ -1,6 +1,9 @@
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Int.Basic
+import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Spread
+
+open Function
 
 /-!
 # Typeclasses for monoids and groups etc
@@ -114,15 +117,14 @@ IsAddLeftCancel.add_left_cancel a b c
 theorem add_left_cancel_iff : a + b = a + c ↔ b = c :=
 ⟨add_left_cancel, congrArg _⟩
 
--- no `function.injective`?
---theorem add_right_injective (a : G) : function.injective (c * .) :=
---λ a b => add_left_cancel
+theorem add_right_injective (a : A) : injective (a + ·) :=
+λ a b => add_left_cancel
 
 @[simp] theorem add_right_inj (a : A) {b c : A} : a + b = a + c ↔ b = c :=
 ⟨add_left_cancel, congrArg _⟩
 
---theorem add_ne_add_right (a : A) {b c : A} : a + b ≠ a + c ↔ b ≠ c :=
---(add_right_injective a).ne_iff
+theorem add_ne_add_right (a : A) {b c : A} : a + b ≠ a + c ↔ b ≠ c :=
+(add_right_injective a).ne_iff
 
 end AddLeftCancel_lemmas
 
@@ -367,15 +369,14 @@ IsMulLeftCancel.mul_left_cancel a b c
 theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
 ⟨mul_left_cancel, congrArg _⟩
 
--- no `function.injective`?
---theorem mul_right_injective (a : G) : function.injective (c * .) :=
---λ a b => mul_left_cancel
+theorem mul_right_injective (a : G) : injective (a * ·) :=
+λ a b => mul_left_cancel
 
 @[simp] theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
 ⟨mul_left_cancel, congrArg _⟩
 
---theorem mul_ne_mul_right (a : G) {b c : G} : a * b ≠ a * c ↔ b ≠ c :=
---(mul_right_injective a).ne_iff
+theorem mul_ne_mul_right (a : G) {b c : G} : a * b ≠ a * c ↔ b ≠ c :=
+(mul_right_injective a).ne_iff
 
 end MulLeftCancel
 
