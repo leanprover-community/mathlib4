@@ -465,8 +465,8 @@ protected lemma neg_add {a b : ℤ} : - (a + b) = -a + -b := by
 lemma negSucc_ofNat_coe' (n : ℕ) : -[1+ n] = -↑n - 1 :=
 by rw [Int.sub_eq_add_neg, ← Int.neg_add]; rfl
 
-protected lemma subNatNat_eq_coe {m n : ℕ} : subNatNat m n = (m:ℤ) - n := by
-  refine subNatNat_elim m n (fun m n i => i = (m:ℤ) - n) ?p ?n
+protected lemma subNatNat_eq_coe {m n : ℕ} : subNatNat m n = ↑m - ↑n := by
+  refine subNatNat_elim m n (fun m n i => i = ↑m - ↑n) ?p ?n
   case p =>
     intros i n
     rw [Int.ofNat_add, Int.sub_eq_add_neg, Int.add_assoc, Int.add_left_comm,

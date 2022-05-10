@@ -149,6 +149,6 @@ lemma cast_eq_cast_iff_Nat (m n : ℕ) : (m : ℤ) = (n : ℤ) ↔ m = n :=
 lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
 
 @[norm_cast]
-protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → m - n = (m : ℤ) - n := ofNat_sub
+protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
 end Int
