@@ -124,14 +124,13 @@ private def additiveTestAux: Bool → Expr → M Bool
 
 /--
 `additiveTest e` tests whether the expression `e` contains no constant
-`nm` that is not applied to any arguments, and such that `f nm = none`.
+`nm` that is not applied to any arguments, and such that `translations.find?[nm] = none`.
 This is used in `@[to_additive]` for deciding which subexpressions to transform: we only transform
 constants if `additiveTest` applied to their first argument returns `true`.
 This means we will replace expression applied to e.g. `α` or `α × β`, but not when applied to
 e.g. `Nat` or `ℝ × α`.
-`f` is the dictionary of declarations that are in the `to_additive` dictionary.
 We ignore all arguments specified by the `ignore` `NameMap`.
-If `replaceAll` is `true` the test always return `true`.
+If `replaceAll` is `true` the test always returns `true`.
 -/
 def additiveTest (e : Expr) : M Bool := do
   if (←replaceAll) then
@@ -154,12 +153,12 @@ This can be done by applying `etaExpand` first.
 -/
 def applyReplacementFun : Expr → MetaM Expr :=
   Lean.Expr.replaceRecMeta fun r e => do
+    trace[to_additive_detail] "applyReplacementFun: replace at {e}"
     match e with
     | Expr.lit (Literal.natVal 1) _    => pure <| mkNatLit 0
     | Expr.const n₀ ls _ => do
       let n₁ := Name.mapPrefix (findTranslation? <|← getEnv) n₀
-      if n₀ != n₁ then
-        trace[to_additive_detail] "applyReplacementFun: {n₀} → {n₁}"
+      trace[to_additive_detail] "applyReplacementFun: {n₀} → {n₁}"
       let ls : List Level ← (do -- [todo] just get Lean to figure out the levels?
         if ← shouldReorder n₀ 1 then
             return ls.get! 1::ls.head!::ls.drop 2
@@ -170,6 +169,7 @@ def applyReplacementFun : Expr → MetaM Expr :=
       if let some nm := gf.constName? then
         let gArgs := g.getAppArgs
         -- e = `(nm y₁ .. yₙ x)
+        trace[to_additive_detail] "applyReplacementFun: app {nm} {gArgs} {x}"
         if gArgs.size > 0 then
           let c1 ← shouldReorder nm gArgs.size
           let c2 ← additiveTest gArgs[0]
@@ -181,11 +181,15 @@ def applyReplacementFun : Expr → MetaM Expr :=
             let e₂ :=  mkApp2 gf x ga
             trace[to_additive_detail] "applyReplacementFun: reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter:  {e₂}"
             return some e₂
-        if ← isRelevant nm gArgs.size then
-          if gf.isConst && not (← additiveTest x) then
-            let x ← r x
-            let args ← gArgs.mapM r
-            return some $ mkApp (mkAppN gf args) x
+        let c1 ← isRelevant nm gArgs.size
+        let c2 := gf.isConst
+        let c3 ← additiveTest x
+        if c1 && c2 && not c3 then
+          -- the test failed, so don't update the function body.
+          trace[to_additive_detail] "applyReplacementFun: isRelevant and test failed: {nm} {gArgs} {x}"
+          let x ← r x
+          let args ← gArgs.mapM r
+          return some $ mkApp (mkAppN gf args) x
       return e.updateApp! (← r g) (← r x)
     | _ => return none
 
@@ -196,7 +200,7 @@ def etaExpandN (n : Nat) (e : Expr): MetaM Expr := do
 /-- `e.expand` eta-expands all expressions that have as head a constant `n` in
 `reorder`. They are expanded until they are applied to one more argument than the maximum in
 `reorder.find n`. -/
-private def expand (e : Expr) : MetaM Expr := do
+def expand (e : Expr) : MetaM Expr := do
   let e₂ ←e.replaceRecMeta $ fun r e => do
     let e0 := e.getAppFn
     let es := e.getAppArgs
@@ -317,30 +321,32 @@ def transformDecl (src tgt : Name) : CoreM Unit := do
       -- [todo] add equation lemmas to tgt_eqn
   copyAttributes src tgt
   return ()
-
 /--
 Find the first argument of `nm` that has a multiplicative type-class on it.
 Returns 1 if there are no types with a multiplicative class as arguments.
 E.g. `prod.group` returns 1, and `pi.has_one` returns 2.
 -/
-def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
+def firstMultiplicativeArg (nm : Name) : MetaM (Option Nat) := do
   let d ← getConstInfo nm
   forallTelescopeReducing (← getConstInfo nm).type fun xs _ => do
-    let l ← xs.mapIdxM fun i x => do
+    -- xs are the arguments to the constant
+    let xs := xs.toList
+    let l ← xs.mapM fun x => do
+      -- x is an argument and i is the index
+      -- write `x : (y₀ : α₀) → ... → (yₙ : αₙ) → tgt_fn tgt_args₀ ... tgt_argsₘ`
       forallTelescopeReducing (← inferType x) fun ys tgt => do
         let (tgt_fn, tgt_args) := tgt.getAppFnArgs
         let n_bi := ys.size
         if let some c := tgt.getAppFn.constName? then
-          if findTranslation? (← getEnv) c |>.isSome then
-            return none
-        if tgt_args.size > 0 then
-          return tgt_args[0].getAppFn.bvarIdx?.map (i + n_bi - .)
-        return none
-    let l := l.filterMap id
-    if l.size == 0 then
-      return 1
-    else
-      return l.foldr min l[0]
+          if findTranslation? (← getEnv) c |>.isNone then
+            return []
+        return tgt_args.toList.filterMap fun tgt_arg =>
+          xs.findIdx? fun x => Expr.containsFVar tgt_arg x.fvarId!
+    trace[to_additive_detail] "firstMultiplicativeArg: {l}"
+    match l.join with
+    | [] => return none
+    | (head :: tail) => return some <| tail.foldr Nat.min head
+
 
 /-- `ValueType` is the type of the arguments that can be provided to `to_additive`. -/
 structure ValueType : Type where
@@ -669,15 +675,19 @@ initialize registerBuiltinAttribute {
       if let some tgt' := findTranslation? (← getEnv) src then
         throwError "{src} already has a to_additive translation {tgt'}."
       insertTranslation src tgt
-      let firstMultArg ← MetaM.run' <| firstMultiplicativeArg src
-      if (firstMultArg != 1) then
-        proceedFields src tgt
+      if let some firstMultArg ← (MetaM.run' <| firstMultiplicativeArg src) then
+        trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
+        relevantArgAttr.add src firstMultArg
       if (← getEnv).contains tgt then
+        -- since tgt already exists, we just need to add a translation src ↦ tgt
+        -- and also src.𝑥 ↦ tgt.𝑥' for any subfields.
         proceedFields src tgt
       else
+        -- tgt doesn't exist, so let's make it
         let shouldTrace := val.trace || ((← getOptions) |>.getBool `trace.to_additive)
-        withOptions (fun o => o |>.setBool `to_additive.replaceAll val.replaceAll
-                                |>.setBool `trace.to_additive shouldTrace)
+        withOptions
+          (fun o => o |>.setBool `to_additive.replaceAll val.replaceAll
+                      |>.setBool `trace.to_additive shouldTrace)
           (transformDecl src tgt)
       if let some doc := val.doc then
         addDocString tgt doc
