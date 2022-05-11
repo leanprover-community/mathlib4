@@ -1,25 +1,49 @@
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Tactic.Spread
+import Mathlib.Tactic.ToAdditive
+
+-- [todo] is this correct? I think it's needed to ensure that additiveTest
+-- succeeds if the relevant arg involves Nat.
+attribute [to_additive] Nat
+attribute [to_additive] Int
+
+attribute [to_additive Add] Mul
+attribute [to_additive Sub] Div
+attribute [to_additive HAdd] HMul
+attribute [to_additive instHAdd]  instHMul
+attribute [to_additive HSub] HDiv
+
+attribute [to_additive_reorder 1] HPow
+attribute [to_additive_reorder 1 4] HPow.hPow
+attribute [to_additive HMul] HPow
 
 /-!
 # Typeclasses for monoids and groups etc
 -/
 
-local macro "ofNat_class" Class:ident n:num : command =>
-  let field := Lean.mkIdent <| Class.getId.eraseMacroScopes.getString!.toLower
-  `(class $Class:ident.{u} (α : Type u) where
-    $field:ident : α
+class Zero.{u} (α : Type u) where
+  zero : α
 
-  instance {α} [$Class α] : OfNat α (nat_lit $n) where
-    ofNat := ‹$Class α›.1
+instance Zero.toOfNat0 {α} [Zero α] : OfNat α (nat_lit 0) where
+  ofNat := ‹Zero α›.1
 
-  instance {α} [OfNat α (nat_lit $n)] : $Class α where
-    $field:ident := $n)
+instance Zero.ofOfNat0 {α} [OfNat α (nat_lit 0)] : Zero α where
+  zero := 0
 
-ofNat_class Zero 0
-ofNat_class One 1
+@[to_additive Zero]
+class One.{u} (α : Type u) where
+  one : α
 
+@[to_additive Zero.toOfNat0]
+instance One.toOfNat1 {α} [One α] : OfNat α (nat_lit 1) where
+  ofNat := ‹One α›.1
+
+@[to_additive Zero.ofOfNat0]
+instance One.ofOfNat1 {α} [OfNat α (nat_lit 1)] : One α where
+  one := 1
+
+@[to_additive Neg]
 class Inv (α : Type u) where
   inv : α → α
 
@@ -50,6 +74,9 @@ def npow_rec [One M] [Mul M] : ℕ → M → M
 | 0  , a => 1
 | n+1, a => a * npow_rec n a
 
+attribute [to_additive_reorder 3] npow_rec
+attribute [to_additive] npow_rec
+
 end nat_action
 
 section int_action
@@ -66,6 +93,9 @@ def gpow_rec {G : Type u} [One G] [Mul G] [Inv G] : ℤ → G → G
 | (Int.ofNat n)  , a => npow_rec n a
 | (Int.negSucc n), a => (npow_rec n.succ a) ⁻¹
 
+attribute [to_additive_reorder 4] gpow_rec
+attribute [to_additive gsmul_rec] gpow_rec
+
 end int_action
 
 /-
@@ -79,13 +109,12 @@ end int_action
 ### Semigroups
 
 -/
-
 class AddSemigroup (A : Type u) extends Add A where
   add_assoc (a b c : A) : (a + b) + c = a + (b + c)
 
 theorem add_assoc {G : Type u} [AddSemigroup G] :
   ∀ a b c : G, (a + b) + c = a + (b + c) :=
-AddSemigroup.add_assoc
+  AddSemigroup.add_assoc
 
 class AddCommSemigroup (A : Type u) extends AddSemigroup A where
   add_comm (a b : A) : a + b = b + a
@@ -147,9 +176,13 @@ end AddRightCancel_lemmas
 
 -/
 
-class AddMonoid (A : Type u) extends AddSemigroup A, Zero A where
+/-- Typeclass for expressing that a type `M` with + and 0 satisfies
+`0 + a = a` and `a + 0 = a` for all `a : M`. -/
+class AddZeroClass (A : Type u) extends Zero A, Add A where
   add_zero (a : A) : a + 0 = a
   zero_add (a : A) : 0 + a = a
+
+class AddMonoid (A : Type u) extends AddSemigroup A, AddZeroClass A where
   nsmul : ℕ → A → A := nsmul_rec
   nsmul_zero' : ∀ x, nsmul 0 x = 0 -- fill in with tactic once we can do this
   nsmul_succ' : ∀ (n : ℕ) x, nsmul n.succ x = x + nsmul n x -- fill in with tactic
@@ -320,31 +353,36 @@ theorem Int.cast_negSucc [AddGroupWithOne R] : (Int.cast (Int.negSucc n) : R) = 
 
 -/
 
+@[to_additive AddSemigroup]
 class Semigroup (G : Type u) extends Mul G where
   mul_assoc (a b c : G) : (a * b) * c = a * (b * c)
 
 export Semigroup (mul_assoc)
 
+@[to_additive AddCommSemigroup]
 class CommSemigroup (G : Type u) extends Semigroup G where
   mul_comm (a b : G) : a * b = b * a
 
 export CommSemigroup (mul_comm)
 
+@[to_additive]
 lemma mul_left_comm {M} [CommSemigroup M] (a b c : M) : a * (b * c) = b * (a * c) :=
 by rw [← mul_assoc, mul_comm a, mul_assoc]
 
 -- Funky Lean 3 proof of the above:
 --left_comm has_mul.mul mul_comm mul_assoc
 
+@[to_additive]
 lemma mul_right_comm {M} [CommSemigroup M] (a b c : M) : a * b * c = a * c * b :=
 by rw [mul_assoc, mul_comm b c, mul_assoc]
 
 
 /-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
 `1 * a = a` and `a * 1 = a` for all `a : M`. -/
+@[to_additive AddZeroClass]
 class MulOneClass (M : Type u) extends One M, Mul M where
-  one_mul : ∀ (a : M), 1 * a = a
   mul_one : ∀ (a : M), a * 1 = a
+  one_mul : ∀ (a : M), 1 * a = a
 
 /-
 
@@ -361,9 +399,11 @@ section MulLeftCancel
 
 variable {G : Type u} [Semigroup G] [IsMulLeftCancel G] {a b c : G}
 
+@[to_additive]
 theorem mul_left_cancel : a * b = a * c → b = c :=
-IsMulLeftCancel.mul_left_cancel a b c
+  IsMulLeftCancel.mul_left_cancel a b c
 
+@[to_additive]
 theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
 ⟨mul_left_cancel, congrArg _⟩
 
@@ -371,7 +411,7 @@ theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
 --theorem mul_right_injective (a : G) : function.injective (c * .) :=
 --λ a b => mul_left_cancel
 
-@[simp] theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
+@[simp, to_additive] theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
 ⟨mul_left_cancel, congrArg _⟩
 
 --theorem mul_ne_mul_right (a : G) {b c : G} : a * b ≠ a * c ↔ b ≠ c :=
@@ -383,13 +423,15 @@ section MulRightCancel
 
 variable {G : Type u} [Semigroup G] [IsMulRightCancel G] {a b c : G}
 
+@[to_additive]
 theorem mul_right_cancel : b * a = c * a → b = c :=
 IsMulRightCancel.mul_right_cancel a b c
 
+@[to_additive]
 theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
 ⟨mul_right_cancel, λ h => h ▸ rfl⟩
 
-@[simp] theorem mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
+@[simp, to_additive] theorem mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
 ⟨mul_right_cancel, λ h => h ▸ rfl⟩
 
 end MulRightCancel
@@ -400,21 +442,27 @@ end MulRightCancel
 
 -/
 
+@[to_additive AddMonoid]
 class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   npow : ℕ → M → M := npow_rec
   npow_zero' : ∀ x, npow 0 x = 1 -- fill in with tactic once we can do this
   npow_succ' : ∀ (n : ℕ) x, npow n.succ x = x * npow n x -- fill in with tactic
+
+-- [todo] this shouldn't be needed
+attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
 
 section Monoid
 variable {M : Type u} [Monoid M]
 
 @[defaultInstance high] instance Monoid.HPow : HPow M ℕ M := ⟨λ a n => Monoid.npow n a⟩
 
-@[simp] theorem mul_one : ∀ (a : M), a * 1 = a :=
-Monoid.mul_one
+@[simp, to_additive]
+theorem mul_one : ∀ (a : M), a * 1 = a :=
+  Monoid.mul_one
 
-@[simp] theorem one_mul : ∀ (a : M), 1 * a = a :=
-Monoid.one_mul
+@[simp, to_additive]
+theorem one_mul : ∀ (a : M), 1 * a = a :=
+  Monoid.one_mul
 
 theorem npow_eq_pow (n : ℕ) (a : M) : Monoid.npow n a = a^n := rfl
 
@@ -459,6 +507,7 @@ end Monoid
 
 -/
 
+@[to_additive AddCommMonoid]
 class CommMonoid (M : Type u) extends Monoid M where
   mul_comm (a b : M) : a * b = b * a
 
@@ -497,6 +546,7 @@ class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G :=
 
 -/
 
+@[to_additive AddGroup]
 class Group (G : Type u) extends DivInvMonoid G where
   mul_left_inv (a : G) : a⁻¹ * a = 1
 
@@ -504,27 +554,29 @@ section Group_lemmas
 
 variable {G : Type u} [Group G] {a b c : G}
 
-@[simp] theorem mul_left_inv : ∀ a : G, a⁻¹ * a = 1 :=
+@[simp, to_additive]
+theorem mul_left_inv : ∀ a : G, a⁻¹ * a = 1 :=
 Group.mul_left_inv
 
+@[to_additive]
 theorem inv_mul_self (a : G) : a⁻¹ * a = 1 := mul_left_inv a
 
-@[simp] theorem inv_mul_cancel_left (a b : G) : a⁻¹ * (a * b) = b :=
+@[simp, to_additive] theorem inv_mul_cancel_left (a b : G) : a⁻¹ * (a * b) = b :=
 by rw [← mul_assoc, mul_left_inv, one_mul]
 
-@[simp] theorem inv_eq_of_mul_eq_one (h : a * b = 1) : a⁻¹ = b :=
+@[simp, to_additive] theorem inv_eq_of_mul_eq_one (h : a * b = 1) : a⁻¹ = b :=
 left_inv_eq_right_inv (inv_mul_self a) h
 
-@[simp] theorem inv_inv (a : G) : (a⁻¹)⁻¹ = a :=
+@[simp, to_additive] theorem inv_inv (a : G) : (a⁻¹)⁻¹ = a :=
 inv_eq_of_mul_eq_one (mul_left_inv a)
 
-@[simp] theorem mul_right_inv (a : G) : a * a⁻¹ = 1 := by
+@[simp, to_additive] theorem mul_right_inv (a : G) : a * a⁻¹ = 1 := by
   rw [←mul_left_inv (a⁻¹), inv_inv]
 
 -- synonym
 theorem mul_inv_self (a : G) : a * a⁻¹ = 1 := mul_right_inv a
 
-@[simp] theorem mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a :=
+@[simp, to_additive] theorem mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a :=
 by rw [mul_assoc, mul_right_inv, mul_one]
 
 end Group_lemmas

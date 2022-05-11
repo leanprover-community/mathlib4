@@ -42,11 +42,13 @@ import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Set
 import Mathlib.Init.SetNotation
+import Mathlib.Lean.Exception
 import Mathlib.Lean.Expr
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr.Traverse
 import Mathlib.Lean.LocalContext
+import Mathlib.Lean.NameMapAttribute
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nonempty
@@ -97,6 +99,7 @@ import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
+import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.Use
 import Mathlib.Testing.SlimCheck.Gen

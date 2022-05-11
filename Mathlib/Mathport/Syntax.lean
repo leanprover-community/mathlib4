@@ -570,14 +570,6 @@ namespace Attr
 
 /- M -/ syntax (name := elementwise) "elementwise" (ppSpace ident)? : attr
 
-/- B -/ syntax (name := toAdditiveIgnoreArgs) "to_additive_ignore_args" num* : attr
-/- B -/ syntax (name := toAdditiveRelevantArg) "to_additive_relevant_arg" num : attr
-/- B -/ syntax (name := toAdditiveReorder) "to_additive_reorder" num* : attr
-/- B -/ syntax (name := toAdditive) "to_additive" (ppSpace ident)? (ppSpace str)? : attr
-/- B -/ syntax (name := toAdditive!) "to_additive!" (ppSpace ident)? (ppSpace str)? : attr
-/- B -/ syntax (name := toAdditive?) "to_additive?" (ppSpace ident)? (ppSpace str)? : attr
-/- B -/ syntax (name := toAdditive!?) "to_additive!?" (ppSpace ident)? (ppSpace str)? : attr
-
 end Attr
 
 namespace Command

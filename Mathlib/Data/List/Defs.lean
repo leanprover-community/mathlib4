@@ -169,6 +169,12 @@ def indexesValues (p : α → Prop) [DecidablePred p] (l : List α) : List (ℕ 
 def indexesOf [DecidableEq α] (a : α) : List α → List Nat :=
   findIdxs (Eq a)
 
+def findIdx? (p : α → Bool) (startIndex : Nat := 0) : List α → Option Nat
+| [] => none
+| a :: l => if p a then some startIndex else findIdx? p (startIndex + 1) l
+
+def indexOf? [BEq α] (a : α) : List α → Option Nat := findIdx? (a == ·)
+
 /-- `lookmap` is a combination of `lookup` and `filterMap`.
   `lookmap f l` will apply `f : α → option α` to each element of the list,
   replacing `a → b` at the first value `a` in the list such that `f a = some b`. -/
