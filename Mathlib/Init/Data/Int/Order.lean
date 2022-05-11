@@ -55,7 +55,7 @@ theorem eq_ofNat_of_zero_le {a : ℤ} (h : 0 ≤ a) : ∃ n : ℕ, a = n := by
   have t := le.dest_sub h; simp at t; exact t
 
 theorem eq_succ_of_zero_lt {a : ℤ} (h : 0 < a) : ∃ n : ℕ, a = n.succ :=
-  let ⟨n, (h : 1 + n = a)⟩ := le.dest h
+  let ⟨n, (h : ↑(1 + n) = a)⟩ := le.dest h
   ⟨n, by rw [Nat.add_comm] at h <;> exact h.symm⟩
 
 theorem lt_add_succ (a : ℤ) (n : ℕ) : a < a + Nat.succ n :=
