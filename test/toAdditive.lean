@@ -6,7 +6,7 @@ open Lean
 -- work in a namespace so that it doesn't matter if names clash
 namespace Test
 
--- [todo] remove these once tests pass
+-- [note] use the below options for diagnostics:
 -- set_option trace.to_additive true
 -- set_option trace.to_additive_detail true
 -- set_option pp.universes true
@@ -40,7 +40,9 @@ theorem bar1_works : bar1 3 4 = 3 * 4 := by decide
 
 infix:80 " ^ " => my_has_pow.pow
 
-instance dummy : my_has_pow ℕ $ plift ℤ := ⟨fun _ _ => 0⟩
+instance dummy_pow : my_has_pow ℕ $ plift ℤ := ⟨fun x y => 0⟩
+instance dummy_smul : my_has_scalar (plift ℤ) ℕ := ⟨fun x y => 0⟩
+attribute [to_additive dummy_smul] dummy_pow
 
 set_option pp.universes true
 @[to_additive bar2]
@@ -48,7 +50,7 @@ def foo2 {α} [my_has_pow α ℕ] (x : α) (n : ℕ) (m : plift ℤ) : α := x ^
 
 theorem foo2_works : foo2 2 3 (plift.up 2) = Nat.pow 2 0 := by decide
 -- [todo] should it still be using dummy?
-theorem bar2_works : bar2 2 3 (plift.up 2) =  2 * (dummy.1 3 (plift.up 2)) := by decide
+theorem bar2_works : bar2 2 3 (plift.up 2) =  2 * (dummy_smul.1 (plift.up 2) 3) := by decide
 
 @[to_additive bar3]
 def foo3 {α} [my_has_pow α ℕ] (x : α) : ℕ → α := @my_has_pow.pow α ℕ _ x

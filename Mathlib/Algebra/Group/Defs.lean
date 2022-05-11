@@ -6,6 +6,7 @@ import Mathlib.Tactic.ToAdditive
 -- [todo] is this correct? I think it's needed to ensure that additiveTest
 -- succeeds if the relevant arg involves Nat.
 attribute [to_additive] Nat
+attribute [to_additive] Int
 
 attribute [to_additive Add] Mul
 attribute [to_additive Sub] Div
