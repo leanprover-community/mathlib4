@@ -38,7 +38,9 @@ initialize ignoreArgsAttr : NameMapAttribute (List Nat) ←
         return ids.toList
   }
 
-/-- Gets the set of arguments that should be ignored for the given name (according to to_additive_ignore_args) -/
+/-- Gets the set of arguments that should be ignored for the given name
+(according to `@[to_additive_ignore_args ...]`).
+This value is used in `additiveTestAux`. -/
 def ignore [Functor M] [MonadEnv M]: Name → M (Option (List Nat))
   | n => (ignoreArgsAttr.find? · n) <$> getEnv
 
@@ -52,10 +54,12 @@ initialize reorderAttr : NameMapAttribute (List Nat) ←
       | _ => throwError "unexpected to_additive_reorder syntax {stx}"
   }
 
-/-- Get the reorder list (defined using `@[to_additive_reorder]`) for the given decl. -/
+/-- Get the reorder list (defined using `@[to_additive_reorder ...]`) for the given declaration. -/
 def getReorder [Functor M] [MonadEnv M]: Name →  M (List Nat)
   | n => (reorderAttr.find? · n |>.getD []) <$> getEnv
 
+/-- Given a declaration name and an argument index, determines whether this index
+should be swapped with the next one. -/
 def shouldReorder [Functor M] [MonadEnv M]: Name → Nat → M Bool
   | n, i => (i ∈ ·) <$> (getReorder n)
 
@@ -69,8 +73,10 @@ initialize relevantArgAttr : NameMapAttribute (Nat) ←
       | _ => throwError "unexpected to_additive_relevant_arg syntax {stx}"
   }
 
-def isRelevant [Monad M] [MonadEnv M] (n : Name) (i : Nat) : M Bool :=
-do
+/-- Given a declaration name and an argument index, determines whether it
+is relevant. This is used in `applyReplacementFun` where more detail on what it
+does can be found. -/
+def isRelevant [Monad M] [MonadEnv M] (n : Name) (i : Nat) : M Bool := do
   match relevantArgAttr.find? (← getEnv) n with
   | some j => return i == j
   | none => return i == 0
@@ -83,14 +89,16 @@ initialize translations : NameMapExtension Name ←
 def findTranslation? (env : Environment) : Name → Option Name :=
   (ToAdditive.translations.getState env).find?
 
-/-- Add a translation to the translations map. -/
+/-- Add a (multiplicative → additive) name translation to the translations map. -/
 def insertTranslation (src tgt : Name) : CoreM Unit := do
   if let some tgt' := findTranslation? (←getEnv) src then
     throwError "Already exists translation {src} ↦ {tgt'}"
   modifyEnv (ToAdditive.translations.addEntry · (src, tgt))
   trace[to_additive] "Added translation {src} ↦ {tgt}."
 
-/-- Get whether or not the replace-all flag is set. -/
+/-- Get whether or not the replace-all flag is set. If this is true, then the
+additiveTest heuristic is not used and all instances of multiplication are replaced.
+You can enable this with `@[to_additive!]`-/
 def replaceAll [Functor M] [MonadOptions M] : M Bool :=
   (·.getBool `to_additive.replaceAll) <$> getOptions
 
@@ -115,15 +123,15 @@ private def additiveTestAux: Bool → Expr → M Bool
   | b, _                => return true
 
 /--
-`additive_test e` tests whether the expression `e` contains no constant
+`additiveTest e` tests whether the expression `e` contains no constant
 `nm` that is not applied to any arguments, and such that `f nm = none`.
 This is used in `@[to_additive]` for deciding which subexpressions to transform: we only transform
-constants if `additive_test` applied to their first argument returns `tt`.
+constants if `additiveTest` applied to their first argument returns `true`.
 This means we will replace expression applied to e.g. `α` or `α × β`, but not when applied to
 e.g. `ℕ` or `ℝ × α`.
 `f` is the dictionary of declarations that are in the `to_additive` dictionary.
-We ignore all arguments specified in the `name_map` `ignore`.
-If `replace_all` is `tt` the test always return `tt`.
+We ignore all arguments specified by the `ignore` `NameMap`.
+If `replaceAll` is `true` the test always return `true`.
 -/
 def additiveTest (e : Expr) : M Bool := do
   if (←replaceAll) then
@@ -209,10 +217,11 @@ private def expand (e : Expr) : MetaM Expr := do
   trace[to_additive_detail] "expand:\nBefore: {e}\nAfter:  {e₂}"
   return e₂
 
-def updateWithFun
-  (tgt : Name) (decl : ConstantInfo)
+/-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
+def updateDecl
+  (tgt : Name) (srcDecl : ConstantInfo)
   : MetaM ConstantInfo := do
-  let mut decl := decl.updateName tgt
+  let mut decl := srcDecl.updateName tgt
   decl := decl.updateType $ (← applyReplacementFun (← expand decl.type))
   if let some v := decl.value? then
     decl := decl.updateValue (← applyReplacementFun (← expand v))
@@ -245,35 +254,38 @@ partial def transformDeclAux
   -- we skip if we already transformed this declaration before
   if env.contains tgt then
     return
-  let decl ← getConstInfo src
+  let srcDecl ← getConstInfo src
   -- we first transform all the declarations of the form `pre._proof_i`
-  for n in decl.type.listNamesWithPrefix pre do
+  for n in srcDecl.type.listNamesWithPrefix pre do
     transformDeclAux pre tgt_pre n
-  if let some value := decl.value? then
+  if let some value := srcDecl.value? then
     for n in value.listNamesWithPrefix pre do
       transformDeclAux pre tgt_pre n
-  -- we transform `decl` using `f` and the configuration options.
-  let decl : ConstantInfo ← MetaM.run' $ updateWithFun tgt decl
-  if ¬ decl.hasValue then
-    throwError "Expected {decl.name} to have a value."
-  trace[to_additive] "generating\n{decl.name} :=\n  {decl.value!}"
+  -- now transform the source declaration
+  let trgDecl : ConstantInfo ← MetaM.run' $ updateDecl tgt srcDecl
+  if ¬ trgDecl.hasValue then
+    throwError "Expected {trgDecl.name} to have a value."
+  trace[to_additive] "generating\n{trgDecl.name} :=\n  {trgDecl.value!}"
   try
     -- make sure that the type is correct,
-    -- and emit a more helpful error message if it failes
-    discard <| MetaM.run' <| inferType decl.value!
+    -- and emit a more helpful error message if it fails
+    discard <| MetaM.run' <| inferType trgDecl.value!
   catch
     | Exception.error stx msg => throwError "@[to_additive] failed.
       Type mismatch in additive declaration. For help, see the docstring
       of `to_additive.attr`, section `Troubleshooting`.
-      Failed to add declaration\n{decl.name}:\n{msg}"
+      Failed to add declaration\n{trgDecl.name}:\n{msg}"
     | e => panic! "unreachable"
-  addAndCompile decl.toDeclaration!
+  addAndCompile trgDecl.toDeclaration!
   if isProtected (← getEnv) src then
     setEnv $ addProtected (← getEnv) tgt
 
 /-- This should copy all of the attributes on src to tgt.
 At the moment it only copies `simp` attributes because attributes
-are not stored by the environment. [todo] add more attributes.
+are not stored by the environment.
+
+[todo] add more attributes. A change is coming to core that should
+allow us to iterate the attributes applied to a given decalaration.
 -/
 def copyAttributes (src tgt : Name) : CoreM Unit := do
   -- [todo] other simp theorems
@@ -291,7 +303,7 @@ def copyAttributes (src tgt : Name) : CoreM Unit := do
 
 /--
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
-the body using the dictionary `dict`.
+the body using the `translations` dictionary.
 This is used to implement `@[to_additive]`.
 -/
 def transformDecl (src tgt : Name) : CoreM Unit := do
@@ -301,7 +313,7 @@ def transformDecl (src tgt : Name) : CoreM Unit := do
   if let some eqns := eqns? then
     for src_eqn in eqns do
       transformDeclAux src tgt src_eqn
-      -- [todo] copy attributes
+      -- [todo] copy attributes for equations
       -- [todo] add equation lemmas to tgt_eqn
   copyAttributes src tgt
   return ()
@@ -411,8 +423,6 @@ def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
   if res == src && tgt != src then
     throwError "to_additive: can't transport {src} to itself."
   return res
-
-
 
 private def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (List String)) : CoreM Unit := do
   let srcFields ← f src
