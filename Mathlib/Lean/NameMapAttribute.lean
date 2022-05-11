@@ -45,6 +45,10 @@ structure NameMapAttribute (α) where
 def NameMapAttribute.find? (attr : NameMapAttribute α)
   : (env : Environment) → Name → Option α := attr.ext.find?
 
+def NameMapAttribute.add [Monad M] [MonadEnv M] [MonadError M]
+  (attr : NameMapAttribute α) (k : Name) (v : α) : M Unit :=
+  attr.ext.add k v
+
 def registerNameMapAttribute (impl : NameMapAttributeImpl α) : IO (NameMapAttribute α) := do
   let ext ← mkNameMapExtension α impl.name
   registerBuiltinAttribute {
