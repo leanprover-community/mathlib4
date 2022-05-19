@@ -31,3 +31,10 @@ def bar (f : ℕ → ℕ → ℕ) (n₁ n₂ n₃ n₄ : ℕ) : ℕ := f (f n₄
   guard $ e == d.value!
 
 end replaceRec
+
+open Lean.PrettyPrinter.Delaborator in
+theorem Pos.roundtrip :
+  true = (List.all
+    [#[], #[0], #[1], #[0,1], #[1,0] , #[0,0]]
+    (fun x => x == (Pos.decode <| Pos.encode <| x))
+  ) := by native_decide
