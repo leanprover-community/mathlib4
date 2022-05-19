@@ -125,7 +125,7 @@ private def viewPosAux (k : Array Expr → Expr → M α) (fvars: Array Expr) : 
   | 1, e@(Expr.app f a _)       => k fvars a
   | 0, e@(Expr.lam n y b _)     => k fvars y
   | 1, e@(Expr.lam n y b c)     => withLocalDecl n c.binderInfo (y.instantiateRev fvars) fun x => k (fvars.push x) b
-  | 0, e@(Expr.forallE n y b _) => k fvars <| y.instantiateRev fvars
+  | 0, e@(Expr.forallE n y b _) => k fvars y
   | 1, e@(Expr.forallE n y b c) => withLocalDecl n c.binderInfo (y.instantiateRev fvars) fun x => k (fvars.push x) b
   | 0, e@(Expr.letE n y a b c)  => k fvars y
   | 1, e@(Expr.letE n y a b c)  => k fvars a
