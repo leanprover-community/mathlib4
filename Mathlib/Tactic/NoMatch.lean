@@ -18,34 +18,30 @@ impossible pattern. The `match x with.` and `intro.` tactics do the same thing b
 namespace Lean
 
 syntax:lead (name := Parser.Term.noMatch) "match " matchDiscr,* " with" "." : term
-syntax:lead (name := Parser.Tactic.introNoMatch) "intro" "." : tactic
 
 namespace Elab.Term
 
-open private elabMatchCore in elabMatch.elabMatchDefault in
-open private elabMatchAux waitExpectedTypeAndDiscrs in elabMatchCore in
+open private elabMatchAux waitExpectedType from Lean.Elab.Match in
 @[termElab Parser.Term.noMatch] def elabNoMatch' : TermElab
-| stx@`(match $discrs,* with.), expectedType? => do
+| `(match $discrs,* with.), expectedType? => do
   let discrs := discrs.getElems
-  if let some i ← discrs.findIdxM? fun discr =>
-      return (← isAtomicDiscr? discr).isNone then
-    let discr := discrs[i][1]
-    let discrs := discrs.set! i (← `(x))
-    return ← elabTerm (← `(let x := $discr; match $discrs,* with.)) expectedType?
-  let expectedType ← waitExpectedTypeAndDiscrs stx expectedType?
+  for i in [0:discrs.size] do
+    let `(matchDiscr| $[$n :]? $discr:term) := discrs[i] | throwUnsupportedSyntax
+    if let some x ← isAtomicDiscr? discr then
+      tryPostponeIfMVar (← Meta.inferType x)
+    else
+      let discrs := discrs.set! i (← `(matchDiscr| $[$n :]? x))
+      return ← elabTerm (← `(let x := $discr; match $discrs,* with.)) expectedType?
+  let expectedType ← waitExpectedType expectedType?
   elabMatchAux none discrs #[] mkNullNode expectedType
 | _, _ => throwUnsupportedSyntax
 
-elab tk:"fun" "." : term <= expectedType =>
-  Meta.forallTelescopeReducing expectedType fun args _ => do
-    let mut discrs := #[]
-    let mut binders := #[]
-    for _ in args do
-      let n ← mkFreshIdent tk
-      binders := binders.push n
-      discrs := discrs.push $
-        mkNode ``Lean.Parser.Term.matchDiscr #[mkNullNode, n]
-    elabTerm (← `(@fun $binders* => match $discrs,* with.)) (some expectedType)
+elab tk:"fun" "." : term <= expectedType => do
+  let (binders, discrs) ← (·.unzip) <$>
+    Meta.forallTelescopeReducing expectedType fun args _ => do
+      args.mapM fun arg => withFreshMacroScope do
+        return (← `(a), ← `(matchDiscr| a))
+  elabTerm (← `(@fun $binders:ident* => match $discrs:matchDiscr,* with.)) expectedType
 
 macro tk:"λ" "." : term => `(fun%$tk .)
 
