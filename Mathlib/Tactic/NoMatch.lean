@@ -22,17 +22,17 @@ syntax:lead (name := Parser.Tactic.introNoMatch) "intro" "." : tactic
 
 namespace Elab.Term
 
-open private elabMatchCore in elabMatch.elabMatchDefault in
-open private elabMatchAux waitExpectedTypeAndDiscrs in elabMatchCore in
+open private elabMatchCore elabMatchAux waitExpectedType from Lean.Elab.Match in
 @[termElab Parser.Term.noMatch] def elabNoMatch' : TermElab
-| stx@`(match $discrs,* with.), expectedType? => do
+| `(match $discrs,* with.), expectedType? => do
   let discrs := discrs.getElems
-  if let some i ← discrs.findIdxM? fun discr =>
-      return (← isAtomicDiscr? discr).isNone then
-    let discr := discrs[i][1]
-    let discrs := discrs.set! i (← `(x))
+  if let some i ← discrs.findIdxM? (fun discr => do
+      let `(matchDiscr| $[$n :]? $discr:term) := discr | return false
+      return (← isAtomicDiscr? discr).isNone) then
+    let `(matchDiscr| $[$n :]? $discr:term) := discrs[i] | throwUnsupportedSyntax
+    let discrs := discrs.set! i (← `(matchDiscr| $[$n :]? x))
     return ← elabTerm (← `(let x := $discr; match $discrs,* with.)) expectedType?
-  let expectedType ← waitExpectedTypeAndDiscrs stx expectedType?
+  let expectedType ← waitExpectedType expectedType?
   elabMatchAux none discrs #[] mkNullNode expectedType
 | _, _ => throwUnsupportedSyntax
 
@@ -43,8 +43,7 @@ elab tk:"fun" "." : term <= expectedType =>
     for _ in args do
       let n ← mkFreshIdent tk
       binders := binders.push n
-      discrs := discrs.push $
-        mkNode ``Lean.Parser.Term.matchDiscr #[mkNullNode, n]
+      discrs := discrs.push <|<- `(matchDiscr| $n:ident)
     elabTerm (← `(@fun $binders* => match $discrs,* with.)) (some expectedType)
 
 macro tk:"λ" "." : term => `(fun%$tk .)
