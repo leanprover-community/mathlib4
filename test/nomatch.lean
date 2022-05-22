@@ -5,8 +5,6 @@ example : False → α := by intro.
 example : ¬ False := fun.
 example : ¬ False := by intro.
 example : ¬ ¬ 0 = 0 := fun.
-example : ¬ ¬ 0 = 0 := @fun x => match x with.
-example : ¬ ¬ 0 = 0 := (match · with.)
 
 example (h : False) : α := fun.
 example (h : False) : α := match with.
