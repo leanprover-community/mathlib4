@@ -125,11 +125,11 @@ instance : LawfulFunctor Set where
      λ ⟨b, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
   map_const := rfl
 
-syntax (priority := high) "{" term,+ "}" : term
+syntax "{" term,+ "}" : term
 
 macro_rules
-  | `({$x}) => `(Set.singleton $x)
-  | `({$x, $xs:term,*}) => `(Set.insert $x {$xs,*})
+  | `({$x:term}) => `(Set.singleton $x)
+  | `({$x:term, $xs:term,*}) => `(Set.insert $x {$xs:term,*})
 
 @[appUnexpander Set.singleton]
 def singletonUnexpander : Lean.PrettyPrinter.Unexpander

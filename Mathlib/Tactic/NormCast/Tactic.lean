@@ -64,11 +64,11 @@ is rewritten to:            op (↑(↑(x : α) : β) : γ) (↑(y : β) : γ)
 when (↑(↑(x : α) : β) : γ) = (↑(x : α) : γ) can be proven with a squash lemma
 -/
 def splittingProcedure (expr : Expr) : MetaM Simp.Result := do
-  let Expr.app (Expr.app op x ..) y .. := expr | return {expr := expr}
+  let Expr.app (Expr.app op x ..) y .. := expr | return {expr}
 
-  let Expr.forallE _ γ (Expr.forallE _ γ' ty ..) .. ← inferType op | return {expr := expr}
-  if γ'.hasLooseBVars || ty.hasLooseBVars then return {expr := expr}
-  unless ← isDefEq γ γ' do return {expr := expr}
+  let Expr.forallE _ γ (Expr.forallE _ γ' ty ..) .. ← inferType op | return {expr}
+  if γ'.hasLooseBVars || ty.hasLooseBVars then return {expr}
+  unless ← isDefEq γ γ' do return {expr}
 
   try
     let some x' ← isCoeOf? x | failure
@@ -100,7 +100,7 @@ def splittingProcedure (expr : Expr) : MetaM Simp.Result := do
     let some x_x2 ← proveEqUsingDown x x2 | failure
     Simp.mkCongrFun (← Simp.mkCongr {expr := op} x_x2) y
   catch _ =>
-    return {expr := expr}
+    return {expr}
 
 /--
 Discharging function used during simplification in the "squash" step.
@@ -157,12 +157,12 @@ def derive (e : Expr) : MetaM Simp.Result := do
   trace[Tactic.norm_cast] "before: {r.expr}"
 
   -- step 1: pre-processing of numerals
-  let r ← mkEqTrans r <|<- Simp.main r.expr { config := config, congrTheorems }
+  let r ← mkEqTrans r <|<- Simp.main r.expr { config, congrTheorems }
     { post := fun e => return Simp.Step.done (← try numeralToCoe e catch _ => pure {expr := e}) }
   trace[Tactic.norm_cast] "after numeralToCoe: {r.expr}"
 
   -- step 2: casts are moved upwards and eliminated
-  let r ← mkEqTrans r <|<- Simp.main r.expr { config := config, congrTheorems }
+  let r ← mkEqTrans r <|<- Simp.main r.expr { config, congrTheorems }
     { post := upwardAndElim (← normCastExt.up.getTheorems) }
   trace[Tactic.norm_cast] "after upwardAndElim: {r.expr}"
 
@@ -250,7 +250,7 @@ syntax (name := convNormCast) "norm_cast" : conv
 
 syntax (name := pushCast) "push_cast " (config)? (discharger)? (&"only ")? ("[" (simpStar <|> simpErase <|> simpLemma),* "]")? (location)? : tactic
 @[tactic pushCast] def evalPushCast : Tactic := fun stx => do
-  let { ctx := ctx, fvarIdToLemmaId, dischargeWrapper } ← withMainContext do
+  let { ctx, fvarIdToLemmaId, dischargeWrapper, .. } ← withMainContext do
     mkSimpContext' (← pushCastExt.getTheorems) stx (eraseLocal := false)
   dischargeWrapper.with fun discharge? =>
     simpLocation ctx discharge? fvarIdToLemmaId (expandOptLocation stx[5])
