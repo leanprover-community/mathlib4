@@ -76,7 +76,7 @@ private def printIdCore (id : Name) : ConstantInfo → CoreM MessageData
     mkHeader' "constructor" id us t u
   | ConstantInfo.recInfo { levelParams := us, type := t, isUnsafe := u, .. } =>
     mkHeader' "recursor" id us t u
-  | ConstantInfo.inductInfo { levelParams := us, numParams := numParams, numIndices := numIndices, type := t, ctors := ctors, isUnsafe := u, .. } =>
+  | ConstantInfo.inductInfo { levelParams := us, numParams, numIndices, type := t, ctors, isUnsafe := u, .. } =>
     printInduct id us numParams numIndices t ctors u
 
 def diffExtension (old new : Environment)
