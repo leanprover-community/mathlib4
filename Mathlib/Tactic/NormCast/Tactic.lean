@@ -250,7 +250,7 @@ syntax (name := convNormCast) "norm_cast" : conv
 
 syntax (name := pushCast) "push_cast " (config)? (discharger)? (&"only ")? ("[" (simpStar <|> simpErase <|> simpLemma),* "]")? (location)? : tactic
 @[tactic pushCast] def evalPushCast : Tactic := fun stx => do
-  let { ctx := ctx, fvarIdToLemmaId, dischargeWrapper } ← withMainContext do
+  let { ctx, fvarIdToLemmaId, dischargeWrapper, .. } ← withMainContext do
     mkSimpContext' (← pushCastExt.getTheorems) stx (eraseLocal := false)
   dischargeWrapper.with fun discharge? =>
     simpLocation ctx discharge? fvarIdToLemmaId (expandOptLocation stx[5])
