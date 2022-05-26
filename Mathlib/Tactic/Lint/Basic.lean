@@ -6,6 +6,7 @@ Authors: Floris van Doorn, Robert Y. Lewis, Gabriel Ebner
 
 import Lean
 import Mathlib.Util.TermUnsafe
+import Mathlib.Lean.NameMapAttribute
 open Lean Meta
 
 namespace Mathlib.Tactic.Lint
@@ -27,11 +28,11 @@ metadata is stored in the `Linter` structure. We define two attributes:
 syntax (name := nolint) "nolint" (ppSpace ident)+ : attr
 
 -- Defines the user attribute `nolint` for skipping `#lint`
-initialize nolintAttr : ParametricAttribute (Array Name) ←
-  registerParametricAttribute {
+initialize nolintAttr : NameMapAttribute (Array Name) ←
+  registerNameMapAttribute {
     name := `nolint
     descr := "Do not report this declaration in any of the tests of `#lint`"
-    getParam := fun decl stx =>
+    add := fun decl stx =>
       match stx with
         -- TODO: validate linter names
         | `(attr|nolint $[$ids]*) => pure $ ids.map (·.getId.eraseMacroScopes)
@@ -40,8 +41,8 @@ initialize nolintAttr : ParametricAttribute (Array Name) ←
 
 /-- Returns true if `decl` should be checked
 using `linter`, i.e., if there is no `nolint` attribute. -/
-def shouldBeLinted [Monad m] [MonadEnv m] (linter : Name) (decl : Name) : m Bool := do
-  pure !((nolintAttr.getParam (← getEnv) decl).getD {}).contains linter
+def shouldBeLinted [Monad m] [MonadEnv m] (linter : Name) (decl : Name) : m Bool :=
+  return !((nolintAttr.find? (← getEnv) decl).getD {}).contains linter
 
 /--
 Returns true if `decl` is an automatically generated declaration.
@@ -53,6 +54,7 @@ def isAutoDecl (decl : Name) : CoreM Bool := do
   if decl.hasMacroScopes then return true
   if decl.isInternal then return true
   if let Name.str n s _ := decl then
+    if s.startsWith "proof_" || s.startsWith "match_" then return true
     if (← getEnv).isConstructor n && ["injEq", "inj", "sizeOf_spec"].any (· == s) then
       return true
     if let ConstantInfo.inductInfo _ := (← getEnv).find? n then

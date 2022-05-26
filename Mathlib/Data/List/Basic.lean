@@ -9,6 +9,10 @@ import Lean
 
 open Function
 
+@[simp]
+theorem Option.mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
+  cases o <;> simp [toList, eq_comm]
+
 namespace List
 
 theorem concat_eq_append : ∀ (l : List α) a, concat l a = l ++ [a]
