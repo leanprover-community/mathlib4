@@ -649,7 +649,7 @@ theorem get_of_eq {L L' : List α} (h : L = L') (i : Fin  L.length) :
   cases n
   subst hn0; rfl
 
-theorem get_zero [Inhabited α] {L : List α} (h : 0 < L.length) : L.get ⟨0, h⟩ = L.head? := by
+theorem get_zero {L : List α} (h : 0 < L.length) : L.get ⟨0, h⟩ = L.head? := by
   cases L; {cases h}; simp
 
 theorem get_append : ∀ {l₁ l₂ : List α} (n : ℕ) (h : n < l₁.length),
@@ -1241,12 +1241,12 @@ repeat' a (n - length l) ++ l
 theorem leftpad_length (n : ℕ) (a : α) (l : List α) : (leftpad n a l).length = max n l.length :=
 by simp only [leftpad, length_append, length_repeat', Nat.sub_add_eq_max]
 
-theorem leftpad_prefix [DecidableEq α] (n : ℕ) (a : α) (l : List α) : isPrefix (repeat' a (n - length l)) (leftpad n a l) :=
+theorem leftpad_prefix (n : ℕ) (a : α) (l : List α) : isPrefix (repeat' a (n - length l)) (leftpad n a l) :=
 by
   simp only [isPrefix, leftpad]
   exact Exists.intro l rfl
 
-theorem leftpad_suffix [DecidableEq α] (n : ℕ) (a : α) (l : List α) : isSuffix l (leftpad n a l) :=
+theorem leftpad_suffix (n : ℕ) (a : α) (l : List α) : isSuffix l (leftpad n a l) :=
 by
   simp only [isSuffix, leftpad]
   exact Exists.intro (repeat' a (n - length l)) rfl

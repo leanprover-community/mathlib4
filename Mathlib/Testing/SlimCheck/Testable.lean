@@ -404,14 +404,14 @@ section IO
 open TestResult
 
 /-- Execute `cmd` and repeat every time the result is `gave_up` (at most `n` times). -/
-def retry (cmd : Rand (TestResult p)) (cfg : Configuration) : Nat → Rand (TestResult p)
+def retry (cmd : Rand (TestResult p)) : Nat → Rand (TestResult p)
 | 0 => pure $ TestResult.gaveUp 1
 | n+1 => do
   let r ← cmd
   match r with
   | success hp => pure $ success hp
   | TestResult.failure h xs n => pure $ failure h xs n
-  | gaveUp _ => retry cmd cfg n
+  | gaveUp _ => retry cmd n
 
 /-- Count the number of times the test procedure gave up. -/
 def giveUp (x : Nat) : TestResult p → TestResult p
@@ -428,7 +428,7 @@ def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) : TestRes
   if cfg.traceSuccesses then
     slimTrace s!"New sample"
     slimTrace s!"Retrying up to {cfg.numRetries} times until guards hold"
-  let x ← retry (ReaderT.run (Testable.runProp p cfg true) ⟨size⟩) cfg cfg.numRetries
+  let x ← retry (ReaderT.run (Testable.runProp p cfg true) ⟨size⟩) cfg.numRetries
   match x with
   | (success (PSum.inl ())) => runSuiteAux p cfg r n
   | (gaveUp g) => runSuiteAux p cfg (giveUp g r) n

@@ -39,7 +39,7 @@ def setParent {n} (m : UFModel n) (x y : Fin n) (h : m.rank x < m.rank y) : UFMo
     · exact m.rank_lt i
 
 def setParentBump {n} (m : UFModel n) (x y : Fin n)
-  (ne : x.1 ≠ y) (H : m.rank x ≤ m.rank y) (hroot : (m.parent y).1 = y) : UFModel n where
+    (H : m.rank x ≤ m.rank y) (hroot : (m.parent y).1 = y) : UFModel n where
   parent i := if x.1 = i then y else m.parent i
   rank i := if y.1 = i ∧ m.rank x = m.rank y then m.rank y + 1 else m.rank i
   rank_lt i := by
@@ -273,7 +273,7 @@ def link (self : UnionFind α) (x y : Fin self.size)
   case b =>
     let ⟨m, hm⟩ := self.model'; let n := self.size
     simp [hm.rank_eq] at h; simp [hm.parent_eq'] at yroot
-    refine ⟨_, m.setParentBump x y ne h yroot, ?_⟩
+    refine ⟨_, m.setParentBump x y h yroot, ?_⟩
     let parent (i : Fin n) := (if x.1 = i then y else m.parent i).1
     have : UFModel.Agrees arr₁ (·.parent) parent :=
       hm.1.set (fun i h => by simp; rw [if_neg h.symm]) (fun h => by simp)
