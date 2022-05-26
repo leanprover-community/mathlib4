@@ -184,8 +184,7 @@ and_congr (injective.of_comp_iff hf.injective _) (surjective.of_comp_iff' hf _)
 to `Set α`. -/
 theorem cantor_surjective {α} (f : α → Set α) : ¬ Function.surjective f
 | h => let ⟨D, e⟩ := h (λ a => ¬ f a a)
-       by have x := @iff_not_self (f D D)
-          exact (@iff_not_self (f D D)) $ iff_of_eq (congr_fun e D)
+       (@iff_not_self (f D D)) $ iff_of_eq (congr_fun e D)
 
 /-- Cantor's diagonal argument implies that there are no injective functions from `Set α` to `α`. -/
 theorem cantor_injective {α : Type _} (f : (Set α) → α) :
