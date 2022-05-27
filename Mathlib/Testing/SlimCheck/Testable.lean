@@ -126,6 +126,7 @@ instance (priority := low) : PrintableProp p where
 class Testable (p : Prop) where
   run (cfg : Configuration) (minimize : Bool) : Gen (TestResult p)
 
+@[nolint unusedArguments]
 def NamedBinder (n : String) (p : Prop) : Prop := p
 
 namespace TestResult
@@ -466,6 +467,7 @@ partial def addDecorations (e : Expr) : Expr :=
 /-- `DecorationsOf p` is used as a hint to `mk_decorations` to specify
 that the goal should be satisfied with a proposition equivalent to `p`
 with added annotations. -/
+@[nolint unusedArguments]
 abbrev DecorationsOf (p : Prop) := Prop
 
 open Elab.Tactic

@@ -7,6 +7,7 @@ import Mathlib.Init.Logic
 import Mathlib.Init.Function
 import Mathlib.Tactic.Basic
 import Mathlib.Util.LibraryNote
+import Mathlib.Tactic.Lint.Basic
 
 section needs_better_home
 /- This section contains items that have no direct counterpart from Lean 3 / Mathlib 3.
@@ -88,6 +89,7 @@ theorem iff_iff_eq : (a ↔ b) ↔ a = b := ⟨propext, iff_of_eq⟩
 
 @[simp] theorem imp_self : (a → a) ↔ True := iff_true_intro id
 
+@[nolint unusedArguments]
 theorem imp_intro {α β : Prop} (h : α) : β → α := λ _ => h
 
 theorem imp_false : (a → False) ↔ ¬ a := Iff.rfl
