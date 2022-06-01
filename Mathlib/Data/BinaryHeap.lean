@@ -51,7 +51,7 @@ def mkHeap (lt : α → α → Bool) (a : Array α) : {a' : Array α // a'.size 
     ⟨a₂, h₂.trans a'.2⟩
   loop (a.size / 2) a (Nat.div_le_self ..)
 
-@[simp] theorem size_mkHeap (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
+@[simp] theorem size_mkHeap (lt : α → α → Bool) (a : Array α) :
   (mkHeap lt a).1.size = a.size := (mkHeap lt a).2
 
 /-- Core operation for binary heaps, expressed directly on arrays.

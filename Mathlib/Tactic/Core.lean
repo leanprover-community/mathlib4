@@ -55,8 +55,9 @@ def toPreDefinition (nm newNm : Name) (newType newValue : Expr) (newDoc : Option
     type := newType
     value := newValue }
   return predef
+
 /-- Make `nm` protected. -/
-def setProtected {m : Type → Type} [Monad m] [MonadEnv m] (nm : Name) : m Unit := do
+def setProtected {m : Type → Type} [MonadEnv m] (nm : Name) : m Unit :=
   modifyEnv (addProtected · nm)
 
 namespace Parser.Tactic
