@@ -194,7 +194,6 @@ syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
 /- E -/ syntax (name := trans) "trans" (ppSpace colGt term)? : tactic
 /- B -/ syntax (name := acRfl) "ac_rfl" : tactic
 /- B -/ syntax (name := cc) "cc" : tactic
-/- E -/ syntax (name := substVars) "subst_vars" : tactic
 
 -- builtin unfold only accepts single ident
 /- M -/ syntax (name := unfold') (priority := low) "unfold" (config)? (ppSpace colGt ident)* (ppSpace location)? : tactic
