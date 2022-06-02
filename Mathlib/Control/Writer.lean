@@ -1,3 +1,4 @@
+import Mathlib.Algebra.Group.Defs
 /-
 Copyright (c) 2019 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -18,6 +19,18 @@ class MonadWriter (ω : outParam (Type u)) (M : Type u → Type v) where
   pass {α} : M (α × (ω → ω)) → M α
 
 export MonadWriter (tell listen pass)
+
+variable {M : Type u → Type v} [Monad M]
+
+instance [MonadWriter ω M] : MonadWriter ω (ReaderT ρ M) where
+  tell w :=  (tell w : M _)
+  listen x r := listen <| x r
+  pass x r := pass <| x r
+
+instance [MonadWriter ω M] : MonadWriter ω (StateT σ M) where
+  tell w := (tell w : M _)
+  listen x s := (fun ((a,w), s) => ((a,s), w)) <$> listen (x s)
+  pass x s := pass <| (fun ((a, f), s) => ((a, s), f)) <$> (x s)
 
 namespace WriterT
 
@@ -60,5 +73,13 @@ instance [MonadExcept ε M] : MonadExcept ε (WriterT ω M) where
   throw := fun e => WriterT.mk $ throw e
   tryCatch := fun cmd c => WriterT.mk $ tryCatch cmd fun e => (c e).run
 
+
+instance [MonadLiftT M (WriterT ω M)] : MonadControl M (WriterT ω M) where
+  stM := fun α => α × ω
+  liftWith f := liftM <| f fun x => x.run
+  restoreM := WriterT.mk
+
+instance : MonadFunctor M (WriterT ω M) where
+  monadMap := fun k (w : M _) => WriterT.mk $ k w
 
 end WriterT
