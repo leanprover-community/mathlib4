@@ -1,10 +1,21 @@
-import Mathlib.Algebra.Group.Defs
 /-
 Copyright (c) 2019 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, E.W.Ayers
+-/
+import Mathlib.Algebra.Group.Defs
 
-The writer monad transformer for passing immutable state.
+/-!
+# Writer monads
+
+This file introduces monads for managing immutable, appendable state.
+Common applications are logging monads where the monad logs messages as the
+computation progresses.
+
+## References
+- https://hackage.haskell.org/package/mtl-2.2.1/docs/Control-Monad-Writer-Class.html
+- [Original Mark P Jones article introducing `Writer`](https://web.cecs.pdx.edu/~mpj/pubs/springschool.html)
+
 -/
 
 def WriterT (ω : Type u) (M : Type u → Type v) (α : Type u) : Type v :=
@@ -72,7 +83,6 @@ instance : MonadWriter ω (WriterT ω M) where
 instance [MonadExcept ε M] : MonadExcept ε (WriterT ω M) where
   throw := fun e => WriterT.mk $ throw e
   tryCatch := fun cmd c => WriterT.mk $ tryCatch cmd fun e => (c e).run
-
 
 instance [MonadLiftT M (WriterT ω M)] : MonadControl M (WriterT ω M) where
   stM := fun α => α × ω
