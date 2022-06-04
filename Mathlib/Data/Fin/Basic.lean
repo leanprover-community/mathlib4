@@ -89,11 +89,11 @@ instance : OfNat (Fin n) a where
 @[simp] lemma Fin.ofNat'_zero : (Fin.ofNat' 0 h : Fin n) = 0 := rfl
 @[simp] lemma Fin.ofNat'_one : (Fin.ofNat' 1 h : Fin n) = 1 := rfl
 
-lemma Fin.ofNat'_succ : (Fin.ofNat' i.succ Fin.size_positive' : Fin n) = (Fin.ofNat' i Fin.size_positive' : Fin n) + 1 := by
-  revert n; exact fun
-    | n + 2, h => ext (by simp [Fin.ofNat', Fin.add_def])
-    | 1, h => Subsingleton.allEq _ _
-    | 0, h => Subsingleton.allEq _ _
+lemma Fin.ofNat'_succ : {n : Nat} → [Nonempty (Fin n)] →
+    (Fin.ofNat' i.succ Fin.size_positive' : Fin n) = (Fin.ofNat' i Fin.size_positive' : Fin n) + 1
+  | n + 2, h => ext (by simp [Fin.ofNat', Fin.add_def])
+  | 1, h => Subsingleton.allEq _ _
+  | 0, h => Subsingleton.allEq _ _
 
 instance : AddCommSemigroup (Fin n) where
   add_assoc _ _ _ := by

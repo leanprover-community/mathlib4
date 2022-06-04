@@ -120,8 +120,9 @@ It tries to rewrite an expression using the elim and move lemmas.
 On failure, it calls the splitting procedure heuristic.
 -/
 partial def upwardAndElim (up : SimpTheorems) (e : Expr) : SimpM Simp.Step := do
-  let r ← Simp.rewrite e up.post up.erased prove (tag := "squash")
-  let r ← mkEqTrans r <|<- splittingProcedure r.expr
+  let r ← Simp.rewrite? e up.post up.erased prove (tag := "squash") (rflOnly := false)
+  let r := r.getD { expr := e }
+  let r ← mkEqTrans r <|← splittingProcedure r.expr
   if r.expr == e then return Simp.Step.done {expr := e}
   return Simp.Step.visit r
 
@@ -200,9 +201,9 @@ def normCastHyp (fvarId : FVarId) : TacticM Unit :=
   liftMetaTactic1 fun mvarId => do
     let hyp ← instantiateMVars (← getLocalDecl fvarId).type
     let prf ← derive hyp
-    return (← applySimpResultToLocalDecl mvarId fvarId prf).map (·.snd)
+    return (← applySimpResultToLocalDecl mvarId fvarId prf false).map (·.snd)
 
-elab "norm_cast0" loc:(ppSpace location)? : tactic =>
+elab "norm_cast0" loc:((ppSpace location)?) : tactic =>
   withMainContext do
     match expandOptLocation loc with
     | Location.targets hyps target =>
@@ -220,7 +221,6 @@ macro "assumption_mod_cast" : tactic => `(norm_cast0 at * <;> assumption)
 Normalize casts at the given locations by moving them "upwards".
 -/
 macro "norm_cast" loc:(ppSpace location)? : tactic =>
-  let loc := loc.getOptional?
   `(tactic| norm_cast0 $[$loc:location]? <;> try trivial)
 
 /--

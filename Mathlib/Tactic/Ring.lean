@@ -114,7 +114,7 @@ def pp : HornerExpr → MetaM Format
 | (xadd e a x (_, n) b) => do
   let pa ← a.pp
   let pb ← b.pp
-  let px ← PrettyPrinter.ppExpr Name.anonymous [] x.1
+  let px ← PrettyPrinter.ppExpr x.1
   return "(" ++ pa ++ ") * (" ++ px ++ ")^" ++ toString n ++ " + " ++ pb
 
 end HornerExpr

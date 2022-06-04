@@ -30,6 +30,26 @@ def replaceRec (f? : (Expr → Expr) → Expr → Option Expr) : Expr → Expr :
     | some x => x
     | none   => traverseChildren (M := Id) r e
 
+/-- replaceRec under a monad. -/
+def replaceRecM [Monad M] (f? : (Expr → M Expr) → Expr → M (Option Expr)) : Expr → M Expr :=
+  fix fun r e => do
+    match ← f? r e with
+    | some x => return x
+    | none => traverseChildren r e
+
+/-- Similar to `replaceRecM` except that bound variables are instantiated with free variables
+(like `Lean.Meta.transform`).
+This means that MetaM tactics can be used inside the replacement function.
+
+If you don't need recursive calling, you should prefer using `Lean.Meta.transform` because it also caches visits.
+ -/
+def replaceRecMeta [Monad M] [MonadLiftT MetaM M] [MonadControlT MetaM M]
+  (f? : (Expr → M Expr) → Expr → M (Option Expr)) : Expr → M Expr :=
+  fix fun r e => do
+    match ← f? r e with
+    | some x => return x
+    | none => Lean.Meta.traverseChildren r e
+
 /-- A version of `Expr.replace` where we can use recursive calls even if we replace a subexpression.
   When reaching a subexpression `e` we call `traversal e` to see if we want to do anything with this
   expression. If `traversal e = none` we proceed to the children of `e`. If

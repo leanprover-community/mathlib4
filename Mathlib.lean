@@ -43,6 +43,7 @@ import Mathlib.Init.Logic
 import Mathlib.Init.Set
 import Mathlib.Init.SetNotation
 import Mathlib.Lean.Expr
+import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr.Traverse
 import Mathlib.Lean.LocalContext
@@ -64,6 +65,7 @@ import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.Have
 import Mathlib.Tactic.IrreducibleDef
+import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lint
 import Mathlib.Tactic.Lint.Basic
@@ -99,6 +101,9 @@ import Mathlib.Tactic.Symm
 import Mathlib.Tactic.Trans
 import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.Use
+import Mathlib.Testing.SlimCheck.Gen
+import Mathlib.Testing.SlimCheck.Sampleable
+import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Util.DeclName
 import Mathlib.Util.Eval
 import Mathlib.Util.Export

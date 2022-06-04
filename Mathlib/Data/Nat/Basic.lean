@@ -95,6 +95,9 @@ protected def case_strong_rec_on {p : ℕ → Sort u} (a : ℕ)
   (hz : p 0) (hi : ∀ n, (∀ m, m ≤ n → p m) → p (succ n)) : p a :=
 Nat.strong_rec_on a fun | 0, _ => hz | n+1, ih => hi n (λ m w => ih m (lt_succ_of_le w))
 
+theorem le_pred_of_lt {m n : Nat} (h : m < n) : m ≤ n - 1 :=
+  Nat.sub_le_sub_right h 1
+
 /- div -/
 
 lemma mul_div_le (m n : ℕ) : n * (m / n) ≤ m := by
