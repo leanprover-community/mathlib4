@@ -37,6 +37,8 @@ For each constructor `𝑐` of `T` and each field `𝑎 : α` of `𝑐`, this wi
 
 -/
 
+initialize  registerTraceClass `derive_optics
+
 -- [todo] this must already exist.
 def Name.mapHead (f : String →String) : Name →Name
   | Name.str p s _ => Name.mkStr p (f s)
@@ -75,6 +77,11 @@ def mkOptics (decl : Name) : CommandElabM Unit := do
       let ctorPattern ← `($(mkIdent ctorInfo.name):ident $fieldPatterns:term*)
       for fieldIdx in List.range ctorInfo.numFields do
         let field := fields[fieldIdx]
+        if field.userName.isNum then
+          -- In this case, the field name is anonymous (ie the user didn't provide an
+          -- explicit field name). So skip. [todo] more canonical way of determining
+          -- whether user gave the field an explicit name?
+          continue
         let fieldPat := fieldPatterns[fieldIdx]
         let outType ← PrettyPrinter.delab type
         let fieldType ← PrettyPrinter.delab field.type
@@ -155,7 +162,10 @@ def mkOptics (decl : Name) : CommandElabM Unit := do
         )
 
       return cmds
-    cmds.forM elabCommand
+    for cmd in cmds do
+      let pp ← liftCoreM $ PrettyPrinter.ppCommand cmd
+      trace[derive_optics] "Creating definition:\n{pp}"
+      elabCommand cmd
 
 elab "derive_optics" decl:ident : command =>
   mkOptics decl.getId

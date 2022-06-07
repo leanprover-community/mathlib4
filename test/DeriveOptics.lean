@@ -1,8 +1,10 @@
 import Mathlib.Lean.Deriving.Optics
 
+set_option trace.derive_optics true
+
 inductive Wow
   | foo (cheese : Nat) (plops : Wow)
-  | bar (lemon : String) (posset : Nat)
+  | bar (lemon : String) (posset : Nat) : String → Wow
 derive_optics Wow
 
 
@@ -12,7 +14,7 @@ inductive MyList (α β : Type) :  Type
 
 derive_optics MyList
 
-def t := (Wow.bar "asdf" 3)
+def t : Wow := (Wow.bar "asdf" 3 "green")
 
 #check Wow.bar.lemon?
 #check Wow.bar.withLemon
