@@ -64,6 +64,8 @@ def Empty.elim {C : Sort _} : Empty → C := λ e => match e with.
 
 instance : Subsingleton Empty := ⟨λa => a.elim⟩
 
+lemma ne_comm {α} {a b : α} : a ≠ b ↔ b ≠ a := ⟨Ne.symm, Ne.symm⟩
+
 end miscellany
 
 /-!
