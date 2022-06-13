@@ -38,9 +38,9 @@ def Not.elim {α : Sort _} (H1 : ¬a) (H2 : a) : α := absurd H2 H1
 /- eq -/
 
 -- proof irrelevance is built in
-@[nolint defLemma] def proof_irrel := @proofIrrel
-@[nolint defLemma] def congr_fun := @congrFun
-@[nolint defLemma] def congr_arg := @congrArg
+lemma proof_irrel : type_of% @proofIrrel := proofIrrel
+lemma congr_fun : type_of% @congrFun := congrFun
+lemma congr_arg : type_of% @congrArg := congrArg
 
 lemma trans_rel_left {α : Sort u} {a b c : α} (r : α → α → Prop) (h₁ : r a b) (h₂ : b = c) : r a c :=
 h₂ ▸ h₁
@@ -56,7 +56,7 @@ lemma cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h₂ 
 
 lemma Ne.def {α : Sort u} (a b : α) : (a ≠ b) = ¬ (a = b) := rfl
 
-@[nolint defLemma] def eq_rec_heq := @eqRec_heq
+lemma eq_rec_heq : type_of% @eqRec_heq := @eqRec_heq
 
 lemma heq_of_eq_rec_left {φ : α → Sort v} {a a' : α} {p₁ : φ a} {p₂ : φ a'} :
   (e : a = a') → (h₂ : Eq.rec (motive := fun a _ => φ a) p₁ e = p₂) → HEq p₁ p₂
