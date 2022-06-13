@@ -49,14 +49,14 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array (Name × MVarId)) (wit
     let (altVarNames, names') := names.splitAtD numFields `_
     names := names'
     let (_, g) ← introN g numFields altVarNames
-    let some (g, _) ← Cases.unifyEqs numEqs g {} | pure ()
+    let some (g, _) ← Cases.unifyEqs? numEqs g {} | pure ()
     let (_, g) ← introNP g numGeneralized
     let g ← liftM $ toClear.foldlM tryClear g
     subgoals := subgoals.push g
   pure subgoals
 
 open private getElimNameInfo generalizeTargets generalizeVars in evalInduction in
-elab (name := induction') tk:"induction' " tgts:(casesTarget,+)
+elab (name := induction') "induction' " tgts:(casesTarget,+)
     usingArg:((" using " ident)?)
     withArg:((" with " (colGt binderIdent)+)?)
     genArg:((" generalizing " (colGt ident)+)?) : tactic => do

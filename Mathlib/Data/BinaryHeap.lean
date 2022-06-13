@@ -30,7 +30,7 @@ def heapifyDown (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
     let a' := a.swap i j
     let j' := ⟨j, by rw [a.size_swap i j]; exact j.1.2⟩
     have : a'.size - j < a.size - i := by
-      rw [a.size_swap i j]; exact Nat.sub_lt_sub_left i.2 <| Nat.lt_of_le_and_ne j.2 h
+      rw [a.size_swap i j]; exact Nat.sub_lt_sub_left i.2 <| Nat.lt_of_le_of_ne j.2 h
     let ⟨a₂, h₂⟩ := heapifyDown lt a' j'
     ⟨a₂, h₂.trans (a.size_swap i j)⟩
 termination_by _ => a.size - i
