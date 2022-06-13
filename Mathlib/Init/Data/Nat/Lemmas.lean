@@ -831,9 +831,9 @@ cases n with
     simp only [hterm]
     exact to_digits_core_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e ‹n.succ < 10 ^ e› ‹0 < e›
 
-lemma Nat.pow_succ' {m n : Nat} : m ^ n.succ = m * m ^ n := by
+lemma pow_succ' {m n : Nat} : m ^ n.succ = m * m ^ n := by
   rw [Nat.pow_succ, Nat.mul_comm]
 
-@[simp] lemma Nat.pow_eq {m n : Nat} : m.pow n = m ^ n := rfl
+@[simp] lemma pow_eq {m n : Nat} : m.pow n = m ^ n := rfl
 
 end Nat
