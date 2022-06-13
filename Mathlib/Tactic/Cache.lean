@@ -70,6 +70,7 @@ def Cache.get [Monad m] [MonadEnv m] [MonadLog m] [MonadOptions m] [MonadLiftT B
     | Sum.inl init =>
       let env ← getEnv
       let fileName ← getFileName
+      let fileMap ← getFileMap
       let options ← getOptions -- TODO: sanitize options?
       -- Default heartbeats to a reasonable value.
       -- otherwise librarySearch times out on mathlib
@@ -79,7 +80,7 @@ def Cache.get [Monad m] [MonadEnv m] [MonadLog m] [MonadOptions m] [MonadLiftT B
       let res ← EIO.asTask do
         let metaCtx : Meta.Context := {}
         let metaState : Meta.State := {}
-        let coreCtx : Core.Context := {options, fileName, fileMap := default}
+        let coreCtx : Core.Context := {options, fileName, fileMap}
         let coreState : Core.State := {env}
         pure (← ((init ‹_›).run ‹_› ‹_›).run ‹_›).1.1
       show BaseIO _ from cache.set (Sum.inr res)
