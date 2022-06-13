@@ -100,11 +100,11 @@ def xor (a b : Prop) := (a ∧ ¬ b) ∨ (b ∧ ¬ a)
 
 /- iff -/
 
-def Iff.elim (f : (a → b) → (b → a) → c) (h : a ↔ b) : c := f h.1 h.2
+lemma Iff.elim (f : (a → b) → (b → a) → c) (h : a ↔ b) : c := f h.1 h.2
 
-def Iff.elim_left : (a ↔ b) → a → b := Iff.mp
+lemma Iff.elim_left : (a ↔ b) → a → b := Iff.mp
 
-def Iff.elim_right : (a ↔ b) → b → a := Iff.mpr
+lemma Iff.elim_right : (a ↔ b) → b → a := Iff.mpr
 
 lemma Eq.to_iff : a = b → (a ↔ b) | rfl => Iff.rfl
 
