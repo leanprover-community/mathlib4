@@ -255,12 +255,6 @@ protected lemma div_le_of_le_mul {m n : ℕ} : ∀ {k}, m ≤ k * n → m / k �
      rw [←h2] at h3
      exact le_trans h1 h3
 
-protected lemma div_le_self : ∀ (m n : ℕ), m / n ≤ m
-| m, 0   => by simp [Nat.div_zero]
-| m, n+1 => Nat.div_le_of_le_mul $ by
-  have := Nat.mul_le_mul_right m (succ_pos n)
-  rwa [Nat.one_mul] at this
-
 lemma div_eq_sub_div (h₁ : 0 < b) (h₂ : b ≤ a) : a / b = (a - b) / b + 1 := by
  rw [div_eq a, if_pos]; constructor <;> assumption
 
@@ -737,13 +731,6 @@ Nat.lt_of_lt_of_le (Nat.mul_lt_mul_of_pos_right hac pos_b) (Nat.mul_le_mul_of_no
 
 protected lemma mul_lt_mul' (h1 : a ≤ c) (h2 : b < d) (h3 : 0 < c) : a * b < c * d :=
 Nat.lt_of_le_of_lt (Nat.mul_le_mul_of_nonneg_right h1) (Nat.mul_lt_mul_of_pos_left h2 h3)
-
-lemma div_lt_self (h₁ : 0 < n) (h₂ : 1 < m) : n / m < n := by
-  have m_pos : 0 < m := Nat.lt_trans Nat.zero_lt_one h₂
-  suffices 1 * n < m * n by
-    rw [Nat.one_mul, Nat.mul_comm] at this
-    exact (Nat.div_lt_iff_lt_mul m_pos).2 this
-  exact Nat.mul_lt_mul h₂ (Nat.le_refl _) h₁
 
 @[simp] theorem mod_mod (a n : ℕ) : (a % n) % n = a % n :=
 (eq_zero_or_pos n).elim

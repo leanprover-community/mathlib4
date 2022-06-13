@@ -88,7 +88,8 @@ def lintCore (decls : Array Name) (linters : Array NamedLinter) :
       (linter, ·) <$> decls.mapM fun decl => (decl, ·) <$> do
         BaseIO.asTask do
           match ← withCurrHeartbeats (linter.test decl)
-              |>.run'.run' {options} {env} |>.toBaseIO with
+              |>.run'.run' {options, fileName := "", fileMap := default} {env}
+              |>.toBaseIO with
           | Except.ok msg? => pure msg?
           | Except.error err => pure m!"LINTER FAILED:\n{err.toMessageData}"
 
