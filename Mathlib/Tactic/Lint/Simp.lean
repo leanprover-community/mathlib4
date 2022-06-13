@@ -114,7 +114,7 @@ def heuristicallyExtractSimpTheoremsCore (ctx : Simp.Context) (constToSimpDecl :
   heuristicallyExtractSimpTheoremsCore ctx (constToSimpDeclMap ctx) prf
 
 def decorateError (msg : MessageData) (k : MetaM α) : MetaM α := do
-  try k catch e => throw e
+  try k catch e => throw (.error e.getRef m!"{msg}\n{e.toMessageData}")
 
 def formatLemmas (lems : Array Name) : CoreM MessageData := do
   toMessageData <$> lems.mapM mkConstWithLevelParams

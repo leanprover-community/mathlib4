@@ -10,8 +10,8 @@ namespace Lean
 /-- Maps declaration names to α. -/
 def NameMapExtension (α : Type) := SimplePersistentEnvExtension (Name × α) (NameMap α)
 
-instance [Inhabited α] : Inhabited (NameMapExtension α) :=
-  show Inhabited (SimplePersistentEnvExtension _ _ ) by infer_instance
+instance : Inhabited (NameMapExtension α) :=
+  inferInstanceAs <| Inhabited (SimplePersistentEnvExtension ..)
 
 def NameMapExtension.find? (ext : NameMapExtension α) (env : Environment) : Name → Option α :=
   (SimplePersistentEnvExtension.getState ext env).find?

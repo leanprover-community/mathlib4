@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Init.SetNotation
-import Mathlib.Init.Data.List.Basic
 
 /-!
 # Extra definitions on `Option`
@@ -69,10 +68,6 @@ def guard (p : α → Prop) [DecidablePred p] (a : α) : Option α :=
 def toList : Option α → List α
 | none => []
 | some a => [a]
-
-@[simp]
-theorem mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
-  cases o <;> simp [toList, eq_comm]
 
 /-- Two arguments failsafe function. Returns `f a b` if the inputs are `some a` and `some b`, and
 "does nothing" otherwise. -/

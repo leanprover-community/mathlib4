@@ -229,6 +229,7 @@ class Nat.AtLeastTwo (n : Nat) : Prop where
 instance : Nat.AtLeastTwo (n + 2) where
   prop := Nat.succ_le_succ $ Nat.succ_le_succ $ Nat.zero_le _
 
+@[nolint unusedArguments]
 instance [AddMonoidWithOne R] [Nat.AtLeastTwo n] : OfNat R n where
   ofNat := n.cast
 

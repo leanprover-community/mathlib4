@@ -6,6 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Ext
+import Mathlib.Tactic.Lint.Basic
 
 -- Workaround for not being able to add ext lemmas from other modules.
 @[ext] private def funext' := @funext
@@ -37,10 +38,9 @@ def Not.elim {α : Sort _} (H1 : ¬a) (H2 : a) : α := absurd H2 H1
 /- eq -/
 
 -- proof irrelevance is built in
-def proof_irrel := @proofIrrel
-
-def congr_fun := @congrFun
-def congr_arg := @congrArg
+lemma proof_irrel : type_of% @proofIrrel := proofIrrel
+lemma congr_fun : type_of% @congrFun := congrFun
+lemma congr_arg : type_of% @congrArg := congrArg
 
 lemma trans_rel_left {α : Sort u} {a b c : α} (r : α → α → Prop) (h₁ : r a b) (h₂ : b = c) : r a c :=
 h₂ ▸ h₁
@@ -56,7 +56,7 @@ lemma cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h₂ 
 
 lemma Ne.def {α : Sort u} (a b : α) : (a ≠ b) = ¬ (a = b) := rfl
 
-def eq_rec_heq := @eqRec_heq
+lemma eq_rec_heq : type_of% @eqRec_heq := @eqRec_heq
 
 lemma heq_of_eq_rec_left {φ : α → Sort v} {a a' : α} {p₁ : φ a} {p₂ : φ a'} :
   (e : a = a') → (h₂ : Eq.rec (motive := fun a _ => φ a) p₁ e = p₂) → HEq p₁ p₂
@@ -100,11 +100,11 @@ def xor (a b : Prop) := (a ∧ ¬ b) ∨ (b ∧ ¬ a)
 
 /- iff -/
 
-def Iff.elim (f : (a → b) → (b → a) → c) (h : a ↔ b) : c := f h.1 h.2
+lemma Iff.elim (f : (a → b) → (b → a) → c) (h : a ↔ b) : c := f h.1 h.2
 
-def Iff.elim_left : (a ↔ b) → a → b := Iff.mp
+lemma Iff.elim_left : (a ↔ b) → a → b := Iff.mp
 
-def Iff.elim_right : (a ↔ b) → b → a := Iff.mpr
+lemma Iff.elim_right : (a ↔ b) → b → a := Iff.mpr
 
 lemma Eq.to_iff : a = b → (a ↔ b) | rfl => Iff.rfl
 
