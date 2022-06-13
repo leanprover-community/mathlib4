@@ -6,6 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Ext
+import Mathlib.Tactic.Lint.Basic
 
 -- Workaround for not being able to add ext lemmas from other modules.
 @[ext] private def funext' := @funext
@@ -37,10 +38,9 @@ def Not.elim {α : Sort _} (H1 : ¬a) (H2 : a) : α := absurd H2 H1
 /- eq -/
 
 -- proof irrelevance is built in
-def proof_irrel := @proofIrrel
-
-def congr_fun := @congrFun
-def congr_arg := @congrArg
+@[nolint defLemma] def proof_irrel := @proofIrrel
+@[nolint defLemma] def congr_fun := @congrFun
+@[nolint defLemma] def congr_arg := @congrArg
 
 lemma trans_rel_left {α : Sort u} {a b c : α} (r : α → α → Prop) (h₁ : r a b) (h₂ : b = c) : r a c :=
 h₂ ▸ h₁
