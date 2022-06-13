@@ -90,6 +90,7 @@ has been used. -/
   test declName := do
     if (← isAutoDecl declName) || isGlobalInstance (← getEnv) declName then
       return none
+    if ← isProjectionFn declName then return none
     let info ← getConstInfo declName
     let isThm ← match info with
       | .defnInfo .. => pure false
