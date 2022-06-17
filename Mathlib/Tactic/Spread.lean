@@ -21,7 +21,7 @@ example : Foo α := {
 -/
 
 macro_rules
-| `({ $[$srcs,* with]? $[$fields $[,]?]* $[: $ty?]? }) => do
+| `({ $[$srcs,* with]? $[$fields],* $[: $ty?]? }) => do
     let mut spreads := #[]
     let mut newFields := #[]
 
@@ -32,7 +32,7 @@ macro_rules
             spreads := spreads.push arg
           else
             newFields := newFields.push field
-        | `(structInstFieldAbbrev| $name:ident) =>
+        | `(structInstFieldAbbrev| $_:ident) =>
           newFields := newFields.push field
         | _ =>
           throwUnsupported
@@ -40,4 +40,4 @@ macro_rules
     if spreads.isEmpty then throwUnsupported
 
     let srcs := (srcs.map (·.1)).getD #[] ++ spreads
-    `({ $srcs,* with $[$newFields,]* $[: $ty?]? })
+    `({ $srcs,* with $[$newFields],* $[: $ty?]? })

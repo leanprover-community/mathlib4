@@ -18,7 +18,7 @@ namespace Lean
 namespace Export
 
 /- References -/
-private constant MethodsRefPointed : NonemptyType.{0}
+private opaque MethodsRefPointed : NonemptyType.{0}
 
 private def MethodsRef : Type := MethodsRefPointed.type
 

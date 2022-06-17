@@ -84,7 +84,7 @@ macro mods:declModifiers "irreducible_def" n_id:declId declSig:optDeclSig val:de
     structure Wrapper$[.{$us,*}]? where
       value : type_of% @definition.{$us',*}
       prop : Eq @value @(delta% @definition)
-    constant wrapped$[.{$us,*}]? : Wrapper.{$us',*} := ⟨_, rfl⟩
+    opaque wrapped$[.{$us,*}]? : Wrapper.{$us',*} := ⟨_, rfl⟩
     $mods:declModifiers def $n:ident$[.{$us,*}]? := value_proj @wrapped.{$us',*}
     theorem $n_def:ident $[.{$us,*}]? : eta_helper Eq @$n.{$us',*} @(delta% @definition) := by
       intros
