@@ -83,7 +83,7 @@ example {α : Type _} (h : Empty) : α := by library_search
 
 -- TODO example (f : A → C) (g : B → C) : (A ⊕ B) → C := by library_search
 
-constant f : ℕ → ℕ
+opaque f : ℕ → ℕ
 axiom F (a b : ℕ) : f a ≤ f b ↔ a ≤ b
 -- TODO example (a b : ℕ) (h : a ≤ b) : f a ≤ f b := by library_search
 
