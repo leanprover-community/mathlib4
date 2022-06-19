@@ -238,7 +238,7 @@ elab "any_goals " seq:tacticSeq : tactic => do
         evalTactic seq
         mvarIdsNew := mvarIdsNew ++ (← getUnsolvedGoals)
         anySuccess := true
-      catch ex =>
+      catch _ =>
         mvarIdsNew := mvarIdsNew.push mvarId
   if not anySuccess then
     throwError "failed on all goals"

@@ -63,7 +63,7 @@ variable {M : Type u}
 /-- The fundamental scalar multiplication in an additive monoid. `nsmul_rec n a = a+a+...+a` n
 times. Use instead `n • a`, which has better definitional behavior. -/
 def nsmul_rec [Zero M] [Add M] : ℕ → M → M
-| 0  , a => 0
+| 0  , _ => 0
 | n+1, a => a + nsmul_rec n a
 
 -- use `x * npow_rec n x` and not `npow_rec n x * x` in the definition to make sure that
@@ -71,7 +71,7 @@ def nsmul_rec [Zero M] [Add M] : ℕ → M → M
 /-- The fundamental power operation in a monoid. `npow_rec n a = a*a*...*a` n times.
 Use instead `a ^ n`,  which has better definitional behavior. -/
 def npow_rec [One M] [Mul M] : ℕ → M → M
-| 0  , a => 1
+| 0  , _ => 1
 | n+1, a => a * npow_rec n a
 
 attribute [to_additive_reorder 3] npow_rec

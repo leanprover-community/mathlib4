@@ -58,4 +58,4 @@ elab "restate_axiom " oldName:ident newName:optional(ident) : command => do
     addAndCompile $  Declaration.defnDecl { info with name := newName }
   | ConstantInfo.thmInfo info =>
     addAndCompile $  Declaration.thmDecl { info with name := newName }
-  | x => throwError "Constant {oldName} is not a definition or theorem."
+  | _ => throwError "Constant {oldName} is not a definition or theorem."

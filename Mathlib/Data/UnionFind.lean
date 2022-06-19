@@ -15,7 +15,7 @@ namespace UFModel
 
 def empty : UFModel 0 where
   parent i := i.elim0
-  rank i := 0
+  rank _ := 0
   rank_lt i := i.elim0
 
 def push {n} (m : UFModel n) (k) (le : n ≤ k) : UFModel k where
@@ -24,7 +24,7 @@ def push {n} (m : UFModel n) (k) (le : n ≤ k) : UFModel k where
       let ⟨a, h'⟩ := m.parent ⟨i, h⟩
       ⟨a, lt_of_lt_of_le h' le⟩
     else i
-  rank i := if h : i < n then m.rank i else 0
+  rank i := if i < n then m.rank i else 0
   rank_lt i := by
     simp; split <;> rename_i h
     · simp [(m.parent ⟨i, h⟩).2, h]; exact m.rank_lt _
@@ -102,7 +102,7 @@ theorem push {arr : Array α} {n} {m : Fin n → β} (H : Agrees arr f m)
 
 theorem set {arr : Array α} {n} {m : Fin n → β} (H : Agrees arr f m)
   {i : Fin arr.size} {x} {m' : Fin n → β}
-  (hm₁ : ∀ (j : Fin n) (h : j.1 ≠ i), m' j = m j)
+  (hm₁ : ∀ (j : Fin n), j.1 ≠ i → m' j = m j)
   (hm₂ : ∀ (h : i < n), f x = m' ⟨i, h⟩) : Agrees (arr.set i x) f m' := by
   cases H
   refine mk' (by simp) fun j hj₁ hj₂ => ?_
@@ -209,7 +209,7 @@ theorem parent_lt (self : UnionFind α) (i) : (self.arr.get i).parent < self.siz
 
 def push (self : UnionFind α) (x : α) : UnionFind α where
   arr := self.arr.push ⟨self.arr.size, x, 0⟩
-  model := let ⟨m, hm⟩ := self.model'; ⟨_, _, hm.push _ rfl _⟩
+  model := let ⟨_, hm⟩ := self.model'; ⟨_, _, hm.push _ rfl _⟩
 
 def findAux (self : UnionFind α) (x : Fin self.size) :
   (s : Array (UFNode α)) ×' (root : Fin s.size) ×'
@@ -261,7 +261,7 @@ def link (self : UnionFind α) (x y : Fin self.size)
       ⟨self.arr.set y {ny with parent := x}, ?a⟩
     else
       let arr₁ := self.arr.set x {nx with parent := y}
-      let arr₂ := if e : nx.rank = ny.rank then
+      let arr₂ := if nx.rank = ny.rank then
         arr₁.set ⟨y, by simp; exact y.2⟩ {ny with rank := ny.rank + 1}
       else arr₁
       ⟨arr₂, ?b⟩
@@ -282,7 +282,7 @@ def link (self : UnionFind α) (x y : Fin self.size)
       · exact this.set (fun i h => by simp [h.symm]) (fun h => by simp [ne, hm.parent_eq'])
       · exact this
     have : UFModel.Agrees arr₁ (·.rank) (fun i : Fin n => m.rank i) :=
-      hm.2.set (fun i h => by simp) (fun h => by simp [hm.rank_eq])
+      hm.2.set (fun i _ => by simp) (fun _ => by simp [hm.rank_eq])
     let rank (i : Fin n) := if y.1 = i ∧ m.rank x = m.rank y then m.rank y + 1 else m.rank i
     have H2 : UFModel.Agrees arr₂ (·.rank) rank := by
       simp; split <;> (rename_i xy; simp [hm.rank_eq] at xy; simp [xy])

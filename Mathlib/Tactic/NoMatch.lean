@@ -38,10 +38,10 @@ open private elabMatchAux waitExpectedType from Lean.Elab.Match in
 
 elab tk:"fun" "." : term <= expectedType => do
   let (binders, discrs) ← (·.unzip) <$>
-    Meta.forallTelescopeReducing expectedType fun args _ => do
-      args.mapM fun arg => withFreshMacroScope do
+    Meta.forallTelescopeReducing expectedType fun args _ =>
+      args.mapM fun _ => withFreshMacroScope do
         return (← `(a), ← `(matchDiscr| a))
-  elabTerm (← `(@fun $binders:ident* => match $discrs:matchDiscr,* with.)) expectedType
+  elabTerm (← `(@fun%$tk $binders:ident* => match%$tk $discrs:matchDiscr,* with.)) expectedType
 
 macro tk:"λ" "." : term => `(fun%$tk .)
 

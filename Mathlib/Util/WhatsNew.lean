@@ -52,7 +52,7 @@ private def mkHeader' (kind : String) (id : Name) (levelParams : List Name) (typ
 private def printDefLike (kind : String) (id : Name) (levelParams : List Name) (type : Expr) (value : Expr) (safety := DefinitionSafety.safe) : CoreM MessageData :=
   return (← mkHeader kind id levelParams type safety) ++ " :=" ++ Format.line ++ value
 
-private def printInduct (id : Name) (levelParams : List Name) (numParams : Nat) (numIndices : Nat) (type : Expr)
+private def printInduct (id : Name) (levelParams : List Name) (_numParams : Nat) (_numIndices : Nat) (type : Expr)
     (ctors : List Name) (isUnsafe : Bool) : CoreM MessageData := do
   let mut m ← mkHeader' "inductive" id levelParams type isUnsafe
   m := m ++ Format.line ++ "constructors:"
@@ -70,7 +70,7 @@ private def printIdCore (id : Name) : ConstantInfo → CoreM MessageData
     printDefLike "theorem" id us t v
   | ConstantInfo.opaqueInfo  { levelParams := us, type := t, isUnsafe := u, .. } =>
     mkHeader' "constant" id us t u
-  | ConstantInfo.quotInfo  { kind := kind, levelParams := us, type := t, .. } =>
+  | ConstantInfo.quotInfo  { levelParams := us, type := t, .. } =>
     mkHeader' "Quotient primitive" id us t false
   | ConstantInfo.ctorInfo { levelParams := us, type := t, isUnsafe := u, .. } =>
     mkHeader' "constructor" id us t u

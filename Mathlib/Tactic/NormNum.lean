@@ -56,11 +56,11 @@ instance (α) [Semiring α] : LawfulOne α := ⟨Nat.cast_one.symm⟩
 
 theorem isNat_add {α} [Semiring α] : (a b : α) → (a' b' c : Nat) →
   isNat a a' → isNat b b' → Nat.add a' b' = c → isNat (a + b) c
-| _, _, _, _, _, rfl, rfl, rfl => Nat.cast_add.symm
+| _, _, _a', _b', _, rfl, rfl, rfl => Nat.cast_add.symm
 
 theorem isNat_mul {α} [Semiring α] : (a b : α) → (a' b' c : Nat) →
   isNat a a' → isNat b b' → Nat.mul a' b' = c → isNat (a * b) c
-| _, _, _, _, _, rfl, rfl, rfl => Nat.cast_mul.symm
+| _, _, _a', _b', _, rfl, rfl, rfl => Nat.cast_mul.symm
 
 theorem isNat_pow {α} [Semiring α] : (a : α) → (b a' b' c : Nat) →
   isNat a a' → isNat b b' → Nat.pow a' b' = c → isNat (a ^ b) c
@@ -74,7 +74,7 @@ partial def evalIsNat (u : Level) (α sα e : Expr) : MetaM (Expr × Expr) := do
   | (``HMul.hMul, #[_, _, _, _, a, b]) => evalBinOp ``NormNum.isNat_mul (·*·) a b
   | (``HPow.hPow, #[_, _, _, _, a, b]) => evalPow ``NormNum.isNat_pow (·^·) a b
   | (``OfNat.ofNat, #[_, ln, inst]) =>
-    let some n := ln.natLit? | throwError "fail"
+    unless ln.isNatLit do throwError "fail"
     let lawful ← synthInstance (mkApp4 (mkConst ``LawfulOfNat [u]) α sα ln inst)
     pure (ln, mkApp5 (mkConst ``LawfulOfNat.isNat_ofNat [u]) α sα ln inst lawful)
   | (``Zero.zero, #[_, inst]) =>

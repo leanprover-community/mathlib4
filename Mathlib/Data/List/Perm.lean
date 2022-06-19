@@ -28,11 +28,7 @@ induction p with
 
 theorem Perm_comm {l₁ l₂ : List α} : l₁ ~ l₂ ↔ l₂ ~ l₁ := ⟨Perm.symm, Perm.symm⟩
 
-theorem Perm.swap'
-  (x y : α)
-  {l₁ l₂ : List α}
-  (p : l₁ ~ l₂) :
-  y::x::l₁ ~ x::y::l₂ :=
+theorem Perm.swap' (x y : α) {l₁ l₂ : List α} (p : l₁ ~ l₂) : y::x::l₁ ~ x::y::l₂ :=
   have h1 : y :: l₁ ~ y :: l₂ := Perm.cons y p
   have h2 : x :: y :: l₁ ~ x :: y :: l₂ := Perm.cons x h1
   have h3 : y :: x :: l₁ ~ x :: y :: l₁ := Perm.swap x y l₁
@@ -43,30 +39,32 @@ theorem Perm.Equivalence : Equivalence (@Perm α) := ⟨Perm.refl, Perm.symm, Pe
 instance (α : Type u) : Setoid (List α) := ⟨Perm, Perm.Equivalence⟩
 
 theorem Perm.subset {α : Type u} {l₁ l₂ : List α} (p : l₁ ~ l₂) : l₁ ⊆ l₂ := by
-induction p with
-| nil => exact nil_subset _
-| cons _ _ ih => exact cons_subset_cons _ ih
-| swap x y l =>
-  intro a
-  rw [mem_cons]
-  exact fun
-  | Or.inl rfl => Mem.tail _ (Mem.head ..)
-  | Or.inr (Mem.head ..) => Mem.head ..
-  | Or.inr (Mem.tail _ a_mem_l) => Mem.tail _ (Mem.tail _ a_mem_l)
-| trans h1 h2 ih₁ ih₂ => exact subset.trans ih₁ ih₂
+  induction p with
+  | nil => exact nil_subset _
+  | cons _ _ ih => exact cons_subset_cons _ ih
+  | swap x y l =>
+    intro a
+    rw [mem_cons]
+    exact fun
+    | Or.inl rfl => Mem.tail _ (Mem.head ..)
+    | Or.inr (Mem.head ..) => Mem.head ..
+    | Or.inr (Mem.tail _ a_mem_l) => Mem.tail _ (Mem.tail _ a_mem_l)
+  | trans _ _ ih₁ ih₂ => exact subset.trans ih₁ ih₂
 
 theorem perm_middle {a : α} : ∀ {l₁ l₂ : List α}, l₁++a::l₂ ~ a::(l₁++l₂)
-| [], l₂ => Perm.refl _
-| (b::l₁), l₂ =>
+| [], _ => Perm.refl _
+| b::l₁, l₂ =>
   let h2 := @perm_middle α a l₁ l₂
   (h2.cons _).trans (swap a b _)
 
-theorem perm_insertNth {x : α} {l : List α} {n : Nat} (h : n ≤ l.length) : insertNth n x l ~ x :: l :=
-  match l, n with
-  | [], 0 => Perm.refl _
-  | [],  m + 1 => False.elim (Nat.not_succ_le_zero _ h)
-  | y :: ys, 0 => Perm.refl _
-  | y :: ys, m + 1 =>
-    Perm.trans
-      (Perm.cons _ (perm_insertNth (Nat.le_of_succ_le_succ h)))
-      (Perm.swap _ _ _)
+
+set_option linter.unusedVariables false in -- FIXME: lean4#1214
+theorem perm_insertNth {x : α} : ∀ {l : List α} {n : Nat}, n ≤ l.length →
+  insertNth n x l ~ x :: l
+| [], 0, _ => Perm.refl _
+| [], _+1, h => False.elim (Nat.not_succ_le_zero _ h)
+| _::_, 0, _ => Perm.refl _
+| _::_, _+1, h =>
+  Perm.trans
+    (Perm.cons _ (perm_insertNth (Nat.le_of_succ_le_succ h)))
+    (Perm.swap _ _ _)

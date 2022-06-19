@@ -4,7 +4,7 @@ import Mathlib.Data.String.Defs
 namespace String
 
 lemma congr_append : ∀ (a b : String), a ++ b = String.mk (a.data ++ b.data)
-| ⟨a⟩, ⟨b⟩ => rfl
+| ⟨_⟩, ⟨_⟩ => rfl
 
 @[simp] lemma length_append : ∀ (as bs : String), (as ++ bs).length = as.length + bs.length
 | ⟨as⟩, ⟨bs⟩ => by

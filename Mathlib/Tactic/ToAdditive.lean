@@ -31,7 +31,7 @@ initialize ignoreArgsAttr : NameMapAttribute (List Nat) ←
   registerNameMapAttribute {
     name  := `to_additive_ignore_args
     descr := "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized."
-    add   := fun src stx => do
+    add   := fun _ stx => do
         let ids ← match stx with
           | `(attr|to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.isNatLit?.get!)
           | _ => throwError "unexpected to_additive_ignore_args syntax {stx}"
@@ -48,10 +48,9 @@ initialize reorderAttr : NameMapAttribute (List Nat) ←
   registerNameMapAttribute {
     name := `to_additive_reorder
     descr := "Auxiliary attribute for `to_additive` that stores arguments that need to be reordered."
-    add := fun decl stx =>
-      match stx with
-      | `(attr|to_additive_reorder $[$ids:num]*) => pure <| Array.toList <| ids.map (·.isNatLit?.get!)
-      | _ => throwError "unexpected to_additive_reorder syntax {stx}"
+    add := fun
+    | _, `(attr|to_additive_reorder $[$ids:num]*) => pure <| Array.toList <| ids.map (·.isNatLit?.get!)
+    | _, stx => throwError "unexpected to_additive_reorder syntax {stx}"
   }
 
 /-- Get the reorder list (defined using `@[to_additive_reorder ...]`) for the given declaration. -/
@@ -67,10 +66,9 @@ initialize relevantArgAttr : NameMapAttribute (Nat) ←
   registerNameMapAttribute {
     name := `to_additive_relevant_arg
     descr := "Auxiliary attribute for `to_additive` stating which arguments are the types with a multiplicative structure."
-    add := fun decl stx =>
-      match stx with
-      | `(attr|to_additive_relevant_arg $id) => pure <| id.isNatLit?.get!
-      | _ => throwError "unexpected to_additive_relevant_arg syntax {stx}"
+    add := fun
+    | _, `(attr|to_additive_relevant_arg $id) => pure <| id.isNatLit?.get!
+    | _, stx => throwError "unexpected to_additive_relevant_arg syntax {stx}"
   }
 
 /-- Given a declaration name and an argument index, determines whether it
@@ -106,21 +104,21 @@ variable [Monad M] [MonadOptions M] [MonadEnv M]
 
 /-- Auxilliary function for `additiveTest`. The bool argument *only* matters when applied
 to exactly a constant. -/
-private def additiveTestAux: Bool → Expr → M Bool
-  | b, Expr.const n _ _           => return b || (findTranslation? (← getEnv) n).isSome
-  | b, (Expr.app e a _) => do
-      if (← additiveTestAux true e) then
+private def additiveTestAux : Bool → Expr → M Bool
+  | b, Expr.const n _ _ => return b || (findTranslation? (← getEnv) n).isSome
+  | _, Expr.app e a _ => do
+      if ← additiveTestAux true e then
         return true
-      if let (some n) := e.getAppFn.constName? then
-        if let (some l) ← ignore n then
+      if let some n := e.getAppFn.constName? then
+        if let some l ← ignore n then
           if e.getAppNumArgs + 1 ∈ l then
             return true
       additiveTestAux false a
-  | b, (Expr.lam n e t _) => additiveTestAux false t
-  | b, (Expr.forallE n e t _) => additiveTestAux false t
-  | b, (Expr.letE n g e body _) =>
-    return (←additiveTestAux false e) && (← additiveTestAux false body)
-  | b, _                => return true
+  | _, Expr.lam _ _ t _ => additiveTestAux false t
+  | _, Expr.forallE _ _ t _ => additiveTestAux false t
+  | _, Expr.letE _ _ e body _ =>
+    additiveTestAux false e <&&> additiveTestAux false body
+  | _, _                => return true
 
 /--
 `additiveTest e` tests whether the expression `e` contains no constant
@@ -275,11 +273,11 @@ partial def transformDeclAux
     -- and emit a more helpful error message if it fails
     discard <| MetaM.run' <| inferType trgDecl.value!
   catch
-    | Exception.error stx msg => throwError "@[to_additive] failed.
+    | Exception.error _ msg => throwError "@[to_additive] failed.
       Type mismatch in additive declaration. For help, see the docstring
       of `to_additive.attr`, section `Troubleshooting`.
       Failed to add declaration\n{trgDecl.name}:\n{msg}"
-    | e => panic! "unreachable"
+    | _ => panic! "unreachable"
   addAndCompile trgDecl.toDeclaration!
   if isProtected (← getEnv) src then
     setEnv $ addProtected (← getEnv) tgt
@@ -327,16 +325,14 @@ Returns 1 if there are no types with a multiplicative class as arguments.
 E.g. `prod.group` returns 1, and `pi.has_one` returns 2.
 -/
 def firstMultiplicativeArg (nm : Name) : MetaM (Option Nat) := do
-  let d ← getConstInfo nm
   forallTelescopeReducing (← getConstInfo nm).type fun xs _ => do
     -- xs are the arguments to the constant
     let xs := xs.toList
     let l ← xs.mapM fun x => do
       -- x is an argument and i is the index
       -- write `x : (y₀ : α₀) → ... → (yₙ : αₙ) → tgt_fn tgt_args₀ ... tgt_argsₘ`
-      forallTelescopeReducing (← inferType x) fun ys tgt => do
-        let (tgt_fn, tgt_args) := tgt.getAppFnArgs
-        let n_bi := ys.size
+      forallTelescopeReducing (← inferType x) fun _ys tgt => do
+        let (_tgt_fn, tgt_args) := tgt.getAppFnArgs
         if let some c := tgt.getAppFn.constName? then
           if findTranslation? (← getEnv) c |>.isNone then
             return []
@@ -371,39 +367,38 @@ def addCommPrefix : Bool → String → String
 
 /-- Dictionary used by `to_additive.guess_name` to autogenerate names.
 [todo] update to Lean 4 naming -/
-private def guessNameDict : Bool → List String → List String
-| is_comm, ("one" :: "le" :: s)        => addCommPrefix is_comm "nonneg"    :: guessNameDict false s
-| is_comm, ("one" :: "lt" :: s)        => addCommPrefix is_comm "pos"       :: guessNameDict false s
-| is_comm, ("le" :: "one" :: s)        => addCommPrefix is_comm "nonpos"    :: guessNameDict false s
-| is_comm, ("lt" :: "one" :: s)        => addCommPrefix is_comm "neg"       :: guessNameDict false s
-| is_comm, ("mul" :: "single" :: s)    => addCommPrefix is_comm "single"    :: guessNameDict false s
-| is_comm, ("mul" :: "support" :: s)   => addCommPrefix is_comm "support"   :: guessNameDict false s
-| is_comm, ("mul" :: "tsupport" :: s)  => addCommPrefix is_comm "tsupport"  :: guessNameDict false s
-| is_comm, ("mul" :: "indicator" :: s) => addCommPrefix is_comm "indicator" :: guessNameDict false s
-| is_comm, ("mul" :: s)                => addCommPrefix is_comm "add"       :: guessNameDict false s
-| is_comm, ("smul" :: s)               => addCommPrefix is_comm "vadd"      :: guessNameDict false s
-| is_comm, ("inv" :: s)                => addCommPrefix is_comm "neg"       :: guessNameDict false s
-| is_comm, ("div" :: s)                => addCommPrefix is_comm "sub"       :: guessNameDict false s
-| is_comm, ("one" :: s)                => addCommPrefix is_comm "zero"      :: guessNameDict false s
-| is_comm, ("prod" :: s)               => addCommPrefix is_comm "sum"       :: guessNameDict false s
-| is_comm, ("finprod" :: s)            => addCommPrefix is_comm "finsum"    :: guessNameDict false s
-| is_comm, ("pow" :: s)                => addCommPrefix is_comm "nsmul"     :: guessNameDict false s
-| is_comm, ("npow" :: s)               => addCommPrefix is_comm "nsmul"     :: guessNameDict false s
-| is_comm, ("zpow" :: s)               => addCommPrefix is_comm "zsmul"     :: guessNameDict false s
-| is_comm, ("monoid" :: s)      => ("add_" ++ addCommPrefix is_comm "monoid")    :: guessNameDict false s
-| is_comm, ("submonoid" :: s)   => ("add_" ++ addCommPrefix is_comm "submonoid") :: guessNameDict false s
-| is_comm, ("group" :: s)       => ("add_" ++ addCommPrefix is_comm "group")     :: guessNameDict false s
-| is_comm, ("subgroup" :: s)    => ("add_" ++ addCommPrefix is_comm "subgroup")  :: guessNameDict false s
-| is_comm, ("semigroup" :: s)   => ("add_" ++ addCommPrefix is_comm "semigroup") :: guessNameDict false s
-| is_comm, ("magma" :: s)       => ("add_" ++ addCommPrefix is_comm "magma")     :: guessNameDict false s
-| is_comm, ("haar" :: s)        => ("add_" ++ addCommPrefix is_comm "haar")      :: guessNameDict false s
-| is_comm, ("prehaar" :: s)     => ("add_" ++ addCommPrefix is_comm "prehaar")   :: guessNameDict false s
-| is_comm, ("unit" :: s)        => ("add_" ++ addCommPrefix is_comm "unit")      :: guessNameDict false s
-| is_comm, ("units" :: s)       => ("add_" ++ addCommPrefix is_comm "units")     :: guessNameDict false s
-| is_comm, ("comm" :: s)        => guessNameDict true s
-| is_comm, (x :: s)             => (addCommPrefix is_comm x :: guessNameDict false s)
-| true, []                        => ["comm"]
-| false, []                        => []
+private def guessNameDict (is_comm : Bool) : List String → List String
+| "one" :: "le" :: s        => addCommPrefix is_comm "nonneg"    :: guessNameDict false s
+| "one" :: "lt" :: s        => addCommPrefix is_comm "pos"       :: guessNameDict false s
+| "le" :: "one" :: s        => addCommPrefix is_comm "nonpos"    :: guessNameDict false s
+| "lt" :: "one" :: s        => addCommPrefix is_comm "neg"       :: guessNameDict false s
+| "mul" :: "single" :: s    => addCommPrefix is_comm "single"    :: guessNameDict false s
+| "mul" :: "support" :: s   => addCommPrefix is_comm "support"   :: guessNameDict false s
+| "mul" :: "tsupport" :: s  => addCommPrefix is_comm "tsupport"  :: guessNameDict false s
+| "mul" :: "indicator" :: s => addCommPrefix is_comm "indicator" :: guessNameDict false s
+| "mul" :: s                => addCommPrefix is_comm "add"       :: guessNameDict false s
+| "smul" :: s               => addCommPrefix is_comm "vadd"      :: guessNameDict false s
+| "inv" :: s                => addCommPrefix is_comm "neg"       :: guessNameDict false s
+| "div" :: s                => addCommPrefix is_comm "sub"       :: guessNameDict false s
+| "one" :: s                => addCommPrefix is_comm "zero"      :: guessNameDict false s
+| "prod" :: s               => addCommPrefix is_comm "sum"       :: guessNameDict false s
+| "finprod" :: s            => addCommPrefix is_comm "finsum"    :: guessNameDict false s
+| "pow" :: s                => addCommPrefix is_comm "nsmul"     :: guessNameDict false s
+| "npow" :: s               => addCommPrefix is_comm "nsmul"     :: guessNameDict false s
+| "zpow" :: s               => addCommPrefix is_comm "zsmul"     :: guessNameDict false s
+| "monoid" :: s      => ("add_" ++ addCommPrefix is_comm "monoid")    :: guessNameDict false s
+| "submonoid" :: s   => ("add_" ++ addCommPrefix is_comm "submonoid") :: guessNameDict false s
+| "group" :: s       => ("add_" ++ addCommPrefix is_comm "group")     :: guessNameDict false s
+| "subgroup" :: s    => ("add_" ++ addCommPrefix is_comm "subgroup")  :: guessNameDict false s
+| "semigroup" :: s   => ("add_" ++ addCommPrefix is_comm "semigroup") :: guessNameDict false s
+| "magma" :: s       => ("add_" ++ addCommPrefix is_comm "magma")     :: guessNameDict false s
+| "haar" :: s        => ("add_" ++ addCommPrefix is_comm "haar")      :: guessNameDict false s
+| "prehaar" :: s     => ("add_" ++ addCommPrefix is_comm "prehaar")   :: guessNameDict false s
+| "unit" :: s        => ("add_" ++ addCommPrefix is_comm "unit")      :: guessNameDict false s
+| "units" :: s       => ("add_" ++ addCommPrefix is_comm "units")     :: guessNameDict false s
+| "comm" :: s        => guessNameDict true s
+| x :: s             => (addCommPrefix is_comm x :: guessNameDict false s)
+| []                 => bif is_comm then ["comm"] else []
 
 /-- Autogenerate target name for `to_additive`. -/
 def guessName : String → String :=

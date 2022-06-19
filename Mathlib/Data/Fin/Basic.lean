@@ -11,7 +11,7 @@ instance : Subsingleton (Fin 1) where
   allEq := fun ⟨0, _⟩ ⟨0, _⟩ => rfl
 
 /-- If you actually have an element of `Fin n`, then the `n` is always positive -/
-lemma Fin.size_positive : ∀ (x : Fin n), 0 < n
+lemma Fin.size_positive : Fin n → 0 < n
 | ⟨x, h⟩ =>
   match Nat.eq_or_lt_of_le (Nat.zero_le x) with
   | Or.inl h_eq => h_eq ▸ h
@@ -40,23 +40,23 @@ lemma Fin.val_eq_of_lt {n a : Nat} (h : a < n) : (Fin.ofNat' a (zero_lt_of_lt h)
 
 lemma Fin.modn_def : ∀ (a : Fin n) (m : Nat),
   a % m = Fin.mk ((a.val % m) % n) (Nat.mod_lt (a.val % m) (a.size_positive))
-| ⟨a, pa⟩, m => rfl
+| ⟨_, _⟩, _ => rfl
 
 lemma Fin.mod_def : ∀ (a m : Fin n),
   a % m = Fin.mk ((a.val % m.val) % n) (Nat.mod_lt (a.val % m.val) (a.size_positive))
-| ⟨a, pa⟩, ⟨m, pm⟩ => rfl
+| ⟨_, _⟩, ⟨_, _⟩ => rfl
 
 lemma Fin.add_def : ∀ (a b : Fin n),
   a + b = (Fin.mk ((a.val + b.val) % n) (Nat.mod_lt _ (a.size_positive)))
-| ⟨a, pa⟩, ⟨b, pb⟩ => rfl
+| ⟨_, _⟩, ⟨_, _⟩ => rfl
 
 lemma Fin.mul_def : ∀ (a b : Fin n),
   a * b = (Fin.mk ((a.val * b.val) % n) (Nat.mod_lt _ (a.size_positive)))
-| ⟨a, pa⟩, ⟨b, pb⟩ => rfl
+| ⟨_, _⟩, ⟨_, _⟩ => rfl
 
 lemma Fin.sub_def : ∀ (a b : Fin n),
   a - b = (Fin.mk ((a + (n - b)) % n) (Nat.mod_lt _ (a.size_positive)))
-| ⟨a, pa⟩, ⟨b, pb⟩ => rfl
+| ⟨_, _⟩, ⟨_, _⟩ => rfl
 
 @[simp] lemma Fin.mod_eq (a : Fin n) : a % n = a := by
   apply Fin.eq_of_val_eq
@@ -298,7 +298,7 @@ instance : CommRing (Fin n) where
   __ := inferInstanceAs (CommSemiring (Fin n))
 
 lemma Fin.gt_wf : WellFounded (fun a b : Fin n => b < a) :=
-  Subrelation.wf (@fun a i h => ⟨h, i.2⟩) (invImage (fun i => i.1) (Nat.upRel n)).wf
+  Subrelation.wf (fun {_ i} h => ⟨h, i.2⟩) (invImage (fun i => i.1) (Nat.upRel n)).wf
 
 /-- A well-ordered relation for "upwards" induction on `Fin n`. -/
 def Fin.upRel (n : ℕ) : WellFoundedRelation (Fin n) := ⟨_, gt_wf⟩

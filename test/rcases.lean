@@ -11,10 +11,10 @@ example (x : α × β × γ) : True := by
   trivial
 
 example (x : α × β × γ) : True := by
-  rcases x with ⟨a, -, c⟩
+  rcases x with ⟨(a : α) : id α, -, c : id γ⟩
   guard_hyp a : α
   fail_if_success have : β := by assumption
-  guard_hyp c : γ
+  guard_hyp c : id γ
   trivial
 
 example (x : (α × β) × γ) : True := by
@@ -108,8 +108,8 @@ example (i j : Nat) : (Σ' x, i ≤ x ∧ x ≤ j) → i ≤ j := by
 example (x : Quot fun _ _ : α => True) (h : x = x): x = x := by
   rcases x with ⟨z⟩
   guard_hyp z : α
-  guard_hyp h : Quot.mk (fun x x => True) z = Quot.mk (fun x x => True) z
-  guard_target == Quot.mk (fun x x => True) z = Quot.mk (fun x x => True) z
+  guard_hyp h : Quot.mk (fun _ _ => True) z = Quot.mk (fun _ _ => True) z
+  guard_target == Quot.mk (fun _ _ => True) z = Quot.mk (fun _ _ => True) z
   exact h
 
 example (n : Nat) : True := by
@@ -121,9 +121,9 @@ example (n : Nat) : True := by
   {trivial}; trivial
 
 open Lean Elab Tactic in
-elab "checkNumHyps " n:num : tactic => liftMetaMAtMain fun g => do
+elab "checkNumHyps " n:num : tactic => liftMetaMAtMain fun _ => do
   -- +1 because the _example recursion decl is in the list
-  guard $ (← getLCtx).foldl (fun i d => i+1) 0 = n.toNat + 1
+  guard $ (← getLCtx).foldl (fun i _ => i+1) 0 = n.toNat + 1
 
 example (h : ∃ x : Nat, x = x ∧ 1 = 1) : True := by
   rcases h with ⟨-, _⟩

@@ -85,7 +85,7 @@ theorem LeftInverse.injective {g : β → α} {f : α → β} : LeftInverse g f 
 λ h a b hf => h a ▸ h b ▸ hf ▸ rfl
 
 theorem has_LeftInverse.injective {f : α → β} : has_LeftInverse f → injective f :=
-λ h => Exists.elim h (λ finv inv => inv.injective)
+λ h => Exists.elim h (λ _ inv => inv.injective)
 
 theorem RightInverse_of_injective_of_LeftInverse {f : α → β} {g : β → α}
     (injf : injective f) (lfg : LeftInverse f g) :
@@ -96,7 +96,7 @@ theorem RightInverse.surjective {f : α → β} {g : β → α} (h : RightInvers
 λ y => ⟨g y, h y⟩
 
 theorem has_RightInverse.surjective {f : α → β} : has_RightInverse f → surjective f
-| ⟨finv, inv⟩ => inv.surjective
+| ⟨_, inv⟩ => inv.surjective
 
 theorem LeftInverse_of_surjective_of_RightInverse {f : α → β} {g : β → α} (surjf : surjective f)
   (rfg : RightInverse f g) : LeftInverse f g :=
@@ -128,7 +128,7 @@ variable {α : Type u₁} {β : Type u₂} {φ : Type u₃}
 rfl
 
 @[simp] theorem uncurry_curry (f : α × β → φ) : uncurry (curry f) = f :=
-funext (λ ⟨a, b⟩ => rfl)
+funext (λ ⟨_, _⟩ => rfl)
 
 protected theorem LeftInverse.id {g : β → α} {f : α → β} (h : LeftInverse g f) : g ∘ f = id :=
 funext h

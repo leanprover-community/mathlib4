@@ -16,7 +16,7 @@ open Nat
 @[simp] theorem length_tail (l : List α) : length (tail l) = length l - 1 := by cases l <;> rfl
 
 @[simp] theorem length_drop : ∀ (i : Nat) (l : List α), length (drop i l) = length l - i
-| 0, l => rfl
+| 0, _ => rfl
 | succ i, [] => Eq.symm (Nat.zero_sub (succ i))
 | succ i, x :: l => calc
   length (drop (succ i) (x :: l)) = length l - i := length_drop i l
@@ -94,32 +94,32 @@ instance : Subset (List α) := ⟨List.subset⟩
   fun b i => False.elim (Iff.mp (mem_nil_iff b) i)
 
 -- @[refl]
-@[simp] theorem subset.refl (l : List α) : l ⊆ l := fun b i => i
+@[simp] theorem subset.refl (l : List α) : l ⊆ l := fun _ i => i
 
 -- @[trans]
 theorem subset.trans {l₁ l₂ l₃ : List α} (h₁ : l₁ ⊆ l₂) (h₂ : l₂ ⊆ l₃) : l₁ ⊆ l₃ :=
-  fun b i => h₂ (h₁ i)
+  fun _ i => h₂ (h₁ i)
 
-@[simp] theorem subset_cons (a : α) (l : List α) : l ⊆ a :: l := fun b i => Mem.tail _ i
+@[simp] theorem subset_cons (a : α) (l : List α) : l ⊆ a :: l := fun _ => Mem.tail _
 
 theorem subset_of_cons_subset {a : α} {l₁ l₂ : List α} : a :: l₁ ⊆ l₂ → l₁ ⊆ l₂ :=
-  fun s b i => s (mem_cons_of_mem _ i)
+  fun s _ i => s (mem_cons_of_mem _ i)
 
 theorem cons_subset_cons {l₁ l₂ : List α} (a : α) (s : l₁ ⊆ l₂) : a :: l₁ ⊆ a :: l₂ :=
-  fun b hin => mem_cons.2 $ match eq_or_mem_of_mem_cons hin with
+  fun _ hin => mem_cons.2 $ match eq_or_mem_of_mem_cons hin with
   | Or.inl e => Or.inl e
   | Or.inr i => Or.inr (s i)
 
 @[simp]
 theorem subset_append_left (l₁ l₂ : List α) : l₁ ⊆ l₁ ++ l₂ :=
-  fun b => mem_append_left _
+  fun _ => mem_append_left _
 
 @[simp]
 theorem subset_append_right (l₁ l₂ : List α) : l₂ ⊆ l₁ ++ l₂ :=
-  fun b => mem_append_right _
+  fun _ => mem_append_right _
 
 theorem subset_cons_of_subset (a : α) {l₁ l₂ : List α} : l₁ ⊆ l₂ → l₁ ⊆ a :: l₂ :=
-  fun s a i => Mem.tail _ (s i)
+  fun s _ i => Mem.tail _ (s i)
 
 theorem eq_nil_of_length_eq_zero {l : List α} : length l = 0 → l = [] :=   by
   induction l <;> intros; {rfl}; contradiction
@@ -135,14 +135,14 @@ theorem ne_nil_of_length_eq_succ {l : List α} : ∀ {n : Nat}, length l = succ 
 @[simp] theorem length_take : ∀ (i : Nat) (l : List α), length (take i l) = min i (length l)
 | 0, l => by simp [Nat.zero_min]
 | succ n, [] => by simp [Nat.min_zero]
-| succ n, a :: l => by simp [Nat.min_succ_succ, add_one, length_take]
+| succ n, _ :: l => by simp [Nat.min_succ_succ, add_one, length_take]
 
 theorem length_take_le (n) (l : List α) : length (take n l) ≤ n := by simp [min_le_left]
 
 theorem length_removeNth : ∀ (l : List α) (i : ℕ),
   i < length l → length (removeNth l i) = length l - 1
-| [], _, h => rfl
-| x::xs, 0, h => by simp [removeNth]; rfl
+| [], _, _ => rfl
+| x::xs, 0, _ => by simp [removeNth]; rfl
 | x::xs, i+1, h => by
   have : i < length xs := Nat.lt_of_succ_lt_succ h
   simp [removeNth, ← Nat.add_one]
@@ -163,5 +163,5 @@ infixl:50 " <+ " => sublist
 
 theorem length_le_of_sublist : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → length l₁ ≤ length l₂
 | _, _, sublist.slnil => le_refl 0
-| _, _, sublist.cons l₁ l₂ a s => le_succ_of_le (length_le_of_sublist s)
-| _, _, sublist.cons2 l₁ l₂ a s => succ_le_succ (length_le_of_sublist s)
+| _, _, sublist.cons l₁ _ _ s => le_succ_of_le (length_le_of_sublist s)
+| _, _, sublist.cons2 _ _ _ s => succ_le_succ (length_le_of_sublist s)

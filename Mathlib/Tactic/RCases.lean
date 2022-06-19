@@ -223,7 +223,7 @@ constructor. The `name` is the name which will be used in the top-level `cases` 
 `rcases_patt` is the pattern which the field will be matched against by subsequent `cases`
 tactics. -/
 def processConstructor (ref : Syntax) : Nat → ListΠ RCasesPatt → ListΠ Name × ListΠ RCasesPatt
-| 0,     ps      => ([], [])
+| 0,     _       => ([], [])
 | 1,     []      => ([`_], [default])
 | 1,     [p]     => ([p.name?.getD `_], [p])
 | 1,     ps      => ([`_], [RCasesPatt.tuple ref ps])
@@ -237,7 +237,7 @@ and the list of `(constructor name, patterns)` for each constructor, where `patt
 (conjunctive) list of patterns to apply to each constructor argument. -/
 def processConstructors (ref : Syntax) (params : Nat) (altVarNames : Array AltVarNames := #[]) :
   ListΣ Name → ListΣ RCasesPatt → MetaM (Array AltVarNames × ListΣ (Name × ListΠ RCasesPatt))
-| [], ps => pure (altVarNames, [])
+| [], _ => pure (altVarNames, [])
 | c :: cs, ps => do
   let n := FunInfo.getArity $ ← getFunInfo (← mkConstWithLevelParams c)
   let p := ps.headD default
@@ -257,7 +257,7 @@ def subst' (mvarId : MVarId) (hFVarId : FVarId)
   let hLocalDecl ← getLocalDecl hFVarId
   let error {α} _ : MetaM α := throwTacticEx `subst mvarId
     m!"invalid equality proof, it is not of the form (x = t) or (t = x){indentExpr hLocalDecl.type}"
-  let some (α, lhs, rhs) ← matchEq? hLocalDecl.type | error ()
+  let some (_, lhs, rhs) ← matchEq? hLocalDecl.type | error ()
   let substReduced (newType : Expr) (symm : Bool) : MetaM (FVarSubst × MVarId) := do
     let mvarId ← assert mvarId hLocalDecl.userName newType (mkFVar hFVarId)
     let (hFVarId', mvarId) ← intro1P mvarId
@@ -313,7 +313,7 @@ partial def rcasesCore (g : MVarId) (fs : FVarSubst) (clears : Array FVarId) (e 
     unless ← isDefEq etype expected do
       Term.throwTypeMismatchError "rcases: scrutinee" expected etype e
     let g ← replaceLocalDeclDefEq g e.fvarId! expected
-    cont g fs clears a
+    rcasesCore g fs clears e.fvarId! a pat cont
   | RCasesPatt.alts _ [p] => rcasesCore g fs clears e a p cont
   | _ => do
     let e ← translate e
@@ -482,7 +482,7 @@ end Lean.Meta.RCases
 namespace Lean.Parser.Tactic
 open Elab Elab.Tactic Meta RCases
 
-elab (name := rcases?) "rcases?" tgts:casesTarget,* num:(" : " num)? : tactic =>
+elab (name := rcases?) "rcases?" _tgts:casesTarget,* _num:(" : " num)? : tactic =>
   throwError "unimplemented"
 
 elab (name := rcases) tk:"rcases" tgts:casesTarget,* pat:((" with " rcasesPatLo)?) : tactic => do

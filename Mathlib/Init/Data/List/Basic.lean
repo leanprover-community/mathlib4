@@ -57,11 +57,11 @@ open Option Nat
 /-- Get the tail of a nonempty list, or return `[]` for `[]`. -/
 def tail : List α → List α
 | []    => []
-| a::as => as
+| _::as => as
 
 
 def mapIdxAux (f : Nat → α → β) : Nat → List α → List β
-| k, [] => []
+| _, [] => []
 | k, a :: as => f k a :: mapIdxAux f (k+1) as
 
 /-- Given a function `f : Nat → α → β` and `as : list α`, `as = [a₀, a₁, ...]`, returns the list
@@ -96,7 +96,7 @@ def indexOf [BEq α] (a : α) : List α → Nat := findIdx (a == ·)
 
 @[simp] def removeNth : List α → Nat → List α
 | [], _ => []
-| x :: xs, 0 => xs
+| _ :: xs, 0 => xs
 | x :: xs, i+1 => x :: removeNth xs i
 
 def bor (l : List Bool) : Bool := any l id
@@ -125,5 +125,5 @@ instance [DecidableEq α] : Inter (List α) := ⟨List.inter⟩
 def last! [Inhabited α] : List α → α
 | [] => panic! "empty list"
 | [a] => a
-| [a, b] => b
-| a :: b :: l => last! l
+| [_, b] => b
+| _ :: _ :: l => last! l

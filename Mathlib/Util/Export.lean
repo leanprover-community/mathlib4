@@ -94,7 +94,7 @@ def exportLevel (L : Level) : ExportM Nat := do
       let i ← alloc L; IO.println s!"{i} #UIM {← exportLevel l₁} {← exportLevel l₂}"; pure i
     | Level.param n _ =>
       let i ← alloc L; IO.println s!"{i} #UP {← exportName n}"; pure i
-    | Level.mvar n _ => unreachable!
+    | Level.mvar _ _ => unreachable!
 
 def biStr : BinderInfo → String
 | BinderInfo.default        => "#BD"
@@ -122,18 +122,18 @@ partial def exportExpr (E : Expr) : ExportM Nat := do
       IO.println s; pure i
     | Expr.app e₁ e₂ _ =>
       let i ← alloc E; IO.println s!"{i} #EA {← exportExpr e₁} {← exportExpr e₂}"; pure i
-    | Expr.lam n e₁ e₂ d =>
+    | Expr.lam _ e₁ e₂ d =>
       let i ← alloc E
       IO.println s!"{i} #EL {biStr d.binderInfo} {← exportExpr e₁} {← exportExpr e₂}"; pure i
-    | Expr.forallE n e₁ e₂ d =>
+    | Expr.forallE _ e₁ e₂ d =>
       let i ← alloc E
       IO.println s!"{i} #EP {biStr d.binderInfo} {← exportExpr e₁} {← exportExpr e₂}"; pure i
-    | Expr.letE n e₁ e₂ e₃ _ =>
+    | Expr.letE _ e₁ e₂ e₃ _ =>
       let i ← alloc E
       IO.println s!"{i} #EP {← exportExpr e₁} {← exportExpr e₂} {← exportExpr e₃}"; pure i
     | Expr.lit (Literal.natVal n) _ => let i ← alloc E; IO.println s!"{i} #EN {n}"; pure i
     | Expr.lit (Literal.strVal s) _ => let i ← alloc E; IO.println s!"{i} #ET {s}"; pure i
-    | Expr.mdata _ e _ => unreachable!
+    | Expr.mdata _ _ _ => unreachable!
     | Expr.proj n k e _ =>
       let i ← alloc E; IO.println s!"{i} #EJ {← exportName n} {k} {← exportExpr e}"; pure i
 
@@ -148,7 +148,7 @@ partial def exportDef (n : Name) : ExportM Unit := do
   | defnInfo    val => defn "#DEF" val.name val.type val.value val.levelParams
   | thmInfo     val => defn "#THM" val.name val.type val.value val.levelParams
   | opaqueInfo  val => defn "#CN" val.name val.type val.value val.levelParams
-  | quotInfo    val =>
+  | quotInfo    _ =>
     IO.println "#QUOT"
     for n in [``Quot, ``Quot.mk, ``Quot.lift, ``Quot.ind] do
       insert n
@@ -177,7 +177,7 @@ where
     | n => s!"#MUT {val.numParams} {n}"
     for j in is do insert j; insert (mkRecName j)
     for j in is do
-      let vals ← getConstInfoInduct j
+      let val ← getConstInfoInduct j
       s := s ++ s!" {← exportName val.name} {← exportExpr val.type} {val.ctors.length}"
       for c in val.ctors do
         insert c

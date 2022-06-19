@@ -64,7 +64,7 @@ syntax "expandBinders% " "(" ident " => " term ")" extBinders ", " term : term
 macro_rules
   | `(expandBinders% ($x => $term) $y:extBinder, $res) =>
     `(expandBinders% ($x => $term) ($y:extBinder), $res)
-  | `(expandBinders% ($x => $term), $res) => pure res
+  | `(expandBinders% ($_ => $_), $res) => pure res
 macro_rules
   | `(expandBinders% ($x => $term) ($y:ident $[: $ty]?) $binders*, $res) => do
     let ty := ty.getD (← `(_))
@@ -593,7 +593,7 @@ macro_rules
     let ns := mkIdentFrom ns <| rootNamespace ++ ns.getId
     `(with_weak_namespace $ns
       scoped notation $[$prec:precedence]? $[$n:namedName]? $[$prio:namedPrio]? $sym => $t)
-  | `(localized [$ns] $attrKind:attrKind $mixfixKind $prec:precedence $[$n:namedName]? $[$prio:namedPrio]? $sym => $t) =>
+  | `(localized [$ns] $_:attrKind $mixfixKind $prec:precedence $[$n:namedName]? $[$prio:namedPrio]? $sym => $t) =>
     let ns := mkIdentFrom ns <| rootNamespace ++ ns.getId
     `(with_weak_namespace $ns
       scoped $mixfixKind $prec:precedence $[$n:namedName]? $[$prio:namedPrio]? $sym => $t)

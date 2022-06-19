@@ -10,7 +10,7 @@ import Mathlib.Data.List.Basic
 namespace Array
 
 theorem ext' : {a b : Array α} → a.data = b.data → a = b
-| ⟨a⟩, ⟨_⟩, rfl => rfl
+| ⟨_⟩, ⟨_⟩, rfl => rfl
 
 @[simp] theorem data_toArray : (a : Array α) → a.data.toArray = a
 | ⟨l⟩ => ext' l.toArray_data

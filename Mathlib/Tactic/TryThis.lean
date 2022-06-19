@@ -20,7 +20,7 @@ open Lean Elab Elab.Tactic PrettyPrinter Meta
 
 partial def replaceMVarsByUnderscores [Monad m] [MonadQuotation m]
     (s : Syntax) : m Syntax := do
-  if s matches `(?$mvar:ident) then
+  if s matches `(?$_:ident) then
     `(?_)
   else if let Syntax.node _ kind args := s then
     mkNode kind <$> args.mapM replaceMVarsByUnderscores
