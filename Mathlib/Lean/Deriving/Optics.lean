@@ -252,7 +252,6 @@ def mkOpticsCore (indVal : InductiveVal) : TermElabM (Array Syntax) :=
     let mut cmds := #[]
     let fcs ← getFieldCollections indVal.name
     have : ForIn TermElabM FieldCollections (_ × _) := Std.RBMap.instForInRBMapProd
-    have : ForIn TermElabM (NameMap Nat) (_ × _) := Std.RBMap.instForInRBMapProd
     for (field, cne?) in fcs do
       if let some (ctors, fieldType) := cne? then
         let isEx := if ← isExhaustive ctors indVal.name then "exhaustive" else "non-exhaustive"
