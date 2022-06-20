@@ -20,4 +20,12 @@ then reassembles the string by intercalating the separator token `c` over the ma
 def mapTokens (c : Char) (f : String → String) : String → String :=
 intercalate (singleton c) ∘ List.map f ∘ (·.split (· = c))
 
+/-- Make a human-readable string from the given list which is comma-separated but the final comma is
+replaced with `conj`. So if `conj := "and"` we get `"A, B, C and D"`.-/
+def andList (conj : String) : List String → String
+  | [] => ""
+  | [x] => x
+  | [x,y] => s!"{x} {conj} {y}"
+  | head :: tail => s!"{head}, {andList conj tail}"
+
 end String
