@@ -43,16 +43,16 @@ namespace Lean.Elab.Deriving.Optics
 initialize registerTraceClass `derive_optics
 
 -- [todo] this must already exist?
-def Name.mapHead (f : String →String) : Name →Name
+private def Name.modifyHead (f : String → String) : Name → Name
   | Name.str p s _ => Name.mkStr p (f s)
   | n => n
 
-def mkDocComment (s : String) : Syntax :=
+private def mkDocComment (s : String) : Syntax :=
   mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (s ++ "-/")]
 
 variable {M} [MonadControlT MetaM M] [MonadLiftT MetaM M] [Monad M] [MonadEnv M] [MonadError M]
 
-structure IndField :=
+private structure IndField :=
   (ctor : Name)
   (name : Name)
   (index : Nat)
@@ -67,7 +67,7 @@ def getAllFields (decl : Name) : TermElabM (Array IndField) := do
   let indVal ← getConstInfoInduct decl
   indVal.ctors.foldlM (fun acc ctor => do
     let ctorInfo ← Lean.getConstInfoCtor ctor
-    Lean.Meta.forallTelescopeReducing ctorInfo.type fun xs type => do
+    Lean.Meta.forallTelescopeReducing ctorInfo.type fun xs _ => do
       let xsdecls ← liftM $ xs.mapM Lean.Meta.getFVarLocalDecl
       let params := xs[:ctorInfo.numParams].toArray
       let fields := xsdecls[ctorInfo.numParams:].toArray
@@ -83,7 +83,7 @@ def getAllFields (decl : Name) : TermElabM (Array IndField) := do
 
 /-- Given inductive datatype `decl`, makes a map from field names to a
 map from constructor names to field index and type. -/
-def getFieldCollections
+private def getFieldCollections
   (decl : Name) : TermElabM FieldCollections := do
   let fields ← getAllFields decl
   return fields.foldl add ∅
@@ -114,10 +114,10 @@ private def isExhaustive (ctors : NameMap α) (indName : Name) : M Bool := do
   let indVal ← getConstInfoInduct indName
   return indVal.ctors.all (fun a => ctors.contains a)
 
-def mkGetOptional (baseName indName fieldName : Name) (indType : Syntax) (implicitBinders : Array Syntax) (fieldType : Syntax) (ctors : NameMap Nat) : TermElabM Syntax := do
+private def mkGetOptional (baseName indName fieldName : Name) (indType : Syntax) (implicitBinders : Array Syntax) (fieldType : Syntax) (ctors : NameMap Nat) : TermElabM Syntax := do
   if (← isExhaustive ctors indName) then
     throwError "expected non-exhautive ctor list"
-  let defname := mkIdent <| baseName ++ Name.mapHead (· ++ "?") fieldName
+  let defname := mkIdent <| baseName ++ Name.modifyHead (· ++ "?") fieldName
   let (lhs, rhs) ← mkAlts ctors (fun _ i fvs => `(some $(fvs[i])))
   let docstring := mkDocComment <| s!"If the given `{indName}` is a {ctorNameOrList ctors}; returns the value of the `{fieldName}` field, otherwise returns `none`."
   `(
@@ -128,10 +128,10 @@ def mkGetOptional (baseName indName fieldName : Name) (indType : Syntax) (implic
           | _ => none
   )
 
-def mkGetBang (baseName indName fieldName : Name) (indType : Syntax) (implicitBinders : Array Syntax) (fieldType : Syntax) (ctors : NameMap Nat) : TermElabM Syntax := do
+private def mkGetBang (baseName indName fieldName : Name) (indType : Syntax) (implicitBinders : Array Syntax) (fieldType : Syntax) (ctors : NameMap Nat) : TermElabM Syntax := do
   if (← isExhaustive ctors indName) then
     throwError "expected non-exhautive ctor list"
-  let defname : Name := baseName ++ Name.mapHead (· ++ "!") fieldName
+  let defname : Name := baseName ++ Name.modifyHead (· ++ "!") fieldName
   let docstring := mkDocComment <| s!"If the given `{indName}` is a {ctorNameOrList ctors},
     returns the value of the `{fieldName}` field, otherwise panics."
   let (lhs, rhs) ← mkAlts ctors (fun _ i fvs => pure fvs[i])
@@ -145,7 +145,7 @@ def mkGetBang (baseName indName fieldName : Name) (indType : Syntax) (implicitBi
         panic! s!"expected constructor {n}"
   )
 
-def mkGet (baseName indName fieldName : Name) (indType : Syntax) (implicitBinders : Array Syntax) (fieldType : Syntax) (ctors : NameMap Nat) : TermElabM Syntax := do
+private def mkGet (baseName indName fieldName : Name) (indType : Syntax) (implicitBinders : Array Syntax) (fieldType : Syntax) (ctors : NameMap Nat) : TermElabM Syntax := do
   if not (← isExhaustive ctors indName) then
     throwError "expected exhaustive ctor list"
   let defname : Name := baseName ++ fieldName
@@ -159,8 +159,8 @@ def mkGet (baseName indName fieldName : Name) (indType : Syntax) (implicitBinder
   )
 
 
-def mkWith (baseName indName fieldName : Name) (indType : Syntax) (implicitBinders : Array Syntax) (fieldType : Syntax) (ctors : NameMap Nat) : TermElabM Syntax := do
-  let defname : Name := baseName ++ Name.mapHead (fun n => s!"with{n.capitalize}") fieldName
+private def mkWith (baseName indName fieldName : Name) (indType : Syntax) (implicitBinders : Array Syntax) (fieldType : Syntax) (ctors : NameMap Nat) : TermElabM Syntax := do
+  let defname : Name := baseName ++ Name.modifyHead (fun n => s!"with{n.capitalize}") fieldName
   let x ← mkIdent <$> mkFreshUserName `x
   let (lhs, rhs) ← mkAlts ctors (fun ctorName i fvs => `($(mkIdent ctorName) $(fvs.modify i (fun _ => x)):term*))
   if ← isExhaustive ctors indName then
@@ -183,8 +183,8 @@ def mkWith (baseName indName fieldName : Name) (indType : Syntax) (implicitBinde
         | y => y
     )
 
-def mkModify (baseName indName fieldName : Name) (indType : Syntax) (implicitBinders : Array Syntax) (fieldType : Syntax) (ctors : NameMap Nat) : TermElabM Syntax := do
-  let defname : Name := baseName ++ Name.mapHead (fun n => s!"modify{n.capitalize}") fieldName
+private def mkModify (baseName indName fieldName : Name) (indType : Syntax) (implicitBinders : Array Syntax) (fieldType : Syntax) (ctors : NameMap Nat) : TermElabM Syntax := do
+  let defname : Name := baseName ++ Name.modifyHead (fun n => s!"modify{n.capitalize}") fieldName
   let x ← mkIdent <$> mkFreshUserName `visit
   let (lhs, rhs) ← mkAlts ctors (fun ctorName i fvs => do
     let outFields ← fvs.modifyM i (fun q => `(($x <| $q)))
@@ -209,13 +209,13 @@ def mkModify (baseName indName fieldName : Name) (indType : Syntax) (implicitBin
     )
 
 
-def mkModifyM (baseName indName fieldName : Name) (indType : Syntax) (implicitBinders : Array Syntax) (fieldType : Syntax) (ctors : NameMap Nat) : TermElabM Syntax := do
+private def mkModifyM (baseName indName fieldName : Name) (indType : Syntax) (implicitBinders : Array Syntax) (fieldType : Syntax) (ctors : NameMap Nat) : TermElabM Syntax := do
   let visit ← mkIdent <$> mkFreshUserName `visit
   let x ← mkIdent <$> mkFreshUserName `x
   let (lhs, rhs) ← mkAlts ctors (fun ctorName i fvs => do
-    let outFields := fvs.modify i (fun q => x)
+    let outFields := fvs.modify i (fun _ => x)
     `((fun $x => $(mkIdent ctorName) $outFields:term*) <$> $visit $(fvs[i])))
-  let defname : Name := baseName ++ Name.mapHead (fun n => s!"modifyM{n.capitalize}") fieldName
+  let defname : Name := baseName ++ Name.modifyHead (fun n => s!"modifyM{n.capitalize}") fieldName
   if ← (isExhaustive ctors indName) then
     let docstring := mkDocComment <|  s!"Runs the given `visit` function on the `{fieldName}` field."
     `(
@@ -241,10 +241,10 @@ def mkModifyM (baseName indName fieldName : Name) (indType : Syntax) (implicitBi
         | y => pure y
     )
 
-def opticMakers := [mkGet, mkGetOptional, mkGetBang, mkWith, mkModify, mkModifyM]
+private def opticMakers := [mkGet, mkGetOptional, mkGetBang, mkWith, mkModify, mkModifyM]
 
-def mkOpticsCore (indVal : InductiveVal) : TermElabM (Array Syntax) :=
-  Lean.Meta.forallTelescopeReducing indVal.type fun params indType => do
+private def mkOpticsCore (indVal : InductiveVal) : TermElabM (Array Syntax) :=
+  Lean.Meta.forallTelescopeReducing indVal.type fun params _ => do
     let paramDecls ← liftM $ params.mapM Lean.Meta.getFVarLocalDecl
     let paramStx := paramDecls |>.map (fun x => mkIdent x.userName)
     let indType ← `($(mkIdent indVal.name):ident $paramStx:term*)
@@ -262,7 +262,7 @@ def mkOpticsCore (indVal : InductiveVal) : TermElabM (Array Syntax) :=
             let cmd ← mk indVal.name indVal.name field indType implicitBinders fieldType ctors
             cmds := cmds.push cmd
           catch
-            | x => continue
+            | _err => continue
     let fields ← getAllFields indVal.name
     for field in fields do
       let fieldType ← PrettyPrinter.delab <| field.type.instantiateRev params
@@ -272,10 +272,10 @@ def mkOpticsCore (indVal : InductiveVal) : TermElabM (Array Syntax) :=
           let cmd ← mk field.ctor indVal.name field.name indType implicitBinders fieldType ctors
           cmds := cmds.push cmd
         catch
-          | e => continue
+          | _err => continue
     return cmds
 
-def mkOptics (decl : Name) : CommandElabM Unit := do
+private def mkOptics (decl : Name) : CommandElabM Unit := do
   if not (← isInductive decl) then
     throwError "{decl} must be an inductive datatype."
   let indVal ← getConstInfoInduct decl
@@ -287,7 +287,6 @@ def mkOptics (decl : Name) : CommandElabM Unit := do
     -- get the users to make bespoke optics.
     throwError "getters and setters derivation not supported for indexed inductive datatype {decl}."
   if indVal.ctors.length <= 1 then
-    -- [todo] add lens def here.
     throwError "single constructor inductive types should be structures."
 
   let cmds : Array Syntax ← liftTermElabM none <| mkOpticsCore indVal
