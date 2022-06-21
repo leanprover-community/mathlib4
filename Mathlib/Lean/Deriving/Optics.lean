@@ -11,33 +11,6 @@ open Lean.Parser.Term
 open Lean.Parser.Command
 open Lean.Elab.Deriving
 
-/-!
-
-# Deriving optics from inductive datatypes.
-
-This file defines the `derive_optics T` command where `T` is an inductive datatype.
-For each constructor `𝑐` of `T` and each field `𝑎 : α` of `𝑐`, this will create the following definitions:
-
-1. `T.𝑐.𝑎? : T → Option α`
-2. `T.𝑐.𝑎! : T → α`
-3. `T.𝑐.with𝑎 : α → T → T`
-4. `T.𝑐.modify𝑎 : (α → α) → T → T`
-5. `T.𝑐.modifyM𝑎 : (α → M α) → T → M T`
-
-## Future work
-
-[todo] Extending to many other patterns:
-
-- `T.children : T → List T`
-- `T.traverseChildren [Applicative M]: (T → M T) → (T → M T)`
-- `T.Base : Type → Type` is the base functor type such that `T = Fix T.Base`
-- `T.Free : Type → Type`
-- `T.Zipper`
-- `T.Pos` -- analogous to `Expr.SubExpr.Pos`.
-- Build an optics library and have full-fledged optics.
-
--/
-
 namespace Lean.Elab.Deriving.Optics
 
 initialize registerTraceClass `derive_optics
@@ -63,7 +36,7 @@ private structure IndField :=
 It's none if the field exists on constructors but the types are incompatible.-/
 abbrev FieldCollections := NameMap (Option (NameMap Nat × Expr))
 
-def getAllFields (decl : Name) : TermElabM (Array IndField) := do
+private def getAllFields (decl : Name) : TermElabM (Array IndField) := do
   let indVal ← getConstInfoInduct decl
   indVal.ctors.foldlM (fun acc ctor => do
     let ctorInfo ← Lean.getConstInfoCtor ctor
@@ -296,6 +269,28 @@ private def mkOptics (decl : Name) : CommandElabM Unit := do
     trace[derive_optics] "Creating definition:\n{pp}"
     elabCommand cmd
 
+/-- If `T` is an inductive datatype with more than one constructor, `derive_optics T` will create
+a set of helper definitions for unpacking the named fields of constructors of `T`.
+Let `𝑐` be a constructor of `T` and let `𝑎` be a named field of `𝑐`. `derive_optics T` will produce
+the following definitions:
+
+1. `T.𝑐.𝑎? : T → Option α`
+2. `T.𝑐.𝑎! : T → α`
+3. `T.𝑐.with𝑎 : α → T → T`
+4. `T.𝑐.modify𝑎 : (α → α) → T → T`
+5. `T.𝑐.modifyM𝑎 : (α → M α) → T → M T`
+
+Each definition includes a docstring describing its behaviour.
+
+Additionally, it will create a non-`𝑐`-named version (`T.𝑎?`, `T.with𝑎`...) where if the same
+field name `𝑎` appears on multiple constructors, it will perform the operation on both.
+
+If `𝑎` exists on every constructor, `T.𝑎?` and `T.𝑎!` will be not be
+generated, instead `T.𝑎 : T → α` will be.
+
+You can view the generated definitions using `set_option trace.derive_optics true`.
+
+ -/
 elab "derive_optics" decl:ident : command =>
   mkOptics decl.getId
 
