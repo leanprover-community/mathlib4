@@ -33,9 +33,11 @@ jobs:
       - name: test mathlib
         run: make test
 
+      - name: build linter
+        run: lake build runLinter
+
       - name: lint mathlib
         run: |
-          lake build runLinter
           ./build/bin/runLinter
 
       - name: check that all files are imported
