@@ -131,10 +131,10 @@ https://leanprover-community.github.io/mathlib_docs/notes.html#simp-normal%20for
     -- TODO: equation lemmas
     let ctx ← Simp.Context.mkDefault
     checkAllSimpTheoremInfos (← getConstInfo declName).type fun {lhs, rhs, isConditional, ..} => do
-    let ⟨lhs', prf1⟩ ← decorateError "simplify fails on left-hand side:" <| simp lhs ctx
+    let ⟨lhs', prf1, _⟩ ← decorateError "simplify fails on left-hand side:" <| simp lhs ctx
     let prf1_lems := heuristicallyExtractSimpTheorems ctx (prf1.getD (mkBVar 0))
     if prf1_lems.contains declName then return none
-    let ⟨rhs', prf2⟩ ← decorateError "simplify fails on right-hand side:" <| simp rhs ctx
+    let ⟨rhs', prf2, _⟩ ← decorateError "simplify fails on right-hand side:" <| simp rhs ctx
     let lhs'_eq_rhs' ← isSimpEq lhs' rhs' (whnfFirst := false)
     let lhs_in_nf ← isSimpEq lhs' lhs
     if lhs'_eq_rhs' then do
