@@ -49,10 +49,9 @@ theorem gcd.induction
   (H1 : ∀ m n, 0 < m → P (n % m) m → P m n) :
   P m n :=
   @WellFounded.induction _ _ lt_wfRel.wf (λ m => ∀ n, P m n) m
-    (λ k IH =>
-      match k with
-      | 0 => H0
-      | pk+1 => λ n => H1 _ _ (succ_pos _) (IH _ (mod_lt _ (succ_pos _)) _) )
+    (fun
+    | 0, _ => H0
+    | _+1, IH => λ _ => H1 _ _ (succ_pos _) (IH _ (mod_lt _ (succ_pos _)) _) )
     n
 
 def lcm (m n : ℕ) : ℕ := m * n / gcd m n
@@ -63,14 +62,13 @@ def lcm (m n : ℕ) : ℕ := m * n / gcd m n
 
 theorem gcd_dvd (m n : ℕ) : (gcd m n ∣ m) ∧ (gcd m n ∣ n) := by
   induction m, n using gcd.induction with
-  | H0 n => exact And.intro (Exists.intro 0 (by simp))
-                            (Exists.intro 1 (by simp))
-  | H1 m n mpos IH =>
+  | H0 n => exact ⟨⟨0, by simp⟩, ⟨1, by simp⟩⟩
+  | H1 m n _ IH =>
     let ⟨IH₁, IH₂⟩ := IH
-    exact And.intro (by rwa [gcd_rec])
-                    (by rw [←gcd_rec] at IH₁
-                        rw [←gcd_rec] at IH₂
-                        exact (dvd_mod_iff IH₂).1 IH₁)
+    refine ⟨by rwa [gcd_rec], ?_⟩
+    rw [←gcd_rec] at IH₁
+    rw [←gcd_rec] at IH₂
+    exact (dvd_mod_iff IH₂).1 IH₁
 
 theorem gcd_dvd_left (m n : ℕ) : gcd m n ∣ m := (gcd_dvd m n).left
 
@@ -82,12 +80,14 @@ theorem gcd_le_right {m} (n) (h : 0 < n) : gcd m n ≤ n := le_of_dvd h $ gcd_dv
 
 theorem dvd_gcd {m n k : ℕ} : k ∣ m → k ∣ n → k ∣ gcd m n := by
   induction m, n using gcd.induction with
-  | H0 n => intros _ kn
-            rw [gcd_zero_left]
-            exact kn
-  | H1 m n mpos IH => intros H1 H2
-                      rw [gcd_rec]
-                      exact IH ((dvd_mod_iff H1).mpr H2) H1
+  | H0 n =>
+    intros _ kn
+    rw [gcd_zero_left]
+    exact kn
+  | H1 m n _ IH =>
+    intros H1 H2
+    rw [gcd_rec]
+    exact IH ((dvd_mod_iff H1).mpr H2) H1
 
 theorem dvd_gcd_iff {m n k : ℕ} : k ∣ gcd m n ↔ k ∣ m ∧ k ∣ n :=
 Iff.intro (λ h => And.intro (Nat.dvd_trans h (gcd_dvd m n).left) (Nat.dvd_trans h (gcd_dvd m n).right))
@@ -123,7 +123,7 @@ Eq.trans (gcd_comm n 1) $ gcd_one_left n
 theorem gcd_mul_left (m n k : ℕ) : gcd (m * n) (m * k) = m * gcd n k := by
   induction n, k using gcd.induction with
   | H0 k => simp
-  | H1 n k npos IH => rwa [←mul_mod_mul_left, ←gcd_rec, ←gcd_rec] at IH
+  | H1 n k _ IH => rwa [←mul_mod_mul_left, ←gcd_rec, ←gcd_rec] at IH
 
 theorem gcd_mul_right (m n k : ℕ) : gcd (m * n) (k * n) = gcd m k * n :=
 by rw [Nat.mul_comm m n, Nat.mul_comm k n, Nat.mul_comm (gcd m k) n, gcd_mul_left]
@@ -408,7 +408,7 @@ lemma coprime.gcd_both (k l : ℕ) {m n : ℕ} (hmn : coprime m n) : coprime (gc
 
 lemma coprime.mul_dvd_of_dvd_of_dvd {a n m : ℕ} (hmn : coprime m n)
   (hm : m ∣ a) (hn : n ∣ a) : m * n ∣ a :=
-  let ⟨k, hk⟩ := hm
+  let ⟨_, hk⟩ := hm
   hk.symm ▸ Nat.mul_dvd_mul_left _ (hmn.symm.dvd_of_dvd_mul_left (hk ▸ hn))
 
 theorem coprime_one_left : ∀ n, coprime 1 n := gcd_one_left

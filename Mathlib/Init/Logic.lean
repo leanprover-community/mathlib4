@@ -242,8 +242,8 @@ Iff.intro (Or.rec id hb) Or.inl
 
 -- Port note: in mathlib3, this is not_or
 lemma not_or_intro {a b : Prop} : ¬ a → ¬ b → ¬ (a ∨ b)
-| hna, hnb, (Or.inl ha) => absurd ha hna
-| hna, hnb, (Or.inr hb) => absurd hb hnb
+| hna, _, Or.inl ha => absurd ha hna
+| _, hnb, Or.inr hb => absurd hb hnb
 
 lemma not_or (p q) : ¬ (p ∨ q) ↔ ¬ p ∧ ¬ q :=
 ⟨fun H => ⟨mt Or.inl H, mt Or.inr H⟩, fun ⟨hp, hq⟩ pq => pq.elim hp hq⟩
@@ -266,13 +266,13 @@ lemma iff_congr (h₁ : a ↔ c) (h₂ : b ↔ d) : (a ↔ b) ↔ (c ↔ d) :=
 /- implies simp rule -/
 -- This is not marked `@[simp]` because we have `implies_true : (α → True) = True` in core.
 lemma implies_true_iff (α : Sort u) : (α → True) ↔ True :=
-Iff.intro (λ h => trivial) (λ ha h => trivial)
+Iff.intro (λ _ => trivial) (λ _ _ => trivial)
 
 lemma false_implies_iff (a : Prop) : (False → a) ↔ True :=
-Iff.intro (λ h => trivial) (λ ha h => False.elim h)
+Iff.intro (λ _ => trivial) (λ _ => False.elim)
 
 theorem true_implies_iff (α : Prop) : (True → α) ↔ α :=
-Iff.intro (λ h => h trivial) (λ h h' => h)
+Iff.intro (λ h => h trivial) (λ h _ => h)
 
 /- exists unique -/
 
@@ -297,7 +297,7 @@ Exists.elim h (λ x hx => ⟨x, And.left hx⟩)
 
 lemma unique_of_exists_unique {α : Sort u} {p : α → Prop}
     (h : ∃! x, p x) {y₁ y₂ : α} (py₁ : p y₁) (py₂ : p y₂) : y₁ = y₂ :=
-let ⟨x, hx, hy⟩ := h; (hy _ py₁).trans (hy _ py₂).symm
+let ⟨_, _, hy⟩ := h; (hy _ py₁).trans (hy _ py₂).symm
 
 /- exists, forall, exists unique congruences -/
 
@@ -317,7 +317,7 @@ lemma exists_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃ a, p a) �
 ⟨exists_imp_exists fun x => (h x).1, exists_imp_exists fun x => (h x).2⟩
 
 lemma exists_unique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃! a, p a) ↔ ∃! a, q a :=
-exists_congr fun x => and_congr (h _) $ forall_congr' fun y => imp_congr_left (h _)
+exists_congr fun _ => and_congr (h _) $ forall_congr' fun _ => imp_congr_left (h _)
 
 lemma forall_not_of_not_exists {p : α → Prop} (hne : ¬∃ x, p x) (x) : ¬p x | hp => hne ⟨x, hp⟩
 
@@ -328,7 +328,7 @@ namespace Decidable
 
   -- TODO: rec_on_true and rec_on_false
 
-  def by_cases {q : Sort u} [φ : Decidable p] : (p → q) → (¬p → q) → q := byCases
+  def by_cases {q : Sort u} [Decidable p] : (p → q) → (¬p → q) → q := byCases
 
   lemma by_contradiction [φ : Decidable p] (h : ¬ p → False) : p := @byContradiction p φ h
 
@@ -367,12 +367,12 @@ section
     else isFalse (Or.rec (λ ⟨h, _⟩ => hp h : ¬(p ∧ ¬ q)) (λ ⟨h, _⟩ => hq h : ¬(q ∧ ¬ p)))
 
   instance exists_prop_decidable {p} (P : p → Prop)
-    [Dp : Decidable p] [DP : ∀ h, Decidable (P h)] : Decidable (∃ h, P h) :=
+    [Decidable p] [∀ h, Decidable (P h)] : Decidable (∃ h, P h) :=
   if h : p then decidable_of_decidable_of_iff
-    ⟨λ h2 => ⟨h, h2⟩, λ⟨h', h2⟩ => h2⟩ else isFalse (mt (λ⟨h, _⟩ => h) h)
+    ⟨λ h2 => ⟨h, h2⟩, λ ⟨_, h2⟩ => h2⟩ else isFalse (mt (λ ⟨h, _⟩ => h) h)
 
   instance forall_prop_decidable {p} (P : p → Prop)
-    [Dp : Decidable p] [DP : ∀ h, Decidable (P h)] : Decidable (∀ h, P h) :=
+    [Decidable p] [∀ h, Decidable (P h)] : Decidable (∀ h, P h) :=
   if h : p
   then decidable_of_decidable_of_iff ⟨λ h2 _ => h2, λ al => al h⟩
   else isTrue (λ h2 => absurd h2 h)
@@ -391,14 +391,14 @@ def decidable_eq_of_bool_pred {α : Sort u} {p : α → α → Bool} (h₁ : is_
 
 lemma decidable_eq_inl_refl {α : Sort u} [h : DecidableEq α] (a : α) : h a a = isTrue (Eq.refl a) :=
 match (h a a) with
-| (isTrue e)  => rfl
-| (isFalse n) => absurd rfl n
+| isTrue _  => rfl
+| isFalse n => absurd rfl n
 
 lemma decidable_eq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α} : ∀ n : a ≠ b, h a b = isFalse n :=
 λ n =>
 match (h a b) with
-| (isTrue e)   => absurd e n
-| (isFalse n₁) => proof_irrel n n₁ ▸ Eq.refl (isFalse n)
+| isTrue e   => absurd e n
+| isFalse n₁ => proof_irrel n n₁ ▸ Eq.refl (isFalse n)
 
 /- subsingleton -/
 
@@ -419,16 +419,16 @@ lemma if_ctx_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : Dec
                    (h_c : b ↔ c) (h_t : c → x = u) (h_e : ¬c → y = v) :
         ite b x y = ite c u v :=
 match dec_b, dec_c with
-| (isFalse h₁), (isFalse h₂) => h_e h₂
-| (isTrue h₁),  (isTrue h₂)  => h_t h₂
-| (isFalse h₁), (isTrue h₂)  => absurd h₂ (Iff.mp (not_iff_not_of_iff h_c) h₁)
-| (isTrue h₁),  (isFalse h₂) => absurd h₁ (Iff.mpr (not_iff_not_of_iff h_c) h₂)
+| isFalse _,  isFalse h₂ => h_e h₂
+| isTrue _,   isTrue h₂  => h_t h₂
+| isFalse h₁, isTrue h₂  => absurd h₂ (Iff.mp (not_iff_not_of_iff h_c) h₁)
+| isTrue h₁,  isFalse h₂ => absurd h₁ (Iff.mpr (not_iff_not_of_iff h_c) h₂)
 
 lemma if_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : Decidable c]
                {x y u v : α}
                (h_c : b ↔ c) (h_t : x = u) (h_e : y = v) :
         ite b x y = ite c u v :=
-@if_ctx_congr α b c dec_b dec_c x y u v h_c (λ h => h_t) (λ h => h_e)
+@if_ctx_congr α b c dec_b dec_c x y u v h_c (λ _ => h_t) (λ _ => h_e)
 
 @[simp] lemma if_true {h : Decidable True} (t e : α) : (@ite α True h t e) = t :=
 if_pos trivial
@@ -440,15 +440,15 @@ lemma if_ctx_congr_prop {b c x y u v : Prop} [dec_b : Decidable b] [dec_c : Deci
                       (h_c : b ↔ c) (h_t : c → (x ↔ u)) (h_e : ¬c → (y ↔ v)) :
         ite b x y ↔ ite c u v :=
 match dec_b, dec_c with
-| (isFalse h₁), (isFalse h₂) => h_e h₂
-| (isTrue h₁),  (isTrue h₂)  => h_t h₂
-| (isFalse h₁), (isTrue h₂)  => absurd h₂ (Iff.mp (not_iff_not_of_iff h_c) h₁)
-| (isTrue h₁),  (isFalse h₂) => absurd h₁ (Iff.mpr (not_iff_not_of_iff h_c) h₂)
+| isFalse _,  isFalse h₂ => h_e h₂
+| isTrue _,   isTrue h₂  => h_t h₂
+| isFalse h₁, isTrue h₂  => absurd h₂ (Iff.mp (not_iff_not_of_iff h_c) h₁)
+| isTrue h₁,  isFalse h₂ => absurd h₁ (Iff.mpr (not_iff_not_of_iff h_c) h₂)
 
-lemma if_congr_prop {b c x y u v : Prop} [dec_b : Decidable b] [dec_c : Decidable c]
+lemma if_congr_prop {b c x y u v : Prop} [Decidable b] [Decidable c]
                     (h_c : b ↔ c) (h_t : x ↔ u) (h_e : y ↔ v) :
         ite b x y ↔ ite c u v :=
-if_ctx_congr_prop h_c (λ h => h_t) (λ h => h_e)
+if_ctx_congr_prop h_c (λ _ => h_t) (λ _ => h_e)
 
 lemma if_ctx_simp_congr_prop {b c x y u v : Prop} [dec_b : Decidable b]
                                (h_c : b ↔ c) (h_t : c → (x ↔ u)) (h_e : ¬c → (y ↔ v)) :
@@ -458,7 +458,7 @@ lemma if_ctx_simp_congr_prop {b c x y u v : Prop} [dec_b : Decidable b]
 lemma if_simp_congr_prop {b c x y u v : Prop} [dec_b : Decidable b]
                            (h_c : b ↔ c) (h_t : x ↔ u) (h_e : y ↔ v) :
         ite b x y ↔ (@ite Prop c (decidable_of_decidable_of_iff h_c) u v) :=
-@if_ctx_simp_congr_prop b c x y u v dec_b h_c (λ h => h_t) (λ h => h_e)
+@if_ctx_simp_congr_prop b c x y u v dec_b h_c (λ _ => h_t) (λ _ => h_e)
 
 lemma dif_ctx_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : Decidable c]
                     {x : b → α} {u : c → α} {y : ¬b → α} {v : ¬c → α}
@@ -467,10 +467,10 @@ lemma dif_ctx_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : De
                     (h_e : ∀ (h : ¬c),   y (Iff.mpr (not_iff_not_of_iff h_c) h) = v h) :
         (@dite α b dec_b x y) = (@dite α c dec_c u v) :=
 match dec_b, dec_c with
-| (isFalse h₁), (isFalse h₂) => h_e h₂
-| (isTrue h₁),  (isTrue h₂)  => h_t h₂
-| (isFalse h₁), (isTrue h₂)  => absurd h₂ (Iff.mp (not_iff_not_of_iff h_c) h₁)
-| (isTrue h₁),  (isFalse h₂) => absurd h₁ (Iff.mpr (not_iff_not_of_iff h_c) h₂)
+| isFalse _,  isFalse h₂ => h_e h₂
+| isTrue _,   isTrue h₂  => h_t h₂
+| isFalse h₁, isTrue h₂  => absurd h₂ (Iff.mp (not_iff_not_of_iff h_c) h₁)
+| isTrue h₁,  isFalse h₂ => absurd h₁ (Iff.mpr (not_iff_not_of_iff h_c) h₂)
 
 lemma dif_ctx_simp_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b]
                          {x : b → α} {u : c → α} {y : ¬b → α} {v : ¬c → α}
@@ -488,8 +488,8 @@ if c then False else True
 
 lemma of_as_true {c : Prop} [h₁ : Decidable c] (h₂ : as_true c) : c :=
 match h₁, h₂ with
-| (isTrue h_c),  h₂ => h_c
-| (isFalse h_c), h₂ => False.elim h₂
+| isTrue h_c, _ => h_c
+| isFalse _, h₂ => False.elim h₂
 
 /-- Universe lifting operation -/
 structure ulift.{r, s} (α : Type s) : Type (max s r) :=
@@ -499,7 +499,7 @@ namespace ulift
 
 /- Bijection between α and ulift.{v} α -/
 lemma up_down {α : Type u} : ∀ (b : ulift.{v} α), up (down b) = b
-| up a => rfl
+| up _ => rfl
 
 lemma down_up {α : Type u} (a : α) : down (up.{v} a) = a := rfl
 
@@ -512,7 +512,7 @@ up :: (down : α)
 namespace plift
 /- Bijection between α and plift α -/
 lemma up_down : ∀ (b : plift α), up (down b) = b
-| (up a) => rfl
+| up _ => rfl
 
 lemma down_up (a : α) : down (up a) = a := rfl
 end plift

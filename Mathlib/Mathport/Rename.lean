@@ -34,7 +34,7 @@ open Lean.Elab Lean.Elab.Command
 syntax (name := align) "#align " ident ident : command
 
 @[commandElab align] def elabAlign : CommandElab
-  | `(#align%$tk $id3:ident $id4:ident) =>
+  | `(#align $id3:ident $id4:ident) =>
     liftCoreM $ addNameAlignment id3.getId id4.getId
   | _ => throwUnsupportedSyntax
 

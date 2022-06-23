@@ -172,7 +172,7 @@ theorem card_eq_of_equiv {as bs : List α} (h : as.equiv bs) : card as = card bs
 
 theorem card_append_disjoint : ∀ {as bs : List α},
     disjoint as bs → card (as ++ bs) = card as + card bs
-  | [], bs, disj => by simp
+  | [], _, _ => by simp
   | a :: as, bs, disj => by
     have disj' : disjoint as bs := fun _ h1 h2 => disj (mem_cons_of_mem a h1) h2
     cases Decidable.em (a ∈ as) with

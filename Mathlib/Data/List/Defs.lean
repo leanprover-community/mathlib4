@@ -31,7 +31,7 @@ splitAtD 2 [a, b, c] x = ([a, b], [c])
 splitAtD 4 [a, b, c] x = ([a, b, c, x], [])
 ``` -/
 def splitAtD : ℕ → List α → α → List α × List α
-| 0, xs, a => ([], xs)
+| 0, xs, _ => ([], xs)
 | n+1, [], a => let (l, r) := splitAtD n [] a; (a :: l, r)
 | n+1, x :: xs, a => let (l, r) := splitAtD n xs a; (x :: l, r)
 
@@ -59,7 +59,7 @@ modifyNthTail f 2 [a, b, c] = [a, b] ++ f [c]
 @[simp]
 def modifyNthTail (f : List α → List α) : ℕ → List α → List α
 | 0, l => f l
-| n+1, [] => []
+| _+1, [] => []
 | n+1, a :: l => a :: modifyNthTail f n l
 
 /-- Apply `f` to the head of the list, if it exists. -/
@@ -88,8 +88,8 @@ def insertNth (n : ℕ) (a : α) : List α → List α :=
 
 /-- Take `n` elements from a list `l`. If `l` has less than `n` elements, append `n - length l`
 elements `x`. -/
-def takeD : ∀ n : ℕ, List α → α → List α
-| 0, l, _ => []
+def takeD : ℕ → List α → α → List α
+| 0, _, _ => []
 | n+1, l, x => l.headD x :: takeD n l.tail x
 
 /-- Fold a function `f` over the list from the left, returning the list
@@ -246,7 +246,7 @@ def sublists' (l : List α) : List (List α) :=
   sublists'Aux l id []
 
 def sublistsAux : List α → (List α → List β → List β) → List β
-| [], f => []
+| [], _ => []
 | a :: l, f => f [a] (sublistsAux l fun ys r => f ys (f (a :: ys) r))
 
 /-- `sublists l` is the list of all (non-contiguous) sublists of `l`; cf. `sublists'`
@@ -258,7 +258,7 @@ def sublists (l : List α) : List (List α) :=
   [] :: sublistsAux l cons
 
 def sublistsAux₁ : List α → (List α → List β) → List β
-| [], f => []
+| [], _ => []
 | a :: l, f => f [a] ++ sublistsAux₁ l fun ys => f ys ++ f (a :: ys)
 
 section Forall₂
@@ -340,7 +340,7 @@ protected def sigma {σ : α → Type _} (l₁ : List α) (l₂ : ∀ a, List (�
   `ofFnAux f m h l` returns the first `m` elements of `ofFn f`
   appended to `l` -/
 def ofFnAux {n} (f : Fin n → α) : ∀ m, m ≤ n → List α → List α
-| 0, h, l => l
+| 0, _, l => l
 | m+1, h, l => ofFnAux f m (Nat.le_of_lt h) (f ⟨m, h⟩ :: l)
 
 /-- `ofFn f` with `f : fin n → α` returns the list whose ith element is `f i`
@@ -423,7 +423,7 @@ def eraseDup [DecidableEq α] : List α → List α :=
   It is intended mainly for proving properties of `range` and `iota`. -/
 @[simp]
 def range' : ℕ → ℕ → List ℕ
-| s, 0 => []
+| _, 0 => []
 | s, n+1 => s :: range' (s+1) n
 
 /-- Drop `none`s from a list, and replace each remaining `some a` with `a`. -/
@@ -435,7 +435,7 @@ it returns `x` otherwise -/
 @[simp]
 def ilast' {α} : α → List α → α
 | a, [] => a
-| a, b :: l => ilast' b l
+| _, b :: l => ilast' b l
 
 /-- `last' xs` returns the last element of `xs` if `xs` is non-empty;
 it returns `none` otherwise -/
@@ -443,7 +443,7 @@ it returns `none` otherwise -/
 def last' {α} : List α → Option α
 | [] => none
 | [a] => some a
-| b :: l => last' l
+| _ :: l => last' l
 
 /-- `rotate l n` rotates the elements of `l` to the left by `n`
 ```
@@ -455,7 +455,7 @@ def rotate (l : List α) (n : ℕ) : List α :=
 
 /-- rotate' is the same as `rotate`, but slower. Used for proofs about `rotate`-/
 def rotate' : List α → ℕ → List α
-| [], n => []
+| [], _ => []
 | l, 0 => l
 | a :: l, n+1 => rotate' (l ++ [a]) n
 
@@ -516,7 +516,7 @@ def getRest [DecidableEq α] : List α → List α → Option (List α)
 -/
 def slice {α} : ℕ → ℕ → List α → List α
 | 0, n, xs => xs.drop n
-| n+1, m, [] => []
+| _+1, _, [] => []
 | n+1, m, x :: xs => x :: slice n m xs
 
 /--
@@ -640,7 +640,7 @@ allSome [some 1, none  ] = none
 def allSome : List (Option α) → Option (List α)
 | [] => some []
 | some a :: as => cons a <$> allSome as
-| none :: as => none
+| none :: _ => none
 
 /--
 `fillNones xs ys` replaces the `none`s in `xs` with elements of `ys`. If there
@@ -679,7 +679,7 @@ def takeList {α} : List α → List ℕ → List (List α) × List α
   that is, the first `i` elements of `xs`, and the remaining elements chunked into
   sublists of length `n+1`. -/
 def toChunksAux {α} (n : ℕ) : List α → ℕ → List α × List (List α)
-| [], i => ([], [])
+| [], _ => ([], [])
 | x :: xs, 0 =>
   let (l, L) := toChunksAux n xs n
   ([], (x :: l) :: L)
@@ -731,7 +731,7 @@ def zipWith₅ (f : α → β → γ → δ → ε → ζ) : List α → List β
 
 /-- An auxiliary function for `List.mapWithPrefixSuffix`. -/
 def mapWithPrefixSuffixAux {α β} (f : List α → α → List α → β) : List α → List α → List β
-| prev, [] => []
+| _, [] => []
 | prev, h :: t => f prev h t :: mapWithPrefixSuffixAux f (prev.concat h) t
 
 /--

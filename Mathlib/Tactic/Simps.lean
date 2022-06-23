@@ -49,9 +49,8 @@ initialize simpsAttr : ParametricAttribute (Array Name) ←
   registerParametricAttribute {
     name := `simps
     descr := "Automatically derive lemmas specifying the projections of this declaration.",
-    getParam := fun decl stx =>
-      match stx with
-        -- TODO implement support for `config := ...`
-        | `(attr|simps $[$ids]*) => pure $ ids.map (·.getId.eraseMacroScopes)
-        | _ => throwError "unexpected simps syntax {stx}"
+    getParam := fun
+    -- TODO implement support for `config := ...`
+    | _, `(attr|simps $[$ids]*) => pure $ ids.map (·.getId.eraseMacroScopes)
+    | _, stx => throwError "unexpected simps syntax {stx}"
   }

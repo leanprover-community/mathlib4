@@ -21,8 +21,8 @@ variable {α : Type _} {β : Type _}
 /-- An elimination principle for `Option`. It is a nondependent version of `Option.rec_on`. -/
 @[simp]
 protected def elim : Option α → β → (α → β) → β
-| some x, y, f => f x
-| none, y, f => y
+| some x, _, f => f x
+| none, y, _ => y
 
 instance : Membership α (Option α) :=
   ⟨fun a b => b = some a⟩

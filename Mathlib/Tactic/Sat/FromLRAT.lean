@@ -120,8 +120,9 @@ def Fmla.proof (f : Fmla) (c : Clause) : Prop :=
 
 /-- If `f` subsumes `c` (i.e. `c ∈ f`), then `f.proof c`. -/
 theorem Fmla.proof_of_subsumes (H : Fmla.subsumes f (Fmla.one c)) : f.proof c :=
-  fun v h => h.1 _ $ H.1 _ $ List.Mem.head ..
+  fun _ h => h.1 _ $ H.1 _ $ List.Mem.head ..
 
+set_option linter.unusedVariables false in -- FIXME: lean4#1214
 /-- The core unit-propagation step.
 
 We have a local context of assumptions `¬l'` (sometimes called an assignment)
@@ -146,9 +147,9 @@ def Valuation.implies (v : Valuation) (p : Prop) : List Prop → Nat → Prop
 /-- `Valuation.mk [a, b, c]` is a valuation which is `a` at 0, `b` at 1 and `c` at 2, and false
 everywhere else. -/
 def Valuation.mk : List Prop → Valuation
-| [], n => False
-| a::as, 0 => a
-| a::as, n+1 => mk as n
+| [], _ => False
+| a::_, 0 => a
+| _::as, n+1 => mk as n
 
 /-- The fundamental relationship between `mk` and `implies`:
 `(mk ps).implies p ps 0` is equivalent to `p`. -/
@@ -433,7 +434,7 @@ partial def buildReify (ctx ctx' proof : Expr) (nvars : Nat) : Expr × Expr := I
   | 0 => e
   | n+1 => mkPS (depth+1) (mkApp2 cons (mkBVar depth) e) n
   pr := mkApp5 (mkConst ``Sat.Fmla.refute) e (mkPS 0 nil nvars) ctx proof pr
-  for i in [0:nvars] do
+  for _ in [0:nvars] do
     e := mkForall `a default (mkSort levelZero) e
     pr := mkLambda `a default (mkSort levelZero) pr
   pure (e, pr)
@@ -516,7 +517,7 @@ def parseDimacs : Parsec (Nat × Array (Array Int)) := do
   let nvars ← parseNat <* ws
   let nclauses ← parseNat <* ws
   let mut clauses := Array.mkEmpty nclauses
-  for i in [:nclauses] do
+  for _ in [:nclauses] do
     clauses := clauses.push (← parseInts)
   pure (nvars, clauses)
 

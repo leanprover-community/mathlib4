@@ -86,14 +86,14 @@ def splittingProcedure (expr : Expr) : MetaM Simp.Result := do
       let some y_y2 ← proveEqUsingDown y y2 | failure
       Simp.mkCongr {expr := mkApp op x} y_y2)
   catch _ => try
-    let some (β, n) := isNumeral? y | failure
+    let some (_, n) := isNumeral? y | failure
     let some x' ← isCoeOf? x | failure
     let α ← inferType x'
     let y2 ← mkCoe (← mkNumeral α n) γ
     let some y_y2 ← proveEqUsingDown y y2 | failure
     Simp.mkCongr {expr := mkApp op x} y_y2
   catch _ => try
-    let some (α, n) := isNumeral? x | failure
+    let some (_, n) := isNumeral? x | failure
     let some y' ← isCoeOf? y | failure
     let β ← inferType y'
     let x2 ← mkCoe (← mkNumeral β n) γ
@@ -245,7 +245,7 @@ macro "apply_mod_cast " e:term : tactic => `(apply mod_cast ($e : _))
 
 syntax (name := convNormCast) "norm_cast" : conv
 @[tactic convNormCast] def evalConvNormCast : Tactic :=
-  open Elab.Tactic.Conv in fun stx => withMainContext do
+  open Elab.Tactic.Conv in fun _ => withMainContext do
     applySimpResult (← derive (← getLhs))
 
 syntax (name := pushCast) "push_cast " (config)? (discharger)? (&"only ")? ("[" (simpStar <|> simpErase <|> simpLemma),* "]")? (location)? : tactic

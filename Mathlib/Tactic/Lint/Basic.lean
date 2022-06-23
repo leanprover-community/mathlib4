@@ -32,7 +32,7 @@ initialize nolintAttr : NameMapAttribute (Array Name) ←
   registerNameMapAttribute {
     name := `nolint
     descr := "Do not report this declaration in any of the tests of `#lint`"
-    add := fun decl stx =>
+    add := fun _decl stx =>
       match stx with
         -- TODO: validate linter names
         | `(attr|nolint $[$ids]*) => pure $ ids.map (·.getId.eraseMacroScopes)

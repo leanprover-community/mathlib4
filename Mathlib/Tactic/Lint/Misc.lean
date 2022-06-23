@@ -47,7 +47,7 @@ We skip all declarations that contain `sorry` in their value. -/
         e := mkApp e ldecl.type
         if let some val := ldecl.value? then
           e := mkApp e val
-      let unused := args.zip (.range args.size) |>.filter fun (arg, i) =>
+      let unused := args.zip (.range args.size) |>.filter fun (arg, _) =>
         !e.containsFVar arg.fvarId!
       if unused.isEmpty then return none
       addMessageContextFull <| .joinSep (← unused.toList.mapM fun (arg, i) =>

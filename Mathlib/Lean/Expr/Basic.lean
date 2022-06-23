@@ -78,17 +78,17 @@ def updateValue : ConstantInfo → Expr → ConstantInfo
   | defnInfo   info, v => defnInfo   {info with value := v}
   | thmInfo    info, v => thmInfo    {info with value := v}
   | opaqueInfo info, v => opaqueInfo {info with value := v}
-  | d, v => d
+  | d, _ => d
 
 def toDeclaration! : ConstantInfo → Declaration
   | defnInfo   info => Declaration.defnDecl info
   | thmInfo    info => Declaration.thmDecl     info
   | axiomInfo  info => Declaration.axiomDecl   info
   | opaqueInfo info => Declaration.opaqueDecl  info
-  | quotInfo   info => panic! "toDeclaration for quotInfo not implemented"
-  | inductInfo info => panic! "toDeclaration for inductInfo not implemented"
-  | ctorInfo   info => panic! "toDeclaration for ctorInfo not implemented"
-  | recInfo    info => panic! "toDeclaration for recInfo not implemented"
+  | quotInfo   _ => panic! "toDeclaration for quotInfo not implemented"
+  | inductInfo _ => panic! "toDeclaration for inductInfo not implemented"
+  | ctorInfo   _ => panic! "toDeclaration for ctorInfo not implemented"
+  | recInfo    _ => panic! "toDeclaration for recInfo not implemented"
 
 end ConstantInfo
 
@@ -133,7 +133,7 @@ def modifyArg (modifier : Expr → Expr) (e : Expr) (i : Nat) (n := e.getAppNumA
   modifyRevArg modifier (n - i - 1) e
 
 def getRevArg? : Expr → Nat → Option Expr
-  | app f a _, 0   => a
+  | app _ a _, 0   => a
   | app f _ _, i+1 => getRevArg! f i
   | _,         _   => none
 

@@ -105,13 +105,13 @@ initialize extExtension : SimpleScopedEnvExtension (Name × Array DiscrTree.Key)
 def extAttribute : AttributeImpl where
   name := `ext
   descr := "Marks a lemma as extensionality lemma"
-  add decl stx kind := do
+  add decl _stx kind := do
     if isStructure (← getEnv) decl then
       liftCommandElabM do
         Elab.Command.elabCommand <|<- `(declareExtTheoremsFor $(mkIdent decl))
     else MetaM.run' do
       let declTy := (← getConstInfo decl).type
-      let (xs, bis, declTy) ← withReducible <| forallMetaTelescopeReducing declTy
+      let (_, _, declTy) ← withReducible <| forallMetaTelescopeReducing declTy
       if declTy.isAppOfArity ``Eq 3 && (declTy.getArg! 1).isMVar && (declTy.getArg! 2).isMVar then
         let ty := declTy.getArg! 0
         let key ←
@@ -139,8 +139,7 @@ elab "apply_ext_lemma" : tactic => do
     try
       liftMetaTactic (apply · (← mkConstWithFreshMVarLevels lem))
       return
-    catch e =>
-      s.restore
+    catch _ => s.restore
   throwError "no applicable extensionality lemma found for{indentExpr ty}"
 
 scoped syntax "ext_or_skip" (ppSpace rintroPat)* : tactic

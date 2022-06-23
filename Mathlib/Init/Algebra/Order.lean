@@ -55,10 +55,10 @@ theorem lt_iff_le_not_le : ∀ {a b : α}, a < b ↔ (a ≤ b ∧ ¬ b ≤ a) :=
 Preorder.lt_iff_le_not_le _ _
 
 theorem lt_of_le_not_le : ∀ {a b : α}, a ≤ b → ¬ b ≤ a → a < b
-| a, b, hab, hba => lt_iff_le_not_le.mpr ⟨hab, hba⟩
+| _a, _b, hab, hba => lt_iff_le_not_le.mpr ⟨hab, hba⟩
 
 theorem le_not_le_of_lt : ∀ {a b : α}, a < b → a ≤ b ∧ ¬ b ≤ a
-| a, b, hab => lt_iff_le_not_le.mp hab
+| _a, _b, hab => lt_iff_le_not_le.mp hab
 
 theorem le_of_eq {a b : α} : a = b → a ≤ b :=
 λ h => h ▸ le_refl a
@@ -67,16 +67,16 @@ theorem ge_trans : ∀ {a b c : α}, a ≥ b → b ≥ c → a ≥ c :=
 λ h₁ h₂ => le_trans h₂ h₁
 
 theorem lt_irrefl : ∀ a : α, ¬ a < a
-| a, haa => match le_not_le_of_lt haa with
+| _a, haa => match le_not_le_of_lt haa with
   | ⟨h1, h2⟩ => h2 h1
 
 theorem gt_irrefl : ∀ a : α, ¬ a > a :=
 lt_irrefl
 
 theorem lt_trans : ∀ {a b c : α}, a < b → b < c → a < c
-| a, b, c, hab, hbc =>
+| _a, _b, _c, hab, hbc =>
   match le_not_le_of_lt hab, le_not_le_of_lt hbc with
-  | ⟨hab, hba⟩, ⟨hbc, hcb⟩ => lt_of_le_not_le (le_trans hab hbc) (λ hca => hcb (le_trans hca hab))
+  | ⟨hab, _⟩, ⟨hbc, hcb⟩ => lt_of_le_not_le (le_trans hab hbc) (λ hca => hcb (le_trans hca hab))
 
 theorem gt_trans : ∀ {a b c : α}, a > b → b > c → a > c :=
 λ h₁ h₂ => lt_trans h₂ h₁
@@ -91,15 +91,15 @@ theorem lt_asymm {a b : α} (h : a < b) : ¬ b < a :=
 λ h1 : b < a => lt_irrefl a (lt_trans h h1)
 
 theorem le_of_lt : ∀ {a b : α}, a < b → a ≤ b
-| a, b, hab => (le_not_le_of_lt hab).left
+| _a, _b, hab => (le_not_le_of_lt hab).left
 
 theorem lt_of_lt_of_le : ∀ {a b c : α}, a < b → b ≤ c → a < c
-| a, b, c, hab, hbc =>
+| _a, _b, _c, hab, hbc =>
   let ⟨hab, hba⟩ := le_not_le_of_lt hab
   lt_of_le_not_le (le_trans hab hbc) $ λ hca => hba (le_trans hbc hca)
 
 theorem lt_of_le_of_lt : ∀ {a b c : α}, a ≤ b → b < c → a < c
-| a, b, c, hab, hbc =>
+| _a, _b, _c, hab, hbc =>
   let ⟨hbc, hcb⟩ := le_not_le_of_lt hbc
   lt_of_le_not_le (le_trans hab hbc) $ λ hca => hcb (le_trans hca hab)
 
@@ -123,8 +123,8 @@ theorem not_lt_of_ge {a b : α} (h : a ≥ b) : ¬ a < b :=
 λ hab => not_le_of_gt hab h
 
 theorem le_of_lt_or_eq : ∀ {a b : α}, (a < b ∨ a = b) → a ≤ b
-| a, b, (Or.inl hab) => le_of_lt hab
-| a, b, (Or.inr hab) => hab ▸ le_refl _
+| _a, _b, Or.inl hab => le_of_lt hab
+| _a, _b, Or.inr hab => hab ▸ le_refl _
 
 theorem le_of_eq_or_lt {a b : α} (h : a = b ∨ a < b) : a ≤ b := match h with
 | (Or.inl h) => le_of_eq h

@@ -441,7 +441,7 @@ lemma imp_imp_imp (h₀ : c → a) (h₁ : b → d) : (a → b) → (c → d) :=
 
 -- See Note [decidable namespace]
 protected theorem Decidable.peirce (a b : Prop) [Decidable a] : ((a → b) → a) → a :=
-if ha : a then λ h => ha else λ h => h ha.elim
+if ha : a then λ _ => ha else λ h => h ha.elim
 
 theorem peirce (a b : Prop) : ((a → b) → a) → a := Decidable.peirce _ _
 
@@ -509,17 +509,17 @@ theorem not_and_not_right : ¬(a ∧ ¬b) ↔ (a → b) := Decidable.not_and_not
 **Important**: this function should be used instead of `rw` on `decidable b`, because the
 kernel will get stuck reducing the usage of `propext` otherwise,
 and `dec_trivial` will not work. -/
-@[inline] def decidable_of_iff (a : Prop) (h : a ↔ b) [D : Decidable a] : Decidable b :=
+@[inline] def decidable_of_iff (a : Prop) (h : a ↔ b) [Decidable a] : Decidable b :=
 decidable_of_decidable_of_iff h
 
 /-- Transfer decidability of `b` to decidability of `a`, if the propositions are equivalent.
 This is the same as `decidable_of_iff` but the iff is flipped. -/
-@[inline] def decidable_of_iff' (b : Prop) (h : a ↔ b) [D : Decidable b] : Decidable a :=
+@[inline] def decidable_of_iff' (b : Prop) (h : a ↔ b) [Decidable b] : Decidable a :=
 decidable_of_decidable_of_iff h.symm
 
 /-- Prove that `a` is decidable by constructing a boolean `b` and a proof that `b ↔ a`.
 (This is sometimes taken as an alternate definition of decidability.) -/
-def decidable_of_bool : ∀ (b : Bool) (h : b ↔ a), Decidable a
+def decidable_of_bool : ∀ (b : Bool), (b ↔ a) → Decidable a
 | true, h => isTrue (h.1 rfl)
 | false, h => isFalse (mt h.2 Bool.ff_ne_tt)
 
@@ -617,7 +617,7 @@ forall_congr' (λ a => forall₃_congr (h a))
 
 lemma exists_imp_exists' {p : α → Prop} {q : β → Prop} (f : α → β) (hpq : ∀ a, p a → q (f a))
   (hp : ∃ a, p a) : ∃ b, q b :=
-Exists.elim hp (λ a hp' => ⟨_, hpq _ hp'⟩)
+Exists.elim hp (λ _ hp' => ⟨_, hpq _ hp'⟩)
 
 lemma exists₂_congr {p q : α → β → Prop} (h : ∀ a b, p a b ↔ q a b) :
   (∃ a b, p a b) ↔ (∃ a b, q a b) :=
@@ -666,18 +666,18 @@ protected theorem Decidable.not_forall {p : α → Prop}
 @[simp] theorem not_forall {p : α → Prop} : (¬ ∀ x, p x) ↔ ∃ x, ¬ p x := Decidable.not_forall
 
 @[simp] theorem forall_const (α : Sort _) [i : Nonempty α] : (α → b) ↔ b :=
-⟨i.elim, λ hb x => hb⟩
+⟨i.elim, λ hb _ => hb⟩
 
 theorem forall_and_distrib {p q : α → Prop} : (∀ x, p x ∧ q x) ↔ (∀ x, p x) ∧ (∀ x, q x) :=
 ⟨λ h => ⟨λ x => (h x).left, λ x => (h x).right⟩, λ ⟨h₁, h₂⟩ x => ⟨h₁ x, h₂ x⟩⟩
 
 @[simp] theorem forall_eq {p : α → Prop} {a' : α} : (∀ a, a = a' → p a) ↔ p a' :=
-⟨λ h => h a' rfl, λ h a e => e.symm ▸ h⟩
+⟨λ h => h a' rfl, λ h _ e => e.symm ▸ h⟩
 
 @[simp] theorem forall_eq' {a' : α} : (∀ a, a' = a → p a) ↔ p a' :=
 by simp [@eq_comm _ a']
 
-@[simp] theorem exists_false : ¬ (∃ a : α, False) := fun ⟨a, h⟩ => h
+@[simp] theorem exists_false : ¬ (∃ _a : α, False) := fun ⟨_, h⟩ => h
 
 @[simp] theorem exists_and_distrib_left {q : Prop} {p : α → Prop} :
   (∃ x, q ∧ p x) ↔ q ∧ (∃ x, p x) :=
@@ -692,7 +692,7 @@ by simp [And.comm]
 @[simp] theorem exists_eq' {a' : α} : ∃ a, a' = a := ⟨_, rfl⟩
 
 @[simp] theorem exists_eq_left {p : α → Prop} {a' : α} : (∃ a, a = a' ∧ p a) ↔ p a' :=
-⟨λ ⟨a, e, h⟩ => e ▸ h, λ h => ⟨_, rfl, h⟩⟩
+⟨λ ⟨_, e, h⟩ => e ▸ h, λ h => ⟨_, rfl, h⟩⟩
 
 @[simp] theorem exists_eq_right {p : α → Prop} {a' : α} : (∃ a, p a ∧ a = a') ↔ p a' :=
 (exists_congr $ by exact λ a => And.comm).trans exists_eq_left
@@ -714,7 +714,7 @@ by simp [@eq_comm _ a']
 
 
 @[simp]
-theorem exists_prop {p q : Prop} : (∃ h : p, q) ↔ p ∧ q :=
+theorem exists_prop {p q : Prop} : (∃ _h : p, q) ↔ p ∧ q :=
 Iff.intro (fun ⟨hp, hq⟩ => And.intro hp hq) (fun ⟨hp, hq⟩ => Exists.intro hp hq)
 
 @[simp] theorem exists_apply_eq_apply {α β : Type _} (f : α → β) (a' : α) : ∃ a, f a = f a' :=

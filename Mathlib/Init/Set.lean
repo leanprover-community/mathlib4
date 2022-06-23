@@ -52,7 +52,7 @@ instance : Subset (Set α) :=
 ⟨Set.subset⟩
 
 instance : EmptyCollection (Set α) :=
-⟨λ a => false⟩
+⟨λ _ => false⟩
 
 open Mathlib.ExtendedBinder in
 syntax "{ " extBinder " | " term " }" : term
@@ -73,7 +73,7 @@ open Mathlib.ExtendedBinder in
 macro (priority := low) "{ " t:term " | " bs:extBinders " }" : term =>
   `({ x | ∃ᵉ $bs:extBinders, $t = x })
 
-def univ : Set α := {a | True }
+def univ : Set α := {_a | True}
 
 protected def insert (a : α) (s : Set α) : Set α :=
 {b | b = a ∨ b ∈ s}
@@ -119,10 +119,10 @@ instance : Functor Set :=
 { map := @Set.image }
 
 instance : LawfulFunctor Set where
-  id_map s := funext $ λ b => propext ⟨λ ⟨_, sb, rfl⟩ => sb, λ sb => ⟨_, sb, rfl⟩⟩
-  comp_map g h s := funext $ λ c => propext
+  id_map _ := funext fun _ => propext ⟨λ ⟨_, sb, rfl⟩ => sb, λ sb => ⟨_, sb, rfl⟩⟩
+  comp_map g h _ := funext $ λ c => propext
     ⟨λ ⟨a, ⟨h₁, h₂⟩⟩ => ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
-     λ ⟨b, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
+     λ ⟨_, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
   map_const := rfl
 
 syntax "{" term,+ "}" : term
