@@ -499,6 +499,7 @@ open Decorations in
 /-- Run a test suite for `p` and throw an exception if `p` does not not hold.-/
 def Testable.check (p : Prop) (cfg : Configuration := {}) (p' : Decorations.DecorationsOf p := by mk_decorations) [Testable p'] : IO PUnit := do
   let x ← Testable.checkIO p' cfg
+  go p' x where /-- HACK: https://github.com/leanprover/lean4/issues/1247 -/ go p' (x : TestResult p') : IO PUnit := do
   match x with
   | TestResult.success _ => if !cfg.quiet then IO.println "Success" else pure ()
   | TestResult.gaveUp n => if !cfg.quiet then IO.println s!"Gave up {n} times"
