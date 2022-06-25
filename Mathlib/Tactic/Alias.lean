@@ -85,26 +85,23 @@ syntax (name := aliasLRDots) "alias " ident " ↔ " ".." : command
 
 
 /--
-  Given the type of an iff decl, produce a value for one of the implication
-  directions (determined by `iffmp`).
+  Given a possibly forall-quantified iff expression `prf`, produce a value for one
+  of the implication directions (determined by `mp`).
 -/
-def mkIffMpApp (iffmp: Name) : Expr → (Nat → Expr) → MetaM Expr
-| (Expr.forallE n varType body d), f => do
-     let rest ← mkIffMpApp iffmp body (λ n => mkApp (f (n+1)) (mkBVar n))
-     pure $ mkLambda n d.binderInfo varType rest
-| (Expr.app (Expr.app (Expr.const ``Iff _ _) e1 _) e2 _), f =>
-  pure $ mkApp3 (mkConst iffmp) e1 e2 (f 0)
-| _, _ => throwError "Target theorem must have the form `∀ x y z, a ↔ b`"
+def mkIffMpApp (mp : Bool) (prf : Expr) : MetaM Expr := do
+  Meta.forallTelescope (← Meta.inferType prf) fun xs ty => do
+    let some (lhs, rhs) := ty.iff?
+        | throwError "Target theorem must have the form `∀ x y z, a ↔ b`"
+    Meta.mkLambdaFVars xs <|
+      mkApp3 (mkConst (if mp then ``Iff.mp else ``Iff.mpr)) lhs rhs (mkAppN prf xs)
 
 /--
-  Given a constant represent an iff decl, adds a decl for one of the implication
+  Given a constant representing an iff decl, adds a decl for one of the implication
   directions.
 -/
 def aliasIff (ci : ConstantInfo) (al : Name) (isForward : Bool) : MetaM Unit := do
   let ls := ci.levelParams
-  let t := ci.type
-  let iffmp := if isForward then ``Iff.mp else ``Iff.mpr
-  let v ← mkIffMpApp iffmp t (λ _ => mkConst ci.name (lvls := (ls.map mkLevelParam)))
+  let v ← mkIffMpApp isForward ci.value!
   let t' ← Meta.inferType v
   -- TODO add @alias attribute
   addDecl $ .thmDecl {
