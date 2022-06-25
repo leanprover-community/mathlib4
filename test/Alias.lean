@@ -1,6 +1,7 @@
 import Mathlib
 
 namespace Alias
+namespace A
 
 theorem foo : 1 + 1 = 2 := rfl
 alias foo ← foo1 foo2 foo3
@@ -34,5 +35,9 @@ example : True ∧ True → True := backward True
 alias a_iff_a_and_a ↔ ..
 example : True → True ∧ True := a_and_a_of_a True
 example : True ∧ True → True := a_of_a_and_a True
+
+end A
+
+example : True → True ∧ True := A.a_and_a_of_a True
 
 end Alias
