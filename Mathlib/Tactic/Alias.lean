@@ -79,16 +79,23 @@ syntax (name := aliasLRDots) "alias " ident " ↔ " ".." : command
 
 | _ => Lean.Elab.throwUnsupportedSyntax
 
--- Given the type of an iff decl, produce a value for one of the implication
--- directions (determined by `iffmp`).
+
+/--
+  Given the type of an iff decl, produce a value for one of the implication
+  directions (determined by `iffmp`).
+-/
 def mkIffMpApp (iffmp: Name) : Expr → (Nat → Expr) → MetaM Expr
 | (Expr.forallE n varType body d), f => do
      let rest ← mkIffMpApp iffmp body (λ n => mkApp (f (n+1)) (mkBVar n))
      pure $ mkLambda n d.binderInfo varType rest
 | (Expr.app (Expr.app (Expr.const ``Iff _ _) e1 _) e2 _), f =>
   pure $ mkApp3 (mkConst iffmp) e1 e2 (f 0)
-| _, _ => throwError "Target theorem must have the form `Π x y z, a ↔ b`"
+| _, _ => throwError "Target theorem must have the form `∀ x y z, a ↔ b`"
 
+/--
+  Given a constant represent an iff decl, adds a decl for one of the implication
+  directions.
+-/
 def aliasIff (ci : ConstantInfo) (al : Name) (isForward : Bool) : MetaM Unit := do
   let ls := ci.levelParams
   let t := ci.type
