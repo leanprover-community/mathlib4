@@ -380,6 +380,10 @@ end
 
 lemma Bool.ff_ne_tt : false = true → False := Bool.noConfusion
 
+lemma Bool.eq_false_or_eq_true : (b : Bool) → b = true ∨ b = false
+  | true => .inl rfl
+  | false => .inr rfl
+
 def is_dec_eq {α : Sort u} (p : α → α → Bool) : Prop   := ∀ ⦃x y : α⦄, p x y = true → x = y
 def is_dec_refl {α : Sort u} (p : α → α → Bool) : Prop := ∀ x, p x x = true
 
