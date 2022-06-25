@@ -63,17 +63,18 @@ syntax (name := aliasLRDots) "alias " ident " ↔ " ".." : command
 | `(alias $name:ident ← $aliases:ident*) => do
   let resolved ← resolveGlobalConstNoOverload name
   let constant ← getConstInfo resolved
+  let ns ← getCurrNamespace
 
   for a in aliases do
     let decl ← match constant with
     | Lean.ConstantInfo.defnInfo d =>
       pure $ .defnDecl {
-        d with name := a.getId
+        d with name := (ns.append a.getId)
                value := mkConst resolved (d.levelParams.map mkLevelParam)
       }
     | Lean.ConstantInfo.thmInfo t =>
       pure $ .thmDecl {
-        t with name := a.getId
+        t with name := (ns.append a.getId)
                value := mkConst resolved (t.levelParams.map mkLevelParam)
       }
     | _ => throwError "alias only works with def or theorem"

@@ -38,6 +38,8 @@ example : True ∧ True → True := a_of_a_and_a True
 
 end A
 
+-- test namespacing
+example : 1 + 1 = 2 := A.foo1
 example : True → True ∧ True := A.a_and_a_of_a True
 example : True → True ∧ True := A.forward True
 example : True ∧ True → True := A.backward True
