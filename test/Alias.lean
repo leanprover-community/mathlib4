@@ -4,7 +4,7 @@ namespace Alias
 namespace A
 
 theorem foo : 1 + 1 = 2 := rfl
-alias foo ← foo1 foo2 foo3
+alias foo ← foo1 foo2 foo3 _root_.B.foo4
 example : 1 + 1 = 2 := foo1
 example : 1 + 1 = 2 := foo2
 example : 1 + 1 = 2 := foo3
@@ -40,8 +40,19 @@ end A
 
 -- test namespacing
 example : 1 + 1 = 2 := A.foo1
+example : 1 + 1 = 2 := B.foo4
 example : True → True ∧ True := A.a_and_a_of_a True
 example : True → True ∧ True := A.forward True
 example : True ∧ True → True := A.backward True
+
+namespace C
+
+alias A.a_iff_a_and_a ↔ _root_.B.forward2 _
+alias A.a_iff_a_and_a ↔ _ _root_.B.backward2
+
+end C
+
+example : True → True ∧ True := B.forward2 True
+example : True ∧ True → True := B.backward2 True
 
 end Alias

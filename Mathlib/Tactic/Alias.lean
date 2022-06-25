@@ -58,6 +58,21 @@ syntax (name := aliasLR) "alias " ident " ↔ " binderIdent binderIdent : comman
 /-- Adds one-way implication declarations, inferring names for them. -/
 syntax (name := aliasLRDots) "alias " ident " ↔ " ".." : command
 
+/-- Like `++`, except that if the right argument starts with `_root_` the namespace will be
+ignored.
+```
+appendNamespace `a.b `c.d = `a.b.c.d
+appendNamespace `a.b `_root_.c.d = `c.d
+```
+
+TODO: Move this declaration to a more central location.
+-/
+def appendNamespace (ns : Name) : Name → Name
+| Name.str Name.anonymous s _ => if s = "_root_" then Name.anonymous else Name.mkStr ns s
+| Name.str p s _              => Name.mkStr (appendNamespace ns p) s
+| Name.num p n _              => Name.mkNum (appendNamespace ns p) n
+| Name.anonymous              => ns
+
 /-- Elaborates an `alias ←` command. -/
 @[commandElab «alias»] def elabAlias : Elab.Command.CommandElab
 | `(alias $name:ident ← $aliases:ident*) => do
@@ -69,12 +84,12 @@ syntax (name := aliasLRDots) "alias " ident " ↔ " ".." : command
     let decl ← match constant with
     | Lean.ConstantInfo.defnInfo d =>
       pure $ .defnDecl {
-        d with name := (ns.append a.getId)
+        d with name := (appendNamespace ns a.getId)
                value := mkConst resolved (d.levelParams.map mkLevelParam)
       }
     | Lean.ConstantInfo.thmInfo t =>
       pure $ .thmDecl {
-        t with name := (ns.append a.getId)
+        t with name := (appendNamespace ns a.getId)
                value := mkConst resolved (t.levelParams.map mkLevelParam)
       }
     | _ => throwError "alias only works with def or theorem"
@@ -120,8 +135,11 @@ def aliasIff (ci : ConstantInfo) (al : Name) (isForward : Bool) : MetaM Unit := 
    let ns ← getCurrNamespace
 
    Lean.Elab.Command.liftTermElabM none do
-     if let `(binderIdent| $x:ident) := left then aliasIff constant (ns.append x.getId) true
-     if let `(binderIdent| $x:ident) := right then aliasIff constant (ns.append x.getId) false
+     if let `(binderIdent| $x:ident) := left
+     then aliasIff constant (appendNamespace ns x.getId) true
+
+     if let `(binderIdent| $x:ident) := right
+     then aliasIff constant (appendNamespace ns x.getId) false
 
 | _ => Lean.Elab.throwUnsupportedSyntax
 
