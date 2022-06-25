@@ -49,10 +49,16 @@ namespace Alias
 
 open Lean
 
+/-- Adds some copies of a theorem or definition. -/
 syntax (name := alias) "alias " ident " ← " ident* : command
+
+/-- Adds one-way implication declarations. -/
 syntax (name := aliasLR) "alias " ident " ↔ " binderIdent binderIdent : command
+
+/-- Adds one-way implication declarations, inferring names for them. -/
 syntax (name := aliasLRDots) "alias " ident " ↔ " ".." : command
 
+/-- Elaborates an `alias ←` command. -/
 @[commandElab «alias»] def elabAlias : Elab.Command.CommandElab
 | `(alias $name:ident ← $aliases:ident*) => do
   let resolved ← resolveGlobalConstNoOverload name
@@ -110,6 +116,7 @@ def aliasIff (ci : ConstantInfo) (al : Name) (isForward : Bool) : MetaM Unit := 
       levelParams := ls
   }
 
+/-- Elaborates an `alias ↔` command. -/
 @[commandElab aliasLR] def elabAliasLR : Lean.Elab.Command.CommandElab
 | `(alias $name:ident ↔ $left:binderIdent $right:binderIdent ) => do
    let resolved ← resolveGlobalConstNoOverload name
@@ -135,6 +142,7 @@ def aliasIff (ci : ConstantInfo) (al : Name) (isForward : Bool) : MetaM Unit := 
 
 | _ => Lean.Elab.throwUnsupportedSyntax
 
+/-- Elaborates an `alias ↔ ..` command. -/
 @[commandElab aliasLRDots] def elabAliasLRDots : Lean.Elab.Command.CommandElab
 | `(alias $name:ident ↔ ..) => do
   let resolved ← resolveGlobalConstNoOverload name
