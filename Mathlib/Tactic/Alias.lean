@@ -67,12 +67,12 @@ syntax (name := aliasLRDots) "alias " ident " ↔ " ".." : command
   for a in aliases do
     let decl ← match constant with
     | Lean.ConstantInfo.defnInfo d =>
-      pure $ Lean.Declaration.defnDecl {
+      pure $ .defnDecl {
         d with name := a.getId
                value := mkConst resolved (d.levelParams.map mkLevelParam)
       }
     | Lean.ConstantInfo.thmInfo t =>
-      pure $ Lean.Declaration.thmDecl {
+      pure $ .thmDecl {
         t with name := a.getId
                value := mkConst resolved (t.levelParams.map mkLevelParam)
       }
@@ -107,7 +107,7 @@ def aliasIff (ci : ConstantInfo) (al : Name) (isForward : Bool) : MetaM Unit := 
   let v ← mkIffMpApp iffmp t (λ _ => mkConst ci.name (lvls := (ls.map mkLevelParam)))
   let t' ← Meta.inferType v
   -- TODO add @alias attribute
-  addDecl $ Lean.Declaration.thmDecl {
+  addDecl $ .thmDecl {
       name := al
       value := v
       type := t'
