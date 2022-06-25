@@ -387,37 +387,21 @@ fun {x} => by simp only [mem_map, not_and, exists_imp_distrib, and_imp]
 
 @[simp] theorem mem_reverse (x : α) (as : List α) : x ∈ reverse as ↔ x ∈ as := by simp [reverse]
 
--- TODO: better automation needed
-theorem mem_filterAux (x : α) (p : α → Bool) :
-    ∀ as bs, x ∈ filterAux p as bs ↔ (x ∈ as ∧ p x) ∨ x ∈ bs
-  | [], bs => by simp [filterAux]
-  | (a :: as), bs => by
-    simp [filterAux]
-    cases pa : p a with
-    | true =>
-      simp [mem_filterAux x p as (a :: bs)]
-      constructor
-      · intro
-        | Or.inl h'' => exact Or.inl ⟨Or.inr h''.1, h''.2⟩
-        | Or.inr (Or.inl h₃) => exact Or.inl ⟨Or.inl h₃, h₃ ▸ pa⟩
-        | Or.inr (Or.inr h₃) => exact Or.inr h₃
-      · intro
-        | Or.inl ⟨Or.inl h₃, _⟩ => exact Or.inr (Or.inl h₃)
-        | Or.inl ⟨Or.inr h₃, h''⟩ => exact Or.inl ⟨h₃, h''⟩
-        | Or.inr h'' => exact Or.inr (Or.inr h'')
-    | false =>
-      simp [mem_filterAux x p as bs]
-      constructor
-      · intro
-        | Or.inl h'' => exact Or.inl ⟨Or.inr h''.1, h''.2⟩
-        | Or.inr h'' => exact Or.inr h''
-      · intro
-        | Or.inl ⟨Or.inl h₃, h''⟩ => rw [← h₃, h''] at pa; contradiction
-        | Or.inl ⟨Or.inr h₃, h''⟩ => exact Or.inl ⟨h₃, h''⟩
-        | Or.inr h'' => exact Or.inr h''
-
 theorem mem_filter (as : List α) (p : α → Bool) (x : α) :
-    x ∈ filter p as ↔ x ∈ as ∧ p x = true := by simp [filter, mem_filterAux]
+    x ∈ filter p as ↔ x ∈ as ∧ p x = true := by
+  by_cases (p x) <;> simp only [*, and_true, and_false, iff_false]
+  case pos =>
+    induction as
+    case nil => simp [filter]
+    case cons head tail ih =>
+      have : p head = false → x ≠ head := fun _ _ => by simp_all
+      cases (p head).eq_false_or_eq_true <;> simp [filter, *]
+  case neg =>
+    induction as
+    case nil => simp [filter]
+    case cons head tail ih =>
+      have : p head = true → x ≠ head := fun _ _ => by simp_all
+      simp only [filter] <;> split <;> simp [*]
 
 /-! ### append -/
 
