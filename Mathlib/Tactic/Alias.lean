@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
+Authors: Mario Carneiro, David Renshaw
 -/
 import Lean.Elab.Command
 import Lean.Elab.Term
@@ -62,21 +62,19 @@ syntax (name := aliasLRDots) "alias " ident " ↔ " ".." : command
 @[commandElab «alias»] def elabAlias : Elab.Command.CommandElab
 | `(alias $name:ident ← $aliases:ident*) => do
   let resolved ← resolveGlobalConstNoOverload name
-  let constant ← match (← Lean.getEnv).constants.find? resolved with
-                 | none => throwError "failed to resolve alias LHS"
-                 | some c => pure c
+  let constant ← getConstInfo resolved
 
   for a in aliases do
     let decl ← match constant with
     | Lean.ConstantInfo.defnInfo d =>
       pure $ Lean.Declaration.defnDecl {
         d with name := a.getId
-               value := mkConst resolved
+               value := mkConst resolved (d.levelParams.map mkLevelParam)
       }
     | Lean.ConstantInfo.thmInfo t =>
       pure $ Lean.Declaration.thmDecl {
         t with name := a.getId
-               value := mkConst resolved
+               value := mkConst resolved (t.levelParams.map mkLevelParam)
       }
     | _ => throwError "alias only works with def or theorem"
 
@@ -120,9 +118,7 @@ def aliasIff (ci : ConstantInfo) (al : Name) (isForward : Bool) : MetaM Unit := 
 @[commandElab aliasLR] def elabAliasLR : Lean.Elab.Command.CommandElab
 | `(alias $name:ident ↔ $left:binderIdent $right:binderIdent ) => do
    let resolved ← resolveGlobalConstNoOverload name
-   let constant ← match (← Lean.getEnv).constants.find? resolved with
-                  | none => throwError "failed to resolve alias LHS"
-                  | some c => pure c
+   let constant ← getConstInfo resolved
 
    Lean.Elab.Command.liftTermElabM none do
      match left with
@@ -146,9 +142,7 @@ def aliasIff (ci : ConstantInfo) (al : Name) (isForward : Bool) : MetaM Unit := 
 @[commandElab aliasLRDots] def elabAliasLRDots : Lean.Elab.Command.CommandElab
 | `(alias $name:ident ↔ ..) => do
   let resolved ← resolveGlobalConstNoOverload name
-  let constant ← match (← Lean.getEnv).constants.find? resolved with
-                 | none => throwError "failed to resolve alias LHS"
-                 | some c => pure c
+  let constant ← getConstInfo resolved
 
   let (parent, base) ← match resolved with
                        | Name.str n s _ => pure (n,s)
