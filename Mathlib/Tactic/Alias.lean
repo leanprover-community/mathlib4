@@ -116,10 +116,11 @@ def aliasIff (ci : ConstantInfo) (al : Name) (isForward : Bool) : MetaM Unit := 
 | `(alias $name:ident ↔ $left:binderIdent $right:binderIdent ) => do
    let resolved ← resolveGlobalConstNoOverload name
    let constant ← getConstInfo resolved
+   let ns ← getCurrNamespace
 
    Lean.Elab.Command.liftTermElabM none do
-     if let `(binderIdent| $x:ident) := left then aliasIff constant x.getId true
-     if let `(binderIdent| $x:ident) := right then aliasIff constant x.getId false
+     if let `(binderIdent| $x:ident) := left then aliasIff constant (ns.append x.getId) true
+     if let `(binderIdent| $x:ident) := right then aliasIff constant (ns.append x.getId) false
 
 | _ => Lean.Elab.throwUnsupportedSyntax
 
