@@ -121,20 +121,8 @@ def aliasIff (ci : ConstantInfo) (al : Name) (isForward : Bool) : MetaM Unit := 
    let constant ← getConstInfo resolved
 
    Lean.Elab.Command.liftTermElabM none do
-     match left with
-     | `(binderIdent| $x:ident) =>
-       aliasIff constant x.getId true
-
-     | `(binderIdent| _) => pure ()
-
-     | _ => Lean.Elab.throwUnsupportedSyntax
-
-     match right with
-     | `(binderIdent| $x:ident) =>
-       aliasIff constant x.getId false
-
-     | `(binderIdent| _) => pure ()
-     | _ => Lean.Elab.throwUnsupportedSyntax
+     if let `(binderIdent| $x:ident) := left then aliasIff constant x.getId true
+     if let `(binderIdent| $x:ident) := right then aliasIff constant x.getId false
 
 | _ => Lean.Elab.throwUnsupportedSyntax
 
