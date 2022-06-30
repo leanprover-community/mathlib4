@@ -181,6 +181,7 @@ def getDeclsInMathlib : CoreM (Array Name) := do
   pure decls
 
 open Elab Command in
+/-- The command `#lint` runs the linters on the current file (by default). -/
 elab "#lint"
     project:(&"mathlib" <|> &"all")?
     verbosity:("+" <|> "-")?

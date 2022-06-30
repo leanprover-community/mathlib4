@@ -7,6 +7,7 @@ Authors: Gabriel Ebner
 import Mathlib.Tactic.NormCast.CoeExt
 import Mathlib.Tactic.NormCast.Ext
 
+/-- `addElim foo` registers `foo` as an elim-lemma in `norm_cast`. -/
 local elab "addElim" id:ident : command =>
   open Tactic.NormCast Lean Meta in
   Elab.Command.liftCoreM do MetaM.run' do

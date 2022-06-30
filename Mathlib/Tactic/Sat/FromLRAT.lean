@@ -577,7 +577,7 @@ def fromLRAT (cnf lrat : String) (name : Name) : MetaM Unit := do
 open Elab Term
 
 
-/-!
+/--
 A macro for producing SAT proofs from CNF / LRAT files.
 These files are commonly used in the SAT community for writing proofs.
 
@@ -628,7 +628,7 @@ lrat_proof example
 --   (include_str "full2.cnf")
 --   (include_str "full2.lrat")
 
-/-!
+/--
 A macro for producing SAT proofs from CNF / LRAT files.
 These files are commonly used in the SAT community for writing proofs.
 

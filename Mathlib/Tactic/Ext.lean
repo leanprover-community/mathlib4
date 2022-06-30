@@ -31,6 +31,10 @@ def withExtHyps (struct : Name) (k : Array Expr → (x y : Expr) → Array (Name
         hyps := hyps.push (field, ← mkHEq x_f y_f)
     k params x y hyps
 
+/--
+Creates the type of the extensionality lemma for the given structure,
+elaborating to `x.1 = y.1 → x.2 = y.2 → x = y`, for example.
+-/
 scoped elab "ext_type%" struct:ident : term => do
   withExtHyps (← resolveGlobalConstNoOverload struct) fun params x y hyps => do
     let mut ty ← mkEq x y
@@ -46,6 +50,10 @@ def mkAndN : List Expr → Expr
   | [p, q] => mkAnd p q
   | p :: ps => mkAnd p (mkAndN ps)
 
+/--
+Creates the type of the iff-variant of the extensionality lemma for the given structure,
+elaborating to `x = y ↔ x.1 = y.1 ∧ x.2 = y.2`, for example.
+-/
 scoped elab "ext_iff_type%" struct:ident : term => do
   withExtHyps (← resolveGlobalConstNoOverload struct) fun params x y hyps => do
     mkForallFVars (params |>.push x |>.push y) <|
@@ -68,6 +76,7 @@ scoped macro "ext_iff_proof%" : term => `(fun {..} {..} =>
   ⟨fun _ => by subst_eqs; split_ands <;> rfl,
    fun _ => by (repeat cases ‹_ ∧ _›); subst_eqs; rfl⟩)
 
+/-- `declareExtTheoremsFor A` declares the extensionality theorems for `A`. -/
 scoped macro "declareExtTheoremsFor" struct:ident : command => do
   let extName := mkIdent <| struct.getId.eraseMacroScopes.mkStr "ext"
   let extIffName := mkIdent <| struct.getId.eraseMacroScopes.mkStr "ext_iff"
