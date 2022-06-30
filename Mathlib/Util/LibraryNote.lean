@@ -24,4 +24,4 @@ def getDocCommentContent (stx : Syntax) : String :=
 
 open Lean Parser Command in
 elab "library_note " title:strLit ppSpace text:docComment : command => do
-  modifyEnv (libraryNoteExt.addEntry · (title.isStrLit?.get!, getDocCommentContent text))
+  modifyEnv (libraryNoteExt.addEntry · (title.1.isStrLit?.get!, getDocCommentContent text))

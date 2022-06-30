@@ -189,13 +189,13 @@ elab "#lint"
     : command => do
   let (decls, whereDesc, groupByFilename) ← match project with
     | none => do pure (← liftCoreM getDeclsInCurrModule, "in the current file", false)
-    | some (Syntax.atom _ "mathlib") => do pure (← liftCoreM getDeclsInMathlib, "in mathlib", true)
-    | some (Syntax.atom _ "all") => do pure (← liftCoreM getAllDecls, "in all files", true)
+    | some ⟨.atom _ "mathlib"⟩ => do pure (← liftCoreM getDeclsInMathlib, "in mathlib", true)
+    | some ⟨.atom _ "all"⟩ => do pure (← liftCoreM getAllDecls, "in all files", true)
     | _ => throwUnsupportedSyntax
   let verbosity : LintVerbosity ← match verbosity with
-    | none => pure LintVerbosity.medium
-    | some (Syntax.atom _ "+") => pure LintVerbosity.high
-    | some (Syntax.atom _ "-") => pure LintVerbosity.low
+    | none => pure .medium
+    | some ⟨.atom _ "+"⟩ => pure .high
+    | some ⟨.atom _ "-"⟩ => pure .low
     | _ => throwUnsupportedSyntax
   let fast := fast.isSome
   let only := only.isSome

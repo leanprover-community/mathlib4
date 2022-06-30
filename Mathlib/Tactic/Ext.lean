@@ -78,8 +78,8 @@ open Elab.Command MonadRecDepth in
 def liftCommandElabM (k : CommandElabM α) : AttrM α := do
   let (a, commandState) ←
     k.run {
-      fileName := (← getEnv).mainModule.toString,
-      fileMap := default,
+      fileName := ← getFileName,
+      fileMap := ← getFileMap,
       tacticCache? := none,
     } |>.run {
       env := ← getEnv,
@@ -143,28 +143,24 @@ elab "apply_ext_lemma" : tactic => do
   throwError "no applicable extensionality lemma found for{indentExpr ty}"
 
 scoped syntax "ext_or_skip" (ppSpace rintroPat)* : tactic
-macro_rules | `(tactic| ext_or_skip) => `(tactic| skip)
 macro_rules
-| `(tactic| ext_or_skip $xs:rintroPat*) =>
-  `(tactic| apply_ext_lemma; ext_or_skip $xs:rintroPat*)
-macro_rules
+| `(tactic| ext_or_skip) => `(tactic| skip)
 | `(tactic| ext_or_skip $x:rintroPat $xs:rintroPat*) =>
-  `(tactic| rintro $x:rintroPat; ext_or_skip $xs:rintroPat*)
+  `(tactic| repeat apply_ext_lemma; rintro $x:rintroPat; ext_or_skip $xs:rintroPat*)
 
 -- TODO: support `ext : n`
 
 syntax "ext" (colGt ppSpace rintroPat)* (" : " num)? : tactic
 macro_rules
 | `(tactic| ext) => do
-  `(tactic| first | intro; ext | apply_ext_lemma; ext | skip)
-macro_rules
+  `(tactic| repeat (first | (intro) | apply_ext_lemma))
 | `(tactic| ext $xs:rintroPat*) =>
-  `(tactic| apply_ext_lemma; ext_or_skip $xs:rintroPat*)
+  `(tactic| ext_or_skip $xs*)
 
 syntax "ext1" (colGt ppSpace rintroPat)* : tactic
 macro_rules
 | `(tactic| ext1 $xs:rintroPat*) =>
-  `(tactic| apply_ext_lemma; rintro $xs:rintroPat*)
+  `(tactic| apply_ext_lemma; rintro $xs*)
 
 -- TODO
 syntax "ext1?" (colGt ppSpace rintroPat)* : tactic

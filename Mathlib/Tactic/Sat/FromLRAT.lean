@@ -601,15 +601,15 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
   to load CNF / LRAT files from disk.
 -/
 elab "lrat_proof" n:(ident <|> "example") cnf:term:max lrat:term:max : command => do
-  let name := (← getCurrNamespace) ++ if n.isIdent then n.getId else `_example
+  let name := (← getCurrNamespace) ++ if n.1.isIdent then n.1.getId else `_example
   Command.liftTermElabM name do
-    let cnf ← unsafe (Mathlib.Eval.evalTerm String (mkConst ``String) cnf)
-    let lrat ← unsafe (Mathlib.Eval.evalTerm String (mkConst ``String) lrat)
+    let cnf ← unsafe evalTerm String (mkConst ``String) cnf
+    let lrat ← unsafe evalTerm String (mkConst ``String) lrat
     let go := do
       fromLRAT cnf lrat name
       withSaveInfoContext do
         Term.addTermInfo' n (mkConst name) (isBinder := true)
-    if n.isIdent then go else withoutModifyingEnv go
+    if n.1.isIdent then go else withoutModifyingEnv go
 
 lrat_proof example
   -- The CNF file
@@ -655,8 +655,8 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
   to load CNF / LRAT files from disk.
 -/
 elab "from_lrat" cnf:term:max lrat:term:max : term => do
-  let cnf ← unsafe (Mathlib.Eval.evalTerm String (mkConst ``String) cnf)
-  let lrat ← unsafe (Mathlib.Eval.evalTerm String (mkConst ``String) lrat)
+  let cnf ← unsafe evalTerm String (mkConst ``String) cnf
+  let lrat ← unsafe evalTerm String (mkConst ``String) lrat
   let name ← mkAuxName `lrat
   fromLRAT cnf lrat name
   return mkConst name

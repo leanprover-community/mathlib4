@@ -195,8 +195,8 @@ initialize registerBuiltinAttribute {
   descr := "attribute for norm_cast"
   add := fun decl stx kind => MetaM.run' do
     let `(attr| norm_cast $[$label:normCastLabel]? $[$prio]?) := stx | unreachable!
-    let prio := (prio.bind Syntax.isNatLit?).getD (eval_prio default)
-    match label.bind Syntax.isStrLit? with
+    let prio := (prio.bind (·.1.isNatLit?)).getD (eval_prio default)
+    match label.bind (·.1.isStrLit?) with
     | "elim" => addElim decl kind prio
     | "move" => addMove decl kind prio
     | "squash" => addSquash decl kind prio

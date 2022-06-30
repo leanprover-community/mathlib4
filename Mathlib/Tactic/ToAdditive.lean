@@ -33,7 +33,7 @@ initialize ignoreArgsAttr : NameMapAttribute (List Nat) ←
     descr := "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized."
     add   := fun _ stx => do
         let ids ← match stx with
-          | `(attr|to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.isNatLit?.get!)
+          | `(attr|to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
           | _ => throwError "unexpected to_additive_ignore_args syntax {stx}"
         return ids.toList
   }
@@ -49,7 +49,7 @@ initialize reorderAttr : NameMapAttribute (List Nat) ←
     name := `to_additive_reorder
     descr := "Auxiliary attribute for `to_additive` that stores arguments that need to be reordered."
     add := fun
-    | _, `(attr|to_additive_reorder $[$ids:num]*) => pure <| Array.toList <| ids.map (·.isNatLit?.get!)
+    | _, `(attr|to_additive_reorder $[$ids:num]*) => pure <| Array.toList <| ids.map (·.1.isNatLit?.get!)
     | _, stx => throwError "unexpected to_additive_reorder syntax {stx}"
   }
 
@@ -67,7 +67,7 @@ initialize relevantArgAttr : NameMapAttribute (Nat) ←
     name := `to_additive_relevant_arg
     descr := "Auxiliary attribute for `to_additive` stating which arguments are the types with a multiplicative structure."
     add := fun
-    | _, `(attr|to_additive_relevant_arg $id) => pure <| id.isNatLit?.get!
+    | _, `(attr|to_additive_relevant_arg $id) => pure <| id.1.isNatLit?.get!
     | _, stx => throwError "unexpected to_additive_relevant_arg syntax {stx}"
   }
 

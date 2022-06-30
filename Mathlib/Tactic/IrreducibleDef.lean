@@ -62,8 +62,11 @@ local syntax "stop_at_first_error" command* : command
 open Command in elab_rules : command
   | `(stop_at_first_error $[$cmds]*) => do
     for cmd in cmds do
-      elabCommand cmd
+      elabCommand cmd.raw
       if (← get).messages.hasErrors then break
+
+instance : Coe Ident Syntax.Level where
+  coe stx := Unhygienic.run `(level| $stx:ident)
 
 /--
 Introduces an irreducible definition.
@@ -75,7 +78,7 @@ macro mods:declModifiers "irreducible_def" n_id:declId declSig:optDeclSig val:de
   let (n, us) ← match n_id with
     | `(Parser.Command.declId| $n:ident $[.{$us,*}]?) => pure (n, us)
     | _ => Macro.throwUnsupported
-  let us' := us.getD (Syntax.SepArray.ofElems #[])
+  let us' := us.getD { elemsAndSeps := #[] }
   let n_def := mkIdent <| (·.review) <|
     let scopes := extractMacroScopes n.getId
     { scopes with name := scopes.name.appendAfter "_def" }

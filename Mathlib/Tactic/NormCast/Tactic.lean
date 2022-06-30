@@ -220,18 +220,20 @@ macro "assumption_mod_cast" : tactic => `(norm_cast0 at * <;> assumption)
 /--
 Normalize casts at the given locations by moving them "upwards".
 -/
-macro "norm_cast" loc:(ppSpace location)? : tactic =>
-  `(tactic| norm_cast0 $[$loc:location]? <;> try trivial)
+syntax "norm_cast" (ppSpace location)? : tactic
+macro_rules
+| `(tactic| norm_cast $[$loc]?) =>
+  `(tactic| norm_cast0 $[$loc]? <;> try trivial)
 
 /--
 Rewrite with the given rules and normalize casts between steps.
 -/
 syntax "rw_mod_cast" (config)? rwRuleSeq (ppSpace location)? : tactic
 macro_rules
-  | `(tactic|rw_mod_cast $[$config:config]? [$rules,*] $[$loc:location]?) => do
+  | `(tactic|rw_mod_cast $[$config]? [$rules,*] $[$loc]?) => do
     let tacs ← rules.getElems.mapM fun rule =>
-      `(tactic| norm_cast at *; rw $[$config]? [$rule] $[$loc:location]?)
-    `(tactic| ($[$tacs:tactic]*))
+      `(tactic| (norm_cast at *; rw $[$config]? [$rule] $[$loc]?))
+    `(tactic| ($[$tacs]*))
 
 /--
 Normalize the goal and the given expression, then close the goal with exact.

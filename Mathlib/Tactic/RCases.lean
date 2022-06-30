@@ -393,7 +393,7 @@ open Elab
 partial def RCasesPatt.parse (stx : Syntax) : MetaM RCasesPatt :=
   match stx with
   | `(Lean.Parser.Tactic.rcasesPatMed| $ps:rcasesPat|*) => do
-    pure $ RCasesPatt.alts' stx (← ps.getElems.toList.mapM parse)
+    pure $ RCasesPatt.alts' stx (← ps.getElems.toList.mapM (parse ·.raw))
   | `(Lean.Parser.Tactic.rcasesPatLo| $pat:rcasesPatMed : $t:term) => do
     pure $ RCasesPatt.typed stx (← parse pat) t
   | `(Lean.Parser.Tactic.rcasesPatLo| $pat:rcasesPatMed) => parse pat
@@ -401,7 +401,7 @@ partial def RCasesPatt.parse (stx : Syntax) : MetaM RCasesPatt :=
   | `(rcasesPat| $h:ident) => pure $ RCasesPatt.one stx h.getId
   | `(rcasesPat| -) => pure $ RCasesPatt.clear stx
   | `(rcasesPat| ⟨$ps,*⟩) => do
-    pure $ RCasesPatt.tuple stx (← ps.getElems.toList.mapM parse)
+    pure $ RCasesPatt.tuple stx (← ps.getElems.toList.mapM (parse ·.raw))
   | `(rcasesPat| ($pat)) => parse pat
   | _ => throwUnsupportedSyntax
 
@@ -479,36 +479,36 @@ def rintro (ref : Syntax) (pats : Array Syntax) (ty? : Option Syntax)
 
 end Lean.Meta.RCases
 
-namespace Lean.Parser.Tactic
-open Elab Elab.Tactic Meta RCases
+namespace Mathlib.Tactic
+open Lean Elab Elab.Tactic Meta RCases Parser.Tactic
 
 elab (name := rcases?) "rcases?" _tgts:casesTarget,* _num:(" : " num)? : tactic =>
   throwError "unimplemented"
 
 elab (name := rcases) tk:"rcases" tgts:casesTarget,* pat:((" with " rcasesPatLo)?) : tactic => do
-  let pat ← match pat.getArgs with
+  let pat ← match pat.raw.getArgs with
   | #[_, pat] => RCasesPatt.parse pat
   | #[] => pure $ RCasesPatt.tuple tk []
   | _ => throwUnsupportedSyntax
   let tgts := tgts.getElems.map fun tgt =>
-    (if tgt[0].isNone then none else some tgt[0][0].getId, tgt[1])
+    (if tgt.raw[0].isNone then none else some tgt.raw[0][0].getId, tgt.raw[1])
   withMainContext do
     replaceMainGoal (← RCases.rcases tgts pat (← getMainGoal))
 
 elab (name := obtain) tk:"obtain"
     pat:(ppSpace rcasesPatMed)? ty:((" : " term)?) val:((" := " term,+)?) : tactic => do
   let pat ← liftM $ pat.mapM RCasesPatt.parse
-  if val.isNone then
-    if ty.isNone then throwError
+  if val.raw.isNone then
+    if ty.raw.isNone then throwError
         ("`obtain` requires either an expected type or a value.\n" ++
         "usage: `obtain ⟨patt⟩? : type (:= val)?` or `obtain ⟨patt⟩? (: type)? := val`")
     let pat := pat.getD (RCasesPatt.one tk `this)
     withMainContext do
-      replaceMainGoal (← RCases.obtainNone pat ty[1] (← getMainGoal))
+      replaceMainGoal (← RCases.obtainNone pat ty.raw[1] (← getMainGoal))
   else
     let pat := pat.getD (RCasesPatt.one tk `_)
-    let pat := pat.typed? tk $ if ty.isNone then none else some ty[1]
-    let tgts := val[1].getSepArgs.map fun val => (none, val)
+    let pat := pat.typed? tk $ if ty.raw.isNone then none else some ty.raw[1]
+    let tgts := val.raw[1].getSepArgs.map fun val => (none, val)
     withMainContext do
       replaceMainGoal (← RCases.rcases tgts pat (← getMainGoal))
 
@@ -516,6 +516,6 @@ elab (name := rintro?) "rintro?" (" : " num)? : tactic =>
   throwError "unimplemented"
 
 elab (name := rintro) "rintro" pats:(ppSpace colGt rintroPat)+ ty:((" : " term)?) : tactic => do
-  let ty? := if ty.isNone then none else some ty[1]
+  let ty? := if ty.raw.isNone then none else some ty.raw[1]
   withMainContext do
     replaceMainGoal (← RCases.rintro ty pats ty? (← getMainGoal))

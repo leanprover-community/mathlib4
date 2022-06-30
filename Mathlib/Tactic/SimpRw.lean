@@ -32,8 +32,8 @@ example {a : ℕ}
 by simp_rw [h1, h2]
 ```
 -/
-macro "simp_rw " rws:rwRuleSeq loc:(ppSpace location)? : tactic => do
-  let stx ← rws[1].getSepArgs.mapM fun
+macro "simp_rw " rws:rwRuleSeq loc:location ? : tactic => do
+  let stx ← rws.1[1].getSepArgs.mapM fun
     | `(rwRule| $e:term) => `(tactic| simp%$e only [$e:term] $(loc)?)
     | `(rwRule| ←%$tk $e:term) => `(tactic| simp%$tk only [← $e:term] $(loc)?)
     | _ => Macro.throwUnsupported
