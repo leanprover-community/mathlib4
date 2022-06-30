@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Lean.Elab.Command
 import Lean.Elab.Quotation
+import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.CommandQuote
@@ -582,8 +583,6 @@ namespace Command
   (" from" (ppSpace ident)+)? (" := " str)? : command
 
 /- M -/ syntax (name := addHintTactic) "add_hint_tactic " tactic : command
-/- M -/ syntax (name := alias) "alias " ident " ← " ident* : command
-/- M -/ syntax (name := aliasLR) "alias " ident " ↔ " (".." <|> (binderIdent binderIdent)) : command
 
 /- S -/ syntax (name := explode) "#explode " ident : command
 
