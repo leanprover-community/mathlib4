@@ -88,13 +88,20 @@ macro (name := expandFoldr) "expandFoldr% "
     term.replaceM fun e =>
       return if e == x then some arg else if e == y then some res else none
 
-
-syntax bindersItem := atomic("(" "..." ")")
-syntax foldRep := (strLit "*") <|> ",*"
+/-- Keywording indicating whether to use a left- or right-fold. -/
 syntax foldKind := &"foldl" <|> &"foldr"
-syntax foldAction := "(" ident foldRep " => " foldKind " (" ident ident " => " term ") " term ")"
+/-- `notation3` argument matching `extBinders`. -/
+syntax bindersItem := atomic("(" "..." ")")
+/-- `notation3` argument simulating a Lean 3 fold notation. -/
+syntax foldAction := "(" ident strLit "*" " => " foldKind " (" ident ident " => " term ") " term ")"
+/-- `notation3` argument binding a name. -/
 syntax identOptScoped := ident (":" "(" "scoped " ident " => " term ")")?
+/-- `notation3` argument. -/
 syntax notation3Item := strLit <|> bindersItem <|> identOptScoped <|> foldAction
+/--
+`notation3` declares notation using Lean 3-style syntax.
+Only to be used for mathport.
+-/
 macro ak:Term.attrKind "notation3"
     prec:(precedence)? name:(namedName)? prio:(namedPrio)?
     lits:(notation3Item)+ " => " val:term : command => do
@@ -106,10 +113,7 @@ macro ak:Term.attrKind "notation3"
       macroArgs := macroArgs.push (← `(macroArg| $lit:str))
     | `(notation3Item| $_:bindersItem) =>
       macroArgs := macroArgs.push (← `(macroArg| binders:extBinders))
-    | `(notation3Item| ($id:ident $rep:foldRep => $kind ($x $y => $scopedTerm) $init)) =>
-      let sep := match rep with
-        | `(foldRep| $sep:str *) => sep
-        | _ => Syntax.mkStrLit ", "
+    | `(notation3Item| ($id:ident $sep:str* => $kind ($x $y => $scopedTerm) $init)) =>
       macroArgs := macroArgs.push (← `(macroArg| $id:ident:sepBy(term, $sep:str)))
       let scopedTerm ← scopedTerm.replaceM fun
         | Syntax.ident _ _ id .. => pure $ boundNames.find? id

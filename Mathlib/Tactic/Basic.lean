@@ -37,12 +37,19 @@ macro_rules
   | `(tactic| rwa $rws:rwRuleSeq $[$loc:location]?) =>
     `(tactic| rw $rws:rwRuleSeq $[$loc:location]?; assumption)
 
+/--
+`by_cases h : p` makes a case distinction on `p`,
+resulting in two subgoals `h : p ⊢` and `h : ¬ p ⊢`.
+-/
 macro "by_cases " h:ident ":" e:term : tactic =>
   `(cases Decidable.em $e with | inl $h => ?pos | inr $h => ?neg)
 
-set_option hygiene false in
+/--
+`by_cases p` makes a case distinction on `p`,
+resulting in two subgoals `h : p ⊢` and `h : ¬ p ⊢`.
+-/
 macro "by_cases " e:term : tactic =>
-  `(cases Decidable.em $e with | inl h => ?pos | inr h => ?neg)
+  `(by_cases $(mkIdent `h) : $e)
 
 macro (name := classical) "classical" : tactic =>
   `(have em := Classical.propDecidable)
