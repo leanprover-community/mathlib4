@@ -10,5 +10,4 @@ open Lean Parser
 @[termParser default+1] def command.quot : Parser :=
   leading_parser "`(command|" >> incQuotDepth commandParser >> ")"
 
-@[termElab command.quot] def Lean.Elab.Term.elabCommandQuot : TermElab :=
-  adaptExpander Quotation.stxQuot.expand
+elab_stx_quot command.quot
