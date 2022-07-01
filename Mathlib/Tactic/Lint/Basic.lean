@@ -93,7 +93,7 @@ and produces a list of linters. -/
 def getLinters (l : List Name) : CoreM (List NamedLinter) :=
   l.mapM getLinter
 
--- Defines the user attribute `linter` for adding a linter to the default set.
+-- Defines the user attribute `mathlibLinter` for adding a linter to the default set.
 initialize mathlibLinterAttr : TagAttribute ←
   registerTagAttribute
     (name := `mathlibLinter)
