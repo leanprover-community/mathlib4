@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 import Lean
 
-namespace Lean
+open Lean Parser
 
-@[termParser default+1] def Parser.Term.Command.quot : Parser :=
+@[termParser default+1] def command.quot : Parser :=
   leading_parser "`(command|" >> incQuotDepth commandParser >> ")"
 
-@[termElab Command.quot] def Elab.Term.elabCommandQuot : TermElab :=
+@[termElab command.quot] def Lean.Elab.Term.elabCommandQuot : TermElab :=
   adaptExpander Quotation.stxQuot.expand
