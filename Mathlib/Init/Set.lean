@@ -133,12 +133,12 @@ macro_rules
 
 @[appUnexpander Set.singleton]
 def singletonUnexpander : Lean.PrettyPrinter.Unexpander
-| `(Set.singleton $a) => `({ $a })
+| `(Set.singleton $a) => `({ $a:term })
 | _ => throw ()
 
 @[appUnexpander Set.insert]
 def insertUnexpander : Lean.PrettyPrinter.Unexpander
-| `(Set.insert $a { $ts,* }) => `({$a, $ts,*})
+| `(Set.insert $a { $ts,* }) => `({$a:term, $ts,*})
 | _ => throw ()
 
 end Set

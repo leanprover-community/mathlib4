@@ -60,7 +60,7 @@ elab (name := induction') "induction' " tgts:(casesTarget,+)
     usingArg:((" using " ident)?)
     withArg:((" with " (colGt binderIdent)+)?)
     genArg:((" generalizing " (colGt ident)+)?) : tactic => do
-  let targets ← elabCasesTargets tgts.getSepArgs
+  let targets ← elabCasesTargets tgts.1.getSepArgs
   let g ← getMainGoal
   withMVarContext g do
     let elimInfo ← getElimNameInfo usingArg targets (induction := true)
@@ -68,7 +68,7 @@ elab (name := induction') "induction' " tgts:(casesTarget,+)
     evalInduction.checkTargets targets
     let targetFVarIds := targets.map (·.fvarId!)
     withMVarContext g do
-      let genArgs ← if genArg.isNone then pure #[] else getFVarIds genArg[1].getArgs
+      let genArgs ← if genArg.1.isNone then pure #[] else getFVarIds genArg.1[1].getArgs
       let forbidden ← mkGeneralizationForbiddenSet targets
       let mut s ← getFVarSetToGeneralize targets forbidden
       for v in genArgs do
@@ -89,7 +89,7 @@ elab (name := induction') "induction' " tgts:(casesTarget,+)
 open private getElimNameInfo in evalCases in
 elab (name := cases') "cases' " tgts:(casesTarget,+) usingArg:((" using " ident)?)
   withArg:((" with " (colGt binderIdent)+)?) : tactic => do
-  let targets ← elabCasesTargets tgts.getSepArgs
+  let targets ← elabCasesTargets tgts.1.getSepArgs
   let g ← getMainGoal
   withMVarContext g do
     let elimInfo ← getElimNameInfo usingArg targets (induction := false)

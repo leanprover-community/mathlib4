@@ -37,7 +37,7 @@ def splitGoalsAndGetNth (nth : ℕ) (reverse : Bool := false) :
 See also `Tactic.rotate_goals`, which moves goals from the front to the back and vice-versa.
 -/
 elab "pick_goal " reverse:"-"? n:num : tactic => do
-  let (g, gl, gr) ← splitGoalsAndGetNth n.toNat !reverse.isNone
+  let (g, gl, gr) ← splitGoalsAndGetNth n.1.toNat !reverse.isNone
   setGoals $ g :: (gl ++ gr)
 
 /-- `swap` is a shortcut for `pick_goal 2`, which interchanges the 1st and 2nd goals. -/
@@ -54,7 +54,7 @@ The goal is not required to be solved and any resulting subgoals are inserted ba
 list of goals, replacing the chosen goal.
 -/
 elab "on_goal " reverse:"-"? n:num " => " seq:tacticSeq : tactic => do
-  let (g, gl, gr) ← splitGoalsAndGetNth n.toNat !reverse.isNone
+  let (g, gl, gr) ← splitGoalsAndGetNth n.1.toNat !reverse.isNone
   setGoals [g]
   evalTactic seq
   setGoals $ gl ++ (← getUnsolvedGoals) ++ gr

@@ -123,7 +123,7 @@ example (n : Nat) : True := by
 open Lean Elab Tactic in
 elab "checkNumHyps " n:num : tactic => liftMetaMAtMain fun _ => do
   -- +1 because the _example recursion decl is in the list
-  guard $ (← getLCtx).foldl (fun i _ => i+1) 0 = n.toNat + 1
+  guard $ (← getLCtx).foldl (fun i _ => i+1) 0 = n.1.toNat + 1
 
 example (h : ∃ x : Nat, x = x ∧ 1 = 1) : True := by
   rcases h with ⟨-, _⟩

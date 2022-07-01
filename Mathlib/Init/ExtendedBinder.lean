@@ -79,18 +79,22 @@ binder_predicate x " > " y:term => `($x > $y)
 -/
 syntax (docComment)? (attrKind)? "binder_predicate " optNamedName optNamedPrio ident macroArg* " => " term : command
 
+instance : Coe (TSyntax numLitKind) (TSyntax `prio) where
+  coe stx := ⟨stx⟩
+
 -- adapted from the macro macro
 open Elab Command in
-macro_rules
+elab_rules : command
   | `($[$doc?:docComment]? $attrKind:attrKind binder_predicate%$tk $[(name := $name?)]? $[(priority := $prio?)]? $x $args:macroArg* => $rhs) => do
-    let prio  ← evalOptPrio prio?
+    let prio ← liftMacroM do evalOptPrio prio?
     let (stxParts, patArgs) := (← args.mapM expandMacroArg).unzip
     let name ← match name? with
       | some name => pure name.getId
-      | none => mkNameFromParserSyntax `binderTerm (mkNullNode stxParts)
+      | none => liftMacroM do mkNameFromParserSyntax `binderTerm (mkNullNode stxParts)
     /- The command `syntax [<kind>] ...` adds the current namespace to the syntax node kind.
       So, we must include current namespace when we create a pattern for the following `macro_rules` commands. -/
-    let pat := mkNode ((← Macro.getCurrNamespace) ++ name) patArgs
+    let pat : TSyntax `binderPred := ⟨(mkNode ((← getCurrNamespace) ++ name) patArgs).1⟩
+    elabCommand <|<-
     `($[$doc?:docComment]? $attrKind:attrKind syntax%$tk (name := $(← mkIdentFromRef name)) (priority := $(quote prio)) $[$stxParts]* : binderPred
       $[$doc?:docComment]? macro_rules%$tk | `(satisfiesBinderPred% $$($x):term $pat:binderPred) => $rhs)
 

@@ -40,7 +40,7 @@ elab tk:"fun" "." : term <= expectedType => do
   let (binders, discrs) ← (·.unzip) <$>
     Meta.forallTelescopeReducing expectedType fun args _ =>
       args.mapM fun _ => withFreshMacroScope do
-        return (← `(a), ← `(matchDiscr| a))
+        return ((⟨← `(a)⟩ : Ident), ← `(matchDiscr| a))
   elabTerm (← `(@fun%$tk $binders:ident* => match%$tk $discrs:matchDiscr,* with.)) expectedType
 
 macro tk:"λ" "." : term => `(fun%$tk .)

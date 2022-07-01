@@ -109,12 +109,12 @@ import Mathlib.Testing.SlimCheck.Gen
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Util.DeclName
-import Mathlib.Util.Eval
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.LibraryNote
 import Mathlib.Util.MemoFix
 import Mathlib.Util.Simp
+import Mathlib.Util.Syntax
 import Mathlib.Util.TermUnsafe
 import Mathlib.Util.Time
 import Mathlib.Util.WhatsNew

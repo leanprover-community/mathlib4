@@ -393,7 +393,7 @@ open Elab
 partial def RCasesPatt.parse (stx : Syntax) : MetaM RCasesPatt :=
   match stx with
   | `(Lean.Parser.Tactic.rcasesPatMed| $ps:rcasesPat|*) => do
-    pure $ RCasesPatt.alts' stx (← ps.getElems.toList.mapM parse)
+    pure $ RCasesPatt.alts' stx (← ps.getElems.toList.mapM (parse ·.raw))
   | `(Lean.Parser.Tactic.rcasesPatLo| $pat:rcasesPatMed : $t:term) => do
     pure $ RCasesPatt.typed stx (← parse pat) t
   | `(Lean.Parser.Tactic.rcasesPatLo| $pat:rcasesPatMed) => parse pat
@@ -401,7 +401,7 @@ partial def RCasesPatt.parse (stx : Syntax) : MetaM RCasesPatt :=
   | `(rcasesPat| $h:ident) => pure $ RCasesPatt.one stx h.getId
   | `(rcasesPat| -) => pure $ RCasesPatt.clear stx
   | `(rcasesPat| ⟨$ps,*⟩) => do
-    pure $ RCasesPatt.tuple stx (← ps.getElems.toList.mapM parse)
+    pure $ RCasesPatt.tuple stx (← ps.getElems.toList.mapM (parse ·.raw))
   | `(rcasesPat| ($pat)) => parse pat
   | _ => throwUnsupportedSyntax
 
@@ -479,43 +479,123 @@ def rintro (ref : Syntax) (pats : Array Syntax) (ty? : Option Syntax)
 
 end Lean.Meta.RCases
 
-namespace Lean.Parser.Tactic
-open Elab Elab.Tactic Meta RCases
+namespace Mathlib.Tactic
+open Lean Elab Elab.Tactic Meta RCases Parser.Tactic
 
+/--
+`rcases? e` will perform case splits on `e` in the same way as `rcases e`,
+but rather than accepting a pattern, it does a maximal cases and prints the
+pattern that would produce this case splitting. The default maximum depth is 5,
+but this can be modified with `rcases? e : n`.
+-/
 elab (name := rcases?) "rcases?" _tgts:casesTarget,* _num:(" : " num)? : tactic =>
   throwError "unimplemented"
 
+/--
+`rcases` is a tactic that will perform `cases` recursively, according to a pattern. It is used to
+destructure hypotheses or expressions composed of inductive types like `h1 : a ∧ b ∧ c ∨ d` or
+`h2 : ∃ x y, trans_rel R x y`. Usual usage might be `rcases h1 with ⟨ha, hb, hc⟩ | hd` or
+`rcases h2 with ⟨x, y, _ | ⟨z, hxz, hzy⟩⟩` for these examples.
+
+Each element of an `rcases` pattern is matched against a particular local hypothesis (most of which
+are generated during the execution of `rcases` and represent individual elements destructured from
+the input expression). An `rcases` pattern has the following grammar:
+
+* A name like `x`, which names the active hypothesis as `x`.
+* A blank `_`, which does nothing (letting the automatic naming system used by `cases` name the
+  hypothesis).
+* A hyphen `-`, which clears the active hypothesis and any dependents.
+* The keyword `rfl`, which expects the hypothesis to be `h : a = b`, and calls `subst` on the
+  hypothesis (which has the effect of replacing `b` with `a` everywhere or vice versa).
+* A type ascription `p : ty`, which sets the type of the hypothesis to `ty` and then matches it
+  against `p`. (Of course, `ty` must unify with the actual type of `h` for this to work.)
+* A tuple pattern `⟨p1, p2, p3⟩`, which matches a constructor with many arguments, or a series
+  of nested conjunctions or existentials. For example if the active hypothesis is `a ∧ b ∧ c`,
+  then the conjunction will be destructured, and `p1` will be matched against `a`, `p2` against `b`
+  and so on.
+* An alteration pattern `p1 | p2 | p3`, which matches an inductive type with multiple constructors,
+  or a nested disjunction like `a ∨ b ∨ c`.
+
+A pattern like `⟨a, b, c⟩ | ⟨d, e⟩` will do a split over the inductive datatype,
+naming the first three parameters of the first constructor as `a,b,c` and the
+first two of the second constructor `d,e`. If the list is not as long as the
+number of arguments to the constructor or the number of constructors, the
+remaining variables will be automatically named. If there are nested brackets
+such as `⟨⟨a⟩, b | c⟩ | d` then these will cause more case splits as necessary.
+If there are too many arguments, such as `⟨a, b, c⟩` for splitting on
+`∃ x, ∃ y, p x`, then it will be treated as `⟨a, ⟨b, c⟩⟩`, splitting the last
+parameter as necessary.
+
+`rcases` also has special support for quotient types: quotient induction into Prop works like
+matching on the constructor `quot.mk`.
+
+`rcases h : e with PAT` will do the same as `rcases e with PAT` with the exception that an
+assumption `h : e = PAT` will be added to the context.
+-/
 elab (name := rcases) tk:"rcases" tgts:casesTarget,* pat:((" with " rcasesPatLo)?) : tactic => do
-  let pat ← match pat.getArgs with
+  let pat ← match pat.raw.getArgs with
   | #[_, pat] => RCasesPatt.parse pat
   | #[] => pure $ RCasesPatt.tuple tk []
   | _ => throwUnsupportedSyntax
   let tgts := tgts.getElems.map fun tgt =>
-    (if tgt[0].isNone then none else some tgt[0][0].getId, tgt[1])
+    (if tgt.raw[0].isNone then none else some tgt.raw[0][0].getId, tgt.raw[1])
   withMainContext do
     replaceMainGoal (← RCases.rcases tgts pat (← getMainGoal))
 
+/--
+The `obtain` tactic is a combination of `have` and `rcases`. See `rcases` for
+a description of supported patterns.
+
+```lean
+obtain ⟨patt⟩ : type := proof
+```
+is equivalent to
+```lean
+have h : type := proof
+rcases h with ⟨patt⟩
+```
+
+If `⟨patt⟩` is omitted, `rcases` will try to infer the pattern.
+
+If `type` is omitted, `:= proof` is required.
+-/
 elab (name := obtain) tk:"obtain"
     pat:(ppSpace rcasesPatMed)? ty:((" : " term)?) val:((" := " term,+)?) : tactic => do
   let pat ← liftM $ pat.mapM RCasesPatt.parse
-  if val.isNone then
-    if ty.isNone then throwError
+  if val.raw.isNone then
+    if ty.raw.isNone then throwError
         ("`obtain` requires either an expected type or a value.\n" ++
         "usage: `obtain ⟨patt⟩? : type (:= val)?` or `obtain ⟨patt⟩? (: type)? := val`")
     let pat := pat.getD (RCasesPatt.one tk `this)
     withMainContext do
-      replaceMainGoal (← RCases.obtainNone pat ty[1] (← getMainGoal))
+      replaceMainGoal (← RCases.obtainNone pat ty.raw[1] (← getMainGoal))
   else
     let pat := pat.getD (RCasesPatt.one tk `_)
-    let pat := pat.typed? tk $ if ty.isNone then none else some ty[1]
-    let tgts := val[1].getSepArgs.map fun val => (none, val)
+    let pat := pat.typed? tk $ if ty.raw.isNone then none else some ty.raw[1]
+    let tgts := val.raw[1].getSepArgs.map fun val => (none, val)
     withMainContext do
       replaceMainGoal (← RCases.rcases tgts pat (← getMainGoal))
 
+/--
+`rintro?` will introduce and case split on variables in the same way as
+`rintro`, but will also print the `rintro` invocation that would have the same
+result. Like `rcases?`, `rintro? : n` allows for modifying the
+depth of splitting; the default is 5.
+-/
 elab (name := rintro?) "rintro?" (" : " num)? : tactic =>
   throwError "unimplemented"
 
+/--
+The `rintro` tactic is a combination of the `intros` tactic with `rcases` to
+allow for destructuring patterns while introducing variables. See `rcases` for
+a description of supported patterns. For example, `rintro (a | ⟨b, c⟩) ⟨d, e⟩`
+will introduce two variables, and then do case splits on both of them producing
+two subgoals, one with variables `a d e` and the other with `b c d e`.
+
+`rintro`, unlike `rcases`, also supports the form `(x y : ty)` for introducing
+and type-ascripting multiple variables at once, similar to binders.
+-/
 elab (name := rintro) "rintro" pats:(ppSpace colGt rintroPat)+ ty:((" : " term)?) : tactic => do
-  let ty? := if ty.isNone then none else some ty[1]
+  let ty? := if ty.raw.isNone then none else some ty.raw[1]
   withMainContext do
     replaceMainGoal (← RCases.rintro ty pats ty? (← getMainGoal))

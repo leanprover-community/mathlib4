@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Mario Carneiro
 -/
 import Mathlib.Data.List.Basic
-import Mathlib.Util.Eval
 
 /-!
 # `lrat_proof` command
@@ -578,7 +577,7 @@ def fromLRAT (cnf lrat : String) (name : Name) : MetaM Unit := do
 open Elab Term
 
 
-/-!
+/--
 A macro for producing SAT proofs from CNF / LRAT files.
 These files are commonly used in the SAT community for writing proofs.
 
@@ -601,15 +600,15 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
   to load CNF / LRAT files from disk.
 -/
 elab "lrat_proof" n:(ident <|> "example") cnf:term:max lrat:term:max : command => do
-  let name := (← getCurrNamespace) ++ if n.isIdent then n.getId else `_example
+  let name := (← getCurrNamespace) ++ if n.1.isIdent then n.1.getId else `_example
   Command.liftTermElabM name do
-    let cnf ← unsafe (Mathlib.Eval.evalTerm String (mkConst ``String) cnf)
-    let lrat ← unsafe (Mathlib.Eval.evalTerm String (mkConst ``String) lrat)
+    let cnf ← unsafe evalTerm String (mkConst ``String) cnf
+    let lrat ← unsafe evalTerm String (mkConst ``String) lrat
     let go := do
       fromLRAT cnf lrat name
       withSaveInfoContext do
         Term.addTermInfo' n (mkConst name) (isBinder := true)
-    if n.isIdent then go else withoutModifyingEnv go
+    if n.1.isIdent then go else withoutModifyingEnv go
 
 lrat_proof example
   -- The CNF file
@@ -629,7 +628,7 @@ lrat_proof example
 --   (include_str "full2.cnf")
 --   (include_str "full2.lrat")
 
-/-!
+/--
 A macro for producing SAT proofs from CNF / LRAT files.
 These files are commonly used in the SAT community for writing proofs.
 
@@ -655,8 +654,8 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
   to load CNF / LRAT files from disk.
 -/
 elab "from_lrat" cnf:term:max lrat:term:max : term => do
-  let cnf ← unsafe (Mathlib.Eval.evalTerm String (mkConst ``String) cnf)
-  let lrat ← unsafe (Mathlib.Eval.evalTerm String (mkConst ``String) lrat)
+  let cnf ← unsafe evalTerm String (mkConst ``String) cnf
+  let lrat ← unsafe evalTerm String (mkConst ``String) lrat
   let name ← mkAuxName `lrat
   fromLRAT cnf lrat name
   return mkConst name

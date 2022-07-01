@@ -23,6 +23,7 @@ import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Init.ExtendedBinder
 import Mathlib.Util.WithWeakNamespace
+import Mathlib.Util.Syntax
 
 -- To fix upstream:
 -- * bracketedExplicitBinders doesn't support optional types
@@ -72,7 +73,6 @@ macro_rules
     term.replaceM fun x' => do
       unless x == x' do return none
       `(fun $y:ident : $ty => expandBinders% ($x => $term) $[$binders]*, $res)
-macro_rules
   | `(expandBinders% ($x => $term) ($y:ident $pred:binderPred) $binders*, $res) =>
     term.replaceM fun x' => do
       unless x == x' do return none
@@ -89,64 +89,66 @@ macro (name := expandFoldr) "expandFoldr% "
     term.replaceM fun e =>
       return if e == x then some arg else if e == y then some res else none
 
+/-- Keywording indicating whether to use a left- or right-fold. -/
+syntax foldKind := &"foldl" <|> &"foldr"
+/-- `notation3` argument matching `extBinders`. -/
 syntax bindersItem := atomic("(" "..." ")")
-syntax foldRep := (strLit "*") <|> ",*"
-syntax foldAction := "(" ident foldRep " => "
-  (&"foldl" <|> &"foldr") " (" ident ident " => " term ") " term ")"
-syntax identScope := ":" "(" "scoped " ident " => " term ")"
-syntax notation3Item := strLit <|> bindersItem <|> (ident (identScope)?) <|> foldAction
+/-- `notation3` argument simulating a Lean 3 fold notation. -/
+syntax foldAction := "(" ident strLit "*" " => " foldKind " (" ident ident " => " term ") " term ")"
+/-- `notation3` argument binding a name. -/
+syntax identOptScoped := ident (":" "(" "scoped " ident " => " term ")")?
+/-- `notation3` argument. -/
+syntax notation3Item := strLit <|> bindersItem <|> identOptScoped <|> foldAction
+/--
+`notation3` declares notation using Lean 3-style syntax.
+Only to be used for mathport.
+-/
 macro ak:Term.attrKind "notation3"
-    prec:optPrecedence name:optNamedName prio:optNamedPrio
-    lits:((ppSpace notation3Item)+) " => " val:term : command => do
+    prec:(precedence)? name:(namedName)? prio:(namedPrio)?
+    lits:(notation3Item)+ " => " val:term : command => do
   let mut boundNames : Std.HashMap Name Syntax := {}
   let mut macroArgs := #[]
-  for item in lits.getArgs do
-    let lit := item[0]
-    if let some _ := lit.isStrLit? then
+  for lit in lits do
+    match (lit : TSyntax ``notation3Item) with
+    | `(notation3Item| $lit:str) =>
       macroArgs := macroArgs.push (← `(macroArg| $lit:str))
-    else if lit.isOfKind ``bindersItem then
+    | `(notation3Item| $_:bindersItem) =>
       macroArgs := macroArgs.push (← `(macroArg| binders:extBinders))
-    else if lit.isOfKind ``foldAction then
-      let mut sep := lit[2][0]
-      if sep.isAtom then sep := Syntax.mkStrLit ", "
-      macroArgs := macroArgs.push (← `(macroArg| $(lit[1]):ident:sepBy(term, $sep:str)))
-      let scopedTerm ← lit[9].replaceM fun
+    | `(notation3Item| ($id:ident $sep:str* => $kind ($x $y => $scopedTerm) $init)) =>
+      macroArgs := macroArgs.push (← `(macroArg| $id:ident:sepBy(term, $sep:str)))
+      let scopedTerm ← scopedTerm.replaceM fun
         | Syntax.ident _ _ id .. => pure $ boundNames.find? id
         | _ => pure none
-      let init ← lit[11].replaceM fun
+      let init ← init.replaceM fun
         | Syntax.ident _ _ id .. => pure $ boundNames.find? id
         | _ => pure none
-      let id := lit[1]
-      let args := Elab.Command.expandMacroArg.mkSplicePat
-        `sepBy (← `(Syntax.SepArray.ofElems ($id:ident).getElems)) ",*"
+      let args := mkNullNode #[.mkAntiquotSuffixSpliceNode `sepBy
+        (.mkAntiquotNode `term (← `(Syntax.TSepArray.ofElems ($id:ident).getElems))) ",*"]
       let args := #[
-        Lean.mkAtom "(", lit[6], lit[7], Lean.mkAtom "=>", scopedTerm, Lean.mkAtom ")", init,
+        Lean.mkAtom "(", x, y, Lean.mkAtom "=>", scopedTerm, Lean.mkAtom ")", init,
         Lean.mkAtom "[", args, Lean.mkAtom "]"]
-      let stx ← match lit[4] with
-        | Lean.Syntax.atom _ "foldl" =>
-          pure $ mkNode ``expandFoldl (#[Lean.mkAtom "expandFoldl%"] ++ args)
-        | Lean.Syntax.atom _ "foldr" =>
-          pure $ mkNode ``expandFoldr (#[Lean.mkAtom "expandFoldr%"] ++ args)
-        | _ => throw Lean.Macro.Exception.unsupportedSyntax
+      let stx ← show MacroM Syntax.Term from match kind.1[0] with
+        | .atom _ "foldl" => pure ⟨mkNode ``expandFoldl (#[Lean.mkAtom "expandFoldl%"] ++ args)⟩
+        | .atom _ "foldr" => pure ⟨mkNode ``expandFoldr (#[Lean.mkAtom "expandFoldr%"] ++ args)⟩
+        | _ => Macro.throwUnsupported
       boundNames := boundNames.insert id.getId stx
-    else if let Syntax.ident _ _ id .. := lit then
+    | `(notation3Item| $lit:ident : (scoped $scopedId:ident => $scopedTerm)) =>
+      let id := lit.getId
       macroArgs := macroArgs.push (← `(macroArg| $lit:ident:term))
-      if item[1].getNumArgs == 1 then
-        let scopedId := item[1][0][3]
-        let scopedTerm := item[1][0][5]
-        let scopedTerm ← scopedTerm.replaceM fun
-          | Syntax.ident _ _ id .. => pure $ boundNames.find? id
-          | _ => pure none
-        boundNames := boundNames.insert id <|
-          ← `(expandBinders% ($scopedId:ident => $scopedTerm:term) $$binders:extBinders,
-            $(lit.mkAntiquotNode))
-      else
-        boundNames := boundNames.insert id <| lit.mkAntiquotNode
+      let scopedTerm ← scopedTerm.replaceM fun
+        | Syntax.ident _ _ id .. => pure $ boundNames.find? id
+        | _ => pure none
+      boundNames := boundNames.insert id <|
+        ← `(expandBinders% ($scopedId => $scopedTerm) $$binders:extBinders,
+          $(⟨lit.1.mkAntiquotNode `term⟩):term)
+    | `(notation3Item| $lit:ident) =>
+      macroArgs := macroArgs.push (← `(macroArg| $lit:ident:term))
+      boundNames := boundNames.insert lit.getId <| lit.1.mkAntiquotNode `term
+    | stx => Macro.throwUnsupported
   let val ← val.replaceM fun
     | Syntax.ident _ _ id .. => pure $ boundNames.find? id
     | _ => pure none
-  `($ak:attrKind macro $[$(prec.getOptional?):precedence]? $[$(name.getOptional?):namedName]?
-      $[$(prio.getOptional?):namedPrio]? $[$macroArgs:macroArg]* : term => do
+  `($ak:attrKind macro $[$prec]? $[$name]? $[$prio]? $[$macroArgs]* : term => do
     `($val:term))
 
 end Parser.Command
