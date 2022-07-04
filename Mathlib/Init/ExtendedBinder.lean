@@ -79,9 +79,6 @@ binder_predicate x " > " y:term => `($x > $y)
 -/
 syntax (docComment)? (attrKind)? "binder_predicate " optNamedName optNamedPrio ident macroArg* " => " term : command
 
-instance : Coe (TSyntax numLitKind) (TSyntax `prio) where
-  coe stx := ⟨stx⟩
-
 -- adapted from the macro macro
 open Elab Command in
 elab_rules : command

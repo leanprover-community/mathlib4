@@ -330,7 +330,7 @@ partial def rcasesCore (g : MVarId) (fs : FVarSubst) (clears : Array FVarId) (e 
           let elimInfo ← getElimInfo `Quot.ind
           let res ← ElimApp.mkElimApp elimInfo #[e] (← getMVarTag g)
           let elimArgs := res.elimApp.getAppArgs
-          ElimApp.setMotiveArg g elimArgs[elimInfo.motivePos].mvarId! #[e.fvarId!]
+          ElimApp.setMotiveArg g elimArgs[elimInfo.motivePos]!.mvarId! #[e.fvarId!]
           assignExprMVar g res.elimApp
           let #[(n, g)] := res.alts | panic! "rcases"
           let (v, g) ← intro g x
@@ -415,7 +415,7 @@ def generalizeExceptFVar (mvarId : MVarId) (args : Array GeneralizeArg) : MetaM 
     if arg.expr.isFVar && arg.hName?.isNone then
       result := result.push arg.expr
     else
-      result := result.push (mkFVar fvarIdsNew[j])
+      result := result.push (mkFVar fvarIdsNew[j]!)
       j := j+1
   pure (result, mvarId)
 
