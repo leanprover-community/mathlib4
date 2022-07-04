@@ -8,9 +8,12 @@ import Mathlib.Tactic.Lint.Basic
 
 open Lean Parser
 
+/-- Syntax quotation for the command category. -/
 @[termParser default+1] def command.quot : Parser :=
   leading_parser "`(command|" >> incQuotDepth commandParser >> ")"
 
-attribute [nolint docBlame] command.quot command.quot.parenthesizer command.quot.formatter
+attribute [nolint docBlame] command.quot.parenthesizer command.quot.formatter
 
-elab_stx_quot command.quot
+/-- Syntax quotation for the command category. -/
+@[termElab command.quot] def Lean.Elab.Term.elabCommandQuot : TermElab :=
+  adaptExpander Quotation.stxQuot.expand
