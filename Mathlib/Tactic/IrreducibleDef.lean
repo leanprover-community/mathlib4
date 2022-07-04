@@ -65,9 +65,6 @@ open Command in elab_rules : command
       elabCommand cmd.raw
       if (← get).messages.hasErrors then break
 
-instance : Coe Ident Syntax.Level where
-  coe stx := Unhygienic.run `(level| $stx:ident)
-
 /--
 Introduces an irreducible definition.
 `irreducible_def foo := 42` generates

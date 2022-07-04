@@ -27,7 +27,8 @@ structure Cache :=
 
 structure State :=
   atoms : Array Expr := #[]
-  numAtoms : Nat     := 0
+
+def State.numAtoms (s : State) := s.atoms.size
 
 /-- The monad that `ring` works in. This is a reader monad containing a cache and
 the list of atoms-up-to-defeq encountered thus far, used for atom sorting. -/
@@ -46,10 +47,10 @@ def mkAppCS (f : Name) (args : Array Expr) : RingM Expr := do
 put it in the list of atoms and return the new index, otherwise. -/
 def addAtom (e : Expr) : RingM Nat := do
   let c ← get
-  for i in [:c.numAtoms] do
-    if ← isDefEq e c.atoms[i] then
+  for h : i in [:c.numAtoms] do
+    if ← isDefEq e c.atoms[⟨i, by exact h.2⟩] then
       return i
-  modify λ c => { c with atoms := c.atoms.push e, numAtoms := c.numAtoms + 1}
+  modify λ c => { c with atoms := c.atoms.push e }
   return c.numAtoms
 
 /-- The normal form that `ring` uses is mediated by the function `horner a x n b := a * x ^ n + b`.

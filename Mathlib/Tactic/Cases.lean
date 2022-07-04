@@ -80,7 +80,7 @@ elab (name := induction') "induction' " tgts:(casesTarget,+)
       let (fvarIds, g) ← Meta.revert g (← sortFVarIds s.toArray)
       let result ← withRef tgts <| ElimApp.mkElimApp elimInfo targets (← getMVarTag g)
       let elimArgs := result.elimApp.getAppArgs
-      ElimApp.setMotiveArg g elimArgs[elimInfo.motivePos].mvarId! targetFVarIds
+      ElimApp.setMotiveArg g elimArgs[elimInfo.motivePos]!.mvarId! targetFVarIds
       assignExprMVar g result.elimApp
       let subgoals ← ElimApp.evalNames elimInfo result.alts withArg
         (numGeneralized := fvarIds.size) (toClear := targetFVarIds)
@@ -96,8 +96,8 @@ elab (name := cases') "cases' " tgts:(casesTarget,+) usingArg:((" using " ident)
     let targets ← addImplicitTargets elimInfo targets
     let result ← withRef tgts <| ElimApp.mkElimApp elimInfo targets (← getMVarTag g)
     let elimArgs := result.elimApp.getAppArgs
-    let targets ← elimInfo.targetsPos.mapM (instantiateMVars elimArgs[·])
-    let motive := elimArgs[elimInfo.motivePos]
+    let targets ← elimInfo.targetsPos.mapM (instantiateMVars elimArgs[·]!)
+    let motive := elimArgs[elimInfo.motivePos]!
     let g ← generalizeTargetsEq g (← inferType motive) targets
     let (targetsNew, g) ← introN g targets.size
     withMVarContext g do

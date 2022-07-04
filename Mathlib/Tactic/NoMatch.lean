@@ -26,7 +26,7 @@ open private elabMatchAux waitExpectedType from Lean.Elab.Match in
 | `(match $discrs,* with.), expectedType? => do
   let discrs := discrs.getElems
   for i in [0:discrs.size] do
-    let `(matchDiscr| $[$n :]? $discr:term) := discrs[i] | throwUnsupportedSyntax
+    let `(matchDiscr| $[$n :]? $discr:term) := discrs[i]! | throwUnsupportedSyntax
     if let some x ← isAtomicDiscr? discr then
       tryPostponeIfMVar (← Meta.inferType x)
     else

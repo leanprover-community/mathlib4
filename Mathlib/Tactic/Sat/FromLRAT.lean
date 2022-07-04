@@ -241,7 +241,7 @@ def buildClause (arr : Array Int) : Expr :=
 partial def buildConj (arr : Array (Array Int)) (start stop : Nat) : Expr :=
   match stop - start with
   | 0 => panic! "empty"
-  | 1 => mkApp (mkConst ``Sat.Fmla.one) (buildClause arr[start])
+  | 1 => mkApp (mkConst ``Sat.Fmla.one) (buildClause arr[start]!)
   | len =>
     let mid := start + len / 2
     mkApp2 (mkConst ``Sat.Fmla.and) (buildConj arr start mid) (buildConj arr mid stop)
@@ -256,7 +256,7 @@ partial def buildClauses (arr : Array (Array Int)) (ctx : Expr) (start stop : Na
     let c := f.appArg!
     let proof := mkApp3 (mkConst ``Sat.Fmla.proof_of_subsumes) ctx c p
     let n := accum.1 + 1
-    (n, accum.2.insert n { lits := arr[start], expr := c, proof })
+    (n, accum.2.insert n { lits := arr[start]!, expr := c, proof })
   | len =>
     let mid := start + len / 2
     let f₁ := f.appFn!.appArg!

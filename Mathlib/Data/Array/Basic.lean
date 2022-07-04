@@ -40,7 +40,7 @@ theorem get?_len_le (a : Array α) (i : Nat) (h : a.size ≤ i) :
 
 theorem get?_eq_get? (a : Array α) (i : Nat) :
   a.get? i = a.data.get? i := by
-  simp [get?]; split <;> rename_i h
+  simp [get?, Array.getOp]; split <;> rename_i h
   · simp [get, List.get?_eq_get h]
   · simp [List.get?_len_le (le_of_not_lt h)]
 
