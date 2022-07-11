@@ -35,7 +35,7 @@ the list of atoms-up-to-defeq encountered thus far, used for atom sorting. -/
 abbrev RingM := ReaderT Cache $ StateRefT State MetaM
 
 def RingM.run (ty : Expr) (m : RingM α) : MetaM α := do
-  let Level.succ u _ ← getLevel ty | throwError "fail"
+  let .succ u ← getLevel ty | throwError "fail"
   let inst ← synthInstance (mkApp (mkConst ``CommSemiring [u]) ty)
   (m {α := ty, univ := u, cs := inst }).run' {}
 
@@ -397,7 +397,7 @@ partial def eval (e : Expr) : RingM (HornerExpr × Expr) :=
     -- let (e₂', p₂) ← lift $ norm_num.derive e₂ <|> refl_conv e₂,
     let (e₂', p₂) := (e₂, ← mkEqRefl e₂)
     match e₂'.numeral?, P.getAppFn with
-    | some k, Expr.const ``Monoid.HPow _ _ => do
+    | some k, .const ``Monoid.HPow _ => do
       let (e₁', p₁) ← eval e₁
       let (e', p') ← evalPow e₁' (e₂, k)
       let p ← mkAppM ``subst_into_pow #[e₁, e₂, e₁', e₂', e', p₁, p₂, p']

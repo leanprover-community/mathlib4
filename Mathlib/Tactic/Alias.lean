@@ -68,10 +68,10 @@ appendNamespace `a.b `_root_.c.d = `c.d
 TODO: Move this declaration to a more central location.
 -/
 def appendNamespace (ns : Name) : Name → Name
-| Name.str Name.anonymous s _ => if s = "_root_" then Name.anonymous else Name.mkStr ns s
-| Name.str p s _              => Name.mkStr (appendNamespace ns p) s
-| Name.num p n _              => Name.mkNum (appendNamespace ns p) n
-| Name.anonymous              => ns
+| .str .anonymous s => if s = "_root_" then Name.anonymous else Name.mkStr ns s
+| .str p s          => Name.mkStr (appendNamespace ns p) s
+| .num p n          => Name.mkNum (appendNamespace ns p) n
+| .anonymous        => ns
 
 /-- Elaborates an `alias ←` command. -/
 @[commandElab «alias»] def elabAlias : Elab.Command.CommandElab
@@ -150,7 +150,7 @@ def aliasIff (ci : ConstantInfo) (al : Name) (isForward : Bool) : MetaM Unit := 
   let constant ← getConstInfo resolved
 
   let (parent, base) ← match resolved with
-                       | Name.str n s _ => pure (n,s)
+                       | .str n s => pure (n,s)
                        | _ => throwError "alias only works for string names"
 
   let components := base.splitOn "_iff_"

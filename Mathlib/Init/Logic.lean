@@ -188,8 +188,6 @@ lemma and_congr (h₁ : a ↔ c) (h₂ : b ↔ d) : a ∧ b ↔ c ∧ d := ⟨An
 lemma and_congr_right (h : a → (b ↔ c)) : (a ∧ b) ↔ (a ∧ c) :=
 ⟨fun ⟨ha, hb⟩ => ⟨ha, (h ha).1 hb⟩, fun ⟨ha, hb⟩ => ⟨ha, (h ha).2 hb⟩⟩
 
-lemma And.comm : a ∧ b ↔ b ∧ a := ⟨And.symm, And.symm⟩
-
 lemma and_comm (a b : Prop) : a ∧ b ↔ b ∧ a := And.comm
 
 lemma And.assoc : (a ∧ b) ∧ c ↔ a ∧ (b ∧ c) :=

@@ -46,7 +46,7 @@ elab "restate_axiom " oldName:ident newName:optional(ident) : command => do
     match newName with
       | none =>
         match oldName with
-        | Name.str n s _  =>
+        | Name.str n s =>
           if s.back = ''' then
             Name.mkStr n $ s.extract 0 (s.endPos - ⟨1⟩)
           else
