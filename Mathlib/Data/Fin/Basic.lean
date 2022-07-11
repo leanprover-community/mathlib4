@@ -38,10 +38,6 @@ lemma Fin.val_eq_of_lt {n a : Nat} (h : a < n) : (Fin.ofNat' a (zero_lt_of_lt h)
   rw [Nat.mod_eq_of_lt]
   exact Nat.succ_lt_succ (Nat.zero_lt_succ _)
 
-lemma Fin.modn_def : ∀ (a : Fin n) (m : Nat),
-  a % m = Fin.mk ((a.val % m) % n) (Nat.mod_lt (a.val % m) (a.size_positive))
-| ⟨_, _⟩, _ => rfl
-
 lemma Fin.mod_def : ∀ (a m : Fin n),
   a % m = Fin.mk ((a.val % m.val) % n) (Nat.mod_lt (a.val % m.val) (a.size_positive))
 | ⟨_, _⟩, ⟨_, _⟩ => rfl
@@ -57,15 +53,6 @@ lemma Fin.mul_def : ∀ (a b : Fin n),
 lemma Fin.sub_def : ∀ (a b : Fin n),
   a - b = (Fin.mk ((a + (n - b)) % n) (Nat.mod_lt _ (a.size_positive)))
 | ⟨_, _⟩, ⟨_, _⟩ => rfl
-
-@[simp] lemma Fin.mod_eq (a : Fin n) : a % n = a := by
-  apply Fin.eq_of_val_eq
-  simp only [Fin.modn_def, Nat.mod_mod]
-  exact Nat.mod_eq_of_lt a.isLt
-
-@[simp] lemma Fin.mod_eq_val (a : Fin n) : a.val % n = a.val := by
-  simp only [Fin.modn_def, Nat.mod_mod]
-  exact Nat.mod_eq_of_lt a.isLt
 
 theorem Fin.mod_eq_of_lt {a b : Fin n} (h : a < b) : a % b = a := by
   apply Fin.eq_of_val_eq
@@ -121,7 +108,7 @@ instance : CommSemigroup (Fin n) where
 
 theorem Fin.mod_lt : ∀ (i : Fin n) {m : Fin n}, (0 : Fin n) < m → (i % m) < m
 | ⟨a, aLt⟩, ⟨m, mLt⟩, hp =>  by
-    have zero_lt : (0 : Nat) < m := Fin.zero_def ▸ hp
+    have zero_lt : (0 : Nat) < m := @Fin.zero_def n _ ▸ hp
     have a_mod_lt : a % m < m := Nat.mod_lt _ zero_lt
     simp only [Fin.mod_def, LT.lt]
     rw [(Nat.mod_eq_of_lt (Nat.lt_trans a_mod_lt mLt) : a % m % n = a % m)]

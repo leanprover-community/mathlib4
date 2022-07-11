@@ -1,5 +1,7 @@
 import Mathlib.Data.List.Basic
 
+macro_rules | `($x[$i]'$h) => `(getElem $x $i $h)
+
 @[simp] theorem List.toArrayAux_data : ∀ (l : List α) a, (l.toArrayAux a).data = a.data ++ l
 | [], r => (append_nil _).symm
 | a::as, r => (toArrayAux_data as (r.push a)).trans $
@@ -7,69 +9,78 @@ import Mathlib.Data.List.Basic
 
 @[simp] theorem List.toArray_data (l : List α) : l.toArray.data = l := toArrayAux_data _ _
 
+theorem getElem?_pos [GetElem Cont Idx Elem Dom] (a : Cont) (i : Idx) (h : Dom a i) [Decidable (Dom a i)] :
+    a[i]? = a[i] :=
+  dif_pos h
+
+theorem getElem?_neg [GetElem Cont Idx Elem Dom] (a : Cont) (i : Idx) (h : ¬ Dom a i) [Decidable (Dom a i)] :
+    a[i]? = none :=
+  dif_neg h
+
 namespace Array
 
-theorem ext' : {a b : Array α} → a.data = b.data → a = b
-| ⟨_⟩, ⟨_⟩, rfl => rfl
-
-@[simp] theorem data_toArray : (a : Array α) → a.data.toArray = a
+@[simp] theorem toArray_data : (a : Array α) → a.data.toArray = a
 | ⟨l⟩ => ext' l.toArray_data
 
--- Port note: The Lean 4 core library has `toArrayLit_eq` with the same signature as this,
--- but currently its proof is `sorry`.
-theorem toArrayLit_eq' (a : Array α) (n : Nat) (hsz : a.size = n) : a = toArrayLit a n hsz := by
-  have := aux n
-  rw [List.drop_eq_nil_of_le (Nat.le_of_eq hsz)] at this
-  exact (data_toArray a).symm.trans $ congrArg List.toArray (this _).symm
-where
-  aux : ∀ i hi, toListLitAux a n hsz i hi (a.data.drop i) = a.data
-  | 0, _ => rfl
-  | i+1, hi => by
-    simp [toListLitAux]
-    suffices _::_ = _ by rw [this]; apply aux
-    apply List.get_cons_drop
+@[simp] theorem get_eq_getElem (a : Array α) (i : Fin a.size) : a.get i = a[i.1] := rfl
+@[simp] theorem get?_eq_getElem? (a : Array α) (i : Fin a.size) : a.get? i = a[i.1]? := rfl
+@[simp] theorem getData_eq_getElem (a : Array α) (i : Fin _) : a.data.get i = a[i.1] := rfl
 
-theorem get_eq_get (a : Array α) (i : Fin _) :
-  a.get i = a.data.get i := rfl
+theorem getElem?_eq_get (a : Array α) (i : Nat) (h : i < a.size) : a[i]? = a[i] := getElem?_pos _ _ _
 
-theorem get?_eq_get (a : Array α) (i : Nat) (h : i < a.size) :
-  a.get? i = some (a.get ⟨i, h⟩) := by simp [get?, h]
+theorem get?_len_le (a : Array α) (i : Nat) (h : a.size ≤ i) : a[i]? = none := by
+  simp [getElem?_neg, h]
 
-theorem get?_len_le (a : Array α) (i : Nat) (h : a.size ≤ i) :
-  a.get? i = none := by simp [get?, not_lt_of_ge h]
+theorem data_get_eq_getElem (a : Array α) (i : Nat) (h : i < a.size) : a.data.get ⟨i, h⟩ = a[i] := by
+  by_cases i < a.size <;> simp_all <;> rfl
 
-theorem get?_eq_get? (a : Array α) (i : Nat) :
-  a.get? i = a.data.get? i := by
-  simp [get?, Array.getOp]; split <;> rename_i h
-  · simp [get, List.get?_eq_get h]
-  · simp [List.get?_len_le (le_of_not_lt h)]
+theorem data_get?_eq_getElem? (a : Array α) (i : Nat) : a.data.get? i = a[i]? := by
+  by_cases i < a.size <;> simp_all [getElem?_pos, getElem?_neg, List.get?_eq_get] <;> rfl
+
+theorem get_push_lt (a : Array α) (x : α) (i : Nat) (h : i < a.size) :
+    (a.push x)[i]'(by simp_all [Nat.lt_succ_iff, le_of_lt]) = a[i] := by
+  simp only [push, ← data_get_eq_getElem, List.concat_eq_append]
+  simp [data_get_eq_getElem, List.get_append, getElem?_pos, h]
+
+@[simp] theorem get_push_eq (a : Array α) (x : α) : (a.push x)[a.size] = x := by
+  simp only [push, ← data_get_eq_getElem, List.concat_eq_append]
+  rw [List.get_append_right] <;> simp [data_get_eq_getElem]
 
 theorem get?_push_lt (a : Array α) (x : α) (i : Nat) (h : i < a.size) :
-  (a.push x).get? i = some (a.get ⟨i, h⟩) := by
-  simp [push, get?_eq_get?, ← List.get?_eq_get, get_eq_get, List.concat_eq_append]
-  exact List.get?_append h
+    (a.push x)[i]? = some a[i] := by
+  rw [getElem?_pos, get_push_lt]
 
-theorem get?_push_eq (a : Array α) (x : α) :
-  (a.push x).get? a.size = some x := by
-  simp [push, get?_eq_get?, ← List.get?_eq_get, get_eq_get, List.concat_eq_append]
+theorem get?_push_eq (a : Array α) (x : α) : (a.push x)[a.size]? = some x := by
+  rw [getElem?_pos, get_push_eq]
 
-theorem get_push (a : Array α) (x : α) (i) :
-  (a.push x).get i = if h : i < a.size then a.get ⟨i, h⟩ else x := by
-  split <;> (rename_i h; apply Option.some.inj; rw [← get?_eq_get])
-  · apply get?_push_lt
-  · match i with | ⟨i, hi⟩ => ?_
-    simp at hi ⊢
-    rw [le_antisymm (Nat.le_of_lt_succ hi) (le_of_not_lt h), get?_push_eq]
+theorem get_push (a : Array α) (x : α) (i : Nat) (h : i < (a.push x).size) :
+    (a.push x)[i] = if h : i < a.size then a[i] else x := by
+  by_cases i < a.size
+  case pos => simp [get_push_lt, *]
+  case neg =>
+    have : i = a.size := by apply le_antisymm <;> simp_all [Nat.lt_succ_iff]
+    simp [get_push_lt, *]
 
-@[simp] lemma get?_set_eq (a : Array α) (i) (v : α) : (a.set i v).get? i = v := by
-  simp [set, get?_eq_get?, List.get?_set_of_lt _ i.2]
+@[simp] lemma get_set_eq (a : Array α) (i : Nat) (h : i < a.size) (v : α) : (a.set ⟨i, h⟩ v)[i]'(by simp_all) = v := by
+  simp only [set, ← data_get_eq_getElem, List.get_set_eq]
 
-@[simp] lemma get?_set_ne (a : Array α) {i j} (v : α)
-  (h : i.1 ≠ j) : (a.set i v).get? j = a.get? j := by
-  simp [set, get?_eq_get?, List.get?_set_ne _ _ h]
+@[simp] lemma get_set_ne (a : Array α) {i j : Nat} (v : α) (hi : i < a.size) (hj : j < a.size)
+    (h : i ≠ j) : (a.set ⟨i, hi⟩ v)[j]'(by simp_all) = a[j] := by
+  simp only [set, ← data_get_eq_getElem, List.get_set_ne h]
 
-lemma get?_set (a : Array α) (i j) (v : α) :
-  (a.set i v).get? j = if i.1 = j then some v else a.get? j := by
-  split; {subst j; simp}; simp_all
+@[simp] lemma get?_set_eq (a : Array α) (i : Nat) (h : i < a.size) (v : α) : (a.set ⟨i, h⟩ v)[i]? = v := by
+  simp [getElem?_pos, *]
+
+@[simp] lemma get?_set_ne (a : Array α) {i j : Nat} (v : α) (hi : i < a.size)
+    (h : i ≠ j) : (a.set ⟨i, hi⟩ v)[j]? = a[j]? := by
+  by_cases j < a.size <;> simp [getElem?_pos, getElem?_neg, *]
+
+lemma get?_set (a : Array α) (i j : Nat) (hi : i < a.size) (v : α) :
+    (a.set ⟨i, hi⟩ v)[j]? = if i = j then some v else a[j]? := by
+  by_cases i = j <;> simp [*]
+
+lemma get_set (a : Array α) (i j : Nat) (hi : i < a.size) (hj : j < a.size) (v : α) :
+    (a.set ⟨i, hi⟩ v)[j]'(by simp_all) = if i = j then v else a[j] := by
+  by_cases i = j <;> simp [*]
 
 end Array

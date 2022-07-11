@@ -68,6 +68,10 @@ theorem isNat_pow {α} [Semiring α] : (a : α) → (b a' b' c : Nat) →
 
 def instSemiringNat : Semiring Nat := inferInstance
 
+theorem isNat_cast {R} [Semiring R] (n m : Nat) :
+    isNat n m → isNat (n : R) m := by
+  rintro ⟨⟩; rfl
+
 partial def evalIsNat (u : Level) (α sα e : Expr) : MetaM (Expr × Expr) := do
   let (n, p) ← match e.getAppFnArgs with
   | (``HAdd.hAdd, #[_, _, _, _, a, b]) => evalBinOp ``NormNum.isNat_add (·+·) a b
@@ -83,8 +87,11 @@ partial def evalIsNat (u : Level) (α sα e : Expr) : MetaM (Expr × Expr) := do
   | (``One.one, #[_, inst]) =>
     let lawful ← synthInstance (mkApp3 (mkConst ``LawfulOne [u]) α sα inst)
     pure (mkNatLit 1, mkApp4 (mkConst ``LawfulOne.isNat_one [u]) α sα inst lawful)
+  | (``Nat.cast, #[_, _, n])  =>
+    let (m, pm) ← evalIsNat levelZero (mkConst ``Nat) (mkConst ``instSemiringNat) n
+    pure (m, mkApp5 (mkConst ``isNat_cast [u]) α sα n m pm)
   | _ =>
-    unless e.isNatLit do throwError "fail"
+    unless e.isNatLit do throwError "fail {e}"
     pure (e, mkApp (mkConst ``isNat_rawNat) e)
   pure (n, mkApp2 (mkConst ``id [levelZero]) (mkApp4 (mkConst ``isNat [u]) α sα e n) p)
 where

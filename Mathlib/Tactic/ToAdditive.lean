@@ -170,7 +170,7 @@ def applyReplacementFun : Expr → MetaM Expr :=
         trace[to_additive_detail] "applyReplacementFun: app {nm} {gArgs} {x}"
         if h : gArgs.size > 0 then
           let c1 ← shouldReorder nm gArgs.size
-          let c2 ← additiveTest gArgs[⟨0, h⟩]
+          let c2 ← additiveTest gArgs[0]
           if c1 && c2 then
             -- interchange `x` and the last argument of `g`
             let x ← r x

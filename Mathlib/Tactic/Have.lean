@@ -23,7 +23,7 @@ have h
 def Lean.Parser.Term.haveIdLhs' : Parser :=
   optional (ppSpace >> ident >> many (ppSpace >>
     checkColGt "expected to be indented" >>
-    (simpleBinderWithoutType <|> bracketedBinder))) >> optType
+    letIdBinder)) >> optType
 
 namespace Mathlib.Tactic
 

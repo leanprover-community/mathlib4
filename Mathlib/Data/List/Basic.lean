@@ -15,22 +15,10 @@ theorem Option.mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o 
 
 namespace List
 
-theorem concat_eq_append : ∀ (l : List α) a, concat l a = l ++ [a]
-| [], a => (append_nil _).symm
-| x::xs, a => by simp only [concat, cons_append, concat_eq_append xs]
-
 theorem get_cons_drop : ∀ (l : List α) i,
   List.get l i :: List.drop (i + 1) l = List.drop i l
 | _::_, ⟨0, _⟩ => rfl
 | _::_, ⟨i+1, _⟩ => get_cons_drop _ ⟨i, _⟩
-
-theorem drop_eq_nil_of_le : ∀ {l : List α} {k : Nat}, l.length ≤ k → l.drop k = []
-| [], k, _ => by cases k <;> rfl
-| a::l, 0, h => by cases h
-| a::l, k+1, h => by have h0 : length (a :: l) = length l + 1 := rfl
-                     have h1 : length l ≤ k := by rw [h0] at h
-                                                   exact Nat.le_of_succ_le_succ h
-                     exact drop_eq_nil_of_le (l := l) h1
 
 theorem join_nil : join ([] : List (List α)) = [] := rfl
 
@@ -677,7 +665,7 @@ theorem getLast_eq_get : ∀ (l : List α) (h : l ≠ []),
   rw [getLast_singleton, get_singleton]
 | a :: b :: l, h => by rw [getLast_cons, getLast_eq_get (b :: l)]; {rfl}; exact cons_ne_nil b l
 
-@[simp] theorem get?_concat_length : ∀ (l : List α) a : α, (l ++ [a]).get? l.length = some a
+@[simp] theorem get?_concat_length : ∀ (l : List α) (a : α), (l ++ [a]).get? l.length = some a
 | [], a => rfl
 | b :: l, a => by rw [cons_append, length_cons]; simp only [get?, get?_concat_length]
 

@@ -176,7 +176,7 @@ def getDeclsInMathlib : CoreM (Array Name) := do
   let mut decls ← getDeclsInCurrModule
   let mathlibModules := (← getEnv).header.moduleNames.map ((`Mathlib).isPrefixOf ·)
   for (declName, moduleIdx) in (← getEnv).const2ModIdx.toArray do
-    if mathlibModules[moduleIdx]? == true then
+    if mathlibModules[(id moduleIdx : Nat)]? == true then
       decls := decls.push declName
   pure decls
 
