@@ -22,20 +22,6 @@ namespace Array
 @[simp] theorem toArray_data : (a : Array α) → a.data.toArray = a
 | ⟨l⟩ => ext' l.toArray_data
 
--- Port note: The Lean 4 core library has `toArrayLit_eq` with the same signature as this,
--- but currently its proof is `sorry`.
-theorem toArrayLit_eq' (a : Array α) (n : Nat) (hsz : a.size = n) : a = toArrayLit a n hsz := by
-  have := aux n
-  rw [List.drop_eq_nil_of_le (Nat.le_of_eq hsz)] at this
-  exact (toArray_data a).symm.trans $ congrArg List.toArray (this _).symm
-where
-  aux : ∀ i hi, toListLitAux a n hsz i hi (a.data.drop i) = a.data
-  | 0, _ => rfl
-  | i+1, hi => by
-    simp [toListLitAux]
-    suffices _::_ = _ by rw [this]; apply aux
-    apply List.get_cons_drop
-
 @[simp] theorem get_eq_getElem (a : Array α) (i : Fin a.size) : a.get i = a[i.1] := rfl
 @[simp] theorem get?_eq_getElem? (a : Array α) (i : Fin a.size) : a.get? i = a[i.1]? := rfl
 @[simp] theorem getData_eq_getElem (a : Array α) (i : Fin _) : a.data.get i = a[i.1] := rfl
