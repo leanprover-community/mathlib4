@@ -372,10 +372,10 @@ end
 
 /-- Like `tryClearMany`, but also clears dependent hypotheses if possible -/
 def tryClearMany' (mvarId : MVarId) (fvarIds : Array FVarId) : MetaM MVarId := do
-  let toErase ← (← getMVarDecl mvarId).lctx.foldlM (init := fvarIds) fun toErase localDecl =>
-    return if ← findLocalDeclDependsOn localDecl toErase.contains then
-      toErase.push localDecl.fvarId
-    else toErase
+  let mut toErase := fvarIds
+  for localDecl in (← getMVarDecl mvarId).lctx do
+    if ← findLocalDeclDependsOn localDecl toErase.contains then
+      toErase := toErase.push localDecl.fvarId
   tryClearMany mvarId toErase
 
 /-- The terminating continuation used in `rcasesCore` and `rcasesContinue`. We specialize the type
