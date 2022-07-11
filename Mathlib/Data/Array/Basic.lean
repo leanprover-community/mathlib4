@@ -17,15 +17,6 @@ theorem getElem?_neg [GetElem Cont Idx Elem Dom] (a : Cont) (i : Idx) (h : ¬ Do
     a[i]? = none :=
   dif_neg h
 
-@[simp] theorem getElem_fin [GetElem Cont Nat Elem Dom] (a : Cont) (i : Fin n) (h : Dom a i) :
-    a[i] = a[i.1] := rfl
-
-@[simp] theorem getElem_fin' [GetElem Cont Nat Elem Dom] (a : Cont) (i : Nat) (hin : i < n) (hdom : Dom a i) :
-    a[Fin.mk i hin] = a[i] := rfl
-
-@[simp] theorem getElem?_fin [GetElem Cont Nat Elem Dom] (a : Cont) (i : Fin n) [Decidable (Dom a i)] :
-    a[i]? = a[i.1]? := rfl
-
 namespace Array
 
 @[simp] theorem toArray_data : (a : Array α) → a.data.toArray = a
