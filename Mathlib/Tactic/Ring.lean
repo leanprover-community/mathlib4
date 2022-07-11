@@ -48,7 +48,8 @@ put it in the list of atoms and return the new index, otherwise. -/
 def addAtom (e : Expr) : RingM Nat := do
   let c ← get
   for h : i in [:c.numAtoms] do
-    if ← isDefEq e c.atoms[⟨i, by exact h.2⟩] then
+    have : i < c.atoms.size := h.2
+    if ← isDefEq e c.atoms[i] then
       return i
   modify λ c => { c with atoms := c.atoms.push e }
   return c.numAtoms

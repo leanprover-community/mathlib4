@@ -372,9 +372,8 @@ end
 
 /-- Like `tryClearMany`, but also clears dependent hypotheses if possible -/
 def tryClearMany' (mvarId : MVarId) (fvarIds : Array FVarId) : MetaM MVarId := do
-  let mctx ← getMCtx
-  let toErase := (← getMVarDecl mvarId).lctx.foldl (init := fvarIds) fun toErase localDecl =>
-    if mctx.findLocalDeclDependsOn localDecl toErase.contains then
+  let toErase ← (← getMVarDecl mvarId).lctx.foldlM (init := fvarIds) fun toErase localDecl =>
+    return if ← findLocalDeclDependsOn localDecl toErase.contains then
       toErase.push localDecl.fvarId
     else toErase
   tryClearMany mvarId toErase
