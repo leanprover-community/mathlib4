@@ -38,8 +38,8 @@ def mapPrefix (f : Name → Option Name) (n : Name) : Name := Id.run do
   if let some n' := f n then return n'
   match n with
   | anonymous => anonymous
-  | str n' s _ => mkStr (mapPrefix f n') s
-  | num n' i _ => mkNum (mapPrefix f n') i
+  | str n' s => mkStr (mapPrefix f n') s
+  | num n' i => mkNum (mapPrefix f n') i
 
 end Name
 
@@ -101,8 +101,8 @@ def constName (e : Expr) : Name :=
   e.constName?.getD Name.anonymous
 
 def bvarIdx? : Expr → Option Nat
-  | bvar idx _ => some idx
-  | _          => none
+  | bvar idx => some idx
+  | _        => none
 
 /-- Return the function (name) and arguments of an application. -/
 def getAppFnArgs (e : Expr) : Name × Array Expr :=
@@ -110,15 +110,15 @@ def getAppFnArgs (e : Expr) : Name × Array Expr :=
 
 /-- Turn an expression that is a natural number literal into a natural number. -/
 def natLit! : Expr → Nat
-  | lit (Literal.natVal v) _ => v
-  | _                        => panic! "nat literal expected"
+  | lit (Literal.natVal v) => v
+  | _                      => panic! "nat literal expected"
 
 /-- Returns a `NameSet` of all constants in an expression starting with a certain prefix. -/
 def listNamesWithPrefix (pre : Name) (e : Expr) : NameSet :=
   e.foldConsts ∅ fun n l => if n.getPrefix == pre then l.insert n else l
 
 def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M Expr
-  | app f a _ => mkApp f <$> modifier a
+  | app f a => mkApp f <$> modifier a
   | e => pure e
 
 def modifyAppArg (modifier : Expr → Expr) : Expr → Expr :=
@@ -133,9 +133,9 @@ def modifyArg (modifier : Expr → Expr) (e : Expr) (i : Nat) (n := e.getAppNumA
   modifyRevArg modifier (n - i - 1) e
 
 def getRevArg? : Expr → Nat → Option Expr
-  | app _ a _, 0   => a
-  | app f _ _, i+1 => getRevArg! f i
-  | _,         _   => none
+  | app _ a, 0   => a
+  | app f _, i+1 => getRevArg! f i
+  | _,       _   => none
 
 /-- Given `f a₀ a₁ ... aₙ₋₁`, returns the `i`th argument or none if out of bounds. -/
 def getArg? (e : Expr) (i : Nat) (n := e.getAppNumArgs): Option Expr :=

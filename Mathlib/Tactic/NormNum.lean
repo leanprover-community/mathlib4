@@ -118,7 +118,7 @@ theorem eval_of_isNat {α} [Semiring α] (n) [OfNat α n] [LawfulOfNat α n] :
 
 def eval (e : Expr) : MetaM (Expr × Expr) := do
   let α ← inferType e
-  let Level.succ u _ ← getLevel α | throwError "fail"
+  let .succ u ← getLevel α | throwError "fail"
   let sα ← synthInstance (mkApp (mkConst ``Semiring [u]) α)
   let (ln, p) ← evalIsNat u α sα e
   let ofNatInst ← synthInstance (mkApp2 (mkConst ``OfNat [u]) α ln)
@@ -131,7 +131,7 @@ theorem eval_eq_of_isNat {α} [Semiring α] :
 | _, _, _, rfl, rfl => rfl
 
 def evalEq (α a b : Expr) : MetaM Expr := do
-  let Level.succ u _ ← getLevel α | throwError "fail"
+  let .succ u ← getLevel α | throwError "fail"
   let sα ← synthInstance (mkApp (mkConst ``Semiring [u]) α)
   let (ln, pa) ← evalIsNat u α sα a
   let (ln', pb) ← evalIsNat u α sα b

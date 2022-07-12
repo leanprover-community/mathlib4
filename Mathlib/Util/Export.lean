@@ -77,24 +77,24 @@ def exportName (n : Name) : ExportM Nat := do
   match (← get).names.map.find? n with
   | some i => pure i
   | none => match n with
-    | Name.anonymous => pure 0
-    | Name.num p a _ => let i ← alloc n; IO.println s!"{i} #NI {← exportName p} {a}"; pure i
-    | Name.str p s _ => let i ← alloc n; IO.println s!"{i} #NS {← exportName p} {s}"; pure i
+    | .anonymous => pure 0
+    | .num p a => let i ← alloc n; IO.println s!"{i} #NI {← exportName p} {a}"; pure i
+    | .str p s => let i ← alloc n; IO.println s!"{i} #NS {← exportName p} {s}"; pure i
 
 def exportLevel (L : Level) : ExportM Nat := do
   match (← get).levels.map.find? L with
   | some i => pure i
   | none => match L with
-    | Level.zero _ => pure 0
-    | Level.succ l _ =>
+    | .zero => pure 0
+    | .succ l =>
       let i ← alloc L; IO.println s!"{i} #US {← exportLevel l}"; pure i
-    | Level.max l₁ l₂ _ =>
+    | .max l₁ l₂ =>
       let i ← alloc L; IO.println s!"{i} #UM {← exportLevel l₁} {← exportLevel l₂}"; pure i
-    | Level.imax l₁ l₂ _ =>
+    | .imax l₁ l₂ =>
       let i ← alloc L; IO.println s!"{i} #UIM {← exportLevel l₁} {← exportLevel l₂}"; pure i
-    | Level.param n _ =>
+    | .param n =>
       let i ← alloc L; IO.println s!"{i} #UP {← exportName n}"; pure i
-    | Level.mvar _ _ => unreachable!
+    | .mvar _ => unreachable!
 
 def biStr : BinderInfo → String
 | BinderInfo.default        => "#BD"
@@ -110,31 +110,31 @@ partial def exportExpr (E : Expr) : ExportM Nat := do
   match (← get).exprs.map.find? E with
   | some i => pure i
   | none => match E with
-    | Expr.bvar n _ => let i ← alloc E; IO.println s!"{i} #EV {n}"; pure i
-    | Expr.fvar _ _ => unreachable!
-    | Expr.mvar _ _ => unreachable!
-    | Expr.sort l _ => let i ← alloc E; IO.println s!"{i} #ES {← exportLevel l}"; pure i
-    | Expr.const n ls _ =>
+    | .bvar n => let i ← alloc E; IO.println s!"{i} #EV {n}"; pure i
+    | .fvar _ => unreachable!
+    | .mvar _  => unreachable!
+    | .sort l => let i ← alloc E; IO.println s!"{i} #ES {← exportLevel l}"; pure i
+    | .const n ls =>
       exportDef n
       let i ← alloc E
       let mut s := s!"{i} #EC {← exportName n}"
       for l in ls do s := s ++ s!" {← exportLevel l}"
       IO.println s; pure i
-    | Expr.app e₁ e₂ _ =>
+    | .app e₁ e₂ =>
       let i ← alloc E; IO.println s!"{i} #EA {← exportExpr e₁} {← exportExpr e₂}"; pure i
-    | Expr.lam _ e₁ e₂ d =>
+    | .lam _ e₁ e₂ d =>
       let i ← alloc E
-      IO.println s!"{i} #EL {biStr d.binderInfo} {← exportExpr e₁} {← exportExpr e₂}"; pure i
-    | Expr.forallE _ e₁ e₂ d =>
+      IO.println s!"{i} #EL {biStr d} {← exportExpr e₁} {← exportExpr e₂}"; pure i
+    | .forallE _ e₁ e₂ d =>
       let i ← alloc E
-      IO.println s!"{i} #EP {biStr d.binderInfo} {← exportExpr e₁} {← exportExpr e₂}"; pure i
-    | Expr.letE _ e₁ e₂ e₃ _ =>
+      IO.println s!"{i} #EP {biStr d} {← exportExpr e₁} {← exportExpr e₂}"; pure i
+    | .letE _ e₁ e₂ e₃ _ =>
       let i ← alloc E
       IO.println s!"{i} #EP {← exportExpr e₁} {← exportExpr e₂} {← exportExpr e₃}"; pure i
-    | Expr.lit (Literal.natVal n) _ => let i ← alloc E; IO.println s!"{i} #EN {n}"; pure i
-    | Expr.lit (Literal.strVal s) _ => let i ← alloc E; IO.println s!"{i} #ET {s}"; pure i
-    | Expr.mdata _ _ _ => unreachable!
-    | Expr.proj n k e _ =>
+    | .lit (.natVal n) => let i ← alloc E; IO.println s!"{i} #EN {n}"; pure i
+    | .lit (.strVal s) => let i ← alloc E; IO.println s!"{i} #ET {s}"; pure i
+    | .mdata _ _ => unreachable!
+    | .proj n k e =>
       let i ← alloc E; IO.println s!"{i} #EJ {← exportName n} {k} {← exportExpr e}"; pure i
 
 partial def exportDef (n : Name) : ExportM Unit := do
