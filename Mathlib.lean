@@ -76,6 +76,10 @@ import Mathlib.Tactic.Lint.Basic
 import Mathlib.Tactic.Lint.Frontend
 import Mathlib.Tactic.Lint.Misc
 import Mathlib.Tactic.Lint.Simp
+import Mathlib.Tactic.Micromega.Basic
+import Mathlib.Tactic.Micromega.Certificate
+import Mathlib.Tactic.Micromega.Polynomial
+import Mathlib.Tactic.Micromega.Tactic
 import Mathlib.Tactic.NoMatch
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormCast.CoeExt
