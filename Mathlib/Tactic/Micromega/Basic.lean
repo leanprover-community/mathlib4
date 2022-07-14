@@ -34,7 +34,7 @@ def map : PolyExpr α → PolyExpr β
 
 -- coq: zeval_const
 @[specialize]
-def eval [Add α] [Sub α] [Mul α] [Neg α] [Pow α Nat] : PolyExpr α → OptionM α
+def eval [Add α] [Sub α] [Mul α] [Neg α] [Pow α Nat] : PolyExpr α → Option α
 | const c => some c
 | var _ => none
 | add e₁ e₂ => do some $ (← e₁.eval) + (← e₂.eval)
@@ -58,15 +58,15 @@ namespace Poly
 
 -- coq: xdenorm, denorm
 def denorm : Poly α → (x : UInt32 := 0) → PolyExpr α
-| const c, x => PolyExpr.const c
+| const c, _ => PolyExpr.const c
 | inj j p, x => p.denorm (x + j)
 | var p j q, x => p.denorm x * PolyExpr.var x ^ j + q.denorm (x + 1)
 
 -- coq: max_var
 def maxVar : Poly α → (x : UInt32 := 0) → UInt32
-| const c, x => x
+| const _, x => x
 | inj j p, x => p.maxVar (x + j)
-| var p j q, x => max (p.maxVar x) (q.maxVar (x + 1))
+| var p _ q, x => max (p.maxVar x) (q.maxVar (x + 1))
 
 instance (n) [OfNat α n] : OfNat (Poly α) n := ⟨const (OfNat.ofNat n)⟩
 
@@ -209,7 +209,7 @@ partial def mul [OfNat α (nat_lit 0)] [OfNat α (nat_lit 1)] [Add α] [Mul α] 
 | const c, inj j q₀ => mkInj j (q₀ * c)
 | inj j' q', inj j q₀ =>
   if j ≤ j' then mkInj j (mul (inj₀ (j'-j) q') q₀) else mkInj j' (mul q' (inj (j-j') q₀))
-| var p' i' q', inj j q₀  =>
+| var _ i' q', inj j q₀  =>
   mkVar (mul q' (inj j q₀)) i' $ if j == 1 then mul q' q₀ else mul q' (inj (j-1) q₀)
 | const c, p'' => p'' * c
 | p@(inj j q₀), var p' i' q' => mkVar (mul p p') i' (mul (mkInjPred j q₀) q')
@@ -311,11 +311,11 @@ def mapA : GFormula α ξ β φ → GFormula α' ξ β φ
 variable (f : β → γ → γ) in
 def foldB : GFormula α ξ β φ → γ → γ
 | A _ _ an => f an
-| and k f₁ f₂ => foldB f₁ ∘ foldB f₂
-| or k f₁ f₂ => foldB f₁ ∘ foldB f₂
-| not k f => foldB f
-| imp k f₁ o f₂ => foldB f₁ ∘ foldB f₂
-| iff k f₁ f₂ => foldB f₁ ∘ foldB f₂
+| and _ f₁ f₂ => foldB f₁ ∘ foldB f₂
+| or _ f₁ f₂ => foldB f₁ ∘ foldB f₂
+| not _ f => foldB f
+| imp _ f₁ _ f₂ => foldB f₁ ∘ foldB f₂
+| iff _ f₁ f₂ => foldB f₁ ∘ foldB f₂
 | eq f₁ f₂ => foldB f₁ ∘ foldB f₂
 | _ => id
 
@@ -359,16 +359,16 @@ def CNF.isFalse : CNF σ α → Bool
 class Deduce (σ) := (unsat : σ → Bool) (deduce : σ → σ → Option σ)
 
 -- coq: add_term
-def Clause.addTerm [Deduce σ] (t₀ : σ × α) (cl : Clause σ α) : OptionM (Clause σ α) := do
-  let check (t' : σ × α) : OptionM Unit := do
+def Clause.addTerm [Deduce σ] (t₀ : σ × α) (cl : Clause σ α) : Option (Clause σ α) := do
+  let check (t' : σ × α) : Option Unit := do
     if let some u := Deduce.deduce t₀.1 t'.1 then
       if Deduce.unsat u then none
   for lit in cl do check lit
   check t₀
-  cl.push t₀
+  some $ cl.push t₀
 
 -- coq: or_clause
-def Clause.or [Deduce σ] (cl₁ cl₂ : Clause σ α) : OptionM (Clause σ α) := do
+def Clause.or [Deduce σ] (cl₁ cl₂ : Clause σ α) : Option (Clause σ α) := do
   let mut out := cl₂
   for lit in cl₁ do
     out ← out.addTerm lit
@@ -448,14 +448,14 @@ def Clause.addTermT [Deduce σ] (t₀ : σ × α) (cl : Clause σ α) : Except (
       if Deduce.unsat u then throw ↑t'.2
   for lit in cl do check lit
   check t₀
-  cl.push t₀
+  pure $ cl.push t₀
 
 -- coq: ror_clause
 def Clause.orT [Deduce σ] (cl₁ cl₂ : Clause σ α) : Except (Trace α) (Clause σ α) := do
   let mut out := cl₂
   for lit in cl₁ do
     out ← out.addTermT lit
-  out
+  pure out
 
 -- coq: ror_clause_cnf
 def CNF.orT₁ [Deduce σ] (f : CNF σ α) (cl : Clause σ α) : CNF σ α × Trace α :=
@@ -526,7 +526,7 @@ class ToConstr (α β ξ) where
 def GFormula.toConstr [ToConstr α β ξ] : GFormula α ξ β φ → ξ
 | GFormula.true k => ToConstr.true α β k
 | GFormula.false k => ToConstr.false α β k
-| X k x => x
+| X _ x => x
 | A k a b => ToConstr.A k a b
 | and k f₁ f₂ => ToConstr.and α β k (toConstr f₁) (toConstr f₂)
 | or k f₁ f₂ => ToConstr.or α β k (toConstr f₁) (toConstr f₂)
@@ -601,8 +601,8 @@ end
 
 -- coq: cnf_checker
 partial def CNF.check
-  (checker : Clause σ α → β → OptionM Unit) (f : CNF σ α) (l : Array β) : OptionM Unit :=
-  let rec loop (i : Nat) : OptionM Unit := do
+  (checker : Clause σ α → β → Option Unit) (f : CNF σ α) (l : Array β) : Option Unit :=
+  let rec loop (i : Nat) : Option Unit := do
     if h : i < f.size then
       if h' : i < l.size then
         checker (f.get ⟨i, h⟩) (l.get ⟨i, h'⟩); loop (i+1)
@@ -611,7 +611,7 @@ partial def CNF.check
 
 -- coq: tauto_checker
 def tautoChecker [Deduce σ] [Normalize α σ β]
-  (checker : Clause σ β → γ → OptionM Unit) (f : GFormula α ξ β φ) (w : Array γ) : OptionM Unit :=
+  (checker : Clause σ β → γ → Option Unit) (f : GFormula α ξ β φ) (w : Array γ) : Option Unit :=
   f.xcnf true |>.check checker w
 
 -- coq: op1
@@ -624,7 +624,7 @@ instance [Repr α] : Repr (Atom α) := inferInstanceAs (Repr (_×_))
 instance [OfNat α (nat_lit 0)] : Inhabited (Atom α) := ⟨(0, Ord.zero)⟩
 
 -- coq: opMult
-def Ord.mul : Ord → Ord → OptionM Ord
+def Ord.mul : Ord → Ord → Option Ord
 | Ord.zero, _ => some Ord.zero
 | _, Ord.zero => some Ord.zero
 | Ord.nonzero, Ord.nonzero => some Ord.nonzero
@@ -634,7 +634,7 @@ def Ord.mul : Ord → Ord → OptionM Ord
 | _, _ => some Ord.nonneg
 
 -- coq: opAdd
-def Ord.add : Ord → Ord → OptionM Ord
+def Ord.add : Ord → Ord → Option Ord
 | Ord.zero, o => some o
 | o, Ord.zero => some o
 | Ord.nonzero, _ => none
@@ -673,32 +673,32 @@ deriving Inhabited, Repr
 
 -- coq: pexpr_times_nformula
 def Atom.smul [OfNat α (nat_lit 0)] [OfNat α (nat_lit 1)] [Add α] [Mul α] [BEq α] :
-  Poly α → Atom α → OptionM (Atom α)
+  Poly α → Atom α → Option (Atom α)
 | p, (ef, Ord.zero) => some (p * ef, Ord.zero)
-| p, (ef, _) => none
+| _, _ => none
 
 -- coq: nformula_times_nformula
 def Atom.mul [OfNat α (nat_lit 0)] [OfNat α (nat_lit 1)] [Add α] [Mul α] [BEq α] :
-  Atom α → Atom α → OptionM (Atom α)
-| (e₁, o₁), (e₂, o₂) => do (e₁ * e₂, ← o₁.mul o₂)
+  Atom α → Atom α → Option (Atom α)
+| (e₁, o₁), (e₂, o₂) => return (e₁ * e₂, ← o₁.mul o₂)
 
 -- coq: nformula_plus_nformula, zdeduce, qdeduce, rdeduce
 @[specialize]
-def Atom.add [OfNat α (nat_lit 0)] [BEq α] [Add α] : Atom α → Atom α → OptionM (Atom α)
-| (e₁, o₁), (e₂, o₂) => do (e₁ + e₂, ← o₁.add o₂)
+def Atom.add [OfNat α (nat_lit 0)] [BEq α] [Add α] : Atom α → Atom α → Option (Atom α)
+| (e₁, o₁), (e₂, o₂) => return (e₁ + e₂, ← o₁.add o₂)
 
 -- coq: eval_Psatz, eval_Psatz0
 variable [∀ n, OfNat α n] [Add α] [Mul α] [BEq α] [LT α] [DecidableRel (@LT.lt α _)]
   (l : Array (Atom α)) in
 @[specialize]
-def PSatz.eval : PSatz α → OptionM (Atom α)
-| hyp n => l[n]
-| square e => (e.square, Ord.nonneg)
+def PSatz.eval : PSatz α → Option (Atom α)
+| hyp n => l[n]?
+| square e => some (e.square, Ord.nonneg)
 | smul re e => do (← e.eval).smul re
 | mul e₁ e₂ => do (← e₁.eval).mul (← e₂.eval)
 | add e₁ e₂ => do (← e₁.eval).add (← e₂.eval)
 | const c => if 0 < c then some (Poly.const c, Ord.pos) else none
-| zero => (0, Ord.zero)
+| zero => some (0, Ord.zero)
 
 -- coq: check_inconsistent, zunsat, qunsat, runsat
 @[specialize]
@@ -719,7 +719,7 @@ instance [OfNat α (nat_lit 0)] [BEq α] [Add α] [LT α] [DecidableRel (@LT.lt 
 -- coq: check_normalized_formulas, zWeakChecker, qWeakChecker, rWeakChecker
 @[specialize]
 def PSatz.check [∀ n, OfNat α n] [Add α] [Mul α] [BEq α] [LT α] [DecidableRel (@LT.lt α _)]
-  (l : Array (Atom α)) (cm : PSatz α) : OptionM Unit :=
+  (l : Array (Atom α)) (cm : PSatz α) : Option Unit :=
   match cm.eval l with
   | some f => guard f.inconsistent
   | none => none
@@ -863,7 +863,7 @@ instance : Normalize (AtomExpr Int) (Atom Int) β where
 def Int.divEuclid : Int → Int → Int
 | Int.ofNat m, Int.ofNat n => Int.ofNat (m / n)
 | Int.ofNat m, Int.negSucc n => -Int.ofNat (m / Nat.succ n)
-| Int.negSucc m, 0 => 0
+| Int.negSucc _, 0 => 0
 | Int.negSucc m, Int.ofNat (n+1) => Int.negSucc (m / Nat.succ n)
 | Int.negSucc m, Int.negSucc n => Int.ofNat (Nat.succ (m / Nat.succ n))
 
@@ -934,7 +934,7 @@ def AtomExpr.eqSub (x y t : UInt32) : AtomExpr Int :=
 def Atom.listMaxVar (l : Array (Atom α)) : UInt32 := l.foldl (fun m a => a.1.maxVar m) 0
 
 -- coq: zChecker
-partial def ZArithProof.check (l : Array (Atom Int)) : ZArithProof → OptionM Unit
+partial def ZArithProof.check (l : Array (Atom Int)) : ZArithProof → Option Unit
 | done => none
 | rat w pf => do
   let f ← w.eval l
@@ -974,12 +974,12 @@ def BFormula.map (f : α → β) : BFormula α ξ → BFormula β ξ := GFormula
 -- coq: qTautoChecker
 def tautoCheckerAtom
   [∀ n, OfNat α n] [Add α] [Mul α] [Neg α] [BEq α] [LT α] [DecidableRel (@LT.lt α _)]
-  (l : BFormula (AtomExpr α) ξ) (pfs : Array (PSatz α)) : OptionM Unit :=
+  (l : BFormula (AtomExpr α) ξ) (pfs : Array (PSatz α)) : Option Unit :=
 tautoChecker (fun cl => PSatz.check (cl.map (·.1))) l pfs
 
 -- coq: zTautoChecker
 def tautoCheckerInt
-  (l : BFormula (AtomExpr Int) ξ) (pfs : Array ZArithProof) : OptionM Unit :=
+  (l : BFormula (AtomExpr Int) ξ) (pfs : Array ZArithProof) : Option Unit :=
 tautoChecker (fun cl => ZArithProof.check (cl.map (·.1))) l pfs
 
 -- coq: rcst
@@ -1011,5 +1011,5 @@ def RConst.eval : RConst → Rat
 | neg a => -a.eval
 
 -- coq: rTautoChecker
-def tautoCheckerR (l : BFormula (AtomExpr RConst) ξ) (pfs : Array (PSatz Rat)) : OptionM Unit :=
+def tautoCheckerR (l : BFormula (AtomExpr RConst) ξ) (pfs : Array (PSatz Rat)) : Option Unit :=
 tautoCheckerAtom (l.map (·.map (·.eval))) pfs
