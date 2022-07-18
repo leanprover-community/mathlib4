@@ -54,11 +54,10 @@ def transLemmas (env : Environment) : DiscrTree Name :=
 def simpleTrans {rel : α → α → Prop}{a b c : α}[Trans rel rel rel] :
     rel a b → rel b c → rel a c  := trans
 
-syntax (name := trans) "trans" (ppSpace (colGt term))? : tactic
 open Lean.Elab.Tactic
-@[tactic «trans»] def transTacticImpl: Tactic := fun stx =>
-match stx with
-| `(tactic|trans) =>
+elab "trans" t?:(ppSpace (colGt term))? : tactic => do
+match t? with
+| none =>
   withMainContext do
   let tgt ← getMainTarget
   match ← relationAppM? tgt with
@@ -76,7 +75,7 @@ match stx with
       catch e =>
         s.restore
     throwError "no applicable transitivity lemma found for {indentExpr tgt}"
-| `(tactic|trans $t) =>
+| some t =>
   withMainContext do
   let tgt ← getMainTarget
   match ← relationAppM? tgt with
@@ -104,4 +103,3 @@ match stx with
         s.restore
         logInfo m!"Error in apply : {e.toMessageData}, rel: {rel}, lem: {lem}"
     throwError "no applicable transitivity lemma found for {indentExpr tgt}"
-| _ => throwIllFormedSyntax
