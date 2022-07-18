@@ -11,6 +11,7 @@ import Mathlib.Tactic.Core
 import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
+import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NormCast
@@ -205,7 +206,6 @@ syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
 /- M -/ syntax (name := unfoldProjs) "unfold_projs" (config)? (ppSpace location)? : tactic
 /- M -/ syntax (name := unfold1) "unfold1" (config)? (ppSpace colGt ident)* (ppSpace location)? : tactic
 
-/- E -/ syntax (name := inferOptParam) "infer_opt_param" : tactic
 /- E -/ syntax (name := inferAutoParam) "infer_auto_param" : tactic
 /- M -/ syntax (name := guardExprEq) "guard_expr " term:51 " =ₐ " term : tactic -- alpha equality
 /- M -/ syntax (name := guardTarget) "guard_target" " =ₐ " term : tactic -- alpha equality
