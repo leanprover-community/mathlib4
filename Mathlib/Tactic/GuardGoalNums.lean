@@ -6,6 +6,12 @@ Authors: Robert Y. Lewis
 
 import Lean
 
+/-!
+
+A tactic stub file for the `guard_goal_nums` tactic.
+
+-/
+
 open Lean Meta Elab Tactic
 
 /-- `guard_goal_nums n` succeeds if there are exactly `n` goals and fails otherwise. -/
