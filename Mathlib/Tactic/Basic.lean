@@ -256,3 +256,14 @@ elab "fapply " e:term : tactic =>
 
 elab "eapply " e:term : tactic =>
   evalApplyLikeTactic (Meta.apply (cfg := {newGoals := ApplyNewGoals.nonDependentOnly})) e
+
+/--
+Tries to solve the goal using a canonical proof of `true` or the `reflexivity` tactic.
+-/
+syntax (name := triv) "triv" : tactic
+
+macro_rules
+  | `(tactic| triv) => `(tactic| exact trivial)
+
+macro_rules
+  | `(tactic| triv) => `(tactic| rfl)
