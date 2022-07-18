@@ -17,12 +17,12 @@ def relationAppM?(expr: Expr) : MetaM (Option (Expr × Expr × Expr)) :=
       let allArgs := expr.getAppArgs
       if allArgs.size < 2 then pure none
       else
-        let lhs := allArgs[allArgs.size -2]
-        let rhs := allArgs[allArgs.size -1]
+        let lhs := allArgs[allArgs.size -2]!
+        let rhs := allArgs[allArgs.size -1]!
         if ← isDefEq (← inferType lhs) (← inferType rhs) then
           let mut rel := baseRel
           for i in [0:allArgs.size - 2] do
-            rel := mkApp rel allArgs[i]
+            rel := mkApp rel allArgs[i]!
           return some (rel, lhs, rhs)
         else return none
     else pure none
@@ -37,7 +37,7 @@ def symmAttr : AttributeImpl where
       if xs.size < 1 then
         throwError "@[symm] attribute only applies to lemmas proving x ∼ y → y ∼ x, got {declTy} with too few arguments"
       else
-        let finalHyp ← inferType xs[xs.size -1]
+        let finalHyp ← inferType xs[xs.size -1]!
         match ← relationAppM? targetTy with
         | some (rel, lhs, rhs) =>
           let flip ←  mkAppM' rel #[rhs, lhs]

@@ -34,8 +34,8 @@ def transAttr : AttributeImpl where
       else
         match ← relationAppM? targetTy with
         | some (rel, x, z) =>
-          let xyHyp ← inferType xs[xs.size -2]
-          let yzHyp ← inferType xs[xs.size -1]
+          let xyHyp ← inferType xs[xs.size -2]!
+          let yzHyp ← inferType xs[xs.size -1]!
           let y ← mkFreshExprMVar (some <| ← inferType x)
           let modelPair ← mkAppM ``PProd.mk #[← mkAppM' rel #[x, y], ← mkAppM' rel #[y, z]]
           let hypPair ← mkAppM ``PProd.mk #[xyHyp, yzHyp]
