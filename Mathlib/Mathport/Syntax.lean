@@ -527,6 +527,8 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := pure_coherence) "pure_coherence" : tactic
 /- M -/ syntax (name := coherence) "coherence" : tactic
 
+attribute [nolint docBlame] coherence pure_coherence
+
 namespace Conv
 
 -- https://github.com/leanprover-community/mathlib/issues/2882
