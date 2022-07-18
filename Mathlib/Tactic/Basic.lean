@@ -259,3 +259,10 @@ elab "fapply " e:term : tactic =>
 
 elab "eapply " e:term : tactic =>
   evalApplyLikeTactic (Meta.apply (cfg := {newGoals := ApplyNewGoals.nonDependentOnly})) e
+
+/-- This tactic clears all auxiliary declarations from the context. -/
+elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
+  for ldec in (←getLCtx) do
+    if ldec.isAuxDecl then
+      try replaceMainGoal [←Meta.clear (←getMainGoal) ldec.fvarId]
+      catch | _ => pure ()
