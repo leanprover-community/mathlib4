@@ -1,4 +1,4 @@
-import Mathlib.Tactic.GuardHypNums
+import Mathlib.Tactic.GuardGoalNums
 
 example : true ∧ true := by
   constructor
