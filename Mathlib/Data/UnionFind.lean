@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Simpa
 import Mathlib.Data.Array.Basic
 
 structure UFModel (n) where
@@ -123,7 +124,7 @@ theorem size_eq {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr)
   n = arr.size := H.1.size_eq
 
 theorem parent_eq {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr)
-  (i : Nat) (h₁ h₂) : (arr[i]'h₁).parent = m.parent ⟨i, h₂⟩ := H.1.get_eq ..
+  (i : Nat) (h₁ : i < arr.size) (h₂) : arr[i].parent = m.parent ⟨i, h₂⟩ := H.1.get_eq ..
 
 theorem parent_eq' {arr : Array (UFNode α)} {m : UFModel arr.size} (H : m.Models arr)
   (i : Fin arr.size) : (arr[i.1]).parent = m.parent i := H.parent_eq ..
@@ -142,7 +143,7 @@ theorem push {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr)
     simp [UFModel.push, h, lt_irrefl]
 
 theorem setParent {arr : Array (UFNode α)} {n} {m : UFModel n} (hm : m.Models arr)
-  (i j H hi x) (hp : x.parent = j.1) (hrk : x.rank = (arr.get ⟨i.1, hi⟩).rank) :
+  (i j H hi x) (hp : x.parent = j.1) (hrk : x.rank = arr[i].rank) :
   (m.setParent i j H).Models (arr.set ⟨i.1, hi⟩ x) :=
   ⟨hm.1.set
       (fun k h => by simp [UFModel.setParent, h.symm])
@@ -196,15 +197,14 @@ theorem rank_eq (self : UnionFind α) {n} {m : UFModel n} (H : m.Models self.arr
     {i} (h : i < self.size) : self.rank i = m.rank i := by
   simp [rank, h, H.rank_eq]
 
-theorem rank_lt (self : UnionFind α) {i} : (self.arr.get i).parent ≠ i →
-  self.rank i < self.rank (self.arr.get i).parent := by
+theorem rank_lt (self : UnionFind α) {i : Nat} (h) : self.arr[i].parent ≠ i →
+  self.rank i < self.rank self.arr[i].parent := by
   let ⟨m, hm⟩ := self.model'
-  simp [hm.parent_eq', hm.rank_eq, rank, size, i.2, (m.parent i).2]
-  exact m.rank_lt i
+  simpa [hm.parent_eq, hm.rank_eq, rank, size, h, (m.parent ⟨i, h⟩).2] using m.rank_lt ⟨i, h⟩
 
-theorem parent_lt (self : UnionFind α) (i) : (self.arr.get i).parent < self.size := by
+theorem parent_lt (self : UnionFind α) (i : Nat) (h) : self.arr[i].parent < self.size := by
   let ⟨m, hm⟩ := self.model'
-  simp [hm.parent_eq', size, (m.parent i).2]
+  simp [hm.parent_eq, size, (m.parent ⟨i, h⟩).2, h]
 
 def push (self : UnionFind α) (x : α) : UnionFind α where
   arr := self.arr.push ⟨self.arr.size, x, 0⟩
@@ -216,17 +216,18 @@ def findAux (self : UnionFind α) (x : Fin self.size) :
       m.Models self.arr ∧ m'.Models s ∧ m'.rank = m.rank ∧
       (∃ hr, (m'.parent ⟨root, hr⟩).1 = root) ∧
       m.rank x ≤ m.rank root := by
-  let y := (self.arr.get x).parent
+  have : x < self.arr.size := x.2
+  let y := self.arr[x].parent
   refine if h : y = x then ⟨self.arr, x, ?a⟩ else
-    have := Nat.sub_lt_sub_left (self.lt_rankMax x) (self.rank_lt h)
-    let ⟨arr₁, root, H⟩ := self.findAux ⟨y, self.parent_lt x⟩
+    have := Nat.sub_lt_sub_left (self.lt_rankMax x) (self.rank_lt _ h)
+    let ⟨arr₁, root, H⟩ := self.findAux ⟨y, self.parent_lt _ x.2⟩
     have hx := ?hx
     let arr₂ := arr₁.set ⟨x, hx⟩ {arr₁.get ⟨x, hx⟩ with parent := root}
     ⟨arr₂, ⟨root, by simp [root.2]⟩, ?b⟩
   -- start proof
   case a =>
     let ⟨m, hm⟩ := self.model'
-    exact ⟨_, m, m, hm, hm, rfl, ⟨x.2, by rwa [← hm.parent_eq']⟩, le_refl _⟩
+    exact ⟨_, m, m, hm, hm, rfl, ⟨x.2, by rwa [← hm.parent_eq]⟩, le_refl _⟩
   all_goals let ⟨n, m, m', hm, hm', e, ⟨_, hr⟩, le⟩ := H
   case hx => exact hm'.size_eq ▸ hm.size_eq.symm ▸ x.2
   case b =>
@@ -254,8 +255,10 @@ def find (self : UnionFind α) (x : Fin self.size) :
 def link (self : UnionFind α) (x y : Fin self.size)
   (yroot : (self.arr.get y).parent = y) : UnionFind α := by
   refine if ne : x.1 = y then self else
-    let nx := self.arr.get x
-    let ny := self.arr.get y
+    have hx : x < self.arr.size := x.2
+    have hy : y < self.arr.size := y.2
+    let nx := self.arr[x]
+    let ny := self.arr[y]
     if h : ny.rank < nx.rank then
       ⟨self.arr.set y {ny with parent := x}, ?a⟩
     else
@@ -267,12 +270,10 @@ def link (self : UnionFind α) (x y : Fin self.size)
   -- start proof
   case a =>
     let ⟨m, hm⟩ := self.model'
-    simp [hm.rank_eq] at h
-    exact ⟨_, _, hm.setParent y x h _ _ rfl rfl⟩
+    exact ⟨_, _, hm.setParent y x (by simpa [hm.rank_eq] using h) _ _ rfl rfl⟩
   case b =>
     let ⟨m, hm⟩ := self.model'; let n := self.size
-    simp [hm.rank_eq] at h; simp [hm.parent_eq'] at yroot
-    refine ⟨_, m.setParentBump x y h yroot, ?_⟩
+    refine ⟨_, m.setParentBump x y (by simpa [hm.rank_eq] using h) (by simpa [← hm.parent_eq'] using yroot), ?_⟩
     let parent (i : Fin n) := (if x.1 = i then y else m.parent i).1
     have : UFModel.Agrees arr₁ (·.parent) parent :=
       hm.1.set (fun i h => by simp; rw [if_neg h.symm]) (fun h => by simp)

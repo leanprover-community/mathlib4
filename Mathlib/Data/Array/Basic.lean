@@ -2,6 +2,15 @@ import Mathlib.Data.List.Basic
 
 macro_rules | `($x[$i]'$h) => `(getElem $x $i $h)
 
+@[simp] theorem getElem_fin [GetElem Cont Nat Elem Dom] (a : Cont) (i : Fin n) (h : Dom a i) :
+    a[i] = a[i.1] := rfl
+
+@[simp] theorem getElem?_fin [GetElem Cont Nat Elem Dom] (a : Cont) (i : Fin n)
+    [Decidable (Dom a i)] : a[i]? = a[i.1]? := rfl
+
+@[simp] theorem getElem!_fin [GetElem Cont Nat Elem Dom] (a : Cont) (i : Fin n)
+    [Decidable (Dom a i)] [Inhabited Elem] : a[i]! = a[i.1]! := rfl
+
 @[simp] theorem List.toArrayAux_data : ∀ (l : List α) a, (l.toArrayAux a).data = a.data ++ l
 | [], r => (append_nil _).symm
 | a::as, r => (toArrayAux_data as (r.push a)).trans $
@@ -22,9 +31,9 @@ namespace Array
 @[simp] theorem toArray_data : (a : Array α) → a.data.toArray = a
 | ⟨l⟩ => ext' l.toArray_data
 
-@[simp] theorem get_eq_getElem (a : Array α) (i : Fin a.size) : a.get i = a[i.1] := rfl
-@[simp] theorem get?_eq_getElem? (a : Array α) (i : Fin a.size) : a.get? i = a[i.1]? := rfl
-@[simp] theorem getData_eq_getElem (a : Array α) (i : Fin _) : a.data.get i = a[i.1] := rfl
+@[simp] theorem get_eq_getElem (a : Array α) (i : Fin a.size) : a.get i = a[i] := rfl
+@[simp] theorem get?_eq_getElem? (a : Array α) (i : Fin a.size) : a.get? i = a[i]? := rfl
+@[simp] theorem getData_eq_getElem (a : Array α) (i : Fin _) : a.data.get i = a[i] := rfl
 
 theorem getElem?_eq_get (a : Array α) (i : Nat) (h : i < a.size) : a[i]? = a[i] := getElem?_pos _ _ _
 
