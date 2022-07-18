@@ -22,6 +22,7 @@ import Mathlib.Tactic.ShowTerm
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Trace
+import Mathlib.Tactic.Substs
 import Mathlib.Init.ExtendedBinder
 import Mathlib.Util.WithWeakNamespace
 import Mathlib.Util.Syntax
@@ -246,7 +247,6 @@ end Conv
 
 /- E -/ syntax (name := fconstructor) "fconstructor" : tactic
 /- E -/ syntax (name := tryFor) "try_for " term:max tacticSeq : tactic
-/- E -/ syntax (name := substs) "substs" (ppSpace ident)* : tactic
 /- E -/ syntax (name := unfoldCoes) "unfold_coes" (ppSpace location)? : tactic
 /- E -/ syntax (name := unfoldWf) "unfold_wf" : tactic
 /- M -/ syntax (name := unfoldAux) "unfold_aux" : tactic
