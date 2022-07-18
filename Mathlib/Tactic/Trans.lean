@@ -97,8 +97,6 @@ match stx with
           withLocalDecl `pf1 BinderInfo.default r1 fun pf1 =>
           withLocalDecl `pf2 BinderInfo.default r2 fun pf2 => do
             let pf3 ← mkAppM lem #[pf1, pf2]
-              -- Term.elabAppArgs f #[]
-              --   #[Term.Arg.expr pf1, Term.Arg.expr pf2] none (explicit := false) (ellipsis := false)
             mkLambdaFVars #[pf1, pf2] pf3
         liftMetaTactic (apply · l)
         return

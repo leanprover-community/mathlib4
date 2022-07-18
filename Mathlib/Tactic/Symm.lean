@@ -9,7 +9,9 @@ initialize symmExtension : SimpleScopedEnvExtension (Name × Array DiscrTree.Key
     addEntry := fun dt (n, ks) => dt.insertCore ks n
     initial := {}
   }
-
+/--
+matches to expressions of the form `r x y` with `r` a relation and returns the triple `(r, x, y)` if there is a match. Note that `r` may be obtained applying a function to arguments.
+-/
 def relationAppM?(expr: Expr) : MetaM (Option (Expr × Expr × Expr)) :=
   do
     if expr.isApp && (← inferType expr).isProp then
