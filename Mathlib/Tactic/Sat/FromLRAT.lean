@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Mario Carneiro
 -/
 import Mathlib.Data.List.Basic
-import Mathlib.Util.Eval
 
 /-!
 # `lrat_proof` command
@@ -120,8 +119,9 @@ def Fmla.proof (f : Fmla) (c : Clause) : Prop :=
 
 /-- If `f` subsumes `c` (i.e. `c ∈ f`), then `f.proof c`. -/
 theorem Fmla.proof_of_subsumes (H : Fmla.subsumes f (Fmla.one c)) : f.proof c :=
-  fun v h => h.1 _ $ H.1 _ $ List.Mem.head ..
+  fun _ h => h.1 _ $ H.1 _ $ List.Mem.head ..
 
+set_option linter.unusedVariables false in -- FIXME: lean4#1214
 /-- The core unit-propagation step.
 
 We have a local context of assumptions `¬l'` (sometimes called an assignment)
@@ -146,9 +146,9 @@ def Valuation.implies (v : Valuation) (p : Prop) : List Prop → Nat → Prop
 /-- `Valuation.mk [a, b, c]` is a valuation which is `a` at 0, `b` at 1 and `c` at 2, and false
 everywhere else. -/
 def Valuation.mk : List Prop → Valuation
-| [], n => False
-| a::as, 0 => a
-| a::as, n+1 => mk as n
+| [], _ => False
+| a::_, 0 => a
+| _::as, n+1 => mk as n
 
 /-- The fundamental relationship between `mk` and `implies`:
 `(mk ps).implies p ps 0` is equivalent to `p`. -/
@@ -241,7 +241,7 @@ def buildClause (arr : Array Int) : Expr :=
 partial def buildConj (arr : Array (Array Int)) (start stop : Nat) : Expr :=
   match stop - start with
   | 0 => panic! "empty"
-  | 1 => mkApp (mkConst ``Sat.Fmla.one) (buildClause arr[start])
+  | 1 => mkApp (mkConst ``Sat.Fmla.one) (buildClause arr[start]!)
   | len =>
     let mid := start + len / 2
     mkApp2 (mkConst ``Sat.Fmla.and) (buildConj arr start mid) (buildConj arr mid stop)
@@ -256,7 +256,7 @@ partial def buildClauses (arr : Array (Array Int)) (ctx : Expr) (start stop : Na
     let c := f.appArg!
     let proof := mkApp3 (mkConst ``Sat.Fmla.proof_of_subsumes) ctx c p
     let n := accum.1 + 1
-    (n, accum.2.insert n { lits := arr[start], expr := c, proof })
+    (n, accum.2.insert n { lits := arr[start]!, expr := c, proof })
   | len =>
     let mid := start + len / 2
     let f₁ := f.appFn!.appArg!
@@ -433,7 +433,7 @@ partial def buildReify (ctx ctx' proof : Expr) (nvars : Nat) : Expr × Expr := I
   | 0 => e
   | n+1 => mkPS (depth+1) (mkApp2 cons (mkBVar depth) e) n
   pr := mkApp5 (mkConst ``Sat.Fmla.refute) e (mkPS 0 nil nvars) ctx proof pr
-  for i in [0:nvars] do
+  for _ in [0:nvars] do
     e := mkForall `a default (mkSort levelZero) e
     pr := mkLambda `a default (mkSort levelZero) pr
   pure (e, pr)
@@ -516,7 +516,7 @@ def parseDimacs : Parsec (Nat × Array (Array Int)) := do
   let nvars ← parseNat <* ws
   let nclauses ← parseNat <* ws
   let mut clauses := Array.mkEmpty nclauses
-  for i in [:nclauses] do
+  for _ in [:nclauses] do
     clauses := clauses.push (← parseInts)
   pure (nvars, clauses)
 
@@ -577,7 +577,7 @@ def fromLRAT (cnf lrat : String) (name : Name) : MetaM Unit := do
 open Elab Term
 
 
-/-!
+/--
 A macro for producing SAT proofs from CNF / LRAT files.
 These files are commonly used in the SAT community for writing proofs.
 
@@ -600,15 +600,15 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
   to load CNF / LRAT files from disk.
 -/
 elab "lrat_proof" n:(ident <|> "example") cnf:term:max lrat:term:max : command => do
-  let name := (← getCurrNamespace) ++ if n.isIdent then n.getId else `_example
+  let name := (← getCurrNamespace) ++ if n.1.isIdent then n.1.getId else `_example
   Command.liftTermElabM name do
-    let cnf ← unsafe (Mathlib.Eval.evalTerm String (mkConst ``String) cnf)
-    let lrat ← unsafe (Mathlib.Eval.evalTerm String (mkConst ``String) lrat)
+    let cnf ← unsafe evalTerm String (mkConst ``String) cnf
+    let lrat ← unsafe evalTerm String (mkConst ``String) lrat
     let go := do
       fromLRAT cnf lrat name
       withSaveInfoContext do
         Term.addTermInfo' n (mkConst name) (isBinder := true)
-    if n.isIdent then go else withoutModifyingEnv go
+    if n.1.isIdent then go else withoutModifyingEnv go
 
 lrat_proof example
   -- The CNF file
@@ -628,7 +628,7 @@ lrat_proof example
 --   (include_str "full2.cnf")
 --   (include_str "full2.lrat")
 
-/-!
+/--
 A macro for producing SAT proofs from CNF / LRAT files.
 These files are commonly used in the SAT community for writing proofs.
 
@@ -654,8 +654,8 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
   to load CNF / LRAT files from disk.
 -/
 elab "from_lrat" cnf:term:max lrat:term:max : term => do
-  let cnf ← unsafe (Mathlib.Eval.evalTerm String (mkConst ``String) cnf)
-  let lrat ← unsafe (Mathlib.Eval.evalTerm String (mkConst ``String) lrat)
+  let cnf ← unsafe evalTerm String (mkConst ``String) cnf
+  let lrat ← unsafe evalTerm String (mkConst ``String) lrat
   let name ← mkAuxName `lrat
   fromLRAT cnf lrat name
   return mkConst name

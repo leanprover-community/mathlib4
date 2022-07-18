@@ -27,14 +27,15 @@ structure Cache :=
 
 structure State :=
   atoms : Array Expr := #[]
-  numAtoms : Nat     := 0
+
+def State.numAtoms (s : State) := s.atoms.size
 
 /-- The monad that `ring` works in. This is a reader monad containing a cache and
 the list of atoms-up-to-defeq encountered thus far, used for atom sorting. -/
 abbrev RingM := ReaderT Cache $ StateRefT State MetaM
 
 def RingM.run (ty : Expr) (m : RingM α) : MetaM α := do
-  let Level.succ u _ ← getLevel ty | throwError "fail"
+  let .succ u ← getLevel ty | throwError "fail"
   let inst ← synthInstance (mkApp (mkConst ``CommSemiring [u]) ty)
   (m {α := ty, univ := u, cs := inst }).run' {}
 
@@ -46,10 +47,11 @@ def mkAppCS (f : Name) (args : Array Expr) : RingM Expr := do
 put it in the list of atoms and return the new index, otherwise. -/
 def addAtom (e : Expr) : RingM Nat := do
   let c ← get
-  for i in [:c.numAtoms] do
+  for h : i in [:c.numAtoms] do
+    have : i < c.atoms.size := h.2
     if ← isDefEq e c.atoms[i] then
       return i
-  modify λ c => { c with atoms := c.atoms.push e, numAtoms := c.numAtoms + 1}
+  modify λ c => { c with atoms := c.atoms.push e }
   return c.numAtoms
 
 /-- The normal form that `ring` uses is mediated by the function `horner a x n b := a * x ^ n + b`.
@@ -110,8 +112,8 @@ def reflConv (e : HornerExpr) : RingM (HornerExpr × Expr) := do pure (e, ← mk
 
 /-- Pretty printer for `horner_expr`. -/
 def pp : HornerExpr → MetaM Format
-| (const e c) => pure $ toString c
-| (xadd e a x (_, n) b) => do
+| const _ c => pure $ toString c
+| xadd _ a x (_, n) b => do
   let pa ← a.pp
   let pb ← b.pp
   let px ← PrettyPrinter.ppExpr x.1
@@ -132,11 +134,11 @@ by simp [h.symm, horner, pow_add, mul_assoc]
 
 /-- Evaluate `horner a n x b` where `a` and `b` are already in normal form. -/
 def evalHorner : HornerExpr → Expr × ℕ → Expr × ℕ → HornerExpr → RingM (HornerExpr × Expr)
-| ha@(const a coeff), x, n, b => do
+| ha@(const _ coeff), x, n, b => do
   if coeff = 0 then
     return (b, ← mkAppCS ``zero_horner #[x.1, n.1, b])
   else (← xadd' ha x n b).reflConv
-| ha@(xadd a a₁ x₁ n₁ b₁), x, n, b => do
+| ha@(xadd _ a₁ x₁ n₁ b₁), x, n, b => do
   if x₁.2 = x.2 ∧ b₁.e.numeral? = some 0 then do
     let n' := mkRawNatLit (n₁.2 + n.2)
     let h ← mkEqRefl n'
@@ -198,7 +200,6 @@ partial def evalAdd : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
     return (← xadd' a x n b',
       ← mkAppCS ``horner_add_const #[a, x.1, n.1, b, e₂, b', h])
 | he₁@(xadd e₁ a₁ x₁ n₁ b₁), he₂@(xadd e₂ a₂ x₂ n₂ b₂) => do
-  let c ← get
   if x₁.2 < x₂.2 then
     let (b', h) ← evalAdd b₁ he₂
     return (← xadd' a₁ x₁ n₁ b',
@@ -211,7 +212,6 @@ partial def evalAdd : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
     let k := n₂.2 - n₁.2
     let ek := mkRawNatLit k
     let h₁ ← mkEqRefl n₂.1
-    let c ← read
     let α0 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]
     let (a', h₂) ← evalAdd a₁ (← xadd' a₂ x₁ (ek, k) (const α0 0))
     let (b', h₃) ← evalAdd b₁ b₂
@@ -246,10 +246,10 @@ by simp [horner, ← h₁, ← h₂, add_mul, mul_assoc, mul_comm c]
 
 /-- Evaluate `k * a` where `k` is a rational numeral and `a` is in normal form. -/
 def evalConstMul (k : Expr × ℕ) : HornerExpr → RingM (HornerExpr × Expr)
-| (const e coeff) => do
+| const e coeff => do
   let (e', p) ← NormNum.eval $ ← mkMul k.1 e
   return (const e' (k.2 * coeff), p)
-| (xadd e a x n b) => do
+| xadd _ a x n b => do
   let (a', h₁) ← evalConstMul k a
   let (b', h₂) ← evalConstMul k b
   return (← xadd' a' x n b',
@@ -289,7 +289,7 @@ partial def evalMul : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
     let p ←  mkAppM ``one_mul #[e₂]
     return (e₂, p)
   else evalConstMul (e₁, c₁) e₂
-| e₁, he₂@(const e₂ c₂) => do
+| e₁, he₂@(const e₂ _) => do
   let p₁ ← mkAppM ``mul_comm #[e₁, e₂]
   let (e', p₂) ← evalMul he₂ e₁
   let p ← mkEqTrans p₁ p₂
@@ -397,7 +397,7 @@ partial def eval (e : Expr) : RingM (HornerExpr × Expr) :=
     -- let (e₂', p₂) ← lift $ norm_num.derive e₂ <|> refl_conv e₂,
     let (e₂', p₂) := (e₂, ← mkEqRefl e₂)
     match e₂'.numeral?, P.getAppFn with
-    | some k, Expr.const ``Monoid.HPow _ _ => do
+    | some k, .const ``Monoid.HPow _ => do
       let (e₁', p₁) ← eval e₁
       let (e', p') ← evalPow e₁' (e₂, k)
       let p ← mkAppM ``subst_into_pow #[e₁, e₂, e₁', e₂', e', p₁, p₂, p']

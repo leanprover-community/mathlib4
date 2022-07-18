@@ -32,4 +32,4 @@ This is useful for implementing tree traversal functions where
 subtrees may be referenced in multiple places.
 -/
 @[implementedBy memoFixImpl]
-constant memoFix {α : Type u} {β : Type v} [Nonempty β] (f : (α → β) → (α → β)) : α → β
+opaque memoFix {α : Type u} {β : Type v} [Nonempty β] (f : (α → β) → (α → β)) : α → β

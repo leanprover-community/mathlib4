@@ -33,8 +33,8 @@ initialize registerTraceClass `Tactic.librarySearch
 -- from Lean.Server.Completion
 private def isBlackListed (declName : Name) : MetaM Bool := do
   if declName == ``sorryAx then return false
-  if declName matches Name.str _ "inj" _ then return false
-  if declName matches Name.str _ "noConfusionType" _ then return false
+  if declName matches .str _ "inj" then return false
+  if declName matches .str _ "noConfusionType" then return false
   let env ← getEnv
   pure $ declName.isInternal
    || isAuxRecursor env declName
@@ -46,7 +46,7 @@ initialize librarySearchLemmas : DeclCache (DiscrTree Name) ←
     if constInfo.isUnsafe then return lemmas
     if ← isBlackListed name then return lemmas
     withNewMCtxDepth do
-      let (xs, bis, type) ← withReducible <| forallMetaTelescopeReducing constInfo.type
+      let (_, _, type) ← withReducible <| forallMetaTelescopeReducing constInfo.type
       let keys ← withReducible <| DiscrTree.mkPath type
       pure $ lemmas.insertCore keys name
 
@@ -112,7 +112,7 @@ elab_rules : tactic | `(tactic| library_search%$tk) => do
   withNestedTraces do
   trace[Tactic.librarySearch] "proving {← getMainTarget}"
   let mvar ← getMainGoal
-  let (hs, introdMVar) ← intros (← getMainGoal)
+  let (_, introdMVar) ← intros (← getMainGoal)
   withMVarContext introdMVar do
     if let some suggestions ← librarySearch introdMVar (← librarySearchLemmas.get) then
       for suggestion in suggestions do
@@ -127,7 +127,7 @@ elab tk:"library_search%" : term <= expectedType => do
   withNestedTraces do
   trace[Tactic.librarySearch] "proving {expectedType}"
   let mvar ← mkFreshExprMVar expectedType
-  let (hs, introdMVar) ← intros mvar.mvarId!
+  let (_, introdMVar) ← intros mvar.mvarId!
   withMVarContext introdMVar do
     if let some suggestions ← librarySearch introdMVar (← librarySearchLemmas.get) then
       for suggestion in suggestions do

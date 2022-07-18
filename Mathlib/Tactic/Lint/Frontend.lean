@@ -88,7 +88,8 @@ def lintCore (decls : Array Name) (linters : Array NamedLinter) :
       (linter, ·) <$> decls.mapM fun decl => (decl, ·) <$> do
         BaseIO.asTask do
           match ← withCurrHeartbeats (linter.test decl)
-              |>.run'.run' {options} {env} |>.toBaseIO with
+              |>.run'.run' {options, fileName := "", fileMap := default} {env}
+              |>.toBaseIO with
           | Except.ok msg? => pure msg?
           | Except.error err => pure m!"LINTER FAILED:\n{err.toMessageData}"
 
@@ -175,11 +176,12 @@ def getDeclsInMathlib : CoreM (Array Name) := do
   let mut decls ← getDeclsInCurrModule
   let mathlibModules := (← getEnv).header.moduleNames.map ((`Mathlib).isPrefixOf ·)
   for (declName, moduleIdx) in (← getEnv).const2ModIdx.toArray do
-    if mathlibModules[moduleIdx] then
+    if mathlibModules[(id moduleIdx : Nat)]? == true then
       decls := decls.push declName
   pure decls
 
 open Elab Command in
+/-- The command `#lint` runs the linters on the current file (by default). -/
 elab "#lint"
     project:(&"mathlib" <|> &"all")?
     verbosity:("+" <|> "-")?
@@ -188,13 +190,13 @@ elab "#lint"
     : command => do
   let (decls, whereDesc, groupByFilename) ← match project with
     | none => do pure (← liftCoreM getDeclsInCurrModule, "in the current file", false)
-    | some (Syntax.atom _ "mathlib") => do pure (← liftCoreM getDeclsInMathlib, "in mathlib", true)
-    | some (Syntax.atom _ "all") => do pure (← liftCoreM getAllDecls, "in all files", true)
+    | some ⟨.atom _ "mathlib"⟩ => do pure (← liftCoreM getDeclsInMathlib, "in mathlib", true)
+    | some ⟨.atom _ "all"⟩ => do pure (← liftCoreM getAllDecls, "in all files", true)
     | _ => throwUnsupportedSyntax
   let verbosity : LintVerbosity ← match verbosity with
-    | none => pure LintVerbosity.medium
-    | some (Syntax.atom _ "+") => pure LintVerbosity.high
-    | some (Syntax.atom _ "-") => pure LintVerbosity.low
+    | none => pure .medium
+    | some ⟨.atom _ "+"⟩ => pure .high
+    | some ⟨.atom _ "-"⟩ => pure .low
     | _ => throwUnsupportedSyntax
   let fast := fast.isSome
   let only := only.isSome

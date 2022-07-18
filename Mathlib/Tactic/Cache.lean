@@ -63,12 +63,14 @@ Calling this function for the first time
 will initialize the cache with the function
 provided in the constructor.
 -/
-def Cache.get [Monad m] [MonadEnv m] [MonadOptions m] [MonadLiftT BaseIO m] [MonadExcept Exception m]
+def Cache.get [Monad m] [MonadEnv m] [MonadLog m] [MonadOptions m] [MonadLiftT BaseIO m] [MonadExcept Exception m]
     (cache : Cache α) : m α := do
   let t ← match ← show BaseIO _ from ST.Ref.get cache with
     | Sum.inr t => pure t
     | Sum.inl init =>
       let env ← getEnv
+      let fileName ← getFileName
+      let fileMap ← getFileMap
       let options ← getOptions -- TODO: sanitize options?
       -- Default heartbeats to a reasonable value.
       -- otherwise librarySearch times out on mathlib
@@ -78,7 +80,7 @@ def Cache.get [Monad m] [MonadEnv m] [MonadOptions m] [MonadLiftT BaseIO m] [Mon
       let res ← EIO.asTask do
         let metaCtx : Meta.Context := {}
         let metaState : Meta.State := {}
-        let coreCtx : Core.Context := {options}
+        let coreCtx : Core.Context := {options, fileName, fileMap}
         let coreState : Core.State := {env}
         pure (← ((init ‹_›).run ‹_› ‹_›).run ‹_›).1.1
       show BaseIO _ from cache.set (Sum.inr res)

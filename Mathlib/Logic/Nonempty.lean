@@ -18,7 +18,7 @@ This file proves a few extra facts about `Nonempty`, which is defined in core Le
 -/
 
 
-theorem exists_true_iff_nonempty {α : Sort _} : (∃ a : α, True) ↔ Nonempty α :=
+theorem exists_true_iff_nonempty {α : Sort _} : (∃ _a : α, True) ↔ Nonempty α :=
   Iff.intro (fun ⟨a, _⟩ => ⟨a⟩) fun ⟨a⟩ => ⟨a, trivial⟩
 
 @[simp]
@@ -86,7 +86,7 @@ theorem nonempty_plift : Nonempty (PLift α) ↔ Nonempty α :=
 
 @[simp]
 theorem Nonempty.forall {p : Nonempty α → Prop} : (∀ h : Nonempty α, p h) ↔ ∀ a, p ⟨a⟩ :=
-  Iff.intro (fun h a => h _) fun h ⟨a⟩ => h a
+  Iff.intro (fun h _ => h _) fun h ⟨a⟩ => h a
 
 @[simp]
 theorem Nonempty.exists {p : Nonempty α → Prop} : (∃ h : Nonempty α, p h) ↔ ∃ a, p ⟨a⟩ :=
@@ -133,5 +133,4 @@ theorem subsingleton_of_not_nonempty (h : ¬Nonempty α) : Subsingleton α :=
   ⟨fun x => False.elim $ not_nonempty_iff_imp_false.mp h x⟩
 
 instance {β : α → Sort v} [∀ a, Nonempty (β a)] : Nonempty (∀ a, β a) :=
-  ⟨fun a => Classical.arbitrary _⟩
-
+  ⟨fun _ => Classical.arbitrary _⟩
