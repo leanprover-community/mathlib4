@@ -3,6 +3,7 @@ import Lean
 namespace Mathlib.Tactic.Symm
 open Lean Meta
 
+/- Environment extensions for symm lemmas -/
 initialize symmExtension : SimpleScopedEnvExtension (Name × Array DiscrTree.Key) (DiscrTree Name) ←
   registerSimpleScopedEnvExtension {
     name := `symm
@@ -29,6 +30,7 @@ def relationAppM?(expr: Expr) : MetaM (Option (Expr × Expr × Expr)) :=
         else return none
     else pure none
 
+/-- add symmetry attribute if valid -/
 def symmAttr : AttributeImpl where
   name := `symm
   descr := "symmetric relation"
@@ -52,12 +54,15 @@ def symmAttr : AttributeImpl where
 
 initialize registerBuiltinAttribute symmAttr
 
+/-- look up symmetry lemmas -/
 def symmLemmas (env : Environment) : DiscrTree Name :=
   symmExtension.getState env
 
 syntax (name := symm) "symm" : tactic
 
 open Lean.Elab.Tactic in
+
+/-- symmetry tactic -/
 elab "symm" : tactic =>
   withMainContext do
   let tgt ← getMainTarget

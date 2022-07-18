@@ -6,6 +6,7 @@ namespace Mathlib.Tactic.Trans
 open Lean Meta Elab
 open Mathlib.Tactic.Symm
 
+/- Environment extension storing transitivity lemmas -/
 initialize transExtension : SimpleScopedEnvExtension (Name × Array DiscrTree.Key) (DiscrTree Name) ←
   registerSimpleScopedEnvExtension {
     name := `trans
@@ -24,6 +25,7 @@ def areTransHyps(rel x z xyHyp yzHyp : Expr) : MetaM Bool :=
     -- pure true
   catch _ => pure false
 
+/-- add transitivity attribute if valid-/
 def transAttr : AttributeImpl where
   name := `trans
   descr := "transitive relation"
@@ -50,13 +52,16 @@ def transAttr : AttributeImpl where
 
 initialize registerBuiltinAttribute transAttr
 
+/-- look up transitivity lemmas -/
 def transLemmas (env : Environment) : DiscrTree Name :=
   transExtension.getState env
 
-def simpleTrans {rel : α → α → Prop}{a b c : α}[Trans rel rel rel] :
+/-- transitivity lemmas from the typeclass -/
+theorem simpleTrans {rel : α → α → Prop}{a b c : α}[Trans rel rel rel] :
     rel a b → rel b c → rel a c  := trans
 
 open Lean.Elab.Tactic
+/-- transitivity tactic implementation -/
 elab "trans" t?:(ppSpace (colGt term))? : tactic => do
 match t? with
 | none =>
