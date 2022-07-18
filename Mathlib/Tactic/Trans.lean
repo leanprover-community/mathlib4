@@ -13,6 +13,8 @@ initialize transExtension : SimpleScopedEnvExtension (Name × Array DiscrTree.Ke
     initial := {}
   }
 
+/- checks whether there is some `y` so that `xyHyp` has type `rel x y` and `yzHyp` has type `rel y z`.
+-/
 def areTransHyps(rel x z xyHyp yzHyp : Expr) : MetaM Bool :=
   try
     let y ← mkFreshExprMVar (some <| ← inferType x)
