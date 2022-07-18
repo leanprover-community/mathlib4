@@ -12,5 +12,11 @@ example {P Q : Prop} (q : P) (p : Q) : P ∧ Q := by
 
 example {a b : Nat} (h : a = b) : a = b ∧ a = a := by
   swap_var a ↔ b
+-- ba: Nat
+-- h: b = a
+-- ⊢ b = a ∧ b = b
   swap_var b y, y ↔ x
+-- xa: Nat
+-- h: x = a
+-- ⊢ x = a ∧ x = x
   exact .intro h $ .refl x
