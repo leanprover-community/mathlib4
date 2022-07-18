@@ -39,7 +39,7 @@ example (a b c : Nat): a ≤ b → b ≤ c → a ≤ c := by
    assumption
    assumption
 
-example (a b c : Nat): a ≤  b → b ≤  c → a ≤  c :=
+example (a b c : Nat): a ≤ b → b ≤ c → a ≤ c :=
    by intros ; trans ; repeat (assumption)
 
 
