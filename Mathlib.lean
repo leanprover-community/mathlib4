@@ -102,6 +102,7 @@ import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
+import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.Use

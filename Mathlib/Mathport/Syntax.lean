@@ -350,9 +350,6 @@ syntax termList := " [" term,* "]"
 
 /- E -/ syntax (name := renameVar) "rename_var " ident " → " ident (ppSpace location)? : tactic
 
-syntax swapVarArg := ident " ↔ "? ident
-/- E -/ syntax (name := swapVar) "swap_var " (colGt swapVarArg),+ : tactic
-
 /- M -/ syntax (name := assocRw) "assoc_rw " rwRuleSeq (ppSpace location)? : tactic
 
 /- N -/ syntax (name := dsimpResult) "dsimp_result " (&"only ")? ("[" Tactic.simpArg,* "]")?
