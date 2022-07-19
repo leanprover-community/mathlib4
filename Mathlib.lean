@@ -118,5 +118,6 @@ import Mathlib.Util.Simp
 import Mathlib.Util.Syntax
 import Mathlib.Util.TermUnsafe
 import Mathlib.Util.Time
+import Mathlib.Util.Tactic
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
