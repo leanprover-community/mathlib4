@@ -21,6 +21,7 @@ import Mathlib.Tactic.Set
 import Mathlib.Tactic.ShowTerm
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
+import Mathlib.Tactic.Trace
 import Mathlib.Init.ExtendedBinder
 import Mathlib.Util.WithWeakNamespace
 import Mathlib.Util.Syntax
@@ -182,7 +183,6 @@ syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
 /- M -/ syntax (name := casesType!) "cases_type!" "*"? ppSpace ident* : tactic
 /- N -/ syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
 
-/- E -/ syntax (name := trace) "trace " term : tactic
 /- E -/ syntax (name := existsi) (priority := low) "exists " term,* : tactic
 /- E -/ syntax (name := eConstructor) "econstructor" : tactic
 /- M -/ syntax (name := constructorM) "constructorm" "*"? ppSpace term,* : tactic
@@ -274,7 +274,6 @@ end Conv
 /- M -/ syntax (name := guardExprEq') "guard_expr " term:51 " = " term : tactic -- definitional equality
 /- M -/ syntax (name := guardTarget') "guard_target" " = " term : tactic -- definitional equality
 /- E -/ syntax (name := triv) "triv" : tactic
-/- N -/ syntax (name := clearAuxDecl) "clear_aux_decl" : tactic
 /- M -/ syntax (name := clearExcept) "clear " "*" " - " ident* : tactic
 /- M -/ syntax (name := extractGoal) "extract_goal" (ppSpace ident)?
   (" with" (ppSpace (colGt ident))*)? : tactic

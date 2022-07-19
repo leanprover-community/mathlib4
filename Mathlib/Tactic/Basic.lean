@@ -23,6 +23,9 @@ macro "exfalso" : tactic => `(apply False.elim)
 
 macro "_" : tactic => `({})
 
+/-- We allow the `rfl` tactic to also use `Iff.rfl`. -/
+-- `rfl` was defined earlier in Lean4, at src/lean/init/tactics.lean
+-- Later we want to allow `rfl` to use all relations marked with an attribute.
 macro_rules | `(tactic| rfl) => `(tactic| exact Iff.rfl)
 
 /-- `change` is a synonym for `show`,
@@ -256,3 +259,11 @@ elab "fapply " e:term : tactic =>
 
 elab "eapply " e:term : tactic =>
   evalApplyLikeTactic (Meta.apply (cfg := {newGoals := ApplyNewGoals.nonDependentOnly})) e
+
+/-- This tactic clears all auxiliary declarations from the context. -/
+elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
+  let mut g ← getMainGoal
+  for ldec in ← getLCtx do
+    if ldec.isAuxDecl then
+      g ← Meta.tryClear g ldec.fvarId
+  replaceMainGoal [g]
