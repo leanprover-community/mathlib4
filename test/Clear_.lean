@@ -7,6 +7,11 @@ example (_delete_this : Nat) : Nat := by
   fail_if_success assumption
   exact 0
 
+-- Confirms that clear_ does not delete class instances
+example [_dont_delete_this : Inhabited Nat] : Inhabited Nat := by
+  clear_
+  assumption
+
 -- Confirms that clear_ clears _delete_ths but not dont_delete_this
 example (_delete_this : Nat) (dont_delete_this : Int) : Nat := by
   clear_
