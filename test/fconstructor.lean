@@ -1,8 +1,8 @@
 import Mathlib.Tactic.Constructor
 
-structure foo :=
-(a : Type)
-(x : List a)
+structure Foo where
+  a : Type
+  x : List a
 
 example : foo := by
   fconstructor
