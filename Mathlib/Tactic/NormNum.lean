@@ -165,11 +165,6 @@ protected def runTarget : TacticM Unit := do
     assignExprMVar g p
     pure []
 
-/-- Runs norm_num1 on a hypothesis. -/
-protected def runLocalDecl (_fv : FVarId) : TacticM Unit := do
-  -- [todo] what is correct behaviour?
-  throwError "Running norm_num at a hypothesis is not implemented."
-
 /-- Apply norm_num conversion to lhs in `⊢ lhs = _` without interleaving simp. -/
 def convert : TacticM Unit := do
   let lhs ← getLhs
@@ -212,7 +207,7 @@ elab_rules : tactic
       | none => Location.targets #[] true
       | some loc => expandLocation loc
     withLocation loc
-      (atLocal := Meta.NormNum.runLocalDecl)
+      (atLocal := fun _ => throwError "running norm_num on a hypothesis is not implemented")
       (atTarget := Meta.NormNum.runTarget)
       (failed := fun _ => throwError "norm_num failed")
 
