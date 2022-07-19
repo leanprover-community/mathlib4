@@ -79,6 +79,8 @@ import Mathlib.Tactic.Lint.Basic
 import Mathlib.Tactic.Lint.Frontend
 import Mathlib.Tactic.Lint.Misc
 import Mathlib.Tactic.Lint.Simp
+import Mathlib.Tactic.MfldSetTac.Attr
+import Mathlib.Tactic.MfldSetTac.Tactic
 import Mathlib.Tactic.NoMatch
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormCast.CoeExt

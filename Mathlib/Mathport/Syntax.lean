@@ -14,6 +14,7 @@ import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.MfldSetTac.Tactic
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.RCases
@@ -507,7 +508,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := continuity!?) "continuity!?" (config)? : tactic
 
 /- E -/ syntax (name := unitInterval) "unit_interval" : tactic
-/- E -/ syntax (name := mfldSetTac) "mfld_set_tac" : tactic
 
 /- N -/ syntax (name := measurability) "measurability" (config)? : tactic
 /- N -/ syntax (name := measurability!) "measurability!" (config)? : tactic
