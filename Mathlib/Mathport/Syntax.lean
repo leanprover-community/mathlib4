@@ -7,6 +7,7 @@ import Lean.Elab.Command
 import Lean.Elab.Quotation
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.CommandQuote
@@ -274,7 +275,6 @@ end Conv
 /- M -/ syntax (name := guardExprEq') "guard_expr " term:51 " = " term : tactic -- definitional equality
 /- M -/ syntax (name := guardTarget') "guard_target" " = " term : tactic -- definitional equality
 /- E -/ syntax (name := triv) "triv" : tactic
-/- M -/ syntax (name := clearExcept) "clear " "*" " - " ident* : tactic
 /- M -/ syntax (name := extractGoal) "extract_goal" (ppSpace ident)?
   (" with" (ppSpace (colGt ident))*)? : tactic
 /- M -/ syntax (name := extractGoal!) "extract_goal!" (ppSpace ident)?
