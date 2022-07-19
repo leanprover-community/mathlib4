@@ -51,3 +51,21 @@ example (a b c : Nat): a < b → b < c → a < c := by
 
 example (a b c : Nat): a < b → b < c → a < c :=
    by intros ; trans ; repeat (assumption)
+
+
+macro "transitivity" t?:(colGt term)? : tactic => do
+   match t? with
+   | none => `(tactic|trans)
+   | some t => `(tactic|trans $t)
+
+example (a b c : Nat): a < b → b < c → a < c := by
+   intro h₁ h₂
+   transitivity b
+   assumption
+   assumption
+
+example (a b c : Nat): a < b → b < c → a < c :=
+   by intros ; transitivity ; repeat (assumption)
+
+example (a b c : Nat): a ≤ b → b ≤ c → a ≤ c :=
+   by intros ; transitivity ; repeat (assumption)
