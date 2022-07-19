@@ -58,11 +58,10 @@ initialize registerBuiltinAttribute symmAttr
 def symmLemmas (env : Environment) : DiscrTree Name :=
   symmExtension.getState env
 
-syntax (name := symm) "symm" : tactic
 
 open Lean.Elab.Tactic in
 
-/-- symmetry tactic -/
+/-- This tactic applies to a goal whose target has the form `t ~ u` where `~` is a symmetric relation, that is, a relation which has a symmetry lemma tagged with the attribute [symm]. It replaces the target with `u ~ t`. -/
 elab "symm" : tactic =>
   withMainContext do
   let tgt ← getMainTarget

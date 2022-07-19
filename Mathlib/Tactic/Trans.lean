@@ -14,7 +14,7 @@ initialize transExtension : SimpleScopedEnvExtension (Name × Array DiscrTree.Ke
     initial := {}
   }
 
-/- checks whether there is some `y` so that `xyHyp` has type `rel x y` and `yzHyp` has type `rel y z`.
+/-- checks whether there is some `y` so that `xyHyp` has type `rel x y` and `yzHyp` has type `rel y z`.
 -/
 def areTransHyps(rel x z xyHyp yzHyp : Expr) : MetaM Bool :=
   try
@@ -61,7 +61,9 @@ theorem simpleTrans {rel : α → α → Prop}{a b c : α}[Trans rel rel rel] :
     rel a b → rel b c → rel a c  := trans
 
 open Lean.Elab.Tactic
-/-- transitivity tactic implementation -/
+/-- This tactic applies to a goal whose target has the form `t ~ u` where `~` is a transitive relation, that is, a relation which has a transitivity lemma tagged with the attribute [trans].
+
+transitivity `s` replaces the goal with the two subgoals `t ~ s` and `s ~ u`. If `s` is omitted, then a metavariable is used instead. -/
 elab "trans" t?:(ppSpace (colGt term))? : tactic => do
 match t? with
 | none =>
