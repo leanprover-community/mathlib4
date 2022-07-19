@@ -11,5 +11,8 @@ open Tactic
 
 syntax (name := substs) "substs" (colGt ppSpace ident)* : tactic
 
+/--
+Applies the `subst` tactic to all given hypotheses from left to right
+-/
 macro_rules
 | `(tactic| substs $xs:ident*) => `(tactic| ($[subst $xs;]*))
