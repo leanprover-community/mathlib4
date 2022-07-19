@@ -1,5 +1,6 @@
 import Mathlib.Tactic.MfldSetTac.Attr
 import Mathlib.Tactic.Ext
+import Mathlib.Init.Logic
 
 open Lean Meta Elab Tactic
 
@@ -40,4 +41,4 @@ elab (name := mfldSetTac) "mfld_set_tac" : tactic => withMainContext do
 --example (x : Nat) : x * 1 = x := by
 --  simp only [mfld_simps]
 
-attribute [mfld_simps] and_true
+attribute [mfld_simps] and_true eq_self_iff_true Function.comp_apply
