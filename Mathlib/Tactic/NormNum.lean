@@ -72,6 +72,15 @@ theorem isNat_cast {R} [Semiring R] (n m : Nat) :
     isNat n m → isNat (n : R) m := by
   rintro ⟨⟩; rfl
 
+/-- Given
+  - `u : Level`,
+  - `$α : Type $u`,
+  - `$sα : Semiring $α` and
+  - `$e : $α` where `e` is reducible to a number literal.
+  Produces a pair `(c, p)` where
+  - `n` is a natural number literal and
+  - `$p : isNat $e $n`
+-/
 partial def evalIsNat (u : Level) (α sα e : Expr) : MetaM (Expr × Expr) := do
   let (n, p) ← match e.getAppFnArgs with
   | (``HAdd.hAdd, #[_, _, _, _, a, b]) => evalBinOp ``NormNum.isNat_add (·+·) a b
@@ -116,6 +125,13 @@ theorem eval_of_isNat {α} [Semiring α] (n) [OfNat α n] [LawfulOfNat α n] :
   (a : α) → isNat a n → a = OfNat.ofNat n
 | _, rfl => LawfulOfNat.isNat_ofNat.symm
 
+/-- Given
+  - `$e : $α` where `e` is reducible to a number literal.
+  Produces a pair `(c, p)` where
+  - `n` is a natural number literal and
+  - `$p : $e = OfNat.ofNat $n`
+  Providing we have `LawfulOfNat $α $n`
+-/
 def eval (e : Expr) : MetaM (Expr × Expr) := do
   let α ← inferType e
   let .succ u ← getLevel α | throwError "fail"
@@ -130,13 +146,34 @@ theorem eval_eq_of_isNat {α} [Semiring α] :
   (a b : α) → (n : ℕ) → isNat a n → isNat b n → a = b
 | _, _, _, rfl, rfl => rfl
 
+/-- Returns the proof that `a = b` using normnum. -/
 def evalEq (α a b : Expr) : MetaM Expr := do
-  let .succ u ← getLevel α | throwError "fail"
+  let .succ u ← getLevel α | throwError "fail: expected {α} to be a type."
   let sα ← synthInstance (mkApp (mkConst ``Semiring [u]) α)
   let (ln, pa) ← evalIsNat u α sα a
   let (ln', pb) ← evalIsNat u α sα b
   guard (ln.natLit! == ln'.natLit!)
   pure $ mkApp7 (mkConst ``eval_eq_of_isNat [u]) α sα a b ln pa pb
+
+open Lean Elab Tactic Conv
+
+/-- Normnums a target of form `a = b`. -/
+protected def runTarget : TacticM Unit := do
+  liftMetaTactic fun g => do
+    let some (α, lhs, rhs) ← matchEq? (← getMVarType g) | throwError "fail"
+    let p ← NormNum.evalEq α lhs rhs
+    assignExprMVar g p
+    pure []
+
+protected def runLocalDecl (fv : FVarId) : TacticM Unit := do
+  -- [todo] what is correct behaviour?
+  throwError "Running norm_num at a hypothesis is not implemented."
+
+/-- Apply norm_num conversion to lhs in `⊢ lhs = _` without interleaving simp. -/
+def convert : TacticM Unit := do
+  let lhs ← getLhs
+  let (lhs', h) ← eval lhs
+  updateLhs lhs' h
 
 end NormNum
 end Meta
@@ -146,13 +183,23 @@ namespace Tactic
 open Lean.Parser.Tactic in
 syntax (name := normNum) "norm_num" (" [" simpArg,* "]")? (ppSpace location)? : tactic
 
+open Lean.Parser.Tactic in
+syntax (name := normNum1) "norm_num1" (ppSpace location)? : tactic
+
 open Meta Elab.Tactic in
-elab_rules : tactic | `(tactic| norm_num) => do
-  liftMetaTactic fun g => do
-    let some (α, lhs, rhs) ← matchEq? (← getMVarType g) | throwError "fail"
-    let p ← NormNum.evalEq α lhs rhs
-    assignExprMVar g p
-    pure []
+elab_rules : tactic
+  | `(tactic| norm_num $[[$simpArgs]]? $[$loc]?) => do
+    -- [todo] original also has simp discharge with norm_num1
+    evalTactic <|← `(tactic| repeat1 (first | norm_num1 $[$loc]? | simp $[[$simpArgs]]? $[$loc]?))
+  | `(tactic| norm_num1 $[$loc]?) => do
+    let loc :=
+      match loc with
+      | none => Location.targets #[] true
+      | some loc => expandLocation loc
+    withLocation loc
+      (atLocal := Meta.NormNum.runLocalDecl)
+      (atTarget := Meta.NormNum.runTarget)
+      (failed := fun _ => throwError "norm_num failed")
 
 end Tactic
 
