@@ -84,5 +84,13 @@ def getUsingArg : Syntax → TacticM Syntax
   | `(usingArg|using $e) => pure e
   | _                    => Elab.throwUnsupportedSyntax
 
+/--
+`repeat1 tac` applies `tac` to main goal at least once. If the application succeeds,
+the tactic is applied recursively to the generated subgoals until it eventually fails.
+-/
+syntax "repeat1 " tacticSeq : tactic
+macro_rules
+  | `(tactic| repeat1 $seq) => `(tactic| ($seq); repeat $seq)
+
 end Parser.Tactic
 end Lean
