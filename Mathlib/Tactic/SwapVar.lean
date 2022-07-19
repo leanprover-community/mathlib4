@@ -29,18 +29,19 @@ example {a b : Nat} (h : a = b) : a = b ∧ a = a := by
   exact .intro h $ .refl x
 ```
 -/
-elab "swap_var " vars:(colGt (ident " ↔ "? ident)),+ : tactic => do
-  let vars := vars.getElems.map fun stx =>
-    (stx.raw.getArg 0 |>.getId, stx.raw.getArg 2 |>.getId)
-  withMainContext do
-    let ctx ← getLCtx
-    let temp := ctx.getUnusedName `__h
-    let ctxNew := vars.foldl (init := ctx) fun acc pair =>
-      acc.renameUserName pair.1 temp
-        |>.renameUserName pair.2 pair.1
-        |>.renameUserName temp pair.2
-    liftMetaTactic fun mvarId => do
-      let mvarIdNew ← mkFreshExprMVarAt ctxNew (← getLocalInstances) (← getMVarType mvarId)
-        .syntheticOpaque (← getMVarTag mvarId)
-      assignExprMVar mvarId mvarIdNew
-      return [mvarIdNew.mvarId!]
+elab "swap_var " vars:(colGt (ident " ↔ "? ident)),+ : tactic =>
+  liftMetaTactic fun mvarId => do
+    let mut ctx ← getLCtx
+    for stx in vars.getElems do
+      let getDecl (stx : Syntax) :=
+        match ctx.findFromUserName? stx.getId with
+        | some decl => pure (stx.getId, decl.fvarId)
+        | none => throwErrorAt stx "swap_var: unknown variable {stx.getId}"
+      let (n1, fvar1) ← getDecl stx.raw[0]
+      let (n2, fvar2) ← getDecl stx.raw[2]
+      ctx := ctx.setUserName fvar1 n2
+      ctx := ctx.setUserName fvar2 n1
+    let mvarIdNew ← mkFreshExprMVarAt ctx (← getLocalInstances) (← getMVarType mvarId)
+      .syntheticOpaque (← getMVarTag mvarId)
+    assignExprMVar mvarId mvarIdNew
+    return [mvarIdNew.mvarId!]

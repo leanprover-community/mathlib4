@@ -8,15 +8,15 @@ import Mathlib.Tactic.SwapVar
 
 example {P Q : Prop} (q : P) (p : Q) : P ∧ Q := by
   swap_var p ↔ q
-  exact .intro p q
+  exact ⟨p, q⟩
 
 example {a b : Nat} (h : a = b) : a = b ∧ a = a := by
   swap_var a ↔ b
--- b a: Nat
--- h: b = a
--- ⊢ b = a ∧ b = b
-  swap_var b y, y ↔ x
--- x a: Nat
--- h: x = a
--- ⊢ x = a ∧ x = x
-  exact .intro h $ .refl x
+  guard_hyp h : b = a
+  guard_target == b = a ∧ b = b
+  exact ⟨h, Eq.refl b⟩
+
+example {a b c d : Nat} (h : a = b ∧ c = d) : a = b ∧ c = d := by
+  swap_var a ↔ b, b c
+  guard_target == c = a ∧ b = d
+  exact h
