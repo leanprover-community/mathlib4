@@ -260,7 +260,5 @@ elab "eapply " e:term : tactic =>
 /--
 Tries to solve the goal using a canonical proof of `true` or the `reflexivity` tactic.
 -/
-syntax (name := triv) "triv" : tactic
-
-macro_rules
-  | `(tactic| triv) => `(tactic| first | exact trivial | rfl | fail "triv tactic failed")
+macro (name := triv) "triv" : tactic =>
+  `(tactic| first | exact trivial | rfl | fail "triv tactic failed")
