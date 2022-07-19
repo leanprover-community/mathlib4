@@ -1,4 +1,5 @@
 import Mathlib.Data.List.Basic
+import Mathlib.Tactic.HaveI
 
 macro_rules | `($x[$i]'$h) => `(getElem $x $i $h)
 
@@ -47,7 +48,8 @@ theorem data_get?_eq_getElem? (a : Array α) (i : Nat) : a.data.get? i = a[i]? :
   by_cases i < a.size <;> simp_all [getElem?_pos, getElem?_neg, List.get?_eq_get] <;> rfl
 
 theorem get_push_lt (a : Array α) (x : α) (i : Nat) (h : i < a.size) :
-    (a.push x)[i]'(by simp_all [Nat.lt_succ_iff, le_of_lt]) = a[i] := by
+    haveI : i < (a.push x).size := by simp_all [Nat.lt_succ_iff, le_of_lt]
+    (a.push x)[i] = a[i] := by
   simp only [push, ← data_get_eq_getElem, List.concat_eq_append]
   simp [data_get_eq_getElem, List.get_append, getElem?_pos, h]
 

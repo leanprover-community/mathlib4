@@ -11,7 +11,8 @@ open Lean Elab.Tactic Meta
 
 syntax renameArg := term " => " ident
 
-/-- `rename' h => hnew` renames the hypothesis named `h` to `hnew`. -/
+/-- `rename' h => hnew` renames the hypothesis named `h` to `hnew`.
+To rename several hypothesis, use `rename' h₁ => h₁new, h₂ => h₂new`. -/
 syntax (name := rename') "rename'" (ppSpace renameArg),* : tactic
 
 elab_rules : tactic

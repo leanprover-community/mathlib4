@@ -275,7 +275,6 @@ end Conv
 /- M -/ syntax (name := guardExprEq') "guard_expr " term:51 " = " term : tactic -- definitional equality
 /- M -/ syntax (name := guardTarget') "guard_target" " = " term : tactic -- definitional equality
 /- E -/ syntax (name := triv) "triv" : tactic
-/- N -/ syntax (name := clearAuxDecl) "clear_aux_decl" : tactic
 /- M -/ syntax (name := clearExcept) "clear " "*" " - " ident* : tactic
 /- M -/ syntax (name := extractGoal) "extract_goal" (ppSpace ident)?
   (" with" (ppSpace (colGt ident))*)? : tactic
