@@ -1,4 +1,6 @@
 import Mathlib.Tactic.Trans
+import Mathlib.Init.Data.Nat.Lemmas
+open Nat
 
 -- testing that the attribute is recognized and used
 def nleq : Nat → Nat → Prop
@@ -53,19 +55,21 @@ example (a b c : Nat): a < b → b < c → a < c :=
    by intros ; trans ; repeat (assumption)
 
 
-macro "transitivity" t?:(colGt term)? : tactic => do
-   match t? with
-   | none => `(tactic|trans)
-   | some t => `(tactic|trans $t)
-
-example (a b c : Nat): a < b → b < c → a < c := by
-   intro h₁ h₂
-   transitivity b
-   assumption
-   assumption
-
-example (a b c : Nat): a < b → b < c → a < c :=
-   by intros ; transitivity ; repeat (assumption)
-
-example (a b c : Nat): a ≤ b → b ≤ c → a ≤ c :=
-   by intros ; transitivity ; repeat (assumption)
+example (x n p : ℕ) (h₁ : n*p ≤ x) : (x - n*p) / n = x / n - p := by
+  cases eq_zero_or_pos n with
+  | inl h₀ => rw [h₀, Nat.div_zero, Nat.div_zero, Nat.zero_sub]
+  | inr h₀ => induction p with
+    | zero => rw [Nat.mul_zero, Nat.sub_zero, Nat.sub_zero]
+    | succ p IH =>
+      have h₂ : n*p ≤ x := by
+        trans
+        · apply Nat.mul_le_mul_left; apply le_succ
+        · apply h₁
+      have h₃ : x - n * p ≥ n := by
+        apply Nat.le_of_add_le_add_right
+        rw [Nat.sub_add_cancel h₂, Nat.add_comm]
+        rw [mul_succ] at h₁
+        apply h₁
+      rw [sub_succ, ← IH h₂]
+      rw [div_eq_sub_div h₀ h₃]
+      simp [add_one, Nat.pred_succ, mul_succ, Nat.sub_sub]
