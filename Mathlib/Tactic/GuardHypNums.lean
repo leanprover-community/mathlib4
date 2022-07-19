@@ -12,13 +12,11 @@ A tactic stub file for the `guard_hyp_nums` tactic.
 
 open Lean Meta Elab Tactic
 
+-- has been PRed to core in https://github.com/leanprover/lean4/pull/1323
 /-- `localContextLength` returns the number of hypotheses in the local context,
 including hidden and auxiliary hypotheses. -/
-def localContextLength : TacticM Nat := do
-  let mut numHyps := 0
-  for _ in (← getLCtx) do
-    numHyps := numHyps + 1
-  return numHyps
+def Lean.LocalContext.size (lctx : LocalContext) : Nat :=
+  lctx.foldl (fun n _ => n+1) 0
 
 /--
 `guard_hyp_nums n` succeeds if there are exactly `n` hypotheses and fails otherwise.
@@ -28,6 +26,6 @@ not be printed in the goal view. This tactic computes the total number of hypoth
 not the number of visible hypotheses.
 -/
 elab (name := guardHypNums) "guard_hyp_nums " n:num : tactic => do
-  let numHyps ← localContextLength
+  let numHyps := (← getLCtx).size
   guard (numHyps = n.getNat) <|>
     throwError "expected {n.getNat} goals but found {numHyps}"
