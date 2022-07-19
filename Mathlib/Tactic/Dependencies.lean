@@ -3,58 +3,51 @@ import Lean.Util.FoldConsts
 
 open Lean Meta Elab Tactic
 
-#check Expr
-
-/-- Returns true if any of the names in the given `name_set` are present in the given `expr`. -/
-def Lean.Expr.hasLocalIn (e : Expr) (ns : NameSet) : Bool :=
-Option.isSome <| e.find? fun j =>
-  match j with
-    | Expr.fvar id => ns.contains id.name
-    | _ => false
-
-
-
-example (a b c: Nat) : true := by
-  testtac a = b, a
-  trivial
-/--
-`type_has_local_in_name_set h ns` returns true iff the type of `h` contains a
-local constant whose unique name appears in `ns`.
--/
-def typeHasLocalInNameSet (h : Expr) (ns : NameSet) : MetaM Bool := do
-  let hType ← inferType h
-  return hType.hasLocalIn ns
-
-partial def revertTargetDeps : TacticM Nat := do
+partial def revertTargetDepsImpl : TacticM Nat := do
   let tgt ← getMainTarget
-  let mut l : List FVarId := []
-  for e in (← getLCtx) do
-    l := if (← exprDependsOn tgt e.fvarId) then l.concat e.fvarId else l
+  let l : List FVarId ← (← getLCtx).foldrM (init := []) fun dcl l => do
+    if (← exprDependsOn tgt dcl.fvarId) then pure (dcl.fvarId::l) else pure l
   let (fvarIds, g) ← Meta.revert (← getMainGoal) l.toArray
   replaceMainGoal [g]
   match l with
   | [] => return fvarIds.size
-  | _  => return fvarIds.size + (← revertTargetDeps)
+  | _  => return fvarIds.size + (← revertTargetDepsImpl)
 
-#check FVarId.name
-
--- meta def revert_target_deps : tactic ℕ :=
--- do tgt ← target,
---    ctx ← local_context,
---    l ← ctx.mfilter (kdepends_on tgt),
---    n ← revert_lst l,
---    if l = [] then return n
---      else do m ← revert_target_deps, return (m + n)
-
-elab (name := testtac) "testtac" h:term " , " ids:(colGt ident)* : tactic => do
-  let hElab ← elabTerm h none
-  let ids ← getFVarIds ids
-  -- let ns := ids.foldl (fun s i => s.insert i.name) NameSet.empty
-  dbg_trace (← revertTargetDeps)
-  -- guard <| hElab.hasLocalIn ns
+elab (name := revertTargetDeps) "revert_target_deps" : tactic => do
+  let _ ← revertTargetDepsImpl; pure ()
 
 
-example (a b c: Nat) : a = b := by
-  testtac a = b, a b
 
-#check exprDependsOn
+-- these instances are needed for the example below
+
+instance (p : Bool → Prop) [hd : DecidablePred p] : Decidable (∀ b, p b) :=
+match hd true, hd false with
+| Decidable.isFalse ht, _ => Decidable.isFalse fun ha => ht (ha _)
+| _, Decidable.isFalse hf => Decidable.isFalse fun ha => hf (ha _)
+| Decidable.isTrue ht, Decidable.isTrue hf => Decidable.isTrue <| Bool.rec hf ht
+
+instance (p : Bool → Prop) [hd : DecidablePred p] : Decidable (∃ b, p b) :=
+match hd true, hd false with
+| Decidable.isFalse ht, Decidable.isFalse hf => Decidable.isFalse fun ⟨b, hb⟩ =>
+  by cases b <;> contradiction
+| Decidable.isTrue ht, _ => Decidable.isTrue ⟨_, ht⟩
+| _, Decidable.isTrue hf => Decidable.isTrue ⟨_, hf⟩
+
+-- this example is taken from the test file for revert_target_deps in mathlib
+example (b : Bool) (h : b = true) : true := by
+  let b₁ : Bool := b
+  /-
+  This test shows that `tactic.revert_target_deps`
+  will revert `b₁` because it occurse in the `have` statement below,
+  but recursively also reverts `b` (and hence `h`),
+  because `b` occurs in the body of the `let` statement that introduces `b₁`,
+  even though `b` doesn't occur directly in the `have` statement below.
+  -/
+  have : ∀ b₂ : Bool, b₂ ≠ b₁ → b₂ = false := by
+    revert_target_deps
+  -- ∀ (b : Bool),
+  -- b = true →
+  --   let b₁ := b;
+  --   ∀ (b₂ : Bool), b₂ ≠ b₁ → b₂ = false
+    decide
+  trivial
