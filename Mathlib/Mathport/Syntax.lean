@@ -523,10 +523,8 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- E -/ syntax (name := ghostSimp) "ghost_simp" (" [" simpArg,* "]")? : tactic
 /- E -/ syntax (name := wittTruncateFunTac) "witt_truncate_fun_tac" : tactic
 
-/- M -/ syntax (name := pure_coherence) "pure_coherence" : tactic
-/- M -/ syntax (name := coherence) "coherence" : tactic
-
-attribute [nolint docBlame] coherence pure_coherence
+/- M -/ @[nolint docBlame] syntax (name := pure_coherence) "pure_coherence" : tactic
+/- M -/ @[nolint docBlame] syntax (name := coherence) "coherence" : tactic
 
 namespace Conv
 
