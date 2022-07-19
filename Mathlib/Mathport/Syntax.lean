@@ -7,6 +7,7 @@ import Lean.Elab.Command
 import Lean.Elab.Quotation
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Ext
