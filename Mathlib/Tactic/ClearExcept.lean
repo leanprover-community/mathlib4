@@ -9,9 +9,9 @@ open Lean.Meta
 
 namespace Lean.Elab.Tactic
 
+/-- Clears all hypotheses it can besides those provided -/
 syntax (name := clearExcept) "clear " "*" " - " (colGt ident)* : tactic
 
-/-- Clears all hypotheses it can besides those provided -/
 elab_rules : tactic
   | `(tactic| clear * - $hs:ident*) => do
     let fvarIds ← getFVarIds hs
