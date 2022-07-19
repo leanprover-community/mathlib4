@@ -38,8 +38,8 @@ example (_dont_delete_this : Type) : _dont_delete_this = _dont_delete_this := by
   rfl
 
 -- Confirms that clear_ clears all that it can even if some underscored hypotheses cannot be cleared
-example (_dont_delete_this : Type) (_delete_this : _dont_delete_this = _dont_delete_this)
-  : _dont_delete_this = _dont_delete_this := by
+example (_dont_delete_this : Type) (_delete_this : _dont_delete_this = _dont_delete_this) :
+  _dont_delete_this = _dont_delete_this := by
   clear_
   fail_if_success assumption
   rfl
