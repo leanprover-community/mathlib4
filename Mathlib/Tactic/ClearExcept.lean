@@ -16,7 +16,7 @@ elab_rules : tactic
   | `(tactic| clear * - $hs:ident*) => do
     let fvarIds ← getFVarIds hs
     liftMetaTactic1 fun goal => do
-      let mut toClear : Array FVarId:= #[]
+      let mut toClear : Array FVarId := #[]
       for decl in ← getLCtx do
         unless fvarIds.contains decl.fvarId do
           if let none ← isClass? decl.type then
