@@ -61,9 +61,9 @@ import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
-import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Conv

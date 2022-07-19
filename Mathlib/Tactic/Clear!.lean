@@ -17,7 +17,7 @@ elab_rules : tactic
   | `(tactic| clear! $hs:ident*) => do
     let fvarIds ← getFVarIds hs
     liftMetaTactic1 fun goal => do
-      let mut toClear : Array FVarId:= #[]
+      let mut toClear : Array FVarId := #[]
       for decl in ← getLCtx do
         let hasAnyDependencyFn (fvarId : FVarId) (acc : Bool) : MetaM Bool :=
           return acc || decl.fvarId == fvarId || (← localDeclDependsOn decl fvarId)
