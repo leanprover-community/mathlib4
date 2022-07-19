@@ -7,6 +7,7 @@ import Lean.Elab.Command
 import Lean.Elab.Quotation
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Ext
@@ -251,7 +252,6 @@ end Conv
 /- M -/ syntax (name := unfoldAux) "unfold_aux" : tactic
 /- E -/ syntax (name := recover) "recover" : tactic
 /- E -/ syntax (name := «continue») "continue " tacticSeq : tactic
-/- M -/ syntax (name := clear_) "clear_" : tactic
 /- M -/ syntax (name := replace') "replace " Term.haveIdLhs : tactic
 /- M -/ syntax (name := generalizeHyp) "generalize " atomic(ident " : ")? term:51 " = " ident
   ppSpace location : tactic
@@ -521,6 +521,9 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := initRing) "init_ring" (" using " term)? : tactic
 /- E -/ syntax (name := ghostSimp) "ghost_simp" (" [" simpArg,* "]")? : tactic
 /- E -/ syntax (name := wittTruncateFunTac) "witt_truncate_fun_tac" : tactic
+
+/- M -/ @[nolint docBlame] syntax (name := pure_coherence) "pure_coherence" : tactic
+/- M -/ @[nolint docBlame] syntax (name := coherence) "coherence" : tactic
 
 namespace Conv
 
