@@ -34,10 +34,10 @@ def relationAppM? (expr : Expr) : MetaM (Option (Expr × Expr × Expr)) :=
 def symmAttr : AttributeImpl where
   name := `symm
   descr := "symmetric relation"
-  add decl stx kind := do
+  add decl _ kind := do
     MetaM.run' do
       let declTy := (← getConstInfo decl).type
-      let (xs, bis, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
+      let (xs, _, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
       if xs.size < 1 then
         throwError "@[symm] attribute only applies to lemmas proving x ∼ y → y ∼ x, got {declTy} with too few arguments"
       else
@@ -69,12 +69,12 @@ elab "symm" : tactic =>
   match ← relationAppM? tgt with
   | none =>
     throwError "symmetry lemmas only apply to binary relations, not{indentExpr tgt}"
-  | some (rel, lhs, rhs) =>
+  | some (rel, _, _) =>
     let s ← saveState
     for lem in ← (symmLemmas (← getEnv)).getMatch rel do
       try
         liftMetaTactic (apply · (← mkConstWithFreshMVarLevels lem))
         return
-      catch e =>
+      catch _ =>
         s.restore
     throwError "no applicable symmetry lemma found for{indentExpr tgt}"

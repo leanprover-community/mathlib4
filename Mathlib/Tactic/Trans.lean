@@ -29,10 +29,10 @@ def areTransHyps(rel x z xyHyp yzHyp : Expr) : MetaM Bool :=
 def transAttr : AttributeImpl where
   name := `trans
   descr := "transitive relation"
-  add decl stx kind := do
+  add decl _ kind := do
     MetaM.run' do
       let declTy := (← getConstInfo decl).type
-      let (xs, bis, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
+      let (xs, _, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
       if xs.size < 2 then
         throwError "@[trans] attribute only applies to lemmas proving x ∼ y → y ∼ z → z ∼ x, got {declTy} with too few arguments"
       else
@@ -70,16 +70,16 @@ match t? with
   match ← relationAppM? tgt with
   | none =>
     throwError "transitivity lemmas only apply to binary relations, not {indentExpr tgt}"
-  | some (rel, x, z) =>
+  | some (rel, x, _) =>
     let s ← saveState
-    let α ← inferType x
+    let _ ← inferType x
     let lemmas ← (transLemmas (← getEnv)).getUnify rel
     let lemmas := lemmas.push ``simpleTrans
     for lem in lemmas do
       try
         liftMetaTactic (apply · (← mkConstWithFreshMVarLevels lem))
         return
-      catch e =>
+      catch _ =>
         s.restore
     throwError "no applicable transitivity lemma found for {indentExpr tgt}"
 | some t =>
@@ -91,7 +91,6 @@ match t? with
   | some (rel, x, z) =>
     let s ← saveState
     let y ← elabTerm t none
-    let α ← inferType y
     let lemmas ← (transLemmas (← getEnv)).getUnify rel
     let lemmas := lemmas.push ``simpleTrans
     for lem in lemmas do
