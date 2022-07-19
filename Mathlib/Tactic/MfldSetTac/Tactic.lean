@@ -12,13 +12,13 @@ elab (name := mfldSetTac) "mfld_set_tac" : tactic => withMainContext do
   let g ← getMainGoal
   let goalTy := (← instantiateMVars (← getMVarDecl g).type).getAppFnArgs
   match goalTy with
-  | (``Eq, #[ty, e₁, e₂]) =>
+  | (``Eq, #[_ty, _e₁, _e₂]) =>
     evalTactic (← `(tactic| apply Set.ext;  intro my_y; constructor <;> { intro h_my_y;
                             try { simp only [*, mfld_simps] at h_my_y
                                   simp only [*, mfld_simps] } }))
-  | (``Subset.subset, #[ty, inst, e₁, e₂]) =>
+  | (``Subset.subset, #[_ty, _inst, _e₁, _e₂]) =>
     evalTactic (← `(tactic| intro my_y h_my_y;
-                            try { simp only [*, -h_my_y, mfld_simps] at h_my_y
+                            try { simp only [*, mfld_simps] at h_my_y
                                   simp only [*, mfld_simps] }))
   | _ => throwError "goal should be an equality or an inclusion"
 
@@ -42,6 +42,7 @@ elab (name := mfldSetTac) "mfld_set_tac" : tactic => withMainContext do
 --  simp only [mfld_simps]
 
 variable {α : Type u} {β : Type v} {γ : Type w}
+
 
 /-! ## Syntax of objects and lemmas needed for testing `MfldSetTac` -/
 section stub_lemmas
@@ -96,7 +97,7 @@ instance LocalHomeomorph.has_coe_to_fun : CoeFun (LocalHomeomorph α β) (λ _ =
 
 def LocalHomeomorph.symm (e : LocalHomeomorph α β) : LocalHomeomorph β α := sorry
 
-@[mfld_simps] theorem LocalHomeomorph.symm_to_LocalEquiv (e : LocalHomeomorph α β) :
+@[mfld_simps] theorem LocalHomeomorph.symm_toLocalEquiv (e : LocalHomeomorph α β) :
   e.symm.toLocalEquiv = e.toLocalEquiv.symm :=
 sorry
 
@@ -121,16 +122,16 @@ attribute [mfld_simps] and_true
     -- LocalEquiv.trans_source
 example  (e : LocalEquiv α β) (e' : LocalEquiv β γ) :
   (e.trans e').source = e.source ∩ Set.Preimage e (e.target ∩ e'.source) := by
---mfld_set_tac
-apply Set.ext
-intro my_y
-constructor
-intro h_my_y
-simp only [*, mfld_simps] at h_my_y
-simp only [*, mfld_simps]
-intro h_my_y
-simp only [*, mfld_simps] at h_my_y
-simp only [*, mfld_simps]
+mfld_set_tac
+--apply Set.ext
+--intro my_y
+--constructor
+--intro h_my_y
+--simp only [*, mfld_simps] at h_my_y
+--simp only [*, mfld_simps]
+--intro h_my_y
+--simp only [*, mfld_simps] at h_my_y
+--simp only [*, mfld_simps]
 
 
 
@@ -142,8 +143,7 @@ LocalEquiv.trans_source
 Set.memInterEq
 Set.memPreimage
 -/
-example (e : LocalEquiv α β) : (e.trans e.symm).source = e.source :=
-by MfldSetTac
+example (e : LocalEquiv α β) : (e.trans e.symm).source = e.source := by mfld_set_tac
 
 /-
 andTrue
@@ -153,8 +153,7 @@ Set.memInterEq
 Set.memPreimage
 -/
 example (s : Set α) (f : LocalHomeomorph α β) :
-  f.symm.to_LocalEquiv.source ∩ (f.to_LocalEquiv.target ∩ Set.Preimage f.symm s)
-  = f.symm.to_LocalEquiv.source ∩ Set.Preimage f.symm s :=
-by MfldSetTac
+  f.symm.toLocalEquiv.source ∩ (f.toLocalEquiv.target ∩ Set.Preimage f.symm s)
+  = f.symm.toLocalEquiv.source ∩ Set.Preimage f.symm s := by mfld_set_tac
 
 end tests
