@@ -9,6 +9,7 @@ import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
+import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Ext
@@ -288,8 +289,6 @@ end Conv
 /- M -/ syntax (name := applyAssumption) "apply_assumption" : tactic
 
 /- B -/ syntax (name := hint) "hint" : tactic
-
-/- M -/ syntax (name := clear!) "clear!" (ppSpace colGt ident)* : tactic
 
 /- B -/ syntax (name := choose) "choose" (ppSpace colGt ident)+ (" using " term)? : tactic
 /- B -/ syntax (name := choose!) "choose!" (ppSpace colGt ident)+ (" using " term)? : tactic
