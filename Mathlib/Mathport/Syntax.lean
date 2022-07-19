@@ -22,6 +22,7 @@ import Mathlib.Tactic.ShowTerm
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Symm
+import Mathlib.Tactic.Trace
 import Mathlib.Tactic.Trans
 import Mathlib.Init.ExtendedBinder
 import Mathlib.Util.WithWeakNamespace
@@ -184,7 +185,6 @@ syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
 /- M -/ syntax (name := casesType!) "cases_type!" "*"? ppSpace ident* : tactic
 /- N -/ syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
 
-/- E -/ syntax (name := trace) "trace " term : tactic
 /- E -/ syntax (name := existsi) (priority := low) "exists " term,* : tactic
 /- E -/ syntax (name := eConstructor) "econstructor" : tactic
 /- M -/ syntax (name := constructorM) "constructorm" "*"? ppSpace term,* : tactic

@@ -107,6 +107,7 @@ import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.Symm
 import Mathlib.Tactic.Trans
 import Mathlib.Tactic.ToAdditive
+import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.Use
 import Mathlib.Testing.SlimCheck.Gen
