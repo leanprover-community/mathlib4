@@ -165,6 +165,7 @@ protected def runTarget : TacticM Unit := do
     assignExprMVar g p
     pure []
 
+/-- Runs norm_num1 on a hypothesis. -/
 protected def runLocalDecl (_fv : FVarId) : TacticM Unit := do
   -- [todo] what is correct behaviour?
   throwError "Running norm_num at a hypothesis is not implemented."
@@ -181,9 +182,23 @@ end Meta
 namespace Tactic
 
 open Lean.Parser.Tactic in
+/-- Normalize numerical expressions.
+
+[todo] currently only supports Semirings (that is, `+`, `*`, `^` but no `-`) and equality.
+
+### Lean 3 docstring
+
+Supports the operations
+`+` `-` `*` `/` `^` and `%` over numerical types such as
+`ℕ`, `ℤ`, `ℚ`, `ℝ`, `ℂ` and some general algebraic types,
+and can prove goals of the form `A = B`, `A ≠ B`, `A < B` and `A ≤ B`,
+where `A` and `B` are numerical expressions.
+It also has a relatively simple primality prover. -/
 syntax (name := normNum) "norm_num" (" [" simpArg,* "]")? (ppSpace location)? : tactic
 
 open Lean.Parser.Tactic in
+
+/-- Basic version of `norm_num` that does not call `simp`. -/
 syntax (name := normNum1) "norm_num1" (ppSpace location)? : tactic
 
 open Meta Elab.Tactic in
