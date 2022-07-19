@@ -165,7 +165,7 @@ protected def runTarget : TacticM Unit := do
     assignExprMVar g p
     pure []
 
-protected def runLocalDecl (fv : FVarId) : TacticM Unit := do
+protected def runLocalDecl (_fv : FVarId) : TacticM Unit := do
   -- [todo] what is correct behaviour?
   throwError "Running norm_num at a hypothesis is not implemented."
 
