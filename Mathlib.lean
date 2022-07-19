@@ -72,6 +72,7 @@ import Mathlib.Tactic.Find
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.Have
 import Mathlib.Tactic.HaveI
+import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
