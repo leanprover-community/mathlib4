@@ -262,7 +262,8 @@ elab "eapply " e:term : tactic =>
 
 /-- This tactic clears all auxiliary declarations from the context. -/
 elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
-  for ldec in (←getLCtx) do
+  let mut g ← getMainGoal
+  for ldec in ← getLCtx do
     if ldec.isAuxDecl then
-      try replaceMainGoal [←Meta.clear (←getMainGoal) ldec.fvarId]
-      catch | _ => pure ()
+      g ← Meta.tryClear g ldec.fvarId
+  replaceMainGoal [g]
