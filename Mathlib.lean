@@ -65,7 +65,6 @@ import Mathlib.Tactic.Coe
 import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Core
-import Mathlib.Tactic.Dependencies
 import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.GuardGoalNums
@@ -93,6 +92,7 @@ import Mathlib.Tactic.RCases
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.RestateAxiom
+import Mathlib.Tactic.RevertTargetDeps
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.RunTac
