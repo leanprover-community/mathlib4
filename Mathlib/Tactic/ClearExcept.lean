@@ -18,7 +18,7 @@ elab_rules : tactic
     liftMetaTactic1 fun goal => do
       let mut toClear : Array FVarId:= #[]
       for decl in ← getLCtx do
-        if not (fvarIds.contains decl.fvarId) then
+        unless fvarIds.contains decl.fvarId do
           if let none ← isClass? decl.type then
             toClear := toClear.push decl.fvarId
       tryClearMany goal toClear
