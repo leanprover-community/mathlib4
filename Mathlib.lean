@@ -108,6 +108,7 @@ import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
+import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TryThis
@@ -122,6 +123,7 @@ import Mathlib.Util.LibraryNote
 import Mathlib.Util.MemoFix
 import Mathlib.Util.Simp
 import Mathlib.Util.Syntax
+import Mathlib.Util.Tactic
 import Mathlib.Util.TermUnsafe
 import Mathlib.Util.Time
 import Mathlib.Util.WhatsNew
