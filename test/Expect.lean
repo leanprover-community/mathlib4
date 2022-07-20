@@ -7,10 +7,12 @@ Authors: Arthur Paulino
 import Mathlib.Tactic.Expect
 
 example : True ∧ True := by
-  expect_goal True ∧ True
+  expect_goals True ∧ True
   constructor
-  expect_failure expect_goal True ∧ True
-  expect_goal True
+  expect_goals True, True
+  expect_failure_msg "too many expected goals" expect_goals True, True, Foo
+  expect_failure expect_goals True ∧ True
+  expect_goals True
   repeat simp
 
 example (p : P) : P := by
@@ -20,15 +22,15 @@ example (p : P) : P := by
 
 example (h : a = b) : a = b ∧ b = a := by
   constructor
-  expect_goal a = b
+  expect_goals a = b
   have _five := 5
-  expect_hyp _five : Nat
-  expect_failure_msg "expected 'String' but got 'Nat'" expect_hyp _five : String
-  expect_failure_msg "unknown identifier 'six'" expect_hyp six : Nat
-  expect_hyp h : a = b
+  expect_hyps _five : Nat, h : a = b
+  expect_failure_msg "expected 'String' but got 'Nat'" expect_hyps _five : String
+  expect_failure_msg "unknown identifier 'six'" expect_hyps six : Nat
+  expect_hyps h : a = b
   exact h
-  expect_goal b = a
+  expect_goals b = a
   have _six := 6
-  expect_hyp _six : Nat
-  expect_failure_msg "unknown identifier 'five'" expect_hyp five : Nat
+  expect_hyps _six : Nat, h : a = b
+  expect_failure_msg "unknown identifier 'five'" expect_hyps five : Nat
   simp [h]

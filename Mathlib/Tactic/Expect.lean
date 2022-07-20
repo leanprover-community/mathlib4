@@ -25,19 +25,28 @@ elab "expect_failure_msg " msg:str tacs:tacticSeq : tactic => do
     if eMsg != expectedMsg then
       throwErrorAt msg "expected failure message \"{expectedMsg}\" but got \"{eMsg}\""
 
-/-- `expect_goal t` succeeds iff the main goal is the type `t`. -/
-elab "expect_goal " type:term : tactic => do
-  let expectedType ← elabTerm type none
-  let goalType ← getMainTarget
-  if goalType != expectedType then
-    throwErrorAt type s!"expected '{expectedType}' but got '{goalType}'"
-
-/-- `expect_hyp h : t` succeeds iff there exists a `h` in the context whose type is `t`. -/
-elab "expect_hyp " hyp:ident ":" type:term : tactic => withMainContext do
-  match (← getLCtx).findFromUserName? hyp.getId with
-    | some decl => do
-      let goalType ← instantiateMVars decl.type
-      let expectedType ← elabTerm type none
-      if goalType != expectedType then
+/-- `expect_goals t₁, t₂, ⋯` succeeds iff the list of goals start with types `t₁`, `t₂` ... -/
+elab "expect_goals " types:(colGt term),+ : tactic => do
+  let typesList := types.getElems.data
+  let goalsList ← getUnsolvedGoals
+  if typesList.length > goalsList.length then
+    throwError "too many expected goals"
+  typesList.zip goalsList |>.forM fun (type, mvarId) => do
+    let goalType ← instantiateMVars (← getMVarDecl mvarId).type
+    let expectedType ← elabTerm type none
+    if goalType != expectedType then
       throwErrorAt type s!"expected '{expectedType}' but got '{goalType}'"
-    | none => throwErrorAt hyp "unknown identifier '{hyp}'"
+
+syntax hypRule := ident " : " term
+
+/-- `expect_hyps h₁ : t₁, h₂ : t₂, ⋯` succeeds iff every `hᵢ` in the context has type `tᵢ`. -/
+elab "expect_hyps " rules:(hypRule),+ : tactic => withMainContext do
+  rules.getElems.forM fun rule => do
+    let `(hypRule| $hyp:ident : $type:term) := rule | unreachable!
+    match (← getLCtx).findFromUserName? hyp.getId with
+      | some decl => do
+        let goalType ← instantiateMVars decl.type
+        let expectedType ← elabTerm type none
+        if goalType != expectedType then
+        throwErrorAt type s!"expected '{expectedType}' but got '{goalType}'"
+      | none => throwErrorAt hyp "unknown identifier '{hyp}'"
