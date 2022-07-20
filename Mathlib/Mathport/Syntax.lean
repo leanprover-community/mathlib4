@@ -14,6 +14,7 @@ import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.InferParam
+import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NormCast
@@ -276,7 +277,6 @@ end Conv
   (" with" (ppSpace (colGt ident))*)? : tactic
 /- M -/ syntax (name := extractGoal!) "extract_goal!" (ppSpace ident)?
   (" with" (ppSpace (colGt ident))*)? : tactic
-/- M -/ syntax (name := inhabit) "inhabit " atomic(ident " : ")? term : tactic
 /- E -/ syntax (name := revertDeps) "revert_deps" (ppSpace colGt ident)* : tactic
 /- E -/ syntax (name := revertAfter) "revert_after " ident : tactic
 /- E -/ syntax (name := revertTargetDeps) "revert_target_deps" : tactic
