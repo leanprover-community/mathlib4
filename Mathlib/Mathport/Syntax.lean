@@ -175,7 +175,6 @@ end Tactic
 
 namespace Tactic
 
-/- N -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
 /- N -/ syntax (name := applyWith) "apply " term " with " term : tactic
 /- E -/ syntax (name := mapply) "mapply " term : tactic
 /- M -/ syntax (name := withCases) "with_cases " tacticSeq : tactic
@@ -260,7 +259,6 @@ end Conv
 /- B -/ syntax (name := refineStruct) "refine_struct " term : tactic
 /- M -/ syntax (name := matchHyp) "match_hyp " ("(" &"m" " := " term ") ")? ident " : " term : tactic
 /- E -/ syntax (name := guardHypNums) "guard_hyp_nums " num : tactic
-/- E -/ syntax (name := guardTags) "guard_tags" (ppSpace ident)* : tactic
 /- E -/ syntax (name := guardProofTerm) "guard_proof_term " tactic:51 " => " term : tactic
 /- E -/ syntax (name := failIfSuccess?) "fail_if_success? " str ppSpace tacticSeq : tactic
 /- N -/ syntax (name := field) "field " ident " => " tacticSeq : tactic
