@@ -8,6 +8,7 @@ import Mathlib.Util.Tactic
 
 namespace Mathlib.Tactic
 
+/-- The parser for swap rules -/
 syntax swapRule := ident " ↔ "? ident
 
 /--
