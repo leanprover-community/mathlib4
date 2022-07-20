@@ -8,6 +8,8 @@ import Mathlib.Util.Tactic
 
 namespace Mathlib.Tactic
 
+syntax swapRule := ident " ↔ "? ident
+
 /--
 `swap_var swap_rule₁, swap_rule₂, ⋯` applies `swap_rule₁` then `swap_rule₂` then `⋯`.
 
@@ -20,9 +22,10 @@ example {P Q : Prop} (q : P) (p : Q) : P ∧ Q := by
   exact ⟨p, q⟩
 ```
 -/
-elab "swap_var " vars:(colGt (ident " ↔ "? ident)),+ : tactic =>
+elab "swap_var " vars:(colGt swapRule),+ : tactic =>
   modifyLocalContext fun ctx =>
     vars.getElems.foldlM (init := ctx) fun ctx stx => do
-      let (n1, fvar1) ← getNameAndFVarId ctx stx.raw[0]
-      let (n2, fvar2) ← getNameAndFVarId ctx stx.raw[2]
-      pure $ ctx.setUserName fvar1 n2 |>.setUserName fvar2 n1
+      let `(swapRule| $n₁:ident $[↔]? $n₂:ident) := stx | unreachable!
+      let (n₁, fvarId₁) ← getNameAndFVarId ctx n₁
+      let (n₂, fvarId₂) ← getNameAndFVarId ctx n₂
+      pure $ ctx.setUserName fvarId₁ n₂ |>.setUserName fvarId₂ n₁
