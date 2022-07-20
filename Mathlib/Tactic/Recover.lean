@@ -46,7 +46,6 @@ partial def getUnassignedGoalMVarDependencies (mvarId : MVarId) :
     /-- main loop for metavariables-/
     go (mvarId : MVarId) : StateRefT (HashSet MVarId) MetaM Unit :=
       withIncRecDepth do
-        instantiateMVarsInGoal mvarId
         let mdecl ← getMVarDecl mvarId
         addMVars mdecl.type
         for ldecl in mdecl.lctx do
@@ -62,11 +61,11 @@ elab "recover" tacs:tacticSeq : tactic => do
   evalTactic tacs
   let mut unassigned : HashSet MVarId := {}
   for mvarId in originalGoals do
-    unless ← isExprMVarAssigned mvarId do
+    unless ← isExprMVarAssigned mvarId <||> isMVarDelayedAssigned mvarId do
       unassigned := unassigned.insert mvarId
     let unassignedMVarDependencies ←
         getUnassignedGoalMVarDependencies mvarId
     unassigned :=
         Std.HashSet.insertMany
             unassigned unassignedMVarDependencies.toList
-  setGoals <| (← getGoals) ++ unassigned.toList
+  setGoals <| ((← getGoals) ++ unassigned.toList).eraseDups
