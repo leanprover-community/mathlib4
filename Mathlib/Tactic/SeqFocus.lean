@@ -9,11 +9,11 @@ open Lean Elab Meta Tactic
 
 namespace Tactic
 
-/-- Assuming there are `n` goals, `mapTacs [t1, t2, ..., tn]` applies each `ti` to the respective
+/-- Assuming there are `n` goals, `map_tacs [t1, t2, ..., tn]` applies each `ti` to the respective
 goal and leaves the resulting subgoals. -/
-elab "mapTacs " "[" ts:tactic,* "]" : tactic => do
+elab "map_tacs " "[" ts:tactic,* "]" : tactic => do
   let mvarIds ← getGoals
-  let tacs := (ts : Array Syntax)
+  let tacs := ts.getElems
   let length := tacs.size
   if length < mvarIds.length then
     throwError "not enough tactics"
@@ -21,7 +21,7 @@ elab "mapTacs " "[" ts:tactic,* "]" : tactic => do
     throwError "too many tactics"
   let mut mvarIdsNew := #[]
   for tac in tacs, mvarId in mvarIds do
-    unless (← isExprMVarAssigned mvarId) do
+    unless ← isExprMVarAssigned mvarId do
       setGoals [mvarId]
       try
         evalTactic tac
@@ -37,7 +37,7 @@ elab "mapTacs " "[" ts:tactic,* "]" : tactic => do
 /-- `t <;> [t1, t2, ..., tn]` focuses on the first goal and applies `t`, which should result in `n`
 subgoals. It then applies each `ti` to the corresponding goal and collects the resulting
 subgoals. -/
-macro (name := seqFocus) t:tactic " <;> " "[" ts:tactic,* "]" : tactic =>
-  `(tactic| focus ( $t:tactic; mapTacs [$ts,*]) )
+macro (name := seq_focus) t:tactic " <;> " "[" ts:tactic,* "]" : tactic =>
+  `(tactic| focus ( $t:tactic; map_tacs [$ts,*]) )
 
 end Tactic
