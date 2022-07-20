@@ -40,7 +40,7 @@ elab "expect_goals " types:(colGt term),+ : tactic => do
 /-- The parsing rule for defining hypotheses expectations. -/
 syntax hypRule := ident " : " term
 
-/-- `expect_hyps h₁ : t₁, h₂ : t₂, ⋯` succeeds iff every `hᵢ` in the context has type `tᵢ`. -/
+/-- `expect_hyps h₁ : t₁, h₂ : t₂, ⋯` succeeds iff each `hᵢ` appears in the context with type `tᵢ`. -/
 elab "expect_hyps " rules:(hypRule),+ : tactic => withMainContext do
   rules.getElems.forM fun rule => do
     let `(hypRule| $hyp:ident : $type:term) := rule | unreachable!
