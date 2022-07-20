@@ -9,6 +9,7 @@ import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
+import Mathlib.Tactic.ClearValue
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Ext
@@ -280,7 +281,6 @@ end Conv
 /- E -/ syntax (name := revertDeps) "revert_deps" (ppSpace colGt ident)* : tactic
 /- E -/ syntax (name := revertAfter) "revert_after " ident : tactic
 /- E -/ syntax (name := revertTargetDeps) "revert_target_deps" : tactic
-/- E -/ syntax (name := clearValue) "clear_value" (ppSpace colGt ident)* : tactic
 
 /- M -/ syntax (name := applyAssumption) "apply_assumption" : tactic
 

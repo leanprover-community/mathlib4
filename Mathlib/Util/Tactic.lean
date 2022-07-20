@@ -21,6 +21,17 @@ def getNameAndFVarId [Monad m] [MonadError m] (ctx : LocalContext) (stx : Syntax
   else
     throwErrorAt stx "not an identifier"
 
+/-- Finds the `Name` and the `LocalDecl` of a variable given a `LocalContext` and a `Syntax.ident`. -/
+def getNameAndLocalDecl [Monad m] [MonadError m] (ctx : LocalContext) (stx : Syntax) :
+    m (Name × LocalDecl) :=
+  if stx.isIdent then
+    let name := stx.getId
+    match ctx.findFromUserName? name with
+    | some decl => return (name, decl)
+    | none => throwErrorAt stx "unknown variable {name}"
+  else
+    throwErrorAt stx "not an identifier"
+
 /-- Updates the current `LocalContext` with a transformation function in `MetaM`. -/
 def modifyLocalContext (fLCtx : LocalContext → MetaM LocalContext) : TacticM Unit :=
   liftMetaTactic fun mvarId => do
