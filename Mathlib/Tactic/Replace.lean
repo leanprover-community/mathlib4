@@ -40,18 +40,6 @@ h : β
 ⊢ goal
 ```
 
-Likewise, after `replace h : β`, the state will be:
-```lean
-case h
-f : α → β
-h : α
-⊢ β
-
-f: α → β
-h: β
-⊢ goal
-```
-
 This can be used to simulate the `specialize` and `apply at` tactics of Coq.
 -/
 elab_rules : tactic
@@ -68,6 +56,37 @@ elab_rules : tactic
         catch | _ => pure ()
       | none     => pure ()
 
+/--
+Acts like `have`, but removes a hypothesis with the same name as
+this one if possible. For example, if the state is:
+
+Then after `replace h : β` the state will be:
+
+```lean
+case h
+f : α → β
+h : α
+⊢ β
+
+f: α → β
+h: β
+⊢ goal
+```
+
+Where `have h : β` would result in:
+
+```lean
+case h
+f: α → β
+h: α
+⊢ β
+
+f: α → β
+h✝: α
+h: β
+⊢ goal
+```
+-/
 elab_rules : tactic
 | `(tactic| replace $[$n:ident $bs*]? $[: $t:term]?) => withMainContext do
     let (mvar1, mvar2) ← haveLetCore (← getMainGoal) n (bs.getD #[]) t false
