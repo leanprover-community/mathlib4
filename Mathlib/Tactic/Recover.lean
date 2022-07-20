@@ -12,7 +12,6 @@ open Std (HashSet PHashSet)
 open Lean Meta Elab Tactic
 
 /- The code below (up to the tactic) is from Aesop due to Janis Limperg-/
-namespace Mathlib.Tactic
 
 namespace Std.HashSet
 
@@ -41,7 +40,7 @@ partial def getUnassignedGoalMVarDependencies (mvarId : MVarId) :
     /-- helper for adding metavariables -/
     addMVars (e : Expr) : StateRefT (HashSet MVarId) MetaM Unit := do
       let mvars ← getMVarsNoDelayed e
-      modify (fun s => Std.HashSet.insertMany s mvars)
+      modify (·.insertMany mvars)
       mvars.forM go
     /-- main loop for metavariables-/
     go (mvarId : MVarId) : StateRefT (HashSet MVarId) MetaM Unit :=
@@ -55,6 +54,9 @@ partial def getUnassignedGoalMVarDependencies (mvarId : MVarId) :
 
 /- Above code from Aesop -/
 
+namespace Mathlib.Tactic
+
+
 /-- Modifier `recover` for a tactic (sequence) to debug cases where goals are closed incorrectly. The tactic `recover tacs` for a tactic (sequence) tacs applies the tactics and then adds goals that are not closed starting from the original -/
 elab "recover" tacs:tacticSeq : tactic => do
   let originalGoals ← getGoals
@@ -66,6 +68,5 @@ elab "recover" tacs:tacticSeq : tactic => do
     let unassignedMVarDependencies ←
         getUnassignedGoalMVarDependencies mvarId
     unassigned :=
-        Std.HashSet.insertMany
-            unassigned unassignedMVarDependencies.toList
+            unassigned.insertMany unassignedMVarDependencies.toList
   setGoals <| ((← getGoals) ++ unassigned.toList).eraseDups
