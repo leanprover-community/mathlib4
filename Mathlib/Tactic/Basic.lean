@@ -261,7 +261,7 @@ elab "eapply " e:term : tactic =>
   evalApplyLikeTactic (Meta.apply (cfg := {newGoals := ApplyNewGoals.nonDependentOnly})) e
 
 /--
-Tries to solve the goal using a canonical proof of `true` or the `reflexivity` tactic.
+Tries to solve the goal using a canonical proof of `True`, or the `rfl` tactic.
 Unlike `trivial` or `trivial'`, does not use the `contradiction` tactic.
 -/
 macro (name := triv) "triv" : tactic =>
