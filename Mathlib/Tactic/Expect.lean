@@ -11,12 +11,12 @@ namespace Mathlib.Tactic
 open Lean Meta Elab Tactic
 
 /-- `expect_failure tacs` succeeds iff `tacs` fails. -/
-elab "expect_failure " tacs:tacticSeq : tactic => withMainContext do
+elab "expect_failure " tacs:tacticSeq : tactic => do
   if ← try withoutRecover (evalTactic tacs); pure true catch _ => pure false then
     throwErrorAt tacs "tactic succeeded"
 
 /-- `expect_failure_msg msg tacs` succeeds iff `tacs` fails with `msg` as the error message. -/
-elab "expect_failure_msg " msg:str tacs:tacticSeq : tactic => withMainContext do
+elab "expect_failure_msg " msg:str tacs:tacticSeq : tactic => do
   match ← try withoutRecover (evalTactic tacs); pure none catch e => pure (some e) with
   | none => throwErrorAt tacs "tactic succeeded"
   | some e =>
@@ -26,7 +26,7 @@ elab "expect_failure_msg " msg:str tacs:tacticSeq : tactic => withMainContext do
       throwErrorAt msg "expected failure message \"{expectedMsg}\" but got \"{eMsg}\""
 
 /-- `expect_goal t` succeeds iff the main goal is the type `t`. -/
-elab "expect_goal " type:term : tactic => withMainContext do
+elab "expect_goal " type:term : tactic => do
   let expectedType ← elabTerm type none
   let goalType ← getMainTarget
   if goalType != expectedType then
