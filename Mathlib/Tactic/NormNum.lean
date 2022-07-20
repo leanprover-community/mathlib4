@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Lean.Elab.Tactic.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Tactic.Core
+import Mathlib.Util.Simp
 
 namespace Lean
 
@@ -194,7 +195,6 @@ def normNumHyp (ctx : Simp.Context) (fvarId: FVarId) : TacticM Unit :=
       | throwError "Failed to apply norm_num to hyp."
     return newGoal
 
-export private elabSimpArgs from Lean.Elab.Tactic.Simp in
 open Meta Elab Tactic in
 /-- Elaborator helper for norm num. -/
 def elabNormNum (args: Syntax) (loc : Syntax) : TacticM Unit := do
