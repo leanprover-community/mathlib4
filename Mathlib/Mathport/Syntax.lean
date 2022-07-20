@@ -246,7 +246,6 @@ end Conv
 /- E -/ syntax (name := fsplit) "fsplit" : tactic
 /- M -/ syntax (name := injectionsAndClear) "injections_and_clear" : tactic
 
-/- E -/ syntax (name := fconstructor) "fconstructor" : tactic
 /- E -/ syntax (name := tryFor) "try_for " term:max tacticSeq : tactic
 /- E -/ syntax (name := substs) "substs" (ppSpace ident)* : tactic
 /- E -/ syntax (name := unfoldCoes) "unfold_coes" (ppSpace location)? : tactic
