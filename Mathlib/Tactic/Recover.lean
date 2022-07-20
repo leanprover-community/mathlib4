@@ -57,7 +57,9 @@ partial def getUnassignedGoalMVarDependencies (mvarId : MVarId) :
 namespace Mathlib.Tactic
 
 
-/-- Modifier `recover` for a tactic (sequence) to debug cases where goals are closed incorrectly. The tactic `recover tacs` for a tactic (sequence) tacs applies the tactics and then adds goals that are not closed starting from the original -/
+/-- Modifier `recover` for a tactic (sequence) to debug cases where goals are closed incorrectly.
+The tactic `recover tacs` for a tactic (sequence) tacs applies the tactics and then adds goals
+that are not closed starting from the original -/
 elab "recover" tacs:tacticSeq : tactic => do
   let originalGoals ← getGoals
   evalTactic tacs
