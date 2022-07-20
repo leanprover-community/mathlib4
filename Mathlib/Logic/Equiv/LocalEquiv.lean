@@ -1,7 +1,7 @@
-import Mathlib.Tactic.MfldSetTac.Attr
-import Mathlib.Tactic.Core
 import Mathlib.Init.Logic
 import Mathlib.Init.Set
+import Mathlib.Logic.Equiv.MfldSimpsAttr
+import Mathlib.Tactic.Core
 
 open Lean Meta Elab Tactic
 

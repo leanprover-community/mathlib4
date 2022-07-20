@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Lean.Elab.Command
 import Lean.Elab.Quotation
+import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Clear_
@@ -14,7 +15,6 @@ import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
-import Mathlib.Tactic.MfldSetTac.Tactic
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.RCases

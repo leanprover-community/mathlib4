@@ -5,7 +5,7 @@ in realistic conditions. Instead, we create stub definitions and lemmas on objec
 `LocalHomeomorph`, label them with `mfld_simps` and run tests on those.
 -/
 
-import Mathlib.Tactic.MfldSetTac.Tactic
+import Mathlib.Logic.Equiv.LocalEquiv
 
 open Lean Meta Elab Tactic
 
