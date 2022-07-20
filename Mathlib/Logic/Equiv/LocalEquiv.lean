@@ -14,9 +14,6 @@ file to become functional.
 
 namespace Tactic.MfldSetTac
 
-theorem Set.ext {α : Type u} {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
-funext (fun x => propext (h x))
-
 /-- A very basic tactic to show that sets showing up in manifolds coincide or are included
 in one another. -/
 elab (name := mfldSetTac) "mfld_set_tac" : tactic => withMainContext do
