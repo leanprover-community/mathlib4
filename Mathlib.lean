@@ -51,6 +51,8 @@ import Mathlib.Lean.Expr.Traverse
 import Mathlib.Lean.LocalContext
 import Mathlib.Lean.NameMapAttribute
 import Mathlib.Logic.Basic
+import Mathlib.Logic.Equiv.MfldSimpsAttr
+import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nonempty
 import Mathlib.Mathport.Attributes
@@ -79,8 +81,6 @@ import Mathlib.Tactic.Lint.Basic
 import Mathlib.Tactic.Lint.Frontend
 import Mathlib.Tactic.Lint.Misc
 import Mathlib.Tactic.Lint.Simp
-import Mathlib.Tactic.MfldSetTac.Attr
-import Mathlib.Tactic.MfldSetTac.Tactic
 import Mathlib.Tactic.NoMatch
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormCast.CoeExt
