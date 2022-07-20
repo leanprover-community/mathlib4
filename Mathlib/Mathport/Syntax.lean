@@ -7,15 +7,19 @@ import Lean.Elab.Command
 import Lean.Elab.Quotation
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.ClearExcept
+import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
+import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.RCases
+import Mathlib.Tactic.Replace
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.ShowTerm
@@ -206,7 +210,6 @@ syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
 /- M -/ syntax (name := unfoldProjs) "unfold_projs" (config)? (ppSpace location)? : tactic
 /- M -/ syntax (name := unfold1) "unfold1" (config)? (ppSpace colGt ident)* (ppSpace location)? : tactic
 
-/- E -/ syntax (name := inferOptParam) "infer_opt_param" : tactic
 /- E -/ syntax (name := inferAutoParam) "infer_auto_param" : tactic
 /- M -/ syntax (name := guardExprEq) "guard_expr " term:51 " =ₐ " term : tactic -- alpha equality
 /- M -/ syntax (name := guardTarget) "guard_target" " =ₐ " term : tactic -- alpha equality
@@ -245,7 +248,6 @@ end Conv
 /- E -/ syntax (name := fsplit) "fsplit" : tactic
 /- M -/ syntax (name := injectionsAndClear) "injections_and_clear" : tactic
 
-/- E -/ syntax (name := fconstructor) "fconstructor" : tactic
 /- E -/ syntax (name := tryFor) "try_for " term:max tacticSeq : tactic
 /- E -/ syntax (name := substs) "substs" (ppSpace ident)* : tactic
 /- E -/ syntax (name := unfoldCoes) "unfold_coes" (ppSpace location)? : tactic
@@ -253,8 +255,6 @@ end Conv
 /- M -/ syntax (name := unfoldAux) "unfold_aux" : tactic
 /- E -/ syntax (name := recover) "recover" : tactic
 /- E -/ syntax (name := «continue») "continue " tacticSeq : tactic
-/- M -/ syntax (name := clear_) "clear_" : tactic
-/- M -/ syntax (name := replace') "replace " Term.haveIdLhs : tactic
 /- M -/ syntax (name := generalizeHyp) "generalize " atomic(ident " : ")? term:51 " = " ident
   ppSpace location : tactic
 /- M -/ syntax (name := clean) "clean " term : tactic
@@ -274,8 +274,6 @@ end Conv
   (" with " binderIdent)? : tactic
 /- M -/ syntax (name := guardExprEq') "guard_expr " term:51 " = " term : tactic -- definitional equality
 /- M -/ syntax (name := guardTarget') "guard_target" " = " term : tactic -- definitional equality
-/- E -/ syntax (name := triv) "triv" : tactic
-/- M -/ syntax (name := clearExcept) "clear " "*" " - " ident* : tactic
 /- M -/ syntax (name := extractGoal) "extract_goal" (ppSpace ident)?
   (" with" (ppSpace (colGt ident))*)? : tactic
 /- M -/ syntax (name := extractGoal!) "extract_goal!" (ppSpace ident)?
@@ -349,9 +347,6 @@ syntax termList := " [" term,* "]"
 /- E -/ syntax (name := byContra') "by_contra'" (ppSpace ident)? Term.optType : tactic
 
 /- E -/ syntax (name := renameVar) "rename_var " ident " → " ident (ppSpace location)? : tactic
-
-syntax swapVarArg := ident " ↔ "? ident
-/- E -/ syntax (name := swapVar) "swap_var " (colGt swapVarArg),+ : tactic
 
 /- M -/ syntax (name := assocRw) "assoc_rw " rwRuleSeq (ppSpace location)? : tactic
 
@@ -523,6 +518,9 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := initRing) "init_ring" (" using " term)? : tactic
 /- E -/ syntax (name := ghostSimp) "ghost_simp" (" [" simpArg,* "]")? : tactic
 /- E -/ syntax (name := wittTruncateFunTac) "witt_truncate_fun_tac" : tactic
+
+/- M -/ @[nolint docBlame] syntax (name := pure_coherence) "pure_coherence" : tactic
+/- M -/ @[nolint docBlame] syntax (name := coherence) "coherence" : tactic
 
 namespace Conv
 
