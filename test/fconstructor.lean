@@ -4,7 +4,7 @@ structure Foo where
   a : Type
   x : List a
 
-example : foo := by
+example : Foo := by
   fconstructor
   exact Nat
   exact [0,1,2]
