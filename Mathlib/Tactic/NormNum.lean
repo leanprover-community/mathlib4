@@ -9,6 +9,8 @@ import Mathlib.Tactic.Core
 
 namespace Lean
 
+initialize registerTraceClass `Tactic.norm_num
+
 /--
   Return true if `e` is one of the following
   - A nat literal (numeral)
@@ -127,20 +129,34 @@ theorem eval_of_isNat {α} [Semiring α] (n) [OfNat α n] [LawfulOfNat α n] :
 
 /-- Given
   - `$e : $α` where `e` is reducible to a number literal.
-  Produces a pair `(c, p)` where
+  Produces a simp-result `(n, p)` where
   - `n` is a natural number literal and
   - `$p : $e = OfNat.ofNat $n`
-  Providing we have `LawfulOfNat $α $n`
+  Providing we have `LawfulOfNat $α $n`.
 -/
-def eval (e : Expr) : MetaM (Expr × Expr) := do
+def eval (e : Expr) : MetaM Simp.Result := do
   let α ← inferType e
   let .succ u ← getLevel α | throwError "fail"
   let sα ← synthInstance (mkApp (mkConst ``Semiring [u]) α)
   let (ln, p) ← evalIsNat u α sα e
   let ofNatInst ← synthInstance (mkApp2 (mkConst ``OfNat [u]) α ln)
   let lawfulInst ← synthInstance (mkApp4 (mkConst ``LawfulOfNat [u]) α sα ln ofNatInst)
-  pure (mkApp3 (mkConst ``OfNat.ofNat [u]) α ln ofNatInst,
-    mkApp7 (mkConst ``eval_of_isNat [u]) α sα ln ofNatInst lawfulInst e p)
+  let expr := mkApp3 (mkConst ``OfNat.ofNat [u]) α ln ofNatInst
+  let pf := mkApp7 (mkConst ``eval_of_isNat [u]) α sα ln ofNatInst lawfulInst e p
+  return {expr, proof? := pf}
+
+open Simp in
+/-- Traverses the given expression using simp and normalises any numbers it finds. -/
+def derive (ctx : Simp.Context) (e : Expr) : MetaM Simp.Result := do
+  let e ← instantiateMVars e
+  let nosimp := (← getOptions).getBool `norm_num.nosimp
+  let methods := if nosimp then {} else Simp.DefaultMethods.methods
+  let r ← Simp.main e ctx
+    { methods with
+      post := fun e => do try return Simp.Step.done (← eval e) catch _ => methods.post e }
+  trace[Tactic.norm_num] "before: {e}\n after: {r.expr}"
+
+  return r
 
 theorem eval_eq_of_isNat {α} [Semiring α] :
   (a b : α) → (n : ℕ) → isNat a n → isNat b n → a = b
@@ -157,67 +173,66 @@ def evalEq (α a b : Expr) : MetaM Expr := do
 
 open Lean Elab Tactic Conv
 
-/-- Normnums a target of form `a = b`. -/
-protected def runTarget : TacticM Unit := do
-  liftMetaTactic fun g => do
-    let some (α, lhs, rhs) ← matchEq? (← getMVarType g) | throwError "fail"
-    let p ← NormNum.evalEq α lhs rhs
-    assignExprMVar g p
-    pure []
+/-- Normnums a target. -/
+def normNumTarget (ctx : Simp.Context) : TacticM Unit := do
+  liftMetaTactic1 fun mvarId => do
+    let tgt ← instantiateMVars (← getMVarType mvarId)
+    let prf ← derive ctx tgt
+    let newGoal ← applySimpResultToTarget mvarId tgt prf
+    let t ← inferType (mkMVar newGoal)
+    if t.isConstOf ``True then
+      assignExprMVar newGoal (mkConst ``True.intro)
+      return none
+    return some newGoal
 
-/-- Apply norm_num conversion to lhs in `⊢ lhs = _` without interleaving simp. -/
-def convert : TacticM Unit := do
-  let lhs ← getLhs
-  let (lhs', h) ← eval lhs
-  updateLhs lhs' h
+/-- Normnums a hypothesis. -/
+def normNumHyp (ctx : Simp.Context) (fvarId: FVarId) : TacticM Unit :=
+  liftMetaTactic1 fun mvarId => do
+    let hyp ← instantiateMVars (← getLocalDecl fvarId).type
+    let prf ← derive ctx hyp
+    let (some (_newHyp, newGoal)) ← applySimpResultToLocalDecl mvarId fvarId prf false
+      | throwError "Failed to apply norm_num to hyp."
+    return newGoal
+
+export private elabSimpArgs from Lean.Elab.Tactic.Simp in
+open Meta Elab Tactic in
+/-- Elaborator helper for norm num. -/
+def elabNormNum (args: Syntax) (loc : Syntax) : TacticM Unit := do
+  -- [todo] are there norm_num simp lemmas?
+  let simpTheorems ← ({} : SimpTheorems).addConst ``eq_self
+  let congrTheorems ← Meta.getSimpCongrTheorems
+  let eraseLocal := false
+  let kind := SimpKind.simp
+  let mut ctx : Simp.Context := {
+    config      := {}
+    simpTheorems := #[simpTheorems]
+    congrTheorems
+  }
+  let r ← Lean.Elab.Tactic.elabSimpArgs args (eraseLocal := eraseLocal) (kind := kind) ctx
+  ctx := r.ctx
+  let loc := expandOptLocation loc
+  withLocation loc
+    (atLocal := Meta.NormNum.normNumHyp ctx)
+    (atTarget := Meta.NormNum.normNumTarget ctx)
+    (failed := fun _ => throwError "norm_num failed")
 
 end NormNum
 end Meta
 
 namespace Tactic
 
-open Lean.Parser.Tactic in
-/-- Normalize numerical expressions.
+open Lean.Parser.Tactic
 
-[todo] currently only supports Semirings (that is, `+`, `*`, `^` but no `-`) and equality.
-
-### Lean 3 docstring
-
-Supports the operations
-`+` `-` `*` `/` `^` and `%` over numerical types such as
-`ℕ`, `ℤ`, `ℚ`, `ℝ`, `ℂ` and some general algebraic types,
-and can prove goals of the form `A = B`, `A ≠ B`, `A < B` and `A ≤ B`,
-where `A` and `B` are numerical expressions.
-It also has a relatively simple primality prover. -/
-syntax (name := normNum) "norm_num" (" [" simpArg,* "]")? (ppSpace location)? : tactic
-
-open Lean.Parser.Tactic in
+/-- Normalize numerical expressions. -/
+elab "norm_num" args:(("[" simpArg,* "]")?) loc:(location ?) : tactic =>
+  withOptions (·.setBool `norm_num.nosimp false)
+  <| Meta.NormNum.elabNormNum args loc
 
 /-- Basic version of `norm_num` that does not call `simp`. -/
-syntax (name := normNum1) "norm_num1" (ppSpace location)? : tactic
-
-open Meta Elab.Tactic in
-elab_rules : tactic
-  | `(tactic| norm_num $[[$simpArgs]]? $[$loc]?) => do
-    -- [todo] original also has simp discharge with norm_num1
-    evalTactic <|← `(tactic| repeat1 (first | norm_num1 $[$loc]? | simp $[[$simpArgs]]? $[$loc]?))
-  | `(tactic| norm_num1 $[$loc]?) => do
-    let loc :=
-      match loc with
-      | none => Location.targets #[] true
-      | some loc => expandLocation loc
-    withLocation loc
-      (atLocal := fun _ => throwError "running norm_num on a hypothesis is not implemented")
-      (atTarget := Meta.NormNum.runTarget)
-      (failed := fun _ => throwError "norm_num failed")
+elab "norm_num1" loc:(location ?) : tactic =>
+  withOptions (·.setBool `norm_num.nosimp true)
+  <| Meta.NormNum.elabNormNum (Syntax.missing) loc
 
 end Tactic
 
 end Lean
-
-variable (α) [Semiring α]
-example : (1 + 0 : α) = (0 + 1 : α) := by norm_num
-example : (0 + (2 + 3) + 1 : α) = 6 := by norm_num
-example : (70 * (33 + 2) : α) = 2450 := by norm_num
-example : (8 + 2 ^ 2 * 3 : α) = 20 := by norm_num
-example : ((2 * 1 + 1) ^ 2 : α) = (3 * 3 : α) := by norm_num
