@@ -38,11 +38,12 @@ partial def getUnassignedGoalMVarDependencies (mvarId : MVarId) :
     MetaM (HashSet MVarId) :=
   return (← go mvarId |>.run {}).snd
   where
+    /-- helper for adding metavariables -/
     addMVars (e : Expr) : StateRefT (HashSet MVarId) MetaM Unit := do
       let mvars ← getMVarsNoDelayed e
       modify (fun s => Std.HashSet.insertMany s mvars)
       mvars.forM go
-
+    /-- main loop for metavariables-/
     go (mvarId : MVarId) : StateRefT (HashSet MVarId) MetaM Unit :=
       withIncRecDepth do
         instantiateMVarsInGoal mvarId
