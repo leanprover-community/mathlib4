@@ -259,7 +259,6 @@ end Conv
 /- M -/ syntax (name := clean) "clean " term : tactic
 /- B -/ syntax (name := refineStruct) "refine_struct " term : tactic
 /- M -/ syntax (name := matchHyp) "match_hyp " ("(" &"m" " := " term ") ")? ident " : " term : tactic
-/- E -/ syntax (name := guardHypNums) "guard_hyp_nums " num : tactic
 /- E -/ syntax (name := guardTags) "guard_tags" (ppSpace ident)* : tactic
 /- E -/ syntax (name := guardProofTerm) "guard_proof_term " tactic:51 " => " term : tactic
 /- E -/ syntax (name := failIfSuccess?) "fail_if_success? " str ppSpace tacticSeq : tactic
