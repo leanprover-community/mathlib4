@@ -37,6 +37,7 @@ elab "expect_goals " types:(colGt term),+ : tactic => do
     if goalType != expectedType then
       throwErrorAt type s!"expected '{expectedType}' but got '{goalType}'"
 
+/-- The parsing rule for defining hypotheses expectations. -/
 syntax hypRule := ident " : " term
 
 /-- `expect_hyps h₁ : t₁, h₂ : t₂, ⋯` succeeds iff every `hᵢ` in the context has type `tᵢ`. -/
