@@ -58,15 +58,15 @@ instance (α) [Semiring α] : LawfulOne α := ⟨Nat.cast_one.symm⟩
 
 theorem isNat_add {α} [Semiring α] : (a b : α) → (a' b' c : Nat) →
   isNat a a' → isNat b b' → Nat.add a' b' = c → isNat (a + b) c
-| _, _, _a', _b', _, rfl, rfl, rfl => Nat.cast_add.symm
+  | _, _, _a', _b', _, rfl, rfl, rfl => Nat.cast_add.symm
 
 theorem isNat_mul {α} [Semiring α] : (a b : α) → (a' b' c : Nat) →
   isNat a a' → isNat b b' → Nat.mul a' b' = c → isNat (a * b) c
-| _, _, _a', _b', _, rfl, rfl, rfl => Nat.cast_mul.symm
+  | _, _, _a', _b', _, rfl, rfl, rfl => Nat.cast_mul.symm
 
 theorem isNat_pow {α} [Semiring α] : (a : α) → (b a' b' c : Nat) →
   isNat a a' → isNat b b' → Nat.pow a' b' = c → isNat (a ^ b) c
-| _, _, _, _, _, rfl, rfl, rfl => by simp [isNat]
+  | _, _, _, _, _, rfl, rfl, rfl => by simp [isNat]
 
 def instSemiringNat : Semiring Nat := inferInstance
 
@@ -160,7 +160,7 @@ def derive (ctx : Simp.Context) (e : Expr) : MetaM Simp.Result := do
 
 theorem eval_eq_of_isNat {α} [Semiring α] :
   (a b : α) → (n : ℕ) → isNat a n → isNat b n → a = b
-| _, _, _, rfl, rfl => rfl
+  | _, _, _, rfl, rfl => rfl
 
 /-- Returns the proof that `a = b` using normnum. -/
 def evalEq (α a b : Expr) : MetaM Expr := do
