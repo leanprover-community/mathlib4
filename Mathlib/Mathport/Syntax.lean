@@ -273,7 +273,6 @@ end Conv
   (" with " binderIdent)? : tactic
 /- M -/ syntax (name := guardExprEq') "guard_expr " term:51 " = " term : tactic -- definitional equality
 /- M -/ syntax (name := guardTarget') "guard_target" " = " term : tactic -- definitional equality
-/- E -/ syntax (name := triv) "triv" : tactic
 /- M -/ syntax (name := extractGoal) "extract_goal" (ppSpace ident)?
   (" with" (ppSpace (colGt ident))*)? : tactic
 /- M -/ syntax (name := extractGoal!) "extract_goal!" (ppSpace ident)?
