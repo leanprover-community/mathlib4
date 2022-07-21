@@ -101,6 +101,7 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.RunTac
 import Mathlib.Tactic.Sat.FromLRAT
+import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.ShowTerm
 import Mathlib.Tactic.SimpRw
