@@ -30,19 +30,16 @@ def inhabitCore (mVarId : MVarId) (h_name : Option Ident) (term : Syntax) : Tact
     let e_lvl ← Meta.getLevel e
     let inhabited_e := mkApp (mkConst ``Inhabited [e_lvl]) e
     let nonempty_e := mkApp (mkConst ``Nonempty [e_lvl]) e
-    match (← findLocalDeclWithType? nonempty_e) with
-    | some fVarId =>
-      let nonempty_e_pf := mkFVar fVarId
-      let h_name : Name :=
-        match h_name with
-        | some h_name => h_name.getId
-        | none => `inhabited_h
-      let pf ←
-        if ← isProp e then Meta.mkAppM ``nonempty_prop_to_inhabited #[e, nonempty_e_pf]
-        else Meta.mkAppM ``nonempty_to_inhabited #[e, nonempty_e_pf]
-      let (_, mVarId2) ← intro1P (← assert mVarId h_name inhabited_e pf)
-      return mVarId2
-    | none => throwError s!"Could not synthesize Nonempty {term}"
+    let nonempty_e_pf ← synthInstance nonempty_e
+    let h_name : Name :=
+      match h_name with
+      | some h_name => h_name.getId
+      | none => `inhabited_h
+    let pf ←
+      if ← isProp e then Meta.mkAppM ``nonempty_prop_to_inhabited #[e, nonempty_e_pf]
+      else Meta.mkAppM ``nonempty_to_inhabited #[e, nonempty_e_pf]
+    let (_, mVarId2) ← intro1P (← assert mVarId h_name inhabited_e pf)
+    return mVarId2
 
 elab_rules : tactic
   | `(tactic| inhabit $[$h_name:ident :]? $term) => do

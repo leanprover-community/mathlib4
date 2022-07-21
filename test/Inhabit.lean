@@ -25,3 +25,12 @@ noncomputable example {α : Type} : Nonempty α → Inhabited α := by
 noncomputable example {p : Prop} [Nonempty p] : Inhabited p := by
   inhabit p_inhabited : p
   exact p_inhabited
+
+axiom α : Type
+axiom a : α
+instance : Nonempty α := Nonempty.intro a
+
+-- Confirms that inhabit can find Nonempty instances that aren't in the local context
+noncomputable example : Inhabited α := by
+  inhabit α
+  assumption
