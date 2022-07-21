@@ -28,8 +28,8 @@ We want this to be able to push negations inside binders.
 -/
 def binderTelescope1 (e : Expr) (f : Expr → Expr → MetaM α) : MetaM α := do
 match e with
-| Expr.lam n t b d => withLocalDecl n d.binderInfo t fun x => f x (instantiate1 b x)
-| Expr.forallE n t b d => withLocalDecl n d.binderInfo t fun x => f x (instantiate1 b x)
+| Expr.lam n t b d => withLocalDecl n d t fun x => f x (instantiate1 b x)
+| Expr.forallE n t b d => withLocalDecl n d t fun x => f x (instantiate1 b x)
 | _ => throwError "binder expected{indentExpr e}"
 
 /-- This function takes an expression and create the equivalent expression by pushing negations
@@ -57,7 +57,7 @@ match expr with
     if eqProof.isAppOf ``Eq.refl
     then return (expr, ← mkEqRefl expr)
     else return (←mkLambdaFVars #[x] eNew, ← mkFunExt (←mkLambdaFVars #[x] eqProof))
-| Expr.app e₁ e₂ _ =>
+| Expr.app e₁ e₂ =>
    match expr.not? with
    | some expr' =>
       match expr'.getAppFnArgs with
@@ -147,8 +147,11 @@ at every assumption and the goal using `push_neg at *` or at selected assumption
 using say `push_neg at h h' ⊢` as usual.
 -/
 elab "push_neg " loc:(ppSpace location)? : tactic => do
-let loc := expandOptLocation loc
-withLocation loc
-  pushNegLocalDecl
-  pushnegTarget
-  (fun _ => throwError "Pushneg couldn't find a negation to push")
+match loc with
+| none => throwError "Pushneg couldn't find a negation to push"
+| some loc =>
+    let loc := expandOptLocation loc
+    withLocation loc
+      pushNegLocalDecl
+      pushnegTarget
+      (fun _ => throwError "Pushneg couldn't find a negation to push")

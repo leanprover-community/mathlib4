@@ -18,6 +18,7 @@ import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.RCases
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.Ring
