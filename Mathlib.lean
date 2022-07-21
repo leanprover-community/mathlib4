@@ -63,6 +63,7 @@ import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
+import Mathlib.Tactic.ClearValue
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Constructor
