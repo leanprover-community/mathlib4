@@ -344,8 +344,6 @@ syntax termList := " [" term,* "]"
 
 /- E -/ syntax (name := byContra') "by_contra'" (ppSpace ident)? Term.optType : tactic
 
-/- E -/ syntax (name := renameVar) "rename_var " ident " → " ident (ppSpace location)? : tactic
-
 /- M -/ syntax (name := assocRw) "assoc_rw " rwRuleSeq (ppSpace location)? : tactic
 
 /- N -/ syntax (name := dsimpResult) "dsimp_result " (&"only ")? ("[" Tactic.simpArg,* "]")?
