@@ -120,6 +120,7 @@ import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Util.DeclName
 import Mathlib.Util.Export
+import Mathlib.Util.Expr
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.LibraryNote
 import Mathlib.Util.MemoFix
