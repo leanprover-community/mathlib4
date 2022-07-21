@@ -4,34 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Kevin Buzzard
 -/
 import Lean
---import Mathlib.Mathport.Syntax
 import Mathlib.Tactic.Basic
-import Lean.Elab.Command
-import Lean.Elab.Quotation
-import Mathlib.Tactic.Alias
-import Mathlib.Tactic.Cases
-import Mathlib.Tactic.ClearExcept
-import Mathlib.Tactic.Clear_
-import Mathlib.Tactic.Core
-import Mathlib.Tactic.CommandQuote
-import Mathlib.Tactic.Ext
-import Mathlib.Tactic.Find
-import Mathlib.Tactic.InferParam
-import Mathlib.Tactic.LeftRight
-import Mathlib.Tactic.LibrarySearch
-import Mathlib.Tactic.NormCast
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.RCases
-import Mathlib.Tactic.Replace
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Set
-import Mathlib.Tactic.ShowTerm
-import Mathlib.Tactic.Simps
-import Mathlib.Tactic.SolveByElim
-import Mathlib.Tactic.Trace
-import Mathlib.Init.ExtendedBinder
-import Mathlib.Util.WithWeakNamespace
-import Mathlib.Util.Syntax
+import Mathlib.Mathport.Syntax
+
 open Lean Lean.Parser Parser.Tactic Elab Command Elab.Tactic Meta
 
 /--
@@ -63,7 +38,6 @@ end
 ```
 -/
 syntax (name := byContra') "by_contra'" (ppSpace ident)? Term.optType : tactic
-syntax (name := pushNeg) "push_neg" (ppSpace location)? : tactic
 
 macro_rules
   | `(tactic| by_contra') => `(tactic| (by_contra $(mkIdent `this); push_neg at this))
