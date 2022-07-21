@@ -71,50 +71,9 @@ macro_rules
   | `(tactic| by_contra' $e : $y) => `(tactic|
        ( by_contra';
          -- if the below `exact` call fails then this tactic should fail with the message
-         -- tactic failed: <goal type> and <type of definitely_not_dollar_e> are not definitionally equal
-         have $e : $y := by { push_neg; exact this };
+         -- tactic failed: <goal type> and <type of this> are not definitionally equal
+         have $e : $y := by { push_neg;
+         trace e;
+         exact this };
          clear this
        ))
-
-
-macro_rules
-  | `(tactic| push_neg) => `(tactic| simp only [not_not])
-  | `(tactic| push_neg at $e) => `(tactic| simp only [not_not, not_lt] at $e)
-
-example (p : Prop): ¬ ¬ ¬ ¬ ¬ ¬ P := by
-  by_contra' foo : ¬ ¬ ¬ P;
-  sorry
-
-
-example : 1 < 2 := by
-  by_contra' h
-
-set_option pp.all true
-example (a b : ℕ) (foo : False)  : a < b := by
-  by_contra' bar;
-  guard_hyp bar : b ≤ a;
-  exact foo
-
-#exit
-begin
-  by_contra' h : 2 ≤ 1,
-  guard_hyp' h : 2 ≤ 1, -- this is not defeq to `¬ 1 < 2`
-  revert h,
-  exact dec_trivial
-end
-
-example : 1 < 2 :=
-begin
-  by_contra' h : ¬ 1 < 2,
-  guard_hyp' h : ¬ 1 < 2, -- this is not defeq to `2 ≤ 1`
-  revert h,
-  exact dec_trivial
-end
-
-example : 1 < 2 :=
-begin
-  by_contra' : 2 ≤ 1,
-  guard_hyp' this : 2 ≤ 1, -- this is not defeq to `¬ 1 < 2`
-  revert this,
-  exact dec_trivial
-end
