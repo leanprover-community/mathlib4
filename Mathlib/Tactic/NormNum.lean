@@ -31,14 +31,14 @@ namespace Meta
 
 namespace NormNum
 
-def isNat [Semiring α] (a : α) (n : ℕ) := a = OfNat.ofNat n
+def isNat [Semiring α] (a : α) (n : ℕ) := a = n
 
 class LawfulOfNat (α) [Semiring α] (n) [OfNat α n] : Prop where
   isNat_ofNat : isNat (@OfNat.ofNat _ n ‹_› : α) n
 
-instance (α) [Semiring α] : LawfulOfNat α n := ⟨rfl⟩
-instance (α) [Semiring α] : LawfulOfNat α (nat_lit 0) := ⟨rfl⟩
-instance (α) [Semiring α] : LawfulOfNat α (nat_lit 1) := ⟨rfl⟩
+instance (α) [Semiring α] [Nat.AtLeastTwo n] : LawfulOfNat α n := ⟨rfl⟩
+instance (α) [Semiring α] : LawfulOfNat α (nat_lit 0) := ⟨Nat.cast_zero.symm⟩
+instance (α) [Semiring α] : LawfulOfNat α (nat_lit 1) := ⟨Nat.cast_one.symm⟩
 instance : LawfulOfNat Nat n := ⟨show n = Nat.cast n by simp⟩
 instance : LawfulOfNat Int n := ⟨show Int.ofNat n = Nat.cast n by simp⟩
 
@@ -47,27 +47,30 @@ theorem isNat_rawNat (n : ℕ) : isNat n n := LawfulOfNat.isNat_ofNat
 class LawfulZero (α) [Semiring α] [Zero α] : Prop where
   isNat_zero : isNat (Zero.zero : α) (nat_lit 0)
 
-instance (α) [Semiring α] : LawfulZero α := ⟨rfl⟩
+instance (α) [Semiring α] : LawfulZero α := ⟨Nat.cast_zero.symm⟩
 
 class LawfulOne (α) [Semiring α] [One α] : Prop where
   isNat_one : isNat (One.one : α) (nat_lit 1)
 
-instance (α) [Semiring α] : LawfulOne α := ⟨rfl⟩
+instance (α) [Semiring α] : LawfulOne α := ⟨Nat.cast_one.symm⟩
 
 theorem isNat_add {α} [Semiring α] : (a b : α) → (a' b' c : Nat) →
   isNat a a' → isNat b b' → Nat.add a' b' = c → isNat (a + b) c
-| _, _, _, _, _, rfl, rfl, rfl => Nat.cast_add.symm
+| _, _, _a', _b', _, rfl, rfl, rfl => Nat.cast_add.symm
 
 theorem isNat_mul {α} [Semiring α] : (a b : α) → (a' b' c : Nat) →
   isNat a a' → isNat b b' → Nat.mul a' b' = c → isNat (a * b) c
-| _, _, _, _, _, rfl, rfl, rfl => Nat.cast_mul.symm
+| _, _, _a', _b', _, rfl, rfl, rfl => Nat.cast_mul.symm
 
 theorem isNat_pow {α} [Semiring α] : (a : α) → (b a' b' c : Nat) →
   isNat a a' → isNat b b' → Nat.pow a' b' = c → isNat (a ^ b) c
-| _, _, _, _, _, rfl, rfl, rfl => by
-  simp only [OfNat.ofNat, isNat, Nat.cast_Nat, ← Nat.cast_pow]; rfl
+| _, _, _, _, _, rfl, rfl, rfl => by simp [isNat]
 
 def instSemiringNat : Semiring Nat := inferInstance
+
+theorem isNat_cast {R} [Semiring R] (n m : Nat) :
+    isNat n m → isNat (n : R) m := by
+  rintro ⟨⟩; rfl
 
 partial def evalIsNat (u : Level) (α sα e : Expr) : MetaM (Expr × Expr) := do
   let (n, p) ← match e.getAppFnArgs with
@@ -75,7 +78,7 @@ partial def evalIsNat (u : Level) (α sα e : Expr) : MetaM (Expr × Expr) := do
   | (``HMul.hMul, #[_, _, _, _, a, b]) => evalBinOp ``NormNum.isNat_mul (·*·) a b
   | (``HPow.hPow, #[_, _, _, _, a, b]) => evalPow ``NormNum.isNat_pow (·^·) a b
   | (``OfNat.ofNat, #[_, ln, inst]) =>
-    let some n := ln.natLit? | throwError "fail"
+    unless ln.isNatLit do throwError "fail"
     let lawful ← synthInstance (mkApp4 (mkConst ``LawfulOfNat [u]) α sα ln inst)
     pure (ln, mkApp5 (mkConst ``LawfulOfNat.isNat_ofNat [u]) α sα ln inst lawful)
   | (``Zero.zero, #[_, inst]) =>
@@ -84,8 +87,11 @@ partial def evalIsNat (u : Level) (α sα e : Expr) : MetaM (Expr × Expr) := do
   | (``One.one, #[_, inst]) =>
     let lawful ← synthInstance (mkApp3 (mkConst ``LawfulOne [u]) α sα inst)
     pure (mkNatLit 1, mkApp4 (mkConst ``LawfulOne.isNat_one [u]) α sα inst lawful)
+  | (``Nat.cast, #[_, _, n])  =>
+    let (m, pm) ← evalIsNat levelZero (mkConst ``Nat) (mkConst ``instSemiringNat) n
+    pure (m, mkApp5 (mkConst ``isNat_cast [u]) α sα n m pm)
   | _ =>
-    unless e.isNatLit do throwError "fail"
+    unless e.isNatLit do throwError "fail {e}"
     pure (e, mkApp (mkConst ``isNat_rawNat) e)
   pure (n, mkApp2 (mkConst ``id [levelZero]) (mkApp4 (mkConst ``isNat [u]) α sα e n) p)
 where
@@ -112,7 +118,7 @@ theorem eval_of_isNat {α} [Semiring α] (n) [OfNat α n] [LawfulOfNat α n] :
 
 def eval (e : Expr) : MetaM (Expr × Expr) := do
   let α ← inferType e
-  let Level.succ u _ ← getLevel α | throwError "fail"
+  let .succ u ← getLevel α | throwError "fail"
   let sα ← synthInstance (mkApp (mkConst ``Semiring [u]) α)
   let (ln, p) ← evalIsNat u α sα e
   let ofNatInst ← synthInstance (mkApp2 (mkConst ``OfNat [u]) α ln)
@@ -125,7 +131,7 @@ theorem eval_eq_of_isNat {α} [Semiring α] :
 | _, _, _, rfl, rfl => rfl
 
 def evalEq (α a b : Expr) : MetaM Expr := do
-  let Level.succ u _ ← getLevel α | throwError "fail"
+  let .succ u ← getLevel α | throwError "fail"
   let sα ← synthInstance (mkApp (mkConst ``Semiring [u]) α)
   let (ln, pa) ← evalIsNat u α sα a
   let (ln', pb) ← evalIsNat u α sα b

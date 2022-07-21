@@ -7,6 +7,7 @@ Authors: Jeremy Avigad, Deniz Aydin, Floris van Doorn
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Coe
+import Mathlib.Tactic.NormCast.Lemmas
 open Nat
 
 namespace Int
@@ -88,8 +89,8 @@ lemma negSucc_ofNat_eq (n : ℕ) : -[1+ n] = -((↑n) + 1) := rfl
 
 protected lemma neg_neg : ∀ a : ℤ, -(-a) = a
 | ofNat 0     => rfl
-| ofNat (n+1) => rfl
-| -[1+ n]     => rfl
+| ofNat (_+1) => rfl
+| -[1+ _]     => rfl
 
 protected lemma neg_inj {a b : ℤ} (h : -a = -b) : a = b :=
 by rw [← Int.neg_neg a, ← Int.neg_neg b, h]
@@ -187,9 +188,9 @@ lemma eq_x_or_neg (a : ℤ) : ∃n : ℕ, a = n ∨ a = -↑n := ⟨_, natAbs_eq
 /- ## sign -/
 
 def sign : ℤ → ℤ
-| (n+1:ℕ) => 1
+| (_+1:ℕ) => 1
 | 0       => 0
-| -[1+ n] => -1
+| -[1+ _] => -1
 
 @[simp] theorem sign_zero : sign 0 = 0 := rfl
 @[simp] theorem sign_one : sign 1 = 1 := rfl
@@ -208,7 +209,7 @@ def fdiv : ℤ → ℤ → ℤ
 | 0,       _       => 0
 | (m : ℕ), (n : ℕ) => ofNat (m / n)
 | (m+1:ℕ), -[1+ n] => -[1+ m / succ n]
-| -[1+ m], 0       => 0
+| -[1+ _], 0       => 0
 | -[1+ m], (n+1:ℕ) => -[1+ m / succ n]
 | -[1+ m], -[1+ n] => ofNat (succ m / succ n)
 
@@ -246,8 +247,8 @@ protected lemma add_comm : ∀ a b : ℤ, a + b = b + a
 | -[1+ _], -[1+ _] => by simp [Nat.add_comm]
 
 protected lemma add_zero : ∀ a : ℤ, a + 0 = a
-| (ofNat n) => rfl
-| -[1+ n]   => rfl
+| ofNat _ => rfl
+| -[1+ _] => rfl
 
 protected lemma zero_add (a : ℤ) : 0 + a = a := Int.add_comm a 0 ▸ Int.add_zero a
 
@@ -287,7 +288,7 @@ by
     have h₃ : m ≤ n + k := le_of_succ_le_succ h₂
     rw [subNatNat_of_lt h', subNatNat_of_lt h₂]
     simp [Nat.add_comm]
-    rw [← add_succ, succ_pred_eq_of_pos (Nat.sub_pos_of_lt h'), add_succ, succ_sub h₃, pred_succ]
+    rw [← add_succ, succ_pred_eq_of_pos (Nat.sub_pos_of_lt h'), add_succ, succ_sub h₃, Nat.pred_succ]
     rw [Nat.add_comm n, Nat.add_sub_assoc (Nat.le_of_lt h')]
 
 lemma add_assoc_aux1 (m n : ℕ) :
@@ -340,8 +341,8 @@ protected lemma mul_comm : ∀ a b : ℤ, a * b = b * a
 | a, b => by cases a <;> cases b <;> simp [Nat.mul_comm]
 
 lemma ofNat_mul_negOfNat (m : ℕ) : ∀ n, ofNat m * negOfNat n = negOfNat (m * n)
-| 0        => rfl
-| (succ n) => rfl
+| 0      => rfl
+| succ _ => rfl
 
 lemma negOfNat_mul_ofNat (m n : ℕ) : negOfNat m * ofNat n = negOfNat (m * n) := by
     rw [Int.mul_comm]
@@ -349,8 +350,8 @@ lemma negOfNat_mul_ofNat (m n : ℕ) : negOfNat m * ofNat n = negOfNat (m * n) :
 
 lemma negSucc_ofNat_mul_negOfNat (m : ℕ) :
   ∀ n, -[1+ m] * negOfNat n = ofNat (succ m * n)
-| 0        => rfl
-| (succ n) => rfl
+| 0      => rfl
+| succ _ => rfl
 
 lemma negOfNat_mul_negSucc_ofNat (m n : ℕ) :
   negOfNat n * -[1+ m] = ofNat (n * succ m) := by
@@ -363,15 +364,15 @@ protected lemma mul_assoc : ∀ a b c : ℤ, a * b * c = a * (b * c)
 | a, b, c => by cases a <;> cases b <;> cases c <;> simp [Nat.mul_assoc]
 
 protected lemma mul_zero : ∀ (a : ℤ), a * 0 = 0
-| (ofNat m) => rfl
-| -[1+ m]   => rfl
+| ofNat _ => rfl
+| -[1+ _] => rfl
 
 protected lemma zero_mul (a : ℤ) : 0 * a = 0 :=
 Int.mul_comm a 0 ▸ Int.mul_zero a
 
 lemma negOfNat_eq_subNatNat_zero : ∀ n, negOfNat n = subNatNat 0 n
-| 0        => rfl
-| (succ n) => rfl
+| 0      => rfl
+| succ _ => rfl
 
 lemma ofNat_mul_subNatNat (m n k : ℕ) :
   ofNat m * subNatNat n k = subNatNat (m * n) (m * k) :=
@@ -441,8 +442,7 @@ protected lemma zero_ne_one : (0 : ℤ) ≠ 1 := λ h => Int.noConfusion h fun.
 lemma ofNat_sub {n m : ℕ} (h : m ≤ n) : ofNat (n - m) = ofNat n - ofNat m := by
   show ofNat (n - m) = ofNat n + negOfNat m
   match m, h with
-  | 0, h =>
-    rfl
+  | 0, _ => rfl
   | succ m, h =>
     show ofNat (n - succ m) = subNatNat n (succ m)
     simp [subNatNat, subNatNat] -- TODO: How to avoid having to simp through rename definitions to unfold them?
@@ -463,8 +463,6 @@ protected lemma neg_add {a b : ℤ} : - (a + b) = -a + -b := by
 
 lemma negSucc_ofNat_coe' (n : ℕ) : -[1+ n] = -↑n - 1 :=
 by rw [Int.sub_eq_add_neg, ← Int.neg_add]; rfl
-
-protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
 protected lemma subNatNat_eq_coe {m n : ℕ} : subNatNat m n = ↑m - ↑n := by
   refine subNatNat_elim m n (fun m n i => i = ↑m - ↑n) ?p ?n
@@ -493,8 +491,8 @@ protected lemma neg_eq_neg_one_mul : ∀ a : ℤ, -a = -1 * a
 | -[1+ n]       => show _ = ofNat _ by rw [Nat.one_mul] rfl
 
 theorem sign_mul_natAbs : ∀ (a : ℤ), sign a * natAbs a = a
-| (n+1:ℕ) => Int.one_mul _
+| (_+1:ℕ) => Int.one_mul _
 | 0       => rfl
-| -[1+ n] => (Int.neg_eq_neg_one_mul _).symm
+| -[1+ _] => (Int.neg_eq_neg_one_mul _).symm
 
 end Int

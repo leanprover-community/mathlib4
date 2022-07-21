@@ -30,7 +30,7 @@ def heapifyDown (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
     let a' := a.swap i j
     let j' := ⟨j, by rw [a.size_swap i j]; exact j.1.2⟩
     have : a'.size - j < a.size - i := by
-      rw [a.size_swap i j]; exact Nat.sub_lt_sub_left i.2 <| Nat.lt_of_le_and_ne j.2 h
+      rw [a.size_swap i j]; exact Nat.sub_lt_sub_left i.2 <| Nat.lt_of_le_of_ne j.2 h
     let ⟨a₂, h₂⟩ := heapifyDown lt a' j'
     ⟨a₂, h₂.trans (a.size_swap i j)⟩
 termination_by _ => a.size - i
@@ -51,7 +51,7 @@ def mkHeap (lt : α → α → Bool) (a : Array α) : {a' : Array α // a'.size 
     ⟨a₂, h₂.trans a'.2⟩
   loop (a.size / 2) a (Nat.div_le_self ..)
 
-@[simp] theorem size_mkHeap (lt : α → α → Bool) (a : Array α) (i : Fin a.size) :
+@[simp] theorem size_mkHeap (lt : α → α → Bool) (a : Array α) :
   (mkHeap lt a).1.size = a.size := (mkHeap lt a).2
 
 /-- Core operation for binary heaps, expressed directly on arrays.
@@ -109,7 +109,7 @@ def popMaxAux {lt} (self : BinaryHeap α lt) : {a' : BinaryHeap α lt // a'.size
     have hn := by rw [e]; apply Nat.lt_succ_self
     if hn0 : 0 < n then
       let a := self.1.swap ⟨0, h0⟩ ⟨n, hn⟩ |>.pop
-      ⟨⟨heapifyDown lt a ⟨0, by rwa [Array.size_pop, Array.size_swap, e, Nat.add_sub_cancel]⟩⟩,
+      ⟨⟨heapifyDown lt a ⟨0, by rwa [Array.size_pop, Array.size_swap, e]⟩⟩,
         by simp [size]⟩
     else
       ⟨⟨self.1.pop⟩, by simp [size]⟩

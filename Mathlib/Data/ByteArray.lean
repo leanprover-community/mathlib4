@@ -59,12 +59,12 @@ def String.toAsciiByteArray (s : String) : ByteArray :=
   let rec loop (p : Pos) (out : ByteArray) : ByteArray :=
     if h : s.atEnd p then out else
     let c := s.get p
-    have : utf8ByteSize s - next s p < utf8ByteSize s - p :=
+    have : utf8ByteSize s - (next s p).byteIdx < utf8ByteSize s - p.byteIdx :=
       Nat.sub_lt_sub_left (Nat.lt_of_not_le <| mt decide_eq_true h)
         (Nat.lt_add_of_pos_right (String.csize_pos _))
     loop (s.next p) (out.push c.toUInt8)
   loop 0 ByteArray.empty
-termination_by _ => utf8ByteSize s - p
+termination_by _ => utf8ByteSize s - p.byteIdx
 
 /-- Convert a byte slice into a string. This does not handle non-ASCII characters correctly:
 every byte will become a unicode character with codepoint < 256. -/

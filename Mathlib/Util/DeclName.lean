@@ -21,4 +21,4 @@ open Lean Elab Term
 elab "decl_name%" : term => do
   let some declName ← getDeclName?
     | throwError "invalid `decl_name!` macro, it must be used in definitions"
-  elabTerm (quote declName) none
+  elabTerm (quote declName : Term) none

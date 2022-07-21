@@ -25,6 +25,7 @@ lemma UInt64.val_eq_of_lt {a : Nat} : a < UInt64.size -> (ofNat a).val = a := Fi
 lemma USize.val_eq_of_lt {a : Nat} : a < USize.size -> (ofNat a).val = a := Fin.val_eq_of_lt
 
 set_option hygiene false
+/-- `genIntDeclars UInt8` generates a `CommRing UInt8` instance.  -/
 local macro "genIntDeclars" typeName:ident : command => do
   `(
     namespace $typeName
@@ -79,28 +80,36 @@ local macro "genIntDeclars" typeName:ident : command => do
         mul_zero := by simp [mul_def, zero_def]
         npow_zero' := fun _ => rfl
         npow_succ' := fun _ _ => rfl
-        mul_add a b c := by
+        right_distrib a b c := by
           simp only [mul_def, add_def]
           apply eq_of_val_eq
-          exact Semiring.mul_add a.val b.val c.val
-        add_mul a b c := by
+          exact right_distrib a.val b.val c.val
+        left_distrib a b c := by
           simp only [mul_def, add_def]
           apply eq_of_val_eq
-          exact Semiring.add_mul a.val b.val c.val
+          exact left_distrib a.val b.val c.val
+        natCast n := ⟨n⟩
+        natCast_zero := rfl
+        natCast_succ _ := congrArg mk (Fin.ofNat'_succ)
+        __ := inferInstanceAs (AddCommSemigroup $typeName)
+        __ := inferInstanceAs (Semigroup $typeName)
 
       instance : Ring $typeName where
-        sub_eq_add_neg := fun _ _ => congrArg mk (Ring.sub_eq_add_neg _ _)
+        sub_eq_add_neg := fun _ _ => congrArg mk (sub_eq_add_neg _ _)
         gsmul := fun x a => mk (Ring.gsmul x a.val)
-        gsmul_zero' := fun a => congrArg mk (Ring.gsmul_zero' a.val)
-        gsmul_succ' := fun x a => congrArg mk (Ring.gsmul_succ' x a.val)
+        gsmul_zero' := fun a => congrArg mk (SubNegMonoid.gsmul_zero' a.val)
+        gsmul_succ' := fun x a => congrArg mk (SubNegMonoid.gsmul_succ' x a.val)
         gsmul_neg' := fun x a => congrArg mk (SubNegMonoid.gsmul_neg' x a.val)
         add_left_neg := fun a => by apply eq_of_val_eq; simp [neg_def, add_def, zero_def]
+        intCast n := ⟨n⟩
+        intCast_ofNat _ := rfl
+        intCast_negSucc _ := rfl
 
       instance : CommRing $typeName where
         mul_comm := fun _ _ => by
           apply eq_of_val_eq
           simp [mul_def, zero_def]
-          exact CommSemiring.mul_comm _ _
+          exact mul_comm _ _
 
     end $typeName
   )

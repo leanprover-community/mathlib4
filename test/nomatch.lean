@@ -2,11 +2,10 @@ import Mathlib.Tactic.NoMatch
 
 example : False → α := fun.
 example : False → α := by intro.
-example : ¬ α := fun.
-example : ¬ α := by intro.
+example : ¬ False := fun.
+example : ¬ False := by intro.
+example : ¬ ¬ 0 = 0 := fun.
 
-example (h : False) : α := fun.
-example (h : False) : α := match with.
 example (h : False) : α := match h with.
 
 example (h : Nat → False) : Nat := match h 1 with.

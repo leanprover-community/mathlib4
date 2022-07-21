@@ -20,5 +20,5 @@ example (a b : C n) : a = b := by
   guard_target == a.c = b.c; admit
 
 example (f g : Nat × Nat → Nat) : f = g := by
-  ext (x, y)
+  ext ⟨x, y⟩
   guard_target == f (x, y) = g (x, y); admit

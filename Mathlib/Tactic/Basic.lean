@@ -23,6 +23,9 @@ macro "exfalso" : tactic => `(apply False.elim)
 
 macro "_" : tactic => `({})
 
+/-- We allow the `rfl` tactic to also use `Iff.rfl`. -/
+-- `rfl` was defined earlier in Lean4, at src/lean/init/tactics.lean
+-- Later we want to allow `rfl` to use all relations marked with an attribute.
 macro_rules | `(tactic| rfl) => `(tactic| exact Iff.rfl)
 
 /-- `change` is a synonym for `show`,
@@ -37,12 +40,19 @@ macro_rules
   | `(tactic| rwa $rws:rwRuleSeq $[$loc:location]?) =>
     `(tactic| rw $rws:rwRuleSeq $[$loc:location]?; assumption)
 
+/--
+`by_cases h : p` makes a case distinction on `p`,
+resulting in two subgoals `h : p ⊢` and `h : ¬ p ⊢`.
+-/
 macro "by_cases " h:ident ":" e:term : tactic =>
   `(cases Decidable.em $e with | inl $h => ?pos | inr $h => ?neg)
 
-set_option hygiene false in
+/--
+`by_cases p` makes a case distinction on `p`,
+resulting in two subgoals `h : p ⊢` and `h : ¬ p ⊢`.
+-/
 macro "by_cases " e:term : tactic =>
-  `(cases Decidable.em $e with | inl h => ?pos | inr h => ?neg)
+  `(by_cases $(mkIdent `h) : $e)
 
 macro (name := classical) "classical" : tactic =>
   `(have em := Classical.propDecidable)
@@ -184,13 +194,13 @@ elab "match_target" t:term : tactic  => do
 syntax (name := byContra) "by_contra" (ppSpace colGt ident)? : tactic
 macro_rules
   | `(tactic| by_contra) => `(tactic| (match_target Not _; intro))
-  | `(tactic| by_contra $e) => `(tactic| (match_target Not _; intro $e))
+  | `(tactic| by_contra $e) => `(tactic| (match_target Not _; intro $e:ident))
 macro_rules
   | `(tactic| by_contra) => `(tactic| (apply Decidable.byContradiction; intro))
-  | `(tactic| by_contra $e) => `(tactic| (apply Decidable.byContradiction; intro $e))
+  | `(tactic| by_contra $e) => `(tactic| (apply Decidable.byContradiction; intro $e:ident))
 macro_rules
   | `(tactic| by_contra) => `(tactic| (apply Classical.byContradiction; intro))
-  | `(tactic| by_contra $e) => `(tactic| (apply Classical.byContradiction; intro $e))
+  | `(tactic| by_contra $e) => `(tactic| (apply Classical.byContradiction; intro $e:ident))
 
 /--
 `iterate n tac` runs `tac` exactly `n` times.
@@ -209,7 +219,7 @@ macro_rules
   | `(tactic|iterate $seq:tacticSeq) =>
     `(tactic|try ($seq:tacticSeq); iterate $seq:tacticSeq)
   | `(tactic|iterate $n $seq:tacticSeq) =>
-    match n.toNat with
+    match n.1.toNat with
     | 0 => `(tactic| skip)
     | n+1 => `(tactic|($seq:tacticSeq); iterate $(quote n) $seq:tacticSeq)
 
@@ -238,8 +248,29 @@ elab "any_goals " seq:tacticSeq : tactic => do
         evalTactic seq
         mvarIdsNew := mvarIdsNew ++ (← getUnsolvedGoals)
         anySuccess := true
-      catch ex =>
+      catch _ =>
         mvarIdsNew := mvarIdsNew.push mvarId
   if not anySuccess then
     throwError "failed on all goals"
   setGoals mvarIdsNew.toList
+
+elab "fapply " e:term : tactic =>
+  evalApplyLikeTactic (Meta.apply (cfg := {newGoals := ApplyNewGoals.all})) e
+
+elab "eapply " e:term : tactic =>
+  evalApplyLikeTactic (Meta.apply (cfg := {newGoals := ApplyNewGoals.nonDependentOnly})) e
+
+/--
+Tries to solve the goal using a canonical proof of `True`, or the `rfl` tactic.
+Unlike `trivial` or `trivial'`, does not use the `contradiction` tactic.
+-/
+macro (name := triv) "triv" : tactic =>
+  `(tactic| first | exact trivial | rfl | fail "triv tactic failed")
+
+/-- This tactic clears all auxiliary declarations from the context. -/
+elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
+  let mut g ← getMainGoal
+  for ldec in ← getLCtx do
+    if ldec.isAuxDecl then
+      g ← Meta.tryClear g ldec.fvarId
+  replaceMainGoal [g]

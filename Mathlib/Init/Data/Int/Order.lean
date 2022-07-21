@@ -6,6 +6,7 @@ Authors: Jeremy Avigad
 The order relation on the integers.
 -/
 import Mathlib.Init.Data.Int.Basic
+import Mathlib.Algebra.Ring.Basic
 
 namespace Int
 
@@ -14,8 +15,9 @@ theorem nonneg_def {a : ℤ} : NonNeg a ↔ ∃ n : ℕ, a = n :=
 
 lemma NonNeg.elim {a : ℤ} : NonNeg a → ∃ n : ℕ, a = n := nonneg_def.1
 
-lemma nonneg_or_nonneg_neg (a : ℤ) : NonNeg a ∨ NonNeg (-a) :=
-match a with | ofNat n => Or.inl ⟨_⟩ | negSucc n => Or.inr ⟨_⟩
+lemma nonneg_or_nonneg_neg : ∀ (a : ℤ), NonNeg a ∨ NonNeg (-a)
+| ofNat _ => Or.inl ⟨_⟩
+| negSucc _ => Or.inr ⟨_⟩
 
 theorem le_def (a b : ℤ) : a ≤ b ↔ NonNeg (b - a) := Iff.refl _
 
@@ -40,7 +42,7 @@ protected theorem le_total (a b : ℤ) : a ≤ b ∨ b ≤ a :=
   (nonneg_or_nonneg_neg (b - a)).imp_right fun H => by
     rwa [(by simp [Int.add_comm] : -(b - a) = a - b)] at H
 
-@[simp] theorem ofNat_le {m n : ℕ} : (↑m : ℤ) ≤ ↑n ↔ m ≤ n :=
+@[simp, norm_cast] theorem ofNat_le {m n : ℕ} : (↑m : ℤ) ≤ ↑n ↔ m ≤ n :=
   ⟨fun h =>
     let ⟨k, hk⟩ := le.dest h
     Nat.le.intro $ Int.ofNat.inj $ (Int.ofNat_add m k).trans hk,
@@ -54,7 +56,7 @@ theorem eq_ofNat_of_zero_le {a : ℤ} (h : 0 ≤ a) : ∃ n : ℕ, a = n := by
   have t := le.dest_sub h; simp at t; exact t
 
 theorem eq_succ_of_zero_lt {a : ℤ} (h : 0 < a) : ∃ n : ℕ, a = n.succ :=
-  let ⟨n, (h : 1 + n = a)⟩ := le.dest h
+  let ⟨n, (h : ↑(1 + n) = a)⟩ := le.dest h
   ⟨n, by rw [Nat.add_comm] at h <;> exact h.symm⟩
 
 theorem lt_add_succ (a : ℤ) (n : ℕ) : a < a + Nat.succ n :=
@@ -67,8 +69,8 @@ theorem lt.dest {a b : ℤ} (h : a < b) : ∃ n : ℕ, a + Nat.succ n = b :=
   (le.dest h).imp fun n h => by
     rwa [Int.add_comm, Int.add_left_comm] at h
 
-@[simp] theorem ofNat_lt {n m : ℕ} : (↑n : ℤ) < ↑m ↔ n < m := by
-  rw [lt_iff_add_one_le, ← Int.ofNat_succ, ofNat_le]; rfl
+@[simp, norm_cast] theorem ofNat_lt {n m : ℕ} : (↑n : ℤ) < ↑m ↔ n < m := by
+  rw [lt_iff_add_one_le, ← Nat.cast_succ, ofNat_le]; rfl
 
 theorem ofNat_nonneg (n : ℕ) : 0 ≤ ofNat n := ⟨_⟩
 
@@ -79,13 +81,13 @@ protected theorem le_refl (a : ℤ) : a ≤ a :=
 
 protected theorem le_trans {a b c : ℤ} (h₁ : a ≤ b) (h₂ : b ≤ c) : a ≤ c :=
   let ⟨n, hn⟩ := le.dest h₁; let ⟨m, hm⟩ := le.dest h₂
-  le.intro (n + m) $ by rw [← hm, ← hn, Int.add_assoc, ofNat_add]
+  le.intro (n + m) $ by rw [← hm, ← hn, Int.add_assoc, Nat.cast_add]
 
 protected theorem le_antisymm {a b : ℤ} (h₁ : a ≤ b) (h₂ : b ≤ a) : a = b := by
   let ⟨n, hn⟩ := le.dest h₁; let ⟨m, hm⟩ := le.dest h₂
-  have := hn; rw [← hm, Int.add_assoc, ← Int.ofNat_add] at this
+  have := hn; rw [← hm, Int.add_assoc, ← Nat.cast_add] at this
   have := Int.ofNat.inj $ Int.add_left_cancel $ this.trans (Int.add_zero _).symm
-  rw [← hn, Nat.eq_zero_of_add_eq_zero_left this, Int.ofNat_zero, Int.add_zero a]
+  rw [← hn, Nat.eq_zero_of_add_eq_zero_left this, Nat.cast_zero, Int.add_zero a]
 
 protected theorem lt_irrefl (a : ℤ) : ¬a < a := fun H =>
   let ⟨n, hn⟩ := lt.dest H
@@ -98,13 +100,13 @@ protected theorem ne_of_lt {a b : ℤ} (h : a < b) : a ≠ b := fun e => by
   cases e; exact Int.lt_irrefl _ h
 
 theorem le_of_lt {a b : ℤ} (h : a < b) : a ≤ b :=
-  let ⟨n, hn⟩ := lt.dest h; le.intro _ hn
+  let ⟨_, hn⟩ := lt.dest h; le.intro _ hn
 
 protected theorem lt_iff_le_and_ne {a b : ℤ} : a < b ↔ a ≤ b ∧ a ≠ b := by
   refine ⟨fun h => ⟨le_of_lt h, Int.ne_of_lt h⟩, fun ⟨aleb, aneb⟩ => ?_⟩
   let ⟨n, hn⟩ := le.dest aleb
   have : n ≠ 0 := aneb.imp fun this' => by
-    rw [← hn, this', Int.ofNat_zero, Int.add_zero]
+    rw [← hn, this', Nat.cast_zero, Int.add_zero]
   exact lt.intro $ by rwa [← Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero this)] at hn
 
 theorem lt_succ (a : ℤ) : a < a + 1 := Int.le_refl (a + 1)
@@ -119,12 +121,12 @@ protected theorem add_lt_add_left {a b : ℤ} (h : a < b) (c : ℤ) : c + a < c 
 protected theorem mul_nonneg {a b : ℤ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b := by
   let ⟨n, hn⟩ := eq_ofNat_of_zero_le ha
   let ⟨m, hm⟩ := eq_ofNat_of_zero_le hb
-  rw [hn, hm, ← ofNat_mul]; exact ofNat_nonneg _
+  rw [hn, hm, ← Nat.cast_mul]; exact ofNat_nonneg _
 
 protected theorem mul_pos {a b : ℤ} (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by
   let ⟨n, hn⟩ := eq_succ_of_zero_lt ha
   let ⟨m, hm⟩ := eq_succ_of_zero_lt hb
-  rw [hn, hm, ← ofNat_mul]; exact ofNat_succ_pos _
+  rw [hn, hm, ← Nat.cast_mul]; exact ofNat_succ_pos _
 
 protected theorem zero_lt_one : (0 : ℤ) < 1 := ⟨_⟩
 
@@ -156,13 +158,11 @@ theorem le_natAbs {a : ℤ} : a ≤ natAbs a :=
     fun h => le_trans h (ofNat_zero_le _)
 
 theorem neg_succ_lt_zero (n : ℕ) : -[1+ n] < 0 :=
-  lt_of_not_ge $ fun h => by
-    let ⟨m, h⟩ := eq_ofNat_of_zero_le h
-    contradiction
+  lt_of_not_ge fun h => by rcases eq_ofNat_of_zero_le h with ⟨_, ⟨⟩⟩
 
 theorem eq_neg_succ_of_lt_zero : ∀ {a : ℤ}, a < 0 → ∃ n : ℕ, a = -[1+ n]
   | (n : ℕ), h => absurd h (not_lt_of_ge (ofNat_zero_le _))
-  | -[1+ n], h => ⟨n, rfl⟩
+  | -[1+ n], _ => ⟨n, rfl⟩
 
 protected theorem eq_neg_of_eq_neg {a b : ℤ} (h : a = -b) : b = -a := by
   rw [h, Int.neg_neg]
@@ -718,7 +718,7 @@ theorem exists_eq_neg_ofNat {a : ℤ} (H : a ≤ 0) : ∃ n : ℕ, a = -(n : ℤ
 
 theorem natAbs_of_nonneg {a : ℤ} (H : 0 ≤ a) : (natAbs a : ℤ) = a :=
   match a, eq_ofNat_of_zero_le H with
-  | _, ⟨n, rfl⟩ => rfl
+  | _, ⟨_, rfl⟩ => rfl
 
 theorem ofNat_natAbs_of_nonpos {a : ℤ} (H : a ≤ 0) : (natAbs a : ℤ) = -a := by
   rw [← natAbs_neg, natAbs_of_nonneg (Int.neg_nonneg_of_nonpos H)]
@@ -745,22 +745,22 @@ theorem sign_of_succ (n : Nat) : sign (Nat.succ n) = 1 := rfl
 
 theorem sign_eq_one_of_pos {a : ℤ} (h : 0 < a) : sign a = 1 :=
   match a, eq_succ_of_zero_lt h with
-  | _, ⟨n, rfl⟩ => rfl
+  | _, ⟨_, rfl⟩ => rfl
 
 theorem sign_eq_neg_one_of_neg {a : ℤ} (h : a < 0) : sign a = -1 :=
   match a, eq_neg_succ_of_lt_zero h with
-  | _, ⟨n, rfl⟩ => rfl
+  | _, ⟨_, rfl⟩ => rfl
 
 theorem eq_zero_of_sign_eq_zero : ∀ {a : ℤ}, sign a = 0 → a = 0
   | 0, _ => rfl
 
 theorem pos_of_sign_eq_one : ∀ {a : ℤ}, sign a = 1 → 0 < a
-  | (n + 1 : ℕ), _ => ofNat_lt.2 (Nat.succ_pos _)
+  | (_ + 1 : ℕ), _ => ofNat_lt.2 (Nat.succ_pos _)
 
 theorem neg_of_sign_eq_neg_one : ∀ {a : ℤ}, sign a = -1 → a < 0
-  | (n + 1 : ℕ), h => nomatch h
+  | (_ + 1 : ℕ), h => nomatch h
   | 0, h => nomatch h
-  | -[1+ n], _ => neg_succ_lt_zero _
+  | -[1+ _], _ => neg_succ_lt_zero _
 
 theorem sign_eq_one_iff_pos (a : ℤ) : sign a = 1 ↔ 0 < a :=
   ⟨pos_of_sign_eq_one, sign_eq_one_of_pos⟩
@@ -814,5 +814,9 @@ theorem eq_one_of_mul_eq_self_left {a b : ℤ} (Hpos : a ≠ 0) (H : b * a = a) 
 
 theorem eq_one_of_mul_eq_self_right {a b : ℤ} (Hpos : b ≠ 0) (H : b * a = b) : a = 1 :=
   Int.eq_of_mul_eq_mul_left Hpos $ by rw [Int.mul_one, H]
+
+lemma ofNat_natAbs_eq_of_nonneg : ∀ a : ℤ, 0 ≤ a → Int.ofNat (Int.natAbs a) = a
+| ofNat _, _ => rfl
+| -[1+ n], h => absurd (neg_succ_lt_zero n) (not_lt_of_ge h)
 
 end Int

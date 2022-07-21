@@ -21,23 +21,23 @@ example : Foo α := {
 -/
 
 macro_rules
-| `({ $[$srcs,* with]? $[$fields $[,]?]* $[: $ty?]? }) => do
+| `({ $[$srcs,* with]? $[$fields],* $[: $ty?]? }) => do
     let mut spreads := #[]
     let mut newFields := #[]
 
     for field in fields do
-      match field with
+      match field.1 with
         | `(structInstField| $name:ident := $arg) =>
           if name.getId.eraseMacroScopes == `__ then do
             spreads := spreads.push arg
           else
             newFields := newFields.push field
-        | `(structInstFieldAbbrev| $name:ident) =>
+        | `(structInstFieldAbbrev| $_:ident) =>
           newFields := newFields.push field
         | _ =>
           throwUnsupported
 
     if spreads.isEmpty then throwUnsupported
 
-    let srcs := (srcs.map (·.1)).getD #[] ++ spreads
-    `({ $srcs,* with $[$newFields,]* $[: $ty?]? })
+    let srcs := (srcs.map (·.getElems)).getD {} ++ spreads
+    `({ $srcs,* with $[$newFields],* $[: $ty?]? })

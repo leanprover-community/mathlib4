@@ -19,9 +19,6 @@ protected lemma not_lt_of_le {n m : ℕ} (h₁ : m ≤ n) : ¬ n < m
 
 protected lemma not_le_of_lt {n m : ℕ} : m < n → ¬ n ≤ m  := Nat.not_le_of_gt
 
-protected lemma ne_of_lt {a b : Nat} : a < b -> a ≠ b :=
-  fun h_lt h_eq => (Nat.not_le_of_lt h_lt : ¬b <= a) (h_eq ▸ Nat.le_refl b : b <= a)
-
 protected lemma lt_of_not_le {a b : ℕ} : ¬ a ≤ b → b < a := (Nat.lt_or_ge b a).resolve_right
 
 protected lemma le_of_not_lt {a b : ℕ} : ¬ a < b → b ≤ a := (Nat.lt_or_ge a b).resolve_left
@@ -38,10 +35,6 @@ protected lemma not_le {n m : ℕ} : ¬ n ≤ m ↔ m < n :=
 
 protected lemma lt_or_eq_of_le {n m : ℕ} (h : n ≤ m) : n < m ∨ n = m :=
 (Nat.lt_or_ge _ _).imp_right (Nat.le_antisymm h)
-
-lemma eq_of_mul_eq_mul_right {n m k : ℕ} (Hm : 0 < m) (H : n * m = k * m) : n = k :=
-by rw [Nat.mul_comm n m, Nat.mul_comm k m] at H
-   exact Nat.eq_of_mul_eq_mul_left Hm H
 
 theorem le_zero_iff {i : ℕ} : i ≤ 0 ↔ i = 0 :=
   ⟨Nat.eq_zero_of_le_zero, λ h => h ▸ le_refl i⟩
@@ -66,7 +59,7 @@ lemma sub_lt_self {a b : ℕ} (h₀ : 0 < a) (h₁ : a ≤ b) : b - a < b := by
 protected lemma add_sub_cancel' {n m : ℕ} (h : m ≤ n) : m + (n - m) = n :=
 by rw [Nat.add_comm, Nat.sub_add_cancel h]
 
-protected lemma sub_lt_sub_left : ∀ {k m n : ℕ} (H : k < m) (h : k < n), m - n < m - k
+protected lemma sub_lt_sub_left : ∀ {k m n : ℕ}, k < m → k < n → m - n < m - k
 | 0, m+1, n+1, _, _ => by rw [Nat.add_sub_add_right]; exact lt_succ_of_le (Nat.sub_le _ _)
 | k+1, m+1, n+1, h1, h2 => by
   rw [Nat.add_sub_add_right, Nat.add_sub_add_right]
@@ -102,6 +95,9 @@ protected def case_strong_rec_on {p : ℕ → Sort u} (a : ℕ)
   (hz : p 0) (hi : ∀ n, (∀ m, m ≤ n → p m) → p (succ n)) : p a :=
 Nat.strong_rec_on a fun | 0, _ => hz | n+1, ih => hi n (λ m w => ih m (lt_succ_of_le w))
 
+theorem le_pred_of_lt {m n : Nat} (h : m < n) : m ≤ n - 1 :=
+  Nat.sub_le_sub_right h 1
+
 /- div -/
 
 lemma mul_div_le (m n : ℕ) : n * (m / n) ≤ m := by
@@ -117,7 +113,7 @@ def Up (ub a i : ℕ) := i < a ∧ i < ub
 lemma Up.next {ub i} (h : i < ub) : Up ub (i+1) i := ⟨Nat.lt_succ_self _, h⟩
 
 lemma Up.WF (ub) : WellFounded (Up ub) :=
-  Subrelation.wf (h₂ := (measure (ub - .)).wf) @fun a i ⟨ia, iu⟩ => Nat.sub_lt_sub_left iu ia
+  Subrelation.wf (h₂ := (measure (ub - .)).wf) fun ⟨ia, iu⟩ => Nat.sub_lt_sub_left iu ia
 
 /-- A well-ordered relation for "upwards" induction on the natural numbers up to some bound `ub`. -/
 def upRel (ub : ℕ) : WellFoundedRelation Nat := ⟨Up ub, Up.WF ub⟩

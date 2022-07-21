@@ -83,11 +83,12 @@ open Std
 -- This function computes the map ``{`decl._auxLemma.1 ↦ `decl}``
 def constToSimpDeclMap (ctx : Simp.Context) : HashMap Name Name := Id.run do
   let mut map : HashMap Name Name := {}
-  for sls in [ctx.simpTheorems.pre, ctx.simpTheorems.post] do
-    for sl in ((elements sls).run #[]).2 do
-      if let some declName := sl.name? then
-        if let some auxDeclName := sl.proof.getAppFn.constName? then
-          map := map.insert auxDeclName declName
+  for sls' in ctx.simpTheorems do
+    for sls in [sls'.pre, sls'.post] do
+      for sl in ((elements sls).run #[]).2 do
+        if let some declName := sl.name? then
+          if let some auxDeclName := sl.proof.getAppFn.constName? then
+            map := map.insert auxDeclName declName
   return map
 
 def isEqnLemma? (n : Name) : Option Name :=
@@ -99,7 +100,7 @@ def isEqnLemma? (n : Name) : Option Name :=
 def heuristicallyExtractSimpTheoremsCore (ctx : Simp.Context) (constToSimpDecl : HashMap Name Name) (prf : Expr) : Array Name := Id.run do
   let mut cnsts : HashSet Name := {}
   for c in prf.getUsedConstants do
-    if ctx.simpTheorems.toUnfold.contains c then
+    if ctx.simpTheorems.isDeclToUnfold c then
       cnsts := cnsts.insert c
     else if ctx.congrTheorems.lemmas.contains c then
       cnsts := cnsts.insert c
@@ -113,7 +114,7 @@ def heuristicallyExtractSimpTheoremsCore (ctx : Simp.Context) (constToSimpDecl :
   heuristicallyExtractSimpTheoremsCore ctx (constToSimpDeclMap ctx) prf
 
 def decorateError (msg : MessageData) (k : MetaM α) : MetaM α := do
-  try k catch e => throw e
+  try k catch e => throw (.error e.getRef m!"{msg}\n{e.toMessageData}")
 
 def formatLemmas (lems : Array Name) : CoreM MessageData := do
   toMessageData <$> lems.mapM mkConstWithLevelParams
@@ -130,14 +131,16 @@ https://leanprover-community.github.io/mathlib_docs/notes.html#simp-normal%20for
     -- TODO: equation lemmas
     let ctx ← Simp.Context.mkDefault
     checkAllSimpTheoremInfos (← getConstInfo declName).type fun {lhs, rhs, isConditional, ..} => do
-    let ⟨lhs', prf1⟩ ← decorateError "simplify fails on left-hand side:" <| simp lhs ctx
+    let ⟨lhs', prf1, _⟩ ← decorateError "simplify fails on left-hand side:" <| simp lhs ctx
     let prf1_lems := heuristicallyExtractSimpTheorems ctx (prf1.getD (mkBVar 0))
     if prf1_lems.contains declName then return none
-    let ⟨rhs', prf2⟩ ← decorateError "simplify fails on right-hand side:" <| simp rhs ctx
+    let ⟨rhs', prf2, _⟩ ← decorateError "simplify fails on right-hand side:" <| simp rhs ctx
     let lhs'_eq_rhs' ← isSimpEq lhs' rhs' (whnfFirst := false)
     let lhs_in_nf ← isSimpEq lhs' lhs
     if lhs'_eq_rhs' then do
       if prf1.isNone then return none -- TODO: cannot detect used rfl-lemmas
+      if let .str _n "sizeOf_spec" := declName then
+        return none -- HACK: these often use rfl-lemmas but are not rfl
       let used_lemmas := heuristicallyExtractSimpTheorems ctx <|
         mkApp (prf1.getD (mkBVar 0)) (prf2.getD (mkBVar 0))
       return m!"simp can prove this:
@@ -232,10 +235,10 @@ Some commutativity lemmas are simp lemmas:"
   test := fun declName => withReducible do
     unless ← isSimpTheorem declName do return none
     let ty := (← getConstInfo declName).type
-    forallTelescopeReducing ty fun xs ty => do
+    forallTelescopeReducing ty fun _ ty => do
     let some (_, lhs, rhs) := ty.eq? | return none
     unless lhs.getAppFn.constName? == rhs.getAppFn.constName? do return none
-    let (mvars, bis, ty') ← forallMetaTelescopeReducing ty
+    let (_, _, ty') ← forallMetaTelescopeReducing ty
     let some (_, lhs', rhs') := ty'.eq? | return none
     unless ← isDefEq rhs lhs' do return none
     unless ← withNewMCtxDepth (isDefEq rhs lhs') do return none

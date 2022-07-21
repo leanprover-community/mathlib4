@@ -11,7 +11,7 @@ instance : Subsingleton (Fin 1) where
   allEq := fun ⟨0, _⟩ ⟨0, _⟩ => rfl
 
 /-- If you actually have an element of `Fin n`, then the `n` is always positive -/
-lemma Fin.size_positive : ∀ (x : Fin n), 0 < n
+lemma Fin.size_positive : Fin n → 0 < n
 | ⟨x, h⟩ =>
   match Nat.eq_or_lt_of_le (Nat.zero_le x) with
   | Or.inl h_eq => h_eq ▸ h
@@ -38,34 +38,21 @@ lemma Fin.val_eq_of_lt {n a : Nat} (h : a < n) : (Fin.ofNat' a (zero_lt_of_lt h)
   rw [Nat.mod_eq_of_lt]
   exact Nat.succ_lt_succ (Nat.zero_lt_succ _)
 
-lemma Fin.modn_def : ∀ (a : Fin n) (m : Nat),
-  a % m = Fin.mk ((a.val % m) % n) (Nat.mod_lt (a.val % m) (a.size_positive))
-| ⟨a, pa⟩, m => rfl
-
 lemma Fin.mod_def : ∀ (a m : Fin n),
   a % m = Fin.mk ((a.val % m.val) % n) (Nat.mod_lt (a.val % m.val) (a.size_positive))
-| ⟨a, pa⟩, ⟨m, pm⟩ => rfl
+| ⟨_, _⟩, ⟨_, _⟩ => rfl
 
 lemma Fin.add_def : ∀ (a b : Fin n),
   a + b = (Fin.mk ((a.val + b.val) % n) (Nat.mod_lt _ (a.size_positive)))
-| ⟨a, pa⟩, ⟨b, pb⟩ => rfl
+| ⟨_, _⟩, ⟨_, _⟩ => rfl
 
 lemma Fin.mul_def : ∀ (a b : Fin n),
   a * b = (Fin.mk ((a.val * b.val) % n) (Nat.mod_lt _ (a.size_positive)))
-| ⟨a, pa⟩, ⟨b, pb⟩ => rfl
+| ⟨_, _⟩, ⟨_, _⟩ => rfl
 
 lemma Fin.sub_def : ∀ (a b : Fin n),
   a - b = (Fin.mk ((a + (n - b)) % n) (Nat.mod_lt _ (a.size_positive)))
-| ⟨a, pa⟩, ⟨b, pb⟩ => rfl
-
-@[simp] lemma Fin.mod_eq (a : Fin n) : a % n = a := by
-  apply Fin.eq_of_val_eq
-  simp only [Fin.modn_def, Nat.mod_mod]
-  exact Nat.mod_eq_of_lt a.isLt
-
-@[simp] lemma Fin.mod_eq_val (a : Fin n) : a.val % n = a.val := by
-  simp only [Fin.modn_def, Nat.mod_mod]
-  exact Nat.mod_eq_of_lt a.isLt
+| ⟨_, _⟩, ⟨_, _⟩ => rfl
 
 theorem Fin.mod_eq_of_lt {a b : Fin n} (h : a < b) : a % b = a := by
   apply Fin.eq_of_val_eq
@@ -89,11 +76,11 @@ instance : OfNat (Fin n) a where
 @[simp] lemma Fin.ofNat'_zero : (Fin.ofNat' 0 h : Fin n) = 0 := rfl
 @[simp] lemma Fin.ofNat'_one : (Fin.ofNat' 1 h : Fin n) = 1 := rfl
 
-lemma Fin.ofNat'_succ : (Fin.ofNat' i.succ Fin.size_positive' : Fin n) = (Fin.ofNat' i Fin.size_positive' : Fin n) + 1 := by
-  revert n; exact fun
-    | n + 2, h => ext (by simp [Fin.ofNat', Fin.add_def])
-    | 1, h => Subsingleton.allEq _ _
-    | 0, h => Subsingleton.allEq _ _
+lemma Fin.ofNat'_succ : {n : Nat} → [Nonempty (Fin n)] →
+    (Fin.ofNat' i.succ Fin.size_positive' : Fin n) = (Fin.ofNat' i Fin.size_positive' : Fin n) + 1
+  | n + 2, h => ext (by simp [Fin.ofNat', Fin.add_def])
+  | 1, h => Subsingleton.allEq _ _
+  | 0, h => Subsingleton.allEq _ _
 
 instance : AddCommSemigroup (Fin n) where
   add_assoc _ _ _ := by
@@ -121,7 +108,7 @@ instance : CommSemigroup (Fin n) where
 
 theorem Fin.mod_lt : ∀ (i : Fin n) {m : Fin n}, (0 : Fin n) < m → (i % m) < m
 | ⟨a, aLt⟩, ⟨m, mLt⟩, hp =>  by
-    have zero_lt : (0 : Nat) < m := Fin.zero_def ▸ hp
+    have zero_lt : (0 : Nat) < m := @Fin.zero_def n _ ▸ hp
     have a_mod_lt : a % m < m := Nat.mod_lt _ zero_lt
     simp only [Fin.mod_def, LT.lt]
     rw [(Nat.mod_eq_of_lt (Nat.lt_trans a_mod_lt mLt) : a % m % n = a % m)]
@@ -212,6 +199,12 @@ instance : AddCommMonoid (Fin n) where
     simp [Fin.ofNat', Fin.add_def]
     exact congrArg (fun x => x % n) (Nat.add_comm (x * a.val) (a.val) ▸ Nat.succ_mul x a.val)
 
+instance : AddMonoidWithOne (Fin n) where
+  __ := inferInstanceAs (AddCommMonoid (Fin n))
+  natCast n := Fin.ofNat' n Fin.size_positive'
+  natCast_zero := rfl
+  natCast_succ _ := Fin.ofNat'_succ
+
 private theorem Fin.mul_one (a : Fin n) : a * 1 = a := by
   apply Fin.eq_of_val_eq
   simp only [Fin.mul_def, Fin.one_def]
@@ -245,14 +238,15 @@ private theorem Fin.mul_add (a b c : Fin n) : a * (b + c) = a * b + a * c := by
     simp [Fin.mul_def, Fin.add_def]
     generalize lhs : a.val * ((b.val + c.val) % n) % n = l
     rw [(Nat.mod_eq_of_lt a.isLt).symm, ← Nat.mul_mod] at lhs
-    rw [← lhs, Semiring.mul_add]
+    rw [← lhs, left_distrib]
 
 instance : CommSemiring (Fin n) where
   __ := inferInstanceAs (MonoidWithZero (Fin n))
   __ := inferInstanceAs (CommSemigroup (Fin n))
   __ := inferInstanceAs (AddCommMonoid (Fin n))
-  mul_add := Fin.mul_add
-  add_mul a b c := (by rw [mul_comm, Fin.mul_add, mul_comm c, mul_comm c])
+  __ := inferInstanceAs (AddMonoidWithOne (Fin n))
+  left_distrib := Fin.mul_add
+  right_distrib a b c := (by rw [mul_comm, Fin.mul_add, mul_comm c, mul_comm c])
 
 instance : Neg (Fin n) where
   neg a := ⟨(n - a) % n, Nat.mod_lt _ (lt_of_le_of_lt (Nat.zero_le _) a.isLt)⟩
@@ -271,36 +265,47 @@ private theorem Fin.add_left_neg (a : Fin n) : -a + a = 0 := by
     apply Fin.eq_of_val_eq
     simp [Fin.sub_def, (Nat.add_sub_cancel' (Nat.le_of_lt a.isLt)), Nat.mod_self]
 
-private theorem Fin.neg_mul_eq_neg_mul (a b : Fin n) : -(a * b) = (-a) * b :=
-  let this : Ring (Fin n) := {
-    sub_eq_add_neg, add_left_neg
-    gsmul_zero' := by simp [gsmul_rec, nsmul_rec]
-    gsmul_succ' := by simp [gsmul_rec, nsmul_rec]
-    gsmul_neg' := by simp [gsmul_rec, nsmul_rec]
-  }
-  _root_.neg_mul_eq_neg_mul a b
+def Fin.ofInt' : ℤ → Fin n
+  | (i : ℕ) => i
+  | (Int.negSucc i) => -↑(i + 1 : ℕ)
 
-instance : Ring (Fin n) where
+instance : AddGroupWithOne (Fin n) where
+  __ := inferInstanceAs (AddMonoidWithOne (Fin n))
+  gsmul_zero' := by simp [gsmul_rec, nsmul_rec]
+  gsmul_succ' := by simp [gsmul_rec, nsmul_rec, -Int.ofNat_eq_cast]
+  gsmul_neg' := by simp [gsmul_rec, nsmul_rec, -Int.ofNat_eq_cast]
   sub_eq_add_neg := Fin.sub_eq_add_neg
-  gsmul (x : Int) (a : Fin n) : Fin n := Fin.ofInt'' x * a
-  gsmul_zero' := fun _ => by
-    apply Fin.eq_of_val_eq
-    simp only [Fin.ofNat', Fin.ofInt'', Fin.mul_def, Nat.zero_mod, Nat.zero_mul, Fin.zero_def]
-  gsmul_succ' k a := by simp only [Fin.ofInt'', Fin.ofNat'_succ, add_mul, one_mul, add_comm a]
-  gsmul_neg' k a := by simp only [Fin.ofInt'', Fin.neg_mul_eq_neg_mul]
-  add_left_neg a := by
-    rw [add_comm, ← Fin.sub_eq_add_neg]
-    apply Fin.eq_of_val_eq
-    simp [Fin.sub_def, (Nat.add_sub_cancel' (Nat.le_of_lt a.isLt)), Nat.mod_self]
+  add_left_neg := Fin.add_left_neg
+  intCast := Fin.ofInt'
+  intCast_ofNat _ := rfl
+  intCast_negSucc _ := rfl
 
 instance : CommRing (Fin n) where
-  __ := inferInstanceAs (CommSemigroup (Fin n))
-  __ := inferInstanceAs (Ring (Fin n))
+  __ := inferInstanceAs (AddGroupWithOne (Fin n))
+  __ := inferInstanceAs (CommSemiring (Fin n))
 
 lemma Fin.gt_wf : WellFounded (fun a b : Fin n => b < a) :=
-  Subrelation.wf (@fun a i h => ⟨h, i.2⟩) (invImage (fun i => i.1) (Nat.upRel n)).wf
+  Subrelation.wf (fun {_ i} h => ⟨h, i.2⟩) (invImage (fun i => i.1) (Nat.upRel n)).wf
 
 /-- A well-ordered relation for "upwards" induction on `Fin n`. -/
 def Fin.upRel (n : ℕ) : WellFoundedRelation (Fin n) := ⟨_, gt_wf⟩
+
+lemma Fin.le_refl (f : Fin n) : f ≤ f := Nat.le_refl _
+lemma Fin.le_trans (a b c : Fin n) : a ≤ b → b ≤ c → a ≤ c := Nat.le_trans
+lemma Fin.lt_iff_le_not_le (a b : Fin n) : a < b ↔ a ≤ b ∧ ¬b ≤ a := Nat.lt_iff_le_not_le
+lemma Fin.le_antisymm (a b : Fin n) : a ≤ b → b ≤ a → a = b := by
+  intro h1 h2
+  apply Fin.eq_of_val_eq
+  exact Nat.le_antisymm h1 h2
+
+lemma Fin.le_total (a b : Fin n) : a ≤ b ∨ b ≤ a := Nat.le_total _ _
+
+instance : LinearOrder (Fin n) where
+  le_refl := Fin.le_refl
+  le_trans := Fin.le_trans
+  lt_iff_le_not_le := Fin.lt_iff_le_not_le
+  le_antisymm := Fin.le_antisymm
+  le_total := Fin.le_total
+  decidable_le := inferInstance
 
 end
