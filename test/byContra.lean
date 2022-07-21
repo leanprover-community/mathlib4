@@ -29,3 +29,7 @@ example : 1 < 2 := by
 example (p : Prop) (bar : False) : ¬ ¬ ¬ ¬ ¬ ¬ P := by
   by_contra' foo : ¬ ¬ ¬ P; -- normalises to ¬ P, as does ¬ (goal).
   exact bar
+
+example (p : Prop) (bar : False) : ¬ ¬ ¬ ¬ ¬ ¬ P := by
+  by_contra' : ¬ ¬ ¬ P;
+  exact bar -- my code creates a nameless goal `: ¬P`
