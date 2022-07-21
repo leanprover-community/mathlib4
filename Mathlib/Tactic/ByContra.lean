@@ -48,3 +48,9 @@ macro_rules
         -- tactic failed: <goal type> and <type of this> are not definitionally equal
         have $e : $y := by { push_neg; exact this };
         clear this ) )
+  | `(tactic| by_contra' : $y) => `(tactic|
+       (by_contra';
+        -- if the below `exact` call fails then this tactic should fail with the message
+        -- tactic failed: <goal type> and <type of this> are not definitionally equal
+        have this : $y := by { push_neg; exact this };
+      ) )
