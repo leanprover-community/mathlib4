@@ -16,11 +16,14 @@ open Lean Meta Elab.Tactic Parser.Tactic
 open Lean.Expr
 open Lean.Elab.Term
 
-theorem not_not_eq (h : p = p') : (¬¬p) = p' := h ▸ (propext not_not)
-theorem not_and_eq (h : p = p')    (h' : (¬q) = q') : (¬ (p ∧ q)) = (p' → q') := h ▸ h' ▸ propext not_and
-theorem not_or_eq  (h : (¬p) = p') (h' : (¬q) = q') : (¬ (p ∨ q)) = (p' ∧ q') := h ▸ h' ▸ propext not_or_distrib
-theorem not_forall_eq {s s' : α → Prop} (h : ∀x, (¬s x) = s' x) : (¬ ∀x, s x) = (∃ x, s' x) := funext h ▸ propext not_forall
-theorem not_exists_eq {s s' : α → Prop} (h : ∀x, (¬s x) = s' x) : (¬ ∃x, s x) = (∀ x, s' x) := forall_congr h ▸ propext not_exists
+variable {s : α → Prop}
+
+theorem not_not_eq : (¬ ¬ p) = p := propext not_not
+theorem not_and_eq : (¬ (p ∧ q)) = (p → ¬ q) := propext not_and
+theorem not_or_eq : (¬ (p ∨ q)) = (¬ p ∧ ¬ q) := propext not_or_distrib
+theorem not_forall_eq : (¬ ∀ x, s x) = (∃ x, ¬ s x) := propext not_forall
+theorem not_exists_eq : (¬ ∃ x, s x) = (∀ x, ¬ s x) := propext not_exists
+theorem not_implies_eq : (¬ (p → q)) = (p ∧ ¬ q) := propext not_imp
 
 /-- This function is used to instantiate the bounded var of a binder and give it a local declaration
 as a free var.\
@@ -43,6 +46,30 @@ if no one is suitable, leave the negation in place and pushes possibles negation
 both subexressions
 - In other cases, the function just returns the expression and the reflexive equality
 -/
+partial def pushNegTransformStep (expr : Expr) : MetaM (Simp.Result) := do
+  let expr ← whnfR expr
+  match expr.not? with
+  | some expr' =>
+    match expr'.getAppFnArgs with
+    | (`Not, #[e]) =>
+      return { expr := e, proof? := some (← mkAppM ``not_not_eq #[e]) }
+    | (`And, #[p, q]) =>
+      return { expr := forallE `_ p (mkNot q) default,
+               proof? := some (← mkAppM ``not_and_eq #[p, q])}
+    | (`Or, #[p, q]) =>
+      return { expr := mkAnd (mkNot p) (mkNot q),
+               proof? := some (← mkAppM ``not_or_eq #[p]) }
+    | (`Exists, #[_, e]) =>
+      match e with
+        | (Expr.lam n typ bo bi) => do
+          return { expr := forallE n typ (← mkAppM `Not #[bo]) bi,
+                   proof? := some (← mkAppM ``not_exists_eq #[e]) }
+        | _ => return { expr := expr, proof? := none } -- should we throw an error instead?
+    | _ => return { expr := expr, proof? := none }
+  | none => return { expr := expr, proof? := none }
+
+#exit
+
 partial def pushNegation (expr : Expr) : MetaM (Expr × Expr) := do
   match expr with
   | Expr.forallE .. =>
@@ -177,3 +204,5 @@ example : (¬ ∀(x : α), p' x) → (∃(x : α), ¬ p' x) :=by
   intro h
   push_neg at h
   exact h
+
+example (p : Bool) : decide (¬ ¬ p) = p := by push_neg
