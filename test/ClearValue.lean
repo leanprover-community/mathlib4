@@ -1,4 +1,5 @@
 import Mathlib.Tactic.ClearValue
+import Mathlib.Data.Fin.Basic
 
 example {a b : Nat} (h : a = b) : a = b := by
   let c := a + b
@@ -19,3 +20,9 @@ example {a b : Nat} (h : a = b) : a = b := by
   fail_if_success clear_value _i h
   clear_value h
   assumption
+
+def t' {m: Nat} (a: Fin m) : let n := m; ∀ (b : Fin n), a = b -> True := by
+  intros _n b
+  fail_if_success clear_value _n
+  intros _
+  trivial

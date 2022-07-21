@@ -28,7 +28,7 @@ elab (name := clear_value) "clear_value" hs:(ppSpace colGt ident)* : tactic  => 
       let .letE v t d b _ ← getMVarType goal'
         | throwErrorAt syn "Cannot clear the body of {name}. It is not a local definition."
       let e := mkForall v .default t b
-      _ ← inferType e <|>
+      _ ← guard (← isTypeCorrect e) <|>
         throwErrorAt syn "Cannot clear the body of {name}. The resulting goal is not type correct."
       let g ← withMVarContext goal' (mkFreshExprMVar e)
 
