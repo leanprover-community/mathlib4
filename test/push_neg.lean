@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Alice Laroche
 -/
 
-import Mathlib.Tactic.Pushneg
+import Mathlib.Tactic.PushNeg
 
 variable {α : Type} {p q : Prop} {p' q' : α → Prop}
 

@@ -26,7 +26,7 @@ theorem not_exists_eq {s s' : α → Prop} (h : ∀x, (¬s x) = s' x) : (¬ ∃x
 as a free var.\
 We want this to be able to push negations inside binders.
 -/
-def binderTelescope1 (e : Expr) (f : Expr → Expr → MetaM α) : MetaM α := do
+def withLocalFromBinder (e : Expr) (f : Expr → Expr → MetaM α) : MetaM α := do
 match e with
 | Expr.lam n t b d => withLocalDecl n d t fun x => f x (instantiate1 b x)
 | Expr.forallE n t b d => withLocalDecl n d t fun x => f x (instantiate1 b x)
@@ -45,14 +45,14 @@ both subexressions
 -/
 partial def pushNegation (expr : Expr) : MetaM (Expr × Expr) := do
 match expr with
-| Expr.forallE n t b _ =>
-  binderTelescope1 expr fun x e => do
+| Expr.forallE .. =>
+  withLocalFromBinder expr fun x e => do
     let (eNew, eqProof) ← pushNegation e
     if eqProof.isAppOf ``Eq.refl
     then return (expr, ← mkEqRefl expr)
     else return (←mkForallFVars #[x] eNew, ← mkForallCongr (←mkLambdaFVars #[x] eqProof))
-| Expr.lam n t b _ =>
-  binderTelescope1 expr fun x e => do
+| Expr.lam .. =>
+  withLocalFromBinder expr fun x e => do
     let (eNew, eqProof) ← pushNegation e
     if eqProof.isAppOf ``Eq.refl
     then return (expr, ← mkEqRefl expr)
@@ -77,8 +77,8 @@ match expr with
         let eNew := mkAnd p q
         let eqProof ← mkAppOptM ``not_or_eq #[none, none,none, none, eqProof₁, eqProof₂]
         return (eNew, eqProof)
-      | (`Exists, #[t, e]) =>
-        binderTelescope1 e fun x e => do
+      | (`Exists, #[_, e]) =>
+        withLocalFromBinder e fun x e => do
           let (eNew, eqProof) ← pushNegation (mkNot e)
           let eNew ← mkForallFVars #[x] eNew
           let eqProof ← mkLambdaFVars #[x] eqProof
@@ -86,7 +86,7 @@ match expr with
           return (eNew, eqProof)
       | _ => match expr' with
         | Expr.forallE _ t _ _ =>
-          binderTelescope1 expr' fun x e => do
+          withLocalFromBinder expr' fun x e => do
             let (eNew, eqProof) ← pushNegation (mkNot e)
             let eNew ← mkLambdaFVars #[x] eNew
             let level ← getLevel (←inferType eNew)
@@ -114,7 +114,7 @@ then
   let mvarId' ← replaceTargetEq (← getMainGoal) eNew eqProof
   replaceMainGoal [mvarId']
 else
-  throwError "Pushneg couldn't find a negation to push"
+  logInfo "push_neg couldn't find a negation to push"
 
 def pushNegLocalDecl (fvarId : FVarId): TacticM Unit := do
 let target ← getLocalDecl fvarId
@@ -124,7 +124,7 @@ then
   let mvarId' ← replaceLocalDecl (← getMainGoal) fvarId  eNew eqProof
   replaceMainGoal [mvarId'.mvarId]
 else
-  throwError "Pushneg couldn't find a negation to push"
+  logInfo "push_neg couldn't find a negation to push"
 
 
 /--
@@ -148,10 +148,32 @@ using say `push_neg at h h' ⊢` as usual.
 -/
 elab "push_neg " loc:(ppSpace location)? : tactic => do
 match loc with
-| none => throwError "Pushneg couldn't find a negation to push"
+| none => pushnegTarget
 | some loc =>
-    let loc := expandOptLocation loc
+    let loc := expandLocation loc
     withLocation loc
       pushNegLocalDecl
-      pushnegTarget
-      (fun _ => throwError "Pushneg couldn't find a negation to push")
+      (logInfo "here")
+      (fun _ => logInfo "push_neg couldn't find a negation to push")
+
+variable {α : Type} {p q : Prop} {p' q' : α → Prop}
+
+example : (¬p ∧ ¬q) → ¬(p ∨ q) := by
+  intro h
+  push_neg
+  exact h
+
+example : ¬(p ∧ q) → (p → ¬q) :=by
+  intro h
+  push_neg at h
+  exact h
+
+example : (∀(x : α), ¬ p' x) → ¬ ∃(x : α), p' x:= by
+  intro h
+  push_neg
+  exact h
+
+example : (¬ ∀(x : α), p' x) → (∃(x : α), ¬ p' x) :=by
+  intro h
+  push_neg at h
+  exact h
