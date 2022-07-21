@@ -5,6 +5,7 @@ Authors: Arthur Paulino
 -/
 
 import Lean
+import Mathlib.Util.Expr
 
 namespace Mathlib.Tactic
 
@@ -21,10 +22,29 @@ def getNameAndFVarId [Monad m] [MonadError m] (ctx : LocalContext) (stx : Syntax
   else
     throwErrorAt stx "not an identifier"
 
-/-- Updates the current `LocalContext` with a transformation function in `MetaM`. -/
+/-- Updates the current `LocalContext` with a map function in `MetaM`. -/
 def modifyLocalContext (fLCtx : LocalContext → MetaM LocalContext) : TacticM Unit :=
   liftMetaTactic fun mvarId => do
     let newGoal ← mkFreshExprMVarAt (← fLCtx (← getLCtx)) (← getLocalInstances)
       (← getMVarType mvarId) .syntheticOpaque (← getMVarTag mvarId)
     assignExprMVar mvarId newGoal
     return [newGoal.mvarId!]
+
+/-- Updates the current goal with a `Expr` map function in `MetaM`. -/
+def modifyGoal (fExpr : Expr → MetaM Expr) : TacticM Unit :=
+  liftMetaTactic fun mvarId => do
+    let newGoal ← mkFreshExprMVarAt (← getLCtx) (← getLocalInstances)
+      (← fExpr (← getMVarType mvarId)) .syntheticOpaque (← getMVarTag mvarId)
+    assignExprMVar mvarId newGoal
+    return [newGoal.mvarId!]
+
+/-- Renames bound variables on a hypothesis. -/
+def renameBVarHyp (old new : Name) (hyp : FVarId) : TacticM Unit :=
+  modifyLocalContext fun ctx =>
+    return ctx.modifyLocalDecl hyp fun decl =>
+      decl.setType $ decl.type.renameBVar old new
+
+/-- Renames bound variables on the goal. -/
+def renameBVarGoal (old new : Name) : TacticM Unit :=
+  modifyGoal fun e =>
+    return e.renameBVar old new
