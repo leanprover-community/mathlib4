@@ -43,11 +43,8 @@ macro_rules
   | `(tactic| by_contra') => `(tactic| (by_contra $(mkIdent `this); push_neg at this))
   | `(tactic| by_contra' $e) => `(tactic| (by_contra $e; push_neg at ($e)))
   | `(tactic| by_contra' $e : $y) => `(tactic|
-       ( by_contra';
-         -- if the below `exact` call fails then this tactic should fail with the message
-         -- tactic failed: <goal type> and <type of this> are not definitionally equal
-         have $e : $y := by { push_neg;
-         trace e;
-         exact this };
-         clear this
-       ))
+       (by_contra';
+        -- if the below `exact` call fails then this tactic should fail with the message
+        -- tactic failed: <goal type> and <type of this> are not definitionally equal
+        have $e : $y := by { push_neg; exact this };
+        clear this ) )
