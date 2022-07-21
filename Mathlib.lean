@@ -68,6 +68,7 @@ import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Core
+import Mathlib.Tactic.Expect
 import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.GuardGoalNums
