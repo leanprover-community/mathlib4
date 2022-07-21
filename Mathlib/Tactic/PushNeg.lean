@@ -27,10 +27,10 @@ as a free var.\
 We want this to be able to push negations inside binders.
 -/
 def withLocalFromBinder (e : Expr) (f : Expr → Expr → MetaM α) : MetaM α := do
-match e with
-| Expr.lam n t b d => withLocalDecl n d t fun x => f x (instantiate1 b x)
-| Expr.forallE n t b d => withLocalDecl n d t fun x => f x (instantiate1 b x)
-| _ => throwError "binder expected{indentExpr e}"
+  match e with
+  | Expr.lam n t b d => withLocalDecl n d t fun x => f x (instantiate1 b x)
+  | Expr.forallE n t b d => withLocalDecl n d t fun x => f x (instantiate1 b x)
+  | _ => throwError "binder expected{indentExpr e}"
 
 /-- This function takes an expression and create the equivalent expression by pushing negations
 and a proof of the equality
@@ -44,87 +44,87 @@ both subexressions
 - In other cases, the function just returns the expression and the reflexive equality
 -/
 partial def pushNegation (expr : Expr) : MetaM (Expr × Expr) := do
-match expr with
-| Expr.forallE .. =>
-  withLocalFromBinder expr fun x e => do
-    let (eNew, eqProof) ← pushNegation e
-    if eqProof.isAppOf ``Eq.refl
-    then return (expr, ← mkEqRefl expr)
-    else return (←mkForallFVars #[x] eNew, ← mkForallCongr (←mkLambdaFVars #[x] eqProof))
-| Expr.lam .. =>
-  withLocalFromBinder expr fun x e => do
-    let (eNew, eqProof) ← pushNegation e
-    if eqProof.isAppOf ``Eq.refl
-    then return (expr, ← mkEqRefl expr)
-    else return (←mkLambdaFVars #[x] eNew, ← mkFunExt (←mkLambdaFVars #[x] eqProof))
-| Expr.app e₁ e₂ =>
-   match expr.not? with
-   | some expr' =>
-      match expr'.getAppFnArgs with
-      | (`Not, #[e]) =>
-        let (eNew, eqProof) ← pushNegation e
-        let eqProof ← mkAppOptM ``not_not_eq #[none, none, eqProof]
-        return (eNew, eqProof)
-      | (`And, #[p, q]) =>
-        let (p, eqProof₁) ← pushNegation p
-        let (q, eqProof₂) ← pushNegation (mkNot q)
-        let eNew := mkForall `_ default p q
-        let eqProof ← mkAppOptM ``not_and_eq #[none, none,none, none, eqProof₁, eqProof₂]
-        return (eNew, eqProof)
-      | (`Or, #[p, q]) =>
-        let (p, eqProof₁) ← pushNegation (mkNot p)
-        let (q, eqProof₂) ← pushNegation (mkNot q)
-        let eNew := mkAnd p q
-        let eqProof ← mkAppOptM ``not_or_eq #[none, none,none, none, eqProof₁, eqProof₂]
-        return (eNew, eqProof)
-      | (`Exists, #[_, e]) =>
-        withLocalFromBinder e fun x e => do
-          let (eNew, eqProof) ← pushNegation (mkNot e)
-          let eNew ← mkForallFVars #[x] eNew
-          let eqProof ← mkLambdaFVars #[x] eqProof
-          let eqProof ← mkAppOptM ``not_exists_eq #[none, none, none, eqProof]
+  match expr with
+  | Expr.forallE .. =>
+    withLocalFromBinder expr fun x e => do
+      let (eNew, eqProof) ← pushNegation e
+      if eqProof.isAppOf ``Eq.refl
+      then return (expr, ← mkEqRefl expr)
+      else return (←mkForallFVars #[x] eNew, ← mkForallCongr (←mkLambdaFVars #[x] eqProof))
+  | Expr.lam .. =>
+    withLocalFromBinder expr fun x e => do
+      let (eNew, eqProof) ← pushNegation e
+      if eqProof.isAppOf ``Eq.refl
+      then return (expr, ← mkEqRefl expr)
+      else return (←mkLambdaFVars #[x] eNew, ← mkFunExt (←mkLambdaFVars #[x] eqProof))
+  | Expr.app e₁ e₂ =>
+     match expr.not? with
+     | some expr' =>
+        match expr'.getAppFnArgs with
+        | (`Not, #[e]) =>
+          let (eNew, eqProof) ← pushNegation e
+          let eqProof ← mkAppOptM ``not_not_eq #[none, none, eqProof]
           return (eNew, eqProof)
-      | _ => match expr' with
-        | Expr.forallE _ t _ _ =>
-          withLocalFromBinder expr' fun x e => do
+        | (`And, #[p, q]) =>
+          let (p, eqProof₁) ← pushNegation p
+          let (q, eqProof₂) ← pushNegation (mkNot q)
+          let eNew := mkForall `_ default p q
+          let eqProof ← mkAppOptM ``not_and_eq #[none, none,none, none, eqProof₁, eqProof₂]
+          return (eNew, eqProof)
+        | (`Or, #[p, q]) =>
+          let (p, eqProof₁) ← pushNegation (mkNot p)
+          let (q, eqProof₂) ← pushNegation (mkNot q)
+          let eNew := mkAnd p q
+          let eqProof ← mkAppOptM ``not_or_eq #[none, none,none, none, eqProof₁, eqProof₂]
+          return (eNew, eqProof)
+        | (`Exists, #[_, e]) =>
+          withLocalFromBinder e fun x e => do
             let (eNew, eqProof) ← pushNegation (mkNot e)
-            let eNew ← mkLambdaFVars #[x] eNew
-            let level ← getLevel (←inferType eNew)
-            let eNew := mkAppN (mkConst ``Exists [level]) #[t, eNew]
+            let eNew ← mkForallFVars #[x] eNew
             let eqProof ← mkLambdaFVars #[x] eqProof
-            let eqProof ← mkAppOptM ``not_forall_eq #[none, none, none, eqProof]
+            let eqProof ← mkAppOptM ``not_exists_eq #[none, none, none, eqProof]
             return (eNew, eqProof)
-        | _ =>
-          let (eNew, eqProof) ← pushNegation expr'
-          let eqProof ← mkCongr (←mkEqRefl (mkConst `Not)) eqProof
-          return (mkNot eNew, eqProof)
-   | _ =>
-      let (e₁', eqProof₁) ← pushNegation e₁
-      let (e₂', eqProof₂) ← pushNegation e₂
-      let eqProof ← mkCongr eqProof₁ eqProof₂
-      return (mkApp e₁' e₂', eqProof)
-| _ => return (expr, ←mkEqRefl expr)
+        | _ => match expr' with
+          | Expr.forallE _ t _ _ =>
+            withLocalFromBinder expr' fun x e => do
+              let (eNew, eqProof) ← pushNegation (mkNot e)
+              let eNew ← mkLambdaFVars #[x] eNew
+              let level ← getLevel (←inferType eNew)
+              let eNew := mkAppN (mkConst ``Exists [level]) #[t, eNew]
+              let eqProof ← mkLambdaFVars #[x] eqProof
+              let eqProof ← mkAppOptM ``not_forall_eq #[none, none, none, eqProof]
+              return (eNew, eqProof)
+          | _ =>
+            let (eNew, eqProof) ← pushNegation expr'
+            let eqProof ← mkCongr (←mkEqRefl (mkConst `Not)) eqProof
+            return (mkNot eNew, eqProof)
+     | _ =>
+        let (e₁', eqProof₁) ← pushNegation e₁
+        let (e₂', eqProof₂) ← pushNegation e₂
+        let eqProof ← mkCongr eqProof₁ eqProof₂
+        return (mkApp e₁' e₂', eqProof)
+  | _ => return (expr, ←mkEqRefl expr)
 
 
 def pushnegTarget : TacticM Unit := do
-let target ← getMainTarget
-let (eNew, eqProof) ← pushNegation target
-if !eqProof.isAppOf ``Eq.refl
-then
-  let mvarId' ← replaceTargetEq (← getMainGoal) eNew eqProof
-  replaceMainGoal [mvarId']
-else
-  logInfo "push_neg couldn't find a negation to push"
+  let target ← getMainTarget
+  let (eNew, eqProof) ← pushNegation target
+  if !eqProof.isAppOf ``Eq.refl
+  then
+    let mvarId' ← replaceTargetEq (← getMainGoal) eNew eqProof
+    replaceMainGoal [mvarId']
+  else
+    logInfo "push_neg couldn't find a negation to push"
 
 def pushNegLocalDecl (fvarId : FVarId): TacticM Unit := do
-let target ← getLocalDecl fvarId
-let (eNew, eqProof) ← pushNegation target.type
-if ! eqProof.isAppOf ``Eq.refl
-then
-  let mvarId' ← replaceLocalDecl (← getMainGoal) fvarId  eNew eqProof
-  replaceMainGoal [mvarId'.mvarId]
-else
-  logInfo "push_neg couldn't find a negation to push"
+  let target ← getLocalDecl fvarId
+  let (eNew, eqProof) ← pushNegation target.type
+  if ! eqProof.isAppOf ``Eq.refl
+  then
+    let mvarId' ← replaceLocalDecl (← getMainGoal) fvarId  eNew eqProof
+    replaceMainGoal [mvarId'.mvarId]
+  else
+    logInfo "push_neg couldn't find a negation to push"
 
 
 /--
@@ -147,14 +147,14 @@ at every assumption and the goal using `push_neg at *` or at selected assumption
 using say `push_neg at h h' ⊢` as usual.
 -/
 elab "push_neg " loc:(ppSpace location)? : tactic => do
-match loc with
-| none => pushnegTarget
-| some loc =>
-    let loc := expandLocation loc
-    withLocation loc
-      pushNegLocalDecl
-      (logInfo "here")
-      (fun _ => logInfo "push_neg couldn't find a negation to push")
+  match loc with
+  | none => pushnegTarget
+  | some loc =>
+      let loc := expandLocation loc
+      withLocation loc
+        pushNegLocalDecl
+        (logInfo "here")
+        (fun _ => logInfo "push_neg couldn't find a negation to push")
 
 variable {α : Type} {p q : Prop} {p' q' : α → Prop}
 
