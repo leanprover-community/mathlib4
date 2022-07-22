@@ -755,4 +755,73 @@ Example: if `f : ℕ → list ℕ → β`, `List.mapWithComplement f [1, 2, 3]` 
 def mapWithComplement {α β} (f : α → List α → β) : List α → List β :=
   mapWithPrefixSuffix fun pref a suff => f a (pref ++ suff)
 
+/--
+Auxiliary function for `List.compareWith`
+-/
+def compareWithAux (f : α → α → Ordering) : List α → List α → Ordering
+  | x::xs, y::ys =>
+    let c := f x y
+    if c == Ordering.eq then
+      compareWithAux f xs ys
+    else c
+  | [], [] => Ordering.eq
+  | _, [] => Ordering.gt
+  | [], _ => Ordering.lt
+
+/--
+`List.compareWith` compares two lists `l₁` and `l₂` using the function `compare` from
+the `Ord` typeclass, which means that the type of the list's elements have to have
+an instance of this typeclass. `List.comparewith` returns a contructor from the
+`Ordering` inductive type.
+
+Examples:
+```
+[1, 5].compareWith [1, 8] = Ordering.lt
+[1, 10].compareWith  [1, 10] = Ordering.eq
+[1, 11].compareWith  [1, 13] = Ordering.gt
+[1, 5].compareWith [1] = Ordering.lt
+[1].compareWith [1, 8] = Ordering.gt
+```
+-/
+def compareWith [Ord α] (l₁ l₂ : List α) : Ordering :=
+  compareWithAux compare l₁ l₂
+
+/--
+`List.compareWith'` functions exactly like `List.compareWith`, except you can
+provide your own custom function for it to use as a comparer, of type
+`α → α → Ordering`.
+-/
+def compareWith' (f : α → α → Ordering) (l₁ l₂ : List α) : Ordering :=
+  compareWithAux f l₁ l₂
+
+/--
+`List.sum` sums all of the elements of of list `l`, whose elements
+have instances of `Add` and `OfNat`.
+-/
+def sum [Add α] [OfNat α (nat_lit 0)] (l : List α) : α :=
+  l.foldl (.+.) 0
+
+/--
+`List.sumBy` sums the results of `f` mapped to each element of `l`. The return type of `f`
+must have instances of `Add` and `OfNat`.
+-/
+def sumBy [Add β] [OfNat β (nat_lit 0)] (l : List α) (f : α → β) : β :=
+  l.map f |>.sum
+
+/--
+`List.average` computes the average of all the elements in the
+given list.
+-/
+def average [Add α] [HDiv α Nat α] [OfNat α (nat_lit 0)] : List α -> α
+  | [] => 0
+  | xs => xs.sum / xs.length
+
+/--
+`List.average` computes the average of the given list after
+applying `p` to each element.
+-/
+def averageBy [Add α] [HDiv α Nat α] [OfNat α (nat_lit 0)] (p: β → α) : List β → α
+  | [] => 0
+  | xs => xs.sumBy p / xs.length
+
 end List
