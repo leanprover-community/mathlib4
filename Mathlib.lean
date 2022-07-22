@@ -43,6 +43,7 @@ import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Set
 import Mathlib.Init.SetNotation
+import Mathlib.Lean.Deriving.Optics
 import Mathlib.Lean.Exception
 import Mathlib.Lean.Expr
 import Mathlib.Lean.Expr.Basic
