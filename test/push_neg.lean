@@ -47,6 +47,10 @@ example (x y : β) (h : y < x) : ¬(x ≤ y) := by
   push_neg
   exact h
 
+example (x y : α) (h : x = y) : ¬ (x ≠ y) := by
+  push_neg
+  exact h
+
 example : ¬∃ (y : Unit), (y ≠ ()) := by
   push_neg
   simp

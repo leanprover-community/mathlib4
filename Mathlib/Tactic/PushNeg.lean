@@ -21,6 +21,7 @@ theorem not_or_eq : (¬ (p ∨ q)) = (¬ p ∧ ¬ q) := propext not_or_distrib
 theorem not_forall_eq : (¬ ∀ x, s x) = (∃ x, ¬ s x) := propext not_forall
 theorem not_exists_eq : (¬ ∃ x, s x) = (∀ x, ¬ s x) := propext not_exists
 theorem not_implies_eq : (¬ (p → q)) = (p ∧ ¬ q) := propext not_imp
+theorem not_ne_eq (x y : α) : (¬ (x ≠ y)) = (x = y) := ne_eq x y ▸ not_not_eq _
 
 variable {β : Type u} [LinearOrder β]
 theorem not_le_eq (a b : β) : (¬ (a ≤ b)) = (b < a) := propext not_le
@@ -42,6 +43,8 @@ def transformNegationStep (e : Expr) : SimpM Simp.Step := do
       return mkSimpStep (mkAnd (mkNot p) (mkNot q)) (←mkAppM ``not_or_eq #[p, q])
   | (``Eq, #[_ty, e₁, e₂]) =>
       return Simp.Step.visit { expr := ← mkAppM ``Ne #[e₁, e₂] }
+  | (``Ne, #[_ty, e₁, e₂]) =>
+      return mkSimpStep (← mkAppM ``Eq #[e₁, e₂]) (← mkAppM ``not_ne_eq #[e₁, e₂])
   | (``LE.le, #[_ty, _inst, e₁, e₂]) =>
       return mkSimpStep (← mkAppM ``LT.lt #[e₂, e₁]) (← mkAppM ``not_le_eq #[e₁, e₂])
   | (``LT.lt, #[_ty, _inst, e₁, e₂]) =>
