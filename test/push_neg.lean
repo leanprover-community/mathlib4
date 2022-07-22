@@ -31,7 +31,9 @@ example : (¬ ∀(x : α), p' x) → (∃(x : α), ¬ p' x) :=by
 
 example (p : Bool) : decide (¬ ¬ p) = p := by
   push_neg
-  sorry
+  induction p
+  simp
+  simp
 
 example : ((fun x => x+x) 1) = 2 := by
   push_neg
@@ -39,24 +41,24 @@ example : ((fun x => x+x) 1) = 2 := by
 
 example : ¬ ¬ p = p := by
   push_neg
-  sorry
+  rfl
 
-example (x y : β) : ¬(x ≤ y) := by
+example (x y : β) (h : y < x) : ¬(x ≤ y) := by
   push_neg
-  sorry
+  exact h
 
-example : ¬∃ (y : Nat), (y = 1) := by
+example : ¬∃ (y : Unit), (y ≠ ()) := by
   push_neg
-  sorry
+  simp
 
 example (h : ∃ y : Nat, ¬(y=1)): ¬∀ (y : Nat), (y = 1) := by
   push_neg
   exact h
 
-example (x y : β) : ¬¬¬ (x ≤ y) := by
+example (x y : β) (h : y < x) : ¬¬¬ (x ≤ y) := by
   push_neg
-  sorry
+  exact h
 
 example (x y : β) (h₁ : ¬¬¬(x < y)) (h₂ : ¬∃ (x y : Nat), x = y) : ¬ ∀(x y : Nat), x = y := by
   push_neg at *
-  sorry
+  exact ⟨0, 1, by simp⟩
