@@ -66,3 +66,7 @@ example (x y : β) (h : y < x) : ¬¬¬ (x ≤ y) := by
 example (x y : β) (h₁ : ¬¬¬(x < y)) (h₂ : ¬∃ (x y : Nat), x = y) : ¬ ∀(x y : Nat), x = y := by
   push_neg at *
   exact ⟨0, 1, by simp⟩
+
+example (x y : β) (h₁ : ¬¬¬(x < y)) (h₂ : ¬∃ (x y : Nat), x = y) : ¬ ∀(x y : Nat), x = y := by
+  push_neg at h₁ h₂ ⊢
+  exact ⟨0, 1, by simp⟩
