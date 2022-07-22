@@ -17,6 +17,7 @@ variable (p q : Prop) (s : α → Prop)
 
 theorem not_not_eq : (¬ ¬ p) = p := propext not_not
 theorem not_and_eq : (¬ (p ∧ q)) = (p → ¬ q) := propext not_and
+theorem not_and_distrib_eq : (¬ (p ∧ q)) = (¬ p ∨ ¬ q) := propext not_and_distrib
 theorem not_or_eq : (¬ (p ∨ q)) = (¬ p ∧ ¬ q) := propext not_or_distrib
 theorem not_forall_eq : (¬ ∀ x, s x) = (∃ x, ¬ s x) := propext not_forall
 theorem not_exists_eq : (¬ ∃ x, s x) = (∀ x, ¬ s x) := propext not_exists
@@ -27,18 +28,20 @@ variable {β : Type u} [LinearOrder β]
 theorem not_le_eq (a b : β) : (¬ (a ≤ b)) = (b < a) := propext not_le
 theorem not_lt_eq (a b : β) : (¬ (a < b)) = (b ≤ a) := propext not_lt
 
-def mkSimpStep (e : Expr) (pf : Expr) : Simp.Step :=
-  Simp.Step.visit { expr := e, proof? := some pf }
-
 /-- Push negations at the top level of the current expression. -/
 def transformNegationStep (e : Expr) : SimpM Simp.Step := do
+  let mkSimpStep (e : Expr) (pf : Expr) : Simp.Step :=
+    Simp.Step.visit { expr := e, proof? := some pf }
+  let distrib_mode ← getBoolOption `push_neg.use_distrib
   let e_whnf ← whnfR e
   let some ex := e_whnf.not? | return Simp.Step.visit { expr := e }
   match ex.getAppFnArgs with
   | (``Not, #[e]) =>
       return mkSimpStep e (←mkAppM ``not_not_eq #[e])
   | (``And, #[p, q]) =>
-      return mkSimpStep (.forallE `_ p (mkNot q) default) (←mkAppM ``not_and_eq #[p, q])
+      match distrib_mode with
+      | false => return mkSimpStep (.forallE `_ p (mkNot q) default) (←mkAppM ``not_and_eq #[p, q])
+      | true  => return mkSimpStep (mkOr (mkNot p) (mkNot q)) (←mkAppM ``not_and_distrib_eq #[p, q])
   | (``Or, #[p, q]) =>
       return mkSimpStep (mkAnd (mkNot p) (mkNot q)) (←mkAppM ``not_or_eq #[p, q])
   | (``Eq, #[_ty, e₁, e₂]) =>

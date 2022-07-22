@@ -275,4 +275,7 @@ elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
       g ← Meta.tryClear g ldec.fvarId
   replaceMainGoal [g]
 
-register_simp_attr push_neg "push_neg attribute"
+register_option push_neg.use_distrib : Bool :=
+  { defValue := false
+    group := ""
+    descr := "Make push_neg use `not_and_distrib` rather than the default `not_and`." }
