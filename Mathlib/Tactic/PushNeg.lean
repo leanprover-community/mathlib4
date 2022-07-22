@@ -51,16 +51,15 @@ def transformNegationStep (e : Expr) : SimpM Simp.Step := do
       return mkSimpStep (← mkAppM ``LE.le #[e₂, e₁]) (← mkAppM ``not_lt_eq #[e₁, e₂])
   | (``Exists, #[_, e]) =>
       match e with
-        | (Expr.lam n typ bo bi) => do
-          return mkSimpStep (.forallE n typ (← mkAppM `Not #[bo]) bi)
-            (← mkAppM ``not_exists_eq #[e])
-        | _ => return Simp.Step.visit { expr := e }
+      | (Expr.lam n typ bo bi) => do
+        return mkSimpStep (.forallE n typ (← mkAppM `Not #[bo]) bi) (← mkAppM ``not_exists_eq #[e])
+      | _ => return Simp.Step.visit { expr := e }
   | _ => match ex with
-          | .forallE name ty body binfo => do
-            let body' : Expr := .lam name ty (mkNot body) binfo
-            let body'' : Expr := .lam name ty body binfo
-            return mkSimpStep (← mkAppM ``Exists #[body']) (← mkAppM ``not_forall_eq #[body''])
-          | _ => return Simp.Step.visit { expr := e }
+         | .forallE name ty body binfo => do
+           let body' : Expr := .lam name ty (mkNot body) binfo
+           let body'' : Expr := .lam name ty body binfo
+           return mkSimpStep (← mkAppM ``Exists #[body']) (← mkAppM ``not_forall_eq #[body''])
+         | _ => return Simp.Step.visit { expr := e }
 
 /-- Recursively push negations at the top level of the current expression. This is needed
 to handle e.g. triple negation. -/
