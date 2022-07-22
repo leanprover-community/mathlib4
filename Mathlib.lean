@@ -2,7 +2,11 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
+import Mathlib.Control.Basic
+import Mathlib.Control.Optics
+import Mathlib.Control.Profunctor
 import Mathlib.Control.Random
+import Mathlib.Control.Traversable
 import Mathlib.Control.Writer
 import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
@@ -24,6 +28,7 @@ import Mathlib.Data.Prod
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
+import Mathlib.Data.Sum
 import Mathlib.Data.UInt
 import Mathlib.Data.UnionFind
 import Mathlib.Init.Algebra.Functions
