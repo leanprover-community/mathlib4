@@ -274,3 +274,5 @@ elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
     if ldec.isAuxDecl then
       g ← Meta.tryClear g ldec.fvarId
   replaceMainGoal [g]
+
+register_simp_attr push_neg "push_neg attribute"
