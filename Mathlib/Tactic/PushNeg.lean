@@ -32,14 +32,13 @@ theorem not_lt_eq (a b : β) : (¬ (a < b)) = (b ≤ a) := propext not_lt
 def transformNegationStep (e : Expr) : SimpM Simp.Step := do
   let mkSimpStep (e : Expr) (pf : Expr) : Simp.Step :=
     Simp.Step.visit { expr := e, proof? := some pf }
-  let distrib_mode ← getBoolOption `push_neg.use_distrib
   let e_whnf ← whnfR e
   let some ex := e_whnf.not? | return Simp.Step.visit { expr := e }
   match ex.getAppFnArgs with
   | (``Not, #[e]) =>
-      return mkSimpStep e (←mkAppM ``not_not_eq #[e])
+      return mkSimpStep e (← mkAppM ``not_not_eq #[e])
   | (``And, #[p, q]) =>
-      match distrib_mode with
+      match ← getBoolOption `push_neg.use_distrib with
       | false => return mkSimpStep (.forallE `_ p (mkNot q) default) (←mkAppM ``not_and_eq #[p, q])
       | true  => return mkSimpStep (mkOr (mkNot p) (mkNot q)) (←mkAppM ``not_and_distrib_eq #[p, q])
   | (``Or, #[p, q]) =>
