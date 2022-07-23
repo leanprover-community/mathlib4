@@ -29,7 +29,7 @@ theorem not_le_eq (a b : β) : (¬ (a ≤ b)) = (b < a) := propext not_le
 theorem not_lt_eq (a b : β) : (¬ (a < b)) = (b ≤ a) := propext not_lt
 
 /-- Push negations at the top level of the current expression. -/
-def transformNegationStep (e : Expr) : SimpM Simp.Step := do
+def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
   let mkSimpStep (e : Expr) (pf : Expr) : Simp.Step :=
     Simp.Step.visit { expr := e, proof? := some pf }
   let e_whnf ← whnfR e
@@ -52,22 +52,25 @@ def transformNegationStep (e : Expr) : SimpM Simp.Step := do
   | (``LT.lt, #[_ty, _inst, e₁, e₂]) =>
       return mkSimpStep (← mkAppM ``LE.le #[e₂, e₁]) (← mkAppM ``not_lt_eq #[e₁, e₂])
   | (``Exists, #[_, .lam n typ bo bi]) =>
-    return mkSimpStep (.forallE n typ (← mkAppM `Not #[bo]) bi) (← mkAppM ``not_exists_eq #[e])
+      return mkSimpStep (.forallE n typ (mkNot bo) bi)
+                        (← mkAppM ``not_exists_eq #[.lam n typ bo bi])
+  | (``Exists, #[_, _]) =>
+      return none
   | _ => match ex with
          | .forallE name ty body binfo => do
            let body' : Expr := .lam name ty (mkNot body) binfo
            let body'' : Expr := .lam name ty body binfo
            return mkSimpStep (← mkAppM ``Exists #[body']) (← mkAppM ``not_forall_eq #[body''])
-         | _ => return Simp.Step.visit { expr := e }
+         | _ => return none
 
 /-- Recursively push negations at the top level of the current expression. This is needed
 to handle e.g. triple negation. -/
 partial def transformNegation (e : Expr) : SimpM Simp.Step := do
-  let Simp.Step.visit r₁ ← transformNegationStep e | unreachable!
+  let Simp.Step.visit r₁ ← transformNegationStep e | return Simp.Step.visit { expr := e }
   match r₁.proof? with
   | none => return Simp.Step.visit r₁
   | some _ => do
-      let Simp.Step.visit r₂ ← transformNegation r₁.expr | unreachable!
+      let Simp.Step.visit r₂ ← transformNegation r₁.expr | return Simp.Step.visit r₁
       return Simp.Step.visit (← Simp.mkEqTrans r₁ r₂)
 
 /-- Execute main loop of `push_neg` at the main goal. -/
