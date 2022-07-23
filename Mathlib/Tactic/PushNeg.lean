@@ -51,11 +51,8 @@ def transformNegationStep (e : Expr) : SimpM Simp.Step := do
       return mkSimpStep (← mkAppM ``LT.lt #[e₂, e₁]) (← mkAppM ``not_le_eq #[e₁, e₂])
   | (``LT.lt, #[_ty, _inst, e₁, e₂]) =>
       return mkSimpStep (← mkAppM ``LE.le #[e₂, e₁]) (← mkAppM ``not_lt_eq #[e₁, e₂])
-  | (``Exists, #[_, e]) =>
-      match e with
-      | (Expr.lam n typ bo bi) => do
-        return mkSimpStep (.forallE n typ (← mkAppM `Not #[bo]) bi) (← mkAppM ``not_exists_eq #[e])
-      | _ => return Simp.Step.visit { expr := e }
+  | (``Exists, #[_, .lam n typ bo bi]) =>
+    return mkSimpStep (.forallE n typ (← mkAppM `Not #[bo]) bi) (← mkAppM ``not_exists_eq #[e])
   | _ => match ex with
          | .forallE name ty body binfo => do
            let body' : Expr := .lam name ty (mkNot body) binfo
