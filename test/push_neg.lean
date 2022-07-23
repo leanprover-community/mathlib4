@@ -31,7 +31,8 @@ example : (¬ ∀(x : α), p' x) → (∃(x : α), ¬ p' x) :=by
 
 example (p : Bool) : decide (¬ ¬ p) = p := by
   push_neg
-  induction p
+  guard_target == decide p = p
+  cases p <;> rfl
   simp
   simp
 
