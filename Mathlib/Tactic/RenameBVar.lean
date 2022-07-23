@@ -6,7 +6,6 @@ Authors: Arthur Paulino, Patrick Massot
 
 import Lean
 import Mathlib.Util.Tactic
-import Mathlib.Util.Expr
 
 namespace Mathlib.Tactic
 
