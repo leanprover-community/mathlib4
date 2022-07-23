@@ -38,6 +38,7 @@ example (p : Bool) : decide (¬ ¬ p) = p := by
 
 example : ((fun x => x+x) 1) = 2 := by
   push_neg
+  guard_target == 1 + 1 = 2
   simp
 
 example : ¬ ¬ p = p := by
