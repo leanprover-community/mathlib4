@@ -11,7 +11,6 @@ namespace Mathlib.Tactic
 open Lean Elab.Tactic
 
 syntax "replace " haveDecl : tactic
-syntax (name := replace') "replace " Parser.Term.haveIdLhs' : tactic
 
 /--
 Acts like `have`, but removes a hypothesis with the same name as
@@ -87,6 +86,8 @@ h: β
 ⊢ goal
 ```
 -/
+syntax (name := replace') "replace " Parser.Term.haveIdLhs' : tactic
+
 elab_rules : tactic
 | `(tactic| replace $[$n:ident $bs*]? $[: $t:term]?) => withMainContext do
     let (mvar1, mvar2) ← haveLetCore (← getMainGoal) n (bs.getD #[]) t false
