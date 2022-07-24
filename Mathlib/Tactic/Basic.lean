@@ -260,6 +260,13 @@ elab "fapply " e:term : tactic =>
 elab "eapply " e:term : tactic =>
   evalApplyLikeTactic (Meta.apply (cfg := {newGoals := ApplyNewGoals.nonDependentOnly})) e
 
+/--
+Tries to solve the goal using a canonical proof of `True`, or the `rfl` tactic.
+Unlike `trivial` or `trivial'`, does not use the `contradiction` tactic.
+-/
+macro (name := triv) "triv" : tactic =>
+  `(tactic| first | exact trivial | rfl | fail "triv tactic failed")
+
 /-- This tactic clears all auxiliary declarations from the context. -/
 elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
   let mut g ← getMainGoal

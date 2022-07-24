@@ -169,12 +169,6 @@ end Term
 
 namespace Tactic
 
-/- E -/ syntax tactic " <;> " "[" tactic,* "]" : tactic
-
-end Tactic
-
-namespace Tactic
-
 /- N -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
 /- N -/ syntax (name := applyWith) "apply " term " with " term : tactic
 /- E -/ syntax (name := mapply) "mapply " term : tactic
@@ -259,7 +253,6 @@ end Conv
 /- M -/ syntax (name := clean) "clean " term : tactic
 /- B -/ syntax (name := refineStruct) "refine_struct " term : tactic
 /- M -/ syntax (name := matchHyp) "match_hyp " ("(" &"m" " := " term ") ")? ident " : " term : tactic
-/- E -/ syntax (name := guardHypNums) "guard_hyp_nums " num : tactic
 /- E -/ syntax (name := guardTags) "guard_tags" (ppSpace ident)* : tactic
 /- E -/ syntax (name := guardProofTerm) "guard_proof_term " tactic:51 " => " term : tactic
 /- E -/ syntax (name := failIfSuccess?) "fail_if_success? " str ppSpace tacticSeq : tactic
@@ -273,7 +266,6 @@ end Conv
   (" with " binderIdent)? : tactic
 /- M -/ syntax (name := guardExprEq') "guard_expr " term:51 " = " term : tactic -- definitional equality
 /- M -/ syntax (name := guardTarget') "guard_target" " = " term : tactic -- definitional equality
-/- E -/ syntax (name := triv) "triv" : tactic
 /- M -/ syntax (name := extractGoal) "extract_goal" (ppSpace ident)?
   (" with" (ppSpace (colGt ident))*)? : tactic
 /- M -/ syntax (name := extractGoal!) "extract_goal!" (ppSpace ident)?
@@ -347,9 +339,6 @@ syntax termList := " [" term,* "]"
 /- E -/ syntax (name := byContra') "by_contra'" (ppSpace ident)? Term.optType : tactic
 
 /- E -/ syntax (name := renameVar) "rename_var " ident " → " ident (ppSpace location)? : tactic
-
-syntax swapVarArg := ident " ↔ "? ident
-/- E -/ syntax (name := swapVar) "swap_var " (colGt swapVarArg),+ : tactic
 
 /- M -/ syntax (name := assocRw) "assoc_rw " rwRuleSeq (ppSpace location)? : tactic
 
