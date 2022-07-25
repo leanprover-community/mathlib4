@@ -5,6 +5,7 @@ import Mathlib.Logic.Function.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.List.Defs
+import Mathlib.Data.Subtype
 import Lean
 
 open Function
@@ -208,11 +209,11 @@ lemma bind_map {g : α → List β} {f : β → γ} :
 /-! ### length -/
 
 
--- @[simp] lemma length_tail (l : list α) : length (tail l) = length l - 1 :=
+-- @[simp] lemma length_tail (l : List α) : length (tail l) = length l - 1 :=
 -- by cases l; refl
 
 -- -- TODO(Leo): cleanup proof after arith dec proc
--- @[simp] lemma length_drop : ∀ (i : ℕ) (l : list α), length (drop i l) = length l - i
+-- @[simp] lemma length_drop : ∀ (i : ℕ) (l : List α), length (drop i l) = length l - i
 -- | 0 l         := rfl
 -- | (succ i) [] := eq.symm (nat.zero_sub (succ i))
 -- | (succ i) (x::l) := calc
@@ -894,7 +895,7 @@ theorem erasep_append_right :
 | (x::xs), l₂, h => by
   simp [(forall_mem_cons.1 h).1, erasep_append_right _ (forall_mem_cons.1 h).2]
 
--- theorem erasep_sublist (l : List α) : l.erasep p <+ l :=
+-- theorem erasep_subList (l : List α) : l.erasep p <+ l :=
 -- by rcases exists_or_eq_self_of_erasep p l with h | ⟨c, l₁, l₂, h₁, h₂, h₃, h₄⟩;
 --    [rw h, {rw [h₄, h₃], simp}]
 
@@ -907,16 +908,16 @@ theorem erasep_subset (l : List α) : l.erasep p ⊆ l := fun a => by
     | Or.inl h => exact Or.inl h
     | Or.inr h => exact Or.inr $ mem_cons_of_mem _ h
 -- the proof was:
--- (erasep_sublist l).subset
+-- (erasep_subList l).subset
 
--- theorem sublist.erasep {l₁ l₂ : List α} (s : l₁ <+ l₂) : l₁.erasep p <+ l₂.erasep p :=
+-- theorem subList.erasep {l₁ l₂ : List α} (s : l₁ <+ l₂) : l₁.erasep p <+ l₂.erasep p :=
 -- begin
 --   induction s,
---   case List.sublist.slnil { refl },
---   case List.sublist.cons : l₁ l₂ a s IH {
+--   case List.subList.slnil { refl },
+--   case List.subList.cons : l₁ l₂ a s IH {
 --     by_cases h : p a; simp [h],
---     exacts [IH.trans (erasep_sublist _), IH.cons _ _ _] },
---   case List.sublist.cons2 : l₁ l₂ a s IH {
+--     exacts [IH.trans (erasep_subList _), IH.cons _ _ _] },
+--   case List.subList.cons2 : l₁ l₂ a s IH {
 --     by_cases h : p a; simp [h],
 --     exacts [s, IH.cons2 _ _ _] }
 -- end
@@ -1005,15 +1006,15 @@ theorem erase_append_right {a : α} {l₁ : List α} (l₂ : List α) (h : a ∉
   rw [erase_eq_erasep, erase_eq_erasep, erasep_append_right]
   intros b h' h''; rw [h''] at h; exact h h'
 
--- theorem erase_sublist (a : α) (l : List α) : l.erase a <+ l :=
--- by rw erase_eq_erasep; apply erasep_sublist
+-- theorem erase_subList (a : α) (l : List α) : l.erase a <+ l :=
+-- by rw erase_eq_erasep; apply erasep_subList
 
 theorem erase_subset (a : α) (l : List α) : l.erase a ⊆ l := by
   rw [erase_eq_erasep]; apply erasep_subset
---(erase_sublist a l).subset
+--(erase_subList a l).subset
 
--- theorem sublist.erase (a : α) {l₁ l₂ : List α} (h : l₁ <+ l₂) : l₁.erase a <+ l₂.erase a :=
--- by simp [erase_eq_erasep]; exact sublist.erasep h
+-- theorem subList.erase (a : α) {l₁ l₂ : List α} (h : l₁ <+ l₂) : l₁.erase a <+ l₂.erase a :=
+-- by simp [erase_eq_erasep]; exact subList.erasep h
 
 theorem mem_of_mem_erase {a b : α} {l : List α} : a ∈ l.erase b → a ∈ l :=
   @erase_subset _ _ _ _ _
@@ -1140,9 +1141,9 @@ lemma disjoint_of_disjoint_append_left_right (d : disjoint (l₁ ++ l₂) l) : d
 -- lemma disjoint_take_drop {m n : ℕ} (hl : l.nodup) (h : m ≤ n) : disjoint (l.take m) (l.drop n) :=
 -- begin
 --   induction l generalizing m n,
---   case list.nil : m n
+--   case List.nil : m n
 --   { simp },
---   case list.cons : x xs xs_ih m n
+--   case List.cons : x xs xs_ih m n
 --   { cases m; cases n; simp only [disjoint_cons_left, mem_cons_iff, disjoint_cons_right, drop,
 --                                  true_or, eq_self_iff_true, not_true, false_and,
 --                                  disjoint_nil_left, take],
@@ -1180,7 +1181,7 @@ end union
   cases l₁ <;> simp [List.inter, mem_filter]
 
 /--
-List.prod satisfies a specification of cartesian product on lists.
+List.prod satisfies a specification of cartesian product on Lists.
 -/
 theorem product_spec (xs : List α) (ys : List β) (x : α) (y : β) :
   (x, y) ∈ product xs ys <-> (x ∈ xs ∧ y ∈ ys) := by
@@ -1238,5 +1239,61 @@ theorem leftpad_suffix (n : ℕ) (a : α) (l : List α) : isSuffix l (leftpad n 
 by
   simp only [isSuffix, leftpad]
   exact Exists.intro (repeat' a (n - length l)) rfl
+
+/-! ### map for partial functions -/
+
+/-- Partial map. If `f : ∀ a, p a → β` is a partial function defined on
+  `a : α` satisfying `p`, then `pmap f l h` is essentially the same as `map f l`
+  but is defined only when all members of `l` satisfy `p`, using the proof
+  to apply `f`. -/
+@[simp] def pmap {p : α → Prop} (f : ∀ a, p a → β) : ∀ l : List α, (∀ a ∈ l, p a) → List β
+| [],   _ => []
+| a::l, H => f a (forall_mem_cons.1 H).1 :: pmap f l (forall_mem_cons.1 H).2
+
+/-- "Attach" the proof that the elements of `l` are in `l` to produce a new List
+  with the same elements but in the type `{x // x ∈ l}`. -/
+def attach (l : List α) : List {x // x ∈ l} := pmap Subtype.mk l (λ _ => id)
+
+@[simp] theorem pmap_eq_map (p : α → Prop) (f : α → β) (l : List α) (H) :
+  @pmap _ _ p (λ a _ => f a) l H = map f l :=
+by induction l with
+  | nil => rfl
+  | cons x l ih => simp only [*, pmap, map]
+
+theorem pmap_congr {p q : α → Prop} {f : ∀ a, p a → β} {g : ∀ a, q a → β}
+  (l : List α) {H₁ H₂} (h : ∀ a h₁ h₂, f a h₁ = g a h₂) :
+  pmap f l H₁ = pmap g l H₂ :=
+by induction l with
+  | nil => rfl
+  | cons x l ih => rw [pmap, pmap, h, ih]
+
+theorem map_pmap {p : α → Prop} (g : β → γ) (f : ∀ a, p a → β)
+  (l H) : map g (pmap f l H) = pmap (λ a h => g (f a h)) l H :=
+by induction l with
+  | nil => rfl
+  | cons x l ih => simp only [*, pmap, map]
+#check Subtype.exists
+theorem pmap_map {p : β → Prop} (g : ∀ b, p b → γ) (f : α → β)
+  (l H) : pmap g (map f l) H = pmap (λ a h => g (f a) h) l (λ a h => H _ (mem_map_of_mem _ h)) :=
+by induction l with
+  | nil => rfl
+  | cons x l ih => simp only [*, pmap, map]
+
+theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β)
+  (l H) : pmap f l H = l.attach.map (λ x => f x.1 (H _ x.2)) :=
+by rw [attach, map_pmap]; exact pmap_congr l (λ a h₁ _ => rfl)
+
+theorem attach_map_val (l : List α) : l.attach.map Subtype.val = l :=
+by rw [attach, map_pmap]; exact (pmap_eq_map _ _ _ _).trans (map_id l)
+
+@[simp] theorem mem_attach (l : List α) : ∀ x, x ∈ l.attach := by
+  rintro ⟨a, h⟩
+  have := mem_map.1 (by rw [attach_map_val]; exact h);
+  rcases this with ⟨⟨_, _⟩, m, rfl⟩
+  exact m
+
+@[simp] theorem mem_pmap {p : α → Prop} {f : ∀ a, p a → β}
+  {l H b} : b ∈ pmap f l H ↔ ∃ (a : α) (h : a ∈ l), f a (H a h) = b :=
+by simp only [pmap_eq_map_attach, mem_map, mem_attach, true_and, Subtype.exists, eq_comm]; rfl
 
 end List

@@ -405,6 +405,14 @@ def Chain' : List α → Prop
 | [] => True
 | a :: l => Chain R a l
 
+variable {R}
+@[simp]
+theorem Chain_cons {a b : α} {l : List α} : Chain R a (b::l) ↔ R a b ∧ Chain R b l := by
+  constructor
+  · intro h
+    cases h with | cons a b => exact ⟨a, b⟩
+  · exact λ ⟨n, p⟩ => p.cons n
+
 end Chain
 
 /-- `Nodup l` means that `l` has no duplicates, that is, any element appears at most
