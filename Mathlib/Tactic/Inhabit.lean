@@ -43,5 +43,5 @@ def evalInhabit (mVarId : MVarId) (h_name : Option Ident) (term : Syntax) : Tact
 
 elab_rules : tactic
   | `(tactic| inhabit $[$h_name:ident :]? $term) => do
-    let mVarId ← inhabitCore (← getMainGoal) h_name term
+    let mVarId ← evalInhabit (← getMainGoal) h_name term
     replaceMainGoal [mVarId]
