@@ -38,8 +38,8 @@ def evalInhabit (mVarId : MVarId) (h_name : Option Ident) (term : Syntax) : Tact
     let pf ←
       if ← isProp e then Meta.mkAppM ``nonempty_prop_to_inhabited #[e, nonempty_e_pf]
       else Meta.mkAppM ``nonempty_to_inhabited #[e, nonempty_e_pf]
-    let (_, mVarId2) ← intro1P (← assert mVarId h_name inhabited_e pf)
-    return mVarId2
+    let (_, r) ← intro1P (← assert mVarId h_name inhabited_e pf)
+    return r
 
 elab_rules : tactic
   | `(tactic| inhabit $[$h_name:ident :]? $term) => do
