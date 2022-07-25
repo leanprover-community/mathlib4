@@ -22,9 +22,9 @@ def nonempty_prop_to_inhabited (α : Prop) (α_nonempty : Nonempty α) : Inhabit
 -/
 syntax (name := inhabit) "inhabit " atomic(ident " : ")? term : tactic
 
-/-- inhabitCore takes in the mVarId of the main goal, runs the core portion of the inhabit tactic,
+/-- `evalInhabit` takes in the mVarId of the main goal, runs the core portion of the inhabit tactic,
     and returns the resulting mVarId -/
-def inhabitCore (mVarId : MVarId) (h_name : Option Ident) (term : Syntax) : TacticM MVarId := do
+def evalInhabit (mVarId : MVarId) (h_name : Option Ident) (term : Syntax) : TacticM MVarId := do
   withMVarContext mVarId do
     let e ← Tactic.elabTerm term none
     let e_lvl ← Meta.getLevel e
