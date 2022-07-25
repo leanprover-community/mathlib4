@@ -56,7 +56,7 @@ def getPropHyps : MetaM (Array FVarId) := do
         result := result.push localDecl.fvarId
   return result
 
-export private mkDischargeWrapper elabSimpArgs from Lean.Elab.Tactic.Simp
+export private mkDischargeWrapper from Lean.Elab.Tactic.Simp
 
 -- copied from core
 /--
