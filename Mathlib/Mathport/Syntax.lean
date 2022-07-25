@@ -7,6 +7,7 @@ import Lean.Elab.Command
 import Lean.Elab.Quotation
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Core
@@ -279,8 +280,6 @@ end Conv
 /- M -/ syntax (name := applyAssumption) "apply_assumption" : tactic
 
 /- B -/ syntax (name := hint) "hint" : tactic
-
-/- M -/ syntax (name := clear!) "clear!" (ppSpace colGt ident)* : tactic
 
 /- B -/ syntax (name := choose) "choose" (ppSpace colGt ident)+ (" using " term)? : tactic
 /- B -/ syntax (name := choose!) "choose!" (ppSpace colGt ident)+ (" using " term)? : tactic
