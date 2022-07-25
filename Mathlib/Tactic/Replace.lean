@@ -28,7 +28,7 @@ h : β
 ⊢ goal
 ```
 
-Where `have h := f h` would result in:
+whereas `have h := f h` would result in:
 
 ```lean
 f : α → β
