@@ -26,12 +26,12 @@ open private elabMatchAux waitExpectedType from Lean.Elab.Match in
 | `(match $discrs,* with.), expectedType? => do
   let discrs := discrs.getElems
   for h : i in [0:discrs.size] do
-    let i := ⟨i, (h : _ ∧ _).2⟩
+    have h : i < discrs.size := h.2
     let `(matchDiscr| $[$n :]? $discr:term) := discrs[i] | throwUnsupportedSyntax
     if let some x ← isAtomicDiscr? discr then
       tryPostponeIfMVar (← Meta.inferType x)
     else
-      let discrs := discrs.set i (← `(matchDiscr| $[$n :]? x))
+      let discrs := discrs.set ⟨i, h⟩ (← `(matchDiscr| $[$n :]? x))
       return ← elabTerm (← `(let x := $discr; match $discrs,* with.)) expectedType?
   let expectedType ← waitExpectedType expectedType?
   elabMatchAux none discrs #[] mkNullNode expectedType

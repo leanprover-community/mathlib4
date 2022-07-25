@@ -61,13 +61,20 @@ import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.ClearExcept
+import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.CommandQuote
+import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
+import Mathlib.Tactic.GuardGoalNums
+import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.Have
+import Mathlib.Tactic.HaveI
+import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
@@ -94,6 +101,7 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.RunTac
 import Mathlib.Tactic.Sat.FromLRAT
+import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.ShowTerm
 import Mathlib.Tactic.SimpRw
@@ -102,7 +110,9 @@ import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.SudoSetOption
+import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.ToAdditive
+import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.Use
 import Mathlib.Testing.SlimCheck.Gen
@@ -115,6 +125,7 @@ import Mathlib.Util.LibraryNote
 import Mathlib.Util.MemoFix
 import Mathlib.Util.Simp
 import Mathlib.Util.Syntax
+import Mathlib.Util.Tactic
 import Mathlib.Util.TermUnsafe
 import Mathlib.Util.Time
 import Mathlib.Util.WhatsNew

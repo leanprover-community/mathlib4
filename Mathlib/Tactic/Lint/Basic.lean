@@ -53,7 +53,7 @@ expansion.
 def isAutoDecl (decl : Name) : CoreM Bool := do
   if decl.hasMacroScopes then return true
   if decl.isInternal then return true
-  if let Name.str n s _ := decl then
+  if let Name.str n s := decl then
     if s.startsWith "proof_" || s.startsWith "match_" then return true
     if (← getEnv).isConstructor n && ["injEq", "inj", "sizeOf_spec"].any (· == s) then
       return true

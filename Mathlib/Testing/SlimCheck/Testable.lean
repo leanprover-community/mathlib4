@@ -490,7 +490,7 @@ proposition where the quantifiers are annotated with `NamedBinder`.
 scoped elab "mk_decorations" : tactic => do
   let goal ← getMainGoal
   let goalType ← getMVarType goal
-  if let Expr.app (Expr.const ``Decorations.DecorationsOf _ _) body _ := goalType then
+  if let .app (.const ``Decorations.DecorationsOf _) body := goalType then
     closeMainGoal (addDecorations body)
 
 end Decorations
@@ -498,10 +498,8 @@ end Decorations
 open Decorations in
 /-- Run a test suite for `p` and throw an exception if `p` does not not hold.-/
 def Testable.check (p : Prop) (cfg : Configuration := {}) (p' : Decorations.DecorationsOf p := by mk_decorations) [Testable p'] : IO PUnit := do
-  let x ← Testable.checkIO p' cfg
-  go p' x where /-- HACK: https://github.com/leanprover/lean4/issues/1247 -/ go p' (x : TestResult p') : IO PUnit := do
-  match x with
-  | TestResult.success _ => if !cfg.quiet then IO.println "Success" else pure ()
+  match ← Testable.checkIO p' cfg with
+  | TestResult.success _ => if !cfg.quiet then IO.println "Success"
   | TestResult.gaveUp n => if !cfg.quiet then IO.println s!"Gave up {n} times"
   | TestResult.failure _ xs n => throw (IO.userError $ formatFailure "Found problems!" xs n)
 
