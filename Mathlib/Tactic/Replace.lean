@@ -67,22 +67,22 @@ f : α → β
 h : α
 ⊢ β
 
-f: α → β
-h: β
+f : α → β
+h : β
 ⊢ goal
 ```
 
-Where `have h : β` would result in:
+whereas `have h : β` would result in:
 
 ```lean
 case h
-f: α → β
-h: α
+f : α → β
+h : α
 ⊢ β
 
-f: α → β
-h✝: α
-h: β
+f : α → β
+h✝ : α
+h : β
 ⊢ goal
 ```
 -/
