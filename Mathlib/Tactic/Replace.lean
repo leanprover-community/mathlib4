@@ -10,8 +10,6 @@ namespace Mathlib.Tactic
 
 open Lean Elab.Tactic
 
-syntax "replace " haveDecl : tactic
-
 /--
 Acts like `have`, but removes a hypothesis with the same name as
 this one if possible. For example, if the state is:
@@ -41,6 +39,8 @@ h : β
 
 This can be used to simulate the `specialize` and `apply at` tactics of Coq.
 -/
+syntax "replace " haveDecl : tactic
+
 elab_rules : tactic
   | `(tactic|replace $[$n?:ident]? $[: $t?:term]? := $v:term) =>
     withMainContext do
