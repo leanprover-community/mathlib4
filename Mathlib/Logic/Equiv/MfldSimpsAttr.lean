@@ -2,6 +2,7 @@ import Lean
 
 open Lean Meta
 
+/-- The environment extension for the `mfld_simps` simp set. -/
 initialize mfldSetTacExt : SimpExtension ←
   registerSimpAttr `mfld_simps (extName := `Tactic.MfldSetTac.mfldSetTacExt) $
     "The simpset `mfld_simps` records several simp lemmas that are
