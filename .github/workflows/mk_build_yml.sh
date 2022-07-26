@@ -26,8 +26,6 @@ on:
       - 'trying.tmp*'
       - 'staging*.tmp'
       - 'nolints'
-      # do not build lean-x.y.z branch used by leanpkg
-      - 'lean-3.*'
       # ignore staging branch used by bors, this is handled by bors.yml
       - 'staging'
 
@@ -64,8 +62,6 @@ on:
       - 'trying.tmp*'
       - 'staging*.tmp'
       - 'nolints'
-      # do not build lean-x.y.z branch used by leanpkg
-      - 'lean-3.*'
 
 name: continuous integration (mathlib forks)
 EOF

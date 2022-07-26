@@ -14,22 +14,10 @@ on:
       - 'trying.tmp*'
       - 'staging*.tmp'
       - 'nolints'
-      # do not build lean-x.y.z branch used by leanpkg
-      - 'lean-3.*'
       # ignore staging branch used by bors, this is handled by bors.yml
       - 'staging'
 
 name: continuous integration
-on:
-  push:
-    branches-ignore:
-      # ignore tmp branches used by bors
-      - 'staging.tmp*'
-      - 'trying.tmp*'
-      - 'staging*.tmp'
-  pull_request:
-
-name: ci
 
 jobs:
   style_lint:
