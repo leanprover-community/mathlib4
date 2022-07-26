@@ -11,8 +11,6 @@ namespace Mathlib.Tactic
 
 open Lean Parser Elab Tactic
 
-syntax "rename_bvar " ident " → " ident (ppSpace location)? : tactic
-
 /--
 * `rename_bvar old new` renames all bound variables named `old` to `new` in the target.
 * `rename_bvar old new at h` does the same in hypothesis `h`.
@@ -27,14 +25,17 @@ end
 ```
 Note: name clashes are resolved automatically.
 -/
-elab_rules : tactic
-  | `(tactic| rename_bvar $old → $new at $loc) =>
+elab "rename_bvar " old:ident " → " new:ident loc?:(ppSpace location)? : tactic => do
+  match loc? with
+  | none => renameBVarTarget old.getId new.getId
+  | some loc =>
     withLocation (expandLocation loc)
       (renameBVarHyp old.getId new.getId)
       (renameBVarTarget old.getId new.getId)
-      fun _ => pure ()
-  | `(tactic| rename_bvar $old → $new) => renameBVarTarget old.getId new.getId
+      fun _ => throwError "unexpected location syntax"
 
 example (h : ∀ a b : Nat, a = b → b = a) : ∀ a b : Nat, a = b → b = a := by
-  rename_bvar a → x at h -- why doesn't this work?
+  rename_bvar a → x
+  rename_bvar a → x at h
+  rename_bvar x → b at h
   exact h
