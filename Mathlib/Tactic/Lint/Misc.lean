@@ -62,7 +62,6 @@ We skip all declarations that contain `sorry` in their value. -/
       return none
     if declName matches .str _ "parenthesizer" | .str _ "formatter" then
       return none
-    if hasInitAttr (← getEnv) declName then return none -- https://github.com/leanprover/lean4/issues/1324
     let kind ← match ← getConstInfo declName with
       | .axiomInfo .. => pure "axiom"
       | .opaqueInfo .. => pure "constant"
