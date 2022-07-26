@@ -643,12 +643,7 @@ disambiguate from the prelude's `instLTProd`, which uses the lexicographic order
 -/
 
 @[simp] lemma swap_lt_swap : (instPreorderProd _ _).lt x.swap y.swap ↔ (instPreorderProd _ _).lt x y :=
-by have h1 : ((instPreorderProd β α).lt x.swap y.swap ↔ x.swap ≤ y.swap ∧ ¬ y.swap ≤ x.swap) :=
-     (instPreorderProd β α).lt_iff_le_not_le _ _
-   have h2 : ((instPreorderProd α β).lt x y ↔ x ≤ y ∧ ¬ y ≤ x) :=
-     (instPreorderProd α β).lt_iff_le_not_le x y
-   rw [h1, h2]
-   exact and_congr swap_le_swap (not_congr swap_le_swap)
+and_congr swap_le_swap (not_congr swap_le_swap)
 
 lemma mk_le_mk_iff_left : (a₁, b) ≤ (a₂, b) ↔ a₁ ≤ a₂ := and_iff_left le_rfl
 lemma mk_le_mk_iff_right : (a, b₁) ≤ (a, b₂) ↔ b₁ ≤ b₂ := and_iff_right le_rfl
