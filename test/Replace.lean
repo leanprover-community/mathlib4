@@ -47,3 +47,16 @@ example {a : Nat} : a = a := by
   have : Nat := by assumption -- old `a` is not gone
   have : Int := by exact a    -- new `a` is of type `Int`
   simp
+
+-- tests without `:=`, creating a new subgoal
+
+example (z : Int) : Nat := by
+  replace z : Nat
+  exact 0
+  assumption
+
+example : True := by
+  have : 1 + 1 = 2 := by simp_arith
+  replace : 2 + 2 = 4
+  simp_arith
+  trivial
