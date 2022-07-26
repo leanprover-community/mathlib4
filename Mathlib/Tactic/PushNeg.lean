@@ -28,6 +28,11 @@ variable {β : Type u} [LinearOrder β]
 theorem not_le_eq (a b : β) : (¬ (a ≤ b)) = (b < a) := propext not_le
 theorem not_lt_eq (a b : β) : (¬ (a < b)) = (b ≤ a) := propext not_lt
 
+register_option push_neg.use_distrib : Bool :=
+  { defValue := false
+    group := ""
+    descr := "Make push_neg use `not_and_distrib` rather than the default `not_and`." }
+
 /-- Push negations at the top level of the current expression. -/
 def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
   let mkSimpStep (e : Expr) (pf : Expr) : Simp.Step :=
