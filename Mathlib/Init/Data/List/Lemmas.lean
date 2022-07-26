@@ -49,6 +49,8 @@ theorem mem_nil_iff (a : α) : a ∈ ([] : List α) ↔ False := by simp
 
 theorem mem_cons_self (a : α) (l : List α) : a ∈ a :: l := by simp
 
+@[simp] lemma mem_cons_iff (a y : α) (l : List α) : a ∈ y :: l ↔ (a = y ∨ a ∈ l) := mem_cons
+
 theorem mem_cons_eq (a y : α) (l : List α) : (a ∈ y :: l) = (a = y ∨ a ∈ l) := by simp
 
 theorem mem_cons_of_mem (y : α) {a : α} {l : List α} : a ∈ l → a ∈ y :: l := List.Mem.tail _
