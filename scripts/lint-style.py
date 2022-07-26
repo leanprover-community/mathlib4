@@ -386,8 +386,5 @@ def lint(path):
 for filename in sys.argv[1:]:
     lint(Path(filename))
 
-# if "exceptions" is empty,
-# we're trying to generate style-exceptions.txt,
-# so new exceptions are expected
-if new_exceptions and len(exceptions) > 0:
+if len(exceptions) > 0:
     exit(1)
