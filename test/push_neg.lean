@@ -92,6 +92,11 @@ example (h : p → ¬ q) : ¬ (p ∧ q) := by
   guard_target == p → ¬q
   exact h
 
+example (a : β) : ¬ ∀ x : β, x < a → ∃ y : β, (y < a) ∧ ∀ z : β, x = z := by
+  push_neg
+  guard_target == ∃ x, x < a ∧ ∀ (y : β), y < a → ∃ z, x ≠ z
+  sorry
+
 set_option push_neg.use_distrib true
 
 example (h : ¬ p ∨ ¬ q): ¬ (p ∧ q) := by
@@ -103,3 +108,8 @@ example : p →  ¬ ¬ ¬ ¬ ¬ ¬ p := by
   push_neg
   guard_target == p → p
   exact id
+
+example (h : x = 0 ∧ y ≠ 0) : ¬(x = 0 → y = 0) := by
+  push_neg
+  guard_target == x = 0 ∧ y ≠ 0
+  exact h
