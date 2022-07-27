@@ -15,8 +15,7 @@ elab (name := guardTag) "guard_tag" t:(ppSpace ident) : tactic => do
 /--
 `propagate_tags tac` carries the tag of the main goal to the main goal of the result of doing `tac`.
 -/
-elab "propagate_tags " tac:tacticSeq : tactic => do
-  withMainContext do
+elab "propagate_tags " tac:tacticSeq : tactic => withMainContext do
   let g ← getMainGoal
   let tag ← getMainTag
   match tag with
