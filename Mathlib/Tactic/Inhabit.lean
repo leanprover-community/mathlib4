@@ -5,6 +5,11 @@ Authors: Joshua Clune
 -/
 import Lean
 
+/-!
+Defines the `inhabit α` tactic, which tries to construct an `Inhabited α` instance,
+constructively or otherwise.
+-/
+
 open Lean.Meta
 
 namespace Lean.Elab.Tactic
