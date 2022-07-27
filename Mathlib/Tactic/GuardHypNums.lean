@@ -12,12 +12,6 @@ A tactic stub file for the `guard_hyp_nums` tactic.
 
 open Lean Meta Elab Tactic
 
--- has been PRed to core in https://github.com/leanprover/lean4/pull/1323
-/-- `localContextLength` returns the number of hypotheses in the local context,
-including hidden and auxiliary hypotheses. -/
-def Lean.LocalContext.size (lctx : LocalContext) : Nat :=
-  lctx.foldl (fun n _ => n+1) 0
-
 /--
 `guard_hyp_nums n` succeeds if there are exactly `n` hypotheses and fails otherwise.
 
