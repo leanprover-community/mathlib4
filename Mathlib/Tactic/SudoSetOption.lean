@@ -19,21 +19,21 @@ private def setOption [Monad m] [MonadError m]
         | none => throwError "unsupported option value {val}"
   pure $ opts.insert name.getId val
 
-/-
+open Elab.Command in
+/--
 The command `sudo set_option name val` is similar to `set_option name val`,
 but it also allows to set undeclared options.
 -/
-open Elab.Command in
 elab "sudo" "set_option" n:ident val:term : command => do
   let options ← setOption n val (← getOptions)
   modify fun s => { s with maxRecDepth := maxRecDepth.get options }
   modifyScope fun scope => { scope with opts := options }
 
-/-
+open Elab.Term in
+/--
 The command `sudo set_option name val in term` is similar to `set_option name val in term`,
 but it also allows to set undeclared options.
 -/
-open Elab.Term in
 elab "sudo" "set_option" n:ident val:term "in" body:term : term <= expectedType => do
   let options ← setOption n val (← getOptions)
   withTheReader Core.Context (fun ctx =>

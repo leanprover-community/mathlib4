@@ -1,6 +1,6 @@
 TESTS = $(wildcard test/*.lean)
 
-.PHONY: all build test
+.PHONY: all build test lint
 
 all: build test
 
@@ -11,3 +11,6 @@ test: $(addsuffix .run, $(TESTS))
 
 test/%.run: build
 	lake env lean test/$*
+
+lint: build
+	./build/bin/runLinter

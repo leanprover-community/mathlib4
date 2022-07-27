@@ -7,6 +7,12 @@ Authors: Gabriel Ebner
 import Lean
 import Mathlib.Tactic.OpenPrivate
 
+/-!
+# Helper functions for the `norm_cast` tactic.
+
+[TODO] Needs documentation, cleanup, and possibly reunification of `mkSimpContext'` with core.
+-/
+
 def Std.PHashSet.toList [BEq α] [Hashable α] (s : Std.PHashSet α) : List α :=
   s.1.toList.map (·.1)
 
@@ -56,14 +62,15 @@ def getPropHyps : MetaM (Array FVarId) := do
         result := result.push localDecl.fvarId
   return result
 
-export private mkDischargeWrapper elabSimpArgs from Lean.Elab.Tactic.Simp
+export private mkDischargeWrapper from Lean.Elab.Tactic.Simp
 
 -- copied from core
 /--
   If `ctx == false`, the config argument is assumed to have type `Meta.Simp.Config`, and `Meta.Simp.ConfigCtx` otherwise.
   If `ctx == false`, the `discharge` option must be none -/
 def mkSimpContext' (simpTheorems : SimpTheorems) (stx : Syntax) (eraseLocal : Bool)
-    (ctx := false) (ignoreStarArg : Bool := false) : TacticM MkSimpContextResult := do
+    (kind := SimpKind.simp) (ctx := false) (ignoreStarArg : Bool := false) :
+    TacticM MkSimpContextResult := do
   if ctx && !stx[2].isNone then
     throwError "'simp_all' tactic does not support 'discharger' option"
   let dischargeWrapper ← mkDischargeWrapper stx[2]
@@ -74,8 +81,8 @@ def mkSimpContext' (simpTheorems : SimpTheorems) (stx : Syntax) (eraseLocal : Bo
     else
       pure simpTheorems
   let congrTheorems ← Meta.getSimpCongrTheorems
-  let r ← elabSimpArgs stx[4] (eraseLocal := eraseLocal) {
-    config       := (← elabSimpConfig stx[1] (ctx := ctx))
+  let r ← elabSimpArgs stx[4] (eraseLocal := eraseLocal) (kind := kind) {
+    config       := (← elabSimpConfig stx[1] (kind := kind))
     simpTheorems := #[simpTheorems], congrTheorems
   }
   if !r.starArg || ignoreStarArg then

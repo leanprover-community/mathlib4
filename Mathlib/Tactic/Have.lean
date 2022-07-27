@@ -23,7 +23,7 @@ have h
 def Lean.Parser.Term.haveIdLhs' : Parser :=
   optional (ppSpace >> ident >> many (ppSpace >>
     checkColGt "expected to be indented" >>
-    (simpleBinderWithoutType <|> bracketedBinder))) >> optType
+    letIdBinder)) >> optType
 
 namespace Mathlib.Tactic
 
@@ -43,13 +43,13 @@ def haveLetCore (mvarId : MVarId) (name : Option Syntax) (bis : Array Syntax)
     let (mvar1, t, p) ← elabBinders fun es => do
       let t ← match t with
       | none => mkFreshTypeMVar
-      | some t => Tactic.elabTerm t none
+      | some t => Tactic.elabTerm.go t none
       let p ← mkFreshExprMVar t MetavarKind.syntheticOpaque n
       pure (p.mvarId!, ← mkForallFVars es t, ← mkLambdaFVars es p)
     let (fvar, mvar2) ← intro1P (← declFn mvarId n t p)
     if let some stx := name then
       withMVarContext mvar2 do
-        Term.addTermInfo (isBinder := true) stx (mkFVar fvar)
+        Term.addTermInfo' (isBinder := true) stx (mkFVar fvar)
     pure (mvar1, mvar2)
 
 elab_rules : tactic

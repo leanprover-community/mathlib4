@@ -86,14 +86,14 @@ def splittingProcedure (expr : Expr) : MetaM Simp.Result := do
       let some y_y2 ← proveEqUsingDown y y2 | failure
       Simp.mkCongr {expr := mkApp op x} y_y2)
   catch _ => try
-    let some (β, n) := isNumeral? y | failure
+    let some (_, n) := isNumeral? y | failure
     let some x' ← isCoeOf? x | failure
     let α ← inferType x'
     let y2 ← mkCoe (← mkNumeral α n) γ
     let some y_y2 ← proveEqUsingDown y y2 | failure
     Simp.mkCongr {expr := mkApp op x} y_y2
   catch _ => try
-    let some (α, n) := isNumeral? x | failure
+    let some (_, n) := isNumeral? x | failure
     let some y' ← isCoeOf? y | failure
     let β ← inferType y'
     let x2 ← mkCoe (← mkNumeral β n) γ
@@ -120,8 +120,9 @@ It tries to rewrite an expression using the elim and move lemmas.
 On failure, it calls the splitting procedure heuristic.
 -/
 partial def upwardAndElim (up : SimpTheorems) (e : Expr) : SimpM Simp.Step := do
-  let r ← Simp.rewrite e up.post up.erased prove (tag := "squash")
-  let r ← mkEqTrans r <|<- splittingProcedure r.expr
+  let r ← Simp.rewrite? e up.post up.erased prove (tag := "squash") (rflOnly := false)
+  let r := r.getD { expr := e }
+  let r ← mkEqTrans r <|← splittingProcedure r.expr
   if r.expr == e then return Simp.Step.done {expr := e}
   return Simp.Step.visit r
 
@@ -200,9 +201,9 @@ def normCastHyp (fvarId : FVarId) : TacticM Unit :=
   liftMetaTactic1 fun mvarId => do
     let hyp ← instantiateMVars (← getLocalDecl fvarId).type
     let prf ← derive hyp
-    return (← applySimpResultToLocalDecl mvarId fvarId prf).map (·.snd)
+    return (← applySimpResultToLocalDecl mvarId fvarId prf false).map (·.snd)
 
-elab "norm_cast0" loc:(ppSpace location)? : tactic =>
+elab "norm_cast0" loc:((ppSpace location)?) : tactic =>
   withMainContext do
     match expandOptLocation loc with
     | Location.targets hyps target =>
@@ -219,19 +220,20 @@ macro "assumption_mod_cast" : tactic => `(norm_cast0 at * <;> assumption)
 /--
 Normalize casts at the given locations by moving them "upwards".
 -/
-macro "norm_cast" loc:(ppSpace location)? : tactic =>
-  let loc := loc.getOptional?
-  `(tactic| norm_cast0 $[$loc:location]? <;> try trivial)
+syntax "norm_cast" (ppSpace location)? : tactic
+macro_rules
+| `(tactic| norm_cast $[$loc]?) =>
+  `(tactic| norm_cast0 $[$loc]? <;> try trivial)
 
 /--
 Rewrite with the given rules and normalize casts between steps.
 -/
 syntax "rw_mod_cast" (config)? rwRuleSeq (ppSpace location)? : tactic
 macro_rules
-  | `(tactic|rw_mod_cast $[$config:config]? [$rules,*] $[$loc:location]?) => do
+  | `(tactic|rw_mod_cast $[$config]? [$rules,*] $[$loc]?) => do
     let tacs ← rules.getElems.mapM fun rule =>
-      `(tactic| norm_cast at *; rw $[$config]? [$rule] $[$loc:location]?)
-    `(tactic| ($[$tacs:tactic]*))
+      `(tactic| (norm_cast at *; rw $[$config]? [$rule] $[$loc]?))
+    `(tactic| ($[$tacs]*))
 
 /--
 Normalize the goal and the given expression, then close the goal with exact.
@@ -245,12 +247,12 @@ macro "apply_mod_cast " e:term : tactic => `(apply mod_cast ($e : _))
 
 syntax (name := convNormCast) "norm_cast" : conv
 @[tactic convNormCast] def evalConvNormCast : Tactic :=
-  open Elab.Tactic.Conv in fun stx => withMainContext do
+  open Elab.Tactic.Conv in fun _ => withMainContext do
     applySimpResult (← derive (← getLhs))
 
 syntax (name := pushCast) "push_cast " (config)? (discharger)? (&"only ")? ("[" (simpStar <|> simpErase <|> simpLemma),* "]")? (location)? : tactic
 @[tactic pushCast] def evalPushCast : Tactic := fun stx => do
-  let { ctx, fvarIdToLemmaId, dischargeWrapper } ← withMainContext do
+  let { ctx, fvarIdToLemmaId, dischargeWrapper, .. } ← withMainContext do
     mkSimpContext' (← pushCastExt.getTheorems) stx (eraseLocal := false)
   dischargeWrapper.with fun discharge? =>
     simpLocation ctx discharge? fvarIdToLemmaId (expandOptLocation stx[5])

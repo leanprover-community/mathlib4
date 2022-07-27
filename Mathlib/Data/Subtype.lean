@@ -44,7 +44,7 @@ lemma ext_iff {a1 a2 : {x // p x}} : a1 = a2 ↔ (a1 : α) = (a2 : α) :=
 lemma heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : {x // p x}} {a2 : {x // q x}} :
   HEq a1 a2 ↔ (a1 : α) = (a2 : α) :=
 Eq.rec (motive := λ (pp: (α → Prop)) _ => ∀ a2' : {x // pp x}, HEq a1 a2' ↔ (a1 : α) = (a2' : α))
-       (λ a2' => heq_iff_eq.trans ext_iff) (funext $ λ x => propext (h x)) a2
+       (λ _ => heq_iff_eq.trans ext_iff) (funext $ λ x => propext (h x)) a2
 
 lemma heq_iff_coe_heq {α β : Sort _} {p : α → Prop} {q : β → Prop} {a : {x // p x}}
   {b : {y // q y}} (h : α = β) (h' : HEq p q) :
@@ -68,7 +68,7 @@ theorem mk_eq_mk {a h a' h'} : @mk α p a h = @mk α p a' h' ↔ a = a' :=
 ext_iff
 
 theorem coe_eq_iff {a : {a // p a}} {b : α} : ↑a = b ↔ ∃ h, a = ⟨b, h⟩ :=
-⟨λ h => h ▸ ⟨a.2, (coe_eta _ _).symm⟩, λ ⟨hb, ha⟩ => ha.symm ▸ rfl⟩
+⟨λ h => h ▸ ⟨a.2, (coe_eta _ _).symm⟩, λ ⟨_, ha⟩ => ha.symm ▸ rfl⟩
 
 theorem coe_injective : injective ((↑·) : Subtype p → α) :=
 by intros a b hab
@@ -120,7 +120,7 @@ theorem map_comp {p : α → Prop} {q : β → Prop} {r : γ → Prop} {x : Subt
 rfl
 
 theorem map_id {p : α → Prop} {h : ∀a, p a → p (id a)} : map (@id α) h = id :=
-funext $ λ ⟨v, h⟩ => rfl
+funext fun ⟨_, _⟩ => rfl
 
 lemma map_injective {p : α → Prop} {q : β → Prop} {f : α → β} (h : ∀a, p a → q (f a))
   (hf : injective f) : injective (map f h) :=

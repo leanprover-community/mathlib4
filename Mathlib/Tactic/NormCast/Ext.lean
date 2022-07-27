@@ -44,7 +44,7 @@ partial def countHeadCoes (e : Expr) : MetaM Nat := do
 
 /-- Count how many coercions are inside the expression, including the top ones. -/
 partial def countCoes (e : Expr) : MetaM Nat :=
-  lambdaTelescope e fun xs e => do
+  lambdaTelescope e fun _ e => do
     if let Expr.const fn .. := e.getAppFn then
       if let some info ← getCoeFnInfo? fn then
         if e.getAppNumArgs >= info.numArgs then
@@ -60,7 +60,7 @@ def countInternalCoes (e : Expr) : MetaM Nat :=
 
 /-- Classifies a declaration of type `ty` as a `norm_cast` rule. -/
 def classifyType (ty : Expr) : MetaM Label :=
-  forallTelescopeReducing ty fun xs ty => do
+  forallTelescopeReducing ty fun _ ty => do
     let ty ← whnf ty
     let (lhs, rhs) ←
       if ty.isAppOfArity ``Eq 3 then pure (ty.getArg! 1, ty.getArg! 2)
@@ -69,7 +69,6 @@ def classifyType (ty : Expr) : MetaM Label :=
     let lhsCoes ← countCoes lhs
     if lhsCoes = 0 then throwError "norm_cast: badly shaped lemma, lhs must contain at least one coe{indentExpr lhs}"
     let lhsHeadCoes ← countHeadCoes lhs
-    let lhsInternalCoes ← countInternalCoes lhs
     let rhsHeadCoes ← countHeadCoes rhs
     let rhsInternalCoes ← countInternalCoes rhs
     if lhsHeadCoes = 0 then
@@ -196,8 +195,8 @@ initialize registerBuiltinAttribute {
   descr := "attribute for norm_cast"
   add := fun decl stx kind => MetaM.run' do
     let `(attr| norm_cast $[$label:normCastLabel]? $[$prio]?) := stx | unreachable!
-    let prio := (prio.bind Syntax.isNatLit?).getD (eval_prio default)
-    match label.bind Syntax.isStrLit? with
+    let prio := (prio.bind (·.1.isNatLit?)).getD (eval_prio default)
+    match label.bind (·.1.isStrLit?) with
     | "elim" => addElim decl kind prio
     | "move" => addMove decl kind prio
     | "squash" => addSquash decl kind prio

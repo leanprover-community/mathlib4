@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2021 Henrik Böving. All rights reserved.
+Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving
 -/
@@ -92,17 +92,13 @@ instance : BoundedRandom Nat where
 
 instance : BoundedRandom Int where
   randomR := λ lo hi h _ => do
-    let ⟨z, h1, h2⟩ ← randBound Nat 0 (Int.natAbs $ hi - lo) (Nat.zero_le _)
+    let ⟨z, _, h2⟩ ← randBound Nat 0 (Int.natAbs $ hi - lo) (Nat.zero_le _)
     pure ⟨
       z + lo,
       Int.le_add_of_nonneg_left (Int.ofNat_zero_le z),
       Int.add_le_of_le_sub_right $ Int.le_trans
         (Int.ofNat_le.mpr h2)
-        (by
-          apply le_of_eq
-          apply Int.ofNat_natAbs_eq_of_nonneg
-          exact Int.sub_nonneg_of_le h)
-    ⟩
+        (le_of_eq $ Int.ofNat_natAbs_eq_of_nonneg _ $ Int.sub_nonneg_of_le h)⟩
 
 instance {n : Nat} : BoundedRandom (Fin n) where
   randomR := λ lo hi h _ => do
@@ -124,3 +120,6 @@ def IO.runRand (cmd : Rand α) : BaseIO α := do
   let (res, new) := Id.run <| StateT.run cmd rng
   stdGenRef.set new.down
   pure res
+
+def IO.runRandWith (seed : Nat) (cmd : Rand α) : BaseIO α := do
+  pure $ (cmd.run (ULift.up $ mkStdGen seed)).1

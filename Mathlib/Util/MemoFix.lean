@@ -5,12 +5,12 @@ Authors: Gabriel Ebner, E.W.Ayers
 -/
 import Std
 
-open Std ShareCommon
-
 /-!
 # Fixpoint function with memoisation
 
 -/
+
+open Std ShareCommon
 
 private unsafe def memoFixImplObj (f : (Object → Object) → (Object → Object)) (a : Object) : Object := unsafeBaseIO do
   let cache : IO.Ref ObjectMap ← ST.mkRef (mkObjectMap ())
@@ -32,4 +32,4 @@ This is useful for implementing tree traversal functions where
 subtrees may be referenced in multiple places.
 -/
 @[implementedBy memoFixImpl]
-constant memoFix {α : Type u} {β : Type v} [Nonempty β] (f : (α → β) → (α → β)) : α → β
+opaque memoFix {α : Type u} {β : Type v} [Nonempty β] (f : (α → β) → (α → β)) : α → β
