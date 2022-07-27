@@ -35,6 +35,7 @@ partial def getUnassignedGoalMVarDependencies (mvarId : MVarId) :
     MetaM (HashSet MVarId) :=
   return (← go mvarId |>.run {}).snd
   where
+    /-- auxiliary function for `getUnassignedGoalMVarDependencies` -/
     addMVars (e : Expr) : StateRefT (HashSet MVarId) MetaM Unit := do
       let mvars ← getMVars e
       let mut s ← get
@@ -44,7 +45,7 @@ partial def getUnassignedGoalMVarDependencies (mvarId : MVarId) :
           s := s.insert mvarId
       set s
       mvars.forM go
-
+    /-- auxiliary function for `getUnassignedGoalMVarDependencies` -/
     go (mvarId : MVarId) : StateRefT (HashSet MVarId) MetaM Unit :=
       withIncRecDepth do
         let mdecl ← getMVarDecl mvarId
