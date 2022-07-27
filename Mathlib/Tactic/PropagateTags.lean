@@ -8,8 +8,8 @@ import Lean
 namespace Mathlib.Tactic
 open Lean Elab.Tactic Meta
 
-/-- `guard_tags t` tests that `t` is the tag of the main goal. -/
-elab (name := guardTags) "guard_tags" t:(ppSpace ident) : tactic => do
+/-- `guard_tag t` tests that `t` is the tag of the main goal. -/
+elab (name := guardTag) "guard_tag" t:(ppSpace ident) : tactic => do
   guard ((← getMainTag) == t.getId)
 
 /--
