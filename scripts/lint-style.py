@@ -386,5 +386,5 @@ def lint(path):
 for filename in sys.argv[1:]:
     lint(Path(filename))
 
-if len(exceptions) > 0:
+if new_exceptions:
     exit(1)
