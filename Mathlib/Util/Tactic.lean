@@ -6,6 +6,12 @@ Authors: Arthur Paulino
 
 import Lean
 
+/-!
+# Miscellaneous helper functions for tactics.
+
+[TODO] Ideally we would find good homes for everything in this file, eventually removing it.
+-/
+
 namespace Mathlib.Tactic
 
 open Lean Meta Elab Tactic
