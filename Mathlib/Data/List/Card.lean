@@ -1,5 +1,5 @@
 /-
-Author: Jeremy Avigad
+Authors: Jeremy Avigad
 
 This is a makeshift theory of the cardinality of a list. Any list can be taken to represent the
 finite set of its elements. Cardinality counts the number of distinct elements. Cardinality
