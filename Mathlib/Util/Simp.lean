@@ -7,6 +7,12 @@ Authors: Gabriel Ebner
 import Lean
 import Mathlib.Tactic.OpenPrivate
 
+/-!
+# Helper functions for the `norm_cast` tactic.
+
+[TODO] Needs documentation, cleanup, and possibly reunification of `mkSimpContext'` with core.
+-/
+
 def Std.PHashSet.toList [BEq α] [Hashable α] (s : Std.PHashSet α) : List α :=
   s.1.toList.map (·.1)
 
@@ -56,7 +62,7 @@ def getPropHyps : MetaM (Array FVarId) := do
         result := result.push localDecl.fvarId
   return result
 
-export private mkDischargeWrapper elabSimpArgs from Lean.Elab.Tactic.Simp
+export private mkDischargeWrapper from Lean.Elab.Tactic.Simp
 
 -- copied from core
 /--

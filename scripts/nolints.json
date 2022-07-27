@@ -69,7 +69,6 @@
  ["docBlame", "right_distributive"],
  ["docBlame", "right_identity"],
  ["docBlame", "setOf"],
- ["docBlame", "simpsAttr"],
  ["docBlame", "successIfFail"],
  ["docBlame", "tacticAny_goals_"],
  ["docBlame", "tacticBy_cases_"],

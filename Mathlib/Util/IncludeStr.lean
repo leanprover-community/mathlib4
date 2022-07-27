@@ -5,8 +5,13 @@ Authors: Henrik Böving, Xubai Wang
 -/
 import Lean
 
+/-!
+# Defines the `include_str` macro.
+-/
+
 namespace Mathlib.Util
 
+/-- A term macro that includes the content of a file, as a string. -/
 elab (name := includeStr) "include_str " str:str : term => do
   let some str := str.1.isStrLit? | Lean.Elab.throwUnsupportedSyntax
   let srcPath := System.FilePath.mk (← Lean.MonadLog.getFileName)
