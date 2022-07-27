@@ -13,4 +13,4 @@ elab (name := clear_) "clear_" : tactic =>
         if !str.isEmpty && str.front == '_' then
           if let none ← isClass? decl.type then
             toClear := toClear.push decl.fvarId
-    tryClearMany goal toClear
+    goal.tryClearMany toClear

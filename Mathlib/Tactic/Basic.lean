@@ -119,7 +119,7 @@ where
     | _ => pure ()
   intro1PStep : TacticM Unit :=
     liftMetaTactic fun mvarId => do
-      let (_, mvarId) ← Meta.intro1P mvarId
+      let (_, mvarId) ← mvarId.intro1P
       pure [mvarId]
 
 /-- Try calling `assumption` on all goals; succeeds if it closes at least one goal. -/
@@ -242,7 +242,7 @@ elab "any_goals " seq:tacticSeq : tactic => do
   let mut mvarIdsNew := #[]
   let mut anySuccess := false
   for mvarId in mvarIds do
-    unless (← isExprMVarAssigned mvarId) do
+    unless (← mvarId.isAssigned) do
       setGoals [mvarId]
       try
         evalTactic seq
@@ -255,10 +255,10 @@ elab "any_goals " seq:tacticSeq : tactic => do
   setGoals mvarIdsNew.toList
 
 elab "fapply " e:term : tactic =>
-  evalApplyLikeTactic (Meta.apply (cfg := {newGoals := ApplyNewGoals.all})) e
+  evalApplyLikeTactic (MVarId.apply (cfg := {newGoals := ApplyNewGoals.all})) e
 
 elab "eapply " e:term : tactic =>
-  evalApplyLikeTactic (Meta.apply (cfg := {newGoals := ApplyNewGoals.nonDependentOnly})) e
+  evalApplyLikeTactic (MVarId.apply (cfg := {newGoals := ApplyNewGoals.nonDependentOnly})) e
 
 /--
 Tries to solve the goal using a canonical proof of `True`, or the `rfl` tactic.
@@ -272,5 +272,5 @@ elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
   let mut g ← getMainGoal
   for ldec in ← getLCtx do
     if ldec.isAuxDecl then
-      g ← Meta.tryClear g ldec.fvarId
+      g ← g.tryClear ldec.fvarId
   replaceMainGoal [g]

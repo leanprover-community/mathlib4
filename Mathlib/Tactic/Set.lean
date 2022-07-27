@@ -46,7 +46,7 @@ elab_rules : tactic
       let val ← elabTerm val none
       pure (← inferType val, val)
     let fvar ← liftMetaTacticAux fun mvarId => do
-      let (fvar, mvarId) ← intro1P (← define mvarId a.getId ty val)
+      let (fvar, mvarId) ← (← mvarId.define a.getId ty val).intro1P
       pure (fvar, [mvarId])
     withMainContext do
       Term.addTermInfo' (isBinder := true) a (mkFVar fvar)

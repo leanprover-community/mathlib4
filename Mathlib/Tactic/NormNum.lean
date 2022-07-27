@@ -149,9 +149,9 @@ syntax (name := normNum) "norm_num" (" [" simpArg,* "]")? (ppSpace location)? : 
 open Meta Elab.Tactic in
 elab_rules : tactic | `(tactic| norm_num) => do
   liftMetaTactic fun g => do
-    let some (α, lhs, rhs) ← matchEq? (← getMVarType g) | throwError "fail"
+    let some (α, lhs, rhs) ← matchEq? (← g.getType) | throwError "fail"
     let p ← NormNum.evalEq α lhs rhs
-    assignExprMVar g p
+    g.assign p
     pure []
 
 end Tactic

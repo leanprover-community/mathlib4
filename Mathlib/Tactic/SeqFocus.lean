@@ -21,7 +21,7 @@ elab "map_tacs " "[" ts:tactic,* "]" : tactic => do
     throwError "too many tactics"
   let mut mvarIdsNew := #[]
   for tac in tacs, mvarId in mvarIds do
-    unless ← isExprMVarAssigned mvarId do
+    unless ← mvarId.isAssigned do
       setGoals [mvarId]
       try
         evalTactic tac

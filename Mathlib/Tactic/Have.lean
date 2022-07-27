@@ -36,8 +36,8 @@ syntax "suffices" Parser.Term.haveIdLhs' : tactic
 open Elab Term in
 def haveLetCore (mvarId : MVarId) (name : Option Syntax) (bis : Array Syntax)
   (t : Option Syntax) (keepTerm : Bool) : TermElabM (MVarId × MVarId) :=
-  let declFn := if keepTerm then define else assert
-  withMVarContext mvarId do
+  let declFn := if keepTerm then MVarId.define else MVarId.assert
+  mvarId.withContext do
     let n := if let some n := name then n.getId else `this
     let elabBinders k := if bis.isEmpty then k #[] else elabBinders bis k
     let (mvar1, t, p) ← elabBinders fun es => do
@@ -46,9 +46,9 @@ def haveLetCore (mvarId : MVarId) (name : Option Syntax) (bis : Array Syntax)
       | some t => Tactic.elabTerm.go t none
       let p ← mkFreshExprMVar t MetavarKind.syntheticOpaque n
       pure (p.mvarId!, ← mkForallFVars es t, ← mkLambdaFVars es p)
-    let (fvar, mvar2) ← intro1P (← declFn mvarId n t p)
+    let (fvar, mvar2) ← (← declFn mvarId n t p).intro1P
     if let some stx := name then
-      withMVarContext mvar2 do
+      mvar2.withContext do
         Term.addTermInfo' (isBinder := true) stx (mkFVar fvar)
     pure (mvar1, mvar2)
 

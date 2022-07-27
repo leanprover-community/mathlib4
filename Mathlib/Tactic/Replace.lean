@@ -51,7 +51,7 @@ elab_rules : tactic
       evalTactic $ ← `(tactic|have $[$n?]? $[: $t?]? := $v)
       match hId? with
       | some hId =>
-        try replaceMainGoal [← Meta.clear (← getMainGoal) hId]
+        try replaceMainGoal [← (← getMainGoal).clear hId]
         catch | _ => pure ()
       | none     => pure ()
 
@@ -97,6 +97,6 @@ elab_rules : tactic
     let hId? := (← getLCtx).findFromUserName? name |>.map fun d => d.fvarId
     match hId? with
     | some hId =>
-      try replaceMainGoal [mvar1, ← Meta.clear mvar2 hId]
+      try replaceMainGoal [mvar1, ← mvar2.clear hId]
       catch | _ => pure ()
     | none     => replaceMainGoal [mvar1, mvar2]
