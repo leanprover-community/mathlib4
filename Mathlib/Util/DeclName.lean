@@ -10,7 +10,7 @@ Defines a macro that returns the name of the enclosing definition.
 
 ```
 namespace Foo
-def bar : Name := decl_name!
+def bar : Name := decl_name%
 
 #eval Foo.bar -- `Foo.bar
 ```
@@ -20,5 +20,5 @@ open Lean Elab Term
 
 elab "decl_name%" : term => do
   let some declName ← getDeclName?
-    | throwError "invalid `decl_name!` macro, it must be used in definitions"
+    | throwError "invalid `decl_name%` macro, it must be used in definitions"
   elabTerm (quote declName : Term) none
