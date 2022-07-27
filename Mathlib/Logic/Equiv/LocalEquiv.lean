@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2022 Frédéric Dupuis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Author: Frédéric Dupuis, Heather Macbeth
+-/
+
 import Mathlib.Init.Logic
 import Mathlib.Init.Set
 import Mathlib.Logic.Equiv.MfldSimpsAttr
