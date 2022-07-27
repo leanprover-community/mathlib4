@@ -44,9 +44,3 @@ elab "rename_bvar " old:ident " → " new:ident loc?:(ppSpace location)? : tacti
       (fun fvarId => renameBVarHyp mvarId fvarId old.getId new.getId)
       (renameBVarTarget mvarId old.getId new.getId)
       fun _ => throwError "unexpected location syntax"
-
-example (h : ∀ a b : Nat, a = b → b = a) : ∀ a b : Nat, a = b → b = a := by
-  rename_bvar a → x
-  rename_bvar a → x at h
-  rename_bvar x → b at h
-  exact h
