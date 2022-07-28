@@ -56,6 +56,7 @@ rcases, rintro, obtain, destructuring, cases, pattern matching, match
 
 namespace Lean.Parser.Tactic
 
+/-- The syntax category of `rcases` patterns. -/
 declare_syntax_cat rcasesPat
 syntax rcasesPatMed := sepBy1(rcasesPat, " | ")
 syntax rcasesPatLo := rcasesPatMed (" : " term)?
@@ -65,6 +66,7 @@ syntax (name := rcasesPat.clear) "-" : rcasesPat
 syntax (name := rcasesPat.tuple) "⟨" rcasesPatLo,* "⟩" : rcasesPat
 syntax (name := rcasesPat.paren) "(" rcasesPatLo ")" : rcasesPat
 
+/-- The syntax category of `rintro` patterns. -/
 declare_syntax_cat rintroPat
 syntax (name := rintroPat.one) rcasesPat : rintroPat
 syntax (name := rintroPat.binder) "(" rintroPat+ (" : " term)? ")" : rintroPat
