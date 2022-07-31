@@ -24,6 +24,7 @@ structure Cache :=
   α : Expr
   univ : Level
   cs : Expr
+  red : TransparencyMode
 
 structure State :=
   atoms : Array Expr := #[]
@@ -34,10 +35,10 @@ def State.numAtoms (s : State) := s.atoms.size
 the list of atoms-up-to-defeq encountered thus far, used for atom sorting. -/
 abbrev RingM := ReaderT Cache $ StateRefT State MetaM
 
-def RingM.run (ty : Expr) (m : RingM α) : MetaM α := do
-  let .succ u ← getLevel ty | throwError "fail"
-  let inst ← synthInstance (mkApp (mkConst ``CommSemiring [u]) ty)
-  (m {α := ty, univ := u, cs := inst }).run' {}
+def RingM.run (ty : Expr) (red : TransparencyMode) (m : RingM α) : MetaM α := do
+  let .succ univ ← getLevel ty | throwError "fail"
+  let cs ← synthInstance (mkApp (mkConst ``CommSemiring [univ]) ty)
+  (m {α := ty, univ, cs, red }).run' {}
 
 def mkAppCS (f : Name) (args : Array Expr) : RingM Expr := do
   let c ← read
@@ -409,9 +410,10 @@ partial def eval (e : Expr) : RingM (HornerExpr × Expr) :=
     | _ => evalAtom e
 
 elab "ring" : tactic => liftMetaMAtMain fun g => do
-  match (← instantiateMVars (← g.getDecl).type).getAppFnArgs with
+  match (← instantiateMVars (← g.getType)).getAppFnArgs with
   | (`Eq, #[ty, e₁, e₂]) =>
-    let ((e₁', p₁), (e₂', p₂)) ← RingM.run ty $ do pure (← eval e₁, ← eval e₂)
+    let red := .default -- FIXME
+    let ((e₁', p₁), (e₂', p₂)) ← RingM.run ty red $ do pure (← eval e₁, ← eval e₂)
     if ← isDefEq e₁' e₂' then
       g.assign (← mkEqTrans p₁ (← mkEqSymm p₂))
     else

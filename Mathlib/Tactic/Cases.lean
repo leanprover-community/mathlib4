@@ -51,7 +51,7 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array (Name × MVarId)) (wit
     let (_, g) ← g.introN numFields altVarNames
     let some (g, _) ← Cases.unifyEqs? numEqs g {} | pure ()
     let (_, g) ← g.introNP numGeneralized
-    let g ← liftM $ toClear.foldlM MVarId.tryClear g
+    let g ← liftM $ toClear.foldlM (·.tryClear) g
     subgoals := subgoals.push g
   pure subgoals
 

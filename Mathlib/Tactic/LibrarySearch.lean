@@ -50,43 +50,42 @@ initialize librarySearchLemmas : DeclCache (DiscrTree Name) ←
       let keys ← withReducible <| DiscrTree.mkPath type
       pure $ lemmas.insertCore keys name
 
-def librarySearch (mvarId : MVarId) (lemmas : DiscrTree Name) (solveByElimDepth := 6) :
+def librarySearch (goal : MVarId) (lemmas : DiscrTree Name) (solveByElimDepth := 6) :
     MetaM <| Option (Array <| MetavarContext × List MVarId) := do
   profileitM Exception "librarySearch" (← getOptions) do
-  let mvar := mkMVar mvarId
-  let ty ← inferType mvar
+  let ty ← goal.getType
 
   let mut suggestions := #[]
 
   let state0 ← get
 
   try
-    solveByElim solveByElimDepth mvarId
+    solveByElim solveByElimDepth goal
     return none
   catch _ =>
     set state0
 
   for lem in ← lemmas.getMatch ty do
     trace[Tactic.librarySearch] "{lem}"
-    match ← traceCtx `Tactic.librarySearch try
-        let newMVars ← mvarId.apply (← mkConstWithFreshMVarLevels lem)
-        (try
-          for newMVar in newMVars do
-            newMVar.withContext do
-              trace[Tactic.librarySearch] "proving {← addMessageContextFull (mkMVar newMVar)}"
-              solveByElim solveByElimDepth newMVar
-          pure $ some $ Sum.inr ()
-        catch _ =>
-          let res := some $ Sum.inl <| (← getMCtx, newMVars)
-          set state0
-          pure res)
+    let result ← traceCtx `Tactic.librarySearch try
+      let newGoals ← goal.apply (← mkConstWithFreshMVarLevels lem)
+      (try
+        for newGoal in newGoals do
+          newGoal.withContext do
+            trace[Tactic.librarySearch] "proving {← addMessageContextFull (mkMVar newGoal)}"
+            solveByElim solveByElimDepth newGoal
+        pure $ some $ Sum.inr ()
       catch _ =>
+        let res := some $ Sum.inl (← getMCtx, newGoals)
         set state0
-        pure none
-      with
-      | none => pure ()
-      | some (Sum.inr ()) => return none
-      | some (Sum.inl suggestion) => suggestions := suggestions.push suggestion
+        pure res)
+    catch _ =>
+      set state0
+      pure none
+    match result with
+    | none => pure ()
+    | some (Sum.inr ()) => return none
+    | some (Sum.inl suggestion) => suggestions := suggestions.push suggestion
 
   pure $ some suggestions
 
@@ -112,13 +111,13 @@ elab_rules : tactic | `(tactic| library_search%$tk) => do
   withNestedTraces do
   trace[Tactic.librarySearch] "proving {← getMainTarget}"
   let mvar ← getMainGoal
-  let (_, introdMVar) ← (← getMainGoal).intros
-  introdMVar.withContext do
-    if let some suggestions ← librarySearch introdMVar (← librarySearchLemmas.get) then
+  let (_, goal) ← (← getMainGoal).intros
+  goal.withContext do
+    if let some suggestions ← librarySearch goal (← librarySearchLemmas.get) then
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addExactSuggestion tk (← instantiateMVars (mkMVar mvar))
-      admitGoal introdMVar
+      admitGoal goal
     else
       addExactSuggestion tk (← instantiateMVars (mkMVar mvar))
 
@@ -126,14 +125,14 @@ open Elab Term in
 elab tk:"library_search%" : term <= expectedType => do
   withNestedTraces do
   trace[Tactic.librarySearch] "proving {expectedType}"
-  let mvar ← mkFreshExprMVar expectedType
-  let (_, introdMVar) ← mvar.mvarId!.intros
-  introdMVar.withContext do
-    if let some suggestions ← librarySearch introdMVar (← librarySearchLemmas.get) then
+  let goal ← mkFreshExprMVar expectedType
+  let (_, introdGoal) ← goal.mvarId!.intros
+  introdGoal.withContext do
+    if let some suggestions ← librarySearch introdGoal (← librarySearchLemmas.get) then
       for suggestion in suggestions do
         withMCtx suggestion.1 do
-          addTermSuggestion tk (← instantiateMVars mvar)
+          addTermSuggestion tk (← instantiateMVars goal)
       mkSorry expectedType (synthetic := true)
     else
-      addTermSuggestion tk (← instantiateMVars mvar)
-      instantiateMVars mvar
+      addTermSuggestion tk (← instantiateMVars goal)
+      instantiateMVars goal

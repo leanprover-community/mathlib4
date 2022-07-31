@@ -29,8 +29,8 @@ syntax (name := inhabit) "inhabit " atomic(ident " : ")? term : tactic
 
 /-- `evalInhabit` takes in the MVarId of the main goal, runs the core portion of the inhabit tactic,
     and returns the resulting MVarId -/
-def evalInhabit (mvarId : MVarId) (h_name : Option Ident) (term : Syntax) : TacticM MVarId := do
-  mvarId.withContext do
+def evalInhabit (goal : MVarId) (h_name : Option Ident) (term : Syntax) : TacticM MVarId := do
+  goal.withContext do
     let e ← Tactic.elabTerm term none
     let e_lvl ← Meta.getLevel e
     let inhabited_e := mkApp (mkConst ``Inhabited [e_lvl]) e
@@ -43,10 +43,10 @@ def evalInhabit (mvarId : MVarId) (h_name : Option Ident) (term : Syntax) : Tact
     let pf ←
       if ← isProp e then Meta.mkAppM ``nonempty_prop_to_inhabited #[e, nonempty_e_pf]
       else Meta.mkAppM ``nonempty_to_inhabited #[e, nonempty_e_pf]
-    let (_, r) ← (← mvarId.assert h_name inhabited_e pf).intro1P
+    let (_, r) ← (← goal.assert h_name inhabited_e pf).intro1P
     return r
 
 elab_rules : tactic
   | `(tactic| inhabit $[$h_name:ident :]? $term) => do
-    let mVarId ← evalInhabit (← getMainGoal) h_name term
-    replaceMainGoal [mVarId]
+    let goal ← evalInhabit (← getMainGoal) h_name term
+    replaceMainGoal [goal]

@@ -254,30 +254,30 @@ def processConstructors (ref : Syntax) (params : Nat) (altVarNames : Array AltVa
 open Elab Tactic
 
 -- this belongs in core; it is a variation on subst that passes fvarSubst through
-def subst' (mvarId : MVarId) (hFVarId : FVarId)
+def subst' (goal : MVarId) (hFVarId : FVarId)
   (fvarSubst : FVarSubst := {}) : MetaM (FVarSubst × MVarId) := do
   let hLocalDecl ← hFVarId.getDecl
-  let error {α} _ : MetaM α := throwTacticEx `subst mvarId
+  let error {α} _ : MetaM α := throwTacticEx `subst goal
     m!"invalid equality proof, it is not of the form (x = t) or (t = x){indentExpr hLocalDecl.type}"
   let some (_, lhs, rhs) ← matchEq? hLocalDecl.type | error ()
   let substReduced (newType : Expr) (symm : Bool) : MetaM (FVarSubst × MVarId) := do
-    let mvarId ← mvarId.assert hLocalDecl.userName newType (mkFVar hFVarId)
-    let (hFVarId', mvarId) ← mvarId.intro1P
-    let mvarId ← mvarId.clear hFVarId
-    substCore mvarId hFVarId' (symm := symm) (tryToSkip := true) (fvarSubst := fvarSubst)
+    let goal ← goal.assert hLocalDecl.userName newType (mkFVar hFVarId)
+    let (hFVarId', goal) ← goal.intro1P
+    let goal ← goal.clear hFVarId
+    substCore goal hFVarId' (symm := symm) (tryToSkip := true) (fvarSubst := fvarSubst)
   let rhs' ← whnf rhs
   if rhs'.isFVar then
     if rhs != rhs' then
       substReduced (← mkEq lhs rhs') true
     else
-      substCore mvarId hFVarId (symm := true) (tryToSkip := true) (fvarSubst := fvarSubst)
+      substCore goal hFVarId (symm := true) (tryToSkip := true) (fvarSubst := fvarSubst)
   else
     let lhs' ← whnf lhs
     if lhs'.isFVar then
       if lhs != lhs' then
         substReduced (← mkEq lhs' rhs) false
       else
-        substCore mvarId hFVarId (symm := false) (tryToSkip := true) (fvarSubst := fvarSubst)
+        substCore goal hFVarId (symm := false) (tryToSkip := true) (fvarSubst := fvarSubst)
     else error ()
 
 mutual
@@ -341,7 +341,7 @@ partial def rcasesCore (g : MVarId) (fs : FVarSubst) (clears : Array FVarId) (e 
           pure ([(n, ps)], #[⟨⟨g, #[mkFVar v], fs'⟩, n⟩])
       | ConstantInfo.inductInfo info, _ => do
         let (altVarNames, r) ← processConstructors pat.ref info.numParams #[] info.ctors pat.asAlts
-        (r, ·) <$> cases g e.fvarId! altVarNames
+        (r, ·) <$> g.cases e.fvarId! altVarNames
       | _, _ => failK ()
     (·.2) <$> subgoals.foldlM (init := (r, a)) fun (r, a) ⟨goal, ctorName⟩ => do
       let rec align
@@ -373,12 +373,12 @@ partial def rcasesContinue (g : MVarId) (fs : FVarSubst) (clears : Array FVarId)
 end
 
 /-- Like `tryClearMany`, but also clears dependent hypotheses if possible -/
-def tryClearMany' (mvarId : MVarId) (fvarIds : Array FVarId) : MetaM MVarId := do
+def tryClearMany' (goal : MVarId) (fvarIds : Array FVarId) : MetaM MVarId := do
   let mut toErase := fvarIds
-  for localDecl in (← mvarId.getDecl).lctx do
+  for localDecl in (← goal.getDecl).lctx do
     if ← findLocalDeclDependsOn localDecl toErase.contains then
       toErase := toErase.push localDecl.fvarId
-  mvarId.tryClearMany toErase
+  goal.tryClearMany toErase
 
 /-- The terminating continuation used in `rcasesCore` and `rcasesContinue`. We specialize the type
 `α` to `Array MVarId` to collect the list of goals, and given the list of `clears`, it attempts to
@@ -407,9 +407,9 @@ partial def RCasesPatt.parse (stx : Syntax) : MetaM RCasesPatt :=
   | _ => throwUnsupportedSyntax
 
 -- extracted from elabCasesTargets
-def generalizeExceptFVar (mvarId : MVarId) (args : Array GeneralizeArg) : MetaM (Array Expr × MVarId) := do
+def generalizeExceptFVar (goal : MVarId) (args : Array GeneralizeArg) : MetaM (Array Expr × MVarId) := do
   let argsToGeneralize := args.filter fun arg => !(arg.expr.isFVar && arg.hName?.isNone)
-  let (fvarIdsNew, mvarId) ← generalize mvarId argsToGeneralize
+  let (fvarIdsNew, goal) ← goal.generalize argsToGeneralize
   let mut result := #[]
   let mut j := 0
   for arg in args do
@@ -418,7 +418,7 @@ def generalizeExceptFVar (mvarId : MVarId) (args : Array GeneralizeArg) : MetaM 
     else
       result := result.push (mkFVar fvarIdsNew[j]!)
       j := j+1
-  pure (result, mvarId)
+  pure (result, goal)
 
 /-- Given a list of targets of the form `e` or `h : e`, and a pattern, match all the targets
 against the pattern. Returns the list of produced subgoals. -/

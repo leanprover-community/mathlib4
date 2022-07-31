@@ -12,27 +12,27 @@ namespace Tactic
 /-- Assuming there are `n` goals, `map_tacs [t1, t2, ..., tn]` applies each `ti` to the respective
 goal and leaves the resulting subgoals. -/
 elab "map_tacs " "[" ts:tactic,* "]" : tactic => do
-  let mvarIds ← getGoals
+  let goals ← getGoals
   let tacs := ts.getElems
   let length := tacs.size
-  if length < mvarIds.length then
+  if length < goals.length then
     throwError "not enough tactics"
-  else if length > mvarIds.length then
+  else if length > goals.length then
     throwError "too many tactics"
-  let mut mvarIdsNew := #[]
-  for tac in tacs, mvarId in mvarIds do
-    unless ← mvarId.isAssigned do
-      setGoals [mvarId]
-      try
-        evalTactic tac
-        mvarIdsNew := mvarIdsNew ++ (← getUnsolvedGoals)
-      catch ex =>
-        if (← read).recover then
-          logException ex
-          mvarIdsNew := mvarIdsNew.push mvarId
-        else
-          throw ex
-  setGoals mvarIdsNew.toList
+  let mut goalsNew := #[]
+  for tac in tacs, goal in goals do
+    if ← goal.isAssigned then continue
+    setGoals [goal]
+    try
+      evalTactic tac
+      goalsNew := goalsNew ++ (← getUnsolvedGoals)
+    catch ex =>
+      if (← read).recover then
+        logException ex
+        goalsNew := goalsNew.push goal
+      else
+        throw ex
+  setGoals goalsNew.toList
 
 /-- `t <;> [t1, t2, ..., tn]` focuses on the first goal and applies `t`, which should result in `n`
 subgoals. It then applies each `ti` to the corresponding goal and collects the resulting

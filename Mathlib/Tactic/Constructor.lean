@@ -14,7 +14,6 @@ open Lean Meta Elab Tactic
 except that it does not reorder goals.
 -/
 elab "fconstructor " : tactic => withMainContext do
-  let mvarIds' ←
-    (← getMainGoal).constructor (cfg := {newGoals := .all})
+  let mvarIds' ← (← getMainGoal).constructor {newGoals := .all}
   Term.synthesizeSyntheticMVarsNoPostponing
   replaceMainGoal mvarIds'

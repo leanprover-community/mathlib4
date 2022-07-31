@@ -18,12 +18,12 @@ open Lean.Elab.Tactic
 /-- Attempt to solve the given metavariable by repeating applying a local hypothesis. -/
 def Lean.Meta.solveByElim : Nat → MVarId → MetaM Unit
   | 0, _ => throwError "fail"
-  | (n+1), mvarId => do
+  | n+1, goal => do
       -- We attempt to find a local declaration which can be applied,
       -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
       (← getLCtx).firstDeclM fun localDecl => do
         guard ¬ localDecl.isAuxDecl
-        for g in (← mvarId.apply localDecl.toExpr) do solveByElim n g
+        for g in (← goal.apply localDecl.toExpr) do solveByElim n g
 
 namespace Lean.Tactic
 

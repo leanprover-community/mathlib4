@@ -65,8 +65,8 @@ macro_rules
 
 @[appUnexpander setOf]
 def setOf.unexpander : Lean.PrettyPrinter.Unexpander
-  | `(setOf fun $x:ident => $p) => `({ $x:ident | $p })
-  | `(setOf fun $x:ident : $ty:term => $p) => `({ $x:ident : $ty:term | $p })
+  | `($_ fun $x:ident => $p) => `({ $x:ident | $p })
+  | `($_ fun $x:ident : $ty:term => $p) => `({ $x:ident : $ty:term | $p })
   | _ => throw ()
 
 open Mathlib.ExtendedBinder in
@@ -133,12 +133,12 @@ macro_rules
 
 @[appUnexpander Set.singleton]
 def singletonUnexpander : Lean.PrettyPrinter.Unexpander
-| `(Set.singleton $a) => `({ $a:term })
+| `($_ $a) => `({ $a:term })
 | _ => throw ()
 
 @[appUnexpander Set.insert]
 def insertUnexpander : Lean.PrettyPrinter.Unexpander
-| `(Set.insert $a { $ts,* }) => `({$a:term, $ts,*})
+| `($_ $a { $ts,* }) => `({$a:term, $ts,*})
 | _ => throw ()
 
 end Set

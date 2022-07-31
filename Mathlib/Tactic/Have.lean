@@ -34,35 +34,35 @@ syntax "let " Parser.Term.haveIdLhs' : tactic
 syntax "suffices" Parser.Term.haveIdLhs' : tactic
 
 open Elab Term in
-def haveLetCore (mvarId : MVarId) (name : Option Syntax) (bis : Array Syntax)
+def haveLetCore (goal : MVarId) (name : Option Syntax) (bis : Array Syntax)
   (t : Option Syntax) (keepTerm : Bool) : TermElabM (MVarId × MVarId) :=
   let declFn := if keepTerm then MVarId.define else MVarId.assert
-  mvarId.withContext do
+  goal.withContext do
     let n := if let some n := name then n.getId else `this
     let elabBinders k := if bis.isEmpty then k #[] else elabBinders bis k
-    let (mvar1, t, p) ← elabBinders fun es => do
+    let (goal1, t, p) ← elabBinders fun es => do
       let t ← match t with
       | none => mkFreshTypeMVar
       | some t => Tactic.elabTerm.go t none
       let p ← mkFreshExprMVar t MetavarKind.syntheticOpaque n
       pure (p.mvarId!, ← mkForallFVars es t, ← mkLambdaFVars es p)
-    let (fvar, mvar2) ← (← declFn mvarId n t p).intro1P
+    let (fvar, goal2) ← (← declFn goal n t p).intro1P
     if let some stx := name then
-      mvar2.withContext do
+      goal2.withContext do
         Term.addTermInfo' (isBinder := true) stx (mkFVar fvar)
-    pure (mvar1, mvar2)
+    pure (goal1, goal2)
 
 elab_rules : tactic
 | `(tactic| have $[$n:ident $bs*]? $[: $t:term]?) => do
-  let (mvar1, mvar2) ← haveLetCore (← getMainGoal) n (bs.getD #[]) t false
-  replaceMainGoal [mvar1, mvar2]
+  let (goal1, goal2) ← haveLetCore (← getMainGoal) n (bs.getD #[]) t false
+  replaceMainGoal [goal1, goal2]
 
 elab_rules : tactic
 | `(tactic| suffices $[$n:ident $bs*]? $[: $t:term]?) => do
-  let (mvar1, mvar2) ← haveLetCore (← getMainGoal) n (bs.getD #[]) t false
-  replaceMainGoal [mvar2, mvar1]
+  let (goal1, goal2) ← haveLetCore (← getMainGoal) n (bs.getD #[]) t false
+  replaceMainGoal [goal2, goal1]
 
 elab_rules : tactic
 | `(tactic| let $[$n:ident $bs*]? $[: $t:term]?) => withMainContext do
-  let (mvar1, mvar2) ← haveLetCore (← getMainGoal) n (bs.getD #[]) t true
-  replaceMainGoal [mvar1, mvar2]
+  let (goal1, goal2) ← haveLetCore (← getMainGoal) n (bs.getD #[]) t true
+  replaceMainGoal [goal1, goal2]
