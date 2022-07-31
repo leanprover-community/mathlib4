@@ -24,8 +24,8 @@ open Lean Elab Tactic Meta
 /-- Close a goal of the form `optParam α a` by using `a`. -/
 elab (name := inferOptParam) "infer_opt_param" : tactic =>
   liftMetaTactic fun goal => do
-    let tgt_expr ← getMVarType goal
+    let tgt_expr ← goal.getType
     match tgt_expr.getAppFnArgs with
-    | (``optParam, #[_ty, val]) => assignExprMVar goal val; pure []
+    | (``optParam, #[_ty, val]) => goal.assign val; pure []
     | _ => throwError
       "`infer_opt_param` only solves goals of the form `optParam _ _`, not {tgt_expr}"

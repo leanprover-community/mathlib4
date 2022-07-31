@@ -23,4 +23,4 @@ elab_rules : tactic
         let deps := (← collectForwardDeps #[mkFVar fvar] true).map (·.fvarId!)
         if ← deps.allM fun dep => return (← isClass? (lctx.get! dep).type).isNone then
           toClear := toClear ++ deps
-      tryClearMany goal toClear
+      goal.tryClearMany toClear

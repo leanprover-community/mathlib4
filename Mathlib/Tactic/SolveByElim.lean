@@ -23,7 +23,7 @@ def Lean.Meta.solveByElim : Nat → MVarId → MetaM Unit
       -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
       (← getLCtx).firstDeclM fun localDecl => do
         guard ¬ localDecl.isAuxDecl
-        for g in (← apply mvarId localDecl.toExpr) do solveByElim n g
+        for g in (← mvarId.apply localDecl.toExpr) do solveByElim n g
 
 namespace Lean.Tactic
 

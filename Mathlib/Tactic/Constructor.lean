@@ -15,6 +15,6 @@ except that it does not reorder goals.
 -/
 elab "fconstructor " : tactic => withMainContext do
   let mvarIds' ←
-    Meta.constructor (cfg := {newGoals := .all}) (← getMainGoal)
+    (← getMainGoal).constructor (cfg := {newGoals := .all})
   Term.synthesizeSyntheticMVarsNoPostponing
   replaceMainGoal mvarIds'

@@ -94,7 +94,7 @@ def mkSimpContext' (simpTheorems : SimpTheorems) (stx : Syntax) (eraseLocal : Bo
     let mut ctx := ctx
     let mut fvarIdToLemmaId := {}
     for h in hs do
-      let localDecl ← getLocalDecl h
+      let localDecl ← h.getDecl
       unless simpTheorems.isErased localDecl.userName do
         let fvarId := localDecl.fvarId
         let proof  := localDecl.toExpr

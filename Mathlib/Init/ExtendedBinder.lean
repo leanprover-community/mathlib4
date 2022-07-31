@@ -12,7 +12,7 @@ Defines an extended binder syntax supporting `∀ ε > 0, ...` etc.
 
 namespace Mathlib.ExtendedBinder
 
-/-
+/--
 The syntax category of binder predicates contains predicates like `> 0`, `∈ s`, etc.
 (`: t` should not be a binder predicate because it would clash with the built-in syntax for ∀/∃.)
 -/

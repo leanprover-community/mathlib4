@@ -69,10 +69,10 @@ def librarySearch (mvarId : MVarId) (lemmas : DiscrTree Name) (solveByElimDepth 
   for lem in ← lemmas.getMatch ty do
     trace[Tactic.librarySearch] "{lem}"
     match ← traceCtx `Tactic.librarySearch try
-        let newMVars ← apply mvarId (← mkConstWithFreshMVarLevels lem)
+        let newMVars ← mvarId.apply (← mkConstWithFreshMVarLevels lem)
         (try
           for newMVar in newMVars do
-            withMVarContext newMVar do
+            newMVar.withContext do
               trace[Tactic.librarySearch] "proving {← addMessageContextFull (mkMVar newMVar)}"
               solveByElim solveByElimDepth newMVar
           pure $ some $ Sum.inr ()
@@ -112,8 +112,8 @@ elab_rules : tactic | `(tactic| library_search%$tk) => do
   withNestedTraces do
   trace[Tactic.librarySearch] "proving {← getMainTarget}"
   let mvar ← getMainGoal
-  let (_, introdMVar) ← intros (← getMainGoal)
-  withMVarContext introdMVar do
+  let (_, introdMVar) ← (← getMainGoal).intros
+  introdMVar.withContext do
     if let some suggestions ← librarySearch introdMVar (← librarySearchLemmas.get) then
       for suggestion in suggestions do
         withMCtx suggestion.1 do
@@ -127,8 +127,8 @@ elab tk:"library_search%" : term <= expectedType => do
   withNestedTraces do
   trace[Tactic.librarySearch] "proving {expectedType}"
   let mvar ← mkFreshExprMVar expectedType
-  let (_, introdMVar) ← intros mvar.mvarId!
-  withMVarContext introdMVar do
+  let (_, introdMVar) ← mvar.mvarId!.intros
+  introdMVar.withContext do
     if let some suggestions ← librarySearch introdMVar (← librarySearchLemmas.get) then
       for suggestion in suggestions do
         withMCtx suggestion.1 do

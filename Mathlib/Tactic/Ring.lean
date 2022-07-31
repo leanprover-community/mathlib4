@@ -409,11 +409,11 @@ partial def eval (e : Expr) : RingM (HornerExpr × Expr) :=
     | _ => evalAtom e
 
 elab "ring" : tactic => liftMetaMAtMain fun g => do
-  match (← instantiateMVars (← getMVarDecl g).type).getAppFnArgs with
+  match (← instantiateMVars (← g.getDecl).type).getAppFnArgs with
   | (`Eq, #[ty, e₁, e₂]) =>
     let ((e₁', p₁), (e₂', p₂)) ← RingM.run ty $ do pure (← eval e₁, ← eval e₂)
     if ← isDefEq e₁' e₂' then
-      assignExprMVar g (← mkEqTrans p₁ (← mkEqSymm p₂))
+      g.assign (← mkEqTrans p₁ (← mkEqSymm p₂))
     else
       throwError "ring failed, ring expressions not equal: \n{← e₁'.pp}\n  !=\n{← e₂'.pp}"
   | _ => throwError "ring failed: not an equality"

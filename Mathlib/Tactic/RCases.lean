@@ -56,6 +56,7 @@ rcases, rintro, obtain, destructuring, cases, pattern matching, match
 
 namespace Lean.Parser.Tactic
 
+/-- The syntax category of `rcases` patterns. -/
 declare_syntax_cat rcasesPat
 syntax rcasesPatMed := sepBy1(rcasesPat, " | ")
 syntax rcasesPatLo := rcasesPatMed (" : " term)?
@@ -65,6 +66,7 @@ syntax (name := rcasesPat.clear) "-" : rcasesPat
 syntax (name := rcasesPat.tuple) "⟨" rcasesPatLo,* "⟩" : rcasesPat
 syntax (name := rcasesPat.paren) "(" rcasesPatLo ")" : rcasesPat
 
+/-- The syntax category of `rintro` patterns. -/
 declare_syntax_cat rintroPat
 syntax (name := rintroPat.one) rcasesPat : rintroPat
 syntax (name := rintroPat.binder) "(" rintroPat+ (" : " term)? ")" : rintroPat
@@ -254,14 +256,14 @@ open Elab Tactic
 -- this belongs in core; it is a variation on subst that passes fvarSubst through
 def subst' (mvarId : MVarId) (hFVarId : FVarId)
   (fvarSubst : FVarSubst := {}) : MetaM (FVarSubst × MVarId) := do
-  let hLocalDecl ← getLocalDecl hFVarId
+  let hLocalDecl ← hFVarId.getDecl
   let error {α} _ : MetaM α := throwTacticEx `subst mvarId
     m!"invalid equality proof, it is not of the form (x = t) or (t = x){indentExpr hLocalDecl.type}"
   let some (_, lhs, rhs) ← matchEq? hLocalDecl.type | error ()
   let substReduced (newType : Expr) (symm : Bool) : MetaM (FVarSubst × MVarId) := do
-    let mvarId ← assert mvarId hLocalDecl.userName newType (mkFVar hFVarId)
-    let (hFVarId', mvarId) ← intro1P mvarId
-    let mvarId ← clear mvarId hFVarId
+    let mvarId ← mvarId.assert hLocalDecl.userName newType (mkFVar hFVarId)
+    let (hFVarId', mvarId) ← mvarId.intro1P
+    let mvarId ← mvarId.clear hFVarId
     substCore mvarId hFVarId' (symm := symm) (tryToSkip := true) (fvarSubst := fvarSubst)
   let rhs' ← whnf rhs
   if rhs'.isFVar then
@@ -300,7 +302,7 @@ partial def rcasesCore (g : MVarId) (fs : FVarSubst) (clears : Array FVarId) (e 
     unless e.isFVar do
       throwError "rcases tactic failed: {e} is not a fvar"
     pure e
-  withRef pat.ref <| withMVarContext g <| match pat with
+  withRef pat.ref <| g.withContext <| match pat with
   | RCasesPatt.one _ `rfl => do
     let (fs, g) ← subst' g (← translate e).fvarId! fs
     cont g fs clears a
@@ -312,7 +314,7 @@ partial def rcasesCore (g : MVarId) (fs : FVarSubst) (clears : Array FVarId) (e 
     let etype ← inferType e
     unless ← isDefEq etype expected do
       Term.throwTypeMismatchError "rcases: scrutinee" expected etype e
-    let g ← replaceLocalDeclDefEq g e.fvarId! expected
+    let g ← g.replaceLocalDeclDefEq e.fvarId! expected
     rcasesCore g fs clears e.fvarId! a pat cont
   | RCasesPatt.alts _ [p] => rcasesCore g fs clears e a p cont
   | _ => do
@@ -325,16 +327,16 @@ partial def rcasesCore (g : MVarId) (fs : FVarSubst) (clears : Array FVarId) (e 
         unless info.kind matches QuotKind.type do failK ()
         let pat := pat.asAlts.headD default
         let ([x], ps) := processConstructor pat.ref 1 pat.asTuple | panic! "rcases"
-        let (vars, g) ← Meta.revert g (← getFVarsToGeneralize #[e])
-        withMVarContext g do
+        let (vars, g) ← g.revert (← getFVarsToGeneralize #[e])
+        g.withContext do
           let elimInfo ← getElimInfo `Quot.ind
-          let res ← ElimApp.mkElimApp elimInfo #[e] (← getMVarTag g)
+          let res ← ElimApp.mkElimApp elimInfo #[e] (← g.getTag)
           let elimArgs := res.elimApp.getAppArgs
           ElimApp.setMotiveArg g elimArgs[elimInfo.motivePos]!.mvarId! #[e.fvarId!]
-          assignExprMVar g res.elimApp
+          g.assign res.elimApp
           let #[(n, g)] := res.alts | panic! "rcases"
-          let (v, g) ← intro g x
-          let (varsOut, g) ← introNP g vars.size
+          let (v, g) ← g.intro x
+          let (varsOut, g) ← g.introNP vars.size
           let fs' := (vars.zip varsOut).foldl (init := fs) fun fs (v, w) => fs.insert v (mkFVar w)
           pure ([(n, ps)], #[⟨⟨g, #[mkFVar v], fs'⟩, n⟩])
       | ConstantInfo.inductInfo info, _ => do
@@ -373,10 +375,10 @@ end
 /-- Like `tryClearMany`, but also clears dependent hypotheses if possible -/
 def tryClearMany' (mvarId : MVarId) (fvarIds : Array FVarId) : MetaM MVarId := do
   let mut toErase := fvarIds
-  for localDecl in (← getMVarDecl mvarId).lctx do
+  for localDecl in (← mvarId.getDecl).lctx do
     if ← findLocalDeclDependsOn localDecl toErase.contains then
       toErase := toErase.push localDecl.fvarId
-  tryClearMany mvarId toErase
+  mvarId.tryClearMany toErase
 
 /-- The terminating continuation used in `rcasesCore` and `rcasesContinue`. We specialize the type
 `α` to `Array MVarId` to collect the list of goals, and given the list of `clears`, it attempts to
@@ -442,7 +444,7 @@ first followed by the goals produced by the pattern match. -/
 def obtainNone (pat : RCasesPatt) (ty : Syntax) (g : MVarId) : TermElabM (List MVarId) := do
   let ty ← Term.elabType ty
   let g₁ ← mkFreshExprMVar (some ty)
-  let (v, g₂) ← intro1 (← assert g (pat.name?.getD default) ty g₁)
+  let (v, g₂) ← (← g.assert (pat.name?.getD default) ty g₁).intro1
   let gs ← rcasesCore g₂ {} #[] v #[] pat finish
   pure (g₁.mvarId! :: gs.toList)
 
@@ -454,7 +456,7 @@ partial def rintroCore (g : MVarId) (fs : FVarSubst) (clears : Array FVarId) (a 
   match pat with
   | `(rintroPat| $pat:rcasesPat) =>
     let pat := (← RCasesPatt.parse pat).typed? ref ty?
-    let (v, g) ← intro g (pat.name?.getD `_)
+    let (v, g) ← g.intro (pat.name?.getD `_)
     rcasesCore g fs clears v a pat cont
   | `(rintroPat| ($(pats)* $[: $ty?]?)) =>
     rintroContinue g fs clears pat pats ty? a cont
@@ -463,7 +465,7 @@ partial def rintroCore (g : MVarId) (fs : FVarSubst) (clears : Array FVarId) (a 
 partial def rintroContinue (g : MVarId) (fs : FVarSubst) (clears : Array FVarId)
   (ref : Syntax) (pats : Array Syntax) (ty? : Option Syntax) (a : α)
   (cont : MVarId → FVarSubst → Array FVarId → α → TermElabM α) : TermElabM α := do
-  withMVarContext g do
+  g.withContext do
     let rec loop i g fs clears a := do
       if h : i < pats.size then
         rintroCore g fs clears a ref (pats.get ⟨i, h⟩) ty? (loop (i+1))
