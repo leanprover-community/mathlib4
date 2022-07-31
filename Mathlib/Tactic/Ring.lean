@@ -21,9 +21,13 @@ namespace Ring
 
 /-- This cache contains data required by the `ring` tactic during execution. -/
 structure Cache :=
+  /-- The carrier of the ring we are working on -/
   α : Expr
+  /-- The level of `α` -/
   univ : Level
+  /-- A proof of `comm_semiring α` -/
   cs : Expr
+  /-- The reducibility setting for definitional equality of atoms -/
   red : TransparencyMode
 
 structure State :=
