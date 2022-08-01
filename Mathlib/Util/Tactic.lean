@@ -29,8 +29,8 @@ def getNameAndFVarId [Monad m] [MonadError m] (ctx : LocalContext) (stx : Syntax
 
 /-- Updates the current `LocalContext` with a transformation function in `MetaM`. -/
 def modifyLocalContext (fLCtx : LocalContext → MetaM LocalContext) : TacticM Unit :=
-  liftMetaTactic fun mvarId => do
+  liftMetaTactic fun goal => do
     let newGoal ← mkFreshExprMVarAt (← fLCtx (← getLCtx)) (← getLocalInstances)
-      (← mvarId.getType) .syntheticOpaque (← mvarId.getTag)
-    mvarId.assign newGoal
+      (← goal.getType) .syntheticOpaque (← goal.getTag)
+    goal.assign newGoal
     return [newGoal.mvarId!]

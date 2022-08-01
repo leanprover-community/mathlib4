@@ -61,7 +61,7 @@ scoped elab "ext_iff_type%" struct:ident : term => do
 
 elab "subst_eqs" : tactic =>
   open Elab.Tactic in
-  liftMetaTactic1 fun mvarId => mvarId.substEqs
+  liftMetaTactic1 (·.substEqs)
 
 scoped macro "ext_proof%" : term =>
   `(fun {..} {..} => by intros; subst_eqs; rfl)

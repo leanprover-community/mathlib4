@@ -192,16 +192,16 @@ elab "mod_cast " e:term : term <= expectedType => do
 open Tactic Parser.Tactic Elab.Tactic
 
 def normCastTarget : TacticM Unit :=
-  liftMetaTactic1 fun mvarId => do
-    let tgt ← instantiateMVars (← mvarId.getType)
+  liftMetaTactic1 fun goal => do
+    let tgt ← instantiateMVars (← goal.getType)
     let prf ← derive tgt
-    applySimpResultToTarget mvarId tgt prf
+    applySimpResultToTarget goal tgt prf
 
 def normCastHyp (fvarId : FVarId) : TacticM Unit :=
-  liftMetaTactic1 fun mvarId => do
+  liftMetaTactic1 fun goal => do
     let hyp ← instantiateMVars (← fvarId.getDecl).type
     let prf ← derive hyp
-    return (← applySimpResultToLocalDecl mvarId fvarId prf false).map (·.snd)
+    return (← applySimpResultToLocalDecl goal fvarId prf false).map (·.snd)
 
 elab "norm_cast0" loc:((ppSpace location)?) : tactic =>
   withMainContext do
