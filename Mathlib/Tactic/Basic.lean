@@ -274,10 +274,3 @@ elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
     if ldec.isAuxDecl then
       g ← g.tryClear ldec.fvarId
   replaceMainGoal [g]
-
--- TODO: remove at next nightly bump
-/-- Ensures that the given tactic sequence fails. Used for testing. -/
-elab (name := failIfSuccess) "fail_if_success " tactic:tacticSeq : tactic => do
-  monadMap (m := TermElabM) Term.withoutErrToSorry <| withoutRecover do
-    if (← try evalTactic tactic; pure true catch _ => pure false) then
-      throwError "tactic succeeded"

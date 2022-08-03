@@ -22,25 +22,6 @@ only `pp.*` options.
 
 -/
 
--- FIXME: polyfill for lean4#1391
-namespace Std.PersistentHashMap
-
-/-- `for` iteration for `PersistentHashMap`. -/
-@[specialize] protected def forIn {_ : BEq α} {_ : Hashable α} [Monad m]
-    (map : PersistentHashMap α β) (init : σ) (f : α × β → σ → m (ForInStep σ)) : m σ := do
-  let intoError : ForInStep σ → Except σ σ
-  | .done s => .error s
-  | .yield s => .ok s
-  let result ← foldlM (m := ExceptT σ m) map (init := init) fun s a b =>
-    (intoError <$> f (a, b) s : m _)
-  match result with
-  | .ok s | .error s => pure s
-
-instance {_ : BEq α} {_ : Hashable α} : ForIn m (PersistentHashMap α β) (α × β) where
-  forIn := PersistentHashMap.forIn
-
-end Std.PersistentHashMap
-
 namespace Mathlib.Tactic
 open Lean Meta Elab Tactic
 
@@ -110,16 +91,15 @@ elab "#help" (&"attr" <|> &"attribute") id:(ident)? : command => do
         continue
     decls := decls.insert name decl
   let mut msg := Format.nil
-  -- let env ← getEnv
+  let env ← getEnv
   if decls.isEmpty then
     match id with
     | some id => throwError "no attributes start with {id}"
     | none => throwError "no attributes found (!)"
   for (name, decl) in decls do
     let mut msg1 := s!"[{name}]: {decl.descr}"
-    -- FIXME: put back when lean4#1384 lands
-    -- if let some doc ← findDocString? env decl.ref then
-    --   msg1 := s!"{msg1}\n{doc.trim}"
+    if let some doc ← findDocString? env decl.ref then
+      msg1 := s!"{msg1}\n{doc.trim}"
     msg := msg ++ .nest 2 msg1 ++ .line ++ .line
   logInfo msg
 
@@ -164,21 +144,17 @@ elab "#help" &"cats" id:(ident)? : command => do
         continue
     decls := decls.insert name cat
   let mut msg := MessageData.nil
-  -- let env ← getEnv
+  let env ← getEnv
   if decls.isEmpty then
     match id with
     | some id => throwError "no syntax categories start with {id}"
     | none => throwError "no syntax categories found (!)"
-  for (name, _cat) in decls do
-    -- FIXME: put back when lean4#1392 lands
-    -- let mut msg1 := m!"category {name} [{mkConst cat.ref}]"
-    -- if let some doc ← findDocString? env cat.ref then
-    --   msg1 := msg1 ++ Format.line ++ doc.trim
-    let msg1 := m!"category {name}"
+  for (name, cat) in decls do
+    let mut msg1 := m!"category {name} [{mkConst cat.declName}]"
+    if let some doc ← findDocString? env cat.declName then
+      msg1 := msg1 ++ Format.line ++ doc.trim
     msg := msg ++ .nest 2 msg1 ++ (.line ++ .line : Format)
   logInfo msg
-
-/- FIXME: these depend essentially on lean4#1392
 
 /--
 The command `#help cat C` shows all syntaxes that have been defined in syntax category `C` in the
@@ -206,11 +182,12 @@ elab "#help" &"cat" cat:ident id:(ident <|> str)? : command => do
   for (k, _) in cat.kinds do
     let mut used := false
     if let some tk := do getHeadTk (← (← env.find? k).value?) then
+      let tk := tk.trim
       if let some id := id then
         if !id.isPrefixOf tk then
           continue
       used := true
-      decls := decls.insert tk k
+      decls := decls.insert tk ((decls.findD tk #[]).push k)
     if !used && id.isNone then
       rest := rest.insert (k.toString false) k
   let mut msg := MessageData.nil
@@ -219,11 +196,12 @@ elab "#help" &"cat" cat:ident id:(ident <|> str)? : command => do
     | some id => throwError "no {catName} declarations start with {id}"
     | none => throwError "no {catName} declarations found"
   let env ← getEnv
-  for (name, k) in decls do
-    let mut msg1 := m!"syntax {repr name.trim}... [{mkConst k}]"
-    if let some doc ← findDocString? env k then
-      msg1 := msg1 ++ Format.line ++ doc.trim
-    msg := msg ++ .nest 2 msg1 ++ (.line ++ .line : Format)
+  for (name, ks) in decls do
+    for k in ks do
+      let mut msg1 := m!"syntax {repr name}... [{mkConst k}]"
+      if let some doc ← findDocString? env k then
+        msg1 := msg1 ++ Format.line ++ doc.trim
+      msg := msg ++ .nest 2 msg1 ++ (.line ++ .line : Format)
   for (_, k) in rest do
     let mut msg1 := m!"syntax ... [{mkConst k}]"
     if let some doc ← findDocString? env k then
@@ -251,4 +229,3 @@ See `#help cat` for more information.
 -/
 macro "#help" &"conv" id:(ident <|> str)? : command =>
   set_option hygiene false in `(#help cat conv $(id.map (⟨·.raw⟩))?)
--/
