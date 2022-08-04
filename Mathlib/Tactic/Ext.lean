@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Gabriel Ebner
+Authors: Gabriel Ebner
 -/
 import Lean
 import Mathlib.Tactic.Cache
@@ -61,7 +61,7 @@ scoped elab "ext_iff_type%" struct:ident : term => do
 
 elab "subst_eqs" : tactic =>
   open Elab.Tactic in
-  liftMetaTactic1 fun mvarId => substEqs mvarId
+  liftMetaTactic1 (·.substEqs)
 
 scoped macro "ext_proof%" : term =>
   `(fun {..} {..} => by intros; subst_eqs; rfl)
@@ -146,7 +146,7 @@ elab "apply_ext_lemma" : tactic => do
   let s ← saveState
   for lem in ← (extLemmas (← getEnv)).getMatch ty do
     try
-      liftMetaTactic (apply · (← mkConstWithFreshMVarLevels lem))
+      liftMetaTactic (·.apply (← mkConstWithFreshMVarLevels lem))
       return
     catch _ => s.restore
   throwError "no applicable extensionality lemma found for{indentExpr ty}"

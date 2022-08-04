@@ -44,7 +44,9 @@ syntax (name := initializeSimpsProjections?) "initialize_simps_projections?"
 end Command
 end Lean.Parser
 
--- Defines the user attribute `simps` for automatic generation of `@[simp]` lemmas for projections.
+/--
+  Defines the user attribute `simps` for automatic generation of `@[simp]` lemmas for projections.
+-/
 initialize simpsAttr : ParametricAttribute (Array Name) ←
   registerParametricAttribute {
     name := `simps
