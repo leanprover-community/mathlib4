@@ -378,7 +378,6 @@ macro "squeeze_dsimp!?" rest:squeezeDSimpArgsRest : tactic =>
 
 /- M -/ syntax (name := truncCases) "trunc_cases " term (" with " (colGt binderIdent)+)? : tactic
 
-/- E -/ syntax (name := normNum1) "norm_num1" (ppSpace location)? : tactic
 /- E -/ syntax (name := applyNormed) "apply_normed " term : tactic
 
 /- E -/ syntax (name := abel1) "abel1" : tactic
