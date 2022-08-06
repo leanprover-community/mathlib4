@@ -5,6 +5,12 @@ Authors: Mario Carneiro
 -/
 import Lean
 
+/-!
+# Defines `#time` command.
+
+Time the elaboration of a command, and print the result (in milliseconds).
+-/
+
 section
 open Lean Elab Command
 

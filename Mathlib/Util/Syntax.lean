@@ -5,6 +5,10 @@ Authors: Gabriel Ebner
 -/
 import Lean
 
+/-!
+# Helper functions for working with typed syntaxes.
+-/
+
 namespace Lean
 
 /--

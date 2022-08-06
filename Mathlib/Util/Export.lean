@@ -1,12 +1,12 @@
 /-
 Copyright (c) 2021 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Mario Carneiro
+Authors: Mario Carneiro
 -/
 import Lean
 import Std.Data.HashMap
 
-/-
+/-!
 A rudimentary export format, adapted from
 <https://github.com/leanprover-community/lean/blob/master/doc/export_format.md>
 with support for lean 4 kernel primitives.

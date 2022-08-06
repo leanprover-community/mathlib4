@@ -7,6 +7,7 @@ import Lean.Elab.Command
 import Lean.Elab.Quotation
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Core
@@ -18,6 +19,7 @@ import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.RCases
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.Ring
@@ -169,12 +171,6 @@ end Term
 
 namespace Tactic
 
-/- E -/ syntax tactic " <;> " "[" tactic,* "]" : tactic
-
-end Tactic
-
-namespace Tactic
-
 /- N -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
 /- N -/ syntax (name := applyWith) "apply " term " with " term : tactic
 /- E -/ syntax (name := mapply) "mapply " term : tactic
@@ -259,7 +255,6 @@ end Conv
 /- M -/ syntax (name := clean) "clean " term : tactic
 /- B -/ syntax (name := refineStruct) "refine_struct " term : tactic
 /- M -/ syntax (name := matchHyp) "match_hyp " ("(" &"m" " := " term ") ")? ident " : " term : tactic
-/- E -/ syntax (name := guardHypNums) "guard_hyp_nums " num : tactic
 /- E -/ syntax (name := guardTags) "guard_tags" (ppSpace ident)* : tactic
 /- E -/ syntax (name := guardProofTerm) "guard_proof_term " tactic:51 " => " term : tactic
 /- E -/ syntax (name := failIfSuccess?) "fail_if_success? " str ppSpace tacticSeq : tactic
@@ -273,7 +268,6 @@ end Conv
   (" with " binderIdent)? : tactic
 /- M -/ syntax (name := guardExprEq') "guard_expr " term:51 " = " term : tactic -- definitional equality
 /- M -/ syntax (name := guardTarget') "guard_target" " = " term : tactic -- definitional equality
-/- E -/ syntax (name := triv) "triv" : tactic
 /- M -/ syntax (name := extractGoal) "extract_goal" (ppSpace ident)?
   (" with" (ppSpace (colGt ident))*)? : tactic
 /- M -/ syntax (name := extractGoal!) "extract_goal!" (ppSpace ident)?
@@ -287,8 +281,6 @@ end Conv
 /- M -/ syntax (name := applyAssumption) "apply_assumption" : tactic
 
 /- B -/ syntax (name := hint) "hint" : tactic
-
-/- M -/ syntax (name := clear!) "clear!" (ppSpace colGt ident)* : tactic
 
 /- B -/ syntax (name := choose) "choose" (ppSpace colGt ident)+ (" using " term)? : tactic
 /- B -/ syntax (name := choose!) "choose!" (ppSpace colGt ident)+ (" using " term)? : tactic
@@ -338,16 +330,10 @@ syntax termList := " [" term,* "]"
 
 /- S -/ syntax (name := prettyCases) "pretty_cases" : tactic
 
--- see also https://github.com/leanprover-community/mathlib4/pull/193
-/- M -/ syntax (name := pushNeg) "push_neg" (ppSpace location)? : tactic
-
 /- M -/ syntax (name := contrapose) "contrapose" (ppSpace ident (" with " ident)?)? : tactic
 /- M -/ syntax (name := contrapose!) "contrapose!" (ppSpace ident (" with " ident)?)? : tactic
 
 /- E -/ syntax (name := renameVar) "rename_var " ident " → " ident (ppSpace location)? : tactic
-
-syntax swapVarArg := ident " ↔ "? ident
-/- E -/ syntax (name := swapVar) "swap_var " (colGt swapVarArg),+ : tactic
 
 /- M -/ syntax (name := assocRw) "assoc_rw " rwRuleSeq (ppSpace location)? : tactic
 
