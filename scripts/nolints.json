@@ -439,7 +439,6 @@
  ["docBlame", "Mathlib.ExtendedBinder.«term∀ᵉ_,_»"],
  ["docBlame", "Mathlib.ExtendedBinder.«term∃__,_»"],
  ["docBlame", "Mathlib.ExtendedBinder.«term∃ᵉ_,_»"],
- ["docBlame", "Mathlib.RunTac.tacticRun_tac_"],
  ["docBlame", "Mathlib.Tactic.haveLetCore"],
  ["docBlame", "Mathlib.Tactic.renameArg"],
  ["docBlame", "Mathlib.Tactic.set"],

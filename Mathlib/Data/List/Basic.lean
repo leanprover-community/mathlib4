@@ -687,7 +687,7 @@ theorem ext_get {l₁ l₂ : List α} (hl : length l₁ = length l₂)
     if h₁ : n < length l₁ then by
       rw [get?_eq_get, get?_eq_get, h n h₁ (by rwa [←hl])]
     else by
-      have h₁ := le_of_not_gt h₁
+      have h₁ := le_of_not_lt h₁
       rw [get?_len_le h₁, get?_len_le]; rwa [← hl]
 
 theorem modifyNthTail_id : ∀ n (l : List α), l.modifyNthTail id n = l
