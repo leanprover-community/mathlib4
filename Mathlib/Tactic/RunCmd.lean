@@ -16,7 +16,7 @@ namespace Lean.Parser.Command
 open Meta Elab Command Term
 
 elab (name := runCmd) "run_cmd " elems:doSeq : command => do
-  ← liftTermElabM `runCmd <|
+  ← liftTermElabM <|
     unsafe evalTerm (CommandElabM Unit)
       (mkApp (mkConst ``CommandElabM) (mkConst ``Unit))
       (← `(discard do $elems))
