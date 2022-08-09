@@ -195,7 +195,7 @@ syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
 /- E -/ syntax (name := symm) "symm" : tactic
 /- E -/ syntax (name := trans) "trans" (ppSpace colGt term)? : tactic
-/- B -/ syntax (name := acRfl) "ac_rfl" : tactic
+/- B -/ syntax (name := acRfl') "ac_rfl" : tactic
 /- B -/ syntax (name := cc) "cc" : tactic
 
 -- builtin unfold only accepts single ident
@@ -284,7 +284,7 @@ end Conv
 /- B -/ syntax (name := choose) "choose" (ppSpace colGt ident)+ (" using " term)? : tactic
 /- B -/ syntax (name := choose!) "choose!" (ppSpace colGt ident)+ (" using " term)? : tactic
 
-/- N -/ syntax (name := congr) "congr" (ppSpace colGt num)?
+/- N -/ syntax (name := congr') "congr" (ppSpace colGt num)?
   (" with " (colGt rcasesPat)* (" : " num)?)? : tactic
 /- M -/ syntax (name := rcongr) "rcongr" (ppSpace colGt rcasesPat)* : tactic
 /- E -/ syntax (name := convert) "convert " "← "? term (" using " num)? : tactic
