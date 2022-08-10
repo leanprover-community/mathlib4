@@ -9,6 +9,9 @@ import Lean.Server.Rpc.RequestHandling
 import Lean.Elab
 import Lean.Widget.UserWidget
 
+-- Please install Node.js and run `lake build widgetCommDiag` before running the rest of this file.
+#exit
+
 -- TODO(WN): Remove when category theory is ported
 class quiver (V : Type u) where
   hom : V → V → Sort v
