@@ -1,3 +1,7 @@
+# Lean build artifacts
 /build
 /lake-packages
 /.cache
+# JavaScript build arifacts
+/widget/dist
+/widget/node_modules

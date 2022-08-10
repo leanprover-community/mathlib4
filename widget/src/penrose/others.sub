@@ -1,0 +1,70 @@
+/*
+Copyright (c) 2022 Wojciech Nawrocki. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Wojciech Nawrocki
+*/
+
+-- Product
+-- Object X,Y,Z,W
+-- Cell f := MakeCell(W, X)
+-- Cell g := MakeCell(W, Y)
+-- Cell h := MakeCell(W, Z)
+-- Cell pi1 := MakeCell(Z, X)
+-- Cell pi2 := MakeCell(Z, Y)
+
+-- IsDownVertical(h)
+-- IsLeftHorizontal(pi1)
+-- IsRightHorizontal(pi2)
+
+-- AutoLabel All
+-- Label Z "X \times Y"
+-- Label pi1 "\pi_1"
+-- Label pi2 "\pi_2"
+-- Label h "\langle f, g \rangle"
+
+-- Pullback
+-- Object X,Y,Z,W,D
+-- Cell f := MakeCell(X, Z)
+-- Cell g := MakeCell(Y, Z)
+-- IsRightHorizontal(f)
+-- IsDownVertical(g)
+
+-- Cell pi1 := MakeCell(W, X)
+-- Cell pi2 := MakeCell(W, Y)
+-- IsDownVertical(pi1)
+-- IsRightHorizontal(pi2)
+
+-- Cell h1 := MakeCell(D, X)
+-- Cell h2 := MakeCell(D, Y)
+-- Cell h := MakeCell(D, W)
+-- IsRightDownDiagonal(h)
+-- IsCurvedRight(h1)
+-- IsCurvedLeft(h2)
+
+-- AutoLabel All
+-- Label W "X \times_Z Y"
+-- Label pi1 "\pi_1"
+-- Label pi2 "\pi_2"
+-- Label h1 "h_1"
+-- Label h2 "h_2"
+
+-- Two squares
+-- Object A,B,C,D,E,F
+-- Cell f := MakeCell(A, B)
+-- Cell g := MakeCell(B, C)
+-- IsRightHorizontal(f)
+-- IsRightHorizontal(g)
+
+-- Cell h := MakeCell(A, F)
+-- Cell i := MakeCell(B, E)
+-- Cell j := MakeCell(C, D)
+-- IsDownVertical(h)
+-- IsDownVertical(i)
+-- IsDownVertical(j)
+
+-- Cell k := MakeCell(F, E)
+-- Cell l := MakeCell(E, D)
+-- IsRightHorizontal(k)
+-- IsRightHorizontal(l)
+
+-- AutoLabel All

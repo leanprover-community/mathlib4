@@ -1,0 +1,24 @@
+/*
+Copyright (c) 2022 Wojciech Nawrocki. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Wojciech Nawrocki
+*/
+
+Object A,B,C,D
+Cell f := MakeCell(A,B)
+Cell g := MakeCell(B,C)
+
+IsRightHorizontal(f)
+IsLabelLeft(f)
+IsDownVertical(g)
+IsLabelLeft(g)
+
+Cell h := MakeCell(A,D)
+Cell i := MakeCell(D,C)
+
+IsDownVertical(h)
+IsLabelRight(h)
+IsRightHorizontal(i)
+IsLabelRight(i)
+
+AutoLabel All
