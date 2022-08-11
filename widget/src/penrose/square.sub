@@ -13,12 +13,12 @@ IsLabelLeft(f)
 IsDownVertical(g)
 IsLabelLeft(g)
 
-Cell h := MakeCell(A,D)
-Cell i := MakeCell(D,C)
+Cell h := MakeCell(D,C)
+Cell i := MakeCell(A,D)
 
-IsDownVertical(h)
+IsRightHorizontal(h)
 IsLabelRight(h)
-IsRightHorizontal(i)
+IsDownVertical(i)
 IsLabelRight(i)
 
 AutoLabel All
