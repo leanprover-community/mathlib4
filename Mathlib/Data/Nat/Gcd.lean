@@ -63,8 +63,8 @@ def lcm (m n : ℕ) : ℕ := m * n / gcd m n
 
 theorem gcd_dvd (m n : ℕ) : (gcd m n ∣ m) ∧ (gcd m n ∣ n) :=
 gcd.induction m n
-  (λn => by rw [gcd_zero_left]; exact ⟨Nat.dvd_zero n, Nat.dvd_refl n⟩)
-  (λm n _ => by rw [←gcd_rec]; exact λ ⟨IH₁, IH₂⟩ => ⟨IH₂, (dvd_mod_iff IH₂).1 IH₁⟩)
+  (λ n => by rw [gcd_zero_left]; exact ⟨Nat.dvd_zero n, Nat.dvd_refl n⟩)
+  (λ m n _ => by rw [←gcd_rec]; exact λ ⟨IH₁, IH₂⟩ => ⟨IH₂, (dvd_mod_iff IH₂).1 IH₁⟩)
 
 theorem gcd_dvd_left (m n : ℕ) : gcd m n ∣ m := (gcd_dvd m n).left
 
@@ -76,8 +76,8 @@ theorem gcd_le_right {m} (n) (h : 0 < n) : gcd m n ≤ n := le_of_dvd h $ gcd_dv
 
 theorem dvd_gcd {m n k : ℕ} : k ∣ m → k ∣ n → k ∣ gcd m n :=
 gcd.induction m n
-  (λn _ kn => by rw [gcd_zero_left]; exact kn)
-  (λn m _ IH H1 H2 => by rw [gcd_rec]; exact IH ((dvd_mod_iff H1).2 H2) H1)
+  (λ n _ kn => by rw [gcd_zero_left]; exact kn)
+  (λ n m _ IH H1 H2 => by rw [gcd_rec]; exact IH ((dvd_mod_iff H1).2 H2) H1)
 
 theorem dvd_gcd_iff {m n k : ℕ} : k ∣ gcd m n ↔ k ∣ m ∧ k ∣ n :=
 Iff.intro (λ h => And.intro (Nat.dvd_trans h (gcd_dvd m n).left) (Nat.dvd_trans h (gcd_dvd m n).right))
