@@ -11,15 +11,15 @@ import Mathlib.Tactic.TryThis
 /-!
 # Library search
 
-This file defines a tactic `librarySearch`
-and a term elaborator `librarySearch%`
+This file defines a tactic `library_search`
+and a term elaborator `library_search%`
 that tries to find a lemma
 solving the current goal
 (subgoals are solved using `solveByElim`).
 
 ```
-example : x < x + 1 := librarySearch%
-example : Nat := by librarySearch
+example : x < x + 1 := library_search%
+example : Nat := by library_search
 ```
 -/
 
