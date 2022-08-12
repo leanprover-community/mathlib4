@@ -16,6 +16,7 @@ The `#help` command can be used to list all definitions in a variety of extensib
 * `#help cats` lists syntax categories (like `term`, `tactic`, `stx` etc)
 * `#help cat C` lists elements of syntax category C
   * `#help term`, `#help tactic`, `#help conv` are shorthand for `#help cat term` etc.
+  * `#help cat+ C` also shows `elab` and `macro` definitions associated to the syntaxes
 
 All forms take an optional identifier to narrow the search; for example `#help option pp` shows
 only `pp.*` options.
@@ -23,7 +24,7 @@ only `pp.*` options.
 -/
 
 namespace Mathlib.Tactic
-open Lean Meta Elab Tactic
+open Lean Meta Elab Tactic Command
 
 /--
 The command `#help option` shows all options that have been defined in the current environment.
@@ -167,17 +168,20 @@ syntax "first"... [Parser.tactic.first]
 The quoted string is the leading token of the syntax, if applicable. It is followed by the full
 name of the syntax (which you can also click to go to the definition), and the documentation.
 
-The form `#help cat C id` will show only attributes that begin with `id`.
+* The form `#help cat C id` will show only attributes that begin with `id`.
+* The form `#help cat+ C` will also show information about any `macro`s and `elab`s
+  associated to the listed syntaxes.
 -/
-elab "#help" &"cat" cat:ident id:(ident <|> str)? : command => do
+elab "#help" &"cat" more:"+"? catStx:ident id:(ident <|> str)? : command => do
   let id := id.map fun id => match id.raw with
     | .ident _ _ v _ => v.toString false
     | id => id.isStrLit?.get!
   let mut decls : Std.RBMap _ _ compare := {}
   let mut rest : Std.RBMap _ _ compare := {}
-  let catName := cat.getId
+  let catName := catStx.getId.eraseMacroScopes
   let some cat := (Parser.parserExtension.getState (← getEnv)).categories.find? catName
-    | throwError "{cat} is not a syntax category"
+    | throwErrorAt catStx "{catStx} is not a syntax category"
+  liftTermElabM <| Term.addCategoryInfo catStx catName
   let env ← getEnv
   for (k, _) in cat.kinds do
     let mut used := false
@@ -196,36 +200,52 @@ elab "#help" &"cat" cat:ident id:(ident <|> str)? : command => do
     | some id => throwError "no {catName} declarations start with {id}"
     | none => throwError "no {catName} declarations found"
   let env ← getEnv
-  for (name, ks) in decls do
-    for k in ks do
-      let mut msg1 := m!"syntax {repr name}... [{mkConst k}]"
-      if let some doc ← findDocString? env k then
-        msg1 := msg1 ++ Format.line ++ doc.trim
-      msg := msg ++ .nest 2 msg1 ++ (.line ++ .line : Format)
-  for (_, k) in rest do
-    let mut msg1 := m!"syntax ... [{mkConst k}]"
+  let addMsg (k : SyntaxNodeKind) (msg msg1 : MessageData) : CommandElabM MessageData := do
+    let mut msg1 := msg1
     if let some doc ← findDocString? env k then
       msg1 := msg1 ++ Format.line ++ doc.trim
-    msg := msg ++ .nest 2 msg1 ++ (.line ++ .line : Format)
+    msg1 := .nest 2 msg1
+    if more.isSome then
+      let addElabs {α} (type : String) (attr : KeyedDeclsAttribute α)
+          (msg : MessageData) : CommandElabM MessageData := do
+        let mut msg := msg
+        for e in attr.getEntries env k do
+          let x := e.declName
+          msg := msg ++ Format.line ++ m!"+ {type} {mkConst x}"
+          if let some doc ← findDocString? env x then
+            msg := msg ++ .nest 2 (Format.line ++ doc.trim)
+        pure msg
+      msg1 ← addElabs "macro" macroAttribute msg1
+      match catName with
+      | `term => msg1 ← addElabs "term elab" Term.termElabAttribute msg1
+      | `command => msg1 ← addElabs "command elab" commandElabAttribute msg1
+      | `tactic | `conv => msg1 ← addElabs "tactic elab" tacticElabAttribute msg1
+      | _ => pure ()
+    return msg ++ msg1 ++ (.line ++ .line : Format)
+  for (name, ks) in decls do
+    for k in ks do
+      msg ← addMsg k msg m!"syntax {repr name}... [{mkConst k}]"
+  for (_, k) in rest do
+    msg ← addMsg k msg m!"syntax ... [{mkConst k}]"
   logInfo msg
 
 /--
 The command `#help term` shows all term syntaxes that have been defined in the current environment.
 See `#help cat` for more information.
 -/
-macro "#help" &"term" id:(ident <|> str)? : command =>
-  set_option hygiene false in `(#help cat term $(id.map (⟨·.raw⟩))?)
+macro "#help" tk:&"term" more:"+"? id:(ident <|> str)? : command =>
+  `(#help cat$[+%$more]? $(mkIdentFrom tk `term) $(id.map (⟨·.raw⟩))?)
 
 /--
 The command `#help tactic` shows all tactics that have been defined in the current environment.
 See `#help cat` for more information.
 -/
-macro "#help" &"tactic" id:(ident <|> str)? : command =>
-  set_option hygiene false in `(#help cat tactic $(id.map (⟨·.raw⟩))?)
+macro "#help" tk:&"tactic" more:"+"? id:(ident <|> str)? : command => do
+  `(#help cat$[+%$more]? $(mkIdentFrom tk `tactic) $(id.map (⟨·.raw⟩))?)
 
 /--
 The command `#help conv` shows all tactics that have been defined in the current environment.
 See `#help cat` for more information.
 -/
-macro "#help" &"conv" id:(ident <|> str)? : command =>
-  set_option hygiene false in `(#help cat conv $(id.map (⟨·.raw⟩))?)
+macro "#help" tk:&"conv" more:"+"? id:(ident <|> str)? : command =>
+  `(#help cat$[+%$more]? $(mkIdentFrom tk `conv) $(id.map (⟨·.raw⟩))?)
