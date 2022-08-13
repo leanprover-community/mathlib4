@@ -15,7 +15,8 @@ The `#help` command can be used to list all definitions in a variety of extensib
 * `#help attr` lists attributes (used in `@[myAttr] def foo := ...`)
 * `#help cats` lists syntax categories (like `term`, `tactic`, `stx` etc)
 * `#help cat C` lists elements of syntax category C
-  * `#help term`, `#help tactic`, `#help conv` are shorthand for `#help cat term` etc.
+  * `#help term`, `#help tactic`, `#help conv`, `#help command`
+    are shorthand for `#help cat term` etc.
   * `#help cat+ C` also shows `elab` and `macro` definitions associated to the syntaxes
 
 All forms take an optional identifier to narrow the search; for example `#help option pp` shows
@@ -249,3 +250,10 @@ See `#help cat` for more information.
 -/
 macro "#help" tk:&"conv" more:"+"? id:(ident <|> str)? : command =>
   `(#help cat$[+%$more]? $(mkIdentFrom tk `conv) $(id.map (⟨·.raw⟩))?)
+
+/--
+The command `#help command` shows all commands that have been defined in the current environment.
+See `#help cat` for more information.
+-/
+macro "#help" tk:&"command" more:"+"? id:(ident <|> str)? : command =>
+  `(#help cat$[+%$more]? $(mkIdentFrom tk `command) $(id.map (⟨·.raw⟩))?)
