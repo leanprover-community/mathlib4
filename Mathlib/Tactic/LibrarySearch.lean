@@ -54,6 +54,7 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name) (solveByElimDepth :=
     MetaM <| Option (Array <| MetavarContext × List MVarId) := do
   profileitM Exception "librarySearch" (← getOptions) do
   let ty ← goal.getType
+  withTraceNode `Tactic.librarySearch (return m!"{exceptOptionEmoji ·} {ty}") do
 
   let mut suggestions := #[]
 
@@ -67,7 +68,7 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name) (solveByElimDepth :=
 
   for lem in ← lemmas.getMatch ty do
     trace[Tactic.librarySearch] "{lem}"
-    let result ← traceCtx `Tactic.librarySearch try
+    let result ← withTraceNode `Tactic.librarySearch (return m!"{exceptOptionEmoji ·} trying {lem}") try
       let newGoals ← goal.apply (← mkConstWithFreshMVarLevels lem)
       (try
         for newGoal in newGoals do
@@ -108,8 +109,6 @@ syntax (name := librarySearch!) "library_search!" (config)? (" [" simpArg,* "]")
 
 open Elab.Tactic Elab Tactic in
 elab_rules : tactic | `(tactic| library_search%$tk) => do
-  withNestedTraces do
-  trace[Tactic.librarySearch] "proving {← getMainTarget}"
   let mvar ← getMainGoal
   let (_, goal) ← (← getMainGoal).intros
   goal.withContext do
@@ -123,8 +122,6 @@ elab_rules : tactic | `(tactic| library_search%$tk) => do
 
 open Elab Term in
 elab tk:"library_search%" : term <= expectedType => do
-  withNestedTraces do
-  trace[Tactic.librarySearch] "proving {expectedType}"
   let goal ← mkFreshExprMVar expectedType
   let (_, introdGoal) ← goal.mvarId!.intros
   introdGoal.withContext do
