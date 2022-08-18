@@ -32,3 +32,9 @@ and the "real" port hasn't started yet
   ```
   find Mathlib -name "*.lean" | env LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
   ```
+## Building HTML documentation
+Building HTML documentation locally is straightforward:
+```
+lake -Kdoc=on build Mathlib:docs
+```
+The HTML files can then be found in `build/doc`.
