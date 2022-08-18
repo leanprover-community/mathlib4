@@ -389,6 +389,7 @@ by `x ≤ y ↔ f x ≤ f y`. It is the unique relation on `α` making `f` a `re
 is injective). -/
 @[simp] def Order.preimage {α β} (f : α → β) (s : β → β → Prop) (x y : α) : Prop := s (f x) (f y)
 
+/-- If `f : α → β` and `s` is an order on `β`, then `f ⁻¹'o s` is an order on `α`.-/
 infix:80 " ⁻¹'o " => Order.preimage
 
 /-- The preimage of a decidable order is decidable. -/
@@ -401,6 +402,7 @@ instance Order.preimage.decidable {α β} (f : α → β) (s : β → β → Pro
 /-- Type synonym to equip a type with the dual order: `≤` means `≥` and `<` means `>`. -/
 def order_dual (α : Type _) : Type _ := α
 
+/--  If `α` has an order, then `αᵒᵈ` has the dual order.  -/
 notation:max α "ᵒᵈ" => order_dual α
 
 namespace order_dual
@@ -447,6 +449,7 @@ LinearOrder.ext $ λ _ _ => Iff.rfl
 
 end order_dual
 
+/-- Notation for set/lattice complement -/
 postfix:max "ᶜ" => Complement.complement
 
 instance Prop.complement : Complement Prop := ⟨Not⟩
@@ -518,7 +521,10 @@ class Inf (α : Type u) where
   /-- Infimum, i.e. the greatest lower bound. -/
   inf : α → α → α
 
+/-- Syntax for write the supremum of `a` and `b` as `a ⊔ b`. -/
 infix:68 " ⊔ " => Sup.sup
+
+/-- Syntax for write the infinum of `a` and `b` as `a ⊓ b`. -/
 infix:68 " ⊓ " => Inf.inf
 
 /-! ### Lifts of order instances -/
