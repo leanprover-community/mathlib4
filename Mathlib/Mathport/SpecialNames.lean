@@ -71,6 +71,13 @@ namespace Mathlib.Prelude
 #align has_seq_left  SeqLeft
 #align has_seq_right SeqRight
 #align has_dvd       Dvd
+#align has_subset    Subset
+#align has_union     Union
+#align has_inter     Inter
+#align has_sdiff     Sdiff
+
+#align has_emptyc EmptyCollection
+#align has_emptyc.emptyc EmptyCollection.emptyCollection
 
 -- Implementation detail
 #align _sorry_placeholder_     _sorry_placeholder_
