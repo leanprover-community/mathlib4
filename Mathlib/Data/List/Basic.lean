@@ -195,19 +195,6 @@ lemma bind_map {g : α → List β} {f : β → γ} :
 
 /-! ### length -/
 
-
--- @[simp] lemma length_tail (l : list α) : length (tail l) = length l - 1 :=
--- by cases l; refl
-
--- -- TODO(Leo): cleanup proof after arith dec proc
--- @[simp] lemma length_drop : ∀ (i : ℕ) (l : list α), length (drop i l) = length l - i
--- | 0 l         := rfl
--- | (succ i) [] := eq.symm (nat.zero_sub (succ i))
--- | (succ i) (x::l) := calc
---   length (drop (succ i) (x::l))
---           = length l - i             : length_drop i l
---       ... = succ (length l) - succ i : (nat.succ_sub_succ_eq_sub (length l) i).symm
-
 theorem length_eq_zero {l : List α} : length l = 0 ↔ l = [] :=
 ⟨eq_nil_of_length_eq_zero, fun h => by rw [h]; rfl⟩
 
