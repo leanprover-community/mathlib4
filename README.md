@@ -35,6 +35,6 @@ and the "real" port hasn't started yet
 ## Building HTML documentation
 Building HTML documentation locally is straightforward:
 ```
-lake -Kenv=dev build Mathlib:docs
+lake -Kdoc=on build Mathlib:docs
 ```
 The HTML files can then be found in `build/doc`.
