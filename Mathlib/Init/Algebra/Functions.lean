@@ -49,7 +49,7 @@ lemma eq_min {a b c : α} (h₁ : c ≤ a) (h₂ : c ≤ b) (h₃ : ∀{d}, d �
 le_antisymm (le_min h₁ h₂) (h₃ (min_le_left a b) (min_le_right a b))
 
 lemma min_comm (a b : α) : min a b = min b a :=
-eq_min (min_le_right a b) (min_le_left a b) (λ {c} h₁ h₂ => le_min h₂ h₁)
+eq_min (min_le_right a b) (min_le_left a b) (λ {_} h₁ h₂ => le_min h₂ h₁)
 
 lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) :=
 by apply eq_min
@@ -75,7 +75,7 @@ lemma eq_max {a b c : α} (h₁ : a ≤ c) (h₂ : b ≤ c) (h₃ : ∀{d}, a �
 le_antisymm (h₃ (le_max_left a b) (le_max_right a b)) (max_le h₁ h₂)
 
 lemma max_comm (a b : α) : max a b = max b a :=
-eq_max (le_max_right a b) (le_max_left a b) (λ {c} h₁ h₂ => max_le h₂ h₁)
+eq_max (le_max_right a b) (le_max_left a b) (λ {_} h₁ h₂ => max_le h₂ h₁)
 
 lemma max_assoc (a b c : α) : max (max a b) c = max a (max b c) := by
   apply eq_max

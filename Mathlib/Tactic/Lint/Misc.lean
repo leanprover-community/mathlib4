@@ -47,7 +47,7 @@ We skip all declarations that contain `sorry` in their value. -/
         e := mkApp e ldecl.type
         if let some val := ldecl.value? then
           e := mkApp e val
-      let unused := args.zip (.range args.size) |>.filter fun (arg, i) =>
+      let unused := args.zip (.range args.size) |>.filter fun (arg, _) =>
         !e.containsFVar arg.fvarId!
       if unused.isEmpty then return none
       addMessageContextFull <| .joinSep (← unused.toList.mapM fun (arg, i) =>
@@ -59,6 +59,8 @@ We skip all declarations that contain `sorry` in their value. -/
   errorsFound := "DEFINITIONS ARE MISSING DOCUMENTATION STRINGS:"
   test declName := do
     if (← isAutoDecl declName) || isGlobalInstance (← getEnv) declName then
+      return none
+    if declName matches .str _ "parenthesizer" | .str _ "formatter" then
       return none
     let kind ← match ← getConstInfo declName with
       | .axiomInfo .. => pure "axiom"

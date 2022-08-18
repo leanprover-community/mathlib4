@@ -56,6 +56,7 @@ rcases, rintro, obtain, destructuring, cases, pattern matching, match
 
 namespace Lean.Parser.Tactic
 
+/-- The syntax category of `rcases` patterns. -/
 declare_syntax_cat rcasesPat
 syntax rcasesPatMed := sepBy1(rcasesPat, " | ")
 syntax rcasesPatLo := rcasesPatMed (" : " term)?
@@ -65,6 +66,7 @@ syntax (name := rcasesPat.clear) "-" : rcasesPat
 syntax (name := rcasesPat.tuple) "⟨" rcasesPatLo,* "⟩" : rcasesPat
 syntax (name := rcasesPat.paren) "(" rcasesPatLo ")" : rcasesPat
 
+/-- The syntax category of `rintro` patterns. -/
 declare_syntax_cat rintroPat
 syntax (name := rintroPat.one) rcasesPat : rintroPat
 syntax (name := rintroPat.binder) "(" rintroPat+ (" : " term)? ")" : rintroPat
@@ -223,7 +225,7 @@ constructor. The `name` is the name which will be used in the top-level `cases` 
 `rcases_patt` is the pattern which the field will be matched against by subsequent `cases`
 tactics. -/
 def processConstructor (ref : Syntax) : Nat → ListΠ RCasesPatt → ListΠ Name × ListΠ RCasesPatt
-| 0,     ps      => ([], [])
+| 0,     _       => ([], [])
 | 1,     []      => ([`_], [default])
 | 1,     [p]     => ([p.name?.getD `_], [p])
 | 1,     ps      => ([`_], [RCasesPatt.tuple ref ps])
@@ -237,7 +239,7 @@ and the list of `(constructor name, patterns)` for each constructor, where `patt
 (conjunctive) list of patterns to apply to each constructor argument. -/
 def processConstructors (ref : Syntax) (params : Nat) (altVarNames : Array AltVarNames := #[]) :
   ListΣ Name → ListΣ RCasesPatt → MetaM (Array AltVarNames × ListΣ (Name × ListΠ RCasesPatt))
-| [], ps => pure (altVarNames, [])
+| [], _ => pure (altVarNames, [])
 | c :: cs, ps => do
   let n := FunInfo.getArity $ ← getFunInfo (← mkConstWithLevelParams c)
   let p := ps.headD default
@@ -252,30 +254,30 @@ def processConstructors (ref : Syntax) (params : Nat) (altVarNames : Array AltVa
 open Elab Tactic
 
 -- this belongs in core; it is a variation on subst that passes fvarSubst through
-def subst' (mvarId : MVarId) (hFVarId : FVarId)
+def subst' (goal : MVarId) (hFVarId : FVarId)
   (fvarSubst : FVarSubst := {}) : MetaM (FVarSubst × MVarId) := do
-  let hLocalDecl ← getLocalDecl hFVarId
-  let error {α} _ : MetaM α := throwTacticEx `subst mvarId
+  let hLocalDecl ← hFVarId.getDecl
+  let error {α} _ : MetaM α := throwTacticEx `subst goal
     m!"invalid equality proof, it is not of the form (x = t) or (t = x){indentExpr hLocalDecl.type}"
-  let some (α, lhs, rhs) ← matchEq? hLocalDecl.type | error ()
+  let some (_, lhs, rhs) ← matchEq? hLocalDecl.type | error ()
   let substReduced (newType : Expr) (symm : Bool) : MetaM (FVarSubst × MVarId) := do
-    let mvarId ← assert mvarId hLocalDecl.userName newType (mkFVar hFVarId)
-    let (hFVarId', mvarId) ← intro1P mvarId
-    let mvarId ← clear mvarId hFVarId
-    substCore mvarId hFVarId' (symm := symm) (tryToSkip := true) (fvarSubst := fvarSubst)
+    let goal ← goal.assert hLocalDecl.userName newType (mkFVar hFVarId)
+    let (hFVarId', goal) ← goal.intro1P
+    let goal ← goal.clear hFVarId
+    substCore goal hFVarId' (symm := symm) (tryToSkip := true) (fvarSubst := fvarSubst)
   let rhs' ← whnf rhs
   if rhs'.isFVar then
     if rhs != rhs' then
       substReduced (← mkEq lhs rhs') true
     else
-      substCore mvarId hFVarId (symm := true) (tryToSkip := true) (fvarSubst := fvarSubst)
+      substCore goal hFVarId (symm := true) (tryToSkip := true) (fvarSubst := fvarSubst)
   else
     let lhs' ← whnf lhs
     if lhs'.isFVar then
       if lhs != lhs' then
         substReduced (← mkEq lhs' rhs) false
       else
-        substCore mvarId hFVarId (symm := false) (tryToSkip := true) (fvarSubst := fvarSubst)
+        substCore goal hFVarId (symm := false) (tryToSkip := true) (fvarSubst := fvarSubst)
     else error ()
 
 mutual
@@ -300,7 +302,7 @@ partial def rcasesCore (g : MVarId) (fs : FVarSubst) (clears : Array FVarId) (e 
     unless e.isFVar do
       throwError "rcases tactic failed: {e} is not a fvar"
     pure e
-  withRef pat.ref <| withMVarContext g <| match pat with
+  withRef pat.ref <| g.withContext <| match pat with
   | RCasesPatt.one _ `rfl => do
     let (fs, g) ← subst' g (← translate e).fvarId! fs
     cont g fs clears a
@@ -312,8 +314,8 @@ partial def rcasesCore (g : MVarId) (fs : FVarSubst) (clears : Array FVarId) (e 
     let etype ← inferType e
     unless ← isDefEq etype expected do
       Term.throwTypeMismatchError "rcases: scrutinee" expected etype e
-    let g ← replaceLocalDeclDefEq g e.fvarId! expected
-    cont g fs clears a
+    let g ← g.replaceLocalDeclDefEq e.fvarId! expected
+    rcasesCore g fs clears e.fvarId! a pat cont
   | RCasesPatt.alts _ [p] => rcasesCore g fs clears e a p cont
   | _ => do
     let e ← translate e
@@ -325,21 +327,21 @@ partial def rcasesCore (g : MVarId) (fs : FVarSubst) (clears : Array FVarId) (e 
         unless info.kind matches QuotKind.type do failK ()
         let pat := pat.asAlts.headD default
         let ([x], ps) := processConstructor pat.ref 1 pat.asTuple | panic! "rcases"
-        let (vars, g) ← Meta.revert g (← getFVarsToGeneralize #[e])
-        withMVarContext g do
+        let (vars, g) ← g.revert (← getFVarsToGeneralize #[e])
+        g.withContext do
           let elimInfo ← getElimInfo `Quot.ind
-          let res ← ElimApp.mkElimApp elimInfo #[e] (← getMVarTag g)
+          let res ← ElimApp.mkElimApp elimInfo #[e] (← g.getTag)
           let elimArgs := res.elimApp.getAppArgs
-          ElimApp.setMotiveArg g elimArgs[elimInfo.motivePos].mvarId! #[e.fvarId!]
-          assignExprMVar g res.elimApp
+          ElimApp.setMotiveArg g elimArgs[elimInfo.motivePos]!.mvarId! #[e.fvarId!]
+          g.assign res.elimApp
           let #[(n, g)] := res.alts | panic! "rcases"
-          let (v, g) ← intro g x
-          let (varsOut, g) ← introNP g vars.size
+          let (v, g) ← g.intro x
+          let (varsOut, g) ← g.introNP vars.size
           let fs' := (vars.zip varsOut).foldl (init := fs) fun fs (v, w) => fs.insert v (mkFVar w)
           pure ([(n, ps)], #[⟨⟨g, #[mkFVar v], fs'⟩, n⟩])
       | ConstantInfo.inductInfo info, _ => do
         let (altVarNames, r) ← processConstructors pat.ref info.numParams #[] info.ctors pat.asAlts
-        (r, ·) <$> cases g e.fvarId! altVarNames
+        (r, ·) <$> g.cases e.fvarId! altVarNames
       | _, _ => failK ()
     (·.2) <$> subgoals.foldlM (init := (r, a)) fun (r, a) ⟨goal, ctorName⟩ => do
       let rec align
@@ -371,13 +373,12 @@ partial def rcasesContinue (g : MVarId) (fs : FVarSubst) (clears : Array FVarId)
 end
 
 /-- Like `tryClearMany`, but also clears dependent hypotheses if possible -/
-def tryClearMany' (mvarId : MVarId) (fvarIds : Array FVarId) : MetaM MVarId := do
-  let mctx ← getMCtx
-  let toErase := (← getMVarDecl mvarId).lctx.foldl (init := fvarIds) fun toErase localDecl =>
-    if mctx.findLocalDeclDependsOn localDecl toErase.contains then
-      toErase.push localDecl.fvarId
-    else toErase
-  tryClearMany mvarId toErase
+def tryClearMany' (goal : MVarId) (fvarIds : Array FVarId) : MetaM MVarId := do
+  let mut toErase := fvarIds
+  for localDecl in (← goal.getDecl).lctx do
+    if ← findLocalDeclDependsOn localDecl toErase.contains then
+      toErase := toErase.push localDecl.fvarId
+  goal.tryClearMany toErase
 
 /-- The terminating continuation used in `rcasesCore` and `rcasesContinue`. We specialize the type
 `α` to `Array MVarId` to collect the list of goals, and given the list of `clears`, it attempts to
@@ -393,7 +394,7 @@ open Elab
 partial def RCasesPatt.parse (stx : Syntax) : MetaM RCasesPatt :=
   match stx with
   | `(Lean.Parser.Tactic.rcasesPatMed| $ps:rcasesPat|*) => do
-    pure $ RCasesPatt.alts' stx (← ps.getElems.toList.mapM parse)
+    pure $ RCasesPatt.alts' stx (← ps.getElems.toList.mapM (parse ·.raw))
   | `(Lean.Parser.Tactic.rcasesPatLo| $pat:rcasesPatMed : $t:term) => do
     pure $ RCasesPatt.typed stx (← parse pat) t
   | `(Lean.Parser.Tactic.rcasesPatLo| $pat:rcasesPatMed) => parse pat
@@ -401,23 +402,23 @@ partial def RCasesPatt.parse (stx : Syntax) : MetaM RCasesPatt :=
   | `(rcasesPat| $h:ident) => pure $ RCasesPatt.one stx h.getId
   | `(rcasesPat| -) => pure $ RCasesPatt.clear stx
   | `(rcasesPat| ⟨$ps,*⟩) => do
-    pure $ RCasesPatt.tuple stx (← ps.getElems.toList.mapM parse)
+    pure $ RCasesPatt.tuple stx (← ps.getElems.toList.mapM (parse ·.raw))
   | `(rcasesPat| ($pat)) => parse pat
   | _ => throwUnsupportedSyntax
 
 -- extracted from elabCasesTargets
-def generalizeExceptFVar (mvarId : MVarId) (args : Array GeneralizeArg) : MetaM (Array Expr × MVarId) := do
+def generalizeExceptFVar (goal : MVarId) (args : Array GeneralizeArg) : MetaM (Array Expr × MVarId) := do
   let argsToGeneralize := args.filter fun arg => !(arg.expr.isFVar && arg.hName?.isNone)
-  let (fvarIdsNew, mvarId) ← generalize mvarId argsToGeneralize
+  let (fvarIdsNew, goal) ← goal.generalize argsToGeneralize
   let mut result := #[]
   let mut j := 0
   for arg in args do
     if arg.expr.isFVar && arg.hName?.isNone then
       result := result.push arg.expr
     else
-      result := result.push (mkFVar fvarIdsNew[j])
+      result := result.push (mkFVar fvarIdsNew[j]!)
       j := j+1
-  pure (result, mvarId)
+  pure (result, goal)
 
 /-- Given a list of targets of the form `e` or `h : e`, and a pattern, match all the targets
 against the pattern. Returns the list of produced subgoals. -/
@@ -443,7 +444,7 @@ first followed by the goals produced by the pattern match. -/
 def obtainNone (pat : RCasesPatt) (ty : Syntax) (g : MVarId) : TermElabM (List MVarId) := do
   let ty ← Term.elabType ty
   let g₁ ← mkFreshExprMVar (some ty)
-  let (v, g₂) ← intro1 (← assert g (pat.name?.getD default) ty g₁)
+  let (v, g₂) ← (← g.assert (pat.name?.getD default) ty g₁).intro1
   let gs ← rcasesCore g₂ {} #[] v #[] pat finish
   pure (g₁.mvarId! :: gs.toList)
 
@@ -455,7 +456,7 @@ partial def rintroCore (g : MVarId) (fs : FVarSubst) (clears : Array FVarId) (a 
   match pat with
   | `(rintroPat| $pat:rcasesPat) =>
     let pat := (← RCasesPatt.parse pat).typed? ref ty?
-    let (v, g) ← intro g (pat.name?.getD `_)
+    let (v, g) ← g.intro (pat.name?.getD `_)
     rcasesCore g fs clears v a pat cont
   | `(rintroPat| ($(pats)* $[: $ty?]?)) =>
     rintroContinue g fs clears pat pats ty? a cont
@@ -464,7 +465,7 @@ partial def rintroCore (g : MVarId) (fs : FVarSubst) (clears : Array FVarId) (a 
 partial def rintroContinue (g : MVarId) (fs : FVarSubst) (clears : Array FVarId)
   (ref : Syntax) (pats : Array Syntax) (ty? : Option Syntax) (a : α)
   (cont : MVarId → FVarSubst → Array FVarId → α → TermElabM α) : TermElabM α := do
-  withMVarContext g do
+  g.withContext do
     let rec loop i g fs clears a := do
       if h : i < pats.size then
         rintroCore g fs clears a ref (pats.get ⟨i, h⟩) ty? (loop (i+1))
@@ -479,43 +480,123 @@ def rintro (ref : Syntax) (pats : Array Syntax) (ty? : Option Syntax)
 
 end Lean.Meta.RCases
 
-namespace Lean.Parser.Tactic
-open Elab Elab.Tactic Meta RCases
+namespace Mathlib.Tactic
+open Lean Elab Elab.Tactic Meta RCases Parser.Tactic
 
-elab (name := rcases?) "rcases?" tgts:casesTarget,* num:(" : " num)? : tactic =>
+/--
+`rcases? e` will perform case splits on `e` in the same way as `rcases e`,
+but rather than accepting a pattern, it does a maximal cases and prints the
+pattern that would produce this case splitting. The default maximum depth is 5,
+but this can be modified with `rcases? e : n`.
+-/
+elab (name := rcases?) "rcases?" _tgts:casesTarget,* _num:(" : " num)? : tactic =>
   throwError "unimplemented"
 
+/--
+`rcases` is a tactic that will perform `cases` recursively, according to a pattern. It is used to
+destructure hypotheses or expressions composed of inductive types like `h1 : a ∧ b ∧ c ∨ d` or
+`h2 : ∃ x y, trans_rel R x y`. Usual usage might be `rcases h1 with ⟨ha, hb, hc⟩ | hd` or
+`rcases h2 with ⟨x, y, _ | ⟨z, hxz, hzy⟩⟩` for these examples.
+
+Each element of an `rcases` pattern is matched against a particular local hypothesis (most of which
+are generated during the execution of `rcases` and represent individual elements destructured from
+the input expression). An `rcases` pattern has the following grammar:
+
+* A name like `x`, which names the active hypothesis as `x`.
+* A blank `_`, which does nothing (letting the automatic naming system used by `cases` name the
+  hypothesis).
+* A hyphen `-`, which clears the active hypothesis and any dependents.
+* The keyword `rfl`, which expects the hypothesis to be `h : a = b`, and calls `subst` on the
+  hypothesis (which has the effect of replacing `b` with `a` everywhere or vice versa).
+* A type ascription `p : ty`, which sets the type of the hypothesis to `ty` and then matches it
+  against `p`. (Of course, `ty` must unify with the actual type of `h` for this to work.)
+* A tuple pattern `⟨p1, p2, p3⟩`, which matches a constructor with many arguments, or a series
+  of nested conjunctions or existentials. For example if the active hypothesis is `a ∧ b ∧ c`,
+  then the conjunction will be destructured, and `p1` will be matched against `a`, `p2` against `b`
+  and so on.
+* An alteration pattern `p1 | p2 | p3`, which matches an inductive type with multiple constructors,
+  or a nested disjunction like `a ∨ b ∨ c`.
+
+A pattern like `⟨a, b, c⟩ | ⟨d, e⟩` will do a split over the inductive datatype,
+naming the first three parameters of the first constructor as `a,b,c` and the
+first two of the second constructor `d,e`. If the list is not as long as the
+number of arguments to the constructor or the number of constructors, the
+remaining variables will be automatically named. If there are nested brackets
+such as `⟨⟨a⟩, b | c⟩ | d` then these will cause more case splits as necessary.
+If there are too many arguments, such as `⟨a, b, c⟩` for splitting on
+`∃ x, ∃ y, p x`, then it will be treated as `⟨a, ⟨b, c⟩⟩`, splitting the last
+parameter as necessary.
+
+`rcases` also has special support for quotient types: quotient induction into Prop works like
+matching on the constructor `quot.mk`.
+
+`rcases h : e with PAT` will do the same as `rcases e with PAT` with the exception that an
+assumption `h : e = PAT` will be added to the context.
+-/
 elab (name := rcases) tk:"rcases" tgts:casesTarget,* pat:((" with " rcasesPatLo)?) : tactic => do
-  let pat ← match pat.getArgs with
+  let pat ← match pat.raw.getArgs with
   | #[_, pat] => RCasesPatt.parse pat
   | #[] => pure $ RCasesPatt.tuple tk []
   | _ => throwUnsupportedSyntax
   let tgts := tgts.getElems.map fun tgt =>
-    (if tgt[0].isNone then none else some tgt[0][0].getId, tgt[1])
+    (if tgt.raw[0].isNone then none else some tgt.raw[0][0].getId, tgt.raw[1])
   withMainContext do
     replaceMainGoal (← RCases.rcases tgts pat (← getMainGoal))
 
+/--
+The `obtain` tactic is a combination of `have` and `rcases`. See `rcases` for
+a description of supported patterns.
+
+```lean
+obtain ⟨patt⟩ : type := proof
+```
+is equivalent to
+```lean
+have h : type := proof
+rcases h with ⟨patt⟩
+```
+
+If `⟨patt⟩` is omitted, `rcases` will try to infer the pattern.
+
+If `type` is omitted, `:= proof` is required.
+-/
 elab (name := obtain) tk:"obtain"
     pat:(ppSpace rcasesPatMed)? ty:((" : " term)?) val:((" := " term,+)?) : tactic => do
   let pat ← liftM $ pat.mapM RCasesPatt.parse
-  if val.isNone then
-    if ty.isNone then throwError
+  if val.raw.isNone then
+    if ty.raw.isNone then throwError
         ("`obtain` requires either an expected type or a value.\n" ++
         "usage: `obtain ⟨patt⟩? : type (:= val)?` or `obtain ⟨patt⟩? (: type)? := val`")
     let pat := pat.getD (RCasesPatt.one tk `this)
     withMainContext do
-      replaceMainGoal (← RCases.obtainNone pat ty[1] (← getMainGoal))
+      replaceMainGoal (← RCases.obtainNone pat ty.raw[1] (← getMainGoal))
   else
     let pat := pat.getD (RCasesPatt.one tk `_)
-    let pat := pat.typed? tk $ if ty.isNone then none else some ty[1]
-    let tgts := val[1].getSepArgs.map fun val => (none, val)
+    let pat := pat.typed? tk $ if ty.raw.isNone then none else some ty.raw[1]
+    let tgts := val.raw[1].getSepArgs.map fun val => (none, val)
     withMainContext do
       replaceMainGoal (← RCases.rcases tgts pat (← getMainGoal))
 
+/--
+`rintro?` will introduce and case split on variables in the same way as
+`rintro`, but will also print the `rintro` invocation that would have the same
+result. Like `rcases?`, `rintro? : n` allows for modifying the
+depth of splitting; the default is 5.
+-/
 elab (name := rintro?) "rintro?" (" : " num)? : tactic =>
   throwError "unimplemented"
 
+/--
+The `rintro` tactic is a combination of the `intros` tactic with `rcases` to
+allow for destructuring patterns while introducing variables. See `rcases` for
+a description of supported patterns. For example, `rintro (a | ⟨b, c⟩) ⟨d, e⟩`
+will introduce two variables, and then do case splits on both of them producing
+two subgoals, one with variables `a d e` and the other with `b c d e`.
+
+`rintro`, unlike `rcases`, also supports the form `(x y : ty)` for introducing
+and type-ascripting multiple variables at once, similar to binders.
+-/
 elab (name := rintro) "rintro" pats:(ppSpace colGt rintroPat)+ ty:((" : " term)?) : tactic => do
-  let ty? := if ty.isNone then none else some ty[1]
+  let ty? := if ty.raw.isNone then none else some ty.raw[1]
   withMainContext do
     replaceMainGoal (← RCases.rintro ty pats ty? (← getMainGoal))

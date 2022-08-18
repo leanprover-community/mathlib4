@@ -15,8 +15,9 @@ theorem nonneg_def {a : ℤ} : NonNeg a ↔ ∃ n : ℕ, a = n :=
 
 lemma NonNeg.elim {a : ℤ} : NonNeg a → ∃ n : ℕ, a = n := nonneg_def.1
 
-lemma nonneg_or_nonneg_neg (a : ℤ) : NonNeg a ∨ NonNeg (-a) :=
-match a with | ofNat n => Or.inl ⟨_⟩ | negSucc n => Or.inr ⟨_⟩
+lemma nonneg_or_nonneg_neg : ∀ (a : ℤ), NonNeg a ∨ NonNeg (-a)
+| ofNat _ => Or.inl ⟨_⟩
+| negSucc _ => Or.inr ⟨_⟩
 
 theorem le_def (a b : ℤ) : a ≤ b ↔ NonNeg (b - a) := Iff.refl _
 
@@ -99,7 +100,7 @@ protected theorem ne_of_lt {a b : ℤ} (h : a < b) : a ≠ b := fun e => by
   cases e; exact Int.lt_irrefl _ h
 
 theorem le_of_lt {a b : ℤ} (h : a < b) : a ≤ b :=
-  let ⟨n, hn⟩ := lt.dest h; le.intro _ hn
+  let ⟨_, hn⟩ := lt.dest h; le.intro _ hn
 
 protected theorem lt_iff_le_and_ne {a b : ℤ} : a < b ↔ a ≤ b ∧ a ≠ b := by
   refine ⟨fun h => ⟨le_of_lt h, Int.ne_of_lt h⟩, fun ⟨aleb, aneb⟩ => ?_⟩
@@ -157,13 +158,11 @@ theorem le_natAbs {a : ℤ} : a ≤ natAbs a :=
     fun h => le_trans h (ofNat_zero_le _)
 
 theorem neg_succ_lt_zero (n : ℕ) : -[1+ n] < 0 :=
-  lt_of_not_ge $ fun h => by
-    let ⟨m, h⟩ := eq_ofNat_of_zero_le h
-    contradiction
+  lt_of_not_ge fun h => by rcases eq_ofNat_of_zero_le h with ⟨_, ⟨⟩⟩
 
 theorem eq_neg_succ_of_lt_zero : ∀ {a : ℤ}, a < 0 → ∃ n : ℕ, a = -[1+ n]
   | (n : ℕ), h => absurd h (not_lt_of_ge (ofNat_zero_le _))
-  | -[1+ n], h => ⟨n, rfl⟩
+  | -[1+ n], _ => ⟨n, rfl⟩
 
 protected theorem eq_neg_of_eq_neg {a b : ℤ} (h : a = -b) : b = -a := by
   rw [h, Int.neg_neg]
@@ -719,7 +718,7 @@ theorem exists_eq_neg_ofNat {a : ℤ} (H : a ≤ 0) : ∃ n : ℕ, a = -(n : ℤ
 
 theorem natAbs_of_nonneg {a : ℤ} (H : 0 ≤ a) : (natAbs a : ℤ) = a :=
   match a, eq_ofNat_of_zero_le H with
-  | _, ⟨n, rfl⟩ => rfl
+  | _, ⟨_, rfl⟩ => rfl
 
 theorem ofNat_natAbs_of_nonpos {a : ℤ} (H : a ≤ 0) : (natAbs a : ℤ) = -a := by
   rw [← natAbs_neg, natAbs_of_nonneg (Int.neg_nonneg_of_nonpos H)]
@@ -746,22 +745,22 @@ theorem sign_of_succ (n : Nat) : sign (Nat.succ n) = 1 := rfl
 
 theorem sign_eq_one_of_pos {a : ℤ} (h : 0 < a) : sign a = 1 :=
   match a, eq_succ_of_zero_lt h with
-  | _, ⟨n, rfl⟩ => rfl
+  | _, ⟨_, rfl⟩ => rfl
 
 theorem sign_eq_neg_one_of_neg {a : ℤ} (h : a < 0) : sign a = -1 :=
   match a, eq_neg_succ_of_lt_zero h with
-  | _, ⟨n, rfl⟩ => rfl
+  | _, ⟨_, rfl⟩ => rfl
 
 theorem eq_zero_of_sign_eq_zero : ∀ {a : ℤ}, sign a = 0 → a = 0
   | 0, _ => rfl
 
 theorem pos_of_sign_eq_one : ∀ {a : ℤ}, sign a = 1 → 0 < a
-  | (n + 1 : ℕ), _ => ofNat_lt.2 (Nat.succ_pos _)
+  | (_ + 1 : ℕ), _ => ofNat_lt.2 (Nat.succ_pos _)
 
 theorem neg_of_sign_eq_neg_one : ∀ {a : ℤ}, sign a = -1 → a < 0
-  | (n + 1 : ℕ), h => nomatch h
+  | (_ + 1 : ℕ), h => nomatch h
   | 0, h => nomatch h
-  | -[1+ n], _ => neg_succ_lt_zero _
+  | -[1+ _], _ => neg_succ_lt_zero _
 
 theorem sign_eq_one_iff_pos (a : ℤ) : sign a = 1 ↔ 0 < a :=
   ⟨pos_of_sign_eq_one, sign_eq_one_of_pos⟩
@@ -817,7 +816,7 @@ theorem eq_one_of_mul_eq_self_right {a b : ℤ} (Hpos : b ≠ 0) (H : b * a = b)
   Int.eq_of_mul_eq_mul_left Hpos $ by rw [Int.mul_one, H]
 
 lemma ofNat_natAbs_eq_of_nonneg : ∀ a : ℤ, 0 ≤ a → Int.ofNat (Int.natAbs a) = a
-| (ofNat n), h => rfl
-| -[1+ n],   h => absurd (neg_succ_lt_zero n) (not_lt_of_ge h)
+| ofNat _, _ => rfl
+| -[1+ n], h => absurd (neg_succ_lt_zero n) (not_lt_of_ge h)
 
 end Int

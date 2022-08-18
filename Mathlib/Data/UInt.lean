@@ -25,6 +25,7 @@ lemma UInt64.val_eq_of_lt {a : Nat} : a < UInt64.size -> (ofNat a).val = a := Fi
 lemma USize.val_eq_of_lt {a : Nat} : a < USize.size -> (ofNat a).val = a := Fin.val_eq_of_lt
 
 set_option hygiene false
+/-- `genIntDeclars UInt8` generates a `CommRing UInt8` instance.  -/
 local macro "genIntDeclars" typeName:ident : command => do
   `(
     namespace $typeName

@@ -59,7 +59,7 @@ lemma sub_lt_self {a b : ℕ} (h₀ : 0 < a) (h₁ : a ≤ b) : b - a < b := by
 protected lemma add_sub_cancel' {n m : ℕ} (h : m ≤ n) : m + (n - m) = n :=
 by rw [Nat.add_comm, Nat.sub_add_cancel h]
 
-protected lemma sub_lt_sub_left : ∀ {k m n : ℕ} (H : k < m) (h : k < n), m - n < m - k
+protected lemma sub_lt_sub_left : ∀ {k m n : ℕ}, k < m → k < n → m - n < m - k
 | 0, m+1, n+1, _, _ => by rw [Nat.add_sub_add_right]; exact lt_succ_of_le (Nat.sub_le _ _)
 | k+1, m+1, n+1, h1, h2 => by
   rw [Nat.add_sub_add_right, Nat.add_sub_add_right]
@@ -113,7 +113,7 @@ def Up (ub a i : ℕ) := i < a ∧ i < ub
 lemma Up.next {ub i} (h : i < ub) : Up ub (i+1) i := ⟨Nat.lt_succ_self _, h⟩
 
 lemma Up.WF (ub) : WellFounded (Up ub) :=
-  Subrelation.wf (h₂ := (measure (ub - .)).wf) @fun a i ⟨ia, iu⟩ => Nat.sub_lt_sub_left iu ia
+  Subrelation.wf (h₂ := (measure (ub - .)).wf) fun ⟨ia, iu⟩ => Nat.sub_lt_sub_left iu ia
 
 /-- A well-ordered relation for "upwards" induction on the natural numbers up to some bound `ub`. -/
 def upRel (ub : ℕ) : WellFoundedRelation Nat := ⟨Up ub, Up.WF ub⟩

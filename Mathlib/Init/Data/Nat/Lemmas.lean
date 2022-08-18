@@ -54,7 +54,7 @@ instance : LinearOrder ℕ :=
 
 lemma pred_lt_pred : ∀ {n m : ℕ}, n ≠ 0 → n < m → pred n < pred m
 | 0,   _,   h, _ => (h rfl).elim
-| n+1, m+1, _, h => lt_of_succ_lt_succ h
+| _+1, _+1, _, h => lt_of_succ_lt_succ h
 
 -- Port note: this lemma was not present in Lean 3
 protected lemma add_left_cancel_iff {n m k : ℕ} : n + m = n + k ↔ m = k :=
@@ -70,7 +70,7 @@ Nat.lt_of_le_of_ne (Nat.le_of_add_le_add_left (Nat.le_of_lt h)) fun heq =>
 protected lemma lt_of_add_lt_add_right {a b c : ℕ} (h : a + b < c + b) : a < c :=
   Nat.lt_of_add_lt_add_left ((by rwa [Nat.add_comm b a, Nat.add_comm b c]): b + a < b + c)
 
-protected lemma lt_add_right (a b c : Nat) : a < b -> a < b + c :=
+protected lemma lt_add_right (a b c : Nat) : a < b → a < b + c :=
   fun h => lt_of_lt_of_le h (Nat.le_add_right _ _)
 
 protected lemma lt_add_of_pos_right {n k : ℕ} (h : 0 < k) : n < n + k :=
@@ -132,15 +132,15 @@ theorem succ_sub_one (n : ℕ) : succ n - 1 = n :=
 rfl
 
 theorem succ_pred_eq_of_pos : ∀ {n : ℕ}, 0 < n → succ (pred n) = n
-| succ k, h => rfl
+| succ _, _ => rfl
 
 protected theorem le_of_sub_eq_zero : ∀{n m : ℕ}, n - m = 0 → n ≤ m
 | n, 0, H => by rw [Nat.sub_zero] at H; simp [H]
-| 0, m+1, H => Nat.zero_le (m + 1)
+| 0, m+1, _ => Nat.zero_le (m + 1)
 | n+1, m+1, H => Nat.add_le_add_right
   (Nat.le_of_sub_eq_zero (by simp [Nat.add_sub_add_right] at H; exact H)) _
 
-protected theorem eq_zero_of_nonpos : ∀ (n : Nat), ¬0 < n -> n = 0
+protected theorem eq_zero_of_nonpos : ∀ (n : Nat), ¬0 < n → n = 0
 | 0 => fun _ => rfl
 | n+1 => fun h => absurd (Nat.zero_lt_succ n) h
 
@@ -172,9 +172,7 @@ have f : x ≤ y → min (succ x) (succ y) = succ (min x y) := by
 have g : ¬ (x ≤ y) → min (succ x) (succ y) = succ (min x y) := by
   intro p
   have h1 : min (succ x) (succ y) = succ y :=
-    if_neg (λeq => let hp : pred (succ x) ≤ pred (succ y) := (pred_le_pred eq)
-                   let hp2 : x ≤ y := hp
-                   p hp)
+    if_neg (λ eq => p (by exact pred_le_pred eq))
   have h2 : succ y = succ (min x y) := congr_arg succ (Eq.symm (if_neg p))
   rwa [←h2]
 Decidable.by_cases f g
@@ -201,7 +199,7 @@ protected lemma case_strong_induction_on {p : Nat → Prop} (a : Nat)
 Nat.strong_induction_on a $ λ n =>
   match n with
   | 0     => λ _ => hz
-  | (n+1) => λ h₁ => hi n (λ m h₂ => h₁ _ (lt_succ_of_le h₂))
+  | (n+1) => λ h₁ => hi n (λ _ h₂ => h₁ _ (lt_succ_of_le h₂))
 
 /- mod -/
 
@@ -246,7 +244,7 @@ lemma le_div_iff_mul_le (k0 : 0 < k) : x ≤ y / k ↔ x * k ≤ y := by
         ← Nat.add_sub_cancel (x*k) k, Nat.sub_le_sub_right_iff h.2, Nat.add_sub_cancel]
 
 protected lemma div_le_of_le_mul {m n : ℕ} : ∀ {k}, m ≤ k * n → m / k ≤ n
-| 0,      h => by simp [Nat.div_zero, n.zero_le]
+| 0, _ => by simp [Nat.div_zero, n.zero_le]
 | succ k, h =>
   suffices succ k * (m / succ k) ≤ succ k * n from Nat.le_of_mul_le_mul_left this (zero_lt_succ _)
   by have h1 : succ k * (m / succ k) ≤ m % succ k + succ k * (m / succ k) := Nat.le_add_left _ _
@@ -283,7 +281,8 @@ theorem exists_eq_succ_of_ne_zero {n : ℕ} (H : n ≠ 0) : ∃k : ℕ, n = succ
 ⟨_, (eq_zero_or_eq_succ_pred _).resolve_left H⟩
 
 
-def discriminate (H1: n = 0 → α) (H2 : ∀m, n = succ m → α) : α :=
+set_option linter.unusedVariables false in -- FIXME: lean4#1214
+def discriminate (H1 : n = 0 → α) (H2 : ∀m, n = succ m → α) : α :=
   match n with
   | 0 => H1 rfl
   | succ m => H2 m rfl
@@ -291,15 +290,15 @@ def discriminate (H1: n = 0 → α) (H2 : ∀m, n = succ m → α) : α :=
 lemma one_eq_succ_zero : 1 = succ 0 := rfl
 
 def two_step_induction {P : ℕ → Sort u} (H1 : P 0) (H2 : P 1)
-    (H3 : ∀ (n : ℕ) (IH1 : P n) (IH2 : P (succ n)), P (succ (succ n))) : (a : ℕ) → P a
+    (H3 : ∀ (n : ℕ), P n → P (succ n) → P (succ (succ n))) : (a : ℕ) → P a
 | 0   => H1
 | 1   => H2
-| n+2 => H3 _ (two_step_induction H1 H2 H3 _) (two_step_induction H1 H2 H3 _)
+| _+2 => H3 _ (two_step_induction H1 H2 H3 _) (two_step_induction H1 H2 H3 _)
 
 def sub_induction {P : ℕ → ℕ → Sort u} (H1 : ∀m, P 0 m)
    (H2 : ∀n, P (succ n) 0) (H3 : ∀n m, P n m → P (succ n) (succ m)) : (n m : ℕ) → P n m
-| 0,   m   => H1 _
-| n+1, 0   => H2 _
+| 0,   _   => H1 _
+| _+1, 0   => H2 _
 | n+1, m+1 => H3 _ _ (sub_induction H1 H2 H3 n m)
 
 /- addition -/
@@ -319,7 +318,7 @@ lemma eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
 /- properties of inequality -/
 
 lemma le_succ_of_pred_le {n m : ℕ} : pred n ≤ m → n ≤ succ m :=
-match n with | 0 => fun _ => zero_le _ | a+1 => succ_le_succ
+match n with | 0 => fun _ => zero_le _ | _+1 => succ_le_succ
 
 lemma le_lt_antisymm {n m : ℕ} (h₁ : n ≤ m) (h₂ : m < n) : False :=
 Nat.lt_irrefl n (Nat.lt_of_le_of_lt h₁ h₂)
@@ -397,10 +396,10 @@ lemma sub_one_sub_lt (h : i < n) : n - 1 - i < n := by
   apply Nat.zero_lt_succ
 
 lemma pred_inj : ∀ {a b : ℕ}, 0 < a → 0 < b → Nat.pred a = Nat.pred b → a = b
-| a+1, b+1, ha, hb, h => by rw [show a = b from h]
-| a+1, 0,   ha, hb, h => absurd hb (Nat.lt_irrefl _)
-| 0,   b+1, ha, hb, h => absurd ha (Nat.lt_irrefl _)
-| 0,   0,   ha, hb, h => rfl
+| a+1, b+1, _,  _, h => by rw [show a = b from h]
+| a+1, 0,   _, hb, _ => absurd hb (Nat.lt_irrefl _)
+| 0,   b+1, ha, _, _ => absurd ha (Nat.lt_irrefl _)
+| 0,   0,   _,  _, _ => rfl
 
 
 /- find -/
@@ -653,37 +652,36 @@ theorem dvd_mod_iff {k m n : ℕ} (h: k ∣ n) : k ∣ m % n ↔ k ∣ m :=
   by rwa [mod_add_div] at t
 
 theorem le_of_dvd {m n : ℕ} (h : 0 < n) : m ∣ n → m ≤ n :=
- λ⟨k,e⟩ => by
-   revert h
-   rw [e]
-   match k with
-   | 0 => intro hn
-          simp at hn
-   | pk+1 => intro _
-             let t := Nat.mul_le_mul_left m (succ_pos pk)
-             rwa [Nat.mul_one] at t
+λ ⟨k, e⟩ => by
+  revert h
+  rw [e]
+  match k with
+  | 0 => intro hn; simp at hn
+  | pk+1 =>
+    intro _
+    let t := Nat.mul_le_mul_left m (succ_pos pk)
+    rwa [Nat.mul_one] at t
 
 theorem dvd_antisymm : ∀ {m n : ℕ}, m ∣ n → n ∣ m → m = n
-| m,     0, h₁, h₂ => Nat.eq_zero_of_zero_dvd h₂
-| 0,     n, h₁, h₂ => (Nat.eq_zero_of_zero_dvd h₁).symm
-| m+1, n+1, h₁, h₂ => Nat.le_antisymm (le_of_dvd (succ_pos _) h₁) (le_of_dvd (succ_pos _) h₂)
+| _,     0, _,  h₂ => Nat.eq_zero_of_zero_dvd h₂
+| 0,     _, h₁, _  => (Nat.eq_zero_of_zero_dvd h₁).symm
+| _+1, _+1, h₁, h₂ => Nat.le_antisymm (le_of_dvd (succ_pos _) h₁) (le_of_dvd (succ_pos _) h₂)
 
 theorem pos_of_dvd_of_pos {m n : ℕ} (H1 : m ∣ n) (H2 : 0 < n) : 0 < m :=
-Nat.pos_of_ne_zero $ λ m0 =>
-  by rw [m0] at H1
-     rw [Nat.eq_zero_of_zero_dvd H1] at H2
-     exact Nat.lt_irrefl _ H2
+Nat.pos_of_ne_zero $ λ m0 => by
+  rw [m0] at H1
+  rw [Nat.eq_zero_of_zero_dvd H1] at H2
+  exact Nat.lt_irrefl _ H2
 
 theorem eq_one_of_dvd_one {n : ℕ} (H : n ∣ 1) : n = 1 :=
   Nat.le_antisymm
-   (le_of_dvd (of_decide_eq_true (by trivial)) H)
-   (pos_of_dvd_of_pos H (of_decide_eq_true (by trivial)))
+    (le_of_dvd (of_decide_eq_true (by trivial)) H)
+    (pos_of_dvd_of_pos H (of_decide_eq_true (by trivial)))
 
-theorem dvd_of_mod_eq_zero {m n : ℕ} (H : n % m = 0) : m ∣ n :=
-Exists.intro
-  (n / m)
-  (by have t := (mod_add_div n m).symm
-      rwa [H, Nat.zero_add] at t)
+theorem dvd_of_mod_eq_zero {m n : ℕ} (H : n % m = 0) : m ∣ n := by
+  refine ⟨n / m, ?_⟩
+  have t := (mod_add_div n m).symm
+  rwa [H, Nat.zero_add] at t
 
 theorem mod_eq_zero_of_dvd {m n : ℕ} (H : m ∣ n) : n % m = 0 :=
 Exists.elim H (λ z H1 => by rw [H1, mul_mod_right])
@@ -692,11 +690,11 @@ theorem dvd_iff_mod_eq_zero (m n : ℕ) : m ∣ n ↔ n % m = 0 :=
 Iff.intro mod_eq_zero_of_dvd dvd_of_mod_eq_zero
 
 instance decidable_dvd : @DecidableRel ℕ (·∣·) :=
-λm n => decidable_of_decidable_of_iff (dvd_iff_mod_eq_zero _ _).symm
+λ _ _ => decidable_of_decidable_of_iff (dvd_iff_mod_eq_zero _ _).symm
 
-protected theorem mul_div_cancel' {m n : ℕ} (H : n ∣ m) : n * (m / n) = m :=
- let t := mod_add_div m n
- by rwa [mod_eq_zero_of_dvd H, Nat.zero_add] at t
+protected theorem mul_div_cancel' {m n : ℕ} (H : n ∣ m) : n * (m / n) = m := by
+  let t := mod_add_div m n
+  rwa [mod_eq_zero_of_dvd H, Nat.zero_add] at t
 
 protected theorem div_mul_cancel {m n : ℕ} (H: n ∣ m) : m / n * n = m :=
   by rw [Nat.mul_comm, Nat.mul_div_cancel' H]
@@ -739,97 +737,101 @@ Nat.lt_of_le_of_lt (Nat.mul_le_mul_of_nonneg_right h1) (Nat.mul_lt_mul_of_pos_le
 
 
 lemma mul_mod (a b n : ℕ) : (a * b) % n = ((a % n) * (b % n)) % n := by
-    let hy := (a * b) % n
-    have hx : (a * b) % n = hy := rfl
-    rw [←mod_add_div a n, ←mod_add_div b n, Nat.right_distrib, Nat.left_distrib, Nat.left_distrib,
-        Nat.mul_assoc, Nat.mul_assoc, ←Nat.left_distrib n _ _, add_mul_mod_self_left,
-        Nat.mul_comm _ (n * (b / n)), Nat.mul_assoc, add_mul_mod_self_left] at hx
-    rw [hx]
-    done
+  let hy := (a * b) % n
+  have hx : (a * b) % n = hy := rfl
+  rw [←mod_add_div a n, ←mod_add_div b n, Nat.right_distrib, Nat.left_distrib, Nat.left_distrib,
+      Nat.mul_assoc, Nat.mul_assoc, ←Nat.left_distrib n _ _, add_mul_mod_self_left,
+      Nat.mul_comm _ (n * (b / n)), Nat.mul_assoc, add_mul_mod_self_left] at hx
+  rw [hx]
+  done
 
 @[simp] theorem mod_add_mod (m n k : ℕ) : (m % n + k) % n = (m + k) % n := by
-   have := (add_mul_mod_self_left (m % n + k) n (m / n)).symm
-   rwa [Nat.add_right_comm, mod_add_div] at this
+  have := (add_mul_mod_self_left (m % n + k) n (m / n)).symm
+  rwa [Nat.add_right_comm, mod_add_div] at this
 
-@[simp] theorem add_mod_mod (m n k : ℕ) : (m + n % k) % k = (m + n) % k :=
-by rw [Nat.add_comm, mod_add_mod, Nat.add_comm]
+@[simp] theorem add_mod_mod (m n k : ℕ) : (m + n % k) % k = (m + n) % k := by
+  rw [Nat.add_comm, mod_add_mod, Nat.add_comm]
 
-lemma add_mod (a b n : ℕ) : (a + b) % n = ((a % n) + (b % n)) % n :=
-by rw [add_mod_mod, mod_add_mod]
+lemma add_mod (a b n : ℕ) : (a + b) % n = ((a % n) + (b % n)) % n := by
+  rw [add_mod_mod, mod_add_mod]
 
-lemma to_digits_core_lens_eq_aux (b f : Nat)
-  : ∀ (n : Nat) (l1 l2 : List Char) (h0 : l1.length = l2.length), (Nat.toDigitsCore b f n l1).length = (Nat.toDigitsCore b f n l2).length := by
-induction f with
-  simp only [Nat.toDigitsCore, List.length] <;> intro n l1 l2 hlen
-| zero => assumption
-| succ f ih =>
-  by_cases hx : n / b = 0
-  case pos => simp only [hx, if_true, List.length, congrArg (fun l => l + 1) hlen]
-  case neg =>
-    simp only [hx, if_false]
-    specialize ih (n / b) (Nat.digitChar (n % b) :: l1) (Nat.digitChar (n % b) :: l2)
-    simp only [List.length, congrArg (fun l => l + 1) hlen] at ih
-    exact ih trivial
+lemma to_digits_core_lens_eq_aux (b f : Nat) :
+  ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →
+    (Nat.toDigitsCore b f n l1).length = (Nat.toDigitsCore b f n l2).length := by
+  induction f with
+    simp only [Nat.toDigitsCore, List.length] <;> intro n l1 l2 hlen
+  | zero => assumption
+  | succ f ih =>
+    by_cases hx : n / b = 0
+    case pos => simp only [hx, if_true, List.length, congrArg (fun l => l + 1) hlen]
+    case neg =>
+      simp only [hx, if_false]
+      specialize ih (n / b) (Nat.digitChar (n % b) :: l1) (Nat.digitChar (n % b) :: l2)
+      simp only [List.length, congrArg (fun l => l + 1) hlen] at ih
+      exact ih trivial
 
-lemma to_digits_core_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Char), (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1 := by
-induction f with
-  intro n c tl <;> simp only [Nat.toDigitsCore, List.length]
-| succ f ih =>
-  by_cases hnb : (n / b) = 0
-  case pos => simp only [hnb, if_true, List.length]
-  case neg =>
-    generalize hx: Nat.digitChar (n % b) = x
-    simp only [hx, hnb, if_false] at ih
-    simp only [hnb, if_false]
-    specialize ih (n / b) c (x :: tl)
-    rw [<- ih]
-    have lens_eq : (x :: (c :: tl)).length = (c :: x :: tl).length := by simp
-    apply to_digits_core_lens_eq_aux
-    exact lens_eq
+lemma to_digits_core_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Char),
+    (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1 := by
+  induction f with
+    intro n c tl <;> simp only [Nat.toDigitsCore, List.length]
+  | succ f ih =>
+    by_cases hnb : (n / b) = 0
+    case pos => simp only [hnb, if_true, List.length]
+    case neg =>
+      generalize hx: Nat.digitChar (n % b) = x
+      simp only [hx, hnb, if_false] at ih
+      simp only [hnb, if_false]
+      specialize ih (n / b) c (x :: tl)
+      rw [<- ih]
+      have lens_eq : (x :: (c :: tl)).length = (c :: x :: tl).length := by simp
+      apply to_digits_core_lens_eq_aux
+      exact lens_eq
 
-lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ -> n / b < b ^ e := by
-simp only [Nat.pow_succ]
-exact (@Nat.div_lt_iff_lt_mul b n (b ^ e) h_b_pos).mpr
+lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n / b < b ^ e := by
+  simp only [Nat.pow_succ]
+  exact (@Nat.div_lt_iff_lt_mul b n (b ^ e) h_b_pos).mpr
 
 /-- The String representation produced by toDigitsCore has the proper length relative to
 the number of digits in `n < e` for some base `b`. Since this works with any base greater
 than one, it can be used for binary, decimal, and hex. -/
-lemma to_digits_core_length (b : Nat) (h : 2 <= b) (f n e : Nat) (hlt : n < b ^ e) (h_e_pos: 0 < e) : (Nat.toDigitsCore b f n []).length <= e := by
-induction f generalizing n e hlt h_e_pos with
-  simp only [Nat.toDigitsCore, List.length, Nat.zero_le]
-| succ f ih =>
-  cases e with
-  | zero => exact False.elim (Nat.lt_irrefl 0 h_e_pos)
-  | succ e =>
-    by_cases h_pred_pos : 0 < e
-    case pos =>
-      have _ : 0 < b := Nat.lt_trans (by decide) h
-      specialize ih (n / b) e (nat_repr_len_aux n b e ‹0 < b› hlt) h_pred_pos
-      by_cases hdiv_ten : n / b = 0
-      case pos => simp only [hdiv_ten]; exact Nat.le.step h_pred_pos
+lemma to_digits_core_length (b : Nat) (h : 2 <= b) (f n e : Nat)
+    (hlt : n < b ^ e) (h_e_pos: 0 < e) : (Nat.toDigitsCore b f n []).length <= e := by
+  induction f generalizing n e hlt h_e_pos with
+    simp only [Nat.toDigitsCore, List.length, Nat.zero_le]
+  | succ f ih =>
+    cases e with
+    | zero => exact False.elim (Nat.lt_irrefl 0 h_e_pos)
+    | succ e =>
+      by_cases h_pred_pos : 0 < e
+      case pos =>
+        have _ : 0 < b := Nat.lt_trans (by decide) h
+        specialize ih (n / b) e (nat_repr_len_aux n b e ‹0 < b› hlt) h_pred_pos
+        by_cases hdiv_ten : n / b = 0
+        case pos => simp only [hdiv_ten]; exact Nat.le.step h_pred_pos
+        case neg =>
+          simp only [hdiv_ten,
+            to_digits_core_lens_eq b f (n / b) (Nat.digitChar $ n % b), if_false]
+          exact Nat.succ_le_succ ih
       case neg =>
-        simp only [hdiv_ten, to_digits_core_lens_eq b f (n / b) (Nat.digitChar $ n % b), if_false]
-        exact Nat.succ_le_succ ih
-    case neg =>
-      have _ : e = 0 := Nat.eq_zero_of_nonpos e h_pred_pos
-      rw [‹e = 0›]
-      have _ : b ^ 1 = b := by simp only [pow_succ, pow_zero, Nat.one_mul]
-      have _ : n < b := ‹b ^ 1 = b› ▸ (‹e = 0› ▸ hlt : n < b ^ Nat.succ 0)
-      simp only [(@Nat.div_eq_of_lt n b ‹n < b› : n / b = 0), if_true, List.length]
+        have _ : e = 0 := Nat.eq_zero_of_nonpos e h_pred_pos
+        rw [‹e = 0›]
+        have _ : b ^ 1 = b := by simp only [pow_succ, pow_zero, Nat.one_mul]
+        have _ : n < b := ‹b ^ 1 = b› ▸ (‹e = 0› ▸ hlt : n < b ^ Nat.succ 0)
+        simp only [(@Nat.div_eq_of_lt n b ‹n < b› : n / b = 0), if_true, List.length]
 
 /-- The core implementation of `Nat.repr` returns a String with length less than or equal to the
 number of digits in the decimal number (represented by `e`). For example, the decimal string
 representation of any number less than 1000 (10 ^ 3) has a length less than or equal to 3. -/
-lemma repr_length (n e : Nat) : 0 < e -> n < 10 ^ e -> (Nat.repr n).length <= e := by
-cases n with
-  intro _ _ <;> simp only [Nat.repr, Nat.toDigits, String.length, List.asString]
-| zero => assumption
-| succ n =>
-  by_cases hterm : n.succ / 10 = 0
-  case pos => simp only [hterm, Nat.toDigitsCore]; assumption
-  case neg =>
-    simp only [hterm]
-    exact to_digits_core_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e ‹n.succ < 10 ^ e› ‹0 < e›
+lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length <= e := by
+  cases n with
+    (intro e0 he; simp only [Nat.repr, Nat.toDigits, String.length, List.asString])
+  | zero => assumption
+  | succ n =>
+    by_cases hterm : n.succ / 10 = 0
+    case pos => simp only [hterm, Nat.toDigitsCore]; assumption
+    case neg =>
+      simp only [hterm]
+      exact to_digits_core_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e he e0
 
 lemma pow_succ' {m n : Nat} : m ^ n.succ = m * m ^ n := by
   rw [Nat.pow_succ, Nat.mul_comm]

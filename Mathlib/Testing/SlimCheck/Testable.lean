@@ -127,7 +127,7 @@ class Testable (p : Prop) where
   run (cfg : Configuration) (minimize : Bool) : Gen (TestResult p)
 
 @[nolint unusedArguments]
-def NamedBinder (n : String) (p : Prop) : Prop := p
+def NamedBinder (_n : String) (p : Prop) : Prop := p
 
 namespace TestResult
 
@@ -135,7 +135,7 @@ def toString : TestResult p → String
 | success (PSum.inl _) => "success (no proof)"
 | success (PSum.inr _) => "success (proof)"
 | gaveUp n => s!"gave {n} times"
-| failure _ counters n => s!"failed {counters}"
+| failure _ counters _ => s!"failed {counters}"
 
 instance : ToString (TestResult p) := ⟨toString⟩
 
@@ -339,11 +339,15 @@ instance varTestable [SampleableExt α] {β : α → Prop} [∀ x, Testable (β 
     pure $ addVarInfo var finalX (· $ SampleableExt.interp finalX) finalR
 
 /-- Test a universal property about propositions -/
-instance propVarTestable {β : Prop → Prop} [∀ b : Bool, Testable (β b)] : Testable (NamedBinder var $ ∀ p : Prop, β p) where
+instance propVarTestable {β : Prop → Prop} [∀ b : Bool, Testable (β b)] :
+  Testable (NamedBinder var $ ∀ p : Prop, β p)
+where
   run := λ cfg min =>
     imp (λ h (b : Bool) => h b) <$> Testable.runProp (NamedBinder var $ ∀ b : Bool, β b) cfg min
 
-instance (priority := high) unusedVarTestable [Nonempty α] [Testable β] : Testable (NamedBinder var $ ∀ x : α, β) where
+instance (priority := high) unusedVarTestable [Nonempty α] [Testable β] :
+  Testable (NamedBinder var $ ∀ _x : α, β)
+where
   run := λ cfg min => do
     if cfg.traceDiscarded || cfg.traceSuccesses then
       slimTrace s!"{var} is unused"
@@ -352,7 +356,7 @@ instance (priority := high) unusedVarTestable [Nonempty α] [Testable β] : Test
     pure $ imp (· $ Classical.ofNonempty) finalR (PSum.inr $ λ x _ => x)
 
 instance (priority := low) decidableTestable {p : Prop} [PrintableProp p] [Decidable p] : Testable p where
-  run := λ cfg min =>
+  run := λ _ _ =>
     if h : p then
       pure $ success (PSum.inr h)
     else
@@ -468,7 +472,7 @@ partial def addDecorations (e : Expr) : Expr :=
 that the goal should be satisfied with a proposition equivalent to `p`
 with added annotations. -/
 @[nolint unusedArguments]
-abbrev DecorationsOf (p : Prop) := Prop
+abbrev DecorationsOf (_p : Prop) := Prop
 
 open Elab.Tactic
 open Meta
@@ -485,8 +489,8 @@ proposition where the quantifiers are annotated with `NamedBinder`.
 -/
 scoped elab "mk_decorations" : tactic => do
   let goal ← getMainGoal
-  let goalType ← getMVarType goal
-  if let Expr.app (Expr.const ``Decorations.DecorationsOf _ _) body _ := goalType then
+  let goalType ← goal.getType
+  if let .app (.const ``Decorations.DecorationsOf _) body := goalType then
     closeMainGoal (addDecorations body)
 
 end Decorations
@@ -494,9 +498,8 @@ end Decorations
 open Decorations in
 /-- Run a test suite for `p` and throw an exception if `p` does not not hold.-/
 def Testable.check (p : Prop) (cfg : Configuration := {}) (p' : Decorations.DecorationsOf p := by mk_decorations) [Testable p'] : IO PUnit := do
-  let x ← Testable.checkIO p' cfg
-  match x with
-  | TestResult.success _ => if !cfg.quiet then IO.println "Success" else pure ()
+  match ← Testable.checkIO p' cfg with
+  | TestResult.success _ => if !cfg.quiet then IO.println "Success"
   | TestResult.gaveUp n => if !cfg.quiet then IO.println s!"Gave up {n} times"
   | TestResult.failure _ xs n => throw (IO.userError $ formatFailure "Found problems!" xs n)
 

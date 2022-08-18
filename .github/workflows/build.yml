@@ -34,9 +34,7 @@ jobs:
         run: make test
 
       - name: lint mathlib
-        run: |
-          lake build runLinter
-          ./build/bin/runLinter
+        run: make lint
 
       - name: check that all files are imported
         run: git diff --exit-code

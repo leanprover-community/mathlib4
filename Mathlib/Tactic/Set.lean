@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Ian Benway. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Ian Benway.
+Authors: Ian Benway.
 -/
 import Lean
 namespace Mathlib.Tactic
@@ -45,9 +45,9 @@ elab_rules : tactic
     | none =>
       let val ← elabTerm val none
       pure (← inferType val, val)
-    let fvar ← liftMetaTacticAux fun mvarId => do
-      let (fvar, mvarId) ← intro1P (← define mvarId a.getId ty val)
-      pure (fvar, [mvarId])
+    let fvar ← liftMetaTacticAux fun goal => do
+      let (fvar, goal) ← (← goal.define a.getId ty val).intro1P
+      pure (fvar, [goal])
     withMainContext do
       Term.addTermInfo' (isBinder := true) a (mkFVar fvar)
   if rw.isNone then

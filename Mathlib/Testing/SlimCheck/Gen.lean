@@ -68,8 +68,8 @@ by the size parameter of `Gen`. -/
 def arrayOf (x : Gen α) : Gen (Array α) := do
   let sz ← choose Nat 0 (←getSize) (Nat.zero_le _)
   let mut res := #[]
-  for i in [0:sz] do
-    res := res.push (←x)
+  for _ in [0:sz] do
+    res := res.push (← x)
   pure res
 
 /-- Create an `List` of examples using `x`. The size is controlled
@@ -79,12 +79,12 @@ def listOf (x : Gen α) : Gen (List α) :=
 
 /-- Given a list of example generators, choose one to create an example. -/
 def oneOf (xs : Array (Gen α)) (pos : 0 < xs.size := by decide) : Gen α := do
-  let ⟨x, h1, h2⟩ ← chooseNatLt 0 xs.size pos
+  let ⟨x, _, h2⟩ ← chooseNatLt 0 xs.size pos
   xs.get ⟨x, h2⟩
 
 /-- Given a list of examples, choose one to create an example. -/
 def elements (xs : List α) (pos : 0 < xs.length) : Gen α := do
-  let ⟨x, h1, h2⟩ ← chooseNatLt 0 xs.length pos
+  let ⟨x, _, h2⟩ ← chooseNatLt 0 xs.length pos
   pure $ xs.get ⟨x, h2⟩
 
 open List in
@@ -93,7 +93,7 @@ def permutationOf : (xs : List α) → Gen { ys // ys ~ xs }
 | [] => pure ⟨[], Perm.nil⟩
 | x::xs => do
   let ⟨ys, h1⟩ ← permutationOf xs
-  let ⟨n, h2, h3⟩ ← choose Nat 0 ys.length (Nat.zero_le _)
+  let ⟨n, _, h3⟩ ← choose Nat 0 ys.length (Nat.zero_le _)
   pure ⟨insertNth n x ys, Perm.trans (perm_insertNth h3) (Perm.cons _ h1)⟩
 
 /-- Given two generators produces a tuple consisting out of the result of both -/

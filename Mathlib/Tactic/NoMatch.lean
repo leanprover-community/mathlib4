@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Mario Carneiro
+Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.OpenPrivate
 import Lean
@@ -25,12 +25,13 @@ open private elabMatchAux waitExpectedType from Lean.Elab.Match in
 @[termElab Parser.Term.noMatch] def elabNoMatch' : TermElab
 | `(match $discrs,* with.), expectedType? => do
   let discrs := discrs.getElems
-  for i in [0:discrs.size] do
+  for h : i in [0:discrs.size] do
+    have h : i < discrs.size := h.2
     let `(matchDiscr| $[$n :]? $discr:term) := discrs[i] | throwUnsupportedSyntax
     if let some x ← isAtomicDiscr? discr then
       tryPostponeIfMVar (← Meta.inferType x)
     else
-      let discrs := discrs.set! i (← `(matchDiscr| $[$n :]? x))
+      let discrs := discrs.set ⟨i, h⟩ (← `(matchDiscr| $[$n :]? x))
       return ← elabTerm (← `(let x := $discr; match $discrs,* with.)) expectedType?
   let expectedType ← waitExpectedType expectedType?
   elabMatchAux none discrs #[] mkNullNode expectedType
@@ -38,10 +39,10 @@ open private elabMatchAux waitExpectedType from Lean.Elab.Match in
 
 elab tk:"fun" "." : term <= expectedType => do
   let (binders, discrs) ← (·.unzip) <$>
-    Meta.forallTelescopeReducing expectedType fun args _ => do
-      args.mapM fun arg => withFreshMacroScope do
-        return (← `(a), ← `(matchDiscr| a))
-  elabTerm (← `(@fun $binders:ident* => match $discrs:matchDiscr,* with.)) expectedType
+    Meta.forallTelescopeReducing expectedType fun args _ =>
+      args.mapM fun _ => withFreshMacroScope do
+        return ((⟨← `(a)⟩ : Ident), ← `(matchDiscr| a))
+  elabTerm (← `(@fun%$tk $binders:ident* => match%$tk $discrs:matchDiscr,* with.)) expectedType
 
 macro tk:"λ" "." : term => `(fun%$tk .)
 

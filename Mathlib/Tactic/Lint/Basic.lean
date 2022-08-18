@@ -32,7 +32,7 @@ initialize nolintAttr : NameMapAttribute (Array Name) ←
   registerNameMapAttribute {
     name := `nolint
     descr := "Do not report this declaration in any of the tests of `#lint`"
-    add := fun decl stx =>
+    add := fun _decl stx =>
       match stx with
         -- TODO: validate linter names
         | `(attr|nolint $[$ids]*) => pure $ ids.map (·.getId.eraseMacroScopes)
@@ -53,7 +53,7 @@ expansion.
 def isAutoDecl (decl : Name) : CoreM Bool := do
   if decl.hasMacroScopes then return true
   if decl.isInternal then return true
-  if let Name.str n s _ := decl then
+  if let Name.str n s := decl then
     if s.startsWith "proof_" || s.startsWith "match_" then return true
     if (← getEnv).isConstructor n && ["injEq", "inj", "sizeOf_spec"].any (· == s) then
       return true
@@ -93,7 +93,7 @@ and produces a list of linters. -/
 def getLinters (l : List Name) : CoreM (List NamedLinter) :=
   l.mapM getLinter
 
--- Defines the user attribute `linter` for adding a linter to the default set.
+-- Defines the user attribute `mathlibLinter` for adding a linter to the default set.
 initialize mathlibLinterAttr : TagAttribute ←
   registerTagAttribute
     (name := `mathlibLinter)

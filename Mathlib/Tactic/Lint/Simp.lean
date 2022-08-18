@@ -131,15 +131,15 @@ https://leanprover-community.github.io/mathlib_docs/notes.html#simp-normal%20for
     -- TODO: equation lemmas
     let ctx ← Simp.Context.mkDefault
     checkAllSimpTheoremInfos (← getConstInfo declName).type fun {lhs, rhs, isConditional, ..} => do
-    let ⟨lhs', prf1⟩ ← decorateError "simplify fails on left-hand side:" <| simp lhs ctx
+    let ⟨lhs', prf1, _⟩ ← decorateError "simplify fails on left-hand side:" <| simp lhs ctx
     let prf1_lems := heuristicallyExtractSimpTheorems ctx (prf1.getD (mkBVar 0))
     if prf1_lems.contains declName then return none
-    let ⟨rhs', prf2⟩ ← decorateError "simplify fails on right-hand side:" <| simp rhs ctx
+    let ⟨rhs', prf2, _⟩ ← decorateError "simplify fails on right-hand side:" <| simp rhs ctx
     let lhs'_eq_rhs' ← isSimpEq lhs' rhs' (whnfFirst := false)
     let lhs_in_nf ← isSimpEq lhs' lhs
     if lhs'_eq_rhs' then do
       if prf1.isNone then return none -- TODO: cannot detect used rfl-lemmas
-      if let Name.str n "sizeOf_spec" _ := declName then
+      if let .str _n "sizeOf_spec" := declName then
         return none -- HACK: these often use rfl-lemmas but are not rfl
       let used_lemmas := heuristicallyExtractSimpTheorems ctx <|
         mkApp (prf1.getD (mkBVar 0)) (prf2.getD (mkBVar 0))
@@ -235,10 +235,10 @@ Some commutativity lemmas are simp lemmas:"
   test := fun declName => withReducible do
     unless ← isSimpTheorem declName do return none
     let ty := (← getConstInfo declName).type
-    forallTelescopeReducing ty fun xs ty => do
+    forallTelescopeReducing ty fun _ ty => do
     let some (_, lhs, rhs) := ty.eq? | return none
     unless lhs.getAppFn.constName? == rhs.getAppFn.constName? do return none
-    let (mvars, bis, ty') ← forallMetaTelescopeReducing ty
+    let (_, _, ty') ← forallMetaTelescopeReducing ty
     let some (_, lhs', rhs') := ty'.eq? | return none
     unless ← isDefEq rhs lhs' do return none
     unless ← withNewMCtxDepth (isDefEq rhs lhs') do return none

@@ -6,6 +6,12 @@ Authors: Mario Carneiro, Daniel Selsam, Gabriel Ebner
 
 import Lean
 
+/-!
+# Defines `with_weak_namespace` command.
+
+Changes the current namespace without causing scoped things to go out of scope.
+-/
+
 namespace Lean.Elab.Command
 
 /-- Adds the name to the namespace, `_root_`-aware.
