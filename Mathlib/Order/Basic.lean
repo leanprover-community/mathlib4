@@ -357,32 +357,20 @@ lemma LinearOrder.to_partial_order_injective {α : Type _} :
   rw [h_dle, h_dleq, h_dlt]
 
 theorem Preorder.ext {α} {A B : Preorder α}
-  (H : ∀ x y : α, (A.toLE.le x y ↔ B.toLE.le x y)) : A = B :=
-by apply Preorder.to_le_injective
-   apply A.toLE.ext B.toLE
-   funext x y
-   exact propext $ H x y
-   -- TODO The mathlib3 proof is much simpler: `by { ext x y, exact H x y }`
+    (H : ∀ x y : α, (A.toLE.le x y ↔ B.toLE.le x y)) : A = B := by
+  ext x y
+  exact H x y
 
 theorem PartialOrder.ext {α} {A B : PartialOrder α}
-  (H : ∀ x y : α, (A.toLE.le x y ↔ B.toLE.le x y)) : A = B :=
-by apply PartialOrder.to_preorder_injective
-   apply Preorder.to_le_injective
-   apply A.toLE.ext B.toLE
-   funext x y
-   exact propext $ H x y
-   -- TODO The mathlib3 proof is much simpler: `by { ext x y, exact H x y }`
+    (H : ∀ x y : α, (A.toLE.le x y ↔ B.toLE.le x y)) : A = B := by
+  ext x y
+  exact H x y
 
+open Mathlib.Tactic.Ext
 theorem LinearOrder.ext {α} {A B : LinearOrder α}
-  (H : ∀ x y : α, A.toLE.le x y ↔ B.toLE.le x y) : A = B :=
-by apply LinearOrder.to_partial_order_injective
-   apply PartialOrder.to_preorder_injective
-   apply Preorder.to_le_injective
-   apply A.toLE.ext B.toLE
-   funext x y
-   exact propext $ H x y
-   -- TODO The mathlib3 proof is much simpler: `by { ext x y, exact H x y }`
-
+    (H : ∀ x y : α, A.toLE.le x y ↔ B.toLE.le x y) : A = B := by
+  ext x y
+  exact H x y
 
 /-- Given a relation `R` on `β` and a function `f : α → β`, the preimage relation on `α` is defined
 by `x ≤ y ↔ f x ≤ f y`. It is the unique relation on `α` making `f` a `rel_embedding` (assuming `f`
