@@ -17,10 +17,10 @@ initialize registerTraceClass `derive_optics
 
 -- [todo] this must already exist?
 private def Name.modifyHead (f : String → String) : Name → Name
-  | Name.str p s _ => Name.mkStr p (f s)
+  | Name.str p s => Name.mkStr p (f s)
   | n => n
 
-private def mkDocComment (s : String) : Syntax :=
+private def mkDocComment (s : String) : TSyntax `Lean.Parser.Command.docComment :=
   mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (s ++ "-/")]
 
 variable {M} [MonadControlT MetaM M] [MonadLiftT MetaM M] [Monad M] [MonadEnv M] [MonadError M]
@@ -66,7 +66,7 @@ private def getFieldCollections
       | some x => x.bind (fun (ctors, t) => if t == f.type && not (ctors.contains f.ctor) then some (ctors.insert f.ctor f.index, t) else none) |> n.insert f.name
       | none => n.insert f.name (some (NameMap.insert ∅ f.ctor f.index, f.type))
 
-private def mkAlt (mkRhs : (fieldVars: Array Syntax) → TermElabM Syntax) (ctor : Name) : TermElabM (Syntax × Syntax) := do
+private def mkAlt (mkRhs : (fieldVars: Array (TSyntax `term)) → TermElabM (TSyntax `term)) (ctor : Name) : TermElabM ((TSyntax `term) × (TSyntax `term)) := do
   let ctorInfo ← Lean.getConstInfoCtor ctor
   let fieldVars ←
     List.range ctorInfo.numFields
@@ -76,41 +76,53 @@ private def mkAlt (mkRhs : (fieldVars: Array Syntax) → TermElabM Syntax) (ctor
   let rhs ← mkRhs fieldVars
   return (lhs, rhs)
 
-private def mkAlts (ctors : NameMap Nat) (mkRhs : (ctorName : Name) → (fieldIdx : Nat) → (fieldVars : Array Syntax) → TermElabM Syntax) : TermElabM ((Array Syntax) × (Array Syntax)) := do
+private def mkAlts (ctors : NameMap Nat) (mkRhs : (ctorName : Name) → (fieldIdx : Nat) → (fieldVars : Array (TSyntax `term)) → TermElabM (TSyntax `term)) : TermElabM ((Array (TSyntax `term)) × (Array (TSyntax `term))) := do
   let cs ← ctors.toList.toArray.mapM (fun (n,i) => mkAlt (mkRhs n i) n)
   return Array.unzip cs
 
 private def ctorNameOrList (ctors : NameMap α) : String :=
-  ctors.toList |>.map Prod.fst |>.map (fun | Name.str _ x _ => s!"`{x}`" | _ => "????") |> String.andList "or"
+  ctors.toList |>.map Prod.fst |>.map (fun | Name.str _ x => s!"`{x}`" | _ => "????") |> String.andList "or"
 
 private def isExhaustive (ctors : NameMap α) (indName : Name) : M Bool := do
   let indVal ← getConstInfoInduct indName
   return indVal.ctors.all (fun a => ctors.contains a)
 
-private def mkGetOptional (baseName indName fieldName : Name) (indType : Syntax) (implicitBinders : Array Syntax) (fieldType : Syntax) (ctors : NameMap Nat) : TermElabM Syntax := do
+private structure CtorInfo where
+  baseName : Name
+  indName : Name
+  fieldName : Name
+  indType : TSyntax `term
+  implicitBinders : TSyntaxArray `Lean.Parser.Term.bracketedBinder
+  fieldType: TSyntax `term
+  ctors : NameMap Nat
+
+
+private def mkGetOptional (c: CtorInfo) : TermElabM (TSyntax `command) := do
+  let {baseName, indName, fieldName, indType, implicitBinders, fieldType, ctors} := c
   if (← isExhaustive ctors indName) then
     throwError "expected non-exhautive ctor list"
   let defname := mkIdent <| baseName ++ Name.modifyHead (· ++ "?") fieldName
-  let (lhs, rhs) ← mkAlts ctors (fun _ i fvs => `(some $(fvs[i])))
+  let (lhs, rhs) ← mkAlts ctors (fun _ i fvs => `(some $(fvs[i]!)))
   let docstring := mkDocComment <| s!"If the given `{indName}` is a {ctorNameOrList ctors}; returns the value of the `{fieldName}` field, otherwise returns `none`."
   `(
         $docstring:docComment
-        def $defname:ident $implicitBinders:explicitBinder*
+        def $defname:ident $implicitBinders:bracketedBinder*
           : $indType → Option $fieldType
           $[| $lhs => $rhs]*
           | _ => none
   )
 
-private def mkGetBang (baseName indName fieldName : Name) (indType : Syntax) (implicitBinders : Array Syntax) (fieldType : Syntax) (ctors : NameMap Nat) : TermElabM Syntax := do
+private def mkGetBang (c : CtorInfo) : TermElabM (TSyntax `command) := do
+  let {baseName, indName, fieldName, indType, implicitBinders, fieldType, ctors} := c
   if (← isExhaustive ctors indName) then
     throwError "expected non-exhautive ctor list"
   let defname : Name := baseName ++ Name.modifyHead (· ++ "!") fieldName
   let docstring := mkDocComment <| s!"If the given `{indName}` is a {ctorNameOrList ctors},
     returns the value of the `{fieldName}` field, otherwise panics."
-  let (lhs, rhs) ← mkAlts ctors (fun _ i fvs => pure fvs[i])
+  let (lhs, rhs) ← mkAlts ctors (fun _ i fvs => pure fvs[i]!)
   `(
     $docstring:docComment
-    def $(mkIdent defname):ident $implicitBinders:explicitBinder* [Inhabited $fieldType]
+    def $(mkIdent defname):ident $implicitBinders:bracketedBinder* [Inhabited $fieldType]
       : $indType → $fieldType
       $[| $lhs => $rhs]*
       | x =>
@@ -118,28 +130,30 @@ private def mkGetBang (baseName indName fieldName : Name) (indType : Syntax) (im
         panic! s!"expected constructor {n}"
   )
 
-private def mkGet (baseName indName fieldName : Name) (indType : Syntax) (implicitBinders : Array Syntax) (fieldType : Syntax) (ctors : NameMap Nat) : TermElabM Syntax := do
+private def mkGet (c : CtorInfo) : TermElabM (TSyntax `command) := do
+  let {baseName, indName, fieldName, indType, implicitBinders, fieldType, ctors} := c
   if not (← isExhaustive ctors indName) then
     throwError "expected exhaustive ctor list"
   let defname : Name := baseName ++ fieldName
   let docstring := mkDocComment <| s!"Returns the value of the `{fieldName}` field."
-  let (lhs, rhs) ← mkAlts ctors (fun _ i fvs => pure fvs[i])
+  let (lhs, rhs) ← mkAlts ctors (fun _ i fvs => pure fvs[i]!)
   `(
     $docstring:docComment
-    def $(mkIdent defname):ident $implicitBinders:explicitBinder* [Inhabited $fieldType]
+    def $(mkIdent defname):ident $implicitBinders:bracketedBinder* [Inhabited $fieldType]
       : $indType → $fieldType
       $[| $lhs => $rhs]*
   )
 
 
-private def mkWith (baseName indName fieldName : Name) (indType : Syntax) (implicitBinders : Array Syntax) (fieldType : Syntax) (ctors : NameMap Nat) : TermElabM Syntax := do
+private def mkWith (c : CtorInfo) : TermElabM (TSyntax `command) := do
+  let {baseName, indName, fieldName, indType, implicitBinders, fieldType, ctors} := c
   let defname : Name := baseName ++ Name.modifyHead (fun n => s!"with{n.capitalize}") fieldName
   let x ← mkIdent <$> mkFreshUserName `x
   let (lhs, rhs) ← mkAlts ctors (fun ctorName i fvs => `($(mkIdent ctorName) $(fvs.modify i (fun _ => x)):term*))
   if ← isExhaustive ctors indName then
     `(
       $(mkDocComment <| s!"Replaces the value of the `{fieldName}` field with the given value."):docComment
-      def $(mkIdent defname):ident $implicitBinders:explicitBinder*
+      def $(mkIdent defname):ident $implicitBinders:bracketedBinder*
         ($x : $fieldType)
         : $indType → $indType
         $[| $lhs => $rhs]*
@@ -149,15 +163,15 @@ private def mkWith (baseName indName fieldName : Name) (indType : Syntax) (impli
       $(mkDocComment <| s!"If the given `{indName}` is a {ctorNameOrList ctors},
           replaces the value of the `{fieldName}` field with the given value.
           Otherwise acts as the identity function."):docComment
-      def $(mkIdent defname):ident $implicitBinders:explicitBinder*
+      def $(mkIdent defname):ident $implicitBinders:bracketedBinder*
         ($x : $fieldType)
         : $indType → $indType
         $[| $lhs => $rhs]*
         | y => y
     )
 
-private def mkModify (baseName indName fieldName : Name) (indType : Syntax) (implicitBinders : Array Syntax) (fieldType : Syntax) (ctors : NameMap Nat) : TermElabM Syntax := do
-  let defname : Name := baseName ++ Name.modifyHead (fun n => s!"modify{n.capitalize}") fieldName
+private def mkModify (c : CtorInfo) : TermElabM (TSyntax `command) := do
+  let {baseName, indName, fieldName, indType, implicitBinders, fieldType, ctors} := c  let defname : Name := baseName ++ Name.modifyHead (fun n => s!"modify{n.capitalize}") fieldName
   let x ← mkIdent <$> mkFreshUserName `visit
   let (lhs, rhs) ← mkAlts ctors (fun ctorName i fvs => do
     let outFields ← fvs.modifyM i (fun q => `(($x <| $q)))
@@ -165,7 +179,7 @@ private def mkModify (baseName indName fieldName : Name) (indType : Syntax) (imp
   if ← isExhaustive ctors indName then
     `(
       $(mkDocComment <| s!"Modifies the value of the `{fieldName}` field with the given `visit` function."):docComment
-      def $(mkIdent defname):ident $implicitBinders:explicitBinder*
+      def $(mkIdent defname):ident $implicitBinders:bracketedBinder*
         ($x :$fieldType → $fieldType )
         : $indType → $indType
         $[| $lhs => $rhs]*
@@ -174,7 +188,7 @@ private def mkModify (baseName indName fieldName : Name) (indType : Syntax) (imp
     `(
       $(mkDocComment <| s!"If the given `{indName}` is a {ctorNameOrList ctors};
           modifies the value of the `{fieldName}` field with the given `visit` function."):docComment
-      def $(mkIdent defname):ident $implicitBinders:explicitBinder*
+      def $(mkIdent defname):ident $implicitBinders:bracketedBinder*
         ($x :$fieldType → $fieldType )
         : $indType → $indType
         $[| $lhs => $rhs]*
@@ -182,12 +196,12 @@ private def mkModify (baseName indName fieldName : Name) (indType : Syntax) (imp
     )
 
 
-private def mkModifyM (baseName indName fieldName : Name) (indType : Syntax) (implicitBinders : Array Syntax) (fieldType : Syntax) (ctors : NameMap Nat) : TermElabM Syntax := do
-  let visit ← mkIdent <$> mkFreshUserName `visit
+private def mkModifyM (c : CtorInfo) : TermElabM (TSyntax `command) := do
+  let {baseName, indName, fieldName, indType, implicitBinders, fieldType, ctors} := c  let visit ← mkIdent <$> mkFreshUserName `visit
   let x ← mkIdent <$> mkFreshUserName `x
   let (lhs, rhs) ← mkAlts ctors (fun ctorName i fvs => do
     let outFields := fvs.modify i (fun _ => x)
-    `((fun $x => $(mkIdent ctorName) $outFields:term*) <$> $visit $(fvs[i])))
+    `((fun $x => $(mkIdent ctorName) $outFields:term*) <$> $visit $(fvs[i]!)))
   let defname : Name := baseName ++ Name.modifyHead (fun n => s!"modifyM{n.capitalize}") fieldName
   if ← (isExhaustive ctors indName) then
     let docstring := mkDocComment <|  s!"Runs the given `visit` function on the `{fieldName}` field."
@@ -195,7 +209,7 @@ private def mkModifyM (baseName indName fieldName : Name) (indType : Syntax) (im
       $docstring:docComment
       def $(mkIdent defname):ident
         {M} [Functor M]
-        $implicitBinders:explicitBinder*
+        $implicitBinders:bracketedBinder*
         ($visit : $fieldType → M $fieldType)
         :  $indType → M $indType
         $[| $lhs => $rhs]*
@@ -207,7 +221,7 @@ private def mkModifyM (baseName indName fieldName : Name) (indType : Syntax) (im
       $docstring:docComment
       def $(mkIdent defname):ident
         {M} [Pure M] [Functor M]
-        $implicitBinders:explicitBinder*
+        $implicitBinders:bracketedBinder*
         ($visit : $fieldType → M $fieldType)
         :  $indType → M $indType
         $[| $lhs => $rhs]*
@@ -216,12 +230,15 @@ private def mkModifyM (baseName indName fieldName : Name) (indType : Syntax) (im
 
 private def opticMakers := [mkGet, mkGetOptional, mkGetBang, mkWith, mkModify, mkModifyM]
 
-private def mkOpticsCore (indVal : InductiveVal) : TermElabM (Array Syntax) :=
+private def mkOpticsCore (indVal : InductiveVal) : TermElabM (Array Syntax.Command) :=
   Lean.Meta.forallTelescopeReducing indVal.type fun params _ => do
     let paramDecls ← liftM $ params.mapM Lean.Meta.getFVarLocalDecl
     let paramStx := paramDecls |>.map (fun x => mkIdent x.userName)
     let indType ← `($(mkIdent indVal.name):ident $paramStx:term*)
-    let implicitBinders ← paramDecls |>.mapM (fun x => `(implicitBinderF| { $(mkIdent x.userName) }))
+    let implicitBinders : Array (TSyntax `Lean.Parser.Term.bracketedBinder) ←
+      paramDecls |>.mapM (fun x => do
+        let i := mkIdent x.userName
+        `(bracketedBinder| { $i:ident }))
     let mut cmds := #[]
     let fcs ← getFieldCollections indVal.name
     have : ForIn TermElabM FieldCollections (_ × _) := Std.RBMap.instForInRBMapProd
@@ -232,7 +249,7 @@ private def mkOpticsCore (indVal : InductiveVal) : TermElabM (Array Syntax) :=
         let fieldType ← PrettyPrinter.delab <| fieldType.instantiateRev params
         for mk in opticMakers do
           try
-            let cmd ← mk indVal.name indVal.name field indType implicitBinders fieldType ctors
+            let cmd ← mk {baseName := indVal.name, indName := indVal.name, fieldName := field, indType, implicitBinders, fieldType, ctors}
             cmds := cmds.push cmd
           catch
             | _err => continue
@@ -242,7 +259,7 @@ private def mkOpticsCore (indVal : InductiveVal) : TermElabM (Array Syntax) :=
       let ctors := mkNameMap Nat |>.insert field.ctor field.index
       for mk in opticMakers do
         try
-          let cmd ← mk field.ctor indVal.name field.name indType implicitBinders fieldType ctors
+          let cmd ← mk {baseName := field.ctor, indName := indVal.name, fieldName := field.name, indType, implicitBinders, fieldType, ctors}
           cmds := cmds.push cmd
         catch
           | _err => continue
@@ -262,7 +279,7 @@ private def mkOptics (decl : Name) : CommandElabM Unit := do
   if indVal.ctors.length <= 1 then
     throwError "single constructor inductive types should be structures."
 
-  let cmds : Array Syntax ← liftTermElabM none <| mkOpticsCore indVal
+  let cmds ← liftTermElabM <| mkOpticsCore indVal
   trace[derive_optics] "Created {cmds.size} definitions."
   for cmd in cmds do
     let pp ← liftCoreM $ PrettyPrinter.ppCommand cmd
