@@ -730,6 +730,13 @@ theorem forall_prop_of_true {p : Prop} {q : p → Prop} (h : p) : (∀ h' : p, q
 
 end quantifiers
 
+namespace Classical
+
+/-- In classical logic, we can decide a proposition. -/
+noncomputable def dec (p : Prop) : Decidable p := inferInstance
+
+end Classical
+
 section ite
 
 /-- A function applied to a `dite` is a `dite` of that function applied to each of the branches. -/

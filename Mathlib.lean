@@ -43,6 +43,7 @@ import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Set
 import Mathlib.Init.SetNotation
+import Mathlib.Init.Zero
 import Mathlib.Lean.Exception
 import Mathlib.Lean.Expr
 import Mathlib.Lean.Expr.Basic
@@ -57,6 +58,7 @@ import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Mathport.SpecialNames
 import Mathlib.Mathport.Syntax
+import Mathlib.Order.Basic
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Cache
