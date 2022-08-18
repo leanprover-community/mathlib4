@@ -153,7 +153,6 @@ end Eq
 
 namespace LE.le
 
-@[nolint ge_or_gt] -- see Note [nolint_ge]
 protected lemma ge [LE α] {x y : α} (h : x ≤ y) : y ≥ x := h
 
 lemma lt_iff_ne [PartialOrder α] {x y : α} (h : x ≤ y) : x < y ↔ x ≠ y := ⟨λ h => h.ne, h.lt_of_ne⟩
@@ -174,7 +173,6 @@ end LE.le
 
 namespace LT.lt
 
-@[nolint ge_or_gt] -- see Note [nolint_ge]
 protected lemma gt [LT α] {x y : α} (h : x < y) : y > x := h
 protected lemma false [Preorder α] {x : α} : x < x → False := lt_irrefl x
 
@@ -185,19 +183,16 @@ lemma lt_or_lt [LinearOrder α] {x y : α} (h : x < y) (z : α) : x < z ∨ z < 
 
 end LT.lt
 
-@[nolint ge_or_gt] -- see Note [nolint_ge]
 protected lemma ge.le [LE α] {x y : α} (h : x ≥ y) : y ≤ x := h
 
-@[nolint ge_or_gt] -- see Note [nolint_ge]
 protected lemma gt.lt [LT α] {x y : α} (h : x > y) : y < x := h
 
-@[nolint ge_or_gt] -- see Note [nolint_ge]
 theorem ge_of_eq [Preorder α] {a b : α} (h : a = b) : a ≥ b := le_of_eq h.symm
 
-@[simp, nolint ge_or_gt] -- see Note [nolint_ge]
+@[simp]
 lemma ge_iff_le [Preorder α] {a b : α} : a ≥ b ↔ b ≤ a := Iff.rfl
 
-@[simp, nolint ge_or_gt] -- see Note [nolint_ge]
+@[simp]
 lemma gt_iff_lt [Preorder α] {a b : α} : a > b ↔ b < a := Iff.rfl
 
 lemma not_le_of_lt [Preorder α] {a b : α} (h : a < b) : ¬ b ≤ a := (le_not_le_of_lt h).right
