@@ -153,9 +153,9 @@ elab "apply_ext_lemma" : tactic => do
 
 scoped syntax "ext_or_skip" (ppSpace rintroPat)* : tactic
 macro_rules
-| `(tactic| ext_or_skip) => `(tactic| skip)
+| `(tactic| ext_or_skip) => `(tactic| repeat apply_ext_lemma)
 | `(tactic| ext_or_skip $x:rintroPat $xs:rintroPat*) =>
-  `(tactic| repeat apply_ext_lemma; rintro $x:rintroPat; ext_or_skip $xs:rintroPat*)
+  `(tactic| (repeat apply_ext_lemma); rintro $x:rintroPat; ext_or_skip $xs:rintroPat*)
 
 -- TODO: support `ext : n`
 
