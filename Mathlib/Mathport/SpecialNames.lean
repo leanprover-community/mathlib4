@@ -72,9 +72,14 @@ namespace Mathlib.Prelude
 #align has_seq_right SeqRight
 #align has_dvd       Dvd
 #align has_subset    Subset
+#align has_ssubset   SSubset
 #align has_union     Union
 #align has_inter     Inter
 #align has_sdiff     Sdiff
+#align has_mem       Membership
+#align has_insert    Insert
+#align has_singleton Singleton
+#align has_sep       Sep
 
 #align has_emptyc EmptyCollection
 #align has_emptyc.emptyc EmptyCollection.emptyCollection
