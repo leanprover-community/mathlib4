@@ -3,6 +3,7 @@ Copyright (c) 2016 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.Option.Defs
 import Mathlib.Logic.Basic
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
@@ -205,9 +206,8 @@ theorem is_partial_inv_left {α β} {f : α → β} {g} (H : is_partial_inv f g)
 theorem injective_of_partial_inv {α β} {f : α → β} {g} (H : is_partial_inv f g) : injective f :=
 λ _ _ h => Option.some.inj $ ((H _ _).2 h).symm.trans ((H _ _).2 rfl)
 
--- TODO mathlib3 uses Mem here
 theorem injective_of_partial_inv_right {α β} {f : α → β} {g} (H : is_partial_inv f g)
- (x y b) (h₁ : g x = some b) (h₂ : g y = some b) : x = y :=
+ (x y b) (h₁ : b ∈ g x) (h₂ : b ∈ g y) : x = y :=
 ((H _ _).1 h₁).symm.trans ((H _ _).1 h₂)
 
 theorem LeftInverse.comp_eq_id {f : α → β} {g : β → α} (h : LeftInverse f g) : f ∘ g = id :=
