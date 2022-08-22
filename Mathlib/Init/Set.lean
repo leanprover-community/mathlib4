@@ -78,8 +78,12 @@ def univ : Set α := {_a | True}
 protected def insert (a : α) (s : Set α) : Set α :=
 {b | b = a ∨ b ∈ s}
 
+instance : Insert α (Set α) := ⟨Set.insert⟩
+
 protected def singleton (a : α) : Set α :=
 {b | b = a}
+
+instance : Singleton α (Set α) := ⟨Set.singleton⟩
 
 protected def union (s₁ s₂ : Set α) : Set α :=
 {a | a ∈ s₁ ∨ a ∈ s₂}
@@ -124,21 +128,5 @@ instance : LawfulFunctor Set where
     ⟨λ ⟨a, ⟨h₁, h₂⟩⟩ => ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
      λ ⟨_, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
   map_const := rfl
-
-syntax "{" term,+ "}" : term
-
-macro_rules
-  | `({$x:term}) => `(Set.singleton $x)
-  | `({$x:term, $xs:term,*}) => `(Set.insert $x {$xs:term,*})
-
-@[appUnexpander Set.singleton]
-def singletonUnexpander : Lean.PrettyPrinter.Unexpander
-| `($_ $a) => `({ $a:term })
-| _ => throw ()
-
-@[appUnexpander Set.insert]
-def insertUnexpander : Lean.PrettyPrinter.Unexpander
-| `($_ $a { $ts,* }) => `({$a:term, $ts,*})
-| _ => throw ()
 
 end Set
