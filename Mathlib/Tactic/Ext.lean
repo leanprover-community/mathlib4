@@ -120,7 +120,7 @@ def extAttribute : AttributeImpl where
         Elab.Command.elabCommand <|<- `(declareExtTheoremsFor $(mkIdent decl))
     else MetaM.run' do
       let declTy := (← getConstInfo decl).type
-      let (_, _, declTy) ← withReducible <| forallMetaTelescopeReducing declTy
+      let (_, _, declTy) ← withDefault <| forallMetaTelescopeReducing declTy
       if declTy.isAppOfArity ``Eq 3 && (declTy.getArg! 1).isMVar && (declTy.getArg! 2).isMVar then
         let ty := declTy.getArg! 0
         let key ←
