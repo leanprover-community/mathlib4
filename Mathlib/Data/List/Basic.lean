@@ -50,11 +50,11 @@ theorem tail_eq_of_cons_eq {h₁ h₂ : α} {t₁ t₂ : List α} :
       (h₁::t₁) = (h₂::t₂) → t₁ = t₂ :=
 fun Peq => List.noConfusion Peq (fun _ Pteq => Pteq)
 
--- @[simp] theorem cons_injective {a : α} : injective (cons a) :=
--- assume l₁ l₂, assume Pe, tail_eq_of_cons_eq Pe
+@[simp] theorem cons_injective {a : α} : injective (cons a) :=
+λ _ _ Pe => tail_eq_of_cons_eq Pe
 
--- theorem cons_inj (a : α) {l l' : List α} : a::l = a::l' ↔ l = l' :=
--- cons_injective.eq_iff
+theorem cons_inj (a : α) {l l' : List α} : a::l = a::l' ↔ l = l' :=
+cons_injective.eq_iff
 
 theorem exists_cons_of_ne_nil {l : List α} (h : l ≠ nil) : ∃ b L, l = b :: L := by
   cases l with
