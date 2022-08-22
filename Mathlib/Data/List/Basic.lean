@@ -50,7 +50,14 @@ theorem tail_eq_of_cons_eq {h₁ h₂ : α} {t₁ t₂ : List α} :
       (h₁::t₁) = (h₂::t₂) → t₁ = t₂ :=
 fun Peq => List.noConfusion Peq (fun _ Pteq => Pteq)
 
-@[simp, nolint simpVarHead] theorem cons_injective {a : α} : injective (cons a) :=
+/-
+  In mathlib3, `cons_injective` has the @[simp] attribute. We omit it here because:
+  1. Adding it trips the simpVarHead lint, related to `Function.injective` having
+     the @[reducible] attribute.
+  2. Adding it might be dangerous in Lean 4, as described in
+     https://github.com/leanprover-community/mathport/issues/118.
+-/
+theorem cons_injective {a : α} : injective (cons a) :=
 λ _ _ Pe => tail_eq_of_cons_eq Pe
 
 theorem cons_inj (a : α) {l l' : List α} : a::l = a::l' ↔ l = l' :=
