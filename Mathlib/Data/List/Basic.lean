@@ -243,14 +243,13 @@ lemma length_injective_iff : injective (List.length : List α → ℕ) ↔ Subsi
   constructor
   · intro h; refine ⟨λ x y => ?_⟩; (suffices [x] = [y] by simpa using this); apply h; rfl
   · intros hα l1 l2 hl
-    induction l1 generalizing l2 with
-    | nil => cases l2 with | nil => rfl | cons _ _ => cases hl
-    | cons a _ ih =>
-      cases l2 with
-      | nil => cases hl
-      | cons b bl => congr
-                     · exact Subsingleton.elim _ _
-                     · apply ih; simpa using hl
+    induction l1 generalizing l2 with | nil => ?_ | cons _ _ ih => ?_ <;> cases l2
+    · rfl
+    · cases hl
+    · cases hl
+    · congr
+      · exact Subsingleton.elim _ _
+      · apply ih; simpa using hl
 
 -- TODO this is @[simp] in mathlib3, but here would run into the simpNF linter.
 lemma length_injective [Subsingleton α] : injective (length : List α → ℕ) :=
