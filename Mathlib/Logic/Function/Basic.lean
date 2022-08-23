@@ -94,27 +94,12 @@ lemma injective.dite (p : α → Prop) [DecidablePred p]
   (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) :
   Function.injective (λ x => if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) :=
 by intros x₁ x₂ h
-   --TODO mathlib3 uses dsimp here
-   have hrw1 : (fun (x : α) => if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) x₁ =
-                if h : p x₁ then f ⟨x₁, h⟩ else f' ⟨x₁, h⟩ := rfl
-   have hrw2 : (fun (x : α) => if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) x₂ =
-               if h : p x₂ then f ⟨x₂, h⟩ else f' ⟨x₂, h⟩ := rfl
-   rw [hrw1, hrw2] at h
-   exact Decidable.byCases
-     (λ (h₁ : p x₁) =>
-       Decidable.byCases
-         (λ (h₂ : p x₂) => by rw [dif_pos h₁, dif_pos h₂] at h
-                              injection (hf h)
-                              assumption)
-         (λ (h₂ : ¬ p x₂) => by rw [dif_pos h₁, dif_neg h₂] at h
-                                exact (im_disj h).elim))
-     (λ (h₁ : ¬ p x₁) =>
-       Decidable.byCases
-         (λ (h₂ : p x₂) => by rw [dif_neg h₁, dif_pos h₂] at h
-                              exact (im_disj h.symm).elim)
-         (λ (h₂ : ¬ p x₂) => by rw [dif_neg h₁, dif_neg h₂] at h
-                                injection (hf' h)
-                                assumption))
+   dsimp only at h
+   by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
+   · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h); assumption
+   · rw [dif_pos h₁, dif_neg h₂] at h; exact (im_disj h).elim
+   · rw [dif_neg h₁, dif_pos h₂] at h; exact (im_disj h.symm).elim
+   · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h); assumption
 
 lemma surjective.of_comp {g : γ → α} (S : surjective (f ∘ g)) : surjective f :=
 λ y => let ⟨x, h⟩ := S y
