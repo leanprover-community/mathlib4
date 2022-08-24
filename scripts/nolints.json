@@ -72,7 +72,6 @@
  ["docBlame", "tactic_"],
  ["docBlame", "«termListΠ»"],
  ["docBlame", "«termListΣ»"],
- ["docBlame", "«term_⁻¹»"],
  ["docBlame", "«term_∣_»"],
  ["docBlame", "«term_≃_»"],
  ["docBlame", "termℕ"],

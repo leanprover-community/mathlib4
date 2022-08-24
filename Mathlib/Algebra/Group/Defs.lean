@@ -39,6 +39,7 @@ instance One.ofOfNat1 {α} [OfNat α (nat_lit 1)] : One α where
 class Inv (α : Type u) where
   inv : α → α
 
+/-- `x⁻¹` is the multiplicative inverse of `x`. -/
 postfix:max "⁻¹" => Inv.inv
 
 /-
