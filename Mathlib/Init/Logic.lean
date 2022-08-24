@@ -141,11 +141,11 @@ lemma imp_congr (h₁ : a ↔ c) (h₂ : b ↔ d) : (a → b) ↔ (c → d) := i
 lemma not_of_not_not_not (h : ¬¬¬a) : ¬a :=
 λ ha => absurd (not_not_intro ha) h
 
--- @[simp] -- Lean 4 has this built-in because it simplifies using decidable instances
+@[simp]
 lemma not_true : (¬ True) ↔ False :=
 iff_false_intro (not_not_intro trivial)
 
--- @[simp] -- Lean 4 has this built-in because it simplifies using decidable instances
+@[simp]
 lemma not_false_iff : (¬ False) ↔ True :=
 iff_true_intro not_false
 
