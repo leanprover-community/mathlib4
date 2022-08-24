@@ -569,7 +569,7 @@ def irreflexive := ∀ x, ¬ x ≺ x
 def anti_symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
 
 /-- An empty relation does not relate any elements. -/
-@[nolint unusedArguments] -- TODO fix lint so that it doesn't fire here
+@[nolint unusedArguments]
 def empty_relation := λ _ _ : α => False
 
 /-- `q` is a subrelation of `r` if for all `x` and `y`, `q x y` implies `r x y` -/
