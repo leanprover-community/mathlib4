@@ -933,10 +933,9 @@ variable [DecidableEq α]
 @[simp] theorem erase_nil (a : α) : [].erase a = [] := rfl
 
 theorem erase_cons (a b : α) (l : List α) :
-    (b :: l).erase a = if b = a then l else b :: l.erase a := by
-  by_cases h : a = b
-  · simp only [if_pos h.symm, List.erase, EqIffBeqTrue.mp h.symm]
-  · simp only [if_neg (Ne.symm h), List.erase, NeqIffBeqFalse.mp (Ne.symm h)]
+    (b :: l).erase a = if b = a then l else b :: l.erase a :=
+  if h : b = a then by simp [List.erase, h]
+  else by simp [List.erase, h, (beq_eq_false_iff_ne _ _).2 h]
 
 @[simp] theorem erase_cons_head (a : α) (l : List α) : (a :: l).erase a = l := by
   simp [erase_cons]
