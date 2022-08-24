@@ -1,10 +1,10 @@
 /-
 Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Arthur Paulino
+Authors: Arthur Paulino, Jannis Limperg
 -/
 
-import Lean
+import Mathlib.Lean.Expr.Basic
 
 /-!
 # Miscellaneous helper functions for tactics.
@@ -16,21 +16,59 @@ namespace Mathlib.Tactic
 
 open Lean Meta Elab Tactic
 
-/-- Finds the `Name` and the `FVarId` of a variable given a `LocalContext` and a `Syntax.ident`. -/
-def getNameAndFVarId [Monad m] [MonadError m] (ctx : LocalContext) (stx : Syntax) :
-    m (Name × FVarId) :=
-  if stx.isIdent then
-    let name := stx.getId
-    match ctx.findFromUserName? name with
-    | some decl => return (name, decl.fvarId)
-    | none => throwErrorAt stx "unknown variable {name}"
-  else
-    throwErrorAt stx "not an identifier"
+variable [Monad m]
 
-/-- Updates the current `LocalContext` with a transformation function in `MetaM`. -/
-def modifyLocalContext (fLCtx : LocalContext → MetaM LocalContext) : TacticM Unit :=
-  liftMetaTactic fun goal => do
-    let newGoal ← mkFreshExprMVarAt (← fLCtx (← getLCtx)) (← getLocalInstances)
-      (← goal.getType) .syntheticOpaque (← goal.getTag)
-    goal.assign newGoal
-    return [newGoal.mvarId!]
+/--
+`modifyMetavarDecl mvarId f` updates the `MetavarDecl` for `mvarId` with `f`.
+Conditions on `f`:
+
+- The target of `f mdecl` is defeq to the target of `mdecl`.
+- The local context of `f mdecl` must contain the same fvars as the local
+  context of `mdecl`. For each fvar in the local context of `f mdecl`, the type
+  (and value, if any) of the fvar must be defeq to the corresponding fvar in
+  the local context of `mdecl`.
+
+If `mvarId` does not refer to a declared metavariable, nothing happens.
+-/
+def modifyMetavarDecl [MonadMCtx m] (mvarId : MVarId)
+    (f : MetavarDecl → MetavarDecl) : m Unit := do
+  modifyMCtx λ mctx =>
+    match mctx.decls.find? mvarId with
+    | none => mctx
+    | some mdecl => { mctx with decls := mctx.decls.insert mvarId (f mdecl) }
+
+/--
+`modifyTarget mvarId f` updates the target of the metavariable `mvarId` with
+`f`. For any `e`, `f e` must be defeq to `e`. If `mvarId` does not refer to
+a declared metvariable, nothing happens.
+-/
+def modifyTarget [MonadMCtx m] (mvarId : MVarId) (f : Expr → Expr) : m Unit :=
+  modifyMetavarDecl mvarId fun mdecl =>
+    { mdecl with type := f mdecl.type }
+
+/--
+`modifyLocalContext mvarId f` updates the local context of the metavariable
+`mvarId` with `f`. The new local context must contain the same fvars as the old
+local context and the types (and values, if any) of the fvars in the new local
+context must be defeq to their equivalents in the old local context.
+
+If `mvarId` does not refer to a declared metavariable, nothing happens.
+-/
+def modifyLocalContext [MonadMCtx m] (mvarId : MVarId)
+    (f : LocalContext → LocalContext) : m Unit :=
+  modifyMetavarDecl mvarId fun mdecl =>
+    { mdecl with lctx := f mdecl.lctx }
+
+/--
+`modifyLocalDecl mvarId fvarId f` updates the local decl `fvarId` in the local
+context of `mvarId` with `f`. `f` must leave the `fvarId` and `index` of the
+`LocalDecl` unchanged. The type of the new `LocalDecl` must be defeq to the type
+of the old `LocalDecl` (and the same applies to the value of the `LocalDecl`, if
+any).
+
+If `mvarId` does not refer to a declared metavariable or if `fvarId` does not
+exist in the local context of `mvarId`, nothing happens.
+-/
+def modifyLocalDecl [MonadMCtx m] (mvarId : MVarId) (fvarId : FVarId)
+    (f : LocalDecl → LocalDecl) : m Unit :=
+  modifyLocalContext mvarId fun lctx => lctx.modifyLocalDecl fvarId f
