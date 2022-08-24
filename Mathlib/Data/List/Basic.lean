@@ -251,7 +251,9 @@ lemma length_injective_iff : injective (List.length : List α → ℕ) ↔ Subsi
                              · exact Subsingleton.elim _ _
                              · apply ih; simpa using hl
 
--- TODO this is @[simp] in mathlib3, but here would run into the simpNF linter.
+@[simp] theorem subsingleton_of_subsingleton [Subsingleton α] : Subsingleton α := ‹_›
+
+@[simp default+1]
 lemma length_injective [Subsingleton α] : injective (length : List α → ℕ) :=
 length_injective_iff.mpr inferInstance
 
