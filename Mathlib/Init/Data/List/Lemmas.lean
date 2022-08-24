@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn
+Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn
 -/
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.Nat.Lemmas
@@ -48,6 +48,9 @@ theorem map_singleton (f : α → β) (a : α) : map f [a] = [f a] := rfl
 theorem mem_nil_iff (a : α) : a ∈ ([] : List α) ↔ False := by simp
 
 theorem mem_cons_self (a : α) (l : List α) : a ∈ a :: l := by simp
+
+-- No @[simp] annotation because `mem_cons` already has it, so adding it trips the `simpNF` linter.
+lemma mem_cons_iff (a y : α) (l : List α) : a ∈ y :: l ↔ (a = y ∨ a ∈ l) := mem_cons
 
 theorem mem_cons_eq (a y : α) (l : List α) : (a ∈ y :: l) = (a = y ∨ a ∈ l) := by simp
 

@@ -81,7 +81,7 @@ end Attr
 initialize registerBuiltinAttribute {
   name := `coe
   descr := "Adds a definition as a coercion"
-  add := fun decl stx kind => MetaM.run' do
+  add := fun decl _stx kind => MetaM.run' do
     unless kind == AttributeKind.global do
       throwError "cannot add local or scoped coe attribute"
     registerCoercion decl

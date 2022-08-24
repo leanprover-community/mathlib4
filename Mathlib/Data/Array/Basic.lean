@@ -1,5 +1,6 @@
 import Mathlib.Data.List.Basic
 import Mathlib.Tactic.HaveI
+import Mathlib.Tactic.Simpa
 
 macro_rules | `($x[$i]'$h) => `(getElem $x $i $h)
 
@@ -93,5 +94,118 @@ lemma get?_set (a : Array α) (i j : Nat) (hi : i < a.size) (v : α) :
 lemma get_set (a : Array α) (i j : Nat) (hi : i < a.size) (hj : j < a.size) (v : α) :
     (a.set ⟨i, hi⟩ v)[j]'(by simp_all) = if i = j then v else a[j] := by
   by_cases i = j <;> simp [*]
+
+@[simp]
+theorem size_mkEmpty : (mkEmpty n : Array α).size = 0 := rfl
+
+@[simp]
+theorem size_mapIdxM_map (as : Array α) (bs : Array β) (f : Fin as.size → α → Id β) (i j h) (hj : j = bs.size) :
+    (Array.mapIdxM.map as f i j h bs).size = as.size := by
+  induction i generalizing j bs
+  case zero => subst hj; simp [mapIdxM.map, ← h]
+  case succ i ih =>
+    simp only [mapIdxM.map, Id.bind_eq]
+    rw [ih]
+    simp [hj]
+
+@[simp]
+theorem size_mapIdxM_Id (a : Array α) (f : Fin a.size → α → Id β) :
+    (a.mapIdxM f).size = a.size := by
+  simp [mapIdxM, size_mapIdxM_map]
+
+@[simp]
+theorem size_mapIdx (a : Array α) (f : Fin a.size → α → β) : (a.mapIdx f).size = a.size := by
+  simp [mapIdx, Id.run]
+
+theorem getElem_mapIdxM_map (as : Array α) (bs : Array β) (f : Fin as.size → α → Id β) (i j h)
+    (hj : j = bs.size) (k) (hk : k < as.size)
+    (hbs : ∀ k' (hk' : k' < bs.size),
+      haveI : k' < as.size := by rw [← h, hj, Nat.add_comm]; exact Nat.lt_add_right _ _ _ hk'
+      bs[k'] = f ⟨k', this⟩ as[k']) :
+    (Id.run (Array.mapIdxM.map as f i j h bs))[k]'(by simp_all [Id.run]) = f ⟨k, hk⟩ as[k] := by
+  induction i generalizing j bs
+  case zero => erw [hbs]
+  case succ i ih =>
+    simp only [mapIdxM.map, Id.bind_eq]
+    rw [ih]
+    · simp [hj]
+    · intro k' hk'
+      rw [get_push]
+      cases (lt_or_eq_of_le <| Nat.le_of_lt_succ (by simpa using hk'))
+      case inl hk' => simp [hk', hbs]
+      case inr hk' => simp_all
+
+@[simp]
+theorem getElem_mapIdx (a : Array α) (f : Fin a.size → α → β) (i : Nat) (h) :
+    haveI : i < a.size := by simp_all
+    (a.mapIdx f)[i]'(h) = f ⟨i, this⟩ a[i] := by
+  simp only [mapIdx, mapIdxM]
+  rw [getElem_mapIdxM_map]
+  · simp
+  · intro k hk; simp at hk; contradiction
+
+@[simp]
+theorem size_swap! (a : Array α) (i j) (hi : i < a.size) (hj : j < a.size) : (a.swap! i j).size = a.size := by
+  simp [swap!, hi, hj]
+
+theorem size_reverse_rev (mid i) (a : Array α) (h : mid ≤ a.size) : (Array.reverse.rev a.size mid a i).size = a.size :=
+  if hi : i < mid then by
+    unfold Array.reverse.rev
+    have : i < a.size := lt_of_lt_of_le hi h
+    have : a.size - i - 1 < a.size := Nat.sub_lt_self i.zero_lt_succ this
+    have := Array.size_reverse_rev mid (i+1) (a.swap! i (a.size - i - 1))
+    simp_all
+  else by
+    unfold Array.reverse.rev
+    simp [dif_neg hi]
+termination_by _ => mid - i
+
+@[simp]
+theorem size_reverse (a : Array α) : a.reverse.size = a.size := by
+  have := size_reverse_rev (a.size / 2) 0 a (Nat.div_le_self ..)
+  simp only [reverse, this]
+
+@[simp]
+theorem size_ofFn_loop (n) (f : Fin n → α) (i acc) : (ofFn.loop n f i acc).size = acc.size + (n - i) :=
+  if hin : i < n then by
+    unfold ofFn.loop
+    have : 1 + (n - (i + 1)) = n - i :=
+      Nat.sub_sub .. ▸ Nat.add_sub_cancel' (Nat.le_sub_of_add_le (Nat.add_comm .. ▸ hin))
+    rw [dif_pos hin, size_ofFn_loop n f (i+1), size_push, Nat.add_assoc, this]
+  else by
+    have : n - i = 0 := Nat.sub_eq_zero_of_le (le_of_not_lt hin)
+    unfold ofFn.loop
+    simp [hin, this]
+termination_by size_ofFn_loop n f i acc => n - i
+
+@[simp]
+theorem size_ofFn (f : Fin n → α) : (ofFn n f).size = n := by
+  simp [ofFn]
+
+@[simp]
+theorem getElem_ofFn_loop (n) (f : Fin n → α) (i acc) (k : Nat) (hki : k < n) (hin : i ≤ n) (hi : i = acc.size)
+    (hacc : ∀ j, ∀ hj : j < acc.size, acc[j] = f ⟨j, lt_of_lt_of_le hj (by simp_all)⟩) :
+    haveI : acc.size + (n - acc.size) = n := Nat.add_sub_cancel' (hi ▸ hin)
+    (ofFn.loop n f i acc)[k]'(by simp_all) = f ⟨k, hki⟩ :=
+  if hin : i < n then by
+    unfold ofFn.loop
+    have : 1 + (n - (i + 1)) = n - i :=
+      Nat.sub_sub .. ▸ Nat.add_sub_cancel' (Nat.le_sub_of_add_le (Nat.add_comm .. ▸ hin))
+    simp only [dif_pos hin]
+    rw [getElem_ofFn_loop n f (i+1) _ k _ hin (by simp_all) (fun j hj => ?hacc)]
+    cases (lt_or_eq_of_le <| Nat.le_of_lt_succ (by simpa using hj))
+    case inl hj => simp [get_push, hj, hacc j hj]
+    case inr hj => simp_all [get_push]
+  else by
+    unfold ofFn.loop
+    simp [hin, hacc k (lt_of_lt_of_le hki (le_of_not_gt (hi ▸ hin)))]
+termination_by
+  getElem_ofFn_loop n f i acc k hki hin hi hacc => n - i
+
+@[simp]
+theorem getElem_ofFn (f : Fin n → α) (i : Nat) (h) : (ofFn n f)[i] = f ⟨i, by simp_all⟩ := by
+  unfold ofFn
+  rw [getElem_ofFn_loop] <;> try {simp}
+  · intro j hj; simp at hj; contradiction
 
 end Array
