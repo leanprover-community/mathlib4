@@ -21,6 +21,7 @@ import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.RCases
+import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Set
@@ -247,7 +248,6 @@ end Conv
 /- E -/ syntax (name := unfoldCoes) "unfold_coes" (ppSpace location)? : tactic
 /- E -/ syntax (name := unfoldWf) "unfold_wf" : tactic
 /- M -/ syntax (name := unfoldAux) "unfold_aux" : tactic
-/- E -/ syntax (name := recover) "recover" : tactic
 /- E -/ syntax (name := «continue») "continue " tacticSeq : tactic
 /- M -/ syntax (name := generalizeHyp) "generalize " atomic(ident " : ")? term:51 " = " ident
   ppSpace location : tactic
