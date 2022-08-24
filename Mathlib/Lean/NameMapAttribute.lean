@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 E.W.Ayers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: E.W.Ayers
+Authors: E.W.Ayers
 -/
 import Lean
 
@@ -59,7 +59,7 @@ def registerNameMapAttribute (impl : NameMapAttributeImpl α) : IO (NameMapAttri
   registerBuiltinAttribute {
     name := impl.name
     descr := impl.descr
-    add := fun src stx kind => do
+    add := fun src stx _kind => do
       let a : α ← impl.add src stx
       ext.add src a
   }

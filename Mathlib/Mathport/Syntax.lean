@@ -7,6 +7,7 @@ import Lean.Elab.Command
 import Lean.Elab.Quotation
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Core
@@ -14,11 +15,13 @@ import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.InferParam
+import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.RCases
+import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Set
@@ -169,12 +172,6 @@ end Term
 
 namespace Tactic
 
-/- E -/ syntax tactic " <;> " "[" tactic,* "]" : tactic
-
-end Tactic
-
-namespace Tactic
-
 /- N -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
 /- N -/ syntax (name := applyWith) "apply " term " with " term : tactic
 /- E -/ syntax (name := mapply) "mapply " term : tactic
@@ -199,7 +196,6 @@ syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
   (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
 /- E -/ syntax (name := symm) "symm" : tactic
 /- E -/ syntax (name := trans) "trans" (ppSpace colGt term)? : tactic
-/- B -/ syntax (name := acRfl) "ac_rfl" : tactic
 /- B -/ syntax (name := cc) "cc" : tactic
 
 -- builtin unfold only accepts single ident
@@ -252,7 +248,6 @@ end Conv
 /- E -/ syntax (name := unfoldCoes) "unfold_coes" (ppSpace location)? : tactic
 /- E -/ syntax (name := unfoldWf) "unfold_wf" : tactic
 /- M -/ syntax (name := unfoldAux) "unfold_aux" : tactic
-/- E -/ syntax (name := recover) "recover" : tactic
 /- E -/ syntax (name := «continue») "continue " tacticSeq : tactic
 /- M -/ syntax (name := generalizeHyp) "generalize " atomic(ident " : ")? term:51 " = " ident
   ppSpace location : tactic
@@ -276,7 +271,6 @@ end Conv
   (" with" (ppSpace (colGt ident))*)? : tactic
 /- M -/ syntax (name := extractGoal!) "extract_goal!" (ppSpace ident)?
   (" with" (ppSpace (colGt ident))*)? : tactic
-/- M -/ syntax (name := inhabit) "inhabit " atomic(ident " : ")? term : tactic
 /- E -/ syntax (name := revertDeps) "revert_deps" (ppSpace colGt ident)* : tactic
 /- E -/ syntax (name := revertAfter) "revert_after " ident : tactic
 /- E -/ syntax (name := revertTargetDeps) "revert_target_deps" : tactic
@@ -286,12 +280,10 @@ end Conv
 
 /- B -/ syntax (name := hint) "hint" : tactic
 
-/- M -/ syntax (name := clear!) "clear!" (ppSpace colGt ident)* : tactic
-
 /- B -/ syntax (name := choose) "choose" (ppSpace colGt ident)+ (" using " term)? : tactic
 /- B -/ syntax (name := choose!) "choose!" (ppSpace colGt ident)+ (" using " term)? : tactic
 
-/- N -/ syntax (name := congr) "congr" (ppSpace colGt num)?
+/- N -/ syntax (name := congr') "congr" (ppSpace colGt num)?
   (" with " (colGt rcasesPat)* (" : " num)?)? : tactic
 /- M -/ syntax (name := rcongr) "rcongr" (ppSpace colGt rcasesPat)* : tactic
 /- E -/ syntax (name := convert) "convert " "← "? term (" using " num)? : tactic
@@ -383,7 +375,6 @@ macro "squeeze_dsimp!?" rest:squeezeDSimpArgsRest : tactic =>
 
 /- M -/ syntax (name := truncCases) "trunc_cases " term (" with " (colGt binderIdent)+)? : tactic
 
-/- E -/ syntax (name := normNum1) "norm_num1" (ppSpace location)? : tactic
 /- E -/ syntax (name := applyNormed) "apply_normed " term : tactic
 
 /- E -/ syntax (name := abel1) "abel1" : tactic

@@ -1,10 +1,16 @@
 /-
 Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Arthur Paulino
+Authors: Arthur Paulino, Jannis Limperg
 -/
 
 import Mathlib.Lean.Expr.Basic
+
+/-!
+# Miscellaneous helper functions for tactics.
+
+[TODO] Ideally we would find good homes for everything in this file, eventually removing it.
+-/
 
 namespace Mathlib.Tactic
 
