@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Mario Carneiro
+Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.NoMatch
 import Lean.Elab.Command
@@ -23,6 +23,9 @@ macro "exfalso" : tactic => `(apply False.elim)
 
 macro "_" : tactic => `({})
 
+/-- We allow the `rfl` tactic to also use `Iff.rfl`. -/
+-- `rfl` was defined earlier in Lean4, at src/lean/init/tactics.lean
+-- Later we want to allow `rfl` to use all relations marked with an attribute.
 macro_rules | `(tactic| rfl) => `(tactic| exact Iff.rfl)
 
 /-- `change` is a synonym for `show`,
@@ -115,9 +118,9 @@ where
         introsDep
     | _ => pure ()
   intro1PStep : TacticM Unit :=
-    liftMetaTactic fun mvarId => do
-      let (_, mvarId) ← Meta.intro1P mvarId
-      pure [mvarId]
+    liftMetaTactic fun goal => do
+      let (_, goal) ← goal.intro1P
+      pure [goal]
 
 /-- Try calling `assumption` on all goals; succeeds if it closes at least one goal. -/
 macro "assumption'" : tactic => `(any_goals assumption)
@@ -235,24 +238,39 @@ elab "repeat' " seq:tacticSeq : tactic => do
   repeat'Aux seq gs
 
 elab "any_goals " seq:tacticSeq : tactic => do
-  let mvarIds ← getGoals
-  let mut mvarIdsNew := #[]
+  let goals ← getGoals
+  let mut goalsNew := #[]
   let mut anySuccess := false
-  for mvarId in mvarIds do
-    unless (← isExprMVarAssigned mvarId) do
-      setGoals [mvarId]
-      try
-        evalTactic seq
-        mvarIdsNew := mvarIdsNew ++ (← getUnsolvedGoals)
-        anySuccess := true
-      catch _ =>
-        mvarIdsNew := mvarIdsNew.push mvarId
-  if not anySuccess then
+  for goal in goals do
+    if ← goal.isAssigned then continue
+    setGoals [goal]
+    try
+      evalTactic seq
+      goalsNew := goalsNew ++ (← getUnsolvedGoals)
+      anySuccess := true
+    catch _ =>
+      goalsNew := goalsNew.push goal
+  unless anySuccess do
     throwError "failed on all goals"
-  setGoals mvarIdsNew.toList
+  setGoals goalsNew.toList
 
 elab "fapply " e:term : tactic =>
-  evalApplyLikeTactic (Meta.apply (cfg := {newGoals := ApplyNewGoals.all})) e
+  evalApplyLikeTactic (·.apply (cfg := {newGoals := ApplyNewGoals.all})) e
 
 elab "eapply " e:term : tactic =>
-  evalApplyLikeTactic (Meta.apply (cfg := {newGoals := ApplyNewGoals.nonDependentOnly})) e
+  evalApplyLikeTactic (·.apply (cfg := {newGoals := ApplyNewGoals.nonDependentOnly})) e
+
+/--
+Tries to solve the goal using a canonical proof of `True`, or the `rfl` tactic.
+Unlike `trivial` or `trivial'`, does not use the `contradiction` tactic.
+-/
+macro (name := triv) "triv" : tactic =>
+  `(tactic| first | exact trivial | rfl | fail "triv tactic failed")
+
+/-- This tactic clears all auxiliary declarations from the context. -/
+elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
+  let mut g ← getMainGoal
+  for ldec in ← getLCtx do
+    if ldec.isAuxDecl then
+      g ← g.tryClear ldec.fvarId
+  replaceMainGoal [g]

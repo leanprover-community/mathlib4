@@ -13,6 +13,20 @@ proofs about these definitions, those are contained in other files in `Mathlib.D
 
 namespace Array
 
+/-- The array `#[f 0, ..., f n]` -/
+def ofFn (n : Nat) (f : Fin n → α) : Array α :=
+  loop 0 (mkEmpty n)
+where
+  /-- Implementation detail of `Array.ofFn`. -/
+  loop (i : Nat) (acc : Array α) : Array α :=
+    if h : i < n then
+      let acc := acc.push (f ⟨i, h⟩)
+      loop (i + 1) acc
+    else
+      acc
+termination_by
+  loop i acc => n - i
+
 /-- The array `#[0, 1, ..., n - 1]`. -/
 def range (n : Nat) : Array Nat :=
   n.fold (flip Array.push) #[]

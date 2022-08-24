@@ -5,12 +5,12 @@ Authors: Gabriel Ebner, E.W.Ayers
 -/
 import Std
 
-open Std ShareCommon
-
 /-!
 # Fixpoint function with memoisation
 
 -/
+
+open Std ShareCommon
 
 private unsafe def memoFixImplObj (f : (Object → Object) → (Object → Object)) (a : Object) : Object := unsafeBaseIO do
   let cache : IO.Ref ObjectMap ← ST.mkRef (mkObjectMap ())
