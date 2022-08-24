@@ -54,6 +54,7 @@ import Mathlib.Lean.NameMapAttribute
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nonempty
+import Mathlib.Logic.Relator
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Mathport.SpecialNames
