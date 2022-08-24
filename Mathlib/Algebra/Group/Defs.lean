@@ -35,11 +35,13 @@ instance One.toOfNat1 {α} [One α] : OfNat α (nat_lit 1) where
 instance One.ofOfNat1 {α} [OfNat α (nat_lit 1)] : One α where
   one := 1
 
+/-- Class of types that have an inversion operation. -/
 @[to_additive Neg]
 class Inv (α : Type u) where
+  /-- Invert an element of α. -/
   inv : α → α
 
-/-- `x⁻¹` is the multiplicative inverse of `x`. -/
+@[inheritDoc]
 postfix:max "⁻¹" => Inv.inv
 
 /-
