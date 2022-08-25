@@ -3,7 +3,7 @@ import Lean
 namespace Mathlib.Tactic.Symm
 open Lean Meta
 
-/- Environment extensions for symm lemmas -/
+/-- Environment extensions for symm lemmas -/
 initialize symmExtension : SimpleScopedEnvExtension (Name × Array DiscrTree.Key) (DiscrTree Name) ←
   registerSimpleScopedEnvExtension {
     name := `symm

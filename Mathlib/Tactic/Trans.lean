@@ -6,7 +6,7 @@ namespace Mathlib.Tactic.Trans
 open Lean Meta Elab
 open Mathlib.Tactic.Symm
 
-/- Environment extension storing transitivity lemmas -/
+/-- Environment extension storing transitivity lemmas -/
 initialize transExtension : SimpleScopedEnvExtension (Name × Array DiscrTree.Key) (DiscrTree Name) ←
   registerSimpleScopedEnvExtension {
     name := `trans
