@@ -76,7 +76,7 @@ variable {a b c d : Prop}
 
 def And.elim (f : a → b → α) (h : a ∧ b) : α := f h.1 h.2
 
-lemma and.swap : a ∧ b → b ∧ a :=
+lemma And.swap : a ∧ b → b ∧ a :=
 λ ⟨ha, hb⟩ => ⟨hb, ha⟩
 
 lemma And.symm : a ∧ b → b ∧ a | ⟨ha, hb⟩ => ⟨hb, ha⟩
