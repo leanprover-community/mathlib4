@@ -26,6 +26,9 @@ namespace Mathlib.Prelude
 #align psum                    PSum
 #align ulift                   ULift
 
+#align classical.some          Classical.choose
+#align classical.some_spec     Classical.choose_spec
+
 #align has_coe Coe
 #align has_coe.coe Coe.coe
 
