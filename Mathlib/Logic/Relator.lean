@@ -60,11 +60,11 @@ def BiUnique : Prop := LeftUnique R ∧ RightUnique R
 variable {R}
 
 lemma RightTotal.rel_forall (h : RightTotal R) :
-  ((R ⇒ implies) ⇒ implies) (λ p => ∀i, p i) (λ q => ∀i, q i) :=
+  ((R ⇒ (· → ·)) ⇒ (· → ·)) (λ p => ∀i, p i) (λ q => ∀i, q i) :=
 λ _ _ Hrel H b => Exists.elim (h b) (λ _ Rab => Hrel Rab (H _))
 
 lemma LeftTotal.rel_exists (h : LeftTotal R) :
-  ((R ⇒ implies) ⇒ implies) (λ p => ∃i, p i) (λ q => ∃i, q i) :=
+  ((R ⇒ (· → ·)) ⇒ (· → ·)) (λ p => ∃i, p i) (λ q => ∃i, q i) :=
 λ _ _ Hrel ⟨a, pa⟩ => (h a).imp $ λ _ Rab => Hrel Rab pa
 
 lemma BiTotal.rel_forall (h : BiTotal R) :
@@ -85,7 +85,7 @@ lemma left_unique_of_rel_eq {eq' : β → β → Prop} (he : (R ⇒ (R ⇒ Iff))
 
 end
 
-lemma rel_imp : (Iff ⇒ (Iff ⇒ Iff)) implies implies :=
+lemma rel_imp : (Iff ⇒ (Iff ⇒ Iff)) (· → ·) (· → ·) :=
 λ _ _ h _ _ l => imp_congr h l
 
 lemma rel_not : (Iff ⇒ Iff) Not Not :=
