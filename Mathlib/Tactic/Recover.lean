@@ -6,7 +6,6 @@ Authors: Gabriel Ebner, Siddhartha Gadgil, Jannis Limperg
 import Lean
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.RCases
-import Std
 
 open Std (HashSet)
 open Lean Meta Elab Tactic
