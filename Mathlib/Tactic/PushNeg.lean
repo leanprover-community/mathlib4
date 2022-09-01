@@ -28,6 +28,7 @@ variable {β : Type u} [LinearOrder β]
 theorem not_le_eq (a b : β) : (¬ (a ≤ b)) = (b < a) := propext not_le
 theorem not_lt_eq (a b : β) : (¬ (a < b)) = (b ≤ a) := propext not_lt
 
+/-- Make `push_neg` use `not_and_distrib` rather than the default `not_and`. -/
 register_option push_neg.use_distrib : Bool :=
   { defValue := false
     group := ""
