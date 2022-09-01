@@ -61,7 +61,7 @@ scoped elab "ext_iff_type%" struct:ident : term => do
 
 elab "subst_eqs" : tactic =>
   open Elab.Tactic in
-  liftMetaTactic1 fun mvarId => substEqs mvarId
+  liftMetaTactic1 (·.substEqs)
 
 scoped macro "ext_proof%" : term =>
   `(fun {..} {..} => by intros; subst_eqs; rfl)
@@ -120,7 +120,7 @@ def extAttribute : AttributeImpl where
         Elab.Command.elabCommand <|<- `(declareExtTheoremsFor $(mkIdent decl))
     else MetaM.run' do
       let declTy := (← getConstInfo decl).type
-      let (_, _, declTy) ← withReducible <| forallMetaTelescopeReducing declTy
+      let (_, _, declTy) ← withDefault <| forallMetaTelescopeReducing declTy
       if declTy.isAppOfArity ``Eq 3 && (declTy.getArg! 1).isMVar && (declTy.getArg! 2).isMVar then
         let ty := declTy.getArg! 0
         let key ←
@@ -146,16 +146,16 @@ elab "apply_ext_lemma" : tactic => do
   let s ← saveState
   for lem in ← (extLemmas (← getEnv)).getMatch ty do
     try
-      liftMetaTactic (apply · (← mkConstWithFreshMVarLevels lem))
+      liftMetaTactic (·.apply (← mkConstWithFreshMVarLevels lem))
       return
     catch _ => s.restore
   throwError "no applicable extensionality lemma found for{indentExpr ty}"
 
 scoped syntax "ext_or_skip" (ppSpace rintroPat)* : tactic
 macro_rules
-| `(tactic| ext_or_skip) => `(tactic| skip)
+| `(tactic| ext_or_skip) => `(tactic| repeat apply_ext_lemma)
 | `(tactic| ext_or_skip $x:rintroPat $xs:rintroPat*) =>
-  `(tactic| repeat apply_ext_lemma; rintro $x:rintroPat; ext_or_skip $xs:rintroPat*)
+  `(tactic| (repeat apply_ext_lemma); rintro $x:rintroPat; ext_or_skip $xs:rintroPat*)
 
 -- TODO: support `ext : n`
 

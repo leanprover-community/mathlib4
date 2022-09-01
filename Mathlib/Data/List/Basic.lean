@@ -5,6 +5,7 @@ import Mathlib.Logic.Function.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.List.Defs
+import Mathlib.Tactic.Simpa
 import Lean
 
 open Function
@@ -50,11 +51,11 @@ theorem tail_eq_of_cons_eq {h₁ h₂ : α} {t₁ t₂ : List α} :
       (h₁::t₁) = (h₂::t₂) → t₁ = t₂ :=
 fun Peq => List.noConfusion Peq (fun _ Pteq => Pteq)
 
--- @[simp] theorem cons_injective {a : α} : injective (cons a) :=
--- assume l₁ l₂, assume Pe, tail_eq_of_cons_eq Pe
+@[simp] theorem cons_injective {a : α} : injective (cons a) :=
+λ _ _ Pe => tail_eq_of_cons_eq Pe
 
--- theorem cons_inj (a : α) {l l' : List α} : a::l = a::l' ↔ l = l' :=
--- cons_injective.eq_iff
+theorem cons_inj (a : α) {l l' : List α} : a::l = a::l' ↔ l = l' :=
+cons_injective.eq_iff
 
 theorem exists_cons_of_ne_nil {l : List α} (h : l ≠ nil) : ∃ b L, l = b :: L := by
   cases l with
@@ -195,19 +196,6 @@ lemma bind_map {g : α → List β} {f : β → γ} :
 
 /-! ### length -/
 
-
--- @[simp] lemma length_tail (l : list α) : length (tail l) = length l - 1 :=
--- by cases l; refl
-
--- -- TODO(Leo): cleanup proof after arith dec proc
--- @[simp] lemma length_drop : ∀ (i : ℕ) (l : list α), length (drop i l) = length l - i
--- | 0 l         := rfl
--- | (succ i) [] := eq.symm (nat.zero_sub (succ i))
--- | (succ i) (x::l) := calc
---   length (drop (succ i) (x::l))
---           = length l - i             : length_drop i l
---       ... = succ (length l) - succ i : (nat.succ_sub_succ_eq_sub (length l) i).symm
-
 theorem length_eq_zero {l : List α} : length l = 0 ↔ l = [] :=
 ⟨eq_nil_of_length_eq_zero, fun h => by rw [h]; rfl⟩
 
@@ -250,17 +238,22 @@ lemma exists_of_length_succ {n} :
 | [], H => absurd H.symm $ Nat.succ_ne_zero n
 | h :: t, _ => ⟨h, t, rfl⟩
 
--- @[simp] lemma length_injective_iff : injective (List.length : List α → ℕ) ↔ subsingleton α :=
--- begin
---   constructor,
---   { intro h, refine ⟨fun  x y, _⟩, suffices : [x] = [y], { simpa using this }, apply h, refl },
---   { intros hα l1 l2 hl, induction l1 generalizing l2; cases l2,
---     { refl }, { cases hl }, { cases hl },
---     congr, exactI subsingleton.elim _ _, apply l1_ih, simpa using hl }
--- end
+@[simp]
+lemma length_injective_iff : injective (List.length : List α → ℕ) ↔ Subsingleton α := by
+  constructor
+  · intro h; refine ⟨λ x y => ?_⟩; (suffices [x] = [y] by simpa using this); apply h; rfl
+  · intros hα l1 l2 hl
+    induction l1 generalizing l2 <;> cases l2
+    case nil.nil => rfl
+    case nil.cons => cases hl
+    case cons.nil => cases hl
+    case cons.cons ih _ _ => congr
+                             · exact Subsingleton.elim _ _
+                             · apply ih; simpa using hl
 
--- @[simp] lemma length_injective [subsingleton α] : injective (length : List α → ℕ) :=
--- length_injective_iff.mpr $ by apply_instance
+@[simp default+1]
+lemma length_injective [Subsingleton α] : injective (length : List α → ℕ) :=
+length_injective_iff.mpr inferInstance
 
 /-! ### set-theoretic notation of Lists -/
 
@@ -687,7 +680,7 @@ theorem ext_get {l₁ l₂ : List α} (hl : length l₁ = length l₂)
     if h₁ : n < length l₁ then by
       rw [get?_eq_get, get?_eq_get, h n h₁ (by rwa [←hl])]
     else by
-      have h₁ := le_of_not_gt h₁
+      have h₁ := le_of_not_lt h₁
       rw [get?_len_le h₁, get?_len_le]; rwa [← hl]
 
 theorem modifyNthTail_id : ∀ n (l : List α), l.modifyNthTail id n = l
@@ -946,10 +939,9 @@ variable [DecidableEq α]
 @[simp] theorem erase_nil (a : α) : [].erase a = [] := rfl
 
 theorem erase_cons (a b : α) (l : List α) :
-    (b :: l).erase a = if b = a then l else b :: l.erase a := by
-  by_cases h : a = b
-  · simp only [if_pos h.symm, List.erase, EqIffBeqTrue.mp h.symm]
-  · simp only [if_neg (Ne.symm h), List.erase, NeqIffBeqFalse.mp (Ne.symm h)]
+    (b :: l).erase a = if b = a then l else b :: l.erase a :=
+  if h : b = a then by simp [List.erase, h]
+  else by simp [List.erase, h, (beq_eq_false_iff_ne _ _).2 h]
 
 @[simp] theorem erase_cons_head (a : α) (l : List α) : (a :: l).erase a = l := by
   simp [erase_cons]

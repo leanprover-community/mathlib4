@@ -21,4 +21,4 @@ elab_rules : tactic
         unless fvarIds.contains decl.fvarId do
           if let none ← isClass? decl.type then
             toClear := toClear.push decl.fvarId
-      tryClearMany goal toClear
+      goal.tryClearMany toClear

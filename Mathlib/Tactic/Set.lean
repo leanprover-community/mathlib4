@@ -45,9 +45,9 @@ elab_rules : tactic
     | none =>
       let val ← elabTerm val none
       pure (← inferType val, val)
-    let fvar ← liftMetaTacticAux fun mvarId => do
-      let (fvar, mvarId) ← intro1P (← define mvarId a.getId ty val)
-      pure (fvar, [mvarId])
+    let fvar ← liftMetaTacticAux fun goal => do
+      let (fvar, goal) ← (← goal.define a.getId ty val).intro1P
+      pure (fvar, [goal])
     withMainContext do
       Term.addTermInfo' (isBinder := true) a (mkFVar fvar)
   if rw.isNone then

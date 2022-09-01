@@ -59,7 +59,7 @@ def registerNameMapAttribute (impl : NameMapAttributeImpl α) : IO (NameMapAttri
   registerBuiltinAttribute {
     name := impl.name
     descr := impl.descr
-    add := fun src stx kind => do
+    add := fun src stx _kind => do
       let a : α ← impl.add src stx
       ext.add src a
   }

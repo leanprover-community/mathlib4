@@ -42,6 +42,7 @@ theorem gcd_rec (m n : ℕ) : gcd m n = gcd (n % m) m :=
             rwa [gcd_zero_right]
   | pm + 1 => by simp [gcd_succ]
 
+@[elabAsElim]
 theorem gcd.induction
   {P : ℕ → ℕ → Prop}
   (m n : ℕ)
@@ -60,15 +61,10 @@ def lcm (m n : ℕ) : ℕ := m * n / gcd m n
 
 ---
 
-theorem gcd_dvd (m n : ℕ) : (gcd m n ∣ m) ∧ (gcd m n ∣ n) := by
-  induction m, n using gcd.induction with
-  | H0 n => exact ⟨⟨0, by simp⟩, ⟨1, by simp⟩⟩
-  | H1 m n _ IH =>
-    let ⟨IH₁, IH₂⟩ := IH
-    refine ⟨by rwa [gcd_rec], ?_⟩
-    rw [←gcd_rec] at IH₁
-    rw [←gcd_rec] at IH₂
-    exact (dvd_mod_iff IH₂).1 IH₁
+theorem gcd_dvd (m n : ℕ) : (gcd m n ∣ m) ∧ (gcd m n ∣ n) :=
+gcd.induction m n
+  (λ n => by rw [gcd_zero_left]; exact ⟨Nat.dvd_zero n, Nat.dvd_refl n⟩)
+  (λ m n _ => by rw [←gcd_rec]; exact λ ⟨IH₁, IH₂⟩ => ⟨IH₂, (dvd_mod_iff IH₂).1 IH₁⟩)
 
 theorem gcd_dvd_left (m n : ℕ) : gcd m n ∣ m := (gcd_dvd m n).left
 
@@ -78,16 +74,10 @@ theorem gcd_le_left {m} (n) (h : 0 < m) : gcd m n ≤ m := le_of_dvd h $ gcd_dvd
 
 theorem gcd_le_right {m} (n) (h : 0 < n) : gcd m n ≤ n := le_of_dvd h $ gcd_dvd_right m n
 
-theorem dvd_gcd {m n k : ℕ} : k ∣ m → k ∣ n → k ∣ gcd m n := by
-  induction m, n using gcd.induction with
-  | H0 n =>
-    intros _ kn
-    rw [gcd_zero_left]
-    exact kn
-  | H1 m n _ IH =>
-    intros H1 H2
-    rw [gcd_rec]
-    exact IH ((dvd_mod_iff H1).mpr H2) H1
+theorem dvd_gcd {m n k : ℕ} : k ∣ m → k ∣ n → k ∣ gcd m n :=
+gcd.induction m n
+  (λ n _ kn => by rw [gcd_zero_left]; exact kn)
+  (λ n m _ IH H1 H2 => by rw [gcd_rec]; exact IH ((dvd_mod_iff H1).2 H2) H1)
 
 theorem dvd_gcd_iff {m n k : ℕ} : k ∣ gcd m n ↔ k ∣ m ∧ k ∣ n :=
 Iff.intro (λ h => And.intro (Nat.dvd_trans h (gcd_dvd m n).left) (Nat.dvd_trans h (gcd_dvd m n).right))

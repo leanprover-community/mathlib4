@@ -76,7 +76,7 @@ variable {a b c d : Prop}
 
 def And.elim (f : a → b → α) (h : a ∧ b) : α := f h.1 h.2
 
-lemma and.swap : a ∧ b → b ∧ a :=
+lemma And.swap : a ∧ b → b ∧ a :=
 λ ⟨ha, hb⟩ => ⟨hb, ha⟩
 
 lemma And.symm : a ∧ b → b ∧ a | ⟨ha, hb⟩ => ⟨hb, ha⟩
@@ -141,11 +141,11 @@ lemma imp_congr (h₁ : a ↔ c) (h₂ : b ↔ d) : (a → b) ↔ (c → d) := i
 lemma not_of_not_not_not (h : ¬¬¬a) : ¬a :=
 λ ha => absurd (not_not_intro ha) h
 
--- @[simp] -- Lean 4 has this built-in because it simplifies using decidable instances
+@[simp]
 lemma not_true : (¬ True) ↔ False :=
 iff_false_intro (not_not_intro trivial)
 
--- @[simp] -- Lean 4 has this built-in because it simplifies using decidable instances
+@[simp]
 lemma not_false_iff : (¬ False) ↔ True :=
 iff_true_intro not_false
 
@@ -536,40 +536,98 @@ lemma let_eq {α : Sort v} {β : Sort u} {a₁ a₂ : α} {b₁ b₂ : α → β
              a₁ = a₂ → (∀ x, b₁ x = b₂ x) → (let x : α := a₁; b₁ x) = (let x : α := a₂; b₂ x) :=
 λ h₁ h₂ => Eq.recOn (motive := λ a _ => (let x := a₁; b₁ x) = (let x := a; b₂ x)) h₁ (h₂ a₁)
 
--- TODO: `section relation`
+section relation
+
+variable {α : Sort u} {β : Sort v} (r : β → β → Prop)
+
+/-- Local notation for an arbitrary binary relation `r`. -/
+local infix:50 " ≺ " => r
+
+/-- A reflexive relation relates every element to itself. -/
+def reflexive := ∀ x, x ≺ x
+
+/-- A relation is symmetric if `x ≺ y` implies `y ≺ x`. -/
+def symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
+
+/-- A relation is transitive if `x ≺ y` and `y ≺ z` together imply `x ≺ z`. -/
+def transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
+
+/-- An equivalance is a reflexive, symmetric, and transitive relation. -/
+def equivalence := reflexive r ∧ symmetric r ∧ transitive r
+
+/-- A relation is total if for all `x` and `y`, either `x ≺ y` or `y ≺ x`. -/
+def total := ∀ x y, x ≺ y ∨ y ≺ x
+
+lemma mk_equivalence (rfl : reflexive r) (symm : symmetric r) (trans : transitive r) :
+  equivalence r :=
+⟨rfl, symm, trans⟩
+
+/-- Irreflexive means "not reflexive". -/
+def irreflexive := ∀ x, ¬ x ≺ x
+
+/-- A relation is antisymmetric if `x ≺ y` and `y ≺ x` together imply that `x = y`. -/
+def anti_symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
+
+/-- An empty relation does not relate any elements. -/
+@[nolint unusedArguments]
+def empty_relation := λ _ _ : α => False
+
+/-- `q` is a subrelation of `r` if for all `x` and `y`, `q x y` implies `r x y` -/
+def subrelation (q r : β → β → Prop) := ∀ ⦃x y⦄, q x y → r x y
+
+/-- Given `f : α → β`, a relation on `β` induces a relation on `α`.-/
+def inv_image (f : α → β) : α → α → Prop :=
+λ a₁ a₂ => f a₁ ≺ f a₂
+
+lemma inv_image.trans (f : α → β) (h : transitive r) : transitive (inv_image r f) :=
+λ (a₁ a₂ a₃ : α) (h₁ : inv_image r f a₁ a₂) (h₂ : inv_image r f a₂ a₃) => h h₁ h₂
+
+lemma inv_image.irreflexive (f : α → β) (h : irreflexive r) : irreflexive (inv_image r f) :=
+λ (a : α) (h₁ : inv_image r f a a) => h (f a) h₁
+
+end relation
 
 section binary
+
 variable {α : Type u} {β : Type v}
 variable (f : α → α → α)
 variable (inv : α → α)
 variable (one : α)
+
+/-- Local notation for `f`, high priority to avoid ambiguity with `HMul.hMul`. -/
+local infix:70 (priority := high) " * " => f
+
+/-- Local notation for `inv`, high priority to avoid ambiguity with `Inv.inv`. -/
+local postfix:100 (priority := high) "⁻¹"  => inv
+
 variable (g : α → α → α)
 
-def commutative        := ∀ a b, f a b = f b a
-def associative        := ∀ a b c, f (f a b) c = f a (f b c)
-def left_identity      := ∀ a, f one a = a
-def right_identity     := ∀ a, f a one = a
-def RightInverse      := ∀ a, f a (inv a) = one
-def left_cancelative   := ∀ a b c, f a b = f a c → b = c
-def right_cancelative  := ∀ a b c, f a b = f c b → a = c
-def left_distributive  := ∀ a b c, f a (g b c) = g (f a b) (f a c)
-def right_distributive := ∀ a b c, f (g a b) c = g (f a c) (f b c)
+/-- Local notation for `g`, high priority to avoid ambiguity with `HAdd.hAdd`. -/
+local infix:65 (priority := high) " + " => g
+
+def commutative        := ∀ a b, a * b = b * a
+def associative        := ∀ a b c, (a * b) * c = a * (b * c)
+def left_identity      := ∀ a, one * a = a
+def right_identity     := ∀ a, a * one = a
+def RightInverse       := ∀ a, a * a⁻¹ = one
+def left_cancelative   := ∀ a b c, a * b = a * c → b = c
+def right_cancelative  := ∀ a b c, a * b = c * b → a = c
+def left_distributive  := ∀ a b c, a * (b + c) = a * b + a * c
+def right_distributive := ∀ a b c, (a + b) * c = a * c + b * c
 def right_commutative (h : β → α → β) := ∀ b a₁ a₂, h (h b a₁) a₂ = h (h b a₂) a₁
 def left_commutative  (h : α → β → β) := ∀ a₁ a₂ b, h a₁ (h a₂ b) = h a₂ (h a₁ b)
 
 lemma left_comm : commutative f → associative f → left_commutative f :=
-by intros hcomm hassoc a b c
-   have h1 : f a (f b c) = f (f a b) c := Eq.symm (hassoc a b c)
-   have h2 : f (f a b) c = f (f b a) c := hcomm a b ▸ rfl
-   have h3 : f (f b a) c = f b (f a c) := hassoc b a c
-   rw [←h3, ←h2, ←h1]
+λ hcomm hassoc a b c => calc
+  a*(b*c) = (a*b)*c  := Eq.symm (hassoc a b c)
+        _ = (b*a)*c  := hcomm a b ▸ rfl
+        _ = b*(a*c)  := hassoc b a c
 
 lemma right_comm : commutative f → associative f → right_commutative f :=
-by intros hcomm hassoc a b c
-   have h1 : f (f a b) c = f a (f b c) := hassoc a b c
-   have h2 : f a (f b c) = f a (f c b) := hcomm b c ▸ rfl
-   have h3 : f a (f c b) = f (f a c) b := Eq.symm (hassoc a c b)
-   rw [←h3, ←h2, ←h1]
+λ hcomm hassoc a b c => calc
+  (a*b)*c = a*(b*c) := hassoc a b c
+        _ = a*(c*b) := hcomm b c ▸ rfl
+        _ = (a*c)*b := Eq.symm (hassoc a c b)
 
 end binary
 

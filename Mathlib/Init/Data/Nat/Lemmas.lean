@@ -190,6 +190,7 @@ protected def strong_rec_on {p : ℕ → Sort u}
   (n : ℕ) (H : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
 Nat.lt_wfRel.wf.fix' H n
 
+@[elabAsElim]
 protected lemma strong_induction_on {p : Nat → Prop} (n : Nat) (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
 Nat.strong_rec_on n h
 
