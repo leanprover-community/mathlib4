@@ -8,14 +8,15 @@ import Mathlib.Data.String.Defs
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr
-import Mathlib.Lean.NameMapAttribute
 import Lean
 import Lean.Data
+import Std.Lean.NameMapAttribute
 
 open Lean
 open Lean.Meta
 open Lean.Elab
 open Lean.Elab.Command
+open Std
 
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" num* : attr
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg" num : attr
@@ -27,7 +28,7 @@ namespace ToAdditive
 initialize registerTraceClass `to_additive
 initialize registerTraceClass `to_additive_detail
 
-initialize ignoreArgsAttr : NameMapAttribute (List Nat) ←
+initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
     name  := `to_additive_ignore_args
     descr := "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized."
@@ -44,7 +45,7 @@ This value is used in `additiveTestAux`. -/
 def ignore [Functor M] [MonadEnv M]: Name → M (Option (List Nat))
   | n => (ignoreArgsAttr.find? · n) <$> getEnv
 
-initialize reorderAttr : NameMapAttribute (List Nat) ←
+initialize reorderAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
     name := `to_additive_reorder
     descr := "Auxiliary attribute for `to_additive` that stores arguments that need to be reordered."
@@ -62,7 +63,7 @@ should be swapped with the next one. -/
 def shouldReorder [Functor M] [MonadEnv M]: Name → Nat → M Bool
   | n, i => (i ∈ ·) <$> (getReorder n)
 
-initialize relevantArgAttr : NameMapAttribute (Nat) ←
+initialize relevantArgAttr : NameMapExtension Nat ←
   registerNameMapAttribute {
     name := `to_additive_relevant_arg
     descr := "Auxiliary attribute for `to_additive` stating which arguments are the types with a multiplicative structure."
@@ -81,7 +82,7 @@ def isRelevant [Monad M] [MonadEnv M] (n : Name) (i : Nat) : M Bool := do
 
 /- Maps multiplicative names to their additive counterparts. -/
 initialize translations : NameMapExtension Name ←
-  mkNameMapExtension Name `translations
+  registerNameMapExtension Name `translations
 
 /-- Get the multiplicative → additive translation for the given name. -/
 def findTranslation? (env : Environment) : Name → Option Name :=

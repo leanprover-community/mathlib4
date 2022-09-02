@@ -17,7 +17,6 @@ import Mathlib.Data.List.Card
 import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Perm
 import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Nat.Gcd
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Prod
@@ -34,7 +33,6 @@ import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Instances
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Basic
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Option.Basic
 import Mathlib.Init.Data.Option.Instances
 import Mathlib.Init.Dvd
@@ -50,7 +48,6 @@ import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr.Traverse
 import Mathlib.Lean.LocalContext
-import Mathlib.Lean.NameMapAttribute
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nonempty
@@ -84,19 +81,12 @@ import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
-import Mathlib.Tactic.Lint
-import Mathlib.Tactic.Lint.Basic
-import Mathlib.Tactic.Lint.Frontend
-import Mathlib.Tactic.Lint.Misc
-import Mathlib.Tactic.Lint.Simp
-import Mathlib.Tactic.NoMatch
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormCast.CoeExt
 import Mathlib.Tactic.NormCast.Ext
 import Mathlib.Tactic.NormCast.Lemmas
 import Mathlib.Tactic.NormCast.Tactic
 import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.OpenPrivate
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.PushNeg
@@ -129,12 +119,10 @@ import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
-import Mathlib.Util.LibraryNote
 import Mathlib.Util.MemoFix
 import Mathlib.Util.Simp
 import Mathlib.Util.Syntax
 import Mathlib.Util.Tactic
-import Mathlib.Util.TermUnsafe
 import Mathlib.Util.Time
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace

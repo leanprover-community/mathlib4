@@ -5,7 +5,6 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Init.SetNotation
 import Mathlib.Init.Logic
-import Mathlib.Tactic.Lint
 
 open Decidable List
 
