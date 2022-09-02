@@ -95,7 +95,7 @@ There is also the `find` tactic which looks for
 lemmas which are `apply`able against the current goal.
 -/
 elab "#find" t:term : command =>
-  liftTermElabM none do
+  liftTermElabM do
     let t ← Term.elabTerm t none
     Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
     findType t

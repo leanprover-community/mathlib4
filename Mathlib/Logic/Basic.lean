@@ -14,18 +14,17 @@ section needs_better_home
    They should probably probably live elsewhere and maybe in some cases should be removed.
 -/
 
--- TODO(Jeremy): where is the best place to put these?
-lemma EqIffBeqTrue [DecidableEq α] {a b : α} : a = b ↔ ((a == b) = true) :=
-⟨decide_eq_true, of_decide_eq_true⟩
+@[simp]
+lemma beq_eq_false_iff_ne [BEq α] [LawfulBEq α] (a b : α) : (a == b) = false ↔ a ≠ b := by
+  rw [ne_eq, ← beq_iff_eq a b]
+  cases a == b <;> decide
 
-lemma NeqIffBeqFalse [DecidableEq α] {a b : α} : a ≠ b ↔ ((a == b) = false) :=
-⟨decide_eq_false, of_decide_eq_false⟩
+lemma decide_eq_true_iff (p : Prop) [Decidable p] : (decide p = true) ↔ p := by
+  simp
 
-lemma decide_eq_true_iff (p : Prop) [Decidable p] : (decide p = true) ↔ p :=
-⟨of_decide_eq_true, decide_eq_true⟩
-
+@[simp]
 lemma decide_eq_false_iff_not (p : Prop) [Decidable p] : (decide p = false) ↔ ¬ p :=
-⟨of_decide_eq_false, decide_eq_false⟩
+  ⟨of_decide_eq_false, decide_eq_false⟩
 
 lemma not_not_em (a : Prop) : ¬¬(a ∨ ¬a) := fun H => H (Or.inr fun h => H (Or.inl h))
 
@@ -677,6 +676,11 @@ theorem forall_and_distrib {p q : α → Prop} : (∀ x, p x ∧ q x) ↔ (∀ x
 @[simp] theorem forall_eq' {a' : α} : (∀ a, a' = a → p a) ↔ p a' :=
 by simp [@eq_comm _ a']
 
+-- this lemma is needed to simplify the output of `list.mem_cons_iff`
+@[simp] theorem forall_eq_or_imp {a' : α} : (∀ a, a = a' ∨ q a → p a) ↔ p a' ∧ ∀ a, q a → p a :=
+by simp only [or_imp_distrib, forall_and_distrib, forall_eq]
+   exact Iff.rfl
+
 @[simp] theorem exists_false : ¬ (∃ _a : α, False) := fun ⟨_, h⟩ => h
 
 @[simp] theorem exists_and_distrib_left {q : Prop} {p : α → Prop} :
@@ -724,6 +728,13 @@ theorem forall_prop_of_true {p : Prop} {q : p → Prop} (h : p) : (∀ h' : p, q
 @forall_const (q h) p ⟨h⟩
 
 end quantifiers
+
+namespace Classical
+
+/-- In classical logic, we can decide a proposition. -/
+noncomputable def dec (p : Prop) : Decidable p := inferInstance
+
+end Classical
 
 section ite
 

@@ -130,7 +130,7 @@ def aliasIff (ci : ConstantInfo) (al : Name) (isForward : Bool) : MetaM Unit := 
   let resolved ← resolveGlobalConstNoOverload name
   let constant ← getConstInfo resolved
   let ns ← getCurrNamespace
-  Lean.Elab.Command.liftTermElabM none do
+  Lean.Elab.Command.liftTermElabM do
     if let `(binderIdent| $x:ident) := left then
       aliasIff constant (appendNamespace ns x.getId) true
     if let `(binderIdent| $x:ident) := right then
@@ -151,7 +151,7 @@ def aliasIff (ci : ConstantInfo) (al : Name) (isForward : Bool) : MetaM Unit := 
   let backward := String.intercalate "_of_" components
   let forwardName := Name.mkStr parent forward
   let backwardName := Name.mkStr parent backward
-  Lean.Elab.Command.liftTermElabM none do
+  Lean.Elab.Command.liftTermElabM do
     aliasIff constant forwardName true
     aliasIff constant backwardName false
   -- TODO add doc string

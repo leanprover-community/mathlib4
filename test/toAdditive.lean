@@ -110,7 +110,7 @@ run_cmd do
 --         = (add_units.mk_of_add_eq_zero 0 0 (by simp) : ℕ) :=
 -- by normCast
 
-def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i (n : ℕ), Bool → One (f i)]
+def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f i)]
   [Add I] [Mul L] : true := by trivial
 
 

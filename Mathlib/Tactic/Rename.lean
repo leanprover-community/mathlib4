@@ -24,8 +24,8 @@ elab_rules : tactic
       for fvar in ids, tgt in bs do
         lctx := lctx.setUserName fvar tgt.getId
       let mvarNew ← mkFreshExprMVarAt lctx (← getLocalInstances)
-        (← getMVarType goal) MetavarKind.syntheticOpaque (← getMVarTag goal)
-      assignExprMVar goal mvarNew
+        (← goal.getType) MetavarKind.syntheticOpaque (← goal.getTag)
+      goal.assign mvarNew
       pure mvarNew.mvarId!
     withMainContext do
       for fvar in ids, tgt in bs do
