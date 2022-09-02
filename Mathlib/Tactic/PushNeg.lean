@@ -98,6 +98,7 @@ def pushNegLocalDecl (fvarId : FVarId): TacticM Unit := withMainContext do
   let ldecl ← getLocalDecl fvarId
   if ldecl.isAuxDecl then return
   let tgt := (← getLocalDecl fvarId).type
+  let tgt ← instantiateMVars tgt
   let myctx : Simp.Context :=
     { config := { eta := true },
       simpTheorems := #[ ]
