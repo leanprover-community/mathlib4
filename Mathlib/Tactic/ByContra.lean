@@ -10,8 +10,6 @@ import Mathlib.Mathport.Syntax
 open Lean Lean.Parser Parser.Tactic Elab Command Elab.Tactic Meta
 
 /--
-IMPORTANT: this tactic will not perform correctly until `push_neg` is implemented.
-
 If the target of the main goal is a proposition `p`,
 `by_contra'` reduces the goal to proving `false` using the additional hypothesis `this : ¬ p`.
 `by_contra' h` can be used to name the hypothesis `h : ¬ p`.
