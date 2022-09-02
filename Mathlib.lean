@@ -99,6 +99,7 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.OpenPrivate
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.PrintPrefix
+import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.RCases
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Rename

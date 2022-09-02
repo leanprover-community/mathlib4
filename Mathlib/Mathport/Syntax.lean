@@ -20,6 +20,7 @@ import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.RCases
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Replace
@@ -327,9 +328,6 @@ syntax termList := " [" term,* "]"
 /- B -/ syntax (name := obviously) "obviously" : tactic
 
 /- S -/ syntax (name := prettyCases) "pretty_cases" : tactic
-
--- see also https://github.com/leanprover-community/mathlib4/pull/193
-/- M -/ syntax (name := pushNeg) "push_neg" (ppSpace location)? : tactic
 
 /- M -/ syntax (name := contrapose) "contrapose" (ppSpace ident (" with " ident)?)? : tactic
 /- M -/ syntax (name := contrapose!) "contrapose!" (ppSpace ident (" with " ident)?)? : tactic
