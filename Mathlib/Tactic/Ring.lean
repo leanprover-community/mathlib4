@@ -21,9 +21,14 @@ namespace Ring
 
 /-- This cache contains data required by the `ring` tactic during execution. -/
 structure Cache :=
+  /-- The carrier of the ring we are working on -/
   α : Expr
+  /-- The level of `α` -/
   univ : Level
+  /-- A proof of `comm_semiring α` -/
   cs : Expr
+  /-- The reducibility setting for definitional equality of atoms -/
+  red : TransparencyMode
 
 structure State :=
   atoms : Array Expr := #[]
@@ -34,10 +39,10 @@ def State.numAtoms (s : State) := s.atoms.size
 the list of atoms-up-to-defeq encountered thus far, used for atom sorting. -/
 abbrev RingM := ReaderT Cache $ StateRefT State MetaM
 
-def RingM.run (ty : Expr) (m : RingM α) : MetaM α := do
-  let .succ u ← getLevel ty | throwError "fail"
-  let inst ← synthInstance (mkApp (mkConst ``CommSemiring [u]) ty)
-  (m {α := ty, univ := u, cs := inst }).run' {}
+def RingM.run (ty : Expr) (red : TransparencyMode) (m : RingM α) : MetaM α := do
+  let .succ univ ← getLevel ty | throwError "fail"
+  let cs ← synthInstance (mkApp (mkConst ``CommSemiring [univ]) ty)
+  (m {α := ty, univ, cs, red }).run' {}
 
 def mkAppCS (f : Name) (args : Array Expr) : RingM Expr := do
   let c ← read
@@ -180,8 +185,8 @@ by
 
 partial def evalAdd : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
 | (const e₁ c₁), (const e₂ c₂) => do
-  let (e', p) ← NormNum.eval $ ← mkAdd e₁ e₂
-  pure (const e' (c₁ + c₂), p)
+  let r ← NormNum.eval $ ← mkAdd e₁ e₂
+  pure (const r.expr (c₁ + c₂), ←r.getProof)
 | he₁@(const e₁ c₁), he₂@(xadd e₂ a x n b) => do
 
   if c₁ = 0 then
@@ -247,8 +252,8 @@ by simp [horner, ← h₁, ← h₂, add_mul, mul_assoc, mul_comm c]
 /-- Evaluate `k * a` where `k` is a rational numeral and `a` is in normal form. -/
 def evalConstMul (k : Expr × ℕ) : HornerExpr → RingM (HornerExpr × Expr)
 | const e coeff => do
-  let (e', p) ← NormNum.eval $ ← mkMul k.1 e
-  return (const e' (k.2 * coeff), p)
+  let r ← NormNum.eval $ ← mkMul k.1 e
+  return (const r.expr (k.2 * coeff), ← r.getProof)
 | xadd _ a x n b => do
   let (a', h₁) ← evalConstMul k a
   let (b', h₂) ← evalConstMul k b
@@ -278,8 +283,8 @@ by
 /-- Evaluate `a * b` where `a` and `b` are in normal form. -/
 partial def evalMul : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
 | (const e₁ c₁), (const e₂ c₂) => do
-  let (e', p) ← NormNum.eval $ ← mkMul e₁ e₂
-  return (const e' (c₁ * c₂), p)
+  let r ← NormNum.eval $ ← mkMul e₁ e₂
+  return (const r.expr (c₁ * c₂), ← r.getProof)
 | (const e₁ c₁), e₂ =>
   if c₁ = 0 then do
     let α0 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]
@@ -339,8 +344,8 @@ partial def evalPow : HornerExpr → Expr × ℕ → RingM (HornerExpr × Expr)
   let p ← mkAppM ``pow_one #[e]
   pure (e, p)
 | const e coeff, (e₂, m) => do
-  let (e', p) ← NormNum.eval $ ← mkAppM ``HPow.hPow #[e, e₂]
-  pure (const e' (coeff ^ m), p)
+  let r ← NormNum.eval $ ← mkAppM ``HPow.hPow #[e, e₂]
+  pure (const r.expr (coeff ^ m), ← r.getProof)
 | he@(xadd e a x n b), m =>
   match b.e.numeral? with
   | some 0 => do
@@ -409,11 +414,12 @@ partial def eval (e : Expr) : RingM (HornerExpr × Expr) :=
     | _ => evalAtom e
 
 elab "ring" : tactic => liftMetaMAtMain fun g => do
-  match (← instantiateMVars (← getMVarDecl g).type).getAppFnArgs with
+  match (← instantiateMVars (← g.getType)).getAppFnArgs with
   | (`Eq, #[ty, e₁, e₂]) =>
-    let ((e₁', p₁), (e₂', p₂)) ← RingM.run ty $ do pure (← eval e₁, ← eval e₂)
+    let red := .default -- FIXME
+    let ((e₁', p₁), (e₂', p₂)) ← RingM.run ty red $ do pure (← eval e₁, ← eval e₂)
     if ← isDefEq e₁' e₂' then
-      assignExprMVar g (← mkEqTrans p₁ (← mkEqSymm p₂))
+      g.assign (← mkEqTrans p₁ (← mkEqSymm p₂))
     else
       throwError "ring failed, ring expressions not equal: \n{← e₁'.pp}\n  !=\n{← e₂'.pp}"
   | _ => throwError "ring failed: not an equality"

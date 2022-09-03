@@ -43,6 +43,7 @@ import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Set
 import Mathlib.Init.SetNotation
+import Mathlib.Init.Zero
 import Mathlib.Lean.Exception
 import Mathlib.Lean.Expr
 import Mathlib.Lean.Expr.Basic
@@ -59,6 +60,7 @@ import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Mathport.SpecialNames
 import Mathlib.Mathport.Syntax
+import Mathlib.Order.Basic
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Cache
@@ -78,7 +80,9 @@ import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.Have
 import Mathlib.Tactic.HaveI
+import Mathlib.Tactic.HelpCmd
 import Mathlib.Tactic.InferParam
+import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
@@ -97,13 +101,15 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.OpenPrivate
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.PrintPrefix
+import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.RCases
+import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Rename
+import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.RunCmd
-import Mathlib.Tactic.RunTac
 import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
@@ -113,6 +119,7 @@ import Mathlib.Tactic.Simpa
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread
+import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.ToAdditive
@@ -122,7 +129,6 @@ import Mathlib.Tactic.Use
 import Mathlib.Testing.SlimCheck.Gen
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
-import Mathlib.Util.DeclName
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.LibraryNote

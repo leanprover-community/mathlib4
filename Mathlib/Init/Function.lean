@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
+Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
 -- a port of core Lean `init/function.lean`
 
@@ -48,7 +48,7 @@ theorem comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) �
 theorem comp_const_right (f : β → φ) (b : β) : f ∘ (const α b) = const α (f b) := rfl
 
 /-- A function `f : α → β` is called injective if `f x = f y` implies `x = y`. -/
-@[reducible] def injective (f : α → β) : Prop := ∀ ⦃a₁ a₂⦄, f a₁ = f a₂ → a₁ = a₂
+def injective (f : α → β) : Prop := ∀ ⦃a₁ a₂⦄, f a₁ = f a₂ → a₁ = a₂
 
 theorem injective.comp {g : β → φ} {f : α → β} (hg : injective g) (hf : injective f) :
   injective (g ∘ f) :=

@@ -3,17 +3,19 @@ Copyright (c) 2022 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, E.W.Ayers
 -/
-import Std
-
-open Std ShareCommon
+import Lean.Data.HashMap
 
 /-!
 # Fixpoint function with memoisation
 
 -/
 
+open Std ShareCommon
+
+private unsafe abbrev ObjectMap := @Std.HashMap Object Object ⟨Object.ptrEq⟩ ⟨Object.hash⟩
+
 private unsafe def memoFixImplObj (f : (Object → Object) → (Object → Object)) (a : Object) : Object := unsafeBaseIO do
-  let cache : IO.Ref ObjectMap ← ST.mkRef (mkObjectMap ())
+  let cache : IO.Ref ObjectMap ← ST.mkRef ∅
   let rec fix (a) := unsafeBaseIO do
     if let some b := (← cache.get).find? a then
       return b

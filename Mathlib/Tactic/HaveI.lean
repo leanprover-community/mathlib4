@@ -38,14 +38,14 @@ elab_rules <= expectedType
     let ty ← elabType ty
     let val ← elabTermEnsuringType val ty
     withLocalDeclD x.getId ty fun x => do
-      return (← abstract (← elabTerm body expectedType) #[x]).instantiate #[val]
+      return (← (← elabTerm body expectedType).abstractM #[x]).instantiate #[val]
 
 elab_rules <= expectedType
   | `(letI $x : $ty := $val; $body) => do
     let ty ← elabType ty
     let val ← elabTermEnsuringType val ty
     withLetDecl x.getId ty val fun x => do
-      return (← abstract (← elabTerm body expectedType) #[x]).instantiate #[val]
+      return (← (← elabTerm body expectedType).abstractM #[x]).instantiate #[val]
 
 /-- `haveI` behaves like `have`, but inlines the value instead of producing a `let_fun` term. -/
 macro "haveI " d:haveDecl : tactic => `(refine_lift haveI $d:haveDecl; ?_)

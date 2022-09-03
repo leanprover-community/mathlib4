@@ -1,7 +1,8 @@
 /-
 Copyright (c) 2019 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lewis, Floris van Doorn, E.W.Ayers
+Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lewis,
+Floris van Doorn, E.W.Ayers, Arthur Paulino
 -/
 import Lean
 
@@ -147,6 +148,16 @@ def modifyArgM [Monad M] (modifier : Expr → M Expr) (e : Expr) (i : Nat) (n :=
   let some a := getArg? e i | return e
   let a ← modifier a
   return modifyArg (fun _ => a) e i n
+
+/-- Traverses an expression `e` and renames bound variables named `old` to `new`. -/
+def renameBVar (e : Expr) (old new : Name) : Expr :=
+  match e with
+  | app fn arg => app (fn.renameBVar old new) (arg.renameBVar old new)
+  | lam n ty bd bi =>
+    lam (if n == old then new else n) (ty.renameBVar old new) (bd.renameBVar old new) bi
+  | forallE n ty bd bi =>
+    forallE (if n == old then new else n) (ty.renameBVar old new) (bd.renameBVar old new) bi
+  | e => e
 
 end Expr
 
