@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Lean
-import Mathlib.Tactic.Lint.Basic
+import Std.Tactic.Lint.Basic
 
 open Lean Parser
 

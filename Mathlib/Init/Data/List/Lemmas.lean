@@ -140,7 +140,7 @@ theorem ne_nil_of_length_eq_succ {l : List α} : ∀ {n : Nat}, length l = succ 
 | succ n, [] => by simp [Nat.min_zero]
 | succ n, _ :: l => by simp [Nat.min_succ_succ, add_one, length_take]
 
-theorem length_take_le (n) (l : List α) : length (take n l) ≤ n := by simp [min_le_left]
+theorem length_take_le (n) (l : List α) : length (take n l) ≤ n := by simp [Nat.min_le_left]
 
 theorem length_removeNth : ∀ (l : List α) (i : ℕ),
   i < length l → length (removeNth l i) = length l - 1

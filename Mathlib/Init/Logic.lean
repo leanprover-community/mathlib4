@@ -6,7 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Ext
-import Mathlib.Tactic.Lint.Basic
+import Std.Tactic.Lint.Basic
 
 -- Workaround for not being able to add ext lemmas from other modules.
 @[ext] private def funext' := @funext
@@ -28,10 +28,6 @@ def non_contradictory (a : Prop) : Prop := ¬¬a
 
 theorem non_contradictory_intro {a : Prop} (ha : a) : ¬¬a :=
 λ hna : ¬a => absurd ha hna
-
-/-- Ex falso for negation. From `¬ a` and `a` anything follows. This is the same as `absurd` with
-the arguments flipped, but it is in the `not` namespace so that projection notation can be used. -/
-def Not.elim {α : Sort _} (H1 : ¬a) (H2 : a) : α := absurd H2 H1
 
 @[reducible] theorem Not.imp {a b : Prop} (H2 : ¬b) (H1 : a → b) : ¬a := mt H1 H2
 
@@ -149,8 +145,6 @@ iff_false_intro (not_not_intro trivial)
 lemma not_false_iff : (¬ False) ↔ True :=
 iff_true_intro not_false
 
-lemma not_congr (h : a ↔ b) : ¬a ↔ ¬b := ⟨mt h.2, mt h.1⟩
-
 lemma ne_self_iff_false (a : α) : a ≠ a ↔ False := not_iff_false_intro rfl
 
 lemma eq_self_iff_true (a : α) : a = a ↔ True := iff_true_intro rfl
@@ -238,25 +232,8 @@ Iff.intro (Or.rec ha id) Or.inr
 theorem or_iff_left_of_imp (hb : b → a) : (a ∨ b) ↔ a :=
 Iff.intro (Or.rec id hb) Or.inl
 
--- Port note: in mathlib3, this is not_or
-lemma not_or_intro {a b : Prop} : ¬ a → ¬ b → ¬ (a ∨ b)
-| hna, _, Or.inl ha => absurd ha hna
-| _, hnb, Or.inr hb => absurd hb hnb
-
 lemma not_or (p q) : ¬ (p ∨ q) ↔ ¬ p ∧ ¬ q :=
 ⟨fun H => ⟨mt Or.inl H, mt Or.inr H⟩, fun ⟨hp, hq⟩ pq => pq.elim hp hq⟩
-
-/- or resolution rules -/
-
-lemma Or.resolve_left {a b : Prop} (h: a ∨ b) (na : ¬ a) : b :=
-Or.elim h (λ ha => absurd ha na) id
-
-lemma Or.neg_resolve_left (h : ¬a ∨ b) (ha : a) : b := h.elim (absurd ha) id
-
-lemma Or.resolve_right {a b : Prop} (h: a ∨ b) (nb : ¬ b) : a :=
-Or.elim h id (λ hb => absurd hb nb)
-
-lemma Or.neg_resolve_right (h : a ∨ ¬b) (nb : b) : a := h.elim id (absurd nb)
 
 lemma iff_congr (h₁ : a ↔ c) (h₂ : b ↔ d) : (a ↔ b) ↔ (c ↔ d) :=
 ⟨fun h => h₁.symm.trans $ h.trans h₂, fun h => h₁.trans $ h.trans h₂.symm⟩

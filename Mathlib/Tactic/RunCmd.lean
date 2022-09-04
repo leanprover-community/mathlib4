@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich, Mario Carneiro
 -/
 import Lean.Elab.SyntheticMVars
-import Mathlib.Util.TermUnsafe
+import Std.Util.TermUnsafe
 
 /-!
 Defines commands to compile and execute a command / term / tactic on the spot:

@@ -208,8 +208,6 @@ syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
 /- M -/ syntax (name := unfold1) "unfold1" (config)? (ppSpace colGt ident)* (ppSpace location)? : tactic
 
 /- E -/ syntax (name := inferAutoParam) "infer_auto_param" : tactic
-/- M -/ syntax (name := guardExprEq) "guard_expr " term:51 " =ₐ " term : tactic -- alpha equality
-/- M -/ syntax (name := guardTarget) "guard_target" " =ₐ " term : tactic -- alpha equality
 
 -- There is already a `by_cases` tactic in core (in `src/init/classical.lean`)
 -- so for now we add a primed version to support the optional identifier,
@@ -266,8 +264,6 @@ end Conv
   (" with " binderIdent)? : tactic
 /- M -/ syntax (name := hGeneralize!) "h_generalize! " atomic(binderIdent " : ")? term:51 " = " ident
   (" with " binderIdent)? : tactic
-/- M -/ syntax (name := guardExprEq') "guard_expr " term:51 " = " term : tactic -- definitional equality
-/- M -/ syntax (name := guardTarget') "guard_target" " = " term : tactic -- definitional equality
 /- M -/ syntax (name := extractGoal) "extract_goal" (ppSpace ident)?
   (" with" (ppSpace (colGt ident))*)? : tactic
 /- M -/ syntax (name := extractGoal!) "extract_goal!" (ppSpace ident)?

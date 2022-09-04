@@ -5,7 +5,6 @@ Authors: Paul-Nicolas Madelaine, Robert Y. Lewis, Mario Carneiro, Gabriel Ebner
 -/
 
 import Mathlib.Tactic.NormCast.Ext
-import Mathlib.Tactic.OpenPrivate
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Util.Simp
 import Mathlib.Algebra.Group.Defs
