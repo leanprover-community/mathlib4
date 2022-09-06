@@ -1,5 +1,5 @@
 import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Data.Int.Basic
+import Mathlib.Init.Data.Int.Notation
 import Mathlib.Init.Zero
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.ToAdditive

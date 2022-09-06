@@ -169,10 +169,6 @@ it is better to use explicitly introduced ones rather than allowing Lean to auto
 classical ones, as these may cause instance mismatch errors later.
 -/
 
--- See Note [decidable namespace]
-protected theorem Decidable.not_not [Decidable a] : ¬¬a ↔ a :=
-Iff.intro Decidable.by_contradiction not_not_intro
-
 /-- The Double Negation Theorem: `¬ ¬ P` is equivalent to `P`.
 The left-to-right direction, double negation elimination (DNE),
 is classically true but not constructively. -/
