@@ -58,6 +58,7 @@ import Mathlib.Mathport.SpecialNames
 import Mathlib.Mathport.Syntax
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Alias
+import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Cases

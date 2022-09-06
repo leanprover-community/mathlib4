@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Lean.Elab.Command
 import Lean.Elab.Quotation
 import Mathlib.Tactic.Alias
+import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
@@ -175,7 +176,6 @@ end Term
 namespace Tactic
 
 /- N -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
-/- N -/ syntax (name := applyWith) "apply " term " with " term : tactic
 /- E -/ syntax (name := mapply) "mapply " term : tactic
 /- M -/ syntax (name := withCases) "with_cases " tacticSeq : tactic
 syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
