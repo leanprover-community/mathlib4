@@ -29,8 +29,6 @@ def non_contradictory (a : Prop) : Prop := ¬¬a
 theorem non_contradictory_intro {a : Prop} (ha : a) : ¬¬a :=
 λ hna : ¬a => absurd ha hna
 
-@[reducible] theorem Not.imp {a b : Prop} (H2 : ¬b) (H1 : a → b) : ¬a := mt H1 H2
-
 /- eq -/
 
 -- proof irrelevance is built in
@@ -201,12 +199,6 @@ lemma and_iff_right (ha : a) : a ∧ b ↔ b := ⟨And.right, fun hb => ⟨ha, h
 @[simp] lemma not_and_self : ¬(¬a ∧ a) | ⟨hn, ha⟩ => hn ha
 
 /- or simp rules -/
-
-lemma Or.imp (f : a → c) (g : b → d) (h : a ∨ b) : c ∨ d := h.elim (inl ∘ f) (inr ∘ g)
-
-lemma Or.imp_left (f : a → b) : a ∨ c → b ∨ c := Or.imp f id
-
-lemma Or.imp_right (f : b → c) : a ∨ b → a ∨ c := Or.imp id f
 
 lemma or_congr (h₁ : a ↔ c) (h₂ : b ↔ d) : (a ∨ b) ↔ (c ∨ d) :=
 ⟨Or.imp h₁.1 h₂.1, Or.imp h₁.2 h₂.2⟩

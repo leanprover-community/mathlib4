@@ -17,7 +17,7 @@
    "rev": "ecd37441047e490ff2ad339e16f45bb8b58591bd",
    "name": "mathlib"},
   {"url": "https://github.com/leanprover/std4",
-   "rev": "fc196a9cba64ffd6e9c0e4b0c9a2f5f3502217a5",
+   "rev": "a780b0d458f39bae2b69747301ce44d23712dfcf",
    "name": "std",
    "inputRev": "main"},
   {"url": "https://github.com/leanprover/lake",

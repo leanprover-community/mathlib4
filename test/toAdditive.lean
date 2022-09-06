@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Tactic.NormCast
+import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 open Lean
 

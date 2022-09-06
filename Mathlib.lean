@@ -28,7 +28,7 @@ import Mathlib.Data.UnionFind
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Data.Int.Basic
-import Mathlib.Init.Data.Int.Order
+import Mathlib.Init.Data.Int.Notation
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Instances
 import Mathlib.Init.Data.List.Lemmas
@@ -83,9 +83,6 @@ import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NormCast
-import Mathlib.Tactic.NormCast.CoeExt
-import Mathlib.Tactic.NormCast.Ext
-import Mathlib.Tactic.NormCast.Lemmas
 import Mathlib.Tactic.NormCast.Tactic
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.PermuteGoals
