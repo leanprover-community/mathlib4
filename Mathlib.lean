@@ -50,6 +50,8 @@ import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr.Traverse
 import Mathlib.Lean.LocalContext
 import Mathlib.Logic.Basic
+import Mathlib.Logic.Equiv.LocalEquiv
+import Mathlib.Logic.Equiv.MfldSimpsAttr
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nonempty
 import Mathlib.Mathport.Attributes

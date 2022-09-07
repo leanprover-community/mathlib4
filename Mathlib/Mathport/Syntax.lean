@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Lean.Elab.Command
 import Lean.Elab.Quotation
+import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Cases
@@ -484,7 +485,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := continuity!?) "continuity!?" (config)? : tactic
 
 /- E -/ syntax (name := unitInterval) "unit_interval" : tactic
-/- E -/ syntax (name := mfldSetTac) "mfld_set_tac" : tactic
 
 /- N -/ syntax (name := measurability) "measurability" (config)? : tactic
 /- N -/ syntax (name := measurability!) "measurability!" (config)? : tactic
