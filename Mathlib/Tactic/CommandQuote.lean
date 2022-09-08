@@ -4,11 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Lean
+import Std.Tactic.Lint.Basic
 
-namespace Lean
+open Lean Parser
 
-@[termParser default+1] def Parser.Term.Command.quot : Parser :=
+/-- Syntax quotation for the command category. -/
+@[termParser default+1] def command.quot : Parser :=
   leading_parser "`(command|" >> incQuotDepth commandParser >> ")"
 
-@[termElab Command.quot] def Elab.Term.elabCommandQuot : TermElab :=
+attribute [nolint docBlame] command.quot.parenthesizer command.quot.formatter
+
+/-- Syntax quotation for the command category. -/
+@[termElab command.quot] def Lean.Elab.Term.elabCommandQuot : TermElab :=
   adaptExpander Quotation.stxQuot.expand

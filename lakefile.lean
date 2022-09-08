@@ -2,8 +2,17 @@ import Lake
 
 open Lake DSL
 
-package mathlib where
-  -- As mathlib does not produce an executable,
-  -- we set the default "facet" to `oleans`,
-  -- so that we can use `lake build`.
-  defaultFacet := PackageFacet.oleans
+package mathlib
+
+@[defaultTarget]
+lean_lib Mathlib
+
+@[defaultTarget]
+lean_exe runLinter where
+  root := `scripts.runLinter
+  supportInterpreter := true
+
+meta if get_config? doc = some "on" then -- do not download and build doc-gen4 by default
+require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
+
+require std from git "https://github.com/leanprover/std4" @ "main"

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Lean
-import Mathlib.Tactic.OpenPrivate
+import Std.Tactic.OpenPrivate
 import Mathlib.Data.List.Defs
 
 /-!
@@ -48,27 +48,27 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array (Name × MVarId)) (wit
     let numFields ← getAltNumFields elimInfo altName
     let (altVarNames, names') := names.splitAtD numFields `_
     names := names'
-    let (_, g) ← introN g numFields altVarNames
-    let some (g, _) ← Cases.unifyEqs numEqs g {} | pure ()
-    let (_, g) ← introNP g numGeneralized
-    let g ← liftM $ toClear.foldlM tryClear g
+    let (_, g) ← g.introN numFields altVarNames
+    let some (g, _) ← Cases.unifyEqs? numEqs g {} | pure ()
+    let (_, g) ← g.introNP numGeneralized
+    let g ← liftM $ toClear.foldlM (·.tryClear) g
     subgoals := subgoals.push g
   pure subgoals
 
 open private getElimNameInfo generalizeTargets generalizeVars in evalInduction in
-elab (name := induction') tk:"induction' " tgts:(casesTarget,+)
-    usingArg:(" using " ident)?
-    withArg:(" with " (colGt binderIdent)+)?
-    genArg:(" generalizing " (colGt ident)+)? : tactic => do
-  let targets ← elabCasesTargets tgts.getSepArgs
-  let (elimName, elimInfo) ← getElimNameInfo usingArg targets (induction := true)
+elab (name := induction') "induction' " tgts:(casesTarget,+)
+    usingArg:((" using " ident)?)
+    withArg:((" with " (colGt binderIdent)+)?)
+    genArg:((" generalizing " (colGt ident)+)?) : tactic => do
+  let targets ← elabCasesTargets tgts.1.getSepArgs
   let g ← getMainGoal
-  withMVarContext g do
+  g.withContext do
+    let elimInfo ← getElimNameInfo usingArg targets (induction := true)
     let targets ← addImplicitTargets elimInfo targets
     evalInduction.checkTargets targets
     let targetFVarIds := targets.map (·.fvarId!)
-    withMVarContext g do
-      let genArgs ← if genArg.isNone then pure #[] else getFVarIds genArg[1].getArgs
+    g.withContext do
+      let genArgs ← if genArg.1.isNone then pure #[] else getFVarIds genArg.1[1].getArgs
       let forbidden ← mkGeneralizationForbiddenSet targets
       let mut s ← getFVarSetToGeneralize targets forbidden
       for v in genArgs do
@@ -77,32 +77,32 @@ elab (name := induction') tk:"induction' " tgts:(casesTarget,+)
         if s.contains v then
           throwError "unnecessary 'generalizing' argument, variable '{mkFVar v}' is generalized automatically"
         s := s.insert v
-      let (fvarIds, g) ← Meta.revert g (← sortFVarIds s.toArray)
-      let result ← withRef tgts <| ElimApp.mkElimApp elimName elimInfo targets (← getMVarTag g)
+      let (fvarIds, g) ← g.revert (← sortFVarIds s.toArray)
+      let result ← withRef tgts <| ElimApp.mkElimApp elimInfo targets (← g.getTag)
       let elimArgs := result.elimApp.getAppArgs
-      ElimApp.setMotiveArg g elimArgs[elimInfo.motivePos].mvarId! targetFVarIds
-      assignExprMVar g result.elimApp
+      ElimApp.setMotiveArg g elimArgs[elimInfo.motivePos]!.mvarId! targetFVarIds
+      g.assign result.elimApp
       let subgoals ← ElimApp.evalNames elimInfo result.alts withArg
         (numGeneralized := fvarIds.size) (toClear := targetFVarIds)
       setGoals (subgoals ++ result.others).toList
 
 open private getElimNameInfo in evalCases in
-elab (name := cases') "cases' " tgts:(casesTarget,+) usingArg:(" using " ident)?
-  withArg:(" with " (colGt binderIdent)+)? : tactic => do
-  let targets ← elabCasesTargets tgts.getSepArgs
-  let (elimName, elimInfo) ← getElimNameInfo usingArg targets (induction := false)
+elab (name := cases') "cases' " tgts:(casesTarget,+) usingArg:((" using " ident)?)
+  withArg:((" with " (colGt binderIdent)+)?) : tactic => do
+  let targets ← elabCasesTargets tgts.1.getSepArgs
   let g ← getMainGoal
-  withMVarContext g do
+  g.withContext do
+    let elimInfo ← getElimNameInfo usingArg targets (induction := false)
     let targets ← addImplicitTargets elimInfo targets
-    let result ← withRef tgts <| ElimApp.mkElimApp elimName elimInfo targets (← getMVarTag g)
+    let result ← withRef tgts <| ElimApp.mkElimApp elimInfo targets (← g.getTag)
     let elimArgs := result.elimApp.getAppArgs
-    let targets ← elimInfo.targetsPos.mapM (instantiateMVars elimArgs[·])
-    let motive := elimArgs[elimInfo.motivePos]
+    let targets ← elimInfo.targetsPos.mapM (instantiateMVars elimArgs[·]!)
+    let motive := elimArgs[elimInfo.motivePos]!
     let g ← generalizeTargetsEq g (← inferType motive) targets
-    let (targetsNew, g) ← introN g targets.size
-    withMVarContext g do
+    let (targetsNew, g) ← g.introN targets.size
+    g.withContext do
       ElimApp.setMotiveArg g motive.mvarId! targetsNew
-      assignExprMVar g result.elimApp
+      g.assign result.elimApp
       let subgoals ← ElimApp.evalNames elimInfo result.alts withArg
          (numEqs := targets.size) (toClear := targetsNew)
       setGoals subgoals.toList

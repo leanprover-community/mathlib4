@@ -20,5 +20,5 @@ notation3 "~{" (x";"* => foldl (a b => (a, b)) ()) "}~" => x
 #check ~{1; true; ~{2}~}~
 #check ~{}~
 
-notation3 "%[" (x,* => foldr (a b => a :: b) []) "]" => x
+notation3 "%[" (x","* => foldr (a b => a :: b) []) "]" => x
 #check %[1, 2, 3]

@@ -12,7 +12,7 @@ Defines an extended binder syntax supporting `∀ ε > 0, ...` etc.
 
 namespace Mathlib.ExtendedBinder
 
-/-
+/--
 The syntax category of binder predicates contains predicates like `> 0`, `∈ s`, etc.
 (`: t` should not be a binder predicate because it would clash with the built-in syntax for ∀/∃.)
 -/
@@ -81,16 +81,17 @@ syntax (docComment)? (attrKind)? "binder_predicate " optNamedName optNamedPrio i
 
 -- adapted from the macro macro
 open Elab Command in
-macro_rules
+elab_rules : command
   | `($[$doc?:docComment]? $attrKind:attrKind binder_predicate%$tk $[(name := $name?)]? $[(priority := $prio?)]? $x $args:macroArg* => $rhs) => do
-    let prio  ← evalOptPrio prio?
+    let prio ← liftMacroM do evalOptPrio prio?
     let (stxParts, patArgs) := (← args.mapM expandMacroArg).unzip
     let name ← match name? with
       | some name => pure name.getId
-      | none => mkNameFromParserSyntax `binderTerm (mkNullNode stxParts)
+      | none => liftMacroM do mkNameFromParserSyntax `binderTerm (mkNullNode stxParts)
     /- The command `syntax [<kind>] ...` adds the current namespace to the syntax node kind.
       So, we must include current namespace when we create a pattern for the following `macro_rules` commands. -/
-    let pat := mkNode ((← Macro.getCurrNamespace) ++ name) patArgs
+    let pat : TSyntax `binderPred := ⟨(mkNode ((← getCurrNamespace) ++ name) patArgs).1⟩
+    elabCommand <|<-
     `($[$doc?:docComment]? $attrKind:attrKind syntax%$tk (name := $(← mkIdentFromRef name)) (priority := $(quote prio)) $[$stxParts]* : binderPred
       $[$doc?:docComment]? macro_rules%$tk | `(satisfiesBinderPred% $$($x):term $pat:binderPred) => $rhs)
 

@@ -971,16 +971,17 @@ add_tactic_doc { Name := "simps", category := DocCategory.attr, declNames := [`s
 -/
 
 
--- Defines the user attribute `simps` for automatic generation of `@[simp]` lemmas for projections.
+/--
+  Defines the user attribute `simps` for automatic generation of `@[simp]` lemmas for projections.
+-/
 initialize simpsAttr : ParametricAttribute (Array Name) ←
   registerParametricAttribute {
     name := `simps
     descr := "Automatically derive lemmas specifying the projections of this declaration.",
-    getParam := fun decl stx =>
-      match stx with
-        -- TODO implement support for `config := ...`
-        | `(attr|simps $[$ids]*) => pure $ ids.map (·.getId.eraseMacroScopes)
-        | _ => throwError "unexpected simps syntax {stx}"
+    getParam := fun
+    -- TODO implement support for `config := ...`
+    | _, `(attr|simps $[$ids]*) => pure $ ids.map (·.getId.eraseMacroScopes)
+    | _, stx => throwError "unexpected simps syntax {stx}"
   }
 
 /-!

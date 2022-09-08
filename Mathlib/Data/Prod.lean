@@ -77,7 +77,7 @@ fun _ _ h => (Prod.mk.inj h).left
 
 -- Port note: this lemma comes from lean3/library/init/data/prod.lean.
 @[simp] lemma mk.eta : ∀{p : α × β}, (p.1, p.2) = p
-| (a,b) => rfl
+| (_, _) => rfl
 
 lemma ext_iff {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 :=
 by rw [← @mk.eta _ _ p, ← @mk.eta _ _ q, mk.inj_iff]
@@ -92,7 +92,7 @@ lemma map_def {f : α → γ} {g : β → δ} : Prod.map f g = λ p => (f p.1, g
 by ext <;> simp
 
 lemma id_prod : (λ (p : α × α) => (p.1, p.2)) = id :=
-funext $ λ ⟨a, b⟩ => rfl
+funext $ λ ⟨_, _⟩ => rfl
 
 lemma fst_surjective [h : Nonempty β] : Function.surjective (@fst α β) :=
 λ x => h.elim $ λ y => ⟨⟨x, y⟩, rfl⟩
@@ -101,16 +101,16 @@ lemma snd_surjective [h : Nonempty α] : Function.surjective (@snd α β) :=
 λ y => h.elim $ λ x => ⟨⟨x, y⟩, rfl⟩
 
 lemma fst_injective [Subsingleton β] : Function.injective (@fst α β) :=
-λ {x y} h => ext' h (Subsingleton.elim x.snd y.snd)
+λ x y h => ext' h (Subsingleton.elim x.snd y.snd)
 
 lemma snd_injective [Subsingleton α] : Function.injective (@snd α β) :=
-λ {x y} h => ext' (Subsingleton.elim _ _) h
+λ _ _ h => ext' (Subsingleton.elim _ _) h
 
 /-- Swap the factors of a product. `swap (a, b) = (b, a)` -/
 def swap : α × β → β × α := λp => (p.2, p.1)
 
 @[simp] lemma swap_swap : ∀ x : α × β, swap (swap x) = x
-| ⟨a, b⟩ => rfl
+| ⟨_, _⟩ => rfl
 
 @[simp] lemma fst_swap {p : α × β} : (swap p).1 = p.2 := rfl
 
@@ -161,7 +161,7 @@ theorem lex_def (r : α → α → Prop) (s : β → β → Prop)
 instance Lex.decidable [DecidableEq α]
   (r : α → α → Prop) (s : β → β → Prop) [DecidableRel r] [DecidableRel s] :
   DecidableRel (Prod.Lex r s) :=
-λ p q => decidable_of_decidable_of_iff (lex_def r s).symm
+λ _ _ => decidable_of_decidable_of_iff (lex_def r s).symm
 
 end Prod
 

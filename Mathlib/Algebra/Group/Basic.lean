@@ -5,12 +5,6 @@ section AddCommSemigroup_lemmas
 
 variable {A : Type u} [AddCommSemigroup A]
 
-lemma add_left_comm (a b c : A) : a + (b + c) = b + (a + c) :=
-by rw [← add_assoc, add_comm a, add_assoc]
-
-lemma add_right_comm (a b c : A) : a + b + c = a + c + b :=
-by rw [add_assoc, add_comm b, add_assoc]
-
 theorem add_add_add_comm (a b c d : A) : (a + b) +(c + d) = (a + c) + (b + d) :=
 by simp [add_left_comm, add_assoc]
 

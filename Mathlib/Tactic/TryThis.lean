@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Gabriel Ebner
+Authors: Gabriel Ebner
 -/
 import Lean
 
@@ -20,19 +20,17 @@ open Lean Elab Elab.Tactic PrettyPrinter Meta
 
 partial def replaceMVarsByUnderscores [Monad m] [MonadQuotation m]
     (s : Syntax) : m Syntax := do
-  if s matches `(?$mvar:ident) then
+  if s matches `(?$_:ident) then
     `(?_)
-  else if let Syntax.node _ kind args := s then
-    mkNode kind <$> args.mapM replaceMVarsByUnderscores
+  else if let Syntax.node info kind args := s then
+    .node info kind <$> args.mapM replaceMVarsByUnderscores
   else
     pure s
 
-def delabToRefinableSyntax (e : Expr) : TermElabM Syntax := do
-  let stx ← delab (← readThe Core.Context).currNamespace
-    (← readThe Core.Context).openDecls e
-  replaceMVarsByUnderscores stx
+def delabToRefinableSyntax (e : Expr) : TermElabM Term :=
+  return ⟨← replaceMVarsByUnderscores (← delab e)⟩
 
-def addSuggestion [Monad m] [MonadLog m] [AddMessageContext m]
+def addSuggestion [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
     (origStx : Syntax) (suggestion : Syntax) : m Unit :=
   -- Use obscure Unicode characters to discourage editor implementations.
   logInfoAt origStx m!"𝔗𝔯𝔶 𝔱𝔥𝔦𝔰: {suggestion}"

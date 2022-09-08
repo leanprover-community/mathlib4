@@ -6,25 +6,25 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Init.Logic
 import Mathlib.Init.Function
 import Mathlib.Tactic.Basic
-import Mathlib.Util.LibraryNote
+import Std.Util.LibraryNote
+import Std.Tactic.Lint.Basic
 
 section needs_better_home
 /- This section contains items that have no direct counterpart from Lean 3 / Mathlib 3.
    They should probably probably live elsewhere and maybe in some cases should be removed.
 -/
 
--- TODO(Jeremy): where is the best place to put these?
-lemma EqIffBeqTrue [DecidableEq α] {a b : α} : a = b ↔ ((a == b) = true) :=
-⟨decide_eq_true, of_decide_eq_true⟩
+@[simp]
+lemma beq_eq_false_iff_ne [BEq α] [LawfulBEq α] (a b : α) : (a == b) = false ↔ a ≠ b := by
+  rw [ne_eq, ← beq_iff_eq a b]
+  cases a == b <;> decide
 
-lemma NeqIffBeqFalse [DecidableEq α] {a b : α} : a ≠ b ↔ ((a == b) = false) :=
-⟨decide_eq_false, of_decide_eq_false⟩
+lemma decide_eq_true_iff (p : Prop) [Decidable p] : (decide p = true) ↔ p := by
+  simp
 
-lemma decide_eq_true_iff (p : Prop) [Decidable p] : (decide p = true) ↔ p :=
-⟨of_decide_eq_true, decide_eq_true⟩
-
+@[simp]
 lemma decide_eq_false_iff_not (p : Prop) [Decidable p] : (decide p = false) ↔ ¬ p :=
-⟨of_decide_eq_false, decide_eq_false⟩
+  ⟨of_decide_eq_false, decide_eq_false⟩
 
 lemma not_not_em (a : Prop) : ¬¬(a ∨ ¬a) := fun H => H (Or.inr fun h => H (Or.inl h))
 
@@ -64,6 +64,8 @@ def Empty.elim {C : Sort _} : Empty → C := λ e => match e with.
 
 instance : Subsingleton Empty := ⟨λa => a.elim⟩
 
+lemma ne_comm {α} {a b : α} : a ≠ b ↔ b ≠ a := ⟨Ne.symm, Ne.symm⟩
+
 end miscellany
 
 /-!
@@ -86,6 +88,7 @@ theorem iff_iff_eq : (a ↔ b) ↔ a = b := ⟨propext, iff_of_eq⟩
 
 @[simp] theorem imp_self : (a → a) ↔ True := iff_true_intro id
 
+@[nolint unusedArguments]
 theorem imp_intro {α β : Prop} (h : α) : β → α := λ _ => h
 
 theorem imp_false : (a → False) ↔ ¬ a := Iff.rfl
@@ -165,10 +168,6 @@ In the other direction, when `decidable` instances do appear in the type signatu
 it is better to use explicitly introduced ones rather than allowing Lean to automatically infer
 classical ones, as these may cause instance mismatch errors later.
 -/
-
--- See Note [decidable namespace]
-protected theorem Decidable.not_not [Decidable a] : ¬¬a ↔ a :=
-Iff.intro Decidable.by_contradiction not_not_intro
 
 /-- The Double Negation Theorem: `¬ ¬ P` is equivalent to `P`.
 The left-to-right direction, double negation elimination (DNE),
@@ -375,12 +374,6 @@ theorem and_or_distrib_right : (a ∧ b) ∨ c ↔ (a ∨ c) ∧ (b ∨ c) :=
 
 /-! Declarations about `iff` -/
 
-theorem iff_of_true (ha : a) (hb : b) : a ↔ b :=
-⟨λ_ => hb, λ _ => ha⟩
-
-theorem iff_of_false (ha : ¬a) (hb : ¬b) : a ↔ b :=
-⟨ha.elim, hb.elim⟩
-
 theorem iff_true_left (ha : a) : (a ↔ b) ↔ b :=
 ⟨λ h => h.1 ha, iff_of_true ha⟩
 
@@ -437,7 +430,7 @@ lemma imp_imp_imp (h₀ : c → a) (h₁ : b → d) : (a → b) → (c → d) :=
 
 -- See Note [decidable namespace]
 protected theorem Decidable.peirce (a b : Prop) [Decidable a] : ((a → b) → a) → a :=
-if ha : a then λ h => ha else λ h => h ha.elim
+if ha : a then λ _ => ha else λ h => h ha.elim
 
 theorem peirce (a b : Prop) : ((a → b) → a) → a := Decidable.peirce _ _
 
@@ -505,17 +498,17 @@ theorem not_and_not_right : ¬(a ∧ ¬b) ↔ (a → b) := Decidable.not_and_not
 **Important**: this function should be used instead of `rw` on `decidable b`, because the
 kernel will get stuck reducing the usage of `propext` otherwise,
 and `dec_trivial` will not work. -/
-@[inline] def decidable_of_iff (a : Prop) (h : a ↔ b) [D : Decidable a] : Decidable b :=
+@[inline] def decidable_of_iff (a : Prop) (h : a ↔ b) [Decidable a] : Decidable b :=
 decidable_of_decidable_of_iff h
 
 /-- Transfer decidability of `b` to decidability of `a`, if the propositions are equivalent.
 This is the same as `decidable_of_iff` but the iff is flipped. -/
-@[inline] def decidable_of_iff' (b : Prop) (h : a ↔ b) [D : Decidable b] : Decidable a :=
+@[inline] def decidable_of_iff' (b : Prop) (h : a ↔ b) [Decidable b] : Decidable a :=
 decidable_of_decidable_of_iff h.symm
 
 /-- Prove that `a` is decidable by constructing a boolean `b` and a proof that `b ↔ a`.
 (This is sometimes taken as an alternate definition of decidability.) -/
-def decidable_of_bool : ∀ (b : Bool) (h : b ↔ a), Decidable a
+def decidable_of_bool : ∀ (b : Bool), (b ↔ a) → Decidable a
 | true, h => isTrue (h.1 rfl)
 | false, h => isFalse (mt h.2 Bool.ff_ne_tt)
 
@@ -613,7 +606,7 @@ forall_congr' (λ a => forall₃_congr (h a))
 
 lemma exists_imp_exists' {p : α → Prop} {q : β → Prop} (f : α → β) (hpq : ∀ a, p a → q (f a))
   (hp : ∃ a, p a) : ∃ b, q b :=
-Exists.elim hp (λ a hp' => ⟨_, hpq _ hp'⟩)
+Exists.elim hp (λ _ hp' => ⟨_, hpq _ hp'⟩)
 
 lemma exists₂_congr {p q : α → β → Prop} (h : ∀ a b, p a b ↔ q a b) :
   (∃ a b, p a b) ↔ (∃ a b, q a b) :=
@@ -662,18 +655,23 @@ protected theorem Decidable.not_forall {p : α → Prop}
 @[simp] theorem not_forall {p : α → Prop} : (¬ ∀ x, p x) ↔ ∃ x, ¬ p x := Decidable.not_forall
 
 @[simp] theorem forall_const (α : Sort _) [i : Nonempty α] : (α → b) ↔ b :=
-⟨i.elim, λ hb x => hb⟩
+⟨i.elim, λ hb _ => hb⟩
 
 theorem forall_and_distrib {p q : α → Prop} : (∀ x, p x ∧ q x) ↔ (∀ x, p x) ∧ (∀ x, q x) :=
 ⟨λ h => ⟨λ x => (h x).left, λ x => (h x).right⟩, λ ⟨h₁, h₂⟩ x => ⟨h₁ x, h₂ x⟩⟩
 
 @[simp] theorem forall_eq {p : α → Prop} {a' : α} : (∀ a, a = a' → p a) ↔ p a' :=
-⟨λ h => h a' rfl, λ h a e => e.symm ▸ h⟩
+⟨λ h => h a' rfl, λ h _ e => e.symm ▸ h⟩
 
 @[simp] theorem forall_eq' {a' : α} : (∀ a, a' = a → p a) ↔ p a' :=
 by simp [@eq_comm _ a']
 
-@[simp] theorem exists_false : ¬ (∃ a : α, False) := fun ⟨a, h⟩ => h
+-- this lemma is needed to simplify the output of `list.mem_cons_iff`
+@[simp] theorem forall_eq_or_imp {a' : α} : (∀ a, a = a' ∨ q a → p a) ↔ p a' ∧ ∀ a, q a → p a :=
+by simp only [or_imp_distrib, forall_and_distrib, forall_eq]
+   exact Iff.rfl
+
+@[simp] theorem exists_false : ¬ (∃ _a : α, False) := fun ⟨_, h⟩ => h
 
 @[simp] theorem exists_and_distrib_left {q : Prop} {p : α → Prop} :
   (∃ x, q ∧ p x) ↔ q ∧ (∃ x, p x) :=
@@ -688,7 +686,7 @@ by simp [And.comm]
 @[simp] theorem exists_eq' {a' : α} : ∃ a, a' = a := ⟨_, rfl⟩
 
 @[simp] theorem exists_eq_left {p : α → Prop} {a' : α} : (∃ a, a = a' ∧ p a) ↔ p a' :=
-⟨λ ⟨a, e, h⟩ => e ▸ h, λ h => ⟨_, rfl, h⟩⟩
+⟨λ ⟨_, e, h⟩ => e ▸ h, λ h => ⟨_, rfl, h⟩⟩
 
 @[simp] theorem exists_eq_right {p : α → Prop} {a' : α} : (∃ a, p a ∧ a = a') ↔ p a' :=
 (exists_congr $ by exact λ a => And.comm).trans exists_eq_left
@@ -710,7 +708,7 @@ by simp [@eq_comm _ a']
 
 
 @[simp]
-theorem exists_prop {p q : Prop} : (∃ h : p, q) ↔ p ∧ q :=
+theorem exists_prop {p q : Prop} : (∃ _h : p, q) ↔ p ∧ q :=
 Iff.intro (fun ⟨hp, hq⟩ => And.intro hp hq) (fun ⟨hp, hq⟩ => Exists.intro hp hq)
 
 @[simp] theorem exists_apply_eq_apply {α β : Type _} (f : α → β) (a' : α) : ∃ a, f a = f a' :=
@@ -720,6 +718,13 @@ theorem forall_prop_of_true {p : Prop} {q : p → Prop} (h : p) : (∀ h' : p, q
 @forall_const (q h) p ⟨h⟩
 
 end quantifiers
+
+namespace Classical
+
+/-- In classical logic, we can decide a proposition. -/
+noncomputable def dec (p : Prop) : Decidable p := inferInstance
+
+end Classical
 
 section ite
 

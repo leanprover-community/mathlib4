@@ -17,14 +17,14 @@ theorem some_ne_none (x : α) : some x ≠ none :=
   fun h => Option.noConfusion h
 
 protected theorem «forall» {p : Option α → Prop} : (∀ x, p x) ↔ p none ∧ ∀ x, p (some x) :=
-  ⟨fun h => ⟨h _, fun x => h _⟩, fun h x => Option.casesOn x h.1 h.2⟩
+  ⟨fun h => ⟨h _, fun _ => h _⟩, fun h x => Option.casesOn x h.1 h.2⟩
 
 protected theorem «exists» {p : Option α → Prop} : (∃ x, p x) ↔ p none ∨ ∃ x, p (some x) :=
   ⟨fun | ⟨none, hx⟩ => Or.inl hx | ⟨some x, hx⟩ => Or.inr ⟨x, hx⟩,
-    fun h => h.elim (fun h => ⟨_, h⟩) fun ⟨x, hx⟩ => ⟨_, hx⟩⟩
+    fun h => h.elim (fun h => ⟨_, h⟩) fun ⟨_, hx⟩ => ⟨_, hx⟩⟩
 
 theorem get_mem : ∀ {o : Option α} (h : isSome o), Option.get h ∈ o
-| some a, _ => rfl
+| some _, _ => rfl
 
 theorem get_of_mem {a : α} : ∀ {o : Option α} (h : isSome o), a ∈ o → Option.get h = a
 | _, _, rfl => rfl
@@ -32,7 +32,7 @@ theorem get_of_mem {a : α} : ∀ {o : Option α} (h : isSome o), a ∈ o → Op
 theorem not_mem_none (a : α) : a ∉ (none : Option α) := fun h => Option.noConfusion h
 
 @[simp] theorem some_get : ∀ {x : Option α} (h : isSome x), some (Option.get h) = x
-| some x, hx => rfl
+| some _, _ => rfl
 
 @[simp] theorem get_some (x : α) (h : isSome (some x)) : Option.get h = x := rfl
 
@@ -51,13 +51,13 @@ theorem some_injective (α : Type _) : Function.injective (@some α) :=
 
 /-- `option.map f` is injective if `f` is injective. -/
 theorem map_injective {f : α → β} (Hf : Function.injective f) : Function.injective (Option.map f)
-| none, none, H => rfl
+| none, none, _ => rfl
 | some a₁, some a₂, H => by rw [Hf (Option.some.inj H)]
 
 @[ext] theorem ext : ∀ {o₁ o₂ : Option α}, (∀ a, a ∈ o₁ ↔ a ∈ o₂) → o₁ = o₂
-| none, none, H => rfl
-| some a, o, H => ((H _).1 rfl).symm
-| o, some b, H => (H _).2 rfl
+| none, none, _ => rfl
+| some _, _, H => ((H _).1 rfl).symm
+| _, some _, H => (H _).2 rfl
 
 theorem eq_none_iff_forall_not_mem {o : Option α} : o = none ↔ ∀ a, a ∉ o :=
   ⟨fun e a h => by rw [e] at h; (cases h), fun h => ext $ by simp; exact h⟩
