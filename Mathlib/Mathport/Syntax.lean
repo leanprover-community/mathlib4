@@ -329,8 +329,6 @@ syntax termList := " [" term,* "]"
 /- M -/ syntax (name := contrapose) "contrapose" (ppSpace ident (" with " ident)?)? : tactic
 /- M -/ syntax (name := contrapose!) "contrapose!" (ppSpace ident (" with " ident)?)? : tactic
 
-/- E -/ syntax (name := byContra') "by_contra'" (ppSpace ident)? Term.optType : tactic
-
 /- M -/ syntax (name := assocRw) "assoc_rw " rwRuleSeq (ppSpace location)? : tactic
 
 /- N -/ syntax (name := dsimpResult) "dsimp_result " (&"only ")? ("[" Tactic.simpArg,* "]")?

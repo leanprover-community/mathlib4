@@ -62,6 +62,7 @@ import Mathlib.Order.Basic
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Basic
+import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Clear!
