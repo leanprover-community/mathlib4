@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Kevin Buzzard
 -/
 import Lean
-import Mathlib.Tactic.Basic
-import Mathlib.Mathport.Syntax
+import Mathlib.Tactic.PushNeg
 
 open Lean Lean.Parser Parser.Tactic Elab Command Elab.Tactic Meta
 
@@ -35,7 +34,7 @@ begin
 end
 ```
 -/
-syntax (name := byContra') "by_contra'" (ppSpace ident)? Term.optType : tactic
+syntax (name := byContra') "by_contra'" (ppSpace colGt ident)? Term.optType : tactic
 
 macro_rules
   | `(tactic| by_contra') => `(tactic| (by_contra $(mkIdent `this); push_neg at this))
