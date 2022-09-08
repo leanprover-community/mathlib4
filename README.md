@@ -18,6 +18,7 @@ and the "real" port hasn't started yet
 
 # Build instructions
 
+* Make sure Lean is not running, and close all instances of VSCode running Lean processes.
 * Get the newest version of `elan`. If you already have installed a version of Lean, you can run
   ```
   elan self update
