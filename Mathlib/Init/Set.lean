@@ -45,6 +45,9 @@ s a
 instance : Membership α (Set α) :=
 ⟨Set.mem⟩
 
+theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
+funext (fun x => propext (h x))
+
 protected def subset (s₁ s₂ : Set α) :=
 ∀ {a}, a ∈ s₁ → a ∈ s₂
 

@@ -3,8 +3,8 @@ Copyright (c) 2018 Sebastian Ullrich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich, Mario Carneiro
 -/
-import Lean.Elab.SyntheticMVars
-import Mathlib.Util.TermUnsafe
+import Lean.Elab.Eval
+import Std.Util.TermUnsafe
 
 /-!
 Defines commands to compile and execute a command / term / tactic on the spot:
@@ -49,7 +49,7 @@ syntax (name := byElab) "by_elab" doSeq : term
 @[termElab byElab] def elabRunElab : TermElab := fun
 | `(by_elab $cmds:doSeq), expectedType? => do
   if let `(Lean.Parser.Term.doSeq| $e:term) := cmds then
-    if e matches `(Lean.Parser.Term.doSeq| fun $_* => $_) then
+    if e matches `(Lean.Parser.Term.doSeq| fun $_args* => $_) then
       let tac ← unsafe evalTerm
         (Option Expr → TermElabM Expr)
         (Lean.mkForall `x .default

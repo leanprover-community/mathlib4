@@ -5,7 +5,7 @@ Authors: Gabriel Ebner
 -/
 
 import Lean
-import Mathlib.Tactic.OpenPrivate
+import Std.Tactic.OpenPrivate
 
 /-!
 # Helper functions for the `norm_cast` tactic.

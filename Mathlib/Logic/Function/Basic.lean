@@ -9,7 +9,7 @@ import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
 import Mathlib.Init.Set
 import Mathlib.Init.SetNotation
-import Mathlib.Tactic.Lint.Basic
+import Std.Tactic.Lint.Basic
 
 universe u v w
 

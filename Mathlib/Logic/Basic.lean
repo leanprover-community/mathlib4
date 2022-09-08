@@ -6,8 +6,8 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Init.Logic
 import Mathlib.Init.Function
 import Mathlib.Tactic.Basic
-import Mathlib.Util.LibraryNote
-import Mathlib.Tactic.Lint.Basic
+import Std.Util.LibraryNote
+import Std.Tactic.Lint.Basic
 
 section needs_better_home
 /- This section contains items that have no direct counterpart from Lean 3 / Mathlib 3.
@@ -168,10 +168,6 @@ In the other direction, when `decidable` instances do appear in the type signatu
 it is better to use explicitly introduced ones rather than allowing Lean to automatically infer
 classical ones, as these may cause instance mismatch errors later.
 -/
-
--- See Note [decidable namespace]
-protected theorem Decidable.not_not [Decidable a] : ¬¬a ↔ a :=
-Iff.intro Decidable.by_contradiction not_not_intro
 
 /-- The Double Negation Theorem: `¬ ¬ P` is equivalent to `P`.
 The left-to-right direction, double negation elimination (DNE),
@@ -377,12 +373,6 @@ theorem and_or_distrib_right : (a ∧ b) ∨ c ↔ (a ∨ c) ∧ (b ∨ c) :=
 ⟨λ h => h.elim id Or.inr, λ h => h.elim (Or.inl ∘ Or.inl) Or.inr⟩
 
 /-! Declarations about `iff` -/
-
-theorem iff_of_true (ha : a) (hb : b) : a ↔ b :=
-⟨λ_ => hb, λ _ => ha⟩
-
-theorem iff_of_false (ha : ¬a) (hb : ¬b) : a ↔ b :=
-⟨ha.elim, hb.elim⟩
 
 theorem iff_true_left (ha : a) : (a ↔ b) ↔ b :=
 ⟨λ h => h.1 ha, iff_of_true ha⟩

@@ -5,7 +5,9 @@ Authors: Mario Carneiro
 -/
 import Lean.Elab.Command
 import Lean.Elab.Quotation
+import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Tactic.Alias
+import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
@@ -175,7 +177,6 @@ end Term
 namespace Tactic
 
 /- N -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
-/- N -/ syntax (name := applyWith) "apply " term " with " term : tactic
 /- E -/ syntax (name := mapply) "mapply " term : tactic
 /- M -/ syntax (name := withCases) "with_cases " tacticSeq : tactic
 syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
@@ -208,8 +209,6 @@ syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
 /- M -/ syntax (name := unfold1) "unfold1" (config)? (ppSpace colGt ident)* (ppSpace location)? : tactic
 
 /- E -/ syntax (name := inferAutoParam) "infer_auto_param" : tactic
-/- M -/ syntax (name := guardExprEq) "guard_expr " term:51 " =ₐ " term : tactic -- alpha equality
-/- M -/ syntax (name := guardTarget) "guard_target" " =ₐ " term : tactic -- alpha equality
 
 -- There is already a `by_cases` tactic in core (in `src/init/classical.lean`)
 -- so for now we add a primed version to support the optional identifier,
@@ -266,8 +265,6 @@ end Conv
   (" with " binderIdent)? : tactic
 /- M -/ syntax (name := hGeneralize!) "h_generalize! " atomic(binderIdent " : ")? term:51 " = " ident
   (" with " binderIdent)? : tactic
-/- M -/ syntax (name := guardExprEq') "guard_expr " term:51 " = " term : tactic -- definitional equality
-/- M -/ syntax (name := guardTarget') "guard_target" " = " term : tactic -- definitional equality
 /- M -/ syntax (name := extractGoal) "extract_goal" (ppSpace ident)?
   (" with" (ppSpace (colGt ident))*)? : tactic
 /- M -/ syntax (name := extractGoal!) "extract_goal!" (ppSpace ident)?
@@ -486,7 +483,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := continuity!?) "continuity!?" (config)? : tactic
 
 /- E -/ syntax (name := unitInterval) "unit_interval" : tactic
-/- E -/ syntax (name := mfldSetTac) "mfld_set_tac" : tactic
 
 /- N -/ syntax (name := measurability) "measurability" (config)? : tactic
 /- N -/ syntax (name := measurability!) "measurability!" (config)? : tactic
