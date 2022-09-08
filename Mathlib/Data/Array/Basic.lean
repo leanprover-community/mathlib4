@@ -1,5 +1,5 @@
+import Std.Tactic.HaveI
 import Mathlib.Data.List.Basic
-import Mathlib.Tactic.HaveI
 import Mathlib.Tactic.Simpa
 
 macro_rules | `($x[$i]'$h) => `(getElem $x $i $h)

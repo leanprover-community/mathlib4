@@ -1,3 +1,4 @@
+import Std.Tactic.GuardExpr
 import Mathlib.Tactic.PermuteGoals
 
 example (p q r : Prop) : p → q → r → p ∧ q ∧ r := by
