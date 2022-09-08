@@ -215,7 +215,6 @@ syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
 -- and available `decidable` instances.
 /- M -/ syntax (name := byCases') "by_cases' " atomic(ident " : ")? term : tactic
 
-/- E -/ syntax (name := typeCheck) "type_check " term : tactic
 /- S -/ syntax (name := rsimp) "rsimp" : tactic
 /- S -/ syntax (name := compVal) "comp_val" : tactic
 /- S -/ syntax (name := async) "async " tacticSeq : tactic
