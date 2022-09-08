@@ -5,6 +5,8 @@ Authors: Mario Carneiro
 -/
 import Lean.Elab.Command
 import Lean.Elab.Quotation
+import Std.Tactic.Ext
+import Std.Tactic.RCases
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyWith
@@ -14,7 +16,6 @@ import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.CommandQuote
-import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
@@ -23,7 +24,6 @@ import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.PushNeg
-import Mathlib.Tactic.RCases
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.Ring
@@ -33,7 +33,6 @@ import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Trace
 import Mathlib.Tactic.Substs
-import Mathlib.Init.ExtendedBinder
 import Mathlib.Util.WithWeakNamespace
 import Mathlib.Util.Syntax
 
@@ -60,7 +59,7 @@ estimated difficulty of writing the tactic. The key is as follows:
 namespace Lean
 
 namespace Parser.Command
-open Mathlib.ExtendedBinder
+open Std.ExtendedBinder
 
 /- N -/ elab (name := include) "include " ident+ : command => pure ()
 /- N -/ elab (name := omit) "omit " ident+ : command => pure ()
@@ -287,6 +286,9 @@ end Conv
 /- E -/ syntax (name := convert) "convert " "← "? term (" using " num)? : tactic
 /- E -/ syntax (name := convertTo) "convert_to " term (" using " num)? : tactic
 /- E -/ syntax (name := acChange) "ac_change " term (" using " num)? : tactic
+
+/- M -/ syntax (name := rcases?) "rcases?" casesTarget,* (" : " num)? : tactic
+/- M -/ syntax (name := rintro?) "rintro?" (" : " num)? : tactic
 
 /- M -/ syntax (name := decide!) "decide!" : tactic
 

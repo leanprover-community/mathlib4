@@ -1,5 +1,5 @@
+import Std.Data.List.Lemmas
 import Mathlib.Init.Data.Option.Instances
-import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Basic
 import Mathlib.Data.Nat.Basic
@@ -84,7 +84,7 @@ theorem eq_or_ne_mem_of_mem {a b : α} {l : List α} (h' : a ∈ b :: l) : a = b
   open Classical in if h : a = b then Or.inl h else Or.inr ⟨h, (mem_cons.1 h').resolve_left h⟩
 
 theorem not_mem_append {a : α} {s t : List α} (h₁ : a ∉ s) (h₂ : a ∉ t) : a ∉ s ++ t :=
-mt mem_append.1 $ (not_or _ _).mpr ⟨h₁, h₂⟩
+mt mem_append.1 $ not_or.mpr ⟨h₁, h₂⟩
 
 theorem ne_nil_of_mem {a : α} {l : List α} (h : a ∈ l) : l ≠ [] := by intro e; rw [e] at h; cases h
 
@@ -110,7 +110,7 @@ theorem not_mem_of_not_mem_cons {a b : α} {l : List α} : (a ∉ b::l) → a �
 fun nin nainl => absurd (Mem.tail _ nainl) nin
 
 theorem not_mem_cons_of_ne_of_not_mem {a y : α} {l : List α} : a ≠ y → (a ∉ l) → (a ∉ y::l) :=
-fun p1 p2 => fun Pain => absurd (eq_or_mem_of_mem_cons Pain) ((not_or _ _).mpr ⟨p1, p2⟩)
+fun p1 p2 => fun Pain => absurd (eq_or_mem_of_mem_cons Pain) (not_or.mpr ⟨p1, p2⟩)
 
 theorem ne_and_not_mem_of_not_mem_cons {a y : α} {l : List α} : (a ∉ y::l) → a ≠ y ∧ a ∉ l :=
 fun p => And.intro (ne_of_not_mem_cons p) (not_mem_of_not_mem_cons p)
@@ -495,16 +495,16 @@ theorem map_eq_append_split {f : α → β} {l : List α} {s₁ s₂ : List β}
   rw [←length_map l f, h, length_append]
   apply Nat.le_add_right
 
-/-! ### repeat -/
+/-! ### replicate -/
 
-theorem repeat'_succ (a : α) n : repeat' a (n+1) = a :: repeat' a n := rfl
+theorem replicate_succ n (a : α) : replicate (n+1) a = a :: replicate n a := rfl
 
-theorem mem_repeat' {a b : α} : ∀ {n}, b ∈ repeat' a n ↔ n ≠ 0 ∧ b = a
+theorem mem_replicate {a b : α} : ∀ {n}, b ∈ replicate n a ↔ n ≠ 0 ∧ b = a
 | 0 => by simp
-| n+1 => by simp [mem_repeat']
+| n+1 => by simp [mem_replicate]
 
-theorem eq_of_mem_repeat' {a b : α} {n} (h : b ∈ repeat' a n) : b = a :=
-  (mem_repeat'.1 h).2
+theorem eq_of_mem_replicate {a b : α} {n} (h : b ∈ replicate n a) : b = a :=
+  (mem_replicate.1 h).2
 
 /-! ### getLast -/
 
@@ -643,8 +643,8 @@ theorem get_append_right' {l₁ l₂ : List α} {n : ℕ} (h₁ : l₁.length �
     (l₁ ++ l₂).get ⟨n, h₂⟩ = l₂.get ⟨n - l₁.length, id <| get_append_right_aux h₁ h₂⟩ :=
 Option.some.inj $ by rw [← get?_eq_get, ← get?_eq_get, get?_append_right h₁]
 
-@[simp] theorem get_repeat' (a : α) {n : ℕ} (m : Fin _) : (List.repeat' a n).get m = a :=
-  eq_of_mem_repeat' (get_mem _ _ _)
+@[simp] theorem get_replicate (a : α) {n : ℕ} (m : Fin _) : (List.replicate n a).get m = a :=
+  eq_of_mem_replicate (get_mem _ _ _)
 
 theorem get?_append {l₁ l₂ : List α} {n : ℕ} (hn : n < l₁.length) :
   (l₁ ++ l₂).get? n = l₁.get? n := by
@@ -776,13 +776,13 @@ theorem mem_or_eq_of_mem_set : ∀ {l : List α} {n : ℕ} {a b : α}, a ∈ l.s
 section insert
 variable [DecidableEq α]
 
-@[simp] theorem insert_of_mem {a : α} {l : List α} (h : a ∈ l) : insert a l = l := by
-  simp only [insert, if_pos h]
+@[simp] theorem insert_of_mem {a : α} {l : List α} (h : a ∈ l) : l.insert a = l := by
+  simp only [List.insert, if_pos h]
 
-@[simp] theorem insert_of_not_mem {a : α} {l : List α} (h : a ∉ l) : insert a l = a :: l := by
-  simp only [insert, if_neg h]
+@[simp] theorem insert_of_not_mem {a : α} {l : List α} (h : a ∉ l) : l.insert a = a :: l := by
+  simp only [List.insert, if_neg h]
 
-@[simp] theorem mem_insert_iff {a b : α} {l : List α} : a ∈ insert b l ↔ a = b ∨ a ∈ l := by
+@[simp] theorem mem_insert_iff {a b : α} {l : List α} : a ∈ l.insert b ↔ a = b ∨ a ∈ l := by
   by_cases h : b ∈ l
   · rw [insert_of_mem h]
     constructor; {apply Or.inr}
@@ -791,21 +791,21 @@ variable [DecidableEq α]
     | Or.inr h' => exact h'
   · rw [insert_of_not_mem h, mem_cons]
 
-@[simp 1100] theorem mem_insert_self (a : α) (l : List α) : a ∈ insert a l :=
+@[simp 1100] theorem mem_insert_self (a : α) (l : List α) : a ∈ l.insert a :=
 mem_insert_iff.2 (Or.inl rfl)
 
-theorem mem_insert_of_mem {a b : α} {l : List α} (h : a ∈ l) : a ∈ insert b l :=
+theorem mem_insert_of_mem {a b : α} {l : List α} (h : a ∈ l) : a ∈ l.insert b :=
 mem_insert_iff.2 (Or.inr h)
 
-theorem eq_or_mem_of_mem_insert {a b : α} {l : List α} (h : a ∈ insert b l) : a = b ∨ a ∈ l :=
+theorem eq_or_mem_of_mem_insert {a b : α} {l : List α} (h : a ∈ l.insert b) : a = b ∨ a ∈ l :=
 mem_insert_iff.1 h
 
 @[simp] theorem length_insert_of_mem {a : α} {l : List α} (h : a ∈ l) :
-  length (insert a l) = length l := by
+  length (l.insert a) = length l := by
   rw [insert_of_mem h]
 
 @[simp] theorem length_insert_of_not_mem {a : α} {l : List α} (h : a ∉ l) :
-  length (insert a l) = length l + 1 := by
+  length (l.insert a) = length l + 1 := by
   rw [insert_of_not_mem h]; rfl
 
 end insert
@@ -1143,7 +1143,7 @@ variable [DecidableEq α]
 @[simp] theorem nil_union (l : List α) : nil.union l = l := by simp [List.union, foldr]
 
 @[simp] theorem cons_union (a : α) (l₁ l₂ : List α) :
-  (a :: l₁).union l₂ = insert a (l₁.union l₂) := by simp [List.union, foldr]
+  (a :: l₁).union l₂ = (l₁.union l₂).insert a := by simp [List.union, foldr]
 
 @[simp] theorem mem_union_iff [DecidableEq α] {x : α} {l₁ l₂ : List α} :
     x ∈ l₁.union l₂ ↔ x ∈ l₁ ∨ x ∈ l₂ := by
@@ -1201,15 +1201,14 @@ List.decidablePairwise
 
 /-- pad `l : List α` with repeated occurrences of `a : α` until it's of length `n`.
   If `l` is initially larger than `n`, just return `l`. -/
-def leftpad (n : ℕ) (a : α) (l : List α) : List α :=
-repeat' a (n - length l) ++ l
+def leftpad (n : ℕ) (a : α) (l : List α) : List α := replicate (n - length l) a ++ l
 
 /-- The length of the List returned by `List.leftpad n a l` is equal
   to the larger of `n` and `l.length` -/
 theorem leftpad_length (n : ℕ) (a : α) (l : List α) : (leftpad n a l).length = max n l.length :=
-by simp only [leftpad, length_append, length_repeat', Nat.sub_add_eq_max]
+by simp only [leftpad, length_append, length_replicate, Nat.sub_add_eq_max]
 
-theorem leftpad_prefix (n : ℕ) (a : α) (l : List α) : isPrefix (repeat' a (n - length l)) (leftpad n a l) :=
+theorem leftpad_prefix (n : ℕ) (a : α) (l : List α) : isPrefix (replicate (n - length l) a) (leftpad n a l) :=
 by
   simp only [isPrefix, leftpad]
   exact Exists.intro l rfl
@@ -1217,6 +1216,6 @@ by
 theorem leftpad_suffix (n : ℕ) (a : α) (l : List α) : isSuffix l (leftpad n a l) :=
 by
   simp only [isSuffix, leftpad]
-  exact Exists.intro (repeat' a (n - length l)) rfl
+  exact Exists.intro (replicate (n - length l) a) rfl
 
 end List

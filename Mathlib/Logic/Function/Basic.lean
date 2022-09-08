@@ -3,13 +3,13 @@ Copyright (c) 2016 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Std.Classes.SetNotation
+import Std.Tactic.Lint.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Logic.Basic
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
 import Mathlib.Init.Set
-import Mathlib.Init.SetNotation
-import Std.Tactic.Lint.Basic
 
 universe u v w
 

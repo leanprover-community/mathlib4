@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
 import Lean
-import Mathlib.Init.Data.List.Instances
+import Std.Data.List.Basic
 import Mathlib.Init.Data.Nat.Basic
 
 /-!

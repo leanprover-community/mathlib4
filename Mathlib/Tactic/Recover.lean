@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Siddhartha Gadgil, Jannis Limperg
 -/
 import Lean
+import Std.Tactic.RCases
 import Mathlib.Tactic.Cache
-import Mathlib.Tactic.RCases
 
 open Std (HashSet)
 open Lean Meta Elab Tactic
@@ -40,14 +40,14 @@ partial def getUnassignedGoalMVarDependencies (mvarId : MVarId) :
       let mut s ← get
       set ({} : HashSet MVarId) -- Ensure that `s` is not shared.
       for mvarId in mvars do
-        unless ← isMVarDelayedAssigned mvarId do
+        unless ← mvarId.isDelayedAssigned do
           s := s.insert mvarId
       set s
       mvars.forM go
     /-- auxiliary function for `getUnassignedGoalMVarDependencies` -/
     go (mvarId : MVarId) : StateRefT (HashSet MVarId) MetaM Unit :=
       withIncRecDepth do
-        let mdecl ← getMVarDecl mvarId
+        let mdecl ← mvarId.getDecl
         addMVars mdecl.type
         for ldecl in mdecl.lctx do
           addMVars ldecl.type
@@ -55,8 +55,7 @@ partial def getUnassignedGoalMVarDependencies (mvarId : MVarId) :
             addMVars val
         if let (some ass) ← getDelayedMVarAssignment? mvarId then
           let pendingMVarId := ass.mvarIdPending
-          if ! (← isExprMVarAssigned pendingMVarId) &&
-             ! (← isMVarDelayedAssigned pendingMVarId) then
+          unless ← pendingMVarId.isAssigned <||> pendingMVarId.isDelayedAssigned do
             modify (·.insert pendingMVarId)
           go pendingMVarId
 
@@ -68,10 +67,8 @@ elab "recover" tacs:tacticSeq : tactic => do
   evalTactic tacs
   let mut unassigned : HashSet MVarId := {}
   for mvarId in originalGoals do
-    unless ← isExprMVarAssigned mvarId <||> isMVarDelayedAssigned mvarId do
+    unless ← mvarId.isAssigned <||> mvarId.isDelayedAssigned do
       unassigned := unassigned.insert mvarId
-    let unassignedMVarDependencies ←
-        getUnassignedGoalMVarDependencies mvarId
-    unassigned :=
-            unassigned.insertMany unassignedMVarDependencies.toList
+    let unassignedMVarDependencies ← getUnassignedGoalMVarDependencies mvarId
+    unassigned := unassigned.insertMany unassignedMVarDependencies.toList
   setGoals <| ((← getGoals) ++ unassigned.toList).eraseDups
