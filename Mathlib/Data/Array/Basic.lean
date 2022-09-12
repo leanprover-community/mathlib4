@@ -18,7 +18,7 @@ macro_rules | `($x[$i]'$h) => `(getElem $x $i $h)
 | a::as, r => (toArrayAux_data as (r.push a)).trans $
   by simp [Array.push, append_assoc, List.concat_eq_append]
 
-@[simp] theorem List.toArray_data (l : List α) : l.toArray.data = l := toArrayAux_data _ _
+alias Array.data_toArray ← List.toArray_data
 
 theorem getElem?_pos [GetElem Cont Idx Elem Dom] (a : Cont) (i : Idx) (h : Dom a i) [Decidable (Dom a i)] :
     a[i]? = a[i] :=
@@ -94,9 +94,6 @@ lemma get?_set (a : Array α) (i j : Nat) (hi : i < a.size) (v : α) :
 lemma get_set (a : Array α) (i j : Nat) (hi : i < a.size) (hj : j < a.size) (v : α) :
     (a.set ⟨i, hi⟩ v)[j]'(by simp_all) = if i = j then v else a[j] := by
   by_cases i = j <;> simp [*]
-
-@[simp]
-theorem size_mkEmpty : (mkEmpty n : Array α).size = 0 := rfl
 
 @[simp]
 theorem size_mapIdxM_map (as : Array α) (bs : Array β) (f : Fin as.size → α → Id β) (i j h) (hj : j = bs.size) :
