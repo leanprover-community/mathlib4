@@ -99,6 +99,8 @@ The left-to-right direction, double negation elimination (DNE),
 is classically true but not constructively. -/
 @[simp] theorem not_not : ¬¬a ↔ a := Decidable.not_not
 
+theorem not_ne_iff {a b : α} : ¬a ≠ b ↔ a = b := not_not
+
 theorem of_not_not : ¬¬a → a := by_contra
 theorem of_not_imp : ¬ (a → b) → a := Decidable.of_not_imp
 
@@ -141,6 +143,9 @@ theorem or_of_or_of_imp_right (h₁ : c ∨ a) (h : a → b) : c ∨ b := Or.imp
 theorem Or.elim3 (h : a ∨ b ∨ c) (ha : a → d) (hb : b → d) (hc : c → d) : d :=
   h.elim ha fun h₂ => h₂.elim hb hc
 
+theorem Or.imp3 (had : a → d) (hbe : b → e) (hcf : c → f) : a ∨ b ∨ c → d ∨ e ∨ f :=
+  .imp had <| .imp hbe hcf
+
 alias or_imp ← or_imp_distrib
 
 theorem or_iff_not_imp_left : a ∨ b ↔ (¬ a → b) := Decidable.or_iff_not_imp_left
@@ -160,6 +165,7 @@ lemma iff_mpr_iff_true_intro {P : Prop} (h : P) : Iff.mpr (iff_true_intro h) Tru
 
 theorem not_or_of_imp : (a → b) → ¬ a ∨ b := Decidable.not_or_of_imp
 theorem imp_iff_not_or : (a → b) ↔ (¬ a ∨ b) := Decidable.imp_iff_not_or
+theorem imp_iff_or_not : b → a ↔ a ∨ ¬b := Decidable.imp_iff_or_not
 
 alias Decidable.imp_or ← Decidable.imp_or_distrib
 alias Decidable.imp_or' ← Decidable.imp_or_distrib'
@@ -191,6 +197,10 @@ alias not_or ← not_or_distrib
 
 theorem or_iff_not_and_not : a ∨ b ↔ ¬ (¬a ∧ ¬b) := Decidable.or_iff_not_and_not
 theorem and_iff_not_or_not : a ∧ b ↔ ¬ (¬ a ∨ ¬ b) := Decidable.and_iff_not_or_not
+@[simp] theorem imp_iff_right_iff : (a → b ↔ b) ↔ a ∨ b := Decidable.imp_iff_right_iff
+@[simp] theorem and_or_imp : a ∧ b ∨ (a → c) ↔ a → b ∨ c := Decidable.and_or_imp
+theorem or_congr_left' (h : ¬c → (a ↔ b)) : a ∨ c ↔ b ∨ c := Decidable.or_congr_left' h
+theorem or_congr_right' (h : ¬a → (b ↔ c)) : a ∨ b ↔ a ∨ c := Decidable.or_congr_right' h
 
 end propositional
 

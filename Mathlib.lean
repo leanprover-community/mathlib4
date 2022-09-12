@@ -14,7 +14,6 @@ import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Card
-import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Perm
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Option.Basic

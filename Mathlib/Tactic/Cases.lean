@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 import Lean
 import Std.Tactic.OpenPrivate
-import Mathlib.Data.List.Defs
+import Std.Data.List.Basic
 
 /-!
 
