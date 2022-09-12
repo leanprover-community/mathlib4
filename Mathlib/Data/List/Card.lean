@@ -156,7 +156,7 @@ theorem card_map_eq_of_inj_on {f : α → β} {as : List α} :
       intro inj_on'
       cases (exists_of_mem_map h) with
       | intro x hx =>
-        have : x = a := inj_on' (mem_cons_of_mem _ hx.1) (mem_cons_self ..) hx.2
+        have : a = x := inj_on' (mem_cons_self ..) (mem_cons_of_mem _ hx.1) hx.2
         have h1 : a ∈ as := this ▸ hx.1
         have h2 : inj_on f as := inj_on_of_subset inj_on' (subset_cons _ _)
         simp  [h1, mem_map_of_mem f h1, ih h2]

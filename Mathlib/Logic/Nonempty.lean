@@ -74,9 +74,6 @@ theorem nonempty_psigma {β : α → Sort v} : Nonempty (PSigma β) ↔ ∃ a : 
   Iff.intro (fun ⟨⟨a, c⟩⟩ => ⟨a, ⟨c⟩⟩) fun ⟨a, ⟨c⟩⟩ => ⟨⟨a, c⟩⟩
 
 @[simp]
-theorem nonempty_empty : ¬Nonempty Empty := fun.
-
-@[simp]
 theorem nonempty_ulift : Nonempty (ULift α) ↔ Nonempty α :=
   Iff.intro (fun ⟨⟨a⟩⟩ => ⟨a⟩) fun ⟨a⟩ => ⟨⟨a⟩⟩
 

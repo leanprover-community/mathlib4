@@ -18,7 +18,7 @@ macro_rules | `($x[$i]'$h) => `(getElem $x $i $h)
 | a::as, r => (toArrayAux_data as (r.push a)).trans $
   by simp [Array.push, append_assoc, List.concat_eq_append]
 
-@[simp] theorem List.toArray_data (l : List α) : l.toArray.data = l := toArrayAux_data _ _
+alias Array.data_toArray ← List.toArray_data
 
 theorem getElem?_pos [GetElem Cont Idx Elem Dom] (a : Cont) (i : Idx) (h : Dom a i) [Decidable (Dom a i)] :
     a[i]? = a[i] :=
@@ -96,9 +96,6 @@ lemma get_set (a : Array α) (i j : Nat) (hi : i < a.size) (hj : j < a.size) (v 
   by_cases i = j <;> simp [*]
 
 @[simp]
-theorem size_mkEmpty : (mkEmpty n : Array α).size = 0 := rfl
-
-@[simp]
 theorem size_mapIdxM_map (as : Array α) (bs : Array β) (f : Fin as.size → α → Id β) (i j h) (hj : j = bs.size) :
     (Array.mapIdxM.map as f i j h bs).size = as.size := by
   induction i generalizing j bs
@@ -166,29 +163,29 @@ theorem size_reverse (a : Array α) : a.reverse.size = a.size := by
   simp only [reverse, this]
 
 @[simp]
-theorem size_ofFn_loop (n) (f : Fin n → α) (i acc) : (ofFn.loop n f i acc).size = acc.size + (n - i) :=
+theorem size_ofFn_loop (n) (f : Fin n → α) (i acc) : (ofFn.go f i acc).size = acc.size + (n - i) :=
   if hin : i < n then by
-    unfold ofFn.loop
+    unfold ofFn.go
     have : 1 + (n - (i + 1)) = n - i :=
       Nat.sub_sub .. ▸ Nat.add_sub_cancel' (Nat.le_sub_of_add_le (Nat.add_comm .. ▸ hin))
     rw [dif_pos hin, size_ofFn_loop n f (i+1), size_push, Nat.add_assoc, this]
   else by
     have : n - i = 0 := Nat.sub_eq_zero_of_le (le_of_not_lt hin)
-    unfold ofFn.loop
+    unfold ofFn.go
     simp [hin, this]
 termination_by size_ofFn_loop n f i acc => n - i
 
 @[simp]
-theorem size_ofFn (f : Fin n → α) : (ofFn n f).size = n := by
+theorem size_ofFn (f : Fin n → α) : (ofFn f).size = n := by
   simp [ofFn]
 
 @[simp]
 theorem getElem_ofFn_loop (n) (f : Fin n → α) (i acc) (k : Nat) (hki : k < n) (hin : i ≤ n) (hi : i = acc.size)
     (hacc : ∀ j, ∀ hj : j < acc.size, acc[j] = f ⟨j, lt_of_lt_of_le hj (by simp_all)⟩) :
     haveI : acc.size + (n - acc.size) = n := Nat.add_sub_cancel' (hi ▸ hin)
-    (ofFn.loop n f i acc)[k]'(by simp_all) = f ⟨k, hki⟩ :=
+    (ofFn.go f i acc)[k]'(by simp_all) = f ⟨k, hki⟩ :=
   if hin : i < n then by
-    unfold ofFn.loop
+    unfold ofFn.go
     have : 1 + (n - (i + 1)) = n - i :=
       Nat.sub_sub .. ▸ Nat.add_sub_cancel' (Nat.le_sub_of_add_le (Nat.add_comm .. ▸ hin))
     simp only [dif_pos hin]
@@ -197,13 +194,13 @@ theorem getElem_ofFn_loop (n) (f : Fin n → α) (i acc) (k : Nat) (hki : k < n)
     case inl hj => simp [get_push, hj, hacc j hj]
     case inr hj => simp_all [get_push]
   else by
-    unfold ofFn.loop
+    unfold ofFn.go
     simp [hin, hacc k (lt_of_lt_of_le hki (le_of_not_gt (hi ▸ hin)))]
 termination_by
   getElem_ofFn_loop n f i acc k hki hin hi hacc => n - i
 
 @[simp]
-theorem getElem_ofFn (f : Fin n → α) (i : Nat) (h) : (ofFn n f)[i] = f ⟨i, by simp_all⟩ := by
+theorem getElem_ofFn (f : Fin n → α) (i : Nat) (h) : (ofFn f)[i] = f ⟨i, by simp_all⟩ := by
   unfold ofFn
   rw [getElem_ofFn_loop] <;> try {simp}
   · intro j hj; simp at hj; contradiction
