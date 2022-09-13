@@ -334,24 +334,6 @@ syntax termList := " [" term,* "]"
 
 /- S -/ syntax (name := squeezeScope) "squeeze_scope " tacticSeq : tactic
 
-syntax squeezeSimpArgsRest := (config)? (discharger)? (&" only")? (simpArgs)? (ppSpace location)?
-/- S -/ syntax "squeeze_simp" "!"? "?"? squeezeSimpArgsRest : tactic
-macro "squeeze_simp?" rest:squeezeSimpArgsRest : tactic =>
-  `(tactic| squeeze_simp ? $rest:squeezeSimpArgsRest)
-macro "squeeze_simp!" rest:squeezeSimpArgsRest : tactic =>
-  `(tactic| squeeze_simp ! $rest:squeezeSimpArgsRest)
-macro "squeeze_simp!?" rest:squeezeSimpArgsRest : tactic =>
-  `(tactic| squeeze_simp !? $rest:squeezeSimpArgsRest)
-
-syntax squeezeDSimpArgsRest := (config)? (&" only")? (dsimpArgs)? (ppSpace location)?
-/- S -/ syntax "squeeze_dsimp" "!"? "?"? squeezeDSimpArgsRest : tactic
-macro "squeeze_dsimp?" rest:squeezeDSimpArgsRest : tactic =>
-  `(tactic| squeeze_dsimp ? $rest:squeezeDSimpArgsRest)
-macro "squeeze_dsimp!" rest:squeezeDSimpArgsRest : tactic =>
-  `(tactic| squeeze_dsimp ! $rest:squeezeDSimpArgsRest)
-macro "squeeze_dsimp!?" rest:squeezeDSimpArgsRest : tactic =>
-  `(tactic| squeeze_dsimp !? $rest:squeezeDSimpArgsRest)
-
 /- S -/ syntax (name := suggest) "suggest" (config)? (ppSpace num)?
   (simpArgs)? (" using " (colGt binderIdent)+)? : tactic
 
