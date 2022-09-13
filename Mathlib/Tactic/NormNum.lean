@@ -224,7 +224,7 @@ namespace Tactic
 open Lean.Parser.Tactic
 
 /-- Normalize numerical expressions. -/
-elab "norm_num" args:(("[" simpArg,* "]")?) loc:(location ?) : tactic =>
+elab "norm_num" args:(simpArgs ?) loc:(location ?) : tactic =>
   withOptions (·.setBool `norm_num.nosimp false)
   <| Meta.NormNum.elabNormNum args loc
 
