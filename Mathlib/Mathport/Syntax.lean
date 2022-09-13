@@ -263,9 +263,9 @@ end Conv
   (" with " binderIdent)? : tactic
 /- M -/ syntax (name := hGeneralize!) "h_generalize! " atomic(binderIdent " : ")? term:51 " = " ident
   (" with " binderIdent)? : tactic
-/- M -/ syntax (name := extractGoal) "extract_goal" (ppSpace ident)?
+/- S -/ syntax (name := extractGoal) "extract_goal" (ppSpace ident)?
   (" with" (ppSpace (colGt ident))*)? : tactic
-/- M -/ syntax (name := extractGoal!) "extract_goal!" (ppSpace ident)?
+/- S -/ syntax (name := extractGoal!) "extract_goal!" (ppSpace ident)?
   (" with" (ppSpace (colGt ident))*)? : tactic
 /- E -/ syntax (name := revertDeps) "revert_deps" (ppSpace colGt ident)* : tactic
 /- E -/ syntax (name := revertAfter) "revert_after " ident : tactic
@@ -274,7 +274,7 @@ end Conv
 
 /- M -/ syntax (name := applyAssumption) "apply_assumption" : tactic
 
-/- B -/ syntax (name := hint) "hint" : tactic
+/- S -/ syntax (name := hint) "hint" : tactic
 
 /- B -/ syntax (name := choose) "choose" (ppSpace colGt ident)+ (" using " term)? : tactic
 /- B -/ syntax (name := choose!) "choose!" (ppSpace colGt ident)+ (" using " term)? : tactic
@@ -448,8 +448,8 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- E -/ syntax (name := nthRwLHS) "nth_rw_lhs " num rwRuleSeq (ppSpace location)? : tactic
 /- E -/ syntax (name := nthRwRHS) "nth_rw_rhs " num rwRuleSeq (ppSpace location)? : tactic
 
-/- B -/ syntax (name := rwSearch) "rw_search " (config)? rwRuleSeq : tactic
-/- B -/ syntax (name := rwSearch?) "rw_search? " (config)? rwRuleSeq : tactic
+/- S -/ syntax (name := rwSearch) "rw_search " (config)? rwRuleSeq : tactic
+/- S -/ syntax (name := rwSearch?) "rw_search? " (config)? rwRuleSeq : tactic
 
 /- M -/ syntax (name := piInstanceDeriveField) "pi_instance_derive_field" : tactic
 /- M -/ syntax (name := piInstance) "pi_instance" : tactic
