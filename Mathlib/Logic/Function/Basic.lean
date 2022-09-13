@@ -3,12 +3,13 @@ Copyright (c) 2016 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Std.Classes.SetNotation
+import Std.Tactic.Lint.Basic
+import Mathlib.Data.Option.Defs
 import Mathlib.Logic.Basic
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
 import Mathlib.Init.Set
-import Mathlib.Init.SetNotation
-import Mathlib.Tactic.Lint.Basic
 
 universe u v w
 
@@ -93,27 +94,12 @@ lemma injective.dite (p : α → Prop) [DecidablePred p]
   (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) :
   Function.injective (λ x => if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) :=
 by intros x₁ x₂ h
-   --TODO mathlib3 uses dsimp here
-   have hrw1 : (fun (x : α) => if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) x₁ =
-                if h : p x₁ then f ⟨x₁, h⟩ else f' ⟨x₁, h⟩ := rfl
-   have hrw2 : (fun (x : α) => if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) x₂ =
-               if h : p x₂ then f ⟨x₂, h⟩ else f' ⟨x₂, h⟩ := rfl
-   rw [hrw1, hrw2] at h
-   exact Decidable.byCases
-     (λ (h₁ : p x₁) =>
-       Decidable.byCases
-         (λ (h₂ : p x₂) => by rw [dif_pos h₁, dif_pos h₂] at h
-                              injection (hf h)
-                              assumption)
-         (λ (h₂ : ¬ p x₂) => by rw [dif_pos h₁, dif_neg h₂] at h
-                                exact (im_disj h).elim))
-     (λ (h₁ : ¬ p x₁) =>
-       Decidable.byCases
-         (λ (h₂ : p x₂) => by rw [dif_neg h₁, dif_pos h₂] at h
-                              exact (im_disj h.symm).elim)
-         (λ (h₂ : ¬ p x₂) => by rw [dif_neg h₁, dif_neg h₂] at h
-                                injection (hf' h)
-                                assumption))
+   dsimp only at h
+   by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
+   · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h); assumption
+   · rw [dif_pos h₁, dif_neg h₂] at h; exact (im_disj h).elim
+   · rw [dif_neg h₁, dif_pos h₂] at h; exact (im_disj h.symm).elim
+   · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h); assumption
 
 lemma surjective.of_comp {g : γ → α} (S : surjective (f ∘ g)) : surjective f :=
 λ y => let ⟨x, h⟩ := S y
@@ -205,9 +191,8 @@ theorem is_partial_inv_left {α β} {f : α → β} {g} (H : is_partial_inv f g)
 theorem injective_of_partial_inv {α β} {f : α → β} {g} (H : is_partial_inv f g) : injective f :=
 λ _ _ h => Option.some.inj $ ((H _ _).2 h).symm.trans ((H _ _).2 rfl)
 
--- TODO mathlib3 uses Mem here
 theorem injective_of_partial_inv_right {α β} {f : α → β} {g} (H : is_partial_inv f g)
- (x y b) (h₁ : g x = some b) (h₂ : g y = some b) : x = y :=
+ (x y b) (h₁ : b ∈ g x) (h₂ : b ∈ g y) : x = y :=
 ((H _ _).1 h₁).symm.trans ((H _ _).1 h₂)
 
 theorem LeftInverse.comp_eq_id {f : α → β} {g : β → α} (h : LeftInverse f g) : f ∘ g = id :=

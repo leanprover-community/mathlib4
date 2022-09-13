@@ -5,7 +5,13 @@ Authors: Gabriel Ebner
 -/
 
 import Lean
-import Mathlib.Tactic.OpenPrivate
+import Std.Tactic.OpenPrivate
+
+/-!
+# Helper functions for the `norm_cast` tactic.
+
+[TODO] Needs documentation, cleanup, and possibly reunification of `mkSimpContext'` with core.
+-/
 
 def Std.PHashSet.toList [BEq α] [Hashable α] (s : Std.PHashSet α) : List α :=
   s.1.toList.map (·.1)
@@ -88,7 +94,7 @@ def mkSimpContext' (simpTheorems : SimpTheorems) (stx : Syntax) (eraseLocal : Bo
     let mut ctx := ctx
     let mut fvarIdToLemmaId := {}
     for h in hs do
-      let localDecl ← getLocalDecl h
+      let localDecl ← h.getDecl
       unless simpTheorems.isErased localDecl.userName do
         let fvarId := localDecl.fvarId
         let proof  := localDecl.toExpr

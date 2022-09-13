@@ -49,7 +49,7 @@ theorem Perm.subset {α : Type u} {l₁ l₂ : List α} (p : l₁ ~ l₂) : l₁
     | Or.inl rfl => Mem.tail _ (Mem.head ..)
     | Or.inr (Mem.head ..) => Mem.head ..
     | Or.inr (Mem.tail _ a_mem_l) => Mem.tail _ (Mem.tail _ a_mem_l)
-  | trans _ _ ih₁ ih₂ => exact subset.trans ih₁ ih₂
+  | trans _ _ ih₁ ih₂ => exact Subset.trans ih₁ ih₂
 
 theorem perm_middle {a : α} : ∀ {l₁ l₂ : List α}, l₁++a::l₂ ~ a::(l₁++l₂)
 | [], _ => Perm.refl _

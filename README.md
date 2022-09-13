@@ -18,6 +18,7 @@ and the "real" port hasn't started yet
 
 # Build instructions
 
+* Make sure Lean is not running, and close all instances of VSCode running Lean processes.
 * Get the newest version of `elan`. If you already have installed a version of Lean, you can run
   ```
   elan self update
@@ -32,3 +33,9 @@ and the "real" port hasn't started yet
   ```
   find Mathlib -name "*.lean" | env LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
   ```
+## Building HTML documentation
+Building HTML documentation locally is straightforward:
+```
+lake -Kdoc=on build Mathlib:docs
+```
+The HTML files can then be found in `build/doc`.
