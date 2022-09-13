@@ -28,6 +28,8 @@ set -exo pipefail
 #    Exceptions are maintained in `scripts/style-exceptions.txt`.
 # 2. The remainder of this shell script
 #    contains some lints on the global repository.
+#
+# TODO: This is adapted from the linter for mathlib3. It should be rewritten in Lean.
 
 ################################################################################
 

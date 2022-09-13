@@ -71,8 +71,6 @@ Mathlib/Data/List/Basic.lean : line 528 : ERR_LIN : Line has more than 100 chara
 Mathlib/Data/List/Basic.lean : line 6 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/List/Basic.lean : line 7 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/List/Basic.lean : line 8 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/List/Basic.lean : line 904 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Data/List/Basic.lean : line 907 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Data/List/Card.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/List/Card.lean : line 12 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/List/Card.lean : line 2 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
@@ -184,13 +182,7 @@ Mathlib/Lean/LocalContext.lean : line 1 : ERR_COP : Malformed or missing copyrig
 Mathlib/Lean/LocalContext.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Lean/LocalContext.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/NameMapAttribute.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Lean/NameMapAttribute.lean : line 28 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Lean/NameMapAttribute.lean : line 35 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Lean/NameMapAttribute.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
-Mathlib/Lean/NameMapAttribute.lean : line 59 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Lean/NameMapAttribute.lean : line 65 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Lean/NameMapAttribute.lean : line 66 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Lean/NameMapAttribute.lean : line 69 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Lean/NameMapAttribute.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Logic/Basic.lean : line 12 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Logic/Basic.lean : line 217 : ERR_LIN : Line has more than 100 characters
@@ -199,8 +191,6 @@ Mathlib/Logic/Function/Basic.lean : line 13 : ERR_MOD : Module docstring missing
 Mathlib/Logic/Function/Basic.lean : line 264 : ERR_LIN : Line has more than 100 characters
 Mathlib/Logic/Nonempty.lean : line 95 : ERR_LIN : Line has more than 100 characters
 Mathlib/Mathport/Attributes.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Mathport/Rename.lean : line 20 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Mathport/Rename.lean : line 24 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Mathport/Rename.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Mathport/SpecialNames.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Mathport/Syntax.lean : line 178 : ERR_LIN : Line has more than 100 characters
@@ -218,12 +208,6 @@ Mathlib/Mathport/Syntax.lean : line 503 : ERR_LIN : Line has more than 100 chara
 Mathlib/Mathport/Syntax.lean : line 582 : ERR_LIN : Line has more than 100 characters
 Mathlib/Mathport/Syntax.lean : line 586 : ERR_LIN : Line has more than 100 characters
 Mathlib/Mathport/Syntax.lean : line 85 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/Alias.lean : line 120 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Alias.lean : line 125 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Alias.lean : line 85 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Alias.lean : line 88 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Alias.lean : line 90 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Alias.lean : line 93 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/Basic.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/Basic.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Tactic/Basic.lean : line 9 : ERR_MOD : Module docstring missing, or too late
@@ -252,16 +236,9 @@ Mathlib/Tactic/Core.lean : line 10 : ERR_MOD : Module docstring missing, or too 
 Mathlib/Tactic/Expect.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Ext.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/Ext.lean : line 10 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Ext.lean : line 101 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Ext.lean : line 108 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Ext.lean : line 112 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/Ext.lean : line 133 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/Ext.lean : line 15 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/Ext.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
-Mathlib/Tactic/Ext.lean : line 89 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Ext.lean : line 93 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Ext.lean : line 93 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Ext.lean : line 97 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/Find.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/Find.lean : line 115 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/Find.lean : line 120 : ERR_LIN : Line has more than 100 characters
@@ -283,22 +260,13 @@ Mathlib/Tactic/LibrarySearch.lean : line 1 : ERR_COP : Malformed or missing copy
 Mathlib/Tactic/LibrarySearch.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Tactic/Lint/Basic.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Lint/Basic.lean : line 22 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/Lint/Basic.lean : line 32 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Lint/Basic.lean : line 40 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Lint/Frontend.lean : line 162 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Lint/Frontend.lean : line 162 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Lint/Frontend.lean : line 164 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Lint/Frontend.lean : line 227 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/Lint/Frontend.lean : line 37 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/Lint/Misc.lean : line 121 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/Lint/Misc.lean : line 232 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/Lint/Misc.lean : line 235 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/Lint/Misc.lean : line 262 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/Lint/Misc.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Lint/Simp.lean : line 100 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/Lint/Simp.lean : line 40 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/Lint/Simp.lean : line 45 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Lint/Simp.lean : line 48 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/Lint/Simp.lean : line 58 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/Lint/Simp.lean : line 59 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/Lint/Simp.lean : line 9 : ERR_MOD : Module docstring missing, or too late
@@ -309,31 +277,15 @@ Mathlib/Tactic/NormCast/CoeExt.lean : line 1 : ERR_COP : Malformed or missing co
 Mathlib/Tactic/NormCast/CoeExt.lean : line 2 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/NormCast/CoeExt.lean : line 2 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/NormCast/CoeExt.lean : line 25 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/NormCast/CoeExt.lean : line 28 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/NormCast/CoeExt.lean : line 32 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/NormCast/CoeExt.lean : line 58 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/NormCast/CoeExt.lean : line 65 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/NormCast/CoeExt.lean : line 81 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/NormCast/CoeExt.lean : line 88 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/NormCast/Ext.lean : line 103 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/NormCast/Ext.lean : line 11 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/NormCast/Ext.lean : line 193 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/NormCast/Ext.lean : line 205 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/NormCast/Ext.lean : line 70 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/NormCast/Ext.lean : line 77 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/NormCast/Ext.lean : line 85 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/NormCast/Ext.lean : line 99 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/NormCast/Lemmas.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/NormCast/Tactic.lean : line 13 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/NormCast/Tactic.lean : line 146 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/NormCast/Tactic.lean : line 152 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/NormCast/Tactic.lean : line 170 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/NormCast/Tactic.lean : line 173 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/NormCast/Tactic.lean : line 253 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/NormNum.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/OpenPrivate.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Tactic/OpenPrivate.lean : line 111 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/OpenPrivate.lean : line 118 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/OpenPrivate.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Tactic/OpenPrivate.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/PermuteGoals.lean : line 1 : ERR_COP : Malformed or missing copyright header
@@ -351,13 +303,7 @@ Mathlib/Tactic/RunTac.lean : line 1 : ERR_COP : Malformed or missing copyright h
 Mathlib/Tactic/RunTac.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Tactic/RunTac.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Sat/FromLRAT.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Tactic/Sat/FromLRAT.lean : line 323 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Sat/FromLRAT.lean : line 327 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/Sat/FromLRAT.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
-Mathlib/Tactic/Sat/FromLRAT.lean : line 545 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Sat/FromLRAT.lean : line 552 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Sat/FromLRAT.lean : line 558 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Sat/FromLRAT.lean : line 563 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/SeqFocus.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/SeqFocus.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Tactic/SeqFocus.lean : line 8 : ERR_MOD : Module docstring missing, or too late
@@ -370,13 +316,9 @@ Mathlib/Tactic/ShowTerm.lean : line 9 : ERR_MOD : Module docstring missing, or t
 Mathlib/Tactic/SimpRw.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Simpa.lean : line 24 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/Simpa.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Simps.lean : line 51 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Simps.lean : line 58 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/SolveByElim.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/SolveByElim.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Tactic/Spread.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Tactic/Spread.lean : line 17 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/Spread.lean : line 19 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/Spread.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Tactic/Spread.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/SudoSetOption.lean : line 8 : ERR_MOD : Module docstring missing, or too late
@@ -385,20 +327,11 @@ Mathlib/Tactic/ToAdditive.lean : line 15 : ERR_MOD : Module docstring missing, o
 Mathlib/Tactic/ToAdditive.lean : line 180 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/ToAdditive.lean : line 187 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/ToAdditive.lean : line 252 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/ToAdditive.lean : line 31 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/ToAdditive.lean : line 33 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/ToAdditive.lean : line 39 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/ToAdditive.lean : line 418 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/ToAdditive.lean : line 456 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/ToAdditive.lean : line 48 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/ToAdditive.lean : line 50 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/ToAdditive.lean : line 52 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/ToAdditive.lean : line 54 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/ToAdditive.lean : line 66 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/ToAdditive.lean : line 662 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/ToAdditive.lean : line 68 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/ToAdditive.lean : line 690 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Tactic/ToAdditive.lean : line 72 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Tactic/Trace.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/Trace.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Tactic/Trace.lean : line 8 : ERR_MOD : Module docstring missing, or too late
@@ -430,20 +363,14 @@ Mathlib/Util/Export.lean : line 1 : ERR_COP : Malformed or missing copyright hea
 Mathlib/Util/Export.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Util/Export.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Util/IncludeStr.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Util/LibraryNote.lean : line 15 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Util/LibraryNote.lean : line 19 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Util/LibraryNote.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Util/MemoFix.lean : line 15 : ERR_LIN : Line has more than 100 characters
 Mathlib/Util/MemoFix.lean : line 25 : ERR_LIN : Line has more than 100 characters
 Mathlib/Util/MemoFix.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Util/Simp.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Util/Simp.lean : line 63 : ERR_LIN : Line has more than 100 characters
-Mathlib/Util/Simp.lean : line 78 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Util/Simp.lean : line 81 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Util/Syntax.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Util/Tactic.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Util/TermUnsafe.lean : line 38 : WRN_BRC : Probable misformatting of curly braces
-Mathlib/Util/TermUnsafe.lean : line 45 : WRN_BRC : Probable misformatting of curly braces
 Mathlib/Util/Time.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Util/WhatsNew.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Util/WhatsNew.lean : line 36 : ERR_LIN : Line has more than 100 characters

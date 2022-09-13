@@ -28,6 +28,8 @@ exceptions by redirecting the output to ``style-exceptions.txt``:
     $ ./scripts/lint-style.py $(find src archive -name '*.lean') > scripts/style-exceptions.txt
 """
 
+# TODO: This is adapted from the linter for mathlib3. It should be rewritten in Lean.
+
 from pathlib import Path
 import sys
 import re
@@ -42,8 +44,6 @@ ERR_OPT = 6 # set_option
 ERR_AUT = 7 # malformed authors list
 ERR_TAC = 9 # imported tactic{,.omega,.observe}
 ERR_UNF = 10 # unfreeze_local_instances
-WRN_IND = 11 # indentation
-WRN_BRC = 12 # curly braces
 
 exceptions = []
 
@@ -74,8 +74,6 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
             exceptions += [(ERR_AUT, path)]
         if errno == "ERR_TAC":
             exceptions += [(ERR_TAC, path)]
-        if errno == "ERR_UNF":
-            exceptions += [(ERR_UNF, path)]
 
 new_exceptions = False
 
@@ -283,12 +281,6 @@ def lint(path):
         errs = set_option_check(lines, path)
         format_errors(errs)
         errs = import_omega_check(lines, path)
-        format_errors(errs)
-        errs = indent_check(lines, path)
-        format_errors(errs)
-        errs = braces_check(lines, path)
-        format_errors(errs)
-        errs = unfreeze_local_instances_check(lines, path)
         format_errors(errs)
 
 for filename in sys.argv[1:]:
