@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Tactic.NoMatch
+import Std.Tactic.NoMatch
 
 /-!
 # Nonempty types
@@ -72,9 +72,6 @@ theorem nonempty_psum : Nonempty (PSum α β) ↔ Nonempty α ∨ Nonempty β :=
 @[simp]
 theorem nonempty_psigma {β : α → Sort v} : Nonempty (PSigma β) ↔ ∃ a : α, Nonempty (β a) :=
   Iff.intro (fun ⟨⟨a, c⟩⟩ => ⟨a, ⟨c⟩⟩) fun ⟨a, ⟨c⟩⟩ => ⟨⟨a, c⟩⟩
-
-@[simp]
-theorem nonempty_empty : ¬Nonempty Empty := fun.
 
 @[simp]
 theorem nonempty_ulift : Nonempty (ULift α) ↔ Nonempty α :=

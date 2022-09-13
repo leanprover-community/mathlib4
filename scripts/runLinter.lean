@@ -1,7 +1,7 @@
-import Mathlib.Tactic.Lint
+import Std.Tactic.Lint
 import Mathlib.Data.Array.Defs
 
-open Lean Core Elab Command Mathlib.Tactic.Lint
+open Lean Core Elab Command Std.Tactic.Lint
 
 abbrev NoLints := Array (Name × Name)
 
@@ -38,7 +38,7 @@ unsafe def main (args : List String) : IO Unit := do
     let ctx := {fileName := "", fileMap := default}
     let state := {env}
     Prod.fst <$> (CoreM.toIO · ctx state) do
-      let decls ← getDeclsInMathlib
+      let decls ← getDeclsInPackage `Mathlib
       let linters ← getChecks (slow := true) (extra := []) (useOnly := false)
       let results ← lintCore decls linters.toArray
       if update then

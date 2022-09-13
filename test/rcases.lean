@@ -1,5 +1,5 @@
+import Std.Tactic.RCases
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.RCases
 
 -- variable {α β γ : Type u}
 

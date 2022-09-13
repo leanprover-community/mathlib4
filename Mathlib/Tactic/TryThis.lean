@@ -30,7 +30,7 @@ partial def replaceMVarsByUnderscores [Monad m] [MonadQuotation m]
 def delabToRefinableSyntax (e : Expr) : TermElabM Term :=
   return ⟨← replaceMVarsByUnderscores (← delab e)⟩
 
-def addSuggestion [Monad m] [MonadLog m] [AddMessageContext m]
+def addSuggestion [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
     (origStx : Syntax) (suggestion : Syntax) : m Unit :=
   -- Use obscure Unicode characters to discourage editor implementations.
   logInfoAt origStx m!"𝔗𝔯𝔶 𝔱𝔥𝔦𝔰: {suggestion}"

@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul-Nicolas Madelaine, Robert Y. Lewis, Mario Carneiro, Gabriel Ebner
 -/
 
-import Mathlib.Tactic.NormCast.Ext
-import Mathlib.Tactic.OpenPrivate
+import Std.Tactic.NormCast.Ext
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Util.Simp
 import Mathlib.Algebra.Group.Defs
@@ -192,16 +191,16 @@ elab "mod_cast " e:term : term <= expectedType => do
 open Tactic Parser.Tactic Elab.Tactic
 
 def normCastTarget : TacticM Unit :=
-  liftMetaTactic1 fun mvarId => do
-    let tgt ← instantiateMVars (← getMVarType mvarId)
+  liftMetaTactic1 fun goal => do
+    let tgt ← instantiateMVars (← goal.getType)
     let prf ← derive tgt
-    applySimpResultToTarget mvarId tgt prf
+    applySimpResultToTarget goal tgt prf
 
 def normCastHyp (fvarId : FVarId) : TacticM Unit :=
-  liftMetaTactic1 fun mvarId => do
-    let hyp ← instantiateMVars (← getLocalDecl fvarId).type
+  liftMetaTactic1 fun goal => do
+    let hyp ← instantiateMVars (← fvarId.getDecl).type
     let prf ← derive hyp
-    return (← applySimpResultToLocalDecl mvarId fvarId prf false).map (·.snd)
+    return (← applySimpResultToLocalDecl goal fvarId prf false).map (·.snd)
 
 elab "norm_cast0" loc:((ppSpace location)?) : tactic =>
   withMainContext do
@@ -211,7 +210,7 @@ elab "norm_cast0" loc:((ppSpace location)?) : tactic =>
       (← getFVarIds hyps).forM normCastHyp
     | Location.wildcard =>
       normCastTarget
-      (← getNondepPropHyps (← getMainGoal)).forM normCastHyp
+      (← (← getMainGoal).getNondepPropHyps).forM normCastHyp
 
 /-- `assumption_mod_cast` runs `norm_cast` on the goal. For each local hypothesis `h`, it also
 normalizes `h` and tries to use that to close the goal. -/

@@ -6,6 +6,14 @@ Authors: Arthur Paulino
 
 import Mathlib.Util.Tactic
 
+/-!
+# Defines the `swap_var` tactic
+
+Swap the names of two hypotheses.
+-/
+
+open Lean Meta Elab.Tactic
+
 namespace Mathlib.Tactic
 
 /-- The parser for swap rules -/
@@ -23,10 +31,18 @@ example {P Q : Prop} (q : P) (p : Q) : P ∧ Q := by
   exact ⟨p, q⟩
 ```
 -/
-elab "swap_var " vars:(colGt swapRule),+ : tactic =>
-  modifyLocalContext fun ctx =>
-    vars.getElems.foldlM (init := ctx) fun ctx stx => do
-      let `(swapRule| $n₁:ident $[↔]? $n₂:ident) := stx | unreachable!
-      let (n₁, fvarId₁) ← getNameAndFVarId ctx n₁
-      let (n₂, fvarId₂) ← getNameAndFVarId ctx n₂
-      pure $ ctx.setUserName fvarId₁ n₂ |>.setUserName fvarId₂ n₁
+elab "swap_var " swapRules:(colGt swapRule),+ : tactic => do
+  let mvarId ← getMainGoal
+  let mdecl ← getMVarDecl mvarId
+  let localInstances := mdecl.localInstances
+  let lctx ← swapRules.getElems.foldlM (init := mdecl.lctx) fun lctx swapRule => do
+    withLCtx lctx localInstances do
+      let `(swapRule| $n₁:ident $[↔]? $n₂:ident) := swapRule
+        | unreachable!
+      let n₁ := n₁.getId
+      let n₂ := n₂.getId
+      let fvarId₁ := (← getLocalDeclFromUserName n₁).fvarId
+      let fvarId₂ := (← getLocalDeclFromUserName n₂).fvarId
+      return lctx.setUserName fvarId₁ n₂ |>.setUserName fvarId₂ n₁
+  let mdecl := { mdecl with lctx := lctx }
+  modifyMCtx fun mctx => { mctx with decls := mctx.decls.insert mvarId mdecl }

@@ -23,7 +23,7 @@ Iff.intro
   (fun h => ⟨fun _ xas => (h _).1 xas, fun _ xbs => (h _).2 xbs⟩)
   (fun ⟨h1, h2⟩ x => ⟨@h1 x, @h2 x⟩)
 
-theorem insert_equiv_cons [DecidableEq α] (a : α) (as : List α) : (insert a as).equiv (a :: as) :=
+theorem insert_equiv_cons [DecidableEq α] (a : α) (as : List α) : (as.insert a).equiv (a :: as) :=
   fun x => by simp
 
 theorem union_equiv_append [DecidableEq α] (as bs : List α) : (as.union bs).equiv (as ++ bs) :=
@@ -90,10 +90,10 @@ theorem card_le_card_cons (a : α) (as : List α) : card as ≤ card (a :: as) :
   | inr h => simp [h, Nat.le_succ]
 
 @[simp] theorem card_insert_of_mem {a : α} {as : List α} (h : a ∈ as) :
-    card (insert a as) = card as := by simp [h]
+    card (as.insert a) = card as := by simp [h]
 
 @[simp] theorem card_insert_of_not_mem {a : α} {as : List α} (h : a ∉ as) :
-    card (insert a as) = card as + 1 := by simp [h]
+    card (as.insert a) = card as + 1 := by simp [h]
 
 theorem card_remove_of_mem {a : α} : ∀ {as : List α}, a ∈ as → card as = card (remove a as) + 1
   | [], h => False.elim (not_mem_nil _ h)
@@ -156,7 +156,7 @@ theorem card_map_eq_of_inj_on {f : α → β} {as : List α} :
       intro inj_on'
       cases (exists_of_mem_map h) with
       | intro x hx =>
-        have : x = a := inj_on' (mem_cons_of_mem _ hx.1) (mem_cons_self ..) hx.2
+        have : a = x := inj_on' (mem_cons_self ..) (mem_cons_of_mem _ hx.1) hx.2
         have h1 : a ∈ as := this ▸ hx.1
         have h2 : inj_on f as := inj_on_of_subset inj_on' (subset_cons _ _)
         simp  [h1, mem_map_of_mem f h1, ih h2]
