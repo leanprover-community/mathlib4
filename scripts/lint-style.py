@@ -76,10 +76,6 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
             exceptions += [(ERR_TAC, path)]
         if errno == "ERR_UNF":
             exceptions += [(ERR_UNF, path)]
-        if errno == "WRN_IND":
-            exceptions += [(WRN_IND, path)]
-        if errno == "WRN_BRC":
-            exceptions += [(WRN_BRC, path)]
 
 new_exceptions = False
 
@@ -154,81 +150,6 @@ def long_lines_check(lines, path):
             continue
         if len(line) > 101:
             errors += [(ERR_LIN, line_nr, path)]
-    return errors
-
-def indent_check(lines, path):
-    """Check that tactic blocks are indented correctly.
-
-    This linter warns whenever a `{` symbol starting a subproof appears wrongly indented in a tactic block.
-    It does not do much parsing, so to avoid false positives it skips some blocks with complicated syntax
-    like nested `begin`/`end` or containing the keywords `calc` or `match`.
-    """
-    errors = []
-    indent_lvl = 0
-    in_prf = 0  # counter for nested proof blocks
-    check_rest_of_block = True  # we only check uncomplicated syntax
-    ended_with_comma = False  # track whether the previous line ends with a comma
-    inside_special = 0  # track whether we are inside ⟨⟩ or []
-    for line_nr, line in enumerate(lines, 1):
-        line = line.split('--')[0] # discard any commented out part of this line
-        if len(line) == 0 or line[-1] != '\n':
-            line += '\n' # add back newline if it just got removed
-        # `lstr` is the line with starting whitespace removed.
-        # Therefore, `len(line) - len(lstr)` is the line's indentation depth.
-        lstr = line.lstrip(' ')
-
-        # Check that `{` starting a subproof has the expected indentation.
-        if in_prf > 0 and check_rest_of_block and ended_with_comma and not inside_special:
-            if lstr[0] == '{' and len(line) - len(lstr) != indent_lvl:
-                errors += [(WRN_IND, line_nr, path)]
-
-        # Update state for next line.
-        ended_with_comma = line.endswith(",\n")
-        # We don't want to lint inside `⟨..⟩` (anonymous constructor) or `[..]` tactic blocks.
-        inside_special += line.count('⟨') + line.count('[') - line.count('⟩') - line.count(']')
-        if line[0] != ' ':
-            # This is either the `end` line of a tactic proof, or the first line of a new declaration.
-            # Reset the state:
-            indent_lvl = 0
-            in_prf = 0
-            check_rest_of_block = True
-            ended_with_comma = False
-            inside_special = 0
-        if re.match("\b(match|calc)\b", line) is not None:
-            check_rest_of_block = False
-        if re.match("\bbegin\b", line) is not None:
-            # Don't check complicated proof block syntax (note, one if uses `line.find` the other `lstr.find`)
-            # in this case, we ignore proof blocks whose outermost-block doesn't begin flush-left
-            if line.find("begin") > 0 and in_prf == 0:
-                check_rest_of_block = False
-            # in this case, we ignore proof blocks where begin is not the first word on the line
-            if lstr.find("begin") > 0:
-                check_rest_of_block = False
-            indent_lvl += 2
-            in_prf += 1
-        if re.match("\bend\b", line) is not None:
-            indent_lvl -= 2
-            in_prf -= 1
-        indent_lvl += 2 * line.count('{') # potential innocent(?) clash with set-builder notation
-        indent_lvl -= 2 * line.count('}') # there can be multiple closing braces on one line
-    return errors
-
-def braces_check(lines, path):
-    """Check that curly braces are placed correctly.
-
-    This linter warns whenever a `{` (resp. `}`) appears at the end (resp. start) of a line.
-    """
-    errors = []
-    for line_nr, line in enumerate(lines, 1):
-        lstr = line.strip()
-        if len(lstr) == 0:
-            continue
-        if lstr[-1] == '{':
-            if "goal" in lstr:
-                continue
-            errors += [(WRN_BRC, line_nr, path)]
-        if lstr[0] == '}':
-            errors += [(WRN_BRC, line_nr, path)]
     return errors
 
 def import_only_check(lines, path):
@@ -306,13 +227,6 @@ def import_omega_check(lines, path):
             errors += [(ERR_TAC, line_nr, path)]
     return errors
 
-def unfreeze_local_instances_check(lines, path):
-    errors = []
-    for line_nr, line in skip_comments(enumerate(lines, 1)):
-        if "unfreeze_local_instances" in line:
-            errors += [(ERR_UNF, line_nr, path)]
-    return errors
-
 def output_message(path, line_nr, code, msg):
     if len(exceptions) == 0:
         # we are generating a new exceptions file
@@ -350,12 +264,6 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_AUT", "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'")
         if errno == ERR_TAC:
             output_message(path, line_nr, "ERR_TAC", "Files in mathlib cannot import the whole tactic folder, nor tactic.omega or tactic.observe")
-        if errno == ERR_UNF:
-            output_message(path, line_nr, "ERR_UNF", "Use of unfreeze_local_instances is discouraged and leads to performance problems, use unfreezingI instead")
-        if errno == WRN_IND:
-            output_message(path, line_nr, "WRN_IND", "Probable indentation mistake in proof")
-        if errno == WRN_BRC:
-            output_message(path, line_nr, "WRN_BRC", "Probable misformatting of curly braces")
 
 def lint(path):
     with path.open(encoding="utf-8") as f:
