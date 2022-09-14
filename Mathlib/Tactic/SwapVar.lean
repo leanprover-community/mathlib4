@@ -6,6 +6,12 @@ Authors: Arthur Paulino
 
 import Mathlib.Util.Tactic
 
+/-!
+# Defines the `swap_var` tactic
+
+Swap the names of two hypotheses.
+-/
+
 open Lean Meta Elab.Tactic
 
 namespace Mathlib.Tactic

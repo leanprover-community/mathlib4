@@ -12,6 +12,14 @@ import Lean
 import Lean.Data
 import Std.Lean.NameMapAttribute
 
+/-!
+# The `@[to_additive]` attribute.
+
+The attribute `to_additive` can be used to automatically transport theorems
+and definitions (but not inductive types and structures) from a multiplicative
+theory to an additive theory.
+-/
+
 open Lean
 open Lean.Meta
 open Lean.Elab
