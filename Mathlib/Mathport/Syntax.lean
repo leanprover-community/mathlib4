@@ -10,6 +10,7 @@ import Std.Tactic.RCases
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyWith
+import Mathlib.Tactic.ApplyRules
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
@@ -258,7 +259,6 @@ end Conv
 /- N -/ syntax (name := field) "field " ident " => " tacticSeq : tactic
 /- N -/ syntax (name := haveField) "have_field" : tactic
 /- N -/ syntax (name := applyField) "apply_field" : tactic
-/- M -/ syntax (name := applyRules) "apply_rules" (config)? " [" term,* "]" (ppSpace num)? : tactic
 /- M -/ syntax (name := hGeneralize) "h_generalize " atomic(binderIdent " : ")? term:51 " = " ident
   (" with " binderIdent)? : tactic
 /- M -/ syntax (name := hGeneralize!) "h_generalize! " atomic(binderIdent " : ")? term:51 " = " ident
