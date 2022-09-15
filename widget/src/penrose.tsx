@@ -15,6 +15,7 @@ export interface PenroseTrio {
     sub: string
 }
 
+/** Compute the hash of a Penrose trio. */
 async function hashTrio({dsl, sty, sub}: PenroseTrio): Promise<string> {
     // https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder/encodeInto#buffer_sizing
     const data = new Uint8Array(3 * (dsl.length + sty.length + sub.length))
@@ -31,12 +32,12 @@ async function hashTrio({dsl, sty, sub}: PenroseTrio): Promise<string> {
     return digestArr.map(b => b.toString(16).padStart(2, '0')).join('')
 }
 
-/** The compile -> optimize -> prepare SVG sequence is not cheap (on the order of 1s for a simple diagram),
- * so we aggressively cache its SVG outputs. */
+/** The compile -> optimize -> prepare SVG sequence is not cheap (on the order of 1s for a simple
+ * diagram), so we cache its SVG outputs. */
 // TODO(WN): provide a "redraw" button to resample a misshapen diagram.
 const diagramSvgCache = new Map<string, SVGSVGElement>()
 
-function aliasToNumber (x: SVG.NumberAlias): number {
+function svgNumberToNumber (x: SVG.NumberAlias): number {
     let y: string | number
     if (x instanceof Number) y = x.valueOf()
     else y = x as any
@@ -50,7 +51,12 @@ async function renderPenroseTrio(trio: PenroseTrio, maxOptSteps: number): Promis
     const hash = await hashTrio(trio)
     if (diagramSvgCache.has(hash)) return diagramSvgCache.get(hash)!
     const {dsl, sty, sub} = trio
-    const compileRes = penrose.compileTrio({ domain: dsl, style: sty, substance: sub, variation: '' })
+    const compileRes = penrose.compileTrio({
+        domain: dsl,
+        style: sty,
+        substance: sub,
+        variation: ''
+    })
     if (compileRes.isErr()) throw new Error(penrose.showError(compileRes.error))
     const state = await penrose.prepareState(compileRes.value)
     const stateRes = penrose.stepUntilConvergence(state, maxOptSteps)
@@ -66,14 +72,15 @@ async function renderPenroseTrio(trio: PenroseTrio, maxOptSteps: number): Promis
 
     obj.each((i, children) => {
         const child = children[i]
-        minX = Math.min(minX, aliasToNumber(child.x()))
-        maxX = Math.max(maxX, aliasToNumber(child.x()) + aliasToNumber(child.width()))
-        minY = Math.min(minY, aliasToNumber(child.y()))
-        maxY = Math.max(maxY, aliasToNumber(child.y()) + aliasToNumber(child.height()))
+        minX = Math.min(minX, svgNumberToNumber(child.x()))
+        maxX = Math.max(maxX, svgNumberToNumber(child.x()) + svgNumberToNumber(child.width()))
+        minY = Math.min(minY, svgNumberToNumber(child.y()))
+        maxY = Math.max(maxY, svgNumberToNumber(child.y()) + svgNumberToNumber(child.height()))
     })
 
     const padding = 10
-    const newX = minX - padding, newY = minY - padding, newW = (maxX - minX) + padding, newH = (maxY - minY) + padding
+    const newX = minX - padding, newY = minY - padding,
+          newW = (maxX - minX) + padding, newH = (maxY - minY) + padding
     const newSvg = obj.viewbox(newX, newY, newW, newH).width(newW).height(newH)
     diagramSvgCache.set(hash, newSvg.node)
 
@@ -95,7 +102,8 @@ interface InnerWithEmbedsProps extends Omit<InnerWithContainerProps, 'embedNodes
     embeds: Map<string, HTMLDivElement>
 }
 
-function InnerWithEmbeds({trio: {dsl, sty, sub}, maxOptSteps, embeds, containerDiv, hiddenDiv}: InnerWithEmbedsProps): JSX.Element {
+function InnerWithEmbeds({trio: {dsl, sty, sub}, maxOptSteps, embeds, containerDiv, hiddenDiv}
+        : InnerWithEmbedsProps): JSX.Element {
     const containerRect = containerDiv.getBoundingClientRect()
     const dim = Math.ceil(Math.max(400, containerRect.width))
 
@@ -181,7 +189,8 @@ override \`${name}\`.textBox.fillColor = ${boxCol}
     return element
 }
 
-function InnerWithContainer({trio, maxOptSteps, embedNodes, containerDiv, hiddenDiv}: InnerWithContainerProps): JSX.Element {
+function InnerWithContainer({trio, maxOptSteps, embedNodes, containerDiv, hiddenDiv}
+        : InnerWithContainerProps): JSX.Element {
     const rect = containerDiv.getBoundingClientRect()
     const dim = Math.ceil(Math.max(400, rect.width))
 
@@ -245,8 +254,8 @@ function InnerWithContainer({trio, maxOptSteps, embedNodes, containerDiv, hidden
     </>
 }
 
-/** Renders an interactive [Penrose](https://github.com/penrose/penrose) diagram with the specified trio.
- * The Penrose optimizer is ran for at most `maxOptSteps`, a heuristic for when to stop trying.
+/** Renders an interactive [Penrose](https://github.com/penrose/penrose) diagram with the specified
+ * trio. The Penrose optimizer is ran for at most `maxOptSteps`, a heuristic for when to stop trying.
  *
  * For every `[name, nd]` in `embedNodes` we locate an object with the same `name` in the substance
  * program, adjust the style program so that the object's dimensions match those of `nd`, and draw
