@@ -14,3 +14,12 @@ by apply_rules [add_le_add, Nat.mul_le_mul_of_nonneg_right]
 -- test that metavariables created for implicit arguments don't get stuck
 example (P : Nat → Type) (f : {n : Nat} → P n → P (n + 1)) (g : P 0) : P 2 :=
 by apply_rules [f, g]
+
+-- check that `apply_rules` solves goals that come after goals that it can't solve
+example (Q : Type) (f : Nat → Q) : Int × Q :=
+by
+  apply_rules [Prod.mk, f]
+  guard_target = Int
+  exact 0
+  guard_target = Nat
+  exact 37
