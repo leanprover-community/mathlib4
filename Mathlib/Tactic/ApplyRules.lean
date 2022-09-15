@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Std.Util.TermUnsafe
-import Mathlib.Tactic.repeat
+import Mathlib.Tactic.Repeat
 
 /-!
 # The `apply_rules` tactic
