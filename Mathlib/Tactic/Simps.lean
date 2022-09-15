@@ -6,8 +6,7 @@ Authors: Floris van Doorn
 
 -- import Mathlib.Lean.Expr
 import Lean
-import Mathlib.Data.List.Basic
--- import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Data.List.Basic -- this should import the above file
 import Std.Tactic.NoMatch
 
 /-!
@@ -33,20 +32,28 @@ reducing a definition when projections are applied to it.
 There are three attributes being defined here
 * `@[simps]` is the attribute for objects of a structure or instances of a class. It will
   automatically generate simplification lemmas for each projection of the object/instance that
-  contains data. See the doc strings for `simpsAttr` and `simps_cfg` for more details and
+  contains data. See the doc strings for `simpsAttr` and `simpsCfg` for more details and
   configuration options.
 * `@[simpsStructure]` is automatically added to structures that have been used in `@[simps]` at least
   once. This attribute contains the data of the projections used for this structure by all following
   invocations of `@[simps]`.
-* `@[notationClass]` should be added to all classes that define notation, like `has_mul` and
-  `has_zero`. This specifies that the projections that `@[simps]` used are the projections from
+* `@[notationClass]` should be added to all classes that define notation, like `Mul` and
+  `Zero`. This specifies that the projections that `@[simps]` used are the projections from
   these notation classes instead of the projections of the superclasses.
-  Example: if `has_mul` is tagged with `@[notationClass]` then the projection used for `semigroup`
-  will be `λ α hα, @has_mul.mul α (@semigroup.to_has_mul α hα)` instead of `@semigroup.mul`.
+  Example: if `Mul` is tagged with `@[notationClass]` then the projection used for `Semigroup`
+  will be `λ α hα, @Mul.mul α (@Semigroup.toMul α hα)` instead of `@Semigroup.mul`.
 
 ## Tags
 
 structures, projections, simp, simplifier, generates declarations
+-/
+
+/-
+ask:
+- are there useful commands for compositions of structure projections?
+- is _refl_lemma still a thing?
+- When a coercion is inserted into a term, how does that look?
+- what is the Lean 4 equivalent of has_to_format/has_to_tactic_format?
 -/
 
 -- move
@@ -73,7 +80,7 @@ namespace Command
 
 syntax simpsRule.rename := ident " → " ident
 syntax simpsRule.erase := "-" ident
-syntax simpsRule := (simpsRule.rename <|> simpsRule.erase) &" as_prefix"?
+syntax simpsRule := (simpsRule.rename <|> simpsRule.erase) &" asPrefix"?
 syntax simpsProj := ident (" (" simpsRule,+ ")")?
 syntax (name := initializeSimpsProjections) "initializeSimpsProjections"
   (ppSpace simpsProj)* : command
@@ -90,22 +97,22 @@ builtin_initialize registerTraceClass `Simps.debug
 /--
 Projection data for a single projection of a structure, consisting of the following fields:
 - the name used in the generated `simp` lemmas
-- an expression used by simps for the projection. It must be definitionally equal to an original
+- an Expression used by simps for the projection. It must be definitionally equal to an original
   projection (or a composition of multiple projections).
-  These expressions can contain the universe parameters specified in the first argument of
+  These Expressions can contain the universe parameters specified in the first argument of
   `simpsStructure`.
 - a list of natural numbers, which is the projection number(s) that have to be applied to the
-  expression. For example the list `[0, 1]` corresponds to applying the first projection of the
+  Expression. For example the list `[0, 1]` corresponds to applying the first projection of the
   structure, and then the second projection of the resulting structure (this assumes that the
   target of the first projection is a structure with at least two projections).
   The composition of these projections is required to be definitionally equal to the provided
-  expression.
+  Expression.
 - A boolean specifying whether `simp` lemmas are generated for this projection by default.
 - A boolean specifying whether this projection is written as prefix.
 -/
 structure ProjectionData where
-  Name : Name
-  Expr : Expr
+  Name : Name -- todo: uncapitalize
+  Expr : Expr -- todo: uncapitalize
   projNrs : List ℕ
   isDefault : Bool
   isPrefix : Bool
@@ -127,7 +134,7 @@ initialize simpsStructure : NameMapExtension (List Name × List ProjectionData) 
 /-- The `@[notationClass]` attribute specifies that this is a notation class,
   and this notation should be used instead of projections by @[simps].
   * The first argument `true` for notation classes and `false` for classes applied to the structure,
-    like `has_coe_to_sort` and `has_coe_toFun`
+    like `CoeSort` and `CoeFun`
   * The second argument is the name of the projection (by default it is the first projection
     of the structure)
 -/
@@ -140,12 +147,12 @@ initialize notationClassAttr : NameMapExtension (Bool × Option Name) ←
       pure <| (isNotation.isSome, proj.map (·.getId))
     | _, stx => throwError "unexpected notationClass syntax {stx}" }
 
-/-- Temporary projection data parsed from `initializeSimpsProjections` before the expression
+/-- Temporary projection data parsed from `initializeSimpsProjections` before the Expression
   matching this projection has been found. Only used internally in `simpsGetRawProjections`. -/
 structure ParsedProjectionData where
-  orig_name : Name
+  origName : Name
   -- name for this projection used in the structure definition
-  new_name : Name
+  newName : Name
   -- name for this projection used in the generated `simp` lemmas
   isDefault : Bool
   isPrefix : Bool
@@ -162,10 +169,12 @@ def projectionsInfo (l : List ProjectionData) (pref : String) (str : Name) : For
     defaults.map fun s =>
       let prefixStr := if s.isPrefix then "(prefix) " else ""
       f!"Projection {prefixStr}{s.Name}: {s.Expr}"
-  let print2 := String.join <| (nondefaults.map fun nm : ProjectionData => toString nm.1).intersperse ", "
+  let print2 :=
+    String.join <| (nondefaults.map fun nm : ProjectionData => toString nm.1).intersperse ", "
   let toPrint :=
     toPrint.map toString ++
-      if nondefaults.isEmpty then [] else ["No lemmas are generated for the projections: " ++ print2 ++ "."]
+      if nondefaults.isEmpty then [] else
+      ["No lemmas are generated for the projections: " ++ print2 ++ "."]
   let toPrint := String.join <| toPrint.intersperse "\n        > "
   f! "[simps] > {pref } {str }:\n        > {toPrint}"
 
@@ -179,7 +188,7 @@ partial def getCompositeOfProjectionsAux : ∀ (str : Name) (proj : String) (x :
       fun n p => (fun x => (x, n, p)) <$> proj.getRest ("_" ++ p.getString!)
     if (projInfo.filterMap id).isEmpty then
       throwError "Failed to find constructor {proj.drop 1} in structure {str}."
-    let (projRest, index, projName) := (projInfo.filterMap id).last!
+    let (projRest, index, projName) := (projInfo.filterMap id).getLast!
     let strDecl := (env.find? str).get!
     let projExpr : Expr := mkConst (str ++ projName) <| strDecl.levelParams.map mkLevelParam
     let projDecl := (env.find? (str ++ projName)).get!
@@ -195,18 +204,18 @@ partial def getCompositeOfProjectionsAux : ∀ (str : Name) (proj : String) (x :
           getCompositeOfProjectionsAux tgt.getAppFn.constName! projRest (mkAppN newX typeArgs)
             newPos (args ++ typeArgs)
 
+
 /-- Given a structure `str` and a projection `proj`, that could be multiple nested projections
-  (separated by `_`), returns an expression that is the composition of these projections and a
+  (separated by `_`), returns an Expression that is the composition of these projections and a
   list of natural numbers, that are the projection numbers of the applied projections. -/
 def getCompositeOfProjections (str : Name) (proj : String) : MetaM (Expr × List ℕ) := do
   let env ← getEnv
   let strDecl := (env.find? str).get!
   let strExpr : Expr := mkConst str <| strDecl.levelParams.map mkLevelParam
   let type ← inferType strExpr
-  forallTelescopeReducing type fun typeArgs tgt => do
-    let str_ap := mkAppN strExpr typeArgs
-    let x := mkFVar sorry -- mk_local' `x BinderInfo.default str_ap
-    getCompositeOfProjectionsAux str ("_" ++ proj) x [] <| typeArgs ++ [x]
+  forallTelescopeReducing type fun typeArgs _ =>
+  withLocalDeclD `x (mkAppN strExpr typeArgs) fun ex =>
+  getCompositeOfProjectionsAux str ("_" ++ proj) ex [] <| typeArgs ++ [ex]
 
 
 /--
@@ -218,7 +227,7 @@ attribute instead. See the documentation for this attribute for the data this ta
 
 The returned universe levels are the universe levels of the structure. For the projections there
 are three cases
-* If the declaration `{structure_name}.simps.{projection_name}` has been declared, then the value
+* If the declaration `{StructureName}.simps.{projectionName}` has been declared, then the value
   of this declaration is used (after checking that it is definitionally equal to the actual
   projection. If you rename the projection name, the declaration should have the *new* projection
   name.
@@ -228,19 +237,19 @@ are three cases
   projection that is definitionally equal to it (if there is such a projection).
   This means in practice that coercions to function types and sorts will be used instead of
   a projection, if this coercion is definitionally equal to a projection. Furthermore, for
-  notation classes like `has_mul` and `has_zero` those projections are used instead of the
+  notation classes like `Mul` and `Zero` those projections are used instead of the
   corresponding projection.
   Projections for coercions and notation classes are not automatically generated if they are
   composites of multiple projections (for example when you use `extend` without the
-  `olstrDeclucture_cmd`).
+  `oldStructureCmd` (does this exist?)).
 * Otherwise, the projection of the structure is chosen.
   For example: ``simpsGetRawProjections env `prod`` gives the default projections
 ```
   ([u, v], [prod.fst.{u v}, prod.snd.{u v}])
 ```
-    while ``simpsGetRawProjections env `equiv`` gives
+    while ``simpsGetRawProjections env `equiv`` gives [todo: change example for Lean 4]
 ```
-  ([u_1, u_2], [λ α β, coe_fn, λ {α β} (e : α ≃ β), ⇑(e.symm), left_inv, right_inv])
+  ([u_1, u_2], [λ α β, Coe.coe, λ {α β} (e : α ≃ β), ⇑(e.symm), left_inv, right_inv])
 ```
     after declaring the coercion from `equiv` to function and adding the declaration
 ```
@@ -248,10 +257,10 @@ are three cases
 ```
 
 Optionally, this command accepts three optional arguments:
-* If `trace_if_exists` the command will always generate a trace message when the structure already
+* If `traceIfExists` the command will always generate a trace message when the structure already
   has the attribute `@[simpsStructure]`.
-* The `rules` argument accepts a list of pairs `sum.inl (old_name, new_name)`. This is used to
-  change the projection name `old_name` to the custom projection name `new_name`. Example:
+* The `rules` argument accepts a list of pairs `sum.inl (oldName, newName)`. This is used to
+  change the projection name `oldName` to the custom projection name `newName`. Example:
   for the structure `equiv` the projection `toFun` could be renamed `apply`. This name will be
   used for parsing and generating projection names. This argument is ignored if the structure
   already has an existing attribute. If an element of `rules` is of the form `sum.inr name`, this
@@ -260,22 +269,23 @@ Optionally, this command accepts three optional arguments:
 -/
 -- if performance becomes a problem, possible heuristic: use the names of the projections to
 -- skip all classes that don't have the corresponding field.
-def simpsGetRawProjections (env : Environment) (str : Name) (trace_if_exists : Bool := false)
+def simpsGetRawProjections (env : Environment) (str : Name) (traceIfExists : Bool := false)
     (rules : List ProjectionRule := []) (trc := false) : CoreM (List Name × List ProjectionData) := do
   let shouldTrace := trc || ((← getOptions) |>.getBool `simps.verbose)
   match (simpsStructure.getState env).find? str with
   | some data =>
     -- We always print the projections when they already exists and are called by
     -- `initializeSimpsProjections`.
-    if trace_if_exists || ((← getOptions) |>.getBool `simps.verbose) then
+    if traceIfExists || ((← getOptions) |>.getBool `simps.verbose) then
       dbg_trace projectionsInfo data.2 "Already found projection information for structure" str
     return data
   | none => _
     if trc then
-      dbg_trace "[simps] > generating projection information for structure {← str}."
-    trace[simps.debug] "[simps] > Applying the rules {← rules}."
+      dbg_trace "[simps] > generating projection information for structure {str}."
+    trace[simps.debug] "[simps] > Applying the rules {rules}."
     let strDecl := (env.find? str).get!
-    let rawUnivs := strDecl.levelParams
+    let rawLevels := strDecl.levelParams
+    let rawUnivs := rawLevels.map Level.param
     /- Figure out projections, including renamings. The information for a projection is (before we
       figure out the `expr` of the projection:
       `(original name, given name, is default, is prefix)`.
@@ -285,104 +295,125 @@ def simpsGetRawProjections (env : Environment) (str : Name) (trace_if_exists : B
     let projs : Array ParsedProjectionData := projs.fieldNames.map fun nm => ⟨nm, nm, true, false⟩
     let projs : Array ParsedProjectionData := rules.foldl (init := projs) fun projs rule =>
       match rule with
-      | (.inl (old_nm, new_nm), isPrefix) =>
-        if (projs.map (·.new_name)).contains old_nm then
-          projs.map fun proj => if proj.new_name == old_nm then
-            { proj with new_name := new_nm, isPrefix := isPrefix } else
+      | (.inl (oldName, newName), isPrefix) =>
+        if (projs.map (·.newName)).contains oldName then
+          projs.map fun proj => if proj.newName == oldName then
+            { proj with newName := newName, isPrefix := isPrefix } else
             proj else
-          projs.push ⟨old_nm, new_nm, true, isPrefix⟩
+          projs.push ⟨oldName, newName, true, isPrefix⟩
       | (.inr nm, isPrefix) =>
-        if (projs.map (·.new_name)).contains nm then
-          projs.map fun proj => if proj.new_name = nm then
+        if (projs.map (·.newName)).contains nm then
+          projs.map fun proj => if proj.newName = nm then
             { proj with isDefault := false, isPrefix := isPrefix } else
             proj else
           projs.push ⟨nm, nm, false, isPrefix⟩
-    trace[simps.debug] "[simps] > Projection info after applying the rules: {← projs}."
-    if !(projs.map (·.new_name)).toList.Nodup then throwError
+    trace[simps.debug] "[simps] > Projection info after applying the rules: {projs}."
+    if !(projs.map (·.newName)).toList.Nodup then throwError
         "Invalid projection names. Two projections have the same name.
 This is likely because a custom composition of projections was given the same name as an " ++
         "existing projection. Solution: rename the existing projection (before renaming the " ++
         "custom projection)."
-    /- Define the raw expressions for the projections, by default as the projections
-    (as an expression), but this can be overriden by the user. -/
-    let raw_exprs_and_nrs ← projs.mapM fun ⟨old_nm, new_nm, _, _⟩ => do
-    { let (raw_expr, nrs) ← MetaM.run' (getCompositeOfProjections str old_nm.getString!) -- todo: check
-      let custom_proj ← (do
-        match (env.find? (str ++ `simps ++ new_nm)).get! with
+    /- Define the raw Expressions for the projections, by default as the projections
+    (as an Expression), but this can be overriden by the user. -/
+    let rawExprsAndNrs ← projs.mapM fun ⟨oldName, newName, _, _⟩ => do
+    { let (rawExpr, nrs) ← MetaM.run' (getCompositeOfProjections str oldName.getString!) -- todo: check
+      let customProj ← (do
+        match (env.find? (str ++ `simps ++ newName)).get! with
         | d@(.defnInfo decl) =>
-          let custom_proj := d.instantiateValueLevelParams _
+          let customProj := d.instantiateValueLevelParams _
           if trc then
-            dbg_trace "[simps] > found custom projection for {(← new_nm)}:\n        > {← custom_proj}"
-          return custom_proj
-        | _ => throwError "") <|> return raw_expr
-      match (← MetaM.run' $ isDefEq custom_proj raw_expr) with
-      | true => return (custom_proj, nrs)
+            dbg_trace "[simps] > found custom projection for {newName}:\n        > {customProj}"
+          return customProj
+        | _ => throwError "") <|> return rawExpr
+      match (← MetaM.run' $ isDefEq customProj rawExpr) with
+      | true => return (customProj, nrs)
       | false =>
-        -- if the type of the expression is different, we show a different error message, because
+        -- if the type of the Expression is different, we show a different error message, because
         -- that is more likely going to be helpful.
-        let custom_proj_type ← MetaM.run' (inferType custom_proj)
-        let raw_expr_type ← MetaM.run' (inferType raw_expr)
-        if (← MetaM.run' (isDefEq custom_proj_type raw_expr_type)) then
-            throwError "Invalid custom projection:\n  {custom_proj}
-Expression is not definitionally equal to {raw_expr}"
+        let customProjType ← MetaM.run' (inferType customProj)
+        let rawExprType ← MetaM.run' (inferType rawExpr)
+        if (← MetaM.run' (isDefEq customProjType rawExprType)) then
+            throwError "Invalid custom projection:\n  {customProj}
+Expression is not definitionally equal to {rawExpr}"
           else
-            throwError "Invalid custom projection:\n  {custom_proj}
-Expression has different type than {str ++ old_nm}. Given type:\n  {custom_proj_type}
-Expected type:\n  {raw_expr_type}
+            throwError "Invalid custom projection:\n  {customProj}
+Expression has different type than {str ++ oldName}. Given type:\n  {customProjType}
+Expected type:\n  {rawExprType}
 Note: make sure order of implicit arguments is exactly the same." }
-    let raw_exprs := raw_exprs_and_nrs.map Prod.fst
+    let rawExprs := rawExprsAndNrs.map Prod.fst
     -- Check for other coercions and type-class arguments to use as projections instead.
-    let raw_exprs ← forallTelescope strDecl.type fun args _ => do
-      let rawLevels := rawUnivs.map (·.paramName!)
-      let e_str := mkAppN (Expr.const str rawLevels) args
-      let automatic_projs ← attribute.get_instances `notationClass
-      let raw_exprs ←
-        automatic_projs.foldM
-            (fun class_nm =>
-              (/- For this class, find the projection. `raw_expr` is the projection found applied to `args`,
-                        and `lambda_raw_expr` has the arguments `args` abstracted. -/
-                do
-                  let (is_class, projName) ← notationClass_attr class_nm
-                  let projName ← projName <|> (e class_nm).map List.headₓ
-                  let (raw_expr, lambda_raw_expr) ←
-                    if is_class then do
-                        guardₓ <| args = 1
-                        let e_inst_type := (const class_nm rawLevels).mk_app args
-                        let (hyp, e_inst) ← try_for 1000 (mk_conditional_instance e_str e_inst_type)
-                        let raw_expr ← mk_mapp projName [args, e_inst]
-                        clear hyp
-                        let raw_expr_lambda ← lambdas [hyp] raw_expr
-                        return (raw_expr, raw_expr_lambda args)
-                      else do
-                        let e_inst_type ← to_expr (((const class_nm []).app (pexpr.of_expr e_str)).app (pquote.1 _))
-                        let e_inst ← try_for 1000 (mk_instance e_inst_type)
-                        let raw_expr ← mk_mapp projName [e_str, none, e_inst]
-                        return (raw_expr, raw_expr args)
-                  let raw_expr_whnf ← whnf raw_expr
-                  let relevant_proj := raw_expr_whnf
-                  guardₓ <| projs fun x => x.1 = relevant_proj ∧ ¬e (str ++ `simps ++ x)
-                  let pos := projs fun x => x.1 = relevant_proj
-                  if trc then
-                    dbg_trace "        > using {(← projName)} instead of the default projection {← relevant_proj}."
-                  trace[simps.debug] "[simps] > The raw projection is:\n {← lambda_raw_expr}"
-                  return <| raw_exprs Pos lambda_raw_expr) <|>
-                return raw_exprs)
-            raw_exprs
-    let positions := raw_exprs_and_nrs.map Prod.snd
-    let proj_names := projs.map (·.new_name)
+    let rawExprs ← MetaM.run' <| forallTelescope strDecl.type fun args _ => do
+      let eStr := mkAppN (Expr.const str rawUnivs) args
+      let automaticProjs := notationClassAttr.getState env
+      let rawExprs ← (automaticProjs.foldM (init := rawExprs)
+        fun rawExprs className (isClass, projName) =>
+        -- small part not yet implemented
+        --   (do
+        -- let classInfo := (getStructureInfo? env className).get!
+        -- let projName := projName.getD classInfo.fieldNames[0]!
+        -- /- For this class, find the projection. `rawExpr` is the projection found applied to `args`,
+        --       and `lambdaRawExpr` has the arguments `args` abstracted. -/
+        -- let (rawExpr, lambdaRawExpr) ← pure <|
+        --   if isClass then do
+        --       unless args.length = 1 do panic! -- is there a better way to add a guard?
+        --       let eInstType := mkAppN (const className rawLevels) args
+        --       let (hyp, eInst) ← tryFor 1000 (mk_conditional_instance eStr eInstType)
+        --       let rawExpr ← mkAppOptM projName [args, eInst]
+        --       clear hyp
+        --       let rawExprLambda ← lambdas [hyp] rawExpr
+        --       return (rawExpr, rawExprLambda args)
+        --     else do
+        --       let eInstType ← toExpr (((const className []).app (pexpr.of_expr eStr)).app (pquote.1 _))
+        --       let eInst ← tryFor 1000 (synthInstance eInstType)
+        --       let rawExpr ← mkAppOptM projName [eStr, none, eInst]
+        --       return (rawExpr, rawExpr args)
+        -- let rawExprWhnf ← whnf rawExpr
+        -- let relevantProj := rawExprWhnf
+        -- guardₓ <| projs fun x => x.1 = relevantProj ∧ ¬e (str ++ `simps ++ x)
+        -- let pos := projs fun x => x.1 = relevantProj
+        -- if trc then
+        --   dbg_trace "        > using {projName} instead of the default projection {relevantProj}."
+        -- trace[simps.debug] "[simps] > The raw projection is:\n {lambdaRawExpr}"
+        -- return <| rawExprs Pos lambdaRawExpr) <|>
+          pure rawExprs)
+      pure rawExprs
+    let positions := rawExprsAndNrs.map Prod.snd
+    let projNames := projs.map (·.newName)
     let defaults := projs.map (·.isDefault)
     let prefixes := projs.map (·.isPrefix)
-    let projs := proj_names ProjectionData.mk raw_exprs positions defaults prefixes
-    let projs
-      ←-- make all proof non-default.
-          projs
-          fun proj => is_proof proj >>= fun b => return <| if b then { proj with isDefault := false } else proj
-    when trc <| projectionsInfo projs "generated projections for" str >>= trace
-    simpsStructure str (rawUnivs, projs) tt
-    trace[simps.debug] "[simps] > Generated raw projection data:\n{← (rawUnivs, projs)}"
-    return (rawUnivs, projs)
+    -- this is nicer if we have `Array.zipWith₅`
+    let projs := (((projNames.zipWith rawExprs ProjectionData.mk).zipWith positions id).zipWith
+      defaults id).zipWith prefixes id
+    -- make all proof non-default.
+    let projs ← projs.mapM fun proj => do
+      match (← MetaM.run' <| isProof proj.Expr) with
+      | true => pure { proj with isDefault := false }
+      | false => pure proj
+    let projs := projs.toList
+    if trc then
+      dbg_trace (projectionsInfo projs "generated projections for" str)
+    simpsStructure.add str (rawLevels, projs)
+    trace[simps.debug] "[simps] > Generated raw projection data:\n{(rawLevels, projs)}"
+    return (rawLevels, projs)
 
 
+
+/-
+todo: mimic the below implementation using withLocalDecl
+/--
+Finds an instance of an implication `cond → tgt`.
+Returns a pair of a local constant `e` of type `cond`, and an instance of `tgt` that can mention
+`e`. The local constant `e` is added as an hypothesis to the tactic state, but should not be used,
+since it has been "proven" by a metavariable.
+-/
+meta def mk_conditional_instance (cond tgt : Expr) : tactic (expr × Expr) := do
+f ← mk_meta_var cond,
+e ← assertv `c cond f, swap,
+reset_instance_cache,
+inst ← mk_instance tgt,
+return (e, inst)
+
+-/
 
 
 /-!
@@ -390,25 +421,25 @@ Note: make sure order of implicit arguments is exactly the same." }
 
 
 /-- Parse a rule for `initializeSimpsProjections`. It is either `<name>→<name>` or `-<name>`,
-  possibly following by `as_prefix`.-/
+  possibly following by `asPrefix`.-/
 def simpsParseRule : parser ProjectionRule :=
   Prod.mk <$> ((fun x y => inl (x, y)) <$> ident <*> (tk "->" >> ident) <|> inr <$> (tk "-" >> ident)) <*>
-    isSome <$> (tk "as_prefix")?
+    isSome <$> (tk "asPrefix")?
 
 library_note "custom simps projection"/-- You can specify custom projections for the `@[simps]` attribute.
-To do this for the projection `my_structure.original_projection` by adding a declaration
-`my_structure.simps.my_projection` that is definitionally equal to
-`my_structure.original_projection` but has the projection in the desired (simp-normal) form.
+To do this for the projection `MyStructure.originalProjection` by adding a declaration
+`MyStructure.simps.myProjection` that is definitionally equal to
+`MyStructure.originalProjection` but has the projection in the desired (simp-normal) form.
 Then you can call
 ```
-initializeSimpsProjections (original_projection → my_projection, ...)
+initializeSimpsProjections (originalProjection → myProjection, ...)
 ```
 to register this projection. See `initializeSimpsProjectionsCmd` for more information.
 
 You can also specify custom projections that are definitionally equal to a composite of multiple
-projections. This is often desirable when extending structures (without `olstrDeclucture_cmd`).
+projections. This is often desirable when extending structures (without `oldStructureCmd`).
 
-`has_coe_toFun` and notation class (like `has_mul`) instances will be automatically used, if they
+`CoeFun` and notation class (like `Mul`) instances will be automatically used, if they
 are definitionally equal to a projection of the structure (but not when they are equal to the
 composite of multiple projections).
 -/
@@ -419,16 +450,16 @@ composite of multiple projections).
   `initializeSimpsProjections equiv (toFun → apply, invFun → symm_apply)`.
 * See Note [custom simps projection] and the examples below for information how to declare custom
   projections.
-* If no custom projection is specified, the projection will be `coe_fn`/`⇑` if a `has_coe_toFun`
-  instance has been declared, or the notation of a notation class (like `has_mul`) if such an
+* If no custom projection is specified, the projection will be `CoeFun.coe`/`⇑` if a `CoeFun`
+  instance has been declared, or the notation of a notation class (like `Mul`) if such an
   instance is available. If none of these cases apply, the projection itself will be used.
 * You can disable a projection by default by running
   `initializeSimpsProjections equiv (-invFun)`
   This will ensure that no simp lemmas are generated for this projection,
   unless this projection is explicitly specified by the user.
 * If you want the projection name added as a prefix in the generated lemma name, you can add the
-  `as_prefix` modifier:
-  `initializeSimpsProjections equiv (toFun → coe as_prefix)`
+  `asPrefix` modifier:
+  `initializeSimpsProjections equiv (toFun → coe asPrefix)`
   Note that this does not influence the parsing of projection names: if you have a declaration
   `foo` and you want to apply the projections `snd`, `coe` (which is a prefix) and `fst`, in that
   order you can run `@[simps snd_coe_fst] def foo ...` and this will generate a lemma with the
@@ -439,48 +470,48 @@ composite of multiple projections).
   ```
     structure A := (proj : ℕ)
     structure B extends A
-    initializeSimpsProjections? B (to_A_proj → proj, -to_A)
+    initializeSimpsProjections? B (toA_proj → proj, -toA)
   ```
   You can also make your custom projection that is definitionally equal to a composite of
   projections. In this case, coercions and notation classes are not automatically recognized, and
   should be manually given by giving a custom projection.
-  This is especially useful when extending a structure (without `olstrDeclucture_cmd`).
-  In the above example, it is desirable to add `-to_A`, so that `@[simps]` doesn't automatically
-  apply the `B.to_A` projection and then recursively the `A.proj` projection in the lemmas it
-  generates. If you want to get both the `foo_proj` and `foo_to_A` simp lemmas, you can use
-  `@[simps, simps to_A]`.
-* Running `initializeSimpsProjections my_struc` without arguments is not necessary, it has the
+  This is especially useful when extending a structure (without `oldStructureCmd`).
+  In the above example, it is desirable to add `-toA`, so that `@[simps]` doesn't automatically
+  apply the `B.toA` projection and then recursively the `A.proj` projection in the lemmas it
+  generates. If you want to get both the `foo_proj` and `foo_toA` simp lemmas, you can use
+  `@[simps, simps toA]`.
+* Running `initializeSimpsProjections MyStruc` without arguments is not necessary, it has the
   same effect if you just add `@[simps]` to a declaration.
 * If you do anything to change the default projections, make sure to call either `@[simps]` or
   `initializeSimpsProjections` in the same file as the structure declaration. Otherwise, you might
   have a file that imports the structure, but not your custom projections.
 
 Some common uses:
-* If you define a new homomorphism-like structure (like `mul_hom`) you can just run
-  `initializeSimpsProjections` after defining the `has_coe_toFun` instance
+* If you define a new homomorphism-like structure (like `MulHom`) you can just run
+  `initializeSimpsProjections` after defining the `CoeFun` instance
   ```
-    instance {mM : has_mul M} {mN : has_mul N} : has_coe_toFun (mul_hom M N) := ...
-    initializeSimpsProjections mul_hom (toFun → apply)
+    instance {mM : Mul M} {mN : Mul N} : CoeFun (MulHom M N) := ...
+    initializeSimpsProjections MulHom (toFun → apply)
   ```
   This will generate `foo_apply` lemmas for each declaration `foo`.
 * If you prefer `coe_foo` lemmas that state equalities between functions, use
-  `initializeSimpsProjections mul_hom (toFun → coe as_prefix)`
-  In this case you have to use `@[simps {fully_applied := false}]` or equivalently `@[simps as_fn]`
+  `initializeSimpsProjections MulHom (toFun → coe asPrefix)`
+  In this case you have to use `@[simps {fullyApplied := false}]` or equivalently `@[simps asFn]`
   whenever you call `@[simps]`.
 * You can also initialize to use both, in which case you have to choose which one to use by default,
   by using either of the following
   ```
-    initializeSimpsProjections mul_hom (toFun → apply, toFun → coe, -coe as_prefix)
-    initializeSimpsProjections mul_hom (toFun → apply, toFun → coe as_prefix, -apply)
+    initializeSimpsProjections MulHom (toFun → apply, toFun → coe, -coe asPrefix)
+    initializeSimpsProjections MulHom (toFun → apply, toFun → coe asPrefix, -apply)
   ```
-  In the first case, you can get both lemmas using `@[simps, simps coe as_fn]` and in the second
-  case you can get both lemmas using `@[simps as_fn, simps apply]`.
-* If your new homomorphism-like structure extends another structure (without `olstrDeclucture_cmd`)
+  In the first case, you can get both lemmas using `@[simps, simps coe asFn]` and in the second
+  case you can get both lemmas using `@[simps asFn, simps apply]`.
+* If your new homomorphism-like structure extends another structure (without `oldStructureCmd`)
   (like `relEmbedding`), then you have to specify explicitly that you want to use a coercion
   as a custom projection. For example
   ```
     def relEmbedding.simps.apply (h : r ↪r s) : α → β := h
-    initializeSimpsProjections relEmbedding (to_embedding_toFun → apply, -to_embedding)
+    initializeSimpsProjections relEmbedding (toEmbedding_toFun → apply, -toEmbedding)
   ```
 * If you have an isomorphism-like structure (like `equiv`) you often want to define a custom
   projection for the inverse:
@@ -493,9 +524,9 @@ Some common uses:
 def initializeSimpsProjectionsCmd (_ : parse <| tk "initializeSimpsProjections") : parser Unit := do
   let env ← getEnv
   let trc ← isSome <$> (tk "?")?
-  let ns ← (Prod.mk <$> ident <*> (tk "(" >> sep_by (tk ",") simpsParseRule <* tk ")")?)*
+  let ns ← (Prod.mk <$> ident <*> (tk "(" >> sepBy (tk ",") simpsParseRule <* tk ")")?)*
   ns fun data => do
-      let nm ← resolve_constant data.1
+      let nm ← resolveConstant data.1
       simpsGetRawProjections env nm true (data.2.getOrElse []) trc
 
 add_tactic_doc
@@ -507,36 +538,36 @@ add_tactic_doc
     The attributes can be either basic attributes, or user attributes without parameters.
     There are two attributes which `simps` might add itself:
     * If ``[`simp]`` is in the list, then ``[`_refl_lemma]`` is added automatically if appropriate.
-    * If the definition is marked with `@[to_additive ...]` then all generated lemmas are marked
-      with `@[to_additive]`. This is governed by the `add_additive` configuration option.
-  * if `simp_rhs` is `true` then the right-hand-side of the generated lemmas will be put in
-    simp-normal form. More precisely: `dsimp, simp` will be called on all these expressions.
+    * If the definition is marked with `@[toAdditive ...]` then all generated lemmas are marked
+      with `@[toAdditive]`. This is governed by the `addAdditive` configuration option.
+  * if `simpRhs` is `true` then the right-hand-side of the generated lemmas will be put in
+    simp-normal form. More precisely: `dsimp, simp` will be called on all these Expressions.
     See note [dsimp, simp].
-  * `type_md` specifies how aggressively definitions are unfolded in the type of expressions
+  * `typeMd` specifies how aggressively definitions are unfolded in the type of Expressions
     for the purposes of finding out whether the type is a function type.
     Default: `instances`. This will unfold coercion instances (so that a coercion to a function type
     is recognized as a function type), but not declarations like `set`.
-  * `rhs_md` specifies how aggressively definition in the declaration are unfolded for the purposes
+  * `rhsMd` specifies how aggressively definition in the declaration are unfolded for the purposes
     of finding out whether it is a constructor.
     Default: `none`
     Exception: `@[simps]` will automatically add the options
-    `{rhs_md := semireducible, simp_rhs := true}` if the given definition is not a constructor with
-    the given reducibility setting for `rhs_md`.
-  * If `fully_applied` is `false` then the generated `simp` lemmas will be between non-fully applied
+    `{rhsMd := semireducible, simpRhs := true}` if the given definition is not a constructor with
+    the given reducibility setting for `rhsMd`.
+  * If `fullyApplied` is `false` then the generated `simp` lemmas will be between non-fully applied
     terms, i.e. equalities between functions. This does not restrict the recursive behavior of
     `@[simps]`, so only the "final" projection will be non-fully applied.
     However, it can be used in combination with explicit field names, to get a partially applied
     intermediate projection.
-  * The option `not_recursive` contains the list of names of types for which `@[simps]` doesn't
+  * The option `notRecursive` contains the list of names of types for which `@[simps]` doesn't
     recursively apply projections. For example, given an equivalence `α × β ≃ β × α` one usually
     wants to only apply the projections for `equiv`, and not also those for `×`. This option is
     only relevant if no explicit projection names are given as argument to `@[simps]`.
   * The option `trace` is set to `true` when you write `@[simps?]`. In this case, the attribute will
     print all generated lemmas. It is almost the same as setting the option `trace.simps.verbose`,
     except that it doesn't print information about the found projections.
-  * if `add_additive` is `some nm` then `@[to_additive]` is added to the generated lemma. This
+  * if `addAdditive` is `some nm` then `@[toAdditive]` is added to the generated lemma. This
     option is automatically set to `true` when the original declaration was tagged with
-    `@[to_additive, simps]` (in that order), where `nm` is the additive name of the original
+    `@[toAdditive, simps]` (in that order), where `nm` is the additive name of the original
     declaration.
 -/
 structure SimpsCfg where
@@ -548,10 +579,10 @@ structure SimpsCfg where
   notRecursive := [`prod, `pprod]
   trace := false
   addAdditive := @none Name
-  deriving has_reflect, Inhabited
+  deriving Reflect, Inhabited
 
 /-- A common configuration for `@[simps]`: generate equalities between functions instead equalities
-  between fully applied expressions. -/
+  between fully applied Expressions. -/
 def asFn : SimpsCfg where
   fullyApplied := false
 
@@ -562,7 +593,7 @@ def lemmasOnly : SimpsCfg where
 /-- Get the projections of a structure used by `@[simps]` applied to the appropriate arguments.
   Returns a list of tuples
   ```
-  (corresponding right-hand-side, given projection name, projection expression, projection numbers,
+  (corresponding right-hand-side, given projection name, projection Expression, projection numbers,
     used by default, is prefix)
   ```
   (where all fields except the first are packed in a `ProjectionData` structure)
@@ -585,34 +616,34 @@ def lemmasOnly : SimpsCfg where
   ```
 -/
 def simpsGetProjectionExprs (e : environment) (tgt : Expr) (rhs : Expr) (cfg : SimpsCfg) :
-    tactic <| List <| expr × ProjectionData := do
-  let params := get_app_args tgt
+    tactic <| List <| Expr × ProjectionData := do
+  let params := getAppArgs tgt
   ((-- the parameters of the structure
             params <|
-            (get_app_args rhs).take params).mmap'
-        fun ⟨a, b⟩ => is_def_eq a b) <|>
+            (getAppArgs rhs).take params).mmap'
+        fun ⟨a, b⟩ => isDefEq a b) <|>
       throwError "unreachable code (1)"
-  let str := tgt.getAppFn.const_name
-  let rhs_args := (get_app_args rhs).drop params.length
+  let str := tgt.getAppFn.constName
+  let rhsArgs := (getAppArgs rhs).drop params.length
   let-- the fields of the object
     (rawUnivs, projDeclata)
     ← simpsGetRawProjections e str false [] cfg.trace
   let univs := rawUnivs.zip tgt.getAppFn.levelParams
-  let new_projDeclata : List <| expr × ProjectionData :=
+  let newProjDeclata : List <| Expr × ProjectionData :=
     projDeclata.map fun proj =>
-      (rhs_args.inth proj.projNrs.head,
-        { proj with expr := (proj.expr.instantiate_univ_params univs).instantiate_lambdas_or_apps params,
+      (rhsArgs.inth proj.projNrs.head,
+        { proj with Expr := (proj.expr.instantiateUnivParams univs).instantiateLambdasOrApps params,
           projNrs := proj.projNrs.tail })
-  return new_projDeclata
+  return newProjDeclata
 
 /-- Add a lemma with `nm` stating that `lhs = rhs`. `type` is the type of both `lhs` and `rhs`,
   `args` is the list of local constants occurring, and `univs` is the list of universe variables. -/
-def simpsAddProjection (nm : Name) (type lhs rhs : Expr) (args : List expr) (univs : List Name)
+def simpsAddProjection (nm : Name) (type lhs rhs : Expr) (args : List Expr) (univs : List Name)
     (cfg : SimpsCfg) : tactic Unit := do
   trace[simps.debug] "[simps] > Planning to add the equality
-                  > {(← lhs)} = ({(← rhs)} : {← type})"
-  let lvl ← get_univ_level type
-  let-- simplify `rhs` if `cfg.simp_rhs` is true
+                  > {lhs} = ({rhs} : {type})"
+  let lvl ← getUnivLevel type
+  let-- simplify `rhs` if `cfg.simpRhs` is true
     (rhs, prf)
     ←
     (do
@@ -622,205 +653,205 @@ def simpsAddProjection (nm : Name) (type lhs rhs : Expr) (args : List expr) (uni
               when (rhs ≠ rhs')
                 (← do
                   dbg_trace "[simps] > `dsimp` simplified rhs to
-                            > {← rhs'}")
+                            > { rhs'}")
           let (rhsprf1, rhsprf2, ns) ← rhs'.simp { failIfUnchanged := false }
           trace[simps.debug] <|
               when (rhs' ≠ rhsprf1)
                 (← do
                   dbg_trace "[simps] > `simp` simplified rhs to
-                            > {← rhsprf1}")
+                            > {rhsprf1}")
           return (Prod.mk rhsprf1 rhsprf2)) <|>
         return (rhs, const `eq.refl [lvl] type lhs)
-  let eq_ap := const `eq [lvl] type lhs rhs
-  let decl_name ← get_unused_decl_name nm
-  let decl_type := eq_ap.pis args
-  let decl_value := prf.lambdas args
-  let decl := declaration.thm decl_name univs decl_type (pure decl_value)
+  let eqAp := const `eq [lvl] type lhs rhs
+  let declName ← getUnusedDeclName nm
+  let declType := eqAp.pis args
+  let declValue := prf.lambdas args
+  let decl := declaration.thm declName univs declType (pure declValue)
   when cfg
       (← do
-        dbg_trace "[simps] > adding projection {(← decl_name)}:
-                  > {← decl_type}")
-  decorate_error ("Failed to add projection lemma " ++ decl_name ++ ". Nested error:") <| add_decl decl
-  let b ← succeeds <| is_def_eq lhs rhs
-  when (b ∧ `simp ∈ cfg) (set_basic_attribute `_refl_lemma decl_name true)
-  cfg fun nm => set_attribute nm decl_name tt
-  when cfg <| to_additive.attr decl_name ⟨false, cfg, cfg, none, true⟩ tt
+        dbg_trace "[simps] > adding projection {declName}:
+                  > {declType}")
+  decorateError ("Failed to add projection lemma " ++ declName ++ ". Nested error:") <| addDecl decl
+  let b ← succeeds <| isDefEq lhs rhs
+  when (b ∧ `simp ∈ cfg) (set_basic_attribute `_refl_lemma declName true)
+  cfg fun nm => set_attribute nm declName tt
+  when cfg <| toAdditive.attr declName ⟨false, cfg, cfg, none, true⟩ tt
 
 /-- Derive lemmas specifying the projections of the declaration.
   If `todo` is non-empty, it will generate exactly the names in `todo`.
-  `to_apply` is non-empty after a custom projection that is a composition of multiple projections
+  `toApply` is non-empty after a custom projection that is a composition of multiple projections
   was just used. In that case we need to apply these projections before we continue changing lhs. -/
 def simpsAddProjections :
-    ∀ e : environment nm : Name type lhs rhs : Expr args : List expr univs : List Name must_be_str : Bool cfg : SimpsCfg
-      todo : List Stringₓ to_apply : List ℕ, tactic Unit
-  | e, nm, type, lhs, rhs, args, univs, must_be_str, cfg, todo, to_apply => do
+    ∀ e : environment nm : Name type lhs rhs : Expr args : List Expr univs : List Name mustBeStr : Bool cfg : SimpsCfg
+      todo : List String toApply : List ℕ, tactic Unit
+  | e, nm, type, lhs, rhs, args, univs, mustBeStr, cfg, todo, toApply => do
     -- we don't want to unfold non-reducible definitions (like `set`) to apply more arguments
         whenTracing
         `simps.debug
         (← do
-          dbg_trace "[simps] > Type of the expression before normalizing: {← type}")
+          dbg_trace "[simps] > Type of the Expression before normalizing: {type}")
     let (typeArgs, tgt) ← open_pis_whnf type cfg.typeMd
     trace[simps.debug]
         (← do
-          dbg_trace "[simps] > Type after removing pi's: {← tgt}")
+          dbg_trace "[simps] > Type after removing pi's: {tgt}")
     let tgt ← whnf tgt
     trace[simps.debug]
         (← do
-          dbg_trace "[simps] > Type after reduction: {← tgt}")
-    let new_args := args ++ typeArgs
-    let lhs_ap := lhs.instantiate_lambdas_or_apps typeArgs
-    let rhs_ap := rhs.instantiate_lambdas_or_apps typeArgs
-    let str := tgt.getAppFn.const_name
+          dbg_trace "[simps] > Type after reduction: {tgt}")
+    let newArgs := args ++ typeArgs
+    let lhsAp := lhs.instantiateLambdasOrApps typeArgs
+    let rhsAp := rhs.instantiateLambdasOrApps typeArgs
+    let str := tgt.getAppFn.constName
     let-- We want to generate the current projection if it is in `todo`
-    todo_next := todo.filter (· ≠ "")
+    todoNext := todo.filter (· ≠ "")
     /- Don't recursively continue if `str` is not a structure or if the structure is in
-            `not_recursive`. -/
-        if e str ∧ ¬(todo = [] ∧ str ∈ cfg ∧ ¬must_be_str) then do
+            `notRecursive`. -/
+        if e str ∧ ¬(todo = [] ∧ str ∈ cfg ∧ ¬mustBeStr) then do
         let [intro] ← return <| e str | throwError "unreachable code (3)"
-        let rhs_whnf ← whnf rhs_ap cfg
-        let (rhs_ap, todo_now)
-          ←-- `todo_now` means that we still have to generate the current simp lemma
-              if ¬is_constant_of rhs_ap intro ∧ is_constant_of rhs_whnf intro then
+        let rhsWhnf ← whnf rhsAp cfg
+        let (rhsAp, todoNow)
+          ←-- `todoNow` means that we still have to generate the current simp lemma
+              if ¬isConstantOf rhsAp intro ∧ isConstantOf rhsWhnf intro then
               /- If this was a desired projection, we want to apply it before taking the whnf.
                           However, if the current field is an eta-expansion (see below), we first want
                           to eta-reduce it and only then construct the projection.
                           This makes the flow of this function messy. -/
                   when
-                  ("" ∈ todo ∧ to_apply = [])
-                  (if cfg then simpsAddProjection nm tgt lhs_ap rhs_ap new_args univs cfg
+                  ("" ∈ todo ∧ toApply = [])
+                  (if cfg then simpsAddProjection nm tgt lhsAp rhsAp newArgs univs cfg
                   else simpsAddProjection nm type lhs rhs args univs cfg) >>
-                return (rhs_whnf, false)
-            else return (rhs_ap, "" ∈ todo ∧ to_apply = [])
-        if is_constant_of (getAppFn rhs_ap) intro then do
+                return (rhsWhnf, false)
+            else return (rhsAp, "" ∈ todo ∧ toApply = [])
+        if isConstantOf (getAppFn rhsAp) intro then do
             let projInfo
               ←-- if the value is a constructor application
                   simpsGetProjectionExprs
-                  e tgt rhs_ap cfg
+                  e tgt rhsAp cfg
             trace[simps.debug]
                 (← do
                   dbg_trace "[simps] > Raw projection information:
-                      {← projInfo}")
-            let eta ← rhs_ap
-            let-- check whether `rhs_ap` is an eta-expansion
-            rhs_ap := eta rhs_ap
-            -- eta-reduce `rhs_ap`
-                  /- As a special case, we want to automatically generate the current projection if `rhs_ap`
+                      {projInfo}")
+            let eta ← rhsAp
+            let-- check whether `rhsAp` is an eta-expansion
+            rhsAp := eta rhsAp
+            -- eta-reduce `rhsAp`
+                  /- As a special case, we want to automatically generate the current projection if `rhsAp`
                           was an eta-expansion. Also, when this was a desired projection, we need to generate the
                           current projection if we haven't done it above. -/
                   when
-                  (todo_now ∨ todo = [] ∧ eta ∧ to_apply = []) <|
-                if cfg then simpsAddProjection nm tgt lhs_ap rhs_ap new_args univs cfg
+                  (todoNow ∨ todo = [] ∧ eta ∧ toApply = []) <|
+                if cfg then simpsAddProjection nm tgt lhsAp rhsAp newArgs univs cfg
                 else simpsAddProjection nm type lhs rhs args univs cfg
             -- If we are in the middle of a composite projection.
                   when
-                  (to_apply ≠ []) <|
+                  (toApply ≠ []) <|
                 do
-                let ⟨new_rhs, proj, projExprxpr, projNrs, isDefault, isPrefix⟩ ← return <| projInfo to_apply
-                let new_type ← infer_type new_rhs
+                let ⟨newRhs, proj, projExprxpr, projNrs, isDefault, isPrefix⟩ ← return <| projInfo toApply
+                let newType ← inferType newRhs
                 trace[simps.debug]
                     (← do
                       dbg_trace "[simps] > Applying a custom composite projection. Current lhs:
-                                >  {← lhs_ap}")
-                simpsAddProjections e nm new_type lhs_ap new_rhs new_args univs false cfg todo to_apply
+                                >  {lhsAp}")
+                simpsAddProjections e nm newType lhsAp newRhs newArgs univs false cfg todo toApply
             /- We stop if no further projection is specified or if we just reduced an eta-expansion and we
                         automatically choose projections -/
                   when
-                  ¬(to_apply ≠ [] ∨ todo = [""] ∨ eta ∧ todo = []) <|
+                  ¬(toApply ≠ [] ∨ todo = [""] ∨ eta ∧ todo = []) <|
                 do
                 let projs : List Name := projInfo fun x => x
-                let todo := if to_apply = [] then todo_next else todo
+                let todo := if toApply = [] then todoNext else todo
                 -- check whether all elements in `todo` have a projection as prefix
                       guardₓ
                       (todo fun x => projs fun proj => ("_" ++ proj).isPrefixOf x) <|>
                     let x := (todo fun x => projs fun proj => ¬("_" ++ proj).isPrefixOf x).iget
-                    let simp_lemma := nm x
-                    let needed_proj := (x '_').tail.head
+                    let simpLemma := nm x
+                    let neededProj := (x '_').tail.head
                     throwError
                       "Invalid simp lemma {(←
-                        simp_lemma)}. Structure {(← str)} does not have projection {(← needed_proj)}.
+                        simpLemma)}. Structure {str} does not have projection {(← neededProj)}.
                       The known projections are:
-                        {(← projs)}
+                        {projs}
                       You can also see this information by running
-                        `initializeSimpsProjections? {← str}`.
+                        `initializeSimpsProjections? {str}`.
                       Note: these projection names might not correspond to the projection names of the structure."
-                projInfo fun proj_nr ⟨new_rhs, proj, projExprxpr, projNrs, isDefault, isPrefix⟩ => do
-                    let new_type ← infer_type new_rhs
-                    let new_todo := todo.filter_map fun x => x ("_" ++ proj)
+                projInfo fun projNr ⟨newRhs, proj, projExprxpr, projNrs, isDefault, isPrefix⟩ => do
+                    let newType ← inferType newRhs
+                    let new_todo := todo.filterMap fun x => x ("_" ++ proj)
                     -- we only continue with this field if it is non-propositional or mentioned in todo
                           when
                           (isDefault ∧ todo = [] ∨ new_todo ≠ []) <|
                         do
-                        let new_lhs := projExprxpr [lhs_ap]
-                        let new_nm := nm proj isPrefix
+                        let newLhs := projExprxpr [lhsAp]
+                        let newName := nm proj isPrefix
                         let new_cfg :=
-                          { cfg with addAdditive := cfg fun nm => nm (to_additive.guess_name proj) isPrefix }
+                          { cfg with addAdditive := cfg fun nm => nm (toAdditive.guess_name proj) isPrefix }
                         trace[simps.debug]
                             (← do
                               dbg_trace "[simps] > Recursively add projections for:
-                                        >  {← new_lhs}")
-                        simpsAddProjections e new_nm new_type new_lhs new_rhs new_args univs false new_cfg new_todo
+                                        >  {newLhs}")
+                        simpsAddProjections e newName newType newLhs newRhs newArgs univs false new_cfg new_todo
                             projNrs
-          else-- if I'm about to run into an error, try to set the transparency for `rhs_md` higher.
-              if cfg = transparency.none ∧ (must_be_str ∨ todo_next ≠ [] ∨ to_apply ≠ []) then do
+          else-- if I'm about to run into an error, try to set the transparency for `rhsMd` higher.
+              if cfg = transparency.none ∧ (mustBeStr ∨ todoNext ≠ [] ∨ toApply ≠ []) then do
               when cfg
                   (← do
                     dbg_trace "[simps] > The given definition is not a constructor application:
-                              >   {← rhs_ap}
-                              > Retrying with the options \{ rhs_md := semireducible, simp_rhs := true}.")
-              simpsAddProjections e nm type lhs rhs args univs must_be_str
-                  { cfg with rhsMd := semireducible, simpRhs := true } todo to_apply
+                              >   {rhsAp}
+                              > Retrying with the options \{ rhsMd := semireducible, simpRhs := true}.")
+              simpsAddProjections e nm type lhs rhs args univs mustBeStr
+                  { cfg with rhsMd := semireducible, simpRhs := true } todo toApply
             else do
-              when (to_apply ≠ []) <|
-                  throwError "Invalid simp lemma {(← nm)}.
+              when (toApply ≠ []) <|
+                  throwError "Invalid simp lemma {nm}.
                     The given definition is not a constructor application:
-                      {← rhs_ap}"
-              when must_be_str <|
+                      {rhsAp}"
+              when mustBeStr <|
                   throwError "Invalid `simps` attribute. The body is not a constructor application:
-                      {← rhs_ap}"
-              when (todo_next ≠ []) <|
-                  throwError "Invalid simp lemma {(← nm todo_next)}.
+                      {rhsAp}"
+              when (todoNext ≠ []) <|
+                  throwError "Invalid simp lemma {(← nm todoNext)}.
                     The given definition is not a constructor application:
-                      {← rhs_ap}"
-              if cfg then simpsAddProjection nm tgt lhs_ap rhs_ap new_args univs cfg
+                      {rhsAp}"
+              if cfg then simpsAddProjection nm tgt lhsAp rhsAp newArgs univs cfg
                 else simpsAddProjection nm type lhs rhs args univs cfg
       else do
-        when must_be_str <| throwError "Invalid `simps` attribute. Target {← str} is not a structure"
-        when (todo_next ≠ [] ∧ str ∉ cfg) <|
-            let first_todo := todo_next
+        when mustBeStr <| throwError "Invalid `simps` attribute. Target {str} is not a structure"
+        when (todoNext ≠ [] ∧ str ∉ cfg) <|
+            let first_todo := todoNext
             throwError "Invalid simp lemma {(← nm first_todo)}.
-              Projection {← (first_todo '_').tail.head} doesn't exist, because target is not a structure."
-        if cfg then simpsAddProjection nm tgt lhs_ap rhs_ap new_args univs cfg
+              Projection {(first_todo '_').tail.head} doesn't exist, because target is not a structure."
+        if cfg then simpsAddProjection nm tgt lhsAp rhsAp newArgs univs cfg
           else simpsAddProjection nm type lhs rhs args univs cfg
 
 /-- `simpsTac` derives `simp` lemmas for all (nested) non-Prop projections of the declaration.
   If `todo` is non-empty, it will generate exactly the names in `todo`.
-  If `short_nm` is true, the generated names will only use the last projection name.
+  If `shortNm` is true, the generated names will only use the last projection name.
   If `trc` is true, trace as if `trace.simps.verbose` is true. -/
-def simpsTac (nm : Name) (cfg : SimpsCfg := {  }) (todo : List Stringₓ := []) (trc := false) : tactic Unit := do
+def simpsTac (nm : Name) (cfg : SimpsCfg := {  }) (todo : List String := []) (trc := false) : tactic Unit := do
   let env ← getEnv
   let d ← e.get nm
-  let lhs : Expr := const d.to_name d.levelParams
+  let lhs : Expr := const d.Name d.levelParams
   let todo := todo.dedup.map fun proj => "_" ++ proj
   let cfg := { cfg with trace := cfg.trace || ((← getOptions) |>.getBool `simps.verbose || trc }
-  let b ← hasAttribute' `to_additive nm
+  let b ← hasAttribute' `toAdditive nm
   let cfg ←
     if b then do
-        let dict ← to_additive.aux_attr.get_cache
+        let dict ← toAdditive.aux_attr.get_cache
         when cfg
             (← do
-              dbg_trace "[simps] > @[to_additive] will be added to all generated lemmas.")
+              dbg_trace "[simps] > @[toAdditive] will be added to all generated lemmas.")
         return { cfg with addAdditive := dict nm }
       else return cfg
   simpsAddProjections e nm d lhs d [] d true cfg todo []
 
 /-- The parser for the `@[simps]` attribute. -/
-def simpsParser : parser (Bool × List Stringₓ × SimpsCfg) := do
+def simpsParser : parser (Bool × List String × SimpsCfg) := do
   -- note: we don't check whether the user has written a nonsense namespace in an argument.
         Prod.mk <$>
         isSome <$> (tk "?")? <*>
       (Prod.mk <$> many (name.last <$> ident) <*> do
         let some e ← parser.pexpr? | return {  }
-        eval_pexpr SimpsCfg e)
+        evalPexpr SimpsCfg e)
 
 /-- The `@[simps]` attribute automatically derives lemmas specifying the projections of this
 declaration.
@@ -839,10 +870,10 @@ derives two `simp` lemmas:
 * It will automatically reduce newly created beta-redexes, but will not unfold any definitions.
 * If the structure has a coercion to either sorts or functions, and this is defined to be one
   of the projections, then this coercion will be used instead of the projection.
-* If the structure is a class that has an instance to a notation class, like `has_mul`, then this
+* If the structure is a class that has an instance to a notation class, like `Mul`, then this
   notation is used instead of the corresponding projection.
 * You can specify custom projections, by giving a declaration with name
-  `{structure_name}.simps.{projection_name}`. See Note [custom simps projection].
+  `{StructureName}.simps.{projectionName}`. See Note [custom simps projection].
 
   Example:
   ```lean
@@ -866,12 +897,12 @@ derives two `simp` lemmas:
   `simp` lemmas for all fields in that structure.
   * Exception: by default it will not recursively create `simp` lemmas for fields in the structures
     `prod` and `pprod`. You can give explicit projection names or change the value of
-    `simps_cfg.not_recursive` to override this behavior.
+    `simpsCfg.notRecursive` to override this behavior.
 
   Example:
   ```lean
-  structure my_prod (α β : Type*) := (fst : α) (snd : β)
-  @[simps] def foo : prod ℕ ℕ × my_prod ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
+  structure MyProd (α β : Type*) := (fst : α) (snd : β)
+  @[simps] def foo : prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
   ```
   generates
   ```lean
@@ -887,8 +918,8 @@ derives two `simp` lemmas:
 
   Example:
   ```lean
-  structure my_prod (α β : Type*) := (fst : α) (snd : β)
-  @[simps fst fst_fst snd] def foo : prod ℕ ℕ × my_prod ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
+  structure MyProd (α β : Type*) := (fst : α) (snd : β)
+  @[simps fst fst_fst snd] def foo : prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
   ```
   generates
   ```lean
@@ -900,30 +931,30 @@ derives two `simp` lemmas:
 
   Example:
   ```lean
-  structure equiv_plus_data (α β) extends α ≃ β := (data : bool)
-  @[simps] def bar {α} : equiv_plus_data α α := { data := true, ..equiv.refl α }
+  structure EquivPlusData (α β) extends α ≃ β := (data : bool)
+  @[simps] def bar {α} : EquivPlusData α α := { data := true, ..equiv.refl α }
   ```
   generates the following:
   ```lean
-  @[simp] lemma bar_to_equiv : ∀ {α : Sort*}, bar.to_equiv = equiv.refl α
+  @[simp] lemma bar_toEquiv : ∀ {α : Sort*}, bar.toEquiv = equiv.refl α
   @[simp] lemma bar_data : ∀ {α : Sort*}, bar.data = tt
   ```
   This is true, even though Lean inserts an eta-expanded version of `equiv.refl α` in the
   definition of `bar`.
-* For configuration options, see the doc string of `simps_cfg`.
-* The precise syntax is `('simps' ident* e)`, where `e` is an expression of type `simps_cfg`.
+* For configuration options, see the doc string of `simpsCfg`.
+* The precise syntax is `('simps' ident* e)`, where `e` is an Expression of type `simpsCfg`.
 * `@[simps]` reduces let-expressions where necessary.
 * When option `trace.simps.verbose` is true, `simps` will print the projections it finds and the
   lemmas it generates. The same can be achieved by using `@[simps?]`, except that in this case it
   will not print projection information.
-* Use `@[to_additive, simps]` to apply both `to_additive` and `simps` to a definition, making sure
-  that `simps` comes after `to_additive`. This will also generate the additive versions of all
+* Use `@[toAdditive, simps]` to apply both `toAdditive` and `simps` to a definition, making sure
+  that `simps` comes after `toAdditive`. This will also generate the additive versions of all
   `simp` lemmas.
 -/
 /- If one of the fields is a partially applied constructor, we will eta-expand it
   (this likely never happens, so is not included in the official doc). -/
 @[user_attribute]
-def simpsAttr : user_attribute Unit (Bool × List Stringₓ × SimpsCfg) where
+def simpsAttr : user_attribute Unit (Bool × List String × SimpsCfg) where
   Name := `simps
   descr := "Automatically derive lemmas specifying the projections of this declaration."
   parser := simpsParser
@@ -957,7 +988,7 @@ initialize simpsAttr : ParametricAttribute (Array Name) ←
 -- FROM LEAN 3
 
 import tactic.protected
-import algebra.group.to_additive
+import algebra.group.toAdditive
 
 section
 open format
@@ -991,7 +1022,7 @@ used by the `@[simps]` attribute.
   The `@[notationClass]` attribute specifies that this is a notation class,
   and this notation should be used instead of projections by @[simps].
   * The first argument `true` for notation classes and `false` for classes applied to the structure,
-    like `has_coe_to_sort` and `has_coe_toFun`
+    like `CoeSort` and `CoeFun`
   * The second argument is the name of the projection (by default it is the first projection
     of the structure)
 -/
@@ -1000,12 +1031,12 @@ used by the `@[simps]` attribute.
   descr := "An attribute specifying that this is a notation class. Used by @[simps].",
   parser := prod.mk <$> (option.is_none <$> (tk "*")?) <*> ident? }
 
-attribute [notationClass] has_zero has_one has_add has_mul has_inv has_neg has_sub has_div has_dvd
+attribute [notationClass] Zero has_one has_add Mul has_inv has_neg has_sub has_div has_dvd
   has_mod has_le has_lt has_append has_andthen has_union has_inter has_sdiff has_equiv has_subset
   has_ssubset has_emptyc has_insert has_singleton has_sep has_mem has_pow
 
-attribute [notationClass* coe_sort] has_coe_to_sort
-attribute [notationClass* coe_fn] has_coe_toFun
+attribute [notationClass* coe_sort] CoeSort
+attribute [notationClass* coe_fn] CoeFun
 
 /-- Returns the projection information of a structure. -/
 meta def projectionsInfo (l : list ProjectionData) (pref : string) (str : name) : TacticM Format :=
@@ -1024,39 +1055,39 @@ do
 
 /-- Auxiliary function of `getCompositeOfProjections`. -/
 meta def getCompositeOfProjectionsAux : Π (str : name) (proj : string) (x : Expr)
-  (pos : list ℕ) (args : list expr), tactic (expr × list ℕ) | str proj x pos args := do
+  (pos : list ℕ) (args : list Expr), tactic (expr × list ℕ) | str proj x pos args := do
   e ← getEnv,
   projs ← e.structure_fields str,
   let projInfo := projs.map_with_index $ λ n p, (λ x, (x, n, p)) <$> proj.get_rest ("_" ++ p.last),
-  when (projInfo.filter_map id = []) $
+  when (projInfo.filterMap id = []) $
     fail!"Failed to find constructor {proj.popn 1} in structure {str}.",
-  (projRest, index, projName) ← return (projInfo.filter_map id).ilast,
+  (projRest, index, projName) ← return (projInfo.filterMap id).ilast,
   strDecl ← e.get str,
   let projExpr : Expr := const (str ++ projName) strDecl.levelParams,
   projDecl ← e.get (str ++ projName),
-  type ← infer_type x,
-  let params := get_app_args type,
+  type ← inferType x,
+  let params := getAppArgs type,
   let univs := projDecl.univ_params.zip type.getAppFn.levelParams,
-  let newX := (projExpr.instantiate_univ_params univs).mk_app $ params ++ [x],
+  let newX := mkAppN (projExpr.instantiateUnivParams univs) $ params ++ [x],
   let newPos := pos ++ [index],
-  if projRest.is_empty then return (newX.lambdas args, newPos) else do
-    type ← infer_type newX,
+  if projRest.isEmpty then return (newX.lambdas args, newPos) else do
+    type ← inferType newX,
     (typeArgs, tgt) ← open_pis_whnf type,
-    let newStr := tgt.getAppFn.const_name,
-    getCompositeOfProjectionsAux newStr projRest (newX.mk_app typeArgs) newPos
+    let newStr := tgt.getAppFn.constName,
+    getCompositeOfProjectionsAux newStr projRest (mkAppN newX typeArgs) newPos
       (args ++ typeArgs)
 
 /-- Given a structure `str` and a projection `proj`, that could be multiple nested projections
-  (separated by `_`), returns an expression that is the composition of these projections and a
+  (separated by `_`), returns an Expression that is the composition of these projections and a
   list of natural numbers, that are the projection numbers of the applied projections. -/
 meta def getCompositeOfProjections (str : name) (proj : string) : tactic (expr × list ℕ) := do
   e ← getEnv,
   strDecl ← e.get str,
   let strExpr : Expr := const str strDecl.levelParams,
-  type ← infer_type strExpr,
+  type ← inferType strExpr,
   (typeArgs, tgt) ← open_pis_whnf type,
-  let str_ap := strExpr.mk_app typeArgs,
-  x ← mk_local' `x binder_info.default str_ap,
+  let strAp := mkAppN strExpr typeArgs,
+  x ← mk_local' `x binder_info.default strAp,
   getCompositeOfProjectionsAux str ("_" ++ proj) x [] $ typeArgs ++ [x]
 
 /--
@@ -1068,7 +1099,7 @@ meta def getCompositeOfProjections (str : name) (proj : string) : tactic (expr �
 
   The returned universe levels are the universe levels of the structure. For the projections there
   are three cases
-  * If the declaration `{structure_name}.simps.{projection_name}` has been declared, then the value
+  * If the declaration `{StructureName}.simps.{projectionName}` has been declared, then the value
     of this declaration is used (after checking that it is definitionally equal to the actual
     projection. If you rename the projection name, the declaration should have the *new* projection
     name.
@@ -1078,11 +1109,11 @@ meta def getCompositeOfProjections (str : name) (proj : string) : tactic (expr �
     projection that is definitionally equal to it (if there is such a projection).
     This means in practice that coercions to function types and sorts will be used instead of
     a projection, if this coercion is definitionally equal to a projection. Furthermore, for
-    notation classes like `has_mul` and `has_zero` those projections are used instead of the
+    notation classes like `Mul` and `Zero` those projections are used instead of the
     corresponding projection.
     Projections for coercions and notation classes are not automatically generated if they are
     composites of multiple projections (for example when you use `extend` without the
-    `olstrDeclucture_cmd`).
+    `oldStructureCmd`).
   * Otherwise, the projection of the structure is chosen.
     For example: ``simpsGetRawProjections env `prod`` gives the default projections
 ```
@@ -1098,10 +1129,10 @@ meta def getCompositeOfProjections (str : name) (proj : string) : tactic (expr �
 ```
 
   Optionally, this command accepts three optional arguments:
-  * If `trace_if_exists` the command will always generate a trace message when the structure already
+  * If `traceIfExists` the command will always generate a trace message when the structure already
     has the attribute `@[simpsStructure]`.
-  * The `rules` argument accepts a list of pairs `sum.inl (old_name, new_name)`. This is used to
-    change the projection name `old_name` to the custom projection name `new_name`. Example:
+  * The `rules` argument accepts a list of pairs `sum.inl (oldName, newName)`. This is used to
+    change the projection name `oldName` to the custom projection name `newName`. Example:
     for the structure `equiv` the projection `toFun` could be renamed `apply`. This name will be
     used for parsing and generating projection names. This argument is ignored if the structure
     already has an existing attribute. If an element of `rules` is of the form `sum.inr name`, this
@@ -1110,7 +1141,7 @@ meta def getCompositeOfProjections (str : name) (proj : string) : tactic (expr �
 -/
 -- if performance becomes a problem, possible heuristic: use the names of the projections to
 -- skip all classes that don't have the corresponding field.
-meta def simpsGetRawProjections (e : environment) (str : name) (trace_if_exists : bool := false)
+meta def simpsGetRawProjections (e : environment) (str : name) (traceIfExists : bool := false)
   (rules : list projection_rule := []) (trc := false) :
   tactic (list name × list ProjectionData) := do
   let trc := trc || ((← getOptions) |>.getBool `simps.verbose,
@@ -1119,7 +1150,7 @@ meta def simpsGetRawProjections (e : environment) (str : name) (trace_if_exists 
     data ← simpsStructure.get_param str,
     -- We always print the projections when they already exists and are called by
     -- `initializeSimpsProjections`.
-    when (trace_if_exists || ((← getOptions) |>.getBool `simps.verbose) $ projectionsInfo data.2
+    when (traceIfExists || ((← getOptions) |>.getBool `simps.verbose) $ projectionsInfo data.2
       "Already found projection information for structure" str >>= trace,
     return data
   else do
@@ -1137,90 +1168,90 @@ meta def simpsGetRawProjections (e : environment) (str : name) (trace_if_exists 
     let projs : list ParsedProjectionData := projs.map $ λ nm, ⟨nm, nm, true, false⟩,
     let projs : list ParsedProjectionData := rules.foldl (λ projs rule,
       match rule with
-      | (inl (old_nm, new_nm), isPrefix) := if old_nm ∈ projs.map (λ x, x.new_name) then
+      | (inl (oldName, newName), isPrefix) := if oldName ∈ projs.map (λ x, x.newName) then
         projs.map $ λ proj,
-          if proj.new_name = old_nm then
-            { new_name := new_nm, isPrefix := isPrefix, ..proj } else
+          if proj.newName = oldName then
+            { newName := newName, isPrefix := isPrefix, ..proj } else
             proj else
-        projs ++ [⟨old_nm, new_nm, true, isPrefix⟩]
-      | (inr nm, isPrefix) := if nm ∈ projs.map (λ x, x.new_name) then
-        projs.map $ λ proj, if proj.new_name = nm then
+        projs ++ [⟨oldName, newName, true, isPrefix⟩]
+      | (inr nm, isPrefix) := if nm ∈ projs.map (λ x, x.newName) then
+        projs.map $ λ proj, if proj.newName = nm then
           { isDefault := false, isPrefix := isPrefix, ..proj } else
           proj else
         projs ++ [⟨nm, nm, false, isPrefix⟩]
       end) projs,
     trace[simps.debug] trace!"[simps] > Projection info after applying the rules: {projs}.",
-    when ¬ (projs.map $ λ x, x.new_name : list name).nodup $
+    when ¬ (projs.map $ λ x, x.newName : list name).nodup $
       throwError $ "Invalid projection names. Two projections have the same name.
 This is likely because a custom composition of projections was given the same name as an " ++
 "existing projection. Solution: rename the existing projection (before renaming the custom " ++
 "projection).",
-    /- Define the raw expressions for the projections, by default as the projections
-    (as an expression), but this can be overriden by the user. -/
-    raw_exprs_and_nrs ← projs.mmap $ λ ⟨orig_nm, new_nm, _, _⟩, do
-    { (raw_expr, nrs) ← getCompositeOfProjections str orig_nm.last,
-      custom_proj ← do
-      { decl ← e.get (str ++ `simps ++ new_nm.last),
-        let custom_proj := decl.value.instantiate_univ_params $ decl.univ_params.zip rawLevels,
+    /- Define the raw Expressions for the projections, by default as the projections
+    (as an Expression), but this can be overriden by the user. -/
+    rawExprsAndNrs ← projs.mmap $ λ ⟨orig_nm, newName, _, _⟩, do
+    { (rawExpr, nrs) ← getCompositeOfProjections str orig_nm.last,
+      customProj ← do
+      { decl ← e.get (str ++ `simps ++ newName.last),
+        let customProj := decl.value.instantiateUnivParams $ decl.univ_params.zip rawLevels,
         when trc trace!
-          "[simps] > found custom projection for {new_nm}:\n        > {custom_proj}",
-        return custom_proj } <|> return raw_expr,
-      is_def_eq custom_proj raw_expr <|>
-        -- if the type of the expression is different, we show a different error message, because
+          "[simps] > found custom projection for {newName}:\n        > {customProj}",
+        return customProj } <|> return rawExpr,
+      isDefEq customProj rawExpr <|>
+        -- if the type of the Expression is different, we show a different error message, because
         -- that is more likely going to be helpful.
         do
-        { custom_proj_type ← infer_type custom_proj,
-          raw_expr_type ← infer_type raw_expr,
-          b ← succeeds (is_def_eq custom_proj_type raw_expr_type),
-          if b then fail!"Invalid custom projection:\n  {custom_proj}
-Expression is not definitionally equal to\n  {raw_expr}"
-          else fail!"Invalid custom projection:\n  {custom_proj}
-Expression has different type than {str ++ orig_nm}. Given type:\n  {custom_proj_type}
-Expected type:\n  {raw_expr_type}" },
-      return (custom_proj, nrs) },
-    let raw_exprs := raw_exprs_and_nrs.map prod.fst,
+        { customProjType ← inferType customProj,
+          rawExprType ← inferType rawExpr,
+          b ← succeeds (isDefEq customProjType rawExprType),
+          if b then fail!"Invalid custom projection:\n  {customProj}
+Expression is not definitionally equal to\n  {rawExpr}"
+          else fail!"Invalid custom projection:\n  {customProj}
+Expression has different type than {str ++ orig_nm}. Given type:\n  {customProjType}
+Expected type:\n  {rawExprType}" },
+      return (customProj, nrs) },
+    let rawExprs := rawExprsAndNrs.map prod.fst,
     /- Check for other coercions and type-class arguments to use as projections instead. -/
     (args, _) ← open_pis strDecl.type,
-    let e_str := (expr.const str rawLevels).mk_app args,
-    automatic_projs ← attribute.get_instances `notationClass,
-    raw_exprs ← automatic_projs.mfoldl (λ (raw_exprs : list expr) class_nm, do
-    { (is_class, projName) ← notationClass_attr.get_param class_nm,
-      projName ← projName <|> (e.structure_fields_full class_nm).map list.head,
-      /- For this class, find the projection. `raw_expr` is the projection found applied to `args`,
-        and `lambda_raw_expr` has the arguments `args` abstracted. -/
-      (raw_expr, lambda_raw_expr) ← if is_class then (do
+    let eStr := mkAppN (expr.const str rawLevels) args,
+    automaticProjs ← attribute.get_instances `notationClass,
+    rawExprs ← automaticProjs.mfoldl (λ (rawExprs : list Expr) className, do
+    { (isClass, projName) ← notationClass_attr.get_param className,
+      projName ← projName <|> (e.structure_fields_full className).map list.head,
+      /- For this class, find the projection. `rawExpr` is the projection found applied to `args`,
+        and `lambdaRawExpr` has the arguments `args` abstracted. -/
+      (rawExpr, lambdaRawExpr) ← if isClass then (do
         guard $ args.length = 1,
-        let e_inst_type := (const class_nm rawLevels).mk_app args,
-        (hyp, e_inst) ← try_for 1000 (mk_conditional_instance e_str e_inst_type),
-        raw_expr ← mk_mapp projName [args.head, e_inst],
+        let eInstType := mkAppN (const className rawLevels) args,
+        (hyp, eInst) ← tryFor 1000 (mk_conditional_instance eStr eInstType),
+        rawExpr ← mkAppOptM projName [args.head, eInst],
         clear hyp,
         -- Note: `expr.bind_lambda` doesn't give the correct type
-        raw_expr_lambda ← lambdas [hyp] raw_expr,
-        return (raw_expr, raw_expr_lambda.lambdas args))
+        rawExprLambda ← lambdas [hyp] rawExpr,
+        return (rawExpr, rawExprLambda.lambdas args))
       else (do
-        e_inst_type ← to_expr (((const class_nm []).app (pexpr.of_expr e_str)).app ``(_)),
-        e_inst ← try_for 1000 (mk_instance e_inst_type),
-        raw_expr ← mk_mapp projName [e_str, none, e_inst],
-        return (raw_expr, raw_expr.lambdas args)),
-      raw_expr_whnf ← whnf raw_expr,
-      let relevant_proj := raw_expr_whnf.binding_body.getAppFn.const_name,
+        eInstType ← toExpr (((const className []).app (pexpr.of_expr eStr)).app ``(_)),
+        eInst ← tryFor 1000 (mk_instance eInstType),
+        rawExpr ← mkAppOptM projName [eStr, none, eInst],
+        return (rawExpr, rawExpr.lambdas args)),
+      rawExprWhnf ← whnf rawExpr,
+      let relevantProj := rawExprWhnf.binding_body.getAppFn.constName,
       /- Use this as projection, if the function reduces to a projection, and this projection has
         not been overrriden by the user. -/
       guard $ projs.any $
-        λ x, x.1 = relevant_proj.last ∧ ¬ e.contains (str ++ `simps ++ x.new_name.last),
-      let pos := projs.find_index (λ x, x.1 = relevant_proj.last),
+        λ x, x.1 = relevantProj.last ∧ ¬ e.contains (str ++ `simps ++ x.newName.last),
+      let pos := projs.find_index (λ x, x.1 = relevantProj.last),
       when trc trace!
-        "        > using {projName} instead of the default projection {relevant_proj.last}.",
-      trace[simps.debug] trace!"[simps] > The raw projection is:\n  {lambda_raw_expr}",
-      return $ raw_exprs.update_nth pos lambda_raw_expr } <|> return raw_exprs) raw_exprs,
-    let positions := raw_exprs_and_nrs.map prod.snd,
-    let proj_names := projs.map (λ x, x.new_name),
+        "        > using {projName} instead of the default projection {relevantProj.last}.",
+      trace[simps.debug] trace!"[simps] > The raw projection is:\n  {lambdaRawExpr}",
+      return $ rawExprs.update_nth pos lambdaRawExpr } <|> return rawExprs) rawExprs,
+    let positions := rawExprsAndNrs.map prod.snd,
+    let projNames := projs.map (λ x, x.newName),
     let defaults := projs.map (λ x, x.isDefault),
     let prefixes := projs.map (λ x, x.isPrefix),
-    let projs := proj_names.zip_with5 ProjectionData.mk raw_exprs positions defaults prefixes,
+    let projs := projNames.zip_with5 ProjectionData.mk rawExprs positions defaults prefixes,
     /- make all proof non-default. -/
     projs ← projs.mmap $ λ proj,
-      is_proof proj.expr >>= λ b, return $ if b then { isDefault := false, .. proj } else proj,
+      isProof proj.expr >>= λ b, return $ if b then { isDefault := false, .. proj } else proj,
     when trc $ projectionsInfo projs "generated projections for" str >>= trace,
     simpsStructure.set str (rawUnivs, projs) true,
     trace[simps.debug] trace!
@@ -1228,27 +1259,27 @@ Expected type:\n  {raw_expr_type}" },
     return (rawUnivs, projs)
 
 /-- Parse a rule for `initializeSimpsProjections`. It is either `<name>→<name>` or `-<name>`,
-  possibly following by `as_prefix`.-/
+  possibly following by `asPrefix`.-/
 meta def simpsParseRule : parser projection_rule :=
 prod.mk <$>
   ((λ x y, inl (x, y)) <$> ident <*> (tk "->" >> ident) <|> inr <$> (tk "-" >> ident)) <*>
-  isSome <$> (tk "as_prefix")?
+  isSome <$> (tk "asPrefix")?
 
 /--
 You can specify custom projections for the `@[simps]` attribute.
-To do this for the projection `my_structure.original_projection` by adding a declaration
-`my_structure.simps.my_projection` that is definitionally equal to
-`my_structure.original_projection` but has the projection in the desired (simp-normal) form.
+To do this for the projection `MyStructure.originalProjection` by adding a declaration
+`MyStructure.simps.myProjection` that is definitionally equal to
+`MyStructure.originalProjection` but has the projection in the desired (simp-normal) form.
 Then you can call
 ```
-initializeSimpsProjections (original_projection → my_projection, ...)
+initializeSimpsProjections (originalProjection → myProjection, ...)
 ```
 to register this projection. See `initializeSimpsProjectionsCmd` for more information.
 
 You can also specify custom projections that are definitionally equal to a composite of multiple
-projections. This is often desirable when extending structures (without `olstrDeclucture_cmd`).
+projections. This is often desirable when extending structures (without `oldStructureCmd`).
 
-`has_coe_toFun` and notation class (like `has_mul`) instances will be automatically used, if they
+`CoeFun` and notation class (like `Mul`) instances will be automatically used, if they
 are definitionally equal to a projection of the structure (but not when they are equal to the
 composite of multiple projections).
 -/
@@ -1260,16 +1291,16 @@ This command specifies custom names and custom projections for the simp attribut
   `initializeSimpsProjections equiv (toFun → apply, invFun → symm_apply)`.
 * See Note [custom simps projection] and the examples below for information how to declare custom
   projections.
-* If no custom projection is specified, the projection will be `coe_fn`/`⇑` if a `has_coe_toFun`
-  instance has been declared, or the notation of a notation class (like `has_mul`) if such an
+* If no custom projection is specified, the projection will be `coe_fn`/`⇑` if a `CoeFun`
+  instance has been declared, or the notation of a notation class (like `Mul`) if such an
   instance is available. If none of these cases apply, the projection itself will be used.
 * You can disable a projection by default by running
   `initializeSimpsProjections equiv (-invFun)`
   This will ensure that no simp lemmas are generated for this projection,
   unless this projection is explicitly specified by the user.
 * If you want the projection name added as a prefix in the generated lemma name, you can add the
-  `as_prefix` modifier:
-  `initializeSimpsProjections equiv (toFun → coe as_prefix)`
+  `asPrefix` modifier:
+  `initializeSimpsProjections equiv (toFun → coe asPrefix)`
   Note that this does not influence the parsing of projection names: if you have a declaration
   `foo` and you want to apply the projections `snd`, `coe` (which is a prefix) and `fst`, in that
   order you can run `@[simps snd_coe_fst] def foo ...` and this will generate a lemma with the
@@ -1280,43 +1311,43 @@ This command specifies custom names and custom projections for the simp attribut
   ```
     structure A := (proj : ℕ)
     structure B extends A
-    initializeSimpsProjections? B (to_A_proj → proj, -to_A)
+    initializeSimpsProjections? B (toA_proj → proj, -toA)
   ```
   You can also make your custom projection that is definitionally equal to a composite of
   projections. In this case, coercions and notation classes are not automatically recognized, and
   should be manually given by giving a custom projection.
-  This is especially useful when extending a structure (without `olstrDeclucture_cmd`).
-  In the above example, it is desirable to add `-to_A`, so that `@[simps]` doesn't automatically
-  apply the `B.to_A` projection and then recursively the `A.proj` projection in the lemmas it
-  generates. If you want to get both the `foo_proj` and `foo_to_A` simp lemmas, you can use
-  `@[simps, simps to_A]`.
-* Running `initializeSimpsProjections my_struc` without arguments is not necessary, it has the
+  This is especially useful when extending a structure (without `oldStructureCmd`).
+  In the above example, it is desirable to add `-toA`, so that `@[simps]` doesn't automatically
+  apply the `B.toA` projection and then recursively the `A.proj` projection in the lemmas it
+  generates. If you want to get both the `foo_proj` and `foo_toA` simp lemmas, you can use
+  `@[simps, simps toA]`.
+* Running `initializeSimpsProjections MyStruc` without arguments is not necessary, it has the
   same effect if you just add `@[simps]` to a declaration.
 * If you do anything to change the default projections, make sure to call either `@[simps]` or
   `initializeSimpsProjections` in the same file as the structure declaration. Otherwise, you might
   have a file that imports the structure, but not your custom projections.
 
 Some common uses:
-* If you define a new homomorphism-like structure (like `mul_hom`) you can just run
-  `initializeSimpsProjections` after defining the `has_coe_toFun` instance
+* If you define a new homomorphism-like structure (like `MulHom`) you can just run
+  `initializeSimpsProjections` after defining the `CoeFun` instance
   ```
-    instance {mM : has_mul M} {mN : has_mul N} : has_coe_toFun (mul_hom M N) := ...
-    initializeSimpsProjections mul_hom (toFun → apply)
+    instance {mM : Mul M} {mN : Mul N} : CoeFun (MulHom M N) := ...
+    initializeSimpsProjections MulHom (toFun → apply)
   ```
   This will generate `foo_apply` lemmas for each declaration `foo`.
 * If you prefer `coe_foo` lemmas that state equalities between functions, use
-  `initializeSimpsProjections mul_hom (toFun → coe as_prefix)`
-  In this case you have to use `@[simps {fully_applied := false}]` or equivalently `@[simps as_fn]`
+  `initializeSimpsProjections MulHom (toFun → coe asPrefix)`
+  In this case you have to use `@[simps {fullyApplied := false}]` or equivalently `@[simps asFn]`
   whenever you call `@[simps]`.
 * You can also initialize to use both, in which case you have to choose which one to use by default,
   by using either of the following
   ```
-    initializeSimpsProjections mul_hom (toFun → apply, toFun → coe, -coe as_prefix)
-    initializeSimpsProjections mul_hom (toFun → apply, toFun → coe as_prefix, -apply)
+    initializeSimpsProjections MulHom (toFun → apply, toFun → coe, -coe asPrefix)
+    initializeSimpsProjections MulHom (toFun → apply, toFun → coe asPrefix, -apply)
   ```
-  In the first case, you can get both lemmas using `@[simps, simps coe as_fn]` and in the second
-  case you can get both lemmas using `@[simps as_fn, simps apply]`.
-* If your new homomorphism-like structure extends another structure (without `olstrDeclucture_cmd`)
+  In the first case, you can get both lemmas using `@[simps, simps coe asFn]` and in the second
+  case you can get both lemmas using `@[simps asFn, simps apply]`.
+* If your new homomorphism-like structure extends another structure (without `oldStructureCmd`)
   (like `relEmbedding`), then you have to specify explicitly that you want to use a coercion
   as a custom projection. For example
   ```
@@ -1336,13 +1367,13 @@ Some common uses:
   trc ← isSome <$> (tk "?")?,
   ns ← (prod.mk <$> ident <*> (tk "(" >> sep_by (tk ",") simpsParseRule <* tk ")")?)*,
   ns.mmap' $ λ data, do
-    nm ← resolve_constant data.1,
+    nm ← resolveConstant data.1,
     simpsGetRawProjections env nm true (data.2.get_or_else []) trc
 
 add_tactic_doc
 { name                     := "initializeSimpsProjections",
   category                 := doc_category.cmd,
-  decl_names               := [`initializeSimpsProjectionsCmd],
+  declNames               := [`initializeSimpsProjectionsCmd],
   tags                     := ["simplification"] }
 
 /--
@@ -1351,59 +1382,59 @@ add_tactic_doc
     The attributes can be either basic attributes, or user attributes without parameters.
     There are two attributes which `simps` might add itself:
     * If ``[`simp]`` is in the list, then ``[`_refl_lemma]`` is added automatically if appropriate.
-    * If the definition is marked with `@[to_additive ...]` then all generated lemmas are marked
-      with `@[to_additive]`. This is governed by the `add_additive` configuration option.
-  * if `simp_rhs` is `true` then the right-hand-side of the generated lemmas will be put in
-    simp-normal form. More precisely: `dsimp, simp` will be called on all these expressions.
+    * If the definition is marked with `@[toAdditive ...]` then all generated lemmas are marked
+      with `@[toAdditive]`. This is governed by the `addAdditive` configuration option.
+  * if `simpRhs` is `true` then the right-hand-side of the generated lemmas will be put in
+    simp-normal form. More precisely: `dsimp, simp` will be called on all these Expressions.
     See note [dsimp, simp].
-  * `type_md` specifies how aggressively definitions are unfolded in the type of expressions
+  * `typeMd` specifies how aggressively definitions are unfolded in the type of Expressions
     for the purposes of finding out whether the type is a function type.
     Default: `instances`. This will unfold coercion instances (so that a coercion to a function type
     is recognized as a function type), but not declarations like `set`.
-  * `rhs_md` specifies how aggressively definition in the declaration are unfolded for the purposes
+  * `rhsMd` specifies how aggressively definition in the declaration are unfolded for the purposes
     of finding out whether it is a constructor.
     Default: `none`
     Exception: `@[simps]` will automatically add the options
-    `{rhs_md := semireducible, simp_rhs := true}` if the given definition is not a constructor with
-    the given reducibility setting for `rhs_md`.
-  * If `fully_applied` is `false` then the generated `simp` lemmas will be between non-fully applied
+    `{rhsMd := semireducible, simpRhs := true}` if the given definition is not a constructor with
+    the given reducibility setting for `rhsMd`.
+  * If `fullyApplied` is `false` then the generated `simp` lemmas will be between non-fully applied
     terms, i.e. equalities between functions. This does not restrict the recursive behavior of
     `@[simps]`, so only the "final" projection will be non-fully applied.
     However, it can be used in combination with explicit field names, to get a partially applied
     intermediate projection.
-  * The option `not_recursive` contains the list of names of types for which `@[simps]` doesn't
+  * The option `notRecursive` contains the list of names of types for which `@[simps]` doesn't
     recursively apply projections. For example, given an equivalence `α × β ≃ β × α` one usually
     wants to only apply the projections for `equiv`, and not also those for `×`. This option is
     only relevant if no explicit projection names are given as argument to `@[simps]`.
   * The option `trace` is set to `true` when you write `@[simps?]`. In this case, the attribute will
     print all generated lemmas. It is almost the same as setting the option `trace.simps.verbose`,
     except that it doesn't print information about the found projections.
-  * if `add_additive` is `some nm` then `@[to_additive]` is added to the generated lemma. This
+  * if `addAdditive` is `some nm` then `@[toAdditive]` is added to the generated lemma. This
     option is automatically set to `true` when the original declaration was tagged with
-    `@[to_additive, simps]` (in that order), where `nm` is the additive name of the original
+    `@[toAdditive, simps]` (in that order), where `nm` is the additive name of the original
     declaration.
 -/
-@[derive [has_reflect, inhabited]] structure simps_cfg :=
+@[derive [has_reflect, inhabited]] structure simpsCfg :=
 (attrs         := [`simp])
-(simp_rhs      := false)
-(type_md       := transparency.instances)
-(rhs_md        := transparency.none)
-(fully_applied := true)
-(not_recursive := [`prod, `pprod])
+(simpRhs      := false)
+(typeMd       := transparency.instances)
+(rhsMd        := transparency.none)
+(fullyApplied := true)
+(notRecursive := [`prod, `pprod])
 (trace         := false)
-(add_additive  := @none name)
+(addAdditive  := @none name)
 
 /-- A common configuration for `@[simps]`: generate equalities between functions instead equalities
-  between fully applied expressions. -/
-def as_fn : simps_cfg := {fully_applied := false}
+  between fully applied Expressions. -/
+def asFn : simpsCfg := {fullyApplied := false}
 /-- A common configuration for `@[simps]`: don't tag the generated lemmas with `@[simp]`. -/
-def lemmas_only : simps_cfg := {attrs := []}
+def lemmas_only : simpsCfg := {attrs := []}
 
 /--
   Get the projections of a structure used by `@[simps]` applied to the appropriate arguments.
   Returns a list of tuples
   ```
-  (corresponding right-hand-side, given projection name, projection expression, projection numbers,
+  (corresponding right-hand-side, given projection name, projection Expression, projection numbers,
     used by default, is prefix)
   ```
   (where all fields except the first are packed in a `ProjectionData` structure)
@@ -1426,30 +1457,30 @@ def lemmas_only : simps_cfg := {attrs := []}
   ```
 -/
 meta def simpsGetProjectionExprs (e : environment) (tgt : Expr)
-  (rhs : Expr) (cfg : simps_cfg) : tactic $ list $ expr × ProjectionData := do
-  let params := get_app_args tgt, -- the parameters of the structure
-  (params.zip $ (get_app_args rhs).take params.length).mmap' (λ ⟨a, b⟩, is_def_eq a b)
+  (rhs : Expr) (cfg : simpsCfg) : tactic $ list $ Expr × ProjectionData := do
+  let params := getAppArgs tgt, -- the parameters of the structure
+  (params.zip $ (getAppArgs rhs).take params.length).mmap' (λ ⟨a, b⟩, isDefEq a b)
     <|> throwError "unreachable code (1)",
-  let str := tgt.getAppFn.const_name,
-  let rhs_args := (get_app_args rhs).drop params.length, -- the fields of the object
+  let str := tgt.getAppFn.constName,
+  let rhsArgs := (getAppArgs rhs).drop params.length, -- the fields of the object
   (rawUnivs, projDeclata) ← simpsGetRawProjections e str false [] cfg.trace,
   let univs := rawUnivs.zip tgt.getAppFn.levelParams,
-  let new_projDeclata : list $ expr × ProjectionData := projDeclata.map $
-    λ proj, (rhs_args.inth proj.projNrs.head,
-      { expr := (proj.expr.instantiate_univ_params univs).instantiate_lambdas_or_apps params,
+  let newProjDeclata : list $ Expr × ProjectionData := projDeclata.map $
+    λ proj, (rhsArgs.inth proj.projNrs.head,
+      { Expr := (proj.expr.instantiateUnivParams univs).instantiateLambdasOrApps params,
         projNrs := proj.projNrs.tail,
         .. proj }),
-  return new_projDeclata
+  return newProjDeclata
 
 /-- Add a lemma with `nm` stating that `lhs = rhs`. `type` is the type of both `lhs` and `rhs`,
   `args` is the list of local constants occurring, and `univs` is the list of universe variables. -/
-meta def simpsAddProjection (nm : name) (type lhs rhs : Expr) (args : list expr)
-  (univs : list name) (cfg : simps_cfg) : tactic unit := do
+meta def simpsAddProjection (nm : name) (type lhs rhs : Expr) (args : list Expr)
+  (univs : list name) (cfg : simpsCfg) : tactic unit := do
   trace[simps.debug] trace!
     "[simps] > Planning to add the equality\n        > {lhs} = ({rhs} : {type})",
-  lvl ← get_univ_level type,
-  -- simplify `rhs` if `cfg.simp_rhs` is true
-  (rhs, prf) ← do { guard cfg.simp_rhs,
+  lvl ← getUnivLevel type,
+  -- simplify `rhs` if `cfg.simpRhs` is true
+  (rhs, prf) ← do { guard cfg.simpRhs,
     rhs' ← rhs.dsimp {fail_if_unchanged := false},
     trace[simps.debug] $ when (rhs ≠ rhs') trace!
       "[simps] > `dsimp` simplified rhs to\n        > {rhs'}",
@@ -1458,170 +1489,170 @@ meta def simpsAddProjection (nm : name) (type lhs rhs : Expr) (args : list expr)
       "[simps] > `simp` simplified rhs to\n        > {rhsprf1}",
     return (prod.mk rhsprf1 rhsprf2) }
     <|> return (rhs, const `eq.refl [lvl] type lhs),
-  let eq_ap := const `eq [lvl] type lhs rhs,
-  decl_name ← get_unused_decl_name nm,
-  let decl_type := eq_ap.pis args,
-  let decl_value := prf.lambdas args,
-  let decl := declaration.thm decl_name univs decl_type (pure decl_value),
+  let eqAp := const `eq [lvl] type lhs rhs,
+  declName ← get_unused_declName nm,
+  let declType := eqAp.pis args,
+  let declValue := prf.lambdas args,
+  let decl := declaration.thm declName univs declType (pure declValue),
   when cfg.trace trace!
-    "[simps] > adding projection {decl_name}:\n        > {decl_type}",
-  decorate_error ("Failed to add projection lemma " ++ decl_name.to_string ++ ". Nested error:") $
+    "[simps] > adding projection {declName}:\n        > {declType}",
+  decorate_error ("Failed to add projection lemma " ++ declName.to_string ++ ". Nested error:") $
     add_decl decl,
-  b ← succeeds $ is_def_eq lhs rhs,
-  when (b ∧ `simp ∈ cfg.attrs) (set_basic_attribute `_refl_lemma decl_name true),
-  cfg.attrs.mmap' $ λ nm, set_attribute nm decl_name true,
-  when cfg.add_additive.isSome $
-    to_additive.attr.set decl_name ⟨false, cfg.trace, cfg.add_additive.iget, none, true⟩ tt
+  b ← succeeds $ isDefEq lhs rhs,
+  when (b ∧ `simp ∈ cfg.attrs) (set_basic_attribute `_refl_lemma declName true),
+  cfg.attrs.mmap' $ λ nm, set_attribute nm declName true,
+  when cfg.addAdditive.isSome $
+    toAdditive.attr.set declName ⟨false, cfg.trace, cfg.addAdditive.iget, none, true⟩ tt
 
 /-- Derive lemmas specifying the projections of the declaration.
   If `todo` is non-empty, it will generate exactly the names in `todo`.
-  `to_apply` is non-empty after a custom projection that is a composition of multiple projections
+  `toApply` is non-empty after a custom projection that is a composition of multiple projections
   was just used. In that case we need to apply these projections before we continue changing lhs. -/
 meta def simpsAddProjections : Π (e : environment) (nm : name)
-  (type lhs rhs : Expr) (args : list expr) (univs : list name) (must_be_str : bool)
-  (cfg : simps_cfg) (todo : list string) (to_apply : list ℕ), tactic unit
-| e nm type lhs rhs args univs must_be_str cfg todo to_apply := do
+  (type lhs rhs : Expr) (args : list Expr) (univs : list name) (mustBeStr : bool)
+  (cfg : simpsCfg) (todo : list string) (toApply : list ℕ), tactic unit
+| e nm type lhs rhs args univs mustBeStr cfg todo toApply := do
   -- we don't want to unfold non-reducible definitions (like `set`) to apply more arguments
   trace[simps.debug] trace!
-    "[simps] > Type of the expression before normalizing: {type}",
-  (typeArgs, tgt) ← open_pis_whnf type cfg.type_md,
+    "[simps] > Type of the Expression before normalizing: {type}",
+  (typeArgs, tgt) ← open_pis_whnf type cfg.typeMd,
   trace[simps.debug] trace!"[simps] > Type after removing pi's: {tgt}",
   tgt ← whnf tgt,
   trace[simps.debug] trace!"[simps] > Type after reduction: {tgt}",
-  let new_args := args ++ typeArgs,
-  let lhs_ap := lhs.instantiate_lambdas_or_apps typeArgs,
-  let rhs_ap := rhs.instantiate_lambdas_or_apps typeArgs,
-  let str := tgt.getAppFn.const_name,
+  let newArgs := args ++ typeArgs,
+  let lhsAp := lhs.instantiateLambdasOrApps typeArgs,
+  let rhsAp := rhs.instantiateLambdasOrApps typeArgs,
+  let str := tgt.getAppFn.constName,
   /- We want to generate the current projection if it is in `todo` -/
-  let todo_next := todo.filter (≠ ""),
+  let todoNext := todo.filter (≠ ""),
   /- Don't recursively continue if `str` is not a structure or if the structure is in
-    `not_recursive`. -/
-  if e.is_structure str ∧ ¬(todo = [] ∧ str ∈ cfg.not_recursive ∧ ¬must_be_str) then do
+    `notRecursive`. -/
+  if e.is_structure str ∧ ¬(todo = [] ∧ str ∈ cfg.notRecursive ∧ ¬mustBeStr) then do
     [intro] ← return $ e.constructors_of str | throwError "unreachable code (3)",
-    rhs_whnf ← whnf rhs_ap cfg.rhs_md,
-    (rhs_ap, todo_now) ← -- `todo_now` means that we still have to generate the current simp lemma
-      if ¬ is_constant_of rhs_ap.getAppFn intro ∧
-        is_constant_of rhs_whnf.getAppFn intro then
+    rhsWhnf ← whnf rhsAp cfg.rhsMd,
+    (rhsAp, todoNow) ← -- `todoNow` means that we still have to generate the current simp lemma
+      if ¬ isConstantOf rhsAp.getAppFn intro ∧
+        isConstantOf rhsWhnf.getAppFn intro then
       /- If this was a desired projection, we want to apply it before taking the whnf.
         However, if the current field is an eta-expansion (see below), we first want
         to eta-reduce it and only then construct the projection.
         This makes the flow of this function messy. -/
-      when ("" ∈ todo ∧ to_apply = []) (if cfg.fully_applied then
-        simpsAddProjection nm tgt lhs_ap rhs_ap new_args univs cfg else
+      when ("" ∈ todo ∧ toApply = []) (if cfg.fullyApplied then
+        simpsAddProjection nm tgt lhsAp rhsAp newArgs univs cfg else
         simpsAddProjection nm type lhs rhs args univs cfg) >>
-      return (rhs_whnf, false) else
-      return (rhs_ap, "" ∈ todo ∧ to_apply = []),
-    if is_constant_of (getAppFn rhs_ap) intro then do -- if the value is a constructor application
-      projInfo ← simpsGetProjectionExprs e tgt rhs_ap cfg,
+      return (rhsWhnf, false) else
+      return (rhsAp, "" ∈ todo ∧ toApply = []),
+    if isConstantOf (getAppFn rhsAp) intro then do -- if the value is a constructor application
+      projInfo ← simpsGetProjectionExprs e tgt rhsAp cfg,
       trace[simps.debug] trace!"[simps] > Raw projection information:\n  {projInfo}",
-      eta ← rhs_ap.is_eta_expansion, -- check whether `rhs_ap` is an eta-expansion
-      let rhs_ap := eta.lhoare rhs_ap, -- eta-reduce `rhs_ap`
-      /- As a special case, we want to automatically generate the current projection if `rhs_ap`
+      eta ← rhsAp.is_eta_expansion, -- check whether `rhsAp` is an eta-expansion
+      let rhsAp := eta.lhoare rhsAp, -- eta-reduce `rhsAp`
+      /- As a special case, we want to automatically generate the current projection if `rhsAp`
         was an eta-expansion. Also, when this was a desired projection, we need to generate the
         current projection if we haven't done it above. -/
-      when (todo_now ∨ (todo = [] ∧ eta.isSome ∧ to_apply = [])) $
-        if cfg.fully_applied then
-          simpsAddProjection nm tgt lhs_ap rhs_ap new_args univs cfg else
+      when (todoNow ∨ (todo = [] ∧ eta.isSome ∧ toApply = [])) $
+        if cfg.fullyApplied then
+          simpsAddProjection nm tgt lhsAp rhsAp newArgs univs cfg else
           simpsAddProjection nm type lhs rhs args univs cfg,
       /- If we are in the middle of a composite projection. -/
-      when (to_apply ≠ []) $ do
-      { ⟨new_rhs, proj, projExprxpr, projNrs, isDefault, isPrefix⟩ ←
-          return $ projInfo.inth to_apply.head,
-        new_type ← infer_type new_rhs,
+      when (toApply ≠ []) $ do
+      { ⟨newRhs, proj, projExprxpr, projNrs, isDefault, isPrefix⟩ ←
+          return $ projInfo.inth toApply.head,
+        newType ← inferType newRhs,
         trace[simps.debug]
           trace!"[simps] > Applying a custom composite projection. Current lhs:
-        >  {lhs_ap}",
-        simpsAddProjections e nm new_type lhs_ap new_rhs new_args univs false cfg todo
-          to_apply.tail },
+        >  {lhsAp}",
+        simpsAddProjections e nm newType lhsAp newRhs newArgs univs false cfg todo
+          toApply.tail },
       /- We stop if no further projection is specified or if we just reduced an eta-expansion and we
       automatically choose projections -/
-      when ¬(to_apply ≠ [] ∨ todo = [""] ∨ (eta.isSome ∧ todo = [])) $ do
+      when ¬(toApply ≠ [] ∨ todo = [""] ∨ (eta.isSome ∧ todo = [])) $ do
         let projs : list name := projInfo.map $ λ x, x.snd.name,
-        let todo := if to_apply = [] then todo_next else todo,
+        let todo := if toApply = [] then todoNext else todo,
         -- check whether all elements in `todo` have a projection as prefix
         guard (todo.all $ λ x, projs.any $ λ proj, ("_" ++ proj.last).isPrefix_of x) <|>
           let x := (todo.find $ λ x, projs.all $ λ proj, ¬ ("_" ++ proj.last).isPrefix_of x).iget,
-            simp_lemma := nm.append_suffix x,
-            needed_proj := (x.split_on '_').tail.head in
+            simpLemma := nm.append_suffix x,
+            neededProj := (x.split_on '_').tail.head in
           fail!
-"Invalid simp lemma {simp_lemma}. Structure {str} does not have projection {needed_proj}.
+"Invalid simp lemma {simpLemma}. Structure {str} does not have projection {neededProj}.
 The known projections are:
   {projs}
 You can also see this information by running
   `initializeSimpsProjections? {str}`.
 Note: these projection names might not correspond to the projection names of the structure.",
         projInfo.mmap_with_index' $
-          λ proj_nr ⟨new_rhs, proj, projExprxpr, projNrs, isDefault, isPrefix⟩, do
-          new_type ← infer_type new_rhs,
+          λ projNr ⟨newRhs, proj, projExprxpr, projNrs, isDefault, isPrefix⟩, do
+          newType ← inferType newRhs,
           let new_todo :=
-            todo.filter_map $ λ x, x.get_rest ("_" ++ proj.last),
+            todo.filterMap $ λ x, x.get_rest ("_" ++ proj.last),
           -- we only continue with this field if it is non-propositional or mentioned in todo
           when ((isDefault ∧ todo = []) ∨ new_todo ≠ []) $ do
-            let new_lhs := projExprxpr.instantiate_lambdas_or_apps [lhs_ap],
-            let new_nm := nm.append_to_last proj.last isPrefix,
-            let new_cfg := { add_additive := cfg.add_additive.map $
-              λ nm, nm.append_to_last (to_additive.guess_name proj.last) isPrefix, ..cfg },
+            let newLhs := projExprxpr.instantiateLambdasOrApps [lhsAp],
+            let newName := nm.append_to_last proj.last isPrefix,
+            let new_cfg := { addAdditive := cfg.addAdditive.map $
+              λ nm, nm.append_to_last (toAdditive.guess_name proj.last) isPrefix, ..cfg },
             trace[simps.debug] trace!"[simps] > Recursively add projections for:
-        >  {new_lhs}",
-            simpsAddProjections e new_nm new_type new_lhs new_rhs new_args univs
+        >  {newLhs}",
+            simpsAddProjections e newName newType newLhs newRhs newArgs univs
               false new_cfg new_todo projNrs
-    -- if I'm about to run into an error, try to set the transparency for `rhs_md` higher.
-    else if cfg.rhs_md = transparency.none ∧ (must_be_str ∨ todo_next ≠ [] ∨ to_apply ≠ []) then do
+    -- if I'm about to run into an error, try to set the transparency for `rhsMd` higher.
+    else if cfg.rhsMd = transparency.none ∧ (mustBeStr ∨ todoNext ≠ [] ∨ toApply ≠ []) then do
       when cfg.trace trace!
         "[simps] > The given definition is not a constructor application:
-        >   {rhs_ap}
-        > Retrying with the options {{ rhs_md := semireducible, simp_rhs := true}.",
-      simpsAddProjections e nm type lhs rhs args univs must_be_str
-        { rhs_md := semireducible, simp_rhs := true, ..cfg} todo to_apply
+        >   {rhsAp}
+        > Retrying with the options {{ rhsMd := semireducible, simpRhs := true}.",
+      simpsAddProjections e nm type lhs rhs args univs mustBeStr
+        { rhsMd := semireducible, simpRhs := true, ..cfg} todo toApply
     else do
-      when (to_apply ≠ []) $
+      when (toApply ≠ []) $
         fail!"Invalid simp lemma {nm}.
-The given definition is not a constructor application:\n  {rhs_ap}",
-      when must_be_str $
-        fail!"Invalid `simps` attribute. The body is not a constructor application:\n  {rhs_ap}",
-      when (todo_next ≠ []) $
-        fail!"Invalid simp lemma {nm.append_suffix todo_next.head}.
-The given definition is not a constructor application:\n  {rhs_ap}",
-      if cfg.fully_applied then
-        simpsAddProjection nm tgt lhs_ap rhs_ap new_args univs cfg else
+The given definition is not a constructor application:\n  {rhsAp}",
+      when mustBeStr $
+        fail!"Invalid `simps` attribute. The body is not a constructor application:\n  {rhsAp}",
+      when (todoNext ≠ []) $
+        fail!"Invalid simp lemma {nm.append_suffix todoNext.head}.
+The given definition is not a constructor application:\n  {rhsAp}",
+      if cfg.fullyApplied then
+        simpsAddProjection nm tgt lhsAp rhsAp newArgs univs cfg else
         simpsAddProjection nm type lhs rhs args univs cfg
   else do
-    when must_be_str $
+    when mustBeStr $
       fail!"Invalid `simps` attribute. Target {str} is not a structure",
-    when (todo_next ≠ [] ∧ str ∉ cfg.not_recursive) $
-        let first_todo := todo_next.head in
+    when (todoNext ≠ [] ∧ str ∉ cfg.notRecursive) $
+        let first_todo := todoNext.head in
         fail!"Invalid simp lemma {nm.append_suffix first_todo}.
 Projection {(first_todo.split_on '_').tail.head} doesn't exist, because target is not a structure.",
-    if cfg.fully_applied then
-      simpsAddProjection nm tgt lhs_ap rhs_ap new_args univs cfg else
+    if cfg.fullyApplied then
+      simpsAddProjection nm tgt lhsAp rhsAp newArgs univs cfg else
       simpsAddProjection nm type lhs rhs args univs cfg
 
 /-- `simpsTac` derives `simp` lemmas for all (nested) non-Prop projections of the declaration.
   If `todo` is non-empty, it will generate exactly the names in `todo`.
-  If `short_nm` is true, the generated names will only use the last projection name.
+  If `shortNm` is true, the generated names will only use the last projection name.
   If `trc` is true, trace as if `trace.simps.verbose` is true. -/
-meta def simpsTac (nm : name) (cfg : simps_cfg := {}) (todo : list string := []) (trc := false) :
+meta def simpsTac (nm : name) (cfg : simpsCfg := {}) (todo : list string := []) (trc := false) :
   tactic unit := do
   e ← getEnv,
   d ← e.get nm,
-  let lhs : Expr := const d.to_name d.levelParams,
+  let lhs : Expr := const d.Name d.levelParams,
   let todo := todo.dedup.map $ λ proj, "_" ++ proj,
   let cfg := { trace := cfg.trace || ((← getOptions) |>.getBool `simps.verbose || trc, ..cfg },
-  b ← hasAttribute' `to_additive nm,
+  b ← hasAttribute' `toAdditive nm,
   cfg ← if b then do
-  { dict ← to_additive.aux_attr.get_cache,
+  { dict ← toAdditive.aux_attr.get_cache,
     when cfg.trace
-      trace!"[simps] > @[to_additive] will be added to all generated lemmas.",
-    return { add_additive := dict.find nm, ..cfg } } else
+      trace!"[simps] > @[toAdditive] will be added to all generated lemmas.",
+    return { addAdditive := dict.find nm, ..cfg } } else
     return cfg,
   simpsAddProjections e nm d.type lhs d.value [] d.univ_params true cfg todo []
 
 /-- The parser for the `@[simps]` attribute. -/
-meta def simpsParser : parser (bool × list string × simps_cfg) := do
+meta def simpsParser : parser (bool × list string × simpsCfg) := do
 /- note: we don't check whether the user has written a nonsense namespace in an argument. -/
 prod.mk <$> isSome <$> (tk "?")? <*>
   (prod.mk <$> many (name.last <$> ident) <*>
-  (do some e ← parser.pexpr? | return {}, eval_pexpr simps_cfg e))
+  (do some e ← parser.pexpr? | return {}, evalPexpr simpsCfg e))
 
 /--
 The `@[simps]` attribute automatically derives lemmas specifying the projections of this
@@ -1641,10 +1672,10 @@ derives two `simp` lemmas:
 * It will automatically reduce newly created beta-redexes, but will not unfold any definitions.
 * If the structure has a coercion to either sorts or functions, and this is defined to be one
   of the projections, then this coercion will be used instead of the projection.
-* If the structure is a class that has an instance to a notation class, like `has_mul`, then this
+* If the structure is a class that has an instance to a notation class, like `Mul`, then this
   notation is used instead of the corresponding projection.
 * You can specify custom projections, by giving a declaration with name
-  `{structure_name}.simps.{projection_name}`. See Note [custom simps projection].
+  `{StructureName}.simps.{projectionName}`. See Note [custom simps projection].
 
   Example:
   ```lean
@@ -1668,12 +1699,12 @@ derives two `simp` lemmas:
   `simp` lemmas for all fields in that structure.
   * Exception: by default it will not recursively create `simp` lemmas for fields in the structures
     `prod` and `pprod`. You can give explicit projection names or change the value of
-    `simps_cfg.not_recursive` to override this behavior.
+    `simpsCfg.notRecursive` to override this behavior.
 
   Example:
   ```lean
-  structure my_prod (α β : Type*) := (fst : α) (snd : β)
-  @[simps] def foo : prod ℕ ℕ × my_prod ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
+  structure MyProd (α β : Type*) := (fst : α) (snd : β)
+  @[simps] def foo : prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
   ```
   generates
   ```lean
@@ -1689,8 +1720,8 @@ derives two `simp` lemmas:
 
   Example:
   ```lean
-  structure my_prod (α β : Type*) := (fst : α) (snd : β)
-  @[simps fst fst_fst snd] def foo : prod ℕ ℕ × my_prod ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
+  structure MyProd (α β : Type*) := (fst : α) (snd : β)
+  @[simps fst fst_fst snd] def foo : prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
   ```
   generates
   ```lean
@@ -1702,29 +1733,29 @@ derives two `simp` lemmas:
 
   Example:
   ```lean
-  structure equiv_plus_data (α β) extends α ≃ β := (data : bool)
-  @[simps] def bar {α} : equiv_plus_data α α := { data := true, ..equiv.refl α }
+  structure EquivPlusData (α β) extends α ≃ β := (data : bool)
+  @[simps] def bar {α} : EquivPlusData α α := { data := true, ..equiv.refl α }
   ```
   generates the following:
   ```lean
-  @[simp] lemma bar_to_equiv : ∀ {α : Sort*}, bar.to_equiv = equiv.refl α
+  @[simp] lemma bar_toEquiv : ∀ {α : Sort*}, bar.toEquiv = equiv.refl α
   @[simp] lemma bar_data : ∀ {α : Sort*}, bar.data = tt
   ```
   This is true, even though Lean inserts an eta-expanded version of `equiv.refl α` in the
   definition of `bar`.
-* For configuration options, see the doc string of `simps_cfg`.
-* The precise syntax is `('simps' ident* e)`, where `e` is an expression of type `simps_cfg`.
+* For configuration options, see the doc string of `simpsCfg`.
+* The precise syntax is `('simps' ident* e)`, where `e` is an Expression of type `simpsCfg`.
 * `@[simps]` reduces let-expressions where necessary.
 * When option `trace.simps.verbose` is true, `simps` will print the projections it finds and the
   lemmas it generates. The same can be achieved by using `@[simps?]`, except that in this case it
   will not print projection information.
-* Use `@[to_additive, simps]` to apply both `to_additive` and `simps` to a definition, making sure
-  that `simps` comes after `to_additive`. This will also generate the additive versions of all
+* Use `@[toAdditive, simps]` to apply both `toAdditive` and `simps` to a definition, making sure
+  that `simps` comes after `toAdditive`. This will also generate the additive versions of all
   `simp` lemmas.
 -/
 /- If one of the fields is a partially applied constructor, we will eta-expand it
   (this likely never happens, so is not included in the official doc). -/
-@[user_attribute] meta def simpsAttr : user_attribute unit (bool × list string × simps_cfg) :=
+@[user_attribute] meta def simpsAttr : user_attribute unit (bool × list string × simpsCfg) :=
 { name := `simps,
   descr := "Automatically derive lemmas specifying the projections of this declaration.",
   parser := simpsParser,
@@ -1737,7 +1768,7 @@ derives two `simp` lemmas:
 add_tactic_doc
 { name                     := "simps",
   category                 := doc_category.attr,
-  decl_names               := [`simpsAttr],
+  declNames               := [`simpsAttr],
   tags                     := ["simplification"] }
 
 -/
