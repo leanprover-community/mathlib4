@@ -5,6 +5,10 @@ Authors: Gabriel Ebner
 -/
 import Lean
 
+/-!
+# Macro for spread syntax (`__ := instSomething`) in structures.
+-/
+
 open Lean Parser.Term Macro
 
 /-
