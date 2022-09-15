@@ -177,7 +177,7 @@ end Term
 namespace Tactic
 
 /- N -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
-/- E -/ syntax (name := mapply) "mapply " term : tactic
+/- S -/ syntax (name := mapply) "mapply " term : tactic
 /- M -/ syntax (name := withCases) "with_cases " tacticSeq : tactic
 syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
 /- N -/ syntax (name := case'') "case'' " (("[" caseArg,* "]") <|> caseArg) " => " tacticSeq : tactic
