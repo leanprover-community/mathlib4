@@ -44,35 +44,40 @@ def ElimStatus.merge : ElimStatus → ElimStatus → ElimStatus
 | _, success => success
 | failure ts₁, failure ts₂ => failure (ts₁ ++ ts₂)
 
-def choose1 (nondep : Bool) (h : Expr) (data : Name) (spec : Name) :
-  TacticM (Expr × ElimStatus) := do
-  -- TODO: instantiateMVars ???
-  dbg_trace "Hi"
-  let t ← inferType h
-  forallTelescopeReducing t $ fun ctxt t => do
-    let t ← withTransparency .all (whnf t)
-    match t.getAppFnArgs with
-    | (`Exists, #[α, p]) => do
-      let ne_fail : ElimStatus := .failure []
-      let nonemp : Option Expr := none
-      let ctxt' ← if nonemp.isSome then ctxt.filterM (fun e => not <$> isProof e) else pure ctxt
-      let data_ty ← mkForallFVars ctxt' α
-      let data_val ← mkAppM ``Classical.choose #[mkAppN h ctxt]
-      let (d, g) ← (← (← getMainGoal).assert data data_ty data_val).intro1P
-      let spec_ty ← mkForallFVars ctxt (p.app (mkAppN (.fvar d) ctxt')).headBeta
-      let spec_val ← mkAppM ``Classical.choose_spec #[mkAppN h ctxt]
-      let mut (e, g) ← (← g.assert spec spec_ty spec_val).intro1P
-      -- match h with
-      -- | .fvar v => g ← g.clear v
-      -- | _ => pure ()
-      dbg_trace "{e.name}"
-      replaceMainGoal [g]
-      return (.fvar e, ne_fail)
-    | (`And, #[p, q]) => throwError "not implemented yet"
-    -- TODO: support Σ, × ?
-    | _ => throwError "expected a term of the shape `∀xs, ∃a, p xs a` or `∀xs, p xs ∧ q xs`"
+def choose1 (nondep : Bool) (h : Option Expr) (data : Name) :
+  TacticM ElimStatus := do
+  let g ← getMainGoal
+  let (g, h) ← match h with
+  | some e => pure (g, e)
+  | none   => do
+    let (e, g) ← g.intro1P
+    pure (g, .fvar e)
+  g.withContext do
+    let h ← instantiateMVars h
+    let t ← inferType h
+    forallTelescopeReducing t $ fun ctxt t => do
+      let t ← withTransparency .all (whnf t)
+      match t.getAppFnArgs with
+      | (`Exists, #[α, p]) => do
+        let ne_fail : ElimStatus := .failure []
+        let nonemp : Option Expr := none
+        let ctxt' ← if nonemp.isSome then ctxt.filterM (fun e => not <$> isProof e) else pure ctxt
+        let data_ty ← mkForallFVars ctxt' α
+        let data_val ← mkAppM ``Classical.choose #[mkAppN h ctxt]
+        let (d, g) ← (← g.assert data data_ty data_val).intro1P
+        let spec_ty ← mkForallFVars ctxt (p.app (mkAppN (.fvar d) ctxt')).headBeta
+        let spec_val ← mkAppM ``Classical.choose_spec #[mkAppN h ctxt]
+        let mut g ← g.assert .anonymous spec_ty spec_val
+        match h with
+        | .fvar v => g ← g.clear v
+        | _ => pure ()
+        replaceMainGoal [g]
+        return ne_fail
+        | (`And, #[p, q]) => throwError "not implemented yet"
+        -- TODO: support Σ, × ?
+        | _ => throwError "expected a term of the shape `∀xs, ∃a, p xs a` or `∀xs, p xs ∧ q xs`"
 
-def choose (nondep : Bool) (h : Expr) : List Name → ElimStatus → TacticM Unit
+def choose (nondep : Bool) (h : Option Expr) : List Name → ElimStatus → TacticM Unit
 | [], _ => throwError "expect list of variables"
 | [n], status => match nondep, status with
   | true, .failure tys => do    -- We expected some elimination, but it didn't happen.
@@ -81,17 +86,16 @@ def choose (nondep : Bool) (h : Expr) : List Name → ElimStatus → TacticM Uni
     throwError "choose!: failed to synthesize any nonempty instances"
   | _, _ => do
     let g ← getMainGoal
-    replaceMainGoal [← g.rename h.fvarId! n]  -- fails if `h` is not a local variable
+    replaceMainGoal [(← g.intro n).2]
 | (n::ns), status => do
-  let f : Name := .num `tmpChooseVarName ns.length
-  dbg_trace "{f}"
-  let (v, status') ← choose1 nondep h n f
-  choose nondep v ns (status.merge status')
+  let status' ← choose1 nondep h n
+  choose nondep none ns (status.merge status')
 
 elab "choose1 " data:ident spec:ident " using " h:term : tactic =>
   withMainContext do
     let h ← Elab.Tactic.elabTerm h none
-    _ ← choose1 false h data.getId spec.getId
+    _ ← choose1 false h data.getId
+    evalTactic $ ← `(tactic|intro $spec:ident)
 
 elab "choose" first:ident rest:ident* " using " h:term : tactic =>
   withMainContext do
@@ -102,10 +106,10 @@ elab "choose" first:ident rest:ident* " using " h:term : tactic =>
 example (h : ∀n m : Nat, n < m → ∃i j, m = n + i ∨ m + j = n) : True :=
 by
   choose i j h' using h
-  sorry
-    -- choose1 i h' using h
-    -- choose1 j h'' using h'
-    -- trivial
+  -- choose1 i h' using h
+  -- choose1 j ignoreme using h'
+  -- clear ignoreme
+  trivial
   -- guard_hyp i : ∀n m : ℕ, n < m → ℕ,
   -- guard_hyp j : ∀n m : ℕ, n < m → ℕ,
   -- guard_hyp h : ∀ (n m : ℕ) (h : n < m), m = n + i n m h ∨ m + j n m h = n,
