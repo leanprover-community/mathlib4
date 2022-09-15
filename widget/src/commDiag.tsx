@@ -6,7 +6,8 @@ Authors: Wojciech Nawrocki
 import * as React from 'react';
 
 import { Position } from 'vscode-languageserver-protocol';
-import { InteractiveCode, useAsync, RpcContext, CodeWithInfos, RpcSessionAtPos, DocumentPosition } from '@leanprover/infoview';
+import { InteractiveCode, useAsync, RpcContext, CodeWithInfos, RpcSessionAtPos, DocumentPosition }
+    from '@leanprover/infoview';
 
 import commutativeDsl from './penrose/commutative.dsl';
 import commutativeSty from './penrose/commutative.sty';
@@ -69,7 +70,8 @@ function CommTriangle({diag}: {diag: DiagramData}): JSX.Element {
     />
 }
 
-async function getCommutativeDiagram(rs: RpcSessionAtPos, pos: Position): Promise<DiagramData | undefined> {
+async function getCommutativeDiagram(rs: RpcSessionAtPos, pos: Position)
+        : Promise<DiagramData | undefined> {
     return rs.call<Position, DiagramData | undefined>('getCommutativeDiagram', pos)
 }
 
