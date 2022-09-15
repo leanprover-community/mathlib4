@@ -53,6 +53,7 @@ import Mathlib.Mathport.SpecialNames
 import Mathlib.Mathport.Syntax
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Alias
+import Mathlib.Tactic.ApplyRules
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
@@ -87,6 +88,7 @@ import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
+import Mathlib.Tactic.Repeat
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.Ring
