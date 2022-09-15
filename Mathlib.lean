@@ -30,7 +30,6 @@ import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Notation
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Data.Option.Basic
 import Mathlib.Init.Data.Option.Instances
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
@@ -96,7 +95,6 @@ import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.ShowTerm
 import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Simpa
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread
