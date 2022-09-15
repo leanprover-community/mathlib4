@@ -5,9 +5,7 @@ import Mathlib.Lean.Expr.Basic
 
 open Lean Lean.Meta Elab.Term Elab.Tactic
 
-namespace Tactic
-
-namespace Choose
+namespace function
 
 open Classical in
 /-- `sometimes f` evaluates to some value of `f`, if it exists. This function is especially
@@ -22,6 +20,26 @@ dif_pos ⟨a⟩
 theorem sometimes_spec {p : Prop} {α} [Nonempty α]
   (P : α → Prop) (f : p → α) (a : p) (h : P (f a)) : P (sometimes f) :=
 (sometimes_eq f a).symm ▸ h
+
+end function
+
+namespace Tactic
+
+namespace Choose
+
+def mk_sometimes (u : Level) (α nonemp p : Expr) :
+  List Expr → Expr × Expr → MetaM (Expr × Expr)
+| [], (val, spec) => pure (val, spec)
+| (e :: ctxt), (val, spec) => do
+  let (val, spec) ← mk_sometimes u α nonemp p ctxt (val, spec)
+  let t ← inferType e
+  let b ← isProp t
+  if b then do
+    let val' ← mkLambdaFVars #[e] val
+    pure
+      (mkApp4 (Expr.const ``function.sometimes [Level.zero, u]) t α nonemp val',
+      mkApp7 (Expr.const ``function.sometimes_spec [u]) t α nonemp p val' e spec)
+  else pure (val, spec)
 
 /-- Results of searching for nonempty instances,
 to eliminate dependencies on propositions (`choose!`).
@@ -57,15 +75,22 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
     forallTelescopeReducing t fun ctxt t => do
       (← withTransparency .all (whnf t)).withApp fun
       | .const ``Exists [u], #[α, p] => do
-        let neFail : ElimStatus := .failure []
-        let nonemp : Option Expr := none
+        let ((neFail : ElimStatus), (nonemp : Option Expr)) ← if nondep
+          then do
+          let ne := (Expr.const ``Nonempty [u]).app α
+          match ← synthInstance? ne with
+          | some e => pure (.success, some e)
+          | none   => pure (.failure [ne], none)
+          else pure (.failure [], none)
         let ctxt' ← if nonemp.isSome then ctxt.filterM (fun e => not <$> isProof e) else pure ctxt
         let dataTy ← mkForallFVars ctxt' α
-        let dataVal ← mkLambdaFVars ctxt' <|
-          mkApp3 (.const ``Classical.choose [u]) α p (mkAppN h ctxt)
-        let specVal ← mkLambdaFVars ctxt <|
-          mkApp3 (.const ``Classical.choose_spec [u]) α p (mkAppN h ctxt)
-        let (fvar, g) ← withLocalDeclD data dataTy fun d => do
+        let mut dataVal := mkApp3 (.const ``Classical.choose [u]) α p (mkAppN h ctxt)
+        let mut specVal := mkApp3 (.const ``Classical.choose_spec [u]) α p (mkAppN h ctxt)
+        if let some nonemp := nonemp then
+          (dataVal, specVal) ← mk_sometimes u α nonemp p ctxt.toList (dataVal, specVal)
+        dataVal ← mkLambdaFVars ctxt' dataVal
+        specVal ← mkLambdaFVars ctxt specVal
+        let (fvar, g) ← withLocalDeclD .anonymous dataTy fun d => do
           let specTy ← mkForallFVars ctxt (p.app (mkAppN d ctxt')).headBeta
           g.withContext do
           withLocalDeclD data dataTy fun d' => do
@@ -77,7 +102,9 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
         | .fvar v => g.clear v
         | _ => pure g
         return (neFail, fvar, g)
-      | .const ``And _, #[p, q] => throwError "not implemented yet"
+      | .const ``And _, #[p, q] => do
+        let e1 ← mkLambdaFVars ctxt $ mkApp (.const ``And.left []) (mkAppN h ctxt)
+        _
       -- TODO: support Σ, × ?
       | _, _ => throwError "expected a term of the shape `∀xs, ∃a, p xs a` or `∀xs, p xs ∧ q xs`"
 
@@ -97,7 +124,7 @@ def choose (nondep : Bool) (h : Option Expr) :
   | _, _ => do
     let (fvar, g) ← g.intro n.getId
     g.withContext do
-      Elab.Term.addLocalVarInfo n (mkFVar fvar)
+      Elab.Term.addLocalVarInfo n (.fvar fvar)
     return .ok g
 | (n::ns), status, g => do
   let (status', g) ← choose1WithInfo g nondep h n
@@ -109,19 +136,31 @@ elab "choose1 " data:ident spec:ident " using " h:term : tactic =>
     replaceMainGoal [(← choose1WithInfo (← getMainGoal) false h data).2]
     evalTactic $ ← `(tactic|intro $spec:ident)
 
-elab "choose" ids:ident+ " using " h:term : tactic =>
+elab "choose" b:"!"? ids:ident+ " using " h:term : tactic =>
   withMainContext do
     let h ← Elab.Tactic.elabTerm h none
-    match ← choose false h ids.toList (.failure []) (← getMainGoal) with
+    match ← choose b.isSome h ids.toList (.failure []) (← getMainGoal) with
     | .ok g => replaceMainGoal [g]
     | .error tys =>
       let gs ← tys.mapM (fun ty => Expr.mvarId! <$> (mkFreshExprMVar (some ty)))
       setGoals gs
       throwError "choose!: failed to synthesize any nonempty instances"
 
-example (h : ∀n m : Nat, n < m → ∃i j, m = n + i ∨ m + j = n) : True :=
+-- elab "choose!" ids:ident+ " using " h:term : tactic =>
+--   withMainContext do
+--     let h ← Elab.Tactic.elabTerm h none
+--     match ← choose true h ids.toList (.failure []) (← getMainGoal) with
+--     | .ok g => replaceMainGoal [g]
+--     | .error tys =>
+--       let gs ← tys.mapM (fun ty => Expr.mvarId! <$> (mkFreshExprMVar (some ty)))
+--       setGoals gs
+--       throwError "choose!: failed to synthesize any nonempty instances"
+
+example {α : Type} (h : ∀n m : α, n = m → ∃i j : Nat, i ≠ j) : True :=
 by
-  choose i j h' using h
+  -- revert h
+  -- choose i j h
+  choose ! i j h' using h
   -- choose1 i h' using h
   -- choose1 j ignoreme using h'
   -- clear ignoreme
