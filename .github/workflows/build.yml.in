@@ -18,7 +18,8 @@ jobs:
           ./scripts/lint-style.sh
 
   build:
-    name: Build
+    if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
+    name: BuildJOB_NAME
     runs-on: ubuntu-latest
     steps:
       - name: install elan

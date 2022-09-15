@@ -119,7 +119,8 @@ def mkIffMpApp (mp : Bool) (prf : Expr) : MetaM Expr := do
   Given a constant representing an iff decl, adds a decl for one of the implication
   directions.
 -/
-def aliasIff (ci : ConstantInfo) (ref : Syntax) (al : Name) (isForward : Bool) : TermElabM Unit := do
+def aliasIff (ci : ConstantInfo) (ref : Syntax) (al : Name) (isForward : Bool) :
+    TermElabM Unit := do
   let ls := ci.levelParams
   let v ← mkIffMpApp isForward ci.value!
   let t' ← Meta.inferType v
