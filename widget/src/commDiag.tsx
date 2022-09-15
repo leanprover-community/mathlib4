@@ -77,23 +77,23 @@ async function getCommutativeDiagram(rs: RpcSessionAtPos, pos: Position)
 
 export default function({pos}: {pos: DocumentPosition}): React.ReactNode {
     const rs = React.useContext(RpcContext)
-    const [status, diag, err] = useAsync(() => getCommutativeDiagram(rs, pos), [rs, pos])
+    const res = useAsync(() => getCommutativeDiagram(rs, pos), [rs, pos])
 
     let msg = <></>
-    if (status === 'pending')
+    if (res.state === 'loading')
         msg = <>Loading diagram..</>
-    else if (status === 'rejected')
-        msg = <>Error: {JSON.stringify(err)}</>
-    else if (status === 'fulfilled' && !diag)
+    else if (res.state === 'rejected')
+        msg = <>Error: {JSON.stringify(res.error)}</>
+    else if (res.state === 'resolved' && !res.value)
         msg = <>Error: no diagram.</>
 
     // We keep the diagrams alive to avoid a re-render when the cursor moves
     // to a position containing the same diagram.
     return <>
-        {diag && diag.kind === 'square' &&
-            <CommSquare diag={diag} />}
-        {diag && diag.kind === 'triangle' &&
-            <CommTriangle diag={diag} /> }
+        {res.state === 'resolved' && res.value && res.value.kind === 'square' &&
+            <CommSquare diag={res.value} />}
+        {res.state === 'resolved' && res.value && res.value.kind === 'triangle' &&
+            <CommTriangle diag={res.value} /> }
         {msg}
     </>
 }
