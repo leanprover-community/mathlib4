@@ -7,6 +7,7 @@ import * as React from "react"
 import * as ReactDOM from "react-dom"
 import * as penrose from "@penrose/core"
 import * as SVG from "@svgdotjs/svg.js"
+import useResizeObserver from "use-resize-observer";
 
 /** See [here](https://penrose.gitbook.io/penrose/#what-makes-up-a-penrose-program) for explanation. */
 export interface PenroseTrio {
@@ -47,7 +48,6 @@ function svgNumberToNumber (x: SVG.NumberAlias): number {
 }
 
 async function renderPenroseTrio(trio: PenroseTrio, maxOptSteps: number): Promise<SVGSVGElement> {
-    console.log(trio.sty)
     const hash = await hashTrio(trio)
     if (diagramSvgCache.has(hash)) return diagramSvgCache.get(hash)!
     const {dsl, sty, sub} = trio
@@ -87,6 +87,20 @@ async function renderPenroseTrio(trio: PenroseTrio, maxOptSteps: number): Promis
     return newSvg.node
 }
 
+/** Return all elements in a Penrose-generated SVG which have names corresponding to objects in the
+ * substance program. These are detected by looking for strings in the elements' `textContent`s. */
+function getPenroseNamedElements(svg: SVG.Svg): Map<string, SVG.Element> {
+    const res = new Map<string, SVG.Element>()
+    for (const child of svg.find('g, rect')) {
+        if (!child.node.textContent) continue
+        const groups = child.node.textContent.match(/`(\w+)`.textBox/)
+        if (!groups) continue
+        const name = groups[1]
+        res.set(name, child)
+    }
+    return res
+}
+
 export interface PenroseCanvasProps {
     trio: PenroseTrio
     maxOptSteps: number
@@ -94,7 +108,7 @@ export interface PenroseCanvasProps {
 }
 
 interface InnerWithContainerProps extends PenroseCanvasProps {
-    containerDiv: HTMLDivElement
+    diagramWidth: number
     hiddenDiv: HTMLDivElement
 }
 
@@ -102,16 +116,13 @@ interface InnerWithEmbedsProps extends Omit<InnerWithContainerProps, 'embedNodes
     embeds: Map<string, HTMLDivElement>
 }
 
-function InnerWithEmbeds({trio: {dsl, sty, sub}, maxOptSteps, embeds, containerDiv, hiddenDiv}
-        : InnerWithEmbedsProps): JSX.Element {
-    const containerRect = containerDiv.getBoundingClientRect()
-    const dim = Math.ceil(Math.max(400, containerRect.width))
-
+function InnerWithEmbeds({trio: {dsl, sty, sub}, maxOptSteps, embeds, diagramWidth, hiddenDiv}:
+        InnerWithEmbedsProps): JSX.Element {
     sty = sty +
 `
 canvas {
-    width = ${dim}
-    height = ${dim}
+    width = ${diagramWidth}
+    height = ${diagramWidth}
 }
 `
 
@@ -129,6 +140,8 @@ canvas {
             .getPropertyValue('--vscode-editorHoverWidget-background'))
 
     for (const [name, elt] of embeds) {
+        // NOTE(WN): this getBoundingClientRect call is not easy to remove, but it might be okay;
+        // the dimensions of this rect should never change unless the whole diagram changes.
         const rect = elt.getBoundingClientRect()
 
         // KC's hack: https://github.com/penrose/penrose/issues/1057#issuecomment-1164313880
@@ -159,28 +172,24 @@ override \`${name}\`.textBox.fillColor = ${boxCol}
             }).catch(ex => {
                 setElement(<pre>Error while drawing: {ex.toString()}</pre>)
             })
-    }, [dsl, sty, sub, maxOptSteps, embeds, containerDiv])
+    }, [dsl, sty, sub, maxOptSteps, embeds])
 
     // Position embeds over nodes in the SVG
     React.useEffect(() => {
         if (!svg) return
 
-        // The boxes that we can draw interactive elements over
-        const diagramBoxes = new Map<string, Element>()
-        for (const gElt of svg.querySelectorAll("g, rect")) {
-            if (!gElt.textContent) continue
-            const gps = gElt.textContent.match(/`(\w+)`.textBox/)
-            if (!gps) continue
-            const name = gps[1]
-            diagramBoxes.set(name, gElt)
-        }
-
-        for (const [name, gElt] of diagramBoxes) {
-            const embedElt = embeds.get(name)
-            if (!embedElt) continue
-            const gRect = gElt.getBoundingClientRect()
-            embedElt.style.top = `${gRect.top - containerRect.top}px`
-            embedElt.style.left = `${gRect.left - containerRect.left}px`
+        /** The SVG boxes that we can draw interactive elements over. */
+        const obj = SVG.SVG(svg)
+        const diagramBoxes = getPenroseNamedElements(obj)
+        for (const [name, embedElt] of embeds) {
+            const gElt = diagramBoxes.get(name)
+            if (!gElt) throw new Error(`Could not find object named '${name}' in the diagram.`)
+            // Note: this calculation assumes that one SVG user unit is one pixel. We achieve
+            // this by setting the `viewBox` width/height to the `<svg>` width/height.
+            const userY = svgNumberToNumber(gElt.y()) - obj.viewbox().y
+            const userX = svgNumberToNumber(gElt.x()) - obj.viewbox().x
+            embedElt.style.top = `${userY}px`
+            embedElt.style.left = `${userX}px`
         }
 
         hiddenDiv.style.visibility = 'visible'
@@ -189,10 +198,8 @@ override \`${name}\`.textBox.fillColor = ${boxCol}
     return element
 }
 
-function InnerWithContainer({trio, maxOptSteps, embedNodes, containerDiv, hiddenDiv}
-        : InnerWithContainerProps): JSX.Element {
-    const rect = containerDiv.getBoundingClientRect()
-    const dim = Math.ceil(Math.max(400, rect.width))
+function InnerWithContainer(props: InnerWithContainerProps): JSX.Element {
+    const {embedNodes, diagramWidth, hiddenDiv} = props
 
     interface EmbedData {
         elt: HTMLDivElement | undefined
@@ -203,14 +210,15 @@ function InnerWithContainer({trio, maxOptSteps, embedNodes, containerDiv, hidden
     // This is set once when all the embeds have been drawn
     const [embedsFinal, setEmbedsFinal] = React.useState<Map<string, HTMLDivElement>>()
 
-    // Create portals for the embedded nodes; they will update `embeds` when rendered
+    // Create portals for the embedded nodes as children of `hiddenDiv`; they will update `embeds`
+    // when rendered
     React.useEffect(() => {
         const newEmbeds: Map<string, EmbedData> = new Map()
         for (const [name, nd] of embedNodes) {
             const div = <div
                 className="dib absolute"
                 // Limit how wide nodes in the diagram can be
-                style={{maxWidth: `${Math.ceil(dim / 5)}px`}}
+                style={{maxWidth: `${Math.ceil(diagramWidth / 5)}px`}}
                 ref={newDiv => {
                     if (!newDiv) return
                     setEmbeds(embeds => {
@@ -234,7 +242,7 @@ function InnerWithContainer({trio, maxOptSteps, embedNodes, containerDiv, hidden
         }
         setEmbeds(newEmbeds)
     // `deps` must have constant size so we can't do a deeper comparison
-    }, [embedNodes, hiddenDiv, dim])
+    }, [embedNodes, hiddenDiv, diagramWidth])
 
     React.useEffect(() => {
         const embedDivs = new Map()
@@ -247,9 +255,7 @@ function InnerWithContainer({trio, maxOptSteps, embedNodes, containerDiv, hidden
     }, [embeds, embedNodes])
 
     return <>
-        {embedsFinal &&
-            <InnerWithEmbeds trio={trio} maxOptSteps={maxOptSteps} embeds={embedsFinal}
-                containerDiv={containerDiv} hiddenDiv={hiddenDiv} />}
+        {embedsFinal && <InnerWithEmbeds {...props} embeds={embedsFinal} />}
         {Array.from(embeds.values()).map(({portal}) => portal)}
     </>
 }
@@ -270,11 +276,16 @@ export function PenroseCanvas(props: PenroseCanvasProps): JSX.Element {
      * - `InnerWithEmbeds` adjusts the style program to match the sizes of embeds, draws the diagram,
      *   positions the embeds over it, and finally makes them visible. */
 
-    const [containerDiv, setContainerDiv] = React.useState<HTMLDivElement | null>(null)
+    const { ref: containerRef, width = 1 } = useResizeObserver<HTMLDivElement>({
+        round: Math.ceil,
+    })
+    // TODO(WN): debounce changes to this; it's a lot of computation to keep redrawing the diagram
+    // when the infoview is being resized.
+    const diagramWidth = Math.max(400, width)
     const [hiddenDiv, setHiddenDiv] = React.useState<HTMLDivElement | null>(null)
-    return <div className="relative" ref={setContainerDiv}>
-        {containerDiv && hiddenDiv &&
-            <InnerWithContainer {...props} containerDiv={containerDiv} hiddenDiv={hiddenDiv} />}
+    return <div className="relative" ref={containerRef}>
+        {1 < width && hiddenDiv &&
+            <InnerWithContainer {...props} diagramWidth={diagramWidth} hiddenDiv={hiddenDiv} />}
         <div style={{visibility: 'hidden'}} ref={setHiddenDiv} />
     </div>
 }
