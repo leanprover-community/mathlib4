@@ -1,6 +1,5 @@
 import Lean
 import Mathlib.Util.Tactic
-import Mathlib.Lean.Expr.Basic
 
 
 open Lean Lean.Meta Elab.Term Elab.Tactic
@@ -100,6 +99,12 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
         let ((neFail : ElimStatus), (nonemp : Option Expr)) ← if nondep
           then do
           let ne := (Expr.const ``Nonempty [u]).app α
+          let L : List (Name × Expr × Expr) ← ctxt.toList.filterMapM $ fun e => do
+            let ty ← (inferType e >>= whnf)
+            if (← isProof e) then return none
+            pure $ some (.anonymous, (Expr.const ``Nonempty [u]).app ty, mkApp2 (Expr.const ``Nonempty.intro [u]) ty e)
+          let (_, g') ← (g.asserts L >>= MVarId.intros)
+          g'.withContext do
           match ← synthInstance? ne with
           | some e => pure (.success, some e)
           | none   => pure (.failure [ne], none)
@@ -175,7 +180,7 @@ elab "choose" b:"!"? ids:ident+ " using " h:term : tactic =>
       setGoals gs
       throwError "choose!: failed to synthesize any nonempty instances"
 
-example {α : Type} (h : ∀n m : α, n = m → ∃i j : Nat, i ≠ j ∧ i = j) : True :=
+example {α : Type} (h : ∀n m : α, n = m → ∃i j : α, i ≠ j ∧ i = j) : True :=
 by
   choose ! i j h₁ h₂ using h
   sorry
