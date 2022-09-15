@@ -23,6 +23,28 @@ theorem sometimes_spec {p : Prop} {α} [Nonempty α]
 
 end function
 
+namespace Lean /- MOVE THIS -/
+
+namespace MVarId
+
+/-- `asserts g l` asserts all the tuples in `l`,
+where `l` is a list of tuples of the form `(name, type, val)`.
+It returns the resulting goal.
+
+The first element in the list `l` will be asserted first,
+and the last element in the list `l` will be asserted last.
+In particular, the last element will correspond to the outmost lambda
+in the goal that is returned. -/
+def asserts (g : MVarId) : List (Name × Expr × Expr) → MetaM MVarId
+| [] => pure g
+| ((n, ty, val) :: l) => do
+  let g₁ ← g.assert n ty val
+  asserts g₁ l
+
+end MVarId
+
+end Lean
+
 namespace Tactic
 
 namespace Choose
@@ -103,8 +125,15 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
         | _ => pure g
         return (neFail, fvar, g)
       | .const ``And _, #[p, q] => do
-        let e1 ← mkLambdaFVars ctxt $ mkApp (.const ``And.left []) (mkAppN h ctxt)
-        _
+        let e1 ← mkLambdaFVars ctxt $ mkApp3 (.const ``And.left  []) p q (mkAppN h ctxt)
+        let e2 ← mkLambdaFVars ctxt $ mkApp3 (.const ``And.right []) p q (mkAppN h ctxt)
+        let t1 ← inferType e1
+        let t2 ← inferType e2
+        let (fvar, g) ← (g.asserts [(.anonymous, t2, e2), (data, t1, e1)] >>= MVarId.intro1P)
+        let g ← match h with
+        | .fvar v => g.clear v
+        | _ => pure g
+        return (.success, .fvar fvar, g)
       -- TODO: support Σ, × ?
       | _, _ => throwError "expected a term of the shape `∀xs, ∃a, p xs a` or `∀xs, p xs ∧ q xs`"
 
@@ -146,26 +175,7 @@ elab "choose" b:"!"? ids:ident+ " using " h:term : tactic =>
       setGoals gs
       throwError "choose!: failed to synthesize any nonempty instances"
 
--- elab "choose!" ids:ident+ " using " h:term : tactic =>
---   withMainContext do
---     let h ← Elab.Tactic.elabTerm h none
---     match ← choose true h ids.toList (.failure []) (← getMainGoal) with
---     | .ok g => replaceMainGoal [g]
---     | .error tys =>
---       let gs ← tys.mapM (fun ty => Expr.mvarId! <$> (mkFreshExprMVar (some ty)))
---       setGoals gs
---       throwError "choose!: failed to synthesize any nonempty instances"
-
-example {α : Type} (h : ∀n m : α, n = m → ∃i j : Nat, i ≠ j) : True :=
+example {α : Type} (h : ∀n m : α, n = m → ∃i j : Nat, i ≠ j ∧ i = j) : True :=
 by
-  -- revert h
-  -- choose i j h
-  choose ! i j h' using h
-  -- choose1 i h' using h
-  -- choose1 j ignoreme using h'
-  -- clear ignoreme
+  choose ! i j h₁ h₂ using h
   sorry
-  -- guard_hyp i : ∀n m : ℕ, n < m → ℕ,
-  -- guard_hyp j : ∀n m : ℕ, n < m → ℕ,
-  -- guard_hyp h : ∀ (n m : ℕ) (h : n < m), m = n + i n m h ∨ m + j n m h = n,
-  -- trivial
