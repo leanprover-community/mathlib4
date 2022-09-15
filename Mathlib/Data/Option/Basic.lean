@@ -21,13 +21,6 @@ theorem map_injective {f : α → β} (Hf : Function.injective f) : Function.inj
 -- theorem join_eq_none {o : Option (Option α)} : o.join = none ↔ o = none ∨ o = some none := by
 --   rcases o with _|_|_; simp
 
-theorem lift_or_get_choice {f : α → α → α} (h : ∀ a b, f a b = a ∨ f a b = b) :
-  ∀ o₁ o₂, lift_or_get f o₁ o₂ = o₁ ∨ lift_or_get f o₁ o₂ = o₂
-| none, none => Or.inl rfl
-| some a, none => Or.inl rfl
-| none, some b => Or.inr rfl
-| some a, some b => by have := h a b; simp [lift_or_get] at this ⊢; exact this
-
 @[simp] theorem lift_or_get_none_left {f} {b : Option α} : lift_or_get f none b = b := by
   cases b <;> rfl
 
