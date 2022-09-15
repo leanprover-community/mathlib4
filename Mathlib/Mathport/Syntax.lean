@@ -205,11 +205,6 @@ syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
 
 /- E -/ syntax (name := inferAutoParam) "infer_auto_param" : tactic
 
--- There is already a `by_cases` tactic in core (in `src/init/classical.lean`)
--- so for now we add a primed version to support the optional identifier,
--- and available `decidable` instances.
-/- M -/ syntax (name := byCases') "by_cases' " atomic(ident " : ")? term : tactic
-
 /- S -/ syntax (name := rsimp) "rsimp" : tactic
 /- S -/ syntax (name := compVal) "comp_val" : tactic
 /- S -/ syntax (name := async) "async " tacticSeq : tactic
@@ -260,9 +255,9 @@ end Conv
   (" with" (ppSpace (colGt ident))*)? : tactic
 /- S -/ syntax (name := extractGoal!) "extract_goal!" (ppSpace ident)?
   (" with" (ppSpace (colGt ident))*)? : tactic
-/- E -/ syntax (name := revertDeps) "revert_deps" (ppSpace colGt ident)* : tactic
-/- E -/ syntax (name := revertAfter) "revert_after " ident : tactic
-/- E -/ syntax (name := revertTargetDeps) "revert_target_deps" : tactic
+/- S -/ syntax (name := revertDeps) "revert_deps" (ppSpace colGt ident)* : tactic
+/- S -/ syntax (name := revertAfter) "revert_after " ident : tactic
+/- S -/ syntax (name := revertTargetDeps) "revert_target_deps" : tactic
 /- E -/ syntax (name := clearValue) "clear_value" (ppSpace colGt ident)* : tactic
 
 /- M -/ syntax (name := applyAssumption) "apply_assumption" : tactic
