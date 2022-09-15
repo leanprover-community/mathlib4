@@ -65,24 +65,33 @@ namespace Parser.Tactic
 -- syntax simpArg := simpStar <|> simpErase <|> simpLemma
 def simpArg := simpStar.binary `orelse (simpErase.binary `orelse simpLemma)
 
-syntax simpArgs := " [" simpArg,* "] "
+-- syntax dsimpArg := simpErase <|> simpLemma
+def dsimpArg := simpErase.binary `orelse simpLemma
+
+syntax simpArgs := " [" simpArg,* "]"
+syntax dsimpArgs := " [" dsimpArg,* "]"
 syntax withArgs := " with " (colGt ident)+
 syntax usingArg := " using " term
 
 /-- Extract the arguments from a `simpArgs` syntax as an array of syntaxes -/
 def getSimpArgs : Syntax → TacticM (Array Syntax)
-  | `(simpArgs|[$args,*]) => pure args.getElems
-  | _                     => Elab.throwUnsupportedSyntax
+  | `(simpArgs| [$args,*]) => pure args.getElems
+  | _                      => Elab.throwUnsupportedSyntax
+
+/-- Extract the arguments from a `dsimpArgs` syntax as an array of syntaxes -/
+def getDSimpArgs : Syntax → TacticM (Array Syntax)
+  | `(dsimpArgs| [$args,*]) => pure args.getElems
+  | _                       => Elab.throwUnsupportedSyntax
 
 /-- Extract the arguments from a `withArgs` syntax as an array of syntaxes -/
 def getWithArgs : Syntax → TacticM (Array Syntax)
-  | `(withArgs|with $args*) => pure args
-  | _                       => Elab.throwUnsupportedSyntax
+  | `(withArgs| with $args*) => pure args
+  | _                        => Elab.throwUnsupportedSyntax
 
 /-- Extract the argument from a `usingArg` syntax as a syntax term -/
 def getUsingArg : Syntax → TacticM Syntax
-  | `(usingArg|using $e) => pure e
-  | _                    => Elab.throwUnsupportedSyntax
+  | `(usingArg| using $e) => pure e
+  | _                     => Elab.throwUnsupportedSyntax
 
 /--
 `repeat1 tac` applies `tac` to main goal at least once. If the application succeeds,

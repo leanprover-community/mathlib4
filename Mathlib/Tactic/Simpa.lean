@@ -10,18 +10,12 @@ namespace Mathlib.Tactic
 
 open Lean Parser.Tactic Elab.Tactic
 
-syntax simpaArgsRest := (config)? (discharger)? &" only "? (simpArgs)? (withArgs)? (usingArg)?
+syntax simpaArgsRest := (config)? (discharger)? &" only "? (simpArgs)? (usingArg)?
 
-syntax "simpa" "!"? "?"? simpaArgsRest : tactic
+syntax "simpa" "?"? "!"? simpaArgsRest : tactic
 macro "simpa!" rest:simpaArgsRest : tactic => `(tactic| simpa ! $rest:simpaArgsRest)
 macro "simpa?" rest:simpaArgsRest : tactic => `(tactic| simpa ? $rest:simpaArgsRest)
-macro "simpa!?" rest:simpaArgsRest : tactic => `(tactic| simpa !? $rest:simpaArgsRest)
-
--- TODO
-syntax "squeeze_simpa" "!"? "?"? simpaArgsRest : tactic
-macro "squeeze_simpa!" rest:simpaArgsRest : tactic => `(tactic| squeeze_simpa ! $rest:simpaArgsRest)
-macro "squeeze_simpa?" rest:simpaArgsRest : tactic => `(tactic| squeeze_simpa ? $rest:simpaArgsRest)
-macro "squeeze_simpa!?" rest:simpaArgsRest : tactic => `(tactic| squeeze_simpa !? $rest:simpaArgsRest)
+macro "simpa?!" rest:simpaArgsRest : tactic => `(tactic| simpa ?! $rest:simpaArgsRest)
 
 /--
 This is a "finishing" tactic modification of `simp`. It has two forms.
@@ -42,8 +36,8 @@ This is a "finishing" tactic modification of `simp`. It has two forms.
 #TODO: implement `?`
 -/
 elab_rules : tactic
-| `(tactic| simpa $[!%$unfold]? $[?%$squeeze]? $[$cfg:config]? $[$disch:discharger]? $[only%$only]?
-      $[[$args,*]]? $[with $wth]? $[using $usingArg]?) => do
+| `(tactic| simpa $[?%$squeeze]? $[!%$unfold]? $[$cfg:config]? $[$disch:discharger]? $[only%$only]?
+      $[[$args,*]]? $[using $usingArg]?) => do
   let nGoals := (← getUnsolvedGoals).length
   evalTactic $ ← `(tactic|simp $(cfg)? $(disch)? $[only%$only]? $[[$[$args],*]]?)
   if (← getUnsolvedGoals).length < nGoals then
