@@ -90,8 +90,8 @@ def getUsingArg : Syntax → TacticM Syntax
   | _                     => Elab.throwUnsupportedSyntax
 
 /--
-`repeat1 tac` repeatedly applies `tac` until it fails.
-`repeat1` succeeds if and only if `tac` succeeds at least once.
+`repeat1 tac` applies `tac` to main goal at least once. If the application succeeds,
+the tactic is applied recursively to the generated subgoals until it eventually fails.
 -/
 macro "repeat1 " seq:tacticSeq : tactic => `(tactic| ($seq); repeat $seq)
 
