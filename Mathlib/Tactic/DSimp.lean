@@ -6,6 +6,10 @@ Authors: Gabriel Ebner, Moritz Doll
 
 import Mathlib.Tactic.Core
 
+/-!
+The `dsimp` tactic for `conv`.
+-/
+
 namespace Lean.Parser.Tactic.Conv
 open Lean.Elab.Tactic Elab.Tactic.Conv Parser.Tactic.Conv
 
