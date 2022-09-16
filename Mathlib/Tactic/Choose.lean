@@ -1,5 +1,6 @@
 import Lean
 import Mathlib.Util.Tactic
+import Mathlib.Tactic.ShowTerm
 
 
 open Lean Lean.Meta Elab.Term Elab.Tactic
@@ -106,12 +107,11 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
             pure $ some (.anonymous, (Expr.const ``Nonempty [u]).app ty, mkApp2 (Expr.const ``Nonempty.intro [u]) ty e)
           let (_, g') ← (m.mvarId!.asserts L >>= MVarId.intros)
           g'.withContext do
-          dbg_trace "Hi"
-          match ← synthInstance? m with
+          match ← synthInstance? (← g'.getType) with
           | some e => do
-            let e ← instantiateMVars e
-            dbg_trace "Ho"
-            pure (.success, some e)
+            g'.assign e
+            let m ← instantiateMVars m
+            pure (.success, some m)
           | none   => pure (.failure [ne], none)
           else pure (.failure [], none)
         let ctxt' ← if nonemp.isSome then ctxt.filterM (fun e => not <$> isProof e) else pure ctxt
@@ -147,45 +147,51 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
       -- TODO: support Σ, × ?
       | _, _ => throwError "expected a term of the shape `∀xs, ∃a, p xs a` or `∀xs, p xs ∧ q xs`"
 
-def choose1WithInfo (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Ident) :
+def choose1WithInfo (g : MVarId) (nondep : Bool) (h : Option Expr) (data : TSyntax ``binderIdent) :
   TermElabM (ElimStatus × MVarId) := do
-  let (status, fvar, g) ← choose1 g nondep h data.getId
+  let n ← match data with
+  | `(binderIdent| $n:ident) => pure n.getId
+  | _ => pure `_
+  let (status, fvar, g) ← choose1 g nondep h n
   g.withContext do
     Elab.Term.addLocalVarInfo data fvar
   pure (status, g)
 
-def choose (nondep : Bool) (h : Option Expr) :
-  List Ident → ElimStatus → MVarId → TermElabM (Except (List Expr) MVarId)
+def elabChoose (nondep : Bool) (h : Option Expr) :
+  List (TSyntax ``binderIdent) → ElimStatus → MVarId → TermElabM (Except (List Expr) MVarId)
 | [], _, _ => throwError "expect list of variables"
 | [n], status, g =>
   match nondep, status with
   | true, .failure tys => pure (.error tys)   -- We expected some elimination, but it didn't happen.
   | _, _ => do
-    let (fvar, g) ← g.intro n.getId
+    let (fvar, g) ← match n with
+    | `(binderIdent| $n:ident) => g.intro n.getId
+    | _ => g.intro1
     g.withContext do
       Elab.Term.addLocalVarInfo n (.fvar fvar)
     return .ok g
 | (n::ns), status, g => do
   let (status', g) ← choose1WithInfo g nondep h n
-  choose nondep none ns (status.merge status') g
+  elabChoose nondep none ns (status.merge status') g
 
-elab "choose1 " data:ident spec:ident " using " h:term : tactic =>
+/-- TODO -/
+elab (name := choose) "choose" b:"!"? ids:binderIdent+ h:(" using " term)? : tactic =>
   withMainContext do
-    let h ← Elab.Tactic.elabTerm h none
-    replaceMainGoal [(← choose1WithInfo (← getMainGoal) false h data).2]
-    evalTactic $ ← `(tactic|intro $spec:ident)
-
-elab "choose" b:"!"? ids:ident+ " using " h:term : tactic =>
-  withMainContext do
-    let h ← Elab.Tactic.elabTerm h none
-    match ← choose b.isSome h ids.toList (.failure []) (← getMainGoal) with
+    let h ← h.mapM fun h => Elab.Tactic.elabTerm h none
+    match ← elabChoose b.isSome h ids.toList (.failure []) (← getMainGoal) with
     | .ok g => replaceMainGoal [g]
     | .error tys =>
       let gs ← tys.mapM (fun ty => Expr.mvarId! <$> (mkFreshExprMVar (some ty)))
       setGoals gs
       throwError "choose!: failed to synthesize any nonempty instances"
 
-example {α : Type} (h : ∀n m : α, n = m → ∃i j : α, i ≠ j ∧ i = j) : True :=
+@[inheritDoc choose]
+macro "choose!" ids:binderIdent+ " using " h:term : tactic =>
+  `(tactic| choose ! $[$ids]* using $h)
+
+example {α : Type} (h : ∀n m : α, ∀ (h : n = m), ∃i j : α, i ≠ j ∧ h = h) : True :=
 by
-  choose ! i j h₁ h₂ using h
-  sorry
+  revert h
+  intro h
+  choose! i j _x _y using h
+  trivial
