@@ -11,11 +11,12 @@ example {a b c d e : Nat} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 0 ≤ e) :
   a + c * e + a + c + 0 ≤ b + d * e + b + d + e :=
 by apply_rules [add_le_add, Nat.mul_le_mul_of_nonneg_right]
 
--- test that metavariables created for implicit arguments don't get stuck
+-- Test that metavariables created for implicit arguments don't get stuck
+-- This required extra work in Lean 3, but doesn't seem to be a problem in Lean 4.
 example (P : Nat → Type) (f : {n : Nat} → P n → P (n + 1)) (g : P 0) : P 2 :=
 by apply_rules [f, g]
 
--- check that `apply_rules` solves goals that come after goals that it can't solve
+-- Check that `apply_rules` solves goals that come after goals that it can't solve
 example (Q : Type) (f : Nat → Q) : Int × Q :=
 by
   apply_rules [Prod.mk, f]
