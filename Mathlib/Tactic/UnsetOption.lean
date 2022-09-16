@@ -20,18 +20,18 @@ is cleaner not to write it explicitly, or for some options where the default
 behaviour is different from any user set value.
 -/
 
-syntax (name := «unset_option») "unset_option " ident : command
-
 namespace Lean.Elab
 
 variable [Monad m] [MonadOptions m] [MonadExceptOf Exception m] [MonadRef m]
 variable [AddErrorMessageContext m] [MonadLiftT (EIO Exception) m] [MonadInfoTree m]
 
+/-- unset the option specified by id -/
 def elabUnsetOption (id : Syntax) : m Options := do
   -- We include the first argument (the keyword) for position information in case `id` is `missing`.
   addCompletionInfo <| CompletionInfo.option (← getRef)
   unsetOption id.getId.eraseMacroScopes
 where
+  /-- unset the given option name -/
   unsetOption (optionName : Name) : m Options := return (← getOptions).erase optionName
 
 namespace Command
