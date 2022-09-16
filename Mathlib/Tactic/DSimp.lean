@@ -29,6 +29,7 @@ example (a : Nat): (0 + 0) = a - a := by
 -/
 syntax (name := dsimp) "dsimp " (config)? (discharger)? (&"only ")? ("[" dsimpArg,* "]")? : conv
 
+/-- The `dsimp` tactic for `conv`. -/
 @[tactic Lean.Parser.Tactic.Conv.dsimp] def evalDSimp : Tactic := fun stx => withMainContext do
   -- Get the simp context:
   let { ctx, .. } ← mkSimpContext stx (eraseLocal := false) (kind := .dsimp)
