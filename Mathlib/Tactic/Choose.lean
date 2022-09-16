@@ -84,6 +84,14 @@ def ElimStatus.merge : ElimStatus → ElimStatus → ElimStatus
 | _, success => success
 | failure ts₁, failure ts₂ => failure (ts₁ ++ ts₂)
 
+def getBinderName (e : Expr) : MetaM (Option Name) := do
+  match ← withReducible (whnf e) with
+  | .forallE (binderName := n) .. | .lam (binderName := n) .. => pure (some n)
+  | _ => pure none
+
+def mkFreshNameFrom (orig base : Name) : CoreM Name :=
+  if orig = `_ then mkFreshUserName base else pure orig
+
 def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
   MetaM (ElimStatus × Expr × MVarId) := do
   let (g, h) ← match h with
@@ -97,8 +105,8 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
     forallTelescopeReducing t fun ctxt t => do
       (← withTransparency .all (whnf t)).withApp fun
       | .const ``Exists [u], #[α, p] => do
-        let ((neFail : ElimStatus), (nonemp : Option Expr)) ← if nondep
-          then do
+        let data ← mkFreshNameFrom data ((← getBinderName p).getD `h)
+        let ((neFail : ElimStatus), (nonemp : Option Expr)) ← if nondep then
           let ne := (Expr.const ``Nonempty [u]).app α
           let m ← mkFreshExprMVar ne
           let L : List (Name × Expr × Expr) ← ctxt.toList.filterMapM $ fun e => do
@@ -113,7 +121,7 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
             let m ← instantiateMVars m
             pure (.success, some m)
           | none   => pure (.failure [ne], none)
-          else pure (.failure [], none)
+        else pure (.failure [], none)
         let ctxt' ← if nonemp.isSome then ctxt.filterM (fun e => not <$> isProof e) else pure ctxt
         let dataTy ← mkForallFVars ctxt' α
         let mut dataVal := mkApp3 (.const ``Classical.choose [u]) α p (mkAppN h ctxt)
@@ -135,6 +143,7 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
         | _ => pure g
         return (neFail, fvar, g)
       | .const ``And _, #[p, q] => do
+        let data ← mkFreshNameFrom data `h
         let e1 ← mkLambdaFVars ctxt $ mkApp3 (.const ``And.left  []) p q (mkAppN h ctxt)
         let e2 ← mkLambdaFVars ctxt $ mkApp3 (.const ``And.right []) p q (mkAppN h ctxt)
         let t1 ← inferType e1
@@ -147,14 +156,25 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
       -- TODO: support Σ, × ?
       | _, _ => throwError "expected a term of the shape `∀xs, ∃a, p xs a` or `∀xs, p xs ∧ q xs`"
 
+def SourceInfo.fromRef' (ref : Syntax) (synthetic := true) : SourceInfo :=
+  match ref.getPos?, ref.getTailPos? with
+  | some pos, some tailPos =>
+    if synthetic then .synthetic pos tailPos
+    else .original "".toSubstring pos "".toSubstring tailPos
+  | _,        _            => .none
+
+def addLocalVarInfoForBinderIdent (fvar : Expr) : TSyntax ``binderIdent → TermElabM Unit
+| `(binderIdent| $n:ident) =>
+  Elab.Term.addLocalVarInfo n fvar
+| tk => do
+  let stx := mkNode ``Parser.Term.hole #[Syntax.atom (SourceInfo.fromRef' tk false) "_"] -- HACK
+  Elab.Term.addLocalVarInfo stx fvar
+
 def choose1WithInfo (g : MVarId) (nondep : Bool) (h : Option Expr) (data : TSyntax ``binderIdent) :
   TermElabM (ElimStatus × MVarId) := do
-  let n ← match data with
-  | `(binderIdent| $n:ident) => pure n.getId
-  | _ => pure `_
+  let n := if let `(binderIdent| $n:ident) := data then n.getId else `_
   let (status, fvar, g) ← choose1 g nondep h n
-  g.withContext do
-    Elab.Term.addLocalVarInfo data fvar
+  g.withContext <| addLocalVarInfoForBinderIdent fvar data
   pure (status, g)
 
 def elabChoose (nondep : Bool) (h : Option Expr) :
@@ -167,31 +187,30 @@ def elabChoose (nondep : Bool) (h : Option Expr) :
     let (fvar, g) ← match n with
     | `(binderIdent| $n:ident) => g.intro n.getId
     | _ => g.intro1
-    g.withContext do
-      Elab.Term.addLocalVarInfo n (.fvar fvar)
+    g.withContext <| addLocalVarInfoForBinderIdent (.fvar fvar) n
     return .ok g
 | (n::ns), status, g => do
   let (status', g) ← choose1WithInfo g nondep h n
   elabChoose nondep none ns (status.merge status') g
 
 /-- TODO -/
-elab (name := choose) "choose" b:"!"? ids:binderIdent+ h:(" using " term)? : tactic =>
-  withMainContext do
-    let h ← h.mapM fun h => Elab.Tactic.elabTerm h none
-    match ← elabChoose b.isSome h ids.toList (.failure []) (← getMainGoal) with
-    | .ok g => replaceMainGoal [g]
-    | .error tys =>
-      let gs ← tys.mapM (fun ty => Expr.mvarId! <$> (mkFreshExprMVar (some ty)))
-      setGoals gs
-      throwError "choose!: failed to synthesize any nonempty instances"
+syntax (name := choose) "choose" "!"? (colGt binderIdent)+ (" using " term)? : tactic
+elab_rules : tactic
+| `(tactic| choose $[!%$b]? $[$ids]* $[using $h]?) => withMainContext do
+  let h ← h.mapM fun h => Elab.Tactic.elabTerm h none
+  match ← elabChoose b.isSome h ids.toList (.failure []) (← getMainGoal) with
+  | .ok g => replaceMainGoal [g]
+  | .error tys =>
+    let gs ← tys.mapM fun ty => Expr.mvarId! <$> mkFreshExprMVar (some ty)
+    setGoals gs
+    throwError "choose!: failed to synthesize any nonempty instances"
 
 @[inheritDoc choose]
-macro "choose!" ids:binderIdent+ " using " h:term : tactic =>
-  `(tactic| choose ! $[$ids]* using $h)
+syntax "choose!" (colGt binderIdent)+ (" using " term)? : tactic
+macro_rules
+  | `(tactic| choose! $[$ids]* $[using $h]?) => `(tactic| choose ! $[$ids]* $[using $h]?)
 
 example {α : Type} (h : ∀n m : α, ∀ (h : n = m), ∃i j : α, i ≠ j ∧ h = h) : True :=
 by
-  revert h
-  intro h
   choose! i j _x _y using h
   trivial
