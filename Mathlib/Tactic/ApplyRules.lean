@@ -54,11 +54,13 @@ open Lean Meta Elab Tactic Term Parser.Tactic
 /--
 Implementation of the `apply_rules` tactic.
 -/
-def applyRules (cfg : ApplyConfig) (maxIters : Nat) (L : List Expr) : MVarId → MetaM (List MVarId) :=
+def applyRules (cfg : ApplyConfig) (maxIters : Nat) (L : List Expr) :
+  MVarId → MetaM (List MVarId) :=
 fun h => repeat'' (maxIters := maxIters)
   (fun g => (do g.assumption; pure []) <|> L.firstM (g.apply · cfg)) [h]
 
 -- This should be moved higher in the import hierarchy when others need it.
+/-- An elaborator for translating a `Syntax` to an `ApplyConfig`. -/
 declare_config_elab elabApplyConfig ApplyConfig
 
 /--
