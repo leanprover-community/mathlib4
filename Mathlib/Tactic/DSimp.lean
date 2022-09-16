@@ -10,15 +10,17 @@ namespace Lean.Parser.Tactic.Conv
 open Lean.Elab.Tactic Elab.Tactic.Conv Parser.Tactic.Conv
 
 /--
-`dsimp` simplifies a term in `conv`-mode using only definitional equalities.
+`dsimp` is the definitional simplifier in `conv`-mode. It differs from `simp` in that it only
+applies theorems that hold by reflexivity.
 
 Examples:
 
 ```lean
-example : (1 + 0) = 1 := by
+example (a : Nat): (0 + 0) = a - a := by
   conv =>
     lhs
     dsimp
+    rw [←Nat.sub_self a]
 ```
 -/
 syntax (name := dsimp) "dsimp " (config)? (discharger)? (&"only ")? ("[" dsimpArg,* "]")? : conv
@@ -28,11 +30,3 @@ syntax (name := dsimp) "dsimp " (config)? (discharger)? (&"only ")? ("[" dsimpAr
   let { ctx, .. } ← mkSimpContext stx (eraseLocal := false) (kind := .dsimp)
   -- Get the left-hand-side and change it using dsimp
   changeLhs (← Lean.Meta.dsimp (← getLhs) ctx)
-
-example : (1 + 0) = 1 := by
-  dsimp
-
-example : (1 + 0) = 1 := by
-  conv =>
-    lhs
-    dsimp
