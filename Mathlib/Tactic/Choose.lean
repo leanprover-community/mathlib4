@@ -99,14 +99,19 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
         let ((neFail : ElimStatus), (nonemp : Option Expr)) ← if nondep
           then do
           let ne := (Expr.const ``Nonempty [u]).app α
+          let m ← mkFreshExprMVar ne
           let L : List (Name × Expr × Expr) ← ctxt.toList.filterMapM $ fun e => do
             let ty ← (inferType e >>= whnf)
             if (← isProof e) then return none
             pure $ some (.anonymous, (Expr.const ``Nonempty [u]).app ty, mkApp2 (Expr.const ``Nonempty.intro [u]) ty e)
-          let (_, g') ← (g.asserts L >>= MVarId.intros)
+          let (_, g') ← (m.mvarId!.asserts L >>= MVarId.intros)
           g'.withContext do
-          match ← synthInstance? ne with
-          | some e => pure (.success, some e)
+          dbg_trace "Hi"
+          match ← synthInstance? m with
+          | some e => do
+            let e ← instantiateMVars e
+            dbg_trace "Ho"
+            pure (.success, some e)
           | none   => pure (.failure [ne], none)
           else pure (.failure [], none)
         let ctxt' ← if nonemp.isSome then ctxt.filterM (fun e => not <$> isProof e) else pure ctxt
