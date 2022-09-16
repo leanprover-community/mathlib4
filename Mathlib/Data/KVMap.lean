@@ -11,9 +11,12 @@ import Lean.Data.KVMap
 
 namespace Lean.KVMap
 
+/-- erase pairs whose names match the second argument from a list of
+`Name × DataValue` pairs-/
 def eraseCore : List (Name × DataValue) → Name → List (Name × DataValue)
   | l, n => List.dropWhile (fun a => a.1 == n) l
 
+/-- erase an entry from the map -/
 def erase : KVMap → Name → KVMap
   | ⟨m⟩, k => ⟨eraseCore m k⟩
 
