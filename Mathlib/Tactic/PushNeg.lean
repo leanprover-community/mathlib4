@@ -89,15 +89,15 @@ def pushNegTarget : TacticM Unit := withMainContext do
       simpTheorems := #[ ]
       congrTheorems := (← getSimpCongrTheorems) }
   let goal ← getMainGoal
-  let tgt ← instantiateMVars (← MVarId.getType goal)
+  let tgt ← instantiateMVars (← goal.getType)
   let myres := ← Simp.main tgt myctx (methods := { pre := transformNegation })
   replaceMainGoal [← applySimpResultToTarget goal tgt myres]
 
 /-- Execute main loop of `push_neg` at a local hypothesis. -/
 def pushNegLocalDecl (fvarId : FVarId): TacticM Unit := withMainContext do
-  let ldecl ← FVarId.getDecl fvarId
+  let ldecl ← fvarId.getDecl
   if ldecl.isAuxDecl then return
-  let tgt := (← FVarId.getDecl fvarId).type
+  let tgt := (← fvarId.getDecl).type
   let tgt ← instantiateMVars tgt
   let myctx : Simp.Context :=
     { config := { eta := true },

@@ -177,19 +177,19 @@ open Lean Elab Tactic Conv
 /-- Normnums a target. -/
 def normNumTarget (ctx : Simp.Context) : TacticM Unit := do
   liftMetaTactic1 fun mvarId => do
-    let tgt ← instantiateMVars (← MVarId.getType mvarId)
+    let tgt ← instantiateMVars (← mvarId.getType)
     let prf ← derive ctx tgt
     let newGoal ← applySimpResultToTarget mvarId tgt prf
     let t ← inferType (mkMVar newGoal)
     if t.isConstOf ``True then
-      MVarId.assign newGoal (mkConst ``True.intro)
+      newGoal.assign (mkConst ``True.intro)
       return none
     return some newGoal
 
 /-- Normnums a hypothesis. -/
 def normNumHyp (ctx : Simp.Context) (fvarId: FVarId) : TacticM Unit :=
   liftMetaTactic1 fun mvarId => do
-    let hyp ← instantiateMVars (← FVarId.getDecl fvarId).type
+    let hyp ← instantiateMVars (← fvarId.getDecl).type
     let prf ← derive ctx hyp
     let (some (_newHyp, newGoal)) ← applySimpResultToLocalDecl mvarId fvarId prf false
       | throwError "Failed to apply norm_num to hyp."
