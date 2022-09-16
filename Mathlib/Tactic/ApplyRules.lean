@@ -3,8 +3,9 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Lean
 import Std.Util.TermUnsafe
-import Mathlib.Tactic.Repeat
+import Std.Lean.Meta
 
 /-!
 # The `apply_rules` tactic
@@ -12,7 +13,6 @@ import Mathlib.Tactic.Repeat
 The `apply_rules` tactic calls `apply` (with a specified set of lemmas) and `assumption`
 repeatedly, until no more applications are possible.
 -/
-
 
 namespace Mathlib.Tactic
 open Lean Meta Elab Tactic Term Parser.Tactic
@@ -29,7 +29,10 @@ fun g => L.firstM (g.apply · cfg)
 Implementation of the `apply_rules` tactic.
 -/
 def applyRules (cfg : ApplyConfig) (L : List Expr) : MVarId → MetaM (List MVarId) :=
-repeat' (fun g => (do g.assumption; pure []) <|> applyFirst cfg L g)
+(repeat' (fun g => (do g.assumption; pure []) <|> applyFirst cfg L g) [·])
+
+-- This should be moved higher in the import hierarchy when others need it.
+declare_config_elab elabApplyConfig ApplyConfig
 
 /--
 `apply_rules [l₁, l₂, ...]` tries to solve the main goal by iteratively
@@ -48,8 +51,8 @@ TODO: add support for attributes
 TODO: copy the other tests/examples from Lean 3
 -/
 elab (name := applyRulesElab)
-  "apply_rules" cfg:(config)? " [" lemmas:term,* "]" : tactic =>
+  "apply_rules" cfg:(config ?) " [" lemmas:term,* "]" : tactic =>
 do
-  let cfg ← cfg.mapM (unsafe evalTerm ApplyConfig (mkConst ``ApplyConfig) ·)
+  let cfg ← elabApplyConfig cfg
   let lemmas ← lemmas.getElems.toList.mapM (elabTermForApply ·.raw)
-  liftMetaTactic $ applyRules (cfg.getD {}) lemmas
+  liftMetaTactic $ applyRules cfg lemmas

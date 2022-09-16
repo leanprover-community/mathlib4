@@ -89,5 +89,11 @@ def getUsingArg : Syntax → TacticM Syntax
   | `(usingArg| using $e) => pure e
   | _                     => Elab.throwUnsupportedSyntax
 
+/--
+`repeat1 tac` repeatedly applies `tac` until it fails.
+`repeat1` succeeds if and only if `tac` succeeds at least once.
+-/
+macro "repeat1 " seq:tacticSeq : tactic => `(tactic| ($seq); repeat $seq)
+
 end Parser.Tactic
 end Lean
