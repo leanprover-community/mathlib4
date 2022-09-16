@@ -24,7 +24,7 @@ namespace Tactic.MfldSetTac
 in one another. -/
 elab (name := mfldSetTac) "mfld_set_tac" : tactic => withMainContext do
   let g ← getMainGoal
-  let goalTy := (← instantiateMVars (← getMVarDecl g).type).getAppFnArgs
+  let goalTy := (← instantiateMVars (← g.getDecl).type).getAppFnArgs
   match goalTy with
   | (``Eq, #[_ty, _e₁, _e₂]) =>
     evalTactic (← `(tactic| apply Set.ext;  intro my_y; constructor <;> { intro h_my_y;
