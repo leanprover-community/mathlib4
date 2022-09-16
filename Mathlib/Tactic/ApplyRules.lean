@@ -18,18 +18,10 @@ namespace Mathlib.Tactic
 open Lean Meta Elab Tactic Term Parser.Tactic
 
 /--
-`applyFirst cfg l`, for `L : List Expr`,
-tries to apply one of the lemmas in `L` to the goal (using `cfg : ApplyConfig`), and
-fails if none succeeds.
--/
-def applyFirst (cfg : ApplyConfig) (L : List Expr) : MVarId → MetaM (List MVarId) :=
-fun g => L.firstM (g.apply · cfg)
-
-/--
 Implementation of the `apply_rules` tactic.
 -/
 def applyRules (cfg : ApplyConfig) (L : List Expr) : MVarId → MetaM (List MVarId) :=
-(repeat' (fun g => (do g.assumption; pure []) <|> applyFirst cfg L g) [·])
+(repeat' (fun g => (do g.assumption; pure []) <|> L.firstM (g.apply · cfg)) [·])
 
 -- This should be moved higher in the import hierarchy when others need it.
 declare_config_elab elabApplyConfig ApplyConfig
