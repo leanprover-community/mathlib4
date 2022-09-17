@@ -223,24 +223,22 @@ Examples:
 
 ```lean
 example (h : ∀n m : ℕ, ∃i j, m = n + i ∨ m + j = n) : true :=
-begin
-  choose i j h using h,
-  guard_hyp i : ℕ → ℕ → ℕ,
-  guard_hyp j : ℕ → ℕ → ℕ,
-  guard_hyp h : ∀ (n m : ℕ), m = n + i n m ∨ m + j n m = n,
+by
+  choose i j h using h
+  guard_hyp i : ℕ → ℕ → ℕ
+  guard_hyp j : ℕ → ℕ → ℕ
+  guard_hyp h : ∀ (n m : ℕ), m = n + i n m ∨ m + j n m = n
   trivial
-end
 ```
 
 ```lean
 example (h : ∀ i : ℕ, i < 7 → ∃ j, i < j ∧ j < i+i) : true :=
-begin
-  choose! f h h' using h,
-  guard_hyp f : ℕ → ℕ,
-  guard_hyp h : ∀ (i : ℕ), i < 7 → i < f i,
-  guard_hyp h' : ∀ (i : ℕ), i < 7 → f i < i + i,
-  trivial,
-end
+by
+  choose! f h h' using h
+  guard_hyp f : ℕ → ℕ
+  guard_hyp h : ∀ (i : ℕ), i < 7 → i < f i
+  guard_hyp h' : ∀ (i : ℕ), i < 7 → f i < i + i
+  trivial
 ```
 -/
 syntax (name := choose) "choose" "!"? (colGt binderIdent)+ (" using " term)? : tactic
@@ -258,8 +256,3 @@ elab_rules : tactic
 syntax "choose!" (colGt binderIdent)+ (" using " term)? : tactic
 macro_rules
   | `(tactic| choose! $[$ids]* $[using $h]?) => `(tactic| choose ! $[$ids]* $[using $h]?)
-
-example {α : Type} (h : ∀n m : α, ∀ (h : n = m), ∃i j : α, i ≠ j ∧ h = h) : True :=
-by
-  choose! i j _ _ using h
-  trivial
