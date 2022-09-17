@@ -8,6 +8,10 @@ import Mathlib.Util.Asserts
 import Mathlib.Util.Tactic
 import Mathlib.Tactic.ShowTerm
 
+import Mathlib.Lean.getBinderName
+import Mathlib.Lean.mkFreshNameFrom
+import Mathlib.Lean.addLocalVarInfoForBinderIdent
+
 open Lean Lean.Meta Elab.Term Elab.Tactic
 
 /-!
@@ -80,28 +84,6 @@ def ElimStatus.merge : ElimStatus → ElimStatus → ElimStatus
 | _, success => success
 | failure ts₁, failure ts₂ => failure (ts₁ ++ ts₂)
 
-def getBinderName (e : Expr) : MetaM (Option Name) := do
-  match ← withReducible (whnf e) with
-  | .forallE (binderName := n) .. | .lam (binderName := n) .. => pure (some n)
-  | _ => pure none
-
-def mkFreshNameFrom (orig base : Name) : CoreM Name :=
-  if orig = `_ then mkFreshUserName base else pure orig
-
-def SourceInfo.fromRef' (ref : Syntax) (synthetic := true) : SourceInfo :=
-  match ref.getPos?, ref.getTailPos? with
-  | some pos, some tailPos =>
-    if synthetic then .synthetic pos tailPos
-    else .original "".toSubstring pos "".toSubstring tailPos
-  | _,        _            => .none
-
-def addLocalVarInfoForBinderIdent (fvar : Expr) : TSyntax ``binderIdent → TermElabM Unit
-| `(binderIdent| $n:ident) =>
-  Elab.Term.addLocalVarInfo n fvar
-| tk => do
-  let stx := mkNode ``Parser.Term.hole #[Syntax.atom (SourceInfo.fromRef' tk false) "_"] -- HACK
-  Elab.Term.addLocalVarInfo stx fvar
-
 /-- Changes `(h : ∀xs, ∃a:α, p a) ⊢ g` to `(d : ∀xs, a) ⊢ (s : ∀xs, p (d xs)) → g` and
 `(h : ∀xs, p xs ∧ q xs) ⊢ g` to `(d : ∀xs, p xs) ⊢ (s : ∀xs, q xs) → g`.
 `choose1` returns a tuple of
@@ -126,7 +108,7 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
     forallTelescopeReducing t fun ctxt t => do
       (← withTransparency .all (whnf t)).withApp fun
       | .const ``Exists [u], #[α, p] => do
-        let data ← mkFreshNameFrom data ((← getBinderName p).getD `h)
+        let data ← data.mkFreshNameFrom ((← p.getBinderName).getD `h)
         let ((neFail : ElimStatus), (nonemp : Option Expr)) ← if nondep then
           let ne := (Expr.const ``Nonempty [u]).app α
           let m ← mkFreshExprMVar ne
@@ -164,7 +146,7 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
         | _ => pure g
         return (neFail, fvar, g)
       | .const ``And _, #[p, q] => do
-        let data ← mkFreshNameFrom data `h
+        let data ← data.mkFreshNameFrom `h
         let e1 ← mkLambdaFVars ctxt $ mkApp3 (.const ``And.left  []) p q (mkAppN h ctxt)
         let e2 ← mkLambdaFVars ctxt $ mkApp3 (.const ``And.right []) p q (mkAppN h ctxt)
         let t1 ← inferType e1
@@ -182,7 +164,7 @@ def choose1WithInfo (g : MVarId) (nondep : Bool) (h : Option Expr) (data : TSynt
   TermElabM (ElimStatus × MVarId) := do
   let n := if let `(binderIdent| $n:ident) := data then n.getId else `_
   let (status, fvar, g) ← choose1 g nondep h n
-  g.withContext <| addLocalVarInfoForBinderIdent fvar data
+  g.withContext <| fvar.addLocalVarInfoForBinderIdent data
   pure (status, g)
 
 /-- A loop around `choose1`. The main entry point for the `choose` tactic. -/
@@ -196,7 +178,7 @@ def elabChoose (nondep : Bool) (h : Option Expr) :
     let (fvar, g) ← match n with
     | `(binderIdent| $n:ident) => g.intro n.getId
     | _ => g.intro1
-    g.withContext <| addLocalVarInfoForBinderIdent (.fvar fvar) n
+    g.withContext <| (Expr.fvar fvar).addLocalVarInfoForBinderIdent n
     return .ok g
 | (n::ns), status, g => do
   let (status', g) ← choose1WithInfo g nondep h n

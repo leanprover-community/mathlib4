@@ -1,7 +1,6 @@
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Basic
 
-/- choice -/
 example (h : ∀n m : Nat, n < m → ∃i j, m = n + i ∨ m + j = n) : true :=
 by
   choose i j h using h
@@ -10,6 +9,7 @@ by
   guard_hyp h : ∀ (n m : Nat) (h : n < m), m = n + i n m h ∨ m + j n m h = n
   trivial
 
+-- `choose!` eliminates dependencies on props, whenever possible
 example (h : ∀n m : Nat, n < m → ∃i j, m = n + i ∨ m + j = n) : true :=
 by
   choose! i j h using h
