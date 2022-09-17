@@ -42,6 +42,10 @@ import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr.Traverse
 import Mathlib.Lean.LocalContext
+import Mathlib.Lean.SourceInfo_fromRef
+import Mathlib.Lean.addLocalVarInfoForBinderIdent
+import Mathlib.Lean.getBinderName
+import Mathlib.Lean.mkFreshNameFrom
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Logic.Equiv.MfldSimpsAttr
@@ -112,6 +116,7 @@ import Mathlib.Tactic.Use
 import Mathlib.Testing.SlimCheck.Gen
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
+import Mathlib.Util.Asserts
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.MemoFix
