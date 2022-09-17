@@ -47,7 +47,7 @@ input theorem has the form `A_iff_B` or `A_iff_B_left` etc.
 namespace Tactic
 namespace Alias
 
-open Lean Parser.Command
+open Lean Elab Parser.Command
 
 /-- Adds some copies of a theorem or definition. -/
 syntax (name := alias) (docComment)? "alias " ident " ← " ident* : command
@@ -74,28 +74,35 @@ def appendNamespace (ns : Name) : Name → Name
 | .anonymous        => ns
 
 /-- Elaborates an `alias ←` command. -/
-@[commandElab «alias»] def elabAlias : Elab.Command.CommandElab
+@[commandElab «alias»] def elabAlias : Command.CommandElab
 | `($[$doc]? alias $name:ident ← $aliases:ident*) => do
-  let resolved ← resolveGlobalConstNoOverload name
+  let resolved ← resolveGlobalConstNoOverloadWithInfo name
   let constant ← getConstInfo resolved
   let ns ← getCurrNamespace
   for a in aliases do
+    let declName := appendNamespace ns a.getId
     let decl ← match constant with
     | Lean.ConstantInfo.defnInfo d =>
       pure $ .defnDecl {
-        d with name := appendNamespace ns a.getId
+        d with name := declName
                value := mkConst resolved (d.levelParams.map mkLevelParam)
       }
     | Lean.ConstantInfo.thmInfo t =>
       pure $ .thmDecl {
-        t with name := appendNamespace ns a.getId
+        t with name := declName
                value := mkConst resolved (t.levelParams.map mkLevelParam)
       }
     | _ => throwError "alias only works with def or theorem"
+    addDeclarationRanges declName {
+      range := ← getDeclarationRange (← getRef)
+      selectionRange := ← getDeclarationRange a
+    }
     -- TODO add @alias attribute
     Lean.addDecl decl
+    Command.liftTermElabM <|
+      Term.addTermInfo' a (← mkConstWithLevelParams declName) (isBinder := true)
     -- TODO add doc string
-| _ => Lean.Elab.throwUnsupportedSyntax
+| _ => throwUnsupportedSyntax
 
 /--
   Given a possibly forall-quantified iff expression `prf`, produce a value for one
@@ -112,35 +119,41 @@ def mkIffMpApp (mp : Bool) (prf : Expr) : MetaM Expr := do
   Given a constant representing an iff decl, adds a decl for one of the implication
   directions.
 -/
-def aliasIff (ci : ConstantInfo) (al : Name) (isForward : Bool) : MetaM Unit := do
+def aliasIff (ci : ConstantInfo) (ref : Syntax) (al : Name) (isForward : Bool) :
+    TermElabM Unit := do
   let ls := ci.levelParams
   let v ← mkIffMpApp isForward ci.value!
   let t' ← Meta.inferType v
   -- TODO add @alias attribute
+  addDeclarationRanges al {
+    range := ← getDeclarationRange (← getRef)
+    selectionRange := ← getDeclarationRange ref
+  }
   addDecl $ .thmDecl {
     name := al
     value := v
     type := t'
     levelParams := ls
   }
+  Term.addTermInfo' ref (← mkConstWithLevelParams al) (isBinder := true)
 
 /-- Elaborates an `alias ↔` command. -/
-@[commandElab aliasLR] def elabAliasLR : Lean.Elab.Command.CommandElab
+@[commandElab aliasLR] def elabAliasLR : Command.CommandElab
 | `($[$doc]? alias $name:ident ↔ $left:binderIdent $right:binderIdent) => do
-  let resolved ← resolveGlobalConstNoOverload name
+  let resolved ← resolveGlobalConstNoOverloadWithInfo name
   let constant ← getConstInfo resolved
   let ns ← getCurrNamespace
-  Lean.Elab.Command.liftTermElabM do
+  Command.liftTermElabM do
     if let `(binderIdent| $x:ident) := left then
-      aliasIff constant (appendNamespace ns x.getId) true
+      aliasIff constant x (appendNamespace ns x.getId) true
     if let `(binderIdent| $x:ident) := right then
-      aliasIff constant (appendNamespace ns x.getId) false
-| _ => Lean.Elab.throwUnsupportedSyntax
+      aliasIff constant x (appendNamespace ns x.getId) false
+| _ => throwUnsupportedSyntax
 
 /-- Elaborates an `alias ↔ ..` command. -/
-@[commandElab aliasLRDots] def elabAliasLRDots : Lean.Elab.Command.CommandElab
-| `($[$doc]? alias $name:ident ↔ ..) => do
-  let resolved ← resolveGlobalConstNoOverload name
+@[commandElab aliasLRDots] def elabAliasLRDots : Command.CommandElab
+| `($[$doc]? alias $name:ident ↔ ..%$tk) => do
+  let resolved ← resolveGlobalConstNoOverloadWithInfo name
   let constant ← getConstInfo resolved
   let (parent, base) ← match resolved with
     | .str n s => pure (n, s)
@@ -151,11 +164,11 @@ def aliasIff (ci : ConstantInfo) (al : Name) (isForward : Bool) : MetaM Unit := 
   let backward := String.intercalate "_of_" components
   let forwardName := Name.mkStr parent forward
   let backwardName := Name.mkStr parent backward
-  Lean.Elab.Command.liftTermElabM do
-    aliasIff constant forwardName true
-    aliasIff constant backwardName false
+  Command.liftTermElabM do
+    aliasIff constant tk forwardName true
+    aliasIff constant tk backwardName false
   -- TODO add doc string
-| _ => Lean.Elab.throwUnsupportedSyntax
+| _ => throwUnsupportedSyntax
 
 end Alias
 end Tactic

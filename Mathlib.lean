@@ -14,7 +14,6 @@ import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Card
-import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Perm
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Option.Basic
@@ -29,19 +28,12 @@ import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Notation
-import Mathlib.Init.Data.List.Basic
-import Mathlib.Init.Data.List.Instances
-import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Data.Option.Basic
 import Mathlib.Init.Data.Option.Instances
-import Mathlib.Init.Dvd
-import Mathlib.Init.ExtendedBinder
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Set
-import Mathlib.Init.SetNotation
 import Mathlib.Init.Zero
 import Mathlib.Lean.Exception
 import Mathlib.Lean.Expr
@@ -73,14 +65,13 @@ import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Core
+import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Expect
-import Mathlib.Tactic.Ext
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.Have
-import Mathlib.Tactic.HaveI
 import Mathlib.Tactic.HelpCmd
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
@@ -93,7 +84,6 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.PushNeg
-import Mathlib.Tactic.RCases
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
@@ -106,7 +96,6 @@ import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.ShowTerm
 import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Simpa
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread
@@ -116,6 +105,7 @@ import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TryThis
+import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.Use
 import Mathlib.Testing.SlimCheck.Gen
 import Mathlib.Testing.SlimCheck.Sampleable

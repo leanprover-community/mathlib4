@@ -366,7 +366,6 @@ theorem PartialOrder.ext {α} {A B : PartialOrder α}
   ext x y
   exact H x y
 
-open Mathlib.Tactic.Ext
 theorem LinearOrder.ext {α} {A B : LinearOrder α}
     (H : ∀ x y : α, A.toLE.le x y ↔ B.toLE.le x y) : A = B := by
   ext x y
@@ -611,8 +610,7 @@ lemma le_def {α β : Type _} [LE α] [LE β] {x y : α × β} :
   (x₁, y₁) ≤ (x₂, y₂) ↔ x₁ ≤ x₂ ∧ y₁ ≤ y₂ :=
 Iff.rfl
 
-@[simp] lemma swap_le_swap [LE α] [LE β] {x y : α × β} : x.swap ≤ y.swap ↔ x ≤ y :=
-and_comm _ _
+@[simp] lemma swap_le_swap [LE α] [LE β] {x y : α × β} : x.swap ≤ y.swap ↔ x ≤ y := and_comm
 
 section preorder
 variable [Preorder α] [Preorder β] {a a₁ a₂ : α} {b b₁ b₂ : β} {x y : α × β}

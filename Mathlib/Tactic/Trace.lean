@@ -7,6 +7,10 @@ import Std.Util.TermUnsafe
 import Lean.Elab.Tactic.ElabTerm
 import Lean.Meta.Eval
 
+/-!
+# Defines the `trace` tactic.
+-/
+
 open Lean Meta Elab Tactic
 
 /-- Evaluates a term to a string (when possible), and prints it as a trace message. -/
