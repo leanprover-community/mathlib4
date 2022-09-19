@@ -10,8 +10,6 @@ import Mathlib.Tactic.ShowTerm
 
 import Mathlib.Lean.mkFreshNameFrom
 
-open Lean Lean.Meta Elab.Term Elab.Tactic
-
 /-!
 # `choose` tactic
 Performs Skolemization, that is, given `h : ∀ a:α, ∃ b:β, p a b |- G` produces
@@ -19,6 +17,8 @@ Performs Skolemization, that is, given `h : ∀ a:α, ∃ b:β, p a b |- G` prod
 
 TODO: switch to `rcases` syntax: `choose ⟨i, j, h₁ -⟩ := expr`.
 -/
+
+open Lean Lean.Meta Elab.Term Elab.Tactic
 
 namespace Tactic
 
