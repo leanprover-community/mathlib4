@@ -6,7 +6,6 @@ Authors: Scott Morrison, Newell Jensen
 import Lean.Elab.Command
 import Lean.Meta.Tactic.Constructor
 
-
 open Lean Meta Elab Tactic
 
 /--
