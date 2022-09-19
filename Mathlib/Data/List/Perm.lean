@@ -1,6 +1,5 @@
 import Mathlib.Init.Set
-import Mathlib.Data.List.Basic
-import Mathlib.Tactic.ShowTerm
+import Mathlib.Data.List.Pairwise
 
 namespace List
 
@@ -167,12 +166,13 @@ theorem Perm.pairwise_iff {R : α → α → Prop} (S : symmetric R) :
   | nil =>
       rw [←p.nil_eq]
       constructor
-  | @cons a h d ih =>
+  | @cons a h d _ ih =>
       have : a ∈ l₂ := p.subset (mem_cons_self _ _)
       rcases mem_split this with ⟨s₂, t₂, rfl⟩
       have p' := (p.trans perm_middle).cons_inv
-      refine' (pairwise_middle S).2 (pairwise_cons.2 ⟨fun b m => _, IH _ p'⟩)
-      exact h _ (p'.symm.subset m)
+      refine' (pairwise_middle S).2 (Pairwise_cons.2 ⟨_, ih p'⟩)
+      intro b m
+      exact d _ (p'.symm.subset m)
 
 theorem Perm.nodup_iff {l₁ l₂ : List α} : l₁ ~ l₂ → (Nodup l₁ ↔ Nodup l₂) :=
   Perm.pairwise_iff <| @Ne.symm α
