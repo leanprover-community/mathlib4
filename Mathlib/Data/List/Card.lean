@@ -171,10 +171,10 @@ theorem card_eq_of_equiv {as bs : List α} (h : as.equiv bs) : card as = card bs
   Nat.le_antisymm (card_subset_le sub_and_sub.1) (card_subset_le sub_and_sub.2)
 
 theorem card_append_disjoint : ∀ {as bs : List α},
-    disjoint as bs → card (as ++ bs) = card as + card bs
+    Disjoint as bs → card (as ++ bs) = card as + card bs
   | [], _, _ => by simp
   | a :: as, bs, disj => by
-    have disj' : disjoint as bs := fun _ h1 h2 => disj (mem_cons_of_mem a h1) h2
+    have disj' : Disjoint as bs := fun _ h1 h2 => disj (mem_cons_of_mem a h1) h2
     cases Decidable.em (a ∈ as) with
     | inl h =>
       simp [h, card_append_disjoint disj']
@@ -183,7 +183,7 @@ theorem card_append_disjoint : ∀ {as bs : List α},
       simp [h, h1, card_append_disjoint disj']
       rw [Nat.add_right_comm]
 
-theorem card_union_disjoint {as bs : List α} (h : disjoint as bs) :
+theorem card_union_disjoint {as bs : List α} (h : Disjoint as bs) :
     card (as.union bs) = card as + card bs := by
   rw [card_eq_of_equiv (union_equiv_append as bs), card_append_disjoint h]
 

@@ -62,7 +62,6 @@ notation f "^["n"]" => iterate f n
 
 /- successor and predecessor -/
 
-set_option linter.unusedVariables false in -- FIXME: lean4#1214
 def discriminate (H1 : n = 0 → α) (H2 : ∀m, n = succ m → α) : α :=
   match n with
   | 0 => H1 rfl

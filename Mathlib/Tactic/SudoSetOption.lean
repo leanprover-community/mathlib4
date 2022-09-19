@@ -5,6 +5,13 @@ Authors: Gabriel Ebner
 -/
 
 import Lean
+
+/-!
+# Defines the `sudo set_option` command.
+
+Allows setting undeclared options.
+-/
+
 open Lean Elab
 
 private def setOption [Monad m] [MonadError m]
