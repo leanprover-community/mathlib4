@@ -57,6 +57,16 @@ theorem mem_map_of_injective {f : α → β} (H : injective f) {a : α} {l : Lis
 ⟨fun m => let ⟨_, m', e⟩ := exists_of_mem_map m
           H e ▸ m', mem_map_of_mem _⟩
 
+theorem mem_split {a : α} {l : List α} (h : a ∈ l) : ∃ s t : List α, l = s ++ a :: t := by
+  induction l with
+  | nil => cases h
+  | cons b l ih =>
+      cases h with
+      | head => exact ⟨[], l, rfl⟩
+      | tail _ h =>
+          rcases ih h with ⟨s, t, rfl⟩
+          exact ⟨b :: s, t, rfl⟩
+
 /-! ### length -/
 
 alias length_pos ↔ ne_nil_of_length_pos length_pos_of_ne_nil
