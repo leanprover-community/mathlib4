@@ -14,9 +14,9 @@ import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
+import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Core
-import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.InferParam
