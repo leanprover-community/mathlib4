@@ -14,6 +14,7 @@ import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
+import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Existsi
