@@ -1,6 +1,10 @@
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Basic
 
+/-!
+# Tests for the `choose` tactic
+-/
+
 example (h : ∀n m : Nat, n < m → ∃i j, m = n + i ∨ m + j = n) : true :=
 by
   choose i j h using h
