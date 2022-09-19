@@ -6,6 +6,12 @@ Authors: Mario Carneiro
 
 import Lean
 
+/-!
+# `mkFreshNameFrom`
+
+Temporary file. Should be moved to core.
+-/
+
 namespace Lean
 
 namespace Name

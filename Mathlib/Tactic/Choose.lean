@@ -8,9 +8,7 @@ import Mathlib.Util.Asserts
 import Mathlib.Util.Tactic
 import Mathlib.Tactic.ShowTerm
 
-import Mathlib.Lean.getBinderName
 import Mathlib.Lean.mkFreshNameFrom
-import Mathlib.Lean.addLocalVarInfoForBinderIdent
 
 open Lean Lean.Meta Elab.Term Elab.Tactic
 

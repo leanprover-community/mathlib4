@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lew
 Floris van Doorn, E.W.Ayers, Arthur Paulino
 -/
 import Lean
+import Mathlib.Lean.SourceInfo
 
 /-!
 # Additional operations on Expr and related types
@@ -158,6 +159,23 @@ def renameBVar (e : Expr) (old new : Name) : Expr :=
   | forallE n ty bd bi =>
     forallE (if n == old then new else n) (ty.renameBVar old new) (bd.renameBVar old new) bi
   | e => e
+
+open Lean.Meta in
+/-- `getBinderName e` returns `some n` if `e` is an expression of the form `∀ n, ...`
+and `none` otherwise. -/
+def getBinderName (e : Expr) : MetaM (Option Name) := do
+  match ← withReducible (whnf e) with
+  | .forallE (binderName := n) .. | .lam (binderName := n) .. => pure (some n)
+  | _ => pure none
+
+open Lean.Elab.Term in
+/-- A hack to work around the linter complaining that a variable named `_` is unused. -/
+def addLocalVarInfoForBinderIdent (fvar : Expr) : TSyntax ``binderIdent → TermElabM Unit
+| `(binderIdent| $n:ident) =>
+  Elab.Term.addLocalVarInfo n fvar
+| tk => do
+  let stx := mkNode ``Parser.Term.hole #[Syntax.atom (SourceInfo.fromRef' tk false) "_"] -- HACK
+  Elab.Term.addLocalVarInfo stx fvar
 
 end Expr
 
