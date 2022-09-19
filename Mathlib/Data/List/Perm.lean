@@ -84,9 +84,9 @@ theorem perm_inv_core {a : α} {l₁ l₂ r₁ r₂ : List α} : l₁ ++ a :: r�
   generalize e₂ : l₂ ++ a :: r₂ = s₂
   intro p
   revert l₁ l₂ r₁ r₂ e₁ e₂
-  refine' perm_induction_on p _ (fun x t₁ t₂ p IH => _) (fun x y t₁ t₂ p IH => _) (fun t₁ t₂ t₃ p₁ p₂ IH₁ IH₂ => _)
-  · intro e₁ e₂
-    apply (not_mem_nil a).elim
+  refine' @(perm_induction_on p _ (fun x t₁ t₂ p IH => _) (fun x y t₁ t₂ p IH => _) (fun t₁ t₂ t₃ p₁ p₂ IH₁ IH₂ => _))
+    <;> intro l₁ l₂ r₁ r₂ e₁ e₂
+  · apply (not_mem_nil a).elim
     rw [← e₁]
     simp
   · rcases l₁ with ⟨y,l₁⟩ <;> rcases l₂ with ⟨z,l₂⟩ <;> dsimp at e₁ e₂ <;> injections <;> subst x
