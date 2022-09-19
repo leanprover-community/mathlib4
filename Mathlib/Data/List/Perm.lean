@@ -57,8 +57,6 @@ theorem perm_middle {a : α} : ∀ {l₁ l₂ : List α}, l₁++a::l₂ ~ a::(l�
   let h2 := @perm_middle α a l₁ l₂
   (h2.cons _).trans (swap a b _)
 
-
-set_option linter.unusedVariables false in -- FIXME: lean4#1214
 theorem perm_insertNth {x : α} : ∀ {l : List α} {n : Nat}, n ≤ l.length →
   insertNth n x l ~ x :: l
 | [], 0, _ => Perm.refl _
