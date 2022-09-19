@@ -114,7 +114,9 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
           let L : List (Name × Expr × Expr) ← ctx.toList.filterMapM $ fun e => do
             let ty ← (inferType e >>= whnf)
             if (← isProof e) then return none
-            pure $ some (.anonymous, (Expr.const ``Nonempty [u]).app ty, mkApp2 (Expr.const ``Nonempty.intro [u]) ty e)
+            let nety := (Expr.const ``Nonempty [u]).app ty
+            let neval := mkApp2 (Expr.const ``Nonempty.intro [u]) ty e
+            pure $ some (.anonymous, nety, neval)
           let (_, g') ← (m.mvarId!.asserts L >>= MVarId.intros)
           g'.withContext do
           match ← synthInstance? (← g'.getType) with
