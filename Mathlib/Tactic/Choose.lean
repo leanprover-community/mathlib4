@@ -44,16 +44,16 @@ namespace Tactic
 namespace Choose
 
 /-- Given `α : Sort u`, `nonemp : Nonempty α`, `p : α → Prop`, a context of free variables
-`ctxt`, and a pair of an element `val : α` and `spec : p val`,
+`ctx`, and a pair of an element `val : α` and `spec : p val`,
 `mk_sometimes u α nonemp p ctx (val, spec)` produces another pair `val', spec'`
-such that `val'` does not have any free variables from elements of `ctxt` whose types are
+such that `val'` does not have any free variables from elements of `ctx` whose types are
 propositions. This is done by applying `function.sometimes` to abstract over all the propositional
 arguments. -/
 def mk_sometimes (u : Level) (α nonemp p : Expr) :
   List Expr → Expr × Expr → MetaM (Expr × Expr)
 | [], (val, spec) => pure (val, spec)
-| (e :: ctxt), (val, spec) => do
-  let (val, spec) ← mk_sometimes u α nonemp p ctxt (val, spec)
+| (e :: ctx), (val, spec) => do
+  let (val, spec) ← mk_sometimes u α nonemp p ctx (val, spec)
   let t ← inferType e
   let b ← isProp t
   if b then do
@@ -105,14 +105,14 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
   g.withContext do
     let h ← instantiateMVars h
     let t ← inferType h
-    forallTelescopeReducing t fun ctxt t => do
+    forallTelescopeReducing t fun ctx t => do
       (← withTransparency .all (whnf t)).withApp fun
       | .const ``Exists [u], #[α, p] => do
         let data ← data.mkFreshNameFrom ((← p.getBinderName).getD `h)
         let ((neFail : ElimStatus), (nonemp : Option Expr)) ← if nondep then
           let ne := (Expr.const ``Nonempty [u]).app α
           let m ← mkFreshExprMVar ne
-          let L : List (Name × Expr × Expr) ← ctxt.toList.filterMapM $ fun e => do
+          let L : List (Name × Expr × Expr) ← ctx.toList.filterMapM $ fun e => do
             let ty ← (inferType e >>= whnf)
             if (← isProof e) then return none
             pure $ some (.anonymous, (Expr.const ``Nonempty [u]).app ty, mkApp2 (Expr.const ``Nonempty.intro [u]) ty e)
@@ -125,16 +125,16 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
             pure (.success, some m)
           | none   => pure (.failure [ne], none)
         else pure (.failure [], none)
-        let ctxt' ← if nonemp.isSome then ctxt.filterM (fun e => not <$> isProof e) else pure ctxt
-        let dataTy ← mkForallFVars ctxt' α
-        let mut dataVal := mkApp3 (.const ``Classical.choose [u]) α p (mkAppN h ctxt)
-        let mut specVal := mkApp3 (.const ``Classical.choose_spec [u]) α p (mkAppN h ctxt)
+        let ctx' ← if nonemp.isSome then ctx.filterM (not <$> isProof .) else pure ctx
+        let dataTy ← mkForallFVars ctx' α
+        let mut dataVal := mkApp3 (.const ``Classical.choose [u]) α p (mkAppN h ctx)
+        let mut specVal := mkApp3 (.const ``Classical.choose_spec [u]) α p (mkAppN h ctx)
         if let some nonemp := nonemp then
-          (dataVal, specVal) ← mk_sometimes u α nonemp p ctxt.toList (dataVal, specVal)
-        dataVal ← mkLambdaFVars ctxt' dataVal
-        specVal ← mkLambdaFVars ctxt specVal
+          (dataVal, specVal) ← mk_sometimes u α nonemp p ctx.toList (dataVal, specVal)
+        dataVal ← mkLambdaFVars ctx' dataVal
+        specVal ← mkLambdaFVars ctx specVal
         let (fvar, g) ← withLocalDeclD .anonymous dataTy fun d => do
-          let specTy ← mkForallFVars ctxt (p.app (mkAppN d ctxt')).headBeta
+          let specTy ← mkForallFVars ctx (p.app (mkAppN d ctx')).headBeta
           g.withContext do
           withLocalDeclD data dataTy fun d' => do
           let mvarTy ← mkArrow (specTy.replaceFVar d d') (← g.getType)
@@ -147,8 +147,8 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
         return (neFail, fvar, g)
       | .const ``And _, #[p, q] => do
         let data ← data.mkFreshNameFrom `h
-        let e1 ← mkLambdaFVars ctxt $ mkApp3 (.const ``And.left  []) p q (mkAppN h ctxt)
-        let e2 ← mkLambdaFVars ctxt $ mkApp3 (.const ``And.right []) p q (mkAppN h ctxt)
+        let e1 ← mkLambdaFVars ctx $ mkApp3 (.const ``And.left  []) p q (mkAppN h ctx)
+        let e2 ← mkLambdaFVars ctx $ mkApp3 (.const ``And.right []) p q (mkAppN h ctx)
         let t1 ← inferType e1
         let t2 ← inferType e2
         let (fvar, g) ← (g.asserts [(.anonymous, t2, e2), (data, t1, e1)] >>= MVarId.intro1P)
@@ -226,7 +226,7 @@ by
 syntax (name := choose) "choose" "!"? (colGt binderIdent)+ (" using " term)? : tactic
 elab_rules : tactic
 | `(tactic| choose $[!%$b]? $[$ids]* $[using $h]?) => withMainContext do
-  let h ← h.mapM fun h => Elab.Tactic.elabTerm h none
+  let h ← h.mapM (Elab.Tactic.elabTerm . none)
   match ← elabChoose b.isSome h ids.toList (.failure []) (← getMainGoal) with
   | .ok g => replaceMainGoal [g]
   | .error tys =>
