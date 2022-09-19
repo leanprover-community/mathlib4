@@ -11,17 +11,36 @@ open Lean.Meta
 
 namespace Lean.Elab.Tactic
 
-def getMemType (e : Expr) : TacticM (Option Expr) := do
-  -- let type ← inferType e -- should be `Prop`
+/-- If `e` is of the form `x ∈ (A : List α)` , `x ∈ (A : Finset α)`, or `x ∈ (A : Multiset α)`,
+return `Some α`, otherwise `None`. -/
+def getMemType {m : Type → Type} [Monad m] [MonadError m] (e : Expr) : m (Option Expr) := do
   match e.getAppFnArgs with
   | (``Membership.mem, #[_, type, _, _, _]) =>
     match type.getAppFnArgs with
     | (``List, #[α])     => return α
     | (``Multiset, #[α]) => return α
     | (``Finset, #[α])   => return α
-    | _ => throwError m!"Hypothesis must be of type `x ∈ (A : List/Multiset/Finset α)`"
+    | _ => throwError ("Hypothesis must be of type `x ∈ (A : List α)`, `x ∈ (A : Finset α)`,"
+        ++ " or `x ∈ (A : Multiset α)`")
   | _ => return none
 
+/--
+Recursively runs the `cases` tactic on a hypothesis `h`,
+as long as two goals are produced. `cases` is called recursively on the second goal,
+and we return a list of the first goals which appeared.
+
+This is useful for hypotheses of the form `h : a ∈ [l₁, l₂, ...]`,
+which will be transformed into a sequence of goals with hypotheses `h : a = l₁`, `h : a = l₂`,
+and so on.
+-/
+partial def unfoldCases (h : FVarId) : MVarId → MetaM (List MVarId) :=
+fun g => do try
+  let #[g₁, g₂] ← cases g h | throwError "unexpected number of cases"
+  let gs ← unfoldCases g₂.fields[3]!.fvarId! g₂.mvarId
+  return g₁.mvarId :: gs
+catch _ => return []
+
+/-- Implementation of the `fin_cases` tactic. -/
 partial def finCasesAt (hyp : FVarId) : TacticM Unit := do
   withMainContext do
     let lDecl ←
@@ -29,18 +48,7 @@ partial def finCasesAt (hyp : FVarId) : TacticM Unit := do
       | none => throwError m!"hypothesis not found"
       | some lDecl => pure lDecl
     match ← getMemType lDecl.type with
-    | some _ =>
-      -- Deal with `x ∈ A` hypotheses:
-      -- everything inside this block is a hack lmao
-      liftMetaTacticAux fun mvarId => do
-        let rec loop (goal : MVarId) (hyp : FVarId) (cont : Array MVarId) := do
-          try
-            let #[g₁, g₂] ← cases goal hyp |
-              throwError "'cases' tactic failed, unexpected number of subgoals"
-            loop g₂.mvarId g₂.fields[3]!.fvarId! (cont.push g₁.mvarId)
-          catch _ =>
-            return cont
-        return ((), Array.toList <|← loop mvarId hyp #[])
+    | some _ => liftMetaTactic (unfoldCases hyp)
     | none =>
       -- Deal with `x : A`, where `[Fintype A]` is available:
       let inst ← synthInstance (← mkAppM ``Fintype #[lDecl.type])
@@ -52,8 +60,7 @@ partial def finCasesAt (hyp : FVarId) : TacticM Unit := do
         let (fvar, mvarId) ← intro1P (← assert mvarId `this t v)
         pure (fvar, [mvarId])
 
-      withMainContext do
-        finCasesAt hyp
+      finCasesAt hyp
 
 syntax (name := finCases) "fin_cases " ("*" <|> (term,+)) (" with " term)? : tactic
 
@@ -63,6 +70,7 @@ syntax (name := finCases) "fin_cases " ("*" <|> (term,+)) (" with " term)? : tac
     for (h : TSyntax `term) in hyps.getElems do
       finCasesAt (← getFVarId h)
   | `(tactic| fin_cases * $[with $es]?) => do
+    -- Try running `finCasesAt` on each local hypothesis.
     sorry
   | _ => throwUnsupportedSyntax
 
