@@ -121,6 +121,7 @@ def Fmla.proof (f : Fmla) (c : Clause) : Prop :=
 theorem Fmla.proof_of_subsumes (H : Fmla.subsumes f (Fmla.one c)) : f.proof c :=
   fun _ h => h.1 _ $ H.1 _ $ List.Mem.head ..
 
+set_option linter.unusedVariables false in -- FIXME: lean4#1214
 /-- The core unit-propagation step.
 
 We have a local context of assumptions `¬l'` (sometimes called an assignment)
