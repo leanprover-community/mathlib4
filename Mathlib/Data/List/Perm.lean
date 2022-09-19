@@ -147,9 +147,9 @@ theorem Perm.cons_inv {a : α} {l₁ l₂ : List α} : a :: l₁ ~ a :: l₂ →
 theorem Perm.length_eq {l₁ l₂ : List α} (p : l₁ ~ l₂) : length l₁ = length l₂ := by
   induction p with
   | nil => simp
-  | cons _ _ ih => sorry
-  | swap x y l => simp
-  | trans _ _ ih₁ ih₂ => sorry
+  | cons _ _ ih => simp [ih]
+  | swap _ _ l => simp
+  | trans _ _ ih₁ ih₂ => exact ih₁.trans ih₂
 
 theorem Perm.eq_nil {l : List α} (p : l ~ []) : l = [] :=
   eq_nil_of_length_eq_zero p.length_eq
@@ -158,7 +158,7 @@ theorem Perm.nil_eq {l : List α} (p : [] ~ l) : [] = l :=
   p.symm.eq_nil.symm
 
 theorem Perm.pairwise_iff {R : α → α → Prop} (S : symmetric R) :
-  ∀ {l₁ l₂ : List α} (p : l₁ ~ l₂), Pairwise R l₁ ↔ Pairwise R l₂ := by
+  ∀ {l₁ l₂ : List α}, l₁ ~ l₂ → (Pairwise R l₁ ↔ Pairwise R l₂) := by
   suffices ∀ {l₁ l₂}, l₁ ~ l₂ → Pairwise R l₁ → Pairwise R l₂ from
     fun l₁ l₂ p => ⟨this p, this p.symm⟩
   intros l₁ l₂ p d
