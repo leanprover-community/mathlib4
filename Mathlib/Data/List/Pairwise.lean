@@ -20,7 +20,8 @@ namespace List
 variable {α β : Type _} {R S T : α → α → Prop} {a : α} {l : List α}
 
 theorem pairwise_append {l₁ l₂ : List α} :
-    Pairwise R (l₁ ++ l₂) ↔ Pairwise R l₁ ∧ Pairwise R l₂ ∧ (∀ x, x ∈ l₁ → ∀ y, y ∈ l₂ → R x y) := by
+    Pairwise R (l₁ ++ l₂) ↔ Pairwise R l₁ ∧ Pairwise R l₂ ∧ (∀ x, x ∈ l₁ → ∀ y, y ∈ l₂ → R x y) :=
+by
   induction l₁ with
   | nil => simp [Pairwise.nil]
   | cons a l₁ ih =>
