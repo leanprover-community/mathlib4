@@ -21,6 +21,11 @@ Performs Skolemization, that is, given `h : ∀ a:α, ∃ b:β, p a b |- G` prod
 
 TODO: switch to `rcases` syntax: `choose ⟨i, j, h₁ -⟩ := expr`.
 -/
+
+namespace Tactic
+
+namespace Choose
+
 namespace function
 
 open Classical in
@@ -38,10 +43,6 @@ theorem sometimes_spec {p : Prop} {α} [Nonempty α]
 (sometimes_eq f a).symm ▸ h
 
 end function
-
-namespace Tactic
-
-namespace Choose
 
 /-- Given `α : Sort u`, `nonemp : Nonempty α`, `p : α → Prop`, a context of free variables
 `ctx`, and a pair of an element `val : α` and `spec : p val`,
