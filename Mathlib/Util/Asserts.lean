@@ -6,6 +6,13 @@ Authors: Johan Commelin
 
 import Lean
 
+/-!
+# `MVarId.asserts`
+
+A variant of `MVarId.assert` that takes a list of things to assert,
+and returns the final goal.
+-/
+
 open Lean
 
 namespace Lean
