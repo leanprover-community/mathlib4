@@ -64,14 +64,23 @@ partial def finCasesAt (hyp : FVarId) : TacticM Unit := do
 
 syntax (name := finCases) "fin_cases " ("*" <|> (term,+)) (" with " term)? : tactic
 
+/- TODO: Implement the `with` clause. -/
+/- TODO: use `norm_num` when there is no `with` clause. -/
+/- TODO: can we name the cases generated according to their values,
+   rather than `tail.tail.tail.head`? -/
+/- TODO: copy across the tests from mathlib3. -/
+
 @[tactic finCases] def evalFinCases : Tactic := fun stx =>
   match stx with
   | `(tactic| fin_cases $hyps,* $[with $es]?) => do
     for (h : TSyntax `term) in hyps.getElems do
       finCasesAt (← getFVarId h)
   | `(tactic| fin_cases * $[with $es]?) => do
+    if es.getElems.size > 0 then
+      throwError "Specify a single hypothesis when using a `with` argument."
     -- Try running `finCasesAt` on each local hypothesis.
-    sorry
+    for h in (← getPropHyps) do
+      finCasesAt h
   | _ => throwUnsupportedSyntax
 
 example {p : Fin 4 → Prop} (i : Fin 4) (h : p i) : p i := by
