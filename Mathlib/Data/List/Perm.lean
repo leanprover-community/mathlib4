@@ -72,7 +72,8 @@ theorem Perm.mem_iff {a : α} {l₁ l₂ : List α} (h : l₁ ~ l₂) : a ∈ l�
 
 /-- The way Lean 4 computes the motive with `elabAsElim` has changed
 relative to the behaviour of `elab_as_eliminator` in Lean 3.
-See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Potential.20elaboration.20bug.20with.20.60elabAsElim.60/near/299573172
+See
+https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Potential.20elaboration.20bug.20with.20.60elabAsElim.60/near/299573172
 for an explanation of the change made here relative to mathlib3.
 -/
 @[elabAsElim]
