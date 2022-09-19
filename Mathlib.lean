@@ -42,7 +42,7 @@ import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr.Traverse
 import Mathlib.Lean.LocalContext
-import Mathlib.Lean.SourceInfo_fromRef
+import Mathlib.Lean.SourceInfo
 import Mathlib.Lean.addLocalVarInfoForBinderIdent
 import Mathlib.Lean.getBinderName
 import Mathlib.Lean.mkFreshNameFrom
