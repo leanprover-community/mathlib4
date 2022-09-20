@@ -28,7 +28,9 @@ This file defines a typeclass to state that a type is finite.
   is a finset `elems` (a list up to permutation without duplicates),
   together with a proof that everything of type `α` is in the list. -/
 class Fintype (α : Type _) where
+  /-- The `Finset` of elements of a `Fintype`. -/
   elems : Finset α
+  /-- The proof that every term of the type is contained in the `Finset` of elements. -/
   complete : ∀ x : α, x ∈ elems
 
 namespace Finset

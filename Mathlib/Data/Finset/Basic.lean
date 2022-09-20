@@ -45,8 +45,10 @@ variable {α : Type _} {β : Type _} {γ : Type _}
 /-- `finset α` is the type of finite sets of elements of `α`. It is implemented
   as a multiset (a list up to permutation) which has no duplicate elements. -/
 structure Finset (α : Type _) where
+  /-- The underlying `Multiset` of a `Finset`. -/
   val : Multiset α
-  Nodup : Nodup val
+  /-- The proof that the underlying `Multiset` of a `Finset` has no duplicates. -/
+  nodup : Nodup val
 
 namespace Finset
 
