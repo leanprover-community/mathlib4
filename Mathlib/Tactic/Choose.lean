@@ -25,6 +25,11 @@ namespace Tactic
 namespace Choose
 
 namespace function
+/-!
+## `function.sometimes`
+
+To make the `choose` tactic self-contained, we give a definition of `function.sometimes` in this file.
+-/
 
 open Classical in
 /-- `sometimes f` evaluates to some value of `f`, if it exists. This function is especially
