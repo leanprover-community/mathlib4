@@ -28,7 +28,8 @@ namespace function
 /-!
 ## `function.sometimes`
 
-To make the `choose` tactic self-contained, we give a definition of `function.sometimes` in this file.
+To make the `choose` tactic self-contained,
+we give a definition of `function.sometimes` in this file.
 -/
 
 open Classical in
