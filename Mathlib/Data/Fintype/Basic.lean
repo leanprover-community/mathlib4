@@ -45,3 +45,12 @@ def univ : Finset α :=
 @[simp]
 theorem mem_univ (x : α) : x ∈ (univ : Finset α) :=
   Fintype.complete x
+
+end Finset
+
+namespace Fintype
+
+instance (n : ℕ) : Fintype (Fin n) :=
+⟨Finset.finRange n, Finset.mem_finRange⟩
+
+end Fintype
