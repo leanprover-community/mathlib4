@@ -244,3 +244,17 @@ Iff.intro (fun _ => trivial) (fun _ _ => trivial)
 
 theorem forall_prop_of_false {p : Prop} {q : p → Prop} (hn : ¬p) : (∀ h' : p, q h') ↔ True :=
   iff_true_intro fun h => hn.elim h
+
+/-! ### Declarations about bounded quantifiers -/
+
+section BoundedQuantifiers
+
+variable {α} {p q r : α → Prop} {P Q : ∀ x, p x → Prop}
+
+theorem Ball.imp_right (H : ∀ x h, P x h → Q x h) (h₁ : ∀ x h, P x h) (x h) : Q x h :=
+  H _ _ <| h₁ _ _
+
+theorem Ball.imp_left (H : ∀ x, p x → q x) (h₁ : ∀ x, q x → r x) (x) (h : p x) : r x :=
+  h₁ _ <| H _ h
+
+end BoundedQuantifiers

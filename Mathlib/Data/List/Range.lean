@@ -1,6 +1,8 @@
-
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.List.Basic
+import Mathlib.Order.Basic
+import Mathlib.Data.Fin.Basic
+import Mathlib.Data.List.Chain
 
 namespace List
 
@@ -8,26 +10,44 @@ open Nat
 
 @[simp]
 theorem mem_range' {m : ℕ} : ∀ {s n : ℕ}, m ∈ range' s n ↔ s ≤ m ∧ m < s + n
-  | s, 0 => (false_iff _).2 fun ⟨H1, H2⟩ => not_le_of_lt H2 H1
+  | s, 0 => by simp
   | s, succ n =>
     have : m = s → m < s + n + 1 := fun e => e ▸ lt_succ_of_le (Nat.le_add_right _ _)
     have l : m = s ∨ s + 1 ≤ m ↔ s ≤ m := by
       simpa only [eq_comm] using (@Decidable.le_iff_eq_or_lt _ _ _ s m).symm
-    (mem_cons_iff _ _ _).trans <| by
-      simp only [mem_range', or_and_distrib_left, or_iff_right_of_imp this, l, add_right_commₓ] <;> rfl
+    mem_cons.trans <| by
+      simp only [mem_range', or_and_distrib_left, or_iff_right_of_imp this, l, Nat.add_right_comm] <;> rfl
 
-theorem range_core_range' : ∀ s n : ℕ, rangeCore s (range' s n) = range' 0 (n + s)
+theorem rangeAux_range' : ∀ s n : ℕ, rangeAux s (range' s n) = range' 0 (n + s)
   | 0, n => rfl
   | s + 1, n => by
-    rw [show n + (s + 1) = n + 1 + s from add_right_commₓ n s 1] <;> exact range_core_range' s (n + 1)
+    rw [show n + (s + 1) = n + 1 + s from Nat.add_right_comm n s 1] <;> exact rangeAux_range' s (n + 1)
 
 theorem range_eq_range' (n : ℕ) : range n = range' 0 n :=
-  (range_core_range' n 0).trans <| by
-    rw [zero_add]
+  (rangeAux_range' n 0).trans <| by
+    rw [Nat.zero_add]
 
 @[simp]
 theorem mem_range {m n : ℕ} : m ∈ range n ↔ m < n := by
-  simp only [range_eq_range', mem_range', Nat.zero_leₓ, true_andₓ, zero_addₓ]
+  simp only [range_eq_range', mem_range', Nat.zero_le, true_and, Nat.zero_add]
+  rfl
+
+theorem chain_succ_range' : ∀ s n : ℕ, Chain (fun a b => b = succ a) s (range' (s + 1) n)
+  | _, 0 => Chain.nil
+  | s, n + 1 => (chain_succ_range' (s + 1) n).cons rfl
+
+theorem chain_lt_range' (s n : ℕ) : Chain (· < ·) s (range' (s + 1) n) :=
+  (chain_succ_range' s n).imp fun _ _ e => e.symm ▸ lt_succ_self _
+
+theorem pairwise_lt_range' : ∀ s n : ℕ, Pairwise (· < ·) (range' s n)
+  | _, 0 => Pairwise.nil
+  | s, n + 1 => chain_iff_pairwise.1 (chain_lt_range' s n)
+
+theorem nodup_range' (s n : ℕ) : Nodup (range' s n) :=
+  (pairwise_lt_range' s n).imp fun _ _ => Nat.ne_of_lt
+
+theorem nodup_range (n : ℕ) : Nodup (range n) := by
+  simp only [range_eq_range', nodup_range']
 
 /-- All elements of `fin n`, from `0` to `n-1`. The corresponding finset is `finset.univ`. -/
 def finRange (n : ℕ) : List (Fin n) :=
