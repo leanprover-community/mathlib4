@@ -176,9 +176,9 @@ end Term
 
 namespace Tactic
 
-/- N -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
+/- S -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
 /- S -/ syntax (name := mapply) "mapply " term : tactic
-/- M -/ syntax (name := withCases) "with_cases " tacticSeq : tactic
+/- S -/ syntax (name := withCases) "with_cases " tacticSeq : tactic
 syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
 /- N -/ syntax (name := case'') "case'' " (("[" caseArg,* "]") <|> caseArg) " => " tacticSeq : tactic
 /- S -/ syntax "destruct " term : tactic
@@ -234,7 +234,7 @@ end Conv
 /- E -/ syntax (name := unfoldCoes) "unfold_coes" (ppSpace location)? : tactic
 /- E -/ syntax (name := unfoldWf) "unfold_wf" : tactic
 /- M -/ syntax (name := unfoldAux) "unfold_aux" : tactic
-/- E -/ syntax (name := «continue») "continue " tacticSeq : tactic
+/- S -/ syntax (name := «continue») "continue " tacticSeq : tactic
 /- M -/ syntax (name := generalizeHyp) "generalize " atomic(ident " : ")? term:51 " = " ident
   ppSpace location : tactic
 /- M -/ syntax (name := clean) "clean " term : tactic
@@ -274,8 +274,8 @@ end Conv
 /- E -/ syntax (name := convertTo) "convert_to " term (" using " num)? : tactic
 /- E -/ syntax (name := acChange) "ac_change " term (" using " num)? : tactic
 
-/- M -/ syntax (name := rcases?) "rcases?" casesTarget,* (" : " num)? : tactic
-/- M -/ syntax (name := rintro?) "rintro?" (" : " num)? : tactic
+/- S -/ syntax (name := rcases?) "rcases?" casesTarget,* (" : " num)? : tactic
+/- S -/ syntax (name := rintro?) "rintro?" (" : " num)? : tactic
 
 /- M -/ syntax (name := decide!) "decide!" : tactic
 
@@ -298,10 +298,10 @@ syntax generalizesArg := (ident " : ")? term:51 " = " ident
   (ppSpace (colGt binderIdent))* (ppSpace location)? : tactic
 
 syntax withPattern := "-" <|> "_" <|> ident
-/- M -/ syntax (name := cases'') "cases''" casesTarget (" with " (colGt withPattern)+)? : tactic
+/- S -/ syntax (name := cases'') "cases''" casesTarget (" with " (colGt withPattern)+)? : tactic
 syntax fixingClause := " fixing" (" *" <|> (ppSpace ident)+)
 syntax generalizingClause := " generalizing" (ppSpace ident)+
-/- N -/ syntax (name := induction'') "induction''" casesTarget
+/- S -/ syntax (name := induction'') "induction''" casesTarget
   (fixingClause <|> generalizingClause)? (" with " (colGt withPattern)+)? : tactic
 
 syntax termList := " [" term,* "]"
