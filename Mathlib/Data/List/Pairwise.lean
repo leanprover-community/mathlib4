@@ -82,3 +82,10 @@ theorem Pairwise.of_map {S : β → β → Prop} (f : α → β) (H : ∀ a b : 
 theorem Pairwise.map {S : β → β → Prop} (f : α → β) (H : ∀ a b : α, R a b → S (f a) (f b)) (p : Pairwise R l) :
     Pairwise S (map f l) :=
   (pairwise_map f).2 <| p.imp H
+
+theorem Pairwise.iff_of_mem {S : α → α → Prop} {l : List α} (H : ∀ {a b}, a ∈ l → b ∈ l → (R a b ↔ S a b)) :
+    Pairwise R l ↔ Pairwise S l :=
+  ⟨Pairwise.imp_of_mem fun {_ _} m m' => (H m m').1, Pairwise.imp_of_mem fun {_ _} m m' => (H m m').2⟩
+
+theorem Pairwise.and_mem {l : List α} : Pairwise R l ↔ Pairwise (fun x y => x ∈ l ∧ y ∈ l ∧ R x y) l :=
+  Pairwise.iff_of_mem (by simp (config := { contextual := true }))

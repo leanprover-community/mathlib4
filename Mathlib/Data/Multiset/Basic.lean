@@ -25,6 +25,11 @@ variable {α : Type _} {β : Type _} {γ : Type _}
 def Multiset.{u} (α : Type u) : Type u :=
   Quotient (List.instSetoidList α)
 
+namespace Multiset
+
+instance : Coe (List α) (Multiset α) :=
+  ⟨Quot.mk _⟩
+
 section Mem
 
 /-- `a ∈ s` means that `a` has nonzero multiplicity in `s`. -/

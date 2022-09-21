@@ -1,5 +1,5 @@
 import Mathlib.Data.Nat.Basic
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Nodup
 import Mathlib.Order.Basic
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.List.Chain
@@ -62,4 +62,4 @@ theorem mem_fin_range {n : ℕ} (a : Fin n) : a ∈ finRange n :=
   mem_pmap.2 ⟨a.1, mem_range.2 a.2, Fin.eta _ _⟩
 
 theorem nodup_fin_range (n : ℕ) : (finRange n).Nodup :=
-  (nodup_range _).pmap fun _ _ _ _ => Fin.veq_of_eq
+  (nodup_range _).pmap fun _ _ _ _ => Fin.val_eq_of_eq
