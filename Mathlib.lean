@@ -17,10 +17,12 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Card
 import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Range
 import Mathlib.Data.Multiset.Basic
+import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
