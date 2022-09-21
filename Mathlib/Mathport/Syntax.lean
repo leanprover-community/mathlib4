@@ -14,8 +14,9 @@ import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
-import Mathlib.Tactic.Core
 import Mathlib.Tactic.CommandQuote
+import Mathlib.Tactic.Constructor
+import Mathlib.Tactic.Core
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.InferParam
@@ -187,7 +188,6 @@ syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
 /- M -/ syntax (name := casesType!) "cases_type!" "*"? ppSpace ident* : tactic
 /- N -/ syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
 
-/- E -/ syntax (name := eConstructor) "econstructor" : tactic
 /- M -/ syntax (name := constructorM) "constructorm" "*"? ppSpace term,* : tactic
 /- M -/ syntax (name := injections') "injections" (" with " (colGt (ident <|> "_"))+)? : tactic
 /- N -/ syntax (name := simpIntro) "simp_intro" (config)?

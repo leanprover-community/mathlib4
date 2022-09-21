@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Basic
+import Mathlib.Data.List.Range
 
 /-!
 # Finite types
@@ -45,3 +46,12 @@ def univ : Finset α :=
 @[simp]
 theorem mem_univ (x : α) : x ∈ (univ : Finset α) :=
   Fintype.complete x
+
+end Finset
+
+namespace Fintype
+
+instance (n : ℕ) : Fintype (Fin n) :=
+  ⟨⟨List.finRange n, List.nodup_fin_range n⟩, List.mem_fin_range⟩
+
+end Fintype
