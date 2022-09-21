@@ -189,19 +189,13 @@ syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
 /- N -/ syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
 
 /- M -/ syntax (name := constructorM) "constructorm" "*"? ppSpace term,* : tactic
-/- M -/ syntax (name := injections') "injections" (" with " (colGt (ident <|> "_"))+)? : tactic
 /- N -/ syntax (name := simpIntro) "simp_intro" (config)?
   (ppSpace colGt (ident <|> "_"))* (&" only")? (simpArgs)? : tactic
 /- E -/ syntax (name := symm) "symm" : tactic
 /- E -/ syntax (name := trans) "trans" (ppSpace colGt term)? : tactic
 /- B -/ syntax (name := cc) "cc" : tactic
 
--- builtin unfold only accepts single ident
-/- M -/ syntax (name := unfold') (priority := low) "unfold" (config)? (ppSpace colGt ident)* (ppSpace location)? : tactic
-/- N -/ syntax (name := dUnfold) "dunfold" (config)? (ppSpace colGt ident)* (ppSpace location)? : tactic
-/- N -/ syntax (name := delta') "delta'" (colGt ident)* (ppSpace location)? : tactic
 /- M -/ syntax (name := unfoldProjs) "unfold_projs" (config)? (ppSpace location)? : tactic
-/- M -/ syntax (name := unfold1) "unfold1" (config)? (ppSpace colGt ident)* (ppSpace location)? : tactic
 
 /- E -/ syntax (name := inferAutoParam) "infer_auto_param" : tactic
 
@@ -214,7 +208,6 @@ namespace Conv
 open Tactic (simpArg rwRuleSeq)
 /- N -/ syntax (name := «for») "for " term:max " [" num,* "]" " => " tacticSeq : conv
 /- N -/ syntax (name := dsimp) "dsimp" (config)? (&" only")? (dsimpArgs)? : conv
-/- E -/ syntax (name := guardLHS) "guard_lhs " " =ₐ " term : conv
 
 end Conv
 
@@ -484,8 +477,6 @@ namespace Conv
 
 -- https://github.com/leanprover-community/mathlib/issues/2882
 /- M -/ syntax (name := applyCongr) "apply_congr" (ppSpace (colGt term))? : conv
-
-/- E -/ syntax (name := guardTarget) "guard_target" " =ₐ " term : conv
 
 /- E -/ syntax (name := normNum1) "norm_num1" : conv
 /- E -/ syntax (name := normNum) "norm_num" (simpArgs)? : conv
