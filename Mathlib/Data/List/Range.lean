@@ -32,12 +32,14 @@ theorem mem_range' {m : ℕ} : ∀ {s n : ℕ}, m ∈ range' s n ↔ s ≤ m ∧
     have l : m = s ∨ s + 1 ≤ m ↔ s ≤ m := by
       simpa only [eq_comm] using (@Decidable.le_iff_eq_or_lt _ _ _ s m).symm
     mem_cons.trans <| by
-      simp only [mem_range', or_and_distrib_left, or_iff_right_of_imp this, l, Nat.add_right_comm] <;> rfl
+      simp only [mem_range', or_and_distrib_left, or_iff_right_of_imp this, l, Nat.add_right_comm]
+        <;> rfl
 
 theorem rangeAux_range' : ∀ s n : ℕ, rangeAux s (range' s n) = range' 0 (n + s)
   | 0, n => rfl
   | s + 1, n => by
-    rw [show n + (s + 1) = n + 1 + s from Nat.add_right_comm n s 1] <;> exact rangeAux_range' s (n + 1)
+    rw [show n + (s + 1) = n + 1 + s from Nat.add_right_comm n s 1]
+      <;> exact rangeAux_range' s (n + 1)
 
 theorem range_eq_range' (n : ℕ) : range n = range' 0 n :=
   (rangeAux_range' n 0).trans <| by
