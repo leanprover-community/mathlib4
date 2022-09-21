@@ -1,4 +1,19 @@
+/-
+Copyright (c) 2018 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro, Kenny Lau
+-/
 import Mathlib.Data.List.Pairwise
+
+/-!
+# Lists with no duplicates
+
+`List.Nodup` is defined in `Std.Data.List.Basic`. In this file we prove various properties of this
+predicate.
+
+TODO: This is only a partial port,
+containing only the material needed to construct `Fintype (Fin n)`.
+-/
 
 open Function
 

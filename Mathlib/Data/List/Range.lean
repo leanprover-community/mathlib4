@@ -1,8 +1,24 @@
+/-
+Copyright (c) 2018 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro, Kenny Lau, Scott Morrison
+-/
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.List.Nodup
 import Mathlib.Order.Basic
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.List.Chain
+
+/-!
+# Ranges of naturals as lists
+
+This file shows basic results about `List.iota`, `List.range`, `List.range'` (all defined in
+`Std.Data.List.Basic`) and defines `List.finRange`.
+`finRange n` is the list of elements of `fin n`.
+`iota n = [1, ..., n]` and `range n = [0, ..., n - 1]` are basic list constructions used for
+tactics. `range' a b = [a, ..., a + b - 1]` is there to help prove properties about them.
+Actual maths should use `List.Ico` instead.
+-/
 
 namespace List
 
