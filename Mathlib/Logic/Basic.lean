@@ -261,7 +261,8 @@ theorem forall_2_true_iff {β : α → Sort _} : (∀ a, β a → True) ↔ True
   forall_true_iff' fun _ => forall_true_iff
 
 @[simp]
-theorem forall_3_true_iff {β : α → Sort _} {γ : ∀ a, β a → Sort _} : (∀ (a) (b : β a), γ a b → True) ↔ True :=
+theorem forall_3_true_iff {β : α → Sort _} {γ : ∀ a, β a → Sort _} :
+    (∀ (a) (b : β a), γ a b → True) ↔ True :=
   forall_true_iff' fun _ => forall_2_true_iff
 
 /-! ### Declarations about bounded quantifiers -/

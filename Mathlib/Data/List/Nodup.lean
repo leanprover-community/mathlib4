@@ -39,8 +39,8 @@ alias nodup_attach ↔ Nodup.of_attach Nodup.attach
 -- TODO in mathlib3 we had:
 -- attribute [protected] nodup.attach
 
-theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H} (hf : ∀ a ha b hb, f a ha = f b hb → a = b)
-    (h : Nodup l) : Nodup (pmap f l H) := by
+theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
+    (hf : ∀ a ha b hb, f a ha = f b hb → a = b) (h : Nodup l) : Nodup (pmap f l H) := by
   rw [pmap_eq_map_attach] <;>
     exact
       h.attach.map fun ⟨a, ha⟩ ⟨b, hb⟩ h => by
