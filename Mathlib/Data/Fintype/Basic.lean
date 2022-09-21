@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Basic
+import Mathlib.Data.List.Range
 
 /-!
 # Finite types
@@ -51,6 +52,6 @@ end Finset
 namespace Fintype
 
 instance (n : ℕ) : Fintype (Fin n) :=
-⟨Finset.finRange n, Finset.mem_finRange⟩
+  ⟨⟨List.finRange n, List.nodup_fin_range n⟩, List.mem_fin_range⟩
 
 end Fintype

@@ -61,16 +61,19 @@ theorem Pairwise.imp_of_mem {S : α → α → Prop} {l : List α}
 theorem Pairwise.imp (H : ∀ a b, R a b → S a b) : Pairwise R l → Pairwise S l :=
   Pairwise.imp_of_mem fun {a b} _ _ => H a b
 
-theorem pairwise_map (f : β → α) : ∀ {l : List β}, Pairwise R (map f l) ↔ Pairwise (fun a b : β => R (f a) (f b)) l
+theorem pairwise_map (f : β → α) :
+    ∀ {l : List β}, Pairwise R (map f l) ↔ Pairwise (fun a b : β => R (f a) (f b)) l
   | [] => by
     simp only [map, Pairwise.nil]
   | b :: l => by
-    have : (∀ a b', b' ∈ l → f b' = a → R (f b) a) ↔ ∀ b' : β, b' ∈ l → R (f b) (f b') :=
+    have : (∀ a b', b' ∈ l → a = f b' → R (f b) a) ↔ ∀ b' : β, b' ∈ l → R (f b) (f b') :=
       forall_swap.trans <|
-        forall_congr fun a =>
+        forall_congr' fun a =>
           forall_swap.trans <| by
-            simp only [forall_eq']
-    simp only [map, Pairwise_cons, mem_map, exists_imp_distrib, and_imp, this, pairwise_map]
+            simp only [forall_eq]
+            rfl
+    simp only [Pairwise_cons, map, pairwise_map, mem_map, exists_imp_distrib, and_imp, this]
+    rfl
 
 theorem Pairwise.of_map {S : β → β → Prop} (f : α → β) (H : ∀ a b : α, S (f a) (f b) → R a b)
     (p : Pairwise S (map f l)) : Pairwise R l :=
