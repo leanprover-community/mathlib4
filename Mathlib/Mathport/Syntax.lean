@@ -478,8 +478,6 @@ namespace Conv
 -- https://github.com/leanprover-community/mathlib/issues/2882
 /- M -/ syntax (name := applyCongr) "apply_congr" (ppSpace (colGt term))? : conv
 
-/- E -/ syntax (name := guardTarget) "guard_target" " =ₐ " term : conv
-
 /- E -/ syntax (name := normNum1) "norm_num1" : conv
 /- E -/ syntax (name := normNum) "norm_num" (simpArgs)? : conv
 
