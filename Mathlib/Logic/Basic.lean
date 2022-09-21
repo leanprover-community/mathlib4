@@ -250,21 +250,6 @@ theorem forall_prop_of_false {p : Prop} {q : p → Prop} (hn : ¬p) : (∀ h' : 
 theorem forall_swap {p : α → β → Prop} : (∀ x y, p x y) ↔ ∀ y x, p x y :=
   ⟨swap, swap⟩
 
--- Unfortunately this causes simp to loop sometimes, so we
--- add the 2 and 3 cases as simp lemmas instead
--- TODO: Is this still the case in Lean4?
-theorem forall_true_iff' {p : α → Prop} (h : ∀ a, p a ↔ True) : (∀ a, p a) ↔ True :=
-  iff_true_intro fun _ => of_iff_true (h _)
-
-@[simp]
-theorem forall_2_true_iff {β : α → Sort _} : (∀ a, β a → True) ↔ True :=
-  forall_true_iff' fun _ => forall_true_iff
-
-@[simp]
-theorem forall_3_true_iff {β : α → Sort _} {γ : ∀ a, β a → Sort _} :
-    (∀ (a) (b : β a), γ a b → True) ↔ True :=
-  forall_true_iff' fun _ => forall_2_true_iff
-
 /-! ### Declarations about bounded quantifiers -/
 
 section BoundedQuantifiers
