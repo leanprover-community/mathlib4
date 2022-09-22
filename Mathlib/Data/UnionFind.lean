@@ -98,7 +98,7 @@ theorem push {arr : Array α} {n} {m : Fin n → β} (H : Agrees arr f m)
   refine mk' this fun i h₁ h₂ => ?_
   simp [Array.get_push]; split <;> (rename_i h; simp at hm₁ ⊢)
   · rw [← hm₁ ⟨i, h₂⟩]; assumption
-  · cases show i = arr.size by apply le_antisymm <;> simp_all [Nat.lt_succ_iff]
+  · cases show i = arr.size by apply le_antisymm <;> simp_all [Nat.lt_succ]
     rw [hm₂]
 
 theorem set {arr : Array α} {n} {m : Fin n → β} (H : Agrees arr f m)
@@ -188,7 +188,7 @@ def rankMax (self : UnionFind α) := (rankMaxAux self self.size).1 + 1
 
 theorem lt_rankMax' (self : UnionFind α) (i : Fin self.size) :
   (self.arr.get i).rank < self.rankMax :=
-  Nat.lt_succ_iff.2 $ (rankMaxAux self self.size).2 _ i.2 _
+  Nat.lt_succ.2 $ (rankMaxAux self self.size).2 _ i.2 _
 
 theorem lt_rankMax (self : UnionFind α) (i : Nat) : self.rank i < self.rankMax := by
   simp [rank]; split; {apply lt_rankMax'}; apply Nat.succ_pos
