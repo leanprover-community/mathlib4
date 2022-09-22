@@ -70,3 +70,10 @@ example (_ : Test n) (h2 : Test (m + 1)) : True := by
   cases_type* Test
   · clear ‹False›; trivial
   · clear ‹False›; clear ‹False›; trivial
+
+example : True ∧ True ∧ True := by
+  constructorm True, _∨_
+  guard_target = True ∧ True ∧ True
+  constructorm _∧_
+  · guard_target = True; constructorm True
+  · guard_target = True ∧ True; constructorm* True, _∧_

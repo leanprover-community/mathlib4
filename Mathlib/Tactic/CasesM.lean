@@ -6,9 +6,9 @@ Authors: Mario Carneiro
 import Lean
 
 /-!
-# `casesm` and `cases_type` tactics
+# `casesm`, `cases_type`, `constructorm` tactics
 
-These tactics implement repeated `cases` on anything satisfying a predicate.
+These tactics implement repeated `cases` / `constructor` on anything satisfying a predicate.
 -/
 
 namespace Mathlib.Tactic
@@ -46,6 +46,18 @@ partial def casesMatching (g : MVarId) (matcher : Expr → MetaM Bool)
           return acc
       return (acc.push g)
 
+/-- Elaborate a list of terms with holes into a list of patterns. -/
+def elabPatterns (pats : Array Term) : TermElabM (Array AbstractMVarsResult) :=
+  withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) <|
+  Term.withoutErrToSorry <|
+  pats.mapM fun p => Term.withoutModifyingElabMetaStateWithInfo do
+    withRef p <| abstractMVars (← Term.elabTerm p none)
+
+/-- Returns true if any of the patterns match the expression. -/
+def matchPatterns (pats : Array AbstractMVarsResult) (e : Expr) : MetaM Bool := do
+  let e ← instantiateMVars e
+  pats.anyM fun p => return (← Conv.matchPattern? p e) matches some (_, #[])
+
 /--
 * `casesm p` applies the `cases` tactic to a hypothesis `h : type`
   if `type` matches the pattern `p`.
@@ -60,14 +72,8 @@ casesm* _ ∨ _, _ ∧ _
 ```
 -/
 elab (name := casesM) "casesm" recursive:"*"? ppSpace pats:term,+ : tactic => do
-  let patterns ←
-    withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) <|
-    Term.withoutErrToSorry <|
-    pats.getElems.mapM fun p => Term.withoutModifyingElabMetaStateWithInfo do
-      withRef p <| abstractMVars (← Term.elabTerm p none)
-  let matcher ty := patterns.anyM fun p =>
-    return (← Conv.matchPattern? p ty) matches some (_, #[])
-  liftMetaTactic (casesMatching · matcher recursive.isSome)
+  let pats ← elabPatterns pats.getElems
+  liftMetaTactic (casesMatching · (matchPatterns pats) recursive.isSome)
 
 /-- Common implementation of `cases_type` and `cases_type!`. -/
 def elabCasesType (heads : Array Ident)
@@ -95,3 +101,42 @@ elab (name := casesType) "cases_type" recursive:"*"? ppSpace heads:(colGt ident)
 @[inheritDoc casesType]
 elab (name := casesType!) "cases_type!" recursive:"*"? ppSpace heads:(colGt ident)+ : tactic =>
   elabCasesType heads recursive.isSome false
+
+/--
+Core tactic for `constructorm`. Calls `constructor` on all subgoals for which
+`matcher ldecl.type` returns true.
+* `recursive`: if true, it calls itself repeatedly on the resulting subgoals
+-/
+partial def constructorMatching (g : MVarId) (matcher : Expr → MetaM Bool)
+    (recursive := false) : MetaM (List MVarId) :=
+  if recursive then
+    return (← go g).toList
+  else
+    g.withContext do
+      if ← matcher (← g.getType) then g.constructor else pure [g]
+where
+  /-- Auxiliary for `constructorMatching`. Accumulates generated subgoals in `acc`. -/
+  go (g : MVarId) (acc : Array MVarId := #[]) : MetaM (Array MVarId) :=
+    g.withContext do
+      if ← matcher (← g.getType) then
+        let mut acc := acc
+        for g' in ← g.constructor do
+          acc ← go g' acc
+        return acc
+      return (acc.push g)
+
+/--
+* `constructorm p_1, ..., p_n` applies the `constructor` tactic to the main goal
+  if `type` matches one of the given patterns.
+* `constructorm* p` is a more efficient and compact version of `· repeat constructorm p`.
+  It is more efficient because the pattern is compiled once.
+
+Example: The following tactic proves any theorem like `True ∧ (True ∨ True)` consisting of
+and/or/true:
+```
+constructorm* _ ∨ _, _ ∧ _, True
+```
+-/
+elab (name := constructorM) "constructorm" recursive:"*"? ppSpace pats:term,+ : tactic => do
+  let pats ← elabPatterns pats.getElems
+  liftMetaTactic (constructorMatching · (matchPatterns pats) recursive.isSome)
