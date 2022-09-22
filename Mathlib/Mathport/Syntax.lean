@@ -27,6 +27,7 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Replace
+import Mathlib.Tactic.Rfl
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.ShowTerm
