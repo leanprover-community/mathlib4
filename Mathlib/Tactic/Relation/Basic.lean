@@ -9,9 +9,9 @@ import Lean
 open Lean Meta
 
 /--
-matches to expressions of the form `r x y` with `r` a relation and returns
+Matches to expressions of the form `r x y` with `r` a relation and returns
 the triple `(r, x, y)` if there is a match. Note that `r` may be obtained
-applying a function to arguments.
+by applying a function to arguments.
 -/
 def relationAppM? (expr : Expr) : MetaM (Option (Expr × Expr × Expr)) :=
   do
