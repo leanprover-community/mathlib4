@@ -47,7 +47,8 @@ open Lean.Elab.Tactic in
 /-- This tactic applies to a goal whose target has the form `x ~ x`, where `~` is a reflexive
 relation, that is, a relation which has a reflexive lemma tagged with the attribute [refl].
 -/
-elab "rfl" : tactic =>
+elab_rules : tactic
+| `(tactic| rfl) =>
   withMainContext do
   let tgt ← getMainTarget
   match ← relationAppM? tgt with
