@@ -8,11 +8,6 @@ import Mathlib.Data.List.Perm
 /-!
 # Multisets
 These are implemented as the quotient of a list by permutations.
-
-TODO: This is currently extremely minimal,
-containing only the definitions required to implement the `fin_cases` tactic.
-Please update this module doc as changes are made,
-eventually restoring the original mathlib3 module doc.
 -/
 
 
@@ -22,8 +17,7 @@ variable {α : Type _} {β : Type _} {γ : Type _}
 
 /-- `Multiset α` is the quotient of `List α` by list permutation. The result
   is a type of finite sets with duplicates allowed.  -/
-def Multiset.{u} (α : Type u) : Type u :=
-  Quotient (List.instSetoidList α)
+def Multiset (α : Type u) : Type u := Quotient (List.instSetoidList α)
 
 section Mem
 
@@ -31,5 +25,4 @@ section Mem
 def Mem (a : α) (s : Multiset α) : Prop :=
   Quot.liftOn s (fun l => a ∈ l) fun l₁ l₂ (e : l₁ ~ l₂) => propext <| e.mem_iff
 
-instance : Membership α (Multiset α) :=
-  ⟨Mem⟩
+instance : Membership α (Multiset α) := ⟨Mem⟩

@@ -61,11 +61,11 @@ theorem mem_split {a : α} {l : List α} (h : a ∈ l) : ∃ s t : List α, l = 
   induction l with
   | nil => cases h
   | cons b l ih =>
-      cases h with
-      | head => exact ⟨[], l, rfl⟩
-      | tail _ h =>
-          rcases ih h with ⟨s, t, rfl⟩
-          exact ⟨b :: s, t, rfl⟩
+    cases h with
+    | head => exact ⟨[], l, rfl⟩
+    | tail _ h =>
+      rcases ih h with ⟨s, t, rfl⟩
+      exact ⟨b :: s, t, rfl⟩
 
 /-! ### length -/
 
