@@ -114,13 +114,17 @@ theorem Monotone.comp_le_comp_left
 
 variable [Preorder γ]
 
-theorem monotone_lam {f : α → β → γ} (hf : ∀ b, Monotone fun a => f a b) : Monotone f := fun _ _ h b => hf b h
+theorem monotone_lam {f : α → β → γ} (hf : ∀ b, Monotone fun a => f a b) : Monotone f :=
+  fun _ _ h b => hf b h
 
-theorem monotone_app (f : β → α → γ) (b : β) (hf : Monotone fun a b => f b a) : Monotone (f b) := fun _ _ h => hf h b
+theorem monotone_app (f : β → α → γ) (b : β) (hf : Monotone fun a b => f b a) : Monotone (f b) :=
+  fun _ _ h => hf h b
 
-theorem antitone_lam {f : α → β → γ} (hf : ∀ b, Antitone fun a => f a b) : Antitone f := fun _ _ h b => hf b h
+theorem antitone_lam {f : α → β → γ} (hf : ∀ b, Antitone fun a => f a b) : Antitone f :=
+  fun _ _ h b => hf b h
 
-theorem antitone_app (f : β → α → γ) (b : β) (hf : Antitone fun a b => f b a) : Antitone (f b) := fun _ _ h => hf h b
+theorem antitone_app (f : β → α → γ) (b : β) (hf : Antitone fun a b => f b a) : Antitone (f b) :=
+  fun _ _ h => hf h b
 
 end Preorder
 
@@ -275,5 +279,6 @@ theorem antitone_on_const [Preorder α] [Preorder β] {c : β} {s : Set α} :
     AntitoneOn (fun _ : α => c) s :=
   fun _ _ _ _ _ => le_rfl
 
-theorem injective_of_le_imp_le [PartialOrder α] [Preorder β] (f : α → β) (h : ∀ {x y}, f x ≤ f y → x ≤ y) :
-    injective f := fun _ _ hxy => (h hxy.le).antisymm (h hxy.ge)
+theorem injective_of_le_imp_le
+    [PartialOrder α] [Preorder β] (f : α → β) (h : ∀ {x y}, f x ≤ f y → x ≤ y) : injective f :=
+  fun _ _ hxy => (h hxy.le).antisymm (h hxy.ge)
