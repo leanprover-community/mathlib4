@@ -221,7 +221,6 @@ end Conv
 /- E -/ syntax (name := symm') "symm'" (ppSpace location)? : tactic
 /- E -/ syntax (name := trans') "trans'" (ppSpace term)? : tactic
 
-/- E -/ syntax (name := fsplit) "fsplit" : tactic
 /- M -/ syntax (name := injectionsAndClear) "injections_and_clear" : tactic
 
 /- E -/ syntax (name := tryFor) "try_for " term:max tacticSeq : tactic
