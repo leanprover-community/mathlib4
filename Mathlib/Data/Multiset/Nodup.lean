@@ -6,11 +6,6 @@ Authors: Mario Carneiro
 import Mathlib.Data.Multiset.Basic
 /-!
 # The `nodup` predicate for multisets without duplicate elements.
-
-TODO: This is currently extremely minimal,
-containing only the definitions required to implement the `fin_cases` tactic.
-Please update this module doc as changes are made,
-eventually restoring the original mathlib3 module doc.
 -/
 
 

@@ -86,6 +86,14 @@ def ExistsUnique (p : α → Prop) := ∃ x, p x ∧ ∀ y, p y → y = x
 open Lean in
 macro "∃! " xs:explicitBinders ", " b:term : term => expandExplicitBinders ``ExistsUnique xs b
 
+/-- Pretty-printing for `ExistsUnique`, following the same pattern as pretty printing
+    for `Exists`. -/
+@[appUnexpander ExistsUnique] def unexpandExistsUnique : Lean.PrettyPrinter.Unexpander
+  | `($(_) fun $x:ident => ∃! $xs:binderIdent*, $b) => `(∃! $x:ident $xs:binderIdent*, $b)
+  | `($(_) fun $x:ident => $b)                      => `(∃! $x:ident, $b)
+  | `($(_) fun ($x:ident : $t) => $b)               => `(∃! ($x:ident : $t), $b)
+  | _                                               => throw ()
+
 lemma ExistsUnique.intro {p : α → Prop} (w : α)
   (h₁ : p w) (h₂ : ∀ y, p y → y = w) : ∃! x, p x := ⟨w, h₁, h₂⟩
 

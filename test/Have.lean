@@ -41,5 +41,5 @@ example : True := by
   let m' x (y : Nat) : x + y = y + x
   rw [Nat.add_comm]
   have q
-    · exact 6
+  · exact 6
   simp
