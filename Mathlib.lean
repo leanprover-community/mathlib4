@@ -75,6 +75,7 @@ import Mathlib.Tactic.Core
 import Mathlib.Tactic.DSimp
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Expect
+import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
