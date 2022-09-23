@@ -17,6 +17,7 @@ import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Core
+import Mathlib.Tactic.DSimp
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.InferParam
@@ -208,7 +209,6 @@ namespace Conv
 
 open Tactic (simpArg rwRuleSeq)
 /- N -/ syntax (name := «for») "for " term:max " [" num,* "]" " => " tacticSeq : conv
-/- N -/ syntax (name := dsimp) "dsimp" (config)? (&" only")? (dsimpArgs)? : conv
 
 end Conv
 
