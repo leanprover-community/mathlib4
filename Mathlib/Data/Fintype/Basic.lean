@@ -9,16 +9,11 @@ import Mathlib.Data.List.Range
 /-!
 # Finite types
 
-TODO: This is currently extremely minimal,
-containing only the definitions required to implement the `fin_cases` tactic.
-Please update this module doc as changes are made,
-eventually restoring the original mathlib3 module doc.
-
 This file defines a typeclass to state that a type is finite.
 
 ## Main declarations
 
-* `Fintype α`:  Typeclass saying that a type is finite. It takes as fields a `Finset` and a proof
+* `Fintype α`: Typeclass saying that a type is finite. It takes as fields a `Finset` and a proof
   that all terms of type `α` are in it.
 * `Finset.univ`: The finset of all elements of a fintype.
 
@@ -40,12 +35,9 @@ variable [Fintype α]
 
 /-- `univ` is the universal finite set of type `finset α` implied from
   the assumption `fintype α`. -/
-def univ : Finset α :=
-  Fintype.elems
+def univ : Finset α := Fintype.elems
 
-@[simp]
-theorem mem_univ (x : α) : x ∈ (univ : Finset α) :=
-  Fintype.complete x
+@[simp] theorem mem_univ (x : α) : x ∈ (univ : Finset α) := Fintype.complete x
 
 end Finset
 

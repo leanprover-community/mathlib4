@@ -3,7 +3,6 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init.Data.Option.Instances
 import Mathlib.Init.Function
 import Mathlib.Data.Option.Defs
 import Mathlib.Logic.Basic

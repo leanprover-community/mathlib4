@@ -241,8 +241,7 @@ noncomputable def Classical.dec (p : Prop) : Decidable p := inferInstance
 
 open Function
 
-theorem forall_true_iff : α → True ↔ True :=
-  Iff.intro (fun _ => trivial) (fun _ _ => trivial)
+theorem forall_true_iff : α → True ↔ True := iff_true_intro fun _ => trivial
 
 theorem forall_prop_of_false {p : Prop} {q : p → Prop} (hn : ¬p) : (∀ h' : p, q h') ↔ True :=
   iff_true_intro fun h => hn.elim h

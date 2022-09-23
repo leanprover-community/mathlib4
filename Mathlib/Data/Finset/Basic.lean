@@ -8,11 +8,6 @@ import Mathlib.Data.Multiset.Nodup
 /-!
 # Finite sets
 
-TODO: This is currently extremely minimal,
-containing only the definitions required to implement the `fin_cases` tactic.
-Please update this module doc as changes are made,
-eventually restoring the original mathlib3 module doc.
-
 Terms of type `Finset α` are one way of talking about finite subsets of `α` in mathlib.
 Below, `Finset α` is defined as a structure with 2 fields:
 
@@ -54,8 +49,6 @@ namespace Finset
 
 /-! ### membership -/
 
-instance : Membership α (Finset α) :=
-  ⟨fun a s => a ∈ s.1⟩
+instance : Membership α (Finset α) := ⟨fun a s => a ∈ s.1⟩
 
-theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 :=
-  Iff.rfl
+theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 := Iff.rfl
