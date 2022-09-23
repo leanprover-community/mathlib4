@@ -55,7 +55,7 @@ instance : Subset (Set α) :=
 ⟨Set.subset⟩
 
 instance : EmptyCollection (Set α) :=
-⟨λ _ => false⟩
+⟨λ _ => False⟩
 
 open Std.ExtendedBinder in
 syntax "{ " extBinder " | " term " }" : term
