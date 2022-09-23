@@ -181,9 +181,6 @@ namespace Tactic
 /- S -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
 /- S -/ syntax (name := mapply) "mapply " term : tactic
 /- S -/ syntax (name := withCases) "with_cases " tacticSeq : tactic
-syntax caseArg' := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
-/- N -/ syntax (name := case'')
-  "case'' " (("[" caseArg',* "]") <|> caseArg') " => " tacticSeq : tactic
 /- S -/ syntax "destruct " term : tactic
 /- M -/ syntax (name := casesM) "casesm" "*"? ppSpace term,* : tactic
 /- M -/ syntax (name := casesType) "cases_type" "*"? ppSpace ident* : tactic
