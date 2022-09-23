@@ -32,7 +32,7 @@ def delabToRefinableSyntax (e : Expr) : TermElabM Term :=
 
 def addSuggestion [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
     (origStx : Syntax) (suggestion : Syntax) : m Unit :=
-  -- Use obscure Unicode characters to discourage editor implementations.
+  -- Use obscure Unicode characters for 'Try this:' to discourage editor implementations.
   logInfoAt origStx m!"𝔗𝔯𝔶 𝔱𝔥𝔦𝔰: {suggestion}"
 
 def addExactSuggestion (origTac : Syntax) (e : Expr) : TacticM Unit := do
