@@ -3,9 +3,19 @@ Copyright (c) 2022 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Hanting Zhang
 -/
-
+import Mathlib.Tactic.Core
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Data.Fintype.Basic
+
+/-!
+# The `fin_cases` tactic.
+
+Given a hypothesis of the form `h : x ∈ (A : List α)`, `x ∈ (A : Finset α)`,
+or `x ∈ (A : Multiset α)`,
+or a hypothesis of the form `h : A`, where `[Fintype A]` is available,
+`fin_cases h` will repeatedly call `cases` to split the goal into
+separate cases for each possible value.
+-/
 
 open Lean.Meta
 
@@ -62,7 +72,51 @@ partial def finCasesAt (hyp : FVarId) : TacticM Unit := do
 
       finCasesAt hyp
 
-syntax (name := finCases) "fin_cases " ("*" <|> (ident,+)) (" with " term)? : tactic
+/--
+`fin_cases h` performs case analysis on a hypothesis of the form
+`h : A`, where `[fintype A]` is available, or
+`h : a ∈ A`, where `A : finset X`, `A : multiset X` or `A : list X`.
+
+As an example, in
+```
+example (f : ℕ → Prop) (p : fin 3) (h0 : f 0) (h1 : f 1) (h2 : f 2) : f p.val :=
+begin
+  fin_cases *; simp,
+  all_goals { assumption }
+end
+```
+after `fin_cases p; simp`, there are three goals, `f 0`, `f 1`, and `f 2`.
+
+`fin_cases h with l` takes a list of descriptions for the cases of `h`.
+These should be definitionally equal to and in the same order as the
+default enumeration of the cases.
+
+For example,
+```
+example (x y : ℕ) (h : x ∈ [1, 2]) : x = y :=
+begin
+  fin_cases h with [1, 1+1],
+end
+```
+produces two cases: `1 = y` and `1 + 1 = y`.
+
+When using `fin_cases a` on data `a` defined with `let`,
+the tactic will not be able to clear the variable `a`,
+and will instead produce hypotheses `this : a = ...`.
+These hypotheses can be given a name using `fin_cases a using ha`.
+
+For example,
+```
+example (f : ℕ → fin 3) : true :=
+begin
+  let a := f 3,
+  fin_cases a using ha,
+end
+```
+produces three goals with hypotheses
+`ha : a = 0`, `ha : a = 1`, and `ha : a = 2`.
+-/
+syntax (name := finCases) "fin_cases " (colGt ppSpace ident)* (" with " term)? : tactic
 
 /- TODO: Implement the `with` clause. -/
 /- TODO: mathlib also allowed a `using` clause, to provide a name for an un-clearable hypothesis. -/
@@ -70,19 +124,13 @@ syntax (name := finCases) "fin_cases " ("*" <|> (ident,+)) (" with " term)? : ta
 /- TODO: can we name the cases generated according to their values,
    rather than `tail.tail.tail.head`? -/
 
-@[tactic finCases] def evalFinCases : Tactic := fun stx =>
-  match stx with
-  -- TODO how are we meant to handle these two cases??
-  -- | `(tactic| fin_cases * $[with $es]?) => do
-  --   if es.isSome then
-  --     throwError "Specify a single hypothesis when using a `with` argument."
-  --   -- Try running `finCasesAt` on each local hypothesis.
-  --   for h in (← getPropHyps) do
-  --     finCasesAt h
-  | `(tactic| fin_cases $hyps,* $[with $es]?) => do
-    for (h : TSyntax `ident) in hyps.getElems do
-      finCasesAt (← getFVarId h)
-  | _ => throwUnsupportedSyntax
+@[tactic finCases] elab_rules : tactic
+  | `(tactic| fin_cases $hyps:ident* $[with $es]?) => withMainContext do
+  if es.isSome ∧ hyps.size > 1 then
+    throwError "When using a `with` clause you may only work on a single hypothesis."
+  focus
+    for h in hyps do
+      allGoals (finCasesAt (← getFVarId h))
 
 example {x : Nat} (h : x ∈ [0, 2, 37]) : x ≤ 57 := by
   fin_cases h
@@ -100,7 +148,6 @@ example {p : Fin 4 → Prop} (i : Fin 4) (h : p i) : p i := by
   fin_cases i
   repeat exact h
 
-
 example (f : Nat → Prop) (p : Fin 3) (h0 : f 0) (h1 : f 1) (h2 : f 2) : f p.val := by
   fin_cases p
   all_goals
@@ -109,38 +156,40 @@ example (f : Nat → Prop) (p : Fin 3) (h0 : f 0) (h1 : f 1) (h2 : f 2) : f p.va
 example (f : Nat → Prop) (p : Fin 0) : f p.val :=
 by fin_cases p
 
-example (x2 : Fin 2) (x3 : Fin 3) (n : Nat) (y : Fin n) : x2.val * x3.val = x3.val * x2.val := by
-  fin_cases x2 <;> fin_cases x3
-  fail_if_success
-    fin_cases *
-  fail_if_success
-    fin_cases y
-  all_goals { rfl }
-
-example (x : ℕ) (h : x ∈ [2,3,5,7]) : true := by
-  fail_if_success
-    fin_cases h with [3,3,5,7]
-  trivial
-
-example (x : List Nat) (h : x ∈ [[1],[2]]) : x.length = 1 := by
-  fin_cases h with [[1],[1+1]]
-  · simp
-  · guard_target == [1 + 1].length = 1
-    simp
-
- -- testing that `with` arguments are elaborated with respect to the expected type:
-example (x : Int) (h : x ∈ ([2,3] : List Int)) : x = 2 ∨ x = 3 := by
-  fin_cases h with [2,3]
-  all_goals { simp }
-
-example (n : ℕ) (h : n % 3 ∈ [0,1]) : true := by
-  fin_cases h
-  · guard_hyp h : n % 3 = 0
-    trivial
-  · guard_hyp h : n % 3 = 1
-    trivial
+example (x2 : Fin 2) (x3 : Fin 3) : True := by
+  fin_cases x2 x3
+  all_goals { trivial }
 
 -- TODO Restore the remaining tests from mathlib3:
+
+-- example (x2 : Fin 2) (x3 : Fin 3) (n : Nat) (y : Fin n) : x2.val * x3.val = x3.val * x2.val := by
+--   fin_cases x2 <;> fin_cases x3
+--   fail_if_success
+--     fin_cases y
+--   all_goals { rfl }
+
+-- example (x : ℕ) (h : x ∈ [2,3,5,7]) : True := by
+--   fail_if_success
+--     fin_cases h with [3,3,5,7]
+--   trivial
+
+-- example (x : List Nat) (h : x ∈ [[1],[2]]) : x.length = 1 := by
+--   fin_cases h with [[1],[1+1]]
+--   · simp
+--   · guard_target == [1 + 1].length = 1
+--     simp
+
+--  -- testing that `with` arguments are elaborated with respect to the expected type:
+-- example (x : Int) (h : x ∈ ([2,3] : List Int)) : x = 2 ∨ x = 3 := by
+--   fin_cases h with [2,3]
+--   all_goals { simp }
+
+-- example (n : ℕ) (h : n % 3 ∈ [0,1]) : True := by
+--   fin_cases h
+--   · guard_hyp h : n % 3 = 0
+--     trivial
+--   · guard_hyp h : n % 3 = 1
+--     trivial
 
 -- instance (n : ℕ) : decidable (nat.prime n) := decidable_prime_1 n
 -- example (x : ℕ) (h : x ∈ (List.range 10).filter Nat.prime) : x = 2 ∨ x = 3 ∨ x = 5 ∨ x = 7 := by
