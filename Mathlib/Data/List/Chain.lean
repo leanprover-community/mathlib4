@@ -15,9 +15,6 @@ A list `[a₂, ..., aₙ]` is a `Chain` starting at `a₁` with respect to the r
 and `r a₂ a₃` and ... and `r aₙ₋₁ aₙ`. We write it `Chain r a₁ [a₂, ..., aₙ]`.
 A graph-specialized version is in development and will hopefully be added under `combinatorics.`
 sometime soon.
-
-TODO: This is only a partial port,
-containing only the material needed to construct `Fintype (Fin n)`.
 -/
 
 namespace List
@@ -32,9 +29,9 @@ theorem Chain.imp' {R S : α → α → Prop} (HRS : ∀ ⦃a b⦄, R a b → S 
   induction p generalizing b with
   | nil => constructor
   | cons r _ ih =>
-      constructor
-      · exact Hab r
-      · exact ih (@HRS _)
+    constructor
+    · exact Hab r
+    · exact ih (@HRS _)
 
 theorem Chain.imp {R S : α → α → Prop} (H : ∀ a b, R a b → S a b) {a : α} {l : List α}
     (p : Chain R a l) : Chain S a l :=
@@ -46,17 +43,16 @@ protected theorem Pairwise.chain (p : Pairwise R (a :: l)) : Chain R a l := by
   induction p' generalizing a with
   | nil => exact Chain.nil
   | cons r' _ ih =>
-      simp only [chain_cons, forall_mem_cons] at r
-      exact chain_cons.2 ⟨r.1, ih r'⟩
+    simp only [chain_cons, forall_mem_cons] at r
+    exact chain_cons.2 ⟨r.1, ih r'⟩
 
 protected theorem Chain.pairwise {R : α → α → Prop} [Trans R R R] :
     ∀ {a : α} {l : List α}, Chain R a l → Pairwise R (a :: l)
   | a, [], .nil => pairwise_singleton _ _
   | a, _, .cons h hb =>
-    hb.pairwise.cons
-      (by
-        simp only [mem_cons, forall_eq_or_imp, h, true_and]
-        exact fun c hc => trans h (rel_of_pairwise_cons hb.pairwise hc))
+    hb.pairwise.cons (by
+      simp only [mem_cons, forall_eq_or_imp, h, true_and]
+      exact fun c hc => trans h (rel_of_pairwise_cons hb.pairwise hc))
 
 theorem chain_iff_pairwise {R : α → α → Prop} [Trans R R R] {a : α} {l : List α} :
     Chain R a l ↔ Pairwise R (a :: l) :=

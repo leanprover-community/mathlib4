@@ -47,9 +47,9 @@ theorem Pairwise.imp_of_mem {S : α → α → Prop} {l : List α}
   induction p with
   | nil => constructor
   | @cons a l r _ ih =>
-      constructor
-      · exact Ball.imp_right (fun x h => H (mem_cons_self _ _) (mem_cons_of_mem _ h)) r
-      · exact ih fun {a b} m m' => H (mem_cons_of_mem _ m) (mem_cons_of_mem _ m')
+    constructor
+    · exact Ball.imp_right (fun x h => H (mem_cons_self _ _) (mem_cons_of_mem _ h)) r
+    · exact ih fun {a b} m m' => H (mem_cons_of_mem _ m) (mem_cons_of_mem _ m')
 
 theorem Pairwise.imp (H : ∀ a b, R a b → S a b) : Pairwise R l → Pairwise S l :=
   Pairwise.imp_of_mem fun {a b} _ _ => H a b
@@ -60,11 +60,9 @@ theorem pairwise_map (f : β → α) :
     simp only [map, Pairwise.nil]
   | b :: l => by
     have : (∀ a b', b' ∈ l → a = f b' → R (f b) a) ↔ ∀ b' : β, b' ∈ l → R (f b) (f b') :=
-      forall_swap.trans <|
-        forall_congr' fun a =>
-          forall_swap.trans <| by
-            simp only [forall_eq]
-            rfl
+      forall_swap.trans <| forall_congr' fun a => forall_swap.trans <| by
+        simp only [forall_eq]
+        rfl
     simp only [Pairwise_cons, map, pairwise_map, mem_map, exists_imp_distrib, and_imp, this]
     rfl
 

@@ -239,15 +239,14 @@ end quantifiers
 /-- In classical logic, we can decide a proposition. -/
 noncomputable def Classical.dec (p : Prop) : Decidable p := inferInstance
 
-open Function
-
 theorem forall_true_iff : α → True ↔ True := iff_true_intro fun _ => trivial
 
 theorem forall_prop_of_false {p : Prop} {q : p → Prop} (hn : ¬p) : (∀ h' : p, q h') ↔ True :=
   iff_true_intro fun h => hn.elim h
 
-theorem forall_swap {p : α → β → Prop} : (∀ x y, p x y) ↔ ∀ y x, p x y :=
-  ⟨swap, swap⟩
+open Function
+
+theorem forall_swap {p : α → β → Prop} : (∀ x y, p x y) ↔ ∀ y x, p x y := ⟨swap, swap⟩
 
 /-! ### Declarations about bounded quantifiers -/
 

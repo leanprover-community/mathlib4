@@ -10,9 +10,6 @@ import Mathlib.Data.List.Pairwise
 
 `List.Nodup` is defined in `Std.Data.List.Basic`. In this file we prove various properties of this
 predicate.
-
-TODO: This is only a partial port,
-containing only the material needed to construct `Fintype (Fin n)`.
 -/
 
 open Function
@@ -31,8 +28,8 @@ theorem Nodup.of_map (f : α → β) {l : List α} : Nodup (map f l) → Nodup l
 
 @[simp]
 theorem nodup_attach {l : List α} : Nodup (attach l) ↔ Nodup l :=
-  ⟨fun h => attach_map_val l ▸ h.map fun _ _ => Subtype.eq, fun h =>
-    Nodup.of_map Subtype.val ((attach_map_val l).symm ▸ h)⟩
+  ⟨fun h => attach_map_val l ▸ h.map fun _ _ => Subtype.eq,
+   fun h => Nodup.of_map Subtype.val ((attach_map_val l).symm ▸ h)⟩
 
 alias nodup_attach ↔ Nodup.of_attach Nodup.attach
 
@@ -41,7 +38,7 @@ alias nodup_attach ↔ Nodup.of_attach Nodup.attach
 
 theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
     (hf : ∀ a ha b hb, f a ha = f b hb → a = b) (h : Nodup l) : Nodup (pmap f l H) := by
-  rw [pmap_eq_map_attach] <;>
-    exact
-      h.attach.map fun ⟨a, ha⟩ ⟨b, hb⟩ h => by
-        congr <;> exact hf a (H _ ha) b (H _ hb) h
+  rw [pmap_eq_map_attach]
+  exact h.attach.map fun ⟨a, ha⟩ ⟨b, hb⟩ h => by
+    congr
+    exact hf a (H _ ha) b (H _ hb) h
