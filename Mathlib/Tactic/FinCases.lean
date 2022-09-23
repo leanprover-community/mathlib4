@@ -86,6 +86,17 @@ begin
 end
 ```
 after `fin_cases p; simp`, there are three goals, `f 0`, `f 1`, and `f 2`.
+-/
+syntax (name := finCases) "fin_cases " (colGt ppSpace ident)* : tactic
+
+/-!
+`fin_cases` used to also have two modifiers, `fin_cases ... with ...` and `fin_cases ... using ...`.
+With neither actually used in mathlib, they haven't been re-implemented here.
+
+In case someone finds a need for them, and wants to re-implement, the relevant sections of
+the doc-string are preserved here:
+
+---
 
 `fin_cases h with l` takes a list of descriptions for the cases of `h`.
 These should be definitionally equal to and in the same order as the
@@ -116,18 +127,13 @@ end
 produces three goals with hypotheses
 `ha : a = 0`, `ha : a = 1`, and `ha : a = 2`.
 -/
-syntax (name := finCases) "fin_cases " (colGt ppSpace ident)* (" with " term)? : tactic
 
-/- TODO: Implement the `with` clause. -/
-/- TODO: mathlib also allowed a `using` clause, to provide a name for an un-clearable hypothesis. -/
-/- TODO: use `norm_num` when there is no `with` clause. -/
+/- TODO: In mathlib3 we ran `norm_num` when there is no `with` clause. Is this still useful? -/
 /- TODO: can we name the cases generated according to their values,
    rather than `tail.tail.tail.head`? -/
 
 @[tactic finCases] elab_rules : tactic
-  | `(tactic| fin_cases $hyps:ident* $[with $es]?) => withMainContext do
-  if es.isSome ∧ hyps.size > 1 then
-    throwError "When using a `with` clause you may only work on a single hypothesis."
+  | `(tactic| fin_cases $hyps:ident*) => withMainContext do
   focus
     for h in hyps do
       allGoals (finCasesAt (← getFVarId h))
@@ -161,6 +167,7 @@ example (x2 : Fin 2) (x3 : Fin 3) : True := by
   all_goals { trivial }
 
 -- TODO Restore the remaining tests from mathlib3:
+-- Some of these test the `with` and `using` clauses which haven't been re-implemented.
 
 -- example (x2 : Fin 2) (x3 : Fin 3) (n : Nat) (y : Fin n) : x2.val * x3.val = x3.val * x2.val := by
 --   fin_cases x2 <;> fin_cases x3
