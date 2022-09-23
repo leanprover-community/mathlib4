@@ -39,11 +39,10 @@ theorem rangeAux_range' : ∀ s n : ℕ, rangeAux s (range' s n) = range' 0 (n +
   | 0, n => rfl
   | s + 1, n => by
     rw [show n + (s + 1) = n + 1 + s from Nat.add_right_comm n s 1]
-      <;> exact rangeAux_range' s (n + 1)
+    exact rangeAux_range' s (n + 1)
 
 theorem range_eq_range' (n : ℕ) : range n = range' 0 n :=
-  (rangeAux_range' n 0).trans <| by
-    rw [Nat.zero_add]
+  (rangeAux_range' n 0).trans <| by rw [Nat.zero_add]
 
 @[simp]
 theorem mem_range {m n : ℕ} : m ∈ range n ↔ m < n := by
@@ -68,12 +67,9 @@ theorem nodup_range (n : ℕ) : Nodup (range n) := by
   simp only [range_eq_range', nodup_range']
 
 /-- All elements of `fin n`, from `0` to `n-1`. The corresponding finset is `finset.univ`. -/
-def finRange (n : ℕ) : List (Fin n) :=
-  (range n).pmap Fin.mk fun _ => mem_range.1
+def finRange (n : ℕ) : List (Fin n) := (range n).pmap Fin.mk fun _ => mem_range.1
 
-@[simp]
-theorem fin_range_zero : finRange 0 = [] :=
-  rfl
+@[simp] theorem fin_range_zero : finRange 0 = [] := rfl
 
 @[simp]
 theorem mem_fin_range {n : ℕ} (a : Fin n) : a ∈ finRange n :=

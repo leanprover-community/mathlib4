@@ -21,8 +21,7 @@ def Multiset (α : Type u) : Type u := Quotient (List.instSetoidList α)
 
 namespace Multiset
 
-instance : Coe (List α) (Multiset α) :=
-  ⟨Quot.mk _⟩
+instance : Coe (List α) (Multiset α) := ⟨Quot.mk _⟩
 
 section Mem
 

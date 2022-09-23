@@ -237,7 +237,7 @@ theorem pmap_congr {p q : α → Prop} {f : ∀ a, p a → β} {g : ∀ a, q a �
   induction l with
   | nil => rfl
   | cons a l ih =>
-      rw [pmap, pmap, h _ (mem_cons_self _ _), ih (fun a ha => h a (mem_cons_of_mem _ ha))]
+    rw [pmap, pmap, h _ (mem_cons_self _ _), ih (fun a ha => h a (mem_cons_of_mem _ ha))]
 
 theorem map_pmap {p : α → Prop} (g : β → γ) (f : ∀ a, p a → β) (l H) :
     map g (pmap f l H) = pmap (fun a h => g (f a h)) l H := by
