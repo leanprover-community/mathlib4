@@ -62,7 +62,7 @@ elab_rules : tactic
     let s ← saveState
     for lem in ← (reflLemmas (← getEnv)).getMatch rel do
       try
-        liftMetaTactic (MVarId.apply · (← mkConstWithFreshMVarLevels lem))
+        liftMetaTactic (·.apply (← mkConstWithFreshMVarLevels lem))
         return
       catch _ =>
         s.restore
