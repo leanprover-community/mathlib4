@@ -8,30 +8,23 @@ import Mathlib.Tactic.ShowTerm
 
 /-!
 # Pairwise relations on a list
-
-TODO: This is currently extremely minimal,
-containing only the definitions required to implement the `fin_cases` tactic.
-Please update this module doc as changes are made,
-eventually restoring the original mathlib3 module doc.
-
 -/
 
 namespace List
 
 variable {α β : Type _} {R S T : α → α → Prop} {a : α} {l : List α}
 
-theorem pairwise_append {l₁ l₂ : List α} :
-    Pairwise R (l₁ ++ l₂) ↔ Pairwise R l₁ ∧ Pairwise R l₂ ∧ (∀ x, x ∈ l₁ → ∀ y, y ∈ l₂ → R x y) :=
-by
+theorem pairwise_append {l₁ l₂ : List α} : Pairwise R (l₁ ++ l₂) ↔
+    Pairwise R l₁ ∧ Pairwise R l₂ ∧ (∀ x, x ∈ l₁ → ∀ y, y ∈ l₂ → R x y) := by
   induction l₁ with
   | nil => simp [Pairwise.nil]
   | cons a l₁ ih =>
-      simp only [cons_append, Pairwise_cons, forall_mem_append, ih, forall_mem_cons,
-        forall_and_distrib, and_assoc, And.left_comm]
-      rfl
+    simp only [cons_append, Pairwise_cons, forall_mem_append, ih, forall_mem_cons,
+      forall_and_distrib, and_assoc, And.left_comm]
+    rfl
 
 theorem pairwise_append_comm (s : symmetric R) {l₁ l₂ : List α} :
-  Pairwise R (l₁ ++ l₂) ↔ Pairwise R (l₂ ++ l₁) := by
+    Pairwise R (l₁ ++ l₂) ↔ Pairwise R (l₂ ++ l₁) := by
   have : ∀ l₁ l₂ : List α, (∀ x : α, x ∈ l₁ → ∀ y : α, y ∈ l₂ → R x y) →
     ∀ x : α, x ∈ l₂ → ∀ y : α, y ∈ l₁ → R x y := fun l₁ l₂ a x xm y ym => s (a y ym x xm)
   simp only [pairwise_append, And.left_comm] <;> rw [Iff.intro (this l₁ l₂) (this l₂ l₁)]
