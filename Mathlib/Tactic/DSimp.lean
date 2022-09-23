@@ -7,11 +7,11 @@ Authors: Gabriel Ebner, Moritz Doll
 import Mathlib.Tactic.Core
 
 /-!
-The `dsimp` tactic for `conv`.
+# The `dsimp` tactic for `conv`.
 -/
 
-namespace Lean.Parser.Tactic.Conv
-open Lean.Elab.Tactic Elab.Tactic.Conv Parser.Tactic.Conv
+namespace Mathlib.Tactic.Conv
+open Lean Elab Tactic Conv Parser.Tactic
 
 /--
 `dsimp` is the definitional simplifier in `conv`-mode. It differs from `simp` in that it only
@@ -24,13 +24,13 @@ example (a : Nat): (0 + 0) = a - a := by
   conv =>
     lhs
     dsimp
-    rw [←Nat.sub_self a]
+    rw [← Nat.sub_self a]
 ```
 -/
 syntax (name := dsimp) "dsimp " (config)? (discharger)? (&"only ")? ("[" dsimpArg,* "]")? : conv
 
 /-- The `dsimp` tactic for `conv`. -/
-@[tactic Lean.Parser.Tactic.Conv.dsimp] def evalDSimp : Tactic := fun stx => withMainContext do
+@[tactic dsimp] def evalDSimp : Tactic := fun stx => withMainContext do
   -- Get the simp context:
   let { ctx, .. } ← mkSimpContext stx (eraseLocal := false) (kind := .dsimp)
   -- Get the left-hand-side and change it using dsimp
