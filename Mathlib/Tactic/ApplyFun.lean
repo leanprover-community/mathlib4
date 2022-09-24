@@ -50,7 +50,8 @@ def applyFunHyp (f : Expr) (u : Option Expr) (h : FVarId) (g : MVarId) : MetaM (
   logInfo d.type.getAppFnArgs.2
   match d.type.getAppFnArgs with
   | (``Eq, _) => do
-    let prf ← mkAppM ``congrArg #[f, d.toExpr]
+    let prf ← mkCongrArg f d.toExpr
+    logInfo prf
     let g ← g.clear h
     let (_,g) ← (←(g.assert d.userName (← inferType prf) prf)).intro1P
     return [g]

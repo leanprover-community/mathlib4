@@ -10,8 +10,6 @@ example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : injective $ g ∘ f) : i
   apply_fun g at h
   exact H h
 
--- TODO restore and port these tests from mathlib3
-
 example (x : Int) (h : x = 1) : 1 = 1 := by
   apply_fun (fun p => p) at h
   rfl
@@ -22,18 +20,21 @@ example (x : Int) (h : x = 1) : 1 = 1 := by
   apply_fun (fun p => p) at h
   rfl
 
+set_option pp.all true in
+example (a b : Int) (h : a = b) : a + 1 = b + 1 := by
+  apply_fun (fun n => n+1) at h
+  -- check that `h` was β-reduced
+  guard_hyp h : a + 1 = b + 1
+  exact h
+
+-- TODO restore and port these tests from mathlib3
+
 -- example (f : ℕ → ℕ) (a b : ℕ) (monof : monotone f) (h : a ≤ b) : f a ≤ f b :=
 -- begin
 --   apply_fun f at h,
 --   assumption,
 --   assumption
 -- end
-
-example (a b : Int) (h : a = b) : a + 1 = b + 1 := by
-  apply_fun (fun n => n+1) at h
-  -- check that `h` was β-reduced
-  guard_hyp h : a + 1 = b + 1
-  exact h
 
 -- example (f : ℕ → ℕ) (a b : ℕ) (monof : monotone f) (h : a ≤ b) : f a ≤ f b :=
 -- begin
