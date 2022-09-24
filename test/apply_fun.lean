@@ -1,24 +1,26 @@
+import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Init.Function
 -- import Mathlib.Data.Matrix.Basic
 
 open Function
 
-example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : injective $ g ∘ f) :
-  injective f := by
+example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : injective $ g ∘ f) : injective f := by
   intros x x' h
   apply_fun g at h
   exact H h
 
 -- TODO restore and port these tests from mathlib3
 
--- example (x : ℤ) (h : x = 1) : 1 = 1 :=
--- begin
---   revert h,
---   refine (λ h, _),
---   apply_fun (λ p, p) at h,
---   refl,
--- end
+example (x : Int) (h : x = 1) : 1 = 1 := by
+  apply_fun (fun p => p) at h
+  rfl
+
+example (x : Int) (h : x = 1) : 1 = 1 := by
+  revert h
+  refine' (fun h => ?_)
+  apply_fun (fun p => p) at h
+  rfl
 
 -- example (f : ℕ → ℕ) (a b : ℕ) (monof : monotone f) (h : a ≤ b) : f a ≤ f b :=
 -- begin
@@ -27,13 +29,11 @@ example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : injective $ g ∘ f) :
 --   assumption
 -- end
 
--- example (a b : ℤ) (h : a = b) : a + 1 = b + 1 :=
--- begin
---   apply_fun (λ n, n+1) at h,
---   -- check that `h` was β-reduced
---   guard_hyp' h : a + 1 = b + 1,
---   exact h
--- end
+example (a b : Int) (h : a = b) : a + 1 = b + 1 := by
+  apply_fun (fun n => n+1) at h
+  -- check that `h` was β-reduced
+  guard_hyp h : a + 1 = b + 1
+  exact h
 
 -- example (f : ℕ → ℕ) (a b : ℕ) (monof : monotone f) (h : a ≤ b) : f a ≤ f b :=
 -- begin

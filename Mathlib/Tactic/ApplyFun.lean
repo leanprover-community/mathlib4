@@ -42,20 +42,28 @@ example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : injective $ g ∘ f) :
  -/
 syntax (name := applyFun) "apply_fun " term (ppSpace location)? (" using " term)? : tactic
 
-def applyFunHyp (f : Expr) (u : Option Expr) (h : FVarId) : TacticM Unit := do
+open Lean.Meta
+
+def applyFunHyp (f : Expr) (u : Option Expr) (h : FVarId) (g : MVarId) : MetaM (List MVarId) := do
   let d ← h.getDecl
+  logInfo d.type.getAppFnArgs.1
+  logInfo d.type.getAppFnArgs.2
   match d.type.getAppFnArgs with
-  | (``Eq, #[_ty, e₁, e₂]) => sorry
-  | (``LE.le, #[_ty, e₁, e₂]) => sorry
+  | (``Eq, _) => do
+    let prf ← mkAppM ``congrArg #[f, d.toExpr]
+    let g ← g.clear h
+    let (_,g) ← (←(g.assert d.userName (← inferType prf) prf)).intro1P
+    return [g]
+  | (``LE.le, _) => throwError "NOT IMPLEMENTED"
   | _ => throwError "apply_fun can only handle hypotheses of the form `a = b` or `a ≤ b`."
 
 def applyFunTarget (f : Expr) (u : Option Expr) : TacticM Unit :=
-  sorry
+  throwError "NOT IMPLEMENTED"
 
-elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $h]?) => do
+@[tactic applyFun] elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
   let f ← Tactic.elabTerm f none
-  let h ← h.mapM (Tactic.elabTerm · none)
+  let P ← P.mapM (Tactic.elabTerm · none)
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
-    (atLocal := applyFunHyp f h)
-    (atTarget := applyFunTarget f h)
+    (atLocal := fun h => liftMetaTactic <| applyFunHyp f P h)
+    (atTarget := applyFunTarget f P)
     (failed := fun _ => throwError "apply_fun failed")
