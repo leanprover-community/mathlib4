@@ -7,7 +7,7 @@
    "rev": "439303af06465824588a486f5f9c023ca69979f3",
    "name": "leanInk"},
   {"url": "https://github.com/leanprover/doc-gen4",
-   "rev": "a2345380e861332fabecc61591cb274e61163a97",
+   "rev": "b07faa65fe58882da6322aa9bfe480509fee8c76",
    "name": "doc-gen4",
    "inputRev": "main"},
   {"url": "https://github.com/xubaiw/Unicode.lean",
