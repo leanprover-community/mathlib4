@@ -31,7 +31,6 @@ import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Set
-import Mathlib.Tactic.ShowTerm
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Trace
@@ -211,6 +210,8 @@ open Tactic (simpArg rwRuleSeq)
 /- N -/ syntax (name := «for») "for " term:max " [" num,* "]" " => " tacticSeq : conv
 
 end Conv
+-- can't be in the section because `Parser.Tactic.Conv.conv` shadows `Parser.Category.conv`
+/- N -/ syntax:1 (name := Conv.seqFocus) conv " <;> " conv : conv
 
 /- E -/ syntax (name := apply') "apply' " term : tactic
 /- E -/ syntax (name := fapply') "fapply' " term : tactic

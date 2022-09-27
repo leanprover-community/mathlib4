@@ -302,7 +302,7 @@ def copyAttributes (src tgt : Name) : CoreM Unit := do
   -- [todo] other simp theorems
   let some ext ← getSimpExtension? `simp | return ()
   let thms ← ext.getTheorems
-  if (¬ thms.isLemma src) || thms.isLemma tgt then
+  if (¬ thms.isLemma (.decl src)) || thms.isLemma (.decl tgt) then
     return ()
   -- [todo] how to get prio data from SimpTheorems?
   MetaM.run' $ Lean.Meta.addSimpTheorem ext tgt

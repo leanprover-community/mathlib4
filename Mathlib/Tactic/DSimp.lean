@@ -34,4 +34,4 @@ syntax (name := dsimp) "dsimp " (config)? (discharger)? (&"only ")? ("[" dsimpAr
   -- Get the simp context:
   let { ctx, .. } ← mkSimpContext stx (eraseLocal := false) (kind := .dsimp)
   -- Get the left-hand-side and change it using dsimp
-  changeLhs (← Lean.Meta.dsimp (← getLhs) ctx)
+  changeLhs (← Lean.Meta.dsimp (← getLhs) ctx).1
