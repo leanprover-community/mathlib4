@@ -232,12 +232,12 @@ end Conv
 /- M -/ syntax (name := clean) "clean " term : tactic
 /- B -/ syntax (name := refineStruct) "refine_struct " term : tactic
 /- M -/ syntax (name := matchHyp) "match_hyp " ("(" &"m" " := " term ") ")? ident " : " term : tactic
-/- E -/ syntax (name := guardTags) "guard_tags" (ppSpace ident)* : tactic
-/- E -/ syntax (name := guardProofTerm) "guard_proof_term " tactic:51 " => " term : tactic
-/- E -/ syntax (name := failIfSuccess?) "fail_if_success? " str ppSpace tacticSeq : tactic
+/- S -/ syntax (name := guardTags) "guard_tags" (ppSpace ident)* : tactic
+/- S -/ syntax (name := guardProofTerm) "guard_proof_term " tactic:51 " => " term : tactic
+/- S -/ syntax (name := failIfSuccess?) "fail_if_success? " str ppSpace tacticSeq : tactic
 /- N -/ syntax (name := field) "field " ident " => " tacticSeq : tactic
-/- N -/ syntax (name := haveField) "have_field" : tactic
-/- N -/ syntax (name := applyField) "apply_field" : tactic
+/- S -/ syntax (name := haveField) "have_field" : tactic
+/- S -/ syntax (name := applyField) "apply_field" : tactic
 /- M -/ syntax (name := applyRules) "apply_rules" (config)? " [" term,* "]" (ppSpace num)? : tactic
 /- M -/ syntax (name := hGeneralize) "h_generalize " atomic(binderIdent " : ")? term:51 " = " ident
   (" with " binderIdent)? : tactic
@@ -273,8 +273,8 @@ end Conv
 
 /- M -/ syntax (name := deltaInstance) "delta_instance" (ppSpace ident)* : tactic
 
-/- M -/ syntax (name := elide) "elide " num (ppSpace location)? : tactic
-/- M -/ syntax (name := unelide) "unelide" (ppSpace location)? : tactic
+/- S -/ syntax (name := elide) "elide " num (ppSpace location)? : tactic
+/- S -/ syntax (name := unelide) "unelide" (ppSpace location)? : tactic
 
 /- S -/ syntax (name := clarify) "clarify" (config)?
   (Parser.Tactic.simpArgs)? (" using " term,+)? : tactic
@@ -396,7 +396,7 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := sliceLHS) "slice_lhs " num num " => " Conv.convSeq : tactic
 /- M -/ syntax (name := sliceRHS) "slice_rhs " num num " => " Conv.convSeq : tactic
 
-/- N -/ syntax (name := subtypeInstance) "subtype_instance" : tactic
+/- S -/ syntax (name := subtypeInstance) "subtype_instance" : tactic
 
 /- M -/ syntax (name := group) "group" (ppSpace location)? : tactic
 
@@ -513,8 +513,6 @@ namespace Attr
 /- M -/ syntax (name := mono) "mono" (ppSpace Tactic.mono.side)? : attr
 
 /- M -/ syntax (name := reassoc) "reassoc" (ppSpace ident)? : attr
-
-/- N -/ syntax (name := ancestor) "ancestor" (ppSpace ident)* : attr
 
 /- M -/ syntax (name := elementwise) "elementwise" (ppSpace ident)? : attr
 
