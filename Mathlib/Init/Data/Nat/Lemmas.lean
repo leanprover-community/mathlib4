@@ -167,7 +167,7 @@ lemma to_digits_core_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List C
       simp only [hx, hnb, if_false] at ih
       simp only [hnb, if_false]
       specialize ih (n / b) c (x :: tl)
-      rw [<- ih]
+      rw [← ih]
       have lens_eq : (x :: (c :: tl)).length = (c :: x :: tl).length := by simp
       apply to_digits_core_lens_eq_aux
       exact lens_eq
