@@ -8,7 +8,7 @@ import Mathlib.Util.Asserts
 import Mathlib.Util.Tactic
 import Mathlib.Tactic.ShowTerm
 
-import Mathlib.Lean.mkFreshNameFrom
+import Mathlib.Lean.CoreM
 
 /-!
 # `choose` tactic
