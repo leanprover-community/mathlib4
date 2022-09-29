@@ -12,8 +12,8 @@ namespace Mathlib.Tactic.Relation.Rfl
 open Lean Meta
 
 /-- Environment extensions for `refl` lemmas -/
-initialize reflExtension : SimpleScopedEnvExtension (Name × Array DiscrTree.Key)
-(DiscrTree Name) ← registerSimpleScopedEnvExtension {
+initialize reflExtension : SimpleScopedEnvExtension (Name × Array DiscrTree.Key) (DiscrTree Name) ←
+  registerSimpleScopedEnvExtension {
     name := `refl
     addEntry := fun dt (n, ks) => dt.insertCore ks n
     initial := {}
@@ -28,14 +28,14 @@ def reflAttr : AttributeImpl where
       let declTy := (← getConstInfo decl).type
       let (xs, _, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
       if xs.size < 1 then
-        throwError "@[refl] attribute only applies to lemmas proving x ∼ x, got {declTy} with
-        too few arguments"
+        throwError "@[refl] attribute only applies to lemmas proving x ∼ x, got {declTy
+          } with too few arguments"
       else
         match ← relationAppM? targetTy with
         | some (rel, lhs, rhs) =>
           unless (← isDefEq lhs rhs) do
-            throwError "@[refl] attribute only applies to lemmas proving x ∼ x, got {declTy}
-            with {lhs} ~ {rhs} instead"
+            throwError "@[refl] attribute only applies to lemmas proving x ∼ x, got {declTy
+              } with {lhs} ~ {rhs} instead"
           let key ← withReducible <| DiscrTree.mkPath rel
           reflExtension.add (decl, key) kind
         | none =>
@@ -64,7 +64,9 @@ elab_rules : tactic
       try
         liftMetaTactic (·.apply (← mkConstWithFreshMVarLevels lem))
         return
-      catch _ =>
+      catch e =>
         s.restore
+        throw e
+    throwError "rfl failed, no lemma with @[refl] applies"
   | none =>
-    throwError "reflexivity lemmas only apply to binary relations, not{indentExpr tgt}"
+    throwError "reflexivity lemmas only apply to binary relations, no {indentExpr tgt}"
