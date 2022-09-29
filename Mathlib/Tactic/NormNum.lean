@@ -152,9 +152,8 @@ def derive (ctx : Simp.Context) (e : Expr) : MetaM Simp.Result := do
   let e ← instantiateMVars e
   let nosimp := (← getOptions).getBool `norm_num.nosimp
   let methods := if nosimp then {} else Simp.DefaultMethods.methods
-  let r ← Simp.main e ctx
-    { methods with
-      post := fun e => do try return Simp.Step.done (← eval e) catch _ => methods.post e }
+  let post e := do try return Simp.Step.done (← eval e) catch _ => methods.post e
+  let (r, _) ← Simp.main e ctx (methods := { methods with post })
   trace[Tactic.norm_num] "before: {e}\n after: {r.expr}"
 
   return r
@@ -177,19 +176,19 @@ open Lean Elab Tactic Conv
 /-- Normnums a target. -/
 def normNumTarget (ctx : Simp.Context) : TacticM Unit := do
   liftMetaTactic1 fun mvarId => do
-    let tgt ← instantiateMVars (← getMVarType mvarId)
+    let tgt ← instantiateMVars (← mvarId.getType)
     let prf ← derive ctx tgt
     let newGoal ← applySimpResultToTarget mvarId tgt prf
     let t ← inferType (mkMVar newGoal)
     if t.isConstOf ``True then
-      assignExprMVar newGoal (mkConst ``True.intro)
+      newGoal.assign (mkConst ``True.intro)
       return none
     return some newGoal
 
 /-- Normnums a hypothesis. -/
 def normNumHyp (ctx : Simp.Context) (fvarId: FVarId) : TacticM Unit :=
   liftMetaTactic1 fun mvarId => do
-    let hyp ← instantiateMVars (← getLocalDecl fvarId).type
+    let hyp ← instantiateMVars (← fvarId.getDecl).type
     let prf ← derive ctx hyp
     let (some (_newHyp, newGoal)) ← applySimpResultToLocalDecl mvarId fvarId prf false
       | throwError "Failed to apply norm_num to hyp."
