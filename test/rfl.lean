@@ -1,8 +1,8 @@
 import Mathlib.Tactic.Relation.Rfl
 
-example (a : ℕ) : a = a := rfl
+example (a : Nat) : a = a := rfl
 
-example (a : ℕ) : a = a := by rfl
+example (a : Nat) : a = a := by rfl
 
 open Setoid
 
@@ -21,8 +21,10 @@ example (a : Nat) : a ≤ a := by rfl
 
 structure Foo
 
-instance : LE Foo where le _a _b := ∀ _x : Unit, True
+def Foo.le (_ _ : Foo) := Unit → True
+instance : LE Foo := ⟨Foo.le⟩
 
-@[refl] theorem foo_refl : ∀ (a : Foo), a ≤ a := fun _ _ => trivial
+@[refl] theorem Foo.le_refl (a : Foo) : a ≤ a := fun _ => trivial
 
-example : ∀ (a : Foo), a ≤ a := by intro a; rfl
+example (a : Foo) : a ≤ a := by apply Foo.le_refl
+example (a : Foo) : a ≤ a := by rfl

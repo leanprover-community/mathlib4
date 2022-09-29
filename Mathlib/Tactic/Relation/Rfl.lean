@@ -18,41 +18,32 @@ initialize reflExtension : SimpleScopedEnvExtension (Name × Array DiscrTree.Key
     initial := {}
   }
 
-/-- add reflexivity attribute if valid -/
-def reflAttr : AttributeImpl where
+initialize registerBuiltinAttribute {
   name := `refl
   descr := "reflexivity relation"
-  add decl _ kind := do
-    MetaM.run' do
-      let declTy := (← getConstInfo decl).type
-      let (_, _, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
-      let fail := throwError
-        "@[refl] attribute only applies to lemmas proving x ∼ x, got {declTy}"
-      let .app (.app rel lhs) rhs := targetTy | fail
-      unless ← isDefEq lhs rhs do fail
-      let key ← withReducible <| DiscrTree.mkPath rel
-      reflExtension.add (decl, key) kind
+  add := fun decl _ kind => MetaM.run' do
+    let declTy := (← getConstInfo decl).type
+    let (_, _, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
+    let fail := throwError
+      "@[refl] attribute only applies to lemmas proving x ∼ x, got {declTy}"
+    let .app (.app rel lhs) rhs := targetTy | fail
+    unless ← isDefEq lhs rhs do fail
+    let key ← DiscrTree.mkPath rel
+    reflExtension.add (decl, key) kind
+}
 
-initialize registerBuiltinAttribute reflAttr
-
-
-/-- look up reflexivity lemmas -/
-def reflLemmas (env : Environment) : DiscrTree Name :=
-  reflExtension.getState env
-
-open Lean.Elab.Tactic in
-
-/-- This tactic applies to a goal whose target has the form `x ~ x`, where `~` is a reflexive
+open Elab.Tactic in
+/--
+This tactic applies to a goal whose target has the form `x ~ x`, where `~` is a reflexive
 relation, that is, a relation which has a reflexive lemma tagged with the attribute [refl].
 -/
 elab_rules : tactic
-| `(tactic| rfl) =>
-  withMainContext do
+| `(tactic| rfl) => withMainContext do
   let tgt ← getMainTarget
   let .app (.app rel _) _ := tgt
     | throwError "reflexivity lemmas only apply to binary relations, not {indentExpr tgt}"
   let s ← saveState
-  for lem in ← (reflLemmas (← getEnv)).getMatch rel do
+  for lem in ← (reflExtension.getState (← getEnv)).getMatch rel do
     try
       liftMetaTactic (·.apply (← mkConstWithFreshMVarLevels lem))
       return

@@ -84,6 +84,7 @@ import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Recover
+import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
@@ -94,6 +95,7 @@ import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.ShowTerm
+import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
@@ -106,6 +108,7 @@ import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.Use
+import Mathlib.Test
 import Mathlib.Testing.SlimCheck.Gen
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
