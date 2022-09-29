@@ -121,7 +121,6 @@ def Fmla.proof (f : Fmla) (c : Clause) : Prop :=
 theorem Fmla.proof_of_subsumes (H : Fmla.subsumes f (Fmla.one c)) : f.proof c :=
   fun _ h => h.1 _ $ H.1 _ $ List.Mem.head ..
 
-set_option linter.unusedVariables false in -- FIXME: lean4#1214
 /-- The core unit-propagation step.
 
 We have a local context of assumptions `¬l'` (sometimes called an assignment)
@@ -134,8 +133,8 @@ We continue the proof in `h₂`, with the assumption that `l` is falsified. -/
 theorem Valuation.by_cases {v : Valuation} {l}
   (h₁ : v.neg l.negate → False) (h₂ : v.neg l → False) : False :=
 match l with
-| Literal.pos i => h₂ h₁
-| Literal.neg i => h₁ h₂
+| Literal.pos _ => h₂ h₁
+| Literal.neg _ => h₁ h₂
 
 /-- `v.implies p [a, b, c] 0` definitionally unfolds to `(v 0 ↔ a) → (v 1 ↔ b) → (v 2 ↔ c) → p`.
 This is used to introduce assumptions about the first `n` values of `v` during reification. -/

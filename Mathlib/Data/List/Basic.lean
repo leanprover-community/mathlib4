@@ -57,6 +57,16 @@ theorem mem_map_of_injective {f : α → β} (H : injective f) {a : α} {l : Lis
 ⟨fun m => let ⟨_, m', e⟩ := exists_of_mem_map m
           H e ▸ m', mem_map_of_mem _⟩
 
+theorem mem_split {a : α} {l : List α} (h : a ∈ l) : ∃ s t : List α, l = s ++ a :: t := by
+  induction l with
+  | nil => cases h
+  | cons b l ih =>
+    cases h with
+    | head => exact ⟨[], l, rfl⟩
+    | tail _ h =>
+      rcases ih h with ⟨s, t, rfl⟩
+      exact ⟨b :: s, t, rfl⟩
+
 /-! ### length -/
 
 alias length_pos ↔ ne_nil_of_length_pos length_pos_of_ne_nil
@@ -192,7 +202,7 @@ theorem get?_injective {α : Type u} {xs : List α} {i j : ℕ}
 List.prod satisfies a specification of cartesian product on lists.
 -/
 theorem product_spec (xs : List α) (ys : List β) (x : α) (y : β) :
-  (x, y) ∈ product xs ys <-> (x ∈ xs ∧ y ∈ ys) := by
+  (x, y) ∈ product xs ys ↔ x ∈ xs ∧ y ∈ ys := by
   constructor
   · simp only [List.product, and_imp, exists_prop, List.mem_map, Prod.mk.injEq,
       exists_eq_right_right', List.mem_bind]
