@@ -3,10 +3,10 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
+import Std.Tactic.TryThis
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
-import Mathlib.Tactic.TryThis
 
 /-!
 # Library search
