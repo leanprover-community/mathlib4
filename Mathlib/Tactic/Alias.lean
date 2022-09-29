@@ -79,7 +79,7 @@ def appendNamespace (ns : Name) : Name → Name
   let resolved ← resolveGlobalConstNoOverloadWithInfo name
   let constant ← getConstInfo resolved
   let ns ← getCurrNamespace
-  for a in aliases do
+  for a in aliases do withRef a do
     let declName := appendNamespace ns a.getId
     let decl ← match constant with
     | Lean.ConstantInfo.defnInfo d =>
@@ -93,13 +93,14 @@ def appendNamespace (ns : Name) : Name → Name
                value := mkConst resolved (t.levelParams.map mkLevelParam)
       }
     | _ => throwError "alias only works with def or theorem"
+    checkNotAlreadyDeclared declName
     addDeclarationRanges declName {
       range := ← getDeclarationRange (← getRef)
       selectionRange := ← getDeclarationRange a
     }
     -- TODO add @alias attribute
-    Lean.addDecl decl
-    Command.liftTermElabM <|
+    Command.liftTermElabM do
+      Lean.addDecl decl
       Term.addTermInfo' a (← mkConstWithLevelParams declName) (isBinder := true)
     -- TODO add doc string
 | _ => throwUnsupportedSyntax
