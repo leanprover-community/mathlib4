@@ -13,7 +13,7 @@ variable {α : Sort u} [Setoid α]
 
 example (a : α) : a ≈ a := by rfl
 
-example (a : Nat) : a ≤ a := by (fail_if_success rfl) apply Nat.le_refl
+example (a : Nat) : a ≤ a := by (fail_if_success rfl); apply Nat.le_refl
 
 attribute [refl] Nat.le_refl
 

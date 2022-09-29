@@ -5,7 +5,6 @@ Authors: Newell Jensen
 -/
 
 import Lean
-import Mathlib.Tactic.Relation.Basic
 
 namespace Mathlib.Tactic.Relation.Rfl
 
@@ -26,20 +25,13 @@ def reflAttr : AttributeImpl where
   add decl _ kind := do
     MetaM.run' do
       let declTy := (← getConstInfo decl).type
-      let (xs, _, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
-      if xs.size < 1 then
-        throwError "@[refl] attribute only applies to lemmas proving x ∼ x, got {declTy
-          } with too few arguments"
-      else
-        match ← relationAppM? targetTy with
-        | some (rel, lhs, rhs) =>
-          unless (← isDefEq lhs rhs) do
-            throwError "@[refl] attribute only applies to lemmas proving x ∼ x, got {declTy
-              } with {lhs} ~ {rhs} instead"
-          let key ← withReducible <| DiscrTree.mkPath rel
-          reflExtension.add (decl, key) kind
-        | none =>
-          throwError "@[refl] attribute only applies to lemmas proving x ∼ x, got {declTy}"
+      let (_, _, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
+      let fail := throwError
+        "@[refl] attribute only applies to lemmas proving x ∼ x, got {declTy}"
+      let .app (.app rel lhs) rhs := targetTy | fail
+      unless ← isDefEq lhs rhs do fail
+      let key ← withReducible <| DiscrTree.mkPath rel
+      reflExtension.add (decl, key) kind
 
 initialize registerBuiltinAttribute reflAttr
 
@@ -57,16 +49,14 @@ elab_rules : tactic
 | `(tactic| rfl) =>
   withMainContext do
   let tgt ← getMainTarget
-  match ← relationAppM? tgt with
-  | some (rel, _, _) =>
-    let s ← saveState
-    for lem in ← (reflLemmas (← getEnv)).getMatch rel do
-      try
-        liftMetaTactic (·.apply (← mkConstWithFreshMVarLevels lem))
-        return
-      catch e =>
-        s.restore
-        throw e
-    throwError "rfl failed, no lemma with @[refl] applies"
-  | none =>
-    throwError "reflexivity lemmas only apply to binary relations, no {indentExpr tgt}"
+  let .app (.app rel _) _ := tgt
+    | throwError "reflexivity lemmas only apply to binary relations, not {indentExpr tgt}"
+  let s ← saveState
+  for lem in ← (reflLemmas (← getEnv)).getMatch rel do
+    try
+      liftMetaTactic (·.apply (← mkConstWithFreshMVarLevels lem))
+      return
+    catch e =>
+      s.restore
+      throw e
+  throwError "rfl failed, no lemma with @[refl] applies"
