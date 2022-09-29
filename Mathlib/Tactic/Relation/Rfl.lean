@@ -3,8 +3,14 @@ Copyright (c) 2022 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
-
 import Lean
+
+/-!
+# `rfl` tactic extension for reflexive relations
+
+This extends the `rfl` tactic so that it works on any reflexive relation,
+provided the reflexivity lemma has been marked as `@[refl]`.
+-/
 
 namespace Mathlib.Tactic.Relation.Rfl
 
