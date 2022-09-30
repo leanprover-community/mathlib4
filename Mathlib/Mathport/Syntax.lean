@@ -11,6 +11,7 @@ import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
@@ -182,12 +183,8 @@ namespace Tactic
 /- S -/ syntax (name := mapply) "mapply " term : tactic
 /- S -/ syntax (name := withCases) "with_cases " tacticSeq : tactic
 /- S -/ syntax "destruct " term : tactic
-/- M -/ syntax (name := casesM) "casesm" "*"? ppSpace term,* : tactic
-/- M -/ syntax (name := casesType) "cases_type" "*"? ppSpace ident* : tactic
-/- M -/ syntax (name := casesType!) "cases_type!" "*"? ppSpace ident* : tactic
 /- N -/ syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
 
-/- M -/ syntax (name := constructorM) "constructorm" "*"? ppSpace term,* : tactic
 /- N -/ syntax (name := simpIntro) "simp_intro" (config)?
   (ppSpace colGt (ident <|> "_"))* (&" only")? (simpArgs)? : tactic
 /- E -/ syntax (name := symm) "symm" : tactic
@@ -205,7 +202,7 @@ namespace Tactic
 namespace Conv
 
 open Tactic (simpArg rwRuleSeq)
-/- N -/ syntax (name := «for») "for " term:max " [" num,* "]" " => " tacticSeq : conv
+/- N -/ syntax (name := «for») "for " term:max " [" num,* "]" " => " convSeq : conv
 
 end Conv
 -- can't be in the section because `Parser.Tactic.Conv.conv` shadows `Parser.Category.conv`
