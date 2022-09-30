@@ -37,7 +37,7 @@ where
 namespace Command
 
 /-- Unset a user option -/
-elab (name := «unset_option») "unset_option " opt:ident : command => do
+elab (name := unsetOption) "unset_option " opt:ident : command => do
   let options ← Elab.elabUnsetOption opt
   modify fun s => { s with maxRecDepth := maxRecDepth.get options }
   modifyScope fun scope => { scope with opts := options }
