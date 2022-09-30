@@ -13,7 +13,7 @@ import Std.Tactic.OpenPrivate
 [TODO] Needs documentation, cleanup, and possibly reunification of `mkSimpContext'` with core.
 -/
 
-def Std.PHashSet.toList [BEq α] [Hashable α] (s : Std.PHashSet α) : List α :=
+def Lean.PHashSet.toList [BEq α] [Hashable α] (s : Lean.PHashSet α) : List α :=
   s.1.toList.map (·.1)
 
 namespace Lean

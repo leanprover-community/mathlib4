@@ -10,9 +10,9 @@ import Lean.Data.HashMap
 
 -/
 
-open Std ShareCommon
+open ShareCommon
 
-private unsafe abbrev ObjectMap := @Std.HashMap Object Object ⟨Object.ptrEq⟩ ⟨Object.hash⟩
+private unsafe abbrev ObjectMap := @Lean.HashMap Object Object ⟨Object.ptrEq⟩ ⟨Object.hash⟩
 
 private unsafe def memoFixImplObj (f : (Object → Object) → (Object → Object)) (a : Object) : Object := unsafeBaseIO do
   let cache : IO.Ref ObjectMap ← ST.mkRef ∅
