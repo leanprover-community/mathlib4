@@ -65,7 +65,8 @@ whether this is a `rflTheorem`. This should also check for `Iff.rfl`
 namespace String
 
 /-- `getRest s pre` returns `some post` if `s = pre ++ post`.
-  If `pre` is not a prefix of `s`, it returns `none`. -/
+  If `pre` is not a prefix of `s`, it returns `none`.
+  Note: this corresponds to `List.isPrefixOf?`-/
 def getRest (s pre : String) : Option String :=
 if startsWith s pre then some <| s.drop pre.length else none
 
