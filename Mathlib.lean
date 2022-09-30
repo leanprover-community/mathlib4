@@ -27,6 +27,7 @@ import Mathlib.Data.Prod
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
+import Mathlib.Data.Test
 import Mathlib.Data.UInt
 import Mathlib.Data.UnionFind
 import Mathlib.Init.Algebra.Functions
@@ -100,6 +101,7 @@ import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps
+import Mathlib.Tactic.SimpsDeclareAttrs
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Substs

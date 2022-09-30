@@ -51,9 +51,14 @@ structures, projections, simp, simplifier, generates declarations
 /-
 ask:
 - are there useful commands for compositions of structure projections?
-- is _refl_lemma still a thing?
-- When a coercion is inserted into a term, how does that look?
+- is _refl_lemma still a thing? -> probably, but I can call a function that should add it
+- When a coercion is inserted into a term, how does that look? -> you never see coercions
 - what is the Lean 4 equivalent of has_to_format/has_to_tactic_format?
+- primitive projections -> you never see these normally
+
+-- PR opportunity: dsimp using iff.rfl lemmas:
+* In file `Tactic/Simp/SimpTheorems` we check whether a proof is `Eq.refl` to decide
+whether this is a `rflTheorem`. This should also check for `Iff.rfl`
 -/
 
 -- move
@@ -86,18 +91,22 @@ syntax (name := initialize_simps_projections) "initialize_simps_projections"
   (ppSpace simpsProj) : command
 syntax (name := initialize_simps_projections?) "initialize_simps_projections?"
   (ppSpace simpsProj) : command
-/- QUESTION 1: can I replace the 2 syntaxes above by:
+/- question 1: can I replace the 2 syntaxes above by:
 syntax (name := initialize_simps_projections2) "initialize_simps_projections" "?"?
   (ppSpace simpsProj) : command
 -/
+/- question 2: Am I doing tracing wrong? -/
+/- question 3: what is a reasonable low number as second argument of `synthInstance`?
+  What does this number measure?-/
+
 syntax (name := notation_class) "notation_class" : attr
 
 
 end Command
 end Lean.Parser
 
-builtin_initialize registerTraceClass `Simps.verbose
-builtin_initialize registerTraceClass `Simps.debug
+initialize registerTraceClass `simps.verbose
+initialize registerTraceClass `simps.debug
 
 /--
 Projection data for a single projection of a structure, consisting of the following fields:
@@ -145,26 +154,33 @@ initialize simpsStructure : NameMapExtension (List Name × List ProjectionData) 
   * The second argument is the name of the projection (by default it is the first projection
     of the structure)
 -/
-initialize notation_classAttr : NameMapExtension Unit ← -- todo: should this be TagAttribute?
+initialize notationClassAttr : NameMapExtension Unit ← -- todo: should this be TagAttribute?
   registerNameMapAttribute {
     name  := `notation_class
     descr := "An attribute specifying that this is a notation class. Used by @[simps]."
     add   := fun
-    | _, `(attr|notation_class) => pure ()
+    | nm, `(attr|notation_class) => do
+      if (getStructureInfo? (← getEnv) nm).isNone then
+        throwError "@[notation_class] attribute can only be added to classes."
     | _, stx => throwError "unexpected notation_class syntax {stx}" }
 
 /-- Temporary projection data parsed from `initialize_simps_projections` before the Expression
   matching this projection has been found. Only used internally in `simpsGetRawProjections`. -/
 structure ParsedProjectionData where
-  origName : Name
-  -- name for this projection used in the structure definition
-  newName : Name
-  -- name for this projection used in the generated `simp` lemmas
-  isDefault : Bool
-  isPrefix : Bool
+  origName : Name  -- name for this projection used in the structure definition
+  newName : Name   -- name for this projection used in the generated `simp` lemmas
+  isDefault : Bool -- will simp lemmas be generated for with (without specifically naming this?)
+  isPrefix : Bool  -- is the projection name a prefix?
+  expr? : Option Expr := none -- projection expression
+  projNrs : List Nat := [] -- the list of projection numbers this expression corresponds to
+  isChanged : Bool := false -- is this a projection that is changed by the user?
 
-instance : ToFormat ParsedProjectionData := ⟨λ ⟨a, b, c, d⟩ => .group <| .nest 1 <|
-  "⟨" ++ .joinSep [format a, format b, format c, format d] ("," ++ .line) ++ "⟩"⟩
+def ParsedProjectionData.toProjectionData (p : ParsedProjectionData) : ProjectionData :=
+⟨p.newName, p.expr?.getD default, p.projNrs, p.isDefault, p.isPrefix⟩
+
+instance : ToFormat ParsedProjectionData := ⟨λ ⟨x₁, x₂, x₃, x₄, x₅, x₆, x₇⟩ => .group <| .nest 1 <|
+  "⟨" ++ .joinSep [format x₁, format x₂, format x₃, format x₄, format x₅, format x₆, format x₇]
+    ("," ++ .line) ++ "⟩"⟩
 
 /-- The type of rules that specify how metadata for projections in changes.
   See `initialize_simps_projections`. -/
@@ -225,13 +241,112 @@ def getCompositeOfProjections (str : Name) (proj : String) : MetaM (Expr × List
   withLocalDeclD `x (mkAppN strExpr typeArgs) fun ex =>
   getCompositeOfProjectionsAux str ("_" ++ proj) ex [] <| typeArgs ++ [ex]
 
+/-- Auxilliary function for `simpsGetRawProjections` that executes the projection renaming.
 
-def mkConditionalInstance (cond tgt : Expr) : MetaM Expr := do
-  withLocalDeclD `x cond fun condInst => do
-  let tgtInst ← synthInstance tgt
-  let lambdaInst ← mkLambdaFVars #[condInst] tgtInst
-  instantiateMVars lambdaInst -- probably not needed for `[simps]`, but cannot hurt
+Figure out projections, including renamings. The information for a projection is (before we
+figure out the `expr` of the projection):
+`(original name, given name, is default, is prefix)`.
+The first projections are always the actual projections of the structure, but `rules` could
+specify custom projections that are compositions of multiple projections. -/
+def simpsApplyProjectionRules (str : Name) (rules : Array ProjectionRule) :
+  CoreM (Array ParsedProjectionData) := do
+  let env ← getEnv
+  if getStructureInfo? env str |>.isNone then
+    throwError "Declaration {str} is not a structure."
+  let projs := (getStructureInfo? env str).get!
+  let projs : Array ParsedProjectionData := projs.fieldNames.map fun nm => ⟨nm, nm, true, false, none, [], false⟩
+  let projs : Array ParsedProjectionData := rules.foldl (init := projs) fun projs rule =>
+    match rule with
+    | (.inl (oldName, newName), isPrefix) =>
+      if (projs.map (·.newName)).contains oldName then
+        projs.map fun proj => if proj.newName == oldName then
+          { proj with newName := newName, isPrefix := isPrefix } else
+          proj else
+        projs.push ⟨oldName, newName, true, isPrefix, none, [], false⟩
+    | (.inr nm, isPrefix) =>
+      if (projs.map (·.newName)).contains nm then
+        projs.map fun proj => if proj.newName = nm then
+          { proj with isDefault := false, isPrefix := isPrefix } else
+          proj else
+        projs.push ⟨nm, nm, false, isPrefix, none, [], false⟩
+  trace[simps.debug] "[simps] > Projection info after applying the rules: {projs}."
+  if !(projs.map (·.newName)).toList.Nodup then throwError
+    ("Invalid projection names. Two projections have the same name.\n{
+    }This is likely because a custom composition of projections was given the same name as an {
+    }existing projection. Solution: rename the existing projection (before naming the {
+    }custom projection).")
+  pure projs
 
+/-- Auxilliary function for `simpsGetRawProjections`.
+Find custom projections declared by the user. -/
+def simpsFindCustomProjection (str : Name) (proj : ParsedProjectionData)
+  (rawUnivs : List Level) (trc : Bool) : CoreM ParsedProjectionData := do
+  let env ← getEnv
+  let (rawExpr, nrs) ← MetaM.run' (getCompositeOfProjections str proj.origName.getString!)
+  match env.find? (str ++ `simps ++ proj.newName) with
+  | some d@(.defnInfo _) =>
+    let customProj := d.instantiateValueLevelParams rawUnivs
+    if trc then
+      dbg_trace "[simps] > found custom projection for {proj.newName}:\n        > {customProj}"
+    match (← MetaM.run' $ isDefEq customProj rawExpr) with
+    | true => pure {proj with expr? := some customProj, projNrs := nrs, isChanged := true}
+    | false =>
+      -- if the type of the Expression is different, we show a different error message, because
+      -- (in Lean 3) just stating that the expressions are different is quite unhelpful
+      let customProjType ← MetaM.run' (inferType customProj)
+      let rawExprType ← MetaM.run' (inferType rawExpr)
+      if (← MetaM.run' (isDefEq customProjType rawExprType)) then throwError
+        ("Invalid custom projection:\n  {customProj}\n{
+        }Expression is not definitionally equal to {rawExpr}") else throwError
+        ("Invalid custom projection:\n  {customProj}\n{
+        }Expression has different type than {str ++ proj.origName}. Given type:\n{
+        }  {customProjType}\nExpected type:\n  {rawExprType}\n{
+        }Note: make sure order of implicit arguments is exactly the same.")
+  | _ => pure {proj with expr? := some rawExpr, projNrs := nrs}
+
+/-- Auxilliary function for `simpsGetRawProjections`.
+Resolve a single notation class in `simpsFindAutomaticProjections`. -/
+def simpsResolveNotationClass (projs : Array ParsedProjectionData)
+  (className : Name) (args : Array Expr) (eStr : Expr) (rawUnivs : List Level) (trc : Bool) :
+    MetaM (Array ParsedProjectionData) := do
+  let env ← getEnv
+  let classInfo := (getStructureInfo? env className).get!
+  let projName := classInfo.fieldNames[0]!
+  /- For this class, find the projection. `rawExpr` is the projection found applied to `args`,
+      and `lambdaRawExpr` has the arguments `args` abstracted. -/
+  let (relevantProj, lambdaRawExpr) ← do
+    let eInstType := mkAppN (.const className rawUnivs) args
+    withLocalDeclD `x eStr fun hyp => do
+      let eInst ← synthInstance eInstType (some 10) -- reasonable, but low number
+      let rawExpr ← mkAppM projName (args.push eInst)
+      let rawExprLambda ← mkLambdaFVars (args.push hyp) rawExpr
+      let rawExprWhnf ← whnf rawExpr
+      let relevantProj := Name.anonymous --todo  raw_expr_whnf.binding_body.get_app_fn.const_name,
+      return (relevantProj, rawExprLambda)
+  match projs.findIdx? fun x => x.1 == relevantProj with
+  | none => throwError "" -- trace a warning
+  | some pos => do -- check that this is not a custom projection
+    -- guard <| projs.any fun x => x.1 = relevantProj ∧ ¬e (str ++ `simps ++ x)
+    -- let pos := projs
+    if trc then
+      dbg_trace "        > using {projName} instead of the default projection {relevantProj}."
+    trace[simps.debug] "[simps] > The raw projection is:\n {lambdaRawExpr}"
+    pure (projs.mapIdx (fun nr x => if nr.1 = pos then {x with expr? := some lambdaRawExpr} else x))
+
+/-- Auxilliary function for `simpsGetRawProjections`.
+Find custom projections, automatically found by simps.
+These come from algebraic notation classes, like `+`. -/
+def simpsFindAutomaticProjections (str : Name) (projs : Array ParsedProjectionData)
+  (strType : Expr) (rawUnivs : List Level) (trc : Bool) : CoreM (Array ParsedProjectionData) := do
+  let env ← getEnv
+  MetaM.run' <| forallTelescope strType fun args _ => do
+    let eStr := mkAppN (.const str rawUnivs) args
+    let automaticProjs := notationClassAttr.getState env
+    if args.toList.length == 1 then -- wrong if additional type-class arguments?
+      automaticProjs.foldM (init := projs) fun projs className _ =>
+        simpsResolveNotationClass projs className args eStr rawUnivs trc <|>
+        pure projs else
+      pure projs
 
 
 /--
@@ -289,120 +404,28 @@ def simpsGetRawProjections (str : Name) (traceIfExists : Bool := false)
   (rules : Array ProjectionRule := #[]) (trc := false) :
   CoreM (List Name × List ProjectionData) := do
   let env ← getEnv
-  -- let shouldTrace := trc || ((← getOptions) |>.getBool `simps.verbose)
+  let trc := trc || ((← getOptions) |>.getBool `trace.simps.verbose)
   -- to do: double check tracing
   match (simpsStructure.getState env).find? str with
   | some data =>
     -- We always print the projections when they already exists and are called by
     -- `initialize_simps_projections`.
-    if traceIfExists || ((← getOptions) |>.getBool `simps.verbose) then
+    if traceIfExists || ((← getOptions) |>.getBool `trace.simps.verbose) then
       dbg_trace projectionsInfo data.2 "Already found projection information for structure" str
     return data
   | none =>
     if trc then
       dbg_trace "[simps] > generating projection information for structure {str}."
     trace[simps.debug] "[simps] > Applying the rules {rules}."
+    if env.find? str |>.isNone then
+      throwError "No such declaration {str}." -- maybe unreachable
     let strDecl := (env.find? str).get!
     let rawLevels := strDecl.levelParams
     let rawUnivs := rawLevels.map Level.param
-    /- Figure out projections, including renamings. The information for a projection is (before we
-      figure out the `expr` of the projection:
-      `(original name, given name, is default, is prefix)`.
-      The first projections are always the actual projections of the structure, but `rules` could
-      specify custom projections that are compositions of multiple projections. -/
-    let projs := (getStructureInfo? env str).get!
-    let projs : Array ParsedProjectionData := projs.fieldNames.map fun nm => ⟨nm, nm, true, false⟩
-    let projs : Array ParsedProjectionData := rules.foldl (init := projs) fun projs rule =>
-      match rule with
-      | (.inl (oldName, newName), isPrefix) =>
-        if (projs.map (·.newName)).contains oldName then
-          projs.map fun proj => if proj.newName == oldName then
-            { proj with newName := newName, isPrefix := isPrefix } else
-            proj else
-          projs.push ⟨oldName, newName, true, isPrefix⟩
-      | (.inr nm, isPrefix) =>
-        if (projs.map (·.newName)).contains nm then
-          projs.map fun proj => if proj.newName = nm then
-            { proj with isDefault := false, isPrefix := isPrefix } else
-            proj else
-          projs.push ⟨nm, nm, false, isPrefix⟩
-    trace[simps.debug] "[simps] > Projection info after applying the rules: {projs}."
-    if !(projs.map (·.newName)).toList.Nodup then throwError
-        ("Invalid projection names. Two projections have the same name.
-This is likely because a custom composition of projections was given the same name as an {
-        }existing projection. Solution: rename the existing projection (before renaming the {
-        }custom projection).")
-    /- Define the raw Expressions for the projections, by default as the projections
-    (as an Expression), but this can be overriden by the user. -/
-    let rawExprsAndNrs ← projs.mapM fun ⟨oldName, newName, _, _⟩ => do
-    { let (rawExpr, nrs) ← MetaM.run' (getCompositeOfProjections str oldName.getString!) -- todo: check
-      let customProj ← (do
-        match (env.find? (str ++ `simps ++ newName)).get! with
-        | d@(.defnInfo _) =>
-          let customProj := d.instantiateValueLevelParams rawUnivs
-          if trc then
-            dbg_trace "[simps] > found custom projection for {newName}:\n        > {customProj}"
-          return customProj
-        | _ => throwError "") <|> return rawExpr
-      match (← MetaM.run' $ isDefEq customProj rawExpr) with
-      | true => return (customProj, nrs)
-      | false =>
-        -- if the type of the Expression is different, we show a different error message, because
-        -- that is more likely going to be helpful.
-        let customProjType ← MetaM.run' (inferType customProj)
-        let rawExprType ← MetaM.run' (inferType rawExpr)
-        if (← MetaM.run' (isDefEq customProjType rawExprType)) then
-            throwError "Invalid custom projection:\n  {customProj}
-Expression is not definitionally equal to {rawExpr}"
-          else
-            throwError "Invalid custom projection:\n  {customProj}
-Expression has different type than {str ++ oldName}. Given type:\n  {customProjType}
-Expected type:\n  {rawExprType}
-Note: make sure order of implicit arguments is exactly the same." }
-    let rawExprs := rawExprsAndNrs.map Prod.fst
-    -- Check for other coercions and type-class arguments to use as projections instead.
-    let rawExprs ← MetaM.run' <| forallTelescope strDecl.type fun args _ => do
-      let _ /-eStr-/ := mkAppN (Expr.const str rawUnivs) args
-      let automaticProjs := notation_classAttr.getState env
-      let rawExprs ← if args.toList.length == 1 then
-        (automaticProjs.foldM (init := rawExprs)
-          fun rawExprs _ _ /-className (isClass, projName)-/ =>
-        -- small part not yet implemented
-        --   (do
-        -- let classInfo := (getStructureInfo? env className).get!
-        -- let projName := projName.getD classInfo.fieldNames[0]!
-        -- /- For this class, find the projection. `rawExpr` is the projection found applied to `args`,
-        --       and `lambdaRawExpr` has the arguments `args` abstracted. -/
-        -- let (rawExpr, lambdaRawExpr) ← pure <|
-        --   if isClass then do
-        --       let eInstType := mkAppN (const className rawLevels) args
-        --       let (hyp, eInst) ← tryFor 1000 (mkConditionalInstance eStr eInstType)
-        --       let rawExpr ← mkAppOptM projName [args, eInst]
-        --       clear hyp
-        --       let rawExprLambda ← lambdas [hyp] rawExpr
-        --       return (rawExpr, rawExprLambda args)
-        --     else do
-        --       let eInstType ← toExpr (((const className []).app (pexpr.of_expr eStr)).app (pquote.1 _))
-        --       let eInst ← tryFor 1000 (synthInstance eInstType)
-        --       let rawExpr ← mkAppOptM projName [eStr, none, eInst]
-        --       return (rawExpr, rawExpr args)
-        -- let rawExprWhnf ← whnf rawExpr
-        -- let relevantProj := rawExprWhnf
-        -- guardₓ <| projs fun x => x.1 = relevantProj ∧ ¬e (str ++ `simps ++ x)
-        -- let pos := projs fun x => x.1 = relevantProj
-        -- if trc then
-        --   dbg_trace "        > using {projName} instead of the default projection {relevantProj}."
-        -- trace[simps.debug] "[simps] > The raw projection is:\n {lambdaRawExpr}"
-        -- return <| rawExprs Pos lambdaRawExpr) <|>
-          pure rawExprs) else pure rawExprs
-      pure rawExprs
-    let positions := rawExprsAndNrs.map Prod.snd
-    let projNames := projs.map (·.newName)
-    let defaults := projs.map (·.isDefault)
-    let prefixes := projs.map (·.isPrefix)
-    -- this is nicer if we have `Array.zipWith₅`
-    let projs := (((projNames.zipWith rawExprs ProjectionData.mk).zipWith positions id).zipWith
-      defaults id).zipWith prefixes id
+    let projs ← simpsApplyProjectionRules str rules
+    let projs ← projs.mapM fun proj => simpsFindCustomProjection str proj rawUnivs trc
+    let projs ← simpsFindAutomaticProjections str projs strDecl.type rawUnivs trc
+    let projs := projs.map (·.toProjectionData)
     -- make all proof non-default.
     let projs ← projs.mapM fun proj => do
       match (← MetaM.run' <| isProof proj.Expr) with
@@ -518,26 +541,22 @@ Some common uses:
     initialize_simps_projections equiv (toFun → apply, invFun → symm_apply)
   ```
 -/
-def initializeSimpsProjectionsCmd (trc : Bool) : Syntax → CommandElabM Unit
-| `(initialize_simps_projections $id $[($stxs,*)]?) => do
+def initializeSimpsProjectionsCmd (trc : Bool) (id : Ident)
+  (stxs : Option (Syntax.TSepArray `Lean.Parser.Command.simpsRule ",")) : CommandElabM Unit := do
   let stxs := stxs.getD <| .mk #[]
   let rules ← stxs.getElems.raw.mapM elabSimpsRule
   let nm ← resolveGlobalConstNoOverload id
   _ ← liftCoreM <| simpsGetRawProjections nm true rules trc
-| `(initialize_simps_projections? $id $[($stxs,*)]?) => do -- todo: remove redundant code
-  let stxs := stxs.getD <| .mk #[]
-  let rules ← stxs.getElems.raw.mapM elabSimpsRule
-  let nm ← resolveGlobalConstNoOverload id
-  _ ← liftCoreM <| simpsGetRawProjections nm true rules trc
-| _ => throwUnsupportedSyntax
 
 /-- Elaborates an `initialize_simps_projections` command. -/
-@[commandElab «initialize_simps_projections»] def elabInitializeSimpsProjections : CommandElab :=
-initializeSimpsProjectionsCmd false
+@[commandElab «initialize_simps_projections»] def elabInitializeSimpsProjections : CommandElab
+| `(initialize_simps_projections $id $[($stxs,*)]?) => initializeSimpsProjectionsCmd false id stxs
+| _ => throwUnsupportedSyntax
 
 /-- Elaborates an `initialize_simps_projections?` command. -/
-@[commandElab «initialize_simps_projections?»] def elabInitializeSimpsProjections? : CommandElab :=
-initializeSimpsProjectionsCmd true
+@[commandElab «initialize_simps_projections?»] def elabInitializeSimpsProjections? : CommandElab
+| `(initialize_simps_projections? $id $[($stxs,*)]?) => initializeSimpsProjectionsCmd true id stxs
+| _ => throwUnsupportedSyntax
 
 
 
