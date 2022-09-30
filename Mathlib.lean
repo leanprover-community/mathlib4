@@ -56,6 +56,7 @@ import Mathlib.Mathport.Rename
 import Mathlib.Mathport.SpecialNames
 import Mathlib.Mathport.Syntax
 import Mathlib.Order.Basic
+import Mathlib.Order.Monotone
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Basic
