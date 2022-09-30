@@ -14,6 +14,7 @@ import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.KVMap
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Card
 import Mathlib.Data.List.Pairwise
@@ -110,6 +111,7 @@ import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TypeCheck
+import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
 import Mathlib.Testing.SlimCheck.Gen
 import Mathlib.Testing.SlimCheck.Sampleable
