@@ -18,7 +18,6 @@ import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Core
-import Mathlib.Tactic.DSimp
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.InferParam
@@ -121,7 +120,7 @@ Only to be used for mathport.
 macro ak:Term.attrKind "notation3"
     prec:(precedence)? name:(namedName)? prio:(namedPrio)?
     lits:(notation3Item)+ " => " val:term : command => do
-  let mut boundNames : Std.HashMap Name Syntax := {}
+  let mut boundNames : Lean.HashMap Name Syntax := {}
   let mut macroArgs := #[]
   for lit in lits do
     match (lit : TSyntax ``notation3Item) with
@@ -198,15 +197,6 @@ namespace Tactic
 /- S -/ syntax (name := rsimp) "rsimp" : tactic
 /- S -/ syntax (name := compVal) "comp_val" : tactic
 /- S -/ syntax (name := async) "async " tacticSeq : tactic
-
-namespace Conv
-
-open Tactic (simpArg rwRuleSeq)
-/- N -/ syntax (name := «for») "for " term:max " [" num,* "]" " => " convSeq : conv
-
-end Conv
--- can't be in the section because `Parser.Tactic.Conv.conv` shadows `Parser.Category.conv`
-/- N -/ syntax:1 (name := Conv.seqFocus) conv " <;> " conv : conv
 
 /- E -/ syntax (name := apply') "apply' " term : tactic
 /- E -/ syntax (name := fapply') "fapply' " term : tactic

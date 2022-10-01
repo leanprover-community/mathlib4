@@ -9,7 +9,7 @@ namespace Mathlib.Prelude.Rename
 
 open Lean
 open System (FilePath)
-open Std (HashMap)
+open Lean (HashMap)
 
 abbrev RenameMap := HashMap Name Name
 
