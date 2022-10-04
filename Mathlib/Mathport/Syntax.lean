@@ -32,6 +32,7 @@ import Mathlib.Tactic.Replace
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Set
+import Mathlib.Tactic.SimpTrace
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Trace
@@ -305,18 +306,6 @@ syntax termList := " [" term,* "]"
   (&"only ")? (simpArgs)? " => " tacticSeq : tactic
 
 /- M -/ syntax (name := splitIfs) "split_ifs" (ppSpace location)? (" with " binderIdent+)? : tactic
-
-/- S -/ syntax (name := squeezeScope) "squeeze_scope " tacticSeq : tactic
-
-syntax simpTraceArgsRest := (config)? (discharger)? (&" only")? (simpArgs)? (ppSpace location)?
-syntax simpAllTraceArgsRest := (config)? (discharger)? (&" only")? (dsimpArgs)? (ppSpace location)?
-syntax dsimpTraceArgsRest := (config)? (&" only")? (dsimpArgs)? (ppSpace location)?
-/- S -/ syntax "simp?" "!"? simpTraceArgsRest : tactic
-/- S -/ syntax "simp_all?" "!"? simpAllTraceArgsRest : tactic
-/- S -/ syntax "dsimp?" "!"? dsimpTraceArgsRest : tactic
-macro "simp?!" rest:simpTraceArgsRest : tactic => `(tactic| simp? ! $rest)
-macro "simp_all?!" rest:simpAllTraceArgsRest : tactic => `(tactic| simp_all? ! $rest)
-macro "dsimp?!" rest:dsimpTraceArgsRest : tactic => `(tactic| dsimp? ! $rest)
 
 /- S -/ syntax (name := suggest) "suggest" (config)? (ppSpace num)?
   (simpArgs)? (" using " (colGt binderIdent)+)? : tactic
