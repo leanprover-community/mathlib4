@@ -14,6 +14,7 @@ import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.KVMap
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Card
 import Mathlib.Data.List.Pairwise
@@ -63,6 +64,7 @@ import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
@@ -71,7 +73,6 @@ import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Core
-import Mathlib.Tactic.DSimp
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Expect
 import Mathlib.Tactic.Find
@@ -91,6 +92,7 @@ import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Recover
+import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
@@ -100,7 +102,6 @@ import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
-import Mathlib.Tactic.ShowTerm
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
@@ -110,8 +111,8 @@ import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.Trace
-import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.TypeCheck
+import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
 import Mathlib.Testing.SlimCheck.Gen
 import Mathlib.Testing.SlimCheck.Sampleable

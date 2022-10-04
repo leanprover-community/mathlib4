@@ -49,7 +49,7 @@ private def isBlackListed (declName : Name) : MetaM Bool := do
   <||> isRec declName
   <||> isMatcher declName
 
-initialize findDeclsPerHead : DeclCache (Std.HashMap HeadIndex (Array Name)) ←
+initialize findDeclsPerHead : DeclCache (Lean.HashMap HeadIndex (Array Name)) ←
   DeclCache.mk "#find: init cache" {} fun _ c headMap => do
     if (← isBlackListed c.name) then
       return headMap
