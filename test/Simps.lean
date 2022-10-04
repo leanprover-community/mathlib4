@@ -9,12 +9,6 @@ set_option trace.simps.verbose true
 
 open Lean Meta Elab Term Command
 
-run_cmd Command.runTermElabM fun _ => do
-  let _ ← mkConditionalInstance (← elabTerm (← `(AddGroup Bool)) none)
-    (← elabTerm (← `(Add Bool)) none)
-  -- IO.println <| format e
-  pure ()
-
 structure Foo1 : Type where
   one : Nat
   two : Bool
@@ -83,6 +77,16 @@ def NewTop.simps.newElim {α β : Type _} (x : NewTop α β) : α × α := x.eli
 
 run_cmd liftCoreM <| successIfFail <| simpsGetRawProjections `DoesntExist
 
+class Something (α : Type _) where
+  op : α → α → α → α
+
+instance {α : Type _} [Something α] : Add α :=
+⟨λ x y => Something.op x y y⟩
+
+
+initialize_simps_projections? Something
+
+
 -- other tests (to delete)
 
 
@@ -92,12 +96,28 @@ lemma Prod.eq {α β : Type _} {x y : α × β} (h₁ : x.1 = y.1) (h₂ : x.2 =
 match x, y, h₁, h₂ with
 | _x, (_, _), rfl, rfl => rfl -- using eta for Structures!
 
-def AddSemigroup.prod {α β : Type _} [AddSemigroup α] [AddSemigroup β] : AddSemigroup (α × β) :=
+instance AddSemigroup.prod {α β : Type _} [AddSemigroup α] [AddSemigroup β] : AddSemigroup (α × β) :=
 { add := λ x y => ⟨x.1 + y.1, x.2 + y.2⟩
   add_assoc := λ _ _ _ => congrArg₂ Prod.mk (add_assoc ..) (add_assoc ..) } -- using eta for Structures!
 
+-- #print AddSemigroup
+-- #print AddCommSemigroup
+-- #print AddMonoid
+-- #print AddCommMonoid
+-- #print AddMonoidWithOne
+
+lemma prod_mul {α β : Type _} [AddSemigroup α] [AddSemigroup β] (x y : α × β) :
+  x + y = ⟨x.1 + y.1, x.2 + y.2⟩ := rfl
+
+-- attribute [notation_class] Add HAdd
+-- #print HAdd
 
 initialize_simps_projections AddSemigroup (toAdd_add → add, -toAdd)
+
+class MyClass (R : Type u) extends AddMonoidWithOne R, Monoid R
+
+#print MyClass
+
 -- #eval 1+1
 -- #check Equiv
 -- #check Equiv.inv_fun_as_coe
