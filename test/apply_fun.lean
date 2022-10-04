@@ -16,7 +16,14 @@ example (x : Int) (h : x = 1) : 1 = 1 := by
 
 example (x : Int) (h : x = 1) : 1 = 1 := by
   revert h
+  intro h
+  apply_fun (fun p => p) at h
+  rfl
+
+example (x : Int) (h : x = 1) : 1 = 1 := by
+  revert h
   refine' (fun h => ?_)
+  -- See https://github.com/leanprover/lean4/issues/1681#issuecomment-1266282337
   apply_fun (fun p => p) at h
   rfl
 
