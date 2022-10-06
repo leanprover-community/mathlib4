@@ -30,7 +30,8 @@ by
   guard_target == Classical.choose a < 2
   exact Classical.choose_spec a
 
-example (x : ℕ) (h : x < 2) (H : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) < 2 :=
+example (x : ℕ) (h : x < 2) (H : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) < 2) :
+  Classical.choose (⟨x, h⟩ : ∃ x, x < 2) < 2 :=
 by
   generalize_proofs a at H ⊢
   guard_hyp a : ∃ x, x < 2

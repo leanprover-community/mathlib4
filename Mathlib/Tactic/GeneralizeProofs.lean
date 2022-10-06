@@ -38,7 +38,8 @@ private def mkGen (e : Expr) : M Unit := do
   modify fun s =>
     { s with nextIdx := s.nextIdx.pop, curIdx := s.curIdx.push ⟨e, s.nextIdx.back, none⟩ }
   /- We turn on zeta-expansion to make sure we don't need to perform an expensive `check` step to
-     identify which let-decls can be abstracted. If we design a more efficient test, we can avoid the eager zeta expasion step.
+     identify which let-decls can be abstracted. If we design a more efficient test, we can avoid
+     the eager zeta expasion step.
      It a benchmark created by @selsam, The extra `check` step was a bottleneck. -/
   -- mkAuxDefinitionFor lemmaName e (zeta := true)
 
@@ -64,9 +65,12 @@ partial def visit (e : Expr) : M Expr := do
         mkGen e
         return e
       else match e with
-        | .lam ..      => lambdaLetTelescope e fun xs b => visitBinders xs do mkLambdaFVars xs (← visit b) (usedLetOnly := false)
-        | .letE ..     => lambdaLetTelescope e fun xs b => visitBinders xs do mkLambdaFVars xs (← visit b) (usedLetOnly := false)
-        | .forallE ..  => forallTelescope e fun xs b => visitBinders xs do mkForallFVars xs (← visit b)
+        | .lam ..      => lambdaLetTelescope e fun xs b => visitBinders xs do
+          mkLambdaFVars xs (← visit b) (usedLetOnly := false)
+        | .letE ..     => lambdaLetTelescope e fun xs b => visitBinders xs do
+          mkLambdaFVars xs (← visit b) (usedLetOnly := false)
+        | .forallE ..  => forallTelescope e fun xs b => visitBinders xs do
+          mkForallFVars xs (← visit b)
         | .mdata _ b   => return e.updateMData! (← visit b)
         | .proj _ _ b  => return e.updateProj! (← visit b)
         | .app ..      => e.withApp fun f args => return mkAppN f (← args.mapM visit)
@@ -103,7 +107,8 @@ elab (name := generalizeProofs) "generalize_proofs" hs:(ppSpace colGt ident)* lo
       logInfo (toMessageData hs)
       logInfo (← goal.getType)
       logInfo (← (do let t ← goal.getType; instantiateMVars t))
-      let (_, ⟨_, out⟩) ← GeneralizeProofs.visit (← goal.getType >>= instantiateMVars) |>.run { baseName := `a } |>.run |>.run { nextIdx := hs }
+      let (_, ⟨_, out⟩) ← GeneralizeProofs.visit (← goal.getType >>= instantiateMVars) |>.run
+        { baseName := `a } |>.run |>.run { nextIdx := hs }
       -- logInfo (repr out)
       let (_, _, mvarId) ← goal.generalizeHyp out #[] --fvarIds
       logInfo (toMessageData hs)
