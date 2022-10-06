@@ -8,6 +8,7 @@ Authors: Floris van Doorn
 import Lean
 import Mathlib.Data.List.Basic -- this should import the above file
 import Std.Tactic.NoMatch
+import Mathlib.Tactic.ToAdditive
 
 /-!
 # Stub for implementation of the `@[simps]` attribute.
@@ -99,7 +100,7 @@ syntax (name := initialize_simps_projections2) "initialize_simps_projections" "?
 /- question 2: Am I doing tracing wrong? -/
 /- question 3: what is a reasonable low number as second argument of `synthInstance`?
   What does this number measure?-/
-
+/- Question 4: How to add an attribute? `attr.add "do a bunch of effort to write syntax here?"`-/
 syntax (name := notation_class) "notation_class" : attr
 
 
@@ -126,8 +127,8 @@ Projection data for a single projection of a structure, consisting of the follow
 - A boolean specifying whether this projection is written as prefix.
 -/
 structure ProjectionData where
-  Name : Name -- todo: uncapitalize
-  Expr : Expr -- todo: uncapitalize
+  name : Name -- todo: uncapitalize
+  expr : Expr -- todo: uncapitalize
   projNrs : List ℕ
   isDefault : Bool
   isPrefix : Bool
@@ -194,7 +195,7 @@ def projectionsInfo (l : List ProjectionData) (pref : String) (str : Name) : For
   let toPrint : List Format :=
     defaults.map fun s =>
       let prefixStr := if s.isPrefix then "(prefix) " else ""
-      f!"Projection {prefixStr}{s.Name}: {s.Expr}"
+      f!"Projection {prefixStr}{s.name}: {s.expr}"
   let print2 :=
     String.join <| (nondefaults.map fun nm : ProjectionData => toString nm.1).intersperse ", "
   let toPrint :=
@@ -443,7 +444,7 @@ def simpsGetRawProjections (str : Name) (traceIfExists : Bool := false)
     let projs := projs.map (·.toProjectionData)
     -- make all proof non-default.
     let projs ← projs.mapM fun proj => do
-      match (← MetaM.run' <| isProof proj.Expr) with
+      match (← MetaM.run' <| isProof proj.expr) with
       | true => pure { proj with isDefault := false }
       | false => pure proj
     if trc then
@@ -642,54 +643,64 @@ def simpsGetProjectionExprs (tgt : Expr) (rhs : Expr) (cfg : SimpsCfg) :
     projDeclata.map fun proj =>
       (rhsArgs.getD (a₀ := default) proj.projNrs.head!,
         { proj with
-            Expr := (proj.Expr.instantiateLevelParams rawUnivs
+            expr := (proj.expr.instantiateLevelParams rawUnivs
               tgt.getAppFn.constLevels!).instantiateLambdasOrApps params
             projNrs := proj.projNrs.tail })
 
+/-- `getUnivLevel t` returns the universe level of a type `t` -/
+def getUnivLevel (t : Expr) : MetaM Level := do
+  let univ ← inferType t
+  let Expr.sort u ← whnf univ | throwError "getUnivLevel error: argument is not a type."
+  return u
+
+/-- Add a lemma with `nm` stating that `lhs = rhs`. `type` is the type of both `lhs` and `rhs`,
+  `args` is the list of local constants occurring, and `univs` is the list of universe variables. -/
+def simpsAddProjection (nm : Name) (type lhs rhs : Expr) (args : Array Expr) (univs : List Name)
+    (cfg : SimpsCfg) : MetaM Unit := do
+  trace[simps.debug] "[simps] > Planning to add the equality\n        > {lhs} = ({rhs} : {type})"
+  let env ← getEnv
+  if (env.find? nm).isSome then -- diverging behavior from Lean 3
+    throwError "simps tried to add lemma {nm} to the environment, but it already exists."
+    -- simplify `rhs` if `cfg.simpRhs` is true
+  let lvl ← getUnivLevel type
+  let (rhs, prf) ← do
+    if !cfg.simpRhs then
+      pure (rhs, mkAppN (mkConst `Eq.refl [lvl]) #[type, lhs]) else
+      let (rhs2, _) ← dsimp rhs {} -- { failIfUnchanged := false }
+      if rhs != rhs2 then
+        trace[simps.debug] "[simps] > `dsimp` simplified rhs to\n        > {rhs2}"
+      let (result, _) ← simp rhs2 {} --{ failIfUnchanged := false }
+      if rhs2 != result.expr then
+        trace[simps.debug] "[simps] > `simp` simplified rhs to\n        > {result.expr}"
+      pure (result.expr, result.proof?.getD _)
+  let eqAp := mkAppN (mkConst `Eq [lvl]) #[type, lhs, rhs]
+  let declName := nm
+  let declType ← mkForallFVars args eqAp
+  let declValue ← mkLambdaFVars args prf
+  let decl := Declaration.thmDecl
+    { name := nm
+      levelParams := univs
+      type := declType
+      value := declValue }
+  if cfg.trace then
+    dbg_trace "[simps] > adding projection {declName}:\n        > {declType}"
+  -- what is the best way to add some decoration to an error message?
+  -- match (← getEnv).addDecl decl with
+  -- | Except.ok    env => setEnv env
+  -- | Except.error ex  => throwError
+  --     "Failed to add projection lemma {declName}. Nested error:\n{ex.toMessageData (← getOptions)}"
+  try addDecl decl
+  catch ex =>
+    throwError "Failed to add projection lemma {declName}. Nested error:\n{ex.toMessageData}"
+  if (← isDefEq lhs rhs) ∧ `simp ∈ cfg.attrs then
+     pure () --set_basic_attribute `_refl_lemma declName true
+  -- cfg.attrs.mapM fun nm => setAttribute nm declName tt -- deal with attributes
+  if cfg.addAdditive.isSome then
+    ToAdditive.addToAdditiveAttr nm ⟨false, cfg.trace, cfg.addAdditive.get!, none, true⟩
 
 /-!
 
 
-/-- Add a lemma with `nm` stating that `lhs = rhs`. `type` is the type of both `lhs` and `rhs`,
-  `args` is the list of local constants occurring, and `univs` is the list of universe variables. -/
-def simpsAddProjection (nm : Name) (type lhs rhs : Expr) (args : List Expr) (univs : List Name)
-    (cfg : SimpsCfg) : tactic Unit := do
-  trace[simps.debug] "[simps] > Planning to add the equality
-                  > {lhs} = ({rhs} : {type})"
-  let lvl ← getUnivLevel type
-  let-- simplify `rhs` if `cfg.simpRhs` is true
-    (rhs, prf)
-    ←
-    (do
-          guardₓ cfg
-          let rhs' ← rhs.dsimp { failIfUnchanged := false }
-          trace[simps.debug] <|
-              when (rhs ≠ rhs')
-                (← do
-                  dbg_trace "[simps] > `dsimp` simplified rhs to
-                            > { rhs'}")
-          let (rhsprf1, rhsprf2, ns) ← rhs'.simp { failIfUnchanged := false }
-          trace[simps.debug] <|
-              when (rhs' ≠ rhsprf1)
-                (← do
-                  dbg_trace "[simps] > `simp` simplified rhs to
-                            > {rhsprf1}")
-          return (Prod.mk rhsprf1 rhsprf2)) <|>
-        return (rhs, const `eq.refl [lvl] type lhs)
-  let eqAp := const `eq [lvl] type lhs rhs
-  let declName ← getUnusedDeclName nm
-  let declType := eqAp.pis args
-  let declValue := prf.lambdas args
-  let decl := declaration.thm declName univs declType (pure declValue)
-  when cfg
-      (← do
-        dbg_trace "[simps] > adding projection {declName}:
-                  > {declType}")
-  decorateError ("Failed to add projection lemma " ++ declName ++ ". Nested error:") <| addDecl decl
-  let b ← succeeds <| isDefEq lhs rhs
-  when (b ∧ `simp ∈ cfg) (set_basic_attribute `_refl_lemma declName true)
-  cfg fun nm => set_attribute nm declName tt
-  when cfg <| toAdditive.attr declName ⟨false, cfg, cfg, none, true⟩ tt
 
 /-- Derive lemmas specifying the projections of the declaration.
   If `todo` is non-empty, it will generate exactly the names in `todo`.
@@ -764,8 +775,7 @@ def simpsAddProjections :
                 let newType ← inferType newRhs
                 trace[simps.debug]
                     (← do
-                      dbg_trace "[simps] > Applying a custom composite projection. Current lhs:
-                                >  {lhsAp}")
+                      dbg_trace "[simps] > Applying a custom composite projection. Current lhs:\n        >  {lhsAp}")
                 simpsAddProjections e nm newType lhsAp newRhs newArgs univs false cfg todo toApply
             /- We stop if no further projection is specified or if we just reduced an eta-expansion and we
                         automatically choose projections -/
@@ -801,17 +811,14 @@ def simpsAddProjections :
                           { cfg with addAdditive := cfg fun nm => nm (toAdditive.guess_name proj) isPrefix }
                         trace[simps.debug]
                             (← do
-                              dbg_trace "[simps] > Recursively add projections for:
-                                        >  {newLhs}")
+                              dbg_trace "[simps] > Recursively add projections for:\n        >  {newLhs}")
                         simpsAddProjections e newName newType newLhs newRhs newArgs univs false new_cfg new_todo
                             projNrs
           else-- if I'm about to run into an error, try to set the transparency for `rhsMd` higher.
               if cfg = transparency.none ∧ (mustBeStr ∨ todoNext ≠ [] ∨ toApply ≠ []) then do
               when cfg
                   (← do
-                    dbg_trace "[simps] > The given definition is not a constructor application:
-                              >   {rhsAp}
-                              > Retrying with the options \{ rhsMd := semireducible, simpRhs := true}.")
+                    dbg_trace "[simps] > The given definition is not a constructor application:\n        >   {rhsAp}\n        > Retrying with the options \{ rhsMd := semireducible, simpRhs := true}.")
               simpsAddProjections e nm type lhs rhs args univs mustBeStr
                   { cfg with rhsMd := semireducible, simpRhs := true } todo toApply
             else do
@@ -844,7 +851,7 @@ def simpsAddProjections :
 def simpsTac (nm : Name) (cfg : SimpsCfg := {  }) (todo : List String := []) (trc := false) : tactic Unit := do
   let env ← getEnv
   let d ← e.get nm
-  let lhs : Expr := const d.Name d.levelParams
+  let lhs : Expr := const d.name d.levelParams
   let todo := todo.dedup.map fun proj => "_" ++ proj
   let cfg := { cfg with trace := cfg.trace || ((← getOptions) |>.getBool `simps.verbose || trc }
   let b ← hasAttribute' `toAdditive nm
@@ -1266,7 +1273,7 @@ meta def simpsTac (nm : name) (cfg : simpsCfg := {}) (todo : list string := []) 
   tactic unit := do
   e ← getEnv,
   d ← e.get nm,
-  let lhs : Expr := const d.Name d.levelParams,
+  let lhs : Expr := const d.name d.levelParams,
   let todo := todo.dedup.map $ λ proj, "_" ++ proj,
   let cfg := { trace := cfg.trace || ((← getOptions) |>.getBool `simps.verbose || trc, ..cfg },
   b ← hasAttribute' `toAdditive nm,
