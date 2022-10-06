@@ -93,18 +93,10 @@ example : list.nth_le [1, 2] 1 dec_trivial = 2 := by
   generalize_proofs h,
   -- h : 1 < [1, 2].length
   -- ⊢ [1, 2].nth_le 1 h = 2
-```-/
--- syntax (name := generalizeProofs) "generalize_proofs" (ppSpace colGt ident)* : tactic
-
-elab (name := generalizeProofs) "generalize_proofs" --hs:(ppSpace colGt ident)* loc:(location)?
+```
+-/
+elab (name := generalizeProofs) "generalize_proofs"
   hs:(ppSpace (colGt binderIdent))* loc:(ppSpace location)? : tactic => do
--- elab_rules : tactic
-  -- | `(tactic| generalize_proofs $hs:ident*) => do
-    -- let lctx ← getLCtx -- linter for mut not needed?
-    -- let fvarIds := lctx.getFVarIds
-    -- let fvar ← liftMetaTacticAux fun mvarId => do
-      -- let (fvar, mvarId) ← mvarId.intro hs
-      -- pure (fvar, [mvarId])
     let ou := if loc.isSome then
         match expandLocation loc.get! with
           | .wildcard => #[]
