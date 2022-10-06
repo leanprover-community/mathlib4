@@ -13,7 +13,11 @@ This is a slight simplification of the `solve_aux` tactic in Lean3.
 
 open Lean Elab Tactic Meta
 
-/-- `synthesizeUsing type tac` synthesizes an element of `type` using tactic `tac` -/
+/--
+`synthesizeUsing type tac` synthesizes an element of `type` using tactic `tac`.
+
+The tactic `tac` may leave goals open, these remain as metavariables in the returned expression.
+-/
 -- In Lean3 this was called `solve_aux`,
 -- and took a `TacticM α` and captured the produced value in `α`.
 -- As this was barely used, we've simplified here.
