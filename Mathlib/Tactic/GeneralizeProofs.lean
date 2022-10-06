@@ -102,6 +102,13 @@ elab (name := generalizeProofs) "generalize_proofs" hs:(ppSpace colGt ident)* lo
     -- let fvar ← liftMetaTacticAux fun mvarId => do
       -- let (fvar, mvarId) ← mvarId.intro hs
       -- pure (fvar, [mvarId])
+    let ou := if loc.isSome then
+        match expandLocation loc.get! with
+          | .wildcard => #[]
+          | .targets t _ => t
+      else #[]
+    let fvs ← getFVarIds ou
+    logInfo (toMessageData ou)
     liftMetaTactic1 fun goal => do -- TODO decide if working on all or not
       let hs : Array Name := (hs.map TSyntax.getId).reverse
       logInfo (toMessageData hs)
@@ -109,7 +116,6 @@ elab (name := generalizeProofs) "generalize_proofs" hs:(ppSpace colGt ident)* lo
       logInfo (← (do let t ← goal.getType; instantiateMVars t))
       let (_, ⟨_, out⟩) ← GeneralizeProofs.visit (← goal.getType >>= instantiateMVars) |>.run
         { baseName := `a } |>.run |>.run { nextIdx := hs }
-      -- logInfo (repr out)
-      let (_, _, mvarId) ← goal.generalizeHyp out #[] --fvarIds
+      let (_, _, mvarId) ← goal.generalizeHyp out fvs --fvarIds
       logInfo (toMessageData hs)
       return mvarId
