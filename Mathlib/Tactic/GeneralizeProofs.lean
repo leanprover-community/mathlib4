@@ -74,6 +74,7 @@ partial def visit (e : Expr) : M Expr := do
 
 end GeneralizeProofs
 
+open Lean.Parser.Tactic
 
 /--
 Generalize proofs in the goal, naming them with the provided list.
@@ -88,7 +89,8 @@ example : list.nth_le [1, 2] 1 dec_trivial = 2 := by
 ```-/
 -- syntax (name := generalizeProofs) "generalize_proofs" (ppSpace colGt ident)* : tactic
 
-elab (name := «generalizeProofs») "generalize_proofs" hs:(ppSpace colGt ident)* : tactic => do
+elab (name := generalizeProofs) "generalize_proofs" hs:(ppSpace colGt ident)* loc:(location)? :
+  tactic => do
 -- elab_rules : tactic
   -- | `(tactic| generalize_proofs $hs:ident*) => do
     -- let lctx ← getLCtx -- linter for mut not needed?
@@ -97,10 +99,11 @@ elab (name := «generalizeProofs») "generalize_proofs" hs:(ppSpace colGt ident)
       -- let (fvar, mvarId) ← mvarId.intro hs
       -- pure (fvar, [mvarId])
     liftMetaTactic1 fun goal => do -- TODO decide if working on all or not
-      let hs : Array Name := hs.map TSyntax.getId
+      let hs : Array Name := (hs.map TSyntax.getId).reverse
       logInfo (toMessageData hs)
       logInfo (← goal.getType)
-      let (_, ⟨_, out⟩) ← GeneralizeProofs.visit (← goal.getType) |>.run { baseName := `a } |>.run |>.run { nextIdx := hs }
+      logInfo (← (do let t ← goal.getType; instantiateMVars t))
+      let (_, ⟨_, out⟩) ← GeneralizeProofs.visit (← goal.getType >>= instantiateMVars) |>.run { baseName := `a } |>.run |>.run { nextIdx := hs }
       -- logInfo (repr out)
       let (_, _, mvarId) ← goal.generalizeHyp out #[] --fvarIds
       logInfo (toMessageData hs)
