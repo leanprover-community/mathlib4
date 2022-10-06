@@ -35,8 +35,11 @@ private def mkGen (e : Expr) : M Unit := do
   -- let lemmaName ← mkAuxName (ctx.baseName ++ `proof) s.nextIdx
   logInfo e
   logInfo (toMessageData s.nextIdx)
+  let mut t := Name.anonymous
+  if s.nextIdx = #[] then
+    t ← mkFreshUserName `h
   modify fun s =>
-    { s with nextIdx := s.nextIdx.pop, curIdx := s.curIdx.push ⟨e, s.nextIdx.back, none⟩ }
+    { s with nextIdx := s.nextIdx.pop, curIdx := s.curIdx.push ⟨e, s.nextIdx.back?.getD t, none⟩ }
   /- We turn on zeta-expansion to make sure we don't need to perform an expensive `check` step to
      identify which let-decls can be abstracted. If we design a more efficient test, we can avoid
      the eager zeta expasion step.
@@ -93,8 +96,8 @@ example : list.nth_le [1, 2] 1 dec_trivial = 2 := by
 ```-/
 -- syntax (name := generalizeProofs) "generalize_proofs" (ppSpace colGt ident)* : tactic
 
-elab (name := generalizeProofs) "generalize_proofs" hs:(ppSpace colGt ident)* loc:(location)? :
-  tactic => do
+elab (name := generalizeProofs) "generalize_proofs" --hs:(ppSpace colGt ident)* loc:(location)?
+  hs:(ppSpace (colGt binderIdent))* loc:(ppSpace location)? : tactic => do
 -- elab_rules : tactic
   -- | `(tactic| generalize_proofs $hs:ident*) => do
     -- let lctx ← getLCtx -- linter for mut not needed?
@@ -110,12 +113,16 @@ elab (name := generalizeProofs) "generalize_proofs" hs:(ppSpace colGt ident)* lo
     let fvs ← getFVarIds ou
     logInfo (toMessageData ou)
     liftMetaTactic1 fun goal => do -- TODO decide if working on all or not
-      let hs : Array Name := (hs.map TSyntax.getId).reverse
-      logInfo (toMessageData hs)
+      let hsa : Array Name ← (hs.reverse.mapM fun sy => do
+        if let `(binderIdent| $s:ident) := sy then
+          return s.getId
+        else
+          mkFreshUserName `h)
+      logInfo (toMessageData hsa)
       logInfo (← goal.getType)
       logInfo (← (do let t ← goal.getType; instantiateMVars t))
-      let (_, ⟨_, out⟩) ← GeneralizeProofs.visit (← goal.getType >>= instantiateMVars) |>.run
-        { baseName := `a } |>.run |>.run { nextIdx := hs }
+      let (_, ⟨_, out⟩) ← GeneralizeProofs.visit (← instantiateMVars (← goal.getType)) |>.run
+        { baseName := `a } |>.run |>.run { nextIdx := hsa }
       let (_, _, mvarId) ← goal.generalizeHyp out fvs --fvarIds
       logInfo (toMessageData hs)
       return mvarId

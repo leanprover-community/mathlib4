@@ -1,6 +1,7 @@
 import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.GeneralizeProofs
 import Std.Tactic.GuardExpr
+import Mathlib.Tactic.LibrarySearch
 
 def List.nthLe (l : List α) (n) (h : n < l.length) : α := sorry
 
@@ -18,15 +19,45 @@ by
   guard_target == Classical.choose a < 2
   exact Classical.choose_spec a
 
+example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) = Classical.choose (⟨x, h⟩ : ∃ x, x < 2) :=
+by
+  generalize_proofs a
+  guard_hyp a : ∃ x, x < 2
+  guard_target == Classical.choose a = Classical.choose a
+  rfl
+
+example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) =
+  Classical.choose (⟨x, Nat.lt_succ_of_lt h⟩ : ∃ x, x < 3) :=
+by
+  generalize_proofs a
+  guard_hyp a : ∃ x, x < 2
+  guard_target = Classical.choose a = Classical.choose _
+  sorry
+
+example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) =
+  Classical.choose (⟨x, Nat.lt_succ_of_lt h⟩ : ∃ x, x < 3) :=
+by
+  generalize_proofs
+  guard_target = Classical.choose _ = Classical.choose _
+  sorry
+
+example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) =
+  Classical.choose (⟨x, Nat.lt_succ_of_lt h⟩ : ∃ x, x < 3) :=
+by
+  generalize_proofs _ a
+  guard_hyp a : ∃ x, x < 3
+  guard_target = Classical.choose _ = Classical.choose a
+  sorry
+
 example (a : ∃ x, x < 2) : Classical.choose a < 2 :=
 by
   generalize_proofs
   guard_target == Classical.choose a < 2
   exact Classical.choose_spec a
 
-example (x : ℕ) (h : x < 2) (a : ∃ x, x < 2) : Classical.choose a < 2 :=
+example (a : ∃ x, x < 2) : Classical.choose a < 2 :=
 by
-  generalize_proofs
+  generalize_proofs t
   guard_target == Classical.choose a < 2
   exact Classical.choose_spec a
 
