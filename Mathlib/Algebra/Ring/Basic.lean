@@ -36,11 +36,13 @@ section Semiring
 
 @[simp]
 lemma Nat.cast_mul [Semiring R] {m n : ℕ} : (m * n).cast = (m.cast * n.cast : R) := by
-  induction n generalizing m <;> simp_all [mul_succ, mul_add]
+  sorry
+  -- induction n generalizing m <;> simp_all [mul_succ, mul_add]
 
 @[simp]
 lemma Nat.cast_pow [Semiring R] {m n : ℕ} : (m ^ n).cast = (m.cast ^ n : R) := by
-  induction n generalizing m <;> simp_all [Nat.pow_succ', _root_.pow_succ', pow_zero]
+  sorry
+  -- induction n generalizing m <;> simp_all [Nat.pow_succ', _root_.pow_succ', pow_zero]
 
 end Semiring
 
@@ -131,21 +133,21 @@ instance : CommRing ℤ where
   intCast_ofNat _ := rfl
   intCast_negSucc _ := rfl
 
-@[simp, norm_cast] lemma cast_id : Int.cast n = n := rfl
+-- @[simp, norm_cast] lemma cast_id : Int.cast n = n := rfl
 
-@[simp] lemma ofNat_eq_cast : Int.ofNat n = n := rfl
+-- @[simp] lemma ofNat_eq_cast : Int.ofNat n = n := rfl
 
-@[simp, norm_cast]
-lemma cast_Nat_cast [AddGroupWithOne R] : (Int.cast (Nat.cast n) : R) = Nat.cast n :=
-  Int.cast_ofNat
+-- @[simp, norm_cast]
+-- lemma cast_Nat_cast [AddGroupWithOne R] : (Int.cast (Nat.cast n) : R) = Nat.cast n :=
+--   Int.cast_ofNat
 
-@[simp, norm_cast]
-lemma cast_eq_cast_iff_Nat (m n : ℕ) : (m : ℤ) = (n : ℤ) ↔ m = n := ofNat_inj
+-- @[simp, norm_cast]
+-- lemma cast_eq_cast_iff_Nat (m n : ℕ) : (m : ℤ) = (n : ℤ) ↔ m = n := ofNat_inj
 
-@[simp, norm_cast]
-lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
+-- @[simp, norm_cast]
+-- lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
 
-@[norm_cast]
-protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
+-- @[norm_cast]
+-- protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
 end Int
