@@ -3,8 +3,10 @@ import Mathlib.Tactic.Simps
 import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 import Mathlib.Data.Equiv.Basic
+import Mathlib.Util.Simp -- temp
 
--- set_option trace.simps.debug true
+
+set_option trace.simps.debug true
 set_option trace.simps.verbose true
 
 open Lean Meta Elab Term Command
@@ -129,13 +131,16 @@ example (n : ℕ) : foo.rfl.invFun n = n := by rw [foo.rfl_invFun]
 /- the declarations are `simp` lemmas -/
 @[simps] def foo : ℕ × ℤ := (1, 2)
 
-example : foo.1 = 1 := by simp -- note: in Lean 4 this succeeds without `@[simps]`
-example : foo.2 = 2 := by simp
-example : foo.1 = 1 := by dsimp <;> rfl -- check that dsimp also unfolds
-example : foo.2 = 2 := by dsimp <;> rfl
-example {α} (x : α) : foo.rfl.toFun x = x := by simp
-example {α} (x : α) : foo.rfl.invFun x = x := by simp
-example {α} (x : α) : foo.rfl.toFun = @id α := by { successIfFail {simp}, refl }
+-- note: in Lean 4 the first test succeeds without `@[simps]`, however, the remaining tests don't
+example : foo.1 = 1 := by simp
+example {a : ℕ} {h : 1 = a} : foo.1 = a := by rw [foo_fst, h]
+example {a : ℕ} {h : 1 = a} : foo.1 = a := by simp <;> rw [h]
+example {a : ℤ} {h : 2 = a} : foo.2 = a := by simp <;> rw [h]
+example {a : ℕ} {h : 1 = a} : foo.1 = a := by dsimp <;> rw [h] -- check that dsimp also unfolds
+example {a : ℤ} {h : 2 = a} : foo.2 = a := by dsimp <;> rw [h]
+example {α} (x y : α) (h : x = y) : foo.rfl.toFun x = y := by simp <;> rw [h]
+example {α} (x y : α) (h : x = y) : foo.rfl.invFun x = y := by simp <;> rw [h]
+-- example {α} (x y : α) (h : x = y) : foo.rfl.toFun = @id α := by { successIfFail {simp}, refl }
 
 /- check some failures -/
 def bar1 : ℕ := 1 -- type is not a structure
@@ -145,28 +150,23 @@ Classical.choice ⟨foo.rfl⟩
 run_cmd liftCoreM <| do
   -- _ ← simpsTac `foo.bar1
   -- successIfFailWithMsg (simpsTac `foo.bar1)
-  --   "Invalid `simps` attribute. Target nat is not a structure"
+  --   "Invalid `simps` attribute. Target Nat is not a structure"
   -- _ ← simpsTac `foo.bar2
   -- successIfFailWithMsg (simpsTac `foo.bar2)
   --   "Invalid `simps` attribute. The body is not a constructor application:
-  -- Classical.choice bar2._proof_1"
-  let e ← getEnv
-  let nm := `foo.bar1
-  let d := (e.find? nm).get!
-  let lhs : Expr := mkConst d.name (d.levelParams.map Level.param)
-  MetaM.run' <| simpsAddProjections e nm d.type lhs d.value! #[] d.levelParams false {} [] []
+  -- Classical.choice (_ : Nonempty (α ≃ α))"
+  pure ()
 
-#exit
+#check @id_eq -- this doesn't fire
+
 /- test that if a non-constructor is given as definition, then
   `{rhs_md := semireducible, simp_rhs := true}` is applied automatically. -/
 @[simps] def rfl2 {α} : α ≃ α := foo.rfl
 
-example {α} (x : α) : rfl2.toFun x = x ∧ rfl2.invFun x = x :=
-begin
+example {α} (x : α) : rfl2.toFun x = x ∧ rfl2.invFun x = x := by
   dsimp only [rfl2_toFun, rfl2_invFun]
-  guard_target (x = x ∧ x = x)
+  guard_target == (x = x ∧ x = x)
   exact ⟨rfl, rfl⟩
-end
 
 /- test `fully_applied` option -/
 

@@ -13,13 +13,7 @@ import Mathlib.Tactic.ToAdditive
 /-!
 # Stub for implementation of the `@[simps]` attribute.
 
-This file is currently just a stub that creates a no-operation `@[simps]` attribute.
-Without this, all declarations in the mathport output for mathlib3 that use `@[simps]` fail.
-With the no-operation attribute, the declarations can succeed,
-but of course all later proofs that rely on the existence of the automatically generated lemmas
-will fail.
-
-Partial progress to port the implementation from mathlib3.
+Partial progress to port the `@[simps]` attribute implementation from mathlib3.
 
 OLD DOC:
 
@@ -44,19 +38,38 @@ There are three attributes being defined here
   Example: if `Mul` is tagged with `@[notation_class]` then the projection used for `Semigroup`
   will be `λ α hα, @Mul.mul α (@Semigroup.toMul α hα)` instead of `@Semigroup.mul`.
 
+## Changes w.r.t. Lean 3
+
+There are some small changes in the attribute. None of them should have great effects
+* The attribute will now raise an error if it tries to generate a lemma when there already exists
+  a lemma with that name (in Lean 3 it would generate a different unique name)
+* `transparency.none` has been replaced by `TransparencyMode.reducible`
+* The `attr` configuration option has been split into `isSimp` and `attrs` (for extra attributes)
+  (todo)
+
 ## Tags
 
 structures, projections, simp, simplifier, generates declarations
 -/
 
 /-
-ask:
+Questions
 - are there useful commands for compositions of structure projections?
 - is _refl_lemma still a thing? -> probably, but I can call a function that should add it
 - When a coercion is inserted into a term, how does that look? -> you never see coercions
 - what is the Lean 4 equivalent of has_to_format/has_to_tactic_format?
 - primitive projections -> you never see these normally
+-/
 
+/- Question: How to deal with all the different kinds of attributes? Is there a uniform
+  "add attribute A to declaration X" or "check whether X has attribute A"?
+  Can I add an attribute without constructing a complicated `Syntax` object? -/
+/- question: Is there a reason `TransparencyMode.none` is not a thing anymore? (not super important) -/
+/- question: what is a reasonable low number as second argument of `synthInstance`?
+  What does this number measure?-/
+
+
+/-
 -- PR opportunity: dsimp using iff.rfl lemmas:
 * In file `Tactic/Simp/SimpTheorems` we check whether a proof is `Eq.refl` to decide
 whether this is a `rflTheorem`. This should also check for `Iff.rfl`
@@ -65,10 +78,9 @@ whether this is a `rflTheorem`. This should also check for `Iff.rfl`
 -- move
 namespace String
 
-/-- `getRest s pre` returns `some post` if `s = pre ++ post`.
-  If `pre` is not a prefix of `s`, it returns `none`.
-  Note: this corresponds to `List.isPrefixOf?`-/
-def getRest (s pre : String) : Option String :=
+/-- `isPrefixOf? s pre` returns `some post` if `s = pre ++ post`.
+  If `pre` is not a prefix of `s`, it returns `none`. -/
+def isPrefixOf? (s pre : String) : Option String :=
 if startsWith s pre then some <| s.drop pre.length else none
 
 end String
@@ -80,7 +92,109 @@ namespace Attr
 
 syntax simpsArgsRest := (" (" &"config" " := " term ")")? (ppSpace ident)*
 
+/-- The `@[simps]` attribute automatically derives lemmas specifying the projections of this
+declaration.
+
+Example:
+```lean
+@[simps] def foo : ℕ × ℤ := (1, 2)
+```
+derives two `simp` lemmas:
+```lean
+@[simp] lemma foo_fst : foo.fst = 1
+@[simp] lemma foo_snd : foo.snd = 2
+```
+
+* It does not derive `simp` lemmas for the prop-valued projections.
+* It will automatically reduce newly created beta-redexes, but will not unfold any definitions.
+* If the structure has a coercion to either sorts or functions, and this is defined to be one
+  of the projections, then this coercion will be used instead of the projection.
+* If the structure is a class that has an instance to a notation class, like `Mul`, then this
+  notation is used instead of the corresponding projection.
+* You can specify custom projections, by giving a declaration with name
+  `{StructureName}.simps.{projectionName}`. See Note [custom simps projection].
+
+  Example:
+  ```lean
+  def equiv.simps.invFun (e : α ≃ β) : β → α := e.symm
+  @[simps] def equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
+  ⟨e₂ ∘ e₁, e₁.symm ∘ e₂.symm⟩
+  ```
+  generates
+  ```
+  @[simp] lemma equiv.trans_toFun : ∀ {α β γ} (e₁ e₂) (a : α), ⇑(e₁.trans e₂) a = (⇑e₂ ∘ ⇑e₁) a
+  @[simp] lemma equiv.trans_invFun : ∀ {α β γ} (e₁ e₂) (a : γ),
+    ⇑((e₁.trans e₂).symm) a = (⇑(e₁.symm) ∘ ⇑(e₂.symm)) a
+  ```
+
+* You can specify custom projection names, by specifying the new projection names using
+  `initialize_simps_projections`.
+  Example: `initialize_simps_projections equiv (toFun → apply, invFun → symm_apply)`.
+  See `elabInitializeSimpsProjections` for more information.
+
+* If one of the fields itself is a structure, this command will recursively create
+  `simp` lemmas for all fields in that structure.
+  * Exception: by default it will not recursively create `simp` lemmas for fields in the structures
+    `prod` and `pprod`. You can give explicit projection names or change the value of
+    `simpsCfg.notRecursive` to override this behavior.
+
+  Example:
+  ```lean
+  structure MyProd (α β : Type*) := (fst : α) (snd : β)
+  @[simps] def foo : prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
+  ```
+  generates
+  ```lean
+  @[simp] lemma foo_fst : foo.fst = (1, 2)
+  @[simp] lemma foo_snd_fst : foo.snd.fst = 3
+  @[simp] lemma foo_snd_snd : foo.snd.snd = 4
+  ```
+
+* You can use `@[simps proj1 proj2 ...]` to only generate the projection lemmas for the specified
+  projections.
+* Recursive projection names can be specified using `proj1_proj2_proj3`.
+  This will create a lemma of the form `foo.proj1.proj2.proj3 = ...`.
+
+  Example:
+  ```lean
+  structure MyProd (α β : Type*) := (fst : α) (snd : β)
+  @[simps fst fst_fst snd] def foo : prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
+  ```
+  generates
+  ```lean
+  @[simp] lemma foo_fst : foo.fst = (1, 2)
+  @[simp] lemma foo_fst_fst : foo.fst.fst = 1
+  @[simp] lemma foo_snd : foo.snd = {fst := 3, snd := 4}
+  ```
+* If one of the values is an eta-expanded structure, we will eta-reduce this structure.
+
+  Example:
+  ```lean
+  structure EquivPlusData (α β) extends α ≃ β := (data : bool)
+  @[simps] def bar {α} : EquivPlusData α α := { data := true, ..equiv.refl α }
+  ```
+  generates the following:
+  ```lean
+  @[simp] lemma bar_toEquiv : ∀ {α : Sort*}, bar.toEquiv = equiv.refl α
+  @[simp] lemma bar_data : ∀ {α : Sort*}, bar.data = tt
+  ```
+  This is true, even though Lean inserts an eta-expanded version of `equiv.refl α` in the
+  definition of `bar`.
+* For configuration options, see the doc string of `simpsCfg`.
+* The precise syntax is `('simps' ident* e)`, where `e` is an Expression of type `simpsCfg`.
+* `@[simps]` reduces let-expressions where necessary.
+* When option `trace.simps.verbose` is true, `simps` will print the projections it finds and the
+  lemmas it generates. The same can be achieved by using `@[simps?]`, except that in this case it
+  will not print projection information.
+* Use `@[toAdditive, simps]` to apply both `toAdditive` and `simps` to a definition, making sure
+  that `simps` comes after `toAdditive`. This will also generate the additive versions of all
+  `simp` lemmas.
+-/
+/- If one of the fields is a partially applied constructor, we will eta-expand it
+  (this likely never happens, so is not included in the official doc). -/
 syntax (name := simps) "simps" "?"? simpsArgsRest : attr
+
+@[inheritDoc simps]
 macro "simps?" rest:simpsArgsRest : attr => `(attr| simps ? $rest)
 
 end Attr
@@ -91,26 +205,100 @@ syntax simpsRule.rename := ident " → " ident
 syntax simpsRule.erase := "-" ident
 syntax simpsRule := (simpsRule.rename <|> simpsRule.erase) &" as_prefix"?
 syntax simpsProj := (ppSpace ident (" (" simpsRule,+ ")")?)
+
+
+/--
+This command specifies custom names and custom projections for the simp attribute `simpsAttr`.
+* You can specify custom names by writing e.g.
+  `initialize_simps_projections equiv (toFun → apply, invFun → symm_apply)`.
+* See Note [custom simps projection] and the examples below for information how to declare custom
+  projections.
+* If no custom projection is specified, the projection will be `coe_fn`/`⇑` if a `CoeFun`
+  instance has been declared, or the notation of a notation class (like `Mul`) if such an
+  instance is available. If none of these cases apply, the projection itself will be used.
+* You can disable a projection by default by running
+  `initialize_simps_projections equiv (-invFun)`
+  This will ensure that no simp lemmas are generated for this projection,
+  unless this projection is explicitly specified by the user.
+* If you want the projection name added as a prefix in the generated lemma name, you can add the
+  `as_prefix` modifier:
+  `initialize_simps_projections equiv (toFun → coe as_prefix)`
+  Note that this does not influence the parsing of projection names: if you have a declaration
+  `foo` and you want to apply the projections `snd`, `coe` (which is a prefix) and `fst`, in that
+  order you can run `@[simps snd_coe_fst] def foo ...` and this will generate a lemma with the
+  name `coe_foo_snd_fst`.
+  * Run `initialize_simps_projections?` (or `set_option trace.simps.verbose true`)
+  to see the generated projections.
+* You can declare a new name for a projection that is the composite of multiple projections, e.g.
+  ```
+    structure A := (proj : ℕ)
+    structure B extends A
+    initialize_simps_projections? B (toA_proj → proj, -toA)
+  ```
+  You can also make your custom projection that is definitionally equal to a composite of
+  projections. In this case, coercions and notation classes are not automatically recognized, and
+  should be manually given by giving a custom projection.
+  This is especially useful when extending a structure (without `oldStructureCmd`).
+  In the above example, it is desirable to add `-toA`, so that `@[simps]` doesn't automatically
+  apply the `B.toA` projection and then recursively the `A.proj` projection in the lemmas it
+  generates. If you want to get both the `foo_proj` and `foo_toA` simp lemmas, you can use
+  `@[simps, simps toA]`.
+* Running `initialize_simps_projections MyStruc` without arguments is not necessary, it has the
+  same effect if you just add `@[simps]` to a declaration.
+* If you do anything to change the default projections, make sure to call either `@[simps]` or
+  `initialize_simps_projections` in the same file as the structure declaration. Otherwise, you might
+  have a file that imports the structure, but not your custom projections.
+
+Some common uses:
+* If you define a new homomorphism-like structure (like `MulHom`) you can just run
+  `initialize_simps_projections` after defining the `CoeFun` instance
+  ```
+    instance {mM : Mul M} {mN : Mul N} : CoeFun (MulHom M N) := ...
+    initialize_simps_projections MulHom (toFun → apply)
+  ```
+  This will generate `foo_apply` lemmas for each declaration `foo`.
+* If you prefer `coe_foo` lemmas that state equalities between functions, use
+  `initialize_simps_projections MulHom (toFun → coe as_prefix)`
+  In this case you have to use `@[simps {fullyApplied := false}]` or equivalently `@[simps asFn]`
+  whenever you call `@[simps]`.
+* You can also initialize to use both, in which case you have to choose which one to use by default,
+  by using either of the following
+  ```
+    initialize_simps_projections MulHom (toFun → apply, toFun → coe, -coe as_prefix)
+    initialize_simps_projections MulHom (toFun → apply, toFun → coe as_prefix, -apply)
+  ```
+  In the first case, you can get both lemmas using `@[simps, simps coe asFn]` and in the second
+  case you can get both lemmas using `@[simps asFn, simps apply]`.
+* If your new homomorphism-like structure extends another structure (without `oldStructureCmd`)
+  (like `relEmbedding`), then you have to specify explicitly that you want to use a coercion
+  as a custom projection. For example
+  ```
+    def relEmbedding.simps.apply (h : r ↪r s) : α → β := h
+    initialize_simps_projections relEmbedding (to_embedding_toFun → apply, -to_embedding)
+  ```
+* If you have an isomorphism-like structure (like `equiv`) you often want to define a custom
+  projection for the inverse:
+  ```
+    def equiv.simps.symm_apply (e : α ≃ β) : β → α := e.symm
+    initialize_simps_projections equiv (toFun → apply, invFun → symm_apply)
+  ```
+-/
 syntax (name := initialize_simps_projections)
   "initialize_simps_projections" "?"? simpsProj : command
+
+@[inheritDoc «initialize_simps_projections»]
 macro "initialize_simps_projections?" rest:simpsProj : command =>
   `(initialize_simps_projections ? $rest)
 
+
+/-- The `@[notation_class]` attribute specifies that this is a notation class,
+  and this notation should be used instead of projections by @[simps].
+  * The first argument `true` for notation classes and `false` for classes applied to the structure,
+    like `CoeSort` and `CoeFun`
+  * The second argument is the name of the projection (by default it is the first projection
+    of the structure)
+-/
 syntax (name := notation_class) "notation_class" : attr
-
-/- question: Is the `simpa` organization of "syntax variants" the official way to do multiple syntaxes?
-i.e. `initialize_simps_projections?` is a macro for `initialize_simps_projections ?` -/
-/- question: Am I doing tracing wrong? (`if trc then logInfo m!"foo"`) -> use LogInfo -/
-/- Question: How to deal with all the different kinds of attributes? Is there a uniform
-  "add attribute A to declaration X" or "check whether X has attribute A"?
-  Can I add an attribute without constructing a complicated `Syntax` object? -/
-/- question: how to deal with unused variable false positives? -/
-/- question: Is there a reason `TransparencyMode.none` is not a thing anymore? (not super important) -/
-/- question: what is a reasonable low number as second argument of `synthInstance`?
-  What does this number measure?-/
-
-
-
 
 end Command
 end Lean.Parser
@@ -157,14 +345,8 @@ used by the `@[simps]` attribute.
 initialize simpsStructure : NameMapExtension (List Name × Array ProjectionData) ←
   registerNameMapExtension (List Name × Array ProjectionData) `simpsStructure
 
-/-- The `@[notation_class]` attribute specifies that this is a notation class,
-  and this notation should be used instead of projections by @[simps].
-  * The first argument `true` for notation classes and `false` for classes applied to the structure,
-    like `CoeSort` and `CoeFun`
-  * The second argument is the name of the projection (by default it is the first projection
-    of the structure)
--/
-initialize notationClassAttr : NameMapExtension Unit ← -- todo: should this be TagAttribute?
+/- todo: should this be TagAttribute? Can we "initialize" TagAttribute with a certain cache? -/
+initialize notationClassAttr : NameMapExtension Unit ←
   registerNameMapAttribute {
     name  := `notation_class
     descr := "An attribute specifying that this is a notation class. Used by @[simps]."
@@ -220,7 +402,7 @@ partial def getCompositeOfProjectionsAux (str : Name) (proj : String) (x : Expr)
     let env ← getEnv
     let projs := (getStructureInfo? env str).get!
     let projInfo := projs.fieldNames.toList.mapIdx
-      fun n p => (fun x => (x, n, p)) <$> proj.getRest ("_" ++ p.getString!)
+      fun n p => (fun x => (x, n, p)) <$> proj.isPrefixOf? ("_" ++ p.getString!)
     if (projInfo.filterMap id).isEmpty then
       throwError "Failed to find constructor {proj.drop 1} in structure {str}."
     let (projRest, index, projName) := (projInfo.filterMap id).getLast!
@@ -306,7 +488,7 @@ def simpsFindCustomProjection (str : Name) (proj : ParsedProjectionData)
       -- (in Lean 3) just stating that the expressions are different is quite unhelpful
       let customProjType ← MetaM.run' (inferType customProj)
       let rawExprType ← MetaM.run' (inferType rawExpr)
-      if (← MetaM.run' (isDefEq customProjType rawExprType)) then throwError
+      if (← MetaM.run' (isDefEq customProjType rawExprType)) then throwError -- todo: indentExpr doesn't work here?
         "Invalid custom projection:\n  {customProj}\n{""
         }Expression is not definitionally equal to {rawExpr}" else throwError
         "Invalid custom projection:\n  {customProj}\n{""
@@ -488,83 +670,6 @@ def elabSimpsRule : Syntax → CommandElabM ProjectionRule
 | `(simpsRule| - $id $[as_prefix%$tk]?) => pure (.inr id.getId, tk.isSome)
 | _                    => Elab.throwUnsupportedSyntax
 
-
-/--
-This command specifies custom names and custom projections for the simp attribute `simpsAttr`.
-* You can specify custom names by writing e.g.
-  `initialize_simps_projections equiv (toFun → apply, invFun → symm_apply)`.
-* See Note [custom simps projection] and the examples below for information how to declare custom
-  projections.
-* If no custom projection is specified, the projection will be `coe_fn`/`⇑` if a `CoeFun`
-  instance has been declared, or the notation of a notation class (like `Mul`) if such an
-  instance is available. If none of these cases apply, the projection itself will be used.
-* You can disable a projection by default by running
-  `initialize_simps_projections equiv (-invFun)`
-  This will ensure that no simp lemmas are generated for this projection,
-  unless this projection is explicitly specified by the user.
-* If you want the projection name added as a prefix in the generated lemma name, you can add the
-  `as_prefix` modifier:
-  `initialize_simps_projections equiv (toFun → coe as_prefix)`
-  Note that this does not influence the parsing of projection names: if you have a declaration
-  `foo` and you want to apply the projections `snd`, `coe` (which is a prefix) and `fst`, in that
-  order you can run `@[simps snd_coe_fst] def foo ...` and this will generate a lemma with the
-  name `coe_foo_snd_fst`.
-  * Run `initialize_simps_projections?` (or `set_option trace.simps.verbose true`)
-  to see the generated projections.
-* You can declare a new name for a projection that is the composite of multiple projections, e.g.
-  ```
-    structure A := (proj : ℕ)
-    structure B extends A
-    initialize_simps_projections? B (toA_proj → proj, -toA)
-  ```
-  You can also make your custom projection that is definitionally equal to a composite of
-  projections. In this case, coercions and notation classes are not automatically recognized, and
-  should be manually given by giving a custom projection.
-  This is especially useful when extending a structure (without `oldStructureCmd`).
-  In the above example, it is desirable to add `-toA`, so that `@[simps]` doesn't automatically
-  apply the `B.toA` projection and then recursively the `A.proj` projection in the lemmas it
-  generates. If you want to get both the `foo_proj` and `foo_toA` simp lemmas, you can use
-  `@[simps, simps toA]`.
-* Running `initialize_simps_projections MyStruc` without arguments is not necessary, it has the
-  same effect if you just add `@[simps]` to a declaration.
-* If you do anything to change the default projections, make sure to call either `@[simps]` or
-  `initialize_simps_projections` in the same file as the structure declaration. Otherwise, you might
-  have a file that imports the structure, but not your custom projections.
-
-Some common uses:
-* If you define a new homomorphism-like structure (like `MulHom`) you can just run
-  `initialize_simps_projections` after defining the `CoeFun` instance
-  ```
-    instance {mM : Mul M} {mN : Mul N} : CoeFun (MulHom M N) := ...
-    initialize_simps_projections MulHom (toFun → apply)
-  ```
-  This will generate `foo_apply` lemmas for each declaration `foo`.
-* If you prefer `coe_foo` lemmas that state equalities between functions, use
-  `initialize_simps_projections MulHom (toFun → coe as_prefix)`
-  In this case you have to use `@[simps {fullyApplied := false}]` or equivalently `@[simps asFn]`
-  whenever you call `@[simps]`.
-* You can also initialize to use both, in which case you have to choose which one to use by default,
-  by using either of the following
-  ```
-    initialize_simps_projections MulHom (toFun → apply, toFun → coe, -coe as_prefix)
-    initialize_simps_projections MulHom (toFun → apply, toFun → coe as_prefix, -apply)
-  ```
-  In the first case, you can get both lemmas using `@[simps, simps coe asFn]` and in the second
-  case you can get both lemmas using `@[simps asFn, simps apply]`.
-* If your new homomorphism-like structure extends another structure (without `oldStructureCmd`)
-  (like `relEmbedding`), then you have to specify explicitly that you want to use a coercion
-  as a custom projection. For example
-  ```
-    def relEmbedding.simps.apply (h : r ↪r s) : α → β := h
-    initialize_simps_projections relEmbedding (to_embedding_toFun → apply, -to_embedding)
-  ```
-* If you have an isomorphism-like structure (like `equiv`) you often want to define a custom
-  projection for the inverse:
-  ```
-    def equiv.simps.symm_apply (e : α ≃ β) : β → α := e.symm
-    initialize_simps_projections equiv (toFun → apply, invFun → symm_apply)
-  ```
--/
 @[commandElab «initialize_simps_projections»] def elabInitializeSimpsProjections : CommandElab
 | `(initialize_simps_projections $[?%$trc]? $id $[($stxs,*)]?) => do
   let stxs := stxs.getD <| .mk #[]
@@ -574,14 +679,15 @@ Some common uses:
 | _ => throwUnsupportedSyntax
 
 structure SimpsCfg where
-  attrs := [`simp]
+  isSimp := true
+  attrs : List Name := [] -- todo
   simpRhs := false
   typeMd := TransparencyMode.instances
   rhsMd := TransparencyMode.reducible -- was `none` in Lean 3
   fullyApplied := true
   notRecursive := [`prod, `pprod]
   trace := false
-  debug := false
+  debug := false -- adds a few checks (not used much)
   addAdditive := @none Name
   deriving Inhabited
 
@@ -657,31 +763,32 @@ def getUnivLevel (t : Expr) : MetaM Level := do
 
 /-- Add a lemma with `nm` stating that `lhs = rhs`. `type` is the type of both `lhs` and `rhs`,
   `args` is the list of local constants occurring, and `univs` is the list of universe variables. -/
-def simpsAddProjection (nm : Name) (type lhs rhs : Expr) (args : Array Expr) (univs : List Name)
-    (cfg : SimpsCfg) : MetaM Unit := do
+def simpsAddProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
+  (univs : List Name) (cfg : SimpsCfg) : MetaM Unit := do
   trace[simps.debug] "[simps] > Planning to add the equality\n        > {lhs} = ({rhs} : {type})"
   let env ← getEnv
-  if (env.find? nm).isSome then -- diverging behavior from Lean 3
-    throwError "simps tried to add lemma {nm} to the environment, but it already exists."
+  if (env.find? declName).isSome then -- diverging behavior from Lean 3
+    throwError "simps tried to add lemma {declName} to the environment, but it already exists."
     -- simplify `rhs` if `cfg.simpRhs` is true
   let lvl ← getUnivLevel type
   let (rhs, prf) ← do
     let defaultPrf := mkAppN (mkConst `Eq.refl [lvl]) #[type, lhs]
     if !cfg.simpRhs then
       pure (rhs, defaultPrf)  else
-      let (rhs2, _) ← dsimp rhs {} -- { failIfUnchanged := false }
+      let (rhs2, _) ← dsimp rhs {} -- todo: create simp context
       if rhs != rhs2 then
-        trace[simps.debug] "[simps] > `dsimp` simplified rhs to\n        > {rhs2}"
-      let (result, _) ← simp rhs2 {} --{ failIfUnchanged := false }
+        trace[simps.debug] "[simps] > `dsimp` simplified rhs to\n        > {rhs2}" else
+        trace[simps.debug] "[simps] > `dsimp` failed to simplify rhs"
+      let (result, _) ← simp rhs2 {} -- todo: create simp context
       if rhs2 != result.expr then
-        trace[simps.debug] "[simps] > `simp` simplified rhs to\n        > {result.expr}"
+        trace[simps.debug] "[simps] > `simp` simplified rhs to\n        > {result.expr}" else
+        trace[simps.debug] "[simps] > `simp` failed to simplify rhs"
       pure (result.expr, result.proof?.getD defaultPrf)
   let eqAp := mkAppN (mkConst `Eq [lvl]) #[type, lhs, rhs]
-  let declName := nm
   let declType ← mkForallFVars args eqAp
   let declValue ← mkLambdaFVars args prf
   let decl := Declaration.thmDecl
-    { name := nm
+    { name := declName
       levelParams := univs
       type := declType
       value := declValue }
@@ -695,11 +802,11 @@ def simpsAddProjection (nm : Name) (type lhs rhs : Expr) (args : Array Expr) (un
   try addDecl decl
   catch ex =>
     throwError "Failed to add projection lemma {declName}. Nested error:\n{ex.toMessageData}"
-  if (← isDefEq lhs rhs) ∧ `simp ∈ cfg.attrs then
-     pure () --set_basic_attribute `_refl_lemma declName true
+  if cfg.isSimp then
+    addSimpTheorem simpExtension declName true false .global <| eval_prio default
   -- cfg.attrs.mapM fun nm => setAttribute nm declName tt -- todo: deal with attributes
   if cfg.addAdditive.isSome then
-    ToAdditive.addToAdditiveAttr nm ⟨false, cfg.trace, cfg.addAdditive.get!, none, true⟩
+    ToAdditive.addToAdditiveAttr declName ⟨false, cfg.trace, cfg.addAdditive.get!, none, true⟩
 
 /-- Update the last component of a name. -/
 def Lean.Name.updateLast (f : String → String) : Name → Name
@@ -729,9 +836,10 @@ partial def simpsAddProjections (env : Environment) (nm : Name) (type lhs rhs : 
   (toApply : List ℕ) : MetaM (Array Name) := do
   -- we don't want to unfold non-reducible definitions (like `set`) to apply more arguments
   trace[simps.debug] "[simps] > Type of the Expression before normalizing: {type}"
-  withTransparency cfg.typeMd <| forallTelescopeReducing type fun typeArgs tgt => do
+  withTransparency cfg.typeMd <| forallTelescopeReducing type fun typeArgs tgt =>
+    withTransparency .default <| do
   trace[simps.debug] "[simps] > Type after removing pi's: {tgt}"
-  let tgt ← whnf tgt
+  let tgt ← whnfD tgt
   trace[simps.debug] "[simps] > Type after reduction: {tgt}"
   let newArgs := args ++ typeArgs
   let lhsAp := lhs.instantiateLambdasOrApps typeArgs
@@ -742,7 +850,7 @@ partial def simpsAddProjections (env : Environment) (nm : Name) (type lhs rhs : 
   let strInfo? := getStructureInfo? env str
   /- Don't recursively continue if `str` is not a structure or if the structure is in
   `notRecursive`. -/
-  if strInfo?.isNone || (todo.isEmpty ∧ str ∈ cfg.notRecursive ∧ !mustBeStr) then
+  if strInfo?.isNone || (todo.isEmpty && str ∈ cfg.notRecursive && !mustBeStr) then
     if mustBeStr then
       throwError "Invalid `simps` attribute. Target {str} is not a structure"
     if !todoNext.isEmpty && str ∉ cfg.notRecursive then
@@ -757,9 +865,11 @@ partial def simpsAddProjections (env : Environment) (nm : Name) (type lhs rhs : 
   let [ctor] ← pure info.ctors | throwError "unreachable"
   trace[simps.debug] "[simps] > {str} is a structure with constructor {ctor}."
   let rhsWhnf ← withTransparency cfg.rhsMd <| whnf rhsAp
+  trace[simps.debug]
+    "[simps] > The right-hand-side {indentExpr rhsAp}\n reduces to {indentExpr rhsWhnf}"
   -- `todoNow` means that we still have to generate the current simp lemma
   let (rhsAp, todoNow) ←
-    if !rhsAp.isConstOf ctor ∧ rhsWhnf.isConstOf ctor then
+    if !rhsAp.getAppFn.isConstOf ctor ∧ rhsWhnf.getAppFn.isConstOf ctor then
       /- If this was a desired projection, we want to apply it before taking the whnf.
       However, if the current field is an eta-expansion (see below), we first want
       to eta-reduce it and only then construct the projection.
@@ -769,7 +879,9 @@ partial def simpsAddProjections (env : Environment) (nm : Name) (type lhs rhs : 
           simpsAddProjection nm tgt lhsAp rhsAp newArgs univs cfg else
           simpsAddProjection nm type lhs rhs args univs cfg
       pure (rhsWhnf, false) else
-    pure (rhsAp, "" ∈ todo && toApply.isEmpty)
+      pure (rhsAp, "" ∈ todo && toApply.isEmpty)
+  trace[simps.debug]
+    "[simps] > Continuing with {indentExpr rhsAp}"
   if !rhsAp.getAppFn.isConstOf ctor then
     -- if I'm about to run into an error, try to set the transparency for `rhsMd` higher.
     if cfg.rhsMd == .reducible && (mustBeStr || !todoNext.isEmpty || !toApply.isEmpty) then
@@ -781,12 +893,12 @@ partial def simpsAddProjections (env : Environment) (nm : Name) (type lhs rhs : 
         { cfg with rhsMd := .default, simpRhs := true } todo toApply else
     if !toApply.isEmpty then
       throwError "Invalid simp lemma {nm}.\nThe given definition is not a constructor {""
-        }application:\n  {rhsAp}"
+        }application:{indentExpr rhsAp}"
     if mustBeStr then
-      throwError "Invalid `simps` attribute. The body is not a constructor application:\n  {rhsAp}"
+      throwError "Invalid `simps` attribute. The body is not a constructor application:{indentExpr rhsAp}"
     if !todoNext.isEmpty then
       throwError "Invalid simp lemma {nm.appendAfter todoNext.head!}.\n{""
-        }The given definition is not a constructor application:\n  {rhsAp}"
+        }The given definition is not a constructor application:{indentExpr rhsAp}"
     if cfg.fullyApplied then
       simpsAddProjection nm tgt lhsAp rhsAp newArgs univs cfg else
       simpsAddProjection nm type lhs rhs args univs cfg
@@ -833,7 +945,7 @@ partial def simpsAddProjections (env : Environment) (nm : Name) (type lhs rhs : 
   | none =>
     let l ← projInfo.mapM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ => do
       let newType ← inferType newRhs
-      let new_todo := todo.filterMap fun x => x.getRest ("_" ++ proj.getString)
+      let new_todo := todo.filterMap fun x => x.isPrefixOf? ("_" ++ proj.getString)
       -- we only continue with this field if it is default or mentioned in todo
       if !(isDefault && todo.isEmpty) && new_todo.isEmpty then pure #[] else
       let newLhs := projExpr.instantiateLambdasOrApps #[lhsAp]
@@ -865,119 +977,8 @@ def simpsTac (nm : Name) (cfg : SimpsCfg := {}) (todo : List String := []) (trc 
       logInfo m!"[simps] > @[toAdditive] will be added to all generated lemmas."
     pure { cfg with addAdditive := additiveName }
   MetaM.run' <|
-    simpsAddProjections env nm d.type lhs (d.value?.getD default) #[] d.levelParams true cfg todo []
+    simpsAddProjections env nm d.type lhs (d.value?.getD default) #[] d.levelParams (mustBeStr := true) cfg todo []
 
--- /-- The parser for the `@[simps]` attribute. -/
--- def simpsParser : parser (Bool × List String × SimpsCfg) := do
---   -- note: we don't check whether the user has written a nonsense namespace in an argument.
---         Prod.mk <$>
---         isSome <$> (tk "?")? <*>
---       (Prod.mk <$> many (name.last <$> ident) <*> do
---         let some env ← parser.pexpr? | return {  }
---         evalPexpr SimpsCfg e)
-
-
-/-- The `@[simps]` attribute automatically derives lemmas specifying the projections of this
-declaration.
-
-Example:
-```lean
-@[simps] def foo : ℕ × ℤ := (1, 2)
-```
-derives two `simp` lemmas:
-```lean
-@[simp] lemma foo_fst : foo.fst = 1
-@[simp] lemma foo_snd : foo.snd = 2
-```
-
-* It does not derive `simp` lemmas for the prop-valued projections.
-* It will automatically reduce newly created beta-redexes, but will not unfold any definitions.
-* If the structure has a coercion to either sorts or functions, and this is defined to be one
-  of the projections, then this coercion will be used instead of the projection.
-* If the structure is a class that has an instance to a notation class, like `Mul`, then this
-  notation is used instead of the corresponding projection.
-* You can specify custom projections, by giving a declaration with name
-  `{StructureName}.simps.{projectionName}`. See Note [custom simps projection].
-
-  Example:
-  ```lean
-  def equiv.simps.invFun (e : α ≃ β) : β → α := e.symm
-  @[simps] def equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
-  ⟨e₂ ∘ e₁, e₁.symm ∘ e₂.symm⟩
-  ```
-  generates
-  ```
-  @[simp] lemma equiv.trans_toFun : ∀ {α β γ} (e₁ e₂) (a : α), ⇑(e₁.trans e₂) a = (⇑e₂ ∘ ⇑e₁) a
-  @[simp] lemma equiv.trans_invFun : ∀ {α β γ} (e₁ e₂) (a : γ),
-    ⇑((e₁.trans e₂).symm) a = (⇑(e₁.symm) ∘ ⇑(e₂.symm)) a
-  ```
-
-* You can specify custom projection names, by specifying the new projection names using
-  `initialize_simps_projections`.
-  Example: `initialize_simps_projections equiv (toFun → apply, invFun → symm_apply)`.
-  See `elabInitializeSimpsProjections` for more information.
-
-* If one of the fields itself is a structure, this command will recursively create
-  `simp` lemmas for all fields in that structure.
-  * Exception: by default it will not recursively create `simp` lemmas for fields in the structures
-    `prod` and `pprod`. You can give explicit projection names or change the value of
-    `simpsCfg.notRecursive` to override this behavior.
-
-  Example:
-  ```lean
-  structure MyProd (α β : Type*) := (fst : α) (snd : β)
-  @[simps] def foo : prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
-  ```
-  generates
-  ```lean
-  @[simp] lemma foo_fst : foo.fst = (1, 2)
-  @[simp] lemma foo_snd_fst : foo.snd.fst = 3
-  @[simp] lemma foo_snd_snd : foo.snd.snd = 4
-  ```
-
-* You can use `@[simps proj1 proj2 ...]` to only generate the projection lemmas for the specified
-  projections.
-* Recursive projection names can be specified using `proj1_proj2_proj3`.
-  This will create a lemma of the form `foo.proj1.proj2.proj3 = ...`.
-
-  Example:
-  ```lean
-  structure MyProd (α β : Type*) := (fst : α) (snd : β)
-  @[simps fst fst_fst snd] def foo : prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
-  ```
-  generates
-  ```lean
-  @[simp] lemma foo_fst : foo.fst = (1, 2)
-  @[simp] lemma foo_fst_fst : foo.fst.fst = 1
-  @[simp] lemma foo_snd : foo.snd = {fst := 3, snd := 4}
-  ```
-* If one of the values is an eta-expanded structure, we will eta-reduce this structure.
-
-  Example:
-  ```lean
-  structure EquivPlusData (α β) extends α ≃ β := (data : bool)
-  @[simps] def bar {α} : EquivPlusData α α := { data := true, ..equiv.refl α }
-  ```
-  generates the following:
-  ```lean
-  @[simp] lemma bar_toEquiv : ∀ {α : Sort*}, bar.toEquiv = equiv.refl α
-  @[simp] lemma bar_data : ∀ {α : Sort*}, bar.data = tt
-  ```
-  This is true, even though Lean inserts an eta-expanded version of `equiv.refl α` in the
-  definition of `bar`.
-* For configuration options, see the doc string of `simpsCfg`.
-* The precise syntax is `('simps' ident* e)`, where `e` is an Expression of type `simpsCfg`.
-* `@[simps]` reduces let-expressions where necessary.
-* When option `trace.simps.verbose` is true, `simps` will print the projections it finds and the
-  lemmas it generates. The same can be achieved by using `@[simps?]`, except that in this case it
-  will not print projection information.
-* Use `@[toAdditive, simps]` to apply both `toAdditive` and `simps` to a definition, making sure
-  that `simps` comes after `toAdditive`. This will also generate the additive versions of all
-  `simp` lemmas.
--/
-/- If one of the fields is a partially applied constructor, we will eta-expand it
-  (this likely never happens, so is not included in the official doc). -/
--- @[user_attribute]
 initialize simpsAttr : ParametricAttribute (Array Name) ←
   registerParametricAttribute {
     name := `simps
@@ -986,7 +987,7 @@ initialize simpsAttr : ParametricAttribute (Array Name) ←
     | nm, `(attr|simps $[?%$trc]? $[(config := $c)]? $[$ids]*) => do
       let ids := ids.map (·.getId.eraseMacroScopes.getString)
       let cfg ← match c with
-        | none => pure default
+        | none => pure {}
         | some c => MetaM.run' <| TermElabM.run' <| elabSimpsConfig c
       simpsTac nm cfg ids.toList trc.isSome
     | _, stx => throwError "unexpected simps syntax {stx}"
