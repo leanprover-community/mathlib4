@@ -462,6 +462,8 @@ class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 @[to_additive AddCommMonoid]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
 
+attribute [to_additive AddCommMonoid.toAddCommSemigroup] CommMonoid.toCommSemigroup
+
 section LeftCancelMonoid
 
 /-- An additive monoid in which addition is left-cancellative.
@@ -472,6 +474,8 @@ class AddLeftCancelMonoid (M : Type u) extends AddLeftCancelSemigroup M, AddMono
 /-- A monoid in which multiplication is left-cancellative. -/
 @[to_additive AddLeftCancelMonoid]
 class LeftCancelMonoid (M : Type u) extends LeftCancelSemigroup M, Monoid M
+
+attribute [to_additive AddLeftCancelMonoid.toAddMonoid] LeftCancelMonoid.toMonoid
 
 end LeftCancelMonoid
 
@@ -486,6 +490,8 @@ class AddRightCancelMonoid (M : Type u) extends AddRightCancelSemigroup M, AddMo
 @[to_additive AddRightCancelMonoid]
 class RightCancelMonoid (M : Type u) extends RightCancelSemigroup M, Monoid M
 
+attribute [to_additive AddRightCancelMonoid.toAddMonoid] RightCancelMonoid.toMonoid
+
 end RightCancelMonoid
 
 section CancelMonoid
@@ -499,12 +505,16 @@ class AddCancelMonoid (M : Type u) extends AddLeftCancelMonoid M, AddRightCancel
 @[to_additive AddCancelMonoid]
 class CancelMonoid (M : Type u) extends LeftCancelMonoid M, RightCancelMonoid M
 
+attribute [to_additive AddCancelMonoid.toAddRightCancelMonoid] CancelMonoid.toRightCancelMonoid
+
 /-- Commutative version of `add_cancel_monoid`. -/
 class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMonoid M
 
 /-- Commutative version of `cancel_monoid`. -/
 @[to_additive AddCancelCommMonoid]
 class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
+
+attribute [to_additive AddCancelCommMonoid.toAddCommMonoid] CancelCommMonoid.toCommMonoid
 
 -- see Note [lower instance priority]
 @[to_additive]
@@ -751,6 +761,8 @@ class DivisionMonoid (G : Type u) extends DivInvMonoid G, HasInvolutiveInv G whe
   involutivity of inversion. -/
   inv_eq_of_mul (a b : G) : a * b = 1 → a⁻¹ = b
 
+attribute [to_additive SubtractionMonoid.toHasInvolutiveNeg] DivisionMonoid.toHasInvolutiveInv
+
 section DivisionMonoid
 
 variable [DivisionMonoid G] {a b : G}
@@ -773,6 +785,8 @@ class SubtractionCommMonoid (G : Type u) extends SubtractionMonoid G, AddCommMon
 This is the immediate common ancestor of `comm_group` and `comm_group_with_zero`. -/
 @[to_additive SubtractionCommMonoid]
 class DivisionCommMonoid (G : Type u) extends DivisionMonoid G, CommMonoid G
+
+attribute [to_additive SubtractionCommMonoid.toAddCommMonoid] DivisionCommMonoid.toCommMonoid
 
 /-- A `group` is a `monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
 
@@ -848,13 +862,14 @@ theorem Group.toDivInvMonoid_injective {G : Type _} : Function.injective (@Group
   rintro ⟨⟩ ⟨⟩ ⟨⟩
   rfl
 
-/-- A commutative group is a group with commutative `(*)`. -/
-class CommGroup (G : Type u) extends Group G, CommMonoid G
-
 /-- An additive commutative group is an additive group with commutative `(+)`. -/
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 
-attribute [to_additive AddCommGroup] CommGroup
+/-- A commutative group is a group with commutative `(*)`. -/
+@[to_additive AddCommGroup]
+class CommGroup (G : Type u) extends Group G, CommMonoid G
+
+attribute [to_additive AddCommGroup.toAddCommMonoid] CommGroup.toCommMonoid
 
 attribute [instance] AddCommGroup.toAddCommMonoid
 

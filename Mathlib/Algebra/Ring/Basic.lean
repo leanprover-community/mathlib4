@@ -1,6 +1,6 @@
+import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Tactic.Spread
-import Mathlib.Util.WhatsNew
 
 /-
 # Semirings and rings
