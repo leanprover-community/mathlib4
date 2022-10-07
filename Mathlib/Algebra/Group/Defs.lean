@@ -526,6 +526,7 @@ end CommMonoid
 ### Div inv monoids
 -/
 
+@[to_additive SubNegMonoid]
 class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G :=
 (div := λ a b => a * b⁻¹)
 (div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹)
@@ -535,6 +536,10 @@ class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G :=
   ∀ (n : ℕ) (a : G), gpow (Int.ofNat n.succ) a = a * gpow (Int.ofNat n) a)
 (gpow_neg' :
   ∀ (n : ℕ) (a : G), gpow (Int.negSucc n) a = (gpow (Int.ofNat n.succ) a) ⁻¹)
+
+export DivInvMonoid (div_eq_mul_inv)
+
+alias div_eq_mul_inv ← division_def
 
 /-
 
@@ -569,11 +574,21 @@ inv_eq_of_mul_eq_one (mul_left_inv a)
 @[simp, to_additive] theorem mul_right_inv (a : G) : a * a⁻¹ = 1 := by
   rw [←mul_left_inv (a⁻¹), inv_inv]
 
--- synonym
-theorem mul_inv_self (a : G) : a * a⁻¹ = 1 := mul_right_inv a
+@[simp, to_additive]
+theorem mul_inv_cancel_left (a b : G) : a * (a⁻¹ * b) = b := by
+  rw [← mul_assoc, mul_right_inv, one_mul]
 
-@[simp, to_additive] theorem mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a :=
-by rw [mul_assoc, mul_right_inv, mul_one]
+@[simp, to_additive]
+theorem mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a := by
+  rw [mul_assoc, mul_right_inv, mul_one]
+
+@[simp, to_additive]
+theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a := by
+  rw [mul_assoc, mul_left_inv, mul_one]
+
+-- synonym
+@[to_additive]
+theorem mul_inv_self (a : G) : a * a⁻¹ = 1 := mul_right_inv a
 
 end Group_lemmas
 
