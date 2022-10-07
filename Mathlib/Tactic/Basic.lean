@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Lean
 import Std
+import Mathlib.Tactic.Cases
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
