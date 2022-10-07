@@ -120,9 +120,11 @@ section flip
 
 variable {M N μ r}
 
-theorem Covariant.flip (h : Covariant M N μ r) : Covariant M N μ (flip r) := fun a _ _ hbc => h a hbc
+theorem Covariant.flip (h : Covariant M N μ r) : Covariant M N μ (flip r) :=
+  fun a _ _ hbc => h a hbc
 
-theorem Contravariant.flip (h : Contravariant M N μ r) : Contravariant M N μ (flip r) := fun a _ _ hbc => h a hbc
+theorem Contravariant.flip (h : Contravariant M N μ r) : Contravariant M N μ (flip r) :=
+  fun a _ _ hbc => h a hbc
 
 end flip
 
@@ -134,7 +136,8 @@ theorem act_rel_act_of_rel (m : M) {a b : N} (ab : r a b) : r (μ m a) (μ m b) 
   CovariantClass.elim _ ab
 
 @[to_additive]
-theorem Group.covariant_iff_contravariant [Group N] : Covariant N N (· * ·) r ↔ Contravariant N N (· * ·) r := by
+theorem Group.covariant_iff_contravariant [Group N] :
+    Covariant N N (· * ·) r ↔ Contravariant N N (· * ·) r := by
   constructor
   · intro h a b c bc
     rw [← inv_mul_cancel_left a b, ← inv_mul_cancel_left a c]
