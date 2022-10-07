@@ -12,8 +12,9 @@ attribute [to_additive] Int
 attribute [to_additive Add] Mul
 attribute [to_additive Sub] Div
 attribute [to_additive HAdd] HMul
-attribute [to_additive instHAdd]  instHMul
+attribute [to_additive instHAdd] instHMul
 attribute [to_additive HSub] HDiv
+attribute [to_additive instHSub] instHDiv
 
 attribute [to_additive_reorder 1] HPow
 attribute [to_additive_reorder 1 4] HPow.hPow
@@ -116,54 +117,6 @@ class AddCommSemigroup (A : Type u) extends AddSemigroup A where
 
 theorem add_comm {A : Type u} [AddCommSemigroup A] (a b : A) : a + b = b + a :=
 AddCommSemigroup.add_comm a b
-/-
-
-### Cancellative semigroups
-
--/
-
-class IsAddLeftCancel (A : Type u) [Add A] where
-  add_left_cancel (a b c : A) : a + b = a + c → b = c
-
-class IsAddRightCancel (A : Type u) [Add A] where
-  add_right_cancel (a b c : A) : b + a = c + a → b = c
-
-section AddLeftCancel_lemmas
-
-variable {A : Type u} [AddSemigroup A] [IsAddLeftCancel A] {a b c : A}
-
-theorem add_left_cancel : a + b = a + c → b = c :=
-IsAddLeftCancel.add_left_cancel a b c
-
-theorem add_left_cancel_iff : a + b = a + c ↔ b = c :=
-⟨add_left_cancel, congrArg _⟩
-
--- no `function.injective`?
---theorem add_right_injective (a : G) : function.injective (c * .) :=
---λ a b => add_left_cancel
-
-@[simp] theorem add_right_inj (a : A) {b c : A} : a + b = a + c ↔ b = c :=
-⟨add_left_cancel, congrArg _⟩
-
---theorem add_ne_add_right (a : A) {b c : A} : a + b ≠ a + c ↔ b ≠ c :=
---(add_right_injective a).ne_iff
-
-end AddLeftCancel_lemmas
-
-section AddRightCancel_lemmas
-
-variable {A : Type u} [AddSemigroup A] [IsAddRightCancel A] {a b c : A}
-
-theorem add_right_cancel : b + a = c + a → b = c :=
-IsAddRightCancel.add_right_cancel a b c
-
-theorem add_right_cancel_iff : b + a = c + a ↔ b = c :=
-⟨add_right_cancel, λ h => h ▸ rfl⟩
-
-@[simp] theorem add_left_inj (a : A) {b c : A} : b + a = c + a ↔ b = c :=
-⟨add_right_cancel, λ h => h ▸ rfl⟩
-
-end AddRightCancel_lemmas
 
 /-
 
@@ -300,17 +253,6 @@ theorem add_neg_self (a : A) : a + -a = 0 := add_right_neg a
 @[simp] theorem add_neg_cancel_right (a b : A) : a + b + -b = a :=
 by rw [add_assoc, add_right_neg, add_zero]
 
-instance (A : Type u) [AddGroup A] : IsAddRightCancel A where
-  add_right_cancel a b c h := by
-  rw [← add_neg_cancel_right b a, h, add_neg_cancel_right]
-
-instance (A : Type u) [AddGroup A] : IsAddLeftCancel A where
-  add_left_cancel a b c h := by
-  rw [← neg_add_cancel_left a b, h, neg_add_cancel_left]
-
-lemma eq_of_sub_eq_zero' (h : a - b = 0) : a = b :=
-  add_right_cancel <| show a + (-b) = b + (-b) by rw [← sub_eq_add_neg, h, add_neg_self]
-
 end AddGroup_lemmas
 
 class AddCommGroup (A : Type u) extends AddGroup A, AddCommMonoid A
@@ -382,58 +324,6 @@ by rw [mul_assoc, mul_comm b c, mul_assoc]
 class MulOneClass (M : Type u) extends One M, Mul M where
   mul_one : ∀ (a : M), a * 1 = a
   one_mul : ∀ (a : M), 1 * a = a
-
-/-
-
-### Cancellative semigroups
-
--/
-
-class IsMulLeftCancel (G : Type u) [Mul G] where
-  mul_left_cancel (a b c : G) : a * b = a * c → b = c
-
-class IsMulRightCancel (G : Type u) [Mul G] where
-  mul_right_cancel (a b c : G) : b * a = c * a → b = c
-section MulLeftCancel
-
-variable {G : Type u} [Semigroup G] [IsMulLeftCancel G] {a b c : G}
-
-@[to_additive]
-theorem mul_left_cancel : a * b = a * c → b = c :=
-  IsMulLeftCancel.mul_left_cancel a b c
-
-@[to_additive]
-theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
-⟨mul_left_cancel, congrArg _⟩
-
--- no `function.injective`?
---theorem mul_right_injective (a : G) : function.injective (c * .) :=
---λ a b => mul_left_cancel
-
-@[simp, to_additive] theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
-⟨mul_left_cancel, congrArg _⟩
-
---theorem mul_ne_mul_right (a : G) {b c : G} : a * b ≠ a * c ↔ b ≠ c :=
---(mul_right_injective a).ne_iff
-
-end MulLeftCancel
-
-section MulRightCancel
-
-variable {G : Type u} [Semigroup G] [IsMulRightCancel G] {a b c : G}
-
-@[to_additive]
-theorem mul_right_cancel : b * a = c * a → b = c :=
-IsMulRightCancel.mul_right_cancel a b c
-
-@[to_additive]
-theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
-⟨mul_right_cancel, λ h => h ▸ rfl⟩
-
-@[simp, to_additive] theorem mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
-⟨mul_right_cancel, λ h => h ▸ rfl⟩
-
-end MulRightCancel
 
 /-
 
@@ -600,3 +490,80 @@ class CommGroup (G : Type u) extends Group G where
 
 instance (G : Type u) [CommGroup G] : CommMonoid G where
   __ := ‹CommGroup G›
+
+
+/-- A `LeftCancelSemigroup` is a semigroup such that `a * b = a * c` implies `b = c`. -/
+@[ext]
+class LeftCancelSemigroup (G : Type u) extends Semigroup G where
+  mul_left_cancel : ∀ a b c : G, a * b = a * c → b = c
+
+/-- An `AddLeftCancelSemigroup` is an additive semigroup such that
+`a + b = a + c` implies `b = c`. -/
+@[ext]
+class AddLeftCancelSemigroup (G : Type u) extends AddSemigroup G where
+  add_left_cancel : ∀ a b c : G, a + b = a + c → b = c
+
+attribute [to_additive AddLeftCancelSemigroup] LeftCancelSemigroup
+
+section LeftCancelSemigroup
+
+variable [LeftCancelSemigroup G] {a b c : G}
+
+@[to_additive]
+theorem mul_left_cancel : a * b = a * c → b = c :=
+  LeftCancelSemigroup.mul_left_cancel a b c
+
+@[to_additive]
+theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
+  ⟨mul_left_cancel, congr_arg _⟩
+
+@[to_additive]
+theorem mul_right_injective (a : G) : Function.injective ((· * ·) a) := fun _ _ => mul_left_cancel
+
+@[simp, to_additive]
+theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
+  (mul_right_injective a).eq_iff
+
+@[to_additive]
+theorem mul_ne_mul_right (a : G) {b c : G} : a * b ≠ a * c ↔ b ≠ c :=
+  (mul_right_injective a).ne_iff
+
+end LeftCancelSemigroup
+
+/-- A `right_cancel_semigroup` is a semigroup such that `a * b = c * b` implies `a = c`. -/
+@[ext]
+class RightCancelSemigroup (G : Type u) extends Semigroup G where
+  mul_right_cancel : ∀ a b c : G, a * b = c * b → a = c
+
+/-- An `add_right_cancel_semigroup` is an additive semigroup such that
+`a + b = c + b` implies `a = c`. -/
+@[ext]
+class AddRightCancelSemigroup (G : Type u) extends AddSemigroup G where
+  add_right_cancel : ∀ a b c : G, a + b = c + b → a = c
+
+attribute [to_additive AddRightCancelSemigroup] RightCancelSemigroup
+
+section RightCancelSemigroup
+
+variable [RightCancelSemigroup G] {a b c : G}
+
+@[to_additive]
+theorem mul_right_cancel : a * b = c * b → a = c :=
+  RightCancelSemigroup.mul_right_cancel a b c
+
+@[to_additive]
+theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
+  ⟨mul_right_cancel, congr_arg (· * a)⟩
+
+@[to_additive]
+theorem mul_left_injective (a : G) : Function.injective (· * a) := fun _ _ => mul_right_cancel
+
+@[simp, to_additive]
+theorem mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
+  (mul_left_injective a).eq_iff
+
+@[to_additive]
+theorem mul_ne_mul_left (a : G) {b c : G} : b * a ≠ c * a ↔ b ≠ c :=
+  (mul_left_injective a).ne_iff
+
+end RightCancelSemigroup

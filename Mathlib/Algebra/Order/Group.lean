@@ -43,8 +43,7 @@ section Right
 
 variable [CovariantClass α α (swap (· * ·)) (· < ·)] {a b c d : α}
 
--- FIXME: restore @[to_additive sub_pos]
-@[simp]
+@[simp, to_additive sub_pos]
 theorem one_lt_div' : 1 < a / b ↔ b < a := by
   rw [← mul_lt_mul_iff_right b, one_mul, div_eq_mul_inv, inv_mul_cancel_right]
 

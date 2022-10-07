@@ -51,10 +51,34 @@ class CommSemiring (R : Type u) extends Semiring R, CommMonoid R where
 
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 
-theorem neg_mul_eq_neg_mul {R} [Ring R] (a b : R) : -(a * b) = (-a) * b :=
-  Eq.symm <| eq_of_sub_eq_zero' <| by
-    rw [sub_eq_add_neg, neg_neg (a * b) /- TODO: why is arg necessary? -/]
-    rw [← add_mul, neg_add_self a /- TODO: why is arg necessary? -/, zero_mul]
+section Ring
+
+variable [Ring R]
+
+@[simp]
+theorem neg_mul (a b : R) : -a * b = -(a * b) :=
+  eq_neg_of_add_eq_zero_left <| by rw [← right_distrib, add_left_neg, zero_mul]
+
+@[simp]
+theorem mul_neg (a b : R) : a * -b = -(a * b) :=
+  eq_neg_of_add_eq_zero_left <| by rw [← left_distrib, add_left_neg, mul_zero]
+
+theorem neg_mul_neg (a b : R) : -a * -b = a * b := by simp
+
+theorem neg_mul_eq_neg_mulₓ (a b : R) : -(a * b) = -a * b :=
+  (neg_mul _ _).symm
+
+theorem neg_mul_eq_mul_neg (a b : R) : -(a * b) = a * -b :=
+  (mul_neg _ _).symm
+
+theorem neg_mul_comm (a b : R) : -a * b = a * -b := by simp
+
+end Ring
+
+-- theorem neg_mul_eq_neg_mul {R} [Ring R] (a b : R) : -(a * b) = (-a) * b :=
+--   Eq.symm <| eq_of_sub_eq_zero' <| by
+--     rw [sub_eq_add_neg, neg_neg (a * b) /- TODO: why is arg necessary? -/]
+--     rw [← add_mul, neg_add_self a /- TODO: why is arg necessary? -/, zero_mul]
 
 class CommRing (R : Type u) extends Ring R, CommSemiring R
 
