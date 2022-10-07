@@ -1,4 +1,4 @@
-import Mathlib.Data.Nat.Cast.Defs
+-- import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Tactic.Spread
 
@@ -36,13 +36,11 @@ section Semiring
 
 @[simp]
 lemma Nat.cast_mul [Semiring R] {m n : ℕ} : (m * n).cast = (m.cast * n.cast : R) := by
-  sorry
-  -- induction n generalizing m <;> simp_all [mul_succ, mul_add]
+  induction n generalizing m <;> simp_all [mul_succ, mul_add]
 
 @[simp]
 lemma Nat.cast_pow [Semiring R] {m n : ℕ} : (m ^ n).cast = (m.cast ^ n : R) := by
-  sorry
-  -- induction n generalizing m <;> simp_all [Nat.pow_succ', _root_.pow_succ', pow_zero]
+  induction n generalizing m <;> simp_all [Nat.pow_succ', _root_.pow_succ', pow_zero]
 
 end Semiring
 
@@ -115,17 +113,17 @@ instance : CommRing ℤ where
     show ofNat (Nat.succ n) * x = x + ofNat n * x
     rw [Int.ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
   sub_eq_add_neg a b := Int.sub_eq_add_neg
-  gsmul := HMul.hMul
-  gsmul_zero' := Int.zero_mul
-  gsmul_succ' n x := by rw [Int.ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
-  gsmul_neg' n x := by
-    cases x with
-    | ofNat m =>
-      rw [Int.negSucc_ofNat_ofNat, Int.ofNat_mul_ofNat]
-      exact rfl
-    | negSucc m =>
-      rw [Int.mul_negSucc_ofNat_negSucc_ofNat, Int.ofNat_mul_negSucc_ofNat]
-      exact rfl
+  -- gsmul := HMul.hMul
+  -- gsmul_zero' := Int.zero_mul
+  -- gsmul_succ' n x := by rw [Int.ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
+  -- gsmul_neg' n x := by
+  --   cases x with
+  --   | ofNat m =>
+  --     rw [Int.negSucc_ofNat_ofNat, Int.ofNat_mul_ofNat]
+  --     exact rfl
+  --   | negSucc m =>
+  --     rw [Int.mul_negSucc_ofNat_negSucc_ofNat, Int.ofNat_mul_negSucc_ofNat]
+  --     exact rfl
   natCast := (·)
   natCast_zero := rfl
   natCast_succ _ := rfl
@@ -133,21 +131,21 @@ instance : CommRing ℤ where
   intCast_ofNat _ := rfl
   intCast_negSucc _ := rfl
 
--- @[simp, norm_cast] lemma cast_id : Int.cast n = n := rfl
+@[simp, norm_cast] lemma cast_id : Int.cast n = n := rfl
 
--- @[simp] lemma ofNat_eq_cast : Int.ofNat n = n := rfl
+@[simp] lemma ofNat_eq_cast : Int.ofNat n = n := rfl
 
--- @[simp, norm_cast]
--- lemma cast_Nat_cast [AddGroupWithOne R] : (Int.cast (Nat.cast n) : R) = Nat.cast n :=
---   Int.cast_ofNat
+@[simp, norm_cast]
+lemma cast_Nat_cast [AddGroupWithOne R] : (Int.cast (Nat.cast n) : R) = Nat.cast n :=
+  Int.cast_ofNat
 
--- @[simp, norm_cast]
--- lemma cast_eq_cast_iff_Nat (m n : ℕ) : (m : ℤ) = (n : ℤ) ↔ m = n := ofNat_inj
+@[simp, norm_cast]
+lemma cast_eq_cast_iff_Nat (m n : ℕ) : (m : ℤ) = (n : ℤ) ↔ m = n := ofNat_inj
 
--- @[simp, norm_cast]
--- lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
+@[simp, norm_cast]
+lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
 
--- @[norm_cast]
--- protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
+@[norm_cast]
+protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
 end Int
