@@ -1,5 +1,8 @@
 import Mathlib.Algebra.Group.Defs
 
+lemma eq_of_sub_eq_zero' {R : Type _} [AddGroup R] {a b : R} (h : a - b = 0) : a = b :=
+  add_right_cancel <| show a + (-b) = b + (-b) by rw [← sub_eq_add_neg, h, add_neg_self]
+
 /-- Typeclass for expressing that a type `M₀` with multiplication and a zero satisfies
 `0 * a = 0` and `a * 0 = 0` for all `a : M₀`. -/
 class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
