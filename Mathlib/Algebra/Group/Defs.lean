@@ -401,13 +401,15 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 -- TODO I wouldn't have thought this is necessary. Is is a bug in `to_additive`?
 attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
 
-instance Monoid.hasPow {M : Type _} [Monoid M] : Pow M ℕ :=
+instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
   ⟨fun x n => Monoid.npow n x⟩
 
-instance AddMonoid.hasSmulNat {M : Type _} [AddMonoid M] : HasSmul ℕ M :=
+@[defaultInstance high] instance Monoid.HPow {M : Type _} [Monoid M] : HPow M ℕ M := ⟨λ a n => Monoid.npow n a⟩
+
+instance AddMonoid.HasSmul {M : Type _} [AddMonoid M] : HasSmul ℕ M :=
   ⟨AddMonoid.nsmul⟩
 
-attribute [to_additive AddMonoid.hasSmulNat] Monoid.hasPow
+attribute [to_additive AddMonoid.hasSmulNat] Monoid.Pow
 
 section
 -- FIXME The lemmas in this section should be done by `to_additive` below, but it fails.
