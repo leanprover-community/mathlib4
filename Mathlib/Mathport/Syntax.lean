@@ -294,9 +294,6 @@ syntax termList := " [" term,* "]"
 
 /- S -/ syntax (name := prettyCases) "pretty_cases" : tactic
 
-/- M -/ syntax (name := contrapose) "contrapose" (ppSpace ident (" with " ident)?)? : tactic
-/- M -/ syntax (name := contrapose!) "contrapose!" (ppSpace ident (" with " ident)?)? : tactic
-
 /- M -/ syntax (name := assocRw) "assoc_rw " rwRuleSeq (ppSpace location)? : tactic
 
 /- N -/ syntax (name := dsimpResult) "dsimp_result "
