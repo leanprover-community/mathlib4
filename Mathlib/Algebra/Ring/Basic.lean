@@ -1,5 +1,4 @@
 import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.Group.Basic
 import Mathlib.Tactic.Spread
 import Mathlib.Util.WhatsNew
 
