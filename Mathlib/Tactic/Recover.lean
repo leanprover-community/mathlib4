@@ -7,10 +7,10 @@ import Lean
 import Std.Tactic.RCases
 import Mathlib.Tactic.Cache
 
-open Std (HashSet)
+open Lean (HashSet)
 open Lean Meta Elab Tactic
 
-namespace Std.HashSet
+namespace Lean.HashSet
 
 /-- Insert many elements into a HashSet. -/
 def insertMany [ForIn Id ρ α] [BEq α] [Hashable α] (s : HashSet α) (as : ρ) :
@@ -20,7 +20,7 @@ def insertMany [ForIn Id ρ α] [BEq α] [Hashable α] (s : HashSet α) (as : ρ
     s := s.insert a
   return s
 
-end Std.HashSet
+end Lean.HashSet
 
 
 namespace Mathlib.Tactic

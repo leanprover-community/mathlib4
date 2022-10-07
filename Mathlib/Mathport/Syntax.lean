@@ -12,13 +12,13 @@ import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.ApplyRules
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Core
-import Mathlib.Tactic.DSimp
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.InferParam
@@ -30,9 +30,9 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Replace
+import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Set
-import Mathlib.Tactic.ShowTerm
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Trace
@@ -121,7 +121,7 @@ Only to be used for mathport.
 macro ak:Term.attrKind "notation3"
     prec:(precedence)? name:(namedName)? prio:(namedPrio)?
     lits:(notation3Item)+ " => " val:term : command => do
-  let mut boundNames : Std.HashMap Name Syntax := {}
+  let mut boundNames : Lean.HashMap Name Syntax := {}
   let mut macroArgs := #[]
   for lit in lits do
     match (lit : TSyntax ``notation3Item) with
@@ -182,16 +182,9 @@ namespace Tactic
 /- S -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
 /- S -/ syntax (name := mapply) "mapply " term : tactic
 /- S -/ syntax (name := withCases) "with_cases " tacticSeq : tactic
-syntax caseArg' := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
-/- N -/ syntax (name := case'')
-  "case'' " (("[" caseArg',* "]") <|> caseArg') " => " tacticSeq : tactic
 /- S -/ syntax "destruct " term : tactic
-/- M -/ syntax (name := casesM) "casesm" "*"? ppSpace term,* : tactic
-/- M -/ syntax (name := casesType) "cases_type" "*"? ppSpace ident* : tactic
-/- M -/ syntax (name := casesType!) "cases_type!" "*"? ppSpace ident* : tactic
 /- N -/ syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
 
-/- M -/ syntax (name := constructorM) "constructorm" "*"? ppSpace term,* : tactic
 /- N -/ syntax (name := simpIntro) "simp_intro" (config)?
   (ppSpace colGt (ident <|> "_"))* (&" only")? (simpArgs)? : tactic
 /- E -/ syntax (name := symm) "symm" : tactic
@@ -206,13 +199,6 @@ syntax caseArg' := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
 /- S -/ syntax (name := compVal) "comp_val" : tactic
 /- S -/ syntax (name := async) "async " tacticSeq : tactic
 
-namespace Conv
-
-open Tactic (simpArg rwRuleSeq)
-/- N -/ syntax (name := «for») "for " term:max " [" num,* "]" " => " tacticSeq : conv
-
-end Conv
-
 /- E -/ syntax (name := apply') "apply' " term : tactic
 /- E -/ syntax (name := fapply') "fapply' " term : tactic
 /- E -/ syntax (name := eapply') "eapply' " term : tactic
@@ -222,7 +208,6 @@ end Conv
 /- E -/ syntax (name := symm') "symm'" (ppSpace location)? : tactic
 /- E -/ syntax (name := trans') "trans'" (ppSpace term)? : tactic
 
-/- E -/ syntax (name := fsplit) "fsplit" : tactic
 /- M -/ syntax (name := injectionsAndClear) "injections_and_clear" : tactic
 
 /- E -/ syntax (name := tryFor) "try_for " term:max tacticSeq : tactic
@@ -235,12 +220,12 @@ end Conv
 /- M -/ syntax (name := clean) "clean " term : tactic
 /- B -/ syntax (name := refineStruct) "refine_struct " term : tactic
 /- M -/ syntax (name := matchHyp) "match_hyp " ("(" &"m" " := " term ") ")? ident " : " term : tactic
-/- E -/ syntax (name := guardTags) "guard_tags" (ppSpace ident)* : tactic
-/- E -/ syntax (name := guardProofTerm) "guard_proof_term " tactic:51 " => " term : tactic
-/- E -/ syntax (name := failIfSuccess?) "fail_if_success? " str ppSpace tacticSeq : tactic
+/- S -/ syntax (name := guardTags) "guard_tags" (ppSpace ident)* : tactic
+/- S -/ syntax (name := guardProofTerm) "guard_proof_term " tactic:51 " => " term : tactic
+/- S -/ syntax (name := failIfSuccess?) "fail_if_success? " str ppSpace tacticSeq : tactic
 /- N -/ syntax (name := field) "field " ident " => " tacticSeq : tactic
-/- N -/ syntax (name := haveField) "have_field" : tactic
-/- N -/ syntax (name := applyField) "apply_field" : tactic
+/- S -/ syntax (name := haveField) "have_field" : tactic
+/- S -/ syntax (name := applyField) "apply_field" : tactic
 /- M -/ syntax (name := hGeneralize) "h_generalize " atomic(binderIdent " : ")? term:51 " = " ident
   (" with " binderIdent)? : tactic
 /- M -/ syntax (name := hGeneralize!) "h_generalize! " atomic(binderIdent " : ")? term:51 " = " ident
@@ -275,8 +260,8 @@ end Conv
 
 /- M -/ syntax (name := deltaInstance) "delta_instance" (ppSpace ident)* : tactic
 
-/- M -/ syntax (name := elide) "elide " num (ppSpace location)? : tactic
-/- M -/ syntax (name := unelide) "unelide" (ppSpace location)? : tactic
+/- S -/ syntax (name := elide) "elide " num (ppSpace location)? : tactic
+/- S -/ syntax (name := unelide) "unelide" (ppSpace location)? : tactic
 
 /- S -/ syntax (name := clarify) "clarify" (config)?
   (Parser.Tactic.simpArgs)? (" using " term,+)? : tactic
@@ -308,9 +293,6 @@ syntax termList := " [" term,* "]"
 /- B -/ syntax (name := obviously) "obviously" : tactic
 
 /- S -/ syntax (name := prettyCases) "pretty_cases" : tactic
-
-/- M -/ syntax (name := contrapose) "contrapose" (ppSpace ident (" with " ident)?)? : tactic
-/- M -/ syntax (name := contrapose!) "contrapose!" (ppSpace ident (" with " ident)?)? : tactic
 
 /- M -/ syntax (name := assocRw) "assoc_rw " rwRuleSeq (ppSpace location)? : tactic
 
@@ -398,7 +380,7 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := sliceLHS) "slice_lhs " num num " => " Conv.convSeq : tactic
 /- M -/ syntax (name := sliceRHS) "slice_rhs " num num " => " Conv.convSeq : tactic
 
-/- N -/ syntax (name := subtypeInstance) "subtype_instance" : tactic
+/- S -/ syntax (name := subtypeInstance) "subtype_instance" : tactic
 
 /- M -/ syntax (name := group) "group" (ppSpace location)? : tactic
 
@@ -515,8 +497,6 @@ namespace Attr
 /- M -/ syntax (name := mono) "mono" (ppSpace Tactic.mono.side)? : attr
 
 /- M -/ syntax (name := reassoc) "reassoc" (ppSpace ident)? : attr
-
-/- N -/ syntax (name := ancestor) "ancestor" (ppSpace ident)* : attr
 
 /- M -/ syntax (name := elementwise) "elementwise" (ppSpace ident)? : attr
 
