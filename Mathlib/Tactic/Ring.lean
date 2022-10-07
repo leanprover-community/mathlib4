@@ -160,7 +160,7 @@ by
 theorem horner_add_const {α} [CommSemiring α] (a x n b k b') (h : b + k = b') :
   @horner α _ a x n b + k = horner a x n b' :=
 by
-  simp [horner, h.symm ,add_left_comm k, add_assoc]
+  simp [horner, h.symm, add_left_comm k, add_assoc]
 
 theorem horner_add_horner_lt {α} [CommSemiring α] (a₁ x n₁ b₁ a₂ n₂ b₂ k a' b')
   (h₁ : n₁ + k = n₂) (h₂ : (a₁ + horner a₂ x k 0 : α) = a') (h₃ : b₁ + b₂ = b') :
@@ -328,7 +328,7 @@ partial def evalMul : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
 theorem horner_pow {α} [CommSemiring α] (a x : α) (n m n' : ℕ) (a') (h₁ : n * m = n') (h₂ : a ^ m = (a' : α)) :
   @horner α _ a x n 0 ^ m = horner a' x n' 0 :=
 by
-  simp [h₁.symm, h₂.symm, horner,  mul_pow a, pow_mul]
+  simp [h₁.symm, h₂.symm, horner, mul_pow a, pow_mul]
 
 theorem pow_succ_eq {α} [CommSemiring α] (a : α) (n : ℕ) (b c)
   (h₁ : a ^ n = b) (h₂ : b * a = c) : a ^ (n + 1) = c :=

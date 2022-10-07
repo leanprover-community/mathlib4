@@ -1,4 +1,3 @@
--- import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Tactic.Spread
 
@@ -49,6 +48,8 @@ class CommSemiring (R : Type u) extends Semiring R, CommMonoid R where
   right_distrib a b c := (by rw [mul_comm, mul_add, mul_comm c, mul_comm c])
 
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
+
+example [Ring R] : HasInvolutiveNeg R := inferInstance
 
 theorem neg_mul_eq_neg_mul {R} [Ring R] (a b : R) : -(a * b) = (-a) * b :=
   Eq.symm <| eq_of_sub_eq_zero' <| by
