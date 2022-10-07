@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Aurélien Saue
 -/
 import Lean.Elab.Tactic.Basic
+import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Tactic.NormNum
 
@@ -332,7 +333,7 @@ by
 
 theorem pow_succ_eq {α} [CommSemiring α] (a : α) (n : ℕ) (b c)
   (h₁ : a ^ n = b) (h₂ : b * a = c) : a ^ (n + 1) = c :=
-by rw [← h₂, ← h₁, pow_succ]
+by rw [← h₂, ← h₁, pow_succ']
 
 /-- Evaluate `a ^ n` where `a` is in normal form and `n` is a natural numeral. -/
 partial def evalPow : HornerExpr → Expr × ℕ → RingM (HornerExpr × Expr)

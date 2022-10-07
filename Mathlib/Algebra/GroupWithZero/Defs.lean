@@ -3,7 +3,7 @@ import Mathlib.Algebra.Group.Defs
 theorem eq_of_sub_eq_zero' [AddGroup R] {a b : R} (h : a - b = 0) : a = b :=
   add_right_cancel <| show a + (-b) = b + (-b) by rw [← sub_eq_add_neg, h, add_neg_self]
 
-theorem pow_succ' [Monoid M] : ∀ (n : ℕ) (a : M), a ^ n.succ = a * a ^ n :=
+theorem pow_succ'' [Monoid M] : ∀ (n : ℕ) (a : M), a ^ n.succ = a * a ^ n :=
 Monoid.npow_succ'
 
 /-- Typeclass for expressing that a type `M₀` with multiplication and a zero satisfies

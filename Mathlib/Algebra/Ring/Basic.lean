@@ -1,3 +1,4 @@
+import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Tactic.Spread
 
@@ -39,7 +40,7 @@ lemma Nat.cast_mul [Semiring R] {m n : ℕ} : (m * n).cast = (m.cast * n.cast : 
 
 @[simp]
 lemma Nat.cast_pow [Semiring R] {m n : ℕ} : (m ^ n).cast = (m.cast ^ n : R) := by
-  induction n generalizing m <;> simp_all [Nat.pow_succ', _root_.pow_succ', pow_zero]
+  induction n generalizing m <;> simp_all [Nat.pow_succ', _root_.pow_succ'', pow_zero]
 
 end Semiring
 
