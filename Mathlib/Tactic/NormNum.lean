@@ -152,9 +152,8 @@ def derive (ctx : Simp.Context) (e : Expr) : MetaM Simp.Result := do
   let e ← instantiateMVars e
   let nosimp := (← getOptions).getBool `norm_num.nosimp
   let methods := if nosimp then {} else Simp.DefaultMethods.methods
-  let r ← Simp.main e ctx
-    { methods with
-      post := fun e => do try return Simp.Step.done (← eval e) catch _ => methods.post e }
+  let post e := do try return Simp.Step.done (← eval e) catch _ => methods.post e
+  let (r, _) ← Simp.main e ctx (methods := { methods with post })
   trace[Tactic.norm_num] "before: {e}\n after: {r.expr}"
 
   return r

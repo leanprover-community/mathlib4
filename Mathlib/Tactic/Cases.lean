@@ -38,13 +38,13 @@ namespace Lean.Parser.Tactic
 open Meta Elab Elab.Tactic
 
 open private getAltNumFields in evalCases ElimApp.evalAlts.go in
-def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array (Name × MVarId)) (withArg : Syntax)
+def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg : Syntax)
     (numEqs := 0) (numGeneralized := 0) (toClear : Array FVarId := #[]) :
     TermElabM (Array MVarId) := do
   let mut names := if withArg.isNone then [] else
     withArg[1].getArgs.map (getNameOfIdent' ·[0]) |>.toList
   let mut subgoals := #[]
-  for (altName, g) in alts do
+  for { name := altName, mvarId := g, .. } in alts do
     let numFields ← getAltNumFields elimInfo altName
     let (altVarNames, names') := names.splitAtD numFields `_
     names := names'
