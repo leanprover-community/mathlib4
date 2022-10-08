@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Basic
-import Mathlib.Tactic.ShowTerm
 
 /-!
 # Pairwise relations on a list
