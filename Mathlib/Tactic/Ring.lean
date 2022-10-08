@@ -131,7 +131,13 @@ open HornerExpr
 
 theorem zero_horner {α} [CommSemiring α] (x n b) :
   @horner α _ 0 x n b = b :=
-by simp [horner]
+by
+  simp [horner]
+  -- Strangely the simplifier will not use `zero_add` here.
+  -- simp only [zero_add] -- does nothing
+  rw [zero_add]
+  -- Alternatively:
+  -- exact zero_add _
 
 theorem horner_horner {α} [CommSemiring α] (a₁ x n₁ n₂ b n')
   (h : n₁ + n₂ = n') :
