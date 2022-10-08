@@ -115,17 +115,6 @@ instance : CommRing ℤ where
     show ofNat (Nat.succ n) * x = x + ofNat n * x
     rw [Int.ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
   sub_eq_add_neg a b := Int.sub_eq_add_neg
-  -- gsmul := HMul.hMul
-  -- gsmul_zero' := Int.zero_mul
-  -- gsmul_succ' n x := by rw [Int.ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
-  -- gsmul_neg' n x := by
-  --   cases x with
-  --   | ofNat m =>
-  --     rw [Int.negSucc_ofNat_ofNat, Int.ofNat_mul_ofNat]
-  --     exact rfl
-  --   | negSucc m =>
-  --     rw [Int.mul_negSucc_ofNat_negSucc_ofNat, Int.ofNat_mul_negSucc_ofNat]
-  --     exact rfl
   natCast := (·)
   natCast_zero := rfl
   natCast_succ _ := rfl
