@@ -26,6 +26,10 @@ lemma Fin.ext_iff {a b : Fin n} : a = b ↔ a.val = b.val :=
 lemma Fin.size_positive' [Nonempty (Fin n)] : 0 < n :=
   ‹Nonempty (Fin n)›.elim fun i => Fin.size_positive i
 
+@[simp]
+protected theorem Fin.eta (a : Fin n) (h : (a : ℕ) < n) : (⟨(a : ℕ), h⟩ : Fin n) = a := by
+  cases a <;> rfl
+
 lemma zero_lt_of_lt {a : Nat} : ∀ {x : Nat}, x < a -> 0 < a
 | 0, h   => h
 | x+1, h => Nat.lt_trans (Nat.zero_lt_succ x) h
