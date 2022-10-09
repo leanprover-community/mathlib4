@@ -85,7 +85,8 @@ instance [AddGroupWithOne R] : CoeTail ℤ R where coe := Int.cast
 theorem Int.cast_ofNat [AddGroupWithOne R] : (Int.cast (Int.ofNat n) : R) = Nat.cast n :=
   AddGroupWithOne.intCast_ofNat _
 @[simp, norm_cast]
-theorem Int.cast_negSucc [AddGroupWithOne R] : (Int.cast (Int.negSucc n) : R) = (-(Nat.cast (n + 1)) : R) :=
+theorem Int.cast_negSucc [AddGroupWithOne R] :
+    (Int.cast (Int.negSucc n) : R) = (-(Nat.cast (n + 1)) : R) :=
   AddGroupWithOne.intCast_negSucc _
 
 @[simp, norm_cast] theorem Int.cast_zero [AddGroupWithOne R] : ((0 : ℤ) : R) = 0 := by
