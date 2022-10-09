@@ -133,16 +133,17 @@ theorem zero_horner {α} [CommSemiring α] (x n b) :
   @horner α _ 0 x n b = b :=
 by
   simp [horner]
-  -- Strangely the simplifier will not use `zero_add` here.
-  -- simp only [zero_add] -- does nothing
+  -- FIXME: `simp` should have already applied `zero_add`
   rw [zero_add]
   -- Alternatively:
   -- exact zero_add _
 
-theorem horner_horner {α} [CommSemiring α] (a₁ x n₁ n₂ b n')
-  (h : n₁ + n₂ = n') :
-  @horner α _ (horner a₁ x n₁ 0) x n₂ b = horner a₁ x n' b :=
-by simp [h.symm, horner, pow_add, mul_assoc]
+theorem horner_horner {α} [CommSemiring α] (a₁ x n₁ n₂ b n') (h : n₁ + n₂ = n') :
+    @horner α _ (horner a₁ x n₁ 0) x n₂ b = horner a₁ x n' b := by
+  simp [h.symm, horner, pow_add, mul_assoc]
+  -- FIXME this should not be required:
+  rw [add_zero]
+  simp [mul_assoc]
 
 /-- Evaluate `horner a n x b` where `a` and `b` are already in normal form. -/
 def evalHorner : HornerExpr → Expr × ℕ → Expr × ℕ → HornerExpr → RingM (HornerExpr × Expr)
@@ -175,6 +176,8 @@ theorem horner_add_horner_lt {α} [CommSemiring α] (a₁ x n₁ b₁ a₂ n₂ 
 by
   rw [← h₁, ← h₂, ← h₃]
   simp [horner, add_assoc, add_mul, pow_add, mul_assoc, add_comm n₁ k, add_left_comm b₁]
+  have := @zero_add α
+  rw [zero_add]
 
 theorem horner_add_horner_gt {α} [CommSemiring α] (a₁ x n₁ b₁ a₂ n₂ b₂ k a' b')
   (h₁ : n₂ + k = n₁) (h₂ : (horner a₁ x k 0 + a₂ : α) = a') (h₃ : b₁ + b₂ = b') :
@@ -182,6 +185,8 @@ theorem horner_add_horner_gt {α} [CommSemiring α] (a₁ x n₁ b₁ a₂ n₂ 
 by
   rw [← h₁, ← h₂, ← h₃]
   simp [horner, add_assoc, mul_assoc, add_mul, add_comm n₂ k, pow_add, add_left_comm b₁]
+  -- FIXME, this should not be required
+  rw [zero_add]
 
 theorem horner_add_horner_eq {α} [CommSemiring α] (a₁ x n b₁ a₂ b₂ a' b' t)
   (h₁ : a₁ + a₂ = a') (h₂ : b₁ + b₂ = b') (h₃ : horner a' x n b' = t) :
@@ -275,6 +280,8 @@ theorem horner_mul_horner_zero {α} [CommSemiring α] (a₁ x n₁ b₁ a₂ n�
 by
   rw [← h₂, ← h₁]
   simp [horner, add_mul, mul_assoc]
+  -- FIXME, this should not be required
+  rw [add_zero, add_zero]
 
 theorem horner_mul_horner {α} [CommSemiring α]
   (a₁ x n₁ b₁ a₂ n₂ b₂ aa haa ab bb t)
@@ -286,6 +293,8 @@ theorem horner_mul_horner {α} [CommSemiring α]
 by
   rw [← H, ← h₂, ← h₁, ← h₃, ← h₄]
   simp [horner, add_mul, mul_add, mul_assoc, mul_comm b₂]
+  -- FIXME, this should not be required
+  rw [add_zero]
 
 /-- Evaluate `a * b` where `a` and `b` are in normal form. -/
 partial def evalMul : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
@@ -336,6 +345,9 @@ theorem horner_pow {α} [CommSemiring α] (a x : α) (n m n' : ℕ) (a') (h₁ :
   @horner α _ a x n 0 ^ m = horner a' x n' 0 :=
 by
   simp [h₁.symm, h₂.symm, horner, mul_pow a, pow_mul]
+  -- FIXME, this should not be required
+  rw [add_zero, add_zero]
+  simp [mul_pow a]
 
 theorem pow_succ_eq {α} [CommSemiring α] (a : α) (n : ℕ) (b c)
   (h₁ : a ^ n = b) (h₂ : b * a = c) : a ^ (n + 1) = c :=
@@ -371,6 +383,8 @@ partial def evalPow : HornerExpr → Expr × ℕ → RingM (HornerExpr × Expr)
 
 theorem horner_atom {α} [CommSemiring α] (x : α) : x = horner 1 x 1 0 := by
   simp [horner]
+  -- FIXME, this should not be required
+  rw [add_zero]
 
 /-- Evaluate `a` where `a` is an atom. -/
 def evalAtom (e : Expr) : RingM (HornerExpr × Expr) := do
