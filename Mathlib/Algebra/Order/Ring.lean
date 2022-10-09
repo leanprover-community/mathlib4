@@ -108,6 +108,11 @@ section OrderedRing
 
 variable [OrderedRing α] {a b c : α}
 
+open Function
+
+example : CovariantClass α α (· + ·) (· ≤ ·) := inferInstance
+example : CovariantClass α α (swap (· + ·)) (· < ·) := inferInstance
+
 theorem OrderedRing.mul_lt_mul_of_pos_left (h₁ : a < b) (h₂ : 0 < c) : c * a < c * b := by
   rw [← sub_pos, ← mul_sub]
   exact OrderedRing.mul_pos _ _ h₂ (sub_pos.2 h₁)

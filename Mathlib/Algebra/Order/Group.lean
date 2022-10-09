@@ -31,10 +31,14 @@ class OrderedAddCommGroup (α : Type u) extends AddCommGroup α, PartialOrder α
   add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 
 attribute [to_additive OrderedAddCommGroup] OrderedCommGroup
+attribute [to_additive OrderedAddCommGroup.toPartialOrder] OrderedCommGroup.toPartialOrder
 
 @[to_additive]
-instance OrderedCommGroup.to_covariant_class_left_le (α : Type u) [OrderedCommGroup α] :
+instance OrderedCommGroup.toCovariantClassLeftLe (α : Type u) [OrderedCommGroup α] :
     CovariantClass α α (· * ·) (· ≤ ·) where elim := fun a b c bc => OrderedCommGroup.mul_le_mul_left b c bc a
+
+-- FIXME why isn't `to_additive` adding this?
+attribute [instance] OrderedAddCommGroup.toCovariantClassLeftLe
 
 section Group
 variable [Group α] [LT α]
