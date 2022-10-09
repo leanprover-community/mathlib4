@@ -45,14 +45,17 @@ def Nat.cast [AddMonoidWithOne R] : ℕ → R := AddMonoidWithOne.natCast
 instance [AddMonoidWithOne R] : CoeTail ℕ R where coe := Nat.cast
 instance [AddMonoidWithOne R] : CoeHTCT ℕ R where coe := Nat.cast
 
-@[simp, norm_cast] theorem Nat.cast_zero [AddMonoidWithOne R] : ((0 : ℕ) : R) = 0 := AddMonoidWithOne.natCast_zero
+@[simp, norm_cast] theorem Nat.cast_zero [AddMonoidWithOne R] : ((0 : ℕ) : R) = 0 :=
+  AddMonoidWithOne.natCast_zero
 @[simp 500, norm_cast 500]
-theorem Nat.cast_succ [AddMonoidWithOne R] : ((Nat.succ n : ℕ) : R) = (n : R) + 1 := AddMonoidWithOne.natCast_succ _
+theorem Nat.cast_succ [AddMonoidWithOne R] : ((Nat.succ n : ℕ) : R) = (n : R) + 1 := A
+  ddMonoidWithOne.natCast_succ _
 @[simp, norm_cast]
-theorem Nat.cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := sorry --by simp
+theorem Nat.cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := sorry --FIXME by simp
 
 @[simp, norm_cast] theorem Nat.cast_add [AddMonoidWithOne R] : ((m + n : ℕ) : R) = (m : R) + n := by
   sorry
+  -- FIXME
   -- induction n <;> simp_all [add_succ, add_assoc]
 
 class Nat.AtLeastTwo (n : Nat) : Prop where

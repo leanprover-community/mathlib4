@@ -404,7 +404,8 @@ attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
 instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
   ⟨fun x n => Monoid.npow n x⟩
 
-@[defaultInstance high] instance Monoid.HPow {M : Type _} [Monoid M] : HPow M ℕ M := ⟨λ a n => Monoid.npow n a⟩
+@[defaultInstance high] instance Monoid.HPow {M : Type _} [Monoid M] : HPow M ℕ M :=
+  ⟨λ a n => Monoid.npow n a⟩
 
 instance AddMonoid.HasSmul {M : Type _} [AddMonoid M] : HasSmul ℕ M :=
   ⟨AddMonoid.nsmul⟩
@@ -520,8 +521,10 @@ attribute [to_additive AddCancelCommMonoid.toAddCommMonoid] CancelCommMonoid.toC
 
 -- see Note [lower instance priority]
 @[to_additive]
-instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelCommMonoid M] : CancelMonoid M :=
-  { ‹CancelCommMonoid M› with mul_right_cancel := fun a b c h => mul_left_cancel <| by rw [mul_comm, h, mul_comm] }
+instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelCommMonoid M] :
+    CancelMonoid M :=
+  { ‹CancelCommMonoid M› with
+    mul_right_cancel := fun a b c h => mul_left_cancel <| by rw [mul_comm, h, mul_comm] }
 
 end CancelMonoid
 

@@ -49,15 +49,19 @@ variable {S : Type u} [Semigroup S] {a b x y z x' y' : S}
 
 /-- If `a` semiconjugates `x` to `y` and `x'` to `y'`,
 then it semiconjugates `x * x'` to `y * y'`. -/
-@[simp, to_additive "If `a` semiconjugates `x` to `y` and `x'` to `y'`, then it semiconjugates\n`x + x'` to `y + y'`."]
-theorem mul_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') : SemiconjBy a (x * x') (y * y') := by
+@[simp, to_additive "If `a` semiconjugates `x` to `y` and `x'` to `y'`,
+then it semiconjugates `x + x'` to `y + y'`."]
+theorem mul_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
+    SemiconjBy a (x * x') (y * y') := by
   sorry
+  -- FIXME
   -- unfold SemiconjBy <;> assoc_rw [h.eq, h'.eq]
 
 /-- If both `a` and `b` semiconjugate `x` to `y`, then so does `a * b`. -/
 @[to_additive "If both `a` and `b` semiconjugate `x` to `y`, then so does `a + b`."]
 theorem mul_left (ha : SemiconjBy a y z) (hb : SemiconjBy b x y) : SemiconjBy (a * b) x z := by
   sorry
+  -- FIXME
   -- unfold SemiconjBy <;> assoc_rw [hb.eq, ha.eq, mul_assoc]
 
 end Semigroup

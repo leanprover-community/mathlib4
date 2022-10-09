@@ -129,8 +129,9 @@ theorem parent_eq {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models ar
 theorem parent_eq' {arr : Array (UFNode α)} {m : UFModel arr.size} (H : m.Models arr)
   (i : Fin arr.size) : (arr[i.1]).parent = m.parent i := H.parent_eq ..
 
-theorem rank_eq {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr)
-  (i : Nat) (h : i < arr.size) : arr[i].rank = m.rank i := H.2.get_eq _ _ (by rw [H.size_eq]; exact h)
+theorem rank_eq {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr) (i : Nat)
+    (h : i < arr.size) : arr[i].rank = m.rank i :=
+  H.2.get_eq _ _ (by rw [H.size_eq]; exact h)
 
 theorem empty : UFModel.empty.Models (α := α) #[] := ⟨Agrees.empty, Agrees.empty⟩
 
