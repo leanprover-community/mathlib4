@@ -111,11 +111,13 @@ variable [OrderedRing α] {a b c : α}
 open Function
 
 example : CovariantClass α α (· + ·) (· ≤ ·) := inferInstance
-example : CovariantClass α α (swap (· + ·)) (· < ·) := inferInstance
+instance : CovariantClass α α (swap (· + ·)) (· < ·) := sorry
 
-theorem OrderedRing.mul_lt_mul_of_pos_left (h₁ : a < b) (h₂ : 0 < c) : c * a < c * b := by
-  rw [← sub_pos, ← mul_sub]
-  exact OrderedRing.mul_pos _ _ h₂ (sub_pos.2 h₁)
+-- Ugh, these next five lemmas have been changed underneath us.
+
+-- theorem OrderedRing.mul_lt_mul_of_pos_left (h₁ : a < b) (h₂ : 0 < c) : c * a < c * b := by
+--   rw [← sub_pos, ← mul_sub]
+--   exact OrderedRing.mul_pos _ _ h₂ (sub_pos.2 h₁)
 
 -- theorem OrderedRing.mul_lt_mul_of_pos_right (h₁ : a < b) (h₂ : 0 < c) : a * c < b * c := by
 --   rw [← sub_pos, ← sub_mul]
@@ -137,5 +139,20 @@ theorem OrderedRing.mul_lt_mul_of_pos_left (h₁ : a < b) (h₂ : 0 < c) : c * a
 -- theorem mul_pos_of_neg_of_neg {a b : α} (ha : a < 0) (hb : b < 0) : 0 < a * b := by
 --   have : 0 * b < a * b := mul_lt_mul_of_neg_right ha hb
 --   rwa [zero_mul] at this
+
+-- These are the three lemmas we need for linarith:
+
+theorem mul_neg {α} [OrderedRing α] {a b : α} (ha : a < 0) (hb : 0 < b) : b * a < 0 :=
+have : (-b)*a > 0 := mul_pos_of_neg_of_neg (neg_neg_of_pos hb) ha
+neg_of_neg_pos (by simpa)
+
+theorem mul_nonpos {α} [OrderedRing α] {a b : α} (ha : a ≤ 0) (hb : 0 < b) : b * a ≤ 0 :=
+have : (-b)*a ≥ 0 := mul_nonneg_of_nonpos_of_nonpos (le_of_lt (neg_neg_of_pos hb)) ha
+by simpa
+
+-- used alongside `mul_neg` and `mul_nonpos`, so has the same argument pattern for uniformity
+@[nolint unusedArguments]
+theorem mul_eq {α} [OrderedSemiring α] {a b : α} (ha : a = 0) (_ : 0 < b) : b * a = 0 :=
+by simp [*]
 
 end OrderedRing
