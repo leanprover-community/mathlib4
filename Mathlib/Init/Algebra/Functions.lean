@@ -71,7 +71,8 @@ lemma min_eq_right {a b : α} (h : b ≤ a) : min a b = b :=
 by rw [min_comm]
    exact min_eq_left h
 
-lemma eq_max {a b c : α} (h₁ : a ≤ c) (h₂ : b ≤ c) (h₃ : ∀{d}, a ≤ d → b ≤ d → c ≤ d) : c = max a b :=
+lemma eq_max {a b c : α} (h₁ : a ≤ c) (h₂ : b ≤ c) (h₃ : ∀{d}, a ≤ d → b ≤ d → c ≤ d) :
+    c = max a b :=
 le_antisymm (h₃ (le_max_left a b) (le_max_right a b)) (max_le h₁ h₂)
 
 lemma max_comm (a b : α) : max a b = max b a :=
