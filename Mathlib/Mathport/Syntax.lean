@@ -90,7 +90,8 @@ macro_rules
   | `(expandBinders% ($x => $term) ($y:ident $pred:binderPred) $binders*, $res) =>
     term.replaceM fun x' => do
       unless x == x' do return none
-      `(fun $y:ident => expandBinders% ($x => $term) (h : satisfiesBinderPred% $y $pred) $[$binders]*, $res)
+      `(fun $y:ident => expandBinders% ($x => $term) (h : satisfiesBinderPred% $y $pred)
+        $[$binders]*, $res)
 
 macro (name := expandFoldl) "expandFoldl% "
   "(" x:ident y:ident " => " term:term ")" init:term:max "[" args:term,* "]" : term =>
