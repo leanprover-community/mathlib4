@@ -55,23 +55,23 @@ section Ring
 
 variable [Ring R]
 
-@[simp]
-theorem neg_mul (a b : R) : -a * b = -(a * b) :=
-  eq_neg_of_add_eq_zero_left <| by rw [← right_distrib, add_left_neg, zero_mul]
+-- @[simp]
+-- theorem neg_mul (a b : R) : -a * b = -(a * b) :=
+--   eq_neg_of_add_eq_zero_left <| by rw [← right_distrib, add_left_neg, zero_mul]
 
-@[simp]
-theorem mul_neg (a b : R) : a * -b = -(a * b) :=
-  eq_neg_of_add_eq_zero_left <| by rw [← left_distrib, add_left_neg, mul_zero]
+-- @[simp]
+-- theorem mul_neg (a b : R) : a * -b = -(a * b) :=
+--   eq_neg_of_add_eq_zero_left <| by rw [← left_distrib, add_left_neg, mul_zero]
 
-theorem neg_mul_neg (a b : R) : -a * -b = a * b := by simp
+-- theorem neg_mul_neg (a b : R) : -a * -b = a * b := by simp
 
-theorem neg_mul_eq_neg_mulₓ (a b : R) : -(a * b) = -a * b :=
-  (neg_mul _ _).symm
+-- theorem neg_mul_eq_neg_mulₓ (a b : R) : -(a * b) = -a * b :=
+--   (neg_mul _ _).symm
 
-theorem neg_mul_eq_mul_neg (a b : R) : -(a * b) = a * -b :=
-  (mul_neg _ _).symm
+-- theorem neg_mul_eq_mul_neg (a b : R) : -(a * b) = a * -b :=
+--   (mul_neg _ _).symm
 
-theorem neg_mul_comm (a b : R) : -a * b = a * -b := by simp
+-- theorem neg_mul_comm (a b : R) : -a * b = a * -b := by simp
 
 end Ring
 

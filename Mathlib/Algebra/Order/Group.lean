@@ -20,10 +20,21 @@ The reason is that we did not want to change existing names in the library.
 
 open Function
 
+/-- An ordered commutative group is an commutative group
+with a partial order in which multiplication is strictly monotone. -/
+class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
+  mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
+
 /-- An ordered additive commutative group is an additive commutative group
 with a partial order in which addition is strictly monotone. -/
 class OrderedAddCommGroup (α : Type u) extends AddCommGroup α, PartialOrder α where
   add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
+
+attribute [to_additive OrderedAddCommGroup] OrderedCommGroup
+
+@[to_additive]
+instance OrderedCommGroup.to_covariant_class_left_le (α : Type u) [OrderedCommGroup α] :
+    CovariantClass α α (· * ·) (· ≤ ·) where elim := fun a b c bc => OrderedCommGroup.mul_le_mul_left b c bc a
 
 section Group
 variable [Group α] [LT α]

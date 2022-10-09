@@ -491,6 +491,8 @@ class CommGroup (G : Type u) extends Group G where
 instance (G : Type u) [CommGroup G] : CommMonoid G where
   __ := ‹CommGroup G›
 
+attribute [to_additive AddCommGroup] CommGroup
+
 
 /-- A `LeftCancelSemigroup` is a semigroup such that `a * b = a * c` implies `b = c`. -/
 @[ext]
