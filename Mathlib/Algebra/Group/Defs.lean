@@ -710,8 +710,8 @@ theorem zpow_neg_succ_of_nat (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n +
 
 This is a duplicate of `div_inv_monoid.div_eq_mul_inv` ensuring that the types unfold better.
 -/
-@[to_additive
-      "Subtracting an element is the same as adding by its negative.\n\nThis is a duplicate of `sub_neg_monoid.sub_eq_mul_neg` ensuring that the types unfold better."]
+@[to_additive "Subtracting an element is the same as adding by its negative.
+This is a duplicate of `sub_neg_monoid.sub_eq_mul_neg` ensuring that the types unfold better."]
 theorem div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
   DivInvMonoid.div_eq_mul_inv _ _
 
@@ -828,23 +828,28 @@ private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b :=
   left_inv_eq_right_inv (inv_mul_self a) h
 
 @[simp, to_additive]
-theorem mul_right_inv (a : G) : a * a⁻¹ = 1 := by rw [← mul_left_inv a⁻¹, inv_eq_of_mul (mul_left_inv a)]
+theorem mul_right_inv (a : G) : a * a⁻¹ = 1 :=
+  by rw [← mul_left_inv a⁻¹, inv_eq_of_mul (mul_left_inv a)]
 
 @[to_additive]
 theorem mul_inv_self (a : G) : a * a⁻¹ = 1 :=
   mul_right_inv a
 
 @[simp, to_additive]
-theorem inv_mul_cancel_left (a b : G) : a⁻¹ * (a * b) = b := by rw [← mul_assoc, mul_left_inv, one_mul]
+theorem inv_mul_cancel_left (a b : G) : a⁻¹ * (a * b) = b :=
+  by rw [← mul_assoc, mul_left_inv, one_mul]
 
 @[simp, to_additive]
-theorem mul_inv_cancel_left (a b : G) : a * (a⁻¹ * b) = b := by rw [← mul_assoc, mul_right_inv, one_mul]
+theorem mul_inv_cancel_left (a b : G) : a * (a⁻¹ * b) = b :=
+  by rw [← mul_assoc, mul_right_inv, one_mul]
 
 @[simp, to_additive]
-theorem mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a := by rw [mul_assoc, mul_right_inv, mul_one]
+theorem mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a :=
+  by rw [mul_assoc, mul_right_inv, mul_one]
 
 @[simp, to_additive]
-theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a := by rw [mul_assoc, mul_left_inv, mul_one]
+theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a :=
+  by rw [mul_assoc, mul_left_inv, mul_one]
 
 @[to_additive AddGroup.toSubtractionMonoid]
 instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
@@ -871,7 +876,8 @@ attribute [instance] AddGroup.toAddCancelMonoid
 end Group
 
 @[to_additive]
-theorem Group.toDivInvMonoid_injective {G : Type _} : Function.injective (@Group.toDivInvMonoid G) := by
+theorem Group.toDivInvMonoid_injective {G : Type _} :
+    Function.injective (@Group.toDivInvMonoid G) := by
   rintro ⟨⟩ ⟨⟩ ⟨⟩
   rfl
 
