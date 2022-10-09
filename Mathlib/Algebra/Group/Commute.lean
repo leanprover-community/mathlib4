@@ -80,9 +80,11 @@ theorem mul_right (hab : Commute a b) (hac : Commute a c) : Commute a (b * c) :=
 theorem mul_left (hac : Commute a c) (hbc : Commute b c) : Commute (a * b) c :=
   SemiconjBy.mul_left hac hbc
 
-protected theorem right_comm (h : Commute b c) (a : S) : a * b * c = a * c * b := by simp only [mul_assoc, h.eq]
+protected theorem right_comm (h : Commute b c) (a : S) : a * b * c = a * c * b :=
+  by simp only [mul_assoc, h.eq]
 
-protected theorem left_comm (h : Commute a b) (c) : a * (b * c) = b * (a * c) := by simp only [← mul_assoc, h.eq]
+protected theorem left_comm (h : Commute a b) (c) : a * (b * c) = b * (a * c) :=
+  by simp only [← mul_assoc, h.eq]
 
 end Semigroup
 
