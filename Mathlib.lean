@@ -14,6 +14,7 @@ import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.HashMap
 import Mathlib.Data.KVMap
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Card
@@ -28,6 +29,7 @@ import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Prod
+import Mathlib.Data.RBSet
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
