@@ -187,8 +187,9 @@ instance Fin.sampleableExt {n : Nat} : SampleableExt (Fin (n.succ)) :=
   ))
 
 instance Int.sampleableExt : SampleableExt Int :=
-  mkSelfContained (do choose Int (-(←getSize)) (←getSize)
-    (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _)))
+  mkSelfContained (do
+    choose Int (-(←getSize)) (←getSize)
+      (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _)))
 
 instance Bool.sampleableExt : SampleableExt Bool :=
   mkSelfContained $ chooseAny Bool
