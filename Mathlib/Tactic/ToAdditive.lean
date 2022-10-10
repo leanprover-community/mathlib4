@@ -252,7 +252,7 @@ using the transforms dictionary.
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
 partial def transformDeclAux
-  (pre tgt_pre : Name) : Name → CoreM Unit := fun src => do
+  (ref : Syntax) (pre tgt_pre : Name) : Name → CoreM Unit := fun src => do
   -- if this declaration is not `pre` or an internal declaration, we do nothing.
   if not (src == pre || isInternal' src) then
     if (findTranslation? (← getEnv) src).isSome then
@@ -268,10 +268,10 @@ partial def transformDeclAux
   let srcDecl ← getConstInfo src
   -- we first transform all the declarations of the form `pre._proof_i`
   for n in srcDecl.type.listNamesWithPrefix pre do
-    transformDeclAux pre tgt_pre n
+    transformDeclAux ref pre tgt_pre n
   if let some value := srcDecl.value? then
     for n in value.listNamesWithPrefix pre do
-      transformDeclAux pre tgt_pre n
+      transformDeclAux ref pre tgt_pre n
   -- now transform the source declaration
   let trgDecl : ConstantInfo ← MetaM.run' $ updateDecl tgt srcDecl
   if ¬ trgDecl.hasValue then
@@ -288,6 +288,11 @@ partial def transformDeclAux
       Failed to add declaration\n{trgDecl.name}:\n{msg}"
     | _ => panic! "unreachable"
   addAndCompile trgDecl.toDeclaration!
+  -- now add declaration ranges so jump-to-definition works
+  addDeclarationRanges tgt {
+    range := ← getDeclarationRange ref
+    selectionRange := ← getDeclarationRange (getDeclarationSelectionRef ref)
+  }
   if isProtected (← getEnv) src then
     setEnv $ addProtected (← getEnv) tgt
 
@@ -317,13 +322,13 @@ Make a new copy of a declaration, replacing fragments of the names of identifier
 the body using the `translations` dictionary.
 This is used to implement `@[to_additive]`.
 -/
-def transformDecl (src tgt : Name) : CoreM Unit := do
-  transformDeclAux src tgt src
+def transformDecl (ref : Syntax) (src tgt : Name) : CoreM Unit := do
+  transformDeclAux ref src tgt src
   let eqns? ← MetaM.run' (getEqnsFor? src true)
   -- now transform all of the equational lemmas
   if let some eqns := eqns? then
     for src_eqn in eqns do
-      transformDeclAux src tgt src_eqn
+      transformDeclAux ref src tgt src_eqn
       -- [todo] copy attributes for equations
       -- [todo] add equation lemmas to tgt_eqn
   copyAttributes src tgt
@@ -352,7 +357,6 @@ def firstMultiplicativeArg (nm : Name) : MetaM (Option Nat) := do
     | [] => return none
     | (head :: tail) => return some <| tail.foldr Nat.min head
 
-
 /-- `ValueType` is the type of the arguments that can be provided to `to_additive`. -/
 structure ValueType : Type where
   /-- Replace all multiplicative declarations, do not use the heuristic. -/
@@ -367,6 +371,10 @@ structure ValueType : Type where
   /-- If `allow_auto_name` is `false` (default) then
   `@[to_additive]` will check whether the given name can be auto-generated. -/
   allowAutoName : Bool := false
+  /-- The `Syntax` element corresponding to the original multiplicative declaration
+  (or the `to_additive` attribute if it is added later),
+  which we need for adding definition ranges. -/
+  ref : Syntax
   deriving Repr
 
 /-- `add_comm_prefix x s` returns `"comm_" ++ s` if `x = tt` and `s` otherwise. -/
@@ -456,17 +464,18 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
   -- aux (fun n => (env.constructorsOf n).mmap $ ...
 
 private def elabToAdditiveAux
-  (replaceAll trace : Bool) (tgt : Option Syntax) (doc : Option Syntax) : ValueType :=
+  (src : Syntax) (replaceAll trace : Bool) (tgt : Option Syntax) (doc : Option Syntax) : ValueType :=
   { replaceAll := replaceAll
     trace := trace
     tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
     doc := doc.bind (·.isStrLit?)
     allowAutoName := false
+    ref := src
   }
 
 private def elabToAdditive : Syntax → CoreM ValueType
-  | `(attr| to_additive $[!%$replaceAll]? $[?%$trace]? $[$tgt]? $[$doc]?) =>
-    return elabToAdditiveAux replaceAll.isSome trace.isSome tgt doc
+  | src@`(attr| to_additive $[!%$replaceAll]? $[?%$trace]? $[$tgt]? $[$doc]?) =>
+    return elabToAdditiveAux src replaceAll.isSome trace.isSome tgt doc
   | _ => throwUnsupportedSyntax
 
 /-!
@@ -692,7 +701,7 @@ initialize registerBuiltinAttribute {
         withOptions
           (fun o => o |>.setBool `to_additive.replaceAll val.replaceAll
                       |>.setBool `trace.to_additive shouldTrace)
-          (transformDecl src tgt)
+          (transformDecl val.ref src tgt)
       if let some doc := val.doc then
         addDocString tgt doc
       return ()
