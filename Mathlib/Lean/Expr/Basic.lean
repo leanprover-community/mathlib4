@@ -169,13 +169,10 @@ def getBinderName (e : Expr) : MetaM (Option Name) := do
   | _ => pure none
 
 open Lean.Elab.Term in
-/-- A hack to work around the linter complaining that a variable named `_` is unused. -/
+/-- Annotates a `binderIdent` with the binder information from an `fvar`. -/
 def addLocalVarInfoForBinderIdent (fvar : Expr) : TSyntax ``binderIdent → TermElabM Unit
-| `(binderIdent| $n:ident) =>
-  Elab.Term.addLocalVarInfo n fvar
-| tk => do
-  let stx := mkNode ``Parser.Term.hole #[Syntax.atom (SourceInfo.fromRef' tk false) "_"] -- HACK
-  Elab.Term.addLocalVarInfo stx fvar
+| `(binderIdent| $n:ident) => Elab.Term.addLocalVarInfo n fvar
+| tk => Elab.Term.addLocalVarInfo (Unhygienic.run `(_%$tk)) fvar
 
 end Expr
 

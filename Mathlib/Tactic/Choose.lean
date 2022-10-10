@@ -20,16 +20,12 @@ TODO: switch to `rcases` syntax: `choose ⟨i, j, h₁ -⟩ := expr`.
 
 open Lean Lean.Meta Elab.Term Elab.Tactic
 
-namespace Tactic
-
-namespace Choose
-
-namespace function
+namespace Function
 /-!
-## `function.sometimes`
+## `Function.sometimes`
 
 To make the `choose` tactic self-contained,
-we give a definition of `function.sometimes` in this file.
+we give a definition of `Function.sometimes` in this file.
 -/
 
 open Classical in
@@ -46,7 +42,9 @@ theorem sometimes_spec {p : Prop} {α} [Nonempty α]
   (P : α → Prop) (f : p → α) (a : p) (h : P (f a)) : P (sometimes f) :=
 (sometimes_eq f a).symm ▸ h
 
-end function
+end Function
+
+namespace Mathlib.Tactic.Choose
 
 /-- Given `α : Sort u`, `nonemp : Nonempty α`, `p : α → Prop`, a context of free variables
 `ctx`, and a pair of an element `val : α` and `spec : p val`,
@@ -64,8 +62,8 @@ def mk_sometimes (u : Level) (α nonemp p : Expr) :
   if b then do
     let val' ← mkLambdaFVars #[e] val
     pure
-      (mkApp4 (Expr.const ``function.sometimes [Level.zero, u]) t α nonemp val',
-      mkApp7 (Expr.const ``function.sometimes_spec [u]) t α nonemp p val' e spec)
+      (mkApp4 (Expr.const ``Function.sometimes [Level.zero, u]) t α nonemp val',
+      mkApp7 (Expr.const ``Function.sometimes_spec [u]) t α nonemp p val' e spec)
   else pure (val, spec)
 
 /-- Results of searching for nonempty instances,
@@ -117,22 +115,23 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
         let ((neFail : ElimStatus), (nonemp : Option Expr)) ← if nondep then
           let ne := (Expr.const ``Nonempty [u]).app α
           let m ← mkFreshExprMVar ne
-          let L : List (Name × Expr × Expr) ← ctx.toList.filterMapM $ fun e => do
-            let ty ← (inferType e >>= whnf)
-            if (← isProof e) then return none
+          let mut g' := m.mvarId!
+          for e in ctx do
+            if (← isProof e) then continue
+            let ty ← whnf (← inferType e)
             let nety := (Expr.const ``Nonempty [u]).app ty
             let neval := mkApp2 (Expr.const ``Nonempty.intro [u]) ty e
-            pure $ some (.anonymous, nety, neval)
-          let (_, g') ← (m.mvarId!.asserts L >>= MVarId.intros)
+            g' ← g'.assert .anonymous nety neval
+          (_, g') ← g'.intros
           g'.withContext do
-          match ← synthInstance? (← g'.getType) with
-          | some e => do
-            g'.assign e
-            let m ← instantiateMVars m
-            pure (.success, some m)
-          | none   => pure (.failure [ne], none)
+            match ← synthInstance? (← g'.getType) with
+            | some e => do
+              g'.assign e
+              let m ← instantiateMVars m
+              pure (.success, some m)
+            | none => pure (.failure [ne], none)
         else pure (.failure [], none)
-        let ctx' ← if nonemp.isSome then ctx.filterM (not <$> isProof .) else pure ctx
+        let ctx' ← if nonemp.isSome then ctx.filterM (not <$> isProof ·) else pure ctx
         let dataTy ← mkForallFVars ctx' α
         let mut dataVal := mkApp3 (.const ``Classical.choose [u]) α p (mkAppN h ctx)
         let mut specVal := mkApp3 (.const ``Classical.choose_spec [u]) α p (mkAppN h ctx)
@@ -142,12 +141,11 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
         specVal ← mkLambdaFVars ctx specVal
         let (fvar, g) ← withLocalDeclD .anonymous dataTy fun d => do
           let specTy ← mkForallFVars ctx (p.app (mkAppN d ctx')).headBeta
-          g.withContext do
-          withLocalDeclD data dataTy fun d' => do
-          let mvarTy ← mkArrow (specTy.replaceFVar d d') (← g.getType)
-          let newMVar ← mkFreshExprSyntheticOpaqueMVar mvarTy (← g.getTag)
-          g.assign <| mkApp2 (← mkLambdaFVars #[d'] newMVar) dataVal specVal
-          pure (d', newMVar.mvarId!)
+          g.withContext <| withLocalDeclD data dataTy fun d' => do
+            let mvarTy ← mkArrow (specTy.replaceFVar d d') (← g.getType)
+            let newMVar ← mkFreshExprSyntheticOpaqueMVar mvarTy (← g.getTag)
+            g.assign <| mkApp2 (← mkLambdaFVars #[d'] newMVar) dataVal specVal
+            pure (d', newMVar.mvarId!)
         let g ← match h with
         | .fvar v => g.clear v
         | _ => pure g
@@ -158,7 +156,7 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
         let e2 ← mkLambdaFVars ctx $ mkApp3 (.const ``And.right []) p q (mkAppN h ctx)
         let t1 ← inferType e1
         let t2 ← inferType e2
-        let (fvar, g) ← (g.asserts [(.anonymous, t2, e2), (data, t1, e1)] >>= MVarId.intro1P)
+        let (fvar, g) ← (← (← g.assert .anonymous t2 e2).assert data t1 e1).intro1P
         let g ← match h with
         | .fvar v => g.clear v
         | _ => pure g
@@ -176,43 +174,47 @@ def choose1WithInfo (g : MVarId) (nondep : Bool) (h : Option Expr) (data : TSynt
 
 /-- A loop around `choose1`. The main entry point for the `choose` tactic. -/
 def elabChoose (nondep : Bool) (h : Option Expr) :
-  List (TSyntax ``binderIdent) → ElimStatus → MVarId → TermElabM (Except (List Expr) MVarId)
+  List (TSyntax ``binderIdent) → ElimStatus → MVarId → TermElabM MVarId
 | [], _, _ => throwError "expect list of variables"
 | [n], status, g =>
   match nondep, status with
-  | true, .failure tys => pure (.error tys)   -- We expected some elimination, but it didn't happen.
+  | true, .failure tys => do -- We expected some elimination, but it didn't happen.
+    let mut msg := m!"choose!: failed to synthesize any nonempty instances"
+    for ty in tys do
+      msg := msg ++ m!"{(← mkFreshExprMVar ty).mvarId!}"
+    throwError msg
   | _, _ => do
     let (fvar, g) ← match n with
     | `(binderIdent| $n:ident) => g.intro n.getId
     | _ => g.intro1
     g.withContext <| (Expr.fvar fvar).addLocalVarInfoForBinderIdent n
-    return .ok g
-| (n::ns), status, g => do
+    return g
+| n::ns, status, g => do
   let (status', g) ← choose1WithInfo g nondep h n
   elabChoose nondep none ns (status.merge status') g
 
-/-- `choose a b h h' using hyp` takes a hypothesis `hyp` of the form
-`∀ (x : X) (y : Y), ∃ (a : A) (b : B), P x y a b ∧ Q x y a b`
-for some `P Q : X → Y → A → B → Prop` and outputs
-into context a function `a : X → Y → A`, `b : X → Y → B` and two assumptions:
-`h : ∀ (x : X) (y : Y), P x y (a x y) (b x y)` and
-`h' : ∀ (x : X) (y : Y), Q x y (a x y) (b x y)`. It also works with dependent versions.
+/--
+* `choose a b h h' using hyp` takes a hypothesis `hyp` of the form
+  `∀ (x : X) (y : Y), ∃ (a : A) (b : B), P x y a b ∧ Q x y a b`
+  for some `P Q : X → Y → A → B → Prop` and outputs
+  into context a function `a : X → Y → A`, `b : X → Y → B` and two assumptions:
+  `h : ∀ (x : X) (y : Y), P x y (a x y) (b x y)` and
+  `h' : ∀ (x : X) (y : Y), Q x y (a x y) (b x y)`. It also works with dependent versions.
 
-`choose! a b h h' using hyp` does the same, except that it will remove dependency of
-the functions on propositional arguments if possible. For example if `Y` is a proposition
-and `A` and `B` are nonempty in the above example then we will instead get
-`a : X → A`, `b : X → B`, and the assumptions
-`h : ∀ (x : X) (y : Y), P x y (a x) (b x)` and
-`h' : ∀ (x : X) (y : Y), Q x y (a x) (b x)`.
+* `choose! a b h h' using hyp` does the same, except that it will remove dependency of
+  the functions on propositional arguments if possible. For example if `Y` is a proposition
+  and `A` and `B` are nonempty in the above example then we will instead get
+  `a : X → A`, `b : X → B`, and the assumptions
+  `h : ∀ (x : X) (y : Y), P x y (a x) (b x)` and
+  `h' : ∀ (x : X) (y : Y), Q x y (a x) (b x)`.
 
 The `using hyp` part can be ommited,
 which will effectively cause `choose` to start with an `intro hyp`.
 
 Examples:
 
-```lean
-example (h : ∀n m : ℕ, ∃i j, m = n + i ∨ m + j = n) : true :=
-by
+```
+example (h : ∀ n m : ℕ, ∃ i j, m = n + i ∨ m + j = n) : True := by
   choose i j h using h
   guard_hyp i : ℕ → ℕ → ℕ
   guard_hyp j : ℕ → ℕ → ℕ
@@ -220,9 +222,8 @@ by
   trivial
 ```
 
-```lean
-example (h : ∀ i : ℕ, i < 7 → ∃ j, i < j ∧ j < i+i) : true :=
-by
+```
+example (h : ∀ i : ℕ, i < 7 → ∃ j, i < j ∧ j < i+i) : True := by
   choose! f h h' using h
   guard_hyp f : ℕ → ℕ
   guard_hyp h : ∀ (i : ℕ), i < 7 → i < f i
@@ -233,13 +234,9 @@ by
 syntax (name := choose) "choose" "!"? (colGt binderIdent)+ (" using " term)? : tactic
 elab_rules : tactic
 | `(tactic| choose $[!%$b]? $[$ids]* $[using $h]?) => withMainContext do
-  let h ← h.mapM (Elab.Tactic.elabTerm . none)
-  match ← elabChoose b.isSome h ids.toList (.failure []) (← getMainGoal) with
-  | .ok g => replaceMainGoal [g]
-  | .error tys =>
-    let gs ← tys.mapM fun ty => Expr.mvarId! <$> mkFreshExprMVar (some ty)
-    setGoals gs
-    throwError "choose!: failed to synthesize any nonempty instances"
+  let h ← h.mapM (Elab.Tactic.elabTerm · none)
+  let g ← elabChoose b.isSome h ids.toList (.failure []) (← getMainGoal)
+  replaceMainGoal [g]
 
 @[inheritDoc choose]
 syntax "choose!" (colGt binderIdent)+ (" using " term)? : tactic
