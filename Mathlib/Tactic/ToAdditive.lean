@@ -162,7 +162,7 @@ def applyReplacementFun : Expr → MetaM Expr :=
   Lean.Expr.replaceRecMeta fun r e => do
     trace[to_additive_detail] "applyReplacementFun: replace at {e}"
     match e with
-    | .lit (.natVal 1) => pure <| mkNatLit 0
+    | .lit (.natVal 1) => pure <| mkRawNatLit 0
     | .const n₀ ls => do
       let n₁ := Name.mapPrefix (findTranslation? <|← getEnv) n₀
       trace[to_additive_detail] "applyReplacementFun: {n₀} → {n₁}"
@@ -705,6 +705,9 @@ initialize registerBuiltinAttribute {
       if let some doc := val.doc then
         addDocString tgt doc
       return ()
+    -- Because `@[simp]` runs after compilation,
+    -- we have to as well to be able to copy attributes correctly.
+    applicationTime := .afterCompilation
   }
 
 
