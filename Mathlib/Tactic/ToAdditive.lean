@@ -290,8 +290,8 @@ partial def transformDeclAux
   addAndCompile trgDecl.toDeclaration!
   -- now add declaration ranges so jump-to-definition works
   addDeclarationRanges tgt {
-    range := ← getDeclarationRange ref
-    selectionRange := ← getDeclarationRange (getDeclarationSelectionRef ref)
+    range := ← getDeclarationRange (← getRef)
+    selectionRange := ← getDeclarationRange ref
   }
   if isProtected (← getEnv) src then
     setEnv $ addProtected (← getEnv) tgt
