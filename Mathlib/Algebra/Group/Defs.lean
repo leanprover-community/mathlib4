@@ -252,6 +252,7 @@ theorem MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁
   rintro ⟨⟨one₁⟩, ⟨mul₁⟩, one_mul₁, mul_one₁⟩ ⟨⟨one₂⟩, ⟨mul₂⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
   congr
   sorry
+  -- FIXME:
   -- exact (one_mul₂ one₁).symm.trans (mul_one₁ one₂)
 
 section MulOneClass

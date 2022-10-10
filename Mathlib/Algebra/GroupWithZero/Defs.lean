@@ -51,12 +51,10 @@ instance [AddMonoidWithOne R] : CoeHTCT ℕ R where coe := Nat.cast
 theorem Nat.cast_succ [AddMonoidWithOne R] : ((Nat.succ n : ℕ) : R) = (n : R) + 1 :=
   AddMonoidWithOne.natCast_succ _
 @[simp, norm_cast]
-theorem Nat.cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := sorry --FIXME by simp
+theorem Nat.cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by simp
 
 @[simp, norm_cast] theorem Nat.cast_add [AddMonoidWithOne R] : ((m + n : ℕ) : R) = (m : R) + n := by
-  sorry
-  -- FIXME
-  -- induction n <;> simp_all [add_succ, add_assoc]
+  induction n <;> simp_all [add_succ, add_assoc]
 
 class Nat.AtLeastTwo (n : Nat) : Prop where
   prop : n ≥ 2
