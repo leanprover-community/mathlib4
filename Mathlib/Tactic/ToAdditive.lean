@@ -294,7 +294,7 @@ partial def transformDeclAux
     range := ← getDeclarationRange (← getRef)
     selectionRange := ← getDeclarationRange ref
   }
-  MetaM.run' <| Term.TermElabM.run' <| Term.addTermInfo' ref trgDecl.value!
+  (Term.addTermInfo' ref (← mkConstWithLevelParams trgDecl.name)).run'.run'
   if isProtected (← getEnv) src then
     setEnv $ addProtected (← getEnv) tgt
 
