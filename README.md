@@ -33,9 +33,15 @@ and the "real" port hasn't started yet
   ```
   find Mathlib -name "*.lean" | env LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
   ```
+
 ## Building HTML documentation
 Building HTML documentation locally is straightforward:
 ```
 lake -Kdoc=on build Mathlib:docs
 ```
 The HTML files can then be found in `build/doc`.
+
+## Dependencies
+If you want to update dependencies, use `lake update -Kdoc=on`.
+This will update the `lean_packages/manifest.json` file correctly.
+You will need to make a PR after committing the changes to this file.

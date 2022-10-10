@@ -7,7 +7,7 @@ abbrev NoLints := Array (Name × Name)
 
 def readJsonFile (α) [FromJson α] (path : System.FilePath) : IO α := do
   let _ : MonadExceptOf String IO := ⟨throw ∘ IO.userError, fun x _ => x⟩
-  liftExcept <| fromJson? <|<- liftExcept <| Json.parse <|<- IO.FS.readFile path
+  liftExcept <| fromJson? <|← liftExcept <| Json.parse <|← IO.FS.readFile path
 
 def writeJsonFile (α) [ToJson α] (path : System.FilePath) (a : α) : IO Unit :=
   IO.FS.writeFile path <| toJson a |>.pretty

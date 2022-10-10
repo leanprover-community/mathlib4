@@ -156,20 +156,18 @@ def derive (e : Expr) : MetaM Simp.Result := do
   trace[Tactic.norm_cast] "before: {r.expr}"
 
   -- step 1: pre-processing of numerals
-  let r ← mkEqTrans r <|<- Simp.main r.expr { config, congrTheorems }
-    { post := fun e => return Simp.Step.done (← try numeralToCoe e catch _ => pure {expr := e}) }
+  let post e := return Simp.Step.done (← try numeralToCoe e catch _ => pure {expr := e})
+  let r ← Simp.mkEqTrans r (← Simp.main r.expr { config, congrTheorems } (methods := { post })).1
   trace[Tactic.norm_cast] "after numeralToCoe: {r.expr}"
 
   -- step 2: casts are moved upwards and eliminated
-  let r ← mkEqTrans r <|<- Simp.main r.expr { config, congrTheorems }
-    { post := upwardAndElim (← normCastExt.up.getTheorems) }
+  let post := upwardAndElim (← normCastExt.up.getTheorems)
+  let r ← Simp.mkEqTrans r (← Simp.main r.expr { config, congrTheorems } (methods := { post })).1
   trace[Tactic.norm_cast] "after upwardAndElim: {r.expr}"
 
   -- step 3: casts are squashed
-  let r ← mkEqTrans r <|<- simp r.expr {
-    simpTheorems := #[← normCastExt.squash.getTheorems]
-    config, congrTheorems
-  }
+  let simpTheorems := #[← normCastExt.squash.getTheorems]
+  let r ← mkEqTrans r (← simp r.expr { simpTheorems, config, congrTheorems }).1
   trace[Tactic.norm_cast] "after squashing: {r.expr}"
 
   return r
@@ -249,12 +247,13 @@ syntax (name := convNormCast) "norm_cast" : conv
   open Elab.Tactic.Conv in fun _ => withMainContext do
     applySimpResult (← derive (← getLhs))
 
-syntax (name := pushCast) "push_cast " (config)? (discharger)? (&"only ")? ("[" (simpStar <|> simpErase <|> simpLemma),* "]")? (location)? : tactic
+syntax (name := pushCast) "push_cast " (config)? (discharger)? (&"only ")?
+  ("[" (simpStar <|> simpErase <|> simpLemma),* "]")? (location)? : tactic
 @[tactic pushCast] def evalPushCast : Tactic := fun stx => do
-  let { ctx, fvarIdToLemmaId, dischargeWrapper, .. } ← withMainContext do
+  let { ctx, dischargeWrapper, .. } ← withMainContext do
     mkSimpContext' (← pushCastExt.getTheorems) stx (eraseLocal := false)
   dischargeWrapper.with fun discharge? =>
-    simpLocation ctx discharge? fvarIdToLemmaId (expandOptLocation stx[5])
+    discard <| simpLocation ctx discharge? (expandOptLocation stx[5])
 
 -- add_hint_tactic "norm_cast at *"
 

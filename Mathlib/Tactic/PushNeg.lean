@@ -65,7 +65,8 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
   | _ => match ex with
           | .forallE name ty body binfo => do
               if (← isProp ty) then
-                return mkSimpStep (← mkAppM ``And #[ty, mkNot body]) (← mkAppM ``not_implies_eq #[ty, body])
+                return mkSimpStep (← mkAppM ``And #[ty, mkNot body])
+                  (← mkAppM ``not_implies_eq #[ty, body])
               else
                 let body' : Expr := .lam name ty (mkNot body) binfo
                 let body'' : Expr := .lam name ty body binfo
@@ -90,7 +91,7 @@ def pushNegTarget : TacticM Unit := withMainContext do
       congrTheorems := (← getSimpCongrTheorems) }
   let goal ← getMainGoal
   let tgt ← instantiateMVars (← goal.getType)
-  let myres := ← Simp.main tgt myctx (methods := { pre := transformNegation })
+  let (myres, _) ← Simp.main tgt myctx (methods := { pre := transformNegation })
   replaceMainGoal [← applySimpResultToTarget goal tgt myres]
 
 /-- Execute main loop of `push_neg` at a local hypothesis. -/
@@ -104,7 +105,7 @@ def pushNegLocalDecl (fvarId : FVarId): TacticM Unit := withMainContext do
       simpTheorems := #[ ]
       congrTheorems := (← getSimpCongrTheorems) }
   let goal ← getMainGoal
-  let myres := ← Simp.main tgt myctx (methods := { pre := transformNegation })
+  let (myres, _) ← Simp.main tgt myctx (methods := { pre := transformNegation })
   let some ⟨_, newGoal⟩ ← applySimpResultToLocalDecl goal fvarId myres False | throwError "fail"
   replaceMainGoal [newGoal]
 

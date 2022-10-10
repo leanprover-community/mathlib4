@@ -33,7 +33,8 @@ protected def strong_rec_on {p : ℕ → Sort u}
 Nat.lt_wfRel.wf.fix' H n
 
 @[elabAsElim]
-protected lemma strong_induction_on {p : Nat → Prop} (n : Nat) (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
+protected lemma strong_induction_on {p : Nat → Prop} (n : Nat) (h : ∀ n, (∀ m, m < n → p m) → p n) :
+    p n :=
 Nat.strong_rec_on n h
 
 protected lemma case_strong_induction_on {p : Nat → Prop} (a : Nat)
@@ -167,7 +168,7 @@ lemma to_digits_core_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List C
       simp only [hx, hnb, if_false] at ih
       simp only [hnb, if_false]
       specialize ih (n / b) c (x :: tl)
-      rw [<- ih]
+      rw [← ih]
       have lens_eq : (x :: (c :: tl)).length = (c :: x :: tl).length := by simp
       apply to_digits_core_lens_eq_aux
       exact lens_eq

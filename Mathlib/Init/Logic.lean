@@ -86,6 +86,14 @@ def ExistsUnique (p : α → Prop) := ∃ x, p x ∧ ∀ y, p y → y = x
 open Lean in
 macro "∃! " xs:explicitBinders ", " b:term : term => expandExplicitBinders ``ExistsUnique xs b
 
+/-- Pretty-printing for `ExistsUnique`, following the same pattern as pretty printing
+    for `Exists`. -/
+@[appUnexpander ExistsUnique] def unexpandExistsUnique : Lean.PrettyPrinter.Unexpander
+  | `($(_) fun $x:ident => ∃! $xs:binderIdent*, $b) => `(∃! $x:ident $xs:binderIdent*, $b)
+  | `($(_) fun $x:ident => $b)                      => `(∃! $x:ident, $b)
+  | `($(_) fun ($x:ident : $t) => $b)               => `(∃! ($x:ident : $t), $b)
+  | _                                               => throw ()
+
 lemma ExistsUnique.intro {p : α → Prop} (w : α)
   (h₁ : p w) (h₂ : ∀ y, p y → y = w) : ∃! x, p x := ⟨w, h₁, h₂⟩
 
@@ -139,8 +147,8 @@ end
 def is_dec_eq {α : Sort u} (p : α → α → Bool) : Prop   := ∀ ⦃x y : α⦄, p x y = true → x = y
 def is_dec_refl {α : Sort u} (p : α → α → Bool) : Prop := ∀ x, p x x = true
 
-def decidable_eq_of_bool_pred {α : Sort u} {p : α → α → Bool} (h₁ : is_dec_eq p) (h₂ : is_dec_refl p) :
-  DecidableEq α :=
+def decidable_eq_of_bool_pred {α : Sort u} {p : α → α → Bool} (h₁ : is_dec_eq p)
+    (h₂ : is_dec_refl p) : DecidableEq α :=
 λ (x y : α) =>
  if hp : p x y = true then isTrue (h₁ hp)
  else isFalse (λ hxy : x = y => absurd (h₂ y) (by rwa [hxy] at hp))
@@ -150,7 +158,8 @@ match (h a a) with
 | isTrue _  => rfl
 | isFalse n => absurd rfl n
 
-lemma decidable_eq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α} : ∀ n : a ≠ b, h a b = isFalse n :=
+lemma decidable_eq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α} :
+    ∀ n : a ≠ b, h a b = isFalse n :=
 λ n =>
 match (h a b) with
 | isTrue e   => absurd e n

@@ -6,9 +6,8 @@ Authors: Johannes Hölzl, Floris van Doorn, Mario Carneiro, Reid Barton, Johan C
 
 import Mathlib.Util.Asserts
 import Mathlib.Util.Tactic
-import Mathlib.Tactic.ShowTerm
-
 import Mathlib.Lean.CoreM
+import Mathlib.Logic.Function.Basic
 
 /-!
 # `choose` tactic
@@ -18,31 +17,7 @@ Performs Skolemization, that is, given `h : ∀ a:α, ∃ b:β, p a b |- G` prod
 TODO: switch to `rcases` syntax: `choose ⟨i, j, h₁ -⟩ := expr`.
 -/
 
-open Lean Lean.Meta Elab.Term Elab.Tactic
-
-namespace Function
-/-!
-## `Function.sometimes`
-
-To make the `choose` tactic self-contained,
-we give a definition of `Function.sometimes` in this file.
--/
-
-open Classical in
-/-- `sometimes f` evaluates to some value of `f`, if it exists. This function is especially
-interesting in the case where `α` is a proposition, in which case `f` is necessarily a
-constant function, so that `sometimes f = f a` for all `a`. -/
-noncomputable def sometimes {α β} [Nonempty β] (f : α → β) : β :=
-if h : Nonempty α then f (choice h) else choice ‹_›
-
-theorem sometimes_eq {p : Prop} {α} [Nonempty α] (f : p → α) (a : p) : sometimes f = f a :=
-dif_pos ⟨a⟩
-
-theorem sometimes_spec {p : Prop} {α} [Nonempty α]
-  (P : α → Prop) (f : p → α) (a : p) (h : P (f a)) : P (sometimes f) :=
-(sometimes_eq f a).symm ▸ h
-
-end Function
+open Lean Meta Elab Tactic
 
 namespace Mathlib.Tactic.Choose
 
@@ -50,7 +25,7 @@ namespace Mathlib.Tactic.Choose
 `ctx`, and a pair of an element `val : α` and `spec : p val`,
 `mk_sometimes u α nonemp p ctx (val, spec)` produces another pair `val', spec'`
 such that `val'` does not have any free variables from elements of `ctx` whose types are
-propositions. This is done by applying `function.sometimes` to abstract over all the propositional
+propositions. This is done by applying `Function.sometimes` to abstract over all the propositional
 arguments. -/
 def mk_sometimes (u : Level) (α nonemp p : Expr) :
   List Expr → Expr × Expr → MetaM (Expr × Expr)

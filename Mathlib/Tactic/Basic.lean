@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Lean
 import Std
+import Mathlib.Tactic.Cases
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
@@ -107,23 +108,6 @@ elab "match_target" t:term : tactic  => do
     let (val) ← elabTerm t (← inferType (← getMainTarget))
     if not (← isDefEq val (← getMainTarget)) then
       throwError "failed"
-
-elab "any_goals " seq:tacticSeq : tactic => do
-  let goals ← getGoals
-  let mut goalsNew := #[]
-  let mut anySuccess := false
-  for goal in goals do
-    if ← goal.isAssigned then continue
-    setGoals [goal]
-    try
-      evalTactic seq
-      goalsNew := goalsNew ++ (← getUnsolvedGoals)
-      anySuccess := true
-    catch _ =>
-      goalsNew := goalsNew.push goal
-  unless anySuccess do
-    throwError "failed on all goals"
-  setGoals goalsNew.toList
 
 /-- This tactic clears all auxiliary declarations from the context. -/
 elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
