@@ -68,16 +68,8 @@ local macro "genIntDeclars" typeName:ident : command => do
       lemma one_def : (1 : $typeName) = ⟨1⟩ := rfl
 
       instance : Semiring $typeName where
-        add_zero := by
-          simp [add_def, zero_def]
-          -- FIXME this should not be necessary:
-          intro
-          rw [add_zero]
-        zero_add := by
-          simp [add_def, zero_def]
-          -- FIXME this should not be necessary:
-          intro
-          rw [zero_add]
+        add_zero := by simp [add_def, zero_def]
+        zero_add := by simp [add_def, zero_def]
         add_comm := by simp [add_def, add_comm]
         mul_one  := by simp [mul_def, one_def]
         one_mul  := by simp [mul_def, one_def]
@@ -107,8 +99,6 @@ local macro "genIntDeclars" typeName:ident : command => do
         add_left_neg := fun a => by
           apply eq_of_val_eq
           simp [neg_def, add_def, zero_def]
-          -- FIXME this should not be necessary:
-          rw [add_left_neg]
         intCast n := ⟨n⟩
         intCast_ofNat _ := rfl
         intCast_negSucc _ := rfl
