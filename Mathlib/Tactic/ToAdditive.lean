@@ -247,8 +247,6 @@ def isInternal' : Name → Bool
   | n@(.str _ s) => s.startsWith "proof_" || n.isInternal
   | n => Name.isInternal n
 
-#print Lean.Elab.Term.TermElabM.run'
-
 /-- transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
 using the transforms dictionary.
 `replace_all`, `trace`, `ignore` and `reorder` are configuration options.
