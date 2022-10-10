@@ -15,7 +15,8 @@ def leftRightMeta (name : Name) (idx max : Nat) (goal : MVarId) : MetaM (List MV
       (fun _ => throwTacticEx `constructor goal "target is not an inductive datatype")
       fun ival us => do
         unless ival.ctors.length == max do
-          throwTacticEx `constructor goal s!"{name} target applies for inductive types with exactly two constructors"
+          throwTacticEx `constructor goal
+            s!"{name} target applies for inductive types with exactly two constructors"
         let ctor := ival.ctors[idx]!
         goal.apply <| mkConst ctor us
 

@@ -20,7 +20,8 @@ by simp only [String.length]
 
 /-- The length of the String returned by `String.leftpad n a c` is equal
   to the larger of `n` and `s.length` -/
-@[simp] lemma leftpad_length (n : ℕ) (c : Char) : ∀ (s : String), (leftpad n c s).length = max n s.length
+@[simp] lemma leftpad_length (n : ℕ) (c : Char) :
+  ∀ (s : String), (leftpad n c s).length = max n s.length
 | ⟨s⟩ => by simp only [leftpad, String.length, List.leftpad_length]
 
 lemma leftpad_prefix (n : ℕ) (c : Char) : ∀ s, isPrefix (replicate (n - length s) c) (leftpad n c s)
