@@ -33,7 +33,8 @@ private def levelParamsToMessageData (levelParams : List Name) : MessageData :=
       m := m ++ ", " ++ toMessageData u
     return m ++ "}"
 
-private def mkHeader (kind : String) (id : Name) (levelParams : List Name) (type : Expr) (safety : DefinitionSafety) : CoreM MessageData := do
+private def mkHeader (kind : String) (id : Name) (levelParams : List Name) (type : Expr)
+    (safety : DefinitionSafety) : CoreM MessageData := do
   let m : MessageData :=
     match safety with
     | DefinitionSafety.unsafe  => "unsafe "
@@ -46,14 +47,17 @@ private def mkHeader (kind : String) (id : Name) (levelParams : List Name) (type
   let m := m ++ kind ++ " " ++ id ++ levelParamsToMessageData levelParams ++ " : " ++ type
   pure m
 
-private def mkHeader' (kind : String) (id : Name) (levelParams : List Name) (type : Expr) (isUnsafe : Bool) : CoreM MessageData :=
-  mkHeader kind id levelParams type (if isUnsafe then DefinitionSafety.unsafe else DefinitionSafety.safe)
+private def mkHeader' (kind : String) (id : Name) (levelParams : List Name) (type : Expr)
+    (isUnsafe : Bool) : CoreM MessageData :=
+  mkHeader kind id levelParams type
+    (if isUnsafe then DefinitionSafety.unsafe else DefinitionSafety.safe)
 
-private def printDefLike (kind : String) (id : Name) (levelParams : List Name) (type : Expr) (value : Expr) (safety := DefinitionSafety.safe) : CoreM MessageData :=
+private def printDefLike (kind : String) (id : Name) (levelParams : List Name) (type : Expr)
+    (value : Expr) (safety := DefinitionSafety.safe) : CoreM MessageData :=
   return (← mkHeader kind id levelParams type safety) ++ " :=" ++ Format.line ++ value
 
-private def printInduct (id : Name) (levelParams : List Name) (_numParams : Nat) (_numIndices : Nat) (type : Expr)
-    (ctors : List Name) (isUnsafe : Bool) : CoreM MessageData := do
+private def printInduct (id : Name) (levelParams : List Name) (_numParams : Nat) (_numIndices : Nat)
+    (type : Expr) (ctors : List Name) (isUnsafe : Bool) : CoreM MessageData := do
   let mut m ← mkHeader' "inductive" id levelParams type isUnsafe
   m := m ++ Format.line ++ "constructors:"
   for ctor in ctors do
@@ -76,7 +80,8 @@ private def printIdCore (id : Name) : ConstantInfo → CoreM MessageData
     mkHeader' "constructor" id us t u
   | ConstantInfo.recInfo { levelParams := us, type := t, isUnsafe := u, .. } =>
     mkHeader' "recursor" id us t u
-  | ConstantInfo.inductInfo { levelParams := us, numParams, numIndices, type := t, ctors, isUnsafe := u, .. } =>
+  | ConstantInfo.inductInfo
+      { levelParams := us, numParams, numIndices, type := t, ctors, isUnsafe := u, .. } =>
     printInduct id us numParams numIndices t ctors u
 
 def diffExtension (old new : Environment)

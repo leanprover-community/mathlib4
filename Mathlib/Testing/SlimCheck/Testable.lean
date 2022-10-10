@@ -244,7 +244,8 @@ instance iffTestable [Testable ((p ∧ q) ∨ (¬ p ∧ ¬ q))] : Testable (p �
     let h ← runProp ((p ∧ q) ∨ (¬ p ∧ ¬ q)) cfg min
     pure $ iff iff_iff_and_or_not_and_not h
 
-instance decGuardTestable [PrintableProp p] [Decidable p] {β : p → Prop} [∀ h, Testable (β h)] : Testable (NamedBinder var $ ∀ h, β h) where
+instance decGuardTestable [PrintableProp p] [Decidable p] {β : p → Prop} [∀ h, Testable (β h)] :
+    Testable (NamedBinder var $ ∀ h, β h) where
   run := λ cfg min => do
     if h : p then
       let res := (runProp (β h) cfg min)
@@ -257,7 +258,8 @@ instance decGuardTestable [PrintableProp p] [Decidable p] {β : p → Prop} [∀
     else
       pure $ gaveUp 1
 
-instance forallTypesTestable {f : Type → Prop} [Testable (f Int)] : Testable (NamedBinder var $ ∀ x, f x) where
+instance forallTypesTestable {f : Type → Prop} [Testable (f Int)] :
+    Testable (NamedBinder var $ ∀ x, f x) where
   run := λ cfg min => do
     let r ← runProp (f Int) cfg min
     pure $ addVarInfo var "ℤ" (· $ Int) r
@@ -288,8 +290,9 @@ candidate that falsifies a property and recursively shrinking that one.
 The process is guaranteed to terminate because `shrink x` produces
 a proof that all the values it produces are smaller (according to `SizeOf`)
 than `x`. -/
-def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration) (var : String)
-    (x : SampleableExt.proxy α) (n : Nat) : OptionT Gen (Σ x, TestResult (β (SampleableExt.interp x))) := do
+def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration)
+    (var : String) (x : SampleableExt.proxy α) (n : Nat) :
+    OptionT Gen (Σ x, TestResult (β (SampleableExt.interp x))) := do
   let candidates := SampleableExt.shrink.shrink x
   if cfg.traceShrinkCandidates then
     slimTrace s!"Candidates for {var} := {repr x}:\n  {repr candidates}"
@@ -310,8 +313,9 @@ def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (
 
 /-- Once a property fails to hold on an example, look for smaller counter-examples
 to show the user. -/
-def minimize [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration) (var : String)
-    (x : SampleableExt.proxy α) (r : TestResult (β $ SampleableExt.interp x)) : Gen (Σ x, TestResult (β $ SampleableExt.interp x)) := do
+def minimize [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration)
+    (var : String) (x : SampleableExt.proxy α) (r : TestResult (β $ SampleableExt.interp x)) :
+    Gen (Σ x, TestResult (β $ SampleableExt.interp x)) := do
   if cfg.traceShrink then
      slimTrace "Shrink"
      slimTrace s!"Attempting to shrink {var} := {repr x}"
@@ -320,7 +324,8 @@ def minimize [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg
 
 /-- Test a universal property by creating a sample of the right type and instantiating the
 bound variable with it. -/
-instance varTestable [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] : Testable (NamedBinder var $ ∀ x : α, β x) where
+instance varTestable [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] :
+    Testable (NamedBinder var $ ∀ x : α, β x) where
   run := λ cfg min => do
     let x ← SampleableExt.sample
     if cfg.traceSuccesses || cfg.traceDiscarded then
@@ -355,7 +360,8 @@ where
     let finalR := addInfo s!"{var} is irrelevant (unused)" id r
     pure $ imp (· $ Classical.ofNonempty) finalR (PSum.inr $ λ x _ => x)
 
-instance (priority := low) decidableTestable {p : Prop} [PrintableProp p] [Decidable p] : Testable p where
+instance (priority := low) decidableTestable {p : Prop} [PrintableProp p] [Decidable p] :
+    Testable p where
   run := λ _ _ =>
     if h : p then
       pure $ success (PSum.inr h)
@@ -426,7 +432,8 @@ def giveUp (x : Nat) : TestResult p → TestResult p
 | TestResult.failure h xs n => failure h xs n
 
 /-- Try `n` times to find a counter-example for `p`. -/
-def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) : TestResult p → Nat → Rand (TestResult p)
+def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) :
+  TestResult p → Nat → Rand (TestResult p)
 | r, 0 => pure r
 | r, n+1 => do
   let size := (cfg.numInst - n - 1) * cfg.maxSize / cfg.numInst
@@ -497,15 +504,18 @@ end Decorations
 
 open Decorations in
 /-- Run a test suite for `p` and throw an exception if `p` does not not hold.-/
-def Testable.check (p : Prop) (cfg : Configuration := {}) (p' : Decorations.DecorationsOf p := by mk_decorations) [Testable p'] : IO PUnit := do
+def Testable.check (p : Prop) (cfg : Configuration := {})
+    (p' : Decorations.DecorationsOf p := by mk_decorations) [Testable p'] : IO PUnit := do
   match ← Testable.checkIO p' cfg with
   | TestResult.success _ => if !cfg.quiet then IO.println "Success"
   | TestResult.gaveUp n => if !cfg.quiet then IO.println s!"Gave up {n} times"
   | TestResult.failure _ xs n => throw (IO.userError $ formatFailure "Found problems!" xs n)
 
--- #eval Testable.check (∀ (x y z a : Nat) (h1 : 3 < x) (h2 : 3 < y), x - y = y - x) Configuration.verbose
+-- #eval Testable.check (∀ (x y z a : Nat) (h1 : 3 < x) (h2 : 3 < y), x - y = y - x)
+--   Configuration.verbose
 -- #eval Testable.check (∀ x : Nat, ∀ y : Nat, x + y = y + x) Configuration.verbose
--- #eval Testable.check (∀ (x : (Nat × Nat)), x.fst - x.snd - 10 = x.snd - x.fst - 10) Configuration.verbose
+-- #eval Testable.check (∀ (x : (Nat × Nat)), x.fst - x.snd - 10 = x.snd - x.fst - 10)
+--   Configuration.verbose
 -- #eval Testable.check (∀ (x : Nat) (h : 10 < x), 5 < x) Configuration.verbose
 
 end SlimCheck

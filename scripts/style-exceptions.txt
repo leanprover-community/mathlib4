@@ -112,15 +112,7 @@ Mathlib/Logic/Function/Basic.lean : line 14 : ERR_MOD : Module docstring missing
 Mathlib/Mathport/Attributes.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Mathport/Rename.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Mathport/SpecialNames.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Mathport/Syntax.lean : line 222 : ERR_LIN : Line has more than 100 characters
-Mathlib/Mathport/Syntax.lean : line 232 : ERR_LIN : Line has more than 100 characters
-Mathlib/Mathport/Syntax.lean : line 360 : ERR_LIN : Line has more than 100 characters
-Mathlib/Mathport/Syntax.lean : line 399 : ERR_LIN : Line has more than 100 characters
 Mathlib/Mathport/Syntax.lean : line 42 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Mathport/Syntax.lean : line 434 : ERR_LIN : Line has more than 100 characters
-Mathlib/Mathport/Syntax.lean : line 447 : ERR_LIN : Line has more than 100 characters
-Mathlib/Mathport/Syntax.lean : line 522 : ERR_LIN : Line has more than 100 characters
-Mathlib/Mathport/Syntax.lean : line 526 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/ApplyWith.lean : line 0 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/ApplyWith.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/ApplyWith.lean : line 2 : ERR_COP : Malformed or missing copyright header
@@ -130,8 +122,6 @@ Mathlib/Tactic/Basic.lean : line 10 : ERR_MOD : Module docstring missing, or too
 Mathlib/Tactic/ByContra.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/ByContra.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Tactic/ByContra.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Cases.lean : line 76 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/Cases.lean : line 78 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/Clear!.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/ClearExcept.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Clear_.lean : line 0 : ERR_COP : Malformed or missing copyright header
@@ -145,23 +135,17 @@ Mathlib/Tactic/Core.lean : line 10 : ERR_MOD : Module docstring missing, or too 
 Mathlib/Tactic/Existsi.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Expect.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Have.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/IrreducibleDef.lean : line 74 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/LeftRight.lean : line 18 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/LeftRight.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/LibrarySearch.lean : line 71 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/NormCast/Tactic.lean : line 12 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/NormCast/Tactic.lean : line 250 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/NormNum.lean : line 11 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/PermuteGoals.lean : line 11 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/PrintPrefix.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/PushNeg.lean : line 12 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/PushNeg.lean : line 68 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/Recover.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Rename.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/RenameBVar.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Replace.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/RestateAxiom.lean : line 10 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Ring.lean : line 328 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/SeqFocus.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Set.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Tactic/Set.lean : line 7 : ERR_MOD : Module docstring missing, or too late
@@ -169,42 +153,7 @@ Mathlib/Tactic/SimpRw.lean : line 9 : ERR_MOD : Module docstring missing, or too
 Mathlib/Tactic/Substs.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/Substs.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Tactic/Substs.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/ToAdditive.lean : line 189 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/ToAdditive.lean : line 196 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/ToAdditive.lean : line 261 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/ToAdditive.lean : line 42 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/ToAdditive.lean : line 427 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/ToAdditive.lean : line 59 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/ToAdditive.lean : line 61 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/ToAdditive.lean : line 77 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/TypeCheck.lean : line 0 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/TypeCheck.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/TypeCheck.lean : line 3 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/TypeCheck.lean : line 3 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Testing/SlimCheck/Gen.lean : line 44 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Gen.lean : line 47 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Sampleable.lean : line 120 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Sampleable.lean : line 145 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Sampleable.lean : line 159 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Sampleable.lean : line 166 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Sampleable.lean : line 167 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Sampleable.lean : line 186 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Sampleable.lean : line 194 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 247 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 260 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 291 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 292 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 313 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 314 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 323 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 358 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 429 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 500 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 506 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 508 : ERR_LIN : Line has more than 100 characters
-Mathlib/Util/WhatsNew.lean : line 36 : ERR_LIN : Line has more than 100 characters
-Mathlib/Util/WhatsNew.lean : line 49 : ERR_LIN : Line has more than 100 characters
-Mathlib/Util/WhatsNew.lean : line 50 : ERR_LIN : Line has more than 100 characters
-Mathlib/Util/WhatsNew.lean : line 52 : ERR_LIN : Line has more than 100 characters
-Mathlib/Util/WhatsNew.lean : line 55 : ERR_LIN : Line has more than 100 characters
-Mathlib/Util/WhatsNew.lean : line 79 : ERR_LIN : Line has more than 100 characters
