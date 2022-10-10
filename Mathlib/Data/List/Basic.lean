@@ -2,6 +2,7 @@ import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Option.Basic
+import Mathlib.Data.Subtype
 import Std.Tactic.Simpa
 import Std.Data.List.Lemmas
 import Lean
@@ -209,3 +210,63 @@ theorem product_spec (xs : List α) (ys : List β) (x : α) (y : β) :
     exact And.intro
   · simp only [product, mem_bind, mem_map, Prod.mk.injEq, exists_eq_right_right', exists_prop]
     exact id
+
+/-- Partial map. If `f : Π a, p a → β` is a partial function defined on
+  `a : α` satisfying `p`, then `pmap f l h` is essentially the same as `map f l`
+  but is defined only when all members of `l` satisfy `p`, using the proof
+  to apply `f`. -/
+@[simp]
+def pmap {p : α → Prop} (f : ∀ a, p a → β) : ∀ l : List α, (∀ a ∈ l, p a) → List β
+  | [], H => []
+  | a :: l, H => f a (forall_mem_cons.1 H).1 :: pmap f l (forall_mem_cons.1 H).2
+
+/-- "Attach" the proof that the elements of `l` are in `l` to produce a new list
+  with the same elements but in the type `{x // x ∈ l}`. -/
+def attach (l : List α) : List { x // x ∈ l } :=
+  pmap Subtype.mk l (fun _ => id)
+
+@[simp]
+theorem pmap_eq_map (p : α → Prop) (f : α → β) (l : List α) (H) :
+    @pmap _ _ p (fun a _ => f a) l H = map f l := by
+  induction l with
+  | nil => rfl
+  | cons => simp only [*, pmap, map]
+
+theorem pmap_congr {p q : α → Prop} {f : ∀ a, p a → β} {g : ∀ a, q a → β} (l : List α) {H₁ H₂}
+    (h : ∀ a ∈ l, ∀ (h₁ h₂), f a h₁ = g a h₂) : pmap f l H₁ = pmap g l H₂ := by
+  induction l with
+  | nil => rfl
+  | cons a l ih =>
+    rw [pmap, pmap, h _ (mem_cons_self _ _), ih (fun a ha => h a (mem_cons_of_mem _ ha))]
+
+theorem map_pmap {p : α → Prop} (g : β → γ) (f : ∀ a, p a → β) (l H) :
+    map g (pmap f l H) = pmap (fun a h => g (f a h)) l H := by
+  induction l with
+  | nil => rfl
+  | cons => simp only [*, pmap, map]
+
+theorem pmap_map {p : β → Prop} (g : ∀ b, p b → γ) (f : α → β) (l H) :
+    pmap g (map f l) H = pmap (fun a h => g (f a) h) l fun a h => H _ (mem_map_of_mem _ h) := by
+  induction l with
+  | nil => rfl
+  | cons => simp only [*, pmap, map]
+
+theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (l H) :
+    pmap f l H = l.attach.map fun x => f x.1 (H _ x.2) := by
+  rw [attach, map_pmap] <;> exact pmap_congr l fun _ _ _ _ => rfl
+
+theorem attach_map_val (l : List α) : l.attach.map Subtype.val = l := by
+  rw [attach, map_pmap] <;> exact (pmap_eq_map _ _ _ _).trans (map_id l)
+
+@[simp]
+theorem mem_attach (l : List α) : ∀ x, x ∈ l.attach
+  | ⟨a, h⟩ => by
+    have := mem_map.1 (by rw [attach_map_val] <;> exact h)
+    rcases this with ⟨⟨_, _⟩, m, rfl⟩
+    exact m
+
+@[simp]
+theorem mem_pmap {p : α → Prop} {f : ∀ a, p a → β} {l H b} :
+    b ∈ pmap f l H ↔ ∃ (a : _)(h : a ∈ l), f a (H a h) = b := by
+  simp only [pmap_eq_map_attach, mem_map, mem_attach, true_and, Subtype.exists, eq_comm]
+  rfl

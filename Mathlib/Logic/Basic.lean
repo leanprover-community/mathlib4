@@ -243,3 +243,21 @@ theorem forall_true_iff : α → True ↔ True := iff_true_intro fun _ => trivia
 
 theorem forall_prop_of_false {p : Prop} {q : p → Prop} (hn : ¬p) : (∀ h' : p, q h') ↔ True :=
   iff_true_intro fun h => hn.elim h
+
+open Function
+
+theorem forall_swap {p : α → β → Prop} : (∀ x y, p x y) ↔ ∀ y x, p x y := ⟨swap, swap⟩
+
+/-! ### Declarations about bounded quantifiers -/
+
+section BoundedQuantifiers
+
+variable {α} {p q r : α → Prop} {P Q : ∀ x, p x → Prop}
+
+theorem Ball.imp_right (H : ∀ x h, P x h → Q x h) (h₁ : ∀ x h, P x h) (x h) : Q x h :=
+  H _ _ <| h₁ _ _
+
+theorem Ball.imp_left (H : ∀ x, p x → q x) (h₁ : ∀ x, q x → r x) (x) (h : p x) : r x :=
+  h₁ _ <| H _ h
+
+end BoundedQuantifiers
