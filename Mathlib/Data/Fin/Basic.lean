@@ -255,7 +255,9 @@ instance : CommSemiring (Fin n) where
 instance : Neg (Fin n) where
   neg a := ⟨(n - a) % n, Nat.mod_lt _ (lt_of_le_of_lt (Nat.zero_le _) a.isLt)⟩
 
-lemma Fin.neg_def : (-a : Fin n) = ⟨(n - a) % n, Nat.mod_lt _ (lt_of_le_of_lt (Nat.zero_le _) a.isLt)⟩ := rfl
+lemma Fin.neg_def :
+    (-a : Fin n) = ⟨(n - a) % n, Nat.mod_lt _ (lt_of_le_of_lt (Nat.zero_le _) a.isLt)⟩ :=
+  rfl
 
 protected def Fin.ofInt'' : Int → Fin n
   | Int.ofNat a => Fin.ofNat' a Fin.size_positive'
