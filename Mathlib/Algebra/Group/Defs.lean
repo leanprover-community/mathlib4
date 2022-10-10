@@ -7,7 +7,6 @@ import Mathlib.Init.Zero
 import Mathlib.Init.Data.Int.Notation
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.ToAdditive
-import Mathlib.Util.WhatsNew
 
 /-!
 # Typeclasses for (semi)groups and monoids
