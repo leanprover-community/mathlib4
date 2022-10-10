@@ -79,6 +79,10 @@ alias and_left_comm ← And.left_comm
 alias or_assoc ← Or.assoc
 alias or_left_comm ← Or.left_comm
 
+-- This is need for `calc` to work with `iff`.
+instance : Trans Iff Iff Iff where
+  trans := fun p q => p.trans q
+
 /- exists unique -/
 
 def ExistsUnique (p : α → Prop) := ∃ x, p x ∧ ∀ y, p y → y = x

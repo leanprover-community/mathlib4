@@ -116,12 +116,9 @@ section LeftCancelMonoid
 variable {M : Type u} [LeftCancelMonoid M] {a b : M}
 
 @[simp, to_additive]
-theorem mul_right_eq_self : a * b = a ↔ b = 1 :=
-  sorry
-  -- calc
-  --   a * b = a ↔ a * b = a * 1 := by rw [mul_one]
-  --   _ ↔ b = 1 := mul_left_cancel_iff
-
+theorem mul_right_eq_self : a * b = a ↔ b = 1 := calc
+  a * b = a ↔ a * b = a * 1 := by rw [mul_one]
+  _ ↔ b = 1 := mul_left_cancel_iff
 
 @[simp, to_additive]
 theorem self_eq_mul_right : a = a * b ↔ b = 1 :=
@@ -134,12 +131,9 @@ section RightCancelMonoid
 variable {M : Type u} [RightCancelMonoid M] {a b : M}
 
 @[simp, to_additive]
-theorem mul_left_eq_self : a * b = b ↔ a = 1 :=
-  sorry
-  -- calc
-  --   a * b = b ↔ a * b = 1 * b := by rw [one_mul]
-  --   _ ↔ a = 1 := mul_right_cancel_iff
-
+theorem mul_left_eq_self : a * b = b ↔ a = 1 := calc
+  a * b = b ↔ a * b = 1 * b := by rw [one_mul]
+  _ ↔ a = 1 := mul_right_cancel_iff
 
 @[simp, to_additive]
 theorem self_eq_mul_left : b = a * b ↔ a = 1 :=
@@ -308,8 +302,7 @@ theorem one_eq_inv : 1 = a⁻¹ ↔ a = 1 :=
 
 @[to_additive]
 theorem inv_ne_one : a⁻¹ ≠ 1 ↔ a ≠ 1 :=
-  sorry
-  -- inv_eq_one.Not
+  inv_eq_one.not
 
 @[to_additive]
 theorem eq_of_one_div_eq_one_div (h : 1 / a = 1 / b) : a = b :=
@@ -483,13 +476,15 @@ theorem inv_mul_eq_one : a⁻¹ * b = 1 ↔ a = b := by rw [mul_eq_one_iff_eq_in
 
 @[to_additive]
 theorem div_left_injective : Function.injective fun a => a / b := by
-  sorry
-  -- simpa only [div_eq_mul_inv] using fun a a' h => mul_left_injective b⁻¹ h
+  -- FIXME this could be by `simpa`, but it fails. This is probably a bug in `simpa`.
+  simp only [div_eq_mul_inv]
+  exact fun a a' h => mul_left_injective b⁻¹ h
 
 @[to_additive]
 theorem div_right_injective : Function.injective fun a => b / a := by
-  sorry
-  -- simpa only [div_eq_mul_inv] using fun a a' h => inv_injective (mul_right_injective b h)
+  -- FIXME see above
+  simp only [div_eq_mul_inv]
+  exact fun a a' h => inv_injective (mul_right_injective b h)
 
 @[simp, to_additive sub_add_cancel]
 theorem div_mul_cancel' (a b : G) : a / b * b = a :=
@@ -602,7 +597,9 @@ theorem div_eq_of_eq_mul' {a b c : G} (h : a = b * c) : a / b = c := by
   rw [h, div_eq_mul_inv, mul_comm, inv_mul_cancel_left]
 
 @[simp, to_additive]
-theorem mul_div_mul_left_eq_div (a b c : G) : c * a / (c * b) = a / b := sorry -- by simp
+theorem mul_div_mul_left_eq_div (a b c : G) : c * a / (c * b) = a / b := by
+  rw [div_eq_mul_inv, mul_inv_rev, mul_comm b⁻¹ c⁻¹, mul_comm c a, mul_assoc, ←mul_assoc c,
+    mul_right_inv, one_mul, div_eq_mul_inv]
 
 @[to_additive eq_sub_of_add_eq']
 theorem eq_div_of_mul_eq'' (h : c * a = b) : a = b / c := by simp [h.symm]
