@@ -259,15 +259,14 @@ using the transforms dictionary.
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
 partial def transformDeclAux
-  (ref : Syntax) (pre tgt_pre : Name) : Name → CoreM Unit := fun src => do
+  (ref : Option Syntax) (pre tgt_pre : Name) : Name → CoreM Unit := fun src => do
   -- if this declaration is not `pre` or an internal declaration, we do nothing.
   if not (src == pre || isInternal' src) then
     if (findTranslation? (← getEnv) src).isSome then
-      return ()
-    else throwError
-       ("The declaration {pre} depends on the declaration {src} which is in the namespace {pre}," ++
-        " but does not have the `@[to_additive]` attribute. This is not supported. " ++
-        "Workaround: move {src} to a different namespace.")
+      return
+    throwError "The declaration {pre} depends on the declaration {src} which is in the namespace {
+      pre}, but does not have the `@[to_additive]` attribute. This is not supported.\n{""
+      }Workaround: move {src} to a different namespace."
   let env ← getEnv
   -- we find the additive name of `src`
   let tgt := src.mapPrefix (fun n => if n == pre then some tgt_pre else none)
@@ -277,10 +276,10 @@ partial def transformDeclAux
   let srcDecl ← getConstInfo src
   -- we first transform all the declarations of the form `pre._proof_i`
   for n in srcDecl.type.listNamesWithPrefix pre do
-    transformDeclAux ref pre tgt_pre n
+    transformDeclAux none pre tgt_pre n
   if let some value := srcDecl.value? then
     for n in value.listNamesWithPrefix pre do
-      transformDeclAux ref pre tgt_pre n
+      transformDeclAux none pre tgt_pre n
   -- now transform the source declaration
   let trgDecl : ConstantInfo ← MetaM.run' $ updateDecl tgt srcDecl
   if ¬ trgDecl.hasValue then
@@ -300,9 +299,15 @@ partial def transformDeclAux
   -- now add declaration ranges so jump-to-definition works
   addDeclarationRanges tgt {
     range := ← getDeclarationRange (← getRef)
-    selectionRange := ← getDeclarationRange ref
+    selectionRange := ← getDeclarationRange (ref.getD (← getRef))
   }
-  (Term.addTermInfo' ref (← mkConstWithLevelParams trgDecl.name)).run'.run'
+  if let some ref := ref then
+    -- TODO: make a function for this
+    pushInfoLeaf <| .ofTermInfo {
+      elaborator := .anonymous, lctx := {}, expectedType? := none
+      stx := ref, isBinder := true
+      expr := ← mkConstWithLevelParams trgDecl.name
+    }
   if isProtected (← getEnv) src then
     setEnv $ addProtected (← getEnv) tgt
 
@@ -315,34 +320,33 @@ allow us to iterate the attributes applied to a given decalaration.
 -/
 def copyAttributes (src tgt : Name) : CoreM Unit := do
   -- [todo] other simp theorems
-  let some ext ← getSimpExtension? `simp | return ()
+  let some ext ← getSimpExtension? `simp | return
   let thms ← ext.getTheorems
   if (¬ thms.isLemma (.decl src)) || thms.isLemma (.decl tgt) then
-    return ()
+    return
   -- [todo] how to get prio data from SimpTheorems?
-  MetaM.run' $ Lean.Meta.addSimpTheorem ext tgt
+  Lean.Meta.addSimpTheorem ext tgt
     (post := true)
     (inv := false)
     (attrKind := AttributeKind.global)
-    (prio := 1000)
-  return ()
+    (prio := 1000) |>.run'
 
 /--
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
 the body using the `translations` dictionary.
 This is used to implement `@[to_additive]`.
 -/
-def transformDecl (ref : Syntax) (src tgt : Name) : CoreM Unit := do
+def transformDecl (ref : Option Syntax) (src tgt : Name) : CoreM Unit := do
   transformDeclAux ref src tgt src
   let eqns? ← MetaM.run' (getEqnsFor? src true)
   -- now transform all of the equational lemmas
   if let some eqns := eqns? then
     for src_eqn in eqns do
-      transformDeclAux ref src tgt src_eqn
+      transformDeclAux none src tgt src_eqn
       -- [todo] copy attributes for equations
       -- [todo] add equation lemmas to tgt_eqn
   copyAttributes src tgt
-  return ()
+
 /--
 Find the first argument of `nm` that has a multiplicative type-class on it.
 Returns 1 if there are no types with a multiplicative class as arguments.
@@ -474,19 +478,19 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
   -- [todo] run to_additive on the constructors of n:
   -- aux (fun n => (env.constructorsOf n).mmap $ ...
 
-private def elabToAdditiveAux (src : Syntax) (replaceAll trace : Bool) (tgt : Option Syntax)
+private def elabToAdditiveAux (ref : Syntax) (replaceAll trace : Bool) (tgt : Option Syntax)
     (doc : Option Syntax) : ValueType :=
   { replaceAll := replaceAll
     trace := trace
     tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
     doc := doc.bind (·.isStrLit?)
     allowAutoName := false
-    ref := src
+    ref
   }
 
 private def elabToAdditive : Syntax → CoreM ValueType
-  | src@`(attr| to_additive $[!%$replaceAll]? $[?%$trace]? $[$tgt]? $[$doc]?) =>
-    return elabToAdditiveAux src replaceAll.isSome trace.isSome tgt doc
+  | `(attr| to_additive%$tk $[!%$replaceAll]? $[?%$trace]? $[$tgt]? $[$doc]?) =>
+    return elabToAdditiveAux ((tgt.map (·.raw)).getD tk) replaceAll.isSome trace.isSome tgt doc
   | _ => throwUnsupportedSyntax
 
 /-!
@@ -715,7 +719,6 @@ initialize registerBuiltinAttribute {
           (transformDecl val.ref src tgt)
       if let some doc := val.doc then
         addDocString tgt doc
-      return ()
     -- Because `@[simp]` runs after compilation,
     -- we have to as well to be able to copy attributes correctly.
     applicationTime := .afterCompilation
