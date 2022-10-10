@@ -10,6 +10,7 @@ import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr
 import Lean
 import Lean.Data
+import Lean.Elab.Term
 import Std.Lean.NameMapAttribute
 
 /-!
@@ -246,6 +247,8 @@ def isInternal' : Name → Bool
   | n@(.str _ s) => s.startsWith "proof_" || n.isInternal
   | n => Name.isInternal n
 
+#print Lean.Elab.Term.TermElabM.run'
+
 /-- transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
 using the transforms dictionary.
 `replace_all`, `trace`, `ignore` and `reorder` are configuration options.
@@ -293,6 +296,7 @@ partial def transformDeclAux
     range := ← getDeclarationRange (← getRef)
     selectionRange := ← getDeclarationRange ref
   }
+  MetaM.run' <| Term.TermElabM.run' <| Term.addTermInfo' ref trgDecl.value!
   if isProtected (← getEnv) src then
     setEnv $ addProtected (← getEnv) tgt
 
