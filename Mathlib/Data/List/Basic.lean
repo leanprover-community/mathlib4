@@ -161,7 +161,8 @@ alias subset_nil ↔ eq_nil_of_subset_nil _
 --     · simp only [cons_append, @eq_comm _ a, ih, and_assoc, and_or_distrib_left,
 --         exists_and_distrib_left]
 
--- @[simp] theorem split_at_eq_take_drop : ∀ (n : ℕ) (l : List α), split_at n l = (take n l, drop n l)
+-- @[simp] theorem split_at_eq_take_drop :
+--   ∀ (n : ℕ) (l : List α), split_at n l = (take n l, drop n l)
 -- | 0, a => rfl
 -- | n+1, [] => rfl
 -- | n+1, x :: xs => by simp only [split_at, split_at_eq_take_drop n xs, take, drop]

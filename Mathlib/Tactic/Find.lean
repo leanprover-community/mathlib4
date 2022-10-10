@@ -70,7 +70,8 @@ def findType (t : Expr) : TermElabM Unit := withReducible do
     let c := env.find? n |>.get!
     let cTy := c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
     let found ← forallTelescopeReducing cTy fun cParams cTy' => do
-      let pat := pat.expr.instantiateLevelParamsArray pat.paramNames (← mkFreshLevelMVars pat.numMVars).toArray
+      let pat := pat.expr.instantiateLevelParamsArray pat.paramNames
+        (← mkFreshLevelMVars pat.numMVars).toArray
       let (_, _, pat) ← lambdaMetaTelescope pat
       let (patParams, _, pat) ← forallMetaTelescopeReducing pat
       isDefEq cTy' pat <&&> matchHyps patParams.toList [] cParams.toList
@@ -112,18 +113,21 @@ elab "#find" t:term : command =>
 
 open Lean.Elab.Tactic
 /-
-Display theorems (and definitions) whose result type matches the current goal, i.e. which should be `apply`able.
+Display theorems (and definitions) whose result type matches the current goal,
+i.e. which should be `apply`able.
 ```lean
 example : True := by find
 ```
 `find` will not affect the goal by itself and should be removed from the finished proof.
-For a command that takes the type to search for as an argument, see `#find`, which is also available as a tactic.
+For a command that takes the type to search for as an argument,
+see `#find`, which is also available as a tactic.
 -/
 elab "find" : tactic => do
   findType (← getMainTarget)
 
 /-
-Tactic version of the `#find` command. See also the `find` tactic to search for theorems matching the current goal.
+Tactic version of the `#find` command.
+See also the `find` tactic to search for theorems matching the current goal.
 -/
 elab "#find" t:term : tactic => do
   let t ← Term.elabTerm t none

@@ -14,7 +14,8 @@ open ShareCommon
 
 private unsafe abbrev ObjectMap := @Lean.HashMap Object Object ⟨Object.ptrEq⟩ ⟨Object.hash⟩
 
-private unsafe def memoFixImplObj (f : (Object → Object) → (Object → Object)) (a : Object) : Object := unsafeBaseIO do
+private unsafe def memoFixImplObj (f : (Object → Object) → (Object → Object)) (a : Object) :
+    Object := unsafeBaseIO do
   let cache : IO.Ref ObjectMap ← ST.mkRef ∅
   let rec fix (a) := unsafeBaseIO do
     if let some b := (← cache.get).find? a then
@@ -24,7 +25,8 @@ private unsafe def memoFixImplObj (f : (Object → Object) → (Object → Objec
     pure b
   pure $ fix a
 
-private unsafe def memoFixImpl {α : Type u} {β : Type v} [Nonempty β] : (f : (α → β) → (α → β)) → (a : α) → β :=
+private unsafe def memoFixImpl {α : Type u} {β : Type v} [Nonempty β] :
+    (f : (α → β) → (α → β)) → (a : α) → β :=
   unsafeCast memoFixImplObj
 
 /-- Takes the fixpoint of `f` with caching of values that have been seen before.

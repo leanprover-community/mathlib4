@@ -117,7 +117,8 @@ def mkSelfContained [Repr α] [Shrinkable α] (sample : Gen α) : SampleableExt 
 
 /-- First samples a proxy value and interprets it. Especially useful if
 the proxy and target type are the same. -/
-def interpSample (α : Type u) [SampleableExt α] : Gen α := SampleableExt.interp <$> SampleableExt.sample
+def interpSample (α : Type u) [SampleableExt α] : Gen α :=
+  SampleableExt.interp <$> SampleableExt.sample
 
 end SampleableExt
 
@@ -142,7 +143,8 @@ instance Nat.shrinkable : Shrinkable Nat where
   shrink := Nat.shrink
 
 /-- `Fin.shrink` works like `Nat.shrink` but instead operates on `Fin`. -/
-def Fin.shrink {n : Nat} (m : Fin n.succ) : List { y : Fin n.succ // WellFoundedRelation.rel y m } :=
+def Fin.shrink {n : Nat} (m : Fin n.succ) :
+    List { y : Fin n.succ // WellFoundedRelation.rel y m } :=
   let shrinks := Nat.shrink m.val
   shrinks.map (λ x => {x with property := by
     simp_wf
@@ -155,16 +157,18 @@ local instance Int_sizeOfAbs : SizeOf Int := ⟨Int.natAbs⟩
 
 /-- `Int.shrinkable` operates like `Nat.shrinkable` but also includes the negative variants. -/
 instance Int.shrinkable : Shrinkable Int where
-  shrink n :=
-    Nat.shrink n.natAbs |>.map λ ⟨x, h⟩ => ⟨-x, (by simp_wf; simp only [SizeOf.sizeOf]; rw [Int.natAbs_neg]; exact h)⟩
+  shrink n := Nat.shrink n.natAbs |>.map λ ⟨x, h⟩ =>
+    ⟨-x, (by simp_wf; simp only [SizeOf.sizeOf]; rw [Int.natAbs_neg]; exact h)⟩
 
 instance Bool.shrinkable : Shrinkable Bool := {}
 instance Char.shrinkable : Shrinkable Char := {}
 
 instance Prod.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] : Shrinkable (Prod α β) where
   shrink := λ (fst,snd) =>
-    let shrink1 := shrA.shrink fst |>.map fun ⟨x, _⟩ => ⟨(x, snd), by simp_wf; apply Prod.Lex.left; simp_all_arith⟩
-    let shrink2 := shrB.shrink snd |>.map fun ⟨x, _⟩ => ⟨(fst, x), by simp_wf; apply Prod.Lex.right; simp_all_arith⟩
+    let shrink1 := shrA.shrink fst |>.map
+      fun ⟨x, _⟩ => ⟨(x, snd), by simp_wf; apply Prod.Lex.left; simp_all_arith⟩
+    let shrink2 := shrB.shrink snd |>.map
+      fun ⟨x, _⟩ => ⟨(fst, x), by simp_wf; apply Prod.Lex.right; simp_all_arith⟩
     shrink1 ++ shrink2
 
 end Shrinkers
@@ -183,7 +187,9 @@ instance Fin.sampleableExt {n : Nat} : SampleableExt (Fin (n.succ)) :=
   ))
 
 instance Int.sampleableExt : SampleableExt Int :=
-  mkSelfContained (do choose Int (-(←getSize)) (←getSize) (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _)))
+  mkSelfContained (do
+    choose Int (-(←getSize)) (←getSize)
+      (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _)))
 
 instance Bool.sampleableExt : SampleableExt Bool :=
   mkSelfContained $ chooseAny Bool
@@ -191,14 +197,15 @@ instance Bool.sampleableExt : SampleableExt Bool :=
 /-- This can be specialized into customized `SampleableExt Char` instances.
 The resulting instance has `1 / length` chances of making an unrestricted choice of characters
 and it otherwise chooses a character from `chars` with uniform probabilities.  -/
-def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) : SampleableExt Char :=
-    mkSelfContained do
-      let x ← choose Nat 0 length (Nat.zero_le _)
-      if x.val == 0 then
-        let n ← interpSample Nat
-        pure $ Char.ofNat n
-      else
-        elements chars pos
+def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) :
+    SampleableExt Char :=
+  mkSelfContained do
+    let x ← choose Nat 0 length (Nat.zero_le _)
+    if x.val == 0 then
+      let n ← interpSample Nat
+      pure $ Char.ofNat n
+    else
+      elements chars pos
 
 instance Char.sampleableDefault : SampleableExt Char :=
   Char.sampleable 3 " 0123abcABC:,;`\\/".toList (by decide)

@@ -129,8 +129,9 @@ theorem parent_eq {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models ar
 theorem parent_eq' {arr : Array (UFNode α)} {m : UFModel arr.size} (H : m.Models arr)
   (i : Fin arr.size) : (arr[i.1]).parent = m.parent i := H.parent_eq ..
 
-theorem rank_eq {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr)
-  (i : Nat) (h : i < arr.size) : arr[i].rank = m.rank i := H.2.get_eq _ _ (by rw [H.size_eq]; exact h)
+theorem rank_eq {arr : Array (UFNode α)} {n} {m : UFModel n} (H : m.Models arr) (i : Nat)
+     (h : i < arr.size) : arr[i].rank = m.rank i :=
+  H.2.get_eq _ _ (by rw [H.size_eq]; exact h)
 
 theorem empty : UFModel.empty.Models (α := α) #[] := ⟨Agrees.empty, Agrees.empty⟩
 
@@ -273,7 +274,8 @@ def link (self : UnionFind α) (x y : Fin self.size)
     exact ⟨_, _, hm.setParent y x (by simpa [hm.rank_eq] using h) _ _ rfl rfl⟩
   case b =>
     let ⟨m, hm⟩ := self.model'; let n := self.size
-    refine ⟨_, m.setParentBump x y (by simpa [hm.rank_eq] using h) (by simpa [← hm.parent_eq'] using yroot), ?_⟩
+    refine ⟨_, m.setParentBump x y (by simpa [hm.rank_eq] using h)
+      (by simpa [← hm.parent_eq'] using yroot), ?_⟩
     let parent (i : Fin n) := (if x.1 = i then y else m.parent i).1
     have : UFModel.Agrees arr₁ (·.parent) parent :=
       hm.1.set (fun i h => by simp; rw [if_neg h.symm]) (fun h => by simp)
