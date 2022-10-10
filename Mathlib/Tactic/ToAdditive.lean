@@ -474,8 +474,8 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
   -- [todo] run to_additive on the constructors of n:
   -- aux (fun n => (env.constructorsOf n).mmap $ ...
 
-private def elabToAdditiveAux
-  (src : Syntax) (replaceAll trace : Bool) (tgt : Option Syntax) (doc : Option Syntax) : ValueType :=
+private def elabToAdditiveAux (src : Syntax) (replaceAll trace : Bool) (tgt : Option Syntax)
+    (doc : Option Syntax) : ValueType :=
   { replaceAll := replaceAll
     trace := trace
     tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous

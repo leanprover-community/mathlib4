@@ -855,7 +855,8 @@ theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a :=
 instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
   { ‹Group G› with
     inv_inv := fun a => inv_eq_of_mul (mul_left_inv a),
-    mul_inv_rev := fun a b => inv_eq_of_mul <| by rw [mul_assoc, mul_inv_cancel_left, mul_right_inv],
+    mul_inv_rev :=
+      fun a b => inv_eq_of_mul <| by rw [mul_assoc, mul_inv_cancel_left, mul_right_inv],
     inv_eq_of_mul := fun _ _ => inv_eq_of_mul }
 
 -- FIXME this isn't being copied by `to_additive`
