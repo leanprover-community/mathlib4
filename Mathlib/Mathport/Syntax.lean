@@ -228,9 +228,9 @@ namespace Tactic
 /- S -/ syntax (name := haveField) "have_field" : tactic
 /- S -/ syntax (name := applyField) "apply_field" : tactic
 /- M -/ syntax (name := applyRules) "apply_rules" (config)? " [" term,* "]" (ppSpace num)? : tactic
-/- M -/ syntax (name := hGeneralize) "h_generalize " atomic(binderIdent " : ")? term:51 " = " ident
+/- S -/ syntax (name := hGeneralize) "h_generalize " atomic(binderIdent " : ")? term:51 " = " ident
   (" with " binderIdent)? : tactic
-/- M -/ syntax (name := hGeneralize!) "h_generalize! " atomic(binderIdent " : ")?
+/- S -/ syntax (name := hGeneralize!) "h_generalize! " atomic(binderIdent " : ")?
   term:51 " = " ident (" with " binderIdent)? : tactic
 /- S -/ syntax (name := extractGoal) "extract_goal" (ppSpace ident)?
   (" with" (ppSpace (colGt ident))*)? : tactic
