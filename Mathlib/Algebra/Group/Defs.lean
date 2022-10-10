@@ -687,7 +687,7 @@ theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
   DivInvMonoid.zpow_zero' a
 
 -- TODO restore @[to_additive coe_nat_zsmul]
-@[simp, norm_cast]
+@[norm_cast]
 theorem zpow_coe_nat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
   | 0 => (zpow_zero _).trans (pow_zero _).symm
   | n + 1 =>
@@ -695,7 +695,6 @@ theorem zpow_coe_nat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
       a ^ (↑(n + 1) : ℤ) = a * a ^ (n : ℤ) := DivInvMonoid.zpow_succ' _ _
       _ = a * a ^ n := congr_arg ((· * ·) a) (zpow_coe_nat a n)
       _ = a ^ (n + 1) := (pow_succ _ _).symm
-
 
 -- TODO restore @[to_additive of_nat_zsmul]
 theorem zpow_of_nat (a : G) (n : ℕ) : a ^ Int.ofNat n = a ^ n :=

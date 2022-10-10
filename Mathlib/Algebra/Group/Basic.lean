@@ -174,7 +174,7 @@ theorem inv_eq_iff_inv_eq : a⁻¹ = b ↔ b⁻¹ = a :=
 
 variable (G)
 
-@[simp, to_additive]
+@[to_additive]
 theorem inv_comp_inv : Inv.inv ∘ Inv.inv = @id G :=
   inv_involutive.comp_self
 
@@ -279,7 +279,7 @@ theorem inv_div_left : a⁻¹ / b = (b * a)⁻¹ := by simp
 @[simp, to_additive]
 theorem inv_div : (a / b)⁻¹ = b / a := by simp
 
-@[simp, to_additive]
+@[to_additive]
 theorem one_div_div : 1 / (a / b) = b / a := by simp
 
 @[to_additive]
@@ -344,7 +344,7 @@ theorem inv_mul_eq_div : a⁻¹ * b = b / a := by simp
 @[to_additive]
 theorem inv_mul' : (a * b)⁻¹ = a⁻¹ / b := by simp
 
-@[simp, to_additive]
+@[to_additive]
 theorem inv_div_inv : a⁻¹ / b⁻¹ = b / a := by simp
 
 @[to_additive]
