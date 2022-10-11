@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Mario Carneiro, Reid Barton, Johan Commelin
 -/
 
-import Mathlib.Util.Asserts
 import Mathlib.Util.Tactic
-import Mathlib.Lean.CoreM
 import Mathlib.Logic.Function.Basic
 
 /-!
@@ -62,6 +60,11 @@ def ElimStatus.merge : ElimStatus → ElimStatus → ElimStatus
 | _, success => success
 | failure ts₁, failure ts₂ => failure (ts₁ ++ ts₂)
 
+/-- `mkFreshNameFrom orig base` returns `mkFreshUserName base` if ``orig = `_``
+and `orig` otherwise. -/
+def mkFreshNameFrom (orig base : Name) : CoreM Name :=
+  if orig = `_ then mkFreshUserName base else pure orig
+
 /-- Changes `(h : ∀xs, ∃a:α, p a) ⊢ g` to `(d : ∀xs, a) ⊢ (s : ∀xs, p (d xs)) → g` and
 `(h : ∀xs, p xs ∧ q xs) ⊢ g` to `(d : ∀xs, p xs) ⊢ (s : ∀xs, q xs) → g`.
 `choose1` returns a tuple of
@@ -86,7 +89,7 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
     forallTelescopeReducing t fun ctx t => do
       (← withTransparency .all (whnf t)).withApp fun
       | .const ``Exists [u], #[α, p] => do
-        let data ← data.mkFreshNameFrom ((← p.getBinderName).getD `h)
+        let data ← mkFreshNameFrom data ((← p.getBinderName).getD `h)
         let ((neFail : ElimStatus), (nonemp : Option Expr)) ← if nondep then
           let ne := (Expr.const ``Nonempty [u]).app α
           let m ← mkFreshExprMVar ne
@@ -126,7 +129,7 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
         | _ => pure g
         return (neFail, fvar, g)
       | .const ``And _, #[p, q] => do
-        let data ← data.mkFreshNameFrom `h
+        let data ← mkFreshNameFrom data `h
         let e1 ← mkLambdaFVars ctx $ mkApp3 (.const ``And.left  []) p q (mkAppN h ctx)
         let e2 ← mkLambdaFVars ctx $ mkApp3 (.const ``And.right []) p q (mkAppN h ctx)
         let t1 ← inferType e1
