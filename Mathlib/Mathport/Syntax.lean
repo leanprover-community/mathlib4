@@ -286,9 +286,6 @@ end Conv
 syntax generalizesArg := (ident " : ")? term:51 " = " ident
 /- M -/ syntax (name := generalizes) "generalizes " "[" generalizesArg,* "]" : tactic
 
-/- M -/ syntax (name := generalizeProofs) "generalize_proofs"
-  (ppSpace (colGt binderIdent))* (ppSpace location)? : tactic
-
 syntax withPattern := "-" <|> "_" <|> ident
 /- S -/ syntax (name := cases'') "cases''" casesTarget (" with " (colGt withPattern)+)? : tactic
 syntax fixingClause := " fixing" (" *" <|> (ppSpace ident)+)
