@@ -8,7 +8,8 @@ import Mathlib.Algebra.Ring.Basic
 import Mathlib.Tactic.Core
 import Mathlib.Util.Simp
 
-namespace Lean
+namespace Mathlib
+open Lean Meta
 
 initialize registerTraceClass `Tactic.norm_num
 
@@ -18,7 +19,7 @@ initialize registerTraceClass `Tactic.norm_num
   - `Nat.zero`
   - `Nat.succ x` where `isNumeral x`
   - `OfNat.ofNat _ x _` where `isNumeral x` -/
-partial def Expr.numeral? (e : Expr) : Option Nat :=
+partial def _root_.Lean.Expr.numeral? (e : Expr) : Option Nat :=
   if let some n := e.natLit? then n
   else
     let f := e.getAppFn
@@ -58,15 +59,15 @@ class LawfulOne (α) [Semiring α] [One α] : Prop where
 instance (α) [Semiring α] : LawfulOne α := ⟨Nat.cast_one.symm⟩
 
 theorem isNat_add {α} [Semiring α] : (a b : α) → (a' b' c : Nat) →
-  isNat a a' → isNat b b' → Nat.add a' b' = c → isNat (a + b) c
-  | _, _, _a', _b', _, rfl, rfl, rfl => Nat.cast_add.symm
+    isNat a a' → isNat b b' → Nat.add a' b' = c → isNat (a + b) c
+  | _, _, _, _, _, rfl, rfl, rfl => Nat.cast_add.symm
 
 theorem isNat_mul {α} [Semiring α] : (a b : α) → (a' b' c : Nat) →
-  isNat a a' → isNat b b' → Nat.mul a' b' = c → isNat (a * b) c
-  | _, _, _a', _b', _, rfl, rfl, rfl => Nat.cast_mul.symm
+    isNat a a' → isNat b b' → Nat.mul a' b' = c → isNat (a * b) c
+  | _, _, _, _, _, rfl, rfl, rfl => Nat.cast_mul.symm
 
 theorem isNat_pow {α} [Semiring α] : (a : α) → (b a' b' c : Nat) →
-  isNat a a' → isNat b b' → Nat.pow a' b' = c → isNat (a ^ b) c
+    isNat a a' → isNat b b' → Nat.pow a' b' = c → isNat (a ^ b) c
   | _, _, _, _, _, rfl, rfl, rfl => by simp [isNat]
 
 def instSemiringNat : Semiring Nat := inferInstance
@@ -146,92 +147,140 @@ def eval (e : Expr) : MetaM Simp.Result := do
   let pf := mkApp7 (mkConst ``eval_of_isNat [u]) α sα ln ofNatInst lawfulInst e p
   return {expr, proof? := pf}
 
-open Simp in
-/-- Traverses the given expression using simp and normalises any numbers it finds. -/
-def derive (ctx : Simp.Context) (e : Expr) : MetaM Simp.Result := do
-  let e ← instantiateMVars e
-  let nosimp := (← getOptions).getBool `norm_num.nosimp
-  let methods := if nosimp then {} else Simp.DefaultMethods.methods
-  let post e := do try return Simp.Step.done (← eval e) catch _ => methods.post e
-  let (r, _) ← Simp.main e ctx (methods := { methods with post })
-  trace[Tactic.norm_num] "before: {e}\n after: {r.expr}"
-
-  return r
-
 theorem eval_eq_of_isNat {α} [Semiring α] :
   (a b : α) → (n : ℕ) → isNat a n → isNat b n → a = b
   | _, _, _, rfl, rfl => rfl
 
-/-- Returns the proof that `a = b` using normnum. -/
-def evalEq (α a b : Expr) : MetaM Expr := do
-  let .succ u ← getLevel α | throwError "fail: expected {α} to be a type."
-  let sα ← synthInstance (mkApp (mkConst ``Semiring [u]) α)
-  let (ln, pa) ← evalIsNat u α sα a
-  let (ln', pb) ← evalIsNat u α sα b
-  guard (ln.natLit! == ln'.natLit!)
-  pure $ mkApp7 (mkConst ``eval_eq_of_isNat [u]) α sα a b ln pa pb
+/--
+Constructs a proof that the original expression is true
+given a simp result which simplifies the target to `True`.
+-/
+def _root_.Lean.Meta.Simp.Result.ofTrue (r : Simp.Result) : MetaM (Option Expr) :=
+  if r.expr.isConstOf ``True then
+    some <$> match r.proof? with
+    | some proof => mkOfEqTrue proof
+    | none => pure (mkConst ``True.intro)
+  else
+    pure none
 
-open Lean Elab Tactic Conv
+/-- A simp plugin which calls `NormNum.eval`. -/
+def tryNormNum? (e : Expr) : SimpM (Option Simp.Step) :=
+  try return some (Simp.Step.done (← eval e)) catch _ => return none
 
-/-- Normnums a target. -/
-def normNumTarget (ctx : Simp.Context) : TacticM Unit := do
-  liftMetaTactic1 fun mvarId => do
-    let tgt ← instantiateMVars (← mvarId.getType)
-    let prf ← derive ctx tgt
-    let newGoal ← applySimpResultToTarget mvarId tgt prf
-    let t ← inferType (mkMVar newGoal)
-    if t.isConstOf ``True then
-      newGoal.assign (mkConst ``True.intro)
-      return none
-    return some newGoal
+variable (ctx : Simp.Context) (useSimp := true) in
+mutual
+  /-- A discharger which calls `norm_num`. -/
+  partial def discharge (e : Expr) : SimpM (Option Expr) := do (← derive e).ofTrue
 
-/-- Normnums a hypothesis. -/
-def normNumHyp (ctx : Simp.Context) (fvarId: FVarId) : TacticM Unit :=
-  liftMetaTactic1 fun mvarId => do
-    let hyp ← instantiateMVars (← fvarId.getDecl).type
-    let prf ← derive ctx hyp
-    let (some (_newHyp, newGoal)) ← applySimpResultToLocalDecl mvarId fvarId prf false
-      | throwError "Failed to apply norm_num to hyp."
-    return newGoal
+  /-- The `Methods` to use when `useSimp` is enabled. -/
+  @[inline] partial def methodsSimp : Simp.Methods where
+    pre := (Simp.preDefault · discharge)
+    post e := do Simp.andThen (← Simp.postDefault e discharge) tryNormNum?
+    discharge? := discharge
 
-open Meta Elab Tactic in
-/-- Elaborator helper for norm num. -/
-def elabNormNum (args: Syntax) (loc : Syntax) : TacticM Unit := do
-  -- [todo] are there norm_num simp lemmas?
-  let simpTheorems ← ({} : SimpTheorems).addConst ``eq_self
-  let congrTheorems ← Meta.getSimpCongrTheorems
-  let eraseLocal := false
-  let kind := SimpKind.simp
-  let mut ctx : Simp.Context := {
-    config      := {}
-    simpTheorems := #[simpTheorems]
-    congrTheorems
-  }
-  let r ← Lean.Elab.Tactic.elabSimpArgs args (eraseLocal := eraseLocal) (kind := kind) ctx
-  ctx := r.ctx
-  let loc := expandOptLocation loc
-  withLocation loc
-    (atLocal := Meta.NormNum.normNumHyp ctx)
-    (atTarget := Meta.NormNum.normNumTarget ctx)
-    (failed := fun _ => throwError "norm_num failed")
+  /-- The `Methods` to use when `useSimp` is disabled. -/
+  @[inline] partial def methodsNoSimp : Simp.Methods where
+    post e := Simp.andThen (.visit { expr := e }) tryNormNum?
+    discharge? := discharge
+
+  /-- Traverses the given expression using simp and normalises any numbers it finds. -/
+  partial def derive (e : Expr) : MetaM Simp.Result :=
+    (·.1) <$> Simp.main e ctx (methods := if useSimp then methodsSimp else methodsNoSimp)
+end
+
+-- FIXME: had to inline a bunch of stuff from `simpGoal` here
+/--
+The core of `norm_num` as a tactic in `MetaM`.
+
+* `g`: The goal to simplify
+* `ctx`: The simp context, constructed by `mkSimpContext` and
+  containing any additional simp rules we want to use
+* `fvarIdsToSimp`: The selected set of hypotheses used in the location argument
+* `simplifyTarget`: true if the target is selected in the location argument
+* `useSimp`: true if we used `norm_num` instead of `norm_num1`
+-/
+def normNumAt (g : MVarId) (ctx : Simp.Context) (fvarIdsToSimp : Array FVarId)
+    (simplifyTarget := true) (useSimp := true) :
+    MetaM (Option (Array FVarId × MVarId)) := g.withContext do
+  g.checkNotAssigned `norm_num
+  let mut g := g
+  let mut toAssert := #[]
+  let mut replaced := #[]
+  for fvarId in fvarIdsToSimp do
+    let localDecl ← fvarId.getDecl
+    let type ← instantiateMVars localDecl.type
+    let ctx := { ctx with simpTheorems := ctx.simpTheorems.eraseTheorem (.fvar localDecl.fvarId) }
+    let r ← derive ctx useSimp type
+    match r.proof? with
+    | some _ =>
+      let some (value, type) ← applySimpResultToProp g (mkFVar fvarId) type r
+        | return none
+      toAssert := toAssert.push { userName := localDecl.userName, type, value }
+    | none =>
+      if r.expr.isConstOf ``False then
+        g.assign (← mkFalseElim (← g.getType) (mkFVar fvarId))
+        return none
+      g ← g.replaceLocalDeclDefEq fvarId r.expr
+      replaced := replaced.push fvarId
+  if simplifyTarget then
+    let res ← g.withContext do
+      let target ← instantiateMVars (← g.getType)
+      let r ← derive ctx useSimp target
+      let some proof ← r.ofTrue
+        | some <$> applySimpResultToTarget g target r
+      g.assign proof
+      pure none
+    let some gNew := res | return none
+    g := gNew
+  let (fvarIdsNew, gNew) ← g.assertHypotheses toAssert
+  let toClear := fvarIdsToSimp.filter fun fvarId => !replaced.contains fvarId
+  let gNew ← gNew.tryClearMany toClear
+  return some (fvarIdsNew, gNew)
+
+open Elab.Tactic in
+/--
+Elaborates a call to `norm_num only? [args]` or `norm_num1`.
+* `args`: the `(simpArgs)?` syntax for simp arguments
+* `loc`: the `(location)?` syntax for the optional location argument
+* `simpOnly`: true if `only` was used in `norm_num`
+* `useSimp`: false if `norm_num1` was used, in which case only the structural parts
+  of `simp` will be used, not any of the post-processing that `simp only` does without lemmas
+-/
+-- FIXME: had to inline a bunch of stuff from `mkSimpContext` and `simpLocation` here
+def elabNormNum (args : Syntax) (loc : Syntax)
+    (simpOnly := false) (useSimp := true) : TacticM Unit := do
+  let simpTheorems ←
+    if !useSimp || simpOnly then simpOnlyBuiltins.foldlM (·.addConst ·) {} else getSimpTheorems
+  let mut { ctx, starArg } ← elabSimpArgs args (eraseLocal := false) (kind := .simp)
+    { simpTheorems := #[simpTheorems], congrTheorems := ← getSimpCongrTheorems }
+  if starArg then
+    let mut simpTheorems := ctx.simpTheorems
+    for h in ← getPropHyps do
+      unless simpTheorems.isErased (.fvar h) do
+        simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
+    ctx := { ctx with simpTheorems }
+  let g ← getMainGoal
+  let res ← match expandOptLocation loc with
+  | .targets hyps simplifyTarget => normNumAt g ctx (← getFVarIds hyps) simplifyTarget useSimp
+  | .wildcard => normNumAt g ctx (← g.getNondepPropHyps) (simplifyTarget := true) useSimp
+  match res with
+  | none => replaceMainGoal []
+  | some (_, g) => replaceMainGoal [g]
 
 end NormNum
 end Meta
 
 namespace Tactic
 
-open Lean.Parser.Tactic
+open Lean.Parser.Tactic Meta.NormNum
 
 /-- Normalize numerical expressions. -/
-elab "norm_num" args:(simpArgs ?) loc:(location ?) : tactic =>
-  withOptions (·.setBool `norm_num.nosimp false)
-  <| Meta.NormNum.elabNormNum args loc
+elab "norm_num" only:&" only"? args:(simpArgs ?) loc:(location ?) : tactic =>
+  elabNormNum args loc (simpOnly := only.isSome) (useSimp := true)
 
 /-- Basic version of `norm_num` that does not call `simp`. -/
 elab "norm_num1" loc:(location ?) : tactic =>
-  withOptions (·.setBool `norm_num.nosimp true)
-  <| Meta.NormNum.elabNormNum (Syntax.missing) loc
+  elabNormNum mkNullNode loc (simpOnly := true) (useSimp := false)
 
 end Tactic
-
-end Lean
+end Mathlib

@@ -17,8 +17,9 @@ Based on <http://www.cs.ru.nl/~freek/courses/tt-2014/read/10.1.1.61.3041.pdf> .
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
-namespace Tactic
+namespace Mathlib.Tactic
 namespace Ring
+open Mathlib.Meta
 
 /-- This cache contains data required by the `ring` tactic during execution. -/
 structure Cache :=

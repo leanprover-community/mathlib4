@@ -61,7 +61,7 @@ theorem pairwise_lt_range' : ∀ s n : ℕ, Pairwise (· < ·) (range' s n)
   | s, n + 1 => chain_iff_pairwise.1 (chain_lt_range' s n)
 
 theorem nodup_range' (s n : ℕ) : Nodup (range' s n) :=
-  (pairwise_lt_range' s n).imp fun _ _ => Nat.ne_of_lt
+  (pairwise_lt_range' s n).imp Nat.ne_of_lt
 
 theorem nodup_range (n : ℕ) : Nodup (range n) := by
   simp only [range_eq_range', nodup_range']
