@@ -87,6 +87,51 @@ end String
 
 open Lean Meta Parser Elab Term Command
 
+-- move
+namespace Lean.Meta
+open Tactic Simp
+/- make simp context giving data instead of Syntax. Doesn't support arguments.
+Intended to be very similar to `Lean.Elab.Tactic.mkSimpContext`
+Todo: support arguments. -/
+def mkSimpContextResult (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind := SimpKind.simp)
+  (dischargeWrapper := DischargeWrapper.default) (hasStar := false) :
+  MetaM MkSimpContextResult := do
+  match dischargeWrapper with
+  | .default => pure ()
+  | _ =>
+    if kind == SimpKind.simpAll then
+      throwError "'simp_all' tactic does not support 'discharger' option"
+    if kind == SimpKind.dsimp then
+      throwError "'dsimp' tactic does not support 'discharger' option"
+  let simpTheorems ← if simpOnly then
+    simpOnlyBuiltins.foldlM (·.addConst ·) ({} : SimpTheorems)
+  else
+    getSimpTheorems
+  let congrTheorems ← getSimpCongrTheorems
+  let ctx : Simp.Context ← pure {
+    config      := cfg
+    simpTheorems := #[simpTheorems], congrTheorems
+  }
+  if !hasStar then
+    return { ctx, dischargeWrapper }
+  else
+    let mut simpTheorems := ctx.simpTheorems
+    let hs ← getPropHyps
+    for h in hs do
+      unless simpTheorems.isErased (.fvar h) do
+        simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
+    let ctx := { ctx with simpTheorems }
+    return { ctx, dischargeWrapper }
+
+def mkSimpContext (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind := SimpKind.simp)
+  (dischargeWrapper := DischargeWrapper.default) (hasStar := false) :
+  MetaM Simp.Context := do
+  let data ← mkSimpContextResult cfg simpOnly kind dischargeWrapper hasStar
+  return data.ctx
+
+end Lean.Meta
+
+
 namespace Lean.Parser
 namespace Attr
 
@@ -763,7 +808,7 @@ def getUnivLevel (t : Expr) : MetaM Level := do
 
 /-- Add a lemma with `nm` stating that `lhs = rhs`. `type` is the type of both `lhs` and `rhs`,
   `args` is the list of local constants occurring, and `univs` is the list of universe variables. -/
-def simpsAddProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
+def simpsAddProjection (ref : Syntax) (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   (univs : List Name) (cfg : SimpsCfg) : MetaM Unit := do
   trace[simps.debug] "[simps] > Planning to add the equality\n        > {lhs} = ({rhs} : {type})"
   let env ← getEnv
@@ -774,12 +819,13 @@ def simpsAddProjection (declName : Name) (type lhs rhs : Expr) (args : Array Exp
   let (rhs, prf) ← do
     let defaultPrf := mkAppN (mkConst `Eq.refl [lvl]) #[type, lhs]
     if !cfg.simpRhs then
-      pure (rhs, defaultPrf)  else
-      let (rhs2, _) ← dsimp rhs {} -- todo: create simp context
+      pure (rhs, defaultPrf) else
+      let ctx ← mkSimpContext
+      let (rhs2, _) ← dsimp rhs ctx
       if rhs != rhs2 then
         trace[simps.debug] "[simps] > `dsimp` simplified rhs to\n        > {rhs2}" else
         trace[simps.debug] "[simps] > `dsimp` failed to simplify rhs"
-      let (result, _) ← simp rhs2 {} -- todo: create simp context
+      let (result, _) ← simp rhs2 ctx
       if rhs2 != result.expr then
         trace[simps.debug] "[simps] > `simp` simplified rhs to\n        > {result.expr}" else
         trace[simps.debug] "[simps] > `simp` failed to simplify rhs"
@@ -806,7 +852,7 @@ def simpsAddProjection (declName : Name) (type lhs rhs : Expr) (args : Array Exp
     addSimpTheorem simpExtension declName true false .global <| eval_prio default
   -- cfg.attrs.mapM fun nm => setAttribute nm declName tt -- todo: deal with attributes
   if cfg.addAdditive.isSome then
-    ToAdditive.addToAdditiveAttr declName ⟨false, cfg.trace, cfg.addAdditive.get!, none, true⟩
+    ToAdditive.addToAdditiveAttr declName ⟨false, cfg.trace, cfg.addAdditive.get!, none, true, ref⟩
 
 /-- Update the last component of a name. -/
 def Lean.Name.updateLast (f : String → String) : Name → Name
@@ -831,7 +877,7 @@ def Lean.Name.getString : Name → String
   was just used. In that case we need to apply these projections before we continue changing `lhs`.
   `simpLemmas`: names of the simp lemmas added so far.(simpLemmas : Array Name)
   -/
-partial def simpsAddProjections (env : Environment) (nm : Name) (type lhs rhs : Expr)
+partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (type lhs rhs : Expr)
   (args : Array Expr) (univs : List Name) (mustBeStr : Bool) (cfg : SimpsCfg) (todo : List String)
   (toApply : List ℕ) : MetaM (Array Name) := do
   -- we don't want to unfold non-reducible definitions (like `set`) to apply more arguments
@@ -858,8 +904,8 @@ partial def simpsAddProjections (env : Environment) (nm : Name) (type lhs rhs : 
       throwError "Invalid simp lemma {nm.appendAfter firstTodo}.\nProjection {""
         }{(firstTodo.splitOn "_").tail.head!} doesn't exist, because target is not a structure."
     if cfg.fullyApplied then
-      simpsAddProjection nm tgt lhsAp rhsAp newArgs univs cfg else
-      simpsAddProjection nm type lhs rhs args univs cfg
+      simpsAddProjection ref nm tgt lhsAp rhsAp newArgs univs cfg else
+      simpsAddProjection ref nm type lhs rhs args univs cfg
     pure #[nm] else
   let some (.inductInfo info) ← pure <| env.find? str | throwError "unreachable"
   let [ctor] ← pure info.ctors | throwError "unreachable"
@@ -876,8 +922,8 @@ partial def simpsAddProjections (env : Environment) (nm : Name) (type lhs rhs : 
       This makes the flow of this function messy. -/
       if "" ∈ todo && toApply.isEmpty then
         if cfg.fullyApplied then
-          simpsAddProjection nm tgt lhsAp rhsAp newArgs univs cfg else
-          simpsAddProjection nm type lhs rhs args univs cfg
+          simpsAddProjection ref nm tgt lhsAp rhsAp newArgs univs cfg else
+          simpsAddProjection ref nm type lhs rhs args univs cfg
       pure (rhsWhnf, false) else
       pure (rhsAp, "" ∈ todo && toApply.isEmpty)
   trace[simps.debug]
@@ -889,7 +935,7 @@ partial def simpsAddProjections (env : Environment) (nm : Name) (type lhs rhs : 
         logInfo m!"[simps] > The given definition is not a constructor {""
           }application:\n        >   {rhsAp}\n        > Retrying with the options {""
           }\{rhs_md := semireducible, simp_rhs := tt}."
-      simpsAddProjections env nm type lhs rhs args univs mustBeStr
+      simpsAddProjections env ref nm type lhs rhs args univs mustBeStr
         { cfg with rhsMd := .default, simpRhs := true } todo toApply else
     if !toApply.isEmpty then
       throwError "Invalid simp lemma {nm}.\nThe given definition is not a constructor {""
@@ -900,8 +946,8 @@ partial def simpsAddProjections (env : Environment) (nm : Name) (type lhs rhs : 
       throwError "Invalid simp lemma {nm.appendAfter todoNext.head!}.\n{""
         }The given definition is not a constructor application:{indentExpr rhsAp}"
     if cfg.fullyApplied then
-      simpsAddProjection nm tgt lhsAp rhsAp newArgs univs cfg else
-      simpsAddProjection nm type lhs rhs args univs cfg
+      simpsAddProjection ref nm tgt lhsAp rhsAp newArgs univs cfg else
+      simpsAddProjection ref nm type lhs rhs args univs cfg
     pure #[nm] else
   -- if the value is a constructor application
   trace[simps.debug] "[simps] > Generating raw projection information..."
@@ -916,7 +962,7 @@ partial def simpsAddProjections (env : Environment) (nm : Name) (type lhs rhs : 
     let newType ← inferType newRhs
     trace[simps.debug] "[simps] > Applying a custom composite projection. Current {""
       }lhs:\n        >   {lhsAp}"
-    simpsAddProjections env nm newType lhsAp newRhs newArgs univs false cfg todo toApply else
+    simpsAddProjections env ref nm newType lhsAp newRhs newArgs univs false cfg todo toApply else
   -- check whether `rhsAp` is an eta-expansion
   let eta : Option Expr := none -- todo: support eta-reduction of structures (still useful, because we care about syntactic equality!?)
   -- let eta ← rhsAp.isEtaExpansion
@@ -926,8 +972,8 @@ partial def simpsAddProjections (env : Environment) (nm : Name) (type lhs rhs : 
   current projection if we haven't done it above. -/
   if todoNow || (todo.isEmpty && eta.isSome) then
     if cfg.fullyApplied then
-      simpsAddProjection nm tgt lhsAp rhsAp newArgs univs cfg else
-      simpsAddProjection nm type lhs rhs args univs cfg
+      simpsAddProjection ref nm tgt lhsAp rhsAp newArgs univs cfg else
+      simpsAddProjection ref nm type lhs rhs args univs cfg
   /- We stop if no further projection is specified or if we just reduced an eta-expansion and we
   automatically choose projections -/
   if !(todo == [""] || eta.isSome || todo.isEmpty) then pure #[] else
@@ -954,7 +1000,7 @@ partial def simpsAddProjections (env : Environment) (nm : Name) (type lhs rhs : 
         { cfg with addAdditive := cfg.addAdditive.map fun nm =>
           updateName nm (ToAdditive.guessName proj.getString) isPrefix }
       trace[simps.debug] "[simps] > Recursively add projections for:\n        >  {newLhs}"
-      simpsAddProjections env newName newType newLhs newRhs newArgs univs false new_cfg new_todo
+      simpsAddProjections env ref newName newType newLhs newRhs newArgs univs false new_cfg new_todo
         projNrs
     pure l.flatten
 
@@ -962,8 +1008,8 @@ partial def simpsAddProjections (env : Environment) (nm : Name) (type lhs rhs : 
   If `todo` is non-empty, it will generate exactly the names in `todo`.
   If `shortNm` is true, the generated names will only use the last projection name.
   If `trc` is true, trace as if `trace.simps.verbose` is true. -/
-def simpsTac (nm : Name) (cfg : SimpsCfg := {}) (todo : List String := []) (trc := false) :
-  AttrM (Array Name) := do
+def simpsTac (ref : Syntax) (nm : Name) (cfg : SimpsCfg := {}) (todo : List String := [])
+  (trc := false) : AttrM (Array Name) := do
   let env ← getEnv
   let some d ← pure <| env.find? nm | throwError "Declaration {nm} doesn't exist."
   let lhs : Expr := mkConst d.name <| d.levelParams.map Level.param
@@ -976,19 +1022,19 @@ def simpsTac (nm : Name) (cfg : SimpsCfg := {}) (todo : List String := []) (trc 
     if cfg.trace then
       logInfo m!"[simps] > @[toAdditive] will be added to all generated lemmas."
     pure { cfg with addAdditive := additiveName }
-  MetaM.run' <|
-    simpsAddProjections env nm d.type lhs (d.value?.getD default) #[] d.levelParams (mustBeStr := true) cfg todo []
+  MetaM.run' <| simpsAddProjections env ref nm d.type lhs (d.value?.getD default) #[] d.levelParams
+      (mustBeStr := true) cfg todo []
 
 initialize simpsAttr : ParametricAttribute (Array Name) ←
   registerParametricAttribute {
     name := `simps
     descr := "Automatically derive lemmas specifying the projections of this declaration.",
     getParam := fun
-    | nm, `(attr|simps $[?%$trc]? $[(config := $c)]? $[$ids]*) => do
+    | nm, stx@`(attr|simps $[?%$trc]? $[(config := $c)]? $[$ids]*) => do
       let ids := ids.map (·.getId.eraseMacroScopes.getString)
       let cfg ← match c with
         | none => pure {}
         | some c => MetaM.run' <| TermElabM.run' <| elabSimpsConfig c
-      simpsTac nm cfg ids.toList trc.isSome
+      simpsTac stx nm cfg ids.toList trc.isSome
     | _, stx => throwError "unexpected simps syntax {stx}"
   }
