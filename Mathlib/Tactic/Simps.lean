@@ -131,6 +131,9 @@ def mkSimpContext (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind := Si
 
 end Lean.Meta
 
+def hasSimpAttribute (env : Environment) (declName : Name) : Bool :=
+  simpExtension.getState env |>.lemmaNames.contains <| .decl declName
+
 
 namespace Lean.Parser
 namespace Attr
@@ -507,7 +510,7 @@ def simpsApplyProjectionRules (str : Name) (rules : Array ProjectionRule) :
           { proj with isDefault := false, isPrefix := isPrefix } else
           proj else
         projs.push ⟨nm, nm, false, isPrefix, none, [], false⟩
-  trace[simps.debug] "[simps] > Projection info after applying the rules: {projs}."
+  trace[simps.debug] "Projection info after applying the rules: {projs}."
   unless (projs.map (·.newName)).toList.Nodup do throwError
     "Invalid projection names. Two projections have the same name.\n{""
     }This is likely because a custom composition of projections was given the same name as an {""
@@ -570,7 +573,7 @@ def simpsResolveNotationClass (projs : Array ParsedProjectionData)
         }but it is not definitionally equal to any projection."
     throwError "" -- will be caught by <|> in `simpsFindAutomaticProjections`
   | some pos =>
-    trace[simps.debug] "[simps] > The raw projection is:\n {rawExprLambda}"
+    trace[simps.debug] "The raw projection is:\n {rawExprLambda}"
     projs.mapIdxM fun nr x => if nr.1 = pos then do
       if x.isChanged then
         if trc then
@@ -667,7 +670,7 @@ def simpsGetRawProjections (str : Name) (traceIfExists : Bool := false)
   | none =>
     if trc then
       logInfo m!"[simps] > generating projection information for structure {str}."
-    trace[simps.debug] "[simps] > Applying the rules {rules}."
+    trace[simps.debug] "Applying the rules {rules}."
     if env.find? str |>.isNone then
       throwError "No such declaration {str}." -- maybe unreachable
     let strDecl := (env.find? str).get!
@@ -686,7 +689,7 @@ def simpsGetRawProjections (str : Name) (traceIfExists : Bool := false)
     if trc then
       logInfo <| projectionsInfo projs.toList "generated projections for" str
     simpsStructure.add str (rawLevels, projs)
-    trace[simps.debug] "[simps] > Generated raw projection data:\n{(rawLevels, projs)}"
+    trace[simps.debug] "Generated raw projection data:\n{(rawLevels, projs)}"
     pure (rawLevels, projs)
 
 library_note "custom simps projection"
@@ -723,29 +726,29 @@ def elabSimpsRule : Syntax → CommandElabM ProjectionRule
   _ ← liftCoreM <| simpsGetRawProjections nm true rules trc.isSome
 | _ => throwUnsupportedSyntax
 
-structure SimpsCfg where
+structure Simps.Config where
   isSimp := true
   attrs : List Name := [] -- todo
   simpRhs := false
   typeMd := TransparencyMode.instances
   rhsMd := TransparencyMode.reducible -- was `none` in Lean 3
   fullyApplied := true
-  notRecursive := [`prod, `pprod]
+  notRecursive := [`Prod, `PProd]
   trace := false
   debug := false -- adds a few checks (not used much)
   addAdditive := @none Name
   deriving Inhabited
 
-/-- Function elaborating SimpsCfg -/
-declare_config_elab elabSimpsConfig SimpsCfg
+/-- Function elaborating Simps.Config -/
+declare_config_elab elabSimpsConfig Simps.Config
 
 /-- A common configuration for `@[simps]`: generate equalities between functions instead equalities
   between fully applied Expressions. -/
-def SimpsCfg.asFn : SimpsCfg where
+def Simps.Config.asFn : Simps.Config where
   fullyApplied := false
 
 /-- A common configuration for `@[simps]`: don't tag the generated lemmas with `@[simp]`. -/
-def SimpsCfg.lemmasOnly : SimpsCfg where
+def Simps.Config.lemmasOnly : Simps.Config where
   attrs := []
 
 /-- `instantiateLambdasOrApps es e` instantiates lambdas in `e` by expressions from `es`.
@@ -782,7 +785,7 @@ e.betaRev es.reverse true -- check if this is what I want
      ...]
   ```
 -/
-def simpsGetProjectionExprs (tgt : Expr) (rhs : Expr) (cfg : SimpsCfg) :
+def simpsGetProjectionExprs (tgt : Expr) (rhs : Expr) (cfg : Simps.Config) :
     MetaM <| Array <| Expr × ProjectionData := do
   -- the parameters of the structure
   let params := tgt.getAppArgs
@@ -809,8 +812,8 @@ def getUnivLevel (t : Expr) : MetaM Level := do
 /-- Add a lemma with `nm` stating that `lhs = rhs`. `type` is the type of both `lhs` and `rhs`,
   `args` is the list of local constants occurring, and `univs` is the list of universe variables. -/
 def simpsAddProjection (ref : Syntax) (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
-  (univs : List Name) (cfg : SimpsCfg) : MetaM Unit := do
-  trace[simps.debug] "[simps] > Planning to add the equality\n        > {lhs} = ({rhs} : {type})"
+  (univs : List Name) (cfg : Simps.Config) : MetaM Unit := do
+  trace[simps.debug] "Planning to add the equality\n        > {lhs} = ({rhs} : {type})"
   let env ← getEnv
   if (env.find? declName).isSome then -- diverging behavior from Lean 3
     throwError "simps tried to add lemma {declName} to the environment, but it already exists."
@@ -823,12 +826,12 @@ def simpsAddProjection (ref : Syntax) (declName : Name) (type lhs rhs : Expr) (a
       let ctx ← mkSimpContext
       let (rhs2, _) ← dsimp rhs ctx
       if rhs != rhs2 then
-        trace[simps.debug] "[simps] > `dsimp` simplified rhs to\n        > {rhs2}" else
-        trace[simps.debug] "[simps] > `dsimp` failed to simplify rhs"
+        trace[simps.debug] "`dsimp` simplified rhs to\n        > {rhs2}" else
+        trace[simps.debug] "`dsimp` failed to simplify rhs"
       let (result, _) ← simp rhs2 ctx
       if rhs2 != result.expr then
-        trace[simps.debug] "[simps] > `simp` simplified rhs to\n        > {result.expr}" else
-        trace[simps.debug] "[simps] > `simp` failed to simplify rhs"
+        trace[simps.debug] "`simp` simplified rhs to\n        > {result.expr}" else
+        trace[simps.debug] "`simp` failed to simplify rhs"
       pure (result.expr, result.proof?.getD defaultPrf)
   let eqAp := mkAppN (mkConst `Eq [lvl]) #[type, lhs, rhs]
   let declType ← mkForallFVars args eqAp
@@ -878,15 +881,15 @@ def Lean.Name.getString : Name → String
   `simpLemmas`: names of the simp lemmas added so far.(simpLemmas : Array Name)
   -/
 partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (type lhs rhs : Expr)
-  (args : Array Expr) (univs : List Name) (mustBeStr : Bool) (cfg : SimpsCfg) (todo : List String)
+  (args : Array Expr) (univs : List Name) (mustBeStr : Bool) (cfg : Simps.Config) (todo : List String)
   (toApply : List ℕ) : MetaM (Array Name) := do
   -- we don't want to unfold non-reducible definitions (like `set`) to apply more arguments
-  trace[simps.debug] "[simps] > Type of the Expression before normalizing: {type}"
+  trace[simps.debug] "Type of the Expression before normalizing: {type}"
   withTransparency cfg.typeMd <| forallTelescopeReducing type fun typeArgs tgt =>
     withTransparency .default <| do
-  trace[simps.debug] "[simps] > Type after removing pi's: {tgt}"
+  trace[simps.debug] "Type after removing pi's: {tgt}"
   let tgt ← whnfD tgt
-  trace[simps.debug] "[simps] > Type after reduction: {tgt}"
+  trace[simps.debug] "Type after reduction: {tgt}"
   let newArgs := args ++ typeArgs
   let lhsAp := lhs.instantiateLambdasOrApps typeArgs
   let rhsAp := rhs.instantiateLambdasOrApps typeArgs
@@ -909,10 +912,9 @@ partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (
     pure #[nm] else
   let some (.inductInfo info) ← pure <| env.find? str | throwError "unreachable"
   let [ctor] ← pure info.ctors | throwError "unreachable"
-  trace[simps.debug] "[simps] > {str} is a structure with constructor {ctor}."
+  trace[simps.debug] "{str} is a structure with constructor {ctor}."
   let rhsWhnf ← withTransparency cfg.rhsMd <| whnf rhsAp
-  trace[simps.debug]
-    "[simps] > The right-hand-side {indentExpr rhsAp}\n reduces to {indentExpr rhsWhnf}"
+  trace[simps.debug] "The right-hand-side {indentExpr rhsAp}\n reduces to {indentExpr rhsWhnf}"
   -- `todoNow` means that we still have to generate the current simp lemma
   let (rhsAp, todoNow) ←
     if !rhsAp.getAppFn.isConstOf ctor ∧ rhsWhnf.getAppFn.isConstOf ctor then
@@ -926,8 +928,7 @@ partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (
           simpsAddProjection ref nm type lhs rhs args univs cfg
       pure (rhsWhnf, false) else
       pure (rhsAp, "" ∈ todo && toApply.isEmpty)
-  trace[simps.debug]
-    "[simps] > Continuing with {indentExpr rhsAp}"
+  trace[simps.debug] "Continuing with {indentExpr rhsAp}"
   if !rhsAp.getAppFn.isConstOf ctor then
     -- if I'm about to run into an error, try to set the transparency for `rhsMd` higher.
     if cfg.rhsMd == .reducible && (mustBeStr || !todoNext.isEmpty || !toApply.isEmpty) then
@@ -950,9 +951,9 @@ partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (
       simpsAddProjection ref nm type lhs rhs args univs cfg
     pure #[nm] else
   -- if the value is a constructor application
-  trace[simps.debug] "[simps] > Generating raw projection information..."
+  trace[simps.debug] "Generating raw projection information..."
   let projInfo ← simpsGetProjectionExprs tgt rhsAp cfg
-  trace[simps.debug] "[simps] > Raw projection information:\n  {projInfo}"
+  trace[simps.debug] "Raw projection information:\n  {projInfo}"
   -- If we are in the middle of a composite projection.
   if !toApply.isEmpty then do
     let ⟨newRhs, _⟩ ←
@@ -960,7 +961,7 @@ partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (
       | none => throwError "unreachable: index of composite projection is out of bounds."
       | some x => pure x
     let newType ← inferType newRhs
-    trace[simps.debug] "[simps] > Applying a custom composite projection. Current {""
+    trace[simps.debug] "Applying a custom composite projection. Current {""
       }lhs:\n        >   {lhsAp}"
     simpsAddProjections env ref nm newType lhsAp newRhs newArgs univs false cfg todo toApply else
   -- check whether `rhsAp` is an eta-expansion
@@ -999,7 +1000,7 @@ partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (
       let new_cfg :=
         { cfg with addAdditive := cfg.addAdditive.map fun nm =>
           updateName nm (ToAdditive.guessName proj.getString) isPrefix }
-      trace[simps.debug] "[simps] > Recursively add projections for:\n        >  {newLhs}"
+      trace[simps.debug] "Recursively add projections for:\n        >  {newLhs}"
       simpsAddProjections env ref newName newType newLhs newRhs newArgs univs false new_cfg new_todo
         projNrs
     pure l.flatten
@@ -1008,7 +1009,7 @@ partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (
   If `todo` is non-empty, it will generate exactly the names in `todo`.
   If `shortNm` is true, the generated names will only use the last projection name.
   If `trc` is true, trace as if `trace.simps.verbose` is true. -/
-def simpsTac (ref : Syntax) (nm : Name) (cfg : SimpsCfg := {}) (todo : List String := [])
+def simpsTac (ref : Syntax) (nm : Name) (cfg : Simps.Config := {}) (todo : List String := [])
   (trc := false) : AttrM (Array Name) := do
   let env ← getEnv
   let some d ← pure <| env.find? nm | throwError "Declaration {nm} doesn't exist."
