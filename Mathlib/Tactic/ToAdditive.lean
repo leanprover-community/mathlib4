@@ -723,6 +723,8 @@ initialize registerBuiltinAttribute {
         throwError "`to_additive` can't be used as a local attribute"
       let val ← elabToAdditive stx
       addToAdditiveAttr src val
+    -- Because `@[simp]` runs after compilation,
+    -- we have to as well to be able to copy attributes correctly.
     applicationTime := .afterCompilation
   }
 
