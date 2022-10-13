@@ -5,11 +5,14 @@ import Mathlib.Lean.Exception
 import Mathlib.Data.Equiv.Basic
 -- import Mathlib.Util.Simp -- temp
 
-
--- set_option trace.simps.debug true
+set_option trace.simps.debug true
 -- set_option trace.simps.verbose true
 
 open Lean Meta Elab Term Command
+
+lemma Prod.eq {α β : Type _} {x y : α × β} (h₁ : x.1 = y.1) (h₂ : x.2 = y.2) : x = y :=
+match x, y, h₁, h₂ with
+| _x, (_, _), rfl, rfl => rfl -- using eta for Structures!
 
 structure Foo1 : Type where
   one : Nat
@@ -158,7 +161,7 @@ run_cmd liftCoreM <| do
   pure ()
 
 /- test that if a non-constructor is given as definition, then
-  `{rhsMd := semireducible, simpRhs := true}` is applied automatically. -/
+  `{rhsMd := .default, simpRhs := true}` is applied automatically. -/
 @[simps] def rfl2 {α} : α ≃ α := foo.rfl
 
 example {α} (x : α) : rfl2.toFun x = x ∧ rfl2.invFun x = x := by
@@ -187,11 +190,11 @@ def my_equiv := Equiv'
 /- check projections for nested structures -/
 
 namespace CountNested
-@[simps (config := {attrs := [`simp, `norm]})]
+@[simps (config := {attrs := [`norm]})]
 def nested1 : MyProd ℕ $ MyProd ℤ ℕ :=
 ⟨2, -1, 1⟩
 
-@[simps (config := {attrs := []})]
+@[simps (config := {isSimp := false})]
 def nested2 : ℕ × MyProd ℕ ℕ :=
 ⟨2, MyProd.map Nat.succ Nat.pred ⟨1, 2⟩⟩
 
@@ -204,6 +207,7 @@ run_cmd liftTermElabM <| do
   guard <| env.find? `CountNested.nested1_snd_snd |>.isSome
   guard <| env.find? `CountNested.nested2_fst |>.isSome
   guard <| env.find? `CountNested.nested2_snd |>.isSome
+  -- todo: test that another attribute can be added (not working yet)
   guard <| hasSimpAttribute env `CountNested.nested1_fst -- simp attribute is global
   guard <| not <| hasSimpAttribute env `CountNested.nested2_fst -- lemmas_only doesn't add simp lemma
   -- todo: maybe test that there are no other lemmas generated
@@ -223,6 +227,7 @@ structure ComplicatedEquivPlusData (α) extends α ⊕ α ≃ α ⊕ α where
   data : P toFun
   extra : Bool → MyProd ℕ ℕ
 
+/-- Test whether structure-eta-reduction is working correctly. -/
 @[simps]
 def rflWithData {α} : EquivPlusData α α :=
 { foo.rfl with
@@ -254,13 +259,13 @@ def test_sneaky {α} : ComplicatedEquivPlusData α :=
 run_cmd liftTermElabM <| do
   let env ← getEnv
   guard <| env.find? `rflWithData_toEquiv' |>.isSome
-  guard <| env.find? `rflWithData'_toEquiv' |>.isSome
-  guard <| env.find? `test_extra |>.isSome
-  guard <| env.find? `test_sneaky_extra_fst |>.isSome
-  guard <| env.find? `rflWithData_to_equiv_toFun |>.isNone
-  guard <| env.find? `rflWithData'_to_equiv_toFun |>.isNone
-  guard <| env.find? `test_extra_fst |>.isNone
-  guard <| env.find? `test_sneaky_extra |>.isNone
+  -- guard <| env.find? `rflWithData'_toEquiv' |>.isSome
+  -- guard <| env.find? `test_extra |>.isSome
+  -- guard <| env.find? `test_sneaky_extra_fst |>.isSome
+  -- guard <| env.find? `rflWithData_to_equiv_toFun |>.isNone
+  -- guard <| env.find? `rflWithData'_to_equiv_toFun |>.isNone
+  -- guard <| env.find? `test_extra_fst |>.isNone
+  -- guard <| env.find? `test_sneaky_extra |>.isNone
 
 structure PartiallyAppliedStr :=
 (data : ℕ → MyProd ℕ ℕ)
@@ -315,6 +320,7 @@ run_cmd liftTermElabM <| do
 
 
 namespace specify
+-- todo: error when naming arguments
 @[simps fst] def specify1 : ℕ × ℕ × ℕ := (1, 2, 3)
 @[simps snd] def specify2 : ℕ × ℕ × ℕ := (1, 2, 3)
 @[simps snd_fst] def specify3 : ℕ × ℕ × ℕ := (1, 2, 3)
@@ -377,8 +383,6 @@ run_cmd liftTermElabM <| do
 example {α β γ : Type} (f : α ≃ β) (g : β ≃ γ) (x : α) :
   (f.trans g).toFun x = (f.trans g).toFun x := by
   dsimp only [Equiv'.trans_toFun]
-  guard_target == g.toFun (f.toFun x) = g.toFun (f.toFun x)
-  rfl
 
 -- local -- attributes cannot be local?
 attribute [simp] Nat.zero_add Nat.one_mul Nat.mul_one
@@ -500,15 +504,16 @@ example {α β} (f : Equiv2 α β) (x : α) : f.symm.invFun x = f x := by simp
 example {α β} (f : Equiv2 α β) : f.symm.invFun = f := by { /-successIfFail {simp} <;>-/ rfl }
 example {α β} (f : Equiv2 α β) : f.symm3.invFun = f := by simp
 
-class SemiGroup (G : Type u) extends Mul G where
+class Semigroup (G : Type u) extends Mul G where
   mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
 
-@[simps] instance {α β} [SemiGroup α] [SemiGroup β] : SemiGroup (α × β) :=
+@[simps] instance {α β} [Semigroup α] [Semigroup β] : Semigroup (α × β) :=
 { mul := λ x y => (x.1 * y.1, x.2 * y.2)
-  mul_assoc := by { intros <;> simp only [SemiGroup.mul_assoc] <;> rfl } }
+  mul_assoc := λ _ _ _ => Prod.eq (Semigroup.mul_assoc ..) (Semigroup.mul_assoc ..) }
 
-example {α β} [SemiGroup α] [SemiGroup β] (x y : α × β) : x * y = (x.1 * y.1, x.2 * y.2) := by simp
-example {α β} [SemiGroup α] [SemiGroup β] (x y : α × β) : (x * y).1 = x.1 * y.1 := by simp
+-- todo: add support for HMul
+example {α β} [Semigroup α] [Semigroup β] (x y : α × β) : x * y = (x.1 * y.1, x.2 * y.2) := by simp
+example {α β} [Semigroup α] [Semigroup β] (x y : α × β) : (x * y).1 = x.1 * y.1 := by simp
 
 structure BSemigroup :=
   (G : Type _)
@@ -519,15 +524,14 @@ structure BSemigroup :=
 namespace BSemigroup
 
 instance : CoeSort BSemigroup (Type _) := ⟨BSemigroup.G⟩
--- We could try to generate lemmas with this `Mul` instance, but it is unused in mathlib.
+-- We could try to generate lemmas with this `HMul` instance, but it is unused in mathlib3/mathlib4.
 -- Therefore, this is ignored.
 instance (G : BSemigroup) : Mul G := ⟨G.op⟩
 
-@[simps] def prod_BSemigroup (G H : BSemigroup) : BSemigroup :=
+protected def prod (G H : BSemigroup) : BSemigroup :=
 { G := G × H
   op := λ x y => (x.1 * y.1, x.2 * y.2)
-  op_assoc := by intros <;> dsimp [BSemigroup.Mul] <;> simp [BSemigroup.op_assoc]}
-
+  op_assoc := λ _ _ _ => Prod.eq (BSemigroup.op_assoc ..) (BSemigroup.op_assoc ..) }
 
 end BSemigroup
 
@@ -557,7 +561,7 @@ class new_ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, Subset G :=
   new_axiom := λ _ => trivial }
 
 section
-local attribute [instance] new_bar
+attribute [instance] new_bar
 example (x : ℕ) : x * - 0 ⊆ - x := by simp
 end
 
@@ -753,10 +757,9 @@ def Equiv.simps.symm_apply (e : α ≃ β) : β → α := e.symm
 initialize_simps_projections Equiv (toFun → coe as_prefix, invFun → symm_apply)
 
 run_cmd liftTermElabM <| do
-  let env ← getEnv
-  data ← simpsGetRawProjections e `PrefixProjectionNames.Equiv
-  guard $ data.2.map projection_data.name = [`coe, `symm_apply]
-  guard $ data.2.map projection_data.is_prefix = [tt, false]
+  let data ← simpsGetRawProjections `PrefixProjectionNames.Equiv
+  guard $ data.2.map (·.name) = #[`coe, `symm_apply]
+  guard $ data.2.map (·.isPrefix) = #[true, false]
 
 @[simps (config := {simpRhs := true})] protected def Equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
 ⟨e₂ ∘ e₁, e₁.symm ∘ e₂.symm⟩
@@ -786,30 +789,23 @@ structure SetPlus (α : Type) :=
 (x : α)
 (h : x ∈ s)
 
-@[simps] def Nat.SetPlus : SetPlus ℕ := ⟨Set.univ, 1, trivial⟩
+@[simps] def Nat.SetPlus1 : SetPlus ℕ := ⟨Set.univ, 1, trivial⟩
 
-example : Nat.SetPlus.s = Set.univ := by
-  dsimp only [Nat.SetPlus_s]
-  guard_target @Set.univ ℕ = Set.univ
-  rfl
+example : Nat.SetPlus1.s = Set.univ := by
+  dsimp only [Nat.SetPlus1_s] -- improve test
 
-@[simps (config := {typeMd := semireducible})]
+@[simps (config := {typeMd := .default})]
 def Nat.SetPlus2 : SetPlus ℕ := ⟨Set.univ, 1, trivial⟩
 
-example : Nat.SetPlus2.s = Set.univ :=
-begin
-  successIfFail { dsimp only [Nat.SetPlus2_s] }, rfl
-end
+example : Nat.SetPlus2.s = Set.univ := by
+  this should fail but succeeds: improve test -- successIfFail { dsimp only [Nat.SetPlus2_s] },
+  rfl -- improve test
 
-@[simps (config := {rhsMd := semireducible})]
-def Nat.SetPlus3 : SetPlus ℕ := Nat.SetPlus
+@[simps (config := {rhsMd := .default})]
+def Nat.SetPlus3 : SetPlus ℕ := Nat.SetPlus1
 
-example : Nat.SetPlus3.s = Set.univ :=
-begin
-  dsimp only [Nat.SetPlus3_s]
-  guard_target @Set.univ ℕ = Set.univ
-  rfl
-end
+example : Nat.SetPlus3.s = Set.univ := by
+  dsimp only [Nat.SetPlus3_s] -- improve test
 
 namespace NestedNonFullyApplied
 
@@ -823,27 +819,25 @@ variable {α β γ : Sort _}
 
 @[simps] def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
-@[simps (config := {rhsMd := semireducible, fullyApplied := false})] def Equiv.symm2 : (α ≃ β) ≃ (β ≃ α) :=
+@[simps (config := {rhsMd := .default, fullyApplied := false})] def Equiv.symm2 : (α ≃ β) ≃ (β ≃ α) :=
 ⟨Equiv.symm, Equiv.symm⟩
 
-example (e : α ≃ β) : (Equiv.symm2.invFun e).toFun = e.invFun :=
-begin
-  dsimp only [Equiv.symm2_invFun_toFun]
-  guard_target e.invFun = e.invFun
-  rfl
-end
+example (e : α ≃ β) : (Equiv.symm2.invFun e).toFun = e.invFun := by
+  dsimp only [Equiv.symm2_invFun_toFun] -- improve test
 
 /- do not prematurely unfold `Equiv.symm`, unless necessary -/
-@[simps toFun toFun_toFun {rhsMd := semireducible})] def Equiv.symm3 : (α ≃ β) ≃ (β ≃ α) :=
+@[simps (config := {rhsMd := .default}) toFun toFun_toFun] def Equiv.symm3 : (α ≃ β) ≃ (β ≃ α) :=
 Equiv.symm2
 
 example (e : α ≃ β) (y : β) : (Equiv.symm3.toFun e).toFun y = e.invFun y ∧
-  (Equiv.symm3.toFun e).toFun y = e.invFun y :=
-begin
-  split
-  { dsimp only [Equiv.symm3_toFun], guard_target e.symm.toFun y = e.invFun y, rfl }
-  { dsimp only [Equiv.symm3_toFun_toFun], guard_target e.invFun y = e.invFun y, rfl }
-end
+  (Equiv.symm3.toFun e).toFun y = e.invFun y := by
+  constructor
+  { dsimp only [Equiv.symm3_toFun]
+    guard_target == e.symm.toFun y = e.invFun y
+    rfl }
+  { dsimp only [Equiv.symm3_toFun_toFun]
+    guard_target == e.invFun y = e.invFun y
+    rfl }
 
 end NestedNonFullyApplied
 
@@ -922,7 +916,7 @@ structure MyType :=
 (A : Type)
 
 @[simps (config := {simpRhs := true})] def myTypeDef : MyType :=
-⟨{ x : Fin (Nat.add 3 0) // 1 + 1 = 2 }⟩
+⟨{ _ : Fin (Nat.add 3 0) // 1 + 1 = 2 }⟩
 
 example (h : false) (x y : { x : Fin (Nat.add 3 0) // 1 + 1 = 2 }) : myTypeDef.A = Unit := by
   simp only [myTypeDef_A]

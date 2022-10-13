@@ -138,7 +138,7 @@ def hasSimpAttribute (env : Environment) (declName : Name) : Bool :=
 namespace Lean.Parser
 namespace Attr
 
-syntax simpsArgsRest := (" (" &"config" " := " term ")")? (ppSpace ident)*
+syntax simpsArgsRest := (Tactic.config)? (ppSpace ident)*
 
 /-- The `@[simps]` attribute automatically derives lemmas specifying the projections of this
 declaration.
@@ -817,7 +817,7 @@ def simpsAddProjection (ref : Syntax) (declName : Name) (type lhs rhs : Expr) (a
   let env ← getEnv
   if (env.find? declName).isSome then -- diverging behavior from Lean 3
     throwError "simps tried to add lemma {declName} to the environment, but it already exists."
-    -- simplify `rhs` if `cfg.simpRhs` is true
+  -- simplify `rhs` if `cfg.simpRhs` is true
   let lvl ← getUnivLevel type
   let (rhs, prf) ← do
     let defaultPrf := mkAppN (mkConst `Eq.refl [lvl]) #[type, lhs]
@@ -894,6 +894,7 @@ partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (
   let lhsAp := lhs.instantiateLambdasOrApps typeArgs
   let rhsAp := rhs.instantiateLambdasOrApps typeArgs
   let str := tgt.getAppFn.constName
+  trace[simps.debug] "todo: {todo}"
   -- We want to generate the current projection if it is in `todo`
   let todoNext := todo.filter (· ≠ "")
   let strInfo? := getStructureInfo? env str
@@ -910,24 +911,26 @@ partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (
       simpsAddProjection ref nm tgt lhsAp rhsAp newArgs univs cfg else
       simpsAddProjection ref nm type lhs rhs args univs cfg
     pure #[nm] else
+  -- if the type is a structure
   let some (.inductInfo info) ← pure <| env.find? str | throwError "unreachable"
   let [ctor] ← pure info.ctors | throwError "unreachable"
   trace[simps.debug] "{str} is a structure with constructor {ctor}."
   let rhsWhnf ← withTransparency cfg.rhsMd <| whnf rhsAp
   trace[simps.debug] "The right-hand-side {indentExpr rhsAp}\n reduces to {indentExpr rhsWhnf}"
+  let addThisProjection := "" ∈ todo && toApply.isEmpty -- did the user ask to add this projection?
   -- `todoNow` means that we still have to generate the current simp lemma
   let (rhsAp, todoNow) ←
-    if !rhsAp.getAppFn.isConstOf ctor ∧ rhsWhnf.getAppFn.isConstOf ctor then
+    if !rhsAp.getAppFn.isConstOf ctor && rhsWhnf.getAppFn.isConstOf ctor then
       /- If this was a desired projection, we want to apply it before taking the whnf.
       However, if the current field is an eta-expansion (see below), we first want
       to eta-reduce it and only then construct the projection.
       This makes the flow of this function messy. -/
-      if "" ∈ todo && toApply.isEmpty then
+      if addThisProjection then
         if cfg.fullyApplied then
           simpsAddProjection ref nm tgt lhsAp rhsAp newArgs univs cfg else
           simpsAddProjection ref nm type lhs rhs args univs cfg
       pure (rhsWhnf, false) else
-      pure (rhsAp, "" ∈ todo && toApply.isEmpty)
+      pure (rhsAp, addThisProjection)
   trace[simps.debug] "Continuing with {indentExpr rhsAp}"
   if !rhsAp.getAppFn.isConstOf ctor then
     -- if I'm about to run into an error, try to set the transparency for `rhsMd` higher.
@@ -964,8 +967,9 @@ partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (
     trace[simps.debug] "Applying a custom composite projection. Current {""
       }lhs:\n        >   {lhsAp}"
     simpsAddProjections env ref nm newType lhsAp newRhs newArgs univs false cfg todo toApply else
+  trace[simps.debug] "Not in the middle of applying a custom composite projection"
   -- check whether `rhsAp` is an eta-expansion
-  let eta : Option Expr := none -- todo: support eta-reduction of structures (still useful, because we care about syntactic equality!?)
+  let eta : Option Expr := none -- todo: support eta-reduction of structures (still useful, since we don't want to recurse into something like `{fst := x.fst, snd := x.snd}`)
   -- let eta ← rhsAp.isEtaExpansion
   let rhsAp := eta.getD rhsAp -- eta-reduce `rhsAp`
   /- As a special case, we want to automatically generate the current projection if `rhsAp`
@@ -977,7 +981,7 @@ partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (
       simpsAddProjection ref nm type lhs rhs args univs cfg
   /- We stop if no further projection is specified or if we just reduced an eta-expansion and we
   automatically choose projections -/
-  if !(todo == [""] || eta.isSome || todo.isEmpty) then pure #[] else
+  if !(todo == [""] || (eta.isSome && todo.isEmpty)) then pure #[] else
   let projs : Array Name := projInfo.map fun x => x.2.name
   let todo := if toApply.isEmpty then todoNext else todo
   -- check whether all elements in `todo` have a projection as prefix
@@ -1032,9 +1036,7 @@ initialize simpsAttr : ParametricAttribute (Array Name) ←
     descr := "Automatically derive lemmas specifying the projections of this declaration.",
     getParam := fun
     | nm, stx@`(attr|simps $[?%$trc]? $[(config := $c)]? $[$ids]*) => do
-      let cfg ← match c with
-      | none => pure {}
-      | some c => MetaM.run' <| TermElabM.run' <| withSaveInfoContext <| elabSimpsConfig c
+      let cfg ← MetaM.run' <| TermElabM.run' <| withSaveInfoContext <| elabSimpsConfig stx[2][0]
       let ids := ids.map (·.getId.eraseMacroScopes.getString)
       simpsTac stx nm cfg ids.toList trc.isSome
     | _, stx => throwError "unexpected simps syntax {stx}"
