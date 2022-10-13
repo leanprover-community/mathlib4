@@ -36,6 +36,9 @@ partial def _root_.Lean.Expr.numeral? (e : Expr) : Option Nat :=
 namespace Meta.NormNum
 open Qq
 
+/-- Given a monadic function `k`
+which takes typed expressions representing a semiring element to a `NormNum.Result`,
+and lifts it to a `norm_num` extension. -/
 def withSemiring
   (k : {u : Level} → (α : Q(Type u)) → Q($α) → Q(Semiring «$α») → MetaM Result) :
     NormNumExt where eval e := do
@@ -44,6 +47,7 @@ def withSemiring
 
 theorem isNat_zero (α) [Semiring α] : isNat (Zero.zero : α) (nat_lit 0) := Nat.cast_zero.symm
 
+/-- The `norm_num` extension which identifies the expression `Zero.zero`, returning `0`. -/
 @[norm_num Zero.zero] def evalZero : NormNumExt := withSemiring fun α e _i => do
   match e with
   | ~q(Zero.zero) =>
@@ -51,11 +55,13 @@ theorem isNat_zero (α) [Semiring α] : isNat (Zero.zero : α) (nat_lit 0) := Na
 
 theorem isNat_one (α) [Semiring α] : isNat (One.one : α) (nat_lit 1) := Nat.cast_one.symm
 
+/-- The `norm_num` extension which identifies the expression `One.one`, returning `1`. -/
 @[norm_num One.one] def evalOne : NormNumExt := withSemiring fun α e _i => do
   match e with
   | ~q(One.one) =>
     return .isNat (mkRawNatLit 1) q(isNat_one $α)
 
+/-- The `norm_num` extension which identifies an expression `OfNat.ofNat n`, returning `n`. -/
 @[norm_num OfNat.ofNat _] def evalOfNat : NormNumExt := withSemiring fun α e _ => do
   match e with
   | ~q(@OfNat.ofNat _ $n $oα) =>
@@ -69,6 +75,8 @@ theorem isNat_add {α} [Semiring α] : {a b : α} → {a' b' c : Nat} →
     isNat a a' → isNat b b' → Nat.add a' b' = c → isNat (a + b) c
   | _, _, _, _, _, rfl, rfl, rfl => Nat.cast_add.symm
 
+/-- The `norm_num` extension which identifies expressions of the form `a + b`,
+such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ + _, Add.add _ _] def evalAdd : NormNumExt := withSemiring fun α e _i => do
   let arm (a b : Q($α)) : MetaM Result := do
     let (⟨na, pa⟩, ⟨nb, pb⟩) := (← deriveQ a, ← deriveQ b)
@@ -83,6 +91,8 @@ theorem isNat_mul {α} [Semiring α] : {a b : α} → {a' b' c : Nat} →
     isNat a a' → isNat b b' → Nat.mul a' b' = c → isNat (a * b) c
   | _, _, _, _, _, rfl, rfl, rfl => Nat.cast_mul.symm
 
+/-- The `norm_num` extension which identifies expressions of the form `a * b`,
+such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ * _, Mul.mul _ _] def evalMul : NormNumExt := withSemiring fun α e _i => do
   let arm (a b : Q($α)) : MetaM Result := do
     let (⟨na, pa⟩, ⟨nb, pb⟩) := (← deriveQ a, ← deriveQ b)
@@ -99,6 +109,8 @@ theorem isNat_pow {α} [Semiring α] : {a : α} → {b a' b' c : Nat} →
 
 def instSemiringNat : Semiring Nat := inferInstance
 
+/-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
+such that `norm_num` successfully recognises both `a` and `b`, with `b : ℕ`. -/
 @[norm_num (_ : α) ^ (_ : Nat), Pow.pow _ (_ : Nat)]
 def evalPow : NormNumExt := withSemiring fun α e _i => do
   let arm (a : Q($α)) (b : Q(Nat)) : MetaM Result := do
@@ -114,6 +126,7 @@ theorem isNat_cast {R} [Semiring R] (n m : Nat) :
     isNat n m → isNat (n : R) m := by
   rintro ⟨⟩; rfl
 
+/-- The `norm_num` extension which identifies an expression `Nat.cast n`, returning `n`. -/
 @[norm_num Nat.cast _] def evalNatCast : NormNumExt := withSemiring fun α e _i => do
   match e with
   | ~q(Nat.cast $a) =>

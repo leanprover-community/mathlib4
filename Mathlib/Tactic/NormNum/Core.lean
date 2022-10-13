@@ -24,6 +24,7 @@ namespace Meta.NormNum
 
 initialize registerTraceClass `Tactic.norm_num
 
+/-- Assert that an element of a semiring is equal to the coercion of some natural number. -/
 def isNat [Semiring α] (a : α) (n : ℕ) := a = n
 
 class LawfulOfNat (α) [Semiring α] (n) [OfNat α n] : Prop where
@@ -39,6 +40,9 @@ theorem eval_of_isNat {α} [Semiring α] (n) [OfNat α n] [LawfulOfNat α n] :
   (a : α) → isNat a n → a = OfNat.ofNat n
 | _, rfl => LawfulOfNat.isNat_ofNat.symm
 
+/-- The result of `norm_num` running on an expression of type `α` can either be
+a natural number literal in `α`
+or some new expression `e : α` equipped with a proof of type `isNat e n` for some `n : ℕ`. -/
 inductive Result where
   | literal (lit : Expr)
   | isNat (lit proof : Expr)
@@ -48,15 +52,26 @@ instance : ToMessageData Result where
   | .literal lit => m!"(literal {lit})"
   | .isNat lit proof => m!"(isNat {lit} {proof})"
 
+/--
+Express a `Result` as a pair of expressions `e : α` and `prf : isNat e n` for some `n : ℕ`.
+-/
 def Result.toIsNat : Result → Expr × Expr
   | .literal (lit : Q(Nat)) => (lit, q(@Eq.refl Nat $lit))
   | .isNat lit p => (lit, p)
 
+/--
+Given a typed expression `e : α`, and a `Result`
+(which should have been obtained by running `derive` on `e`,
+produce a typed expression `lit : ℕ` and a proof of `isNat e lit`.
+-/
 def Result.toIsNatQ {α : Q(Type u)} (e : Q($α)) :
     Result → (_inst : Q(Semiring $α) := by assumption) → (lit : Q(Nat)) × Q(NormNum.isNat $e $lit)
   | .literal (lit : Q(Nat)), _ => ⟨lit, (q(@Eq.refl Nat $lit) : Expr)⟩
   | .isNat lit p, _ => ⟨lit, p⟩
 
+/--
+Convert a `Result` to a `Simp.Result`.
+-/
 def Result.toSimpResult (e : Expr) : Result → MetaM Simp.Result
   | .literal lit => pure { expr := lit }
   | .isNat (lit : Q(Nat)) p => by exact do
@@ -67,9 +82,13 @@ def Result.toSimpResult (e : Expr) : Result → MetaM Simp.Result
     let lawfulInst ← synthInstanceQ (q(LawfulOfNat $α $lit) : Q(Prop))
     return { expr := q((OfNat.ofNat $lit : $α)), proof? := q(eval_of_isNat $lit $e $p) }
 
+/--
+A extension for `norm_num`.
+-/
 structure NormNumExt where
   pre := true
   post := true
+  /-- Attempts to prove an expression is equal to some natural number. -/
   eval : Expr → MetaM Result
 
 /-- Read a `norm_num` extension from a declaration of the right type. -/
@@ -95,6 +114,7 @@ initialize normNumExt : PersistentEnvExtension Entry (Entry × NormNumExt)
     exportEntriesFn := fun s => s.1.reverse.toArray
   }
 
+/-- Run each registered `norm_num` extension on an expression, returning a `NormNum.Result`. -/
 def derive (e : Expr) (post := false) : MetaM Result := do
   if e.isNatLit then return .literal e
   let s ← saveState
@@ -110,10 +130,14 @@ def derive (e : Expr) (post := false) : MetaM Result := do
         s.restore
   throwError "{e}: no norm_nums apply"
 
+/-- Run each registered `norm_num` extension on a typed expression `e : α`,
+returning a typed expression `lit : ℕ`, and a proof of `isNat e lit`. -/
 def deriveQ {α : Q(Type u)} (e : Q($α))
     (inst : Q(Semiring $α) := by with_reducible assumption) :
     MetaM ((lit : Q(Nat)) × Q(NormNum.isNat $e $lit)) := return (← derive e).toIsNatQ e
 
+/-- Run each registered `norm_num` extension on an expression,
+returning a `Simp.Result`. -/
 def eval (e : Expr) : MetaM Simp.Result := do (← derive e).toSimpResult e
 
 initialize registerBuiltinAttribute {
