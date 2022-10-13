@@ -17,11 +17,11 @@ an action on a Type.
 The intended application is the splitting of the ordering from the algebraic assumptions on the
 operations in the `ordered_[...]` hierarchy.
 
-The strategy is to introduce two more flexible typeclasses, `covariant_class` and
-`contravariant_class`:
+The strategy is to introduce two more flexible typeclasses, `CovariantClass` and
+`ContravariantClass`:
 
-* `covariant_class` models the implication `a ≤ b → c * a ≤ c * b` (multiplication is monotone),
-* `contravariant_class` models the implication `a * b < a * c → b < c`.
+* `CovariantClass` models the implication `a ≤ b → c * a ≤ c * b` (multiplication is monotone),
+* `ContravariantClass` models the implication `a * b < a * c → b < c`.
 
 Since `co(ntra)variant_class` takes as input the operation (typically `(+)` or `(*)`) and the order
 relation (typically `(≤)` or `(<)`), these are the only two typeclasses that I have used.
@@ -29,19 +29,19 @@ relation (typically `(≤)` or `(<)`), these are the only two typeclasses that I
 The general approach is to formulate the lemma that you are interested in and prove it, with the
 `ordered_[...]` typeclass of your liking.  After that, you convert the single typeclass,
 say `[ordered_cancel_monoid M]`, into three typeclasses, e.g.
-`[left_cancel_semigroup M] [partial_order M] [covariant_class M M (function.swap (*)) (≤)]`
+`[left_cancel_semigroup M] [partial_order M] [CovariantClass M M (function.swap (*)) (≤)]`
 and have a go at seeing if the proof still works!
 
 Note that it is possible to combine several co(ntra)variant_class assumptions together.
 Indeed, the usual ordered typeclasses arise from assuming the pair
-`[covariant_class M M (*) (≤)] [contravariant_class M M (*) (<)]`
+`[CovariantClass M M (*) (≤)] [ContravariantClass M M (*) (<)]`
 on top of order/algebraic assumptions.
 
-A formal remark is that normally `covariant_class` uses the `(≤)`-relation, while
-`contravariant_class` uses the `(<)`-relation. This need not be the case in general, but seems to be
+A formal remark is that normally `CovariantClass` uses the `(≤)`-relation, while
+`ContravariantClass` uses the `(<)`-relation. This need not be the case in general, but seems to be
 the most common usage. In the opposite direction, the implication
 ```lean
-[semigroup α] [partial_order α] [contravariant_class α α (*) (≤)] => left_cancel_semigroup α
+[semigroup α] [partial_order α] [ContravariantClass α α (*) (≤)] => left_cancel_semigroup α
 ```
 holds -- note the `co*ntra*` assumption on the `(≤)`-relation.
 
@@ -64,7 +64,7 @@ and we have switched to the `Trans` typeclass from Lean 4 core.
 -- TODO: convert `has_exists_mul_of_le`, `has_exists_add_of_le`?
 -- TODO: relationship with `con/add_con`
 -- TODO: include equivalence of `left_cancel_semigroup` with
--- `semigroup partial_order contravariant_class α α (*) (≤)`?
+-- `semigroup partial_order ContravariantClass α α (*) (≤)`?
 -- TODO : use ⇒, as per Eric's suggestion?  See
 -- https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/ordered.20stuff/near/236148738
 -- for a discussion.
@@ -76,30 +76,30 @@ variable {M N : Type _} (μ : M → N → N) (r : N → N → Prop)
 
 variable (M N)
 
-/-- `covariant` is useful to formulate succintly statements about the interactions between an
+/-- `Covariant` is useful to formulate succintly statements about the interactions between an
 action of a Type on another one and a relation on the acted-upon Type.
 
-See the `covariant_class` doc-string for its meaning. -/
+See the `CovariantClass` doc-string for its meaning. -/
 def Covariant : Prop :=
   ∀ (m) {n₁ n₂}, r n₁ n₂ → r (μ m n₁) (μ m n₂)
 
-/-- `contravariant` is useful to formulate succintly statements about the interactions between an
+/-- `Contravariant` is useful to formulate succintly statements about the interactions between an
 action of a Type on another one and a relation on the acted-upon Type.
 
-See the `contravariant_class` doc-string for its meaning. -/
+See the `ContravariantClass` doc-string for its meaning. -/
 def Contravariant : Prop :=
   ∀ (m) {n₁ n₂}, r (μ m n₁) (μ m n₂) → r n₁ n₂
 
 /-- Given an action `μ` of a Type `M` on a Type `N` and a relation `r` on `N`, informally, the
-`covariant_class` says that "the action `μ` preserves the relation `r`."
+`CovariantClass` says that "the action `μ` preserves the relation `r`."
 
-More precisely, the `covariant_class` is a class taking two Types `M N`, together with an "action"
+More precisely, the `CovariantClass` is a class taking two Types `M N`, together with an "action"
 `μ : M → N → N` and a relation `r : N → N → Prop`.  Its unique field `elim` is the assertion that
 for all `m ∈ M` and all elements `n₁, n₂ ∈ N`, if the relation `r` holds for the pair
 `(n₁, n₂)`, then, the relation `r` also holds for the pair `(μ m n₁, μ m n₂)`,
 obtained from `(n₁, n₂)` by acting upon it by `m`.
 
-If `m : M` and `h : r n₁ n₂`, then `covariant_class.elim m h : r (μ m n₁) (μ m n₂)`.
+If `m : M` and `h : r n₁ n₂`, then `CovariantClass.elim m h : r (μ m n₁) (μ m n₂)`.
 -/
 class CovariantClass : Prop where
   /-- For all `m ∈ M` and all elements `n₁, n₂ ∈ N`, if the relation `r` holds for the pair
@@ -107,16 +107,16 @@ class CovariantClass : Prop where
   protected elim : Covariant M N μ r
 
 /-- Given an action `μ` of a Type `M` on a Type `N` and a relation `r` on `N`, informally, the
-`contravariant_class` says that "if the result of the action `μ` on a pair satisfies the
+`ContravariantClass` says that "if the result of the action `μ` on a pair satisfies the
 relation `r`, then the initial pair satisfied the relation `r`."
 
-More precisely, the `contravariant_class` is a class taking two Types `M N`, together with an
+More precisely, the `ContravariantClass` is a class taking two Types `M N`, together with an
 "action" `μ : M → N → N` and a relation `r : N → N → Prop`.  Its unique field `elim` is the
 assertion that for all `m ∈ M` and all elements `n₁, n₂ ∈ N`, if the relation `r` holds for the
 pair `(μ m n₁, μ m n₂)` obtained from `(n₁, n₂)` by acting upon it by `m`, then, the relation
 `r` also holds for the pair `(n₁, n₂)`.
 
-If `m : M` and `h : r (μ m n₁) (μ m n₂)`, then `contravariant_class.elim m h : r n₁ n₂`.
+If `m : M` and `h : r (μ m n₁) (μ m n₂)`, then `ContravariantClass.elim m h : r n₁ n₂`.
 -/
 class ContravariantClass : Prop where
   /-- For all `m ∈ M` and all elements `n₁, n₂ ∈ N`, if the relation `r` holds for the
