@@ -1032,10 +1032,10 @@ initialize simpsAttr : ParametricAttribute (Array Name) ←
     descr := "Automatically derive lemmas specifying the projections of this declaration.",
     getParam := fun
     | nm, stx@`(attr|simps $[?%$trc]? $[(config := $c)]? $[$ids]*) => do
-      let ids := ids.map (·.getId.eraseMacroScopes.getString)
       let cfg ← match c with
-        | none => pure {}
-        | some c => MetaM.run' <| TermElabM.run' <| elabSimpsConfig c
+      | none => pure {}
+      | some c => MetaM.run' <| TermElabM.run' <| withSaveInfoContext <| elabSimpsConfig c
+      let ids := ids.map (·.getId.eraseMacroScopes.getString)
       simpsTac stx nm cfg ids.toList trc.isSome
     | _, stx => throwError "unexpected simps syntax {stx}"
   }
