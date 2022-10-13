@@ -16,7 +16,7 @@ namespace Mathlib
 open Lean Meta
 
 /--
-  Return true if `e` is one of the following
+  Return `some n` if `e` is one of the following
   - A nat literal (numeral)
   - `Nat.zero`
   - `Nat.succ x` where `isNumeral x`
