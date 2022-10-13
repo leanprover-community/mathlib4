@@ -282,3 +282,22 @@ theorem antitone_on_const [Preorder α] [Preorder β] {c : β} {s : Set α} :
 theorem injective_of_le_imp_le
     [PartialOrder α] [Preorder β] (f : α → β) (h : ∀ {x y}, f x ≤ f y → x ≤ y) : injective f :=
   fun _ _ hxy => (h hxy.le).antisymm (h hxy.ge)
+
+/-! ### Monotonicity under composition -/
+
+
+section Composition
+
+variable [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α → β} {s : Set α}
+
+protected theorem Monotone.comp (hg : Monotone g) (hf : Monotone f) : Monotone (g ∘ f) :=
+  fun _ _ h => hg (hf h)
+
+theorem Monotone.comp_antitone (hg : Monotone g) (hf : Antitone f) : Antitone (g ∘ f) :=
+  fun _ _ h => hg (hf h)
+
+protected theorem Antitone.comp (hg : Antitone g) (hf : Antitone f) : Monotone (g ∘ f) :=
+  fun _ _ h => hg (hf h)
+
+theorem Antitone.comp_monotone (hg : Antitone g) (hf : Monotone f) : Antitone (g ∘ f) :=
+  fun _ _ h => hg (hf h)

@@ -3,7 +3,6 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Init.Algebra.Classes
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Order.Basic
 import Mathlib.Order.Monotone
@@ -51,7 +50,15 @@ holds -- note the `co*ntra*` assumption on the `(≤)`-relation.
 We stick to the convention of using `function.swap (*)` (or `function.swap (+)`), for the
 typeclass assumptions, since `function.swap` is slightly better behaved than `flip`.
 However, sometimes as a **non-typeclass** assumption, we prefer `flip (*)` (or `flip (+)`),
-as it is easier to use. -/
+as it is easier to use.
+
+
+# Porting notes
+
+In mathlib3 we used the `is_trans` typeclass from Lean 3 core,
+and we have switched to the `Trans` typeclass from Lean 4 core.
+
+-/
 
 
 -- TODO: convert `has_exists_mul_of_le`, `has_exists_add_of_le`?
@@ -120,9 +127,11 @@ section flip
 
 variable {M N μ r}
 
-theorem Covariant.flip (h : Covariant M N μ r) : Covariant M N μ (flip r) := fun a b c hbc => h a hbc
+theorem Covariant.flip (h : Covariant M N μ r) : Covariant M N μ (flip r) :=
+  fun a _ _ hbc => h a hbc
 
-theorem Contravariant.flip (h : Contravariant M N μ r) : Contravariant M N μ (flip r) := fun a b c hbc => h a hbc
+theorem Contravariant.flip (h : Contravariant M N μ r) : Contravariant M N μ (flip r) :=
+  fun a _ _ hbc => h a hbc
 
 end flip
 
@@ -219,8 +228,8 @@ variable {α : Type _} {M N μ} [Preorder α] [Preorder N]
 variable {f : N → α}
 
 /-- The partial application of a constant to a covariant operator is monotone. -/
-theorem Covariant.monotone_of_const [CovariantClass M N μ (· ≤ ·)] (m : M) : Monotone (μ m) := fun a b ha =>
-  CovariantClass.elim m ha
+theorem Covariant.monotone_of_const [CovariantClass M N μ (· ≤ ·)] (m : M) : Monotone (μ m) :=
+  fun _ _ ha => CovariantClass.elim m ha
 
 /-- A monotone function remains monotone when composed with the partial application
 of a covariant operator. E.g., `∀ (m : ℕ), monotone f → monotone (λ n, f (m + n))`. -/
@@ -232,7 +241,7 @@ theorem Monotone.covariant_of_const [CovariantClass M N μ (· ≤ ·)] (hf : Mo
 the operator.  E.g., `∀ (m : ℕ), monotone f → monotone (λ n, f (n + m))`. -/
 theorem Monotone.covariant_of_const' {μ : N → N → N} [CovariantClass N N (swap μ) (· ≤ ·)] (hf : Monotone f) (m : N) :
     Monotone fun n => f (μ n m) :=
-fun _ _ x => hf (@Covariant.monotone_of_const _ _ (swap μ) _ _ m _ _ x)
+  fun _ _ x => hf (@Covariant.monotone_of_const _ _ (swap μ) _ _ m _ _ x)
 
 /-- Dual of `monotone.covariant_of_const` -/
 theorem Antitone.covariant_of_const [CovariantClass M N μ (· ≤ ·)] (hf : Antitone f) (m : M) :
@@ -242,7 +251,7 @@ theorem Antitone.covariant_of_const [CovariantClass M N μ (· ≤ ·)] (hf : An
 /-- Dual of `monotone.covariant_of_const'` -/
 theorem Antitone.covariant_of_const' {μ : N → N → N} [CovariantClass N N (swap μ) (· ≤ ·)] (hf : Antitone f) (m : N) :
     Antitone fun n => f (μ n m) :=
-  hf.comp_monotone <| Covariant.monotone_of_const m
+  hf.comp_monotone <| @Covariant.monotone_of_const _ _ (swap μ) _ _ m
 
 end Monotone
 
@@ -261,20 +270,26 @@ theorem contravariant_lt_of_contravariant_le [PartialOrder N] :
   exact lt_irrefl _ bc
 
 theorem covariant_le_iff_contravariant_lt [LinearOrder N] : Covariant M N μ (· ≤ ·) ↔ Contravariant M N μ (· < ·) :=
-  ⟨fun h a b c bc => not_le.mp fun k => not_le.mpr bc (h _ k), fun h a b c bc =>
-    not_lt.mp fun k => not_lt.mpr bc (h _ k)⟩
+  ⟨fun h _ _ _ bc => not_le.mp fun k => not_le.mpr bc (h _ k),
+   fun h _ _ _ bc => not_lt.mp fun k => not_lt.mpr bc (h _ k)⟩
 
 theorem covariant_lt_iff_contravariant_le [LinearOrder N] : Covariant M N μ (· < ·) ↔ Contravariant M N μ (· ≤ ·) :=
-  ⟨fun h a b c bc => not_lt.mp fun k => not_lt.mpr bc (h _ k), fun h a b c bc =>
-    not_le.mp fun k => not_le.mpr bc (h _ k)⟩
+  ⟨fun h _ _ _ bc => not_lt.mp fun k => not_lt.mpr bc (h _ k),
+   fun h _ _ _ bc => not_le.mp fun k => not_le.mpr bc (h _ k)⟩
+
+-- Porting note: `covariant_flip_mul_iff` used to use the `IsSymmOp` typeclass from Lean 3 core.
+-- To avoid it, we prove the relevant lemma here.
+@[to_additive]
+lemma flip_mul [CommSemigroup N] : (flip (· * ·) : N → N → N) = (· * ·) :=
+  funext fun a => funext fun b => mul_comm b a
 
 @[to_additive]
 theorem covariant_flip_mul_iff [CommSemigroup N] : Covariant N N (flip (· * ·)) r ↔ Covariant N N (· * ·) r := by
-  rw [IsSymmOp.flip_eq]
+  rw [flip_mul]
 
 @[to_additive]
 theorem contravariant_flip_mul_iff [CommSemigroup N] :
-    Contravariant N N (flip (· * ·)) r ↔ Contravariant N N (· * ·) r := by rw [IsSymmOp.flip_eq]
+    Contravariant N N (flip (· * ·)) r ↔ Contravariant N N (· * ·) r := by rw [flip_mul]
 
 @[to_additive]
 instance contravariant_mul_lt_of_covariant_mul_le [Mul N] [LinearOrder N] [CovariantClass N N (· * ·) (· ≤ ·)] :
@@ -326,7 +341,6 @@ instance LeftCancelSemigroup.contravariant_mul_le_of_contravariant_mul_lt [LeftC
     ContravariantClass N N (· * ·) (· ≤ ·) where elim := fun a b c bc => by
     cases' le_iff_eq_or_lt.mp bc with h h
     · exact ((mul_right_inj a).mp h).le
-
     · exact (ContravariantClass.elim _ h).le
 
 
@@ -336,7 +350,6 @@ instance RightCancelSemigroup.contravariant_swap_mul_le_of_contravariant_swap_mu
     ContravariantClass N N (swap (· * ·)) (· ≤ ·) where elim := fun a b c bc => by
     cases' le_iff_eq_or_lt.mp bc with h h
     · exact ((mul_left_inj a).mp h).le
-
     · exact (ContravariantClass.elim _ h).le
 
 
