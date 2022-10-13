@@ -453,7 +453,7 @@ attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
 section Monoid
 variable {M : Type u} [Monoid M]
 
-@[defaultInstance high] instance Monoid.HPow : HPow M ℕ M := ⟨λ a n => Monoid.npow n a⟩
+@[defaultInstance high] instance Monoid.Pow : Pow M ℕ := ⟨λ a n => Monoid.npow n a⟩
 
 @[simp, to_additive]
 theorem mul_one : ∀ (a : M), a * 1 = a :=

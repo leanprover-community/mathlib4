@@ -25,7 +25,7 @@
    "name": "lake",
    "inputRev": "master"},
   {"url": "https://github.com/gebner/quote4",
-   "rev": "d9276ee16b084851b26cf9b2222cd8dad77a85c5",
+   "rev": "81be563ea260ef89fe7f26998811f44816998238",
    "name": "Qq",
    "inputRev": "master"},
   {"url": "https://github.com/xubaiw/CMark.lean",
