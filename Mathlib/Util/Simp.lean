@@ -66,8 +66,10 @@ export private mkDischargeWrapper from Lean.Elab.Tactic.Simp
 
 -- copied from core
 /--
-  If `ctx == false`, the config argument is assumed to have type `Meta.Simp.Config`, and `Meta.Simp.ConfigCtx` otherwise.
-  If `ctx == false`, the `discharge` option must be none -/
+If `ctx == false`, the config argument is assumed to have type `Meta.Simp.Config`,
+and `Meta.Simp.ConfigCtx` otherwise.
+If `ctx == false`, the `discharge` option must be none
+-/
 def mkSimpContext' (simpTheorems : SimpTheorems) (stx : Syntax) (eraseLocal : Bool)
     (kind := SimpKind.simp) (ctx := false) (ignoreStarArg : Bool := false) :
     TacticM MkSimpContextResult := do

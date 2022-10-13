@@ -210,9 +210,11 @@ def Nat.cast [AddMonoidWithOne R] : ℕ → R := AddMonoidWithOne.natCast
 instance [AddMonoidWithOne R] : CoeTail ℕ R where coe := Nat.cast
 instance [AddMonoidWithOne R] : CoeHTCT ℕ R where coe := Nat.cast
 
-@[simp, norm_cast] theorem Nat.cast_zero [AddMonoidWithOne R] : ((0 : ℕ) : R) = 0 := AddMonoidWithOne.natCast_zero
+@[simp, norm_cast] theorem Nat.cast_zero [AddMonoidWithOne R] : ((0 : ℕ) : R) = 0 :=
+  AddMonoidWithOne.natCast_zero
 @[simp 500, norm_cast 500]
-theorem Nat.cast_succ [AddMonoidWithOne R] : ((Nat.succ n : ℕ) : R) = (n : R) + 1 := AddMonoidWithOne.natCast_succ _
+theorem Nat.cast_succ [AddMonoidWithOne R] : ((Nat.succ n : ℕ) : R) = (n : R) + 1 :=
+  AddMonoidWithOne.natCast_succ _
 @[simp, norm_cast]
 theorem Nat.cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by simp
 
@@ -329,7 +331,8 @@ instance [AddGroupWithOne R] : CoeTail ℤ R where coe := Int.cast
 theorem Int.cast_ofNat [AddGroupWithOne R] : (Int.cast (Int.ofNat n) : R) = Nat.cast n :=
   AddGroupWithOne.intCast_ofNat _
 @[simp, norm_cast]
-theorem Int.cast_negSucc [AddGroupWithOne R] : (Int.cast (Int.negSucc n) : R) = (-(Nat.cast (n + 1)) : R) :=
+theorem Int.cast_negSucc [AddGroupWithOne R] :
+    (Int.cast (Int.negSucc n) : R) = (-(Nat.cast (n + 1)) : R) :=
   AddGroupWithOne.intCast_negSucc _
 
 @[simp, norm_cast] theorem Int.cast_zero [AddGroupWithOne R] : ((0 : ℤ) : R) = 0 := by

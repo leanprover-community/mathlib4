@@ -6,10 +6,7 @@ Mathlib/Algebra/Group/Basic.lean : line 4 : ERR_MOD : Module docstring missing, 
 Mathlib/Algebra/Group/Defs.lean : line 0 : ERR_COP : Malformed or missing copyright header
 Mathlib/Algebra/Group/Defs.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Algebra/Group/Defs.lean : line 2 : ERR_COP : Malformed or missing copyright header
-Mathlib/Algebra/Group/Defs.lean : line 213 : ERR_LIN : Line has more than 100 characters
-Mathlib/Algebra/Group/Defs.lean : line 215 : ERR_LIN : Line has more than 100 characters
 Mathlib/Algebra/Group/Defs.lean : line 3 : ERR_COP : Malformed or missing copyright header
-Mathlib/Algebra/Group/Defs.lean : line 332 : ERR_LIN : Line has more than 100 characters
 Mathlib/Algebra/Group/Defs.lean : line 4 : ERR_COP : Malformed or missing copyright header
 Mathlib/Algebra/Group/Defs.lean : line 5 : ERR_COP : Malformed or missing copyright header
 Mathlib/Algebra/Group/Defs.lean : line 7 : ERR_COP : Malformed or missing copyright header
@@ -25,23 +22,11 @@ Mathlib/Algebra/Ring/Basic.lean : line 2 : ERR_COP : Malformed or missing copyri
 Mathlib/Algebra/Ring/Basic.lean : line 3 : ERR_COP : Malformed or missing copyright header
 Mathlib/Algebra/Ring/Basic.lean : line 4 : ERR_COP : Malformed or missing copyright header
 Mathlib/Algebra/Ring/Basic.lean : line 6 : ERR_COP : Malformed or missing copyright header
-Mathlib/Control/Random.lean : line 70 : ERR_LIN : Line has more than 100 characters
 Mathlib/Data/Array/Basic.lean : line 0 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/Array/Basic.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Array/Basic.lean : line 145 : ERR_LIN : Line has more than 100 characters
-Mathlib/Data/Array/Basic.lean : line 148 : ERR_LIN : Line has more than 100 characters
-Mathlib/Data/Array/Basic.lean : line 183 : ERR_LIN : Line has more than 100 characters
 Mathlib/Data/Array/Basic.lean : line 2 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Array/Basic.lean : line 23 : ERR_LIN : Line has more than 100 characters
-Mathlib/Data/Array/Basic.lean : line 27 : ERR_LIN : Line has more than 100 characters
-Mathlib/Data/Array/Basic.lean : line 3 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Array/Basic.lean : line 40 : ERR_LIN : Line has more than 100 characters
-Mathlib/Data/Array/Basic.lean : line 45 : ERR_LIN : Line has more than 100 characters
-Mathlib/Data/Array/Basic.lean : line 5 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Array/Basic.lean : line 5 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/Array/Basic.lean : line 76 : ERR_LIN : Line has more than 100 characters
-Mathlib/Data/Array/Basic.lean : line 83 : ERR_LIN : Line has more than 100 characters
-Mathlib/Data/Array/Basic.lean : line 99 : ERR_LIN : Line has more than 100 characters
+Mathlib/Data/Array/Basic.lean : line 4 : ERR_COP : Malformed or missing copyright header
+Mathlib/Data/Array/Basic.lean : line 4 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/BinaryHeap.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/ByteArray.lean : line 0 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/ByteArray.lean : line 1 : ERR_COP : Malformed or missing copyright header
@@ -55,7 +40,6 @@ Mathlib/Data/Char.lean : line 2 : ERR_MOD : Module docstring missing, or too lat
 Mathlib/Data/Fin/Basic.lean : line 0 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/Fin/Basic.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/Fin/Basic.lean : line 2 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Fin/Basic.lean : line 254 : ERR_LIN : Line has more than 100 characters
 Mathlib/Data/Fin/Basic.lean : line 3 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/Fin/Basic.lean : line 4 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/Fin/Basic.lean : line 5 : ERR_COP : Malformed or missing copyright header
@@ -63,23 +47,17 @@ Mathlib/Data/Fin/Basic.lean : line 7 : ERR_COP : Malformed or missing copyright 
 Mathlib/Data/Fin/Basic.lean : line 7 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/List/Basic.lean : line 0 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/List/Basic.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/List/Basic.lean : line 153 : ERR_LIN : Line has more than 100 characters
+Mathlib/Data/List/Basic.lean : line 10 : ERR_COP : Malformed or missing copyright header
+Mathlib/Data/List/Basic.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/List/Basic.lean : line 2 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/List/Basic.lean : line 3 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/List/Basic.lean : line 4 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/List/Basic.lean : line 5 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/List/Basic.lean : line 6 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/List/Basic.lean : line 7 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/List/Basic.lean : line 796 : ERR_LIN : Line has more than 100 characters
-Mathlib/Data/List/Basic.lean : line 9 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/List/Basic.lean : line 9 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Data/List/Basic.lean : line 8 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/List/Card.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/List/Card.lean : line 12 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/List/Perm.lean : line 0 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/List/Perm.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/List/Perm.lean : line 2 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/List/Perm.lean : line 4 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/List/Perm.lean : line 4 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/Nat/Basic.lean : line 0 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/Nat/Basic.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/Nat/Basic.lean : line 2 : ERR_COP : Malformed or missing copyright header
@@ -88,11 +66,7 @@ Mathlib/Data/Nat/Basic.lean : line 4 : ERR_COP : Malformed or missing copyright 
 Mathlib/Data/Nat/Basic.lean : line 5 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/Nat/Basic.lean : line 7 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/Nat/Basic.lean : line 7 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/Option/Basic.lean : line 12 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/Option/Defs.lean : line 124 : ERR_LIN : Line has more than 100 characters
-Mathlib/Data/Option/Defs.lean : line 129 : ERR_LIN : Line has more than 100 characters
-Mathlib/Data/Option/Defs.lean : line 58 : ERR_LIN : Line has more than 100 characters
-Mathlib/Data/Option/Defs.lean : line 97 : ERR_LIN : Line has more than 100 characters
+Mathlib/Data/Option/Basic.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/String/Defs.lean : line 0 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/String/Defs.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/String/Defs.lean : line 3 : ERR_COP : Malformed or missing copyright header
@@ -100,7 +74,6 @@ Mathlib/Data/String/Defs.lean : line 3 : ERR_MOD : Module docstring missing, or 
 Mathlib/Data/String/Lemmas.lean : line 0 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/String/Lemmas.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/String/Lemmas.lean : line 2 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/String/Lemmas.lean : line 23 : ERR_LIN : Line has more than 100 characters
 Mathlib/Data/String/Lemmas.lean : line 4 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/String/Lemmas.lean : line 4 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/Subtype.lean : line 13 : ERR_MOD : Module docstring missing, or too late
@@ -113,34 +86,20 @@ Mathlib/Data/UInt.lean : line 5 : ERR_COP : Malformed or missing copyright heade
 Mathlib/Data/UInt.lean : line 7 : ERR_COP : Malformed or missing copyright header
 Mathlib/Data/UInt.lean : line 7 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/UnionFind.lean : line 10 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/UnionFind.lean : line 133 : ERR_LIN : Line has more than 100 characters
-Mathlib/Data/UnionFind.lean : line 276 : ERR_LIN : Line has more than 100 characters
-Mathlib/Init/Algebra/Functions.lean : line 74 : ERR_LIN : Line has more than 100 characters
 Mathlib/Init/Algebra/Functions.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Algebra/Order.lean : line 8 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Init/Data/Int/Basic.lean : line 14 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Data/Int/Notation.lean : line 7 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Data/Nat/Basic.lean : line 7 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Data/Nat/Lemmas.lean : line 10 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Init/Data/Nat/Lemmas.lean : line 36 : ERR_LIN : Line has more than 100 characters
-Mathlib/Init/Data/Option/Basic.lean : line 7 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Init/Data/Option/Instances.lean : line 7 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Function.lean : line 6 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Logic.lean : line 13 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Init/Logic.lean : line 142 : ERR_LIN : Line has more than 100 characters
-Mathlib/Init/Logic.lean : line 153 : ERR_LIN : Line has more than 100 characters
 Mathlib/Init/Zero.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Init/Zero.lean : line 1 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/Exception.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Lean/Exception.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Lean/Exception.lean : line 7 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Lean/Expr/Basic.lean : line 132 : ERR_LIN : Line has more than 100 characters
-Mathlib/Lean/Expr/Basic.lean : line 147 : ERR_LIN : Line has more than 100 characters
-Mathlib/Lean/Expr/ReplaceRec.lean : line 11 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Lean/Expr/ReplaceRec.lean : line 34 : ERR_LIN : Line has more than 100 characters
-Mathlib/Lean/Expr/ReplaceRec.lean : line 4 : ERR_LIN : Line has more than 100 characters
-Mathlib/Lean/Expr/ReplaceRec.lean : line 43 : ERR_LIN : Line has more than 100 characters
-Mathlib/Lean/Expr/ReplaceRec.lean : line 62 : ERR_LIN : Line has more than 100 characters
+Mathlib/Lean/Expr/ReplaceRec.lean : line 12 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/LocalContext.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Logic/Basic.lean : line 12 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Logic/Equiv/LocalEquiv.lean : line 1 : ERR_COP : Malformed or missing copyright header
@@ -150,133 +109,51 @@ Mathlib/Logic/Equiv/MfldSimpsAttr.lean : line 1 : ERR_COP : Malformed or missing
 Mathlib/Logic/Equiv/MfldSimpsAttr.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Logic/Equiv/MfldSimpsAttr.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Logic/Function/Basic.lean : line 14 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Logic/Function/Basic.lean : line 249 : ERR_LIN : Line has more than 100 characters
-Mathlib/Logic/Nonempty.lean : line 92 : ERR_LIN : Line has more than 100 characters
 Mathlib/Mathport/Attributes.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Mathport/Rename.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Mathport/SpecialNames.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Mathport/Syntax.lean : line 183 : ERR_LIN : Line has more than 100 characters
-Mathlib/Mathport/Syntax.lean : line 204 : ERR_LIN : Line has more than 100 characters
-Mathlib/Mathport/Syntax.lean : line 205 : ERR_LIN : Line has more than 100 characters
-Mathlib/Mathport/Syntax.lean : line 208 : ERR_LIN : Line has more than 100 characters
-Mathlib/Mathport/Syntax.lean : line 254 : ERR_LIN : Line has more than 100 characters
-Mathlib/Mathport/Syntax.lean : line 264 : ERR_LIN : Line has more than 100 characters
-Mathlib/Mathport/Syntax.lean : line 40 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Mathport/Syntax.lean : line 405 : ERR_LIN : Line has more than 100 characters
-Mathlib/Mathport/Syntax.lean : line 444 : ERR_LIN : Line has more than 100 characters
-Mathlib/Mathport/Syntax.lean : line 479 : ERR_LIN : Line has more than 100 characters
-Mathlib/Mathport/Syntax.lean : line 492 : ERR_LIN : Line has more than 100 characters
-Mathlib/Mathport/Syntax.lean : line 571 : ERR_LIN : Line has more than 100 characters
-Mathlib/Mathport/Syntax.lean : line 575 : ERR_LIN : Line has more than 100 characters
-Mathlib/Mathport/Syntax.lean : line 91 : ERR_LIN : Line has more than 100 characters
-Mathlib/Order/Basic.lean : line 318 : ERR_LIN : Line has more than 100 characters
-Mathlib/Order/Basic.lean : line 458 : ERR_LIN : Line has more than 100 characters
-Mathlib/Order/Basic.lean : line 460 : ERR_LIN : Line has more than 100 characters
-Mathlib/Order/Basic.lean : line 632 : ERR_LIN : Line has more than 100 characters
+Mathlib/Mathport/Syntax.lean : line 42 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/ApplyWith.lean : line 0 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/ApplyWith.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/ApplyWith.lean : line 2 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/ApplyWith.lean : line 4 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/ApplyWith.lean : line 4 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Basic.lean : line 9 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Tactic/Basic.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/ByContra.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/ByContra.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Tactic/ByContra.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Cache.lean : line 108 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/Cache.lean : line 66 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/Cases.lean : line 76 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/Cases.lean : line 78 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/Clear!.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/ClearExcept.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Clear_.lean : line 0 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/Clear_.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/Clear_.lean : line 3 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/Clear_.lean : line 3 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Coe.lean : line 23 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/Coe.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/CommandQuote.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Constructor.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Core.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Existsi.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Expect.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Find.lean : line 115 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/Find.lean : line 120 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/Find.lean : line 126 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/Find.lean : line 73 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/Have.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Inhabit.lean : line 21 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/Inhabit.lean : line 25 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/IrreducibleDef.lean : line 74 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/LeftRight.lean : line 18 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/LeftRight.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/LibrarySearch.lean : line 71 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/NormCast/Tactic.lean : line 12 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/NormCast/Tactic.lean : line 252 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/NormNum.lean : line 11 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/PermuteGoals.lean : line 11 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/PrintPrefix.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/PushNeg.lean : line 12 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/PushNeg.lean : line 68 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/Recover.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Rename.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/RenameBVar.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Replace.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/RestateAxiom.lean : line 10 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Ring.lean : line 328 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/SeqFocus.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Set.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Tactic/Set.lean : line 7 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/ShowTerm.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/SimpRw.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Simpa.lean : line 24 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/Simpa.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Spread.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Substs.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/Substs.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Tactic/Substs.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/SudoSetOption.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/SwapVar.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/ToAdditive.lean : line 15 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/ToAdditive.lean : line 181 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/ToAdditive.lean : line 188 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/ToAdditive.lean : line 253 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/ToAdditive.lean : line 34 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/ToAdditive.lean : line 419 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/ToAdditive.lean : line 51 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/ToAdditive.lean : line 53 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/ToAdditive.lean : line 69 : ERR_LIN : Line has more than 100 characters
-Mathlib/Tactic/Trace.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/TypeCheck.lean : line 0 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/TypeCheck.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/TypeCheck.lean : line 3 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/TypeCheck.lean : line 3 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Testing/SlimCheck/Gen.lean : line 44 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Gen.lean : line 47 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Sampleable.lean : line 120 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Sampleable.lean : line 145 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Sampleable.lean : line 159 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Sampleable.lean : line 166 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Sampleable.lean : line 167 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Sampleable.lean : line 186 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Sampleable.lean : line 194 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 247 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 260 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 291 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 292 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 313 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 314 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 323 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 358 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 429 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 500 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 506 : ERR_LIN : Line has more than 100 characters
-Mathlib/Testing/SlimCheck/Testable.lean : line 508 : ERR_LIN : Line has more than 100 characters
-Mathlib/Util/MemoFix.lean : line 17 : ERR_LIN : Line has more than 100 characters
-Mathlib/Util/MemoFix.lean : line 27 : ERR_LIN : Line has more than 100 characters
-Mathlib/Util/Simp.lean : line 69 : ERR_LIN : Line has more than 100 characters
-Mathlib/Util/WhatsNew.lean : line 36 : ERR_LIN : Line has more than 100 characters
-Mathlib/Util/WhatsNew.lean : line 49 : ERR_LIN : Line has more than 100 characters
-Mathlib/Util/WhatsNew.lean : line 50 : ERR_LIN : Line has more than 100 characters
-Mathlib/Util/WhatsNew.lean : line 52 : ERR_LIN : Line has more than 100 characters
-Mathlib/Util/WhatsNew.lean : line 55 : ERR_LIN : Line has more than 100 characters
-Mathlib/Util/WhatsNew.lean : line 79 : ERR_LIN : Line has more than 100 characters

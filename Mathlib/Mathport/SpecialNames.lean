@@ -29,6 +29,9 @@ namespace Mathlib.Prelude
 #align classical.some          Classical.choose
 #align classical.some_spec     Classical.choose_spec
 
+#align Exists.some             Exists.choose
+#align Exists.some_spec        Exists.choose_spec
+
 #align has_coe Coe
 #align has_coe.coe Coe.coe
 

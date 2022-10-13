@@ -16,8 +16,9 @@ Based on <http://www.cs.ru.nl/~freek/courses/tt-2014/read/10.1.1.61.3041.pdf> .
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
-namespace Tactic
+namespace Mathlib.Tactic
 namespace Ring
+open Mathlib.Meta
 
 /-- This cache contains data required by the `ring` tactic during execution. -/
 structure Cache :=
@@ -325,7 +326,8 @@ partial def evalMul : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
         #[a₁, x₁.1, n₁.1, b₁, a₂, n₂.1, b₂, aa, haa, ab, bb, t, h₁, h₂, h₃, h₄, H])
 
 
-theorem horner_pow {α} [CommSemiring α] (a x : α) (n m n' : ℕ) (a') (h₁ : n * m = n') (h₂ : a ^ m = (a' : α)) :
+theorem horner_pow {α} [CommSemiring α] (a x : α) (n m n' : ℕ) (a') (h₁ : n * m = n')
+    (h₂ : a ^ m = (a' : α)) :
   @horner α _ a x n 0 ^ m = horner a' x n' 0 :=
 by
   simp [h₁.symm, h₂.symm, horner,  mul_pow a, pow_mul]
