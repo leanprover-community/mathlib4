@@ -102,6 +102,8 @@ obtained from `(n₁, n₂)` by acting upon it by `m`.
 If `m : M` and `h : r n₁ n₂`, then `covariant_class.elim m h : r (μ m n₁) (μ m n₂)`.
 -/
 class CovariantClass : Prop where
+  /-- For all `m ∈ M` and all elements `n₁, n₂ ∈ N`, if the relation `r` holds for the pair
+  `(n₁, n₂)`, then, the relation `r` also holds for the pair `(μ m n₁, μ m n₂)` -/
   protected elim : Covariant M N μ r
 
 /-- Given an action `μ` of a Type `M` on a Type `N` and a relation `r` on `N`, informally, the
@@ -117,6 +119,9 @@ pair `(μ m n₁, μ m n₂)` obtained from `(n₁, n₂)` by acting upon it by 
 If `m : M` and `h : r (μ m n₁) (μ m n₂)`, then `contravariant_class.elim m h : r n₁ n₂`.
 -/
 class ContravariantClass : Prop where
+  /-- For all `m ∈ M` and all elements `n₁, n₂ ∈ N`, if the relation `r` holds for the
+  pair `(μ m n₁, μ m n₂)` obtained from `(n₁, n₂)` by acting upon it by `m`, then, the relation
+  `r` also holds for the pair `(n₁, n₂)`. -/
   protected elim : Contravariant M N μ r
 
 theorem rel_iff_cov [CovariantClass M N μ r] [ContravariantClass M N μ r] (m : M) {a b : N} :
