@@ -86,7 +86,9 @@ def Result.toSimpResult (e : Expr) : Result → MetaM Simp.Result
 A extension for `norm_num`.
 -/
 structure NormNumExt where
+  /-- The extension should be run in the `pre` phase when used as simp plugin. -/
   pre := true
+  /-- The extension should be run in the `post` phase when used as simp plugin. -/
   post := true
   /-- Attempts to prove an expression is equal to some natural number. -/
   eval : Expr → MetaM Result
@@ -96,6 +98,8 @@ def mkNormNumExt (n : Name) : ImportM NormNumExt := do
   let { env, opts, .. } ← read
   IO.ofExcept <| unsafe env.evalConstCheck NormNumExt opts ``NormNumExt n
 
+/-- Each `norm_num` extension is labelled with a collection of patterns
+which determine the expressions to which it should be applied. -/
 abbrev Entry := Array (Array DiscrTree.Key) × Name
 /-- Environment extensions for `norm_num` declarations -/
 initialize normNumExt : PersistentEnvExtension Entry (Entry × NormNumExt)
