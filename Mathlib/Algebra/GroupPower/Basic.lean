@@ -32,6 +32,12 @@ theorem Commute.mul_pow {a b : M} (h : Commute a b) (n : ℕ) : (a * b) ^ n = a 
   · rw [pow_zero, pow_zero, pow_zero, one_mul]
   · simp only [pow_succ, ih, ← mul_assoc, (h.pow_left n).right_comm]
 
+@[simp]
+theorem one_pow [Monoid M] (n : ℕ) : (1 : M) ^ n = 1 := by
+  induction' n with n ih
+  · exact pow_zero _
+  · rw [pow_succ, ih, one_mul]
+
 end Monoid
 
 /-!

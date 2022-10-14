@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Order.Ring
+import Mathlib.Algebra.GroupPower.Basic
 
 /-!
 # Temporary sorried lemmas, potentially used by `norm_num` and/or `ring`.
@@ -27,16 +28,6 @@ theorem mul_neg (a b : α) : a * -b = -(a * b) :=
 theorem mul_sub (a b c : α) : a * (b - c) = a * b - a * c :=
   sorry
 end
-
--- Lemmas that will be ported to `Algebra.GroupPower.Basic`
-@[simp]
-theorem pow_one [Monoid M] (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, mul_one]
-
-@[simp]
-theorem one_pow [Monoid M] (n : ℕ) : (1 : M) ^ n = 1 := by
-  induction' n with n ih
-  · exact pow_zero _
-  · rw [pow_succ, ih, one_mul]
 
 -- Lemmas that will be ported to `Algebra.Order.Group.Basic`
 
