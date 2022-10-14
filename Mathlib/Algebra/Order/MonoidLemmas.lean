@@ -43,21 +43,23 @@ variable [LE α]
 /- The prime on this lemma is present only on the multiplicative version.  The unprimed version
 is taken by the analogous lemma for semiring, with an extra non-negativity assumption. -/
 @[to_additive add_le_add_left]
-theorem mul_le_mul_left' [CovariantClass α α (· * ·) (· ≤ ·)] {b c : α} (bc : b ≤ c) (a : α) : a * b ≤ a * c :=
+theorem mul_le_mul_left' [CovariantClass α α (· * ·) (· ≤ ·)] {b c : α} (bc : b ≤ c) (a : α) :
+    a * b ≤ a * c :=
   CovariantClass.elim _ bc
 
 @[to_additive le_of_add_le_add_left]
-theorem le_of_mul_le_mul_left' [ContravariantClass α α (· * ·) (· ≤ ·)] {a b c : α} (bc : a * b ≤ a * c) : b ≤ c :=
+theorem le_of_mul_le_mul_left' [ContravariantClass α α (· * ·) (· ≤ ·)] {a b c : α}
+    (bc : a * b ≤ a * c) : b ≤ c :=
   ContravariantClass.elim _ bc
 
 @[simp, to_additive]
-theorem mul_le_mul_iff_left [CovariantClass α α (· * ·) (· ≤ ·)] [ContravariantClass α α (· * ·) (· ≤ ·)] (a : α)
-    {b c : α} : a * b ≤ a * c ↔ b ≤ c :=
+theorem mul_le_mul_iff_left [CovariantClass α α (· * ·) (· ≤ ·)]
+    [ContravariantClass α α (· * ·) (· ≤ ·)] (a : α) {b c : α} : a * b ≤ a * c ↔ b ≤ c :=
   rel_iff_cov α α (· * ·) (· ≤ ·) a
 
 @[simp, to_additive]
-theorem mul_le_mul_iff_right [CovariantClass α α (swap (· * ·)) (· ≤ ·)] [ContravariantClass α α (swap (· * ·)) (· ≤ ·)]
-    (a : α) {b c : α} : b * a ≤ c * a ↔ b ≤ c :=
+theorem mul_le_mul_iff_right [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+    [ContravariantClass α α (swap (· * ·)) (· ≤ ·)] (a : α) {b c : α} : b * a ≤ c * a ↔ b ≤ c :=
   rel_iff_cov α α (swap (· * ·)) (· ≤ ·) a
 
 end LE
@@ -67,21 +69,23 @@ section LT
 variable [LT α]
 
 @[simp, to_additive]
-theorem mul_lt_mul_iff_left [CovariantClass α α (· * ·) (· < ·)] [ContravariantClass α α (· * ·) (· < ·)] (a : α)
-    {b c : α} : a * b < a * c ↔ b < c :=
+theorem mul_lt_mul_iff_left [CovariantClass α α (· * ·) (· < ·)]
+    [ContravariantClass α α (· * ·) (· < ·)] (a : α) {b c : α} : a * b < a * c ↔ b < c :=
   rel_iff_cov α α (· * ·) (· < ·) a
 
 @[simp, to_additive]
-theorem mul_lt_mul_iff_right [CovariantClass α α (swap (· * ·)) (· < ·)] [ContravariantClass α α (swap (· * ·)) (· < ·)]
-    (a : α) {b c : α} : b * a < c * a ↔ b < c :=
+theorem mul_lt_mul_iff_right [CovariantClass α α (swap (· * ·)) (· < ·)]
+    [ContravariantClass α α (swap (· * ·)) (· < ·)] (a : α) {b c : α} : b * a < c * a ↔ b < c :=
   rel_iff_cov α α (swap (· * ·)) (· < ·) a
 
 @[to_additive add_lt_add_left]
-theorem mul_lt_mul_left' [CovariantClass α α (· * ·) (· < ·)] {b c : α} (bc : b < c) (a : α) : a * b < a * c :=
+theorem mul_lt_mul_left' [CovariantClass α α (· * ·) (· < ·)] {b c : α} (bc : b < c) (a : α) :
+    a * b < a * c :=
   CovariantClass.elim _ bc
 
 @[to_additive lt_of_add_lt_add_left]
-theorem lt_of_mul_lt_mul_left' [ContravariantClass α α (· * ·) (· < ·)] {a b c : α} (bc : a * b < a * c) : b < c :=
+theorem lt_of_mul_lt_mul_left' [ContravariantClass α α (· * ·) (· < ·)] {a b c : α}
+    (bc : a * b < a * c) : b < c :=
   ContravariantClass.elim _ bc
 
 end LT
