@@ -130,9 +130,7 @@ end HornerExpr
 
 open HornerExpr
 
-theorem zero_horner {α} [CommSemiring α] (x n b) :
-  @horner α _ 0 x n b = b :=
-by
+theorem zero_horner {α} [CommSemiring α] (x n b) : @horner α _ 0 x n b = b := by
   simp [horner]
 
 theorem horner_horner {α} [CommSemiring α] (a₁ x n₁ n₂ b n') (h : n₁ + n₂ = n') :

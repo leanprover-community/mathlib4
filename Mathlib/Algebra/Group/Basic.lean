@@ -27,7 +27,7 @@ is equal to a multiplication on the left by `x * y`.
 -/
 @[simp, to_additive "Composing two additions on the left by `y` then `x`
 is equal to a addition on the left by `x + y`."]
-theorem comp_mul_left [Semigroup α] (x y : α) : (· * ·) x ∘ (· * ·) y = (· * ·) (x * y) := by
+theorem comp_mul_left [Semigroup α] (x y : α) : (x * ·) ∘ (y * ·) = (x * y * ·) := by
   ext z
   simp [mul_assoc]
 
@@ -58,10 +58,7 @@ theorem ite_one_mul {P : Prop} [Decidable P] {a b : M} :
 
 @[to_additive]
 theorem eq_one_iff_eq_one_of_mul_eq_one {a b : M} (h : a * b = 1) : a = 1 ↔ b = 1 := by
-  constructor <;>
-    · rintro rfl
-      simpa using h
-
+  constructor <;> (rintro rfl; simpa using h)
 
 @[to_additive]
 theorem one_mul_eq_id : (· * ·) (1 : M) = id :=
@@ -192,8 +189,7 @@ section DivInvMonoid
 
 variable [DivInvMonoid G] {a b c : G}
 
--- The attributes are out of order on purpose
-@[to_additive] -- TODO restore @[field_simps]
+@[to_additive, field_simps] -- The attributes are out of order on purpose
 theorem inv_eq_one_div (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mul]
 
 @[to_additive]
@@ -204,8 +200,7 @@ theorem mul_one_div (x y : G) : x * (1 / y) = x / y :=
 theorem mul_div_assoc (a b c : G) : a * b / c = a * (b / c) :=
   by rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc _ _ _]
 
--- The attributes are out of order on purpose
-@[to_additive] -- TODO restore @[field_simps]
+@[to_additive, field_simps] -- The attributes are out of order on purpose
 theorem mul_div_assoc' (a b c : G) : a * (b / c) = a * b / c :=
   (mul_div_assoc _ _ _).symm
 
@@ -310,8 +305,7 @@ theorem eq_of_one_div_eq_one_div (h : 1 / a = 1 / b) : a = b :=
 
 variable (a b c)
 
--- The attributes are out of order on purpose
-@[to_additive] -- TODO restore @[field_simps]
+@[to_additive, field_simps] -- The attributes are out of order on purpose
 theorem div_div_eq_mul_div : a / (b / c) = a * c / b := by simp
 
 @[simp, to_additive]
@@ -356,7 +350,7 @@ theorem one_div_mul_one_div : 1 / a * (1 / b) = 1 / (a * b) := by simp
 @[to_additive]
 theorem div_right_comm : a / b / c = a / c / b := by simp
 
-@[to_additive] -- TODO restore @[field_simps]
+@[to_additive, field_simps]
 theorem div_div : a / b / c = a / (b * c) := by simp
 
 @[to_additive]
@@ -371,7 +365,7 @@ theorem mul_div_right_comm : a * b / c = a / c * b := by simp
 @[to_additive]
 theorem div_mul_eq_div_div : a / (b * c) = a / b / c := by simp
 
-@[to_additive] -- TODO restore @[field_simps]
+@[to_additive, field_simps]
 theorem div_mul_eq_mul_div : a / b * c = a * c / b := by simp
 
 @[to_additive]

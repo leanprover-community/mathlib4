@@ -96,9 +96,7 @@ local macro "genIntDeclars" typeName:ident : command => do
 
       instance : Ring $typeName where
         sub_eq_add_neg := fun _ _ => congrArg mk (sub_eq_add_neg _ _)
-        add_left_neg := fun a => by
-          apply eq_of_val_eq
-          simp [neg_def, add_def, zero_def]
+        add_left_neg := fun a => by apply eq_of_val_eq; simp [neg_def, add_def, zero_def]
         intCast n := ⟨n⟩
         intCast_ofNat _ := rfl
         intCast_negSucc _ := rfl
