@@ -23,12 +23,14 @@ The reason is that we did not want to change existing names in the library.
 with a partial order such that `a ≤ b → c * a ≤ c * b` (multiplication is monotone)
 -/
 class OrderedCommMonoid (α : Type _) extends CommMonoid α, PartialOrder α where
+  /-- Multiplication is monotone in an `OrderedCommMonoid`. -/
   protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
 
 /-- An ordered (additive) commutative monoid is a commutative monoid
   with a partial order such that `a ≤ b → c + a ≤ c + b` (addition is monotone)
 -/
 class OrderedAddCommMonoid (α : Type _) extends AddCommMonoid α, PartialOrder α where
+  /-- Addition is monotone in an `OrderedAddCommMonoid`. -/
   protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 
 attribute [to_additive OrderedAddCommMonoid] OrderedCommMonoid
@@ -83,7 +85,10 @@ end OrderedInstances
 is an additive commutative monoid with a partial order,
 in which addition is cancellative and monotone. -/
 class OrderedCancelAddCommMonoid (α : Type u) extends AddCommMonoid α, PartialOrder α where
+  /-- Addition is monotone in an ordered cancellative additive commutative monoid. -/
   add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
+  /-- Additive cancellation is compatible with the order in an ordered cancellative additive
+    commutative monoid. -/
   le_of_add_le_add_left : ∀ a b c : α, a + b ≤ a + c → b ≤ c
 
 /-- An ordered cancellative commutative monoid
@@ -91,7 +96,9 @@ is a commutative monoid with a partial order,
 in which multiplication is cancellative and monotone. -/
 @[to_additive OrderedCancelAddCommMonoid]
 class OrderedCancelCommMonoid (α : Type u) extends CommMonoid α, PartialOrder α where
+  /-- Multiplication is monotone in an ordered cancellative commutative monoid. -/
   mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
+  /-- Cancellation is compatible with the order in an ordered cancellative commutative monoid. -/
   le_of_mul_le_mul_left : ∀ a b c : α, a * b ≤ a * c → b ≤ c
 
 

@@ -106,12 +106,19 @@ They have yet to come up in practice.
 /-- An `OrderedSemiring α` is a semiring `α` with a partial order such that
 addition is monotone and multiplication by a positive number is strictly monotone. -/
 class OrderedSemiring (α : Type u) extends Semiring α, OrderedCancelAddCommMonoid α where
+  /-- `0 ≤ 1` in any ordered semiring. -/
   zero_le_one : (0 : α) ≤ 1
+  /-- In an ordered semiring, we can multiply an inequality `a < b` on the left
+  by a positive element `0 < c` to obtain `c * a < c * b`. -/
   mul_lt_mul_of_pos_left : ∀ a b c : α, a < b → 0 < c → c * a < c * b
+  /-- In an ordered semiring, we can multiply an inequality `a < b` on the right
+  by a positive element `0 < c` to obtain `a * c < b * c`. -/
   mul_lt_mul_of_pos_right : ∀ a b c : α, a < b → 0 < c → a * c < b * c
 
 /-- An `OrderedRing α` is a ring `α` with a partial order such that
 addition is monotone and multiplication by a positive number is strictly monotone. -/
 class OrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
+  /-- `0 ≤ 1` in any ordered ring. -/
   zero_le_one : 0 ≤ (1 : α)
+  /-- The product of positive elements is positive. -/
   mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b
