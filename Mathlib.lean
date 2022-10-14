@@ -45,6 +45,7 @@ import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
+import Mathlib.Init.Propext
 import Mathlib.Init.Set
 import Mathlib.Init.Zero
 import Mathlib.Lean.Exception
