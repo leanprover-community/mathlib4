@@ -493,7 +493,7 @@ private def elabToAdditive : Syntax → CoreM ValueType
     return elabToAdditiveAux ((tgt.map (·.raw)).getD tk) replaceAll.isSome trace.isSome tgt doc
   | _ => throwUnsupportedSyntax
 
-/-! `addToAdditiveAttr src val` adds a `@[to_additive]` attribute to `src` with configuration `val`.
+/-- `addToAdditiveAttr src val` adds a `@[to_additive]` attribute to `src` with configuration `val`.
 See the attribute implementation for more details. -/
 def addToAdditiveAttr (src : Name) (val : ValueType) : AttrM Unit := do
   let tgt ← targetName src val.tgt val.allowAutoName
