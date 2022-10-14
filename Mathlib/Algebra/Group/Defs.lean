@@ -98,6 +98,11 @@ class Inv (α : Type u) where
 @[inheritDoc]
 postfix:max "⁻¹" => Inv.inv
 
+/-- The simpset `field_simps` is used by the tactic `field_simp` to
+reduce an expression in a field to an expression of the form `n / d` where `n` and `d` are
+division-free. -/
+register_simp_attr field_simps
+
 section Mul
 
 variable [Mul G]
@@ -249,10 +254,10 @@ attribute [to_additive AddZeroClass] MulOneClass
 @[ext, to_additive]
 theorem MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
   rintro ⟨⟨one₁⟩, ⟨mul₁⟩, one_mul₁, mul_one₁⟩ ⟨⟨one₂⟩, ⟨mul₂⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
-  congr
-  sorry
   -- FIXME:
-  -- exact (one_mul₂ one₁).symm.trans (mul_one₁ one₂)
+  -- congr
+  suffices one₁ = one₂ by cases this; rfl
+  exact (one_mul₂ one₁).symm.trans (mul_one₁ one₂)
 
 section MulOneClass
 
@@ -380,23 +385,15 @@ to `0 : ℕ`).
 /-- An `add_monoid` is an `add_semigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   nsmul : ℕ → M → M := nsmulRec
-  nsmul_zero' : ∀ x, nsmul 0 x = 0 := by
-    intros
-    rfl
-  nsmul_succ' : ∀ (n : ℕ) (x), nsmul n.succ x = x + nsmul n x := by
-    intros
-    rfl
+  nsmul_zero' : ∀ x, nsmul 0 x = 0 := by intros; rfl
+  nsmul_succ' : ∀ (n : ℕ) (x), nsmul n.succ x = x + nsmul n x := by intros; rfl
 
 /-- A `monoid` is a `semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive AddMonoid]
 class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   npow : ℕ → M → M := npowRec
-  npow_zero' : ∀ x, npow 0 x = 1 := by
-    intros
-    rfl
-  npow_succ' : ∀ (n : ℕ) (x), npow n.succ x = x * npow n x := by
-    intros
-    rfl
+  npow_zero' : ∀ x, npow 0 x = 1 := by intros; rfl
+  npow_succ' : ∀ (n : ℕ) (x), npow n.succ x = x * npow n x := by intros; rfl
 
 -- TODO I wouldn't have thought this is necessary. Is is a bug in `to_additive`?
 attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
@@ -523,8 +520,7 @@ attribute [to_additive AddCancelCommMonoid.toAddCommMonoid] CancelCommMonoid.toC
 @[to_additive]
 instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelCommMonoid M] :
     CancelMonoid M :=
-  { ‹CancelCommMonoid M› with
-    mul_right_cancel := fun a b c h => mul_left_cancel <| by rw [mul_comm, h, mul_comm] }
+  { mul_right_cancel := fun a b c h => mul_left_cancel <| by rw [mul_comm, h, mul_comm] }
 
 end CancelMonoid
 
@@ -613,20 +609,13 @@ in diamonds. See the definition of `monoid` and Note [forgetful inheritance] for
 explanations on this.
 -/
 class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
-  div := fun a b => a * b⁻¹
-  div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ := by
-    intros
-    rfl
+  div a b := a * b⁻¹
+  div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ := by intros; rfl
   zpow : ℤ → G → G := zpowRec
-  zpow_zero' : ∀ a : G, zpow 0 a = 1 := by
-    intros
-    rfl
-  zpow_succ' : ∀ (n : ℕ) (a : G), zpow (Int.ofNat n.succ) a = a * zpow (Int.ofNat n) a := by
-    intros
-    rfl
-  zpow_neg' : ∀ (n : ℕ) (a : G), zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ := by
-    intros
-    rfl
+  zpow_zero' : ∀ a : G, zpow 0 a = 1 := by intros; rfl
+  zpow_succ' (n : ℕ) (a : G) : zpow (Int.ofNat n.succ) a = a * zpow (Int.ofNat n) a := by
+    intros; rfl
+  zpow_neg' (n : ℕ) (a : G) : zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ := by intros; rfl
 
 /-- A `sub_neg_monoid` is an `add_monoid` with unary `-` and binary `-` operations
 satisfying `sub_eq_add_neg : ∀ a b, a - b = a + -b`.
@@ -646,20 +635,13 @@ in diamonds. See the definition of `add_monoid` and Note [forgetful inheritance]
 explanations on this.
 -/
 class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
-  sub := fun a b => a + -b
-  sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by
-    intros
-    rfl
+  sub a b := a + -b
+  sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
   zsmul : ℤ → G → G := zsmulRec
-  zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by
-    intros
-    rfl
-  zsmul_succ' : ∀ (n : ℕ) (a : G), zsmul (Int.ofNat n.succ) a = a + zsmul (Int.ofNat n) a := by
-    intros
-    rfl
-  zsmul_neg' : ∀ (n : ℕ) (a : G), zsmul (Int.negSucc n) a = -zsmul n.succ a := by
-    intros
-    rfl
+  zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
+  zsmul_succ' (n : ℕ) (a : G) : zsmul (Int.ofNat n.succ) a = a + zsmul (Int.ofNat n) a := by
+    intros; rfl
+  zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by intros; rfl
 
 attribute [to_additive SubNegMonoid] DivInvMonoid
 
@@ -689,11 +671,10 @@ theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
 @[norm_cast]
 theorem zpow_coe_nat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
   | 0 => (zpow_zero _).trans (pow_zero _).symm
-  | n + 1 =>
-    calc
-      a ^ (↑(n + 1) : ℤ) = a * a ^ (n : ℤ) := DivInvMonoid.zpow_succ' _ _
-      _ = a * a ^ n := congr_arg ((· * ·) a) (zpow_coe_nat a n)
-      _ = a ^ (n + 1) := (pow_succ _ _).symm
+  | n + 1 => calc
+    a ^ (↑(n + 1) : ℤ) = a * a ^ (n : ℤ) := DivInvMonoid.zpow_succ' _ _
+    _ = a * a ^ n := congr_arg ((· * ·) a) (zpow_coe_nat a n)
+    _ = a ^ (n + 1) := (pow_succ _ _).symm
 
 -- TODO restore @[to_additive of_nat_zsmul]
 theorem zpow_of_nat (a : G) (n : ℕ) : a ^ Int.ofNat n = a ^ n :=
@@ -852,10 +833,9 @@ theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a :=
 
 @[to_additive AddGroup.toSubtractionMonoid]
 instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
-  { ‹Group G› with
-    inv_inv := fun a => inv_eq_of_mul (mul_left_inv a),
+  { inv_inv := fun a => inv_eq_of_mul (mul_left_inv a)
     mul_inv_rev :=
-      fun a b => inv_eq_of_mul <| by rw [mul_assoc, mul_inv_cancel_left, mul_right_inv],
+      fun a b => inv_eq_of_mul <| by rw [mul_assoc, mul_inv_cancel_left, mul_right_inv]
     inv_eq_of_mul := fun _ _ => inv_eq_of_mul }
 
 -- FIXME this isn't being copied by `to_additive`
@@ -866,7 +846,7 @@ attribute [instance] AddGroup.toSubtractionMonoid
 @[to_additive AddGroup.toAddCancelMonoid]
 instance (priority := 100) Group.toCancelMonoid : CancelMonoid G :=
   { ‹Group G› with
-    mul_right_cancel := fun a b c h => by rw [← mul_inv_cancel_right a b, h, mul_inv_cancel_right],
+    mul_right_cancel := fun a b c h => by rw [← mul_inv_cancel_right a b, h, mul_inv_cancel_right]
     mul_left_cancel := fun a b c h => by rw [← inv_mul_cancel_left a b, h, inv_mul_cancel_left] }
 
 -- FIXME this isn't being copied by `to_additive`
@@ -877,9 +857,7 @@ end Group
 
 @[to_additive]
 theorem Group.toDivInvMonoid_injective {G : Type _} :
-    Function.injective (@Group.toDivInvMonoid G) := by
-  rintro ⟨⟩ ⟨⟩ ⟨⟩
-  rfl
+    Function.injective (@Group.toDivInvMonoid G) := by rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
 
 /-- An additive commutative group is an additive group with commutative `(+)`. -/
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
@@ -894,8 +872,7 @@ attribute [instance] AddCommGroup.toAddCommMonoid
 
 @[to_additive]
 theorem CommGroup.toGroup_injective {G : Type u} : Function.injective (@CommGroup.toGroup G) := by
-  rintro ⟨⟩ ⟨⟩ ⟨⟩
-  rfl
+  rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
 
 section CommGroup
 
