@@ -1,17 +1,18 @@
 /-
 Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Leonardo de Moura
+Authors: Leonardo de Moura
 -/
 import Mathlib.Init.Logic
 
-/-- Additional congruence lemmas. -/
+/-! Additional congruence lemmas. -/
 
 -- Porting note:
 -- the statement of `forall_congr_eq` in Lean 3 is identical to `forall_congr` in Lean 4,
 -- so is omitted.
--- theorem forall_congr_eq {a : Sort u} {p q : a → Prop} (h : ∀ x, p x = q x) : (∀ x, p x) = ∀ x, q x :=
---   (forall_congr fun a => (h a))
+-- theorem forall_congr_eq {a : Sort u} {p q : a → Prop} (h : ∀ x, p x = q x) :
+--   (∀ x, p x) = ∀ x, q x :=
+-- (forall_congr fun a => (h a))
 
 theorem imp_congr_eq {a b c d : Prop} (h₁ : a = c) (h₂ : b = d) : (a → b) = (c → d) :=
   propext (imp_congr h₁.to_iff h₂.to_iff)
