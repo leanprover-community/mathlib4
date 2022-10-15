@@ -41,10 +41,12 @@ def chooseAny (α : Type u) [Random α] : Gen α :=
   λ _ => rand α
 
 /-- Lift `BoundedRandom.randomR` to the `Gen` monad. -/
-def choose (α : Type u) [Preorder α] [BoundedRandom α] (lo hi : α) (h : lo ≤ hi) : Gen {a // lo ≤ a ∧ a ≤ hi} :=
+def choose (α : Type u) [Preorder α] [BoundedRandom α] (lo hi : α) (h : lo ≤ hi) :
+    Gen {a // lo ≤ a ∧ a ≤ hi} :=
   λ _ => randBound α lo hi h
 
-lemma chooseNatLt_aux {lo hi : Nat} (a : Nat) (h : Nat.succ lo ≤ a ∧ a ≤ hi) : lo ≤ Nat.pred a ∧ Nat.pred a < hi :=
+lemma chooseNatLt_aux {lo hi : Nat} (a : Nat) (h : Nat.succ lo ≤ a ∧ a ≤ hi) :
+    lo ≤ Nat.pred a ∧ Nat.pred a < hi :=
   And.intro (Nat.le_pred_of_lt (Nat.lt_of_succ_le h.left)) <|
     show a.pred.succ ≤ hi by
        rw [Nat.succ_pred_eq_of_pos]

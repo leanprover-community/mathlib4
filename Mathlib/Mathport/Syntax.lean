@@ -5,14 +5,20 @@ Authors: Mario Carneiro
 -/
 import Lean.Elab.Command
 import Lean.Elab.Quotation
+import Std.Tactic.Ext
+import Std.Tactic.RCases
+import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Tactic.Alias
+import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
-import Mathlib.Tactic.Core
 import Mathlib.Tactic.CommandQuote
-import Mathlib.Tactic.Ext
+import Mathlib.Tactic.Constructor
+import Mathlib.Tactic.Core
+import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
@@ -20,19 +26,16 @@ import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.RCases
+import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Replace
+import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Set
-import Mathlib.Tactic.ShowTerm
+import Mathlib.Tactic.SimpTrace
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Substs
-import Mathlib.Tactic.Symm
-import Mathlib.Tactic.Trace
-import Mathlib.Tactic.Trans
-import Mathlib.Init.ExtendedBinder
 import Mathlib.Util.WithWeakNamespace
 import Mathlib.Util.Syntax
 
@@ -59,7 +62,7 @@ estimated difficulty of writing the tactic. The key is as follows:
 namespace Lean
 
 namespace Parser.Command
-open Mathlib.ExtendedBinder
+open Std.ExtendedBinder
 
 /- N -/ elab (name := include) "include " ident+ : command => pure ()
 /- N -/ elab (name := omit) "omit " ident+ : command => pure ()
@@ -87,7 +90,8 @@ macro_rules
   | `(expandBinders% ($x => $term) ($y:ident $pred:binderPred) $binders*, $res) =>
     term.replaceM fun x' => do
       unless x == x' do return none
-      `(fun $y:ident => expandBinders% ($x => $term) (h : satisfiesBinderPred% $y $pred) $[$binders]*, $res)
+      `(fun $y:ident => expandBinders% ($x => $term) (h : satisfiesBinderPred% $y $pred)
+        $[$binders]*, $res)
 
 macro (name := expandFoldl) "expandFoldl% "
   "(" x:ident y:ident " => " term:term ")" init:term:max "[" args:term,* "]" : term =>
@@ -117,7 +121,7 @@ Only to be used for mathport.
 macro ak:Term.attrKind "notation3"
     prec:(precedence)? name:(namedName)? prio:(namedPrio)?
     lits:(notation3Item)+ " => " val:term : command => do
-  let mut boundNames : Std.HashMap Name Syntax := {}
+  let mut boundNames : Lean.HashMap Name Syntax := {}
   let mut macroArgs := #[]
   for lit in lits do
     match (lit : TSyntax ``notation3Item) with
@@ -175,64 +179,25 @@ end Term
 
 namespace Tactic
 
-/- N -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
-/- N -/ syntax (name := applyWith) "apply " term " with " term : tactic
-/- E -/ syntax (name := mapply) "mapply " term : tactic
-/- M -/ syntax (name := withCases) "with_cases " tacticSeq : tactic
-syntax caseArg := binderIdent,+ (" :" (ppSpace (ident <|> "_"))+)?
-/- N -/ syntax (name := case'') "case'' " (("[" caseArg,* "]") <|> caseArg) " => " tacticSeq : tactic
+/- S -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
+/- S -/ syntax (name := mapply) "mapply " term : tactic
+/- S -/ syntax (name := withCases) "with_cases " tacticSeq : tactic
 /- S -/ syntax "destruct " term : tactic
-/- M -/ syntax (name := casesM) "casesm" "*"? ppSpace term,* : tactic
-/- M -/ syntax (name := casesType) "cases_type" "*"? ppSpace ident* : tactic
-/- M -/ syntax (name := casesType!) "cases_type!" "*"? ppSpace ident* : tactic
 /- N -/ syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
 
-/- E -/ syntax (name := existsi) (priority := low) "exists " term,* : tactic
-/- E -/ syntax (name := eConstructor) "econstructor" : tactic
-/- M -/ syntax (name := constructorM) "constructorm" "*"? ppSpace term,* : tactic
-/- M -/ syntax (name := injections') "injections" (" with " (colGt (ident <|> "_"))+)? : tactic
-/- N -/ syntax (name := simp') "simp'" "*"? (config)? (discharger)? (&" only")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
 /- N -/ syntax (name := simpIntro) "simp_intro" (config)?
-  (ppSpace colGt (ident <|> "_"))* (&" only")? (" [" simpArg,* "]")? (" with " ident+)? : tactic
-/- N -/ syntax (name := dsimp') "dsimp'" (config)? (&" only")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
+  (ppSpace colGt (ident <|> "_"))* (&" only")? (simpArgs)? : tactic
 /- E -/ syntax (name := symm) "symm" : tactic
 /- E -/ syntax (name := trans) "trans" (ppSpace colGt term)? : tactic
 /- B -/ syntax (name := cc) "cc" : tactic
 
--- builtin unfold only accepts single ident
-/- M -/ syntax (name := unfold') (priority := low) "unfold" (config)? (ppSpace colGt ident)* (ppSpace location)? : tactic
-/- N -/ syntax (name := dUnfold) "dunfold" (config)? (ppSpace colGt ident)* (ppSpace location)? : tactic
-/- N -/ syntax (name := delta') "delta'" (colGt ident)* (ppSpace location)? : tactic
 /- M -/ syntax (name := unfoldProjs) "unfold_projs" (config)? (ppSpace location)? : tactic
-/- M -/ syntax (name := unfold1) "unfold1" (config)? (ppSpace colGt ident)* (ppSpace location)? : tactic
 
 /- E -/ syntax (name := inferAutoParam) "infer_auto_param" : tactic
-/- M -/ syntax (name := guardExprEq) "guard_expr " term:51 " =ₐ " term : tactic -- alpha equality
-/- M -/ syntax (name := guardTarget) "guard_target" " =ₐ " term : tactic -- alpha equality
 
--- There is already a `by_cases` tactic in core (in `src/init/classical.lean`)
--- so for now we add a primed version to support the optional identifier,
--- and available `decidable` instances.
-/- M -/ syntax (name := byCases') "by_cases' " atomic(ident " : ")? term : tactic
-
-/- E -/ syntax (name := typeCheck) "type_check " term : tactic
 /- S -/ syntax (name := rsimp) "rsimp" : tactic
 /- S -/ syntax (name := compVal) "comp_val" : tactic
 /- S -/ syntax (name := async) "async " tacticSeq : tactic
-
-namespace Conv
-
-open Tactic (simpArg rwRuleSeq)
-/- N -/ syntax (name := «for») "for " term:max " [" num,* "]" " => " tacticSeq : conv
-/- N -/ syntax (name := simp') "simp'" (config)? (discharger)? (&" only")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? : conv
-/- N -/ syntax (name := dsimp) "dsimp" (config)? (&" only")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? : conv
-/- E -/ syntax (name := guardLHS) "guard_lhs " " =ₐ " term : conv
-
-end Conv
 
 /- E -/ syntax (name := apply') "apply' " term : tactic
 /- E -/ syntax (name := fapply') "fapply' " term : tactic
@@ -243,44 +208,42 @@ end Conv
 /- E -/ syntax (name := symm') "symm'" (ppSpace location)? : tactic
 /- E -/ syntax (name := trans') "trans'" (ppSpace term)? : tactic
 
-/- E -/ syntax (name := fsplit) "fsplit" : tactic
 /- M -/ syntax (name := injectionsAndClear) "injections_and_clear" : tactic
 
 /- E -/ syntax (name := tryFor) "try_for " term:max tacticSeq : tactic
 /- E -/ syntax (name := unfoldCoes) "unfold_coes" (ppSpace location)? : tactic
 /- E -/ syntax (name := unfoldWf) "unfold_wf" : tactic
 /- M -/ syntax (name := unfoldAux) "unfold_aux" : tactic
-/- E -/ syntax (name := «continue») "continue " tacticSeq : tactic
+/- S -/ syntax (name := «continue») "continue " tacticSeq : tactic
 /- M -/ syntax (name := generalizeHyp) "generalize " atomic(ident " : ")? term:51 " = " ident
   ppSpace location : tactic
 /- M -/ syntax (name := clean) "clean " term : tactic
 /- B -/ syntax (name := refineStruct) "refine_struct " term : tactic
-/- M -/ syntax (name := matchHyp) "match_hyp " ("(" &"m" " := " term ") ")? ident " : " term : tactic
-/- E -/ syntax (name := guardTags) "guard_tags" (ppSpace ident)* : tactic
-/- E -/ syntax (name := guardProofTerm) "guard_proof_term " tactic:51 " => " term : tactic
-/- E -/ syntax (name := failIfSuccess?) "fail_if_success? " str ppSpace tacticSeq : tactic
+/- M -/ syntax (name := matchHyp) "match_hyp " ("(" &"m" " := " term ") ")? ident " : " term :
+  tactic
+/- S -/ syntax (name := guardTags) "guard_tags" (ppSpace ident)* : tactic
+/- S -/ syntax (name := guardProofTerm) "guard_proof_term " tactic:51 " => " term : tactic
+/- S -/ syntax (name := failIfSuccess?) "fail_if_success? " str ppSpace tacticSeq : tactic
 /- N -/ syntax (name := field) "field " ident " => " tacticSeq : tactic
-/- N -/ syntax (name := haveField) "have_field" : tactic
-/- N -/ syntax (name := applyField) "apply_field" : tactic
+/- S -/ syntax (name := haveField) "have_field" : tactic
+/- S -/ syntax (name := applyField) "apply_field" : tactic
 /- M -/ syntax (name := applyRules) "apply_rules" (config)? " [" term,* "]" (ppSpace num)? : tactic
-/- M -/ syntax (name := hGeneralize) "h_generalize " atomic(binderIdent " : ")? term:51 " = " ident
+/- S -/ syntax (name := hGeneralize) "h_generalize " atomic(binderIdent " : ")? term:51 " = " ident
   (" with " binderIdent)? : tactic
-/- M -/ syntax (name := hGeneralize!) "h_generalize! " atomic(binderIdent " : ")? term:51 " = " ident
-  (" with " binderIdent)? : tactic
-/- M -/ syntax (name := guardExprEq') "guard_expr " term:51 " = " term : tactic -- definitional equality
-/- M -/ syntax (name := guardTarget') "guard_target" " = " term : tactic -- definitional equality
-/- M -/ syntax (name := extractGoal) "extract_goal" (ppSpace ident)?
+/- S -/ syntax (name := hGeneralize!) "h_generalize! " atomic(binderIdent " : ")?
+  term:51 " = " ident (" with " binderIdent)? : tactic
+/- S -/ syntax (name := extractGoal) "extract_goal" (ppSpace ident)?
   (" with" (ppSpace (colGt ident))*)? : tactic
-/- M -/ syntax (name := extractGoal!) "extract_goal!" (ppSpace ident)?
+/- S -/ syntax (name := extractGoal!) "extract_goal!" (ppSpace ident)?
   (" with" (ppSpace (colGt ident))*)? : tactic
-/- E -/ syntax (name := revertDeps) "revert_deps" (ppSpace colGt ident)* : tactic
-/- E -/ syntax (name := revertAfter) "revert_after " ident : tactic
-/- E -/ syntax (name := revertTargetDeps) "revert_target_deps" : tactic
+/- S -/ syntax (name := revertDeps) "revert_deps" (ppSpace colGt ident)* : tactic
+/- S -/ syntax (name := revertAfter) "revert_after " ident : tactic
+/- S -/ syntax (name := revertTargetDeps) "revert_target_deps" : tactic
 /- E -/ syntax (name := clearValue) "clear_value" (ppSpace colGt ident)* : tactic
 
 /- M -/ syntax (name := applyAssumption) "apply_assumption" : tactic
 
-/- B -/ syntax (name := hint) "hint" : tactic
+/- S -/ syntax (name := hint) "hint" : tactic
 
 /- B -/ syntax (name := choose) "choose" (ppSpace colGt ident)+ (" using " term)? : tactic
 /- B -/ syntax (name := choose!) "choose!" (ppSpace colGt ident)+ (" using " term)? : tactic
@@ -292,19 +255,22 @@ end Conv
 /- E -/ syntax (name := convertTo) "convert_to " term (" using " num)? : tactic
 /- E -/ syntax (name := acChange) "ac_change " term (" using " num)? : tactic
 
+/- S -/ syntax (name := rcases?) "rcases?" casesTarget,* (" : " num)? : tactic
+/- S -/ syntax (name := rintro?) "rintro?" (" : " num)? : tactic
+
 /- M -/ syntax (name := decide!) "decide!" : tactic
 
 /- M -/ syntax (name := deltaInstance) "delta_instance" (ppSpace ident)* : tactic
 
-/- M -/ syntax (name := elide) "elide " num (ppSpace location)? : tactic
-/- M -/ syntax (name := unelide) "unelide" (ppSpace location)? : tactic
+/- S -/ syntax (name := elide) "elide " num (ppSpace location)? : tactic
+/- S -/ syntax (name := unelide) "unelide" (ppSpace location)? : tactic
 
 /- S -/ syntax (name := clarify) "clarify" (config)?
-  (" [" Parser.Tactic.simpArg,* "]")? (" using " term,+)? : tactic
+  (Parser.Tactic.simpArgs)? (" using " term,+)? : tactic
 /- S -/ syntax (name := safe) "safe" (config)?
-  (" [" Parser.Tactic.simpArg,* "]")? (" using " term,+)? : tactic
+  (Parser.Tactic.simpArgs)? (" using " term,+)? : tactic
 /- S -/ syntax (name := finish) "finish" (config)?
-  (" [" Parser.Tactic.simpArg,* "]")? (" using " term,+)? : tactic
+  (Parser.Tactic.simpArgs)? (" using " term,+)? : tactic
 
 syntax generalizesArg := (ident " : ")? term:51 " = " ident
 /- M -/ syntax (name := generalizes) "generalizes " "[" generalizesArg,* "]" : tactic
@@ -313,10 +279,10 @@ syntax generalizesArg := (ident " : ")? term:51 " = " ident
   (ppSpace (colGt binderIdent))* (ppSpace location)? : tactic
 
 syntax withPattern := "-" <|> "_" <|> ident
-/- M -/ syntax (name := cases'') "cases''" casesTarget (" with " (colGt withPattern)+)? : tactic
+/- S -/ syntax (name := cases'') "cases''" casesTarget (" with " (colGt withPattern)+)? : tactic
 syntax fixingClause := " fixing" (" *" <|> (ppSpace ident)+)
 syntax generalizingClause := " generalizing" (ppSpace ident)+
-/- N -/ syntax (name := induction'') "induction''" casesTarget
+/- S -/ syntax (name := induction'') "induction''" casesTarget
   (fixingClause <|> generalizingClause)? (" with " (colGt withPattern)+)? : tactic
 
 syntax termList := " [" term,* "]"
@@ -330,47 +296,17 @@ syntax termList := " [" term,* "]"
 
 /- S -/ syntax (name := prettyCases) "pretty_cases" : tactic
 
--- see also https://github.com/leanprover-community/mathlib4/pull/193
-/- M -/ syntax (name := pushNeg) "push_neg" (ppSpace location)? : tactic
-
-/- M -/ syntax (name := contrapose) "contrapose" (ppSpace ident (" with " ident)?)? : tactic
-/- M -/ syntax (name := contrapose!) "contrapose!" (ppSpace ident (" with " ident)?)? : tactic
-
-/- E -/ syntax (name := byContra') "by_contra'" (ppSpace ident)? Term.optType : tactic
-
 /- M -/ syntax (name := assocRw) "assoc_rw " rwRuleSeq (ppSpace location)? : tactic
 
-/- N -/ syntax (name := dsimpResult) "dsimp_result " (&"only ")? ("[" Tactic.simpArg,* "]")?
-  (" with " ident+)? " => " tacticSeq : tactic
-/- N -/ syntax (name := simpResult) "simp_result " (&"only ")? ("[" Tactic.simpArg,* "]")?
-  (" with " ident+)? " => " tacticSeq : tactic
+/- N -/ syntax (name := dsimpResult) "dsimp_result "
+  (&"only ")? (dsimpArgs)? " => " tacticSeq : tactic
+/- N -/ syntax (name := simpResult) "simp_result "
+  (&"only ")? (simpArgs)? " => " tacticSeq : tactic
 
 /- M -/ syntax (name := splitIfs) "split_ifs" (ppSpace location)? (" with " binderIdent+)? : tactic
 
-/- S -/ syntax (name := squeezeScope) "squeeze_scope " tacticSeq : tactic
-
-syntax squeezeSimpArgsRest := (config)? (discharger)? (&" only")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)?
-/- S -/ syntax "squeeze_simp" "!"? "?"? squeezeSimpArgsRest : tactic
-macro "squeeze_simp?" rest:squeezeSimpArgsRest : tactic =>
-  `(tactic| squeeze_simp ? $rest:squeezeSimpArgsRest)
-macro "squeeze_simp!" rest:squeezeSimpArgsRest : tactic =>
-  `(tactic| squeeze_simp ! $rest:squeezeSimpArgsRest)
-macro "squeeze_simp!?" rest:squeezeSimpArgsRest : tactic =>
-  `(tactic| squeeze_simp !? $rest:squeezeSimpArgsRest)
-
-syntax squeezeDSimpArgsRest := (config)? (&" only")?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)?
-/- S -/ syntax "squeeze_dsimp" "!"? "?"? squeezeDSimpArgsRest : tactic
-macro "squeeze_dsimp?" rest:squeezeDSimpArgsRest : tactic =>
-  `(tactic| squeeze_dsimp ? $rest:squeezeDSimpArgsRest)
-macro "squeeze_dsimp!" rest:squeezeDSimpArgsRest : tactic =>
-  `(tactic| squeeze_dsimp ! $rest:squeezeDSimpArgsRest)
-macro "squeeze_dsimp!?" rest:squeezeDSimpArgsRest : tactic =>
-  `(tactic| squeeze_dsimp !? $rest:squeezeDSimpArgsRest)
-
 /- S -/ syntax (name := suggest) "suggest" (config)? (ppSpace num)?
-  (" [" simpArg,* "]")? (" with " (colGt ident)+)? (" using " (colGt binderIdent)+)? : tactic
+  (simpArgs)? (" using " (colGt binderIdent)+)? : tactic
 
 /- B -/ syntax (name := tauto) "tauto" (config)? : tactic
 /- B -/ syntax (name := tauto!) "tauto!" (config)? : tactic
@@ -410,7 +346,8 @@ syntax nameAndTerm := term:71 " * " term:66
 
 /- S -/ syntax (name := omega) "omega" (&" manual")? (&" nat" <|> &" int")? : tactic
 
-/- M -/ syntax (name := tfaeHave) "tfae_have " (ident " : ")? num (" → " <|> " ↔ " <|> " ← ") num : tactic
+/- M -/ syntax (name := tfaeHave) "tfae_have " (ident " : ")? num (" → " <|> " ↔ " <|> " ← ") num :
+  tactic
 /- M -/ syntax (name := tfaeFinish) "tfae_finish" : tactic
 
 syntax mono.side := &"left" <|> &"right" <|> &"both"
@@ -434,30 +371,31 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := sliceLHS) "slice_lhs " num num " => " Conv.convSeq : tactic
 /- M -/ syntax (name := sliceRHS) "slice_rhs " num num " => " Conv.convSeq : tactic
 
-/- N -/ syntax (name := subtypeInstance) "subtype_instance" : tactic
+/- S -/ syntax (name := subtypeInstance) "subtype_instance" : tactic
 
 /- M -/ syntax (name := group) "group" (ppSpace location)? : tactic
 
 /- M -/ syntax (name := cancelDenoms) "cancel_denoms" (ppSpace location)? : tactic
 
-/- M -/ syntax (name := zify) "zify" (" [" simpArg,* "]")? (ppSpace location)? : tactic
+/- M -/ syntax (name := zify) "zify" (simpArgs)? (ppSpace location)? : tactic
 
 /- S -/ syntax (name := transport) "transport" (ppSpace term)? " using " term : tactic
 
 /- M -/ syntax (name := unfoldCases) "unfold_cases " tacticSeq : tactic
 
 /- M -/ syntax (name := fieldSimp) "field_simp" (config)? (discharger)? (&" only")?
-  (" [" Tactic.simpArg,* "]")? (" with " (colGt ident)+)? (ppSpace location)? : tactic
+  (Tactic.simpArgs)? (ppSpace location)? : tactic
 
-/- B -/ syntax (name := equivRw) "equiv_rw" (config)? (termList <|> term) (ppSpace location)? : tactic
+/- B -/ syntax (name := equivRw) "equiv_rw" (config)? (termList <|> term) (ppSpace location)? :
+  tactic
 /- B -/ syntax (name := equivRwType) "equiv_rw_type" (config)? term : tactic
 
 /- N -/ syntax (name := nthRw) "nth_rw " num rwRuleSeq (ppSpace location)? : tactic
 /- E -/ syntax (name := nthRwLHS) "nth_rw_lhs " num rwRuleSeq (ppSpace location)? : tactic
 /- E -/ syntax (name := nthRwRHS) "nth_rw_rhs " num rwRuleSeq (ppSpace location)? : tactic
 
-/- B -/ syntax (name := rwSearch) "rw_search " (config)? rwRuleSeq : tactic
-/- B -/ syntax (name := rwSearch?) "rw_search? " (config)? rwRuleSeq : tactic
+/- S -/ syntax (name := rwSearch) "rw_search " (config)? rwRuleSeq : tactic
+/- S -/ syntax (name := rwSearch?) "rw_search? " (config)? rwRuleSeq : tactic
 
 /- M -/ syntax (name := piInstanceDeriveField) "pi_instance_derive_field" : tactic
 /- M -/ syntax (name := piInstance) "pi_instance" : tactic
@@ -484,7 +422,8 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 
 /- N -/ syntax (name := opInduction) "op_induction" (ppSpace (colGt term))? : tactic
 
-/- S -/ syntax (name := mvBisim) "mv_bisim" (ppSpace (colGt term))? (" with " binderIdent+)? : tactic
+/- S -/ syntax (name := mvBisim) "mv_bisim" (ppSpace (colGt term))? (" with " binderIdent+)? :
+  tactic
 
 /- M -/ syntax (name := continuity) "continuity" (config)? : tactic
 /- M -/ syntax (name := continuity!) "continuity!" (config)? : tactic
@@ -492,20 +431,20 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := continuity!?) "continuity!?" (config)? : tactic
 
 /- E -/ syntax (name := unitInterval) "unit_interval" : tactic
-/- E -/ syntax (name := mfldSetTac) "mfld_set_tac" : tactic
 
 /- N -/ syntax (name := measurability) "measurability" (config)? : tactic
 /- N -/ syntax (name := measurability!) "measurability!" (config)? : tactic
 /- N -/ syntax (name := measurability?) "measurability?" (config)? : tactic
 /- N -/ syntax (name := measurability!?) "measurability!?" (config)? : tactic
-/- M -/ syntax (name := padicIndexSimp) "padic_index_simp" " [" term,* "]" (ppSpace location)? : tactic
+/- M -/ syntax (name := padicIndexSimp) "padic_index_simp" " [" term,* "]" (ppSpace location)? :
+  tactic
 
 /- E -/ syntax (name := uniqueDiffWithinAt_Ici_Iic_univ) "uniqueDiffWithinAt_Ici_Iic_univ" : tactic
 
 /- M -/ syntax (name := ghostFunTac) "ghost_fun_tac " term ", " term : tactic
 /- M -/ syntax (name := ghostCalc) "ghost_calc" (ppSpace binderIdent)* : tactic
 /- M -/ syntax (name := initRing) "init_ring" (" using " term)? : tactic
-/- E -/ syntax (name := ghostSimp) "ghost_simp" (" [" simpArg,* "]")? : tactic
+/- E -/ syntax (name := ghostSimp) "ghost_simp" (simpArgs)? : tactic
 /- E -/ syntax (name := wittTruncateFunTac) "witt_truncate_fun_tac" : tactic
 
 /- M -/ @[nolint docBlame] syntax (name := pure_coherence) "pure_coherence" : tactic
@@ -516,10 +455,8 @@ namespace Conv
 -- https://github.com/leanprover-community/mathlib/issues/2882
 /- M -/ syntax (name := applyCongr) "apply_congr" (ppSpace (colGt term))? : conv
 
-/- E -/ syntax (name := guardTarget) "guard_target" " =ₐ " term : conv
-
 /- E -/ syntax (name := normNum1) "norm_num1" : conv
-/- E -/ syntax (name := normNum) "norm_num" (" [" simpArg,* "]")? : conv
+/- E -/ syntax (name := normNum) "norm_num" (simpArgs)? : conv
 
 /- E -/ syntax (name := ringNF) "ring_nf" (ppSpace ringMode)? : conv
 /- E -/ syntax (name := ringNF!) "ring_nf!" (ppSpace ringMode)? : conv
@@ -555,8 +492,6 @@ namespace Attr
 
 /- M -/ syntax (name := reassoc) "reassoc" (ppSpace ident)? : attr
 
-/- N -/ syntax (name := ancestor) "ancestor" (ppSpace ident)* : attr
-
 /- M -/ syntax (name := elementwise) "elementwise" (ppSpace ident)? : attr
 
 end Attr
@@ -577,11 +512,13 @@ namespace Command
 
 syntax (name := localized) "localized " "[" ident "] " command : command
 macro_rules
-  | `(localized [$ns] notation $[$prec:precedence]? $[$n:namedName]? $[$prio:namedPrio]? $sym => $t) =>
+  | `(localized [$ns] notation $[$prec:precedence]? $[$n:namedName]? $[$prio:namedPrio]?
+       $sym => $t) =>
     let ns := mkIdentFrom ns <| rootNamespace ++ ns.getId
     `(with_weak_namespace $ns
       scoped notation $[$prec:precedence]? $[$n:namedName]? $[$prio:namedPrio]? $sym => $t)
-  | `(localized [$ns] $_:attrKind $mixfixKind $prec:precedence $[$n:namedName]? $[$prio:namedPrio]? $sym => $t) =>
+  | `(localized [$ns] $_:attrKind $mixfixKind $prec:precedence $[$n:namedName]? $[$prio:namedPrio]?
+       $sym => $t) =>
     let ns := mkIdentFrom ns <| rootNamespace ++ ns.getId
     `(with_weak_namespace $ns
       scoped $mixfixKind $prec:precedence $[$n:namedName]? $[$prio:namedPrio]? $sym => $t)
@@ -594,8 +531,7 @@ macro_rules
 
 /- N -/ syntax (name := defReplacer) "def_replacer " ident Term.optType : command
 
-/- S -/ syntax (name := simp) "#simp" (&" only")? (" [" Tactic.simpArg,* "]")?
-  (" with " ident+)? " :"? ppSpace term : command
+/- S -/ syntax (name := simp) "#simp" (&" only")? (Tactic.simpArgs)? " :"? ppSpace term : command
 
 /- S -/ syntax (name := «where») "#where" : command
 

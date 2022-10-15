@@ -6,6 +6,12 @@ Authors: Arthur Paulino
 
 import Mathlib.Util.Tactic
 
+/-!
+# Defines the `swap_var` tactic
+
+Swap the names of two hypotheses.
+-/
+
 open Lean Meta Elab.Tactic
 
 namespace Mathlib.Tactic
@@ -27,7 +33,7 @@ example {P Q : Prop} (q : P) (p : Q) : P ∧ Q := by
 -/
 elab "swap_var " swapRules:(colGt swapRule),+ : tactic => do
   let mvarId ← getMainGoal
-  let mdecl ← getMVarDecl mvarId
+  let mdecl ← mvarId.getDecl
   let localInstances := mdecl.localInstances
   let lctx ← swapRules.getElems.foldlM (init := mdecl.lctx) fun lctx swapRule => do
     withLCtx lctx localInstances do

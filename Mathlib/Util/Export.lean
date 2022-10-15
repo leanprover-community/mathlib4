@@ -4,14 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Lean
-import Std.Data.HashMap
 
 /-!
 A rudimentary export format, adapted from
 <https://github.com/leanprover-community/lean/blob/master/doc/export_format.md>
 with support for lean 4 kernel primitives.
 -/
-open Std (HashMap HashSet)
+open Lean (HashMap HashSet)
 
 namespace Lean
 
@@ -101,7 +100,6 @@ def biStr : BinderInfo → String
 | BinderInfo.implicit       => "#BI"
 | BinderInfo.strictImplicit => "#BS"
 | BinderInfo.instImplicit   => "#BC"
-| BinderInfo.auxDecl        => unreachable!
 
 open ConstantInfo in
 mutual

@@ -200,7 +200,7 @@ end
 -- #norm_num 1 = 1
 example : 1 = 1 := by norm_num
 -- #norm_num 2^4-1 ∣ 2^16-1
-example : 2^4-1 ∣ 2^16-1 := by norm_num
+-- example : 2^4-1 ∣ 2^16-1 := by norm_num
 -- #norm_num (3 : real) ^ (-2 : ℤ) = 1/9
 -- example : (3 : real) ^ (-2 : ℤ) = 1/9 := by norm_num
 

@@ -23,7 +23,7 @@ Iff.intro
   (fun h => ⟨fun _ xas => (h _).1 xas, fun _ xbs => (h _).2 xbs⟩)
   (fun ⟨h1, h2⟩ x => ⟨@h1 x, @h2 x⟩)
 
-theorem insert_equiv_cons [DecidableEq α] (a : α) (as : List α) : (insert a as).equiv (a :: as) :=
+theorem insert_equiv_cons [DecidableEq α] (a : α) (as : List α) : (as.insert a).equiv (a :: as) :=
   fun x => by simp
 
 theorem union_equiv_append [DecidableEq α] (as bs : List α) : (as.union bs).equiv (as ++ bs) :=
@@ -90,10 +90,10 @@ theorem card_le_card_cons (a : α) (as : List α) : card as ≤ card (a :: as) :
   | inr h => simp [h, Nat.le_succ]
 
 @[simp] theorem card_insert_of_mem {a : α} {as : List α} (h : a ∈ as) :
-    card (insert a as) = card as := by simp [h]
+    card (as.insert a) = card as := by simp [h]
 
 @[simp] theorem card_insert_of_not_mem {a : α} {as : List α} (h : a ∉ as) :
-    card (insert a as) = card as + 1 := by simp [h]
+    card (as.insert a) = card as + 1 := by simp [h]
 
 theorem card_remove_of_mem {a : α} : ∀ {as : List α}, a ∈ as → card as = card (remove a as) + 1
   | [], h => False.elim (not_mem_nil _ h)
@@ -156,7 +156,7 @@ theorem card_map_eq_of_inj_on {f : α → β} {as : List α} :
       intro inj_on'
       cases (exists_of_mem_map h) with
       | intro x hx =>
-        have : x = a := inj_on' (mem_cons_of_mem _ hx.1) (mem_cons_self ..) hx.2
+        have : a = x := inj_on' (mem_cons_self ..) (mem_cons_of_mem _ hx.1) hx.2
         have h1 : a ∈ as := this ▸ hx.1
         have h2 : inj_on f as := inj_on_of_subset inj_on' (subset_cons _ _)
         simp  [h1, mem_map_of_mem f h1, ih h2]
@@ -171,10 +171,10 @@ theorem card_eq_of_equiv {as bs : List α} (h : as.equiv bs) : card as = card bs
   Nat.le_antisymm (card_subset_le sub_and_sub.1) (card_subset_le sub_and_sub.2)
 
 theorem card_append_disjoint : ∀ {as bs : List α},
-    disjoint as bs → card (as ++ bs) = card as + card bs
+    Disjoint as bs → card (as ++ bs) = card as + card bs
   | [], _, _ => by simp
   | a :: as, bs, disj => by
-    have disj' : disjoint as bs := fun _ h1 h2 => disj (mem_cons_of_mem a h1) h2
+    have disj' : Disjoint as bs := fun _ h1 h2 => disj (mem_cons_of_mem a h1) h2
     cases Decidable.em (a ∈ as) with
     | inl h =>
       simp [h, card_append_disjoint disj']
@@ -183,7 +183,7 @@ theorem card_append_disjoint : ∀ {as bs : List α},
       simp [h, h1, card_append_disjoint disj']
       rw [Nat.add_right_comm]
 
-theorem card_union_disjoint {as bs : List α} (h : disjoint as bs) :
+theorem card_union_disjoint {as bs : List α} (h : Disjoint as bs) :
     card (as.union bs) = card as + card bs := by
   rw [card_eq_of_equiv (union_equiv_append as bs), card_append_disjoint h]
 

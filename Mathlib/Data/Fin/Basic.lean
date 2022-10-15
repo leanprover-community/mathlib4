@@ -1,5 +1,5 @@
 import Mathlib.Data.Nat.Basic
-import Mathlib.Init.Data.Nat.Lemmas
+import Std.Data.Nat.Lemmas
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
@@ -25,6 +25,10 @@ lemma Fin.ext_iff {a b : Fin n} : a = b ↔ a.val = b.val :=
 
 lemma Fin.size_positive' [Nonempty (Fin n)] : 0 < n :=
   ‹Nonempty (Fin n)›.elim fun i => Fin.size_positive i
+
+@[simp]
+protected theorem Fin.eta (a : Fin n) (h : (a : ℕ) < n) : (⟨(a : ℕ), h⟩ : Fin n) = a := by
+  cases a <;> rfl
 
 lemma zero_lt_of_lt {a : Nat} : ∀ {x : Nat}, x < a -> 0 < a
 | 0, h   => h
@@ -251,7 +255,9 @@ instance : CommSemiring (Fin n) where
 instance : Neg (Fin n) where
   neg a := ⟨(n - a) % n, Nat.mod_lt _ (lt_of_le_of_lt (Nat.zero_le _) a.isLt)⟩
 
-lemma Fin.neg_def : (-a : Fin n) = ⟨(n - a) % n, Nat.mod_lt _ (lt_of_le_of_lt (Nat.zero_le _) a.isLt)⟩ := rfl
+lemma Fin.neg_def :
+    (-a : Fin n) = ⟨(n - a) % n, Nat.mod_lt _ (lt_of_le_of_lt (Nat.zero_le _) a.isLt)⟩ :=
+  rfl
 
 protected def Fin.ofInt'' : Int → Fin n
   | Int.ofNat a => Fin.ofNat' a Fin.size_positive'
@@ -271,9 +277,6 @@ def Fin.ofInt' : ℤ → Fin n
 
 instance : AddGroupWithOne (Fin n) where
   __ := inferInstanceAs (AddMonoidWithOne (Fin n))
-  gsmul_zero' := by simp [gsmul_rec, nsmul_rec]
-  gsmul_succ' := by simp [gsmul_rec, nsmul_rec, -Int.ofNat_eq_cast]
-  gsmul_neg' := by simp [gsmul_rec, nsmul_rec, -Int.ofNat_eq_cast]
   sub_eq_add_neg := Fin.sub_eq_add_neg
   add_left_neg := Fin.add_left_neg
   intCast := Fin.ofInt'

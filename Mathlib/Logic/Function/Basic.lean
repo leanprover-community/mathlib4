@@ -3,13 +3,13 @@ Copyright (c) 2016 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Std.Classes.SetNotation
+import Std.Tactic.Lint.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Logic.Basic
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
 import Mathlib.Init.Set
-import Mathlib.Init.SetNotation
-import Mathlib.Tactic.Lint.Basic
 
 universe u v w
 
@@ -246,7 +246,8 @@ if h : ∃ a, f a = b then some (Classical.choose h) else none
 theorem partial_inv_of_injective {α β} {f : α → β} (I : injective f) :
   is_partial_inv f (partial_inv f)
 | a, b =>
-⟨λ h => have hpi: partial_inv f b = if h : ∃ a, f a = b then some (Classical.choose h) else none := rfl
+⟨λ h => have hpi : partial_inv f b = if h : ∃ a, f a = b then some (Classical.choose h) else none :=
+          rfl
         if h' : ∃ a, f a = b
         then by rw [hpi, dif_pos h'] at h
                 injection h with h

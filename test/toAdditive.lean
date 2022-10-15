@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Tactic.NormCast
+import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 open Lean
 
@@ -40,17 +41,17 @@ theorem bar1_works : bar1 3 4 = 3 * 4 := by decide
 
 infix:80 " ^ " => my_has_pow.pow
 
-instance dummy_pow : my_has_pow ℕ $ plift ℤ := ⟨fun x y => 0⟩
-instance dummy_smul : my_has_scalar (plift ℤ) ℕ := ⟨fun x y => 0⟩
+instance dummy_pow : my_has_pow ℕ $ PLift ℤ := ⟨fun x y => 0⟩
+instance dummy_smul : my_has_scalar (PLift ℤ) ℕ := ⟨fun x y => 0⟩
 attribute [to_additive dummy_smul] dummy_pow
 
 set_option pp.universes true
 @[to_additive bar2]
-def foo2 {α} [my_has_pow α ℕ] (x : α) (n : ℕ) (m : plift ℤ) : α := x ^ (n ^ m)
+def foo2 {α} [my_has_pow α ℕ] (x : α) (n : ℕ) (m : PLift ℤ) : α := x ^ (n ^ m)
 
-theorem foo2_works : foo2 2 3 (plift.up 2) = Nat.pow 2 0 := by decide
+theorem foo2_works : foo2 2 3 (PLift.up 2) = Nat.pow 2 0 := by decide
 -- [todo] should it still be using dummy?
-theorem bar2_works : bar2 2 3 (plift.up 2) =  2 * (dummy_smul.1 (plift.up 2) 3) := by decide
+theorem bar2_works : bar2 2 3 (PLift.up 2) =  2 * (dummy_smul.1 (PLift.up 2) 3) := by decide
 
 @[to_additive bar3]
 def foo3 {α} [my_has_pow α ℕ] (x : α) : ℕ → α := @my_has_pow.pow α ℕ _ x
@@ -78,13 +79,11 @@ theorem bar7_works : bar7 2 3 =  2 * 3 := by decide
 
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do
-  let env ← getEnv
   let c ← getConstInfo `Test.foo6
-  let e : Expr ← Lean.Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.expand c.value!
-  let t ← Lean.Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.expand c.type
+  let e : Expr ← Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.expand c.value!
+  let t ← Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.expand c.type
   let decl := c |>.updateName `Test.barr6 |>.updateType t |>.updateValue e |>.toDeclaration!
-  addAndCompile decl
-  return ()
+  Elab.Command.liftCoreM <| addAndCompile decl
 
 /-! Test the namespace bug (#8733). This code should *not* generate a lemma
   `add_some_def.in_namespace`. -/
@@ -96,14 +95,14 @@ if some_def.in_namespace then x * x else x
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
 run_cmd do
-  Lean.Elab.Command.liftCoreM <| successIfFail (ToAdditive.transformDecl `Test.some_def `Test.add_some_def)
+  Elab.Command.liftCoreM <| successIfFail (ToAdditive.transformDecl (← getRef) `Test.some_def `Test.add_some_def)
 
 
 attribute [to_additive some_other_name] some_def.in_namespace
 attribute [to_additive add_some_def] some_def
 
 run_cmd do
-  Lean.Elab.Command.liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namespace)
+  Elab.Command.liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namespace)
 
 -- [todo] currently this test breaks.
 -- example : (add_units.mk_of_add_eq_zero 0 0 (by simp) : ℕ)
@@ -119,9 +118,9 @@ instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One $ f i] : One ((
   ⟨fun _ => 1⟩
 
 run_cmd do
-  let n ← Lean.Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg `Test.pi.has_one
+  let n ← Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg `Test.pi.has_one
   if n != some 1 then throwError "{n} != 1"
-  let n ← Lean.Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg `Test.foo_mul
+  let n ← Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg `Test.foo_mul
   if n != some 4 then throwError "{n} != 4"
 
 @[to_additive]
