@@ -89,7 +89,8 @@ theorem Nonempty.forall {p : Nonempty α → Prop} : (∀ h : Nonempty α, p h) 
 theorem Nonempty.exists {p : Nonempty α → Prop} : (∃ h : Nonempty α, p h) ↔ ∃ a, p ⟨a⟩ :=
   Iff.intro (fun ⟨⟨a⟩, h⟩ => ⟨a, h⟩) fun ⟨a, h⟩ => ⟨⟨a⟩, h⟩
 
-theorem Classical.nonempty_pi {β : α → Sort v} : Nonempty (∀ a : α, β a) ↔ ∀ a : α, Nonempty (β a) :=
+theorem Classical.nonempty_pi {β : α → Sort v} :
+    Nonempty (∀ a : α, β a) ↔ ∀ a : α, Nonempty (β a) :=
   Iff.intro (fun ⟨f⟩ a => ⟨f a⟩) fun f => ⟨fun a => Classical.choice $ f a⟩
 
 /-- Using `classical.choice`, lifts a (`Prop`-valued) `Nonempty` instance to a (`Type`-valued)

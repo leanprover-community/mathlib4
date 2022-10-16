@@ -1,5 +1,9 @@
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.Semiconj
+import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Control.Random
@@ -17,8 +21,11 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.KVMap
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Card
+import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Perm
+import Mathlib.Data.List.Range
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Nat.Basic
@@ -104,6 +111,7 @@ import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.SimpTrace
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread

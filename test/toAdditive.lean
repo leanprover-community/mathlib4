@@ -95,7 +95,7 @@ if some_def.in_namespace then x * x else x
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
 run_cmd do
-  Elab.Command.liftCoreM <| successIfFail (ToAdditive.transformDecl `Test.some_def `Test.add_some_def)
+  Elab.Command.liftCoreM <| successIfFail (ToAdditive.transformDecl (← getRef) `Test.some_def `Test.add_some_def)
 
 
 attribute [to_additive some_other_name] some_def.in_namespace

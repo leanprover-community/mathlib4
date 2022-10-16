@@ -79,6 +79,10 @@ alias and_left_comm ← And.left_comm
 alias or_assoc ← Or.assoc
 alias or_left_comm ← Or.left_comm
 
+-- This is needed for `calc` to work with `iff`.
+instance : Trans Iff Iff Iff where
+  trans := fun p q => p.trans q
+
 /- exists unique -/
 
 def ExistsUnique (p : α → Prop) := ∃ x, p x ∧ ∀ y, p y → y = x
@@ -147,8 +151,8 @@ end
 def is_dec_eq {α : Sort u} (p : α → α → Bool) : Prop   := ∀ ⦃x y : α⦄, p x y = true → x = y
 def is_dec_refl {α : Sort u} (p : α → α → Bool) : Prop := ∀ x, p x x = true
 
-def decidable_eq_of_bool_pred {α : Sort u} {p : α → α → Bool} (h₁ : is_dec_eq p) (h₂ : is_dec_refl p) :
-  DecidableEq α :=
+def decidable_eq_of_bool_pred {α : Sort u} {p : α → α → Bool} (h₁ : is_dec_eq p)
+    (h₂ : is_dec_refl p) : DecidableEq α :=
 λ (x y : α) =>
  if hp : p x y = true then isTrue (h₁ hp)
  else isFalse (λ hxy : x = y => absurd (h₂ y) (by rwa [hxy] at hp))
@@ -158,7 +162,8 @@ match (h a a) with
 | isTrue _  => rfl
 | isFalse n => absurd rfl n
 
-lemma decidable_eq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α} : ∀ n : a ≠ b, h a b = isFalse n :=
+lemma decidable_eq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α} :
+    ∀ n : a ≠ b, h a b = isFalse n :=
 λ n =>
 match (h a b) with
 | isTrue e   => absurd e n
