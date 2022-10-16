@@ -14,25 +14,17 @@ example (x : Int) (h : x = 1) : 1 = 1 := by
   apply_fun (fun p => p) at h
   rfl
 
-example (x : Int) (h : x = 1) : 1 = 1 := by
-  revert h
-  intro h
-  apply_fun (fun p => p) at h
-  rfl
-
-example (x : Int) (h : x = 1) : 1 = 1 := by
-  revert h
-  refine' (fun h => ?_)
-  -- See https://github.com/leanprover/lean4/issues/1681#issuecomment-1266282337
-  apply_fun (fun p => p) at h
-  rfl
-
-set_option pp.all true in
 example (a b : Int) (h : a = b) : a + 1 = b + 1 := by
+  -- Make sure that we infer the type of the function only after we see the hypothesis:
   apply_fun (fun n => n+1) at h
-  -- check that `h` was β-reduced
+  -- check that `h` was β-reduced (in Lean3 this required additional work)
   guard_hyp h : a + 1 = b + 1
   exact h
+
+-- Verify failure when applying a dependently typed function.
+example (P : Nat → Type) (Q : (n : Nat) -> P n) (a b : Nat) (h : a = b) : True := by
+  fail_if_success apply_fun Q at h
+  trivial
 
 -- TODO restore and port these tests from mathlib3
 

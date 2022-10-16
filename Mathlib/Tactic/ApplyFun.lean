@@ -5,7 +5,7 @@ Authors: Keeley Hoek, Patrick Massot, Scott Morrison
 -/
 import Mathlib.Lean.Expr.Basic
 -- TODO
--- import Tactic.Monotonicity
+-- import Mathlib.Tactic.Monotonicity
 
 namespace Mathlib.Tactic
 open Lean Parser Tactic Elab Tactic
@@ -44,26 +44,32 @@ syntax (name := applyFun) "apply_fun " term (ppSpace location)? (" using " term)
 
 open Lean.Meta
 
-def applyFunHyp (f : Expr) (u : Option Expr) (h : FVarId) (g : MVarId) : MetaM (List MVarId) := do
+initialize registerTraceClass `apply_fun
+
+def applyFunHyp (f : Expr) (using? : Option Expr) (h : FVarId) (g : MVarId) : MetaM (List MVarId) := do
   let d ← h.getDecl
-  logInfo d.type.getAppFnArgs.1
-  logInfo d.type.getAppFnArgs.2
   match d.type.getAppFnArgs with
-  | (``Eq, _) => do
+  | (``Eq, #[α, _, _]) => do
+    -- We have to jump through a hoop here!
+    -- At this point Lean may think `f` is a dependently-typed function,
+    -- so we can't just feed it to `congrArg`.
+    -- To solve this, we first unify `f` with a metavariable `_ : α → _`
+    -- (i.e. an arrow, but with the target as some fresh type metavariable).
+    if ¬ (← isDefEq f (← mkFreshExprMVar (← mkArrow α (← mkFreshTypeMVar)))) then
+      throwError "Can not use `apply_fun` with a dependently typed function."
     let prf ← mkCongrArg f d.toExpr
-    logInfo prf
     let g ← g.clear h
     let (_,g) ← (←(g.assert d.userName (← inferType prf) prf)).intro1P
     return [g]
   | (``LE.le, _) => throwError "NOT IMPLEMENTED"
   | _ => throwError "apply_fun can only handle hypotheses of the form `a = b` or `a ≤ b`."
 
-def applyFunTarget (f : Expr) (u : Option Expr) : TacticM Unit :=
+def applyFunTarget (f : Expr) (using? : Option Expr) : TacticM Unit :=
   throwError "NOT IMPLEMENTED"
 
 @[tactic applyFun] elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
-  let f ← Tactic.elabTerm f none
-  let P ← P.mapM (Tactic.elabTerm · none)
+  let f ← elabTermForApply f
+  let P ← P.mapM (elabTerm · none)
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
     (atLocal := fun h => liftMetaTactic <| applyFunHyp f P h)
     (atTarget := applyFunTarget f P)
