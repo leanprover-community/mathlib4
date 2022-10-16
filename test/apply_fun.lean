@@ -1,3 +1,4 @@
+import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Init.Function
@@ -28,18 +29,14 @@ example (P : Nat → Type) (Q : (n : Nat) -> P n) (a b : Nat) (h : a = b) : True
 
 -- TODO restore and port these tests from mathlib3
 
--- example (f : ℕ → ℕ) (a b : ℕ) (monof : monotone f) (h : a ≤ b) : f a ≤ f b :=
--- begin
---   apply_fun f at h,
---   assumption,
---   assumption
--- end
+example (f : ℕ → ℕ) (a b : ℕ) (monof : Monotone f) (h : a ≤ b) : f a ≤ f b := by
+  apply_fun f at h using monof
+  assumption
 
--- example (f : ℕ → ℕ) (a b : ℕ) (monof : monotone f) (h : a ≤ b) : f a ≤ f b :=
--- begin
---   apply_fun f at h using monof,
+-- example (f : ℕ → ℕ) (a b : ℕ) (monof : Monotone f) (h : a ≤ b) : f a ≤ f b := by
+--   apply_fun f at h
 --   assumption
--- end
+--   assumption
 
 -- -- monotonicity will be proved by `mono` in the next example
 -- example (a b : ℕ) (h : a ≤ b) : a + 1 ≤ b + 1 :=

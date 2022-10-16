@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Keeley Hoek, Patrick Massot, Scott Morrison
 -/
 import Mathlib.Lean.Expr.Basic
+import Mathlib.Order.Monotone
 -- TODO
 -- import Mathlib.Tactic.Monotonicity
 
@@ -48,7 +49,7 @@ initialize registerTraceClass `apply_fun
 
 def applyFunHyp (f : Expr) (using? : Option Expr) (h : FVarId) (g : MVarId) : MetaM (List MVarId) := do
   let d ← h.getDecl
-  match d.type.getAppFnArgs with
+  let prf ← match d.type.getAppFnArgs with
   | (``Eq, #[α, _, _]) => do
     -- We have to jump through a hoop here!
     -- At this point Lean may think `f` is a dependently-typed function,
@@ -57,12 +58,18 @@ def applyFunHyp (f : Expr) (using? : Option Expr) (h : FVarId) (g : MVarId) : Me
     -- (i.e. an arrow, but with the target as some fresh type metavariable).
     if ¬ (← isDefEq f (← mkFreshExprMVar (← mkArrow α (← mkFreshTypeMVar)))) then
       throwError "Can not use `apply_fun` with a dependently typed function."
-    let prf ← mkCongrArg f d.toExpr
-    let g ← g.clear h
-    let (_,g) ← (←(g.assert d.userName (← inferType prf) prf)).intro1P
-    return [g]
-  | (``LE.le, _) => throwError "NOT IMPLEMENTED"
+    mkCongrArg f d.toExpr
+  | (``LE.le, _) =>
+    let monotone_f : Expr ← match using? with
+    | some r => pure r
+    | none => throwError "TODO: implement generate a `monotone f` goal."
+    mkAppM' monotone_f #[d.toExpr]
   | _ => throwError "apply_fun can only handle hypotheses of the form `a = b` or `a ≤ b`."
+
+  let g ← g.clear h
+  -- TODO should there be a `note` that does this in one go?
+  let (_,g) ← (←(g.assert d.userName (← inferType prf) prf)).intro1P
+  return [g]
 
 def applyFunTarget (f : Expr) (using? : Option Expr) : TacticM Unit :=
   throwError "NOT IMPLEMENTED"
