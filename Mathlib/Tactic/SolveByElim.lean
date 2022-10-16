@@ -22,14 +22,19 @@ def Lean.Meta.getLocalHyps : MetaM (Array Expr) := do
     if !d.isImplementationDetail then hs := hs.push d.toExpr
   return hs
 
+initialize registerTraceClass `solveByElim
+
 /-- Attempt to solve the given metavariable by repeating applying a list of facts. -/
 def Lean.Meta.solveByElim (es : List Expr) : Nat → MVarId → MetaM Unit
 | 0, _ => throwError "solve_by_elim exceeded its recursion limit"
 | n+1, goal => do
+  trace[solveByElim] "Working on: {goal}"
   -- We attempt to find an expression which can be applied,
   -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
   es.firstM (fun e => do
-    for g in (← goal.apply e) do solveByElim es n g)
+    trace[solveByElim] "Trying to apply: {e}"
+    for g in (← goal.apply e) do
+      if ¬ (← g.isAssigned) then solveByElim es n g)
 
 namespace Lean.Tactic
 

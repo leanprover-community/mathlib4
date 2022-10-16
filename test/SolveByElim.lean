@@ -30,6 +30,11 @@ example {α β γ : Type} (f : α → β) (g : β → γ) (a : α) : γ := by so
 example {α β γ : Type} (f : α → β) (g : β → γ) (b : β) : γ := by solve_by_elim only [g, b]
 example {α : Nat → Type} (f : (n : Nat) → α n → α (n+1)) (a : α 0) : α 5 := by solve_by_elim only [f, a]
 
+-- Verify that already assigned metavariables are skipped.
+example (P₁ P₂: α → Prop) (f: forall (a: α), P₁ a → P₂ a → β)
+        (a: α) (ha₁: P₁ a) (ha₂ : P₂ a) : β := by
+  solve_by_elim
+
 -- With proper backtracking this should work (and did in mathlib3).
 -- example (P₁ P₂: α → Prop) (f: forall (a: α), P₁ a → P₂ a → β)
 --         (a: α) (ha₁: P₁ a)
