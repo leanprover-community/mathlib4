@@ -1,5 +1,21 @@
+/-
+Copyright (c) 2015 Microsoft Corporation. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
+-/
 import Mathlib.Init.Set
 import Mathlib.Data.List.Pairwise
+
+/-!
+# List Permutations
+
+This file introduces the `List.Perm` relation, which is true if two lists are permutations of one
+another.
+
+## Notation
+
+The notation `~` is used for permutation equivalence.
+-/
 
 namespace List
 

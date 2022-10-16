@@ -10,6 +10,7 @@ import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr
 import Lean
 import Lean.Data
+import Lean.Elab.Term
 import Std.Lean.NameMapAttribute
 
 /-!
@@ -39,7 +40,8 @@ initialize registerTraceClass `to_additive_detail
 initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
     name  := `to_additive_ignore_args
-    descr := "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized."
+    descr :=
+      "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized."
     add   := fun _ stx => do
         let ids ← match stx with
           | `(attr|to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
@@ -56,9 +58,11 @@ def ignore [Functor M] [MonadEnv M]: Name → M (Option (List Nat))
 initialize reorderAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
     name := `to_additive_reorder
-    descr := "Auxiliary attribute for `to_additive` that stores arguments that need to be reordered."
+    descr :=
+      "Auxiliary attribute for `to_additive` that stores arguments that need to be reordered."
     add := fun
-    | _, `(attr|to_additive_reorder $[$ids:num]*) => pure <| Array.toList <| ids.map (·.1.isNatLit?.get!)
+    | _, `(attr|to_additive_reorder $[$ids:num]*) =>
+      pure <| Array.toList <| ids.map (·.1.isNatLit?.get!)
     | _, stx => throwError "unexpected to_additive_reorder syntax {stx}"
   }
 
@@ -74,7 +78,8 @@ def shouldReorder [Functor M] [MonadEnv M]: Name → Nat → M Bool
 initialize relevantArgAttr : NameMapExtension Nat ←
   registerNameMapAttribute {
     name := `to_additive_relevant_arg
-    descr := "Auxiliary attribute for `to_additive` stating which arguments are the types with a multiplicative structure."
+    descr := "Auxiliary attribute for `to_additive` stating" ++
+      " which arguments are the types with a multiplicative structure."
     add := fun
     | _, `(attr|to_additive_relevant_arg $id) => pure <| id.1.isNatLit?.get!
     | _, stx => throwError "unexpected to_additive_relevant_arg syntax {stx}"
@@ -162,7 +167,7 @@ def applyReplacementFun : Expr → MetaM Expr :=
   Lean.Expr.replaceRecMeta fun r e => do
     trace[to_additive_detail] "applyReplacementFun: replace at {e}"
     match e with
-    | .lit (.natVal 1) => pure <| mkNatLit 0
+    | .lit (.natVal 1) => pure <| mkRawNatLit 0
     | .const n₀ ls => do
       let n₁ := Name.mapPrefix (findTranslation? <|← getEnv) n₀
       trace[to_additive_detail] "applyReplacementFun: {n₀} → {n₁}"
@@ -186,14 +191,16 @@ def applyReplacementFun : Expr → MetaM Expr :=
             let gf ← r g.appFn!
             let ga ← r g.appArg!
             let e₂ :=  mkApp2 gf x ga
-            trace[to_additive_detail] "applyReplacementFun: reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter:  {e₂}"
+            trace[to_additive_detail]
+              "applyReplacementFun: reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter:  {e₂}"
             return some e₂
         let c1 ← isRelevant nm gArgs.size
         let c2 := gf.isConst
         let c3 ← additiveTest x
         if c1 && c2 && not c3 then
           -- the test failed, so don't update the function body.
-          trace[to_additive_detail] "applyReplacementFun: isRelevant and test failed: {nm} {gArgs} {x}"
+          trace[to_additive_detail]
+            "applyReplacementFun: isRelevant and test failed: {nm} {gArgs} {x}"
           let x ← r x
           let args ← gArgs.mapM r
           return some $ mkApp (mkAppN gf args) x
@@ -252,13 +259,14 @@ using the transforms dictionary.
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
 partial def transformDeclAux
-  (pre tgt_pre : Name) : Name → CoreM Unit := fun src => do
+  (ref : Option Syntax) (pre tgt_pre : Name) : Name → CoreM Unit := fun src => do
   -- if this declaration is not `pre` or an internal declaration, we do nothing.
   if not (src == pre || isInternal' src) then
     if (findTranslation? (← getEnv) src).isSome then
-      return ()
-    else
-      throwError "The declaration {pre} depends on the declaration {src} which is in the namespace {pre}, but does not have the `@[to_additive]` attribute. This is not supported. Workaround: move {src} to a different namespace."
+      return
+    throwError "The declaration {pre} depends on the declaration {src} which is in the namespace {
+      pre}, but does not have the `@[to_additive]` attribute. This is not supported.\n{""
+      }Workaround: move {src} to a different namespace."
   let env ← getEnv
   -- we find the additive name of `src`
   let tgt := src.mapPrefix (fun n => if n == pre then some tgt_pre else none)
@@ -268,10 +276,10 @@ partial def transformDeclAux
   let srcDecl ← getConstInfo src
   -- we first transform all the declarations of the form `pre._proof_i`
   for n in srcDecl.type.listNamesWithPrefix pre do
-    transformDeclAux pre tgt_pre n
+    transformDeclAux none pre tgt_pre n
   if let some value := srcDecl.value? then
     for n in value.listNamesWithPrefix pre do
-      transformDeclAux pre tgt_pre n
+      transformDeclAux none pre tgt_pre n
   -- now transform the source declaration
   let trgDecl : ConstantInfo ← MetaM.run' $ updateDecl tgt srcDecl
   if ¬ trgDecl.hasValue then
@@ -288,6 +296,18 @@ partial def transformDeclAux
       Failed to add declaration\n{trgDecl.name}:\n{msg}"
     | _ => panic! "unreachable"
   addAndCompile trgDecl.toDeclaration!
+  -- now add declaration ranges so jump-to-definition works
+  addDeclarationRanges tgt {
+    range := ← getDeclarationRange (← getRef)
+    selectionRange := ← getDeclarationRange (ref.getD (← getRef))
+  }
+  if let some ref := ref then
+    -- TODO: make a function for this
+    pushInfoLeaf <| .ofTermInfo {
+      elaborator := .anonymous, lctx := {}, expectedType? := none
+      stx := ref, isBinder := true
+      expr := ← mkConstWithLevelParams trgDecl.name
+    }
   if isProtected (← getEnv) src then
     setEnv $ addProtected (← getEnv) tgt
 
@@ -300,34 +320,33 @@ allow us to iterate the attributes applied to a given decalaration.
 -/
 def copyAttributes (src tgt : Name) : CoreM Unit := do
   -- [todo] other simp theorems
-  let some ext ← getSimpExtension? `simp | return ()
+  let some ext ← getSimpExtension? `simp | return
   let thms ← ext.getTheorems
   if (¬ thms.isLemma (.decl src)) || thms.isLemma (.decl tgt) then
-    return ()
+    return
   -- [todo] how to get prio data from SimpTheorems?
-  MetaM.run' $ Lean.Meta.addSimpTheorem ext tgt
+  Lean.Meta.addSimpTheorem ext tgt
     (post := true)
     (inv := false)
     (attrKind := AttributeKind.global)
-    (prio := 1000)
-  return ()
+    (prio := 1000) |>.run'
 
 /--
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
 the body using the `translations` dictionary.
 This is used to implement `@[to_additive]`.
 -/
-def transformDecl (src tgt : Name) : CoreM Unit := do
-  transformDeclAux src tgt src
+def transformDecl (ref : Option Syntax) (src tgt : Name) : CoreM Unit := do
+  transformDeclAux ref src tgt src
   let eqns? ← MetaM.run' (getEqnsFor? src true)
   -- now transform all of the equational lemmas
   if let some eqns := eqns? then
     for src_eqn in eqns do
-      transformDeclAux src tgt src_eqn
+      transformDeclAux none src tgt src_eqn
       -- [todo] copy attributes for equations
       -- [todo] add equation lemmas to tgt_eqn
   copyAttributes src tgt
-  return ()
+
 /--
 Find the first argument of `nm` that has a multiplicative type-class on it.
 Returns 1 if there are no types with a multiplicative class as arguments.
@@ -352,7 +371,6 @@ def firstMultiplicativeArg (nm : Name) : MetaM (Option Nat) := do
     | [] => return none
     | (head :: tail) => return some <| tail.foldr Nat.min head
 
-
 /-- `ValueType` is the type of the arguments that can be provided to `to_additive`. -/
 structure ValueType : Type where
   /-- Replace all multiplicative declarations, do not use the heuristic. -/
@@ -367,6 +385,10 @@ structure ValueType : Type where
   /-- If `allow_auto_name` is `false` (default) then
   `@[to_additive]` will check whether the given name can be auto-generated. -/
   allowAutoName : Bool := false
+  /-- The `Syntax` element corresponding to the original multiplicative declaration
+  (or the `to_additive` attribute if it is added later),
+  which we need for adding definition ranges. -/
+  ref : Syntax
   deriving Repr
 
 /-- `add_comm_prefix x s` returns `"comm_" ++ s` if `x = tt` and `s` otherwise. -/
@@ -424,7 +446,8 @@ def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
     let .str pre s := src | throwError "to_additive: can't transport {src}"
     let tgt_auto := guessName s
     if tgt.toString == tgt_auto then
-      dbg_trace "{src}: correctly autogenerated target name {tgt_auto}, you may remove the explicit {tgt} argument."
+      dbg_trace ("{src}: correctly autogenerated target name {tgt_auto}," ++
+        " you may remove the explicit {tgt} argument.")
     let pre := pre.mapPrefix <| findTranslation? (← getEnv)
     if tgt == Name.anonymous then
       return Name.mkStr pre tgt_auto
@@ -455,18 +478,19 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
   -- [todo] run to_additive on the constructors of n:
   -- aux (fun n => (env.constructorsOf n).mmap $ ...
 
-private def elabToAdditiveAux
-  (replaceAll trace : Bool) (tgt : Option Syntax) (doc : Option Syntax) : ValueType :=
+private def elabToAdditiveAux (ref : Syntax) (replaceAll trace : Bool) (tgt : Option Syntax)
+    (doc : Option Syntax) : ValueType :=
   { replaceAll := replaceAll
     trace := trace
     tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
     doc := doc.bind (·.isStrLit?)
     allowAutoName := false
+    ref
   }
 
 private def elabToAdditive : Syntax → CoreM ValueType
-  | `(attr| to_additive $[!%$replaceAll]? $[?%$trace]? $[$tgt]? $[$doc]?) =>
-    return elabToAdditiveAux replaceAll.isSome trace.isSome tgt doc
+  | `(attr| to_additive%$tk $[!%$replaceAll]? $[?%$trace]? $[$tgt]? $[$doc]?) =>
+    return elabToAdditiveAux ((tgt.map (·.raw)).getD tk) replaceAll.isSome trace.isSome tgt doc
   | _ => throwUnsupportedSyntax
 
 /-!
@@ -692,10 +716,12 @@ initialize registerBuiltinAttribute {
         withOptions
           (fun o => o |>.setBool `to_additive.replaceAll val.replaceAll
                       |>.setBool `trace.to_additive shouldTrace)
-          (transformDecl src tgt)
+          (transformDecl val.ref src tgt)
       if let some doc := val.doc then
         addDocString tgt doc
-      return ()
+    -- Because `@[simp]` runs after compilation,
+    -- we have to as well to be able to copy attributes correctly.
+    applicationTime := .afterCompilation
   }
 
 

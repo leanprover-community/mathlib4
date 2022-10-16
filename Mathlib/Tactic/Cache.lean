@@ -63,8 +63,8 @@ Calling this function for the first time
 will initialize the cache with the function
 provided in the constructor.
 -/
-def Cache.get [Monad m] [MonadEnv m] [MonadLog m] [MonadOptions m] [MonadLiftT BaseIO m] [MonadExcept Exception m]
-    (cache : Cache α) : m α := do
+def Cache.get [Monad m] [MonadEnv m] [MonadLog m] [MonadOptions m] [MonadLiftT BaseIO m]
+    [MonadExcept Exception m] (cache : Cache α) : m α := do
   let t ← match ← show BaseIO _ from ST.Ref.get cache with
     | Sum.inr t => pure t
     | Sum.inl init =>
@@ -105,7 +105,8 @@ The cached structure `α` is initialized with `empty`,
 and then `addDecl` is called for every constant in the environment.
 Calls to `addDecl` for imported constants are cached.
 -/
-def DeclCache.mk (profilingName : String) (empty : α) (addDecl : Name → ConstantInfo → α → MetaM α) : IO (DeclCache α) := do
+def DeclCache.mk (profilingName : String) (empty : α)
+    (addDecl : Name → ConstantInfo → α → MetaM α) : IO (DeclCache α) := do
   let cache ← Cache.mk do
     profileitM Exception profilingName (← getOptions) do
     let mut a := empty
