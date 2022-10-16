@@ -50,6 +50,7 @@ initialize librarySearchLemmas : DeclCache (DiscrTree Name) ←
       let keys ← withReducible <| DiscrTree.mkPath type
       pure $ lemmas.insertCore keys name
 
+/-- Shortcut for calling `solveByElimImpl`. -/
 def solveByElim (depth := 6) (g : MVarId) := Lean.Tactic.solveByElimImpl false [] depth g
 
 def librarySearch (goal : MVarId) (lemmas : DiscrTree Name) (solveByElimDepth := 6) :
