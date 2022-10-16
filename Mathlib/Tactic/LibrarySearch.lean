@@ -50,6 +50,8 @@ initialize librarySearchLemmas : DeclCache (DiscrTree Name) ←
       let keys ← withReducible <| DiscrTree.mkPath type
       pure $ lemmas.insertCore keys name
 
+def solveByElim (depth := 6) (g : MVarId) := Lean.Tactic.solveByElimImpl false [] depth g
+
 def librarySearch (goal : MVarId) (lemmas : DiscrTree Name) (solveByElimDepth := 6) :
     MetaM <| Option (Array <| MetavarContext × List MVarId) := do
   profileitM Exception "librarySearch" (← getOptions) do
