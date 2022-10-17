@@ -8,6 +8,12 @@ import Mathlib.Order.Monotone
 -- TODO when `mono` is ported
 -- import Mathlib.Tactic.Monotonicity
 
+/-!
+# The `apply_fun` tactic.
+
+Apply a function to an equality or inequality in either a local hypothesis or the goal.
+-/
+
 namespace Mathlib.Tactic
 open Lean Parser Tactic Elab Tactic
 
