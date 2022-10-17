@@ -96,15 +96,21 @@ def applyFunTarget (f : Expr) (using? : Option Expr) (g : MVarId) : MetaM (List 
   | (``Not, #[p]) => match p.getAppFnArgs with
     | (``Eq, #[_, _, _]) => g.apply (← mkAppM ``ne_of_apply_ne #[f])
     | _ => applyFunTargetFailure f
+  -- TODO Once `Order.Hom.Basic` has been ported, verify these work.
+  | (``LE.le, _) => g.apply (← mkAppM `order_iso.le_iff_le #[f])
+  | (``GE.ge, _) => g.apply (← mkAppM `order_iso.le_iff_le #[f])
+  | (``LT.lt, _) => g.apply (← mkAppM `order_iso.lt_iff_lt #[f])
+  | (``GT.gt, _) => g.apply (← mkAppM `order_iso.lt_iff_lt #[f])
   | (``Eq, #[_, _, _]) => do
     let ng ← mkFreshExprMVar (← mkAppM ``Function.injective #[f])
     -- Try the `using` clause
     _ ← using?.mapM (fun u => isDefEq ng u)
     -- Try an assumption
     _ ← try ng.mvarId!.assumption catch _ => pure ()
-    -- TODO when `equiv` is ported, try to solve this goal using `equiv.injective`.
+    -- TODO Once `Logic.Equiv.Basic` has been ported, verify this works.
+    -- Try `Equiv.injective
+    _ ← try ng.mvarId!.apply (mkConst `Equiv.injective) catch _ => pure []
     g.apply ng
-  -- TODO when order isomorphisms are ported, add more cases here following mathlib3
   | _ => applyFunTargetFailure f
 
 @[tactic applyFun] elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do

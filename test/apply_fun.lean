@@ -54,14 +54,6 @@ example (n m : ℕ) (f : ℕ → ℕ) (w : Function.injective f ∧ true) (h : f
   apply_fun f using w.1
   assumption
 
--- example (n m : ℕ) (f : ℕ → ℕ) (w : function.injective f ∧ true) (h : f n = f m) : n = m :=
--- begin
---   apply_fun f,
---   assumption,
---   exact w.1,
--- end
-
-
 
 -- -- monotonicity will be proved by `mono` in the next example
 -- example (a b : ℕ) (h : a ≤ b) : a + 1 ≤ b + 1 :=
