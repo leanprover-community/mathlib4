@@ -265,3 +265,6 @@ theorem Ball.imp_left (H : ∀ x, p x → q x) (h₁ : ∀ x, q x → r x) (x) (
   h₁ _ <| H _ h
 
 end BoundedQuantifiers
+
+lemma ne_of_apply_ne {α β : Sort _} (f : α → β) {x y : α} (h : f x ≠ f y) : x ≠ y :=
+λ (w : x = y) => h (congr_arg f w)

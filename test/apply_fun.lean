@@ -33,10 +33,35 @@ example (f : ℕ → ℕ) (a b : ℕ) (monof : Monotone f) (h : a ≤ b) : f a �
   apply_fun f at h using monof
   assumption
 
--- example (f : ℕ → ℕ) (a b : ℕ) (monof : Monotone f) (h : a ≤ b) : f a ≤ f b := by
---   apply_fun f at h
---   assumption
---   assumption
+example (f : ℕ → ℕ) (a b : ℕ) (monof : Monotone f) (h : a ≤ b) : f a ≤ f b := by
+  apply_fun f at h
+  · assumption
+  · assumption
+
+example (n m : ℕ) (f : ℕ → ℕ) (h : f n ≠ f m) : n ≠ m := by
+  apply_fun f
+  exact h
+
+example (n m : ℕ) (f : ℕ → ℕ) (w : Function.injective f) (h : f n = f m) : n = m := by
+  apply_fun f
+  assumption
+
+example (n m : ℕ) (f : ℕ → ℕ) (w : Function.injective f) (h : f n = f m) : n = m := by
+  apply_fun f using w
+  assumption
+
+example (n m : ℕ) (f : ℕ → ℕ) (w : Function.injective f ∧ true) (h : f n = f m) : n = m := by
+  apply_fun f using w.1
+  assumption
+
+-- example (n m : ℕ) (f : ℕ → ℕ) (w : function.injective f ∧ true) (h : f n = f m) : n = m :=
+-- begin
+--   apply_fun f,
+--   assumption,
+--   exact w.1,
+-- end
+
+
 
 -- -- monotonicity will be proved by `mono` in the next example
 -- example (a b : ℕ) (h : a ≤ b) : a + 1 ≤ b + 1 :=
@@ -60,31 +85,6 @@ example (f : ℕ → ℕ) (a b : ℕ) (monof : Monotone f) (h : a ≤ b) : f a �
 -- begin
 --   apply_fun fin.cast_succ at H,
 --   exact H,
--- end
-
--- example (n m : ℕ) (f : ℕ → ℕ) (h : f n ≠ f m) : n ≠ m :=
--- begin
---   apply_fun f,
---   exact h,
--- end
-
--- example (n m : ℕ) (f : ℕ → ℕ) (w : function.injective f) (h : f n = f m) : n = m :=
--- begin
---   apply_fun f,
---   assumption,
--- end
-
--- example (n m : ℕ) (f : ℕ → ℕ) (w : function.injective f ∧ true) (h : f n = f m) : n = m :=
--- begin
---   apply_fun f using w.1,
---   assumption,
--- end
-
--- example (n m : ℕ) (f : ℕ → ℕ) (w : function.injective f ∧ true) (h : f n = f m) : n = m :=
--- begin
---   apply_fun f,
---   assumption,
---   exact w.1,
 -- end
 
 -- example (n m : ℕ) (f : ℕ ≃ ℕ) (h : f n = f m) : n = m :=
