@@ -65,8 +65,8 @@ import Mathlib.Mathport.Syntax
 import Mathlib.Order.Basic
 import Mathlib.Order.Monotone
 import Mathlib.Tactic.Alias
-import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cache
