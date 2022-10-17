@@ -97,7 +97,7 @@ def applyFunHyp (f : Expr) (using? : Option Expr) (h : FVarId) (g : MVarId) :
 
 /-- Failure message for `applyFunTarget`. -/
 def applyFunTargetFailure (f : Expr) : MetaM (List MVarId) := do
-  throwError "`apply_fun` could not apply `f` to the main goal."
+  throwError "`apply_fun` could not apply `{f}` to the main goal."
 
 /-- Apply a function to the main goal. -/
 def applyFunTarget (f : Expr) (using? : Option Expr) (g : MVarId) : MetaM (List MVarId) := do
