@@ -56,7 +56,8 @@ def _root_.Lean.MVarId.note (g : MVarId) (n : Name := .anonymous) (type : Option
   (←(g.assert n (type.getD (← inferType body)) body)).intro1P
 
 /-- Apply a function to a hypothesis. -/
-def applyFunHyp (f : Expr) (using? : Option Expr) (h : FVarId) (g : MVarId) : MetaM (List MVarId) := do
+def applyFunHyp (f : Expr) (using? : Option Expr) (h : FVarId) (g : MVarId) :
+    MetaM (List MVarId) := do
   let d ← h.getDecl
   let (prf, newGoals) ← match d.type.getAppFnArgs with
   | (``Eq, #[α, _, _]) => do
