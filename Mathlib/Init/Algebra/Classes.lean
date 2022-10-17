@@ -5,8 +5,6 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Init.Logic
 
-universe u v
-
 /-!
 # Unbundled algebra classes
 
@@ -27,6 +25,8 @@ I've omitted all the `@[algebra]` attributes, as they are not used elsewhere.
 The section `StrictWeakOrder` has been omitted, but I've left the mathport output in place.
 Please delete if cleaning up.
 -/
+
+universe u v
 
 -- @[algebra]
 class IsSymmOp (α : Type u) (β : outParam (Type v)) (op : outParam (α → α → β)) : Prop where
