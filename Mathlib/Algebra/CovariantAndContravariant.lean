@@ -150,7 +150,7 @@ theorem act_rel_act_of_rel (m : M) {a b : N} (ab : r a b) : r (μ m a) (μ m b) 
 @[to_additive]
 theorem Group.covariant_iff_contravariant [Group N] :
     Covariant N N (· * ·) r ↔ Contravariant N N (· * ·) r := by
-  refine' ⟨fun h a b c bc => _, fun h a b c bc => _⟩
+  refine ⟨fun h a b c bc => ?_, fun h a b c bc => ?_⟩
   · rw [← inv_mul_cancel_left a b, ← inv_mul_cancel_left a c]
     exact h a⁻¹ bc
   · rw [← inv_mul_cancel_left a b, ← inv_mul_cancel_left a c] at bc
@@ -168,7 +168,7 @@ attribute [instance] AddGroup.covconv
 @[to_additive]
 theorem Group.covariant_swap_iff_contravariant_swap [Group N] :
     Covariant N N (swap (· * ·)) r ↔ Contravariant N N (swap (· * ·)) r := by
-  refine' ⟨fun h a b c bc => _, fun h a b c bc => _⟩
+  refine ⟨fun h a b c bc => ?_, fun h a b c bc => ?_⟩
   · rw [← mul_inv_cancel_right b a, ← mul_inv_cancel_right c a]
     exact h a⁻¹ bc
   · rw [← mul_inv_cancel_right b a, ← mul_inv_cancel_right c a] at bc
@@ -268,16 +268,15 @@ end Monotone
 
 theorem covariant_le_of_covariant_lt [PartialOrder N] :
     Covariant M N μ (· < ·) → Covariant M N μ (· ≤ ·) := by
-  refine' fun h a b c bc => _
+  intro h a b c bc
   rcases le_iff_eq_or_lt.mp bc with (rfl | bc)
   · exact rfl.le
   · exact (h _ bc).le
 
 theorem contravariant_lt_of_contravariant_le [PartialOrder N] :
     Contravariant M N μ (· ≤ ·) → Contravariant M N μ (· < ·) := by
-  refine' fun h a b c bc => lt_iff_le_and_ne.mpr ⟨h a bc.le, _⟩
-  rintro rfl
-  exact lt_irrefl _ bc
+  refine fun h a b c bc => lt_iff_le_and_ne.mpr ⟨h a bc.le, ?_⟩
+  rintro rfl; exact lt_irrefl _ bc
 
 theorem covariant_le_iff_contravariant_lt [LinearOrder N] :
     Covariant M N μ (· ≤ ·) ↔ Contravariant M N μ (· < ·) :=
@@ -297,8 +296,7 @@ lemma flip_mul [CommSemigroup N] : (flip (· * ·) : N → N → N) = (· * ·) 
 
 @[to_additive]
 theorem covariant_flip_mul_iff [CommSemigroup N] :
-    Covariant N N (flip (· * ·)) r ↔ Covariant N N (· * ·) r := by
-  rw [flip_mul]
+    Covariant N N (flip (· * ·)) r ↔ Covariant N N (· * ·) r := by rw [flip_mul]
 
 @[to_additive]
 theorem contravariant_flip_mul_iff [CommSemigroup N] :
@@ -350,7 +348,7 @@ attribute [instance] covariant_swap_add_lt_of_covariant_add_lt
 instance LeftCancelSemigroup.covariant_mul_lt_of_covariant_mul_le [LeftCancelSemigroup N]
     [PartialOrder N] [CovariantClass N N (· * ·) (· ≤ ·)] :
     CovariantClass N N (· * ·) (· < ·) where
-  elim := fun a b c bc => by
+  elim a b c bc := by
     cases' lt_iff_le_and_ne.mp bc with bc cb
     exact lt_iff_le_and_ne.mpr ⟨CovariantClass.elim a bc, (mul_ne_mul_right a).mpr cb⟩
 
@@ -360,7 +358,7 @@ attribute [instance] AddLeftCancelSemigroup.covariant_add_lt_of_covariant_add_le
 instance RightCancelSemigroup.covariant_swap_mul_lt_of_covariant_swap_mul_le
     [RightCancelSemigroup N] [PartialOrder N] [CovariantClass N N (swap (· * ·)) (· ≤ ·)] :
     CovariantClass N N (swap (· * ·)) (· < ·) where
-  elim := fun a b c bc => by
+  elim a b c bc := by
     cases' lt_iff_le_and_ne.mp bc with bc cb
     exact lt_iff_le_and_ne.mpr ⟨CovariantClass.elim a bc, (mul_ne_mul_left a).mpr cb⟩
 
@@ -370,7 +368,7 @@ attribute [instance] AddRightCancelSemigroup.covariant_swap_add_lt_of_covariant_
 instance LeftCancelSemigroup.contravariant_mul_le_of_contravariant_mul_lt [LeftCancelSemigroup N]
     [PartialOrder N] [ContravariantClass N N (· * ·) (· < ·)] :
     ContravariantClass N N (· * ·) (· ≤ ·) where
-  elim := fun a b c bc => by
+  elim a b c bc := by
     cases' le_iff_eq_or_lt.mp bc with h h
     · exact ((mul_right_inj a).mp h).le
     · exact (ContravariantClass.elim _ h).le
@@ -381,7 +379,7 @@ attribute [instance] AddLeftCancelSemigroup.contravariant_add_le_of_contravarian
 instance RightCancelSemigroup.contravariant_swap_mul_le_of_contravariant_swap_mul_lt
     [RightCancelSemigroup N] [PartialOrder N] [ContravariantClass N N (swap (· * ·)) (· < ·)] :
     ContravariantClass N N (swap (· * ·)) (· ≤ ·) where
-  elim := fun a b c bc => by
+  elim a b c bc := by
     cases' le_iff_eq_or_lt.mp bc with h h
     · exact ((mul_left_inj a).mp h).le
     · exact (ContravariantClass.elim _ h).le
