@@ -49,8 +49,7 @@ TODO: add support for attributes
 TODO: copy the other tests/examples from Lean 3
 -/
 elab (name := applyRulesElab)
-  "apply_rules" cfg:(config ?) " [" lemmas:term,* "]" n:(ppSpace num)? : tactic =>
-do
+    "apply_rules" cfg:(config ?) " [" lemmas:term,* "]" n:(ppSpace num)? : tactic => do
   let cfg ← elabApplyConfig cfg
   let lemmas ← lemmas.getElems.toList.mapM (elabTermForApply ·.raw)
   liftMetaTactic $ applyRules cfg (n.map (·.getNat) |>.getD 50) lemmas
