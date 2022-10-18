@@ -1,5 +1,10 @@
+import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.Semiconj
+import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Control.Random
@@ -61,6 +66,7 @@ import Mathlib.Mathport.Syntax
 import Mathlib.Order.Basic
 import Mathlib.Order.Monotone
 import Mathlib.Tactic.Alias
+import Mathlib.Tactic.ApplyRules
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
@@ -107,6 +113,7 @@ import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.SimpTrace
 import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread

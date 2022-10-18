@@ -246,7 +246,8 @@ if h : ∃ a, f a = b then some (Classical.choose h) else none
 theorem partial_inv_of_injective {α β} {f : α → β} (I : injective f) :
   is_partial_inv f (partial_inv f)
 | a, b =>
-⟨λ h => have hpi: partial_inv f b = if h : ∃ a, f a = b then some (Classical.choose h) else none := rfl
+⟨λ h => have hpi : partial_inv f b = if h : ∃ a, f a = b then some (Classical.choose h) else none :=
+          rfl
         if h' : ∃ a, f a = b
         then by rw [hpi, dif_pos h'] at h
                 injection h with h

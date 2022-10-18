@@ -129,7 +129,8 @@ def modifyRevArg (modifier : Expr → Expr): Nat → Expr  → Expr
   | 0 => modifyAppArg modifier
   | (i+1) => modifyAppArg (modifyRevArg modifier i)
 
-/-- Given `f a₀ a₁ ... aₙ₋₁`, runs `modifier` on the `i`th argument or returns the original expression if out of bounds. -/
+/-- Given `f a₀ a₁ ... aₙ₋₁`, runs `modifier` on the `i`th argument or
+returns the original expression if out of bounds. -/
 def modifyArg (modifier : Expr → Expr) (e : Expr) (i : Nat) (n := e.getAppNumArgs) : Expr :=
   modifyRevArg modifier (n - i - 1) e
 
@@ -144,7 +145,8 @@ def getArg? (e : Expr) (i : Nat) (n := e.getAppNumArgs): Option Expr :=
 
 /-- Given `f a₀ a₁ ... aₙ₋₁`, runs `modifier` on the `i`th argument.
 An argument `n` may be provided which says how many arguments we are expecting `e` to have. -/
-def modifyArgM [Monad M] (modifier : Expr → M Expr) (e : Expr) (i : Nat) (n := e.getAppNumArgs) : M Expr := do
+def modifyArgM [Monad M] (modifier : Expr → M Expr) (e : Expr) (i : Nat) (n := e.getAppNumArgs) :
+    M Expr := do
   let some a := getArg? e i | return e
   let a ← modifier a
   return modifyArg (fun _ => a) e i n

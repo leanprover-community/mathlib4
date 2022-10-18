@@ -255,7 +255,9 @@ instance : CommSemiring (Fin n) where
 instance : Neg (Fin n) where
   neg a := ⟨(n - a) % n, Nat.mod_lt _ (lt_of_le_of_lt (Nat.zero_le _) a.isLt)⟩
 
-lemma Fin.neg_def : (-a : Fin n) = ⟨(n - a) % n, Nat.mod_lt _ (lt_of_le_of_lt (Nat.zero_le _) a.isLt)⟩ := rfl
+lemma Fin.neg_def :
+    (-a : Fin n) = ⟨(n - a) % n, Nat.mod_lt _ (lt_of_le_of_lt (Nat.zero_le _) a.isLt)⟩ :=
+  rfl
 
 protected def Fin.ofInt'' : Int → Fin n
   | Int.ofNat a => Fin.ofNat' a Fin.size_positive'
@@ -275,9 +277,6 @@ def Fin.ofInt' : ℤ → Fin n
 
 instance : AddGroupWithOne (Fin n) where
   __ := inferInstanceAs (AddMonoidWithOne (Fin n))
-  gsmul_zero' := by simp [gsmul_rec, nsmul_rec]
-  gsmul_succ' := by simp [gsmul_rec, nsmul_rec, -Int.ofNat_eq_cast]
-  gsmul_neg' := by simp [gsmul_rec, nsmul_rec, -Int.ofNat_eq_cast]
   sub_eq_add_neg := Fin.sub_eq_add_neg
   add_left_neg := Fin.add_left_neg
   intCast := Fin.ofInt'

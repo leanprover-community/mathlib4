@@ -68,18 +68,19 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name) (solveByElimDepth :=
 
   for lem in ← lemmas.getMatch ty do
     trace[Tactic.librarySearch] "{lem}"
-    let result ← withTraceNode `Tactic.librarySearch (return m!"{exceptOptionEmoji ·} trying {lem}") try
-      let newGoals ← goal.apply (← mkConstWithFreshMVarLevels lem)
-      (try
-        for newGoal in newGoals do
-          newGoal.withContext do
-            trace[Tactic.librarySearch] "proving {← addMessageContextFull (mkMVar newGoal)}"
-            solveByElim solveByElimDepth newGoal
-        pure $ some $ Sum.inr ()
-      catch _ =>
-        let res := some $ Sum.inl (← getMCtx, newGoals)
-        set state0
-        pure res)
+    let result ← withTraceNode `Tactic.librarySearch (return m!"{exceptOptionEmoji ·} trying {lem}")
+      try
+        let newGoals ← goal.apply (← mkConstWithFreshMVarLevels lem)
+        (try
+          for newGoal in newGoals do
+            newGoal.withContext do
+              trace[Tactic.librarySearch] "proving {← addMessageContextFull (mkMVar newGoal)}"
+              solveByElim solveByElimDepth newGoal
+          pure $ some $ Sum.inr ()
+        catch _ =>
+          let res := some $ Sum.inl (← getMCtx, newGoals)
+          set state0
+          pure res)
     catch _ =>
       set state0
       pure none

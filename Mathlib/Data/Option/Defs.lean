@@ -45,12 +45,13 @@ def maybe.{u, v} {m : Type u → Type v} [Monad m] {α : Type u} : Option (m α)
 | some fn => some <$> fn
 
 /-- Map a monadic function `f : α → m β` over an `o : option α`, maybe producing a result. -/
-def mmap.{u, v, w} {m : Type u → Type v} [Monad m] {α : Type w} {β : Type u} (f : α → m β) (o : Option α) :
-  m (Option β) :=
+def mmap.{u, v, w} {m : Type u → Type v} [Monad m] {α : Type w} {β : Type u} (f : α → m β)
+    (o : Option α) : m (Option β) :=
   (o.map f).maybe
 
 /-- A monadic analogue of `Option.elim`. -/
-def melim {α β : Type _} {m : Type _ → Type _} [Monad m] (x : m (Option α)) (y : m β) (z : α → m β) : m β :=
+def melim {α β : Type _} {m : Type _ → Type _} [Monad m] (x : m (Option α)) (y : m β)
+    (z : α → m β) : m β :=
   do (← x).elim y z
 
 /-- A monadic analogue of `Option.getD`. -/

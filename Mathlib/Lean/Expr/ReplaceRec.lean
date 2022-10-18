@@ -1,7 +1,8 @@
 /-
 Copyright (c) 2019 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lewis, Floris van Doorn, E.W.Ayers
+Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lewis,
+Floris van Doorn, E.W.Ayers
 -/
 import Lean
 import Lean.Meta
@@ -31,7 +32,8 @@ def replaceRec (f? : (Expr → Expr) → Expr → Option Expr) : Expr → Expr :
     | none   => traverseChildren (M := Id) r e
 
 /-- replaceRec under a monad. -/
-partial def replaceRecM [Monad M] (f? : (Expr → M Expr) → Expr → M (Option Expr)) (e : Expr) : M Expr := do
+partial def replaceRecM [Monad M] (f? : (Expr → M Expr) → Expr → M (Option Expr)) (e : Expr) :
+    M Expr := do
   match ← f? (replaceRecM f?) e with
   | some x => return x
   | none => traverseChildren (replaceRecM f?) e
@@ -40,7 +42,8 @@ partial def replaceRecM [Monad M] (f? : (Expr → M Expr) → Expr → M (Option
 (like `Lean.Meta.transform`).
 This means that MetaM tactics can be used inside the replacement function.
 
-If you don't need recursive calling, you should prefer using `Lean.Meta.transform` because it also caches visits.
+If you don't need recursive calling,
+you should prefer using `Lean.Meta.transform` because it also caches visits.
  -/
 partial def replaceRecMeta [Monad M] [MonadLiftT MetaM M] [MonadControlT MetaM M]
     (f? : (Expr → M Expr) → Expr → M (Option Expr)) (e : Expr) : M Expr := do
@@ -59,7 +62,8 @@ partial def replaceRecMeta [Monad M] [MonadLiftT MetaM M] [MonadControlT MetaM M
   `e` according to some measure  (and this measure must also be strictly decreasing on the w.r.t.
   the structural subterm relation).
   -/
-def replaceRecTraversal (traversal : Expr → Option (Array Expr × (Array Expr → Expr))) : Expr → Expr :=
+def replaceRecTraversal (traversal : Expr → Option (Array Expr × (Array Expr → Expr))) :
+    Expr → Expr :=
   replaceRec fun r e =>
     match traversal e with
     | none => none

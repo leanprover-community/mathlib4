@@ -71,7 +71,8 @@ Introduces an irreducible definition.
 a constant `foo : Nat` as well as
 a theorem `foo_def : foo = 42`.
 -/
-macro mods:declModifiers "irreducible_def" n_id:declId declSig:optDeclSig val:declVal : command => do
+macro mods:declModifiers "irreducible_def" n_id:declId declSig:optDeclSig val:declVal :
+    command => do
   let (n, us) ← match n_id with
     | `(Parser.Command.declId| $n:ident $[.{$us,*}]?) => pure (n, us)
     | _ => Macro.throwUnsupported
