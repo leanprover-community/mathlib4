@@ -34,6 +34,7 @@ absolute
 Absolute value is a unary operator with properties similar to the absolute value of a real number.
 -/
 class Abs (α : Type _) where
+  /-- The absolute value function. -/
   abs : α → α
 
 #align has_abs Abs
@@ -43,19 +44,24 @@ export Abs (abs)
 /-- The positive part of an element admiting a decomposition into positive and negative parts.
 -/
 class PosPart (α : Type _) where
-  Pos : α → α
+  /-- The positive part function. -/
+  pos : α → α
 
 #align has_pos_part PosPart
 
 /-- The negative part of an element admiting a decomposition into positive and negative parts.
 -/
 class NegPart (α : Type _) where
+  /-- The negative part function. -/
   neg : α → α
 
 #align has_neg_part NegPart
 
+@[inheritDoc Abs.abs]
 macro atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
 
+@[inheritDoc]
 postfix:1000 "⁺" => PosPart.pos
 
+@[inheritDoc]
 postfix:1000 "⁻" => NegPart.neg
