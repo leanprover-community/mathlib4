@@ -18,7 +18,7 @@ equalities.
 * `Fin2 n`: Inductive type variant of `Fin n`. `fz` corresponds to `0` and `fs n` corresponds to
   `n`.
 * `Fin2.toNat`, `Fin2.optOfNat`, `Fin2.ofNat'`: Conversions to and from `ℕ`. `ofNat' m` takes a
-  proof that `m < n` through the class `IsLt`.
+  proof that `m < n` through the class `Fin2.IsLt`.
 * `Fin2.add k`: Takes `i : Fin2 n` to `i + k : Fin2 (n + k)`.
 * `Fin2.left`: Embeds `Fin2 n` into `Fin2 (n + k)`.
 * `Fin2.insertPerm a`: Permutation of `Fin2 n` which cycles `0, ..., a - 1` and leaves
@@ -98,6 +98,7 @@ def remapLeft {m n} (f : Fin2 m → Fin2 n) : ∀ k, Fin2 (m + k) → Fin2 (n + 
 /-- This is a simple type class inference prover for proof obligations
   of the form `m < n` where `m n : ℕ`. -/
 class IsLt (m n : ℕ) where
+  /-- The unique field of `Fin2.IsLt`, a proof that `m < n`. -/
   h : m < n
 
 instance IsLt.zero (n) : IsLt 0 (succ n) :=
