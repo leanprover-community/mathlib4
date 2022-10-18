@@ -17,6 +17,7 @@ import Mathlib.Data.Char
 import Mathlib.Data.Equiv.Basic
 import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.KVMap
