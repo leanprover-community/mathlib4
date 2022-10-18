@@ -46,7 +46,7 @@ and so on.
 partial def unfoldCases (h : FVarId) (g : MVarId) : MetaM (List MVarId) := do
   try
     let #[g₁, g₂] ← g.cases h | throwError "unexpected number of cases"
-    let gs ← unfoldCases g₂.fields[3]!.fvarId! g₂.mvarId
+    let gs ← unfoldCases g₂.fields[2]!.fvarId! g₂.mvarId
     return g₁.mvarId :: gs
   catch _ => return []
 

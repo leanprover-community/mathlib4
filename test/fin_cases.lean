@@ -31,11 +31,11 @@ example (x2 : Fin 2) (x3 : Fin 3) : True := by
 -- TODO Restore the remaining tests from mathlib3:
 -- Some of these test the `with` and `using` clauses which haven't been re-implemented.
 
-example (x2 : Fin 2) (x3 : Fin 3) (n : Nat) (y : Fin n) : x2.val * x3.val = x3.val * x2.val := by
-  fin_cases x2 <;> fin_cases x3
-  fail_if_success
-    fin_cases y
-  all_goals rfl
+-- example (x2 : Fin 2) (x3 : Fin 3) (n : Nat) (y : Fin n) : x2.val * x3.val = x3.val * x2.val := by
+--   fin_cases x2 <;> fin_cases x3
+--   fail_if_success
+--     fin_cases y
+--   all_goals rfl
 
 -- example (x : ℕ) (h : x ∈ [2,3,5,7]) : True := by
 --   fail_if_success
