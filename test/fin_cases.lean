@@ -25,7 +25,7 @@ example (f : Nat → Prop) (p : Fin 0) : f p.val :=
 by fin_cases p
 
 example (x2 : Fin 2) (x3 : Fin 3) : True := by
-  fin_cases x2 x3
+  fin_cases x2, x3
   all_goals trivial
 
 -- TODO Restore the remaining tests from mathlib3:
