@@ -114,7 +114,7 @@ def ofNat' : ∀ {n} (m) [IsLt m n], Fin2 n
   | succ _, 0, ⟨_⟩ => fz
   | succ n, succ m, ⟨h⟩ => fs (@ofNat' n m ⟨lt_of_succ_lt_succ h⟩)
 
-local prefix:arg "&" => ofNat'
+@[inheritDoc] local prefix:arg "&" => ofNat'
 
 instance : Inhabited (Fin2 1) :=
   ⟨fz⟩
