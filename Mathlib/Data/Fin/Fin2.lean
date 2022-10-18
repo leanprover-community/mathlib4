@@ -3,25 +3,27 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Std.Tactic.NoMatch
 import Mathlib.Init.Data.Nat.Basic
-/-!
-# Inductive type variant of `fin`
 
-`fin` is defined as a subtype of `ℕ`. This file defines an equivalent type, `fin2`, which is
+/-!
+# Inductive type variant of `Fin`
+
+`Fin` is defined as a subtype of `ℕ`. This file defines an equivalent type, `Fin2`, which is
 defined inductively. This is useful for its induction principle and different definitional
 equalities.
 
 ## Main declarations
 
-* `fin2 n`: Inductive type variant of `fin n`. `fz` corresponds to `0` and `fs n` corresponds to
+* `Fin2 n`: Inductive type variant of `fin n`. `fz` corresponds to `0` and `fs n` corresponds to
   `n`.
-* `to_nat`, `opt_of_nat`, `of_nat'`: Conversions to and from `ℕ`. `of_nat' m` takes a proof that
-  `m < n` through the class `is_lt`.
-* `add k`: Takes `i : fin2 n` to `i + k : fin2 (n + k)`.
-* `left`: Embeds `fin2 n` into `fin2 (n + k)`.
-* `insert_perm a`: Permutation of `fin2 n` which cycles `0, ..., a - 1` and leaves `a, ..., n - 1`
-  unchanged.
-* `remap_left f`: Function `fin2 (m + k) → fin2 (n + k)` by applying `f : fin m → fin n` to
+* `Fin2.toNat`, `Fin2.optOfNat`, `Fin2.ofNat'`: Conversions to and from `ℕ`. `ofNat' m` takes a
+  proof that `m < n` through the class `IsLt`.
+* `Fin2.add k`: Takes `i : Fin2 n` to `i + k : Fin2 (n + k)`.
+* `Fin2.left`: Embeds `Fin2 n` into `Fin2 (n + k)`.
+* `Fin2.insertPerm a`: Permutation of `Fin2 n` which cycles `0, ..., a - 1` and leaves
+  `a, ..., n - 1` unchanged.
+* `Fin2.remapLeft f`: Function `Fin2 (m + k) → Fin2 (n + k)` by applying `f : fin m → fin n` to
   `0, ..., m - 1` and sending `m + i` to `n + i`.
 -/
 
@@ -48,8 +50,7 @@ protected def cases' {n} {C : Fin2 (succ n) → Sort u} (H1 : C fz) (H2 : ∀ n,
   | fs n => H2 n
 
 /-- Ex falso. The dependent eliminator for the empty `fin2 0` type. -/
-def elim0 {C : Fin2 0 → Sort u} : ∀ i : Fin2 0, C i :=
-  fun i => by cases i
+def elim0 {C : Fin2 0 → Sort u} : ∀ i : Fin2 0, C i := fun.
 
 /-- Converts a `fin2` into a natural. -/
 def toNat : ∀ {n}, Fin2 n → ℕ
