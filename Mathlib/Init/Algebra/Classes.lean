@@ -230,31 +230,32 @@ section
 
 variable {α : Type u} {r : α → α → Prop}
 
--- mathport name: «expr ≺ »
+/-- Temporary notation for a relation. -/
 local infixl:50 "≺" => r
 
-theorem irrefl [IsIrrefl α r] (a : α) : ¬a≺a :=
+theorem irrefl [IsIrrefl α r] (a : α) : ¬a ≺ a :=
   IsIrrefl.irrefl a
 
-theorem refl [IsRefl α r] (a : α) : a≺a :=
+theorem refl [IsRefl α r] (a : α) : a ≺ a :=
   IsRefl.refl a
 
-theorem trans [IsTrans α r] {a b c : α} : a≺b → b≺c → a≺c :=
+theorem trans [IsTrans α r] {a b c : α} : a ≺ b → b ≺ c → a ≺ c :=
   IsTrans.trans _ _ _
 
-theorem symm [IsSymm α r] {a b : α} : a≺b → b≺a :=
+theorem symm [IsSymm α r] {a b : α} : a ≺ b → b ≺ a :=
   IsSymm.symm _ _
 
-theorem antisymm [IsAntisymm α r] {a b : α} : a≺b → b≺a → a = b :=
+theorem antisymm [IsAntisymm α r] {a b : α} : a ≺ b → b ≺ a → a = b :=
   IsAntisymm.antisymm _ _
 
-theorem asymm [IsAsymm α r] {a b : α} : a≺b → ¬b≺a :=
+theorem asymm [IsAsymm α r] {a b : α} : a ≺ b → ¬b ≺ a :=
   IsAsymm.asymm _ _
 
-theorem trichotomous [IsTrichotomous α r] : ∀ a b : α, a≺b ∨ a = b ∨ b≺a :=
+theorem trichotomous [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
   IsTrichotomous.trichotomous
 
-theorem incomp_trans [IsIncompTrans α r] {a b c : α} : ¬a≺b ∧ ¬b≺a → ¬b≺c ∧ ¬c≺b → ¬a≺c ∧ ¬c≺a :=
+theorem incomp_trans [IsIncompTrans α r] {a b c : α} :
+    ¬a ≺ b ∧ ¬b ≺ a → ¬b ≺ c ∧ ¬c ≺ b → ¬a ≺ c ∧ ¬c ≺ a :=
   IsIncompTrans.incomp_trans _ _ _
 
 instance (priority := 90) is_asymm_of_is_trans_of_is_irrefl [IsTrans α r] [IsIrrefl α r] :
@@ -266,35 +267,36 @@ section ExplicitRelationVariants
 variable (r)
 
 @[elabWithoutExpectedType]
-theorem irrefl_of [IsIrrefl α r] (a : α) : ¬a≺a :=
+theorem irrefl_of [IsIrrefl α r] (a : α) : ¬a ≺ a :=
   irrefl a
 
 @[elabWithoutExpectedType]
-theorem refl_of [IsRefl α r] (a : α) : a≺a :=
+theorem refl_of [IsRefl α r] (a : α) : a ≺ a :=
   refl a
 
 @[elabWithoutExpectedType]
-theorem trans_of [IsTrans α r] {a b c : α} : a≺b → b≺c → a≺c :=
+theorem trans_of [IsTrans α r] {a b c : α} : a ≺ b → b ≺ c → a ≺ c :=
   trans
 
 @[elabWithoutExpectedType]
-theorem symm_of [IsSymm α r] {a b : α} : a≺b → b≺a :=
+theorem symm_of [IsSymm α r] {a b : α} : a ≺ b → b ≺ a :=
   symm
 
 @[elabWithoutExpectedType]
-theorem asymm_of [IsAsymm α r] {a b : α} : a≺b → ¬b≺a :=
+theorem asymm_of [IsAsymm α r] {a b : α} : a ≺ b → ¬b ≺ a :=
   asymm
 
 @[elabWithoutExpectedType]
-theorem total_of [IsTotal α r] (a b : α) : a≺b ∨ b≺a :=
+theorem total_of [IsTotal α r] (a b : α) : a ≺ b ∨ b ≺ a :=
   IsTotal.total _ _
 
 @[elabWithoutExpectedType]
-theorem trichotomous_of [IsTrichotomous α r] : ∀ a b : α, a≺b ∨ a = b ∨ b≺a :=
+theorem trichotomous_of [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
   trichotomous
 
 @[elabWithoutExpectedType]
-theorem incomp_trans_of [IsIncompTrans α r] {a b c : α} : ¬a≺b ∧ ¬b≺a → ¬b≺c ∧ ¬c≺b → ¬a≺c ∧ ¬c≺a :=
+theorem incomp_trans_of [IsIncompTrans α r] {a b c : α} :
+    ¬a ≺ b ∧ ¬b ≺ a → ¬b ≺ c ∧ ¬c ≺ b → ¬a ≺ c ∧ ¬c ≺ a :=
   incomp_trans
 
 end ExplicitRelationVariants
@@ -313,7 +315,7 @@ end
 -- local infixl:50 "≺" => r
 
 -- def Equiv (a b : α) : Prop :=
---   ¬a≺b ∧ ¬b≺a
+--   ¬a ≺ b ∧ ¬b ≺ a
 
 -- parameter [IsStrictWeakOrder α r]
 
@@ -328,9 +330,9 @@ end
 -- theorem etrans {a b c : α} : a ≈ b → b ≈ c → a ≈ c :=
 --   incomp_trans
 
--- theorem not_lt_of_equiv {a b : α} : a ≈ b → ¬a≺b := fun h => h.1
+-- theorem not_lt_of_equiv {a b : α} : a ≈ b → ¬a ≺ b := fun h => h.1
 
--- theorem not_lt_of_equiv' {a b : α} : a ≈ b → ¬b≺a := fun h => h.2
+-- theorem not_lt_of_equiv' {a b : α} : a ≈ b → ¬b ≺ a := fun h => h.2
 
 -- instance is_equiv : IsEquiv α equiv where
 --   refl := erefl
