@@ -44,8 +44,9 @@ which will be transformed into a sequence of goals with hypotheses `h : a = l₁
 and so on.
 -/
 partial def unfoldCases (h : FVarId) (g : MVarId) : MetaM (List MVarId) := do
+  let gs ← g.cases h
   try
-    let #[g₁, g₂] ← g.cases h | throwError "unexpected number of cases"
+    let #[g₁, g₂] := gs | throwError "unexpected number of cases"
     let gs ← unfoldCases g₂.fields[2]!.fvarId! g₂.mvarId
     return g₁.mvarId :: gs
   catch _ => return []
