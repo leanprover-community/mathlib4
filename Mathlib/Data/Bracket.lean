@@ -34,4 +34,4 @@ class Bracket (L M : Type _) where
   It is supported by the `Bracket` typeclass. -/
   bracket : L → M → M
 
-notation "⁅" x ", " y "⁆" => Bracket.bracket x y
+@[inheritDoc] notation "⁅" x ", " y "⁆" => Bracket.bracket x y
