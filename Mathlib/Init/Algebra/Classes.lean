@@ -99,29 +99,29 @@ class IsRightCancel (α : Type u) (op : α → α → α) : Prop where
 class IsIdempotent (α : Type u) (op : α → α → α) : Prop where
   idempotent : ∀ a, op a a = a
 
--- -- class IsLeftDistrib (α : Type u) (op₁ : α → α → α) (op₂ : outParam <| α → α → α) : Prop where
+--class IsLeftDistrib (α : Type u) (op₁ : α → α → α) (op₂ : outParam <| α → α → α) : Prop where
 --   left_distrib : ∀ a b c, op₁ a (op₂ b c) = op₂ (op₁ a b) (op₁ a c)
 
--- -- class IsRightDistrib (α : Type u) (op₁ : α → α → α) (op₂ : outParam <| α → α → α) : Prop where
+-- class IsRightDistrib (α : Type u) (op₁ : α → α → α) (op₂ : outParam <| α → α → α) : Prop where
 --   right_distrib : ∀ a b c, op₁ (op₂ a b) c = op₂ (op₁ a c) (op₁ b c)
 
--- -- class IsLeftInv (α : Type u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α) : Prop
---    where
+-- class IsLeftInv (α : Type u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α) :
+--     Prop where
 --   left_inv : ∀ a, op (inv a) a = o
 
--- -- class IsRightInv (α : Type u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α) : Prop
---     where
+-- class IsRightInv (α : Type u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α) :
+--     Prop where
 --   right_inv : ∀ a, op a (inv a) = o
 
--- -- class IsCondLeftInv (α : Type u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α)
+-- class IsCondLeftInv (α : Type u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α)
 --   (p : outParam <| α → Prop) : Prop where
 --   left_inv : ∀ a, p a → op (inv a) a = o
 
--- -- class IsCondRightInv (α : Type u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α)
+-- class IsCondRightInv (α : Type u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α)
 --   (p : outParam <| α → Prop) : Prop where
 --   right_inv : ∀ a, p a → op a (inv a) = o
 
--- -- class IsDistinct (α : Type u) (a : α) (b : α) : Prop where
+-- class IsDistinct (α : Type u) (a : α) (b : α) : Prop where
 --   distinct : a ≠ b
 
 /-
