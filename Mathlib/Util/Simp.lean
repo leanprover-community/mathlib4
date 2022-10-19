@@ -5,7 +5,7 @@ Authors: Gabriel Ebner
 -/
 
 import Lean
-import Mathlib.Tactic.OpenPrivate
+import Std.Tactic.OpenPrivate
 
 /-!
 # Helper functions for the `norm_cast` tactic.
@@ -13,7 +13,7 @@ import Mathlib.Tactic.OpenPrivate
 [TODO] Needs documentation, cleanup, and possibly reunification of `mkSimpContext'` with core.
 -/
 
-def Std.PHashSet.toList [BEq α] [Hashable α] (s : Std.PHashSet α) : List α :=
+def Lean.PHashSet.toList [BEq α] [Hashable α] (s : Lean.PHashSet α) : List α :=
   s.1.toList.map (·.1)
 
 namespace Lean
@@ -39,9 +39,9 @@ f!"pre:
 post:
 {s.post.getElements.toList}
 lemmaNames:
-{s.lemmaNames.toList}
+{s.lemmaNames.toList.map (·.key)}
 toUnfold: {s.toUnfold.toList}
-erased: {s.erased.toList}
+erased: {s.erased.toList.map (·.key)}
 toUnfoldThms: {s.toUnfoldThms.toList}"
 
 def mkEqSymm (e : Expr) (r : Simp.Result) : MetaM Simp.Result :=
@@ -66,40 +66,35 @@ export private mkDischargeWrapper from Lean.Elab.Tactic.Simp
 
 -- copied from core
 /--
-  If `ctx == false`, the config argument is assumed to have type `Meta.Simp.Config`, and `Meta.Simp.ConfigCtx` otherwise.
-  If `ctx == false`, the `discharge` option must be none -/
+If `ctx == false`, the config argument is assumed to have type `Meta.Simp.Config`,
+and `Meta.Simp.ConfigCtx` otherwise.
+If `ctx == false`, the `discharge` option must be none
+-/
 def mkSimpContext' (simpTheorems : SimpTheorems) (stx : Syntax) (eraseLocal : Bool)
     (kind := SimpKind.simp) (ctx := false) (ignoreStarArg : Bool := false) :
     TacticM MkSimpContextResult := do
   if ctx && !stx[2].isNone then
-    throwError "'simp_all' tactic does not support 'discharger' option"
+    if kind == SimpKind.simpAll then
+      throwError "'simp_all' tactic does not support 'discharger' option"
+    if kind == SimpKind.dsimp then
+      throwError "'dsimp' tactic does not support 'discharger' option"
   let dischargeWrapper ← mkDischargeWrapper stx[2]
   let simpOnly := !stx[3].isNone
-  let simpTheorems ←
-    if simpOnly then
-      ({} : SimpTheorems).addConst ``eq_self
-    else
-      pure simpTheorems
+  let simpTheorems ← if simpOnly then
+    simpOnlyBuiltins.foldlM (·.addConst ·) {}
+  else
+    pure simpTheorems
   let congrTheorems ← Meta.getSimpCongrTheorems
   let r ← elabSimpArgs stx[4] (eraseLocal := eraseLocal) (kind := kind) {
     config       := (← elabSimpConfig stx[1] (kind := kind))
     simpTheorems := #[simpTheorems], congrTheorems
   }
   if !r.starArg || ignoreStarArg then
-    return { r with fvarIdToLemmaId := {}, dischargeWrapper }
+    return { r with dischargeWrapper }
   else
-    let ctx := r.ctx
-    let mut simpTheorems := ctx.simpTheorems
+    let mut simpTheorems := r.ctx.simpTheorems
     let hs ← getPropHyps
-    let mut ctx := ctx
-    let mut fvarIdToLemmaId := {}
     for h in hs do
-      let localDecl ← h.getDecl
-      unless simpTheorems.isErased localDecl.userName do
-        let fvarId := localDecl.fvarId
-        let proof  := localDecl.toExpr
-        let id     ← mkFreshUserName `h
-        fvarIdToLemmaId := fvarIdToLemmaId.insert fvarId id
-        simpTheorems ← simpTheorems.addTheorem proof (name? := id)
-        ctx := { ctx with simpTheorems }
-    return { ctx, fvarIdToLemmaId, dischargeWrapper }
+      unless simpTheorems.isErased (.fvar h) do
+        simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
+    return { ctx := { r.ctx with simpTheorems }, dischargeWrapper }

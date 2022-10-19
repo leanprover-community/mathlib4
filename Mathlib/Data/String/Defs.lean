@@ -7,7 +7,7 @@ namespace String
 def leftpad (n : Nat) (c : Char) (s : String) : String :=
 ⟨List.leftpad n c s.data⟩
 
-def repeat' (c : Char) (n : Nat) : String := ⟨List.repeat' c n⟩
+def replicate (n : Nat) (c : Char) : String := ⟨List.replicate n c⟩
 
 def isPrefix : String -> String -> Prop
 | ⟨d1⟩, ⟨d2⟩ => List.isPrefix d1 d2

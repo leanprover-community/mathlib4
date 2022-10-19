@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Lean.Parser.Term
-import Mathlib.Init.SetNotation
+import Std.Classes.SetNotation
 
 /-!
 
@@ -45,6 +45,9 @@ s a
 instance : Membership α (Set α) :=
 ⟨Set.mem⟩
 
+theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
+funext (fun x => propext (h x))
+
 protected def subset (s₁ s₂ : Set α) :=
 ∀ {a}, a ∈ s₁ → a ∈ s₂
 
@@ -52,9 +55,9 @@ instance : Subset (Set α) :=
 ⟨Set.subset⟩
 
 instance : EmptyCollection (Set α) :=
-⟨λ _ => false⟩
+⟨λ _ => False⟩
 
-open Mathlib.ExtendedBinder in
+open Std.ExtendedBinder in
 syntax "{ " extBinder " | " term " }" : term
 
 macro_rules
@@ -69,7 +72,7 @@ def setOf.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident : $ty:term => $p) => `({ $x:ident : $ty:term | $p })
   | _ => throw ()
 
-open Mathlib.ExtendedBinder in
+open Std.ExtendedBinder in
 macro (priority := low) "{ " t:term " | " bs:extBinders " }" : term =>
   `({ x | ∃ᵉ $bs:extBinders, $t = x })
 

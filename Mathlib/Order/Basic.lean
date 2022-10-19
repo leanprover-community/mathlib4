@@ -315,7 +315,8 @@ lemma le_implies_le_of_le_of_le {a b c d : α} [Preorder α] (hca : c ≤ a) (hb
 λ hab => (hca.trans hab).trans hbd
 
 @[ext]
-theorem Preorder.to_le_injective {α : Type _} : Function.injective (@Preorder.toLE α) := λ A B h => by
+theorem Preorder.to_le_injective {α : Type _} : Function.injective (@Preorder.toLE α) :=
+λ A B h => by
   cases A with | @mk A_toLE A_toLT A_le_refl A_le_trans A_lt_iff_le_not_le =>
   cases B with | @mk B_toLE B_toLT B_le_refl B_le_trans B_lt_iff_le_not_le =>
   subst h
@@ -366,7 +367,6 @@ theorem PartialOrder.ext {α} {A B : PartialOrder α}
   ext x y
   exact H x y
 
-open Mathlib.Tactic.Ext
 theorem LinearOrder.ext {α} {A B : LinearOrder α}
     (H : ∀ x y : α, A.toLE.le x y ↔ B.toLE.le x y) : A = B := by
   ext x y
@@ -456,9 +456,11 @@ lemma Pi.compl_apply {ι : Type u} {α : ι → Type v} [∀ i, Complement (α i
 
 /-! ### Order instances on the function space -/
 
-instance Pi.hasLe {ι : Type u} {α : ι → Type v} [∀ i, LE (α i)] : LE (∀ i, α i) where le := fun x y => ∀ i, x i ≤ y i
+instance Pi.hasLe {ι : Type u} {α : ι → Type v} [∀ i, LE (α i)] : LE (∀ i, α i) where
+  le := fun x y => ∀ i, x i ≤ y i
 
-lemma Pi.le_def {ι : Type u} {α : ι → Type v} [∀ i, LE (α i)] {x y : ∀ i, α i} : x ≤ y ↔ ∀ i, x i ≤ y i :=
+lemma Pi.le_def {ι : Type u} {α : ι → Type v} [∀ i, LE (α i)] {x y : ∀ i, α i} :
+    x ≤ y ↔ ∀ i, x i ≤ y i :=
   Iff.rfl
 
 instance Pi.preorder {ι : Type u} {α : ι → Type v} [∀ i, Preorder (α i)] : Preorder (∀ i, α i) :=
@@ -611,8 +613,7 @@ lemma le_def {α β : Type _} [LE α] [LE β] {x y : α × β} :
   (x₁, y₁) ≤ (x₂, y₂) ↔ x₁ ≤ x₂ ∧ y₁ ≤ y₂ :=
 Iff.rfl
 
-@[simp] lemma swap_le_swap [LE α] [LE β] {x y : α × β} : x.swap ≤ y.swap ↔ x ≤ y :=
-and_comm _ _
+@[simp] lemma swap_le_swap [LE α] [LE β] {x y : α × β} : x.swap ≤ y.swap ↔ x ≤ y := and_comm
 
 section preorder
 variable [Preorder α] [Preorder β] {a a₁ a₂ : α} {b b₁ b₂ : β} {x y : α × β}
@@ -631,8 +632,9 @@ Port note: Below, we need to specify `(instPreorderProd _ _).lt` rather than jus
 disambiguate from the prelude's `instLTProd`, which uses the lexicographic order on `α × β`.
 -/
 
-@[simp] lemma swap_lt_swap : (instPreorderProd _ _).lt x.swap y.swap ↔ (instPreorderProd _ _).lt x y :=
-and_congr swap_le_swap (not_congr swap_le_swap)
+@[simp] lemma swap_lt_swap :
+    (instPreorderProd _ _).lt x.swap y.swap ↔ (instPreorderProd _ _).lt x y :=
+  and_congr swap_le_swap (not_congr swap_le_swap)
 
 lemma mk_le_mk_iff_left : (a₁, b) ≤ (a₂, b) ↔ a₁ ≤ a₂ := and_iff_left le_rfl
 lemma mk_le_mk_iff_right : (a, b₁) ≤ (a, b₂) ↔ b₁ ≤ b₂ := and_iff_right le_rfl

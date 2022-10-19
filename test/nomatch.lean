@@ -1,4 +1,4 @@
-import Mathlib.Tactic.NoMatch
+import Std.Tactic.NoMatch
 
 example : False → α := fun.
 example : False → α := by intro.

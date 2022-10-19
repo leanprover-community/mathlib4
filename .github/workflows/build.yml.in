@@ -1,0 +1,48 @@
+
+jobs:
+  style_lint:
+    if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
+    name: Lint styleJOB_NAME
+    runs-on: STYLE_LINT_RUNNER
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: install Python
+        if: ${{ 'STYLE_LINT_RUNNER' == 'ubuntu-latest' }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: lint
+        run: |
+          ./scripts/lint-style.sh
+
+  build:
+    if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
+    name: BuildJOB_NAME
+    runs-on: ubuntu-latest
+    steps:
+      - name: install elan
+        run: |
+          set -o pipefail
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v1.4.2/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - uses: actions/checkout@v2
+
+      - name: update Mathlib.lean
+        run: |
+          find Mathlib -name "*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
+
+      - name: build mathlib
+        run: lake build
+
+      - name: test mathlib
+        run: make test
+
+      - name: lint mathlib
+        run: make lint
+
+      - name: check that all files are imported
+        run: git diff --exit-code

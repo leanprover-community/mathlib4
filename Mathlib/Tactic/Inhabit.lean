@@ -18,12 +18,15 @@ namespace Lean.Elab.Tactic
 noncomputable def nonempty_to_inhabited (α : Type _) (_ : Nonempty α) : Inhabited α :=
   Inhabited.mk (Classical.ofNonempty)
 
-/-- Derives `Inhabited α` from `Nonempty α` without `Classical.choice` assuming `α` is of type `Prop`-/
+/-- Derives `Inhabited α` from `Nonempty α` without `Classical.choice`
+assuming `α` is of type `Prop`-/
 def nonempty_prop_to_inhabited (α : Prop) (α_nonempty : Nonempty α) : Inhabited α :=
   Inhabited.mk <| Nonempty.elim α_nonempty id
 
-/-- `inhabit α` tries to derive a `Nonempty α` instance and then uses it to make an `Inhabited α` instance.
-     If the target is a `Prop`, this is done constructively. Otherwise, it uses `Classical.choice`.
+/--
+`inhabit α` tries to derive a `Nonempty α` instance and
+then uses it to make an `Inhabited α` instance.
+If the target is a `Prop`, this is done constructively. Otherwise, it uses `Classical.choice`.
 -/
 syntax (name := inhabit) "inhabit " atomic(ident " : ")? term : tactic
 

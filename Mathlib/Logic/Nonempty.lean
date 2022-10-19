@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Tactic.NoMatch
+import Std.Tactic.NoMatch
 
 /-!
 # Nonempty types
@@ -74,9 +74,6 @@ theorem nonempty_psigma {β : α → Sort v} : Nonempty (PSigma β) ↔ ∃ a : 
   Iff.intro (fun ⟨⟨a, c⟩⟩ => ⟨a, ⟨c⟩⟩) fun ⟨a, ⟨c⟩⟩ => ⟨⟨a, c⟩⟩
 
 @[simp]
-theorem nonempty_empty : ¬Nonempty Empty := fun.
-
-@[simp]
 theorem nonempty_ulift : Nonempty (ULift α) ↔ Nonempty α :=
   Iff.intro (fun ⟨⟨a⟩⟩ => ⟨a⟩) fun ⟨a⟩ => ⟨⟨a⟩⟩
 
@@ -92,7 +89,8 @@ theorem Nonempty.forall {p : Nonempty α → Prop} : (∀ h : Nonempty α, p h) 
 theorem Nonempty.exists {p : Nonempty α → Prop} : (∃ h : Nonempty α, p h) ↔ ∃ a, p ⟨a⟩ :=
   Iff.intro (fun ⟨⟨a⟩, h⟩ => ⟨a, h⟩) fun ⟨a, h⟩ => ⟨⟨a⟩, h⟩
 
-theorem Classical.nonempty_pi {β : α → Sort v} : Nonempty (∀ a : α, β a) ↔ ∀ a : α, Nonempty (β a) :=
+theorem Classical.nonempty_pi {β : α → Sort v} :
+    Nonempty (∀ a : α, β a) ↔ ∀ a : α, Nonempty (β a) :=
   Iff.intro (fun ⟨f⟩ a => ⟨f a⟩) fun f => ⟨fun a => Classical.choice $ f a⟩
 
 /-- Using `classical.choice`, lifts a (`Prop`-valued) `Nonempty` instance to a (`Type`-valued)

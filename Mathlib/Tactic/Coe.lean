@@ -20,7 +20,8 @@ Defines notations for coercions.
 namespace Lean.Elab.Term.CoeImpl
 
 /-- Elaborator for the `(↑)`, `(⇑)`, and `(↥)` notations. -/
-def elabPartiallyAppliedCoe (sym : String) (expectedType : Expr) (mkCoe : (b a x : Expr) → TermElabM Expr) : TermElabM Expr := do
+def elabPartiallyAppliedCoe (sym : String) (expectedType : Expr)
+    (mkCoe : (b a x : Expr) → TermElabM Expr) : TermElabM Expr := do
   let expectedType ← instantiateMVars expectedType
   let Expr.forallE _ a b .. := expectedType | do
     tryPostpone

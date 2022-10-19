@@ -3,10 +3,10 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
+import Std.Tactic.TryThis
 import Mathlib.Tactic.Cache
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
-import Mathlib.Tactic.TryThis
 
 /-!
 # Library search
@@ -68,18 +68,19 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name) (solveByElimDepth :=
 
   for lem in ← lemmas.getMatch ty do
     trace[Tactic.librarySearch] "{lem}"
-    let result ← withTraceNode `Tactic.librarySearch (return m!"{exceptOptionEmoji ·} trying {lem}") try
-      let newGoals ← goal.apply (← mkConstWithFreshMVarLevels lem)
-      (try
-        for newGoal in newGoals do
-          newGoal.withContext do
-            trace[Tactic.librarySearch] "proving {← addMessageContextFull (mkMVar newGoal)}"
-            solveByElim solveByElimDepth newGoal
-        pure $ some $ Sum.inr ()
-      catch _ =>
-        let res := some $ Sum.inl (← getMCtx, newGoals)
-        set state0
-        pure res)
+    let result ← withTraceNode `Tactic.librarySearch (return m!"{exceptOptionEmoji ·} trying {lem}")
+      try
+        let newGoals ← goal.apply (← mkConstWithFreshMVarLevels lem)
+        (try
+          for newGoal in newGoals do
+            newGoal.withContext do
+              trace[Tactic.librarySearch] "proving {← addMessageContextFull (mkMVar newGoal)}"
+              solveByElim solveByElimDepth newGoal
+          pure $ some $ Sum.inr ()
+        catch _ =>
+          let res := some $ Sum.inl (← getMCtx, newGoals)
+          set state0
+          pure res)
     catch _ =>
       set state0
       pure none
@@ -99,10 +100,10 @@ open Lean.Parser.Tactic
 -- in particular including additional lemmas
 -- with `library_search [X, Y, Z]` or `library_search with attr`,
 -- or requiring that a particular hypothesis is used in the solution, with `library_search using h`.
-syntax (name := librarySearch') "library_search" (config)? (" [" simpArg,* "]")?
-  (" with " (colGt ident)+)? (" using " (colGt binderIdent)+)? : tactic
-syntax (name := librarySearch!) "library_search!" (config)? (" [" simpArg,* "]")?
-  (" with " (colGt ident)+)? (" using " (colGt binderIdent)+)? : tactic
+syntax (name := librarySearch') "library_search" (config)? (simpArgs)?
+  (" using " (colGt binderIdent)+)? : tactic
+syntax (name := librarySearch!) "library_search!" (config)? (simpArgs)?
+  (" using " (colGt binderIdent)+)? : tactic
 
 -- For now we only implement the basic functionality.
 -- The full syntax is recognized, but will produce a "Tactic has not been implemented" error.
