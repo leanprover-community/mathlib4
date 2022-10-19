@@ -1,3 +1,5 @@
+import Mathlib.Algebra.Abs
+import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Group.Defs
@@ -16,6 +18,7 @@ import Mathlib.Data.Char
 import Mathlib.Data.Equiv.Basic
 import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.KVMap
@@ -66,6 +69,7 @@ import Mathlib.Mathport.Syntax
 import Mathlib.Order.Basic
 import Mathlib.Order.Monotone
 import Mathlib.Tactic.Alias
+import Mathlib.Tactic.ApplyRules
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra

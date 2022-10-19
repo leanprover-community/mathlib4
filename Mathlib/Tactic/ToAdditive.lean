@@ -318,6 +318,7 @@ are not stored by the environment.
 [todo] add more attributes. A change is coming to core that should
 allow us to iterate the attributes applied to a given decalaration.
 -/
+-- TODO once we can copy `instance`, tidy up `Algebra/CovariantAndContravariant.lean`.
 def copyAttributes (src tgt : Name) : CoreM Unit := do
   -- [todo] other simp theorems
   let some ext ← getSimpExtension? `simp | return
