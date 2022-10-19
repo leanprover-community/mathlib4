@@ -61,6 +61,7 @@ import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Logic.Equiv.MfldSimpsAttr
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nonempty
+import Mathlib.Logic.Relator
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Mathport.SpecialNames
