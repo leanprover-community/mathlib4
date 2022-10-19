@@ -3,6 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Init.Function
+import Std.Tactic.Ext
 import Mathlib.Logic.Function.Basic
 
 /-!
@@ -48,12 +50,11 @@ instance [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] : DecidableE
     | _, _, _, _, isFalse n => isFalse fun h => Sigma.noConfusion h fun e₁ _ => n e₁
 
 -- sometimes the built-in injectivity support does not work
--- *PORT TODO* nolint simp_nf attribute removed
-@[simp]
+@[simp, nolint simp_nf]
 theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
     Sigma.mk a₁ b₁ = ⟨a₂, b₂⟩ ↔ a₁ = a₂ ∧ HEq b₁ b₂ :=
   ⟨λ h => by cases h; exact ⟨rfl, heq_of_eq rfl⟩, -- in Lean 3 `simp` solved this
-   λ ⟨h₁, h₂⟩ => by subst h₁; rw [eq_of_heq h₂]⟩   -- *PORT TODO* -- should I worry?
+   λ ⟨h₁, h₂⟩ => by subst h₁; rw [eq_of_heq h₂]⟩
 
 @[simp]
 theorem eta : ∀ x : Σa, β a, Sigma.mk x.1 x.2 = x
