@@ -16,19 +16,18 @@ A sigma type is a dependent pair type. Like `α × β` but where the type of the
 depends on the first component. More precisely, given `β : ι → Type*`, `Sigma β` is made of stuff
 which is of type `β i` for some `i : ι`, so the sigma type is a disjoint union of types.
 For example, the sum type `X ⊕ Y` can be emulated using a sigma type, by taking `ι` with
-exactly two elements. See `equiv.sum_equiv_sigma_bool` (remark: probably not yet ported
-to Lean 4).
+exactly two elements (see `Equiv.sum_equiv_sigma_bool`).
 
 `Σ x, A x` is notation for `Sigma A` (note that this is `\Sigma`, not the sum operator `∑`).
 `Σ x y z ..., A x y z ...` is notation for `Σ x, Σ y, Σ z, ..., A x y z ...`. Here we have
-`α : Type*`, `β : α → Type*`, `γ : Π a : α, β a → Type*`, ...,
-`A : Π (a : α) (b : β a) (c : γ a b) ..., Type*`  with `x : α` `y : β x`, `z : γ x y`, ...
+`α : Type _`, `β : α → Type _`, `γ : Π a : α, β a → Type _`, ...,
+`A : Π (a : α) (b : β a) (c : γ a b) ..., Type _`  with `x : α` `y : β x`, `z : γ x y`, ...
 
 ## Notes
 
-The definition of `Sigma` takes values in `Type*`. This effectively forbids `Prop`- valued sigma
-types. To that effect, we have `PSigma`, which takes value in `Sort*` and carries a more complicated
-universe signature as a consequence.
+The definition of `Sigma` takes values in `Type _`. This effectively forbids `Prop`- valued sigma
+types. To that effect, we have `PSigma`, which takes value in `Sort _` and carries a more
+complicated universe signature as a consequence.
 -/
 
 section Sigma
@@ -62,11 +61,7 @@ theorem eta : ∀ x : Σa, β a, Sigma.mk x.1 x.2 = x
 
 @[ext]
 theorem ext {x₀ x₁ : Sigma β} (h₀ : x₀.1 = x₁.1) (h₁ : HEq x₀.2 x₁.2) : x₀ = x₁ := by
-  cases x₀
-  cases x₁
-  cases h₀
-  cases h₁
-  rfl
+  cases x₀; cases x₁; cases h₀; cases h₁; rfl
 
 theorem ext_iff {x₀ x₁ : Sigma β} : x₀ = x₁ ↔ x₀.1 = x₁.1 ∧ HEq x₀.2 x₁.2 := by
   cases x₀
@@ -142,7 +137,8 @@ theorem Sigma.uncurry_curry {γ : ∀ a, β a → Type _} (f : ∀ x : Sigma β,
   funext fun ⟨_, _⟩ => rfl
 
 @[simp]
-theorem Sigma.curry_uncurry {γ : ∀ a, β a → Type _} (f : ∀ (x) (y : β x), γ x y) : Sigma.curry (Sigma.uncurry f) = f :=
+theorem Sigma.curry_uncurry {γ : ∀ a, β a → Type _} (f : ∀ (x) (y : β x), γ x y) :
+    Sigma.curry (Sigma.uncurry f) = f :=
   rfl
 
 /-- Convert a product type to a Σ-type. -/
@@ -167,13 +163,15 @@ theorem Prod.to_sigma_mk {α β} (x : α) (y : β) : (x, y).toSigma = ⟨x, y⟩
 
 -- this meta lean 3 definition is perhaps not needed in mathlib4; I have commented
 -- out the autoported code (which doesn't compile)
--- -- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:66:14: unsupported tactic `reflect_name #[]
--- -- we generate this manually as `@[derive has_reflect]` fails
+-- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:66:14: unsupported tactic `reflect_name #[]
+-- we generate this manually as `@[derive has_reflect]` fails
 -- @[instance]
--- protected unsafe def sigma.reflect.{u, v} [reflected_univ.{u}] [reflected_univ.{v}] {α : Type u} (β : α → Type v)
---     [reflected _ α] [reflected _ β] [hα : has_reflect α] [hβ : ∀ i, has_reflect (β i)] : has_reflect (Σa, β a) :=
+-- protected unsafe def sigma.reflect.{u, v} [reflected_univ.{u}] [reflected_univ.{v}] {α : Type u}
+--   (β : α → Type v) [reflected _ α] [reflected _ β] [hα : has_reflect α]
+--   [hβ : ∀ i, has_reflect (β i)] : has_reflect (Σa, β a) :=
 --   fun ⟨a, b⟩ =>
---   (by trace "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:66:14: unsupported tactic `reflect_name #[]" :
+--   (by trace "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:66:14: unsupported tactic
+--     `reflect_name #[]" :
 --         reflected _ @Sigma.mk.{u, v}).subst₄
 --     (quote.1 α) (quote.1 β) (quote.1 a) (quote.1 b)
 
@@ -205,8 +203,10 @@ instance [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] : DecidableE
       | _, _, isFalse n => isFalse fun h => PSigma.noConfusion h fun _ e₂ => n <| eq_of_heq e₂
     | _, _, _, _, isFalse n => isFalse fun h => PSigma.noConfusion h fun e₁ _ => n e₁
 
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/porting.20data.2Esigma.2Ebasic/near/304855864
+-- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/porting.20data.2Esig
+-- ma.2Ebasic/near/304855864 (URL broken because line was too long)
 -- for an explanation of why this is currently needed. It generates `PSigma.mk.inj`.
+-- This could be done elsewhere.
 gen_injective_theorems% PSigma
 
 theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
