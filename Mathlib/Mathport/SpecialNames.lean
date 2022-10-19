@@ -86,13 +86,12 @@ namespace Mathlib.Prelude
 #align has_insert    Insert
 #align has_singleton Singleton
 #align has_sep       Sep
+#align has_bracket   Bracket
 
 #align has_emptyc EmptyCollection
 #align has_emptyc.emptyc EmptyCollection.emptyCollection
 
 -- Implementation detail
 #align _sorry_placeholder_     _sorry_placeholder_
-
-
 
 end Mathlib.Prelude
