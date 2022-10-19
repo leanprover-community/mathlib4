@@ -16,7 +16,7 @@ A sigma type is a dependent pair type. Like `α × β` but where the type of the
 depends on the first component. More precisely, given `β : ι → Type*`, `Sigma β` is made of stuff
 which is of type `β i` for some `i : ι`, so the sigma type is a disjoint union of types.
 For example, the sum type `X ⊕ Y` can be emulated using a sigma type, by taking `ι` with
-exactly two elements (see `Equiv.sum_equiv_sigma_bool`).
+exactly two elements (see `Equiv.sumEquivSigmaBool`).
 
 `Σ x, A x` is notation for `Sigma A` (note that this is `\Sigma`, not the sum operator `∑`).
 `Σ x y z ..., A x y z ...` is notation for `Σ x, Σ y, Σ z, ..., A x y z ...`. Here we have
