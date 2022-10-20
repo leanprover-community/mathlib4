@@ -999,7 +999,7 @@ initialize simpsAttr : ParametricAttribute (Array Name) ←
     name := `simps
     descr := "Automatically derive lemmas specifying the projections of this declaration.",
     getParam := fun
-    | nm, stx@`(attr|simps $[?%$trc]? $[(config := $c)]? $[$ids]*) => do
+    | nm, stx@`(attr| simps $[?%$trc]? $[(config := $c)]? $[$ids]*) => do
       let cfg ← MetaM.run' <| TermElabM.run' <| withSaveInfoContext <| elabSimpsConfig stx[2][0]
       let ids := ids.map (·.getId.eraseMacroScopes.getString)
       simpsTac stx nm cfg ids.toList trc.isSome

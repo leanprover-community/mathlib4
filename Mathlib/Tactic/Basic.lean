@@ -11,7 +11,7 @@ open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
 syntax (name := «variables») "variables" (bracketedBinder)* : command
 
-@[commandElab «variables»] def elabVariables : CommandElab
+@[command_elab «variables»] def elabVariables : CommandElab
   | `(variables%$pos $binders*) => do
     logWarningAt pos "'variables' has been replaced by 'variable' in lean 4"
     elabVariable (← `(variable%$pos $binders*))
@@ -30,10 +30,10 @@ macro_rules
 resulting in two subgoals `h : p ⊢` and `h : ¬ p ⊢`.
 -/
 macro "by_cases " e:term : tactic =>
-  `(by_cases $(mkIdent `h) : $e)
+  `(tactic| by_cases $(mkIdent `h) : $e)
 
 macro (name := classical) "classical" : tactic =>
-  `(have em := Classical.propDecidable)
+  `(tactic| have em := Classical.propDecidable)
 
 syntax "transitivity" (colGt term)? : tactic
 set_option hygiene false in
@@ -101,7 +101,7 @@ where
       pure [goal]
 
 /-- Try calling `assumption` on all goals; succeeds if it closes at least one goal. -/
-macro "assumption'" : tactic => `(any_goals assumption)
+macro "assumption'" : tactic => `(tactic| any_goals assumption)
 
 elab "match_target" t:term : tactic  => do
   withMainContext do

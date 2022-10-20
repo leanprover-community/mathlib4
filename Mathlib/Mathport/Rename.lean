@@ -18,7 +18,6 @@ def RenameMap.insertPair (m : RenameMap) : Name × Name → RenameMap
 
 initialize renameExtension : SimplePersistentEnvExtension (Name × Name) RenameMap ←
   registerSimplePersistentEnvExtension {
-    name          := `renameMapExtension
     addEntryFn    := RenameMap.insertPair
     addImportedFn := fun es => mkStateFromImportedEntries (RenameMap.insertPair) {} es
   }
@@ -33,14 +32,14 @@ open Lean.Elab Lean.Elab.Command
 
 syntax (name := align) "#align " ident ident : command
 
-@[commandElab align] def elabAlign : CommandElab
+@[command_elab align] def elabAlign : CommandElab
   | `(#align $id3:ident $id4:ident) =>
     liftCoreM $ addNameAlignment id3.getId id4.getId
   | _ => throwUnsupportedSyntax
 
 syntax (name := lookup3) "#lookup3 " ident : command
 
-@[commandElab lookup3] def elabLookup3 : CommandElab
+@[command_elab lookup3] def elabLookup3 : CommandElab
   | `(#lookup3%$tk $id3:ident) => do
     let n3 := id3.getId
     match getRenameMap (← getEnv) |>.find? n3 with
