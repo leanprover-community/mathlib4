@@ -95,9 +95,6 @@ structure Equiv' (α : Sort _) (β : Sort _) :=
 
 infix:25 (priority := default+1) " ≃ " => Equiv'
 
--- macro "simps?" rest:simpsArgsRest : attr => `(attr| simps ? $rest)
--- local infix (name := Equiv') ` ≃ `:25 := Equiv'
-
 /- Since `prod` and `PProd` are a special case for `@[simps]`, we define a new structure to test
   the basic functionality.-/
 structure MyProd (α β : Type _) := (fst : α) (snd : β)
@@ -376,7 +373,7 @@ example {α β γ : Type} (f : α ≃ β) (g : β ≃ γ) (x : α) {z : γ} (h :
   dsimp only [Equiv'.trans_toFun]
   rw [h]
 
-/- local -/ attribute [simp] Nat.zero_add Nat.one_mul Nat.mul_one
+attribute [local simp] Nat.zero_add Nat.one_mul Nat.mul_one
 @[simps (config := {simpRhs := true})] def myNatEquiv : ℕ ≃ ℕ :=
 ⟨λ n => 0 + n, λ n => 1 * n * 1, by intro n <;> simp, by intro n <;> simp⟩
 
@@ -539,7 +536,7 @@ class ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, Subset G :=
   new_axiom := λ _ => trivial }
 
 section
-/- local -/ attribute [instance] bar
+attribute [local instance] bar
 example (x : ℕ) : x * - 0 ⊆ - x := by simp
 end
 
@@ -554,7 +551,7 @@ class new_ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, Subset G :=
   new_axiom := λ _ => trivial }
 
 section
-/- local -/ attribute [instance] new_bar
+attribute [local instance] new_bar
 example (x : ℕ) : x * - 0 ⊆ - x := by simp
 end
 
@@ -920,7 +917,7 @@ instance my_instance {M N} [One M] [One N] : One (M × N) := ⟨(1, 1)⟩
 section
 /-! Test `dsimp, simp` with the option `simpRhs` -/
 
-/- local -/ attribute [simp] Nat.add
+attribute [local simp] Nat.add
 
 structure MyType :=
 (A : Type)
@@ -928,7 +925,7 @@ structure MyType :=
 @[simps (config := {simpRhs := true})] def myTypeDef : MyType :=
 ⟨{ _x : Fin (Nat.add 3 0) // 1 + 1 = 2 }⟩
 
--- this fails in Lean 4, not sure what is going on
+-- todo: this fails in Lean 4, not sure what is going on
 -- example (h : false) (x y : { x : Fin (Nat.add 3 0) // 1 + 1 = 2 }) : myTypeDef.A = Unit := by
 --   simp only [myTypeDef_A]
 --   guard_target == { _x : Fin 3 // true } = Unit

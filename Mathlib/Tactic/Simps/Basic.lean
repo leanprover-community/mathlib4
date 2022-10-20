@@ -51,6 +51,8 @@ There are some small changes in the attribute. None of them should have great ef
 * `transparency.none` has been replaced by `TransparencyMode.reducible`
 * The `attr` configuration option has been split into `isSimp` and `attrs` (for extra attributes)
   (todo)
+* Because Lean 4 uses bundled structures, this means that `simps` applied to anything that
+  implements a notation class will almost certainly require a user-provided custom simps projection.
 
 ## Tags
 
