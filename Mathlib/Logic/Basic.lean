@@ -977,12 +977,6 @@ theorem ExistsUnique.unique2 {α : Sort _} {p : α → Sort _} [∀ x, Subsingle
 
 end Quantifiers
 
-lemma eq_true_intro {a : Prop} (h : a) : a = True :=
-  propext (iff_true_intro h)
-
-lemma eq_false_intro {a : Prop} (h : ¬a) : a = False :=
-  propext (iff_false_intro h)
-
 /-! ### Classical lemmas -/
 
 
@@ -992,8 +986,8 @@ variable {α : Sort _} {p : α → Prop}
 
 theorem prop_complete (a : Prop) : a = True ∨ a = False :=
   Or.elim (em a)
-    (fun t => Or.inl (eq_true_intro t))
-    (fun f => Or.inr (eq_false_intro f))
+    (fun t => Or.inl (eq_true t))
+    (fun f => Or.inr (eq_false f))
 
 theorem cases_true_false (p : Prop → Prop) (h1 : p True) (h2 : p False) (a : Prop) : p a :=
   Or.elim (prop_complete a)
