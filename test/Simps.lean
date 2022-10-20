@@ -72,8 +72,7 @@ structure NewTop (α β : Type _) extends Right α β, Left α
 
 def NewTop.simps.newElim {α β : Type _} (x : NewTop α β) : α × α := x.elim
 
--- initialize_simps_projections? NewTop (toRight_toFoo2_elim → newElim)
-
+initialize_simps_projections NewTop (toRight_toFoo2_elim → newElim)
 
 run_cmd liftCoreM <| successIfFail <| simpsGetRawProjections `DoesntExist
 
@@ -86,13 +85,7 @@ instance {α : Type _} [Something α] : Add α :=
 
 initialize_simps_projections Something
 
-/- start Lean 3 test suite -/
-
-
 universe v u w
--- set_option trace.simps.verbose true
--- set_option trace.simps.debug true
--- set_option trace.app_builder true
 
 structure Equiv' (α : Sort _) (β : Sort _) :=
 (toFun    : α → β)
@@ -1078,10 +1071,9 @@ example {α : Type} (x z : α) (h : x = z) : (ffoo α).symm x = z := by
 @[simps] def ffoo3 (α : Type) : FurtherDecoratedEquiv α α :=
 { foo α with Q_toFun  := λ y => ⟨y, rfl⟩, Q_invFun  := λ y => ⟨y, rfl⟩ }
 
--- todo [bug]: composite projection
--- @[simps apply toEquiv' toEquiv'_toFun toDecoratedEquiv_apply]
+@[simps apply toEquiv' toEquiv'_toFun toDecoratedEquiv_apply]
 def ffoo4 (α : Type) : FurtherDecoratedEquiv α α :=
-{ Q_toFun  := λ y => ⟨y, rfl⟩, Q_invFun  := λ y => ⟨y, rfl⟩, toDecoratedEquiv := foo α }
+{ Q_toFun := λ y => ⟨y, rfl⟩, Q_invFun := λ y => ⟨y, rfl⟩, toDecoratedEquiv := foo α }
 
 structure OneMore (α : Sort _) (β : Sort _) extends FurtherDecoratedEquiv α β
 
@@ -1114,8 +1106,7 @@ initialize_simps_projections OneMore
 example {α : Type} (x : α) : (fffoo α).symm x = x :=
 by dsimp <;> guard_target == x = x <;> rfl
 
--- todo [bug]: composite projection
--- @[simps apply to_dequiv_apply toFurtherDecoratedEquiv_apply to_dequiv]
+@[simps apply to_dequiv_apply toFurtherDecoratedEquiv_apply to_dequiv]
 def fffoo2 (α : Type) : OneMore α α := fffoo α
 
 /- test the case where a projection takes additional arguments. -/

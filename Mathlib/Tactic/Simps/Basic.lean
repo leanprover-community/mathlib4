@@ -38,12 +38,8 @@ There are three attributes being defined here
 
 ## Questions
 
-* Is there something similar to `tryFor`?
+* Is there something similar to `tryFor` (used for `synthInstance`)?
 * Is there a `scoped attribute` command (`scoped attribute [instance] foo`)?
-
-## Known bugs
-
-* Adding an (explicitly named?) projection after a composite projection goes wrong
 
 ## Changes w.r.t. Lean 3
 
@@ -931,9 +927,10 @@ partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (
       | none => throwError "unreachable: index of composite projection is out of bounds."
       | some x => pure x
     let newType ← inferType newRhs
-    trace[simps.debug] "Applying a custom composite projection. Current {""
+    trace[simps.debug] "Applying a custom composite projection. Todo: {toApply}. Current {""
       }lhs:\n        >   {lhsAp}"
-    simpsAddProjections env ref nm newType lhsAp newRhs newArgs univs false cfg todo toApply else
+    simpsAddProjections env ref nm newType lhsAp newRhs newArgs univs false cfg todo
+      toApply.tail else
   trace[simps.debug] "Not in the middle of applying a custom composite projection"
   -- check whether `rhsAp` is an eta-expansion
   let eta : Option Expr := none -- todo: support eta-reduction of structures (still useful, since we don't want to recurse into something like `{fst := x.fst, snd := x.snd}`)
@@ -950,7 +947,7 @@ partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (
   automatically choose projections -/
   if (todo == [""] || (eta.isSome && todo.isEmpty)) then pure #[] else -- wrong output!?
   let projs : Array Name := projInfo.map fun x => x.2.name
-  let todo := if toApply.isEmpty then todoNext else todo
+  let todo := todoNext
   trace[simps.debug] "Next todo: {todoNext}"
   -- check whether all elements in `todo` have a projection as prefix
   match todo.find? fun x => projs.all fun proj => !("_" ++ proj.getString).isPrefixOf x with
