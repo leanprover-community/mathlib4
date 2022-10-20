@@ -7,6 +7,8 @@ import Mathlib.Init.Logic
 import Mathlib.Init.Function
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Tactic.Basic
+import Mathlib.Tactic.LeftRight
+import Mathlib.Tactic.SimpTrace
 import Std.Util.LibraryNote
 import Std.Tactic.Lint.Basic
 
@@ -157,7 +159,7 @@ theorem PLift.down_inj {α : Sort _} {a b : PLift α} : a.down = b.down ↔ a = 
   ⟨fun h => PLift.down_injective h, fun h => by rw [h]⟩
 
 -- missing [symm] attribute for ne in core.
--- TODO implement `[symm]` and `symmetry` tactic.
+-- TODO Porting note: `[symm]` and `symmetry` tactic are implemented in #253
 -- attribute [symm] Ne.symm
 
 @[simp]
@@ -1140,19 +1142,47 @@ section ite
 variable {α β γ : Sort _} {σ : α → Sort _} (f : α → β) {P Q : Prop} [Decidable P] [Decidable Q] {a b c : α} {A : P → α}
   {B : ¬P → α}
 
+-- TODO golf?
+-- mathlib3port suggested just `by_cases P <;> simp [*, exists_prop_of_false not_false]`
 theorem dite_eq_iff : dite P A B = c ↔ (∃ h, A h = c) ∨ ∃ h, B h = c := by
-  by_cases P <;> simp [*, exists_prop_of_false not_false]
+  by_cases P
+  · rw [dif_pos h]
+    constructor
+    · exact fun w => Or.inl ⟨h, w⟩
+    · rintro (w|w)
+      · exact w.choose_spec
+      · exact False.elim (w.choose h)
+  · rw [dif_neg h]
+    constructor
+    · exact fun w => Or.inr ⟨h, w⟩
+    · rintro (w|w)
+      · exact False.elim (h w.choose)
+      · exact w.choose_spec
 
 theorem ite_eq_iff : ite P a b = c ↔ P ∧ a = c ∨ ¬P ∧ b = c :=
   dite_eq_iff.trans <| by simp only; rw [exists_prop, exists_prop]
 
+-- TODO golf?
+-- mathlib3port suggested just `by_cases P <;> simp [*, forall_prop_of_false not_false]`
 @[simp]
 theorem dite_eq_left_iff : dite P (fun _ => a) B = a ↔ ∀ h, B h = a := by
-  by_cases P <;> simp [*, forall_prop_of_false not_false]
+  by_cases P
+  · rw [dif_pos h]
+    simp only [true_iff]
+    exact fun w => False.elim (w h)
+  · rw [dif_neg h]
+    exact ⟨fun w _ => w, fun w => w h⟩
 
+-- TODO golf?
+-- mathlib3port suggested just `by_cases P <;> simp [*, forall_prop_of_false not_false]`
 @[simp]
 theorem dite_eq_right_iff : (dite P A fun _ => b) = b ↔ ∀ h, A h = b := by
-  by_cases P <;> simp [*, forall_prop_of_false not_false]
+  by_cases P
+  · rw [dif_pos h]
+    exact ⟨fun w _ => w, fun w => w h⟩
+  · rw [dif_neg h]
+    simp only [true_iff]
+    exact fun w => False.elim (h w)
 
 @[simp]
 theorem ite_eq_left_iff : ite P a b = a ↔ ¬P → b = a :=
