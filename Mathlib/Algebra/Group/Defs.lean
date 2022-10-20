@@ -7,6 +7,7 @@ import Mathlib.Init.Zero
 import Mathlib.Init.Data.Int.Notation
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.ToAdditive
+import Mathlib.Util.WhatsNew
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -396,6 +397,7 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   npow_succ' : ∀ (n : ℕ) (x), npow n.succ x = x * npow n x := by intros; rfl
 
 -- TODO I wouldn't have thought this is necessary. Is is a bug in `to_additive`?
+-- It seems that it isn't operating on the second parent.
 attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
 
 instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
@@ -717,6 +719,7 @@ class InvOneClass (G : Type _) extends One G, Inv G where
 @[to_additive SubNegZeroMonoid]
 class DivInvOneMonoid (G : Type _) extends DivInvMonoid G, InvOneClass G
 
+-- Porting note: `to_additive` is not operating on the second parent.
 attribute [to_additive SubNegZeroMonoid.toNegZeroClass] DivInvOneMonoid.toInvOneClass
 
 variable [InvOneClass G]
