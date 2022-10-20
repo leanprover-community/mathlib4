@@ -100,4 +100,7 @@ namespace Mathlib.Prelude
 -- Implementation detail
 #align _sorry_placeholder_     _sorry_placeholder_
 
+#align eq_true_intro           eq_true
+#align eq_false_intro          eq_false
+
 end Mathlib.Prelude
