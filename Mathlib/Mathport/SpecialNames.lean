@@ -39,8 +39,8 @@ namespace Mathlib.Prelude
 #align has_coe Coe
 #align has_coe.coe Coe.coe
 
-#align has_coe_t CoeT
-#align has_coe_t.coe CoeT.coe
+#align has_coe_t CoeTC
+#align has_coe_t.coe CoeTC.coe
 
 #align has_coe_to_fun CoeFun
 #align has_coe_to_fun.coe CoeFun.coe

@@ -67,16 +67,20 @@ instance Subtype.subsingleton (α : Sort _) [Subsingleton α] (p : α → Prop) 
     cases this
     rfl⟩
 
--- FIXME I need some help sorting out these!
+-- Porting note: The following simp lemma has `Coe` and `CoeTC` switched because `coeTrans` in
+-- `Init.Coe` as the transitive closure on the other position.
 
--- /-- Add an instance to "undo" coercion transitivity into a chain of coercions, because
---    most simp lemmas are stated with respect to simple coercions and will not match when
---    part of a chain. -/
--- @[simp]
--- theorem coe_coe {α β γ} [Coe α β] [CoeT β γ] (a : α) : (a : γ) = (a : β) :=
---   rfl
+/-- Add an instance to "undo" coercion transitivity into a chain of coercions, because
+    most simp lemmas are stated with respect to simple coercions and will not match when
+    part of a chain. -/
+ @[simp]
+ theorem coe_coe {α β γ} [CoeTC α β] [Coe β γ] (a : α) : (a : γ) = (a : β) :=
+   rfl
 
--- theorem coe_fn_coe_trans {α β γ δ} [Coe α β] [HasCoeTAux β γ] [CoeFun γ δ] (x : α) : @coeFn α _ _ x = @coeFn β _ _ x :=
+-- Porting note: I suspect we don't need the following lemmas anymore, since we don't
+-- have a separate `coe_fn` anymore.
+
+-- theorem coe_fn_coe_trans {α β γ δ} [Coe α β] [HasCoeTCAux β γ] [CoeFun γ δ] (x : α) : @coeFn α _ _ x = @coeFn β _ _ x :=
 --   rfl
 
 -- /-- Non-dependent version of `coe_fn_coe_trans`, helps `rw` figure out the argument. -/
@@ -85,8 +89,9 @@ instance Subtype.subsingleton (α : Sort _) [Subsingleton α] (p : α → Prop) 
 --   rfl
 
 -- @[simp]
--- theorem coe_fn_coe_base {α β γ} [Coe α β] [CoeFun β γ] (x : α) : @coeFn α _ _ x = @coeFn β _ _ x :=
---   rfl
+-- theorem coe_fn_coe_base {α β γ} [Coe α β] [CoeFun β γ] (x : α) :
+--    coe α _ _ x = @coeFn β _ _ x :=
+--  rfl
 
 -- /-- Non-dependent version of `coe_fn_coe_base`, helps `rw` figure out the argument. -/
 -- theorem coe_fn_coe_base' {α β} {γ : outParam <| _} [Coe α β] [CoeFun β fun _ => γ] (x : α) :
