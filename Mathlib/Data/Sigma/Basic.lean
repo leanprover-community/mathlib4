@@ -64,9 +64,7 @@ theorem ext {x₀ x₁ : Sigma β} (h₀ : x₀.1 = x₁.1) (h₁ : HEq x₀.2 x
   cases x₀; cases x₁; cases h₀; cases h₁; rfl
 
 theorem ext_iff {x₀ x₁ : Sigma β} : x₀ = x₁ ↔ x₀.1 = x₁.1 ∧ HEq x₀.2 x₁.2 := by
-  cases x₀
-  cases x₁
-  exact Sigma.mk.inj_iff
+  cases x₀; cases x₁; exact Sigma.mk.inj_iff
 
 /-- A specialized ext lemma for equality of sigma types over an indexed subtype. -/
 @[ext]
@@ -161,27 +159,13 @@ theorem Prod.snd_to_sigma {α β} (x : α × β) : (Prod.toSigma x).snd = x.snd 
 theorem Prod.to_sigma_mk {α β} (x : α) (y : β) : (x, y).toSigma = ⟨x, y⟩ :=
   rfl
 
--- this meta lean 3 definition is perhaps not needed in mathlib4; I have commented
--- out the autoported code (which doesn't compile)
--- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:66:14: unsupported tactic `reflect_name #[]
--- we generate this manually as `@[derive has_reflect]` fails
--- @[instance]
--- protected unsafe def sigma.reflect.{u, v} [reflected_univ.{u}] [reflected_univ.{v}] {α : Type u}
---   (β : α → Type v) [reflected _ α] [reflected _ β] [hα : has_reflect α]
---   [hβ : ∀ i, has_reflect (β i)] : has_reflect (Σa, β a) :=
---   fun ⟨a, b⟩ =>
---   (by trace "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:66:14: unsupported tactic
---     `reflect_name #[]" :
---         reflected _ @Sigma.mk.{u, v}).subst₄
---     (quote.1 α) (quote.1 β) (quote.1 a) (quote.1 b)
+-- Porting note: the meta instance `has_reflect (Σa, β a)` was removed here.
 
 end Sigma
 
-section PSigma
+namespace PSigma
 
 variable {α : Sort _} {β : α → Sort _}
-
-namespace PSigma
 
 /-- Nondependent eliminator for `psigma`. -/
 def elim {γ} (f : ∀ a, β a → γ) (a : PSigma β) : γ :=
@@ -203,8 +187,7 @@ instance [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] : DecidableE
       | _, _, isFalse n => isFalse fun h => PSigma.noConfusion h fun _ e₂ => n <| eq_of_heq e₂
     | _, _, _, _, isFalse n => isFalse fun h => PSigma.noConfusion h fun e₁ _ => n e₁
 
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/porting.20data.2Esig
--- ma.2Ebasic/near/304855864 (URL broken because line was too long)
+-- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/porting.20data.2Esigma.2Ebasic/near/304855864
 -- for an explanation of why this is currently needed. It generates `PSigma.mk.inj`.
 -- This could be done elsewhere.
 gen_injective_theorems% PSigma
@@ -217,16 +200,10 @@ theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
 
 @[ext]
 theorem ext {x₀ x₁ : PSigma β} (h₀ : x₀.1 = x₁.1) (h₁ : HEq x₀.2 x₁.2) : x₀ = x₁ := by
-  cases x₀
-  cases x₁
-  cases h₀
-  cases h₁
-  rfl
+  cases x₀; cases x₁; cases h₀; cases h₁; rfl
 
 theorem ext_iff {x₀ x₁ : PSigma β} : x₀ = x₁ ↔ x₀.1 = x₁.1 ∧ HEq x₀.2 x₁.2 := by
-  cases x₀
-  cases x₁
-  exact PSigma.mk.inj_iff
+  cases x₀; cases x₁; exact PSigma.mk.inj_iff
 
 @[simp]
 theorem «forall» {p : (Σ'a, β a) → Prop} : (∀ x, p x) ↔ ∀ a b, p ⟨a, b⟩ :=
@@ -251,7 +228,5 @@ variable {α₁ : Sort _} {α₂ : Sort _} {β₁ : α₁ → Sort _} {β₂ : �
 /-- Map the left and right components of a sigma -/
 def map (f₁ : α₁ → α₂) (f₂ : ∀ a, β₁ a → β₂ (f₁ a)) : PSigma β₁ → PSigma β₂
   | ⟨a, b⟩ => ⟨f₁ a, f₂ a b⟩
-
-end PSigma
 
 end PSigma
