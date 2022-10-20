@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Semiconj
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.Order.RingLemmas
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Control.Random
 import Mathlib.Control.Writer
