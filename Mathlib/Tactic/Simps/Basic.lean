@@ -9,6 +9,7 @@ import Lean
 import Mathlib.Data.List.Basic -- this should import the above file
 import Std.Tactic.NoMatch
 import Mathlib.Tactic.ToAdditive
+import Mathlib.Tactic.Simps.NotationClass
 
 /-!
 # Stub for implementation of the `@[simps]` attribute.
@@ -38,6 +39,17 @@ There are three attributes being defined here
   Example: if `Mul` is tagged with `@[notation_class]` then the projection used for `Semigroup`
   will be `λ α hα, @Mul.mul α (@Semigroup.toMul α hα)` instead of `@Semigroup.mul`.
 
+## Unimplemented Features
+
+* Correct interaction with heterogenous operations like `HAdd` and `HMul`
+* structure-Eta-reducing subexpressions
+
+### To Test
+
+* Correct handling with named projections
+* Adding custom simp-attributes
+* what is a reasonable low number as second argument of `synthInstance`
+
 ## Changes w.r.t. Lean 3
 
 There are some small changes in the attribute. None of them should have great effects
@@ -52,29 +64,6 @@ There are some small changes in the attribute. None of them should have great ef
 structures, projections, simp, simplifier, generates declarations
 -/
 
-/-
-Questions
-- are there useful commands for compositions of structure projections?
-- is _refl_lemma still a thing? -> probably, but I can call a function that should add it
-- When a coercion is inserted into a term, how does that look? -> you never see coercions
-- what is the Lean 4 equivalent of has_to_format/has_to_tactic_format?
-- primitive projections -> you never see these normally
--/
-
-/- Question: How to deal with all the different kinds of attributes? Is there a uniform
-  "add attribute A to declaration X" or "check whether X has attribute A"?
-  Can I add an attribute without constructing a complicated `Syntax` object? -/
-/- question: Is there a reason `TransparencyMode.none` is not a thing anymore? (not super important) -/
-/- question: what is a reasonable low number as second argument of `synthInstance`?
-  What does this number measure?-/
-
-
-/-
--- PR opportunity: dsimp using iff.rfl lemmas:
-* In file `Tactic/Simp/SimpTheorems` we check whether a proof is `Eq.refl` to decide
-whether this is a `rflTheorem`. This should also check for `Iff.rfl`
--/
-
 -- move
 namespace String
 
@@ -86,6 +75,14 @@ if startsWith s pre then some <| s.drop pre.length else none
 end String
 
 open Lean Meta Parser Elab Term Command
+
+/-! Declare some notation classes. -/
+attribute [notation_class]
+  Add Mul Neg Sub Div Dvd Mod LE LT Append Pow HasEquiv
+
+-- attribute [notation_class]
+--   Zero One Inv HasAndthen HasUnion HasInter HasSdiff
+--   HasEquiv HasSubset HasSsubset HasEmptyc HasInsert HasSingleton HasSep HasMem
 
 -- move
 namespace Lean.Meta
@@ -134,9 +131,11 @@ end Lean.Meta
 def hasSimpAttribute (env : Environment) (declName : Name) : Bool :=
   simpExtension.getState env |>.lemmaNames.contains <| .decl declName
 
-
 namespace Lean.Parser
 namespace Attr
+
+
+
 
 syntax simpsArgsRest := (Tactic.config)? (ppSpace ident)*
 
@@ -157,39 +156,40 @@ derives two `simp` lemmas:
 * It will automatically reduce newly created beta-redexes, but will not unfold any definitions.
 * If the structure has a coercion to either sorts or functions, and this is defined to be one
   of the projections, then this coercion will be used instead of the projection.
-* If the structure is a class that has an instance to a notation class, like `Mul`, then this
+* If the structure is a class that has an instance to a notation class, like `Neg`, then this
   notation is used instead of the corresponding projection.
+  [TODO: not yet implemented for heterogenous operations like `HMul` and `HAdd`]
 * You can specify custom projections, by giving a declaration with name
   `{StructureName}.simps.{projectionName}`. See Note [custom simps projection].
 
   Example:
   ```lean
-  def equiv.simps.invFun (e : α ≃ β) : β → α := e.symm
-  @[simps] def equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
+  def Equiv.simps.invFun (e : α ≃ β) : β → α := e.symm
+  @[simps] def Equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ e₁, e₁.symm ∘ e₂.symm⟩
   ```
   generates
   ```
-  @[simp] lemma equiv.trans_toFun : ∀ {α β γ} (e₁ e₂) (a : α), ⇑(e₁.trans e₂) a = (⇑e₂ ∘ ⇑e₁) a
-  @[simp] lemma equiv.trans_invFun : ∀ {α β γ} (e₁ e₂) (a : γ),
+  @[simp] lemma Equiv.trans_toFun : ∀ {α β γ} (e₁ e₂) (a : α), ⇑(e₁.trans e₂) a = (⇑e₂ ∘ ⇑e₁) a
+  @[simp] lemma Equiv.trans_invFun : ∀ {α β γ} (e₁ e₂) (a : γ),
     ⇑((e₁.trans e₂).symm) a = (⇑(e₁.symm) ∘ ⇑(e₂.symm)) a
   ```
 
 * You can specify custom projection names, by specifying the new projection names using
   `initialize_simps_projections`.
-  Example: `initialize_simps_projections equiv (toFun → apply, invFun → symm_apply)`.
+  Example: `initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)`.
   See `elabInitializeSimpsProjections` for more information.
 
 * If one of the fields itself is a structure, this command will recursively create
   `simp` lemmas for all fields in that structure.
   * Exception: by default it will not recursively create `simp` lemmas for fields in the structures
-    `prod` and `pprod`. You can give explicit projection names or change the value of
+    `Prod` and `PProd`. You can give explicit projection names or change the value of
     `simpsCfg.notRecursive` to override this behavior.
 
   Example:
   ```lean
   structure MyProd (α β : Type*) := (fst : α) (snd : β)
-  @[simps] def foo : prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
+  @[simps] def foo : Prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
   ```
   generates
   ```lean
@@ -206,7 +206,7 @@ derives two `simp` lemmas:
   Example:
   ```lean
   structure MyProd (α β : Type*) := (fst : α) (snd : β)
-  @[simps fst fst_fst snd] def foo : prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
+  @[simps fst fst_fst snd] def foo : Prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
   ```
   generates
   ```lean
@@ -219,14 +219,14 @@ derives two `simp` lemmas:
   Example:
   ```lean
   structure EquivPlusData (α β) extends α ≃ β := (data : bool)
-  @[simps] def bar {α} : EquivPlusData α α := { data := true, ..equiv.refl α }
+  @[simps] def bar {α} : EquivPlusData α α := { data := true, ..Equiv.refl α }
   ```
   generates the following:
   ```lean
-  @[simp] lemma bar_toEquiv : ∀ {α : Sort*}, bar.toEquiv = equiv.refl α
+  @[simp] lemma bar_toEquiv : ∀ {α : Sort*}, bar.toEquiv = Equiv.refl α
   @[simp] lemma bar_data : ∀ {α : Sort*}, bar.data = tt
   ```
-  This is true, even though Lean inserts an eta-expanded version of `equiv.refl α` in the
+  This is true, even though Lean inserts an eta-expanded version of `Equiv.refl α` in the
   definition of `bar`.
 * For configuration options, see the doc string of `simpsCfg`.
 * The precise syntax is `('simps' ident* e)`, where `e` is an Expression of type `simpsCfg`.
@@ -258,19 +258,19 @@ syntax simpsProj := (ppSpace ident (" (" simpsRule,+ ")")?)
 /--
 This command specifies custom names and custom projections for the simp attribute `simpsAttr`.
 * You can specify custom names by writing e.g.
-  `initialize_simps_projections equiv (toFun → apply, invFun → symm_apply)`.
+  `initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)`.
 * See Note [custom simps projection] and the examples below for information how to declare custom
   projections.
 * If no custom projection is specified, the projection will be `coe_fn`/`⇑` if a `CoeFun`
   instance has been declared, or the notation of a notation class (like `Mul`) if such an
   instance is available. If none of these cases apply, the projection itself will be used.
 * You can disable a projection by default by running
-  `initialize_simps_projections equiv (-invFun)`
+  `initialize_simps_projections Equiv (-invFun)`
   This will ensure that no simp lemmas are generated for this projection,
   unless this projection is explicitly specified by the user.
 * If you want the projection name added as a prefix in the generated lemma name, you can add the
   `as_prefix` modifier:
-  `initialize_simps_projections equiv (toFun → coe as_prefix)`
+  `initialize_simps_projections Equiv (toFun → coe as_prefix)`
   Note that this does not influence the parsing of projection names: if you have a declaration
   `foo` and you want to apply the projections `snd`, `coe` (which is a prefix) and `fst`, in that
   order you can run `@[simps snd_coe_fst] def foo ...` and this will generate a lemma with the
@@ -324,11 +324,11 @@ Some common uses:
     def relEmbedding.simps.apply (h : r ↪r s) : α → β := h
     initialize_simps_projections relEmbedding (to_embedding_toFun → apply, -to_embedding)
   ```
-* If you have an isomorphism-like structure (like `equiv`) you often want to define a custom
+* If you have an isomorphism-like structure (like `Equiv`) you often want to define a custom
   projection for the inverse:
   ```
-    def equiv.simps.symm_apply (e : α ≃ β) : β → α := e.symm
-    initialize_simps_projections equiv (toFun → apply, invFun → symm_apply)
+    def Equiv.simps.symm_apply (e : α ≃ β) : β → α := e.symm
+    initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
   ```
 -/
 syntax (name := initialize_simps_projections)
@@ -337,16 +337,6 @@ syntax (name := initialize_simps_projections)
 @[inheritDoc «initialize_simps_projections»]
 macro "initialize_simps_projections?" rest:simpsProj : command =>
   `(initialize_simps_projections ? $rest)
-
-
-/-- The `@[notation_class]` attribute specifies that this is a notation class,
-  and this notation should be used instead of projections by @[simps].
-  * The first argument `true` for notation classes and `false` for classes applied to the structure,
-    like `CoeSort` and `CoeFun`
-  * The second argument is the name of the projection (by default it is the first projection
-    of the structure)
--/
-syntax (name := notation_class) "notation_class" : attr
 
 end Command
 end Lean.Parser
@@ -392,17 +382,6 @@ used by the `@[simps]` attribute.
 -/
 initialize simpsStructure : NameMapExtension (List Name × Array ProjectionData) ←
   registerNameMapExtension (List Name × Array ProjectionData) `simpsStructure
-
-/- todo: should this be TagAttribute? Can we "initialize" TagAttribute with a certain cache? -/
-initialize notationClassAttr : NameMapExtension Unit ←
-  registerNameMapAttribute {
-    name  := `notation_class
-    descr := "An attribute specifying that this is a notation class. Used by @[simps]."
-    add   := fun
-    | nm, `(attr|notation_class) => do
-      if (getStructureInfo? (← getEnv) nm).isNone then
-        throwError "@[notation_class] attribute can only be added to classes."
-    | _, stx => throwError "unexpected notation_class syntax {stx}" }
 
 /-- Temporary projection data parsed from `initialize_simps_projections` before the Expression
   matching this projection has been found. Only used internally in `simpsGetRawProjections`. -/
@@ -629,17 +608,17 @@ are three cases
   composites of multiple projections (for example when you use `extend` without the
   `oldStructureCmd` (does this exist?)).
 * Otherwise, the projection of the structure is chosen.
-  For example: ``simpsGetRawProjections env `prod`` gives the default projections
+  For example: ``simpsGetRawProjections env `Prod`` gives the default projections
 ```
-  ([u, v], [prod.fst.{u v}, prod.snd.{u v}])
+  ([u, v], [Prod.fst.{u v}, Prod.snd.{u v}])
 ```
-    while ``simpsGetRawProjections env `equiv`` gives [todo: change example for Lean 4]
+    while ``simpsGetRawProjections env `Equiv`` gives [todo: change example for Lean 4]
 ```
   ([u_1, u_2], [λ α β, Coe.coe, λ {α β} (e : α ≃ β), ⇑(e.symm), left_inv, right_inv])
 ```
-    after declaring the coercion from `equiv` to function and adding the declaration
+    after declaring the coercion from `Equiv` to function and adding the declaration
 ```
-  def equiv.simps.invFun {α β} (e : α ≃ β) : β → α := e.symm
+  def Equiv.simps.invFun {α β} (e : α ≃ β) : β → α := e.symm
 ```
 
 Optionally, this command accepts three optional arguments:
@@ -647,7 +626,7 @@ Optionally, this command accepts three optional arguments:
   has the attribute `@[simpsStructure]`.
 * The `rules` argument accepts a list of pairs `sum.inl (oldName, newName)`. This is used to
   change the projection name `oldName` to the custom projection name `newName`. Example:
-  for the structure `equiv` the projection `toFun` could be renamed `apply`. This name will be
+  for the structure `Equiv` the projection `toFun` could be renamed `apply`. This name will be
   used for parsing and generating projection names. This argument is ignored if the structure
   already has an existing attribute. If an element of `rules` is of the form `sum.inr name`, this
   means that the projection `name` will not be applied by default.
@@ -772,8 +751,8 @@ e.betaRev es.reverse true -- check if this is what I want
 
   Example 1: ``simpsGetProjectionExprs env `(α × β) `(⟨x, y⟩)`` will give the output
   ```
-    [(`(x), `fst, `(@prod.fst.{u v} α β), [0], true, false),
-     (`(y), `snd, `(@prod.snd.{u v} α β), [1], true, false)]
+    [(`(x), `fst, `(@Prod.fst.{u v} α β), [0], true, false),
+     (`(y), `snd, `(@Prod.snd.{u v} α β), [1], true, false)]
   ```
 
   Example 2: ``simpsGetProjectionExprs env `(α ≃ α) `(⟨id, id, λ _, rfl, λ _, rfl⟩)``

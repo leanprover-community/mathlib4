@@ -121,8 +121,8 @@ import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.SimpTrace
-import Mathlib.Tactic.Simps
-import Mathlib.Tactic.SimpsDeclareAttrs
+import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Substs

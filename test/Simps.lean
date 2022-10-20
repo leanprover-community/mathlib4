@@ -1,5 +1,5 @@
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Tactic.Simps
+import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 import Mathlib.Data.Equiv.Basic

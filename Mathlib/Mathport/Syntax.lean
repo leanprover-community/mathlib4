@@ -35,7 +35,7 @@ import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpTrace
-import Mathlib.Tactic.Simps
+import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Trace
 import Mathlib.Tactic.Substs
