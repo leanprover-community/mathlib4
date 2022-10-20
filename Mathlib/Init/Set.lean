@@ -66,7 +66,7 @@ macro_rules
   | `({ $x:ident $b:binderPred | $p }) =>
     `(setOf fun $x:ident => satisfiesBinderPred% $x $b ∧ $p)
 
-@[appUnexpander setOf]
+@[app_unexpander setOf]
 def setOf.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident => $p) => `({ $x:ident | $p })
   | `($_ fun $x:ident : $ty:term => $p) => `({ $x:ident : $ty:term | $p })

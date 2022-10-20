@@ -35,5 +35,5 @@ Hashing makes use of a pointer hash.
 This is useful for implementing tree traversal functions where
 subtrees may be referenced in multiple places.
 -/
-@[implementedBy memoFixImpl]
+@[implemented_by memoFixImpl]
 opaque memoFix {α : Type u} {β : Type v} [Nonempty β] (f : (α → β) → (α → β)) : α → β
