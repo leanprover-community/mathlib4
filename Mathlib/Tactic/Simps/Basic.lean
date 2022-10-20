@@ -38,11 +38,6 @@ There are three attributes being defined here
 * Correct interaction with `@[to_additive]`
 * Adding custom simp-attributes / other attributes
 
-## Questions
-
-* Is there something similar to `tryFor` (used for `synthInstance`)?
-* Is there a `scoped attribute` command (`scoped attribute [instance] foo`)?
-
 ## Changes w.r.t. Lean 3
 
 There are some small changes in the attribute. None of them should have great effects
@@ -353,8 +348,8 @@ Projection data for a single projection of a structure, consisting of the follow
 - A boolean specifying whether this projection is written as prefix.
 -/
 structure ProjectionData where
-  name : Name -- todo: uncapitalize
-  expr : Expr -- todo: uncapitalize
+  name : Name
+  expr : Expr
   projNrs : List ℕ
   isDefault : Bool
   isPrefix : Bool
@@ -530,7 +525,9 @@ def simpsResolveNotationClass (projs : Array ParsedProjectionData)
   let (relevantProj, rawExprLambda) ← do
     let eInstType := mkAppN (.const className rawUnivs) args
     withLocalDeclD `x eStr fun hyp => do
-      let eInst ← synthInstance eInstType (some 10) -- reasonable, but low number
+      -- todo: instead of instance search, traverse through parent structures for a notation class
+      -- (that way we also deal with composite projections)
+      let eInst ← synthInstance eInstType (some 10)
       let rawExpr ← mkAppM projName (args.push eInst)
       let rawExprLambda ← mkLambdaFVars (args.push hyp) rawExpr
       let rawExprWhnf ← whnf rawExpr
@@ -603,15 +600,8 @@ are three cases
 * Otherwise, the projection of the structure is chosen.
   For example: ``simpsGetRawProjections env `Prod`` gives the default projections.
 ```
-  ([u, v], [Prod.fst.{u v}, Prod.snd.{u v}])
-```
-  while ``simpsGetRawProjections env `Equiv`` gives [todo: change example for Lean 4]
-```
-  ([u_1, u_2], [λ α β, Coe.coe, λ {α β} (e : α ≃ β), ⇑(e.symm), left_inv, right_inv])
-```
-  after declaring the coercion from `Equiv` to function and adding the declaration
-```
-  def Equiv.simps.invFun {α β} (e : α ≃ β) : β → α := e.symm
+  ([u, v], [(`fst, `(Prod.fst.{u v}), [0], true, false),
+     (`snd, `(@Prod.snd.{u v}), [1], true, false)])
 ```
 
 Optionally, this command accepts three optional arguments:
@@ -696,7 +686,7 @@ def elabSimpsRule : Syntax → CommandElabM ProjectionRule
 
 structure Simps.Config where
   isSimp := true
-  attrs : List Name := [] -- todo
+  attrs : List Name := []
   simpRhs := false
   typeMd := TransparencyMode.instances
   rhsMd := TransparencyMode.reducible -- was `none` in Lean 3
