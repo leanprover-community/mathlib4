@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 
-import Lean
-import Mathlib.Data.List.Basic
+import Std.Lean.NameMapAttribute
+import Lean.Structure
 
 /-!
 # `@[notation_class]` attribute for `@[simps]`
@@ -20,6 +20,8 @@ in the file where we declare `@[simps]`. For further documentation, see `Tactic.
   Note: this does *not* work yet for heterogenous operations like `HAdd`.
 -/
 syntax (name := notation_class) "notation_class" : attr
+
+open Lean
 
 /- todo: should this be TagAttribute? Can we "initialize" TagAttribute with a certain cache? -/
 initialize notationClassAttr : NameMapExtension Unit ←
