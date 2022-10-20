@@ -20,6 +20,7 @@ import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.Existsi
+import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
@@ -359,8 +360,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
   (config)? ((" : " term) <|> (" := " term))? : tactic
 
 /- M -/ syntax (name := applyFun) "apply_fun " term (ppSpace location)? (" using " term)? : tactic
-
-/- M -/ syntax (name := finCases) "fin_cases " ("*" <|> (term,+)) (" with " term)? : tactic
 
 /- M -/ syntax (name := intervalCases) "interval_cases" (ppSpace (colGt term))?
   (" using " term ", " term)? (" with " ident)? : tactic

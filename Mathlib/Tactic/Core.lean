@@ -97,3 +97,31 @@ macro "repeat1 " seq:tacticSeq : tactic => `(tactic| ($seq); repeat $seq)
 
 end Parser.Tactic
 end Lean
+
+namespace Lean.Elab.Tactic
+
+/--
+Run a tactic on all goals, and always succeeds.
+
+(This is parallel to `Lean.Elab.Tactic.evalAllGoals` in core,
+which takes a `Syntax` rather than `TacticM Unit`.
+This function could be moved to core and `evalAllGoals` refactored to use it.)
+-/
+def allGoals (tac : TacticM Unit) : TacticM Unit := do
+  let mvarIds ← getGoals
+  let mut mvarIdsNew := #[]
+  for mvarId in mvarIds do
+    unless (← mvarId.isAssigned) do
+      setGoals [mvarId]
+      try
+        tac
+        mvarIdsNew := mvarIdsNew ++ (← getUnsolvedGoals)
+      catch ex =>
+        if (← read).recover then
+          logException ex
+          mvarIdsNew := mvarIdsNew.push mvarId
+        else
+          throw ex
+  setGoals mvarIdsNew.toList
+
+end Lean.Elab.Tactic
