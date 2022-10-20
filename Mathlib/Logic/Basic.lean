@@ -938,12 +938,14 @@ theorem ExistsUnique.unique {α : Sort _} {p : α → Prop} (h : ∃! x, p x) {y
     y₁ = y₂ :=
   unique_of_exists_unique h py₁ py₂
 
-@[congr]
+-- Porting note: `@[congr]` commented out for now.
+-- @[congr]
 theorem forall_prop_congr {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h ↔ q' h) (hp : p ↔ p') :
     (∀ h, q h) ↔ ∀ h : p', q' (hp.2 h) :=
   ⟨fun h1 h2 => (hq _).1 (h1 (hp.2 h2)), fun h1 h2 => (hq _).2 (h1 (hp.1 h2))⟩
 
-@[congr]
+-- Porting note: `@[congr]` commented out for now.
+-- @[congr]
 theorem forall_prop_congr' {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h ↔ q' h) (hp : p ↔ p') :
     (∀ h, q h) = ∀ h : p', q' (hp.2 h) :=
   propext (forall_prop_congr hq hp)
@@ -1013,9 +1015,9 @@ noncomputable def decRel (p : α → α → Prop) : DecidableRel p := by infer_i
 /-- Any type `α` has decidable equality classically. -/
 noncomputable def decEq (α : Sort _) : DecidableEq α := by infer_instance
 
+-- Porting note: `@[elabAsElim]` commented out for now
 /-- Construct a function from a default value `H0`, and a function to use if there exists a value
 satisfying the predicate. -/
-@[elabAsElim]
 noncomputable def existsCases.{u} {C : Sort u} (H0 : C) (H : ∀ a, p a → C) : C :=
   if h : ∃ a, p a then H (Classical.choose h) (Classical.choose_spec h) else H0
 
@@ -1035,10 +1037,10 @@ def choiceOfByContradiction' {α : Sort _} (contra : ¬(α → False) → α) : 
 
 end Classical
 
+-- Porting note: `@[elabAsElim]` commented out for now
 /-- This function has the same type as `exists.rec_on`, and can be used to case on an equality,
 but `exists.rec_on` can only eliminate into Prop, while this version eliminates into any universe
 using the axiom of choice. -/
-@[elabAsElim]
 noncomputable def Exists.classicalRecOn.{u} {α} {p : α → Prop} (h : ∃ a, p a) {C : Sort u} (H : ∀ a, p a → C) : C :=
   H (Classical.choose h) (Classical.choose_spec h)
 
