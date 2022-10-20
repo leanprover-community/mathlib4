@@ -234,7 +234,7 @@ derives two `simp` lemmas:
   (this likely never happens, so is not included in the official doc). -/
 syntax (name := simps) "simps" "?"? simpsArgsRest : attr
 
-@[inheritDoc simps]
+@[inherit_doc simps]
 macro "simps?" rest:simpsArgsRest : attr => `(attr| simps ? $rest)
 
 end Attr
@@ -324,7 +324,7 @@ Some common uses:
 syntax (name := initialize_simps_projections)
   "initialize_simps_projections" "?"? simpsProj : command
 
-@[inheritDoc «initialize_simps_projections»]
+@[inherit_doc «initialize_simps_projections»]
 macro "initialize_simps_projections?" rest:simpsProj : command =>
   `(initialize_simps_projections ? $rest)
 
@@ -684,7 +684,7 @@ def elabSimpsRule : Syntax → CommandElabM ProjectionRule
 | `(simpsRule| - $id $[as_prefix%$tk]?) => pure (.inr id.getId, tk.isSome)
 | _                    => Elab.throwUnsupportedSyntax
 
-@[commandElab «initialize_simps_projections»] def elabInitializeSimpsProjections : CommandElab
+@[command_elab «initialize_simps_projections»] def elabInitializeSimpsProjections : CommandElab
 | `(initialize_simps_projections $[?%$trc]? $id $[($stxs,*)]?) => do
   let stxs := stxs.getD <| .mk #[]
   let rules ← stxs.getElems.raw.mapM elabSimpsRule

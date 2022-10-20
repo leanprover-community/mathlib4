@@ -248,8 +248,8 @@ def test_sneaky {α} : ComplicatedEquivPlusData α :=
 -- todo: eta
 -- run_cmd liftTermElabM <| do
 --   let env ← getEnv
---   guard <| env.find? `rflWithData_toEquiv' |>.isSome
---   guard <| env.find? `rflWithData'_toEquiv' |>.isSome
+  -- guard <| env.find? `rflWithData_toEquiv' |>.isSome
+  -- guard <| env.find? `rflWithData'_toEquiv' |>.isSome
 --   guard <| env.find? `test_extra |>.isSome
 --   guard <| env.find? `test_sneaky_extra_fst |>.isSome
 --   guard <| env.find? `rflWithData_to_equiv_toFun |>.isNone
@@ -1021,11 +1021,12 @@ example {α : Type} (x z : α) (h : x = z) : (foo α).symm x = z := by
   P_toFun  := λ _ _ h => h
   P_invFun := λ _ _ h => h }
 
--- todo: eta
--- example {α : Type} (x z : α) (h : x = z) : (foo2 α).toEquiv' x = z := by
---   dsimp
---   guard_target == foo.rfl x = z
---   rw [h]
+
+example {α : Type} (x z : α) (h : x = z) : (foo2 α).toEquiv' x = z := by
+  dsimp
+  -- todo: eta
+  -- guard_target == foo.rfl x = z
+  rw [h]
 
 example {α : Type} (x z : α) (h : x = z) : foo2 α x = z := by
   dsimp
