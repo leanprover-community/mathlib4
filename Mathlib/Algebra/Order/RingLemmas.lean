@@ -59,10 +59,12 @@ section Abbreviations
 variable [Mul α] [Zero α] [Preorder α]
 
 set_option quotPrecheck false in
+/-- Local notation for the nonnegative elements of a type `α`. TODO: actually make local. -/
 notation "α≥0" => { x : α // 0 ≤ x }
 
 -- mathport name: «exprα>0»
 set_option quotPrecheck false in
+/-- Local notation for the positive elements of a type `α`. TODO: actually make local. -/
 notation "α>0" => { x : α // 0 < x }
 
 /-- `pos_mul_mono α` is an abbreviation for `covariant_class α≥0 α (λ x y, x * y) (≤)`,

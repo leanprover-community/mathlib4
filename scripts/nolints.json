@@ -126,6 +126,8 @@
  ["docBlame", "ByteSliceT.off"],
  ["docBlame", "CancelCommMonoid.mul_comm"],
  ["docBlame", "CancelMonoid.mul_right_cancel"],
+ ["docBlame", "CancelMonoidWithZero.mul_left_cancel_of_ne_zero"],
+ ["docBlame", "CancelMonoidWithZero.mul_right_cancel_of_ne_zero"],
  ["docBlame", "CommGroup.mul_comm"],
  ["docBlame", "CommMonoid.mul_comm"],
  ["docBlame", "CommRing.mul_comm"],
