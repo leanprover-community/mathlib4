@@ -401,9 +401,6 @@ attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
 @[defaultInstance high] instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
   ⟨fun x n => Monoid.npow n x⟩
 
-@[defaultInstance high] instance Monoid.HPow {M : Type _} [Monoid M] : HPow M ℕ M :=
-  ⟨λ a n => Monoid.npow n a⟩
-
 instance AddMonoid.HasSmul {M : Type _} [AddMonoid M] : HasSmul ℕ M :=
   ⟨AddMonoid.nsmul⟩
 
