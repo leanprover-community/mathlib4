@@ -20,9 +20,9 @@ There are three attributes being defined here
   automatically generate simplification lemmas for each projection of the object/instance that
   contains data. See the doc strings for `Lean.Parser.Attr.simps` and `Simps.Config`
   for more details and configuration options.
-* `@[simpsStructure]` is automatically added to structures that have been used in `@[simps]` at least
-  once. This attribute contains the data of the projections used for this structure by all following
-  invocations of `@[simps]`.
+* `@[simpsStructure]` is automatically added to structures that have been used in `@[simps]`
+  at least once. This attribute contains the data of the projections used for this structure
+  by all following invocations of `@[simps]`.
 * `@[notation_class]` should be added to all classes that define notation, like `Mul` and
   `Zero`. This specifies that the projections that `@[simps]` used are the projections from
   these notation classes instead of the projections of the superclasses.
@@ -33,6 +33,8 @@ There are three attributes being defined here
 
 * Correct interaction with heterogenous operations like `HAdd` and `HMul`
 * structure-Eta-reducing subexpressions
+  * still useful, since we don't want to recurse into something like `{fst := x.fst, snd := x.snd}`
+    obtained by `{ x with ... }`
 * Correct interaction with `@[to_additive]`
 * Adding custom simp-attributes / other attributes
 
@@ -462,7 +464,8 @@ def simpsApplyProjectionRules (str : Name) (rules : Array ProjectionRule) :
   if getStructureInfo? env str |>.isNone then
     throwError "Declaration {str} is not a structure."
   let projs := (getStructureInfo? env str).get!
-  let projs : Array ParsedProjectionData := projs.fieldNames.map fun nm => ⟨nm, nm, true, false, none, [], false⟩
+  let projs : Array ParsedProjectionData := projs.fieldNames.map
+    fun nm => ⟨nm, nm, true, false, none, [], false⟩
   let projs : Array ParsedProjectionData := rules.foldl (init := projs) fun projs rule =>
     match rule with
     | (.inl (oldName, newName), isPrefix) =>
@@ -503,7 +506,7 @@ def simpsFindCustomProjection (str : Name) (proj : ParsedProjectionData)
       -- (in Lean 3) just stating that the expressions are different is quite unhelpful
       let customProjType ← MetaM.run' (inferType customProj)
       let rawExprType ← MetaM.run' (inferType rawExpr)
-      if (← MetaM.run' (isDefEq customProjType rawExprType)) then throwError -- todo: indentExpr doesn't work here?
+      if (← MetaM.run' (isDefEq customProjType rawExprType)) then throwError
         "Invalid custom projection:\n  {customProj}\n{""
         }Expression is not definitionally equal to {rawExpr}" else throwError
         "Invalid custom projection:\n  {customProj}\n{""
@@ -596,7 +599,7 @@ are three cases
   composites of multiple projections (for example when you use `extend` without the
   `oldStructureCmd` (does this exist?)).
 * Otherwise, the projection of the structure is chosen.
-  For example: ``simpsGetRawProjections env `Prod`` gives the default projections. The universe levels
+  For example: ``simpsGetRawProjections env `Prod`` gives the default projections.
 ```
   ([u, v], [Prod.fst.{u v}, Prod.snd.{u v}])
 ```
@@ -806,11 +809,6 @@ def simpsAddProjection (ref : Syntax) (declName : Name) (type lhs rhs : Expr) (a
       value := declValue }
   if cfg.trace then
     logInfo m!"[simps] > adding projection {declName}:\n        > {declType}"
-  -- what is the best way to add some decoration to an error message?
-  -- match (← getEnv).addDecl decl with
-  -- | Except.ok    env => setEnv env
-  -- | Except.error ex  => throwError
-  --     "Failed to add projection lemma {declName}. Nested error:\n{ex.toMessageData (← getOptions)}"
   try addDecl decl
   catch ex =>
     throwError "Failed to add projection lemma {declName}. Nested error:\n{ex.toMessageData}"
@@ -844,8 +842,8 @@ def Lean.Name.getString : Name → String
   `simpLemmas`: names of the simp lemmas added so far.(simpLemmas : Array Name)
   -/
 partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (type lhs rhs : Expr)
-  (args : Array Expr) (univs : List Name) (mustBeStr : Bool) (cfg : Simps.Config) (todo : List String)
-  (toApply : List ℕ) : MetaM (Array Name) := do
+  (args : Array Expr) (univs : List Name) (mustBeStr : Bool) (cfg : Simps.Config)
+  (todo : List String) (toApply : List ℕ) : MetaM (Array Name) := do
   -- we don't want to unfold non-reducible definitions (like `set`) to apply more arguments
   trace[simps.debug] "Type of the Expression before normalizing: {type}"
   withTransparency cfg.typeMd <| forallTelescopeReducing type fun typeArgs tgt =>
@@ -908,7 +906,8 @@ partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (
       throwError "Invalid simp lemma {nm}.\nThe given definition is not a constructor {""
         }application:{indentExpr rhsAp}"
     if mustBeStr then
-      throwError "Invalid `simps` attribute. The body is not a constructor application:{indentExpr rhsAp}"
+      throwError "Invalid `simps` attribute. The body is not a constructor application:{
+        indentExpr rhsAp}"
     if !todoNext.isEmpty then
       throwError "Invalid simp lemma {nm.appendAfter todoNext.head!}.\n{""
         }The given definition is not a constructor application:{indentExpr rhsAp}"
@@ -933,7 +932,7 @@ partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (
       toApply.tail else
   trace[simps.debug] "Not in the middle of applying a custom composite projection"
   -- check whether `rhsAp` is an eta-expansion
-  let eta : Option Expr := none -- todo: support eta-reduction of structures (still useful, since we don't want to recurse into something like `{fst := x.fst, snd := x.snd}`)
+  let eta : Option Expr := none -- todo: support eta-reduction of structures
   -- let eta ← rhsAp.isEtaExpansion
   let rhsAp := eta.getD rhsAp -- eta-reduce `rhsAp`
   /- As a special case, we want to automatically generate the current projection if `rhsAp`
