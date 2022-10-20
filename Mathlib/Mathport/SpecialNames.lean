@@ -25,12 +25,16 @@ namespace Mathlib.Prelude
 #align pprod                   PProd
 #align psum                    PSum
 #align ulift                   ULift
+#align plift                   PLift
+#align pempty                  PEmpty
 
 #align classical.some          Classical.choose
 #align classical.some_spec     Classical.choose_spec
 
 #align Exists.some             Exists.choose
 #align Exists.some_spec        Exists.choose_spec
+
+#align forall_congr            forall_congr'
 
 #align has_coe Coe
 #align has_coe.coe Coe.coe
@@ -51,6 +55,8 @@ namespace Mathlib.Prelude
 
 #align has_beq                 BEq
 #align has_sizeof              SizeOf
+
+#align xor                     xor
 
 -- This otherwise causes filenames to clash
 #align category_theory.Kleisli CategoryTheory.KleisliCat
