@@ -21,7 +21,7 @@ class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M�
 
 class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulZeroOneClass M₀, SemigroupWithZero M₀
 
-export MonoidWithZero (zero_mul mul_zero)
+export MulZeroClass (zero_mul mul_zero)
 attribute [simp] zero_mul mul_zero
 
 class GroupWithZero (G₀ : Type u) extends DivInvMonoid G₀, MonoidWithZero G₀ where
@@ -91,3 +91,27 @@ theorem Int.cast_negSucc [AddGroupWithOne R] :
   erw [Int.cast_ofNat, Nat.cast_zero]
 @[simp, norm_cast] theorem Int.cast_one [AddGroupWithOne R] : ((1 : ℤ) : R) = 1 := by
   erw [Int.cast_ofNat, Nat.cast_one]
+
+/-- A type `M` is a `CancelMonoidWithZero` if it is a monoid with zero element, `0` is left
+and right absorbing, and left/right multiplication by a non-zero element is injective. -/
+class CancelMonoidWithZero (M₀ : Type u) extends MonoidWithZero M₀ where
+  protected mul_left_cancel_of_ne_zero : ∀ {a b c : M₀}, a ≠ 0 → a * b = a * c → b = c
+  protected mul_right_cancel_of_ne_zero : ∀ {a b c : M₀}, b ≠ 0 → a * b = c * b → a = c
+
+section CancelMonoidWithZero
+
+variable [CancelMonoidWithZero M₀] {a b c : M₀}
+
+lemma mul_left_cancel₀ (ha : a ≠ 0) (h : a * b = a * c) : b = c :=
+CancelMonoidWithZero.mul_left_cancel_of_ne_zero ha h
+
+lemma mul_right_cancel₀ (hb : b ≠ 0) (h : a * b = c * b) : a = c :=
+CancelMonoidWithZero.mul_right_cancel_of_ne_zero hb h
+
+lemma mul_right_injective₀ (ha : a ≠ 0) : Function.injective (a * ·) :=
+λ _ _ => mul_left_cancel₀ ha
+
+lemma mul_left_injective₀ (hb : b ≠ 0) : Function.injective (· * b) :=
+λ _ _ => mul_right_cancel₀ hb
+
+end CancelMonoidWithZero
