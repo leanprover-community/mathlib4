@@ -752,10 +752,10 @@ theorem forall_imp_iff_exists_imp [ha : Nonempty α] : (∀ x, p x) → b ↔ �
       Classical.byCases (fun hb : b => (h' a) fun _ => hb) fun hb => hb <| h fun x => (not_imp.1 (h' x)).1,
     fun ⟨x, hx⟩ h => hx (h x)⟩
 
--- TODO: duplicate of a lemma in core
--- Porting note: Reimplemented
-theorem forall_true_iff : α → True ↔ True :=
+theorem implies_true_iff : α → True ↔ True :=
   ⟨fun _ => True.intro, fun _ _ => True.intro⟩
+
+alias implies_true_iff ← forall_true_iff
 
 -- Unfortunately this causes simp to loop sometimes, so we
 -- add the 2 and 3 cases as simp lemmas instead
@@ -777,7 +777,7 @@ theorem exists_unique_iff_exists {α : Sort _} [Subsingleton α] {p : α → Pro
 /-- For some reason simp doesn't use `forall_const` to simplify in this case. -/
 @[simp]
 theorem forall_forall_const {α β : Type _} (p : β → Prop) [Nonempty α] : (∀ x, α → p x) ↔ ∀ x, p x :=
-  forall_congr fun x => forall_const α
+  forall_congr' fun _ => forall_const α
 
 @[simp]
 theorem exists_const (α : Sort _) [i : Nonempty α] : (∃ _ : α, b) ↔ b :=
@@ -977,6 +977,12 @@ theorem ExistsUnique.unique2 {α : Sort _} {p : α → Sort _} [∀ x, Subsingle
 
 end Quantifiers
 
+lemma eq_true_intro {a : Prop} (h : a) : a = True :=
+  propext (iff_true_intro h)
+
+lemma eq_false_intro {a : Prop} (h : ¬a) : a = False :=
+  propext (iff_false_intro h)
+
 /-! ### Classical lemmas -/
 
 
@@ -984,7 +990,21 @@ namespace Classical
 
 variable {α : Sort _} {p : α → Prop}
 
-theorem cases {p : Prop → Prop} (h1 : p True) (h2 : p False) : ∀ a, p a := fun a => casesOn a h1 h2
+theorem prop_complete (a : Prop) : a = True ∨ a = False :=
+  Or.elim (em a)
+    (fun t => Or.inl (eq_true_intro t))
+    (fun f => Or.inr (eq_false_intro f))
+
+theorem cases_true_false (p : Prop → Prop) (h1 : p True) (h2 : p False) (a : Prop) : p a :=
+  Or.elim (prop_complete a)
+    (fun ht : a = True =>  ht.symm ▸ h1)
+    (fun hf : a = False => hf.symm ▸ h2)
+
+theorem cases_on (a : Prop) {p : Prop → Prop} (h1 : p True) (h2 : p False) : p a :=
+  cases_true_false p h1 h2 a
+
+theorem cases {p : Prop → Prop} (h1 : p True) (h2 : p False) : ∀ a, p a :=
+  fun a => cases_on a h1 h2
 
 -- use shortened names to avoid conflict when classical namespace is open.
 /-- Any prop `p` is decidable classically. A shorthand for `classical.prop_decidable`. -/
@@ -1097,13 +1117,13 @@ theorem ball_true_iff (p : α → Prop) : (∀ x, p x → True) ↔ True :=
   iff_true_intro fun _ _ => trivial
 
 theorem ball_and_distrib : (∀ x h, P x h ∧ Q x h) ↔ (∀ x h, P x h) ∧ ∀ x h, Q x h :=
-  Iff.trans (forall_congr fun x => forall_and_distrib) forall_and_distrib
+  Iff.trans (forall_congr' fun _ => forall_and_distrib) forall_and_distrib
 
 theorem bex_or_distrib : (∃ x h, P x h ∨ Q x h) ↔ (∃ x h, P x h) ∨ ∃ x h, Q x h :=
   Iff.trans (exists_congr fun _ => exists_or_distrib) exists_or_distrib
 
 theorem ball_or_left_distrib : (∀ x, p x ∨ q x → r x) ↔ (∀ x, p x → r x) ∧ ∀ x, q x → r x :=
-  Iff.trans (forall_congr fun x => or_imp_distrib) forall_and_distrib
+  Iff.trans (forall_congr' fun _ => or_imp_distrib) forall_and_distrib
 
 theorem bex_or_left_distrib : (∃ (x : _) (_ : p x ∨ q x), r x) ↔ (∃ (x : _) (_ : p x), r x) ∨ ∃ (x : _) (_ : q x), r x :=
   by simp only [exists_prop] <;> exact Iff.trans (exists_congr fun x => or_and_distrib_right) exists_or_distrib
