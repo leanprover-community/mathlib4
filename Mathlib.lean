@@ -1,5 +1,11 @@
+import Mathlib.Algebra.Abs
+import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.Semiconj
+import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Control.Random
@@ -7,11 +13,13 @@ import Mathlib.Control.Writer
 import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.BinaryHeap
+import Mathlib.Data.Bracket
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
 import Mathlib.Data.Equiv.Basic
 import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.KVMap
@@ -33,6 +41,7 @@ import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
 import Mathlib.Data.UInt
 import Mathlib.Data.UnionFind
+import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Data.Int.Basic
@@ -54,6 +63,7 @@ import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Logic.Equiv.MfldSimpsAttr
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nonempty
+import Mathlib.Logic.Relator
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Mathport.SpecialNames
@@ -61,6 +71,7 @@ import Mathlib.Mathport.Syntax
 import Mathlib.Order.Basic
 import Mathlib.Order.Monotone
 import Mathlib.Tactic.Alias
+import Mathlib.Tactic.ApplyRules
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
@@ -78,6 +89,7 @@ import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Expect
+import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums

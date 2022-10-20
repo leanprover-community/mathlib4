@@ -277,9 +277,6 @@ def Fin.ofInt' : ℤ → Fin n
 
 instance : AddGroupWithOne (Fin n) where
   __ := inferInstanceAs (AddMonoidWithOne (Fin n))
-  gsmul_zero' := by simp [gsmul_rec, nsmul_rec]
-  gsmul_succ' := by simp [gsmul_rec, nsmul_rec, -Int.ofNat_eq_cast]
-  gsmul_neg' := by simp [gsmul_rec, nsmul_rec, -Int.ofNat_eq_cast]
   sub_eq_add_neg := Fin.sub_eq_add_neg
   add_left_neg := Fin.add_left_neg
   intCast := Fin.ofInt'

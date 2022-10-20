@@ -17,6 +17,7 @@ and elsewhere.
 
 open Lean Meta Qq Elab Term
 
+/-- Attribute for identifying `norm_num` extensions. -/
 syntax (name := norm_num) "norm_num" term,+ : attr
 
 namespace Mathlib
@@ -27,7 +28,9 @@ initialize registerTraceClass `Tactic.norm_num
 /-- Assert that an element of a semiring is equal to the coercion of some natural number. -/
 def isNat [Semiring α] (a : α) (n : ℕ) := a = n
 
+/-- Asserting that the `OfNat α n` instance provides the same value as the coercion. -/
 class LawfulOfNat (α) [Semiring α] (n) [OfNat α n] : Prop where
+  /-- Assert `isNat (OfNat.ofNat n α) n`, with the parametrising instance. -/
   isNat_ofNat : isNat (@OfNat.ofNat _ n ‹_› : α) n
 
 instance (α) [Semiring α] [Nat.AtLeastTwo n] : LawfulOfNat α n := ⟨rfl⟩
