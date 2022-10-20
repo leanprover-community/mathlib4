@@ -268,35 +268,35 @@ section ExplicitRelationVariants
 
 variable (r)
 
-@[elabWithoutExpectedType]
+@[elab_without_expected_type]
 theorem irrefl_of [IsIrrefl α r] (a : α) : ¬a ≺ a :=
   irrefl a
 
-@[elabWithoutExpectedType]
+@[elab_without_expected_type]
 theorem refl_of [IsRefl α r] (a : α) : a ≺ a :=
   refl a
 
-@[elabWithoutExpectedType]
+@[elab_without_expected_type]
 theorem trans_of [IsTrans α r] {a b c : α} : a ≺ b → b ≺ c → a ≺ c :=
   trans
 
-@[elabWithoutExpectedType]
+@[elab_without_expected_type]
 theorem symm_of [IsSymm α r] {a b : α} : a ≺ b → b ≺ a :=
   symm
 
-@[elabWithoutExpectedType]
+@[elab_without_expected_type]
 theorem asymm_of [IsAsymm α r] {a b : α} : a ≺ b → ¬b ≺ a :=
   asymm
 
-@[elabWithoutExpectedType]
+@[elab_without_expected_type]
 theorem total_of [IsTotal α r] (a b : α) : a ≺ b ∨ b ≺ a :=
   IsTotal.total _ _
 
-@[elabWithoutExpectedType]
+@[elab_without_expected_type]
 theorem trichotomous_of [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
   trichotomous
 
-@[elabWithoutExpectedType]
+@[elab_without_expected_type]
 theorem incomp_trans_of [IsIncompTrans α r] {a b c : α} :
     ¬a ≺ b ∧ ¬b ≺ a → ¬b ≺ c ∧ ¬c ≺ b → ¬a ≺ c ∧ ¬c ≺ a :=
   incomp_trans

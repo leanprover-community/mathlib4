@@ -93,7 +93,7 @@ def getUsingArg : Syntax → TacticM Syntax
 `repeat1 tac` applies `tac` to main goal at least once. If the application succeeds,
 the tactic is applied recursively to the generated subgoals until it eventually fails.
 -/
-macro "repeat1 " seq:tacticSeq : tactic => `(tactic| ($seq); repeat $seq)
+macro "repeat1 " seq:tacticSeq : tactic => `(tactic| (($seq); repeat $seq))
 
 end Parser.Tactic
 end Lean

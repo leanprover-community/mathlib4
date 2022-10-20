@@ -42,7 +42,7 @@ namespace Fin2
 
 /-- Define a dependent function on `fin2 (succ n)` by giving its value at
 zero (`H1`) and by giving a dependent function on the rest (`H2`). -/
-@[elabAsElim]
+@[elab_as_elim]
 protected def cases' {n} {C : Fin2 (succ n) → Sort u} (H1 : C fz) (H2 : ∀ n, C (fs n)) :
     ∀ i : Fin2 (succ n), C i
   | fz => H1
@@ -112,7 +112,7 @@ def ofNat' : ∀ {n} (m) [IsLt m n], Fin2 n
   | succ _, 0, ⟨_⟩ => fz
   | succ n, succ m, ⟨h⟩ => fs (@ofNat' n m ⟨lt_of_succ_lt_succ h⟩)
 
-@[inheritDoc] local prefix:arg "&" => ofNat'
+@[inherit_doc] local prefix:arg "&" => ofNat'
 
 instance : Inhabited (Fin2 1) :=
   ⟨fz⟩
