@@ -49,6 +49,7 @@ import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Notation
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Data.Option.Instances
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Set
