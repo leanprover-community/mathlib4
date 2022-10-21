@@ -24,6 +24,7 @@ syntax (name := notation_class) "notation_class" : attr
 open Lean
 
 /- todo: should this be TagAttribute? Can we "initialize" TagAttribute with a certain cache? -/
+/-- `@[notation_class]` attribute -/
 initialize notationClassAttr : NameMapExtension Unit ←
   registerNameMapAttribute {
     name  := `notation_class

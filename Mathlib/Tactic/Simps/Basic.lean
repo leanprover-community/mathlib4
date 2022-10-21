@@ -71,10 +71,27 @@ end String
 
 open Lean Meta Parser Elab Term Command
 
+/-- Update the last component of a name. -/
+def Lean.Name.updateLast (f : String → String) : Name → Name
+| (.str n s) => .str n (f s)
+| n          => n
+
+/-- `updateName nm s is_prefix` adds `s` to the last component of `nm`,
+  either as prefix or as suffix (specified by `isPrefix`), separated by `_`.
+  Used by `simps_add_projections`. -/
+def updateName (nm : Name) (s : String) (isPrefix : Bool) : Name :=
+nm.updateLast λ s' => if isPrefix then s ++ "_" ++ s' else s' ++ "_" ++ s
+
+/-- Get the last field of a name as a string.
+Doesn't raise an error when the last component is a numeric field. -/
+def Lean.Name.getString : Name → String
+| .str _ s => s
+| _       => ""
+
 -- move
 namespace Lean.Meta
 open Tactic Simp
-/- make simp context giving data instead of Syntax. Doesn't support arguments.
+/-- Make `MkSimpContextResult` giving data instead of Syntax. Doesn't support arguments.
 Intended to be very similar to `Lean.Elab.Tactic.mkSimpContext`
 Todo: support arguments. -/
 def mkSimpContextResult (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind := SimpKind.simp)
@@ -107,6 +124,9 @@ def mkSimpContextResult (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind
     let ctx := { ctx with simpTheorems }
     return { ctx, dischargeWrapper }
 
+/-- Make `Simp.Context` giving data instead of Syntax. Doesn't support arguments.
+Intended to be very similar to `Lean.Elab.Tactic.mkSimpContext`
+Todo: support arguments. -/
 def mkSimpContext (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind := SimpKind.simp)
   (dischargeWrapper := DischargeWrapper.default) (hasStar := false) :
   MetaM Simp.Context := do
@@ -130,6 +150,7 @@ attribute [notation_class]
 --   Zero One Inv HasAndthen HasUnion HasInter HasSdiff
 --   HasEquiv HasSubset HasSsubset HasEmptyc HasInsert HasSingleton HasSep HasMem
 
+/-- arguments to `@[simps]` attribute. -/
 syntax simpsArgsRest := (Tactic.config)? (ppSpace ident)*
 
 /-- The `@[simps]` attribute automatically derives lemmas specifying the projections of this
@@ -336,27 +357,25 @@ end Lean.Parser
 initialize registerTraceClass `simps.verbose
 initialize registerTraceClass `simps.debug
 
-/--
-Projection data for a single projection of a structure, consisting of the following fields:
-- the name used in the generated `simp` lemmas
-- an Expression used by simps for the projection. It must be definitionally equal to an original
+/-- Projection data for a single projection of a structure -/
+structure ProjectionData where
+  /-- The name used in the generated `simp` lemmas -/
+  name : Name
+  /-- An Expression used by simps for the projection. It must be definitionally equal to an original
   projection (or a composition of multiple projections).
   These Expressions can contain the universe parameters specified in the first argument of
-  `simpsStructure`.
-- a list of natural numbers, which is the projection number(s) that have to be applied to the
+  `simpsStructure`. -/
+  expr : Expr
+  /-- A list of natural numbers, which is the projection number(s) that have to be applied to the
   Expression. For example the list `[0, 1]` corresponds to applying the first projection of the
   structure, and then the second projection of the resulting structure (this assumes that the
   target of the first projection is a structure with at least two projections).
   The composition of these projections is required to be definitionally equal to the provided
-  Expression.
-- A boolean specifying whether `simp` lemmas are generated for this projection by default.
-- A boolean specifying whether this projection is written as prefix.
--/
-structure ProjectionData where
-  name : Name
-  expr : Expr
+  Expression. -/
   projNrs : List ℕ
+  /-- A boolean specifying whether `simp` lemmas are generated for this projection by default. -/
   isDefault : Bool
+  /-- A boolean specifying whether this projection is written as prefix. -/
   isPrefix : Bool
   deriving Inhabited
 
@@ -378,13 +397,20 @@ initialize simpsStructure : NameMapExtension (List Name × Array ProjectionData)
 /-- Temporary projection data parsed from `initialize_simps_projections` before the Expression
   matching this projection has been found. Only used internally in `simpsGetRawProjections`. -/
 structure ParsedProjectionData where
-  origName : Name  -- name for this projection used in the structure definition
-  newName : Name   -- name for this projection used in the generated `simp` lemmas
-  isDefault : Bool -- will simp lemmas be generated for with (without specifically naming this?)
-  isPrefix : Bool  -- is the projection name a prefix?
-  expr? : Option Expr := none -- projection expression
-  projNrs : List Nat := [] -- the list of projection numbers this expression corresponds to
-  isChanged : Bool := false -- is this a projection that is changed by the user?
+  /-- name for this projection used in the structure definition -/
+  origName : Name
+  /-- name for this projection used in the generated `simp` lemmas -/
+  newName : Name
+  /-- will simp lemmas be generated for with (without specifically naming this?) -/
+  isDefault : Bool
+  /-- is the projection name a prefix? -/
+  isPrefix : Bool
+  /-- projection expression -/
+  expr? : Option Expr := none
+  /-- the list of projection numbers this expression corresponds to -/
+  projNrs : List Nat := []
+  /-- is this a projection that is changed by the user? -/
+  isChanged : Bool := false
 
 def ParsedProjectionData.toProjectionData (p : ParsedProjectionData) : ProjectionData :=
 ⟨p.newName, p.expr?.getD default, p.projNrs, p.isDefault, p.isPrefix⟩
@@ -681,6 +707,7 @@ def elabSimpsRule : Syntax → CommandElabM ProjectionRule
 | `(simpsRule| - $id $[as_prefix%$tk]?) => pure (.inr id.getId, tk.isSome)
 | _                    => Elab.throwUnsupportedSyntax
 
+/-- Function elaborating `initialize_simps_projections`. -/
 @[command_elab «initialize_simps_projections»] def elabInitializeSimpsProjections : CommandElab
 | `(initialize_simps_projections $[?%$trc]? $id $[($stxs,*)]?) => do
   let stxs := stxs.getD <| .mk #[]
@@ -689,16 +716,32 @@ def elabSimpsRule : Syntax → CommandElabM ProjectionRule
   _ ← liftCoreM <| simpsGetRawProjections nm true rules trc.isSome
 | _ => throwUnsupportedSyntax
 
+/-- Configuration options for `@[simps]` -/
 structure Simps.Config where
+  /-- Make generated lemmas simp lemmas -/
   isSimp := true
+  /-- [TODO] Other attributes to apply to generated lemmas -/
   attrs : List Name := []
+  /-- simplify the right-hand side of generated simp-lemmas using `dsimp, simp`. -/
   simpRhs := false
+  /-- TransparencyMode used to reduce the type in order to detect whether it is a structure. -/
   typeMd := TransparencyMode.instances
-  rhsMd := TransparencyMode.reducible -- was `none` in Lean 3
+  /-- TransparencyMode used to reduce the right-hand side in order to detect whether it is a
+  constructor. Note: was `none` in Lean 3 -/
+  rhsMd := TransparencyMode.reducible
+  /-- Generated lemmas that are fully applied, i.e. generates equalities between applied functions.
+  Set this to `false` to generate equalities between functions. -/
   fullyApplied := true
+  /-- List of types in which we are not recursing to generate simplification lemmas.
+  E.g. if we write `@[simps] def e : α × β ≃ β × α := ...` we will generate `e_apply` and not
+  `e_apply_fst`. -/
   notRecursive := [`Prod, `PProd]
+  /-- Output tracing messages. Can be set to `true` by writing `@[simps?]`. -/
   trace := false
-  debug := false -- adds a few checks (not used much)
+  /-- Output debug messages. Not used much, use `set_option simps.debug true` instead. -/
+  debug := false
+  /-- [TODO] Add `@[to_additive]` to all generated lemmas. This can be set by marking the
+  declaration with the `@[to_additive]` attribute before the `@[simps]` attribute -/
   addAdditive := @none Name
   deriving Inhabited
 
@@ -766,12 +809,6 @@ def simpsGetProjectionExprs (tgt : Expr) (rhs : Expr) (cfg : Simps.Config) :
               tgt.getAppFn.constLevels!).instantiateLambdasOrApps params
             projNrs := proj.projNrs.tail })
 
-/-- `getUnivLevel t` returns the universe level of a type `t` -/
-def getUnivLevel (t : Expr) : MetaM Level := do
-  let univ ← inferType t
-  let Expr.sort u ← whnf univ | throwError "getUnivLevel error: argument is not a type."
-  pure u
-
 /-- Add a lemma with `nm` stating that `lhs = rhs`. `type` is the type of both `lhs` and `rhs`,
   `args` is the list of local constants occurring, and `univs` is the list of universe variables. -/
 def simpsAddProjection (ref : Syntax) (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
@@ -781,7 +818,7 @@ def simpsAddProjection (ref : Syntax) (declName : Name) (type lhs rhs : Expr) (a
   if (env.find? declName).isSome then -- diverging behavior from Lean 3
     throwError "simps tried to add lemma {declName} to the environment, but it already exists."
   -- simplify `rhs` if `cfg.simpRhs` is true
-  let lvl ← getUnivLevel type
+  let lvl ← getLevel type
   let (rhs, prf) ← do
     let defaultPrf := mkAppN (mkConst `Eq.refl [lvl]) #[type, lhs]
     if !cfg.simpRhs then
@@ -814,22 +851,6 @@ def simpsAddProjection (ref : Syntax) (declName : Name) (type lhs rhs : Expr) (a
   -- cfg.attrs.mapM fun nm => setAttribute nm declName tt -- todo: deal with attributes
   if cfg.addAdditive.isSome then
     ToAdditive.addToAdditiveAttr declName ⟨false, cfg.trace, cfg.addAdditive.get!, none, true, ref⟩
-
-/-- Update the last component of a name. -/
-def Lean.Name.updateLast (f : String → String) : Name → Name
-| (.str n s) => .str n (f s)
-| n          => n
-
-/-- `updateName nm s is_prefix` adds `s` to the last component of `nm`,
-  either as prefix or as suffix (specified by `isPrefix`), separated by `_`.
-  Used by `simps_add_projections`. -/
-def updateName (nm : Name) (s : String) (isPrefix : Bool) : Name :=
-nm.updateLast λ s' => if isPrefix then s ++ "_" ++ s' else s' ++ "_" ++ s
-
-def Lean.Name.getString : Name → String
-| .str _ s => s
-| _       => ""
-
 
 /--
 Perform head-structure-eta-reduction on expression `e`. That is, if `e` is of the form
@@ -1005,6 +1026,7 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Simps.Config := {}) (todo : List 
   MetaM.run' <| simpsAddProjections env ref nm d.type lhs (d.value?.getD default) #[] d.levelParams
       (mustBeStr := true) cfg todo []
 
+/-- `simps` attribute. -/
 initialize simpsAttr : ParametricAttribute (Array Name) ←
   registerParametricAttribute {
     name := `simps
