@@ -38,6 +38,11 @@ There are three attributes being defined here
 * Correct interaction with `@[to_additive]`
 * Adding custom simp-attributes / other attributes
 
+### Improvements
+* Use syntax reference better
+* Check output of simps (especially in combination with to_additive).
+
+
 ## Changes w.r.t. Lean 3
 
 There are some small changes in the attribute. None of them should have great effects
@@ -826,6 +831,38 @@ def Lean.Name.getString : Name → String
 | _       => ""
 
 
+/--
+Perform head-structure-eta-reduction on expression `e`. That is, if `e` is of the form
+`⟨f.1, f.2, ..., f.n⟩` with `f` definitionally equal to `e`, then
+`headStructureEtaReduce e = headStructureEtaReduce f` and `headStructureEtaReduce e = e` otherwise.
+-/
+partial def headStructureEtaReduce (e : Expr) : MetaM Expr := do
+  let env ← getEnv
+  let (ctor, args) := e.getAppFnArgs
+  let .some (.ctorInfo { induct := struct, numParams := numParams, ..}) ←
+    pure <| env.find? ctor | pure e
+  let some { fieldNames := fieldNames, .. } := getStructureInfo? env struct | pure e
+  let params := args.toList.take numParams -- fix if `Array.take` / `Array.drop` exist
+  let fields := args.toList.drop numParams
+  trace[simps.debug] "rhs is constructor application with params{indentD params}\nand fields {
+    indentD fields}"
+  if fields.isEmpty then pure e else
+  let (fn0, fieldArgs0) ← pure <| fields[0]!.getAppFnArgs
+  if fn0 != struct ++ fieldNames[0]! || fieldArgs0.toList.take numParams != params then
+    trace[simps.debug] "{fn0} ≠ {struct ++ fieldNames[0]!} or {fieldArgs0.toList.take numParams} ≠ {
+      params}"
+    pure e else
+  let reduct := fieldArgs0.toList.drop numParams |>.head!
+  trace[simps.debug] "Potential structure-eta-reduct:{indentExpr e}\nto{indentExpr reduct}"
+  let allArgs := params.toArray.push reduct
+  trace[simps.debug] "{(fields.tail.zip fieldNames.toList.tail).map
+    λ (field, fieldName) => field.getAppFnArgs == (struct ++ fieldName, allArgs)}"
+  if (← (fields.tail.zip fieldNames.toList.tail).allM λ (field, fieldName) =>
+    if field.getAppFnArgs == (struct ++ fieldName, allArgs) then pure true else isProof field) then
+    trace[simps.debug] "Structure-eta-reduce:{indentExpr e}\nto{indentExpr reduct}"
+    headStructureEtaReduce reduct else
+    pure e
+
 /-- Derive lemmas specifying the projections of the declaration.
   `nm`: name of the lemma
   If `todo` is non-empty, it will generate exactly the names in `todo`.
@@ -865,51 +902,44 @@ partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (
       simpsAddProjection ref nm type lhs rhs args univs cfg
     pure #[nm] else
   -- if the type is a structure
-  let some (.inductInfo info) ← pure <| env.find? str | throwError "unreachable"
-  let [ctor] ← pure info.ctors | throwError "unreachable"
+  let some (.inductInfo { isRec := false, ctors := [ctor], .. }) ← pure <| env.find? str |
+    throwError "unreachable"
   trace[simps.debug] "{str} is a structure with constructor {ctor}."
-  let rhsWhnf ← withTransparency cfg.rhsMd <| whnf rhsAp
-  trace[simps.debug] "The right-hand-side {indentExpr rhsAp}\n reduces to {indentExpr rhsWhnf}"
+  let rhsEta ← headStructureEtaReduce rhsAp
   let addThisProjection := "" ∈ todo && toApply.isEmpty -- did the user ask to add this projection?
-  -- `todoNow` means that we still have to generate the current simp lemma
-  let (rhsAp, todoNow) ←
-    if !rhsAp.getAppFn.isConstOf ctor && rhsWhnf.getAppFn.isConstOf ctor then
-      /- If this was a desired projection, we want to apply it before taking the whnf.
-      However, if the current field is an eta-expansion (see below), we first want
-      to eta-reduce it and only then construct the projection.
-      This makes the flow of this function messy. -/
-      if addThisProjection then
-        if cfg.fullyApplied then
-          simpsAddProjection ref nm tgt lhsAp rhsAp newArgs univs cfg else
-          simpsAddProjection ref nm type lhs rhs args univs cfg
-      pure (rhsWhnf, false) else
-      pure (rhsAp, addThisProjection)
-  trace[simps.debug] "Continuing with {indentExpr rhsAp}"
-  if !rhsAp.getAppFn.isConstOf ctor then
+  if addThisProjection then
+    if cfg.fullyApplied then
+      simpsAddProjection ref nm tgt lhsAp rhsEta newArgs univs cfg else
+      simpsAddProjection ref nm type lhs rhs args univs cfg
+  let rhsWhnf ← withTransparency cfg.rhsMd <| whnf rhsEta
+  trace[simps.debug] "The right-hand-side {indentExpr rhsAp}\n reduces to {indentExpr rhsWhnf}"
+  if !rhsWhnf.getAppFn.isConstOf ctor then
     -- if I'm about to run into an error, try to set the transparency for `rhsMd` higher.
     if cfg.rhsMd == .reducible && (mustBeStr || !todoNext.isEmpty || !toApply.isEmpty) then
       if cfg.trace then
         logInfo m!"[simps] > The given definition is not a constructor {""
-          }application:\n        >   {rhsAp}\n        > Retrying with the options {""
+          }application:\n        >   {rhsWhnf}\n        > Retrying with the options {""
           }\{rhs_md := semireducible, simp_rhs := tt}."
-      simpsAddProjections env ref nm type lhs rhs args univs mustBeStr
-        { cfg with rhsMd := .default, simpRhs := true } todo toApply else
+      let nms ← simpsAddProjections env ref nm type lhs rhs args univs mustBeStr
+        { cfg with rhsMd := .default, simpRhs := true } todo toApply
+      pure <| if addThisProjection then nms.push nm else nms else
     if !toApply.isEmpty then
       throwError "Invalid simp lemma {nm}.\nThe given definition is not a constructor {""
-        }application:{indentExpr rhsAp}"
+        }application:{indentExpr rhsWhnf}"
     if mustBeStr then
       throwError "Invalid `simps` attribute. The body is not a constructor application:{
-        indentExpr rhsAp}"
+        indentExpr rhsWhnf}"
     if !todoNext.isEmpty then
       throwError "Invalid simp lemma {nm.appendAfter todoNext.head!}.\n{""
-        }The given definition is not a constructor application:{indentExpr rhsAp}"
-    if cfg.fullyApplied then
-      simpsAddProjection ref nm tgt lhsAp rhsAp newArgs univs cfg else
-      simpsAddProjection ref nm type lhs rhs args univs cfg
+        }The given definition is not a constructor application:{indentExpr rhsWhnf}"
+    if !addThisProjection then
+      if cfg.fullyApplied then
+        simpsAddProjection ref nm tgt lhsAp rhsEta newArgs univs cfg else
+        simpsAddProjection ref nm type lhs rhs args univs cfg
     pure #[nm] else
   -- if the value is a constructor application
   trace[simps.debug] "Generating raw projection information..."
-  let projInfo ← simpsGetProjectionExprs tgt rhsAp cfg
+  let projInfo ← simpsGetProjectionExprs tgt rhsWhnf cfg
   trace[simps.debug] "Raw projection information:\n  {projInfo}"
   -- If we are in the middle of a composite projection.
   if !toApply.isEmpty then do
@@ -923,20 +953,9 @@ partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (
     simpsAddProjections env ref nm newType lhsAp newRhs newArgs univs false cfg todo
       toApply.tail else
   trace[simps.debug] "Not in the middle of applying a custom composite projection"
-  -- check whether `rhsAp` is an eta-expansion
-  let eta : Option Expr := none -- todo: support eta-reduction of structures
-  -- let eta ← rhsAp.isEtaExpansion
-  let rhsAp := eta.getD rhsAp -- eta-reduce `rhsAp`
-  /- As a special case, we want to automatically generate the current projection if `rhsAp`
-  was an eta-expansion. Also, when this was a desired projection, we need to generate the
-  current projection if we haven't done it above. -/
-  if todoNow || (todo.isEmpty && eta.isSome) then
-    if cfg.fullyApplied then
-      simpsAddProjection ref nm tgt lhsAp rhsAp newArgs univs cfg else
-      simpsAddProjection ref nm type lhs rhs args univs cfg
   /- We stop if no further projection is specified or if we just reduced an eta-expansion and we
   automatically choose projections -/
-  if (todo == [""] || (eta.isSome && todo.isEmpty)) then pure #[] else -- wrong output!?
+  if todo == [""] then pure #[nm] else
   let projs : Array Name := projInfo.map fun x => x.2.name
   let todo := todoNext
   trace[simps.debug] "Next todo: {todoNext}"
@@ -950,7 +969,7 @@ partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (
       }by running\n  `initialize_simps_projections? {str}`.\nNote: these projection names might {""
       }be customly defined for `simps`, and differ from the projection names of the structure."
   | none =>
-    let l ← projInfo.mapM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ => do
+    let nms ← projInfo.concatMapM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ => do
       let newType ← inferType newRhs
       let new_todo := todo.filterMap fun x => x.isPrefixOf? ("_" ++ proj.getString)
       -- we only continue with this field if it is default or mentioned in todo
@@ -963,7 +982,7 @@ partial def simpsAddProjections (env : Environment) (ref : Syntax) (nm : Name) (
       trace[simps.debug] "Recursively add projections for:\n        >  {newLhs}"
       simpsAddProjections env ref newName newType newLhs newRhs newArgs univs false new_cfg new_todo
         projNrs
-    pure l.flatten
+    pure <| if addThisProjection then nms.push nm else nms
 
 /-- `simpsTac` derives `simp` lemmas for all (nested) non-Prop projections of the declaration.
   If `todo` is non-empty, it will generate exactly the names in `todo`.

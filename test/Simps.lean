@@ -113,6 +113,7 @@ run_cmd liftTermElabM <| do
   guard <| env.find? `foo.rfl_invFun |>.isSome
   guard <| env.find? `foo.rfl_left_inv |>.isNone
   guard <| env.find? `foo.rfl_right_inv |>.isNone
+  guard <| simpsAttr.getParam? env `foo.rfl == #[`foo.rfl_toFun, `foo.rfl_invFun]
 
 example (n : ℕ) : foo.rfl.toFun n = n := by rw [foo.rfl_toFun, id]
 example (n : ℕ) : foo.rfl.invFun n = n := by rw [foo.rfl_invFun]
@@ -137,11 +138,9 @@ noncomputable def bar2 {α} : α ≃ α :=
 Classical.choice ⟨foo.rfl⟩
 
 run_cmd liftCoreM <| do
-  -- _ ← simpsTac `foo.bar1
-  -- successIfFailWithMsg (simpsTac `foo.bar1)
+  _ ← successIfFail <| simpsTac .missing `foo.bar1
   --   "Invalid `simps` attribute. Target Nat is not a structure"
-  -- _ ← simpsTac `foo.bar2
-  -- successIfFailWithMsg (simpsTac `foo.bar2)
+  _ ← successIfFail <| simpsTac .missing `foo.bar2
   --   "Invalid `simps` attribute. The body is not a constructor application:
   -- Classical.choice (_ : Nonempty (α ≃ α))"
   pure ()
@@ -193,6 +192,10 @@ run_cmd liftTermElabM <| do
   guard <| env.find? `CountNested.nested1_snd_snd |>.isSome
   guard <| env.find? `CountNested.nested2_fst |>.isSome
   guard <| env.find? `CountNested.nested2_snd |>.isSome
+  guard <| simpsAttr.getParam? env `CountNested.nested1 ==
+    #[`CountNested.nested1_fst, `CountNested.nested1_snd_fst, `CountNested.nested1_snd_snd]
+  guard <| simpsAttr.getParam? env `CountNested.nested2 ==
+    #[`CountNested.nested2_fst, `CountNested.nested2_snd]
   -- todo: test that another attribute can be added (not working yet)
   guard <| hasSimpAttribute env `CountNested.nested1_fst -- simp attribute is global
   guard <| not <| hasSimpAttribute env `CountNested.nested2_fst -- lemmas_only doesn't add simp lemma
@@ -242,17 +245,17 @@ def test_sneaky {α} : ComplicatedEquivPlusData α :=
   data := rfl
   extra := λ _ => ⟨(3,5).1,(3,5).2⟩ }
 
--- todo: eta
--- run_cmd liftTermElabM <| do
---   let env ← getEnv
-  -- guard <| env.find? `rflWithData_toEquiv' |>.isSome
-  -- guard <| env.find? `rflWithData'_toEquiv' |>.isSome
---   guard <| env.find? `test_extra |>.isSome
---   guard <| env.find? `test_sneaky_extra_fst |>.isSome
---   guard <| env.find? `rflWithData_to_equiv_toFun |>.isNone
---   guard <| env.find? `rflWithData'_to_equiv_toFun |>.isNone
---   guard <| env.find? `test_extra_fst |>.isNone
---   guard <| env.find? `test_sneaky_extra |>.isNone
+run_cmd liftTermElabM <| do
+  let env ← getEnv
+  guard <| env.find? `rflWithData_toEquiv' |>.isSome
+  guard <| env.find? `rflWithData'_toEquiv' |>.isSome
+  guard <| env.find? `test_extra_fst |>.isSome
+  guard <| simpsAttr.getParam? env `test ==
+    #[`test_toEquiv', `test_P, `test_extra_fst, `test_extra_snd]
+  guard <| env.find? `test_sneaky_extra_fst |>.isSome
+  guard <| env.find? `rflWithData_to_equiv_toFun |>.isNone
+  guard <| env.find? `rflWithData'_to_equiv_toFun |>.isNone
+  guard <| env.find? `test_sneaky_extra |>.isNone
 
 structure PartiallyAppliedStr :=
 (data : ℕ → MyProd ℕ ℕ)
@@ -268,6 +271,8 @@ run_cmd liftTermElabM <| do
   let env ← getEnv
   guard <| env.find? `partially_applied_term_data_fst |>.isSome
   guard <| env.find? `partially_applied_term_data_snd |>.isSome
+  guard <| simpsAttr.getParam? env `partially_applied_term ==
+    #[`partially_applied_term_data_fst, `partially_applied_term_data_snd]
 
 structure VeryPartiallyAppliedStr :=
 (data : ∀β, ℕ → β → MyProd ℕ β)
@@ -311,7 +316,7 @@ namespace specify
 @[simps fst] def specify1 : ℕ × ℕ × ℕ := (1, 2, 3)
 @[simps snd] def specify2 : ℕ × ℕ × ℕ := (1, 2, 3)
 @[simps snd_fst] def specify3 : ℕ × ℕ × ℕ := (1, 2, 3)
-@[simps snd snd_snd snd_snd] def specify4 : ℕ × ℕ × ℕ := (1, 2, 3) -- last argument is ignored
+@[simps snd snd_snd] def specify4 : ℕ × ℕ × ℕ := (1, 2, 3) -- last argument is ignored
 @[simps] noncomputable def specify5 : ℕ × ℕ × ℕ := (1, Classical.choice ⟨(2, 3)⟩)
 end specify
 
@@ -324,41 +329,39 @@ run_cmd liftTermElabM <| do
   guard <| env.find? `specify.specify4_snd |>.isSome
   guard <| env.find? `specify.specify5_fst |>.isSome
   guard <| env.find? `specify.specify5_snd |>.isSome
-  -- todo: there are no other lemmas generated
-  -- guard $ 12 = env.fold 0
-  --   (λ d n => n + if d.to_name.components.init.ilast = `specify then 1 else 0)
-  _ ← successIfFail (simpsTac .missing `specify.specify1 {} ["fst_fst"])
+  guard <| simpsAttr.getParam? env `specify.specify1 == #[`specify.specify1_fst]
+  guard <| simpsAttr.getParam? env `specify.specify4 ==
+    #[`specify.specify4_snd_snd, `specify.specify4_snd]
+  guard <| simpsAttr.getParam? env `specify.specify5 ==
+    #[`specify.specify5_fst, `specify.specify5_snd]
+  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} ["fst_fst"]
 --     "Invalid simp lemma specify.specify1_fst_fst.
 -- Projection fst doesn't exist, because target is not a structure."
-  _ ← successIfFail (simpsTac .missing `specify.specify1 {} ["foo_fst"])
+  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} ["foo_fst"]
 --     "Invalid simp lemma specify.specify1_foo_fst. Structure prod does not have projection foo.
 -- The known projections are:
 --   [fst, snd]
 -- You can also see this information by running
 --   `initialize_simps_projections? prod`.
 -- Note: these projection names might not correspond to the projection names of the structure."
-  _ ← successIfFail (simpsTac .missing `specify.specify1 {} ["snd_bar"])
+  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} ["snd_bar"]
 --     "Invalid simp lemma specify.specify1_snd_bar. Structure prod does not have projection bar.
 -- The known projections are:
 --   [fst, snd]
 -- You can also see this information by running
 --   `initialize_simps_projections? prod`.
 -- Note: these projection names might not correspond to the projection names of the structure."
-  _ ← successIfFail (simpsTac .missing `specify.specify5 {} ["snd_snd"])
+  _ ← successIfFail <| simpsTac .missing `specify.specify5 {} ["snd_snd"]
 --     "Invalid simp lemma specify.specify5_snd_snd.
 -- The given definition is not a constructor application:
 --   Classical.choice specify.specify5._proof_1"
 
 
 /- We also eta-reduce if we explicitly specify the projection. -/
--- todo: eta
--- attribute [simps extra] test -- this should raise an error!
--- run_cmd liftTermElabM <| do
---   let env ← getEnv
---   let d1 := env.find? `test_extra |>.get!
---   let d2 := env.find? `test_extra_2 |>.get!
---   guard <| d1.type == d2.type
---   pure ()
+attribute [simps extra] test
+example {α} {b : Bool} {x} (h : (⟨3, 5⟩ : MyProd _ _) = x) : (@test α).extra b = x := by
+  dsimp
+  rw [h]
 
 /- check simpRhs option -/
 @[simps (config := {simpRhs := true})] def Equiv'.trans {α β γ} (f : α ≃ β) (g : β ≃ γ) : α ≃ γ :=
@@ -1019,10 +1022,14 @@ example {α : Type} (x z : α) (h : x = z) : (foo α).symm x = z := by
   P_invFun := λ _ _ h => h }
 
 
+example {α : Type} (x z : α) (h : foo.rfl x = z) : (foo2 α).toEquiv' x = z := by
+  dsimp only [foo2_toEquiv']
+  guard_target == foo.rfl x = z
+  rw [h]
+
 example {α : Type} (x z : α) (h : x = z) : (foo2 α).toEquiv' x = z := by
-  dsimp
-  -- todo: eta
-  -- guard_target == foo.rfl x = z
+  dsimp only [foo2_apply]
+  guard_target == x = z
   rw [h]
 
 example {α : Type} (x z : α) (h : x = z) : foo2 α x = z := by
