@@ -135,6 +135,7 @@ def mkSimpContext (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind := Si
 
 end Lean.Meta
 
+/-- Tests whether `declName` has the `@[simp]` attribute in `env`. -/
 def hasSimpAttribute (env : Environment) (declName : Name) : Bool :=
   simpExtension.getState env |>.lemmaNames.contains <| .decl declName
 
@@ -412,6 +413,7 @@ structure ParsedProjectionData where
   /-- is this a projection that is changed by the user? -/
   isChanged : Bool := false
 
+/-- Turn `ParsedProjectionData` into `ProjectionData`. -/
 def ParsedProjectionData.toProjectionData (p : ParsedProjectionData) : ProjectionData :=
 ⟨p.newName, p.expr?.getD default, p.projNrs, p.isDefault, p.isPrefix⟩
 
