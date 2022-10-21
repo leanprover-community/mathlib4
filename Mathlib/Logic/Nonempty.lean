@@ -120,13 +120,15 @@ protected noncomputable def Classical.arbitrary (α) [h : Nonempty α] : α :=
 theorem Nonempty.map {α β} (f : α → β) : Nonempty α → Nonempty β
   | ⟨h⟩ => ⟨f h⟩
 
-protected theorem Nonempty.map2 {α β γ : Sort _} (f : α → β → γ) : Nonempty α → Nonempty β → Nonempty γ
+protected theorem Nonempty.map2 {α β γ : Sort _} (f : α → β → γ) :
+    Nonempty α → Nonempty β → Nonempty γ
   | ⟨x⟩, ⟨y⟩ => ⟨f x y⟩
 
 protected theorem Nonempty.congr {α β} (f : α → β) (g : β → α) : Nonempty α ↔ Nonempty β :=
   ⟨Nonempty.map f, Nonempty.map g⟩
 
-theorem Nonempty.elim_to_inhabited {α : Sort _} [h : Nonempty α] {p : Prop} (f : Inhabited α → p) : p :=
+theorem Nonempty.elim_to_inhabited {α : Sort _} [h : Nonempty α] {p : Prop} (f : Inhabited α → p) :
+    p :=
   h.elim <| f ∘ Inhabited.mk
 
 instance Prod.Nonempty {α β} [h : Nonempty α] [h2 : Nonempty β] : Nonempty (α × β) :=
