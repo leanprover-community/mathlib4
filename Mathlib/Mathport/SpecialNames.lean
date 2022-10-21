@@ -32,6 +32,8 @@ namespace Mathlib.Prelude
 #align Exists.some             Exists.choose
 #align Exists.some_spec        Exists.choose_spec
 
+#align is_lawful_monad         LawfulMonad
+
 #align has_coe Coe
 #align has_coe.coe Coe.coe
 
