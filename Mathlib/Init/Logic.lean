@@ -169,6 +169,11 @@ match (h a b) with
 | isTrue e   => absurd e n
 | isFalse n₁ => proof_irrel n n₁ ▸ Eq.refl (isFalse n)
 
+-- see Note [lower instance priority]
+@[simp]
+instance (priority := 100) nonempty_of_inhabited [Inhabited α] : Nonempty α :=
+⟨default⟩
+
 /- subsingleton -/
 
 -- TODO: rec_subsingleton
