@@ -191,6 +191,7 @@
  ["docBlame", "IsCondLeftInv.left_inv"],
  ["docBlame", "IsCondRightInv.right_inv"],
  ["docBlame", "IsDistinct.distinct"],
+ ["docBlame", "IsEmpty.false"],
  ["docBlame", "IsIdempotent.idempotent"],
  ["docBlame", "IsIncompTrans.incomp_trans"],
  ["docBlame", "IsIrrefl.irrefl"],
