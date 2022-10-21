@@ -181,21 +181,23 @@ Certain propositions should not be treated as a class globally,
 but sometimes it is very convenient to be able to use the type class system
 in specific circumstances.
 
-For example, `zmod p` is a field if and only if `p` is a prime number.
+For example, `Zmod p` is a field if and only if `p` is a prime number.
 In order to be able to find this field instance automatically by type class search,
 we have to turn `p.prime` into an instance implicit assumption.
 
-On the other hand, making `nat.prime` a class would require a major refactoring of the library,
+On the other hand, making `Fat.prime` a class would require a major refactoring of the library,
 and it is questionable whether making `nat.prime` a class is desirable at all.
-The compromise is to add the assumption `[fact p.prime]` to `zmod.field`.
+The compromise is to add the assumption `[Fact p.prime]` to `Zmod.field`.
 
 In particular, this class is not intended for turning the type class system
 into an automated theorem prover for first order logic. -/
 class Fact (p : Prop) : Prop where
+  /-- `Fact.out` contains the unwrapped witness for the fact represented by the instance of
+  `Fact p`. -/
   out : p
 
 library_note "fact non-instances"/--
-In most cases, we should not have global instances of `fact`; typeclass search only reads the head
+In most cases, we should not have global instances of `Fact`; typeclass search only reads the head
 symbol and then tries any instances, which means that adding any such instance will cause slowdowns
 everywhere. We instead make them as lemmata and make them local instances as required.
 -/
@@ -761,7 +763,7 @@ theorem not_forall_not : (¬∀ x, ¬p x) ↔ ∃ x, p x :=
 
 -- See Note [decidable namespace]
 protected theorem Decidable.not_exists_not [∀ x, Decidable (p x)] : (¬∃ x, ¬p x) ↔ ∀ x, p x := by
-  simp [Decidable.not_not]
+  simp only [not_exists, Decidable.not_not, iff_self]
 
 @[simp]
 theorem not_exists_not : (¬∃ x, ¬p x) ↔ ∀ x, p x :=
