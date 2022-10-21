@@ -597,8 +597,8 @@ theorem ball_cond_comm {α} {s : α → Prop} {p : α → α → Prop} :
   ⟨fun h a b ha hb => h a ha b hb, fun h a ha b hb => h a b ha hb⟩
 
 theorem ball_mem_comm {α β} [Membership α β] {s : β} {p : α → α → Prop} :
-    (∀ (a b) (_ : a ∈ s) (_ : b ∈ s), p a b) ↔ ∀ a b, a ∈ s → b ∈ s → p a b :=
-  ⟨fun h a _ ha hb => h a _ ha hb, fun h a _ ha hb => h a _ ha hb⟩
+    (∀ a (_ : a ∈ s) b (_ : b ∈ s), p a b) ↔ ∀ a b, a ∈ s → b ∈ s → p a b :=
+  ball_cond_comm
 
 theorem ne_of_apply_ne {α β : Sort _} (f : α → β) {x y : α} (h : f x ≠ f y) : x ≠ y :=
   fun w : x = y => h (congr_arg f w)
