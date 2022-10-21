@@ -76,7 +76,7 @@ instance Subtype.subsingleton (α : Sort _) [Subsingleton α] (p : α → Prop) 
     most simp lemmas are stated with respect to simple coercions and will not match when
     part of a chain. -/
  @[simp]
- theorem coe_coe {α β γ} [CoeTC α β] [Coe β γ] (a : α) : (a : γ) = (a : β) :=
+ theorem coe_coe {α β γ} [CoeTC α β] [Coe β γ] (a : α) : @CoeTC.coe α γ _ a = (a : β) :=
    rfl
 
 -- Porting note: I suspect we don't need the following lemmas anymore, since we don't
