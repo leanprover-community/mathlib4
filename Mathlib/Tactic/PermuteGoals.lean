@@ -42,7 +42,7 @@ elab "pick_goal " reverse:"-"? n:num : tactic => do
   setGoals $ g :: (gl ++ gr)
 
 /-- `swap` is a shortcut for `pick_goal 2`, which interchanges the 1st and 2nd goals. -/
-macro "swap" : tactic => `(pick_goal 2)
+macro "swap" : tactic => `(tactic| pick_goal 2)
 
 /--
 `on_goal n => tacSeq` creates a block scope for the `n`-th goal and tries the sequence

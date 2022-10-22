@@ -48,11 +48,11 @@ instance : Membership α (Set α) :=
 theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
 funext (fun x => propext (h x))
 
-protected def subset (s₁ s₂ : Set α) :=
+protected def Subset (s₁ s₂ : Set α) :=
 ∀ {a}, a ∈ s₁ → a ∈ s₂
 
-instance : Subset (Set α) :=
-⟨Set.subset⟩
+instance : HasSubset (Set α) :=
+⟨Set.Subset⟩
 
 instance : EmptyCollection (Set α) :=
 ⟨λ _ => False⟩
@@ -66,7 +66,7 @@ macro_rules
   | `({ $x:ident $b:binderPred | $p }) =>
     `(setOf fun $x:ident => satisfiesBinderPred% $x $b ∧ $p)
 
-@[appUnexpander setOf]
+@[app_unexpander setOf]
 def setOf.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident => $p) => `({ $x:ident | $p })
   | `($_ fun $x:ident : $ty:term => $p) => `({ $x:ident : $ty:term | $p })
@@ -106,7 +106,7 @@ def compl (s : Set α) : Set α :=
 protected def diff (s t : Set α) : Set α :=
 {a ∈ s | a ∉ t}
 
-instance : Sdiff (Set α) :=
+instance : SDiff (Set α) :=
 ⟨Set.diff⟩
 
 def powerset (s : Set α) : Set (Set α) :=

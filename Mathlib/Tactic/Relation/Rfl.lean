@@ -19,7 +19,6 @@ open Lean Meta
 /-- Environment extensions for `refl` lemmas -/
 initialize reflExtension : SimpleScopedEnvExtension (Name × Array DiscrTree.Key) (DiscrTree Name) ←
   registerSimpleScopedEnvExtension {
-    name := `refl
     addEntry := fun dt (n, ks) => dt.insertCore ks n
     initial := {}
   }

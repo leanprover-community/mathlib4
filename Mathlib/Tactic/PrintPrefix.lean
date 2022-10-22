@@ -46,7 +46,7 @@ syntax (name := printPrefix) "#print prefix " ident : command
 The command `#print prefix foo` will print all definitions that start with
 the namespace `foo`.
 -/
-@[commandElab printPrefix] def elabPrintPrefix : CommandElab
+@[command_elab printPrefix] def elabPrintPrefix : CommandElab
 | `(#print prefix%$tk $name:ident) => do
   let nameId := name.getId
   liftTermElabM do

@@ -46,7 +46,7 @@ elab (name := runTac) "run_tac" e:doSeq : tactic => do
 syntax (name := byElab) "by_elab" doSeq : term
 
 /-- Elaborator for `by_elab`. -/
-@[termElab byElab] def elabRunElab : TermElab := fun
+@[term_elab byElab] def elabRunElab : TermElab := fun
 | `(by_elab $cmds:doSeq), expectedType? => do
   if let `(Lean.Parser.Term.doSeq| $e:term) := cmds then
     if e matches `(Lean.Parser.Term.doSeq| fun $_args* => $_) then

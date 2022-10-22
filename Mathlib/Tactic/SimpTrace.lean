@@ -34,7 +34,7 @@ This command can also be used in `simp_all` and `dsimp`.
 -/
 syntax (name := simpTrace) "simp?" "!"? simpTraceArgsRest : tactic
 
-@[inheritDoc simpTrace]
+@[inherit_doc simpTrace]
 macro tk:"simp?!" rest:simpTraceArgsRest : tactic => `(tactic| simp?%$tk ! $rest)
 
 macro_rules
@@ -48,10 +48,10 @@ macro_rules
 /-- The common arguments of `simp_all?` and `simp_all?!`. -/
 syntax simpAllTraceArgsRest := (config)? (discharger)? (&" only")? (dsimpArgs)?
 
-@[inheritDoc simpTrace]
+@[inherit_doc simpTrace]
 syntax (name := simpAllTrace) "simp_all?" "!"? simpAllTraceArgsRest : tactic
 
-@[inheritDoc simpTrace]
+@[inherit_doc simpTrace]
 macro tk:"simp_all?!" rest:simpAllTraceArgsRest : tactic => `(tactic| simp_all?%$tk ! $rest)
 
 macro_rules
@@ -65,10 +65,10 @@ macro_rules
 /-- The common arguments of `dsimp?` and `dsimp?!`. -/
 syntax dsimpTraceArgsRest := (config)? (&" only")? (dsimpArgs)? (ppSpace location)?
 
-@[inheritDoc simpTrace]
+@[inherit_doc simpTrace]
 syntax (name := dsimpTrace) "dsimp?" "!"? dsimpTraceArgsRest : tactic
 
-@[inheritDoc simpTrace]
+@[inherit_doc simpTrace]
 macro tk:"dsimp?!" rest:dsimpTraceArgsRest : tactic => `(tactic| dsimp?%$tk ! $rest)
 
 macro_rules

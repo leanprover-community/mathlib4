@@ -12,4 +12,4 @@ initialize transAttr : TagAttribute ← registerTagAttribute `trans "transitive 
 initialize substAttr : TagAttribute ← registerTagAttribute `subst "substitution"
 
 initialize hintTacticAttr : TagAttribute ←
-  registerTagAttribute `hintTactic "A tactic that should be tried by `hint`."
+  registerTagAttribute `hint_tactic "A tactic that should be tried by `hint`."

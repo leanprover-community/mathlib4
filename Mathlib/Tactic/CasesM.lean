@@ -98,7 +98,7 @@ cases_type* Or And
 elab (name := casesType) "cases_type" recursive:"*"? ppSpace heads:(colGt ident)+ : tactic =>
   elabCasesType heads recursive.isSome true
 
-@[inheritDoc casesType]
+@[inherit_doc casesType]
 elab (name := casesType!) "cases_type!" recursive:"*"? ppSpace heads:(colGt ident)+ : tactic =>
   elabCasesType heads recursive.isSome false
 
