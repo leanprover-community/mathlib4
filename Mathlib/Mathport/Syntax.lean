@@ -9,11 +9,12 @@ import Std.Tactic.Ext
 import Std.Tactic.RCases
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Tactic.Alias
-import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.ApplyRules
+import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
+import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
@@ -260,9 +261,6 @@ namespace Tactic
 /- M -/ syntax (name := applyAssumption) "apply_assumption" : tactic
 
 /- S -/ syntax (name := hint) "hint" : tactic
-
-/- B -/ syntax (name := choose) "choose" (ppSpace colGt ident)+ (" using " term)? : tactic
-/- B -/ syntax (name := choose!) "choose!" (ppSpace colGt ident)+ (" using " term)? : tactic
 
 /- N -/ syntax (name := congr') "congr" (ppSpace colGt num)?
   (" with " (colGt rcasesPat)* (" : " num)?)? : tactic
