@@ -25,7 +25,7 @@ set_option maxRecDepth 100000 in
 #time example : (List.range 500).length = 500 := rfl
 ```
 -/
-@[commandElab timeCmd] def timeCmdElab : CommandElab
+@[command_elab timeCmd] def timeCmdElab : CommandElab
   | `(#time%$tk $stx:command) => do
     let start ← IO.monoMsNow
     elabCommand stx

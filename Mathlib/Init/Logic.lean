@@ -79,16 +79,20 @@ alias and_left_comm ← And.left_comm
 alias or_assoc ← Or.assoc
 alias or_left_comm ← Or.left_comm
 
+-- This is needed for `calc` to work with `iff`.
+instance : Trans Iff Iff Iff where
+  trans := fun p q => p.trans q
+
 /- exists unique -/
 
 def ExistsUnique (p : α → Prop) := ∃ x, p x ∧ ∀ y, p y → y = x
 
-open Lean in
+open Lean TSyntax.Compat in
 macro "∃! " xs:explicitBinders ", " b:term : term => expandExplicitBinders ``ExistsUnique xs b
 
 /-- Pretty-printing for `ExistsUnique`, following the same pattern as pretty printing
     for `Exists`. -/
-@[appUnexpander ExistsUnique] def unexpandExistsUnique : Lean.PrettyPrinter.Unexpander
+@[app_unexpander ExistsUnique] def unexpandExistsUnique : Lean.PrettyPrinter.Unexpander
   | `($(_) fun $x:ident => ∃! $xs:binderIdent*, $b) => `(∃! $x:ident $xs:binderIdent*, $b)
   | `($(_) fun $x:ident => $b)                      => `(∃! $x:ident, $b)
   | `($(_) fun ($x:ident : $t) => $b)               => `(∃! ($x:ident : $t), $b)
@@ -369,7 +373,7 @@ variable {α : Sort u} {C : α → Sort v} {r : α → α → Prop}
 unsafe def fix'.impl (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x :=
   F x fun y _ => impl hwf F y
 
-@[implementedBy fix'.impl]
+@[implemented_by fix'.impl]
 def fix' (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x := hwf.fix F x
 
 end WellFounded

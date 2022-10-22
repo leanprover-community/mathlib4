@@ -74,7 +74,7 @@ def appendNamespace (ns : Name) : Name → Name
 | .anonymous        => ns
 
 /-- Elaborates an `alias ←` command. -/
-@[commandElab «alias»] def elabAlias : Command.CommandElab
+@[command_elab «alias»] def elabAlias : Command.CommandElab
 | `($[$doc]? alias $name:ident ← $aliases:ident*) => do
   let resolved ← resolveGlobalConstNoOverloadWithInfo name
   let constant ← getConstInfo resolved
@@ -139,7 +139,7 @@ def aliasIff (ci : ConstantInfo) (ref : Syntax) (al : Name) (isForward : Bool) :
   Term.addTermInfo' ref (← mkConstWithLevelParams al) (isBinder := true)
 
 /-- Elaborates an `alias ↔` command. -/
-@[commandElab aliasLR] def elabAliasLR : Command.CommandElab
+@[command_elab aliasLR] def elabAliasLR : Command.CommandElab
 | `($[$doc]? alias $name:ident ↔ $left:binderIdent $right:binderIdent) => do
   let resolved ← resolveGlobalConstNoOverloadWithInfo name
   let constant ← getConstInfo resolved
@@ -152,7 +152,7 @@ def aliasIff (ci : ConstantInfo) (ref : Syntax) (al : Name) (isForward : Bool) :
 | _ => throwUnsupportedSyntax
 
 /-- Elaborates an `alias ↔ ..` command. -/
-@[commandElab aliasLRDots] def elabAliasLRDots : Command.CommandElab
+@[command_elab aliasLRDots] def elabAliasLRDots : Command.CommandElab
 | `($[$doc]? alias $name:ident ↔ ..%$tk) => do
   let resolved ← resolveGlobalConstNoOverloadWithInfo name
   let constant ← getConstInfo resolved

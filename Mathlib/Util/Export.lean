@@ -100,7 +100,6 @@ def biStr : BinderInfo → String
 | BinderInfo.implicit       => "#BI"
 | BinderInfo.strictImplicit => "#BS"
 | BinderInfo.instImplicit   => "#BC"
-| BinderInfo.auxDecl        => unreachable!
 
 open ConstantInfo in
 mutual

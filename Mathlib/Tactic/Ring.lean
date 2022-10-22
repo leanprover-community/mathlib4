@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Aurélien Saue
 -/
 import Lean.Elab.Tactic.Basic
+import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Tactic.NormNum
 
@@ -16,8 +17,9 @@ Based on <http://www.cs.ru.nl/~freek/courses/tt-2014/read/10.1.1.61.3041.pdf> .
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
-namespace Tactic
+namespace Mathlib.Tactic
 namespace Ring
+open Mathlib.Meta
 
 /-- This cache contains data required by the `ring` tactic during execution. -/
 structure Cache :=
@@ -128,14 +130,12 @@ end HornerExpr
 
 open HornerExpr
 
-theorem zero_horner {α} [CommSemiring α] (x n b) :
-  @horner α _ 0 x n b = b :=
-by simp [horner]
+theorem zero_horner {α} [CommSemiring α] (x n b) : @horner α _ 0 x n b = b := by
+  simp [horner]
 
-theorem horner_horner {α} [CommSemiring α] (a₁ x n₁ n₂ b n')
-  (h : n₁ + n₂ = n') :
-  @horner α _ (horner a₁ x n₁ 0) x n₂ b = horner a₁ x n' b :=
-by simp [h.symm, horner, pow_add, mul_assoc]
+theorem horner_horner {α} [CommSemiring α] (a₁ x n₁ n₂ b n') (h : n₁ + n₂ = n') :
+    @horner α _ (horner a₁ x n₁ 0) x n₂ b = horner a₁ x n' b := by
+  simp [h.symm, horner, pow_add, mul_assoc]
 
 /-- Evaluate `horner a n x b` where `a` and `b` are already in normal form. -/
 def evalHorner : HornerExpr → Expr × ℕ → Expr × ℕ → HornerExpr → RingM (HornerExpr × Expr)
@@ -160,7 +160,7 @@ by
 theorem horner_add_const {α} [CommSemiring α] (a x n b k b') (h : b + k = b') :
   @horner α _ a x n b + k = horner a x n b' :=
 by
-  simp [horner, h.symm ,add_left_comm k, add_assoc]
+  simp [horner, h.symm, add_left_comm k, add_assoc]
 
 theorem horner_add_horner_lt {α} [CommSemiring α] (a₁ x n₁ b₁ a₂ n₂ b₂ k a' b')
   (h₁ : n₁ + k = n₂) (h₂ : (a₁ + horner a₂ x k 0 : α) = a') (h₃ : b₁ + b₂ = b') :
@@ -185,8 +185,8 @@ by
 
 partial def evalAdd : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
 | (const e₁ c₁), (const e₂ c₂) => do
-  let r ← NormNum.eval $ ← mkAdd e₁ e₂
-  pure (const r.expr (c₁ + c₂), ←r.getProof)
+  let r ← NormNum.eval (← mkAdd e₁ e₂)
+  pure (const r.expr (c₁ + c₂), ← r.getProof)
 | he₁@(const e₁ c₁), he₂@(xadd e₂ a x n b) => do
 
   if c₁ = 0 then
@@ -252,7 +252,7 @@ by simp [horner, ← h₁, ← h₂, add_mul, mul_assoc, mul_comm c]
 /-- Evaluate `k * a` where `k` is a rational numeral and `a` is in normal form. -/
 def evalConstMul (k : Expr × ℕ) : HornerExpr → RingM (HornerExpr × Expr)
 | const e coeff => do
-  let r ← NormNum.eval $ ← mkMul k.1 e
+  let r ← NormNum.eval (← mkMul k.1 e)
   return (const r.expr (k.2 * coeff), ← r.getProof)
 | xadd _ a x n b => do
   let (a', h₁) ← evalConstMul k a
@@ -283,7 +283,7 @@ by
 /-- Evaluate `a * b` where `a` and `b` are in normal form. -/
 partial def evalMul : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
 | (const e₁ c₁), (const e₂ c₂) => do
-  let r ← NormNum.eval $ ← mkMul e₁ e₂
+  let r ← NormNum.eval (← mkMul e₁ e₂)
   return (const r.expr (c₁ * c₂), ← r.getProof)
 | (const e₁ c₁), e₂ =>
   if c₁ = 0 then do
@@ -329,11 +329,11 @@ theorem horner_pow {α} [CommSemiring α] (a x : α) (n m n' : ℕ) (a') (h₁ :
     (h₂ : a ^ m = (a' : α)) :
   @horner α _ a x n 0 ^ m = horner a' x n' 0 :=
 by
-  simp [h₁.symm, h₂.symm, horner,  mul_pow a, pow_mul]
+  simp [h₁.symm, h₂.symm, horner, mul_pow a, pow_mul]
 
 theorem pow_succ_eq {α} [CommSemiring α] (a : α) (n : ℕ) (b c)
   (h₁ : a ^ n = b) (h₂ : b * a = c) : a ^ (n + 1) = c :=
-by rw [← h₂, ← h₁, pow_succ]
+by rw [← h₂, ← h₁, pow_succ']
 
 /-- Evaluate `a ^ n` where `a` is in normal form and `n` is a natural numeral. -/
 partial def evalPow : HornerExpr → Expr × ℕ → RingM (HornerExpr × Expr)
@@ -402,13 +402,13 @@ partial def eval (e : Expr) : RingM (HornerExpr × Expr) :=
   | (``HPow.hPow, #[_,_,_,P,e₁,e₂]) => do
     -- let (e₂', p₂) ← lift $ norm_num.derive e₂ <|> refl_conv e₂,
     let (e₂', p₂) := (e₂, ← mkEqRefl e₂)
-    match e₂'.numeral?, P.getAppFn with
-    | some k, .const ``Monoid.HPow _ => do
-      let (e₁', p₁) ← eval e₁
-      let (e', p') ← evalPow e₁' (e₂, k)
-      let p ← mkAppM ``subst_into_pow #[e₁, e₂, e₁', e₂', e', p₁, p₂, p']
-      return (e', p)
-    | _, _ => evalAtom e
+    let some k := e₂'.numeral? | evalAtom e
+    let (``instHPow, #[_, _, P]) := P.getAppFnArgs | evalAtom e
+    let true := P.getAppFn.isConstOf ``Monoid.Pow || P.getAppFn.isConstOf ``instPowNat | evalAtom e
+    let (e₁', p₁) ← eval e₁
+    let (e', p') ← evalPow e₁' (e₂, k)
+    let p ← mkAppM ``subst_into_pow #[e₁, e₂, e₁', e₂', e', p₁, p₂, p']
+    return (e', p)
   | _ =>
     match e.numeral? with
     | some n => (const e n).reflConv

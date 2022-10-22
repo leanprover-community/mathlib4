@@ -216,7 +216,7 @@ elab_rules : tactic
   let g ← elabChoose b.isSome h ids.toList (.failure []) (← getMainGoal)
   replaceMainGoal [g]
 
-@[inheritDoc choose]
+@[inherit_doc choose]
 syntax "choose!" (colGt binderIdent)+ (" using " term)? : tactic
 macro_rules
   | `(tactic| choose! $[$ids]* $[using $h]?) => `(tactic| choose ! $[$ids]* $[using $h]?)
