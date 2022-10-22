@@ -59,6 +59,7 @@ import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr.Traverse
 import Mathlib.Lean.LocalContext
+import Mathlib.Lean.Meta
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Logic.Equiv.MfldSimpsAttr
@@ -111,6 +112,8 @@ import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl
+import Mathlib.Tactic.Relation.Symm
+import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
