@@ -45,6 +45,7 @@ import Mathlib.Data.UnionFind
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
+import Mathlib.Init.Core
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Notation
 import Mathlib.Init.Data.Nat.Basic
@@ -52,7 +53,7 @@ import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Set
-import Mathlib.Init.Zero
+import Mathlib.Init.ZeroOne
 import Mathlib.Lean.Exception
 import Mathlib.Lean.Expr
 import Mathlib.Lean.Expr.Basic

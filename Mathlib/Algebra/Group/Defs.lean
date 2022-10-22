@@ -3,10 +3,11 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-import Mathlib.Init.Zero
-import Mathlib.Init.Data.Int.Notation
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.ToAdditive
+import Mathlib.Init.ZeroOne
+import Mathlib.Init.Data.Int.Notation
+import Mathlib.Data.List.Basic
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -77,23 +78,12 @@ universe u
 
 variable {G : Type _}
 
-@[to_additive Zero]
-class One (α : Type u) where
-  one : α
-
-@[to_additive Zero.toOfNat0]
-instance One.toOfNat1 {α} [One α] : OfNat α (nat_lit 1) where
-  ofNat := ‹One α›.1
-
-@[to_additive Zero.ofOfNat0]
-instance One.ofOfNat1 {α} [OfNat α (nat_lit 1)] : One α where
-  one := 1
-
 /-- Class of types that have an inversion operation. -/
 @[to_additive Neg]
 class Inv (α : Type u) where
   /-- Invert an element of α. -/
   inv : α → α
+#align has_inv Inv
 
 @[inherit_doc]
 postfix:max "⁻¹" => Inv.inv
