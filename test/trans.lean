@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Trans
+import Mathlib.Tactic.Relation.Trans
 import Std.Data.Nat.Lemmas
 
 -- testing that the attribute is recognized and used

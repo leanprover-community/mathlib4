@@ -43,13 +43,8 @@ initialize registerBuiltinAttribute {
     transExt.add (decl, key) kind
 }
 
-/-- look up transitivity lemmas -/
-def transLemmas (env : Environment) : DiscrTree Name :=
-  transExt.getState env
-
-/-- transitivity lemmas from the typeclass -/
-theorem simpleTrans {rel : α → α → Prop} {a b c : α} [Trans rel rel rel] :
-    rel a b → rel b c → rel a c := trans
+/-- Compose two proofs by transitivity, simplified to the homogeneous case. -/
+def _root_.Trans.simple {a b c : α} [Trans r r r] : r a b → r b c → r a c := trans
 
 open Lean.Elab.Tactic
 /--
@@ -66,7 +61,7 @@ elab "trans" t?:(ppSpace (colGt term))? : tactic => withMainContext do
   let ty ← inferType x
   let t? ← t?.mapM (elabTermWithHoles · ty (← getMainTag))
   let s ← saveState
-  for lem in (← (transLemmas (← getEnv)).getUnify rel).push ``simpleTrans do
+  for lem in (← (transExt.getState (← getEnv)).getUnify rel).push ``Trans.simple do
     try
       liftMetaTactic fun g => do
         let lemTy ← inferType (← mkConstWithLevelParams lem)

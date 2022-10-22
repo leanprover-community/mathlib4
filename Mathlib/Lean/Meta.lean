@@ -6,6 +6,8 @@ Authors: Mario Carneiro
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
 
+/-! ## Additional utilities in `Lean.Meta` -/
+
 namespace Lean.Meta
 
 /--

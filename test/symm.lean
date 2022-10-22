@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Symm
+import Mathlib.Tactic.Relation.Symm
 import Std.Tactic.ShowTerm
 
 -- testing that the attribute is recognized
