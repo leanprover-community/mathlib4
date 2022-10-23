@@ -9,11 +9,12 @@ import Std.Tactic.Ext
 import Std.Tactic.RCases
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Tactic.Alias
-import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.ApplyRules
+import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
+import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
@@ -45,8 +46,9 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
+import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Simps
+import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.SimpTrace
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Substs
@@ -203,8 +205,6 @@ namespace Tactic
 /- S -/ syntax "destruct " term : tactic
 /- N -/ syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
 
-/- N -/ syntax (name := simpIntro) "simp_intro" (config)?
-  (ppSpace colGt (ident <|> "_"))* (&" only")? (simpArgs)? : tactic
 /- E -/ syntax (name := symm) "symm" : tactic
 /- E -/ syntax (name := trans) "trans" (ppSpace colGt term)? : tactic
 /- B -/ syntax (name := cc) "cc" : tactic
@@ -261,9 +261,6 @@ namespace Tactic
 /- M -/ syntax (name := applyAssumption) "apply_assumption" : tactic
 
 /- S -/ syntax (name := hint) "hint" : tactic
-
-/- B -/ syntax (name := choose) "choose" (ppSpace colGt ident)+ (" using " term)? : tactic
-/- B -/ syntax (name := choose!) "choose!" (ppSpace colGt ident)+ (" using " term)? : tactic
 
 /- N -/ syntax (name := congr') "congr" (ppSpace colGt num)?
   (" with " (colGt rcasesPat)* (" : " num)?)? : tactic

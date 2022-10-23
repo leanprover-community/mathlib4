@@ -3,6 +3,7 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland, Yury Kudryashov
 -/
+import Mathlib.Tactic.Relation.Symm
 import Mathlib.Algebra.Group.Semiconj
 
 /-!
@@ -51,8 +52,7 @@ protected theorem refl (a : S) : Commute a a :=
   Eq.refl (a * a)
 
 /-- If `a` commutes with `b`, then `b` commutes with `a`. -/
--- TODO: restore @[symm]
-@[to_additive "If `a` commutes with `b`, then `b` commutes with `a`."]
+@[symm, to_additive "If `a` commutes with `b`, then `b` commutes with `a`."]
 protected theorem symm {a b : S} (h : Commute a b) : Commute b a :=
   Eq.symm h
 

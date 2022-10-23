@@ -365,8 +365,6 @@
  ["docBlame", "Function.HasUncurry.uncurry"],
  ["docBlame", "Lean.Attr.hintTacticAttr"],
  ["docBlame", "Lean.Attr.substAttr"],
- ["docBlame", "Lean.Attr.symmAttr"],
- ["docBlame", "Lean.Attr.transAttr"],
  ["docBlame", "Lean.ConstantInfo.isDef"],
  ["docBlame", "Lean.ConstantInfo.isThm"],
  ["docBlame", "Lean.ConstantInfo.toDeclaration!"],
