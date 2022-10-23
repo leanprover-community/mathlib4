@@ -184,6 +184,10 @@ theorem iff_iff_not_or_and_or_not : (a ↔ b) ↔ ((¬a ∨ b) ∧ (a ∨ ¬b)) 
   Decidable.iff_iff_not_or_and_or_not
 theorem not_and_not_right : ¬(a ∧ ¬b) ↔ (a → b) := Decidable.not_and_not_right
 
+lemma Iff.not (h : a ↔ b) : ¬ a ↔ ¬ b := not_congr h
+lemma Iff.not_left (h : a ↔ ¬ b) : ¬ a ↔ b := h.not.trans not_not
+lemma Iff.not_right (h : ¬ a ↔ b) : a ↔ ¬ b := not_not.symm.trans h.not
+
 /-! ### De Morgan's laws -/
 
 alias Decidable.not_and ← Decidable.not_and_distrib

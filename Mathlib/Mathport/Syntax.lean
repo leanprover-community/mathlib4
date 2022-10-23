@@ -9,36 +9,55 @@ import Std.Tactic.Ext
 import Std.Tactic.RCases
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Tactic.Alias
+import Mathlib.Tactic.ApplyRules
 import Mathlib.Tactic.ApplyWith
+import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
+import Mathlib.Tactic.Choose
+import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
-import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Constructor
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.Existsi
+import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
+import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
+import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Recover
-import Mathlib.Tactic.Replace
 import Mathlib.Tactic.Relation.Rfl
+import Mathlib.Tactic.Rename
+import Mathlib.Tactic.RenameBVar
+import Mathlib.Tactic.Replace
+import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.RunCmd
+import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
+import Mathlib.Tactic.SimpIntro
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.SimpTrace
-import Mathlib.Tactic.Simps
 import Mathlib.Tactic.SolveByElim
-import Mathlib.Tactic.Trace
 import Mathlib.Tactic.Substs
-import Mathlib.Util.WithWeakNamespace
+import Mathlib.Tactic.SwapVar
+import Mathlib.Tactic.Trace
+import Mathlib.Tactic.TypeCheck
+import Mathlib.Tactic.Use
 import Mathlib.Util.Syntax
+import Mathlib.Util.WithWeakNamespace
 
 -- To fix upstream:
 -- * bracketedExplicitBinders doesn't support optional types
@@ -186,8 +205,6 @@ namespace Tactic
 /- S -/ syntax "destruct " term : tactic
 /- N -/ syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
 
-/- N -/ syntax (name := simpIntro) "simp_intro" (config)?
-  (ppSpace colGt (ident <|> "_"))* (&" only")? (simpArgs)? : tactic
 /- E -/ syntax (name := symm) "symm" : tactic
 /- E -/ syntax (name := trans) "trans" (ppSpace colGt term)? : tactic
 /- B -/ syntax (name := cc) "cc" : tactic
@@ -228,7 +245,6 @@ namespace Tactic
 /- N -/ syntax (name := field) "field " ident " => " tacticSeq : tactic
 /- S -/ syntax (name := haveField) "have_field" : tactic
 /- S -/ syntax (name := applyField) "apply_field" : tactic
-/- M -/ syntax (name := applyRules) "apply_rules" (config)? " [" term,* "]" (ppSpace num)? : tactic
 /- S -/ syntax (name := hGeneralize) "h_generalize " atomic(binderIdent " : ")? term:51 " = " ident
   (" with " binderIdent)? : tactic
 /- S -/ syntax (name := hGeneralize!) "h_generalize! " atomic(binderIdent " : ")?
@@ -245,9 +261,6 @@ namespace Tactic
 /- M -/ syntax (name := applyAssumption) "apply_assumption" : tactic
 
 /- S -/ syntax (name := hint) "hint" : tactic
-
-/- B -/ syntax (name := choose) "choose" (ppSpace colGt ident)+ (" using " term)? : tactic
-/- B -/ syntax (name := choose!) "choose!" (ppSpace colGt ident)+ (" using " term)? : tactic
 
 /- N -/ syntax (name := congr') "congr" (ppSpace colGt num)?
   (" with " (colGt rcasesPat)* (" : " num)?)? : tactic
@@ -359,8 +372,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
   (config)? ((" : " term) <|> (" := " term))? : tactic
 
 /- M -/ syntax (name := applyFun) "apply_fun " term (ppSpace location)? (" using " term)? : tactic
-
-/- M -/ syntax (name := finCases) "fin_cases " ("*" <|> (term,+)) (" with " term)? : tactic
 
 /- M -/ syntax (name := intervalCases) "interval_cases" (ppSpace (colGt term))?
   (" using " term ", " term)? (" with " ident)? : tactic

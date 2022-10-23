@@ -44,7 +44,7 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
       "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized."
     add   := fun _ stx => do
         let ids ← match stx with
-          | `(attr|to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
+          | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
           | _ => throwError "unexpected to_additive_ignore_args syntax {stx}"
         return ids.toList
   }
@@ -61,7 +61,7 @@ initialize reorderAttr : NameMapExtension (List Nat) ←
     descr :=
       "Auxiliary attribute for `to_additive` that stores arguments that need to be reordered."
     add := fun
-    | _, `(attr|to_additive_reorder $[$ids:num]*) =>
+    | _, `(attr| to_additive_reorder $[$ids:num]*) =>
       pure <| Array.toList <| ids.map (·.1.isNatLit?.get!)
     | _, stx => throwError "unexpected to_additive_reorder syntax {stx}"
   }
@@ -81,7 +81,7 @@ initialize relevantArgAttr : NameMapExtension Nat ←
     descr := "Auxiliary attribute for `to_additive` stating" ++
       " which arguments are the types with a multiplicative structure."
     add := fun
-    | _, `(attr|to_additive_relevant_arg $id) => pure <| id.1.isNatLit?.get!
+    | _, `(attr| to_additive_relevant_arg $id) => pure <| id.1.isNatLit?.get!
     | _, stx => throwError "unexpected to_additive_relevant_arg syntax {stx}"
   }
 
@@ -94,8 +94,7 @@ def isRelevant [Monad M] [MonadEnv M] (n : Name) (i : Nat) : M Bool := do
   | none => return i == 0
 
 /- Maps multiplicative names to their additive counterparts. -/
-initialize translations : NameMapExtension Name ←
-  registerNameMapExtension Name `translations
+initialize translations : NameMapExtension Name ← registerNameMapExtension _
 
 /-- Get the multiplicative → additive translation for the given name. -/
 def findTranslation? (env : Environment) : Name → Option Name :=
@@ -318,6 +317,7 @@ are not stored by the environment.
 [todo] add more attributes. A change is coming to core that should
 allow us to iterate the attributes applied to a given decalaration.
 -/
+-- TODO once we can copy `instance`, tidy up `Algebra/CovariantAndContravariant.lean`.
 def copyAttributes (src tgt : Name) : CoreM Unit := do
   -- [todo] other simp theorems
   let some ext ← getSimpExtension? `simp | return
@@ -719,7 +719,7 @@ that the new name differs from the original one.
 -/
 initialize registerBuiltinAttribute {
     name := `to_additive
-    descr :="Transport multiplicative to additive"
+    descr := "Transport multiplicative to additive"
     add := fun src stx kind => do
       if (kind != AttributeKind.global) then
         throwError "`to_additive` can't be used as a local attribute"

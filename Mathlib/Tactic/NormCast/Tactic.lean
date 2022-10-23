@@ -8,6 +8,7 @@ import Std.Tactic.NormCast.Ext
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Util.Simp
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.GroupWithZero.Defs
 
 open Lean Meta Simp
 
@@ -212,14 +213,12 @@ elab "norm_cast0" loc:((ppSpace location)?) : tactic =>
 
 /-- `assumption_mod_cast` runs `norm_cast` on the goal. For each local hypothesis `h`, it also
 normalizes `h` and tries to use that to close the goal. -/
-macro "assumption_mod_cast" : tactic => `(norm_cast0 at * <;> assumption)
+macro "assumption_mod_cast" : tactic => `(tactic| norm_cast0 at * <;> assumption)
 
 /--
 Normalize casts at the given locations by moving them "upwards".
 -/
-syntax "norm_cast" (ppSpace location)? : tactic
-macro_rules
-| `(tactic| norm_cast $[$loc]?) =>
+macro "norm_cast" loc:(ppSpace location)? : tactic =>
   `(tactic| norm_cast0 $[$loc]? <;> try trivial)
 
 /--
@@ -227,7 +226,7 @@ Rewrite with the given rules and normalize casts between steps.
 -/
 syntax "rw_mod_cast" (config)? rwRuleSeq (ppSpace location)? : tactic
 macro_rules
-  | `(tactic|rw_mod_cast $[$config]? [$rules,*] $[$loc]?) => do
+  | `(tactic| rw_mod_cast $[$config]? [$rules,*] $[$loc]?) => do
     let tacs ← rules.getElems.mapM fun rule =>
       `(tactic| (norm_cast at *; rw $[$config]? [$rule] $[$loc]?))
     `(tactic| ($[$tacs]*))
@@ -235,12 +234,12 @@ macro_rules
 /--
 Normalize the goal and the given expression, then close the goal with exact.
 -/
-macro "exact_mod_cast " e:term : tactic => `(exact mod_cast ($e : _))
+macro "exact_mod_cast " e:term : tactic => `(tactic| exact mod_cast ($e : _))
 
 /--
 Normalize the goal and the given expression, then apply the expression to the goal.
 -/
-macro "apply_mod_cast " e:term : tactic => `(apply mod_cast ($e : _))
+macro "apply_mod_cast " e:term : tactic => `(tactic| apply mod_cast ($e : _))
 
 syntax (name := convNormCast) "norm_cast" : conv
 @[tactic convNormCast] def evalConvNormCast : Tactic :=

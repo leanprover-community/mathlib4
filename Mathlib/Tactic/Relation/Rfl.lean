@@ -12,14 +12,13 @@ This extends the `rfl` tactic so that it works on any reflexive relation,
 provided the reflexivity lemma has been marked as `@[refl]`.
 -/
 
-namespace Mathlib.Tactic.Relation.Rfl
+namespace Mathlib.Tactic
 
 open Lean Meta
 
 /-- Environment extensions for `refl` lemmas -/
-initialize reflExtension : SimpleScopedEnvExtension (Name × Array DiscrTree.Key) (DiscrTree Name) ←
+initialize reflExt : SimpleScopedEnvExtension (Name × Array DiscrTree.Key) (DiscrTree Name) ←
   registerSimpleScopedEnvExtension {
-    name := `refl
     addEntry := fun dt (n, ks) => dt.insertCore ks n
     initial := {}
   }
@@ -33,9 +32,9 @@ initialize registerBuiltinAttribute {
     let fail := throwError
       "@[refl] attribute only applies to lemmas proving x ∼ x, got {declTy}"
     let .app (.app rel lhs) rhs := targetTy | fail
-    unless ← isDefEq lhs rhs do fail
+    unless ← withNewMCtxDepth <| isDefEq lhs rhs do fail
     let key ← DiscrTree.mkPath rel
-    reflExtension.add (decl, key) kind
+    reflExt.add (decl, key) kind
 }
 
 open Elab.Tactic in
@@ -49,7 +48,7 @@ elab_rules : tactic
   let .app (.app rel _) _ := tgt
     | throwError "reflexivity lemmas only apply to binary relations, not {indentExpr tgt}"
   let s ← saveState
-  for lem in ← (reflExtension.getState (← getEnv)).getMatch rel do
+  for lem in ← (reflExt.getState (← getEnv)).getMatch rel do
     try
       liftMetaTactic (·.apply (← mkConstWithFreshMVarLevels lem))
       return

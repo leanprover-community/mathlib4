@@ -1,7 +1,6 @@
+import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.Group.Basic
 import Mathlib.Tactic.Spread
-import Mathlib.Util.WhatsNew
 
 /-
 # Semirings and rings
@@ -41,7 +40,7 @@ lemma Nat.cast_mul [Semiring R] {m n : ℕ} : (m * n).cast = (m.cast * n.cast : 
 
 @[simp]
 lemma Nat.cast_pow [Semiring R] {m n : ℕ} : (m ^ n).cast = (m.cast ^ n : R) := by
-  induction n generalizing m <;> simp_all [Nat.pow_succ', _root_.pow_succ', pow_zero]
+  induction n generalizing m <;> simp_all [Nat.pow_succ', _root_.pow_succ'', pow_zero]
 
 end Semiring
 
@@ -50,6 +49,8 @@ class CommSemiring (R : Type u) extends Semiring R, CommMonoid R where
   right_distrib a b c := (by rw [mul_comm, mul_add, mul_comm c, mul_comm c])
 
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
+
+example [Ring R] : HasInvolutiveNeg R := inferInstance
 
 theorem neg_mul_eq_neg_mul {R} [Ring R] (a b : R) : -(a * b) = (-a) * b :=
   Eq.symm <| eq_of_sub_eq_zero' <| by
@@ -114,17 +115,6 @@ instance : CommRing ℤ where
     show ofNat (Nat.succ n) * x = x + ofNat n * x
     rw [Int.ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
   sub_eq_add_neg a b := Int.sub_eq_add_neg
-  gsmul := HMul.hMul
-  gsmul_zero' := Int.zero_mul
-  gsmul_succ' n x := by rw [Int.ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
-  gsmul_neg' n x := by
-    cases x with
-    | ofNat m =>
-      rw [Int.negSucc_ofNat_ofNat, Int.ofNat_mul_ofNat]
-      exact rfl
-    | negSucc m =>
-      rw [Int.mul_negSucc_ofNat_negSucc_ofNat, Int.ofNat_mul_negSucc_ofNat]
-      exact rfl
   natCast := (·)
   natCast_zero := rfl
   natCast_succ _ := rfl
