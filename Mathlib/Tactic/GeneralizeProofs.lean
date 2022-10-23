@@ -10,8 +10,13 @@ open Lean.Meta
 
 namespace Lean.Elab.Tactic
 
+-- unrelated to this file but nice for debugging
 deriving instance Repr for GeneralizeArg
+
 namespace GeneralizeProofs
+
+/- The following set up are the visit function are copied from core -/
+
 
 def isNonTrivialProof (e : Expr) : MetaM Bool := do
   if !(← isProof e) then
@@ -103,18 +108,13 @@ elab (name := generalizeProofs) "generalize_proofs"
           | .targets t _ => t
       else #[]
     let fvs ← getFVarIds ou
-    logInfo (toMessageData ou)
     liftMetaTactic1 fun goal => do -- TODO decide if working on all or not
       let hsa : Array Name ← (hs.reverse.mapM fun sy => do
         if let `(binderIdent| $s:ident) := sy then
           return s.getId
         else
           mkFreshUserName `h)
-      logInfo (toMessageData hsa)
-      logInfo (← goal.getType)
-      logInfo (← (do let t ← goal.getType; instantiateMVars t))
       let (_, ⟨_, out⟩) ← GeneralizeProofs.visit (← instantiateMVars (← goal.getType)) |>.run
         { baseName := `a } |>.run |>.run { nextIdx := hsa }
-      let (_, _, mvarId) ← goal.generalizeHyp out fvs --fvarIds
-      logInfo (toMessageData hs)
+      let (_, _, mvarId) ← goal.generalizeHyp out fvs
       return mvarId
