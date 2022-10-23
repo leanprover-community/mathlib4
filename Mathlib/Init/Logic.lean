@@ -11,6 +11,7 @@ import Mathlib.Tactic.Basic
 import Mathlib.Tactic.SimpTrace
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
+import Mathlib.Tactic.Relation.Trans
 
 #align opt_param_eq optParam_eq
 
@@ -19,7 +20,8 @@ import Mathlib.Mathport.Rename
 @[deprecated] def Implies (a b : Prop) := a → b
 
 /-- Implication `→` is transitive. If `P → Q` and `Q → R` then `P → R`. -/
-@[deprecated, trans] theorem Implies.trans {p q r : Prop} (h₁ : p → q) (h₂ : q → r) :
+-- FIXME This should have `@[trans]`, but the `trans` attributed PR'd in #253 rejects it.
+@[deprecated] theorem Implies.trans {p q r : Prop} (h₁ : p → q) (h₂ : q → r) :
     p → r := fun hp => h₂ (h₁ hp)
 
 /- Not -/
