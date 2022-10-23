@@ -528,14 +528,14 @@ protected def prod (G H : BSemigroup) : BSemigroup :=
 
 end BSemigroup
 
-class ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, Subset G :=
+class ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G :=
 (new_axiom : ∀ x : G, x * - 0 ⊆ - x)
 
 @[simps] def bar : ExtendingStuff ℕ :=
 { mul := (·*·)
   zero := 0
   neg := Nat.succ
-  subset := λ _ _ => True
+  Subset := λ _ _ => True
   new_axiom := λ _ => trivial }
 
 section
@@ -543,14 +543,14 @@ attribute [local instance] bar
 example (x : ℕ) : x * - 0 ⊆ - x := by simp
 end
 
-class new_ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, Subset G :=
+class new_ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G :=
 (new_axiom : ∀ x : G, x * - 0 ⊆ - x)
 
 @[simps] def new_bar : new_ExtendingStuff ℕ :=
 { mul := (·*·)
   zero := 0
   neg := Nat.succ
-  subset := λ _ _ => True
+  Subset := λ _ _ => True
   new_axiom := λ _ => trivial }
 
 section
