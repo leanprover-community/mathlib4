@@ -48,7 +48,7 @@ import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Simps
+import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.SimpTrace
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.Substs
