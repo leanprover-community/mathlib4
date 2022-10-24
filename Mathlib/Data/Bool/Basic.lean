@@ -73,9 +73,7 @@ theorem true_eq_decide_iff {p : Prop} [Decidable p] : true = decide p ↔ p :=
 
 @[simp]
 theorem false_eq_decide_iff {p : Prop} [Decidable p] : false = decide p ↔ ¬p :=
-  eq_comm.trans sorry
---  eq_comm.trans (to_bool_ff_iff _) in mathlib3
--- but this lemma is from core lean 3 init.data.bool.lemmas
+  eq_comm.trans (decide_false_iff _)
 
 theorem decide_not (p : Prop) [Decidable p] : (decide ¬p) = not (decide p) := by
   by_cases p <;> simp [*]
@@ -92,7 +90,7 @@ theorem decide_or (p q : Prop) [Decidable p] [Decidable q] : decide (p ∨ q) = 
 
 @[simp]
 theorem decide_eq {p q : Prop} [Decidable p] [Decidable q] : decide p = decide q ↔ (p ↔ q) :=
-  ⟨fun h => (coe_decide p).symm.trans <| by simp [h], sorry⟩ -- to_bool_congr is in core 3
+  ⟨fun h => (coe_decide p).symm.trans <| by simp [h], decide_congr⟩
 
 theorem not_false' : ¬false := fun.
 -- wtf why does ff_ne_tt exist in this form?
