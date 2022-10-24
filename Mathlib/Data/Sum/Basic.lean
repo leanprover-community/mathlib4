@@ -385,7 +385,8 @@ theorem lex_acc_inl {a} (aca : Acc r a) : Acc (Lex r s) (inl a) := by
   cases' h with a' _ h'
   exact IH _ h'
 
-theorem lex_acc_inr (aca : ∀ a, Acc (Lex r s) (inl a)) {b} (acb : Acc s b) : Acc (Lex r s) (inr b) := by
+theorem lex_acc_inr (aca : ∀ a, Acc (Lex r s) (inl a)) {b} (acb : Acc s b) :
+    Acc (Lex r s) (inr b) := by
   induction' acb with b H IH
   constructor
   intro y h
