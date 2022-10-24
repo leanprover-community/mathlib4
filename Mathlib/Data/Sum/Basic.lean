@@ -14,16 +14,16 @@ This file proves basic results about the sum type `α ⊕ β`.
 
 ## Main declarations
 
-* `Sum.get_left`: Retrieves the left content of `x : α ⊕ β` or returns `none` if it's coming from
+* `Sum.getLeft`: Retrieves the left content of `x : α ⊕ β` or returns `none` if it's coming from
   the right.
-* `Sum.get_right`: Retrieves the right content of `x : α ⊕ β` or returns `none` if it's coming from
+* `Sum.getRight`: Retrieves the right content of `x : α ⊕ β` or returns `none` if it's coming from
   the left.
-* `Sum.is_left`: Returns whether `x : α ⊕ β` comes from the left component or not.
-* `Sum.is_right`: Returns whether `x : α ⊕ β` comes from the right component or not.
+* `Sum.isLeft`: Returns whether `x : α ⊕ β` comes from the left component or not.
+* `Sum.isRight`: Returns whether `x : α ⊕ β` comes from the right component or not.
 * `Sum.map`: Maps `α ⊕ β` to `γ ⊕ δ` component-wise.
 * `Sum.elim`: Nondependent eliminator/induction principle for `α ⊕ β`.
 * `Sum.swap`: Maps `α ⊕ β` to `β ⊕ α` by swapping components.
-* `Sum.lex`: Lexicographic order on `α ⊕ β` induced by a relation on `α` and a relation on `β`.
+* `Sum.Lex`: Lexicographic order on `α ⊕ β` induced by a relation on `α` and a relation on `β`.
 
 ## Notes
 
