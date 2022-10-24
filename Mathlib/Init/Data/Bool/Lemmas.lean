@@ -12,6 +12,8 @@ set_option autoImplicit false
 
 attribute [simp] cond or and not xor
 
+namespace Bool
+
 @[simp]
 theorem cond_a_a.{u} {α : Type u} (b : Bool) (a : α) : cond b a a = a := by cases b <;> simp
 
@@ -27,9 +29,6 @@ theorem xor_false (b : Bool) : xor b false = b := by cases b <;> simp
 theorem true_xor (b : Bool) : xor true b = not b := by cases b <;> simp
 
 theorem false_xor (b : Bool) : xor false b = b := by cases b <;> simp
-
-@[simp]
-theorem not_not (b : Bool) : not (not b) = b := by cases b <;> simp
 
 theorem true_eq_false_eq_False : ¬true = false := by decide
 
@@ -135,3 +134,5 @@ theorem ite_eq_true_distrib (c : Prop) [Decidable c] (a b : Bool) :
 @[simp]
 theorem ite_eq_false_distrib (c : Prop) [Decidable c] (a b : Bool) :
     ((if c then a else b) = false) = if c then a = false else b = false := by by_cases c <;> simp [*]
+
+end Bool

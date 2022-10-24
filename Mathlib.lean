@@ -54,6 +54,7 @@ import Mathlib.Init.Align
 import Mathlib.Init.Classical
 import Mathlib.Init.Core
 import Mathlib.Init.Data.Bool.Basic
+import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Notation
 import Mathlib.Init.Data.Nat.Basic

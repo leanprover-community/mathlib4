@@ -6,7 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad
 import Mathlib.Tactic.Coe -- ↥
 import Std.Logic -- eq_comm
 import Mathlib.Init.Algebra.Order -- LinearOrder
-import Mathlib.Init.Data.Bool.Basic -- xor -- this will be imported by lemmas
+import Mathlib.Init.Data.Bool.Lemmas
 
 -- to be removed
 import Mathlib.Tactic.SimpTrace
@@ -157,7 +157,7 @@ theorem or_left_comm : ∀ a b c, (a || (b || c)) = (b || (a || c)) := by decide
 
 theorem or_inl {a b : Bool} (H : a) : a || b := by simp [H]
 
-theorem or_inr {a b : Bool} (H : b) : a || b := by simp [H]
+theorem or_inr {a b : Bool} (H : b) : a || b := by cases a <;> simp [H]
 
 theorem and_comm : ∀ a b, (a && b) = (b && a) := by decide
 
@@ -173,13 +173,13 @@ theorem and_or_distrib_left (a b c : Bool) : (a && (b || c)) = (a && b || a && c
   cases a <;> simp
 
 theorem and_or_distrib_right (a b c : Bool) : ((a || b) && c) = (a && c || b && c) := by
-  cases c <;> simp
+  cases a <;> cases b <;> cases c <;> simp
 
 theorem or_and_distrib_left (a b c : Bool) : (a || b && c) = ((a || b) && (a || c)) := by
   cases a <;> simp
 
 theorem or_and_distrib_right (a b c : Bool) : (a && b || c) = ((a || c) && (b || c)) := by
-  cases c <;> simp
+  cases a <;> cases b <;> cases c <;> simp
 
 @[simp]
 theorem Not_eq_not : ∀ {a b : Bool}, ¬a = !b ↔ a = b := by decide
@@ -195,10 +195,6 @@ theorem not_ne : ∀ {a b : Bool}, (!a) ≠ b ↔ a = b := Not_not_eq
 
 @[simp]
 theorem not_iff_Not : ∀ {b : Bool}, !b ↔ ¬b := by decide
-
-theorem eq_true_of_not_eq_false : ∀ {a : Bool}, not a = false → a = true := by decide
-
-theorem eq_false_of_not_eq_true : ∀ {a : Bool}, not a = true → a = false := by decide
 
 @[simp]
 theorem and_not_self : ∀ x, (x && !x) = false := by decide
@@ -238,7 +234,7 @@ theorem and_xor_distrib_left (a b c : Bool) : (a && xor b c) = xor (a && b) (a &
   cases a <;> simp
 
 theorem and_xor_distrib_right (a b c : Bool) : (xor a b && c) = xor (a && c) (b && c) := by
-  cases c <;> simp
+  cases a <;> cases b <;> cases c <;> simp
 
 theorem xor_iff_ne : ∀ {x y : Bool}, xor x y = true ↔ x ≠ y := by decide
 
