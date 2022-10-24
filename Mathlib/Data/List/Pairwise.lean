@@ -38,7 +38,7 @@ theorem Pairwise.imp_of_mem {S : α → α → Prop} {l : List α}
   | nil => constructor
   | @cons a l r _ ih =>
     constructor
-    · exact Ball.imp_right (fun x h => H (mem_cons_self _ _) (mem_cons_of_mem _ h)) r
+    · exact BAll.imp_right (fun x h => H (mem_cons_self _ _) (mem_cons_of_mem _ h)) r
     · exact ih fun {a b} m m' => H (mem_cons_of_mem _ m) (mem_cons_of_mem _ m')
 
 theorem Pairwise.of_map {S : β → β → Prop} (f : α → β) (H : ∀ a b : α, S (f a) (f b) → R a b)
