@@ -70,11 +70,11 @@ ext_iff
 theorem coe_eq_iff {a : {a // p a}} {b : α} : ↑a = b ↔ ∃ h, a = ⟨b, h⟩ :=
 ⟨λ h => h ▸ ⟨a.2, (coe_eta _ _).symm⟩, λ ⟨_, ha⟩ => ha.symm ▸ rfl⟩
 
-theorem coe_injective : injective ((↑·) : Subtype p → α) :=
+theorem coe_injective : Injective ((↑·) : Subtype p → α) :=
 by intros a b hab
    exact Subtype.ext hab
 
-theorem val_injective : injective (@val _ p) :=
+theorem val_injective : Injective (@val _ p) :=
 coe_injective
 
 /-- Restrict a (dependent) function to a subtype -/
@@ -87,7 +87,7 @@ lemma restrict_apply {α} {β : α → Type _} (f : ∀x, β x) (p : α → Prop
 -- FIXME: replace Subtype.val with (↑)
 lemma restrict_def {α β} (f : α → β) (p : α → Prop) : restrict f p = f ∘ Subtype.val := rfl
 
-lemma restrict_injective {α β} {f : α → β} (p : α → Prop) (h : injective f) :
+lemma restrict_injective {α β} {f : α → β} (p : α → Prop) (h : Injective f) :
   injective (restrict f p) :=
 h.comp coe_injective
 
@@ -96,13 +96,13 @@ def coind {α β} (f : α → β) {p : β → Prop} (h : ∀a, p (f a)) : α →
 λ a => ⟨f a, h a⟩
 
 theorem coind_injective {α β} {f : α → β} {p : β → Prop} (h : ∀a, p (f a))
-  (hf : injective f) : injective (coind f h) :=
+  (hf : Injective f) : Injective (coind f h) :=
 by intros x y hxy
    refine hf ?_
    apply congrArg Subtype.val hxy
 
 theorem coind_surjective {α β} {f : α → β} {p : β → Prop} (h : ∀a, p (f a))
-  (hf : surjective f) : surjective (coind f h) :=
+  (hf : Surjective f) : Surjective (coind f h) :=
 λ x => let ⟨a, ha⟩ := hf x
        ⟨a, coe_injective ha⟩
 
@@ -124,7 +124,7 @@ theorem map_id {p : α → Prop} {h : ∀a, p a → p (id a)} : map (@id α) h =
 funext fun ⟨_, _⟩ => rfl
 
 lemma map_injective {p : α → Prop} {q : β → Prop} {f : α → β} (h : ∀a, p a → q (f a))
-  (hf : injective f) : injective (map f h) :=
+  (hf : Injective f) : Injective (map f h) :=
 coind_injective _ $ hf.comp coe_injective
 
 lemma map_involutive {p : α → Prop} {f : α → α} (h : ∀a, p a → p (f a))

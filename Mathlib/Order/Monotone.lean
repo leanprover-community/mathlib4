@@ -179,10 +179,10 @@ section PartialOrder
 
 variable [PartialOrder β] {f : α → β}
 
-theorem Monotone.strict_mono_of_injective (h₁ : Monotone f) (h₂ : injective f) : StrictMono f :=
+theorem Monotone.strict_mono_of_injective (h₁ : Monotone f) (h₂ : Injective f) : StrictMono f :=
   fun _ _ h => (h₁ h.le).lt_of_ne fun H => h.ne <| h₂ H
 
-theorem Antitone.strict_anti_of_injective (h₁ : Antitone f) (h₂ : injective f) : StrictAnti f :=
+theorem Antitone.strict_anti_of_injective (h₁ : Antitone f) (h₂ : Injective f) : StrictAnti f :=
   fun _ _ h => (h₁ h.le).lt_of_ne fun H => h.ne <| h₂ H.symm
 
 end PartialOrder
@@ -280,7 +280,7 @@ theorem antitone_on_const [Preorder α] [Preorder β] {c : β} {s : Set α} :
   fun _ _ _ _ _ => le_rfl
 
 theorem injective_of_le_imp_le
-    [PartialOrder α] [Preorder β] (f : α → β) (h : ∀ {x y}, f x ≤ f y → x ≤ y) : injective f :=
+    [PartialOrder α] [Preorder β] (f : α → β) (h : ∀ {x y}, f x ≤ f y → x ≤ y) : Injective f :=
   fun _ _ hxy => (h hxy.le).antisymm (h hxy.ge)
 
 /-! ### Monotonicity under composition -/
