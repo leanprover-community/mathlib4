@@ -36,8 +36,8 @@ theorem exists' {p : α → β → Prop} : (∃ x : PProd α β, p x.1 x.2) ↔ 
 
 end PProd
 
-theorem Function.Injective.pprod_map {f : α → β} {g : γ → δ} (hf : injective f) (hg : injective g) :
-    injective (fun x => ⟨f x.1, g x.2⟩ : PProd α γ → PProd β δ) := fun _ _ h =>
+theorem Function.Injective.pprod_map {f : α → β} {g : γ → δ} (hf : Injective f) (hg : Injective g) :
+    Injective (fun x => ⟨f x.1, g x.2⟩ : PProd α γ → PProd β δ) := fun _ _ h =>
   have A := congr_arg PProd.fst h
   have B := congr_arg PProd.snd h
   congr_arg₂ PProd.mk (hf A) (hg B)
