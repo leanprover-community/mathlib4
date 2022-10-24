@@ -5,6 +5,8 @@ Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
 -- a port of core Lean `init/function.lean`
 
+import Mathlib.Mathport.Rename
+
 /-!
 # General operations on functions
 -/
@@ -50,6 +52,8 @@ theorem comp_const_right (f : β → φ) (b : β) : f ∘ (const α b) = const �
 /-- A function `f : α → β` is called injective if `f x = f y` implies `x = y`. -/
 def injective (f : α → β) : Prop := ∀ ⦃a₁ a₂⦄, f a₁ = f a₂ → a₁ = a₂
 
+#align function.injective Function.injective
+
 theorem injective.comp {g : β → φ} {f : α → β} (hg : injective g) (hf : injective f) :
   injective (g ∘ f) :=
 fun _ _ h => hf (hg h)
@@ -57,6 +61,8 @@ fun _ _ h => hf (hg h)
 /-- A function `f : α → β` is calles surjective if every `b : β` is equal to `f a`
 for some `a : α`. -/
 @[reducible] def surjective (f : α → β) : Prop := ∀ b, ∃ a, f a = b
+
+#align function.surjective Function.surjective
 
 theorem surjective.comp {g : β → φ} {f : α → β} (hg : surjective g) (hf : surjective f) :
   surjective (g ∘ f) :=
