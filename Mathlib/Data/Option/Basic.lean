@@ -52,10 +52,10 @@ theorem eq_of_mem_of_mem {a : α} {o1 o2 : Option α} (h1 : a ∈ o1) (h2 : a �
 theorem Mem.left_unique : Relator.LeftUnique ((· ∈ ·) : α → Option α → Prop) :=
 fun _ _ _=> mem_unique
 
-theorem some_injective (α : Type _) : Function.injective (@some α) := fun _ _ => some_inj.mp
+theorem some_injective (α : Type _) : Function.Injective (@some α) := fun _ _ => some_inj.mp
 
 /-- `option.map f` is injective if `f` is injective. -/
-theorem map_injective {f : α → β} (Hf : Function.injective f) : Function.injective (Option.map f)
+theorem map_injective {f : α → β} (Hf : Function.Injective f) : Function.Injective (Option.map f)
   | none, none, _ => rfl
   | some a₁, some a₂, H => by rw [Hf (Option.some.inj H)]
 
@@ -94,7 +94,7 @@ theorem map_coe' {a : α} {f : α → β} : Option.map f (a : Option α) = ↑(f
   rfl
 
 /-- `option.map` as a function between functions is injective. -/
-theorem map_injective' : Function.injective (@Option.map α β) := fun f g h =>
+theorem map_injective' : Function.Injective (@Option.map α β) := fun f g h =>
   funext fun x => some_injective _ <| by simp only [← map_some', h]
 
 @[simp]
