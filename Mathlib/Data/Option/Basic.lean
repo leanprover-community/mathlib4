@@ -378,6 +378,8 @@ theorem choice_is_some_iff_nonempty {α : Type _} : (choice α).isSome ↔ Nonem
 
 end
 
+#align option.elim Option.elimₓ
+
 @[simp]
 theorem elim_none_some (f : Option α → β) : (fun x => Option.elim x (f none) (f ∘ some)) = f :=
   funext fun o => by cases o <;> rfl
