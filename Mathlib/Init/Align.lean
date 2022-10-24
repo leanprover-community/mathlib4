@@ -36,8 +36,8 @@ actual theorems in the files.
 #align has_coe Coe
 #align has_coe.coe Coe.coe
 
-#align has_coe_t CoeTₓ
-#align has_coe_t.coe CoeTₓ.coe
+#align has_coe_t CoeTCₓ -- universe level mismatch
+#align has_coe_t.coe CoeTCₓ.coe
 
 #align has_coe_to_fun CoeFun
 #align has_coe_to_fun.coe CoeFun.coe

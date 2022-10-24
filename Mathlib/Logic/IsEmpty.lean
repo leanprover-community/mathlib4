@@ -145,19 +145,19 @@ theorem is_empty_subtype (p : α → Prop) : IsEmpty (Subtype p) ↔ ∀ x, ¬p 
 
 @[simp]
 theorem is_empty_prod {α β : Type _} : IsEmpty (α × β) ↔ IsEmpty α ∨ IsEmpty β := by
-  simp only [← not_nonempty_iff, nonempty_prod, not_and_distrib, iff_self]
+  simp only [← not_nonempty_iff, nonempty_prod, not_and_or, iff_self]
 
 @[simp]
 theorem is_empty_pprod : IsEmpty (PProd α β) ↔ IsEmpty α ∨ IsEmpty β := by
-  simp only [← not_nonempty_iff, nonempty_pprod, not_and_distrib, iff_self]
+  simp only [← not_nonempty_iff, nonempty_pprod, not_and_or, iff_self]
 
 @[simp]
 theorem is_empty_sum {α β} : IsEmpty (Sum α β) ↔ IsEmpty α ∧ IsEmpty β := by
-  simp only [← not_nonempty_iff, nonempty_sum, not_or_distrib, iff_self]
+  simp only [← not_nonempty_iff, nonempty_sum, not_or, iff_self]
 
 @[simp]
 theorem is_empty_psum {α β} : IsEmpty (PSum α β) ↔ IsEmpty α ∧ IsEmpty β := by
-  simp only [← not_nonempty_iff, nonempty_psum, not_or_distrib, iff_self]
+  simp only [← not_nonempty_iff, nonempty_psum, not_or, iff_self]
 
 @[simp]
 theorem is_empty_ulift {α} : IsEmpty (ULift α) ↔ IsEmpty α := by
