@@ -724,4 +724,6 @@
  ["docBlame", "Mathlib.Tactic.Ring.RingM.run"],
  ["docBlame", "Mathlib.Tactic.Ring.State.atoms"],
  ["docBlame", "Mathlib.Tactic.Ring.State.numAtoms"],
- ["docBlame", "Mathlib.Tactic.Sat.buildReify.mkPS"]]
+ ["docBlame", "Mathlib.Tactic.Sat.buildReify.mkPS"],
+ ["unusedArguments", "Mathlib.Init.Core.Combinator.K"],
+ ["unusedArguments", "Mathlib.Init.Logic.Decidable.not_or_iff_and_not"]]
