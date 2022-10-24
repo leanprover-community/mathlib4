@@ -161,6 +161,20 @@ def renameBVar (e : Expr) (old new : Name) : Expr :=
     forallE (if n == old then new else n) (ty.renameBVar old new) (bd.renameBVar old new) bi
   | e => e
 
+open Lean.Meta in
+/-- `getBinderName e` returns `some n` if `e` is an expression of the form `∀ n, ...`
+and `none` otherwise. -/
+def getBinderName (e : Expr) : MetaM (Option Name) := do
+  match ← withReducible (whnf e) with
+  | .forallE (binderName := n) .. | .lam (binderName := n) .. => pure (some n)
+  | _ => pure none
+
+open Lean.Elab.Term in
+/-- Annotates a `binderIdent` with the binder information from an `fvar`. -/
+def addLocalVarInfoForBinderIdent (fvar : Expr) : TSyntax ``binderIdent → TermElabM Unit
+| `(binderIdent| $n:ident) => Elab.Term.addLocalVarInfo n fvar
+| tk => Elab.Term.addLocalVarInfo (Unhygienic.run `(_%$tk)) fvar
+
 end Expr
 
 end Lean

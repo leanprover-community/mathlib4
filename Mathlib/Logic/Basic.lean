@@ -109,11 +109,6 @@ instance Subtype.subsingleton (α : Sort _) [Subsingleton α] (p : α → Prop) 
 --     @coeSort α _ _ x = @coeSort β _ _ x :=
 --   rfl
 
--- @[simp]
--- theorem coe_sort_coe_base {α β γ} [Coe α β] [CoeSort β γ] (x : α) :
---     @coeSort α _ _ x = @coeSort β _ _ x :=
---   rfl
-
 library_note "function coercion"
 /-- Many structures such as bundled morphisms coerce to functions so that you can
 transparently apply them to arguments. For example, if `e : α ≃ β` and `a : α`
@@ -139,6 +134,13 @@ instance {α β} : has_coe_to_fun (sparkling_equiv α β) :=
 simp-normal form. The lemma `coe_fn_coe_base` will unfold it to `⇑↑e a`. This
 often causes loops in the simplifier.)
 -/
+
+-- @[simp]
+-- theorem coe_sort_coe_base {α β γ} [Coe α β] [CoeSort β γ] (x : α) :
+--     @coeSort α _ _ x = @coeSort β _ _ x :=
+--   rfl
+
+#align pempty PEmpty
 
 theorem congr_heq {α β γ : Sort _} {f : α → γ} {g : β → γ} {x : α} {y : β}
     (h₁ : HEq f g) (h₂ : HEq x y) : f x = g y := by
@@ -262,13 +264,11 @@ protected theorem Function.mt : (a → b) → ¬b → ¬a :=
 
 alias Decidable.em ← dec_em
 
-theorem dec_em' (p : Prop) [Decidable p] : ¬p ∨ p :=
-  (dec_em p).swap
+theorem dec_em' (p : Prop) [Decidable p] : ¬p ∨ p := (dec_em p).symm
 
 alias Classical.em ← em
 
-theorem em' (p : Prop) : ¬p ∨ p :=
-  (em p).swap
+theorem em' (p : Prop) : ¬p ∨ p := (em p).symm
 
 theorem or_not {p : Prop} : p ∨ ¬p :=
   em _
@@ -358,22 +358,15 @@ theorem Iff.not_right (h : ¬a ↔ b) : a ↔ ¬b :=
 
 /-! ### Declarations about `xor` -/
 
+@[simp] theorem xor_true : Xor' True = Not := by simp [Xor']
 
-@[simp]
-theorem xor_true : xor True = Not :=
-  funext fun a => by simp [xor]
+@[simp] theorem xor_false : Xor' False = id := by ext; simp [Xor']
 
-@[simp]
-theorem xor_false : xor False = id :=
-  funext fun a => by simp [xor]
+theorem xor_comm (a b) : Xor' a b = Xor' b a := by simp [Xor', and_comm, or_comm]
 
-theorem xor_comm (a b) : xor a b = xor b a := by simp [xor, and_comm, or_comm]
+instance : IsCommutative Prop Xor' := ⟨xor_comm⟩
 
-instance : IsCommutative Prop xor :=
-  ⟨xor_comm⟩
-
-@[simp]
-theorem xor_self (a : Prop) : xor a a = False := by simp [xor]
+@[simp] theorem xor_self (a : Prop) : Xor' a a = False := by simp [Xor']
 
 /-! ### Declarations about `and` -/
 
@@ -563,10 +556,10 @@ theorem and_iff_not_or_not : a ∧ b ↔ ¬(¬a ∨ ¬b) :=
   Decidable.and_iff_not_or_not
 
 @[simp]
-theorem not_xor (P Q : Prop) : ¬xor P Q ↔ (P ↔ Q) := by
-  simp only [not_and, xor, not_or_distrib, not_not, ← iff_iff_implies_and_implies, iff_self]
+theorem not_xor (P Q : Prop) : ¬Xor' P Q ↔ (P ↔ Q) := by
+  simp only [not_and, Xor', not_or_distrib, not_not, ← iff_iff_implies_and_implies, iff_self]
 
-theorem xor_iff_not_iff (P Q : Prop) : xor P Q ↔ ¬(P ↔ Q) := by rw [iff_not_comm, not_xor]
+theorem xor_iff_not_iff (P Q : Prop) : Xor' P Q ↔ ¬(P ↔ Q) := by rw [iff_not_comm, not_xor]
 
 end Propositional
 

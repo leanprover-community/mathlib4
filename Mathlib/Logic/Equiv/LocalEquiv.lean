@@ -32,7 +32,7 @@ elab (name := mfldSetTac) "mfld_set_tac" : tactic => withMainContext do
       constructor <;>
         · intro h_my_y
           try (simp only [*, mfld_simps] at h_my_y; simp only [*, mfld_simps]))))
-  | (``Subset.subset, #[_ty, _inst, _e₁, _e₂]) =>
+  | (``Subset, #[_ty, _inst, _e₁, _e₂]) =>
     evalTactic (← `(tactic| (
       intro my_y h_my_y
       try (simp only [*, mfld_simps] at h_my_y; simp only [*, mfld_simps]))))
