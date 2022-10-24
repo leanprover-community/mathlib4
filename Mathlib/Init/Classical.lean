@@ -1,0 +1,38 @@
+/-
+Copyright (c) 2015 Microsoft Corporation. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
+-/
+import Mathlib.Tactic.Alias
+import Mathlib.Tactic.IrreducibleDef
+import Mathlib.Mathport.Rename
+import Mathlib.Init.Logic
+
+/-! ### alignments from lean 3 `init.classical` -/
+
+namespace Classical
+
+#align inhabited_of_nonempty inhabited_of_nonempty
+#align inhabited_of_exists inhabited_of_exists
+
+attribute [local instance] propDecidable
+attribute [local instance] decidableInhabited
+
+alias axiomOfChoice ← axiom_of_choice -- TODO: fix in core
+alias propComplete ← prop_complete -- TODO: fix in core
+
+@[elab_as_elim] theorem cases_true_false (p : Prop → Prop)
+    (h1 : p True) (h2 : p False) (a : Prop) : p a :=
+  Or.elim (prop_complete a) (fun ht : a = True => ht.symm ▸ h1) fun hf : a = False => hf.symm ▸ h2
+
+theorem cases_on (a : Prop) {p : Prop → Prop} (h1 : p True) (h2 : p False) : p a :=
+  @cases_true_false p h1 h2 a
+
+theorem cases {p : Prop → Prop} (h1 : p True) (h2 : p False) (a) : p a := cases_on a h1 h2
+
+alias byCases ← by_cases
+alias byContradiction ← by_contradiction
+
+theorem eq_false_or_eq_true (a : Prop) : a = False ∨ a = True := (prop_complete a).symm
+
+end Classical

@@ -68,11 +68,11 @@ theorem mk.inj_iff {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b�
  by intro hab; rw [hab.left, hab.right]⟩
 
 lemma mk.inj_left {α β : Type _} (a : α) :
-  Function.injective (Prod.mk a : β → α × β) :=
+  Function.Injective (Prod.mk a : β → α × β) :=
 fun _ _ h => (Prod.mk.inj h).right
 
 lemma mk.inj_right {α β : Type _} (b : β) :
-  Function.injective (λ a => Prod.mk a b : α → α × β) :=
+  Function.Injective (λ a => Prod.mk a b : α → α × β) :=
 fun _ _ h => (Prod.mk.inj h).left
 
 -- Port note: this lemma comes from lean3/library/init/data/prod.lean.
@@ -94,16 +94,16 @@ by ext <;> simp
 lemma id_prod : (λ (p : α × α) => (p.1, p.2)) = id :=
 funext $ λ ⟨_, _⟩ => rfl
 
-lemma fst_surjective [h : Nonempty β] : Function.surjective (@fst α β) :=
+lemma fst_surjective [h : Nonempty β] : Function.Surjective (@fst α β) :=
 λ x => h.elim $ λ y => ⟨⟨x, y⟩, rfl⟩
 
-lemma snd_surjective [h : Nonempty α] : Function.surjective (@snd α β) :=
+lemma snd_surjective [h : Nonempty α] : Function.Surjective (@snd α β) :=
 λ y => h.elim $ λ x => ⟨⟨x, y⟩, rfl⟩
 
-lemma fst_injective [Subsingleton β] : Function.injective (@fst α β) :=
+lemma fst_injective [Subsingleton β] : Function.Injective (@fst α β) :=
 λ x y h => ext' h (Subsingleton.elim x.snd y.snd)
 
-lemma snd_injective [Subsingleton α] : Function.injective (@snd α β) :=
+lemma snd_injective [Subsingleton α] : Function.Injective (@snd α β) :=
 λ _ _ h => ext' (Subsingleton.elim _ _) h
 
 /-- Swap the factors of a product. `swap (a, b) = (b, a)` -/
@@ -127,13 +127,13 @@ swap_swap
 lemma swap_RightInverse : Function.RightInverse (@swap α β) swap :=
 swap_swap
 
-lemma swap_injective : Function.injective (@swap α β) :=
+lemma swap_injective : Function.Injective (@swap α β) :=
 swap_LeftInverse.injective
 
-lemma swap_surjective : Function.surjective (@swap α β) :=
+lemma swap_surjective : Function.Surjective (@swap α β) :=
 Function.RightInverse.surjective swap_LeftInverse
 
-lemma swap_bijective : Function.bijective (@swap α β) :=
+lemma swap_bijective : Function.Bijective (@swap α β) :=
 ⟨swap_injective, swap_surjective⟩
 
 @[simp] lemma swap_inj {p q : α × β} : swap p = swap q ↔ p = q :=
@@ -167,8 +167,8 @@ end Prod
 
 open Function
 
-lemma Function.injective.prod_map {f : α → γ} {g : β → δ} (hf : injective f) (hg : injective g) :
-  injective (Prod.map f g) :=
+lemma Function.Injective.prod_map {f : α → γ} {g : β → δ} (hf : Injective f) (hg : Injective g) :
+  Injective (Prod.map f g) :=
 by intros x y h
    have h1 := (Prod.ext_iff.1 h).1
    rw [Prod.map_fst, Prod.map_fst] at h1
@@ -176,8 +176,8 @@ by intros x y h
    rw [Prod.map_snd, Prod.map_snd] at h2
    exact Prod.ext' (hf h1) (hg h2)
 
-lemma Function.surjective.prod_map {f : α → γ} {g : β → δ} (hf : surjective f) (hg : surjective g) :
-  surjective (Prod.map f g) :=
+lemma Function.Surjective.prod_map {f : α → γ} {g : β → δ} (hf : Surjective f) (hg : Surjective g) :
+  Surjective (Prod.map f g) :=
 λ p => let ⟨x, hx⟩ := hf p.1
        let ⟨y, hy⟩ := hg p.2
        ⟨(x, y), Prod.ext' hx hy⟩
