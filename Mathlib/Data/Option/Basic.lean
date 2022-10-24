@@ -29,15 +29,12 @@ along with a term `a : α` if the value is `True`.
 
 -/
 
-set_option autoImplicit false
-
 namespace Option
 
 variable {α β γ δ : Type _}
 
--- FIXME: do we even need this?
--- theorem coe_def : (coe : α → Option α) = some :=
---   rfl
+theorem coe_def : (fun a => ↑a : α → Option α) = some :=
+  rfl
 
 -- TODO: move to std
 /-- Extracts the value `a` from an option if it is `some a`, otherwise use a backup `b`. -/
@@ -336,10 +333,9 @@ theorem cases_on'_some (x : β) (f : α → β) (a : α) : casesOn' (some a) x f
 theorem cases_on'_coe (x : β) (f : α → β) (a : α) : casesOn' (a : Option α) x f = f a :=
   rfl
 
--- used to mention `coe` instead of `some
 @[simp]
 theorem cases_on'_none_coe (f : Option α → β) (o : Option α) :
-    casesOn' o (f none) (f ∘ some) = f o := by cases o <;> rfl
+    casesOn' o (f none) (f ∘ (fun a => ↑a)) = f o := by cases o <;> rfl
 
 @[simp]
 theorem get_or_else_map (f : α → β) (x : α) (o : Option α) :
