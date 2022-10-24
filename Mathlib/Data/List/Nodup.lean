@@ -20,7 +20,7 @@ theorem Nodup.map_on {f : α → β} (H : ∀ x ∈ l, ∀ y ∈ l, f x = f y �
     (map f l).Nodup :=
   Pairwise.map _ (fun a b ⟨ma, mb, n⟩ e => n (H a ma b mb e)) (Pairwise.and_mem.1 d)
 
-protected theorem Nodup.map {f : α → β} (hf : Function.injective f) : Nodup l → Nodup (map f l) :=
+protected theorem Nodup.map {f : α → β} (hf : Function.Injective f) : Nodup l → Nodup (map f l) :=
   Nodup.map_on fun _ _ _ _ h => hf h
 
 theorem Nodup.of_map (f : α → β) {l : List α} : Nodup (map f l) → Nodup l :=

@@ -48,25 +48,25 @@ theorem comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) �
 theorem comp_const_right (f : β → φ) (b : β) : f ∘ (const α b) = const α (f b) := rfl
 
 /-- A function `f : α → β` is called injective if `f x = f y` implies `x = y`. -/
-def injective (f : α → β) : Prop := ∀ ⦃a₁ a₂⦄, f a₁ = f a₂ → a₁ = a₂
+def Injective (f : α → β) : Prop := ∀ ⦃a₁ a₂⦄, f a₁ = f a₂ → a₁ = a₂
 
-theorem injective.comp {g : β → φ} {f : α → β} (hg : injective g) (hf : injective f) :
-  injective (g ∘ f) :=
+theorem Injective.comp {g : β → φ} {f : α → β} (hg : Injective g) (hf : Injective f) :
+  Injective (g ∘ f) :=
 fun _ _ h => hf (hg h)
 
 /-- A function `f : α → β` is calles surjective if every `b : β` is equal to `f a`
 for some `a : α`. -/
-@[reducible] def surjective (f : α → β) : Prop := ∀ b, ∃ a, f a = b
+@[reducible] def Surjective (f : α → β) : Prop := ∀ b, ∃ a, f a = b
 
-theorem surjective.comp {g : β → φ} {f : α → β} (hg : surjective g) (hf : surjective f) :
-  surjective (g ∘ f) :=
+theorem Surjective.comp {g : β → φ} {f : α → β} (hg : Surjective g) (hf : Surjective f) :
+  Surjective (g ∘ f) :=
 λ (c : φ) => Exists.elim (hg c) (λ b hb => Exists.elim (hf b) (λ a ha =>
   Exists.intro a (show g (f a) = c from (Eq.trans (congrArg g ha) hb))))
 
 /-- A function is called bijective if it is both injective and surjective. -/
-def bijective (f : α → β) := injective f ∧ surjective f
+def Bijective (f : α → β) := Injective f ∧ Surjective f
 
-theorem bijective.comp {g : β → φ} {f : α → β} : bijective g → bijective f → bijective (g ∘ f)
+theorem Bijective.comp {g : β → φ} {f : α → β} : Bijective g → Bijective f → Bijective (g ∘ f)
 | ⟨h_ginj, h_gsurj⟩, ⟨h_finj, h_fsurj⟩ => ⟨h_ginj.comp h_finj, h_gsurj.comp h_fsurj⟩
 
 /-- `LeftInverse g f` means that g is a left inverse to f. That is, `g ∘ f = id`. -/
@@ -81,34 +81,34 @@ def RightInverse (g : β → α) (f : α → β) : Prop := LeftInverse f g
 /-- `has_RightInverse f` means that `f` has an unspecified right inverse. -/
 def has_RightInverse (f : α → β) : Prop := ∃ finv : β → α, RightInverse finv f
 
-theorem LeftInverse.injective {g : β → α} {f : α → β} : LeftInverse g f → injective f :=
+theorem LeftInverse.injective {g : β → α} {f : α → β} : LeftInverse g f → Injective f :=
 λ h a b hf => h a ▸ h b ▸ hf ▸ rfl
 
-theorem has_LeftInverse.injective {f : α → β} : has_LeftInverse f → injective f :=
+theorem has_LeftInverse.injective {f : α → β} : has_LeftInverse f → Injective f :=
 λ h => Exists.elim h (λ _ inv => inv.injective)
 
 theorem RightInverse_of_injective_of_LeftInverse {f : α → β} {g : β → α}
-    (injf : injective f) (lfg : LeftInverse f g) :
+    (injf : Injective f) (lfg : LeftInverse f g) :
   RightInverse f g :=
 λ x => injf $ lfg $ f x
 
-theorem RightInverse.surjective {f : α → β} {g : β → α} (h : RightInverse g f) : surjective f :=
+theorem RightInverse.surjective {f : α → β} {g : β → α} (h : RightInverse g f) : Surjective f :=
 λ y => ⟨g y, h y⟩
 
-theorem has_RightInverse.surjective {f : α → β} : has_RightInverse f → surjective f
+theorem has_RightInverse.surjective {f : α → β} : has_RightInverse f → Surjective f
 | ⟨_, inv⟩ => inv.surjective
 
-theorem LeftInverse_of_surjective_of_RightInverse {f : α → β} {g : β → α} (surjf : surjective f)
+theorem LeftInverse_of_surjective_of_RightInverse {f : α → β} {g : β → α} (surjf : Surjective f)
   (rfg : RightInverse f g) : LeftInverse f g :=
 λ y =>
   let ⟨x, hx⟩ := surjf y
   by rw [← hx, rfg]
 
-theorem injective_id : injective (@id α) := fun _ _ => id
+theorem injective_id : Injective (@id α) := fun _ _ => id
 
-theorem surjective_id : surjective (@id α) := λ a => ⟨a, rfl⟩
+theorem surjective_id : Surjective (@id α) := λ a => ⟨a, rfl⟩
 
-theorem bijective_id : bijective (@id α) := ⟨injective_id, surjective_id⟩
+theorem bijective_id : Bijective (@id α) := ⟨injective_id, surjective_id⟩
 
 end Function
 
