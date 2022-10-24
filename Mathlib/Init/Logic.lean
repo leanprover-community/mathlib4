@@ -9,6 +9,7 @@ import Std.Logic
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.SimpTrace
+import Mathlib.Tactic.Relation.Symm
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Relation.Trans
@@ -49,6 +50,8 @@ theorem cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h�
 /- Ne -/
 
 theorem Ne.def {α : Sort u} (a b : α) : (a ≠ b) = ¬ (a = b) := rfl
+
+attribute [symm] Ne.symm
 
 /- HEq -/
 
@@ -236,18 +239,20 @@ theorem exists_unique_of_exists_of_unique {α : Sort u} {p : α → Prop}
     (hex : ∃ x, p x) (hunique : ∀ y₁ y₂, p y₁ → p y₂ → y₁ = y₂) : ∃! x, p x :=
   Exists.elim hex (λ x px => ExistsUnique.intro x px (λ y (h : p y) => hunique y x h px))
 
-theorem exists_of_exists_unique {α : Sort u} {p : α → Prop} (h : ∃! x, p x) : ∃ x, p x :=
-  Exists.elim h (λ x hx => ⟨x, And.left hx⟩)
+theorem ExistsUnique.exists {p : α → Prop} : (∃! x, p x) → ∃ x, p x | ⟨x, h, _⟩ => ⟨x, h⟩
+#align exists_of_exists_unique ExistsUnique.exists
 
-theorem unique_of_exists_unique {α : Sort u} {p : α → Prop}
+theorem ExistsUnique.unique {α : Sort u} {p : α → Prop}
     (h : ∃! x, p x) {y₁ y₂ : α} (py₁ : p y₁) (py₂ : p y₂) : y₁ = y₂ :=
   let ⟨_, _, hy⟩ := h; (hy _ py₁).trans (hy _ py₂).symm
+#align unique_of_exists_unique ExistsUnique.unique
 
 /- exists, forall, exists unique congruences -/
 
 -- TODO
--- attribute [congr] forall_congr
--- attribute [congr] exists_congr
+-- attribute [congr] forall_congr'
+-- attribute [congr] exists_congr'
+#align forall_congr forall_congr'
 
 #align Exists.imp Exists.imp
 #align exists_imp_exists Exists.imp
