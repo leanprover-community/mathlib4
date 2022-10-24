@@ -106,11 +106,11 @@ theorem LeftInverse_of_surjective_of_RightInverse {f : α → β} {g : β → α
   let ⟨x, hx⟩ := surjf y
   by rw [← hx, rfg]
 
-theorem injective_id : Injective (@id α) := fun _ _ => id
+theorem Injective_id : Injective (@id α) := fun _ _ => id
 
-theorem surjective_id : Surjective (@id α) := λ a => ⟨a, rfl⟩
+theorem Surjective_id : Surjective (@id α) := λ a => ⟨a, rfl⟩
 
-theorem bijective_id : Bijective (@id α) := ⟨injective_id, surjective_id⟩
+theorem Bijective_id : Bijective (@id α) := ⟨injective_id, surjective_id⟩
 
 end Function
 

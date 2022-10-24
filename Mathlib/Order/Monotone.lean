@@ -279,7 +279,7 @@ theorem antitone_on_const [Preorder α] [Preorder β] {c : β} {s : Set α} :
     AntitoneOn (fun _ : α => c) s :=
   fun _ _ _ _ _ => le_rfl
 
-theorem injective_of_le_imp_le
+theorem Injective_of_le_imp_le
     [PartialOrder α] [Preorder β] (f : α → β) (h : ∀ {x y}, f x ≤ f y → x ≤ y) : Injective f :=
   fun _ _ hxy => (h hxy.le).antisymm (h hxy.ge)
 

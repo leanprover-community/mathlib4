@@ -107,7 +107,7 @@ theorem coind_surjective {α β} {f : α → β} {p : β → Prop} (h : ∀a, p 
        ⟨a, coe_injective ha⟩
 
 theorem coind_bijective {α β} {f : α → β} {p : β → Prop} (h : ∀a, p (f a))
-  (hf : bijective f) : bijective (coind f h) :=
+  (hf : Bijective f) : Bijective (coind f h) :=
 ⟨coind_injective h hf.1, coind_surjective h hf.2⟩
 
 /-- Restriction of a function to a function on subtypes. -/

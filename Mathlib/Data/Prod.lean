@@ -133,7 +133,7 @@ swap_LeftInverse.injective
 lemma swap_surjective : Function.Surjective (@swap α β) :=
 Function.RightInverse.surjective swap_LeftInverse
 
-lemma swap_bijective : Function.bijective (@swap α β) :=
+lemma swap_bijective : Function.Bijective (@swap α β) :=
 ⟨swap_injective, swap_surjective⟩
 
 @[simp] lemma swap_inj {p q : α × β} : swap p = swap q ↔ p = q :=
