@@ -40,20 +40,8 @@ theorem coe_def : (fun a => ↑a : α → Option α) = some :=
 #align option.get_or_else Option.getD
 
 @[simp]
-theorem get_or_else_some (x y : α) : Option.getD (some x) y = x :=
+theorem getD_coe (x y : α) : Option.getD (↑x) y = x :=
   rfl
-
-@[simp]
-theorem get_or_else_none (x : α) : Option.getD none x = x :=
-  rfl
-
-@[simp]
-theorem get_or_else_coe (x y : α) : Option.getD (↑x) y = x :=
-  rfl
-
-theorem get_or_else_of_ne_none {x : Option α} (hx : x ≠ none) (y : α) :
-    some (x.getD y) = x := by
-  cases x; contradiction; rw [get_or_else_some]
 
 theorem coe_get {o : Option α} (h : o.isSome) : ((Option.get _ h : α) : Option α) = o :=
   Option.some_get h
@@ -289,7 +277,7 @@ theorem iget_mem [Inhabited α] : ∀ {o : Option α}, isSome o → o.iget ∈ o
 theorem iget_of_mem [Inhabited α] {a : α} : ∀ {o : Option α}, a ∈ o → o.iget = a
   | _, rfl => rfl
 
-theorem get_or_else_default_eq_iget [Inhabited α] (o : Option α) :
+theorem getD_default_eq_iget [Inhabited α] (o : Option α) :
     o.getD default = o.iget := by cases o <;> rfl
 
 @[simp]
@@ -335,11 +323,6 @@ theorem cases_on'_coe (x : β) (f : α → β) (a : α) : casesOn' (a : Option �
 -- @[simp]
 theorem cases_on'_none_coe (f : Option α → β) (o : Option α) :
     casesOn' o (f none) (f ∘ (fun a => ↑a)) = f o := by cases o <;> rfl
-
--- @[simp]
-theorem get_or_else_map (f : α → β) (x : α) (o : Option α) :
-    getD (o.map f) (f x) = f (getD o x) := by
-  cases o <;> rfl
 
 theorem orelse_eq_some (o o' : Option α) (x : α) :
     (o <|> o') = some x ↔ o = some x ∨ o = none ∧ o' = some x := by
