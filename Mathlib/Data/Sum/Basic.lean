@@ -197,7 +197,6 @@ theorem update_inl_comp_inr [DecidableEq (Sum α β)] {f : Sum α β → γ} {i 
     update f (inl i) x ∘ inr = f ∘ inr :=
   (update_comp_eq_of_forall_ne _ _) fun _ => inr_ne_inl
 
-@[simp]
 theorem update_inl_apply_inr [DecidableEq (Sum α β)] {f : Sum α β → γ} {i : α} {j : β} {x : γ} :
     update f (inl i) x (inr j) = f (inr j) :=
   Function.update_noteq inr_ne_inl _ _
@@ -207,7 +206,6 @@ theorem update_inr_comp_inl [DecidableEq (Sum α β)] {f : Sum α β → γ} {i 
     update f (inr i) x ∘ inl = f ∘ inl :=
   (update_comp_eq_of_forall_ne _ _) fun _ => inl_ne_inr
 
-@[simp]
 theorem update_inr_apply_inl [DecidableEq (Sum α β)] {f : Sum α β → γ} {i : α} {j : β} {x : γ} :
     update f (inr j) x (inl i) = f (inl i) :=
   Function.update_noteq inl_ne_inr _ _
