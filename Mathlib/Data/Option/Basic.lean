@@ -55,7 +55,6 @@ theorem get_or_else_of_ne_none {x : Option α} (hx : x ≠ none) (y : α) :
     some (x.getD y) = x := by
   cases x; contradiction; rw [get_or_else_some]
 
-@[simp]
 theorem coe_get {o : Option α} (h : o.isSome) : ((Option.get _ h : α) : Option α) = o :=
   Option.some_get h
 
@@ -84,12 +83,10 @@ theorem none_bind' (f : α → Option β) : none.bind f = none :=
 theorem some_bind' (a : α) (f : α → Option β) : (some a).bind f = f a :=
   rfl
 
-@[simp]
 theorem bind_eq_some' {x : Option α} {f : α → Option β} {b : β} :
     x.bind f = some b ↔ ∃ a, x = some a ∧ f a = some b :=
   by cases x <;> simp
 
-@[simp]
 theorem bind_eq_none' {o : Option α} {f : α → Option β} :
     o.bind f = none ↔ ∀ b a, a ∈ o → b ∉ f a := by
   simp only [eq_none_iff_forall_not_mem, mem_def, bind_eq_some, not_exists, not_and, iff_self]
@@ -130,7 +127,8 @@ section Pmap
 
 variable {p : α → Prop} (f : ∀ a : α, p a → β) (x : Option α)
 
-@[simp]
+-- Can't simp tag this anymore because `pbind` simplifies
+-- @[simp]
 theorem pbind_eq_bind (f : α → Option β) (x : Option α) : (x.pbind fun a _ => f a) = x.bind f := by
   cases x <;> simp only [pbind, none_bind', some_bind']
 
@@ -170,7 +168,8 @@ theorem map_pmap (g : β → γ) (f : ∀ a, p a → β) (x H) :
     Option.map g (pmap f x H) = pmap (fun a h => g (f a h)) x H :=
   by cases x <;> simp only [map_none', map_some', pmap]
 
-@[simp]
+-- Can't simp tag this anymore because `pbind` simplifies
+-- @[simp]
 theorem pmap_eq_map (p : α → Prop) (f : α → β) (x H) :
     @pmap _ _ p (fun a _ => f a) x H = Option.map f x := by
   cases x <;> simp only [map_none', map_some', pmap]
@@ -206,10 +205,12 @@ theorem pbind_eq_some {f : ∀ a : α, a ∈ x → Option β} {y : β} :
     simp only [mem_def, Option.some_inj] at H
     simpa [H] using hz
 
-@[simp]
+-- Can't simp tag this anymore because `pbind` simplifies
+-- @[simp]
 theorem pmap_eq_none_iff {h} : pmap f x h = none ↔ x = none := by cases x <;> simp
 
-@[simp]
+-- Can't simp tag this anymore because `pbind` simplifies
+-- @[simp]
 theorem pmap_eq_some_iff {hf} {y : β} :
     pmap f x hf = some y ↔ ∃ (a : α) (H : x = some a), f a (hf a H) = y := by
   rcases x with (_|x)
@@ -222,7 +223,8 @@ theorem pmap_eq_some_iff {hf} {y : β} :
       simp only [mem_def, Option.some_inj] at H
       simp only [H, pmap]
 
-@[simp]
+-- Can't simp tag this anymore because `pbind` simplifies
+-- @[simp]
 theorem join_pmap_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} (H) :
     (pmap (pmap f) x H).join = pmap f x.join fun a h => H (some a) (mem_of_mem_join h) _ rfl := by
   rcases x with (_ | _ | x) <;> simp
@@ -248,10 +250,10 @@ theorem none_orelse' (x : Option α) : none.orElse (fun _ => x) = x := by cases 
 theorem none_orelse (x : Option α) : (none <|> x) = x :=
   none_orelse' x
 
-@[simp]
+-- @[simp]
 theorem orelse_none' (x : Option α) : x.orElse (fun _ => none) = x := by cases x <;> rfl
 
-@[simp]
+-- @[simp]
 theorem orelse_none (x : Option α) : (x <|> none) = x :=
   orelse_none' x
 
@@ -274,7 +276,7 @@ theorem is_none_none : @isNone α none = true :=
 theorem is_none_some {a : α} : isNone (some a) = false :=
   rfl
 
-@[simp]
+-- @[simp]
 theorem not_is_some {a : Option α} : isSome a = false ↔ a.isNone = true := by cases a <;> simp
 
 theorem not_is_some_iff_eq_none {o : Option α} : ¬o.isSome ↔ o = none := by cases o <;> simp
@@ -302,10 +304,10 @@ theorem lift_or_get_choice {f : α → α → α} (h : ∀ a b, f a b = a ∨ f 
   | none, some b => Or.inr rfl
   | some a, some b => by simpa [lift_or_get] using h a b
 
-@[simp]
+-- @[simp]
 theorem lift_or_get_none_left {f} {b : Option α} : liftOrGet f none b = b := by cases b <;> rfl
 
-@[simp]
+-- @[simp]
 theorem lift_or_get_none_right {f} {a : Option α} : liftOrGet f a none = a := by cases a <;> rfl
 
 @[simp]
@@ -330,11 +332,11 @@ theorem cases_on'_some (x : β) (f : α → β) (a : α) : casesOn' (some a) x f
 theorem cases_on'_coe (x : β) (f : α → β) (a : α) : casesOn' (a : Option α) x f = f a :=
   rfl
 
-@[simp]
+-- @[simp]
 theorem cases_on'_none_coe (f : Option α → β) (o : Option α) :
     casesOn' o (f none) (f ∘ (fun a => ↑a)) = f o := by cases o <;> rfl
 
-@[simp]
+-- @[simp]
 theorem get_or_else_map (f : α → β) (x : α) (o : Option α) :
     getD (o.map f) (f x) = f (getD o x) := by
   cases o <;> rfl
@@ -380,7 +382,7 @@ end
 
 #align option.elim Option.elimₓ
 
-@[simp]
+-- @[simp]
 theorem elim_none_some (f : Option α → β) : (fun x => Option.elim x (f none) (f ∘ some)) = f :=
   funext fun o => by cases o <;> rfl
 
