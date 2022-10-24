@@ -131,10 +131,11 @@ theorem Nonempty.elim_to_inhabited {α : Sort _} [h : Nonempty α] {p : Prop} (f
     p :=
   h.elim <| f ∘ Inhabited.mk
 
-instance Prod.Nonempty {α β} [h : Nonempty α] [h2 : Nonempty β] : Nonempty (α × β) :=
+protected instance Prod.Nonempty {α β} [h : Nonempty α] [h2 : Nonempty β] : Nonempty (α × β) :=
   h.elim fun g => h2.elim fun g2 => ⟨⟨g, g2⟩⟩
 
-instance Pi.Nonempty {ι : Sort _} {α : ι → Sort _} [∀ i, Nonempty (α i)] : Nonempty (∀ i, α i) :=
+protected instance Pi.Nonempty {ι : Sort _} {α : ι → Sort _} [∀ i, Nonempty (α i)] :
+    Nonempty (∀ i, α i) :=
   ⟨fun _ => Classical.arbitrary _⟩
 
 theorem Classical.nonempty_pi {ι} {α : ι → Sort _} : Nonempty (∀ i, α i) ↔ ∀ i, Nonempty (α i) :=
