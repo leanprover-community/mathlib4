@@ -16,6 +16,11 @@ Other basic operations on `Option` are defined in the core library.
 
 namespace Option
 
+/-- Inhabited `get` function. Returns `a` if the input is `some a`, otherwise returns `default`. -/
+@[reducible] def iget [Inhabited α] : Option α → α
+| (some x) => x
+| none     => default
+
 /-- Two arguments failsafe function. Returns `f a b` if the inputs are `some a` and `some b`, and
 "does nothing" otherwise. -/
 def lift_or_get (f : α → α → α) : Option α → Option α → Option α
