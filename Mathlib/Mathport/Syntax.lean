@@ -24,6 +24,7 @@ import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
+import Mathlib.Tactic.DocCommands
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
@@ -510,7 +511,6 @@ end Attr
 
 namespace Command
 
-/- N -/ syntax (name := copyDocString) "copy_doc_string " ident " → " ident+ : command
 /- N -/ syntax (name := addTacticDoc) (docComment)? "add_tactic_doc " term : command
 /- N -/ syntax (name := addDeclDoc) docComment "add_decl_doc " ident : command
 
