@@ -144,7 +144,7 @@ theorem Classical.nonempty_pi {ι} {α : ι → Sort _} : Nonempty (∀ i, α i)
 theorem subsingleton_of_not_nonempty {α : Sort _} (h : ¬Nonempty α) : Subsingleton α :=
   ⟨fun x => False.elim <| not_nonempty_iff_imp_false.mp h x⟩
 
-theorem Function.Surjective.nonempty [h : Nonempty β] {f : α → β} (hf : Function.surjective f) :
+theorem Function.Surjective.nonempty [h : Nonempty β] {f : α → β} (hf : Function.Surjective f) :
       Nonempty α :=
   let ⟨y⟩ := h
   let ⟨x, _⟩ := hf y
