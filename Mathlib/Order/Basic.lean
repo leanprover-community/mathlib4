@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Prod
 import Mathlib.Data.Subtype
 import Mathlib.Init.Algebra.Order
-import Mathlib.Init.Zero
+import Mathlib.Init.ZeroOne
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.Alias
 

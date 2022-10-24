@@ -57,11 +57,11 @@ class NegPart (α : Type _) where
 
 #align has_neg_part NegPart
 
-@[inheritDoc Abs.abs]
+@[inherit_doc Abs.abs]
 macro atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
 
-@[inheritDoc]
+@[inherit_doc]
 postfix:1000 "⁺" => PosPart.pos
 
-@[inheritDoc]
+@[inherit_doc]
 postfix:1000 "⁻" => NegPart.neg

@@ -84,7 +84,8 @@ f x
 lemma restrict_apply {α} {β : α → Type _} (f : ∀x, β x) (p : α → Prop) (x : Subtype p) :
   restrict f p x = f x.1 := rfl
 
-lemma restrict_def {α β} (f : α → β) (p : α → Prop) : restrict f p = f ∘ (↑) := rfl
+-- FIXME: replace Subtype.val with (↑)
+lemma restrict_def {α β} (f : α → β) (p : α → Prop) : restrict f p = f ∘ Subtype.val := rfl
 
 lemma restrict_injective {α β} {f : α → β} (p : α → Prop) (h : injective f) :
   injective (restrict f p) :=

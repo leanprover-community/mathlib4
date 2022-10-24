@@ -7,6 +7,7 @@ import Std.Classes.SetNotation
 import Std.Tactic.Lint.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Logic.Basic
+import Mathlib.Logic.Nonempty
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
 import Mathlib.Init.Set
@@ -134,9 +135,8 @@ hf.forall.trans $ forall_congr' fun _ => hf.forall₂
 
 theorem surjective.exists {f : α → β} (hf : surjective f) {p : β → Prop} :
   (∃ y, p y) ↔ ∃ x, p (f x) :=
-⟨λ ⟨y, hy⟩ => let ⟨x, hx⟩ := hf y
-              ⟨x, hx.symm ▸ hy⟩,
- λ ⟨x, hx⟩ => ⟨f x, hx⟩⟩
+⟨fun ⟨y, hy⟩ => let ⟨x, hx⟩ := hf y; ⟨x, hx.symm ▸ hy⟩,
+ fun ⟨x, hx⟩ => ⟨f x, hx⟩⟩
 
 theorem surjective.exists₂ {f : α → β} (hf : surjective f) {p : β → β → Prop} :
   (∃ y₁ y₂, p y₁ y₂) ↔ ∃ x₁ x₂, p (f x₁) (f x₂) :=
@@ -148,11 +148,9 @@ hf.exists.trans $ exists_congr fun _ => hf.exists₂
 
 lemma bijective_iff_exists_unique (f : α → β) : bijective f ↔
   ∀ b : β, ∃! (a : α), f a = b :=
-⟨ λ hf b => let ⟨a, ha⟩ := hf.surjective b
-            ⟨a, ha, λ _ ha' => hf.injective (ha'.trans ha.symm)⟩,
-  λ he => ⟨
-    λ {_a a'} h => unique_of_exists_unique (he (f a')) h rfl,
-    λ b => ExistsUnique.exists (he b) ⟩⟩
+⟨ fun hf b => let ⟨a, ha⟩ := hf.surjective b
+              ⟨a, ha, fun _ ha' => hf.injective (ha'.trans ha.symm)⟩,
+  fun he => ⟨fun {_a a'} h => (he (f a')).unique h rfl, fun b => (he b).exists⟩⟩
 
 /-- Shorthand for using projection notation with `function.bijective_iff_exists_unique`. -/
 lemma bijective.exists_unique {f : α → β} (hf : bijective f) (b : β) : ∃! (a : α), f a = b :=
@@ -506,6 +504,11 @@ lemma extend_def (f : α → β) (g : α → γ) (e' : β → γ) (b : β) [hd :
 by simp only [extend_def, dif_pos, exists_apply_eq_apply]
    exact congr_arg g (hf $ Classical.choose_spec (exists_apply_eq_apply f a))
 
+@[simp]
+theorem extend_apply' (g : α → γ) (e' : β → γ) (b : β) (hb : ¬∃ a, f a = b) :
+  extend f g e' b = e' b := by
+  simp [Function.extend_def, hb]
+
 @[simp] lemma extend_comp (hf : injective f) (g : α → γ) (e' : β → γ) :
   extend f g e' ∘ f = g :=
 funext $ λ a => extend_apply hf g e' a
@@ -613,7 +616,7 @@ protected lemma right (hf : injective2 f) {a₁ a₂ b₁ b₂} (h : f a₁ b₁
 (hf h).2
 
 lemma eq_iff (hf : injective2 f) {a₁ a₂ b₁ b₂} : f a₁ b₁ = f a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ :=
-⟨λ h => hf h, λ⟨h1, h2⟩ => congr_arg2 f h1 h2⟩
+⟨λ h => hf h, λ⟨h1, h2⟩ => congr_arg₂ f h1 h2⟩
 
 end injective2
 

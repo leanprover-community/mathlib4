@@ -111,7 +111,6 @@ initialize normNumExt : PersistentEnvExtension Entry (Entry × NormNumExt)
   have : BEq NormNumExt := ⟨fun _ _ => false⟩
   let insert kss v dt := kss.foldl (fun dt ks => dt.insertCore ks v) dt
   registerPersistentEnvExtension {
-    name := decl_name%
     mkInitial := pure ([], {})
     addImportedFn := fun s => do
       let dt ← s.foldlM (init := {}) fun dt s => s.foldlM (init := dt) fun dt (kss, n) => do

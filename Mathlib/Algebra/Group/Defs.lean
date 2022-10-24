@@ -3,10 +3,11 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-import Mathlib.Init.Zero
-import Mathlib.Init.Data.Int.Notation
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.ToAdditive
+import Mathlib.Init.ZeroOne
+import Mathlib.Init.Data.Int.Notation
+import Mathlib.Data.List.Basic
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -77,25 +78,14 @@ universe u
 
 variable {G : Type _}
 
-@[to_additive Zero]
-class One (α : Type u) where
-  one : α
-
-@[to_additive Zero.toOfNat0]
-instance One.toOfNat1 {α} [One α] : OfNat α (nat_lit 1) where
-  ofNat := ‹One α›.1
-
-@[to_additive Zero.ofOfNat0]
-instance One.ofOfNat1 {α} [OfNat α (nat_lit 1)] : One α where
-  one := 1
-
 /-- Class of types that have an inversion operation. -/
 @[to_additive Neg]
 class Inv (α : Type u) where
   /-- Invert an element of α. -/
   inv : α → α
+#align has_inv Inv
 
-@[inheritDoc]
+@[inherit_doc]
 postfix:max "⁻¹" => Inv.inv
 
 /-- The simpset `field_simps` is used by the tactic `field_simp` to
@@ -395,10 +385,11 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   npow_zero' : ∀ x, npow 0 x = 1 := by intros; rfl
   npow_succ' : ∀ (n : ℕ) (x), npow n.succ x = x * npow n x := by intros; rfl
 
--- TODO I wouldn't have thought this is necessary. Is is a bug in `to_additive`?
+-- FIXME I wouldn't have thought this is necessary. Is is a bug in `to_additive`?
+-- It seems that it isn't operating on the second parent.
 attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
 
-@[defaultInstance high] instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
+@[default_instance high] instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
   ⟨fun x n => Monoid.npow n x⟩
 
 instance AddMonoid.HasSmul {M : Type _} [AddMonoid M] : HasSmul ℕ M :=
@@ -714,6 +705,7 @@ class InvOneClass (G : Type _) extends One G, Inv G where
 @[to_additive SubNegZeroMonoid]
 class DivInvOneMonoid (G : Type _) extends DivInvMonoid G, InvOneClass G
 
+-- FIXME: `to_additive` is not operating on the second parent.
 attribute [to_additive SubNegZeroMonoid.toNegZeroClass] DivInvOneMonoid.toInvOneClass
 
 variable [InvOneClass G]

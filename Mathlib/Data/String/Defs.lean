@@ -1,4 +1,4 @@
-import Mathlib.Data.List.Basic
+import Std.Data.List.Basic
 
 namespace String
 
@@ -9,10 +9,10 @@ def leftpad (n : Nat) (c : Char) (s : String) : String :=
 
 def replicate (n : Nat) (c : Char) : String := ⟨List.replicate n c⟩
 
-def isPrefix : String -> String -> Prop
+def isPrefix : String → String → Prop
 | ⟨d1⟩, ⟨d2⟩ => List.isPrefix d1 d2
 
-def isSuffix : String -> String -> Prop
+def isSuffix : String → String → Prop
 | ⟨d1⟩, ⟨d2⟩ => List.isSuffix d1 d2
 
 /-- `string.mapTokens c f s` tokenizes `s : string` on `c : char`, maps `f` over each token, and
