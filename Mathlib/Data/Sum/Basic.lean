@@ -252,11 +252,8 @@ section LiftRel
 /-- Lifts pointwise two relations between `α` and `γ` and between `β` and `δ` to a relation between
 `α ⊕ β` and `γ ⊕ δ`. -/
 inductive LiftRel (r : α → γ → Prop) (s : β → δ → Prop) : Sum α β → Sum γ δ → Prop
-| inl {a c} : r a c → LiftRel r s (inl a) (inl c)
-| inr {b d} : s b d → LiftRel r s (inr b) (inr d)
-
--- FIXME
--- attribute [protected] lift_rel.inl lift_rel.inr
+| protected inl {a c} : r a c → LiftRel r s (inl a) (inl c)
+| protected inr {b d} : s b d → LiftRel r s (inr b) (inr d)
 
 variable {r r₁ r₂ : α → γ → Prop} {s s₁ s₂ : β → δ → Prop} {a : α} {b : β} {c : γ} {d : δ}
   {x : Sum α β} {y : Sum γ δ}
@@ -320,12 +317,9 @@ section Lex
 /-- Lexicographic order for sum. Sort all the `inl a` before the `inr b`, otherwise use the
 respective order on `α` or `β`. -/
 inductive Lex (r : α → α → Prop) (s : β → β → Prop) : Sum α β → Sum α β → Prop
-  | inl {a₁ a₂} (h : r a₁ a₂) : Lex r s (inl a₁) (inl a₂)
-  | inr {b₁ b₂} (h : s b₁ b₂) : Lex r s (inr b₁) (inr b₂)
+  | protected inl {a₁ a₂} (h : r a₁ a₂) : Lex r s (inl a₁) (inl a₂)
+  | protected inr {b₁ b₂} (h : s b₁ b₂) : Lex r s (inr b₁) (inr b₂)
   | sep (a b) : Lex r s (inl a) (inr b)
-
--- FIXME
--- attribute [protected] Sum.Lex.inl Sum.Lex.inr
 
 attribute [simp] Lex.sep
 
