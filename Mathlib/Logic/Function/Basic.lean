@@ -135,9 +135,8 @@ hf.forall.trans $ forall_congr' fun _ => hf.forall₂
 
 theorem surjective.exists {f : α → β} (hf : surjective f) {p : β → Prop} :
   (∃ y, p y) ↔ ∃ x, p (f x) :=
-⟨λ ⟨y, hy⟩ => let ⟨x, hx⟩ := hf y
-              ⟨x, hx.symm ▸ hy⟩,
- λ ⟨x, hx⟩ => ⟨f x, hx⟩⟩
+⟨fun ⟨y, hy⟩ => let ⟨x, hx⟩ := hf y; ⟨x, hx.symm ▸ hy⟩,
+ fun ⟨x, hx⟩ => ⟨f x, hx⟩⟩
 
 theorem surjective.exists₂ {f : α → β} (hf : surjective f) {p : β → β → Prop} :
   (∃ y₁ y₂, p y₁ y₂) ↔ ∃ x₁ x₂, p (f x₁) (f x₂) :=
@@ -149,11 +148,9 @@ hf.exists.trans $ exists_congr fun _ => hf.exists₂
 
 lemma bijective_iff_exists_unique (f : α → β) : bijective f ↔
   ∀ b : β, ∃! (a : α), f a = b :=
-⟨ λ hf b => let ⟨a, ha⟩ := hf.surjective b
-            ⟨a, ha, λ _ ha' => hf.injective (ha'.trans ha.symm)⟩,
-  λ he => ⟨
-    λ {_a a'} h => unique_of_exists_unique (he (f a')) h rfl,
-    λ b => ExistsUnique.exists (he b) ⟩⟩
+⟨ fun hf b => let ⟨a, ha⟩ := hf.surjective b
+              ⟨a, ha, fun _ ha' => hf.injective (ha'.trans ha.symm)⟩,
+  fun he => ⟨fun {_a a'} h => (he (f a')).unique h rfl, fun b => (he b).exists⟩⟩
 
 /-- Shorthand for using projection notation with `function.bijective_iff_exists_unique`. -/
 lemma bijective.exists_unique {f : α → β} (hf : bijective f) (b : β) : ∃! (a : α), f a = b :=
@@ -619,7 +616,7 @@ protected lemma right (hf : injective2 f) {a₁ a₂ b₁ b₂} (h : f a₁ b₁
 (hf h).2
 
 lemma eq_iff (hf : injective2 f) {a₁ a₂ b₁ b₂} : f a₁ b₁ = f a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ :=
-⟨λ h => hf h, λ⟨h1, h2⟩ => congr_arg2 f h1 h2⟩
+⟨λ h => hf h, λ⟨h1, h2⟩ => congr_arg₂ f h1 h2⟩
 
 end injective2
 
