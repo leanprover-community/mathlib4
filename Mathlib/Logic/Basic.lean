@@ -128,13 +128,13 @@ theorem congr_arg_heq {α} {β : α → Sort _} (f : ∀ a, β a) :
     ∀ {a₁ a₂ : α}, a₁ = a₂ → HEq (f a₁) (f a₂)
   | _, _, rfl => HEq.rfl
 
-theorem ULift.down_injective {α : Sort _} : Function.injective (@ULift.down α)
+theorem ULift.down_injective {α : Sort _} : Function.Injective (@ULift.down α)
   | ⟨a⟩, ⟨b⟩, _ => by congr
 
 @[simp] theorem ULift.down_inj {α : Sort _} {a b : ULift α} : a.down = b.down ↔ a = b :=
   ⟨fun h => ULift.down_injective h, fun h => by rw [h]⟩
 
-theorem PLift.down_injective {α : Sort _} : Function.injective (@PLift.down α)
+theorem PLift.down_injective {α : Sort _} : Function.Injective (@PLift.down α)
   | ⟨a⟩, ⟨b⟩, _ => by congr
 
 @[simp] theorem PLift.down_inj {α : Sort _} {a b : PLift α} : a.down = b.down ↔ a = b :=
