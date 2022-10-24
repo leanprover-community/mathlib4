@@ -227,6 +227,9 @@ alias Exists.imp' ← exists_imp_exists'
 alias exists_imp ← exists_imp_distrib
 alias exists_imp ↔ _ not_exists_of_forall_not
 
+#align Exists.some Exists.choose
+#align Exists.some_spec Exists.choose_spec
+
 protected theorem Decidable.not_forall {p : α → Prop}
   [Decidable (∃ x, ¬ p x)] [∀ x, Decidable (p x)] : (¬ ∀ x, p x) ↔ ∃ x, ¬ p x :=
 ⟨Not.decidable_imp_symm $ λ nx x => Not.decidable_imp_symm (λ h => ⟨x, h⟩) nx,

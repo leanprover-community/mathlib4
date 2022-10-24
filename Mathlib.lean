@@ -49,6 +49,7 @@ import Mathlib.Data.UnionFind
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
+import Mathlib.Init.Align
 import Mathlib.Init.Core
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Notation
@@ -76,7 +77,6 @@ import Mathlib.Logic.Nonempty
 import Mathlib.Logic.Relator
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
-import Mathlib.Mathport.SpecialNames
 import Mathlib.Mathport.Syntax
 import Mathlib.Order.Basic
 import Mathlib.Order.Monotone
