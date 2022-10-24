@@ -298,10 +298,12 @@ theorem LiftRel.mono (hr : ∀ a b, r₁ a b → r₂ a b) (hs : ∀ a b, s₁ a
   · exact LiftRel.inl (hr _ _ ‹_›)
   · exact LiftRel.inr (hs _ _ ‹_›)
 
-theorem LiftRel.mono_left (hr : ∀ a b, r₁ a b → r₂ a b) (h : LiftRel r₁ s x y) : LiftRel r₂ s x y :=
+theorem LiftRel.mono_left (hr : ∀ a b, r₁ a b → r₂ a b) (h : LiftRel r₁ s x y) :
+    LiftRel r₂ s x y :=
   (h.mono hr) fun _ _ => id
 
-theorem LiftRel.mono_right (hs : ∀ a b, s₁ a b → s₂ a b) (h : LiftRel r s₁ x y) : LiftRel r s₂ x y :=
+theorem LiftRel.mono_right (hs : ∀ a b, s₁ a b → s₂ a b) (h : LiftRel r s₁ x y) :
+    LiftRel r s₂ x y :=
   h.mono (fun _ _ => id) hs
 
 protected theorem LiftRel.swap (h : LiftRel r s x y) : LiftRel s r x.swap y.swap := by
@@ -432,12 +434,14 @@ namespace Sum
 
 open Function
 
-theorem elim_const_const (c : γ) : Sum.elim (const _ c : α → γ) (const _ c : β → γ) = const _ c := by
+theorem elim_const_const (c : γ) :
+    Sum.elim (const _ c : α → γ) (const _ c : β → γ) = const _ c := by
   ext x
   cases x <;> rfl
 
 @[simp]
-theorem elim_lam_const_lam_const (c : γ) : (Sum.elim (fun _ : α => c) fun _ : β => c) = fun _ => c :=
+theorem elim_lam_const_lam_const (c : γ) :
+    (Sum.elim (fun _ : α => c) fun _ : β => c) = fun _ => c :=
   Sum.elim_const_const c
 
 theorem elim_update_left [DecidableEq α] [DecidableEq β] (f : α → γ) (g : β → γ) (i : α) (c : γ) :
