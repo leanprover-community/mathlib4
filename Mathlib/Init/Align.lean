@@ -159,6 +159,11 @@ actual theorems in the files.
 #align nat.dvd_of_mul_dvd_mul_left Nat.dvd_of_mul_dvd_mul_leftₓ
 #align nat.dvd_of_mul_dvd_mul_right Nat.dvd_of_mul_dvd_mul_rightₓ
 
+/-! ## `init.data.option.instances` -/
+
+#align option.eq_none_of_is_none Option.eq_none_of_isNone
+#align option.eq_some_of_is_some Option.eq_some_of_isSome
+
 /-! ## `init.data.ordering.basic` -/
 
 /-! ## `init.data.prod` -/
