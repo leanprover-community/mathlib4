@@ -268,31 +268,39 @@ variable {r r₁ r₂ : α → γ → Prop} {s s₁ s₂ : β → δ → Prop} {
   {x : Sum α β} {y : Sum γ δ}
 
 @[simp]
-theorem lift_rel_inl_inl : LiftRel r s (inl a) (inl c) ↔ r a c :=
+theorem liftRel_inl_inl : LiftRel r s (inl a) (inl c) ↔ r a c :=
   ⟨fun h => by
     cases h
     assumption, LiftRel.inl⟩
 
-@[simp]
-theorem not_lift_rel_inl_inr : ¬LiftRel r s (inl a) (inr d) :=
-  fun.
+#align sum.lift_rel_inl_inl Sum.liftRel_inl_inl
 
 @[simp]
-theorem not_lift_rel_inr_inl : ¬LiftRel r s (inr b) (inl c) :=
+theorem not_liftRel_inl_inr : ¬LiftRel r s (inl a) (inr d) :=
   fun.
 
+#align sum.not_lift_rel_inl_inr Sum.not_liftRel_inl_inr
+
 @[simp]
-theorem lift_rel_inr_inr : LiftRel r s (inr b) (inr d) ↔ s b d :=
+theorem not_liftRel_inr_inl : ¬LiftRel r s (inr b) (inl c) :=
+  fun.
+
+#align sum.not_lift_rel_inr_inl Sum.not_liftRel_inr_inl
+
+@[simp]
+theorem liftRel_inr_inr : LiftRel r s (inr b) (inr d) ↔ s b d :=
   ⟨fun h => by
     cases h
     assumption, LiftRel.inr⟩
 
+#align sum.lift_rel_inr_inr Sum.liftRel_inr_inr
+
 instance [∀ a c, Decidable (r a c)] [∀ b d, Decidable (s b d)] :
     ∀ (ab : Sum α β) (cd : Sum γ δ), Decidable (LiftRel r s ab cd)
-  | inl _, inl _ => decidable_of_iff' _ lift_rel_inl_inl
-  | inl _, inr _ => Decidable.isFalse not_lift_rel_inl_inr
-  | inr _, inl _ => Decidable.isFalse not_lift_rel_inr_inl
-  | inr _, inr _ => decidable_of_iff' _ lift_rel_inr_inr
+  | inl _, inl _ => decidable_of_iff' _ liftRel_inl_inl
+  | inl _, inr _ => Decidable.isFalse not_liftRel_inl_inr
+  | inr _, inl _ => Decidable.isFalse not_liftRel_inr_inl
+  | inr _, inr _ => decidable_of_iff' _ liftRel_inr_inr
 
 theorem LiftRel.mono (hr : ∀ a b, r₁ a b → r₂ a b) (hs : ∀ a b, s₁ a b → s₂ a b)
   (h : LiftRel r₁ s₁ x y) : LiftRel r₂ s₂ x y := by
@@ -314,10 +322,12 @@ protected theorem LiftRel.swap (h : LiftRel r s x y) : LiftRel s r x.swap y.swap
   · exact LiftRel.inl ‹_›
 
 @[simp]
-theorem lift_rel_swap_iff : LiftRel s r x.swap y.swap ↔ LiftRel r s x y :=
+theorem liftRel_swap_iff : LiftRel s r x.swap y.swap ↔ LiftRel r s x y :=
   ⟨fun h => by
     rw [← swap_swap x, ← swap_swap y]
     exact h.swap, LiftRel.swap⟩
+
+#align sum.lift_rel_swap_iff Sum.liftRel_swap_iff
 
 end LiftRel
 
@@ -362,7 +372,9 @@ protected theorem LiftRel.lex {a b : Sum α β} (h : LiftRel r s a b) : Lex r s 
   · exact Lex.inl ‹_›
   · exact Lex.inr ‹_›
 
-theorem lift_rel_subrelation_lex : Subrelation (LiftRel r s) (Lex r s) := LiftRel.lex
+theorem liftRel_subrelation_lex : Subrelation (LiftRel r s) (Lex r s) := LiftRel.lex
+
+#align sum.lift_rel_subrelation_lex Sum.liftRel_subrelation_lex
 
 theorem Lex.mono (hr : ∀ a b, r₁ a b → r₂ a b) (hs : ∀ a b, s₁ a b → s₂ a b) (h : Lex r₁ s₁ x y) :
     Lex r₂ s₂ x y := by
