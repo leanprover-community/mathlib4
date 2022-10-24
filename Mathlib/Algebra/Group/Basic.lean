@@ -280,10 +280,14 @@ theorem one_div_div : 1 / (a / b) = b / a := by simp
 @[to_additive]
 theorem one_div_one_div : 1 / (1 / a) = a := by simp
 
-@[to_additive]
+@[to_additive SubtractionMonoid.toSubNegZeroMonoid]
 instance (priority := 100) DivisionMonoid.toDivInvOneMonoid : DivInvOneMonoid α :=
   { DivisionMonoid.toDivInvMonoid with
     inv_one := by simpa only [one_div, inv_inv] using (inv_div (1 : α) 1).symm }
+
+-- FIXME this isn't being copied by `to_additive`
+-- FIXME how to set priority?
+attribute [instance] SubtractionMonoid.toSubNegZeroMonoid
 
 variable {a b c}
 

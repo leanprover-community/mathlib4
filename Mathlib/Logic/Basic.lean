@@ -48,11 +48,11 @@ alias imp_and ← imp_and_distrib
 
 alias Decidable.em ← dec_em
 
-theorem dec_em' (p : Prop) [Decidable p] : ¬p ∨ p := (dec_em p).swap
+theorem dec_em' (p : Prop) [Decidable p] : ¬p ∨ p := (dec_em p).symm
 
 alias Classical.em ← em
 
-theorem em' (p : Prop) : ¬p ∨ p := (em p).swap
+theorem em' (p : Prop) : ¬p ∨ p := (em p).symm
 
 theorem or_not {p : Prop} : p ∨ ¬p := em _
 
@@ -112,15 +112,15 @@ theorem not_imp_comm : (¬a → b) ↔ (¬b → a) := Decidable.not_imp_comm
 
 /-! ### Declarations about `xor` -/
 
-@[simp] theorem xor_true : xor True = Not := by simp [xor]
+@[simp] theorem xor_true : Xor' True = Not := by simp [Xor']
 
-@[simp] theorem xor_false : xor False = id := by ext; simp [xor]
+@[simp] theorem xor_false : Xor' False = id := by ext; simp [Xor']
 
-theorem xor_comm (a b) : xor a b = xor b a := by simp [xor, and_comm, or_comm]
+theorem xor_comm (a b) : Xor' a b = Xor' b a := by simp [Xor', and_comm, or_comm]
 
 -- TODO is_commutative instance
 
-@[simp] theorem xor_self (a : Prop) : xor a a = False := by simp [xor]
+@[simp] theorem xor_self (a : Prop) : Xor' a a = False := by simp [Xor']
 
 /-! ### Declarations about `and` -/
 
