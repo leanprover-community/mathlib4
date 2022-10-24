@@ -9,11 +9,11 @@ import Mathlib.Logic.Basic
 
 namespace Option
 
-theorem some_injective (α : Type _) : Function.injective (@some α) :=
+theorem some_injective (α : Type _) : Function.Injective (@some α) :=
   fun _ _ => some_inj.mp
 
 /-- `option.map f` is injective if `f` is injective. -/
-theorem map_injective {f : α → β} (Hf : Function.injective f) : Function.injective (Option.map f)
+theorem map_injective {f : α → β} (Hf : Function.Injective f) : Function.Injective (Option.map f)
 | none, none, _ => rfl
 | some a₁, some a₂, H => by rw [Hf (Option.some.inj H)]
 

@@ -90,31 +90,31 @@ def map (f₁ : α₁ → α₂) (f₂ : ∀ a, β₁ a → β₂ (f₁ a)) (x :
 
 end Sigma
 
-theorem sigma_mk_injective {i : α} : Function.injective (@Sigma.mk α β i)
+theorem sigma_mk_injective {i : α} : Function.Injective (@Sigma.mk α β i)
   | _, _, rfl => rfl
 
-theorem Function.injective.sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
-  (h₁ : Function.injective f₁) (h₂ : ∀ a, Function.injective (f₂ a)) :
-    Function.injective (Sigma.map f₁ f₂)
+theorem Function.Injective.sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
+  (h₁ : Function.Injective f₁) (h₂ : ∀ a, Function.Injective (f₂ a)) :
+    Function.Injective (Sigma.map f₁ f₂)
   | ⟨i, x⟩, ⟨j, y⟩, h => by
     obtain rfl : i = j := h₁ (Sigma.mk.inj_iff.mp h).1
     obtain rfl : x = y := h₂ i (sigma_mk_injective h)
     rfl
 
-theorem Function.injective.of_sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
-    (h : Function.injective (Sigma.map f₁ f₂)) (a : α₁) : Function.injective (f₂ a) :=
+theorem Function.Injective.of_sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
+    (h : Function.Injective (Sigma.map f₁ f₂)) (a : α₁) : Function.Injective (f₂ a) :=
   fun x y hxy =>
   sigma_mk_injective <| @h ⟨a, x⟩ ⟨a, y⟩ (Sigma.ext rfl (heq_of_eq hxy))
 
-theorem Function.injective.sigma_map_iff {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
-  (h₁ : Function.injective f₁) :
-    Function.injective (Sigma.map f₁ f₂) ↔ ∀ a, Function.injective (f₂ a) :=
+theorem Function.Injective.sigma_map_iff {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
+  (h₁ : Function.Injective f₁) :
+    Function.Injective (Sigma.map f₁ f₂) ↔ ∀ a, Function.Injective (f₂ a) :=
   ⟨fun h => h.of_sigma_map, h₁.sigma_map⟩
 
-theorem Function.surjective.sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
-  (h₁ : Function.surjective f₁) (h₂ : ∀ a, Function.surjective (f₂ a)) :
-    Function.surjective (Sigma.map f₁ f₂) := by
-  simp only [Function.surjective, Sigma.forall, h₁.forall]
+theorem Function.Surjective.sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
+  (h₁ : Function.Surjective f₁) (h₂ : ∀ a, Function.Surjective (f₂ a)) :
+    Function.Surjective (Sigma.map f₁ f₂) := by
+  simp only [Function.Surjective, Sigma.forall, h₁.forall]
   exact fun i => (h₂ _).forall.2 fun x => ⟨⟨i, x⟩, rfl⟩
 
 /-- Interpret a function on `Σ x : α, β x` as a dependent function with two arguments.
