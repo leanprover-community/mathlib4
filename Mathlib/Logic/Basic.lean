@@ -157,8 +157,8 @@ For example, `Zmod p` is a field if and only if `p` is a prime number.
 In order to be able to find this field instance automatically by type class search,
 we have to turn `p.prime` into an instance implicit assumption.
 
-On the other hand, making `Fat.prime` a class would require a major refactoring of the library,
-and it is questionable whether making `nat.prime` a class is desirable at all.
+On the other hand, making `Nat.prime` a class would require a major refactoring of the library,
+and it is questionable whether making `Nat.prime` a class is desirable at all.
 The compromise is to add the assumption `[Fact p.prime]` to `Zmod.field`.
 
 In particular, this class is not intended for turning the type class system
