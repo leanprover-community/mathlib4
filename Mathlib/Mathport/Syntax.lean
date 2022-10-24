@@ -512,7 +512,6 @@ end Attr
 namespace Command
 
 /- N -/ syntax (name := addTacticDoc) (docComment)? "add_tactic_doc " term : command
-/- N -/ syntax (name := addDeclDoc) docComment "add_decl_doc " ident : command
 
 /- S -/ syntax (name := setupTacticParser) "setup_tactic_parser" : command
 /- N -/ syntax (name := mkSimpAttribute) "mk_simp_attribute " ident
