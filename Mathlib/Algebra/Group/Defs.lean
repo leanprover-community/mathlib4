@@ -3,10 +3,11 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-import Mathlib.Init.Zero
-import Mathlib.Init.Data.Int.Notation
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.ToAdditive
+import Mathlib.Init.ZeroOne
+import Mathlib.Init.Data.Int.Notation
+import Mathlib.Data.List.Basic
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -77,25 +78,14 @@ universe u
 
 variable {G : Type _}
 
-@[to_additive Zero]
-class One (α : Type u) where
-  one : α
-
-@[to_additive Zero.toOfNat0]
-instance One.toOfNat1 {α} [One α] : OfNat α (nat_lit 1) where
-  ofNat := ‹One α›.1
-
-@[to_additive Zero.ofOfNat0]
-instance One.ofOfNat1 {α} [OfNat α (nat_lit 1)] : One α where
-  one := 1
-
 /-- Class of types that have an inversion operation. -/
 @[to_additive Neg]
 class Inv (α : Type u) where
   /-- Invert an element of α. -/
   inv : α → α
+#align has_inv Inv
 
-@[inheritDoc]
+@[inherit_doc]
 postfix:max "⁻¹" => Inv.inv
 
 /-- The simpset `field_simps` is used by the tactic `field_simp` to
@@ -187,7 +177,7 @@ theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
   ⟨mul_left_cancel, congr_arg _⟩
 
 @[to_additive]
-theorem mul_right_injective (a : G) : Function.injective ((· * ·) a) := fun _ _ => mul_left_cancel
+theorem mul_right_injective (a : G) : Function.Injective ((· * ·) a) := fun _ _ => mul_left_cancel
 
 @[simp, to_additive]
 theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
@@ -225,7 +215,7 @@ theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
   ⟨mul_right_cancel, congr_arg (· * a)⟩
 
 @[to_additive]
-theorem mul_left_injective (a : G) : Function.injective (· * a) := fun _ _ => mul_right_cancel
+theorem mul_left_injective (a : G) : Function.Injective (· * a) := fun _ _ => mul_right_cancel
 
 @[simp, to_additive]
 theorem mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
@@ -395,14 +385,12 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   npow_zero' : ∀ x, npow 0 x = 1 := by intros; rfl
   npow_succ' : ∀ (n : ℕ) (x), npow n.succ x = x * npow n x := by intros; rfl
 
--- TODO I wouldn't have thought this is necessary. Is is a bug in `to_additive`?
+-- FIXME I wouldn't have thought this is necessary. Is is a bug in `to_additive`?
+-- It seems that it isn't operating on the second parent.
 attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
 
-instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
+@[default_instance high] instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
   ⟨fun x n => Monoid.npow n x⟩
-
-@[defaultInstance high] instance Monoid.HPow {M : Type _} [Monoid M] : HPow M ℕ M :=
-  ⟨λ a n => Monoid.npow n a⟩
 
 instance AddMonoid.HasSmul {M : Type _} [AddMonoid M] : HasSmul ℕ M :=
   ⟨AddMonoid.nsmul⟩
@@ -717,6 +705,7 @@ class InvOneClass (G : Type _) extends One G, Inv G where
 @[to_additive SubNegZeroMonoid]
 class DivInvOneMonoid (G : Type _) extends DivInvMonoid G, InvOneClass G
 
+-- FIXME: `to_additive` is not operating on the second parent.
 attribute [to_additive SubNegZeroMonoid.toNegZeroClass] DivInvOneMonoid.toInvOneClass
 
 variable [InvOneClass G]
@@ -857,7 +846,7 @@ end Group
 
 @[to_additive]
 theorem Group.toDivInvMonoid_injective {G : Type _} :
-    Function.injective (@Group.toDivInvMonoid G) := by rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
+    Function.Injective (@Group.toDivInvMonoid G) := by rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
 
 /-- An additive commutative group is an additive group with commutative `(+)`. -/
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
@@ -871,7 +860,7 @@ attribute [to_additive AddCommGroup.toAddCommMonoid] CommGroup.toCommMonoid
 attribute [instance] AddCommGroup.toAddCommMonoid
 
 @[to_additive]
-theorem CommGroup.toGroup_injective {G : Type u} : Function.injective (@CommGroup.toGroup G) := by
+theorem CommGroup.toGroup_injective {G : Type u} : Function.Injective (@CommGroup.toGroup G) := by
   rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
 
 section CommGroup

@@ -104,7 +104,7 @@ variable {M : Type u} [CommMonoid M] {x y z : M}
 
 @[to_additive]
 theorem inv_unique (hy : x * y = 1) (hz : x * z = 1) : y = z :=
-  left_inv_eq_right_inv (trans (mul_comm _ _) hy) hz
+  left_inv_eq_right_inv (Trans.trans (mul_comm _ _) hy) hz
 
 end CommMonoid
 
@@ -143,15 +143,15 @@ section HasInvolutiveInv
 variable [HasInvolutiveInv G] {a b : G}
 
 @[simp, to_additive]
-theorem inv_involutive : Function.involutive (Inv.inv : G → G) :=
+theorem inv_involutive : Function.Involutive (Inv.inv : G → G) :=
   inv_inv
 
 @[simp, to_additive]
-theorem inv_surjective : Function.surjective (Inv.inv : G → G) :=
+theorem inv_surjective : Function.Surjective (Inv.inv : G → G) :=
   inv_involutive.surjective
 
 @[to_additive]
-theorem inv_injective : Function.injective (Inv.inv : G → G) :=
+theorem inv_injective : Function.Injective (Inv.inv : G → G) :=
   inv_involutive.injective
 
 @[simp, to_additive]
@@ -280,10 +280,14 @@ theorem one_div_div : 1 / (a / b) = b / a := by simp
 @[to_additive]
 theorem one_div_one_div : 1 / (1 / a) = a := by simp
 
-@[to_additive]
+@[to_additive SubtractionMonoid.toSubNegZeroMonoid]
 instance (priority := 100) DivisionMonoid.toDivInvOneMonoid : DivInvOneMonoid α :=
   { DivisionMonoid.toDivInvMonoid with
     inv_one := by simpa only [one_div, inv_inv] using (inv_div (1 : α) 1).symm }
+
+-- FIXME this isn't being copied by `to_additive`
+-- FIXME how to set priority?
+attribute [instance] SubtractionMonoid.toSubNegZeroMonoid
 
 variable {a b c}
 
@@ -399,11 +403,11 @@ variable [Group G] {a b c d : G}
 theorem div_eq_inv_self : a / b = b⁻¹ ↔ a = 1 := by rw [div_eq_mul_inv, mul_left_eq_self]
 
 @[to_additive]
-theorem mul_left_surjective (a : G) : Function.surjective ((· * ·) a) :=
+theorem mul_left_surjective (a : G) : Function.Surjective ((· * ·) a) :=
   fun x => ⟨a⁻¹ * x, mul_inv_cancel_left a x⟩
 
 @[to_additive]
-theorem mul_right_surjective (a : G) : Function.surjective fun x => x * a := fun x =>
+theorem mul_right_surjective (a : G) : Function.Surjective fun x => x * a := fun x =>
   ⟨x * a⁻¹, inv_mul_cancel_right x a⟩
 
 @[to_additive]
@@ -469,13 +473,13 @@ theorem mul_inv_eq_one : a * b⁻¹ = 1 ↔ a = b := by rw [mul_eq_one_iff_eq_in
 theorem inv_mul_eq_one : a⁻¹ * b = 1 ↔ a = b := by rw [mul_eq_one_iff_eq_inv, inv_inj]
 
 @[to_additive]
-theorem div_left_injective : Function.injective fun a => a / b := by
+theorem div_left_injective : Function.Injective fun a => a / b := by
   -- FIXME this could be by `simpa`, but it fails. This is probably a bug in `simpa`.
   simp only [div_eq_mul_inv]
   exact fun a a' h => mul_left_injective b⁻¹ h
 
 @[to_additive]
-theorem div_right_injective : Function.injective fun a => b / a := by
+theorem div_right_injective : Function.Injective fun a => b / a := by
   -- FIXME see above
   simp only [div_eq_mul_inv]
   exact fun a a' h => inv_injective (mul_right_injective b h)

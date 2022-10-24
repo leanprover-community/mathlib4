@@ -44,7 +44,7 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
       "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized."
     add   := fun _ stx => do
         let ids ← match stx with
-          | `(attr|to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
+          | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
           | _ => throwError "unexpected to_additive_ignore_args syntax {stx}"
         return ids.toList
   }
@@ -61,7 +61,7 @@ initialize reorderAttr : NameMapExtension (List Nat) ←
     descr :=
       "Auxiliary attribute for `to_additive` that stores arguments that need to be reordered."
     add := fun
-    | _, `(attr|to_additive_reorder $[$ids:num]*) =>
+    | _, `(attr| to_additive_reorder $[$ids:num]*) =>
       pure <| Array.toList <| ids.map (·.1.isNatLit?.get!)
     | _, stx => throwError "unexpected to_additive_reorder syntax {stx}"
   }
@@ -81,7 +81,7 @@ initialize relevantArgAttr : NameMapExtension Nat ←
     descr := "Auxiliary attribute for `to_additive` stating" ++
       " which arguments are the types with a multiplicative structure."
     add := fun
-    | _, `(attr|to_additive_relevant_arg $id) => pure <| id.1.isNatLit?.get!
+    | _, `(attr| to_additive_relevant_arg $id) => pure <| id.1.isNatLit?.get!
     | _, stx => throwError "unexpected to_additive_relevant_arg syntax {stx}"
   }
 
@@ -94,8 +94,7 @@ def isRelevant [Monad M] [MonadEnv M] (n : Name) (i : Nat) : M Bool := do
   | none => return i == 0
 
 /- Maps multiplicative names to their additive counterparts. -/
-initialize translations : NameMapExtension Name ←
-  registerNameMapExtension Name `translations
+initialize translations : NameMapExtension Name ← registerNameMapExtension _
 
 /-- Get the multiplicative → additive translation for the given name. -/
 def findTranslation? (env : Environment) : Name → Option Name :=
@@ -383,7 +382,7 @@ structure ValueType : Type where
   tgt : Name := Name.anonymous
   /-- An optional doc string.-/
   doc : Option String := none
-  /-- If `allow_auto_name` is `false` (default) then
+  /-- If `allowAutoName` is `false` (default) then
   `@[to_additive]` will check whether the given name can be auto-generated. -/
   allowAutoName : Bool := false
   /-- The `Syntax` element corresponding to the original multiplicative declaration
@@ -493,6 +492,31 @@ private def elabToAdditive : Syntax → CoreM ValueType
   | `(attr| to_additive%$tk $[!%$replaceAll]? $[?%$trace]? $[$tgt]? $[$doc]?) =>
     return elabToAdditiveAux ((tgt.map (·.raw)).getD tk) replaceAll.isSome trace.isSome tgt doc
   | _ => throwUnsupportedSyntax
+
+/-- `addToAdditiveAttr src val` adds a `@[to_additive]` attribute to `src` with configuration `val`.
+See the attribute implementation for more details. -/
+def addToAdditiveAttr (src : Name) (val : ValueType) : AttrM Unit := do
+  let tgt ← targetName src val.tgt val.allowAutoName
+  if let some tgt' := findTranslation? (← getEnv) src then
+    throwError "{src} already has a to_additive translation {tgt'}."
+  insertTranslation src tgt
+  if let some firstMultArg ← (MetaM.run' <| firstMultiplicativeArg src) then
+    trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
+    relevantArgAttr.add src firstMultArg
+  if (← getEnv).contains tgt then
+    -- since tgt already exists, we just need to add a translation src ↦ tgt
+    -- and also src.𝑥 ↦ tgt.𝑥' for any subfields.
+    proceedFields src tgt
+  else
+    -- tgt doesn't exist, so let's make it
+    let shouldTrace := val.trace || ((← getOptions) |>.getBool `trace.to_additive)
+    withOptions
+      (fun o => o |>.setBool `to_additive.replaceAll val.replaceAll
+                  |>.setBool `trace.to_additive shouldTrace)
+      (transformDecl val.ref src tgt)
+  if let some doc := val.doc then
+    addDocString tgt doc
+  return ()
 
 /-!
 The attribute `to_additive` can be used to automatically transport theorems
@@ -695,31 +719,12 @@ that the new name differs from the original one.
 -/
 initialize registerBuiltinAttribute {
     name := `to_additive
-    descr :="Transport multiplicative to additive"
+    descr := "Transport multiplicative to additive"
     add := fun src stx kind => do
       if (kind != AttributeKind.global) then
         throwError "`to_additive` can't be used as a local attribute"
       let val ← elabToAdditive stx
-      let tgt ← targetName src val.tgt val.allowAutoName
-      if let some tgt' := findTranslation? (← getEnv) src then
-        throwError "{src} already has a to_additive translation {tgt'}."
-      insertTranslation src tgt
-      if let some firstMultArg ← (MetaM.run' <| firstMultiplicativeArg src) then
-        trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
-        relevantArgAttr.add src firstMultArg
-      if (← getEnv).contains tgt then
-        -- since tgt already exists, we just need to add a translation src ↦ tgt
-        -- and also src.𝑥 ↦ tgt.𝑥' for any subfields.
-        proceedFields src tgt
-      else
-        -- tgt doesn't exist, so let's make it
-        let shouldTrace := val.trace || ((← getOptions) |>.getBool `trace.to_additive)
-        withOptions
-          (fun o => o |>.setBool `to_additive.replaceAll val.replaceAll
-                      |>.setBool `trace.to_additive shouldTrace)
-          (transformDecl val.ref src tgt)
-      if let some doc := val.doc then
-        addDocString tgt doc
+      addToAdditiveAttr src val
     -- Because `@[simp]` runs after compilation,
     -- we have to as well to be able to copy attributes correctly.
     applicationTime := .afterCompilation

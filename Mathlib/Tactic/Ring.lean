@@ -185,8 +185,8 @@ by
 
 partial def evalAdd : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
 | (const e₁ c₁), (const e₂ c₂) => do
-  let r ← NormNum.eval $ ← mkAdd e₁ e₂
-  pure (const r.expr (c₁ + c₂), ←r.getProof)
+  let r ← NormNum.eval (← mkAdd e₁ e₂)
+  pure (const r.expr (c₁ + c₂), ← r.getProof)
 | he₁@(const e₁ c₁), he₂@(xadd e₂ a x n b) => do
 
   if c₁ = 0 then
@@ -252,7 +252,7 @@ by simp [horner, ← h₁, ← h₂, add_mul, mul_assoc, mul_comm c]
 /-- Evaluate `k * a` where `k` is a rational numeral and `a` is in normal form. -/
 def evalConstMul (k : Expr × ℕ) : HornerExpr → RingM (HornerExpr × Expr)
 | const e coeff => do
-  let r ← NormNum.eval $ ← mkMul k.1 e
+  let r ← NormNum.eval (← mkMul k.1 e)
   return (const r.expr (k.2 * coeff), ← r.getProof)
 | xadd _ a x n b => do
   let (a', h₁) ← evalConstMul k a
@@ -283,7 +283,7 @@ by
 /-- Evaluate `a * b` where `a` and `b` are in normal form. -/
 partial def evalMul : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
 | (const e₁ c₁), (const e₂ c₂) => do
-  let r ← NormNum.eval $ ← mkMul e₁ e₂
+  let r ← NormNum.eval (← mkMul e₁ e₂)
   return (const r.expr (c₁ * c₂), ← r.getProof)
 | (const e₁ c₁), e₂ =>
   if c₁ = 0 then do
@@ -402,13 +402,13 @@ partial def eval (e : Expr) : RingM (HornerExpr × Expr) :=
   | (``HPow.hPow, #[_,_,_,P,e₁,e₂]) => do
     -- let (e₂', p₂) ← lift $ norm_num.derive e₂ <|> refl_conv e₂,
     let (e₂', p₂) := (e₂, ← mkEqRefl e₂)
-    match e₂'.numeral?, P.getAppFn with
-    | some k, .const ``Monoid.HPow _ => do
-      let (e₁', p₁) ← eval e₁
-      let (e', p') ← evalPow e₁' (e₂, k)
-      let p ← mkAppM ``subst_into_pow #[e₁, e₂, e₁', e₂', e', p₁, p₂, p']
-      return (e', p)
-    | _, _ => evalAtom e
+    let some k := e₂'.numeral? | evalAtom e
+    let (``instHPow, #[_, _, P]) := P.getAppFnArgs | evalAtom e
+    let true := P.getAppFn.isConstOf ``Monoid.Pow || P.getAppFn.isConstOf ``instPowNat | evalAtom e
+    let (e₁', p₁) ← eval e₁
+    let (e', p') ← evalPow e₁' (e₂, k)
+    let p ← mkAppM ``subst_into_pow #[e₁, e₂, e₁', e₂', e', p₁, p₂, p']
+    return (e', p)
   | _ =>
     match e.numeral? with
     | some n => (const e n).reflConv

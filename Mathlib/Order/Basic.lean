@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Prod
 import Mathlib.Data.Subtype
 import Mathlib.Init.Algebra.Order
-import Mathlib.Init.Zero
+import Mathlib.Init.ZeroOne
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.Alias
 
@@ -315,7 +315,7 @@ lemma le_implies_le_of_le_of_le {a b c d : α} [Preorder α] (hca : c ≤ a) (hb
 λ hab => (hca.trans hab).trans hbd
 
 @[ext]
-theorem Preorder.to_le_injective {α : Type _} : Function.injective (@Preorder.toLE α) :=
+theorem Preorder.to_le_injective {α : Type _} : Function.Injective (@Preorder.toLE α) :=
 λ A B h => by
   cases A with | @mk A_toLE A_toLT A_le_refl A_le_trans A_lt_iff_le_not_le =>
   cases B with | @mk B_toLE B_toLT B_le_refl B_le_trans B_lt_iff_le_not_le =>
@@ -339,7 +339,7 @@ theorem Preorder.to_le_injective {α : Type _} : Function.injective (@Preorder.t
 
 @[ext]
 lemma PartialOrder.to_preorder_injective {α : Type _} :
-  Function.injective (@PartialOrder.toPreorder α) := λ A B h => by
+  Function.Injective (@PartialOrder.toPreorder α) := λ A B h => by
     cases A
     cases B
     subst h
@@ -347,7 +347,7 @@ lemma PartialOrder.to_preorder_injective {α : Type _} :
 
 @[ext]
 lemma LinearOrder.to_partial_order_injective {α : Type _} :
-  Function.injective (@LinearOrder.toPartialOrder α) := by
+  Function.Injective (@LinearOrder.toPartialOrder α) := by
   intros A B h
   cases A with | @mk A_toPartialOrder A_le_total A_decidable_le A_decidable_eq A_decidable_lt =>
   cases B with | @mk B_toPartialOrder B_le_total B_decidable_le B_decidable_eq B_decidable_lt =>
@@ -531,13 +531,13 @@ See note [reducible non-instances]. -/
 
 /-- Transfer a `PartialOrder` on `β` to a `PartialOrder` on `α` using an injective
 function `f : α → β`. See note [reducible non-instances]. -/
-@[reducible] def PartialOrder.lift {α β} [PartialOrder β] (f : α → β) (inj : injective f) :
+@[reducible] def PartialOrder.lift {α β} [PartialOrder β] (f : α → β) (inj : Injective f) :
   PartialOrder α :=
 { Preorder.lift f with le_antisymm := λ _ _ h₁ h₂ => inj (h₁.antisymm h₂) }
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. See note [reducible non-instances]. -/
-@[reducible] def LinearOrder.lift {α β} [LinearOrder β] (f : α → β) (inj : injective f) :
+@[reducible] def LinearOrder.lift {α β} [LinearOrder β] (f : α → β) (inj : Injective f) :
   LinearOrder α :=
 { PartialOrder.lift f inj with
     le_total     := λ x y => le_total (f x) (f y),
