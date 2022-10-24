@@ -251,8 +251,6 @@ theorem swap_right_inverse : Function.RightInverse (@swap α β) swap :=
 
 section LiftRel
 
-set_option autoImplicit false
-
 /-- Lifts pointwise two relations between `α` and `γ` and between `β` and `δ` to a relation between
 `α ⊕ β` and `γ ⊕ δ`. -/
 inductive LiftRel (r : α → γ → Prop) (s : β → δ → Prop) : Sum α β → Sum γ δ → Prop
