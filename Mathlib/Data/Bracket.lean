@@ -3,6 +3,7 @@ Copyright (c) 2021 Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Lutz, Oliver Nash
 -/
+import Mathlib.Mathport.Rename
 
 /-!
 # Bracket Notation
@@ -20,7 +21,6 @@ We introduce the notation `⁅x, y⁆` for the `bracket` of any `Bracket` struct
 these are the Unicode "square with quill" brackets rather than the usual square brackets.
 -/
 
-
 /-- The has_bracket class has three intended uses:
   1. for certain binary operations on structures, like the product `⁅x, y⁆` of two elements
     `x`, `y` in a Lie algebra or the commutator of two elements `x` and `y` in a group.
@@ -33,5 +33,6 @@ class Bracket (L M : Type _) where
   /-- `⁅x, y⁆` is the result of a bracket operation on elements `x` and `y`.
   It is supported by the `Bracket` typeclass. -/
   bracket : L → M → M
+#align has_bracket Bracket
 
 @[inherit_doc] notation "⁅" x ", " y "⁆" => Bracket.bracket x y
