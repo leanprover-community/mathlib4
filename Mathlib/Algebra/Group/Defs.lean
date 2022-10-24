@@ -177,7 +177,7 @@ theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
   ⟨mul_left_cancel, congr_arg _⟩
 
 @[to_additive]
-theorem mul_right_injective (a : G) : Function.injective ((· * ·) a) := fun _ _ => mul_left_cancel
+theorem mul_right_injective (a : G) : Function.Injective ((· * ·) a) := fun _ _ => mul_left_cancel
 
 @[simp, to_additive]
 theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
@@ -215,7 +215,7 @@ theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
   ⟨mul_right_cancel, congr_arg (· * a)⟩
 
 @[to_additive]
-theorem mul_left_injective (a : G) : Function.injective (· * a) := fun _ _ => mul_right_cancel
+theorem mul_left_injective (a : G) : Function.Injective (· * a) := fun _ _ => mul_right_cancel
 
 @[simp, to_additive]
 theorem mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
@@ -846,7 +846,7 @@ end Group
 
 @[to_additive]
 theorem Group.toDivInvMonoid_injective {G : Type _} :
-    Function.injective (@Group.toDivInvMonoid G) := by rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
+    Function.Injective (@Group.toDivInvMonoid G) := by rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
 
 /-- An additive commutative group is an additive group with commutative `(+)`. -/
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
@@ -860,7 +860,7 @@ attribute [to_additive AddCommGroup.toAddCommMonoid] CommGroup.toCommMonoid
 attribute [instance] AddCommGroup.toAddCommMonoid
 
 @[to_additive]
-theorem CommGroup.toGroup_injective {G : Type u} : Function.injective (@CommGroup.toGroup G) := by
+theorem CommGroup.toGroup_injective {G : Type u} : Function.Injective (@CommGroup.toGroup G) := by
   rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
 
 section CommGroup
