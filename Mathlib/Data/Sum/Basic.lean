@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury G. Kudryashov
 -/
 import Mathlib.Logic.Function.Basic
+import Mathlib.Mathport.Rename
 
 /-!
 # Disjoint union of types
@@ -68,11 +69,15 @@ def getLeft : Sum α β → Option α
   | inl a => some a
   | inr _ => none
 
+#align sum.get_left Sum.getLeft
+
 /-- Check if a sum is `inr` and if so, retrieve its contents. -/
 @[simp]
 def getRight : Sum α β → Option β
   | inr b => some b
   | inl _ => none
+
+#align sum.get_right Sum.getRight
 
 /-- Check if a sum is `inl`. -/
 @[simp]
@@ -80,18 +85,22 @@ def isLeft : Sum α β → Bool
   | inl _ => true
   | inr _ => false
 
+#align sum.is_left Sum.isLeft
+
 /-- Check if a sum is `inr`. -/
 @[simp]
 def isRight : Sum α β → Bool
   | inl _ => false
   | inr _ => true
 
+#align sum.is_right Sum.isRight
+
 variable {x y : Sum α β}
 
-theorem get_left_eq_none_iff : x.getLeft = none ↔ x.isRight := by
+theorem getLeft_eq_none_iff : x.getLeft = none ↔ x.isRight := by
   cases x <;> simp only [getLeft, isRight, eq_self_iff_true]
 
-theorem get_right_eq_none_iff : x.getRight = none ↔ x.isLeft := by
+theorem getRight_eq_none_iff : x.getRight = none ↔ x.isLeft := by
   cases x <;> simp only [getRight, isLeft, eq_self_iff_true]
 
 end get
