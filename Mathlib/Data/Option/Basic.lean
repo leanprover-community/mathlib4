@@ -7,6 +7,7 @@ import Mathlib.Logic.IsEmpty
 import Mathlib.Tactic.Basic
 import Mathlib.Logic.Relator
 import Mathlib.Tactic.SimpTrace
+import Mathlib.Mathport.Rename
 
 /-!
 # Option of a type
@@ -36,26 +37,22 @@ variable {α β γ δ : Type _}
 theorem coe_def : (fun a => ↑a : α → Option α) = some :=
   rfl
 
--- TODO: move to std
-/-- Extracts the value `a` from an option if it is `some a`, otherwise use a backup `b`. -/
-def getOrElse {α : Type _} : (o : Option α) → α → α
-  | some x, _ => x
-  | none, b   => b
+#align option.get_or_else Option.getD
 
 @[simp]
-theorem get_or_else_some (x y : α) : Option.getOrElse (some x) y = x :=
+theorem get_or_else_some (x y : α) : Option.getD (some x) y = x :=
   rfl
 
 @[simp]
-theorem get_or_else_none (x : α) : Option.getOrElse none x = x :=
+theorem get_or_else_none (x : α) : Option.getD none x = x :=
   rfl
 
 @[simp]
-theorem get_or_else_coe (x y : α) : Option.getOrElse (↑x) y = x :=
+theorem get_or_else_coe (x y : α) : Option.getD (↑x) y = x :=
   rfl
 
 theorem get_or_else_of_ne_none {x : Option α} (hx : x ≠ none) (y : α) :
-    some (x.getOrElse y) = x := by
+    some (x.getD y) = x := by
   cases x; contradiction; rw [get_or_else_some]
 
 @[simp]
@@ -291,7 +288,7 @@ theorem iget_of_mem [Inhabited α] {a : α} : ∀ {o : Option α}, a ∈ o → o
   | _, rfl => rfl
 
 theorem get_or_else_default_eq_iget [Inhabited α] (o : Option α) :
-    o.getOrElse default = o.iget := by cases o <;> rfl
+    o.getD default = o.iget := by cases o <;> rfl
 
 @[simp]
 theorem guard_eq_some' {p : Prop} [Decidable p] (u) : _root_.guard p = some u ↔ p := by
@@ -339,7 +336,7 @@ theorem cases_on'_none_coe (f : Option α → β) (o : Option α) :
 
 @[simp]
 theorem get_or_else_map (f : α → β) (x : α) (o : Option α) :
-    getOrElse (o.map f) (f x) = f (getOrElse o x) := by
+    getD (o.map f) (f x) = f (getD o x) := by
   cases o <;> rfl
 
 theorem orelse_eq_some (o o' : Option α) (x : α) :
