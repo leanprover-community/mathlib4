@@ -24,6 +24,7 @@ def Lean.MVarId.congrN' (mvarId : MVarId) (n : Nat) (closeEasy := true) : MetaM 
     let (_, s) ← go n mvarId |>.run #[]
     return s.toList
 where
+  /-- Auxiliary definition for `congrN'`. -/
   go (n : Nat) (mvarId : MVarId) : StateRefT (Array MVarId) MetaM Unit := do
     match n with
     | 0 => modify (·.push mvarId)
@@ -57,8 +58,6 @@ def Lean.MVarId.convert (e : Expr) (sym : Bool) (depth : Option Nat := none) (g 
     m.refl
     return []
   catch _ => return [m]
-
-syntax (name := convert) "convert " "← "? term (" using " num)? : tactic
 
 /--
 The `exact e` and `refine e` tactics require a term `e` whose type is
@@ -101,6 +100,8 @@ the goal equals the type of `e`, then simplifying it using
 depth of matching (like `congr' n`). In the example, `convert e using
 1` would produce a new goal `⊢ n + n + 1 = 2 * n + 1`.
 -/
+syntax (name := convert) "convert " "← "? term (" using " num)? : tactic
+
 elab_rules : tactic
 | `(tactic| convert $[←%$sym]? $term $[using $n]?) => withMainContext do
   let e ← Term.elabTerm term (← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget))))
