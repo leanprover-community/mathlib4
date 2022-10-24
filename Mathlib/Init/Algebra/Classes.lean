@@ -362,10 +362,10 @@ theorem is_strict_weak_order_of_is_total_preorder {α : Type u} {le : α → α 
       Iff.mpr (h _ _) nca,
     irrefl := fun a hlt => absurd (refl_of le a) (Iff.mp (h _ _) hlt),
     incomp_trans := fun a b c ⟨nab, nba⟩ ⟨nbc, ncb⟩ =>
-      have hba : le b a := Decidable.of_not_not (Iff.mp (not_iff_not_of_iff (h _ _)) nab)
-      have hab : le a b := Decidable.of_not_not (Iff.mp (not_iff_not_of_iff (h _ _)) nba)
-      have hcb : le c b := Decidable.of_not_not (Iff.mp (not_iff_not_of_iff (h _ _)) nbc)
-      have hbc : le b c := Decidable.of_not_not (Iff.mp (not_iff_not_of_iff (h _ _)) ncb)
+      have hba : le b a := Decidable.of_not_not (Iff.mp (not_congr (h _ _)) nab)
+      have hab : le a b := Decidable.of_not_not (Iff.mp (not_congr (h _ _)) nba)
+      have hcb : le c b := Decidable.of_not_not (Iff.mp (not_congr (h _ _)) nbc)
+      have hbc : le b c := Decidable.of_not_not (Iff.mp (not_congr (h _ _)) ncb)
       have hac : le a c := trans_of le hab hbc
       have hca : le c a := trans_of le hcb hba
       And.intro (fun n => absurd hca (Iff.mp (h _ _) n)) fun n => absurd hac (Iff.mp (h _ _) n) }

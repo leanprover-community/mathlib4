@@ -87,6 +87,8 @@ syntax (name := align) "#align " ident ident : command
     if (← getInfoState).enabled then
       if (← getEnv).contains id4.getId then
         addConstInfo id4 id4.getId none
+    if (getRenameMap (← getEnv)).toLean4.contains id3.getId then
+      throwErrorAt id3 "{id3.getId} has already been aligned (to {id4.getId})"
     liftCoreM $ addNameAlignment id3.getId id4.getId
   | _ => throwUnsupportedSyntax
 
