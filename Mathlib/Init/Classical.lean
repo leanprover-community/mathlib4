@@ -8,6 +8,8 @@ import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Logic
 
+/-! ### alignments from lean 3 `init.classical` -/
+
 namespace Classical
 
 #align inhabited_of_nonempty inhabited_of_nonempty
