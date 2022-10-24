@@ -246,8 +246,9 @@ theorem unique_of_exists_unique {α : Sort u} {p : α → Prop}
 /- exists, forall, exists unique congruences -/
 
 -- TODO
--- attribute [congr] forall_congr
--- attribute [congr] exists_congr
+-- attribute [congr] forall_congr'
+-- attribute [congr] exists_congr'
+#align forall_congr forall_congr'
 
 #align Exists.imp Exists.imp
 #align exists_imp_exists Exists.imp
