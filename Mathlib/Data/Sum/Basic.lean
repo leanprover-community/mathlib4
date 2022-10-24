@@ -415,7 +415,7 @@ open Sum
 
 namespace Function
 
-theorem Injective.sum_elim {f : α → γ} {g : β → γ} (hf : injective f) (hg : injective g)
+theorem injective.sum_elim {f : α → γ} {g : β → γ} (hf : injective f) (hg : injective g)
     (hfg : ∀ a b, f a ≠ g b) : injective (Sum.elim f g)
   | inl _, inl _, h => congr_arg inl <| hf h
   | inl _, inr _, h => (hfg _ _ h).elim
