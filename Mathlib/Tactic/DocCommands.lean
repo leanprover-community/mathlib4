@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 
+import Mathlib.Lean.Expr.Basic
+
 /-!
 # Documentation commands
 -/
-
-import Mathlib.Lean.Expr.Basic
 open Lean Elab
 
 /--
