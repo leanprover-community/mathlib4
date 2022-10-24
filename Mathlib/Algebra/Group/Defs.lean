@@ -385,7 +385,8 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   npow_zero' : ∀ x, npow 0 x = 1 := by intros; rfl
   npow_succ' : ∀ (n : ℕ) (x), npow n.succ x = x * npow n x := by intros; rfl
 
--- TODO I wouldn't have thought this is necessary. Is is a bug in `to_additive`?
+-- FIXME I wouldn't have thought this is necessary. Is is a bug in `to_additive`?
+-- It seems that it isn't operating on the second parent.
 attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
 
 @[default_instance high] instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
@@ -704,6 +705,7 @@ class InvOneClass (G : Type _) extends One G, Inv G where
 @[to_additive SubNegZeroMonoid]
 class DivInvOneMonoid (G : Type _) extends DivInvMonoid G, InvOneClass G
 
+-- FIXME: `to_additive` is not operating on the second parent.
 attribute [to_additive SubNegZeroMonoid.toNegZeroClass] DivInvOneMonoid.toInvOneClass
 
 variable [InvOneClass G]

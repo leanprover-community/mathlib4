@@ -7,6 +7,10 @@ import Mathlib.Algebra.Group.Semiconj
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.Order.Group
+import Mathlib.Algebra.Order.Monoid
+import Mathlib.Algebra.Order.MonoidLemmas
+import Mathlib.Algebra.Order.Ring
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Control.Random
 import Mathlib.Control.Writer
@@ -52,6 +56,7 @@ import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
+import Mathlib.Init.Propext
 import Mathlib.Init.Set
 import Mathlib.Init.ZeroOne
 import Mathlib.Lean.Exception
@@ -65,6 +70,7 @@ import Mathlib.Logic.Basic
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Logic.Equiv.MfldSimpsAttr
 import Mathlib.Logic.Function.Basic
+import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Nonempty
 import Mathlib.Logic.Relator
 import Mathlib.Mathport.Attributes
