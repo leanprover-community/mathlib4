@@ -7,25 +7,6 @@ import Mathlib.Mathport.Rename
 
 namespace Mathlib.Prelude
 
--- Note: we do not currently auto-align constants.
-#align quot Quot
-#align quot.mk Quot.mk
-#align quot.lift Quot.lift
-#align quot.ind Quot.ind
-
--- Otherwise would be`OutParam` and `OptParam`!
--- Note: we want `auto_param` to *not* align.
-#align out_param               outParam
-#align opt_param               optParam
-
-#align heq                     HEq
-
-#align psigma                  PSigma
-#align punit                   PUnit
-#align pprod                   PProd
-#align psum                    PSum
-#align ulift                   ULift
-
 #align classical.some          Classical.choose
 #align classical.some_spec     Classical.choose_spec
 
@@ -46,13 +27,7 @@ namespace Mathlib.Prelude
 #align has_coe_to_sort CoeSort
 #align has_coe_to_sort.coe CoeSort.coe
 
-#align has_le                  LE
-#align has_le.le               LE.le
-#align has_lt                  LT
-#align has_lt.lt               LT.lt
-
 #align has_beq                 BEq
-#align has_sizeof              SizeOf
 
 -- This otherwise causes filenames to clash
 #align category_theory.Kleisli CategoryTheory.KleisliCat
@@ -62,36 +37,12 @@ namespace Mathlib.Prelude
 
 -- Generic 'has'-stripping
 -- Note: we don't currently strip automatically for various reasons.
-#align has_zero      Zero
-#align has_one       One
-#align has_inv       Inv
-#align has_add       Add
-#align has_sub       Sub
-#align has_mul       Mul
-#align has_div       Div
-#align has_neg       Neg
-#align has_mod       Mod
-#align has_pow       Pow
-#align has_append    Append
 #align has_pure      Pure
 #align has_bind      Bind
 #align has_seq       Seq
 #align has_seq_left  SeqLeft
 #align has_seq_right SeqRight
-#align has_dvd       Dvd
-#align has_subset    Subset
-#align has_ssubset   SSubset
-#align has_union     Union
-#align has_inter     Inter
-#align has_sdiff     Sdiff
-#align has_mem       Membership
-#align has_insert    Insert
-#align has_singleton Singleton
-#align has_sep       Sep
 #align has_bracket   Bracket
-
-#align has_emptyc EmptyCollection
-#align has_emptyc.emptyc EmptyCollection.emptyCollection
 
 -- Implementation detail
 #align _sorry_placeholder_     _sorry_placeholder_

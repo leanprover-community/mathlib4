@@ -218,7 +218,7 @@ theorem product_spec (xs : List α) (ys : List β) (x : α) (y : β) :
   to apply `f`. -/
 @[simp]
 def pmap {p : α → Prop} (f : ∀ a, p a → β) : ∀ l : List α, (∀ a ∈ l, p a) → List β
-  | [], H => []
+  | [], _ => []
   | a :: l, H => f a (forall_mem_cons.1 H).1 :: pmap f l (forall_mem_cons.1 H).2
 
 /-- "Attach" the proof that the elements of `l` are in `l` to produce a new list
