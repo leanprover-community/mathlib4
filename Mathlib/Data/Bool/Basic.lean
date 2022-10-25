@@ -3,17 +3,15 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Mathlib.Tactic.Coe -- ↥
-import Std.Logic -- eq_comm
-import Mathlib.Init.Algebra.Order -- LinearOrder
+import Mathlib.Tactic.Coe -- ↥ -- remove?
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Nat.Lemmas -- partial order on ℕ
 import Mathlib.Init.Function -- Function.injective
 
 -- to be removed
-import Mathlib.Tactic.SimpTrace
-import Mathlib.Tactic.PrintPrefix
-import Std.Tactic.Lint
+-- import Mathlib.Tactic.SimpTrace
+-- import Mathlib.Tactic.PrintPrefix
+-- import Std.Tactic.Lint
 
 /-!
 # booleans
@@ -43,9 +41,11 @@ I deleted notation ! because it must be elsewhere
 
 namespace Bool
 
+-- TODO unwanted?
 theorem CoeSort_coe_true : (↥ true : Prop) = True :=
   by simp only
 
+-- TODO unwanted?
 theorem CoeSort_coe_false : (↥ false : Prop) = False :=
   by simp only
 
