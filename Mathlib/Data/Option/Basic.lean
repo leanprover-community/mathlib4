@@ -20,11 +20,6 @@ theorem map_injective {f : α → β} (Hf : Function.Injective f) : Function.Inj
 -- theorem join_eq_none {o : Option (Option α)} : o.join = none ↔ o = none ∨ o = some none := by
 --   rcases o with _|_|_; simp
 
-@[simp] theorem lift_or_get_none_left {f} {b : Option α} : lift_or_get f none b = b := by
-  cases b <;> rfl
-
-@[simp] theorem lift_or_get_none_right {f} {a : Option α} : lift_or_get f a none = a := by
-  cases a <;> rfl
-
-@[simp] theorem lift_or_get_some_some {f} {a b : α} :
-  lift_or_get f (some a) (some b) = f a b := rfl
+#align option.lift_or_get_none_left Option.liftOrGet_none_left
+#align option.lift_or_get_none_right Option.liftOrGet_none_right
+#align option.lift_or_get_some_some Option.liftOrGet_some_some
