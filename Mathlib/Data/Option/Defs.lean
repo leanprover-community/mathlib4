@@ -83,7 +83,7 @@ instance (f : α → α → α) [h : IsIdempotent α f] : IsIdempotent (Option �
 instance (f : α → α → α) : IsLeftId (Option α) (liftOrGet f) none :=
   ⟨fun a => by cases a <;> simp [liftOrGet]⟩
 
-instance liftOrGet_is_right_id (f : α → α → α) : IsRightId (Option α) (liftOrGet f) none :=
+instance (f : α → α → α) : IsRightId (Option α) (liftOrGet f) none :=
   ⟨fun a => by cases a <;> simp [liftOrGet]⟩
 
 protected def traverse.{u, v} {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β) :
