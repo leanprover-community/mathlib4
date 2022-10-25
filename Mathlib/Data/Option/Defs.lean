@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 import Std.Classes.SetNotation
 import Std.Data.Option.Basic
 import Std.Data.List.Lemmas
-import Mathlib.Init.Data.Option.Instances
 import Mathlib.Init.Algebra.Classes
 
 /-!
@@ -74,7 +73,7 @@ protected def elim' (b : β) (f : α → β) : Option α → β
   | none => b
 
 theorem is_none_iff_eq_none {o : Option α} : o.isNone = true ↔ o = none :=
-  ⟨Option.eq_none_of_is_none, fun e => e.symm ▸ rfl⟩
+  ⟨Option.eq_none_of_isNone, fun e => e.symm ▸ rfl⟩
 
 theorem mem_some_iff {α : Type _} {a b : α} : a ∈ some b ↔ b = a := by simp
 
@@ -111,13 +110,13 @@ theorem mem_to_list {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
 
 -- lift f
 instance lift_or_get_comm (f : α → α → α) [h : IsCommutative α f] : IsCommutative (Option α) (liftOrGet f) :=
-  ⟨fun a b => by cases a <;> cases b <;> simp [lift_or_get, h.comm]⟩
+  ⟨fun a b => by cases a <;> cases b <;> simp [lift_or_get, IsCommutative.comm]⟩
 
 instance lift_or_get_assoc (f : α → α → α) [h : IsAssociative α f] : IsAssociative (Option α) (liftOrGet f) :=
-  ⟨fun a b c => by cases a <;> cases b <;> cases c <;> simp [lift_or_get, h.assoc]⟩
+  ⟨fun a b c => by cases a <;> cases b <;> cases c <;> simp [lift_or_get, IsAssociative.assoc]⟩
 
 instance lift_or_get_idem (f : α → α → α) [h : IsIdempotent α f] : IsIdempotent (Option α) (liftOrGet f) :=
-  ⟨fun a => by cases a <;> simp [lift_or_get, h.idempotent]⟩
+  ⟨fun a => by cases a <;> simp [lift_or_get, IsIdempotent.idempotent]⟩
 
 instance lift_or_get_is_left_id (f : α → α → α) : IsLeftId (Option α) (liftOrGet f) none :=
   ⟨fun a => by cases a <;> simp [lift_or_get]⟩
