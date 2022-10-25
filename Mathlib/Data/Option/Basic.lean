@@ -210,7 +210,7 @@ theorem pmap_eq_some_iff {hf} {y : β} :
       simp only [H, pmap]
 
 -- Can't simp tag this anymore because `join` and `pmap` simplify
-@[simp]
+-- @[simp]
 theorem join_pmap_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} (H) :
     (pmap (pmap f) x H).join = pmap f x.join fun a h => H (some a) (mem_of_mem_join h) _ rfl := by
   rcases x with (_ | _ | x) <;> simp
