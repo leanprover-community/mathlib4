@@ -12,7 +12,7 @@ import Mathlib.Init.Algebra.Classes
 # Extra definitions on `Option`
 
 This file defines more operations involving `Option α`. Lemmas about them are located in other
-files under `Data.Option.`.
+files under `Data.Option.Lemmas`.
 Other basic operations on `Option` are defined in the core library.
 -/
 
@@ -60,6 +60,8 @@ def melim {α β : Type _} {m : Type _ → Type _} [Monad m] (x : m (Option α))
 /-- A monadic analogue of `Option.getD`. -/
 def mgetD {α : Type _} {m : Type _ → Type _} [Monad m] (x : m (Option α)) (y : m α) : m α :=
   melim x y pure
+
+#align option.mget_or_else Option.mgetD
 
 variable {α : Type _} {β : Type _}
 
@@ -134,7 +136,3 @@ instance lift_or_get_is_left_id (f : α → α → α) : IsLeftId (Option α) (l
 
 instance lift_or_get_is_right_id (f : α → α → α) : IsRightId (Option α) (liftOrGet f) none :=
   ⟨fun a => by cases a <;> simp [lift_or_get]⟩
-
-/-- A monadic analogue of `option.get_or_else`. -/
-def mgetOrElse {α : Type _} {m : Type _ → Type _} [Monad m] (x : m (Option α)) (y : m α) : m α :=
-  melim x y pure
