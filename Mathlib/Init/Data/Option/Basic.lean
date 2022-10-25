@@ -4,8 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Std.Logic
---import Leanbin.Init.Control.Monad
---import Leanbin.Init.Control.Alternative
+
+/-!
+# Basic definitions on `Option`.
+
+Ported from Lean 3's `init.data.option.basic`.
+-/
 
 open Decidable
 
