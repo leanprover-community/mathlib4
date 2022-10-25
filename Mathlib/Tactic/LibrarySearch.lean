@@ -118,6 +118,8 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name) (required : List Exp
 
   pure $ some suggestions
     where
+  /-- Verify that the instantiated goal contains each `Expr` in `required` as a sub-expression.
+  (Make sure to not reset the state before calling.) -/
   checkRequired : MetaM Bool := do pure <| required.all (·.occurs (← instantiateMVars (.mvar goal)))
 
 def lines (ls : List MessageData) :=
