@@ -57,9 +57,9 @@ theorem «exists» {p : Sum α β → Prop} : (∃ x, p x) ↔ (∃ a, p (inl a)
     | Or.inl ⟨a, h⟩ => ⟨inl a, h⟩
     | Or.inr ⟨b, h⟩ => ⟨inr b, h⟩⟩
 
-theorem inl_injective : Function.injective (inl : α → Sum α β) := fun _ _ => inl.inj
+theorem inl_injective : Function.Injective (inl : α → Sum α β) := fun _ _ => inl.inj
 
-theorem inr_injective : Function.injective (inr : β → Sum α β) := fun _ _ => inr.inj
+theorem inr_injective : Function.Injective (inr : β → Sum α β) := fun _ _ => inr.inj
 
 section get
 
@@ -415,20 +415,20 @@ open Sum
 
 namespace Function
 
-theorem injective.sum_elim {f : α → γ} {g : β → γ} (hf : injective f) (hg : injective g)
-    (hfg : ∀ a b, f a ≠ g b) : injective (Sum.elim f g)
+theorem Injective.sum_elim {f : α → γ} {g : β → γ} (hf : Injective f) (hg : Injective g)
+    (hfg : ∀ a b, f a ≠ g b) : Injective (Sum.elim f g)
   | inl _, inl _, h => congr_arg inl <| hf h
   | inl _, inr _, h => (hfg _ _ h).elim
   | inr _, inl _, h => (hfg _ _ h.symm).elim
   | inr _, inr _, h => congr_arg inr <| hg h
 
-theorem Injective.sum_map {f : α → β} {g : α' → β'} (hf : injective f) (hg : injective g) :
-    injective (Sum.map f g)
+theorem Injective.sum_map {f : α → β} {g : α' → β'} (hf : Injective f) (hg : Injective g) :
+    Injective (Sum.map f g)
   | inl _, inl _, h => congr_arg inl <| hf <| inl.inj h
   | inr _, inr _, h => congr_arg inr <| hg <| inr.inj h
 
-theorem Surjective.sum_map {f : α → β} {g : α' → β'} (hf : surjective f) (hg : surjective g) :
-    surjective (Sum.map f g)
+theorem Surjective.sum_map {f : α → β} {g : α' → β'} (hf : Surjective f) (hg : Surjective g) :
+    Surjective (Sum.map f g)
   | inl y =>
     let ⟨x, hx⟩ := hf y
     ⟨inl x, congr_arg inl hx⟩
