@@ -156,7 +156,7 @@ theorem map_pmap (g : β → γ) (f : ∀ a, p a → β) (x H) :
     Option.map g (pmap f x H) = pmap (fun a h => g (f a h)) x H :=
   by cases x <;> simp only [map_none', map_some', pmap]
 
--- Can't simp tag this anymore because `pbind` simplifies
+-- Can't simp tag this anymore because `pmap` simplifies
 -- @[simp]
 theorem pmap_eq_map (p : α → Prop) (f : α → β) (x H) :
     @pmap _ _ p (fun a _ => f a) x H = Option.map f x := by
@@ -193,11 +193,11 @@ theorem pbind_eq_some {f : ∀ a : α, a ∈ x → Option β} {y : β} :
     simp only [mem_def, Option.some_inj] at H
     simpa [H] using hz
 
--- Can't simp tag this anymore because `pbind` simplifies
+-- Can't simp tag this anymore because `pmap` simplifies
 -- @[simp]
 theorem pmap_eq_none_iff {h} : pmap f x h = none ↔ x = none := by cases x <;> simp
 
--- Can't simp tag this anymore because `pbind` simplifies
+-- Can't simp tag this anymore because `pmap` simplifies
 -- @[simp]
 theorem pmap_eq_some_iff {hf} {y : β} :
     pmap f x hf = some y ↔ ∃ (a : α) (H : x = some a), f a (hf a H) = y := by
@@ -211,8 +211,8 @@ theorem pmap_eq_some_iff {hf} {y : β} :
       simp only [mem_def, Option.some_inj] at H
       simp only [H, pmap]
 
--- Can't simp tag this anymore because `pbind` simplifies
--- @[simp]
+-- Can't simp tag this anymore because `join` and `pmap` simplify
+@[simp]
 theorem join_pmap_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} (H) :
     (pmap (pmap f) x H).join = pmap f x.join fun a h => H (some a) (mem_of_mem_join h) _ rfl := by
   rcases x with (_ | _ | x) <;> simp
