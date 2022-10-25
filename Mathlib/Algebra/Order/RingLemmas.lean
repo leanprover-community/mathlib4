@@ -438,7 +438,7 @@ theorem mul_right_cancel_iff_of_pos [MulPosMonoRev α] (b0 : 0 < b) : a * b = c 
 theorem mul_eq_mul_iff_eq_and_eq_of_pos [PosMulStrictMono α] [MulPosStrictMono α] [PosMulMonoRev α]
     [MulPosMonoRev α] (hac : a ≤ b) (hbd : c ≤ d) (a0 : 0 < a) (d0 : 0 < d) :
     a * c = b * d ↔ a = b ∧ c = d := by
-  refine' ⟨fun h => _, fun h => congr_arg2 (· * ·) h.1 h.2⟩
+  refine' ⟨fun h => _, fun h => congr_arg₂ (· * ·) h.1 h.2⟩
   rcases hac.eq_or_lt with (rfl | hac)
   · exact ⟨rfl, (mul_left_cancel_iff_of_pos a0).mp h⟩
 
@@ -450,7 +450,7 @@ theorem mul_eq_mul_iff_eq_and_eq_of_pos [PosMulStrictMono α] [MulPosStrictMono 
 theorem mul_eq_mul_iff_eq_and_eq_of_pos' [PosMulStrictMono α] [MulPosStrictMono α] [PosMulMonoRev α]
     [MulPosMonoRev α] (hac : a ≤ b) (hbd : c ≤ d) (b0 : 0 < b) (c0 : 0 < c) :
     a * c = b * d ↔ a = b ∧ c = d := by
-  refine' ⟨fun h => _, fun h => congr_arg2 (· * ·) h.1 h.2⟩
+  refine' ⟨fun h => _, fun h => congr_arg₂ (· * ·) h.1 h.2⟩
   rcases hac.eq_or_lt with (rfl | hac)
   · exact ⟨rfl, (mul_left_cancel_iff_of_pos b0).mp h⟩
 
