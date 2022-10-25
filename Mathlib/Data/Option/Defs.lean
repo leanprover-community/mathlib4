@@ -111,8 +111,10 @@ theorem iget_some [Inhabited α] {a : α} : (some a).iget = a :=
   rfl
 
 @[simp]
-theorem mem_to_list {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
+theorem mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
   cases o <;> simp [toList, eq_comm]
+
+#align option.mem_to_list option.mem_toList
 
 -- lift f
 instance lift_or_get_comm (f : α → α → α) [h : IsCommutative α f] :
