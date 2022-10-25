@@ -108,10 +108,10 @@ CancelMonoidWithZero.mul_left_cancel_of_ne_zero ha h
 lemma mul_right_cancel₀ (hb : b ≠ 0) (h : a * b = c * b) : a = c :=
 CancelMonoidWithZero.mul_right_cancel_of_ne_zero hb h
 
-lemma mul_right_injective₀ (ha : a ≠ 0) : Function.injective (a * ·) :=
+lemma mul_right_injective₀ (ha : a ≠ 0) : Function.Injective (a * ·) :=
 λ _ _ => mul_left_cancel₀ ha
 
-lemma mul_left_injective₀ (hb : b ≠ 0) : Function.injective (· * b) :=
+lemma mul_left_injective₀ (hb : b ≠ 0) : Function.Injective (· * b) :=
 λ _ _ => mul_right_cancel₀ hb
 
 end CancelMonoidWithZero
