@@ -254,7 +254,7 @@
  ["docBlame", "NonUnitalNonAssocSemiring.zero_mul"],
  ["docBlame", "NonUnitalSemiring.mul_assoc"],
  ["docBlame", "One.one"],
- ["docBlame", "Option.traverse"],
+ ["docBlame", "Data.Option.Defs.Option.traverse"],
  ["docBlame", "PartialOrder.le_antisymm"],
  ["docBlame", "Preorder.le_refl"],
  ["docBlame", "Preorder.le_trans"],
