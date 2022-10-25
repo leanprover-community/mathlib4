@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Std.Logic
+import Std.Data.Option.Basic
 
 /-!
 # Basic definitions on `Option`.
@@ -20,9 +21,6 @@ namespace Option
 def getOrElse {α : Type u} : Option α → α → α
   | some x, _ => x
   | none, e => e
-
-def get {α : Type u} : ∀ {o : Option α}, isSome o → α
-  | some x, _ => x
 
 def rhoare {α : Type u} : Bool → α → Option α
   | .true,  _ => none
