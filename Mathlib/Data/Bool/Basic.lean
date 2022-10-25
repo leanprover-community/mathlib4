@@ -7,6 +7,8 @@ import Mathlib.Tactic.Coe -- ↥
 import Std.Logic -- eq_comm
 import Mathlib.Init.Algebra.Order -- LinearOrder
 import Mathlib.Init.Data.Bool.Lemmas
+import Mathlib.Init.Data.Nat.Lemmas -- partial order on ℕ
+import Mathlib.Init.Function -- Function.injective
 
 -- to be removed
 import Mathlib.Tactic.SimpTrace
@@ -247,7 +249,7 @@ theorem not_or : ∀ a b : Bool, !(a || b) = (!a && !b) := by decide
 
 theorem not_inj : ∀ {a b : Bool}, !a = !b → a = b := by decide
 
-
+-- *TODO* This is horrible
 instance : LinearOrder Bool where
   le := fun a b => a = false ∨ b = true
   le_refl := by unfold LE.le; decide
@@ -297,35 +299,28 @@ def ofNat (n : Nat) : Bool :=
 theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
   simp only [ofNat, ne_eq, _root_.decide_not];
   cases Nat.decEq n 0 with
-  | isFalse h1 => sorry
-  | isTrue hn => sorry
-#exit
-#check instDecidableEqNat
-#synth Decidable (1 = 2)
---#exit
-theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
-  simp [ofNat] <;> cases Nat.decEq n 0 with | .isFalse h1 => sorry | .isTrue h1 => foo <;> cases Nat.decEq m 0 <;> simp only [Decidable.rec]
-  · subst m
-    have h := le_antisymm h (Nat.zero_le _)
-    contradiction
+  | isTrue hn => rw [decide_eq_true hn]; exact false_le
+  | isFalse hn =>
+    cases Nat.decEq m 0 with
+    | isFalse hm => rw [decide_eq_false hm]; exact le_true
+    | isTrue hm => subst hm; have h := le_antisymm h (Nat.zero_le n); contradiction
 
-  · apply Or.inl
-    rfl
+theorem toNat_le_toNat {b₀ b₁ : Bool} (h : b₀ ≤ b₁) : toNat b₀ ≤ toNat b₁ := by
+  cases h with
+  | inl h => subst h; exact Nat.zero_le _
+  | inr h => subst h; cases b₀ <;> simp;
 
-#exit
-theorem to_nat_le_to_nat {b₀ b₁ : Bool} (h : b₀ ≤ b₁) : toNat b₀ ≤ toNat b₁ := by
-  cases h <;> subst h <;> [cases b₁, cases b₀] <;> simp [to_nat, Nat.zero_leₓ]
-
-theorem of_nat_to_nat (b : Bool) : ofNat (toNat b) = b := by cases b <;> simp only [of_nat, to_nat] <;> exact by decide
+theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
+  cases b <;> rfl
 
 @[simp]
-theorem injective_iff {α : Sort _} {f : Bool → α} : Function.Injective f ↔ f false ≠ f true :=
+theorem injective_iff {α : Sort _} {f : Bool → α} : Function.injective f ↔ f false ≠ f true :=
   ⟨fun Hinj Heq => ff_ne_tt (Hinj Heq), fun H x y hxy => by
     cases x <;> cases y
     exacts[rfl, (H hxy).elim, (H hxy.symm).elim, rfl]⟩
 
 /-- **Kaminski's Equation** -/
 theorem apply_apply_apply (f : Bool → Bool) (x : Bool) : f (f (f x)) = f x := by
-  cases x <;> cases h₁ : f tt <;> cases h₂ : f ff <;> simp only [h₁, h₂]
+  cases x <;> cases h₁ : f true <;> cases h₂ : f false <;> simp only [h₁, h₂]
 
 end Bool
