@@ -24,9 +24,8 @@ variable {γ : α → Type _}
 instance (priority := 20) Zero.Nonempty [Zero α] : Nonempty α :=
   ⟨0⟩
 
--- TODO: find place for this, since `One` is in `Algebra.Group.Defs`
--- instance (priority := 20) One.nonempty [One α] : Nonempty α :=
---   ⟨1⟩
+instance (priority := 20) One.nonempty [One α] : Nonempty α :=
+  ⟨1⟩
 
 theorem exists_true_iff_nonempty {α : Sort _} : (∃ _ : α, True) ↔ Nonempty α :=
   Iff.intro (fun ⟨a, _⟩ => ⟨a⟩) fun ⟨a⟩ => ⟨a, trivial⟩
