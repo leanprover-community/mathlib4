@@ -12,19 +12,13 @@ import Mathlib.Init.Algebra.Classes
 # Extra definitions on `Option`
 
 This file defines more operations involving `Option α`. Lemmas about them are located in other
-files under `Data.Option.Lemmas`.
+files under `Mathlib.Data.Option`.
 Other basic operations on `Option` are defined in the core library.
 -/
 
 namespace Option
 
-/-- Two arguments failsafe function. Returns `f a b` if the inputs are `some a` and `some b`, and
-"does nothing" otherwise. -/
-def lift_or_get (f : α → α → α) : Option α → Option α → Option α
-| none, none => none
-| some a, none => some a
-| none, some b => some b
-| some a, some b => some (f a b)
+#align option.lift_or_get Option.liftOrGet
 
 /-- Lifts a relation `α → β → Prop` to a relation `Option α → Option β → Prop` by just adding
 `none ~ none`. -/
@@ -47,21 +41,9 @@ def maybe.{u, v} {m : Type u → Type v} [Monad m] {α : Type u} : Option (m α)
 | none => pure none
 | some fn => some <$> fn
 
-/-- Map a monadic function `f : α → m β` over an `o : Option α`, maybe producing a result. -/
-def mmap.{u, v, w} {m : Type u → Type v} [Monad m] {α : Type w} {β : Type u} (f : α → m β)
-    (o : Option α) : m (Option β) :=
-  (o.map f).maybe
-
-/-- A monadic analogue of `Option.elim`. -/
-def melim {α β : Type _} {m : Type _ → Type _} [Monad m] (x : m (Option α)) (y : m β)
-    (z : α → m β) : m β :=
-  do (← x).elim y z
-
-/-- A monadic analogue of `Option.getD`. -/
-def mgetD {α : Type _} {m : Type _ → Type _} [Monad m] (x : m (Option α)) (y : m α) : m α :=
-  melim x y pure
-
-#align option.mget_or_else Option.mgetD
+#align option.mmap Option.mapM
+#align option.melim Option.elimM
+#align option.mget_or_else Option.getDM
 
 variable {α : Type _} {β : Type _}
 
@@ -107,8 +89,6 @@ def iget [Inhabited α] : Option α → α
   | some x => x
   | none => default
 
--- Porting note: Illegal simp attribute, left side is `a`
--- @[simp]
 theorem iget_some [Inhabited α] {a : α} : (some a).iget = a :=
   rfl
 
@@ -116,23 +96,28 @@ theorem iget_some [Inhabited α] {a : α} : (some a).iget = a :=
 theorem mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
   cases o <;> simp [toList, eq_comm]
 
-#align option.mem_to_list option.mem_toList
+#align option.mem_to_list Option.mem_toList
 
--- lift f
-instance lift_or_get_comm (f : α → α → α) [h : IsCommutative α f] :
+instance liftOrGet_isCommutative (f : α → α → α) [IsCommutative α f] :
     IsCommutative (Option α) (liftOrGet f) :=
-  ⟨fun a b => by cases a <;> cases b <;> simp [lift_or_get, IsCommutative.comm]⟩
+  ⟨fun a b => by cases a <;> cases b <;> simp [liftOrGet, IsCommutative.comm]⟩
 
-instance lift_or_get_assoc (f : α → α → α) [h : IsAssociative α f] :
+instance liftOrGet_isAssociative (f : α → α → α) [IsAssociative α f] :
     IsAssociative (Option α) (liftOrGet f) :=
-  ⟨fun a b c => by cases a <;> cases b <;> cases c <;> simp [lift_or_get, IsAssociative.assoc]⟩
+  ⟨fun a b c => by cases a <;> cases b <;> cases c <;> simp [liftOrGet, IsAssociative.assoc]⟩
 
-instance lift_or_get_idem (f : α → α → α) [h : IsIdempotent α f] :
+instance liftOrGet_isIdempotent (f : α → α → α) [IsIdempotent α f] :
     IsIdempotent (Option α) (liftOrGet f) :=
-  ⟨fun a => by cases a <;> simp [lift_or_get, IsIdempotent.idempotent]⟩
+  ⟨fun a => by cases a <;> simp [liftOrGet, IsIdempotent.idempotent]⟩
 
-instance lift_or_get_is_left_id (f : α → α → α) : IsLeftId (Option α) (liftOrGet f) none :=
-  ⟨fun a => by cases a <;> simp [lift_or_get]⟩
+instance liftOrGet_isLeftId (f : α → α → α) : IsLeftId (Option α) (liftOrGet f) none :=
+  ⟨fun a => by cases a <;> simp [liftOrGet]⟩
 
-instance lift_or_get_is_right_id (f : α → α → α) : IsRightId (Option α) (liftOrGet f) none :=
-  ⟨fun a => by cases a <;> simp [lift_or_get]⟩
+instance liftOrGet_isRightId (f : α → α → α) : IsRightId (Option α) (liftOrGet f) none :=
+  ⟨fun a => by cases a <;> simp [liftOrGet]⟩
+
+#align option.lift_or_get_comm Option.liftOrGet_isCommutative
+#align option.lift_or_get_assoc Option.liftOrGet_isAssociative
+#align option.lift_or_get_idem Option.liftOrGet_isIdempotent
+#align option.lift_or_get_is_left_id Option.liftOrGet_isLeftId
+#align option.lift_or_get_is_right_id Option.liftOrGet_isRightId
