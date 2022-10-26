@@ -75,6 +75,9 @@ private def reduceIfsAt (loc : Location) : TacticM Unit := do
   pure ()
 
 /-- Splits a single if-then-else expression and then reduces the resulting goals.
+Has a similar effect as `SplitIf.splitIfTarget?` or `SplitIf.splitIfLocalDecl?` from
+core Lean 4. We opt not to use those library functions so that we can better mimic
+the behavior of mathlib3's `split_ifs`.
 -/
 private def splitIf1 (cond: Expr) (hName : Name) (loc : Location) : TacticM Unit := do
   let splitCases := liftMetaTactic fun mvarId => do
