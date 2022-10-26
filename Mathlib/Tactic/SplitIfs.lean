@@ -22,34 +22,38 @@ fun tac1 tac2 => focus do
   tac1
   allGoals tac2
 
-private def get_relevant_fvarids_of_loc (loc : Location) : TacticM (List FVarId) :=
+/-- A position where a split may apply.
+-/
+private inductive SplitPosition
+| target
+| hyp (fvarId: FVarId)
+
+/-- Collects a list of positions pointed to by `loc` and their types.
+-/
+private def getSplitCandidates (loc : Location) : TacticM (List (SplitPosition × Expr)) :=
 match loc with
 | Location.wildcard => do
-   let lctx ← getLCtx
-   return lctx.getFVarIds.toList
-| Location.targets hyps _ => do
-   let fvarIds ← hyps.mapM getFVarId
-   return fvarIds.toList
+   let candidates ← (← getLCtx).getFVarIds.mapM
+     (fun fvarId => do
+       let typ ← instantiateMVars (← inferType (mkFVar fvarId))
+       return (SplitPosition.hyp fvarId, typ))
+   pure ((SplitPosition.target, ← getMainTarget) :: candidates.toList)
+| Location.targets hyps tgt => do
+   let candidates ← (← hyps.mapM getFVarId).mapM
+     (fun fvarId => do
+       let typ ← instantiateMVars (← inferType (mkFVar fvarId))
+       return (SplitPosition.hyp fvarId, typ))
+   if tgt
+   then return (SplitPosition.target, ← getMainTarget) :: candidates.toList
+   else return candidates.toList
 
-/-- Returns `true` if `loc` includes the goal's target.
+/-- Finds an if condition to split. If successful, returns the position and the condition.
 -/
-private def loc_includes_target (loc : Location) : Bool :=
-match loc with
-| Location.wildcard => true
-| Location.targets _ tgt => tgt
-
-/-- Finds an if condition to split.
--/
-private def find_if_cond_at (loc : Location) : TacticM (Option Expr) := do
-   let fvarIds ← get_relevant_fvarids_of_loc loc
-   let hTypes ← ((fvarIds.map mkFVar).mapM inferType : MetaM _)
-   let hTypes ← hTypes.mapM instantiateMVars
-   let tgt ← getMainTarget
-   let es := if loc_includes_target loc then tgt::hTypes else hTypes
-   for e in es do
-     if let some cond := SplitIf.findIfToSplit? e
-     then return some cond
-   return none
+private def findIfCondAt (loc : Location) : TacticM (Option (SplitPosition × Expr)) := do
+  for (pos, e) in  (← getSplitCandidates loc) do
+    if let some cond := SplitIf.findIfToSplit? e
+    then return some (pos, cond)
+  return none
 
 /-- `Simp.Discharge` strategy to use in `reduceIfsAt`. Delegates to
 `SplitIf.discharge?`, and additionally supports discharging `True`, to
@@ -89,9 +93,7 @@ private def getNextName (hNames: IO.Ref (List Name)) : MetaM Name := do
 /-- Returns `true` if the condition or its negation already appears as a hypothesis.
 -/
 private def valueKnown (cond : Expr) : TacticM Bool := do
-  let lctx ← getLCtx
-  let fvarIds := lctx.getFVarIds
-  let hTypes ← ((fvarIds.map mkFVar).mapM inferType : MetaM _)
+  let hTypes ← (((← getLCtx).getFVarIds.map mkFVar).mapM inferType : MetaM _)
   let hTypes := hTypes.toList
   let not_cond := mkApp (mkConst `Not) cond
   return (hTypes.contains cond) || (hTypes.contains not_cond)
@@ -101,7 +103,7 @@ Stops if it encounters a condition in the passed-in `List Expr`.
 -/
 private partial def splitIfsCore (loc : Location) (hNames : IO.Ref (List Name)) :
   List Expr → TacticM Unit := fun done => do
-  let some cond ← find_if_cond_at loc
+  let some (_,cond) ← findIfCondAt loc
       | Meta.throwTacticEx `split_ifs (←getMainGoal) "no if-the-else conditions to split"
 
   -- If `cond` is `¬p` then use `p` instead.
