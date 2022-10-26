@@ -22,25 +22,6 @@ fun tac1 tac2 => focus do
   tac1
   allGoals tac2
 
-/-- Finds an if-then-else and returns its condition.
--/
-private partial def findIfCond? (e : Expr) : Option Expr :=
-  go e
-where
-  go (e : Expr) : Option Expr :=
-    if let some ifCond := e.find? isCandidate then
-        let cond := ifCond.getArg! 1 5
-        -- Try to find a nested `if` in `cond`
-        go cond |>.getD cond
-    else
-      none
-
-  isCandidate (e : Expr) : Bool := Id.run do
-    if e.isIte || e.isDIte then
-      !(e.getArg! 1 5).hasLooseBVars
-    else
-      false
-
 private def get_relevant_fvarids_of_loc (loc : Location) : TacticM (List FVarId) :=
 match loc with
 | Location.wildcard => do
@@ -66,7 +47,7 @@ private def find_if_cond_at (loc : Location) : TacticM (Option Expr) := do
    let tgt ← getMainTarget
    let es := if loc_includes_target loc then tgt::hTypes else hTypes
    for e in es do
-     if let some cond := findIfCond? e
+     if let some cond := SplitIf.findIfToSplit? e
      then return some cond
    return none
 
