@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Ring.Basic
+import Mathlib.Data.Int.Cast.Defs
 import Qq.MetaM
+import Qq.Delab
 
 /-!
 ## `norm_num` core functionality
@@ -14,8 +16,8 @@ which allow for plugging in new normalization functionality around a simp-based 
 The actual behavior is in `@[norm_num]`-tagged definitions in `Tactic.NormNum.Basic`
 and elsewhere.
 -/
-
-open Lean Meta Qq Elab Term
+open Lean hiding Rat
+open Lean.Meta Qq Lean.Elab Term
 
 /-- Attribute for identifying `norm_num` extensions. -/
 syntax (name := norm_num) "norm_num" term,+ : attr
@@ -26,64 +28,155 @@ namespace Meta.NormNum
 initialize registerTraceClass `Tactic.norm_num
 
 /-- Assert that an element of a semiring is equal to the coercion of some natural number. -/
-def isNat [Semiring α] (a : α) (n : ℕ) := a = n
+structure IsNat [Semiring α] (a : α) (n : ℕ) : Prop where
+  out : a = n
+
+theorem IsNat.raw_refl (n : ℕ) : IsNat n n := ⟨rfl⟩
 
 /-- Asserting that the `OfNat α n` instance provides the same value as the coercion. -/
 class LawfulOfNat (α) [Semiring α] (n) [OfNat α n] : Prop where
-  /-- Assert `isNat (OfNat.ofNat n α) n`, with the parametrising instance. -/
-  isNat_ofNat : isNat (@OfNat.ofNat _ n ‹_› : α) n
+  /-- Assert `n = (OfNat.ofNat n α)`, with the parametrising instance. -/
+  eq_ofNat : n = (@OfNat.ofNat _ n ‹_› : α)
 
 instance (α) [Semiring α] [Nat.AtLeastTwo n] : LawfulOfNat α n := ⟨rfl⟩
-instance (α) [Semiring α] : LawfulOfNat α (nat_lit 0) := ⟨Nat.cast_zero.symm⟩
-instance (α) [Semiring α] : LawfulOfNat α (nat_lit 1) := ⟨Nat.cast_one.symm⟩
-instance : LawfulOfNat Nat n := ⟨show n = Nat.cast n by simp⟩
-instance : LawfulOfNat Int n := ⟨show Int.ofNat n = Nat.cast n by simp⟩
+instance (α) [Semiring α] : LawfulOfNat α (nat_lit 0) := ⟨Nat.cast_zero⟩
+instance (α) [Semiring α] : LawfulOfNat α (nat_lit 1) := ⟨Nat.cast_one⟩
+instance : LawfulOfNat ℕ n := ⟨show n = Nat.cast n by simp⟩
+instance : LawfulOfNat ℤ n := ⟨show Int.ofNat n = Nat.cast n by simp⟩
 
-theorem eval_of_isNat {α} [Semiring α] (n) [OfNat α n] [LawfulOfNat α n] :
-  (a : α) → isNat a n → a = OfNat.ofNat n
-| _, rfl => LawfulOfNat.isNat_ofNat.symm
+theorem IsNat.to_eq {α} [Semiring α] (n) [OfNat α n] [LawfulOfNat α n] :
+    (a : α) → IsNat a n → a = OfNat.ofNat n
+  | _, ⟨rfl⟩ => LawfulOfNat.eq_ofNat
 
-/-- The result of `norm_num` running on an expression of type `α` can either be
-a natural number literal in `α`
-or some new expression `e : α` equipped with a proof of type `isNat e n` for some `n : ℕ`. -/
-inductive Result where
-  | literal (lit : Expr)
-  | isNat (lit proof : Expr)
+/-- Assert that an element of a ring is equal to the coercion of some integer. -/
+structure IsInt [Ring α] (a : α) (n : ℤ) : Prop where
+  out : a = n
 
-instance : ToMessageData Result where
+theorem IsInt.to_isNat {α} [Ring α] : ∀ {a : α} {n}, IsInt a (.ofNat n) → IsNat a n
+  | _, _, ⟨rfl⟩ => ⟨by simp⟩
+
+theorem IsNat.to_isInt {α} [Ring α] : ∀ {a : α} {n}, IsNat a n → IsInt a (.ofNat n)
+  | _, _, ⟨rfl⟩ => ⟨by simp⟩
+
+theorem IsInt.neg_to_eq {α} [Ring α] (n) [OfNat α n] [LawfulOfNat α n] :
+    (a : α) → IsInt a (.negOfNat n) → a = -OfNat.ofNat n
+  | _, ⟨rfl⟩ => by simp [Int.negOfNat_eq, Int.cast_neg]; apply LawfulOfNat.eq_ofNat
+
+theorem IsInt.nonneg_to_eq {α} [Ring α] (n) [OfNat α n] [LawfulOfNat α n]
+    (a : α) (h : IsInt a (.ofNat n)) : a = OfNat.ofNat n := h.to_isNat.to_eq
+
+def mkRawIntLit (n : ℤ) : Q(ℤ) :=
+  let lit : Q(ℕ) := mkRawNatLit n.natAbs
+  if 0 ≤ n then q(.ofNat $lit) else q(.negOfNat $lit)
+
+/-- A shortcut (non)instance for `Semiring ℕ` to shrink generated proofs. -/
+def instSemiringNat : Semiring ℕ := inferInstance
+
+/-- A shortcut (non)instance for `Ring ℤ` to shrink generated proofs. -/
+def instRingInt : Ring ℤ := inferInstance
+
+-- TODO: remove when `algebra.invertible` is ported
+/-- `Invertible a` gives a two-sided multiplicative inverse of `a`. -/
+class Invertible [Mul α] [One α] (a : α) : Type _ where
+  invOf : α
+  invOf_mul_self : invOf * a = 1
+  mul_invOf_self : a * invOf = 1
+
+-- This notation has the same precedence as `Inv.inv`.
+scoped prefix:max "⅟" => Invertible.invOf
+
+/--
+Assert that an element of a ring is equal to `num / denom`
+(and `denom` is invertible so that this makes sense).
+We will usually also have `num` and `denom` coprime,
+although this is not part of the definition.
+-/
+structure IsRat [Ring α] (a : α) (num : ℤ) (denom : ℕ) where
+  inv : Invertible denom
+  eq : a = num * ⅟denom
+
+/-- The result of `norm_num` running on an expression `x` of type `α`.
+Untyped version of `Result`. -/
+inductive Result' where
+  /-- Untyped version of `Result.isNat`. -/
+  | isNat (inst lit proof : Expr)
+  /-- Untyped version of `Result.isNegNat`. -/
+  | isNegNat (inst lit proof : Expr)
+  /-- Untyped version of `Result.isRat`. -/
+  | isRat (inst : Expr) (q : Rat) (n d proof : Expr)
+
+section
+set_option linter.unusedVariables false
+
+/-- The result of `norm_num` running on an expression `x` of type `α`. -/
+def Result {α : Q(Type u)} (x : Q($α)) := Result'
+
+/-- The result is `lit : ℕ` (a raw nat literal) and `proof : isNat x lit`. -/
+@[match_pattern, inline] def Result.isNat {α : Q(Type u)} {x : Q($α)} :
+    ∀ (inst : Q(Semiring $α) := by assumption) (lit : Q(ℕ)) (proof : Q(IsNat $x $lit)),
+      Result x := Result'.isNat
+
+/-- The result is `-lit` where `lit` is a raw nat literal
+and `proof : isInt x (.negOfNat lit)`. -/
+@[match_pattern, inline] def Result.isNegNat {α : Q(Type u)} {x : Q($α)} :
+    ∀ (inst : Q(Ring $α) := by assumption) (lit : Q(ℕ)) (proof : Q(IsInt $x (.negOfNat $lit))),
+      Result x := Result'.isNegNat
+
+/-- The result is `proof : isRat x n d`, where `n` is either `.ofNat lit` or `.negOfNat lit`
+with `lit` a raw nat literal and `d` is a raw nat literal (not 0 or 1),
+and `q` is the value of `n / d`. -/
+@[match_pattern, inline] def Result.isRat {α : Q(Type u)} {x : Q($α)} :
+    ∀ (inst : Q(Ring $α) := by assumption) (q : Rat) (n : Q(ℤ)) (d : Q(ℕ))
+      (proof : Q(IsRat $x $n $d)), Result x := Result'.isRat
+
+def Result.isInt {α : Q(Type u)} {x : Q($α)} {z : Q(ℤ)}
+    (inst : Q(Ring $α) := by assumption) (n : ℤ) (proof : Q(IsInt $x $z)) : Result x :=
+  have lit : Q(ℕ) := z.appArg!
+  if 0 ≤ n then
+    let proof : Q(IsInt $x (.ofNat $lit)) := proof
+    .isNat q(Ring.toSemiring) lit q(IsInt.to_isNat $proof)
+  else
+    .isNegNat inst lit proof
+
+end
+
+def inferSemiring (α : Q(Type u)) : MetaM Q(Semiring $α) :=
+  return ← synthInstanceQ (q(Semiring $α) : Q(Type u)) <|> throwError "not a semiring"
+
+def inferRing (α : Q(Type u)) : MetaM Q(Ring $α) :=
+  return ← synthInstanceQ (q(Ring $α) : Q(Type u)) <|> throwError "not a semiring"
+
+/-- Run each registered `norm_num` extension on a typed expression `e : α`,
+returning a typed expression `lit : ℕ`, and a proof of `isNat e lit`. -/
+def Result.toInt {α : Q(Type u)} {e : Q($α)} (_i : Q(Ring $α) := by with_reducible assumption) :
+    Result e → MetaM (ℤ × (lit : Q(ℤ)) × Q(IsInt $e $lit))
+  | .isNat _ lit proof => do
+    have proof : Q(@IsNat _ Ring.toSemiring $e $lit) := proof
+    pure ⟨lit.natLit!, q(.ofNat $lit), q(($proof).to_isInt)⟩
+  | .isNegNat _ lit proof => pure ⟨-lit.natLit!, q(.negOfNat $lit), proof⟩
+  | _ => failure
+
+instance : ToMessageData (Result x) where
   toMessageData
-  | .literal lit => m!"(literal {lit})"
-  | .isNat lit proof => m!"(isNat {lit} {proof})"
-
-/--
-Express a `Result` as a pair of expressions `e : α` and `prf : isNat e n` for some `n : ℕ`.
--/
-def Result.toIsNat : Result → Expr × Expr
-  | .literal (lit : Q(Nat)) => (lit, q(@Eq.refl Nat $lit))
-  | .isNat lit p => (lit, p)
-
-/--
-Given a typed expression `e : α`, and a `Result`
-(which should have been obtained by running `derive` on `e`,
-produce a typed expression `lit : ℕ` and a proof of `isNat e lit`.
--/
-def Result.toIsNatQ {α : Q(Type u)} (e : Q($α)) :
-    Result → (_inst : Q(Semiring $α) := by assumption) → (lit : Q(Nat)) × Q(NormNum.isNat $e $lit)
-  | .literal (lit : Q(Nat)), _ => ⟨lit, (q(@Eq.refl Nat $lit) : Expr)⟩
-  | .isNat lit p, _ => ⟨lit, p⟩
+  | .isNat _ lit proof => m!"isNat {lit} ({proof})"
+  | .isNegNat _ lit proof => m!"isNegNat {lit} ({proof})"
+  | .isRat _ q _ _ proof => m!"isRat {q} ({proof})"
 
 /--
 Convert a `Result` to a `Simp.Result`.
 -/
-def Result.toSimpResult (e : Expr) : Result → MetaM Simp.Result
-  | .literal lit => pure { expr := lit }
-  | .isNat (lit : Q(Nat)) p => by exact do
-    let ⟨.succ u, α, e⟩ ← inferTypeQ e | failure
-    let sα ← synthInstanceQ (q(Semiring $α) : Q(Type u))
-    let p : Q(NormNum.isNat $e $lit) := p
-    let ofNatInst ← synthInstanceQ (q(OfNat $α $lit) : Q(Type u))
-    let lawfulInst ← synthInstanceQ (q(LawfulOfNat $α $lit) : Q(Prop))
-    return { expr := q((OfNat.ofNat $lit : $α)), proof? := q(eval_of_isNat $lit $e $p) }
+def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.Result
+  | .isNat _sα lit p => do
+    let p : Q(IsNat $e $lit) := p
+    let _ofNatInst ← synthInstanceQ (q(OfNat $α $lit) : Q(Type u))
+    let _lawfulInst ← synthInstanceQ (q(LawfulOfNat $α $lit) : Q(Prop))
+    return { expr := q((OfNat.ofNat $lit : $α)), proof? := q(IsNat.to_eq $lit $e $p) }
+  | .isNegNat _rα lit p => do
+    let p : Q(IsInt $e (.negOfNat $lit)) := p
+    let _ofNatInst ← synthInstanceQ (q(OfNat $α $lit) : Q(Type u))
+    let _lawfulInst ← synthInstanceQ (q(LawfulOfNat $α $lit) : Q(Prop))
+    return { expr := q(-(OfNat.ofNat $lit : $α)), proof? := q(IsInt.neg_to_eq $lit $e $p) }
+  | .isRat _ .. => failure -- TODO
 
 /--
 A extension for `norm_num`.
@@ -94,7 +187,7 @@ structure NormNumExt where
   /-- The extension should be run in the `post` phase when used as simp plugin. -/
   post := true
   /-- Attempts to prove an expression is equal to some natural number. -/
-  eval : Expr → MetaM Result
+  eval {α : Q(Type u)} (e : Q($α)) : MetaM (Result e)
 
 /-- Read a `norm_num` extension from a declaration of the right type. -/
 def mkNormNumExt (n : Name) : ImportM NormNumExt := do
@@ -121,8 +214,10 @@ initialize normNumExt : PersistentEnvExtension Entry (Entry × NormNumExt)
   }
 
 /-- Run each registered `norm_num` extension on an expression, returning a `NormNum.Result`. -/
-def derive (e : Expr) (post := false) : MetaM Result := do
-  if e.isNatLit then return .literal e
+def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := do
+  if e.isNatLit then
+    let lit : Q(ℕ) := e
+    return .isNat (q(instSemiringNat) : Q(Semiring ℕ)) lit (q(IsNat.raw_refl $lit) : Expr)
   let s ← saveState
   let arr ← (normNumExt.getState (← getEnv)).2.getMatch e
   for ext in arr do
@@ -138,13 +233,47 @@ def derive (e : Expr) (post := false) : MetaM Result := do
 
 /-- Run each registered `norm_num` extension on a typed expression `e : α`,
 returning a typed expression `lit : ℕ`, and a proof of `isNat e lit`. -/
-def deriveQ {α : Q(Type u)} (e : Q($α))
-    (inst : Q(Semiring $α) := by with_reducible assumption) :
-    MetaM ((lit : Q(Nat)) × Q(NormNum.isNat $e $lit)) := return (← derive e).toIsNatQ e
+def deriveNat' {α : Q(Type u)} (e : Q($α)) :
+    MetaM ((_inst : Q(Semiring $α)) × (lit : Q(ℕ)) × Q(IsNat $e $lit)) := do
+  let .isNat inst lit proof ← derive e | failure
+  pure ⟨inst, lit, proof⟩
+
+/-- Run each registered `norm_num` extension on a typed expression `e : α`,
+returning a typed expression `lit : ℕ`, and a proof of `isNat e lit`. -/
+def deriveNat {α : Q(Type u)} (e : Q($α))
+    (_inst : Q(Semiring $α) := by with_reducible assumption) :
+    MetaM ((lit : Q(ℕ)) × Q(IsNat $e $lit)) := do
+  let .isNat _ lit proof ← derive e | failure
+  pure ⟨lit, proof⟩
+
+def isNatLit (e : Expr) : Option ℕ := do
+  guard <| e.isAppOfArity ``OfNat.ofNat 3
+  let .lit (.natVal lit) := e.appFn!.appArg! | none
+  lit
+
+def isIntLit (e : Expr) : Option ℤ :=
+  if e.isAppOfArity ``Neg.neg 3 then
+    (- ·) <$> isNatLit e.appArg!
+  else
+    isNatLit e
+
+def isRatLit (e : Expr) : Option (ℤ × ℕ) := do
+  if e.isAppOfArity ``Div.div 4 then
+    pure (← isIntLit e.appFn!.appArg!, ← isNatLit e.appArg!)
+  else
+    pure (← isIntLit e, 1)
+
+def isNormalForm : Expr → Bool
+  | .lit _ => true
+  | .mdata _ e => isNormalForm e
+  | e => (isRatLit e).isSome
 
 /-- Run each registered `norm_num` extension on an expression,
 returning a `Simp.Result`. -/
-def eval (e : Expr) : MetaM Simp.Result := do (← derive e).toSimpResult e
+def eval (e : Expr) (post := false) : MetaM Simp.Result := do
+  if isNormalForm e then return { expr := e }
+  let ⟨.succ _, _, e⟩ ← inferTypeQ e | failure
+  (← derive e post).toSimpResult
 
 initialize registerBuiltinAttribute {
   name := `norm_num
@@ -172,7 +301,7 @@ initialize registerBuiltinAttribute {
 
 /-- A simp plugin which calls `NormNum.eval`. -/
 def tryNormNum? (post := false) (e : Expr) : SimpM (Option Simp.Step) := do
-  try return some (.done (← (← derive e post).toSimpResult e))
+  try return some (.done (← eval e post))
   catch _ => return none
 
 /--
@@ -295,7 +424,7 @@ def elabNormNum (args : Syntax) (loc : Syntax)
 end Meta.NormNum
 
 namespace Tactic
-open Parser.Tactic Meta.NormNum
+open Lean.Parser.Tactic Meta.NormNum
 
 /-- Normalize numerical expressions. -/
 elab "norm_num" only:&" only"? args:(simpArgs ?) loc:(location ?) : tactic =>
