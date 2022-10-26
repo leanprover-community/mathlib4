@@ -85,7 +85,7 @@ private def splitIf1 (cond: Expr) (hName : Name) (loc : Location) : TacticM Unit
     pure [s1.mvarId, s2.mvarId]
   tac_and_then splitCases (reduceIfsAt loc)
 
-/-- Pops of the front of the list of names, or generates a fresh name if the
+/-- Pops off the front of the list of names, or generates a fresh name if the
 list is empty.
 -/
 private def getNextName (hNames: IO.Ref (List Name)) : MetaM Name := do
