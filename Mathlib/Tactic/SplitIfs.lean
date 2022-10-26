@@ -51,28 +51,14 @@ private def find_if_cond_at (loc : Location) : TacticM (Option Expr) := do
      then return some cond
    return none
 
-/-- Discharges `¬¬p` using `h : p`.
+/-- `Simp.Discharge` strategy to use in `reduceIfsAt`. Delegates to
+`SplitIf.discharge?`, and additionally supports discharging `True`, to
+better match the behavior of mathlib3's `split_ifs`.
 -/
-private def dischargeUsingNotNotIntro? (e : Expr) : SimpM (Option Expr) :=
-  if let some eInner := e.notNot?
-  then do
-    (← getLCtx).findDeclRevM? fun localDecl => do
-      if localDecl.isImplementationDetail then
-        return none
-      else if (← isDefEq eInner localDecl.type) then
-        return some (mkApp2 (mkConst `not_not_intro) localDecl.type localDecl.toExpr)
-      else
-        return none
-  else pure none
-
-/-- `Simp.Discharge` strategy to use in `reduceIfsAt`.
--/
-private def discharger (e : Expr) : SimpM (Option Expr) := do
+private def discharge? (e : Expr) : SimpM (Option Expr) := do
   let e ← instantiateMVars e
-  if let some e1 ← Simp.dischargeUsingAssumption? e
+  if let some e1 ← SplitIf.discharge? false e
     then return some e1
-  if let some e2 ← dischargeUsingNotNotIntro? e
-    then return some e2
   if e.isConstOf `True
     then return some (mkConst `True.intro)
   return none
@@ -81,7 +67,7 @@ private def discharger (e : Expr) : SimpM (Option Expr) := do
 -/
 private def reduceIfsAt (loc : Location) : TacticM Unit := do
   let ctx ← SplitIf.getSimpContext
-  let _ ← simpLocation ctx discharger loc
+  let _ ← simpLocation ctx discharge? loc
   pure ()
 
 /-- Splits a single if-then-else expression and then reduces the resulting goals.
