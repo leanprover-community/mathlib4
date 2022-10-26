@@ -147,7 +147,7 @@ def inferRing (α : Q(Type u)) : MetaM Q(Ring $α) :=
   return ← synthInstanceQ (q(Ring $α) : Q(Type u)) <|> throwError "not a semiring"
 
 /-- Run each registered `norm_num` extension on a typed expression `e : α`,
-returning a typed expression `lit : ℕ`, and a proof of `isNat e lit`. -/
+returning a typed expression `lit : ℤ`, and a proof of `isInt e lit`. -/
 def Result.toInt {α : Q(Type u)} {e : Q($α)} (_i : Q(Ring $α) := by with_reducible assumption) :
     Result e → MetaM (ℤ × (lit : Q(ℤ)) × Q(IsInt $e $lit))
   | .isNat _ lit proof => do
@@ -186,7 +186,7 @@ structure NormNumExt where
   pre := true
   /-- The extension should be run in the `post` phase when used as simp plugin. -/
   post := true
-  /-- Attempts to prove an expression is equal to some natural number. -/
+  /-- Attempts to prove an expression is equal to some explicit number of the relevant type. -/
   eval {α : Q(Type u)} (e : Q($α)) : MetaM (Result e)
 
 /-- Read a `norm_num` extension from a declaration of the right type. -/

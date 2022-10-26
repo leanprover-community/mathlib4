@@ -86,7 +86,7 @@ theorem isNat_int_cast {R} [Ring R] (n : ℤ) (m : ℕ) :
 theorem isInt_cast {R} [Ring R] (n m : ℤ) :
     IsInt n m → IsInt (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
 
-/-- The `norm_num` extension which identifies an expression `Nat.cast n`, returning `n`. -/
+/-- The `norm_num` extension which identifies an expression `Int.cast n`, returning `n`. -/
 @[norm_num Int.cast _] def evalIntCast : NormNumExt where eval {u α} e := do
   let rα ← inferRing α
   match e with
