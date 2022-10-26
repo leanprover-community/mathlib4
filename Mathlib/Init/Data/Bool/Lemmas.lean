@@ -6,10 +6,6 @@ Authors: Leonardo de Moura
 import Mathlib.Init.Data.Bool.Basic
 import Mathlib.Init.Logic
 
--- *TODO* remove this
-set_option autoImplicit false
-
-
 attribute [simp] cond or and not xor
 
 namespace Bool
