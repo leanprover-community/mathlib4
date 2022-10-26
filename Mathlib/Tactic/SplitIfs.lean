@@ -54,14 +54,13 @@ private def find_if_cond_at (loc : Location) : TacticM (Option Expr) := do
 /-- Discharges `¬¬p` using `h : p`.
 -/
 private def dischargeUsingNotNotIntro? (e : Expr) : SimpM (Option Expr) :=
-  if e.isAppOf `Not && e.getAppArgs[0]!.isAppOf `Not
+  if let some eInner := e.notNot?
   then do
-    let eInner := e.getAppArgs[0]!.getAppArgs[0]!
     (← getLCtx).findDeclRevM? fun localDecl => do
       if localDecl.isImplementationDetail then
         return none
       else if (← isDefEq eInner localDecl.type) then
-        return some (mkApp (mkApp (mkConst `not_not_intro) localDecl.type) localDecl.toExpr)
+        return some (mkApp2 (mkConst `not_not_intro) localDecl.type localDecl.toExpr)
       else
         return none
   else pure none
