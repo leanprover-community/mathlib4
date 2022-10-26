@@ -143,7 +143,6 @@ import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
-import Mathlib.Tactic.SplitIfsAttr
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SudoSetOption

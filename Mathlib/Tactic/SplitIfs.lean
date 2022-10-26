@@ -6,7 +6,6 @@ Authors: Gabriel Ebner, David Renshaw
 import Lean
 import Mathlib.Init.Logic
 import Mathlib.Tactic.Core
-import Mathlib.Tactic.SplitIfsAttr
 
 /-!
 Tactic to split if-then-else expressions.
@@ -15,8 +14,6 @@ Tactic to split if-then-else expressions.
 namespace Mathlib.Tactic
 
 open Lean Elab.Tactic Parser.Tactic Lean.Meta
-
-attribute [split_ifs_reduction] if_pos if_neg dif_pos dif_neg if_congr
 
 /-- Simulates the `<;>` tactic combinator.
 -/
@@ -103,9 +100,7 @@ private def discharger (e : Expr) : SimpM (Option Expr) := do
 /-- Simplifies if-then-else expressions after cases have been split out.
 -/
 private def reduceIfsAt (loc : Location) : TacticM Unit := do
-  let some ext ← getSimpExtension? `split_ifs_reduction | return
-  let thms ← ext.getTheorems
-  let ctx : Simp.Context := { simpTheorems := #[thms] }
+  let ctx ← SplitIf.getSimpContext
   let _ ← simpLocation ctx discharger loc
   pure ()
 
