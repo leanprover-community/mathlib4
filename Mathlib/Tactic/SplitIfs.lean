@@ -5,6 +5,7 @@ Authors: Gabriel Ebner, David Renshaw
 -/
 import Lean
 import Mathlib.Init.Logic
+import Mathlib.Tactic.Core
 import Mathlib.Tactic.SplitIfsAttr
 
 /-!
@@ -17,31 +18,12 @@ open Lean Elab.Tactic Parser.Tactic Lean.Meta
 
 attribute [split_ifs_reduction] if_pos if_neg dif_pos dif_neg if_congr
 
-/-- Simulates the `all_goals` tactic combinator.
--/
-private def evalAllGoals : TacticM Unit → TacticM Unit := fun tac => do
-  let mvarIds ← getGoals
-  let mut mvarIdsNew := #[]
-  for mvarId in mvarIds do
-    unless (← mvarId.isAssigned) do
-      setGoals [mvarId]
-      try
-        tac
-        mvarIdsNew := mvarIdsNew ++ (← getUnsolvedGoals)
-      catch ex =>
-        if (← read).recover then
-          Elab.logException ex
-          mvarIdsNew := mvarIdsNew.push mvarId
-        else
-          throw ex
-  setGoals mvarIdsNew.toList
-
 /-- Simulates the `<;>` tactic combinator.
 -/
 private def tac_and_then : TacticM Unit → TacticM Unit → TacticM Unit :=
 fun tac1 tac2 => focus do
   tac1
-  evalAllGoals tac2
+  allGoals tac2
 
 /-- Finds an if-then-else and returns its condition.
 -/
