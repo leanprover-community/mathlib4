@@ -6,6 +6,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Semiconj
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Order.Group
 import Mathlib.Algebra.Order.Monoid
@@ -26,6 +27,9 @@ import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Int.Cast
+import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.KVMap
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Card
