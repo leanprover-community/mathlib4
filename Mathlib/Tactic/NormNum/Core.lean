@@ -29,6 +29,7 @@ initialize registerTraceClass `Tactic.norm_num
 
 /-- Assert that an element of a semiring is equal to the coercion of some natural number. -/
 structure IsNat [Semiring α] (a : α) (n : ℕ) : Prop where
+  /-- The element is equal to the coercion of the natural number. -/
   out : a = n
 
 theorem IsNat.raw_refl (n : ℕ) : IsNat n n := ⟨rfl⟩
@@ -50,6 +51,7 @@ theorem IsNat.to_eq {α} [Semiring α] (n) [OfNat α n] [LawfulOfNat α n] :
 
 /-- Assert that an element of a ring is equal to the coercion of some integer. -/
 structure IsInt [Ring α] (a : α) (n : ℤ) : Prop where
+  /-- The element is equal to the coercion of the integer. -/
   out : a = n
 
 theorem IsInt.to_isNat {α} [Ring α] : ∀ {a : α} {n}, IsInt a (.ofNat n) → IsNat a n
@@ -65,6 +67,7 @@ theorem IsInt.neg_to_eq {α} [Ring α] (n) [OfNat α n] [LawfulOfNat α n] :
 theorem IsInt.nonneg_to_eq {α} [Ring α] (n) [OfNat α n] [LawfulOfNat α n]
     (a : α) (h : IsInt a (.ofNat n)) : a = OfNat.ofNat n := h.to_isNat.to_eq
 
+/-- Represent an integer as a typed expression. -/
 def mkRawIntLit (n : ℤ) : Q(ℤ) :=
   let lit : Q(ℕ) := mkRawNatLit n.natAbs
   if 0 ≤ n then q(.ofNat $lit) else q(.negOfNat $lit)
@@ -78,10 +81,14 @@ def instRingInt : Ring ℤ := inferInstance
 -- TODO: remove when `algebra.invertible` is ported
 /-- `Invertible a` gives a two-sided multiplicative inverse of `a`. -/
 class Invertible [Mul α] [One α] (a : α) : Type _ where
+  /-- The multiplicative inverse. -/
   invOf : α
+  /-- The multiplicative inverse is a left inverse. -/
   invOf_mul_self : invOf * a = 1
+  /-- The multiplicative inverse is a right inverse. -/
   mul_invOf_self : a * invOf = 1
 
+/-- Local notation for the inverse of an invertible element. -/
 -- This notation has the same precedence as `Inv.inv`.
 scoped prefix:max "⅟" => Invertible.invOf
 
@@ -92,7 +99,9 @@ We will usually also have `num` and `denom` coprime,
 although this is not part of the definition.
 -/
 structure IsRat [Ring α] (a : α) (num : ℤ) (denom : ℕ) where
+  /-- The denominator is invertible. -/
   inv : Invertible denom
+  /-- The element is equal to the fraction with the specified numerator and denominator. -/
   eq : a = num * ⅟denom
 
 /-- The result of `norm_num` running on an expression `x` of type `α`.
@@ -129,6 +138,9 @@ and `q` is the value of `n / d`. -/
     ∀ (inst : Q(Ring $α) := by assumption) (q : Rat) (n : Q(ℤ)) (d : Q(ℕ))
       (proof : Q(IsRat $x $n $d)), Result x := Result'.isRat
 
+/-- The result is `z : ℤ` and `proof : isNat x z`. -/
+-- Note the independent arguments `z : Q(ℤ)` and `n : ℤ`.
+-- We ensure these are "the same" when calling.
 def Result.isInt {α : Q(Type u)} {x : Q($α)} {z : Q(ℤ)}
     (inst : Q(Ring $α) := by assumption) (n : ℤ) (proof : Q(IsInt $x $z)) : Result x :=
   have lit : Q(ℕ) := z.appArg!
@@ -140,9 +152,11 @@ def Result.isInt {α : Q(Type u)} {x : Q($α)} {z : Q(ℤ)}
 
 end
 
+/-- Helper functor to synthesize a typed `Semiring α` expression. -/
 def inferSemiring (α : Q(Type u)) : MetaM Q(Semiring $α) :=
   return ← synthInstanceQ (q(Semiring $α) : Q(Type u)) <|> throwError "not a semiring"
 
+/-- Helper functor to synthesize a typed `Ring α` expression. -/
 def inferRing (α : Q(Type u)) : MetaM Q(Ring $α) :=
   return ← synthInstanceQ (q(Ring $α) : Q(Type u)) <|> throwError "not a semiring"
 
@@ -246,23 +260,29 @@ def deriveNat {α : Q(Type u)} (e : Q($α))
   let .isNat _ lit proof ← derive e | failure
   pure ⟨lit, proof⟩
 
+/-- Extract the natural number `n` if the expression is of the form `OfNat.ofNat n`. -/
 def isNatLit (e : Expr) : Option ℕ := do
   guard <| e.isAppOfArity ``OfNat.ofNat 3
   let .lit (.natVal lit) := e.appFn!.appArg! | none
   lit
 
+/-- Extract the integer `i` if the expression is either a natural number literal
+or the negation of one. -/
 def isIntLit (e : Expr) : Option ℤ :=
   if e.isAppOfArity ``Neg.neg 3 then
     (- ·) <$> isNatLit e.appArg!
   else
     isNatLit e
 
+/-- Extract the numerator `n : ℤ` and denomination `d : ℕ` if the expression is either
+an integer literal, or the division of one integer literal by another. -/
 def isRatLit (e : Expr) : Option (ℤ × ℕ) := do
   if e.isAppOfArity ``Div.div 4 then
     pure (← isIntLit e.appFn!.appArg!, ← isNatLit e.appArg!)
   else
     pure (← isIntLit e, 1)
 
+/-- Test if an expression represents an explicit number written in normal form. -/
 def isNormalForm : Expr → Bool
   | .lit _ => true
   | .mdata _ e => isNormalForm e
