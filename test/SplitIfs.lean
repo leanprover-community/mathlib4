@@ -37,7 +37,7 @@ example (p q : Prop) [Decidable p] [Decidable q] :
   · exact Or.inl h1
   · exact Or.inr h3
 
-example (p : Prop) [Decidable p] (h : (if p then 1 else 2) > 3) : false := by
+example (p : Prop) [Decidable p] (h : (if p then 1 else 2) > 3) : False := by
   split_ifs at h
   cases h
   · case inl.step h => cases h
@@ -51,7 +51,7 @@ example (p : Prop) [Decidable p] (x : Nat) (h : (if p then 1 else 2) > x) :
      x < (if ¬p then 1 else 0) + 1 := by
    split_ifs at * <;> assumption
 
-example (p : Prop) [Decidable p] : if if ¬p then p else true then p else ¬p := by
+example (p : Prop) [Decidable p] : if if ¬p then p else True then p else ¬p := by
   split_ifs <;>
   assumption
 
@@ -60,6 +60,6 @@ example (p q : Prop) [Decidable p] [Decidable q] :
   split_ifs <;>
   simp [*]
 
-example : true := by
+example : True := by
   fail_if_success { split_ifs }
   trivial
