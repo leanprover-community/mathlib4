@@ -10,13 +10,38 @@ import Mathlib.Algebra.Group.Commute
 ### Monoids
 -/
 
+section AddMonoid
+
+variable [AddMonoid M]
+
+theorem nsmul_zero (n : ℕ) : n • (0 : M) = 0 := by
+  induction' n with n ih
+  · exact zero_nsmul _
+  · rw [succ_nsmul, ih, add_zero]
+
+@[simp]
+theorem one_nsmul (a : M) : 1 • a = a := by rw [succ_nsmul, zero_nsmul, add_zero]
+
+theorem add_nsmul (a : M) (m n : ℕ) : (m + n) • a = m • a + n • a := by
+  induction' n with n ih
+  · rw [Nat.add_zero, zero_nsmul, add_zero]
+  · sorry
+
+end AddMonoid
+
 section Monoid
 
 variable [Monoid M]
 
-@[simp]
+@[to_additive nsmul_zero, simp] theorem one_pow (n : ℕ) : (1 : M)^n = 1 := by
+  induction' n with n ih
+  · exact pow_zero _
+  · rw [pow_succ, ih, one_mul]
+
+@[simp, to_additive one_nsmul]
 theorem pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, mul_one]
 
+@[to_additive add_nsmul]
 theorem pow_add (a : M) (m n : ℕ) : a ^ (m + n) = a ^ m * a ^ n := by
   induction' n with n ih
   · rw [Nat.add_zero, pow_zero, mul_one]

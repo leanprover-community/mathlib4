@@ -330,8 +330,6 @@ syntax termList := " [" term,* "]"
 
 /- E -/ syntax (name := applyNormed) "apply_normed " term : tactic
 
-/- E -/ syntax (name := abel1) "abel1" : tactic
-/- E -/ syntax (name := abel1!) "abel1!" : tactic
 /- B -/ syntax (name := abel) "abel" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 /- B -/ syntax (name := abel!) "abel!" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 
