@@ -140,7 +140,7 @@ elab_rules : tactic
   | none => []
   | some args => args.map (λ s => if let `(binderIdent| $x:ident) := s
                                   then x.getId
-                                  else `x) |>.toList
+                                  else `_) |>.toList
   withMainContext do
     let names ← IO.mkRef names
     splitIfsCore loc names []
