@@ -529,7 +529,7 @@ def simpsFindCustomProjection (str : Name) (proj : ParsedProjectionData)
   let (rawExpr, nrs) ← MetaM.run' (getCompositeOfProjections str proj.origName.getString!)
   match env.find? (str ++ `simps ++ proj.newName) with
   | some d@(.defnInfo _) =>
-    let customProj := d.instantiateValueLevelParams rawUnivs
+    let customProj := d.instantiateValueLevelParams! rawUnivs
     if trc then
       logInfo m!"[simps] > found custom projection for {proj.newName}:\n        > {customProj}"
     match (← MetaM.run' $ isDefEq customProj rawExpr) with
