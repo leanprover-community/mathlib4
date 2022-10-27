@@ -160,8 +160,10 @@ def inferSemiring (α : Q(Type u)) : MetaM Q(Semiring $α) :=
 def inferRing (α : Q(Type u)) : MetaM Q(Ring $α) :=
   return ← synthInstanceQ (q(Ring $α) : Q(Type u)) <|> throwError "not a semiring"
 
-/-- Run each registered `norm_num` extension on a typed expression `e : α`,
-returning a typed expression `lit : ℤ`, and a proof of `isInt e lit`. -/
+/--
+Extract from a `Result` the integer value (as both a term and an expression),
+and the proof that the original expression is equal to this integer.
+-/
 def Result.toInt {α : Q(Type u)} {e : Q($α)} (_i : Q(Ring $α) := by with_reducible assumption) :
     Result e → MetaM (ℤ × (lit : Q(ℤ)) × Q(IsInt $e $lit))
   | .isNat _ lit proof => do
@@ -258,6 +260,22 @@ def deriveNat {α : Q(Type u)} (e : Q($α))
     (_inst : Q(Semiring $α) := by with_reducible assumption) :
     MetaM ((lit : Q(ℕ)) × Q(IsNat $e $lit)) := do
   let .isNat _ lit proof ← derive e | failure
+  pure ⟨lit, proof⟩
+
+/-- Run each registered `norm_num` extension on a typed expression `e : α`,
+returning a typed expression `lit : ℤ`, and a proof of `isInt e lit`. -/
+def deriveInt' {α : Q(Type u)} (e : Q($α)) :
+    MetaM ((_inst : Q(Ring $α)) × (lit : Q(ℤ)) × Q(IsInt $e $lit)) := do
+  let rα ← inferRing α
+  let ⟨_, lit, proof⟩ ← (← derive e).toInt
+  pure ⟨rα, lit, proof⟩
+
+/-- Run each registered `norm_num` extension on a typed expression `e : α`,
+returning a typed expression `lit : ℤ`, and a proof of `isInt e lit`. -/
+def deriveInt {α : Q(Type u)} (e : Q($α))
+    (_inst : Q(Ring $α) := by with_reducible assumption) :
+    MetaM ((lit : Q(ℤ)) × Q(IsInt $e $lit)) := do
+  let ⟨_, lit, proof⟩ ← (← derive e).toInt
   pure ⟨lit, proof⟩
 
 /-- Extract the natural number `n` if the expression is of the form `OfNat.ofNat n`. -/
