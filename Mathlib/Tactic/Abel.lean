@@ -39,11 +39,17 @@ Stores a few options for this call, and caches some common subexpressions
 such as typeclass instances and `0 : α`.
 -/
 structure Context where
+  /-- TransparencyMode for comparing atoms -/
   red      : TransparencyMode
+  /-- The type of the ambient additive commutative group or monoid. -/
   α        : Expr
+  /-- The universe level for `α`. -/
   univ     : Level
+  /-- The expression representing `0 : α`. -/
   α0       : Expr
+  /-- Specify whether we are in an additive commutative group or an additive commutative monoid. -/
   is_group : Bool
+  /-- The `AddCommGroup α` or `AddCommMonoid α` expression. -/
   inst     : Expr
 
 /-- Populate a `context` object for evaluating `e`, up to reducibility level `red`. -/
@@ -89,7 +95,9 @@ Will use the `add_comm_{monoid,group}` instance that has been cached in the cont
 def Context.iapp (c : Context) (n : Name) : Array Expr → Expr :=
 c.app (if c.is_group then add_g n else n) c.inst
 
+/-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative monoid. -/
 def term {α} [AddCommMonoid α] (n : ℕ) (x a : α) : α := n • x + a
+/-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative group. -/
 def termg {α} [AddCommGroup α] (n : ℤ) (x a : α) : α := n • x + a
 
 /-- Evaluate a term with coefficient `n`, atom `x` and successor terms `a`. -/
@@ -99,36 +107,32 @@ def Context.mkTerm (c : Context) (n x a : Expr) : Expr := c.iapp ``term #[n, x, 
 def Context.intToExpr (c : Context) (n : ℤ) : MetaM Expr :=
 Expr.ofInt (mkConst (if c.is_group then ``Int else ``Nat) []) n
 
+/-- A normal form for `abel`.
+Expressions are represented as a list of terms of the form `e = n • x`,
+where `n : ℤ` and `x` is an arbitrary element of the additive commutative monoid or group.
+We explicitly track the `Expr` forms of `e` and `n`, even though they could be reconstructed,
+for efficiency. -/
 inductive NormalExpr : Type
 | zero (e : Expr) : NormalExpr
 | nterm (e : Expr) (n : Expr × ℤ) (x : Expr) (a : NormalExpr) : NormalExpr
 deriving Inhabited
 
+/-- Extract the expression from a normal form. -/
 def NormalExpr.e : NormalExpr → Expr
 | (NormalExpr.zero e) => e
 | (NormalExpr.nterm e _ _ _) => e
 
 instance : Coe NormalExpr Expr where coe := NormalExpr.e
 
+/-- Construct the normal form representing a single term. -/
 def NormalExpr.term' (c : Context) (n : Expr × ℤ) (x : Expr) (a : NormalExpr) :
   NormalExpr :=
 NormalExpr.nterm (c.mkTerm n.1 x a) n x a
 
+/-- Construct the normal form representing zero. -/
 def NormalExpr.zero' (c : Context) : NormalExpr := NormalExpr.zero c.α0
 
-def NormalExpr.toList : NormalExpr → List (ℤ × Expr)
-| (NormalExpr.zero _) => []
-| (NormalExpr.nterm _ (_, n) x a) => (n, x) :: a.toList
-
 open NormalExpr
-
-def NormalExpr.to_string (e : NormalExpr) : String :=
-  " + ".intercalate $ (toList e).map <|
-    fun ⟨n, e⟩ => toString n ++ " • (" ++ toString e ++ ")"
-
-def NormalExpr.refl_conv (e : NormalExpr) : TacticM (NormalExpr × Expr) := do
-  let p ← mkEqRefl e
-  return (e, p)
 
 theorem const_add_term {α} [AddCommMonoid α] (k n x a a') (h : k + a = a') :
     k + @term α _ n x a = term n x a' := by
@@ -167,6 +171,9 @@ theorem zero_termg {α} [AddCommGroup α] (x a) : @termg α _ 0 x a = a := by
   -- simp [termg, zero_zsmul]
   sorry
 
+/--
+Intepret the sum of two expressions in `abel`'s normal form.
+-/
 partial def eval_add (c : Context) : NormalExpr → NormalExpr → TacticM (NormalExpr × Expr)
 | (zero _), e₂ => do
   let p ← mkAppM ``zero_add #[e₂]
@@ -197,6 +204,9 @@ theorem term_neg {α} [AddCommGroup α] (n x a n' a')
   -@termg α _ n x a = termg n' x a' :=
 by simp [h₂.symm, h₁.symm, termg]; sorry
 
+/--
+Interpret a negated expression in `abel`'s normal form.
+-/
 def eval_neg (c : Context) : NormalExpr → TacticM (NormalExpr × Expr)
 | (zero _) => do
   let p ← c.mkApp ``neg_zero ``NegZeroClass #[]
@@ -207,7 +217,9 @@ def eval_neg (c : Context) : NormalExpr → TacticM (NormalExpr × Expr)
   return (term' c (n', -n.2) x a',
     c.app ``term_neg c.inst #[n.1, x, a, n', a', h₁.getD (←mkEqRefl n'), h₂])
 
+/-- A synonym for `•`, used internally in `abel`. -/
 def smul {α} [AddCommMonoid α] (n : ℕ) (x : α) : α := n • x
+/-- A synonym for `•`, used internally in `abel`. -/
 def smulg {α} [AddCommGroup α] (n : ℤ) (x : α) : α := n • x
 
 theorem zero_smul {α} [AddCommMonoid α] (c) : smul c (0 : α) = 0 := by
@@ -232,6 +244,9 @@ theorem term_smulg {α} [AddCommGroup α] (c n x a n' a')
   -- simp [h₂.symm, h₁.symm, termg, smulg, zsmul_add, mul_zsmul]
   sorry
 
+/--
+Auxiliary function for `eval_smul'`.
+-/
 def eval_smul (c : Context) (k : Expr × ℤ) : NormalExpr → TacticM (NormalExpr × Expr)
 | (zero _) => return (zero' c, c.iapp ``zero_smul #[k.1])
 | (nterm _ n x a) => do
@@ -248,6 +263,7 @@ theorem term_atomg {α} [AddCommGroup α] (x : α) : x = termg 1 x 0 := by
   simp [termg]
   sorry
 
+/-- Interpret an expression as an atom for `abel`'s normal form. -/
 def eval_atom (c : Context) (e : Expr) : TacticM (NormalExpr × Expr) := do
   let n1 ← c.intToExpr 1
   return (term' c (n1, 1) e (zero' c), c.iapp ``term_atom #[e])
@@ -322,6 +338,8 @@ def eval_smul' (c : Context) (eval : Expr → TacticM (NormalExpr × Expr))
       return (e', c.app ``subst_into_smul_upcast c.inst #[e₁, e₂, e₁', zl, e₂', e', p₁, p₁', p₂, p])
   | none => eval_atom c orig
 
+/-- Evaluate an expression into its `abel` normal form,
+by recursing into subexpressions. -/
 partial def eval (c : Context) (e : Expr) : TacticM (NormalExpr × Expr) := do
   trace[abel.detail] "running eval on {e}"
   trace[abel.detail] "getAppFnArgs: {e.getAppFnArgs}"
@@ -367,9 +385,20 @@ end Abel
 
 open Tactic.Abel
 
+/-- Tactic for solving equations in the language of
+*additive*, commutative monoids and groups.
+This version of `abel` fails if the target is not an equality
+that is provable by the axioms of commutative monoids/groups.
+
+`abel1!` will use a more aggressive reducibility setting to identify atoms.
+This can prove goals that `abel` cannot, but is more expensive.
+-/
 syntax (name := abel1) "abel1" : tactic
+@[inherit_doc abel1]
 syntax (name := abel1!) "abel1!" : tactic
 
+/-- The `abel1` tactic, which solves equations in the language of commutative additive groups
+(or monoids). -/
 def abel1Impl (tm : TransparencyMode := .default) : TacticM Unit := do
   match (←getMainTarget).getAppFnArgs with
   | (``Eq, #[_, e₁, e₂]) =>
@@ -386,17 +415,7 @@ def abel1Impl (tm : TransparencyMode := .default) : TacticM Unit := do
       throwError "abel1 found that the two sides were not equal"
   | _ => throwError "abel1 requires an equality goal"
 
-
-/-- Tactic for solving equations in the language of
-*additive*, commutative monoids and groups.
-This version of `abel` fails if the target is not an equality
-that is provable by the axioms of commutative monoids/groups.
-
-`abel1!` will use a more aggressive reducibility setting to identify atoms.
-This can prove goals that `abel` cannot, but is more expensive.
--/
 elab_rules : tactic | `(tactic| abel1) => abel1Impl .reducible
-
 elab_rules : tactic | `(tactic| abel1!) => abel1Impl .default
 
 -- TODO finish porting `abel`, rather than just `abel1`.
