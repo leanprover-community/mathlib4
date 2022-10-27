@@ -81,7 +81,7 @@ namespace Int
 
 instance [AddGroupWithOne R] : CoeTail ℤ R where coe := cast
 
-theorem cast_ofNat [AddGroupWithOne R] : (cast (ofNat n) : R) = Nat.cast n :=
+@[simp] theorem cast_ofNat [AddGroupWithOne R] : (cast (ofNat n) : R) = Nat.cast n :=
   AddGroupWithOne.intCast_ofNat _
 #align int.cast_coe_nat Int.cast_ofNat
 
