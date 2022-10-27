@@ -155,6 +155,7 @@ theorem term_add_term {α} [AddCommMonoid α] (n₁ x a₁ n₂ a₂ n' a') (h�
   simp [h₁.symm, h₂.symm, term, add_nsmul]
   sorry -- TODO should be by `ac_refl`, or do it by hand.
 
+@[nolint unusedArguments] -- TODO remove when the proof is filled in.
 theorem term_add_termg {α} [AddCommGroup α] (n₁ x a₁ n₂ a₂ n' a')
     (h₁ : n₁ + n₂ = n') (h₂ : a₁ + a₂ = a') :
     @termg α _ n₁ x a₁ + @termg α _ n₂ x a₂ = termg n' x a' := by
@@ -230,6 +231,7 @@ theorem zero_smulg {α} [AddCommGroup α] (c) : smulg c (0 : α) = 0 := by
   -- simp [smulg, zsmul_zero]
   sorry
 
+@[nolint unusedArguments] -- TODO remove when the proof is filled in.
 theorem term_smul {α} [AddCommMonoid α] (c n x a n' a')
   (h₁ : c * n = n') (h₂ : smul c a = a') :
   smul c (@term α _ n x a) = term n' x a' := by
@@ -237,6 +239,7 @@ theorem term_smul {α} [AddCommMonoid α] (c n x a n' a')
   -- simp [h₂.symm, h₁.symm, term, smul, nsmul_add, mul_nsmul]
   sorry
 
+@[nolint unusedArguments] -- TODO remove when the proof is filled in.
 theorem term_smulg {α} [AddCommGroup α] (c n x a n' a')
   (h₁ : c * n = n') (h₂ : smulg c a = a') :
   smulg c (@termg α _ n x a) = termg n' x a' := by
@@ -290,6 +293,7 @@ lemma subst_into_smulg {α} [AddCommGroup α]
   (prt : @smulg α _ tl tr = t) : smulg l r = t :=
 by simp [prl, prr, prt]
 
+@[nolint unusedArguments] -- TODO remove when the proof is filled in.
 lemma subst_into_smul_upcast {α} [AddCommGroup α]
   (l r tl zl tr t) (prl₁ : l = tl) (prl₂ : ↑tl = zl) (prr : r = tr)
   (prt : @smulg α _ zl tr = t) : smul l r = t := by
