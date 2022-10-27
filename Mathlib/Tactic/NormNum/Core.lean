@@ -118,7 +118,7 @@ section
 set_option linter.unusedVariables false
 
 /-- The result of `norm_num` running on an expression `x` of type `α`. -/
-def Result {α : Q(Type u)} (x : Q($α)) := Result'
+@[nolint unusedArguments] def Result {α : Q(Type u)} (x : Q($α)) := Result'
 
 /-- The result is `lit : ℕ` (a raw nat literal) and `proof : isNat x lit`. -/
 @[match_pattern, inline] def Result.isNat {α : Q(Type u)} {x : Q($α)} :
@@ -261,14 +261,6 @@ def deriveNat {α : Q(Type u)} (e : Q($α))
     MetaM ((lit : Q(ℕ)) × Q(IsNat $e $lit)) := do
   let .isNat _ lit proof ← derive e | failure
   pure ⟨lit, proof⟩
-
-/-- Run each registered `norm_num` extension on a typed expression `e : α`,
-returning a typed expression `lit : ℤ`, and a proof of `isInt e lit`. -/
-def deriveInt' {α : Q(Type u)} (e : Q($α)) :
-    MetaM ((_inst : Q(Ring $α)) × (lit : Q(ℤ)) × Q(IsInt $e $lit)) := do
-  let rα ← inferRing α
-  let ⟨_, lit, proof⟩ ← (← derive e).toInt
-  pure ⟨rα, lit, proof⟩
 
 /-- Run each registered `norm_num` extension on a typed expression `e : α`,
 returning a typed expression `lit : ℤ`, and a proof of `isInt e lit`. -/
