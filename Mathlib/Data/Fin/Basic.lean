@@ -310,5 +310,7 @@ instance : LinearOrder (Fin n) where
   le_antisymm := Fin.le_antisymm
   le_total := Fin.le_total
   decidable_le := inferInstance
+  toMin := minOfLe
+  toMax := maxOfLe
 
 end

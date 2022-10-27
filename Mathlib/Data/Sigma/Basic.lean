@@ -49,7 +49,7 @@ instance [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] : DecidableE
     | _, _, _, _, isFalse n => isFalse fun h => Sigma.noConfusion h fun e₁ _ => n e₁
 
 -- sometimes the built-in injectivity support does not work
-@[simp, nolint simp_nf]
+@[simp] -- @[nolint simpNF]
 theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
     Sigma.mk a₁ b₁ = ⟨a₂, b₂⟩ ↔ a₁ = a₂ ∧ HEq b₁ b₂ :=
   ⟨λ h => by cases h; exact ⟨rfl, heq_of_eq rfl⟩, -- in Lean 3 `simp` solved this
