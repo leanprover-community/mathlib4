@@ -958,15 +958,10 @@ instance hasUncurryInduction [HasUncurry β γ δ] : HasUncurry (α → β) (α 
 
 end Uncurry
 
-/-- A function is involutive, if `f ∘ f = id`. -/
-def Involutive {α} (f : α → α) : Prop :=
-  ∀ x, f (f x) = x
-
-theorem involutive_iff_iter_2_eq_id {α} {f : α → α} : Involutive f ↔ f^[2] = id :=
-  funext_iff.symm
-
 theorem _root_.bool.involutive_bnot : Involutive not :=
   bnot_bnot
+
+#check BnotBnot
 
 namespace Involutive
 
@@ -974,49 +969,17 @@ variable {α : Sort u} {f : α → α} (h : Involutive f)
 
 include h
 
-@[simp]
-theorem comp_self : f ∘ f = id :=
-  funext h
-
 protected theorem left_inverse : LeftInverse f f :=
   h
 
 protected theorem right_inverse : RightInverse f f :=
   h
 
-protected theorem injective : Injective f :=
-  h.LeftInverse.Injective
-
-protected theorem surjective : Surjective f := fun x => ⟨f x, h x⟩
-
-protected theorem bijective : Bijective f :=
-  ⟨h.Injective, h.Surjective⟩
-
-/-- Involuting an `ite` of an involuted value `x : α` negates the `Prop` condition in the `ite`. -/
-protected theorem ite_not (P : Prop) [Decidable P] (x : α) : f (ite P x (f x)) = ite (¬P) x (f x) := by
-  rw [apply_ite f, h, ite_not]
-
-/-- An involution commutes across an equality. Compare to `function.injective.eq_iff`. -/
-protected theorem eq_iff {x y : α} : f x = y ↔ x = f y :=
-  h.Injective.eq_iff' (h y)
-
 end Involutive
-
-/-- The property of a binary function `f : α → β → γ` being injective.
-Mathematically this should be thought of as the corresponding function `α × β → γ` being injective.
--/
-def Injective2 {α β γ} (f : α → β → γ) : Prop :=
-  ∀ ⦃a₁ a₂ b₁ b₂⦄, f a₁ b₁ = f a₂ b₂ → a₁ = a₂ ∧ b₁ = b₂
 
 namespace Injective2
 
 variable {α β γ : Sort _} {f : α → β → γ}
-
-/-- A binary injective function is injective when only the left argument varies. -/
-protected theorem left (hf : Injective2 f) (b : β) : Function.Injective fun a => f a b := fun a₁ a₂ h => (hf h).left
-
-/-- A binary injective function is injective when only the right argument varies. -/
-protected theorem right (hf : Injective2 f) (a : α) : Function.Injective (f a) := fun a₁ a₂ h => (hf h).right
 
 protected theorem uncurry {α β γ : Type _} {f : α → β → γ} (hf : Injective2 f) : Function.Injective (uncurry f) :=
   fun ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ h => And.elim (hf h) (congr_arg2 _)
@@ -1031,28 +994,7 @@ theorem right' (hf : Injective2 f) [Nonempty α] : Function.Injective fun b a =>
   let ⟨a⟩ := ‹Nonempty α›
   hf.right a <| (congr_fun h a : _)
 
-theorem eq_iff (hf : Injective2 f) {a₁ a₂ b₁ b₂} : f a₁ b₁ = f a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ :=
-  ⟨fun h => hf h, And.ndrec <| congr_arg2 f⟩
-
 end Injective2
-
-section Sometimes
-
-attribute [local instance] Classical.propDecidable
-
-/-- `sometimes f` evaluates to some value of `f`, if it exists. This function is especially
-interesting in the case where `α` is a proposition, in which case `f` is necessarily a
-constant function, so that `sometimes f = f a` for all `a`. -/
-noncomputable def sometimes {α β} [Nonempty β] (f : α → β) : β :=
-  if h : Nonempty α then f (Classical.choice h) else Classical.choice ‹_›
-
-theorem sometimes_eq {p : Prop} {α} [Nonempty α] (f : p → α) (a : p) : sometimes f = f a :=
-  dif_pos ⟨a⟩
-
-theorem sometimes_spec {p : Prop} {α} [Nonempty α] (P : α → Prop) (f : p → α) (a : p) (h : P (f a)) : P (sometimes f) :=
-  by rwa [sometimes_eq]
-
-end Sometimes
 
 end Function
 
@@ -1064,8 +1006,8 @@ def Set.piecewise {α : Type u} {β : α → Sort v} (s : Set α) (f g : ∀ i, 
 
 
 theorem eq_rec_on_bijective {α : Sort _} {C : α → Sort _} :
-    ∀ {a a' : α} (h : a = a'), Function.Bijective (@Eq.recOn _ _ C _ h)
-  | _, _, rfl => ⟨fun x y => id, fun x => ⟨x, rfl⟩⟩
+    ∀ {a a' : α} (h : a = a'), Function.Bijective (@Eq.recOn _ _ (fun x _ => C x) _ h)
+  | _, _, rfl => ⟨fun _ _ => id, fun x => ⟨x, rfl⟩⟩
 
 theorem eq_mp_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.mp h) :=
   eq_rec_on_bijective h
@@ -1083,11 +1025,11 @@ is trivial anyway.-/
 @[simp]
 theorem eq_rec_inj {α : Sort _} {a a' : α} (h : a = a') {C : α → Type _} (x y : C a) :
     (Eq.ndrec x h : C a') = Eq.ndrec y h ↔ x = y :=
-  (eq_rec_on_bijective h).Injective.eq_iff
+  (eq_rec_on_bijective h).injective.eq_iff
 
 @[simp]
 theorem cast_inj {α β : Type _} (h : α = β) {x y : α} : cast h x = cast h y ↔ x = y :=
-  (cast_bijective h).Injective.eq_iff
+  (cast_bijective h).injective.eq_iff
 
 theorem Function.LeftInverse.eq_rec_eq {α β : Sort _} {γ : β → Sort v} {f : α → β} {g : β → α}
     (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) : (congr_arg f (h a)).rec (C (g (f a))) = C a :=
