@@ -177,12 +177,11 @@ protected theorem Surjective.right_cancellable (hf : Surjective f) {g₁ g₂ : 
 
 theorem surjective_of_right_cancellable_Prop (h : ∀ g₁ g₂ : β → Prop, g₁ ∘ f = g₂ ∘ f → g₁ = g₂) : Surjective f := by
   specialize h (fun _ => True) (fun y => ∃ x, f x = y) (funext fun x => _)
-  · simp only [(· ∘ ·), exists_apply_eq_apply]
-
   · intro y
     have : True = ∃ x, f x = y := congr_fun h y
     rw [← this]
     exact trivial
+  · simp only [(· ∘ ·), exists_apply_eq_apply]
 
 
 theorem bijective_iff_exists_unique (f : α → β) : Bijective f ↔ ∀ b : β, ∃! a : α, f a = b :=
@@ -223,6 +222,7 @@ theorem cantor_injective {α : Type _} (f : Set α → α) : ¬Injective f
        RightInverse.surjective
          (λ U => funext $ λ _a => propext ⟨λ h => h U rfl, λ h' _U e => i e ▸ h'⟩)
 
+
 /-- There is no surjection from `α : Type u` into `Type u`. This theorem
   demonstrates why `Type : Type` would be inconsistent in Lean. -/
 theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjective f := by
@@ -235,9 +235,8 @@ theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjecti
     suffices cast hU (g s).2 = cast hU (g t).2 by
       simp only [cast_cast, cast_eq] at this
       assumption
-    · congr
+    · congr -- Porting note: the congr regression here has been reported as https://github.com/leanprover/lean4/issues/1787
       assumption
-
   exact cantor_injective g hg
 
 /-- `g` is a partial inverse to `f` (an injective but not necessarily
@@ -465,7 +464,7 @@ lemma forall_update_iff (f : ∀a, β a) {a : α} {b : β a} (p : ∀a, β a →
 theorem exists_update_iff (f : ∀ a, β a) {a : α} {b : β a} (p : ∀ a, β a → Prop) :
     (∃ x, p x (update f a b x)) ↔ p a b ∨ ∃ (x : _)(_ : x ≠ a), p x (f x) := by
   rw [← not_forall_not, forall_update_iff f fun a b => ¬p a b]
-  simp [not_and_distrib]
+  simp [not_and_or]
 
 theorem update_eq_iff {a : α} {b : β a} {f g : ∀ a, β a} : update f a b = g ↔ b = g a ∧ ∀ (x) (_ : x ≠ a), f x = g x :=
   funext_iff.trans <| forall_update_iff _ fun x y => y = g x
@@ -569,7 +568,9 @@ theorem apply_extend {δ} (hf : Injective f) (F : γ → δ) (g : α → γ) (e'
   · cases' hb with a ha
     subst b
     rw [extend_apply hf, extend_apply hf]
+    rfl
   · rw [extend_apply' _ _ _ hb, extend_apply' _ _ _ hb]
+    rfl
 
 theorem extend_injective (hf : Injective f) (e' : β → γ) : Injective fun g => extend f g e' := by
   intro g₁ g₂ hg
@@ -714,7 +715,7 @@ protected theorem left (hf : Injective2 f) (b : β) : Function.Injective fun a =
 protected theorem right (hf : Injective2 f) (a : α) : Function.Injective (f a) := fun a₁ a₂ h => (hf h).right
 
 protected theorem uncurry {α β γ : Type _} {f : α → β → γ} (hf : Injective2 f) : Function.Injective (uncurry f) :=
-  fun ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ h => And.elim (hf h) (congr_arg2 _)
+  fun ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ h => And.elim (hf h) (congr_arg₂ _)
 
 /-- As a map from the left argument to a unary function, `f` is injective. -/
 theorem left' (hf : Injective2 f) [Nonempty β] : Function.Injective f := fun a₁ a₂ h =>
@@ -759,7 +760,7 @@ def Set.piecewise {α : Type u} {β : α → Sort v} (s : Set α) (f g : ∀ i, 
 
 
 theorem eq_rec_on_bijective {α : Sort _} {C : α → Sort _} :
-    ∀ {a a' : α} (h : a = a'), Function.Bijective (@Eq.recOn _ _ C _ h)
+    ∀ {a a' : α} (h : a = a'), Function.Bijective (@Eq.ndrec _ _ C · _ h)
   | _, _, rfl => ⟨fun x y => id, fun x => ⟨x, rfl⟩⟩
 
 theorem eq_mp_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.mp h) :=
@@ -778,11 +779,11 @@ is trivial anyway.-/
 @[simp]
 theorem eq_rec_inj {α : Sort _} {a a' : α} (h : a = a') {C : α → Type _} (x y : C a) :
     (Eq.ndrec x h : C a') = Eq.ndrec y h ↔ x = y :=
-  (eq_rec_on_bijective h).Injective.eq_iff
+  (eq_rec_on_bijective h).injective.eq_iff
 
 @[simp]
 theorem cast_inj {α β : Type _} (h : α = β) {x y : α} : cast h x = cast h y ↔ x = y :=
-  (cast_bijective h).Injective.eq_iff
+  (cast_bijective h).injective.eq_iff
 
 theorem Function.LeftInverse.eq_rec_eq {α β : Sort _} {γ : β → Sort v} {f : α → β} {g : β → α}
     (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) : (congr_arg f (h a)).rec (C (g (f a))) = C a :=
@@ -807,4 +808,4 @@ theorem IsSymmOp.flip_eq {α β} (op) [IsSymmOp α β op] : flip op = op :=
 
 theorem InvImage.equivalence {α : Sort u} {β : Sort v} (r : β → β → Prop) (f : α → β) (h : Equivalence r) :
     Equivalence (InvImage r f) :=
-  ⟨fun _ => h.1 _, fun _ _ x => h.2.1 x, InvImage.trans r f h.2.2⟩
+  ⟨fun _ => h.1 _, fun w => h.symm w, fun h₁ h₂ => InvImage.trans r f (fun _ _ _ => h.trans) h₁ h₂⟩
