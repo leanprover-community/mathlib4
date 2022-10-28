@@ -32,7 +32,7 @@ structure Bundled (c : Type u → Type v) : Type max (u + 1) v where
 
 namespace Bundled
 
--- This is needed so that we can ask for an instance of `c α` below even though Lean doens't know
+-- This is needed so that we can ask for an instance of `c α` below even though Lean doesn't know
 -- that `c α` is a typeclass.
 set_option checkBinderAnnotations false in
 
