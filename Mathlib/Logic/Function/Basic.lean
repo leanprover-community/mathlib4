@@ -11,6 +11,7 @@ import Mathlib.Logic.Nonempty
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
 import Mathlib.Init.Set
+import Mathlib.Tactic.Set
 
 universe u v w
 
@@ -638,6 +639,7 @@ by rwa [sometimes_eq]
 
 end sometimes
 
+-- TODO: put the following two defs at the end of
 end Function
 
 /-- `s.piecewise f g` is the function equal to `f` on the set `s`, and to `g` on its complement. -/
@@ -654,3 +656,460 @@ def set.separates_points {α β : Type _} (A : Set (α → β)) : Prop :=
 ∀ {x y : α}, x ≠ y → ∃ f ∈ A, (f x : β) ≠ f y
 
 -- TODO: is_symm_op.flip_eq
+
+namespace Function
+
+section
+
+variable {α β γ : Sort _} {f : α → β}
+
+@[simp]
+theorem eval_apply {β : α → Sort _} (x : α) (f : ∀ x, β x) : eval x f = f x :=
+  rfl
+
+theorem const_injective [Nonempty α] : Injective (const α : β → α → β) := fun y₁ y₂ h =>
+  let ⟨x⟩ := ‹Nonempty α›
+  congr_fun h x
+
+@[simp]
+theorem const_inj [Nonempty α] {y₁ y₂ : β} : const α y₁ = const α y₂ ↔ y₁ = y₂ :=
+  ⟨fun h => const_injective h, fun h => h ▸ rfl⟩
+
+theorem ne_iff {β : α → Sort _} {f₁ f₂ : ∀ a, β a} : f₁ ≠ f₂ ↔ ∃ a, f₁ a ≠ f₂ a :=
+  funext_iff.not.trans not_forall
+
+/-- If the co-domain `β` of an injective function `f : α → β` has decidable equality, then
+the domain `α` also has decidable equality. -/
+protected def Injective.decidableEq [DecidableEq β] (I : Injective f) : DecidableEq α := fun _ _ =>
+  decidable_of_iff _ I.eq_iff
+
+/-- Composition by an injective function on the left is itself injective. -/
+theorem Injective.comp_left {g : β → γ} (hg : Function.Injective g) :
+    Function.Injective ((· ∘ ·) g : (α → β) → α → γ) :=
+  fun _ _ hgf => funext fun i => hg <| (congr_fun hgf i : _)
+
+instance decidableEqPfun (p : Prop) [Decidable p] (α : p → Type _) [∀ hp, DecidableEq (α hp)] : DecidableEq (∀ hp, α hp)
+  | f, g => decidable_of_iff (∀ hp, f hp = g hp) funext_iff.symm
+
+theorem Surjective.injective_comp_right (hf : Surjective f) : Injective fun g : β → γ => g ∘ f :=
+  fun _ _ h => funext <| hf.forall.2 <| congr_fun h
+
+protected theorem Surjective.right_cancellable (hf : Surjective f) {g₁ g₂ : β → γ} :
+    g₁ ∘ f = g₂ ∘ f ↔ g₁ = g₂ :=
+  hf.injective_comp_right.eq_iff
+
+theorem surjective_of_right_cancellable_Prop (h : ∀ g₁ g₂ : β → Prop, g₁ ∘ f = g₂ ∘ f → g₁ = g₂) :
+    Surjective f := by
+  specialize h (fun _ => True) (fun y => ∃ x, f x = y) (funext fun x => _)
+  · intro y
+    have : True = ∃ x, f x = y := congr_fun h y
+    rw [← this]
+    exact trivial
+  · simp only [(· ∘ ·), exists_apply_eq_apply]
+
+theorem Bijective.exists_unique_iff {f : α → β} (hf : Bijective f) {p : β → Prop} :
+    (∃! y, p y) ↔ ∃! x, p (f x) :=
+  ⟨fun ⟨y, hpy, hy⟩ =>
+    let ⟨x, hx⟩ := hf.surjective y
+    ⟨x, by dsimp only <;> rwa [hx], fun z (hz : p (f z)) => hf.injective <| hx.symm ▸ hy _ hz⟩,
+    fun ⟨x, hpx, hx⟩ =>
+    ⟨f x, hpx, fun y hy =>
+      let ⟨z, hz⟩ := hf.surjective y
+      hz ▸ (congr_arg f <| hx _ <| by dsimp only <;> rwa [hz])⟩⟩
+
+/-- There is no surjection from `α : Type u` into `Type u`. This theorem
+  demonstrates why `Type : Type` would be inconsistent in Lean. -/
+theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjective f := by
+  intro hf
+  let T : Type max u v := Sigma f
+  cases' hf (Set T) with U hU
+  set g : Set T → T := fun s => ⟨U, cast hU.symm s⟩ with hg'
+  have hg : Injective g := by
+    intro s t h
+    suffices cast hU (g s).2 = cast hU (g t).2 by
+      simp only [cast_cast, cast_eq] at this
+      assumption
+    · have := congr (f₁ := @Sigma.snd α f)
+      assumption
+
+  exact cantor_injective g hg
+
+/-- `g` is a partial inverse to `f` (an injective but not necessarily
+  surjective function) if `g y = some x` implies `f x = y`, and `g y = none`
+  implies that `y` is not in the range of `f`. -/
+def IsPartialInv {α β} (f : α → β) (g : β → Option α) : Prop :=
+  ∀ x y, g y = some x ↔ f x = y
+
+theorem left_inverse_iff_comp {f : α → β} {g : β → α} : LeftInverse f g ↔ f ∘ g = id :=
+  ⟨LeftInverse.comp_eq_id, congr_fun⟩
+
+theorem right_inverse_iff_comp {f : α → β} {g : β → α} : RightInverse f g ↔ g ∘ f = id :=
+  ⟨RightInverse.comp_eq_id, congr_fun⟩
+
+theorem LeftInverse.right_inverse_of_injective {f : α → β} {g : β → α} (h : LeftInverse f g) (hf : Injective f) :
+    RightInverse f g := fun x => hf <| h (f x)
+
+theorem LeftInverse.right_inverse_of_surjective {f : α → β} {g : β → α} (h : LeftInverse f g) (hg : Surjective g) :
+    RightInverse f g := fun x =>
+  let ⟨y, hy⟩ := hg x
+  hy ▸ congr_arg g (h y)
+
+theorem RightInverse.left_inverse_of_surjective {f : α → β} {g : β → α} :
+    RightInverse f g → Surjective f → LeftInverse f g :=
+  left_inverse.right_inverse_of_surjective
+
+theorem RightInverse.left_inverse_of_injective {f : α → β} {g : β → α} :
+    RightInverse f g → Injective g → LeftInverse f g :=
+  left_inverse.right_inverse_of_injective
+
+theorem LeftInverse.eq_right_inverse {f : α → β} {g₁ g₂ : β → α} (h₁ : LeftInverse g₁ f) (h₂ : RightInverse g₂ f) :
+    g₁ = g₂ :=
+  calc
+    g₁ = g₁ ∘ f ∘ g₂ := by rw [h₂.comp_eq_id, comp.right_id]
+    _ = g₂ := by rw [← comp.assoc, h₁.comp_eq_id, comp.left_id]
+
+
+attribute [local instance] Classical.propDecidable
+
+/-- We can use choice to construct explicitly a partial inverse for
+  a given injective function `f`. -/
+noncomputable def partialInv {α β} (f : α → β) (b : β) : Option α :=
+  if h : ∃ a, f a = b then some (Classical.choose h) else none
+
+end
+
+section InvFun
+
+variable {α β : Sort _} [Nonempty α] {f : α → β} {a : α} {b : β}
+
+attribute [local instance] Classical.propDecidable
+
+/-- The inverse of a function (which is a left inverse if `f` is injective
+  and a right inverse if `f` is surjective). -/
+noncomputable def invFun (f : α → β) : β → α :=
+  fun y => if h : ∃ x, f x = y then h.choose else Classical.arbitrary α
+
+theorem inv_fun_eq_of_injective_of_right_inverse {g : β → α} (hf : Injective f)
+    (hg : RightInverse g f) : invFun f = g :=
+  funext fun b => hf (by rw [hg b])
+
+theorem right_inverse_inv_fun (hf : Surjective f) : RightInverse (invFun f) f :=
+  fun b => inv_fun_eq <| hf b
+
+theorem left_inverse_inv_fun (hf : Injective f) : LeftInverse (invFun f) f :=
+  fun b => hf <| inv_fun_eq ⟨b, rfl⟩
+
+theorem Injective.has_left_inverse (hf : Injective f) : HasLeftInverse f :=
+  ⟨invFun f, left_inverse_inv_fun hf⟩
+
+theorem injective_iff_has_left_inverse : Injective f ↔ HasLeftInverse f :=
+  ⟨Injective.has_left_inverse, HasLeftInverse.injective⟩
+
+end InvFun
+
+section SurjInv
+
+variable {α : Sort u} {β : Sort v} {γ : Sort w} {f : α → β}
+
+/-- The inverse of a surjective function. (Unlike `inv_fun`, this does not require
+  `α` to be inhabited.) -/
+noncomputable def surjInv {f : α → β} (h : Surjective f) (b : β) : α :=
+  Classical.choose (h b)
+
+theorem right_inverse_surj_inv (hf : Surjective f) : RightInverse (surjInv hf) f :=
+  surj_inv_eq hf
+
+theorem left_inverse_surj_inv (hf : Bijective f) : LeftInverse (surjInv hf.2) f :=
+  right_inverse_of_injective_of_left_inverse hf.1 (right_inverse_surj_inv hf.2)
+
+theorem Surjective.has_right_inverse (hf : Surjective f) : HasRightInverse f :=
+  ⟨_, right_inverse_surj_inv hf⟩
+
+theorem surjective_iff_has_right_inverse : Surjective f ↔ HasRightInverse f :=
+  ⟨Surjective.has_right_inverse, HasRightInverse.surjective⟩
+
+theorem bijective_iff_has_inverse : Bijective f ↔ ∃ g, LeftInverse g f ∧ RightInverse g f :=
+  ⟨fun hf => ⟨_, left_inverse_surj_inv hf, right_inverse_surj_inv hf.2⟩, fun ⟨g, gl, gr⟩ =>
+    ⟨gl.Injective, gr.Surjective⟩⟩
+
+theorem injective_surj_inv (h : Surjective f) : Injective (surjInv h) :=
+  (right_inverse_surj_inv h).Injective
+
+theorem surjective_to_subsingleton [na : Nonempty α] [Subsingleton β] (f : α → β) : Surjective f := fun y =>
+  let ⟨a⟩ := na
+  ⟨a, Subsingleton.elim _ _⟩
+
+/-- Composition by an surjective function on the left is itself surjective. -/
+theorem Surjective.comp_left {g : β → γ} (hg : Surjective g) : Surjective ((· ∘ ·) g : (α → β) → α → γ) := fun f =>
+  ⟨surjInv hg ∘ f, funext fun x => right_inverse_surj_inv _ _⟩
+
+/-- Composition by an bijective function on the left is itself bijective. -/
+theorem Bijective.comp_left {g : β → γ} (hg : Bijective g) : Bijective ((· ∘ ·) g : (α → β) → α → γ) :=
+  ⟨hg.Injective.compLeft, hg.Surjective.compLeft⟩
+
+end SurjInv
+
+section Update
+
+variable {α : Sort u} {β : α → Sort v} {α' : Sort w} [DecidableEq α] [DecidableEq α']
+
+/- warning: function.update_apply -> Function.update_apply is a dubious translation:
+lean 3 declaration is
+  forall {α : Sort.{u}} [_inst_1 : DecidableEq.{u} α] {β : Sort.{u_1}} (f : α -> β) (a' : α) (b : β) (a : α), Eq.{u_1} β (Function.update.{u u_1} α (fun (ᾰ : α) => β) (fun (a : α) (b : α) => _inst_1 a b) f a' b a) (ite.{u_1} β (Eq.{u} α a a') (_inst_1 a a') b (f a))
+but is expected to have type
+  forall {α : Sort.{u}} [inst._@.Mathlib.Logic.Function.Basic._hyg.4838 : DecidableEq.{u} α] {β : Sort.{u_1}} (f : α -> β) (a' : α) (b : β) (a : α), Eq.{u_1} β (Function.update.{u u_1} α (fun (a : α) => β) (fun (a : α) (b : α) => inst._@.Mathlib.Logic.Function.Basic._hyg.4838 a b) f a' b a) (ite.{u_1} β (Eq.{u} α a a') (inst._@.Mathlib.Logic.Function.Basic._hyg.4838 a a') b (f a))
+Case conversion may be inaccurate. Consider using '#align function.update_apply Function.update_applyₓ'. -/
+/-- On non-dependent functions, `function.update` can be expressed as an `ite` -/
+theorem update_apply {β : Sort _} (f : α → β) (a' : α) (b : β) (a : α) : update f a' b a = if a = a' then b else f a :=
+  by
+  dsimp only [update]
+  congr
+  funext
+  rw [eq_rec_constant]
+
+@[simp]
+theorem update_same (a : α) (v : β a) (f : ∀ a, β a) : update f a v a = v :=
+  dif_pos rfl
+
+theorem surjective_eval {α : Sort u} {β : α → Sort v} [h : ∀ a, Nonempty (β a)] (a : α) :
+    Surjective (eval a : (∀ a, β a) → β a) := fun b =>
+  ⟨@update _ _ (Classical.decEq α) (fun a => (h a).some) a b, @update_same _ _ (Classical.decEq α) _ _ _⟩
+
+/- ./././Mathport/Syntax/Translate/Basic.lean:555:2: warning: expanding binder collection (x «expr ≠ » a) -/
+theorem exists_update_iff (f : ∀ a, β a) {a : α} {b : β a} (p : ∀ a, β a → Prop) :
+    (∃ x, p x (update f a b x)) ↔ p a b ∨ ∃ (x : _)(_ : x ≠ a), p x (f x) := by
+  rw [← not_forall_not, forall_update_iff f fun a b => ¬p a b]
+  simp [not_and_distrib]
+
+theorem apply_update₂ {ι : Sort _} [DecidableEq ι] {α β γ : ι → Sort _} (f : ∀ i, α i → β i → γ i) (g : ∀ i, α i)
+    (h : ∀ i, β i) (i : ι) (v : α i) (w : β i) (j : ι) :
+    f j (update g i v j) (update h i w j) = update (fun k => f k (g k) (h k)) i (f i v w) j := by
+  by_cases h:j = i
+  · subst j
+    simp
+
+  · simp [h]
+
+end Update
+
+noncomputable section Extend
+
+attribute [local instance] Classical.propDecidable
+
+variable {α β γ : Sort _} {f : α → β}
+
+theorem apply_extend {δ} (hf : Injective f) (F : γ → δ) (g : α → γ) (e' : β → γ) (b : β) :
+    F (extend f g e' b) = extend f (F ∘ g) (F ∘ e') b := by
+  by_cases hb:∃ a, f a = b
+  · cases' hb with a ha
+    subst b
+    rw [extend_apply hf, extend_apply hf]
+    rfl
+  · rw [extend_apply' _ _ _ hb, extend_apply' _ _ _ hb]
+    rfl
+
+theorem extend_injective (hf : Injective f) (e' : β → γ) : Injective fun g => extend f g e' := by
+  intro g₁ g₂ hg
+  refine' funext fun x => _
+  have H := congr_fun hg (f x)
+  simp only [hf, extend_apply] at H
+  exact H
+
+theorem Injective.surjective_comp_right' (hf : Injective f) (g₀ : β → γ) : Surjective fun g : β → γ => g ∘ f := fun g =>
+  ⟨extend f g g₀, extend_comp hf _ _⟩
+
+theorem Injective.surjective_comp_right [Nonempty γ] (hf : Injective f) : Surjective fun g : β → γ => g ∘ f :=
+  hf.surjective_comp_right' fun _ => Classical.choice ‹_›
+
+theorem Bijective.comp_right (hf : Bijective f) : Bijective fun g : β → γ => g ∘ f :=
+  ⟨hf.surjective.injective_comp_right, fun g =>
+    ⟨g ∘ surjInv hf.surjective,
+      by simp only [comp.assoc g _ f, (left_inverse_surj_inv hf).comp_eq_id, comp.right_id]⟩⟩
+
+end Extend
+
+section Bicomp
+
+variable {α β γ δ ε : Type _}
+
+-- mathport name: «expr ∘₂ »
+-- Suggested local notation:
+local notation f " ∘₂ " g => bicompr f g
+
+end Bicomp
+
+section Uncurry
+
+variable {α β γ δ : Type _}
+
+/-- Uncurrying operator. The most generic use is to recursively uncurry. For instance
+`f : α → β → γ → δ` will be turned into `↿f : α × β × γ → δ`. One can also add instances
+for bundled maps.-/
+add_decl_doc HasUncurry.uncurry
+
+-- mathport name: uncurry
+notation:arg "↿" x:arg => HasUncurry.uncurry x
+
+instance hasUncurryBase : HasUncurry (α → β) α β :=
+  ⟨id⟩
+
+instance hasUncurryInduction [HasUncurry β γ δ] : HasUncurry (α → β) (α × γ) δ :=
+  ⟨fun f p => (↿(f p.1)) p.2⟩
+
+end Uncurry
+
+/-- A function is involutive, if `f ∘ f = id`. -/
+def Involutive {α} (f : α → α) : Prop :=
+  ∀ x, f (f x) = x
+
+theorem involutive_iff_iter_2_eq_id {α} {f : α → α} : Involutive f ↔ f^[2] = id :=
+  funext_iff.symm
+
+theorem _root_.bool.involutive_bnot : Involutive not :=
+  bnot_bnot
+
+namespace Involutive
+
+variable {α : Sort u} {f : α → α} (h : Involutive f)
+
+include h
+
+@[simp]
+theorem comp_self : f ∘ f = id :=
+  funext h
+
+protected theorem left_inverse : LeftInverse f f :=
+  h
+
+protected theorem right_inverse : RightInverse f f :=
+  h
+
+protected theorem injective : Injective f :=
+  h.LeftInverse.Injective
+
+protected theorem surjective : Surjective f := fun x => ⟨f x, h x⟩
+
+protected theorem bijective : Bijective f :=
+  ⟨h.Injective, h.Surjective⟩
+
+/-- Involuting an `ite` of an involuted value `x : α` negates the `Prop` condition in the `ite`. -/
+protected theorem ite_not (P : Prop) [Decidable P] (x : α) : f (ite P x (f x)) = ite (¬P) x (f x) := by
+  rw [apply_ite f, h, ite_not]
+
+/-- An involution commutes across an equality. Compare to `function.injective.eq_iff`. -/
+protected theorem eq_iff {x y : α} : f x = y ↔ x = f y :=
+  h.Injective.eq_iff' (h y)
+
+end Involutive
+
+/-- The property of a binary function `f : α → β → γ` being injective.
+Mathematically this should be thought of as the corresponding function `α × β → γ` being injective.
+-/
+def Injective2 {α β γ} (f : α → β → γ) : Prop :=
+  ∀ ⦃a₁ a₂ b₁ b₂⦄, f a₁ b₁ = f a₂ b₂ → a₁ = a₂ ∧ b₁ = b₂
+
+namespace Injective2
+
+variable {α β γ : Sort _} {f : α → β → γ}
+
+/-- A binary injective function is injective when only the left argument varies. -/
+protected theorem left (hf : Injective2 f) (b : β) : Function.Injective fun a => f a b := fun a₁ a₂ h => (hf h).left
+
+/-- A binary injective function is injective when only the right argument varies. -/
+protected theorem right (hf : Injective2 f) (a : α) : Function.Injective (f a) := fun a₁ a₂ h => (hf h).right
+
+protected theorem uncurry {α β γ : Type _} {f : α → β → γ} (hf : Injective2 f) : Function.Injective (uncurry f) :=
+  fun ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ h => And.elim (hf h) (congr_arg2 _)
+
+/-- As a map from the left argument to a unary function, `f` is injective. -/
+theorem left' (hf : Injective2 f) [Nonempty β] : Function.Injective f := fun a₁ a₂ h =>
+  let ⟨b⟩ := ‹Nonempty β›
+  hf.left b <| (congr_fun h b : _)
+
+/-- As a map from the right argument to a unary function, `f` is injective. -/
+theorem right' (hf : Injective2 f) [Nonempty α] : Function.Injective fun b a => f a b := fun b₁ b₂ h =>
+  let ⟨a⟩ := ‹Nonempty α›
+  hf.right a <| (congr_fun h a : _)
+
+theorem eq_iff (hf : Injective2 f) {a₁ a₂ b₁ b₂} : f a₁ b₁ = f a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ :=
+  ⟨fun h => hf h, And.ndrec <| congr_arg2 f⟩
+
+end Injective2
+
+section Sometimes
+
+attribute [local instance] Classical.propDecidable
+
+/-- `sometimes f` evaluates to some value of `f`, if it exists. This function is especially
+interesting in the case where `α` is a proposition, in which case `f` is necessarily a
+constant function, so that `sometimes f = f a` for all `a`. -/
+noncomputable def sometimes {α β} [Nonempty β] (f : α → β) : β :=
+  if h : Nonempty α then f (Classical.choice h) else Classical.choice ‹_›
+
+theorem sometimes_eq {p : Prop} {α} [Nonempty α] (f : p → α) (a : p) : sometimes f = f a :=
+  dif_pos ⟨a⟩
+
+theorem sometimes_spec {p : Prop} {α} [Nonempty α] (P : α → Prop) (f : p → α) (a : p) (h : P (f a)) : P (sometimes f) :=
+  by rwa [sometimes_eq]
+
+end Sometimes
+
+end Function
+
+/-- `s.piecewise f g` is the function equal to `f` on the set `s`, and to `g` on its complement. -/
+def Set.piecewise {α : Type u} {β : α → Sort v} (s : Set α) (f g : ∀ i, β i) [∀ j, Decidable (j ∈ s)] : ∀ i, β i :=
+  fun i => if i ∈ s then f i else g i
+
+/-! ### Bijectivity of `eq.rec`, `eq.mp`, `eq.mpr`, and `cast` -/
+
+
+theorem eq_rec_on_bijective {α : Sort _} {C : α → Sort _} :
+    ∀ {a a' : α} (h : a = a'), Function.Bijective (@Eq.recOn _ _ C _ h)
+  | _, _, rfl => ⟨fun x y => id, fun x => ⟨x, rfl⟩⟩
+
+theorem eq_mp_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.mp h) :=
+  eq_rec_on_bijective h
+
+theorem eq_mpr_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.mpr h) :=
+  eq_rec_on_bijective h.symm
+
+theorem cast_bijective {α β : Sort _} (h : α = β) : Function.Bijective (cast h) :=
+  eq_rec_on_bijective h
+
+/-! Note these lemmas apply to `Type*` not `Sort*`, as the latter interferes with `simp`, and
+is trivial anyway.-/
+
+
+@[simp]
+theorem eq_rec_inj {α : Sort _} {a a' : α} (h : a = a') {C : α → Type _} (x y : C a) :
+    (Eq.ndrec x h : C a') = Eq.ndrec y h ↔ x = y :=
+  (eq_rec_on_bijective h).Injective.eq_iff
+
+@[simp]
+theorem cast_inj {α β : Type _} (h : α = β) {x y : α} : cast h x = cast h y ↔ x = y :=
+  (cast_bijective h).Injective.eq_iff
+
+theorem Function.LeftInverse.eq_rec_eq {α β : Sort _} {γ : β → Sort v} {f : α → β} {g : β → α}
+    (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) : (congr_arg f (h a)).rec (C (g (f a))) = C a :=
+  eq_of_heq <| (eq_rec_heq _ _).trans <| by rw [h]
+
+theorem Function.LeftInverse.eq_rec_on_eq {α β : Sort _} {γ : β → Sort v} {f : α → β} {g : β → α}
+    (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) : (congr_arg f (h a)).recOn (C (g (f a))) = C a :=
+  h.eq_rec_eq _ _
+
+theorem Function.LeftInverse.cast_eq {α β : Sort _} {γ : β → Sort v} {f : α → β} {g : β → α}
+    (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) :
+    cast (congr_arg (fun a => γ (f a)) (h a)) (C (g (f a))) = C a :=
+  eq_of_heq <| (eq_rec_heq _ _).trans <| by rw [h]
+
+/-- A set of functions "separates points"
+if for each pair of distinct points there is a function taking different values on them. -/
+def Set.SeparatesPoints {α β : Type _} (A : Set (α → β)) : Prop :=
+  ∀ ⦃x y : α⦄, x ≠ y → ∃ f ∈ A, (f x : β) ≠ f y
+
+theorem IsSymmOp.flip_eq {α β} (op) [IsSymmOp α β op] : flip op = op :=
+  funext fun a => funext fun b => (IsSymmOp.symm_op a b).symm
+
+theorem InvImage.equivalence {α : Sort u} {β : Sort v} (r : β → β → Prop) (f : α → β) (h : Equivalence r) :
+    Equivalence (InvImage r f) :=
+  ⟨fun _ => h.1 _, fun _ _ x => h.2.1 x, InvImage.trans r f h.2.2⟩
