@@ -3,37 +3,37 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathbin.Tactic.Basic
-import Mathbin.Logic.IsEmpty
+import Mathlib.Logic.IsEmpty
+import Mathlib.Init.Logic
 
 /-!
 # Types with a unique term
 
-In this file we define a typeclass `unique`,
+In this file we define a typeclass `Unique`,
 which expresses that a type has a unique term.
-In other words, a type that is `inhabited` and a `subsingleton`.
+In other words, a type that is `Inhabited` and a `Subsingleton`.
 
 ## Main declaration
 
-* `unique`: a typeclass that expresses that a type has a unique term.
+* `Unique`: a typeclass that expresses that a type has a unique term.
 
 ## Main statements
 
-* `unique.mk'`: an inhabited subsingleton type is `unique`. This can not be an instance because it
+* `Unique.mk'`: an inhabited subsingleton type is `Unique`. This can not be an instance because it
   would lead to loops in typeclass inference.
 
-* `function.surjective.unique`: if the domain of a surjective function is `unique`, then its
+* `Function.Surjective.unique`: if the domain of a surjective function is `Unique`, then its
   codomain is `unique` as well.
 
-* `function.injective.subsingleton`: if the codomain of an injective function is `subsingleton`,
-  then its domain is `subsingleton` as well.
+* `Function.Injective.subsingleton`: if the codomain of an injective function is `Subsingleton`,
+  then its domain is `Subsingleton` as well.
 
-* `function.injective.unique`: if the codomain of an injective function is `subsingleton` and its
-  domain is `inhabited`, then its domain is `unique`.
+* `Function.Injective.unique`: if the codomain of an injective function is `Subsingleton` and its
+  domain is `Inhabited`, then its domain is `Unique`.
 
 ## Implementation details
 
-The typeclass `unique α` is implemented as a type,
+The typeclass `Unique α` is implemented as a type,
 rather than a `Prop`-valued predicate,
 for good definitional properties of the default term.
 
@@ -54,19 +54,21 @@ structure Unique (α : Sort u) extends Inhabited α where
 
 attribute [class] Unique
 
-theorem unique_iff_exists_unique (α : Sort u) : Nonempty (Unique α) ↔ ∃! a : α, True :=
-  ⟨fun ⟨u⟩ => ⟨u.default, trivial, fun a _ => u.uniq a⟩, fun ⟨a, _, h⟩ => ⟨⟨⟨a⟩, fun _ => h _ trivial⟩⟩⟩
+theorem unique_iff_exists_unique (α : Sort u) : Nonempty (Unique α) ↔ ∃! _ : α, True :=
+  ⟨fun ⟨u⟩ => ⟨u.default, trivial, fun a _ => u.uniq a⟩,
+   fun ⟨a, _, h⟩ => ⟨⟨⟨a⟩, fun _ => h _ trivial⟩⟩⟩
 
-theorem unique_subtype_iff_exists_unique {α} (p : α → Prop) : Nonempty (Unique (Subtype p)) ↔ ∃! a, p a :=
-  ⟨fun ⟨u⟩ => ⟨u.default.1, u.default.2, fun a h => congr_arg Subtype.val (u.uniq ⟨a, h⟩)⟩, fun ⟨a, ha, he⟩ =>
-    ⟨⟨⟨⟨a, ha⟩⟩, fun ⟨b, hb⟩ => by
-        congr
-        exact he b hb⟩⟩⟩
+theorem unique_subtype_iff_exists_unique {α} (p : α → Prop) :
+    Nonempty (Unique (Subtype p)) ↔ ∃! a, p a :=
+  ⟨fun ⟨u⟩ => ⟨u.default.1, u.default.2, fun a h => congr_arg Subtype.val (u.uniq ⟨a, h⟩)⟩,
+   fun ⟨a, ha, he⟩ => ⟨⟨⟨⟨a, ha⟩⟩, fun ⟨b, hb⟩ => by
+      congr
+      exact he b hb⟩⟩⟩
 
-/-- Given an explicit `a : α` with `[subsingleton α]`, we can construct
-a `[unique α]` instance. This is a def because the typeclass search cannot
+/-- Given an explicit `a : α` with `Subsingleton α`, we can construct
+a `Unique α` instance. This is a def because the typeclass search cannot
 arbitrarily invent the `a : α` term. Nevertheless, these instances are all
-equivalent by `unique.subsingleton.unique`.
+equivalent by `Unique.Subsingleton.unique`.
 
 See note [reducible non-instances]. -/
 @[reducible]
@@ -79,13 +81,15 @@ instance PUnit.unique : Unique PUnit.{u} where
   uniq x := subsingleton x _
 
 @[simp]
-theorem PUnit.default_eq_star : (default : PUnit) = PUnit.unit :=
+theorem PUnit.default_eq_unit : (default : PUnit) = PUnit.unit :=
   rfl
+
+#align punit.default_eq_star PUnit.default_eq_unit
 
 /-- Every provable proposition is unique, as all proofs are equal. -/
 def uniqueProp {p : Prop} (h : p) : Unique p where
   default := h
-  uniq x := rfl
+  uniq _ := rfl
 
 instance : Unique True :=
   uniqueProp trivial
@@ -172,7 +176,7 @@ instance Pi.unique {β : α → Sort v} [∀ a, Unique (β a)] : Unique (∀ a, 
 /-- There is a unique function on an empty domain. -/
 instance Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, β a) where
   default := isEmptyElim
-  uniq f := funext isEmptyElim
+  uniq _ := funext isEmptyElim
 
 theorem eq_const_of_unique [Unique α] (f : α → β) : f = Function.const α (f default) := by
   ext x
@@ -188,21 +192,21 @@ variable {f : α → β}
 /-- If the codomain of an injective function is a subsingleton, then the domain
 is a subsingleton as well. -/
 protected theorem Injective.subsingleton (hf : Injective f) [Subsingleton β] : Subsingleton α :=
-  ⟨fun x y => hf <| Subsingleton.elim _ _⟩
+  ⟨fun _ _ => hf <| Subsingleton.elim _ _⟩
 
 /-- If the domain of a surjective function is a subsingleton, then the codomain is a subsingleton as
 well. -/
 protected theorem Surjective.subsingleton [Subsingleton α] (hf : Surjective f) : Subsingleton β :=
-  ⟨hf.Forall₂.2 fun x y => congr_arg f <| Subsingleton.elim x y⟩
+  ⟨hf.forall₂.2 fun x y => congr_arg f <| Subsingleton.elim x y⟩
 
 /-- If the domain of a surjective function is a singleton,
 then the codomain is a singleton as well. -/
 protected def Surjective.unique (hf : Surjective f) [Unique α] : Unique β :=
-  @Unique.mk' _ ⟨f default⟩ hf.Subsingleton
+  @Unique.mk' _ ⟨f default⟩ hf.subsingleton
 
 /-- If `α` is inhabited and admits an injective map to a subsingleton type, then `α` is `unique`. -/
 protected def Injective.unique [Inhabited α] [Subsingleton β] (hf : Injective f) : Unique α :=
-  @Unique.mk' _ _ hf.Subsingleton
+  @Unique.mk' _ _ hf.subsingleton
 
 /-- If a constant function is surjective, then the codomain is a singleton. -/
 def Surjective.uniqueOfSurjectiveConst (α : Type _) {β : Type _} (b : β)
