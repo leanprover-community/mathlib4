@@ -24,9 +24,10 @@ variable {c d : Type u → Type v} {α : Type u}
 
 /-- `bundled` is a type bundled with a type class instance for that type. Only
 the type class is exposed as a parameter. -/
--- @[nolint has_nonempty_instance]
 structure Bundled (c : Type u → Type v) : Type max (u + 1) v where
+  /-- The underlying type of the bundled type -/
   α : Type u
+  /-- The corresponding instance of the bundled type class -/
   str : c α := by infer_instance
 
 namespace Bundled
