@@ -61,6 +61,7 @@ import Mathlib.Init.Classical
 import Mathlib.Init.Core
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Notation
+import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
@@ -82,6 +83,7 @@ import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Nonempty
 import Mathlib.Logic.Relator
+import Mathlib.Logic.Unique
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Mathport.Syntax

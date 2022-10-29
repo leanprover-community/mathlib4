@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Logic.IsEmpty
 import Mathlib.Init.Logic
+import Mathlib.Init.Data.Fin.Basic
 
 /-!
 # Types with a unique term
