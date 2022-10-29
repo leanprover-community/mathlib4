@@ -43,8 +43,6 @@ for good definitional properties of the default term.
 
 universe u v w
 
-variable {α : Sort u} {β : Sort v} {γ : Sort w}
-
 /-- `unique α` expresses that `α` is a type with a unique term `default`.
 
 This is implemented as a type, rather than a `Prop`-valued predicate,
@@ -96,7 +94,7 @@ instance : Unique True :=
   uniqueProp trivial
 
 theorem Fin.eq_zero : ∀ n : Fin 1, n = 0
-  | ⟨n, hn⟩ => Fin.eq_of_veq (Nat.eq_zero_of_le_zero (Nat.le_of_lt_succ hn))
+  | ⟨_, hn⟩ => Fin.eq_of_veq (Nat.eq_zero_of_le_zero (Nat.le_of_lt_succ hn))
 
 instance {n : ℕ} : Inhabited (Fin n.succ) :=
   ⟨0⟩
@@ -152,7 +150,7 @@ instance subsingleton_unique : Subsingleton (Unique α) :=
 a loop in the class inheritance graph. -/
 @[reducible]
 def mk' (α : Sort u) [h₁ : Inhabited α] [Subsingleton α] : Unique α :=
-  { h₁ with uniq := fun x => Subsingleton.elim _ _ }
+  { h₁ with uniq := fun _ => Subsingleton.elim _ _ }
 
 end Unique
 
@@ -217,6 +215,8 @@ def Surjective.uniqueOfSurjectiveConst (α : Type _) {β : Type _} (b : β)
 
 end Function
 
+-- TODO: Mario turned this off as a simp lemma in Std, wanting to profile it.
+attribute [simp] eq_iff_true_of_subsingleton in
 theorem Unique.bijective {A B} [Unique A] [Unique B] {f : A → B} : Function.Bijective f := by
   rw [Function.bijective_iff_has_inverse]
   refine' ⟨default, _, _⟩ <;> intro x <;> simp
@@ -225,8 +225,11 @@ namespace Option
 
 /-- `option α` is a `subsingleton` if and only if `α` is empty. -/
 theorem subsingleton_iff_is_empty {α : Type u} : Subsingleton (Option α) ↔ IsEmpty α :=
-  ⟨fun h => ⟨fun x => Option.noConfusion <| @Subsingleton.elim _ h x none⟩, fun h =>
-    ⟨fun x y => Option.casesOn x (Option.casesOn y rfl fun x => h.elim x) fun x => h.elim x⟩⟩
+  ⟨fun h => ⟨fun x => Option.noConfusion <| @Subsingleton.elim _ h x none⟩,
+   fun _ => ⟨fun x y =>
+     Option.casesOn x (Option.casesOn y rfl fun x => isEmptyElim x) fun x => isEmptyElim x⟩⟩
+-- Note sure why we can't use `h.elim x` here instead of `isEmptyElim x`:
+-- see https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Type.20mismatch.20with.20projection.20notation/near/306897969
 
 instance {α} [IsEmpty α] : Unique (Option α) :=
   @Unique.mk' _ _ (subsingleton_iff_is_empty.2 ‹_›)
@@ -234,13 +237,14 @@ instance {α} [IsEmpty α] : Unique (Option α) :=
 end Option
 
 section Subtype
+variable {α : Sort u}
 
 instance Unique.subtypeEq (y : α) : Unique { x // x = y } where
   default := ⟨y, rfl⟩
-  uniq := fun ⟨x, hx⟩ => by simpa using hx
+  uniq := fun ⟨x, hx⟩ => by congr
 
 instance Unique.subtypeEq' (y : α) : Unique { x // y = x } where
   default := ⟨y, rfl⟩
-  uniq := fun ⟨x, hx⟩ => by simpa using hx.symm
+  uniq := fun ⟨x, hx⟩ => by subst hx; congr
 
 end Subtype
