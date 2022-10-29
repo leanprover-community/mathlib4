@@ -57,6 +57,11 @@ theorem neg_mul_eq_neg_mul {R} [Ring R] (a b : R) : -(a * b) = (-a) * b :=
     rw [sub_eq_add_neg, neg_neg (a * b) /- TODO: why is arg necessary? -/]
     rw [← add_mul, neg_add_self a /- TODO: why is arg necessary? -/, zero_mul]
 
+theorem mul_sub_right_distrib [Ring R] (a b c : R) : (a - b) * c = a * c - b * c := by
+  simpa only [sub_eq_add_neg, neg_mul_eq_neg_mul] using add_mul a (-b) c
+
+alias mul_sub_right_distrib ← sub_mul
+
 class CommRing (R : Type u) extends Ring R, CommSemiring R
 
 /- Instances -/
@@ -100,9 +105,9 @@ instance : CommRing ℤ where
   right_distrib := Int.add_mul
   mul_one := Int.mul_one
   one_mul := Int.one_mul
-  npow (n x) := x ^ n
-  npow_zero' n := rfl
-  npow_succ' n x := by rw [Int.mul_comm]; rfl
+  npow n x := x ^ n
+  npow_zero' _ := rfl
+  npow_succ' _ _ := by rw [Int.mul_comm]; rfl
   mul_assoc := Int.mul_assoc
   add_comm := Int.add_comm
   add_assoc := Int.add_assoc
@@ -114,7 +119,7 @@ instance : CommRing ℤ where
   nsmul_succ' n x := by
     show ofNat (Nat.succ n) * x = x + ofNat n * x
     rw [Int.ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
-  sub_eq_add_neg a b := Int.sub_eq_add_neg
+  sub_eq_add_neg _ _ := Int.sub_eq_add_neg
   natCast := (·)
   natCast_zero := rfl
   natCast_succ _ := rfl

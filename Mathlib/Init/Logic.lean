@@ -321,6 +321,11 @@ theorem decidable_eq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α}
 #align inhabited.default Inhabited.default
 #align arbitrary Inhabited.default
 
+-- see Note [lower instance priority]
+@[simp]
+instance (priority := 100) nonempty_of_inhabited [Inhabited α] : Nonempty α :=
+⟨default⟩
+
 /- subsingleton -/
 
 theorem rec_subsingleton {p : Prop} [h : Decidable p] {h₁ : p → Sort u} {h₂ : ¬p → Sort u}
