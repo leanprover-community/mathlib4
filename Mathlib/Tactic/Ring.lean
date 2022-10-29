@@ -17,18 +17,16 @@ Based on <http://www.cs.ru.nl/~freek/courses/tt-2014/read/10.1.1.61.3041.pdf> .
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
+@[macro_inline] def Ordering.then : Ordering → Ordering → Ordering
+  | .eq, f => f
+  | o, _ => o
+
 namespace Mathlib.Tactic
 namespace Ring
-open Mathlib.Meta
+open Mathlib.Meta Qq NormNum
 
 /-- This cache contains data required by the `ring` tactic during execution. -/
-structure Cache :=
-  /-- The carrier of the ring we are working on -/
-  α : Expr
-  /-- The level of `α` -/
-  univ : Level
-  /-- A proof of `comm_semiring α` -/
-  cs : Expr
+structure Context :=
   /-- The reducibility setting for definitional equality of atoms -/
   red : TransparencyMode
 
@@ -39,16 +37,10 @@ def State.numAtoms (s : State) := s.atoms.size
 
 /-- The monad that `ring` works in. This is a reader monad containing a cache and
 the list of atoms-up-to-defeq encountered thus far, used for atom sorting. -/
-abbrev RingM := ReaderT Cache $ StateRefT State MetaM
+abbrev RingM := ReaderT Context <| StateRefT State MetaM
 
-def RingM.run (ty : Expr) (red : TransparencyMode) (m : RingM α) : MetaM α := do
-  let .succ univ ← getLevel ty | throwError "fail"
-  let cs ← synthInstance (mkApp (mkConst ``CommSemiring [univ]) ty)
-  (m {α := ty, univ, cs, red }).run' {}
-
-def mkAppCS (f : Name) (args : Array Expr) : RingM Expr := do
-  let c ← read
-  pure $ mkAppN (mkConst f [c.univ]) (#[c.α, c.cs] ++ args)
+def RingM.run (red : TransparencyMode) (m : RingM α) : MetaM α := do
+  (m { red }).run' {}
 
 /-- Get the index corresponding to an atomic expression, if it has already been encountered, or
 put it in the list of atoms and return the new index, otherwise. -/
@@ -56,371 +48,574 @@ def addAtom (e : Expr) : RingM Nat := do
   let c ← get
   for h : i in [:c.numAtoms] do
     have : i < c.atoms.size := h.2
-    if ← isDefEq e c.atoms[i] then
+    if ← withTransparency (← read).red <| isDefEq e c.atoms[i] then
       return i
-  modify λ c => { c with atoms := c.atoms.push e }
-  return c.numAtoms
+  modifyGet fun c => (c.atoms.size, { c with atoms := c.atoms.push e })
 
-/-- The normal form that `ring` uses is mediated by the function `horner a x n b := a * x ^ n + b`.
-The reason we use a definition rather than the (more readable) expression on the right is because
-this expression contains a number of typeclass arguments in different positions, while `horner`
-contains only one `CommSemiring` instance at the top level. See also `HornerExpr` for a
-description of normal form. -/
-@[reducible] def horner {α} [CommSemiring α] (a x : α) (n : ℕ) (b : α) := a * (x ^ n) + b
+abbrev instCommSemiringNat : CommSemiring ℕ := inferInstance
+def sℕ : Q(CommSemiring ℕ) := q(instCommSemiringNat)
 
-/-- Every expression in the language of commutative semirings can be viewed as a sum of monomials,
-where each monomial is a product of powers of atoms. We fix a global order on atoms (up to
-definitional equality), and then separate the terms according to their smallest atom. So the top
-level expression is `a * x^n + b` where `x` is the smallest atom and `n > 0` is a numeral, and
-`n` is maximal (so `a` contains at least one monomial not containing an `x`), and `b` contains no
-monomials with an `x` (hence all atoms in `b` are larger than `x`).
+mutual
 
-If there is no `x` satisfying these constraints, then the expression must be a numeral. Even though
-we are working over rings, we allow rational constants when these can be interpreted in the ring,
-so we can solve problems like `x / 3 = 1 / 3 * x` even though these are not technically in the
-language of rings.
+inductive ExBase : ∀ {α : Q(Type u)}, Q(CommSemiring $α) → Q($α) → Type
+  /-- An atomic expression `e` with id `id`. -/
+  | atom (id : ℕ) : ExBase sα e
+  /-- A sum of monomials. -/
+  | sum (_ : ExSum sα e) : ExBase sα e
 
-These constraints ensure that there is a unique normal form for each ring expression, and so the
-algorithm is simply to calculate the normal form of each side and compare for equality.
+inductive ExExp : ∀ {α : Q(Type u)}, Q(CommSemiring $α) → Q($α) → Type
+  /-- A power expression `a ^ b`. -/
+  | exp {α : Q(Type u)} {sα : Q(CommSemiring $α)} (a : Q($α)) (b : Q(ℕ)) :
+    ExBase sα a → ExProd sℕ b → ExExp sα q($a ^ $b)
 
-To allow us to efficiently pattern match on normal forms, we maintain this inductive type that
-holds a normalized expression together with its structure. All the `Expr`s in this type could be
-removed without loss of information, and conversely the `horner_expr` structure and the `ℕ` and
-`ℚ` values can be recovered from the top level `Expr`, but we keep both in order to keep proof
-producing normalization functions efficient. -/
-inductive HornerExpr : Type
-| const (e : Expr) (coeff : ℕ) : HornerExpr --TODO : coeff in ℚ
-| xadd (e : Expr) (a : HornerExpr) (x : Expr × ℕ) (n : Expr × ℕ) (b : HornerExpr) : HornerExpr
+inductive ExProd : ∀ {α : Q(Type u)}, Q(CommSemiring $α) → Q($α) → Type
+  /-- A coefficient `value`, which must not be `0`. `e` is a raw int cast. -/
+  | const (value : ℤ) : ExProd sα e
+  /-- A product `a * b`. -/
+  | mul {α : Q(Type u)} {sα : Q(CommSemiring $α)} (a b : Q($α)) :
+    ExExp sα a → ExProd sα b → ExProd sα q($a * $b)
 
-instance : Inhabited HornerExpr := ⟨HornerExpr.const (mkRawNatLit 0) 0⟩
+inductive ExSum : ∀ {α : Q(Type u)}, Q(CommSemiring $α) → Q($α) → Type
+  /-- Zero. `e` is the expression `0`. -/
+  | zero {α : Q(Type u)} {sα : Q(CommSemiring $α)} : ExSum sα q((0 : $α))
+  /-- A sum of monomials `a + b`. -/
+  | add {α : Q(Type u)} {sα : Q(CommSemiring $α)} (a b : Q($α)) :
+    ExProd sα a → ExSum sα b → ExSum sα q($a + $b)
+end
 
-namespace HornerExpr
+mutual
+-- partial only to speed up compilation
+partial def ExBase.eq : ExBase sα a → ExBase sα b → Bool
+  | .atom i, .atom j => i == j
+  | .sum a, .sum b => a.eq b
+  | _, _ => false
 
-/-- Get the expression corresponding to a `HornerExpr`. This can be calculated recursively from
-the structure, but we cache the exprs in all subterms so that this function can be computed in
-constant time. -/
-def e : HornerExpr → Expr
-| (HornerExpr.const e _) => e
-| (HornerExpr.xadd e _ _ _ _) => e
+partial def ExExp.eq : ExExp sα a → ExExp sα b → Bool
+  | .exp _ _ a₁ a₂, .exp _ _ b₁ b₂ => a₁.eq b₁ && a₂.eq b₂
 
-instance : Coe HornerExpr Expr := ⟨e⟩
+partial def ExProd.eq : ExProd sα a → ExProd sα b → Bool
+  | .const i, .const j => i == j
+  | .mul _ _ a₁ a₂, .mul _ _ b₁ b₂ => a₁.eq b₁ && a₂.eq b₂
+  | _, _ => false
 
-/-- Is this expr the constant `0`? -/
-def isZero : HornerExpr → Bool
-| (HornerExpr.const _ c) => c = 0
-| _ => false
+partial def ExSum.eq : ExSum sα a → ExSum sα b → Bool
+  | .zero, .zero => true
+  | .add _ _ a₁ a₂, .add _ _ b₁ b₂ => a₁.eq b₁ && a₂.eq b₂
+  | _, _ => false
+end
 
-/-- Construct a `xadd` node -/
-def xadd' (a : HornerExpr) (x : Expr × ℕ) (n : Expr × ℕ) (b : HornerExpr) : RingM HornerExpr := do
-  pure $ xadd (← mkAppCS ``horner #[a, x.1, n.1, b]) a x n b
+mutual
+-- partial only to speed up compilation
+partial def ExBase.cmp : ExBase sα a → ExBase sα b → Ordering
+  | .atom i, .atom j => compare i j
+  | .sum a, .sum b => a.cmp b
+  | .atom .., .sum .. => .lt
+  | .sum .., .atom .. => .gt
 
-/-- Reflexivity conversion for a `HornerExpr`. -/
-def reflConv (e : HornerExpr) : RingM (HornerExpr × Expr) := do pure (e, ← mkEqRefl e)
+partial def ExExp.cmp : ExExp sα a → ExExp sα b → Ordering
+  | .exp _ _ a₁ a₂, .exp _ _ b₁ b₂ => (a₁.cmp b₁).then (a₂.cmp b₂)
 
-/-- Pretty printer for `horner_expr`. -/
-def pp : HornerExpr → MetaM Format
-| const _ c => pure $ toString c
-| xadd _ a x (_, n) b => do
-  let pa ← a.pp
-  let pb ← b.pp
-  let px ← PrettyPrinter.ppExpr x.1
-  return "(" ++ pa ++ ") * (" ++ px ++ ")^" ++ toString n ++ " + " ++ pb
+partial def ExProd.cmp : ExProd sα a → ExProd sα b → Ordering
+  | .const i, .const j => compare i j
+  | .mul _ _ a₁ a₂, .mul _ _ b₁ b₂ => (a₁.cmp b₁).then (a₂.cmp b₂)
+  | .const .., .mul .. => .lt
+  | .mul .., .const .. => .gt
 
-end HornerExpr
+partial def ExSum.cmp : ExSum sα a → ExSum sα b → Ordering
+  | .zero, .zero => .eq
+  | .add _ _ a₁ a₂, .add _ _ b₁ b₂ => (a₁.cmp b₁).then (a₂.cmp b₂)
+  | .zero, .add .. => .lt
+  | .add .., .zero => .gt
+end
 
-open HornerExpr
+instance : Ord (ExBase sα e) := ⟨(·.cmp ·)⟩
+instance : Ord (ExExp sα e) := ⟨(·.cmp ·)⟩
+instance : Ord (ExProd sα e) := ⟨(·.cmp ·)⟩
+instance : Ord (ExSum sα e) := ⟨(·.cmp ·)⟩
+instance : LE (ExBase sα e) := leOfOrd
+instance : LE (ExExp sα e) := leOfOrd
+instance : LE (ExProd sα e) := leOfOrd
+instance : LE (ExSum sα e) := leOfOrd
+instance : BEq (ExBase sα e) := ⟨(·.cmp · == .eq)⟩
+instance : BEq (ExExp sα e) := ⟨(·.cmp · == .eq)⟩
+instance : BEq (ExProd sα e) := ⟨(·.cmp · == .eq)⟩
+instance : BEq (ExSum sα e) := ⟨(·.cmp · == .eq)⟩
 
-theorem zero_horner {α} [CommSemiring α] (x n b) : @horner α _ 0 x n b = b := by
-  simp [horner]
+structure Result {α : Q(Type u)} (E : Q($α) → Type) (e : Q($α)) where
+  expr : Q($α)
+  val : E expr
+  proof? : Q($e = $expr)
 
-theorem horner_horner {α} [CommSemiring α] (a₁ x n₁ n₂ b n') (h : n₁ + n₂ = n') :
-    @horner α _ (horner a₁ x n₁ 0) x n₂ b = horner a₁ x n' b := by
-  simp [h.symm, horner, pow_add, mul_assoc]
+def mkInhabited (e') (v : E e') : Inhabited (Result E e) := ⟨e', v, default⟩
 
-/-- Evaluate `horner a n x b` where `a` and `b` are already in normal form. -/
-def evalHorner : HornerExpr → Expr × ℕ → Expr × ℕ → HornerExpr → RingM (HornerExpr × Expr)
-| ha@(const _ coeff), x, n, b => do
-  if coeff = 0 then
-    return (b, ← mkAppCS ``zero_horner #[x.1, n.1, b])
-  else (← xadd' ha x n b).reflConv
-| ha@(xadd _ a₁ x₁ n₁ b₁), x, n, b => do
-  if x₁.2 = x.2 ∧ b₁.e.numeral? = some 0 then do
-    let n' := mkRawNatLit (n₁.2 + n.2)
-    let h ← mkEqRefl n'
-    return (← xadd' a₁ x (n', n₁.2 + n.2) b,
-      ← mkAppCS ``horner_horner #[a₁, x.1, n₁.1, n.1, b, n', h])
-  else (← xadd' ha x n b).reflConv
+instance : Inhabited (Result (ExBase sα) e) := mkInhabited default <| .atom 0
+instance : Inhabited (Result (ExSum sα) e) := mkInhabited _ .zero
+instance : Inhabited (Result (ExProd sα) e) := mkInhabited default <| .const 0
+instance : Inhabited (Result (ExExp sα) e) :=
+  mkInhabited _ <| .exp default default (.atom 0) (.const 0)
 
+variable {α : Q(Type u)} (sα : Q(CommSemiring $α)) [CommSemiring R]
 
-theorem const_add_horner {α} [CommSemiring α] (k a x n b b') (h : k + b = b') :
-  k + @horner α _ a x n b = horner a x n b' :=
-by
-  simp [horner, h.symm, add_comm k, add_assoc]
+def ExProd.mkNat (n : ℕ) : (e : Q($α)) × ExProd sα e :=
+  let lit : Q(ℕ) := mkRawNatLit n
+  ⟨q((($lit).rawCast : $α)), .const n⟩
 
-theorem horner_add_const {α} [CommSemiring α] (a x n b k b') (h : b + k = b') :
-  @horner α _ a x n b + k = horner a x n b' :=
-by
-  simp [horner, h.symm, add_left_comm k, add_assoc]
+def ExProd.mkNegNat (_ : Q(Ring $α)) (n : ℕ) : (e : Q($α)) × ExProd sα e :=
+  let lit : Q(ℕ) := mkRawNatLit n
+  ⟨q(((Int.negOfNat $lit).rawCast : $α)), .const (-n)⟩
 
-theorem horner_add_horner_lt {α} [CommSemiring α] (a₁ x n₁ b₁ a₂ n₂ b₂ k a' b')
-  (h₁ : n₁ + k = n₂) (h₂ : (a₁ + horner a₂ x k 0 : α) = a') (h₃ : b₁ + b₂ = b') :
-  @horner α _ a₁ x n₁ b₁ + horner a₂ x n₂ b₂ = horner a' x n₁ b' :=
-by
-  rw [← h₁, ← h₂, ← h₃]
-  simp [horner, add_assoc, add_mul, pow_add, mul_assoc, add_comm n₁ k, add_left_comm b₁]
+section
+variable {sα}
 
-theorem horner_add_horner_gt {α} [CommSemiring α] (a₁ x n₁ b₁ a₂ n₂ b₂ k a' b')
-  (h₁ : n₂ + k = n₁) (h₂ : (horner a₁ x k 0 + a₂ : α) = a') (h₃ : b₁ + b₂ = b') :
-  @horner α _ a₁ x n₁ b₁ + horner a₂ x n₂ b₂ = horner a' x n₂ b' :=
-by
-  rw [← h₁, ← h₂, ← h₃]
-  simp [horner, add_assoc, mul_assoc, add_mul, add_comm n₂ k, pow_add, add_left_comm b₁]
+def ExExp.toProd (v : ExExp sα e) : ExProd sα q($e * (nat_lit 1).rawCast) := .mul _ _ v (.const 1)
 
-theorem horner_add_horner_eq {α} [CommSemiring α] (a₁ x n b₁ a₂ b₂ a' b' t)
-  (h₁ : a₁ + a₂ = a') (h₂ : b₁ + b₂ = b') (h₃ : horner a' x n b' = t) :
-  @horner α _ a₁ x n b₁ + horner a₂ x n b₂ = t :=
-by
-  rw [← h₃, ← h₁, ← h₂]
-  simp only [horner, add_assoc, mul_assoc, add_mul, zero_mul, zero_add, pow_add, add_left_comm b₁]
+def ExProd.toSum (v : ExProd sα e) : ExSum sα q($e + 0) := .add _ _ v .zero
 
-partial def evalAdd : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
-| (const e₁ c₁), (const e₂ c₂) => do
-  let r ← NormNum.eval (← mkAdd e₁ e₂)
-  pure (const r.expr (c₁ + c₂), ← r.getProof)
-| he₁@(const e₁ c₁), he₂@(xadd e₂ a x n b) => do
+def ExProd.coeff : ExProd sα e → ℤ
+  | .const z => z
+  | .mul _ _ _ v => v.coeff
+end
 
-  if c₁ = 0 then
-    let p ← mkAppM ``zero_add #[e₂]
-    return (he₂, p)
-  else
-    let (b', h) ← evalAdd he₁ b
-    return (← xadd' a x n b',
-      ← mkAppCS ``const_add_horner #[e₁, a, x.1, n.1, b, b', h])
-| he₁@(xadd e₁ a x n b), he₂@(const e₂ c₂) => do
-  if c₂ = 0 then
-    let p ← mkAppM ``add_zero #[e₁]
-    return (he₁, p)
-  else
-    let (b', h) ← evalAdd b he₂
-    return (← xadd' a x n b',
-      ← mkAppCS ``horner_add_const #[a, x.1, n.1, b, e₂, b', h])
-| he₁@(xadd e₁ a₁ x₁ n₁ b₁), he₂@(xadd e₂ a₂ x₂ n₂ b₂) => do
-  if x₁.2 < x₂.2 then
-    let (b', h) ← evalAdd b₁ he₂
-    return (← xadd' a₁ x₁ n₁ b',
-      ← mkAppCS ``horner_add_const #[a₁, x₁.1, n₁.1, b₁, e₂, b', h])
-  else if x₁.2 ≠ x₂.2 then
-    let (b', h) ← evalAdd he₁ b₂
-    return (← xadd' a₂ x₂ n₂ b',
-      ← mkAppCS ``const_add_horner #[e₁, a₂, x₂.1, n₂.1, b₂, b', h])
-  else if n₁.2 < n₂.2 then do
-    let k := n₂.2 - n₁.2
-    let ek := mkRawNatLit k
-    let h₁ ← mkEqRefl n₂.1
-    let α0 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]
-    let (a', h₂) ← evalAdd a₁ (← xadd' a₂ x₁ (ek, k) (const α0 0))
-    let (b', h₃) ← evalAdd b₁ b₂
-    return (← xadd' a' x₁ n₁ b',
-      ← mkAppCS ``horner_add_horner_lt #[a₁, x₁.1, n₁.1, b₁, a₂, n₂.1, b₂, ek, a', b', h₁, h₂, h₃])
-  else if n₁.2 ≠ n₂.2 then do
-    let k := n₁.2 - n₂.2
-    let ek := mkRawNatLit k
-    let h₁ ← mkEqRefl n₁.1
-    let α0 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]
-    let (a', h₂) ← evalAdd (← xadd' a₁ x₁ (ek, k) (const α0 0)) a₂
-    let (b', h₃) ← evalAdd b₁ b₂
-    return (← xadd' a' x₁ n₂ b',
-      ← mkAppCS ``horner_add_horner_gt #[a₁, x₁.1, n₁.1, b₁, a₂, n₂.1, b₂, ek, a', b', h₁, h₂, h₃])
-  else do
-    let (a', h₁) ← evalAdd a₁ a₂
-    let (b', h₂) ← evalAdd b₁ b₂
-    let (t, h₃) ← evalHorner a' x₁ n₁ b'
-    return (t, ← mkAppCS ``horner_add_horner_eq
-      #[a₁, x₁.1, n₁.1, b₁, a₂, b₂, a', b', t, h₁, h₂, h₃])
+inductive Overlap (e : Q($α)) where
+  | zero (_ : Q(IsNat $e (nat_lit 0)))
+  | nonzero (_ : Result (ExProd sα) e)
 
+theorem add_overlap_pf (x : R) (pq_pf : a + b = c) :
+    x * a + x * b = x * c := by subst_vars; simp [mul_add]
 
-theorem horner_const_mul {α} [CommSemiring α] (c a x n b a' b')
-  (h₁ : c * a = a') (h₂ : c * b = b') :
-  c * @horner α _ a x n b = horner a' x n b' :=
-by simp [h₂.symm, h₁.symm, horner, mul_add, mul_assoc]
+theorem add_overlap_pf_zero (x : R) : IsNat (a + b) (nat_lit 0) → IsNat (x * a + x * b) (nat_lit 0)
+  | ⟨h⟩ => ⟨by simp [h, ← mul_add]⟩
 
-theorem horner_mul_const {α} [CommSemiring α] (a x n b c a' b')
-  (h₁ : a * c = a') (h₂ : b * c = b') :
-  @horner α _ a x n b * c = horner a' x n b' :=
-by simp [horner, ← h₁, ← h₂, add_mul, mul_assoc, mul_comm c]
+def evalAddOverlap (va : ExProd sα a) (vb : ExProd sα b) : Option (Overlap sα q($a + $b)) :=
+  match va, vb with
+  | .const za, .const zb => do
+    let ra := Result.ofRawInt za a; let rb := Result.ofRawInt zb b
+    let res ← NormNum.evalAdd.core q($a + $b) _ _ ra rb
+    match res with
+    | .isNat _ (.lit (.natVal 0)) p => pure <| .zero p
+    | rc => let ⟨zc, c, pc⟩ := rc.toRawEq; pure <| .nonzero ⟨c, .const zc, pc⟩
+  | .mul a₁ _ va₁ va₂, .mul _ _ vb₁ vb₂ => do
+    guard (va₁.eq vb₁)
+    match ← evalAddOverlap va₂ vb₂ with
+    | .zero p => pure <| .zero (q(add_overlap_pf_zero $a₁ $p) : Expr)
+    | .nonzero ⟨c, vc, p⟩ =>
+      pure <| .nonzero ⟨_, .mul a₁ c va₁ vc, (q(add_overlap_pf $a₁ $p) : Expr)⟩
+  | _, _ => none
 
-/-- Evaluate `k * a` where `k` is a rational numeral and `a` is in normal form. -/
-def evalConstMul (k : Expr × ℕ) : HornerExpr → RingM (HornerExpr × Expr)
-| const e coeff => do
-  let r ← NormNum.eval (← mkMul k.1 e)
-  return (const r.expr (k.2 * coeff), ← r.getProof)
-| xadd _ a x n b => do
-  let (a', h₁) ← evalConstMul k a
-  let (b', h₂) ← evalConstMul k b
-  return (← xadd' a' x n b',
-    ← mkAppCS ``horner_const_mul #[k.1, a, x.1, n.1, b, a', b', h₁, h₂])
+theorem add_pf_zero_add (b : R) : 0 + b = b := by simp
 
+theorem add_pf_add_zero (a : R) : a + 0 = a := by simp
 
-theorem horner_mul_horner_zero {α} [CommSemiring α] (a₁ x n₁ b₁ a₂ n₂ aa t)
-  (h₁ : @horner α _ a₁ x n₁ b₁ * a₂ = aa)
-  (h₂ : horner aa x n₂ 0 = t) :
-  horner a₁ x n₁ b₁ * horner a₂ x n₂ 0 = t :=
-by
-  rw [← h₂, ← h₁]
-  simp [horner, add_mul, mul_assoc]
+theorem add_pf_add_overlap
+    (_ : a₁ + b₁ = c₁) (_ : a₂ + b₂ = c₂) : (a₁ + a₂ : R) + (b₁ + b₂) = c₁ + c₂ := by
+  subst_vars; simp [add_assoc, add_left_comm]
 
-theorem horner_mul_horner {α} [CommSemiring α]
-  (a₁ x n₁ b₁ a₂ n₂ b₂ aa haa ab bb t)
-  (h₁ : @horner α _ a₁ x n₁ b₁ * a₂ = aa)
-  (h₂ : horner aa x n₂ 0 = haa)
-  (h₃ : a₁ * b₂ = ab) (h₄ : b₁ * b₂ = bb)
-  (H : haa + horner ab x n₁ bb = t) :
-  horner a₁ x n₁ b₁ * horner a₂ x n₂ b₂ = t :=
-by
-  rw [← H, ← h₂, ← h₁, ← h₃, ← h₄]
-  simp [horner, add_mul, mul_add, mul_assoc, mul_comm b₂]
+theorem add_pf_add_overlap_zero
+    (h : IsNat (a₁ + b₁) (nat_lit 0)) (h₄ : a₂ + b₂ = c) : (a₁ + a₂ : R) + (b₁ + b₂) = c := by
+  subst_vars; rw [add_add_add_comm, h.to_eq, add_pf_zero_add]
 
-/-- Evaluate `a * b` where `a` and `b` are in normal form. -/
-partial def evalMul : HornerExpr → HornerExpr → RingM (HornerExpr × Expr)
-| (const e₁ c₁), (const e₂ c₂) => do
-  let r ← NormNum.eval (← mkMul e₁ e₂)
-  return (const r.expr (c₁ * c₂), ← r.getProof)
-| (const e₁ c₁), e₂ =>
-  if c₁ = 0 then do
-    let α0 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]
-    let p ← mkAppM ``zero_mul #[e₂]
-    return (const α0 0, p)
-  else if c₁ = 1 then do
-    let p ←  mkAppM ``one_mul #[e₂]
-    return (e₂, p)
-  else evalConstMul (e₁, c₁) e₂
-| e₁, he₂@(const e₂ _) => do
-  let p₁ ← mkAppM ``mul_comm #[e₁, e₂]
-  let (e', p₂) ← evalMul he₂ e₁
-  let p ← mkEqTrans p₁ p₂
-  return (e', p)
-| he₁@(xadd e₁ a₁ x₁ n₁ b₁), he₂@(xadd e₂ a₂ x₂ n₂ b₂) => do
-  if x₁.2 < x₂.2 then do
-    let (a', h₁) ← evalMul a₁ he₂
-    let (b', h₂) ← evalMul b₁ he₂
-    return (← xadd' a' x₁ n₁ b',
-      ← mkAppCS ``horner_mul_const #[a₁, x₁.1, n₁.1, b₁, e₂, a', b', h₁, h₂])
-  else if x₁.2 ≠ x₂.2 then do
-    let (a', h₁) ← evalMul he₁ a₂
-    let (b', h₂) ← evalMul he₁ b₂
-    return (← xadd' a' x₂ n₂ b',
-      ← mkAppCS ``horner_const_mul #[e₁, a₂, x₂.1, n₂.1, b₂, a', b', h₁, h₂])
-  else do
-    let (aa, h₁) ← evalMul he₁ a₂
-    let α0 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]
-    let (haa, h₂) ← evalHorner aa x₁ n₂ (const α0 0)
-    if b₂.isZero then
-      return (haa, ← mkAppCS ``horner_mul_horner_zero
-        #[a₁, x₁.1, n₁.1, b₁, a₂, n₂.1, aa, haa, h₁, h₂])
-    else do
-      let (ab, h₃) ← evalMul a₁ b₂
-      let (bb, h₄) ← evalMul b₁ b₂
-      let (t, H) ← evalAdd haa (← xadd' ab x₁ n₁ bb)
-      return (t, ← mkAppCS ``horner_mul_horner
-        #[a₁, x₁.1, n₁.1, b₁, a₂, n₂.1, b₂, aa, haa, ab, bb, t, h₁, h₂, h₃, h₄, H])
+theorem add_pf_add_lt (a₁ : R) (_ : a₂ + b = c) : (a₁ + a₂) + b = a₁ + c := by simp [*, add_assoc]
 
+theorem add_pf_add_gt (b₁ : R) (_ : a + b₂ = c) : a + (b₁ + b₂) = b₁ + c := by
+  subst_vars; simp [add_left_comm]
 
-theorem horner_pow {α} [CommSemiring α] (a x : α) (n m n' : ℕ) (a') (h₁ : n * m = n')
-    (h₂ : a ^ m = (a' : α)) :
-  @horner α _ a x n 0 ^ m = horner a' x n' 0 :=
-by
-  simp [h₁.symm, h₂.symm, horner, mul_pow a, pow_mul]
+partial def evalAdd (va : ExSum sα a) (vb : ExSum sα b) : Result (ExSum sα) q($a + $b) :=
+  match va, vb with
+  | .zero, vb => ⟨b, vb, q(add_pf_zero_add $b)⟩
+  | va, .zero => ⟨a, va, q(add_pf_add_zero $a)⟩
+  | .add a₁ _a₂ va₁ va₂, .add b₁ _b₂ vb₁ vb₂ =>
+    match evalAddOverlap sα va₁ vb₁ with
+    | some (.nonzero ⟨c₁, vc₁, pc₁⟩) =>
+      let ⟨c₂, vc₂, pc₂⟩ := evalAdd va₂ vb₂
+      ⟨_, .add c₁ c₂ vc₁ vc₂, q(add_pf_add_overlap $pc₁ $pc₂)⟩
+    | some (.zero pc₁) =>
+      let ⟨c₂, vc₂, pc₂⟩ := evalAdd va₂ vb₂
+      ⟨c₂, vc₂, q(add_pf_add_overlap_zero $pc₁ $pc₂)⟩
+    | none =>
+      if let .lt := va₁.cmp vb₁ then
+        let ⟨c, vc, (pc : Q($_a₂ + ($b₁ + $_b₂) = $c))⟩ := evalAdd va₂ vb
+        ⟨_, .add a₁ c va₁ vc, q(add_pf_add_lt $a₁ $pc)⟩
+      else
+        let ⟨c, vc, (pc : Q($a₁ + $_a₂ + $_b₂ = $c))⟩ := evalAdd va vb₂
+        ⟨_, .add b₁ c vb₁ vc, q(add_pf_add_gt $b₁ $pc)⟩
 
-theorem pow_succ_eq {α} [CommSemiring α] (a : α) (n : ℕ) (b c)
-  (h₁ : a ^ n = b) (h₂ : b * a = c) : a ^ (n + 1) = c :=
-by rw [← h₂, ← h₁, pow_succ']
+theorem one_mul (a : R) : (nat_lit 1).rawCast * a = a := by simp [Nat.rawCast]
 
-/-- Evaluate `a ^ n` where `a` is in normal form and `n` is a natural numeral. -/
-partial def evalPow : HornerExpr → Expr × ℕ → RingM (HornerExpr × Expr)
-| e, (_, 0) => do
-  let α1 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 1, none]
-  let p ← mkAppM ``pow_zero #[e]
-  pure (const α1 1, p)
-| e, (_, 1) => do
-  let p ← mkAppM ``pow_one #[e]
-  pure (e, p)
-| const e coeff, (e₂, m) => do
-  let r ← NormNum.eval $ ← mkAppM ``HPow.hPow #[e, e₂]
-  pure (const r.expr (coeff ^ m), ← r.getProof)
-| he@(xadd e a x n b), m =>
-  match b.e.numeral? with
-  | some 0 => do
-    let n' := mkRawNatLit (n.2 * m.2)
-    let h₁ ← mkEqRefl n'
-    let (a', h₂) ← evalPow a m
-    let α0 ← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]
-    pure (← xadd' a' x (n', n.2 * m.2) (const α0 0),
-      ← mkAppCS ``horner_pow #[a, x.1, n.1, m.1, n', a', h₁, h₂])
-  | _ => do
-    let e₂ := mkRawNatLit (m.2 - 1)
-    let (tl, hl) ← evalPow he (e₂, m.2-1)
-    let (t, p₂) ← evalMul tl he
-    pure (t, ← mkAppCS ``pow_succ_eq #[e, e₂, tl, t, hl, p₂])
+theorem mul_one (a : R) : a * (nat_lit 1).rawCast = a := by simp [Nat.rawCast]
 
+theorem mul_pf_left (a₁ : R) (_ : a₂ * b = c) : (a₁ * a₂ : R) * b = a₁ * c := by
+  subst_vars; rw [mul_assoc]
 
-theorem horner_atom {α} [CommSemiring α] (x : α) : x = horner 1 x 1 0 := by
-  simp [horner]
+theorem mul_pf_right (b₁ : R) (_ : a * b₂ = c) : a * (b₁ * b₂) = b₁ * c := by
+  subst_vars; rw [mul_left_comm]
 
-/-- Evaluate `a` where `a` is an atom. -/
-def evalAtom (e : Expr) : RingM (HornerExpr × Expr) := do
-  let i ← addAtom e
-  let zero := const (← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 0, none]) 0
-  let one := const (← mkAppOptM ``OfNat.ofNat #[(← read).α, mkRawNatLit 1, none]) 1
-  pure (← xadd' one (e,i) (mkRawNatLit 1,1) zero, ← mkAppCS ``horner_atom #[e])
+theorem mul_pp_pf_overlap (x : R) (_ : ea + eb = e) (_ : a₂ * b₂ = c) :
+    (x ^ ea * a₂ : R) * (x ^ eb * b₂) = x ^ e * c := by
+  subst_vars; simp [pow_add, mul_mul_mul_comm]
 
-theorem subst_into_add {α} [Add α] (l r tl tr t)
-  (prl : (l : α) = tl) (prr : r = tr) (prt : tl + tr = t) : l + r = t :=
-by rw [prl, prr, prt]
-
-theorem subst_into_mul {α} [Mul α] (l r tl tr t)
-  (prl : (l : α) = tl) (prr : r = tr) (prt : tl * tr = t) : l * r = t :=
-by rw [prl, prr, prt]
-
-theorem subst_into_pow {α} [Monoid α] (l r tl tr t)
-  (prl : (l : α) = tl) (prr : (r : ℕ) = tr) (prt : tl ^ tr = t) : l ^ r = t :=
-by rw [prl, prr, prt]
-
-partial def eval (e : Expr) : RingM (HornerExpr × Expr) :=
-  match e.getAppFnArgs with
-  | (``HAdd.hAdd, #[_,_,_,_,e₁,e₂]) => do
-    let (e₁', p₁) ← eval e₁
-    let (e₂', p₂) ← eval e₂
-    let (e', p') ← evalAdd e₁' e₂'
-    let p ← mkAppM ``subst_into_add #[e₁, e₂, e₁', e₂', e', p₁, p₂, p']
-    pure (e', p)
-  | (``HMul.hMul, #[_,_,_,_,e₁,e₂]) => do
-    let (e₁', p₁) ← eval e₁
-    let (e₂', p₂) ← eval e₂
-    let (e', p') ← evalMul e₁' e₂'
-    let p ← mkAppM ``subst_into_mul #[e₁, e₂, e₁', e₂', e', p₁, p₂, p']
-    return (e', p)
-  | (``HPow.hPow, #[_,_,_,P,e₁,e₂]) => do
-    -- let (e₂', p₂) ← lift $ norm_num.derive e₂ <|> refl_conv e₂,
-    let (e₂', p₂) := (e₂, ← mkEqRefl e₂)
-    let some k := e₂'.numeral? | evalAtom e
-    let (``instHPow, #[_, _, P]) := P.getAppFnArgs | evalAtom e
-    let true := P.getAppFn.isConstOf ``Monoid.Pow || P.getAppFn.isConstOf ``instPowNat | evalAtom e
-    let (e₁', p₁) ← eval e₁
-    let (e', p') ← evalPow e₁' (e₂, k)
-    let p ← mkAppM ``subst_into_pow #[e₁, e₂, e₁', e₂', e', p₁, p₂, p']
-    return (e', p)
-  | _ =>
-    match e.numeral? with
-    | some n => (const e n).reflConv
-    | _ => evalAtom e
-
-elab "ring" : tactic => liftMetaMAtMain fun g => do
-  match (← instantiateMVars (← g.getType)).getAppFnArgs with
-  | (`Eq, #[ty, e₁, e₂]) =>
-    let red := .default -- FIXME
-    let ((e₁', p₁), (e₂', p₂)) ← RingM.run ty red $ do pure (← eval e₁, ← eval e₂)
-    if ← isDefEq e₁' e₂' then
-      g.assign (← mkEqTrans p₁ (← mkEqSymm p₂))
+partial def evalMulProd (va : ExProd sα a) (vb : ExProd sα b) : Result (ExProd sα) q($a * $b) :=
+  match va, vb with
+  | .const za, .const zb =>
+    if za = 1 then
+      ⟨b, .const zb, (q(one_mul $b) : Expr)⟩
+    else if zb = 1 then
+      ⟨a, .const za, (q(mul_one $a) : Expr)⟩
     else
-      throwError "ring failed, ring expressions not equal: \n{← e₁'.pp}\n  !=\n{← e₂'.pp}"
-  | _ => throwError "ring failed: not an equality"
+      let ra := Result.ofRawInt za a; let rb := Result.ofRawInt zb b
+      let ⟨zc, c, pc⟩ := (NormNum.evalMul.core q($a * $b) _ _ ra rb).get!.toRawEq
+      ⟨c, .const zc, pc⟩
+  | .mul a₁ _ va₁ va₂, .const _ =>
+    let ⟨_, vc, pc⟩ := evalMulProd va₂ vb
+    ⟨_, .mul _ _ va₁ vc, (q(mul_pf_left $a₁ $pc) : Expr)⟩
+  | .const _, .mul b₁ _ vb₁ vb₂ =>
+    let ⟨_, vc, pc⟩ := evalMulProd va vb₂
+    ⟨_, .mul _ _ vb₁ vc, (q(mul_pf_right $b₁ $pc) : Expr)⟩
+  | .mul a₁ _ va₁ va₂, .mul b₁ _ vb₁ vb₂ => Id.run do
+    let ⟨xa, _, vxa, vea⟩ := va₁; let ⟨_, _, vxb, veb⟩ := vb₁
+    if vxa.eq vxb then
+      if let some (.nonzero ⟨_, ve, pe⟩) := evalAddOverlap sℕ vea veb then
+        let ⟨_, vc, pc⟩ := evalMulProd va₂ vb₂
+        return ⟨_, .mul _ _ ⟨_, _, vxa, ve⟩ vc, (q(mul_pp_pf_overlap $xa $pe $pc) : Expr)⟩
+    if let .lt := va₁.cmp vb₁ then
+      let ⟨_, vc, pc⟩ := evalMulProd va₂ vb
+      ⟨_, .mul _ _ va₁ vc, (q(mul_pf_left $a₁ $pc) : Expr)⟩
+    else
+      let ⟨_, vc, pc⟩ := evalMulProd va vb₂
+      ⟨_, .mul _ _ vb₁ vc, (q(mul_pf_right $b₁ $pc) : Expr)⟩
+
+theorem mul_zero (a : R) : a * 0 = 0 := by simp
+
+theorem mul_add (_ : (a : R) * b₁ = c₁) (_ : a * b₂ = c₂) (_ : c₁ + 0 + c₂ = d) :
+    a * (b₁ + b₂) = d := by subst_vars; simp [_root_.mul_add]
+
+def evalMul₁ (va : ExProd sα a) (vb : ExSum sα b) : Result (ExSum sα) q($a * $b) :=
+  match vb with
+  | .zero => ⟨_, .zero, q(mul_zero $a)⟩
+  | .add _ _ vb₁ vb₂ =>
+    let ⟨_, vc₁, pc₁⟩ := evalMulProd sα va vb₁
+    let ⟨_, vc₂, pc₂⟩ := evalMul₁ va vb₂
+    let ⟨_, vd, pd⟩ := evalAdd sα vc₁.toSum vc₂
+    ⟨_, vd, q(mul_add $pc₁ $pc₂ $pd)⟩
+
+theorem zero_mul (b : R) : 0 * b = 0 := by simp
+
+theorem add_mul (_ : (a₁ : R) * b = c₁) (_ : a₂ * b = c₂) (_ : c₁ + c₂ = d) :
+    (a₁ + a₂) * b = d := by subst_vars; simp [_root_.add_mul]
+
+def evalMul (va : ExSum sα a) (vb : ExSum sα b) : Result (ExSum sα) q($a * $b) :=
+  match va with
+  | .zero => ⟨_, .zero, q(zero_mul $b)⟩
+  | .add _ _ va₁ va₂ =>
+    let ⟨_, vc₁, pc₁⟩ := evalMul₁ sα va₁ vb
+    let ⟨_, vc₂, pc₂⟩ := evalMul va₂ vb
+    let ⟨_, vd, pd⟩ := evalAdd sα vc₁ vc₂
+    ⟨_, vd, q(add_mul $pc₁ $pc₂ $pd)⟩
+
+theorem neg_one_mul {R} [Ring R] {a b : R} (_ : (Int.negOfNat (nat_lit 1)).rawCast * a = b) :
+    -a = b := by subst_vars; simp [Int.negOfNat]
+
+theorem neg_mul {R} [Ring R] (a₁ : R) {a₂ b : R}
+    (_ : -a₂ = b) : -(a₁ * a₂) = a₁ * b := by subst_vars; simp
+
+def evalNegProd (rα : Q(Ring $α)) (va : ExProd sα a) : Result (ExProd sα) q(-$a) :=
+  match va with
+  | .const za =>
+    let lit : Q(ℕ) := mkRawNatLit 1
+    let ⟨m1, _⟩ := ExProd.mkNegNat sα rα 1
+    let rm := Result.isNegNat rα lit (q(IsInt.of_raw $α (.negOfNat $lit)) : Expr)
+    let ra := Result.ofRawInt za a
+    let ⟨zb, b, (pb : Q((Int.negOfNat (nat_lit 1)).rawCast * $a = $b))⟩ :=
+      (NormNum.evalMul.core q($m1 * $a) _ _ rm ra).get!.toRawEq
+    ⟨b, .const zb, (q(neg_one_mul (R := $α) $pb) : Expr)⟩
+  | .mul a₁ _ va₁ va₂ =>
+    let ⟨_, vb, pb⟩ := evalNegProd rα va₂
+    ⟨_, .mul _ _ va₁ vb, (q(neg_mul $a₁ $pb) : Expr)⟩
+
+theorem neg_zero {R} [Ring R] : -(0 : R) = 0 := by simp
+
+theorem neg_add {R} [Ring R] {a₁ a₂ b₁ b₂ : R}
+    (_ : -a₁ = b₁) (_ : -a₂ = b₂) : -(a₁ + a₂) = b₁ + b₂ := by subst_vars; simp [add_comm]
+
+def evalNeg (rα : Q(Ring $α)) (va : ExSum sα a) : Result (ExSum sα) q(-$a) :=
+  match va with
+  | .zero => ⟨_, .zero, (q(neg_zero (R := $α)) : Expr)⟩
+  | .add _ _ va₁ va₂ =>
+    let ⟨_, vb₁, pb₁⟩ := evalNegProd sα rα va₁
+    let ⟨_, vb₂, pb₂⟩ := evalNeg rα va₂
+    ⟨_, .add _ _ vb₁ vb₂, (q(neg_add $pb₁ $pb₂) : Expr)⟩
+
+theorem sub_pf {R} [Ring R] {a b c d : R}
+    (_ : -b = c) (_ : a + c = d) : a - b = d := by subst_vars; simp [sub_eq_add_neg]
+
+def evalSub (rα : Q(Ring $α)) (va : ExSum sα a) (vb : ExSum sα b) : Result (ExSum sα) q($a - $b) :=
+  let ⟨_c, vc, pc⟩ := evalNeg sα rα vb
+  let ⟨d, vd, (pd : Q($a + $_c = $d))⟩ := evalAdd sα va vc
+  ⟨d, vd, (q(sub_pf $pc $pd) : Expr)⟩
+
+theorem pow_prod_atom (a : R) (b) : a ^ b = (a + 0) ^ b * (nat_lit 1).rawCast := by simp
+
+def evalPowProdAtom (va : ExProd sα a) (vb : ExProd sℕ b) : Result (ExProd sα) q($a ^ $b) :=
+  ⟨_, (ExExp.exp _ _ (.sum va.toSum) vb).toProd, q(pow_prod_atom $a $b)⟩
+
+theorem pow_atom (a : R) (b) : a ^ b = a ^ b * (nat_lit 1).rawCast + 0 := by simp
+
+def evalPowAtom (va : ExBase sα a) (vb : ExProd sℕ b) : Result (ExSum sα) q($a ^ $b) :=
+  ⟨_, (ExExp.exp _ _ va vb).toProd.toSum, q(pow_atom $a $b)⟩
+
+theorem const_pos (n : ℕ) (h : Nat.ble 1 n = true) : 0 < (n.rawCast : ℕ) := Nat.le_of_ble_eq_true h
+
+theorem mul_exp_pos (n) (h₁ : 0 < a₁) (h₂ : 0 < a₂) : 0 < a₁ ^ n * a₂ :=
+  Nat.mul_pos (Nat.pos_pow_of_pos _ h₁) h₂
+
+theorem add_pos_left (a₂) (h : 0 < a₁) : 0 < a₁ + a₂ := Nat.lt_of_lt_of_le h (Nat.le_add_right ..)
+
+theorem add_pos_right (a₁) (h : 0 < a₂) : 0 < a₁ + a₂ := Nat.lt_of_lt_of_le h (Nat.le_add_left ..)
+
+mutual
+
+def ExBase.evalPos (va : ExBase sℕ a) : Option Q(0 < $a) :=
+  match va with
+  | .atom _ => none
+  | .sum va => va.evalPos
+
+def ExProd.evalPos (va : ExProd sℕ a) : Option Q(0 < $a) :=
+  match va with
+  | .const n =>
+    -- it must be positive because it is a nonzero nat literal
+    have lit : Q(ℕ) := a.appArg!
+    let p : Q(Nat.ble 1 $lit = true) := (q(Eq.refl true) : Expr)
+    some (q(const_pos $lit $p) : Expr)
+  | .mul _ _ ⟨_, ea₁, vxa₁, _⟩ va₂ => do
+    let pa₁ ← vxa₁.evalPos
+    let pa₂ ← va₂.evalPos
+    some q(mul_exp_pos $ea₁ $pa₁ $pa₂)
+
+def ExSum.evalPos (va : ExSum sℕ a) : Option Q(0 < $a) :=
+  match va with
+  | .zero => none
+  | .add a₁ a₂ va₁ va₂ => do
+    match va₁.evalPos with
+    | some p => some q(add_pos_left $a₂ $p)
+    | none => let p ← va₂.evalPos; some q(add_pos_right $a₁ $p)
+
+end
+
+theorem pow_one (a : R) : a ^ nat_lit 1 = a := by simp
+
+theorem pow_bit0 (_ : (a : R) ^ k = b) (_ : b * b = c) : a ^ (Nat.mul (nat_lit 2) k) = c := by
+  subst_vars; simp [Nat.succ_mul, pow_add]
+
+theorem pow_bit1 (_ : (a : R) ^ k = b) (_ : b * b = c) (_ : c * a = d) :
+    a ^ (Nat.add (Nat.mul (nat_lit 2) k) (nat_lit 1)) = d := by
+  subst_vars; simp [Nat.succ_mul, pow_add]
+
+partial def evalPowNat (va : ExSum sα a) (n : Q(ℕ)) : Result (ExSum sα) q($a ^ $n) :=
+  let nn := n.natLit!
+  if nn = 1 then
+    ⟨_, va, (q(pow_one $a) : Expr)⟩
+  else
+    let nm := nn >>> 1
+    have m : Q(ℕ) := mkRawNatLit nm
+    if nn &&& 1 = 0 then
+      let ⟨_, vb, pb⟩ := evalPowNat va m
+      let ⟨_, vc, pc⟩ := evalMul sα vb vb
+      ⟨_, vc, (q(pow_bit0 $pb $pc) : Expr)⟩
+    else
+      let ⟨_, vb, pb⟩ := evalPowNat va m
+      let ⟨_, vc, pc⟩ := evalMul sα vb vb
+      let ⟨_, vd, pd⟩ := evalMul sα vc va
+      ⟨_, vd, (q(pow_bit1 $pb $pc $pd) : Expr)⟩
+
+theorem one_pow (b : ℕ) : ((nat_lit 1).rawCast : R) ^ b = (nat_lit 1).rawCast := by simp
+
+theorem mul_pow (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂) :
+    (xa₁ ^ ea₁ * a₂ : R) ^ b = xa₁ ^ c₁ * c₂ := by subst_vars; simp [_root_.mul_pow, pow_mul]
+
+def evalPowProd (va : ExProd sα a) (vb : ExProd sℕ b) : Result (ExProd sα) q($a ^ $b) :=
+  let res : Option (Result (ExProd sα) q($a ^ $b)) := do
+    match va, vb with
+    | .const 1, _ => some ⟨_, va, (q(one_pow (R := $α) $b) : Expr)⟩
+    | .const za, .const zb =>
+      guard (0 ≤ zb)
+      let ra := Result.ofRawInt za a
+      have lit : Q(ℕ) := b.appArg!
+      let rb := (q(IsNat.of_raw ℕ $lit) : Expr)
+      let ⟨zc, c, pc⟩ := (← NormNum.evalPow.core q($a ^ $b) _ b lit rb ra).toRawEq
+      some ⟨c, .const zc, pc⟩
+    | .mul _ _ ⟨_, _, vxa₁, vea₁⟩ va₂, vb => do
+      let ⟨_, vc₁, pc₁⟩ := evalMulProd sℕ vea₁ vb
+      let ⟨_, vc₂, pc₂⟩ := evalPowProd va₂ vb
+      some ⟨_, .mul _ _ ⟨_, _, vxa₁, vc₁⟩ vc₂, q(mul_pow $pc₁ $pc₂)⟩
+    | _, _ => none
+  res.getD (evalPowProdAtom sα va vb)
+
+structure ExtractCoeff (e : Q(ℕ)) where
+  k : Q(ℕ)
+  e' : Q(ℕ)
+  ve' : ExProd sℕ e'
+  p : Q($e = $e' * $k)
+
+theorem coeff_one (k : ℕ) : k.rawCast = (nat_lit 1).rawCast * k := by simp
+
+theorem coeff_mul (a₁ : ℕ) (_ : a₂ = c₂ * k) : a₁ * a₂ = (a₁ * c₂) * k := by
+  subst_vars; rw [mul_assoc]
+
+def extractCoeff (va : ExProd sℕ a) : ExtractCoeff a :=
+  match va with
+  | .const n =>
+    have k : Q(ℕ) := a.appArg!
+    ⟨k, q((nat_lit 1).rawCast), .const 1, (q(coeff_one $k) : Expr)⟩
+  | .mul a₁ _ va₁ va₂ =>
+    let ⟨k, _, vc, pc⟩ := extractCoeff va₂
+    ⟨k, _, .mul _ _ va₁ vc, q(coeff_mul $a₁ $pc)⟩
+
+theorem pow_one_cast (a : R) : a ^ (nat_lit 1).rawCast = a := by simp
+
+theorem zero_pow (_ : 0 < b) : (0 : R) ^ b = 0 := match b with | b+1 => by simp [pow_succ]
+
+theorem single_pow (_ : (a : R) ^ b = c) : (a + 0) ^ b = c + 0 := by simp [*]
+
+theorem pow_nat (_ : b = c * k) (_ : a ^ c = d) (_ : d ^ k = e) : (a : R) ^ b = e := by
+  subst_vars; simp [pow_mul]
+
+partial def evalPow₁ (va : ExSum sα a) (vb : ExProd sℕ b) : Result (ExSum sα) q($a ^ $b) :=
+  match va, vb with
+  | _, .const 1 => ⟨_, va, (q(pow_one_cast $a) : Expr)⟩
+  | .zero, vb => match vb.evalPos with
+    | some p => ⟨_, .zero, q(zero_pow (R := $α) $p)⟩
+    | none => evalPowAtom sα (.sum .zero) vb
+  | va, vb =>
+    if vb.coeff > 1 then
+      let ⟨k, _, vc, pc⟩ := extractCoeff vb
+      let ⟨_, vd, pd⟩ := evalPow₁ va vc
+      let ⟨_, ve, pe⟩ := evalPowNat sα vd k
+      ⟨_, ve, q(pow_nat $pc $pd $pe)⟩
+    else match va with
+      | .add _ _ va .zero =>
+        let ⟨_, vc, pc⟩ := evalPowProd sα va vb
+        ⟨_, vc.toSum, q(single_pow $pc)⟩
+      | va => evalPowAtom sα (.sum va) vb
+
+theorem pow_zero (a : R) : a ^ 0 = (nat_lit 1).rawCast + 0 := by simp
+
+theorem pow_add (_ : a ^ b₁ = c₁) (_ : a ^ b₂ = c₂) (_ : c₁ * c₂ = d) :
+  (a : R) ^ (b₁ + b₂) = d := by subst_vars; simp [_root_.pow_add]
+
+def evalPow (va : ExSum sα a) (vb : ExSum sℕ b) : Result (ExSum sα) q($a ^ $b) :=
+  match vb with
+  | .zero => ⟨_, (ExProd.mkNat sα 1).2.toSum, q(pow_zero $a)⟩
+  | .add _ _ vb₁ vb₂ =>
+    let ⟨_, vc₁, pc₁⟩ := evalPow₁ sα va vb₁
+    let ⟨_, vc₂, pc₂⟩ := evalPow va vb₂
+    let ⟨_, vd, pd⟩ := evalMul sα vc₁ vc₂
+    ⟨_, vd, q(pow_add $pc₁ $pc₂ $pd)⟩
+
+/-- This cache contains data required by the `ring` tactic during execution. -/
+structure Cache (α : Q(Type u)) :=
+  rα : Option Q(Ring $α)
+
+theorem cast_pos : IsNat (a : R) n → a = n.rawCast + 0
+  | ⟨e⟩ => by simp [e]
+
+theorem cast_zero : IsNat (a : R) (nat_lit 0) → a = 0
+  | ⟨e⟩ => by simp [e]
+
+theorem cast_neg [Ring R] : IsInt (a : R) (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
+  | ⟨e⟩ => by simp [e]
+
+def evalCast : NormNum.Result e → Option (Result (ExSum sα) e)
+  | .isNat _sα (.lit (.natVal 0)) (p : Expr) => clear% _sα
+    let p : Q(IsNat $e (nat_lit 0)) := p
+    pure ⟨_, .zero, (q(cast_zero $p) : Expr)⟩
+  | .isNat _sα lit (p : Expr) => clear% _sα
+    let p : Q(IsNat $e $lit) := p
+    pure ⟨_, (ExProd.mkNat sα lit.natLit!).2.toSum, (q(cast_pos $p) : Expr)⟩
+  | .isNegNat rα lit p =>
+    pure ⟨_, (ExProd.mkNegNat _ rα lit.natLit!).2.toSum, (q(cast_neg $p) : Expr)⟩
+  | _ => none
+
+theorem atom_pf (a : R) : a = a ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast + 0 := by simp
+
+def evalAtom (e : Q($α)) : RingM (Result (ExSum sα) e) := do
+  let i ← addAtom e
+  pure ⟨_, (ExExp.exp e _ (.atom i) (ExProd.mkNat sℕ 1).2).toProd.toSum, (q(atom_pf $e) : Expr)⟩
+
+theorem add_congr (_ : a = a') (_ : b = b')
+    (_ : a' + b' = c) : (a + b : R) = c := by subst_vars; rfl
+
+theorem mul_congr (_ : a = a') (_ : b = b')
+    (_ : a' * b' = c) : (a * b : R) = c := by subst_vars; rfl
+
+theorem pow_congr (_ : a = a') (_ : b = b')
+    (_ : a' ^ b' = c) : (a ^ b : R) = c := by subst_vars; rfl
+
+theorem neg_congr {R} [Ring R] {a a' b : R} (_ : a = a')
+    (_ : -a' = b) : (-a : R) = b := by subst_vars; rfl
+
+theorem sub_congr {R} [Ring R] {a a' b b' c : R} (_ : a = a') (_ : b = b')
+    (_ : a' - b' = c) : (a - b : R) = c := by subst_vars; rfl
+
+def Cache.nat : Cache q(ℕ) := { rα := none }
+
+partial def eval {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+    (c : Cache α) (e : Q($α)) : RingM (Result (ExSum sα) e) := do
+  match e with
+  | ~q($a + $b) =>
+    let ⟨_, va, pa⟩ ← eval sα c a
+    let ⟨_, vb, pb⟩ ← eval sα c b
+    let ⟨c, vc, p⟩ := evalAdd sα va vb
+    pure ⟨c, vc, (q(add_congr $pa $pb $p) : Expr)⟩
+  | ~q($a * $b) =>
+    let ⟨_, va, pa⟩ ← eval sα c a
+    let ⟨_, vb, pb⟩ ← eval sα c b
+    let ⟨c, vc, p⟩ := evalMul sα va vb
+    pure ⟨c, vc, (q(mul_congr $pa $pb $p) : Expr)⟩
+  | ~q($a ^ $b) =>
+    let ⟨_, va, pa⟩ ← eval sα c a
+    let ⟨_, vb, pb⟩ ← eval sℕ .nat b
+    let ⟨c, vc, p⟩ := evalPow sα va vb
+    pure ⟨c, vc, (q(pow_congr $pa $pb $p) : Expr)⟩
+  | _ =>
+    let els := do
+      try evalCast sα (← derive e)
+      catch _ => evalAtom sα e
+    let some rα := c.rα | els
+    match e with
+    | ~q(-$a) =>
+      let ⟨_, va, pa⟩ ← eval sα c a
+      let ⟨b, vb, p⟩ := evalNeg sα rα va
+      pure ⟨b, vb, (q(neg_congr $pa $p) : Expr)⟩
+    | ~q($a - $b) => do
+      let ⟨_, va, pa⟩ ← eval sα c a
+      let ⟨_, vb, pb⟩ ← eval sα c b
+      let ⟨c, vc, p⟩ := evalSub sα rα va vb
+      pure ⟨c, vc, (q(sub_congr $pa $pb $p) : Expr)⟩
+    | _ => els
+
+def _root_.Lean.LOption.toOption {α} : LOption α → Option α
+  | .some a => some a
+  | _ => none
+
+theorem of_eq (_ : (a : R) = c) (_ : b = c) : a = b := by subst_vars; rfl
+
+elab "ring1" tk:"!"? : tactic => liftMetaMAtMain fun g => do
+  let some (α, e₁, e₂) := (← instantiateMVars (← g.getType)).eq?
+    | throwError "ring failed: not an equality"
+  let red := if tk.isSome then .default else .reducible
+  let .sort (.succ u) ← whnf (← inferType α) | throwError "not a type{indentExpr α}"
+  RingM.run red do
+    have α : Q(Type u) := α
+    have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
+    let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
+    let c := { rα := (← trySynthInstanceQ (q(Ring $α) : Q(Type u))).toOption }
+    let ⟨a, va, pa⟩ ← eval sα c e₁
+    let ⟨b, vb, pb⟩ ← eval sα c e₂
+    unless va.eq vb do
+      throwError "ring failed, ring expressions not equal: \n{a}\n  !=\n{b}"
+    let pb : Q($e₂ = $a) := pb
+    g.assign q(of_eq $pa $pb)
+
+macro "ring1!" : tactic => `(tactic| ring1 !)
+
+macro "ring" tk:"!"? : tactic => `(tactic| ring1 $[!%$tk]?)
+macro "ring!" : tactic => `(tactic| ring !)

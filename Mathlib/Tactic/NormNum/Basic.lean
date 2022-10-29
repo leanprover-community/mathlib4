@@ -109,28 +109,41 @@ theorem isInt_add {α} [Ring α] : {a b : α} → {a' b' c : ℤ} →
     IsInt a a' → IsInt b b' → Int.add a' b' = c → IsInt (a + b) c
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Int.cast_add ..).symm⟩
 
+instance : MonadLift Option MetaM where
+  monadLift
+  | none => failure
+  | some e => pure e
+
 /-- The `norm_num` extension which identifies expressions of the form `a + b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ + _, Add.add _ _] def evalAdd : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q($α))) (b : Q($α)) ← withReducible (whnf e) | failure
   let ra ← derive a; let rb ← derive b
-  let intArm (rα : Q(Ring $α)) := do
-    let ⟨za, na, pa⟩ ← ra.toInt; let ⟨zb, nb, pb⟩ ← rb.toInt
-    let zc := za + zb
-    have c := mkRawIntLit zc
-    let r : Q(Int.add $na $nb = $c) := (q(Eq.refl $c) : Expr)
-    return (.isInt rα zc q(isInt_add $pa $pb $r) : Result q($a + $b))
   match ra, rb with
-  | .isNat _ na pa, .isNat sα nb pb =>
-    have pa : Q(IsNat $a $na) := pa
+  | .isNat _ .., .isNat _ .. | .isNat _ .., .isNegNat _ ..
+  | .isNegNat _ .., .isNat _ .. | .isNegNat _ .., .isNegNat _ .. =>
     guard <|← withNewMCtxDepth <| isDefEq f q(HAdd.hAdd (α := $α))
-    have c : Q(ℕ) := mkRawNatLit (na.natLit! + nb.natLit!)
-    let r : Q(Nat.add $na $nb = $c) := (q(Eq.refl $c) : Expr)
-    return (.isNat sα c q(isNat_add $pa $pb $r) : Result q($a + $b))
-  | .isNat _ .., .isNegNat rα ..
-  | .isNegNat rα .., .isNat _ ..
-  | .isNegNat _ .., .isNegNat rα .. => intArm rα
   | _, _ => failure
+  let rec
+  /-- Main part of `evalAdd`. -/
+  core : Option (Result e) := do
+    let intArm (rα : Q(Ring $α)) := do
+      let ⟨za, na, pa⟩ ← ra.toInt; let ⟨zb, nb, pb⟩ ← rb.toInt
+      let zc := za + zb
+      have c := mkRawIntLit zc
+      let r : Q(Int.add $na $nb = $c) := (q(Eq.refl $c) : Expr)
+      return (.isInt rα zc q(isInt_add $pa $pb $r) : Result q($a + $b))
+    match ra, rb with
+    | .isNat _ na pa, .isNat sα nb pb =>
+      have pa : Q(IsNat $a $na) := pa
+      have c : Q(ℕ) := mkRawNatLit (na.natLit! + nb.natLit!)
+      let r : Q(Nat.add $na $nb = $c) := (q(Eq.refl $c) : Expr)
+      return (.isNat sα c q(isNat_add $pa $pb $r) : Result q($a + $b))
+    | .isNat _ .., .isNegNat rα ..
+    | .isNegNat rα .., .isNat _ ..
+    | .isNegNat _ .., .isNegNat rα .. => intArm rα
+    | _, _ => failure
+  core
 
 theorem isInt_neg {α} [Ring α] : {a : α} → {a' b : ℤ} →
     IsInt a a' → Int.neg a' = b → IsInt (-a) b
@@ -177,24 +190,31 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ * _, Mul.mul _ _] def evalMul : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q($α))) (b : Q($α)) ← withReducible (whnf e) | failure
   let ra ← derive a; let rb ← derive b
-  let intArm (rα : Q(Ring $α)) := do
-    guard <|← withNewMCtxDepth <| isDefEq f q(HMul.hMul (α := $α))
-    let ⟨za, na, pa⟩ ← ra.toInt; let ⟨zb, nb, pb⟩ ← rb.toInt
-    let zc := za * zb
-    have c := mkRawIntLit zc
-    let r : Q(Int.mul $na $nb = $c) := (q(Eq.refl $c) : Expr)
-    return (.isInt rα zc q(isInt_mul $pa $pb $r) : Result q($a * $b))
   match ra, rb with
-  | .isNat _ na pa, .isNat sα nb pb =>
-    have pa : Q(IsNat $a $na) := pa
+  | .isNat _ .., .isNat _ .. | .isNat _ .., .isNegNat _ ..
+  | .isNegNat _ .., .isNat _ .. | .isNegNat _ .., .isNegNat _ .. =>
     guard <|← withNewMCtxDepth <| isDefEq f q(HMul.hMul (α := $α))
-    have c : Q(ℕ) := mkRawNatLit (na.natLit! * nb.natLit!)
-    let r : Q(Nat.mul $na $nb = $c) := (q(Eq.refl $c) : Expr)
-    return (.isNat sα c q(isNat_mul $pa $pb $r) : Result q($a * $b))
-  | .isNat _ .., .isNegNat rα ..
-  | .isNegNat rα .., .isNat _ ..
-  | .isNegNat _ .., .isNegNat rα .. => intArm rα
   | _, _ => failure
+  let rec
+  /-- Main part of `evalMul`. -/
+  core : Option (Result e) := do
+    let intArm (rα : Q(Ring $α)) := do
+      let ⟨za, na, pa⟩ ← ra.toInt; let ⟨zb, nb, pb⟩ ← rb.toInt
+      let zc := za * zb
+      have c := mkRawIntLit zc
+      let r : Q(Int.mul $na $nb = $c) := (q(Eq.refl $c) : Expr)
+      return (.isInt rα zc q(isInt_mul $pa $pb $r) : Result q($a * $b))
+    match ra, rb with
+    | .isNat _ na pa, .isNat sα nb pb =>
+      have pa : Q(IsNat $a $na) := pa
+      have c : Q(ℕ) := mkRawNatLit (na.natLit! * nb.natLit!)
+      let r : Q(Nat.mul $na $nb = $c) := (q(Eq.refl $c) : Expr)
+      return (.isNat sα c q(isNat_mul $pa $pb $r) : Result q($a * $b))
+    | .isNat _ .., .isNegNat rα ..
+    | .isNegNat rα .., .isNat _ ..
+    | .isNegNat _ .., .isNegNat rα .. => intArm rα
+    | _, _ => failure
+  core
 
 theorem isNat_pow {α} [Semiring α] : {a : α} → {b a' b' c : ℕ} →
     IsNat a a' → IsNat b b' → Nat.pow a' b' = c → IsNat (a ^ b) c
@@ -212,17 +232,23 @@ def evalPow : NormNumExt where eval {u α} e := do
   let ⟨nb, pb⟩ ← deriveNat b q(instSemiringNat)
   let ra ← derive a
   match ra with
-  | .isNat sα na pa =>
+  | .isNat _ .. | .isNegNat _ .. =>
     guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
-    have c : Q(ℕ) := mkRawNatLit (na.natLit! ^ nb.natLit!)
-    let r : Q(Nat.pow $na $nb = $c) := (q(Eq.refl $c) : Expr)
-    let pb : Q(IsNat $b $nb) := pb
-    return (.isNat sα c q(isNat_pow $pa $pb $r) : Result q($a ^ $b))
-  | .isNegNat rα .. =>
-    guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
-    let ⟨za, na, pa⟩ ← ra.toInt
-    let zc := za ^ nb.natLit!
-    let c := mkRawIntLit zc
-    let r : Q(Int.pow $na $nb = $c) := (q(Eq.refl $c) : Expr)
-    return (.isInt rα zc (z := c) q(isInt_pow $pa $pb $r) : Result q($a ^ $b))
   | _ => failure
+  let rec
+  /-- Main part of `evalPow`. -/
+  core : Option (Result e) := do
+    match ra with
+    | .isNat sα na pa =>
+      have c : Q(ℕ) := mkRawNatLit (na.natLit! ^ nb.natLit!)
+      let r : Q(Nat.pow $na $nb = $c) := (q(Eq.refl $c) : Expr)
+      let pb : Q(IsNat $b $nb) := pb
+      return (.isNat sα c q(isNat_pow $pa $pb $r) : Result q($a ^ $b))
+    | .isNegNat rα .. =>
+      let ⟨za, na, pa⟩ ← ra.toInt
+      let zc := za ^ nb.natLit!
+      let c := mkRawIntLit zc
+      let r : Q(Int.pow $na $nb = $c) := (q(Eq.refl $c) : Expr)
+      return (.isInt rα zc (z := c) q(isInt_pow $pa $pb $r) : Result q($a ^ $b))
+    | _ => failure
+  core
