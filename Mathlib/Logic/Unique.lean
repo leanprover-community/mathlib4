@@ -101,14 +101,14 @@ instance {n : ℕ} : Inhabited (Fin n.succ) :=
   ⟨0⟩
 
 instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
-  ⟨⟨0, Nat.zero_lt_one_add n⟩⟩
+  ⟨⟨0, by rw [Nat.add_comm]; exact Nat.zero_lt_succ _⟩⟩
 
 @[simp]
 theorem Fin.default_eq_zero (n : ℕ) : (default : Fin n.succ) = 0 :=
   rfl
 
-instance Fin.unique : Unique (Fin 1) :=
-  { Fin.inhabited with uniq := Fin.eq_zero }
+instance Fin.unique : Unique (Fin 1) where
+  uniq := Fin.eq_zero
 
 namespace Unique
 
@@ -158,8 +158,7 @@ end Unique
 theorem unique_iff_subsingleton_and_nonempty (α : Sort u) : Nonempty (Unique α) ↔ Subsingleton α ∧ Nonempty α :=
   ⟨fun ⟨u⟩ => by constructor <;> exact inferInstance, fun ⟨hs, hn⟩ =>
     ⟨by
-      skip
-      inhabit α
+      have : Inhabited α := sorry -- FIXME this should be by the missing tactic `inhabit α`.
       exact Unique.mk' α⟩⟩
 
 @[simp]
@@ -170,8 +169,8 @@ theorem Pi.default_def {β : α → Sort v} [∀ a, Inhabited (β a)] :
 theorem Pi.default_apply {β : α → Sort v} [∀ a, Inhabited (β a)] (a : α) : @default (∀ a, β a) _ a = default :=
   rfl
 
-instance Pi.unique {β : α → Sort v} [∀ a, Unique (β a)] : Unique (∀ a, β a) :=
-  { Pi.inhabited α with uniq := fun f => funext fun x => Unique.eq_default _ }
+instance Pi.unique {β : α → Sort v} [∀ a, Unique (β a)] : Unique (∀ a, β a) where
+  uniq := fun _ => funext fun _ => Unique.eq_default _
 
 /-- There is a unique function on an empty domain. -/
 instance Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, β a) where
@@ -181,9 +180,11 @@ instance Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, �
 theorem eq_const_of_unique [Unique α] (f : α → β) : f = Function.const α (f default) := by
   ext x
   rw [Subsingleton.elim x default]
+  rfl
 
-theorem heq_const_of_unique [Unique α] {β : α → Sort v} (f : ∀ a, β a) : HEq f (Function.const α (f default)) :=
-  (Function.hfunext rfl) fun i _ _ => by rw [Subsingleton.elim i default]
+theorem heq_const_of_unique [Unique α] {β : α → Sort v} (f : ∀ a, β a) :
+    HEq f (Function.const α (f default)) :=
+  (Function.hfunext rfl) fun i _ _ => by rw [Subsingleton.elim i default]; rfl
 
 namespace Function
 
@@ -222,7 +223,7 @@ theorem Unique.bijective {A B} [Unique A] [Unique B] {f : A → B} : Function.Bi
 namespace Option
 
 /-- `option α` is a `subsingleton` if and only if `α` is empty. -/
-theorem subsingleton_iff_is_empty {α} : Subsingleton (Option α) ↔ IsEmpty α :=
+theorem subsingleton_iff_is_empty {α : Type u} : Subsingleton (Option α) ↔ IsEmpty α :=
   ⟨fun h => ⟨fun x => Option.noConfusion <| @Subsingleton.elim _ h x none⟩, fun h =>
     ⟨fun x y => Option.casesOn x (Option.casesOn y rfl fun x => h.elim x) fun x => h.elim x⟩⟩
 
