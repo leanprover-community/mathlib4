@@ -114,3 +114,9 @@ elab_rules : tactic
 --   category   := doc_category.tactic,
 --   decl_names := [`tactic.interactive.convert],
 --   tags       := ["congruence"] }
+
+syntax (name := convertTo) "convert_to " term (" using " num)? : tactic
+
+macro_rules
+| `(tactic| convert_to $term $[using $n]?) =>
+  `(tactic| convert (_ : $term) $[using $n]?)
