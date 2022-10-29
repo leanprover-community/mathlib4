@@ -58,6 +58,7 @@ import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.Use
+import Mathlib.Tactic.Zify
 import Mathlib.Util.Syntax
 import Mathlib.Util.WithWeakNamespace
 
@@ -389,8 +390,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := group) "group" (ppSpace location)? : tactic
 
 /- M -/ syntax (name := cancelDenoms) "cancel_denoms" (ppSpace location)? : tactic
-
-/- M -/ syntax (name := zify) "zify" (simpArgs)? (ppSpace location)? : tactic
 
 /- S -/ syntax (name := transport) "transport" (ppSpace term)? " using " term : tactic
 
