@@ -333,18 +333,9 @@ syntax termList := " [" term,* "]"
 /- B -/ syntax (name := abel) "abel" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 /- B -/ syntax (name := abel!) "abel!" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 
-/- E -/ syntax (name := ring1) "ring1" : tactic
-/- E -/ syntax (name := ring1!) "ring1!" : tactic
-
 syntax ringMode := &"SOP" <|> &"raw" <|> &"horner"
 /- E -/ syntax (name := ringNF) "ring_nf" (ppSpace ringMode)? (ppSpace location)? : tactic
 /- E -/ syntax (name := ringNF!) "ring_nf!" (ppSpace ringMode)? (ppSpace location)? : tactic
-/- E -/ syntax (name := ring!) "ring!" : tactic
-
-/- B -/ syntax (name := ringExpEq) "ring_exp_eq" : tactic
-/- B -/ syntax (name := ringExpEq!) "ring_exp_eq!" : tactic
-/- B -/ syntax (name := ringExp) "ring_exp" (ppSpace location)? : tactic
-/- B -/ syntax (name := ringExp!) "ring_exp!" (ppSpace location)? : tactic
 
 /- E -/ syntax (name := noncommRing) "noncomm_ring" : tactic
 

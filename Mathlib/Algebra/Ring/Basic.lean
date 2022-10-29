@@ -52,10 +52,13 @@ class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 
 example [Ring R] : HasInvolutiveNeg R := inferInstance
 
-theorem neg_mul_eq_neg_mul {R} [Ring R] (a b : R) : -(a * b) = (-a) * b :=
-  Eq.symm <| eq_of_sub_eq_zero' <| by
-    rw [sub_eq_add_neg, neg_neg (a * b) /- TODO: why is arg necessary? -/]
-    rw [← add_mul, neg_add_self a /- TODO: why is arg necessary? -/, zero_mul]
+@[simp] theorem neg_mul {R} [Ring R] (a b : R) : (-a) * b = -(a * b) :=
+  eq_of_sub_eq_zero' <| by rw [sub_eq_add_neg, neg_neg, ← add_mul, neg_add_self, zero_mul]
+
+@[simp] lemma mul_neg [Ring R] (a b : R) : a * -b = - (a * b) :=
+  eq_of_sub_eq_zero' <| by rw [sub_eq_add_neg, neg_neg, ← mul_add, neg_add_self, mul_zero]
+
+theorem neg_mul_eq_neg_mul {R} [Ring R] (a b : R) : -(a * b) = (-a) * b := (neg_mul ..).symm
 
 theorem mul_sub_right_distrib [Ring R] (a b c : R) : (a - b) * c = a * c - b * c := by
   simpa only [sub_eq_add_neg, neg_mul_eq_neg_mul] using add_mul a (-b) c

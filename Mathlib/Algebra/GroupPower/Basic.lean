@@ -14,8 +14,10 @@ section Monoid
 
 variable [Monoid M]
 
-@[simp]
-theorem pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, mul_one]
+@[simp] theorem pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, mul_one]
+
+@[simp] theorem one_pow (n : ℕ) : (1 : M) ^ n = 1 := by
+  induction n <;> simp [*, pow_succ]
 
 theorem pow_add (a : M) (m n : ℕ) : a ^ (m + n) = a ^ m * a ^ n := by
   induction' n with n ih

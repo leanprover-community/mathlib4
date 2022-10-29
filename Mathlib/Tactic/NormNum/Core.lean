@@ -34,6 +34,8 @@ structure IsNat [Semiring α] (a : α) (n : ℕ) : Prop where
 
 theorem IsNat.raw_refl (n : ℕ) : IsNat n n := ⟨rfl⟩
 
+@[simp] def _root_.Nat.rawCast [Semiring α] (n : ℕ) : α := n
+
 /-- Asserting that the `OfNat α n` instance provides the same value as the coercion. -/
 class LawfulOfNat (α) [Semiring α] (n) [OfNat α n] : Prop where
   /-- Assert `n = (OfNat.ofNat n α)`, with the parametrising instance. -/
@@ -45,20 +47,32 @@ instance (α) [Semiring α] : LawfulOfNat α (nat_lit 1) := ⟨Nat.cast_one⟩
 instance : LawfulOfNat ℕ n := ⟨show n = Nat.cast n by simp⟩
 instance : LawfulOfNat ℤ n := ⟨show Int.ofNat n = Nat.cast n by simp⟩
 
-theorem IsNat.to_eq {α} [Semiring α] (n) [OfNat α n] [LawfulOfNat α n] :
+theorem IsNat.to_eq [Semiring α] (n) [OfNat α n] [LawfulOfNat α n] :
     (a : α) → IsNat a n → a = OfNat.ofNat n
   | _, ⟨rfl⟩ => LawfulOfNat.eq_ofNat
+
+theorem IsNat.to_raw_eq [Semiring α] : IsNat (a : α) n → a = n.rawCast
+  | ⟨e⟩ => e
+
+theorem IsNat.of_raw (α) [Semiring α] (n : ℕ) : IsNat (n.rawCast : α) n := ⟨rfl⟩
 
 /-- Assert that an element of a ring is equal to the coercion of some integer. -/
 structure IsInt [Ring α] (a : α) (n : ℤ) : Prop where
   /-- The element is equal to the coercion of the integer. -/
   out : a = n
 
+@[simp] def _root_.Int.rawCast [Ring α] (n : ℤ) : α := n
+
 theorem IsInt.to_isNat {α} [Ring α] : ∀ {a : α} {n}, IsInt a (.ofNat n) → IsNat a n
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
 theorem IsNat.to_isInt {α} [Ring α] : ∀ {a : α} {n}, IsNat a n → IsInt a (.ofNat n)
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
+
+theorem IsInt.to_raw_eq [Ring α] : IsInt (a : α) n → a = n.rawCast
+  | ⟨e⟩ => e
+
+theorem IsInt.of_raw (α) [Ring α] (n : ℤ) : IsInt (n.rawCast : α) n := ⟨rfl⟩
 
 theorem IsInt.neg_to_eq {α} [Ring α] (n) [OfNat α n] [LawfulOfNat α n] :
     (a : α) → IsInt a (.negOfNat n) → a = -OfNat.ofNat n
@@ -113,12 +127,15 @@ inductive Result' where
   | isNegNat (inst lit proof : Expr)
   /-- Untyped version of `Result.isRat`. -/
   | isRat (inst : Expr) (q : Rat) (n d proof : Expr)
+  deriving Inhabited
 
 section
 set_option linter.unusedVariables false
 
 /-- The result of `norm_num` running on an expression `x` of type `α`. -/
 @[nolint unusedArguments] def Result {α : Q(Type u)} (x : Q($α)) := Result'
+
+instance : Inhabited (Result x) := inferInstanceAs (Inhabited Result')
 
 /-- The result is `lit : ℕ` (a raw nat literal) and `proof : isNat x lit`. -/
 @[match_pattern, inline] def Result.isNat {α : Q(Type u)} {x : Q($α)} :
@@ -160,12 +177,16 @@ def inferSemiring (α : Q(Type u)) : MetaM Q(Semiring $α) :=
 def inferRing (α : Q(Type u)) : MetaM Q(Ring $α) :=
   return ← synthInstanceQ (q(Ring $α) : Q(Type u)) <|> throwError "not a semiring"
 
+def Result.isZero : Result e → Bool
+  | .isNat _ lit _ => lit.natLit! == 0
+  | _ => false
+
 /--
 Extract from a `Result` the integer value (as both a term and an expression),
 and the proof that the original expression is equal to this integer.
 -/
 def Result.toInt {α : Q(Type u)} {e : Q($α)} (_i : Q(Ring $α) := by with_reducible assumption) :
-    Result e → MetaM (ℤ × (lit : Q(ℤ)) × Q(IsInt $e $lit))
+    Result e → Option (ℤ × (lit : Q(ℤ)) × Q(IsInt $e $lit))
   | .isNat _ lit proof => do
     have proof : Q(@IsNat _ Ring.toSemiring $e $lit) := proof
     pure ⟨lit.natLit!, q(.ofNat $lit), q(($proof).to_isInt)⟩
@@ -178,17 +199,34 @@ instance : ToMessageData (Result x) where
   | .isNegNat _ lit proof => m!"isNegNat {lit} ({proof})"
   | .isRat _ q _ _ proof => m!"isRat {q} ({proof})"
 
+def Result.toRawEq {α : Q(Type u)} {e : Q($α)} : Result e → (ℤ × (e' : Q($α)) × Q($e = $e'))
+  | .isNat _ lit p => ⟨lit.natLit!, q(Nat.rawCast $lit), q(IsNat.to_raw_eq $p)⟩
+  | .isNegNat _ lit p => ⟨-lit.natLit!, q(Int.rawCast (.negOfNat $lit)), q(IsInt.to_raw_eq $p)⟩
+  | .isRat _ .. => ⟨0, (default : Expr), (default : Expr)⟩ -- TODO
+
+/-- Constructs a `Result` out of a raw nat cast. Assumes `e` is a raw nat cast expression. -/
+def Result.ofRawNat {α : Q(Type u)} (e : Q($α)) : Result e := Id.run do
+  let .app (.app _ (sα : Q(Semiring $α))) (lit : Q(ℕ)) := e | panic! "not a raw nat cast"
+  .isNat sα lit (q(IsNat.of_raw $α $lit) : Expr)
+
+/-- Constructs a `Result` out of a raw int cast.
+Assumes `e` is a raw int cast expression denoting `n`. -/
+def Result.ofRawInt {α : Q(Type u)} (n : ℤ) (e : Q($α)) : Result e :=
+  if 0 ≤ n then
+    Result.ofRawNat e
+  else Id.run do
+    let .app (.app _ (rα : Q(Ring $α))) (.app _ (lit : Q(ℕ))) := e | panic! "not a raw int cast"
+    .isNegNat rα lit (q(IsInt.of_raw $α (.negOfNat $lit)) : Expr)
+
 /--
 Convert a `Result` to a `Simp.Result`.
 -/
 def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.Result
   | .isNat _sα lit p => do
-    let p : Q(IsNat $e $lit) := p
     let _ofNatInst ← synthInstanceQ (q(OfNat $α $lit) : Q(Type u))
     let _lawfulInst ← synthInstanceQ (q(LawfulOfNat $α $lit) : Q(Prop))
     return { expr := q((OfNat.ofNat $lit : $α)), proof? := q(IsNat.to_eq $lit $e $p) }
   | .isNegNat _rα lit p => do
-    let p : Q(IsInt $e (.negOfNat $lit)) := p
     let _ofNatInst ← synthInstanceQ (q(OfNat $α $lit) : Q(Type u))
     let _lawfulInst ← synthInstanceQ (q(LawfulOfNat $α $lit) : Q(Prop))
     return { expr := q(-(OfNat.ofNat $lit : $α)), proof? := q(IsInt.neg_to_eq $lit $e $p) }
@@ -267,7 +305,7 @@ returning a typed expression `lit : ℤ`, and a proof of `isInt e lit`. -/
 def deriveInt {α : Q(Type u)} (e : Q($α))
     (_inst : Q(Ring $α) := by with_reducible assumption) :
     MetaM ((lit : Q(ℤ)) × Q(IsInt $e $lit)) := do
-  let ⟨_, lit, proof⟩ ← (← derive e).toInt
+  let some ⟨_, lit, proof⟩ := (← derive e).toInt | failure
   pure ⟨lit, proof⟩
 
 /-- Extract the natural number `n` if the expression is of the form `OfNat.ofNat n`. -/
