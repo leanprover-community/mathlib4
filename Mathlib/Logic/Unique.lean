@@ -154,7 +154,8 @@ def mk' (α : Sort u) [h₁ : Inhabited α] [Subsingleton α] : Unique α :=
 
 end Unique
 
-theorem unique_iff_subsingleton_and_nonempty (α : Sort u) : Nonempty (Unique α) ↔ Subsingleton α ∧ Nonempty α :=
+theorem unique_iff_subsingleton_and_nonempty (α : Sort u) :
+    Nonempty (Unique α) ↔ Subsingleton α ∧ Nonempty α :=
   ⟨fun ⟨u⟩ => by constructor <;> exact inferInstance, fun ⟨hs, hn⟩ =>
     ⟨by
       have : Inhabited α := sorry -- FIXME this should be by the missing tactic `inhabit α`.
@@ -165,7 +166,8 @@ theorem Pi.default_def {β : α → Sort v} [∀ a, Inhabited (β a)] :
     @default (∀ a, β a) _ = fun a : α => @default (β a) _ :=
   rfl
 
-theorem Pi.default_apply {β : α → Sort v} [∀ a, Inhabited (β a)] (a : α) : @default (∀ a, β a) _ a = default :=
+theorem Pi.default_apply {β : α → Sort v} [∀ a, Inhabited (β a)] (a : α) :
+    @default (∀ a, β a) _ a = default :=
   rfl
 
 instance Pi.unique {β : α → Sort v} [∀ a, Unique (β a)] : Unique (∀ a, β a) where
