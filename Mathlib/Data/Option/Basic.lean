@@ -288,7 +288,7 @@ theorem lift_or_get_choice {f : α → α → α} (h : ∀ a b, f a b = a ∨ f 
   | none, none => Or.inl rfl
   | some a, none => Or.inl rfl
   | none, some b => Or.inr rfl
-  | some a, some b => by simpa [lift_or_get] using h a b
+  | some a, some b => by simpa [liftOrGet] using h a b
 
 -- @[simp]
 theorem lift_or_get_none_left {f} {b : Option α} : liftOrGet f none b = b := by cases b <;> rfl
@@ -360,8 +360,6 @@ theorem choice_is_some_iff_nonempty {α : Type _} : (choice α).isSome ↔ Nonem
     exact is_some_some
 
 end
-
-#align option.elim Option.elimₓ
 
 -- @[simp]
 theorem elim_none_some (f : Option α → β) : (fun x => Option.elim x (f none) (f ∘ some)) = f :=
