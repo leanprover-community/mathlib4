@@ -185,7 +185,6 @@ end Bool
 #align coe_tt Bool.coe_true
 #align coe_sort_ff Bool.coe_sort_false
 #align coe_sort_tt Bool.coe_sort_true
-#align to_bool decide
 #align to_bool_iff Bool.decide_iff
 #align to_bool_true Bool.decide_true
 #align to_bool_tt Bool.decide_true
