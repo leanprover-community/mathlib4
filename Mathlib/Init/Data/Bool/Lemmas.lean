@@ -53,22 +53,26 @@ theorem eq_true_of_not_eq_false {b : Bool} : ¬b = false → b = true :=
   Eq.mp (eq_true_eq_not_eq_false b)
 
 @[simp]
-theorem and_eq_true_eq_eq_true_and_eq_true (a b : Bool) : ((a && b) = true) = (a = true ∧ b = true) := by
+theorem and_eq_true_eq_eq_true_and_eq_true (a b : Bool) :
+    ((a && b) = true) = (a = true ∧ b = true) := by
   cases a <;> cases b <;> simp
 
 @[simp]
-theorem or_eq_true_eq_eq_true_or_eq_true (a b : Bool) : ((a || b) = true) = (a = true ∨ b = true) := by
+theorem or_eq_true_eq_eq_true_or_eq_true (a b : Bool) :
+    ((a || b) = true) = (a = true ∨ b = true) := by
   cases a <;> cases b <;> simp
 
 @[simp]
 theorem not_eq_true_eq_eq_false (a : Bool) : (not a = true) = (a = false) := by cases a <;> simp
 
 @[simp]
-theorem and_eq_false_eq_eq_false_or_eq_false (a b : Bool) : ((a && b) = false) = (a = false ∨ b = false) := by
+theorem and_eq_false_eq_eq_false_or_eq_false (a b : Bool) :
+    ((a && b) = false) = (a = false ∨ b = false) := by
   cases a <;> cases b <;> simp
 
 @[simp]
-theorem or_eq_false_eq_eq_false_and_eq_false (a b : Bool) : ((a || b) = false) = (a = false ∧ b = false) := by
+theorem or_eq_false_eq_eq_false_and_eq_false (a b : Bool) :
+    ((a || b) = false) = (a = false ∧ b = false) := by
   cases a <;> cases b <;> simp
 
 @[simp]
@@ -117,7 +121,8 @@ theorem decide_false {p : Prop} [Decidable p] : ¬p → decide p = false :=
 theorem of_decide_false {p : Prop} [Decidable p] : decide p = false → ¬p :=
   (decide_false_iff p).1
 
-theorem decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) : decide p = decide q := by
+theorem decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) :
+    decide p = decide q := by
   cases h' : decide q with
   | false => exact decide_false (mt h.1 <| of_decide_false h')
   | true => exact decide_true (h.2 <| of_decide_true h')
@@ -129,7 +134,8 @@ theorem or_coe_iff (a b : Bool) : a || b ↔ a ∨ b := by cases a <;> cases b <
 theorem and_coe_iff (a b : Bool) : a && b ↔ a ∧ b := by cases a <;> cases b <;> exact by decide
 
 @[simp]
-theorem xor_coe_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by cases a <;> cases b <;> exact by decide
+theorem xor_coe_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
+  cases a <;> cases b <;> exact by decide
 
 @[simp]
 theorem ite_eq_true_distrib (c : Prop) [Decidable c] (a b : Bool) :
@@ -137,7 +143,8 @@ theorem ite_eq_true_distrib (c : Prop) [Decidable c] (a b : Bool) :
 
 @[simp]
 theorem ite_eq_false_distrib (c : Prop) [Decidable c] (a b : Bool) :
-    ((if c then a else b) = false) = if c then a = false else b = false := by by_cases c <;> simp [*]
+    ((if c then a else b) = false) = if c then a = false else b = false := by
+  by_cases c <;> simp [*]
 
 end Bool
 
