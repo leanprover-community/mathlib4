@@ -124,11 +124,6 @@ class OrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
   /-- The product of positive elements is positive. -/
   mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b
 
--- TODO These are necessary because of https://github.com/leanprover/lean4/issues/1730
-attribute [nolint docBlame] OrderedSemiring.le_of_add_le_add_left
-attribute [nolint docBlame] OrderedSemiring.add_le_add_left
-attribute [nolint docBlame] OrderedRing.add_le_add_left
-
 /-- An `ordered_comm_semiring` is a commutative semiring with a partial order such that addition is
 monotone and multiplication by a nonnegative number is monotone. -/
 class OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring α
