@@ -701,9 +701,6 @@ namespace Involutive
 
 variable {α : Sort u} {f : α → α} (h : Involutive f)
 
--- TODO
--- include h
-
 @[simp]
 theorem comp_self : f ∘ f = id :=
   funext h
@@ -752,8 +749,6 @@ protected theorem right (hf : Injective2 f) (a : α) : Function.Injective (f a) 
 
 protected theorem uncurry {α β γ : Type _} {f : α → β → γ} (hf : Injective2 f) :
     Function.Injective (uncurry f) :=
-  -- TODO
-  -- And.elim has changed argument order. We should provide a synonym and #align
   fun ⟨_, _⟩ ⟨_, _⟩ h => (hf h).elim (congr_arg₂ _)
 
 /-- As a map from the left argument to a unary function, `f` is injective. -/
