@@ -3,13 +3,8 @@ Copyright (c) 2016 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Std.Classes.SetNotation
-import Std.Tactic.Lint.Basic
-import Mathlib.Data.Option.Defs
-import Mathlib.Logic.Basic
 import Mathlib.Logic.Nonempty
 import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Function
 import Mathlib.Init.Set
 
 /-!
@@ -250,6 +245,8 @@ theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjecti
       assumption
     · congr -- Porting note: the congr regression here has been reported as
       -- https://github.com/leanprover/lean4/issues/1787
+      -- and subsequently fixed.
+      -- As soon as we can move mathlib4 to nightly-2022-10-29 or later this sorry can be removed.
       sorry
   exact cantor_injective g hg
 
