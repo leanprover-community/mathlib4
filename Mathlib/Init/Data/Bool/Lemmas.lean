@@ -7,6 +7,15 @@ import Mathlib.Init.Data.Bool.Basic
 import Mathlib.Init.Logic
 import Mathlib.Tactic.Coe
 
+/-!
+# Lemmas about booleans
+
+These are the lemmas about booleans which were present in core Lean 3. See also
+the file Mathlib.Data.Bool.Lemmas which contains lemmas about booleans from
+mathlib 3.
+
+-/
+
 attribute [simp] cond or and not xor
 
 namespace Bool
