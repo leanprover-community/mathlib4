@@ -132,11 +132,13 @@ end Semigroup
 /-- A commutative semigroup is a type with an associative commutative `(*)`. -/
 @[ext]
 class CommSemigroup (G : Type u) extends Semigroup G where
+  /-- Multiplication is commutative in a commutative semigroup. -/
   mul_comm : ∀ a b : G, a * b = b * a
 
 /-- A commutative additive semigroup is a type with an associative commutative `(+)`. -/
 @[ext]
 class AddCommSemigroup (G : Type u) extends AddSemigroup G where
+  /-- Addition is commutative in an additive commutative semigroup. -/
   add_comm : ∀ a b : G, a + b = b + a
 
 attribute [to_additive AddCommSemigroup] CommSemigroup

@@ -183,3 +183,5 @@ class LinearOrderedRing (α : Type u) extends StrictOrderedRing α, LinearOrder 
 /-- A `linear_ordered_comm_ring` is a commutative ring with a linear order such that addition is
 monotone and multiplication by a positive number is strictly monotone. -/
 class LinearOrderedCommRing (α : Type u) extends LinearOrderedRing α, CommMonoid α
+
+#print LinearOrderedCommRing.mul_comm
