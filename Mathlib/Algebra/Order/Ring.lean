@@ -122,8 +122,3 @@ class OrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
   zero_le_one : 0 ≤ (1 : α)
   /-- The product of positive elements is positive. -/
   mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b
-
--- TODO These are necessary because of https://github.com/leanprover/lean4/issues/1730
-attribute [nolint docBlame] OrderedSemiring.le_of_add_le_add_left
-attribute [nolint docBlame] OrderedSemiring.add_le_add_left
-attribute [nolint docBlame] OrderedRing.add_le_add_left
