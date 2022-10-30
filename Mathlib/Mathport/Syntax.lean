@@ -318,8 +318,6 @@ syntax termList := " [" term,* "]"
 /- N -/ syntax (name := simpResult) "simp_result "
   (&"only ")? (simpArgs)? " => " tacticSeq : tactic
 
-/- M -/ syntax (name := splitIfs) "split_ifs" (ppSpace location)? (" with " binderIdent+)? : tactic
-
 /- S -/ syntax (name := suggest) "suggest" (config)? (ppSpace num)?
   (simpArgs)? (" using " (colGt binderIdent)+)? : tactic
 
