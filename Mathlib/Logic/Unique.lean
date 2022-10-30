@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Logic.IsEmpty
 import Mathlib.Init.Logic
 import Mathlib.Init.Data.Fin.Basic
+import Mathlib.Tactic.Inhabit
 
 /-!
 # Types with a unique term
@@ -156,10 +157,8 @@ end Unique
 
 theorem unique_iff_subsingleton_and_nonempty (α : Sort u) :
     Nonempty (Unique α) ↔ Subsingleton α ∧ Nonempty α :=
-  ⟨fun ⟨u⟩ => by constructor <;> exact inferInstance, fun ⟨hs, hn⟩ =>
-    ⟨by
-      have : Inhabited α := sorry -- FIXME this should be by the missing tactic `inhabit α`.
-      exact Unique.mk' α⟩⟩
+  ⟨fun ⟨u⟩ => by constructor <;> exact inferInstance,
+   fun ⟨hs, hn⟩ => ⟨by inhabit α; exact Unique.mk' α⟩⟩
 
 @[simp]
 theorem Pi.default_def {β : α → Sort v} [∀ a, Inhabited (β a)] :
