@@ -11,7 +11,7 @@ import Mathlib.Tactic.Coe
 # Lemmas about booleans
 
 These are the lemmas about booleans which were present in core Lean 3. See also
-the file Mathlib.Data.Bool.Lemmas which contains lemmas about booleans from
+the file Mathlib.Data.Bool.Basic which contains lemmas about booleans from
 mathlib 3.
 
 -/
@@ -201,3 +201,5 @@ end Bool
 #align bxor_coe_iff Bool.xor_coe_iff
 #align ite_eq_tt_distrib Bool.ite_eq_true_distrib
 #align ite_eq_ff_distrib Bool.ite_eq_false_distrib
+
+#lint
