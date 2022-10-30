@@ -150,7 +150,7 @@ protected theorem subsingleton_unique' : ∀ h₁ h₂ : Unique α, h₁ = h₂
 instance subsingleton_unique : Subsingleton (Unique α) :=
   ⟨Unique.subsingleton_unique'⟩
 
-/-- Construct `unique` from `inhabited` and `subsingleton`. Making this an instance would create
+/-- Construct `Unique` from `Inhabited` and `Subsingleton`. Making this an instance would create
 a loop in the class inheritance graph. -/
 @[reducible]
 def mk' (α : Sort u) [h₁ : Inhabited α] [Subsingleton α] : Unique α :=
@@ -208,7 +208,7 @@ then the codomain is a singleton as well. -/
 protected def Surjective.unique (hf : Surjective f) [Unique α] : Unique β :=
   @Unique.mk' _ ⟨f default⟩ hf.subsingleton
 
-/-- If `α` is inhabited and admits an injective map to a subsingleton type, then `α` is `unique`. -/
+/-- If `α` is inhabited and admits an injective map to a subsingleton type, then `α` is `Unique`. -/
 protected def Injective.unique [Inhabited α] [Subsingleton β] (hf : Injective f) : Unique α :=
   @Unique.mk' _ _ hf.subsingleton
 
@@ -230,10 +230,8 @@ namespace Option
 /-- `option α` is a `subsingleton` if and only if `α` is empty. -/
 theorem subsingleton_iff_is_empty {α : Type u} : Subsingleton (Option α) ↔ IsEmpty α :=
   ⟨fun h => ⟨fun x => Option.noConfusion <| @Subsingleton.elim _ h x none⟩,
-   fun _ => ⟨fun x y =>
-     Option.casesOn x (Option.casesOn y rfl fun x => isEmptyElim x) fun x => isEmptyElim x⟩⟩
--- Note sure why we can't use `h.elim x` here instead of `isEmptyElim x`:
--- see https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Type.20mismatch.20with.20projection.20notation/near/306897969
+   fun h => ⟨fun x y =>
+     Option.casesOn x (Option.casesOn y rfl fun x => h.elim x) fun x => h.elim x⟩⟩
 
 instance {α} [IsEmpty α] : Unique (Option α) :=
   @Unique.mk' _ _ (subsingleton_iff_is_empty.2 ‹_›)
