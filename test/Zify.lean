@@ -7,18 +7,23 @@ Authors: Moritz Doll, Robert Y. Lewis
 import Mathlib.Tactic.Zify
 import Std.Tactic.GuardExpr
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Tactic.LibrarySearch
 
--- Todo: These are verbatim copies of the tests from mathlib3. There
+-- TODO: These are verbatim copies of the tests from mathlib3. It would be nice to add more.
 
-@[norm_cast] theorem ofNat_zero : Int.ofNat 0 = 0 := rfl
+-- TODO move these attributes to their correct homes.
+attribute [norm_cast] Int.ofNat_mul
+attribute [norm_cast] Int.ofNat_add
+attribute [norm_cast] Int.ofNat_sub
+attribute [norm_cast] Int.ofNat_zero
+
+@[norm_cast] lemma Int.ofNat_ofNat (n : ℕ) : (Int.ofNat (OfNat.ofNat n : ℕ)) = OfNat.ofNat n := rfl
 
 example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) (h2 : (c : ℤ) < a + 3 * b) : a + 3*b > c := by
   zify at h ⊢
   push_cast at h
-  -- fails because Int.ofNat_mul and Int.ofNat_zero are not flagged as `norm_cast`:
-  --guard_hyp h : ¬↑x * ↑y * ↑z < (0 : ℤ)
-  -- fails
-  --guard_target =ₐ ↑c < (↑a : ℤ) + 3 * ↑b
+  guard_hyp h : ¬↑x * ↑y * ↑z < (0 : ℤ)
+  guard_target =ₐ ↑c < (↑a : ℤ) + 3 * ↑b
   exact h2
 
 example (a b : ℕ) (h : (a : ℤ) ≤ b) : a ≤ b := by
@@ -34,11 +39,10 @@ example (a b : ℕ) (h : (a : ℤ) ≤ b) : a ≤ b := by
 
 example (a b c : ℕ) (h : a - b < c) (hab : b ≤ a) : True := by
   zify [hab] at h
-  -- fails because `Int.ofNat_sub` is not flagged as `norm_cast`
-  --guard_hyp h : (a : ℤ) - b < c,
+  guard_hyp h : (a : ℤ) - b < c
   trivial
 
 example (a b c : ℕ) (h : a + b ≠ c) : True := by
   zify at h
-  --guard_hyp h : (a + b : ℤ) ≠ c
+  guard_hyp h : (a + b : ℤ) ≠ c
   trivial
