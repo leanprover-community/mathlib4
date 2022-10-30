@@ -361,11 +361,9 @@ attribute [local instance] Classical.propDecidable
 
 /-- The inverse of a function (which is a left inverse if `f` is injective
   and a right inverse if `f` is surjective). -/
-noncomputable def invFun (f : α → β) : β → α :=
-  fun y => @dite α (∃ x, f x = y) (Classical.propDecidable _)
-    Classical.choose (fun _ => Classical.arbitrary _)
-  -- FIXME: the definition below specializes α to Prop in the presence of `exists_prop_decidable`
-  -- fun y => if h : (∃ x, f x = y) then h.choose else Classical.arbitrary α
+-- Explicit Sort so that `α` isn't inferred to be Prop via `exists_prop_decidable`
+noncomputable def invFun {α : Sort u} {β} [Nonempty α] (f : α → β) : β → α :=
+  fun y => if h : (∃ x, f x = y) then h.choose else Classical.arbitrary α
 
 theorem inv_fun_eq (h : ∃ a, f a = b) : f (invFun f b) = b :=
   by simp only [invFun, dif_pos h, h.choose_spec]
@@ -577,11 +575,9 @@ by using the values of `g` on the range of `f`
 and the values of an auxiliary function `e' : β → γ` elsewhere.
 
 Mostly useful when `f` is injective. -/
-def extend (f : α → β) (g : α → γ) (e' : β → γ) : β → γ := fun b =>
-  @dite γ (∃ a, f a = b) (Classical.propDecidable _) (fun h => g (Classical.choose h))
-    (fun _ => e' b)
-  -- FIXME: the definition below is not correct, due to `exists_prop_decidable`
-  -- if h : ∃ a, f a = b then g (Classical.choose h) else e' b
+-- Explicit Sort so that `α` isn't inferred to be Prop via `exists_prop_decidable`
+def extend {α : Sort u} {β γ} (f : α → β) (g : α → γ) (e' : β → γ) : β → γ := fun b =>
+  if h : ∃ a, f a = b then g (Classical.choose h) else e' b
 
 theorem extend_def (f : α → β) (g : α → γ) (e' : β → γ) (b : β) [Decidable (∃ a, f a = b)] :
     extend f g e' b = if h : ∃ a, f a = b then g (Classical.choose h) else e' b := by
