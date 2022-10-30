@@ -168,11 +168,13 @@ explore changing this, but be warned that the instances involving `domain` may c
 search loops. -/
 /-- A `linear_ordered_semiring` is a nontrivial semiring with a linear order such that
 addition is monotone and multiplication by a positive number is strictly monotone. -/
-class LinearOrderedSemiring (α : Type u) extends StrictOrderedSemiring α, LinearOrderedAddCommMonoid α, Nontrivial α
+class LinearOrderedSemiring (α : Type u) extends StrictOrderedSemiring α,
+  LinearOrderedAddCommMonoid α, Nontrivial α
 
 /-- A `linear_ordered_comm_semiring` is a nontrivial commutative semiring with a linear order such
 that addition is monotone and multiplication by a positive number is strictly monotone. -/
-class LinearOrderedCommSemiring (α : Type _) extends StrictOrderedCommSemiring α, LinearOrderedSemiring α
+class LinearOrderedCommSemiring (α : Type _) extends StrictOrderedCommSemiring α,
+  LinearOrderedSemiring α
 
 /-- A `linear_ordered_ring` is a ring with a linear order such that addition is monotone and
 multiplication by a positive number is strictly monotone. -/
