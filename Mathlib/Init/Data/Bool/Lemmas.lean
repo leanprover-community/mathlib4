@@ -16,12 +16,17 @@ mathlib 3.
 
 -/
 
-attribute [simp] cond or and not xor
-
 namespace Bool
 
+-- In Lean 3 we had `attribute [simp] cond or and not xor` in the corresponding
+-- file, but in Lean 4 this makes the `simpNF` linter complain, so instead we
+-- manually generate the corresponding equation lemmas and tag them with `@[simp]` instead.
+-- `or`, `and`, and `not` are already done in core Lean 4; here is `cond`, and `xor` is done below.
+@[simp] lemma cond_true {α : Type u} {a b : α} : cond true a b = a := rfl
+@[simp] lemma cond_false {α : Type u} {a b : α} : cond false a b = b := rfl
+
 @[simp]
-theorem cond_a_a.{u} {α : Type u} (b : Bool) (a : α) : cond b a a = a := by cases b <;> simp
+theorem cond_self.{u} {α : Type u} (b : Bool) (a : α) : cond b a a = a := by cases b <;> rfl
 
 @[simp]
 theorem xor_self (b : Bool) : xor b b = false := by cases b <;> simp
@@ -40,11 +45,9 @@ theorem true_eq_false_eq_False : ¬true = false := by decide
 
 theorem false_eq_true_eq_False : ¬false = true := by decide
 
-@[simp]
-theorem eq_false_eq_not_eq_true (b : Bool) : (¬b = true) = (b = false) := by cases b <;> simp
+theorem eq_false_eq_not_eq_true (b : Bool) : (¬b = true) = (b = false) := by simp
 
-@[simp]
-theorem eq_true_eq_not_eq_false (b : Bool) : (¬b = false) = (b = true) := by cases b <;> simp
+theorem eq_true_eq_not_eq_false (b : Bool) : (¬b = false) = (b = true) := by simp
 
 theorem eq_false_of_not_eq_true {b : Bool} : ¬b = true → b = false :=
   Eq.mp (eq_false_eq_not_eq_true b)
@@ -52,15 +55,11 @@ theorem eq_false_of_not_eq_true {b : Bool} : ¬b = true → b = false :=
 theorem eq_true_of_not_eq_false {b : Bool} : ¬b = false → b = true :=
   Eq.mp (eq_true_eq_not_eq_false b)
 
-@[simp]
 theorem and_eq_true_eq_eq_true_and_eq_true (a b : Bool) :
-    ((a && b) = true) = (a = true ∧ b = true) := by
-  cases a <;> cases b <;> simp
+    ((a && b) = true) = (a = true ∧ b = true) := by simp
 
-@[simp]
 theorem or_eq_true_eq_eq_true_or_eq_true (a b : Bool) :
-    ((a || b) = true) = (a = true ∨ b = true) := by
-  cases a <;> cases b <;> simp
+    ((a || b) = true) = (a = true ∨ b = true) := by simp
 
 @[simp]
 theorem not_eq_true_eq_eq_false (a : Bool) : (not a = true) = (a = false) := by cases a <;> simp
@@ -78,27 +77,15 @@ theorem or_eq_false_eq_eq_false_and_eq_false (a b : Bool) :
 @[simp]
 theorem not_eq_false_eq_eq_true (a : Bool) : (not a = false) = (a = true) := by cases a <;> simp
 
-@[simp]
-theorem coe_false : ↑false = False :=
-  show (false = true) = False by simp
+theorem coe_false : ↑false = False := by simp
 
-@[simp]
-theorem coe_true : ↑true = True :=
-  show (true = true) = True by simp
+theorem coe_true : ↑true = True := by simp
 
-@[simp]
-theorem coe_sort_false : (↥false : Prop) = False :=
-  show (false = true) = False by simp
+theorem coe_sort_false : (↥false : Prop) = False := by simp
 
-@[simp]
-theorem coe_sort_true : (↥true : Prop) = True :=
-   show (true = true) = True by simp
+theorem coe_sort_true : (↥true : Prop) = True := by simp
 
-@[simp]
-theorem decide_iff (p : Prop) [d : Decidable p] : decide p = true ↔ p :=
-  match d with
-  | isTrue hp => ⟨fun _ => hp, fun _ => rfl⟩
-  | isFalse hnp => ⟨fun h => Bool.noConfusion h, fun hp => absurd hp hnp⟩
+theorem decide_iff (p : Prop) [d : Decidable p] : decide p = true ↔ p := by simp
 
 theorem decide_true {p : Prop} [Decidable p] : p → decide p :=
   (decide_iff p).2
@@ -111,7 +98,6 @@ theorem bool_iff_false {b : Bool} : ¬b ↔ b = false := by cases b <;> exact by
 theorem bool_eq_false {b : Bool} : ¬b → b = false :=
   bool_iff_false.1
 
-@[simp]
 theorem decide_false_iff (p : Prop) [Decidable p] : decide p = false ↔ ¬p :=
   bool_iff_false.symm.trans (not_congr (decide_iff _))
 
@@ -127,11 +113,9 @@ theorem decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) :
   | false => exact decide_false (mt h.1 <| of_decide_false h')
   | true => exact decide_true (h.2 <| of_decide_true h')
 
-@[simp]
-theorem or_coe_iff (a b : Bool) : a || b ↔ a ∨ b := by cases a <;> cases b <;> exact by decide
+theorem or_coe_iff (a b : Bool) : a || b ↔ a ∨ b := by simp
 
-@[simp]
-theorem and_coe_iff (a b : Bool) : a && b ↔ a ∧ b := by cases a <;> cases b <;> exact by decide
+theorem and_coe_iff (a b : Bool) : a && b ↔ a ∧ b := by simp
 
 @[simp]
 theorem xor_coe_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
@@ -152,7 +136,9 @@ end Bool
 -- of the lemmas in the core Lean 3 file `init.data.bool.lemmas` which are not
 -- in core Lean 4; others (e.g. `Bool.and_self`) are aligning lean 3 lemmas with
 -- lemmas from various places in core Lean 4, e.g. `lean.Init.SimpLemmas`.
-#align cond_a_a Bool.cond_a_a
+#align bool.cond_tt Bool.cond_true
+#align bool.cond_ff Bool.cond_false
+#align cond_a_a Bool.cond_self
 #align band_self Bool.and_self
 #align band_tt Bool.and_true
 #align band_ff Bool.and_false
@@ -200,5 +186,3 @@ end Bool
 #align bxor_coe_iff Bool.xor_coe_iff
 #align ite_eq_tt_distrib Bool.ite_eq_true_distrib
 #align ite_eq_ff_distrib Bool.ite_eq_false_distrib
-
-#lint
