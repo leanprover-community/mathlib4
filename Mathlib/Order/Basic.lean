@@ -109,7 +109,8 @@ alias lt_asymm        ← LT.lt.asymm LT.lt.not_lt
 
 alias le_of_eq        ← Eq.le
 
-attribute [nolint decidable_classical] LE.le.lt_or_eq_dec
+-- FIXME: missing linter
+-- attribute [nolint decidable_classical] LE.le.lt_or_eq_dec
 
 section
 variable [Preorder α] {a b c : α}
@@ -228,7 +229,8 @@ lemma eq_or_lt_of_le [PartialOrder α] {a b : α} (h : a ≤ b) : a = b ∨ a < 
 alias Decidable.eq_or_lt_of_le ← LE.le.eq_or_lt_dec
 alias eq_or_lt_of_le ← LE.le.eq_or_lt
 
-attribute [nolint decidable_classical] LE.le.eq_or_lt_dec
+-- FIXME: missing linter
+-- attribute [nolint decidable_classical] LE.le.eq_or_lt_dec
 
 lemma NE.le_iff_lt [PartialOrder α] {a b : α} (h : a ≠ b) : a ≤ b ↔ a < b :=
 ⟨λ h' => lt_of_le_of_ne h' h, λ h => h.le⟩
@@ -315,7 +317,7 @@ lemma le_implies_le_of_le_of_le {a b c d : α} [Preorder α] (hca : c ≤ a) (hb
 λ hab => (hca.trans hab).trans hbd
 
 @[ext]
-theorem Preorder.to_le_injective {α : Type _} : Function.injective (@Preorder.toLE α) :=
+theorem Preorder.to_le_injective {α : Type _} : Function.Injective (@Preorder.toLE α) :=
 λ A B h => by
   cases A with | @mk A_toLE A_toLT A_le_refl A_le_trans A_lt_iff_le_not_le =>
   cases B with | @mk B_toLE B_toLT B_le_refl B_le_trans B_lt_iff_le_not_le =>
@@ -339,23 +341,24 @@ theorem Preorder.to_le_injective {α : Type _} : Function.injective (@Preorder.t
 
 @[ext]
 lemma PartialOrder.to_preorder_injective {α : Type _} :
-  Function.injective (@PartialOrder.toPreorder α) := λ A B h => by
+  Function.Injective (@PartialOrder.toPreorder α) := λ A B h => by
     cases A
     cases B
     subst h
     rfl
 
-@[ext]
-lemma LinearOrder.to_partial_order_injective {α : Type _} :
-  Function.injective (@LinearOrder.toPartialOrder α) := by
-  intros A B h
-  cases A with | @mk A_toPartialOrder A_le_total A_decidable_le A_decidable_eq A_decidable_lt =>
-  cases B with | @mk B_toPartialOrder B_le_total B_decidable_le B_decidable_eq B_decidable_lt =>
-  subst h
-  have h_dle : A_decidable_le = B_decidable_le := Subsingleton.elim _ _
-  have h_dleq : A_decidable_eq = B_decidable_eq := Subsingleton.elim _ _
-  have h_dlt : A_decidable_lt = B_decidable_lt := Subsingleton.elim _ _
-  rw [h_dle, h_dleq, h_dlt]
+@[ext] lemma LinearOrder.to_partial_order_injective {α : Type _} :
+    Function.Injective (@LinearOrder.toPartialOrder α)
+  | @mk _ ord ⟨A_min⟩ ⟨A_max⟩ _ A_decLe A_decEq A_decLt A_min_eq A_max_eq,
+    @mk _ _ ⟨B_min⟩ ⟨B_max⟩ _ B_decLe B_decEq B_decLt B_min_eq B_max_eq, rfl => by
+    cases Subsingleton.elim A_decLe B_decLe
+    cases show A_min = (@minOfLe _ ord.toLE).min by funext a b; exact A_min_eq a b
+    cases show B_min = (@minOfLe _ ord.toLE).min by funext a b; exact B_min_eq a b
+    cases show A_max = (@maxOfLe _ ord.toLE).max by funext a b; exact A_max_eq a b
+    cases show B_max = (@maxOfLe _ ord.toLE).max by funext a b; exact B_max_eq a b
+    cases Subsingleton.elim A_decEq B_decEq
+    cases Subsingleton.elim A_decLt B_decLt
+    rfl
 
 theorem Preorder.ext {α} {A B : Preorder α}
     (H : ∀ x y : α, (A.toLE.le x y ↔ B.toLE.le x y)) : A = B := by
@@ -417,6 +420,10 @@ instance order_dual_partial_order (α : Type _) [PartialOrder α] : PartialOrder
 instance order_dual_linear_order (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ :=
 { order_dual_partial_order α with
     le_total     := λ a b : α => le_total b a
+    max := fun a b => (min a b : α)
+    min := fun a b => (max a b : α)
+    min_def := fun a b => show (max .. : α) = _ by rw [max_comm, max_def]; rfl
+    max_def := fun a b => show (min .. : α) = _ by rw [min_comm, min_def]; rfl
     decidable_le := (inferInstance : DecidableRel (λ a b : α => b ≤ a))
     decidable_lt := (inferInstance : DecidableRel (λ a b : α => b < a))
 }
@@ -531,16 +538,18 @@ See note [reducible non-instances]. -/
 
 /-- Transfer a `PartialOrder` on `β` to a `PartialOrder` on `α` using an injective
 function `f : α → β`. See note [reducible non-instances]. -/
-@[reducible] def PartialOrder.lift {α β} [PartialOrder β] (f : α → β) (inj : injective f) :
+@[reducible] def PartialOrder.lift {α β} [PartialOrder β] (f : α → β) (inj : Injective f) :
   PartialOrder α :=
 { Preorder.lift f with le_antisymm := λ _ _ h₁ h₂ => inj (h₁.antisymm h₂) }
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. See note [reducible non-instances]. -/
-@[reducible] def LinearOrder.lift {α β} [LinearOrder β] (f : α → β) (inj : injective f) :
+@[reducible] def LinearOrder.lift {α β} [LinearOrder β] (f : α → β) (inj : Injective f) :
   LinearOrder α :=
 { PartialOrder.lift f inj with
     le_total     := λ x y => le_total (f x) (f y),
+    toMin := minOfLe
+    toMax := maxOfLe
     decidable_le := λ x y => (inferInstance : Decidable (f x ≤ f y))
     decidable_lt := λ x y => (inferInstance : Decidable (f x < f y))
     decidable_eq := λ _ _ => decidable_of_iff _ inj.eq_iff

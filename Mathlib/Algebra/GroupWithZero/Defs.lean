@@ -75,19 +75,26 @@ class AddGroupWithOne (R : Type u) extends AddMonoidWithOne R, AddGroup R where
   intCast_ofNat : ∀ n : ℕ, intCast n = natCast n
   intCast_negSucc : ∀ n : ℕ, intCast (Int.negSucc n) = - natCast (n + 1)
 
-@[coe]
-def Int.cast [AddGroupWithOne R] : ℤ → R := AddGroupWithOne.intCast
+namespace Int
 
-instance [AddGroupWithOne R] : CoeTail ℤ R where coe := Int.cast
+@[coe] def cast [AddGroupWithOne R] : ℤ → R := AddGroupWithOne.intCast
 
-theorem Int.cast_ofNat [AddGroupWithOne R] : (Int.cast (Int.ofNat n) : R) = Nat.cast n :=
+instance [AddGroupWithOne R] : CoeTail ℤ R where coe := cast
+
+@[simp high, nolint simpNF] -- this lemma competes with `Int.ofNat_eq_cast` to come later
+theorem cast_ofNat [AddGroupWithOne R] : (cast (ofNat n) : R) = Nat.cast n :=
   AddGroupWithOne.intCast_ofNat _
-@[simp, norm_cast]
-theorem Int.cast_negSucc [AddGroupWithOne R] :
-    (Int.cast (Int.negSucc n) : R) = (-(Nat.cast (n + 1)) : R) :=
-  AddGroupWithOne.intCast_negSucc _
+#align int.cast_coe_nat Int.cast_ofNat
 
-@[simp, norm_cast] theorem Int.cast_zero [AddGroupWithOne R] : ((0 : ℤ) : R) = 0 := by
-  erw [Int.cast_ofNat, Nat.cast_zero]
-@[simp, norm_cast] theorem Int.cast_one [AddGroupWithOne R] : ((1 : ℤ) : R) = 1 := by
-  erw [Int.cast_ofNat, Nat.cast_one]
+@[simp, norm_cast]
+theorem cast_negSucc [AddGroupWithOne R] :
+    (cast (negSucc n) : R) = (-(Nat.cast (n + 1)) : R) :=
+  AddGroupWithOne.intCast_negSucc _
+#align int.cast_neg_succ_of_nat Int.cast_negSucc
+
+@[simp, norm_cast] theorem cast_zero [AddGroupWithOne R] : ((0 : ℤ) : R) = 0 := by
+  erw [cast_ofNat, Nat.cast_zero]
+@[simp, norm_cast] theorem cast_one [AddGroupWithOne R] : ((1 : ℤ) : R) = 1 := by
+  erw [cast_ofNat, Nat.cast_one]
+
+end Int

@@ -104,8 +104,9 @@ syntax (name := convert) "convert " "← "? term (" using " num)? : tactic
 
 elab_rules : tactic
 | `(tactic| convert $[←%$sym]? $term $[using $n]?) => withMainContext do
-  let e ← Term.elabTerm term (← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget))))
-  liftMetaTactic (Lean.MVarId.convert e sym.isSome (n.map (·.getNat)))
+  let (e, gs) ← elabTermWithHoles term
+    (← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))) (← getMainTag)
+  liftMetaTactic fun g => return (← g.convert e sym.isSome (n.map (·.getNat))) ++ gs
 
 -- FIXME restore when `add_tactic_doc` is ported.
 -- add_tactic_doc
