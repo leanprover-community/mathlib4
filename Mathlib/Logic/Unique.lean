@@ -44,15 +44,18 @@ for good definitional properties of the default term.
 
 universe u v w
 
-/-- `unique α` expresses that `α` is a type with a unique term `default`.
+/-- `Unique α` expresses that `α` is a type with a unique term `default`.
 
 This is implemented as a type, rather than a `Prop`-valued predicate,
 for good definitional properties of the default term. -/
 @[ext]
 structure Unique (α : Sort u) extends Inhabited α where
+  /-- In a `Unique` type, every term is equal to the default element (from `Inhabited`). -/
   uniq : ∀ a : α, a = default
 
 attribute [class] Unique
+-- The simplifier can already prove this using `eq_iff_true_of_subsingleton`
+attribute [nolint simpNF] Unique.mk.injEq
 
 theorem unique_iff_exists_unique (α : Sort u) : Nonempty (Unique α) ↔ ∃! _ : α, True :=
   ⟨fun ⟨u⟩ => ⟨u.default, trivial, fun a _ => u.uniq a⟩,
