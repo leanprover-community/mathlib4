@@ -14,6 +14,10 @@ apparently `xor` didn't make the cut.
 
 -/
 
+#align bor or
+#align band and
+#align bnot not
+
 /-- Boolean XOR -/
 @[inline]
 def xor : Bool → Bool → Bool
