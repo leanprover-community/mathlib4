@@ -5,6 +5,7 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Init.Data.Bool.Basic
 import Mathlib.Init.Logic
+import Mathlib.Tactic.Coe
 
 attribute [simp] cond or and not xor
 
@@ -72,15 +73,13 @@ theorem coe_false : ↑false = False :=
 theorem coe_true : ↑true = True :=
   show (true = true) = True by simp
 
--- **TODO** Do we just not want this now?
--- @[simp]
--- theorem coe_sort_false : ↥false = False :=
---   show (false = true) = False by simp
+@[simp]
+theorem coe_sort_false : (↥false : Prop) = False :=
+  show (false = true) = False by simp
 
--- **TODO** Do we just not want this now?
--- @[simp]
--- theorem coe_sort_true : ↥true = True :=
---   show (true = true) = True by simp
+@[simp]
+theorem coe_sort_true : (↥true : Prop) = True :=
+   show (true = true) = True by simp
 
 @[simp]
 theorem decide_iff (p : Prop) [d : Decidable p] : decide p = true ↔ p :=
@@ -132,3 +131,41 @@ theorem ite_eq_false_distrib (c : Prop) [Decidable c] (a b : Bool) :
     ((if c then a else b) = false) = if c then a = false else b = false := by by_cases c <;> simp [*]
 
 end Bool
+
+#align cond_a_a Bool.cond_a_a
+#align and_self Bool.and_self
+#align xor_self Bool.xor_self
+#align xor_true Bool.xor_true
+#align xor_false Bool.xor_false
+#align true_xor Bool.true_xor
+#align false_xor Bool.false_xor
+#align true_eq_false_eq_False Bool.true_eq_false_eq_False
+#align false_eq_true_eq_False Bool.false_eq_true_eq_False
+#align eq_false_eq_not_eq_true Bool.eq_false_eq_not_eq_true
+#align eq_true_eq_not_eq_false Bool.eq_true_eq_not_eq_false
+#align eq_false_of_not_eq_true Bool.eq_false_of_not_eq_true
+#align eq_true_of_not_eq_false Bool.eq_true_of_not_eq_false
+#align and_eq_true_eq_eq_true_and_eq_true Bool.and_eq_true_eq_eq_true_and_eq_true
+#align or_eq_true_eq_eq_true_or_eq_true Bool.or_eq_true_eq_eq_true_or_eq_true
+#align not_eq_true_eq_eq_false Bool.not_eq_true_eq_eq_false
+#align and_eq_false_eq_eq_false_or_eq_false Bool.and_eq_false_eq_eq_false_or_eq_false
+#align or_eq_false_eq_eq_false_and_eq_false Bool.or_eq_false_eq_eq_false_and_eq_false
+#align not_eq_false_eq_eq_true Bool.not_eq_false_eq_eq_true
+#align coe_false Bool.coe_false
+#align coe_true Bool.coe_true
+#align coe_sort_false Bool.coe_sort_false
+#align coe_sort_true Bool.coe_sort_true
+#align decide_iff Bool.decide_iff
+#align decide_true Bool.decide_true
+#align of_decide_true Bool.of_decide_true
+#align bool_iff_false Bool.bool_iff_false
+#align bool_eq_false Bool.bool_eq_false
+#align decide_false_iff Bool.decide_false_iff
+#align decide_false Bool.decide_false
+#align of_decide_false Bool.of_decide_false
+#align decide_congr Bool.decide_congr
+#align or_coe_iff Bool.or_coe_iff
+#align and_coe_iff Bool.and_coe_iff
+#align xor_coe_iff Bool.xor_coe_iff
+#align ite_eq_true_distrib Bool.ite_eq_true_distrib
+#align ite_eq_false_distrib Bool.ite_eq_false_distrib
