@@ -209,11 +209,11 @@ theorem Bijective.exists_unique_iff {f : α → β} (hf : Bijective f) {p : β �
     (∃! y, p y) ↔ ∃! x, p (f x) :=
   ⟨fun ⟨y, hpy, hy⟩ =>
     let ⟨x, hx⟩ := hf.surjective y
-    ⟨x, by rwa [hx], fun z (hz : p (f z)) => hf.injective <| hx.symm ▸ hy _ hz⟩,
+    ⟨x, by simpa [hx], fun z (hz : p (f z)) => hf.injective <| hx.symm ▸ hy _ hz⟩,
     fun ⟨x, hpx, hx⟩ =>
     ⟨f x, hpx, fun y hy =>
       let ⟨z, hz⟩ := hf.surjective y
-      hz ▸ congr_arg f <| hx _ <| by rwa [hz]⟩⟩
+      hz ▸ congr_arg f (hx _ (by simpa [hz]))⟩⟩
 
 theorem Bijective.of_comp_iff (f : α → β) {g : γ → α} (hg : Bijective g) :
     Bijective (f ∘ g) ↔ Bijective f :=
@@ -236,7 +236,6 @@ theorem cantor_injective {α : Type _} (f : Set α → α) : ¬Injective f
        RightInverse.surjective
          (λ U => funext $ λ _a => propext ⟨λ h => h U rfl, λ h' _U e => i e ▸ h'⟩)
 
-
 /-- There is no surjection from `α : Type u` into `Type u`. This theorem
   demonstrates why `Type : Type` would be inconsistent in Lean. -/
 theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjective f := by
@@ -249,8 +248,9 @@ theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjecti
     suffices cast hU (g s).2 = cast hU (g t).2 by
       simp only [cast_cast, cast_eq] at this
       assumption
-    · congr -- Porting note: the congr regression here has been reported as https://github.com/leanprover/lean4/issues/1787
-      assumption
+    · congr -- Porting note: the congr regression here has been reported as
+      -- https://github.com/leanprover/lean4/issues/1787
+      sorry
   exact cantor_injective g hg
 
 /-- `g` is a partial inverse to `f` (an injective but not necessarily
@@ -362,7 +362,10 @@ attribute [local instance] Classical.propDecidable
 /-- The inverse of a function (which is a left inverse if `f` is injective
   and a right inverse if `f` is surjective). -/
 noncomputable def invFun (f : α → β) : β → α :=
-  fun y => if h : ∃ x, f x = y then h.choose else Classical.arbitrary α
+  fun y => @dite α (∃ x, f x = y) (Classical.propDecidable _)
+    Classical.choose (fun _ => Classical.arbitrary _)
+  -- FIXME: the definition below specializes α to Prop in the presence of `exists_prop_decidable`
+  -- fun y => if h : (∃ x, f x = y) then h.choose else Classical.arbitrary α
 
 theorem inv_fun_eq (h : ∃ a, f a = b) : f (invFun f b) = b :=
   by simp only [invFun, dif_pos h, h.choose_spec]
@@ -489,7 +492,7 @@ lemma forall_update_iff (f : ∀a, β a) {a : α} {b : β a} (p : ∀a, β a →
 theorem exists_update_iff (f : ∀ a, β a) {a : α} {b : β a} (p : ∀ a, β a → Prop) :
     (∃ x, p x (update f a b x)) ↔ p a b ∨ ∃ (x : _)(_ : x ≠ a), p x (f x) := by
   rw [← not_forall_not, forall_update_iff f fun a b => ¬p a b]
-  simp [not_and_or]
+  simp [-not_and, not_and_or]
 
 theorem update_eq_iff {a : α} {b : β a} {f g : ∀ a, β a} :
     update f a b = g ↔ b = g a ∧ ∀ (x) (_ : x ≠ a), f x = g x :=
@@ -575,7 +578,10 @@ and the values of an auxiliary function `e' : β → γ` elsewhere.
 
 Mostly useful when `f` is injective. -/
 def extend (f : α → β) (g : α → γ) (e' : β → γ) : β → γ := fun b =>
-  if h : ∃ a, f a = b then g (Classical.choose h) else e' b
+  @dite γ (∃ a, f a = b) (Classical.propDecidable _) (fun h => g (Classical.choose h))
+    (fun _ => e' b)
+  -- FIXME: the definition below is not correct, due to `exists_prop_decidable`
+  -- if h : ∃ a, f a = b then g (Classical.choose h) else e' b
 
 theorem extend_def (f : α → β) (g : α → γ) (e' : β → γ) (b : β) [Decidable (∃ a, f a = b)] :
     extend f g e' b = if h : ∃ a, f a = b then g (Classical.choose h) else e' b := by
@@ -755,7 +761,7 @@ protected theorem uncurry {α β γ : Type _} {f : α → β → γ} (hf : Injec
     Function.Injective (uncurry f) :=
   -- TODO
   -- And.elim has changed argument order. We should provide a synonym and #align
-  fun ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ h => And.elim (hf h) (congr_arg₂ _)
+  fun ⟨_, _⟩ ⟨_, _⟩ h => (hf h).elim (congr_arg₂ _)
 
 /-- As a map from the left argument to a unary function, `f` is injective. -/
 theorem left' (hf : Injective2 f) [Nonempty β] : Function.Injective f := fun a₁ a₂ h =>
@@ -806,14 +812,19 @@ theorem eq_rec_on_bijective {α : Sort _} {C : α → Sort _} :
     ∀ {a a' : α} (h : a = a'), Function.Bijective (@Eq.ndrec _ _ C · _ h)
   | _, _, rfl => ⟨fun _ _ => id, fun x => ⟨x, rfl⟩⟩
 
-theorem eq_mp_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.mp h) :=
-  eq_rec_on_bijective h
+theorem eq_mp_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.mp h) := by
+  -- TODO: mathlib3 uses `eq_rec_on_bijective`, difference in elaboration here
+  -- due to `@[macro_inline] possibly?
+  cases h
+  refine ⟨fun _ _ => id, fun x => ⟨x, rfl⟩⟩
 
-theorem eq_mpr_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.mpr h) :=
-  eq_rec_on_bijective h.symm
+theorem eq_mpr_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.mpr h) := by
+  cases h
+  refine ⟨fun _ _ => id, fun x => ⟨x, rfl⟩⟩
 
-theorem cast_bijective {α β : Sort _} (h : α = β) : Function.Bijective (cast h) :=
-  eq_rec_on_bijective h
+theorem cast_bijective {α β : Sort _} (h : α = β) : Function.Bijective (cast h) := by
+  cases h
+  refine ⟨fun _ _ => id, fun x => ⟨x, rfl⟩⟩
 
 /-! Note these lemmas apply to `Type*` not `Sort*`, as the latter interferes with `simp`, and
 is trivial anyway.-/
@@ -830,18 +841,20 @@ theorem cast_inj {α β : Type _} (h : α = β) {x y : α} : cast h x = cast h y
 
 theorem Function.LeftInverse.eq_rec_eq {α β : Sort _} {γ : β → Sort v} {f : α → β} {g : β → α}
     (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) :
-    (congr_arg f (h a)).rec (C (g (f a))) = C a :=
+    -- TODO: mathlib3 uses `(congr_arg f (h a)).rec (C (g (f a)))` for LHS
+    @Eq.rec β (f (g (f a))) (fun x _ => γ x) (C (g (f a))) (f a) (congr_arg f (h a)) = C a :=
   eq_of_heq <| (eq_rec_heq _ _).trans <| by rw [h]
 
 theorem Function.LeftInverse.eq_rec_on_eq {α β : Sort _} {γ : β → Sort v} {f : α → β} {g : β → α}
     (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) :
-    (congr_arg f (h a)).recOn (C (g (f a))) = C a :=
+    -- TODO: mathlib3 uses `(congr_arg f (h a)).recOn (C (g (f a)))` for LHS
+    @Eq.recOn β (f (g (f a))) (fun x _ => γ x) (f a) (congr_arg f (h a)) (C (g (f a))) = C a :=
   h.eq_rec_eq _ _
 
 theorem Function.LeftInverse.cast_eq {α β : Sort _} {γ : β → Sort v} {f : α → β} {g : β → α}
     (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) :
-    cast (congr_arg (fun a => γ (f a)) (h a)) (C (g (f a))) = C a :=
-  eq_of_heq <| (eq_rec_heq _ _).trans <| by rw [h]
+    cast (congr_arg (fun a => γ (f a)) (h a)) (C (g (f a))) = C a := by
+  rw [cast_eq_iff_heq, h]
 
 /-- A set of functions "separates points"
 if for each pair of distinct points there is a function taking different values on them. -/
