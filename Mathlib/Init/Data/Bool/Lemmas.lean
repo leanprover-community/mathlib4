@@ -16,7 +16,7 @@ mathlib 3.
 
 -/
 
--- We align Lean 3 lemmas with lemmas `Init.SimpLemmas` in Lean 4.
+-- We align Lean 3 lemmas with lemmas in `Init.SimpLemmas` in Lean 4.
 #align band_self Bool.and_self
 #align band_tt Bool.and_true
 #align band_ff Bool.and_false
