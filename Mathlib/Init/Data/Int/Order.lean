@@ -4,16 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 
-import Std.Data.Int.Basic
-import Std.Data.Int.Lemmas
-import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Data.Int.Notation
-import Mathlib.Tactic.Basic
-import Mathlib.Tactic.Coe
-import Mathlib.Algebra.Ring.Basic
-open Nat
 
 /-! # The order relation on the integers -/
+
+open Nat
 
 namespace Int
 
