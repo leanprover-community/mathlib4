@@ -34,6 +34,11 @@ structure IsNat [Semiring α] (a : α) (n : ℕ) : Prop where
 
 theorem IsNat.raw_refl (n : ℕ) : IsNat n n := ⟨rfl⟩
 
+/--
+A "raw nat cast" is an expression of the form `(Nat.rawCast lit : α)` where `lit` is a raw
+natural number literal. These expressions are used by tactics like `ring` to decrease the number
+of typeclass arguments required in each use of a number literal at type `α`.
+-/
 @[simp] def _root_.Nat.rawCast [Semiring α] (n : ℕ) : α := n
 
 /-- Asserting that the `OfNat α n` instance provides the same value as the coercion. -/
@@ -61,6 +66,16 @@ structure IsInt [Ring α] (a : α) (n : ℤ) : Prop where
   /-- The element is equal to the coercion of the integer. -/
   out : a = n
 
+/--
+A "raw int cast" is an expression of the form:
+
+* `(Nat.rawCast lit : α)` where `lit` is a raw natural number literal
+* `(Int.rawCast (Int.negOfNat lit) : α)` where `lit` is a nonzero raw natural number literal
+
+(That is, we only actually use this function for negative integers.) This representation is used by
+tactics like `ring` to decrease the number of typeclass arguments required in each use of a number
+literal at type `α`.
+-/
 @[simp] def _root_.Int.rawCast [Ring α] (n : ℤ) : α := n
 
 theorem IsInt.to_isNat {α} [Ring α] : ∀ {a : α} {n}, IsInt a (.ofNat n) → IsNat a n
@@ -177,10 +192,6 @@ def inferSemiring (α : Q(Type u)) : MetaM Q(Semiring $α) :=
 def inferRing (α : Q(Type u)) : MetaM Q(Ring $α) :=
   return ← synthInstanceQ (q(Ring $α) : Q(Type u)) <|> throwError "not a semiring"
 
-def Result.isZero : Result e → Bool
-  | .isNat _ lit _ => lit.natLit! == 0
-  | _ => false
-
 /--
 Extract from a `Result` the integer value (as both a term and an expression),
 and the proof that the original expression is equal to this integer.
@@ -199,6 +210,11 @@ instance : ToMessageData (Result x) where
   | .isNegNat _ lit proof => m!"isNegNat {lit} ({proof})"
   | .isRat _ q _ _ proof => m!"isRat {q} ({proof})"
 
+/--
+Given a `NormNum.Result e` (which uses `IsNat` or `IsInt` to express equality to an integer
+numeral), converts it to an equality `e = Nat.rawCast n` or `e = Int.rawCast n` to a raw cast
+expression, so it can be used for rewriting.
+-/
 def Result.toRawEq {α : Q(Type u)} {e : Q($α)} : Result e → (ℤ × (e' : Q($α)) × Q($e = $e'))
   | .isNat _ lit p => ⟨lit.natLit!, q(Nat.rawCast $lit), q(IsNat.to_raw_eq $p)⟩
   | .isNegNat _ lit p => ⟨-lit.natLit!, q(Int.rawCast (.negOfNat $lit)), q(IsInt.to_raw_eq $p)⟩
