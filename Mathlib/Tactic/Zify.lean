@@ -43,8 +43,6 @@ subtype) to propositions about `ℤ` (the supertype), without changing the type 
 syntax (name := zify) "zify" (simpArgs)? (ppSpace location)? : tactic
 
 macro_rules
-| `(tactic| zify $[at $location]?) =>
-  `(tactic| simp only [zify_simps, push_cast] $[at $location]?)
 | `(tactic| zify $[[$simpArgs,*]]? $[at $location]?) =>
   let args := simpArgs.map (·.getElems) |>.getD #[]
   `(tactic| simp only [zify_simps, push_cast, $args,*] $[at $location]?)
