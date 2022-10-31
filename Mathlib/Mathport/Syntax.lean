@@ -164,9 +164,9 @@ macro ak:Term.attrKind "notation3"
       let args := #[
         Lean.mkAtom "(", x, y, Lean.mkAtom "=>", scopedTerm, Lean.mkAtom ")", init,
         Lean.mkAtom "[", args, Lean.mkAtom "]"]
-      let stx ← show MacroM Syntax.Term from match kind.1[0] with
-        | .atom _ "foldl" => pure ⟨mkNode ``expandFoldl (#[Lean.mkAtom "expandFoldl%"] ++ args)⟩
-        | .atom _ "foldr" => pure ⟨mkNode ``expandFoldr (#[Lean.mkAtom "expandFoldr%"] ++ args)⟩
+      let stx ← show MacroM Syntax.Term from match kind with
+        | `(foldKind| foldl) => pure ⟨mkNode ``expandFoldl (#[Lean.mkAtom "expandFoldl%"] ++ args)⟩
+        | `(foldKind| foldr) => pure ⟨mkNode ``expandFoldr (#[Lean.mkAtom "expandFoldr%"] ++ args)⟩
         | _ => Macro.throwUnsupported
       boundNames := boundNames.insert id.getId stx
     | `(notation3Item| $lit:ident : (scoped $scopedId:ident => $scopedTerm)) =>
