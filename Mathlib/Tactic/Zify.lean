@@ -3,11 +3,26 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
-
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.ZifyAttr
 import Mathlib.Algebra.Ring.Basic
+
+/-!
+# `zify` tactic
+
+The `zify` tactic is used to shift propositions from `ℕ` to `ℤ`.
+This is often useful since `ℤ` has well-behaved subtraction.
+```
+example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
+  zify
+  zify at h
+  /-
+  h : ¬↑x * ↑y * ↑z < 0
+  ⊢ ↑c < ↑a + 3 * ↑b
+  -/
+```
+-/
 
 namespace Mathlib.Tactic.Zify
 
@@ -17,7 +32,7 @@ open Lean.Parser.Tactic
 /--
 The `zify` tactic is used to shift propositions from `ℕ` to `ℤ`.
 This is often useful since `ℤ` has well-behaved subtraction.
-```lean4
+```
 example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   zify
   zify at h
