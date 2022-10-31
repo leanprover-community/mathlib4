@@ -7,8 +7,9 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.ZifyAttr
+import Mathlib.Algebra.Ring.Basic
 
-namespace Mathlib.Tactic
+namespace Mathlib.Tactic.Zify
 
 open Lean
 open Lean.Parser.Tactic
@@ -48,7 +49,7 @@ macro_rules
   let args := simpArgs.map (·.getElems) |>.getD #[]
   `(tactic| simp only [zify_simps, push_cast, $args,*] $[at $location]?)
 
-@[zify_simps] lemma zify.intOfNat_eq (a b : ℕ) : a = b ↔ (a : ℤ) = (b : ℤ) := Int.ofNat_inj.symm
-@[zify_simps] lemma zify.intOfNat_le (a b : ℕ) : a ≤ b ↔ (a : ℤ) ≤ (b : ℤ) := Int.ofNat_le.symm
-@[zify_simps] lemma zify.intOfNat_lt (a b : ℕ) : a < b ↔ (a : ℤ) < (b : ℤ) := Int.ofNat_lt.symm
-@[zify_simps] lemma zify.intOfNat_ne (a b : ℕ) : a ≠ b ↔ (a : ℤ) ≠ (b : ℤ) := by simp
+@[zify_simps] lemma nat_cast_eq (a b : ℕ) : a = b ↔ (a : ℤ) = (b : ℤ) := Int.ofNat_inj.symm
+@[zify_simps] lemma nat_cast_le (a b : ℕ) : a ≤ b ↔ (a : ℤ) ≤ (b : ℤ) := Int.ofNat_le.symm
+@[zify_simps] lemma nat_cast_lt (a b : ℕ) : a < b ↔ (a : ℤ) < (b : ℤ) := Int.ofNat_lt.symm
+@[zify_simps] lemma nat_cast_ne (a b : ℕ) : a ≠ b ↔ (a : ℤ) ≠ (b : ℤ) := by simp
