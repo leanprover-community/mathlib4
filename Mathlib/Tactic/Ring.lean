@@ -144,7 +144,7 @@ inductive ExProd : ∀ {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) �
   | const (value : ℤ) : ExProd sα e
   /-- A product `x ^ e * b` is a monomial if `b` is a monomial. Here `x` is a `ExBase`
   and `e` is a `ExProd` representing a monomial expression in `ℕ` (it is a monomial instead of
-  a polynomial because we eagerly normalize `x ^ (a + b) = x ^ a + x ^ b`.) -/
+  a polynomial because we eagerly normalize `x ^ (a + b) = x ^ a * x ^ b`.) -/
   | mul {α : Q(Type u)} {sα : Q(CommSemiring $α)} {x : Q($α)} {e : Q(ℕ)} {b : Q($α)} :
     ExBase sα x → ExProd sℕ e → ExProd sα b → ExProd sα q($x ^ $e * $b)
 
