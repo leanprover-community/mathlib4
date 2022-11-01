@@ -82,12 +82,14 @@ import Mathlib.Logic.Equiv.MfldSimpsAttr
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Nonempty
+import Mathlib.Logic.Nontrivial
 import Mathlib.Logic.Relator
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Mathport.Syntax
 import Mathlib.Order.Basic
 import Mathlib.Order.Monotone
+import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyRules
 import Mathlib.Tactic.ApplyWith
@@ -148,6 +150,7 @@ import Mathlib.Tactic.SimpTrace
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SolveByElim
+import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SudoSetOption
@@ -157,6 +160,8 @@ import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
+import Mathlib.Tactic.Zify
+import Mathlib.Tactic.Zify.Attr
 import Mathlib.Testing.SlimCheck.Gen
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable

@@ -58,6 +58,7 @@ import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.Use
+import Mathlib.Tactic.Zify
 import Mathlib.Util.Syntax
 import Mathlib.Util.WithWeakNamespace
 
@@ -164,9 +165,9 @@ macro ak:Term.attrKind "notation3"
       let args := #[
         Lean.mkAtom "(", x, y, Lean.mkAtom "=>", scopedTerm, Lean.mkAtom ")", init,
         Lean.mkAtom "[", args, Lean.mkAtom "]"]
-      let stx ← show MacroM Syntax.Term from match kind.1[0] with
-        | .atom _ "foldl" => pure ⟨mkNode ``expandFoldl (#[Lean.mkAtom "expandFoldl%"] ++ args)⟩
-        | .atom _ "foldr" => pure ⟨mkNode ``expandFoldr (#[Lean.mkAtom "expandFoldr%"] ++ args)⟩
+      let stx ← show MacroM Syntax.Term from match kind with
+        | `(foldKind| foldl) => pure ⟨mkNode ``expandFoldl (#[Lean.mkAtom "expandFoldl%"] ++ args)⟩
+        | `(foldKind| foldr) => pure ⟨mkNode ``expandFoldr (#[Lean.mkAtom "expandFoldr%"] ++ args)⟩
         | _ => Macro.throwUnsupported
       boundNames := boundNames.insert id.getId stx
     | `(notation3Item| $lit:ident : (scoped $scopedId:ident => $scopedTerm)) =>
@@ -318,8 +319,6 @@ syntax termList := " [" term,* "]"
 /- N -/ syntax (name := simpResult) "simp_result "
   (&"only ")? (simpArgs)? " => " tacticSeq : tactic
 
-/- M -/ syntax (name := splitIfs) "split_ifs" (ppSpace location)? (" with " binderIdent+)? : tactic
-
 /- S -/ syntax (name := suggest) "suggest" (config)? (ppSpace num)?
   (simpArgs)? (" using " (colGt binderIdent)+)? : tactic
 
@@ -330,8 +329,6 @@ syntax termList := " [" term,* "]"
 
 /- E -/ syntax (name := applyNormed) "apply_normed " term : tactic
 
-/- E -/ syntax (name := abel1) "abel1" : tactic
-/- E -/ syntax (name := abel1!) "abel1!" : tactic
 /- B -/ syntax (name := abel) "abel" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 /- B -/ syntax (name := abel!) "abel!" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 
@@ -389,8 +386,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := group) "group" (ppSpace location)? : tactic
 
 /- M -/ syntax (name := cancelDenoms) "cancel_denoms" (ppSpace location)? : tactic
-
-/- M -/ syntax (name := zify) "zify" (simpArgs)? (ppSpace location)? : tactic
 
 /- S -/ syntax (name := transport) "transport" (ppSpace term)? " using " term : tactic
 

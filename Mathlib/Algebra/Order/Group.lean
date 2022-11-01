@@ -90,9 +90,3 @@ attribute [to_additive neg_pos_of_neg] one_lt_inv_of_inv
 additive commutative group with a linear order in which
 addition is monotone. -/
 class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, LinearOrder α
-
--- TODO These are necessary because of https://github.com/leanprover/lean4/issues/1730
-attribute [nolint docBlame] LinearOrderedAddCommGroup.decidable_lt
-attribute [nolint docBlame] LinearOrderedAddCommGroup.decidable_le
-attribute [nolint docBlame] LinearOrderedAddCommGroup.decidable_eq
-attribute [nolint docBlame] LinearOrderedAddCommGroup.le_total
