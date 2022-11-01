@@ -46,16 +46,22 @@ example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by
 
 section convert_to
 
+-- TODO: The original tests from mathlib are commented out, because `convert` does not
+-- support holes in types yet
+
 example {α} [AddCommMonoid α] {a b c d : α} (H : a = c) (H' : b = d) : a + b = d + c := by
   convert_to c + d = d + c
+  --convert_to c + d = _
   rw [add_comm]
 
 example {α} [AddCommMonoid α] {a b c d : α} (H : a = c) (H' : b = d) : a + b = d + c := by
   convert_to c + d = d + c using 2
+  --convert_to c + d = _ using 2
   rw [add_comm]
 
 example {α} [AddCommMonoid α] {a b c d : α} (H : a = c) (H' : b = d) : a + b = d + c := by
   convert_to c + d = d + c using 0
+  --convert_to c + d = _ using 0
   congr 2
   rw [add_comm]
 
