@@ -120,7 +120,7 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name) (required : List Exp
     where
   /-- Verify that the instantiated goal contains each `Expr` in `required` as a sub-expression.
   (Make sure to not reset the state before calling.) -/
-  checkRequired : MetaM Bool := do pure <| required.all (·.occurs (← instantiateMVars (.mvar goal)))
+  checkRequired : MetaM Bool := return required.all (·.occurs (← instantiateMVars (.mvar goal)))
 
 def lines (ls : List MessageData) :=
   MessageData.joinSep ls (MessageData.ofFormat Format.line)
@@ -143,7 +143,7 @@ elab_rules : tactic | `(tactic| library_search%$tk $[using $[$required:term],*]?
   let mvar ← getMainGoal
   let (_, goal) ← (← getMainGoal).intros
   goal.withContext do
-    let required ← (required.getD {}).toList.mapM (elabTerm ·.raw none)
+    let required := (← (required.getD #[]).mapM getFVarId).toList.map .fvar
     if let some suggestions ← librarySearch goal (← librarySearchLemmas.get) required then
       for suggestion in suggestions do
         withMCtx suggestion.1 do
