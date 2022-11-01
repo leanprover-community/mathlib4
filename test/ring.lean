@@ -8,11 +8,6 @@ example (x y : ℕ) : x + y + y = 2 * y + x := by ring
 example (x y : ℕ) : x + id y = y + id x := by ring!
 example {α} [CommRing α] (x y : α) : x + y + y - x = 2 * y := by ring
 -- example (x y : ℚ) : x / 2 + x / 2 = x := by ring
-<<<<<<< HEAD
-set_option trace.Tactic.norm_num true
-=======
-
->>>>>>> ring_exp
 example (x y : ℕ) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by ring
 -- example (x y : ℝ) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by ring
 example {α} [CommSemiring α] (x : α) : (x + 1) ^ 6 = (1 + x) ^ 6 := by ring
@@ -30,12 +25,8 @@ example (n : ℕ) : (n / 2) + (n / 2) = 2 * (n / 2) := by ring
 --   b ^ 2 - 4 * a * c = 4 * a * 0 + b * b - 4 * a * c := by ring
 example {α} [CommSemiring α] (x y z : α) (n : ℕ) :
   (x + y) * (z * (y * y) + (x * x ^ n + (1 + ↑n) * x ^ n * y)) =
-<<<<<<< HEAD
-    x * (x * x ^ n) + ((2 + ↑n) * (x * x ^ n) * y + (x * z + (z * y + (1 + ↑n) * x ^ n)) * (y * y)) := by ring
-=======
   x * (x * x ^ n) + ((2 + ↑n) * (x * x ^ n) * y +
     (x * z + (z * y + (1 + ↑n) * x ^ n)) * (y * y)) := by ring
->>>>>>> ring_exp
 example {α} [CommRing α] (a b c d e : α) :
   (-(a * b) + c + d) * e = (c + (d + -a * b)) * e := by ring
 example (a n s: ℕ) : a * (n - s) = (n - s) * a := by ring
