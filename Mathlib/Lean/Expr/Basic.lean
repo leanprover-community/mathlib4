@@ -120,6 +120,12 @@ open Meta
 by looking for the appropriate `OfNat` typeclass. -/
 def ofNat (ty : Expr) (n : Nat) : MetaM Expr := mkAppOptM ``OfNat.ofNat #[ty, mkRawNatLit n, none]
 
+/-- Construct the term of type `α` for a given integer
+(doing typeclass search for the `OfNat` and `Neg` instances required). -/
+def ofInt (α : Expr) : Int → MetaM Expr
+| Int.ofNat n => Expr.ofNat α n
+| Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n+1)]
+
 /-- Returns a `NameSet` of all constants in an expression starting with a certain prefix. -/
 def listNamesWithPrefix (pre : Name) (e : Expr) : NameSet :=
   e.foldConsts ∅ fun n l => if n.getPrefix == pre then l.insert n else l

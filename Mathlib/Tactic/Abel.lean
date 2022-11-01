@@ -16,17 +16,6 @@ Evaluate expressions in the language of additive, commutative monoids and groups
 open Lean Elab Meta Tactic
 open Qq
 
-/-- Construct the term of type `α` for a given natural number
-(doing typeclass search for the `OfNat` instance required). -/
-def _root_.Lean.Expr.ofNat (α : Expr) (n : ℕ) : MetaM Expr := do
-  mkAppOptM ``OfNat.ofNat #[α, mkRawNatLit n, none]
-
-/-- Construct the term of type `α` for a given integer
-(doing typeclass search for the `OfNat` and `Neg` instances required). -/
-def _root_.Lean.Expr.ofInt (α : Expr) : ℤ → MetaM Expr
-| Int.ofNat n => Expr.ofNat α n
-| Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n+1)]
-
 namespace Tactic
 namespace Abel
 
