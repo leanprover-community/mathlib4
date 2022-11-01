@@ -187,9 +187,6 @@
  ["docBlame", "IsAssociative.assoc"],
  ["docBlame", "IsAsymm.asymm"],
  ["docBlame", "IsCommutative.comm"],
- ["docBlame", "IsCondLeftInv.left_inv"],
- ["docBlame", "IsCondRightInv.right_inv"],
- ["docBlame", "IsDistinct.distinct"],
  ["docBlame", "IsEmpty.false"],
  ["docBlame", "IsIdempotent.idempotent"],
  ["docBlame", "IsIncompTrans.incomp_trans"],
@@ -725,5 +722,5 @@
  ["docBlame", "Mathlib.Tactic.Ring.State.atoms"],
  ["docBlame", "Mathlib.Tactic.Ring.State.numAtoms"],
  ["docBlame", "Mathlib.Tactic.Sat.buildReify.mkPS"],
- ["unusedArguments", "Mathlib.Init.Core.Combinator.K"],
- ["unusedArguments", "Mathlib.Init.Logic.Decidable.not_or_iff_and_not"]]
+ ["unusedArguments", "Combinator.K"],
+ ["unusedArguments", "Decidable.not_or_iff_and_not"]]
