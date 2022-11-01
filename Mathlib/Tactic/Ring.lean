@@ -211,14 +211,17 @@ instance : Inhabited (Σ e, (ExProd sα) e) := ⟨default, .const 0⟩
 
 mutual
 
+/-- Converts `ExBase sα` to `ExBase sβ`, assuming `sα` and `sβ` are defeq. -/
 partial def ExBase.cast : ExBase sα a → Σ a, ExBase sβ a
   | .atom i => ⟨a, .atom i⟩
   | .sum a => let ⟨_, vb⟩ := a.cast; ⟨_, .sum vb⟩
 
+/-- Converts `ExProd sα` to `ExProd sβ`, assuming `sα` and `sβ` are defeq. -/
 partial def ExProd.cast : ExProd sα a → Σ a, ExProd sβ a
   | .const i => ⟨a, .const i⟩
-  | .mul a₁ a₂ a₃ => ⟨_, .mul a₁.cast.2 a₂.cast.2 a₃.cast.2⟩
+  | .mul a₁ a₂ a₃ => ⟨_, .mul a₁.cast.2 a₂ a₃.cast.2⟩
 
+/-- Converts `ExSum sα` to `ExSum sβ`, assuming `sα` and `sβ` are defeq. -/
 partial def ExSum.cast : ExSum sα a → Σ a, ExSum sβ a
   | .zero => ⟨_, .zero⟩
   | .add a₁ a₂ => ⟨_, .add a₁.cast.2 a₂.cast.2⟩
@@ -464,6 +467,11 @@ theorem nat_cast_add (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : ℕ) : R) = b
 
 mutual
 
+/-- Applies `Nat.cast` to a nat polynomial to produce a polynomial in `α`.
+
+* An atom `e` causes `↑e` to be allocated as a new atom.
+* A sum delegates to `ExSum.evalNatCast`.
+-/
 partial def ExBase.evalNatCast (va : ExBase sℕ a) : RingM (Result (ExBase sα) q($a)) :=
   match va with
   | .atom _ => do
@@ -474,6 +482,11 @@ partial def ExBase.evalNatCast (va : ExBase sℕ a) : RingM (Result (ExBase sα)
     let ⟨_, vc, p⟩ ← va.evalNatCast
     pure ⟨_, .sum vc, p⟩
 
+/-- Applies `Nat.cast` to a nat monomial to produce a monomial in `α`.
+
+* `↑c = c` if `c` is a numeric literal
+* `↑(a ^ n * b) = ↑a ^ n * ↑b`
+-/
 partial def ExProd.evalNatCast (va : ExProd sℕ a) : RingM (Result (ExProd sα) q($a)) :=
   match va with
   | .const c =>
@@ -484,6 +497,11 @@ partial def ExProd.evalNatCast (va : ExProd sℕ a) : RingM (Result (ExProd sα)
     let ⟨_, vb₃, pb₃⟩ ← va₃.evalNatCast
     pure ⟨_, .mul vb₁ va₂ vb₃, q(nat_cast_mul $a₂ $pb₁ $pb₃)⟩
 
+/-- Applies `Nat.cast` to a nat polynomial to produce a polynomial in `α`.
+
+* `↑0 = 0`
+* `↑(a + b) = ↑a + ↑b`
+-/
 partial def ExSum.evalNatCast (va : ExSum sℕ a) : RingM (Result (ExSum sα) q($a)) :=
   match va with
   | .zero => pure ⟨_, .zero, q(nat_cast_zero (R := $α))⟩
@@ -498,6 +516,12 @@ theorem smul_nat (_ : (a * b : ℕ) = c) : a • b = c := by subst_vars; simp
 
 theorem smul_eq_cast (_ : ((a : ℕ) : R) = a') (_ : a' * b = c) : a • b = c := by subst_vars; simp
 
+/-- Constructs the scalar multiplication `n • a`, where both `n : ℕ` and `a : α` are normalized
+polynomial expressions.
+
+* `a • b = a * b` if `α = ℕ`
+* `a • b = ↑a * b` otherwise
+-/
 def evalNSMul (va : ExSum sℕ a) (vb : ExSum sα b) : RingM (Result (ExSum sα) q($a • $b)) := do
   if ← isDefEq sα sℕ then
     let ⟨_, va'⟩ := va.cast
