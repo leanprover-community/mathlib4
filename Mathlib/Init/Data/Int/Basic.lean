@@ -11,9 +11,14 @@ import Mathlib.Init.Data.Int.Notation
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Coe
 import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Order.Ring
+
 open Nat
 
 namespace Int
+
+instance : Nontrivial ℤ :=
+  ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
 instance : LinearOrder Int where
   le := (·≤·)
@@ -30,3 +35,9 @@ instance : LinearOrder Int where
 @[simp, norm_cast] theorem coe_nat_le {m n : ℕ} : (↑m : ℤ) ≤ ↑n ↔ m ≤ n := ofNat_le
 
 @[simp, norm_cast] theorem coe_nat_lt {n m : ℕ} : (↑n : ℤ) < ↑m ↔ n < m := ofNat_lt
+
+instance : LinearOrderedCommRing Int :=
+  { (inferInstance : LinearOrder Int), (inferInstance : CommRing Int) with
+    add_le_add_left := @Int.add_le_add_left,
+    mul_pos := @Int.mul_pos,
+    zero_le_one := le_of_lt Int.zero_lt_one }

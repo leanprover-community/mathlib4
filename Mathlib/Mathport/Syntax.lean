@@ -34,6 +34,7 @@ import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.PermuteGoals
@@ -332,18 +333,9 @@ syntax termList := " [" term,* "]"
 /- B -/ syntax (name := abel) "abel" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 /- B -/ syntax (name := abel!) "abel!" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 
-/- E -/ syntax (name := ring1) "ring1" : tactic
-/- E -/ syntax (name := ring1!) "ring1!" : tactic
-
 syntax ringMode := &"SOP" <|> &"raw" <|> &"horner"
 /- E -/ syntax (name := ringNF) "ring_nf" (ppSpace ringMode)? (ppSpace location)? : tactic
 /- E -/ syntax (name := ringNF!) "ring_nf!" (ppSpace ringMode)? (ppSpace location)? : tactic
-/- E -/ syntax (name := ring!) "ring!" : tactic
-
-/- B -/ syntax (name := ringExpEq) "ring_exp_eq" : tactic
-/- B -/ syntax (name := ringExpEq!) "ring_exp_eq!" : tactic
-/- B -/ syntax (name := ringExp) "ring_exp" (ppSpace location)? : tactic
-/- B -/ syntax (name := ringExp!) "ring_exp!" (ppSpace location)? : tactic
 
 /- E -/ syntax (name := noncommRing) "noncomm_ring" : tactic
 
@@ -351,8 +343,6 @@ syntax nameAndTerm := term:71 " * " term:66
 /- M -/ syntax (name := linearCombination) "linear_combination" (config)?
   sepBy(atomic(nameAndTerm) <|> term:66, " + ") : tactic
 
-/- B -/ syntax (name := linarith) "linarith" (config)? (&" only")? (" [" term,* "]")? : tactic
-/- B -/ syntax (name := linarith!) "linarith!" (config)? (&" only")? (" [" term,* "]")? : tactic
 /- M -/ syntax (name := nlinarith) "nlinarith" (config)? (&" only")? (" [" term,* "]")? : tactic
 /- M -/ syntax (name := nlinarith!) "nlinarith!" (config)? (&" only")? (" [" term,* "]")? : tactic
 

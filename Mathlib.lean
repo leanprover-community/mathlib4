@@ -10,6 +10,7 @@ import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Order.Group
 import Mathlib.Algebra.Order.Monoid
+import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Algebra.Order.MonoidLemmas
 import Mathlib.Algebra.Order.Ring
 import Mathlib.Algebra.Ring.Basic
@@ -46,6 +47,9 @@ import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Prod
 import Mathlib.Data.Prod.PProd
+import Mathlib.Data.Rat.Defs
+import Mathlib.Data.Rat.Order
+import Mathlib.Data.RBMap
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
@@ -61,6 +65,7 @@ import Mathlib.Init.Classical
 import Mathlib.Init.Core
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Notation
+import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
@@ -122,6 +127,14 @@ import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Linarith.Datatypes
+import Mathlib.Tactic.Linarith.Elimination
+import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Tactic.Linarith.Lemmas
+import Mathlib.Tactic.Linarith.Parsing
+import Mathlib.Tactic.Linarith.Preprocessing
+import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormCast.Tactic
 import Mathlib.Tactic.NormNum

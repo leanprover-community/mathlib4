@@ -179,4 +179,51 @@ class LinearOrderedRing (α : Type u) extends StrictOrderedRing α, LinearOrder 
 monotone and multiplication by a positive number is strictly monotone. -/
 class LinearOrderedCommRing (α : Type u) extends LinearOrderedRing α, CommMonoid α
 
-#print LinearOrderedCommRing.mul_comm
+-- see Note [lower instance priority]
+instance (priority := 100) OrderedRing.toOrderedSemiring [OrderedRing α] : OrderedSemiring α :=
+  { ‹OrderedRing α›, (Ring.toSemiring : Semiring α) with
+    le_of_add_le_add_left := sorry,
+    mul_lt_mul_of_pos_left := sorry,
+    mul_lt_mul_of_pos_right := sorry }
+
+section StrictOrderedSemiring
+
+variable [StrictOrderedSemiring α]
+
+-- see Note [lower instance priority]
+instance (priority := 100) StrictOrderedSemiring.toOrderedSemiring : OrderedSemiring α :=
+  { ‹StrictOrderedSemiring α› with }
+
+end StrictOrderedSemiring
+
+section StrictOrderedRing
+
+variable [StrictOrderedRing α]
+
+-- see Note [lower instance priority]
+instance (priority := 100) StrictOrderedRing.toStrictOrderedSemiring : StrictOrderedSemiring α :=
+  { ‹StrictOrderedRing α›, (Ring.toSemiring : Semiring α) with
+    le_of_add_le_add_left := sorry,
+    mul_lt_mul_of_pos_left := sorry,
+    mul_lt_mul_of_pos_right := sorry }
+
+-- see Note [lower instance priority]
+instance (priority := 100) StrictOrderedRing.toOrderedRing : OrderedRing α :=
+  { ‹StrictOrderedRing α› with }
+
+end StrictOrderedRing
+
+section StrictOrderedCommRing
+
+variable [StrictOrderedCommRing α]
+
+-- See note [lower instance priority]
+instance (priority := 100) StrictOrderedCommRing.toStrictOrderedCommSemiring : StrictOrderedCommSemiring α :=
+  { ‹StrictOrderedCommRing α›, StrictOrderedRing.toStrictOrderedSemiring with }
+
+end StrictOrderedCommRing
+
+-- see Note [lower instance priority]
+instance (priority := 100) LinearOrderedCommRing.toStrictOrderedCommRing [d : LinearOrderedCommRing α] :
+    StrictOrderedCommRing α :=
+  { d with }
