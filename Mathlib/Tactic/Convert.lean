@@ -115,6 +115,14 @@ elab_rules : tactic
 --   decl_names := [`tactic.interactive.convert],
 --   tags       := ["congruence"] }
 
+/--
+`convert_to g using n` attempts to change the current goal to `g`, but unlike `change`,
+it will generate equality proof obligations using `congr n` to resolve discrepancies.
+`convert_to g` defaults to using `congr 1`.
+`convert_to` is similar to `convert`, but `convert_to` takes a type (the desired subgoal) while
+`convert` takes a proof term.
+That is, `convert_to g using n` is equivalent to `convert (_ : g) using n`.
+-/
 syntax (name := convertTo) "convert_to " term (" using " num)? : tactic
 
 macro_rules
