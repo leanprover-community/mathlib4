@@ -214,25 +214,6 @@ instance : ToMessageData (Result x) where
   | .isNegNat _ lit proof => m!"isNegNat {lit} ({proof})"
   | .isRat _ q _ _ proof => m!"isRat {q} ({proof})"
 
-def Result.toRawEq {α : Q(Type u)} {e : Q($α)} : Result e → (ℤ × (e' : Q($α)) × Q($e = $e'))
-  | .isNat _ lit p => ⟨lit.natLit!, q(Nat.rawCast $lit), q(IsNat.to_raw_eq $p)⟩
-  | .isNegNat _ lit p => ⟨-lit.natLit!, q(Int.rawCast (.negOfNat $lit)), q(IsInt.to_raw_eq $p)⟩
-  | .isRat _ .. => ⟨0, (default : Expr), (default : Expr)⟩ -- TODO
-
-/-- Constructs a `Result` out of a raw nat cast. Assumes `e` is a raw nat cast expression. -/
-def Result.ofRawNat {α : Q(Type u)} (e : Q($α)) : Result e := Id.run do
-  let .app (.app _ (sα : Q(Semiring $α))) (lit : Q(ℕ)) := e | panic! "not a raw nat cast"
-  .isNat sα lit (q(IsNat.of_raw $α $lit) : Expr)
-
-/-- Constructs a `Result` out of a raw int cast.
-Assumes `e` is a raw int cast expression denoting `n`. -/
-def Result.ofRawInt {α : Q(Type u)} (n : ℤ) (e : Q($α)) : Result e :=
-  if 0 ≤ n then
-    Result.ofRawNat e
-  else Id.run do
-    let .app (.app _ (rα : Q(Ring $α))) (.app _ (lit : Q(ℕ))) := e | panic! "not a raw int cast"
-    .isNegNat rα lit (q(IsInt.of_raw $α (.negOfNat $lit)) : Expr)
-
 /--
 Given a `NormNum.Result e` (which uses `IsNat` or `IsInt` to express equality to an integer
 numeral), converts it to an equality `e = Nat.rawCast n` or `e = Int.rawCast n` to a raw cast
