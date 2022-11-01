@@ -6,12 +6,14 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Semiconj
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Order.Group
 import Mathlib.Algebra.Order.Monoid
 import Mathlib.Algebra.Order.MonoidLemmas
 import Mathlib.Algebra.Order.Ring
 import Mathlib.Algebra.Ring.Basic
+import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.Control.Random
 import Mathlib.Control.Writer
 import Mathlib.Data.Array.Basic
@@ -26,6 +28,9 @@ import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Int.Cast
+import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.KVMap
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Card
@@ -76,12 +81,14 @@ import Mathlib.Logic.Equiv.MfldSimpsAttr
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Nonempty
+import Mathlib.Logic.Nontrivial
 import Mathlib.Logic.Relator
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Mathport.Syntax
 import Mathlib.Order.Basic
 import Mathlib.Order.Monotone
+import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyRules
 import Mathlib.Tactic.ApplyWith
@@ -142,6 +149,7 @@ import Mathlib.Tactic.SimpTrace
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SolveByElim
+import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SudoSetOption
@@ -151,6 +159,8 @@ import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
+import Mathlib.Tactic.Zify
+import Mathlib.Tactic.Zify.Attr
 import Mathlib.Testing.SlimCheck.Gen
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable

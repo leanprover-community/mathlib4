@@ -50,6 +50,9 @@ initialize librarySearchLemmas : DeclCache (DiscrTree Name) ←
       let keys ← withReducible <| DiscrTree.mkPath type
       pure $ lemmas.insertCore keys name
 
+/-- Shortcut for calling `solveByElimImpl`. -/
+def solveByElim (g : MVarId) (depth) := Lean.Tactic.solveByElimImpl false [] depth g
+
 /--
 Try to solve the goal either by:
 * calling `solveByElim`
@@ -77,7 +80,7 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name) (required : List Exp
   let state0 ← get
 
   try
-    solveByElim solveByElimDepth goal
+    solveByElim goal solveByElimDepth
     if (← checkRequired) then
       return none
     else
@@ -94,7 +97,7 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name) (required : List Exp
           for newGoal in newGoals do
             newGoal.withContext do
               trace[Tactic.librarySearch] "proving {← addMessageContextFull (mkMVar newGoal)}"
-              solveByElim solveByElimDepth newGoal
+              solveByElim newGoal solveByElimDepth
           if (← checkRequired) then
             pure $ some $ Sum.inr ()
           else

@@ -110,3 +110,9 @@ instance (priority := 100) OrderedCancelCommMonoid.toOrderedCommMonoid [OrderedC
 
 -- TODO `to_additive` should copy this
 attribute [instance] OrderedCancelAddCommMonoid.toOrderedAddCommMonoid
+
+/-- A linearly ordered additive commutative monoid. -/
+class LinearOrderedAddCommMonoid (α : Type _) extends LinearOrder α, OrderedAddCommMonoid α
+
+/-- A linearly ordered commutative monoid. -/
+class LinearOrderedCommMonoid (α : Type _) extends LinearOrder α, OrderedCommMonoid α

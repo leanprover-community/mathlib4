@@ -207,16 +207,20 @@ section LinearOrder
 
 /-- A linear order is reflexive, transitive, antisymmetric and total relation `≤`.
 We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. -/
-class LinearOrder (α : Type u) extends PartialOrder α :=
-/-- A linear order is total. -/
-(le_total : ∀ a b : α, a ≤ b ∨ b ≤ a)
-/-- In a linearly ordered type, we assume the order relations are all decidable. -/
-(decidable_le : DecidableRel (. ≤ . : α → α → Prop))
-/-- In a linearly ordered type, we assume the order relations are all decidable. -/
-(decidable_eq : DecidableEq α := @decidableEq_of_decidableLe _ _ decidable_le)
-/-- In a linearly ordered type, we assume the order relations are all decidable. -/
-(decidable_lt : DecidableRel (. < . : α → α → Prop) :=
-    @decidableLt_of_decidableLe _ _ decidable_le)
+class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α :=
+  /-- A linear order is total. -/
+  le_total (a b : α) : a ≤ b ∨ b ≤ a
+  /-- In a linearly ordered type, we assume the order relations are all decidable. -/
+  decidable_le : DecidableRel (. ≤ . : α → α → Prop)
+  /-- In a linearly ordered type, we assume the order relations are all decidable. -/
+  decidable_eq : DecidableEq α := @decidableEq_of_decidableLe _ _ decidable_le
+  /-- In a linearly ordered type, we assume the order relations are all decidable. -/
+  decidable_lt : DecidableRel (. < . : α → α → Prop) :=
+    @decidableLt_of_decidableLe _ _ decidable_le
+  /-- The minimum function is equivalent to the one you get from `minOfLe`. -/
+  min_def : ∀ a b, min a b = if a ≤ b then a else b := by intros; rfl
+  /-- The minimum function is equivalent to the one you get from `maxOfLe`. -/
+  max_def : ∀ a b, max a b = if a ≤ b then b else a := by intros; rfl
 
 variable [LinearOrder α]
 

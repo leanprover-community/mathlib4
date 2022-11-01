@@ -9,10 +9,6 @@ import Lean
 
 open Function
 
-@[simp]
-theorem Option.mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
-  cases o <;> simp [toList, eq_comm]
-
 namespace List
 
 /-!
