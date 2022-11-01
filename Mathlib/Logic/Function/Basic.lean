@@ -243,11 +243,7 @@ theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjecti
     suffices cast hU (g s).2 = cast hU (g t).2 by
       simp only [cast_cast, cast_eq] at this
       assumption
-    · congr -- Porting note: the congr regression here has been reported as
-      -- https://github.com/leanprover/lean4/issues/1787
-      -- and subsequently fixed.
-      -- As soon as we can move mathlib4 to nightly-2022-10-29 or later this sorry can be removed.
-      sorry
+    · congr
   exact cantor_injective g hg
 
 /-- `g` is a partial inverse to `f` (an injective but not necessarily
