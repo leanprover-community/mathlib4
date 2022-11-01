@@ -7,7 +7,6 @@ notation, basic datatypes and type classes
 -/
 import Mathlib.Mathport.Rename
 import Std.Classes.SetNotation
-import Std.Tactic.Lint.Basic
 
 /-! ### alignments from lean 3 `init.core` -/
 
@@ -122,7 +121,6 @@ attribute [simp] insert_emptyc_eq
 namespace Combinator
 
 def I (a : α) := a
-@[nolint unusedArguments]
 def K (a : α) (_b : β) := a
 def S (x : α → β → γ) (y : α → β) (z : α) := x z (y z)
 #align combinator.I Combinator.I
