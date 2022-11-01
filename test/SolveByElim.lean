@@ -5,9 +5,38 @@ Authors: Scott Morrison
 -/
 import Mathlib.Tactic.SolveByElim
 
-def test1 (h : Nat) : Nat := by solve_by_elim
-def test2 {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim
-def test3 {α β : Type} (f : α → α → β) (a : α) : β := by solve_by_elim
-def test4 {α β γ : Type} (f : α → β) (g : β → γ) (a : α) : γ := by solve_by_elim
-def test5 {α β γ : Type} (f : α → β) (g : β → γ) (b : β) : γ := by solve_by_elim
-def test6 {α : Nat → Type} (f : (n : Nat) → α n → α (n+1)) (a : α 0) : α 5 := by solve_by_elim
+example (h : Nat) : Nat := by solve_by_elim
+example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim
+example {α β : Type} (f : α → α → β) (a : α) : β := by solve_by_elim
+example {α β γ : Type} (f : α → β) (g : β → γ) (a : α) : γ := by solve_by_elim
+example {α β γ : Type} (f : α → β) (g : β → γ) (b : β) : γ := by solve_by_elim
+example {α : Nat → Type} (f : (n : Nat) → α n → α (n+1)) (a : α 0) : α 5 := by solve_by_elim
+
+example (h : Nat) : Nat := by solve_by_elim []
+example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim []
+example {α β : Type} (f : α → α → β) (a : α) : β := by solve_by_elim []
+example {α β γ : Type} (f : α → β) (g : β → γ) (a : α) : γ := by solve_by_elim []
+example {α β γ : Type} (f : α → β) (g : β → γ) (b : β) : γ := by solve_by_elim []
+example {α : Nat → Type} (f : (n : Nat) → α n → α (n+1)) (a : α 0) : α 5 := by solve_by_elim []
+
+example {α β : Type} (f : α → β) (a : α) : β := by
+  fail_if_success solve_by_elim only [f]
+  solve_by_elim
+
+example (h : Nat) : Nat := by solve_by_elim only [h]
+example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim only [f, a]
+example {α β : Type} (f : α → α → β) (a : α) : β := by solve_by_elim only [f, a]
+example {α β γ : Type} (f : α → β) (g : β → γ) (a : α) : γ := by solve_by_elim only [f, g, a]
+example {α β γ : Type} (f : α → β) (g : β → γ) (b : β) : γ := by solve_by_elim only [g, b]
+example {α : Nat → Type} (f : (n : Nat) → α n → α (n+1)) (a : α 0) : α 5 := by solve_by_elim only [f, a]
+
+-- Verify that already assigned metavariables are skipped.
+example (P₁ P₂: α → Prop) (f: forall (a: α), P₁ a → P₂ a → β)
+        (a: α) (ha₁: P₁ a) (ha₂ : P₂ a) : β := by
+  solve_by_elim
+
+-- With proper backtracking this should work (and did in mathlib3).
+-- example (P₁ P₂: α → Prop) (f: forall (a: α), P₁ a → P₂ a → β)
+--         (a: α) (ha₁: P₁ a)
+--         (a': α) (ha'₁: P₁ a') (ha'₂: P₂ a'): β := by
+--   solve_by_elim
