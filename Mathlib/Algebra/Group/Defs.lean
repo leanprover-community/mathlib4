@@ -646,32 +646,37 @@ section DivInvMonoid
 variable [DivInvMonoid G] {a b : G}
 
 -- TODO restore @[to_additive zsmul_eq_smul]
-@[simp]
-theorem zpow_eq_pow (n : ℤ) (x : G) : DivInvMonoid.zpow n x = x ^ n :=
-  rfl
+@[simp] theorem zpow_eq_pow (n : ℤ) (x : G) : DivInvMonoid.zpow n x = x ^ n := rfl
+theorem zsmul_eq_smul {G} [SubNegMonoid G] (n : ℤ) (x : G) : SubNegMonoid.zsmul n x = n • x := rfl
+attribute [to_additive zsmul_eq_smul] zpow_eq_pow
 
 -- TODO restore @[to_additive zero_zsmul]
-@[simp]
-theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
+@[simp] theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
   DivInvMonoid.zpow_zero' a
+theorem zero_zsmul {G} [SubNegMonoid G] (a : G) : (0 : ℤ) • a = 0 :=
+  SubNegMonoid.zsmul_zero' a
+attribute [to_additive zero_zsmul] zpow_zero
 
--- TODO restore @[to_additive coe_nat_zsmul]
+-- TODO restore @[to_additive ofNat_zsmul]
 @[norm_cast]
-theorem zpow_coe_nat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
+theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
   | 0 => (zpow_zero _).trans (pow_zero _).symm
   | n + 1 => calc
     a ^ (↑(n + 1) : ℤ) = a * a ^ (n : ℤ) := DivInvMonoid.zpow_succ' _ _
-    _ = a * a ^ n := congr_arg ((· * ·) a) (zpow_coe_nat a n)
+    _ = a * a ^ n := congr_arg ((· * ·) a) (zpow_ofNat a n)
     _ = a ^ (n + 1) := (pow_succ _ _).symm
-
--- TODO restore @[to_additive of_nat_zsmul]
-theorem zpow_of_nat (a : G) (n : ℕ) : a ^ Int.ofNat n = a ^ n :=
-  zpow_coe_nat a n
+theorem ofNat_zsmul {G} [SubNegMonoid G] (a : G) : ∀ n : ℕ, (n : ℤ) • a = n • a
+  | 0 => (zero_zsmul _).trans (zero_nsmul _).symm
+  | n + 1 => calc
+    (↑(n + 1) : ℤ) • a = a + (n : ℤ) • a := SubNegMonoid.zsmul_succ' _ _
+    _ = a + n • a := congr_arg ((· + ·) a) (ofNat_zsmul a n)
+    _ = (n + 1) • a := (succ_nsmul _ _).symm
+attribute [to_additive ofNat_zsmul] zpow_ofNat
 
 -- TODO restore @[to_additive]
 @[simp]
-theorem zpow_neg_succ_of_nat (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
-  rw [← zpow_coe_nat]
+theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
+  rw [← zpow_ofNat]
   exact DivInvMonoid.zpow_neg' n a
 
 /-- Dividing by an element is the same as multiplying by its inverse.

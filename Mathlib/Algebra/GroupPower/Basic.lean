@@ -23,9 +23,9 @@ theorem nsmul_zero (n : ℕ) : n • (0 : M) = 0 := by
 theorem one_nsmul (a : M) : 1 • a = a := by rw [succ_nsmul, zero_nsmul, add_zero]
 
 theorem add_nsmul (a : M) (m n : ℕ) : (m + n) • a = m • a + n • a := by
-  induction' n with n ih
-  · rw [Nat.add_zero, zero_nsmul, add_zero]
-  · sorry
+  induction m with
+  | zero => rw [Nat.zero_add, zero_nsmul, zero_add]
+  | succ m ih => rw [Nat.succ_add, Nat.succ_eq_add_one, succ_nsmul, ih, succ_nsmul, add_assoc]
 
 end AddMonoid
 

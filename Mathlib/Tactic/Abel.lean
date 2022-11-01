@@ -152,8 +152,7 @@ theorem term_add_constg {α} [AddCommGroup α] (n x a k a') (h : a + k = a') :
 
 theorem term_add_term {α} [AddCommMonoid α] (n₁ x a₁ n₂ a₂ n' a') (h₁ : n₁ + n₂ = n')
     (h₂ : a₁ + a₂ = a') : @term α _ n₁ x a₁ + @term α _ n₂ x a₂ = term n' x a' := by
-  simp [h₁.symm, h₂.symm, term, add_nsmul]
-  sorry -- TODO should be by `ac_refl`, or do it by hand.
+  simp [h₁.symm, h₂.symm, term, add_nsmul, add_assoc, add_left_comm]
 
 @[nolint unusedArguments] -- TODO remove when the proof is filled in.
 theorem term_add_termg {α} [AddCommGroup α] (n₁ x a₁ n₂ a₂ n' a')
@@ -201,9 +200,8 @@ partial def eval_add (c : Context) : NormalExpr → NormalExpr → TacticM (Norm
       return (term' c n₂ x₂ a', c.iapp ``const_add_term #[e₁, n₂.1, x₂, a₂, a', h])
 
 theorem term_neg {α} [AddCommGroup α] (n x a n' a')
-  (h₁ : -n = n') (h₂ : -a = a') :
-  -@termg α _ n x a = termg n' x a' :=
-by simp [h₂.symm, h₁.symm, termg]; sorry
+    (h₁ : -n = n') (h₂ : -a = a') : -@termg α _ n x a = termg n' x a' := by
+  simp [h₂.symm, h₁.symm, termg]; sorry
 
 /--
 Interpret a negated expression in `abel`'s normal form.
@@ -297,20 +295,19 @@ by simp [prl, prr, prt]
 lemma subst_into_smul_upcast {α} [AddCommGroup α]
   (l r tl zl tr t) (prl₁ : l = tl) (prl₂ : ↑tl = zl) (prr : r = tr)
   (prt : @smulg α _ zl tr = t) : smul l r = t := by
-  -- TODO waiting for fixes to Algebra.Group.Defs (supposedly ported!) for `coe_nat_zsmul`
-  -- simp [← prt, prl₁, ← prl₂, prr, smul, smulg]
-  sorry
+  simp [← prt, prl₁, ← prl₂, prr, smul, smulg, coe_nat_zsmul]
 
 lemma subst_into_add {α} [AddCommMonoid α] (l r tl tr t)
-  (prl : (l : α) = tl) (prr : r = tr) (prt : tl + tr = t) : l + r = t :=
-by rw [prl, prr, prt]
+    (prl : (l : α) = tl) (prr : r = tr) (prt : tl + tr = t) : l + r = t := by
+  rw [prl, prr, prt]
 
 lemma subst_into_addg {α} [AddCommGroup α] (l r tl tr t)
-  (prl : (l : α) = tl) (prr : r = tr) (prt : tl + tr = t) : l + r = t :=
-by rw [prl, prr, prt]
+    (prl : (l : α) = tl) (prr : r = tr) (prt : tl + tr = t) : l + r = t := by
+  rw [prl, prr, prt]
 
-lemma subst_into_negg {α} [AddCommGroup α] (a ta t : α) (pra : a = ta) (prt : -ta = t) : -a = t :=
-by simp [pra, prt]
+lemma subst_into_negg {α} [AddCommGroup α] (a ta t : α)
+    (pra : a = ta) (prt : -ta = t) : -a = t := by
+  simp [pra, prt]
 
 /-- Normalize a term `orig` of the form `smul e₁ e₂` or `smulg e₁ e₂`.
   Normalized terms use `smul` for monoids and `smulg` for groups,
@@ -404,7 +401,7 @@ syntax (name := abel1!) "abel1!" : tactic
 /-- The `abel1` tactic, which solves equations in the language of commutative additive groups
 (or monoids). -/
 def abel1Impl (tm : TransparencyMode := .default) : TacticM Unit := do
-  match (←getMainTarget).getAppFnArgs with
+  match (← getMainTarget).getAppFnArgs with
   | (``Eq, #[_, e₁, e₂]) =>
     trace[abel] "running on an equality `{e₁} = {e₂}`."
     let c ← mkContext tm e₁
