@@ -105,7 +105,7 @@ syntax (name := convert) "convert " "← "? term (" using " num)? : tactic
 elab_rules : tactic
 | `(tactic| convert $[←%$sym]? $term $[using $n]?) => withMainContext do
   let (e, gs) ← elabTermWithHoles term
-    (← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))) (← getMainTag) true
+    (← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))) (← getMainTag)
   liftMetaTactic fun g => return (← g.convert e sym.isSome (n.map (·.getNat))) ++ gs
 
 -- FIXME restore when `add_tactic_doc` is ported.
@@ -127,4 +127,4 @@ syntax (name := convertTo) "convert_to " term (" using " num)? : tactic
 
 macro_rules
 | `(tactic| convert_to $term $[using $n]?) =>
-  `(tactic| convert (_ : $term) $[using $n]?)
+  `(tactic| convert (?_ : $term) $[using $n]?)
