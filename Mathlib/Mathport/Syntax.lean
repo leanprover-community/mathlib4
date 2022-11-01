@@ -268,7 +268,6 @@ namespace Tactic
 /- N -/ syntax (name := congr') "congr" (ppSpace colGt num)?
   (" with " (colGt rcasesPat)* (" : " num)?)? : tactic
 /- M -/ syntax (name := rcongr) "rcongr" (ppSpace colGt rcasesPat)* : tactic
-/- E -/ syntax (name := convertTo) "convert_to " term (" using " num)? : tactic
 /- E -/ syntax (name := acChange) "ac_change " term (" using " num)? : tactic
 
 /- S -/ syntax (name := rcases?) "rcases?" casesTarget,* (" : " num)? : tactic
