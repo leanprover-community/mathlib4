@@ -29,6 +29,10 @@ This file contains:
 
 namespace Int
 
+@[simp, norm_cast] theorem coe_nat_le {m n : ℕ} : (↑m : ℤ) ≤ ↑n ↔ m ≤ n := ofNat_le
+
+@[simp, norm_cast] theorem coe_nat_lt {n m : ℕ} : (↑n : ℤ) < ↑m ↔ n < m := ofNat_lt
+
 /-- Inductively define a function on `ℤ` by defining it at `b`, for the `succ` of a number greater
 than `b`, and the `pred` of a number less than `b`. -/
 @[elab_as_elim] protected def inductionOn' {C : ℤ → Sort _}
