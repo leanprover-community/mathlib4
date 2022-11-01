@@ -145,3 +145,9 @@ lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
 protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
 end Int
+
+-- TODO restore @[to_additive coe_nat_zsmul]
+@[norm_cast]
+theorem zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (n : ℤ) = a ^ n := zpow_ofNat ..
+theorem coe_nat_zsmul [SubNegMonoid G] (a : G) (n : ℕ) : (n : ℤ) • a = n • a := ofNat_zsmul ..
+attribute [to_additive coe_nat_zsmul] zpow_coe_nat
