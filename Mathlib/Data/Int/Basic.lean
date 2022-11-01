@@ -5,8 +5,9 @@ Authors: Jeremy Avigad
 -/
 import Std
 import Mathlib.Tactic.Convert
-import Mathlib.Init.Data.Int.Notation
-import Mathlib.Algebra.Ring.Basic
+import Mathlib.Init.Data.Int.Order
+import Mathlib.Logic.Nontrivial
+import Mathlib.Algebra.Order.Ring
 
 /-!
 # Basic operations on the integers
@@ -28,6 +29,13 @@ This file contains:
 -/
 
 namespace Int
+
+instance : Nontrivial ℤ :=
+  ⟨⟨0, 1, Int.zero_ne_one⟩⟩
+
+@[simp, norm_cast] theorem coe_nat_le {m n : ℕ} : (↑m : ℤ) ≤ ↑n ↔ m ≤ n := ofNat_le
+
+@[simp, norm_cast] theorem coe_nat_lt {n m : ℕ} : (↑n : ℤ) < ↑m ↔ n < m := ofNat_lt
 
 /-- Inductively define a function on `ℤ` by defining it at `b`, for the `succ` of a number greater
 than `b`, and the `pred` of a number less than `b`. -/
@@ -52,3 +60,9 @@ where
     refine _root_.cast (by rw [add_sub_assoc]; rfl) (Hp _ (Int.le_of_lt ?_) (neg n))
     conv => rhs; apply (add_zero b).symm
     rw [Int.add_lt_add_iff_left]; apply negSucc_lt_zero
+
+instance : LinearOrderedCommRing Int :=
+  { (inferInstance : LinearOrder Int), (inferInstance : CommRing Int) with
+    add_le_add_left := @Int.add_le_add_left,
+    mul_pos := @Int.mul_pos,
+    zero_le_one := le_of_lt Int.zero_lt_one }
