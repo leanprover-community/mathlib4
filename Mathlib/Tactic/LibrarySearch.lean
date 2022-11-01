@@ -105,12 +105,9 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name) (required : List Exp
             pure none
         catch _ =>
           let res := some $ Sum.inl (← getMCtx, newGoals)
-          if (← checkRequired) then
-            set state0
-            pure res
-          else
-            set state0
-            pure none)
+          let check ← checkRequired
+          set state0
+          return if check then res else none)
     catch _ =>
       set state0
       pure none
