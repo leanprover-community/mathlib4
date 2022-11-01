@@ -34,6 +34,21 @@ class Semiring (R : Type u) extends NonUnitalSemiring R, NonAssocSemiring R, Mon
 
 section Semiring
 
+-- TODO: put these in the right place
+@[simp] theorem Commute.zero_right [Semiring R] (a : R) : Commute a 0 :=
+  (mul_zero _).trans (zero_mul _).symm
+
+@[simp] theorem Commute.zero_left [Semiring R] (a : R) : Commute 0 a :=
+  (zero_mul _).trans (mul_zero _).symm
+
+@[simp] theorem Commute.add_right [Semiring R] {a b c : R} (h : Commute a b) (h' : Commute a c) :
+    Commute a (b + c) := by
+  simp only [Commute, SemiconjBy, left_distrib, right_distrib, h.eq, h'.eq]
+
+@[simp] theorem Commute.add_left [Semiring R] {a b c : R} (h : Commute a c) (h' : Commute b c) :
+    Commute (a + b) c := by
+  simp only [Commute, SemiconjBy, left_distrib, right_distrib, h.eq, h'.eq]
+
 @[simp]
 lemma Nat.cast_mul [Semiring R] {m n : ℕ} : (m * n).cast = (m.cast * n.cast : R) := by
   induction n generalizing m <;> simp_all [mul_succ, mul_add]
@@ -41,6 +56,11 @@ lemma Nat.cast_mul [Semiring R] {m n : ℕ} : (m * n).cast = (m.cast * n.cast : 
 @[simp]
 lemma Nat.cast_pow [Semiring R] {m n : ℕ} : (m ^ n).cast = (m.cast ^ n : R) := by
   induction n generalizing m <;> simp_all [Nat.pow_succ', _root_.pow_succ'', pow_zero]
+
+theorem Nat.cast_commute [Semiring α] (n : ℕ) (x : α) : Commute (↑n) x := by
+  induction n with
+  | zero => rw [Nat.cast_zero]; exact Commute.zero_left x
+  | succ n ihn => rw [Nat.cast_succ] <;> exact ihn.add_left (Commute.one_left x)
 
 end Semiring
 

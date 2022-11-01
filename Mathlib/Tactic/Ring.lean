@@ -20,7 +20,8 @@ More precisely, expressions of the following form are supported:
 - variables
 - coefficients (any rational number, embedded into the (semi)ring)
 - addition of expressions
-- multiplication of expressions
+- multiplication of expressions (`a * b`)
+- scalar multiplication of expressions (`n • a`; the multiplier must have type `ℕ`)
 - exponentiation of expressions (the exponent must have type `ℕ`)
 - subtraction and negation of expressions (if the base is a full ring)
 
@@ -204,6 +205,26 @@ partial def ExSum.cmp : ExSum sα a → ExSum sα b → Ordering
   | .add .., .zero => .gt
 end
 
+instance : Inhabited (Σ e, (ExBase sα) e) := ⟨default, .atom 0⟩
+instance : Inhabited (Σ e, (ExSum sα) e) := ⟨_, .zero⟩
+instance : Inhabited (Σ e, (ExProd sα) e) := ⟨default, .const 0⟩
+
+mutual
+
+partial def ExBase.cast : ExBase sα a → Σ a, ExBase sβ a
+  | .atom i => ⟨a, .atom i⟩
+  | .sum a => let ⟨_, vb⟩ := a.cast; ⟨_, .sum vb⟩
+
+partial def ExProd.cast : ExProd sα a → Σ a, ExProd sβ a
+  | .const i => ⟨a, .const i⟩
+  | .mul a₁ a₂ a₃ => ⟨_, .mul a₁.cast.2 a₂.cast.2 a₃.cast.2⟩
+
+partial def ExSum.cast : ExSum sα a → Σ a, ExSum sβ a
+  | .zero => ⟨_, .zero⟩
+  | .add a₁ a₂ => ⟨_, .add a₁.cast.2 a₂.cast.2⟩
+
+end
+
 /--
 The result of evaluating an (unnormalized) expression `e` into the type family `E`
 (one of `ExSum`, `ExProd`, `ExBase`) is a (normalized) element `e'`
@@ -217,12 +238,8 @@ structure Result {α : Q(Type u)} (E : Q($α) → Type) (e : Q($α)) where
   /-- A proof that the original expression is equal to the normalized result. -/
   proof : Q($e = $expr)
 
-/-- A constructor of inhabited instances for `Result` when `E` has an element for some `e'`. -/
-def Result.mkInhabited (e') (v : E e') : Inhabited (Result E e) := ⟨e', v, default⟩
-
-instance : Inhabited (Result (ExBase sα) e) := Result.mkInhabited default <| .atom 0
-instance : Inhabited (Result (ExSum sα) e) := Result.mkInhabited _ .zero
-instance : Inhabited (Result (ExProd sα) e) := Result.mkInhabited default <| .const 0
+instance [Inhabited (Σ e, E e)] : Inhabited (Result E e) :=
+  let ⟨e', v⟩ : Σ e, E e := default; ⟨e', v, default⟩
 
 variable {α : Q(Type u)} (sα : Q(CommSemiring $α)) [CommSemiring R]
 
@@ -434,6 +451,63 @@ def evalMul (va : ExSum sα a) (vb : ExSum sα b) : Result (ExSum sα) q($a * $b
     let ⟨_, vc₂, pc₂⟩ := evalMul va₂ vb
     let ⟨_, vd, pd⟩ := evalAdd sα vc₁ vc₂
     ⟨_, vd, q(add_mul $pc₁ $pc₂ $pd)⟩
+
+theorem nat_cast_nat (n) : ((Nat.rawCast n : ℕ) : R) = Nat.rawCast n := by simp
+
+theorem nat_cast_mul (a₂) (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₃ : ℕ) : R) = b₃) :
+    ((a₁ ^ a₂ * a₃ : ℕ) : R) = b₁ ^ a₂ * b₃ := by subst_vars; simp
+
+theorem nat_cast_zero : ((0 : ℕ) : R) = 0 := Nat.cast_zero
+
+theorem nat_cast_add (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : ℕ) : R) = b₂) :
+    ((a₁ + a₂ : ℕ) : R) = b₁ + b₂ := by subst_vars; simp
+
+mutual
+
+partial def ExBase.evalNatCast (va : ExBase sℕ a) : RingM (Result (ExBase sα) q($a)) :=
+  match va with
+  | .atom _ => do
+    let a' : Q($α) := q($a)
+    let i ← addAtom a'
+    pure ⟨a', ExBase.atom i, (q(Eq.refl $a') : Expr)⟩
+  | .sum va => do
+    let ⟨_, vc, p⟩ ← va.evalNatCast
+    pure ⟨_, .sum vc, p⟩
+
+partial def ExProd.evalNatCast (va : ExProd sℕ a) : RingM (Result (ExProd sα) q($a)) :=
+  match va with
+  | .const c =>
+    have n : Q(ℕ) := a.appArg!
+    pure ⟨q(Nat.rawCast $n), .const c, (q(nat_cast_nat (R := $α) $n) : Expr)⟩
+  | .mul (e := a₂) va₁ va₂ va₃ => do
+    let ⟨_, vb₁, pb₁⟩ ← va₁.evalNatCast
+    let ⟨_, vb₃, pb₃⟩ ← va₃.evalNatCast
+    pure ⟨_, .mul vb₁ va₂ vb₃, q(nat_cast_mul $a₂ $pb₁ $pb₃)⟩
+
+partial def ExSum.evalNatCast (va : ExSum sℕ a) : RingM (Result (ExSum sα) q($a)) :=
+  match va with
+  | .zero => pure ⟨_, .zero, q(nat_cast_zero (R := $α))⟩
+  | .add va₁ va₂ => do
+    let ⟨_, vb₁, pb₁⟩ ← va₁.evalNatCast
+    let ⟨_, vb₂, pb₂⟩ ← va₂.evalNatCast
+    pure ⟨_, .add vb₁ vb₂, q(nat_cast_add $pb₁ $pb₂)⟩
+
+end
+
+theorem smul_nat (_ : (a * b : ℕ) = c) : a • b = c := by subst_vars; simp
+
+theorem smul_eq_cast (_ : ((a : ℕ) : R) = a') (_ : a' * b = c) : a • b = c := by subst_vars; simp
+
+def evalNSMul (va : ExSum sℕ a) (vb : ExSum sα b) : RingM (Result (ExSum sα) q($a • $b)) := do
+  if ← isDefEq sα sℕ then
+    let ⟨_, va'⟩ := va.cast
+    have _b : Q(ℕ) := b
+    let ⟨(_c : Q(ℕ)), vc, (pc : Q($a * $_b = $_c))⟩ := evalMul sα va' vb
+    pure ⟨_, vc, (q(smul_nat $pc) : Expr)⟩
+  else
+    let ⟨_, va', pa'⟩ ← va.evalNatCast sα
+    let ⟨_, vc, pc⟩ := evalMul sα va' vb
+    pure ⟨_, vc, (q(smul_eq_cast $pa' $pc) : Expr)⟩
 
 theorem neg_one_mul {R} [Ring R] {a b : R} (_ : (Int.negOfNat (nat_lit 1)).rawCast * a = b) :
     -a = b := by subst_vars; simp [Int.negOfNat]
@@ -768,6 +842,9 @@ theorem add_congr (_ : a = a') (_ : b = b')
 theorem mul_congr (_ : a = a') (_ : b = b')
     (_ : a' * b' = c) : (a * b : R) = c := by subst_vars; rfl
 
+theorem nsmul_congr (_ : (a : ℕ) = a') (_ : b = b')
+    (_ : a' • b' = c) : (a • b : R) = c := by subst_vars; rfl
+
 theorem pow_congr (_ : a = a') (_ : b = b')
     (_ : a' ^ b' = c) : (a ^ b : R) = c := by subst_vars; rfl
 
@@ -797,6 +874,11 @@ partial def eval {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     let ⟨_, vb, pb⟩ ← eval sα c b
     let ⟨c, vc, p⟩ := evalMul sα va vb
     pure ⟨c, vc, (q(mul_congr $pa $pb $p) : Expr)⟩
+  | ~q(($a : ℕ) • $b) =>
+    let ⟨_, va, pa⟩ ← eval sℕ .nat a
+    let ⟨_, vb, pb⟩ ← eval sα c b
+    let ⟨c, vc, p⟩ ← evalNSMul sα va vb
+    pure ⟨c, vc, (q(nsmul_congr $pa $pb $p) : Expr)⟩
   | ~q($a ^ $b) =>
     let ⟨_, va, pa⟩ ← eval sα c a
     let ⟨_, vb, pb⟩ ← eval sℕ .nat b
