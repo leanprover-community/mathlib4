@@ -121,7 +121,7 @@ it will generate equality proof obligations using `congr n` to resolve discrepan
 `convert_to g` defaults to using `congr 1`.
 `convert_to` is similar to `convert`, but `convert_to` takes a type (the desired subgoal) while
 `convert` takes a proof term.
-That is, `convert_to g using n` is equivalent to `convert (_ : g) using n`.
+That is, `convert_to g using n` is equivalent to `convert (?_ : g) using n`.
 -/
 syntax (name := convertTo) "convert_to " term (" using " num)? : tactic
 
