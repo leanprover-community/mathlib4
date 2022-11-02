@@ -59,6 +59,8 @@ import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Align
 import Mathlib.Init.Classical
 import Mathlib.Init.Core
+import Mathlib.Init.Data.Bool.Basic
+import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Notation
