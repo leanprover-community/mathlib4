@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
 
-/-!  Monad combinators, as in Haskell's Control.Monad. -/
+/-! ## Monad combinators, as in Haskell's Control.Monad. -/
 
 universe u v w
 
