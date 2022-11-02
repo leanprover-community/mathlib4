@@ -58,6 +58,7 @@ import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Align
 import Mathlib.Init.Classical
+import Mathlib.Init.Control.Combinators
 import Mathlib.Init.Core
 import Mathlib.Init.Data.Int.Notation
 import Mathlib.Init.Data.Int.Order
