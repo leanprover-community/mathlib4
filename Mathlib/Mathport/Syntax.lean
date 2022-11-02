@@ -8,6 +8,7 @@ import Lean.Elab.Quotation
 import Std.Tactic.Ext
 import Std.Tactic.RCases
 import Mathlib.Logic.Equiv.LocalEquiv
+import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyRules
 import Mathlib.Tactic.ApplyWith
@@ -53,6 +54,7 @@ import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.SimpTrace
 import Mathlib.Tactic.SolveByElim
+import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.Trace
@@ -332,18 +334,9 @@ syntax termList := " [" term,* "]"
 /- B -/ syntax (name := abel) "abel" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 /- B -/ syntax (name := abel!) "abel!" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 
-/- E -/ syntax (name := ring1) "ring1" : tactic
-/- E -/ syntax (name := ring1!) "ring1!" : tactic
-
 syntax ringMode := &"SOP" <|> &"raw" <|> &"horner"
 /- E -/ syntax (name := ringNF) "ring_nf" (ppSpace ringMode)? (ppSpace location)? : tactic
 /- E -/ syntax (name := ringNF!) "ring_nf!" (ppSpace ringMode)? (ppSpace location)? : tactic
-/- E -/ syntax (name := ring!) "ring!" : tactic
-
-/- B -/ syntax (name := ringExpEq) "ring_exp_eq" : tactic
-/- B -/ syntax (name := ringExpEq!) "ring_exp_eq!" : tactic
-/- B -/ syntax (name := ringExp) "ring_exp" (ppSpace location)? : tactic
-/- B -/ syntax (name := ringExp!) "ring_exp!" (ppSpace location)? : tactic
 
 /- E -/ syntax (name := noncommRing) "noncomm_ring" : tactic
 
