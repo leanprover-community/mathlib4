@@ -58,7 +58,7 @@ def List.mfirst {m : Type u → Type v} [Monad m] [Alternative m] {α : Type w} 
     (f : α → m β) : List α → m β
   | [] => failure
   | a :: as => f a <|> List.mfirst f as
-#align list.mfirst List.mfirst -- TOOD: check if is this correct
+#align list.mfirst List.mfirst -- TODO: check if is this correct
 
 def when {m : Type → Type} [Monad m] (c : Prop) [Decidable c] (t : m Unit) : m Unit :=
   ite c t (pure ())
