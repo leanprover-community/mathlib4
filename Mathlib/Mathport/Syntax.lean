@@ -8,6 +8,7 @@ import Lean.Elab.Quotation
 import Std.Tactic.Ext
 import Std.Tactic.RCases
 import Mathlib.Logic.Equiv.LocalEquiv
+import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyRules
 import Mathlib.Tactic.ApplyWith
@@ -53,11 +54,13 @@ import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.SimpTrace
 import Mathlib.Tactic.SolveByElim
+import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.Use
+import Mathlib.Tactic.Zify
 import Mathlib.Util.Syntax
 import Mathlib.Util.WithWeakNamespace
 
@@ -164,9 +167,9 @@ macro ak:Term.attrKind "notation3"
       let args := #[
         Lean.mkAtom "(", x, y, Lean.mkAtom "=>", scopedTerm, Lean.mkAtom ")", init,
         Lean.mkAtom "[", args, Lean.mkAtom "]"]
-      let stx ← show MacroM Syntax.Term from match kind.1[0] with
-        | .atom _ "foldl" => pure ⟨mkNode ``expandFoldl (#[Lean.mkAtom "expandFoldl%"] ++ args)⟩
-        | .atom _ "foldr" => pure ⟨mkNode ``expandFoldr (#[Lean.mkAtom "expandFoldr%"] ++ args)⟩
+      let stx ← show MacroM Syntax.Term from match kind with
+        | `(foldKind| foldl) => pure ⟨mkNode ``expandFoldl (#[Lean.mkAtom "expandFoldl%"] ++ args)⟩
+        | `(foldKind| foldr) => pure ⟨mkNode ``expandFoldr (#[Lean.mkAtom "expandFoldr%"] ++ args)⟩
         | _ => Macro.throwUnsupported
       boundNames := boundNames.insert id.getId stx
     | `(notation3Item| $lit:ident : (scoped $scopedId:ident => $scopedTerm)) =>
@@ -267,7 +270,6 @@ namespace Tactic
 /- N -/ syntax (name := congr') "congr" (ppSpace colGt num)?
   (" with " (colGt rcasesPat)* (" : " num)?)? : tactic
 /- M -/ syntax (name := rcongr) "rcongr" (ppSpace colGt rcasesPat)* : tactic
-/- E -/ syntax (name := convertTo) "convert_to " term (" using " num)? : tactic
 /- E -/ syntax (name := acChange) "ac_change " term (" using " num)? : tactic
 
 /- S -/ syntax (name := rcases?) "rcases?" casesTarget,* (" : " num)? : tactic
@@ -328,23 +330,12 @@ syntax termList := " [" term,* "]"
 
 /- E -/ syntax (name := applyNormed) "apply_normed " term : tactic
 
-/- E -/ syntax (name := abel1) "abel1" : tactic
-/- E -/ syntax (name := abel1!) "abel1!" : tactic
 /- B -/ syntax (name := abel) "abel" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 /- B -/ syntax (name := abel!) "abel!" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
-
-/- E -/ syntax (name := ring1) "ring1" : tactic
-/- E -/ syntax (name := ring1!) "ring1!" : tactic
 
 syntax ringMode := &"SOP" <|> &"raw" <|> &"horner"
 /- E -/ syntax (name := ringNF) "ring_nf" (ppSpace ringMode)? (ppSpace location)? : tactic
 /- E -/ syntax (name := ringNF!) "ring_nf!" (ppSpace ringMode)? (ppSpace location)? : tactic
-/- E -/ syntax (name := ring!) "ring!" : tactic
-
-/- B -/ syntax (name := ringExpEq) "ring_exp_eq" : tactic
-/- B -/ syntax (name := ringExpEq!) "ring_exp_eq!" : tactic
-/- B -/ syntax (name := ringExp) "ring_exp" (ppSpace location)? : tactic
-/- B -/ syntax (name := ringExp!) "ring_exp!" (ppSpace location)? : tactic
 
 /- E -/ syntax (name := noncommRing) "noncomm_ring" : tactic
 
@@ -387,8 +378,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := group) "group" (ppSpace location)? : tactic
 
 /- M -/ syntax (name := cancelDenoms) "cancel_denoms" (ppSpace location)? : tactic
-
-/- M -/ syntax (name := zify) "zify" (simpArgs)? (ppSpace location)? : tactic
 
 /- S -/ syntax (name := transport) "transport" (ppSpace term)? " using " term : tactic
 

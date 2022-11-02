@@ -34,6 +34,21 @@ class Semiring (R : Type u) extends NonUnitalSemiring R, NonAssocSemiring R, Mon
 
 section Semiring
 
+-- TODO: put these in the right place
+@[simp] theorem Commute.zero_right [Semiring R] (a : R) : Commute a 0 :=
+  (mul_zero _).trans (zero_mul _).symm
+
+@[simp] theorem Commute.zero_left [Semiring R] (a : R) : Commute 0 a :=
+  (zero_mul _).trans (mul_zero _).symm
+
+@[simp] theorem Commute.add_right [Semiring R] {a b c : R} (h : Commute a b) (h' : Commute a c) :
+    Commute a (b + c) := by
+  simp only [Commute, SemiconjBy, left_distrib, right_distrib, h.eq, h'.eq]
+
+@[simp] theorem Commute.add_left [Semiring R] {a b c : R} (h : Commute a c) (h' : Commute b c) :
+    Commute (a + b) c := by
+  simp only [Commute, SemiconjBy, left_distrib, right_distrib, h.eq, h'.eq]
+
 @[simp]
 lemma Nat.cast_mul [Semiring R] {m n : ℕ} : (m * n).cast = (m.cast * n.cast : R) := by
   induction n generalizing m <;> simp_all [mul_succ, mul_add]
@@ -41,6 +56,11 @@ lemma Nat.cast_mul [Semiring R] {m n : ℕ} : (m * n).cast = (m.cast * n.cast : 
 @[simp]
 lemma Nat.cast_pow [Semiring R] {m n : ℕ} : (m ^ n).cast = (m.cast ^ n : R) := by
   induction n generalizing m <;> simp_all [Nat.pow_succ', _root_.pow_succ'', pow_zero]
+
+theorem Nat.cast_commute [Semiring α] (n : ℕ) (x : α) : Commute (↑n) x := by
+  induction n with
+  | zero => rw [Nat.cast_zero]; exact Commute.zero_left x
+  | succ n ihn => rw [Nat.cast_succ] <;> exact ihn.add_left (Commute.one_left x)
 
 end Semiring
 
@@ -52,10 +72,13 @@ class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 
 example [Ring R] : HasInvolutiveNeg R := inferInstance
 
-theorem neg_mul_eq_neg_mul {R} [Ring R] (a b : R) : -(a * b) = (-a) * b :=
-  Eq.symm <| eq_of_sub_eq_zero' <| by
-    rw [sub_eq_add_neg, neg_neg (a * b) /- TODO: why is arg necessary? -/]
-    rw [← add_mul, neg_add_self a /- TODO: why is arg necessary? -/, zero_mul]
+@[simp] theorem neg_mul {R} [Ring R] (a b : R) : (-a) * b = -(a * b) :=
+  eq_of_sub_eq_zero' <| by rw [sub_eq_add_neg, neg_neg, ← add_mul, neg_add_self, zero_mul]
+
+@[simp] lemma mul_neg [Ring R] (a b : R) : a * -b = - (a * b) :=
+  eq_of_sub_eq_zero' <| by rw [sub_eq_add_neg, neg_neg, ← mul_add, neg_add_self, mul_zero]
+
+theorem neg_mul_eq_neg_mul {R} [Ring R] (a b : R) : -(a * b) = (-a) * b := (neg_mul ..).symm
 
 theorem mul_sub_right_distrib [Ring R] (a b c : R) : (a - b) * c = a * c - b * c := by
   simpa only [sub_eq_add_neg, neg_mul_eq_neg_mul] using add_mul a (-b) c
@@ -145,3 +168,9 @@ lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
 protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
 end Int
+
+-- TODO restore @[to_additive coe_nat_zsmul]
+@[norm_cast]
+theorem zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (n : ℤ) = a ^ n := zpow_ofNat ..
+theorem coe_nat_zsmul [SubNegMonoid G] (a : G) (n : ℕ) : (n : ℤ) • a = n • a := ofNat_zsmul ..
+attribute [to_additive coe_nat_zsmul] zpow_coe_nat
