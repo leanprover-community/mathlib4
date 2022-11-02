@@ -92,14 +92,14 @@ def removeNegations : Preprocessor :=
     let t : Q(Prop) ← inferType h
     match t with
     | ~q(¬ $p) =>
-      linarithTrace m!"removing negation in {h}"
+      trace[linarith] m!"removing negation in {h}"
       return [← flipNegatedComparison h p]
     | _        => return [h] }
 
 
 end removeNegations
 
--- FIXME the `nat_to_int : GlobalPreprocessor` from mathlib3
+-- FIXME the `natToInt : GlobalPreprocessor` from mathlib3
 -- will need to wait for a port of `zify_proof`.
 -- (`zify` was ported, but purely as porcelain, no plumbing.)
 section natToInt
@@ -252,7 +252,7 @@ def compWithZero : Preprocessor :=
 
 end compWithZero
 
--- FIXME the `cancel_denoms : Preprocessor` from mathlib3 will need to wait
+-- FIXME the `cancelDenoms : Preprocessor` from mathlib3 will need to wait
 -- for a port of the `cancel_denoms` tactic.
 section cancelDenoms
 -- /--

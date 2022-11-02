@@ -221,6 +221,7 @@ def linearFormsAndMaxVar (red : TransparencyMode) (pfs : List Expr) :
     MetaM (List Comp × ℕ) := do
   let pftps ← (pfs.mapM inferType)
   let (l, _, map) ← toCompFold red [] pftps RBMap.empty
+  trace[linarith.detail] "monomial map: {map.toList.map fun ⟨k,v⟩ => (k.toList, v)}"
   return (l, map.size - 1)
 
 end Linarith

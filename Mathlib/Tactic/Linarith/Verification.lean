@@ -190,34 +190,38 @@ set of hypotheses.
 def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM Expr
 | _, [] => throwError "no args to linarith"
 | g, l@(h::_) => do
+    trace[linarith.detail] "Beginning work in `proveFalseByLinarith`."
     -- for the elimination to work properly, we must add a proof of `-1 < 0` to the list,
     -- along with negated equality proofs.
     let l' ← addNegEqProofs l
-    let hz ← mkNegOneLtZeroProof (← typeOfIneqProof h)
-    let inputs := hz::l'
+    trace[linarith.detail] "... finished `addNegEqProofs`."
+    let inputs := (← mkNegOneLtZeroProof (← typeOfIneqProof h))::l'
+    trace[linarith.detail] "... finished `mkNegOneLtZeroProof`."
     let (comps, max_var) ← linearFormsAndMaxVar cfg.transparency inputs
+    trace[linarith.detail] "... finished `linearFormsAndMaxVar`."
+    trace[linarith.detail] "{comps}"
     let oracle := cfg.oracle.getD FourierMotzkin.produceCertificate
     -- perform the elimination and fail if no contradiction is found.
     let certificate : Std.HashMap Nat Nat ← try
       oracle comps max_var
     catch e =>
-      linarithTrace m!"{e.toMessageData}"
+      trace[linarith] m!"{e.toMessageData}"
       throwError "linarith failed to find a contradiction"
-    linarithTrace m!"linarith has found a contradiction: {certificate.toList}"
+    trace[linarith] m!"linarith has found a contradiction: {certificate.toList}"
     let enum_inputs := inputs.enum
     -- construct a list pairing nonzero coeffs with the proof of their corresponding comparison
     let zip := enum_inputs.filterMap (fun ⟨n, e⟩ => (certificate.find? n).map (e, ·))
     let mls ← zip.mapM (fun ⟨e, n⟩ => do mulExpr n (← leftOfIneqProof e))
     -- `sm` is the sum of input terms, scaled to cancel out all variables.
-    let sm ← addExprs mls -- FIXME there was a to_expr here previously
+    let sm ← addExprs mls
     -- let sm ← instantiateMVars sm
-    linarithTrace m!"The expression\n  {sm}\nshould be both 0 and negative"
+    trace[linarith] m!"The expression\n  {sm}\nshould be both 0 and negative"
     -- we prove that `sm = 0`, typically with `ring`.
     let sm_eq_zero ← proveEqZeroUsing cfg.discharger sm
-    -- linarithTrace m!"We have proved that it is zero: {sm_eq_zero}"
+    -- trace[linarith] m!"We have proved that it is zero: {sm_eq_zero}"
     -- we also prove that `sm < 0`
     let sm_lt_zero ← mkLtZeroProof zip
-    -- linarithTrace m!"We have proved that it is negative: {sm_lt_zero}"
+    -- trace[linarith] m!"We have proved that it is negative: {sm_lt_zero}"
     -- this is a contradiction.
     let pftp ← inferType sm_lt_zero
     let ⟨_, nep, _⟩ ← g.rewrite pftp sm_eq_zero

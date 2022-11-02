@@ -114,7 +114,7 @@ removed from the system.
 
 This test is an overapproximation to minimality. It gives necessary but not sufficient conditions.
 If the history of `c` is minimal, then `c.maybeMinimal` is true,
-but `c.maybeMinimal` may also be true for some `c` with minimal history.
+but `c.maybeMinimal` may also be true for some `c` with non-minimal history.
 Thus, if `c.maybeMinimal` is false, `c` is known not to be minimal and must be redundant.
 See http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.51.493&rep=rep1&type=pdf p.13
 (Theorem 7).
@@ -160,9 +160,9 @@ def PComp.add (c1 c2 : PComp) (elimVar : ℕ) : PComp :=
   let c := c1.c.add c2.c
   let src := c1.src.add c2.src
   let history := c1.history.union c2.history
-  let vars := .ofList c.vars _
+  let vars := c1.vars.union c2.vars
   let effective := (c1.effective.union c2.effective).insert elimVar
-  let implicit := ((c1.vars.union c2.vars).sdiff vars).erase (Ord.compare elimVar)
+  let implicit := (vars.sdiff (.ofList c.vars _)).sdiff effective
   ⟨c, src, history, effective, implicit, vars⟩
 
 /--
@@ -192,8 +192,8 @@ abbrev PCompSet := RBSet PComp PComp.cmp
 /-- If `c1` and `c2` both contain variable `a` with opposite coefficients,
 produces `v1` and `v2` such that `a` has been cancelled in `v1*c1 + v2*c2`. -/
 def elimVar (c1 c2 : Comp) (a : ℕ) : Option (ℕ × ℕ) :=
-  let v1 := c1.coeff_of a
-  let v2 := c2.coeff_of a
+  let v1 := c1.coeffOf a
+  let v2 := c2.coeffOf a
   if v1 * v2 < 0 then
     let vlcm :=  Nat.lcm v1.natAbs v2.natAbs
     let  v1' := vlcm / v1.natAbs
@@ -254,7 +254,6 @@ def getPCompSet : LinarithM PCompSet :=
 
 /-- Throws an exception if a contradictory `PComp` is contained in the current state. -/
 def validate : LinarithM Unit := do
-  let cs ← getPCompSet
   match (←getPCompSet).toList.find? (fun p : PComp => p.isContr) with
   | none => return ()
   | some c => throw c
@@ -277,7 +276,7 @@ Returns `(pos, neg, notPresent)`.
 -/
 def splitSetByVarSign (a : ℕ) (comps : PCompSet) : PCompSet × PCompSet × PCompSet :=
   comps.foldl (fun ⟨pos, neg, notPresent⟩ pc =>
-    let n := pc.c.coeff_of a
+    let n := pc.c.coeffOf a
     if n > 0 then ⟨pos.insert pc, neg, notPresent⟩
     else if n < 0 then ⟨pos, neg.insert pc, notPresent⟩
     else ⟨pos, neg, notPresent.insert pc⟩)
@@ -292,6 +291,8 @@ def elimVarM (a : ℕ) : LinarithM Unit := do
   if (a ≤ vs) then (do
     let ⟨pos, neg, notPresent⟩ ← splitSetByVarSign a <$> getPCompSet
     let cs' := pos.foldl (fun s p => s.union (elimWithSet a p neg)) notPresent
+    dbg_trace "elimVarM {a}"
+    dbg_trace "{cs'.toList}"
     update (vs - 1) cs')
   else
     pure ()
@@ -302,6 +303,7 @@ ground comparisons. If this succeeds without exception, the original `linarith` 
 -/
 def elimAllVarsM : LinarithM Unit := do
   let mv ← getMaxVar
+  dbg_trace "{(← getPCompSet).toList}"
   for i in (List.range $ mv + 1).reverse do
     elimVarM i
 

@@ -218,7 +218,7 @@ let single_process : MVarId → List Expr → MetaM Expr :=
    linarithTraceProofs
      ("after preprocessing, linarith has " ++ toString hyps.length ++ " facts:") hyps
    let hyp_set ← partitionByType hyps
-   linarithTrace m!"hypotheses appear in {hyp_set.size} different types"
+   trace[linarith] m!"hypotheses appear in {hyp_set.size} different types"
    match pref_type with
    | some t => proveFalseByLinarith cfg g (hyp_set.findD t []) <|>
                findLinarithContradiction cfg g ((hyp_set.erase t).values)
@@ -226,7 +226,7 @@ let single_process : MVarId → List Expr → MetaM Expr :=
 let preprocessors :=
   (if cfg.split_hypotheses then [Linarith.splitConjunctions.globalize.branching] else []) ++
   cfg.preprocessors.getD default_preprocessors
--- TODO restore when the `remove_ne` preprocessor is implemented
+-- TODO restore when the `removeNe` preprocessor is implemented
 -- let preprocessors := if cfg.split_ne then Linarith.removeNe::preprocessors else preprocessors
 do
   let branches ← preprocess preprocessors g hyps
@@ -263,7 +263,7 @@ partial def linarith (only_on : Bool) (hyps : List Expr)
 do
   -- if the target is an equality, we run `linarith` twice, to prove ≤ and ≥.
   if (← g.getType).isEq then do
-    linarithTrace "target is an equality: splitting"
+    trace[linarith] "target is an equality: splitting"
     let [g₁, g₂] ← g.apply (← mkConst' ``eq_of_not_lt_of_not_gt) | failure
     linarith only_on hyps cfg g₁
     linarith only_on hyps cfg g₂
@@ -279,7 +279,7 @@ do
   let (g, target_type, new_var) ← match ← applyContrLemma g with
   | (none, g) =>
     if cfg.exfalso then do
-      linarithTrace "using exfalso"
+      trace[linarith] "using exfalso"
       pure (← g.exfalso, none, none)
     else
       pure (g, none, none)

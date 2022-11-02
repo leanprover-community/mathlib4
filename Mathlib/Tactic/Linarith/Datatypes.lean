@@ -19,12 +19,9 @@ This file also contains a few convenient auxiliary functions.
 open Lean Elab Tactic Meta
 
 initialize registerTraceClass `linarith
+initialize registerTraceClass `linarith.detail
 
 namespace Linarith
-
-/-- A shorthand for tracing when the `trace.linarith` option is set to true. -/
-def linarithTrace {α} [ToMessageData α] (s : α) : CoreM Unit := do
-  trace[linarith] "{s}"
 
 /--
 A shorthand for tracing the types of a list of proof terms
@@ -179,8 +176,8 @@ deriving Inhabited, Repr
 /-- `c.vars` returns the list of variables that appear in the linear expression contained in `c`. -/
 def Comp.vars : Comp → List Nat := Linexp.vars ∘ Comp.coeffs
 
-/-- `c.coeff_of a` projects the coefficient of variable `a` out of `c`. -/
-def Comp.coeff_of (c : Comp) (a : Nat) : Int :=
+/-- `c.coeffOf a` projects the coefficient of variable `a` out of `c`. -/
+def Comp.coeffOf (c : Comp) (a : Nat) : Int :=
   c.coeffs.zfind a
 
 /-- `c.scale n` scales the coefficients of `c` by `n`. -/
@@ -277,7 +274,7 @@ def GlobalBranchingPreprocessor.process (pp : GlobalBranchingPreprocessor)
   (g : MVarId) (l : List Expr) : MetaM (List Branch) := do
   let branches ← pp.transform g l
   if (branches.length > 1) then
-    linarithTrace m!"Preprocessing: {pp.name} has branched, with branches:"
+    trace[linarith] m!"Preprocessing: {pp.name} has branched, with branches:"
   for ⟨goal, hyps⟩ in branches do
     goal.withContext do
       linarithTraceProofs m!"Preprocessing: {pp.name}" hyps
