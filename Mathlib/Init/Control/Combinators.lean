@@ -9,88 +9,65 @@ import Mathlib.Mathport.Rename
 
 universe u v w
 
-def List.mmap {m : Type u → Type v} [Monad m] {α : Type w} {β : Type u} (f : α → m β) :
-    List α → m (List β)
-  | [] => return []
-  | h :: t => do
-    let h' ← f h
-    let t' ← List.mmap f t
-    return (h' :: t')
+#align list.mmap List.mapM
 
-def List.mmap' {m : Type → Type v} [Monad m] {α : Type u} {β : Type} (f : α → m β) :
+def List.mapM' {m : Type → Type v} [Monad m] {α : Type u} {β : Type} (f : α → m β) :
     List α → m Unit
   | [] => return ()
-  | h :: t => f h *> List.mmap' f t
+  | h :: t => f h *> List.mapM' f t
+#align list.mmap' List.mapM'
 
-def mjoin {m : Type u → Type u} [Monad m] {α : Type u} (a : m (m α)) : m α :=
+def joinM {m : Type u → Type u} [Monad m] {α : Type u} (a : m (m α)) : m α :=
   bind a id
 
-def List.mfilter {m : Type → Type v} [Monad m] {α : Type} (f : α → m Bool) : List α → m (List α)
-  | [] => return []
-  | h :: t => do
-    let b ← f h
-    let t' ← List.mfilter f t
-    cond b (return (h :: t')) (return t')
+#align mjoin joinM
 
-def List.mfoldl {m : Type u → Type v} [Monad m] {s : Type u} {α : Type w} :
-    (s → α → m s) → s → List α → m s
-  | _, s, [] => return s
-  | f, s, h :: r => do
-    let s' ← f s h
-    List.mfoldl f s' r
+#align list.mfilter List.filterM
 
-def List.mfoldr {m : Type u → Type v} [Monad m] {s : Type u} {α : Type w} :
-    (α → s → m s) → s → List α → m s
-  | _, s, [] => return s
-  | f, s, h :: r => do
-    let s' ← List.mfoldr f s r
-    f h s'
+#align list.mfoldl List.foldlM
 
-/- warning: list.mfirst -> List.mfirst is a dubious translation:
-lean 3 declaration is
-  forall {m : Type.{u} -> Type.{v}} [_inst_1 : Monad.{u v} m] [_inst_2 : Alternative.{u v} m]
-    {α : Type.{w}} {β : Type.{u}}, (α -> (m β)) -> (List.{w} α) -> (m β)
-but is expected to have type
-  forall {m : Type.{u} -> Type.{v}} [_inst_2 : Alternative.{u v} m]
-    {α : Type.{w}} {β : Type.{u}}, (α -> (m β)) -> (List.{w} α) -> (m β)
-Case conversion may be inaccurate. Consider using '#align list.mfirst List.mfirstₓ'. -/
-def List.mfirst {m : Type u → Type v} [Monad m] [Alternative m] {α : Type w} {β : Type u}
-    (f : α → m β) : List α → m β
-  | [] => failure
-  | a :: as => f a <|> List.mfirst f as
-#align list.mfirst List.mfirst -- TODO: check if is this correct
+#align list.mfoldr List.foldrM
+
+#align list.mfirst List.firstM
 
 def when {m : Type → Type} [Monad m] (c : Prop) [Decidable c] (t : m Unit) : m Unit :=
   ite c t (pure ())
 
-def mcond {m : Type → Type} [Monad m] {α : Type} (mbool : m Bool) (tm fm : m α) : m α := do
+def condM {m : Type → Type} [Monad m] {α : Type} (mbool : m Bool) (tm fm : m α) : m α := do
   let b ← mbool
   cond b tm fm
 
-def mwhen {m : Type → Type} [Monad m] (c : m Bool) (t : m Unit) : m Unit :=
-  mcond c t (return ())
+#align mcond condM
 
-export List (mmap mmap' mfilter mfoldl)
+def mwhen {m : Type → Type} [Monad m] (c : m Bool) (t : m Unit) : m Unit :=
+  condM c t (return ())
+
+#align mwhen whenM
+
+
+export List (mapM mapM' filterM foldlM)
 
 namespace Monad
 
-def mapm :=
-  @mmap
+def mapM :=
+  @List.mapM
+#align monad.mapm Monad.mapM
 
-def mapm' :=
-  @mmap'
+def mapM' :=
+  @List.mapM'
+#align monad.mapm' Monad.mapM'
 
 def join :=
-  @mjoin
+  @joinM
 
 def filter :=
-  @mfilter
+  @filterM
 
 def foldl :=
-  @mfoldl
+  @List.foldlM
 
 def cond :=
-  @mcond
+  @condM
 
 def sequence {m : Type u → Type v} [Monad m] {α : Type u} : List (m α) → m (List α)
   | [] => return []
