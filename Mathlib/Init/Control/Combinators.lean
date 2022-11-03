@@ -3,6 +3,7 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
+import Std.Data.List.Init.Lemmas
 import Mathlib.Mathport.Rename
 
 /-! ## Monad combinators, as in Haskell's Control.Monad. -/
@@ -11,10 +12,6 @@ universe u v w
 
 #align list.mmap List.mapM
 
-def List.mapM' {m : Type → Type v} [Monad m] {α : Type u} {β : Type} (f : α → m β) :
-    List α → m Unit
-  | [] => return ()
-  | h :: t => f h *> List.mapM' f t
 #align list.mmap' List.mapM'
 
 def joinM {m : Type u → Type u} [Monad m] {α : Type u} (a : m (m α)) : m α :=
@@ -39,7 +36,7 @@ def condM {m : Type → Type} [Monad m] {α : Type} (mbool : m Bool) (tm fm : m 
 
 #align mcond condM
 
-def mwhen {m : Type → Type} [Monad m] (c : m Bool) (t : m Unit) : m Unit :=
+def whenM {m : Type → Type} [Monad m] (c : m Bool) (t : m Unit) : m Unit :=
   condM c t (return ())
 
 #align mwhen whenM
