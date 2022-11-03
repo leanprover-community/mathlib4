@@ -43,7 +43,7 @@ to populate discrimination trees.
 
 open Lean Meta
 
-namespace Tactic
+namespace Mathlib.Tactic
 
 /-- Once-per-file cache. -/
 def Cache (α : Type) :=

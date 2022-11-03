@@ -22,7 +22,7 @@ example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by
 
 example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by
   convert (37, 57, 2, b) using 2
-  guard_target == (Nat × α) = (Nat × β)
+  guard_target = (Nat × α) = (Nat × β)
   congr
 
 example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by

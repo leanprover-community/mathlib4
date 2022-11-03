@@ -49,41 +49,41 @@ example (x : Bar 0) : True := by
 
 example (n : Nat) : n = n := by
   induction' n with n ih
-  · guard_target == Nat.zero = Nat.zero; rfl
+  · guard_target = Nat.zero = Nat.zero; rfl
   · guard_hyp n : Nat; guard_hyp ih : n = n
-    guard_target == Nat.succ n = Nat.succ n; exact congr_arg _ ih
+    guard_target = Nat.succ n = Nat.succ n; exact congr_arg _ ih
 
 example (n : Nat) (h : n < 5) : n = n := by
   induction' n with n ih
-  · guard_target == Nat.zero = Nat.zero; rfl
+  · guard_target = Nat.zero = Nat.zero; rfl
   · guard_hyp n : Nat; guard_hyp ih : n < 5 → n = n; guard_hyp h : Nat.succ n < 5
-    guard_target == Nat.succ n = Nat.succ n; rfl
+    guard_target = Nat.succ n = Nat.succ n; rfl
 
 example (n : Nat) {m} (h : m < 5) : n = n := by
   induction' n with n ih
-  · guard_target == Nat.zero = Nat.zero; rfl
+  · guard_target = Nat.zero = Nat.zero; rfl
   · guard_hyp n : Nat; guard_hyp ih : n = n; guard_hyp h : m < 5
-    guard_target == Nat.succ n = Nat.succ n; rfl
+    guard_target = Nat.succ n = Nat.succ n; rfl
 
 example (n : Nat) {m} (h : m < 5) : n = n := by
   induction' n with n ih generalizing m
-  · guard_target == Nat.zero = Nat.zero; rfl
+  · guard_target = Nat.zero = Nat.zero; rfl
   · guard_hyp n : Nat; guard_hyp ih : ∀ {m}, m < 5 → n = n; guard_hyp h : m < 5
-    guard_target == Nat.succ n = Nat.succ n; rfl
+    guard_target = Nat.succ n = Nat.succ n; rfl
 
 example (n : Nat) : n = n := by
   induction' e : n with m ih
-  · guard_hyp e : n = Nat.zero; guard_target == Nat.zero = Nat.zero; rfl
+  · guard_hyp e : n = Nat.zero; guard_target = Nat.zero = Nat.zero; rfl
   · guard_hyp m : Nat; guard_hyp ih : n = m → m = m
-    guard_hyp e : n = Nat.succ m; guard_target == Nat.succ m = Nat.succ m; rfl
+    guard_hyp e : n = Nat.succ m; guard_target = Nat.succ m = Nat.succ m; rfl
 
 example (n : Nat) : n = n := by
   induction' e : n using my_rec with m ih
   case zee =>
-    guard_hyp e : n = 0; guard_target == 0 = 0; rfl
+    guard_hyp e : n = 0; guard_target = 0 = 0; rfl
   case soo =>
     guard_hyp m : Nat; guard_hyp ih : n = m → m = m
-    guard_hyp e : n = m + 1; guard_target == m + 1 = m + 1; rfl
+    guard_hyp e : n = m + 1; guard_target = m + 1 = m + 1; rfl
 
 example (x : Foo α Nat) : True := by
   induction' x with a a' b' a'' b'' c'' ih
@@ -94,6 +94,6 @@ example (x : Foo α Nat) : True := by
 
 example (x : Bar n) : x = x := by
   induction' x with a b c d h ih
-  case A => guard_target == Bar.A a b = Bar.A a b; rfl
+  case A => guard_target = Bar.A a b = Bar.A a b; rfl
   case B => guard_hyp h : Bar (c + 1); guard_hyp ih : h = h
-            guard_target == Bar.B c d h = Bar.B c d h; rfl
+            guard_target = Bar.B c d h = Bar.B c d h; rfl

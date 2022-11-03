@@ -23,10 +23,9 @@ example : Nat := by library_search
 ```
 -/
 
-namespace Tactic
-namespace LibrarySearch
+namespace Mathlib.Tactic.LibrarySearch
 
-open Lean Meta TryThis
+open Lean Meta Std.Tactic.TryThis
 
 initialize registerTraceClass `Tactic.librarySearch
 

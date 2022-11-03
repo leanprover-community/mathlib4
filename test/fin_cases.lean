@@ -45,7 +45,7 @@ example (x2 : Fin 2) (x3 : Fin 3) (n : Nat) (y : Fin n) : x2.val * x3.val = x3.v
 -- example (x : List Nat) (h : x ∈ [[1],[2]]) : x.length = 1 := by
 --   fin_cases h with [[1],[1+1]]
 --   · simp
---   · guard_target == [1 + 1].length = 1
+--   · guard_target = [1 + 1].length = 1
 --     simp
 
 --  -- testing that `with` arguments are elaborated with respect to the expected type:

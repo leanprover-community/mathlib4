@@ -36,7 +36,7 @@ by use ⟨1, 42⟩
 -- by
 --   use 1
 --   -- goal should now be `1 > 0 ∧ 1 = 1`, whereas it would be `∃ (H : 1 > 0), 1 = 1` after existsi 1.
---   guard_target == 1 > 0 ∧ 1 = 1
+--   guard_target = 1 > 0 ∧ 1 = 1
 --   exact ⟨Nat.zero_lt_one, rfl⟩
 
 -- example : Σ x y : Int, (Int × Int) × Int :=
