@@ -186,7 +186,6 @@ lemma eq_not_iff : ∀ {a b : Bool}, a = !b ↔ a ≠ b := by decide
 lemma not_eq_iff : ∀ {a b : Bool}, !a = b ↔ a ≠ b := by decide
 #align bool.bnot_eq_iff Bool.not_eq_iff
 
--- **TODO** mention examples like this and other Not with caps
 @[simp]
 theorem Not_eq_not : ∀ {a b : Bool}, ¬a = !b ↔ a = b := by decide
 #align bool.not_eq_bnot Bool.Not_eq_not
@@ -211,7 +210,6 @@ lemma self_ne_not : ∀ b : Bool, b ≠ !b := by decide
 lemma eq_or_eq_not : ∀ a b, a = b ∨ a = !b := by decide
 #align bool.eq_or_eq_bnot Bool.eq_or_eq_not
 
--- **TODO** mention examples like this and other Not
 theorem not_iff_Not : ∀ {b : Bool}, !b ↔ ¬b := by simp
 #align bool.bnot_iff_not Bool.not_iff_Not
 
@@ -293,7 +291,6 @@ theorem not_or : ∀ a b : Bool, !(a || b) = (!a && !b) := by decide
 theorem not_inj : ∀ {a b : Bool}, !a = !b → a = b := by decide
 #align bool.bnot_inj Bool.not_inj
 
--- *TODO* flag
 instance : LinearOrder Bool where
   le := fun a b => a = false ∨ b = true
   le_refl := by unfold LE.le; decide
@@ -306,7 +303,6 @@ instance : LinearOrder Bool where
   max_def := λ a b => by cases a <;> cases b <;> decide
   min := and
   min_def := λ a b => by cases a <;> cases b <;> decide
-  -- as of the time of writing, autoparams don't exist in Lean 4
   lt_iff_le_not_le := λ _ _ => Iff.rfl
 #align bool.linear_order Bool.instLinearOrderBool
 
@@ -320,7 +316,6 @@ theorem le_true {x : Bool} : x ≤ true :=
   Or.intro_right _ rfl
 #align bool.le_tt Bool.le_true
 
--- *TODO* check I don't need to #align this because name the same
 theorem lt_iff : ∀ {x y : Bool}, x < y ↔ x = false ∧ y = true := by decide
 
 @[simp]
