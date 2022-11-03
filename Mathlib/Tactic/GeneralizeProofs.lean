@@ -6,6 +6,24 @@ Authors: Alex J. Best
 import Lean
 import Mathlib.Tactic.LibrarySearch
 
+
+/-!
+# The `generalize_proofs` tactic
+
+Generalize any proofs occuring in the goal or in chosen hypotheses, replacing them by
+named hypotheses so that they can be referred to later in the proof easily.
+Commonly useful when dealing with functions like `Classical.choose` that produce data from proofs.
+
+For example:
+```lean
+example : list.nth_le [1, 2] 1 dec_trivial = 2 := by
+  -- ⊢ [1, 2].nth_le 1 _ = 2
+  generalize_proofs h,
+  -- h : 1 < [1, 2].length
+  -- ⊢ [1, 2].nth_le 1 h = 2
+```
+-/
+
 open Lean.Meta
 
 namespace Lean.Elab.Tactic
@@ -15,9 +33,12 @@ deriving instance Repr for GeneralizeArg
 
 namespace GeneralizeProofs
 
-/- The following set up are the visit function are copied from core -/
+/- The following set up are the visit function are based on the file
+Lean.Meta.AbstractNestedProofs in core -/
 
-
+/--
+Matching function for proofs to be generalized,
+duplicate of `Lean.Meta.AbstractNestedProofs.isNonTrivialProof` -/
 def isNonTrivialProof (e : Expr) : MetaM Bool := do
   if !(← isProof e) then
     pure false
@@ -25,32 +46,30 @@ def isNonTrivialProof (e : Expr) : MetaM Bool := do
     e.withApp fun f args =>
       pure $ !f.isAtomic || args.any fun arg => !arg.isAtomic
 
-structure Context where
-  baseName : Name
-
+/-- State for the generalize proofs tactic, contains the remaining names to be used and the
+list of generalizations so far -/
 structure State where
+  /-- The user provided names, may be anonymous -/
   nextIdx : Array Name
+  /-- The generalizations made so far -/
   curIdx : Array GeneralizeArg := #[]
 
-abbrev M := ReaderT Context $ MonadCacheT ExprStructEq Expr $ StateRefT State MetaM
+/-- Monad used by the `generalizeProofs` tactic, carries an expr cache and state with
+names to use and previous generalizations -/
+abbrev M := MonadCacheT ExprStructEq Expr $ StateRefT State MetaM
 
+/-- generalize the given e -/
 private def mkGen (e : Expr) : M Unit := do
-  -- let ctx ← read
   let s ← get
-  -- let lemmaName ← mkAuxName (ctx.baseName ++ `proof) s.nextIdx
-  logInfo e
-  logInfo (toMessageData s.nextIdx)
   let mut t := Name.anonymous
   if s.nextIdx = #[] then
     t ← mkFreshUserName `h
   modify fun s =>
-    { s with nextIdx := s.nextIdx.pop, curIdx := s.curIdx.push ⟨e, s.nextIdx.back?.getD t, none⟩ }
-  /- We turn on zeta-expansion to make sure we don't need to perform an expensive `check` step to
-     identify which let-decls can be abstracted. If we design a more efficient test, we can avoid
-     the eager zeta expasion step.
-     It a benchmark created by @selsam, The extra `check` step was a bottleneck. -/
-  -- mkAuxDefinitionFor lemmaName e (zeta := true)
+    { s with
+      nextIdx := s.nextIdx.pop,
+      curIdx := s.curIdx.push ⟨e, s.nextIdx.back?.getD t, none⟩ }
 
+/-- Recursively generalize proofs occuring in e -/
 partial def visit (e : Expr) : M Expr := do
   if e.isAtomic then
     pure e
@@ -114,7 +133,7 @@ elab (name := generalizeProofs) "generalize_proofs"
           return s.getId
         else
           mkFreshUserName `h)
-      let (_, ⟨_, out⟩) ← GeneralizeProofs.visit (← instantiateMVars (← goal.getType)) |>.run
-        { baseName := `a } |>.run |>.run { nextIdx := hsa }
+      let (_, ⟨_, out⟩) ← GeneralizeProofs.visit (← instantiateMVars (← goal.getType)) |>.run |>.run
+        { nextIdx := hsa }
       let (_, _, mvarId) ← goal.generalizeHyp out fvs
       return mvarId
