@@ -1,7 +1,7 @@
 {"version": 2,
  "packages":
  [{"url": "https://github.com/leanprover/std4",
-   "rev": "52a6002d484643556cb1ce1b6e845c4db9452655",
+   "rev": "3251e4564c136993227bbb5224276e63f077cf8e",
    "name": "std",
    "inputRev": "main"},
   {"url": "https://github.com/gebner/quote4",
