@@ -14,10 +14,10 @@ example {P Q : Prop} (q : P) (p : Q) : P ∧ Q := by
 example {a b : Nat} (h : a = b) : a = b ∧ a = a := by
   swap_var a ↔ b
   guard_hyp h : b = a
-  guard_target == b = a ∧ b = b
+  guard_target = b = a ∧ b = b
   exact ⟨h, Eq.refl b⟩
 
 example {a b c d : Nat} (h : a = b ∧ c = d) : a = b ∧ c = d := by
   swap_var a ↔ b, b c
-  guard_target == c = a ∧ b = d
+  guard_target = c = a ∧ b = d
   exact h

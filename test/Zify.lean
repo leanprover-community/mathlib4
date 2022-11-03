@@ -14,13 +14,13 @@ set_option pp.coercions false
 example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) (h2 : (c : ℤ) < a + 3 * b) : a + 3*b > c := by
   zify at h ⊢
   push_cast at h
-  guard_expr type_of% h = ¬↑x * ↑y * ↑z < (0 : ℤ) -- TODO: canonize instances?
-  guard_target = ↑c < (↑a : ℤ) + 3 * ↑b
+  guard_hyp h :~ ¬↑x * ↑y * ↑z < (0 : ℤ) -- TODO: canonize instances?
+  guard_target =~ ↑c < (↑a : ℤ) + 3 * ↑b
   exact h2
 
 example (a b : ℕ) (h : (a : ℤ) ≤ b) : a ≤ b := by
   zify
-  guard_target == (a : ℤ) ≤ b
+  guard_target = (a : ℤ) ≤ b
   exact h
 
 /-example (a b : ℕ) (h : a = b ∧ b < a) : False := by
@@ -36,5 +36,5 @@ example (a b c : ℕ) (h : a - b < c) (hab : b ≤ a) : True := by
 
 example (a b c : ℕ) (h : a + b ≠ c) : True := by
   zify at h
-  guard_expr type_of% h = (a + b : ℤ) ≠ c
+  guard_hyp h : (a + b : ℤ) ≠ c
   trivial
