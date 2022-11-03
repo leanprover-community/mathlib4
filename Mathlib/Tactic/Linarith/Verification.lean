@@ -195,7 +195,7 @@ def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM
     -- along with negated equality proofs.
     let l' ← addNegEqProofs l
     trace[linarith.detail] "... finished `addNegEqProofs`."
-    let inputs := (← mkNegOneLtZeroProof (← typeOfIneqProof h))::l'
+    let inputs := (← mkNegOneLtZeroProof (← typeOfIneqProof h))::l'.reverse
     trace[linarith.detail] "... finished `mkNegOneLtZeroProof`."
     let (comps, max_var) ← linearFormsAndMaxVar cfg.transparency inputs
     trace[linarith.detail] "... finished `linearFormsAndMaxVar`."

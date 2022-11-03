@@ -82,16 +82,15 @@ The *historical set* `PComp.history` stores the labels of expressions
 that were used in deriving the current `PComp`.
 Variables are also indexed by natural numbers. The sets `PComp.effective`, `PComp.implicit`,
 and `PComp.vars` contain variable indices.
-* `PComp.vars` contains the variables that appear in `PComp.c`. We store them in `PComp` to
-  avoid recomputing the set, which requires folding over a list. (TODO: is this really needed?)
+* `PComp.vars` contains the variables that appear in any inequality in the historical set.
 * `PComp.effective` contains the variables that have been effectively eliminated from `PComp`.
-  A variable `n` is said to be *effectively eliminated* in `PComp` if the elimination of `n`
-  produced at least one of the ancestors of `PComp`.
+  A variable `n` is said to be *effectively eliminated* in `p : PComp` if the elimination of `n`
+  produced at least one of the ancestors of `p` (or `p` itself).
 * `PComp.implicit` contains the variables that have been implicitly eliminated from `PComp`.
-  A variable `n` is said to be *implicitly eliminated* in `PComp` if it satisfies the following
+  A variable `n` is said to be *implicitly eliminated* in `p` if it satisfies the following
   properties:
-  - There is some `ancestor` of `PComp` such that `n` appears in `ancestor.vars`.
-  - `n` does not appear in `PComp.vars`.
+  - `n` appears in some inequality in the historical set (i.e. in `p.vars`).
+  - `n` does not appear in `p.c.vars` (i.e. it has been eliminated).
   - `n` was not effectively eliminated.
 
 We track these sets in order to compute whether the history of a `PComp` is *minimal*.
@@ -116,8 +115,7 @@ This test is an overapproximation to minimality. It gives necessary but not suff
 If the history of `c` is minimal, then `c.maybeMinimal` is true,
 but `c.maybeMinimal` may also be true for some `c` with non-minimal history.
 Thus, if `c.maybeMinimal` is false, `c` is known not to be minimal and must be redundant.
-See http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.51.493&rep=rep1&type=pdf p.13
-(Theorem 7).
+See https://doi.org/10.1016/B978-0-444-88771-9.50019-2 (Theorem 13).
 The condition described there considers only implicitly eliminated variables that have been
 officially eliminated from the system. This is not the case for every implicitly eliminated
 variable. Consider eliminating `z` from `{x + y + z < 0, x - y - z < 0}`. The result is the set
@@ -148,13 +146,17 @@ The computation assumes, but does not enforce, that `elimVar` appears in both `c
 and does not appear in the sum.
 Computing the sum of the two comparisons is easy; the complicated details lie in tracking the
 additional fields of `PComp`.
-* The historical set `PComp.history` of `c1 + c2` is the union of the two historical sets.
-* We recompute the variables that appear in `c1 + c2` from the newly created `Linexp`,
-  since some may have been implicitly eliminated.
+* The historical set `pcomp.history` of `c1 + c2` is the union of the two historical sets.
+* `vars` is the union of `c1.vars` and `c2.vars`.
 * The effectively eliminated variables of `c1 + c2` are the union of the two effective sets,
-  with `elimVar` inserted.
-* The implicitly eliminated variables of `c1 + c2` are those that appear in at least one of
-  `c1.vars` and `c2.vars` but not in `(c1 + c2).vars`, excluding `elimVar`.
+  with `elim_var` inserted.
+* The implicitly eliminated variables of `c1 + c2` are those that appear in
+  `vars` but not `c.vars` or `effective`.
+(Note that the description of the implicitly eliminated variables of `c1 + c2` in the algorithm
+described in Section 6 of https://doi.org/10.1016/B978-0-444-88771-9.50019-2 seems to be wrong:
+that says it should be `(c1.implicit.union c2.implicit).sdiff explicit`.
+Since the implicitly eliminated sets start off empty for the assumption,
+this formula would leave them always empty.)
 -/
 def PComp.add (c1 c2 : PComp) (elimVar : ℕ) : PComp :=
   let c := c1.c.add c2.c
