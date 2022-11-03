@@ -222,7 +222,12 @@ for every `p' ∈ comps`.
 def elimWithSet (a : ℕ) (p : PComp) (comps : PCompSet) : PCompSet :=
   comps.foldl (fun s pc =>
   match pelimVar p pc a with
-  | some pc => if pc.maybeMinimal a then s.insert pc else s
+  | some pc => if pc.maybeMinimal a then
+      dbg_trace "adding {pc}"
+      s.insert pc
+    else
+      dbg_trace "rejecting {pc}"
+      s
   | none => s) RBSet.empty
 
 /--

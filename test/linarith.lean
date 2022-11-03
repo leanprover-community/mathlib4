@@ -259,6 +259,7 @@ example (u v x y A B : Rat)
   intros
   linarith
 
+
 -- FIXME this should work?!
 set_option trace.linarith true in
 set_option trace.linarith.detail true in
