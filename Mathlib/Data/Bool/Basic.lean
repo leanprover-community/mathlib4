@@ -111,7 +111,8 @@ theorem cond_eq_ite {α} (b : Bool) (t e : α) : cond b t e = if b then t else e
   cases b <;> simp
 
 @[simp]
-theorem cond_decide {α} (p : Prop) [Decidable p] (t e : α) : cond (decide p) t e = if p then t else e := by
+theorem cond_decide {α} (p : Prop) [Decidable p] (t e : α) :
+    cond (decide p) t e = if p then t else e := by
   by_cases p <;> simp [*]
 #align bool.cond_to_bool Bool.cond_decide
 
