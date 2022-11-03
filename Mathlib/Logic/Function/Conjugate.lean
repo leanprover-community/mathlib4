@@ -11,20 +11,22 @@ import Mathlib.Tactic.Relation.Rfl
 
 We define the following predicates:
 
-* `function.semiconj`: `f : α → β` semiconjugates `ga : α → α` to `gb : β → β` if `f ∘ ga = gb ∘ f`;
-* `function.semiconj₂: `f : α → β` semiconjugates a binary operation `ga : α → α → α`
+* `Function.Semiconj`: `f : α → β` semiconjugates `ga : α → α` to `gb : β → β` if `f ∘ ga = gb ∘ f`;
+* `Function.Semiconj₂`: `f : α → β` semiconjugates a binary operation `ga : α → α → α`
   to `gb : β → β → β` if `f (ga x y) = gb (f x) (f y)`;
-* `f : α → α` commutes with `g : α → α` if `f ∘ g = g ∘ f`, or equivalently `semiconj f g g`.
-
+* `Function.Commute`: `f : α → α` commutes with `g : α → α` if `f ∘ g = g ∘ f`,
+  or equivalently `Semiconj f g g`.
 -/
 
 namespace Function
 
 variable {α : Type _} {β : Type _} {γ : Type _}
 
-/-- We say that `f : α → β` semiconjugates `ga : α → α` to `gb : β → β` if `f ∘ ga = gb ∘ f`.
-We use `∀ x, f (ga x) = gb (f x)` as the definition, so given `h : function.semiconj f ga gb` and
-`a : α`, we have `h a : f (ga a) = gb (f a)` and `h.comp_eq : f ∘ ga = gb ∘ f`. -/
+/--
+We say that `f : α → β` semiconjugates `ga : α → α` to `gb : β → β` if `f ∘ ga = gb ∘ f`.
+We use `∀ x, f (ga x) = gb (f x)` as the definition, so given `h : Function.Semiconj f ga gb` and
+`a : α`, we have `h a : f (ga a) = gb (f a)` and `h.comp_eq : f ∘ ga = gb ∘ f`.
+-/
 def Semiconj (f : α → β) (ga : α → α) (gb : β → β) : Prop :=
   ∀ x, f (ga x) = gb (f x)
 
@@ -48,12 +50,15 @@ theorem comp_left (hab : Semiconj fab ga gb) (hbc : Semiconj fbc gb gc) :
   fun x => by
     simp only [comp_apply, hab.eq, hbc.eq]
 
-theorem id_right : Semiconj f id id := fun _ => rfl
+theorem id_right : Semiconj f id id :=
+  fun _ => rfl
 
-theorem id_left : Semiconj id ga ga := fun _ => rfl
+theorem id_left : Semiconj id ga ga :=
+  fun _ => rfl
 
 theorem inverses_right (h : Semiconj f ga gb) (ha : RightInverse ga' ga) (hb : LeftInverse gb' gb) :
-    Semiconj f ga' gb' := fun x => by rw [← hb (f (ga' x)), ← h.eq, ha x]
+    Semiconj f ga' gb' :=
+  fun x => by rw [← hb (f (ga' x)), ← h.eq, ha x]
 
 theorem option_map {f : α → β} {ga : α → α} {gb : β → β} (h : Semiconj f ga gb) :
     Semiconj (Option.map f) (Option.map ga) (Option.map gb)
@@ -62,9 +67,11 @@ theorem option_map {f : α → β} {ga : α → α} {gb : β → β} (h : Semico
 
 end Semiconj
 
-/-- Two maps `f g : α → α` commute if `f (g x) = g (f x)` for all `x : α`.
+/--
+Two maps `f g : α → α` commute if `f (g x) = g (f x)` for all `x : α`.
 Given `h : function.commute f g` and `a : α`, we have `h a : f (g a) = g (f a)` and
-`h.comp_eq : f ∘ g = g ∘ f`. -/
+`h.comp_eq : f ∘ g = g ∘ f`.
+-/
 def Commute (f g : α → α) : Prop :=
   Semiconj f g g
 
@@ -76,16 +83,18 @@ namespace Commute
 variable {f f' g g' : α → α}
 
 @[refl]
-theorem refl (f : α → α) : Commute f f := fun _ => Eq.refl _
+theorem refl (f : α → α) : Commute f f :=
+  fun _x => Eq.refl _
 
 @[symm]
-theorem symm (h : Commute f g) : Commute g f := fun x => (h x).symm
+theorem symm (h : Commute f g) : Commute g f :=
+  fun x => (h x).symm
 
 theorem comp_right (h : Commute f g) (h' : Commute f g') : Commute f (g ∘ g') :=
   Semiconj.comp_right h h'
 
 theorem comp_left (h : Commute f g) (h' : Commute f' g) : Commute (f ∘ f') g :=
-  (comp_right h.symm h'.symm).symm
+  (h.symm.comp_right h'.symm).symm
 
 theorem id_right : Commute f id :=
   Semiconj.id_right
@@ -98,9 +107,11 @@ theorem option_map {f g : α → α} : Commute f g → Commute (Option.map f) (O
 
 end Commute
 
-/-- A map `f` semiconjugates a binary operation `ga` to a binary operation `gb` if
-for all `x`, `y` we have `f (ga x y) = gb (f x) (f y)`. E.g., a `monoid_hom`
-semiconjugates `(*)` to `(*)`. -/
+/--
+A map `f` semiconjugates a binary operation `ga` to a binary operation `gb` if
+for all `x`, `y` we have `f (ga x y) = gb (f x) (f y)`. E.g., a `MonoidHom`
+semiconjugates `(*)` to `(*)`.
+-/
 def Semiconj₂ (f : α → β) (ga : α → α → α) (gb : β → β → β) : Prop :=
   ∀ x y, f (ga x y) = gb (f x) (f y)
 
