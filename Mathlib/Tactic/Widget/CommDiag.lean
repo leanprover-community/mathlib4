@@ -9,7 +9,7 @@ import Lean.Server.Rpc.RequestHandling
 import Lean.Elab
 import Lean.Widget.UserWidget
 
-/- ! This module defines the tactic/meta infrastructure for displaying commutative diagrams.
+/-! This module defines the tactic/meta infrastructure for displaying commutative diagrams.
 
 -- TODO(WN): Remove the category theory stub when category theory is ported.
 -/
