@@ -9,10 +9,14 @@ import Lean.Server.Rpc.RequestHandling
 import Lean.Elab
 import Lean.Widget.UserWidget
 
+/- ! This module defines the tactic/meta infrastructure for displaying commutative diagrams.
+
+-- TODO(WN): Remove the category theory stub when category theory is ported.
+-/
+
 -- Please install Node.js and run `lake build widgetCommDiag` before running the rest of this file.
 #exit
 
--- TODO(WN): Remove when category theory is ported
 class quiver (V : Type u) where
   hom : V → V → Sort v
 
@@ -58,7 +62,8 @@ def squaresTac : Tactic
 
 open Lean Widget Server
 
-@[inline] def Lean.Expr.app7? (e : Expr) (fName : Name) : Option (Expr × Expr × Expr × Expr × Expr × Expr × Expr) :=
+@[inline] def Lean.Expr.app7? (e : Expr) (fName : Name)
+    : Option (Expr × Expr × Expr × Expr × Expr × Expr × Expr) :=
   if e.isAppOfArity fName 7 then
     some (
       e.appFn!.appFn!.appFn!.appFn!.appFn!.appFn!.appArg!,
@@ -145,13 +150,16 @@ def homTriangleM? (e : Expr) : MetaM (Option DiagramData) := do
 
 open Lean Server RequestM in
 @[server_rpc_method]
-def getCommutativeDiagram (args : Lean.Lsp.Position) : RequestM (RequestTask (Option DiagramData)) := do
+def getCommutativeDiagram (args : Lean.Lsp.Position)
+    : RequestM (RequestTask (Option DiagramData)) := do
   let doc ← readDoc
   let pos := doc.meta.text.lspPosToUtf8Pos args
   withWaitFindSnapAtPos args fun snap => do
     let g :: _ := snap.infoTree.goalsAt? doc.meta.text pos | return none
     let { ctxInfo := ci, tacticInfo := ti, useAfter := useAfter, .. } := g
-    let ci := if useAfter then { ci with mctx := ti.mctxAfter } else { ci with mctx := ti.mctxBefore }
+    let ci :=
+      if useAfter then { ci with mctx := ti.mctxAfter }
+      else { ci with mctx := ti.mctxBefore }
     let g :: _ := if useAfter then ti.goalsAfter else ti.goalsBefore | return none
     ci.runMetaM {} <| do
       let some mvarDecl := (← getMCtx).findDecl? g
