@@ -468,9 +468,6 @@ namespace Conv
 -- https://github.com/leanprover-community/mathlib/issues/2882
 /- M -/ syntax (name := applyCongr) "apply_congr" (ppSpace (colGt term))? : conv
 
-/- E -/ syntax (name := normNum1) "norm_num1" : conv
-/- E -/ syntax (name := normNum) "norm_num" (simpArgs)? : conv
-
 /- E -/ syntax (name := ringNF) "ring_nf" (config)? (ppSpace ringMode)? : conv
 /- E -/ syntax (name := ringNF!) "ring_nf!" (config)? (ppSpace ringMode)? : conv
 /- E -/ syntax (name := ring) "ring" : conv
@@ -488,8 +485,6 @@ namespace Attr
 
 /- S -/ syntax (name := intro) "intro" : attr
 /- S -/ syntax (name := intro!) "intro!" : attr
-
-/- M -/ syntax (name := ext) "ext" (ppSpace ident)? : attr
 
 /- M -/ syntax (name := higherOrder) "higher_order" (ppSpace ident)? : attr
 /- S -/ syntax (name := interactive) "interactive" : attr
@@ -545,17 +540,10 @@ macro_rules
 
 /- N -/ syntax (name := defReplacer) "def_replacer " ident Term.optType : command
 
-/- S -/ syntax (name := simp) "#simp" (&" only")? (Tactic.simpArgs)? " :"? ppSpace term : command
-
 /- S -/ syntax (name := «where») "#where" : command
 
 /- M -/ syntax (name := reassoc_axiom) "reassoc_axiom " ident : command
 
 /- S -/ syntax (name := sample) "#sample " term : command
-
-/- S -/ syntax (name := normNum) "#norm_num" (&" only")? (Tactic.simpArgs)? " :"? ppSpace term :
-  command
-
-/- S -/ syntax (name := pushNeg) "#push_neg " term : command
 
 end Command
