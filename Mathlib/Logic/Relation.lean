@@ -6,6 +6,10 @@ Authors: Johannes Hölzl
 import Mathlib.Tactic.Basic
 import Mathlib.Logic.Relator
 
+--*TODO* remove this
+import Mathlib.Tactic.LibrarySearch
+set_option autoImplicit false
+
 /-!
 # Relation closures
 
@@ -71,13 +75,13 @@ protected theorem Symmetric.iff (H : Symmetric r) (x y : α) : r x y ↔ r y x :
   ⟨fun h => H h, fun h => H h⟩
 
 theorem Symmetric.flip_eq (h : Symmetric r) : flip r = r :=
-  funext₂ fun _ _ => propext <| h.Iff _ _
+  funext₂ fun _ _ => propext <| h.iff _ _
 
 theorem Symmetric.swap_eq : Symmetric r → swap r = r :=
   Symmetric.flip_eq
 
 theorem flip_eq_iff : flip r = r ↔ Symmetric r :=
-  ⟨fun h x y => (congr_fun₂ h _ _).mp, Symmetric.flip_eq⟩
+  ⟨fun h _ _ => (congr_fun₂ h _ _).mp, Symmetric.flip_eq⟩
 
 theorem swap_eq_iff : swap r = r ↔ Symmetric r :=
   flip_eq_iff
@@ -88,14 +92,16 @@ section Comap
 
 variable {r : β → β → Prop}
 
+
 theorem Reflexive.comap (h : Reflexive r) (f : α → β) : Reflexive (r on f) := fun a => h (f a)
 
-theorem Symmetric.comap (h : Symmetric r) (f : α → β) : Symmetric (r on f) := fun a b hab => h hab
+theorem Symmetric.comap (h : Symmetric r) (f : α → β) : Symmetric (r on f) := fun _ _ hab => h hab
 
-theorem Transitive.comap (h : Transitive r) (f : α → β) : Transitive (r on f) := fun a b c hab hbc => h hab hbc
+theorem Transitive.comap (h : Transitive r) (f : α → β) : Transitive (r on f) := fun _ _ _ hab hbc => h hab hbc
 
+-- *TODO* remark that I couldn't use Symmetric.comap
 theorem Equivalence.comap (h : Equivalence r) (f : α → β) : Equivalence (r on f) :=
-  ⟨h.1.comap f, h.2.1.comap f, h.2.2.comap f⟩
+  ⟨fun a => h.refl (f a), fun hab => h.symm hab, fun hab hbc => h.trans hab hbc⟩
 
 end Comap
 
@@ -116,10 +122,10 @@ def Comp (r : α → β → Prop) (p : β → γ → Prop) (a : α) (c : γ) : P
 local infixr:80 " ∘r " => Relation.Comp
 
 theorem comp_eq : r ∘r (· = ·) = r :=
-  funext fun a => funext fun b => propext <| Iff.intro (fun ⟨c, h, Eq⟩ => Eq ▸ h) fun h => ⟨b, h, rfl⟩
+  funext fun _ => funext fun b => propext <| Iff.intro (fun ⟨_, h, Eq⟩ => Eq ▸ h) fun h => ⟨b, h, rfl⟩
 
 theorem eq_comp : (· = ·) ∘r r = r :=
-  funext fun a => funext fun b => propext <| Iff.intro (fun ⟨c, Eq, h⟩ => Eq.symm ▸ h) fun h => ⟨a, rfl, h⟩
+  funext fun a => funext fun _ => propext <| Iff.intro (fun ⟨_, Eq, h⟩ => Eq.symm ▸ h) fun h => ⟨a, rfl, h⟩
 
 theorem iff_comp {r : Prop → α → Prop} : (· ↔ ·) ∘r r = r := by
   have : (· ↔ ·) = (· = ·) := by funext a b <;> exact iff_eq_eq

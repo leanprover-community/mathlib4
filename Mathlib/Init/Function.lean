@@ -26,6 +26,8 @@ from `β` to `α`. -/
 @[reducible] def on_fun (f : β → β → φ) (g : α → β) : α → α → φ :=
 λ x y => f (g x) (g y)
 
+infixl:2  " on " => on_fun
+
 @[reducible] def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ)
   : α → β → ζ :=
 λ x y => op (f x y) (g x y)
