@@ -96,7 +96,7 @@ export default function({pos}: {pos: DocumentPosition}): React.ReactNode {
     else if (res.state === 'rejected')
         msg = <>Error: {JSON.stringify(res.error)}</>
     else if (res.state === 'resolved' && !res.value)
-        msg = <>Error: no diagram.</>
+        msg = <>No diagram.</>
 
     return <>
         {diag && diag.kind === 'square' &&

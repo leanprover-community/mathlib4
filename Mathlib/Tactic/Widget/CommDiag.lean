@@ -50,14 +50,14 @@ def squares : UserWidgetDefinition where
   name := "Commutative diagram"
   javascript := include_str ".." / ".." / ".." / "widget" / "dist" / "commDiag.js"
 
-/-- If the current goal is a commutative diagram, displays that in the infoview. -/
-syntax (name := squaresTacStx) "squares!" : tactic
+/-- Adds a commutative diagram display to the infoview for the duration of the given proof. -/
+syntax (name := withAlgebraDisplayTacStx) "withAlgebraDisplay " tacticSeq : tactic
 open Lean Elab Tactic in
-@[tactic squaresTacStx]
-def squaresTac : Tactic
-  | stx@`(tactic| squares!) => do
-    if let some _ := stx.getPos? then
-      Lean.Widget.saveWidgetInfo "squares" Json.null stx
+@[tactic withAlgebraDisplayTacStx]
+def withAlgebraDisplayTac : Tactic
+  | stx@`(tactic| withAlgebraDisplay $seq) => do
+    Lean.Widget.saveWidgetInfo "squares" Json.null stx
+    evalTacticSeq seq
   | _ => throwUnsupportedSyntax
 
 open Lean Widget Server
@@ -175,11 +175,11 @@ def getCommutativeDiagram (args : Lean.Lsp.Position)
         return none
 
 example {f g : Nat ⟶ Bool}: f = g → (f ≫ 𝟙 Bool) = (g ≫ 𝟙 Bool) := by
-  intro h
-  squares!
-  exact h
+  withAlgebraDisplay
+    intro h
+    exact h
 
 example {f g : Nat ⟶ Bool}: f = g → f = (g ≫ 𝟙 Bool) := by
-  intro h
-  squares!
-  exact h
+  withAlgebraDisplay
+    intro h
+    exact h
