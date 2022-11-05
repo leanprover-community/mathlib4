@@ -87,6 +87,7 @@ import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Nonempty
 import Mathlib.Logic.Nontrivial
 import Mathlib.Logic.Relator
+import Mathlib.Logic.Relation
 import Mathlib.Logic.Unique
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
