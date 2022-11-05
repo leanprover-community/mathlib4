@@ -443,6 +443,13 @@ def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
 /-- A relation is transitive if `x ≺ y` and `y ≺ z` together imply `x ≺ z`. -/
 def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
 
+def Equivalence.reflexive {r : β → β → Prop} (h : Equivalence r) : Reflexive r := h.refl
+
+def Equivalence.symmetric {r : β → β → Prop} (h : Equivalence r) : Symmetric r := λ _ _ => h.symm
+
+def Equivalence.transitive  {r : β → β → Prop}(h : Equivalence r) : Transitive r :=
+  λ _ _ _ => h.trans
+
 /-- A relation is total if for all `x` and `y`, either `x ≺ y` or `y ≺ x`. -/
 def Total := ∀ x y, x ≺ y ∨ y ≺ x
 

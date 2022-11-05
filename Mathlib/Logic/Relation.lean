@@ -92,16 +92,14 @@ section Comap
 
 variable {r : β → β → Prop}
 
-
 theorem Reflexive.comap (h : Reflexive r) (f : α → β) : Reflexive (r on f) := fun a => h (f a)
 
 theorem Symmetric.comap (h : Symmetric r) (f : α → β) : Symmetric (r on f) := fun _ _ hab => h hab
 
 theorem Transitive.comap (h : Transitive r) (f : α → β) : Transitive (r on f) := fun _ _ _ hab hbc => h hab hbc
 
--- *TODO* remark that I couldn't use Symmetric.comap
 theorem Equivalence.comap (h : Equivalence r) (f : α → β) : Equivalence (r on f) :=
-  ⟨fun a => h.refl (f a), fun hab => h.symm hab, fun hab hbc => h.trans hab hbc⟩
+  ⟨h.reflexive.comap f, @(h.symmetric.comap f), @(h.transitive.comap f)⟩
 
 end Comap
 
