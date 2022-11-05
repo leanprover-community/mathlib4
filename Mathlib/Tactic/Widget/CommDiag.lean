@@ -105,7 +105,7 @@ structure DiagramData where
   objs : Array CodeWithInfos
   homs : Array CodeWithInfos
   kind : DiagramKind
-  deriving Inhabited, RpcEncoding
+  deriving Inhabited, RpcEncodable
 
 /-- Given a commutative square `e ≡ f ≫ g = i ≫ h`, return a square diagram. Otherwise `none`. -/
 def homSquareM? (e : Expr) : MetaM (Option DiagramData) := do
@@ -144,7 +144,7 @@ def homTriangleM? (e : Expr) : MetaM (Option DiagramData) := do
   }
 
 open Lean Server RequestM in
-@[serverRpcMethod]
+@[server_rpc_method]
 def getCommutativeDiagram (args : Lean.Lsp.Position) : RequestM (RequestTask (Option DiagramData)) := do
   let doc ← readDoc
   let pos := doc.meta.text.lspPosToUtf8Pos args
