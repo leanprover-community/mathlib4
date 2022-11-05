@@ -78,6 +78,17 @@ async function getCommutativeDiagram(rs: RpcSessionAtPos, pos: Position)
 export default function({pos}: {pos: DocumentPosition}): React.ReactNode {
     const rs = React.useContext(RpcContext)
     const res = useAsync(() => getCommutativeDiagram(rs, pos), [rs, pos])
+    // Store the diagram data in state so that even when a new diagram is loading,
+    // we still temporarily show the present one. This reduces flickering.
+    const [diag, setDiag] = React.useState<DiagramData | undefined>(undefined)
+
+    React.useEffect(() => {
+        if (res.state === 'rejected' ||
+            (res.state === 'resolved' && !res.value))
+            setDiag(undefined)
+        else if (res.state === 'resolved')
+            setDiag(res.value)
+    }, [res.state])
 
     let msg = <></>
     if (res.state === 'loading')
@@ -87,13 +98,11 @@ export default function({pos}: {pos: DocumentPosition}): React.ReactNode {
     else if (res.state === 'resolved' && !res.value)
         msg = <>Error: no diagram.</>
 
-    // We keep the diagrams alive to avoid a re-render when the cursor moves
-    // to a position containing the same diagram.
     return <>
-        {res.state === 'resolved' && res.value && res.value.kind === 'square' &&
-            <CommSquare diag={res.value} />}
-        {res.state === 'resolved' && res.value && res.value.kind === 'triangle' &&
-            <CommTriangle diag={res.value} /> }
+        {diag && diag.kind === 'square' &&
+            <CommSquare diag={diag} />}
+        {diag && diag.kind === 'triangle' &&
+            <CommTriangle diag={diag} />}
         {msg}
     </>
 }

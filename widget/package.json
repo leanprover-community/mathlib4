@@ -10,7 +10,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@leanprover/infoview": "^0.2.0",
-    "@penrose/core": "^1.3.1-alpha.275",
+    "@penrose/core": "^1.3.1-alpha.305",
     "@svgdotjs/svg.js": "^3.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
