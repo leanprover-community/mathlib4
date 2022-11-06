@@ -7,6 +7,7 @@ import Mathlib.Init.Core
 import Mathlib.Init.Data.Prod
 import Mathlib.Init.Function
 import Mathlib.Logic.Function.Basic
+import Mathlib.Tactic.Relation.Rfl
 
 /-!
 # Extra facts about `prod`
@@ -158,114 +159,80 @@ theorem swap_injective : Function.Injective (@swap α β) :=
 theorem swap_surjective : Function.Surjective (@swap α β) :=
   swap_leftInverse.surjective
 
-/- warning: prod.swap_bijective -> Prod.swap_bijective is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u_1}} {β : Type.{u_2}}, Function.Bijective.{(max (succ u_1) (succ u_2)) (max (succ u_2) (succ u_1))} (Prod.{u_1 u_2} α β) (Prod.{u_2 u_1} β α) (Prod.swap.{u_1 u_2} α β)
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}}, Function.Bijective.{(max (succ u_1) (succ u_2)) (max (succ u_1) (succ u_2))} (Prod.{u_1 u_2} α β) (Prod.{u_2 u_1} β α) (Prod.swap.{u_1 u_2} α β)
-Case conversion may be inaccurate. Consider using '#align prod.swap_bijective Prod.swap_bijectiveₓ'. -/
 theorem swap_bijective : Function.Bijective (@swap α β) :=
   ⟨swap_injective, swap_surjective⟩
 
-/- warning: prod.swap_inj -> Prod.swap_inj is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {p : Prod.{u_1 u_2} α β} {q : Prod.{u_1 u_2} α β}, Iff (Eq.{(max (succ u_2) (succ u_1))} (Prod.{u_2 u_1} β α) (Prod.swap.{u_1 u_2} α β p) (Prod.swap.{u_1 u_2} α β q)) (Eq.{(max (succ u_1) (succ u_2))} (Prod.{u_1 u_2} α β) p q)
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {p : Prod.{u_1 u_2} α β} {q : Prod.{u_1 u_2} α β}, Iff (Eq.{(max (succ u_1) (succ u_2))} (Prod.{u_2 u_1} β α) (Prod.swap.{u_1 u_2} α β p) (Prod.swap.{u_1 u_2} α β q)) (Eq.{(max (succ u_1) (succ u_2))} (Prod.{u_1 u_2} α β) p q)
-Case conversion may be inaccurate. Consider using '#align prod.swap_inj Prod.swap_injₓ'. -/
 @[simp]
 theorem swap_inj {p q : α × β} : swap p = swap q ↔ p = q :=
   swap_injective.eq_iff
 
-/- warning: prod.eq_iff_fst_eq_snd_eq -> Prod.eq_iff_fst_eq_snd_eq is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {p : Prod.{u_1 u_2} α β} {q : Prod.{u_1 u_2} α β}, Iff (Eq.{(max (succ u_1) (succ u_2))} (Prod.{u_1 u_2} α β) p q) (And (Eq.{succ u_1} α (Prod.fst.{u_1 u_2} α β p) (Prod.fst.{u_1 u_2} α β q)) (Eq.{succ u_2} β (Prod.snd.{u_1 u_2} α β p) (Prod.snd.{u_1 u_2} α β q)))
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {p : Prod.{u_1 u_2} α β} {q : Prod.{u_1 u_2} α β}, Iff (Eq.{(max (succ u_1) (succ u_2))} (Prod.{u_1 u_2} α β) p q) (And (Eq.{succ u_1} α (Prod.fst.{u_1 u_2} α β p) (Prod.fst.{u_1 u_2} α β q)) (Eq.{succ u_2} β (Prod.snd.{u_1 u_2} α β p) (Prod.snd.{u_1 u_2} α β q)))
-Case conversion may be inaccurate. Consider using '#align prod.eq_iff_fst_eq_snd_eq Prod.eq_iff_fst_eq_snd_eqₓ'. -/
 theorem eq_iff_fst_eq_snd_eq : ∀ {p q : α × β}, p = q ↔ p.1 = q.1 ∧ p.2 = q.2
   | ⟨p₁, p₂⟩, ⟨q₁, q₂⟩ => by simp
 
-/- warning: prod.fst_eq_iff -> Prod.fst_eq_iff is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {p : Prod.{u_1 u_2} α β} {x : α}, Iff (Eq.{succ u_1} α (Prod.fst.{u_1 u_2} α β p) x) (Eq.{(max (succ u_1) (succ u_2))} (Prod.{u_1 u_2} α β) p (Prod.mk.{u_1 u_2} α β x (Prod.snd.{u_1 u_2} α β p)))
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {p : Prod.{u_1 u_2} α β} {x : α}, Iff (Eq.{succ u_1} α (Prod.fst.{u_1 u_2} α β p) x) (Eq.{(max (succ u_1) (succ u_2))} (Prod.{u_1 u_2} α β) p (Prod.mk.{u_1 u_2} α β x (Prod.snd.{u_1 u_2} α β p)))
-Case conversion may be inaccurate. Consider using '#align prod.fst_eq_iff Prod.fst_eq_iffₓ'. -/
 theorem fst_eq_iff : ∀ {p : α × β} {x : α}, p.1 = x ↔ p = (x, p.2)
   | ⟨a, b⟩, x => by simp
 
-/- warning: prod.snd_eq_iff -> Prod.snd_eq_iff is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {p : Prod.{u_1 u_2} α β} {x : β}, Iff (Eq.{succ u_2} β (Prod.snd.{u_1 u_2} α β p) x) (Eq.{(max (succ u_1) (succ u_2))} (Prod.{u_1 u_2} α β) p (Prod.mk.{u_1 u_2} α β (Prod.fst.{u_1 u_2} α β p) x))
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {p : Prod.{u_1 u_2} α β} {x : β}, Iff (Eq.{succ u_2} β (Prod.snd.{u_1 u_2} α β p) x) (Eq.{(max (succ u_1) (succ u_2))} (Prod.{u_1 u_2} α β) p (Prod.mk.{u_1 u_2} α β (Prod.fst.{u_1 u_2} α β p) x))
-Case conversion may be inaccurate. Consider using '#align prod.snd_eq_iff Prod.snd_eq_iffₓ'. -/
 theorem snd_eq_iff : ∀ {p : α × β} {x : β}, p.2 = x ↔ p = (p.1, x)
   | ⟨a, b⟩, x => by simp
 
-/- warning: prod.lex_def -> Prod.lex_def is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u_1}} {β : Type.{u_2}} (r : α -> α -> Prop) (s : β -> β -> Prop) {p : Prod.{u_1 u_2} α β} {q : Prod.{u_1 u_2} α β}, Iff (Prod.Lex.{u_1 u_2} α β r s p q) (Or (r (Prod.fst.{u_1 u_2} α β p) (Prod.fst.{u_1 u_2} α β q)) (And (Eq.{succ u_1} α (Prod.fst.{u_1 u_2} α β p) (Prod.fst.{u_1 u_2} α β q)) (s (Prod.snd.{u_1 u_2} α β p) (Prod.snd.{u_1 u_2} α β q))))
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} (r : α -> α -> Prop) (s : β -> β -> Prop) {p : Prod.{u_1 u_2} α β} {q : Prod.{u_1 u_2} α β}, Iff (Prod.Lex.{u_1 u_2} α β r s p q) (Or (r (Prod.fst.{u_1 u_2} α β p) (Prod.fst.{u_1 u_2} α β q)) (And (Eq.{succ u_1} α (Prod.fst.{u_1 u_2} α β p) (Prod.fst.{u_1 u_2} α β q)) (s (Prod.snd.{u_1 u_2} α β p) (Prod.snd.{u_1 u_2} α β q))))
-Case conversion may be inaccurate. Consider using '#align prod.lex_def Prod.lex_defₓ'. -/
-theorem lex_def (r : α → α → Prop) (s : β → β → Prop) {p q : α × β} :
+theorem Lex_def (r : α → α → Prop) (s : β → β → Prop) {p q : α × β} :
     Prod.Lex r s p q ↔ r p.1 q.1 ∨ p.1 = q.1 ∧ s p.2 q.2 :=
   ⟨fun h => by cases h <;> simp [*], fun h =>
     match p, q, h with
     | (a, b), (c, d), Or.inl h => Lex.left _ _ h
-    | (a, b), (c, d), Or.inr ⟨e, h⟩ => by change a = c at e <;> subst e <;> exact lex.right _ h⟩
+    | (a, b), (c, d), Or.inr ⟨e, h⟩ => by subst e <;> exact Lex.right _ h⟩
 
-instance Lex.decidable [DecidableEq α] (r : α → α → Prop) (s : β → β → Prop) [DecidableRel r] [DecidableRel s] :
-    DecidableRel (Prod.Lex r s) := fun p q => decidable_of_decidable_of_iff (by infer_instance) (lex_def r s).symm
+instance Lex.decidable [DecidableEq α]
+    (r : α → α → Prop) (s : β → β → Prop) [DecidableRel r] [DecidableRel s] :
+    DecidableRel (Prod.Lex r s) :=
+  fun _ _ => decidable_of_decidable_of_iff (Lex_def r s).symm
 
 @[refl]
 theorem Lex.refl_left (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] : ∀ x, Prod.Lex r s x x
-  | (x₁, x₂) => Lex.left _ _ (refl _)
+  | (_, _) => Lex.left _ _ (refl _)
 
-instance is_refl_left {r : α → α → Prop} {s : β → β → Prop} [IsRefl α r] : IsRefl (α × β) (Lex r s) :=
+instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl α r] : IsRefl (α × β) (Lex r s) :=
   ⟨Lex.refl_left _ _⟩
 
 @[refl]
 theorem Lex.refl_right (r : α → α → Prop) (s : β → β → Prop) [IsRefl β s] : ∀ x, Prod.Lex r s x x
-  | (x₁, x₂) => Lex.right _ (refl _)
+  | (_, _) => Lex.right _ (refl _)
 
-instance is_refl_right {r : α → α → Prop} {s : β → β → Prop} [IsRefl β s] : IsRefl (α × β) (Lex r s) :=
+instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl β s] : IsRefl (α × β) (Lex r s) :=
   ⟨Lex.refl_right _ _⟩
 
 @[trans]
 theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
     ∀ {x y z : α × β}, Prod.Lex r s x y → Prod.Lex r s y z → Prod.Lex r s x z
-  | (x₁, x₂), (y₁, y₂), (z₁, z₂), lex.left _ _ hxy₁, lex.left _ _ hyz₁ => Lex.left _ _ (trans hxy₁ hyz₁)
-  | (x₁, x₂), (y₁, y₂), (z₁, z₂), lex.left _ _ hxy₁, lex.right _ hyz₂ => Lex.left _ _ hxy₁
-  | (x₁, x₂), (y₁, y₂), (z₁, z₂), lex.right _ _, lex.left _ _ hyz₁ => Lex.left _ _ hyz₁
-  | (x₁, x₂), (y₁, y₂), (z₁, z₂), lex.right _ hxy₂, lex.right _ hyz₂ => Lex.right _ (trans hxy₂ hyz₂)
+  | (_, _), (_, _), (_, _), left  _ _ hxy₁, left  _ _ hyz₁ => left  _ _ (_root_.trans hxy₁ hyz₁)
+  | (_, _), (_, _), (_, _), left  _ _ hxy₁, right _ _      => left  _ _ hxy₁
+  | (_, _), (_, _), (_, _), right _ _,      left  _ _ hyz₁ => left  _ _ hyz₁
+  | (_, _), (_, _), (_, _), right _ hxy₂,   right _ hyz₂   => right _ (_root_.trans hxy₂ hyz₂)
 
-instance {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] : IsTrans (α × β) (Lex r s) :=
+instance {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
+  IsTrans (α × β) (Lex r s) :=
   ⟨fun _ _ _ => Lex.trans⟩
 
-instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] [IsAntisymm β s] : IsAntisymm (α × β) (Lex r s) :=
+instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] [IsAntisymm β s] :
+    IsAntisymm (α × β) (Lex r s) :=
   ⟨fun x₁ x₂ h₁₂ h₂₁ =>
     match x₁, x₂, h₁₂, h₂₁ with
-    | (a₁, b₁), (a₂, b₂), lex.left _ _ hr₁, lex.left _ _ hr₂ => (irrefl a₁ (trans hr₁ hr₂)).elim
-    | (a₁, b₁), (a₂, b₂), lex.left _ _ hr₁, lex.right _ _ => (irrefl _ hr₁).elim
-    | (a₁, b₁), (a₂, b₂), lex.right _ _, lex.left _ _ hr₂ => (irrefl _ hr₂).elim
-    | (a₁, b₁), (a₂, b₂), lex.right _ hs₁, lex.right _ hs₂ => antisymm hs₁ hs₂ ▸ rfl⟩
+    | (a, _), (_, _), .left  _ _ hr₁, .left  _ _ hr₂ => (irrefl a (trans hr₁ hr₂)).elim
+    | (_, _), (_, _), .left  _ _ hr₁, .right _ _     => (irrefl _ hr₁).elim
+    | (_, _), (_, _), .right _ _,     .left  _ _ hr₂ => (irrefl _ hr₂).elim
+    | (_, _), (_, _), .right _ hs₁,   .right _ hs₂   => antisymm hs₁ hs₂ ▸ rfl⟩
 
-instance is_total_left {r : α → α → Prop} {s : β → β → Prop} [IsTotal α r] : IsTotal (α × β) (Lex r s) :=
-  ⟨fun ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ => (IsTotal.total a₁ a₂).imp (Lex.left _ _) (Lex.left _ _)⟩
+instance is_total_left {r : α → α → Prop} {s : β → β → Prop} [IsTotal α r] :
+    IsTotal (α × β) (Lex r s) :=
+  ⟨fun ⟨a₁, _⟩ ⟨a₂, _⟩ => (IsTotal.total a₁ a₂).imp (Lex.left _ _) (Lex.left _ _)⟩
 
 instance is_total_right {r : α → α → Prop} {s : β → β → Prop} [IsTrichotomous α r] [IsTotal β s] :
     IsTotal (α × β) (Lex r s) :=
   ⟨fun ⟨i, a⟩ ⟨j, b⟩ => by
     obtain hij | rfl | hji := trichotomous_of r i j
-    · exact Or.inl (lex.left _ _ hij)
-
-    · exact (total_of s a b).imp (lex.right _) (lex.right _)
-
-    · exact Or.inr (lex.left _ _ hji)
-      ⟩
+    · exact Or.inl (.left _ _ hij)
+    · exact (total_of s a b).imp (.right _) (.right _)
+    · exact Or.inr (.left _ _ hji) ⟩
 
 end Prod
 
@@ -275,36 +242,34 @@ namespace Function
 
 variable {f : α → γ} {g : β → δ} {f₁ : α → β} {g₁ : γ → δ} {f₂ : β → α} {g₂ : δ → γ}
 
-/- warning: function.injective.prod_map -> Function.Injective.prod_map is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {γ : Type.{u_3}} {δ : Type.{u_4}} {f : α -> γ} {g : β -> δ}, (Function.Injective.{succ u_1 succ u_3} α γ f) -> (Function.Injective.{succ u_2 succ u_4} β δ g) -> (Function.Injective.{(max (succ u_1) (succ u_2)) (max (succ u_3) (succ u_4))} (Prod.{u_1 u_2} α β) (Prod.{u_3 u_4} γ δ) (Prod.map.{u_1 u_3 u_2 u_4} α γ β δ f g))
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_3}} {γ : Type.{u_2}} {δ : Type.{u_4}} {f : α -> γ} {g : β -> δ}, (Function.Injective.{succ u_1 succ u_2} α γ f) -> (Function.Injective.{succ u_3 succ u_4} β δ g) -> (Function.Injective.{(max (succ u_3) (succ u_1)) (max (succ u_4) (succ u_2))} (Prod.{u_1 u_3} α β) (Prod.{u_2 u_4} γ δ) (Prod.map.{u_1 u_2 u_3 u_4} α γ β δ f g))
-Case conversion may be inaccurate. Consider using '#align function.injective.prod_map Function.Injective.prod_mapₓ'. -/
-theorem Injective.prod_map (hf : Injective f) (hg : Injective g) : Injective (map f g) := fun x y h =>
-  ext (hf (ext_iff.1 h).1) (hg <| (ext_iff.1 h).2)
+theorem Injective.Prod_map (hf : Injective f) (hg : Injective g) : Injective (map f g) :=
+  fun _ _ h => extₓ (hf (ext_iff.1 h).1) (hg <| (ext_iff.1 h).2)
+#align function.injective.prod_map Function.Injective.Prod_map
 
-/- warning: function.surjective.prod_map -> Function.Surjective.prod_map is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {γ : Type.{u_3}} {δ : Type.{u_4}} {f : α -> γ} {g : β -> δ}, (Function.Surjective.{succ u_1 succ u_3} α γ f) -> (Function.Surjective.{succ u_2 succ u_4} β δ g) -> (Function.Surjective.{(max (succ u_1) (succ u_2)) (max (succ u_3) (succ u_4))} (Prod.{u_1 u_2} α β) (Prod.{u_3 u_4} γ δ) (Prod.map.{u_1 u_3 u_2 u_4} α γ β δ f g))
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_3}} {γ : Type.{u_2}} {δ : Type.{u_4}} {f : α -> γ} {g : β -> δ}, (Function.Surjective.{succ u_1 succ u_2} α γ f) -> (Function.Surjective.{succ u_3 succ u_4} β δ g) -> (Function.Surjective.{(max (succ u_3) (succ u_1)) (max (succ u_4) (succ u_2))} (Prod.{u_1 u_3} α β) (Prod.{u_2 u_4} γ δ) (Prod.map.{u_1 u_2 u_3 u_4} α γ β δ f g))
-Case conversion may be inaccurate. Consider using '#align function.surjective.prod_map Function.Surjective.prod_mapₓ'. -/
-theorem Surjective.prod_map (hf : Surjective f) (hg : Surjective g) : Surjective (map f g) := fun p =>
+theorem Surjective.Prod_map (hf : Surjective f) (hg : Surjective g) : Surjective (map f g) :=
+  fun p =>
   let ⟨x, hx⟩ := hf p.1
   let ⟨y, hy⟩ := hg p.2
-  ⟨(x, y), Prod.ext hx hy⟩
+  ⟨(x, y), Prod.extₓ hx hy⟩
+#align function.surjective.prod_map Function.Surjective.Prod_map
 
-theorem Bijective.prod_map (hf : Bijective f) (hg : Bijective g) : Bijective (map f g) :=
-  ⟨hf.1.prod_map hg.1, hf.2.prod_map hg.2⟩
+theorem Bijective.Prod_map (hf : Bijective f) (hg : Bijective g) : Bijective (map f g) :=
+  ⟨hf.1.Prod_map hg.1, hf.2.Prod_map hg.2⟩
+#align function.bijective.prod_map Function.Bijective.Prod_map
 
-theorem LeftInverse.prod_map (hf : LeftInverse f₁ f₂) (hg : LeftInverse g₁ g₂) : LeftInverse (map f₁ g₁) (map f₂ g₂) :=
+theorem LeftInverse.Prod_map (hf : LeftInverse f₁ f₂) (hg : LeftInverse g₁ g₂) :
+    LeftInverse (map f₁ g₁) (map f₂ g₂) :=
   fun a => by rw [Prod.map_map, hf.comp_eq_id, hg.comp_eq_id, map_id, id]
+#align function.left_inverse.prod_map Function.LeftInverse.Prod_map
 
-theorem RightInverse.prod_map : RightInverse f₁ f₂ → RightInverse g₁ g₂ → RightInverse (map f₁ g₁) (map f₂ g₂) :=
-  left_inverse.prod_map
+theorem RightInverse.Prod_map :
+    RightInverse f₁ f₂ → RightInverse g₁ g₂ → RightInverse (map f₁ g₁) (map f₂ g₂) :=
+  LeftInverse.Prod_map
+#align function.right_inverse.prod_map Function.RightInverse.Prod_map
 
-theorem Involutive.prod_map {f : α → α} {g : β → β} : Involutive f → Involutive g → Involutive (map f g) :=
-  left_inverse.prod_map
+theorem Involutive.Prod_map {f : α → α} {g : β → β} :
+    Involutive f → Involutive g → Involutive (map f g) :=
+  LeftInverse.Prod_map
+#align function.involutive.prod_map Function.Involutive.Prod_map
 
 end Function
