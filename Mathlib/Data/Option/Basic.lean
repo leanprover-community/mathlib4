@@ -111,7 +111,7 @@ theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ 
   (a : α) :
     (Option.map f₁ a).map g₁ = (Option.map f₂ a).map g₂ := by rw [map_map, h, ← map_map]
 
-section Pmap
+section pmap
 
 variable {p : α → Prop} (f : ∀ a : α, p a → β) (x : Option α)
 
@@ -217,7 +217,7 @@ theorem join_pmap_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} 
     (pmap (pmap f) x H).join = pmap f x.join fun a h => H (some a) (mem_of_mem_join h) _ rfl := by
   rcases x with (_ | _ | x) <;> simp
 
-end Pmap
+end pmap
 
 @[simp]
 theorem seq_some {α β} {a : α} {f : α → β} : some f <*> some a = some (f a) :=
