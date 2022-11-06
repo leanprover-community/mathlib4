@@ -42,13 +42,11 @@ protected theorem eq (h : Semiconj f ga gb) (x : α) : f (ga x) = gb (f x) :=
 
 theorem comp_right (h : Semiconj f ga gb) (h' : Semiconj f ga' gb') :
     Semiconj f (ga ∘ ga') (gb ∘ gb') :=
-  fun x => by
-    simp only [comp_apply, comp_apply, h.eq, h'.eq]
+  fun x => by simp only [comp_apply, h.eq, h'.eq]
 
 theorem comp_left (hab : Semiconj fab ga gb) (hbc : Semiconj fbc gb gc) :
     Semiconj (fbc ∘ fab) ga gc :=
-  fun x => by
-    simp only [comp_apply, hab.eq, hbc.eq]
+  fun x => by simp only [comp_apply, hab.eq, hbc.eq]
 
 theorem id_right : Semiconj f id id :=
   fun _ => rfl
@@ -63,7 +61,7 @@ theorem inverses_right (h : Semiconj f ga gb) (ha : RightInverse ga' ga) (hb : L
 theorem option_map {f : α → β} {ga : α → α} {gb : β → β} (h : Semiconj f ga gb) :
     Semiconj (Option.map f) (Option.map ga) (Option.map gb)
   | none => rfl
-  | some _a => congr_arg some <| h _
+  | some _ => congr_arg some <| h _
 
 end Semiconj
 
@@ -75,8 +73,7 @@ Given `h : function.commute f g` and `a : α`, we have `h a : f (g a) = g (f a)`
 def Commute (f g : α → α) : Prop :=
   Semiconj f g g
 
-theorem Semiconj.commute {f g : α → α} (h : Semiconj f g g) : Commute f g :=
-  h
+theorem Semiconj.commute {f g : α → α} (h : Semiconj f g g) : Commute f g := h
 
 namespace Commute
 
@@ -84,7 +81,7 @@ variable {f f' g g' : α → α}
 
 @[refl]
 theorem refl (f : α → α) : Commute f f :=
-  fun _x => Eq.refl _
+  fun _ => Eq.refl _
 
 @[symm]
 theorem symm (h : Commute f g) : Commute g f :=
