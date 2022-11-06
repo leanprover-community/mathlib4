@@ -18,11 +18,8 @@ would result in less delta-reduced statements.
 
 alias heq_iff_eq ↔ HEq.eq Eq.heq
 
---attribute [protected] HEq.eq Eq.heq
-
---alias ne_of_eq_of_ne ← Eq.trans_ne
-
---alias ne_of_ne_of_eq ← Ne.trans_eq
+-- Porting note: we may need to modify `alias` so we can make aliases protected at creation.
+-- attribute [protected] HEq.eq Eq.heq
 
 variable {α : Sort _} {p q r : Prop} [Decidable p] [Decidable q] {a b c : α}
 
