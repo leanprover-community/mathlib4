@@ -58,6 +58,7 @@ import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Align
+import Mathlib.Init.CcLemmas
 import Mathlib.Init.Classical
 import Mathlib.Init.Core
 import Mathlib.Init.Data.Bool.Basic
