@@ -8,6 +8,7 @@ import Lean.Elab.Quotation
 import Std.Tactic.Ext
 import Std.Tactic.RCases
 import Mathlib.Logic.Equiv.LocalEquiv
+import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyRules
 import Mathlib.Tactic.ApplyWith
@@ -53,6 +54,7 @@ import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.SimpTrace
 import Mathlib.Tactic.SolveByElim
+import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.Trace
@@ -229,6 +231,8 @@ namespace Tactic
 /- E -/ syntax (name := symm') "symm'" (ppSpace location)? : tactic
 /- E -/ syntax (name := trans') "trans'" (ppSpace term)? : tactic
 
+/- E -/ syntax (name := classical) "classical" : tactic
+
 /- M -/ syntax (name := injectionsAndClear) "injections_and_clear" : tactic
 
 /- E -/ syntax (name := tryFor) "try_for " term:max tacticSeq : tactic
@@ -266,13 +270,15 @@ namespace Tactic
 /- S -/ syntax (name := hint) "hint" : tactic
 
 /- N -/ syntax (name := congr') "congr" (ppSpace colGt num)?
-  (" with " (colGt rcasesPat)* (" : " num)?)? : tactic
-/- M -/ syntax (name := rcongr) "rcongr" (ppSpace colGt rcasesPat)* : tactic
-/- E -/ syntax (name := convertTo) "convert_to " term (" using " num)? : tactic
+  (" with " (colGt rintroPat)* (" : " num)?)? : tactic
+/- M -/ syntax (name := rcongr) "rcongr" (ppSpace colGt rintroPat)* : tactic
+/- M -/ syntax (name := congrM) "congrm " term : tactic
 /- E -/ syntax (name := acChange) "ac_change " term (" using " num)? : tactic
 
 /- S -/ syntax (name := rcases?) "rcases?" casesTarget,* (" : " num)? : tactic
 /- S -/ syntax (name := rintro?) "rintro?" (" : " num)? : tactic
+/- E -/ syntax (name := rsuffices) "rsuffices"
+    (ppSpace Std.Tactic.RCases.rcasesPatMed)? (" : " term)? (" := " term,+)? : tactic
 
 /- M -/ syntax (name := decide!) "decide!" : tactic
 
@@ -333,19 +339,19 @@ syntax termList := " [" term,* "]"
 /- B -/ syntax (name := abel!) "abel!" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 
 syntax ringMode := &"SOP" <|> &"raw" <|> &"horner"
-/- E -/ syntax (name := ringNF) "ring_nf" (ppSpace ringMode)? (ppSpace location)? : tactic
-/- E -/ syntax (name := ringNF!) "ring_nf!" (ppSpace ringMode)? (ppSpace location)? : tactic
+/- E -/ syntax (name := ringNF) "ring_nf" (config)? (ppSpace ringMode)? (ppSpace location)? : tactic
+/- E -/ syntax (name := ringNF!) "ring_nf!" (config)? (ppSpace ringMode)? (ppSpace location)? :
+  tactic
 
 /- E -/ syntax (name := noncommRing) "noncomm_ring" : tactic
 
-syntax nameAndTerm := term:71 " * " term:66
-/- M -/ syntax (name := linearCombination) "linear_combination" (config)?
-  sepBy(atomic(nameAndTerm) <|> term:66, " + ") : tactic
+/- B -/ syntax (name := linearCombination) "linear_combination" (config)? (colGt term)? : tactic
 
 /- B -/ syntax (name := linarith) "linarith" (config)? (&" only")? (" [" term,* "]")? : tactic
 /- B -/ syntax (name := linarith!) "linarith!" (config)? (&" only")? (" [" term,* "]")? : tactic
 /- M -/ syntax (name := nlinarith) "nlinarith" (config)? (&" only")? (" [" term,* "]")? : tactic
 /- M -/ syntax (name := nlinarith!) "nlinarith!" (config)? (&" only")? (" [" term,* "]")? : tactic
+/- S -/ syntax (name := polyrith) "polyrith" (&" only")? (" [" term,* "]")? : tactic
 
 /- S -/ syntax (name := omega) "omega" (&" manual")? (&" nat" <|> &" int")? : tactic
 
@@ -409,6 +415,12 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := elementwise!) "elementwise!" (ppSpace (colGt ident))* : tactic
 /- M -/ syntax (name := deriveElementwiseProof) "derive_elementwise_proof" : tactic
 
+/- M -/ syntax (name := computeDegree) "compute_degree" : tactic
+
+/- B -/ syntax (name := positivity) "positivity" : tactic
+
+/- E -/ syntax (name := qify) "qify" (simpArgs)? (ppSpace location)? : tactic
+
 /- S -/ syntax (name := mkDecorations) "mk_decorations" : tactic
 
 /- M -/ syntax (name := nontriviality) "nontriviality"
@@ -438,6 +450,8 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := padicIndexSimp) "padic_index_simp" " [" term,* "]" (ppSpace location)? :
   tactic
 
+/- M -/ syntax (name := borelize) "borelize" (ppSpace colGt term:max)* : tactic
+
 /- E -/ syntax (name := uniqueDiffWithinAt_Ici_Iic_univ) "uniqueDiffWithinAt_Ici_Iic_univ" : tactic
 
 /- M -/ syntax (name := ghostFunTac) "ghost_fun_tac " term ", " term : tactic
@@ -446,8 +460,8 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- E -/ syntax (name := ghostSimp) "ghost_simp" (simpArgs)? : tactic
 /- E -/ syntax (name := wittTruncateFunTac) "witt_truncate_fun_tac" : tactic
 
-/- M -/ @[nolint docBlame] syntax (name := pure_coherence) "pure_coherence" : tactic
-/- M -/ @[nolint docBlame] syntax (name := coherence) "coherence" : tactic
+/- M -/ syntax (name := pure_coherence) "pure_coherence" : tactic
+/- M -/ syntax (name := coherence) "coherence" : tactic
 
 namespace Conv
 
@@ -457,8 +471,8 @@ namespace Conv
 /- E -/ syntax (name := normNum1) "norm_num1" : conv
 /- E -/ syntax (name := normNum) "norm_num" (simpArgs)? : conv
 
-/- E -/ syntax (name := ringNF) "ring_nf" (ppSpace ringMode)? : conv
-/- E -/ syntax (name := ringNF!) "ring_nf!" (ppSpace ringMode)? : conv
+/- E -/ syntax (name := ringNF) "ring_nf" (config)? (ppSpace ringMode)? : conv
+/- E -/ syntax (name := ringNF!) "ring_nf!" (config)? (ppSpace ringMode)? : conv
 /- E -/ syntax (name := ring) "ring" : conv
 /- E -/ syntax (name := ring!) "ring!" : conv
 
@@ -481,6 +495,8 @@ namespace Attr
 /- S -/ syntax (name := interactive) "interactive" : attr
 
 /- M -/ syntax (name := mkIff) "mk_iff" (ppSpace ident)? : attr
+
+/- M -/ syntax (name := expandExists) "expand_exists" (ppSpace ident)+ : attr
 
 -- TODO: this should be handled in mathport
 /- S -/ syntax (name := protectProj) "protect_proj" (&" without" (ppSpace ident)+)? : attr
@@ -536,5 +552,10 @@ macro_rules
 /- M -/ syntax (name := reassoc_axiom) "reassoc_axiom " ident : command
 
 /- S -/ syntax (name := sample) "#sample " term : command
+
+/- S -/ syntax (name := normNum) "#norm_num" (&" only")? (Tactic.simpArgs)? " :"? ppSpace term :
+  command
+
+/- S -/ syntax (name := pushNeg) "#push_neg " term : command
 
 end Command

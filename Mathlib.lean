@@ -6,6 +6,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Semiconj
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Order.Group
@@ -60,6 +61,9 @@ import Mathlib.Init.Align
 import Mathlib.Init.Classical
 import Mathlib.Init.Control.Combinators
 import Mathlib.Init.Core
+import Mathlib.Init.Data.Bool.Basic
+import Mathlib.Init.Data.Bool.Lemmas
+import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Init.Data.Int.Notation
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Data.Nat.Basic
@@ -84,6 +88,7 @@ import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Nonempty
 import Mathlib.Logic.Nontrivial
 import Mathlib.Logic.Relator
+import Mathlib.Logic.Unique
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Mathport.Syntax
