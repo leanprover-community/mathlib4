@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Std.Tactic.Ext
+import Mathlib.Init.Data.Prod
 import Mathlib.Init.Function
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Basic
@@ -74,10 +75,6 @@ fun _ _ h => (Prod.mk.inj h).right
 lemma mk.inj_right {α β : Type _} (b : β) :
   Function.Injective (λ a => Prod.mk a b : α → α × β) :=
 fun _ _ h => (Prod.mk.inj h).left
-
--- Port note: this lemma comes from lean3/library/init/data/prod.lean.
-@[simp] lemma mk.eta : ∀{p : α × β}, (p.1, p.2) = p
-| (_, _) => rfl
 
 lemma ext_iff {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 :=
 by rw [← @mk.eta _ _ p, ← @mk.eta _ _ q, mk.inj_iff]
