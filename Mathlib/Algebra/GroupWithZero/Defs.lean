@@ -102,7 +102,9 @@ end Int
 /-- A type `M` is a `CancelMonoidWithZero` if it is a monoid with zero element, `0` is left
 and right absorbing, and left/right multiplication by a non-zero element is injective. -/
 class CancelMonoidWithZero (M₀ : Type u) extends MonoidWithZero M₀ where
+  /-- Left multiplication by a non-zero element is injective. -/
   protected mul_left_cancel_of_ne_zero : ∀ {a b c : M₀}, a ≠ 0 → a * b = a * c → b = c
+  /-- Right multiplication by a non-zero element is injective. -/
   protected mul_right_cancel_of_ne_zero : ∀ {a b c : M₀}, b ≠ 0 → a * b = c * b → a = c
 
 section CancelMonoidWithZero
