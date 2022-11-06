@@ -81,13 +81,6 @@ actual theorems in the files.
 #align array Array'
 #align mk_array mkArray'
 
-/-! ## `init.data.bool.basic` -/
-
-#align bor or
-#align band and
-#align bnot not
-#align bxor xor
-
 /-! ## `init.data.char.basic` -/
 
 /-! ## `init.data.char.classes` -/

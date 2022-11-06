@@ -3,6 +3,7 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
+import Mathlib.Mathport.Rename
 -- a port of core Lean `init/function.lean`
 
 /-!
@@ -38,6 +39,8 @@ f x
 theorem left_id (f : α → β) : id ∘ f = f := rfl
 
 theorem right_id (f : α → β) : f ∘ id = f := rfl
+
+#align function.comp_app Function.comp_apply
 
 theorem comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ (g ∘ h) := rfl
 
@@ -75,11 +78,15 @@ def LeftInverse (g : β → α) (f : α → β) : Prop := ∀ x, g (f x) = x
 /-- `has_LeftInverse f` means that `f` has an unspecified left inverse. -/
 def has_LeftInverse (f : α → β) : Prop := ∃ finv : β → α, LeftInverse finv f
 
+#align has_left_inverse has_LeftInverse
+
 /-- `RightInverse g f` means that g is a right inverse to f. That is, `f ∘ g = id`. -/
 def RightInverse (g : β → α) (f : α → β) : Prop := LeftInverse f g
 
 /-- `has_RightInverse f` means that `f` has an unspecified right inverse. -/
 def has_RightInverse (f : α → β) : Prop := ∃ finv : β → α, RightInverse finv f
+
+#align has_right_inverse has_RightInverse
 
 theorem LeftInverse.injective {g : β → α} {f : α → β} : LeftInverse g f → Injective f :=
 λ h a b hf => h a ▸ h b ▸ hf ▸ rfl

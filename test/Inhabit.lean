@@ -26,6 +26,24 @@ noncomputable example {p : Prop} [Nonempty p] : Inhabited p := by
   inhabit p_inhabited : p
   exact p_inhabited
 
+-- Test for the issue that required generalizing `nonempty_to_inhabited` to `Sort`.
+section Unique
+
+structure Unique (α : Sort u) extends Inhabited α where
+  uniq : ∀ a : α, a = default
+
+/-- Construct `unique` from `inhabited` and `subsingleton`. Making this an instance would create
+a loop in the class inheritance graph. -/
+@[reducible]
+def Unique.mk' (α : Sort u) [h₁ : Inhabited α] [Subsingleton α] : Unique α :=
+  { h₁ with uniq := fun _ => Subsingleton.elim _ _ }
+
+noncomputable example {α : Sort u} [Subsingleton α] [Nonempty α] : Unique α := by
+  inhabit α
+  exact Unique.mk' α
+
+end Unique
+
 axiom α : Type
 axiom a : α
 instance : Nonempty α := Nonempty.intro a

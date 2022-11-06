@@ -46,16 +46,10 @@ def solveByElimImpl (only : Bool) (es : List Expr) (n : Nat) (g : MVarId) : Meta
   let es ← (if only then return es else return es ++ (← getLocalHyps).toList)
   Lean.Meta.solveByElim es n g
 
-syntax (name := solveByElim) "solve_by_elim" "*"? (config)? (&" only")? (" [" term,* "]")? : tactic
+syntax (name := solveByElim) "solve_by_elim" "*"? (config)? (&" only")? (simpArgs)? : tactic
 
--- TODO: I'd prefer to combine these into a single `elab_rules`,
--- but I'm failing to optionally match the terms.
-
-elab_rules : tactic | `(tactic| solve_by_elim) => do withMainContext do
-  solveByElimImpl false [] 6 (← getMainGoal)
-
-elab_rules : tactic | `(tactic| solve_by_elim $[only%$o]? [$t:term,*]) => do withMainContext do
-  let es ← t.getElems.toList.mapM (elabTerm ·.raw none)
+elab_rules : tactic | `(tactic| solve_by_elim $[only%$o]? $[[$[$t:term],*]]?) => withMainContext do
+  let es ← (t.getD #[]).toList.mapM (elabTerm ·.raw none)
   solveByElimImpl o.isSome es 6 (← getMainGoal)
 
 end Lean.Tactic

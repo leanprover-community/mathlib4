@@ -5,7 +5,7 @@ Authors: Henrik Böving
 -/
 import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Data.Int.Basic
+import Mathlib.Init.Data.Int.Order
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Nat.Basic
 

@@ -26,8 +26,7 @@ open Lean.Meta
 open Lean.Elab
 open Lean.Elab
 
-namespace Tactic
-namespace Find
+namespace Mathlib.Tactic.Find
 
 private partial def matchHyps : List Expr → List Expr → List Expr → MetaM Bool
   | p::ps, oldHyps, h::newHyps => do
@@ -133,6 +132,3 @@ elab "#find" t:term : tactic => do
   let t ← Term.elabTerm t none
   Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
   findType t
-
-end Find
-end Tactic
