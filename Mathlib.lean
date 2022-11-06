@@ -60,6 +60,7 @@ import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Align
 import Mathlib.Init.CcLemmas
 import Mathlib.Init.Classical
+import Mathlib.Init.Control.Combinators
 import Mathlib.Init.Core
 import Mathlib.Init.Data.Bool.Basic
 import Mathlib.Init.Data.Bool.Lemmas
