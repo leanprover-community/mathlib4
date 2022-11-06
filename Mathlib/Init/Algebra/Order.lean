@@ -39,7 +39,7 @@ class Preorder (α : Type u) extends LE α, LT α :=
 (le_refl : ∀ a : α, a ≤ a)
 (le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c)
 (lt := λ a b => a ≤ b ∧ ¬ b ≤ a)
-(lt_iff_le_not_le : ∀ a b : α, a < b ↔ (a ≤ b ∧ ¬ b ≤ a)) -- . order_laws_tac)
+(lt_iff_le_not_le : ∀ a b : α, a < b ↔ (a ≤ b ∧ ¬ b ≤ a) := by intros; rfl)
 
 variable [Preorder α]
 

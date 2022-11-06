@@ -20,9 +20,6 @@ bool, boolean, Bool, De Morgan
 
 namespace Bool
 
--- probably happening already
-#align bool Bool
-
 theorem decide_True {h} : @decide True h = true :=
   decide_eq_true True.intro
 #align bool.to_bool_true Bool.decide_True
@@ -304,7 +301,6 @@ instance : LinearOrder Bool where
   max_def := λ a b => by cases a <;> cases b <;> decide
   min := and
   min_def := λ a b => by cases a <;> cases b <;> decide
-  lt_iff_le_not_le := λ _ _ => Iff.rfl
 #align bool.linear_order Bool.instLinearOrderBool
 
 @[simp]
