@@ -30,7 +30,7 @@ namespace Meta.NormNum
 initialize registerTraceClass `Tactic.norm_num
 
 /-- Assert that an element of a semiring is equal to the coercion of some natural number. -/
-structure IsNat [Semiring α] (a : α) (n : ℕ) : Prop where
+structure IsNat [AddMonoidWithOne α] (a : α) (n : ℕ) : Prop where
   /-- The element is equal to the coercion of the natural number. -/
   out : a = n
 
@@ -41,27 +41,27 @@ A "raw nat cast" is an expression of the form `(Nat.rawCast lit : α)` where `li
 natural number literal. These expressions are used by tactics like `ring` to decrease the number
 of typeclass arguments required in each use of a number literal at type `α`.
 -/
-@[simp] def _root_.Nat.rawCast [Semiring α] (n : ℕ) : α := n
+@[simp] def _root_.Nat.rawCast [AddMonoidWithOne α] (n : ℕ) : α := n
 
 /-- Asserting that the `OfNat α n` instance provides the same value as the coercion. -/
-class LawfulOfNat (α) [Semiring α] (n) [OfNat α n] : Prop where
+class LawfulOfNat (α) [AddMonoidWithOne α] (n) [OfNat α n] : Prop where
   /-- Assert `n = (OfNat.ofNat n α)`, with the parametrising instance. -/
   eq_ofNat : n = (@OfNat.ofNat _ n ‹_› : α)
 
-instance (α) [Semiring α] [Nat.AtLeastTwo n] : LawfulOfNat α n := ⟨rfl⟩
-instance (α) [Semiring α] : LawfulOfNat α (nat_lit 0) := ⟨Nat.cast_zero⟩
-instance (α) [Semiring α] : LawfulOfNat α (nat_lit 1) := ⟨Nat.cast_one⟩
+instance (α) [AddMonoidWithOne α] [Nat.AtLeastTwo n] : LawfulOfNat α n := ⟨rfl⟩
+instance (α) [AddMonoidWithOne α] : LawfulOfNat α (nat_lit 0) := ⟨Nat.cast_zero⟩
+instance (α) [AddMonoidWithOne α] : LawfulOfNat α (nat_lit 1) := ⟨Nat.cast_one⟩
 instance : LawfulOfNat ℕ n := ⟨show n = Nat.cast n by simp⟩
 instance : LawfulOfNat ℤ n := ⟨show Int.ofNat n = Nat.cast n by simp⟩
 
-theorem IsNat.to_eq [Semiring α] (n) [OfNat α n] [LawfulOfNat α n] :
+theorem IsNat.to_eq [AddMonoidWithOne α] (n) [OfNat α n] [LawfulOfNat α n] :
     (a : α) → IsNat a n → a = OfNat.ofNat n
   | _, ⟨rfl⟩ => LawfulOfNat.eq_ofNat
 
-theorem IsNat.to_raw_eq [Semiring α] : IsNat (a : α) n → a = n.rawCast
+theorem IsNat.to_raw_eq [AddMonoidWithOne α] : IsNat (a : α) n → a = n.rawCast
   | ⟨e⟩ => e
 
-theorem IsNat.of_raw (α) [Semiring α] (n : ℕ) : IsNat (n.rawCast : α) n := ⟨rfl⟩
+theorem IsNat.of_raw (α) [AddMonoidWithOne α] (n : ℕ) : IsNat (n.rawCast : α) n := ⟨rfl⟩
 
 /-- Assert that an element of a ring is equal to the coercion of some integer. -/
 structure IsInt [Ring α] (a : α) (n : ℤ) : Prop where
@@ -103,8 +103,8 @@ def mkRawIntLit (n : ℤ) : Q(ℤ) :=
   let lit : Q(ℕ) := mkRawNatLit n.natAbs
   if 0 ≤ n then q(.ofNat $lit) else q(.negOfNat $lit)
 
-/-- A shortcut (non)instance for `Semiring ℕ` to shrink generated proofs. -/
-def instSemiringNat : Semiring ℕ := inferInstance
+/-- A shortcut (non)instance for `AddMonoidWithOne ℕ` to shrink generated proofs. -/
+def instAddMonoidWithOneNat : AddMonoidWithOne ℕ := inferInstance
 
 /-- A shortcut (non)instance for `Ring ℤ` to shrink generated proofs. -/
 def instRingInt : Ring ℤ := inferInstance
@@ -156,7 +156,7 @@ instance : Inhabited (Result x) := inferInstanceAs (Inhabited Result')
 
 /-- The result is `lit : ℕ` (a raw nat literal) and `proof : isNat x lit`. -/
 @[match_pattern, inline] def Result.isNat {α : Q(Type u)} {x : Q($α)} :
-    ∀ (inst : Q(Semiring $α) := by assumption) (lit : Q(ℕ)) (proof : Q(IsNat $x $lit)),
+    ∀ (inst : Q(AddMonoidWithOne $α) := by assumption) (lit : Q(ℕ)) (proof : Q(IsNat $x $lit)),
       Result x := Result'.isNat
 
 /-- The result is `-lit` where `lit` is a raw nat literal
@@ -172,6 +172,9 @@ and `q` is the value of `n / d`. -/
     ∀ (inst : Q(Ring $α) := by assumption) (q : Rat) (n : Q(ℤ)) (d : Q(ℕ))
       (proof : Q(IsRat $x $n $d)), Result x := Result'.isRat
 
+/-- A shortcut (non)instance for `AddMonoidWithOne α` from `Ring α` to shrink generated proofs. -/
+def instAddMonoidWithOne [Ring α] : AddMonoidWithOne α := inferInstance
+
 /-- The result is `z : ℤ` and `proof : isNat x z`. -/
 -- Note the independent arguments `z : Q(ℤ)` and `n : ℤ`.
 -- We ensure these are "the same" when calling.
@@ -180,11 +183,16 @@ def Result.isInt {α : Q(Type u)} {x : Q($α)} {z : Q(ℤ)}
   have lit : Q(ℕ) := z.appArg!
   if 0 ≤ n then
     let proof : Q(IsInt $x (.ofNat $lit)) := proof
-    .isNat q(Ring.toSemiring) lit q(IsInt.to_isNat $proof)
+    .isNat q(instAddMonoidWithOne) lit q(IsInt.to_isNat $proof)
   else
     .isNegNat inst lit proof
 
 end
+
+/-- Helper functor to synthesize a typed `AddMonoidWithOne α` expression. -/
+def inferAddMonoidWithOne (α : Q(Type u)) : MetaM Q(AddMonoidWithOne $α) :=
+  return ← synthInstanceQ (q(AddMonoidWithOne $α) : Q(Type u)) <|>
+    throwError "not a AddMonoidWithOne"
 
 /-- Helper functor to synthesize a typed `Semiring α` expression. -/
 def inferSemiring (α : Q(Type u)) : MetaM Q(Semiring $α) :=
@@ -201,7 +209,7 @@ and the proof that the original expression is equal to this integer.
 def Result.toInt {α : Q(Type u)} {e : Q($α)} (_i : Q(Ring $α) := by with_reducible assumption) :
     Result e → Option (ℤ × (lit : Q(ℤ)) × Q(IsInt $e $lit))
   | .isNat _ lit proof => do
-    have proof : Q(@IsNat _ Ring.toSemiring $e $lit) := proof
+    have proof : Q(@IsNat _ instAddMonoidWithOne $e $lit) := proof
     pure ⟨lit.natLit!, q(.ofNat $lit), q(($proof).to_isInt)⟩
   | .isNegNat _ lit proof => pure ⟨-lit.natLit!, q(.negOfNat $lit), proof⟩
   | _ => failure
@@ -224,7 +232,7 @@ def Result.toRawEq {α : Q(Type u)} {e : Q($α)} : Result e → (ℤ × (e' : Q(
 
 /-- Constructs a `Result` out of a raw nat cast. Assumes `e` is a raw nat cast expression. -/
 def Result.ofRawNat {α : Q(Type u)} (e : Q($α)) : Result e := Id.run do
-  let .app (.app _ (sα : Q(Semiring $α))) (lit : Q(ℕ)) := e | panic! "not a raw nat cast"
+  let .app (.app _ (sα : Q(AddMonoidWithOne $α))) (lit : Q(ℕ)) := e | panic! "not a raw nat cast"
   .isNat sα lit (q(IsNat.of_raw $α $lit) : Expr)
 
 /-- Constructs a `Result` out of a raw int cast.
@@ -289,7 +297,8 @@ initialize normNumExt : PersistentEnvExtension Entry (Entry × NormNumExt)
 def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := do
   if e.isNatLit then
     let lit : Q(ℕ) := e
-    return .isNat (q(instSemiringNat) : Q(Semiring ℕ)) lit (q(IsNat.raw_refl $lit) : Expr)
+    return .isNat (q(instAddMonoidWithOneNat) : Q(AddMonoidWithOne ℕ))
+      lit (q(IsNat.raw_refl $lit) : Expr)
   let s ← saveState
   let arr ← (normNumExt.getState (← getEnv)).2.getMatch e
   for ext in arr do
@@ -306,14 +315,14 @@ def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := d
 /-- Run each registered `norm_num` extension on a typed expression `e : α`,
 returning a typed expression `lit : ℕ`, and a proof of `isNat e lit`. -/
 def deriveNat' {α : Q(Type u)} (e : Q($α)) :
-    MetaM ((_inst : Q(Semiring $α)) × (lit : Q(ℕ)) × Q(IsNat $e $lit)) := do
+    MetaM ((_inst : Q(AddMonoidWithOne $α)) × (lit : Q(ℕ)) × Q(IsNat $e $lit)) := do
   let .isNat inst lit proof ← derive e | failure
   pure ⟨inst, lit, proof⟩
 
 /-- Run each registered `norm_num` extension on a typed expression `e : α`,
 returning a typed expression `lit : ℕ`, and a proof of `isNat e lit`. -/
 def deriveNat {α : Q(Type u)} (e : Q($α))
-    (_inst : Q(Semiring $α) := by with_reducible assumption) :
+    (_inst : Q(AddMonoidWithOne $α) := by with_reducible assumption) :
     MetaM ((lit : Q(ℕ)) × Q(IsNat $e $lit)) := do
   let .isNat _ lit proof ← derive e | failure
   pure ⟨lit, proof⟩
