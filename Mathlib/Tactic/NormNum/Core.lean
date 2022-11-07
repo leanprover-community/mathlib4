@@ -3,8 +3,10 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Std.Lean.Parser
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Tactic.Conv
 import Qq.MetaM
 import Qq.Delab
 
@@ -475,6 +477,20 @@ def normNumAt (g : MVarId) (ctx : Simp.Context) (fvarIdsToSimp : Array FVarId)
 
 open Qq Lean Meta Elab Tactic Term
 
+/-- Constructs a simp context from the simp argument syntax. -/
+def getSimpContext (args : Syntax) (simpOnly := false) :
+    TacticM Simp.Context := do
+  let simpTheorems ←
+    if simpOnly then simpOnlyBuiltins.foldlM (·.addConst ·) {} else getSimpTheorems
+  let mut { ctx, starArg } ← elabSimpArgs args (eraseLocal := false) (kind := .simp)
+    { simpTheorems := #[simpTheorems], congrTheorems := ← getSimpCongrTheorems }
+  unless starArg do return ctx
+  let mut simpTheorems := ctx.simpTheorems
+  for h in ← getPropHyps do
+    unless simpTheorems.isErased (.fvar h) do
+      simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
+  pure { ctx with simpTheorems }
+
 open Elab.Tactic in
 /--
 Elaborates a call to `norm_num only? [args]` or `norm_num1`.
@@ -487,16 +503,7 @@ Elaborates a call to `norm_num only? [args]` or `norm_num1`.
 -- FIXME: had to inline a bunch of stuff from `mkSimpContext` and `simpLocation` here
 def elabNormNum (args : Syntax) (loc : Syntax)
     (simpOnly := false) (useSimp := true) : TacticM Unit := do
-  let simpTheorems ←
-    if !useSimp || simpOnly then simpOnlyBuiltins.foldlM (·.addConst ·) {} else getSimpTheorems
-  let mut { ctx, starArg } ← elabSimpArgs args (eraseLocal := false) (kind := .simp)
-    { simpTheorems := #[simpTheorems], congrTheorems := ← getSimpCongrTheorems }
-  if starArg then
-    let mut simpTheorems := ctx.simpTheorems
-    for h in ← getPropHyps do
-      unless simpTheorems.isErased (.fvar h) do
-        simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
-    ctx := { ctx with simpTheorems }
+  let ctx ← getSimpContext args (!useSimp || simpOnly)
   let g ← getMainGoal
   let res ← match expandOptLocation loc with
   | .targets hyps simplifyTarget => normNumAt g ctx (← getFVarIds hyps) simplifyTarget useSimp
@@ -510,10 +517,51 @@ end Meta.NormNum
 namespace Tactic
 open Lean.Parser.Tactic Meta.NormNum
 
-/-- Normalize numerical expressions. -/
-elab "norm_num" only:&" only"? args:(simpArgs ?) loc:(location ?) : tactic =>
+/--
+Normalize numerical expressions. Supports the operations `+` `-` `*` `/` `^` and `%`
+over numerical types such as `ℕ`, `ℤ`, `ℚ`, `ℝ`, `ℂ` and some general algebraic types,
+and can prove goals of the form `A = B`, `A ≠ B`, `A < B` and `A ≤ B`, where `A` and `B` are
+numerical expressions. It also has a relatively simple primality prover.
+-/
+elab (name := normNum) "norm_num" only:&" only"? args:(simpArgs ?) loc:(location ?) : tactic =>
   elabNormNum args loc (simpOnly := only.isSome) (useSimp := true)
 
 /-- Basic version of `norm_num` that does not call `simp`. -/
-elab "norm_num1" loc:(location ?) : tactic =>
+elab (name := normNum1) "norm_num1" loc:(location ?) : tactic =>
   elabNormNum mkNullNode loc (simpOnly := true) (useSimp := false)
+
+open Lean Elab Tactic
+
+@[inherit_doc normNum1] syntax (name := normNum1Conv) "norm_num1" : conv
+
+/-- Elaborator for `norm_num1` conv tactic. -/
+@[tactic normNum1Conv] def elabNormNum1Conv : Tactic := fun _ => withMainContext do
+  let ctx ← getSimpContext mkNullNode true
+  Conv.applySimpResult (← deriveSimp ctx (← instantiateMVars (← Conv.getLhs)) (useSimp := false))
+
+@[inherit_doc normNum] syntax (name := normNumConv) "norm_num" &" only"? (simpArgs)? : conv
+
+/-- Elaborator for `norm_num` conv tactic. -/
+@[tactic normNumConv] def elabNormNumConv : Tactic := fun stx => withMainContext do
+  let ctx ← getSimpContext stx[2] !stx[1].isNone
+  Conv.applySimpResult (← deriveSimp ctx (← instantiateMVars (← Conv.getLhs)) (useSimp := true))
+
+/--
+The basic usage is `#norm_num e`, where `e` is an expression,
+which will print the `norm_num` form of `e`.
+
+Syntax: `#norm_num` (`only`)? (`[` simp lemma list `]`)? `:`? expression
+
+This accepts the same options as the `#simp` command.
+You can specify additional simp lemmas as usual, for example using `#norm_num [f, g] : e`.
+(The colon is optional but helpful for the parser.)
+The `only` restricts `norm_num` to using only the provided lemmas, and so
+`#norm_num only : e` behaves similarly to `norm_num1`.
+
+Unlike `norm_num`, this command does not fail when no simplifications are made.
+
+`#norm_num` understands local variables, so you can use them to introduce parameters.
+-/
+macro (name := normNumCmd) "#norm_num" o:(&" only")?
+    args:(Parser.Tactic.simpArgs)? " :"? ppSpace e:term : command =>
+  `(command| #conv norm_num $[only%$o]? $(args)? => $e)
