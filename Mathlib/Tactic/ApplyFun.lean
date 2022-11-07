@@ -18,41 +18,7 @@ When `Logic.Equiv.Basic` and `Order.Hom.Basic` have been ported some additional 
 -/
 
 namespace Mathlib.Tactic
-open Lean Parser Tactic Elab Tactic
-
-/--
-Apply a function to an equality or inequality in either a local hypothesis or the goal.
-
-* If we have `h : a = b`, then `apply_fun f at h` will replace this with `h : f a = f b`.
-* If we have `h : a ≤ b`, then `apply_fun f at h` will replace this with `h : f a ≤ f b`,
-  and create a subsidiary goal `monotone f`.
-  `apply_fun` will automatically attempt to discharge this subsidiary goal using `mono`,
-  or an explicit solution can be provided with `apply_fun f at h using P`, where `P : monotone f`.
-* If the goal is `a ≠ b`, `apply_fun f` will replace this with `f a ≠ f b`.
-* If the goal is `a = b`, `apply_fun f` will replace this with `f a = f b`,
-  and create a subsidiary goal `injective f`.
-  `apply_fun` will automatically attempt to discharge this subsidiary goal using local hypotheses,
-  or if `f` is actually an `equiv`,
-  or an explicit solution can be provided with `apply_fun f using P`, where `P : injective f`.
-* If the goal is `a ≤ b` (or similarly for `a < b`), and `f` is actually an `order_iso`,
-  `apply_fun f` will replace the goal with `f a ≤ f b`.
-  If `f` is anything else (e.g. just a function, or an `equiv`), `apply_fun` will fail.
-
-
-Typical usage is:
-```lean
-open function
-
-example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : injective $ g ∘ f) :
-  injective f := by
-  intros x x' h,
-  apply_fun g at h,
-  exact H h
-```
- -/
-syntax (name := applyFun) "apply_fun " term (ppSpace location)? (" using " term)? : tactic
-
-open Lean.Meta
+open Lean Parser Tactic Elab Tactic Meta
 
 initialize registerTraceClass `apply_fun
 
@@ -107,23 +73,55 @@ def applyFunTarget (f : Expr) (using? : Option Expr) (g : MVarId) : MetaM (List 
     | (``Eq, #[_, _, _]) => g.apply (← mkAppM ``ne_of_apply_ne #[f])
     | _ => applyFunTargetFailure f
   -- TODO Once `Order.Hom.Basic` has been ported, verify these work.
-  | (``LE.le, _) => g.apply (← mkAppM `order_iso.le_iff_le #[f])
-  | (``GE.ge, _) => g.apply (← mkAppM `order_iso.le_iff_le #[f])
-  | (``LT.lt, _) => g.apply (← mkAppM `order_iso.lt_iff_lt #[f])
-  | (``GT.gt, _) => g.apply (← mkAppM `order_iso.lt_iff_lt #[f])
+  -- | (``LE.le, _) => g.apply (← mkAppM ``OrderIso.le_iff_le #[f])
+  -- | (``GE.ge, _) => g.apply (← mkAppM ``OrderIso.le_iff_le #[f])
+  -- | (``LT.lt, _) => g.apply (← mkAppM ``OrderIso.lt_iff_lt #[f])
+  -- | (``GT.gt, _) => g.apply (← mkAppM ``OrderIso.lt_iff_lt #[f])
   | (``Eq, #[_, _, _]) => do
     let ng ← mkFreshExprMVar (← mkAppM ``Function.Injective #[f])
     -- Try the `using` clause
-    _ ← using?.mapM (fun u => isDefEq ng u)
+    if let some u := using? then _ ← isDefEq ng u
     -- Try an assumption
-    _ ← try ng.mvarId!.assumption catch _ => pure ()
-    -- TODO Once `Logic.Equiv.Basic` has been ported, verify this works.
-    -- Try `Equiv.injective
-    _ ← try ng.mvarId!.apply (mkConst `Equiv.injective) catch _ => pure []
+    try ng.mvarId!.assumption catch _ =>
+      -- TODO Once `Logic.Equiv.Basic` has been ported, verify this works.
+      -- try return ← ng.mvarId!.apply (mkConst ``Equiv.injective) catch _ =>
+      pure ()
     g.apply ng
   | _ => applyFunTargetFailure f
 
-@[tactic applyFun] elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
+/--
+Apply a function to an equality or inequality in either a local hypothesis or the goal.
+
+* If we have `h : a = b`, then `apply_fun f at h` will replace this with `h : f a = f b`.
+* If we have `h : a ≤ b`, then `apply_fun f at h` will replace this with `h : f a ≤ f b`,
+  and create a subsidiary goal `monotone f`.
+  `apply_fun` will automatically attempt to discharge this subsidiary goal using `mono`,
+  or an explicit solution can be provided with `apply_fun f at h using P`, where `P : monotone f`.
+* If the goal is `a ≠ b`, `apply_fun f` will replace this with `f a ≠ f b`.
+* If the goal is `a = b`, `apply_fun f` will replace this with `f a = f b`,
+  and create a subsidiary goal `injective f`.
+  `apply_fun` will automatically attempt to discharge this subsidiary goal using local hypotheses,
+  or if `f` is actually an `equiv`,
+  or an explicit solution can be provided with `apply_fun f using P`, where `P : Injective f`.
+* If the goal is `a ≤ b` (or similarly for `a < b`), and `f` is actually an `order_iso`,
+  `apply_fun f` will replace the goal with `f a ≤ f b`.
+  If `f` is anything else (e.g. just a function, or an `equiv`), `apply_fun` will fail.
+
+
+Typical usage is:
+```lean
+open Function
+
+example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective <| g ∘ f) :
+    Injective f := by
+  intros x x' h
+  apply_fun g at h
+  exact H h
+```
+ -/
+syntax (name := applyFun) "apply_fun " term (ppSpace location)? (" using " term)? : tactic
+
+elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
   let f ← elabTermForApply f
   let P ← P.mapM (elabTerm · none)
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
