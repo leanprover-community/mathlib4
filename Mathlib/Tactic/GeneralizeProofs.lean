@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
 import Lean
+import Mathlib.Lean.Expr.Basic
 
 /-!
 # The `generalize_proofs` tactic
@@ -22,33 +23,17 @@ example : list.nth_le [1, 2] 1 dec_trivial = 2 := by
 ```
 -/
 
-open Lean.Meta
-
-namespace Lean.Elab.Tactic
-
--- unrelated to this file but nice for debugging
-deriving instance Repr for GeneralizeArg
-
-namespace GeneralizeProofs
+namespace Mathlib.Tactic.GeneralizeProofs
+open Lean Meta Elab Parser.Tactic Elab.Tactic
 
 /- The following set up are the visit function are based on the file
 Lean.Meta.AbstractNestedProofs in core -/
-
-/--
-Matching function for proofs to be generalized,
-duplicate of `Lean.Meta.AbstractNestedProofs.isNonTrivialProof` -/
-def isNonTrivialProof (e : Expr) : MetaM Bool := do
-  if !(← isProof e) then
-    pure false
-  else
-    e.withApp fun f args =>
-      pure $ !f.isAtomic || args.any fun arg => !arg.isAtomic
 
 /-- State for the generalize proofs tactic, contains the remaining names to be used and the
 list of generalizations so far -/
 structure State where
   /-- The user provided names, may be anonymous -/
-  nextIdx : Array Name
+  nextIdx : List (TSyntax ``binderIdent)
   /-- The generalizations made so far -/
   curIdx : Array GeneralizeArg := #[]
 
@@ -59,13 +44,14 @@ abbrev M := MonadCacheT ExprStructEq Expr $ StateRefT State MetaM
 /-- generalize the given e -/
 private def mkGen (e : Expr) : M Unit := do
   let s ← get
-  let mut t := Name.anonymous
-  if s.nextIdx = #[] then
-    t ← mkFreshUserName `h
-  modify fun s =>
-    { s with
-      nextIdx := s.nextIdx.pop,
-      curIdx := s.curIdx.push ⟨e, s.nextIdx.back?.getD t, none⟩ }
+  let t ← match s.nextIdx with
+  | [] => mkFreshUserName `h
+  | n :: rest =>
+    modify fun s => { s with nextIdx := rest }
+    match n with
+    | `(binderIdent| $s:ident) => pure s.getId
+    | _ => mkFreshUserName `h
+  modify fun s => { s with curIdx := s.curIdx.push ⟨e, t, none⟩ }
 
 /-- Recursively generalize proofs occuring in e -/
 partial def visit (e : Expr) : M Expr := do
@@ -85,8 +71,8 @@ partial def visit (e : Expr) : M Expr := do
            | none       => pure localDecl
         lctx := lctx.modifyLocalDecl xFVarId fun _ => localDecl
       withLCtx lctx localInstances k
-    checkCache { val := e : ExprStructEq } fun _ => do
-      if (← isNonTrivialProof e) then
+    checkCache (e : ExprStructEq) fun _ => do
+      if (← AbstractNestedProofs.isNonTrivialProof e) then
         mkGen e
         return e
       else match e with
@@ -101,10 +87,6 @@ partial def visit (e : Expr) : M Expr := do
         | .app ..      => e.withApp fun f args => return mkAppN f (← args.mapM visit)
         | _            => pure e
 
-end GeneralizeProofs
-
-open Lean.Parser.Tactic
-
 /--
 Generalize proofs in the goal, naming them with the provided list.
 
@@ -118,20 +100,17 @@ example : list.nth_le [1, 2] 1 dec_trivial = 2 := by
 ```
 -/
 elab (name := generalizeProofs) "generalize_proofs"
-  hs:(ppSpace (colGt binderIdent))* loc:(ppSpace location)? : tactic => do
-    let ou := if loc.isSome then
-        match expandLocation loc.get! with
-          | .wildcard => #[]
-          | .targets t _ => t
-      else #[]
-    let fvs ← getFVarIds ou
-    liftMetaTactic1 fun goal => do -- TODO decide if working on all or not
-      let hsa : Array Name ← (hs.reverse.mapM fun sy => do
-        if let `(binderIdent| $s:ident) := sy then
-          return s.getId
-        else
-          mkFreshUserName `h)
-      let (_, ⟨_, out⟩) ← GeneralizeProofs.visit (← instantiateMVars (← goal.getType)) |>.run |>.run
-        { nextIdx := hsa }
-      let (_, _, mvarId) ← goal.generalizeHyp out fvs
-      return mvarId
+    hs:(ppSpace (colGt binderIdent))* loc:(ppSpace location)? : tactic => do
+  let ou := if loc.isSome then
+    match expandLocation loc.get! with
+    | .wildcard => #[]
+    | .targets t _ => t
+  else #[]
+  let fvs ← getFVarIds ou
+  let goal ← getMainGoal
+  let ty ← instantiateMVars (← goal.getType)
+  let (_, ⟨_, out⟩) ← GeneralizeProofs.visit ty |>.run.run { nextIdx := hs.toList }
+  let (_, fvarIds, goal) ← goal.generalizeHyp out fvs
+  for h in hs, fvar in fvarIds do
+    goal.withContext <| (Expr.fvar fvar).addLocalVarInfoForBinderIdent h
+  replaceMainGoal [goal]

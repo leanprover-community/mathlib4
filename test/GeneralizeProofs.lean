@@ -16,14 +16,14 @@ example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) < 2
 by
   generalize_proofs a
   guard_hyp a : ∃ x, x < 2
-  guard_target == Classical.choose a < 2
+  guard_target = Classical.choose a < 2
   exact Classical.choose_spec a
 
 example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) = Classical.choose (⟨x, h⟩ : ∃ x, x < 2) :=
 by
   generalize_proofs a
   guard_hyp a : ∃ x, x < 2
-  guard_target == Classical.choose a = Classical.choose a
+  guard_target = Classical.choose a = Classical.choose a
   rfl
 
 example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) =
@@ -52,13 +52,13 @@ by
 example (a : ∃ x, x < 2) : Classical.choose a < 2 :=
 by
   generalize_proofs
-  guard_target == Classical.choose a < 2
+  guard_target = Classical.choose a < 2
   exact Classical.choose_spec a
 
 example (a : ∃ x, x < 2) : Classical.choose a < 2 :=
 by
   generalize_proofs t
-  guard_target == Classical.choose a < 2
+  guard_target = Classical.choose a < 2
   exact Classical.choose_spec a
 
 example (x : ℕ) (h : x < 2) (H : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) < 2) :
@@ -67,8 +67,13 @@ by
   generalize_proofs a at H ⊢
   guard_hyp a : ∃ x, x < 2
   guard_hyp H : Classical.choose a < 2
-  guard_target == Classical.choose a < 2
+  guard_target = Classical.choose a < 2
   exact H
+
+-- FIXME: result is not type correct
+-- example (H : ∀ y, ∃ (x : ℕ) (h : x < y), Classical.choose (⟨x, h⟩ : ∃ x, x < y) < y) :
+--   ∀ y, ∃ (x : ℕ) (h : x < y), Classical.choose (⟨x, h⟩ : ∃ x, x < y) < y := by
+--   generalize_proofs a at H ⊢
 
 attribute [local instance] Classical.propDecidable
 
@@ -78,5 +83,5 @@ by
   rotate_left
   { exact ⟨1, rfl⟩ }
   generalize_proofs h g
-  guard_target == Classical.choose h = 1
+  guard_target = Classical.choose h = 1
   apply H
