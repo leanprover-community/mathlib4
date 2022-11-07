@@ -20,6 +20,7 @@ import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.CommandQuote
+import Mathlib.Tactic.Congr
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
@@ -269,9 +270,6 @@ namespace Tactic
 
 /- S -/ syntax (name := hint) "hint" : tactic
 
-/- N -/ syntax (name := congr') "congr" (ppSpace colGt num)?
-  (" with " (colGt rintroPat)* (" : " num)?)? : tactic
-/- M -/ syntax (name := rcongr) "rcongr" (ppSpace colGt rintroPat)* : tactic
 /- M -/ syntax (name := congrM) "congrm " term : tactic
 /- E -/ syntax (name := acChange) "ac_change " term (" using " num)? : tactic
 
@@ -410,7 +408,7 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := elementwise!) "elementwise!" (ppSpace (colGt ident))* : tactic
 /- M -/ syntax (name := deriveElementwiseProof) "derive_elementwise_proof" : tactic
 
-/- M -/ syntax (name := computeDegree) "compute_degree" : tactic
+/- M -/ syntax (name := computeDegreeLE) "compute_degree_le" : tactic
 
 /- B -/ syntax (name := positivity) "positivity" : tactic
 
