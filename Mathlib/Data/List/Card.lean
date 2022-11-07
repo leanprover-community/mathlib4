@@ -79,10 +79,10 @@ def card : List α → Nat
 @[simp] theorem card_nil : card ([] : List α) = 0 := rfl
 
 @[simp] theorem card_cons_of_mem {a : α} {as : List α} (h : a ∈ as) :
-    card (a :: as) = card as := by simp [card]; rw [if_pos h]
+    card (a :: as) = card as := by simp [card, h]
 
 @[simp] theorem card_cons_of_not_mem {a : α} {as : List α} (h : a ∉ as) :
-    card (a :: as) = card as + 1 := by simp [card]; rw [if_neg h]
+    card (a :: as) = card as + 1 := by simp [card, h]
 
 theorem card_le_card_cons (a : α) (as : List α) : card as ≤ card (a :: as) := by
   cases Decidable.em (a ∈ as) with

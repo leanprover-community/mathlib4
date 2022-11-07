@@ -23,10 +23,9 @@ example : Nat := by library_search
 ```
 -/
 
-namespace Tactic
-namespace LibrarySearch
+namespace Mathlib.Tactic.LibrarySearch
 
-open Lean Meta TryThis
+open Lean Meta Std.Tactic.TryThis
 
 initialize registerTraceClass `Tactic.librarySearch
 
@@ -50,8 +49,27 @@ initialize librarySearchLemmas : DeclCache (DiscrTree Name) ←
       let keys ← withReducible <| DiscrTree.mkPath type
       pure $ lemmas.insertCore keys name
 
-def librarySearch (goal : MVarId) (lemmas : DiscrTree Name) (solveByElimDepth := 6) :
-    MetaM <| Option (Array <| MetavarContext × List MVarId) := do
+/-- Shortcut for calling `solveByElimImpl`. -/
+def solveByElim (g : MVarId) (depth) := Lean.Tactic.solveByElimImpl false [] depth g
+
+/--
+Try to solve the goal either by:
+* calling `solveByElim`
+* or applying a library lemma then calling  `solveByElim` on the resulting goals.
+
+If it successfully closes the goal, returns `none`.
+Otherwise, it returns `some a`, where `a : Array (MetavarContext × List MVarId)`,
+with an entry for each library lemma which was successfully applied,
+containing the metavariable context after the application, and a list of the subsidiary goals.
+
+(Always succeeds, and the metavariable context stored in the monad is reverted,
+unless the goal was completely solved.)
+
+(Note that if `solveByElim` solves some but not all subsidiary goals,
+this is not currently tracked.)
+-/
+def librarySearch (goal : MVarId) (lemmas : DiscrTree Name) (required : List Expr)
+    (solveByElimDepth := 6) : MetaM <| Option (Array <| MetavarContext × List MVarId) := do
   profileitM Exception "librarySearch" (← getOptions) do
   let ty ← goal.getType
   withTraceNode `Tactic.librarySearch (return m!"{exceptOptionEmoji ·} {ty}") do
@@ -61,8 +79,11 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name) (solveByElimDepth :=
   let state0 ← get
 
   try
-    solveByElim solveByElimDepth goal
-    return none
+    solveByElim goal solveByElimDepth
+    if (← checkRequired) then
+      return none
+    else
+      set state0
   catch _ =>
     set state0
 
@@ -75,12 +96,17 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name) (solveByElimDepth :=
           for newGoal in newGoals do
             newGoal.withContext do
               trace[Tactic.librarySearch] "proving {← addMessageContextFull (mkMVar newGoal)}"
-              solveByElim solveByElimDepth newGoal
-          pure $ some $ Sum.inr ()
+              solveByElim newGoal solveByElimDepth
+          if (← checkRequired) then
+            pure $ some $ Sum.inr ()
+          else
+            set state0
+            pure none
         catch _ =>
           let res := some $ Sum.inl (← getMCtx, newGoals)
+          let check ← checkRequired
           set state0
-          pure res)
+          return if check then res else none)
     catch _ =>
       set state0
       pure none
@@ -90,6 +116,10 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name) (solveByElimDepth :=
     | some (Sum.inl suggestion) => suggestions := suggestions.push suggestion
 
   pure $ some suggestions
+    where
+  /-- Verify that the instantiated goal contains each `Expr` in `required` as a sub-expression.
+  (Make sure to not reset the state before calling.) -/
+  checkRequired : MetaM Bool := return required.all (·.occurs (← instantiateMVars (.mvar goal)))
 
 def lines (ls : List MessageData) :=
   MessageData.joinSep ls (MessageData.ofFormat Format.line)
@@ -98,22 +128,22 @@ open Lean.Parser.Tactic
 
 -- TODO: implement the additional options for `library_search` from Lean 3,
 -- in particular including additional lemmas
--- with `library_search [X, Y, Z]` or `library_search with attr`,
--- or requiring that a particular hypothesis is used in the solution, with `library_search using h`.
+-- with `library_search [X, Y, Z]` or `library_search with attr`.
 syntax (name := librarySearch') "library_search" (config)? (simpArgs)?
-  (" using " (colGt binderIdent)+)? : tactic
+  (" using " (colGt term),+)? : tactic
 syntax (name := librarySearch!) "library_search!" (config)? (simpArgs)?
-  (" using " (colGt binderIdent)+)? : tactic
+  (" using " (colGt term),+)? : tactic
 
 -- For now we only implement the basic functionality.
 -- The full syntax is recognized, but will produce a "Tactic has not been implemented" error.
 
 open Elab.Tactic Elab Tactic in
-elab_rules : tactic | `(tactic| library_search%$tk) => do
+elab_rules : tactic | `(tactic| library_search%$tk $[using $[$required:term],*]?) => do
   let mvar ← getMainGoal
   let (_, goal) ← (← getMainGoal).intros
   goal.withContext do
-    if let some suggestions ← librarySearch goal (← librarySearchLemmas.get) then
+    let required := (← (required.getD #[]).mapM getFVarId).toList.map .fvar
+    if let some suggestions ← librarySearch goal (← librarySearchLemmas.get) required then
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addExactSuggestion tk (← instantiateMVars (mkMVar mvar))
@@ -126,7 +156,7 @@ elab tk:"library_search%" : term <= expectedType => do
   let goal ← mkFreshExprMVar expectedType
   let (_, introdGoal) ← goal.mvarId!.intros
   introdGoal.withContext do
-    if let some suggestions ← librarySearch introdGoal (← librarySearchLemmas.get) then
+    if let some suggestions ← librarySearch introdGoal (← librarySearchLemmas.get) [] then
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addTermSuggestion tk (← instantiateMVars goal)

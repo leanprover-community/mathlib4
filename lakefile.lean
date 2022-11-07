@@ -4,10 +4,10 @@ open Lake DSL
 
 package mathlib
 
-@[defaultTarget]
+@[default_target]
 lean_lib Mathlib
 
-@[defaultTarget]
+@[default_target]
 lean_exe runLinter where
   root := `scripts.runLinter
   supportInterpreter := true

@@ -9,10 +9,6 @@ import Lean
 
 open Function
 
-@[simp]
-theorem Option.mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
-  cases o <;> simp [toList, eq_comm]
-
 namespace List
 
 /-!
@@ -28,7 +24,7 @@ namespace List
 -- instance : is_associative (List α) has_append.append :=
 -- ⟨ append_assoc ⟩
 
-@[simp] theorem cons_injective {a : α} : injective (cons a) :=
+@[simp] theorem cons_injective {a : α} : Injective (cons a) :=
 λ _ _ Pe => tail_eq_of_cons_eq Pe
 
 /-! ### mem -/
@@ -53,7 +49,7 @@ fun p1 p2 => fun Pain => absurd (eq_or_mem_of_mem_cons Pain) (not_or.mpr ⟨p1, 
 theorem ne_and_not_mem_of_not_mem_cons {a y : α} {l : List α} : (a ∉ y::l) → a ≠ y ∧ a ∉ l :=
 fun p => And.intro (ne_of_not_mem_cons p) (not_mem_of_not_mem_cons p)
 
-theorem mem_map_of_injective {f : α → β} (H : injective f) {a : α} {l : List α} :
+theorem mem_map_of_injective {f : α → β} (H : Injective f) {a : α} {l : List α} :
   f a ∈ map f l ↔ a ∈ l :=
 ⟨fun m => let ⟨_, m', e⟩ := exists_of_mem_map m
           H e ▸ m', mem_map_of_mem _⟩
@@ -78,7 +74,7 @@ lemma exists_of_length_succ {n} :
 | h :: t, _ => ⟨h, t, rfl⟩
 
 @[simp]
-lemma length_injective_iff : injective (List.length : List α → ℕ) ↔ Subsingleton α := by
+lemma length_injective_iff : Injective (List.length : List α → ℕ) ↔ Subsingleton α := by
   constructor
   · intro h; refine ⟨λ x y => ?_⟩; (suffices [x] = [y] by simpa using this); apply h; rfl
   · intros hα l1 l2 hl
@@ -91,7 +87,7 @@ lemma length_injective_iff : injective (List.length : List α → ℕ) ↔ Subsi
                              · apply ih; simpa using hl
 
 @[simp default+1]
-lemma length_injective [Subsingleton α] : injective (length : List α → ℕ) :=
+lemma length_injective [Subsingleton α] : Injective (length : List α → ℕ) :=
 length_injective_iff.mpr inferInstance
 
 /-! ### set-theoretic notation of Lists -/
@@ -173,10 +169,10 @@ theorem append_left_cancel {s t₁ t₂ : List α} (h : s ++ t₁ = s ++ t₂) :
 theorem append_right_cancel {s₁ s₂ t : List α} (h : s₁ ++ t = s₂ ++ t) : s₁ = s₂ :=
   (append_left_inj _).1 h
 
-theorem append_right_injective (s : List α) : injective fun t => s ++ t :=
+theorem append_right_injective (s : List α) : Injective fun t => s ++ t :=
 fun _ _ => append_left_cancel
 
-theorem append_left_injective (t : List α) : injective fun s => s ++ t :=
+theorem append_left_injective (t : List α) : Injective fun s => s ++ t :=
 fun _ _ => append_right_cancel
 
 /-! ### nth element -/
@@ -218,7 +214,7 @@ theorem product_spec (xs : List α) (ys : List β) (x : α) (y : β) :
   to apply `f`. -/
 @[simp]
 def pmap {p : α → Prop} (f : ∀ a, p a → β) : ∀ l : List α, (∀ a ∈ l, p a) → List β
-  | [], H => []
+  | [], _ => []
   | a :: l, H => f a (forall_mem_cons.1 H).1 :: pmap f l (forall_mem_cons.1 H).2
 
 /-- "Attach" the proof that the elements of `l` are in `l` to produce a new list

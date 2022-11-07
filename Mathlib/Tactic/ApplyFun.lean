@@ -112,7 +112,7 @@ def applyFunTarget (f : Expr) (using? : Option Expr) (g : MVarId) : MetaM (List 
   | (``LT.lt, _) => g.apply (← mkAppM `order_iso.lt_iff_lt #[f])
   | (``GT.gt, _) => g.apply (← mkAppM `order_iso.lt_iff_lt #[f])
   | (``Eq, #[_, _, _]) => do
-    let ng ← mkFreshExprMVar (← mkAppM ``Function.injective #[f])
+    let ng ← mkFreshExprMVar (← mkAppM ``Function.Injective #[f])
     -- Try the `using` clause
     _ ← using?.mapM (fun u => isDefEq ng u)
     -- Try an assumption

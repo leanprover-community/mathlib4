@@ -3,7 +3,6 @@ Tests for norm_cast
 -/
 
 import Mathlib.Tactic.NormCast
-import Mathlib.Init.Data.Int.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.Data.Option.Defs
 -- import data.complex.basic -- ℕ, ℤ, ℚ, ℝ, ℂ
@@ -56,7 +55,7 @@ structure p (n : ℤ)
 example : p 42 := by
   norm_cast
   -- TODO: guard_target_mod_implicit
-  -- guard_target == p 42
+  -- guard_target = p 42
   exact ⟨⟩
 
 -- example (h : (an : ℝ) = 0) : an = 0 := by exact_mod_cast h

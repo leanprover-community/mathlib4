@@ -13,18 +13,17 @@ namespace Nat
 
 /- properties of inequality -/
 
-instance : LinearOrder ℕ :=
-{ le := Nat.le,
-  le_refl := @Nat.le_refl,
-  le_trans := @Nat.le_trans,
-  le_antisymm := @Nat.le_antisymm,
-  le_total := @Nat.le_total,
-  lt := Nat.lt,
-  lt_iff_le_not_le := @Nat.lt_iff_le_not_le,
-  decidable_lt               := inferInstance,
-  decidable_le               := inferInstance,
-  decidable_eq               := inferInstance }
-
+instance : LinearOrder ℕ where
+  le := Nat.le
+  le_refl := @Nat.le_refl
+  le_trans := @Nat.le_trans
+  le_antisymm := @Nat.le_antisymm
+  le_total := @Nat.le_total
+  lt := Nat.lt
+  lt_iff_le_not_le := @Nat.lt_iff_le_not_le
+  decidable_lt := inferInstance
+  decidable_le := inferInstance
+  decidable_eq := inferInstance
 
 /- TODO(Leo): sub + inequalities -/
 
@@ -32,7 +31,7 @@ protected def strong_rec_on {p : ℕ → Sort u}
   (n : ℕ) (H : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
 Nat.lt_wfRel.wf.fix' H n
 
-@[elabAsElim]
+@[elab_as_elim]
 protected lemma strong_induction_on {p : Nat → Prop} (n : Nat) (h : ∀ n, (∀ m, m < n → p m) → p n) :
     p n :=
 Nat.strong_rec_on n h

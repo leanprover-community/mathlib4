@@ -6,7 +6,7 @@ import Mathlib.Init.Function
 
 open Function
 
-example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : injective $ g ∘ f) : injective f := by
+example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective $ g ∘ f) : Injective f := by
   intros x x' h
   apply_fun g at h
   exact H h
@@ -42,15 +42,15 @@ example (n m : ℕ) (f : ℕ → ℕ) (h : f n ≠ f m) : n ≠ m := by
   apply_fun f
   exact h
 
-example (n m : ℕ) (f : ℕ → ℕ) (w : Function.injective f) (h : f n = f m) : n = m := by
+example (n m : ℕ) (f : ℕ → ℕ) (w : Function.Injective f) (h : f n = f m) : n = m := by
   apply_fun f
   assumption
 
-example (n m : ℕ) (f : ℕ → ℕ) (w : Function.injective f) (h : f n = f m) : n = m := by
+example (n m : ℕ) (f : ℕ → ℕ) (w : Function.Injective f) (h : f n = f m) : n = m := by
   apply_fun f using w
   assumption
 
-example (n m : ℕ) (f : ℕ → ℕ) (w : Function.injective f ∧ true) (h : f n = f m) : n = m := by
+example (n m : ℕ) (f : ℕ → ℕ) (w : Function.Injective f ∧ true) (h : f n = f m) : n = m := by
   apply_fun f using w.1
   assumption
 

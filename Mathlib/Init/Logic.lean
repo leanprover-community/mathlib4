@@ -3,275 +3,431 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
-
 import Std.Tactic.Ext
 import Std.Tactic.Lint.Basic
 import Std.Logic
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Basic
+import Mathlib.Tactic.SimpTrace
+import Mathlib.Tactic.Relation.Symm
+import Mathlib.Mathport.Attributes
+import Mathlib.Mathport.Rename
+import Mathlib.Tactic.Relation.Trans
 
-theorem opt_param_eq (α : Sort u) (default : α) : optParam α default = α := optParam_eq α default
+#align opt_param_eq optParam_eq
 
-/- not -/
+/- Implication -/
 
-def non_contradictory (a : Prop) : Prop := ¬¬a
+@[deprecated] def Implies (a b : Prop) := a → b
 
-alias not_not_intro ← non_contradictory_intro
+/-- Implication `→` is transitive. If `P → Q` and `Q → R` then `P → R`. -/
+-- FIXME This should have `@[trans]`, but the `trans` attributed PR'd in #253 rejects it.
+@[deprecated] theorem Implies.trans {p q r : Prop} (h₁ : p → q) (h₂ : q → r) :
+    p → r := fun hp => h₂ (h₁ hp)
 
-/- eq -/
+/- Not -/
+
+@[deprecated] def NonContradictory (a : Prop) : Prop := ¬¬a
+
+#align non_contradictory_intro not_not_intro
+
+/- Eq -/
 
 alias proofIrrel ← proof_irrel
 alias congrFun ← congr_fun
 alias congrArg ← congr_arg
 
-lemma trans_rel_left {α : Sort u} {a b c : α}
+@[deprecated] theorem trans_rel_left {α : Sort u} {a b c : α}
     (r : α → α → Prop) (h₁ : r a b) (h₂ : b = c) : r a c := h₂ ▸ h₁
 
-lemma trans_rel_right {α : Sort u} {a b c : α}
-    (r : α → α → Prop) (h₁ : a = b) (h₂ : r b c) : r a c := h₁.symm ▸ h₂
+@[deprecated] theorem trans_rel_right {α : Sort u} {a b c : α}
+    (r : α → α → Prop) (h₁ : a = b) (h₂ : r b c) : r a c := h₁ ▸ h₂
 
-lemma not_of_eq_false {p : Prop} (h : p = False) : ¬p := fun hp => h ▸ hp
+theorem not_of_eq_false {p : Prop} (h : p = False) : ¬p := fun hp => h ▸ hp
 
-lemma cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h₂ a := rfl
+theorem cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h₂ a := rfl
 
-/- ne -/
+/- Ne -/
 
-lemma Ne.def {α : Sort u} (a b : α) : (a ≠ b) = ¬ (a = b) := rfl
+theorem Ne.def {α : Sort u} (a b : α) : (a ≠ b) = ¬ (a = b) := rfl
+
+attribute [symm] Ne.symm
+
+/- HEq -/
 
 alias eqRec_heq ← eq_rec_heq
 
-lemma heq_of_eq_rec_left {φ : α → Sort v} {a a' : α} {p₁ : φ a} {p₂ : φ a'} :
-  (e : a = a') → (h₂ : Eq.rec (motive := fun a _ => φ a) p₁ e = p₂) → HEq p₁ p₂
-| rfl, rfl => HEq.rfl
+-- FIXME
+-- attribute [refl] HEq.refl
+-- attribute [symm] HEq.symm
+-- attribute [trans] HEq.trans
+-- attribute [trans] heq_of_eq_of_heq
 
-lemma heq_of_eq_rec_right {φ : α → Sort v} {a a' : α} {p₁ : φ a} {p₂ : φ a'} :
-  (e : a' = a) → (h₂ : p₁ = Eq.rec (motive := fun a _ => φ a) p₂ e) → HEq p₁ p₂
-| rfl, rfl => HEq.rfl
+theorem heq_of_eq_rec_left {φ : α → Sort v} {a a' : α} {p₁ : φ a} {p₂ : φ a'} :
+    (e : a = a') → (h₂ : Eq.rec (motive := fun a _ => φ a) p₁ e = p₂) → HEq p₁ p₂
+  | rfl, rfl => HEq.rfl
 
-lemma of_heq_true (h : HEq a True) : a := of_eq_true (eq_of_heq h)
+theorem heq_of_eq_rec_right {φ : α → Sort v} {a a' : α} {p₁ : φ a} {p₂ : φ a'} :
+    (e : a' = a) → (h₂ : p₁ = Eq.rec (motive := fun a _ => φ a) p₂ e) → HEq p₁ p₂
+  | rfl, rfl => HEq.rfl
 
--- TODO eq_rec_compose
+theorem of_heq_true {a : Prop} (h : HEq a True) : a := of_eq_true (eq_of_heq h)
+
+theorem eq_rec_compose {α β φ : Sort u} :
+    ∀ (p₁ : β = φ) (p₂ : α = β) (a : α),
+      (Eq.recOn p₁ (Eq.recOn p₂ a : β) : φ) = Eq.recOn (Eq.trans p₂ p₁) a
+  | rfl, rfl, _ => rfl
 
 /- and -/
 
 variable {a b c d : Prop}
 
-alias And.symm ← And.swap
+#align and.symm And.symm
+#align and.swap And.symm
 
 /- or -/
 
-alias not_not_em ← non_contradictory_em
-alias Or.symm ← Or.swap
+#align non_contradictory_em not_not_em
+#align or.symm Or.symm
+#align or.swap Or.symm
 
 /- xor -/
 
-def xor (a b : Prop) := (a ∧ ¬ b) ∨ (b ∧ ¬ a)
+def Xor' (a b : Prop) := (a ∧ ¬ b) ∨ (b ∧ ¬ a)
+#align xor Xor'
 
 /- iff -/
 
-theorem Iff.elim_left : type_of% @Iff.mp := @Iff.mp
-theorem Iff.elim_right : type_of% @Iff.mpr := @Iff.mpr
-alias not_congr ← not_iff_not_of_iff
-alias not_not_not ← not_non_contradictory_iff_absurd
-alias not_not_not ↔ not_of_not_not_not _
-alias and_assoc ← And.assoc
-alias and_left_comm ← And.left_comm
-alias or_assoc ← Or.assoc
-alias or_left_comm ← Or.left_comm
+#align iff.mp Iff.mp
+#align iff.elim_left Iff.mp
+#align iff.mpr Iff.mpr
+#align iff.elim_right Iff.mpr
+
+-- FIXME
+-- attribute [refl] Iff.refl
+-- attribute [trans] Iff.trans
+-- attribute [symm] Iff.symm
 
 -- This is needed for `calc` to work with `iff`.
 instance : Trans Iff Iff Iff where
   trans := fun p q => p.trans q
 
+#align not_congr not_congr
+#align not_iff_not_of_iff not_congr
+#align not_non_contradictory_iff_absurd not_not_not
+
+alias not_not_not ↔ not_of_not_not_not _
+
+-- FIXME
+-- attribute [congr] not_congr
+
+@[deprecated and_comm] theorem and_comm' (a b) : a ∧ b ↔ b ∧ a := and_comm
+#align and.comm and_comm
+#align and_comm and_comm'
+
+@[deprecated and_assoc] theorem and_assoc' (a b) : (a ∧ b) ∧ c ↔ a ∧ (b ∧ c) := and_assoc
+#align and_assoc and_assoc'
+#align and.assoc and_assoc
+
+#align and.left_comm and_left_comm
+
+#align and_iff_left and_iff_leftₓ -- reorder implicits
+
+-- FIXME: remove _iff and add _eq for the lean 4 core versions
+theorem and_true_iff : p ∧ True ↔ p := iff_of_eq (and_true _)
+#align and_true and_true_iff
+theorem true_and_iff : True ∧ p ↔ p := iff_of_eq (true_and _)
+#align true_and true_and_iff
+theorem and_false_iff : p ∧ False ↔ False := iff_of_eq (and_false _)
+#align and_false and_false_iff
+theorem false_and_iff : False ∧ p ↔ False := iff_of_eq (false_and _)
+#align false_and false_and_iff
+#align not_and_self not_and_self_iff
+#align and_not_self and_not_self_iff
+theorem and_self_iff : p ∧ p ↔ p := iff_of_eq (and_self _)
+#align and_self and_self_iff
+
+#align or.imp Or.impₓ -- reorder implicits
+
+#align and.elim And.elimₓ
+#align iff.elim Iff.elimₓ
+#align imp_congr imp_congrₓ
+#align imp_congr_ctx imp_congr_ctxₓ
+#align imp_congr_right imp_congr_rightₓ
+
+#align eq_true_intro eq_true
+#align eq_false_intro eq_false
+#align eq_false eq_false_eq
+#align eq_true eq_true_eq
+
+@[deprecated or_comm] theorem or_comm' (a b) : a ∨ b ↔ b ∨ a := or_comm
+#align or.comm or_comm
+#align or_comm or_comm'
+
+@[deprecated or_assoc] theorem or_assoc' (a b) : (a ∨ b) ∨ c ↔ a ∨ (b ∨ c) := or_assoc
+#align or.assoc or_assoc
+#align or_assoc or_assoc'
+
+#align or_left_comm or_left_comm
+#align or.left_comm or_left_comm
+
+#align or_iff_left_of_imp or_iff_left_of_impₓ -- reorder implicits
+
+theorem true_or_iff : True ∨ p ↔ True := iff_of_eq (true_or _)
+#align true_or true_or_iff
+theorem or_true_iff : p ∨ True ↔ True := iff_of_eq (or_true _)
+#align or_true or_true_iff
+theorem false_or_iff : False ∨ p ↔ p := iff_of_eq (false_or _)
+#align false_or false_or_iff
+theorem or_false_iff : p ∨ False ↔ p := iff_of_eq (or_false _)
+#align or_false or_false_iff
+theorem or_self_iff : p ∨ p ↔ p := iff_of_eq (or_self _)
+#align or_self or_self_iff
+
+theorem not_or_of_not : ¬a → ¬b → ¬(a ∨ b) := fun h1 h2 => not_or.2 ⟨h1, h2⟩
+#align not_or not_or_of_not
+
+theorem iff_true_iff : (a ↔ True) ↔ a := iff_of_eq (iff_true _)
+#align iff_true iff_true_iff
+theorem true_iff_iff : (True ↔ a) ↔ a := iff_of_eq (true_iff _)
+#align true_iff true_iff_iff
+
+theorem iff_false_iff : (a ↔ False) ↔ ¬a := iff_of_eq (iff_false _)
+#align iff_false iff_false_iff
+
+theorem false_iff_iff : (False ↔ a) ↔ ¬a := iff_of_eq (false_iff _)
+#align false_iff false_iff_iff
+
+theorem iff_self_iff (a : Prop) : (a ↔ a) ↔ True := iff_of_eq (iff_self _)
+#align iff_self iff_self_iff
+
+#align iff_congr iff_congrₓ -- reorder implicits
+
+#align implies_true_iff imp_true_iff
+#align false_implies_iff false_imp_iff
+#align true_implies_iff true_imp_iff
+
+#align Exists Exists -- otherwise it would get the name ExistsCat
+
+-- TODO
+-- attribute [intro] Exists.intro
+
 /- exists unique -/
 
 def ExistsUnique (p : α → Prop) := ∃ x, p x ∧ ∀ y, p y → y = x
 
-open Lean in
+open Lean TSyntax.Compat in
 macro "∃! " xs:explicitBinders ", " b:term : term => expandExplicitBinders ``ExistsUnique xs b
 
 /-- Pretty-printing for `ExistsUnique`, following the same pattern as pretty printing
     for `Exists`. -/
-@[appUnexpander ExistsUnique] def unexpandExistsUnique : Lean.PrettyPrinter.Unexpander
+@[app_unexpander ExistsUnique] def unexpandExistsUnique : Lean.PrettyPrinter.Unexpander
   | `($(_) fun $x:ident => ∃! $xs:binderIdent*, $b) => `(∃! $x:ident $xs:binderIdent*, $b)
   | `($(_) fun $x:ident => $b)                      => `(∃! $x:ident, $b)
   | `($(_) fun ($x:ident : $t) => $b)               => `(∃! ($x:ident : $t), $b)
   | _                                               => throw ()
 
-lemma ExistsUnique.intro {p : α → Prop} (w : α)
-  (h₁ : p w) (h₂ : ∀ y, p y → y = w) : ∃! x, p x := ⟨w, h₁, h₂⟩
+-- @[intro] -- TODO
+theorem ExistsUnique.intro {p : α → Prop} (w : α)
+    (h₁ : p w) (h₂ : ∀ y, p y → y = w) : ∃! x, p x := ⟨w, h₁, h₂⟩
 
-lemma ExistsUnique.elim {α : Sort u} {p : α → Prop} {b : Prop}
+theorem ExistsUnique.elim {α : Sort u} {p : α → Prop} {b : Prop}
     (h₂ : ∃! x, p x) (h₁ : ∀ x, p x → (∀ y, p y → y = x) → b) : b :=
-Exists.elim h₂ (λ w hw => h₁ w (And.left hw) (And.right hw))
+  Exists.elim h₂ (λ w hw => h₁ w (And.left hw) (And.right hw))
 
-lemma exists_unique_of_exists_of_unique {α : Sort u} {p : α → Prop}
+theorem exists_unique_of_exists_of_unique {α : Sort u} {p : α → Prop}
     (hex : ∃ x, p x) (hunique : ∀ y₁ y₂, p y₁ → p y₂ → y₁ = y₂) : ∃! x, p x :=
-Exists.elim hex (λ x px => ExistsUnique.intro x px (λ y (h : p y) => hunique y x h px))
+  Exists.elim hex (λ x px => ExistsUnique.intro x px (λ y (h : p y) => hunique y x h px))
 
-lemma exists_of_exists_unique {α : Sort u} {p : α → Prop} (h : ∃! x, p x) : ∃ x, p x :=
-Exists.elim h (λ x hx => ⟨x, And.left hx⟩)
+theorem ExistsUnique.exists {p : α → Prop} : (∃! x, p x) → ∃ x, p x | ⟨x, h, _⟩ => ⟨x, h⟩
+#align exists_of_exists_unique ExistsUnique.exists
 
-lemma unique_of_exists_unique {α : Sort u} {p : α → Prop}
+theorem ExistsUnique.unique {α : Sort u} {p : α → Prop}
     (h : ∃! x, p x) {y₁ y₂ : α} (py₁ : p y₁) (py₂ : p y₂) : y₁ = y₂ :=
-let ⟨_, _, hy⟩ := h; (hy _ py₁).trans (hy _ py₂).symm
+  let ⟨_, _, hy⟩ := h; (hy _ py₁).trans (hy _ py₂).symm
+#align unique_of_exists_unique ExistsUnique.unique
 
 /- exists, forall, exists unique congruences -/
 
-alias Exists.imp ← exists_imp_exists
+-- TODO
+-- attribute [congr] forall_congr'
+-- attribute [congr] exists_congr'
+#align forall_congr forall_congr'
 
-lemma exists_unique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃! a, p a) ↔ ∃! a, q a :=
-exists_congr fun _ => and_congr (h _) $ forall_congr' fun _ => imp_congr_left (h _)
+#align Exists.imp Exists.imp
+#align exists_imp_exists Exists.imp
+
+-- @[congr]
+theorem exists_unique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃! a, p a) ↔ ∃! a, q a :=
+  exists_congr fun _ => and_congr (h _) $ forall_congr' fun _ => imp_congr_left (h _)
 
 /- decidable -/
 
+#align decidable.to_bool Decidable.decide
+
+theorem decide_True' (h : Decidable True) : decide True = true := by simp
+#align to_bool_true_eq_tt decide_True'
+
+theorem decide_False' (h : Decidable False) : decide False = false := by simp
+#align to_bool_false_eq_ff decide_False'
+
 namespace Decidable
-  variable {p q : Prop}
 
-  -- TODO: rec_on_true and rec_on_false
+def recOn_true [h : Decidable p] {h₁ : p → Sort u} {h₂ : ¬p → Sort u}
+    (h₃ : p) (h₄ : h₁ h₃) : Decidable.recOn h h₂ h₁ :=
+  cast (by match h with | .isTrue _ => rfl) h₄
+#align decidable.rec_on_true Decidable.recOn_true
 
-  alias byCases ← by_cases
-  alias byContradiction ← by_contradiction
-  alias not_not ← not_not_iff
+def recOn_false [h : Decidable p] {h₁ : p → Sort u} {h₂ : ¬p → Sort u} (h₃ : ¬p) (h₄ : h₂ h₃) :
+    Decidable.recOn h h₂ h₁ :=
+  cast (by match h with | .isFalse _ => rfl) h₄
+#align decidable.rec_on_false Decidable.recOn_false
+
+alias byCases ← by_cases
+alias byContradiction ← by_contradiction
+alias not_not ← not_not_iff
+
+@[deprecated not_or] theorem not_or_iff_and_not (p q) [Decidable p] [Decidable q] :
+    ¬(p ∨ q) ↔ ¬p ∧ ¬q := not_or
 
 end Decidable
 
-section
-  variable {p q : Prop}
+#align decidable_of_decidable_of_iff decidable_of_decidable_of_iff
+#align decidable_of_decidable_of_eq decidable_of_decidable_of_eq
+#align or.by_cases Or.by_cases
 
-  instance [Decidable p] [Decidable q] : Decidable (xor p q) :=
-  if hp : p then
-    if hq : q then isFalse (Or.rec (λ ⟨_, h⟩ => h hq : ¬(p ∧ ¬ q)) (λ ⟨_, h⟩ => h hp : ¬(q ∧ ¬ p)))
-    else isTrue $ Or.inl ⟨hp, hq⟩
-  else
-    if hq : q then isTrue $ Or.inr ⟨hq, hp⟩
-    else isFalse (Or.rec (λ ⟨h, _⟩ => hp h : ¬(p ∧ ¬ q)) (λ ⟨h, _⟩ => hq h : ¬(q ∧ ¬ p)))
-end
+instance [Decidable p] [Decidable q] : Decidable (Xor' p q) := inferInstanceAs (Decidable (Or ..))
 
-def is_dec_eq {α : Sort u} (p : α → α → Bool) : Prop   := ∀ ⦃x y : α⦄, p x y = true → x = y
-def is_dec_refl {α : Sort u} (p : α → α → Bool) : Prop := ∀ x, p x x = true
+def IsDecEq {α : Sort u} (p : α → α → Bool) : Prop := ∀ ⦃x y : α⦄, p x y = true → x = y
+def IsDecRefl {α : Sort u} (p : α → α → Bool) : Prop := ∀ x, p x x = true
 
-def decidable_eq_of_bool_pred {α : Sort u} {p : α → α → Bool} (h₁ : is_dec_eq p)
-    (h₂ : is_dec_refl p) : DecidableEq α :=
-λ (x y : α) =>
- if hp : p x y = true then isTrue (h₁ hp)
- else isFalse (λ hxy : x = y => absurd (h₂ y) (by rwa [hxy] at hp))
+def decidable_eq_of_bool_pred {α : Sort u} {p : α → α → Bool} (h₁ : IsDecEq p)
+    (h₂ : IsDecRefl p) : DecidableEq α
+  | x, y =>
+    if hp : p x y = true then isTrue (h₁ hp)
+    else isFalse (λ hxy : x = y => absurd (h₂ y) (by rwa [hxy] at hp))
+#align decidable_eq_of_bool_pred decidable_eq_of_bool_pred
 
-lemma decidable_eq_inl_refl {α : Sort u} [h : DecidableEq α] (a : α) : h a a = isTrue (Eq.refl a) :=
-match (h a a) with
-| isTrue _  => rfl
-| isFalse n => absurd rfl n
+theorem decidable_eq_inl_refl {α : Sort u} [h : DecidableEq α] (a : α) :
+    h a a = isTrue (Eq.refl a) :=
+  match h a a with
+  | isTrue _ => rfl
 
-lemma decidable_eq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α} :
-    ∀ n : a ≠ b, h a b = isFalse n :=
-λ n =>
-match (h a b) with
-| isTrue e   => absurd e n
-| isFalse n₁ => proof_irrel n n₁ ▸ Eq.refl (isFalse n)
+theorem decidable_eq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α}
+    (n : a ≠ b) : h a b = isFalse n :=
+  match h a b with
+  | isFalse _ => rfl
+
+#align inhabited.default Inhabited.default
+#align arbitrary Inhabited.default
+
+-- see Note [lower instance priority]
+@[simp]
+instance (priority := 100) nonempty_of_inhabited [Inhabited α] : Nonempty α :=
+⟨default⟩
 
 /- subsingleton -/
 
--- TODO: rec_subsingleton
+theorem rec_subsingleton {p : Prop} [h : Decidable p] {h₁ : p → Sort u} {h₂ : ¬p → Sort u}
+    [h₃ : ∀ h : p, Subsingleton (h₁ h)] [h₄ : ∀ h : ¬p, Subsingleton (h₂ h)] :
+    Subsingleton (Decidable.recOn h h₂ h₁) :=
+  match h with
+  | isTrue h => h₃ h
+  | isFalse h => h₄ h
 
-lemma imp_of_if_pos {c t e : Prop} [Decidable c] (h : ite c t e) : c → t :=
-by intro hc
-   have hp : ite c t e = t := if_pos hc
-   rwa [hp] at h
+@[deprecated ite_self]
+theorem if_t_t (c : Prop) [Decidable c] {α : Sort u} (t : α) : ite c t t = t := ite_self _
 
-lemma imp_of_if_neg {c t e : Prop} [Decidable c] (h : ite c t e) : ¬c → e :=
-by intro hnc
-   have hn : ite c t e = e := if_neg hnc
-   rwa [hn] at h
+theorem imp_of_if_pos {c t e : Prop} [Decidable c] (h : ite c t e) (hc : c) : t :=
+  by have := if_pos hc ▸ h; exact this
+#align implies_of_if_pos imp_of_if_pos
 
-lemma if_ctx_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : Decidable c]
-                   {x y u v : α}
-                   (h_c : b ↔ c) (h_t : c → x = u) (h_e : ¬c → y = v) :
-        ite b x y = ite c u v :=
-match dec_b, dec_c with
-| isFalse _,  isFalse h₂ => h_e h₂
-| isTrue _,   isTrue h₂  => h_t h₂
-| isFalse h₁, isTrue h₂  => absurd h₂ (Iff.mp (not_iff_not_of_iff h_c) h₁)
-| isTrue h₁,  isFalse h₂ => absurd h₁ (Iff.mpr (not_iff_not_of_iff h_c) h₂)
+theorem imp_of_if_neg {c t e : Prop} [Decidable c] (h : ite c t e) (hnc : ¬c) : e :=
+  by have := if_neg hnc ▸ h; exact this
+#align implies_of_if_neg imp_of_if_neg
 
-lemma if_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : Decidable c]
-               {x y u v : α}
-               (h_c : b ↔ c) (h_t : x = u) (h_e : y = v) :
-        ite b x y = ite c u v :=
-@if_ctx_congr α b c dec_b dec_c x y u v h_c (λ _ => h_t) (λ _ => h_e)
+theorem if_ctx_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : Decidable c]
+    {x y u v : α} (h_c : b ↔ c) (h_t : c → x = u) (h_e : ¬c → y = v) : ite b x y = ite c u v :=
+  match dec_b, dec_c with
+  | isFalse _,  isFalse h₂ => h_e h₂
+  | isTrue _,   isTrue h₂  => h_t h₂
+  | isFalse h₁, isTrue h₂  => absurd h₂ (Iff.mp (not_congr h_c) h₁)
+  | isTrue h₁,  isFalse h₂ => absurd h₁ (Iff.mpr (not_congr h_c) h₂)
 
-lemma if_ctx_congr_prop {b c x y u v : Prop} [dec_b : Decidable b] [dec_c : Decidable c]
-                      (h_c : b ↔ c) (h_t : c → (x ↔ u)) (h_e : ¬c → (y ↔ v)) :
-        ite b x y ↔ ite c u v :=
-match dec_b, dec_c with
-| isFalse _,  isFalse h₂ => h_e h₂
-| isTrue _,   isTrue h₂  => h_t h₂
-| isFalse h₁, isTrue h₂  => absurd h₂ (Iff.mp (not_iff_not_of_iff h_c) h₁)
-| isTrue h₁,  isFalse h₂ => absurd h₁ (Iff.mpr (not_iff_not_of_iff h_c) h₂)
+theorem if_congr {α : Sort u} {b c : Prop} [Decidable b] [Decidable c]
+    {x y u v : α} (h_c : b ↔ c) (h_t : x = u) (h_e : y = v) : ite b x y = ite c u v :=
+  if_ctx_congr h_c (λ _ => h_t) (λ _ => h_e)
 
-lemma if_congr_prop {b c x y u v : Prop} [Decidable b] [Decidable c]
-                    (h_c : b ↔ c) (h_t : x ↔ u) (h_e : y ↔ v) :
-        ite b x y ↔ ite c u v :=
-if_ctx_congr_prop h_c (λ _ => h_t) (λ _ => h_e)
+theorem if_ctx_congr_prop {b c x y u v : Prop} [dec_b : Decidable b] [dec_c : Decidable c]
+    (h_c : b ↔ c) (h_t : c → (x ↔ u)) (h_e : ¬c → (y ↔ v)) : ite b x y ↔ ite c u v :=
+  match dec_b, dec_c with
+  | isFalse _,  isFalse h₂ => h_e h₂
+  | isTrue _,   isTrue h₂  => h_t h₂
+  | isFalse h₁, isTrue h₂  => absurd h₂ (Iff.mp (not_congr h_c) h₁)
+  | isTrue h₁,  isFalse h₂ => absurd h₁ (Iff.mpr (not_congr h_c) h₂)
 
-lemma if_ctx_simp_congr_prop {b c x y u v : Prop} [dec_b : Decidable b]
-                               (h_c : b ↔ c) (h_t : c → (x ↔ u)) (h_e : ¬c → (y ↔ v)) :
-        ite b x y ↔ (@ite Prop c (decidable_of_decidable_of_iff h_c) u v) :=
-@if_ctx_congr_prop b c x y u v dec_b (decidable_of_decidable_of_iff h_c) h_c h_t h_e
+-- @[congr]
+theorem if_congr_prop {b c x y u v : Prop} [Decidable b] [Decidable c] (h_c : b ↔ c) (h_t : x ↔ u)
+    (h_e : y ↔ v) : ite b x y ↔ ite c u v :=
+  if_ctx_congr_prop h_c (λ _ => h_t) (λ _ => h_e)
 
-lemma if_simp_congr_prop {b c x y u v : Prop} [dec_b : Decidable b]
-                           (h_c : b ↔ c) (h_t : x ↔ u) (h_e : y ↔ v) :
-        ite b x y ↔ (@ite Prop c (decidable_of_decidable_of_iff h_c) u v) :=
-@if_ctx_simp_congr_prop b c x y u v dec_b h_c (λ _ => h_t) (λ _ => h_e)
+theorem if_ctx_simp_congr_prop {b c x y u v : Prop} [Decidable b] (h_c : b ↔ c) (h_t : c → (x ↔ u))
+    (h_e : ¬c → (y ↔ v)) : ite b x y ↔ ite c (h := decidable_of_decidable_of_iff h_c) u v :=
+  if_ctx_congr_prop (dec_c := decidable_of_decidable_of_iff h_c) h_c h_t h_e
 
-lemma dif_ctx_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : Decidable c]
-                    {x : b → α} {u : c → α} {y : ¬b → α} {v : ¬c → α}
-                    (h_c : b ↔ c)
-                    (h_t : ∀ (h : c),    x (Iff.mpr h_c h)                      = u h)
-                    (h_e : ∀ (h : ¬c),   y (Iff.mpr (not_iff_not_of_iff h_c) h) = v h) :
-        (@dite α b dec_b x y) = (@dite α c dec_c u v) :=
-match dec_b, dec_c with
-| isFalse _,  isFalse h₂ => h_e h₂
-| isTrue _,   isTrue h₂  => h_t h₂
-| isFalse h₁, isTrue h₂  => absurd h₂ (Iff.mp (not_iff_not_of_iff h_c) h₁)
-| isTrue h₁,  isFalse h₂ => absurd h₁ (Iff.mpr (not_iff_not_of_iff h_c) h₂)
+theorem if_simp_congr_prop {b c x y u v : Prop} [Decidable b] (h_c : b ↔ c) (h_t : x ↔ u)
+    (h_e : y ↔ v) : ite b x y ↔ (ite c (h := decidable_of_decidable_of_iff h_c) u v) :=
+  if_ctx_simp_congr_prop h_c (λ _ => h_t) (λ _ => h_e)
 
-lemma dif_ctx_simp_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b]
-                         {x : b → α} {u : c → α} {y : ¬b → α} {v : ¬c → α}
-                         (h_c : b ↔ c)
-                         (h_t : ∀ (h : c),    x (Iff.mpr h_c h)                      = u h)
-                         (h_e : ∀ (h : ¬c),   y (Iff.mpr (not_iff_not_of_iff h_c) h) = v h) :
-        (@dite α b dec_b x y) = (@dite α c (decidable_of_decidable_of_iff h_c) u v) :=
-@dif_ctx_congr α b c dec_b (decidable_of_decidable_of_iff h_c) x u y v h_c h_t h_e
+-- @[congr]
+theorem dif_ctx_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : Decidable c]
+    {x : b → α} {u : c → α} {y : ¬b → α} {v : ¬c → α}
+    (h_c : b ↔ c) (h_t : ∀ h : c, x (Iff.mpr h_c h) = u h)
+    (h_e : ∀ h : ¬c, y (Iff.mpr (not_congr h_c) h) = v h) :
+    @dite α b dec_b x y = @dite α c dec_c u v :=
+  match dec_b, dec_c with
+  | isFalse _, isFalse h₂ => h_e h₂
+  | isTrue _, isTrue h₂ => h_t h₂
+  | isFalse h₁, isTrue h₂ => absurd h₂ (Iff.mp (not_congr h_c) h₁)
+  | isTrue h₁, isFalse h₂ => absurd h₁ (Iff.mpr (not_congr h_c) h₂)
 
-def as_true (c : Prop) [Decidable c] : Prop :=
-if c then True else False
+theorem dif_ctx_simp_congr {α : Sort u} {b c : Prop} [Decidable b]
+    {x : b → α} {u : c → α} {y : ¬b → α} {v : ¬c → α}
+    (h_c : b ↔ c) (h_t : ∀ h : c, x (Iff.mpr h_c h) = u h)
+    (h_e : ∀ h : ¬c, y (Iff.mpr (not_congr h_c) h) = v h) :
+    dite b x y = dite c (h := decidable_of_decidable_of_iff h_c) u v :=
+  dif_ctx_congr (dec_c := decidable_of_decidable_of_iff h_c) h_c h_t h_e
 
-def as_false (c : Prop) [Decidable c] : Prop :=
-if c then False else True
+def AsTrue (c : Prop) [Decidable c] : Prop := if c then True else False
 
-lemma of_as_true {c : Prop} [h₁ : Decidable c] (h₂ : as_true c) : c :=
-match h₁, h₂ with
-| isTrue h_c, _ => h_c
-| isFalse _, h₂ => False.elim h₂
+def AsFalse (c : Prop) [Decidable c] : Prop := if c then False else True
+
+theorem AsTrue.get {c : Prop} [h₁ : Decidable c] (_ : AsTrue c) : c :=
+  match h₁ with
+  | isTrue h_c => h_c
+#align of_as_true AsTrue.get
+
+#align ulift ULift
+#align plift PLift
 
 /- Equalities for rewriting let-expressions -/
-lemma let_value_eq {α : Sort u} {β : Sort v} {a₁ a₂ : α} (b : α → β) :
-                   a₁ = a₂ → (let x : α := a₁; b x) = (let x : α := a₂; b x) :=
-λ h => Eq.recOn (motive := (λ a _ => (let x : α := a₁; b x) = (let x : α := a; b x))) h rfl
+theorem let_value_eq {α : Sort u} {β : Sort v} {a₁ a₂ : α} (b : α → β)
+    (h : a₁ = a₂) : (let x : α := a₁; b x) = (let x : α := a₂; b x) := congrArg b h
 
-lemma let_value_heq {α : Sort v} {β : α → Sort u} {a₁ a₂ : α} (b : ∀ x : α, β x) :
-                    a₁ = a₂ → HEq (let x : α := a₁; b x) (let x : α := a₂; b x) :=
-by intro h; rw [h]
+theorem let_value_heq {α : Sort v} {β : α → Sort u} {a₁ a₂ : α} (b : ∀ x : α, β x)
+    (h : a₁ = a₂) : HEq (let x : α := a₁; b x) (let x : α := a₂; b x) := by cases h; rfl
+#align let_value_heq let_value_heq -- FIXME: mathport thinks this is a dubious translation
 
-lemma let_body_eq {α : Sort v} {β : α → Sort u} (a : α) {b₁ b₂ : ∀ x : α, β x} :
-                  (∀ x, b₁ x = b₂ x) → (let x : α := a; b₁ x) = (let x : α := a; b₂ x) :=
-by intro h; rw [h]
+theorem let_body_eq {α : Sort v} {β : α → Sort u} (a : α) {b₁ b₂ : ∀ x : α, β x}
+    (h : ∀ x, b₁ x = b₂ x) : (let x : α := a; b₁ x) = (let x : α := a; b₂ x) := by exact h _ ▸ rfl
+#align let_value_eq let_value_eq -- FIXME: mathport thinks this is a dubious translation
 
-lemma let_eq {α : Sort v} {β : Sort u} {a₁ a₂ : α} {b₁ b₂ : α → β} :
-             a₁ = a₂ → (∀ x, b₁ x = b₂ x) → (let x : α := a₁; b₁ x) = (let x : α := a₂; b₂ x) :=
-λ h₁ h₂ => Eq.recOn (motive := λ a _ => (let x := a₁; b₁ x) = (let x := a; b₂ x)) h₁ (h₂ a₁)
+theorem let_eq {α : Sort v} {β : Sort u} {a₁ a₂ : α} {b₁ b₂ : α → β}
+    (h₁ : a₁ = a₂) (h₂ : ∀ x, b₁ x = b₂ x) :
+    (let x : α := a₁; b₁ x) = (let x : α := a₂; b₂ x) := by simp [h₁, h₂]
+#align let_eq let_eq -- FIXME: mathport thinks this is a dubious translation
 
-section relation
+section Relation
 
 variable {α : Sort u} {β : Sort v} (r : β → β → Prop)
 
@@ -279,92 +435,77 @@ variable {α : Sort u} {β : Sort v} (r : β → β → Prop)
 local infix:50 " ≺ " => r
 
 /-- A reflexive relation relates every element to itself. -/
-def reflexive := ∀ x, x ≺ x
+def Reflexive := ∀ x, x ≺ x
 
 /-- A relation is symmetric if `x ≺ y` implies `y ≺ x`. -/
-def symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
+def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
 
 /-- A relation is transitive if `x ≺ y` and `y ≺ z` together imply `x ≺ z`. -/
-def transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
-
-/-- An equivalance is a reflexive, symmetric, and transitive relation. -/
-def equivalence := reflexive r ∧ symmetric r ∧ transitive r
+def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
 
 /-- A relation is total if for all `x` and `y`, either `x ≺ y` or `y ≺ x`. -/
-def total := ∀ x y, x ≺ y ∨ y ≺ x
+def Total := ∀ x y, x ≺ y ∨ y ≺ x
 
-lemma mk_equivalence (rfl : reflexive r) (symm : symmetric r) (trans : transitive r) :
-  equivalence r :=
-⟨rfl, symm, trans⟩
+#align mk_equivalence Equivalence.mk
 
 /-- Irreflexive means "not reflexive". -/
-def irreflexive := ∀ x, ¬ x ≺ x
+def Irreflexive := ∀ x, ¬ x ≺ x
 
 /-- A relation is antisymmetric if `x ≺ y` and `y ≺ x` together imply that `x = y`. -/
-def anti_symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
+def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
 
 /-- An empty relation does not relate any elements. -/
 @[nolint unusedArguments]
-def empty_relation := λ _ _ : α => False
+def EmptyRelation := λ _ _ : α => False
 
-/-- `q` is a subrelation of `r` if for all `x` and `y`, `q x y` implies `r x y` -/
-def subrelation (q r : β → β → Prop) := ∀ ⦃x y⦄, q x y → r x y
+theorem InvImage.trans (f : α → β) (h : Transitive r) : Transitive (InvImage r f) :=
+  fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) => h h₁ h₂
 
-/-- Given `f : α → β`, a relation on `β` induces a relation on `α`.-/
-def inv_image (f : α → β) : α → α → Prop :=
-λ a₁ a₂ => f a₁ ≺ f a₂
+theorem InvImage.irreflexive (f : α → β) (h : Irreflexive r) : Irreflexive (InvImage r f) :=
+  fun (a : α) (h₁ : InvImage r f a a) => h (f a) h₁
 
-lemma inv_image.trans (f : α → β) (h : transitive r) : transitive (inv_image r f) :=
-λ (a₁ a₂ a₃ : α) (h₁ : inv_image r f a₁ a₂) (h₂ : inv_image r f a₂ a₃) => h h₁ h₂
+end Relation
 
-lemma inv_image.irreflexive (f : α → β) (h : irreflexive r) : irreflexive (inv_image r f) :=
-λ (a : α) (h₁ : inv_image r f a a) => h (f a) h₁
+section Binary
 
-end relation
-
-section binary
-
-variable {α : Type u} {β : Type v}
-variable (f : α → α → α)
-variable (inv : α → α)
-variable (one : α)
+variable {α : Type u} {β : Type v} (f : α → α → α) (inv : α → α) (one : α)
 
 /-- Local notation for `f`, high priority to avoid ambiguity with `HMul.hMul`. -/
 local infix:70 (priority := high) " * " => f
 
 /-- Local notation for `inv`, high priority to avoid ambiguity with `Inv.inv`. -/
-local postfix:100 (priority := high) "⁻¹"  => inv
+local postfix:100 (priority := high) "⁻¹" => inv
 
 variable (g : α → α → α)
 
 /-- Local notation for `g`, high priority to avoid ambiguity with `HAdd.hAdd`. -/
 local infix:65 (priority := high) " + " => g
 
-def commutative        := ∀ a b, a * b = b * a
-def associative        := ∀ a b c, (a * b) * c = a * (b * c)
-def left_identity      := ∀ a, one * a = a
-def right_identity     := ∀ a, a * one = a
-def RightInverse       := ∀ a, a * a⁻¹ = one
-def left_cancelative   := ∀ a b c, a * b = a * c → b = c
-def right_cancelative  := ∀ a b c, a * b = c * b → a = c
-def left_distributive  := ∀ a b c, a * (b + c) = a * b + a * c
-def right_distributive := ∀ a b c, (a + b) * c = a * c + b * c
-def right_commutative (h : β → α → β) := ∀ b a₁ a₂, h (h b a₁) a₂ = h (h b a₂) a₁
-def left_commutative  (h : α → β → β) := ∀ a₁ a₂ b, h a₁ (h a₂ b) = h a₂ (h a₁ b)
+def Commutative       := ∀ a b, a * b = b * a
+def Associative       := ∀ a b c, (a * b) * c = a * (b * c)
+def LeftIdentity      := ∀ a, one * a = a
+def RightIdentity     := ∀ a, a * one = a
+def RightInverse      := ∀ a, a * a⁻¹ = one
+def LeftCancelative   := ∀ a b c, a * b = a * c → b = c
+def RightCancelative  := ∀ a b c, a * b = c * b → a = c
+def LeftDistributive  := ∀ a b c, a * (b + c) = a * b + a * c
+def RightDistributive := ∀ a b c, (a + b) * c = a * c + b * c
+def RightCommutative (h : β → α → β) := ∀ b a₁ a₂, h (h b a₁) a₂ = h (h b a₂) a₁
+def LeftCommutative  (h : α → β → β) := ∀ a₁ a₂ b, h a₁ (h a₂ b) = h a₂ (h a₁ b)
 
-lemma left_comm : commutative f → associative f → left_commutative f :=
-λ hcomm hassoc a b c => calc
-  a*(b*c) = (a*b)*c  := Eq.symm (hassoc a b c)
-        _ = (b*a)*c  := hcomm a b ▸ rfl
-        _ = b*(a*c)  := hassoc b a c
+theorem left_comm : Commutative f → Associative f → LeftCommutative f :=
+  fun hcomm hassoc a b c => calc
+    a*(b*c) = (a*b)*c := Eq.symm (hassoc a b c)
+          _ = (b*a)*c := hcomm a b ▸ rfl
+          _ = b*(a*c) := hassoc b a c
 
-lemma right_comm : commutative f → associative f → right_commutative f :=
-λ hcomm hassoc a b c => calc
-  (a*b)*c = a*(b*c) := hassoc a b c
-        _ = a*(c*b) := hcomm b c ▸ rfl
-        _ = (a*c)*b := Eq.symm (hassoc a c b)
+theorem right_comm : Commutative f → Associative f → RightCommutative f :=
+  fun hcomm hassoc a b c => calc
+    (a*b)*c = a*(b*c) := hassoc a b c
+          _ = a*(c*b) := hcomm b c ▸ rfl
+          _ = (a*c)*b := Eq.symm (hassoc a c b)
 
-end binary
+end Binary
 
 namespace WellFounded
 
@@ -373,7 +514,7 @@ variable {α : Sort u} {C : α → Sort v} {r : α → α → Prop}
 unsafe def fix'.impl (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x :=
   F x fun y _ => impl hwf F y
 
-@[implementedBy fix'.impl]
+@[implemented_by fix'.impl]
 def fix' (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x := hwf.fix F x
 
 end WellFounded

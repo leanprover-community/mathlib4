@@ -5,9 +5,11 @@ local instance [CommSemiring α] : CoeTail Nat α where
 
 example (x y : ℕ) : x + y = y + x := by ring
 example (x y : ℕ) : x + y + y = 2 * y + x := by ring
-example (x y : ℕ) : x + id y = y + id x := by ring
--- example {α} [CommRing α] (x y : α) : x + y + y - x = 2 * y := by ring
+example (x y : ℕ) : x + id y = y + id x := by ring!
+example {α} [CommRing α] (x y : α) : x + y + y - x = 2 * y := by ring
 -- example (x y : ℚ) : x / 2 + x / 2 = x := by ring
+example {α} [CommSemiring α] (x y : α) : (x + y)^2 = x^2 + 2 • x * y + y^2 := by ring
+
 example (x y : ℕ) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by ring
 -- example (x y : ℝ) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by ring
 example {α} [CommSemiring α] (x : α) : (x + 1) ^ 6 = (1 + x) ^ 6 := by ring
@@ -25,9 +27,10 @@ example (n : ℕ) : (n / 2) + (n / 2) = 2 * (n / 2) := by ring
 --   b ^ 2 - 4 * a * c = 4 * a * 0 + b * b - 4 * a * c := by ring
 example {α} [CommSemiring α] (x y z : α) (n : ℕ) :
   (x + y) * (z * (y * y) + (x * x ^ n + (1 + ↑n) * x ^ n * y)) =
-    x * (x * x ^ n) + ((2 + ↑n) * (x * x ^ n) * y + (x * z + (z * y + (1 + ↑n) * x ^ n)) * (y * y)) := by ring
--- example {α} [CommRing α] (a b c d e : α) :
---   (-(a * b) + c + d) * e = (c + (d + -a * b)) * e := by ring
+  x * (x * x ^ n) + ((2 + ↑n) * (x * x ^ n) * y +
+    (x * z + (z * y + (1 + ↑n) * x ^ n)) * (y * y)) := by ring
+example {α} [CommRing α] (a b c d e : α) :
+  (-(a * b) + c + d) * e = (c + (d + -a * b)) * e := by ring
 example (a n s: ℕ) : a * (n - s) = (n - s) * a := by ring
 
 example (A : ℕ) : (2 * A) ^ 2 = (2 * A) ^ 2 := by ring
@@ -46,7 +49,7 @@ example (A : ℕ) : (2 * A) ^ 2 = (2 * A) ^ 2 := by ring
 --   ring
 -- end
 
--- example : (876544 : ℤ) * -1 + (1000000 - 123456) = 0 := by ring
+example : (876544 : ℤ) * -1 + (1000000 - 123456) = 0 := by ring
 
 -- example (x y : ℝ) (hx : x ≠ 0) (hy : y ≠ 0) :
 --   2 * x ^ 3 * 2 / (24 * x) = x ^ 2 / 6 :=
@@ -57,3 +60,7 @@ example (A : ℕ) : (2 * A) ^ 2 = (2 * A) ^ 2 := by ring
 
 -- -- this proof style is not recommended practice
 -- example (A B : ℕ) (H : B * A = 2) : A * B = 2 := by {ring_nf, exact H}
+
+example (n : ℕ) (m : ℤ) : 2^(n+1) * m = 2 * 2^n * m := by ring
+example (a b : ℤ) (n : ℕ) : (a + b)^(n + 2) = (a^2 + b^2 + a * b + b * a) * (a + b)^n := by ring
+example (x y : ℕ) : x + id y = y + id x := by ring!

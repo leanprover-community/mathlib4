@@ -12,37 +12,39 @@ section
 
 variable {α : Type u} [LinearOrder α]
 
-lemma min_le_left (a b : α) : min a b ≤ a :=
-if h : a ≤ b
-then by simp[min, if_pos h, le_refl]
-else by simp[min, if_neg h]
-        exact le_of_not_le h
+lemma min_def (a b : α) : min a b = if a ≤ b then a else b := LinearOrder.min_def ..
 
-lemma min_le_right (a b : α) : min a b ≤ b :=
-if h : a ≤ b
-then by simp[min, if_pos h]; exact h
-else by simp[min, if_neg h, le_refl]
+lemma min_le_left (a b : α) : min a b ≤ a := by
+  if h : a ≤ b
+  then simp [min_def, if_pos h, le_refl]
+  else simp [min_def, if_neg h]; exact le_of_not_le h
 
-lemma le_min {a b c : α} (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b :=
-if h : a ≤ b
-then by simp[min, if_pos h]; exact h₁
-else by simp[min, if_neg h]; exact h₂
+lemma min_le_right (a b : α) : min a b ≤ b := by
+  if h : a ≤ b
+  then simp [min_def, if_pos h]; exact h
+  else simp [min_def, if_neg h, le_refl]
 
-lemma le_max_left (a b : α) : a ≤ max a b :=
-if h : b < a
-then by simp[max, if_pos h, le_refl]
-else by simp[max, if_neg h]
-        exact le_of_not_lt h
+lemma le_min {a b c : α} (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := by
+  if h : a ≤ b
+  then simp [min_def, if_pos h]; exact h₁
+  else simp [min_def, if_neg h]; exact h₂
 
-lemma le_max_right (a b : α) : b ≤ max a b :=
-if h : b < a
-then by simp[max, if_pos h]; exact le_of_lt h
-else by simp[max, if_neg h, le_refl]
+lemma max_def (a b : α) : max a b = if a ≤ b then b else a := LinearOrder.max_def ..
 
-lemma max_le {a b c : α} (h₁ : a ≤ c) (h₂ : b ≤ c) : max a b ≤ c :=
-if h : b < a
-then by simp[max, if_pos h]; exact h₁
-else by simp[max, if_neg h]; exact h₂
+lemma le_max_left (a b : α) : a ≤ max a b := by
+  if h : a ≤ b
+  then simp [max_def, if_pos h]; exact h
+  else simp [max_def, if_neg h, le_refl]
+
+lemma le_max_right (a b : α) : b ≤ max a b := by
+  if h : a ≤ b
+  then simp [max_def, if_pos h]
+  else simp [max_def, if_neg h]; exact le_of_not_le h
+
+lemma max_le {a b c : α} (h₁ : a ≤ c) (h₂ : b ≤ c) : max a b ≤ c := by
+  if h : a ≤ b
+  then simp [max_def, if_pos h]; exact h₂
+  else simp [max_def, if_neg h]; exact h₁
 
 lemma eq_min {a b c : α} (h₁ : c ≤ a) (h₂ : c ≤ b) (h₃ : ∀{d}, d ≤ a → d ≤ b → d ≤ c) :
   c = min a b :=
@@ -58,11 +60,11 @@ by apply eq_min
    . intros d h₁ h₂; apply le_min; apply le_min h₁; apply le_trans h₂; apply min_le_left;
      apply le_trans h₂; apply min_le_right
 
-lemma min_left_comm : @left_commutative α α min :=
+lemma min_left_comm : @LeftCommutative α α min :=
 left_comm min (@min_comm α _) (@min_assoc α _)
 
 @[simp]
-lemma min_self (a : α) : min a a = a := by simp[min]
+lemma min_self (a : α) : min a a = a := by simp [min_def]
 
 lemma min_eq_left {a b : α} (h : a ≤ b) : min a b = a :=
 by apply Eq.symm; apply eq_min (le_refl _) h; intros; assumption
@@ -88,8 +90,7 @@ lemma max_assoc (a b c : α) : max (max a b) c = max a (max b c) := by
 lemma max_left_comm : ∀ (a b c : α), max a (max b c) = max b (max a c) :=
 left_comm max (@max_comm α _) (@max_assoc α _)
 
-@[simp]
-lemma max_self (a : α) : max a a = a := by simp[max]
+@[simp] lemma max_self (a : α) : max a a = a := by simp [max_def]
 
 lemma max_eq_left {a b : α} (h : b ≤ a) : max a b = a :=
 by apply Eq.symm; apply eq_max (le_refl _) h; intros; assumption
