@@ -26,8 +26,6 @@ open Function
 
 namespace Subtype
 
-#align subtype Subtype
-
 variable {α β γ : Sort _} {p q : α → Prop}
 
 /-- See Note [custom simps projection] -/
