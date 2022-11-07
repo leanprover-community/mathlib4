@@ -679,7 +679,7 @@ instance (α : Type u) (β : Type v) [PartialOrder α] [PartialOrder β] :
   PartialOrder (α × β) :=
 { toPreorder := instPreorderProd α β
   le_antisymm := λ _ _ ⟨hac, hbd⟩ ⟨hca, hdb⟩ =>
-    Prod.extₓ (hac.antisymm hca) (hbd.antisymm hdb)
+    Prod.ext' (hac.antisymm hca) (hbd.antisymm hdb)
 }
 
 end Prod
