@@ -42,6 +42,8 @@ import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl
+import Mathlib.Tactic.Relation.Symm
+import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
@@ -211,8 +213,6 @@ namespace Tactic
 /- S -/ syntax "destruct " term : tactic
 /- N -/ syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
 
-/- E -/ syntax (name := symm) "symm" : tactic
-/- E -/ syntax (name := trans) "trans" (ppSpace colGt term)? : tactic
 /- B -/ syntax (name := cc) "cc" : tactic
 
 /- M -/ syntax (name := unfoldProjs) "unfold_projs" (config)? (ppSpace location)? : tactic
@@ -231,8 +231,6 @@ namespace Tactic
 /- E -/ syntax (name := rfl') "rfl'" : tactic
 /- E -/ syntax (name := symm') "symm'" (ppSpace location)? : tactic
 /- E -/ syntax (name := trans') "trans'" (ppSpace term)? : tactic
-
-/- E -/ syntax (name := classical) "classical" : tactic
 
 /- M -/ syntax (name := injectionsAndClear) "injections_and_clear" : tactic
 

@@ -33,9 +33,6 @@ resulting in two subgoals `h : p ⊢` and `h : ¬ p ⊢`.
 macro "by_cases " e:term : tactic =>
   `(tactic| by_cases $(mkIdent `h) : $e)
 
-macro (name := classical!) "classical!" : tactic =>
-  `(tactic| have em := Classical.propDecidable)
-
 syntax "transitivity" (colGt term)? : tactic
 set_option hygiene false in
 macro_rules
