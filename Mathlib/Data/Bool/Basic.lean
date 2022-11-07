@@ -294,6 +294,9 @@ theorem not_or : ∀ a b : Bool, !(a || b) = (!a && !b) := by decide
 theorem not_inj : ∀ {a b : Bool}, !a = !b → a = b := by decide
 #align bool.bnot_inj Bool.not_inj
 
+-- Porting note: having to unfold here is not pretty.
+-- There is a discussion on zulip about this at
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/LinearOrder.20in.20mathlib3.2F4/near/308228493
 instance : LinearOrder Bool where
   le := fun a b => a = false ∨ b = true
   le_refl := by unfold LE.le; decide
