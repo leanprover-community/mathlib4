@@ -184,19 +184,23 @@ lemma eq_not_iff : ∀ {a b : Bool}, a = !b ↔ a ≠ b := by decide
 lemma not_eq_iff : ∀ {a b : Bool}, !a = b ↔ a ≠ b := by decide
 #align bool.bnot_eq_iff Bool.not_eq_iff
 
+-- Porting note: this is a case where our naming scheme is less than ideal.
+-- The two `not`s in this name are different.
+-- For now we're going with consistency at the expense of ambiguity.
 @[simp]
-theorem Not_eq_not : ∀ {a b : Bool}, ¬a = !b ↔ a = b := by decide
-#align bool.not_eq_bnot Bool.Not_eq_not
+theorem not_eq_not : ∀ {a b : Bool}, ¬a = !b ↔ a = b := by decide
+#align bool.not_eq_bnot Bool.not_eq_not
 
+-- Porting note: and here again.
 @[simp]
-theorem Not_not_eq : ∀ {a b : Bool}, ¬(!a) = b ↔ a = b := by decide
-#align bool.bnot_not_eq Bool.Not_not_eq
+theorem not_not_eq : ∀ {a b : Bool}, ¬(!a) = b ↔ a = b := by decide
+#align bool.bnot_not_eq Bool.not_not_eq
 
 theorem ne_not {a b : Bool} : a ≠ !b ↔ a = b :=
-  Not_eq_not
+  not_eq_not
 #align bool.ne_bnot Bool.ne_not
 
-theorem not_ne : ∀ {a b : Bool}, (!a) ≠ b ↔ a = b := Not_not_eq
+theorem not_ne : ∀ {a b : Bool}, (!a) ≠ b ↔ a = b := not_not_eq
 #align bool.bnot_ne Bool.not_ne
 
 lemma not_ne_self : ∀ b : Bool, !b ≠ b := by decide
@@ -208,8 +212,9 @@ lemma self_ne_not : ∀ b : Bool, b ≠ !b := by decide
 lemma eq_or_eq_not : ∀ a b, a = b ∨ a = !b := by decide
 #align bool.eq_or_eq_bnot Bool.eq_or_eq_not
 
-theorem not_iff_Not : ∀ {b : Bool}, !b ↔ ¬b := by simp
-#align bool.bnot_iff_not Bool.not_iff_Not
+-- Porting note: naming issue again: these two `not` are different.
+theorem not_iff_not : ∀ {b : Bool}, !b ↔ ¬b := by simp
+#align bool.bnot_iff_not Bool.not_iff_not
 
 theorem eq_true_of_not_eq_false' {a : Bool} : !a = false → a = true := by
   cases a <;> decide
