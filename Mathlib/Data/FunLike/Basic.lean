@@ -155,13 +155,12 @@ variable {F α β} [i : FunLike F α β]
 -- Porting note: @[nolint dangerous_instance]
 instance (priority := 100) : CoeFun F fun _ => ∀ a : α, β a where coe := FunLike.coe
 
--- Porting note: the next two lemmas presumably aren't needed.
--- @[simp]
--- theorem coe_eq_coe_fn : (FunLike.coe : F → ∀ a : α, β a) = coeFn :=
---   rfl
+@[simp]
+theorem coe_eq_coe_fn : (FunLike.coe : F → ∀ a : α, β a) = (fun f => ↑f) :=
+  rfl
 
--- theorem coe_injective : Function.Injective (coeFn : F → ∀ a : α, β a) :=
---   FunLike.coe_injective'
+theorem coe_injective : Function.Injective (fun f : F => (f : ∀ a : α, β a)) :=
+  FunLike.coe_injective'
 
 @[simp]
 theorem coe_fn_eq {f g : F} : (f : ∀ a : α, β a) = (g : ∀ a : α, β a) ↔ f = g :=
