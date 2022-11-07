@@ -12,8 +12,6 @@ Additional `conv` tactics.
 namespace Mathlib.Tactic.Conv
 open Lean Parser.Tactic Parser.Tactic.Conv
 
-macro "try " t:convSeq : conv => `(conv| first | $t | skip)
-
 syntax (name := convLHS) "conv_lhs" (" at " ident)? (" in " (occs)? term)? " => " convSeq : tactic
 macro_rules
   | `(tactic| conv_lhs $[at $id]? $[in $[$occs]? $pat]? => $seq) =>
@@ -25,6 +23,3 @@ macro_rules
     `(tactic| conv $[at $id]? $[in $[$occs]? $pat]? => rhs; ($seq:convSeq))
 
 macro "run_conv" e:doSeq : conv => `(conv| tactic' => run_tac $e)
-
-macro (name := find) "find " occs:(occs)? pat:term " => " seq:convSeq : conv =>
-  `(conv| conv => pattern $[$occs]? $pat; ($seq:convSeq))

@@ -1,5 +1,21 @@
+/-
+Copyright (c) 2015 Microsoft Corporation. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
+-/
 import Mathlib.Init.Set
 import Mathlib.Data.List.Pairwise
+
+/-!
+# List Permutations
+
+This file introduces the `List.Perm` relation, which is true if two lists are permutations of one
+another.
+
+## Notation
+
+The notation `~` is used for permutation equivalence.
+-/
 
 namespace List
 
@@ -70,13 +86,13 @@ theorem perm_insertNth {x : α} : ∀ {l : List α} {n : Nat}, n ≤ l.length �
 theorem Perm.mem_iff {a : α} {l₁ l₂ : List α} (h : l₁ ~ l₂) : a ∈ l₁ ↔ a ∈ l₂ :=
   Iff.intro (fun m => h.subset m) fun m => h.symm.subset m
 
-/-- The way Lean 4 computes the motive with `elabAsElim` has changed
+/-- The way Lean 4 computes the motive with `elab_as_elim` has changed
 relative to the behaviour of `elab_as_eliminator` in Lean 3.
 See
 https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Potential.20elaboration.20bug.20with.20.60elabAsElim.60/near/299573172
 for an explanation of the change made here relative to mathlib3.
 -/
-@[elabAsElim]
+@[elab_as_elim]
 theorem perm_induction_on
     {P : (l₁ : List α) → (l₂ : List α) → l₁ ~ l₂ → Prop} {l₁ l₂ : List α} (p : l₁ ~ l₂)
     (nil : P [] [] .nil)
@@ -131,7 +147,7 @@ theorem Perm.eq_nil {l : List α} (p : l ~ []) : l = [] := eq_nil_of_length_eq_z
 
 theorem Perm.nil_eq {l : List α} (p : [] ~ l) : [] = l := p.symm.eq_nil.symm
 
-theorem Perm.pairwise_iff {R : α → α → Prop} (S : symmetric R) :
+theorem Perm.pairwise_iff {R : α → α → Prop} (S : Symmetric R) :
     ∀ {l₁ l₂ : List α}, l₁ ~ l₂ → (Pairwise R l₁ ↔ Pairwise R l₂) := by
   suffices ∀ {l₁ l₂}, l₁ ~ l₂ → Pairwise R l₁ → Pairwise R l₂ from
     fun l₁ l₂ p => ⟨this p, this p.symm⟩

@@ -38,13 +38,13 @@ namespace Lean.Parser.Tactic
 open Meta Elab Elab.Tactic
 
 open private getAltNumFields in evalCases ElimApp.evalAlts.go in
-def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array (Name × MVarId)) (withArg : Syntax)
+def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg : Syntax)
     (numEqs := 0) (numGeneralized := 0) (toClear : Array FVarId := #[]) :
     TermElabM (Array MVarId) := do
   let mut names := if withArg.isNone then [] else
     withArg[1].getArgs.map (getNameOfIdent' ·[0]) |>.toList
   let mut subgoals := #[]
-  for (altName, g) in alts do
+  for { name := altName, mvarId := g, .. } in alts do
     let numFields ← getAltNumFields elimInfo altName
     let (altVarNames, names') := names.splitAtD numFields `_
     names := names'
@@ -73,9 +73,11 @@ elab (name := induction') "induction' " tgts:(casesTarget,+)
       let mut s ← getFVarSetToGeneralize targets forbidden
       for v in genArgs do
         if forbidden.contains v then
-          throwError "variable cannot be generalized because target depends on it{indentExpr (mkFVar v)}"
+          throwError ("variable cannot be generalized " ++
+            "because target depends on it{indentExpr (mkFVar v)}")
         if s.contains v then
-          throwError "unnecessary 'generalizing' argument, variable '{mkFVar v}' is generalized automatically"
+          throwError ("unnecessary 'generalizing' argument, " ++
+            "variable '{mkFVar v}' is generalized automatically")
         s := s.insert v
       let (fvarIds, g) ← g.revert (← sortFVarIds s.toArray)
       let result ← withRef tgts <| ElimApp.mkElimApp elimInfo targets (← g.getTag)

@@ -26,6 +26,10 @@ lemma Fin.ext_iff {a b : Fin n} : a = b ↔ a.val = b.val :=
 lemma Fin.size_positive' [Nonempty (Fin n)] : 0 < n :=
   ‹Nonempty (Fin n)›.elim fun i => Fin.size_positive i
 
+@[simp]
+protected theorem Fin.eta (a : Fin n) (h : (a : ℕ) < n) : (⟨(a : ℕ), h⟩ : Fin n) = a := by
+  cases a <;> rfl
+
 lemma zero_lt_of_lt {a : Nat} : ∀ {x : Nat}, x < a -> 0 < a
 | 0, h   => h
 | x+1, h => Nat.lt_trans (Nat.zero_lt_succ x) h
@@ -251,7 +255,9 @@ instance : CommSemiring (Fin n) where
 instance : Neg (Fin n) where
   neg a := ⟨(n - a) % n, Nat.mod_lt _ (lt_of_le_of_lt (Nat.zero_le _) a.isLt)⟩
 
-lemma Fin.neg_def : (-a : Fin n) = ⟨(n - a) % n, Nat.mod_lt _ (lt_of_le_of_lt (Nat.zero_le _) a.isLt)⟩ := rfl
+lemma Fin.neg_def :
+    (-a : Fin n) = ⟨(n - a) % n, Nat.mod_lt _ (lt_of_le_of_lt (Nat.zero_le _) a.isLt)⟩ :=
+  rfl
 
 protected def Fin.ofInt'' : Int → Fin n
   | Int.ofNat a => Fin.ofNat' a Fin.size_positive'
@@ -271,9 +277,6 @@ def Fin.ofInt' : ℤ → Fin n
 
 instance : AddGroupWithOne (Fin n) where
   __ := inferInstanceAs (AddMonoidWithOne (Fin n))
-  gsmul_zero' := by simp [gsmul_rec, nsmul_rec]
-  gsmul_succ' := by simp [gsmul_rec, nsmul_rec, -Int.ofNat_eq_cast]
-  gsmul_neg' := by simp [gsmul_rec, nsmul_rec, -Int.ofNat_eq_cast]
   sub_eq_add_neg := Fin.sub_eq_add_neg
   add_left_neg := Fin.add_left_neg
   intCast := Fin.ofInt'
@@ -307,5 +310,7 @@ instance : LinearOrder (Fin n) where
   le_antisymm := Fin.le_antisymm
   le_total := Fin.le_total
   decidable_le := inferInstance
+  toMin := minOfLe
+  toMax := maxOfLe
 
 end

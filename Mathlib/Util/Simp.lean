@@ -13,7 +13,7 @@ import Std.Tactic.OpenPrivate
 [TODO] Needs documentation, cleanup, and possibly reunification of `mkSimpContext'` with core.
 -/
 
-def Std.PHashSet.toList [BEq α] [Hashable α] (s : Std.PHashSet α) : List α :=
+def Lean.PHashSet.toList [BEq α] [Hashable α] (s : Lean.PHashSet α) : List α :=
   s.1.toList.map (·.1)
 
 namespace Lean
@@ -66,8 +66,10 @@ export private mkDischargeWrapper from Lean.Elab.Tactic.Simp
 
 -- copied from core
 /--
-  If `ctx == false`, the config argument is assumed to have type `Meta.Simp.Config`, and `Meta.Simp.ConfigCtx` otherwise.
-  If `ctx == false`, the `discharge` option must be none -/
+If `ctx == false`, the config argument is assumed to have type `Meta.Simp.Config`,
+and `Meta.Simp.ConfigCtx` otherwise.
+If `ctx == false`, the `discharge` option must be none
+-/
 def mkSimpContext' (simpTheorems : SimpTheorems) (stx : Syntax) (eraseLocal : Bool)
     (kind := SimpKind.simp) (ctx := false) (ignoreStarArg : Bool := false) :
     TacticM MkSimpContextResult := do

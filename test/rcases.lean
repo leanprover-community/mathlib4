@@ -46,19 +46,19 @@ example (x y : Nat) (h : x = y) : True := by
 
 example (h : x = 3) (h₂ : x < 4) : x < 4 := by
   rcases h with ⟨⟩
-  guard_hyp h₂ : 3 < 4; guard_target == 3 < 4; exact h₂
+  guard_hyp h₂ : 3 < 4; guard_target = 3 < 4; exact h₂
 
 example (h : x = 3) (h₂ : x < 4) : x < 4 := by
   rcases h with rfl
-  guard_hyp h₂ : 3 < 4; guard_target == 3 < 4; exact h₂
+  guard_hyp h₂ : 3 < 4; guard_target = 3 < 4; exact h₂
 
 example (h : 3 = x) (h₂ : x < 4) : x < 4 := by
   rcases h with ⟨⟩
-  guard_hyp h₂ : 3 < 4; guard_target == 3 < 4; exact h₂
+  guard_hyp h₂ : 3 < 4; guard_target = 3 < 4; exact h₂
 
 example (h : 3 = x) (h₂ : x < 4) : x < 4 := by
   rcases h with rfl
-  guard_hyp h₂ : 3 < 4; guard_target == 3 < 4; exact h₂
+  guard_hyp h₂ : 3 < 4; guard_target = 3 < 4; exact h₂
 
 example (s : α ⊕ Empty) : True := by
   rcases s with s|⟨⟨⟩⟩
@@ -109,7 +109,7 @@ example (x : Quot fun _ _ : α => True) (h : x = x): x = x := by
   rcases x with ⟨z⟩
   guard_hyp z : α
   guard_hyp h : Quot.mk (fun _ _ => True) z = Quot.mk (fun _ _ => True) z
-  guard_target == Quot.mk (fun _ _ => True) z = Quot.mk (fun _ _ => True) z
+  guard_target = Quot.mk (fun _ _ => True) z = Quot.mk (fun _ _ => True) z
   exact h
 
 example (n : Nat) : True := by

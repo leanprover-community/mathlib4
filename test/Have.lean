@@ -26,7 +26,7 @@ example {a : Nat} : a = a := by
   exact this
 
 example : True := by
-  let N
+  (let N) -- FIXME: lean4#1670
   exact Nat
   have
   · exact 0

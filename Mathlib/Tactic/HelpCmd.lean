@@ -43,8 +43,8 @@ The form `#help option id` will show only options that begin with `id`.
 -/
 elab "#help" &"option" id:(ident)? : command => do
   let id := id.map (·.getId.toString false)
-  let mut decls : Std.RBMap _ _ compare := {}
-  for (name, decl) in show Std.RBMap .. from ← getOptionDecls do
+  let mut decls : Lean.RBMap _ _ compare := {}
+  for (name, decl) in show Lean.RBMap .. from ← getOptionDecls do
     let name := name.toString false
     if let some id := id then
       if !id.isPrefixOf name then
@@ -85,7 +85,7 @@ The form `#help attr id` will show only attributes that begin with `id`.
 -/
 elab "#help" (&"attr" <|> &"attribute") id:(ident)? : command => do
   let id := id.map (·.getId.toString false)
-  let mut decls : Std.RBMap _ _ compare := {}
+  let mut decls : Lean.RBMap _ _ compare := {}
   for (name, decl) in ← attributeMapRef.get do
     let name := name.toString false
     if let some id := id then
@@ -138,7 +138,7 @@ The form `#help cats id` will show only syntax categories that begin with `id`.
 -/
 elab "#help" &"cats" id:(ident)? : command => do
   let id := id.map (·.getId.toString false)
-  let mut decls : Std.RBMap _ _ compare := {}
+  let mut decls : Lean.RBMap _ _ compare := {}
   for (name, cat) in (Parser.parserExtension.getState (← getEnv)).categories do
     let name := name.toString false
     if let some id := id then
@@ -177,8 +177,8 @@ elab "#help" &"cat" more:"+"? catStx:ident id:(ident <|> str)? : command => do
   let id := id.map fun id => match id.raw with
     | .ident _ _ v _ => v.toString false
     | id => id.isStrLit?.get!
-  let mut decls : Std.RBMap _ _ compare := {}
-  let mut rest : Std.RBMap _ _ compare := {}
+  let mut decls : Lean.RBMap _ _ compare := {}
+  let mut rest : Lean.RBMap _ _ compare := {}
   let catName := catStx.getId.eraseMacroScopes
   let some cat := (Parser.parserExtension.getState (← getEnv)).categories.find? catName
     | throwErrorAt catStx "{catStx} is not a syntax category"

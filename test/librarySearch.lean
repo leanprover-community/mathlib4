@@ -89,25 +89,22 @@ axiom F (a b : ℕ) : f a ≤ f b ↔ a ≤ b
 
 -- TODO theorem nonzero_gt_one (n : ℕ) : ¬ n = 0 → n ≥ 1 := by library_search   -- `exact nat.pos_of_ne_zero`
 
-/- TODO: using
+example (L M : List (List ℕ)) : List ℕ := by library_search using L
 
-example (L : List (List ℕ)) : List ℕ :=
-by library_search using L
+example (P Q : List ℕ) (h : ℕ) : List ℕ := by library_search using h, P
 
-example (n m : ℕ) : ℕ :=
-by library_search using n m
+-- These tests for `using` require moving the required subexpressions check deeper into solveByElim
 
-example (P Q : list ℕ) (h : ℕ) : list ℕ :=
-by library_search using h Q
+-- example (n m : ℕ) : ℕ := by library_search using n, m
 
-example (P Q : list ℕ) (h : ℕ) : list ℕ :=
-by library_search using P Q
+-- example (P Q : List ℕ) (h : ℕ) : List ℕ :=
+-- by library_search using h, Q
 
--- Make sure `library_search` finds nothing when we list too many hypotheses after `using`.
-example (P Q R S T : list ℕ) : list ℕ :=
-begin
-  success_if_fail { library_search using P Q R S T, },
-  exact []
-end
+-- example (P Q : List ℕ) (h : ℕ) : List ℕ :=
+-- by library_search using P, Q
 
--/
+-- -- Make sure `library_search` finds nothing when we list too many hypotheses after `using`.
+-- example (P Q R S T : List ℕ) : List ℕ := by
+--   fail_if_success
+--     library_search using P, Q, R, S, T
+--   exact []
