@@ -171,10 +171,10 @@ protected theorem bijective (e : α ≃ β) : Bijective e :=
   EquivLike.bijective e
 
 protected theorem subsingleton (e : α ≃ β) [Subsingleton β] : Subsingleton α :=
-  e.Injective.Subsingleton
+  e.injective.subsingleton
 
 protected theorem subsingleton.symm (e : α ≃ β) [Subsingleton α] : Subsingleton β :=
-  e.symm.Injective.Subsingleton
+  e.symm.injective.subsingleton
 
 theorem subsingleton_congr (e : α ≃ β) : Subsingleton α ↔ Subsingleton β :=
   ⟨fun h => e.symm.subsingleton, fun h => e.subsingleton⟩
@@ -193,7 +193,7 @@ theorem Perm.subsingleton_eq_refl [Subsingleton α] (e : Perm α) : e = Equiv.re
 
 /-- Transfer `decidable_eq` across an equivalence. -/
 protected def decidableEq (e : α ≃ β) [DecidableEq β] : DecidableEq α :=
-  e.Injective.DecidableEq
+  e.injective.decidableEq
 
 theorem nonempty_congr (e : α ≃ β) : Nonempty α ↔ Nonempty β :=
   Nonempty.congr e e.symm
@@ -207,7 +207,7 @@ protected def inhabited [Inhabited β] (e : α ≃ β) : Inhabited α :=
 
 /-- If `α ≃ β` and `β` is a singleton type, then so is `α`. -/
 protected def unique [Unique β] (e : α ≃ β) : Unique α :=
-  e.symm.Surjective.unique
+  e.symm.surjective.unique
 
 /-- Equivalence between equal types. -/
 protected def cast {α β : Sort _} (h : α = β) : α ≃ β :=
