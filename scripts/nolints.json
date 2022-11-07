@@ -150,7 +150,6 @@
  ["docBlame", "Fin.subUnderflows?"],
  ["docBlame", "Fin.underflowingSub"],
  ["docBlame", "Function.app"],
- ["docBlame", "Function.combine"],
  ["docBlame", "Function.comp_left"],
  ["docBlame", "Function.comp_right"],
  ["docBlame", "Function.swap"],
