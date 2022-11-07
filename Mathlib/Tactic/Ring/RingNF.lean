@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Tim Baanen
 -/
 import Mathlib.Tactic.Ring.Basic
+import Mathlib.Tactic.Conv
 
 /-!
 # `ring_nf` tactic
@@ -197,3 +198,14 @@ macro (name := ring) "ring" : tactic =>
   `(tactic| first | ring1 | ring_nf; trace "Try this: ring_nf")
 @[inherit_doc ring] macro "ring!" : tactic =>
   `(tactic| first | ring1! | ring_nf!; trace "Try this: ring_nf!")
+
+/--
+The tactic `ring` evaluates expressions in *commutative* (semi)rings.
+This is the conv tactic version, which rewrites a target which is a ring equality to `True`.
+
+See also the `ring` tactic.
+-/
+macro (name := ringConv) "ring" : conv =>
+  `(conv| first | discharge => ring1 | ring_nf; tactic => trace "Try this: ring_nf")
+@[inherit_doc ringConv] macro "ring!" : conv =>
+  `(conv| first | discharge => ring1! | ring_nf!; tactic => trace "Try this: ring_nf!")

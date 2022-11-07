@@ -67,3 +67,24 @@ example (f : ℕ → ℕ) :
 example (n : ℕ) (m : ℤ) : 2^(n+1) * m = 2 * 2^n * m := by ring
 example (a b : ℤ) (n : ℕ) : (a + b)^(n + 2) = (a^2 + b^2 + a * b + b * a) * (a + b)^n := by ring
 example (x y : ℕ) : x + id y = y + id x := by ring!
+
+-- Example with ring discharging the goal
+example : 22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 46 := by
+  conv => ring
+  trivial -- FIXME: not needed in lean 3
+
+-- Example with ring failing to discharge, to normalizing the goal
+example : (22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 47) = (74 = 75) := by
+  conv => ring
+  trivial
+
+-- Example with ring discharging the goal
+example (x : ℕ) : 22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 := by
+  conv => ring
+  trivial
+
+-- Example with ring failing to discharge, to normalizing the goal
+example (x : ℕ) : (22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 + 1)
+                    = (7 * x + 46 = 7 * x + 47) := by
+  conv => ring
+  trivial

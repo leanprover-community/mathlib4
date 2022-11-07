@@ -454,12 +454,6 @@ namespace Conv
 -- https://github.com/leanprover-community/mathlib/issues/2882
 /- M -/ syntax (name := applyCongr) "apply_congr" (ppSpace (colGt term))? : conv
 
-/- E -/ syntax (name := ring) "ring" : conv
-/- E -/ syntax (name := ring!) "ring!" : conv
-
-/- E -/ syntax (name := ringExp) "ring_exp" : conv
-/- E -/ syntax (name := ringExp!) "ring_exp!" : conv
-
 /- M -/ syntax (name := slice) "slice " num num : conv
 
 end Conv
