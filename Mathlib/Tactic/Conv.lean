@@ -12,7 +12,7 @@ Additional `conv` tactics.
 -/
 
 namespace Mathlib.Tactic.Conv
-open Lean Parser.Tactic Parser.Tactic.Conv
+open Lean Parser.Tactic Parser.Tactic.Conv Elab.Tactic Meta
 
 syntax (name := convLHS) "conv_lhs" (" at " ident)? (" in " (occs)? term)? " => " convSeq : tactic
 macro_rules
@@ -25,6 +25,30 @@ macro_rules
     `(tactic| conv $[at $id]? $[in $[$occs]? $pat]? => rhs; ($seq:convSeq))
 
 macro "run_conv" e:doSeq : conv => `(conv| tactic' => run_tac $e)
+
+/--
+* `discharge => tac` is a conv tactic which rewrites target `p` to `True` if `tac` is a tactic
+  which proves the goal `⊢ p`.
+* `discharge` without argument returns `⊢ p` as a subgoal.
+-/
+syntax (name := dischargeConv) "discharge" (" => " tacticSeq)? : conv
+
+/-- Elaborator for the `discharge` tactic. -/
+@[tactic dischargeConv] def elabDischargeConv : Tactic := fun
+  | `(conv| discharge $[=> $tac]?) => do
+    let g :: gs ← getGoals | throwNoGoalsToBeSolved
+    let (theLhs, theRhs) ← Conv.getLhsRhsCore g
+    let .true ← isProp theLhs | throwError "target is not a proposition"
+    theRhs.mvarId!.assign (mkConst ``True)
+    let m ← mkFreshExprMVar theLhs
+    g.assign (← mkEqTrue m)
+    if let some tac := tac then
+      setGoals [m.mvarId!]
+      evalTactic tac; done
+      setGoals gs
+    else
+      setGoals (m.mvarId! :: gs)
+  | _ => Elab.throwUnsupportedSyntax
 
 open Elab Tactic
 /--
