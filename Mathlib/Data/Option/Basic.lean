@@ -82,7 +82,7 @@ theorem bind_eq_none' {o : Option α} {f : α → Option β} :
 
 theorem joinM_eq_join : joinM = @join α :=
   funext fun _ => rfl
-#align mjoin_eq_join joinM_eq_join
+#align option.join_eq_join Option.joinM_eq_join
 
 theorem bind_eq_bind {α β : Type _} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
   rfl
