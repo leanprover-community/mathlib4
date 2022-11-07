@@ -3,7 +3,7 @@ import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 import Mathlib.Data.Equiv.Basic
-import Mathlib.Data.Prod
+import Mathlib.Data.Prod.Basic
 
 -- set_option trace.simps.debug true
 -- set_option trace.simps.verbose true
