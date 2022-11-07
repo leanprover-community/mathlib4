@@ -20,6 +20,7 @@ import Mathlib.Control.Writer
 import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.BinaryHeap
+import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Bracket
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
@@ -69,6 +70,7 @@ import Mathlib.Init.Data.Int.Notation
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Data.Prod
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Propext
