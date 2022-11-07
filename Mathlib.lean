@@ -154,6 +154,8 @@ import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Ring.Basic
+import Mathlib.Tactic.Ring.RingNF
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.SeqFocus
