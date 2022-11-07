@@ -331,11 +331,6 @@ syntax termList := " [" term,* "]"
 /- B -/ syntax (name := abel) "abel" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 /- B -/ syntax (name := abel!) "abel!" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 
-syntax ringMode := &"SOP" <|> &"raw" <|> &"horner"
-/- E -/ syntax (name := ringNF) "ring_nf" (config)? (ppSpace ringMode)? (ppSpace location)? : tactic
-/- E -/ syntax (name := ringNF!) "ring_nf!" (config)? (ppSpace ringMode)? (ppSpace location)? :
-  tactic
-
 /- E -/ syntax (name := noncommRing) "noncomm_ring" : tactic
 
 /- B -/ syntax (name := linearCombination) "linear_combination" (config)? (colGt term)? : tactic
@@ -459,8 +454,6 @@ namespace Conv
 -- https://github.com/leanprover-community/mathlib/issues/2882
 /- M -/ syntax (name := applyCongr) "apply_congr" (ppSpace (colGt term))? : conv
 
-/- E -/ syntax (name := ringNF) "ring_nf" (config)? (ppSpace ringMode)? : conv
-/- E -/ syntax (name := ringNF!) "ring_nf!" (config)? (ppSpace ringMode)? : conv
 /- E -/ syntax (name := ring) "ring" : conv
 /- E -/ syntax (name := ring!) "ring!" : conv
 
