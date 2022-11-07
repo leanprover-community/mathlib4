@@ -134,6 +134,7 @@ instead of linearly increasing the work per `my_embedding`-related declaration.
 injective coercion to injective functions `α ↪ β`.
 -/
 class EmbeddingLike (F : Sort _) (α β : outParam (Sort _)) extends FunLike F α fun _ => β where
+  /-- The coercion to functions must produce injective functions. -/
   injective' : ∀ f : F, @Function.Injective α β (coe f)
 
 namespace EmbeddingLike

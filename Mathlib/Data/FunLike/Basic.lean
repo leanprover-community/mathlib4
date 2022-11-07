@@ -135,7 +135,9 @@ This typeclass is used in the definition of the homomorphism typeclasses,
 such as `zero_hom_class`, `mul_hom_class`, `monoid_hom_class`, ....
 -/
 class FunLike (F : Sort _) (α : outParam (Sort _)) (β : outParam <| α → Sort _) where
+  /-- The coercion from `F` to a function. -/
   coe : F → ∀ a : α, β a
+  /-- The coercion to functions must be injective. -/
   coe_injective' : Function.Injective coe
 
 section Dependent

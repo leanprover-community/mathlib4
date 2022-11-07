@@ -134,12 +134,18 @@ This typeclass is used in the definition of the homomorphism typeclasses,
 such as `zero_equiv_class`, `mul_equiv_class`, `monoid_equiv_class`, ....
 -/
 class EquivLike (E : Sort _) (α β : outParam (Sort _)) where
+  /-- The coercion to a function in the forward direction. -/
   coe : E → α → β
+  /-- The coercion to a function in the backwards direction. -/
   inv : E → β → α
+  /-- The coercions are left inverses. -/
   left_inv : ∀ e, Function.LeftInverse (inv e) (coe e)
+  /-- The coercions are right inverses. -/
   right_inv : ∀ e, Function.RightInverse (inv e) (coe e)
-  -- The `inv` hypothesis makes this easier to prove with `congr'`
+  /-- If two coercions to functions are jointly injective. -/
   coe_injective' : ∀ e g, coe e = coe g → inv e = inv g → e = g
+  -- This is mathematically equivalent to either of the coercions to functions being injective, but
+  -- the `inv` hypothesis makes this easier to prove with `congr'`
 
 namespace EquivLike
 
