@@ -41,11 +41,6 @@ initialize_simps_projections Subtype (val → coe)
 theorem prop (x : Subtype p) : p x :=
   x.2
 
--- Porting note: coercions are now eagerly elaborated, so this is a tautological lemma
--- @[simp]
-theorem val_eq_coe {x : Subtype p} : x.1 = ↑x :=
-  rfl
-
 @[simp]
 protected theorem «forall» {q : { a // p a } → Prop} : (∀ x, q x) ↔ ∀ a b, q ⟨a, b⟩ :=
   ⟨fun h a b => h ⟨a, b⟩, fun h ⟨a, b⟩ => h a b⟩
