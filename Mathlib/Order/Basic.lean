@@ -488,7 +488,7 @@ is injective). -/
 def Order.Preimage {α β} (f : α → β) (s : β → β → Prop) (x y : α) : Prop :=
   s (f x) (f y)
 
--- mathport name: «expr ⁻¹'o »
+@[inherit_doc]
 infixl:80 " ⁻¹'o " => Order.Preimage
 
 /-- The preimage of a decidable order is decidable. -/
@@ -504,7 +504,7 @@ notation for `order_dual α`. -/
 def OrderDual (α : Type _) : Type _ :=
   α
 
--- mathport name: «expr ᵒᵈ»
+@[inherit_doc]
 notation:max α "ᵒᵈ" => OrderDual α
 
 namespace OrderDual
@@ -563,11 +563,12 @@ end OrderDual
 /-- Set / lattice complement -/
 @[notation_class]
 class HasCompl (α : Type _) where
+  /-- Set / lattice complement -/
   compl : α → α
 
 export HasCompl (compl)
 
--- mathport name: «expr ᶜ»
+@[inherit_doc]
 postfix:999 "ᶜ" => compl
 
 instance : HasCompl Prop :=
@@ -678,17 +679,19 @@ end MinMaxRec
 /-- Typeclass for the `⊔` (`\lub`) notation -/
 @[notation_class]
 class HasSup (α : Type u) where
+  /-- Least upper bound (`\lub` notation) -/
   sup : α → α → α
 
 /-- Typeclass for the `⊓` (`\glb`) notation -/
 @[notation_class]
 class HasInf (α : Type u) where
+  /-- Greatest lower bound (`\glb` notation) -/
   inf : α → α → α
 
--- mathport name: «expr ⊔ »
+@[inherit_doc]
 infixl:68 " ⊔ " => HasSup.sup
 
--- mathport name: «expr ⊓ »
+@[inherit_doc]
 infixl:69 " ⊓ " => HasInf.inf
 
 /-! ### Lifts of order instances -/
@@ -883,6 +886,7 @@ end Prod
 
 /-- An order is dense if there is an element between any pair of distinct elements. -/
 class DenselyOrdered (α : Type u) [LT α] : Prop where
+  /-- An order is dense if there is an element between any pair of distinct elements. -/
   dense : ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a₁ < a ∧ a < a₂
 
 theorem exists_between [LT α] [DenselyOrdered α] : ∀ {a₁ a₂ : α}, a₁ < a₂ → ∃ a, a₁ < a ∧ a < a₂ :=
@@ -944,13 +948,11 @@ theorem max_eq : max a b = star :=
 theorem min_eq : min a b = star :=
   rfl
 
-@[simp]
 protected theorem le : a ≤ b :=
   le_refl _
 
-@[simp]
 theorem not_lt : ¬a < b := by
-  rw [_root_.not_lt]; exact le_refl _
+  simp only [lt_self_iff_false]
 
 
 
