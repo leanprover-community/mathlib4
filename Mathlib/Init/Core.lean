@@ -84,7 +84,7 @@ class AndThen' (α : Type u) (β : Type v) (σ : outParam <| Type w) where
 #align has_union Union
 #align has_equiv HasEquivₓ -- universe levels don't match
 #align has_inter Inter
-#align has_sdiff Sdiff
+#align has_sdiff SDiff
 
 #align has_subset HasSubset
 #align has_subset.subset HasSubset.Subset
