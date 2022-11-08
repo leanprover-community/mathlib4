@@ -3,12 +3,15 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Logic.Unique
 import Mathlib.Data.FunLike.Equiv
+import Mathlib.Init.Data.Bool.Lemmas
+import Mathlib.Logic.Unique
+import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.Substs
 
 /-!
 # Equivalence between types
@@ -130,7 +133,7 @@ theorem Perm.ext_iff {σ τ : Equiv.Perm α} : σ = τ ↔ ∀ x, σ x = τ x :=
 /-- Any type is equivalent to itself. -/
 @[refl]
 protected def refl (α : Sort _) : α ≃ α :=
-  ⟨id, id, fun x => rfl, fun x => rfl⟩
+  ⟨id, id, fun _ => rfl, fun _ => rfl⟩
 
 instance inhabited' : Inhabited (α ≃ α) :=
   ⟨Equiv.refl α⟩
@@ -177,13 +180,13 @@ protected theorem subsingleton.symm (e : α ≃ β) [Subsingleton α] : Subsingl
   e.symm.injective.subsingleton
 
 theorem subsingleton_congr (e : α ≃ β) : Subsingleton α ↔ Subsingleton β :=
-  ⟨fun h => e.symm.subsingleton, fun h => e.subsingleton⟩
+  ⟨fun _ => e.symm.subsingleton, fun _ => e.subsingleton⟩
 
 instance equiv_subsingleton_cod [Subsingleton β] : Subsingleton (α ≃ β) :=
-  ⟨fun f g => Equiv.ext fun x => Subsingleton.elim _ _⟩
+  ⟨fun _ _ => Equiv.ext fun _ => Subsingleton.elim _ _⟩
 
 instance equiv_subsingleton_dom [Subsingleton α] : Subsingleton (α ≃ β) :=
-  ⟨fun f g => Equiv.ext fun x => @Subsingleton.elim _ (Equiv.subsingleton.symm f) _ _⟩
+  ⟨fun f _ => Equiv.ext fun _ => @Subsingleton.elim _ (Equiv.subsingleton.symm f) _ _⟩
 
 instance permUnique [Subsingleton α] : Unique (Perm α) :=
   uniqueOfSubsingleton (Equiv.refl α)
@@ -222,21 +225,27 @@ theorem coe_fn_symm_mk (f : α → β) (g l r) : ((Equiv.mk f g l r).symm : β �
   rfl
 
 @[simp]
-theorem coe_refl : ⇑(Equiv.refl α) = id :=
+theorem coe_refl : (Equiv.refl α : α → α) = id :=
   rfl
 
 /-- This cannot be a `simp` lemmas as it incorrectly matches against `e : α ≃ synonym α`, when
 `synonym α` is semireducible. This makes a mess of `multiplicative.of_add` etc. -/
-theorem Perm.coe_subsingleton {α : Type _} [Subsingleton α] (e : Perm α) : ⇑e = id := by
-  rw [perm.subsingleton_eq_refl e, coe_refl]
+theorem Perm.coe_subsingleton {α : Type _} [Subsingleton α] (e : Perm α) : (e : α → α) = id := by
+  rw [Perm.subsingleton_eq_refl e, coe_refl]
 
+-- porting note: marking this as `@[simp]` because `simp` doesn't fire on `coe_refl`
+-- in an expression such as `Equiv.refl a x`
+@[simp]
 theorem refl_apply (x : α) : Equiv.refl α x = x :=
   rfl
 
 @[simp]
-theorem coe_trans (f : α ≃ β) (g : β ≃ γ) : ⇑(f.trans g) = g ∘ f :=
+theorem coe_trans (f : α ≃ β) (g : β ≃ γ) : (f.trans g : α → γ) = g ∘ f :=
   rfl
 
+-- porting note: marking this as `@[simp]` because `simp` doesn't fire on `coe_trans`
+-- in an expression such as `Equiv.trans f g x`
+@[simp]
 theorem trans_apply (f : α ≃ β) (g : β ≃ γ) (a : α) : (f.trans g) a = g (f a) :=
   rfl
 
@@ -262,122 +271,16 @@ theorem symm_trans_apply (f : α ≃ β) (g : β ≃ γ) (a : γ) : (f.trans g).
 
 -- The `simp` attribute is needed to make this a `dsimp` lemma.
 -- `simp` will always rewrite with `equiv.symm_symm` before this has a chance to fire.
-@[simp, nolint simp_nf]
+@[simp, nolint simpNF]
 theorem symm_symm_apply (f : α ≃ β) (b : α) : f.symm.symm b = f b :=
   rfl
 
 theorem apply_eq_iff_eq (f : α ≃ β) {x y : α} : f x = f y ↔ x = y :=
   EquivLike.apply_eq_iff_eq f
 
-/- failed to parenthesize: parenthesize: uncaught backtrack exception
-[PrettyPrinter.parenthesize.input] (Command.declaration
-     (Command.declModifiers [] [] [] [] [] [])
-     (Command.theorem
-      "theorem"
-      (Command.declId `apply_eq_iff_eq_symm_apply [])
-      (Command.declSig
-       [(Term.implicitBinder "{" [`α `β] [":" (Term.sort "Sort" [(Level.hole "_")])] "}")
-        (Term.explicitBinder "(" [`f] [":" (Logic.Equiv.Defs.«term_≃_» `α " ≃ " `β)] [] ")")
-        (Term.implicitBinder "{" [`x] [":" `α] "}")
-        (Term.implicitBinder "{" [`y] [":" `β] "}")]
-       (Term.typeSpec
-        ":"
-        («term_↔_»
-         («term_=_» (Term.app `f [`x]) "=" `y)
-         "↔"
-         («term_=_» `x "=" (Term.app (Term.proj `f "." `symm) [`y])))))
-      (Command.declValSimple
-       ":="
-       (Term.byTactic
-        "by"
-        (Tactic.tacticSeq
-         (Tactic.tacticSeq1Indented
-          [(Mathlib.Tactic.Conv.convLHS
-            "conv_lhs"
-            []
-            []
-            "=>"
-            (Tactic.Conv.convSeq
-             (Tactic.Conv.convSeq1Indented
-              [(Tactic.Conv.convRw__
-                "rw"
-                []
-                (Tactic.rwRuleSeq "[" [(Tactic.rwRule ["←"] (Term.app `apply_symm_apply [`f `y]))] "]"))])))
-           []
-           (Tactic.rwSeq "rw" [] (Tactic.rwRuleSeq "[" [(Tactic.rwRule [] `apply_eq_iff_eq)] "]") [])])))
-       [])
-      []
-      []))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.abbrev'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.def'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.byTactic
-       "by"
-       (Tactic.tacticSeq
-        (Tactic.tacticSeq1Indented
-         [(Mathlib.Tactic.Conv.convLHS
-           "conv_lhs"
-           []
-           []
-           "=>"
-           (Tactic.Conv.convSeq
-            (Tactic.Conv.convSeq1Indented
-             [(Tactic.Conv.convRw__
-               "rw"
-               []
-               (Tactic.rwRuleSeq "[" [(Tactic.rwRule ["←"] (Term.app `apply_symm_apply [`f `y]))] "]"))])))
-          []
-          (Tactic.rwSeq "rw" [] (Tactic.rwRuleSeq "[" [(Tactic.rwRule [] `apply_eq_iff_eq)] "]") [])])))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Tactic.tacticSeq1Indented', expected 'Lean.Parser.Tactic.tacticSeqBracketed'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.rwSeq "rw" [] (Tactic.rwRuleSeq "[" [(Tactic.rwRule [] `apply_eq_iff_eq)] "]") [])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `apply_eq_iff_eq
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none, [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Mathlib.Tactic.Conv.convLHS
-       "conv_lhs"
-       []
-       []
-       "=>"
-       (Tactic.Conv.convSeq
-        (Tactic.Conv.convSeq1Indented
-         [(Tactic.Conv.convRw__
-           "rw"
-           []
-           (Tactic.rwRuleSeq "[" [(Tactic.rwRule ["←"] (Term.app `apply_symm_apply [`f `y]))] "]"))])))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Tactic.Conv.convSeq1Indented', expected 'Lean.Parser.Tactic.Conv.convSeqBracketed'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.app `apply_symm_apply [`f `y])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `y
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none, [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1024, term))
-      `f
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none, [anonymous]) <=? (some 1024, term)
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      `apply_symm_apply
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none, [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022, (some 1023, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind '«←»', expected 'patternIgnore'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.declValSimple', expected 'Lean.Parser.Command.declValEqns'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.declValSimple', expected 'Lean.Parser.Command.whereStructInst'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.opaque'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.instance'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.axiom'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.example'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.inductive'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.classInductive'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.structure'-/-- failed to format: format: uncaught backtrack exception
-theorem
-  apply_eq_iff_eq_symm_apply
-  { α β : Sort _ } ( f : α ≃ β ) { x : α } { y : β } : f x = y ↔ x = f . symm y
-  := by conv_lhs => rw [ ← apply_symm_apply f y ] rw [ apply_eq_iff_eq ]
+theorem apply_eq_iff_eq_symm_apply (f : α ≃ β) : f x = y ↔ x = f.symm y
+  := by conv_lhs => rw [ ← apply_symm_apply f y ]
+        rw [ apply_eq_iff_eq ]
 
 @[simp]
 theorem cast_apply {α β} (h : α = β) (x : α) : Equiv.cast h x = cast h x :=
@@ -392,14 +295,14 @@ theorem cast_refl {α} (h : α = α := rfl) : Equiv.cast h = Equiv.refl α :=
   rfl
 
 @[simp]
-theorem cast_trans {α β γ} (h : α = β) (h2 : β = γ) : (Equiv.cast h).trans (Equiv.cast h2) = Equiv.cast (h.trans h2) :=
-  ext fun x => by
-    substs h h2
-    rfl
+theorem cast_trans {α β γ} (h : α = β) (h2 : β = γ) :
+    (Equiv.cast h).trans (Equiv.cast h2) = Equiv.cast (h.trans h2) :=
+  ext fun x => by substs h h2
+                  rfl
 
-theorem cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a = b ↔ HEq a b := by
-  subst h
-  simp
+theorem cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a = b ↔ HEq a b :=
+by subst h
+   simp [coe_refl]
 
 theorem symm_apply_eq {α β} (e : α ≃ β) {x y} : e.symm x = y ↔ x = e y :=
   ⟨fun H => by simp [H.symm], fun H => by simp [H]⟩
@@ -435,7 +338,7 @@ theorem self_trans_symm (e : α ≃ β) : e.trans e.symm = Equiv.refl α :=
   ext (by simp)
 
 theorem trans_assoc {δ} (ab : α ≃ β) (bc : β ≃ γ) (cd : γ ≃ δ) : (ab.trans bc).trans cd = ab.trans (bc.trans cd) :=
-  Equiv.ext fun a => rfl
+  Equiv.ext fun _ => rfl
 
 theorem left_inverse_symm (f : Equiv α β) : LeftInverse f.symm f :=
   f.left_inv
@@ -545,31 +448,33 @@ def equivPempty (α : Sort v) [IsEmpty α] : α ≃ PEmpty.{u} :=
 
 /-- `α` is equivalent to an empty type iff `α` is empty. -/
 def equivEmptyEquiv (α : Sort u) : α ≃ Empty ≃ IsEmpty α :=
-  ⟨fun e => Function.is_empty e, @equivEmpty α, fun e => ext fun x => (e x).elim, fun p => rfl⟩
+  ⟨fun e => Function.is_empty e, @equivEmpty α, fun e => ext fun x => (e x).elim, fun _ => rfl⟩
 
 /-- The `Sort` of proofs of a false proposition is equivalent to `pempty`. -/
 def propEquivPempty {p : Prop} (h : ¬p) : p ≃ PEmpty :=
   @equivPempty p <| IsEmpty.prop_iff.2 h
 
 /-- If both `α` and `β` have a unique element, then `α ≃ β`. -/
-def equivOfUnique (α β : Sort _) [Unique α] [Unique β] : α ≃ β where
+def equivOfUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
   toFun := default
   invFun := default
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 
 /-- If `α` has a unique element, then it is equivalent to any `punit`. -/
-def equivPunit (α : Sort _) [Unique α] : α ≃ PUnit.{v} :=
+def equivPunit (α : Sort u) [Unique α] : α ≃ PUnit.{v} :=
   equivOfUnique α _
 
 /-- The `Sort` of proofs of a true proposition is equivalent to `punit`. -/
-def propEquivPunit {p : Prop} (h : p) : p ≃ PUnit :=
-  @equivPunit p <| uniqueProp h
+def propEquivPunit {p : Prop} (h : p) : p ≃ PUnit.{0} :=
+-- porting note: the following causes an error "unknown free variable [anonymous]"
+--  @equivPunit p <| uniqueProp h
+⟨default, λ _ => h, λ _ => Subsingleton.elim _ _, λ _ => Subsingleton.elim _ _⟩
 
 /-- `ulift α` is equivalent to `α`. -/
 @[simps (config := { fullyApplied := false }) apply symmApply]
 protected def ulift {α : Type v} : ULift.{u} α ≃ α :=
-  ⟨ULift.down, ULift.up, ULift.up_down, fun a => rfl⟩
+  ⟨ULift.down, ULift.up, ULift.up_down, fun _ => rfl⟩
 
 /-- `plift α` is equivalent to `α`. -/
 @[simps (config := { fullyApplied := false }) apply symmApply]
@@ -580,22 +485,25 @@ protected def plift : PLift α ≃ α :=
 def ofIff {P Q : Prop} (h : P ↔ Q) : P ≃ Q where
   toFun := h.mp
   invFun := h.mpr
-  left_inv x := rfl
-  right_inv y := rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- If `α₁` is equivalent to `α₂` and `β₁` is equivalent to `β₂`, then the type of maps `α₁ → β₁`
 is equivalent to the type of maps `α₂ → β₂`. -/
-@[congr, simps apply]
+-- porting note: removing `congr` attribute
+@[simps apply]
 def arrowCongr {α₁ β₁ α₂ β₂ : Sort _} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) : (α₁ → β₁) ≃ (α₂ → β₂) where
   toFun f := e₂ ∘ f ∘ e₁.symm
   invFun f := e₂.symm ∘ f ∘ e₁
   left_inv f := funext fun x => by simp
   right_inv f := funext fun x => by simp
 
+#align equiv.arrow_congr_apply Equiv.arrowCongr_apply
+
 theorem arrow_congr_comp {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort _} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) (ec : γ₁ ≃ γ₂) (f : α₁ → β₁)
     (g : β₁ → γ₁) : arrowCongr ea ec (g ∘ f) = arrowCongr eb ec g ∘ arrowCongr ea eb f := by
   ext
-  simp only [comp, arrow_congr_apply, eb.symm_apply_apply]
+  simp only [comp, arrowCongr_apply, eb.symm_apply_apply]
 
 @[simp]
 theorem arrow_congr_refl {α β : Sort _} : arrowCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α → β) :=
@@ -616,7 +524,8 @@ theorem arrow_congr_symm {α₁ β₁ α₂ β₂ : Sort _} (e₁ : α₁ ≃ α
 The `equiv_rw` tactic is not able to use the default `Sort` level `equiv.arrow_congr`,
 because Lean's universe rules will not unify `?l_1` with `imax (1 ?m_1)`.
 -/
-@[congr, simps apply]
+-- porting note: removing `congr` attribute
+@[simps apply]
 def arrowCongr' {α₁ β₁ α₂ β₂ : Type _} (hα : α₁ ≃ α₂) (hβ : β₁ ≃ β₂) : (α₁ → β₁) ≃ (α₂ → β₂) :=
   Equiv.arrowCongr hα hβ
 
@@ -676,20 +585,31 @@ def punitEquivPunit : PUnit.{v} ≃ PUnit.{w} :=
     cases u
     rfl⟩
 
+@[simp] lemma Bool.decide_eq_true (b : Bool) {h} : @decide (b = true) h = b :=
+by cases b
+   . simp
+   . simp
+
 /-- `Prop` is noncomputably equivalent to `bool`. -/
-noncomputable def propEquivBool : Prop ≃ Bool :=
-  ⟨fun p => @decide p (Classical.propDecidable _), fun b => b, fun p => by simp, fun b => by simp⟩
+noncomputable def propEquivBool : Prop ≃ Bool where
+  toFun p := @decide p (Classical.propDecidable _)
+  invFun b := b
+  left_inv p := by simp [@Bool.decide_iff p (Classical.propDecidable _)]
+  right_inv b := by simp
 
 section
 
 /-- The sort of maps to `punit.{v}` is equivalent to `punit.{w}`. -/
-def arrowPunitEquivPunit (α : Sort _) : (α → PUnit.{v}) ≃ PUnit.{w} :=
-  ⟨fun f => PUnit.unit, fun u f => PUnit.unit, fun f => by
+def arrowPunitEquivPunit (α : Sort _) : (α → PUnit.{v}) ≃ PUnit.{w} where
+  toFun _ := PUnit.unit
+  invFun _ _ := PUnit.unit
+  left_inv f := by
     funext x
     cases f x
-    rfl, fun u => by
+    rfl
+  right_inv u := by
     cases u
-    rfl⟩
+    rfl
 
 /-- If `α` is `subsingleton` and `a : α`, then the type of dependent functions `Π (i : α), β
 i` is equivalent to `β i`. -/
@@ -705,22 +625,25 @@ def piSubsingleton {α} (β : α → Sort _) [Subsingleton α] (a : α) : (∀ a
 
 /-- If `α` has a unique term, then the type of function `α → β` is equivalent to `β`. -/
 @[simps (config := { fullyApplied := false })]
-def funUnique (α β) [Unique α] : (α → β) ≃ β :=
+def funUnique (α β) [Unique.{u} α] : (α → β) ≃ β :=
   piSubsingleton _ default
 
 /-- The sort of maps from `punit` is equivalent to the codomain. -/
 def punitArrowEquiv (α : Sort _) : (PUnit.{u} → α) ≃ α :=
-  funUnique _ _
+  funUnique PUnit.{u} α
 
 /-- The sort of maps from `true` is equivalent to the codomain. -/
 def trueArrowEquiv (α : Sort _) : (True → α) ≃ α :=
   funUnique _ _
 
 /-- The sort of maps from a type that `is_empty` is equivalent to `punit`. -/
-def arrowPunitOfIsEmpty (α β : Sort _) [IsEmpty α] : (α → β) ≃ PUnit.{u} :=
-  ⟨fun f => PUnit.unit, fun u => isEmptyElim, fun f => funext isEmptyElim, fun u => by
+def arrowPunitOfIsEmpty (α β : Sort _) [IsEmpty α] : (α → β) ≃ PUnit.{u} where
+  toFun _ := PUnit.unit
+  invFun _ := isEmptyElim
+  left_inv _ := funext isEmptyElim
+  right_inv u := by
     cases u
-    rfl⟩
+    rfl
 
 /-- The sort of maps from `empty` is equivalent to `punit`. -/
 def emptyArrowEquivPunit (α : Sort _) : (Empty → α) ≃ PUnit.{u} :=
@@ -740,13 +663,19 @@ section
 
 /-- A `psigma`-type is equivalent to the corresponding `sigma`-type. -/
 @[simps apply symmApply]
-def psigmaEquivSigma {α} (β : α → Type _) : (Σ'i, β i) ≃ Σi, β i :=
-  ⟨fun a => ⟨a.1, a.2⟩, fun a => ⟨a.1, a.2⟩, fun ⟨a, b⟩ => rfl, fun ⟨a, b⟩ => rfl⟩
+def psigmaEquivSigma {α} (β : α → Type _) : (Σ'i, β i) ≃ Σi, β i where
+  toFun a := ⟨a.1, a.2⟩
+  invFun a := ⟨a.1, a.2⟩
+  left_inv := λ ⟨_, _⟩ => rfl
+  right_inv := λ ⟨_, _⟩ => rfl
 
 /-- A `psigma`-type is equivalent to the corresponding `sigma`-type. -/
 @[simps apply symmApply]
-def psigmaEquivSigmaPlift {α} (β : α → Sort _) : (Σ'i, β i) ≃ Σi : PLift α, PLift (β i.down) :=
-  ⟨fun a => ⟨PLift.up a.1, PLift.up a.2⟩, fun a => ⟨a.1.down, a.2.down⟩, fun ⟨a, b⟩ => rfl, fun ⟨⟨a⟩, ⟨b⟩⟩ => rfl⟩
+def psigmaEquivSigmaPlift {α} (β : α → Sort _) : (Σ'i, β i) ≃ Σi : PLift α, PLift (β i.down) where
+  toFun a := ⟨PLift.up a.1, PLift.up a.2⟩
+  invFun a := ⟨a.1.down, a.2.down⟩
+  left_inv := λ ⟨_, _⟩ => rfl
+  right_inv := λ ⟨_, _⟩ => rfl
 
 /-- A family of equivalences `Π a, β₁ a ≃ β₂ a` generates an equivalence between `Σ' a, β₁ a` and
 `Σ' a, β₂ a`. -/
@@ -819,13 +748,13 @@ def psigmaEquivSubtype {α : Type v} (P : α → Prop) : (Σ'i, P i) ≃ Subtype
 
 /-- A `sigma` with `plift` fibers is equivalent to the subtype. -/
 def sigmaPliftEquivSubtype {α : Type v} (P : α → Prop) : (Σi, PLift (P i)) ≃ Subtype P :=
-  ((psigmaEquivSigma _).symm.trans (psigmaCongrRight fun a => Equiv.plift)).trans (psigmaEquivSubtype P)
+  ((psigmaEquivSigma _).symm.trans (psigmaCongrRight fun _ => Equiv.plift)).trans (psigmaEquivSubtype P)
 
 /-- A `sigma` with `λ i, ulift (plift (P i))` fibers is equivalent to `{ x // P x }`.
 Variant of `sigma_plift_equiv_subtype`.
 -/
 def sigmaUliftPliftEquivSubtype {α : Type v} (P : α → Prop) : (Σi, ULift (PLift (P i))) ≃ Subtype P :=
-  (sigmaCongrRight fun a => Equiv.ulift).trans (sigmaPliftEquivSubtype P)
+  (sigmaCongrRight fun _ => Equiv.ulift).trans (sigmaPliftEquivSubtype P)
 
 namespace Perm
 
@@ -853,14 +782,18 @@ end Perm
 
 /-- An equivalence `f : α₁ ≃ α₂` generates an equivalence between `Σ a, β (f a)` and `Σ a, β a`. -/
 @[simps apply]
-def sigmaCongrLeft {α₁ α₂} {β : α₂ → Sort _} (e : α₁ ≃ α₂) : (Σa : α₁, β (e a)) ≃ Σa : α₂, β a :=
-  ⟨fun a => ⟨e a.1, a.2⟩, fun a => ⟨e.symm a.1, @Eq.ndrec β a.2 (e.right_inv a.1).symm⟩, fun ⟨a, b⟩ =>
-    match (motive := ∀ (a') (h : a' = a), @Sigma.mk _ (β ∘ e) _ (@Eq.ndrec β b (congr_arg e h.symm)) = ⟨a, b⟩)
+def sigmaCongrLeft {α₁ α₂} {β : α₂ → Sort _} (e : α₁ ≃ α₂) : (Σa : α₁, β (e a)) ≃ Σa : α₂, β a where
+  toFun a := ⟨e a.1, a.2⟩
+  invFun a := ⟨e.symm a.1, (e.right_inv a.1).symm ▸ a.2⟩
+  -- porting note: this was a pretty gnarly match already, and it got worse after porting
+  left_inv := fun ⟨a, b⟩ =>
+    match (motive := ∀ (a') (h : a' = a), @Sigma.mk _ (β ∘ e) _ ((congr_arg e h.symm) ▸ b) = ⟨a, b⟩)
       e.symm (e a), e.left_inv a with
-    | _, rfl => rfl,
-    fun ⟨a, b⟩ =>
-    match (motive := ∀ (a') (h : a' = a), Sigma.mk a' (@Eq.ndrec β b h.symm) = ⟨a, b⟩) e (e.symm a), _ with
-    | _, rfl => rfl⟩
+    | _, rfl => rfl
+  right_inv := fun ⟨a, b⟩ =>
+    match (motive := ∀ (a') (h : a' = a), Sigma.mk a' (h.symm ▸ b) = ⟨a, b⟩)
+      e (e.symm a), e.apply_symm_apply _ with
+    | _, rfl => rfl
 
 /-- Transporting a sigma type through an equivalence of the base -/
 def sigmaCongrLeft' {α₁ α₂} {β : α₁ → Sort _} (f : α₁ ≃ α₂) : (Σa : α₁, β a) ≃ Σa : α₂, β (f.symm a) :=
@@ -875,7 +808,7 @@ def sigmaCongr {α₁ α₂} {β₁ : α₁ → Sort _} {β₂ : α₂ → Sort 
 /-- `sigma` type with a constant fiber is equivalent to the product. -/
 @[simps apply symmApply]
 def sigmaEquivProd (α β : Type _) : (Σ_ : α, β) ≃ α × β :=
-  ⟨fun a => ⟨a.1, a.2⟩, fun a => ⟨a.1, a.2⟩, fun ⟨a, b⟩ => rfl, fun ⟨a, b⟩ => rfl⟩
+  ⟨fun a => ⟨a.1, a.2⟩, fun a => ⟨a.1, a.2⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
 
 /-- If each fiber of a `sigma` type is equivalent to a fixed type, then the sigma type
 is equivalent to the product. -/
@@ -887,8 +820,8 @@ def sigmaAssoc {α : Type _} {β : α → Type _} (γ : ∀ a : α, β a → Typ
     (Σab : Σa : α, β a, γ ab.1 ab.2) ≃ Σa : α, Σb : β a, γ a b where
   toFun x := ⟨x.1.1, ⟨x.1.2, x.2⟩⟩
   invFun x := ⟨⟨x.1, x.2.1⟩, x.2.2⟩
-  left_inv := fun ⟨⟨a, b⟩, c⟩ => rfl
-  right_inv := fun ⟨a, ⟨b, c⟩⟩ => rfl
+  left_inv := fun ⟨⟨_, _⟩, _⟩ => rfl
+  right_inv := fun ⟨_, ⟨_, _⟩⟩ => rfl
 
 end
 
@@ -903,146 +836,23 @@ protected theorem exists_unique_congr {p : α → Prop} {q : β → Prop} (f : �
 
 
 protected theorem exists_unique_congr_left' {p : α → Prop} (f : α ≃ β) : (∃! x, p x) ↔ ∃! y, p (f.symm y) :=
-  Equiv.exists_unique_congr f fun x => by simp
+  Equiv.exists_unique_congr f fun {_} => by simp
 
 protected theorem exists_unique_congr_left {p : β → Prop} (f : α ≃ β) : (∃! x, p (f x)) ↔ ∃! y, p y :=
   (Equiv.exists_unique_congr_left' f.symm).symm
 
-/- failed to parenthesize: parenthesize: uncaught backtrack exception
-[PrettyPrinter.parenthesize.input] (Command.declaration
-     (Command.declModifiers [] [] [(Command.protected "protected")] [] [] [])
-     (Command.theorem
-      "theorem"
-      (Command.declId `forall_congr [])
-      (Command.declSig
-       [(Term.implicitBinder "{" [`p] [":" (Term.arrow `α "→" (Term.prop "Prop"))] "}")
-        (Term.implicitBinder "{" [`q] [":" (Term.arrow `β "→" (Term.prop "Prop"))] "}")
-        (Term.explicitBinder "(" [`f] [":" (Logic.Equiv.Defs.«term_≃_» `α " ≃ " `β)] [] ")")
-        (Term.explicitBinder
-         "("
-         [`h]
-         [":"
-          (Term.forall
-           "∀"
-           [(Term.implicitBinder "{" [`x] [] "}")]
-           []
-           ","
-           («term_↔_» (Term.app `p [`x]) "↔" (Term.app `q [(Term.app `f [`x])])))]
-         []
-         ")")]
-       (Term.typeSpec
-        ":"
-        («term_↔_»
-         (Term.forall "∀" [`x] [] "," (Term.app `p [`x]))
-         "↔"
-         (Term.forall "∀" [`y] [] "," (Term.app `q [`y])))))
-      (Command.declValSimple
-       ":="
-       (Term.byTactic
-        "by"
-        (Tactic.tacticSeq
-         (Tactic.tacticSeq1Indented
-          [(Tactic.«tactic_<;>_» (Tactic.constructor "constructor") "<;>" (Tactic.intro "intro" [`h₂ `x]))
-           []
-           («tactic___;_»
-            (cdotTk (patternIgnore (token.«·» "·")))
-            [(group
-              (Tactic.rwSeq "rw" [] (Tactic.rwRuleSeq "[" [(Tactic.rwRule ["←"] (Term.app `f.right_inv [`x]))] "]") [])
-              [])
-             (group (Tactic.apply "apply" `h.mp) [])
-             (group (Tactic.apply "apply" `h₂) [])])
-           []
-           (Tactic.apply "apply" `h.mpr)
-           []
-           (Tactic.apply "apply" `h₂)])))
-       [])
-      []
-      []))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.abbrev'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.def'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.byTactic
-       "by"
-       (Tactic.tacticSeq
-        (Tactic.tacticSeq1Indented
-         [(Tactic.«tactic_<;>_» (Tactic.constructor "constructor") "<;>" (Tactic.intro "intro" [`h₂ `x]))
-          []
-          («tactic___;_»
-           (cdotTk (patternIgnore (token.«·» "·")))
-           [(group
-             (Tactic.rwSeq "rw" [] (Tactic.rwRuleSeq "[" [(Tactic.rwRule ["←"] (Term.app `f.right_inv [`x]))] "]") [])
-             [])
-            (group (Tactic.apply "apply" `h.mp) [])
-            (group (Tactic.apply "apply" `h₂) [])])
-          []
-          (Tactic.apply "apply" `h.mpr)
-          []
-          (Tactic.apply "apply" `h₂)])))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Tactic.tacticSeq1Indented', expected 'Lean.Parser.Tactic.tacticSeqBracketed'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.apply "apply" `h₂)
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `h₂
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none, [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.apply "apply" `h.mpr)
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `h.mpr
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none, [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      («tactic___;_»
-       (cdotTk (patternIgnore (token.«·» "·")))
-       [(group
-         (Tactic.rwSeq "rw" [] (Tactic.rwRuleSeq "[" [(Tactic.rwRule ["←"] (Term.app `f.right_inv [`x]))] "]") [])
-         [])
-        (group (Tactic.apply "apply" `h.mp) [])
-        (group (Tactic.apply "apply" `h₂) [])])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.apply "apply" `h₂)
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `h₂
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none, [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, tactic))
-      (Tactic.apply "apply" `h.mp)
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `h.mp
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none, [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, tactic))
-      (Tactic.rwSeq "rw" [] (Tactic.rwRuleSeq "[" [(Tactic.rwRule ["←"] (Term.app `f.right_inv [`x]))] "]") [])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.app `f.right_inv [`x])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'ident', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `x
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none, [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      `f.right_inv
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none, [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022, (some 1023, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind '«←»', expected 'patternIgnore'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.declValSimple', expected 'Lean.Parser.Command.declValEqns'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.declValSimple', expected 'Lean.Parser.Command.whereStructInst'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.opaque'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.instance'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.axiom'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.example'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.inductive'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.classInductive'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.structure'-/-- failed to format: format: uncaught backtrack exception
-protected
-  theorem
-    forall_congr
-    { p : α → Prop } { q : β → Prop } ( f : α ≃ β ) ( h : ∀ { x } , p x ↔ q f x ) : ∀ x , p x ↔ ∀ y , q y
-    := by constructor <;> intro h₂ x · rw [ ← f.right_inv x ] apply h.mp apply h₂ apply h.mpr apply h₂
+protected theorem forall_congr {p : α → Prop} {q : β → Prop} (f : α ≃ β)
+    (h : ∀ {x}, p x ↔ q (f x)) : (∀ x, p x) ↔ (∀ y, q y) :=
+by constructor <;> intro h₂ x
+   . rw [ ← f.right_inv x ]
+     apply h.mp
+     apply h₂
+   apply h.mpr
+   apply h₂
 
 protected theorem forall_congr' {p : α → Prop} {q : β → Prop} (f : α ≃ β) (h : ∀ {x}, p (f.symm x) ↔ q x) :
     (∀ x, p x) ↔ ∀ y, q y :=
-  (Equiv.forall_congr f.symm fun x => h.symm).symm
+  (Equiv.forall_congr f.symm fun {_} => h.symm).symm
 
 -- We next build some higher arity versions of `equiv.forall_congr`.
 -- Although they appear to just be repeated applications of `equiv.forall_congr`,
@@ -1064,7 +874,7 @@ protected theorem forall₂_congr {p : α₁ → β₁ → Prop} {q : α₂ → 
 
 protected theorem forall₂_congr' {p : α₁ → β₁ → Prop} {q : α₂ → β₂ → Prop} (eα : α₁ ≃ α₂) (eβ : β₁ ≃ β₂)
     (h : ∀ {x y}, p (eα.symm x) (eβ.symm y) ↔ q x y) : (∀ x y, p x y) ↔ ∀ x y, q x y :=
-  (Equiv.forall₂_congr eα.symm eβ.symm fun x y => h.symm).symm
+  (Equiv.forall₂_congr eα.symm eβ.symm fun {_ _} => h.symm).symm
 
 protected theorem forall₃_congr {p : α₁ → β₁ → γ₁ → Prop} {q : α₂ → β₂ → γ₂ → Prop} (eα : α₁ ≃ α₂) (eβ : β₁ ≃ β₂)
     (eγ : γ₁ ≃ γ₂) (h : ∀ {x y z}, p x y z ↔ q (eα x) (eβ y) (eγ z)) : (∀ x y z, p x y z) ↔ ∀ x y z, q x y z := by
@@ -1077,10 +887,10 @@ protected theorem forall₃_congr {p : α₁ → β₁ → γ₁ → Prop} {q : 
 protected theorem forall₃_congr' {p : α₁ → β₁ → γ₁ → Prop} {q : α₂ → β₂ → γ₂ → Prop} (eα : α₁ ≃ α₂) (eβ : β₁ ≃ β₂)
     (eγ : γ₁ ≃ γ₂) (h : ∀ {x y z}, p (eα.symm x) (eβ.symm y) (eγ.symm z) ↔ q x y z) :
     (∀ x y z, p x y z) ↔ ∀ x y z, q x y z :=
-  (Equiv.forall₃_congr eα.symm eβ.symm eγ.symm fun x y z => h.symm).symm
+  (Equiv.forall₃_congr eα.symm eβ.symm eγ.symm fun {_ _ _} => h.symm).symm
 
 protected theorem forall_congr_left' {p : α → Prop} (f : α ≃ β) : (∀ x, p x) ↔ ∀ y, p (f.symm y) :=
-  Equiv.forall_congr f fun x => by simp
+  Equiv.forall_congr f fun {_} => by simp
 
 protected theorem forall_congr_left {p : β → Prop} (f : α ≃ β) : (∀ x, p (f x)) ↔ ∀ y, p y :=
   (Equiv.forall_congr_left' f.symm).symm

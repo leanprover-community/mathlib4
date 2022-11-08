@@ -90,7 +90,7 @@ theorem PUnit.default_eq_unit : (default : PUnit) = PUnit.unit :=
 #align punit.default_eq_star PUnit.default_eq_unit
 
 /-- Every provable proposition is unique, as all proofs are equal. -/
-def uniqueProp {p : Prop} (h : p) : Unique p where
+def uniqueProp {p : Prop} (h : p) : Unique.{0} p where
   default := h
   uniq _ := rfl
 
