@@ -206,6 +206,7 @@ theorem IsStrictTotalOrder.swap (r) [IsStrictTotalOrder α r] : IsStrictTotalOrd
   the constructive reals, and is also known as negative transitivity,
   since the contrapositive asserts transitivity of the relation `¬ a < b`.  -/
 class IsOrderConnected (α : Type u) (lt : α → α → Prop) : Prop where
+  /-- A connected order is one satisfying the condition `a < c → a < b ∨ b < c`. -/
   conn : ∀ a b c, lt a c → lt a b ∨ lt b c
 
 theorem IsOrderConnected.neg_trans {r : α → α → Prop} [IsOrderConnected α r] {a b c}
@@ -233,9 +234,10 @@ instance (priority := 100) is_strict_weak_order_of_is_strict_total_order [IsStri
 
 
 -- Porting note: no `mk_iff` yet, so hard-coded iff
-/-- A well-founded relation. Not to be confused with `is_well_order`. -/
+/-- A well-founded relation. Not to be confused with `isWellOrder`. -/
 -- @[mk_iff]
 class IsWellFounded (α : Type u) (r : α → α → Prop) : Prop where
+  /-- The relation is `WellFounded`, as a proposition. -/
   wf : WellFounded r
 
 theorem IsWellFounded_iff (α : Type u) (r : α → α → Prop) : IsWellFounded α r ↔ WellFounded r :=
@@ -508,6 +510,7 @@ end Prod
 strict relation `s`. Compare `Preorder.lt_iff_le_not_le`. This is mostly meant to provide dot
 notation on `(⊆)` and `(⊂)`. -/
 class IsNonstrictStrictOrder (α : Type _) (r s : α → α → Prop) where
+  /-- The relation `r` is the nonstrict relation corresponding to the strict relation `s`. -/
   right_iff_left_not_left (a b : α) : s a b ↔ r a b ∧ ¬r b a
 
 theorem right_iff_left_not_left {r s : α → α → Prop} [IsNonstrictStrictOrder α r s] {a b : α} :
