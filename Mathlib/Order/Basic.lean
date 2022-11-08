@@ -999,5 +999,5 @@ noncomputable instance {α} [PartialOrder α] [IsTotal α (· ≤ ·)] :
   __ := inferInstanceAs (PartialOrder α)
   le_total := @total_of α (· ≤ ·) _
   decidable_le := Classical.decRel _
-  min := (@minOfLe α _ (Classical.decRel _)).min
-  max := (@maxOfLe α _ (Classical.decRel _)).max
+  toMin := @minOfLe α _ (Classical.decRel _)
+  toMax := @maxOfLe α _ (Classical.decRel _)
