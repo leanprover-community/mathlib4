@@ -728,12 +728,12 @@ def LinearOrder.lift {α β} [LinearOrder β] [HasSup α] [HasInf α] (f : α �
       decidable_eq := fun x y => decidable_of_iff (f x = f y) inj.eq_iff,
       min := (· ⊓ ·), max := (· ⊔ ·),
       min_def := by
-        ext x y
+        intros x y
         apply inj
         rw [apply_ite f]
         exact (hinf _ _).trans (min_def _ _)
       max_def := by
-        ext x y
+        intros x y
         apply inj
         rw [apply_ite f]
         exact (hsup _ _).trans (max_def _ _) }
