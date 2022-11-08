@@ -8,126 +8,121 @@ import Mathlib.Data.FunLike.Embedding
 /-!
 # Typeclass for a type `F` with an injective map to `A ≃ B`
 
-This typeclass is primarily for use by isomorphisms like `monoid_equiv` and `linear_equiv`.
+This typeclass is primarily for use by isomorphisms like `MonoidEquiv` and `LinearEquiv`.
 
-## Basic usage of `equiv_like`
+## Basic usage of `EquivLike`
 
 A typical type of morphisms should be declared as:
 ```
-structure my_iso (A B : Type*) [my_class A] [my_class B]
-  extends equiv A B :=
-(map_op' : ∀ {x y : A}, to_fun (my_class.op x y) = my_class.op (to_fun x) (to_fun y))
+structure MyIso (A B : Type*) [MyClass A] [MyClass B]
+  extends Equiv A B :=
+(map_op' : ∀ {x y : A}, toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
 
-namespace my_iso
+namespace MyIso
 
-variables (A B : Type*) [my_class A] [my_class B]
+variables (A B : Type*) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "Isomorphism class" design below:
-instance : equiv_like (my_iso A B) A (λ _, B) :=
-{ coe := my_iso.to_equiv.to_fun,
-  inv := my_iso.to_equiv.inv_fun,
-  left_inv := my_iso.to_equiv.left_inv,
-  right_inv := my_iso.to_equiv.right_inv,
+instance : EquivLike (MyIso A B) A (λ _, B) :=
+{ coe := MyIso.toEquiv.toFun,
+  inv := MyIso.toEquiv.invFun,
+  left_inv := MyIso.toEquiv.left_inv,
+  right_inv := MyIso.toEquiv.right_inv,
   coe_injective' := λ f g h, by cases f; cases g; congr' }
 
-/-- Helper instance for when there's too many metavariables to apply `equiv_like.coe` directly. -/
-instance : has_coe_to_fun (my_iso A B) := to_fun.to_coe_fn
+/-- Helper instance for when there's too many metavariables to apply `EquivLike.coe` directly. -/
+instance : CoeFun (MyIso A B) := FunLike.instCoeFunForAll
 
-@[simp] lemma to_fun_eq_coe {f : my_iso A B} : f.to_fun = (f : A → B) := rfl
+@[ext] theorem ext {f g : MyIso A B} (h : ∀ x, f x = g x) : f = g := FunLike.ext f g h
 
-@[ext] theorem ext {f g : my_iso A B} (h : ∀ x, f x = g x) : f = g := fun_like.ext f g h
-
-/-- Copy of a `my_iso` with a new `to_fun` equal to the old one. Useful to fix definitional
+/-- Copy of a `MyIso` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (f : my_iso A B) (f' : A → B) (f_inv : B → A) (h : f' = ⇑f) : my_iso A B :=
-{ to_fun := f',
-  inv_fun := f_inv,
+protected def copy (f : MyIso A B) (f' : A → B) (f_inv : B → A) (h : f' = ⇑f) : MyIso A B :=
+{ toFun := f',
+  invFun := f_inv,
   left_inv := h.symm ▸ f.left_inv,
   right_inv := h.symm ▸ f.right_inv,
   map_op' := h.symm ▸ f.map_op' }
 
-end my_iso
+end MyIso
 ```
 
-This file will then provide a `has_coe_to_fun` instance and various
+This file will then provide a `CoeFun` instance and various
 extensionality and simp lemmas.
 
-## Isomorphism classes extending `equiv_like`
+## Isomorphism classes extending `EquivLike`
 
-The `equiv_like` design provides further benefits if you put in a bit more work.
-The first step is to extend `equiv_like` to create a class of those types satisfying
+The `EquivLike` design provides further benefits if you put in a bit more work.
+The first step is to extend `EquivLike` to create a class of those types satisfying
 the axioms of your new type of isomorphisms.
 Continuing the example above:
 
 ```
-section
-set_option old_structure_cmd true
 
-/-- `my_iso_class F A B` states that `F` is a type of `my_class.op`-preserving morphisms.
-You should extend this class when you extend `my_iso`. -/
-class my_iso_class (F : Type*) (A B : out_param $ Type*) [my_class A] [my_class B]
-  extends equiv_like F A (λ _, B), my_hom_class F A B.
+/-- `MyIsoClass F A B` states that `F` is a type of `MyClass.op`-preserving morphisms.
+You should extend this class when you extend `MyIso`. -/
+class MyIsoClass (F : Type*) (A B : outParam <| Type _) [MyClass A] [MyClass B]
+  extends EquivLike F A (λ _, B), MyHomClass F A B
 
 end
 
--- You can replace `my_iso.equiv_like` with the below instance:
-instance : my_iso_class (my_iso A B) A B :=
-{ coe := my_iso.to_fun,
-  inv := my_iso.inv_fun,
-  left_inv := my_iso.left_inv,
-  right_inv := my_iso.right_inv,
+-- You can replace `MyIso.EquivLike` with the below instance:
+instance : MyIsoClass (MyIso A B) A B :=
+{ coe := MyIso.toFun,
+  inv := MyIso.invFun,
+  left_inv := MyIso.left_inv,
+  right_inv := MyIso.right_inv,
   coe_injective' := λ f g h, by cases f; cases g; congr',
-  map_op := my_iso.map_op' }
+  map_op := MyIso.map_op' }
 
--- [Insert `has_coe_to_fun`, `to_fun_eq_coe`, `ext` and `copy` here]
+-- [Insert `CoeFun`, `ext` and `copy` here]
 ```
 
-The second step is to add instances of your new `my_iso_class` for all types extending `my_iso`.
-Typically, you can just declare a new class analogous to `my_iso_class`:
+The second step is to add instances of your new `MyIsoClass` for all types extending `MyIso`.
+Typically, you can just declare a new class analogous to `MyIsoClass`:
 
 ```
-structure cooler_iso (A B : Type*) [cool_class A] [cool_class B]
-  extends my_iso A B :=
-(map_cool' : to_fun cool_class.cool = cool_class.cool)
+structure CoolerIso (A B : Type*) [CoolClass A] [CoolClass B]
+  extends MyIso A B :=
+(map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
 section
 set_option old_structure_cmd true
 
-class cooler_iso_class (F : Type*) (A B : out_param $ Type*) [cool_class A] [cool_class B]
-  extends my_iso_class F A B :=
-(map_cool : ∀ (f : F), f cool_class.cool = cool_class.cool)
+class CoolerIsoClass (F : Type*) (A B : outParam <| Type _) [CoolClass A] [CoolClass B]
+  extends MyIsoClass F A B :=
+(map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
 end
 
-@[simp] lemma map_cool {F A B : Type*} [cool_class A] [cool_class B] [cooler_iso_class F A B]
-  (f : F) : f cool_class.cool = cool_class.cool :=
-my_iso_class.map_op
+@[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B] [CoolerIsoClass F A B]
+  (f : F) : f CoolClass.cool = CoolClass.cool :=
+CoolerIsoClass.map_cool
 
--- You can also replace `my_iso.equiv_like` with the below instance:
-instance : cool_iso_class (cool_iso A B) A B :=
-{ coe := cool_iso.to_fun,
+instance : CoolerIsoClass (CoolerIso A B) A B :=
+{ coe := CoolerIso.toFun,
   coe_injective' := λ f g h, by cases f; cases g; congr',
-  map_op := cool_iso.map_op',
-  map_cool := cool_iso.map_cool' }
+  map_op := CoolerIso.map_op',
+  map_cool := CoolerIso.map_cool' }
 
--- [Insert `has_coe_to_fun`, `to_fun_eq_coe`, `ext` and `copy` here]
+-- [Insert `CoeFun`, `ext` and `copy` here]
 ```
 
 Then any declaration taking a specific type of morphisms as parameter can instead take the
 class you just defined:
 ```
--- Compare with: lemma do_something (f : my_iso A B) : sorry := sorry
-lemma do_something {F : Type*} [my_iso_class F A B] (f : F) : sorry := sorry
+-- Compare with: lemma do_something (f : MyIso A B) : sorry := sorry
+lemma do_something {F : Type*} [MyIsoClass F A B] (f : F) : sorry := sorry
 ```
 
-This means anything set up for `my_iso`s will automatically work for `cool_iso_class`es,
-and defining `cool_iso_class` only takes a constant amount of effort,
-instead of linearly increasing the work per `my_iso`-related declaration.
+This means anything set up for `MyIso`s will automatically work for `CoolerIsoClass`es,
+and defining `CoolerIsoClass` only takes a constant amount of effort,
+instead of linearly increasing the work per `MyIso`-related declaration.
 
 -/
 
 
-/-- The class `equiv_like E α β` expresses that terms of type `E` have an
+/-- The class `EquivLike E α β` expresses that terms of type `E` have an
 injective coercion to bijections between `α` and `β`.
 
 This typeclass is used in the definition of the homomorphism typeclasses,
@@ -185,21 +180,21 @@ theorem bijective_comp (e : E) (f : β → γ) : Function.Bijective (f ∘ e) �
   (EquivLike.bijective e).of_comp_iff f
 
 /-- This lemma is only supposed to be used in the generic context, when working with instances
-of classes extending `equiv_like`.
-For concrete isomorphism types such as `equiv`, you should use `equiv.symm_apply_apply`
+of classes extending `EquivLike`.
+For concrete isomorphism types such as `Equiv`, you should use `Equiv.symm_apply_apply`
 or its equivalent.
 
-TODO: define a generic form of `equiv.symm`. -/
+TODO: define a generic form of `Equiv.symm`. -/
 @[simp]
 theorem inv_apply_apply (e : E) (a : α) : EquivLike.inv e (e a) = a :=
   left_inv _ _
 
 /-- This lemma is only supposed to be used in the generic context, when working with instances
-of classes extending `equiv_like`.
-For concrete isomorphism types such as `equiv`, you should use `equiv.apply_symm_apply`
+of classes extending `EquivLike`.
+For concrete isomorphism types such as `Equiv`, you should use `Equiv.apply_symm_apply`
 or its equivalent.
 
-TODO: define a generic form of `equiv.symm`. -/
+TODO: define a generic form of `Equiv.symm`. -/
 @[simp]
 theorem apply_inv_apply (e : E) (b : β) : e (EquivLike.inv e b) = b :=
   right_inv _ _
