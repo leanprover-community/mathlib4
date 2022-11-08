@@ -123,10 +123,15 @@ theorem coe_sort_false : (↥false : Prop) = False := by simp
 theorem coe_sort_true : (↥true : Prop) = True := by simp
 #align coe_sort_tt Bool.coe_sort_true
 
+@[simp] theorem decide_eq_true (b : Bool) {h} : @decide (b = true) h = b :=
+by cases b
+   . simp
+   . simp
+
 theorem decide_iff (p : Prop) [d : Decidable p] : decide p = true ↔ p := by simp
 #align to_bool_iff Bool.decide_iff
 
-theorem decide_true {p : Prop} [Decidable p] : p → decide p :=
+theorem decide_true (p : Prop) [Decidable p] : p → decide p :=
   (decide_iff p).2
 #align to_bool_true Bool.decide_true
 #align to_bool_tt Bool.decide_true

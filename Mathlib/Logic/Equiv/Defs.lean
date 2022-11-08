@@ -585,11 +585,6 @@ def punitEquivPunit : PUnit.{v} ≃ PUnit.{w} :=
     cases u
     rfl⟩
 
-@[simp] lemma Bool.decide_eq_true (b : Bool) {h} : @decide (b = true) h = b :=
-by cases b
-   . simp
-   . simp
-
 /-- `Prop` is noncomputably equivalent to `bool`. -/
 noncomputable def propEquivBool : Prop ≃ Bool where
   toFun p := @decide p (Classical.propDecidable _)
