@@ -9,10 +9,13 @@ import Mathlib.Init.ZeroOne
 import Mathlib.Init.Algebra.Order
 
 /-!
-# `ne_zero` typeclass
+# `NeZero` typeclass
+
 We create a typeclass `ne_zero n` which carries around the fact that `(n : R) ≠ 0`.
+
 ## Main declarations
-* `ne_zero`: `n ≠ 0` as a typeclass.
+
+* `NeZero`: `n ≠ 0` as a typeclass.
 -/
 
 /-- A type-class version of `n ≠ 0`.  -/
@@ -41,10 +44,10 @@ instance succ : NeZero (n + 1) :=
 theorem of_pos [Preorder M] [Zero M] (h : 0 < x) : NeZero x :=
   ⟨ne_of_gt h⟩
 
-instance coe_trans [Zero M] [Coe R S] [CoeTC S M] [h : NeZero (r : M)] : NeZero ((r : S) : M) :=
+instance coe_trans [Zero M] [Coe R S] [CoeTail S M] [h : NeZero (r : M)] : NeZero ((r : S) : M) :=
   ⟨h.out⟩
 
-theorem trans [Zero M] [Coe R S] [CoeTC S M] (h : NeZero ((r : S) : M)) : NeZero (r : M) :=
+theorem trans [Zero M] [Coe R S] [CoeTail S M] (h : NeZero ((r : S) : M)) : NeZero (r : M) :=
   ⟨h.out⟩
 
 end NeZero
