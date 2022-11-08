@@ -442,6 +442,8 @@ end SurjInv
 section Update
 
 variable {α : Sort u} {β : α → Sort v} {α' : Sort w} [DecidableEq α] [DecidableEq α']
+  {f g : Π a, β a} {a : α} {b : β a}
+
 
 /-- Replacing the value of a function at a given point by a given value. -/
 def update (f : ∀ a, β a) (a' : α) (v : β a') (a : α) : β a :=
@@ -492,6 +494,12 @@ theorem update_eq_iff {a : α} {b : β a} {f g : ∀ a, β a} :
 theorem eq_update_iff {a : α} {b : β a} {f g : ∀ a, β a} :
     g = update f a b ↔ g a = b ∧ ∀ (x) (_ : x ≠ a), g x = f x :=
   funext_iff.trans <| forall_update_iff _ fun x y => g x = y
+
+@[simp] lemma update_eq_self_iff : update f a b = f ↔ b = f a := by simp [update_eq_iff]
+@[simp] lemma eq_update_self_iff : f = update f a b ↔ f a = b := by simp [eq_update_iff]
+
+lemma ne_update_self_iff : f ≠ update f a b ↔ f a ≠ b := eq_update_self_iff.not
+lemma update_ne_self_iff : update f a b ≠ f ↔ b ≠ f a := update_eq_self_iff.not
 
 @[simp]
 theorem update_eq_self (a : α) (f : ∀ a, β a) : update f a (f a) = f :=
