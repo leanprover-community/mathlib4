@@ -96,7 +96,8 @@ theorem lift_on_mk (a : α) (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → 
   rfl
 
 /-- Descends a function `f : α → β → γ` to quotients of `α` and `β`. -/
-@[reducible] -- porting note: removed `@[elab_as_elim]`, gave "unexpected resulting type γ"
+-- porting note: removed `@[elab_as_elim]`, gave "unexpected resulting type γ"
+-- porting note: removed `@[reducible]` because it caused extremely slow `simp`
 protected def lift₂ (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ → f a b₁ = f a b₂)
     (hs : ∀ a₁ a₂ b, r a₁ a₂ → f a₁ b = f a₂ b) (q₁ : Quot r) (q₂ : Quot s) : γ :=
   Quot.lift (fun a => Quot.lift (f a) (hr a))
@@ -109,7 +110,8 @@ theorem lift₂_mk (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ →
   rfl
 
 /-- Descends a function `f : α → β → γ` to quotients of `α` and `β` and applies it. -/
-@[reducible] -- porting note: removed `@[elab_as_elim]`, gave "unexpected resulting type γ"
+-- porting note: removed `@[elab_as_elim]`, gave "unexpected resulting type γ"
+-- porting note: removed `@[reducible]` because it caused extremely slow `simp`
 protected def liftOn₂ (p : Quot r) (q : Quot s) (f : α → β → γ)
     (hr : ∀ a b₁ b₂, s b₁ b₂ → f a b₁ = f a b₂) (hs : ∀ a₁ a₂ b, r a₁ a₂ → f a₁ b = f a₂ b) : γ :=
   Quot.lift₂ f hr hs p q
@@ -136,7 +138,8 @@ theorem map₂_mk (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ → 
   rfl
 
 /-- A binary version of `quot.rec_on_subsingleton`. -/
-@[reducible, elab_as_elim]
+-- porting note: removed `@[reducible]` because it caused extremely slow `simp`
+@[elab_as_elim]
 protected def recOnSubsingleton₂ {φ : Quot r → Quot s → Sort _}
     [h : ∀ a b, Subsingleton (φ ⟦a⟧ ⟦b⟧)] (q₁ : Quot r)
     (q₂ : Quot s) (f : ∀ a b, φ ⟦a⟧ ⟦b⟧) : φ q₁ q₂ :=
@@ -415,7 +418,8 @@ protected theorem lift_mk (f : α → β) (c) (a : α) : lift f c (mk a) = f a :
   rfl
 
 /-- Lift a constant function on `q : trunc α`. -/
-@[reducible] -- porting note: was `@[elab_as_elim]` but gave "unexpected eliminator resulting type"
+-- porting note: removed `@[elab_as_elim]` because it gave "unexpected eliminator resulting type"
+-- porting note: removed `@[reducible]` because it caused extremely slow `simp`
 protected def liftOn (q : Trunc α) (f : α → β) (c : ∀ a b : α, f a = f b) : β :=
   lift f c q
 
@@ -464,20 +468,23 @@ instance : LawfulMonad Trunc where
 variable {C : Trunc α → Sort _}
 
 /-- Recursion/induction principle for `trunc`. -/
-@[reducible, elab_as_elim]
+-- porting note: removed `@[reducible]` because it caused extremely slow `simp`
+@[elab_as_elim]
 protected def rec (f : ∀ a, C (mk a))
     (h : ∀ a b : α, (Eq.ndrec (f a) (Trunc.eq (mk a) (mk b)) : C (mk b)) = f b)
     (q : Trunc α) : C q :=
   Quot.rec f (fun a b _ => h a b) q
 
 /-- A version of `trunc.rec` taking `q : trunc α` as the first argument. -/
-@[reducible, elab_as_elim]
+-- porting note: removed `@[reducible]` because it caused extremely slow `simp`
+@[elab_as_elim]
 protected def recOn (q : Trunc α) (f : ∀ a, C (mk a))
     (h : ∀ a b : α, (Eq.ndrec (f a) (Trunc.eq (mk a) (mk b)) : C (mk b)) = f b) : C q :=
   Trunc.rec f h q
 
 /-- A version of `trunc.rec_on` assuming the codomain is a `subsingleton`. -/
-@[reducible, elab_as_elim]
+-- porting note: removed `@[reducible]` because it caused extremely slow `simp`
+@[elab_as_elim]
 protected def recOnSubsingleton [∀ a, Subsingleton (C (mk a))] (q : Trunc α) (f : ∀ a, C (mk a)) :
     C q :=
   Trunc.rec f (fun _ b => Subsingleton.elim _ (f b)) q
@@ -522,8 +529,8 @@ theorem surjective_Quotient_mk'' : Function.Surjective (Quotient.mk'' : α → Q
 
 /-- A version of `Quotient.liftOn` taking `{s : setoid α}` as an implicit argument instead of an
 instance argument. -/
--- porting note: used to be `@[elab_as_elim]` but gave "unexpected eliminator resulting type"
-@[reducible]
+-- porting note: removed `@[elab_as_elim]` because it gave "unexpected eliminator resulting type"
+-- porting note: removed `@[reducible]` because it caused extremely slow `simp`
 protected def liftOn' (q : Quotient s₁) (f : α → φ) (h : ∀ a b, @Setoid.r α s₁ a b → f a = f b) :
     φ :=
   Quotient.liftOn q f h
@@ -535,8 +542,8 @@ protected theorem liftOn'_mk'' (f : α → φ) (h) (x : α) :
 
 /-- A version of `quotient.liftOn₂` taking `{s₁ : setoid α} {s₂ : setoid β}` as implicit arguments
 instead of instance arguments. -/
--- porting note: used to be `@[elab_as_elim]` but gave "unexpected eliminator resulting type"
-@[reducible]
+-- porting note: removed `@[elab_as_elim]` because it gave "unexpected eliminator resulting type"
+-- porting note: removed `@[reducible]` because it caused extremely slow `simp`
 protected def liftOn₂' (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : α → β → γ)
     (h : ∀ a₁ a₂ b₁ b₂, @Setoid.r α s₁ a₁ b₁ → @Setoid.r β s₂ a₂ b₂ → f a₁ a₂ = f b₁ b₂) : γ :=
   Quotient.liftOn₂ q₁ q₂ f h
@@ -598,7 +605,8 @@ protected def recOnSubsingleton' {φ : Quotient s₁ → Sort _} [∀ a, Subsing
 
 /-- A version of `Quotient.recOnSubsingleton₂` taking `{s₁ : setoid α} {s₂ : setoid α}`
 as implicit arguments instead of instance arguments. -/
-@[reducible, elab_as_elim]
+-- porting note: removed `@[reducible]` because it caused extremely slow `simp`
+@[elab_as_elim]
 protected def recOnSubsingleton₂' {φ : Quotient s₁ → Quotient s₂ → Sort _}
     [∀ a b, Subsingleton (φ ⟦a⟧ ⟦b⟧)]
     (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : ∀ a₁ a₂, φ (Quotient.mk'' a₁) (Quotient.mk'' a₂)) :
