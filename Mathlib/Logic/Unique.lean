@@ -90,7 +90,7 @@ theorem PUnit.default_eq_unit : (default : PUnit) = PUnit.unit :=
 #align punit.default_eq_star PUnit.default_eq_unit
 
 /-- Every provable proposition is unique, as all proofs are equal. -/
-def uniqueProp {p : Prop} (h : p) : Unique p where
+def uniqueProp {p : Prop} (h : p) : Unique.{0} p where
   default := h
   uniq _ := rfl
 
@@ -205,7 +205,7 @@ protected theorem Surjective.subsingleton [Subsingleton α] (hf : Surjective f) 
 
 /-- If the domain of a surjective function is a singleton,
 then the codomain is a singleton as well. -/
-protected def Surjective.unique (hf : Surjective f) [Unique α] : Unique β :=
+protected def Surjective.unique (f : α → β) (hf : Surjective f) [Unique.{u} α] : Unique β :=
   @Unique.mk' _ ⟨f default⟩ hf.subsingleton
 
 /-- If `α` is inhabited and admits an injective map to a subsingleton type, then `α` is `Unique`. -/
