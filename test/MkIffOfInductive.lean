@@ -1,5 +1,7 @@
-import Mathlib.Tactic.MkIffOfInductiveProp
 import Std.Data.List.Basic
+import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Data.List.Perm
+
 
 mk_iff_of_inductive_prop List.Chain test.chain_iff
 
@@ -29,6 +31,21 @@ example (α : Sort u) (a b : α) : a = b ↔ b = a := test.eq_iff a b
 mk_iff_of_inductive_prop HEq      test.heq_iff
 example {α : Sort u} (a : α) {β : Sort u} (b : β) : HEq a b ↔ β = α ∧ HEq b a := test.heq_iff a b
 
+mk_iff_of_inductive_prop List.Perm  test.perm_iff
+example {α : Type _} (a b : List α) :
+    a ~ b ↔
+      a = List.nil ∧ b = List.nil ∨
+        (∃ (x : α) (l₁ l₂ : List α), l₁ ~ l₂ ∧ a = x :: l₁ ∧ b = x :: l₂) ∨
+          (∃ (x y : α) (l : List α), a = y :: x :: l ∧ b = x :: y :: l) ∨
+            ∃ (l₂ : List α), a ~ l₂ ∧ l₂ ~ b := test.perm_iff a b
+
+mk_iff_of_inductive_prop List.Pairwise  test.pairwise_iff
+example {α : Type} (R : α → α → Prop) (al : List α) :
+    List.Pairwise R al ↔
+      al = List.nil ∨
+        ∃ (a : α) (l : List α), (∀ (a' : α), a' ∈ l → R a a') ∧ List.Pairwise R l ∧ al = a :: l
+ := test.pairwise_iff R al
+
 inductive test.is_true (p : Prop) : Prop
 | triviality (h : p) : test.is_true p
 
@@ -50,4 +67,3 @@ inductive ReflTransGen {α : Type _} (r : α → α → Prop) (a : α) : α → 
 example {α : Type} (r: α → α → Prop) (a c : α) :
     ReflTransGen r a c ↔ c = a ∨ ∃ b : α, ReflTransGen r a b ∧ r b c :=
  ReflTransGen_iff r a c
-

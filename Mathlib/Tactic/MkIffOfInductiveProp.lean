@@ -1,8 +1,23 @@
 import Lean
+import Mathlib.Tactic.Existsi
+import Mathlib.Tactic.LeftRight
 
 namespace Mathlib.Tactic
 
 open Lean Meta
+
+/-- `select m n` runs `tactic.right` `m` times, and then `tactic.left` `(n-m)` times.
+Fails if `n < m`. -/
+private def select (m n : Nat) (goal : MVarId) : MetaM MVarId :=
+  match m,n with
+  | 0, 0             => pure goal
+  | 0, (_ + 1)       => do let [new_goal] ← Mathlib.Tactic.LeftRight.leftRightMeta `left 0 2 goal
+                                | throwError "expected only one new goal"
+                           pure new_goal
+  | (m + 1), (n + 1) => do let [new_goal] ← Mathlib.Tactic.LeftRight.leftRightMeta `right 1 2 goal
+                                | throwError "expected only one new goal"
+                           select m n new_goal
+  | _, _             => failure
 
 /-- `compactRelation bs as_ps`: Produce a relation of the form:
 ```lean
@@ -67,14 +82,10 @@ def init : List α → List α
 def constrToProp (univs : List Level) (params : List Expr) (idxs : List Expr) (c : Name) :
   MetaM ((List (Option Expr) × (Expr ⊕ Nat)) × Expr)  :=
 do let type := (← getConstInfo c).instantiateTypeLevelParams univs
-   dbg_trace f!"type: {type}"
    let type' ← Meta.forallBoundedTelescope type (params.length) fun fvars ty => do
      pure $ ty.replaceFVars fvars params.toArray
 
-   dbg_trace f!"univs: {univs}"
    dbg_trace f!"type': {type'}"
-   dbg_trace f!"params: {params}"
-   dbg_trace f!"idxs: {idxs}"
 
    Meta.forallTelescope type' fun fvars ty => do
      dbg_trace f!"inner fvars: {fvars}"
@@ -95,14 +106,13 @@ do let type := (← getConstInfo c).instantiateTypeLevelParams univs
            pure (Sum.inr 0, (mkConst `True))
      | _, []  => do
           let t : Expr ← bs'.getLast!.fvarId!.getType
-          let t := subst t
           let l := (←inferType t).sortLevel!
           if l == Level.zero then do
             let r ← mkExistsLst (init bs') t
-            pure (Sum.inl bs'.getLast!, r)
+            pure (Sum.inl bs'.getLast!, subst r)
           else do
             let r ← mkExistsLst bs' (mkConst `True)
-            pure (Sum.inr 0, r)
+            pure (Sum.inr 0, subst r)
      | _, _ => do
        let r ← mkExistsLst bs' (mkAndLst eqs)
        pure (Sum.inr eqs.length, subst r)
@@ -111,21 +121,32 @@ do let type := (← getConstInfo c).instantiateTypeLevelParams univs
 /--
   Proves the left to right direction.
 -/
-def toCases (mvar : MVarId) (shape : List $ List (Option Expr) × (Expr ⊕ ℕ)) : MetaM Unit :=
+def toCases (mvar : MVarId) (shape : List $ List (Option Expr) × (Expr ⊕ Nat)) : MetaM Unit :=
 do
   let ty ← instantiateMVars (←mvar.getType)
   dbg_trace f!"mvar type = {ty}"
   let ⟨h, mvar'⟩ ← mvar.intro1
-  let _ ← Elab.Term.TermElabM.run $ Elab.Tactic.run mvar' do
-      Elab.Tactic.evalTactic (←`(tactic| admit))
-      pure ()
+  let subgoals ← mvar'.cases h
+  let _ ← (shape.zip subgoals.toList).enum.mapM fun ⟨p, ⟨⟨shape, t⟩, subgoal⟩⟩ => do
+    let vars := subgoal.fields
+    let si := (shape.zip vars.toList).filterMap (λ ⟨c,v⟩ => c >>= λ _ => some v)
+    dbg_trace f!"si = {si}"
+    let mvar'' ← select p (subgoals.size - 1) subgoal.mvarId
+    let _ ← Elab.Term.TermElabM.run $ Elab.Tactic.run mvar'' $ match t with
+      | Sum.inl e => do dbg_trace f!"inl {e}"
+                        let v := vars.get! (shape.length - 1)
+--                        let _ ← (init si).mapM fun e => do
+--                          Elab.Tactic.evalTactic (←`(tactic| existsi $e))
+                        Elab.Tactic.evalTactic (←`(tactic| admit))
+                        pure ()
+      | Sum.inr n => do dbg_trace f!"inr {n}"
+                        Elab.Tactic.evalTactic (←`(tactic| admit))
+                        pure ()
+    pure ()
+
   pure ()
 
 /- 
-  i ← induction h,
-  focus ((s.zip i).enum.map $ λ⟨p, (shape, t), _, vars, _⟩, do
-    let si := (shape.zip vars).filter_map (λ⟨c, v⟩, c >>= λ _, some v),
-    select p (s.length - 1),
     match t with
     | sum.inl e := do
       si.init.mmap' existsi,
@@ -137,6 +158,18 @@ do
     end,
     done),
   done -/
+
+def toInductive (mvar : MVarId) (cs : List Name)
+  (gs : List Expr) (s : List (List (Option Expr) × (Expr ⊕ Nat))) (h : FVarId) :
+  MetaM Unit := do
+  match s.length with
+  | 0       => do let _ ← mvar.cases h
+                  pure ()
+  | (n + 1) => do
+      let _ ← Elab.Term.TermElabM.run $ Elab.Tactic.run mvar do
+        Elab.Tactic.evalTactic (←`(tactic| admit))
+        pure ()
+      pure ()
 
 def mkIffOfInductivePropImpl (ind : Name) (rel : Name) : MetaM Unit := do
   let constInfo ← getConstInfo ind
@@ -170,10 +203,9 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) : MetaM Unit := do
 
   let () ← toCases mp shape
 
-  let _ ← Elab.Term.TermElabM.run $ Elab.Tactic.run mpr do
-      Elab.Tactic.evalTactic (←`(tactic| admit))
-      pure ()
-
+  let ⟨mprFvar, mpr'⟩ ← mpr.intro1
+  let () ← toInductive mpr' constrs
+            ((fvars.toList.take params).map .fvar) shape mprFvar
 
   let decl : Declaration := .thmDecl {
         name := rel
