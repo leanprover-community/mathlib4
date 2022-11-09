@@ -144,6 +144,10 @@ variable {F α β} [i : FunLike F α β]
 -- Porting note: @[nolint dangerous_instance]
 instance (priority := 100) : CoeFun F fun _ => ∀ a : α, β a where coe := FunLike.coe
 
+#eval Lean.Elab.Command.liftTermElabM do
+  Tactic.NormCast.registerCoercion ``FunLike.coe
+    (some { numArgs := 5, coercee := 4, type := .coeFun })
+
 @[simp]
 theorem coe_eq_coe_fn : (FunLike.coe : F → ∀ a : α, β a) = (fun f => ↑f) :=
   rfl
