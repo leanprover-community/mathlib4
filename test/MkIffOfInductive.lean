@@ -2,7 +2,6 @@ import Std.Data.List.Basic
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Data.List.Perm
 
-
 mk_iff_of_inductive_prop List.Chain test.chain_iff
 
 example {α : Type _} (R : α → α → Prop) (a : α) (al : List α) :
@@ -59,6 +58,13 @@ structure foo (m n : Nat) : Prop where
 
 example (m n : Nat) : foo m n ↔ m = n ∧ m + n = 2 := foo_iff m n
 
+@[mk_iff bar]
+structure foo2 (m n : Nat) : Prop where
+  equal : m = n
+  sum_eq_two : m + n = 2
+
+example (m n : Nat) : foo2 m n ↔ m = n ∧ m + n = 2 := bar m n
+
 @[mk_iff]
 inductive ReflTransGen {α : Type _} (r : α → α → Prop) (a : α) : α → Prop
 | refl : ReflTransGen r a a
@@ -67,10 +73,3 @@ inductive ReflTransGen {α : Type _} (r : α → α → Prop) (a : α) : α → 
 example {α : Type} (r: α → α → Prop) (a c : α) :
     ReflTransGen r a c ↔ c = a ∨ ∃ b : α, ReflTransGen r a b ∧ r b c :=
  ReflTransGen_iff r a c
-
-example (p q r : Prop) : (p ∧ q ∧ r) :=
-by refine ⟨?_, ?_⟩; sorry
-   refine ⟨?_, ?_⟩; sorry
-   sorry
-
-
