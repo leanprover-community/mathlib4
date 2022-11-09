@@ -38,17 +38,10 @@ namespace NeZero
 
 variable {R S M F : Type _} {r : R} {x y : M} {n p : Nat}
 
---{a : ℕ+}
 instance succ : NeZero (n + 1) :=
   ⟨n.succ_ne_zero⟩
 
 theorem of_pos [Preorder M] [Zero M] (h : 0 < x) : NeZero x :=
   ⟨ne_of_gt h⟩
-
-instance coe_trans [Zero M] [Coe R S] [CoeTail S M] [h : NeZero (r : M)] : NeZero ((r : S) : M) :=
-  ⟨h.out⟩
-
-theorem trans [Zero M] [Coe R S] [CoeTail S M] (h : NeZero ((r : S) : M)) : NeZero (r : M) :=
-  ⟨h.out⟩
 
 end NeZero
