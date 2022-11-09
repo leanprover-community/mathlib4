@@ -118,6 +118,13 @@ do let type := (← getConstInfo c).instantiateTypeLevelParams univs
        pure (Sum.inr eqs.length, subst r)
      pure ((bs, n), r)
 
+def existsi (mvar : MVarId) (e : Expr) : MetaM MVarId := do
+  let (subgoals,_) ← Elab.Term.TermElabM.run $ Elab.Tactic.run mvar do
+    Elab.Tactic.evalTactic (←`(tactic| refine ⟨?_,?_⟩))
+  let [sg1, sg2] := subgoals | throwError "expected two subgoals"
+  sg1.assign e
+  pure sg2
+
 /--
   Proves the left to right direction.
 -/
@@ -132,26 +139,24 @@ do
     let si := (shape.zip vars.toList).filterMap (λ ⟨c,v⟩ => c >>= λ _ => some v)
     dbg_trace f!"si = {si}"
     let mvar'' ← select p (subgoals.size - 1) subgoal.mvarId
-    let _ ← Elab.Term.TermElabM.run $ Elab.Tactic.run mvar'' $ match t with
-      | Sum.inl e => do dbg_trace f!"inl {e}"
-                        let v := vars.get! (shape.length - 1)
---                        let _ ← (init si).mapM fun e => do
---                          Elab.Tactic.evalTactic (←`(tactic| existsi $e))
+    match t with
+    | Sum.inl _ => do
+      let v := vars.get! (shape.length - 1)
+      let mv ← (init si).foldlM existsi mvar''
+      mv.assign v
+    | Sum.inr n => do dbg_trace f!"inr {n}"
+                      let mv ← si.foldlM existsi mvar''
+                      dbg_trace f!"subgoal type: {←mv.getType}"
+                      let _ ←Elab.Term.TermElabM.run $ Elab.Tactic.run mv do
                         Elab.Tactic.evalTactic (←`(tactic| admit))
                         pure ()
-      | Sum.inr n => do dbg_trace f!"inr {n}"
-                        Elab.Tactic.evalTactic (←`(tactic| admit))
-                        pure ()
+                      pure ()
     pure ()
 
   pure ()
 
 /- 
     match t with
-    | sum.inl e := do
-      si.init.mmap' existsi,
-      some v ← return $ vars.nth (shape.length - 1),
-      exact v
     | sum.inr n := do
       si.mmap' existsi,
       iterate_exactly (n - 1) (split >> constructor >> skip) >> constructor >> skip

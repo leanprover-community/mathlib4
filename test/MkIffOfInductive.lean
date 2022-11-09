@@ -67,3 +67,10 @@ inductive ReflTransGen {α : Type _} (r : α → α → Prop) (a : α) : α → 
 example {α : Type} (r: α → α → Prop) (a c : α) :
     ReflTransGen r a c ↔ c = a ∨ ∃ b : α, ReflTransGen r a b ∧ r b c :=
  ReflTransGen_iff r a c
+
+example (p q r : Prop) : (p ∧ q ∧ r) :=
+by refine ⟨?_, ?_⟩; sorry
+   refine ⟨?_, ?_⟩; sorry
+   sorry
+
+
