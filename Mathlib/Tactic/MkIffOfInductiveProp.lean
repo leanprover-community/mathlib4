@@ -125,44 +125,42 @@ def existsi (mvar : MVarId) (e : Expr) : MetaM MVarId := do
   sg1.assign e
   pure sg2
 
+def splitThenConstructor (mvar : MVarId) (n : Nat) : MetaM Unit :=
+match n with
+| 0   => do
+  let (subgoals',_) ← Elab.Term.TermElabM.run $ Elab.Tactic.run mvar do
+    Elab.Tactic.evalTactic (←`(tactic| constructor))
+  let [] := subgoals' | throwError "expected no subgoals"
+  pure ()
+| n  + 1 => do
+  let (subgoals,_) ← Elab.Term.TermElabM.run $ Elab.Tactic.run mvar do
+    Elab.Tactic.evalTactic (←`(tactic| refine ⟨?_,?_⟩))
+  let [sg1, sg2] := subgoals | throwError "expected two subgoals"
+  let (subgoals',_) ← Elab.Term.TermElabM.run $ Elab.Tactic.run sg1 do
+    Elab.Tactic.evalTactic (←`(tactic| constructor))
+  let [] := subgoals' | throwError "expected no subgoals"
+  splitThenConstructor sg2 n
+
 /--
   Proves the left to right direction.
 -/
 def toCases (mvar : MVarId) (shape : List $ List (Option Expr) × (Expr ⊕ Nat)) : MetaM Unit :=
 do
-  let ty ← instantiateMVars (←mvar.getType)
-  dbg_trace f!"mvar type = {ty}"
   let ⟨h, mvar'⟩ ← mvar.intro1
   let subgoals ← mvar'.cases h
   let _ ← (shape.zip subgoals.toList).enum.mapM fun ⟨p, ⟨⟨shape, t⟩, subgoal⟩⟩ => do
     let vars := subgoal.fields
     let si := (shape.zip vars.toList).filterMap (λ ⟨c,v⟩ => c >>= λ _ => some v)
-    dbg_trace f!"si = {si}"
     let mvar'' ← select p (subgoals.size - 1) subgoal.mvarId
     match t with
     | Sum.inl _ => do
       let v := vars.get! (shape.length - 1)
       let mv ← (init si).foldlM existsi mvar''
       mv.assign v
-    | Sum.inr n => do dbg_trace f!"inr {n}"
-                      let mv ← si.foldlM existsi mvar''
-                      dbg_trace f!"subgoal type: {←mv.getType}"
-                      let _ ←Elab.Term.TermElabM.run $ Elab.Tactic.run mv do
-                        Elab.Tactic.evalTactic (←`(tactic| admit))
-                        pure ()
-                      pure ()
-    pure ()
-
+    | Sum.inr n => do
+      let mv ← si.foldlM existsi mvar''
+      splitThenConstructor mv (n - 1)
   pure ()
-
-/- 
-    match t with
-    | sum.inr n := do
-      si.mmap' existsi,
-      iterate_exactly (n - 1) (split >> constructor >> skip) >> constructor >> skip
-    end,
-    done),
-  done -/
 
 def toInductive (mvar : MVarId) (cs : List Name)
   (gs : List Expr) (s : List (List (Option Expr) × (Expr ⊕ Nat))) (h : FVarId) :
