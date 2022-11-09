@@ -238,6 +238,11 @@ def toInductive (mvar : MVarId) (cs : List Name)
            let (mv', fvars) ← nCasesProd n mv h
            let lastfv := fvars.getLast!
            let (mv2, fvars') ← nCasesProd e mv' lastfv
+
+           /- (note from mathlib3 version): `es.mmap' subst`: fails when we have dependent
+           equalities (`heq`). `subst` will change the dependent hypotheses, so that the `uniq`
+           local names in `es` are wrong afterwards. Instead we revert them and pull them out
+           one-by-one. -/
            let (_, mv3) ← mv2.revert fvars'.toArray
            let mv4 ← fvars'.foldlM (λ mv _ => do let ⟨fv, mv'⟩ ← mv.intro1
                                                  subst mv' fv
@@ -259,7 +264,7 @@ def toInductive (mvar : MVarId) (cs : List Name)
           let _ ← isDefEq t mt -- infer values for those mvars we just made
           mvar'.assign e
 
-/-- Implementation for both `mk_iff` and `mk_iff_of_inductive_prop`.
+/-- Implementation for both `mk_iff` and `mk_iff_of_inductive_prop`.y
 -/
 def mkIffOfInductivePropImpl (ind : Name) (rel : Name) : MetaM Unit := do
   let constInfo ← getConstInfo ind
