@@ -34,6 +34,7 @@ namespace Quot
 variable {ra : α → α → Prop} {rb : β → β → Prop} {φ : Quot ra → Quot rb → Sort _}
 
 -- mathport name: mk
+@[inherit_doc]
 local notation:arg "⟦" a "⟧" => Quot.mk _ a
 
 @[elab_as_elim]
@@ -186,6 +187,7 @@ variable [sa : Setoid α] [sb : Setoid β]
 
 variable {φ : Quotient sa → Quotient sb → Sort _}
 
+@[inherit_doc]
 notation:arg "⟦" a "⟧" => Quotient.mk _ a
 
 instance (s : Setoid α) [Inhabited α] : Inhabited (Quotient s) :=
