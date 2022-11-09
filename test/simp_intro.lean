@@ -3,7 +3,7 @@ import Mathlib.Tactic.SimpIntro
 
 example : x + 0 = y → x = y := by
   simp_intro
-  guard_target == x = y → x = y
+  guard_target = x = y → x = y
   exact id
 
 example : x + 0 = y → x = y := by simp_intro h₁
@@ -14,7 +14,7 @@ example (h : x = z) : x + 0 = y → x = z := by simp_intro [h]
 
 example (h : y = z) : x + 0 = y → x = z := by
   simp_intro
-  guard_target == x = y → x = z
+  guard_target = x = y → x = z
   simp_intro .. [h]
 
 example (h : y = z) : x + 0 = y → x = z := by simp_intro _; exact h

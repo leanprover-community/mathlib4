@@ -88,7 +88,8 @@ namespace IsEmpty
 open Function
 
 /-- Eliminate out of a type that `IsEmpty` (using projection notation). -/
-protected def elim (_ : IsEmpty α) {p : α → Sort _} (a : α) : p a :=
+@[elab_as_elim]
+protected def elim {α : Sort u} (_ : IsEmpty α) {p : α → Sort _} (a : α) : p a :=
   isEmptyElim a
 
 /-- Non-dependent version of `IsEmpty.elim`. Helpful if the elaborator cannot elaborate `h.elim a`

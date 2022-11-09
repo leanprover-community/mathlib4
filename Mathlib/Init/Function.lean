@@ -3,6 +3,7 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
+import Mathlib.Mathport.Rename
 -- a port of core Lean `init/function.lean`
 
 /-!
@@ -22,9 +23,13 @@ variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
 from `β` to `α`. -/
-@[reducible] def on_fun (f : β → β → φ) (g : α → β) : α → α → φ :=
+@[reducible] def onFun (f : β → β → φ) (g : α → β) : α → α → φ :=
 λ x y => f (g x) (g y)
 
+/-- Given functions `f : α → β → φ`, `g : α → β → δ` and a binary operator `op : φ → δ → ζ`,
+produce a function `α → β → ζ` that applies `f` and `g` on each argument and then applies
+`op` to the results.
+-/
 @[reducible] def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ)
   : α → β → ζ :=
 λ x y => op (f x y) (g x y)
@@ -35,9 +40,17 @@ from `β` to `α`. -/
 @[reducible] def app {β : α → Sort u₂} (f : ∀ x, β x) (x : α) : β x :=
 f x
 
+@[inherit_doc onFun]
+infixl:2 " on " => onFun
+
+@[inherit_doc combine]
+notation f " -[" op "]- " g => combine f op g
+
 theorem left_id (f : α → β) : id ∘ f = f := rfl
 
 theorem right_id (f : α → β) : f ∘ id = f := rfl
+
+#align function.comp_app Function.comp_apply
 
 theorem comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ (g ∘ h) := rfl
 
@@ -54,7 +67,7 @@ theorem Injective.comp {g : β → φ} {f : α → β} (hg : Injective g) (hf : 
   Injective (g ∘ f) :=
 fun _ _ h => hf (hg h)
 
-/-- A function `f : α → β` is calles surjective if every `b : β` is equal to `f a`
+/-- A function `f : α → β` is called surjective if every `b : β` is equal to `f a`
 for some `a : α`. -/
 @[reducible] def Surjective (f : α → β) : Prop := ∀ b, ∃ a, f a = b
 
@@ -75,11 +88,15 @@ def LeftInverse (g : β → α) (f : α → β) : Prop := ∀ x, g (f x) = x
 /-- `has_LeftInverse f` means that `f` has an unspecified left inverse. -/
 def has_LeftInverse (f : α → β) : Prop := ∃ finv : β → α, LeftInverse finv f
 
+#align has_left_inverse has_LeftInverse
+
 /-- `RightInverse g f` means that g is a right inverse to f. That is, `f ∘ g = id`. -/
 def RightInverse (g : β → α) (f : α → β) : Prop := LeftInverse f g
 
 /-- `has_RightInverse f` means that `f` has an unspecified right inverse. -/
 def has_RightInverse (f : α → β) : Prop := ∃ finv : β → α, RightInverse finv f
+
+#align has_right_inverse has_RightInverse
 
 theorem LeftInverse.injective {g : β → α} {f : α → β} : LeftInverse g f → Injective f :=
 λ h a b hf => h a ▸ h b ▸ hf ▸ rfl

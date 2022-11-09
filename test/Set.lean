@@ -21,9 +21,9 @@ example (x : Nat) (h : x + x - x = 3) : x + x - x = 3 := by
   guard_hyp h2 : w = y
   set z := w with h3
   set a := 3
-  guard_target == z + z - z = a
+  guard_target = z + z - z = a
   set i'm_the_goal : Prop := z + z - z = a
-  guard_target == i'm_the_goal
+  guard_target = i'm_the_goal
   apply h
 
 example (x : Nat) (h : x - x = 0) : x = x := by

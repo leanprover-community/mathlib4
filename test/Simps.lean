@@ -3,7 +3,7 @@ import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 import Mathlib.Data.Equiv.Basic
-import Mathlib.Data.Prod
+import Mathlib.Data.Prod.Basic
 
 -- set_option trace.simps.debug true
 -- set_option trace.simps.verbose true
@@ -151,12 +151,12 @@ run_cmd liftCoreM <| do
 
 example {α} (x : α) : rfl2.toFun x = x ∧ rfl2.invFun x = x := by
   dsimp
-  guard_target == x = x ∧ x = x
+  guard_target = x = x ∧ x = x
   exact ⟨rfl, rfl⟩
 
 example {α} (x : α) : rfl2.toFun x = x ∧ rfl2.invFun x = x := by
   dsimp only [rfl2_toFun, rfl2_invFun]
-  guard_target == x = x ∧ x = x
+  guard_target = x = x ∧ x = x
   exact ⟨rfl, rfl⟩
 
 /- test `fullyApplied` option -/
@@ -434,6 +434,8 @@ infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 { hom     := λ a b => (a → b)
   id      := λ _ => id
   comp    := λ f g => g ∘ f }
+
+@[ext] theorem types.ext {X Y : Type u} {f g : X ⟶ Y} : (∀ x, f x = g x) → f = g := funext
 
 example (X : Type u) {x : Type u} (h : (X → X) = x) : (X ⟶ X) = x := by simp <;> rw [h]
 example (X : Type u) {f : X → X} (h : ∀ x, f x = x) : 𝟙 X = f := by ext <;> simp <;> rw [h]
@@ -838,10 +840,10 @@ Equiv.symm2
 --   (Equiv.symm3.toFun e).toFun y = e.invFun y := by
 --   constructor
 --   { dsimp only [Equiv.symm3_toFun]
---     guard_target == e.symm.toFun y = e.invFun y
+--     guard_target = e.symm.toFun y = e.invFun y
 --     rfl }
 --   { dsimp only [Equiv.symm3_toFun_toFun]
---     guard_target == e.invFun y = e.invFun y
+--     guard_target = e.invFun y = e.invFun y
 --     rfl }
 
 end NestedNonFullyApplied
@@ -931,7 +933,7 @@ structure MyType :=
 -- todo: this fails in Lean 4, not sure what is going on
 -- example (h : false) (x y : { x : Fin (Nat.add 3 0) // 1 + 1 = 2 }) : myTypeDef.A = Unit := by
 --   simp only [myTypeDef_A]
---   guard_target == { _x : Fin 3 // true } = Unit
+--   guard_target = { _x : Fin 3 // true } = Unit
 --   /- note: calling only one of `simp` or `dsimp` does not produce the current target
 --   as the following tests show. -/
 --   -- successIfFail { guard_hyp x : { x : Fin 3 // true } }
@@ -956,14 +958,14 @@ structure MyType :=
 -- example {M N P : Type _} [mul_one_class M] [mul_one_class N] [mul_one_class P]
 --   (hnp : N →* P) (hmn : M →* N) (m : M) : hnp.my_comp hmn m = hnp (hmn m) := by
 --   dsimp
---   guard_target == hnp (hmn m) = hnp (hmn m)
+--   guard_target = hnp (hmn m) = hnp (hmn m)
 --   rfl
 
 -- -- `to_additive` adds the `_rfl_lemma` attribute to `AddMonoidHom.my_comp_apply`
 -- example {M N P : Type _} [add_zero_class M] [add_zero_class N] [add_zero_class P]
 --   (hnp : N →+ P) (hmn : M →+ N) (m : M) : hnp.my_comp hmn m = hnp (hmn m) := by
 --   dsimp
---   guard_target == hnp (hmn m) = hnp (hmn m)
+--   guard_target = hnp (hmn m) = hnp (hmn m)
 --   rfl
 
 -- test that `to_additive` works with a custom name
@@ -1013,7 +1015,7 @@ initialize_simps_projections DecoratedEquiv
 
 example {α : Type} (x z : α) (h : x = z) : (foo α).symm x = z := by
   dsimp
-  guard_target == x = z
+  guard_target = x = z
   rw [h]
 
 @[simps toEquiv' apply symm_apply] def foo2 (α : Type) : DecoratedEquiv α α :=
@@ -1024,17 +1026,17 @@ example {α : Type} (x z : α) (h : x = z) : (foo α).symm x = z := by
 
 example {α : Type} (x z : α) (h : foo.rfl x = z) : (foo2 α).toEquiv' x = z := by
   dsimp only [foo2_toEquiv']
-  guard_target == foo.rfl x = z
+  guard_target = foo.rfl x = z
   rw [h]
 
 example {α : Type} (x z : α) (h : x = z) : (foo2 α).toEquiv' x = z := by
   dsimp only [foo2_apply]
-  guard_target == x = z
+  guard_target = x = z
   rw [h]
 
 example {α : Type} (x z : α) (h : x = z) : foo2 α x = z := by
   dsimp
-  guard_target == x = z
+  guard_target = x = z
   rw [h]
 
 structure FurtherDecoratedEquiv (α : Sort _) (β : Sort _) extends DecoratedEquiv α β :=
@@ -1070,7 +1072,7 @@ initialize_simps_projections FurtherDecoratedEquiv
 
 example {α : Type} (x z : α) (h : x = z) : (ffoo α).symm x = z := by
   dsimp
-  guard_target == x = z
+  guard_target = x = z
   rw [h]
 
 @[simps] def ffoo3 (α : Type) : FurtherDecoratedEquiv α α :=
@@ -1109,7 +1111,7 @@ initialize_simps_projections OneMore
   Q_invFun := λ y => ⟨y, rfl⟩ }
 
 example {α : Type} (x : α) : (fffoo α).symm x = x :=
-by dsimp <;> guard_target == x = x <;> rfl
+by dsimp <;> guard_target = x = x <;> rfl
 
 @[simps apply to_dequiv_apply toFurtherDecoratedEquiv_apply to_dequiv]
 def fffoo2 (α : Type) : OneMore α α := fffoo α
