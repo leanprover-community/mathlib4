@@ -11,7 +11,7 @@ import Mathlib.Init.Algebra.Order
 /-!
 # `NeZero` typeclass
 
-We create a typeclass `ne_zero n` which carries around the fact that `(n : R) ≠ 0`.
+We create a typeclass `NeZero n` which carries around the fact that `(n : R) ≠ 0`.
 
 ## Main declarations
 
@@ -36,12 +36,10 @@ theorem eq_zero_or_ne_zero {α} [Zero α] (a : α) : a = 0 ∨ NeZero a :=
 
 namespace NeZero
 
-variable {R S M F : Type _} {r : R} {x y : M} {n p : Nat}
+variable {M : Type _} {x : M}
 
-instance succ : NeZero (n + 1) :=
-  ⟨n.succ_ne_zero⟩
+instance succ : NeZero (n + 1) := ⟨n.succ_ne_zero⟩
 
-theorem of_pos [Preorder M] [Zero M] (h : 0 < x) : NeZero x :=
-  ⟨ne_of_gt h⟩
+theorem of_pos [Preorder M] [Zero M] (h : 0 < x) : NeZero x := ⟨ne_of_gt h⟩
 
 end NeZero
