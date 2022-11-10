@@ -13,10 +13,6 @@ import Mathlib.Tactic.MkIffOfInductiveProp
 
 set_option autoImplicit false
 
--- **TODO**
--- depends on Data.Quot #559
--- and on #561 (mkiffs)
-
 /-!
 # Relation closures
 
@@ -331,14 +327,14 @@ theorem trans_left (hab : TransGen r a b) (hbc : ReflTransGen r b c) : TransGen 
   case tail c d _ hcd hac => exact hac.tail hcd
 
 instance : Trans (TransGen r) (ReflTransGen r) (TransGen r) :=
-⟨trans_left⟩
+  ⟨trans_left⟩
 
 @[trans]
 theorem trans (hab : TransGen r a b) (hbc : TransGen r b c) : TransGen r a c :=
   trans_left hab hbc.to_refl
 
 instance : Trans (TransGen r) (TransGen r) (TransGen r) :=
-⟨trans⟩
+  ⟨trans⟩
 
 theorem head' (hab : r a b) (hbc : ReflTransGen r b c) : TransGen r a c :=
   trans_left (single hab) hbc
@@ -378,7 +374,7 @@ theorem trans_right (hab : ReflTransGen r a b) (hbc : TransGen r b c) : TransGen
   case tail c d _ hcd hac => exact hac.tail hcd
 
 instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
-⟨trans_right⟩
+  ⟨trans_right⟩
 
 theorem tail'_iff : TransGen r a c ↔ ∃ b, ReflTransGen r a b ∧ r b c := by
   refine' ⟨fun h => _, fun ⟨b, hab, hbc⟩ => tail' hab hbc⟩
