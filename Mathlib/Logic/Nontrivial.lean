@@ -41,7 +41,6 @@ protected theorem Decidable.exists_ne [Nontrivial α] [DecidableEq α] (x : α) 
   by_cases hx:x = y
   · rw [← hx] at h
     exact ⟨y', h.symm⟩
-
   · exact ⟨y, Ne.symm hx⟩
 
 
