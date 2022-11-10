@@ -121,6 +121,10 @@ def Comp (r : α → β → Prop) (p : β → γ → Prop) (a : α) (c : γ) : P
   ∃ b, r a b ∧ p b c
 
 -- mathport name: «expr ∘r »
+/-- The composition of two relations, yielding a new relation.  The result
+relates a term of `α` and a term of `γ` if there is an intermediate
+term of `β` related to both.
+-/
 local infixr:80 " ∘r " => Relation.Comp
 
 theorem comp_eq : r ∘r (· = ·) = r :=
@@ -595,8 +599,8 @@ theorem join_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) (h : 
     Join r' a b → r a b
   | ⟨_, hac, hbc⟩ => hr.trans (h _ _ hac) (hr.symm <| h _ _ hbc)
 
-theorem refl_trans_gen_of_transitive_reflexive {r' : α → α → Prop} (hr : Reflexive r) (ht : Transitive r)
-    (h : ∀ a b, r' a b → r a b) (h' : ReflTransGen r' a b) : r a b := by
+theorem refl_trans_gen_of_transitive_reflexive {r' : α → α → Prop} (hr : Reflexive r)
+    (ht : Transitive r) (h : ∀ a b, r' a b → r a b) (h' : ReflTransGen r' a b) : r a b := by
   induction' h' with b c hab hbc ih
   · exact hr _
 
@@ -629,7 +633,8 @@ theorem Equivalence.eqv_gen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
 theorem Equivalence.eqv_gen_eq (h : Equivalence r) : EqvGen r = r :=
   funext fun _ => funext fun _ => propext <| h.eqv_gen_iff
 
-theorem EqvGen.mono {r p : α → α → Prop} (hrp : ∀ a b, r a b → p a b) (h : EqvGen r a b) : EqvGen p a b := by
+theorem EqvGen.mono {r p : α → α → Prop} (hrp : ∀ a b, r a b → p a b) (h : EqvGen r a b) :
+    EqvGen p a b := by
   induction h
   case rel a b h => exact EqvGen.rel _ _ (hrp _ _ h)
   case refl => exact EqvGen.refl _
