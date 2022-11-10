@@ -380,9 +380,7 @@ initialize Lean.registerBuiltinAttribute {
   add := fun decl stx _ => Lean.Meta.MetaM.run' do
     let tgt ← (match stx with
                | `(attr| mk_iff $tgt:ident) => pure tgt.getId
-               | `(attr| mk_iff) => match decl with
-                                    | .str parent base => pure (Name.mkStr parent (base ++ "_iff"))
-                                    | _ => throwError "mk_iff only works with string names"
+               | `(attr| mk_iff) => pure $ decl.appendAfter "_iff"
                | _ => throwError "unrecognized syntax")
     mkIffOfInductivePropImpl decl tgt
 }
