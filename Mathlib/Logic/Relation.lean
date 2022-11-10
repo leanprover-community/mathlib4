@@ -7,10 +7,11 @@ import Mathlib.Logic.Relator
 import Mathlib.Init.Propext
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Use
+import Mathlib.Init.Data.Quot
 
---*TODO* remove this
-import Mathlib.Tactic.LibrarySearch
-set_option autoImplicit false
+-- **TODO**
+-- depends on Data.Quot #559
+-- and on #561 (mkiffs)
 
 /-!
 # Relation closures
@@ -355,17 +356,20 @@ theorem to_refl {a b} (h : TransGen r a b) : ReflTransGen r a b := by
   exact ReflTransGen.single h
   exact ReflTransGen.tail ab bc
 
--- **TODO** in Lean 3 this was tagged `trans` but apparently lean 4 doesn't
--- support transitivity when more than one binary relation is involved.
---@[trans]
 theorem trans_left (hab : TransGen r a b) (hbc : ReflTransGen r b c) : TransGen r a c := by
   induction hbc
   case refl => assumption
   case tail c d _ hcd hac => exact hac.tail hcd
 
+instance : Trans (TransGen r) (ReflTransGen r) (TransGen r) :=
+⟨trans_left⟩
+
 @[trans]
 theorem trans (hab : TransGen r a b) (hbc : TransGen r b c) : TransGen r a c :=
   trans_left hab hbc.to_refl
+
+instance : Trans (TransGen r) (TransGen r) (TransGen r) :=
+⟨trans⟩
 
 theorem head' (hab : r a b) (hbc : ReflTransGen r b c) : TransGen r a c :=
   trans_left (single hab) hbc
@@ -385,10 +389,9 @@ theorem head_induction_on {P : ∀ a : α, TransGen r a b → Prop} {a : α} (h 
   induction h
   case single a h => exact base h
   case tail b c _ hbc h_ih =>
+  -- Lean 3 could figure out the motive and `apply
   refine @h_ih (λ {a : α} (hab : @TransGen α r a b) => P a (TransGen.tail hab hbc)) ?_ ?_;
---  show ∀ a, r a b → P a _
   exact fun h => ih h (single hbc) (base hbc)
-  --show ∀ a a', r a a' → trans_gen r a' b → P a' _ → P a _
   exact fun hab hbc => ih hab _
 
 @[elab_as_elim]
@@ -400,13 +403,13 @@ theorem trans_induction_on {P : ∀ {a b : α}, TransGen r a b → Prop} {a b : 
   | single h => exact base h
   | tail hab hbc h_ih => exact ih hab (single hbc) h_ih (base hbc)
 
--- **TODO** In mathlib3 this was tagged with the `@[trans]` attribute but Lean 4's version
--- of the attribute is not flexible enough to handle this yet.
---@[trans]
 theorem trans_right (hab : ReflTransGen r a b) (hbc : TransGen r b c) : TransGen r a c := by
   induction hbc
   case single c hbc => exact tail' hab hbc
   case tail c d _ hcd hac => exact hac.tail hcd
+
+instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
+⟨trans_right⟩
 
 theorem tail'_iff : TransGen r a c ↔ ∃ b, ReflTransGen r a b ∧ r b c := by
   refine' ⟨fun h => _, fun ⟨b, hab, hbc⟩ => tail' hab hbc⟩
@@ -643,7 +646,6 @@ end Join
 
 end Relation
 
-#exit -- just EqvGen to go
 section EqvGen
 
 variable {r : α → α → Prop} {a b : α}
@@ -655,10 +657,8 @@ theorem Equivalence.eqv_gen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
       induction h
       case rel => assumption
       case refl => exact h.1 _
-      case symm =>
-      apply h.2.1
-      assumption
-      case trans a b c _ _ hab hbc => exact h.2.2 hab hbc)
+      case symm => apply h.symm; assumption
+      case trans _ hab hbc => exact h.trans hab hbc)
     (EqvGen.rel a b)
 
 theorem Equivalence.eqv_gen_eq (h : Equivalence r) : EqvGen r = r :=
@@ -668,7 +668,7 @@ theorem EqvGen.mono {r p : α → α → Prop} (hrp : ∀ a b, r a b → p a b) 
   induction h
   case rel a b h => exact EqvGen.rel _ _ (hrp _ _ h)
   case refl => exact EqvGen.refl _
-  case symm a b h ih => exact EqvGen.symm _ _ ih
-  case trans a b c ih1 ih2 hab hbc => exact EqvGen.trans _ _ _ hab hbc
+  case symm a b _ ih => exact EqvGen.symm _ _ ih
+  case trans a b c _ _ hab hbc => exact EqvGen.trans _ _ _ hab hbc
 
 end EqvGen
