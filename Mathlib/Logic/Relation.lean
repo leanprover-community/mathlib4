@@ -3,7 +3,6 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Tactic.Basic
 import Mathlib.Logic.Relator
 import Mathlib.Init.Propext
 import Mathlib.Tactic.Relation.Rfl
@@ -17,7 +16,7 @@ set_option autoImplicit false
 # Relation closures
 
 This file defines the reflexive, transitive, and reflexive transitive closures of relations.
-It also proves some basic results on definitions in core, such as `eqv_gen`.
+It also proves some basic results on definitions such as `EqvGen`.
 
 Note that this is about unbundled relations, that is terms of types of the form `α → β → Prop`. For
 the bundled version, see `rel`.
@@ -34,7 +33,7 @@ the bundled version, see `rel`.
   the reflexive closure of the transitive closure, or the transitive closure of the reflexive
   closure. In terms of rewriting systems, this means that `a` can be rewritten to `b` in a number of
   rewrites.
-* `relation.comp`:  Relation composition. We provide notation `∘r`. For `r : α → β → Prop` and
+* `relation.Comp`:  Relation composition. We provide notation `∘r`. For `r : α → β → Prop` and
   `s : β → γ → Prop`, `r ∘r s`relates `a : α` and `c : γ` iff there exists `b : β` that's related to
   both.
 * `relation.map`: Image of a relation under a pair of maps. For `r : α → β → Prop`, `f : α → γ`,
