@@ -239,10 +239,9 @@ def toInductive (mvar : MVarId) (cs : List Name)
            let lastfv := fvars.getLast!
            let (mv2, fvars') ← nCasesProd e mv' lastfv
 
-           /- `fvars'.foldlM (λ mv fv => subst mv fs) mv2` fails when we have dependent
-           equalities (`HEq`). `subst` will change the dependent hypotheses, so that the
-           `uniq` local names are wrong afterwards. Instead we revert them and pull them
-           out one-by-one. -/
+           /- `fvars'.foldlM subst mv2` fails when we have dependent equalities (`HEq`).
+           `subst` will change the dependent hypotheses, so that the `uniq` local names
+           are wrong afterwards. Instead we revert them and pull them out one-by-one. -/
            let (_, mv3) ← mv2.revert fvars'.toArray
            let mv4 ← fvars'.foldlM (λ mv _ => do let ⟨fv, mv'⟩ ← mv.intro1
                                                  subst mv' fv
