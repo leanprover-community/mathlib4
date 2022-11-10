@@ -10,9 +10,6 @@ import Mathlib.Tactic.Use
 import Mathlib.Init.Data.Quot
 import Mathlib.Tactic.MkIffOfInductiveProp
 
-
-set_option autoImplicit false
-
 /-!
 # Relation closures
 
