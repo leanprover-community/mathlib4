@@ -13,30 +13,30 @@ Let `α` be a type with `<` and `0`.  We use the type `{x : α // 0 < x}` of pos
 to prove results about monotonicity of multiplication.  We also introduce the local notation `α>0`
 for the subtype `{x : α // 0 < x}`:
 
-If the type `α` also has a multiplication, then we combine this with (`contravariant_`)
-`covariant_class`es to assume that multiplication by positive elements is (strictly) monotone on a
-`mul_zero_class`, `monoid_with_zero`,...
+If the type `α` also has a multiplication, then we combine this with (`Contravariant`)
+`CovariantClass`es to assume that multiplication by positive elements is (strictly) monotone on a
+`MulZeroClass`, `MonoidWithZero`,...
 More specifically, we use extensively the following typeclasses:
 
 * monotone left
-* * `covariant_class α>0 α (λ x y, x * y) (≤)`, abbreviated `pos_mul_mono α`,
+* * `CovariantClass α>0 α (λ x y, x * y) (≤)`, abbreviated `PosMulMono α`,
     expressing that multiplication by positive elements on the left is monotone;
-* * `covariant_class α>0 α (λ x y, x * y) (<)`, abbreviated `pos_mul_strict_mono α`,
+* * `CovariantClass α>0 α (λ x y, x * y) (<)`, abbreviated `PosMulStrictMono α`,
     expressing that multiplication by positive elements on the left is strictly monotone;
 * monotone right
-* * `covariant_class α>0 α (λ x y, y * x) (≤)`, abbreviated `mul_pos_mono α`,
+* * `CovariantClass α>0 α (λ x y, y * x) (≤)`, abbreviated `MulPosMono α`,
     expressing that multiplication by positive elements on the right is monotone;
-* * `covariant_class α>0 α (λ x y, y * x) (<)`, abbreviated `mul_pos_strict_mono α`,
+* * `CovariantClass α>0 α (λ x y, y * x) (<)`, abbreviated `MulPosStrictMono α`,
     expressing that multiplication by positive elements on the right is strictly monotone.
 * reverse monotone left
-* * `contravariant_class α>0 α (λ x y, x * y) (≤)`, abbreviated `pos_mul_mono_rev α`,
+* * `ContravariantClass α>0 α (λ x y, x * y) (≤)`, abbreviated `PosMulMonoRev α`,
     expressing that multiplication by positive elements on the left is reverse monotone;
-* * `contravariant_class α>0 α (λ x y, x * y) (<)`, abbreviated `pos_mul_reflect_lt α`,
+* * `ContravariantClass α>0 α (λ x y, x * y) (<)`, abbreviated `PosMulReflectLt α`,
     expressing that multiplication by positive elements on the left is strictly reverse monotone;
 * reverse reverse monotone right
-* * `contravariant_class α>0 α (λ x y, y * x) (≤)`, abbreviated `mul_pos_mono_rev α`,
+* * `ContravariantClass α>0 α (λ x y, y * x) (≤)`, abbreviated `MulPosMonoRev α`,
     expressing that multiplication by positive elements on the right is reverse monotone;
-* * `contravariant_class α>0 α (λ x y, y * x) (<)`, abbreviated `mul_pos_reflect_lt α`,
+* * `ContravariantClass α>0 α (λ x y, y * x) (<)`, abbreviated `MulPosReflectLt α`,
     expressing that multiplication by positive elements on the right is strictly reverse monotone.
 
 ## Notation
@@ -67,42 +67,42 @@ set_option quotPrecheck false in
 /-- Local notation for the positive elements of a type `α`. TODO: actually make local. -/
 notation "α>0" => { x : α // 0 < x }
 
-/-- `pos_mul_mono α` is an abbreviation for `covariant_class α≥0 α (λ x y, x * y) (≤)`,
+/-- `PosMulMono α` is an abbreviation for `CovariantClass α≥0 α (λ x y, x * y) (≤)`,
 expressing that multiplication by nonnegative elements on the left is monotone. -/
 abbrev PosMulMono : Prop :=
   CovariantClass α≥0 α (fun x y => x * y) (· ≤ ·)
 
-/-- `mul_pos_mono α` is an abbreviation for `covariant_class α≥0 α (λ x y, y * x) (≤)`,
+/-- `MulPosMono α` is an abbreviation for `CovariantClass α≥0 α (λ x y, y * x) (≤)`,
 expressing that multiplication by nonnegative elements on the right is monotone. -/
 abbrev MulPosMono : Prop :=
   CovariantClass α≥0 α (fun x y => y * x) (· ≤ ·)
 
-/-- `pos_mul_strict_mono α` is an abbreviation for `covariant_class α>0 α (λ x y, x * y) (<)`,
+/-- `PosMulStrictMono α` is an abbreviation for `CovariantClass α>0 α (λ x y, x * y) (<)`,
 expressing that multiplication by positive elements on the left is strictly monotone. -/
 abbrev PosMulStrictMono : Prop :=
   CovariantClass α>0 α (fun x y => x * y) (· < ·)
 
-/-- `mul_pos_strict_mono α` is an abbreviation for `covariant_class α>0 α (λ x y, y * x) (<)`,
+/-- `MulPosStrictMono α` is an abbreviation for `CovariantClass α>0 α (λ x y, y * x) (<)`,
 expressing that multiplication by positive elements on the right is strictly monotone. -/
 abbrev MulPosStrictMono : Prop :=
   CovariantClass α>0 α (fun x y => y * x) (· < ·)
 
-/-- `pos_mul_reflect_lt α` is an abbreviation for `contravariant_class α≥0 α (λ x y, x * y) (<)`,
+/-- `PosMulReflectLt α` is an abbreviation for `ContravariantClas α≥0 α (λ x y, x * y) (<)`,
 expressing that multiplication by nonnegative elements on the left is strictly reverse monotone. -/
 abbrev PosMulReflectLt : Prop :=
   ContravariantClass α≥0 α (fun x y => x * y) (· < ·)
 
-/-- `mul_pos_reflect_lt α` is an abbreviation for `contravariant_class α≥0 α (λ x y, y * x) (<)`,
+/-- `MulPosReflectLt α` is an abbreviation for `ContravariantClas α≥0 α (λ x y, y * x) (<)`,
 expressing that multiplication by nonnegative elements on the right is strictly reverse monotone. -/
 abbrev MulPosReflectLt : Prop :=
   ContravariantClass α≥0 α (fun x y => y * x) (· < ·)
 
-/-- `pos_mul_mono_rev α` is an abbreviation for `contravariant_class α>0 α (λ x y, x * y) (≤)`,
+/-- `PosMulMonoRev α` is an abbreviation for `ContravariantClas α>0 α (λ x y, x * y) (≤)`,
 expressing that multiplication by positive elements on the left is reverse monotone. -/
 abbrev PosMulMonoRev : Prop :=
   ContravariantClass α>0 α (fun x y => x * y) (· ≤ ·)
 
-/-- `mul_pos_mono_rev α` is an abbreviation for `contravariant_class α>0 α (λ x y, y * x) (≤)`,
+/-- `MulPosMonoRev α` is an abbreviation for `ContravariantClas α>0 α (λ x y, y * x) (≤)`,
 expressing that multiplication by positive elements on the right is reverse monotone. -/
 abbrev MulPosMonoRev : Prop :=
   ContravariantClass α>0 α (fun x y => y * x) (· ≤ ·)
