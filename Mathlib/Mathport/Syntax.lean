@@ -20,6 +20,7 @@ import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.CommandQuote
+import Mathlib.Tactic.Congr
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
@@ -41,6 +42,8 @@ import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl
+import Mathlib.Tactic.Relation.Symm
+import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
@@ -210,8 +213,6 @@ namespace Tactic
 /- S -/ syntax "destruct " term : tactic
 /- N -/ syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
 
-/- E -/ syntax (name := symm) "symm" : tactic
-/- E -/ syntax (name := trans) "trans" (ppSpace colGt term)? : tactic
 /- B -/ syntax (name := cc) "cc" : tactic
 
 /- M -/ syntax (name := unfoldProjs) "unfold_projs" (config)? (ppSpace location)? : tactic
@@ -230,8 +231,6 @@ namespace Tactic
 /- E -/ syntax (name := rfl') "rfl'" : tactic
 /- E -/ syntax (name := symm') "symm'" (ppSpace location)? : tactic
 /- E -/ syntax (name := trans') "trans'" (ppSpace term)? : tactic
-
-/- E -/ syntax (name := classical) "classical" : tactic
 
 /- M -/ syntax (name := injectionsAndClear) "injections_and_clear" : tactic
 
@@ -269,9 +268,6 @@ namespace Tactic
 
 /- S -/ syntax (name := hint) "hint" : tactic
 
-/- N -/ syntax (name := congr') "congr" (ppSpace colGt num)?
-  (" with " (colGt rintroPat)* (" : " num)?)? : tactic
-/- M -/ syntax (name := rcongr) "rcongr" (ppSpace colGt rintroPat)* : tactic
 /- M -/ syntax (name := congrM) "congrm " term : tactic
 /- E -/ syntax (name := acChange) "ac_change " term (" using " num)? : tactic
 
@@ -296,9 +292,6 @@ namespace Tactic
 
 syntax generalizesArg := (ident " : ")? term:51 " = " ident
 /- M -/ syntax (name := generalizes) "generalizes " "[" generalizesArg,* "]" : tactic
-
-/- M -/ syntax (name := generalizeProofs) "generalize_proofs"
-  (ppSpace (colGt binderIdent))* (ppSpace location)? : tactic
 
 syntax withPattern := "-" <|> "_" <|> ident
 /- S -/ syntax (name := cases'') "cases''" casesTarget (" with " (colGt withPattern)+)? : tactic
@@ -338,11 +331,6 @@ syntax termList := " [" term,* "]"
 /- B -/ syntax (name := abel) "abel" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 /- B -/ syntax (name := abel!) "abel!" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 
-syntax ringMode := &"SOP" <|> &"raw" <|> &"horner"
-/- E -/ syntax (name := ringNF) "ring_nf" (config)? (ppSpace ringMode)? (ppSpace location)? : tactic
-/- E -/ syntax (name := ringNF!) "ring_nf!" (config)? (ppSpace ringMode)? (ppSpace location)? :
-  tactic
-
 /- E -/ syntax (name := noncommRing) "noncomm_ring" : tactic
 
 /- B -/ syntax (name := linearCombination) "linear_combination" (config)? (colGt term)? : tactic
@@ -365,8 +353,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 
 /- B -/ syntax (name := acMono) "ac_mono" ("*" <|> ("^" num))?
   (config)? ((" : " term) <|> (" := " term))? : tactic
-
-/- M -/ syntax (name := applyFun) "apply_fun " term (ppSpace location)? (" using " term)? : tactic
 
 /- M -/ syntax (name := intervalCases) "interval_cases" (ppSpace (colGt term))?
   (" using " term ", " term)? (" with " ident)? : tactic
@@ -415,7 +401,7 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := elementwise!) "elementwise!" (ppSpace (colGt ident))* : tactic
 /- M -/ syntax (name := deriveElementwiseProof) "derive_elementwise_proof" : tactic
 
-/- M -/ syntax (name := computeDegree) "compute_degree" : tactic
+/- M -/ syntax (name := computeDegreeLE) "compute_degree_le" : tactic
 
 /- B -/ syntax (name := positivity) "positivity" : tactic
 
@@ -468,17 +454,6 @@ namespace Conv
 -- https://github.com/leanprover-community/mathlib/issues/2882
 /- M -/ syntax (name := applyCongr) "apply_congr" (ppSpace (colGt term))? : conv
 
-/- E -/ syntax (name := normNum1) "norm_num1" : conv
-/- E -/ syntax (name := normNum) "norm_num" (simpArgs)? : conv
-
-/- E -/ syntax (name := ringNF) "ring_nf" (config)? (ppSpace ringMode)? : conv
-/- E -/ syntax (name := ringNF!) "ring_nf!" (config)? (ppSpace ringMode)? : conv
-/- E -/ syntax (name := ring) "ring" : conv
-/- E -/ syntax (name := ring!) "ring!" : conv
-
-/- E -/ syntax (name := ringExp) "ring_exp" : conv
-/- E -/ syntax (name := ringExp!) "ring_exp!" : conv
-
 /- M -/ syntax (name := slice) "slice " num num : conv
 
 end Conv
@@ -488,8 +463,6 @@ namespace Attr
 
 /- S -/ syntax (name := intro) "intro" : attr
 /- S -/ syntax (name := intro!) "intro!" : attr
-
-/- M -/ syntax (name := ext) "ext" (ppSpace ident)? : attr
 
 /- M -/ syntax (name := higherOrder) "higher_order" (ppSpace ident)? : attr
 /- S -/ syntax (name := interactive) "interactive" : attr
@@ -545,17 +518,10 @@ macro_rules
 
 /- N -/ syntax (name := defReplacer) "def_replacer " ident Term.optType : command
 
-/- S -/ syntax (name := simp) "#simp" (&" only")? (Tactic.simpArgs)? " :"? ppSpace term : command
-
 /- S -/ syntax (name := «where») "#where" : command
 
 /- M -/ syntax (name := reassoc_axiom) "reassoc_axiom " ident : command
 
 /- S -/ syntax (name := sample) "#sample " term : command
-
-/- S -/ syntax (name := normNum) "#norm_num" (&" only")? (Tactic.simpArgs)? " :"? ppSpace term :
-  command
-
-/- S -/ syntax (name := pushNeg) "#push_neg " term : command
 
 end Command
