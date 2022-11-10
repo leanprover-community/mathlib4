@@ -16,7 +16,6 @@ This file provides basic definitions and notation instances for Pi types.
 Instances of more sophisticated classes are defined in `Pi.lean` files elsewhere.
 -/
 
-
 open Function
 
 universe u v₁ v₂ v₃
@@ -35,7 +34,6 @@ namespace Pi
 
 /-! `1`, `0`, `+`, `*`, `+ᵥ`, `•`, `^`, `-`, `⁻¹`, and `/` are defined pointwise. -/
 
-
 @[to_additive instZero] -- TODO: improve `to_additive`
 instance instOne [∀ i, One <| f i] : One (∀ i : I, f i) :=
   ⟨fun _ => 1⟩
@@ -45,7 +43,7 @@ theorem one_apply [∀ i, One <| f i] : (1 : ∀ i, f i) i = 1 :=
   rfl
 
 @[to_additive]
-theorem one_def [∀ i, One <| f i] : (1 : ∀ i, f i) = fun i => 1 :=
+theorem one_def [∀ i, One <| f i] : (1 : ∀ i, f i) = fun _ => 1 :=
   rfl
 
 @[simp, to_additive]
@@ -207,15 +205,15 @@ theorem mul_single_eq_of_ne' {i i' : I} (h : i ≠ i') (x : f i) : mulSingle i x
 theorem mul_single_one (i : I) : mulSingle i (1 : f i) = 1 :=
   Function.update_eq_self _ _
 
--- TODO: I don't understand how Lean3 converted `(x : β)` into `(x : f i)`, and neither does Lean4..
+-- TODO: Seems to be a coersion problem: RHS has Type `β`, LHS not.
 /-- On non-dependent functions, `Pi.mulSingle` can be expressed as an `ite` -/
-@[to_additive "On non-dependent functions, `pi.single` can be expressed as an `ite`"]
+@[to_additive "On non-dependent functions, `Pi.single` can be expressed as an `ite`"]
 theorem mul_single_apply {β : Sort _} [One β] (i : I) (x : β) (i' : I) :
     mulSingle i x i' = if i' = i then x else 1 :=
   Function.update_apply 1 i x i'
 
 /-- On non-dependent functions, `Pi.mulSingle` is symmetric in the two indices. -/
-@[to_additive "On non-dependent functions, `pi.single` is symmetric in the two\nindices."]
+@[to_additive "On non-dependent functions, `Pi.single` is symmetric in the two\nindices."]
 theorem mul_single_comm {β : Sort _} [One β] (i : I) (x : β) (i' : I) :
     mulSingle i x i' = mulSingle i' x i := by
   simp [mul_single_apply, eq_comm]
@@ -234,7 +232,6 @@ theorem apply_mul_single₂ (f' : ∀ i, f i → g i → h i) (hf' : ∀ i, f' i
     simp only [mul_single_eq_same]
 
   · simp only [mul_single_eq_of_ne h, hf']
-
 
 @[to_additive]
 theorem mul_single_op {g : I → Type _} [∀ i, One (g i)] (op : ∀ i, f i → g i)
@@ -286,7 +283,7 @@ theorem extend_one [One γ] (f : α → β) : Function.extend f (1 : α → γ) 
 @[to_additive]
 theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ) :
     Function.extend f (g₁ * g₂) (e₁ * e₂) = Function.extend f g₁ e₁ * Function.extend f g₂ e₂ :=
-  funext fun _ => by convert (apply_dite₂ (· * ·) _ _ _ _ _).symm
+  funext fun _ => by convert (apply_dite₂ (· * ·)).symm
 
 @[to_additive]
 theorem extend_inv [Inv γ] (f : α → β) (g : α → γ) (e : β → γ) :
@@ -306,7 +303,7 @@ theorem surjective_pi_map {F : ∀ i, f i → g i} (hF : ∀ i, Surjective (F i)
 
 theorem injective_pi_map {F : ∀ i, f i → g i} (hF : ∀ i, Injective (F i)) :
     Injective fun x : ∀ i, f i => fun i => F i (x i) :=
-  fun x y h => funext fun i => hF i <| (congr_fun h i : _)
+  fun _ _ h => funext fun i => hF i <| (congr_fun h i : _)
 
 theorem bijective_pi_map {F : ∀ i, f i → g i} (hF : ∀ i, Bijective (F i)) :
     Bijective fun x : ∀ i, f i => fun i => F i (x i) :=
