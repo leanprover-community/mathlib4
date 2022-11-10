@@ -266,10 +266,8 @@ def toInductive (mvar : MVarId) (cs : List Name)
 /-- Implementation for both `mk_iff` and `mk_iff_of_inductive_prop`.y
 -/
 def mkIffOfInductivePropImpl (ind : Name) (rel : Name) : MetaM Unit := do
-  let constInfo ← getConstInfo ind
-  let inductVal ← match constInfo with
-                  | .inductInfo info => pure info
-                  | _ => throwError "mk_iff only applies to inductive declarations"
+  let .inductInfo inductVal ← getConstInfo ind |
+    throwError "mk_iff only applies to inductive declarations"
   let constrs := inductVal.ctors
   let params := inductVal.numParams
   let type := inductVal.type
