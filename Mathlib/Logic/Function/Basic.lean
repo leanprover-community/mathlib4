@@ -442,7 +442,7 @@ end SurjInv
 section Update
 
 variable {α : Sort u} {β : α → Sort v} {α' : Sort w} [DecidableEq α] [DecidableEq α']
-  {f g : Π a, β a} {a : α} {b : β a}
+  {f g : (a : α) → β a} {a : α} {b : β a}
 
 
 /-- Replacing the value of a function at a given point by a given value. -/
