@@ -51,6 +51,7 @@ import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.PProd
+import Mathlib.Data.Quot
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
@@ -73,7 +74,9 @@ import Mathlib.Init.Data.Int.Notation
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Init.Data.Prod
+import Mathlib.Init.Data.Quot
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Propext

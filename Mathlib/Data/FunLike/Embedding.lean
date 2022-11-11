@@ -8,124 +8,120 @@ import Mathlib.Data.FunLike.Basic
 /-!
 # Typeclass for a type `F` with an injective map to `A ↪ B`
 
-This typeclass is primarily for use by embeddings such as `rel_embedding`.
+This typeclass is primarily for use by embeddings such as `RelEmbedding`.
 
-## Basic usage of `embedding_like`
+## Basic usage of `EmbeddingLike`
 
-A typical type of embedding should be declared as:
+A typical type of embeddings should be declared as:
 ```
-structure my_embedding (A B : Type*) [my_class A] [my_class B] :=
-(to_fun : A → B)
-(injective' : function.injective to_fun)
-(map_op' : ∀ {x y : A}, to_fun (my_class.op x y) = my_class.op (to_fun x) (to_fun y))
+structure MyEmbedding (A B : Type*) [MyClass A] [MyClass B] :=
+(toFun : A → B)
+(injective' : Function.Injective toFun)
+(map_op' : ∀ {x y : A}, toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
 
-namespace my_embedding
+namespace MyEmbedding
 
-variables (A B : Type*) [my_class A] [my_class B]
+variables (A B : Type*) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "Embedding class" design below:
-instance : embedding_like (my_embedding A B) A B :=
-{ coe := my_embedding.to_fun,
+instance : EmbeddingLike (MyEmbedding A B) A B :=
+{ coe := MyEmbedding.toFun,
   coe_injective' := λ f g h, by cases f; cases g; congr',
-  injective' := my_embedding.injective' }
+  injective' := MyEmbedding.injective' }
 
-/-- Helper instance for when there's too many metavariables to directly
-apply `fun_like.to_coe_fn`. -/
-instance : has_coe_to_fun (my_embedding A B) (λ _, A → B) := ⟨my_embedding.to_fun⟩
+/-- Helper instance for when there's too many metavariables to `EmbeddingLike.coe` directly. -/
+instance : CoeFun (MyEmbedding A B) (λ _, A → B) := ⟨MyEmbedding.toFun⟩
 
-@[simp] lemma to_fun_eq_coe {f : my_embedding A B} : f.to_fun = (f : A → B) := rfl
+@[ext] theorem ext {f g : MyEmbedding A B} (h : ∀ x, f x = g x) : f = g := fun_like.ext f g h
 
-@[ext] theorem ext {f g : my_embedding A B} (h : ∀ x, f x = g x) : f = g := fun_like.ext f g h
-
-/-- Copy of a `my_embedding` with a new `to_fun` equal to the old one. Useful to fix definitional
+/-- Copy of a `MyEmbedding` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (f : my_embedding A B) (f' : A → B) (h : f' = ⇑f) : my_embedding A B :=
-{ to_fun := f',
+protected def copy (f : MyEmbedding A B) (f' : A → B) (h : f' = ⇑f) : MyEmbedding A B :=
+{ toFun := f',
   injective' := h.symm ▸ f.injective',
   map_op' := h.symm ▸ f.map_op' }
 
-end my_embedding
+end MyEmbedding
 ```
 
-This file will then provide a `has_coe_to_fun` instance and various
+This file will then provide a `CoeFun` instance and various
 extensionality and simp lemmas.
 
-## Embedding classes extending `embedding_like`
+## Embedding classes extending `EmbeddingLike`
 
-The `embedding_like` design provides further benefits if you put in a bit more work.
-The first step is to extend `embedding_like` to create a class of those types satisfying
+The `EmbeddingLike` design provides further benefits if you put in a bit more work.
+The first step is to extend `EmbeddingLike` to create a class of those types satisfying
 the axioms of your new type of morphisms.
 Continuing the example above:
 
 ```
 section
-set_option old_structure_cmd true
 
-/-- `my_embedding_class F A B` states that `F` is a type of `my_class.op`-preserving embeddings.
-You should extend this class when you extend `my_embedding`. -/
-class my_embedding_class (F : Type*) (A B : out_param $ Type*) [my_class A] [my_class B]
-  extends embedding_like F A B :=
-(map_op : ∀ (f : F) (x y : A), f (my_class.op x y) = my_class.op (f x) (f y))
+/-- `MyEmbeddingClass F A B` states that `F` is a type of `MyClass.op`-preserving embeddings.
+You should extend this class when you extend `MyEmbedding`. -/
+class MyEmbeddingClass (F : Type*) (A B : outParam <| Type*) [MyClass A] [MyClass B]
+  extends EmbeddingLike F A B :=
+(map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y))
 
 end
 
-@[simp] lemma map_op {F A B : Type*} [my_class A] [my_class B] [my_embedding_class F A B]
-  (f : F) (x y : A) : f (my_class.op x y) = my_class.op (f x) (f y) :=
-my_embedding_class.map_op
+@[simp] lemma map_op {F A B : Type*} [MyClass A] [MyClass B] [MyEmbeddingClass F A B]
+  (f : F) (x y : A) : f (MyClass.op x y) = MyClass.op (f x) (f y) :=
+MyEmbeddingClass.map_op
 
--- You can replace `my_embedding.embedding_like` with the below instance:
-instance : my_embedding_class (my_embedding A B) A B :=
-{ coe := my_embedding.to_fun,
+-- You can replace `MyEmbedding.EmbeddingLike` with the below instance:
+instance : MyEmbeddingClass (MyEmbedding A B) A B :=
+{ coe := MyEmbedding.toFun,
   coe_injective' := λ f g h, by cases f; cases g; congr',
-  injective' := my_embedding.injective',
-  map_op := my_embedding.map_op' }
+  injective' := MyEmbedding.injective',
+  map_op := MyEmbedding.map_op' }
 
--- [Insert `has_coe_to_fun`, `to_fun_eq_coe`, `ext` and `copy` here]
+-- [Insert `CoeFun`, `ext` and `copy` here]
 ```
 
-The second step is to add instances of your new `my_embedding_class` for all types extending
-`my_embedding`.
-Typically, you can just declare a new class analogous to `my_embedding_class`:
+The second step is to add instances of your new `MyEmbeddingClass` for all types extending
+`MyEmbedding`.
+Typically, you can just declare a new class analogous to `MyEmbeddingClass`:
 
 ```
-structure cooler_embedding (A B : Type*) [cool_class A] [cool_class B]
-  extends my_embedding A B :=
-(map_cool' : to_fun cool_class.cool = cool_class.cool)
+structure CoolerEmbedding (A B : Type*) [CoolClass A] [CoolClass B]
+  extends MyEmbedding A B :=
+(map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
 section
 set_option old_structure_cmd true
 
-class cooler_embedding_class (F : Type*) (A B : out_param $ Type*) [cool_class A] [cool_class B]
-  extends my_embedding_class F A B :=
-(map_cool : ∀ (f : F), f cool_class.cool = cool_class.cool)
+class CoolerEmbeddingClass (F : Type*) (A B : outParam <| Type*) [CoolClass A] [CoolClass B]
+  extends MyEmbeddingClass F A B :=
+(map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
 end
 
-@[simp] lemma map_cool {F A B : Type*} [cool_class A] [cool_class B] [cooler_embedding_class F A B]
-  (f : F) : f cool_class.cool = cool_class.cool :=
-my_embedding_class.map_op
+@[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B] [CoolerEmbeddingClass F A B]
+  (f : F) : f CoolClass.cool = CoolClass.cool :=
+MyEmbeddingClass.map_op
 
--- You can also replace `my_embedding.embedding_like` with the below instance:
-instance : cool_embedding_class (cool_embedding A B) A B :=
-{ coe := cool_embedding.to_fun,
+-- You can also replace `MyEmbedding.EmbeddingLike` with the below instance:
+instance : CoolerEmbeddingClass (CoolerEmbedding A B) A B :=
+{ coe := CoolerEmbedding.toFun,
   coe_injective' := λ f g h, by cases f; cases g; congr',
-  injective' := my_embedding.injective',
-  map_op := cool_embedding.map_op',
-  map_cool := cool_embedding.map_cool' }
+  injective' := MyEmbedding.injective',
+  map_op := CoolerEmbedding.map_op',
+  map_cool := CoolerEmbedding.map_cool' }
 
--- [Insert `has_coe_to_fun`, `to_fun_eq_coe`, `ext` and `copy` here]
+-- [Insert `CoeFun`, `ext` and `copy` here]
 ```
 
 Then any declaration taking a specific type of morphisms as parameter can instead take the
 class you just defined:
 ```
--- Compare with: lemma do_something (f : my_embedding A B) : sorry := sorry
-lemma do_something {F : Type*} [my_embedding_class F A B] (f : F) : sorry := sorry
+-- Compare with: lemma do_something (f : MyEmbedding A B) : sorry := sorry
+lemma do_something {F : Type*} [MyEmbeddingClass F A B] (f : F) : sorry := sorry
 ```
 
-This means anything set up for `my_embedding`s will automatically work for `cool_embedding_class`es,
-and defining `cool_embedding_class` only takes a constant amount of effort,
-instead of linearly increasing the work per `my_embedding`-related declaration.
+This means anything set up for `MyEmbedding`s will automatically work for `CoolerEmbeddingClass`es,
+and defining `CoolerEmbeddingClass` only takes a constant amount of effort,
+instead of linearly increasing the work per `MyEmbedding`-related declaration.
 
 -/
 
