@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, David Renshaw
 -/
 import Lean
+import Mathlib.Lean.Meta
 import Mathlib.Tactic.LeftRight
 
 /-!
@@ -125,17 +126,6 @@ do let type := (← getConstInfo c).instantiateTypeLevelParams univs
        let r ← mkExistsList bs' (mkAndList eqs)
        pure (Sum.inr eqs.length, subst r)
      pure ((bs, n), r)
-
-/-- Has the effect of `refine ⟨e₁,e₂,⋯, ?_⟩`.
--/
-def _root_.Lean.MVarId.existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
-  es.foldlM (λ mv e => do
-    let (subgoals,_) ← Elab.Term.TermElabM.run $ Elab.Tactic.run mv do
-      Elab.Tactic.evalTactic (←`(tactic| refine ⟨?_,?_⟩))
-    let [sg1, sg2] := subgoals | throwError "expected two subgoals"
-    sg1.assign e
-    pure sg2)
-    mvar
 
 /-- Splits the goal `n` times via `refine ⟨?_,?_⟩`, and then applies `constructor` to
 close the resulting subgoals.
