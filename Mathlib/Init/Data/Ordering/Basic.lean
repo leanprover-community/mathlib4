@@ -8,13 +8,7 @@ Authors: Leonardo de Moura
 
 universe u v
 
--- Porting note: ideally, done via `deriving Repr` at site of definition of `Ordering`
-instance : Repr Ordering :=
-  ⟨fun s _ =>
-    match s with
-    | .lt => "lt"
-    | .eq => "eq"
-    | .gt => "gt"⟩
+deriving instance Repr for Ordering
 
 namespace Ordering
 
