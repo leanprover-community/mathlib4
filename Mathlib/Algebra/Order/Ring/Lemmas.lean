@@ -399,11 +399,15 @@ theorem mul_pos_reflect_lt_iff_contravariant_pos :
       · simp [←ha] at h
       · exact @ContravariantClass.elim α>0 α (fun x y => y * x) (· < ·) _ ⟨_, ha⟩ _ _ h ⟩⟩
 
+-- Porting note: mathlib3 proofs would look like `StrictMono.monotone <| @CovariantClass.elim ..`
+-- but implicit argument handling causes that to break
 -- see Note [lower instance priority]
 instance (priority := 100) PosMulStrictMono.to_pos_mul_mono [PosMulStrictMono α] : PosMulMono α :=
   pos_mul_mono_iff_covariant_pos.2 <|
     ⟨fun a _ _ h => StrictMono.monotone (λ _ _ h' => mul_lt_mul_of_pos_left h' a.prop) h⟩
 
+-- Porting note: mathlib3 proofs would look like `StrictMono.monotone <| @CovariantClass.elim ..`
+-- but implicit argument handling causes that to break
 -- see Note [lower instance priority]
 instance (priority := 100) MulPosStrictMono.to_mul_pos_mono [MulPosStrictMono α] : MulPosMono α :=
   mul_pos_mono_iff_covariant_pos.2 <|
