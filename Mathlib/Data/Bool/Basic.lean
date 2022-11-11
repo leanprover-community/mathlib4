@@ -21,7 +21,7 @@ bool, boolean, Bool, De Morgan
 namespace Bool
 
 theorem decide_True {h} : @decide True h = true :=
-  decide_eq_true True.intro
+  _root_.decide_eq_true True.intro
 #align bool.to_bool_true Bool.decide_True
 
 theorem decide_False {h} : @decide False h = false :=
@@ -32,7 +32,7 @@ theorem decide_False {h} : @decide False h = false :=
 theorem decide_coe (b : Bool) {h} : @decide b h = b := by
   cases b
   { exact decide_eq_false $ λ j => by cases j }
-  { exact decide_eq_true $ rfl }
+  { exact _root_.decide_eq_true $ rfl }
 #align bool.to_bool_coe Bool.decide_coe
 
 theorem coe_decide (p : Prop) [d : Decidable p] : decide p ↔ p :=
