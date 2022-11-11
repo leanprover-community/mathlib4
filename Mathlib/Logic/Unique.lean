@@ -83,7 +83,11 @@ instance PUnit.unique : Unique PUnit.{u} where
   default := PUnit.unit
   uniq x := subsingleton x _
 
-@[simp]
+-- Porting note:
+-- This should not require a nolint,
+-- but it is currently failing due to a problem in the linter discussed at
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60simpNF.60.20error.20.22unknown.20metavariable.22
+@[simp, nolint simpNF]
 theorem PUnit.default_eq_unit : (default : PUnit) = PUnit.unit :=
   rfl
 
