@@ -91,9 +91,10 @@ theorem lift_mk (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a
 #align quot.lift_beta Quot.lift_mk
 
 @[simp]
-theorem lift_on_mk (a : α) (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) :
+theorem liftOn_mk (a : α) (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) :
   Quot.liftOn (Quot.mk r a) f h = f a :=
   rfl
+#align lift_on_mk liftOn_mk
 
 /-- Descends a function `f : α → β → γ` to quotients of `α` and `β`. -/
 -- porting note: removed `@[elab_as_elim]`, gave "unexpected resulting type γ"
@@ -117,10 +118,11 @@ protected def liftOn₂ (p : Quot r) (q : Quot s) (f : α → β → γ)
   Quot.lift₂ f hr hs p q
 
 @[simp]
-theorem lift_on₂_mk (a : α) (b : β) (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ → f a b₁ = f a b₂)
+theorem liftOn₂_mk (a : α) (b : β) (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ → f a b₁ = f a b₂)
     (hs : ∀ a₁ a₂ b, r a₁ a₂ → f a₁ b = f a₂ b) :
     Quot.liftOn₂ (Quot.mk r a) (Quot.mk s b) f hr hs = f a b :=
   rfl
+#align lift_on₂_mk liftOn₂_mk
 
 variable {t : γ → γ → Prop}
 
@@ -286,15 +288,17 @@ theorem Quotient.lift₂_mk {α : Sort _} {β : Sort _} {γ : Sort _} [Setoid α
   rfl
 
 @[simp]
-theorem Quotient.lift_on_mk [s : Setoid α] (f : α → β) (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) :
+theorem Quotient.liftOn_mk [s : Setoid α] (f : α → β) (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) :
     Quotient.liftOn (Quotient.mk s x) f h = f x :=
   rfl
+#align Quotient.lift_on_mk Quotient.liftOn_mk
 
 @[simp]
-theorem Quotient.lift_on₂_mk {α : Sort _} {β : Sort _} [Setoid α] (f : α → α → β)
+theorem Quotient.liftOn₂_mk {α : Sort _} {β : Sort _} [Setoid α] (f : α → α → β)
     (h : ∀ a₁ a₂ b₁ b₂ : α, a₁ ≈ b₁ → a₂ ≈ b₂ → f a₁ a₂ = f b₁ b₂) (x y : α) :
     Quotient.liftOn₂ (Quotient.mk _ x) (Quotient.mk _ y) f h = f x y :=
   rfl
+#align Quotient.lift_on₂_mk Quotient.liftOn₂_mk
 
 /-- `quot.mk r` is a surjective function. -/
 theorem surjective_quot_mk (r : α → α → Prop) : Function.Surjective (Quot.mk r) :=
@@ -619,10 +623,11 @@ protected def hrecOn' {φ : Quotient s₁ → Sort _} (qa : Quotient s₁) (f : 
   Quot.hrecOn qa f c
 
 @[simp]
-theorem hrec_on'_mk'' {φ : Quotient s₁ → Sort _} (f : ∀ a, φ (Quotient.mk'' a))
+theorem hrecOn'_mk'' {φ : Quotient s₁ → Sort _} (f : ∀ a, φ (Quotient.mk'' a))
     (c : ∀ a₁ a₂, a₁ ≈ a₂ → HEq (f a₁) (f a₂))
     (x : α) : (Quotient.mk'' x).hrecOn' f c = f x :=
   rfl
+#align hrec_on'_mk'' hrecOn'_mk''
 
 /-- Recursion on two `Quotient` arguments `a` and `b`, result type depends on `⟦a⟧` and `⟦b⟧`. -/
 protected def hrecOn₂' {φ : Quotient s₁ → Quotient s₂ → Sort _} (qa : Quotient s₁)
@@ -632,11 +637,12 @@ protected def hrecOn₂' {φ : Quotient s₁ → Quotient s₂ → Sort _} (qa :
   Quotient.hrecOn₂ qa qb f c
 
 @[simp]
-theorem hrec_on₂'_mk'' {φ : Quotient s₁ → Quotient s₂ → Sort _}
+theorem hrecOn₂'_mk'' {φ : Quotient s₁ → Quotient s₂ → Sort _}
     (f : ∀ a b, φ (Quotient.mk'' a) (Quotient.mk'' b))
     (c : ∀ a₁ b₁ a₂ b₂, a₁ ≈ a₂ → b₁ ≈ b₂ → HEq (f a₁ b₁) (f a₂ b₂)) (x : α) (qb : Quotient s₂) :
     (Quotient.mk'' x).hrecOn₂' qb f c = qb.hrecOn' (f x) fun _ _ => c _ _ _ _ (Setoid.refl _) :=
   rfl
+#align hrec_on₂'_mk'' hrecOn₂'_mk''
 
 /-- Map a function `f : α → β` that sends equivalent elements to equivalent elements
 to a function `quotient sa → quotient sb`. Useful to define unary operations on quotients. -/
@@ -690,13 +696,15 @@ protected theorem mk''_eq_mk (x : α) : Quotient.mk'' x = Quotient.mk s x :=
   rfl
 
 @[simp]
-protected theorem lift_on'_mk (x : α) (f : α → β) (h) : (Quotient.mk s x).liftOn' f h = f x :=
+protected theorem liftOn'_mk (x : α) (f : α → β) (h) : (Quotient.mk s x).liftOn' f h = f x :=
   rfl
+#align lift_on'_mk liftOn'_mk
 
 @[simp]
-protected theorem lift_on₂'_mk [t : Setoid β] (f : α → β → γ) (h) (a : α) (b : β) :
+protected theorem liftOn₂'_mk [t : Setoid β] (f : α → β → γ) (h) (a : α) (b : β) :
     Quotient.liftOn₂' (Quotient.mk s a) (Quotient.mk t b) f h = f a b :=
   Quotient.liftOn₂'_mk'' _ _ _ _
+#align lift_on₂'_mk liftOn₂'_mk
 
 @[simp]
 theorem map'_mk [t : Setoid β] (f : α → β) (h) (x : α) :

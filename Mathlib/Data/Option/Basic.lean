@@ -50,8 +50,9 @@ theorem coe_get {o : Option α} (h : o.isSome) : ((Option.get _ h : α) : Option
 theorem eq_of_mem_of_mem {a : α} {o1 o2 : Option α} (h1 : a ∈ o1) (h2 : a ∈ o2) : o1 = o2 :=
   h1.trans h2.symm
 
-theorem Mem.left_unique : Relator.LeftUnique ((· ∈ ·) : α → Option α → Prop) :=
+theorem Mem.leftUnique : Relator.LeftUnique ((· ∈ ·) : α → Option α → Prop) :=
 fun _ _ _=> mem_unique
+#align Mem.left_unique Mem.leftUnique
 
 theorem some_injective (α : Type _) : Function.Injective (@some α) := fun _ _ => some_inj.mp
 
