@@ -104,6 +104,7 @@ import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Mathport.Syntax
 import Mathlib.Order.Basic
+import Mathlib.Order.Compare
 import Mathlib.Order.Monotone
 import Mathlib.Order.Synonym
 import Mathlib.Tactic.Abel
