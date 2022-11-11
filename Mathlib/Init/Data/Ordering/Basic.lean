@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 
-/-!  # Helper definitions and instances for `Ordering` -/
+import Mathlib.Mathport.Rename
 
-universe u v
+/-!  # Helper definitions and instances for `Ordering` -/
 
 deriving instance Repr for Ordering
 
@@ -22,6 +22,8 @@ end Ordering
 
 def CmpUsing {α : Type u} (lt : α → α → Prop) [DecidableRel lt] (a b : α) : Ordering :=
   if lt a b then Ordering.lt else if lt b a then Ordering.gt else Ordering.eq
+#align cmp_using CmpUsing
 
 def Cmp {α : Type u} [LT α] [DecidableRel ((· < ·) : α → α → Prop)] (a b : α) : Ordering :=
   CmpUsing (· < ·) a b
+#align cmp Cmp
