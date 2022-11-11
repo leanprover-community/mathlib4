@@ -30,6 +30,7 @@ import Std.Classes.SetNotation
 #align quot.ind Quot.ind
 
 #align heq HEq
+#align prod Prod
 #align pprod PProd
 
 #align and.left And.left

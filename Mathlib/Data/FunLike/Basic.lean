@@ -9,126 +9,115 @@ import Mathlib.Tactic.NormCast
 /-!
 # Typeclass for a type `F` with an injective map to `A → B`
 
-This typeclass is primarily for use by homomorphisms like `monoid_hom` and `linear_map`.
+This typeclass is primarily for use by homomorphisms like `MonoidHom` and `LinearMap`.
 
-## Basic usage of `fun_like`
+## Basic usage of `FunLike`
 
 A typical type of morphisms should be declared as:
 ```
-structure my_hom (A B : Type*) [my_class A] [my_class B] :=
-(to_fun : A → B)
-(map_op' : ∀ {x y : A}, to_fun (my_class.op x y) = my_class.op (to_fun x) (to_fun y))
+structure MyHom (A B : Type*) [MyClass A] [MyClass B] :=
+(toFun : A → B)
+(map_op' : ∀ {x y : A}, toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
 
-namespace my_hom
+namespace MyHom
 
-variables (A B : Type*) [my_class A] [my_class B]
+variables (A B : Type*) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "morphism class" design below:
-instance : fun_like (my_hom A B) A (λ _, B) :=
-{ coe := my_hom.to_fun, coe_injective' := λ f g h, by cases f; cases g; congr' }
+instance : FunLike (MyHom A B) A (λ _, B) :=
+{ coe := MyHom.toFun, coe_injective' := λ f g h, by cases f; cases g; congr' }
 
 /-- Helper instance for when there's too many metavariables to apply
-`fun_like.has_coe_to_fun` directly. -/
-instance : has_coe_to_fun (my_hom A B) (λ _, A → B) := fun_like.has_coe_to_fun
+`FunLike.coe` directly. -/
+instance : CoeFun (MyHom A B) (λ _, A → B) := ⟨MyHom.toFun⟩
 
-@[simp] lemma to_fun_eq_coe {f : my_hom A B} : f.to_fun = (f : A → B) := rfl
+@[ext] theorem ext {f g : MyHom A B} (h : ∀ x, f x = g x) : f = g := FunLike.ext f g h
 
-@[ext] theorem ext {f g : my_hom A B} (h : ∀ x, f x = g x) : f = g := fun_like.ext f g h
-
-/-- Copy of a `my_hom` with a new `to_fun` equal to the old one. Useful to fix definitional
+/-- Copy of a `MyHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (f : my_hom A B) (f' : A → B) (h : f' = ⇑f) : my_hom A B :=
-{ to_fun := f',
+protected def copy (f : MyHom A B) (f' : A → B) (h : f' = ⇑f) : MyHom A B :=
+{ toFun := f',
   map_op' := h.symm ▸ f.map_op' }
 
-end my_hom
+end MyHom
 ```
 
-This file will then provide a `has_coe_to_fun` instance and various
+This file will then provide a `CoeFun` instance and various
 extensionality and simp lemmas.
 
-## Morphism classes extending `fun_like`
+## Morphism classes extending `FunLike`
 
-The `fun_like` design provides further benefits if you put in a bit more work.
-The first step is to extend `fun_like` to create a class of those types satisfying
+The `FunLike` design provides further benefits if you put in a bit more work.
+The first step is to extend `FunLike` to create a class of those types satisfying
 the axioms of your new type of morphisms.
 Continuing the example above:
 
 ```
-section
-set_option old_structure_cmd true
+/-- `MyHomClass F A B` states that `F` is a type of `MyClass.op`-preserving morphisms.
+You should extend this class when you extend `MyHom`. -/
+class MyHomClass (F : Type*) (A B : outParam <| Type*) [MyClass A] [MyClass B]
+  extends FunLike F A (λ _, B) :=
+(map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y))
 
-/-- `my_hom_class F A B` states that `F` is a type of `my_class.op`-preserving morphisms.
-You should extend this class when you extend `my_hom`. -/
-class my_hom_class (F : Type*) (A B : out_param $ Type*) [my_class A] [my_class B]
-  extends fun_like F A (λ _, B) :=
-(map_op : ∀ (f : F) (x y : A), f (my_class.op x y) = my_class.op (f x) (f y))
+@[simp] lemma map_op {F A B : Type*} [MyClass A] [MyClass B] [MyHomClass F A B]
+  (f : F) (x y : A) : f (MyClass.op x y) = MyClass.op (f x) (f y) :=
+MyHomClass.map_op
 
-end
-@[simp] lemma map_op {F A B : Type*} [my_class A] [my_class B] [my_hom_class F A B]
-  (f : F) (x y : A) : f (my_class.op x y) = my_class.op (f x) (f y) :=
-my_hom_class.map_op
-
--- You can replace `my_hom.fun_like` with the below instance:
-instance : my_hom_class (my_hom A B) A B :=
-{ coe := my_hom.to_fun,
+-- You can replace `MyHom.FunLike` with the below instance:
+instance : MyHomClass (MyHom A B) A B :=
+{ coe := MyHom.toFun,
   coe_injective' := λ f g h, by cases f; cases g; congr',
-  map_op := my_hom.map_op' }
+  map_op := MyHom.map_op' }
 
--- [Insert `has_coe_to_fun`, `to_fun_eq_coe`, `ext` and `copy` here]
+-- [Insert `CoeFun`, `ext` and `copy` here]
 ```
 
-The second step is to add instances of your new `my_hom_class` for all types extending `my_hom`.
-Typically, you can just declare a new class analogous to `my_hom_class`:
+The second step is to add instances of your new `MyHomClass` for all types extending `MyHom`.
+Typically, you can just declare a new class analogous to `MyHomClass`:
 
 ```
-structure cooler_hom (A B : Type*) [cool_class A] [cool_class B]
-  extends my_hom A B :=
-(map_cool' : to_fun cool_class.cool = cool_class.cool)
+structure CoolerHom (A B : Type*) [CoolClass A] [CoolClass B]
+  extends MyHom A B :=
+(map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
-section
-set_option old_structure_cmd true
+class CoolerHomClass (F : Type*) (A B : outParam <| Type*) [CoolClass A] [CoolClass B]
+  extends MyHomClass F A B :=
+(map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
-class cooler_hom_class (F : Type*) (A B : out_param $ Type*) [cool_class A] [cool_class B]
-  extends my_hom_class F A B :=
-(map_cool : ∀ (f : F), f cool_class.cool = cool_class.cool)
+@[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B] [CoolerHomClass F A B]
+  (f : F) : f CoolClass.cool = CoolClass.cool :=
+MyHomClass.map_op
 
-end
-
-@[simp] lemma map_cool {F A B : Type*} [cool_class A] [cool_class B] [cooler_hom_class F A B]
-  (f : F) : f cool_class.cool = cool_class.cool :=
-my_hom_class.map_op
-
--- You can also replace `my_hom.fun_like` with the below instance:
-instance : cool_hom_class (cool_hom A B) A B :=
-{ coe := cool_hom.to_fun,
+-- You can also replace `MyHom.FunLike` with the below instance:
+instance : CoolerHomClass (CoolHom A B) A B :=
+{ coe := CoolHom.toFun,
   coe_injective' := λ f g h, by cases f; cases g; congr',
-  map_op := cool_hom.map_op',
-  map_cool := cool_hom.map_cool' }
+  map_op := CoolHom.map_op',
+  map_cool := CoolHom.map_cool' }
 
--- [Insert `has_coe_to_fun`, `to_fun_eq_coe`, `ext` and `copy` here]
+-- [Insert `CoeFun`, `ext` and `copy` here]
 ```
 
 Then any declaration taking a specific type of morphisms as parameter can instead take the
 class you just defined:
 ```
--- Compare with: lemma do_something (f : my_hom A B) : sorry := sorry
-lemma do_something {F : Type*} [my_hom_class F A B] (f : F) : sorry := sorry
+-- Compare with: lemma do_something (f : MyHom A B) : sorry := sorry
+lemma do_something {F : Type*} [MyHomClass F A B] (f : F) : sorry := sorry
 ```
 
-This means anything set up for `my_hom`s will automatically work for `cool_hom_class`es,
-and defining `cool_hom_class` only takes a constant amount of effort,
-instead of linearly increasing the work per `my_hom`-related declaration.
+This means anything set up for `MyHom`s will automatically work for `CoolerHomClass`es,
+and defining `CoolerHomClass` only takes a constant amount of effort,
+instead of linearly increasing the work per `MyHom`-related declaration.
 
 -/
 
--- Porting note: Not sure what to do with this!
--- Porting note: this had priority 10 in mathlib 3.
 -- This instance should have low priority, to ensure we follow the chain
 -- `FunLike → CoeFun`
--- attribute [instance] coe_fn_trans
+-- Porting note: this is an elaboration detail from Lean 3, we are going to disable it
+-- until it is clearer what the Lean 4 elaborator needs.
+-- attribute [instance, priority 10] coe_fn_trans
 
-/-- The class `fun_like F α β` expresses that terms of type `F` have an
+/-- The class `FunLike F α β` expresses that terms of type `F` have an
 injective coercion to functions from `α` to `β`.
 
 This typeclass is used in the definition of the homomorphism typeclasses,
@@ -154,6 +143,10 @@ variable {F α β} [i : FunLike F α β]
 -- `α` and `β` are out_params, so this instance should not be dangerous
 -- Porting note: @[nolint dangerous_instance]
 instance (priority := 100) : CoeFun F fun _ => ∀ a : α, β a where coe := FunLike.coe
+
+#eval Lean.Elab.Command.liftTermElabM do
+  Tactic.NormCast.registerCoercion ``FunLike.coe
+    (some { numArgs := 5, coercee := 4, type := .coeFun })
 
 @[simp]
 theorem coe_eq_coe_fn : (FunLike.coe : F → ∀ a : α, β a) = (fun f => ↑f) :=

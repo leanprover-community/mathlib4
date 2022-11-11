@@ -19,7 +19,8 @@ example (n : ℕ) : (n / 2) + (n / 2) = 2 * (n / 2) := by ring
 --   a * (-c / b) * (-c / b) + -c + c = a * (c / b * (c / b)) := by ring
 -- example {α} [linear_ordered_field α] (a b c : α) :
 --   b ^ 2 - 4 * c * a = -(4 * c * a) + b ^ 2 := by ring
--- example (x : ℚ) : x ^ (2 + 2) = x^4 := by ring_nf -- TODO: ring should work?
+example {α} [CommSemiring α] (x : α) : x ^ (2 + 2) = x^4 := by ring
+example {α} [CommSemiring α] (x : α) : x ^ (2 + 2) = x^4 := by ring_nf
 -- example {α} [CommRing α] (x : α) : x ^ (2 : ℤ)  = x * x := by ring
 -- example {α} [linear_ordered_field α] (a b c : α) :
 --   b ^ 2 - 4 * c * a = -(4 * c * a) + b ^ 2 := by ring
@@ -58,9 +59,32 @@ example : (876544 : ℤ) * -1 + (1000000 - 123456) = 0 := by ring
 --   ring
 -- end
 
--- -- this proof style is not recommended practice
--- example (A B : ℕ) (H : B * A = 2) : A * B = 2 := by {ring_nf, exact H}
+example (A B : ℕ) (H : B * A = 2) : A * B = 2 := by ring_nf at H ⊢; exact H
+
+example (f : ℕ → ℕ) :
+  2 + f (2 * f 3 * f 3) + f 3 = 1 + f (f 3 ^ 2 + f 3 * f 3) + 1 + f (2 + 1) := by ring_nf
 
 example (n : ℕ) (m : ℤ) : 2^(n+1) * m = 2 * 2^n * m := by ring
 example (a b : ℤ) (n : ℕ) : (a + b)^(n + 2) = (a^2 + b^2 + a * b + b * a) * (a + b)^n := by ring
 example (x y : ℕ) : x + id y = y + id x := by ring!
+
+-- Example with ring discharging the goal
+example : 22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 46 := by
+  conv => ring
+  trivial -- FIXME: not needed in lean 3
+
+-- Example with ring failing to discharge, to normalizing the goal
+example : (22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 47) = (74 = 75) := by
+  conv => ring
+  trivial
+
+-- Example with ring discharging the goal
+example (x : ℕ) : 22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 := by
+  conv => ring
+  trivial
+
+-- Example with ring failing to discharge, to normalizing the goal
+example (x : ℕ) : (22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 + 1)
+                    = (7 * x + 46 = 7 * x + 47) := by
+  conv => ring
+  trivial
