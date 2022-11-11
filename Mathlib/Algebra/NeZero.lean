@@ -26,13 +26,16 @@ class NeZero {R} [Zero R] (n : R) : Prop where
 theorem NeZero.ne {R} [Zero R] (n : R) [h : NeZero n] : n ≠ 0 :=
   h.out
 
-theorem ne_zero_iff {R : Type _} [Zero R] {n : R} : NeZero n ↔ n ≠ 0 :=
+theorem neZero_iff {R : Type _} [Zero R] {n : R} : NeZero n ↔ n ≠ 0 :=
   ⟨fun h => h.out, NeZero.mk⟩
+#align ne_zero_iff neZero_iff
 
-theorem not_ne_zero {R : Type _} [Zero R] {n : R} : ¬NeZero n ↔ n = 0 := by simp [ne_zero_iff]
+theorem not_neZero {R : Type _} [Zero R] {n : R} : ¬NeZero n ↔ n = 0 := by simp [neZero_iff]
+#align not_ne_zero not_neZero
 
-theorem eq_zero_or_ne_zero {α} [Zero α] (a : α) : a = 0 ∨ NeZero a :=
+theorem eq_zero_or_neZero {α} [Zero α] (a : α) : a = 0 ∨ NeZero a :=
   (eq_or_ne a 0).imp_right NeZero.mk
+#align eq_zero_or_ne_zero eq_zero_or_neZero
 
 namespace NeZero
 
