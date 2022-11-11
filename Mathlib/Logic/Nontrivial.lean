@@ -3,7 +3,7 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Prod
+import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Unique
@@ -41,7 +41,6 @@ protected theorem Decidable.exists_ne [Nontrivial α] [DecidableEq α] (x : α) 
   by_cases hx:x = y
   · rw [← hx] at h
     exact ⟨y', h.symm⟩
-
   · exact ⟨y, Ne.symm hx⟩
 
 
