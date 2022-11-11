@@ -361,7 +361,7 @@ def ofNat (n : Nat) : Bool :=
 theorem of_nat_le_of_nat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
   simp only [ofNat, ne_eq, _root_.decide_not];
   cases Nat.decEq n 0 with
-  | isTrue hn => rw [decide_eq_true hn]; exact false_le
+  | isTrue hn => rw [_root_.decide_eq_true hn]; exact false_le
   | isFalse hn =>
     cases Nat.decEq m 0 with
     | isFalse hm => rw [decide_eq_false hm]; exact le_true
