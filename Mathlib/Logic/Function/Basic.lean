@@ -255,7 +255,7 @@ theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjecti
 def IsPartialInv {α β} (f : α → β) (g : β → Option α) : Prop :=
   ∀ x y, g y = some x ↔ f x = y
 
-theorem is_partial_inv_left {α β} {f : α → β} {g} (H : IsPartialInv f g) (x) : g (f x) = some x :=
+theorem isPartialInv_left {α β} {f : α → β} {g} (H : IsPartialInv f g) (x) : g (f x) = some x :=
   (H _ _).2 rfl
 #align function.is_partial_inv_left Function.isPartialInv_left
 
@@ -272,14 +272,16 @@ theorem injective_of_isPartialInv_right {α β} {f : α → β} {g} (H : IsParti
 theorem LeftInverse.comp_eq_id {f : α → β} {g : β → α} (h : LeftInverse f g) : f ∘ g = id :=
   funext h
 
-theorem left_inverse_iff_comp {f : α → β} {g : β → α} : LeftInverse f g ↔ f ∘ g = id :=
+theorem leftInverse_iff_comp {f : α → β} {g : β → α} : LeftInverse f g ↔ f ∘ g = id :=
   ⟨LeftInverse.comp_eq_id, congr_fun⟩
+#align function.left_inverse_iff_comp Function.leftInverse_iff_comp
 
 theorem RightInverse.comp_eq_id {f : α → β} {g : β → α} (h : RightInverse f g) : g ∘ f = id :=
   funext h
 
-theorem right_inverse_iff_comp {f : α → β} {g : β → α} : RightInverse f g ↔ g ∘ f = id :=
+theorem rightInverse_iff_comp {f : α → β} {g : β → α} : RightInverse f g ↔ g ∘ f = id :=
   ⟨RightInverse.comp_eq_id, congr_fun⟩
+#align function.right_inverse_iff_comp Function.rightInverse_iff_comp
 
 theorem LeftInverse.comp {f : α → β} {g : β → α} {h : β → γ} {i : γ → β} (hf : LeftInverse f g)
     (hh : LeftInverse h i) : LeftInverse (h ∘ f) (g ∘ i) :=
@@ -305,27 +307,37 @@ theorem LeftInverse.surjective {f : α → β} {g : β → α} (h : LeftInverse 
 theorem RightInverse.injective {f : α → β} {g : β → α} (h : RightInverse f g) : Injective f :=
   h.leftInverse.injective
 
-theorem LeftInverse.right_inverse_of_injective {f : α → β} {g : β → α} (h : LeftInverse f g)
+theorem LeftInverse.rightInverse_of_injective {f : α → β} {g : β → α} (h : LeftInverse f g)
     (hf : Injective f) : RightInverse f g :=
   fun x => hf <| h (f x)
+#align function.left_inverse.right_inverse_of_injective
+Function.LeftInverse.rightInverse_of_injective
 
-theorem LeftInverse.right_inverse_of_surjective {f : α → β} {g : β → α} (h : LeftInverse f g)
+theorem LeftInverse.rightInverse_of_surjective {f : α → β} {g : β → α} (h : LeftInverse f g)
     (hg : Surjective g) : RightInverse f g :=
   fun x => let ⟨y, hy⟩ := hg x; hy ▸ congr_arg g (h y)
+#align function.left_inverse.right_inverse_of_surjective
+Function.LeftInverse.rightInverse_of_surjective
 
-theorem RightInverse.left_inverse_of_surjective {f : α → β} {g : β → α} :
+theorem RightInverse.leftInverse_of_surjective {f : α → β} {g : β → α} :
     RightInverse f g → Surjective f → LeftInverse f g :=
-  LeftInverse.right_inverse_of_surjective
+  LeftInverse.rightInverse_of_surjective
+#align function.right_inverse.left_inverse_of_surjective
+Function.RightInverse.leftInverse_of_surjective
 
-theorem RightInverse.left_inverse_of_injective {f : α → β} {g : β → α} :
+theorem RightInverse.leftInverse_of_injective {f : α → β} {g : β → α} :
     RightInverse f g → Injective g → LeftInverse f g :=
-  LeftInverse.right_inverse_of_injective
+  LeftInverse.rightInverse_of_injective
+#align function.right_inverse.left_inverse_of_injective
+Function.RightInverse.leftInverse_of_injective
 
-theorem LeftInverse.eq_right_inverse {f : α → β} {g₁ g₂ : β → α} (h₁ : LeftInverse g₁ f)
+theorem LeftInverse.eq_rightInverse {f : α → β} {g₁ g₂ : β → α} (h₁ : LeftInverse g₁ f)
     (h₂ : RightInverse g₂ f) : g₁ = g₂ :=
   calc
     g₁ = g₁ ∘ f ∘ g₂ := by rw [h₂.comp_eq_id, comp.right_id]
      _ = g₂ := by rw [← comp.assoc, h₁.comp_eq_id, comp.left_id]
+#align function.left_inverse.eq_right_inverse
+Function.LeftInverse.eq_rightInverse
 
 attribute [local instance] Classical.propDecidable
 
@@ -348,8 +360,8 @@ theorem partialInv_of_injective {α β} {f : α → β} (I : Injective f) : IsPa
             (dif_pos h).trans (congr_arg _ (I $ Classical.choose_spec h))⟩
 #align function.partial_inv_of_injective Function.partialInv_of_injective
 
-theorem partial_inv_left {α β} {f : α → β} (I : Injective f) : ∀ x, partialInv f (f x) = some x :=
-  is_partial_inv_left (partialInv_of_injective I)
+theorem partialInv_left {α β} {f : α → β} (I : Injective f) : ∀ x, partialInv f (f x) = some x :=
+  isPartialInv_left (partialInv_of_injective I)
 #align function.partial_inv_left Function.partialInv_left
 
 end
@@ -386,7 +398,7 @@ Function.invFun_eq_of_injective_of_rightInverse
 
 theorem rightInverse_invFun (hf : Surjective f) : RightInverse (invFun f) f :=
   fun b => invFun_eq <| hf b
-#align function.rightInverse_invFun Function.rightInverse_invFun
+#align function.right_inverse_inv_fun Function.rightInverse_invFun
 
 theorem leftInverse_invFun (hf : Injective f) : LeftInverse (invFun f) f :=
   fun b => hf <| invFun_eq ⟨b, rfl⟩
@@ -419,27 +431,35 @@ variable {α : Sort u} {β : Sort v} {γ : Sort w} {f : α → β}
 noncomputable def surjInv {f : α → β} (h : Surjective f) (b : β) : α :=
   Classical.choose (h b)
 
-theorem surj_inv_eq (h : Surjective f) (b) : f (surjInv h b) = b :=
+theorem surjInv_eq (h : Surjective f) (b) : f (surjInv h b) = b :=
   Classical.choose_spec (h b)
+#align function.surj_inv_eq Function.surjInv_eq
 
-theorem right_inverse_surj_inv (hf : Surjective f) : RightInverse (surjInv hf) f :=
-  surj_inv_eq hf
+theorem rightInverse_surjInv (hf : Surjective f) : RightInverse (surjInv hf) f :=
+  surjInv_eq hf
+#align function.right_inverse_surjInv Function.rightInverse_surjInv
 
-theorem left_inverse_surj_inv (hf : Bijective f) : LeftInverse (surjInv hf.2) f :=
-  rightInverse_of_injective_of_leftInverse hf.1 (right_inverse_surj_inv hf.2)
+theorem leftInverse_surjInv (hf : Bijective f) : LeftInverse (surjInv hf.2) f :=
+  rightInverse_of_injective_of_leftInverse hf.1 (rightInverse_surjInv hf.2)
+#align function.left_inverse_surj_inv Function.leftInverse_surjInv
 
-theorem Surjective.has_right_inverse (hf : Surjective f) : HasRightInverse f :=
-  ⟨_, right_inverse_surj_inv hf⟩
+theorem Surjective.hasRightInverse (hf : Surjective f) : HasRightInverse f :=
+  ⟨_, rightInverse_surjInv hf⟩
+#align function.surjective.has_right_inverse
+Function.Surjective.hasRightInverse
 
-theorem surjective_iff_has_right_inverse : Surjective f ↔ HasRightInverse f :=
-  ⟨Surjective.has_right_inverse, HasRightInverse.surjective⟩
+theorem surjective_iff_hasRightInverse : Surjective f ↔ HasRightInverse f :=
+  ⟨Surjective.hasRightInverse, HasRightInverse.surjective⟩
+#align function.surjective_iff_has_right_inverse
+Function.surjective_iff_hasRightInverse
 
 theorem bijective_iff_has_inverse : Bijective f ↔ ∃ g, LeftInverse g f ∧ RightInverse g f :=
-  ⟨fun hf => ⟨_, left_inverse_surj_inv hf, right_inverse_surj_inv hf.2⟩, fun ⟨_, gl, gr⟩ =>
+  ⟨fun hf => ⟨_, leftInverse_surjInv hf, rightInverse_surjInv hf.2⟩, fun ⟨_, gl, gr⟩ =>
     ⟨gl.injective, gr.surjective⟩⟩
 
-theorem injective_surj_inv (h : Surjective f) : Injective (surjInv h) :=
-  (right_inverse_surj_inv h).injective
+theorem injective_surjInv (h : Surjective f) : Injective (surjInv h) :=
+  (rightInverse_surjInv h).injective
+#align function.injective_surj_inv Function.injective_surjInv
 
 theorem surjective_to_subsingleton [na : Nonempty α] [Subsingleton β] (f : α → β) :
     Surjective f :=
@@ -448,7 +468,7 @@ theorem surjective_to_subsingleton [na : Nonempty α] [Subsingleton β] (f : α 
 /-- Composition by an surjective function on the left is itself surjective. -/
 theorem Surjective.comp_left {g : β → γ} (hg : Surjective g) :
     Surjective ((· ∘ ·) g : (α → β) → α → γ) := fun f =>
-  ⟨surjInv hg ∘ f, funext fun _ => right_inverse_surj_inv _ _⟩
+  ⟨surjInv hg ∘ f, funext fun _ => rightInverse_surjInv _ _⟩
 
 /-- Composition by an bijective function on the left is itself bijective. -/
 theorem Bijective.comp_left {g : β → γ} (hg : Bijective g) :
@@ -646,7 +666,7 @@ theorem Injective.surjective_comp_right [Nonempty γ] (hf : Injective f) :
 theorem Bijective.comp_right (hf : Bijective f) : Bijective fun g : β → γ => g ∘ f :=
   ⟨hf.surjective.injective_comp_right, fun g =>
     ⟨g ∘ surjInv hf.surjective,
-     by simp only [comp.assoc g _ f, (left_inverse_surj_inv hf).comp_eq_id, comp.right_id]⟩⟩
+     by simp only [comp.assoc g _ f, (leftInverse_surjInv hf).comp_eq_id, comp.right_id]⟩⟩
 
 end Extend
 
