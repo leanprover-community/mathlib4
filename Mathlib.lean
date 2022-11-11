@@ -107,6 +107,7 @@ import Mathlib.Order.Basic
 import Mathlib.Order.Compare
 import Mathlib.Order.Max
 import Mathlib.Order.Monotone
+import Mathlib.Order.RelClasses
 import Mathlib.Order.Synonym
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
