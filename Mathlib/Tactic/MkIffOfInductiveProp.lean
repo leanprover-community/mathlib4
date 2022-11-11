@@ -15,8 +15,8 @@ inductive `Prop`s. For example, when applied to `List.Chain`, it creates a decla
 the following type:
 
 ```lean
-∀{α : Type _} (R : α → α → Prop) (a : α) (l : List α),
-  Chain R a l ↔ l = [] ∨ ∃(b : α) (l' : list α), R a b ∧ Chain R b l ∧ l = b :: l'
+∀ {α : Type _} (R : α → α → Prop) (a : α) (l : List α),
+  Chain R a l ↔ l = [] ∨ ∃(b : α) (l' : List α), R a b ∧ Chain R b l ∧ l = b :: l'
 ```
 
 This tactic can be called using either the `mk_iff_of_inductive_prop` user command or
@@ -62,7 +62,7 @@ partial def compactRelation :
 
 /-- Generates an expression of the form `∃(args), inner`. `args` is assumed to be a list of fvars.
 When possible, `p ∧ q` is used instead of `∃(_ : p), q`. -/
-def mkExistsLst (args : List Expr) (inner : Expr) : MetaM Expr :=
+def mkExistsList (args : List Expr) (inner : Expr) : MetaM Expr :=
 args.foldrM (λarg i:Expr => do
     let t ← inferType arg
     let l := (← inferType t).sortLevel!
@@ -71,18 +71,18 @@ args.foldrM (λarg i:Expr => do
       else mkApp2 (mkConst `And [] : Expr) t i)
   inner
 
-/-- `mkOpLst op empty [x1, x2, ...]` is defined as `op x1 (op x2 ...)`.
+/-- `mkOpList op empty [x1, x2, ...]` is defined as `op x1 (op x2 ...)`.
   Returns `empty` if the list is empty. -/
-def mkOpLst (op : Expr) (empty : Expr) : List Expr → Expr
+def mkOpList (op : Expr) (empty : Expr) : List Expr → Expr
 | []        => empty
 | [e]       => e
-| (e :: es) => mkApp2 op e $ mkOpLst op empty es
+| (e :: es) => mkApp2 op e $ mkOpList op empty es
 
-/-- `mkAndLst [x1, x2, ...]` is defined as `x1 ∧ (x2 ∧ ...)`, or `True` if the list is empty. -/
-def mkAndLst : List Expr → Expr := mkOpLst (mkConst `And) (mkConst `True)
+/-- `mkAndList [x1, x2, ...]` is defined as `x1 ∧ (x2 ∧ ...)`, or `True` if the list is empty. -/
+def mkAndList : List Expr → Expr := mkOpList (mkConst `And) (mkConst `True)
 
-/-- `mkOrLst [x1, x2, ...]` is defined as `x1 ∨ (x2 ∨ ...)`, or `False` if the list is empty. -/
-def mkOrLst : List Expr → Expr := mkOpLst (mkConst `Or) (mkConst `False)
+/-- `mkOrList [x1, x2, ...]` is defined as `x1 ∨ (x2 ∨ ...)`, or `False` if the list is empty. -/
+def mkOrList : List Expr → Expr := mkOpList (mkConst `Or) (mkConst `False)
 
 /-- Drops the final element of a list. -/
 def List.init : List α → List α
@@ -117,13 +117,13 @@ do let type := (← getConstInfo c).instantiateTypeLevelParams univs
           let t : Expr ← bs'.getLast!.fvarId!.getType
           let l := (←inferType t).sortLevel!
           if l == Level.zero then do
-            let r ← mkExistsLst (List.init bs') t
+            let r ← mkExistsList (List.init bs') t
             pure (Sum.inl bs'.getLast!, subst r)
           else do
-            let r ← mkExistsLst bs' (mkConst `True)
+            let r ← mkExistsList bs' (mkConst `True)
             pure (Sum.inr 0, subst r)
      | _, _ => do
-       let r ← mkExistsLst bs' (mkAndLst eqs)
+       let r ← mkExistsList bs' (mkAndList eqs)
        pure (Sum.inr eqs.length, subst r)
      pure ((bs, n), r)
 
@@ -136,7 +136,7 @@ def existsi (mvar : MVarId) (e : Expr) : MetaM MVarId := do
   sg1.assign e
   pure sg2
 
-/-- Splits the goal `n` times via `refine ⟨?_,?_⟩, and then applies `constructor` to
+/-- Splits the goal `n` times via `refine ⟨?_,?_⟩`, and then applies `constructor` to
 close the resulting subgoals.
 -/
 def splitThenConstructor (mvar : MVarId) (n : Nat) : MetaM Unit :=
@@ -217,7 +217,8 @@ def listOptionMerge {α : Type _} {β : Type _} : List (Option α) → List β �
 | some _ :: xs, y :: ys => some y :: listOptionMerge xs ys
 | some _ :: _, [] => []
 
-/-- Finds a proof for the the right-to-left subgoal `mvar`.
+/-- Proves the right to left direction of a generated iff theorem.
+`s` is the output of a call to `constrToProp`.
 -/
 def toInductive (mvar : MVarId) (cs : List Name)
   (gs : List Expr) (s : List (List (Option Expr) × (Expr ⊕ Nat))) (h : FVarId) :
@@ -283,7 +284,7 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) : MetaM Unit := do
     let fvars' := fvars.toList
     let shape_rhss ← constrs.mapM (constrToProp univs (fvars'.take params) (fvars'.drop params))
     let (shape, rhss) := shape_rhss.unzip
-    pure (←mkForallFVars fvars (mkApp2 (mkConst `Iff) lhs (mkOrLst rhss)),
+    pure (←mkForallFVars fvars (mkApp2 (mkConst `Iff) lhs (mkOrList rhss)),
           shape)
 
   let mvar ← mkFreshExprMVar (some thmTy)
@@ -357,8 +358,8 @@ be just `c = i` for some index `i`.
 For example, `mk_iff_of_inductive_prop` on `List.Chain` produces:
 
 ```lean
-∀ {α : Type _} (R : α → α → Prop) (a : α) (l : List α),
-  Chain R a l ↔ l = [] ∨ ∃(b : α) (l' : list α), R a b ∧ Chain R b l ∧ l = b :: l'
+∀ { α : Type _} (R : α → α → Prop) (a : α) (l : List α),
+  Chain R a l ↔ l = [] ∨ ∃(b : α) (l' : List α), R a b ∧ Chain R b l ∧ l = b :: l'
 ```
 
 See also the `mk_iff` user attribute.
