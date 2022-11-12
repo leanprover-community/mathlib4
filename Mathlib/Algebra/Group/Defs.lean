@@ -519,6 +519,10 @@ instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelC
     CancelMonoid M :=
   { mul_right_cancel := fun a b c h => mul_left_cancel <| by rw [mul_comm, h, mul_comm] }
 
+-- TODO
+-- porting notes: Once to_additive works, we should not need to copy this attribute manually.
+attribute [instance] CancelCommMonoid.toAddCancelMonoid
+
 end CancelMonoid
 
 /-- The fundamental power operation in a group. `zpow_rec n a = a*a*...*a` n times, for integer `n`.
