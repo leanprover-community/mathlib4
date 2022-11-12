@@ -655,7 +655,7 @@ theorem and_forall_ne (a : α) : (p a ∧ ∀ (b) (_ : b ≠ a), p b) ↔ ∀ b,
   simp only [← @forall_eq _ p a, ← forall_and, ← or_imp, Classical.em, forall_const, iff_self]
 
 theorem Ne.ne_or_ne {x y : α} (z : α) (h : x ≠ y) : x ≠ z ∨ y ≠ z :=
-  not_and_or.1 <| mt (and_imp.2 Eq.substr) h.symm
+  not_and_or.1 <| mt (and_imp.2 (· ▸ ·)) h.symm
 
 @[simp] theorem exists_unique_eq {a' : α} : ∃! a, a = a' := by
   simp only [eq_comm, ExistsUnique, and_self, forall_eq', exists_eq']
