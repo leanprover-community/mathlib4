@@ -517,6 +517,9 @@ def fixAbbreviation : List String → List String
 | "add" :: "TSupport" :: s => "tsupport" :: fixAbbreviation s
 | "Add" :: "Indicator" :: s => "Indicator" :: fixAbbreviation s
 | "add" :: "Indicator" :: s => "indicator" :: fixAbbreviation s
+-- TODO: Bug in `splitCase` splits like ["LEH", "Pow"] instead of ["LE", "HPow"].
+| "HNsmul" :: s => "HMul" :: fixAbbreviation s
+| "hnsmul" :: s => "hmul" :: fixAbbreviation s
 | x :: s => x :: fixAbbreviation s
 | []  => []
 
