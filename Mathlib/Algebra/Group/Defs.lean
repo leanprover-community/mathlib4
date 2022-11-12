@@ -9,6 +9,9 @@ import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Int.Notation
 import Mathlib.Data.List.Basic
 
+import Std.Tactic.Lint.Frontend
+import Std.Tactic.Lint.Misc
+
 /-!
 # Typeclasses for (semi)groups and monoids
 
@@ -506,6 +509,10 @@ class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
 
 attribute [to_additive AddCancelCommMonoid.toAddCommMonoid] CancelCommMonoid.toCommMonoid
 
+-- TODO
+-- porting notes: Once to_additive works, we should not need to copy this attribute manually.
+attribute [instance] AddCancelMonoid
+
 -- see Note [lower instance priority]
 @[to_additive CancelCommMonoid.toAddCancelMonoid]
 instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelCommMonoid M] :
@@ -883,5 +890,10 @@ instance (priority := 100) CommGroup.toCancelCommMonoid : CancelCommMonoid G :=
 @[to_additive AddCommGroup.toSubtractionCommMonoid]
 instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G :=
   { ‹CommGroup G›, Group.toDivisionMonoid with }
+
+-- TODO
+-- porting notes: Once to_additive works, we should not need to copy this attribute manually.
+attribute [instance] AddCommGroup.toAddCancelCommMonoid
+attribute [instance] AddCommGroup.toSubtractionCommMonoid
 
 end CommGroup
