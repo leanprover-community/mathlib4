@@ -74,6 +74,10 @@ elab tk:"#conv " conv:conv " => " e:term : command =>
       let e' ← instantiateMVars rhs
       logInfoAt tk e'
 
+@[inherit_doc Parser.Tactic.withReducible]
+macro (name := withReducible) tk:"with_reducible " s:convSeq : conv =>
+  `(conv| tactic' => with_reducible%$tk conv' => $s)
+
 /--
 The command `#whnf e` evaluates `e` to Weak Head Normal Form, which means that the "head"
 of the expression is reduced to a primitive - a lambda or forall, or an axiom or inductive type.
@@ -93,6 +97,12 @@ but the subterms `Nat.succ 1` and `List.map Nat.succ (List.cons 2 (List.cons 3 L
 still unevaluated. `#reduce` is equivalent to using `#whnf` on every subexpression.
 -/
 macro tk:"#whnf " e:term : command => `(command| #conv%$tk whnf => $e)
+
+/--
+The command `#rwhnf e` evaluates `e` to Reducible Weak Head Normal Form, that is, it uses
+`whnf` but only unfolding reducible definitions.
+-/
+macro tk:"#rwhnf " e:term : command => `(command| #conv%$tk with_reducible whnf => $e)
 
 /--
 * `#simp => e` runs `simp` on the expression `e` and displays the resulting expression after
