@@ -1,10 +1,10 @@
 {"version": 2,
  "packages":
  [{"url": "https://github.com/leanprover/std4",
-   "rev": "22327ae0520d4e499503429565f79f179f83437a",
+   "rev": "54a7731d9dd4738d1fb9a9664b3ac3802d8e3cf2",
    "name": "std",
    "inputRev": "main"},
   {"url": "https://github.com/gebner/quote4",
-   "rev": "5be427045b61c9d40f9f4b46b3ade98e019a1ad1",
+   "rev": "7ac99aa3fac487bec1d5860e751b99c7418298cf",
    "name": "Qq",
    "inputRev": "master"}]}
