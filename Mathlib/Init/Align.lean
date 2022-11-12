@@ -93,11 +93,6 @@ actual theorems in the files.
 
 #align fin.elim0 Fin.elim0ₓ
 
-/-! ## `init.data.int.basic` -/
-
--- TODO: backport?
-#align int.neg_succ_of_nat Int.negSucc
-
 /-! ## `init.data.int.order` -/
 
 #align int.nonneg Int.NonNeg

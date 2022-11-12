@@ -5,7 +5,7 @@ Authors: Jeremy Avigad
 -/
 
 import Mathlib.Init.Algebra.Order
-import Mathlib.Init.Data.Int.Notation
+import Mathlib.Init.Data.Int.Basic
 
 /-! # The order relation on the integers -/
 
