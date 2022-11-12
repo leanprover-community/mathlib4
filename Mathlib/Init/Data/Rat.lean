@@ -11,5 +11,4 @@ import Std.Data.Rat
 
 namespace Rat
 
-/-- Write the rational numbers as `ℚ`. -/
-notation "ℚ" => Rat
+@[inherit_doc] notation "ℚ" => Rat
