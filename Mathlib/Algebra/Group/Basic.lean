@@ -176,12 +176,16 @@ theorem inv_comp_inv : Inv.inv ∘ Inv.inv = @id G :=
   inv_involutive.comp_self
 
 @[to_additive]
-theorem left_inverse_inv : LeftInverse (fun a : G => a⁻¹) fun a => a⁻¹ :=
+theorem leftInverse_inv : LeftInverse (fun a : G => a⁻¹) fun a => a⁻¹ :=
   inv_inv
+#align left_inverse_inv leftInverse_inv
+#align left_inverse_neg leftInverse_neg
 
 @[to_additive]
-theorem right_inverse_inv : LeftInverse (fun a : G => a⁻¹) fun a => a⁻¹ :=
+theorem rightInverse_inv : LeftInverse (fun a : G => a⁻¹) fun a => a⁻¹ :=
   inv_inv
+#align right_inverse_inv rightInverse_inv
+#align right_inverse_neg rightInverse_neg
 
 end HasInvolutiveInv
 
@@ -554,22 +558,30 @@ theorem eq_iff_eq_of_div_eq_div (H : a / b = c / d) : a = b ↔ c = d :=
   by rw [← div_eq_one, H, div_eq_one]
 
 @[to_additive]
-theorem left_inverse_div_mul_left (c : G) : Function.LeftInverse (fun x => x / c) fun x => x * c :=
+theorem leftInverse_div_mul_left (c : G) : Function.LeftInverse (fun x => x / c) fun x => x * c :=
   fun x => mul_div_cancel'' x c
+#align left_inverse_div_mul_left leftInverse_div_mul_left
+#align left_inverse_sub_add_left leftInverse_sub_add_left
 
 @[to_additive]
-theorem left_inverse_mul_left_div (c : G) : Function.LeftInverse (fun x => x * c) fun x => x / c :=
+theorem leftInverse_mul_left_div (c : G) : Function.LeftInverse (fun x => x * c) fun x => x / c :=
   fun x => div_mul_cancel' x c
+#align left_inverse_mul_left_div leftInverse_mul_left_div
+#align left_inverse_add_left_sub leftInverse_add_left_sub
 
 @[to_additive]
-theorem left_inverse_mul_right_inv_mul (c : G) :
+theorem leftInverse_mul_right_inv_mul (c : G) :
     Function.LeftInverse (fun x => c * x) fun x => c⁻¹ * x :=
   fun x => mul_inv_cancel_left c x
+#align left_inverse_mul_right_inv_mul leftInverse_mul_right_inv_mul
+#align left_inverse_add_right_neg_add leftInverse_add_right_neg_add
 
 @[to_additive]
-theorem left_inverse_inv_mul_mul_right (c : G) :
+theorem leftInverse_inv_mul_mul_right (c : G) :
     Function.LeftInverse (fun x => c⁻¹ * x) fun x => c * x :=
   fun x => inv_mul_cancel_left c x
+#align left_inverse_inv_mul_mul_right leftInverse_inv_mul_mul_right
+#align left_inverse_neg_add_add_right leftInverse_neg_add_add_right
 
 -- TODO @[to_additive]
 theorem exists_npow_eq_one_of_zpow_eq_one {n : ℤ} (hn : n ≠ 0) {x : G} (h : x ^ n = 1) :
