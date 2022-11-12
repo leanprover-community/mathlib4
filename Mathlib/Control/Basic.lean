@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 
 Extends the theory on functors, applicatives and monads.
 -/
-import Lean.Meta.Tactic.Simp
+import Mathlib.Control.Tmp
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Control.Combinators
 
@@ -18,15 +18,12 @@ notation:1 a " $< " f:1 => f a
 
 section
 
-/-- Simp set for functor_norm -/
-register_simp_attr functor_norm
-
 end
 
 section Functor
 
 variable {f : Type u → Type v} [Functor f] [LawfulFunctor f]
--- @[functor_norm]
+@[functor_norm]
 theorem Functor.map_map (m : α → β) (g : β → γ) (x : f α) : g <$> m <$> x = (g ∘ m) <$> x :=
   (comp_map _ _ _).symm
 #align functor.map_map Functor.map_map
@@ -53,16 +50,16 @@ def mzipWith' (f : α → β → F γ) : List α → List β → F PUnit
 
 variable [LawfulApplicative F]
 
---attribute [functor_norm] seq_assoc pure_seq
+attribute [functor_norm] seq_assoc pure_seq
 
 @[simp]
 theorem pure_id'_seq (x : F α) : (pure fun x => x) <*> x = x :=
   pure_id_seq x
 #align pure_id'_seq pure_id'_seq
 
---attribute [functor_norm] seq_assoc pure_seq
+attribute [functor_norm] seq_assoc pure_seq
 
---@[functor_norm]
+@[functor_norm]
 theorem seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
   x <*> f <$> y = (· ∘ f) <$> x <*> y := by
   simp [← pure_seq]
@@ -70,7 +67,7 @@ theorem seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
   simp [pure_seq]
 #align seq_map_assoc seq_map_assoc
 
---@[functor_norm]
+@[functor_norm]
 theorem map_seq (f : β → γ) (x : F (α → β)) (y : F α) :
   f <$> (x <*> y) = (f ∘ ·) <$> x <*> y := by
   simp [← pure_seq] <;> simp [seq_assoc]
@@ -79,7 +76,7 @@ theorem map_seq (f : β → γ) (x : F (α → β)) (y : F α) :
 end Applicative
 
 -- TODO: setup `functor_norm` for `monad` laws
--- attribute [functor_norm] pure_bind bind_assoc bind_pure
+attribute [functor_norm] pure_bind bind_assoc bind_pure
 
 section Monad
 
@@ -108,20 +105,20 @@ theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
 
 #align seq_eq_bind_map seq_eq_bind_map
 
-/-- This is the Kleisli composition -/
-@[reducible]
-def fish {m} [Monad m] {α β γ} (f : α → m β) (g : β → m γ) := fun x => f x >>= g
-#align fish fish
+--/-- This is the Kleisli composition -/
+--@[reducible]
+--def fish {m} [Monad m] {α β γ} (f : α → m β) (g : β → m γ) := fun x => f x >>= g
+--#align fish fish
+--
+---- mathport name: «expr >=> »
+--infixl:55
+--  " >=> " =>-- >=> is already defined in the core library but it is unusable
+--  -- because of its precedence (it is defined with precedence 2) and
+--  -- because it is defined as a lambda instead of having a named
+--  -- function
+--  fish
 
--- mathport name: «expr >=> »
-infixl:55
-  " >=> " =>-- >=> is already defined in the core library but it is unusable
-  -- because of its precedence (it is defined with precedence 2) and
-  -- because it is defined as a lambda instead of having a named
-  -- function
-  fish
-
--- @[functor_norm]
+@[functor_norm]
 theorem fish_pure {α β} (f : α → m β) : f >=> pure = f := by simp only [(· >=> ·), functor_norm]
 #align fish_pure fish_pure
 
@@ -141,7 +138,7 @@ variable {m' : Type v → Type w} [Monad m']
 def List.mmapAccumr (f : α → β' → m' (β' × γ')) : β' → List α → m' (β' × List γ')
   | a, [] => pure (a, [])
   | a, x :: xs => do
-    let (a', ys) ← List.mmapAccumr a xs
+    let (a', ys) ← List.mmapAccumr f a xs
     let (a'', y) ← f x a'
     pure (a'', y :: ys)
 #align list.mmap_accumr List.mmapAccumr
@@ -150,7 +147,7 @@ def List.mmapAccuml (f : β' → α → m' (β' × γ')) : β' → List α → m
   | a, [] => pure (a, [])
   | a, x :: xs => do
     let (a', y) ← f a x
-    let (a'', ys) ← List.mmapAccuml a' xs
+    let (a'', ys) ← List.mmapAccuml f a' xs
     pure (a'', y :: ys)
 #align list.mmap_accuml List.mmapAccuml
 
@@ -160,23 +157,24 @@ section
 
 variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
-theorem mjoin_map_map {α β : Type u} (f : α → β) (a : m (m α)) : joinM (Functor.map f <$> a) = f <$> joinM a := by
-  simp only [joinM, (· ∘ ·), id.def, (bind_pure_comp_eq_map _ _).symm, bind_assoc, map_bind, pure_bind]
-#align mjoin_map_map mjoin_map_map
+theorem joinM_map_map {α β : Type u} (f : α → β) (a : m (m α)) :
+  joinM (Functor.map f <$> a) = f <$> joinM a := by
+  simp only [joinM, (· ∘ ·), id.def, ← bind_pure_comp, bind_assoc, map_bind, pure_bind]
+#align mjoin_map_map joinM_map_map
 
-theorem mjoin_map_mjoin {α : Type u} (a : m (m (m α))) : joinM (joinM <$> a) = joinM (joinM a) := by
-  simp only [joinM, (· ∘ ·), id.def, map_bind, (bind_pure_comp_eq_map _ _).symm, bind_assoc, pure_bind]
-#align mjoin_map_mjoin mjoin_map_mjoin
-
-@[simp]
-theorem mjoin_map_pure {α : Type u} (a : m α) : joinM (pure <$> a) = a := by
-  simp only [joinM, (· ∘ ·), id.def, map_bind, (bind_pure_comp_eq_map _ _).symm, bind_assoc, pure_bind, bind_pure]
-#align mjoin_map_pure mjoin_map_pure
+theorem joinM_map_joinM {α : Type u} (a : m (m (m α))) : joinM (joinM <$> a) = joinM (joinM a) := by
+  simp only [joinM, (· ∘ ·), id.def, map_bind, ← bind_pure_comp, bind_assoc, pure_bind]
+#align mjoin_map_mjoin joinM_map_joinM
 
 @[simp]
-theorem mjoin_pure {α : Type u} (a : m α) : joinM (pure a) = a :=
+theorem joinM_map_pure {α : Type u} (a : m α) : joinM (pure <$> a) = a := by
+  simp only [joinM, (· ∘ ·), id.def, map_bind, ← bind_pure_comp, bind_assoc, pure_bind, bind_pure]
+#align mjoin_map_pure joinM_map_pure
+
+@[simp]
+theorem joinM_pure {α : Type u} (a : m α) : joinM (pure a) = a :=
   LawfulMonad.pure_bind a id
-#align mjoin_pure mjoin_pure
+#align mjoin_pure joinM_pure
 
 end
 
@@ -184,8 +182,10 @@ section Alternative
 
 variable {F : Type → Type v} [Alternative F]
 
+#check Function.const
+
 def succeeds {α} (x : F α) : F Bool :=
-  x $> tt <|> pure false
+  (Function.const _ x) <$> true <|> pure false
 #align succeeds succeeds
 
 def mtry {α} (x : F α) : F Unit :=
