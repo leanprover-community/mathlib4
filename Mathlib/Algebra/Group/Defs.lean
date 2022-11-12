@@ -886,6 +886,10 @@ variable [CommGroup G]
 instance (priority := 100) CommGroup.toCancelCommMonoid : CancelCommMonoid G :=
   { ‹CommGroup G›, Group.toCancelMonoid with }
 
+-- TODO
+-- porting notes: Once to_additive works, we should not need to copy this attribute manually.
+attribute [instance] AddCommGroup.toAddCancelCommMonoid
+
 -- see Note [lower instance priority]
 @[to_additive AddCommGroup.toSubtractionCommMonoid]
 instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G :=
@@ -893,7 +897,6 @@ instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G
 
 -- TODO
 -- porting notes: Once to_additive works, we should not need to copy this attribute manually.
-attribute [instance] AddCommGroup.toAddCancelCommMonoid
 attribute [instance] AddCommGroup.toSubtractionCommMonoid
 
 end CommGroup
