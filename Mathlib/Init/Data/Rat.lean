@@ -6,6 +6,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 
 import Std.Data.Rat
 
+/-!
+# Notation for the rational numbers -/
+
 namespace Rat
 
 notation "ℚ" => Rat
