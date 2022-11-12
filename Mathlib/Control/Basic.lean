@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 Extends the theory on functors, applicatives and monads.
 -/
 import Mathlib.Control.Tmp
-import Mathlib.Mathport.Rename
+import Mathlib.Tactic.CasesM
 import Mathlib.Init.Control.Combinators
 
 universe u v w
@@ -37,7 +37,7 @@ section Applicative
 
 variable {F : Type u → Type v} [Applicative F]
 
-def mzipWith {α₁ α₂ φ : Type u} (f : α₁ → α₂ → F φ) : ∀ (ma₁ : List α₁) (ma₂ : List α₂), F (List φ)
+def mzipWith {α₁ α₂ φ : Type u} (f : α₁ → α₂ → F φ) : ∀ (_ : List α₁) (_ : List α₂), F (List φ)
   | x :: xs, y :: ys => (· :: ·) <$> f x y <*> mzipWith f xs ys
   | _, _ => pure []
 #align mzip_with mzipWith
@@ -135,21 +135,21 @@ variable {β' γ' : Type v}
 
 variable {m' : Type v → Type w} [Monad m']
 
-def List.mmapAccumr (f : α → β' → m' (β' × γ')) : β' → List α → m' (β' × List γ')
+def List.mapMAccumR (f : α → β' → m' (β' × γ')) : β' → List α → m' (β' × List γ')
   | a, [] => pure (a, [])
   | a, x :: xs => do
-    let (a', ys) ← List.mmapAccumr f a xs
+    let (a', ys) ← List.mapMAccumR f a xs
     let (a'', y) ← f x a'
     pure (a'', y :: ys)
-#align list.mmap_accumr List.mmapAccumr
+#align list.mmap_accumr List.mapMAccumR
 
-def List.mmapAccuml (f : β' → α → m' (β' × γ')) : β' → List α → m' (β' × List γ')
+def List.mapMAccumL (f : β' → α → m' (β' × γ')) : β' → List α → m' (β' × List γ')
   | a, [] => pure (a, [])
   | a, x :: xs => do
     let (a', y) ← f a x
-    let (a'', ys) ← List.mmapAccuml f a' xs
+    let (a'', ys) ← List.mapMAccumL f a' xs
     pure (a'', y :: ys)
-#align list.mmap_accuml List.mmapAccuml
+#align list.mmap_accuml List.mapMAccumL
 
 end Monad
 
@@ -182,23 +182,23 @@ section Alternative
 
 variable {F : Type → Type v} [Alternative F]
 
-#check Function.const
-
+-- [todo] add notation for `Functor.mapConst` and port `functor.map_const_rev`
 def succeeds {α} (x : F α) : F Bool :=
-  (Function.const _ x) <$> true <|> pure false
+  Functor.mapConst true x <|> pure false
 #align succeeds succeeds
 
-def mtry {α} (x : F α) : F Unit :=
-  x $> () <|> pure ()
-#align mtry mtry
+def tryM {α} (x : F α) : F Unit :=
+  Functor.mapConst () x <|> pure ()
+#align mtry tryM
 
 @[simp]
-theorem guard_true {h : Decidable True} : @guard F _ True h = pure () := by simp [guard]
-#align guard_true guard_true
+theorem guard_true {h : Decidable True} : @guard F _ True h = pure () := by simp [guard, if_pos]
+#align guard_true guard_True
 
 @[simp]
-theorem guard_false {h : Decidable False} : @guard F _ False h = failure := by simp [guard]
-#align guard_false guard_false
+theorem guard_false {h : Decidable False} : @guard F _ False h = failure :=
+  by simp [guard, if_neg not_false]
+#align guard_false guard_False
 
 end Alternative
 
@@ -221,36 +221,50 @@ instance : Monad (Sum.{v, u} e) where
   pure := @Sum.inr e
   bind := @Sum.bind e
 
-instance : IsLawfulFunctor (Sum.{v, u} e) := by refine' { .. } <;> intros <;> casesm Sum _ _ <;> rfl
+instance : LawfulFunctor (Sum.{v, u} e) := by refine' { .. } <;> intros <;> casesm Sum _ _ <;> rfl
 
 instance : LawfulMonad (Sum.{v, u} e) where
+  seqRight_eq := by
+    intros
+    casesm Sum _ _ <;> casesm Sum _ _ <;> rfl
+  seqLeft_eq := by
+    intros
+    casesm Sum _ _ <;> rfl
+  pure_seq := by
+    intros
+    rfl
   bind_assoc := by
     intros
     casesm Sum _ _ <;> rfl
   pure_bind := by
     intros
     rfl
-  bind_pure_comp_eq_map := by
+  bind_pure_comp := by
     intros
     casesm Sum _ _ <;> rfl
-  bind_map_eq_seq := by
+  bind_map := by
     intros
-    cases f <;> rfl
+    casesm Sum _ _ <;> rfl
 
 end Sum
 
-class IsCommApplicative (m : Type _ → Type _) [Applicative m] extends LawfulApplicative m : Prop where
-  commutative_prod : ∀ {α β} (a : m α) (b : m β), Prod.mk <$> a <*> b = (fun b a => (a, b)) <$> b <*> a
-#align is_comm_applicative IsCommApplicative
+class CommApplicative (m : Type _ → Type _) [Applicative m] extends LawfulApplicative m : Prop where
+  commutative_prod : ∀ {α β} (a : m α) (b : m β),
+    Prod.mk <$> a <*> b = (fun b a => (a, b)) <$> b <*> a
+#align is_comm_applicative CommApplicative
 
 open Functor
 
-theorem IsCommApplicative.commutative_map {m : Type _ → Type _} [Applicative m] [IsCommApplicative m] {α β γ} (a : m α)
-    (b : m β) {f : α → β → γ} : f <$> a <*> b = flip f <$> b <*> a :=
+theorem CommApplicative.commutative_map {m : Type _ → Type _} [h : Applicative m]
+  [CommApplicative m] {α β γ} (a : m α) (b : m β) {f : α → β → γ} :
+  f <$> a <*> b = flip f <$> b <*> a :=
   calc
-    f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) := by
-      simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map]
-    _ = (fun b a => f a b) <$> b <*> a := by
-      rw [IsCommApplicative.commutative_prod] <;> simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map]
+    f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) :=
+      by
+        simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map] <;> rfl
+    _ = (fun b a => f a b) <$> b <*> a :=
+      by
+        rw [@CommApplicative.commutative_prod m h] <;>
+        simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]
 
 #align is_comm_applicative.commutative_map IsCommApplicative.commutative_map
