@@ -167,6 +167,7 @@
  ["docBlame", "HasVsub.vsub"],
  ["docBlame", "IO.runRandWith"],
  ["docBlame", "Int.cast"],
+ ["docBlame", "Int.decNonneg"],
  ["docBlame", "InvOneClass.inv_one"],
  ["docBlame", "IsAntisymm.antisymm"],
  ["docBlame", "IsAssociative.assoc"],

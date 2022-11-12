@@ -93,12 +93,6 @@ actual theorems in the files.
 
 #align fin.elim0 Fin.elim0ₓ
 
-/-! ## `init.data.int.order` -/
-
-#align int.nonneg Int.NonNeg
-#align int.le Int.le
-#align int.lt Int.lt
-
 /-! ## `init.data.int.comp_lemmas` -/
 
 /-! ## `init.data.int.default` -/
