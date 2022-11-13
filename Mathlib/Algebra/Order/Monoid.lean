@@ -57,7 +57,7 @@ instance OrderedCommMonoid.to_covariantClass_right (M : Type _) [OrderedCommMono
 attribute [instance] OrderedAddCommMonoid.to_covariantClass_right
 
 /- This is not an instance, to avoid creating a loop in the type-class system: in a
-`left_cancel_semigroup` with a `partial_order`, assuming `covariantClass M M (*) (≤)` implies
+`left_cancel_semigroup` with a `partial_order`, assuming `CovariantClass M M (*) (≤)` implies
 `CovariantClass M M (*) (<)`, see `left_cancel_semigroup.covariant_mul_lt_of_covariant_mul_le`. -/
 @[to_additive Add.to_covariantClass_left]
 theorem Mul.to_covariantClass_left (M : Type _) [Mul M] [PartialOrder M]
