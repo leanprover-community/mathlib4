@@ -107,7 +107,7 @@ namespace Commute
 variable {g : α → α}
 
 theorem iterate_right (h : Commute f g) (n : ℕ) : Commute f (g^[n]) :=
-  h.iterate_right n
+  Semiconj.iterate_right h n
 
 theorem iterate_left (h : Commute f g) (n : ℕ) : Commute (f^[n]) g :=
   (h.symm.iterate_right n).symm
@@ -160,6 +160,7 @@ theorem comp_iterate_pred_of_pos {n : ℕ} (hn : 0 < n) : f ∘ f^[n.pred] = f^[
   rw [← iterate_succ', Nat.succ_pred_eq_of_pos hn]
 
 /-- A recursor for the iterate of a function. -/
+noncomputable
 def Iterate.rec (p : α → Sort _) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) (n : ℕ) :
     p ((f^[n]) a) :=
   Nat.rec ha
@@ -182,7 +183,7 @@ theorem LeftInverse.iterate {g : α → α} (hg : LeftInverse g f) (n : ℕ) :
 
 theorem RightInverse.iterate {g : α → α} (hg : RightInverse g f) (n : ℕ) :
     RightInverse (g^[n]) (f^[n]) :=
-  hg.iterate n
+  LeftInverse.iterate hg n
 
 theorem iterate_comm (f : α → α) (m n : ℕ) : f^[n]^[m] = f^[m]^[n] :=
   (iterate_mul _ _ _).symm.trans (Eq.trans (by rw [Nat.mul_comm]) (iterate_mul _ _ _))
