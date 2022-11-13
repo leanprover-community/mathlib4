@@ -94,7 +94,7 @@ theorem lift_mk (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a
 theorem liftOn_mk (a : α) (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) :
   Quot.liftOn (Quot.mk r a) f h = f a :=
   rfl
-#align lift_on_mk liftOn_mk
+#align quot.lift_on_mk Quot.liftOn_mk
 
 /-- Descends a function `f : α → β → γ` to quotients of `α` and `β`. -/
 -- porting note: removed `@[elab_as_elim]`, gave "unexpected resulting type γ"
@@ -122,7 +122,7 @@ theorem liftOn₂_mk (a : α) (b : β) (f : α → β → γ) (hr : ∀ a b₁ b
     (hs : ∀ a₁ a₂ b, r a₁ a₂ → f a₁ b = f a₂ b) :
     Quot.liftOn₂ (Quot.mk r a) (Quot.mk s b) f hr hs = f a b :=
   rfl
-#align lift_on₂_mk liftOn₂_mk
+#align quot.lift_on₂_mk Quot.liftOn₂_mk
 
 variable {t : γ → γ → Prop}
 
@@ -627,7 +627,7 @@ theorem hrecOn'_mk'' {φ : Quotient s₁ → Sort _} (f : ∀ a, φ (Quotient.mk
     (c : ∀ a₁ a₂, a₁ ≈ a₂ → HEq (f a₁) (f a₂))
     (x : α) : (Quotient.mk'' x).hrecOn' f c = f x :=
   rfl
-#align hrec_on'_mk'' hrecOn'_mk''
+#align quotient.hrec_on'_mk'' Quotient.hrecOn'_mk''
 
 /-- Recursion on two `Quotient` arguments `a` and `b`, result type depends on `⟦a⟧` and `⟦b⟧`. -/
 protected def hrecOn₂' {φ : Quotient s₁ → Quotient s₂ → Sort _} (qa : Quotient s₁)
@@ -642,7 +642,7 @@ theorem hrecOn₂'_mk'' {φ : Quotient s₁ → Quotient s₂ → Sort _}
     (c : ∀ a₁ b₁ a₂ b₂, a₁ ≈ a₂ → b₁ ≈ b₂ → HEq (f a₁ b₁) (f a₂ b₂)) (x : α) (qb : Quotient s₂) :
     (Quotient.mk'' x).hrecOn₂' qb f c = qb.hrecOn' (f x) fun _ _ => c _ _ _ _ (Setoid.refl _) :=
   rfl
-#align hrec_on₂'_mk'' hrecOn₂'_mk''
+#align quotient.hrec_on₂'_mk'' Quotient.hrecOn₂'_mk''
 
 /-- Map a function `f : α → β` that sends equivalent elements to equivalent elements
 to a function `quotient sa → quotient sb`. Useful to define unary operations on quotients. -/
@@ -698,13 +698,13 @@ protected theorem mk''_eq_mk (x : α) : Quotient.mk'' x = Quotient.mk s x :=
 @[simp]
 protected theorem liftOn'_mk (x : α) (f : α → β) (h) : (Quotient.mk s x).liftOn' f h = f x :=
   rfl
-#align lift_on'_mk liftOn'_mk
+#align quotient.lift_on'_mk Quotient.liftOn'_mk
 
 @[simp]
 protected theorem liftOn₂'_mk [t : Setoid β] (f : α → β → γ) (h) (a : α) (b : β) :
     Quotient.liftOn₂' (Quotient.mk s a) (Quotient.mk t b) f h = f a b :=
   Quotient.liftOn₂'_mk'' _ _ _ _
-#align lift_on₂'_mk liftOn₂'_mk
+#align quotient.lift_on₂'_mk Quotient.liftOn₂'_mk
 
 @[simp]
 theorem map'_mk [t : Setoid β] (f : α → β) (h) (x : α) :
