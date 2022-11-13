@@ -57,6 +57,7 @@ inductive RingMode where
   | SOP
   /-- Raw form: the representation `ring` uses internally. -/
   | raw
+  deriving Inhabited, BEq, Repr
 
 /-- Configuration for `ring_nf`. -/
 structure RingNF.Config where
@@ -66,6 +67,7 @@ structure RingNF.Config where
   recursive := true
   /-- The normalization style. -/
   mode := RingMode.SOP
+  deriving Inhabited, BEq, Repr
 
 /-- Function elaborating `RingNF.Config`. -/
 declare_config_elab elabRingNFConfig RingNF.Config

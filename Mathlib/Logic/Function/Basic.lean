@@ -182,13 +182,8 @@ protected theorem Surjective.right_cancellable (hf : Surjective f) {g₁ g₂ : 
 
 theorem surjective_of_right_cancellable_Prop (h : ∀ g₁ g₂ : β → Prop, g₁ ∘ f = g₂ ∘ f → g₁ = g₂) :
     Surjective f := by
-  specialize h (fun _ => True) (fun y => ∃ x, f x = y) (funext fun x => _)
-  · intro y
-    have : True = ∃ x, f x = y := congr_fun h y
-    rw [← this]
-    exact trivial
-  · simp only [(· ∘ ·), exists_apply_eq_apply]
-
+  specialize h (fun y => ∃ x, f x = y) (fun _ => True) (funext fun x => eq_true ⟨_, rfl⟩)
+  intro y; rw [congr_fun h y]; trivial
 
 theorem bijective_iff_exists_unique (f : α → β) : Bijective f ↔ ∀ b : β, ∃! a : α, f a = b :=
   ⟨ fun hf b => let ⟨a, ha⟩ := hf.surjective b
