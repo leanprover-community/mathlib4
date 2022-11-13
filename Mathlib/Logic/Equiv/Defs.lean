@@ -752,7 +752,8 @@ def psigmaCongrRight {α} {β₁ β₂ : α → Sort _} (F : ∀ a, β₁ a ≃ 
 @[simp]
 theorem psigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Sort _}
     (F : ∀ a, β₁ a ≃ β₂ a) (G : ∀ a, β₂ a ≃ β₃ a) :
-    (psigmaCongrRight F).trans (psigmaCongrRight G) = psigmaCongrRight fun a => (F a).trans (G a) := by
+    (psigmaCongrRight F).trans (psigmaCongrRight G) =
+      psigmaCongrRight fun a => (F a).trans (G a) := by
   ext1 x
   cases x
   rfl
@@ -1008,7 +1009,8 @@ protected def congr {ra : α → α → Prop} {rb : β → β → Prop} (e : α 
   toFun := Quot.map e fun a₁ a₂ => (eq a₁ a₂).1
   invFun :=
     Quot.map e.symm fun b₁ b₂ h =>
-      (eq (e.symm b₁) (e.symm b₂)).2 ((e.apply_symm_apply b₁).symm ▸ (e.apply_symm_apply b₂).symm ▸ h)
+      (eq (e.symm b₁) (e.symm b₂)).2
+        ((e.apply_symm_apply b₁).symm ▸ (e.apply_symm_apply b₂).symm ▸ h)
   left_inv := by
     rintro ⟨a⟩
     simp only [Quot.map, Equiv.symm_apply_apply]
