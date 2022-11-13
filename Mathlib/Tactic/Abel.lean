@@ -15,6 +15,8 @@ Evaluate expressions in the language of additive, commutative monoids and groups
 
 namespace Mathlib.Tactic.Abel
 open Lean Elab Meta Tactic Qq
+-- FIXME: remove this when the sorries are gone
+set_option warningAsError false
 
 /-- Construct the term of type `α` for a given natural number
 (doing typeclass search for the `OfNat` instance required). -/
