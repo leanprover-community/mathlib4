@@ -9,6 +9,7 @@ import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.Group
 import Mathlib.Algebra.Order.Monoid
 import Mathlib.Algebra.Order.MonoidLemmas
@@ -30,6 +31,9 @@ import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.FunLike.Basic
+import Mathlib.Data.FunLike.Embedding
+import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Cast
 import Mathlib.Data.Int.Cast.Defs
@@ -48,6 +52,7 @@ import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.PProd
+import Mathlib.Data.Quot
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
@@ -70,7 +75,9 @@ import Mathlib.Init.Data.Int.Notation
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Init.Data.Prod
+import Mathlib.Init.Data.Quot
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Propext

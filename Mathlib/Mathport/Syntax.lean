@@ -10,12 +10,14 @@ import Std.Tactic.RCases
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
+import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyRules
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Choose
+import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
@@ -30,6 +32,7 @@ import Mathlib.Tactic.DocCommands
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
+import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
