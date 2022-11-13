@@ -15,10 +15,4 @@ open Lean Meta Elab.Tactic
 elab (name := clear!) "clear!" hs:(ppSpace colGt ident)* : tactic => do
   let fvarIds ← getFVarIds hs
   liftMetaTactic1 fun goal => do
-    let mut toClear : Array FVarId := #[]
-    let lctx ← getLCtx
-    for fvar in fvarIds do
-      let deps := (← collectForwardDeps #[mkFVar fvar] true).map (·.fvarId!)
-      if ← deps.allM fun dep => return (← isClass? (lctx.get! dep).type).isNone then
-        toClear := toClear ++ deps
-    goal.tryClearMany toClear
+    goal.tryClearMany <| (← collectForwardDeps (fvarIds.map .fvar) true).map (·.fvarId!)

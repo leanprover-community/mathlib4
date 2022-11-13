@@ -9,6 +9,7 @@ import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.Group
 import Mathlib.Algebra.Order.Monoid
 import Mathlib.Algebra.Order.MonoidLemmas
@@ -74,6 +75,7 @@ import Mathlib.Init.Data.Int.Notation
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Init.Data.Prod
 import Mathlib.Init.Data.Quot
 import Mathlib.Init.Function
@@ -142,6 +144,7 @@ import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormCast.Tactic
 import Mathlib.Tactic.NormNum
