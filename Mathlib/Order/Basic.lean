@@ -643,6 +643,15 @@ theorem Pi.sdiff_apply {ι : Type u} {α : ι → Type v} [∀ i, SDiff (α i)] 
     (x \ y) i = x i \ y i :=
   rfl
 
+namespace Function
+variable [Preorder α] [Nonempty β] {a b : α}
+
+@[simp] lemma const_le_const : const β a ≤ const β b ↔ a ≤ b := by simp [Pi.le_def]
+@[simp] lemma const_lt_const : const β a < const β b ↔ a < b := by
+  simpa [Pi.lt_def] using le_of_lt (α := _)
+
+end Function
+
 /-! ### `min`/`max` recursors -/
 
 
