@@ -5,7 +5,8 @@ open Lake DSL
 package mathlib
 
 @[default_target]
-lean_lib Mathlib
+lean_lib Mathlib where
+  moreLeanArgs := #["-DwarningAsError=true"]
 
 @[default_target]
 lean_exe runLinter where
