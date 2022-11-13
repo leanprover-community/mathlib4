@@ -482,7 +482,7 @@ theorem LinearOrder.ext {α} {A B : LinearOrder α}
   exact H x y
 
 /-- Given a relation `R` on `β` and a function `f : α → β`, the preimage relation on `α` is defined
-by `x ≤ y ↔ f x ≤ f y`. It is the unique relation on `α` making `f` a `rel_embedding` (assuming `f`
+by `x ≤ y ↔ f x ≤ f y`. It is the unique relation on `α` making `f` a `RelEmbedding` (assuming `f`
 is injective). -/
 @[simp]
 def Order.Preimage {α β} (f : α → β) (s : β → β → Prop) (x y : α) : Prop :=
@@ -500,7 +500,7 @@ instance Order.Preimage.decidable {α β} (f : α → β) (s : β → β → Pro
 
 
 /-- Type synonym to equip a type with the dual order: `≤` means `≥` and `<` means `>`. `αᵒᵈ` is
-notation for `order_dual α`. -/
+notation for `OrderDual α`. -/
 def OrderDual (α : Type _) : Type _ :=
   α
 
