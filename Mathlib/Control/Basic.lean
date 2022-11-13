@@ -37,16 +37,16 @@ section Applicative
 
 variable {F : Type u → Type v} [Applicative F]
 
-def mzipWith {α₁ α₂ φ : Type u} (f : α₁ → α₂ → F φ) : ∀ (_ : List α₁) (_ : List α₂), F (List φ)
-  | x :: xs, y :: ys => (· :: ·) <$> f x y <*> mzipWith f xs ys
+def zipMWith {α₁ α₂ φ : Type u} (f : α₁ → α₂ → F φ) : ∀ (_ : List α₁) (_ : List α₂), F (List φ)
+  | x :: xs, y :: ys => (· :: ·) <$> f x y <*> zipMWith f xs ys
   | _, _ => pure []
-#align mzip_with mzipWith
+#align mzip_with zipMWith
 
-def mzipWith' (f : α → β → F γ) : List α → List β → F PUnit
-  | x :: xs, y :: ys => f x y *> mzipWith' f xs ys
+def zipMWith' (f : α → β → F γ) : List α → List β → F PUnit
+  | x :: xs, y :: ys => f x y *> zipMWith' f xs ys
   | [], _ => pure PUnit.unit
   | _, [] => pure PUnit.unit
-#align mzip_with' mzipWith'
+#align mzip_with' zipMWith'
 
 variable [LawfulApplicative F]
 
@@ -84,12 +84,12 @@ variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 
 open List
 
-def List.mpartition {f : Type → Type} [Monad f] {α : Type} (p : α → f Bool) :
+def List.partitionM {f : Type → Type} [Monad f] {α : Type} (p : α → f Bool) :
   List α → f (List α × List α)
   | [] => pure ([], [])
   | x :: xs => condM (p x)
-    (Prod.map (cons x) id <$> List.mpartition p xs)
-    (Prod.map id (cons x) <$> List.mpartition p xs)
+    (Prod.map (cons x) id <$> List.partitionM p xs)
+    (Prod.map id (cons x) <$> List.partitionM p xs)
 #align list.mpartition List.mpartition
 
 theorem map_bind (x : m α) {g : α → m β} {f : β → γ} :
