@@ -47,7 +47,7 @@ instance OrderedCommMonoid.to_covariantClass_left (M : Type _) [OrderedCommMonoi
 attribute [instance] OrderedAddCommMonoid.to_covariantClass_left
 
 /- This instance can be proven with `by apply_instance`.  However, `with_bot ℕ` does not
-pick up a `CovariantClass M M (function.swap (*)) (≤)` instance without it (see PR #7940). -/
+pick up a `CovariantClass M M (function.swap (*)) (≤)` instance without it (see PR mathlib#7940). -/
 @[to_additive OrderedAddCommMonoid.to_covariantClass_right]
 instance OrderedCommMonoid.to_covariantClass_right (M : Type _) [OrderedCommMonoid M] :
     CovariantClass M M (swap (· * ·)) (· ≤ ·) :=
