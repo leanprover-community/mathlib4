@@ -36,12 +36,12 @@ class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
 attribute [to_additive OrderedAddCommGroup] OrderedCommGroup
 
 @[to_additive]
-instance OrderedCommGroup.to_covariantClass_left_le [OrderedCommGroup α] :
+instance OrderedCommGroup.to_covariant_class_left_le [OrderedCommGroup α] :
     CovariantClass α α (· * ·) (· ≤ ·) where
   elim := fun a b c bc => OrderedCommGroup.mul_le_mul_left b c bc a
 
 -- TODO `to_additive` should copy this
-attribute [instance] OrderedAddCommGroup.to_covariantClass_left_le
+attribute [instance] OrderedAddCommGroup.to_covariant_class_left_le
 
 -- see Note [lower instance priority]
 @[to_additive OrderedAddCommGroup.toOrderedCancelAddCommMonoid]
