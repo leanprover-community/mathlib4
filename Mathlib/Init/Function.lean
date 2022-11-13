@@ -23,9 +23,13 @@ variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
 from `β` to `α`. -/
-@[reducible] def on_fun (f : β → β → φ) (g : α → β) : α → α → φ :=
+@[reducible] def onFun (f : β → β → φ) (g : α → β) : α → α → φ :=
 λ x y => f (g x) (g y)
 
+/-- Given functions `f : α → β → φ`, `g : α → β → δ` and a binary operator `op : φ → δ → ζ`,
+produce a function `α → β → ζ` that applies `f` and `g` on each argument and then applies
+`op` to the results.
+-/
 @[reducible] def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ)
   : α → β → ζ :=
 λ x y => op (f x y) (g x y)
@@ -35,6 +39,12 @@ from `β` to `α`. -/
 
 @[reducible] def app {β : α → Sort u₂} (f : ∀ x, β x) (x : α) : β x :=
 f x
+
+@[inherit_doc onFun]
+infixl:2 " on " => onFun
+
+@[inherit_doc combine]
+notation f " -[" op "]- " g => combine f op g
 
 theorem left_id (f : α → β) : id ∘ f = f := rfl
 
@@ -57,7 +67,7 @@ theorem Injective.comp {g : β → φ} {f : α → β} (hg : Injective g) (hf : 
   Injective (g ∘ f) :=
 fun _ _ h => hf (hg h)
 
-/-- A function `f : α → β` is calles surjective if every `b : β` is equal to `f a`
+/-- A function `f : α → β` is called surjective if every `b : β` is equal to `f a`
 for some `a : α`. -/
 @[reducible] def Surjective (f : α → β) : Prop := ∀ b, ∃ a, f a = b
 
