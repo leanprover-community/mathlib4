@@ -1,8 +1,8 @@
 import Mathlib.Algebra.Abs
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Group.Commutator
+import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Semiconj
 import Mathlib.Algebra.Group.Units
