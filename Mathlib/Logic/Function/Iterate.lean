@@ -8,7 +8,7 @@ import Mathlib.Logic.Function.Conjugate
 /-!
 # Iterations of a function
 
-In this file we prove simple properties of `nat.iterate f n` a.k.a. `f^[n]`:
+In this file we prove simple properties of `Nat.iterate f n` a.k.a. `f^[n]`:
 
 * `iterate_zero`, `iterate_succ`, `iterate_succ'`, `iterate_add`, `iterate_mul`:
   formulas for `f^[0]`, `f^[n+1]` (two versions), `f^[n+m]`, and `f^[n*m]`;
