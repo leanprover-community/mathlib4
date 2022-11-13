@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 
 Extends the theory on functors, applicatives and monads.
 -/
-import Mathlib.Control.Tmp
+import Mathlib.Control.SimpSet
 import Mathlib.Tactic.CasesM
 import Mathlib.Init.Control.Combinators
 
@@ -22,12 +22,24 @@ end
 
 section Functor
 
+/- warning: functor.map_map -> Functor.map_map is a dubious translation:
+lean 3 declaration is
+  forall {α : Type.{u}} {β : Type.{u}} {γ : Type.{u}} {f : Type.{u} -> Type.{v}} [_inst_1 : Functor.{u v} f] [_inst_2 : IsLawfulFunctor.{u v} f _inst_1] (m : α -> β) (g : β -> γ) (x : f α), Eq.{succ v} (f γ) (Functor.map.{u v} (fun {α : Type.{u}} => f α) _inst_1 β γ g (Functor.map.{u v} (fun {α : Type.{u}} => f α) _inst_1 α β m x)) (Functor.map.{u v} f _inst_1 α γ (Function.comp.{succ u succ u succ u} α β γ g m) x)
+but is expected to have type
+  forall (f : Type.{u} -> Type.{v}) [inst._@.Mathlib.Data.Equiv.Functor._hyg.22 : Functor.{u v} f] [inst._@.Mathlib.Data.Equiv.Functor._hyg.25 : LawfulFunctor.{u v} f inst._@.Mathlib.Data.Equiv.Functor._hyg.22] {α : Type.{u}} {β : Type.{u}} {γ : Type.{u}} (m : α -> β) (g : β -> γ) (x : f α), Eq.{succ v} (f γ) (Functor.map.{u v} f inst._@.Mathlib.Data.Equiv.Functor._hyg.22 β γ g (Functor.map.{u v} f inst._@.Mathlib.Data.Equiv.Functor._hyg.22 α β m x)) (Functor.map.{u v} f inst._@.Mathlib.Data.Equiv.Functor._hyg.22 α γ (Function.comp.{succ u succ u succ u} α β γ g m) x)
+Case conversion may be inaccurate. Consider using '#align functor.map_map Functor.map_mapₓ'. -/
 variable {f : Type u → Type v} [Functor f] [LawfulFunctor f]
 @[functor_norm]
 theorem Functor.map_map (m : α → β) (g : β → γ) (x : f α) : g <$> m <$> x = (g ∘ m) <$> x :=
   (comp_map _ _ _).symm
 #align functor.map_map Functor.map_map
 
+/- warning: id_map' -> id_map' is a dubious translation:
+lean 3 declaration is
+  forall {α : Type.{u}} {f : Type.{u} -> Type.{v}} [_inst_1 : Functor.{u v} f] [_inst_2 : IsLawfulFunctor.{u v} f _inst_1] (x : f α), Eq.{succ v} (f α) (Functor.map.{u v} f _inst_1 α α (fun (a : α) => a) x) x
+but is expected to have type
+  forall {m : Type.{u_1} -> Type.{u_2}} {α : Type.{u_1}} [inst._@.Init.Control.Lawful._hyg.144 : Functor.{u_1 u_2} m] [inst._@.Init.Control.Lawful._hyg.147 : LawfulFunctor.{u_1 u_2} m inst._@.Init.Control.Lawful._hyg.144] (x : m α), Eq.{succ u_2} (m α) (Functor.map.{u_1 u_2} m inst._@.Init.Control.Lawful._hyg.144 α α (fun (a : α) => a) x) x
+Case conversion may be inaccurate. Consider using '#align id_map' id_map'ₓ'. -/
 attribute [simp] id_map'
 #align id_map' id_map'
 
@@ -103,6 +115,12 @@ theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
   by rw [← bind_pure_comp, bind_assoc] <;> simp [pure_bind, (· ∘ ·)]
 #align seq_bind_eq seq_bind_eq
 
+/- warning: seq_eq_bind_map -> seq_eq_bind_map is a dubious translation:
+lean 3 declaration is
+  forall {α : Type.{u}} {β : Type.{u}} {m : Type.{u} -> Type.{v}} [_inst_1 : Monad.{u v} m] [_inst_2 : LawfulMonad.{u v} m _inst_1] {x : m α} {f : m (α -> β)}, Eq.{succ v} (m β) (Seq.seq.{u v} m (Applicative.toHasSeq.{u v} m (Monad.toApplicative.{u v} m _inst_1)) α β f x) (Bind.bind.{u v} m (Monad.toHasBind.{u v} m _inst_1) (α -> β) β f (fun (_x : α -> β) => Functor.map.{u v} m (Applicative.toFunctor.{u v} m (Monad.toApplicative.{u v} m _inst_1)) α β _x x))
+but is expected to have type
+  forall {m : Type.{u} -> Type.{u_1}} {α : Type.{u}} {β : Type.{u}} [inst._@.Init.Control.Lawful._hyg.1037 : Monad.{u u_1} m] [inst._@.Init.Control.Lawful._hyg.1040 : LawfulMonad.{u u_1} m inst._@.Init.Control.Lawful._hyg.1037] (f : m (α -> β)) (x : m α), Eq.{succ u_1} (m β) (Seq.seq.{u u_1} m (Applicative.toSeq.{u u_1} m (Monad.toApplicative.{u u_1} m inst._@.Init.Control.Lawful._hyg.1037)) α β f (fun (x._@.Init.Control.Lawful._hyg.1063 : Unit) => x)) (Bind.bind.{u u_1} m (Monad.toBind.{u u_1} m inst._@.Init.Control.Lawful._hyg.1037) (α -> β) β f (fun (x._@.Init.Control.Lawful._hyg.1074 : α -> β) => Functor.map.{u u_1} m (Applicative.toFunctor.{u u_1} m (Monad.toApplicative.{u u_1} m inst._@.Init.Control.Lawful._hyg.1037)) α β x._@.Init.Control.Lawful._hyg.1074 x))
+Case conversion may be inaccurate. Consider using '#align seq_eq_bind_map seq_eq_bind_mapₓ'. -/
 #align seq_eq_bind_map seq_eq_bind_map
 
 --/-- This is the Kleisli composition -/
