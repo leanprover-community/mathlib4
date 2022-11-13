@@ -99,10 +99,10 @@ still unevaluated. `#reduce` is equivalent to using `#whnf` on every subexpressi
 macro tk:"#whnf " e:term : command => `(command| #conv%$tk whnf => $e)
 
 /--
-The command `#rwhnf e` evaluates `e` to Reducible Weak Head Normal Form, that is, it uses
-`whnf` but only unfolding reducible definitions.
+The command `#whnfR e` evaluates `e` to Weak Head Normal Form with Reducible transparency,
+that is, it uses `whnf` but only unfolding reducible definitions.
 -/
-macro tk:"#rwhnf " e:term : command => `(command| #conv%$tk with_reducible whnf => $e)
+macro tk:"#whnfR " e:term : command => `(command| #conv%$tk with_reducible whnf => $e)
 
 /--
 * `#simp => e` runs `simp` on the expression `e` and displays the resulting expression after
