@@ -432,7 +432,6 @@ theorem Preorder.toLE_injective {α : Type _} : Function.Injective (@Preorder.to
       simp [*]
     cases this
     congr
-
 #align preorder.to_has_le_injective Preorder.toLE_injective
 
 @[ext]
@@ -443,7 +442,6 @@ theorem PartialOrder.toPreorder_injective {α : Type _} :
   cases B
   cases h
   congr
-
 #align partial_order.to_preorder_injective PartialOrder.toPreorder_injective
 
 @[ext]
