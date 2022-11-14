@@ -5,7 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Std
 import Mathlib.Tactic.Convert
-import Mathlib.Init.Data.Int.Notation
+import Mathlib.Init.Data.Int.Basic
 import Mathlib.Algebra.Ring.Basic
 
 /-!
