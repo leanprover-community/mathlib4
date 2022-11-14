@@ -13,6 +13,9 @@ Evaluate expressions in the language of additive, commutative monoids and groups
 
 -/
 
+-- FIXME: remove this when the sorries are gone
+set_option warningAsError false
+
 open Lean Elab Meta Tactic
 open Qq
 

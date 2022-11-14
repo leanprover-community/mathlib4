@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Data.FunLike.Equiv
+import Mathlib.Data.Quot
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Conv
@@ -77,7 +78,7 @@ instance {F} [EquivLike F α β] : CoeTC F (α ≃ β) :=
       left_inv := EquivLike.left_inv f,
       right_inv := EquivLike.right_inv f }⟩
 
-/-- `perm α` is the type of bijections from `α` to itself. -/
+/-- `Perm α` is the type of bijections from `α` to itself. -/
 @[reducible]
 def Equiv.Perm (α : Sort _) :=
   Equiv α α
@@ -197,7 +198,7 @@ instance permUnique [Subsingleton α] : Unique (Perm α) :=
 theorem Perm.subsingleton_eq_refl [Subsingleton α] (e : Perm α) : e = Equiv.refl α :=
   Subsingleton.elim _ _
 
-/-- Transfer `decidable_eq` across an equivalence. -/
+/-- Transfer `decidableEq` across an equivalence. -/
 protected def decidableEq (e : α ≃ β) [DecidableEq β] : DecidableEq α :=
   e.injective.decidableEq
 
@@ -370,46 +371,55 @@ theorem comp_bijective (f : α → β) (e : β ≃ γ) : Bijective (e ∘ f) ↔
 
 /-- If `α` is equivalent to `β` and `γ` is equivalent to `δ`, then the type of equivalences `α ≃ γ`
 is equivalent to the type of equivalences `β ≃ δ`. -/
-def equivCongr {δ} (ab : α ≃ β) (cd : γ ≃ δ) : α ≃ γ ≃ (β ≃ δ) :=
-  ⟨fun ac => (ab.symm.trans ac).trans cd, fun bd => ab.trans <| bd.trans <| cd.symm, fun ac => by
-    ext x
-    simp, fun ac => by
-    ext x
-    simp⟩
+def equivCongr {δ} (ab : α ≃ β) (cd : γ ≃ δ) : (α ≃ γ) ≃ (β ≃ δ) :=
+  ⟨ fun ac => (ab.symm.trans ac).trans cd,
+    fun bd => ab.trans <| bd.trans <| cd.symm,
+    fun ac => by
+      ext x
+      simp only [trans_apply, comp_apply, symm_apply_apply],
+    fun ac => by
+      ext x
+      simp only [trans_apply, comp_apply, apply_symm_apply] ⟩
 
 @[simp]
-theorem equiv_congr_refl {α β} : (Equiv.refl α).equivCongr (Equiv.refl β) = Equiv.refl (α ≃ β) := by
+theorem equivCongr_refl {α β} : (Equiv.refl α).equivCongr (Equiv.refl β) = Equiv.refl (α ≃ β) := by
   ext
   rfl
+#align equiv.equiv_congr_refl Equiv.equivCongr_refl
 
 @[simp]
-theorem equiv_congr_symm {δ} (ab : α ≃ β) (cd : γ ≃ δ) :
+theorem equivCongr_symm {δ} (ab : α ≃ β) (cd : γ ≃ δ) :
     (ab.equivCongr cd).symm = ab.symm.equivCongr cd.symm := by
   ext
   rfl
+#align equiv.equiv_congr_symm Equiv.equivCongr_symm
 
 @[simp]
-theorem equiv_congr_trans {δ ε ζ} (ab : α ≃ β) (de : δ ≃ ε) (bc : β ≃ γ) (ef : ε ≃ ζ) :
+theorem equivCongr_trans {δ ε ζ} (ab : α ≃ β) (de : δ ≃ ε) (bc : β ≃ γ) (ef : ε ≃ ζ) :
     (ab.equivCongr de).trans (bc.equivCongr ef) = (ab.trans bc).equivCongr (de.trans ef) := by
   ext
   rfl
+#align equiv.equiv_congr_trans Equiv.equivCongr_trans
 
 @[simp]
-theorem equiv_congr_refl_left {α β γ} (bg : β ≃ γ) (e : α ≃ β) :
+theorem equivCongr_refl_left {α β γ} (bg : β ≃ γ) (e : α ≃ β) :
     (Equiv.refl α).equivCongr bg e = e.trans bg :=
   rfl
+#align equiv.equiv_congr_refl_left Equiv.equivCongr_refl_left
 
 @[simp]
-theorem equiv_congr_refl_right {α β} (ab e : α ≃ β) :
+theorem equivCongr_refl_right {α β} (ab e : α ≃ β) :
     ab.equivCongr (Equiv.refl β) e = ab.symm.trans e :=
   rfl
+#align equiv.equiv_congr_refl_right Equiv.equivCongr_refl_right
 
 @[simp]
-theorem equiv_congr_apply_apply {δ} (ab : α ≃ β) (cd : γ ≃ δ) (e : α ≃ γ) (x) :
+theorem equivCongr_apply_apply {δ} (ab : α ≃ β) (cd : γ ≃ δ) (e : α ≃ γ) (x) :
     ab.equivCongr cd e x = cd (e (ab.symm x)) :=
   rfl
+#align equiv.equiv_congr_apply_apply Equiv.equivCongr_apply_apply
 
-section PermCongr
+section permCongr
 
 variable {α' β' : Type _} (e : α' ≃ β')
 
@@ -417,49 +427,58 @@ variable {α' β' : Type _} (e : α' ≃ β')
 def permCongr : Perm α' ≃ Perm β' :=
   equivCongr e e
 
-theorem perm_congr_def (p : Equiv.Perm α') : e.permCongr p = (e.symm.trans p).trans e :=
+theorem permCongr_def (p : Equiv.Perm α') : e.permCongr p = (e.symm.trans p).trans e :=
   rfl
+#align equiv.perm_congr_def Equiv.permCongr_def
 
 @[simp]
-theorem perm_congr_refl : e.permCongr (Equiv.refl _) = Equiv.refl _ := by simp [perm_congr_def]
+theorem permCongr_refl : e.permCongr (Equiv.refl _) = Equiv.refl _ := by simp [permCongr_def]
+#align equiv.perm_congr_refl Equiv.permCongr_refl
 
 @[simp]
-theorem perm_congr_symm : e.permCongr.symm = e.symm.permCongr :=
+theorem permCongr_symm : e.permCongr.symm = e.symm.permCongr :=
   rfl
+#align equiv.perm_congr_symm Equiv.permCongr_symm
 
 @[simp]
-theorem perm_congr_apply (p : Equiv.Perm α') (x) : e.permCongr p x = e (p (e.symm x)) :=
+theorem permCongr_apply (p : Equiv.Perm α') (x) : e.permCongr p x = e (p (e.symm x)) :=
   rfl
+#align equiv.perm_congr_apply Equiv.permCongr_apply
 
-theorem perm_congr_symm_apply (p : Equiv.Perm β') (x) : e.permCongr.symm p x = e.symm (p (e x)) :=
+theorem permCongr_symm_apply (p : Equiv.Perm β') (x) : e.permCongr.symm p x = e.symm (p (e x)) :=
   rfl
+#align equiv.perm_congr_symm_apply Equiv.permCongr_symm_apply
 
-theorem perm_congr_trans (p p' : Equiv.Perm α') :
+theorem permCongr_trans (p p' : Equiv.Perm α') :
     (e.permCongr p).trans (e.permCongr p') = e.permCongr (p.trans p') := by
   ext
-  simp
+  simp only [trans_apply, comp_apply, permCongr_apply, symm_apply_apply]
+#align equiv.perm_congr_trans Equiv.permCongr_trans
 
-end PermCongr
+end permCongr
 
 /-- Two empty types are equivalent. -/
 def equivOfIsEmpty (α β : Sort _) [IsEmpty α] [IsEmpty β] : α ≃ β :=
   ⟨isEmptyElim, isEmptyElim, isEmptyElim, isEmptyElim⟩
 
-/-- If `α` is an empty type, then it is equivalent to the `empty` type. -/
+/-- If `α` is an empty type, then it is equivalent to the `Empty` type. -/
 def equivEmpty (α : Sort u) [IsEmpty α] : α ≃ Empty :=
   equivOfIsEmpty α _
 
-/-- If `α` is an empty type, then it is equivalent to the `pempty` type in any universe. -/
-def equivPempty (α : Sort v) [IsEmpty α] : α ≃ PEmpty.{u} :=
+/-- If `α` is an empty type, then it is equivalent to the `PEmpty` type in any universe. -/
+def equivPEmpty (α : Sort v) [IsEmpty α] : α ≃ PEmpty.{u} :=
   equivOfIsEmpty α _
+#align equiv.equiv_pempty Equiv.equivPEmpty
 
 /-- `α` is equivalent to an empty type iff `α` is empty. -/
 def equivEmptyEquiv (α : Sort u) : α ≃ Empty ≃ IsEmpty α :=
-  ⟨fun e => Function.is_empty e, @equivEmpty α, fun e => ext fun x => (e x).elim, fun _ => rfl⟩
+  ⟨fun e => Function.isEmpty e, @equivEmpty α, fun e => ext fun x => (e x).elim, fun _ => rfl⟩
+#align equiv.equiv_empty_equiv Equiv.equivEmptyEquiv
 
-/-- The `Sort` of proofs of a false proposition is equivalent to `pempty`. -/
-def propEquivPempty {p : Prop} (h : ¬p) : p ≃ PEmpty :=
-  @equivPempty p <| IsEmpty.prop_iff.2 h
+/-- The `Sort` of proofs of a false proposition is equivalent to `PEmpty`. -/
+def propEquivPEmpty {p : Prop} (h : ¬p) : p ≃ PEmpty :=
+  @equivPEmpty p <| IsEmpty.prop_iff.2 h
+#align equiv.prop_equiv_pempty Equiv.propEquivPEmpty
 
 /-- If both `α` and `β` have a unique element, then `α ≃ β`. -/
 def equivOfUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
@@ -468,22 +487,24 @@ def equivOfUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β w
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 
-/-- If `α` has a unique element, then it is equivalent to any `punit`. -/
-def equivPunit (α : Sort u) [Unique α] : α ≃ PUnit.{v} :=
+/-- If `α` has a unique element, then it is equivalent to any `PUnit`. -/
+def equivPUnit (α : Sort u) [Unique α] : α ≃ PUnit.{v} :=
   equivOfUnique α _
+#align equiv.equiv_punit Equiv.equivPUnit
 
-/-- The `Sort` of proofs of a true proposition is equivalent to `punit`. -/
-def propEquivPunit {p : Prop} (h : p) : p ≃ PUnit.{0} :=
+/-- The `Sort` of proofs of a true proposition is equivalent to `PUnit`. -/
+def propEquivPUnit {p : Prop} (h : p) : p ≃ PUnit.{0} :=
 -- porting note: the following causes an error "unknown free variable [anonymous]"
 --  @equivPunit p <| uniqueProp h
 ⟨default, λ _ => h, λ _ => Subsingleton.elim _ _, λ _ => Subsingleton.elim _ _⟩
+#align equiv.prop_equiv_punit Equiv.propEquivPUnit
 
-/-- `ulift α` is equivalent to `α`. -/
+/-- `ULift α` is equivalent to `α`. -/
 @[simps (config := { fullyApplied := false }) apply symmApply]
 protected def ulift {α : Type v} : ULift.{u} α ≃ α :=
   ⟨ULift.down, ULift.up, ULift.up_down, fun _ => rfl⟩
 
-/-- `plift α` is equivalent to `α`. -/
+/-- `PLift α` is equivalent to `α`. -/
 @[simps (config := { fullyApplied := false }) apply symmApply]
 protected def plift : PLift α ≃ α :=
   ⟨PLift.down, PLift.up, PLift.up_down, PLift.down_up⟩
@@ -502,36 +523,39 @@ is equivalent to the type of maps `α₂ → β₂`. -/
 def arrowCongr {α₁ β₁ α₂ β₂ : Sort _} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) : (α₁ → β₁) ≃ (α₂ → β₂) where
   toFun f := e₂ ∘ f ∘ e₁.symm
   invFun f := e₂.symm ∘ f ∘ e₁
-  left_inv f := funext fun x => by simp
-  right_inv f := funext fun x => by simp
-
+  left_inv f := funext fun x => by simp only [comp_apply, symm_apply_apply]
+  right_inv f := funext fun x => by simp only [comp_apply, apply_symm_apply]
 #align equiv.arrow_congr_apply Equiv.arrowCongr_apply
 
-theorem arrow_congr_comp {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort _} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) (ec : γ₁ ≃ γ₂)
+theorem arrowCongr_comp {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort _} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) (ec : γ₁ ≃ γ₂)
     (f : α₁ → β₁) (g : β₁ → γ₁) :
     arrowCongr ea ec (g ∘ f) = arrowCongr eb ec g ∘ arrowCongr ea eb f := by
   ext
   simp only [comp, arrowCongr_apply, eb.symm_apply_apply]
+#align equiv.arrow_congr_comp Equiv.arrowCongr_comp
 
 @[simp]
-theorem arrow_congr_refl {α β : Sort _} :
+theorem arrowCongr_refl {α β : Sort _} :
     arrowCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α → β) :=
   rfl
+#align equiv.arrow_congr_refl Equiv.arrowCongr_refl
 
 @[simp]
-theorem arrow_congr_trans {α₁ β₁ α₂ β₂ α₃ β₃ : Sort _}
+theorem arrowCongr_trans {α₁ β₁ α₂ β₂ α₃ β₃ : Sort _}
     (e₁ : α₁ ≃ α₂) (e₁' : β₁ ≃ β₂) (e₂ : α₂ ≃ α₃) (e₂' : β₂ ≃ β₃) :
     arrowCongr (e₁.trans e₂) (e₁'.trans e₂') = (arrowCongr e₁ e₁').trans (arrowCongr e₂ e₂') :=
   rfl
+#align equiv.arrow_congr_trans Equiv.arrowCongr_trans
 
 @[simp]
-theorem arrow_congr_symm {α₁ β₁ α₂ β₂ : Sort _} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
+theorem arrowCongr_symm {α₁ β₁ α₂ β₂ : Sort _} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
     (arrowCongr e₁ e₂).symm = arrowCongr e₁.symm e₂.symm :=
   rfl
+#align equiv.arrow_congr_symm Equiv.arrowCongr_symm
 
-/-- A version of `equiv.arrow_congr` in `Type`, rather than `Sort`.
+/-- A version of `Equiv.arrowCongr` in `Type`, rather than `Sort`.
 
-The `equiv_rw` tactic is not able to use the default `Sort` level `equiv.arrow_congr`,
+The `equiv_rw` tactic is not able to use the default `Sort` level `Equiv.arrowCongr`,
 because Lean's universe rules will not unify `?l_1` with `imax (1 ?m_1)`.
 -/
 -- porting note: removing `congr` attribute
@@ -540,20 +564,23 @@ def arrowCongr' {α₁ β₁ α₂ β₂ : Type _} (hα : α₁ ≃ α₂) (hβ 
   Equiv.arrowCongr hα hβ
 
 @[simp]
-theorem arrow_congr'_refl {α β : Type _} :
+theorem arrowCongr'_refl {α β : Type _} :
     arrowCongr' (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α → β) :=
   rfl
+#align equiv.arrow_congr'_refl Equiv.arrowCongr'_refl
 
 @[simp]
-theorem arrow_congr'_trans {α₁ β₁ α₂ β₂ α₃ β₃ : Type _}
+theorem arrowCongr'_trans {α₁ β₁ α₂ β₂ α₃ β₃ : Type _}
     (e₁ : α₁ ≃ α₂) (e₁' : β₁ ≃ β₂) (e₂ : α₂ ≃ α₃) (e₂' : β₂ ≃ β₃) :
     arrowCongr' (e₁.trans e₂) (e₁'.trans e₂') = (arrowCongr' e₁ e₁').trans (arrowCongr' e₂ e₂') :=
   rfl
+#align equiv.arrow_congr'_trans Equiv.arrowCongr'_trans
 
 @[simp]
-theorem arrow_congr'_symm {α₁ β₁ α₂ β₂ : Type _} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
+theorem arrowCongr'_symm {α₁ β₁ α₂ β₂ : Type _} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
     (arrowCongr' e₁ e₂).symm = arrowCongr' e₁.symm e₂.symm :=
   rfl
+#align equiv.arrow_congr'_symm Equiv.arrowCongr'_symm
 
 /-- Conjugate a map `f : α → α` by an equivalence `α ≃ β`. -/
 @[simps apply]
@@ -576,7 +603,7 @@ theorem conj_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : (e₁.trans e₂).con
 -- when `(∘)` is reducible, Lean can unify `f₁ ∘ f₂` with any `g` using
 -- `f₁ := g` and `f₂ := λ x, x`.  This causes nontermination.
 theorem conj_comp (e : α ≃ β) (f₁ f₂ : α → α) : e.conj (f₁ ∘ f₂) = e.conj f₁ ∘ e.conj f₂ := by
-  apply arrow_congr_comp
+  apply arrowCongr_comp
 
 theorem eq_comp_symm {α β γ} (e : α ≃ β) (f : β → γ) (g : α → γ) : f = g ∘ e.symm ↔ f ∘ e = g :=
   (e.arrowCongr (Equiv.refl γ)).symm_apply_eq.symm
@@ -590,15 +617,16 @@ theorem eq_symm_comp {α β γ} (e : α ≃ β) (f : γ → α) (g : γ → β) 
 theorem symm_comp_eq {α β γ} (e : α ≃ β) (f : γ → α) (g : γ → β) : e.symm ∘ g = f ↔ g = e ∘ f :=
   ((Equiv.refl γ).arrowCongr e).symm_apply_eq
 
-/-- `punit` sorts in any two universes are equivalent. -/
-def punitEquivPunit : PUnit.{v} ≃ PUnit.{w} :=
+/-- `PUnit` sorts in any two universes are equivalent. -/
+def punitEquivPUnit : PUnit.{v} ≃ PUnit.{w} :=
   ⟨fun _ => PUnit.unit, fun _ => PUnit.unit, fun u => by
     cases u
     rfl, fun u => by
     cases u
     rfl⟩
+#align equiv.punit_equiv_punit Equiv.punitEquivPUnit
 
-/-- `Prop` is noncomputably equivalent to `bool`. -/
+/-- `Prop` is noncomputably equivalent to `Bool`. -/
 noncomputable def propEquivBool : Prop ≃ Bool where
   toFun p := @decide p (Classical.propDecidable _)
   invFun b := b
@@ -607,8 +635,8 @@ noncomputable def propEquivBool : Prop ≃ Bool where
 
 section
 
-/-- The sort of maps to `punit.{v}` is equivalent to `punit.{w}`. -/
-def arrowPunitEquivPunit (α : Sort _) : (α → PUnit.{v}) ≃ PUnit.{w} where
+/-- The sort of maps to `PUnit.{v}` is equivalent to `PUnit.{w}`. -/
+def arrowPUnitEquivPUnit (α : Sort _) : (α → PUnit.{v}) ≃ PUnit.{w} where
   toFun _ := PUnit.unit
   invFun _ _ := PUnit.unit
   left_inv f := by
@@ -618,9 +646,10 @@ def arrowPunitEquivPunit (α : Sort _) : (α → PUnit.{v}) ≃ PUnit.{w} where
   right_inv u := by
     cases u
     rfl
+#align equiv.arrow_punit_equiv_punit Equiv.arrowPUnitEquivPUnit
 
-/-- If `α` is `subsingleton` and `a : α`, then the type of dependent functions `Π (i : α), β
-i` is equivalent to `β i`. -/
+/-- If `α` is `Subsingleton` and `a : α`, then the type of dependent functions `Π (i : α), β i`
+is equivalent to `β a`. -/
 @[simps]
 def piSubsingleton {α} (β : α → Sort _) [Subsingleton α] (a : α) : (∀ a', β a') ≃ β a where
   toFun := eval a
@@ -636,42 +665,46 @@ def piSubsingleton {α} (β : α → Sort _) [Subsingleton α] (a : α) : (∀ a
 def funUnique (α β) [Unique.{u} α] : (α → β) ≃ β :=
   piSubsingleton _ default
 
-/-- The sort of maps from `punit` is equivalent to the codomain. -/
+/-- The sort of maps from `PUnit` is equivalent to the codomain. -/
 def punitArrowEquiv (α : Sort _) : (PUnit.{u} → α) ≃ α :=
   funUnique PUnit.{u} α
 
-/-- The sort of maps from `true` is equivalent to the codomain. -/
+/-- The sort of maps from `True` is equivalent to the codomain. -/
 def trueArrowEquiv (α : Sort _) : (True → α) ≃ α :=
   funUnique _ _
 
-/-- The sort of maps from a type that `is_empty` is equivalent to `punit`. -/
-def arrowPunitOfIsEmpty (α β : Sort _) [IsEmpty α] : (α → β) ≃ PUnit.{u} where
+/-- The sort of maps from a type that `IsEmpty` is equivalent to `PUnit`. -/
+def arrowPUnitOfIsEmpty (α β : Sort _) [IsEmpty α] : (α → β) ≃ PUnit.{u} where
   toFun _ := PUnit.unit
   invFun _ := isEmptyElim
   left_inv _ := funext isEmptyElim
   right_inv u := by
     cases u
     rfl
+#align equiv.arrow_punit_of_is_empy Equiv.arrowPUnitOfIsEmpty
 
-/-- The sort of maps from `empty` is equivalent to `punit`. -/
-def emptyArrowEquivPunit (α : Sort _) : (Empty → α) ≃ PUnit.{u} :=
-  arrowPunitOfIsEmpty _ _
+/-- The sort of maps from `Empty` is equivalent to `PUnit`. -/
+def emptyArrowEquivPUnit (α : Sort _) : (Empty → α) ≃ PUnit.{u} :=
+  arrowPUnitOfIsEmpty _ _
+#align equiv.empty_arrow_equiv_punit Equiv.emptyArrowEquivPUnit
 
-/-- The sort of maps from `pempty` is equivalent to `punit`. -/
-def pemptyArrowEquivPunit (α : Sort _) : (PEmpty → α) ≃ PUnit.{u} :=
-  arrowPunitOfIsEmpty _ _
+/-- The sort of maps from `PEmpty` is equivalent to `PUnit`. -/
+def pemptyArrowEquivPUnit (α : Sort _) : (PEmpty → α) ≃ PUnit.{u} :=
+  arrowPUnitOfIsEmpty _ _
+#align equiv.pempty_arrow_equiv_punit Equiv.pemptyArrowEquivPUnit
 
-/-- The sort of maps from `false` is equivalent to `punit`. -/
-def falseArrowEquivPunit (α : Sort _) : (False → α) ≃ PUnit.{u} :=
-  arrowPunitOfIsEmpty _ _
+/-- The sort of maps from `False` is equivalent to `PUnit`. -/
+def falseArrowEquivPUnit (α : Sort _) : (False → α) ≃ PUnit.{u} :=
+  arrowPUnitOfIsEmpty _ _
+#align equiv.false_arrow_equiv_punit Equiv.falseArrowEquivPUnit
 
 end
 
 section
 
-/-- A `psigma`-type is equivalent to the corresponding `sigma`-type. -/
+/-- A `PSigma`-type is equivalent to the corresponding `Sigma`-type. -/
 @[simps apply symmApply]
-def psigmaEquivSigma {α} (β : α → Type _) : (Σ'i, β i) ≃ Σi, β i where
+def psigmaEquivSigma {α} (β : α → Type _) : (Σ' i, β i) ≃ Σ i, β i where
   toFun a := ⟨a.1, a.2⟩
   invFun a := ⟨a.1, a.2⟩
   left_inv := λ ⟨_, _⟩ => rfl
@@ -679,74 +712,82 @@ def psigmaEquivSigma {α} (β : α → Type _) : (Σ'i, β i) ≃ Σi, β i wher
 
 /-- A `psigma`-type is equivalent to the corresponding `sigma`-type. -/
 @[simps apply symmApply]
-def psigmaEquivSigmaPlift {α} (β : α → Sort _) : (Σ'i, β i) ≃ Σi : PLift α, PLift (β i.down) where
+def psigmaEquivSigmaPLift {α} (β : α → Sort _) : (Σ' i, β i) ≃ Σ i : PLift α, PLift (β i.down) where
   toFun a := ⟨PLift.up a.1, PLift.up a.2⟩
   invFun a := ⟨a.1.down, a.2.down⟩
   left_inv := λ ⟨_, _⟩ => rfl
   right_inv := λ ⟨_, _⟩ => rfl
+#align equiv.psigma_equiv_sigma_plift Equiv.psigmaEquivSigmaPLift
 
 /-- A family of equivalences `Π a, β₁ a ≃ β₂ a` generates an equivalence between `Σ' a, β₁ a` and
 `Σ' a, β₂ a`. -/
 @[simps apply]
-def psigmaCongrRight {α} {β₁ β₂ : α → Sort _} (F : ∀ a, β₁ a ≃ β₂ a) : (Σ'a, β₁ a) ≃ Σ'a, β₂ a :=
+def psigmaCongrRight {α} {β₁ β₂ : α → Sort _} (F : ∀ a, β₁ a ≃ β₂ a) : (Σ' a, β₁ a) ≃ Σ' a, β₂ a :=
   ⟨fun a => ⟨a.1, F a.1 a.2⟩, fun a => ⟨a.1, (F a.1).symm a.2⟩, fun ⟨a, b⟩ =>
     congr_arg (PSigma.mk a) <| symm_apply_apply (F a) b, fun ⟨a, b⟩ =>
     congr_arg (PSigma.mk a) <| apply_symm_apply (F a) b⟩
 
 @[simp]
-theorem psigma_congr_right_trans {α} {β₁ β₂ β₃ : α → Sort _}
+theorem psigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Sort _}
     (F : ∀ a, β₁ a ≃ β₂ a) (G : ∀ a, β₂ a ≃ β₃ a) :
-    (psigmaCongrRight F).trans (psigmaCongrRight G) = psigmaCongrRight fun a => (F a).trans (G a) := by
+    (psigmaCongrRight F).trans (psigmaCongrRight G) =
+      psigmaCongrRight fun a => (F a).trans (G a) := by
   ext1 x
   cases x
   rfl
+#align equiv.psigma_congr_right_trans Equiv.psigmaCongrRight_trans
 
 @[simp]
-theorem psigma_congr_right_symm {α} {β₁ β₂ : α → Sort _} (F : ∀ a, β₁ a ≃ β₂ a) :
+theorem psigmaCongrRight_symm {α} {β₁ β₂ : α → Sort _} (F : ∀ a, β₁ a ≃ β₂ a) :
     (psigmaCongrRight F).symm = psigmaCongrRight fun a => (F a).symm := by
   ext1 x
   cases x
   rfl
+#align equiv.psigma_congr_right_symm Equiv.psigmaCongrRight_symm
 
 @[simp]
-theorem psigma_congr_right_refl {α} {β : α → Sort _} :
-    (psigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ'a, β a) := by
+theorem psigmaCongrRight_refl {α} {β : α → Sort _} :
+    (psigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ' a, β a) := by
   ext1 x
   cases x
   rfl
+#align equiv.psigma_congr_right_refl Equiv.psigmaCongrRight_refl
 
 /-- A family of equivalences `Π a, β₁ a ≃ β₂ a` generates an equivalence between `Σ a, β₁ a` and
 `Σ a, β₂ a`. -/
 @[simps apply]
-def sigmaCongrRight {α} {β₁ β₂ : α → Type _} (F : ∀ a, β₁ a ≃ β₂ a) : (Σa, β₁ a) ≃ Σa, β₂ a :=
+def sigmaCongrRight {α} {β₁ β₂ : α → Type _} (F : ∀ a, β₁ a ≃ β₂ a) : (Σ a, β₁ a) ≃ Σ a, β₂ a :=
   ⟨fun a => ⟨a.1, F a.1 a.2⟩, fun a => ⟨a.1, (F a.1).symm a.2⟩, fun ⟨a, b⟩ =>
     congr_arg (Sigma.mk a) <| symm_apply_apply (F a) b, fun ⟨a, b⟩ =>
     congr_arg (Sigma.mk a) <| apply_symm_apply (F a) b⟩
 
 @[simp]
-theorem sigma_congr_right_trans {α} {β₁ β₂ β₃ : α → Type _}
+theorem sigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Type _}
     (F : ∀ a, β₁ a ≃ β₂ a) (G : ∀ a, β₂ a ≃ β₃ a) :
     (sigmaCongrRight F).trans (sigmaCongrRight G) = sigmaCongrRight fun a => (F a).trans (G a) := by
   ext1 x
   cases x
   rfl
+#align equiv.sigmaCongrRight Equiv.sigmaCongrRight_trans
 
 @[simp]
-theorem sigma_congr_right_symm {α} {β₁ β₂ : α → Type _} (F : ∀ a, β₁ a ≃ β₂ a) :
+theorem sigmaCongrRight_symm {α} {β₁ β₂ : α → Type _} (F : ∀ a, β₁ a ≃ β₂ a) :
     (sigmaCongrRight F).symm = sigmaCongrRight fun a => (F a).symm := by
   ext1 x
   cases x
   rfl
+#align equiv.sigma_congr_right_symm Equiv.sigmaCongrRight_symm
 
 @[simp]
-theorem sigma_congr_right_refl {α} {β : α → Type _} :
-    (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σa, β a) := by
+theorem sigmaCongrRight_refl {α} {β : α → Type _} :
+    (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) := by
   ext1 x
   cases x
   rfl
+#align equiv.sigma_congr_right_refl Equiv.sigmaCongrRight_refl
 
 /-- A `psigma` with `Prop` fibers is equivalent to the subtype.  -/
-def psigmaEquivSubtype {α : Type v} (P : α → Prop) : (Σ'i, P i) ≃ Subtype P where
+def psigmaEquivSubtype {α : Type v} (P : α → Prop) : (Σ' i, P i) ≃ Subtype P where
   toFun x := ⟨x.1, x.2⟩
   invFun x := ⟨x.1, x.2⟩
   left_inv x := by
@@ -757,44 +798,50 @@ def psigmaEquivSubtype {α : Type v} (P : α → Prop) : (Σ'i, P i) ≃ Subtype
     rfl
 
 /-- A `sigma` with `plift` fibers is equivalent to the subtype. -/
-def sigmaPliftEquivSubtype {α : Type v} (P : α → Prop) : (Σi, PLift (P i)) ≃ Subtype P :=
+def sigmaPLiftEquivSubtype {α : Type v} (P : α → Prop) : (Σ i, PLift (P i)) ≃ Subtype P :=
   ((psigmaEquivSigma _).symm.trans
     (psigmaCongrRight fun _ => Equiv.plift)).trans (psigmaEquivSubtype P)
+#align equiv.sigma_plift_equiv_subtype Equiv.sigmaPLiftEquivSubtype
 
 /-- A `sigma` with `λ i, ulift (plift (P i))` fibers is equivalent to `{ x // P x }`.
 Variant of `sigma_plift_equiv_subtype`.
 -/
-def sigmaUliftPliftEquivSubtype {α : Type v} (P : α → Prop) :
-    (Σi, ULift (PLift (P i))) ≃ Subtype P :=
-  (sigmaCongrRight fun _ => Equiv.ulift).trans (sigmaPliftEquivSubtype P)
+def sigmaULiftPLiftEquivSubtype {α : Type v} (P : α → Prop) :
+    (Σ i, ULift (PLift (P i))) ≃ Subtype P :=
+  (sigmaCongrRight fun _ => Equiv.ulift).trans (sigmaPLiftEquivSubtype P)
+#align equiv.sigma_ulift_plift_equiv_subtype Equiv.sigmaULiftPLiftEquivSubtype
 
 namespace Perm
 
 /-- A family of permutations `Π a, perm (β a)` generates a permuation `perm (Σ a, β₁ a)`. -/
 @[reducible]
-def sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm (Σa, β a) :=
+def sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm (Σ a, β a) :=
   Equiv.sigmaCongrRight F
 
 @[simp]
-theorem sigma_congr_right_trans {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) (G : ∀ a, Perm (β a)) :
+theorem sigmaCongrRight_trans {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) (G : ∀ a, Perm (β a)) :
     (sigmaCongrRight F).trans (sigmaCongrRight G) = sigmaCongrRight fun a => (F a).trans (G a) :=
-  Equiv.sigma_congr_right_trans F G
+  Equiv.sigmaCongrRight_trans F G
+#align equiv.perm.sigma_congr_right_trans Equiv.Perm.sigmaCongrRight_trans
 
 @[simp]
-theorem sigma_congr_right_symm {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) :
+theorem sigmaCongrRight_symm {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) :
     (sigmaCongrRight F).symm = sigmaCongrRight fun a => (F a).symm :=
-  Equiv.sigma_congr_right_symm F
+  Equiv.sigmaCongrRight_symm F
+#align equiv.perm.sigma_congr_right_symm Equiv.Perm.sigmaCongrRight_symm
 
 @[simp]
-theorem sigma_congr_right_refl {α} {β : α → Sort _} :
-    (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σa, β a) :=
-  Equiv.sigma_congr_right_refl
+theorem sigmaCongrRight_refl {α} {β : α → Sort _} :
+    (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) :=
+  Equiv.sigmaCongrRight_refl
+#align equiv.perm.sigma_congr_right_refl Equiv.Perm.sigmaCongrRight_refl
 
 end Perm
 
 /-- An equivalence `f : α₁ ≃ α₂` generates an equivalence between `Σ a, β (f a)` and `Σ a, β a`. -/
 @[simps apply]
-def sigmaCongrLeft {α₁ α₂} {β : α₂ → Sort _} (e : α₁ ≃ α₂) : (Σa : α₁, β (e a)) ≃ Σa : α₂, β a where
+def sigmaCongrLeft {α₁ α₂} {β : α₂ → Sort _} (e : α₁ ≃ α₂) :
+    (Σ a : α₁, β (e a)) ≃ Σ a : α₂, β a where
   toFun a := ⟨e a.1, a.2⟩
   invFun a := ⟨e.symm a.1, (e.right_inv a.1).symm ▸ a.2⟩
   -- porting note: this was a pretty gnarly match already, and it got worse after porting
@@ -809,7 +856,7 @@ def sigmaCongrLeft {α₁ α₂} {β : α₂ → Sort _} (e : α₁ ≃ α₂) :
 
 /-- Transporting a sigma type through an equivalence of the base -/
 def sigmaCongrLeft' {α₁ α₂} {β : α₁ → Sort _} (f : α₁ ≃ α₂) :
-    (Σa : α₁, β a) ≃ Σa : α₂, β (f.symm a) :=
+    (Σ a : α₁, β a) ≃ Σ a : α₂, β (f.symm a) :=
   (sigmaCongrLeft f.symm).symm
 
 /-- Transporting a sigma type through an equivalence of the base and a family of equivalences
@@ -820,7 +867,7 @@ def sigmaCongr {α₁ α₂} {β₁ : α₁ → Sort _} {β₂ : α₂ → Sort 
 
 /-- `sigma` type with a constant fiber is equivalent to the product. -/
 @[simps apply symmApply]
-def sigmaEquivProd (α β : Type _) : (Σ_ : α, β) ≃ α × β :=
+def sigmaEquivProd (α β : Type _) : (Σ _ : α, β) ≃ α × β :=
   ⟨fun a => ⟨a.1, a.2⟩, fun a => ⟨a.1, a.2⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
 
 /-- If each fiber of a `sigma` type is equivalent to a fixed type, then the sigma type
@@ -830,7 +877,7 @@ def sigmaEquivProdOfEquiv {α β} {β₁ : α → Sort _} (F : ∀ a, β₁ a �
 
 /-- Dependent product of types is associative up to an equivalence. -/
 def sigmaAssoc {α : Type _} {β : α → Type _} (γ : ∀ a : α, β a → Type _) :
-    (Σab : Σa : α, β a, γ ab.1 ab.2) ≃ Σa : α, Σb : β a, γ a b where
+    (Σ ab : Σ a : α, β a, γ ab.1 ab.2) ≃ Σ a : α, Σ b : β a, γ a b where
   toFun x := ⟨x.1.1, ⟨x.1.2, x.2⟩⟩
   invFun x := ⟨⟨x.1, x.2.1⟩, x.2.2⟩
   left_inv := fun ⟨⟨_, _⟩, _⟩ => rfl
@@ -926,37 +973,36 @@ namespace Quot
 if `ra a₁ a₂ ↔ rb (e a₁) (e a₂). -/
 protected def congr {ra : α → α → Prop} {rb : β → β → Prop} (e : α ≃ β)
     (eq : ∀ a₁ a₂, ra a₁ a₂ ↔ rb (e a₁) (e a₂)) : Quot ra ≃ Quot rb where
-  toFun := Quot.map e fun a₁ a₂ => (Eq a₁ a₂).1
+  toFun := Quot.map e fun a₁ a₂ => (eq a₁ a₂).1
   invFun :=
     Quot.map e.symm fun b₁ b₂ h =>
-      (Eq (e.symm b₁) (e.symm b₂)).2 ((e.apply_symm_apply b₁).symm ▸ (e.apply_symm_apply b₂).symm ▸ h)
+      (eq (e.symm b₁) (e.symm b₂)).2
+        ((e.apply_symm_apply b₁).symm ▸ (e.apply_symm_apply b₂).symm ▸ h)
   left_inv := by
     rintro ⟨a⟩
-    dsimp only [Quot.map]
-    simp only [Equiv.symm_apply_apply]
+    simp only [Quot.map, Equiv.symm_apply_apply]
   right_inv := by
     rintro ⟨a⟩
-    dsimp only [Quot.map]
-    simp only [Equiv.apply_symm_apply]
+    simp only [Quot.map, Equiv.apply_symm_apply]
 
 @[simp]
 theorem congr_mk {ra : α → α → Prop} {rb : β → β → Prop} (e : α ≃ β)
     (eq : ∀ a₁ a₂ : α, ra a₁ a₂ ↔ rb (e a₁) (e a₂)) (a : α) :
-    Quot.congr e Eq (Quot.mk ra a) = Quot.mk rb (e a) :=
+    Quot.congr e eq (Quot.mk ra a) = Quot.mk rb (e a) :=
   rfl
 
 /-- Quotients are congruent on equivalences under equality of their relation.
 An alternative is just to use rewriting with `eq`, but then computational proofs get stuck. -/
 protected def congrRight {r r' : α → α → Prop} (eq : ∀ a₁ a₂, r a₁ a₂ ↔ r' a₁ a₂) :
     Quot r ≃ Quot r' :=
-  Quot.congr (Equiv.refl α) Eq
+  Quot.congr (Equiv.refl α) eq
 
 /-- An equivalence `e : α ≃ β` generates an equivalence between the quotient space of `α`
 by a relation `ra` and the quotient space of `β` by the image of this relation under `e`. -/
 protected def congrLeft {r : α → α → Prop} (e : α ≃ β) :
     Quot r ≃ Quot fun b b' => r (e.symm b) (e.symm b') :=
   @Quot.congr α β r (fun b b' => r (e.symm b) (e.symm b')) e
-    fun a₁ a₂ => by simp only [e.symm_apply_apply]
+    fun a₁ a₂ => by simp only [e.symm_apply_apply]; rfl
 
 end Quot
 
@@ -965,20 +1011,20 @@ namespace Quotient
 /-- An equivalence `e : α ≃ β` generates an equivalence between quotient spaces,
 if `ra a₁ a₂ ↔ rb (e a₁) (e a₂). -/
 protected def congr {ra : Setoid α} {rb : Setoid β} (e : α ≃ β)
-    (eq : ∀ a₁ a₂, @Setoid.R α ra a₁ a₂ ↔ @Setoid.R β rb (e a₁) (e a₂)) :
+    (eq : ∀ a₁ a₂, @Setoid.r α ra a₁ a₂ ↔ @Setoid.r β rb (e a₁) (e a₂)) :
     Quotient ra ≃ Quotient rb :=
-  Quot.congr e Eq
+  Quot.congr e eq
 
 @[simp]
 theorem congr_mk {ra : Setoid α} {rb : Setoid β} (e : α ≃ β)
-    (eq : ∀ a₁ a₂ : α, Setoid.R a₁ a₂ ↔ Setoid.R (e a₁) (e a₂)) (a : α) :
-    Quotient.congr e Eq (Quotient.mk a) = Quotient.mk (e a) :=
+    (eq : ∀ a₁ a₂ : α, Setoid.r a₁ a₂ ↔ Setoid.r (e a₁) (e a₂)) (a : α) :
+    Quotient.congr e eq (Quotient.mk ra a) = Quotient.mk rb (e a) :=
   rfl
 
 /-- Quotients are congruent on equivalences under equality of their relation.
 An alternative is just to use rewriting with `eq`, but then computational proofs get stuck. -/
 protected def congrRight {r r' : Setoid α}
-    (eq : ∀ a₁ a₂, @Setoid.R α r a₁ a₂ ↔ @Setoid.R α r' a₁ a₂) : Quotient r ≃ Quotient r' :=
-  Quot.congrRight Eq
+    (eq : ∀ a₁ a₂, @Setoid.r α r a₁ a₂ ↔ @Setoid.r α r' a₁ a₂) : Quotient r ≃ Quotient r' :=
+  Quot.congrRight eq
 
 end Quotient
