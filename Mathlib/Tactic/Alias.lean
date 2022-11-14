@@ -87,9 +87,9 @@ def Target.toName : Target → Name
 
 /-- The docstring for an alias. -/
 def Target.toString : Target → String
-| Target.plain n => f!"**Alias** of `{n}`.".pretty
-| Target.forward n => f!"**Alias** of the forward direction of `{n}`.".pretty
-| Target.backwards n => f!"**Alias** of the reverse direction of `{n}`.".pretty
+| Target.plain n => s!"**Alias** of `{n}`."
+| Target.forward n => s!"**Alias** of the forward direction of `{n}`."
+| Target.backwards n => s!"**Alias** of the reverse direction of `{n}`."
 
 /-- Elaborates an `alias ←` command. -/
 @[command_elab «alias»] def elabAlias : Command.CommandElab
