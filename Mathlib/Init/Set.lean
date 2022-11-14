@@ -39,6 +39,7 @@ p
 
 namespace Set
 
+/-- Membership in a set -/
 protected def Mem (a : α) (s : Set α) : Prop :=
 s a
 
