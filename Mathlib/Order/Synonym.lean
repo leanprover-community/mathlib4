@@ -28,10 +28,6 @@ coercions should be inserted:
 * `OrderDual`: `OrderDual.toDual : α → αᵒᵈ` and `OrderDual.ofDual : αᵒᵈ → α`
 * `Lex`: `toLex : α → Lex α` and `ofLex : Lex α → α`.
 
-In fact, those are bundled as `Equiv`s to put goals in the right syntactic form for rewriting with
-the `Equiv` API (`⇑toLex a` where `⇑` is `coe_fn : (α ≃ Lex α) → α → Lex α`, instead of a bare
-`toLex a`).
-
 ## See also
 
 This file is similar to `Algebra.Group.TypeTags`.
