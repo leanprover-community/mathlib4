@@ -24,11 +24,11 @@ Examples:
 ```lean
 example : 1 < 2 := by
   by_contra' h
-  -- h : 2 ≤ 1 ⊢ false
+  -- h : 2 ≤ 1 ⊢ False
 
 example : 1 < 2 := by
   by_contra' h : ¬ 1 < 2,
-  -- h : ¬ 1 < 2 ⊢ false
+  -- h : ¬ 1 < 2 ⊢ False
 ```
 -/
 syntax (name := byContra') "by_contra'" (ppSpace colGt binderIdent)? Term.optType : tactic
