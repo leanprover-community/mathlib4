@@ -90,11 +90,39 @@ def List.init : List α → List α
 | [_]    => []
 | a::l => a::init l
 
-/-- Converts an inductive constructor `c` into an intermediate representation that
-will later be mapped into a proposition.
+/-- Auxiliary data associated with a single constructor of an inductive declaration.
+-/
+structure Shape : Type where
+  /-- For each forall-bound variable in the type of the constructor, minus
+  the "params" that apply to the entire inductive type, this list contains `true`
+  if that variable has been kept after `compactRelation`.
+
+  For example, `List.Chain.nil` has type
+  ```lean
+    ∀ {α : Type u_1} {R : α → α → Prop} {a : α}, List.Chain R a []`
+  ```
+  and the first two variables `α` and `R` are "params", while the `a : α` gets
+  eliminated in a `compactRelation`, so `variablesKept = [false].
+
+  `List.Chain.cons` has type
+  ```lean
+    ∀ {α : Type u_1} {R : α → α → Prop} {a b : α} {l : List α},
+       R a b → List.Chain R b l → List.Chain R a (b :: l)
+  ```
+  and the `a : α` gets eliminated, so `compactRelation = [false,true,true,true,true]`.
+   -/
+  variablesKept : List Bool
+
+  /-- The number of equalities, or `none` in the case when we've reduced something
+  of the form `p ∧ True` to just `p`.
+  -/
+  neqs : Option Nat
+
+/-- Converts an inductive constructor `c` into a `Shape` that will be used later in
+while proving the iff theorem, and an proposition representing the constructor.
 -/
 def constrToProp (univs : List Level) (params : List Expr) (idxs : List Expr) (c : Name) :
-  MetaM ((List Bool × (Expr ⊕ Nat)) × Expr)  :=
+  MetaM (Shape × Expr)  :=
 do let type := (← getConstInfo c).instantiateTypeLevelParams univs
    let type' ← Meta.forallBoundedTelescope type (params.length) fun fvars ty => do
      pure $ ty.replaceFVars fvars params.toArray
@@ -111,20 +139,20 @@ do let type := (← getConstInfo c).instantiateTypeLevelParams univs
           else pure (mkApp4 (mkConst `HEq [u]) ty idx instTy inst))
      let (n, r) ← match bs.filterMap id, eqs with
      | [], [] => do
-           pure (Sum.inr 0, (mkConst `True))
+           pure (some 0, (mkConst `True))
      | bs', []  => do
           let t : Expr ← bs'.getLast!.fvarId!.getType
           let l := (←inferType t).sortLevel!
           if l == Level.zero then do
             let r ← mkExistsList (List.init bs') t
-            pure (Sum.inl bs'.getLast!, subst r)
+            pure (none, subst r)
           else do
             let r ← mkExistsList bs' (mkConst `True)
-            pure (Sum.inr 0, subst r)
+            pure (some 0, subst r)
      | bs', _ => do
        let r ← mkExistsList bs' (mkAndList eqs)
-       pure (Sum.inr eqs.length, subst r)
-     pure ((bs.map Option.isSome, n), r)
+       pure (some eqs.length, subst r)
+     pure (⟨bs.map Option.isSome, n⟩, r)
 
 /-- Splits the goal `n` times via `refine ⟨?_,?_⟩`, and then applies `constructor` to
 close the resulting subgoals.
@@ -148,7 +176,7 @@ match n with
 /-- Proves the left to right direction of a generated iff theorem.
 `shape` is the output of a call to `constrToProp`.
 -/
-def toCases (mvar : MVarId) (shape : List (List Bool × (Expr ⊕ Nat))) : MetaM Unit :=
+def toCases (mvar : MVarId) (shape : List Shape) : MetaM Unit :=
 do
   let ⟨h, mvar'⟩ ← mvar.intro1
   let subgoals ← mvar'.cases h
@@ -157,11 +185,11 @@ do
     let si := (shape.zip vars.toList).filterMap (λ ⟨c,v⟩ => if c then some v else none)
     let mvar'' ← select p (subgoals.size - 1) subgoal.mvarId
     match t with
-    | Sum.inl _ => do
+    | none => do
       let v := vars.get! (shape.length - 1)
       let mv ← mvar''.existsi (List.init si)
       mv.assign v
-    | Sum.inr n => do
+    | some n => do
       let mv ← mvar''.existsi si
       splitThenConstructor mv (n - 1)
   pure ()
@@ -208,10 +236,9 @@ def listBoolMerge {α : Type _} : List Bool → List α → List (Option α)
 | true :: _, [] => []
 
 /-- Proves the right to left direction of a generated iff theorem.
-`s` is the output of a call to `constrToProp`.
 -/
 def toInductive (mvar : MVarId) (cs : List Name)
-  (gs : List Expr) (s : List (List Bool × (Expr ⊕ Nat))) (h : FVarId) :
+  (gs : List Expr) (s : List Shape) (h : FVarId) :
   MetaM Unit := do
   match s.length with
   | 0       => do let _ ← mvar.cases h
@@ -221,11 +248,11 @@ def toInductive (mvar : MVarId) (cs : List Name)
       let _ ← (cs.zip (subgoals.zip s)).mapM $ λ⟨constr_name, ⟨h, mv⟩, bs, e⟩ => do
         let n := (bs.filter id).length
         let (mvar', _fvars) ← match e with
-        | Sum.inl _ => nCasesProd (n-1) mv h
-        | Sum.inr 0 => do let ⟨mvar', fvars⟩ ← nCasesProd n mv h
+        | none => nCasesProd (n-1) mv h
+        | some 0 => do let ⟨mvar', fvars⟩ ← nCasesProd n mv h
                           let mvar'' ← mvar'.tryClear fvars.getLast!
                           pure ⟨mvar'', fvars⟩
-        | Sum.inr (e + 1) => do
+        | some (e + 1) => do
            let (mv', fvars) ← nCasesProd n mv h
            let lastfv := fvars.getLast!
            let (mv2, fvars') ← nCasesProd e mv' lastfv
