@@ -176,12 +176,16 @@ theorem inv_comp_inv : Inv.inv ∘ Inv.inv = @id G :=
   inv_involutive.comp_self
 
 @[to_additive]
-theorem left_inverse_inv : LeftInverse (fun a : G => a⁻¹) fun a => a⁻¹ :=
+theorem leftInverse_inv : LeftInverse (fun a : G => a⁻¹) fun a => a⁻¹ :=
   inv_inv
+#align left_inverse_inv leftInverse_inv
+#align left_inverse_neg leftInverse_neg
 
 @[to_additive]
-theorem right_inverse_inv : LeftInverse (fun a : G => a⁻¹) fun a => a⁻¹ :=
+theorem rightInverse_inv : LeftInverse (fun a : G => a⁻¹) fun a => a⁻¹ :=
   inv_inv
+#align right_inverse_inv rightInverse_inv
+#align right_inverse_neg rightInverse_neg
 
 end HasInvolutiveInv
 
@@ -497,7 +501,7 @@ theorem mul_div_cancel'' (a b : G) : a * b / b = a :=
 
 @[simp, to_additive]
 theorem mul_div_mul_right_eq_div (a b c : G) : a * c / (b * c) = a / b := by
-  rw [div_mul_eq_div_div_swap] <;> simp only [mul_left_inj, eq_self_iff_true, mul_div_cancel'']
+  rw [div_mul_eq_div_div_swap]; simp only [mul_left_inj, eq_self_iff_true, mul_div_cancel'']
 
 @[to_additive eq_sub_of_add_eq]
 theorem eq_div_of_mul_eq' (h : a * c = b) : a = b / c := by simp [← h]
@@ -554,22 +558,30 @@ theorem eq_iff_eq_of_div_eq_div (H : a / b = c / d) : a = b ↔ c = d :=
   by rw [← div_eq_one, H, div_eq_one]
 
 @[to_additive]
-theorem left_inverse_div_mul_left (c : G) : Function.LeftInverse (fun x => x / c) fun x => x * c :=
+theorem leftInverse_div_mul_left (c : G) : Function.LeftInverse (fun x => x / c) fun x => x * c :=
   fun x => mul_div_cancel'' x c
+#align left_inverse_div_mul_left leftInverse_div_mul_left
+#align left_inverse_sub_add_left leftInverse_sub_add_left
 
 @[to_additive]
-theorem left_inverse_mul_left_div (c : G) : Function.LeftInverse (fun x => x * c) fun x => x / c :=
+theorem leftInverse_mul_left_div (c : G) : Function.LeftInverse (fun x => x * c) fun x => x / c :=
   fun x => div_mul_cancel' x c
+#align left_inverse_mul_left_div leftInverse_mul_left_div
+#align left_inverse_add_left_sub leftInverse_add_left_sub
 
 @[to_additive]
-theorem left_inverse_mul_right_inv_mul (c : G) :
+theorem leftInverse_mul_right_inv_mul (c : G) :
     Function.LeftInverse (fun x => c * x) fun x => c⁻¹ * x :=
   fun x => mul_inv_cancel_left c x
+#align left_inverse_mul_right_inv_mul leftInverse_mul_right_inv_mul
+#align left_inverse_add_right_neg_add leftInverse_add_right_neg_add
 
 @[to_additive]
-theorem left_inverse_inv_mul_mul_right (c : G) :
+theorem leftInverse_inv_mul_mul_right (c : G) :
     Function.LeftInverse (fun x => c⁻¹ * x) fun x => c * x :=
   fun x => inv_mul_cancel_left c x
+#align left_inverse_inv_mul_mul_right leftInverse_inv_mul_mul_right
+#align left_inverse_neg_add_add_right leftInverse_neg_add_add_right
 
 -- TODO @[to_additive]
 theorem exists_npow_eq_one_of_zpow_eq_one {n : ℤ} (hn : n ≠ 0) {x : G} (h : x ^ n = 1) :
@@ -633,8 +645,8 @@ theorem div_eq_iff_eq_mul' : a / b = c ↔ a = b * c := by rw [div_eq_iff_eq_mul
 theorem mul_div_cancel''' (a b : G) : a * b / a = b := by rw [div_eq_inv_mul, inv_mul_cancel_left]
 
 @[simp, to_additive]
-theorem mul_div_cancel'_right (a b : G) : a * (b / a) = b :=
-  by rw [← mul_div_assoc, mul_div_cancel''']
+theorem mul_div_cancel'_right (a b : G) : a * (b / a) = b := by
+  rw [← mul_div_assoc, mul_div_cancel''']
 
 @[simp, to_additive sub_add_cancel']
 theorem div_mul_cancel'' (a b : G) : a / (a * b) = b⁻¹ := by rw [← inv_div, mul_div_cancel''']
@@ -643,24 +655,24 @@ theorem div_mul_cancel'' (a b : G) : a / (a * b) = b⁻¹ := by rw [← inv_div,
 -- along with the additive version `add_neg_cancel_comm_assoc`,
 -- defined  in `algebra/group/commute`
 @[to_additive]
-theorem mul_mul_inv_cancel'_right (a b : G) : a * (b * a⁻¹) = b :=
-  by rw [← div_eq_mul_inv, mul_div_cancel'_right a b]
+theorem mul_mul_inv_cancel'_right (a b : G) : a * (b * a⁻¹) = b := by
+  rw [← div_eq_mul_inv, mul_div_cancel'_right a b]
 
 @[simp, to_additive]
-theorem mul_mul_div_cancel (a b c : G) : a * c * (b / c) = a * b :=
-  by rw [mul_assoc, mul_div_cancel'_right]
+theorem mul_mul_div_cancel (a b c : G) : a * c * (b / c) = a * b := by
+  rw [mul_assoc, mul_div_cancel'_right]
 
 @[simp, to_additive]
-theorem div_mul_mul_cancel (a b c : G) : a / c * (b * c) = a * b :=
-  by rw [mul_left_comm, div_mul_cancel', mul_comm]
+theorem div_mul_mul_cancel (a b c : G) : a / c * (b * c) = a * b := by
+  rw [mul_left_comm, div_mul_cancel', mul_comm]
 
 @[simp, to_additive sub_add_sub_cancel']
-theorem div_mul_div_cancel'' (a b c : G) : a / b * (c / a) = c / b :=
-  by rw [mul_comm] <;> apply div_mul_div_cancel'
+theorem div_mul_div_cancel'' (a b c : G) : a / b * (c / a) = c / b := by
+  rw [mul_comm]; apply div_mul_div_cancel'
 
 @[simp, to_additive]
-theorem mul_div_div_cancel (a b c : G) : a * b / (a / c) = b * c :=
-  by rw [← div_mul, mul_div_cancel''']
+theorem mul_div_div_cancel (a b c : G) : a * b / (a / c) = b * c := by
+  rw [← div_mul, mul_div_cancel''']
 
 @[simp, to_additive]
 theorem div_div_div_cancel_left (a b c : G) : c / a / (c / b) = b / a := by

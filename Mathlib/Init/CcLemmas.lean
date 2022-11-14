@@ -49,16 +49,16 @@ theorem or_eq_of_eq {a b : Prop} (h : a = b) : (a ∨ b) = a :=
   h ▸ propext or_self_iff
 
 theorem imp_eq_of_eq_true_left {a b : Prop} (h : a = True) : (a → b) = b :=
-  h.symm ▸ propext (Iff.intro (fun h => h trivial) fun h₁ _ => h₁)
+  h.symm ▸ propext ⟨fun h => h trivial, fun h₁ _ => h₁⟩
 
 theorem imp_eq_of_eq_true_right {a b : Prop} (h : b = True) : (a → b) = True :=
-  h.symm ▸ propext (Iff.intro (fun h => trivial) fun h₁ _ => h₁)
+  h.symm ▸ propext ⟨fun _ => trivial, fun h₁ _ => h₁⟩
 
 theorem imp_eq_of_eq_false_left {a b : Prop} (h : a = False) : (a → b) = True :=
-  h.symm ▸ propext (Iff.intro (fun h => trivial) fun _ h₂ => False.elim h₂)
+  h.symm ▸ propext ⟨fun _ => trivial, fun _ h₂ => False.elim h₂⟩
 
 theorem imp_eq_of_eq_false_right {a b : Prop} (h : b = False) : (a → b) = Not a :=
-  h.symm ▸ propext (Iff.intro (fun h => h) fun hna ha => hna ha)
+  h.symm ▸ propext ⟨fun h => h, fun hna ha => hna ha⟩
 
 /- Remark: the congruence closure module will only use the following lemma is
    cc_config.em is tt. -/
@@ -67,7 +67,7 @@ theorem not_imp_eq_of_eq_false_right {a b : Prop} (h : b = False) : (Not a → b
     fun h' => Classical.byContradiction fun hna => h' hna) fun ha hna => hna ha)
 
 theorem imp_eq_true_of_eq {a b : Prop} (h : a = b) : (a → b) = True :=
-  h ▸ propext (Iff.intro (fun _ => trivial) fun _ ha => ha)
+  h ▸ propext ⟨fun _ => trivial, fun _ ha => ha⟩
 
 theorem not_eq_of_eq_true {a : Prop} (h : a = True) : Not a = False :=
   h.symm ▸ propext not_true
