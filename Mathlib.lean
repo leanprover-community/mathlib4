@@ -1,6 +1,7 @@
 import Mathlib.Algebra.Abs
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Semiconj
@@ -71,13 +72,14 @@ import Mathlib.Init.Core
 import Mathlib.Init.Data.Bool.Basic
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Fin.Basic
-import Mathlib.Init.Data.Int.Notation
+import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Init.Data.Prod
 import Mathlib.Init.Data.Quot
+import Mathlib.Init.Data.Rat
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Propext
@@ -95,6 +97,7 @@ import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Logic.Equiv.MfldSimpsAttr
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Function.Conjugate
+import Mathlib.Logic.Function.Iterate
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Lemmas
 import Mathlib.Logic.Nonempty
