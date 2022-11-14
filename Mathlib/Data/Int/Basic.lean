@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Tactic.Convert
-import Mathlib.Tactic.SeqFocus
-import Mathlib.Tactic.NormCast
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Order.Monotone
@@ -155,7 +153,7 @@ theorem coe_nat_ediv (m n : ℕ) : ((m / n : ℕ) : ℤ) = ediv m n := rfl
 theorem ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -((-a - 1) / b + 1) :=
   match a, b, eq_negSucc_of_lt_zero Ha, eq_succ_of_zero_lt Hb with
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
-    rw [show (- -[m+1] : ℤ) = (m + 1 : ℤ) by rfl] <;> rw [add_sub_cancel] <;> rfl
+    rw [show (- -[m+1] : ℤ) = (m + 1 : ℤ) by rfl]; rw [add_sub_cancel]; rfl
 #align int.div_of_neg_of_pos Int.ediv_of_neg_of_pos
 
 #align int.div_nonneg Int.div_nonnegₓ -- int div alignment

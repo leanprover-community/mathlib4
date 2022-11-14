@@ -250,10 +250,10 @@ theorem pmap_map {p : β → Prop} (g : ∀ b, p b → γ) (f : α → β) (l H)
 
 theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (l H) :
     pmap f l H = l.attach.map fun x => f x.1 (H _ x.2) := by
-  rw [attach, map_pmap] <;> exact pmap_congr l fun _ _ _ _ => rfl
+  rw [attach, map_pmap]; exact pmap_congr l fun _ _ _ _ => rfl
 
 theorem attach_map_val (l : List α) : l.attach.map Subtype.val = l := by
-  rw [attach, map_pmap] <;> exact (pmap_eq_map _ _ _ _).trans (map_id l)
+  rw [attach, map_pmap]; exact (pmap_eq_map ..).trans (map_id l)
 
 @[simp]
 theorem mem_attach (l : List α) : ∀ x, x ∈ l.attach
