@@ -129,4 +129,57 @@ def nat_pi_has_one {α : Type} [One α] : One ((x : Nat) → α) := by infer_ins
 @[to_additive]
 def pi_nat_has_one {I : Type} : One ((x : I) → Nat)  := pi.has_one
 
+
+/-!
+Some arbitrary tests to check whether additive names are guessed correctly.
+-/
+section guessName
+
+open ToAdditive
+
+example : True := by
+  run_tac guard (guessName "HMul_Eq_LEOne_Conj₂MulLT'" == "HAdd_Eq_Nonpos_Conj₂AddLT'")
+  run_tac guard (guessName "OneMulSmulInvDivPow"       == "ZeroAddVaddNegSubNsmul")
+  run_tac guard (guessName "ProdFinprodNpowZpow"       == "SumFinsumNsmulZsmul")
+  trivial
+
+-- The current design swaps all instances of `Comm`+`Add` in order to have
+-- `AddCommMonoid` instead of `CommAddMonoid`.
+example : True := by
+  run_tac guard (guessName "comm_mul_CommMul_commMul" == "comm_add_AddComm_addComm")
+  run_tac guard (guessName "mul_comm_MulComm_mulComm" == "add_comm_AddComm_addComm")
+  trivial
+
+example : True := by
+  run_tac guard (guessName "CommMonoid" == "AddCommMonoid")
+  run_tac guard (guessName "commMonoid" == "addCommMonoid")
+  trivial
+
+example : True := by
+  run_tac guard (guessName "CancelCommMonoid" == "AddCancelCommMonoid")
+  run_tac guard (guessName "cancelCommMonoid" == "addCancelCommMonoid")
+  run_tac guard (guessName "CancelMonoid"     == "AddCancelMonoid")
+  run_tac guard (guessName "cancelMonoid"     == "addCancelMonoid")
+  -- -- TODO: not dealing with these atm:
+  -- run_tac guard (guessName "RightCancelMonoid" == "AddRightCancelMonoid")
+  -- run_tac guard (guessName "rightCancelMonoid" == "addRightCancelMonoid")
+  -- run_tac guard (guessName "LefCancelMonoid" == "AddLeftCancelMonoid")
+  -- run_tac guard (guessName "leftCancelMonoid" == "addLeftCancelMonoid")  trivial
+  trivial
+
+example : True := by
+  run_tac guard (guessName "LTOne_LEOne_OneLE_OneLT" == "Neg_Nonpos_Nonneg_Pos")
+  trivial
+
+-- The current design splits this as `LTH, Mul, HPow, LEH, Div` before it translates.
+-- This is kinda a bug.
+example : True := by
+  run_tac guard (guessName "LTHMulHPowLEHDiv" == "LTHAddHMulLEHSub")
+  run_tac guard (guessName "OneLEHMul" == "NonnegHAdd")
+  -- -- TODO: This fails at the moment:
+  -- run_tac guard (guessName "OneLTHPow" == "PosHMul")
+  trivial
+
+end guessName
+
 end Test
