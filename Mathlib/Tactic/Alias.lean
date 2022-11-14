@@ -102,7 +102,8 @@ def appendNamespace (ns : Name) : Name → Name
     Command.liftTermElabM do
       Lean.addDecl decl
       Term.addTermInfo' a (← mkConstWithLevelParams declName) (isBinder := true)
-    -- TODO add doc string
+      if let some docString ← findDocString? (← getEnv) resolved then
+        addDocString declName docString
 | _ => throwUnsupportedSyntax
 
 /--

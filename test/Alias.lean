@@ -3,6 +3,7 @@ import Mathlib
 namespace Alias
 namespace A
 
+/-- doc string for foo -/
 theorem foo : 1 + 1 = 2 := rfl
 alias foo ← foo1 foo2 foo3 _root_.B.foo4
 example : 1 + 1 = 2 := foo1
