@@ -631,7 +631,7 @@ noncomputable def propEquivBool : Prop ≃ Bool where
   toFun p := @decide p (Classical.propDecidable _)
   invFun b := b
   left_inv p := by simp [@Bool.decide_iff p (Classical.propDecidable _)]
-  right_inv b := by simp
+  right_inv b := by cases b; simp
 
 section
 
