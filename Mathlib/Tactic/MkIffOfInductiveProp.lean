@@ -119,7 +119,7 @@ structure Shape : Type where
   neqs : Option Nat
 
 /-- Converts an inductive constructor `c` into a `Shape` that will be used later in
-while proving the iff theorem, and an proposition representing the constructor.
+while proving the iff theorem, and a proposition representing the constructor.
 -/
 def constrToProp (univs : List Level) (params : List Expr) (idxs : List Expr) (c : Name) :
   MetaM (Shape × Expr)  :=
