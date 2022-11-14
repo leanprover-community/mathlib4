@@ -100,7 +100,8 @@ theorem cast_negSucc [AddGroupWithOne R] :
 
 end Int
 
-/-- The simpset `field_simps` is used by the tactic `field_simp` to
-reduce an expression in a field to an expression of the form `n / d` where `n` and `d` are
-division-free. -/
-register_simp_attr field_simps
+section NeZero
+
+attribute [field_simps] two_ne_zero three_ne_zero four_ne_zero
+
+end NeZero
