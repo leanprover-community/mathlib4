@@ -286,7 +286,6 @@
  ["docBlame", "Set.image"],
  ["docBlame", "Set.insert"],
  ["docBlame", "Set.inter"],
- ["docBlame", "Set.mem"],
  ["docBlame", "Set.powerset"],
  ["docBlame", "Set.sUnion"],
  ["docBlame", "Set.singleton"],
