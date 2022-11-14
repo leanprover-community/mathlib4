@@ -19,7 +19,7 @@ This file provides two type synonyms for order theory:
 
 `αᵒᵈ` is notation for `OrderDual α`.
 
-The general rule for notation of `lex` types is to append `ₗ` to the usual notation.
+The general rule for notation of `Lex` types is to append `ₗ` to the usual notation.
 
 ## Implementation notes
 
