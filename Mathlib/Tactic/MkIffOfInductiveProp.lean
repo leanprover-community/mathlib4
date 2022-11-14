@@ -102,7 +102,6 @@ do let type := (← getConstInfo c).instantiateTypeLevelParams univs
    Meta.forallTelescope type' fun fvars ty => do
      let idxs_inst := ty.getAppArgs.toList.drop params.length
      let (bs, eqs, subst) := compactRelation fvars.toList (idxs.zip idxs_inst)
-     let bs' := bs.filterMap id
      let eqs ← eqs.mapM (λ⟨idx, inst⟩ => do
           let ty ← idx.fvarId!.getType
           let instTy ← inferType inst
@@ -110,10 +109,10 @@ do let type := (← getConstInfo c).instantiateTypeLevelParams univs
           if ←isDefEq ty instTy
           then pure (mkApp3 (mkConst `Eq [u]) ty idx inst)
           else pure (mkApp4 (mkConst `HEq [u]) ty idx instTy inst))
-     let (n, r) ← match bs', eqs with
+     let (n, r) ← match bs.filterMap id, eqs with
      | [], [] => do
            pure (Sum.inr 0, (mkConst `True))
-     | _, []  => do
+     | bs', []  => do
           let t : Expr ← bs'.getLast!.fvarId!.getType
           let l := (←inferType t).sortLevel!
           if l == Level.zero then do
@@ -122,7 +121,7 @@ do let type := (← getConstInfo c).instantiateTypeLevelParams univs
           else do
             let r ← mkExistsList bs' (mkConst `True)
             pure (Sum.inr 0, subst r)
-     | _, _ => do
+     | bs', _ => do
        let r ← mkExistsList bs' (mkAndList eqs)
        pure (Sum.inr eqs.length, subst r)
      pure ((bs.map Option.isSome, n), r)
@@ -240,8 +239,7 @@ def toInductive (mvar : MVarId) (cs : List Name)
                                    ) mv3
            pure (mv4, fvars)
         mvar'.withContext do
-          let ctxt ← getLCtx
-          let fvarIds := ctxt.getFVarIds.toList
+          let fvarIds := (←getLCtx).getFVarIds.toList
           let gs := fvarIds.take gs.length
           let hs := (fvarIds.reverse.take n).reverse
           let m := gs.map some ++ listBoolMerge bs hs
