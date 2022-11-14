@@ -27,7 +27,7 @@ example : 1 < 2 := by
   -- h : 2 ≤ 1 ⊢ False
 
 example : 1 < 2 := by
-  by_contra' h : ¬ 1 < 2,
+  by_contra' h : ¬ 1 < 2
   -- h : ¬ 1 < 2 ⊢ False
 ```
 -/
