@@ -432,7 +432,6 @@ theorem Preorder.toLE_injective {α : Type _} : Function.Injective (@Preorder.to
       simp [*]
     cases this
     congr
-
 #align preorder.to_has_le_injective Preorder.toLE_injective
 
 @[ext]
@@ -443,7 +442,6 @@ theorem PartialOrder.toPreorder_injective {α : Type _} :
   cases B
   cases h
   congr
-
 #align partial_order.to_preorder_injective PartialOrder.toPreorder_injective
 
 @[ext]
@@ -482,7 +480,7 @@ theorem LinearOrder.ext {α} {A B : LinearOrder α}
   exact H x y
 
 /-- Given a relation `R` on `β` and a function `f : α → β`, the preimage relation on `α` is defined
-by `x ≤ y ↔ f x ≤ f y`. It is the unique relation on `α` making `f` a `rel_embedding` (assuming `f`
+by `x ≤ y ↔ f x ≤ f y`. It is the unique relation on `α` making `f` a `RelEmbedding` (assuming `f`
 is injective). -/
 @[simp]
 def Order.Preimage {α β} (f : α → β) (s : β → β → Prop) (x y : α) : Prop :=
@@ -500,7 +498,7 @@ instance Order.Preimage.decidable {α β} (f : α → β) (s : β → β → Pro
 
 
 /-- Type synonym to equip a type with the dual order: `≤` means `≥` and `<` means `>`. `αᵒᵈ` is
-notation for `order_dual α`. -/
+notation for `OrderDual α`. -/
 def OrderDual (α : Type _) : Type _ :=
   α
 
@@ -642,6 +640,15 @@ theorem Pi.sdiff_def {ι : Type u} {α : ι → Type v} [∀ i, SDiff (α i)] (x
 theorem Pi.sdiff_apply {ι : Type u} {α : ι → Type v} [∀ i, SDiff (α i)] (x y : ∀ i, α i) (i : ι) :
     (x \ y) i = x i \ y i :=
   rfl
+
+namespace Function
+variable [Preorder α] [Nonempty β] {a b : α}
+
+@[simp] lemma const_le_const : const β a ≤ const β b ↔ a ≤ b := by simp [Pi.le_def]
+@[simp] lemma const_lt_const : const β a < const β b ↔ a < b := by
+  simpa [Pi.lt_def] using le_of_lt (α := _)
+
+end Function
 
 /-! ### `min`/`max` recursors -/
 
