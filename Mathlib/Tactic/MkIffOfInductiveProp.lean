@@ -94,7 +94,7 @@ def List.init : List α → List α
 will later be mapped into a proposition.
 -/
 def constrToProp (univs : List Level) (params : List Expr) (idxs : List Expr) (c : Name) :
-  MetaM ((List (Option Expr) × (Expr ⊕ Nat)) × Expr)  :=
+  MetaM ((List Bool × (Expr ⊕ Nat)) × Expr)  :=
 do let type := (← getConstInfo c).instantiateTypeLevelParams univs
    let type' ← Meta.forallBoundedTelescope type (params.length) fun fvars ty => do
      pure $ ty.replaceFVars fvars params.toArray
@@ -125,7 +125,7 @@ do let type := (← getConstInfo c).instantiateTypeLevelParams univs
      | _, _ => do
        let r ← mkExistsList bs' (mkAndList eqs)
        pure (Sum.inr eqs.length, subst r)
-     pure ((bs, n), r)
+     pure ((bs.map Option.isSome, n), r)
 
 /-- Splits the goal `n` times via `refine ⟨?_,?_⟩`, and then applies `constructor` to
 close the resulting subgoals.
@@ -149,13 +149,13 @@ match n with
 /-- Proves the left to right direction of a generated iff theorem.
 `shape` is the output of a call to `constrToProp`.
 -/
-def toCases (mvar : MVarId) (shape : List $ List (Option Expr) × (Expr ⊕ Nat)) : MetaM Unit :=
+def toCases (mvar : MVarId) (shape : List (List Bool × (Expr ⊕ Nat))) : MetaM Unit :=
 do
   let ⟨h, mvar'⟩ ← mvar.intro1
   let subgoals ← mvar'.cases h
   let _ ← (shape.zip subgoals.toList).enum.mapM fun ⟨p, ⟨⟨shape, t⟩, subgoal⟩⟩ => do
     let vars := subgoal.fields
-    let si := (shape.zip vars.toList).filterMap (λ ⟨c,v⟩ => c >>= λ _ => some v)
+    let si := (shape.zip vars.toList).filterMap (λ ⟨c,v⟩ => if c then some v else none)
     let mvar'' ← select p (subgoals.size - 1) subgoal.mvarId
     match t with
     | Sum.inl _ => do
@@ -193,26 +193,26 @@ match n with
   pure (mvar', fvar1::rest)
 
 /--
-Iterate over two lists, if the first element of the first list is `none`, insert `none` into the
+Iterate over two lists, if the first element of the first list is `false`, insert `none` into the
 result and continue with the tail of first list. Otherwise, wrap the first element of the second
 list with `some` and continue with the tails of both lists. Return when either list is empty.
 
 Example:
 ```
-listOptionMerge [none, some (), none, some ()] [0, 1, 2, 3, 4] = [none, (some 0), none, (some 1)]
+listBoolMerge [false, true, false, true] [0, 1, 2, 3, 4] = [none, (some 0), none, (some 1)]
 ```
 -/
-def listOptionMerge {α : Type _} {β : Type _} : List (Option α) → List β → List (Option β)
+def listBoolMerge {α : Type _} : List Bool → List α → List (Option α)
 | [], _ => []
-| none :: xs, ys => none :: listOptionMerge xs ys
-| some _ :: xs, y :: ys => some y :: listOptionMerge xs ys
-| some _ :: _, [] => []
+| false :: xs, ys => none :: listBoolMerge xs ys
+| true :: xs, y :: ys => some y :: listBoolMerge xs ys
+| true :: _, [] => []
 
 /-- Proves the right to left direction of a generated iff theorem.
 `s` is the output of a call to `constrToProp`.
 -/
 def toInductive (mvar : MVarId) (cs : List Name)
-  (gs : List Expr) (s : List (List (Option Expr) × (Expr ⊕ Nat))) (h : FVarId) :
+  (gs : List Expr) (s : List (List Bool × (Expr ⊕ Nat))) (h : FVarId) :
   MetaM Unit := do
   match s.length with
   | 0       => do let _ ← mvar.cases h
@@ -220,7 +220,7 @@ def toInductive (mvar : MVarId) (cs : List Name)
   | (n + 1) => do
       let subgoals ← nCasesSum n mvar h
       let _ ← (cs.zip (subgoals.zip s)).mapM $ λ⟨constr_name, ⟨h, mv⟩, bs, e⟩ => do
-        let n := (bs.filterMap id).length
+        let n := (bs.filter id).length
         let (mvar', _fvars) ← match e with
         | Sum.inl _ => nCasesProd (n-1) mv h
         | Sum.inr 0 => do let ⟨mvar', fvars⟩ ← nCasesProd n mv h
@@ -244,7 +244,7 @@ def toInductive (mvar : MVarId) (cs : List Name)
           let fvarIds := ctxt.getFVarIds.toList
           let gs := fvarIds.take gs.length
           let hs := (fvarIds.reverse.take n).reverse
-          let m := gs.map some ++ listOptionMerge bs hs
+          let m := gs.map some ++ listBoolMerge bs hs
           let args ← m.mapM (λa => match a with
                                    | some v => pure $ mkFVar v
                                    | none => mkFreshExprMVar none)
