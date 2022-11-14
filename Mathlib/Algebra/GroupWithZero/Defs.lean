@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.NeZero
 
 theorem eq_of_sub_eq_zero' [AddGroup R] {a b : R} (h : a - b = 0) : a = b :=
   add_right_cancel <| show a + (-b) = b + (-b) by rw [← sub_eq_add_neg, h, add_neg_self]
@@ -98,3 +99,8 @@ theorem cast_negSucc [AddGroupWithOne R] :
   erw [cast_ofNat, Nat.cast_one]
 
 end Int
+
+/-- The simpset `field_simps` is used by the tactic `field_simp` to
+reduce an expression in a field to an expression of the form `n / d` where `n` and `d` are
+division-free. -/
+register_simp_attr field_simps
