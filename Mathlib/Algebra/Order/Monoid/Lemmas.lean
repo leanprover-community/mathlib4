@@ -1070,7 +1070,7 @@ theorem Left.mul_eq_mul_iff_eq_and_eq [CovariantClass α α (· * ·) (· < ·)]
   rcases eq_or_lt_of_le hbd with (rfl | hbd)
   · exact ⟨mul_right_cancel'' h, rfl⟩
 
-  exact ((Left.mul_lt_mul hac hbd).Ne h).elim
+  exact ((Left.mul_lt_mul hac hbd).ne h).elim
 #align left.mul_eq_mul_iff_eq_and_eq Left.mul_eq_mul_iff_eq_and_eq
 
 @[to_additive]
@@ -1085,7 +1085,7 @@ theorem Right.mul_eq_mul_iff_eq_and_eq [CovariantClass α α (· * ·) (· ≤ �
   rcases eq_or_lt_of_le hbd with (rfl | hbd)
   · exact ⟨mul_right_cancel'' h, rfl⟩
 
-  exact ((Right.mul_lt_mul hac hbd).Ne h).elim
+  exact ((Right.mul_lt_mul hac hbd).ne h).elim
 #align right.mul_eq_mul_iff_eq_and_eq Right.mul_eq_mul_iff_eq_and_eq
 
 alias Left.mul_eq_mul_iff_eq_and_eq ← mul_eq_mul_iff_eq_and_eq
