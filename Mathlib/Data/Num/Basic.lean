@@ -332,14 +332,14 @@ namespace ZNum
 open PosNum
 
 /-- The negation of a `ZNum`. -/
-def zneg : ZNum → ZNum
+def zNeg : ZNum → ZNum
   | 0 => 0
   | pos a => neg a
   | neg a => pos a
-#align znum.zneg ZNum.zneg
+#align znum.zneg ZNum.zNeg
 
 instance : Neg ZNum :=
-  ⟨zneg⟩
+  ⟨zNeg⟩
 
 /-- The absolute value of a `ZNum` as a `Num`. -/
 def abs : ZNum → Num
@@ -549,32 +549,32 @@ end ZNum
 
 namespace PosNum
 
-/-- Auxiliary definition for `PosNum.divmod`. -/
-def divmodAux (d : PosNum) (q r : Num) : Num × Num :=
+/-- Auxiliary definition for `PosNum.divMod`. -/
+def divModAux (d : PosNum) (q r : Num) : Num × Num :=
   match Num.ofZNum' (Num.sub' r (Num.pos d)) with
   | some r' => (Num.bit1 q, r')
   | none => (Num.bit0 q, r)
-#align pos_num.divmod_aux PosNum.divmodAux
+#align pos_num.divmod_aux PosNum.divModAux
 
-/-- `divmod x y = (y / x, y % x)`. -/
-def divmod (d : PosNum) : PosNum → Num × Num
+/-- `divMod x y = (y / x, y % x)`. -/
+def divMod (d : PosNum) : PosNum → Num × Num
   | bit0 n =>
-    let (q, r₁) := divmod d n
-    divmodAux d q (Num.bit0 r₁)
+    let (q, r₁) := divMod d n
+    divModAux d q (Num.bit0 r₁)
   | bit1 n =>
-    let (q, r₁) := divmod d n
-    divmodAux d q (Num.bit1 r₁)
-  | 1 => divmodAux d 0 1
-#align pos_num.divmod PosNum.divmod
+    let (q, r₁) := divMod d n
+    divModAux d q (Num.bit1 r₁)
+  | 1 => divModAux d 0 1
+#align pos_num.divmod PosNum.divMod
 
 /-- Division of `PosNum`, -/
 def div' (n d : PosNum) : Num :=
-  (divmod d n).1
+  (divMod d n).1
 #align pos_num.div' PosNum.div'
 
 /-- Modulus of `PosNum`s. -/
 def mod' (n d : PosNum) : Num :=
-  (divmod d n).2
+  (divMod d n).2
 #align pos_num.mod' PosNum.mod'
 
 /-
