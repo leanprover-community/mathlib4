@@ -458,7 +458,7 @@ section LeftCancelMonoid
 
 /-- An additive monoid in which addition is left-cancellative.
 Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
-is useful to define the sum over the empty set, so `add_left_cancel_semigroup` is not enough. -/
+is useful to define the sum over the empty set, so `AddLeftCancelSemigroup` is not enough. -/
 class AddLeftCancelMonoid (M : Type u) extends AddLeftCancelSemigroup M, AddMonoid M
 
 /-- A monoid in which multiplication is left-cancellative. -/
@@ -473,7 +473,7 @@ section RightCancelMonoid
 
 /-- An additive monoid in which addition is right-cancellative.
 Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
-is useful to define the sum over the empty set, so `add_right_cancel_semigroup` is not enough. -/
+is useful to define the sum over the empty set, so `AddRightCancelSemigroup` is not enough. -/
 class AddRightCancelMonoid (M : Type u) extends AddRightCancelSemigroup M, AddMonoid M
 
 /-- A monoid in which multiplication is right-cancellative. -/
@@ -488,7 +488,7 @@ section CancelMonoid
 
 /-- An additive monoid in which addition is cancellative on both sides.
 Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
-is useful to define the sum over the empty set, so `add_right_cancel_semigroup` is not enough. -/
+is useful to define the sum over the empty set, so `AddRightCancelSemigroup` is not enough. -/
 class AddCancelMonoid (M : Type u) extends AddLeftCancelMonoid M, AddRightCancelMonoid M
 
 /-- A monoid in which multiplication is cancellative. -/
