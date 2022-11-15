@@ -3,8 +3,9 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
 -/
-import Mathbin.Order.Basic
-import Mathbin.Algebra.NeZero
+
+import Mathlib.Algebra.NeZero
+import Mathlib.Order.Basic
 
 /-!
 # The positive natural numbers
@@ -18,10 +19,11 @@ Most algebraic facts are deferred to `data.pnat.basic`, as they need more import
   and the VM representation of `ℕ+` is the same as `ℕ` because the proof
   is not stored. -/
 def Pnat :=
-  { n : ℕ // 0 < n }deriving DecidableEq, LinearOrder
+  { n : ℕ // 0 < n }
+  deriving DecidableEq, LinearOrder
 #align pnat Pnat
 
--- mathport name: «exprℕ+»
+@[inherit_doc]
 notation "ℕ+" => Pnat
 
 instance : One ℕ+ :=
@@ -32,11 +34,11 @@ instance coePnatNat : Coe ℕ+ ℕ :=
 #align coe_pnat_nat coePnatNat
 
 instance : Repr ℕ+ :=
-  ⟨fun n => repr n.1⟩
+  ⟨fun n n' => reprPrec n.1 n'⟩
 
 namespace Pnat
 
-@[simp]
+-- Porting note: no `simp` due to eagerly elaborated coercions
 theorem mk_coe (n h) : ((⟨n, h⟩ : ℕ+) : ℕ) = n :=
   rfl
 #align pnat.mk_coe Pnat.mk_coe
@@ -44,12 +46,12 @@ theorem mk_coe (n h) : ((⟨n, h⟩ : ℕ+) : ℕ) = n :=
 /-- Predecessor of a `ℕ+`, as a `ℕ`. -/
 def natPred (i : ℕ+) : ℕ :=
   i - 1
-#align pnat.nat_pred Pnat.natPred
+#align pnat.natPred Pnat.natPred
 
 @[simp]
-theorem nat_pred_eq_pred {n : ℕ} (h : 0 < n) : natPred (⟨n, h⟩ : ℕ+) = n.pred :=
+theorem natPred_eq_pred {n : ℕ} (h : 0 < n) : natPred (⟨n, h⟩ : ℕ+) = n.pred :=
   rfl
-#align pnat.nat_pred_eq_pred Pnat.nat_pred_eq_pred
+#align pnat.natPred_eq_pred Pnat.natPred_eq_pred
 
 end Pnat
 
@@ -67,19 +69,19 @@ def succPnat (n : ℕ) : ℕ+ :=
 #align nat.succ_pnat Nat.succPnat
 
 @[simp]
-theorem succ_pnat_coe (n : ℕ) : (succPnat n : ℕ) = succ n :=
+theorem succPnat_coe (n : ℕ) : (succPnat n : ℕ) = succ n :=
   rfl
-#align nat.succ_pnat_coe Nat.succ_pnat_coe
+#align nat.succ_pnat_coe Nat.succPnat_coe
 
 @[simp]
-theorem nat_pred_succ_pnat (n : ℕ) : n.succPnat.natPred = n :=
+theorem natPred_succPnat (n : ℕ) : n.succPnat.natPred = n :=
   rfl
-#align nat.nat_pred_succ_pnat Nat.nat_pred_succ_pnat
+#align nat.nat_pred_succ_pnat Nat.natPred_succPnat
 
 @[simp]
-theorem _root_.pnat.succ_pnat_nat_pred (n : ℕ+) : n.natPred.succPnat = n :=
+theorem _root_.Pnat.succPnat_natPred (n : ℕ+) : n.natPred.succPnat = n :=
   Subtype.eq <| succ_pred_eq_of_pos n.2
-#align nat._root_.pnat.succ_pnat_nat_pred nat._root_.pnat.succ_pnat_nat_pred
+#align nat._root_.pnat.succ_pnat_nat_pred nat._root_.Pnat.succPnat_natPred
 
 /-- Convert a natural number to a pnat. `n+1` is mapped to itself,
   and `0` becomes `1`. -/
@@ -88,12 +90,12 @@ def toPnat' (n : ℕ) : ℕ+ :=
 #align nat.to_pnat' Nat.toPnat'
 
 @[simp]
-theorem to_pnat'_coe : ∀ n : ℕ, (toPnat' n : ℕ) = ite (0 < n) n 1
+theorem toPnat'_coe : ∀ n : ℕ, (toPnat' n : ℕ) = ite (0 < n) n 1
   | 0 => rfl
   | m + 1 => by
     rw [if_pos (succ_pos m)]
     rfl
-#align nat.to_pnat'_coe Nat.to_pnat'_coe
+#align nat.to_pnat'_coe Nat.toPnat'_coe
 
 end Nat
 
@@ -106,22 +108,24 @@ open Nat
  obvious way, but there are a few things to be said about
  subtraction, division and powers.
 -/
-@[simp]
+-- Porting note: no `simp`  because simp can prove it
 theorem mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) ≤ ⟨k, hk⟩ ↔ n ≤ k :=
   Iff.rfl
 #align pnat.mk_le_mk Pnat.mk_le_mk
 
-@[simp]
+-- Porting note: no `simp`  because simp can prove it
 theorem mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) < ⟨k, hk⟩ ↔ n < k :=
   Iff.rfl
 #align pnat.mk_lt_mk Pnat.mk_lt_mk
 
-@[simp, norm_cast]
+-- Porting note: no `norm_cast` due to eagerly elaborated coercions
+-- Porting note: no `simp`  because simp can prove it
 theorem coe_le_coe (n k : ℕ+) : (n : ℕ) ≤ k ↔ n ≤ k :=
   Iff.rfl
 #align pnat.coe_le_coe Pnat.coe_le_coe
 
-@[simp, norm_cast]
+-- Porting note: no `norm_cast` due to eagerly elaborated coercions
+-- Porting note: no `simp`  because simp can prove it
 theorem coe_lt_coe (n k : ℕ+) : (n : ℕ) < k ↔ n < k :=
   Iff.rfl
 #align pnat.coe_lt_coe Pnat.coe_lt_coe
@@ -135,7 +139,7 @@ theorem eq {m n : ℕ+} : (m : ℕ) = n → m = n :=
   Subtype.eq
 #align pnat.eq Pnat.eq
 
-theorem coe_injective : Function.Injective (coe : ℕ+ → ℕ) :=
+theorem coe_injective : Function.Injective (fun (a : ℕ+) => (a : ℕ)) :=
   Subtype.coe_injective
 #align pnat.coe_injective Pnat.coe_injective
 
@@ -144,18 +148,18 @@ theorem ne_zero (n : ℕ+) : (n : ℕ) ≠ 0 :=
   n.2.ne'
 #align pnat.ne_zero Pnat.ne_zero
 
-instance _root_.ne_zero.pnat {a : ℕ+} : NeZero (a : ℕ) :=
-  ⟨a.NeZero⟩
-#align pnat._root_.ne_zero.pnat pnat._root_.ne_zero.pnat
+instance _root_.NeZero.pnat {a : ℕ+} : NeZero (a : ℕ) :=
+  ⟨a.ne_zero⟩
+#align pnat._root_.ne_zero.pnat pnat._root_.NeZero.pnat
 
-theorem to_pnat'_coe {n : ℕ} : 0 < n → (n.toPnat' : ℕ) = n :=
+theorem toPnat'_coe {n : ℕ} : 0 < n → (n.toPnat' : ℕ) = n :=
   succ_pred_eq_of_pos
-#align pnat.to_pnat'_coe Pnat.to_pnat'_coe
+#align pnat.to_pnat'_coe Pnat.toPnat'_coe
 
 @[simp]
-theorem coe_to_pnat' (n : ℕ+) : (n : ℕ).toPnat' = n :=
-  eq (to_pnat'_coe n.Pos)
-#align pnat.coe_to_pnat' Pnat.coe_to_pnat'
+theorem coe_toPnat' (n : ℕ+) : (n : ℕ).toPnat' = n :=
+  eq (toPnat'_coe n.pos)
+#align pnat.coe_to_pnat' Pnat.coe_toPnat'
 
 @[simp]
 theorem one_le (n : ℕ+) : (1 : ℕ+) ≤ n :=
@@ -176,22 +180,25 @@ theorem mk_one {h} : (⟨1, h⟩ : ℕ+) = (1 : ℕ+) :=
   rfl
 #align pnat.mk_one Pnat.mk_one
 
-@[norm_cast]
+-- Porting note: no `norm_cast` due to eagerly elaborated coercions
 theorem one_coe : ((1 : ℕ+) : ℕ) = 1 :=
   rfl
 #align pnat.one_coe Pnat.one_coe
 
-@[simp, norm_cast]
+-- Porting note: no `norm_cast` due to eagerly elaborated coercions
+@[simp]
 theorem coe_eq_one_iff {m : ℕ+} : (m : ℕ) = 1 ↔ m = 1 :=
   Subtype.coe_injective.eq_iff' one_coe
 #align pnat.coe_eq_one_iff Pnat.coe_eq_one_iff
 
-instance : HasWellFounded ℕ+ :=
-  ⟨(· < ·), measure_wf coe⟩
+instance : WellFoundedRelation ℕ+ :=
+  measure (fun (a : ℕ+) => (a : ℕ))
 
 /-- Strong induction on `ℕ+`. -/
-def strongInductionOn {p : ℕ+ → Sort _} : ∀ (n : ℕ+) (h : ∀ k, (∀ m, m < k → p m) → p k), p n
-  | n => fun IH => IH _ fun a h => strong_induction_on a IH
+def strongInductionOn {p : ℕ+ → Sort _} (n : ℕ+) : (∀ k, (∀ m, m < k → p m) → p k) → p n
+  | IH => IH _ fun a _ => strongInductionOn a IH
+termination_by _ => n.1
+
 #align pnat.strong_induction_on Pnat.strongInductionOn
 
 /-- We define `m % k` and `m / k` in the same way as for `ℕ`
@@ -203,7 +210,7 @@ def strongInductionOn {p : ℕ+ → Sort _} : ∀ (n : ℕ+) (h : ∀ k, (∀ m,
 -/
 def modDivAux : ℕ+ → ℕ → ℕ → ℕ+ × ℕ
   | k, 0, q => ⟨k, q.pred⟩
-  | k, r + 1, q => ⟨⟨r + 1, Nat.succ_pos r⟩, q⟩
+  | _, r + 1, q => ⟨⟨r + 1, Nat.succ_pos r⟩, q⟩
 #align pnat.mod_div_aux Pnat.modDivAux
 
 /-- `mod_div m k = (m % k, m / k)`.
@@ -233,25 +240,31 @@ def div (m k : ℕ+) : ℕ :=
   (modDiv m k).2
 #align pnat.div Pnat.div
 
-theorem mod_coe (m k : ℕ+) : (mod m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) (k : ℕ) ((m : ℕ) % (k : ℕ)) := by
-  dsimp [mod, mod_div]
-  cases (m : ℕ) % (k : ℕ)
-  · rw [if_pos rfl]
+theorem mod_coe (m k : ℕ+) :
+  (mod m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) (k : ℕ) ((m : ℕ) % (k : ℕ)) := by
+  dsimp [mod, modDiv]
+  cases (m : ℕ) % (k : ℕ) with
+  | zero =>
+    rw [if_pos rfl]
     rfl
 
-  · rw [if_neg n.succ_ne_zero]
+  | succ n =>
+    rw [if_neg n.succ_ne_zero]
     rfl
 
 #align pnat.mod_coe Pnat.mod_coe
 
-theorem div_coe (m k : ℕ+) : (div m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) ((m : ℕ) / (k : ℕ)).pred ((m : ℕ) / (k : ℕ)) :=
+theorem div_coe (m k : ℕ+) :
+  (div m k : ℕ) = ite ((m : ℕ) % (k : ℕ) = 0) ((m : ℕ) / (k : ℕ)).pred ((m : ℕ) / (k : ℕ)) :=
   by
-  dsimp [div, mod_div]
-  cases (m : ℕ) % (k : ℕ)
-  · rw [if_pos rfl]
+  dsimp [div, modDiv]
+  cases (m : ℕ) % (k : ℕ) with
+  | zero =>
+    rw [if_pos rfl]
     rfl
 
-  · rw [if_neg n.succ_ne_zero]
+  | succ n =>
+    rw [if_neg n.succ_ne_zero]
     rfl
 
 #align pnat.div_coe Pnat.div_coe
@@ -263,16 +276,19 @@ def divExact (m k : ℕ+) : ℕ+ :=
 
 end Pnat
 
+/-
 section CanLift
 
 instance Nat.canLiftPnat : CanLift ℕ ℕ+ coe ((· < ·) 0) :=
-  ⟨fun n hn => ⟨Nat.toPnat' n, Pnat.to_pnat'_coe hn⟩⟩
+  ⟨fun n hn => ⟨Nat.toPnat' n, Pnat.toPnat'_coe hn⟩⟩
 #align nat.can_lift_pnat Nat.canLiftPnat
 
 instance Int.canLiftPnat : CanLift ℤ ℕ+ coe ((· < ·) 0) :=
   ⟨fun n hn =>
     ⟨Nat.toPnat' (Int.natAbs n), by
-      rw [coe_coe, Nat.to_pnat'_coe, if_pos (Int.nat_abs_pos_of_ne_zero hn.ne'), Int.nat_abs_of_nonneg hn.le]⟩⟩
+      rw [coe_coe, Nat.toPnat'_coe, if_pos (Int.nat_abs_pos_of_ne_zero hn.ne'),
+        Int.nat_abs_of_nonneg hn.le]⟩⟩
 #align int.can_lift_pnat Int.canLiftPnat
 
 end CanLift
+-/
