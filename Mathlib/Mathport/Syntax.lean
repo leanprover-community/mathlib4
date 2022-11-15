@@ -39,6 +39,8 @@ import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.PermuteGoals
@@ -335,8 +337,6 @@ syntax termList := " [" term,* "]"
 /- B -/ syntax (name := abel!) "abel!" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 
 /- E -/ syntax (name := noncommRing) "noncomm_ring" : tactic
-
-/- B -/ syntax (name := linearCombination) "linear_combination" (config)? (colGt term)? : tactic
 
 /- B -/ syntax (name := linarith) "linarith" (config)? (&" only")? (" [" term,* "]")? : tactic
 /- B -/ syntax (name := linarith!) "linarith!" (config)? (&" only")? (" [" term,* "]")? : tactic
