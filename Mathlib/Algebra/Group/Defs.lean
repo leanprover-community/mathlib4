@@ -107,10 +107,12 @@ def rightMul : G → G → G := fun g : G => fun x : G => x * g
 
 /-- A mixin for left cancellative multiplication. -/
 class isLeftCancelMul (G : Type u) [Mul G] : Prop where
+  /-- Multiplication is left cancellative. -/
   protected mul_left_cancel : ∀ a b c : G, a * b = a * c → b = c
 
 /-- A mixin for right cancellative multiplication. -/
 class isRightCancelMul (G : Type u) [Mul G] : Prop where
+  /-- Multiplication is right cancellative. -/
   protected mul_right_cancel : ∀ a b c : G, a * b = c * b → a = c
 
 /-- A mixin for cancellative multiplication. -/
@@ -118,12 +120,14 @@ class isCancelMul (G : Type u) [Mul G] extends isLeftCancelMul G, isRightCancelM
 
 /-- A mixin for left cancellative addition. -/
 class isLeftCancelAdd (G : Type u) [Add G] : Prop where
+  /-- Addition is left cancellative. -/
   protected add_left_cancel : ∀ a b c : G, a + b = a + c → b = c
 
 attribute [to_additive isLeftCancelAdd] isLeftCancelMul
 
 /-- A mixin for right cancellative addition. -/
 class isRightCancelAdd (G : Type u) [Add G] : Prop where
+  /-- Addition is right cancellative. -/
   protected add_right_cancel : ∀ a b c : G, a + b = c + b → a = c
 
 attribute [to_additive isRightCancelAdd] isRightCancelMul
