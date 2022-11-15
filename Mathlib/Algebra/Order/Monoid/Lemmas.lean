@@ -134,7 +134,6 @@ theorem mul_lt_mul_of_lt_of_lt [CovariantClass α α (· * ·) (· < ·)]
   calc
     a * c < a * d := mul_lt_mul_left' h₂ a
     _ < b * d := mul_lt_mul_right' h₁ d
-    -- invalid 'calc' step, failed to synthesize `Trans` instance: Trans LT.lt LT.lt ?m.5136
 
 alias add_lt_add_of_lt_of_lt ← add_lt_add
 
@@ -443,7 +442,7 @@ theorem mul_lt_of_lt_of_lt_one [CovariantClass α α (· * ·) (· < ·)] {a b c
   calc
     b * a < b * 1 := mul_lt_mul_left' ha b
     _ = b := mul_one b
-    _ < c := hbc -- invalid 'calc' step, failed to synthesize `Trans` instance
+    _ < c := hbc
 
 @[to_additive]
 theorem mul_lt_of_lt_of_lt_one' [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α} (hbc : b < c)
@@ -533,7 +532,7 @@ theorem lt_mul_of_lt_of_one_lt [CovariantClass α α (· * ·) (· < ·)] {a b c
   calc
     b < c := hbc
     _ = c * 1 := (mul_one c).symm
-    _ < c * a := mul_lt_mul_left' ha c -- invalid 'calc' step, failed to synthesize `Trans` instance
+    _ < c * a := mul_lt_mul_left' ha c
 
 @[to_additive]
 theorem lt_mul_of_lt_of_one_lt' [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α} (hbc : b < c)
@@ -623,7 +622,7 @@ theorem mul_lt_of_lt_one_of_lt [CovariantClass α α (swap (· * ·)) (· < ·)]
   calc
     a * b < 1 * b := mul_lt_mul_right' ha b
     _ = b := one_mul b
-    _ < c := hb -- invalid 'calc' step, failed to synthesize `Trans` instance
+    _ < c := hb
 
 @[to_additive]
 theorem mul_lt_of_lt_one_of_lt' [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α} (ha : a < 1)
