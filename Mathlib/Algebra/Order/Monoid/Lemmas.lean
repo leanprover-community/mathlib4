@@ -61,14 +61,12 @@ theorem mul_le_mul_right' [i : CovariantClass α α (swap (· * ·)) (· ≤ ·)
     (a : α) :
     b * a ≤ c * a :=
   i.elim a bc
-#align mul_le_mul_right' mul_le_mul_right'
 
 @[to_additive le_of_add_le_add_right]
 theorem le_of_mul_le_mul_right' [i : ContravariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
     (bc : b * a ≤ c * a) :
     b ≤ c :=
   i.elim a bc
-#align le_of_mul_le_mul_right' le_of_mul_le_mul_right'
 
 @[simp, to_additive]
 theorem mul_le_mul_iff_left [CovariantClass α α (· * ·) (· ≤ ·)]
@@ -116,14 +114,12 @@ theorem mul_lt_mul_right' [i : CovariantClass α α (swap (· * ·)) (· < ·)] 
     (a : α) :
     b * a < c * a :=
   i.elim a bc
-#align mul_lt_mul_right' mul_lt_mul_right'
 
 @[to_additive lt_of_add_lt_add_right]
 theorem lt_of_mul_lt_mul_right' [i : ContravariantClass α α (swap (· * ·)) (· < ·)] {a b c : α}
     (bc : b * a < c * a) :
     b < c :=
   i.elim a bc
-#align lt_of_mul_lt_mul_right' lt_of_mul_lt_mul_right'
 
 end LT
 
@@ -139,7 +135,6 @@ theorem mul_lt_mul_of_lt_of_lt [CovariantClass α α (· * ·) (· < ·)]
     a * c < a * d := mul_lt_mul_left' h₂ a
     _ < b * d := mul_lt_mul_right' h₁ d
     -- invalid 'calc' step, failed to synthesize `Trans` instance: Trans LT.lt LT.lt ?m.5136
-#align mul_lt_mul_of_lt_of_lt mul_lt_mul_of_lt_of_lt
 
 alias add_lt_add_of_lt_of_lt ← add_lt_add
 
@@ -148,14 +143,12 @@ theorem mul_lt_mul_of_le_of_lt [CovariantClass α α (· * ·) (· < ·)]
     [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c d : α} (h₁ : a ≤ b) (h₂ : c < d) :
     a * c < b * d :=
   (mul_le_mul_right' h₁ _).trans_lt (mul_lt_mul_left' h₂ b)
-#align mul_lt_mul_of_le_of_lt mul_lt_mul_of_le_of_lt
 
 @[to_additive]
 theorem mul_lt_mul_of_lt_of_le [CovariantClass α α (· * ·) (· ≤ ·)]
     [CovariantClass α α (swap (· * ·)) (· < ·)] {a b c d : α} (h₁ : a < b) (h₂ : c ≤ d) :
     a * c < b * d :=
   (mul_le_mul_left' h₂ _).trans_lt (mul_lt_mul_right' h₁ d)
-#align mul_lt_mul_of_lt_of_le mul_lt_mul_of_lt_of_le
 
 /-- Only assumes left strict covariance. -/
 @[to_additive "Only assumes left strict covariance"]
@@ -179,7 +172,6 @@ theorem mul_le_mul' [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass
     {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) :
     a * c ≤ b * d :=
   (mul_le_mul_left' h₂ _).trans (mul_le_mul_right' h₁ d)
-#align mul_le_mul' mul_le_mul'
 
 @[to_additive]
 theorem mul_le_mul_three [CovariantClass α α (· * ·) (· ≤ ·)]
@@ -187,49 +179,42 @@ theorem mul_le_mul_three [CovariantClass α α (· * ·) (· ≤ ·)]
     (h₃ : c ≤ f) :
     a * b * c ≤ d * e * f :=
   mul_le_mul' (mul_le_mul' h₁ h₂) h₃
-#align mul_le_mul_three mul_le_mul_three
 
 @[to_additive]
 theorem mul_lt_of_mul_lt_left [CovariantClass α α (· * ·) (· ≤ ·)] {a b c d : α} (h : a * b < c)
     (hle : d ≤ b) :
     a * d < c :=
   (mul_le_mul_left' hle a).trans_lt h
-#align mul_lt_of_mul_lt_left mul_lt_of_mul_lt_left
 
 @[to_additive]
 theorem mul_le_of_mul_le_left [CovariantClass α α (· * ·) (· ≤ ·)] {a b c d : α} (h : a * b ≤ c)
     (hle : d ≤ b) :
     a * d ≤ c :=
   @act_rel_of_rel_of_act_rel _ _ _ (· ≤ ·) _ ⟨le_trans⟩ a _ _ _ hle h
-#align mul_le_of_mul_le_left mul_le_of_mul_le_left
 
 @[to_additive]
 theorem mul_lt_of_mul_lt_right [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c d : α}
     (h : a * b < c) (hle : d ≤ a) :
     d * b < c :=
   (mul_le_mul_right' hle b).trans_lt h
-#align mul_lt_of_mul_lt_right mul_lt_of_mul_lt_right
 
 @[to_additive]
 theorem mul_le_of_mul_le_right [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c d : α}
     (h : a * b ≤ c) (hle : d ≤ a) :
     d * b ≤ c :=
   (mul_le_mul_right' hle b).trans h
-#align mul_le_of_mul_le_right mul_le_of_mul_le_right
 
 @[to_additive]
 theorem lt_mul_of_lt_mul_left [CovariantClass α α (· * ·) (· ≤ ·)] {a b c d : α} (h : a < b * c)
     (hle : c ≤ d) :
     a < b * d :=
   h.trans_le (mul_le_mul_left' hle b)
-#align lt_mul_of_lt_mul_left lt_mul_of_lt_mul_left
 
 @[to_additive]
 theorem le_mul_of_le_mul_left [CovariantClass α α (· * ·) (· ≤ ·)] {a b c d : α} (h : a ≤ b * c)
     (hle : c ≤ d) :
     a ≤ b * d :=
   @rel_act_of_rel_of_rel_act _ _ _ (· ≤ ·) _ ⟨le_trans⟩ b _ _ _ hle h
-#align le_mul_of_le_mul_left le_mul_of_le_mul_left
 
 @[to_additive]
 theorem lt_mul_of_lt_mul_right [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c d : α}
@@ -242,7 +227,6 @@ theorem le_mul_of_le_mul_right [CovariantClass α α (swap (· * ·)) (· ≤ ·
     (h : a ≤ b * c) (hle : b ≤ d) :
     a ≤ d * c :=
   h.trans (mul_le_mul_right' hle c)
-#align le_mul_of_le_mul_right le_mul_of_le_mul_right
 
 end Preorder
 
@@ -254,14 +238,12 @@ variable [PartialOrder α]
 theorem mul_left_cancel'' [ContravariantClass α α (· * ·) (· ≤ ·)] {a b c : α} (h : a * b = a * c) :
     b = c :=
   (le_of_mul_le_mul_left' h.le).antisymm (le_of_mul_le_mul_left' h.ge)
-#align mul_left_cancel'' mul_left_cancel''
 
 @[to_additive]
 theorem mul_right_cancel'' [ContravariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
     (h : a * b = c * b) :
     a = c :=
   le_antisymm (le_of_mul_le_mul_right' h.le) (le_of_mul_le_mul_right' h.ge)
-#align mul_right_cancel'' mul_right_cancel''
 
 end PartialOrder
 
@@ -283,16 +265,12 @@ theorem le_mul_of_one_le_right' [CovariantClass α α (· * ·) (· ≤ ·)] {a 
     a = a * 1 := (mul_one a).symm
     _ ≤ a * b := mul_le_mul_left' h a
 
-#align le_mul_of_one_le_right' le_mul_of_one_le_right'
-
 @[to_additive add_le_of_nonpos_right]
 theorem mul_le_of_le_one_right' [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} (h : b ≤ 1) :
     a * b ≤ a :=
   calc
     a * b ≤ a * 1 := mul_le_mul_left' h a
     _ = a := mul_one a
-
-#align mul_le_of_le_one_right' mul_le_of_le_one_right'
 
 @[to_additive le_add_of_nonneg_left]
 theorem le_mul_of_one_le_left' [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α} (h : 1 ≤ b) :
@@ -301,8 +279,6 @@ theorem le_mul_of_one_le_left' [CovariantClass α α (swap (· * ·)) (· ≤ ·
     a = 1 * a := (one_mul a).symm
     _ ≤ b * a := mul_le_mul_right' h a
 
-#align le_mul_of_one_le_left' le_mul_of_one_le_left'
-
 @[to_additive add_le_of_nonpos_left]
 theorem mul_le_of_le_one_left' [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α} (h : b ≤ 1) :
     b * a ≤ a :=
@@ -310,61 +286,51 @@ theorem mul_le_of_le_one_left' [CovariantClass α α (swap (· * ·)) (· ≤ ·
     b * a ≤ 1 * a := mul_le_mul_right' h a
     _ = a := one_mul a
 
-#align mul_le_of_le_one_left' mul_le_of_le_one_left'
-
 @[to_additive]
 theorem one_le_of_le_mul_right [ContravariantClass α α (· * ·) (· ≤ ·)] {a b : α} (h : a ≤ a * b) :
     1 ≤ b :=
   le_of_mul_le_mul_left' <| by simpa only [mul_one]
-#align one_le_of_le_mul_right one_le_of_le_mul_right
 
 @[to_additive]
 theorem le_one_of_mul_le_right [ContravariantClass α α (· * ·) (· ≤ ·)] {a b : α} (h : a * b ≤ a) :
     b ≤ 1 :=
   le_of_mul_le_mul_left' <| by simpa only [mul_one]
-#align le_one_of_mul_le_right le_one_of_mul_le_right
 
 @[to_additive]
 theorem one_le_of_le_mul_left [ContravariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α}
     (h : b ≤ a * b) :
     1 ≤ a :=
   le_of_mul_le_mul_right' <| by simpa only [one_mul]
-#align one_le_of_le_mul_left one_le_of_le_mul_left
 
 @[to_additive]
 theorem le_one_of_mul_le_left [ContravariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α}
     (h : a * b ≤ b) :
     a ≤ 1 :=
   le_of_mul_le_mul_right' <| by simpa only [one_mul]
-#align le_one_of_mul_le_left le_one_of_mul_le_left
 
 @[simp, to_additive le_add_iff_nonneg_right]
 theorem le_mul_iff_one_le_right' [CovariantClass α α (· * ·) (· ≤ ·)]
     [ContravariantClass α α (· * ·) (· ≤ ·)] (a : α) {b : α} :
     a ≤ a * b ↔ 1 ≤ b :=
   Iff.trans (by rw [mul_one]) (mul_le_mul_iff_left a)
-#align le_mul_iff_one_le_right' le_mul_iff_one_le_right'
 
 @[simp, to_additive le_add_iff_nonneg_left]
 theorem le_mul_iff_one_le_left' [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
     [ContravariantClass α α (swap (· * ·)) (· ≤ ·)] (a : α) {b : α} :
     a ≤ b * a ↔ 1 ≤ b :=
   Iff.trans (by rw [one_mul]) (mul_le_mul_iff_right a)
-#align le_mul_iff_one_le_left' le_mul_iff_one_le_left'
 
 @[simp, to_additive add_le_iff_nonpos_right]
 theorem mul_le_iff_le_one_right' [CovariantClass α α (· * ·) (· ≤ ·)]
     [ContravariantClass α α (· * ·) (· ≤ ·)] (a : α) {b : α} :
     a * b ≤ a ↔ b ≤ 1 :=
   Iff.trans (by rw [mul_one]) (mul_le_mul_iff_left a)
-#align mul_le_iff_le_one_right' mul_le_iff_le_one_right'
 
 @[simp, to_additive add_le_iff_nonpos_left]
 theorem mul_le_iff_le_one_left' [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
     [ContravariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α} :
     a * b ≤ b ↔ a ≤ 1 :=
   Iff.trans (by rw [one_mul]) (mul_le_mul_iff_right b)
-#align mul_le_iff_le_one_left' mul_le_iff_le_one_left'
 
 end LE
 
@@ -379,15 +345,11 @@ theorem lt_mul_of_one_lt_right' [CovariantClass α α (· * ·) (· < ·)] (a : 
     a = a * 1 := (mul_one a).symm
     _ < a * b := mul_lt_mul_left' h a
 
-#align lt_mul_of_one_lt_right' lt_mul_of_one_lt_right'
-
 @[to_additive add_lt_of_neg_right]
 theorem mul_lt_of_lt_one_right' [CovariantClass α α (· * ·) (· < ·)] (a : α) {b : α} (h : b < 1) : a * b < a :=
   calc
     a * b < a * 1 := mul_lt_mul_left' h a
     _ = a := mul_one a
-
-#align mul_lt_of_lt_one_right' mul_lt_of_lt_one_right'
 
 @[to_additive lt_add_of_pos_left]
 theorem lt_mul_of_one_lt_left' [CovariantClass α α (swap (· * ·)) (· < ·)] (a : α) {b : α} (h : 1 < b) : a < b * a :=
@@ -395,59 +357,47 @@ theorem lt_mul_of_one_lt_left' [CovariantClass α α (swap (· * ·)) (· < ·)]
     a = 1 * a := (one_mul a).symm
     _ < b * a := mul_lt_mul_right' h a
 
-#align lt_mul_of_one_lt_left' lt_mul_of_one_lt_left'
-
 @[to_additive add_lt_of_neg_left]
 theorem mul_lt_of_lt_one_left' [CovariantClass α α (swap (· * ·)) (· < ·)] (a : α) {b : α} (h : b < 1) : b * a < a :=
   calc
     b * a < 1 * a := mul_lt_mul_right' h a
     _ = a := one_mul a
 
-#align mul_lt_of_lt_one_left' mul_lt_of_lt_one_left'
-
 @[to_additive]
 theorem one_lt_of_lt_mul_right [ContravariantClass α α (· * ·) (· < ·)] {a b : α} (h : a < a * b) : 1 < b :=
   lt_of_mul_lt_mul_left' <| by simpa only [mul_one]
-#align one_lt_of_lt_mul_right one_lt_of_lt_mul_right
 
 @[to_additive]
 theorem lt_one_of_mul_lt_right [ContravariantClass α α (· * ·) (· < ·)] {a b : α} (h : a * b < a) : b < 1 :=
   lt_of_mul_lt_mul_left' <| by simpa only [mul_one]
-#align lt_one_of_mul_lt_right lt_one_of_mul_lt_right
 
 @[to_additive]
 theorem one_lt_of_lt_mul_left [ContravariantClass α α (swap (· * ·)) (· < ·)] {a b : α} (h : b < a * b) : 1 < a :=
   lt_of_mul_lt_mul_right' <| by simpa only [one_mul]
-#align one_lt_of_lt_mul_left one_lt_of_lt_mul_left
 
 @[to_additive]
 theorem lt_one_of_mul_lt_left [ContravariantClass α α (swap (· * ·)) (· < ·)] {a b : α} (h : a * b < b) : a < 1 :=
   lt_of_mul_lt_mul_right' <| by simpa only [one_mul]
-#align lt_one_of_mul_lt_left lt_one_of_mul_lt_left
 
 @[simp, to_additive lt_add_iff_pos_right]
 theorem lt_mul_iff_one_lt_right' [CovariantClass α α (· * ·) (· < ·)] [ContravariantClass α α (· * ·) (· < ·)] (a : α)
     {b : α} : a < a * b ↔ 1 < b :=
   Iff.trans (by rw [mul_one]) (mul_lt_mul_iff_left a)
-#align lt_mul_iff_one_lt_right' lt_mul_iff_one_lt_right'
 
 @[simp, to_additive lt_add_iff_pos_left]
 theorem lt_mul_iff_one_lt_left' [CovariantClass α α (swap (· * ·)) (· < ·)]
     [ContravariantClass α α (swap (· * ·)) (· < ·)] (a : α) {b : α} : a < b * a ↔ 1 < b :=
   Iff.trans (by rw [one_mul]) (mul_lt_mul_iff_right a)
-#align lt_mul_iff_one_lt_left' lt_mul_iff_one_lt_left'
 
 @[simp, to_additive add_lt_iff_neg_left]
 theorem mul_lt_iff_lt_one_left' [CovariantClass α α (· * ·) (· < ·)] [ContravariantClass α α (· * ·) (· < ·)]
     {a b : α} : a * b < a ↔ b < 1 :=
   Iff.trans (by rw [mul_one]) (mul_lt_mul_iff_left a)
-#align mul_lt_iff_lt_one_left' mul_lt_iff_lt_one_left'
 
 @[simp, to_additive add_lt_iff_neg_right]
 theorem mul_lt_iff_lt_one_right' [CovariantClass α α (swap (· * ·)) (· < ·)]
     [ContravariantClass α α (swap (· * ·)) (· < ·)] {a : α} (b : α) : a * b < b ↔ a < 1 :=
   Iff.trans (by rw [one_mul]) (mul_lt_mul_iff_right b)
-#align mul_lt_iff_lt_one_right' mul_lt_iff_lt_one_right'
 
 end LT
 
@@ -468,8 +418,6 @@ theorem mul_le_of_le_of_le_one [CovariantClass α α (· * ·) (· ≤ ·)] {a b
     _ = b := mul_one b
     _ ≤ c := hbc
 
-#align mul_le_of_le_of_le_one mul_le_of_le_of_le_one
-
 @[to_additive]
 theorem mul_lt_of_le_of_lt_one [CovariantClass α α (· * ·) (· < ·)] {a b c : α} (hbc : b ≤ c)
     (ha : a < 1) :
@@ -478,8 +426,6 @@ theorem mul_lt_of_le_of_lt_one [CovariantClass α α (· * ·) (· < ·)] {a b c
     b * a < b * 1 := mul_lt_mul_left' ha b
     _ = b := mul_one b
     _ ≤ c := hbc
-
-#align mul_lt_of_le_of_lt_one mul_lt_of_le_of_lt_one
 
 @[to_additive]
 theorem mul_lt_of_lt_of_le_one [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α} (hbc : b < c)
@@ -490,8 +436,6 @@ theorem mul_lt_of_lt_of_le_one [CovariantClass α α (· * ·) (· ≤ ·)] {a b
     _ = b := mul_one b
     _ < c := hbc
 
-#align mul_lt_of_lt_of_le_one mul_lt_of_lt_of_le_one
-
 @[to_additive]
 theorem mul_lt_of_lt_of_lt_one [CovariantClass α α (· * ·) (· < ·)] {a b c : α} (hbc : b < c)
     (ha : a < 1) :
@@ -501,14 +445,11 @@ theorem mul_lt_of_lt_of_lt_one [CovariantClass α α (· * ·) (· < ·)] {a b c
     _ = b := mul_one b
     _ < c := hbc -- invalid 'calc' step, failed to synthesize `Trans` instance
 
-#align mul_lt_of_lt_of_lt_one mul_lt_of_lt_of_lt_one
-
 @[to_additive]
 theorem mul_lt_of_lt_of_lt_one' [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α} (hbc : b < c)
     (ha : a < 1) :
     b * a < c :=
   mul_lt_of_lt_of_le_one hbc ha.le
-#align mul_lt_of_lt_of_lt_one' mul_lt_of_lt_of_lt_one'
 
 /-- Assumes left covariance.
 The lemma assuming right covariance is `right.mul_le_one`. -/
@@ -567,8 +508,6 @@ theorem le_mul_of_le_of_one_le [CovariantClass α α (· * ·) (· ≤ ·)] {a b
     _ = c * 1 := (mul_one c).symm
     _ ≤ c * a := mul_le_mul_left' ha c
 
-#align le_mul_of_le_of_one_le le_mul_of_le_of_one_le
-
 @[to_additive]
 theorem lt_mul_of_le_of_one_lt [CovariantClass α α (· * ·) (· < ·)] {a b c : α} (hbc : b ≤ c)
     (ha : 1 < a) :
@@ -577,8 +516,6 @@ theorem lt_mul_of_le_of_one_lt [CovariantClass α α (· * ·) (· < ·)] {a b c
     b ≤ c := hbc
     _ = c * 1 := (mul_one c).symm
     _ < c * a := mul_lt_mul_left' ha c
-
-#align lt_mul_of_le_of_one_lt lt_mul_of_le_of_one_lt
 
 @[to_additive]
 theorem lt_mul_of_lt_of_one_le [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α} (hbc : b < c)
@@ -589,8 +526,6 @@ theorem lt_mul_of_lt_of_one_le [CovariantClass α α (· * ·) (· ≤ ·)] {a b
     _ = c * 1 := (mul_one c).symm
     _ ≤ c * a := mul_le_mul_left' ha c
 
-#align lt_mul_of_lt_of_one_le lt_mul_of_lt_of_one_le
-
 @[to_additive]
 theorem lt_mul_of_lt_of_one_lt [CovariantClass α α (· * ·) (· < ·)] {a b c : α} (hbc : b < c)
     (ha : 1 < a) :
@@ -600,14 +535,11 @@ theorem lt_mul_of_lt_of_one_lt [CovariantClass α α (· * ·) (· < ·)] {a b c
     _ = c * 1 := (mul_one c).symm
     _ < c * a := mul_lt_mul_left' ha c -- invalid 'calc' step, failed to synthesize `Trans` instance
 
-#align lt_mul_of_lt_of_one_lt lt_mul_of_lt_of_one_lt
-
 @[to_additive]
 theorem lt_mul_of_lt_of_one_lt' [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α} (hbc : b < c)
     (ha : 1 < a) :
     b < c * a :=
   lt_mul_of_lt_of_one_le hbc ha.le
-#align lt_mul_of_lt_of_one_lt' lt_mul_of_lt_of_one_lt'
 
 /-- Assumes left covariance.
 The lemma assuming right covariance is `right.one_le_mul`. -/
@@ -666,8 +598,6 @@ theorem mul_le_of_le_one_of_le [CovariantClass α α (swap (· * ·)) (· ≤ ·
     _ = b := one_mul b
     _ ≤ c := hbc
 
-#align mul_le_of_le_one_of_le mul_le_of_le_one_of_le
-
 @[to_additive]
 theorem mul_lt_of_lt_one_of_le [CovariantClass α α (swap (· * ·)) (· < ·)] {a b c : α} (ha : a < 1)
     (hbc : b ≤ c) :
@@ -676,8 +606,6 @@ theorem mul_lt_of_lt_one_of_le [CovariantClass α α (swap (· * ·)) (· < ·)]
     a * b < 1 * b := mul_lt_mul_right' ha b
     _ = b := one_mul b
     _ ≤ c := hbc
-
-#align mul_lt_of_lt_one_of_le mul_lt_of_lt_one_of_le
 
 @[to_additive]
 theorem mul_lt_of_le_one_of_lt [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α} (ha : a ≤ 1)
@@ -688,8 +616,6 @@ theorem mul_lt_of_le_one_of_lt [CovariantClass α α (swap (· * ·)) (· ≤ ·
     _ = b := one_mul b
     _ < c := hb
 
-#align mul_lt_of_le_one_of_lt mul_lt_of_le_one_of_lt
-
 @[to_additive]
 theorem mul_lt_of_lt_one_of_lt [CovariantClass α α (swap (· * ·)) (· < ·)] {a b c : α} (ha : a < 1)
     (hb : b < c) :
@@ -699,14 +625,11 @@ theorem mul_lt_of_lt_one_of_lt [CovariantClass α α (swap (· * ·)) (· < ·)]
     _ = b := one_mul b
     _ < c := hb -- invalid 'calc' step, failed to synthesize `Trans` instance
 
-#align mul_lt_of_lt_one_of_lt mul_lt_of_lt_one_of_lt
-
 @[to_additive]
 theorem mul_lt_of_lt_one_of_lt' [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α} (ha : a < 1)
     (hbc : b < c) :
     a * b < c :=
   mul_lt_of_le_one_of_lt ha.le hbc
-#align mul_lt_of_lt_one_of_lt' mul_lt_of_lt_one_of_lt'
 
 /-- Assumes right covariance.
 The lemma assuming left covariance is `left.mul_le_one`. -/
@@ -768,8 +691,6 @@ theorem le_mul_of_one_le_of_le [CovariantClass α α (swap (· * ·)) (· ≤ ·
     _ = 1 * c := (one_mul c).symm
     _ ≤ a * c := mul_le_mul_right' ha c
 
-#align le_mul_of_one_le_of_le le_mul_of_one_le_of_le
-
 @[to_additive]
 theorem lt_mul_of_one_lt_of_le [CovariantClass α α (swap (· * ·)) (· < ·)] {a b c : α} (ha : 1 < a)
     (hbc : b ≤ c) :
@@ -778,8 +699,6 @@ theorem lt_mul_of_one_lt_of_le [CovariantClass α α (swap (· * ·)) (· < ·)]
     b ≤ c := hbc
     _ = 1 * c := (one_mul c).symm
     _ < a * c := mul_lt_mul_right' ha c
-
-#align lt_mul_of_one_lt_of_le lt_mul_of_one_lt_of_le
 
 @[to_additive]
 theorem lt_mul_of_one_le_of_lt [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α} (ha : 1 ≤ a)
@@ -790,8 +709,6 @@ theorem lt_mul_of_one_le_of_lt [CovariantClass α α (swap (· * ·)) (· ≤ ·
     _ = 1 * c := (one_mul c).symm
     _ ≤ a * c := mul_le_mul_right' ha c
 
-#align lt_mul_of_one_le_of_lt lt_mul_of_one_le_of_lt
-
 @[to_additive]
 theorem lt_mul_of_one_lt_of_lt [CovariantClass α α (swap (· * ·)) (· < ·)] {a b c : α} (ha : 1 < a)
     (hbc : b < c) :
@@ -801,14 +718,11 @@ theorem lt_mul_of_one_lt_of_lt [CovariantClass α α (swap (· * ·)) (· < ·)]
     _ = 1 * c := (one_mul c).symm
     _ < a * c := mul_lt_mul_right' ha c -- invalid 'calc' step, failed to synthesize `Trans` instance
 
-#align lt_mul_of_one_lt_of_lt lt_mul_of_one_lt_of_lt
-
 @[to_additive]
 theorem lt_mul_of_one_lt_of_lt' [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α} (ha : 1 < a)
     (hbc : b < c) :
     b < a * c :=
   lt_mul_of_one_le_of_lt ha.le hbc
-#align lt_mul_of_one_lt_of_lt' lt_mul_of_one_lt_of_lt'
 
 /-- Assumes right covariance.
 The lemma assuming left covariance is `left.one_le_mul`. -/
@@ -902,56 +816,48 @@ theorem lt_of_mul_lt_of_one_le_left [CovariantClass α α (· * ·) (· ≤ ·)]
     (hle : 1 ≤ b) :
     a < c :=
   (le_mul_of_one_le_right' hle).trans_lt h
-#align lt_of_mul_lt_of_one_le_left lt_of_mul_lt_of_one_le_left
 
 @[to_additive]
 theorem le_of_mul_le_of_one_le_left [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α} (h : a * b ≤ c)
     (hle : 1 ≤ b) :
     a ≤ c :=
   (le_mul_of_one_le_right' hle).trans h
-#align le_of_mul_le_of_one_le_left le_of_mul_le_of_one_le_left
 
 @[to_additive]
 theorem lt_of_lt_mul_of_le_one_left [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α} (h : a < b * c)
     (hle : c ≤ 1) :
     a < b :=
   h.trans_le (mul_le_of_le_one_right' hle)
-#align lt_of_lt_mul_of_le_one_left lt_of_lt_mul_of_le_one_left
 
 @[to_additive]
 theorem le_of_le_mul_of_le_one_left [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α} (h : a ≤ b * c)
     (hle : c ≤ 1) :
     a ≤ b :=
   h.trans (mul_le_of_le_one_right' hle)
-#align le_of_le_mul_of_le_one_left le_of_le_mul_of_le_one_left
 
 @[to_additive]
 theorem lt_of_mul_lt_of_one_le_right [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
     (h : a * b < c) (hle : 1 ≤ a) :
     b < c :=
   (le_mul_of_one_le_left' hle).trans_lt h
-#align lt_of_mul_lt_of_one_le_right lt_of_mul_lt_of_one_le_right
 
 @[to_additive]
 theorem le_of_mul_le_of_one_le_right [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
     (h : a * b ≤ c) (hle : 1 ≤ a) :
     b ≤ c :=
   (le_mul_of_one_le_left' hle).trans h
-#align le_of_mul_le_of_one_le_right le_of_mul_le_of_one_le_right
 
 @[to_additive]
 theorem lt_of_lt_mul_of_le_one_right [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
     (h : a < b * c) (hle : b ≤ 1) :
     a < c :=
   h.trans_le (mul_le_of_le_one_left' hle)
-#align lt_of_lt_mul_of_le_one_right lt_of_lt_mul_of_le_one_right
 
 @[to_additive]
 theorem le_of_le_mul_of_le_one_right [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
     (h : a ≤ b * c) (hle : b ≤ 1) :
     a ≤ c :=
   h.trans (mul_le_of_le_one_left' hle)
-#align le_of_le_mul_of_le_one_right le_of_le_mul_of_le_one_right
 
 end Preorder
 
@@ -971,7 +877,6 @@ theorem mul_eq_one_iff' [CovariantClass α α (· * ·) (· ≤ ·)]
       have : b = 1 := le_antisymm this hb
       And.intro ‹a = 1› ‹b = 1›)
     fun ⟨ha', hb'⟩ => by rw [ha', hb', mul_one]
-#align mul_eq_one_iff' mul_eq_one_iff'
 
 section Left
 
@@ -980,12 +885,10 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α}
 @[to_additive eq_zero_of_add_nonneg_left]
 theorem eq_one_of_one_le_mul_left (ha : a ≤ 1) (hb : b ≤ 1) (hab : 1 ≤ a * b) : a = 1 :=
   ha.eq_of_not_lt fun h => hab.not_lt <| mul_lt_one_of_lt_of_le h hb
-#align eq_one_of_one_le_mul_left eq_one_of_one_le_mul_left
 
 @[to_additive]
 theorem eq_one_of_mul_le_one_left (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a * b ≤ 1) : a = 1 :=
   ha.eq_of_not_gt fun h => hab.not_lt <| one_lt_mul_of_lt_of_le' h hb
-#align eq_one_of_mul_le_one_left eq_one_of_mul_le_one_left
 
 end Left
 
@@ -996,12 +899,10 @@ variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α}
 @[to_additive eq_zero_of_add_nonneg_right]
 theorem eq_one_of_one_le_mul_right (ha : a ≤ 1) (hb : b ≤ 1) (hab : 1 ≤ a * b) : b = 1 :=
   hb.eq_of_not_lt fun h => hab.not_lt <| Right.mul_lt_one_of_le_of_lt ha h
-#align eq_one_of_one_le_mul_right eq_one_of_one_le_mul_right
 
 @[to_additive]
 theorem eq_one_of_mul_le_one_right (ha : 1 ≤ a) (hb : 1 ≤ b) (hab : a * b ≤ 1) : b = 1 :=
   hb.eq_of_not_gt fun h => hab.not_lt <| Right.one_lt_mul_of_le_of_lt ha h
-#align eq_one_of_mul_le_one_right eq_one_of_mul_le_one_right
 
 end Right
 
@@ -1021,8 +922,6 @@ theorem exists_square_le [CovariantClass α α (· * ·) (· < ·)] (a : α) : �
   · use 1
     push_neg  at h
     rwa [mul_one]
-
-#align exists_square_le exists_square_le
 
 end LinearOrder
 
