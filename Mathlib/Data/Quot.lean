@@ -90,7 +90,6 @@ theorem lift_mk (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a
   rfl
 #align quot.lift_beta Quot.lift_mk
 
-@[simp]
 theorem lift_on_mk (a : α) (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) :
   Quot.liftOn (Quot.mk r a) f h = f a :=
   rfl
