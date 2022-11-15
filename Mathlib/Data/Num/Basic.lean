@@ -6,6 +6,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Int.Basic
+import Lean.Linter.Deprecated
 /-!
 # Binary representation of integers using inductive types
 
@@ -185,6 +186,8 @@ section
 
 variable {α : Type _} [One α] [Add α]
 
+set_option linter.deprecated false
+
 /-- `castPosNum` casts a `PosNum` into any type which has `1` and `+`. -/
 @[deprecated] def castPosNum : PosNum → α
   | 1 => 1
@@ -193,20 +196,22 @@ variable {α : Type _} [One α] [Add α]
 #align cast_pos_num castPosNum
 
 /-- `castNum` casts a `Num` into any type which has `0`, `1` and `+`. -/
-def castNum [Zero α] : Num → α
+@[deprecated] def castNum [Zero α] : Num → α
   | 0 => 0
   | Num.pos p => castPosNum p
 #align cast_num castNum
 
 -- see Note [coercion into rings]
-instance (priority := 900) posNumCoe : CoeTC PosNum α :=
+@[deprecated] instance (priority := 900) posNumCoe : CoeTC PosNum α :=
   ⟨castPosNum⟩
 #align pos_num_coe posNumCoe
 
 -- see Note [coercion into rings]
-instance (priority := 900) numNatCoe [Zero α] : CoeTC Num α :=
+@[deprecated] instance (priority := 900) numNatCoe [Zero α] : CoeTC Num α :=
   ⟨castNum⟩
 #align num_nat_coe numNatCoe
+
+set_option linter.deprecated true
 
 instance : Repr PosNum :=
   ⟨fun _ n => repr (n : ℕ)⟩
