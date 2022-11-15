@@ -285,7 +285,6 @@ theorem Quotient.lift₂_mk {α : Sort _} {β : Sort _} {γ : Sort _} [Setoid α
     Quotient.lift₂ f h (Quotient.mk _ a) (Quotient.mk _ b) = f a b :=
   rfl
 
-@[simp]
 theorem Quotient.lift_on_mk [s : Setoid α] (f : α → β) (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) :
     Quotient.liftOn (Quotient.mk s x) f h = f x :=
   rfl
