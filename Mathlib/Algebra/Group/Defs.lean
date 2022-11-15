@@ -265,7 +265,9 @@ theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
 theorem mul_ne_mul_right (a : G) {b c : G} : a * b ≠ a * c ↔ b ≠ c :=
   (mul_right_injective a).ne_iff
 
-@[to_additive AddLeftCancelSemigroup.to_isLeftCancelAdd]
+/-- Any `LeftCancelSemigroup` satisfies `isLeftCancelMul`. -/
+@[to_additive AddLeftCancelSemigroup.to_isLeftCancelAdd "Any `AddLeftCancelSemigroup` satisfies
+`isRightCancelAdd`."]
 instance (priority := 100) LeftCancelSemigroup.to_isLeftCancelMul (G : Type u)
   [LeftCancelSemigroup G] :
     isLeftCancelMul G :=
@@ -309,7 +311,9 @@ theorem mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
 theorem mul_ne_mul_left (a : G) {b c : G} : b * a ≠ c * a ↔ b ≠ c :=
   (mul_left_injective a).ne_iff
 
-@[to_additive AddRightCancelSemigroup.to_isRightCancelAdd]
+/-- Any `RightCancelSemigroup` satisfies `isRightCancelMul`. -/
+@[to_additive AddRightCancelSemigroup.to_isRightCancelAdd "Any `AddRightCancelSemigroup` satisfies
+`isRightCancelMul`."]
 instance (priority := 100) RightCancelSemigroup.to_isRightCancelMul (G : Type u)
   [RightCancelSemigroup G] :
     isRightCancelMul G :=
