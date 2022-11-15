@@ -1302,11 +1302,11 @@ def MulLeCancellable [Mul α] [LE α] (a : α) : Prop :=
 #align mul_le_cancellable MulLeCancellable
 
 @[to_additive]
-theorem Contravariant.mul_le_cancellable [Mul α] [LE α] [ContravariantClass α α (· * ·) (· ≤ ·)]
+theorem Contravariant.MulLeCancellable [Mul α] [LE α] [ContravariantClass α α (· * ·) (· ≤ ·)]
     {a : α} :
     MulLeCancellable a :=
-  fun b c => le_of_mul_le_mul_left'
-#align contravariant.mul_le_cancellable Contravariant.mul_le_cancellable
+  fun _ _ => le_of_mul_le_mul_left'
+#align contravariant.mul_le_cancellable Contravariant.MulLeCancellable
 
 @[to_additive]
 theorem mul_le_cancellable_one [Monoid α] [LE α] : MulLeCancellable (1 : α) := fun a b => by
