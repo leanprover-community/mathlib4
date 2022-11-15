@@ -9,6 +9,9 @@ import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Int.Notation
 import Mathlib.Data.List.Basic
 
+import Std.Tactic.Lint.Frontend
+import Std.Tactic.Lint.Misc
+
 /-!
 # Typeclasses for (semi)groups and monoids
 
@@ -506,11 +509,19 @@ class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
 
 attribute [to_additive AddCancelCommMonoid.toAddCommMonoid] CancelCommMonoid.toCommMonoid
 
+-- TODO
+-- porting notes: Once to_additive works, we should not need to copy this attribute manually.
+attribute [instance] AddCancelMonoid
+
 -- see Note [lower instance priority]
-@[to_additive]
+@[to_additive CancelCommMonoid.toAddCancelMonoid]
 instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelCommMonoid M] :
     CancelMonoid M :=
   { mul_right_cancel := fun a b c h => mul_left_cancel <| by rw [mul_comm, h, mul_comm] }
+
+-- TODO
+-- porting notes: Once to_additive works, we should not need to copy this attribute manually.
+attribute [instance] CancelCommMonoid.toAddCancelMonoid
 
 end CancelMonoid
 
@@ -875,13 +886,21 @@ section CommGroup
 variable [CommGroup G]
 
 -- see Note [lower instance priority]
-@[to_additive]
+@[to_additive AddCommGroup.toAddCancelCommMonoid]
 instance (priority := 100) CommGroup.toCancelCommMonoid : CancelCommMonoid G :=
   { ‹CommGroup G›, Group.toCancelMonoid with }
 
+-- TODO
+-- porting notes: Once to_additive works, we should not need to copy this attribute manually.
+attribute [instance] AddCommGroup.toAddCancelCommMonoid
+
 -- see Note [lower instance priority]
-@[to_additive]
+@[to_additive AddCommGroup.toSubtractionCommMonoid]
 instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G :=
   { ‹CommGroup G›, Group.toDivisionMonoid with }
+
+-- TODO
+-- porting notes: Once to_additive works, we should not need to copy this attribute manually.
+attribute [instance] AddCommGroup.toSubtractionCommMonoid
 
 end CommGroup
