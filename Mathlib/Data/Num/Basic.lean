@@ -3,7 +3,9 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib
+import Mathlib.Mathport.Rename
+import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Data.Int.Basic
 /-!
 # Binary representation of integers using inductive types
 
@@ -320,7 +322,7 @@ def ofNat' : ℕ → Num
   | n + 1 => if (n + 1) % 2 = 0
     then Num.bit0 (ofNat' ((n + 1) / 2))
     else Num.bit1 (ofNat' ((n + 1) / 2))
-decreasing_by (exact Nat.div_lt_self (Nat.succ_pos n) (show 1 < 2 from le_rfl))
+decreasing_by (exact Nat.div_lt_self (Nat.succ_pos n) (Nat.le_refl 2))
 #align num.of_nat' Num.ofNat'
 
 end Num
@@ -383,7 +385,7 @@ protected def bitm1 : ZNum → ZNum
 
 /-- Converts an `Int` to a `ZNum`. -/
 def ofInt' : ℤ → ZNum
-  | (n : ℕ) => Num.toZNum (Num.ofNat' n)
+  | Int.ofNat n => Num.toZNum (Num.ofNat' n)
   | Int.negSucc n => Num.toZNumNeg (Num.ofNat' (n + 1))
 #align znum.of_int' ZNum.ofInt'
 
