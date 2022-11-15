@@ -90,9 +90,6 @@ theorem lift_mk (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a
   rfl
 #align quot.lift_beta Quot.lift_mk
 
--- Porting note: this may be a bad simp lemma now that Lean indexes simp lemmas mod reducible.
--- We need a linter to catch these.
--- @[simp]
 theorem lift_on_mk (a : α) (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) :
   Quot.liftOn (Quot.mk r a) f h = f a :=
   rfl
@@ -105,9 +102,7 @@ protected def lift₂ (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ 
   Quot.lift (fun a => Quot.lift (f a) (hr a))
     (fun a₁ a₂ ha => funext fun q => Quot.induction_on q fun b => hs a₁ a₂ b ha) q₁ q₂
 
--- Porting note: this may be a bad simp lemma now that Lean indexes simp lemmas mod reducible.
--- We need a linter to catch these.
--- @[simp]
+@[simp]
 theorem lift₂_mk (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ → f a b₁ = f a b₂)
     (hs : ∀ a₁ a₂ b, r a₁ a₂ → f a₁ b = f a₂ b)
     (a : α) (b : β) : Quot.lift₂ f hr hs (Quot.mk r a) (Quot.mk s b) = f a b :=
@@ -120,9 +115,7 @@ protected def liftOn₂ (p : Quot r) (q : Quot s) (f : α → β → γ)
     (hr : ∀ a b₁ b₂, s b₁ b₂ → f a b₁ = f a b₂) (hs : ∀ a₁ a₂ b, r a₁ a₂ → f a₁ b = f a₂ b) : γ :=
   Quot.lift₂ f hr hs p q
 
--- Porting note: this may be a bad simp lemma now that Lean indexes simp lemmas mod reducible.
--- We need a linter to catch these.
--- @[simp]
+@[simp]
 theorem lift_on₂_mk (a : α) (b : β) (f : α → β → γ) (hr : ∀ a b₁ b₂, s b₁ b₂ → f a b₁ = f a b₂)
     (hs : ∀ a₁ a₂ b, r a₁ a₂ → f a₁ b = f a₂ b) :
     Quot.liftOn₂ (Quot.mk r a) (Quot.mk s b) f hr hs = f a b :=
@@ -273,16 +266,12 @@ theorem forall_quotient_iff {α : Type _} [r : Setoid α] {p : Quotient r → Pr
     (∀ a : Quotient r, p a) ↔ ∀ a : α, p ⟦a⟧ :=
   ⟨fun h _ => h _, fun h a => a.induction_on h⟩
 
--- Porting note: this may be a bad simp lemma now that Lean indexes simp lemmas mod reducible.
--- We need a linter to catch these.
--- @[simp]
+@[simp]
 theorem Quotient.lift_mk [s : Setoid α] (f : α → β) (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) :
     Quotient.lift f h (Quotient.mk s x) = f x :=
 rfl
 
--- Porting note: this may be a bad simp lemma now that Lean indexes simp lemmas mod reducible.
--- We need a linter to catch these.
--- @[simp]
+@[simp]
 theorem Quotient.lift_comp_mk [Setoid α] (f : α → β) (h : ∀ a b : α, a ≈ b → f a = f b) :
     Quotient.lift f h ∘ Quotient.mk _ = f :=
   rfl
@@ -295,16 +284,11 @@ theorem Quotient.lift₂_mk {α : Sort _} {β : Sort _} {γ : Sort _} [Setoid α
     Quotient.lift₂ f h (Quotient.mk _ a) (Quotient.mk _ b) = f a b :=
   rfl
 
--- Porting note: this may be a bad simp lemma now that Lean indexes simp lemmas mod reducible.
--- We need a linter to catch these.
--- @[simp]
 theorem Quotient.lift_on_mk [s : Setoid α] (f : α → β) (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) :
     Quotient.liftOn (Quotient.mk s x) f h = f x :=
   rfl
 
--- Porting note: this may be a bad simp lemma now that Lean indexes simp lemmas mod reducible.
--- We need a linter to catch these.
--- @[simp]
+@[simp]
 theorem Quotient.lift_on₂_mk {α : Sort _} {β : Sort _} [Setoid α] (f : α → α → β)
     (h : ∀ a₁ a₂ b₁ b₂ : α, a₁ ≈ b₁ → a₂ ≈ b₂ → f a₁ a₂ = f b₁ b₂) (x y : α) :
     Quotient.liftOn₂ (Quotient.mk _ x) (Quotient.mk _ y) f h = f x y :=
@@ -549,9 +533,7 @@ protected def liftOn' (q : Quotient s₁) (f : α → φ) (h : ∀ a b, @Setoid.
     φ :=
   Quotient.liftOn q f h
 
--- Porting note: this may be a bad simp lemma now that Lean indexes simp lemmas mod reducible.
--- We need a linter to catch these.
--- @[simp]
+@[simp]
 protected theorem liftOn'_mk'' (f : α → φ) (h) (x : α) :
     Quotient.liftOn' (@Quotient.mk'' _ s₁ x) f h = f x :=
   rfl
@@ -564,9 +546,7 @@ protected def liftOn₂' (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : α �
     (h : ∀ a₁ a₂ b₁ b₂, @Setoid.r α s₁ a₁ b₁ → @Setoid.r β s₂ a₂ b₂ → f a₁ a₂ = f b₁ b₂) : γ :=
   Quotient.liftOn₂ q₁ q₂ f h
 
--- Porting note: this may be a bad simp lemma now that Lean indexes simp lemmas mod reducible.
--- We need a linter to catch these.
--- @[simp]
+@[simp]
 protected theorem liftOn₂'_mk'' (f : α → β → γ) (h) (a : α) (b : β) :
     Quotient.liftOn₂' (@Quotient.mk'' _ s₁ a) (@Quotient.mk'' _ s₂ b) f h = f a b :=
   rfl
@@ -707,15 +687,11 @@ variable [s : Setoid α]
 protected theorem mk''_eq_mk (x : α) : Quotient.mk'' x = Quotient.mk s x :=
   rfl
 
--- Porting note: this may be a bad simp lemma now that Lean indexes simp lemmas mod reducible.
--- We need a linter to catch these.
--- @[simp]
+@[simp]
 protected theorem lift_on'_mk (x : α) (f : α → β) (h) : (Quotient.mk s x).liftOn' f h = f x :=
   rfl
 
--- Porting note: this may be a bad simp lemma now that Lean indexes simp lemmas mod reducible.
--- We need a linter to catch these.
--- @[simp]
+@[simp]
 protected theorem lift_on₂'_mk [t : Setoid β] (f : α → β → γ) (h) (a : α) (b : β) :
     Quotient.liftOn₂' (Quotient.mk s a) (Quotient.mk t b) f h = f a b :=
   Quotient.liftOn₂'_mk'' _ _ _ _

@@ -24,7 +24,6 @@ variable {α β γ : Sort _} {f : α → β}
   `Function.eval x : (∀ x, β x) → β x`. -/
 @[reducible, simp] def eval {β : α → Sort _} (x : α) (f : ∀ x, β x) : β x := f x
 
-@[simp]
 theorem eval_apply {β : α → Sort _} (x : α) (f : ∀ x, β x) : eval x f = f x :=
   rfl
 
