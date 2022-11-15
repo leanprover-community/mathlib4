@@ -604,7 +604,8 @@ instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelC
     CancelMonoid M :=
   { mul_right_cancel := fun a b c h => mul_left_cancel <| by rw [mul_comm, h, mul_comm] }
 
-@[to_additive AddCancelMonoid.to_isCancelAdd]
+/-- Any `CancelMonoid G` satisfies `isCancelMul G`. -/
+@[to_additive AddCancelMonoid.to_isCancelAdd "Any `CancelMonoid G` satisfies `isCancelMul G`."]
 instance (priority := 100) CancelMonoid.to_isCancelMul (G : Type u) [CancelMonoid G] :
     isCancelMul G :=
   { mul_left_cancel := LeftCancelSemigroup.mul_left_cancel
