@@ -106,7 +106,6 @@ Mathlib/Tactic/ByContra.lean : line 4 : ERR_AUT : Authors line should look like:
 Mathlib/Tactic/ByContra.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/ClearExcept.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Coe.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/CommandQuote.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Constructor.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Core.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Existsi.lean : line 9 : ERR_MOD : Module docstring missing, or too late
