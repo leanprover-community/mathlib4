@@ -979,5 +979,3 @@ instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G
   { ‹CommGroup G›, Group.toDivisionMonoid with }
 
 end CommGroup
-
-#lint
