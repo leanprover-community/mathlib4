@@ -148,6 +148,10 @@ example : True := by
 example : True := by
   run_tac guard (guessName "comm_mul_CommMul_commMul" == "comm_add_AddComm_addComm")
   run_tac guard (guessName "mul_comm_MulComm_mulComm" == "add_comm_AddComm_addComm")
+  run_tac guard (guessName "mul_single_eq_same" == "single_eq_same")
+  run_tac guard (guessName "mul_support" == "support")
+  run_tac guard (guessName "mul_tsupport" == "tsupport")
+  run_tac guard (guessName "mul_indicator" == "indicator")
   trivial
 
 example : True := by

@@ -515,13 +515,17 @@ def fixAbbreviation : List String → List String
 | "lt" :: "_" :: "zero" :: s       => "neg" :: fixAbbreviation s
 | "Add" :: "Single" :: s           => "Single" :: fixAbbreviation s
 | "add" :: "Single" :: s           => "single" :: fixAbbreviation s
+| "add" :: "_" :: "single" :: s    => "single" :: fixAbbreviation s
 | "Add" :: "Support" :: s          => "Support" :: fixAbbreviation s
 | "add" :: "Support" :: s          => "support" :: fixAbbreviation s
+| "add" :: "_" :: "support" :: s   => "support" :: fixAbbreviation s
  -- TODO: Is it `TSupport` or `Tsupport`?
 | "Add" :: "TSupport" :: s         => "TSupport" :: fixAbbreviation s
 | "add" :: "TSupport" :: s         => "tsupport" :: fixAbbreviation s
+| "add" :: "_" :: "tsupport" :: s  => "tsupport" :: fixAbbreviation s
 | "Add" :: "Indicator" :: s        => "Indicator" :: fixAbbreviation s
 | "add" :: "Indicator" :: s        => "indicator" :: fixAbbreviation s
+| "add" :: "_" :: "indicator" :: s => "indicator" :: fixAbbreviation s
 -- TODO: Bug in `splitCase` splits like ["LEH", "Pow"] instead of ["LE", "HPow"].
 -- Currently we just fix these cases manually.
 | "HNsmul" :: s                    => "HMul" :: fixAbbreviation s
