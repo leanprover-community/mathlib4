@@ -114,7 +114,7 @@ class isRightCancelMul (G : Type u) [Mul G] : Prop where
   protected mul_right_cancel : ∀ a b c : G, a * b = c * b → a = c
 
 /-- A mixin for cancellative multiplication. -/
-class isCancelMul (G : Type u) [Mul G] extends isLeftCancelMul G, isRightCancelMul G
+class isCancelMul (G : Type u) [Mul G] extends isLeftCancelMul G, isRightCancelMul G : Prop
 
 /-- A mixin for left cancellative addition. -/
 class isLeftCancelAdd (G : Type u) [Add G] : Prop where
@@ -129,7 +129,7 @@ class isRightCancelAdd (G : Type u) [Add G] : Prop where
 attribute [to_additive isRightCancelAdd] isRightCancelMul
 
 /-- A mixin for cancellative addition. -/
-class isCancelAdd (G : Type u) [Add G] extends isLeftCancelAdd G, isRightCancelAdd G
+class isCancelAdd (G : Type u) [Add G] extends isLeftCancelAdd G, isRightCancelAdd G : Prop
 
 attribute [to_additive isCancelAdd] isCancelMul
 
@@ -979,3 +979,5 @@ instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G
   { ‹CommGroup G›, Group.toDivisionMonoid with }
 
 end CommGroup
+
+#lint
