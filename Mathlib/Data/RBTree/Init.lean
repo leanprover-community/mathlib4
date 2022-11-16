@@ -111,9 +111,15 @@ def ins : RBNode α → α → RBNode α
     | Ordering.gt => red_node a y (ins b x)
   | black_node a y b, x =>
     match CmpUsing lt x y with
-    | Ordering.lt => if a.getColor = red then balance1Node (ins a x) y b else black_node (ins a x) y b
+    | Ordering.lt => if a.getColor = red then
+                      balance1Node (ins a x) y b
+                     else
+                      black_node (ins a x) y b
     | Ordering.eq => black_node a x b
-    | Ordering.gt => if b.getColor = red then balance2Node (ins b x) y a else black_node a y (ins b x)
+    | Ordering.gt => if b.getColor = red then
+                      balance2Node (ins b x) y a
+                     else
+                      black_node a y (ins b x)
 #align rbnode.ins RBNode.ins
 
 def mkInsertResult : Color → RBNode α → RBNode α
@@ -163,17 +169,20 @@ end Membership
 
 inductive WellFormed (lt : α → α → Prop) : RBNode α → Prop
   | leaf_wff : WellFormed lt (leaf _)
-  | insert_wff {n n' : RBNode α} {x : α} [DecidableRel lt] : WellFormed lt n → n' = insert lt n x → WellFormed lt n'
+  | insert_wff {n n' : RBNode α} {x : α} [DecidableRel lt] :
+      WellFormed lt n → n' = insert lt n x → WellFormed lt n'
 #align rbnode.well_formed RBNode.WellFormed
 
 end RBNode
 
 open RBNode
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:334:40: warning: unsupported option auto_param.check_exists -/
+/- ./././Mathport/Syntax/Translate/Basic.lean:334:40: warning:
+unsupported option auto_param.check_exists -/
 set_option auto_param.check_exists false
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:62:18: unsupported non-interactive tactic rbtree.default_lt -/
+/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:62:18:
+unsupported non-interactive tactic rbtree.default_lt -/
 def RBTree (α : Type u)
     (lt : α → α → Prop := by
       run_tac
@@ -182,7 +191,8 @@ def RBTree (α : Type u)
   { t : RBNode α // t.WellFormed lt }
 #align rbtree RBTree
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:62:18: unsupported non-interactive tactic rbtree.default_lt -/
+/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:62:18:
+unsupported non-interactive tactic rbtree.default_lt -/
 def mkRBTree (α : Type u)
     (lt : α → α → Prop := by
       run_tac
@@ -252,7 +262,8 @@ def contains (t : RBTree α lt) (a : α) : Bool :=
   (t.find a).isSome
 #align rbtree.contains RBTree.contains
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:62:18: unsupported non-interactive tactic rbtree.default_lt -/
+/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:62:18:
+unsupported non-interactive tactic rbtree.default_lt -/
 def fromList (l : List α)
     (lt : α → α → Prop := by
       run_tac
@@ -263,7 +274,8 @@ def fromList (l : List α)
 
 end RBTree
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:62:18: unsupported non-interactive tactic rbtree.default_lt -/
+/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:62:18:
+unsupported non-interactive tactic rbtree.default_lt -/
 def rbtreeOf {α : Type u} (l : List α)
     (lt : α → α → Prop := by
       run_tac
