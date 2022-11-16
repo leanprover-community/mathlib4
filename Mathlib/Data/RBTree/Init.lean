@@ -8,12 +8,16 @@ import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Ordering.Basic
 
 
--- This file used to be a part of `prelude`
+-- This file used to be a part of `Prelude`
 universe u v
 
+/-- Nodes of an Red Black Tree-/
 inductive RBNode (α : Type u) where
+  /-- leaf (empty marker) node-/
   | leaf : RBNode α
+  /-- red node-/
   | red_node (lchild : RBNode α) (val : α) (rchild : RBNode α ) : RBNode α
+  /-- black node-/
   | black_node (lchild : RBNode α) (val : α) (rchild : RBNode α) : RBNode α
 
 #align rbnode RBNode
@@ -22,8 +26,11 @@ namespace RBNode
 
 variable {α : Type u} {β : Type v}
 
+/-- enumeration for r/b colors-/
 inductive Color
+  /-- red-/
   | red
+  /-- black-/
   | black
 #align rbnode.color RBNode.Color
 
