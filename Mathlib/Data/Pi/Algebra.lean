@@ -2,6 +2,7 @@
 Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
+Ported by :
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Prod.Basic
@@ -102,14 +103,9 @@ theorem smul_const [HasSmul α β] (a : α) (b : β) : a • const I b = const I
 theorem smul_comp [HasSmul α γ] (a : α) (x : β → γ) (y : I → β) : (a • x) ∘ y = a • x ∘ y :=
   rfl
 
--- @[to_additive inst] -- TODO
+@[to_additive Pi.instHasSmul]
 instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
   ⟨fun x b i => x i ^ b⟩
-
--- TODO: `to_additive` didn't work because `a ^ b` changes to `b • a`.
--- Delete this once the above works:
-instance instHasSmul' [∀ i, HasSmul β (f i)] : HasSmul β (∀ i, f i) :=
-  ⟨fun b x i => b • (x i)⟩
 
 @[simp, to_additive Pi.smul_apply, to_additive_reorder 5]
 theorem pow_apply [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) (i : I) : (x ^ b) i = x i ^ b :=
@@ -119,7 +115,7 @@ theorem pow_apply [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) (i : I) : (x ^
 theorem pow_def [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) : x ^ b = fun i => x i ^ b :=
   rfl
 
--- `to_additive` generates bad output if we take `has_pow α β`.
+-- `to_additive` generates bad output if we take `Pow α β`.
 @[simp, to_additive smul_const, to_additive_reorder 5]
 theorem const_pow [Pow β α] (b : β) (a : α) : const I b ^ a = const I (b ^ a) :=
   rfl
@@ -128,7 +124,7 @@ theorem const_pow [Pow β α] (b : β) (a : α) : const I b ^ a = const I (b ^ a
 theorem pow_comp [Pow γ α] (x : β → γ) (a : α) (y : I → β) : (x ^ a) ∘ y = x ∘ y ^ a :=
   rfl
 
--- -- [porting notes] : deprecated. not ported.
+-- -- Porting note : deprecated. not ported.
 -- @[simp]
 -- theorem bit0_apply [∀ i, Add <| f i] : (bit0 x) i = bit0 (x i) :=
 --   rfl
@@ -300,8 +296,8 @@ section Extend
 theorem extend_one [One γ] (f : α → β) : Function.extend f (1 : α → γ) (1 : β → γ) = 1 :=
   funext fun _ => by apply ite_self
 
--- PORTING NOTE : Had to add `[∀ x, Decidable (∃ a, f a = x)]` to these
--- theorems to proof them, but not sure that's correct.
+-- Porting note : Had to add `[∀ x, Decidable (∃ a, f a = x)]` to these
+-- next 3 theorems to proof them, but not sure that's correct.
 @[to_additive]
 theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ)
     [∀ x, Decidable (∃ a, f a = x)]:
