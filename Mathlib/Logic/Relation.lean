@@ -264,7 +264,7 @@ theorem head_induction_on {P : ∀ a : α, ReflTransGen r a b → Prop} {a : α}
   induction h
   case refl => exact refl
   case tail b c _ hbc ih =>
-  -- remark: Lean 3 figured out the motive and `apply ih` worked
+  -- Porting note: Lean 3 figured out the motive and `apply ih` worked
   refine @ih (λ {a : α} (hab : ReflTransGen r a b) => P a (ReflTransGen.tail hab hbc)) ?_ ?_
   { exact head hbc _ refl }
   { exact fun h1 h2 => head h1 (h2.tail hbc) }
