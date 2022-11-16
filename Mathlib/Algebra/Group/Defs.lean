@@ -997,10 +997,12 @@ variable [CommGroup G]
 @[to_additive]
 instance (priority := 100) CommGroup.toCancelCommMonoid : CancelCommMonoid G :=
   { ‹CommGroup G›, Group.toCancelMonoid with }
+attribute [instance 100] AddCommGroup.toCancelCommMonoid -- FIXME
 
 -- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G :=
   { ‹CommGroup G›, Group.toDivisionMonoid with }
+attribute [instance 100] AddCommGroup.toDivisionCommMonoid -- FIXME
 
 end CommGroup
