@@ -7,12 +7,6 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Data.Sum.Basic
--- import Mathlib.Tactic.Convert
--- import Mathlib.Tactic.Congr
--- import Mathlib.Tactic.Simpa
--- import Mathlib.Tactic.SplitIfs
--- import Mathlib.Tactic.ToAdditive
-
 
 /-!
 # Instances and theorems on pi types
@@ -215,20 +209,21 @@ theorem mul_single_eq_of_ne' {i i' : I} (h : i ≠ i') (x : f i) : mulSingle i x
 theorem mul_single_one (i : I) : mulSingle i (1 : f i) = 1 :=
   Function.update_eq_self _ _
 
--- TODO: Seems to be a coersion problem: RHS has Type `β`, LHS not.
+-- Porting notes:
+-- 1) Why do I have to specify `(fun (_ : I) => β)` explicitely?
+-- 2) Why do I have to specify the type of `(1 : I → β)`?
+-- 3) Removed `{β : Sort _}` as `[One β]` converts it to a type anyways.
 /-- On non-dependent functions, `Pi.mulSingle` can be expressed as an `ite` -/
 @[to_additive "On non-dependent functions, `Pi.Single` can be expressed as an `ite`"]
 theorem mul_single_apply [One β] (i : I) (x : β) (i' : I) :
-    mulSingle i x i' = if i = i' then x else 1 :=
-  Function.update_apply 1 i x i'
+    @mulSingle _ (fun (_ : I) => β) _ _ i x i' = if i' = i then x else 1 :=
+  Function.update_apply (1 : I → β) i x i'
 
-variables (δ : Type _) [One δ] (ii : I) (xx : δ) (i' : I)
-#check mulSingle ii xx i'
-
+-- Porting notes : Same as above.
 /-- On non-dependent functions, `Pi.mulSingle` is symmetric in the two indices. -/
-@[to_additive "On non-dependent functions, `Pi.single` is symmetric in the two\nindices."]
-theorem mul_single_comm {β : Sort _} [One β] (i : I) (x : f i) (i' : I) :
-    mulSingle i x i' = mulSingle i' x i := by
+@[to_additive "On non-dependent functions, `Pi.single` is symmetric in the two indices."]
+theorem mul_single_comm [One β] (i : I) (x : β) (i' : I) :
+    @mulSingle _ (fun (_ : I) => β) _ _ i x i' = @mulSingle _ (fun (_ : I) => β) _ _ i' x i := by
   simp [mul_single_apply, eq_comm]
 
 @[to_additive]
@@ -275,11 +270,23 @@ end
 protected def prod (f' : ∀ i, f i) (g' : ∀ i, g i) (i : I) : f i × g i :=
   (f' i, g' i)
 
+-- Porting note : These two are simp-normal-form versions of the lemmas below.
+-- They should probably be placed in a lower file and be renamed.
 @[simp]
-theorem prod_fst_snd : Pi.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
+theorem prod_fst_snd₂ : (fun (i : α × β) => i) = id :=
   funext fun _ => Prod.mk.eta
 
 @[simp]
+theorem prod_snd_fst₂ : (fun (i : α × β) => (i.snd, i.fst)) = Prod.swap :=
+  rfl
+
+-- Porting note : Linter says these two are not in simp-normal-form. Above is the normal
+-- form version.
+-- @[simp]
+theorem prod_fst_snd : Pi.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
+  funext fun _ => Prod.mk.eta
+
+-- @[simp]
 theorem prod_snd_fst : Pi.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = Prod.swap :=
   rfl
 
@@ -293,24 +300,24 @@ section Extend
 theorem extend_one [One γ] (f : α → β) : Function.extend f (1 : α → γ) (1 : β → γ) = 1 :=
   funext fun _ => by apply ite_self
 
--- PORTING NOTES (!) : Had to add `[∀ x, Decidable (∃ a, f a = x)]` to these
--- theorems to make the proof work, but not sure that's correct.
+-- PORTING NOTE : Had to add `[∀ x, Decidable (∃ a, f a = x)]` to these
+-- theorems to proof them, but not sure that's correct.
 @[to_additive]
 theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ)
     [∀ x, Decidable (∃ a, f a = x)]:
     Function.extend f (g₁ * g₂) (e₁ * e₂) = Function.extend f g₁ e₁ * Function.extend f g₂ e₂ := by
   funext x
   simp [Function.extend_def, apply_dite₂]
--- Porting note: This was the converted proof term not using tactic mode:
--- funext fun _ => by convert (apply_dite₂ (· * ·) _ _ _ _ _).symm
+-- Porting note : This was the converted proof term not using tactic mode:
+-- `funext fun _ => by convert (apply_dite₂ (· * ·) _ _ _ _ _).symm`
 
 @[to_additive]
 theorem extend_inv [Inv γ] (f : α → β) (g : α → γ) (e : β → γ) [∀ x, Decidable (∃ a, f a = x)] :
     Function.extend f g⁻¹ e⁻¹ = (Function.extend f g e)⁻¹ := by
   funext x
   simp [Function.extend_def, apply_dite Inv.inv]
--- Porting note: This was the converted proof term not using tactic mode:
--- funext fun _ => by convert (apply_dite Inv.inv _ _ _).symm
+-- Porting note : This was the converted proof term not using tactic mode:
+-- `funext fun _ => by convert (apply_dite Inv.inv _ _ _).symm`
 
 @[to_additive]
 theorem extend_div [Div γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ)
@@ -318,8 +325,8 @@ theorem extend_div [Div γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ :
     Function.extend f (g₁ / g₂) (e₁ / e₂) = Function.extend f g₁ e₁ / Function.extend f g₂ e₂ := by
   funext x
   simp [Function.extend_def, apply_dite₂]
--- Porting note: This was the converted proof term not using tactic mode:
--- funext fun _ => by convert (apply_dite₂ (· / ·) _ _ _ _ _).symm
+-- Porting note : This was the converted proof term not using tactic mode:
+-- `funext fun _ => by convert (apply_dite₂ (· / ·) _ _ _ _ _).symm`
 
 end Extend
 
@@ -385,3 +392,11 @@ theorem elim_div_div [Div γ] : Sum.elim (a / a') (b / b') = Sum.elim a b / Sum.
   cases x <;> rfl
 
 end Sum
+
+-- Porting note : Atm it seems that to_additive does not copy the `instance` attribute
+-- These can be removed once it does.
+attribute [instance] Pi.instZero
+attribute [instance] Pi.instAdd
+attribute [instance] Pi.instHasVadd
+attribute [instance] Pi.instNeg
+attribute [instance] Pi.instSub
