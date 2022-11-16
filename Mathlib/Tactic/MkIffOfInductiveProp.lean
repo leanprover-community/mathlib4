@@ -333,28 +333,28 @@ be just `c = i` for some index `i`.
 For example, if we try the following:
 ```lean
 @[mk_iff]
-structure foo (m n : Nat) : Prop where
+structure Foo (m n : Nat) : Prop where
   equal : m = n
   sum_eq_two : m + n = 2
 ```
 
-Then `#check foo_iff` returns:
+Then `#check Foo_iff` returns:
 ```lean
-foo_iff : ∀ (m n : Nat), foo m n ↔ m = n ∧ m + n = 2
+Foo_iff : ∀ (m n : Nat), Foo m n ↔ m = n ∧ m + n = 2
 ```
 
 You can add an optional string after `mk_iff` to change the name of the generated lemma.
 For example, if we try the following:
 ```lean
 @[mk_iff bar]
-structure foo (m n : Nat) : Prop where
+structure Foo (m n : Nat) : Prop where
   equal : m = n
   sum_eq_two : m + n = 2
 ```
 
 Then `#check bar` returns:
 ```lean
-bar : ∀ (m n : ℕ), foo m n ↔ m = n ∧ m + n = 2
+bar : ∀ (m n : ℕ), Foo m n ↔ m = n ∧ m + n = 2
 ```
 
 See also the user command `mk_iff_of_inductive_prop`.
