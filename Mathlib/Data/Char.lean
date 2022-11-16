@@ -9,8 +9,9 @@ import Mathlib.Init.Algebra.Order
 /-!
 # More `char` instances
 
-Provides additional defintions and theorems `Char` to `UInt8` theorems
-on conversion to `Nat` and ordering on `Char`
+This file provides a `LinearOrder` instance on `Char`. `Char` is the type of Unicode scalar values.
+Provides an additional definition to truncate a `Char` to `UInt8` and a theorem on conversion to
+`Nat`.
 -/
 
 /-- Convert a character into a `UInt8`, by truncating (reducing modulo 256) if necessary. -/
@@ -26,7 +27,6 @@ theorem String.csize_pos : (c : Char) → 0 < String.csize c := Char.utf8Size_po
 /--
 Provides a `LinearOrder` instance on `Char`. `Char` is the type of Unicode scalar values.
 -/
-
 instance : LinearOrder Char where
   le_refl := fun _ => @le_refl ℕ _ _
   le_trans := fun _ _ _  => @le_trans ℕ _ _ _ _
