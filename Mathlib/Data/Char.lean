@@ -5,12 +5,13 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.UInt
 import Mathlib.Init.Algebra.Order
+
 /-!
 # More `char` instances
 
-This file provides a `linear_order` instance on `char`. `char` is the type of Unicode scalar values.
+Provides additional defintions and theorems `Char` to `UInt8` theorems
+on conversion to `Nat` and ordering on `Char`
 -/
-
 
 /-- Convert a character into a `UInt8`, by truncating (reducing modulo 256) if necessary. -/
 def Char.toUInt8 (n : Char) : UInt8 := n.1.toUInt8
@@ -21,6 +22,16 @@ theorem Char.utf8Size_pos (c : Char) : 0 < c.utf8Size := by
   decide
 
 theorem String.csize_pos : (c : Char) → 0 < String.csize c := Char.utf8Size_pos
+
+theorem Char.ofNat_toNat {c : Char} (h : isValidCharNat c.toNat) : Char.ofNat c.toNat = c := by
+  rw [Char.ofNat, dif_pos h]
+  rfl
+#align char.of_nat_to_nat Char.ofNat_toNat
+
+
+/--
+Provides a `LinearOrder` instance on `Char`. `Char` is the type of Unicode scalar values.
+-/
 
 instance : LinearOrder Char where
   le := (·≤·)
@@ -36,8 +47,3 @@ instance : LinearOrder Char where
   decidable_le := inferInstance
   decidable_eq := inferInstance
   decidable_lt := inferInstance
-
-theorem Char.ofNat_toNat {c : Char} (h : isValidCharNat c.toNat) : Char.ofNat c.toNat = c := by
-  rw [Char.ofNat, dif_pos h]
-  rfl
-#align char.of_nat_to_nat Char.ofNat_toNat
