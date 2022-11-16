@@ -7,6 +7,13 @@ Authors: Leonardo de Moura
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Ordering.Basic
 
+/-!
+# Red Black Trees
+
+Defines basic declaration and essential APIs for Red Black Trees as `RBTree`
+consisting of `RBNode`s using `lt` as the comparator (defaulted to the native type's
+`LT`)
+-/
 
 -- This file used to be a part of `Prelude`
 universe u v
