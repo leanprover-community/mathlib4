@@ -131,11 +131,11 @@ theorem eq_comp : (· = ·) ∘r r = r :=
   Iff.intro (fun ⟨_, Eq, h⟩ => Eq.symm ▸ h) fun h => ⟨a, rfl, h⟩
 
 theorem iff_comp {r : Prop → α → Prop} : (· ↔ ·) ∘r r = r := by
-  have : (· ↔ ·) = (· = ·) := by funext a b <;> exact iff_eq_eq
+  have : (· ↔ ·) = (· = ·) := by funext a b; exact iff_eq_eq
   rw [this, eq_comp]
 
 theorem comp_iff {r : α → Prop → Prop} : r ∘r (· ↔ ·) = r := by
-  have : (· ↔ ·) = (· = ·) := by funext a b <;> exact iff_eq_eq
+  have : (· ↔ ·) = (· = ·) := by funext a b; exact iff_eq_eq
   rw [this, comp_eq]
 
 theorem comp_assoc : (r ∘r p) ∘r q = r ∘r p ∘r q := by
@@ -465,7 +465,7 @@ section ReflTransGen
 open ReflTransGen
 
 theorem reflTransGen_iff_eq (h : ∀ b, ¬r a b) : ReflTransGen r a b ↔ b = a := by
-  rw [cases_head_iff] <;> simp [h, eq_comm]
+  rw [cases_head_iff]; simp [h, eq_comm]
 
 theorem reflTransGen_iff_eq_or_transGen : ReflTransGen r a b ↔ b = a ∨ TransGen r a b := by
   refine' ⟨fun h => _, fun h => _⟩
