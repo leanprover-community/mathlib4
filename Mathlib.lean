@@ -30,6 +30,9 @@ import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.FunLike.Basic
+import Mathlib.Data.FunLike.Embedding
+import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Cast
 import Mathlib.Data.Int.Cast.Defs

@@ -7,6 +7,12 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Data.Sum.Basic
+-- import Mathlib.Tactic.Convert
+-- import Mathlib.Tactic.Congr
+-- import Mathlib.Tactic.Simpa
+-- import Mathlib.Tactic.SplitIfs
+-- import Mathlib.Tactic.ToAdditive
+
 
 /-!
 # Instances and theorems on pi types
@@ -34,9 +40,11 @@ namespace Pi
 
 /-! `1`, `0`, `+`, `*`, `+ᵥ`, `•`, `^`, `-`, `⁻¹`, and `/` are defined pointwise. -/
 
-@[to_additive instZero] -- TODO: improve `to_additive`
+@[to_additive]
 instance instOne [∀ i, One <| f i] : One (∀ i : I, f i) :=
   ⟨fun _ => 1⟩
+
+#align pi.has_one Pi.instOne
 
 @[simp, to_additive]
 theorem one_apply [∀ i, One <| f i] : (1 : ∀ i, f i) i = 1 :=
@@ -58,9 +66,11 @@ theorem one_comp [One γ] (x : α → β) : (1 : β → γ) ∘ x = 1 :=
 theorem comp_one [One β] (x : β → γ) : x ∘ (1 : α → β) = const α (x 1) :=
   rfl
 
-@[to_additive instAdd] -- TODO: improve `to_additive`
+@[to_additive]
 instance instMul [∀ i, Mul <| f i] : Mul (∀ i : I, f i) :=
   ⟨fun f g i => f i * g i⟩
+
+#align pi.has_mul Pi.instMul
 
 @[simp, to_additive]
 theorem mul_apply [∀ i, Mul <| f i] : (x * y) i = x i * y i :=
@@ -78,13 +88,9 @@ theorem const_mul [Mul β] (a b : β) : const α a * const α b = const α (a * 
 theorem mul_comp [Mul γ] (x y : β → γ) (z : α → β) : (x * y) ∘ z = x ∘ z * y ∘ z :=
   rfl
 
--- @[to_additive instHasVadd] -- TODO
+@[to_additive]
 instance instHasSmul [∀ i, HasSmul α <| f i] : HasSmul α (∀ i : I, f i) :=
   ⟨fun s x => fun i => s • x i⟩
-
--- TODO: Didn't manage to use `to_additive` above. Delete this once the above works:
-instance instHasVadd [∀ i, HasVadd α <| f i] : HasVadd α (∀ i : I, f i) :=
-  ⟨fun s x => fun i => s +ᵥ x i⟩
 
 @[simp, to_additive]
 theorem smul_apply [∀ i, HasSmul α <| f i] (s : α) (x : ∀ i, f i) (i : I) : (s • x) i = s • x i :=
@@ -98,11 +104,11 @@ theorem smul_def [∀ i, HasSmul α <| f i] (s : α) (x : ∀ i, f i) : s • x 
 theorem smul_const [HasSmul α β] (a : α) (b : β) : a • const I b = const I (a • b) :=
   rfl
 
-@[to_additive ]
+@[to_additive]
 theorem smul_comp [HasSmul α γ] (a : α) (x : β → γ) (y : I → β) : (a • x) ∘ y = a • x ∘ y :=
   rfl
 
--- @[to_additive] TODO
+-- @[to_additive inst] -- TODO
 instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
   ⟨fun x b i => x i ^ b⟩
 
@@ -128,18 +134,20 @@ theorem const_pow [Pow β α] (b : β) (a : α) : const I b ^ a = const I (b ^ a
 theorem pow_comp [Pow γ α] (x : β → γ) (a : α) (y : I → β) : (x ^ a) ∘ y = x ∘ y ^ a :=
   rfl
 
--- TODO: deprecated. Remove?
+-- -- [porting notes] : deprecated. not ported.
 -- @[simp]
 -- theorem bit0_apply [∀ i, Add <| f i] : (bit0 x) i = bit0 (x i) :=
 --   rfl
-
+--
 -- @[simp]
 -- theorem bit1_apply [∀ i, Add <| f i] [∀ i, One <| f i] : (bit1 x) i = bit1 (x i) :=
 --   rfl
 
-@[to_additive instNegForAll] -- TODO: improve `to_additive`
-instance instInvForAll [∀ i, Inv <| f i] : Inv (∀ i : I, f i) :=
+@[to_additive]
+instance instInv [∀ i, Inv <| f i] : Inv (∀ i : I, f i) :=
   ⟨fun f i => (f i)⁻¹⟩
+
+#align pi.has_inv Pi.instInv
 
 @[simp, to_additive]
 theorem inv_apply [∀ i, Inv <| f i] : x⁻¹ i = (x i)⁻¹ :=
@@ -157,9 +165,11 @@ theorem const_inv [Inv β] (a : β) : (const α a)⁻¹ = const α a⁻¹ :=
 theorem inv_comp [Inv γ] (x : β → γ) (y : α → β) : x⁻¹ ∘ y = (x ∘ y)⁻¹ :=
   rfl
 
-@[to_additive instSubForAll] -- TODO: improve `to_additive`
-instance instDivForAll [∀ i, Div <| f i] : Div (∀ i : I, f i) :=
+@[to_additive]
+instance instDiv [∀ i, Div <| f i] : Div (∀ i : I, f i) :=
   ⟨fun f g i => f i / g i⟩
+
+#align pi.has_div Pi.instDiv
 
 @[simp, to_additive]
 theorem div_apply [∀ i, Div <| f i] : (x / y) i = x i / y i :=
@@ -184,8 +194,8 @@ variable [DecidableEq I]
 variable [∀ i, One (f i)] [∀ i, One (g i)] [∀ i, One (h i)]
 
 /-- The function supported at `i`, with value `x` there, and `1` elsewhere. -/
-@[to_additive Pi.single "The function supported at `i`, with value `x` there, and `0` elsewhere."]
-def mulSingle (i : I) (x : f i) : ∀ i, f i :=
+@[to_additive Pi.Single "The function supported at `i`, with value `x` there, and `0` elsewhere."]
+def mulSingle (i : I) (x : f i) : ∀ (j : I), f j :=
   Function.update 1 i x
 
 @[simp, to_additive]
@@ -207,14 +217,17 @@ theorem mul_single_one (i : I) : mulSingle i (1 : f i) = 1 :=
 
 -- TODO: Seems to be a coersion problem: RHS has Type `β`, LHS not.
 /-- On non-dependent functions, `Pi.mulSingle` can be expressed as an `ite` -/
-@[to_additive "On non-dependent functions, `Pi.single` can be expressed as an `ite`"]
-theorem mul_single_apply {β : Sort _} [One β] (i : I) (x : β) (i' : I) :
-    mulSingle i x i' = if i' = i then x else 1 :=
+@[to_additive "On non-dependent functions, `Pi.Single` can be expressed as an `ite`"]
+theorem mul_single_apply [One β] (i : I) (x : β) (i' : I) :
+    mulSingle i x i' = if i = i' then x else 1 :=
   Function.update_apply 1 i x i'
+
+variables (δ : Type _) [One δ] (ii : I) (xx : δ) (i' : I)
+#check mulSingle ii xx i'
 
 /-- On non-dependent functions, `Pi.mulSingle` is symmetric in the two indices. -/
 @[to_additive "On non-dependent functions, `Pi.single` is symmetric in the two\nindices."]
-theorem mul_single_comm {β : Sort _} [One β] (i : I) (x : β) (i' : I) :
+theorem mul_single_comm {β : Sort _} [One β] (i : I) (x : f i) (i' : I) :
     mulSingle i x i' = mulSingle i' x i := by
   simp [mul_single_apply, eq_comm]
 
@@ -227,7 +240,7 @@ theorem apply_mul_single (f' : ∀ i, f i → g i) (hf' : ∀ i, f' i 1 = 1) (i 
 theorem apply_mul_single₂ (f' : ∀ i, f i → g i → h i) (hf' : ∀ i, f' i 1 1 = 1) (i : I)
     (x : f i) (y : g i) (j : I) :
     f' j (mulSingle i x j) (mulSingle i y j) = mulSingle i (f' i x y) j := by
-  by_cases h:j = i
+  by_cases h : j = i
   · subst h
     simp only [mul_single_eq_same]
 
@@ -280,20 +293,33 @@ section Extend
 theorem extend_one [One γ] (f : α → β) : Function.extend f (1 : α → γ) (1 : β → γ) = 1 :=
   funext fun _ => by apply ite_self
 
+-- PORTING NOTES (!) : Had to add `[∀ x, Decidable (∃ a, f a = x)]` to these
+-- theorems to make the proof work, but not sure that's correct.
 @[to_additive]
-theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ) :
-    Function.extend f (g₁ * g₂) (e₁ * e₂) = Function.extend f g₁ e₁ * Function.extend f g₂ e₂ :=
-  funext fun _ => by convert (apply_dite₂ (· * ·)).symm
+theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ)
+    [∀ x, Decidable (∃ a, f a = x)]:
+    Function.extend f (g₁ * g₂) (e₁ * e₂) = Function.extend f g₁ e₁ * Function.extend f g₂ e₂ := by
+  funext x
+  simp [Function.extend_def, apply_dite₂]
+-- Porting note: This was the converted proof term not using tactic mode:
+-- funext fun _ => by convert (apply_dite₂ (· * ·) _ _ _ _ _).symm
 
 @[to_additive]
-theorem extend_inv [Inv γ] (f : α → β) (g : α → γ) (e : β → γ) :
-    Function.extend f g⁻¹ e⁻¹ = (Function.extend f g e)⁻¹ :=
-  funext fun _ => by convert (apply_dite Inv.inv _ _ _).symm
+theorem extend_inv [Inv γ] (f : α → β) (g : α → γ) (e : β → γ) [∀ x, Decidable (∃ a, f a = x)] :
+    Function.extend f g⁻¹ e⁻¹ = (Function.extend f g e)⁻¹ := by
+  funext x
+  simp [Function.extend_def, apply_dite Inv.inv]
+-- Porting note: This was the converted proof term not using tactic mode:
+-- funext fun _ => by convert (apply_dite Inv.inv _ _ _).symm
 
 @[to_additive]
-theorem extend_div [Div γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ) :
-    Function.extend f (g₁ / g₂) (e₁ / e₂) = Function.extend f g₁ e₁ / Function.extend f g₂ e₂ :=
-  funext fun _ => by convert (apply_dite₂ (· / ·) _ _ _ _ _).symm
+theorem extend_div [Div γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ)
+    [∀ x, Decidable (∃ a, f a = x)] :
+    Function.extend f (g₁ / g₂) (e₁ / e₂) = Function.extend f g₁ e₁ / Function.extend f g₂ e₂ := by
+  funext x
+  simp [Function.extend_def, apply_dite₂]
+-- Porting note: This was the converted proof term not using tactic mode:
+-- funext fun _ => by convert (apply_dite₂ (· / ·) _ _ _ _ _).symm
 
 end Extend
 
