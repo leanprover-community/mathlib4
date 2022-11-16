@@ -5,6 +5,7 @@ Authors: Leonardo de Moura
 -/
 
 import Mathlib.Mathport.Rename
+import Mathlib.Init.Data.Ordering.Basic
 
 
 -- This file used to be a part of `prelude`
@@ -43,16 +44,16 @@ protected def min : RBNode α → Option α
   | leaf _ => none
   | red_node (leaf _) v _ => some v
   | black_node (leaf _) v _ => some v
-  | red_node l v _ => RBNode.min l
-  | black_node l v _ => RBNode.min l
+  | red_node l _ _ => RBNode.min l
+  | black_node l _ _ => RBNode.min l
 #align rbnode.min RBNode.min
 
 protected def max : RBNode α → Option α
   | leaf _ => none
   | red_node _ v (leaf _) => some v
   | black_node _ v (leaf _) => some v
-  | red_node _ v r => RBNode.max r
-  | black_node _ v r => RBNode.max r
+  | red_node _ _ r => RBNode.max r
+  | black_node _ _ r => RBNode.max r
 #align rbnode.max RBNode.max
 
 def fold (f : α → β → β) : RBNode α → β → β
@@ -76,7 +77,7 @@ def balance1 : RBNode α → α → RBNode α → α → RBNode α → RBNode α
 def balance1Node : RBNode α → α → RBNode α → RBNode α
   | red_node l x r, v, t => balance1 l x r v t
   | black_node l x r, v, t => balance1 l x r v t
-  | leaf _, v, t => t
+  | leaf _, _, t => t
 #align rbnode.balance1_node RBNode.balance1Node
 
 -- dummy value
@@ -104,13 +105,14 @@ variable (lt : α → α → Prop) [DecidableRel lt]
 
 def ins : RBNode α → α → RBNode α
   | leaf _, x => red_node (leaf _) x (leaf _)
+  --| leaf             x  := red_node leaf x leaf
   | red_node a y b, x =>
-    match CmpUsing lt x y with
+    match cmpUsing lt x y with
     | Ordering.lt => red_node (ins a x) y b
     | Ordering.eq => red_node a x b
     | Ordering.gt => red_node a y (ins b x)
   | black_node a y b, x =>
-    match CmpUsing lt x y with
+    match cmpUsing lt x y with
     | Ordering.lt => if a.getColor = red then
                       balance1Node (ins a x) y b
                      else
@@ -152,14 +154,14 @@ def MemExact : α → RBNode α → Prop
 variable [DecidableRel lt]
 
 def find : RBNode α → α → Option α
-  | leaf _, x => none
+  | leaf _, _ => none
   | red_node a y b, x =>
-    match CmpUsing lt x y with
+    match cmpUsing lt x y with
     | Ordering.lt => find a x
     | Ordering.eq => some y
     | Ordering.gt => find b x
   | black_node a y b, x =>
-    match CmpUsing lt x y with
+    match cmpUsing lt x y with
     | Ordering.lt => find a x
     | Ordering.eq => some y
     | Ordering.gt => find b x
