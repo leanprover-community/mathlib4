@@ -3,8 +3,9 @@ Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathbin.Tactic.Ext
-import Mathbin.Tactic.Lint.Default
+import Mathlib.Control.Basic
+import Mathlib.Init.Set
+import Std.Tactic.Lint.Misc
 
 /-!
 # Functors
@@ -24,8 +25,8 @@ This module provides additional lemmas, definitions, and instances for `functor`
 functor, applicative
 -/
 
-
-attribute [functor_norm] seq_assoc pure_seq_eq_map map_pure seq_map_assoc map_seq
+set_option autoImplicit false
+attribute [functor_norm] seq_assoc pure_seq map_pure seq_map_assoc map_seq
 
 universe u v w
 
@@ -35,24 +36,26 @@ variable {F : Type u → Type v}
 
 variable {α β γ : Type u}
 
-variable [Functor F] [IsLawfulFunctor F]
+variable [Functor F] [LawfulFunctor F]
 
 theorem Functor.map_id : (· <$> ·) id = (id : F α → F α) := by apply funext <;> apply id_map
 #align functor.map_id Functor.map_id
 
-theorem Functor.map_comp_map (f : α → β) (g : β → γ) : ((· <$> ·) g ∘ (· <$> ·) f : F α → F γ) = (· <$> ·) (g ∘ f) := by
-  apply funext <;> intro <;> rw [comp_map]
+theorem Functor.map_comp_map (f : α → β) (g : β → γ) :
+    ((· <$> ·) g ∘ (· <$> ·) f : F α → F γ) = (· <$> ·) (g ∘ f) :=
+  funext <| fun _ => (comp_map _ _ _).symm
 #align functor.map_comp_map Functor.map_comp_map
 
 theorem Functor.ext {F} :
-    ∀ {F1 : Functor F} {F2 : Functor F} [@IsLawfulFunctor F F1] [@IsLawfulFunctor F F2]
-      (H : ∀ (α β) (f : α → β) (x : F α), @Functor.map _ F1 _ _ f x = @Functor.map _ F2 _ _ f x), F1 = F2
+    ∀ {F1 : Functor F} {F2 : Functor F} [@LawfulFunctor F F1] [@LawfulFunctor F F2]
+    (_H : ∀ (α β) (f : α → β) (x : F α), @Functor.map _ F1 _ _ f x = @Functor.map _ F2 _ _ f x),
+    F1 = F2
   | ⟨m, mc⟩, ⟨m', mc'⟩, H1, H2, H => by
-    cases show @m = @m' by funext α β f x <;> apply H
+    cases show @m = @m' by funext α β f x; apply H -- I did use `H`? but it complained?
     congr
     funext α β
-    have E1 := @map_const_eq _ ⟨@m, @mc⟩ H1
-    have E2 := @map_const_eq _ ⟨@m, @mc'⟩ H2
+    have E1 := @map_const _ ⟨@m, @mc⟩ H1
+    have E2 := @map_const _ ⟨@m, @mc'⟩ H2
     exact E1.trans E2.symm
 #align functor.ext Functor.ext
 
@@ -69,8 +72,8 @@ namespace Functor
 /-- `const α` is the constant functor, mapping every type to `α`. When
 `α` has a monoid structure, `const α` has an `applicative` instance.
 (If `α` has an additive monoid structure, see `functor.add_const`.) -/
-@[nolint unused_arguments]
-def Const (α : Type _) (β : Type _) :=
+@[nolint unusedArguments]
+def Const (α : Type _) (_β : Type _) :=
   α
 #align functor.const Functor.Const
 
@@ -99,14 +102,14 @@ protected theorem ext {α β} {x y : Const α β} (h : x.run = y.run) : x = y :=
 #align functor.const.ext Functor.Const.ext
 
 /-- The map operation of the `const γ` functor. -/
-@[nolint unused_arguments]
-protected def map {γ α β} (f : α → β) (x : Const γ β) : Const γ α :=
+@[nolint unusedArguments]
+protected def map {γ α β} (_f : α → β) (x : Const γ β) : Const γ α :=
   x
 #align functor.const.map Functor.Const.map
 
 instance {γ} : Functor (Const γ) where map := @Const.map γ
 
-instance {γ} : IsLawfulFunctor (Const γ) := by constructor <;> intros <;> rfl
+instance {γ} : LawfulFunctor (Const γ) := by constructor <;> intros <;> rfl
 
 instance {α β} [Inhabited α] : Inhabited (Const α β) :=
   ⟨(default : α)⟩
@@ -134,11 +137,11 @@ def AddConst.run {α β} : AddConst α β → α :=
 #align functor.add_const.run Functor.AddConst.run
 
 instance AddConst.functor {γ} : Functor (AddConst γ) :=
-  @Const.functor γ
+  @Const.instFunctorConst γ
 #align functor.add_const.functor Functor.AddConst.functor
 
-instance AddConst.is_lawful_functor {γ} : IsLawfulFunctor (AddConst γ) :=
-  @Const.is_lawful_functor γ
+instance AddConst.is_lawful_functor {γ} : LawfulFunctor (AddConst γ) :=
+  @Const.instLawfulFunctorConstInstFunctorConst γ
 #align functor.add_const.is_lawful_functor Functor.AddConst.is_lawful_functor
 
 instance {α β} [Inhabited α] : Inhabited (AddConst α β) :=
@@ -178,7 +181,7 @@ variable [Functor F] [Functor G]
 
 /-- The map operation for the composition `comp F G` of functors `F` and `G`. -/
 protected def map {α β : Type v} (h : α → β) : Comp F G α → Comp F G β
-  | comp.mk x => Comp.mk ((· <$> ·) h <$> x)
+  | Comp.mk x => Comp.mk ((· <$> ·) h <$> x)
 #align functor.comp.map Functor.Comp.map
 
 instance : Functor (Comp F G) where map := @Comp.map F G _ _
@@ -193,28 +196,32 @@ protected theorem run_map {α β} (h : α → β) (x : Comp F G α) : (h <$> x).
   rfl
 #align functor.comp.run_map Functor.Comp.run_map
 
-variable [IsLawfulFunctor F] [IsLawfulFunctor G]
+variable [LawfulFunctor F] [LawfulFunctor G]
 
 variable {α β γ : Type v}
 
 protected theorem id_map : ∀ x : Comp F G α, Comp.map id x = x
-  | comp.mk x => by simp [comp.map, Functor.map_id]
+  | Comp.mk x => by simp [Comp.map, Functor.map_id]; rfl
 #align functor.comp.id_map Functor.Comp.id_map
 
-protected theorem comp_map (g' : α → β) (h : β → γ) : ∀ x : Comp F G α, Comp.map (h ∘ g') x = Comp.map h (Comp.map g' x)
-  | comp.mk x => by simp [comp.map, Functor.map_comp_map g' h, functor_norm]
+protected theorem comp_map (g' : α → β) (h : β → γ) :
+    ∀ x : Comp F G α, Comp.map (h ∘ g') x = Comp.map h (Comp.map g' x)
+  | Comp.mk x => by simp [Comp.map, functor_norm, Comp.mk, Functor.map_comp_map]
 #align functor.comp.comp_map Functor.Comp.comp_map
 
-instance : IsLawfulFunctor (Comp F G) where
+instance : LawfulFunctor (Comp F G) where
+  map_const := rfl
   id_map := @Comp.id_map F G _ _ _ _
   comp_map := @Comp.comp_map F G _ _ _ _
 
-theorem functor_comp_id {F} [AF : Functor F] [IsLawfulFunctor F] : @Comp.functor F id _ _ = AF :=
-  @Functor.ext F _ AF (@Comp.is_lawful_functor F id _ _ _ _) _ fun α β f x => rfl
+theorem functor_comp_id {F} [AF : Functor F] [LawfulFunctor F] :
+  @Comp.instFunctorComp F Id _ _ = AF :=
+  @Functor.ext F _ AF (@Comp.instLawfulFunctorCompInstFunctorComp F Id _ _ _ _) _ fun _ _ _ _ => rfl
 #align functor.comp.functor_comp_id Functor.Comp.functor_comp_id
 
-theorem functor_id_comp {F} [AF : Functor F] [IsLawfulFunctor F] : @Comp.functor id F _ _ = AF :=
-  @Functor.ext F _ AF (@Comp.is_lawful_functor id F _ _ _ _) _ fun α β f x => rfl
+theorem functor_id_comp {F} [AF : Functor F] [LawfulFunctor F] :
+  @Comp.instFunctorComp Id F _ _ = AF :=
+  @Functor.ext F _ AF (@Comp.instLawfulFunctorCompInstFunctorComp Id F _ _ _ _) _ fun _ _ _ _ => rfl
 #align functor.comp.functor_id_comp Functor.Comp.functor_id_comp
 
 end Comp
@@ -230,15 +237,16 @@ variable {F : Type u → Type w} {G : Type v → Type u}
 variable [Applicative F] [Applicative G]
 
 /-- The `<*>` operation for the composition of applicative functors. -/
-protected def seq {α β : Type v} : Comp F G (α → β) → Comp F G α → Comp F G β
-  | comp.mk f, comp.mk x => comp.mk <| (· <*> ·) <$> f <*> x
+protected def seq {α β : Type v} : Comp F G (α → β) → (Unit → Comp F G α) → Comp F G β
+  | Comp.mk f, g => match g () with
+    | Comp.mk x => Comp.mk <| (· <*> ·) <$> f <*> x
 #align functor.comp.seq Functor.Comp.seq
 
 instance : Pure (Comp F G) :=
-  ⟨fun _ x => comp.mk <| pure <| pure x⟩
+  ⟨fun x => Comp.mk <| pure <| pure x⟩
 
 instance : Seq (Comp F G) :=
-  ⟨fun _ _ f x => Comp.seq f x⟩
+  ⟨fun f x => Comp.seq f x⟩
 
 @[simp]
 protected theorem run_pure {α : Type v} : ∀ x : α, (pure x : Comp F G α).run = pure (pure x)
@@ -252,7 +260,7 @@ protected theorem run_seq {α β : Type v} (f : Comp F G (α → β)) (x : Comp 
 #align functor.comp.run_seq Functor.Comp.run_seq
 
 instance : Applicative (Comp F G) :=
-  { Comp.hasPure with map := @Comp.map F G _ _, seq := @Comp.seq F G _ _ }
+  { instPureComp with map := @Comp.map F G _ _, seq := @Comp.seq F G _ _ }
 
 end Comp
 
@@ -279,8 +287,8 @@ def supp {α : Type u} (x : F α) : Set α :=
   { y : α | ∀ ⦃p⦄, Liftp p x → p y }
 #align functor.supp Functor.supp
 
-theorem of_mem_supp {α : Type u} {x : F α} {p : α → Prop} (h : Liftp p x) : ∀ y ∈ supp x, p y := fun y hy => hy h
+theorem of_mem_supp {α : Type u} {x : F α} {p : α → Prop} (h : Liftp p x) : ∀ y ∈ supp x, p y :=
+  fun _ hy => hy h
 #align functor.of_mem_supp Functor.of_mem_supp
 
 end Functor
-
