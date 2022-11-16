@@ -1,13 +1,10 @@
 /-
-Ported by Deniz Aydin from the lean3 prelude:
-https://github.com/leanprover-community/lean/blob/master/library/init/algebra/order.lean
-
-Original file's license:
-  Copyright (c) 2016 Microsoft Corporation. All rights reserved.
-  Released under Apache 2.0 license as described in the file LICENSE.
-  Authors: Leonardo de Moura
+Copyright (c) 2016 Microsoft Corporation. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Leonardo de Moura, Deniz Aydin
 -/
 import Mathlib.Init.Logic
+import Mathlib.Tactic.Relation.Rfl
 
 /-!
 # Orders
@@ -44,7 +41,7 @@ class Preorder (α : Type u) extends LE α, LT α :=
 variable [Preorder α]
 
 /-- The relation `≤` on a preorder is reflexive. -/
-@[simp] theorem le_refl : ∀ (a : α), a ≤ a :=
+@[simp, refl] theorem le_refl : ∀ (a : α), a ≤ a :=
 Preorder.le_refl
 
 /-- The relation `≤` on a preorder is transitive. -/
