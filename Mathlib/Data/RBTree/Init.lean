@@ -244,7 +244,7 @@ def revFold (f : α → β → β) : RBTree α lt → β → β
 #align rbtree.rev_fold RBTree.revFold
 
 def empty : RBTree α lt → Bool
-  | ⟨leaf _, _⟩ => true
+  | ⟨leaf, _⟩ => true
   | _ => false
 #align rbtree.empty RBTree.empty
 
