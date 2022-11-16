@@ -23,7 +23,7 @@ The reason is that we did not want to change existing names in the library.
 ## Remark
 
 Almost no monoid is actually present in this file: most assumptions have been generalized to
-`has_mul` or `mul_one_class`.
+`Mul` or `MulOneClass`.
 
 -/
 
@@ -913,7 +913,10 @@ theorem mul_eq_one_iff' [CovariantClass α α (· * ·) (· ≤ ·)]
       have : b ≤ 1 := hab ▸ le_mul_of_one_le_of_le ha le_rfl
       have : b = 1 := le_antisymm this hb
       And.intro ‹a = 1› ‹b = 1›)
-    fun ⟨ha', hb'⟩ => by rw [ha', hb', mul_one]
+    (by rintro ⟨rfl, rfl⟩; rw [mul_one])
+    -- porting note: original proof of the second implication,
+    -- `fun ⟨ha', hb'⟩ => by rw [ha', hb', mul_one]`,
+    -- had its `to_additive`-ization fail due to some bug
 
 section Left
 
@@ -1287,19 +1290,20 @@ theorem cmp_mul_right' {α : Type _} [Mul α] [LinearOrder α]
 
 end Mono
 
-/-- An element `a : α` is `mul_le_cancellable` if `x ↦ a * x` is order-reflecting.
+/-- An element `a : α` is `MulLeCancellable` if `x ↦ a * x` is order-reflecting.
 We will make a separate version of many lemmas that require `[contravariant_class α α (*) (≤)]` with
 `mul_le_cancellable` assumptions instead. These lemmas can then be instantiated to specific types,
 like `ennreal`, where we can replace the assumption `add_le_cancellable x` by `x ≠ ∞`.
 -/
-@[to_additive
-"An element `a : α` is `add_le_cancellable` if `x ↦ a + x` is order-reflecting.
+@[to_additive AddLeCancellable
+"An element `a : α` is `AddLeCancellable` if `x ↦ a + x` is order-reflecting.
 We will make a separate version of many lemmas that require `[contravariant_class α α (+) (≤)]` with
 `mul_le_cancellable` assumptions instead. These lemmas can then be instantiated to specific types,
 like `ennreal`, where we can replace the assumption `add_le_cancellable x` by `x ≠ ∞`. "]
 def MulLeCancellable [Mul α] [LE α] (a : α) : Prop :=
   ∀ ⦃b c⦄, a * b ≤ a * c → b ≤ c
 #align mul_le_cancellable MulLeCancellable
+#align add_le_cancellable AddLeCancellable
 
 @[to_additive]
 theorem Contravariant.MulLeCancellable [Mul α] [LE α] [ContravariantClass α α (· * ·) (· ≤ ·)]
