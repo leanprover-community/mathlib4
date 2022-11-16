@@ -52,6 +52,7 @@ import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
+import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Quot
