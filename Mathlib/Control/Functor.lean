@@ -17,7 +17,7 @@ This module provides additional lemmas, definitions, and instances for `Functor`
 * `Functor.Const α` is the functor that sends all types to `α`.
 * `Functor.AddConst α` is `Functor.Const α` but for when `α` has an additive structure.
 * `Functor.Comp F G` for functors `F` and `G` is the functor composition of `F` and `G`.
-* `liftp` and `liftr` respectively lift predicates and relations on a type `α`
+* `Liftp` and `Liftr` respectively lift predicates and relations on a type `α`
   to `F α`.  Terms of `F α` are considered to, in some sense, contain values of type `α`.
 
 ## Tags
