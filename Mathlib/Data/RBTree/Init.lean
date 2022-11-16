@@ -12,7 +12,7 @@ import Mathlib.Init.Data.Ordering.Basic
 universe u v
 
 inductive RBNode (α : Type u) where
-  | leaf : α → RBNode α
+  | leaf : RBNode α
   | red_node (lchild : RBNode α) (val : α) (rchild : RBNode α ) : RBNode α
   | black_node (lchild : RBNode α) (val : α) (rchild : RBNode α) : RBNode α
 
@@ -35,35 +35,35 @@ instance Color.decidableEq : DecidableEq Color := fun a b =>
 #align rbnode.color.decidable_eq RBNode.Color.decidableEq
 
 def depth (f : Nat → Nat → Nat) : RBNode α → Nat
-  | leaf _ => 0
+  | leaf => 0
   | red_node l _ r => succ (f (depth f l) (depth f r))
   | black_node l _ r => succ (f (depth f l) (depth f r))
 #align rbnode.depth RBNode.depth
 
 protected def min : RBNode α → Option α
-  | leaf _ => none
-  | red_node (leaf _) v _ => some v
-  | black_node (leaf _) v _ => some v
+  | leaf => none
+  | red_node leaf v _ => some v
+  | black_node leaf v _ => some v
   | red_node l _ _ => RBNode.min l
   | black_node l _ _ => RBNode.min l
 #align rbnode.min RBNode.min
 
 protected def max : RBNode α → Option α
-  | leaf _ => none
-  | red_node _ v (leaf _) => some v
-  | black_node _ v (leaf _) => some v
+  | leaf => none
+  | red_node _ v leaf => some v
+  | black_node _ v leaf => some v
   | red_node _ _ r => RBNode.max r
   | black_node _ _ r => RBNode.max r
 #align rbnode.max RBNode.max
 
 def fold (f : α → β → β) : RBNode α → β → β
-  | leaf _, b => b
+  | leaf, b => b
   | red_node l v r, b => fold f r (f v (fold f l b))
   | black_node l v r, b => fold f r (f v (fold f l b))
 #align rbnode.fold RBNode.fold
 
 def revFold (f : α → β → β) : RBNode α → β → β
-  | leaf _, b => b
+  | leaf, b => b
   | red_node l v r, b => revFold f l (f v (revFold f r b))
   | black_node l v r, b => revFold f l (f v (revFold f r b))
 #align rbnode.rev_fold RBNode.revFold
@@ -77,7 +77,7 @@ def balance1 : RBNode α → α → RBNode α → α → RBNode α → RBNode α
 def balance1Node : RBNode α → α → RBNode α → RBNode α
   | red_node l x r, v, t => balance1 l x r v t
   | black_node l x r, v, t => balance1 l x r v t
-  | leaf _, _, t => t
+  | leaf, _, t => t
 #align rbnode.balance1_node RBNode.balance1Node
 
 -- dummy value
@@ -90,7 +90,7 @@ def balance2 : RBNode α → α → RBNode α → α → RBNode α → RBNode α
 def balance2Node : RBNode α → α → RBNode α → RBNode α
   | red_node l x r, v, t => balance2 l x r v t
   | black_node l x r, v, t => balance2 l x r v t
-  | leaf _, _, t => t
+  | leaf, _, t => t
 #align rbnode.balance2_node RBNode.balance2Node
 
 -- dummy
@@ -104,8 +104,7 @@ section Insert
 variable (lt : α → α → Prop) [DecidableRel lt]
 
 def ins : RBNode α → α → RBNode α
-  | leaf _, x => red_node (leaf _) x (leaf _)
-  --| leaf             x  := red_node leaf x leaf
+  | leaf, x => red_node leaf x leaf
   | red_node a y b, x =>
     match cmpUsing lt x y with
     | Ordering.lt => red_node (ins a x) y b
@@ -140,13 +139,13 @@ section Membership
 variable (lt : α → α → Prop)
 
 def Mem : α → RBNode α → Prop
-  | _, leaf _ => False
+  | _, leaf => False
   | a, red_node l v r => RBNode.Mem a l ∨ ¬lt a v ∧ ¬lt v a ∨ RBNode.Mem a r
   | a, black_node l v r => RBNode.Mem a l ∨ ¬lt a v ∧ ¬lt v a ∨ RBNode.Mem a r
 #align rbnode.mem RBNode.Mem
 
 def MemExact : α → RBNode α → Prop
-  | _, leaf _ => False
+  | _, leaf => False
   | a, red_node l v r => RBNode.MemExact a l ∨ a = v ∨ RBNode.MemExact a r
   | a, black_node l v r => RBNode.MemExact a l ∨ a = v ∨ RBNode.MemExact a r
 #align rbnode.mem_exact RBNode.MemExact
@@ -154,7 +153,7 @@ def MemExact : α → RBNode α → Prop
 variable [DecidableRel lt]
 
 def find : RBNode α → α → Option α
-  | leaf _, _ => none
+  | leaf, _ => none
   | red_node a y b, x =>
     match cmpUsing lt x y with
     | Ordering.lt => find a x
@@ -170,7 +169,7 @@ def find : RBNode α → α → Option α
 end Membership
 
 inductive WellFormed (lt : α → α → Prop) : RBNode α → Prop
-  | leaf_wff : WellFormed lt (leaf _)
+  | leaf_wff : WellFormed lt leaf
   | insert_wff {n n' : RBNode α} {x : α} [DecidableRel lt] :
       WellFormed lt n → n' = insert lt n x → WellFormed lt n'
 #align rbnode.well_formed RBNode.WellFormed
