@@ -498,10 +498,10 @@ theorem heq_of_cast_eq : ∀ (e : α = β) (_ : cast e a = a'), HEq a a'
   | rfl, h => Eq.recOn h (HEq.refl _)
 
 theorem cast_eq_iff_heq : cast e a = a' ↔ HEq a a' :=
-  ⟨heq_of_cast_eq _, fun h => by cases h <;> rfl⟩
+  ⟨heq_of_cast_eq _, fun h => by cases h; rfl⟩
 
 theorem rec_heq_of_heq {C : α → Sort _} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
-    HEq (@Eq.ndrec α a C x b e) y := by subst e <;> exact h
+    HEq (@Eq.ndrec α a C x b e) y := by subst e; exact h
 
 protected theorem Eq.congr (h₁ : x₁ = y₁) (h₂ : x₂ = y₂) : x₁ = x₂ ↔ y₁ = y₂ := by
   subst h₁; subst h₂; rfl
@@ -767,7 +767,7 @@ theorem exists_prop_congr' {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h �
     Exists q = ∃ h : p', q' (hp.2 h) :=
   propext (exists_prop_congr hq hp)
 
-/-- See `is_empty.exists_iff` for the `false` version. -/
+/-- See `IsEmpty.exists_iff` for the `false` version. -/
 @[simp] theorem exists_true_left (p : True → Prop) : (∃ x, p x) ↔ p True.intro :=
   exists_prop_of_true _
 
@@ -783,7 +783,7 @@ theorem forall_prop_congr' {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h �
     (∀ h, q h) = ∀ h : p', q' (hp.2 h) :=
   propext (forall_prop_congr hq hp)
 
-/-- See `is_empty.forall_iff` for the `false` version. -/
+/-- See `IsEmpty.forall_iff` for the `false` version. -/
 @[simp] theorem forall_true_left (p : True → Prop) : (∀ x, p x) ↔ p True.intro :=
   forall_prop_of_true _
 
