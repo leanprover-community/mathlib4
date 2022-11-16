@@ -25,7 +25,7 @@ instance : LinearOrder Char where
   decidable_eq := by infer_instance --Char.decidableLeChar.decidableEq
   decidable_lt := by infer_instance --Char.decidableLeChar.decidableLt
 
-theorem Char.ofNat_toNat {c : Char} (h : IsValidChar c.toNat) : Char.ofNat c.toNat = c := by
+theorem Char.ofNat_toNat {c : Char} (h : isValidCharNat c.toNat) : Char.ofNat c.toNat = c := by
   rw [Char.ofNat, dif_pos h]
   cases c
   simp [Char.toNat]
