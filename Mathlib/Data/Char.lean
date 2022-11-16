@@ -1,5 +1,15 @@
+/-
+Copyright (c) 2018 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro
+-/
+import Mathlib.Data.UInt
 import Mathlib.Init.Algebra.Order
+/-!
+# More `char` instances
 
+This file provides a `linear_order` instance on `char`. `char` is the type of Unicode scalar values.
+-/
 
 
 /-- Convert a character into a `UInt8`, by truncating (reducing modulo 256) if necessary. -/
@@ -12,22 +22,24 @@ theorem Char.utf8Size_pos (c : Char) : 0 < c.utf8Size := by
 
 theorem String.csize_pos : (c : Char) → 0 < String.csize c := Char.utf8Size_pos
 
-/-- Define a `LinearOrder` on `Char`-/
 instance : LinearOrder Char where
-  le := (·≤·) --Char.hasLe
-  le_refl := fun a => @le_refl Nat _ _
-  le_trans := fun a b c => @le_trans Nat _ _ _ _
-  le_antisymm := fun a b h₁ h₂ => Char.eq_of_veq <| le_antisymm h₁ h₂
-  lt := (·<·) --Char.hasLt
-  lt_iff_le_not_le := fun a b => @lt_iff_le_not_le Nat _ _ _
-  le_total := fun a b => @le_total Nat _ _ _
-  decidable_le := by infer_instance --Char.decidableLe
-  decidable_eq := by infer_instance --Char.decidableLeChar.decidableEq
-  decidable_lt := by infer_instance --Char.decidableLeChar.decidableLt
+  le := (·≤·)
+  lt := (·<·)
+  le_refl := fun _ => @le_refl ℕ _ _
+  le_trans := fun _ _ _  => @le_trans ℕ _ _ _ _
+  le_antisymm := fun _ _ h₁ h₂ => Char.eq_of_val_eq <| UInt32.eq_of_val_eq <| Fin.ext <|
+    @le_antisymm ℕ _ _ _ h₁ h₂
+  lt_iff_le_not_le := fun _ _ => @lt_iff_le_not_le ℕ _ _ _
+  min := fun a b => if a ≤ b then a else b
+  max := fun a b => if a ≤ b then b else a
+  min_def := fun _ _ => rfl
+  max_def := fun _ _ => rfl
+  le_total := fun _ _ => @le_total ℕ _ _ _
+  decidable_le := inferInstance
+  decidable_eq := inferInstance
+  decidable_lt := inferInstance
 
 theorem Char.ofNat_toNat {c : Char} (h : isValidCharNat c.toNat) : Char.ofNat c.toNat = c := by
   rw [Char.ofNat, dif_pos h]
-  cases c
-  simp [Char.toNat]
-
+  rfl
 #align char.of_nat_to_nat Char.ofNat_toNat
