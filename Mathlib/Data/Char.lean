@@ -32,8 +32,6 @@ instance : LinearOrder Char where
   lt_iff_le_not_le := fun _ _ => @lt_iff_le_not_le ℕ _ _ _
   min := fun a b => if a ≤ b then a else b
   max := fun a b => if a ≤ b then b else a
-  min_def := fun _ _ => rfl
-  max_def := fun _ _ => rfl
   le_total := fun _ _ => @le_total ℕ _ _ _
   decidable_le := inferInstance
   decidable_eq := inferInstance
