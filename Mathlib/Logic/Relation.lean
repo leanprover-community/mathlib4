@@ -116,10 +116,7 @@ term of `β` related to both.
 def Comp (r : α → β → Prop) (p : β → γ → Prop) (a : α) (c : γ) : Prop :=
   ∃ b, r a b ∧ p b c
 
-/-- The composition of two relations, yielding a new relation.  The result
-relates a term of `α` and a term of `γ` if there is an intermediate
-term of `β` related to both.
--/
+@[inherit_doc]
 local infixr:80 " ∘r " => Relation.Comp
 
 theorem comp_eq : r ∘r (· = ·) = r :=
@@ -178,6 +175,7 @@ theorem _root_.Acc.of_downward_closed (dc : ∀ {a b}, rβ b (f a) → ∃ c, f 
     (ha : Acc (InvImage rβ f) a) : Acc rβ (f a) :=
   ha.of_fibration f fun a _ h =>
     let ⟨a', he⟩ := dc h
+    -- porting note: Lean 3 did not need the motive
     ⟨a', he.substr (p := λ x => rβ x (f a)) h, he⟩
 
 end Fibration
@@ -193,7 +191,7 @@ protected def Map (r : α → β → Prop) (f : α → γ) (g : β → δ) : γ 
 variable {r : α → α → Prop} {a b c d : α}
 
 /-- `ReflTransGen r`: reflexive transitive closure of `r` -/
-@[mk_iff Relation.ReflTransGen.cases_tail_iff]
+@[mk_iff ReflTransGen.cases_tail_iff]
 inductive ReflTransGen (r : α → α → Prop) (a : α) : α → Prop
   | refl : ReflTransGen r a a
   | tail {b c} : ReflTransGen r a b → r b c → ReflTransGen r a c
@@ -201,16 +199,20 @@ inductive ReflTransGen (r : α → α → Prop) (a : α) : α → Prop
 attribute [refl] ReflTransGen.refl
 
 /-- `ReflGen r`: reflexive closure of `r` -/
-@[mk_iff Relation.refl_gen_iff]
+@[mk_iff reflGen_iff]
 inductive ReflGen (r : α → α → Prop) (a : α) : α → Prop
   | refl : ReflGen r a a
   | single {b} : r a b → ReflGen r a b
 
+#align relation.refl_gen_iff Relation.reflGen_iff
+
 /-- `TransGen r`: transitive closure of `r` -/
-@[mk_iff Relation.trans_gen_iff]
+@[mk_iff transGen_iff]
 inductive TransGen (r : α → α → Prop) (a : α) : α → Prop
   | single {b} : r a b → TransGen r a b
   | tail {b c} : TransGen r a b → r b c → TransGen r a c
+
+#align relation.trans_gen_iff Relation.transGen_iff
 
 attribute [refl] ReflGen.refl
 
