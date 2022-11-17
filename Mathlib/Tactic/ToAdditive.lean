@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn
+Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 Ported by: E.W.Ayers
 -/
 import Mathlib.Data.String.Defs
@@ -31,6 +31,44 @@ syntax (name := to_additive_ignore_args) "to_additive_ignore_args" num* : attr
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg" num : attr
 syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
 syntax (name := to_additive) "to_additive" "!"? "?"? (ppSpace ident)? (ppSpace str)? : attr
+
+/--
+This function takes a String and splits it into separate parts based on the following
+(naming conventions)[https://github.com/leanprover-community/mathlib4/wiki#naming-convention].
+
+E.g. `#eval  "InvHMulLEConjugate₂Smul_ne_top".splitCase` yields
+`["Inv", "HMul", "LE", "Conjugate₂", "Smul", "_", "ne", "_", "top"]`.
+-/
+partial def String.splitCase (s : String) (i₀ : Pos := 0) (r : List String := []) : List String :=
+  -- We test if we need to split between `i₀` and `i₁`.
+  let i₁ := s.next i₀
+  let i₂ := s.next i₁
+  if s.atEnd i₁ then
+    -- If `i₀` is the last position, return the list.
+    let r := s::r
+    r.reverse
+  -- First, we split on both sides of `_` to keep them there when rejoining the string.
+  else if (s.get i₀ = '_') || (s.get i₁ = '_') then
+    let r := (s.extract 0 i₁)::r
+    splitCase (s.extract i₁ s.endPos) 0 r
+  -- Otherwise, we only ever split when there is an upper case at `i₁`.
+  else if (s.get i₁).isUpper then
+    -- There are two cases we need to split:
+    if (s.get i₀).isUpper then
+      -- 1) If `i₀` and `i₁` are upper, `i₂` is not upper, and `i₀ > 0`.
+      -- This prevents single capital letters being split.
+      -- Example: Splits `LEOne`to `LE`, `One` but leaves `HMul` together.
+      if (i₀ ≠ 0) && ¬((s.get i₂).isUpper) then
+        let r := (s.extract 0 i₁)::r
+        splitCase (s.extract i₁ s.endPos) 0 r
+      else
+        splitCase s i₁ r
+    -- 2) Upper `i₁` is preceeded by non-upper `i₀`.
+    else
+      let r := (s.extract 0 i₁)::r
+      splitCase (s.extract i₁ s.endPos) 0 r
+  else
+    splitCase s i₁ r
 
 namespace ToAdditive
 
@@ -391,52 +429,130 @@ structure ValueType : Type where
   ref : Syntax
   deriving Repr
 
-/-- `add_comm_prefix x s` returns `"comm_" ++ s` if `x = tt` and `s` otherwise. -/
-def addCommPrefix : Bool → String → String
-| true, s => "comm" ++ s.capitalize
-| false, s => s
+/-- Helper for `capitalizeLike`. -/
+partial def capitalizeLikeAux (s : String) (i : String.Pos := 0) : String →  String :=
+  fun p =>
+  if p.atEnd i || s.atEnd i then
+    p
+  else
+    let j := p.next i
+    if (s.get i).isLower then
+      capitalizeLikeAux s j (p.set i (p.get i |>.toLower))
+    else if (s.get i).isUpper then
+      capitalizeLikeAux s j (p.set i (p.get i |>.toUpper))
+    else
+      capitalizeLikeAux s j p
 
-/-- Dictionary used by `to_additive.guess_name` to autogenerate names.
-[todo] update to Lean 4 naming -/
-private def guessNameDict (is_comm : Bool) : List String → List String
-| "one" :: "le" :: s        => addCommPrefix is_comm "nonneg"    :: guessNameDict false s
-| "one" :: "lt" :: s        => addCommPrefix is_comm "pos"       :: guessNameDict false s
-| "le" :: "one" :: s        => addCommPrefix is_comm "nonpos"    :: guessNameDict false s
-| "lt" :: "one" :: s        => addCommPrefix is_comm "neg"       :: guessNameDict false s
-| "mul" :: "single" :: s    => addCommPrefix is_comm "single"    :: guessNameDict false s
-| "mul" :: "support" :: s   => addCommPrefix is_comm "support"   :: guessNameDict false s
-| "mul" :: "tsupport" :: s  => addCommPrefix is_comm "tsupport"  :: guessNameDict false s
-| "mul" :: "indicator" :: s => addCommPrefix is_comm "indicator" :: guessNameDict false s
-| "mul" :: s                => addCommPrefix is_comm "add"       :: guessNameDict false s
-| "smul" :: s               => addCommPrefix is_comm "vadd"      :: guessNameDict false s
-| "inv" :: s                => addCommPrefix is_comm "neg"       :: guessNameDict false s
-| "div" :: s                => addCommPrefix is_comm "sub"       :: guessNameDict false s
-| "one" :: s                => addCommPrefix is_comm "zero"      :: guessNameDict false s
-| "prod" :: s               => addCommPrefix is_comm "sum"       :: guessNameDict false s
-| "finprod" :: s            => addCommPrefix is_comm "finsum"    :: guessNameDict false s
-| "pow" :: s                => addCommPrefix is_comm "nsmul"     :: guessNameDict false s
-| "npow" :: s               => addCommPrefix is_comm "nsmul"     :: guessNameDict false s
-| "zpow" :: s               => addCommPrefix is_comm "zsmul"     :: guessNameDict false s
-| "monoid" :: s      => ("add_" ++ addCommPrefix is_comm "monoid")    :: guessNameDict false s
-| "submonoid" :: s   => ("add_" ++ addCommPrefix is_comm "submonoid") :: guessNameDict false s
-| "group" :: s       => ("add_" ++ addCommPrefix is_comm "group")     :: guessNameDict false s
-| "subgroup" :: s    => ("add_" ++ addCommPrefix is_comm "subgroup")  :: guessNameDict false s
-| "semigroup" :: s   => ("add_" ++ addCommPrefix is_comm "semigroup") :: guessNameDict false s
-| "magma" :: s       => ("add_" ++ addCommPrefix is_comm "magma")     :: guessNameDict false s
-| "haar" :: s        => ("add_" ++ addCommPrefix is_comm "haar")      :: guessNameDict false s
-| "prehaar" :: s     => ("add_" ++ addCommPrefix is_comm "prehaar")   :: guessNameDict false s
-| "unit" :: s        => ("add_" ++ addCommPrefix is_comm "unit")      :: guessNameDict false s
-| "units" :: s       => ("add_" ++ addCommPrefix is_comm "units")     :: guessNameDict false s
-| "comm" :: s        => guessNameDict true s
-| x :: s             => (addCommPrefix is_comm x :: guessNameDict false s)
-| []                 => bif is_comm then ["comm"] else []
+/-- Capitalizes `s` char-by-char like `r`. If `s` is longer, it leaves the tail untouched. -/
+def capitalizeLike (r : String) (s : String) :=
+  capitalizeLikeAux r 0 s
 
-/-- Autogenerate target name for `to_additive`. -/
+/-- Capitalize First element of a list like `s`. -/
+def capitalizeFirstLike (s : String) : List String → List String
+  | x :: r => capitalizeLike s x :: r
+  | [] => []
+
+/--
+Dictionary used by `guessName` to autogenerate names.
+
+Note: `guessName` capitalizes first element of the output according to
+capitalization of the input. Input and first element should therefore be lower-case,
+2nd element should be capitalized properly.
+-/
+private def nameDict : String → List String
+| "one"         => ["zero"]
+| "mul"         => ["add"]
+| "smul"        => ["vadd"]
+| "inv"         => ["neg"]
+| "div"         => ["sub"]
+| "prod"        => ["sum"]
+| "hmul"        => ["hadd"]
+| "hdiv"        => ["hsub"]
+| "hpow"        => ["hmul"]
+| "finprod"     => ["finsum"]
+| "pow"         => ["nsmul"]
+| "npow"        => ["nsmul"]
+| "zpow"        => ["zsmul"]
+| "monoid"      => ["add", "Monoid"]
+| "submonoid"   => ["add", "Submonoid"]
+| "group"       => ["add", "Group"]
+| "subgroup"    => ["add", "Subgroup"]
+| "semigroup"   => ["add", "Semigroup"]
+| "magma"       => ["add", "Magma"]
+| "haar"        => ["add", "Haar"]
+| "prehaar"     => ["add", "Prehaar"]
+| "unit"        => ["add", "Unit"]
+| "units"       => ["add", "Units"]
+| x             => [x]
+
+/--
+Turn each element to lower-case, apply the `nameDict` and
+capitalize the output like the input.
+-/
+def applyNameDict : List String → List String
+| x :: s => (capitalizeFirstLike x (nameDict x.toLower)) ++ applyNameDict s
+| [] => []
+
+/--
+There are a few abbreviations we use. For example "Nonneg" instead of "ZeroLE"
+or "addComm" instead of "commAdd".
+Note: The input to this function is case sensitive!
+-/
+def fixAbbreviation : List String → List String
+| "cancel" :: "Add" :: s            => "addCancel" :: fixAbbreviation s
+| "Cancel" :: "Add" :: s            => "AddCancel" :: fixAbbreviation s
+| "left" :: "Cancel" :: "Add" :: s  => "addLeftCancel" :: fixAbbreviation s
+| "Left" :: "Cancel" :: "Add" :: s  => "AddLeftCancel" :: fixAbbreviation s
+| "right" :: "Cancel" :: "Add" :: s => "addRightCancel" :: fixAbbreviation s
+| "Right" :: "Cancel" :: "Add" :: s => "AddRightCancel" :: fixAbbreviation s
+| "cancel" :: "Comm" :: "Add" :: s  => "addCancelComm" :: fixAbbreviation s
+| "Cancel" :: "Comm" :: "Add" :: s  => "AddCancelComm" :: fixAbbreviation s
+| "comm" :: "Add" :: s              => "addComm" :: fixAbbreviation s
+| "Comm" :: "Add" :: s              => "AddComm" :: fixAbbreviation s
+| "Zero" :: "LE" :: s               => "Nonneg" :: fixAbbreviation s
+| "zero" :: "_" :: "le" :: s        => "nonneg" :: fixAbbreviation s
+| "Zero" :: "LT" :: s               => "Pos" :: fixAbbreviation s
+| "zero" :: "_" :: "lt" :: s        => "pos" :: fixAbbreviation s
+| "LE" :: "Zero" :: s               => "Nonpos" :: fixAbbreviation s
+| "le" :: "_" :: "zero" :: s        => "nonpos" :: fixAbbreviation s
+| "LT" :: "Zero" :: s               => "Neg" :: fixAbbreviation s
+| "lt" :: "_" :: "zero" :: s        => "neg" :: fixAbbreviation s
+| "Add" :: "Single" :: s            => "Single" :: fixAbbreviation s
+| "add" :: "Single" :: s            => "single" :: fixAbbreviation s
+| "add" :: "_" :: "single" :: s     => "single" :: fixAbbreviation s
+| "Add" :: "Support" :: s           => "Support" :: fixAbbreviation s
+| "add" :: "Support" :: s           => "support" :: fixAbbreviation s
+| "add" :: "_" :: "support" :: s    => "support" :: fixAbbreviation s
+ -- TODO: Is it `TSupport` or `Tsupport`?
+| "Add" :: "TSupport" :: s          => "TSupport" :: fixAbbreviation s
+| "add" :: "TSupport" :: s          => "tsupport" :: fixAbbreviation s
+| "add" :: "_" :: "tsupport" :: s   => "tsupport" :: fixAbbreviation s
+| "Add" :: "Indicator" :: s         => "Indicator" :: fixAbbreviation s
+| "add" :: "Indicator" :: s         => "indicator" :: fixAbbreviation s
+| "add" :: "_" :: "indicator" :: s  => "indicator" :: fixAbbreviation s
+-- TODO: Bug in `splitCase` splits like ["LEH", "Pow"] instead of ["LE", "HPow"].
+-- Currently we just fix these cases manually.
+| "HNsmul" :: s                     => "HMul" :: fixAbbreviation s
+| "hnsmul" :: s                     => "hmul" :: fixAbbreviation s
+| "Zero" :: "LEH" :: s              => "NonnegH" :: fixAbbreviation s
+| "Zero" :: "LTH" :: s              => "PosH" :: fixAbbreviation s
+| x :: s                            => x :: fixAbbreviation s
+| []                                => []
+
+/--
+Autogenerate additive name.
+This runs in several steps:
+1) Split according to capitalisation rule and at `_`.
+2) Apply word-by-word translation rules.
+3) Fix up abbreviations that are not word-by-word translations, like "addComm" or "Nonneg".
+-/
 def guessName : String → String :=
-  -- [todo] replace with camelcase logic?
-  String.mapTokens ''' $
-  fun s => String.intercalate (String.singleton '_') $
-  guessNameDict false (s.splitOn "_")
+  String.mapTokens ''' <|
+  fun s =>
+    String.join <|
+    fixAbbreviation <|
+    applyNameDict <|
+    s.splitCase
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
 def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
@@ -446,8 +562,8 @@ def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
     let .str pre s := src | throwError "to_additive: can't transport {src}"
     let tgt_auto := guessName s
     if tgt.toString == tgt_auto then
-      dbg_trace ("{src}: correctly autogenerated target name {tgt_auto}," ++
-        " you may remove the explicit {tgt} argument.")
+      dbg_trace "{src}: correctly autogenerated target name {tgt_auto
+        }, you may remove the explicit {tgt} argument."
     let pre := pre.mapPrefix <| findTranslation? (← getEnv)
     if tgt == Name.anonymous then
       return Name.mkStr pre tgt_auto
