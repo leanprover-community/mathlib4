@@ -99,8 +99,8 @@ def CommMonoid [h : MulOneClass X]
 then the group is commutative. -/
 @[reducible,
   to_additive
-      "If a type carries an additive group structure that\ndistributes over a unital binary operation,
-      then the additive group is commutative."]
+      "If a type carries an additive group structure that\ndistributes over a unital binary
+      operation, then the additive group is commutative."]
 def commGroup [G : Group X]
     (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : CommGroup X :=
   { EckmannHilton.CommMonoid h₁ distrib, G with }
