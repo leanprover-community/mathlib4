@@ -80,6 +80,8 @@ open TSyntax.Compat
 
   Changes from `StructInst.lean` are marked with `!!` in a comment (or with `!!/`, `!!\` surrounding a new or altered block).
 
+  Existing comments are left unchanged, and new comments begin with "~~".
+
   ## Syntax
 
   We use the parser from `Term.lean`, but change `optional ".."` to our parseer for variadic holes, `variadicHole`
@@ -148,16 +150,40 @@ open TSyntax.Compat
 
   The new functionality is in the `ImplicitFields` section to attach metadata to the goals produced. Currently, we attach the metadata as a `KVMap` to the type of the goal, but this may change. We use this metadata to resolve name conflicts, appending an appropriate index if any existing metavariable is from a structure that shares a field name. This is meant to improve clarity: for example, if `Foo` and `Bar` both have fields `x` and `y`, `refine ({ y := 0, ?.. : Foo}, { x := 1, ?.. : Bar})` will produce goals `x` and `y_1` to show that these are not from the same structure. (This may change if we decide to prefix each goal name with the name of the structure.)
 
+  # Problems
+
+  * Should `trySynthStructInstance?` be run even when `useDefaults` is `false`?
+
+  * what about `bi == .instImplicit`?
+
+  * should metadata be on the type, or somewhere else?
+
+  * is the best way to get a unique id for a syntax instance via getPos? Do we need to do so anyway?
+
+  * should utility-like functions be refactored into other files?
+
+  * Can the docstrings of the original structure instance and `refine` be modified from "within mathlib" somehow?
+
 -/
 
 --!!/
-def vH?dd      := leading_parser "?.." >> Parser.optional Parser.ident
-def vH?dd!     := leading_parser "?..!" >> Parser.optional Parser.ident
-def vHdd!      := leading_parser "..!"
-def vHdd       := leading_parser "..."
-def variadicHole      := leading_parser (vH?dd <|> vH?dd! <|> vHdd! <|> vHdd)
+def vH?dd        := leading_parser "?.." >> Parser.optional Parser.ident
+def vH?dd!       := leading_parser "?..!" >> Parser.optional Parser.ident
+def vHdd!        := leading_parser "..!"
+def vHdd         := leading_parser "..."
+def variadicHole := leading_parser (vH?dd <|> vH?dd! <|> vHdd! <|> vHdd)
 
 open Lean.Parser Lean.Parser.Term in
+/--
+Structure instance. `{ x := e, ... }` assigns `e` to field `x`, which may be
+inherited. If `e` is itself a variable called `x`, it can be elided:
+`fun x => { x , y := 1 }`.
+A *structure update* of an existing value can be given via `with`:
+`{ point with x := 1 }`.
+The structure type can be specified if not inferable:
+`{ x := 1, y := 2 : Point }`.
+`?..` will fill fields with automatically-named holes: `{ x := 1, ?.. : Point3D }` will create `?y`, `?z`.
+-/
 @[term_parser] def structInstWithHoles := leading_parser "{" >> ppHardSpace >> Lean.Parser.optional (atomic (sepBy1 termParser ", " >> " with "))
   >> sepByIndent (structInstFieldAbbrev <|> structInstField) ", " (allowTrailingSep := true)
   >> variadicHole --!! Only apply this elaboration to syntax that has one of these holes
@@ -765,7 +791,7 @@ def trySynthStructInstance? (s : Struct) (expectedType : Expr) : TermElabM (Opti
   else
     try synthInstance? expectedType catch _ => return none
 
---!!/
+--!!/ By Mario Carneiro
 def toSyntax (e : Expr) (type? : Option Expr := none) : TermElabM Syntax := withFreshMacroScope do
   let stx ← `(?a)
   let mvar ← elabTerm stx type?
