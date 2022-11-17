@@ -27,6 +27,7 @@ namespace EckmannHilton
 
 variable {X : Type u}
 
+/-- Local notation for `m a b`. -/
 local notation a " <" m:51 "> " b => m a b
 
 /-- `IsUnital m e` expresses that `e : X` is a left and right unit
@@ -65,7 +66,6 @@ theorem mul : m₁ = m₂ := by
     m₁ a b = m₁ (m₂ a e₁) (m₂ e₁ b) := by
       { simp only [one h₁ h₂ distrib, h₁.left_id, h₁.right_id, h₂.left_id, h₂.right_id] }
     _ = m₂ a b := by simp only [distrib, h₁.left_id, h₁.right_id, h₂.left_id, h₂.right_id]
-
 #align eckmann_hilton.mul EckmannHilton.mul
 
 /-- If a type carries two unital binary operations that distribute over each other,
