@@ -64,11 +64,11 @@ def mkPositivityExt (n : Name) : ImportM PositivityExt := do
 
 /-- Each `positivity` extension is labelled with a collection of patterns
 which determine the expressions to which it should be applied. -/
-abbrev Entry := Array (Array DiscrTree.Key) × Name
+abbrev Entry := Array (Array (DiscrTree.Key true)) × Name
 
 /-- Environment extensions for `positivity` declarations -/
 initialize positivityExt : PersistentEnvExtension Entry (Entry × PositivityExt)
-    (List Entry × DiscrTree PositivityExt) ←
+    (List Entry × DiscrTree PositivityExt true) ←
   -- we only need this to deduplicate entries in the DiscrTree
   have : BEq PositivityExt := ⟨fun _ _ => false⟩
   let insert kss v dt := kss.foldl (fun dt ks => dt.insertCore ks v) dt
