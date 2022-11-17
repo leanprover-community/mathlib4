@@ -104,6 +104,6 @@ then the group is commutative. -/
 def commGroup [G : Group X]
     (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : CommGroup X :=
   { EckmannHilton.CommMonoid h₁ distrib, G with }
-#align eckmann_hilton.comm_group EckmannHilton.commGroup
+#align eckmann_hilton.comm_group EckmannHilton.CommGroup
 
 end EckmannHilton
