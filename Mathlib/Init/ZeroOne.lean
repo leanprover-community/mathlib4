@@ -19,7 +19,7 @@ instance Zero.ofOfNat0 {α} [OfNat α (nat_lit 0)] : Zero α where
   zero := 0
 
 
-@[to_additive Zero]
+@[to_additive]
 class One (α : Type u) where
   one : α
 #align has_one One

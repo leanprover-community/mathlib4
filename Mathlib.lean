@@ -15,6 +15,7 @@ import Mathlib.Algebra.Order.Group
 import Mathlib.Algebra.Order.Monoid
 import Mathlib.Algebra.Order.MonoidLemmas
 import Mathlib.Algebra.Order.Ring
+import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.Control.Random
@@ -38,6 +39,7 @@ import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Cast
 import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.KVMap
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Card
@@ -51,6 +53,7 @@ import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
+import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Quot
@@ -102,6 +105,8 @@ import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Lemmas
 import Mathlib.Logic.Nonempty
 import Mathlib.Logic.Nontrivial
+import Mathlib.Logic.Pairwise
+import Mathlib.Logic.Relation
 import Mathlib.Logic.Relator
 import Mathlib.Logic.Unique
 import Mathlib.Mathport.Attributes
@@ -126,7 +131,6 @@ import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
-import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Congr
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Contrapose
@@ -148,6 +152,7 @@ import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormCast.Tactic
@@ -155,6 +160,9 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.PermuteGoals
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Recover
@@ -170,6 +178,7 @@ import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Ring.RingNF
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.Sat.FromLRAT
+import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro

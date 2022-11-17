@@ -454,12 +454,12 @@ theorem LinearOrder.toPartialOrder_injective {α : Type _} :
     have : A_min = B_min := by
       funext a b
       show (Min.mk A_min).min a b = (Min.mk B_min).min a b
-      simp [*] <;> split <;> rfl
+      simp [*]; split <;> rfl
     cases this
     have : A_max = B_max := by
       funext a b
       show (Max.mk A_max).max a b = (Max.mk B_max).max a b
-      simp [*] <;> split <;> rfl
+      simp [*]; split <;> rfl
     cases this
     congr <;> exact Subsingleton.elim _ _
 #align linear_order.to_partial_order_injective LinearOrder.toPartialOrder_injective

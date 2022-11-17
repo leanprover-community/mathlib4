@@ -90,11 +90,39 @@ def List.init : List α → List α
 | [_]    => []
 | a::l => a::init l
 
-/-- Converts an inductive constructor `c` into an intermediate representation that
-will later be mapped into a proposition.
+/-- Auxiliary data associated with a single constructor of an inductive declaration.
+-/
+structure Shape : Type where
+  /-- For each forall-bound variable in the type of the constructor, minus
+  the "params" that apply to the entire inductive type, this list contains `true`
+  if that variable has been kept after `compactRelation`.
+
+  For example, `List.Chain.nil` has type
+  ```lean
+    ∀ {α : Type u_1} {R : α → α → Prop} {a : α}, List.Chain R a []`
+  ```
+  and the first two variables `α` and `R` are "params", while the `a : α` gets
+  eliminated in a `compactRelation`, so `variablesKept = [false].
+
+  `List.Chain.cons` has type
+  ```lean
+    ∀ {α : Type u_1} {R : α → α → Prop} {a b : α} {l : List α},
+       R a b → List.Chain R b l → List.Chain R a (b :: l)
+  ```
+  and the `a : α` gets eliminated, so `compactRelation = [false,true,true,true,true]`.
+   -/
+  variablesKept : List Bool
+
+  /-- The number of equalities, or `none` in the case when we've reduced something
+  of the form `p ∧ True` to just `p`.
+  -/
+  neqs : Option Nat
+
+/-- Converts an inductive constructor `c` into a `Shape` that will be used later in
+while proving the iff theorem, and a proposition representing the constructor.
 -/
 def constrToProp (univs : List Level) (params : List Expr) (idxs : List Expr) (c : Name) :
-  MetaM ((List (Option Expr) × (Expr ⊕ Nat)) × Expr)  :=
+  MetaM (Shape × Expr)  :=
 do let type := (← getConstInfo c).instantiateTypeLevelParams univs
    let type' ← Meta.forallBoundedTelescope type (params.length) fun fvars ty => do
      pure $ ty.replaceFVars fvars params.toArray
@@ -102,7 +130,6 @@ do let type := (← getConstInfo c).instantiateTypeLevelParams univs
    Meta.forallTelescope type' fun fvars ty => do
      let idxs_inst := ty.getAppArgs.toList.drop params.length
      let (bs, eqs, subst) := compactRelation fvars.toList (idxs.zip idxs_inst)
-     let bs' := bs.filterMap id
      let eqs ← eqs.mapM (λ⟨idx, inst⟩ => do
           let ty ← idx.fvarId!.getType
           let instTy ← inferType inst
@@ -110,22 +137,22 @@ do let type := (← getConstInfo c).instantiateTypeLevelParams univs
           if ←isDefEq ty instTy
           then pure (mkApp3 (mkConst `Eq [u]) ty idx inst)
           else pure (mkApp4 (mkConst `HEq [u]) ty idx instTy inst))
-     let (n, r) ← match bs', eqs with
+     let (n, r) ← match bs.filterMap id, eqs with
      | [], [] => do
-           pure (Sum.inr 0, (mkConst `True))
-     | _, []  => do
+           pure (some 0, (mkConst `True))
+     | bs', []  => do
           let t : Expr ← bs'.getLast!.fvarId!.getType
           let l := (←inferType t).sortLevel!
           if l == Level.zero then do
             let r ← mkExistsList (List.init bs') t
-            pure (Sum.inl bs'.getLast!, subst r)
+            pure (none, subst r)
           else do
             let r ← mkExistsList bs' (mkConst `True)
-            pure (Sum.inr 0, subst r)
-     | _, _ => do
+            pure (some 0, subst r)
+     | bs', _ => do
        let r ← mkExistsList bs' (mkAndList eqs)
-       pure (Sum.inr eqs.length, subst r)
-     pure ((bs, n), r)
+       pure (some eqs.length, subst r)
+     pure (⟨bs.map Option.isSome, n⟩, r)
 
 /-- Splits the goal `n` times via `refine ⟨?_,?_⟩`, and then applies `constructor` to
 close the resulting subgoals.
@@ -149,20 +176,20 @@ match n with
 /-- Proves the left to right direction of a generated iff theorem.
 `shape` is the output of a call to `constrToProp`.
 -/
-def toCases (mvar : MVarId) (shape : List $ List (Option Expr) × (Expr ⊕ Nat)) : MetaM Unit :=
+def toCases (mvar : MVarId) (shape : List Shape) : MetaM Unit :=
 do
   let ⟨h, mvar'⟩ ← mvar.intro1
   let subgoals ← mvar'.cases h
   let _ ← (shape.zip subgoals.toList).enum.mapM fun ⟨p, ⟨⟨shape, t⟩, subgoal⟩⟩ => do
     let vars := subgoal.fields
-    let si := (shape.zip vars.toList).filterMap (λ ⟨c,v⟩ => c >>= λ _ => some v)
+    let si := (shape.zip vars.toList).filterMap (λ ⟨c,v⟩ => if c then some v else none)
     let mvar'' ← select p (subgoals.size - 1) subgoal.mvarId
     match t with
-    | Sum.inl _ => do
+    | none => do
       let v := vars.get! (shape.length - 1)
       let mv ← mvar''.existsi (List.init si)
       mv.assign v
-    | Sum.inr n => do
+    | some n => do
       let mv ← mvar''.existsi si
       splitThenConstructor mv (n - 1)
   pure ()
@@ -193,26 +220,25 @@ match n with
   pure (mvar', fvar1::rest)
 
 /--
-Iterate over two lists, if the first element of the first list is `none`, insert `none` into the
+Iterate over two lists, if the first element of the first list is `false`, insert `none` into the
 result and continue with the tail of first list. Otherwise, wrap the first element of the second
 list with `some` and continue with the tails of both lists. Return when either list is empty.
 
 Example:
 ```
-listOptionMerge [none, some (), none, some ()] [0, 1, 2, 3, 4] = [none, (some 0), none, (some 1)]
+listBoolMerge [false, true, false, true] [0, 1, 2, 3, 4] = [none, (some 0), none, (some 1)]
 ```
 -/
-def listOptionMerge {α : Type _} {β : Type _} : List (Option α) → List β → List (Option β)
+def listBoolMerge {α : Type _} : List Bool → List α → List (Option α)
 | [], _ => []
-| none :: xs, ys => none :: listOptionMerge xs ys
-| some _ :: xs, y :: ys => some y :: listOptionMerge xs ys
-| some _ :: _, [] => []
+| false :: xs, ys => none :: listBoolMerge xs ys
+| true :: xs, y :: ys => some y :: listBoolMerge xs ys
+| true :: _, [] => []
 
 /-- Proves the right to left direction of a generated iff theorem.
-`s` is the output of a call to `constrToProp`.
 -/
 def toInductive (mvar : MVarId) (cs : List Name)
-  (gs : List Expr) (s : List (List (Option Expr) × (Expr ⊕ Nat))) (h : FVarId) :
+  (gs : List Expr) (s : List Shape) (h : FVarId) :
   MetaM Unit := do
   match s.length with
   | 0       => do let _ ← mvar.cases h
@@ -220,13 +246,13 @@ def toInductive (mvar : MVarId) (cs : List Name)
   | (n + 1) => do
       let subgoals ← nCasesSum n mvar h
       let _ ← (cs.zip (subgoals.zip s)).mapM $ λ⟨constr_name, ⟨h, mv⟩, bs, e⟩ => do
-        let n := (bs.filterMap id).length
+        let n := (bs.filter id).length
         let (mvar', _fvars) ← match e with
-        | Sum.inl _ => nCasesProd (n-1) mv h
-        | Sum.inr 0 => do let ⟨mvar', fvars⟩ ← nCasesProd n mv h
+        | none => nCasesProd (n-1) mv h
+        | some 0 => do let ⟨mvar', fvars⟩ ← nCasesProd n mv h
                           let mvar'' ← mvar'.tryClear fvars.getLast!
                           pure ⟨mvar'', fvars⟩
-        | Sum.inr (e + 1) => do
+        | some (e + 1) => do
            let (mv', fvars) ← nCasesProd n mv h
            let lastfv := fvars.getLast!
            let (mv2, fvars') ← nCasesProd e mv' lastfv
@@ -240,11 +266,10 @@ def toInductive (mvar : MVarId) (cs : List Name)
                                    ) mv3
            pure (mv4, fvars)
         mvar'.withContext do
-          let ctxt ← getLCtx
-          let fvarIds := ctxt.getFVarIds.toList
+          let fvarIds := (←getLCtx).getFVarIds.toList
           let gs := fvarIds.take gs.length
           let hs := (fvarIds.reverse.take n).reverse
-          let m := gs.map some ++ listOptionMerge bs hs
+          let m := gs.map some ++ listBoolMerge bs hs
           let args ← m.mapM (λa => match a with
                                    | some v => pure $ mkFVar v
                                    | none => mkFreshExprMVar none)
@@ -308,28 +333,28 @@ be just `c = i` for some index `i`.
 For example, if we try the following:
 ```lean
 @[mk_iff]
-structure foo (m n : Nat) : Prop where
+structure Foo (m n : Nat) : Prop where
   equal : m = n
   sum_eq_two : m + n = 2
 ```
 
-Then `#check foo_iff` returns:
+Then `#check Foo_iff` returns:
 ```lean
-foo_iff : ∀ (m n : Nat), foo m n ↔ m = n ∧ m + n = 2
+Foo_iff : ∀ (m n : Nat), Foo m n ↔ m = n ∧ m + n = 2
 ```
 
 You can add an optional string after `mk_iff` to change the name of the generated lemma.
 For example, if we try the following:
 ```lean
 @[mk_iff bar]
-structure foo (m n : Nat) : Prop where
+structure Foo (m n : Nat) : Prop where
   equal : m = n
   sum_eq_two : m + n = 2
 ```
 
 Then `#check bar` returns:
 ```lean
-bar : ∀ (m n : ℕ), foo m n ↔ m = n ∧ m + n = 2
+bar : ∀ (m n : ℕ), Foo m n ↔ m = n ∧ m + n = 2
 ```
 
 See also the user command `mk_iff_of_inductive_prop`.
