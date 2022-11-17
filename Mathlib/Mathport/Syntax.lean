@@ -55,6 +55,7 @@ import Mathlib.Tactic.Replace
 import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.RunCmd
+import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro
@@ -495,22 +496,6 @@ namespace Command
 /- M -/ syntax (name := addHintTactic) "add_hint_tactic " tactic : command
 
 /- S -/ syntax (name := explode) "#explode " ident : command
-
-syntax (name := localized) "localized " "[" ident "] " command : command
-macro_rules
-  | `(localized [$ns] notation $[$prec:precedence]? $[$n:namedName]? $[$prio:namedPrio]?
-       $sym => $t) =>
-    let ns := mkIdentFrom ns <| rootNamespace ++ ns.getId
-    `(with_weak_namespace $ns
-      scoped notation $[$prec:precedence]? $[$n:namedName]? $[$prio:namedPrio]? $sym => $t)
-  | `(localized [$ns] $_:attrKind $mixfixKind $prec:precedence $[$n:namedName]? $[$prio:namedPrio]?
-       $sym => $t) =>
-    let ns := mkIdentFrom ns <| rootNamespace ++ ns.getId
-    `(with_weak_namespace $ns
-      scoped $mixfixKind $prec:precedence $[$n:namedName]? $[$prio:namedPrio]? $sym => $t)
-  | `(localized [$ns] attribute [$attr:attr] $ids*) =>
-    let ns := mkIdentFrom ns <| rootNamespace ++ ns.getId
-    `(with_weak_namespace $ns attribute [scoped $attr:attr] $ids*)
 
 /- S -/ syntax (name := listUnusedDecls) "#list_unused_decls" : command
 
