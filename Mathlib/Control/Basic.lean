@@ -277,9 +277,13 @@ instance : LawfulMonad (Sum.{v, u} e) where
 
 end Sum
 
+section commutative
+
+variable (m : Type _ → Type _)
+
 /-- A `CommApplicative` functor `m` is a (lawful) applicative functor which behaves identically on
 `α × β` and `β × α`, so computations can occur in either order. -/
-class CommApplicative (m : Type _ → Type _) [Applicative m] extends LawfulApplicative m : Prop where
+class CommApplicative [Applicative m] extends LawfulApplicative m : Prop where
   /-- Computations performed first on `a : α` and then on `b : β` are equal to those performed in
   the reverse order. -/
   commutative_prod : ∀ {α β} (a : m α) (b : m β),
@@ -288,7 +292,9 @@ class CommApplicative (m : Type _ → Type _) [Applicative m] extends LawfulAppl
 
 open Functor
 
-theorem CommApplicative.commutative_map {m : Type _ → Type _} [h : Applicative m]
+variable {m}
+
+theorem CommApplicative.commutative_map [h : Applicative m]
   [CommApplicative m] {α β γ} (a : m α) (b : m β) {f : α → β → γ} :
   f <$> a <*> b = flip f <$> b <*> a :=
   calc
@@ -301,3 +307,5 @@ theorem CommApplicative.commutative_map {m : Type _ → Type _} [h : Applicative
         simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]
 
 #align is_comm_applicative.commutative_map IsCommApplicative.commutative_map
+
+end commutative
