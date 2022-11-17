@@ -189,8 +189,7 @@ theorem mul_comm : ∀ a b : G, a * b = b * a :=
 `AddCommSemigroup G` that satisfies `isRightCancelAdd G` also satisfies
 `isLeftCancelAdd G`."]
 lemma CommSemigroup.IsRightCancelMul.to_IsLeftCancelMul (G : Type u) [CommSemigroup G]
-  [IsRightCancelMul G] :
-    IsLeftCancelMul G :=
+  [IsRightCancelMul G] : IsLeftCancelMul G :=
   { mul_left_cancel := fun a b c h => by
       rw [mul_comm a b, mul_comm a c] at h
       exact IsRightCancelMul.mul_right_cancel _ _ _ h }
@@ -201,8 +200,7 @@ lemma CommSemigroup.IsRightCancelMul.to_IsLeftCancelMul (G : Type u) [CommSemigr
 `AddCommSemigroup G` that satisfies `isLeftCancelAdd G` also satisfies
 `isRightCancelAdd G`."]
 lemma CommSemigroup.IsLeftCancelMul.to_IsRightCancelMul (G : Type u) [CommSemigroup G]
-  [IsLeftCancelMul G] :
-    IsRightCancelMul G :=
+  [IsLeftCancelMul G] : IsRightCancelMul G :=
   { mul_right_cancel := fun a b c h => by
       rw [mul_comm a b, mul_comm c b] at h
       exact IsLeftCancelMul.mul_left_cancel _ _ _ h }
@@ -213,8 +211,7 @@ lemma CommSemigroup.IsLeftCancelMul.to_IsRightCancelMul (G : Type u) [CommSemigr
 `AddCommSemigroup G` that satisfies `isLeftCancelAdd G` also satisfies
 `isCancelAdd G`."]
 lemma CommSemigroup.IsLeftCancelMul.to_IsCancelMul (G : Type u) [CommSemigroup G]
-  [IsLeftCancelMul G] :
-    IsCancelMul G :=
+  [IsLeftCancelMul G] : IsCancelMul G :=
   { mul_right_cancel := fun a b c h => by
       rw [mul_comm a b, mul_comm c b] at h
       exact IsLeftCancelMul.mul_left_cancel _ _ _ h }
@@ -225,8 +222,7 @@ lemma CommSemigroup.IsLeftCancelMul.to_IsCancelMul (G : Type u) [CommSemigroup G
 `AddCommSemigroup G` that satisfies `isRightCancelAdd G` also satisfies
 `isCancelAdd G`."]
 lemma CommSemigroup.IsRightCancelMul.to_IsCancelMul (G : Type u) [CommSemigroup G]
-  [IsRightCancelMul G] :
-    IsCancelMul G :=
+  [IsRightCancelMul G] : IsCancelMul G :=
   { mul_left_cancel := fun a b c h => by
       rw [mul_comm a b, mul_comm a c] at h
       exact IsRightCancelMul.mul_right_cancel _ _ _ h }
