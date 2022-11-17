@@ -159,8 +159,9 @@ theorem copy_eq (u : αˣ) (val hv inv hi) : u.copy val hv inv hi = u :=
 @[to_additive]
 instance : MulOneClass αˣ where
   mul u₁ u₂ :=
-    ⟨u₁.val * u₂.val, u₂.inv * u₁.inv, by rw [mul_assoc, ← mul_assoc u₂.val, val_inv, one_mul, val_inv], by
-      rw [mul_assoc, ← mul_assoc u₁.inv, inv_val, one_mul, inv_val]⟩
+    ⟨u₁.val * u₂.val, u₂.inv * u₁.inv,
+      by rw [mul_assoc, ← mul_assoc u₂.val, val_inv, one_mul, val_inv],
+      by rw [mul_assoc, ← mul_assoc u₁.inv, inv_val, one_mul, inv_val]⟩
   one := ⟨1, 1, one_mul 1, one_mul 1⟩
   one_mul u := ext <| one_mul (u : α)
   mul_one u := ext <| mul_one (u : α)
@@ -547,7 +548,8 @@ attribute [to_additive
 -- Porting note: have to explicitly tag `match_1`
 /-- Multiplication by a `u : Mˣ` on the left doesn't affect `IsUnit`. -/
 @[simp]
-theorem Units.isUnit_units_mul {M : Type _} [Monoid M] (u : Mˣ) (a : M) : IsUnit (↑u * a) ↔ IsUnit a :=
+theorem Units.isUnit_units_mul {M : Type _} [Monoid M] (u : Mˣ) (a : M) :
+    IsUnit (↑u * a) ↔ IsUnit a :=
   Iff.intro
     (fun ⟨v, hv⟩ => by
       have : IsUnit (↑u⁻¹ * (↑u * a)) := by exists u⁻¹ * v; rw [← hv, Units.coe_mul]
@@ -643,10 +645,12 @@ protected theorem mul_right_cancel (h : IsUnit b) : a * b = c * b → a = c :=
   h.mul_left_inj.1
 
 @[to_additive]
-protected theorem mul_right_injective (h : IsUnit a) : Injective ((· * ·) a) := fun _ _ => h.mul_left_cancel
+protected theorem mul_right_injective (h : IsUnit a) : Injective ((· * ·) a) :=
+  fun _ _ => h.mul_left_cancel
 
 @[to_additive]
-protected theorem mul_left_injective (h : IsUnit b) : Injective (· * b) := fun _ _ => h.mul_right_cancel
+protected theorem mul_left_injective (h : IsUnit b) : Injective (· * b) :=
+  fun _ _ => h.mul_right_cancel
 
 end Monoid
 
