@@ -21,6 +21,7 @@ jobs:
     if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
     name: Check all files importedJOB_NAME
     runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v2
 
       - name: update Mathlib.lean
