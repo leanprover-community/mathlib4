@@ -40,7 +40,7 @@ E.g. `#eval  "InvHMulLEConjugate₂Smul_ne_top".splitCase` yields
 `["Inv", "HMul", "LE", "Conjugate₂", "Smul", "_", "ne", "_", "top"]`.
 -/
 partial def String.splitCase (s : String) (i₀ : Pos := 0) (r : List String := []) : List String :=
-  -- We test if we needd to split between `i₀` and `i₁`.
+  -- We test if we need to split between `i₀` and `i₁`.
   let i₁ := s.next i₀
   let i₂ := s.next i₁
   if s.atEnd i₁ then
@@ -499,41 +499,45 @@ or "addComm" instead of "commAdd".
 Note: The input to this function is case sensitive!
 -/
 def fixAbbreviation : List String → List String
-| "cancel" :: "Add" :: s           => "addCancel" :: fixAbbreviation s
-| "Cancel" :: "Add" :: s           => "AddCancel" :: fixAbbreviation s
-| "cancel" :: "Comm" :: "Add" :: s => "addCancelComm" :: fixAbbreviation s
-| "Cancel" :: "Comm" :: "Add" :: s => "AddCancelComm" :: fixAbbreviation s
-| "comm" :: "Add" :: s             => "addComm" :: fixAbbreviation s
-| "Comm" :: "Add" :: s             => "AddComm" :: fixAbbreviation s
-| "Zero" :: "LE" :: s              => "Nonneg" :: fixAbbreviation s
-| "zero" :: "_" :: "le" :: s       => "nonneg" :: fixAbbreviation s
-| "Zero" :: "LT" :: s              => "Pos" :: fixAbbreviation s
-| "zero" :: "_" :: "lt" :: s       => "pos" :: fixAbbreviation s
-| "LE" :: "Zero" :: s              => "Nonpos" :: fixAbbreviation s
-| "le" :: "_" :: "zero" :: s       => "nonpos" :: fixAbbreviation s
-| "LT" :: "Zero" :: s              => "Neg" :: fixAbbreviation s
-| "lt" :: "_" :: "zero" :: s       => "neg" :: fixAbbreviation s
-| "Add" :: "Single" :: s           => "Single" :: fixAbbreviation s
-| "add" :: "Single" :: s           => "single" :: fixAbbreviation s
-| "add" :: "_" :: "single" :: s    => "single" :: fixAbbreviation s
-| "Add" :: "Support" :: s          => "Support" :: fixAbbreviation s
-| "add" :: "Support" :: s          => "support" :: fixAbbreviation s
-| "add" :: "_" :: "support" :: s   => "support" :: fixAbbreviation s
+| "cancel" :: "Add" :: s            => "addCancel" :: fixAbbreviation s
+| "Cancel" :: "Add" :: s            => "AddCancel" :: fixAbbreviation s
+| "left" :: "Cancel" :: "Add" :: s  => "addLeftCancel" :: fixAbbreviation s
+| "Left" :: "Cancel" :: "Add" :: s  => "AddLeftCancel" :: fixAbbreviation s
+| "right" :: "Cancel" :: "Add" :: s => "addRightCancel" :: fixAbbreviation s
+| "Right" :: "Cancel" :: "Add" :: s => "AddRightCancel" :: fixAbbreviation s
+| "cancel" :: "Comm" :: "Add" :: s  => "addCancelComm" :: fixAbbreviation s
+| "Cancel" :: "Comm" :: "Add" :: s  => "AddCancelComm" :: fixAbbreviation s
+| "comm" :: "Add" :: s              => "addComm" :: fixAbbreviation s
+| "Comm" :: "Add" :: s              => "AddComm" :: fixAbbreviation s
+| "Zero" :: "LE" :: s               => "Nonneg" :: fixAbbreviation s
+| "zero" :: "_" :: "le" :: s        => "nonneg" :: fixAbbreviation s
+| "Zero" :: "LT" :: s               => "Pos" :: fixAbbreviation s
+| "zero" :: "_" :: "lt" :: s        => "pos" :: fixAbbreviation s
+| "LE" :: "Zero" :: s               => "Nonpos" :: fixAbbreviation s
+| "le" :: "_" :: "zero" :: s        => "nonpos" :: fixAbbreviation s
+| "LT" :: "Zero" :: s               => "Neg" :: fixAbbreviation s
+| "lt" :: "_" :: "zero" :: s        => "neg" :: fixAbbreviation s
+| "Add" :: "Single" :: s            => "Single" :: fixAbbreviation s
+| "add" :: "Single" :: s            => "single" :: fixAbbreviation s
+| "add" :: "_" :: "single" :: s     => "single" :: fixAbbreviation s
+| "Add" :: "Support" :: s           => "Support" :: fixAbbreviation s
+| "add" :: "Support" :: s           => "support" :: fixAbbreviation s
+| "add" :: "_" :: "support" :: s    => "support" :: fixAbbreviation s
  -- TODO: Is it `TSupport` or `Tsupport`?
-| "Add" :: "TSupport" :: s         => "TSupport" :: fixAbbreviation s
-| "add" :: "TSupport" :: s         => "tsupport" :: fixAbbreviation s
-| "add" :: "_" :: "tsupport" :: s  => "tsupport" :: fixAbbreviation s
-| "Add" :: "Indicator" :: s        => "Indicator" :: fixAbbreviation s
-| "add" :: "Indicator" :: s        => "indicator" :: fixAbbreviation s
-| "add" :: "_" :: "indicator" :: s => "indicator" :: fixAbbreviation s
+| "Add" :: "TSupport" :: s          => "TSupport" :: fixAbbreviation s
+| "add" :: "TSupport" :: s          => "tsupport" :: fixAbbreviation s
+| "add" :: "_" :: "tsupport" :: s   => "tsupport" :: fixAbbreviation s
+| "Add" :: "Indicator" :: s         => "Indicator" :: fixAbbreviation s
+| "add" :: "Indicator" :: s         => "indicator" :: fixAbbreviation s
+| "add" :: "_" :: "indicator" :: s  => "indicator" :: fixAbbreviation s
 -- TODO: Bug in `splitCase` splits like ["LEH", "Pow"] instead of ["LE", "HPow"].
 -- Currently we just fix these cases manually.
-| "HNsmul" :: s                    => "HMul" :: fixAbbreviation s
-| "hnsmul" :: s                    => "hmul" :: fixAbbreviation s
+| "HNsmul" :: s                     => "HMul" :: fixAbbreviation s
+| "hnsmul" :: s                     => "hmul" :: fixAbbreviation s
 | "Zero" :: "LEH" :: s              => "NonnegH" :: fixAbbreviation s
 | "Zero" :: "LTH" :: s              => "PosH" :: fixAbbreviation s
-| x :: s                           => x :: fixAbbreviation s
-| []                               => []
+| x :: s                            => x :: fixAbbreviation s
+| []                                => []
 
 /--
 Autogenerate additive name.
@@ -558,8 +562,8 @@ def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
     let .str pre s := src | throwError "to_additive: can't transport {src}"
     let tgt_auto := guessName s
     if tgt.toString == tgt_auto then
-      dbg_trace ("{src}: correctly autogenerated target name {tgt_auto}," ++
-        " you may remove the explicit {tgt} argument.")
+      dbg_trace "{src}: correctly autogenerated target name {tgt_auto
+        }, you may remove the explicit {tgt} argument."
     let pre := pre.mapPrefix <| findTranslation? (← getEnv)
     if tgt == Name.anonymous then
       return Name.mkStr pre tgt_auto

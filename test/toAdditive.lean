@@ -41,8 +41,8 @@ theorem bar1_works : bar1 3 4 = 3 * 4 := by decide
 
 infix:80 " ^ " => my_has_pow.pow
 
-instance dummy_pow : my_has_pow ℕ $ PLift ℤ := ⟨fun x y => 0⟩
-instance dummy_smul : my_has_scalar (PLift ℤ) ℕ := ⟨fun x y => 0⟩
+instance dummy_pow : my_has_pow ℕ $ PLift ℤ := ⟨fun _ _ => 0⟩
+instance dummy_smul : my_has_scalar (PLift ℤ) ℕ := ⟨fun _ _ => 0⟩
 attribute [to_additive dummy_smul] dummy_pow
 
 set_option pp.universes true
@@ -95,7 +95,8 @@ if some_def.in_namespace then x * x else x
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
 run_cmd do
-  Elab.Command.liftCoreM <| successIfFail (ToAdditive.transformDecl (← getRef) `Test.some_def `Test.add_some_def)
+  Elab.Command.liftCoreM <| successIfFail (ToAdditive.transformDecl (← getRef)
+    `Test.some_def `Test.add_some_def)
 
 
 attribute [to_additive some_other_name] some_def.in_namespace
@@ -109,6 +110,11 @@ run_cmd do
 --         = (add_units.mk_of_add_eq_zero 0 0 (by simp) : ℕ) :=
 -- by normCast
 
+section
+
+set_option linter.unusedVariables false
+-- porting note : not sure what the tests do, but the linter complains.
+
 def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f i)]
   [Add I] [Mul L] : true := by trivial
 
@@ -118,10 +124,14 @@ instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One $ f i] : One ((
   ⟨fun _ => 1⟩
 
 run_cmd do
-  let n ← Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg `Test.pi.has_one
+  let n ← (Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg
+    `Test.pi.has_one)
   if n != some 1 then throwError "{n} != 1"
-  let n ← Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg `Test.foo_mul
+  let n ← (Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg
+    `Test.foo_mul)
   if n != some 4 then throwError "{n} != 4"
+
+end
 
 @[to_additive]
 def nat_pi_has_one {α : Type} [One α] : One ((x : Nat) → α) := by infer_instance
@@ -137,52 +147,44 @@ section guessName
 
 open ToAdditive
 
-example : True := by
-  run_tac guard (guessName "HMul_Eq_LEOne_Conj₂MulLT'" == "HAdd_Eq_Nonpos_Conj₂AddLT'")
-  run_tac guard (guessName "OneMulSmulInvDivPow"       == "ZeroAddVaddNegSubNsmul")
-  run_tac guard (guessName "ProdFinprodNpowZpow"       == "SumFinsumNsmulZsmul")
-  trivial
+def checkGuessName (s t : String) : Elab.Command.CommandElabM Unit :=
+  unless guessName s == t do throwError "failed: {guessName s} != {t}"
 
--- The current design swaps all instances of `Comm`+`Add` in order to have
--- `AddCommMonoid` instead of `CommAddMonoid`.
-example : True := by
-  run_tac guard (guessName "comm_mul_CommMul_commMul" == "comm_add_AddComm_addComm")
-  run_tac guard (guessName "mul_comm_MulComm_mulComm" == "add_comm_AddComm_addComm")
-  run_tac guard (guessName "mul_single_eq_same" == "single_eq_same")
-  run_tac guard (guessName "mul_support" == "support")
-  run_tac guard (guessName "mul_tsupport" == "tsupport")
-  run_tac guard (guessName "mul_indicator" == "indicator")
-  trivial
+run_cmd
+  checkGuessName "HMul_Eq_LEOne_Conj₂MulLT'" "HAdd_Eq_Nonpos_Conj₂AddLT'"
+  checkGuessName "OneMulSmulInvDivPow"       "ZeroAddVaddNegSubNsmul"
+  checkGuessName "ProdFinprodNpowZpow"       "SumFinsumNsmulZsmul"
 
-example : True := by
-  run_tac guard (guessName "CommMonoid" == "AddCommMonoid")
-  run_tac guard (guessName "commMonoid" == "addCommMonoid")
-  trivial
+  -- The current design swaps all instances of `Comm`+`Add` in order to have
+  -- `AddCommMonoid` instead of `CommAddMonoid`.
+  checkGuessName "comm_mul_CommMul_commMul" "comm_add_AddComm_addComm"
+  checkGuessName "mul_comm_MulComm_mulComm" "add_comm_AddComm_addComm"
+  checkGuessName "mul_single_eq_same" "single_eq_same"
+  checkGuessName "mul_support" "support"
+  checkGuessName "mul_tsupport" "tsupport"
+  checkGuessName "mul_indicator" "indicator"
 
-example : True := by
-  run_tac guard (guessName "CancelCommMonoid" == "AddCancelCommMonoid")
-  run_tac guard (guessName "cancelCommMonoid" == "addCancelCommMonoid")
-  run_tac guard (guessName "CancelMonoid"     == "AddCancelMonoid")
-  run_tac guard (guessName "cancelMonoid"     == "addCancelMonoid")
-  -- -- TODO: not dealing with these atm:
-  -- run_tac guard (guessName "RightCancelMonoid" == "AddRightCancelMonoid")
-  -- run_tac guard (guessName "rightCancelMonoid" == "addRightCancelMonoid")
-  -- run_tac guard (guessName "LefCancelMonoid" == "AddLeftCancelMonoid")
-  -- run_tac guard (guessName "leftCancelMonoid" == "addLeftCancelMonoid")  trivial
-  trivial
+  checkGuessName "CommMonoid" "AddCommMonoid"
+  checkGuessName "commMonoid" "addCommMonoid"
 
-example : True := by
-  run_tac guard (guessName "LTOne_LEOne_OneLE_OneLT" == "Neg_Nonpos_Nonneg_Pos")
-  trivial
+  checkGuessName "CancelCommMonoid" "AddCancelCommMonoid"
+  checkGuessName "cancelCommMonoid" "addCancelCommMonoid"
+  checkGuessName "CancelMonoid" "AddCancelMonoid"
+  checkGuessName "cancelMonoid" "addCancelMonoid"
+  checkGuessName "RightCancelMonoid" "AddRightCancelMonoid"
+  checkGuessName "rightCancelMonoid" "addRightCancelMonoid"
+  checkGuessName "LeftCancelMonoid" "AddLeftCancelMonoid"
+  checkGuessName "leftCancelMonoid" "addLeftCancelMonoid"
 
--- The current design splits this as `LTH, Mul, HPow, LEH, Div` before it translates.
--- This is kinda a bug.
-example : True := by
-  run_tac guard (guessName "LTHMulHPowLEHDiv" == "LTHAddHMulLEHSub")
-  run_tac guard (guessName "OneLEHMul" == "NonnegHAdd")
+  checkGuessName "LTOne_LEOne_OneLE_OneLT" "Neg_Nonpos_Nonneg_Pos"
+
+  -- The current design splits this as `LTH, Mul, HPow, LEH, Div` before it translates.
+  -- This is kinda a bug.
+  checkGuessName "LTHMulHPowLEHDiv" "LTHAddHMulLEHSub"
+  checkGuessName "OneLEHMul" "NonnegHAdd"
+
   -- -- TODO: This fails at the moment:
-  -- run_tac guard (guessName "OneLTHPow" == "PosHMul")
-  trivial
+  -- checkGuessName "OneLTHPow" "PosHMul"
 
 end guessName
 

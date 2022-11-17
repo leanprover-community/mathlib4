@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 import Mathlib.Tactic.Spread
-import Mathlib.Tactic.ToAdditive
 import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Data.List.Basic
@@ -66,23 +65,23 @@ infixr:73 " • " => HasSmul.smul
 attribute [to_additive] Nat
 attribute [to_additive] Int
 
-attribute [to_additive Add] Mul
-attribute [to_additive Sub] Div
-attribute [to_additive HAdd] HMul
-attribute [to_additive instHAdd] instHMul
-attribute [to_additive HSub] HDiv
-attribute [to_additive instHNeg] instHDiv
+attribute [to_additive] Mul
+attribute [to_additive] Div
+attribute [to_additive] HMul
+attribute [to_additive] instHMul
+attribute [to_additive] HDiv
+attribute [to_additive] instHDiv
 
 attribute [to_additive_reorder 1] HPow
 attribute [to_additive_reorder 1 4] HPow.hPow
-attribute [to_additive HMul] HPow
+attribute [to_additive] HPow
 
 universe u
 
 variable {G : Type _}
 
 /-- Class of types that have an inversion operation. -/
-@[to_additive Neg]
+@[to_additive]
 class Inv (α : Type u) where
   /-- Invert an element of α. -/
   inv : α → α
@@ -120,7 +119,7 @@ class Semigroup (G : Type u) extends Mul G where
 class AddSemigroup (G : Type u) extends Add G where
   add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
 
-attribute [to_additive AddSemigroup] Semigroup
+attribute [to_additive] Semigroup
 
 section Semigroup
 
@@ -144,7 +143,7 @@ class AddCommSemigroup (G : Type u) extends AddSemigroup G where
   /-- Addition is commutative in an additive commutative semigroup. -/
   add_comm : ∀ a b : G, a + b = b + a
 
-attribute [to_additive AddCommSemigroup] CommSemigroup
+attribute [to_additive] CommSemigroup
 
 section CommSemigroup
 
@@ -167,7 +166,7 @@ class LeftCancelSemigroup (G : Type u) extends Semigroup G where
 class AddLeftCancelSemigroup (G : Type u) extends AddSemigroup G where
   add_left_cancel : ∀ a b c : G, a + b = a + c → b = c
 
-attribute [to_additive AddLeftCancelSemigroup] LeftCancelSemigroup
+attribute [to_additive] LeftCancelSemigroup
 
 section LeftCancelSemigroup
 
@@ -205,7 +204,7 @@ class RightCancelSemigroup (G : Type u) extends Semigroup G where
 class AddRightCancelSemigroup (G : Type u) extends AddSemigroup G where
   add_right_cancel : ∀ a b c : G, a + b = c + b → a = c
 
-attribute [to_additive AddRightCancelSemigroup] RightCancelSemigroup
+attribute [to_additive] RightCancelSemigroup
 
 section RightCancelSemigroup
 
@@ -244,7 +243,7 @@ class AddZeroClass (M : Type u) extends Zero M, Add M where
   zero_add : ∀ a : M, 0 + a = a
   add_zero : ∀ a : M, a + 0 = a
 
-attribute [to_additive AddZeroClass] MulOneClass
+attribute [to_additive] MulOneClass
 
 @[ext, to_additive]
 theorem MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
@@ -286,7 +285,7 @@ def nsmulRec [Zero M] [Add M] : ℕ → M → M
   | 0, _ => 0
   | n + 1, a => a + nsmulRec n a
 
-attribute [to_additive nsmulRec] npowRec
+attribute [to_additive] npowRec
 
 end
 
@@ -384,7 +383,7 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   nsmul_succ' : ∀ (n : ℕ) (x), nsmul n.succ x = x + nsmul n x := by intros; rfl
 
 /-- A `monoid` is a `semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
-@[to_additive AddMonoid]
+@[to_additive]
 class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   npow : ℕ → M → M := npowRec
   npow_zero' : ∀ x, npow 0 x = 1 := by intros; rfl
@@ -452,7 +451,7 @@ end Monoid
 class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 
 /-- A commutative monoid is a monoid with commutative `(*)`. -/
-@[to_additive AddCommMonoid]
+@[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
 
 attribute [to_additive AddCommMonoid.toAddCommSemigroup] CommMonoid.toCommSemigroup
@@ -465,7 +464,7 @@ is useful to define the sum over the empty set, so `AddLeftCancelSemigroup` is n
 class AddLeftCancelMonoid (M : Type u) extends AddLeftCancelSemigroup M, AddMonoid M
 
 /-- A monoid in which multiplication is left-cancellative. -/
-@[to_additive AddLeftCancelMonoid]
+@[to_additive]
 class LeftCancelMonoid (M : Type u) extends LeftCancelSemigroup M, Monoid M
 
 attribute [to_additive AddLeftCancelMonoid.toAddMonoid] LeftCancelMonoid.toMonoid
@@ -480,7 +479,7 @@ is useful to define the sum over the empty set, so `AddRightCancelSemigroup` is 
 class AddRightCancelMonoid (M : Type u) extends AddRightCancelSemigroup M, AddMonoid M
 
 /-- A monoid in which multiplication is right-cancellative. -/
-@[to_additive AddRightCancelMonoid]
+@[to_additive]
 class RightCancelMonoid (M : Type u) extends RightCancelSemigroup M, Monoid M
 
 attribute [to_additive AddRightCancelMonoid.toAddMonoid] RightCancelMonoid.toMonoid
@@ -495,7 +494,7 @@ is useful to define the sum over the empty set, so `AddRightCancelSemigroup` is 
 class AddCancelMonoid (M : Type u) extends AddLeftCancelMonoid M, AddRightCancelMonoid M
 
 /-- A monoid in which multiplication is cancellative. -/
-@[to_additive AddCancelMonoid]
+@[to_additive]
 class CancelMonoid (M : Type u) extends LeftCancelMonoid M, RightCancelMonoid M
 
 attribute [to_additive AddCancelMonoid.toAddRightCancelMonoid] CancelMonoid.toRightCancelMonoid
@@ -504,14 +503,14 @@ attribute [to_additive AddCancelMonoid.toAddRightCancelMonoid] CancelMonoid.toRi
 class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMonoid M
 
 /-- Commutative version of `cancel_monoid`. -/
-@[to_additive AddCancelCommMonoid]
+@[to_additive]
 class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
 
 attribute [to_additive AddCancelCommMonoid.toAddCommMonoid] CancelCommMonoid.toCommMonoid
 
 -- TODO
 -- porting notes: Once to_additive works, we should not need to copy this attribute manually.
-attribute [instance] AddCancelMonoid
+attribute [instance] AddCancelCommMonoid.toAddCommMonoid
 
 -- see Note [lower instance priority]
 @[to_additive CancelCommMonoid.toAddCancelMonoid]
@@ -537,7 +536,7 @@ def zsmulRec {M : Type _} [Zero M] [Add M] [Neg M] : ℤ → M → M
   | Int.ofNat n, a => nsmulRec n a
   | Int.negSucc n, a => -nsmulRec n.succ a
 
-attribute [to_additive zsmulRec] zpowRec
+attribute [to_additive] zpowRec
 
 section HasInvolutiveInv
 
@@ -546,7 +545,7 @@ class HasInvolutiveNeg (A : Type _) extends Neg A where
   neg_neg : ∀ x : A, - -x = x
 
 /-- Auxiliary typeclass for types with an involutive `has_inv`. -/
-@[to_additive HasInvolutiveNeg]
+@[to_additive]
 class HasInvolutiveInv (G : Type _) extends Inv G where
   inv_inv : ∀ x : G, x⁻¹⁻¹ = x
 
@@ -715,7 +714,7 @@ class NegZeroClass (G : Type _) extends Zero G, Neg G where
 class SubNegZeroMonoid (G : Type _) extends SubNegMonoid G, NegZeroClass G
 
 /-- Typeclass for expressing that `1⁻¹ = 1`. -/
-@[to_additive NegZeroClass]
+@[to_additive]
 class InvOneClass (G : Type _) extends One G, Inv G where
   inv_one : (1 : G)⁻¹ = 1
 
@@ -796,7 +795,7 @@ with a default so that `a - b = a + -b` holds by definition.
 class AddGroup (A : Type u) extends SubNegMonoid A where
   add_left_neg : ∀ a : A, -a + a = 0
 
-attribute [to_additive AddGroup] Group
+attribute [to_additive] Group
 
 section Group
 
@@ -870,7 +869,7 @@ theorem Group.toDivInvMonoid_injective {G : Type _} :
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 
 /-- A commutative group is a group with commutative `(*)`. -/
-@[to_additive AddCommGroup]
+@[to_additive]
 class CommGroup (G : Type u) extends Group G, CommMonoid G
 
 attribute [to_additive AddCommGroup.toAddCommMonoid] CommGroup.toCommMonoid
@@ -889,7 +888,7 @@ variable [CommGroup G]
 @[to_additive AddCommGroup.toAddCancelCommMonoid]
 instance (priority := 100) CommGroup.toCancelCommMonoid : CancelCommMonoid G :=
   { ‹CommGroup G›, Group.toCancelMonoid with }
-attribute [instance 100] AddCommGroup.toCancelCommMonoid -- FIXME
+attribute [instance 100] AddCommGroup.toAddCancelCommMonoid
 
 -- TODO
 -- porting notes: Once to_additive works, we should not need to copy this attribute manually.
@@ -899,7 +898,7 @@ attribute [instance] AddCommGroup.toAddCancelCommMonoid
 @[to_additive AddCommGroup.toSubtractionCommMonoid]
 instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G :=
   { ‹CommGroup G›, Group.toDivisionMonoid with }
-attribute [instance 100] AddCommGroup.toDivisionCommMonoid -- FIXME
+attribute [instance 100] AddCommGroup.toSubtractionCommMonoid
 
 -- TODO
 -- porting notes: Once to_additive works, we should not need to copy this attribute manually.
