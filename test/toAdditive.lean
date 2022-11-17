@@ -147,11 +147,13 @@ section guessName
 
 open ToAdditive
 
-example : True := by
-  run_tac guard (guessName "HMul_Eq_LEOne_Conj₂MulLT'" == "HAdd_Eq_Nonpos_Conj₂AddLT'")
-  run_tac guard (guessName "OneMulSmulInvDivPow"       == "ZeroAddVaddNegSubNsmul")
-  run_tac guard (guessName "ProdFinprodNpowZpow"       == "SumFinsumNsmulZsmul")
-  trivial
+def checkGuessName (s t : String) : Elab.Command.CommandElabM Unit := 
+  unless guessName s == t do throwError "failed: {guessName s} != {t}"
+
+run_cmd  
+  checkGuessName "HMul_Eq_LEOne_Conj₂MulLT'" "HAdd_Eq_Nonpos_Conj₂AddLT'"
+  checkGuessName "OneMulSmulInvDivPow"       "ZeroAddVaddNegSubNsmul"
+  checkGuessName "ProdFinprodNpowZpow"       "SumFinsumNsmulZsmul"
 
 -- The current design swaps all instances of `Comm`+`Add` in order to have
 -- `AddCommMonoid` instead of `CommAddMonoid`.
