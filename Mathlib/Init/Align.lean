@@ -157,6 +157,11 @@ actual theorems in the files.
 
 /-! ## `init.data.quot` -/
 
+/-! ## `init.data.random` -/
+
+#align std_next stdNextₓ -- this should be defeq but verification causes a stack overflow
+#align std_split stdSplitₓ
+
 /-! ## `init.data.repr` -/
 
 #align has_repr Repr

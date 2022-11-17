@@ -17,7 +17,8 @@ namespace Mathlib.Tactic
 open Lean Meta Elab
 
 /-- Environment extension storing transitivity lemmas -/
-initialize transExt : SimpleScopedEnvExtension (Name × Array DiscrTree.Key) (DiscrTree Name) ←
+initialize transExt :
+    SimpleScopedEnvExtension (Name × Array (DiscrTree.Key true)) (DiscrTree Name true) ←
   registerSimpleScopedEnvExtension {
     addEntry := fun dt (n, ks) => dt.insertCore ks n
     initial := {}
