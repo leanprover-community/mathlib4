@@ -12,6 +12,7 @@ deriving instance Repr for Ordering
 
 namespace Ordering
 
+/-- Combine two `Ordering`s lexicographically. -/
 @[inline]
 def orElse : Ordering → Ordering → Ordering
   | lt, _ => lt
@@ -20,10 +21,17 @@ def orElse : Ordering → Ordering → Ordering
 
 end Ordering
 
-def CmpUsing {α : Type u} (lt : α → α → Prop) [DecidableRel lt] (a b : α) : Ordering :=
+/--
+Lift a decidable relation to an `Ordering`,
+assuming that incomparable terms are `Ordering.eq`.
+-/
+def cmpUsing {α : Type u} (lt : α → α → Prop) [DecidableRel lt] (a b : α) : Ordering :=
   if lt a b then Ordering.lt else if lt b a then Ordering.gt else Ordering.eq
-#align cmp_using CmpUsing
+#align cmp_using cmpUsing
 
-def Cmp {α : Type u} [LT α] [DecidableRel ((· < ·) : α → α → Prop)] (a b : α) : Ordering :=
-  CmpUsing (· < ·) a b
-#align cmp Cmp
+/--
+Construct an `Ordering` from a type with a decidable `LT` instance,
+assuming that incomparable terms are `Ordering.eq`.
+-/
+def cmp {α : Type u} [LT α] [DecidableRel ((· < ·) : α → α → Prop)] (a b : α) : Ordering :=
+  cmpUsing (· < ·) a b
