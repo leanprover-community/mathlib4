@@ -382,7 +382,6 @@
  ["docBlame", "Lean.Meta.find"],
  ["docBlame", "Lean.Meta.findCore"],
  ["docBlame", "Lean.PHashSet.toList"],
- ["docBlame", "Lean.Tactic.solveByElim"],
  ["docBlame", "Mathlib.Tactic.command_Lemma___"],
  ["docBlame", "Mathlib.Tactic.elabVariables"],
  ["docBlame", "Mathlib.Tactic.evalIntrov"],
