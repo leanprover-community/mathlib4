@@ -21,7 +21,6 @@ import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
-import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Congr
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Contrapose
@@ -42,6 +41,7 @@ import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.PermuteGoals
+import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl
@@ -406,8 +406,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 
 /- M -/ syntax (name := computeDegreeLE) "compute_degree_le" : tactic
 
-/- B -/ syntax (name := positivity) "positivity" : tactic
-
 /- E -/ syntax (name := qify) "qify" (simpArgs)? (ppSpace location)? : tactic
 
 /- S -/ syntax (name := mkDecorations) "mk_decorations" : tactic
@@ -470,8 +468,6 @@ namespace Attr
 /- M -/ syntax (name := higherOrder) "higher_order" (ppSpace ident)? : attr
 /- S -/ syntax (name := interactive) "interactive" : attr
 
-/- M -/ syntax (name := mkIff) "mk_iff" (ppSpace ident)? : attr
-
 /- M -/ syntax (name := expandExists) "expand_exists" (ppSpace ident)+ : attr
 
 -- TODO: this should be handled in mathport
@@ -517,7 +513,6 @@ macro_rules
     `(with_weak_namespace $ns attribute [scoped $attr:attr] $ids*)
 
 /- S -/ syntax (name := listUnusedDecls) "#list_unused_decls" : command
-/- M -/ syntax (name := mkIffOfInductiveProp) "mk_iff_of_inductive_prop" ident ident : command
 
 /- N -/ syntax (name := defReplacer) "def_replacer " ident Term.optType : command
 

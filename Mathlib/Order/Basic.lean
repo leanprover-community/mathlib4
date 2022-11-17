@@ -432,7 +432,6 @@ theorem Preorder.toLE_injective {α : Type _} : Function.Injective (@Preorder.to
       simp [*]
     cases this
     congr
-
 #align preorder.to_has_le_injective Preorder.toLE_injective
 
 @[ext]
@@ -443,7 +442,6 @@ theorem PartialOrder.toPreorder_injective {α : Type _} :
   cases B
   cases h
   congr
-
 #align partial_order.to_preorder_injective PartialOrder.toPreorder_injective
 
 @[ext]
@@ -456,12 +454,12 @@ theorem LinearOrder.toPartialOrder_injective {α : Type _} :
     have : A_min = B_min := by
       funext a b
       show (Min.mk A_min).min a b = (Min.mk B_min).min a b
-      simp [*] <;> split <;> rfl
+      simp [*]; split <;> rfl
     cases this
     have : A_max = B_max := by
       funext a b
       show (Max.mk A_max).max a b = (Max.mk B_max).max a b
-      simp [*] <;> split <;> rfl
+      simp [*]; split <;> rfl
     cases this
     congr <;> exact Subsingleton.elim _ _
 #align linear_order.to_partial_order_injective LinearOrder.toPartialOrder_injective
@@ -482,7 +480,7 @@ theorem LinearOrder.ext {α} {A B : LinearOrder α}
   exact H x y
 
 /-- Given a relation `R` on `β` and a function `f : α → β`, the preimage relation on `α` is defined
-by `x ≤ y ↔ f x ≤ f y`. It is the unique relation on `α` making `f` a `rel_embedding` (assuming `f`
+by `x ≤ y ↔ f x ≤ f y`. It is the unique relation on `α` making `f` a `RelEmbedding` (assuming `f`
 is injective). -/
 @[simp]
 def Order.Preimage {α β} (f : α → β) (s : β → β → Prop) (x y : α) : Prop :=
@@ -500,7 +498,7 @@ instance Order.Preimage.decidable {α β} (f : α → β) (s : β → β → Pro
 
 
 /-- Type synonym to equip a type with the dual order: `≤` means `≥` and `<` means `>`. `αᵒᵈ` is
-notation for `order_dual α`. -/
+notation for `OrderDual α`. -/
 def OrderDual (α : Type _) : Type _ :=
   α
 

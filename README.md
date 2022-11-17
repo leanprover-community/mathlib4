@@ -1,20 +1,15 @@
 # mathlib4
 
-Work in progress mathlib port for Lean 4.
-This is not a port.
-We are just trying things out
-to gain experience for
-the real port.
+![](https://github.com/leanprover-community/mathlib4/workflows/continuous%20integration/badge.svg?branch=master)
+[![Bors enabled](https://bors.tech/images/badge_small.svg)](https://app.bors.tech/repositories/37904)
+[![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://leanprover.zulipchat.com)
 
-We're not planning
-to have any review standards
-in the mathlib4 repo
-higher than your average wiki
-during this experimentation phase.
+This is the work in progress port of [mathlib](https://github.com/leanprover-community/mathlib) to [Lean 4](https://leanprover.github.io/).
 
-We don't want to discourage others from trying to port stuff if it helps us learn how to work in lean 4,
-but please understand that anything that is currently in mathlib4 is subject to change/deletion,
-and the "real" port hasn't started yet
+# Contributing
+A guide on how to port a file from mathlib3 to mathlib4 can be found in the [wiki](https://github.com/leanprover-community/mathlib4/wiki).
+The porting effort is coordinated through [zulip](https://leanprover.zulipchat.com/),
+if you want to contribute to the port please come to the `mathlib4` stream.
 
 # Build instructions
 
