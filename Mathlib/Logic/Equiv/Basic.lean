@@ -104,7 +104,7 @@ def prodComm (α β : Type _) : α × β ≃ β × α :=
 #align equiv.prod_comm Equiv.prodComm
 
 @[simp]
-theorem coe_prod_comm (α β : Type _) : ⇑(prodComm α β) = Prod.swap :=
+theorem coe_prod_comm (α β : Type _) : (⇑(prodComm α β) : α × β → β × α) = Prod.swap :=
   rfl
 #align equiv.coe_prod_comm Equiv.coe_prod_comm
 
