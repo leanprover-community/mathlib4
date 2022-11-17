@@ -28,7 +28,7 @@ lemma Fin.size_positive' [Nonempty (Fin n)] : 0 < n :=
 
 @[simp]
 protected theorem Fin.eta (a : Fin n) (h : (a : ℕ) < n) : (⟨(a : ℕ), h⟩ : Fin n) = a := by
-  cases a <;> rfl
+  cases a; rfl
 
 lemma zero_lt_of_lt {a : Nat} : ∀ {x : Nat}, x < a -> 0 < a
 | 0, h   => h

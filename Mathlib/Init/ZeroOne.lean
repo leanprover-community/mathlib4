@@ -33,4 +33,5 @@ instance One.ofOfNat1 {α} [OfNat α (nat_lit 1)] : One α where
 
 @[deprecated, match_pattern] def bit0 {α : Type u} [Add α] (a : α) : α := a + a
 
+set_option linter.deprecated false in
 @[deprecated, match_pattern] def bit1 {α : Type u} [One α] [Add α] (a : α) : α := bit0 a + 1

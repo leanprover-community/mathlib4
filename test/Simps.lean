@@ -3,7 +3,7 @@ import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 import Mathlib.Data.Equiv.Basic
-import Mathlib.Data.Prod
+import Mathlib.Data.Prod.Basic
 
 -- set_option trace.simps.debug true
 -- set_option trace.simps.verbose true
@@ -434,6 +434,8 @@ infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 { hom     := λ a b => (a → b)
   id      := λ _ => id
   comp    := λ f g => g ∘ f }
+
+@[ext] theorem types.ext {X Y : Type u} {f g : X ⟶ Y} : (∀ x, f x = g x) → f = g := funext
 
 example (X : Type u) {x : Type u} (h : (X → X) = x) : (X ⟶ X) = x := by simp <;> rw [h]
 example (X : Type u) {f : X → X} (h : ∀ x, f x = x) : 𝟙 X = f := by ext <;> simp <;> rw [h]

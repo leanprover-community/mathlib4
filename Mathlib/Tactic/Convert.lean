@@ -11,28 +11,6 @@ import Lean
 
 open Lean Meta Elab Tactic
 
-
--- This is yoinked from core so that we can pass the `closeEasy` parameter.
-/--
-Applies `congr` recursively up to depth `n`.
-If `closeEasy := true`, it tries to close new subgoals using `Eq.refl` and `assumption`.
--/
-def Lean.MVarId.congrN' (mvarId : MVarId) (n : Nat) (closeEasy := true) : MetaM (List MVarId) := do
-  if n == 1 then
-    mvarId.congr closeEasy
-  else
-    let (_, s) ← go n mvarId |>.run #[]
-    return s.toList
-where
-  /-- Auxiliary definition for `congrN'`. -/
-  go (n : Nat) (mvarId : MVarId) : StateRefT (Array MVarId) MetaM Unit := do
-    match n with
-    | 0 => modify (·.push mvarId)
-    | n+1 =>
-      let some mvarIds ← observing? (m := MetaM) (mvarId.congr closeEasy)
-        | modify (·.push mvarId)
-      mvarIds.forM (go n)
-
 /--
 Close the goal `g` using `Eq.mp v e`,
 where `v` is a metavariable asserting that the type of `g` and `e` are equal.
@@ -49,14 +27,7 @@ def Lean.MVarId.convert (e : Expr) (sym : Bool) (depth : Option Nat := none) (g 
   let v ← mkFreshExprMVar (← mkAppM ``Eq (if sym then #[src, tgt] else #[tgt, src]))
   g.assign (← mkAppM (if sym then ``Eq.mp else ``Eq.mpr) #[v, e])
   let m := v.mvarId!
-  try
-    m.assumption <|> (withTransparency .reducible m.refl)
-    return []
-  catch _ => try
-    m.congrN' (depth.getD 1000) (closeEasy := true)
-  catch _ => try
-    m.refl
-    return []
+  try m.congrN (depth.getD 1000000)
   catch _ => return [m]
 
 /--
