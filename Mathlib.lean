@@ -174,6 +174,7 @@ import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Ring.RingNF
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.Sat.FromLRAT
+import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro
