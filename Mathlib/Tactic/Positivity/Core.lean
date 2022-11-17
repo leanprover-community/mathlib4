@@ -18,6 +18,8 @@ and elsewhere.
 -/
 open Lean hiding Rat
 open Lean.Meta Qq Lean.Elab Term
+-- FIXME: remove this when the sorries are gone
+set_option warningAsError false
 
 /-- Attribute for identifying `positivity` extensions. -/
 syntax (name := positivity) "positivity" term,+ : attr

@@ -21,6 +21,8 @@ section Nonsense
 open Function
 -- TODO: these classes are mostly nonsense stubs which should be replaced by the real things
 -- when the theory files are ready
+-- FIXME: remove this when the sorries are gone
+set_option warningAsError false
 
 theorem add_pos [AddZeroClass α] [PartialOrder α] [CovariantClass α α (·+·) (·<·)]
     {a b : α} (ha : 0 < a) (hb : 0 < b) : 0 < a + b := sorry
