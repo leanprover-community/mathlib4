@@ -14,27 +14,41 @@ namespace Lean.Elab.Term.StructInstWithHoles --!!
 open Meta
 open TSyntax.Compat
 
---!! All instances of "missing" used to be "default", except in function names, where only `allDefault` was changed to `allMissing`.
+--!! All instances of "missing" used to be "default", except in function names
+--!! `allDefault` was changed to `allMissing`.
 /-
   # What this does
 
-  This file defines a term elaboration for structure instances that include "variadic holes", i.e. holes of "variable length", which are represented via via the syntax `?..`, `?..!`, etc., e.g. `{ x := 0, ?.. }`. This serves to port the functionality of mathlib3's `refine_struct { .. }`, but via `refine` (e.g. `refine { ?.. }`).
+  This file defines a term elaboration for structure instances that include "variadic holes", i.e.
+  holes of "variable length", which are represented via via the syntax `?..`, `?..!`, etc., e.g.
+  `{ x := 0, ?.. }`. This serves to port the functionality of mathlib3's `refine_struct { .. }`,
+  but via `refine` (e.g. `refine { ?.. }`).
 
-  Lean currently already supports one form of variadic hole in structure instances, namely `..`, which fills all unspecified fields with natural metavariables and which is frequently used in pattern matching.
+  Lean currently already supports one form of variadic hole in structure instances, namely `..`,
+  which fills all unspecified fields with natural metavariables and which is frequently used in
+  pattern matching.
 
-  Variadic holes that begin with a question mark are meant to parallel named holes (e.g. `?x`). Therefore, syntax like `{ x := 0, ?.. }` will fill all remaining fields with metavariables named by the field in question (e.g. `y := ?y`). Identifiers can optionally be provided to prefix the name; see below.
+  Variadic holes that begin with a question mark are meant to parallel named holes (e.g. `?x`).
+  Therefore, syntax like `{ x := 0, ?.. }` will fill all remaining fields with metavariables named
+  by the field in question (e.g. `y := ?y`). Identifiers can optionally be provided to prefix the
+  name; see below.
 
   Tests are performed in `Tests/StructInstWithHoles.lean`.
 
-  At the end of this file, we implement `haveFieldProj` in analogy to `have_field` with some modifications. (This might be moved or eliminated.)
+  At the end of this file, we implement `haveFieldProj` in analogy to `have_field` with some
+  modifications. (This might be moved or eliminated.)
 
   ## Current specifics
 
   The following is subject to change.
 
-  Several variants are supported to enable the choice between synthetic holes (`?`) and natural ones, and to enable the choice between filling all unspecified fields with holes (`!`) and synthesizing defaults where possible.
+  Several variants are supported to enable the choice between synthetic holes (`?`) and natural
+  ones, and to enable the choice between filling all unspecified fields with holes (`!`) and
+  synthesizing defaults where possible.
 
-  Currently all four combinations are allowed. This is likely temporary; for example, `...` is certainly not expected to stick around, and more descriptive syntax might be used for whether to synthesize defaults or not (e.g. `?.. noDefaults`)
+  Currently all four combinations are allowed. This is likely temporary; for example, `...` is
+  certainly not expected to stick around, and more descriptive syntax might be used for whether to
+  synthesize defaults or not (e.g. `?.. noDefaults`)
 
                 synthesize defaults
                 ┌──true──┬─false──┐
@@ -43,62 +57,124 @@ open TSyntax.Compat
   unnamed goals │ `...`  │  `..!` │
                 └────────┴────────┘
 
-   Identifiers can be provided after the variadic hole syntax in the `?` case, e.g. `?..foo` and `?..!foo`
+   Identifiers can be provided after the variadic hole syntax in the `?` case, e.g. `?..foo` and
+   `?..!foo`
 
   # Overview of existing code
 
-  This document began as `StructInst.lean`, then was modified as needed. The modifications are done in such a way as to (hopefully) make it easy for them to be absorbed into `StructInst.lean`, if that's where it ends up. The following details how the original `StructInst.lean` works (which is largely preserved).
+  This document began as `StructInst.lean`, then was modified as needed. The modifications are done
+  in such a way as to (hopefully) make it easy for them to be absorbed into `StructInst.lean`, if
+  that's where it ends up. The following details how the original `StructInst.lean` works (which is
+  largely preserved).
 
   ## Short version
 
-  The way this works is that we start with syntax, parse it into a bare-bones `Struct`, use `expandStruct` to expand that struct into another struct that has intermediate indicators (`FieldVal`s) holding raw syntax or accounting for its absence. We then `elabStruct` that struct into an `ElabStructResult` which has the potential result expression (an application of the structure's single constructor to its values, which may be metavariables if they weren't found in the syntax) plus info on the original struct. We then synthesize defaults using `propagate` to assign any metavariables standing in for default values, and then return the expression.
+  The way this works is that we start with syntax, parse it into a bare-bones `Struct`, use
+  `expandStruct` to expand that struct into another struct that has intermediate indicators
+  (`FieldVal`s) holding raw syntax or accounting for its absence. We then `elabStruct` that struct
+  into an `ElabStructResult` which has the potential result expression (an application of the
+  structure's single constructor to its values, which may be metavariables if they weren't found in
+  the syntax) plus info on the original struct. We then synthesize defaults using `propagate` to
+  assign any metavariables standing in for default values, and then return the expression.
 
   ## Long version
 
-  We start with turning the syntax into a struct. First we extract the sources (everything before the `with` and any variadic holes (`..` or similar)), then we feed this to `elabStructInstAux` along with the raw syntax and expected type. Inside `elabStructInstAux` we make the syntax into a Struct (`mkStructView`), then `expandStruct`.
+  We start with turning the syntax into a struct. First we extract the sources (everything before
+  the `with` and any variadic holes (`..` or similar)), then we feed this to `elabStructInstAux`
+  along with the raw syntax and expected type. Inside `elabStructInstAux` we make the syntax into a
+  Struct (`mkStructView`), then `expandStruct`.
 
-  There's a "pre-expression scaffolding/framework/spine" set up early on in the process in the form of FieldVal's, which hold raw information: `.term stx` where `stx` is syntax, if a term was provided; a `.missing` value if it was missing; or a `.nested s` value where `s` is a `Struct` if a subobject relation obtains. The `FieldVal`s for a field might be modified as elaboration proceeds: for example, some might become `.nested`, or some defaults might turn into terms. This all happens during `expandStruct`.
+  There's a "pre-expression scaffolding/framework/spine" set up early on in the process in the form
+  of FieldVal's, which hold raw information: `.term stx` where `stx` is syntax, if a term was
+  provided; a `.missing` value if it was missing; or a `.nested s` value where `s` is a `Struct` if
+  a subobject relation obtains. The `FieldVal`s for a field might be modified as elaboration
+  proceeds: for example, some might become `.nested`, or some defaults might turn into terms. This
+  all happens during `expandStruct`.
 
   The `Struct` holds everything, and is updated throughout the process.
 
-  One of its fields is `field`, which holds a list of `Field Struct`'s. (The appearance of `Struct` within `Field Struct` is to allow the `Struct`s to nest other `Struct`s when we have subobjects.)
+  One of its fields is `field`, which holds a list of `Field Struct`'s. (The appearance of `Struct`
+  within `Field Struct` is to allow the `Struct`s to nest other `Struct`s when we have subobjects.)
 
   The fields of each element of the `field` field (got that?) are
 
   * `ref : Syntax`, which holds the `Syntax` found for that field
   * `lhs : FieldLHS`, which describes the name of the field in question
-  * `val : FieldVal`, which holds the pre-expression `FieldVal`—either `.term stx` where `stx` is the syntax of the field's value, `.default` (now `.missing`) if no syntax was found, or `.nested s` if the field represents a subobject `s` of the structure (e.g. `toFoo`, produced by `extends`)
-  * `expr? : Option Expr`, which holds the elaborated expression when it becomes available (or a metavariable, if the syntax is missing), and which begins at this stage as `none`.
+  * `val : FieldVal`, which holds the pre-expression `FieldVal`—either `.term stx` where `stx` is
+  the syntax of the field's value, `.default` (now `.missing`) if no syntax was found, or `.nested
+  s` if the field represents a subobject `s` of the structure (e.g. `toFoo`, produced by `extends`)
+  * `expr? : Option Expr`, which holds the elaborated expression when it becomes available (or a
+  metavariable, if the syntax is missing), and which begins at this stage as `none`.
 
-  `elacStructInstAux` then calls `elabStruct` on the skeletal `Struct` (which has appropriate `FieldVal`s, but `none` for each field's `expr?`), which turns the `Struct` into an `ElabStructResult`.
+  `elacStructInstAux` then calls `elabStruct` on the skeletal `Struct` (which has appropriate
+  `FieldVal`s, but `none` for each field's `expr?`), which turns the `Struct` into an
+  `ElabStructResult`.
 
-  `elabStruct` elaborates everything but defaults, constructing the structure instance as an expression given by the application of the structure's constructor to the values it finds by elaborating the `stx` in any `.term stx` `FieldVal` while ensuring the appropriate type. (It's not quite true that no defaults are taken care of here: `autoparam`s are turned into `.term`s.) If the `FieldVal` is `.nested s`, it calls `elabStruct` on `s`; if it finds a `.default` (now renamed to `.missing`) `FieldVal`, it uses a fresh metavariable in place of an elaborated expression. As it does this, it stores any elaborated expressions in the `expr?` field of its fields and builds this constructor application expression, which is, in the resulting `ElabStructResult` structure, confusingly also named "val". Occasionally the `FieldVals` for each field are updated as well. Also returned in `ElabStructResult` is the updated Struct with all its new fields, and `instMVars`, an array of metavariables for dealing with typeclass instance synthesis.
+  `elabStruct` elaborates everything but defaults, constructing the structure instance as an
+  expression given by the application of the structure's constructor to the values it finds by
+  elaborating the `stx` in any `.term stx` `FieldVal` while ensuring the appropriate type. (It's
+  not quite true that no defaults are taken care of here: `autoparam`s are turned into `.term`s.)
+  If the `FieldVal` is `.nested s`, it calls `elabStruct` on `s`; if it finds a `.default` (now
+  renamed to `.missing`) `FieldVal`, it uses a fresh metavariable in place of an elaborated
+  expression. As it does this, it stores any elaborated expressions in the `expr?` field of its
+  fields and builds this constructor application expression, which is, in the resulting
+  `ElabStructResult` structure, confusingly also named "val". Occasionally the `FieldVals` for each
+  field are updated as well. Also returned in `ElabStructResult` is the updated Struct with all its
+  new fields, and `instMVars`, an array of metavariables for dealing with typeclass instance
+  synthesis.
 
-  During `elabStruct`, defaults were inserted as metavariables into the constructed expression and into `expr?`, but they were also annotated with ``structInstDefault` to indicate that they represented a missing default value, and needed to be synthesized during the default loop. Indeed, the function `isMissingDefault?` checks that this metavariable is unassigned when deciding whether to return true or false. We finish our elaboration of the structure instance with the `propagate` loop, which iteratively synthesizes the defaults, as sometimes the default values of fields reference other fields which may also have a default value (etc.).
+  During `elabStruct`, defaults were inserted as metavariables into the constructed expression and
+  into `expr?`, but they were also annotated with ``structInstDefault` to indicate that they
+  represented a missing default value, and needed to be synthesized during the default loop.
+  Indeed, the function `isMissingDefault?` checks that this metavariable is unassigned when
+  deciding whether to return true or false. We finish our elaboration of the structure instance
+  with the `propagate` loop, which iteratively synthesizes the defaults, as sometimes the default
+  values of fields reference other fields which may also have a default value (etc.).
 
   # Modifications
 
-  Changes from `StructInst.lean` are marked with `!!` in a comment (or with `!!/`, `!!\` surrounding a new or altered block).
+  Changes from `StructInst.lean` are marked with `!!` in a comment (or with `!!/`, `!!\`
+  surrounding a new or altered block).
 
   Existing comments are left unchanged, and new comments begin with "~~".
 
   ## Syntax
 
-  We use the parser from `Term.lean`, but change `optional ".."` to our parseer for variadic holes, `variadicHole`
+  We use the parser from `Term.lean`, but change `optional ".."` to our parseer for variadic holes,
+  `variadicHole`
 
   ## Logic
 
-  The original implementation of `..`, which creates a natural metavariable for each goal (and does not synthesize defaults) affects things early on, at the stage of `FieldVal`s. Instead of using a `.default` `FieldVal`, it makes a hole via syntax by providing a `.term (mkHole ref)` `FieldVal` for each missing field value.
+  The original implementation of `..`, which creates a natural metavariable for each goal (and does
+  not synthesize defaults) affects things early on, at the stage of `FieldVal`s. Instead of using a
+  `.default` `FieldVal`, it makes a hole via syntax by providing a `.term (mkHole ref)` `FieldVal`
+  for each missing field value.
 
-  We preserve this behavior only for the `isSynthetic := false, useDefaults := false` case. Otherwise, we use the `.default` `FieldVal`—now renamed to `.missing` to reflect its changed function—and intervene mostly within the `ImplicitFields` namespace (previously the `DefaultFields` namespace), where defaults are synthesized. If the variadic hole syntax says not to, we don't propagate the default-synthesizing loop and therefore don't synthesize any defaults. Typically, when the default loop ends with some fields still annotated as missing, an error is thrown (`fields missing: ...`). However, if there's a variadic hole, we simply return from the loop without error; next (whether the loop has run or not) we assign those remaining annotated fields to *new* metavariables, which, in the `isSynthetic := true` case, are well-named and hold all of the metadata we want them to. These are ripe to be used in a `refine` statement.
+  We preserve this behavior only for the `isSynthetic := false, useDefaults := false` case.
+  Otherwise, we use the `.default` `FieldVal`—now renamed to `.missing` to reflect its changed
+  function—and intervene mostly within the `ImplicitFields` namespace (previously the
+  `DefaultFields` namespace), where defaults are synthesized. If the variadic hole syntax says not
+  to, we don't propagate the default-synthesizing loop and therefore don't synthesize any defaults.
+  Typically, when the default loop ends with some fields still annotated as missing, an error is
+  thrown (`fields missing: ...`). However, if there's a variadic hole, we simply return from the
+  loop without error; next (whether the loop has run or not) we assign those remaining annotated
+  fields to *new* metavariables, which, in the `isSynthetic := true` case, are well-named and hold
+  all of the metadata we want them to. These are ripe to be used in a `refine` statement.
 
-  The only exception to this flow is how we handle `autoparam`s: autoparams are handled in `elabStruct`, so that's where we intervene as well.
+  The only exception to this flow is how we handle `autoparam`s: autoparams are handled in
+  `elabStruct`, so that's where we intervene as well.
 
   ## Style
 
-  New code is often written in a "lookahead" fashion, to make it as easy as possible to move this to core, in case it would better belong there. Therefore some cases that don't occur in this elaboration are nonetheless accounted for—for example, the case where variadic hole syntax is absent (where the value of struct.source.implicit is none), and the case where `isSynthetic := false, useDefaults := false`, which is already accounted for by existing `..` syntax. We use a different token (`...`) only to show that this works.
+  New code is often written in a "lookahead" fashion, to make it as easy as possible to move this
+  to core, in case it would better belong there. Therefore some cases that don't occur in this
+  elaboration are nonetheless accounted for—for example, the case where variadic hole syntax is
+  absent (where the value of struct.source.implicit is none), and the case where `isSynthetic :=
+  false, useDefaults := false`, which is already accounted for by existing `..` syntax. We use a
+  different token (`...`) only to show that this works.
 
-  This modification of `StructInst.lean` also attempts to be "minimally invasive" by intervening in as few places as possible and leaving the existing flow of computation intact.
+  This modification of `StructInst.lean` also attempts to be "minimally invasive" by intervening in
+  as few places as possible and leaving the existing flow of computation intact.
 
   ## Locations of changes
 
@@ -112,43 +188,72 @@ open TSyntax.Compat
     * update `$[..%$ell]?` syntax match to accommodate variadic holes
 
   * type of `implicit` in `Source` structure: `Option Syntax` ⇒ `Option VariadicHoleConfig`
-    * originally this held the syntax `..` if present; now it holds information derived from the variadic hole syntax (if present) as opposed to the raw syntax
+    * originally this held the syntax `..` if present; now it holds information derived from the
+    variadic hole syntax (if present) as opposed to the raw syntax
 
   * `getStructSource`
-    * inserted `getVariadicHoleConfig?` in front of the raw `implicitSource` syntax to process it into a `VariadicHoleConfig`
+    * inserted `getVariadicHoleConfig?` in front of the raw `implicitSource` syntax to process it
+    into a `VariadicHoleConfig`
 
   * `formatStruct`
-    * instead of using a literal `".."` whenever `implicit.isSome`, use the syntax we encountered (stored as one of the fields of `VariadicHoleConfig`)
+    * instead of using a literal `".."` whenever `implicit.isSome`, use the syntax we encountered
+    (stored as one of the fields of `VariadicHoleConfig`)
 
   ### Logic
 
   **Simple renamings**
 
-  * The `.default` `FieldVal`, which was used to indicate that fields would be synthesized by the default loop, is renamed to `.missing` for clarity. Likewise `Struct.allDefault` is renamed to `Struct.allMissing` (since it simply checks these `FieldVal`s), and `formatField` formats `.missing` fields via `"<missing>"` instead of via `"<default>"`.
+  * The `.default` `FieldVal`, which was used to indicate that fields would be synthesized by the
+  default loop, is renamed to `.missing` for clarity. Likewise `Struct.allDefault` is renamed to
+  `Struct.allMissing` (since it simply checks these `FieldVal`s), and `formatField` formats
+  `.missing` fields via `"<missing>"` instead of via `"<default>"`.
 
-  * We rename the `DefaultFields` namespace to `ImplicitFields`, since this is now where we intervene to handle holes as well.
+  * We rename the `DefaultFields` namespace to `ImplicitFields`, since this is now where we
+  intervene to handle holes as well.
 
   **Setup changes**
 
-  * `addMissingFields`, which is responsible for attaching `.missing` to unspecified fields, previously attached a `.term (mkHole stx)` to any missing field whenever `..` was present. Here, we only do so in the `isSynthetic := false, useDefaults := false` case, attaching `.missing` in all other cases (both when we exepct them to be synthesized as defaults and not).
+  * `addMissingFields`, which is responsible for attaching `.missing` to unspecified fields,
+  previously attached a `.term (mkHole stx)` to any missing field whenever `..` was present. Here,
+  we only do so in the `isSynthetic := false, useDefaults := false` case, attaching `.missing` in
+  all other cases (both when we exepct them to be synthesized as defaults and not).
 
-  * `elabStruct` – this function uses `FieldVal`s to 1) generate `expr?`s for each field when possible and 2) apply the structure's constructor to the arguments it finds to build the instance expression. It stops short of synthesizing defaults, inserting a metavariable in both places when it encounters a `.missing` field. However, autoparams for `.missing` values are handled here. We therefore modify that section of the code so that
+  * `elabStruct` – this function uses `FieldVal`s to 1) generate `expr?`s for each field when
+  possible and 2) apply the structure's constructor to the arguments it finds to build the instance
+  expression. It stops short of synthesizing defaults, inserting a metavariable in both places when
+  it encounters a `.missing` field. However, autoparams for `.missing` values are handled here. We
+  therefore modify that section of the code so that
     * if the variadic hole says to use holes instead of defaults, we don't try the autoparam
-    * if it says to use defaults, we try the autoparam in such a way that if it fails we use a hole instead
-      * we also need to introduce a new optional `Bool` argument to the internal `cont` function that, when modified from its default, takes a different branch. Otherwise `cont` is untouched, and the original behavior is used when this argument is not specified.
+    * if it says to use defaults, we try the autoparam in such a way that if it fails we use a hole
+    instead
+      * we also need to introduce a new optional `Bool` argument to the internal `cont` function
+      that, when modified from its default, takes a different branch. Otherwise `cont` is
+      untouched, and the original behavior is used when this argument is not specified.
     * if there's no variadic hole, use the original behavior
 
   **Default loop changes**
 
-  * `propagateLoop` – this is a pass of the loop used for synthesizing defaults, and is responsible for throwing an error when too few fields are specified. If there is a variadic hole, it does not throw that error and simply returns.
+  * `propagateLoop` – this is a pass of the loop used for synthesizing defaults, and is responsible
+  for throwing an error when too few fields are specified. If there is a variadic hole, it does not
+  throw that error and simply returns.
 
   * `propagate` – this sets things up for the loop and executes it.
-    * We check the variadic hole config and don't run `propagateLoop` if it says not to. (We start with a `do` to accommodate this.)
-    * At the end, if there is a variadic hole, we run `assignRemainingDefaultsToHoles` (a new function which does what you expect)
+    * We check the variadic hole config and don't run `propagateLoop` if it says not to. (We start
+    with a `do` to accommodate this.)
+
+    * At the end, if there is a variadic hole, we run `assignRemainingDefaultsToHoles` (a new
+    function which does what you expect)
 
   ## New Code
 
-  The new functionality is in the `ImplicitFields` section to attach metadata to the goals produced. Currently, we attach the metadata as a `KVMap` to the type of the goal, but this may change. We use this metadata to resolve name conflicts, appending an appropriate index if any existing metavariable is from a structure that shares a field name. This is meant to improve clarity: for example, if `Foo` and `Bar` both have fields `x` and `y`, `refine ({ y := 0, ?.. : Foo}, { x := 1, ?.. : Bar})` will produce goals `x` and `y_1` to show that these are not from the same structure. (This may change if we decide to prefix each goal name with the name of the structure.)
+  The new functionality is in the `ImplicitFields` section to attach metadata to the goals
+  produced. Currently, we attach the metadata as a `KVMap` to the type of the goal, but this may
+  change. We use this metadata to resolve name conflicts, appending an appropriate index if any
+  existing metavariable is from a structure that shares a field name. This is meant to improve
+  clarity: for example, if `Foo` and `Bar` both have fields `x` and `y`,
+  `refine ({ y := 0, ?.. : Foo}, { x := 1, ?.. : Bar})` will produce goals `x` and `y_1` to show
+  that these are not from the same structure. (This may change if we decide to prefix each goal
+  name with the name of the structure.)
 
   # Problems
 
@@ -162,7 +267,8 @@ open TSyntax.Compat
 
   * should utility-like functions be refactored into other files?
 
-  * Can the docstrings of the original structure instance and `refine` be modified from "within mathlib" somehow?
+  * Can the docstrings of the original structure instance and `refine` be modified from "within
+  mathlib" somehow?
 
   * Do I need to add to "authors" at the top or worry about the copyright?
 
@@ -186,9 +292,11 @@ A *structure update* of an existing value can be given via `with`:
 `{ point with x := 1 }`.
 The structure type can be specified if not inferable:
 `{ x := 1, y := 2 : Point }`.
-`?..` will fill fields with automatically-named holes: `{ x := 1, ?.. : Point3D }` will create `?y`, `?z`.
+`?..` fills fields with automatically-named holes:
+`{ x := 1, ?.. : Point3D }` creates `?y`, `?z`.
 -/
-@[term_parser] def structInstWithHoles := leading_parser "{" >> ppHardSpace >> Lean.Parser.optional (atomic (sepBy1 termParser ", " >> " with "))
+@[term_parser] def structInstWithHoles := leading_parser "{" >> ppHardSpace >> Lean.Parser.optional
+(atomic (sepBy1 termParser ", " >> " with "))
   >> sepByIndent (structInstFieldAbbrev <|> structInstField) ", " (allowTrailingSep := true)
   >> variadicHole --!! Only apply this elaboration to syntax that has one of these holes
   >> Lean.Parser.optional (" : " >> termParser) >> " }"
@@ -219,7 +327,8 @@ The structure type can be specified if not inferable:
   | _ => Macro.throwUnsupported
 
 /--
-  If `stx` is of the form `{ s₁, ..., sₙ with ... }` and `sᵢ` is not a local variable, expand into `let src := sᵢ; { ..., src, ... with ... }`.
+  If `stx` is of the form `{ s₁, ..., sₙ with ... }` and `sᵢ` is not a local variable, expand into
+  `let src := sᵢ; { ..., src, ... with ... }`.
 
   Note that this one is not a `Macro` because we need to access the local context.
 -/
@@ -327,7 +436,8 @@ private def isModifyOp? (stx : Syntax) : TermElabM (Option Syntax) := do
     if arg.getKind == ``Lean.Parser.Term.structInstField then
       /- Remark: the syntax for `structInstField` is
          ```
-         def structInstLVal   := leading_parser (ident <|> numLit <|> structInstArrayRef) >> many (group ("." >> (ident <|> numLit)) <|> structInstArrayRef)
+         def structInstLVal   := leading_parser (ident <|> numLit <|> structInstArrayRef) >> many
+         (group ("." >> (ident <|> numLit)) <|> structInstArrayRef)
          def structInstField  := leading_parser structInstLVal >> " := " >> termParser
          ```
       -/
@@ -353,9 +463,11 @@ private def isModifyOp? (stx : Syntax) : TermElabM (Option Syntax) := do
       return s?
   match s? with
   | none   => return none
-  | some s => if s[0][0].getKind == ``Lean.Parser.Term.structInstArrayRef then return s? else return none
+  | some s => if s[0][0].getKind == ``Lean.Parser.Term.structInstArrayRef then return s? else
+  return none
 
-private def elabModifyOp (stx modifyOp : Syntax) (sources : Array ExplicitSourceInfo) (expectedType? : Option Expr) : TermElabM Expr := do
+private def elabModifyOp (stx modifyOp : Syntax) (sources : Array ExplicitSourceInfo)
+(expectedType? : Option Expr) : TermElabM Expr := do
   if sources.size > 1 then
     throwError "invalid \{...} notation, multiple sources and array update is not supported."
   let cont (val : Syntax) : TermElabM Expr := do
@@ -371,7 +483,8 @@ private def elabModifyOp (stx modifyOp : Syntax) (sources : Array ExplicitSource
   else
     let s ← `(s)
     let valFirst  := rest[0]
-    let valFirst  := if valFirst.getKind == ``Lean.Parser.Term.structInstArrayRef then valFirst else valFirst[1]
+    let valFirst  := if valFirst.getKind == ``Lean.Parser.Term.structInstArrayRef then valFirst
+      else valFirst[1]
     let restArgs  := rest.getArgs
     let valRest   := mkNullNode restArgs[1:restArgs.size]
     let valField  := modifyOp.setArg 0 <| mkNode ``Parser.Term.structInstLVal #[valFirst, valRest]
@@ -445,8 +558,10 @@ def Field.isSimple {σ} : Field σ → Bool
   | _                  => false
 
 inductive Struct where
-  /-- Remark: the field `params` is used for .missing value propagation. It is initially empty, and then set at `elabStruct`. -/
-  | mk (ref : Syntax) (structName : Name) (params : Array (Name × Expr)) (fields : List (Field Struct)) (source : Source)
+  /-- Remark: the field `params` is used for .missing value propagation. It is initially empty, and
+  then set at `elabStruct`. -/
+  | mk (ref : Syntax) (structName : Name) (params : Array (Name × Expr))
+  (fields : List (Field Struct)) (source : Source)
   deriving Inhabited
 
 abbrev Fields := List (Field Struct)
@@ -502,14 +617,16 @@ instance : ToString (Field Struct) := ⟨toString ∘ format⟩
 Recall that `structInstField` elements have the form
 ```
    def structInstField  := leading_parser structInstLVal >> " := " >> termParser
-   def structInstLVal   := leading_parser (ident <|> numLit <|> structInstArrayRef) >> many (("." >> (ident <|> numLit)) <|> structInstArrayRef)
+   def structInstLVal   := leading_parser (ident <|> numLit <|> structInstArrayRef)
+   >> many (("." >> (ident <|> numLit)) <|> structInstArrayRef)
    def structInstArrayRef := leading_parser "[" >> termParser >>"]"
 ```
 -/
 -- Remark: this code relies on the fact that `expandStruct` only transforms `fieldLHS.fieldName`
 def FieldLHS.toSyntax (first : Bool) : FieldLHS → Syntax
   | .modifyOp   stx _    => stx
-  | .fieldName  stx name => if first then mkIdentFrom stx name else mkGroupNode #[mkAtomFrom stx ".", mkIdentFrom stx name]
+  | .fieldName  stx name => if first then mkIdentFrom stx name
+    else mkGroupNode #[mkAtomFrom stx ".", mkIdentFrom stx name]
   | .fieldIndex stx _    => if first then stx else mkGroupNode #[mkAtomFrom stx ".", stx]
 
 def FieldVal.toSyntax : FieldVal Struct → Syntax
@@ -521,7 +638,8 @@ def Field.toSyntax : Field Struct → Syntax
     let stx := field.ref
     let stx := stx.setArg 2 field.val.toSyntax
     match field.lhs with
-    | first::rest => stx.setArg 0 <| mkNullNode #[first.toSyntax true, mkNullNode <| rest.toArray.map (FieldLHS.toSyntax false) ]
+    | first::rest => stx.setArg 0 <| mkNullNode
+      #[first.toSyntax true, mkNullNode <| rest.toArray.map (FieldLHS.toSyntax false) ]
     | _ => unreachable!
 
 private def toFieldLHS (stx : Syntax) : MacroM FieldLHS :=
@@ -556,9 +674,11 @@ private def mkStructView (stx : Syntax) (structName : Name) (source : Source) : 
     return { ref := fieldStx, lhs := first :: rest, val := FieldVal.term val : Field Struct }
   return ⟨stx, structName, #[], fields, source⟩
 
-def Struct.modifyFieldsM {m : Type → Type} [Monad m] (s : Struct) (f : Fields → m Fields) : m Struct :=
+def Struct.modifyFieldsM {m : Type → Type} [Monad m] (s : Struct) (f : Fields → m Fields) :
+m Struct :=
   match s with
-  | ⟨ref, structName, params, fields, source⟩ => return ⟨ref, structName, params, (← f fields), source⟩
+  | ⟨ref, structName, params, fields, source⟩ =>
+    return ⟨ref, structName, params, (← f fields), source⟩
 
 def Struct.modifyFields (s : Struct) (f : Fields → Fields) : Struct :=
   Id.run <| s.modifyFieldsM f
@@ -585,7 +705,8 @@ private def expandNumLitFields (s : Struct) : TermElabM Struct :=
     fields.mapM fun field => match field with
       | { lhs := .fieldIndex ref idx :: rest, .. } =>
         if idx == 0 then throwErrorAt ref "invalid field index, index must be greater than 0"
-        else if idx > fieldNames.size then throwErrorAt ref "invalid field index, structure has only #{fieldNames.size} fields"
+        else if idx > fieldNames.size
+          then throwErrorAt ref "invalid field index, structure has only #{fieldNames.size} fields"
         else return { field with lhs := .fieldName ref fieldNames[idx - 1]! :: rest }
       | _ => return field
 
@@ -647,7 +768,8 @@ private def isSimpleField? : Fields → Option (Field Struct)
   | [field] => if field.isSimple then some field else none
   | _       => none
 
-private def getFieldIdx (structName : Name) (fieldNames : Array Name) (fieldName : Name) : TermElabM Nat := do
+private def getFieldIdx (structName : Name) (fieldNames : Array Name) (fieldName : Name) :
+TermElabM Nat := do
   match fieldNames.findIdx? fun n => n == fieldName with
   | some idx => return idx
   | none     => throwError "field '{fieldName}' is not a valid field of '{structName}'"
@@ -683,8 +805,10 @@ mutual
             pure { field with lhs := [field.lhs.head!], val := FieldVal.nested substruct }
           | none =>
             let updateSource (structStx : Syntax) : TermElabM Syntax := do
-              let sourcesNew ← s.source.explicit.filterMapM fun source => mkProjStx? source.stx source.structName fieldName
-              let explicitSourceStx := if sourcesNew.isEmpty then mkNullNode else mkSourcesWithSyntax sourcesNew
+              let sourcesNew ← s.source.explicit.filterMapM
+                fun source => mkProjStx? source.stx source.structName fieldName
+              let explicitSourceStx := if sourcesNew.isEmpty then mkNullNode
+                else mkSourcesWithSyntax sourcesNew
               let implicitSourceStx := s.source.implicit.map (·.stx) |>.getD mkNullNode --!!
               return (structStx.setArg 1 explicitSourceStx).setArg 3 implicitSourceStx
             let valStx := s.ref -- construct substructure syntax using s.ref as template
@@ -709,17 +833,22 @@ mutual
           match Lean.isSubobjectField? env s.structName fieldName with
           | some substructName =>
             -- If one of the sources has the subobject field, use it
-            if let some val ← s.source.explicit.findSomeM? fun source => mkProjStx? source.stx source.structName fieldName then
+            if let some val ← s.source.explicit.findSomeM?
+              fun source => mkProjStx? source.stx source.structName fieldName
+            then
               addField (FieldVal.term val)
             else
               let substruct := Struct.mk ref substructName #[] [] s.source
               let substruct ← expandStruct substruct
               addField (FieldVal.nested substruct)
           | none =>
-            if let some val ← s.source.explicit.findSomeM? fun source => mkProjStx? source.stx source.structName fieldName then
+            if let some val ← s.source.explicit.findSomeM?
+              fun source => mkProjStx? source.stx source.structName fieldName
+            then
               addField (FieldVal.term val)
             else
-              --!!/ Use hole syntax as a term in the natural, no-defaults (..) case; otherwise add it as a missing field.
+              --!!/ Use hole syntax as a term in the natural, no-defaults (..) case;
+              --    otherwise add it as a missing field.
               match s.source.implicit with
               | some { isSynthetic := false, useDefaults := false, .. } =>
                 addField (FieldVal.term (mkHole ref))
@@ -742,15 +871,18 @@ structure CtorHeaderResult where
   instMVars  : Array MVarId
   params     : Array (Name × Expr)
 
-private def mkCtorHeaderAux : Nat → Expr → Expr → Array MVarId → Array (Name × Expr) → TermElabM CtorHeaderResult
-  | 0,   type, ctorFn, instMVars, params => return { ctorFn , ctorFnType := type, instMVars, params }
+private def mkCtorHeaderAux :
+Nat → Expr → Expr → Array MVarId → Array (Name × Expr) → TermElabM CtorHeaderResult
+  | 0,   type, ctorFn, instMVars, params =>
+    return { ctorFn , ctorFnType := type, instMVars, params }
   | n+1, type, ctorFn, instMVars, params => do
     match (← whnfForall type) with
     | .forallE paramName d b c =>
       match c with
       | .instImplicit =>
         let a ← mkFreshExprMVar d .synthetic
-        mkCtorHeaderAux n (b.instantiate1 a) (mkApp ctorFn a) (instMVars.push a.mvarId!) (params.push (paramName, a))
+        mkCtorHeaderAux n (b.instantiate1 a) (mkApp ctorFn a) (instMVars.push a.mvarId!)
+          (params.push (paramName, a))
       | _ =>
         let a ← mkFreshExprMVar d
         mkCtorHeaderAux n (b.instantiate1 a) (mkApp ctorFn a) instMVars (params.push (paramName, a))
@@ -761,7 +893,8 @@ private partial def getForallBody : Nat → Expr → Option Expr
   | _+1, _                => none
   | 0,   type             => type
 
-private def propagateExpectedType (type : Expr) (numFields : Nat) (expectedType? : Option Expr) : TermElabM Unit := do
+private def propagateExpectedType (type : Expr) (numFields : Nat) (expectedType? : Option Expr) :
+TermElabM Unit := do
   match expectedType? with
   | none              => return ()
   | some expectedType =>
@@ -771,7 +904,8 @@ private def propagateExpectedType (type : Expr) (numFields : Nat) (expectedType?
         unless typeBody.hasLooseBVars do
           discard <| isDefEq expectedType typeBody
 
-private def mkCtorHeader (ctorVal : ConstructorVal) (expectedType? : Option Expr) : TermElabM CtorHeaderResult := do
+private def mkCtorHeader (ctorVal : ConstructorVal) (expectedType? : Option Expr) :
+TermElabM CtorHeaderResult := do
   let us ← mkFreshLevelMVars ctorVal.levelParams.length
   let val  := Lean.mkConst ctorVal.name us
   let type ← instantiateTypeLevelParams (ConstantInfo.ctorInfo ctorVal) us
@@ -786,7 +920,8 @@ def markDefaultMissing (e : Expr) : Expr :=
 def defaultMissing? (e : Expr) : Option Expr :=
   annotation? `structInstDefault e
 
-def throwFailedToElabField {α} (fieldName : Name) (structName : Name) (msgData : MessageData) : TermElabM α :=
+def throwFailedToElabField {α} (fieldName : Name) (structName : Name) (msgData : MessageData) :
+TermElabM α :=
   throwError "failed to elaborate field '{fieldName}' of '{structName}, {msgData}"
 
 def trySynthStructInstance? (s : Struct) (expectedType : Expr) : TermElabM (Option Expr) := do
@@ -813,15 +948,19 @@ elab "faq_throw_error" : tactic =>
 let goal ← Lean.Elab.Tactic.getMainGoal
 Lean.Meta.throwTacticEx `faq_throw_error goal "throwing an error at the current goal"
 
-private partial def elabStruct (s : Struct) (expectedType? : Option Expr) : TermElabM ElabStructResult := withRef s.ref do
+private partial def elabStruct (s : Struct) (expectedType? : Option Expr) :
+TermElabM ElabStructResult := withRef s.ref do
   let env ← getEnv
   let vhc? := s.source.implicit
   let ctorVal := getStructureCtor env s.structName
   if isPrivateNameFromImportedModule env ctorVal.name then
     throwError "invalid \{...} notation, constructor for `{s.structName}` is marked as private"
-  -- We store the parameters at the resulting `Struct`. We use this information during default value propagation.
+  -- We store the parameters at the resulting `Struct`.
+  -- We use this information during default value propagation.
   let { ctorFn, ctorFnType, params, .. } ← mkCtorHeader ctorVal expectedType?
-  let (e, _, fields, instMVars) ← s.fields.foldlM (init := (ctorFn, ctorFnType, [], #[])) fun (e, type, fields, instMVars) field => do
+  let (e, _, fields, instMVars) ← s.fields.foldlM
+    (init := (ctorFn, ctorFnType, [], #[]))
+    fun (e, type, fields, instMVars) field => do
     match field.lhs with
     | [.fieldName ref fieldName] =>
       let type ← whnfForall type
@@ -829,9 +968,14 @@ private partial def elabStruct (s : Struct) (expectedType? : Option Expr) : Term
       match type with
       | .forallE _ d b bi =>
       --!! added updateField argument
-        let cont (val : Expr) (field : Field Struct) (instMVars := instMVars) (updateField := true) : TermElabM (Expr × Expr × Fields × Array MVarId) := do
+        let cont (val : Expr) (field : Field Struct) (instMVars := instMVars)
+        (updateField := true) : TermElabM (Expr × Expr × Fields × Array MVarId) := do
           pushInfoTree <| InfoTree.node (children := {}) <| Info.ofFieldInfo {
-            projName := s.structName.append fieldName, fieldName, lctx := (← getLCtx), val, stx := ref }
+            projName := s.structName.append fieldName,
+            fieldName,
+            lctx := (← getLCtx),
+            val,
+            stx := ref }
           let e     := mkApp e val
           let type  := b.instantiate1 val
           let field := if updateField then { field with expr? := some val } else field --!!
@@ -840,7 +984,8 @@ private partial def elabStruct (s : Struct) (expectedType? : Option Expr) : Term
         | .term stx =>
           cont (← elabTermEnsuringType stx d.consumeTypeAnnotations) field
         | .nested s  =>
-          --~~? Should this remain in all cases? Should the definition be changed when useDefaults is false? When might it be encountered?
+          --~~? Should this remain in all cases? Should the definition be changed when useDefaults
+          --    is false? When might it be encountered?
           let inst? := if vhc?.all (·.useDefaults) then
             (← trySynthStructInstance? s d) else none
           match inst? with
@@ -859,13 +1004,13 @@ private partial def elabStruct (s : Struct) (expectedType? : Option Expr) : Term
               match evalSyntaxConstant env (← getOptions) tacticDecl with
               | .error err       => throwError err
               | .ok tacticSyntax =>
-              --~~? we need to be able to try the tactic and create a metavariable if it fails. but WHEN do we try the tactic, and how do we introduce it correctly? Timing might be tricky. Should we use syntax and a tactic which introduces a metavariable, or should we have a different way of introducing the metavariable by, say, amending the Expression in `cont` post `← elabTermEnsuringType ...`?
               --!!/
                 if vhc?.isSome then
-                  --~~?[...] need to do a couple things here. I think: make the tactic syntax the val, but also...hmmm. we need to use one in the expression and one in the field maybe? do tactics only get evaluated after?
                   let val := (← mkFreshExprMVar (some d) .synthetic)
-                  let stx ← `(by first | $tacticSyntax | exact $(← toSyntax val)) --`(by first | $tacticSyntax | refine $(← toSyntax val))
-                  cont (← elabTermEnsuringType stx d) {field with expr? := some (markDefaultMissing val)} (updateField := false)
+                  let stx ← `(by first | $tacticSyntax | exact $(← toSyntax val))
+                  cont (← elabTermEnsuringType stx d)
+                    {field with expr? := some (markDefaultMissing val)}
+                    (updateField := false)
                 else
                 --!!\
                   let stx ← `(by $tacticSyntax)
@@ -877,7 +1022,8 @@ private partial def elabStruct (s : Struct) (expectedType? : Option Expr) : Term
             --!!\
           | _ =>
             if bi == .instImplicit then
-            --~~? When might this be encountered? Do we need to distinguish it somehow? OR adjust the timing of our metavariable creation?
+            --~~? When might this be encountered? Do we need to distinguish it somehow?
+            --    OR adjust the timing of our metavariable creation?
             --~~? Why is it not some d?
               let val ← withRef field.ref <| mkFreshExprMVar d .synthetic
               trace[Elab.struct] ".instImplicit ({val})"
@@ -886,7 +1032,8 @@ private partial def elabStruct (s : Struct) (expectedType? : Option Expr) : Term
             --~ otherwise, make a metavariable and MARK AS DEFAULT.
               let val ← withRef field.ref <| mkFreshExprMVar (some d)
               cont (markDefaultMissing val) field
-      | _ => withRef field.ref <| throwFailedToElabField fieldName s.structName m!"unexpected constructor type{indentExpr type}"
+      | _ => withRef field.ref (throwFailedToElabField
+          fieldName s.structName m!"unexpected constructor type{indentExpr type}")
     | _ => throwErrorAt field.ref "unexpected unexpanded structure field"
   return { val := e, struct := s.setFields fields.reverse |>.setParams params, instMVars }
 
@@ -910,9 +1057,13 @@ structure Context where
     z : Nat := 2*y
     x := z + 3
   ```
-  And we are trying to elaborate a structure instance for `C`. There are default values for `x` at `A`, `B`, and `C`.
-  We say the default value at `C` has distance 0, the one at `B` distance 1, and the one at `A` distance 2.
-  The field `maxDistance` specifies the maximum distance considered in a round of Default field computation.
+  And we are trying to elaborate a structure instance for `C`.
+
+  There are default values for `x` at `A`, `B`, and `C`.
+  We say the default value at `C` has distance 0, the one at `B` distance 1, and the one at `A`
+  distance 2.
+  The field `maxDistance` specifies the maximum distance considered in a round of Default field
+  computation.
   Remark: since `C` does not set a default value of `y`, the default value at `B` is at distance 0.
 
   The fixpoint for setting default values works in the following way.
@@ -920,7 +1071,8 @@ structure Context where
   - We increase `maxDistance` whenever we failed to compute a new default value in a round.
   - If `maxDistance > 0`, then we interrupt a round as soon as we compute some default value.
     We use depth-first search.
-  - We sign an error if no progress is made when `maxDistance` == structure hierarchy depth (2 in the example above).
+  - We sign an error if no progress is made when `maxDistance` == structure hierarchy depth (2 in
+    the example above).
   -/
   maxDistance : Nat := 0
 
@@ -947,13 +1099,15 @@ def isDefaultMissing? [Monad m] [MonadMCtx m] (field : Field Struct) : m Bool :=
         return true
   return false
 
-partial def findDefaultMissing? [Monad m] [MonadMCtx m] (struct : Struct) : m (Option (Field Struct)) :=
+partial def findDefaultMissing? [Monad m] [MonadMCtx m] (struct : Struct) :
+m (Option (Field Struct)) :=
   struct.fields.findSomeM? fun field => do
    match field.val with
    | .nested struct => findDefaultMissing? struct
    | _ => return if (← isDefaultMissing? field) then field else none
 
-partial def allDefaultMissing [Monad m] [MonadMCtx m] (struct : Struct) : m (Array (Field Struct)) :=
+partial def allDefaultMissing [Monad m] [MonadMCtx m] (struct : Struct) :
+m (Array (Field Struct)) :=
   go struct *> get |>.run' #[]
 where
   go (struct : Struct) : StateT (Array (Field Struct)) m Unit :=
@@ -981,7 +1135,6 @@ def getFieldValue? (struct : Struct) (fieldName : Name) : Option Expr :=
       none
 
 --!!/
---~~? Metadata on a metavariable should be able to be checked from wherever we like. So where should it be? Right now I put it on the type. Where else could it be? LocalInstances? Would that be better?
 structure FieldHoleMData where
   index      : Nat
   structRef  : Syntax
@@ -1024,7 +1177,8 @@ def isFieldHole (decl : MetavarDecl) : Bool :=
   | .mdata md _ => KVMap.getBool md `fieldHole
   | _           => false
 
-/-- Merges two `KVMap`s, overwriting the value of any shared keys with the values given in the second `KVMap`.
+/--
+  Merges two `KVMap`s, overwriting the values of any shared keys with those in the second `KVMap`.
 -/
 def mergeKVMap : KVMap → KVMap → KVMap :=
   fun m₀ m₁ => Id.run do
@@ -1032,7 +1186,9 @@ def mergeKVMap : KVMap → KVMap → KVMap :=
     for (name, data) in m₁ do
       m := KVMap.insert m name data
     return m
-/-- Turns a list of key-value pairs (e.g. ``[(`a, ofBool true), (`b, ofNat 2), ...]``) into a `KVMap`.}-/
+/--
+  Turns a list of key-value pairs (e.g. ``[(`a, ofBool true), (`b, ofNat 2), ...]``) into a `KVMap`.
+-/
 def toKVMap : List (Name × DataValue) → KVMap
 | l => l.foldl (fun m (n, d) => KVMap.insert m n d) {}
 
@@ -1048,8 +1204,12 @@ def mkFieldHoleMDataKVMap (f : FieldHoleMData) : KVMap :=
     (`prefixName , ofName   f.prefixName)
   ]
 
-/-- Creates a metavariable with `metadata` attached to its `type`. If there's any existing metadata on `type`, `metadata` is preferentially merged into it. -/
-def mkFreshExprMVarWithMData (type : Expr) (metadata : KVMap) (kind : MetavarKind := default) (userName := Name.anonymous) :=
+/--
+  Creates a metavariable with `metadata` attached to its `type`.
+  If there's any existing metadata on `type`, `metadata` is preferentially merged into it.
+  -/
+def mkFreshExprMVarWithMData (type : Expr) (metadata : KVMap) (kind : MetavarKind := default)
+(userName := Name.anonymous) : MetaM Expr :=
   let annotatedType :=
     match type with
     | .mdata m e =>
@@ -1059,7 +1219,8 @@ def mkFreshExprMVarWithMData (type : Expr) (metadata : KVMap) (kind : MetavarKin
       Expr.mdata metadata type
   mkFreshExprMVar annotatedType (kind := kind) (userName := userName)
 
-def mkFreshFieldNamedMVar (type : Expr) (index : Nat) (prefixName : Option Name) (field : Field Struct) (struct : Struct) :=
+def mkFreshFieldNamedMVar (type : Expr) (index : Nat) (prefixName : Option Name)
+(field : Field Struct) (struct : Struct) : MetaM Expr :=
   let fieldHoleMData := mkFieldHoleMDataKVMap <| mkFieldHoleMData index field struct
   let name :=
     match prefixName with
@@ -1075,22 +1236,25 @@ def fieldsOverlap (env : Environment) (structName₀ : Name) (structName₁ : Na
   fields₀.any (fun field => fields₁.contains field)
 
 --~~ Monadic code for tracing:
-def getConflictingIndex? (env : Environment) (s : Struct) (prefixName : Name) (decl : MetavarDecl) : TermElabM (Option Nat) := do
+def getConflictingIndex? (env : Environment) (s : Struct) (prefixName : Name) (decl : MetavarDecl)
+: TermElabM (Option Nat) := do
   let fieldHoleMData? := getFieldHoleMDataFromMVar? decl
-  --~~ clean this up
+  --~~ clean this up (two none's)
   match fieldHoleMData? with
   | some fieldHoleMData =>
-    --~~? Is it necessary to check if two goals come from the same `?..`? It seems so far like it's not.
+    --~~? Is it really necessary to check if two goals come from the same `?..`?
     let cond1 := true --Lean.Syntax.getPos? s.ref != Lean.Syntax.getPos? fieldHoleMData.structRef
     let cond2 := prefixName == fieldHoleMData.prefixName
     let cond3 := fieldsOverlap env s.structName (fieldHoleMData.structName)
-    trace[Elab.struct] "goal name conflict for {fieldHoleMData.structName}: {cond1} && {cond2} && {cond3}"
+    trace[Elab.struct]
+      "goal name conflict for {fieldHoleMData.structName}: {cond1} && {cond2} && {cond3}"
     if cond1 && cond2 && cond3
     then return some fieldHoleMData.index
     else return none
   | none => return none
 
-def nextIndexGivenCollisions (env : Environment) (mctx : MetavarContext) (s : Struct) : TermElabM Nat := do
+def nextIndexGivenCollisions (env : Environment) (mctx : MetavarContext) (s : Struct)
+: TermElabM Nat := do
   let prefixName := match s.source.implicit with
   | some { name := some prefixName, .. } => prefixName
   | _ => Name.anonymous
@@ -1109,7 +1273,8 @@ def assignRemainingDefaultsToHoles (struct : Struct) : TermElabM Unit :=
   match struct.source.implicit with
   | some vhc =>
     let index ← nextIndexGivenCollisions (← getEnv) (← getMCtx) struct
-    --~~could refactor so that we get the mvarIds in the range along with the check that they exist in allDefaultMissing
+    --~~could refactor so that we get the mvarIds in the range along with the check that they exist
+    --   in allDefaultMissing
     for field in (← allDefaultMissing struct) do
       match field.expr? with
       | some expr =>
@@ -1118,7 +1283,8 @@ def assignRemainingDefaultsToHoles (struct : Struct) : TermElabM Unit :=
           let type := (← getMVarDecl mvarId).type
           --~~? should these be withRef? Why or why not?
           if vhc.isSynthetic then
-            mvarId.assign (← withRef field.ref <| mkFreshFieldNamedMVar type index vhc.name field struct)
+            mvarId.assign (← withRef field.ref <|
+              mkFreshFieldNamedMVar type index vhc.name field struct)
           else
           --~~? Do we need a new hole? Or can we just leave it as-is?
             let newHole ← withRef field.ref <| mkFreshExprMVar type (kind := .natural)
@@ -1127,55 +1293,6 @@ def assignRemainingDefaultsToHoles (struct : Struct) : TermElabM Unit :=
         | _ => unreachable!
       | none => unreachable!
   | none => return ()
-
--- def getConflictingIndex? (env : Environment) (s : Struct) (prefixName : Name) (decl : MetavarDecl) : Option Nat :=
---   let fieldHoleMData? := getFieldHoleMDataFromMVar? decl
---   --~~ clean this up
---   match fieldHoleMData? with
---   | some fieldHoleMData =>
---     if s.ref != fieldHoleMData.structRef
---       && prefixName == fieldHoleMData.prefixName
---       && (fieldsOverlap env s.structName (fieldHoleMData.structName))
---     then fieldHoleMData.index
---     else none
---   | none => none
-
--- def nextIndexGivenCollisions (env : Environment) (mctx : MetavarContext) (s : Struct) : Nat :=
---   let prefixName := match s.source.implicit with
---   | some { name := some prefixName, ..} => prefixName
---   | _ => Name.anonymous
---   let conflictingIndex := mctx.decls.foldl
---     (fun i? _ decl =>
---       Option.merge max i? (getConflictingIndex? env s prefixName decl)) none
---   match conflictingIndex with
---   | some i => i+1
---   | none   => 0
-
--- def assignRemainingDefaultsToHoles (struct : Struct) : TermElabM Unit :=
--- --~~? withRef?
--- --~~? If so, do we use a synthetic ref or not? What's with that?
---   withRef struct.ref do
---   match struct.source.implicit with
---   | some vhc =>
---     let index := nextIndexGivenCollisions (← getEnv) (← getMCtx) struct
---     --~~could refactor so that we get the mvarIds in the range along with the check that they exist in allDefaultMissing
---     for field in (← allDefaultMissing struct) do
---       match field.expr? with
---       | some expr =>
---         match defaultMissing? expr with
---         | some (.mvar mvarId) =>
---           let type := (← getMVarDecl mvarId).type
---           --~~? should these be withRef? Why or why not?
---           if vhc.isSynthetic then
---             mvarId.assign (← withRef field.ref <| mkFreshFieldNamedMVar type index vhc.name field struct)
---           else
---           --~~? Do we need a new hole?
---             let newHole ← withRef field.ref <| mkFreshExprMVar type (kind := .natural)
---             mvarId.assign newHole
---             registerMVarErrorHoleInfo newHole.mvarId! struct.ref
---         | _ => unreachable!
---       | none => unreachable!
---   | none => return ()
 --!!\
 
 partial def mkDefaultValueAux? (struct : Struct) : Expr → TermElabM (Option Expr)
@@ -1245,7 +1362,8 @@ partial def reduce (structNames : Array Name) (e : Expr) : MetaM Expr := do
     | none     => return e
   | e => return e
 
-partial def tryToSynthesizeDefault (structs : Array Struct) (allStructNames : Array Name) (maxDistance : Nat) (fieldName : Name) (mvarId : MVarId) : TermElabM Bool :=
+partial def tryToSynthesizeDefault (structs : Array Struct) (allStructNames : Array Name)
+(maxDistance : Nat) (fieldName : Name) (mvarId : MVarId) : TermElabM Bool :=
   let rec loop (i : Nat) (dist : Nat) := do
     if dist > maxDistance then
       return false
@@ -1284,7 +1402,9 @@ partial def step (struct : Struct) : M Unit :=
             | some (.mvar mvarId) =>
               unless (← mvarId.isAssigned) do
                 let ctx ← read
-                if (← withRef field.ref <| tryToSynthesizeDefault ctx.structs ctx.allStructNames ctx.maxDistance (getFieldName field) mvarId) then
+                if (← withRef field.ref (tryToSynthesizeDefault
+                  ctx.structs ctx.allStructNames ctx.maxDistance (getFieldName field) mvarId))
+                then
                   modify fun _ => { progress := true }
             | _ => pure ()
 
@@ -1307,7 +1427,8 @@ partial def propagateLoop (hierarchyDepth : Nat) (d : Nat) (struct : Struct) : M
           (getDefaultFnForField? env struct fieldName).isNone
         let fieldsToReport :=
           if missingFieldsWithoutDefault.isEmpty then missingFields else missingFieldsWithoutDefault
-        throwErrorAt field.ref "fields missing: {fieldsToReport.toList.map (s!"'{·}'") |> ", ".intercalate}"
+        throwErrorAt field.ref
+          "fields missing: {fieldsToReport.toList.map (s!"'{·}'") |> ", ".intercalate}"
     else withReader (fun ctx => { ctx with maxDistance := d }) do
       modify fun _ => { progress := false }
       step struct
@@ -1327,12 +1448,14 @@ def propagate (struct : Struct) : TermElabM Unit := do --!! added do
 
 end ImplicitFields
 
-private def elabStructInstAux (stx : Syntax) (expectedType? : Option Expr) (source : Source) : TermElabM Expr := do
+private def elabStructInstAux (stx : Syntax) (expectedType? : Option Expr) (source : Source)
+: TermElabM Expr := do
   let structName ← getStructName expectedType? source
   let struct ← liftMacroM <| mkStructView stx structName source
   let struct ← expandStruct struct
   trace[Elab.struct] "{struct}"
-  /- We try to synthesize pending problems with `withSynthesize` combinator before trying to use default values.
+  /- We try to synthesize pending problems with `withSynthesize` combinator before trying to use
+     default values.
      This is important in examples such as
       ```
       structure MyStruct where
@@ -1343,25 +1466,30 @@ private def elabStructInstAux (stx : Syntax) (expectedType? : Option Expr) (sour
 
       #check { a := 10, b := true : MyStruct }
       ```
-     were the `α` will remain "unknown" until the default instance for `OfNat` is used to ensure that `10` is a `Nat`.
+     were the `α` will remain "unknown" until the default instance for `OfNat` is used to ensure
+     that `10` is a `Nat`.
 
-     TODO: investigate whether this design decision may have unintended side effects or produce confusing behavior.
+     TODO: investigate whether this design decision may have unintended side effects or produce
+     confusing behavior.
   -/
-  let { val := r, struct, instMVars } ← withSynthesize (mayPostpone := true) <| elabStruct struct expectedType?
+  let { val := r, struct, instMVars } ← withSynthesize (mayPostpone := true) <|
+    elabStruct struct expectedType?
   trace[Elab.struct] "before propagate {r}"
   ImplicitFields.propagate struct
   synthesizeAppInstMVars instMVars r
   return r
 
 --!! changed attribute and name
-@[term_elab structInstWithHoles] def elabStructInstWithHoles : TermElab := fun stx expectedType? => do
+@[term_elab structInstWithHoles] def elabStructInstWithHoles : TermElab := fun stx expectedType? =>
+do
   match (← expandNonAtomicExplicitSources stx) with
   | some stxNew => withMacroExpansion stx stxNew <| elabTerm stxNew expectedType?
   | none =>
     let sourceView ← getStructSource stx
     if let some modifyOp ← isModifyOp? stx then
       if sourceView.explicit.isEmpty then
-        throwError "invalid \{...} notation, explicit source is required when using '[<index>] := <value>'"
+        throwError
+          "invalid \{...} notation, explicit source is required when using '[<index>] := <value>'"
       elabModifyOp stx modifyOp sourceView.explicit expectedType?
     else
       elabStructInstAux stx expectedType? sourceView
@@ -1372,15 +1500,21 @@ declare_syntax_cat asname
 syntax "as" ident : asname
 
 -- couldn't write elab "haveFieldProj" f:(ident)? x:("as" n:ident)? : tactic
-/-- Once a goal has been created for a structure's field via `?..` syntax, `haveFieldProj` can be used equivalently to `have <field name>.proj := <projection function>`.
-`haveFieldProj f as a` gets the field projection for the field `f` and names it `a`; `f` and `as a` can both be individually omitted.
+/--
+  Once a goal has been created for a structure's field via `?..` syntax, `haveFieldProj` can be
+  used equivalently to `have <field name>.proj := <projection function>`.
+  `haveFieldProj f as a` gets the field projection for the field `f` and names it `a`;
+  `f` and `as a` can both be individually omitted.
 -/
 elab "haveFieldProj" f:(ident)? x:(asname)? : tactic => do
   let fieldHoleMData? := ImplicitFields.getFieldHoleMDataFromMVar? (← Tactic.getMainDecl)
   match fieldHoleMData? with
   | some fieldHoleMData =>
     let fieldName := match f with | some f' => f'.getId | none => fieldHoleMData.fieldName
-    let some projname := (getProjFnForField? (← getEnv) fieldHoleMData.structName fieldName) | throwError "couldn't find projection function for field {fieldName} of structure {fieldHoleMData.structName}"
+    let structName := fieldHoleMData.structName -- so the error fits on one line
+    let some projname :=
+      (getProjFnForField? (← getEnv) fieldHoleMData.structName fieldName) | throwError
+        "couldn't find projection function for field {fieldName} of structure {structName}"
     let name := match x with
       | some stx => match stx with
         | `(asname|as $n:ident) => n
