@@ -495,7 +495,7 @@ attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
 instance AddMonoid.SMul {M : Type _} [AddMonoid M] : SMul ℕ M :=
   ⟨AddMonoid.nsmul⟩
 
-attribute [to_additive AddMonoid.SmulNat] Monoid.Pow
+attribute [to_additive AddMonoid.SMulNat] Monoid.Pow
 
 section
 -- FIXME The lemmas in this section should be done by `to_additive` below, but it fails.
