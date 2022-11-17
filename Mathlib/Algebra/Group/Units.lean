@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemake
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Logic.Nontrivial
 import Mathlib.Logic.Unique
+import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Simps.Basic
 
 /-!
