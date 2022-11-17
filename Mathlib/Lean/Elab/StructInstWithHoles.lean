@@ -164,9 +164,13 @@ open TSyntax.Compat
 
   * Can the docstrings of the original structure instance and `refine` be modified from "within mathlib" somehow?
 
+  * Do I need to add to "authors" at the top or worry about the copyright?
+
+  * What about the linting style?
+
 -/
 
---!!/
+--!!/ We use parsers in anticipation of this possibly being merged into core.
 def vH?dd        := leading_parser "?.." >> Parser.optional Parser.ident
 def vH?dd!       := leading_parser "?..!" >> Parser.optional Parser.ident
 def vHdd!        := leading_parser "..!"
