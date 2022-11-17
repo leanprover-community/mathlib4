@@ -40,7 +40,7 @@ E.g. `#eval  "InvHMulLEConjugate₂Smul_ne_top".splitCase` yields
 `["Inv", "HMul", "LE", "Conjugate₂", "Smul", "_", "ne", "_", "top"]`.
 -/
 partial def String.splitCase (s : String) (i₀ : Pos := 0) (r : List String := []) : List String :=
-  -- We test if we needd to split between `i₀` and `i₁`.
+  -- We test if we need to split between `i₀` and `i₁`.
   let i₁ := s.next i₀
   let i₂ := s.next i₁
   if s.atEnd i₁ then
