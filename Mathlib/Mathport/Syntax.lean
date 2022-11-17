@@ -202,15 +202,7 @@ macro ak:Term.attrKind "notation3"
 
 end Parser.Command
 
-namespace Parser.Term
-
-/- S -/ syntax "quoteₓ " term : term
-/- S -/ syntax "pquoteₓ " term : term
-/- S -/ syntax "ppquoteₓ " term : term
-/- S -/ syntax "%%ₓ" term : term
-
-end Term
-
+namespace Parser
 namespace Tactic
 
 /- S -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
@@ -222,8 +214,6 @@ namespace Tactic
 /- B -/ syntax (name := cc) "cc" : tactic
 
 /- M -/ syntax (name := unfoldProjs) "unfold_projs" (config)? (ppSpace location)? : tactic
-
-/- E -/ syntax (name := inferAutoParam) "infer_auto_param" : tactic
 
 /- S -/ syntax (name := rsimp) "rsimp" : tactic
 /- S -/ syntax (name := compVal) "comp_val" : tactic
