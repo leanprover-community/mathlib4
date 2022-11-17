@@ -157,6 +157,9 @@ initialize_simps_projections Equiv (toFun → apply, invFun → symmApply)
 protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ e₁, e₁.symm ∘ e₂.symm, e₂.left_inv.comp e₁.left_inv, e₂.right_inv.comp e₁.right_inv⟩
 
+instance : Trans Equiv Equiv Equiv where
+  trans := Equiv.trans
+
 -- porting note: this lemma is now useless since coercions are eagerly unfolded
 /-
 @[simp]
