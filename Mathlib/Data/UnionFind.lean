@@ -147,7 +147,7 @@ theorem setParent {arr : Array (UFNode α)} {n} {m : UFModel n} (hm : m.Models a
   (i j H hi x) (hp : x.parent = j.1) (hrk : x.rank = arr[i].rank) :
   (m.setParent i j H).Models (arr.set ⟨i.1, hi⟩ x) :=
   ⟨hm.1.set
-      (fun k h => by simp [UFModel.setParent, h.symm])
+      (fun k (h : (k:ℕ) ≠ i) => by simp [UFModel.setParent, h.symm])
       (fun h => by simp [UFModel.setParent, hp]),
     hm.2.set (fun _ _ => rfl) (fun _ => hrk.trans $ hm.2.get_eq ..)⟩
 
@@ -217,21 +217,20 @@ def findAux (self : UnionFind α) (x : Fin self.size) :
       m.Models self.arr ∧ m'.Models s ∧ m'.rank = m.rank ∧
       (∃ hr, (m'.parent ⟨root, hr⟩).1 = root) ∧
       m.rank x ≤ m.rank root := by
-  have : x < self.arr.size := x.2
   let y := self.arr[x].parent
-  refine if h : y = x then ⟨self.arr, x, ?a⟩ else
+  refine if h : y = x then ⟨self.arr, x, ?a'⟩ else
     have := Nat.sub_lt_sub_left (self.lt_rankMax x) (self.rank_lt _ h)
     let ⟨arr₁, root, H⟩ := self.findAux ⟨y, self.parent_lt _ x.2⟩
     have hx := ?hx
     let arr₂ := arr₁.set ⟨x, hx⟩ {arr₁.get ⟨x, hx⟩ with parent := root}
-    ⟨arr₂, ⟨root, by simp [root.2]⟩, ?b⟩
+    ⟨arr₂, ⟨root, by simp [root.2]⟩, ?b'⟩
   -- start proof
-  case a =>
+  case a' => -- FIXME: hygiene bug causes `case a` to fail
     let ⟨m, hm⟩ := self.model'
     exact ⟨_, m, m, hm, hm, rfl, ⟨x.2, by rwa [← hm.parent_eq]⟩, le_refl _⟩
   all_goals let ⟨n, m, m', hm, hm', e, ⟨_, hr⟩, le⟩ := H
   case hx => exact hm'.size_eq ▸ hm.size_eq.symm ▸ x.2
-  case b =>
+  case b' =>
     let x' : Fin n := ⟨x, hm.size_eq ▸ x.2⟩
     let root : Fin n := ⟨root, hm'.size_eq.symm ▸ root.2⟩
     have hy : (UFModel.parent m x').1 = y := by rw [← hm.parent_eq x x.2 x'.2]; rfl
@@ -240,7 +239,7 @@ def findAux (self : UnionFind α) (x : Fin self.size) :
     refine ⟨n, m, _, hm,
       hm'.setParent x' root (by rw [e]; exact this) hx _ rfl rfl, e,
       ⟨root.2, ?_⟩, le_of_lt this⟩
-    have := show x.1 ≠ root from mt (congrArg _) (ne_of_lt this)
+    have : x.1 ≠ root := mt (congrArg _) (ne_of_lt this); dsimp only at this
     simp [UFModel.setParent, this, hr]
 termination_by _ α self x => self.rankMax - self.rank x
 
@@ -256,8 +255,6 @@ def find (self : UnionFind α) (x : Fin self.size) :
 def link (self : UnionFind α) (x y : Fin self.size)
   (yroot : (self.arr.get y).parent = y) : UnionFind α := by
   refine if ne : x.1 = y then self else
-    have hx : x < self.arr.size := x.2
-    have hy : y < self.arr.size := y.2
     let nx := self.arr[x]
     let ny := self.arr[y]
     if h : ny.rank < nx.rank then
