@@ -104,19 +104,6 @@ theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
 
 #align seq_eq_bind_map seq_eq_bind_mapₓ
 
---/-- This is the Kleisli composition -/
---@[reducible]
---def fish {m} [Monad m] {α β γ} (f : α → m β) (g : β → m γ) := fun x => f x >>= g
---#align fish fish
---
----- mathport name: «expr >=> »
---infixl:55
---  " >=> " =>-- >=> is already defined in the core library but it is unusable
---  -- because of its precedence (it is defined with precedence 2) and
---  -- because it is defined as a lambda instead of having a named
---  -- function
---  fish
-
 @[functor_norm]
 theorem fish_pure {α β} (f : α → m β) : f >=> pure = f := by simp only [(· >=> ·), functor_norm]
 #align fish_pure fish_pure
