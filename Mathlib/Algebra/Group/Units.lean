@@ -595,7 +595,7 @@ protected noncomputable def unit (h : IsUnit a) : Mˣ :=
 /-- "The element of the additive group of additive units, corresponding to an element of
 an additive monoid which is an additive unit. When `α` is a `SubtractionMonoid`, use
 `IsAddUnit.addUnit'` instead. -/
-protected noncomputable def _root_.isAddUnit.addUnit [AddMonoid N] {a : N} (h : IsAddUnit a) :
+protected noncomputable def _root_.IsAddUnit.addUnit [AddMonoid N] {a : N} (h : IsAddUnit a) :
     AddUnits N :=
   (Classical.choose h).copy a (Classical.choose_spec h).symm _ rfl
 #align is_add_unit.add_unit IsUnit.addUnit
