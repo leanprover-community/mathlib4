@@ -6,8 +6,6 @@ Authors: Johannes Hölzl
 import Mathlib.Control.SimpSet
 import Mathlib.Tactic.CasesM
 import Mathlib.Init.Control.Combinators
-import Std.Tactic.Lint.Frontend
-import Std.Tactic.Lint.Misc
 
 /-!
 Extends the theory on functors, applicatives and monads.
