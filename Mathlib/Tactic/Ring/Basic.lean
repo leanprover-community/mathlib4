@@ -947,6 +947,13 @@ def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α
 
 theorem of_eq (_ : (a : R) = c) (_ : b = c) : a = b := by subst_vars; rfl
 
+/--
+This is a routine which is used to clean up the unsolved subgoal
+of a failed `ring1` application. It is overridden in `Mathlib.Tactic.Ring.RingNF`
+to apply the `ring_nf` simp set to the goal.
+-/
+initialize ringCleanupRef : IO.Ref (Expr → MetaM Expr) ← IO.mkRef pure
+
 /-- Frontend of `ring1`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
 def proveEq (g : MVarId) : RingM Unit := do
   let some (α, e₁, e₂) := (← instantiateMVars (← g.getType)).eq?
@@ -959,7 +966,8 @@ def proveEq (g : MVarId) : RingM Unit := do
   let ⟨a, va, pa⟩ ← eval sα c e₁
   let ⟨b, vb, pb⟩ ← eval sα c e₂
   unless va.eq vb do
-    throwError "ring failed, ring expressions not equal: \n{a}\n  !=\n{b}"
+    let g ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a = $b))
+    throwError "ring failed, ring expressions not equal\n{g.mvarId!}"
   let pb : Q($e₂ = $a) := pb
   g.assign q(of_eq $pa $pb)
 
