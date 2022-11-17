@@ -23,7 +23,7 @@ open Lean Elab Tactic Meta
 
 /-- Close a goal of the form `optParam α a` by using `a`. -/
 elab (name := inferOptParam) "infer_opt_param" : tactic =>
-  liftMetaTactic fun goal => do
+  liftMetaTactic fun goal ↦ do
     let tgt ← goal.getType
     match tgt.getAppFnArgs with
     | (``optParam, #[_ty, val]) => goal.assign val; pure []

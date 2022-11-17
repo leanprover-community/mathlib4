@@ -110,26 +110,26 @@ variable [Preorder α]
 theorem Monotone.comp_le_comp_left
     [Preorder β] {f : β → α} {g h : γ → β} (hf : Monotone f) (le_gh : g ≤ h) :
     LE.le.{max w u} (f ∘ g) (f ∘ h) :=
-  fun x => hf (le_gh x)
+  fun x ↦ hf (le_gh x)
 
 variable [Preorder γ]
 
-theorem monotone_lam {f : α → β → γ} (hf : ∀ b, Monotone fun a => f a b) : Monotone f :=
-  fun _ _ h b => hf b h
+theorem monotone_lam {f : α → β → γ} (hf : ∀ b, Monotone fun a ↦ f a b) : Monotone f :=
+  fun _ _ h b ↦ hf b h
 
-theorem monotone_app (f : β → α → γ) (b : β) (hf : Monotone fun a b => f b a) : Monotone (f b) :=
-  fun _ _ h => hf h b
+theorem monotone_app (f : β → α → γ) (b : β) (hf : Monotone fun a b ↦ f b a) : Monotone (f b) :=
+  fun _ _ h ↦ hf h b
 
-theorem antitone_lam {f : α → β → γ} (hf : ∀ b, Antitone fun a => f a b) : Antitone f :=
-  fun _ _ h b => hf b h
+theorem antitone_lam {f : α → β → γ} (hf : ∀ b, Antitone fun a ↦ f a b) : Antitone f :=
+  fun _ _ h b ↦ hf b h
 
-theorem antitone_app (f : β → α → γ) (b : β) (hf : Antitone fun a b => f b a) : Antitone (f b) :=
-  fun _ _ h => hf h b
+theorem antitone_app (f : β → α → γ) (b : β) (hf : Antitone fun a b ↦ f b a) : Antitone (f b) :=
+  fun _ _ h ↦ hf h b
 
 end Preorder
 
 theorem Function.monotone_eval {ι : Type u} {α : ι → Type v} [∀ i, Preorder (α i)] (i : ι) :
-    Monotone (Function.eval i : (∀ i, α i) → α i) := fun _ _ H => H i
+    Monotone (Function.eval i : (∀ i, α i) → α i) := fun _ _ H ↦ H i
 
 /-! ### Monotonicity hierarchy -/
 
@@ -162,16 +162,16 @@ theorem StrictAnti.imp (hf : StrictAnti f) (h : a < b) : f b < f a :=
   hf h
 
 protected theorem Monotone.monotone_on (hf : Monotone f) (s : Set α) : MonotoneOn f s :=
-  fun _ _ _ _ => hf.imp
+  fun _ _ _ _ ↦ hf.imp
 
 protected theorem Antitone.antitone_on (hf : Antitone f) (s : Set α) : AntitoneOn f s :=
-  fun _ _ _ _ => hf.imp
+  fun _ _ _ _ ↦ hf.imp
 
 protected theorem StrictMono.strict_mono_on (hf : StrictMono f) (s : Set α) : StrictMonoOn f s :=
-  fun _ _ _ _ => hf.imp
+  fun _ _ _ _ ↦ hf.imp
 
 protected theorem StrictAnti.strict_anti_on (hf : StrictAnti f) (s : Set α) : StrictAntiOn f s :=
-  fun _ _ _ _ => hf.imp
+  fun _ _ _ _ ↦ hf.imp
 
 end Preorder
 
@@ -180,10 +180,10 @@ section PartialOrder
 variable [PartialOrder β] {f : α → β}
 
 theorem Monotone.strict_mono_of_injective (h₁ : Monotone f) (h₂ : Injective f) : StrictMono f :=
-  fun _ _ h => (h₁ h.le).lt_of_ne fun H => h.ne <| h₂ H
+  fun _ _ h ↦ (h₁ h.le).lt_of_ne fun H ↦ h.ne <| h₂ H
 
 theorem Antitone.strict_anti_of_injective (h₁ : Antitone f) (h₂ : Injective f) : StrictAnti f :=
-  fun _ _ h => (h₁ h.le).lt_of_ne fun H => h.ne <| h₂ H.symm
+  fun _ _ h ↦ (h₁ h.le).lt_of_ne fun H ↦ h.ne <| h₂ H.symm
 
 end PartialOrder
 
@@ -194,36 +194,36 @@ section PartialOrder
 variable [PartialOrder α] [Preorder β] {f : α → β} {s : Set α}
 
 theorem monotone_iff_forall_lt : Monotone f ↔ ∀ ⦃a b⦄, a < b → f a ≤ f b :=
-  forall₂_congr fun _ _ =>
-    ⟨fun hf h => hf h.le, fun hf h => h.eq_or_lt.elim (fun H => (congr_arg _ H).le) hf⟩
+  forall₂_congr fun _ _ ↦
+    ⟨fun hf h ↦ hf h.le, fun hf h ↦ h.eq_or_lt.elim (fun H ↦ (congr_arg _ H).le) hf⟩
 
 theorem antitone_iff_forall_lt : Antitone f ↔ ∀ ⦃a b⦄, a < b → f b ≤ f a :=
-  forall₂_congr fun _ _ =>
-    ⟨fun hf h => hf h.le, fun hf h => h.eq_or_lt.elim (fun H => (congr_arg _ H).ge) hf⟩
+  forall₂_congr fun _ _ ↦
+    ⟨fun hf h ↦ hf h.le, fun hf h ↦ h.eq_or_lt.elim (fun H ↦ (congr_arg _ H).ge) hf⟩
 
 theorem monotone_on_iff_forall_lt :
     MonotoneOn f s ↔ ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a < b → f a ≤ f b :=
-  ⟨fun hf _ ha _ hb h => hf ha hb h.le,
-   fun hf _ ha _ hb h => h.eq_or_lt.elim (fun H => (congr_arg _ H).le) (hf ha hb)⟩
+  ⟨fun hf _ ha _ hb h ↦ hf ha hb h.le,
+   fun hf _ ha _ hb h ↦ h.eq_or_lt.elim (fun H ↦ (congr_arg _ H).le) (hf ha hb)⟩
 
 theorem antitone_on_iff_forall_lt :
     AntitoneOn f s ↔ ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a < b → f b ≤ f a :=
-  ⟨fun hf _ ha _ hb h => hf ha hb h.le,
-   fun hf _ ha _ hb h => h.eq_or_lt.elim (fun H => (congr_arg _ H).ge) (hf ha hb)⟩
+  ⟨fun hf _ ha _ hb h ↦ hf ha hb h.le,
+   fun hf _ ha _ hb h ↦ h.eq_or_lt.elim (fun H ↦ (congr_arg _ H).ge) (hf ha hb)⟩
 
 -- `preorder α` isn't strong enough: if the preorder on `α` is an equivalence relation,
 -- then `strict_mono f` is vacuously true.
 protected theorem StrictMonoOn.monotone_on (hf : StrictMonoOn f s) : MonotoneOn f s :=
-  monotone_on_iff_forall_lt.2 fun _ ha _ hb h => (hf ha hb h).le
+  monotone_on_iff_forall_lt.2 fun _ ha _ hb h ↦ (hf ha hb h).le
 
 protected theorem StrictAntiOn.antitone_on (hf : StrictAntiOn f s) : AntitoneOn f s :=
-  antitone_on_iff_forall_lt.2 fun _ ha _ hb h => (hf ha hb h).le
+  antitone_on_iff_forall_lt.2 fun _ ha _ hb h ↦ (hf ha hb h).le
 
 protected theorem StrictMono.monotone (hf : StrictMono f) : Monotone f :=
-  monotone_iff_forall_lt.2 fun _ _ h => (hf h).le
+  monotone_iff_forall_lt.2 fun _ _ h ↦ (hf h).le
 
 protected theorem StrictAnti.antitone (hf : StrictAnti f) : Antitone f :=
-  antitone_iff_forall_lt.2 fun _ _ h => (hf h).le
+  antitone_iff_forall_lt.2 fun _ _ h ↦ (hf h).le
 
 end PartialOrder
 
@@ -235,53 +235,53 @@ namespace Subsingleton
 variable [Preorder α] [Preorder β]
 
 protected theorem monotone [Subsingleton α] (f : α → β) : Monotone f :=
-  fun _ _ _ => (congr_arg _ <| Subsingleton.elim _ _).le
+  fun _ _ _ ↦ (congr_arg _ <| Subsingleton.elim _ _).le
 
 protected theorem antitone [Subsingleton α] (f : α → β) : Antitone f :=
-  fun _ _ _ => (congr_arg _ <| Subsingleton.elim _ _).le
+  fun _ _ _ ↦ (congr_arg _ <| Subsingleton.elim _ _).le
 
 theorem monotone' [Subsingleton β] (f : α → β) : Monotone f :=
-  fun _ _ _ => (Subsingleton.elim _ _).le
+  fun _ _ _ ↦ (Subsingleton.elim _ _).le
 
 theorem antitone' [Subsingleton β] (f : α → β) : Antitone f :=
-  fun _ _ _ => (Subsingleton.elim _ _).le
+  fun _ _ _ ↦ (Subsingleton.elim _ _).le
 
 protected theorem strict_mono [Subsingleton α] (f : α → β) : StrictMono f :=
-  fun _ _ h => (h.ne <| Subsingleton.elim _ _).elim
+  fun _ _ h ↦ (h.ne <| Subsingleton.elim _ _).elim
 
 protected theorem strict_anti [Subsingleton α] (f : α → β) : StrictAnti f :=
-  fun _ _ h => (h.ne <| Subsingleton.elim _ _).elim
+  fun _ _ h ↦ (h.ne <| Subsingleton.elim _ _).elim
 
 end Subsingleton
 
 /-! ### Miscellaneous monotonicity results -/
 
 
-theorem monotone_id [Preorder α] : Monotone (id : α → α) := fun _ _ => id
+theorem monotone_id [Preorder α] : Monotone (id : α → α) := fun _ _ ↦ id
 
-theorem monotone_on_id [Preorder α] {s : Set α} : MonotoneOn id s := fun _ _ _ _ => id
+theorem monotone_on_id [Preorder α] {s : Set α} : MonotoneOn id s := fun _ _ _ _ ↦ id
 
-theorem strict_mono_id [Preorder α] : StrictMono (id : α → α) := fun _ _ => id
+theorem strict_mono_id [Preorder α] : StrictMono (id : α → α) := fun _ _ ↦ id
 
-theorem strict_mono_on_id [Preorder α] {s : Set α} : StrictMonoOn id s := fun _ _ _ _ => id
+theorem strict_mono_on_id [Preorder α] {s : Set α} : StrictMonoOn id s := fun _ _ _ _ ↦ id
 
-theorem monotone_const [Preorder α] [Preorder β] {c : β} : Monotone fun _ : α => c :=
-  fun _ _ _ => le_rfl
+theorem monotone_const [Preorder α] [Preorder β] {c : β} : Monotone fun _ : α ↦ c :=
+  fun _ _ _ ↦ le_rfl
 
 theorem monotone_on_const [Preorder α] [Preorder β] {c : β} {s : Set α} :
-    MonotoneOn (fun _ : α => c) s :=
-  fun _ _ _ _ _ => le_rfl
+    MonotoneOn (fun _ : α ↦ c) s :=
+  fun _ _ _ _ _ ↦ le_rfl
 
-theorem antitone_const [Preorder α] [Preorder β] {c : β} : Antitone fun _ : α => c :=
-  fun _ _ _ => le_refl c
+theorem antitone_const [Preorder α] [Preorder β] {c : β} : Antitone fun _ : α ↦ c :=
+  fun _ _ _ ↦ le_refl c
 
 theorem antitone_on_const [Preorder α] [Preorder β] {c : β} {s : Set α} :
-    AntitoneOn (fun _ : α => c) s :=
-  fun _ _ _ _ _ => le_rfl
+    AntitoneOn (fun _ : α ↦ c) s :=
+  fun _ _ _ _ _ ↦ le_rfl
 
 theorem injective_of_le_imp_le
     [PartialOrder α] [Preorder β] (f : α → β) (h : ∀ {x y}, f x ≤ f y → x ≤ y) : Injective f :=
-  fun _ _ hxy => (h hxy.le).antisymm (h hxy.ge)
+  fun _ _ hxy ↦ (h hxy.le).antisymm (h hxy.ge)
 
 /-! ### Monotonicity under composition -/
 
@@ -291,13 +291,13 @@ section Composition
 variable [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α → β} {s : Set α}
 
 protected theorem Monotone.comp (hg : Monotone g) (hf : Monotone f) : Monotone (g ∘ f) :=
-  fun _ _ h => hg (hf h)
+  fun _ _ h ↦ hg (hf h)
 
 theorem Monotone.comp_antitone (hg : Monotone g) (hf : Antitone f) : Antitone (g ∘ f) :=
-  fun _ _ h => hg (hf h)
+  fun _ _ h ↦ hg (hf h)
 
 protected theorem Antitone.comp (hg : Antitone g) (hf : Antitone f) : Monotone (g ∘ f) :=
-  fun _ _ h => hg (hf h)
+  fun _ _ h ↦ hg (hf h)
 
 theorem Antitone.comp_monotone (hg : Antitone g) (hf : Monotone f) : Antitone (g ∘ f) :=
-  fun _ _ h => hg (hf h)
+  fun _ _ h ↦ hg (hf h)

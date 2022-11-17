@@ -34,7 +34,7 @@ namespace Option
 
 variable {α β γ δ : Type _}
 
-theorem coe_def : (fun a => ↑a : α → Option α) = some :=
+theorem coe_def : (fun a ↦ ↑a : α → Option α) = some :=
   rfl
 
 #align option.get_or_else Option.getD
@@ -53,7 +53,7 @@ theorem eq_of_mem_of_mem {a : α} {o1 o2 : Option α} (h1 : a ∈ o1) (h2 : a �
 theorem Mem.left_unique : Relator.LeftUnique ((· ∈ ·) : α → Option α → Prop) :=
 fun _ _ _=> mem_unique
 
-theorem some_injective (α : Type _) : Function.Injective (@some α) := fun _ _ => some_inj.mp
+theorem some_injective (α : Type _) : Function.Injective (@some α) := fun _ _ ↦ some_inj.mp
 
 /-- `Option.map f` is injective if `f` is injective. -/
 theorem map_injective {f : α → β} (Hf : Function.Injective f) : Function.Injective (Option.map f)
@@ -81,7 +81,7 @@ theorem bind_eq_none' {o : Option α} {f : α → Option β} :
   simp only [eq_none_iff_forall_not_mem, mem_def, bind_eq_some, not_exists, not_and, iff_self]
 
 theorem joinM_eq_join : joinM = @join α :=
-  funext fun _ => rfl
+  funext fun _ ↦ rfl
 #align option.join_eq_join Option.joinM_eq_join
 
 theorem bind_eq_bind {α β : Type _} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
@@ -95,8 +95,8 @@ theorem map_coe' {a : α} {f : α → β} : Option.map f (a : Option α) = ↑(f
   rfl
 
 /-- `option.map` as a function between functions is injective. -/
-theorem map_injective' : Function.Injective (@Option.map α β) := fun f g h =>
-  funext fun x => some_injective _ <| by simp only [← map_some', h]
+theorem map_injective' : Function.Injective (@Option.map α β) := fun f g h ↦
+  funext fun x ↦ some_injective _ <| by simp only [← map_some', h]
 
 @[simp]
 theorem map_inj {f g : α → β} : Option.map f = Option.map g ↔ f = g :=
@@ -118,22 +118,22 @@ variable {p : α → Prop} (f : ∀ a : α, p a → β) (x : Option α)
 
 -- Porting note: Can't simp tag this anymore because `pbind` simplifies
 -- @[simp]
-theorem pbind_eq_bind (f : α → Option β) (x : Option α) : (x.pbind fun a _ => f a) = x.bind f := by
+theorem pbind_eq_bind (f : α → Option β) (x : Option α) : (x.pbind fun a _ ↦ f a) = x.bind f := by
   cases x <;> simp only [pbind, none_bind', some_bind']
 
 theorem map_bind {α β γ} (f : β → γ) (x : Option α) (g : α → Option β) :
-    Option.map f (x >>= g) = x >>= fun a => Option.map f (g a) := by
+    Option.map f (x >>= g) = x >>= fun a ↦ Option.map f (g a) := by
   simp only [← map_eq_map, ← bind_pure_comp, LawfulMonad.bind_assoc]
 
 theorem map_bind' (f : β → γ) (x : Option α) (g : α → Option β) :
-    Option.map f (x.bind g) = x.bind fun a => Option.map f (g a) := by cases x <;> simp
+    Option.map f (x.bind g) = x.bind fun a ↦ Option.map f (g a) := by cases x <;> simp
 
 theorem map_pbind (f : β → γ) (x : Option α) (g : ∀ a, a ∈ x → Option β) :
-    Option.map f (x.pbind g) = x.pbind fun a H => Option.map f (g a H) := by
+    Option.map f (x.pbind g) = x.pbind fun a H ↦ Option.map f (g a H) := by
   cases x <;> simp only [pbind, map_none']
 
 theorem pbind_map (f : α → β) (x : Option α) (g : ∀ b : β, b ∈ x.map f → Option γ) :
-    pbind (Option.map f x) g = x.pbind fun a h => g (f a) (mem_map_of_mem _ h) := by cases x <;> rfl
+    pbind (Option.map f x) g = x.pbind fun a h ↦ g (f a) (mem_map_of_mem _ h) := by cases x <;> rfl
 
 @[simp]
 theorem pmap_none (f : ∀ a : α, p a → β) {H} : pmap f (@none α) H = none :=
@@ -141,7 +141,7 @@ theorem pmap_none (f : ∀ a : α, p a → β) {H} : pmap f (@none α) H = none 
 
 @[simp]
 theorem pmap_some (f : ∀ a : α, p a → β) {x : α} (h : p x) :
-    pmap f (some x) = fun _ => some (f x h) :=
+    pmap f (some x) = fun _ ↦ some (f x h) :=
   rfl
 
 theorem mem_pmem {a : α} (h : ∀ a ∈ x, p a) (ha : a ∈ x) : f a (h a ha) ∈ pmap f x h := by
@@ -150,26 +150,26 @@ theorem mem_pmem {a : α} (h : ∀ a ∈ x, p a) (ha : a ∈ x) : f a (h a ha) �
   rfl
 
 theorem pmap_map (g : γ → α) (x : Option γ) (H) :
-    pmap f (x.map g) H = pmap (fun a h => f (g a) h) x fun a h => H _ (mem_map_of_mem _ h) := by
+    pmap f (x.map g) H = pmap (fun a h ↦ f (g a) h) x fun a h ↦ H _ (mem_map_of_mem _ h) := by
   cases x <;> simp only [map_none', map_some', pmap]
 
 theorem map_pmap (g : β → γ) (f : ∀ a, p a → β) (x H) :
-    Option.map g (pmap f x H) = pmap (fun a h => g (f a h)) x H :=
+    Option.map g (pmap f x H) = pmap (fun a h ↦ g (f a h)) x H :=
   by cases x <;> simp only [map_none', map_some', pmap]
 
 -- Porting note: Can't simp tag this anymore because `pmap` simplifies
 -- @[simp]
 theorem pmap_eq_map (p : α → Prop) (f : α → β) (x H) :
-    @pmap _ _ p (fun a _ => f a) x H = Option.map f x := by
+    @pmap _ _ p (fun a _ ↦ f a) x H = Option.map f x := by
   cases x <;> simp only [map_none', map_some', pmap]
 
 theorem pmap_bind {α β γ} {x : Option α} {g : α → Option β} {p : β → Prop} {f : ∀ b, p b → γ} (H)
     (H' : ∀ (a : α), ∀ b ∈ g a, b ∈ x >>= g) :
-    pmap f (x >>= g) H = x >>= fun a => pmap f (g a) fun b h => H _ (H' a _ h) := by
+    pmap f (x >>= g) H = x >>= fun a ↦ pmap f (g a) fun b h ↦ H _ (H' a _ h) := by
   cases x <;> simp only [pmap, bind_eq_bind, none_bind, some_bind]
 
 theorem bind_pmap {α β γ} {p : α → Prop} (f : ∀ a, p a → β) (x : Option α) (g : β → Option γ) (H) :
-    pmap f x H >>= g = x.pbind fun a h => g (f a (H _ h)) := by
+    pmap f x H >>= g = x.pbind fun a h ↦ g (f a (H _ h)) := by
   cases x <;> simp only [pmap, bind_eq_bind, none_bind, some_bind, pbind]
 
 variable {f x}
@@ -215,7 +215,7 @@ theorem pmap_eq_some_iff {hf} {y : β} :
 -- Porting note: Can't simp tag this anymore because `join` and `pmap` simplify
 -- @[simp]
 theorem join_pmap_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} (H) :
-    (pmap (pmap f) x H).join = pmap f x.join fun a h => H (some a) (mem_of_mem_join h) _ rfl := by
+    (pmap (pmap f) x H).join = pmap f x.join fun a h ↦ H (some a) (mem_of_mem_join h) _ rfl := by
   rcases x with (_ | _ | x) <;> simp
 
 end pmap
@@ -225,20 +225,20 @@ theorem seq_some {α β} {a : α} {f : α → β} : some f <*> some a = some (f 
   rfl
 
 @[simp]
-theorem some_orElse' (a : α) (x : Option α) : (some a).orElse (fun _ => x) = some a :=
+theorem some_orElse' (a : α) (x : Option α) : (some a).orElse (fun _ ↦ x) = some a :=
   rfl
 #align option.some_orelse' Option.some_orElse'
 
 #align option.some_orelse Option.some_orElse
 
 @[simp]
-theorem none_orElse' (x : Option α) : none.orElse (fun _ => x) = x := by cases x <;> rfl
+theorem none_orElse' (x : Option α) : none.orElse (fun _ ↦ x) = x := by cases x <;> rfl
 #align option.none_orelse' Option.none_orElse'
 
 #align option.none_orelse Option.none_orElse
 
 @[simp]
-theorem orElse_none' (x : Option α) : x.orElse (fun _ => none) = x := by cases x <;> rfl
+theorem orElse_none' (x : Option α) : x.orElse (fun _ ↦ none) = x := by cases x <;> rfl
 
 #align option.orelse_none' Option.orElse_none'
 
@@ -310,7 +310,7 @@ theorem casesOn'_coe (x : β) (f : α → β) (a : α) : casesOn' (a : Option α
 -- Porting note: Left-hand side does not simplify.
 -- @[simp]
 theorem casesOn'_none_coe (f : Option α → β) (o : Option α) :
-    casesOn' o (f none) (f ∘ (fun a => ↑a)) = f o := by cases o <;> rfl
+    casesOn' o (f none) (f ∘ (fun a ↦ ↑a)) = f o := by cases o <;> rfl
 
 theorem orElse_eq_some (o o' : Option α) (x : α) :
     (o <|> o') = some x ↔ o = some x ∨ o = none ∧ o' = some x := by
@@ -320,7 +320,7 @@ theorem orElse_eq_some (o o' : Option α) (x : α) :
 
 
 theorem orElse_eq_some' (o o' : Option α) (x : α) :
-    o.orElse (fun _ => o') = some x ↔ o = some x ∨ o = none ∧ o' = some x :=
+    o.orElse (fun _ ↦ o') = some x ↔ o = some x ∨ o = none ∧ o' = some x :=
   Option.orElse_eq_some o o' x
 
 @[simp]
@@ -330,7 +330,7 @@ theorem orElse_eq_none (o o' : Option α) : (o <|> o') = none ↔ o = none ∧ o
   · simp only [some_orElse, false_and, iff_self]
 
 @[simp]
-theorem orElse_eq_none' (o o' : Option α) : o.orElse (fun _ => o') = none ↔ o = none ∧ o' = none :=
+theorem orElse_eq_none' (o o' : Option α) : o.orElse (fun _ ↦ o') = none ↔ o = none ∧ o' = none :=
   Option.orElse_eq_none o o'
 
 section
@@ -346,7 +346,7 @@ end
 
 -- Porting note: Can't simp tag this anymore because `elim` simplifies
 -- @[simp]
-theorem elim_none_some (f : Option α → β) : (fun x => Option.elim x (f none) (f ∘ some)) = f :=
-  funext fun o => by cases o <;> rfl
+theorem elim_none_some (f : Option α → β) : (fun x ↦ Option.elim x (f none) (f ∘ some)) = f :=
+  funext fun o ↦ by cases o <;> rfl
 
 end Option

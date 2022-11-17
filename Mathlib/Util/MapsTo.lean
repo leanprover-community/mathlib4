@@ -17,7 +17,7 @@ open Lean Parser Term
 open PrettyPrinter Delaborator SubExpr
 
 /-- `fun x ↦ t` is the function mapping `x` to `t`  -/
-syntax "fun " ppGroup(many1(ppSpace funBinder) optType " ↦") ppSpace term : term
+syntax:max "fun " ppGroup(many1(ppSpace funBinder) optType " ↦") ppSpace term : term
 macro_rules
   | `(fun $[$binders:funBinder]* $[: $ty]? ↦ $body) =>
     `(fun $[$binders:funBinder]* $[: $ty]? => $body)
@@ -29,11 +29,11 @@ open TSyntax.Compat in
 -- Copied from the core function with the same name..
 @[delab lam]
 def delabLam : Delab :=
-  delabBinders fun curNames stxBody => do
+  delabBinders fun curNames stxBody ↦ do
     let e ← getExpr
     let stxT ← withBindingDomain delab
     let ppTypes ← getPPOption getPPFunBinderTypes
-    let usedDownstream := curNames.any (fun n => hasIdent n.getId stxBody)
+    let usedDownstream := curNames.any (fun n ↦ hasIdent n.getId stxBody)
     let defaultCase (_ : Unit) : Delab := do
       if ppTypes then
         let stxCurNames ←

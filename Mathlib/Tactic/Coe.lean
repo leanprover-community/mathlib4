@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
 import Lean
+import Mathlib.Util.MapsTo
 
 open Lean Elab Term Meta
 
@@ -30,13 +31,13 @@ def elabPartiallyAppliedCoe (sym : String) (expectedType : Expr)
     tryPostpone
     throwError "({sym}) must have a non-dependent function type, not{indentExpr expectedType}"
   if a.hasExprMVar then tryPostpone
-  let f ← withLocalDeclD `x a fun x => do
+  let f ← withLocalDeclD `x a fun x ↦ do
     mkLambdaFVars #[x] (← mkCoe b a x)
   return f.etaExpanded?.getD f
 
 /-- Partially applied coercion.  Equivalent to the η-reduction of `(↑ ·)` -/
 elab "(" "↑" ")" : term <= expectedType =>
-  elabPartiallyAppliedCoe "↑" expectedType fun b a x => do
+  elabPartiallyAppliedCoe "↑" expectedType fun b a x ↦ do
     if b.hasExprMVar then tryPostpone
     mkCoe b a x
 
@@ -57,7 +58,7 @@ elab "⇑" m:term : term => do
 
 /-- Partially applied function coercion.  Equivalent to the η-reduction of `(⇑ ·)` -/
 elab "(" "⇑" ")" : term <= expectedType =>
-  elabPartiallyAppliedCoe "⇑" expectedType fun b a x => do
+  elabPartiallyAppliedCoe "⇑" expectedType fun b a x ↦ do
     ensureHasType b (← mkFunCoe a x)
 
 /-- `mkSortCoe a x` coerces an expression `x` of type `a` to a type. -/
@@ -76,5 +77,5 @@ elab "↥" t:term : term => do
 
 /-- Partially applied type coercion.  Equivalent to the η-reduction of `(↥ ·)` -/
 elab "(" "↥" ")" : term <= expectedType =>
-  elabPartiallyAppliedCoe "↥" expectedType fun b a x => do
+  elabPartiallyAppliedCoe "↥" expectedType fun b a x ↦ do
     ensureHasType b (← mkSortCoe a x)

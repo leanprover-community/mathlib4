@@ -31,7 +31,7 @@ def Lean.Meta.solveByElim (es : List Expr) : Nat → MVarId → MetaM Unit
   trace[solveByElim] "Working on: {goal}"
   -- We attempt to find an expression which can be applied,
   -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
-  es.firstM (fun e => do
+  es.firstM (fun e ↦ do
     trace[solveByElim] "Trying to apply: {e}"
     for g in (← goal.apply e) do
       if ¬ (← g.isAssigned) then solveByElim es n g)

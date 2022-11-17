@@ -41,7 +41,7 @@ private def isBlackListed (declName : Name) : MetaM Bool := do
   <||> isRec declName <||> isMatcher declName
 
 initialize librarySearchLemmas : DeclCache (DiscrTree Name) ←
-  DeclCache.mk "librarySearch: init cache" {} fun name constInfo lemmas => do
+  DeclCache.mk "librarySearch: init cache" {} fun name constInfo lemmas ↦ do
     if constInfo.isUnsafe then return lemmas
     if ← isBlackListed name then return lemmas
     withNewMCtxDepth do

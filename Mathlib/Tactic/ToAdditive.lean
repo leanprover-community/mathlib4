@@ -42,7 +42,7 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
     name  := `to_additive_ignore_args
     descr :=
       "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized."
-    add   := fun _ stx => do
+    add   := fun _ stx ↦ do
         let ids ← match stx with
           | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
           | _ => throwError "unexpected to_additive_ignore_args syntax {stx}"
@@ -163,7 +163,7 @@ We assume that all functions where we want to reorder arguments are fully applie
 This can be done by applying `etaExpand` first.
 -/
 def applyReplacementFun : Expr → MetaM Expr :=
-  Lean.Expr.replaceRecMeta fun r e => do
+  Lean.Expr.replaceRecMeta fun r e ↦ do
     trace[to_additive_detail] "applyReplacementFun: replace at {e}"
     match e with
     | .lit (.natVal 1) => pure <| mkRawNatLit 0
@@ -208,13 +208,13 @@ def applyReplacementFun : Expr → MetaM Expr :=
 
 /-- Eta expands `e` at most `n` times.-/
 def etaExpandN (n : Nat) (e : Expr): MetaM Expr := do
-  forallBoundedTelescope (← inferType e) (some n) fun xs _ => mkLambdaFVars xs (mkAppN e xs)
+  forallBoundedTelescope (← inferType e) (some n) fun xs _ ↦ mkLambdaFVars xs (mkAppN e xs)
 
 /-- `e.expand` eta-expands all expressions that have as head a constant `n` in
 `reorder`. They are expanded until they are applied to one more argument than the maximum in
 `reorder.find n`. -/
 def expand (e : Expr) : MetaM Expr := do
-  let e₂ ←e.replaceRecMeta $ fun r e => do
+  let e₂ ←e.replaceRecMeta $ fun r e ↦ do
     let e0 := e.getAppFn
     let es := e.getAppArgs
     let some e0n := e0.constName? | return none
@@ -258,7 +258,7 @@ using the transforms dictionary.
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
 partial def transformDeclAux
-  (ref : Option Syntax) (pre tgt_pre : Name) : Name → CoreM Unit := fun src => do
+  (ref : Option Syntax) (pre tgt_pre : Name) : Name → CoreM Unit := fun src ↦ do
   -- if this declaration is not `pre` or an internal declaration, we do nothing.
   if not (src == pre || isInternal' src) then
     if (findTranslation? (← getEnv) src).isSome then
@@ -268,7 +268,7 @@ partial def transformDeclAux
       }Workaround: move {src} to a different namespace."
   let env ← getEnv
   -- we find the additive name of `src`
-  let tgt := src.mapPrefix (fun n => if n == pre then some tgt_pre else none)
+  let tgt := src.mapPrefix (fun n ↦ if n == pre then some tgt_pre else none)
   -- we skip if we already transformed this declaration before
   if env.contains tgt then
     return
@@ -353,19 +353,19 @@ Returns 1 if there are no types with a multiplicative class as arguments.
 E.g. `prod.group` returns 1, and `pi.has_one` returns 2.
 -/
 def firstMultiplicativeArg (nm : Name) : MetaM (Option Nat) := do
-  forallTelescopeReducing (← getConstInfo nm).type fun xs _ => do
+  forallTelescopeReducing (← getConstInfo nm).type fun xs _ ↦ do
     -- xs are the arguments to the constant
     let xs := xs.toList
-    let l ← xs.mapM fun x => do
+    let l ← xs.mapM fun x ↦ do
       -- x is an argument and i is the index
       -- write `x : (y₀ : α₀) → ... → (yₙ : αₙ) → tgt_fn tgt_args₀ ... tgt_argsₘ`
-      forallTelescopeReducing (← inferType x) fun _ys tgt => do
+      forallTelescopeReducing (← inferType x) fun _ys tgt ↦ do
         let (_tgt_fn, tgt_args) := tgt.getAppFnArgs
         if let some c := tgt.getAppFn.constName? then
           if findTranslation? (← getEnv) c |>.isNone then
             return []
-        return tgt_args.toList.filterMap fun tgt_arg =>
-          xs.findIdx? fun x => Expr.containsFVar tgt_arg x.fvarId!
+        return tgt_args.toList.filterMap fun tgt_arg ↦
+          xs.findIdx? fun x ↦ Expr.containsFVar tgt_arg x.fvarId!
     trace[to_additive_detail] "firstMultiplicativeArg: {l}"
     match l.join with
     | [] => return none
@@ -435,7 +435,7 @@ private def guessNameDict (is_comm : Bool) : List String → List String
 def guessName : String → String :=
   -- [todo] replace with camelcase logic?
   String.mapTokens ''' $
-  fun s => String.intercalate (String.singleton '_') $
+  fun s ↦ String.intercalate (String.singleton '_') $
   guessNameDict false (s.splitOn "_")
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
@@ -471,12 +471,12 @@ so that future uses of `to_additive` will map them to the corresponding `tgt` fi
 def proceedFields (src tgt : Name) : CoreM Unit := do
   let env : Environment ← getEnv
   let aux := proceedFieldsAux src tgt
-  aux (fun n => do
+  aux (fun n ↦ do
     let fields := if isStructure env n then getStructureFieldsFlattened env n else #[]
     return fields |> .map Name.toString |> Array.toList
   )
   -- [todo] run to_additive on the constructors of n:
-  -- aux (fun n => (env.constructorsOf n).mmap $ ...
+  -- aux (fun n ↦ (env.constructorsOf n).mmap $ ...
 
 private def elabToAdditiveAux (ref : Syntax) (replaceAll trace : Bool) (tgt : Option Syntax)
     (doc : Option Syntax) : ValueType :=
@@ -511,7 +511,7 @@ def addToAdditiveAttr (src : Name) (val : ValueType) : AttrM Unit := do
     -- tgt doesn't exist, so let's make it
     let shouldTrace := val.trace || ((← getOptions) |>.getBool `trace.to_additive)
     withOptions
-      (fun o => o |>.setBool `to_additive.replaceAll val.replaceAll
+      (fun o ↦ o |>.setBool `to_additive.replaceAll val.replaceAll
                   |>.setBool `trace.to_additive shouldTrace)
       (transformDecl val.ref src tgt)
   if let some doc := val.doc then
@@ -720,7 +720,7 @@ that the new name differs from the original one.
 initialize registerBuiltinAttribute {
     name := `to_additive
     descr := "Transport multiplicative to additive"
-    add := fun src stx kind => do
+    add := fun src stx kind ↦ do
       if (kind != AttributeKind.global) then
         throwError "`to_additive` can't be used as a local attribute"
       let val ← elabToAdditive stx

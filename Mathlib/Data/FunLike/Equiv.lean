@@ -146,7 +146,7 @@ namespace EquivLike
 
 variable {E F α β γ : Sort _} [iE : EquivLike E α β] [iF : EquivLike F β γ]
 
-theorem inv_injective : Function.Injective (EquivLike.inv : E → β → α) := fun e g h =>
+theorem inv_injective : Function.Injective (EquivLike.inv : E → β → α) := fun e g h ↦
   coe_injective' e g ((right_inv e).eq_rightInverse (h.symm ▸ left_inv g)) h
 
 instance (priority := 100) toEmbeddingLike : EmbeddingLike E α β where

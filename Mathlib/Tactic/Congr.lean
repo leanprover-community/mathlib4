@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Std.Tactic.RCases
 import Std.Tactic.Ext
 import Lean
+import Mathlib.Util.MapsTo
 
 /-! # `congr with` tactic, `rcongr` tactic -/
 
@@ -41,7 +42,7 @@ partial def rcongrCore (g : MVarId) (pats : List (TSyntax `rcasesPat))
   for (g, qs) in ← Ext.extCore g pats (failIfUnchanged := false) do
     let s ← saveState
     let gs ← g.congrN 1000000
-    if ← not <$> g.isAssigned <||> gs.anyM fun g' => return (← g'.getType).eqv (← g.getType) then
+    if ← not <$> g.isAssigned <||> gs.anyM fun g' ↦ return (← g'.getType).eqv (← g.getType) then
       s.restore
       acc := acc.push g
     else
