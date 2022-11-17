@@ -22,7 +22,7 @@ useful for append-heavy uses such as logging and pretty printing.
 
 
 /-- Concatenates a list of difference lists to form a single difference list. Similar to
-`list.join`. -/
+`List.join`. -/
 def DList.join {α : Type _} : List (Std.DList α) → Std.DList α
   | [] => Std.DList.empty
   | x :: xs => x ++ DList.join xs
