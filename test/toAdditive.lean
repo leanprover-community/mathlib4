@@ -129,4 +129,16 @@ def nat_pi_has_one {α : Type} [One α] : One ((x : Nat) → α) := by infer_ins
 @[to_additive]
 def pi_nat_has_one {I : Type} : One ((x : I) → Nat)  := pi.has_one
 
+section noncomputablee
+
+@[to_additive Bar.bar]
+noncomputable def Foo.foo (h : ∃ _ : α, True) : α := Classical.choose h
+
+@[to_additive Bar.bar']
+def Foo.foo' : ℕ := 2
+
+#eval Bar.bar'
+
+end noncomputablee
+
 end Test

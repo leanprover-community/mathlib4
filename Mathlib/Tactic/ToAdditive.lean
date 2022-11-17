@@ -294,7 +294,10 @@ partial def transformDeclAux
       of `to_additive.attr`, section `Troubleshooting`.
       Failed to add declaration\n{trgDecl.name}:\n{msg}"
     | _ => panic! "unreachable"
-  addAndCompile trgDecl.toDeclaration!
+  if isNoncomputable env src then
+    addDecl trgDecl.toDeclaration!
+  else
+    addAndCompile trgDecl.toDeclaration!
   -- now add declaration ranges so jump-to-definition works
   addDeclarationRanges tgt {
     range := ← getDeclarationRange (← getRef)
