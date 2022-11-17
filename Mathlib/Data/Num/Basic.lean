@@ -583,37 +583,16 @@ def mod' (n d : PosNum) : Num :=
   (divMod d n).2
 #align pos_num.mod' PosNum.mod'
 
-/-
-  private def sqrt_aux1 (b : pos_num) (r n : num) : num × num :=
-  match num.of_znum' (n.sub' (r + num.pos b)) with
-  | some n' := (r.div2 + num.pos b, n')
-  | none := (r.div2, n)
-  end
+private def sqrtAux1 (b : PosNum) (r n : Num) : Num × Num :=
+  match Num.ofZNum' (n.sub' (r + Num.pos b)) with
+  | some n' => (r.div2 + Num.pos b, n')
+  | none => (r.div2, n)
 
-  private def sqrt_aux : pos_num → num → num → num
-  | b@(bit0 b') r n := let (r', n') := sqrt_aux1 b r n in sqrt_aux b' r' n'
-  | b@(bit1 b') r n := let (r', n') := sqrt_aux1 b r n in sqrt_aux b' r' n'
-  | 1           r n := (sqrt_aux1 1 r n).1
-  -/
-/-
+private def sqrtAux : PosNum → Num → Num → Num
+  | b@(bit0 b') => fun r n => let (r', n') := sqrtAux1 b r n; sqrtAux b' r' n'
+  | b@(bit1 b') => fun r n => let (r', n') := sqrtAux1 b r n; sqrtAux b' r' n'
+  | 1           => fun r n => (sqrtAux1 1 r n).1
 
-def sqrt_aux : ℕ → ℕ → ℕ → ℕ
-| b r n := if b0 : b = 0 then r else
-  let b' := shiftr b 2 in
-  have b' < b, from sqrt_aux_dec b0,
-  match (n - (r + b : ℕ) : ℤ) with
-  | (n' : ℕ) := sqrt_aux b' (div2 r + b) n'
-  | _ := sqrt_aux b' (div2 r) n
-  end
-
-/-- `sqrt n` is the square root of a natural number `n`. If `n` is not a
-  perfect square, it returns the largest `k:ℕ` such that `k*k ≤ n`. -/
-def sqrt (n : ℕ) : ℕ :=
-match size n with
-| 0      := 0
-| succ s := sqrt_aux (shiftl 1 (bit0 (div2 s))) 0 n
-end
--/
 end PosNum
 
 namespace Num
