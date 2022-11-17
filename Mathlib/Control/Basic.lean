@@ -6,6 +6,8 @@ Authors: Johannes Hölzl
 import Mathlib.Control.SimpSet
 import Mathlib.Tactic.CasesM
 import Mathlib.Init.Control.Combinators
+import Std.Tactic.Lint.Frontend
+import Std.Tactic.Lint.Misc
 
 /-!
 Extends the theory on functors, applicatives and monads.
@@ -237,24 +239,20 @@ instance : LawfulMonad (Sum.{v, u} e) where
 
 end Sum
 
-section commutative
-
-variable (m : Type _ → Type _)
-
 /-- A `CommApplicative` functor `m` is a (lawful) applicative functor which behaves identically on
 `α × β` and `β × α`, so computations can occur in either order. -/
-class CommApplicative [Applicative m] extends LawfulApplicative m : Prop where
+class CommApplicative (m : Type u → Type v) [Applicative m] extends LawfulApplicative m : Prop where
   /-- Computations performed first on `a : α` and then on `b : β` are equal to those performed in
   the reverse order. -/
   commutative_prod : ∀ {α β} (a : m α) (b : m β),
-    Prod.mk <$> a <*> b = (fun b a => (a, b)) <$> b <*> a
+    Prod.mk <$> a <*> b = (fun (b : β) a => (a, b)) <$> b <*> a
 #align is_comm_applicative CommApplicative
 
 open Functor
 
 variable {m}
 
-theorem CommApplicative.commutative_map [h : Applicative m]
+theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative m]
     [CommApplicative m] {α β γ} (a : m α) (b : m β) {f : α → β → γ} :
   f <$> a <*> b = flip f <$> b <*> a :=
   calc
@@ -267,5 +265,3 @@ theorem CommApplicative.commutative_map [h : Applicative m]
         simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]
 
 #align is_comm_applicative.commutative_map IsCommApplicative.commutative_map
-
-end commutative
