@@ -33,6 +33,6 @@ namespace RBTree
 @[deprecated Std.RBMap] structure RBTree (α : Type u) where
   mk :: (h: RBNode α) (cmp: α → α → Prop)
 
-#align rbtree Std.RBSet
+#align rbtree Std.RBMap
 
 end RBTree
