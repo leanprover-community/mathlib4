@@ -186,6 +186,7 @@ section
 
 variable {α : Type _} [One α] [Add α]
 
+section deprecated
 set_option linter.deprecated false
 
 /-- `castPosNum` casts a `PosNum` into any type which has `1` and `+`. -/
@@ -211,7 +212,7 @@ set_option linter.deprecated false
   ⟨castNum⟩
 #align num_nat_coe numNatCoe
 
-set_option linter.deprecated true
+end deprecated
 
 instance : Repr PosNum :=
   ⟨fun _ n => repr (n : ℕ)⟩
