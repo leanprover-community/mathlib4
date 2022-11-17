@@ -287,8 +287,8 @@ alias byCases ← by_cases
 alias byContradiction ← by_contradiction
 alias not_not ← not_not_iff
 
-@[nolint unusedArguments, deprecated not_or] theorem not_or_iff_and_not (p q)
-    [Decidable p] [Decidable q] : ¬(p ∨ q) ↔ ¬p ∧ ¬q := not_or
+@[deprecated not_or] theorem not_or_iff_and_not (p q) [Decidable p] [Decidable q] :
+    ¬(p ∨ q) ↔ ¬p ∧ ¬q := not_or
 
 end Decidable
 
