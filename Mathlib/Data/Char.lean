@@ -7,7 +7,7 @@ import Mathlib.Data.UInt
 import Mathlib.Init.Algebra.Order
 
 /-!
-# More `char` instances
+# More `Char` instances
 
 This file provides a `LinearOrder` instance on `Char`. `Char` is the type of Unicode scalar values.
 Provides an additional definition to truncate a `Char` to `UInt8` and a theorem on conversion to
