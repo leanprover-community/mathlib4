@@ -88,6 +88,7 @@ structure Context :=
   /-- A simplification to apply to atomic expressions when they are encountered,
   before interning them in the atom list. -/
   evalAtom : Expr → MetaM Simp.Result := fun e => pure { expr := e }
+  deriving Inhabited
 
 /-- The mutable state of the `RingM` monad. -/
 structure State :=
@@ -947,6 +948,30 @@ def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α
 theorem of_eq (_ : (a : R) = c) (_ : b = c) : a = b := by subst_vars; rfl
 
 /--
+This is a routine which is used to clean up the unsolved subgoal
+of a failed `ring1` application. It is overridden in `Mathlib.Tactic.Ring.RingNF`
+to apply the `ring_nf` simp set to the goal.
+-/
+initialize ringCleanupRef : IO.Ref (Expr → MetaM Expr) ← IO.mkRef pure
+
+/-- Frontend of `ring1`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
+def proveEq (g : MVarId) : RingM Unit := do
+  let some (α, e₁, e₂) := (← instantiateMVars (← g.getType)).eq?
+    | throwError "ring failed: not an equality"
+  let .sort (.succ u) ← whnf (← inferType α) | throwError "not a type{indentExpr α}"
+  have α : Q(Type u) := α
+  have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
+  let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
+  let c := { rα := (← trySynthInstanceQ (q(Ring $α) : Q(Type u))).toOption }
+  let ⟨a, va, pa⟩ ← eval sα c e₁
+  let ⟨b, vb, pb⟩ ← eval sα c e₂
+  unless va.eq vb do
+    let g ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a = $b))
+    throwError "ring failed, ring expressions not equal\n{g.mvarId!}"
+  let pb : Q($e₂ = $a) := pb
+  g.assign q(of_eq $pa $pb)
+
+/--
 Tactic for solving equations of *commutative* (semi)rings,
 allowing variables in the exponent.
 
@@ -955,20 +980,6 @@ allowing variables in the exponent.
   to determine equality of atoms.
 -/
 elab (name := ring1) "ring1" tk:"!"? : tactic => liftMetaMAtMain fun g => do
-  let some (α, e₁, e₂) := (← instantiateMVars (← g.getType)).eq?
-    | throwError "ring failed: not an equality"
-  let red := if tk.isSome then .default else .reducible
-  let .sort (.succ u) ← whnf (← inferType α) | throwError "not a type{indentExpr α}"
-  RingM.run red do
-    have α : Q(Type u) := α
-    have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
-    let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
-    let c := { rα := (← trySynthInstanceQ (q(Ring $α) : Q(Type u))).toOption }
-    let ⟨a, va, pa⟩ ← eval sα c e₁
-    let ⟨b, vb, pb⟩ ← eval sα c e₂
-    unless va.eq vb do
-      throwError "ring failed, ring expressions not equal: \n{a}\n  !=\n{b}"
-    let pb : Q($e₂ = $a) := pb
-    g.assign q(of_eq $pa $pb)
+  RingM.run (if tk.isSome then .default else .reducible) (proveEq g)
 
 @[inherit_doc ring1] macro "ring1!" : tactic => `(tactic| ring1 !)
