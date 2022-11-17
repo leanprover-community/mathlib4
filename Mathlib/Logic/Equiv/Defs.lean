@@ -503,12 +503,12 @@ def propEquivPUnit {p : Prop} (h : p) : p ≃ PUnit.{0} :=
 #align equiv.prop_equiv_punit Equiv.propEquivPUnit
 
 /-- `ULift α` is equivalent to `α`. -/
-@[simps (config := { fullyApplied := false }) apply symmApply]
+@[simps (config := { fullyApplied := false }) apply]
 protected def ulift {α : Type v} : ULift.{u} α ≃ α :=
   ⟨ULift.down, ULift.up, ULift.up_down, fun _ => rfl⟩
 
 /-- `PLift α` is equivalent to `α`. -/
-@[simps (config := { fullyApplied := false }) apply symmApply]
+@[simps (config := { fullyApplied := false }) apply]
 protected def plift : PLift α ≃ α :=
   ⟨PLift.down, PLift.up, PLift.up_down, PLift.down_up⟩
 
@@ -664,7 +664,7 @@ def piSubsingleton {α} (β : α → Sort _) [Subsingleton α] (a : α) : (∀ a
   right_inv b := rfl
 
 /-- If `α` has a unique term, then the type of function `α → β` is equivalent to `β`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := { fullyApplied := false }) apply]
 def funUnique (α β) [Unique.{u} α] : (α → β) ≃ β :=
   piSubsingleton _ default
 
@@ -730,7 +730,7 @@ def psigmaCongrRight {α} {β₁ β₂ : α → Sort _} (F : ∀ a, β₁ a ≃ 
     congr_arg (PSigma.mk a) <| symm_apply_apply (F a) b, fun ⟨a, b⟩ =>
     congr_arg (PSigma.mk a) <| apply_symm_apply (F a) b⟩
 
-@[simp]
+-- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
 theorem psigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Sort _}
     (F : ∀ a, β₁ a ≃ β₂ a) (G : ∀ a, β₂ a ≃ β₃ a) :
     (psigmaCongrRight F).trans (psigmaCongrRight G) =
@@ -740,7 +740,7 @@ theorem psigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Sort _}
   rfl
 #align equiv.psigma_congr_right_trans Equiv.psigmaCongrRight_trans
 
-@[simp]
+-- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
 theorem psigmaCongrRight_symm {α} {β₁ β₂ : α → Sort _} (F : ∀ a, β₁ a ≃ β₂ a) :
     (psigmaCongrRight F).symm = psigmaCongrRight fun a => (F a).symm := by
   ext1 x
@@ -748,7 +748,7 @@ theorem psigmaCongrRight_symm {α} {β₁ β₂ : α → Sort _} (F : ∀ a, β�
   rfl
 #align equiv.psigma_congr_right_symm Equiv.psigmaCongrRight_symm
 
-@[simp]
+-- Porting note: simp can now prove this, so I have removed `@[simp]`
 theorem psigmaCongrRight_refl {α} {β : α → Sort _} :
     (psigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ' a, β a) := by
   ext1 x
