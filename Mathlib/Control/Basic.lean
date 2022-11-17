@@ -58,7 +58,7 @@ attribute [functor_norm] seq_assoc pure_seq
 
 @[functor_norm]
 theorem seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
-  x <*> f <$> y = (· ∘ f) <$> x <*> y := by
+    x <*> f <$> y = (· ∘ f) <$> x <*> y := by
   simp [← pure_seq]
   simp [seq_assoc, ← comp_map, (· ∘ ·)]
   simp [pure_seq]
@@ -66,7 +66,7 @@ theorem seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
 
 @[functor_norm]
 theorem map_seq (f : β → γ) (x : F (α → β)) (y : F α) :
-  f <$> (x <*> y) = (f ∘ ·) <$> x <*> y := by
+    f <$> (x <*> y) = (f ∘ ·) <$> x <*> y := by
   simp [← pure_seq] <;> simp [seq_assoc]
 #align map_seq map_seq
 
@@ -84,7 +84,7 @@ open List
 /-- A generalization of `List.partitionM` which partitions the list according to a monadic
 predicate. `List.partition` corresponds to the case where `f = Id`. -/
 def List.partitionM {f : Type → Type} [Monad f] {α : Type} (p : α → f Bool) :
-  List α → f (List α × List α)
+    List α → f (List α × List α)
   | [] => pure ([], [])
   | x :: xs => condM (p x)
     (Prod.map (cons x) id <$> List.partitionM p xs)
@@ -92,12 +92,12 @@ def List.partitionM {f : Type → Type} [Monad f] {α : Type} (p : α → f Bool
 #align list.mpartition List.mpartition
 
 theorem map_bind (x : m α) {g : α → m β} {f : β → γ} :
-  f <$> (x >>= g) = x >>= fun a => f <$> g a := by
+    f <$> (x >>= g) = x >>= fun a => f <$> g a := by
   rw [← bind_pure_comp, bind_assoc] <;> simp [bind_pure_comp]
 #align map_bind map_bind
 
 theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
-  f <$> x >>= g = x >>= g ∘ f :=
+    f <$> x >>= g = x >>= g ∘ f :=
   show bind (f <$> x) g = bind x (g ∘ f)
   by rw [← bind_pure_comp, bind_assoc] <;> simp [pure_bind, (· ∘ ·)]
 #align seq_bind_eq seq_bind_eq
@@ -255,7 +255,7 @@ open Functor
 variable {m}
 
 theorem CommApplicative.commutative_map [h : Applicative m]
-  [CommApplicative m] {α β γ} (a : m α) (b : m β) {f : α → β → γ} :
+    [CommApplicative m] {α β γ} (a : m α) (b : m β) {f : α → β → γ} :
   f <$> a <*> b = flip f <$> b <*> a :=
   calc
     f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) :=
