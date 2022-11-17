@@ -49,11 +49,13 @@ section Applicative
 
 variable {F : Type u → Type v} [Applicative F]
 
+/-- A generalization of `List.zipWith` which combines list elements with an `Applicative`. -/
 def zipMWith {α₁ α₂ φ : Type u} (f : α₁ → α₂ → F φ) : ∀ (_ : List α₁) (_ : List α₂), F (List φ)
   | x :: xs, y :: ys => (· :: ·) <$> f x y <*> zipMWith f xs ys
   | _, _ => pure []
 #align mzip_with zipMWith
 
+/-- Like `zipMWith` but evaluates the result as it traverses the lists using `*>`. -/
 def zipMWith' (f : α → β → F γ) : List α → List β → F PUnit
   | x :: xs, y :: ys => f x y *> zipMWith' f xs ys
   | [], _ => pure PUnit.unit
@@ -96,6 +98,8 @@ variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 
 open List
 
+/-- A generalization of `List.partitionM` which partitions the list according to a monadic
+predicate. `List.partition` corresponds to the case where `f = Id`. -/
 def List.partitionM {f : Type → Type} [Monad f] {α : Type} (p : α → f Bool) :
   List α → f (List α × List α)
   | [] => pure ([], [])
@@ -153,6 +157,8 @@ variable {β' γ' : Type v}
 
 variable {m' : Type v → Type w} [Monad m']
 
+/-- Takes a value `β` and `List α` and accumulates pairs according to a monadic function `f`.
+Accumulation occurs from the right (i.e., starting from the tail of the list). -/
 def List.mapMAccumR (f : α → β' → m' (β' × γ')) : β' → List α → m' (β' × List γ')
   | a, [] => pure (a, [])
   | a, x :: xs => do
@@ -161,6 +167,8 @@ def List.mapMAccumR (f : α → β' → m' (β' × γ')) : β' → List α → m
     pure (a'', y :: ys)
 #align list.mmap_accumr List.mapMAccumR
 
+/-- Takes a value `β` and `List α` and accumulates pairs according to a monadic function `f`.
+Accumulation occurs from the left (i.e., starting from the head of the list). -/
 def List.mapMAccumL (f : β' → α → m' (β' × γ')) : β' → List α → m' (β' × List γ')
   | a, [] => pure (a, [])
   | a, x :: xs => do
@@ -201,10 +209,12 @@ section Alternative
 variable {F : Type → Type v} [Alternative F]
 
 -- [todo] add notation for `Functor.mapConst` and port `functor.map_const_rev`
+/-- Returns `pure true` if the computatoin succeeds and `pure false` otherwise. -/
 def succeeds {α} (x : F α) : F Bool :=
   Functor.mapConst true x <|> pure false
 #align succeeds succeeds
 
+/-- Attempts to perform the computation, but fails silently if it doesn't succeed. -/
 def tryM {α} (x : F α) : F Unit :=
   Functor.mapConst () x <|> pure ()
 #align mtry tryM
@@ -230,6 +240,7 @@ lean 3 declaration is
 but is expected to have type
   forall {e : Type.{v}} {α : Type.{_aux_param_0}} {β : Type.{_aux_param_1}}, (Sum.{v _aux_param_0} e α) -> (α -> (Sum.{v _aux_param_1} e β)) -> (Sum.{v _aux_param_1} e β)
 Case conversion may be inaccurate. Consider using '#align sum.bind Sum.bindₓ'. -/
+/-- The monadic `bind` operation for `Sum`. -/
 protected def bind {α β} : Sum e α → (α → Sum e β) → Sum e β
   | inl x, _ => inl x
   | inr x, f => f x
@@ -266,7 +277,11 @@ instance : LawfulMonad (Sum.{v, u} e) where
 
 end Sum
 
+/-- A `CommApplicative` functor `m` is a (lawful) applicative functor which behaves identically on
+`α × β` and `β × α`, so computations can occur in either order. -/
 class CommApplicative (m : Type _ → Type _) [Applicative m] extends LawfulApplicative m : Prop where
+  /-- Computations performed first on `a : α` and then on `b : β` are equal to those performed in
+  the reverse order. -/
   commutative_prod : ∀ {α β} (a : m α) (b : m β),
     Prod.mk <$> a <*> b = (fun b a => (a, b)) <$> b <*> a
 #align is_comm_applicative CommApplicative
