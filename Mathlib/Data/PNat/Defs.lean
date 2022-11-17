@@ -18,8 +18,7 @@ Most algebraic facts are deferred to `Data.PNat.Basic`, as they need more import
 /-- `ℕ+` is the type of positive natural numbers. It is defined as a subtype,
   and the VM representation of `ℕ+` is the same as `ℕ` because the proof
   is not stored. -/
-def PNat :=
-  { n : ℕ // 0 < n }
+def PNat := { n : ℕ // 0 < n }
   deriving DecidableEq, LinearOrder
 #align pnat PNat
 
@@ -46,12 +45,12 @@ theorem mk_coe (n h) : ((⟨n, h⟩ : ℕ+) : ℕ) = n :=
 /-- Predecessor of a `ℕ+`, as a `ℕ`. -/
 def natPred (i : ℕ+) : ℕ :=
   i - 1
-#align pnat.natPred PNat.natPred
+#align pnat.nat_pred PNat.natPred
 
 @[simp]
 theorem natPred_eq_pred {n : ℕ} (h : 0 < n) : natPred (⟨n, h⟩ : ℕ+) = n.pred :=
   rfl
-#align pnat.natPred_eq_pred PNat.natPred_eq_pred
+#align pnat.nat_pred_eq_pred PNat.natPred_eq_pred
 
 end PNat
 
