@@ -276,10 +276,10 @@ def mkNormNumExt (n : Name) : ImportM NormNumExt := do
 
 /-- Each `norm_num` extension is labelled with a collection of patterns
 which determine the expressions to which it should be applied. -/
-abbrev Entry := Array (Array DiscrTree.Key) × Name
+abbrev Entry := Array (Array (DiscrTree.Key true)) × Name
 /-- Environment extensions for `norm_num` declarations -/
 initialize normNumExt : PersistentEnvExtension Entry (Entry × NormNumExt)
-    (List Entry × DiscrTree NormNumExt) ←
+    (List Entry × DiscrTree NormNumExt true) ←
   -- we only need this to deduplicate entries in the DiscrTree
   have : BEq NormNumExt := ⟨fun _ _ => false⟩
   let insert kss v dt := kss.foldl (fun dt ks => dt.insertCore ks v) dt
