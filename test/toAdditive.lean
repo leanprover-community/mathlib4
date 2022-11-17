@@ -164,11 +164,10 @@ example : True := by
   run_tac guard (guessName "cancelCommMonoid" == "addCancelCommMonoid")
   run_tac guard (guessName "CancelMonoid"     == "AddCancelMonoid")
   run_tac guard (guessName "cancelMonoid"     == "addCancelMonoid")
-  -- -- TODO: not dealing with these atm:
-  -- run_tac guard (guessName "RightCancelMonoid" == "AddRightCancelMonoid")
-  -- run_tac guard (guessName "rightCancelMonoid" == "addRightCancelMonoid")
-  -- run_tac guard (guessName "LefCancelMonoid" == "AddLeftCancelMonoid")
-  -- run_tac guard (guessName "leftCancelMonoid" == "addLeftCancelMonoid")  trivial
+  run_tac guard (guessName "RightCancelMonoid" == "AddRightCancelMonoid")
+  run_tac guard (guessName "rightCancelMonoid" == "addRightCancelMonoid")
+  run_tac guard (guessName "LefCancelMonoid" == "AddLeftCancelMonoid")
+  run_tac guard (guessName "leftCancelMonoid" == "addLeftCancelMonoid")  trivial
   trivial
 
 example : True := by
