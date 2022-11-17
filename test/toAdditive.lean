@@ -95,7 +95,8 @@ if some_def.in_namespace then x * x else x
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
 run_cmd do
-  Elab.Command.liftCoreM <| successIfFail (ToAdditive.transformDecl (← getRef) `Test.some_def `Test.add_some_def)
+  Elab.Command.liftCoreM <| successIfFail (ToAdditive.transformDecl (← getRef)
+    `Test.some_def `Test.add_some_def)
 
 
 attribute [to_additive some_other_name] some_def.in_namespace
@@ -109,7 +110,11 @@ run_cmd do
 --         = (add_units.mk_of_add_eq_zero 0 0 (by simp) : ℕ) :=
 -- by normCast
 
-@[nolint unusedArguments]
+section
+
+set_option linter.unusedVariables false
+-- porting note : not sure what the tests do, but the linter complains.
+
 def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f i)]
   [Add I] [Mul L] : true := by trivial
 
@@ -119,10 +124,14 @@ instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One $ f i] : One ((
   ⟨fun _ => 1⟩
 
 run_cmd do
-  let n ← Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg `Test.pi.has_one
+  let n ← (Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg
+    `Test.pi.has_one)
   if n != some 1 then throwError "{n} != 1"
-  let n ← Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg `Test.foo_mul
+  let n ← (Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg
+    `Test.foo_mul)
   if n != some 4 then throwError "{n} != 4"
+
+end
 
 @[to_additive]
 def nat_pi_has_one {α : Type} [One α] : One ((x : Nat) → α) := by infer_instance
@@ -167,8 +176,8 @@ example : True := by
   run_tac guard (guessName "cancelMonoid"     == "addCancelMonoid")
   run_tac guard (guessName "RightCancelMonoid" == "AddRightCancelMonoid")
   run_tac guard (guessName "rightCancelMonoid" == "addRightCancelMonoid")
-  run_tac guard (guessName "LefCancelMonoid" == "AddLeftCancelMonoid")
-  run_tac guard (guessName "leftCancelMonoid" == "addLeftCancelMonoid")  trivial
+  run_tac guard (guessName "LeftCancelMonoid" == "AddLeftCancelMonoid")
+  run_tac guard (guessName "leftCancelMonoid" == "addLeftCancelMonoid")
   trivial
 
 example : True := by

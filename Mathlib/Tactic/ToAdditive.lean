@@ -503,7 +503,7 @@ def fixAbbreviation : List String → List String
 | "Cancel" :: "Add" :: s            => "AddCancel" :: fixAbbreviation s
 | "left" :: "Cancel" :: "Add" :: s  => "addLeftCancel" :: fixAbbreviation s
 | "Left" :: "Cancel" :: "Add" :: s  => "AddLeftCancel" :: fixAbbreviation s
-| "right" :: "cancel" :: "Add" :: s => "addRightCancel" :: fixAbbreviation s
+| "right" :: "Cancel" :: "Add" :: s => "addRightCancel" :: fixAbbreviation s
 | "Right" :: "Cancel" :: "Add" :: s => "AddRightCancel" :: fixAbbreviation s
 | "cancel" :: "Comm" :: "Add" :: s  => "addCancelComm" :: fixAbbreviation s
 | "Cancel" :: "Comm" :: "Add" :: s  => "AddCancelComm" :: fixAbbreviation s
