@@ -2,12 +2,14 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-Extends the theory on functors, applicatives and monads.
 -/
 import Mathlib.Control.SimpSet
 import Mathlib.Tactic.CasesM
 import Mathlib.Init.Control.Combinators
+
+/-!
+Extends the theory on functors, applicatives and monads.
+-/
 
 universe u v w
 
