@@ -24,25 +24,25 @@ The file does not contain any lemmas except for
 
 For basic lemmas about these classes see `Algebra.Group.Basic`.
 
-We also introduce notation classes `HasSmul` and `HasVadd` for multiplicative and additive
+We also introduce notation classes `SMul` and `VAdd` for multiplicative and additive
 actions and register the following instances:
 
 - `Pow M ℕ`, for monoids `M`, and `Pow G ℤ` for groups `G`;
-- `HasSmul ℕ M` for additive monoids `M`, and `HasSmul ℤ G` for additive groups `G`.
+- `SMul ℕ M` for additive monoids `M`, and `SMul ℤ G` for additive groups `G`.
 
 ## Notation
 
 - `+`, `-`, `*`, `/`, `^` : the usual arithmetic operations; the underlying functions are
   `Add.add`, `Neg.neg`/`Sub.sub`, `Mul.mul`, `Div.div`, and `Pow.pow`.
-- `a • b` is used as notation for `HasSmul.smul a b`.
-- `a +ᵥ b` is used as notation for `HasVadd.vadd a b`.
+- `a • b` is used as notation for `SMul.smul a b`.
+- `a +ᵥ b` is used as notation for `VAdd.vadd a b`.
 
 -/
 
 open Function
 
 /-- Type class for the `+ᵥ` notation. -/
-class HasVadd (G : Type _) (P : Type _) where
+class VAdd (G : Type _) (P : Type _) where
   vadd : G → P → P
 
 /-- Type class for the `-ᵥ` notation. -/
@@ -51,12 +51,12 @@ class HasVsub (G : outParam (Type _)) (P : Type _) where
 
 /-- Typeclass for types with a scalar multiplication operation, denoted `•` (`\bu`) -/
 @[ext, to_additive]
-class HasSmul (M : Type _) (α : Type _) where
+class SMul (M : Type _) (α : Type _) where
   smul : M → α → α
 
-infixl:65 " +ᵥ " => HasVadd.vadd
+infixl:65 " +ᵥ " => VAdd.vadd
 infixl:65 " -ᵥ " => HasVsub.vsub
-infixr:73 " • " => HasSmul.smul
+infixr:73 " • " => SMul.smul
 
 -- [todo] is this correct? I think it's needed to ensure that additiveTest
 -- succeeds if the relevant arg involves Nat.
@@ -449,12 +449,12 @@ goes for linear maps, tensor products, and so on (and even for `ℕ` itself).
 
 To solve this issue, we embed an `ℕ`-action in the definition of an `AddMonoid` (which is by
 default equal to the naive action `a + ... + a`, but can be adjusted when needed), and declare
-a `HasSmul ℕ α` instance using this action. See Note [forgetful inheritance] for more
+a `SMul ℕ α` instance using this action. See Note [forgetful inheritance] for more
 explanations on this pattern.
 
 For example, when we define `polynomial R`, then we declare the `ℕ`-action to be by multiplication
 on each coefficient (using the `ℕ`-action on `R` that comes from the fact that `R` is
-an `AddMonoid`). In this way, the two natural `HasSmul ℕ (polynomial ℕ)` instances are defeq.
+an `AddMonoid`). In this way, the two natural `SMul ℕ (polynomial ℕ)` instances are defeq.
 
 The tactic `to_additive` transfers definitions and results from multiplicative monoids to additive
 monoids. To work, it has to map fields to fields. This means that we should also add corresponding
@@ -492,10 +492,10 @@ attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
 @[default_instance high] instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
   ⟨fun x n => Monoid.npow n x⟩
 
-instance AddMonoid.HasSmul {M : Type _} [AddMonoid M] : HasSmul ℕ M :=
+instance AddMonoid.SMul {M : Type _} [AddMonoid M] : SMul ℕ M :=
   ⟨AddMonoid.nsmul⟩
 
-attribute [to_additive AddMonoid.hasSmulNat] Monoid.Pow
+attribute [to_additive AddMonoid.SmulNat] Monoid.Pow
 
 section
 -- FIXME The lemmas in this section should be done by `to_additive` below, but it fails.
@@ -746,13 +746,13 @@ class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
 
 attribute [to_additive SubNegMonoid] DivInvMonoid
 
-instance DivInvMonoid.hasPow {M} [DivInvMonoid M] : Pow M ℤ :=
+instance DivInvMonoid.Pow {M} [DivInvMonoid M] : Pow M ℤ :=
   ⟨fun x n => DivInvMonoid.zpow n x⟩
 
-instance SubNegMonoid.hasSmulInt {M} [SubNegMonoid M] : HasSmul ℤ M :=
+instance SubNegMonoid.SMulInt {M} [SubNegMonoid M] : SMul ℤ M :=
   ⟨SubNegMonoid.zsmul⟩
 
-attribute [to_additive SubNegMonoid.hasSmulInt] DivInvMonoid.hasPow
+attribute [to_additive SubNegMonoid.SMulInt] DivInvMonoid.Pow
 
 section DivInvMonoid
 
