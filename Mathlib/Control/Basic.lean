@@ -112,8 +112,9 @@ theorem fish_pure {α β} (f : α → m β) : f >=> pure = f := by simp only [(�
 theorem fish_pipe {α β} (f : α → m β) : pure >=> f = f := by simp only [(· >=> ·), functor_norm]
 #align fish_pipe fish_pipe
 
+-- note: in Lean 3 `>=>` is left-associative, but in Lean 4 it is right-associative.
 @[functor_norm]
-theorem fish_assoc {α β γ φ} (f : α → m β) (g : β → m γ) (h : γ → m φ) : f >=> g >=> h = f >=> (g >=> h) := by
+theorem fish_assoc {α β γ φ} (f : α → m β) (g : β → m γ) (h : γ → m φ) : (f >=> g) >=> h = f >=> g >=> h := by
   simp only [(· >=> ·), functor_norm]
 #align fish_assoc fish_assoc
 
