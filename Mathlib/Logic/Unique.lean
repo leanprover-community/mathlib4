@@ -83,7 +83,11 @@ instance PUnit.unique : Unique PUnit.{u} where
   default := PUnit.unit
   uniq x := subsingleton x _
 
-@[simp]
+-- Porting note:
+-- This should not require a nolint,
+-- but it is currently failing due to a problem in the linter discussed at
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60simpNF.60.20error.20.22unknown.20metavariable.22
+@[simp, nolint simpNF]
 theorem PUnit.default_eq_unit : (default : PUnit) = PUnit.unit :=
   rfl
 
@@ -145,7 +149,7 @@ end
 
 @[ext]
 protected theorem subsingleton_unique' : ∀ h₁ h₂ : Unique α, h₁ = h₂
-  | ⟨⟨x⟩, h⟩, ⟨⟨y⟩, _⟩ => by congr <;> rw [h x, h y]
+  | ⟨⟨x⟩, h⟩, ⟨⟨y⟩, _⟩ => by congr; rw [h x, h y]
 
 instance subsingleton_unique : Subsingleton (Unique α) :=
   ⟨Unique.subsingleton_unique'⟩
@@ -228,13 +232,14 @@ theorem Unique.bijective {A B} [Unique A] [Unique B] {f : A → B} : Function.Bi
 namespace Option
 
 /-- `option α` is a `subsingleton` if and only if `α` is empty. -/
-theorem subsingleton_iff_is_empty {α : Type u} : Subsingleton (Option α) ↔ IsEmpty α :=
+theorem subsingleton_iff_isEmpty {α : Type u} : Subsingleton (Option α) ↔ IsEmpty α :=
   ⟨fun h => ⟨fun x => Option.noConfusion <| @Subsingleton.elim _ h x none⟩,
    fun h => ⟨fun x y =>
      Option.casesOn x (Option.casesOn y rfl fun x => h.elim x) fun x => h.elim x⟩⟩
+#align option.subsingleton_iff_is_empty Option.subsingleton_iff_isEmpty
 
 instance {α} [IsEmpty α] : Unique (Option α) :=
-  @Unique.mk' _ _ (subsingleton_iff_is_empty.2 ‹_›)
+  @Unique.mk' _ _ (subsingleton_iff_isEmpty.2 ‹_›)
 
 end Option
 

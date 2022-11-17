@@ -1,6 +1,7 @@
 import Mathlib.Algebra.Abs
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Semiconj
@@ -9,6 +10,7 @@ import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.Group
 import Mathlib.Algebra.Order.Monoid
 import Mathlib.Algebra.Order.MonoidLemmas
@@ -31,9 +33,13 @@ import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.FunLike.Basic
+import Mathlib.Data.FunLike.Embedding
+import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Cast
 import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.KVMap
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Card
@@ -49,6 +55,7 @@ import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.PProd
+import Mathlib.Data.Quot
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
@@ -67,11 +74,14 @@ import Mathlib.Init.Core
 import Mathlib.Init.Data.Bool.Basic
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Fin.Basic
-import Mathlib.Init.Data.Int.Notation
+import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Init.Data.Prod
+import Mathlib.Init.Data.Quot
+import Mathlib.Init.Data.Rat
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Propext
@@ -89,10 +99,12 @@ import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Logic.Equiv.MfldSimpsAttr
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Function.Conjugate
+import Mathlib.Logic.Function.Iterate
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Lemmas
 import Mathlib.Logic.Nonempty
 import Mathlib.Logic.Nontrivial
+import Mathlib.Logic.Relation
 import Mathlib.Logic.Relator
 import Mathlib.Logic.Unique
 import Mathlib.Mathport.Attributes
@@ -116,7 +128,6 @@ import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
-import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Congr
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Contrapose
@@ -138,6 +149,7 @@ import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormCast.Tactic
 import Mathlib.Tactic.NormNum

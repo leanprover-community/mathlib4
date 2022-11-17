@@ -10,16 +10,17 @@ import Std.Tactic.RCases
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
+import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyRules
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Choose
+import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
-import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Congr
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Contrapose
@@ -30,6 +31,7 @@ import Mathlib.Tactic.DocCommands
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
+import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
@@ -467,8 +469,6 @@ namespace Attr
 /- M -/ syntax (name := higherOrder) "higher_order" (ppSpace ident)? : attr
 /- S -/ syntax (name := interactive) "interactive" : attr
 
-/- M -/ syntax (name := mkIff) "mk_iff" (ppSpace ident)? : attr
-
 /- M -/ syntax (name := expandExists) "expand_exists" (ppSpace ident)+ : attr
 
 -- TODO: this should be handled in mathport
@@ -514,7 +514,6 @@ macro_rules
     `(with_weak_namespace $ns attribute [scoped $attr:attr] $ids*)
 
 /- S -/ syntax (name := listUnusedDecls) "#list_unused_decls" : command
-/- M -/ syntax (name := mkIffOfInductiveProp) "mk_iff_of_inductive_prop" ident ident : command
 
 /- N -/ syntax (name := defReplacer) "def_replacer " ident Term.optType : command
 
