@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Init.ZeroOne
-import Mathlib.Init.Data.Int.Notation
+import Mathlib.Init.Data.Int.Basic
 import Mathlib.Data.List.Basic
 
 import Std.Tactic.Lint.Frontend
@@ -461,7 +461,7 @@ section LeftCancelMonoid
 
 /-- An additive monoid in which addition is left-cancellative.
 Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
-is useful to define the sum over the empty set, so `add_left_cancel_semigroup` is not enough. -/
+is useful to define the sum over the empty set, so `AddLeftCancelSemigroup` is not enough. -/
 class AddLeftCancelMonoid (M : Type u) extends AddLeftCancelSemigroup M, AddMonoid M
 
 /-- A monoid in which multiplication is left-cancellative. -/
@@ -476,7 +476,7 @@ section RightCancelMonoid
 
 /-- An additive monoid in which addition is right-cancellative.
 Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
-is useful to define the sum over the empty set, so `add_right_cancel_semigroup` is not enough. -/
+is useful to define the sum over the empty set, so `AddRightCancelSemigroup` is not enough. -/
 class AddRightCancelMonoid (M : Type u) extends AddRightCancelSemigroup M, AddMonoid M
 
 /-- A monoid in which multiplication is right-cancellative. -/
@@ -491,7 +491,7 @@ section CancelMonoid
 
 /-- An additive monoid in which addition is cancellative on both sides.
 Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
-is useful to define the sum over the empty set, so `add_right_cancel_semigroup` is not enough. -/
+is useful to define the sum over the empty set, so `AddRightCancelSemigroup` is not enough. -/
 class AddCancelMonoid (M : Type u) extends AddLeftCancelMonoid M, AddRightCancelMonoid M
 
 /-- A monoid in which multiplication is cancellative. -/
@@ -889,6 +889,7 @@ variable [CommGroup G]
 @[to_additive AddCommGroup.toAddCancelCommMonoid]
 instance (priority := 100) CommGroup.toCancelCommMonoid : CancelCommMonoid G :=
   { ‹CommGroup G›, Group.toCancelMonoid with }
+attribute [instance 100] AddCommGroup.toCancelCommMonoid -- FIXME
 
 -- TODO
 -- porting notes: Once to_additive works, we should not need to copy this attribute manually.
@@ -898,6 +899,7 @@ attribute [instance] AddCommGroup.toAddCancelCommMonoid
 @[to_additive AddCommGroup.toSubtractionCommMonoid]
 instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G :=
   { ‹CommGroup G›, Group.toDivisionMonoid with }
+attribute [instance 100] AddCommGroup.toDivisionCommMonoid -- FIXME
 
 -- TODO
 -- porting notes: Once to_additive works, we should not need to copy this attribute manually.
