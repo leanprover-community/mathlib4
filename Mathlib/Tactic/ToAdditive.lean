@@ -296,6 +296,7 @@ partial def transformDeclAux
     | _ => panic! "unreachable"
   if isNoncomputable env src then
     addDecl trgDecl.toDeclaration!
+    setEnv $ addNoncomputable (← getEnv) trgDecl.name
   else
     addAndCompile trgDecl.toDeclaration!
   -- now add declaration ranges so jump-to-definition works

@@ -139,6 +139,9 @@ def Foo.foo' : ℕ := 2
 
 #eval Bar.bar'
 
+run_cmd (do
+  if !isNoncomputable (← getEnv) `Bar.bar then throwError "bar shouldn't be computable"
+  if isNoncomputable (← getEnv) `Bar.bar' then throwError "bar' should be computable")
 end noncomputablee
 
 end Test
