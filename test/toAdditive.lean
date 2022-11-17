@@ -147,53 +147,44 @@ section guessName
 
 open ToAdditive
 
-def checkGuessName (s t : String) : Elab.Command.CommandElabM Unit := 
+def checkGuessName (s t : String) : Elab.Command.CommandElabM Unit :=
   unless guessName s == t do throwError "failed: {guessName s} != {t}"
 
-run_cmd  
+run_cmd
   checkGuessName "HMul_Eq_LEOne_Conj₂MulLT'" "HAdd_Eq_Nonpos_Conj₂AddLT'"
   checkGuessName "OneMulSmulInvDivPow"       "ZeroAddVaddNegSubNsmul"
   checkGuessName "ProdFinprodNpowZpow"       "SumFinsumNsmulZsmul"
 
--- The current design swaps all instances of `Comm`+`Add` in order to have
--- `AddCommMonoid` instead of `CommAddMonoid`.
-example : True := by
-  run_tac guard (guessName "comm_mul_CommMul_commMul" == "comm_add_AddComm_addComm")
-  run_tac guard (guessName "mul_comm_MulComm_mulComm" == "add_comm_AddComm_addComm")
-  run_tac guard (guessName "mul_single_eq_same" == "single_eq_same")
-  run_tac guard (guessName "mul_support" == "support")
-  run_tac guard (guessName "mul_tsupport" == "tsupport")
-  run_tac guard (guessName "mul_indicator" == "indicator")
-  trivial
+  -- The current design swaps all instances of `Comm`+`Add` in order to have
+  -- `AddCommMonoid` instead of `CommAddMonoid`.
+  checkGuessName "comm_mul_CommMul_commMul" "comm_add_AddComm_addComm"
+  checkGuessName "mul_comm_MulComm_mulComm" "add_comm_AddComm_addComm"
+  checkGuessName "mul_single_eq_same" "single_eq_same"
+  checkGuessName "mul_support" "support"
+  checkGuessName "mul_tsupport" "tsupport"
+  checkGuessName "mul_indicator" "indicator"
 
-example : True := by
-  run_tac guard (guessName "CommMonoid" == "AddCommMonoid")
-  run_tac guard (guessName "commMonoid" == "addCommMonoid")
-  trivial
+  checkGuessName "CommMonoid" "AddCommMonoid"
+  checkGuessName "commMonoid" "addCommMonoid"
 
-example : True := by
-  run_tac guard (guessName "CancelCommMonoid" == "AddCancelCommMonoid")
-  run_tac guard (guessName "cancelCommMonoid" == "addCancelCommMonoid")
-  run_tac guard (guessName "CancelMonoid"     == "AddCancelMonoid")
-  run_tac guard (guessName "cancelMonoid"     == "addCancelMonoid")
-  run_tac guard (guessName "RightCancelMonoid" == "AddRightCancelMonoid")
-  run_tac guard (guessName "rightCancelMonoid" == "addRightCancelMonoid")
-  run_tac guard (guessName "LeftCancelMonoid" == "AddLeftCancelMonoid")
-  run_tac guard (guessName "leftCancelMonoid" == "addLeftCancelMonoid")
-  trivial
+  checkGuessName "CancelCommMonoid" "AddCancelCommMonoid"
+  checkGuessName "cancelCommMonoid" "addCancelCommMonoid"
+  checkGuessName "CancelMonoid" "AddCancelMonoid"
+  checkGuessName "cancelMonoid" "addCancelMonoid"
+  checkGuessName "RightCancelMonoid" "AddRightCancelMonoid"
+  checkGuessName "rightCancelMonoid" "addRightCancelMonoid"
+  checkGuessName "LeftCancelMonoid" "AddLeftCancelMonoid"
+  checkGuessName "leftCancelMonoid" "addLeftCancelMonoid"
 
-example : True := by
-  run_tac guard (guessName "LTOne_LEOne_OneLE_OneLT" == "Neg_Nonpos_Nonneg_Pos")
-  trivial
+  checkGuessName "LTOne_LEOne_OneLE_OneLT" "Neg_Nonpos_Nonneg_Pos"
 
--- The current design splits this as `LTH, Mul, HPow, LEH, Div` before it translates.
--- This is kinda a bug.
-example : True := by
-  run_tac guard (guessName "LTHMulHPowLEHDiv" == "LTHAddHMulLEHSub")
-  run_tac guard (guessName "OneLEHMul" == "NonnegHAdd")
+  -- The current design splits this as `LTH, Mul, HPow, LEH, Div` before it translates.
+  -- This is kinda a bug.
+  checkGuessName "LTHMulHPowLEHDiv" "LTHAddHMulLEHSub"
+  checkGuessName "OneLEHMul" "NonnegHAdd"
+
   -- -- TODO: This fails at the moment:
-  -- run_tac guard (guessName "OneLTHPow" == "PosHMul")
-  trivial
+  -- checkGuessName "OneLTHPow" "PosHMul"
 
 end guessName
 
