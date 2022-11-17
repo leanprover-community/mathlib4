@@ -18,6 +18,7 @@ import Mathlib.Algebra.Order.Ring
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.Control.Basic
+import Mathlib.Control.Functor
 import Mathlib.Control.Random
 import Mathlib.Control.SimpSet
 import Mathlib.Control.Writer
