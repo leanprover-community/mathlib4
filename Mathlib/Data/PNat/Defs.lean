@@ -275,6 +275,7 @@ def divExact (m k : ℕ+) : ℕ+ :=
 
 end PNat
 
+-- Porting note: `lift` tactic is not implemented yet.
 /-
 section CanLift
 
