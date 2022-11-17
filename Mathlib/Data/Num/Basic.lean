@@ -667,17 +667,18 @@ end ZNum
 
 section
 
+set_option linter.deprecated false
 variable {α : Type _} [Zero α] [One α] [Add α] [Neg α]
 
 /-- `castZNum` casts a `ZNum` into any type which has `0`, `1`, `+` and `neg` -/
-def castZNum : ZNum → α
+@[deprecated] def castZNum : ZNum → α
   | 0 => 0
   | ZNum.pos p => p
   | ZNum.neg p => -p
 #align cast_znum castZNum
 
 -- see Note [coercion into rings]
-instance (priority := 900) znumCoe : CoeTC ZNum α :=
+@[deprecated] instance (priority := 900) znumCoe : CoeTC ZNum α :=
   ⟨castZNum⟩
 #align znum_coe znumCoe
 
