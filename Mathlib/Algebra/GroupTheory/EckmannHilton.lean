@@ -14,9 +14,9 @@ The main application lies in proving that higher homotopy groups (`πₙ` for `n
 
 ## Main declarations
 
-* `eckmann_hilton.CommMonoid`: If a type carries a unital magma structure that distributes
+* `EckmannHilton.CommMonoid`: If a type carries a unital magma structure that distributes
   over a unital binary operation, then the magma is a commutative monoid.
-* `eckmann_hilton.CommGroup`: If a type carries a group structure that distributes
+* `EckmannHilton.CommGroup`: If a type carries a group structure that distributes
   over a unital binary operation, then the group is commutative.
 
 -/
