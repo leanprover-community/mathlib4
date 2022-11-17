@@ -41,6 +41,7 @@ import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.PermuteGoals
+import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl
@@ -404,8 +405,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := deriveElementwiseProof) "derive_elementwise_proof" : tactic
 
 /- M -/ syntax (name := computeDegreeLE) "compute_degree_le" : tactic
-
-/- B -/ syntax (name := positivity) "positivity" : tactic
 
 /- E -/ syntax (name := qify) "qify" (simpArgs)? (ppSpace location)? : tactic
 

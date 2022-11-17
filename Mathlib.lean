@@ -155,6 +155,9 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.PermuteGoals
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Recover
