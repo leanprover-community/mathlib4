@@ -15,11 +15,6 @@ universe u v w
 
 variable {α β γ : Type u}
 
--- mathport name: «expr $< »
--- notation:1 a " $< " f:1 => f a
-/- the above notation doesn't appear *anywhere* in mathlib, and it is the same as the `|>` operator
-in Lean 4, except with a different binding precedence, so we just remove it. -/
-
 section Functor
 
 /- warning: functor.map_map -> Functor.map_map is a dubious translation:
