@@ -583,11 +583,13 @@ def mod' (n d : PosNum) : Num :=
   (divMod d n).2
 #align pos_num.mod' PosNum.mod'
 
+/-- Auxiliary definition for `sqrtAux`. -/
 private def sqrtAux1 (b : PosNum) (r n : Num) : Num × Num :=
   match Num.ofZNum' (n.sub' (r + Num.pos b)) with
   | some n' => (r.div2 + Num.pos b, n')
   | none => (r.div2, n)
 
+/-- Auxiliary definition for a `sqrt` function which is not currently implemented. -/
 private def sqrtAux : PosNum → Num → Num → Num
   | b@(bit0 b') => fun r n => let (r', n') := sqrtAux1 b r n; sqrtAux b' r' n'
   | b@(bit1 b') => fun r n => let (r', n') := sqrtAux1 b r n; sqrtAux b' r' n'
