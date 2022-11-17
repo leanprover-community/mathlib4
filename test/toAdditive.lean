@@ -41,8 +41,8 @@ theorem bar1_works : bar1 3 4 = 3 * 4 := by decide
 
 infix:80 " ^ " => my_has_pow.pow
 
-instance dummy_pow : my_has_pow ℕ $ PLift ℤ := ⟨fun x y => 0⟩
-instance dummy_smul : my_has_scalar (PLift ℤ) ℕ := ⟨fun x y => 0⟩
+instance dummy_pow : my_has_pow ℕ $ PLift ℤ := ⟨fun _ _ => 0⟩
+instance dummy_smul : my_has_scalar (PLift ℤ) ℕ := ⟨fun _ _ => 0⟩
 attribute [to_additive dummy_smul] dummy_pow
 
 set_option pp.universes true
@@ -109,6 +109,7 @@ run_cmd do
 --         = (add_units.mk_of_add_eq_zero 0 0 (by simp) : ℕ) :=
 -- by normCast
 
+@[nolint unusedArguments]
 def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f i)]
   [Add I] [Mul L] : true := by trivial
 
