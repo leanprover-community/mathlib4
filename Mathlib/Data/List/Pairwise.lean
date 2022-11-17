@@ -17,7 +17,7 @@ theorem pairwise_append_comm (s : Symmetric R) {l₁ l₂ : List α} :
     Pairwise R (l₁ ++ l₂) ↔ Pairwise R (l₂ ++ l₁) := by
   have : ∀ l₁ l₂ : List α, (∀ x : α, x ∈ l₁ → ∀ y : α, y ∈ l₂ → R x y) →
     ∀ x : α, x ∈ l₂ → ∀ y : α, y ∈ l₁ → R x y := fun l₁ l₂ a x xm y ym => s (a y ym x xm)
-  simp only [pairwise_append, and_left_comm] <;> rw [Iff.intro (this l₁ l₂) (this l₂ l₁)]
+  simp only [pairwise_append, and_left_comm]; rw [Iff.intro (this l₁ l₂) (this l₂ l₁)]
 
 theorem pairwise_middle (s : Symmetric R) {a : α} {l₁ l₂ : List α} :
     Pairwise R (l₁ ++ a :: l₂) ↔ Pairwise R (a :: (l₁ ++ l₂)) :=

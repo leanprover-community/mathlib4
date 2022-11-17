@@ -93,17 +93,6 @@ actual theorems in the files.
 
 #align fin.elim0 Fin.elim0ₓ
 
-/-! ## `init.data.int.basic` -/
-
--- TODO: backport?
-#align int.neg_succ_of_nat Int.negSucc
-
-/-! ## `init.data.int.order` -/
-
-#align int.nonneg Int.NonNeg
-#align int.le Int.le
-#align int.lt Int.lt
-
 /-! ## `init.data.int.comp_lemmas` -/
 
 /-! ## `init.data.int.default` -/
@@ -167,6 +156,11 @@ actual theorems in the files.
 #align punit_eq_star PUnit.eq_punit
 
 /-! ## `init.data.quot` -/
+
+/-! ## `init.data.random` -/
+
+#align std_next stdNextₓ -- this should be defeq but verification causes a stack overflow
+#align std_split stdSplitₓ
 
 /-! ## `init.data.repr` -/
 
