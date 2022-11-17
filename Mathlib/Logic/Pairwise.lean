@@ -15,7 +15,7 @@ This file defines pairwise relations.
 ## Main declarations
 
 * `Pairwise`: `Pairwise r` states that `r i j` for all `i ≠ j`.
-* `Set.pairwise`: `s.pairwise r` states that `r i j` for all `i ≠ j` with `i, j ∈ s`.
+* `Set.Pairwise`: `s.Pairwise r` states that `r i j` for all `i ≠ j` with `i, j ∈ s`.
 -/
 
 
@@ -74,7 +74,7 @@ theorem _root_.Reflexive.set_pairwise_iff (hr : Reflexive r) :
     s.Pairwise r ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b :=
   forall₄_congr fun a _ _ _ => or_iff_not_imp_left.symm.trans <| or_iff_right_of_imp <| Eq.ndrec <|
     hr a
-#align set._root_.reflexive.set_pairwise_iff set._root_.Reflexive.set_pairwise_iff
+#align reflexive.set_pairwise_iff Reflexive.set_pairwise_iff
 
 theorem Pairwise.on_injective (hs : s.Pairwise r) (hf : Function.Injective f) (hfs : ∀ x, f x ∈ s) :
     Pairwise (r on f) := fun i j hij => hs (hfs i) (hfs j) (hf.ne hij)
