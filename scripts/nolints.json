@@ -88,7 +88,7 @@
  ["docBlame", "AddLeftCancelMonoid.zero_add"],
  ["docBlame", "AddLeftCancelSemigroup.add_left_cancel"],
  ["docBlame", "AddMonoid.add_zero"],
- ["docBlame", "AddMonoid.hasSmulNat"],
+ ["docBlame", "AddMonoid.SMulNat"],
  ["docBlame", "AddMonoid.nsmul"],
  ["docBlame", "AddMonoid.nsmul_succ'"],
  ["docBlame", "AddMonoid.nsmul_zero'"],
