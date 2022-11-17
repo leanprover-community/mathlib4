@@ -1,14 +1,13 @@
 import Mathlib.Tactic.Abel
 
-variable {α : Type _}
+variable {α : Type _} {a b : α}
 
--- TODO restore tests for `abel` (and make better tests) when it is ported.
--- example [AddCommMonoid α] : a + (b + a) = a + a + b := by abel
--- example [AddCommGroup α] : (a + b) - ((b + a) + a) = -a := by abel
--- example [AddCommGroup α] (x : α) : x - 0 = x := by abel
--- example [AddCommMonoid α] (x : α) : (3 : ℕ) • a = a + (2 : ℕ) • a := by abel
--- example [AddCommGroup α] : (3 : ℤ) • a = a + (2 : ℤ) • a := by abel
--- example [AddCommGroup α] (a b : α) : a-2•b = a -2•b := by abel
+example [AddCommMonoid α] : a + (b + a) = a + a + b := by abel
+example [AddCommGroup α] : (a + b) - ((b + a) + a) = -a := by abel
+example [AddCommGroup α] (x : α) : x - 0 = x := by abel
+example [AddCommMonoid α] : (3 : ℕ) • a = a + (2 : ℕ) • a := by abel
+example [AddCommGroup α] : (3 : ℤ) • a = a + (2 : ℤ) • a := by abel
+example [AddCommGroup α] (a b : α) : a-2•b = a -2•b := by abel
 
 example [AddCommMonoid α] (a b : α) : a + (b + a) = a + a + b := by abel1
 example [AddCommGroup α] (a b : α) : (a + b) - ((b + a) + a) = -a := by abel1
