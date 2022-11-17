@@ -20,6 +20,7 @@ This structure supports `O(1)` `append` and `concat` operations on lists, making
 useful for append-heavy uses such as logging and pretty printing.
 -/
 
+namespace Std
 
 /-- Concatenates a list of difference lists to form a single difference list. Similar to
 `List.join`. -/
@@ -43,3 +44,5 @@ theorem DList_singleton {α : Type _} {a : α} : Std.DList.singleton a = DList.l
 theorem DList_lazy {α : Type _} {l : List α} : DList.lazy_OfList l = Std.DList.ofList l :=
   rfl
 #align dlist_lazy DList_lazy
+
+end Std
