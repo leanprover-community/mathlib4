@@ -764,7 +764,7 @@ def sigmaCongrRight {α} {β₁ β₂ : α → Type _} (F : ∀ a, β₁ a ≃ �
     congr_arg (Sigma.mk a) <| symm_apply_apply (F a) b, fun ⟨a, b⟩ =>
     congr_arg (Sigma.mk a) <| apply_symm_apply (F a) b⟩
 
-@[simp]
+-- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
 theorem sigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Type _}
     (F : ∀ a, β₁ a ≃ β₂ a) (G : ∀ a, β₂ a ≃ β₃ a) :
     (sigmaCongrRight F).trans (sigmaCongrRight G) = sigmaCongrRight fun a => (F a).trans (G a) := by
@@ -773,7 +773,7 @@ theorem sigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Type _}
   rfl
 #align equiv.sigmaCongrRight Equiv.sigmaCongrRight_trans
 
-@[simp]
+-- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
 theorem sigmaCongrRight_symm {α} {β₁ β₂ : α → Type _} (F : ∀ a, β₁ a ≃ β₂ a) :
     (sigmaCongrRight F).symm = sigmaCongrRight fun a => (F a).symm := by
   ext1 x
@@ -781,7 +781,7 @@ theorem sigmaCongrRight_symm {α} {β₁ β₂ : α → Type _} (F : ∀ a, β�
   rfl
 #align equiv.sigma_congr_right_symm Equiv.sigmaCongrRight_symm
 
-@[simp]
+-- Porting note: simp can now prove this, so I have removed `@[simp]`
 theorem sigmaCongrRight_refl {α} {β : α → Type _} :
     (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) := by
   ext1 x
