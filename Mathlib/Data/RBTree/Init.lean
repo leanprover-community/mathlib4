@@ -30,6 +30,8 @@ universe u v
 
 namespace RBTree
 
+/-- Note changed from `def` to `structure` to simplify the
+    previous autoparameter tactic issues -/
 @[deprecated Std.RBMap] structure RBTree (α : Type u) where
   mk :: (h: RBNode α) (cmp: α → α → Prop)
 
