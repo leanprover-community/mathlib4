@@ -38,6 +38,8 @@ import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.PermuteGoals
@@ -53,6 +55,7 @@ import Mathlib.Tactic.Replace
 import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.RunCmd
+import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro
@@ -199,15 +202,7 @@ macro ak:Term.attrKind "notation3"
 
 end Parser.Command
 
-namespace Parser.Term
-
-/- S -/ syntax "quoteₓ " term : term
-/- S -/ syntax "pquoteₓ " term : term
-/- S -/ syntax "ppquoteₓ " term : term
-/- S -/ syntax "%%ₓ" term : term
-
-end Term
-
+namespace Parser
 namespace Tactic
 
 /- S -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
@@ -219,8 +214,6 @@ namespace Tactic
 /- B -/ syntax (name := cc) "cc" : tactic
 
 /- M -/ syntax (name := unfoldProjs) "unfold_projs" (config)? (ppSpace location)? : tactic
-
-/- E -/ syntax (name := inferAutoParam) "infer_auto_param" : tactic
 
 /- S -/ syntax (name := rsimp) "rsimp" : tactic
 /- S -/ syntax (name := compVal) "comp_val" : tactic
@@ -335,8 +328,6 @@ syntax termList := " [" term,* "]"
 /- B -/ syntax (name := abel!) "abel!" (ppSpace (&"raw" <|> &"term"))? (ppSpace location)? : tactic
 
 /- E -/ syntax (name := noncommRing) "noncomm_ring" : tactic
-
-/- B -/ syntax (name := linearCombination) "linear_combination" (config)? (colGt term)? : tactic
 
 /- B -/ syntax (name := linarith) "linarith" (config)? (&" only")? (" [" term,* "]")? : tactic
 /- B -/ syntax (name := linarith!) "linarith!" (config)? (&" only")? (" [" term,* "]")? : tactic
@@ -486,31 +477,10 @@ end Attr
 namespace Command
 
 /- N -/ syntax (name := addTacticDoc) (docComment)? "add_tactic_doc " term : command
-/- N -/ syntax (name := addDeclDoc) docComment "add_decl_doc " ident : command
-
-/- S -/ syntax (name := setupTacticParser) "setup_tactic_parser" : command
-/- N -/ syntax (name := mkSimpAttribute) "mk_simp_attribute " ident
-  (" from" (ppSpace ident)+)? (" := " str)? : command
 
 /- M -/ syntax (name := addHintTactic) "add_hint_tactic " tactic : command
 
 /- S -/ syntax (name := explode) "#explode " ident : command
-
-syntax (name := localized) "localized " "[" ident "] " command : command
-macro_rules
-  | `(localized [$ns] notation $[$prec:precedence]? $[$n:namedName]? $[$prio:namedPrio]?
-       $sym => $t) =>
-    let ns := mkIdentFrom ns <| rootNamespace ++ ns.getId
-    `(with_weak_namespace $ns
-      scoped notation $[$prec:precedence]? $[$n:namedName]? $[$prio:namedPrio]? $sym => $t)
-  | `(localized [$ns] $_:attrKind $mixfixKind $prec:precedence $[$n:namedName]? $[$prio:namedPrio]?
-       $sym => $t) =>
-    let ns := mkIdentFrom ns <| rootNamespace ++ ns.getId
-    `(with_weak_namespace $ns
-      scoped $mixfixKind $prec:precedence $[$n:namedName]? $[$prio:namedPrio]? $sym => $t)
-  | `(localized [$ns] attribute [$attr:attr] $ids*) =>
-    let ns := mkIdentFrom ns <| rootNamespace ++ ns.getId
-    `(with_weak_namespace $ns attribute [scoped $attr:attr] $ids*)
 
 /- S -/ syntax (name := listUnusedDecls) "#list_unused_decls" : command
 
