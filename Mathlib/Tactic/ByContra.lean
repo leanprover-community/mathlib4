@@ -10,7 +10,7 @@ open Lean Lean.Parser Parser.Tactic Elab Command Elab.Tactic Meta
 
 /--
 If the target of the main goal is a proposition `p`,
-`by_contra'` reduces the goal to proving `false` using the additional hypothesis `this : ¬ p`.
+`by_contra'` reduces the goal to proving `False` using the additional hypothesis `this : ¬ p`.
 `by_contra' h` can be used to name the hypothesis `h : ¬ p`.
 The hypothesis `¬ p` will be negation normalized using `push_neg`.
 For instance, `¬ a < b` will be changed to `b ≤ a`.
@@ -20,34 +20,26 @@ The resulting hypothesis is the pre-normalized form, `q`.
 If the name `h` is not explicitly provided, then `this` will be used as name.
 This tactic uses classical reasoning.
 It is a variant on the tactic `by_contra`.
-Examples (IMPORTANT: these will not work until `push_neg` is implemented):
+Examples:
 ```lean
-example : 1 < 2 :=
-begin
-  by_contra' h,
-  -- h : 2 ≤ 1 ⊢ false
-end
-example : 1 < 2 :=
-begin
-  by_contra' h : ¬ 1 < 2,
-  -- h : ¬ 1 < 2 ⊢ false
-end
+example : 1 < 2 := by
+  by_contra' h
+  -- h : 2 ≤ 1 ⊢ False
+
+example : 1 < 2 := by
+  by_contra' h : ¬ 1 < 2
+  -- h : ¬ 1 < 2 ⊢ False
 ```
 -/
-syntax (name := byContra') "by_contra'" (ppSpace colGt ident)? Term.optType : tactic
+syntax (name := byContra') "by_contra'" (ppSpace colGt binderIdent)? Term.optType : tactic
 
 macro_rules
-  | `(tactic| by_contra') => `(tactic| (by_contra $(mkIdent `this); push_neg at this))
-  | `(tactic| by_contra' $e) => `(tactic| (by_contra $e; push_neg at ($e)))
-  | `(tactic| by_contra' $e : $y) => `(tactic|
-       (by_contra';
+  | `(tactic| by_contra'%$tk $[_%$under]? $[: $ty]?) =>
+    `(tactic| by_contra' $(mkIdentFrom (under.getD tk) `this (canonical := true)):ident $[: $ty]?)
+  | `(tactic| by_contra' $e:ident) => `(tactic| (by_contra $e:ident; push_neg at $e:ident))
+  | `(tactic| by_contra' $e:ident : $y) => `(tactic|
+       (by_contra' h;
         -- if the below `exact` call fails then this tactic should fail with the message
-        -- tactic failed: <goal type> and <type of this> are not definitionally equal
-        have $e : $y := by { push_neg; exact this };
-        clear this ) )
-  | `(tactic| by_contra' : $y) => `(tactic|
-       (by_contra';
-        -- if the below `exact` call fails then this tactic should fail with the message
-        -- tactic failed: <goal type> and <type of this> are not definitionally equal
-        have this : $y := by { push_neg; exact this };
-      ) )
+        -- tactic failed: <goal type> and <type of h> are not definitionally equal
+        have $e:ident : $y := by { push_neg; exact h };
+        clear h ) )

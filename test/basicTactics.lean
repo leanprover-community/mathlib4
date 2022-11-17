@@ -14,7 +14,7 @@ example (n : Nat) : Nat := by
   let m : Nat := 1
   guard_hyp m := 1
   guard_hyp m : Nat := 1
-  guard_target == Nat
+  guard_target = Nat
   exact 0
 
 example (a b : Nat) : a ≠ b → ¬ a = b := by

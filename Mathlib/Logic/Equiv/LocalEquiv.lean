@@ -27,13 +27,15 @@ elab (name := mfldSetTac) "mfld_set_tac" : tactic => withMainContext do
   let goalTy := (← instantiateMVars (← g.getDecl).type).getAppFnArgs
   match goalTy with
   | (``Eq, #[_ty, _e₁, _e₂]) =>
-    evalTactic (← `(tactic| apply Set.ext;  intro my_y; constructor <;> { intro h_my_y;
-                            try { simp only [*, mfld_simps] at h_my_y
-                                  simp only [*, mfld_simps] } }))
-  | (``Subset.subset, #[_ty, _inst, _e₁, _e₂]) =>
-    evalTactic (← `(tactic| intro my_y h_my_y;
-                            try { simp only [*, mfld_simps] at h_my_y
-                                  simp only [*, mfld_simps] }))
+    evalTactic (← `(tactic| (
+      apply Set.ext; intro my_y
+      constructor <;>
+        · intro h_my_y
+          try (simp only [*, mfld_simps] at h_my_y; simp only [*, mfld_simps]))))
+  | (``Subset, #[_ty, _inst, _e₁, _e₂]) =>
+    evalTactic (← `(tactic| (
+      intro my_y h_my_y
+      try (simp only [*, mfld_simps] at h_my_y; simp only [*, mfld_simps]))))
   | _ => throwError "goal should be an equality or an inclusion"
 
 attribute [mfld_simps] and_true eq_self_iff_true Function.comp_apply

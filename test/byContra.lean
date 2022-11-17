@@ -31,4 +31,4 @@ example (p : Prop) (bar : False) : ¬ ¬ ¬ ¬ ¬ ¬ P := by
 example (p : Prop) (bar : False) : ¬ ¬ ¬ ¬ ¬ ¬ P := by
   by_contra' : ¬ ¬ ¬ P
   guard_hyp this : ¬ ¬ ¬ P
-  exact bar -- my code creates a nameless goal `: ¬P`
+  exact bar

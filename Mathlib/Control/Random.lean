@@ -5,7 +5,7 @@ Authors: Henrik Böving
 -/
 import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Data.Int.Basic
+import Mathlib.Init.Data.Int.Order
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Nat.Basic
 
@@ -67,7 +67,8 @@ open Rand
 def rand (α : Type u) [Random α] [RandomGen g] : RandG g α := Random.random
 
 /-- Generate a random value of type `α` between `x` and `y` inclusive. -/
-def randBound (α : Type u) [Preorder α]  [BoundedRandom α] (lo hi : α) (h : lo ≤ hi) [RandomGen g] : RandG g {a // lo ≤ a ∧ a ≤ hi} :=
+def randBound (α : Type u) [Preorder α]  [BoundedRandom α] (lo hi : α) (h : lo ≤ hi) [RandomGen g] :
+    RandG g {a // lo ≤ a ∧ a ≤ hi} :=
   BoundedRandom.randomR lo hi h
 
 def randFin {n : Nat} [RandomGen g] : RandG g (Fin n.succ) :=

@@ -7,7 +7,7 @@ abbrev NoLints := Array (Name × Name)
 
 def readJsonFile (α) [FromJson α] (path : System.FilePath) : IO α := do
   let _ : MonadExceptOf String IO := ⟨throw ∘ IO.userError, fun x _ => x⟩
-  liftExcept <| fromJson? <|<- liftExcept <| Json.parse <|<- IO.FS.readFile path
+  liftExcept <| fromJson? <|← liftExcept <| Json.parse <|← IO.FS.readFile path
 
 def writeJsonFile (α) [ToJson α] (path : System.FilePath) (a : α) : IO Unit :=
   IO.FS.writeFile path <| toJson a |>.pretty
@@ -39,8 +39,8 @@ unsafe def main (args : List String) : IO Unit := do
     let state := {env}
     Prod.fst <$> (CoreM.toIO · ctx state) do
       let decls ← getDeclsInPackage `Mathlib
-      let linters ← getChecks (slow := true) (extra := []) (useOnly := false)
-      let results ← lintCore decls linters.toArray
+      let linters ← getChecks (slow := true) (useOnly := false)
+      let results ← lintCore decls linters
       if update then
         writeJsonFile NoLints nolintsFile <|
           .qsort (lt := fun (a,b) (c,d) => a.lt c || (a == c && b.lt d)) <|
@@ -53,7 +53,7 @@ unsafe def main (args : List String) : IO Unit := do
       if failed then
         let fmtResults ←
           formatLinterResults results decls (groupByFilename := true)
-            "in mathlib" (runSlowLinters := true) .medium linters.length
+            "in mathlib" (runSlowLinters := true) .medium linters.size
         IO.print (← fmtResults.toString)
         IO.Process.exit 1
       else

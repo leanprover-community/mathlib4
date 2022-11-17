@@ -7,10 +7,7 @@ import Lean.Attributes
 
 namespace Lean.Attr
 
-initialize reflAttr : TagAttribute ← registerTagAttribute `refl "reflexive relation"
-initialize symmAttr : TagAttribute ← registerTagAttribute `symm "symmetric relation"
-initialize transAttr : TagAttribute ← registerTagAttribute `trans "transitive relation"
 initialize substAttr : TagAttribute ← registerTagAttribute `subst "substitution"
 
 initialize hintTacticAttr : TagAttribute ←
-  registerTagAttribute `hintTactic "A tactic that should be tried by `hint`."
+  registerTagAttribute `hint_tactic "A tactic that should be tried by `hint`."

@@ -13,18 +13,17 @@ namespace Nat
 
 /- properties of inequality -/
 
-instance : LinearOrder ℕ :=
-{ le := Nat.le,
-  le_refl := @Nat.le_refl,
-  le_trans := @Nat.le_trans,
-  le_antisymm := @Nat.le_antisymm,
-  le_total := @Nat.le_total,
-  lt := Nat.lt,
-  lt_iff_le_not_le := @Nat.lt_iff_le_not_le,
-  decidable_lt               := inferInstance,
-  decidable_le               := inferInstance,
-  decidable_eq               := inferInstance }
-
+instance : LinearOrder ℕ where
+  le := Nat.le
+  le_refl := @Nat.le_refl
+  le_trans := @Nat.le_trans
+  le_antisymm := @Nat.le_antisymm
+  le_total := @Nat.le_total
+  lt := Nat.lt
+  lt_iff_le_not_le := @Nat.lt_iff_le_not_le
+  decidable_lt := inferInstance
+  decidable_le := inferInstance
+  decidable_eq := inferInstance
 
 /- TODO(Leo): sub + inequalities -/
 
@@ -32,8 +31,9 @@ protected def strong_rec_on {p : ℕ → Sort u}
   (n : ℕ) (H : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
 Nat.lt_wfRel.wf.fix' H n
 
-@[elabAsElim]
-protected lemma strong_induction_on {p : Nat → Prop} (n : Nat) (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
+@[elab_as_elim]
+protected lemma strong_induction_on {p : Nat → Prop} (n : Nat) (h : ∀ n, (∀ m, m < n → p m) → p n) :
+    p n :=
 Nat.strong_rec_on n h
 
 protected lemma case_strong_induction_on {p : Nat → Prop} (a : Nat)
@@ -143,8 +143,7 @@ end find
 lemma to_digits_core_lens_eq_aux (b f : Nat) :
   ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →
     (Nat.toDigitsCore b f n l1).length = (Nat.toDigitsCore b f n l2).length := by
-  induction f with
-    simp only [Nat.toDigitsCore, List.length] <;> intro n l1 l2 hlen
+  induction f with (simp only [Nat.toDigitsCore, List.length]; intro n l1 l2 hlen)
   | zero => assumption
   | succ f ih =>
     by_cases hx : n / b = 0
@@ -157,8 +156,7 @@ lemma to_digits_core_lens_eq_aux (b f : Nat) :
 
 lemma to_digits_core_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Char),
     (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1 := by
-  induction f with
-    intro n c tl <;> simp only [Nat.toDigitsCore, List.length]
+  induction f with (intro n c tl; simp only [Nat.toDigitsCore, List.length])
   | succ f ih =>
     by_cases hnb : (n / b) = 0
     case pos => simp only [hnb, if_true, List.length]
@@ -167,7 +165,7 @@ lemma to_digits_core_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List C
       simp only [hx, hnb, if_false] at ih
       simp only [hnb, if_false]
       specialize ih (n / b) c (x :: tl)
-      rw [<- ih]
+      rw [← ih]
       have lens_eq : (x :: (c :: tl)).length = (c :: x :: tl).length := by simp
       apply to_digits_core_lens_eq_aux
       exact lens_eq

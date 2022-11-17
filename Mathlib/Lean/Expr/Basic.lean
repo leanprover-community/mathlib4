@@ -129,7 +129,8 @@ def modifyRevArg (modifier : Expr → Expr): Nat → Expr  → Expr
   | 0 => modifyAppArg modifier
   | (i+1) => modifyAppArg (modifyRevArg modifier i)
 
-/-- Given `f a₀ a₁ ... aₙ₋₁`, runs `modifier` on the `i`th argument or returns the original expression if out of bounds. -/
+/-- Given `f a₀ a₁ ... aₙ₋₁`, runs `modifier` on the `i`th argument or
+returns the original expression if out of bounds. -/
 def modifyArg (modifier : Expr → Expr) (e : Expr) (i : Nat) (n := e.getAppNumArgs) : Expr :=
   modifyRevArg modifier (n - i - 1) e
 
@@ -144,7 +145,8 @@ def getArg? (e : Expr) (i : Nat) (n := e.getAppNumArgs): Option Expr :=
 
 /-- Given `f a₀ a₁ ... aₙ₋₁`, runs `modifier` on the `i`th argument.
 An argument `n` may be provided which says how many arguments we are expecting `e` to have. -/
-def modifyArgM [Monad M] (modifier : Expr → M Expr) (e : Expr) (i : Nat) (n := e.getAppNumArgs) : M Expr := do
+def modifyArgM [Monad M] (modifier : Expr → M Expr) (e : Expr) (i : Nat) (n := e.getAppNumArgs) :
+    M Expr := do
   let some a := getArg? e i | return e
   let a ← modifier a
   return modifyArg (fun _ => a) e i n
@@ -158,6 +160,28 @@ def renameBVar (e : Expr) (old new : Name) : Expr :=
   | forallE n ty bd bi =>
     forallE (if n == old then new else n) (ty.renameBVar old new) (bd.renameBVar old new) bi
   | e => e
+
+open Lean.Meta in
+/-- `getBinderName e` returns `some n` if `e` is an expression of the form `∀ n, ...`
+and `none` otherwise. -/
+def getBinderName (e : Expr) : MetaM (Option Name) := do
+  match ← withReducible (whnf e) with
+  | .forallE (binderName := n) .. | .lam (binderName := n) .. => pure (some n)
+  | _ => pure none
+
+open Lean.Elab.Term
+/-- Annotates a `binderIdent` with the binder information from an `fvar`. -/
+def addLocalVarInfoForBinderIdent (fvar : Expr) : TSyntax ``binderIdent → TermElabM Unit
+| `(binderIdent| $n:ident) => Elab.Term.addLocalVarInfo n fvar
+| tk => Elab.Term.addLocalVarInfo (Unhygienic.run `(_%$tk)) fvar
+
+/-- Converts an `Expr` into a `Syntax`, by creating a fresh metavariable
+assigned to the expr and  returning a named metavariable syntax `?a`. -/
+def toSyntax (e : Expr) : TermElabM Syntax.Term := withFreshMacroScope do
+  let stx ← `(?a)
+  let mvar ← elabTermEnsuringType stx (← Meta.inferType e)
+  mvar.mvarId!.assign e
+  pure stx
 
 end Expr
 

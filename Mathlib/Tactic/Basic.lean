@@ -5,12 +5,14 @@ Authors: Mario Carneiro
 -/
 import Lean
 import Std
+import Mathlib.Tactic.Cases
 
+namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
 syntax (name := «variables») "variables" (bracketedBinder)* : command
 
-@[commandElab «variables»] def elabVariables : CommandElab
+@[command_elab «variables»] def elabVariables : CommandElab
   | `(variables%$pos $binders*) => do
     logWarningAt pos "'variables' has been replaced by 'variable' in lean 4"
     elabVariable (← `(variable%$pos $binders*))
@@ -29,10 +31,7 @@ macro_rules
 resulting in two subgoals `h : p ⊢` and `h : ¬ p ⊢`.
 -/
 macro "by_cases " e:term : tactic =>
-  `(by_cases $(mkIdent `h) : $e)
-
-macro (name := classical) "classical" : tactic =>
-  `(have em := Classical.propDecidable)
+  `(tactic| by_cases $(mkIdent `h) : $e)
 
 syntax "transitivity" (colGt term)? : tactic
 set_option hygiene false in
@@ -100,30 +99,13 @@ where
       pure [goal]
 
 /-- Try calling `assumption` on all goals; succeeds if it closes at least one goal. -/
-macro "assumption'" : tactic => `(any_goals assumption)
+macro "assumption'" : tactic => `(tactic| any_goals assumption)
 
 elab "match_target" t:term : tactic  => do
   withMainContext do
     let (val) ← elabTerm t (← inferType (← getMainTarget))
     if not (← isDefEq val (← getMainTarget)) then
       throwError "failed"
-
-elab "any_goals " seq:tacticSeq : tactic => do
-  let goals ← getGoals
-  let mut goalsNew := #[]
-  let mut anySuccess := false
-  for goal in goals do
-    if ← goal.isAssigned then continue
-    setGoals [goal]
-    try
-      evalTactic seq
-      goalsNew := goalsNew ++ (← getUnsolvedGoals)
-      anySuccess := true
-    catch _ =>
-      goalsNew := goalsNew.push goal
-  unless anySuccess do
-    throwError "failed on all goals"
-  setGoals goalsNew.toList
 
 /-- This tactic clears all auxiliary declarations from the context. -/
 elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
