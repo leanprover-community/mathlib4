@@ -99,6 +99,7 @@ theorem le_map_div_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAd
 
 namespace Mathlib.Meta.Positivity
 
+--Porting note: tactic extension commented as decided in the weekly porting meeting
 -- /-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
 -- @[positivity _ _]
 -- unsafe def positivity_map : expr → tactic strictness
