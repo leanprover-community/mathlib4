@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.NeZero
 
 /-!
 # Typeclasses for groups with an adjoined zero element
@@ -181,3 +182,9 @@ theorem cast_negSucc [AddGroupWithOne R] :
   erw [cast_ofNat, Nat.cast_one]
 
 end Int
+
+section NeZero
+
+attribute [field_simps] two_ne_zero three_ne_zero four_ne_zero
+
+end NeZero

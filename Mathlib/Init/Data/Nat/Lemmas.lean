@@ -143,8 +143,7 @@ end find
 lemma to_digits_core_lens_eq_aux (b f : Nat) :
   ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →
     (Nat.toDigitsCore b f n l1).length = (Nat.toDigitsCore b f n l2).length := by
-  induction f with
-    simp only [Nat.toDigitsCore, List.length] <;> intro n l1 l2 hlen
+  induction f with (simp only [Nat.toDigitsCore, List.length]; intro n l1 l2 hlen)
   | zero => assumption
   | succ f ih =>
     by_cases hx : n / b = 0
@@ -157,8 +156,7 @@ lemma to_digits_core_lens_eq_aux (b f : Nat) :
 
 lemma to_digits_core_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Char),
     (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1 := by
-  induction f with
-    intro n c tl <;> simp only [Nat.toDigitsCore, List.length]
+  induction f with (intro n c tl; simp only [Nat.toDigitsCore, List.length])
   | succ f ih =>
     by_cases hnb : (n / b) = 0
     case pos => simp only [hnb, if_true, List.length]
