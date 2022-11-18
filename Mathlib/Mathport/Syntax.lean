@@ -40,6 +40,7 @@ import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.PermuteGoals
@@ -398,9 +399,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- E -/ syntax (name := qify) "qify" (simpArgs)? (ppSpace location)? : tactic
 
 /- S -/ syntax (name := mkDecorations) "mk_decorations" : tactic
-
-/- M -/ syntax (name := nontriviality) "nontriviality"
-  (ppSpace (colGt term))? (" using " simpArg,+)? : tactic
 
 /- M -/ syntax (name := filterUpwards) "filter_upwards" (termList)?
   (" with" term:max*)? (" using" term)? : tactic
