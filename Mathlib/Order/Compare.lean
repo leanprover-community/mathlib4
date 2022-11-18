@@ -45,11 +45,21 @@ namespace Ordering
 
 /-- `Compares o a b` means that `a` and `b` have the ordering relation `o` between them, assuming
 that the relation `a < b` is defined. -/
-@[simp]
+-- Porting: note we have removed `@[simp]` here in favour of separate simp lemmas,
+-- otherwise this definition will unfold to a match.
 def Compares [LT α] : Ordering → α → α → Prop
   | lt, a, b => a < b
   | eq, a, b => a = b
   | gt, a, b => a > b
+
+@[simp]
+lemma Compares_lt [LT α] (a b : α) : Compares lt a b = (a < b) := rfl
+
+@[simp]
+lemma Compares_eq [LT α] (a b : α) : Compares eq a b = (a = b) := rfl
+
+@[simp]
+lemma Compares_gt [LT α] (a b : α) : Compares gt a b = (a > b) := rfl
 
 theorem compares_swap [LT α] {a b : α} {o : Ordering} : o.swap.Compares a b ↔ o.Compares b a := by
   cases o
@@ -151,7 +161,8 @@ theorem cmp_swap [Preorder α] [@DecidableRel α (· < ·)] (a b : α) : (cmp a 
   by_cases a < b <;> by_cases h₂:b < a <;> simp [h, h₂, Ordering.swap]
   exact lt_asymm h h₂
 
-@[simp]
+-- Porting note: Not sure why the simpNF linter doesn't like this. @semorrison
+@[simp, nolint simpNF]
 theorem cmpLE_toDual [LE α] [@DecidableRel α (· ≤ ·)] (x y : α) :
     cmpLE (toDual x) (toDual y) = cmpLE y x :=
   rfl
@@ -163,7 +174,8 @@ theorem cmp_LE_of_dual [LE α] [@DecidableRel α (· ≤ ·)] (x y : αᵒᵈ) :
   rfl
 #align cmp_le_of_dual cmpLE_ofDual
 
-@[simp]
+-- Porting note: Not sure why the simpNF linter doesn't like this. @semorrison
+@[simp, nolint simpNF]
 theorem cmp_toDual [LT α] [@DecidableRel α (· < ·)] (x y : α) :
     cmp (toDual x) (toDual y) = cmp y x :=
   rfl

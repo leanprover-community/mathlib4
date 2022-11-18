@@ -213,22 +213,25 @@ theorem IsOrderConnected.neg_trans {r : α → α → Prop} [IsOrderConnected α
     (h₁ : ¬r a b) (h₂ : ¬r b c) : ¬r a c :=
   mt (IsOrderConnected.conn a b c) <| by simp [h₁, h₂]
 
-theorem is_strict_weak_order_of_is_order_connected [IsAsymm α r] [IsOrderConnected α r] :
+theorem isStrictWeakOrder_of_isOrderConnected [IsAsymm α r] [IsOrderConnected α r] :
     IsStrictWeakOrder α r :=
   { @IsAsymm.is_irrefl α r _ with
     trans := fun _ _ c h₁ h₂ => (IsOrderConnected.conn _ c _ h₁).resolve_right (asymm h₂),
     incomp_trans := fun _ _ _ ⟨h₁, h₂⟩ ⟨h₃, h₄⟩ =>
       ⟨IsOrderConnected.neg_trans h₁ h₃, IsOrderConnected.neg_trans h₄ h₂⟩ }
+#align is_strict_weak_order_of_is_order_connected isStrictWeakOrder_of_isOrderConnected
 
 -- see Note [lower instance priority]
-instance (priority := 100) is_order_connected_of_is_strict_total_order [IsStrictTotalOrder α r] :
+instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStrictTotalOrder α r] :
     IsOrderConnected α r :=
   ⟨λ _ _ _ h => (trichotomous _ _).imp_right fun o => o.elim (fun e => e ▸ h) fun h' => trans h' h⟩
+#align is_order_connected_of_is_strict_total_order isStrictOrderConnected_of_isStrictTotalOrder
 
 -- see Note [lower instance priority]
-instance (priority := 100) is_strict_weak_order_of_is_strict_total_order [IsStrictTotalOrder α r] :
+instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTotalOrder α r] :
     IsStrictWeakOrder α r :=
-  { is_strict_weak_order_of_is_order_connected with }
+  { isStrictWeakOrder_of_isOrderConnected with }
+#align is_strict_weak_order_of_is_strict_total_order isStrictTotalOrder_of_isStrictTotalOrder
 
 /-! ### Well-order -/
 
@@ -272,7 +275,7 @@ noncomputable
 def fix {C : α → Sort _} : (∀ x : α, (∀ y : α, r y x → C y) → C x) → ∀ x : α, C x :=
   wf.fix
 
-/-- The value from `is_well_founded.fix` is built from the previous ones as specified. -/
+/-- The value from `IsWellFounded.fix` is built from the previous ones as specified. -/
 theorem fix_eq {C : α → Sort _} (F : ∀ x : α, (∀ y : α, r y x → C y) → C x) :
     ∀ x, fix r F x = F x fun y _ => fix r F y :=
   wf.fix_eq F
@@ -454,8 +457,6 @@ instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Le
 instance (r : α → α → Prop) [IsWellFounded α r] (f : β → α) : IsWellFounded _ (InvImage r f) :=
   ⟨InvImage.wf f IsWellFounded.wf⟩
 
--- TODO: How to align this?
--- it was `⟨measure_wf f⟩` before
 instance (f : α → ℕ) : IsWellFounded _ (Measure f) :=
   ⟨(measure f).wf⟩
 
@@ -802,7 +803,8 @@ instance OrderDual.is_total_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal α
 instance : WellFoundedLt ℕ :=
   ⟨Nat.lt_wfRel.wf⟩
 
-instance Nat.lt.is_well_order : IsWellOrder ℕ (· < ·) where
+instance Nat.lt.isWellOrder : IsWellOrder ℕ (· < ·) where
+#align nat.lt.is_well_order Nat.lt.isWellOrder
 
 instance [LinearOrder α] [h : IsWellOrder α (· < ·)] : IsWellOrder αᵒᵈ (· > ·) :=
   h
