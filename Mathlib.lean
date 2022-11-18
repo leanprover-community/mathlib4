@@ -985,6 +985,7 @@ import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.SetTheory.Ordinal.NaturalOps
 import Mathlib.SetTheory.Ordinal.Topology
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.AddTacticDoc
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyWith
