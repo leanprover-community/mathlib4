@@ -299,7 +299,7 @@ theorem add_overlap_pf (x : R) (e) (pq_pf : a + b = c) :
 
 theorem add_overlap_pf_zero (x : R) (e) :
     IsNat (a + b) (nat_lit 0) → IsNat (x ^ e * a + x ^ e * b) (nat_lit 0)
-  | ⟨h⟩ => ⟨by simp [h, ← mul_add, Nat.cast_zero]⟩
+  | ⟨h⟩ => ⟨by simp [h, ← mul_add]⟩
 
 /--
 Given monomials `va, vb`, attempts to add them together to get another monomial.
@@ -368,9 +368,9 @@ partial def evalAdd (va : ExSum sα a) (vb : ExSum sα b) : Result (ExSum sα) q
         let ⟨_c, vc, (pc : Q($a₁ + $_a₂ + $_b₂ = $_c))⟩ := evalAdd va vb₂
         ⟨_, .add vb₁ vc, q(add_pf_add_gt $b₁ $pc)⟩
 
-theorem one_mul (a : R) : (nat_lit 1).rawCast * a = a := by simp [Nat.rawCast, Nat.cast_zero]
+theorem one_mul (a : R) : (nat_lit 1).rawCast * a = a := by simp [Nat.rawCast]
 
-theorem mul_one (a : R) : a * (nat_lit 1).rawCast = a := by simp [Nat.rawCast, Nat.cast_zero]
+theorem mul_one (a : R) : a * (nat_lit 1).rawCast = a := by simp [Nat.rawCast]
 
 theorem mul_pf_left (a₁ : R) (a₂) (_ : a₃ * b = c) : (a₁ ^ a₂ * a₃ : R) * b = a₁ ^ a₂ * c := by
   subst_vars; rw [mul_assoc]
@@ -468,7 +468,7 @@ theorem nat_cast_mul (a₂) (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₃ : ℕ) :
 theorem nat_cast_zero : ((0 : ℕ) : R) = 0 := Nat.cast_zero
 
 theorem nat_cast_add (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : ℕ) : R) = b₂) :
-    ((a₁ + a₂ : ℕ) : R) = b₁ + b₂ := by subst_vars; simp [Nat.cast_add]
+    ((a₁ + a₂ : ℕ) : R) = b₁ + b₂ := by subst_vars; simp
 
 mutual
 
@@ -539,7 +539,7 @@ def evalNSMul (va : ExSum sℕ a) (vb : ExSum sα b) : RingM (Result (ExSum sα)
     pure ⟨_, vc, (q(smul_eq_cast $pa' $pc) : Expr)⟩
 
 theorem neg_one_mul {R} [Ring R] {a b : R} (_ : (Int.negOfNat (nat_lit 1)).rawCast * a = b) :
-    -a = b := by subst_vars; simp [Int.negOfNat, Nat.cast_zero]
+    -a = b := by subst_vars; simp [Int.negOfNat]
 
 theorem neg_mul {R} [Ring R] (a₁ : R) (a₂) {a₃ b : R}
     (_ : -a₃ = b) : -(a₁ ^ a₂ * a₃) = a₁ ^ a₂ * b := by subst_vars; simp
@@ -593,8 +593,7 @@ def evalSub (rα : Q(Ring $α)) (va : ExSum sα a) (vb : ExSum sα b) : Result (
   let ⟨d, vd, (pd : Q($a + $_c = $d))⟩ := evalAdd sα va vc
   ⟨d, vd, (q(sub_pf $pc $pd) : Expr)⟩
 
-theorem pow_prod_atom (a : R) (b) : a ^ b = (a + 0) ^ b * (nat_lit 1).rawCast := by
-  simp [Nat.cast_zero]
+theorem pow_prod_atom (a : R) (b) : a ^ b = (a + 0) ^ b * (nat_lit 1).rawCast := by simp
 
 /--
 The fallback case for exponentiating polynomials is to use `ExBase.toProd` to just build an
@@ -606,7 +605,7 @@ the input types are different.)
 def evalPowProdAtom (va : ExProd sα a) (vb : ExProd sℕ b) : Result (ExProd sα) q($a ^ $b) :=
   ⟨_, (ExBase.sum va.toSum).toProd vb, q(pow_prod_atom $a $b)⟩
 
-theorem pow_atom (a : R) (b) : a ^ b = a ^ b * (nat_lit 1).rawCast + 0 := by simp [Nat.cast_zero]
+theorem pow_atom (a : R) (b) : a ^ b = a ^ b * (nat_lit 1).rawCast + 0 := by simp
 
 /--
 The fallback case for exponentiating polynomials is to use `ExBase.toProd` to just build an
@@ -705,8 +704,7 @@ partial def evalPowNat (va : ExSum sα a) (n : Q(ℕ)) : Result (ExSum sα) q($a
       let ⟨_, vd, pd⟩ := evalMul sα vc va
       ⟨_, vd, (q(pow_bit1 $pb $pc $pd) : Expr)⟩
 
-theorem one_pow (b : ℕ) : ((nat_lit 1).rawCast : R) ^ b = (nat_lit 1).rawCast := by
-  simp [Nat.cast_zero]
+theorem one_pow (b : ℕ) : ((nat_lit 1).rawCast : R) ^ b = (nat_lit 1).rawCast := by simp
 
 theorem mul_pow (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂) :
     (xa₁ ^ ea₁ * a₂ : R) ^ b = xa₁ ^ c₁ * c₂ := by subst_vars; simp [_root_.mul_pow, pow_mul]
@@ -807,7 +805,7 @@ partial def evalPow₁ (va : ExSum sα a) (vb : ExProd sℕ b) : Result (ExSum s
       ⟨_, ve, q(pow_nat $pc $pd $pe)⟩
     else evalPowAtom sα (.sum va) vb
 
-theorem pow_zero (a : R) : a ^ 0 = (nat_lit 1).rawCast + 0 := by simp [Nat.cast_zero]
+theorem pow_zero (a : R) : a ^ 0 = (nat_lit 1).rawCast + 0 := by simp
 
 theorem pow_add (_ : a ^ b₁ = c₁) (_ : a ^ b₂ = c₂) (_ : c₁ * c₂ = d) :
   (a : R) ^ (b₁ + b₂) = d := by subst_vars; simp [_root_.pow_add]
@@ -835,7 +833,7 @@ theorem cast_pos : IsNat (a : R) n → a = n.rawCast + 0
   | ⟨e⟩ => by simp [e]
 
 theorem cast_zero : IsNat (a : R) (nat_lit 0) → a = 0
-  | ⟨e⟩ => by simp [e, Nat.cast_zero]
+  | ⟨e⟩ => by simp [e]
 
 theorem cast_neg [Ring R] : IsInt (a : R) (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
   | ⟨e⟩ => by simp [e]
@@ -857,10 +855,9 @@ def evalCast : NormNum.Result e → Option (Result (ExSum sα) e)
     pure ⟨_, (ExProd.mkNegNat _ rα lit.natLit!).2.toSum, (q(cast_neg $p) : Expr)⟩
   | _ => none
 
-theorem atom_pf (a : R) : a = a ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast + 0 := by
-  simp [Nat.cast_zero]
+theorem atom_pf (a : R) : a = a ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast + 0 := by simp
 theorem atom_pf' (p : (a : R) = a') :
-    a = a' ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast + 0 := by simp [*, Nat.cast_zero]
+    a = a' ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast + 0 := by simp [*]
 
 /--
 Evaluates an atom, an expression where `ring` can find no additional structure.
