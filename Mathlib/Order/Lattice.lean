@@ -343,17 +343,22 @@ class SemilatticeInf (α : Type u) extends HasInf α, PartialOrder α where
   protected le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ b ⊓ c
 #align semilattice_inf SemilatticeInf
 
-instance (α) [SemilatticeInf α] : SemilatticeSup αᵒᵈ :=
-  { OrderDual.partialOrder α, OrderDual.hasSup α with
-    le_sup_left := SemilatticeInf.inf_le_left,
-    le_sup_right := SemilatticeInf.inf_le_right,
-    sup_le := fun a b c hca hcb => @SemilatticeInf.le_inf α _ _ _ _ hca hcb }
+instance OrderDual.semilatticeSup (α) [SemilatticeInf α] : SemilatticeSup αᵒᵈ where
+  __ := inferInstanceAs (PartialOrder αᵒᵈ)
+  __ := inferInstanceAs (HasSup αᵒᵈ)
+  le_sup_left := @SemilatticeInf.inf_le_left α _
+  le_sup_right := @SemilatticeInf.inf_le_right α _
+  sup_le := fun _ _ _ hca hcb => @SemilatticeInf.le_inf α _ _ _ _ hca hcb
 
-instance (α) [SemilatticeSup α] : SemilatticeInf αᵒᵈ :=
-  { OrderDual.partialOrder α, OrderDual.hasInf α with inf_le_left := @le_sup_left α _,
-    inf_le_right := @le_sup_right α _, le_inf := fun a b c hca hcb => @sup_le α _ _ _ _ hca hcb }
+instance OrderDual.semilatticeInf (α) [SemilatticeSup α] : SemilatticeInf αᵒᵈ where
+  __ := inferInstanceAs (PartialOrder αᵒᵈ)
+  __ := inferInstanceAs (HasInf αᵒᵈ)
+  inf_le_left := @le_sup_left α _
+  inf_le_right := @le_sup_right α _
+  le_inf := fun _ _ _ hca hcb => @sup_le α _ _ _ _ hca hcb
 
-theorem SemilatticeSup.dual_dual (α : Type _) [H : SemilatticeSup α] : OrderDual.semilatticeSup αᵒᵈ = H :=
+theorem SemilatticeSup.dual_dual (α : Type _) [H : SemilatticeSup α] :
+  OrderDual.semilatticeSup αᵒᵈ = H :=
   SemilatticeSup.ext $ fun _ _ => Iff.rfl
 #align semilattice_sup.dual_dual SemilatticeSup.dual_dual
 
@@ -556,7 +561,8 @@ theorem SemilatticeInf.ext {α} {A B : SemilatticeInf α}
   injection this <;> congr
 #align semilattice_inf.ext SemilatticeInf.ext
 
-theorem SemilatticeInf.dual_dual (α : Type _) [H : SemilatticeInf α] : OrderDual.semilatticeInf αᵒᵈ = H :=
+theorem SemilatticeInf.dual_dual (α : Type _) [H : SemilatticeInf α] :
+  OrderDual.semilatticeInf αᵒᵈ = H :=
   SemilatticeInf.ext $ fun _ _ => Iff.rfl
 #align semilattice_inf.dual_dual SemilatticeInf.dual_dual
 
@@ -754,8 +760,9 @@ theorem inf_sup_left : x ⊓ (y ⊔ z) = x ⊓ y ⊔ x ⊓ z :=
 
 #align inf_sup_left inf_sup_left
 
-instance (α : Type _) [DistribLattice α] : DistribLattice αᵒᵈ :=
-  { OrderDual.lattice α with le_sup_inf := fun x y z => le_of_eq inf_sup_left.symm }
+instance OrderDual.distribLattice (α : Type _) [DistribLattice α] : DistribLattice αᵒᵈ where
+  __ := inferInstanceAs (Lattice αᵒᵈ)
+  le_sup_inf := fun _ _ _ => le_of_eq (@inf_sup_left α).symm
 
 theorem inf_sup_right : (y ⊔ z) ⊓ x = y ⊓ x ⊔ z ⊓ x := by
   simp only [inf_sup_left, fun y : α => @inf_comm α _ y x, eq_self_iff_true]
@@ -780,11 +787,18 @@ theorem eq_of_inf_eq_sup_eq {α : Type u} [DistribLattice α] {a b c : α} (h₁
 
 end DistribLattice
 
+def DistribLattice.ofInfSupLe_aux [Lattice α] (inf_sup_le : ∀ a b c : α, a ⊓ (b ⊔ c) ≤ a ⊓ b ⊔ a ⊓ c) :
+  DistribLattice α where
+  __ := inferInstanceAs (Lattice αᵒᵈ)
+  le_sup_inf := inf_sup_le
+
 -- See note [reducible non-instances]
 /-- Prove distributivity of an existing lattice from the dual distributive law. -/
 @[reducible]
-def DistribLattice.ofInfSupLe [Lattice α] (inf_sup_le : ∀ a b c : α, a ⊓ (b ⊔ c) ≤ a ⊓ b ⊔ a ⊓ c) : DistribLattice α :=
-  { ‹Lattice α›, @OrderDual.distribLattice αᵒᵈ { OrderDual.lattice _ with le_sup_inf := inf_sup_le } with }
+def DistribLattice.ofInfSupLe [Lattice α] (inf_sup_le : ∀ a b c : α, a ⊓ (b ⊔ c) ≤ a ⊓ b ⊔ a ⊓ c) :
+  DistribLattice α where
+  __ := inferInstanceAs (Lattice αᵒᵈ)
+  __ := @OrderDual.distribLattice αᵒᵈ (DistribLattice.ofInfSupLe_aux inf_sup_le)
 #align distrib_lattice.of_inf_sup_le DistribLattice.ofInfSupLe
 
 /-!
@@ -818,15 +832,19 @@ theorem sup_ind (a b : α) {p : α → Prop} (ha : p a) (hb : p b) : p (a ⊔ b)
 #align sup_ind sup_ind
 
 @[simp]
-theorem le_sup_iff : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c :=
-  ⟨fun h =>
+theorem le_sup_iff : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c := by
+  -- Porting note: why is this necessary?
+  have := inferInstanceAs (IsTotal α (· ≤ ·))
+  exact ⟨fun h =>
     (total_of (· ≤ ·) c b).imp (fun bc => by rwa [sup_eq_left.2 bc] at h) fun bc => by rwa [sup_eq_right.2 bc] at h,
     fun h => h.elim le_sup_of_le_left le_sup_of_le_right⟩
 #align le_sup_iff le_sup_iff
 
 @[simp]
-theorem lt_sup_iff : a < b ⊔ c ↔ a < b ∨ a < c :=
-  ⟨fun h =>
+theorem lt_sup_iff : a < b ⊔ c ↔ a < b ∨ a < c := by
+  -- Porting note: why is this necessary?
+  have := inferInstanceAs (IsTotal α (· ≤ ·))
+  exact ⟨fun h =>
     (total_of (· ≤ ·) c b).imp (fun bc => by rwa [sup_eq_left.2 bc] at h) fun bc => by rwa [sup_eq_right.2 bc] at h,
     fun h => h.elim lt_sup_of_lt_left lt_sup_of_lt_right⟩
 #align lt_sup_iff lt_sup_iff
@@ -1276,10 +1294,10 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected def semilatticeSup [SemilatticeSup α] {P : α → Prop} (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) :
     SemilatticeSup { x : α // P x } :=
-  { Subtype.partialOrder P with
+  { inferInstanceAs (PartialOrder (Subtype P)) with
     sup := fun x y => ⟨x.1 ⊔ y.1, Psup x.2 y.2⟩,
     le_sup_left := fun x y => @le_sup_left _ _ (x : α) y, le_sup_right := fun x y => @le_sup_right _ _ (x : α) y,
-    sup_le := fun x y z h1 h2 => @sup_le α _ _ _ _ h1 h2 }
+    sup_le := fun _ _ _ h1 h2 => @sup_le α _ _ _ _ h1 h2 }
 #align subtype.semilattice_sup Subtype.semilatticeSup
 
 /-- A subtype forms a `⊓`-semilattice if `⊓` preserves the property.
@@ -1287,9 +1305,10 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected def semilatticeInf [SemilatticeInf α] {P : α → Prop} (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) :
     SemilatticeInf { x : α // P x } :=
-  { Subtype.partialOrder P with inf := fun x y => ⟨x.1 ⊓ y.1, Pinf x.2 y.2⟩,
+  { inferInstanceAs (PartialOrder (Subtype P)) with
+    inf := fun x y => ⟨x.1 ⊓ y.1, Pinf x.2 y.2⟩,
     inf_le_left := fun x y => @inf_le_left _ _ (x : α) y, inf_le_right := fun x y => @inf_le_right _ _ (x : α) y,
-    le_inf := fun x y z h1 h2 => @le_inf α _ _ _ _ h1 h2 }
+    le_inf := fun _ _ _ h1 h2 => @le_inf α _ _ _ _ h1 h2 }
 #align subtype.semilattice_inf Subtype.semilatticeInf
 
 /-- A subtype forms a lattice if `⊔` and `⊓` preserve the property.
@@ -1300,29 +1319,24 @@ protected def lattice [Lattice α] {P : α → Prop} (Psup : ∀ ⦃x y⦄, P x 
   { Subtype.semilatticeInf Pinf, Subtype.semilatticeSup Psup with }
 #align subtype.lattice Subtype.lattice
 
-@[simp, norm_cast]
+-- Porting note: norm_cast: badly shaped lemma, lhs must contain at least one coe
+@[simp]
 theorem coe_sup [SemilatticeSup α] {P : α → Prop} (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) (x y : Subtype P) :
-    (haveI := Subtype.semilatticeSup Psup
-        (x ⊔ y : Subtype P) :
-        α) =
-      x ⊔ y :=
+    (haveI := Subtype.semilatticeSup Psup; (x ⊔ y : Subtype P) : α) = (x ⊔ y : α) :=
   rfl
 #align subtype.coe_sup Subtype.coe_sup
 
-@[simp, norm_cast]
+-- Porting note: norm_cast: badly shaped lemma, lhs must contain at least one coe
+@[simp]
 theorem coe_inf [SemilatticeInf α] {P : α → Prop} (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) (x y : Subtype P) :
-    (haveI := Subtype.semilatticeInf Pinf
-        (x ⊓ y : Subtype P) :
-        α) =
-      x ⊓ y :=
+    (haveI := Subtype.semilatticeInf Pinf; (x ⊓ y : Subtype P) : α) = (x ⊓ y : α) :=
   rfl
 #align subtype.coe_inf Subtype.coe_inf
 
 @[simp]
 theorem mk_sup_mk [SemilatticeSup α] {P : α → Prop} (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) {x y : α} (hx : P x)
     (hy : P y) :
-    (haveI := Subtype.semilatticeSup Psup
-      (⟨x, hx⟩ ⊔ ⟨y, hy⟩ : Subtype P)) =
+    (haveI := Subtype.semilatticeSup Psup; (⟨x, hx⟩ ⊔ ⟨y, hy⟩ : Subtype P)) =
       ⟨x ⊔ y, Psup hx hy⟩ :=
   rfl
 #align subtype.mk_sup_mk Subtype.mk_sup_mk
@@ -1330,8 +1344,7 @@ theorem mk_sup_mk [SemilatticeSup α] {P : α → Prop} (Psup : ∀ ⦃x y⦄, P
 @[simp]
 theorem mk_inf_mk [SemilatticeInf α] {P : α → Prop} (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) {x y : α} (hx : P x)
     (hy : P y) :
-    (haveI := Subtype.semilatticeInf Pinf
-      (⟨x, hx⟩ ⊓ ⟨y, hy⟩ : Subtype P)) =
+    (haveI := Subtype.semilatticeInf Pinf; (⟨x, hx⟩ ⊓ ⟨y, hy⟩ : Subtype P)) =
       ⟨x ⊓ y, Pinf hx hy⟩ :=
   rfl
 #align subtype.mk_inf_mk Subtype.mk_inf_mk
@@ -1346,7 +1359,8 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.semilatticeSup [HasSup α] [SemilatticeSup β] (f : α → β)
     (hf_inj : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) : SemilatticeSup α :=
-  { PartialOrder.lift f hf_inj with sup := HasSup.sup,
+  { PartialOrder.lift f hf_inj with
+    sup := HasSup.sup,
     le_sup_left := fun a b => by
       change f a ≤ f (a ⊔ b)
       rw [map_sup]
@@ -1367,7 +1381,8 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.semilatticeInf [HasInf α] [SemilatticeInf β] (f : α → β)
     (hf_inj : Function.Injective f) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) : SemilatticeInf α :=
-  { PartialOrder.lift f hf_inj with inf := HasInf.inf,
+  { PartialOrder.lift f hf_inj with
+    inf := HasInf.inf,
     inf_le_left := fun a b => by
       change f (a ⊓ b) ≤ f a
       rw [map_inf]
