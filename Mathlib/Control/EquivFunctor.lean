@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Tactic.Convert
 
 /-!
 # Functions functorial with respect to equivalences
@@ -51,38 +52,38 @@ def mapEquiv : f α ≃ f β where
     convert (congr_fun (EquivFunctor.map_trans' e e.symm) x).symm
     simp
   right_inv y := by
-    apply (congr_fun (EquivFunctor.map_trans e.symm e) y).symm
+    convert (congr_fun (EquivFunctor.map_trans' e.symm e) y).symm
     simp
 #align equiv_functor.map_equiv EquivFunctor.mapEquiv
 
 @[simp]
-theorem map_equiv_apply (x : f α) : mapEquiv f e x = EquivFunctor.map e x :=
+theorem mapEquiv_apply (x : f α) : mapEquiv f e x = EquivFunctor.map e x :=
   rfl
-#align equiv_functor.map_equiv_apply EquivFunctor.map_equiv_apply
+#align equiv_functor.map_equiv_apply EquivFunctor.mapEquiv_apply
 
-theorem map_equiv_symm_apply (y : f β) : (mapEquiv f e).symm y = EquivFunctor.map e.symm y :=
+theorem mapEquiv_symm_apply (y : f β) : (mapEquiv f e).symm y = EquivFunctor.map e.symm y :=
   rfl
-#align equiv_functor.map_equiv_symm_apply EquivFunctor.map_equiv_symm_apply
+#align equiv_functor.map_equiv_symm_apply EquivFunctor.mapEquiv_symm_apply
 
 @[simp]
-theorem map_equiv_refl (α) : mapEquiv f (Equiv.refl α) = Equiv.refl (f α) := by
+theorem mapEquiv_refl (α) : mapEquiv f (Equiv.refl α) = Equiv.refl (f α) := by
  simpa [EquivFunctor.mapEquiv]
-#align equiv_functor.map_equiv_refl EquivFunctor.map_equiv_refl
+#align equiv_functor.map_equiv_refl EquivFunctor.mapEquiv_refl
 
 @[simp]
-theorem map_equiv_symm : (mapEquiv f e).symm = mapEquiv f e.symm :=
-  Equiv.ext $ map_equiv_symm_apply f e
-#align equiv_functor.map_equiv_symm EquivFunctor.map_equiv_symm
+theorem mapEquiv_symm : (mapEquiv f e).symm = mapEquiv f e.symm :=
+  Equiv.ext $ mapEquiv_symm_apply f e
+#align equiv_functor.map_equiv_symm EquivFunctor.mapEquiv_symm
 
 /-- The composition of `mapEquiv`s is carried over the `EquivFunctor`.
 For plain `Functor`s, this lemma is named `map_map` when applied
 or `map_comp_map` when not applied.
 -/
 @[simp]
-theorem map_equiv_trans {γ : Type u₀} (ab : α ≃ β) (bc : β ≃ γ) :
+theorem mapEquiv_trans {γ : Type u₀} (ab : α ≃ β) (bc : β ≃ γ) :
     (mapEquiv f ab).trans (mapEquiv f bc) = mapEquiv f (ab.trans bc) :=
-  Equiv.ext $ fun x => by simp [map_equiv, map_trans']
-#align equiv_functor.map_equiv_trans EquivFunctor.map_equiv_trans
+  Equiv.ext $ fun x => by simp [mapEquiv, map_trans']
+#align equiv_functor.map_equiv_trans EquivFunctor.mapEquiv_trans
 
 end
 
