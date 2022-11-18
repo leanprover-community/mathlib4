@@ -52,9 +52,26 @@ instance [NatCast R] : CoeTail ℕ R where coe := Nat.cast
 -- see note [coercion into rings]
 instance [NatCast R] : CoeHTCT ℕ R where coe := Nat.cast
 
--- I *think* we want this instance? Otherwise we can't write `2 : R` (see `Nat.cast_two` below)
--- this was not in the Lean 3 code
-instance [NatCast R] (n : ℕ) : OfNat R n where ofNat := Nat.cast n
+
+-- the following four declarations are not in mathlib3 and are relevant to the way numeric
+-- literals are handled in Lean 4.
+
+class Nat.AtLeastTwo (n : Nat) : Prop where
+  prop : n ≥ 2
+
+instance : Nat.AtLeastTwo (n + 2) where
+  prop := Nat.succ_le_succ $ Nat.succ_le_succ $ Nat.zero_le _
+
+/-- Recognize numeric literals which are at least `2` as terms of `R` via `Nat.cast`. This
+instance is what makes things like `37 : R` type check.  Note that `0` and `1` are not needed
+because they are recognized as terms of `R` (at least when `R` is an `AddMonoidWithOne`) through
+`Zero` and `One`, respectively. -/
+@[nolint unusedArguments]
+instance [NatCast R] [Nat.AtLeastTwo n] : OfNat R n where
+  ofNat := n.cast
+
+@[simp, norm_cast] theorem Nat.cast_ofNat [NatCast R] [Nat.AtLeastTwo n] :
+  (Nat.cast (OfNat.ofNat n) : R) = OfNat.ofNat n := rfl
 
 /-! ### Additive monoids with one -/
 
@@ -231,17 +248,3 @@ lemma pos_of_neZero_natCast (R) [AddMonoidWithOne R] {n : ℕ} [NeZero (n : R)] 
 #align ne_zero.pos_of_ne_zero_coe NeZero.pos_of_neZero_natCast
 
 end NeZero
-
--- the following lemmas are not in mathlib3
-
-class Nat.AtLeastTwo (n : Nat) : Prop where
-  prop : n ≥ 2
-instance : Nat.AtLeastTwo (n + 2) where
-  prop := Nat.succ_le_succ $ Nat.succ_le_succ $ Nat.zero_le _
-
-@[nolint unusedArguments]
-instance [AddMonoidWithOne R] [Nat.AtLeastTwo n] : OfNat R n where
-  ofNat := n.cast
-
-@[simp, norm_cast] theorem Nat.cast_ofNat [AddMonoidWithOne R] [Nat.AtLeastTwo n] :
-  (Nat.cast (OfNat.ofNat n) : R) = OfNat.ofNat n := rfl
