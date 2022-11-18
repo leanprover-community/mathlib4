@@ -454,8 +454,6 @@ instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Le
 instance (r : α → α → Prop) [IsWellFounded α r] (f : β → α) : IsWellFounded _ (InvImage r f) :=
   ⟨InvImage.wf f IsWellFounded.wf⟩
 
--- TODO: How to align this?
--- it was `⟨measure_wf f⟩` before
 instance (f : α → ℕ) : IsWellFounded _ (Measure f) :=
   ⟨(measure f).wf⟩
 
