@@ -45,11 +45,21 @@ namespace Ordering
 
 /-- `Compares o a b` means that `a` and `b` have the ordering relation `o` between them, assuming
 that the relation `a < b` is defined. -/
-@[simp]
+-- Porting: note we have removed `@[simp]` here in favour of separate simp lemmas,
+-- otherwise this definition will unfold to a match.
 def Compares [LT α] : Ordering → α → α → Prop
   | lt, a, b => a < b
   | eq, a, b => a = b
   | gt, a, b => a > b
+
+@[simp]
+lemma Compares_lt [LT α] (a b : α) : Compares lt a b = (a < b) := rfl
+
+@[simp]
+lemma Compares_eq [LT α] (a b : α) : Compares eq a b = (a = b) := rfl
+
+@[simp]
+lemma Compares_gt [LT α] (a b : α) : Compares gt a b = (a > b) := rfl
 
 theorem compares_swap [LT α] {a b : α} {o : Ordering} : o.swap.Compares a b ↔ o.Compares b a := by
   cases o
