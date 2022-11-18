@@ -132,7 +132,7 @@ instance inhabited' : Inhabited (α ≃ α) := ⟨Equiv.refl α⟩
 protected def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.right_inv, e.left_inv⟩
 
 /-- See Note [custom simps projection] -/
-def simps.symm_apply (e : α ≃ β) : β → α := e.symm
+def Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 
 initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
 
