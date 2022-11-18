@@ -150,9 +150,12 @@ theorem unop_inj {x y : αᵐᵒᵖ} : unop x = unop y ↔ x = y :=
 
 variable (α)
 
-@[to_additive]
+-- @[to_additive]
 instance [Nontrivial α] : Nontrivial αᵐᵒᵖ :=
   op_injective.nontrivial
+
+instance [Nontrivial α] : Nontrivial αᵃᵒᵖ :=
+  AddOpposite.op_injective.nontrivial
 
 @[to_additive]
 instance [Inhabited α] : Inhabited αᵐᵒᵖ :=
