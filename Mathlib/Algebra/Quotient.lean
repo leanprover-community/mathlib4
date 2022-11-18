@@ -45,10 +45,12 @@ class HasQuotient (A : outParam <| Type u) (B : Type v) where
 #align has_quotient HasQuotient
 
 -- Will be provided by e.g. `ideal.quotient.inhabited`
-/-- `has_quotient.quotient A b` (with notation `A ⧸ b`) is the quotient of the type `A` by `b`.
+/-- `has_quotient.quotient A b` (with notation `A ⧸ b`) is the quotient
+ of the type `A` by `b`.
 
-This differs from `has_quotient.quotient'` in that the `A` argument is explicit, which is necessary
-to make Lean show the notation in the goal state.
+This differs from `has_quotient.quotient'` in that the `A` argument is
+ explicit, which is necessary to make Lean show the notation in the
+ goal state.
 -/
 @[reducible]
 def HasQuotient.Quotient (A : outParam <| Type u) {B : Type v} [HasQuotient A B] (b : B) : Type max u v :=
