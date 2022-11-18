@@ -32,12 +32,15 @@ variable {ι F α β γ δ : Type _}
 /-- `NonNegHomClass F α β` states that `F` is a type of nonnegative morphisms. -/
 class NonNegHomClass (F : Type _) (α β : outParam (Type _)) [outParam (Zero β)] [outParam (LE β)]
   extends FunLike F α fun _ => β where
+  /-- `map_nonneg` is the statement that the image of any element is non negative. -/
   map_nonneg (f : F) : ∀ a, 0 ≤ f a
 #align nonneg_hom_class NonNegHomClass
 
 /-- `SubAdditiveHomClass F α β` states that `F` is a type of subadditive morphisms. -/
 class SubAdditiveHomClass (F : Type _) (α β : outParam (Type _)) [outParam (Add α)]
   [outParam (Add β)] [outParam (LE β)] extends FunLike F α fun _ => β where
+  /-- `map_add_le_add` is the statement that the image of a sum is less or equal than the sum of the
+    images. -/
   map_add_le_add (f : F) : ∀ a b, f (a + b) ≤ f a + f b
 #align subadditive_hom_class SubAdditiveHomClass
 
@@ -45,6 +48,8 @@ class SubAdditiveHomClass (F : Type _) (α β : outParam (Type _)) [outParam (Ad
 @[to_additive SubAdditiveHomClass]
 class SubMultiplicativeHomClass (F : Type _) (α β : outParam (Type _)) [outParam (Mul α)]
   [outParam (Mul β)] [outParam (LE β)] extends FunLike F α fun _ => β where
+  /-- `map_mul_le_mul` is the statement that the image of a product is less or equal than the
+    product of the images. -/
   map_mul_le_mul (f : F) : ∀ a b, f (a * b) ≤ f a * f b
 #align submultiplicative_hom_class SubMultiplicativeHomClass
 
@@ -52,12 +57,16 @@ class SubMultiplicativeHomClass (F : Type _) (α β : outParam (Type _)) [outPar
 @[to_additive SubAdditiveHomClass]
 class MulLEAddHomClass (F : Type _) (α β : outParam (Type _)) [outParam (Mul α)] [outParam (Add β)]
   [outParam (LE β)] extends FunLike F α fun _ => β where
+  /-- `map_mul_le_add` is the statement that the image of a product is less or equal than the
+    sum of the images. -/
   map_mul_le_add (f : F) : ∀ a b, f (a * b) ≤ f a + f b
 #align mul_le_add_hom_class MulLEAddHomClass
 
 /-- `NonArchimedeanHomClass F α β` states that `F` is a type of non-archimedean morphisms. -/
 class NonArchimedeanHomClass (F : Type _) (α β : outParam (Type _)) [outParam (Add α)]
   [outParam (LinearOrder β)] extends FunLike F α fun _ => β where
+  /-- `map_add_le_max` is the statement that the image of a sum is less or equal than the
+    maximum of the images. -/
   map_add_le_max (f : F) : ∀ a b, f (a + b) ≤ max (f a) (f b)
 #align nonarchimedean_hom_class NonArchimedeanHomClass
 
@@ -97,7 +106,7 @@ theorem le_map_div_add_map_div [Group α] [AddCommSemigroup β] [LE β] [MulLEAd
     simpa only [div_mul_div_cancel'] using map_mul_le_add f (a / b) (b / c)
 #align le_map_div_add_map_div le_map_div_add_map_div
 
-namespace Mathlib.Meta.Positivity
+--namespace Mathlib.Meta.Positivity
 
 --Porting note: tactic extension commented as decided in the weekly porting meeting
 -- /-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
@@ -107,4 +116,4 @@ namespace Mathlib.Meta.Positivity
 --   | _ => failed
 -- #align tactic.positivity_map tactic.positivity_map
 
-end Mathlib.Meta.Positivity
+--end Mathlib.Meta.Positivity
