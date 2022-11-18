@@ -169,11 +169,19 @@ def getBinderName (e : Expr) : MetaM (Option Name) := do
   | .forallE (binderName := n) .. | .lam (binderName := n) .. => pure (some n)
   | _ => pure none
 
-open Lean.Elab.Term in
+open Lean.Elab.Term
 /-- Annotates a `binderIdent` with the binder information from an `fvar`. -/
 def addLocalVarInfoForBinderIdent (fvar : Expr) : TSyntax ``binderIdent → TermElabM Unit
 | `(binderIdent| $n:ident) => Elab.Term.addLocalVarInfo n fvar
 | tk => Elab.Term.addLocalVarInfo (Unhygienic.run `(_%$tk)) fvar
+
+/-- Converts an `Expr` into a `Syntax`, by creating a fresh metavariable
+assigned to the expr and  returning a named metavariable syntax `?a`. -/
+def toSyntax (e : Expr) : TermElabM Syntax.Term := withFreshMacroScope do
+  let stx ← `(?a)
+  let mvar ← elabTermEnsuringType stx (← Meta.inferType e)
+  mvar.mvarId!.assign e
+  pure stx
 
 end Expr
 
