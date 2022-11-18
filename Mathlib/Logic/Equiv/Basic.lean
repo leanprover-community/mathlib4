@@ -121,7 +121,8 @@ theorem prod_comm_symm (α β) : (prodComm α β).symm = prodComm β α :=
 /-- Type product is associative up to an equivalence. -/
 @[simps]
 def prodAssoc (α β γ : Sort _) : (α × β) × γ ≃ α × β × γ :=
-  ⟨fun p => (p.1.1, p.1.2, p.2), fun p => ((p.1, p.2.1), p.2.2), fun ⟨⟨a, b⟩, c⟩ => rfl, fun ⟨a, ⟨b, c⟩⟩ => rfl⟩
+  ⟨fun p => (p.1.1, p.1.2, p.2), fun p => ((p.1, p.2.1), p.2.2), fun ⟨⟨_, _⟩, _⟩ => rfl,
+    fun ⟨_, ⟨_, _⟩⟩ => rfl⟩
 #align equiv.prod_assoc Equiv.prodAssoc
 
 /-- Functions on `α × β` are equivalent to functions `α → β → γ`. -/
@@ -138,7 +139,7 @@ section
 /-- `punit` is a right identity for type product up to an equivalence. -/
 @[simps]
 def prodPunit (α : Type _) : α × PUnit.{u + 1} ≃ α :=
-  ⟨fun p => p.1, fun a => (a, PUnit.unit), fun ⟨_, PUnit.unit⟩ => rfl, fun a => rfl⟩
+  ⟨fun p => p.1, fun a => (a, PUnit.unit), fun ⟨_, PUnit.unit⟩ => rfl, fun _ => rfl⟩
 #align equiv.prod_punit Equiv.prodPunit
 
 /-- `punit` is a left identity for type product up to an equivalence. -/
