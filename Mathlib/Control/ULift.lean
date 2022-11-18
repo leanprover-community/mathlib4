@@ -5,6 +5,7 @@ Authors: Scott Morrison, Jannis Limperg
 -/
 
 import Mathlib.Mathport.Rename
+import Lean.Elab.Tactic
 
 /-!
 # Monadic instances for `ULift` and `PLift`
@@ -81,8 +82,8 @@ instance : LawfulMonad PLift where
 
 @[simp]
 theorem rec.constant {α : Sort u} {β : Type v} (b : β) :
-    (@PLift.rec α (fun _ => β) fun _ => b) = fun _ => b :=
-        funext fun x => PLift.casesOn x fun a => Eq.refl (PLift.rec (fun a' => b) { down := a })
+    (@PLift.rec α (fun _ => β) fun _ => b) = fun _ => b := rfl
+
 #align plift.rec.constant PLift.rec.constant
 
 end PLift
@@ -154,8 +155,8 @@ instance : LawfulMonad ULift where
 
 @[simp]
 theorem rec.constant {α : Type u} {β : Sort v} (b : β) :
-     (@ULift.rec α (fun _ => β) fun _ => b) = fun _ => b :=
-        funext fun x => ULift.casesOn x fun a => Eq.refl (ULift.rec (fun a' => b) { down := a })
+     (@ULift.rec α (fun _ => β) fun _ => b) = fun _ => b := rfl
+
 #align ULift.rec.constant ULift.rec.constant
 
 end ULift
