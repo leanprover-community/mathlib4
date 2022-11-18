@@ -467,9 +467,9 @@ theorem mul_lt_of_lt_of_lt_one' [CovariantClass α α (· * ·) (· ≤ ·)] {a 
   mul_lt_of_lt_of_le_one hbc ha.le
 
 /-- Assumes left covariance.
-The lemma assuming right covariance is `right.mul_le_one`. -/
+The lemma assuming right covariance is `Right.mul_le_one`. -/
 @[to_additive "Assumes left covariance.
-The lemma assuming right covariance is `right.add_nonpos`."]
+The lemma assuming right covariance is `Right.add_nonpos`."]
 theorem Left.mul_le_one [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} (ha : a ≤ 1) (hb : b ≤ 1) :
     a * b ≤ 1 :=
   mul_le_of_le_of_le_one ha hb
@@ -477,10 +477,10 @@ theorem Left.mul_le_one [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} 
 #align left.add_le_zero Left.add_le_zero
 
 /-- Assumes left covariance.
-The lemma assuming right covariance is `right.mul_lt_one_of_le_of_lt`. -/
+The lemma assuming right covariance is `Right.mul_lt_one_of_le_of_lt`. -/
 @[to_additive Left.add_neg_of_nonpos_of_neg
       "Assumes left covariance.
-      The lemma assuming right covariance is `right.add_neg_of_nonpos_of_neg`."]
+      The lemma assuming right covariance is `Right.add_neg_of_nonpos_of_neg`."]
 theorem Left.mul_lt_one_of_le_of_lt [CovariantClass α α (· * ·) (· < ·)] {a b : α} (ha : a ≤ 1)
     (hb : b < 1) :
     a * b < 1 :=
@@ -489,10 +489,10 @@ theorem Left.mul_lt_one_of_le_of_lt [CovariantClass α α (· * ·) (· < ·)] {
 #align left.add_neg_of_nonpos_of_neg Left.add_neg_of_nonpos_of_neg
 
 /-- Assumes left covariance.
-The lemma assuming right covariance is `right.mul_lt_one_of_lt_of_le`. -/
+The lemma assuming right covariance is `Right.mul_lt_one_of_lt_of_le`. -/
 @[to_additive Left.add_neg_of_neg_of_nonpos
       "Assumes left covariance.
-      The lemma assuming right covariance is `right.add_neg_of_neg_of_nonpos`."]
+      The lemma assuming right covariance is `Right.add_neg_of_neg_of_nonpos`."]
 theorem Left.mul_lt_one_of_lt_of_le [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} (ha : a < 1)
     (hb : b ≤ 1) :
     a * b < 1 :=
@@ -501,9 +501,9 @@ theorem Left.mul_lt_one_of_lt_of_le [CovariantClass α α (· * ·) (· ≤ ·)]
 #align left.add_neg_of_neg_of_nonpos Left.add_neg_of_neg_of_nonpos
 
 /-- Assumes left covariance.
-The lemma assuming right covariance is `right.mul_lt_one`. -/
+The lemma assuming right covariance is `Right.mul_lt_one`. -/
 @[to_additive "Assumes left covariance.
-The lemma assuming right covariance is `right.add_neg`."]
+The lemma assuming right covariance is `Right.add_neg`."]
 theorem Left.mul_lt_one [CovariantClass α α (· * ·) (· < ·)] {a b : α} (ha : a < 1) (hb : b < 1) :
     a * b < 1 :=
   mul_lt_of_lt_of_lt_one ha hb
@@ -511,9 +511,9 @@ theorem Left.mul_lt_one [CovariantClass α α (· * ·) (· < ·)] {a b : α} (h
 #align left.add_lt_zero Left.add_lt_zero
 
 /-- Assumes left covariance.
-The lemma assuming right covariance is `right.mul_lt_one'`. -/
+The lemma assuming right covariance is `Right.mul_lt_one'`. -/
 @[to_additive "Assumes left covariance.
-The lemma assuming right covariance is `right.add_neg'`."]
+The lemma assuming right covariance is `Right.add_neg'`."]
 theorem Left.mul_lt_one' [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} (ha : a < 1) (hb : b < 1) :
     a * b < 1 :=
   mul_lt_of_lt_of_lt_one' ha hb
@@ -567,9 +567,9 @@ theorem lt_mul_of_lt_of_one_lt' [CovariantClass α α (· * ·) (· ≤ ·)] {a 
   lt_mul_of_lt_of_one_le hbc ha.le
 
 /-- Assumes left covariance.
-The lemma assuming right covariance is `right.one_le_mul`. -/
+The lemma assuming right covariance is `Right.one_le_mul`. -/
 @[to_additive Left.add_nonneg "Assumes left covariance.
-The lemma assuming right covariance is `right.add_nonneg`."]
+The lemma assuming right covariance is `Right.add_nonneg`."]
 theorem Left.one_le_mul [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} (ha : 1 ≤ a) (hb : 1 ≤ b) :
     1 ≤ a * b :=
   le_mul_of_le_of_one_le ha hb
@@ -577,10 +577,10 @@ theorem Left.one_le_mul [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} 
 #align left.add_nonneg Left.add_nonneg
 
 /-- Assumes left covariance.
-The lemma assuming right covariance is `right.one_lt_mul_of_le_of_lt`. -/
+The lemma assuming right covariance is `Right.one_lt_mul_of_le_of_lt`. -/
 @[to_additive Left.add_pos_of_nonneg_of_pos
       "Assumes left covariance.
-      The lemma assuming right covariance is `right.add_pos_of_nonneg_of_pos`."]
+      The lemma assuming right covariance is `Right.add_pos_of_nonneg_of_pos`."]
 theorem Left.one_lt_mul_of_le_of_lt [CovariantClass α α (· * ·) (· < ·)] {a b : α} (ha : 1 ≤ a)
     (hb : 1 < b) :
     1 < a * b :=
@@ -589,10 +589,10 @@ theorem Left.one_lt_mul_of_le_of_lt [CovariantClass α α (· * ·) (· < ·)] {
 #align left.add_pos_of_nonneg_of_pos Left.add_pos_of_nonneg_of_pos
 
 /-- Assumes left covariance.
-The lemma assuming right covariance is `right.one_lt_mul_of_lt_of_le`. -/
+The lemma assuming right covariance is `Right.one_lt_mul_of_lt_of_le`. -/
 @[to_additive Left.add_pos_of_pos_of_nonneg
       "Assumes left covariance.
-      The lemma assuming right covariance is `right.add_pos_of_pos_of_nonneg`."]
+      The lemma assuming right covariance is `Right.add_pos_of_pos_of_nonneg`."]
 theorem Left.one_lt_mul_of_lt_of_le [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} (ha : 1 < a)
     (hb : 1 ≤ b) :
     1 < a * b :=
@@ -601,9 +601,9 @@ theorem Left.one_lt_mul_of_lt_of_le [CovariantClass α α (· * ·) (· ≤ ·)]
 #align left.add_pos_of_pos_of_nonneg Left.add_pos_of_pos_of_nonneg
 
 /-- Assumes left covariance.
-The lemma assuming right covariance is `right.one_lt_mul`. -/
+The lemma assuming right covariance is `Right.one_lt_mul`. -/
 @[to_additive Left.add_pos "Assumes left covariance.
-The lemma assuming right covariance is `right.add_pos`."]
+The lemma assuming right covariance is `Right.add_pos`."]
 theorem Left.one_lt_mul [CovariantClass α α (· * ·) (· < ·)] {a b : α} (ha : 1 < a) (hb : 1 < b) :
     1 < a * b :=
   lt_mul_of_lt_of_one_lt ha hb
@@ -611,9 +611,9 @@ theorem Left.one_lt_mul [CovariantClass α α (· * ·) (· < ·)] {a b : α} (h
 #align left.add_pos Left.add_pos
 
 /-- Assumes left covariance.
-The lemma assuming right covariance is `right.one_lt_mul'`. -/
+The lemma assuming right covariance is `Right.one_lt_mul'`. -/
 @[to_additive Left.add_pos' "Assumes left covariance.
-The lemma assuming right covariance is `right.add_pos'`."]
+The lemma assuming right covariance is `Right.add_pos'`."]
 theorem Left.one_lt_mul' [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} (ha : 1 < a) (hb : 1 < b) :
     1 < a * b :=
   lt_mul_of_lt_of_one_lt' ha hb
@@ -667,9 +667,9 @@ theorem mul_lt_of_lt_one_of_lt' [CovariantClass α α (swap (· * ·)) (· ≤ �
   mul_lt_of_le_one_of_lt ha.le hbc
 
 /-- Assumes right covariance.
-The lemma assuming left covariance is `left.mul_le_one`. -/
+The lemma assuming left covariance is `Left.mul_le_one`. -/
 @[to_additive "Assumes right covariance.
-The lemma assuming left covariance is `left.add_nonpos`."]
+The lemma assuming left covariance is `Left.add_nonpos`."]
 theorem Right.mul_le_one [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α} (ha : a ≤ 1)
     (hb : b ≤ 1) :
     a * b ≤ 1 :=
@@ -678,10 +678,10 @@ theorem Right.mul_le_one [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a 
 #align right.add_le_zero Right.add_le_zero
 
 /-- Assumes right covariance.
-The lemma assuming left covariance is `left.mul_lt_one_of_lt_of_le`. -/
+The lemma assuming left covariance is `Left.mul_lt_one_of_lt_of_le`. -/
 @[to_additive Right.add_neg_of_neg_of_nonpos
       "Assumes right covariance.
-      The lemma assuming left covariance is `left.add_neg_of_neg_of_nonpos`."]
+      The lemma assuming left covariance is `Left.add_neg_of_neg_of_nonpos`."]
 theorem Right.mul_lt_one_of_lt_of_le [CovariantClass α α (swap (· * ·)) (· < ·)] {a b : α}
     (ha : a < 1) (hb : b ≤ 1) :
     a * b < 1 :=
@@ -690,10 +690,10 @@ theorem Right.mul_lt_one_of_lt_of_le [CovariantClass α α (swap (· * ·)) (· 
 #align right.add_neg_of_neg_of_nonpos Right.add_neg_of_neg_of_nonpos
 
 /-- Assumes right covariance.
-The lemma assuming left covariance is `left.mul_lt_one_of_le_of_lt`. -/
+The lemma assuming left covariance is `Left.mul_lt_one_of_le_of_lt`. -/
 @[to_additive Right.add_neg_of_nonpos_of_neg
       "Assumes right covariance.
-      The lemma assuming left covariance is `left.add_neg_of_nonpos_of_neg`."]
+      The lemma assuming left covariance is `Left.add_neg_of_nonpos_of_neg`."]
 theorem Right.mul_lt_one_of_le_of_lt [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α}
     (ha : a ≤ 1) (hb : b < 1) :
     a * b < 1 :=
@@ -702,9 +702,9 @@ theorem Right.mul_lt_one_of_le_of_lt [CovariantClass α α (swap (· * ·)) (· 
 #align right.add_neg_of_nonpos_of_neg Right.add_neg_of_nonpos_of_neg
 
 /-- Assumes right covariance.
-The lemma assuming left covariance is `left.mul_lt_one`. -/
+The lemma assuming left covariance is `Left.mul_lt_one`. -/
 @[to_additive "Assumes right covariance.
-The lemma assuming left covariance is `left.add_neg`."]
+The lemma assuming left covariance is `Left.add_neg`."]
 theorem Right.mul_lt_one [CovariantClass α α (swap (· * ·)) (· < ·)] {a b : α} (ha : a < 1)
     (hb : b < 1) :
     a * b < 1 :=
@@ -713,9 +713,9 @@ theorem Right.mul_lt_one [CovariantClass α α (swap (· * ·)) (· < ·)] {a b 
 #align right.add_lt_zero Right.add_lt_zero
 
 /-- Assumes right covariance.
-The lemma assuming left covariance is `left.mul_lt_one'`. -/
+The lemma assuming left covariance is `Left.mul_lt_one'`. -/
 @[to_additive "Assumes right covariance.
-The lemma assuming left covariance is `left.add_neg'`."]
+The lemma assuming left covariance is `Left.add_neg'`."]
 theorem Right.mul_lt_one' [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α} (ha : a < 1)
     (hb : b < 1) :
     a * b < 1 :=
@@ -770,9 +770,9 @@ theorem lt_mul_of_one_lt_of_lt' [CovariantClass α α (swap (· * ·)) (· ≤ �
   lt_mul_of_one_le_of_lt ha.le hbc
 
 /-- Assumes right covariance.
-The lemma assuming left covariance is `left.one_le_mul`. -/
+The lemma assuming left covariance is `Left.one_le_mul`. -/
 @[to_additive Right.add_nonneg "Assumes right covariance.
-The lemma assuming left covariance is `left.add_nonneg`."]
+The lemma assuming left covariance is `Left.add_nonneg`."]
 theorem Right.one_le_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α} (ha : 1 ≤ a)
     (hb : 1 ≤ b) :
     1 ≤ a * b :=
@@ -781,10 +781,10 @@ theorem Right.one_le_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a 
 #align right.add_nonneg Right.add_nonneg
 
 /-- Assumes right covariance.
-The lemma assuming left covariance is `left.one_lt_mul_of_lt_of_le`. -/
+The lemma assuming left covariance is `Left.one_lt_mul_of_lt_of_le`. -/
 @[to_additive Right.add_pos_of_pos_of_nonneg
 "Assumes right covariance.
-The lemma assuming left covariance is `left.add_pos_of_pos_of_nonneg`."]
+The lemma assuming left covariance is `Left.add_pos_of_pos_of_nonneg`."]
 theorem Right.one_lt_mul_of_lt_of_le [CovariantClass α α (swap (· * ·)) (· < ·)] {a b : α}
     (ha : 1 < a) (hb : 1 ≤ b) :
     1 < a * b :=
@@ -793,10 +793,10 @@ theorem Right.one_lt_mul_of_lt_of_le [CovariantClass α α (swap (· * ·)) (· 
 #align right.add_pos_of_pos_of_nonneg Right.add_pos_of_pos_of_nonneg
 
 /-- Assumes right covariance.
-The lemma assuming left covariance is `left.one_lt_mul_of_le_of_lt`. -/
+The lemma assuming left covariance is `Left.one_lt_mul_of_le_of_lt`. -/
 @[to_additive Right.add_pos_of_nonneg_of_pos
 "Assumes right covariance.
-The lemma assuming left covariance is `left.add_pos_of_nonneg_of_pos`."]
+The lemma assuming left covariance is `Left.add_pos_of_nonneg_of_pos`."]
 theorem Right.one_lt_mul_of_le_of_lt [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α}
     (ha : 1 ≤ a) (hb : 1 < b) :
     1 < a * b :=
@@ -805,9 +805,9 @@ theorem Right.one_lt_mul_of_le_of_lt [CovariantClass α α (swap (· * ·)) (· 
 #align right.add_pos_of_nonneg_of_pos Right.add_pos_of_nonneg_of_pos
 
 /-- Assumes right covariance.
-The lemma assuming left covariance is `left.one_lt_mul`. -/
+The lemma assuming left covariance is `Left.one_lt_mul`. -/
 @[to_additive Right.add_pos "Assumes right covariance.
-The lemma assuming left covariance is `left.add_pos`."]
+The lemma assuming left covariance is `Left.add_pos`."]
 theorem Right.one_lt_mul [CovariantClass α α (swap (· * ·)) (· < ·)] {a b : α} (ha : 1 < a)
     (hb : 1 < b) :
     1 < a * b :=
@@ -816,9 +816,9 @@ theorem Right.one_lt_mul [CovariantClass α α (swap (· * ·)) (· < ·)] {a b 
 #align right.add_pos Right.add_pos
 
 /-- Assumes right covariance.
-The lemma assuming left covariance is `left.one_lt_mul'`. -/
+The lemma assuming left covariance is `Left.one_lt_mul'`. -/
 @[to_additive Right.add_pos' "Assumes right covariance.
-The lemma assuming left covariance is `left.add_pos'`."]
+The lemma assuming left covariance is `Left.add_pos'`."]
 theorem Right.one_lt_mul' [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α} (ha : 1 < a)
     (hb : 1 < b) :
     1 < a * b :=
@@ -836,17 +836,17 @@ alias Left.mul_lt_one ← mul_lt_one
 
 alias Left.mul_lt_one' ← mul_lt_one'
 
-attribute [to_additive add_nonpos "**Alias** of `left.add_nonpos`."] mul_le_one'
+attribute [to_additive add_nonpos "**Alias** of `Left.add_nonpos`."] mul_le_one'
 
-attribute [to_additive add_neg_of_nonpos_of_neg "**Alias** of `left.add_neg_of_nonpos_of_neg`."]
+attribute [to_additive add_neg_of_nonpos_of_neg "**Alias** of `Left.add_neg_of_nonpos_of_neg`."]
   mul_lt_one_of_le_of_lt
 
-attribute [to_additive add_neg_of_neg_of_nonpos "**Alias** of `left.add_neg_of_neg_of_nonpos`."]
+attribute [to_additive add_neg_of_neg_of_nonpos "**Alias** of `Left.add_neg_of_neg_of_nonpos`."]
   mul_lt_one_of_lt_of_le
 
-attribute [to_additive "**Alias** of `left.add_neg`."] mul_lt_one
+attribute [to_additive "**Alias** of `Left.add_neg`."] mul_lt_one
 
-attribute [to_additive "**Alias** of `left.add_neg'`."] mul_lt_one'
+attribute [to_additive "**Alias** of `Left.add_neg'`."] mul_lt_one'
 
 alias Left.one_le_mul ← one_le_mul
 
@@ -858,17 +858,17 @@ alias Left.one_lt_mul ← one_lt_mul'
 
 alias Left.one_lt_mul' ← one_lt_mul''
 
-attribute [to_additive add_nonneg "**Alias** of `left.add_nonneg`."] one_le_mul
+attribute [to_additive add_nonneg "**Alias** of `Left.add_nonneg`."] one_le_mul
 
-attribute [to_additive add_pos_of_nonneg_of_pos "**Alias** of `left.add_pos_of_nonneg_of_pos`."]
+attribute [to_additive add_pos_of_nonneg_of_pos "**Alias** of `Left.add_pos_of_nonneg_of_pos`."]
   one_lt_mul_of_le_of_lt'
 
-attribute [to_additive add_pos_of_pos_of_nonneg "**Alias** of `left.add_pos_of_pos_of_nonneg`."]
+attribute [to_additive add_pos_of_pos_of_nonneg "**Alias** of `Left.add_pos_of_pos_of_nonneg`."]
   one_lt_mul_of_lt_of_le'
 
-attribute [to_additive add_pos "**Alias** of `left.add_pos`."] one_lt_mul'
+attribute [to_additive add_pos "**Alias** of `Left.add_pos`."] one_lt_mul'
 
-attribute [to_additive add_pos' "**Alias** of `left.add_pos'`."] one_lt_mul''
+attribute [to_additive add_pos' "**Alias** of `Left.add_pos'`."] one_lt_mul''
 
 @[to_additive]
 theorem lt_of_mul_lt_of_one_le_left [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α} (h : a * b < c)
@@ -997,26 +997,26 @@ section PartialOrder
 
 variable [PartialOrder α]
 
-/- This is not instance, since we want to have an instance from `left_cancel_semigroup`s
-to the appropriate `covariant_class`. -/
+/- This is not instance, since we want to have an instance from `LeftCancelSemigroup`s
+to the appropriate `CovariantClass`. -/
 /-- A semigroup with a partial order and satisfying `left_cancel_semigroup`
-(i.e. `a * c < b * c → a < b`) is a `left_cancel semigroup`. -/
+(i.e. `a * c < b * c → a < b`) is a `left_cancel Semigroup`. -/
 @[to_additive
-"An additive semigroup with a partial order and satisfying `left_cancel_add_semigroup`
-(i.e. `c + a < c + b → a < b`) is a `left_cancel add_semigroup`."]
+"An additive semigroup with a partial order and satisfying `LeftCancelAddSemigroup`
+(i.e. `c + a < c + b → a < b`) is a `left_cancel AddSemigroup`."]
 def Contravariant.toLeftCancelSemigroup [ContravariantClass α α (· * ·) (· ≤ ·)] :
     LeftCancelSemigroup α :=
   { ‹Semigroup α› with mul_left_cancel := fun a b c => mul_left_cancel'' }
 #align contravariant.to_left_cancel_semigroup Contravariant.toLeftCancelSemigroup
 #align contravariant.to_left_cancel_add_semigroup Contravariant.toLeftCancelAddSemigroup
 
-/- This is not instance, since we want to have an instance from `right_cancel_semigroup`s
-to the appropriate `covariant_class`. -/
-/-- A semigroup with a partial order and satisfying `right_cancel_semigroup`
-(i.e. `a * c < b * c → a < b`) is a `right_cancel semigroup`. -/
+/- This is not instance, since we want to have an instance from `RightCancelSemigroup`s
+to the appropriate `CovariantClass`. -/
+/-- A semigroup with a partial order and satisfying `RightCancelSemigroup`
+(i.e. `a * c < b * c → a < b`) is a `right_cancel Semigroup`. -/
 @[to_additive
-"An additive semigroup with a partial order and satisfying `right_cancel_add_semigroup`
-(`a + c < b + c → a < b`) is a `right_cancel add_semigroup`."]
+"An additive semigroup with a partial order and satisfying `RightCancelAddSemigroup`
+(`a + c < b + c → a < b`) is a `right_cancel AddSemigroup`."]
 def Contravariant.toRightCancelSemigroup [ContravariantClass α α (swap (· * ·)) (· ≤ ·)] :
     RightCancelSemigroup α :=
   { ‹Semigroup α› with mul_right_cancel := fun a b c => mul_right_cancel'' }
@@ -1347,13 +1347,13 @@ theorem cmp_mul_right' {α : Type _} [Mul α] [LinearOrder α]
 end Mono
 
 /-- An element `a : α` is `MulLeCancellable` if `x ↦ a * x` is order-reflecting.
-We will make a separate version of many lemmas that require `[contravariant_class α α (*) (≤)]` with
+We will make a separate version of many lemmas that require `[ContravariantClass α α (*) (≤)]` with
 `mul_le_cancellable` assumptions instead. These lemmas can then be instantiated to specific types,
 like `ennreal`, where we can replace the assumption `add_le_cancellable x` by `x ≠ ∞`.
 -/
 @[to_additive
 "An element `a : α` is `AddLeCancellable` if `x ↦ a + x` is order-reflecting.
-We will make a separate version of many lemmas that require `[contravariant_class α α (+) (≤)]` with
+We will make a separate version of many lemmas that require `[ContravariantClass α α (+) (≤)]` with
 `mul_le_cancellable` assumptions instead. These lemmas can then be instantiated to specific types,
 like `ennreal`, where we can replace the assumption `add_le_cancellable x` by `x ≠ ∞`. "]
 def MulLeCancellable [Mul α] [LE α] (a : α) : Prop :=
