@@ -269,7 +269,7 @@ theorem forall_quotient_iff {α : Type _} [r : Setoid α] {p : Quotient r → Pr
 @[simp]
 theorem Quotient.lift_mk [s : Setoid α] (f : α → β) (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) :
     Quotient.lift f h (Quotient.mk s x) = f x :=
-  rfl
+rfl
 
 @[simp]
 theorem Quotient.lift_comp_mk [Setoid α] (f : α → β) (h : ∀ a b : α, a ≈ b → f a = f b) :
