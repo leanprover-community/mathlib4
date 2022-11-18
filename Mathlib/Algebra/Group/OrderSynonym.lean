@@ -3,8 +3,8 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
-import Mathbin.Algebra.Group.Defs
-import Mathbin.Order.Synonym
+import Mathlib.Algebra.Group.Defs
+import Mathlib.Order.Synonym
 
 /-!
 # Group structure on the order type synonyms
