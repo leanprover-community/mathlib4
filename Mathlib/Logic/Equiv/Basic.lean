@@ -161,11 +161,11 @@ def pUnitProd (α : Type _) : PUnit.{u + 1} × α ≃ α :=
 -- **TODO** fix weird universe error
 /-- Any `unique` type is a right identity for type product up to equivalence. -/
 def prodUnique (α : Type u) (β : Type v) [Unique β] : α × β ≃ α :=
-  ((Equiv.refl α).prodCongr <| equivPUnit β).trans <| prodPUnit α
+  ((Equiv.refl α).prodCongr <| equivPUnit.{v+1,v+1} β).trans <| prodPUnit α
 #align equiv.prod_unique Equiv.prodUnique
 
 @[simp]
-theorem coe_prod_unique {α β : Type _} [Unique β] : (⇑(prodUnique α β) : α × β → α)  = Prod.fst :=
+theorem coe_prod_unique {α β : Type _} [Unique β] : (⇑(prodUnique α β) : α × β → α) = Prod.fst :=
   rfl
 #align equiv.coe_prod_unique Equiv.coe_prod_unique
 
@@ -181,7 +181,7 @@ theorem prod_unique_symm_apply {α β : Type _} [Unique β] (x : α)
 
 /-- Any `unique` type is a left identity for type product up to equivalence. -/
 def uniqueProd (α β : Type _) [Unique β] : β × α ≃ α :=
-  ((equivPunit β).prodCongr <| Equiv.refl α).trans <| punitProd α
+  ((equivPUnit.{v+1,v+1} β).prodCongr <| Equiv.refl α).trans <| pUnitProd α
 #align equiv.unique_prod Equiv.uniqueProd
 
 @[simp]
@@ -198,7 +198,7 @@ theorem unique_prod_symm_apply {α β : Type _} [Unique β] (x : α)
 : (uniqueProd α β).symm x = (default, x) :=
   rfl
 #align equiv.unique_prod_symm_apply Equiv.unique_prod_symm_apply
-#exit
+
 /-- `empty` type is a right absorbing element for type product up to an equivalence. -/
 def prodEmpty (α : Type _) : α × Empty ≃ Empty :=
   equivEmpty _
@@ -279,7 +279,7 @@ theorem sum_congr_refl {α β : Sort _} :
   ext i
   cases i <;> rfl
 #align equiv.sum_congr_refl Equiv.sum_congr_refl
-
+#exit
 namespace Perm
 
 /-- Combine a permutation of `α` and of `β` into a permutation of `α ⊕ β`. -/
