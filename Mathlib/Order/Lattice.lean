@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Order.Monotone
 import Mathlib.Tactic.Simps.Basic
+import Mathlib.Data.Bool.Basic
 --import Mathlib.Tactic.PiInstances
 
 /-!
