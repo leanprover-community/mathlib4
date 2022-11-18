@@ -157,6 +157,7 @@ theorem Left.mul_lt_mul [CovariantClass α α (· * ·) (· < ·)]
     a * c < b * d :=
   mul_lt_mul_of_le_of_lt h₁.le h₂
 #align left.mul_lt_mul Left.mul_lt_mul
+#align left.add_lt_add Left.add_lt_add
 
 /-- Only assumes right strict covariance. -/
 @[to_additive "Only assumes right strict covariance"]
@@ -166,6 +167,7 @@ theorem Right.mul_lt_mul [CovariantClass α α (· * ·) (· ≤ ·)]
     a * c < b * d :=
   mul_lt_mul_of_lt_of_le h₁ h₂.le
 #align right.mul_lt_mul Right.mul_lt_mul
+#align right.add_lt_add Right.add_lt_add
 
 @[to_additive add_le_add]
 theorem mul_le_mul' [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
@@ -472,6 +474,7 @@ theorem Left.mul_le_one [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} 
     a * b ≤ 1 :=
   mul_le_of_le_of_le_one ha hb
 #align left.mul_le_one Left.mul_le_one
+#align left.add_le_zero Left.add_le_zero
 
 /-- Assumes left covariance.
 The lemma assuming right covariance is `right.mul_lt_one_of_le_of_lt`. -/
@@ -483,6 +486,7 @@ theorem Left.mul_lt_one_of_le_of_lt [CovariantClass α α (· * ·) (· < ·)] {
     a * b < 1 :=
   mul_lt_of_le_of_lt_one ha hb
 #align left.mul_lt_one_of_le_of_lt Left.mul_lt_one_of_le_of_lt
+#align left.add_neg_of_nonpos_of_neg Left.add_neg_of_nonpos_of_neg
 
 /-- Assumes left covariance.
 The lemma assuming right covariance is `right.mul_lt_one_of_lt_of_le`. -/
@@ -494,6 +498,7 @@ theorem Left.mul_lt_one_of_lt_of_le [CovariantClass α α (· * ·) (· ≤ ·)]
     a * b < 1 :=
   mul_lt_of_lt_of_le_one ha hb
 #align left.mul_lt_one_of_lt_of_le Left.mul_lt_one_of_lt_of_le
+#align left.add_neg_of_neg_of_nonpos Left.add_neg_of_neg_of_nonpos
 
 /-- Assumes left covariance.
 The lemma assuming right covariance is `right.mul_lt_one`. -/
@@ -503,6 +508,7 @@ theorem Left.mul_lt_one [CovariantClass α α (· * ·) (· < ·)] {a b : α} (h
     a * b < 1 :=
   mul_lt_of_lt_of_lt_one ha hb
 #align left.mul_lt_one Left.mul_lt_one
+#align left.add_lt_zero Left.add_lt_zero
 
 /-- Assumes left covariance.
 The lemma assuming right covariance is `right.mul_lt_one'`. -/
@@ -512,6 +518,7 @@ theorem Left.mul_lt_one' [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α}
     a * b < 1 :=
   mul_lt_of_lt_of_lt_one' ha hb
 #align left.mul_lt_one' Left.mul_lt_one'
+#align left.add_lt_zero' Left.add_lt_zero'
 
 /-! Lemmas of the form `b ≤ c → 1 ≤ a → b ≤ c * a`,
 which assume left covariance. -/
@@ -567,6 +574,7 @@ theorem Left.one_le_mul [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} 
     1 ≤ a * b :=
   le_mul_of_le_of_one_le ha hb
 #align left.one_le_mul Left.one_le_mul
+#align left.add_nonneg Left.add_nonneg
 
 /-- Assumes left covariance.
 The lemma assuming right covariance is `right.one_lt_mul_of_le_of_lt`. -/
@@ -578,6 +586,7 @@ theorem Left.one_lt_mul_of_le_of_lt [CovariantClass α α (· * ·) (· < ·)] {
     1 < a * b :=
   lt_mul_of_le_of_one_lt ha hb
 #align left.one_lt_mul_of_le_of_lt Left.one_lt_mul_of_le_of_lt
+#align left.add_pos_of_nonneg_of_pos Left.add_pos_of_nonneg_of_pos
 
 /-- Assumes left covariance.
 The lemma assuming right covariance is `right.one_lt_mul_of_lt_of_le`. -/
@@ -589,6 +598,7 @@ theorem Left.one_lt_mul_of_lt_of_le [CovariantClass α α (· * ·) (· ≤ ·)]
     1 < a * b :=
   lt_mul_of_lt_of_one_le ha hb
 #align left.one_lt_mul_of_lt_of_le Left.one_lt_mul_of_lt_of_le
+#align left.add_pos_of_pos_of_nonneg Left.add_pos_of_pos_of_nonneg
 
 /-- Assumes left covariance.
 The lemma assuming right covariance is `right.one_lt_mul`. -/
@@ -598,6 +608,7 @@ theorem Left.one_lt_mul [CovariantClass α α (· * ·) (· < ·)] {a b : α} (h
     1 < a * b :=
   lt_mul_of_lt_of_one_lt ha hb
 #align left.one_lt_mul Left.one_lt_mul
+#align left.add_pos Left.add_pos
 
 /-- Assumes left covariance.
 The lemma assuming right covariance is `right.one_lt_mul'`. -/
@@ -607,6 +618,7 @@ theorem Left.one_lt_mul' [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α}
     1 < a * b :=
   lt_mul_of_lt_of_one_lt' ha hb
 #align left.one_lt_mul' Left.one_lt_mul'
+#align left.add_pos' Left.add_pos'
 
 /-! Lemmas of the form `a ≤ 1 → b ≤ c → a * b ≤ c`,
 which assume right covariance. -/
@@ -663,6 +675,7 @@ theorem Right.mul_le_one [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a 
     a * b ≤ 1 :=
   mul_le_of_le_one_of_le ha hb
 #align right.mul_le_one Right.mul_le_one
+#align right.add_le_zero Right.add_le_zero
 
 /-- Assumes right covariance.
 The lemma assuming left covariance is `left.mul_lt_one_of_lt_of_le`. -/
@@ -674,6 +687,7 @@ theorem Right.mul_lt_one_of_lt_of_le [CovariantClass α α (swap (· * ·)) (· 
     a * b < 1 :=
   mul_lt_of_lt_one_of_le ha hb
 #align right.mul_lt_one_of_lt_of_le Right.mul_lt_one_of_lt_of_le
+#align right.add_neg_of_neg_of_nonpos Right.add_neg_of_neg_of_nonpos
 
 /-- Assumes right covariance.
 The lemma assuming left covariance is `left.mul_lt_one_of_le_of_lt`. -/
@@ -685,6 +699,7 @@ theorem Right.mul_lt_one_of_le_of_lt [CovariantClass α α (swap (· * ·)) (· 
     a * b < 1 :=
   mul_lt_of_le_one_of_lt ha hb
 #align right.mul_lt_one_of_le_of_lt Right.mul_lt_one_of_le_of_lt
+#align right.add_neg_of_nonpos_of_neg Right.add_neg_of_nonpos_of_neg
 
 /-- Assumes right covariance.
 The lemma assuming left covariance is `left.mul_lt_one`. -/
@@ -695,6 +710,7 @@ theorem Right.mul_lt_one [CovariantClass α α (swap (· * ·)) (· < ·)] {a b 
     a * b < 1 :=
   mul_lt_of_lt_one_of_lt ha hb
 #align right.mul_lt_one Right.mul_lt_one
+#align right.add_lt_zero Right.add_lt_zero
 
 /-- Assumes right covariance.
 The lemma assuming left covariance is `left.mul_lt_one'`. -/
@@ -705,6 +721,7 @@ theorem Right.mul_lt_one' [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a
     a * b < 1 :=
   mul_lt_of_lt_one_of_lt' ha hb
 #align right.mul_lt_one' Right.mul_lt_one'
+#align right.add_lt_zero' Right.add_lt_zero'
 
 /-! Lemmas of the form `1 ≤ a → b ≤ c → b ≤ a * c`,
 which assume right covariance. -/
@@ -761,6 +778,7 @@ theorem Right.one_le_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a 
     1 ≤ a * b :=
   le_mul_of_one_le_of_le ha hb
 #align right.one_le_mul Right.one_le_mul
+#align right.add_nonneg Right.add_nonneg
 
 /-- Assumes right covariance.
 The lemma assuming left covariance is `left.one_lt_mul_of_lt_of_le`. -/
@@ -772,6 +790,7 @@ theorem Right.one_lt_mul_of_lt_of_le [CovariantClass α α (swap (· * ·)) (· 
     1 < a * b :=
   lt_mul_of_one_lt_of_le ha hb
 #align right.one_lt_mul_of_lt_of_le Right.one_lt_mul_of_lt_of_le
+#align right.add_pos_of_pos_of_nonneg Right.add_pos_of_pos_of_nonneg
 
 /-- Assumes right covariance.
 The lemma assuming left covariance is `left.one_lt_mul_of_le_of_lt`. -/
@@ -783,6 +802,7 @@ theorem Right.one_lt_mul_of_le_of_lt [CovariantClass α α (swap (· * ·)) (· 
     1 < a * b :=
   lt_mul_of_one_le_of_lt ha hb
 #align right.one_lt_mul_of_le_of_lt Right.one_lt_mul_of_le_of_lt
+#align right.add_pos_of_nonneg_of_pos Right.add_pos_of_nonneg_of_pos
 
 /-- Assumes right covariance.
 The lemma assuming left covariance is `left.one_lt_mul`. -/
@@ -793,6 +813,7 @@ theorem Right.one_lt_mul [CovariantClass α α (swap (· * ·)) (· < ·)] {a b 
     1 < a * b :=
   lt_mul_of_one_lt_of_lt ha hb
 #align right.one_lt_mul Right.one_lt_mul
+#align right.add_pos Right.add_pos
 
 /-- Assumes right covariance.
 The lemma assuming left covariance is `left.one_lt_mul'`. -/
@@ -803,6 +824,7 @@ theorem Right.one_lt_mul' [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a
     1 < a * b :=
   lt_mul_of_one_lt_of_lt' ha hb
 #align right.one_lt_mul' Right.one_lt_mul'
+#align right.add_pos' Right.add_pos'
 
 alias Left.mul_le_one ← mul_le_one'
 
@@ -986,6 +1008,7 @@ def Contravariant.toLeftCancelSemigroup [ContravariantClass α α (· * ·) (· 
     LeftCancelSemigroup α :=
   { ‹Semigroup α› with mul_left_cancel := fun a b c => mul_left_cancel'' }
 #align contravariant.to_left_cancel_semigroup Contravariant.toLeftCancelSemigroup
+#align contravariant.to_left_cancel_add_semigroup Contravariant.toLeftCancelAddSemigroup
 
 /- This is not instance, since we want to have an instance from `right_cancel_semigroup`s
 to the appropriate `covariant_class`. -/
@@ -998,6 +1021,7 @@ def Contravariant.toRightCancelSemigroup [ContravariantClass α α (swap (· * �
     RightCancelSemigroup α :=
   { ‹Semigroup α› with mul_right_cancel := fun a b c => mul_right_cancel'' }
 #align contravariant.to_right_cancel_semigroup Contravariant.toRightCancelSemigroup
+#align contravariant.to_right_cancel_add_semigroup Contravariant.toRightCancelAddSemigroup
 
 @[to_additive]
 theorem Left.mul_eq_mul_iff_eq_and_eq [CovariantClass α α (· * ·) (· < ·)]
@@ -1013,6 +1037,7 @@ theorem Left.mul_eq_mul_iff_eq_and_eq [CovariantClass α α (· * ·) (· < ·)]
 
   exact ((Left.mul_lt_mul hac hbd).ne h).elim
 #align left.mul_eq_mul_iff_eq_and_eq Left.mul_eq_mul_iff_eq_and_eq
+#align left.add_eq_add_iff_eq_and_eq Left.add_eq_add_iff_eq_and_eq
 
 @[to_additive]
 theorem Right.mul_eq_mul_iff_eq_and_eq [CovariantClass α α (· * ·) (· ≤ ·)]
@@ -1028,6 +1053,7 @@ theorem Right.mul_eq_mul_iff_eq_and_eq [CovariantClass α α (· * ·) (· ≤ �
 
   exact ((Right.mul_lt_mul hac hbd).ne h).elim
 #align right.mul_eq_mul_iff_eq_and_eq Right.mul_eq_mul_iff_eq_and_eq
+#align right.add_eq_add_iff_eq_and_eq Right.add_eq_add_iff_eq_and_eq
 
 alias Left.mul_eq_mul_iff_eq_and_eq ← mul_eq_mul_iff_eq_and_eq
 
@@ -1045,43 +1071,51 @@ variable [Mul α] [Preorder α] [Preorder β] {f g : β → α} {s : Set β}
 theorem Monotone.const_mul' [CovariantClass α α (· * ·) (· ≤ ·)] (hf : Monotone f) (a : α) :
     Monotone fun x => a * f x := fun _ _ h => mul_le_mul_left' (hf h) a
 #align monotone.const_mul' Monotone.const_mul'
+#align monotone.const_add Monotone.const_add
 
 @[to_additive const_add]
 theorem MonotoneOn.const_mul' [CovariantClass α α (· * ·) (· ≤ ·)] (hf : MonotoneOn f s) (a : α) :
     MonotoneOn (fun x => a * f x) s := fun _ hx _ hy h => mul_le_mul_left' (hf hx hy h) a
 #align monotone_on.const_mul' MonotoneOn.const_mul'
+#align monotone_on.const_add MonotoneOn.const_add
 
 @[to_additive const_add]
 theorem Antitone.const_mul' [CovariantClass α α (· * ·) (· ≤ ·)] (hf : Antitone f) (a : α) :
     Antitone fun x => a * f x := fun _ _ h => mul_le_mul_left' (hf h) a
 #align antitone.const_mul' Antitone.const_mul'
+#align antitone.const_add Antitone.const_add
 
 @[to_additive const_add]
 theorem AntitoneOn.const_mul' [CovariantClass α α (· * ·) (· ≤ ·)] (hf : AntitoneOn f s) (a : α) :
     AntitoneOn (fun x => a * f x) s := fun _ hx _ hy h => mul_le_mul_left' (hf hx hy h) a
 #align antitone_on.const_mul' AntitoneOn.const_mul'
+#align antitone_on.const_add AntitoneOn.const_add
 
 @[to_additive add_const]
 theorem Monotone.mul_const' [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (hf : Monotone f) (a : α) :
     Monotone fun x => f x * a := fun _ _ h => mul_le_mul_right' (hf h) a
 #align monotone.mul_const' Monotone.mul_const'
+#align monotone.add_const Monotone.add_const
 
 @[to_additive add_const]
 theorem MonotoneOn.mul_const' [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (hf : MonotoneOn f s)
     (a : α) :
     MonotoneOn (fun x => f x * a) s := fun _ hx _ hy h => mul_le_mul_right' (hf hx hy h) a
 #align monotone_on.mul_const' MonotoneOn.mul_const'
+#align monotone_on.add_const MonotoneOn.add_const
 
 @[to_additive add_const]
 theorem Antitone.mul_const' [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (hf : Antitone f) (a : α) :
     Antitone fun x => f x * a := fun _ _ h => mul_le_mul_right' (hf h) a
 #align antitone.mul_const' Antitone.mul_const'
+#align antitone.add_const Antitone.add_const
 
 @[to_additive add_const]
 theorem AntitoneOn.mul_const' [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (hf : AntitoneOn f s)
     (a : α) :
     AntitoneOn (fun x => f x * a) s := fun _ hx _ hy h => mul_le_mul_right' (hf hx hy h) a
 #align antitone_on.mul_const' AntitoneOn.mul_const'
+#align antitone_on.add_const AntitoneOn.add_const
 
 /-- The product of two monotone functions is monotone. -/
 @[to_additive add "The sum of two monotone functions is monotone."]
@@ -1089,6 +1123,7 @@ theorem Monotone.mul' [CovariantClass α α (· * ·) (· ≤ ·)]
     [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (hf : Monotone f) (hg : Monotone g) :
     Monotone fun x => f x * g x := fun _ _ h => mul_le_mul' (hf h) (hg h)
 #align monotone.mul' Monotone.mul'
+#align monotone.add Monotone.add
 
 /-- The product of two monotone functions is monotone. -/
 @[to_additive add "The sum of two monotone functions is monotone."]
@@ -1097,6 +1132,7 @@ theorem MonotoneOn.mul' [CovariantClass α α (· * ·) (· ≤ ·)]
     MonotoneOn (fun x => f x * g x) s := fun _ hx _ hy h =>
   mul_le_mul' (hf hx hy h) (hg hx hy h)
 #align monotone_on.mul' MonotoneOn.mul'
+#align monotone_on.add MonotoneOn.add
 
 /-- The product of two antitone functions is antitone. -/
 @[to_additive add "The sum of two antitone functions is antitone."]
@@ -1104,6 +1140,7 @@ theorem Antitone.mul' [CovariantClass α α (· * ·) (· ≤ ·)]
     [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (hf : Antitone f) (hg : Antitone g) :
     Antitone fun x => f x * g x := fun _ _ h => mul_le_mul' (hf h) (hg h)
 #align antitone.mul' Antitone.mul'
+#align antitone.add Antitone.add
 
 /-- The product of two antitone functions is antitone. -/
 @[to_additive add "The sum of two antitone functions is antitone."]
@@ -1112,6 +1149,7 @@ theorem AntitoneOn.mul' [CovariantClass α α (· * ·) (· ≤ ·)]
     AntitoneOn (fun x => f x * g x) s :=
   fun _ hx _ hy h => mul_le_mul' (hf hx hy h) (hg hx hy h)
 #align antitone_on.mul' AntitoneOn.mul'
+#align antitone_on.add AntitoneOn.add
 
 section Left
 
@@ -1121,23 +1159,27 @@ variable [CovariantClass α α (· * ·) (· < ·)]
 theorem StrictMono.const_mul' (hf : StrictMono f) (c : α) : StrictMono fun x => c * f x :=
   fun _ _ ab => mul_lt_mul_left' (hf ab) c
 #align strict_mono.const_mul' StrictMono.const_mul'
+#align strict_mono.const_add StrictMono.const_add
 
 @[to_additive const_add]
 theorem StrictMonoOn.const_mul' (hf : StrictMonoOn f s) (c : α) :
     StrictMonoOn (fun x => c * f x) s :=
   fun _ ha _ hb ab => mul_lt_mul_left' (hf ha hb ab) c
 #align strict_mono_on.const_mul' StrictMonoOn.const_mul'
+#align strict_mono_on.const_add StrictMonoOn.const_add
 
 @[to_additive const_add]
 theorem StrictAnti.const_mul' (hf : StrictAnti f) (c : α) : StrictAnti fun x => c * f x :=
   fun _ _ ab => mul_lt_mul_left' (hf ab) c
 #align strict_anti.const_mul' StrictAnti.const_mul'
+#align strict_anti.const_add StrictAnti.const_add
 
 @[to_additive const_add]
 theorem StrictAntiOn.const_mul' (hf : StrictAntiOn f s) (c : α) :
     StrictAntiOn (fun x => c * f x) s :=
   fun _ ha _ hb ab => mul_lt_mul_left' (hf ha hb ab) c
 #align strict_anti_on.const_mul' StrictAntiOn.const_mul'
+#align strict_anti_on.const_add StrictAntiOn.const_add
 
 end Left
 
@@ -1149,23 +1191,27 @@ variable [CovariantClass α α (swap (· * ·)) (· < ·)]
 theorem StrictMono.mul_const' (hf : StrictMono f) (c : α) : StrictMono fun x => f x * c :=
   fun _ _ ab => mul_lt_mul_right' (hf ab) c
 #align strict_mono.mul_const' StrictMono.mul_const'
+#align strict_mono.add_const StrictMono.add_const
 
 @[to_additive add_const]
 theorem StrictMonoOn.mul_const' (hf : StrictMonoOn f s) (c : α) :
     StrictMonoOn (fun x => f x * c) s :=
   fun _ ha _ hb ab => mul_lt_mul_right' (hf ha hb ab) c
 #align strict_mono_on.mul_const' StrictMonoOn.mul_const'
+#align strict_mono_on.add_const StrictMonoOn.add_const
 
 @[to_additive add_const]
 theorem StrictAnti.mul_const' (hf : StrictAnti f) (c : α) : StrictAnti fun x => f x * c :=
   fun _ _ ab => mul_lt_mul_right' (hf ab) c
 #align strict_anti.mul_const' StrictAnti.mul_const'
+#align strict_anti.add_const StrictAnti.add_const
 
 @[to_additive add_const]
 theorem StrictAntiOn.mul_const' (hf : StrictAntiOn f s) (c : α) :
     StrictAntiOn (fun x => f x * c) s :=
   fun _ ha _ hb ab => mul_lt_mul_right' (hf ha hb ab) c
 #align strict_anti_on.mul_const' StrictAntiOn.mul_const'
+#align strict_anti_on.add_const StrictAntiOn.add_const
 
 end Right
 
@@ -1176,6 +1222,7 @@ theorem StrictMono.mul' [CovariantClass α α (· * ·) (· < ·)]
     StrictMono fun x => f x * g x := fun _ _ ab =>
   mul_lt_mul_of_lt_of_lt (hf ab) (hg ab)
 #align strict_mono.mul' StrictMono.mul'
+#align strict_mono.add StrictMono.add
 
 /-- The product of two strictly monotone functions is strictly monotone. -/
 @[to_additive add "The sum of two strictly monotone functions is strictly monotone."]
@@ -1184,6 +1231,7 @@ theorem StrictMonoOn.mul' [CovariantClass α α (· * ·) (· < ·)]
     StrictMonoOn (fun x => f x * g x) s :=
   fun _ ha _ hb ab => mul_lt_mul_of_lt_of_lt (hf ha hb ab) (hg ha hb ab)
 #align strict_mono_on.mul' StrictMonoOn.mul'
+#align strict_mono_on.add StrictMonoOn.add
 
 /-- The product of two strictly antitone functions is strictly antitone. -/
 @[to_additive add "The sum of two strictly antitone functions is strictly antitone."]
@@ -1192,6 +1240,7 @@ theorem StrictAnti.mul' [CovariantClass α α (· * ·) (· < ·)]
     StrictAnti fun x => f x * g x :=
   fun _ _ ab => mul_lt_mul_of_lt_of_lt (hf ab) (hg ab)
 #align strict_anti.mul' StrictAnti.mul'
+#align strict_anti.add StrictAnti.add
 
 /-- The product of two strictly antitone functions is strictly antitone. -/
 @[to_additive add "The sum of two strictly antitone functions is strictly antitone."]
@@ -1200,6 +1249,7 @@ theorem StrictAntiOn.mul' [CovariantClass α α (· * ·) (· < ·)]
     StrictAntiOn (fun x => f x * g x) s :=
   fun _ ha _ hb ab => mul_lt_mul_of_lt_of_lt (hf ha hb ab) (hg ha hb ab)
 #align strict_anti_on.mul' StrictAntiOn.mul'
+#align strict_anti_on.add StrictAntiOn.add
 
 /-- The product of a monotone function and a strictly monotone function is strictly monotone. -/
 @[to_additive add_strict_mono "The sum of a monotone function and a strictly monotone function is
@@ -1210,6 +1260,7 @@ theorem Monotone.mul_strict_mono' [CovariantClass α α (· * ·) (· < ·)]
     StrictMono fun x => f x * g x :=
   fun _ _ h => mul_lt_mul_of_le_of_lt (hf h.le) (hg h)
 #align monotone.mul_strict_mono' Monotone.mul_strict_mono'
+#align monotone.add_strict_mono Monotone.add_strict_mono
 
 /-- The product of a monotone function and a strictly monotone function is strictly monotone. -/
 @[to_additive add_strict_mono "The sum of a monotone function and a strictly monotone function is
@@ -1219,6 +1270,7 @@ theorem MonotoneOn.mul_strict_mono' [CovariantClass α α (· * ·) (· < ·)]
     (hg : StrictMonoOn g s) : StrictMonoOn (fun x => f x * g x) s :=
   fun _ hx _ hy h => mul_lt_mul_of_le_of_lt (hf hx hy h.le) (hg hx hy h)
 #align monotone_on.mul_strict_mono' MonotoneOn.mul_strict_mono'
+#align monotone_on.add_strict_mono MonotoneOn.add_strict_mono
 
 /-- The product of a antitone function and a strictly antitone function is strictly antitone. -/
 @[to_additive add_strict_anti "The sum of a antitone function and a strictly antitone function is
@@ -1229,6 +1281,7 @@ theorem Antitone.mul_strict_anti' [CovariantClass α α (· * ·) (· < ·)]
     StrictAnti fun x => f x * g x :=
   fun _ _ h => mul_lt_mul_of_le_of_lt (hf h.le) (hg h)
 #align antitone.mul_strict_anti' Antitone.mul_strict_anti'
+#align antitone.add_strict_anti Antitone.add_strict_anti
 
 /-- The product of a antitone function and a strictly antitone function is strictly antitone. -/
 @[to_additive add_strict_anti "The sum of a antitone function and a strictly antitone function is
@@ -1239,6 +1292,7 @@ theorem AntitoneOn.mul_strict_anti' [CovariantClass α α (· * ·) (· < ·)]
     StrictAntiOn (fun x => f x * g x) s :=
   fun _ hx _ hy h => mul_lt_mul_of_le_of_lt (hf hx hy h.le) (hg hx hy h)
 #align antitone_on.mul_strict_anti' AntitoneOn.mul_strict_anti'
+#align antitone_on.add_strict_anti AntitoneOn.add_strict_anti
 
 variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· < ·)]
 
@@ -1249,6 +1303,7 @@ theorem StrictMono.mul_monotone' (hf : StrictMono f) (hg : Monotone g) :
     StrictMono fun x => f x * g x :=
   fun _ _ h => mul_lt_mul_of_lt_of_le (hf h) (hg h.le)
 #align strict_mono.mul_monotone' StrictMono.mul_monotone'
+#align strict_mono.add_monotone StrictMono.add_monotone
 
 /-- The product of a strictly monotone function and a monotone function is strictly monotone. -/
 @[to_additive add_monotone "The sum of a strictly monotone function and a monotone function is
@@ -1257,6 +1312,7 @@ theorem StrictMonoOn.mul_monotone' (hf : StrictMonoOn f s) (hg : MonotoneOn g s)
     StrictMonoOn (fun x => f x * g x) s :=
   fun _ hx _ hy h => mul_lt_mul_of_lt_of_le (hf hx hy h) (hg hx hy h.le)
 #align strict_mono_on.mul_monotone' StrictMonoOn.mul_monotone'
+#align strict_mono_on.add_monotone StrictMonoOn.add_monotone
 
 /-- The product of a strictly antitone function and a antitone function is strictly antitone. -/
 @[to_additive add_antitone "The sum of a strictly antitone function and a antitone function is
@@ -1265,6 +1321,7 @@ theorem StrictAnti.mul_antitone' (hf : StrictAnti f) (hg : Antitone g) :
     StrictAnti fun x => f x * g x :=
   fun _ _ h => mul_lt_mul_of_lt_of_le (hf h) (hg h.le)
 #align strict_anti.mul_antitone' StrictAnti.mul_antitone'
+#align strict_anti.add_monotone StrictAnti.add_monotone
 
 /-- The product of a strictly antitone function and a antitone function is strictly antitone. -/
 @[to_additive add_antitone "The sum of a strictly antitone function and a antitone function is
@@ -1273,6 +1330,7 @@ theorem StrictAntiOn.mul_antitone' (hf : StrictAntiOn f s) (hg : AntitoneOn g s)
     StrictAntiOn (fun x => f x * g x) s :=
   fun _ hx _ hy h => mul_lt_mul_of_lt_of_le (hf hx hy h) (hg hx hy h.le)
 #align strict_anti_on.mul_antitone' StrictAntiOn.mul_antitone'
+#align strict_anti_on.add_monotone StrictAntiOn.add_monotone
 
 @[simp, to_additive cmp_add_left]
 theorem cmp_mul_left' {α : Type _} [Mul α] [LinearOrder α] [CovariantClass α α (· * ·) (· < ·)]
@@ -1293,7 +1351,7 @@ We will make a separate version of many lemmas that require `[contravariant_clas
 `mul_le_cancellable` assumptions instead. These lemmas can then be instantiated to specific types,
 like `ennreal`, where we can replace the assumption `add_le_cancellable x` by `x ≠ ∞`.
 -/
-@[to_additive AddLeCancellable
+@[to_additive
 "An element `a : α` is `AddLeCancellable` if `x ↦ a + x` is order-reflecting.
 We will make a separate version of many lemmas that require `[contravariant_class α α (+) (≤)]` with
 `mul_le_cancellable` assumptions instead. These lemmas can then be instantiated to specific types,
@@ -1309,11 +1367,13 @@ theorem Contravariant.MulLeCancellable [Mul α] [LE α] [ContravariantClass α �
     MulLeCancellable a :=
   fun _ _ => le_of_mul_le_mul_left'
 #align contravariant.mul_le_cancellable Contravariant.MulLeCancellable
+#align contravariant.add_le_cancellable Contravariant.AddLeCancellable
 
 @[to_additive]
 theorem mul_le_cancellable_one [Monoid α] [LE α] : MulLeCancellable (1 : α) := fun a b => by
   simpa only [one_mul] using id
 #align mul_le_cancellable_one mul_le_cancellable_one
+#align add_le_cancellable_zero add_le_cancellable_zero
 
 namespace MulLeCancellable
 
@@ -1322,18 +1382,21 @@ protected theorem Injective [Mul α] [PartialOrder α] {a : α} (ha : MulLeCance
     Injective ((· * ·) a) :=
   fun _ _ h => le_antisymm (ha h.le) (ha h.ge)
 #align mul_le_cancellable.injective MulLeCancellable.Injective
+#align add_le_cancellable.injective AddLeCancellable.Injective
 
 @[to_additive]
 protected theorem inj [Mul α] [PartialOrder α] {a b c : α} (ha : MulLeCancellable a) :
     a * b = a * c ↔ b = c :=
   ha.Injective.eq_iff
 #align mul_le_cancellable.inj MulLeCancellable.inj
+#align add_le_cancellable.inj AddLeCancellable.inj
 
 @[to_additive]
 protected theorem injective_left [CommSemigroup α] [PartialOrder α] {a : α}
     (ha : MulLeCancellable a) :
     Injective (· * a) := fun b c h => ha.Injective <| by dsimp; rwa [mul_comm a, mul_comm a]
 #align mul_le_cancellable.injective_left MulLeCancellable.injective_left
+#align add_le_cancellable.injective_left AddLeCancellable.injective_left
 
 @[to_additive]
 protected theorem inj_left [CommSemigroup α] [PartialOrder α] {a b c : α}
@@ -1341,6 +1404,7 @@ protected theorem inj_left [CommSemigroup α] [PartialOrder α] {a b c : α}
     a * c = b * c ↔ a = b :=
   hc.injective_left.eq_iff
 #align mul_le_cancellable.inj_left MulLeCancellable.inj_left
+#align add_le_cancellable.inj_left AddLeCancellable.inj_left
 
 variable [LE α]
 
@@ -1349,12 +1413,14 @@ protected theorem mul_le_mul_iff_left [Mul α] [CovariantClass α α (· * ·) (
     (ha : MulLeCancellable a) : a * b ≤ a * c ↔ b ≤ c :=
   ⟨fun h => ha h, fun h => mul_le_mul_left' h a⟩
 #align mul_le_cancellable.mul_le_mul_iff_left MulLeCancellable.mul_le_mul_iff_left
+#align add_le_cancellable.mul_le_mul_iff_left AddLeCancellable.mul_le_mul_iff_left
 
 @[to_additive]
 protected theorem mul_le_mul_iff_right [CommSemigroup α] [CovariantClass α α (· * ·) (· ≤ ·)]
     {a b c : α} (ha : MulLeCancellable a) :
     b * a ≤ c * a ↔ b ≤ c := by rw [mul_comm b, mul_comm c, ha.mul_le_mul_iff_left]
 #align mul_le_cancellable.mul_le_mul_iff_right MulLeCancellable.mul_le_mul_iff_right
+#align add_le_cancellable.add_le_add_iff_right AddLeCancellable.add_le_add_iff_right
 
 @[to_additive]
 protected theorem le_mul_iff_one_le_right [MulOneClass α] [CovariantClass α α (· * ·) (· ≤ ·)]
@@ -1362,6 +1428,7 @@ protected theorem le_mul_iff_one_le_right [MulOneClass α] [CovariantClass α α
     a ≤ a * b ↔ 1 ≤ b :=
   Iff.trans (by rw [mul_one]) ha.mul_le_mul_iff_left
 #align mul_le_cancellable.le_mul_iff_one_le_right MulLeCancellable.le_mul_iff_one_le_right
+#align add_le_cancellable.le_add_iff_zero_le_right AddLeCancellable.le_add_iff_zero_le_right
 
 @[to_additive]
 protected theorem mul_le_iff_le_one_right [MulOneClass α] [CovariantClass α α (· * ·) (· ≤ ·)]
@@ -1369,18 +1436,21 @@ protected theorem mul_le_iff_le_one_right [MulOneClass α] [CovariantClass α α
     a * b ≤ a ↔ b ≤ 1 :=
   Iff.trans (by rw [mul_one]) ha.mul_le_mul_iff_left
 #align mul_le_cancellable.mul_le_iff_le_one_right MulLeCancellable.mul_le_iff_le_one_right
+#align add_le_cancellable.add_le_iff_le_zero_right AddLeCancellable.add_le_iff_le_zero_right
 
 @[to_additive]
 protected theorem le_mul_iff_one_le_left [CommMonoid α] [CovariantClass α α (· * ·) (· ≤ ·)]
     {a b : α} (ha : MulLeCancellable a) :
     a ≤ b * a ↔ 1 ≤ b := by rw [mul_comm, ha.le_mul_iff_one_le_right]
 #align mul_le_cancellable.le_mul_iff_one_le_left MulLeCancellable.le_mul_iff_one_le_left
+#align add_le_cancellable.le_add_iff_zero_le_left AddLeCancellable.le_add_iff_zero_le_left
 
 @[to_additive]
 protected theorem mul_le_iff_le_one_left [CommMonoid α] [CovariantClass α α (· * ·) (· ≤ ·)]
     {a b : α} (ha : MulLeCancellable a) :
     b * a ≤ a ↔ b ≤ 1 := by rw [mul_comm, ha.mul_le_iff_le_one_right]
 #align mul_le_cancellable.mul_le_iff_le_one_left MulLeCancellable.mul_le_iff_le_one_left
+#align add_le_cancellable.add_le_iff_le_zero_left AddLeCancellable.add_le_iff_le_zero_left
 
 end MulLeCancellable
 
