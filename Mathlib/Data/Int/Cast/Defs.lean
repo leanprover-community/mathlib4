@@ -53,7 +53,7 @@ theorem cast_subNatNat [AddGroupWithOne R] (m n) : ((subNatNat m n : ℤ) : R) =
 
 @[simp, norm_cast]
 theorem cast_add [AddGroupWithOne R] : ∀ m n, ((m + n : ℤ) : R) = m + n
-  | (m : ℕ), (n : ℕ) => by simp [← ofNat_add]
+  | (m : ℕ), (n : ℕ) => by simp [← ofNat_add, Nat.cast_add]
   | (m : ℕ), -[n+1] => by erw [cast_subNatNat, cast_ofNat, cast_negSucc, sub_eq_add_neg]
   | -[m+1], (n : ℕ) => by
     erw [cast_subNatNat, cast_ofNat, cast_negSucc, sub_eq_iff_eq_add,

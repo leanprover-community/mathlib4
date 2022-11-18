@@ -51,11 +51,13 @@ section Semiring
 
 @[simp]
 lemma Nat.cast_mul [Semiring R] {m n : ℕ} : (m * n).cast = (m.cast * n.cast : R) := by
-  induction n generalizing m <;> simp_all [mul_succ, mul_add]
+  induction n generalizing m <;>
+  simp_all [mul_succ, mul_add, Nat.cast_zero, Nat.cast_succ, Nat.cast_add]
 
 @[simp]
 lemma Nat.cast_pow [Semiring R] {m n : ℕ} : (m ^ n).cast = (m.cast ^ n : R) := by
-  induction n generalizing m <;> simp_all [Nat.pow_succ', _root_.pow_succ'', pow_zero]
+  induction n generalizing m <;>
+  simp_all [Nat.pow_succ', _root_.pow_succ'', pow_zero, Nat.cast_zero]
 
 theorem Nat.cast_commute [Semiring α] (n : ℕ) (x : α) : Commute (↑n) x := by
   induction n with
