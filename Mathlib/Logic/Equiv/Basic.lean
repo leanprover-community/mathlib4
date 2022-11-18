@@ -9,6 +9,8 @@ import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
 import Mathlib.Logic.Function.Conjugate
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.Convert
 
 -- **TODO** remove these later
 set_option autoImplicit false
@@ -20,6 +22,7 @@ In this file we continue the work on equivalences begun in `logic/equiv/defs.lea
 
 * canonical isomorphisms between various types: e.g.,
 
+-- **TODO** fix names
   - `equiv.sum_equiv_sigma_bool` is the canonical equivalence between the sum of two types `α ⊕ β`
     and the sigma-type `Σ b : bool, cond b α β`;
 
@@ -28,11 +31,11 @@ In this file we continue the work on equivalences begun in `logic/equiv/defs.lea
 
 * operations on equivalences: e.g.,
 
-  - `equiv.prod_congr ea eb : α₁ × β₁ ≃ α₂ × β₂`: combine two equivalences `ea : α₁ ≃ α₂` and
-    `eb : β₁ ≃ β₂` using `prod.map`.
+  - `Equiv.prodCongr ea eb : α₁ × β₁ ≃ α₂ × β₂`: combine two equivalences `ea : α₁ ≃ α₂` and
+    `eb : β₁ ≃ β₂` using `Prod.Map`.
 
-  More definitions of this kind can be found in other files. E.g., `data/equiv/transfer_instance`
-  does it for many algebraic type classes like `group`, `module`, etc.
+  More definitions of this kind can be found in other files. E.g., `Data/Equiv/TransferInstance`
+  does it for many algebraic type classes like `Group`, `Module`, etc.
 
 ## Tags
 
@@ -48,7 +51,7 @@ variable {α : Sort u} {β : Sort v} {γ : Sort w}
 
 namespace Equiv
 
-/-- `pprod α β` is equivalent to `α × β` -/
+/-- `PProd α β` is equivalent to `α × β` -/
 @[simps apply symmApply]
 def pprodEquivProd {α β : Type _} : PProd α β ≃ α × β where
   toFun x := (x.1, x.2)
@@ -57,8 +60,8 @@ def pprodEquivProd {α β : Type _} : PProd α β ≃ α × β where
   right_inv := fun _ => rfl
 #align equiv.pprod_equiv_prod Equiv.pprodEquivProd
 
-/-- Product of two equivalences, in terms of `pprod`. If `α ≃ β` and `γ ≃ δ`, then
-`pprod α γ ≃ pprod β δ`. -/
+/-- Product of two equivalences, in terms of `PProd`. If `α ≃ β` and `γ ≃ δ`, then
+`PProd α γ ≃ PProd β δ`. -/
 -- porting note: in Lean 3 this had @[congr]`
 @[simps apply]
 def pprodCongr {δ : Sort z} (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PProd α γ ≃ PProd β δ where
@@ -68,23 +71,23 @@ def pprodCongr {δ : Sort z} (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PProd α γ
   right_inv := fun ⟨x, y⟩ => by simp
 #align equiv.pprod_congr Equiv.pprodCongr
 
-/-- Combine two equivalences using `pprod` in the domain and `prod` in the codomain. -/
+/-- Combine two equivalences using `PProd` in the domain and `prod` in the codomain. -/
 @[simps apply symmApply]
 def pprodProd {α₁ β₁ : Sort _} {α₂ β₂ : Type _} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) : PProd α₁ β₁ ≃ α₂ × β₂ :=
   (ea.pprodCongr eb).trans pprodEquivProd
 #align equiv.pprod_prod Equiv.pprodProd
 
-/-- Combine two equivalences using `pprod` in the codomain and `prod` in the domain. -/
+/-- Combine two equivalences using `PProd` in the codomain and `prod` in the domain. -/
 @[simps apply symmApply]
 def prodPProd {α₁ β₁ : Type _} {α₂ β₂ : Sort _} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) : α₁ × β₁ ≃ PProd α₂ β₂ :=
   (ea.symm.pprodProd eb.symm).symm
-#align equiv.prod_pprod Equiv.prodPprod
+#align equiv.prod_pprod Equiv.prodPProd
 
-/-- `pprod α β` is equivalent to `plift α × plift β` -/
+/-- `PProd α β` is equivalent to `Plift α × Plift β` -/
 @[simps apply symmApply]
-def pprodEquivProdPlift {α β : Sort _} : PProd α β ≃ PLift α × PLift β :=
+def pprodEquivProdPLift {α β : Sort _} : PProd α β ≃ PLift α × PLift β :=
   Equiv.plift.symm.pprodProd Equiv.plift.symm
-#align equiv.pprod_equiv_prod_plift Equiv.pprodEquivProdPlift
+#align equiv.pprod_equiv_prod_plift Equiv.pprodEquivProdPLift
 
 /-- Product of two equivalences. If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then `α₁ × β₁ ≃ α₂ × β₂`. This is
 `prod.map` as an equivalence. -/
@@ -95,10 +98,10 @@ def prodCongr {α₁ β₁ α₂ β₂ : Type _} (e₁ : α₁ ≃ α₂) (e₂ 
 #align equiv.prod_congr Equiv.prodCongr
 
 @[simp]
-theorem prod_congr_symm {α₁ β₁ α₂ β₂ : Type _} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
+theorem prodCongr_symm {α₁ β₁ α₂ β₂ : Type _} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
     (prodCongr e₁ e₂).symm = prodCongr e₁.symm e₂.symm :=
   rfl
-#align equiv.prod_congr_symm Equiv.prod_congr_symm
+#align equiv.prod_congr_symm Equiv.prodCongr_symm
 
 /-- Type product is commutative up to an equivalence: `α × β ≃ β × α`. This is `prod.swap` as an
 equivalence.-/
@@ -107,19 +110,19 @@ def prodComm (α β : Type _) : α × β ≃ β × α :=
 #align equiv.prod_comm Equiv.prodComm
 
 @[simp]
-theorem coe_prod_comm (α β : Type _) : (⇑(prodComm α β) : α × β → β × α) = Prod.swap :=
+theorem coe_prodComm (α β : Type _) : (⇑(prodComm α β) : α × β → β × α) = Prod.swap :=
   rfl
-#align equiv.coe_prod_comm Equiv.coe_prod_comm
+#align equiv.coe_prod_comm Equiv.coe_prodComm
 
 @[simp]
-theorem prod_comm_apply {α β : Type _} (x : α × β) : prodComm α β x = x.swap :=
+theorem prodComm_apply {α β : Type _} (x : α × β) : prodComm α β x = x.swap :=
   rfl
-#align equiv.prod_comm_apply Equiv.prod_comm_apply
+#align equiv.prod_comm_apply Equiv.prodComm_apply
 
 @[simp]
-theorem prod_comm_symm (α β) : (prodComm α β).symm = prodComm β α :=
+theorem prodComm_symm (α β) : (prodComm α β).symm = prodComm β α :=
   rfl
-#align equiv.prod_comm_symm Equiv.prod_comm_symm
+#align equiv.prod_comm_symm Equiv.prodComm_symm
 
 /-- Type product is associative up to an equivalence. -/
 @[simps]
@@ -147,7 +150,7 @@ def prodPUnit (α : Type _) : α × PUnit.{u + 1} ≃ α :=
 
 /-- `punit` is a left identity for type product up to an equivalence. -/
 @[simps]
-def pUnitProd (α : Type _) : PUnit.{u + 1} × α ≃ α :=
+def punitProd (α : Type _) : PUnit.{u + 1} × α ≃ α :=
   calc
     PUnit × α ≃ α × PUnit := prodComm _ _
     _ ≃ α := prodPUnit _
@@ -160,13 +163,13 @@ def prodUnique (α : Type u) (β : Type v) [Unique β] : α × β ≃ α :=
 #align equiv.prod_unique Equiv.prodUnique
 
 @[simp]
-theorem coe_prod_unique {α β : Type _} [Unique β] : (⇑(prodUnique α β) : α × β → α)  = Prod.fst :=
+theorem coe_prodUnique {α β : Type _} [Unique β] : (⇑(prodUnique α β) : α × β → α)  = Prod.fst :=
   rfl
-#align equiv.coe_prod_unique Equiv.coe_prod_unique
+#align equiv.coe_prod_unique Equiv.coe_prodUnique
 
-theorem prod_unique_apply {α β : Type _} [Unique β] (x : α × β) : prodUnique α β x = x.1 :=
+theorem prodUnique_apply {α β : Type _} [Unique β] (x : α × β) : prodUnique α β x = x.1 :=
   rfl
-#align equiv.prod_unique_apply Equiv.prod_unique_apply
+#align equiv.prod_unique_apply Equiv.prodUnique_apply
 
 @[simp]
 theorem prod_unique_symm_apply {α β : Type _} [Unique β] (x : α) : (prodUnique α β).symm x = (x, default) :=
@@ -175,23 +178,23 @@ theorem prod_unique_symm_apply {α β : Type _} [Unique β] (x : α) : (prodUniq
 
 /-- Any `unique` type is a left identity for type product up to equivalence. -/
 def uniqueProd (α β : Type _) [Unique β] : β × α ≃ α :=
-  ((equivPUnit.{v+1,v+1} β).prodCongr <| Equiv.refl α).trans <| pUnitProd α
+  ((equivPUnit.{v+1,v+1} β).prodCongr <| Equiv.refl α).trans <| punitProd α
 #align equiv.unique_prod Equiv.uniqueProd
 
 @[simp]
-theorem coe_unique_prod {α β : Type _} [Unique β] : (⇑(uniqueProd α β) : β × α → α) = Prod.snd :=
+theorem coe_uniqueProd {α β : Type _} [Unique β] : (⇑(uniqueProd α β) : β × α → α) = Prod.snd :=
   rfl
-#align equiv.coe_unique_prod Equiv.coe_unique_prod
+#align equiv.coe_unique_prod Equiv.coe_uniqueProd
 
-theorem unique_prod_apply {α β : Type _} [Unique β] (x : β × α) : uniqueProd α β x = x.2 :=
+theorem uniqueProd_apply {α β : Type _} [Unique β] (x : β × α) : uniqueProd α β x = x.2 :=
   rfl
-#align equiv.unique_prod_apply Equiv.unique_prod_apply
+#align equiv.unique_prod_apply Equiv.uniqueProd_apply
 
 @[simp]
-theorem unique_prod_symm_apply {α β : Type _} [Unique β] (x : α) :
+theorem uniqueProd_symm_apply {α β : Type _} [Unique β] (x : α) :
     (uniqueProd α β).symm x = (default, x) :=
   rfl
-#align equiv.unique_prod_symm_apply Equiv.unique_prod_symm_apply
+#align equiv.unique_prod_symm_apply Equiv.uniqueProd_symm_apply
 
 /-- `empty` type is a right absorbing element for type product up to an equivalence. -/
 def prodEmpty (α : Type _) : α × Empty ≃ Empty :=
@@ -204,9 +207,9 @@ def emptyProd (α : Type _) : Empty × α ≃ Empty :=
 #align equiv.empty_prod Equiv.emptyProd
 
 /-- `pempty` type is a right absorbing element for type product up to an equivalence. -/
-def prodPempty (α : Type _) : α × PEmpty ≃ PEmpty :=
+def prodPEmpty (α : Type _) : α × PEmpty ≃ PEmpty :=
   equivPEmpty _
-#align equiv.prod_pempty Equiv.prodPempty
+#align equiv.prod_pempty Equiv.prodPEmpty
 
 /-- `pempty` type is a left absorbing element for type product up to an equivalence. -/
 def pemptyProd (α : Type _) : PEmpty × α ≃ PEmpty :=
@@ -252,23 +255,23 @@ def sumPsum {α₁ β₁ : Type _} {α₂ β₂ : Sort _} (ea : α₁ ≃ α₂)
 #align equiv.sum_psum Equiv.sumPsum
 
 @[simp]
-theorem sum_congr_trans {α₁ α₂ β₁ β₂ γ₁ γ₂ : Sort _} (e : α₁ ≃ β₁) (f : α₂ ≃ β₂) (g : β₁ ≃ γ₁) (h : β₂ ≃ γ₂) :
+theorem sumCongr_trans {α₁ α₂ β₁ β₂ γ₁ γ₂ : Sort _} (e : α₁ ≃ β₁) (f : α₂ ≃ β₂) (g : β₁ ≃ γ₁) (h : β₂ ≃ γ₂) :
     (Equiv.sumCongr e f).trans (Equiv.sumCongr g h) = Equiv.sumCongr (e.trans g) (f.trans h) := by
   ext i
   cases i <;> rfl
-#align equiv.sum_congr_trans Equiv.sum_congr_trans
+#align equiv.sum_congr_trans Equiv.sumCongr_trans
 
 @[simp]
-theorem sum_congr_symm {α β γ δ : Sort _} (e : α ≃ β) (f : γ ≃ δ) :
+theorem sumCongr_symm {α β γ δ : Sort _} (e : α ≃ β) (f : γ ≃ δ) :
     (Equiv.sumCongr e f).symm = Equiv.sumCongr e.symm f.symm :=
   rfl
-#align equiv.sum_congr_symm Equiv.sum_congr_symm
+#align equiv.sum_congr_symm Equiv.sumCongr_symm
 
 @[simp]
-theorem sum_congr_refl {α β : Sort _} : Equiv.sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (Sum α β) := by
+theorem sumCongr_refl {α β : Sort _} : Equiv.sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (Sum α β) := by
   ext i
   cases i <;> rfl
-#align equiv.sum_congr_refl Equiv.sum_congr_refl
+#align equiv.sum_congr_refl Equiv.sumCongr_refl
 
 namespace Perm
 
@@ -279,35 +282,35 @@ def sumCongr {α β : Type _} (ea : Equiv.Perm α) (eb : Equiv.Perm β) : Equiv.
 #align equiv.perm.sum_congr Equiv.Perm.sumCongr
 
 @[simp]
-theorem sum_congr_apply {α β : Type _} (ea : Equiv.Perm α) (eb : Equiv.Perm β) (x : Sum α β) :
+theorem sumCongr_apply {α β : Type _} (ea : Equiv.Perm α) (eb : Equiv.Perm β) (x : Sum α β) :
     sumCongr ea eb x = Sum.map (⇑ea) (⇑eb) x :=
   Equiv.sumCongr_apply ea eb x
-#align equiv.perm.sum_congr_apply Equiv.Perm.sum_congr_apply
+#align equiv.perm.sum_congr_apply Equiv.Perm.sumCongr_apply
 
 @[simp]
-theorem sum_congr_trans {α β : Sort _} (e : Equiv.Perm α) (f : Equiv.Perm β) (g : Equiv.Perm α) (h : Equiv.Perm β) :
+theorem sumCongr_trans {α β : Sort _} (e : Equiv.Perm α) (f : Equiv.Perm β) (g : Equiv.Perm α) (h : Equiv.Perm β) :
     (sumCongr e f).trans (sumCongr g h) = sumCongr (e.trans g) (f.trans h) :=
-  Equiv.sum_congr_trans e f g h
-#align equiv.perm.sum_congr_trans Equiv.Perm.sum_congr_trans
+  Equiv.sumCongr_trans e f g h
+#align equiv.perm.sum_congr_trans Equiv.Perm.sumCongr_trans
 
 @[simp]
-theorem sum_congr_symm {α β : Sort _} (e : Equiv.Perm α) (f : Equiv.Perm β) :
+theorem sumCongr_symm {α β : Sort _} (e : Equiv.Perm α) (f : Equiv.Perm β) :
     (sumCongr e f).symm = sumCongr e.symm f.symm :=
-  Equiv.sum_congr_symm e f
-#align equiv.perm.sum_congr_symm Equiv.Perm.sum_congr_symm
+  Equiv.sumCongr_symm e f
+#align equiv.perm.sum_congr_symm Equiv.Perm.sumCongr_symm
 
 @[simp]
-theorem sum_congr_refl {α β : Sort _} : sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (Sum α β) :=
-  Equiv.sum_congr_refl
-#align equiv.perm.sum_congr_refl Equiv.Perm.sum_congr_refl
+theorem sumCongr_refl {α β : Sort _} : sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (Sum α β) :=
+  Equiv.sumCongr_refl
+#align equiv.perm.sum_congr_refl Equiv.Perm.sumCongr_refl
 
 end Perm
 
 /-- `bool` is equivalent the sum of two `punit`s. -/
-def boolEquivPunitSumPunit : Bool ≃ Sum PUnit.{u + 1} PUnit.{v + 1} :=
+def boolEquivPUnitSumPUnit : Bool ≃ Sum PUnit.{u + 1} PUnit.{v + 1} :=
   ⟨fun b => cond b (inr PUnit.unit) (inl PUnit.unit), Sum.elim (fun _ => false) fun _ => true, fun b => by
     cases b <;> rfl, fun s => by rcases s with (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> rfl⟩
-#align equiv.bool_equiv_punit_sum_punit Equiv.boolEquivPunitSumPunit
+#align equiv.bool_equiv_punit_sum_punit Equiv.boolEquivPUnitSumPUnit
 
 /-- Sum of types is commutative up to an equivalence. This is `sum.swap` as an equivalence. -/
 @[simps (config := { fullyApplied := false }) apply]
@@ -316,9 +319,9 @@ def sumComm (α β : Type _) : Sum α β ≃ Sum β α :=
 #align equiv.sum_comm Equiv.sumComm
 
 @[simp]
-theorem sum_comm_symm (α β) : (sumComm α β).symm = sumComm β α :=
+theorem sumComm_symm (α β) : (sumComm α β).symm = sumComm β α :=
   rfl
-#align equiv.sum_comm_symm Equiv.sum_comm_symm
+#align equiv.sum_comm_symm Equiv.sumComm_symm
 
 /-- Sum of types is associative up to an equivalence. -/
 def sumAssoc (α β γ : Type _) : Sum (Sum α β) γ ≃ Sum α (Sum β γ) :=
@@ -328,34 +331,34 @@ def sumAssoc (α β γ : Type _) : Sum (Sum α β) γ ≃ Sum α (Sum β γ) :=
 #align equiv.sum_assoc Equiv.sumAssoc
 
 @[simp]
-theorem sum_assoc_apply_inl_inl {α β γ} (a) : sumAssoc α β γ (inl (inl a)) = inl a :=
+theorem sumAssoc_apply_inl_inl {α β γ} (a) : sumAssoc α β γ (inl (inl a)) = inl a :=
   rfl
-#align equiv.sum_assoc_apply_inl_inl Equiv.sum_assoc_apply_inl_inl
+#align equiv.sum_assoc_apply_inl_inl Equiv.sumAssoc_apply_inl_inl
 
 @[simp]
-theorem sum_assoc_apply_inl_inr {α β γ} (b) : sumAssoc α β γ (inl (inr b)) = inr (inl b) :=
+theorem sumAssoc_apply_inl_inr {α β γ} (b) : sumAssoc α β γ (inl (inr b)) = inr (inl b) :=
   rfl
-#align equiv.sum_assoc_apply_inl_inr Equiv.sum_assoc_apply_inl_inr
+#align equiv.sum_assoc_apply_inl_inr Equiv.sumAssoc_apply_inl_inr
 
 @[simp]
-theorem sum_assoc_apply_inr {α β γ} (c) : sumAssoc α β γ (inr c) = inr (inr c) :=
+theorem sumAssoc_apply_inr {α β γ} (c) : sumAssoc α β γ (inr c) = inr (inr c) :=
   rfl
-#align equiv.sum_assoc_apply_inr Equiv.sum_assoc_apply_inr
+#align equiv.sum_assoc_apply_inr Equiv.sumAssoc_apply_inr
 
 @[simp]
-theorem sum_assoc_symm_apply_inl {α β γ} (a) : (sumAssoc α β γ).symm (inl a) = inl (inl a) :=
+theorem sumAssoc_symm_apply_inl {α β γ} (a) : (sumAssoc α β γ).symm (inl a) = inl (inl a) :=
   rfl
-#align equiv.sum_assoc_symm_apply_inl Equiv.sum_assoc_symm_apply_inl
+#align equiv.sum_assoc_symm_apply_inl Equiv.sumAssoc_symm_apply_inl
 
 @[simp]
-theorem sum_assoc_symm_apply_inr_inl {α β γ} (b) : (sumAssoc α β γ).symm (inr (inl b)) = inl (inr b) :=
+theorem sumAssoc_symm_apply_inr_inl {α β γ} (b) : (sumAssoc α β γ).symm (inr (inl b)) = inl (inr b) :=
   rfl
-#align equiv.sum_assoc_symm_apply_inr_inl Equiv.sum_assoc_symm_apply_inr_inl
+#align equiv.sum_assoc_symm_apply_inr_inl Equiv.sumAssoc_symm_apply_inr_inl
 
 @[simp]
-theorem sum_assoc_symm_apply_inr_inr {α β γ} (c) : (sumAssoc α β γ).symm (inr (inr c)) = inr c :=
+theorem sumAssoc_symm_apply_inr_inr {α β γ} (c) : (sumAssoc α β γ).symm (inr (inr c)) = inr c :=
   rfl
-#align equiv.sum_assoc_symm_apply_inr_inr Equiv.sum_assoc_symm_apply_inr_inr
+#align equiv.sum_assoc_symm_apply_inr_inr Equiv.sumAssoc_symm_apply_inr_inr
 
 /-- Sum with `empty` is equivalent to the original type. -/
 @[simps symmApply]
@@ -367,9 +370,9 @@ def sumEmpty (α β : Type _) [IsEmpty β] : Sum α β ≃ α :=
 #align equiv.sum_empty Equiv.sumEmpty
 
 @[simp]
-theorem sum_empty_apply_inl {α β : Type _} [IsEmpty β] (a : α) : sumEmpty α β (Sum.inl a) = a :=
+theorem sumEmpty_apply_inl {α β : Type _} [IsEmpty β] (a : α) : sumEmpty α β (Sum.inl a) = a :=
   rfl
-#align equiv.sum_empty_apply_inl Equiv.sum_empty_apply_inl
+#align equiv.sum_empty_apply_inl Equiv.sumEmpty_apply_inl
 
 /-- The sum of `empty` with any `Sort*` is equivalent to the right summand. -/
 @[simps symmApply]
@@ -378,55 +381,55 @@ def emptySum (α β : Type _) [IsEmpty α] : Sum α β ≃ β :=
 #align equiv.empty_sum Equiv.emptySum
 
 @[simp]
-theorem empty_sum_apply_inr {α β : Type _} [IsEmpty α] (b : β) : emptySum α β (Sum.inr b) = b :=
+theorem emptySum_apply_inr {α β : Type _} [IsEmpty α] (b : β) : emptySum α β (Sum.inr b) = b :=
   rfl
-#align equiv.empty_sum_apply_inr Equiv.empty_sum_apply_inr
+#align equiv.empty_sum_apply_inr Equiv.emptySum_apply_inr
 
 /-- `option α` is equivalent to `α ⊕ punit` -/
-def optionEquivSumPunit (α : Type _) : Option α ≃ Sum α PUnit.{u + 1} :=
+def optionEquivSumPUnit (α : Type _) : Option α ≃ Sum α PUnit.{u + 1} :=
   ⟨fun o => o.elim (inr PUnit.unit) inl, fun s => s.elim some fun _ => none, fun o => by cases o <;> rfl, fun s => by
     rcases s with (_ | ⟨⟨⟩⟩) <;> rfl⟩
-#align equiv.option_equiv_sum_punit Equiv.optionEquivSumPunit
+#align equiv.option_equiv_sum_punit Equiv.optionEquivSumPUnit
 
 @[simp]
-theorem option_equiv_sum_punit_none {α} : optionEquivSumPunit α none = Sum.inr PUnit.unit :=
+theorem optionEquivSumPUnit_none {α} : optionEquivSumPUnit α none = Sum.inr PUnit.unit :=
   rfl
-#align equiv.option_equiv_sum_punit_none Equiv.option_equiv_sum_punit_none
-#exit
+#align equiv.option_equiv_sum_punit_none Equiv.optionEquivSumPUnit_none
 
 @[simp]
-theorem option_equiv_sum_punit_some {α} (a) : optionEquivSumPunit α (some a) = Sum.inl a :=
+theorem optionEquivSumPUnit_some {α} (a) : optionEquivSumPUnit α (some a) = Sum.inl a :=
   rfl
-#align equiv.option_equiv_sum_punit_some Equiv.option_equiv_sum_punit_some
+#align equiv.option_equiv_sum_punit_some Equiv.optionEquivSumPUnit_some
 
 @[simp]
-theorem option_equiv_sum_punit_coe {α} (a : α) : optionEquivSumPunit α a = Sum.inl a :=
+theorem optionEquivSumPUnit_coe {α} (a : α) : optionEquivSumPUnit α a = Sum.inl a :=
   rfl
-#align equiv.option_equiv_sum_punit_coe Equiv.option_equiv_sum_punit_coe
+#align equiv.option_equiv_sum_punit_coe Equiv.optionEquivSumPUnit_coe
 
 @[simp]
-theorem option_equiv_sum_punit_symm_inl {α} (a) : (optionEquivSumPunit α).symm (Sum.inl a) = a :=
+theorem optionEquivSumPUnit_symm_inl {α} (a) : (optionEquivSumPUnit α).symm (Sum.inl a) = a :=
   rfl
-#align equiv.option_equiv_sum_punit_symm_inl Equiv.option_equiv_sum_punit_symm_inl
+#align equiv.option_equiv_sum_punit_symm_inl Equiv.optionEquivSumPUnit_symm_inl
 
 @[simp]
-theorem option_equiv_sum_punit_symm_inr {α} (a) : (optionEquivSumPunit α).symm (Sum.inr a) = none :=
+theorem optionEquivSumPUnit_symm_inr {α} (a) : (optionEquivSumPUnit α).symm (Sum.inr a) = none :=
   rfl
-#align equiv.option_equiv_sum_punit_symm_inr Equiv.option_equiv_sum_punit_symm_inr
+#align equiv.option_equiv_sum_punit_symm_inr Equiv.optionEquivSumPUnit_symm_inr
 
 /-- The set of `x : option α` such that `is_some x` is equivalent to `α`. -/
 @[simps]
 def optionIsSomeEquiv (α : Type _) : { x : Option α // x.isSome } ≃ α where
-  toFun o := Option.get o.2
-  invFun x := ⟨some x, by decide⟩
-  left_inv o := Subtype.eq <| Option.some_get _
-  right_inv x := Option.get_some _ _
+  toFun o := Option.get _ o.2
+  invFun x := ⟨some x, rfl⟩
+  left_inv _ := Subtype.eq <| Option.some_get _
+  right_inv _ := Option.get_some _ _
 #align equiv.option_is_some_equiv Equiv.optionIsSomeEquiv
 
 /-- The product over `option α` of `β a` is the binary product of the
 product over `α` of `β (some α)` and `β none` -/
 @[simps]
-def piOptionEquivProd {α : Type _} {β : Option α → Type _} : (∀ a : Option α, β a) ≃ β none × ∀ a : α, β (some a) where
+def piOptionEquivProd {α : Type _} {β : Option α → Type _} :
+    (∀ a : Option α, β a) ≃ β none × ∀ a : α, β (some a) where
   toFun f := (f none, fun a => f (some a))
   invFun x a := Option.casesOn a x.fst x.snd
   left_inv f := funext fun a => by cases a <;> rfl
@@ -440,8 +443,8 @@ difficulty. -/
 def sumEquivSigmaBool (α β : Type u) : Sum α β ≃ Σb : Bool, cond b α β :=
   ⟨fun s => s.elim (fun x => ⟨true, x⟩) fun x => ⟨false, x⟩, fun s =>
     match s with
-    | ⟨tt, a⟩ => inl a
-    | ⟨ff, b⟩ => inr b,
+    | ⟨true, a⟩ => inl a
+    | ⟨false, b⟩ => inr b,
     fun s => by cases s <;> rfl, fun s => by rcases s with ⟨_ | _, _⟩ <;> rfl⟩
 #align equiv.sum_equiv_sigma_bool Equiv.sumEquivSigmaBool
 
@@ -450,7 +453,7 @@ def sumEquivSigmaBool (α β : Type u) : Sum α β ≃ Σb : Bool, cond b α β 
 the type of all fibres of `f` and the total space `α`. -/
 @[simps]
 def sigmaFiberEquiv {α β : Type _} (f : α → β) : (Σy : β, { x // f x = y }) ≃ α :=
-  ⟨fun x => ↑x.2, fun x => ⟨f x, x, rfl⟩, fun ⟨y, x, rfl⟩ => rfl, fun x => rfl⟩
+  ⟨fun x => ↑x.2, fun x => ⟨f x, x, rfl⟩, fun ⟨_, _, rfl⟩ => rfl, fun _ => rfl⟩
 #align equiv.sigma_fiber_equiv Equiv.sigmaFiberEquiv
 
 end
@@ -464,42 +467,45 @@ is naturally equivalent to `α`.
 See `subtype_or_equiv` for sum types over subtypes `{x // p x}` and `{x // q x}`
 that are not necessarily `is_compl p q`.  -/
 def sumCompl {α : Type _} (p : α → Prop) [DecidablePred p] : Sum { a // p a } { a // ¬p a } ≃ α where
-  toFun := Sum.elim coe coe
+  toFun := Sum.elim Subtype.val Subtype.val
   invFun a := if h : p a then Sum.inl ⟨a, h⟩ else Sum.inr ⟨a, h⟩
-  left_inv := by rintro (⟨x, hx⟩ | ⟨x, hx⟩) <;> dsimp <;> [rw [dif_pos], rw [dif_neg]]
+  left_inv := by
+    rintro (⟨x, hx⟩ | ⟨x, hx⟩) <;> dsimp;
+    { rw [dif_pos] }
+    { rw [dif_neg] }
   right_inv a := by
     dsimp
     split_ifs <;> rfl
 #align equiv.sum_compl Equiv.sumCompl
 
 @[simp]
-theorem sum_compl_apply_inl {α : Type _} (p : α → Prop) [DecidablePred p] (x : { a // p a }) :
+theorem sumCompl_apply_inl {α : Type _} (p : α → Prop) [DecidablePred p] (x : { a // p a }) :
     sumCompl p (Sum.inl x) = x :=
   rfl
-#align equiv.sum_compl_apply_inl Equiv.sum_compl_apply_inl
+#align equiv.sum_compl_apply_inl Equiv.sumCompl_apply_inl
 
 @[simp]
-theorem sum_compl_apply_inr {α : Type _} (p : α → Prop) [DecidablePred p] (x : { a // ¬p a }) :
+theorem sumCompl_apply_inr {α : Type _} (p : α → Prop) [DecidablePred p] (x : { a // ¬p a }) :
     sumCompl p (Sum.inr x) = x :=
   rfl
-#align equiv.sum_compl_apply_inr Equiv.sum_compl_apply_inr
+#align equiv.sum_compl_apply_inr Equiv.sumCompl_apply_inr
 
 @[simp]
-theorem sum_compl_apply_symm_of_pos {α : Type _} (p : α → Prop) [DecidablePred p] (a : α) (h : p a) :
+theorem sumCompl_apply_symm_of_pos {α : Type _} (p : α → Prop) [DecidablePred p] (a : α) (h : p a) :
     (sumCompl p).symm a = Sum.inl ⟨a, h⟩ :=
   dif_pos h
-#align equiv.sum_compl_apply_symm_of_pos Equiv.sum_compl_apply_symm_of_pos
+#align equiv.sum_compl_apply_symm_of_pos Equiv.sumCompl_apply_symm_of_pos
 
 @[simp]
-theorem sum_compl_apply_symm_of_neg {α : Type _} (p : α → Prop) [DecidablePred p] (a : α) (h : ¬p a) :
-    (sumCompl p).symm a = Sum.inr ⟨a, h⟩ :=
+theorem sumCompl_apply_symm_of_neg {α : Type _} (p : α → Prop) [DecidablePred p] (a : α)
+    (h : ¬p a) : (sumCompl p).symm a = Sum.inr ⟨a, h⟩ :=
   dif_neg h
-#align equiv.sum_compl_apply_symm_of_neg Equiv.sum_compl_apply_symm_of_neg
+#align equiv.sum_compl_apply_symm_of_neg Equiv.sumCompl_apply_symm_of_neg
 
 /-- Combines an `equiv` between two subtypes with an `equiv` between their complements to form a
   permutation. -/
-def subtypeCongr {α : Type _} {p q : α → Prop} [DecidablePred p] [DecidablePred q] (e : { x // p x } ≃ { x // q x })
-    (f : { x // ¬p x } ≃ { x // ¬q x }) : Perm α :=
+def subtypeCongr {α : Type _} {p q : α → Prop} [DecidablePred p] [DecidablePred q]
+    (e : { x // p x } ≃ { x // q x }) (f : { x // ¬p x } ≃ { x // ¬q x }) : Perm α :=
   (sumCompl p).symm.trans ((sumCongr e f).trans (sumCompl q))
 #align equiv.subtype_congr Equiv.subtypeCongr
 
@@ -515,30 +521,29 @@ def Perm.subtypeCongr : Equiv.Perm ε :=
   permCongr (sumCompl p) (sumCongr ep en)
 #align equiv.perm.subtype_congr Equiv.Perm.subtypeCongr
 
-theorem Perm.subtypeCongr.apply (a : ε) : ep.subtypeCongr en a = if h : p a then ep ⟨a, h⟩ else en ⟨a, h⟩ := by
-  by_cases h:p a <;> simp [perm.subtype_congr, h]
+theorem Perm.subtypeCongr.apply (a : ε) : ep.subtypeCongr en a =
+    if h : p a then (ep ⟨a, h⟩ : ε) else en ⟨a, h⟩ := by
+  by_cases h : p a <;> simp [Perm.subtypeCongr, h]
 #align equiv.perm.subtype_congr.apply Equiv.Perm.subtypeCongr.apply
 
 @[simp]
 theorem Perm.subtypeCongr.left_apply {a : ε} (h : p a) : ep.subtypeCongr en a = ep ⟨a, h⟩ := by
-  simp [perm.subtype_congr.apply, h]
+  simp [Perm.subtypeCongr.apply, h]
 #align equiv.perm.subtype_congr.left_apply Equiv.Perm.subtypeCongr.left_apply
 
 @[simp]
-theorem Perm.subtypeCongr.left_apply_subtype (a : { a // p a }) : ep.subtypeCongr en a = ep a := by
-  convert perm.subtype_congr.left_apply _ _ a.property
-  simp
+theorem Perm.subtypeCongr.left_apply_subtype (a : { a // p a }) : ep.subtypeCongr en a = ep a :=
+    Perm.subtypeCongr.left_apply ep en a.property
 #align equiv.perm.subtype_congr.left_apply_subtype Equiv.Perm.subtypeCongr.left_apply_subtype
 
 @[simp]
 theorem Perm.subtypeCongr.right_apply {a : ε} (h : ¬p a) : ep.subtypeCongr en a = en ⟨a, h⟩ := by
-  simp [perm.subtype_congr.apply, h]
+  simp [Perm.subtypeCongr.apply, h]
 #align equiv.perm.subtype_congr.right_apply Equiv.Perm.subtypeCongr.right_apply
 
 @[simp]
-theorem Perm.subtypeCongr.right_apply_subtype (a : { a // ¬p a }) : ep.subtypeCongr en a = en a := by
-  convert perm.subtype_congr.right_apply _ _ a.property
-  simp
+theorem Perm.subtypeCongr.right_apply_subtype (a : { a // ¬p a }) : ep.subtypeCongr en a = en a :=
+  Perm.subtypeCongr.right_apply ep en a.property
 #align equiv.perm.subtype_congr.right_apply_subtype Equiv.Perm.subtypeCongr.right_apply_subtype
 
 @[simp]
@@ -553,10 +558,10 @@ theorem Perm.subtypeCongr.symm : (ep.subtypeCongr en).symm = Perm.subtypeCongr e
   ext x
   by_cases h:p x
   · have : p (ep.symm ⟨x, h⟩) := Subtype.property _
-    simp [perm.subtype_congr.apply, h, symm_apply_eq, this]
+    simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
 
   · have : ¬p (en.symm ⟨x, h⟩) := Subtype.property (en.symm _)
-    simp [perm.subtype_congr.apply, h, symm_apply_eq, this]
+    simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
 
 #align equiv.perm.subtype_congr.symm Equiv.Perm.subtypeCongr.symm
 
@@ -566,10 +571,10 @@ theorem Perm.subtypeCongr.trans :
   ext x
   by_cases h:p x
   · have : p (ep ⟨x, h⟩) := Subtype.property _
-    simp [perm.subtype_congr.apply, h, this]
+    simp [Perm.subtypeCongr.apply, h, this]
 
   · have : ¬p (en ⟨x, h⟩) := Subtype.property (en _)
-    simp [perm.subtype_congr.apply, h, symm_apply_eq, this]
+    simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
 
 #align equiv.perm.subtype_congr.trans Equiv.Perm.subtypeCongr.trans
 
@@ -583,14 +588,16 @@ variable (p : α → Prop) [DecidablePred p] (x₀ : { a // p a } → β)
 the subtype of functions `x : α → β` that agree with `x₀` on the subtype `{a // p a}`
 is naturally equivalent to the type of functions `{a // ¬ p a} → β`. -/
 @[simps]
-def subtypePreimage : { x : α → β // x ∘ coe = x₀ } ≃ ({ a // ¬p a } → β) where
-  toFun (x : { x : α → β // x ∘ coe = x₀ }) a := (x : α → β) a
+def subtypePreimage : { x : α → β // x ∘ Subtype.val = x₀ } ≃ ({ a // ¬p a } → β) where
+  toFun (x : { x : α → β // x ∘ Subtype.val = x₀ }) a := (x : α → β) a
   invFun x := ⟨fun a => if h : p a then x₀ ⟨a, h⟩ else x ⟨a, h⟩, funext fun ⟨a, h⟩ => dif_pos h⟩
   left_inv := fun ⟨x, hx⟩ =>
     Subtype.val_injective <|
       funext fun a => by
         dsimp
-        split_ifs <;> [rw [← hx], skip] <;> rfl
+        split_ifs
+        { rw [← hx]; rfl }
+        { rfl }
   right_inv x :=
     funext fun ⟨a, h⟩ =>
       show dite (p a) _ _ = _ by
