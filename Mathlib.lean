@@ -13,7 +13,7 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.Group
 import Mathlib.Algebra.Order.Monoid
-import Mathlib.Algebra.Order.MonoidLemmas
+import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Algebra.Order.Ring
 import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Ring.Basic
