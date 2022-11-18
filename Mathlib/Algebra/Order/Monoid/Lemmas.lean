@@ -1278,15 +1278,13 @@ theorem StrictAntiOn.mul_antitone' (hf : StrictAntiOn f s) (hg : AntitoneOn g s)
 theorem cmp_mul_left' {α : Type _} [Mul α] [LinearOrder α] [CovariantClass α α (· * ·) (· < ·)]
     (a b c : α) :
     cmp (a * b) (a * c) = cmp b c :=
-  (strict_mono_id.const_mul' a).cmp_map_eq b c -- in #591 (port Order.Monotone)
-#align cmp_mul_left' cmp_mul_left'
+  (strictMono_id.const_mul' a).cmp_map_eq b c
 
 @[simp, to_additive cmp_add_right]
 theorem cmp_mul_right' {α : Type _} [Mul α] [LinearOrder α]
     [CovariantClass α α (swap (· * ·)) (· < ·)] (a b c : α) :
     cmp (a * c) (b * c) = cmp a b :=
-  (strict_mono_id.mul_const' c).cmp_map_eq a b  -- in #591 (port Order.Monotone)
-#align cmp_mul_right' cmp_mul_right'
+  (strictMono_id.mul_const' c).cmp_map_eq a b
 
 end Mono
 
