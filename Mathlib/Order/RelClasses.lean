@@ -222,14 +222,16 @@ theorem isStrictWeakOrder_of_isOrderConnected [IsAsymm α r] [IsOrderConnected �
 #align is_strict_weak_order_of_is_order_connected isStrictWeakOrder_of_isOrderConnected
 
 -- see Note [lower instance priority]
-instance (priority := 100) is_order_connected_of_is_strict_total_order [IsStrictTotalOrder α r] :
+instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStrictTotalOrder α r] :
     IsOrderConnected α r :=
   ⟨λ _ _ _ h => (trichotomous _ _).imp_right fun o => o.elim (fun e => e ▸ h) fun h' => trans h' h⟩
+#align is_order_connected_of_is_strict_total_order isStrictOrderConnected_of_isStrictTotalOrder
 
 -- see Note [lower instance priority]
-instance (priority := 100) is_strict_weak_order_of_is_strict_total_order [IsStrictTotalOrder α r] :
+instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTotalOrder α r] :
     IsStrictWeakOrder α r :=
-  { is_strict_weak_order_of_is_order_connected with }
+  { isStrictWeakOrder_of_isOrderConnected with }
+#align is_strict_weak_order_of_is_strict_total_order isStrictTotalOrder_of_isStrictTotalOrder
 
 /-! ### Well-order -/
 
