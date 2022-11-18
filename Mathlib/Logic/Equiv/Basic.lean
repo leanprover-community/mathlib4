@@ -10,6 +10,9 @@ import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
 import Mathlib.Logic.Function.Conjugate
 
+-- **TODO** remove these later
+set_option autoImplicit false
+
 /-!
 # Equivalence between types
 
@@ -86,7 +89,8 @@ def pprodEquivProdPlift {α β : Sort _} : PProd α β ≃ PLift α × PLift β 
 /-- Product of two equivalences. If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then `α₁ × β₁ ≃ α₂ × β₂`. This is
 `prod.map` as an equivalence. -/
 --@[congr, simps apply]
---porting note: NEEDS FIXING
+--**TODO** need to sort out those attributes
+--@[simps apply]
 def prodCongr {α₁ β₁ α₂ β₂ : Type _} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) : α₁ × β₁ ≃ α₂ × β₂ :=
   ⟨Prod.map e₁ e₂, Prod.map e₁.symm e₂.symm, fun ⟨a, b⟩ => by simp, fun ⟨a, b⟩ => by simp⟩
 #align equiv.prod_congr Equiv.prodCongr
@@ -138,26 +142,27 @@ section
 
 /-- `punit` is a right identity for type product up to an equivalence. -/
 @[simps]
-def prodPunit (α : Type _) : α × PUnit.{u + 1} ≃ α :=
+def prodPUnit (α : Type _) : α × PUnit.{u + 1} ≃ α :=
   ⟨fun p => p.1, fun a => (a, PUnit.unit), fun ⟨_, PUnit.unit⟩ => rfl, fun _ => rfl⟩
 #align equiv.prod_punit Equiv.prodPunit
 
 /-- `punit` is a left identity for type product up to an equivalence. -/
 @[simps]
-def punitProd (α : Type _) : PUnit.{u + 1} × α ≃ α :=
+def pUnitProd (α : Type _) : PUnit.{u + 1} × α ≃ α :=
   calc
     PUnit × α ≃ α × PUnit := prodComm _ _
-    _ ≃ α := prodPunit _
+    _ ≃ α := prodPUnit _
 
 #align equiv.punit_prod Equiv.punitProd
 
+-- **TODO** fix weird universe error
 /-- Any `unique` type is a right identity for type product up to equivalence. -/
-def prodUnique (α β : Type _) [Unique β] : α × β ≃ α :=
-  ((Equiv.refl α).prodCongr <| equivPunit β).trans <| prodPunit α
+def prodUnique (α : Type u) (β : Type v) [Unique β] : α × β ≃ α :=
+  ((Equiv.refl α).prodCongr <| equivPUnit β).trans <| prodPUnit α
 #align equiv.prod_unique Equiv.prodUnique
 
 @[simp]
-theorem coe_prod_unique {α β : Type _} [Unique β] : ⇑(prodUnique α β) = Prod.fst :=
+theorem coe_prod_unique {α β : Type _} [Unique β] : (⇑(prodUnique α β) : α × β → α)  = Prod.fst :=
   rfl
 #align equiv.coe_prod_unique Equiv.coe_prod_unique
 
@@ -188,7 +193,7 @@ theorem unique_prod_apply {α β : Type _} [Unique β] (x : β × α) : uniquePr
 theorem unique_prod_symm_apply {α β : Type _} [Unique β] (x : α) : (uniqueProd α β).symm x = (default, x) :=
   rfl
 #align equiv.unique_prod_symm_apply Equiv.unique_prod_symm_apply
-
+#exit
 /-- `empty` type is a right absorbing element for type product up to an equivalence. -/
 def prodEmpty (α : Type _) : α × Empty ≃ Empty :=
   equivEmpty _
