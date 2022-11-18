@@ -16,7 +16,7 @@ set_option autoImplicit false
 /-!
 # Equivalence between types
 
-In this file we continue the work on equivalences begun in `logic/equiv/defs.lean`, defining
+In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lean`, defining
 
 * canonical isomorphisms between various types: e.g.,
 
