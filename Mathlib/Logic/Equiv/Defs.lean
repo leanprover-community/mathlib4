@@ -151,13 +151,17 @@ instance : Trans Equiv Equiv Equiv where
 @[simp] theorem inv_fun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
 
 protected theorem injective (e : α ≃ β) : Injective e := EquivLike.injective e
+#align equiv.injective Equiv.injective
 
 protected theorem surjective (e : α ≃ β) : Surjective e := EquivLike.surjective e
+#align equiv.surjective Equiv.surjective
 
 protected theorem bijective (e : α ≃ β) : Bijective e := EquivLike.bijective e
+#align equiv.bijective Equiv.bijective
 
 protected theorem subsingleton (e : α ≃ β) [Subsingleton β] : Subsingleton α :=
   e.injective.subsingleton
+#align equiv.subsingleton Equiv.subsingleton
 
 protected theorem subsingleton.symm (e : α ≃ β) [Subsingleton α] : Subsingleton β :=
   e.symm.injective.subsingleton

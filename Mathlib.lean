@@ -12,6 +12,7 @@ import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.Group
 import Mathlib.Algebra.Order.Monoid
 import Mathlib.Algebra.Order.MonoidLemmas

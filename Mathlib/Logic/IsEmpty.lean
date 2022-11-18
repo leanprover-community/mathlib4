@@ -36,7 +36,7 @@ instance : IsEmpty (Fin 0) :=
 
 protected theorem Function.isEmpty [IsEmpty β] (f : α → β) : IsEmpty α :=
   ⟨fun x => IsEmpty.false (f x)⟩
-#align function.is_empty function.isEmpty
+#align function.is_empty Function.isEmpty
 
 instance {p : α → Sort _} [h : Nonempty α] [∀ x, IsEmpty (p x)] : IsEmpty (∀ x, p x) :=
   h.elim fun x => Function.isEmpty <| Function.eval x
