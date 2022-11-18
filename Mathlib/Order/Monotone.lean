@@ -20,14 +20,14 @@ to mean "decreasing".
 
 * `Monotone f`: A function `f` between two preorders is monotone if `a ≤ b` implies `f a ≤ f b`.
 * `Antitone f`: A function `f` between two preorders is antitone if `a ≤ b` implies `f b ≤ f a`.
-* `MonotoneOn f s`: Same as `monotone f`, but for all `a, b ∈ s`.
-* `AntitoneoN f s`: Same as `antitone f`, but for all `a, b ∈ s`.
+* `MonotoneOn f s`: Same as `Monotone f`, but for all `a, b ∈ s`.
+* `AntitoneoN f s`: Same as `Antitone f`, but for all `a, b ∈ s`.
 * `StrictMono f` : A function `f` between two preorders is strictly monotone if `a < b` implies
   `f a < f b`.
 * `StrictAnti f` : A function `f` between two preorders is strictly antitone if `a < b` implies
   `f b < f a`.
-* `StrictMonoOn f s`: Same as `strict_mono f`, but for all `a, b ∈ s`.
-* `StrictAntiOn f s`: Same as `strict_anti f`, but for all `a, b ∈ s`.
+* `StrictMonoOn f s`: Same as `StrictMono f`, but for all `a, b ∈ s`.
+* `StrictAntiOn f s`: Same as `StrictAnti f`, but for all `a, b ∈ s`.
 
 ## Main theorems
 
@@ -35,9 +35,9 @@ to mean "decreasing".
   `f n ≤ f (n + 1)` for all `n`, then `f` is monotone.
 * `antitone_nat_of_succ_le`, `antitone_int_of_succ_le`: If `f : ℕ → α` or `f : ℤ → α` and
   `f (n + 1) ≤ f n` for all `n`, then `f` is antitone.
-* `strict_mono_nat_of_lt_succ`, `strict_mono_int_of_lt_succ`: If `f : ℕ → α` or `f : ℤ → α` and
+* `strictMono_nat_of_lt_succ`, `strictMono_int_of_lt_succ`: If `f : ℕ → α` or `f : ℤ → α` and
   `f n < f (n + 1)` for all `n`, then `f` is strictly monotone.
-* `strict_anti_nat_of_succ_lt`, `strict_anti_int_of_succ_lt`: If `f : ℕ → α` or `f : ℤ → α` and
+* `strictAnti_nat_of_succ_lt`, `strictAnti_int_of_succ_lt`: If `f : ℕ → α` or `f : ℤ → α` and
   `f (n + 1) < f n` for all `n`, then `f` is strictly antitone.
 
 ## Implementation notes
@@ -779,7 +779,7 @@ theorem Monotone.strictMono_iff_injective (hf : Monotone f) : StrictMono f ↔ I
   ⟨fun h => h.injective, hf.strictMono_of_injective⟩
 #align monotone.strict_mono_iff_injective Monotone.strictMono_iff_injective
 
-theorem Antitone.strict_anti_iff_injective (hf : Antitone f) : StrictAnti f ↔ Injective f :=
+theorem Antitone.strictAnti_iff_injective (hf : Antitone f) : StrictAnti f ↔ Injective f :=
   ⟨fun h => h.injective, hf.strictAnti_of_injective⟩
 #align antitone.strict_anti_iff_injective Antitone.strictAnti_iff_injective
 
