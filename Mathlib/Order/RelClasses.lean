@@ -248,6 +248,11 @@ theorem IsWellFounded_iff (α : Type u) (r : α → α → Prop) : IsWellFounded
 instance [h : WellFoundedRelation α] : IsWellFounded α WellFoundedRelation.rel :=
   { h with }
 
+theorem WellFoundedRelation.asymmetric {α : Sort _} [WellFoundedRelation α] {a b : α} :
+    WellFoundedRelation.rel a b → ¬ WellFoundedRelation.rel b a :=
+  fun hab hba => WellFoundedRelation.asymmetric hba hab
+termination_by _ => a
+
 namespace IsWellFounded
 
 variable (r) [IsWellFounded α r]
@@ -278,13 +283,9 @@ def toWellFoundedRelation : WellFoundedRelation α :=
 
 end IsWellFounded
 
-theorem WellFounded.asymmetric {α : Sort _} {r : α → α → Prop} (h : WellFounded r) :
-    ∀ ⦃a b⦄, r a b → ¬r b a
-  | a => fun b hab hba => asymmetric h hba hab
-termination_by _ => h
-decreasing_by {
-  sorry
-}
+theorem WellFounded.asymmetric {α : Sort _} {r : α → α → Prop} (h : WellFounded r) (a b) :
+    r a b → ¬r b a :=
+  fun hab hba  => @WellFoundedRelation.asymmetric _ ⟨_, h⟩ _ _ hab hba
 
 -- see Note [lower instance priority]
 instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsAsymm α r :=
