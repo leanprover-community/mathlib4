@@ -67,7 +67,7 @@ theorem mapEquiv_symm_apply (y : f β) : (mapEquiv f e).symm y = EquivFunctor.ma
 
 @[simp]
 theorem mapEquiv_refl (α) : mapEquiv f (Equiv.refl α) = Equiv.refl (f α) := by
- simpa [EquivFunctor.mapEquiv]
+ simp [EquivFunctor.mapEquiv]; rfl
 #align equiv_functor.map_equiv_refl EquivFunctor.mapEquiv_refl
 
 @[simp]
@@ -89,11 +89,11 @@ end
 
 instance (priority := 100) ofIsLawfulFunctor (f : Type u₀ → Type u₁) [Functor f] [LawfulFunctor f] :
     EquivFunctor f where
-  map α β e := Functor.map e
+  map {α β} e := Functor.map e
   map_refl' α := by
     ext
     apply LawfulFunctor.id_map
-  map_trans' α β γ k h := by
+  map_trans' {α β γ} k h := by
     ext x
     apply LawfulFunctor.comp_map k h x
 #align equiv_functor.of_is_lawful_functor EquivFunctor.ofIsLawfulFunctor
