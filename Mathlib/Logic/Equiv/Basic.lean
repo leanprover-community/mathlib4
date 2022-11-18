@@ -59,8 +59,8 @@ def pprodEquivProd {α β : Type _} : PProd α β ≃ α × β where
 
 /-- Product of two equivalences, in terms of `pprod`. If `α ≃ β` and `γ ≃ δ`, then
 `pprod α γ ≃ pprod β δ`. -/
---@[congr, simps apply]
---porting note: NEEDS FIXING
+-- porting note: in Lean 3 this had @[congr]`
+@[simps apply]
 def pprodCongr {δ : Sort z} (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PProd α γ ≃ PProd β δ where
   toFun x := ⟨e₁ x.1, e₂ x.2⟩
   invFun x := ⟨e₁.symm x.1, e₂.symm x.2⟩
@@ -76,7 +76,7 @@ def pprodProd {α₁ β₁ : Sort _} {α₂ β₂ : Type _} (ea : α₁ ≃ α�
 
 /-- Combine two equivalences using `pprod` in the codomain and `prod` in the domain. -/
 @[simps apply symmApply]
-def prodPprod {α₁ β₁ : Type _} {α₂ β₂ : Sort _} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) : α₁ × β₁ ≃ PProd α₂ β₂ :=
+def prodPProd {α₁ β₁ : Type _} {α₂ β₂ : Sort _} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) : α₁ × β₁ ≃ PProd α₂ β₂ :=
   (ea.symm.pprodProd eb.symm).symm
 #align equiv.prod_pprod Equiv.prodPprod
 
@@ -88,9 +88,8 @@ def pprodEquivProdPlift {α β : Sort _} : PProd α β ≃ PLift α × PLift β 
 
 /-- Product of two equivalences. If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then `α₁ × β₁ ≃ α₂ × β₂`. This is
 `prod.map` as an equivalence. -/
---@[congr, simps apply]
---**TODO** need to sort out those attributes
---@[simps apply]
+-- porting note: in Lean 3 there was also a @[congr] tag
+@[simps apply]
 def prodCongr {α₁ β₁ α₂ β₂ : Type _} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) : α₁ × β₁ ≃ α₂ × β₂ :=
   ⟨Prod.map e₁ e₂, Prod.map e₁.symm e₂.symm, fun ⟨a, b⟩ => by simp, fun ⟨a, b⟩ => by simp⟩
 #align equiv.prod_congr Equiv.prodCongr
@@ -155,10 +154,9 @@ def pUnitProd (α : Type _) : PUnit.{u + 1} × α ≃ α :=
 
 #align equiv.punit_prod Equiv.punitProd
 
--- **TODO** fix weird universe error
 /-- Any `unique` type is a right identity for type product up to equivalence. -/
 def prodUnique (α : Type u) (β : Type v) [Unique β] : α × β ≃ α :=
-  ((Equiv.refl α).prodCongr <| equivPUnit β).trans <| prodPUnit α
+  ((Equiv.refl α).prodCongr <| equivPUnit.{v+1,v+1} β).trans <| prodPUnit α
 #align equiv.prod_unique Equiv.prodUnique
 
 @[simp]
@@ -177,11 +175,11 @@ theorem prod_unique_symm_apply {α β : Type _} [Unique β] (x : α) : (prodUniq
 
 /-- Any `unique` type is a left identity for type product up to equivalence. -/
 def uniqueProd (α β : Type _) [Unique β] : β × α ≃ α :=
-  ((equivPunit β).prodCongr <| Equiv.refl α).trans <| punitProd α
+  ((equivPUnit.{v+1,v+1} β).prodCongr <| Equiv.refl α).trans <| pUnitProd α
 #align equiv.unique_prod Equiv.uniqueProd
 
 @[simp]
-theorem coe_unique_prod {α β : Type _} [Unique β] : ⇑(uniqueProd α β) = Prod.snd :=
+theorem coe_unique_prod {α β : Type _} [Unique β] : (⇑(uniqueProd α β) : β × α → α) = Prod.snd :=
   rfl
 #align equiv.coe_unique_prod Equiv.coe_unique_prod
 
@@ -190,10 +188,11 @@ theorem unique_prod_apply {α β : Type _} [Unique β] (x : β × α) : uniquePr
 #align equiv.unique_prod_apply Equiv.unique_prod_apply
 
 @[simp]
-theorem unique_prod_symm_apply {α β : Type _} [Unique β] (x : α) : (uniqueProd α β).symm x = (default, x) :=
+theorem unique_prod_symm_apply {α β : Type _} [Unique β] (x : α) :
+    (uniqueProd α β).symm x = (default, x) :=
   rfl
 #align equiv.unique_prod_symm_apply Equiv.unique_prod_symm_apply
-#exit
+
 /-- `empty` type is a right absorbing element for type product up to an equivalence. -/
 def prodEmpty (α : Type _) : α × Empty ≃ Empty :=
   equivEmpty _
@@ -206,12 +205,12 @@ def emptyProd (α : Type _) : Empty × α ≃ Empty :=
 
 /-- `pempty` type is a right absorbing element for type product up to an equivalence. -/
 def prodPempty (α : Type _) : α × PEmpty ≃ PEmpty :=
-  equivPempty _
+  equivPEmpty _
 #align equiv.prod_pempty Equiv.prodPempty
 
 /-- `pempty` type is a left absorbing element for type product up to an equivalence. -/
 def pemptyProd (α : Type _) : PEmpty × α ≃ PEmpty :=
-  equivPempty _
+  equivPEmpty _
 #align equiv.pempty_prod Equiv.pemptyProd
 
 end
@@ -282,7 +281,7 @@ def sumCongr {α β : Type _} (ea : Equiv.Perm α) (eb : Equiv.Perm β) : Equiv.
 @[simp]
 theorem sum_congr_apply {α β : Type _} (ea : Equiv.Perm α) (eb : Equiv.Perm β) (x : Sum α β) :
     sumCongr ea eb x = Sum.map (⇑ea) (⇑eb) x :=
-  Equiv.sum_congr_apply ea eb x
+  Equiv.sumCongr_apply ea eb x
 #align equiv.perm.sum_congr_apply Equiv.Perm.sum_congr_apply
 
 @[simp]
@@ -393,6 +392,7 @@ def optionEquivSumPunit (α : Type _) : Option α ≃ Sum α PUnit.{u + 1} :=
 theorem option_equiv_sum_punit_none {α} : optionEquivSumPunit α none = Sum.inr PUnit.unit :=
   rfl
 #align equiv.option_equiv_sum_punit_none Equiv.option_equiv_sum_punit_none
+#exit
 
 @[simp]
 theorem option_equiv_sum_punit_some {α} (a) : optionEquivSumPunit α (some a) = Sum.inl a :=
