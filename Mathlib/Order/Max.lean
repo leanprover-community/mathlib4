@@ -35,18 +35,22 @@ variable {α β : Type _}
 
 /-- Order without bottom elements. -/
 class NoBotOrder (α : Type _) [LE α] : Prop where
+  /-- For each term `a`, there is some `b` which is either incomparable or strictly smaller. -/
   exists_not_ge (a : α) : ∃ b, ¬a ≤ b
 
 /-- Order without top elements. -/
 class NoTopOrder (α : Type _) [LE α] : Prop where
+  /-- For each term `a`, there is some `b` which is either incomparable or strictly larger. -/
   exists_not_le (a : α) : ∃ b, ¬b ≤ a
 
 /-- Order without minimal elements. Sometimes called coinitial or dense. -/
 class NoMinOrder (α : Type _) [LT α] : Prop where
+  /-- For each term `a`, there is some strictly smaller `b`. -/
   exists_lt (a : α) : ∃ b, b < a
 
 /-- Order without maximal elements. Sometimes called cofinal. -/
 class NoMaxOrder (α : Type _) [LT α] : Prop where
+  /-- For each term `a`, there is some strictly greater `b`. -/
   exists_gt (a : α) : ∃ b, a < b
 
 export NoBotOrder (exists_not_ge)
