@@ -218,10 +218,12 @@ protected theorem StrictMono.dual (hf : StrictMono f) : StrictMono (toDual ∘ f
 protected theorem StrictAnti.dual (hf : StrictAnti f) : StrictAnti (toDual ∘ f ∘ ofDual) :=
   swap hf
 
-protected theorem StrictMonoOn.dual (hf : StrictMonoOn f s) : StrictMonoOn (toDual ∘ f ∘ ofDual) s :=
+protected theorem StrictMonoOn.dual (hf : StrictMonoOn f s) :
+    StrictMonoOn (toDual ∘ f ∘ ofDual) s :=
   swap₂ hf
 
-protected theorem StrictAntiOn.dual (hf : StrictAntiOn f s) : StrictAntiOn (toDual ∘ f ∘ ofDual) s :=
+protected theorem StrictAntiOn.dual (hf : StrictAntiOn f s) :
+    StrictAntiOn (toDual ∘ f ∘ ofDual) s :=
   swap₂ hf
 
 alias antitone_comp_ofDual_iff ↔ _ Monotone.dual_left
@@ -385,7 +387,8 @@ theorem monotoneOn_iff_forall_lt :
    fun hf _ ha _ hb h => h.eq_or_lt.elim (fun H => (congr_arg _ H).le) (hf ha hb)⟩
 #align monotone_on_iff_forall_lt monotoneOn_iff_forall_lt
 
-theorem antitoneOn_iff_forall_lt : AntitoneOn f s ↔ ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a < b → f b ≤ f a :=
+theorem antitoneOn_iff_forall_lt :
+    AntitoneOn f s ↔ ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a < b → f b ≤ f a :=
   ⟨fun hf _ ha _ hb h => hf ha hb h.le,
    fun hf _ ha _ hb h => h.eq_or_lt.elim (fun H => (congr_arg _ H).ge) (hf ha hb)⟩
 #align antitone_on_iff_forall_lt antitoneOn_iff_forall_lt
@@ -790,17 +793,17 @@ end PartialOrder
 variable [LinearOrder β] {f : α → β} {s : Set α} {x y : α}
 
 theorem StrictMonoOn.cmp_map_eq (hf : StrictMonoOn f s) (hx : x ∈ s) (hy : y ∈ s) :
-    Cmp (f x) (f y) = Cmp x y :=
+    cmp (f x) (f y) = cmp x y :=
   ((hf.compares hx hy).2 (cmp_compares x y)).cmp_eq
 
-theorem StrictMono.cmp_map_eq (hf : StrictMono f) (x y : α) : Cmp (f x) (f y) = Cmp x y :=
+theorem StrictMono.cmp_map_eq (hf : StrictMono f) (x y : α) : cmp (f x) (f y) = cmp x y :=
   (hf.strictMonoOn Set.univ).cmp_map_eq trivial trivial
 
 theorem StrictAntiOn.cmp_map_eq (hf : StrictAntiOn f s) (hx : x ∈ s) (hy : y ∈ s) :
-    Cmp (f x) (f y) = Cmp y x :=
+    cmp (f x) (f y) = cmp y x :=
   hf.dual_right.cmp_map_eq hy hx
 
-theorem StrictAnti.cmp_map_eq (hf : StrictAnti f) (x y : α) : Cmp (f x) (f y) = Cmp y x :=
+theorem StrictAnti.cmp_map_eq (hf : StrictAnti f) (x y : α) : cmp (f x) (f y) = cmp y x :=
   (hf.strictAntiOn Set.univ).cmp_map_eq trivial trivial
 
 end LinearOrder
@@ -813,18 +816,20 @@ section Preorder
 variable [Preorder α]
 
 theorem Nat.rel_of_forall_rel_succ_of_le_of_lt (r : β → β → Prop) [IsTrans β r] {f : ℕ → β} {a : ℕ}
-    (h : ∀ n, a ≤ n → r (f n) (f (n + 1))) ⦃b c : ℕ⦄ (hab : a ≤ b) (hbc : b < c) : r (f b) (f c) := by
+    (h : ∀ n, a ≤ n → r (f n) (f (n + 1))) ⦃b c : ℕ⦄ (hab : a ≤ b) (hbc : b < c) :
+    r (f b) (f c) := by
   induction' hbc with k b_lt_k r_b_k
   exacts[h _ hab, trans r_b_k (h _ (hab.trans_lt b_lt_k).le)]
 #align nat.rel_of_forall_rel_succ_of_le_of_lt Nat.rel_of_forall_rel_succ_of_le_of_lt
 
-theorem Nat.rel_of_forall_rel_succ_of_le_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r] {f : ℕ → β} {a : ℕ}
-    (h : ∀ n, a ≤ n → r (f n) (f (n + 1))) ⦃b c : ℕ⦄ (hab : a ≤ b) (hbc : b ≤ c) : r (f b) (f c) :=
+theorem Nat.rel_of_forall_rel_succ_of_le_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r]
+    {f : ℕ → β} {a : ℕ} (h : ∀ n, a ≤ n → r (f n) (f (n + 1)))
+    ⦃b c : ℕ⦄ (hab : a ≤ b) (hbc : b ≤ c) : r (f b) (f c) :=
   hbc.eq_or_lt.elim (fun h => h ▸ refl _) (Nat.rel_of_forall_rel_succ_of_le_of_lt r h hab)
 #align nat.rel_of_forall_rel_succ_of_le_of_le Nat.rel_of_forall_rel_succ_of_le_of_le
 
-theorem Nat.rel_of_forall_rel_succ_of_lt (r : β → β → Prop) [IsTrans β r] {f : ℕ → β} (h : ∀ n, r (f n) (f (n + 1)))
-    ⦃a b : ℕ⦄ (hab : a < b) : r (f a) (f b) :=
+theorem Nat.rel_of_forall_rel_succ_of_lt (r : β → β → Prop) [IsTrans β r] {f : ℕ → β}
+    (h : ∀ n, r (f n) (f (n + 1))) ⦃a b : ℕ⦄ (hab : a < b) : r (f a) (f b) :=
   Nat.rel_of_forall_rel_succ_of_le_of_lt r (fun n _ => h n) le_rfl hab
 #align nat.rel_of_forall_rel_succ_of_lt Nat.rel_of_forall_rel_succ_of_lt
 
