@@ -24,10 +24,10 @@ In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lea
 * canonical isomorphisms between various types: e.g.,
 
 -- **TODO** fix names
-  - `equiv.sum_equiv_sigma_bool` is the canonical equivalence between the sum of two types `α ⊕ β`
+  - `Equiv.sum_equiv_sigma_bool` is the canonical equivalence between the sum of two types `α ⊕ β`
     and the sigma-type `Σ b : bool, cond b α β`;
 
-  - `equiv.prod_sum_distrib : α × (β ⊕ γ) ≃ (α × β) ⊕ (α × γ)` shows that type product and type sum
+  - `Equiv.prod_sum_distrib : α × (β ⊕ γ) ≃ (α × β) ⊕ (α × γ)` shows that type product and type sum
     satisfy the distributive law up to a canonical equivalence;
 
 * operations on equivalences: e.g.,
@@ -275,7 +275,7 @@ theorem sumCongr_symm {α β γ δ : Sort _} (e : α ≃ β) (f : γ ≃ δ) :
 #align equiv.sum_congr_symm Equiv.sumCongr_symm
 
 @[simp]
-theorem sum_congr_refl {α β : Sort _} :
+theorem sumCongr_refl {α β : Sort _} :
     Equiv.sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (Sum α β) := by
   ext i
   cases i <;> rfl
@@ -308,10 +308,10 @@ theorem sumCongr_symm {α β : Sort _} (e : Equiv.Perm α) (f : Equiv.Perm β) :
 #align equiv.perm.sum_congr_symm Equiv.Perm.sumCongr_symm
 
 @[simp]
-theorem sum_congr_refl {α β : Sort _} :
+theorem sumCongr_refl {α β : Sort _} :
     sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (Sum α β) :=
-  Equiv.sum_congr_refl
-#align equiv.perm.sum_congr_refl Equiv.Perm.sum_congr_refl
+  Equiv.sumCongr_refl
+#align equiv.perm.sum_congr_refl Equiv.Perm.sumCongr_refl
 
 end Perm
 
@@ -649,9 +649,9 @@ def piComm {α β} (φ : α → β → Sort _) : (∀ a b, φ a b) ≃ ∀ b a, 
 
 -- up to here **TODO** remove this
 @[simp]
-theorem Pi_comm_symm {α β} {φ : α → β → Sort _} : (piComm φ).symm = (Pi_comm <| swap φ) :=
+theorem piComm_symm {α β} {φ : α → β → Sort _} : (piComm φ).symm = (piComm <| swap φ) :=
   rfl
-#align equiv.Pi_comm_symm Equiv.Pi_comm_symm
+#align equiv.Pi_comm_symm Equiv.piComm_symm
 
 /-- Dependent `curry` equivalence: the type of dependent functions on `Σ i, β i` is equivalent
 to the type of dependent functions of two arguments (i.e., functions to the space of functions).
@@ -1598,7 +1598,7 @@ theorem swap_apply_ne_self_iff {a b x : α} : swap a b x ≠ x ↔ a ≠ b ∧ (
 namespace Perm
 
 @[simp]
-theorem sum_congr_swap_refl {α β : Sort _} [DecidableEq α] [DecidableEq β] (i j : α) :
+theorem sumCongr_swap_refl {α β : Sort _} [DecidableEq α] [DecidableEq β] (i j : α) :
     Equiv.Perm.sumCongr (Equiv.swap i j) (Equiv.refl β) = Equiv.swap (Sum.inl i) (Sum.inl j) := by
   ext x
   cases x
@@ -1607,10 +1607,10 @@ theorem sum_congr_swap_refl {α β : Sort _} [DecidableEq α] [DecidableEq β] (
 
   · simp [Sum.map, swap_apply_of_ne_of_ne]
 
-#align equiv.perm.sum_congr_swap_refl Equiv.Perm.sum_congr_swap_refl
+#align equiv.perm.sum_congr_swap_refl Equiv.Perm.sumCongr_swap_refl
 
 @[simp]
-theorem sum_congr_refl_swap {α β : Sort _} [DecidableEq α] [DecidableEq β] (i j : β) :
+theorem sumCongr_refl_swap {α β : Sort _} [DecidableEq α] [DecidableEq β] (i j : β) :
     Equiv.Perm.sumCongr (Equiv.refl α) (Equiv.swap i j) = Equiv.swap (Sum.inr i) (Sum.inr j) := by
   ext x
   cases x
@@ -1619,7 +1619,7 @@ theorem sum_congr_refl_swap {α β : Sort _} [DecidableEq α] [DecidableEq β] (
   · simp [Sum.map, swap_apply_def]
     split_ifs <;> rfl
 
-#align equiv.perm.sum_congr_refl_swap Equiv.Perm.sum_congr_refl_swap
+#align equiv.perm.sumCongr_refl_swap Equiv.Perm.sumCongr_refl_swap
 
 end Perm
 
