@@ -307,24 +307,14 @@ theorem Monotone.forall_le_of_antitone {β : Type _} [Preorder β] {f g : α →
 #align monotone.forall_le_of_antitone Monotone.forall_le_of_antitone
 
 theorem SemilatticeSup.ext_sup {α} {A B : SemilatticeSup α}
-    (H :
-      ∀ x y : α,
-        (haveI := A
-          x ≤ y) ↔
-          x ≤ y)
+    (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y)
     (x y : α) :
-    (haveI := A
-      x ⊔ y) =
-      x ⊔ y :=
-  eq_of_forall_ge_iff $ fun c => by simp only [sup_le_iff] <;> rw [← H, @sup_le_iff α A, H, H]
+    (haveI := A; x ⊔ y) = x ⊔ y :=
+  eq_of_forall_ge_iff $ fun c => by simp only [sup_le_iff]; rw [← H, @sup_le_iff α A, H, H]
 #align semilattice_sup.ext_sup SemilatticeSup.ext_sup
 
 theorem SemilatticeSup.ext {α} {A B : SemilatticeSup α}
-    (H :
-      ∀ x y : α,
-        (haveI := A
-          x ≤ y) ↔
-          x ≤ y) :
+    (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
     A = B := by
   have := PartialOrder.ext H
   have ss := funext fun x => funext $ SemilatticeSup.ext_sup H x
@@ -550,24 +540,14 @@ theorem Ne.inf_lt_or_inf_lt : a ≠ b → a ⊓ b < a ∨ a ⊓ b < b :=
 #align ne.inf_lt_or_inf_lt Ne.inf_lt_or_inf_lt
 
 theorem SemilatticeInf.ext_inf {α} {A B : SemilatticeInf α}
-    (H :
-      ∀ x y : α,
-        (haveI := A
-          x ≤ y) ↔
-          x ≤ y)
+    (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y)
     (x y : α) :
-    (haveI := A
-      x ⊓ y) =
-      x ⊓ y :=
-  eq_of_forall_le_iff $ fun c => by simp only [le_inf_iff] <;> rw [← H, @le_inf_iff α A, H, H]
+    (haveI := A; x ⊓ y) = x ⊓ y :=
+  eq_of_forall_le_iff $ fun c => by simp only [le_inf_iff]; rw [← H, @le_inf_iff α A, H, H]
 #align semilattice_inf.ext_inf SemilatticeInf.ext_inf
 
 theorem SemilatticeInf.ext {α} {A B : SemilatticeInf α}
-    (H :
-      ∀ x y : α,
-        (haveI := A
-          x ≤ y) ↔
-          x ≤ y) :
+    (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
     A = B := by
   have := PartialOrder.ext H
   have ss := funext fun x => funext $ SemilatticeInf.ext_inf H x
@@ -677,7 +657,7 @@ theorem inf_le_sup : a ⊓ b ≤ a ⊔ b :=
 theorem inf_lt_sup : a ⊓ b < a ⊔ b ↔ a ≠ b := by
   constructor
   · rintro H rfl
-    -- Porting note: wa simpa using H (goal False)
+    -- Porting note: was simpa using H (goal False)
     simp at H
 
   · refine' fun Hne => lt_iff_le_and_ne.2 ⟨inf_le_sup, fun Heq => Hne _⟩
@@ -717,11 +697,7 @@ theorem sup_eq_iff_inf_eq : a ⊔ b = b ↔ a ⊓ b = a := by rw [sup_eq_right, 
 #align sup_eq_iff_inf_eq sup_eq_iff_inf_eq
 
 theorem Lattice.ext {α} {A B : Lattice α}
-    (H :
-      ∀ x y : α,
-        (haveI := A
-          x ≤ y) ↔
-          x ≤ y) :
+    (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
     A = B := by
   have SS : @Lattice.toSemilatticeSup α A = @Lattice.toSemilatticeSup α B := SemilatticeSup.ext H
   have II := SemilatticeInf.ext H
@@ -818,8 +794,11 @@ def DistribLattice.ofInfSupLe [Lattice α] (inf_sup_le : ∀ a b c : α, a ⊓ (
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrder.toLattice {α : Type u} [o : LinearOrder α] : Lattice α :=
-  { o with sup := max, le_sup_left := le_max_left, le_sup_right := le_max_right, sup_le := fun a b c => max_le,
-    inf := min, inf_le_left := min_le_left, inf_le_right := min_le_right, le_inf := fun a b c => le_min }
+  { o with
+    sup := max,
+    le_sup_left := le_max_left, le_sup_right := le_max_right, sup_le := fun _ _ _ => max_le,
+    inf := min,
+    inf_le_left := min_le_left, inf_le_right := min_le_right, le_inf := fun _ _ _ => le_min }
 #align linear_order.to_lattice LinearOrder.toLattice
 
 section LinearOrder
@@ -888,19 +867,28 @@ theorem min_min_min_comm : min (min a b) (min c d) = min (min a c) (min b d) :=
 
 end LinearOrder
 
+-- TODO Move
+/-- Default definition of `max`. -/
+def maxDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
+if a ≤ b then b else a
+
+/-- Default definition of `min`. -/
+def minDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
+if a ≤ b then a else b
+
 theorem sup_eq_max_default [SemilatticeSup α] [DecidableRel ((· ≤ ·) : α → α → Prop)] [IsTotal α (· ≤ ·)] :
     (· ⊔ ·) = (maxDefault : α → α → α) := by
   ext (x y)
-  dsimp only [maxDefault]
-  split_ifs with h'
+  unfold maxDefault
+  split <;> rename_i h'
   exacts[sup_of_le_right h', sup_of_le_left $ (total_of (· ≤ ·) x y).resolve_left h']
 #align sup_eq_max_default sup_eq_max_default
 
 theorem inf_eq_min_default [SemilatticeInf α] [DecidableRel ((· ≤ ·) : α → α → Prop)] [IsTotal α (· ≤ ·)] :
     (· ⊓ ·) = (minDefault : α → α → α) := by
   ext (x y)
-  dsimp only [minDefault]
-  split_ifs with h'
+  unfold minDefault
+  split <;> rename_i h'
   exacts[inf_of_le_left h', inf_of_le_right $ (total_of (· ≤ ·) x y).resolve_left h']
 #align inf_eq_min_default inf_eq_min_default
 
@@ -910,8 +898,15 @@ See note [reducible non-instances]. -/
 @[reducible]
 def Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α] [DecidableRel ((· ≤ ·) : α → α → Prop)]
     [DecidableRel ((· < ·) : α → α → Prop)] [IsTotal α (· ≤ ·)] : LinearOrder α :=
-  { ‹Lattice α› with decidableLe := ‹_›, DecidableEq := ‹_›, decidableLt := ‹_›, le_total := total_of (· ≤ ·),
-    max := (· ⊔ ·), max_def := sup_eq_max_default, min := (· ⊓ ·), min_def := inf_eq_min_default }
+  { ‹Lattice α› with
+    decidable_le := ‹_›,
+    decidable_eq := ‹_›,
+    decidable_lt := ‹_›,
+    le_total := total_of (· ≤ ·),
+    max := (· ⊔ ·),
+    max_def := by exact congr_fun₂ sup_eq_max_default,
+    min := (· ⊓ ·),
+    min_def := by exact congr_fun₂ inf_eq_min_default }
 #align lattice.to_linear_order Lattice.toLinearOrder
 
 -- see Note [lower instance priority]
