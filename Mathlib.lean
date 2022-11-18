@@ -65,7 +65,6 @@ import Mathlib.Data.Sum.Basic
 import Mathlib.Data.UInt
 import Mathlib.Data.UnionFind
 import Mathlib.GroupTheory.EckmannHilton
-import Mathlib.Algebra.GroupTheory.EckmannHilton
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
