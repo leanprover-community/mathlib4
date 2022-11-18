@@ -788,6 +788,7 @@ theorem eq_of_inf_eq_sup_eq {α : Type u} [DistribLattice α] {a b c : α} (h₁
 
 end DistribLattice
 
+-- Porting note: try and remove this again
 def DistribLattice.ofInfSupLe_aux [Lattice α] (inf_sup_le : ∀ a b c : α, a ⊓ (b ⊔ c) ≤ a ⊓ b ⊔ a ⊓ c) :
   DistribLattice α where
   __ := inferInstanceAs (Lattice αᵒᵈ)
@@ -850,9 +851,11 @@ theorem lt_sup_iff : a < b ⊔ c ↔ a < b ∨ a < c := by
     fun h => h.elim lt_sup_of_lt_left lt_sup_of_lt_right⟩
 #align lt_sup_iff lt_sup_iff
 
+-- Porting note: why does sup_ind need an explicit motive?
 @[simp]
 theorem sup_lt_iff : b ⊔ c < a ↔ b < a ∧ c < a :=
-  ⟨fun h => ⟨le_sup_left.trans_lt h, le_sup_right.trans_lt h⟩, fun h => sup_ind b c h.1 h.2⟩
+  ⟨fun h => ⟨le_sup_left.trans_lt h, le_sup_right.trans_lt h⟩,
+   fun h => @sup_ind α _ b c (fun x => x < a) h.1 h.2⟩
 #align sup_lt_iff sup_lt_iff
 
 theorem inf_ind (a b : α) {p : α → Prop} : p a → p b → p (a ⊓ b) :=
@@ -1023,13 +1026,13 @@ theorem inf_def [∀ i, HasInf (α' i)] (f g : ∀ i, α' i) : f ⊓ g = fun i =
   rfl
 #align pi.inf_def Pi.inf_def
 
-instance [∀ i, SemilatticeSup (α' i)] : SemilatticeSup (∀ i, α' i) := by
+instance semilatticeSup [∀ i, SemilatticeSup (α' i)] : SemilatticeSup (∀ i, α' i) := by
   refine_struct { Pi.partialOrder with sup := (· ⊔ ·) } <;> pi_instance_derive_field
 
-instance [∀ i, SemilatticeInf (α' i)] : SemilatticeInf (∀ i, α' i) := by
+instance semilatticeInf [∀ i, SemilatticeInf (α' i)] : SemilatticeInf (∀ i, α' i) := by
   refine_struct { Pi.partialOrder with inf := (· ⊓ ·) } <;> pi_instance_derive_field
 
-instance [∀ i, Lattice (α' i)] : Lattice (∀ i, α' i) :=
+instance lattice [∀ i, Lattice (α' i)] : Lattice (∀ i, α' i) :=
   { Pi.semilatticeSup, Pi.semilatticeInf with }
 
 instance [∀ i, DistribLattice (α' i)] : DistribLattice (∀ i, α' i) := by
@@ -1208,10 +1211,10 @@ namespace Prod
 
 variable (α β)
 
-instance [HasSup α] [HasSup β] : HasSup (α × β) :=
+instance hasSup [HasSup α] [HasSup β] : HasSup (α × β) :=
   ⟨fun p q => ⟨p.1 ⊔ q.1, p.2 ⊔ q.2⟩⟩
 
-instance [HasInf α] [HasInf β] : HasInf (α × β) :=
+instance hasInf [HasInf α] [HasInf β] : HasInf (α × β) :=
   ⟨fun p q => ⟨p.1 ⊓ q.1, p.2 ⊓ q.2⟩⟩
 
 @[simp]
@@ -1262,24 +1265,26 @@ theorem inf_def [HasInf α] [HasInf β] (p q : α × β) : p ⊓ q = (p.fst ⊓ 
   rfl
 #align prod.inf_def Prod.inf_def
 
-instance [SemilatticeSup α] [SemilatticeSup β] : SemilatticeSup (α × β) :=
-  { Prod.partialOrder α β, Prod.hasSup α β with
-    sup_le := fun a b c h₁ h₂ => ⟨sup_le h₁.1 h₂.1, sup_le h₁.2 h₂.2⟩,
-    le_sup_left := fun a b => ⟨le_sup_left, le_sup_left⟩,
-    le_sup_right := fun a b => ⟨le_sup_right, le_sup_right⟩ }
+instance semilatticeSup [SemilatticeSup α] [SemilatticeSup β] : SemilatticeSup (α × β) where
+  __ := Prod.partialOrder α β
+  __ := Prod.hasSup α β
+  sup_le := fun _ _ _ h₁ h₂ => ⟨sup_le h₁.1 h₂.1, sup_le h₁.2 h₂.2⟩
+  le_sup_left := fun _ _ => ⟨le_sup_left, le_sup_left⟩
+  le_sup_right := fun _ _ => ⟨le_sup_right, le_sup_right⟩
 
-instance [SemilatticeInf α] [SemilatticeInf β] : SemilatticeInf (α × β) :=
-  { Prod.partialOrder α β, Prod.hasInf α β with
-    le_inf := fun a b c h₁ h₂ => ⟨le_inf h₁.1 h₂.1, le_inf h₁.2 h₂.2⟩,
-    inf_le_left := fun a b => ⟨inf_le_left, inf_le_left⟩,
-    inf_le_right := fun a b => ⟨inf_le_right, inf_le_right⟩ }
+instance semilatticeInf [SemilatticeInf α] [SemilatticeInf β] : SemilatticeInf (α × β) where
+  __ := Prod.partialOrder α β
+  __ := Prod.hasInf α β
+  le_inf := fun _ _ _ h₁ h₂ => ⟨le_inf h₁.1 h₂.1, le_inf h₁.2 h₂.2⟩
+  inf_le_left := fun _ _ => ⟨inf_le_left, inf_le_left⟩
+  inf_le_right := fun _ _ => ⟨inf_le_right, inf_le_right⟩
 
-instance [Lattice α] [Lattice β] : Lattice (α × β) :=
+instance lattice [Lattice α] [Lattice β] : Lattice (α × β) :=
   { Prod.semilatticeInf α β, Prod.semilatticeSup α β with }
 
 instance [DistribLattice α] [DistribLattice β] : DistribLattice (α × β) :=
   { Prod.lattice α β with
-    le_sup_inf := fun a b c => ⟨le_sup_inf, le_sup_inf⟩ }
+    le_sup_inf := fun _ _ _ => ⟨le_sup_inf, le_sup_inf⟩ }
 
 end Prod
 
@@ -1404,7 +1409,7 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.lattice [HasSup α] [HasInf α] [Lattice β] (f : α → β) (hf_inj : Function.Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) : Lattice α :=
-  { hf_inj.SemilatticeSup f map_sup, hf_inj.SemilatticeInf f map_inf with }
+  { hf_inj.semilatticeSup f map_sup, hf_inj.semilatticeInf f map_inf with }
 #align function.injective.lattice Function.Injective.lattice
 
 /-- A type endowed with `⊔` and `⊓` is a `distrib_lattice`, if it admits an injective map that
@@ -1414,7 +1419,7 @@ See note [reducible non-instances]. -/
 protected def Function.Injective.distribLattice [HasSup α] [HasInf α] [DistribLattice β] (f : α → β)
     (hf_inj : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
     DistribLattice α :=
-  { hf_inj.Lattice f map_sup map_inf with
+  { hf_inj.lattice f map_sup map_inf with
     le_sup_inf := fun a b c => by
       change f ((a ⊔ b) ⊓ (a ⊔ c)) ≤ f (a ⊔ b ⊓ c)
       rw [map_inf, map_sup, map_sup, map_sup, map_inf]
