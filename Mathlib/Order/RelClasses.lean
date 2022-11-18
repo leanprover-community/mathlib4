@@ -173,7 +173,7 @@ def partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
     | _, _, Or.inl rfl => rfl
     | _, Or.inr h₁, Or.inr h₂ => (asymm h₁ h₂).elim
   lt_iff_le_not_le x y :=
-    ⟨fun h => ⟨Or.inr h, not_or_of_not (fun e => by rw [e] at h <;> exact irrefl _ h) (asymm h)⟩,
+    ⟨fun h => ⟨Or.inr h, not_or_of_not (fun e => by rw [e] at h; exact irrefl _ h) (asymm h)⟩,
       fun ⟨h₁, h₂⟩ => h₁.resolve_left fun e => h₂ <| e ▸ Or.inl rfl⟩
 
 /-- Construct a linear order from an `IsStrictTotalOrder` relation.
@@ -248,6 +248,11 @@ theorem IsWellFounded_iff (α : Type u) (r : α → α → Prop) : IsWellFounded
 instance [h : WellFoundedRelation α] : IsWellFounded α WellFoundedRelation.rel :=
   { h with }
 
+theorem WellFoundedRelation.asymmetric {α : Sort _} [WellFoundedRelation α] {a b : α} :
+    WellFoundedRelation.rel a b → ¬ WellFoundedRelation.rel b a :=
+  fun hab hba => WellFoundedRelation.asymmetric hba hab
+termination_by _ => a
+
 namespace IsWellFounded
 
 variable (r) [IsWellFounded α r]
@@ -278,13 +283,9 @@ def toWellFoundedRelation : WellFoundedRelation α :=
 
 end IsWellFounded
 
-theorem WellFounded.asymmetric {α : Sort _} {r : α → α → Prop} (h : WellFounded r) :
-    ∀ ⦃a b⦄, r a b → ¬r b a
-  | a => fun b hab hba => asymmetric h hba hab
-termination_by _ => h
-decreasing_by {
-  sorry
-}
+theorem WellFounded.asymmetric {α : Sort _} {r : α → α → Prop} (h : WellFounded r) (a b) :
+    r a b → ¬r b a :=
+  @WellFoundedRelation.asymmetric _ ⟨_, h⟩ _ _
 
 -- see Note [lower instance priority]
 instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsAsymm α r :=
@@ -363,7 +364,7 @@ def fix {C : α → Sort _} : (∀ x : α, (∀ y : α, y < x → C y) → C x) 
 
 /-- The value from `WellFoundedLt.fix` is built from the previous ones as specified. -/
 theorem fix_eq {C : α → Sort _} (F : ∀ x : α, (∀ y : α, y < x → C y) → C x) :
-    ∀ x, fix F x = F x fun y h => fix F y :=
+    ∀ x, fix F x = F x fun y _ => fix F y :=
   IsWellFounded.fix_eq _ F
 
 /-- Derive a `WellFoundedRelation` instance from a `WellFoundedLt` instance. -/
