@@ -19,6 +19,7 @@ import Mathlib.Algebra.Order.Ring
 import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+import Mathlib.Control.EquivFunctor
 import Mathlib.Control.Random
 import Mathlib.Control.Writer
 import Mathlib.Data.Array.Basic

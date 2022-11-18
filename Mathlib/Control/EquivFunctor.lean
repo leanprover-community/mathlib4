@@ -86,7 +86,7 @@ theorem mapEquiv_trans {γ : Type u₀} (ab : α ≃ β) (bc : β ≃ γ) :
 
 end
 
-instance (priority := 100) ofIsLawfulFunctor (f : Type u₀ → Type u₁) [Functor f] [LawfulFunctor f] :
+instance (priority := 100) ofLawfulFunctor (f : Type u₀ → Type u₁) [Functor f] [LawfulFunctor f] :
     EquivFunctor f where
   map {α β} e := Functor.map e
   map_refl' α := by
@@ -95,7 +95,7 @@ instance (priority := 100) ofIsLawfulFunctor (f : Type u₀ → Type u₁) [Func
   map_trans' {α β γ} k h := by
     ext x
     apply LawfulFunctor.comp_map k h x
-#align equiv_functor.of_is_lawful_functor EquivFunctor.ofIsLawfulFunctor
+#align equiv_functor.of_is_lawful_functor EquivFunctor.ofLawfulFunctor
 
 theorem mapEquiv.injective (f : Type u₀ → Type u₁)
     [Applicative f] [LawfulApplicative f] {α β : Type u₀}
