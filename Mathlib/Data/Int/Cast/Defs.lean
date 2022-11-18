@@ -3,64 +3,81 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Tactic.NormCast
+import Mathlib.Data.Nat.Cast.Defs
 
 /-!
 # Cast of integers
 
 This file defines the *canonical* homomorphism from the integers into an
-additive group with a one (typically a `ring`).  In additive groups with a one
+additive group with a one (typically a `Ring`).  In additive groups with a one
 element, there exists a unique such homomorphism and we store it in the
-`int_cast : ℤ → R` field.
+`intCast : ℤ → R` field.
 
 Preferentially, the homomorphism is written as a coercion.
 
 ## Main declarations
 
-* `int.cast`: Canonical homomorphism `ℤ → R`.
-* `add_group_with_one`: Type class for `int.cast`.
+* `Int.cast`: Canonical homomorphism `ℤ → R`.
+* `AddGroupWithOne`: Type class for `Int.cast`.
 -/
 
-namespace Nat
-variable [AddGroupWithOne R]
 
-@[simp, norm_cast]
-theorem cast_sub {m n} (h : m ≤ n) : ((n - m : ℕ) : R) = n - m :=
-  eq_sub_of_add_eq <| by rw [← cast_add, Nat.sub_add_cancel h]
+universe u
 
-end Nat
+--attribute [simp] Int.ofNat_eq_coe
+
+/-- Default value for `IntCast.intCast` in an `AddGroupWithOne`. -/
+protected def Int.castDef {R : Type u} [NatCast R] [Neg R] : ℤ → R
+  | (n : ℕ) => n
+  | Int.negSucc n => -(n + 1 : ℕ)
+#align int.cast_def Int.castDef
+
+/-- Type class for the canonical homomorphism `ℤ → R`.
+-/
+class IntCast (R : Type u) where
+  intCast : ℤ → R
+#align has_int_cast IntCast
+
+/-! ### Additive groups with one -/
+
+class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGroup R where
+  intCast := Int.castDef
+  intCast_ofNat : ∀ n : ℕ, intCast (n : ℕ) = Nat.cast n := by intros; rfl
+  intCast_negSucc : ∀ n : ℕ, intCast (Int.negSucc n) = - Nat.cast (n + 1) := by intros; rfl
+#align add_group_with_one AddGroupWithOne
+#align add_group_with_one.to_int_cast AddGroupWithOne.toIntCast
+#align add_group_with_one.to_add_monoid_with_one AddGroupWithOne.toAddMonoidWithOne
+#align add_group_with_one.to_add_group AddGroupWithOne.toAddGroup
+#align add_group_with_one.int_cast_of_nat AddGroupWithOne.intCast_ofNat
+#align add_group_with_one.int_cast_neg_succ_of_nat AddGroupWithOne.intCast_negSucc
 
 namespace Int
-variable [AddGroupWithOne R]
+
+/-- Canonical homomorphism from the integers to any ring(-like) structure `R` -/
+@[coe] def cast [IntCast R] : ℤ → R := IntCast.intCast
+#align int.cast Int.cast
+
+instance [IntCast R] : CoeTail ℤ R where coe := cast
+
+@[simp high, nolint simpNF] -- this lemma competes with `Int.ofNat_eq_cast` to come later
+theorem cast_ofNat [AddGroupWithOne R] : (cast (ofNat n) : R) = Nat.cast n :=
+  AddGroupWithOne.intCast_ofNat _
+#align int.cast_coe_nat Int.cast_ofNat
 
 @[simp, norm_cast]
-theorem cast_neg [AddGroupWithOne R] : ∀ n:ℤ, ((-n : ℤ) : R) = -↑n
-  | (0 : ℕ) => by erw [cast_zero, neg_zero]
-  | (n + 1 : ℕ) => by erw [cast_ofNat, cast_negSucc]
-  | -[n +1] => by erw [cast_ofNat, cast_negSucc, neg_neg]
+theorem cast_negSucc [AddGroupWithOne R] : (cast (negSucc n) : R) = (-(Nat.cast (n + 1)) : R) :=
+  AddGroupWithOne.intCast_negSucc _
+#align int.cast_neg_succ_of_nat Int.cast_negSucc
 
-@[simp]
-theorem cast_subNatNat [AddGroupWithOne R] (m n) : ((subNatNat m n : ℤ) : R) = m - n := by
-  unfold Int.subNatNat
-  cases e : n - m
-  · simp only [subNatNat, cast_ofNat]
-    simp [e, Nat.le_of_sub_eq_zero e]
-  · rw [cast_negSucc, Nat.add_one, ← e, Nat.cast_sub <| _root_.le_of_lt <| Nat.lt_of_sub_eq_succ e,
-      neg_sub]
-#align int.cast_sub_nat_nat Int.cast_subNatNat
+@[simp, norm_cast] theorem cast_zero [AddGroupWithOne R] : ((0 : ℤ) : R) = 0 := by
+  erw [cast_ofNat, Nat.cast_zero]
+@[simp, norm_cast] theorem cast_one [AddGroupWithOne R] : ((1 : ℤ) : R) = 1 := by
+  erw [cast_ofNat, Nat.cast_one]
 
-@[simp, norm_cast]
-theorem cast_add [AddGroupWithOne R] : ∀ m n, ((m + n : ℤ) : R) = m + n
-  | (m : ℕ), (n : ℕ) => by simp [← ofNat_add]
-  | (m : ℕ), -[n+1] => by erw [cast_subNatNat, cast_ofNat, cast_negSucc, sub_eq_add_neg]
-  | -[m+1], (n : ℕ) => by
-    erw [cast_subNatNat, cast_ofNat, cast_negSucc, sub_eq_iff_eq_add,
-      add_assoc, eq_neg_add_iff_add_eq, ← Nat.cast_add, ← Nat.cast_add, Nat.add_comm]
-  | -[m+1], -[n+1] => show (-[m + n + 1 +1] : R) = _ by
-    rw [cast_negSucc, cast_negSucc, cast_negSucc, ← neg_add_rev, ← Nat.cast_add,
-      Nat.add_right_comm m n 1, Nat.add_assoc, Nat.add_comm]
+end Int
 
-@[simp, norm_cast]
-theorem cast_sub (m n) : ((m - n : ℤ) : R) = m - n := by simp [Int.sub_eq_add_neg, sub_eq_add_neg]
+/-- An `AddCommGroupWithOne` is an `AddGroupWithOne` satisfying `a + b = b + a`. -/
+class AddCommGroupWithOne (R : Type u) extends AddCommGroup R, AddGroupWithOne R
+#align add_comm_group_with_one AddCommGroupWithOne
+
+open Nat

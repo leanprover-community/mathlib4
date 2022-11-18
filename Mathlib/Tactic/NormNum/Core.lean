@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 import Std.Lean.Parser
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Tactic.Conv
 import Qq.MetaM
 import Qq.Delab

@@ -1,8 +1,5 @@
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.NeZero
-import Mathlib.Data.Nat.Cast.Defs
-/- The import `Mathlib.Data.Nat.Cast.Defs` should only present until `AddGroupWithOne` gets
-gets moved to the appropriate place: `Mathlib.Data.Int.Cast.Defs` -/
 
 theorem eq_of_sub_eq_zero' [AddGroup R] {a b : R} (h : a - b = 0) : a = b :=
   add_right_cancel <| show a + (-b) = b + (-b) by rw [← sub_eq_add_neg, h, add_neg_self]
@@ -35,37 +32,6 @@ class GroupWithZero (G₀ : Type u) extends DivInvMonoid G₀, MonoidWithZero G�
 
 export GroupWithZero (inv_zero)
 attribute [simp] inv_zero
-
-/-! ### Additive groups with one -/
-
-class AddGroupWithOne (R : Type u) extends AddMonoidWithOne R, AddGroup R where
-  intCast : ℤ → R
-  intCast_ofNat : ∀ n : ℕ, intCast n = natCast n
-  intCast_negSucc : ∀ n : ℕ, intCast (Int.negSucc n) = - natCast (n + 1)
-
-namespace Int
-
-@[coe] def cast [AddGroupWithOne R] : ℤ → R := AddGroupWithOne.intCast
-
-instance [AddGroupWithOne R] : CoeTail ℤ R where coe := cast
-
-@[simp high, nolint simpNF] -- this lemma competes with `Int.ofNat_eq_cast` to come later
-theorem cast_ofNat [AddGroupWithOne R] : (cast (ofNat n) : R) = Nat.cast n :=
-  AddGroupWithOne.intCast_ofNat _
-#align int.cast_coe_nat Int.cast_ofNat
-
-@[simp, norm_cast]
-theorem cast_negSucc [AddGroupWithOne R] :
-    (cast (negSucc n) : R) = (-(Nat.cast (n + 1)) : R) :=
-  AddGroupWithOne.intCast_negSucc _
-#align int.cast_neg_succ_of_nat Int.cast_negSucc
-
-@[simp, norm_cast] theorem cast_zero [AddGroupWithOne R] : ((0 : ℤ) : R) = 0 := by
-  erw [cast_ofNat, Nat.cast_zero]
-@[simp, norm_cast] theorem cast_one [AddGroupWithOne R] : ((1 : ℤ) : R) = 1 := by
-  erw [cast_ofNat, Nat.cast_one]
-
-end Int
 
 section NeZero
 
