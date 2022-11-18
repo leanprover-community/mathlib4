@@ -5,6 +5,7 @@ Authors: Leonardo de Moura
 -/
 import Lean.Parser.Term
 import Std.Classes.SetNotation
+import Mathlib.Mathport.Rename
 
 /-!
 
@@ -78,6 +79,7 @@ macro (priority := low) "{ " t:term " | " bs:extBinders " }" : term =>
   `({ x | ∃ᵉ $bs:extBinders, $t = x })
 
 def univ : Set α := {_a | True}
+#align set.univ Set.univ
 
 protected def insert (a : α) (s : Set α) : Set α :=
 {b | b = a ∨ b ∈ s}
