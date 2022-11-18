@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Data.RBTree.Init
+import Mathlib.Init.Algebra.Classes
 
 /-!
 # Basic thorems on search invariants
@@ -12,25 +13,33 @@ Ported with `sorry`s to preserve theorems
 -/
 
 universe u
+section
+set_option linter.deprecated false
+-- FIXME: remove this when the sorries are gone
+set_option warningAsError false
+-- FIXME: remove this when theorems are ported
+set_option checkBinderAnnotations false
 
 namespace RRNode
 
 variable {α : Type u}
 
-inductive IsNodeOf : RBNode α → RBNode α → α → RBNode α → Prop := sorry
+inductive IsNodeOf : RBNode α → RBNode α → α → RBNode α → Prop where
 
 def Lift (lt : α → α → Prop) : Option α → Option α → Prop := sorry
 
-inductive IsSearchable (lt : α → α → Prop) : RBNode α → Option α → Option α → Prop := sorry
+inductive IsSearchable (lt : α → α → Prop) : RBNode α → Option α → Option α → Prop where
 
 
-open RBNode (Mem)
+open RBNode
 
 open IsSearchable
 
 section IsSearchableLemmas
 
 variable {lt : α → α → Prop}
+
+--FIXME: commented to silence errors
 
 theorem lo_lt_hi {t : RBNode α} {lt} [IsTrans α lt] :
     ∀ {lo hi}, IsSearchable lt t lo hi → Lift lt lo hi := sorry
@@ -59,6 +68,7 @@ theorem is_searchable_some_high_of_is_searchable_of_lt {t} [IsTrans α lt] :
 theorem is_searchable_none_high_of_is_searchable_some_high {t} :
     ∀ {lo y} (hlt : IsSearchable lt t lo (some y)), IsSearchable lt t lo none := sorry
 
+
 theorem range [IsStrictWeakOrder α lt] {t : RBNode α} {x} :
     ∀ {lo hi}, IsSearchable lt t lo hi →
       Mem lt x t → Lift lt lo (some x) ∧ Lift lt (some x) hi := sorry
@@ -75,7 +85,7 @@ theorem lt_of_mem_left_right [IsStrictWeakOrder α lt] {y : α} {t l r : RBNode 
 
 end IsSearchableLemmas
 
-inductive IsRedBlack : RBNode α → Color → Nat → Prop := sorry
+inductive IsRedBlack : RBNode α → Color → Nat → Prop where
 
 open IsRedBlack
 
@@ -88,4 +98,4 @@ theorem depth_max {c n} {t : RBNode α} (h : IsRedBlack t c n) : depth max t ≤
 theorem balanced {c n} {t : RBNode α} (h : IsRedBlack t c n) :
     depth max t ≤ 2 * depth min t + 1 := sorry
 
-end RBNode
+--end RBNode

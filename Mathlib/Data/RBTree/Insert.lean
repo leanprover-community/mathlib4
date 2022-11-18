@@ -10,6 +10,12 @@ import Mathlib.Data.RBTree.Find
 
 Ported to preserve theorems, heavily covered by existing `Std` theorems
 -/
+section
+set_option linter.deprecated false
+-- FIXME: remove this when the sorries are gone
+set_option warningAsError false
+-- FIXME: remove this when theorems are ported
+set_option checkBinderAnnotations false
 
 
 universe u v

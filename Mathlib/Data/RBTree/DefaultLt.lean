@@ -9,5 +9,10 @@ Authors: Leonardo de Moura
 Ported with `sorry`s to surface deprecation in dependencies
 -/
 
+section
+set_option linter.deprecated false
+
 
 @[deprecated] def rbtree.default_lt : Unit := sorry
+
+end

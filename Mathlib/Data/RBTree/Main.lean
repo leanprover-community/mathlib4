@@ -14,6 +14,9 @@ import Mathlib.Order.RelClasses
 Ported to preserve theorems
 -/
 
+section
+set_option linter.deprecated false
+
 
 universe u
 

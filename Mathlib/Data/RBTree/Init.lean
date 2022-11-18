@@ -17,6 +17,9 @@ TODO: Delete post porting
 
 universe u v
 
+section
+set_option linter.deprecated false
+
 /-- Nodes of an Red Black Tree-/
 @[deprecated Std.RBNode] inductive RBNode (α : Type u) where
   /-- leaf (empty marker) node-/
@@ -27,6 +30,9 @@ universe u v
   | black_node (lchild : RBNode α) (val : α) (rchild : RBNode α) : RBNode α
 
 #align rbnode Std.RBNode
+
+def MemExact : α → RBNode α → Prop := sorry
+def Mem : α → RBNode α → Prop := sorry
 
 namespace RBTree
 
