@@ -34,6 +34,7 @@ protected def Nat.unaryCast {R : Type u} [One R] [Zero R] [Add R] : ℕ → R
 
 /-- Type class for the canonical homomorphism `ℕ → R`. -/
 class NatCast (R : Type u) where
+  /-- The canonical map `ℕ → R`. -/
   protected natCast : ℕ → R
 #align has_nat_cast NatCast
 #align has_nat_cast.nat_cast NatCast.natCast
