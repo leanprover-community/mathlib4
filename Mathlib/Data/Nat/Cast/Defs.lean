@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Gabriel Ebner
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.NeZero
 import Mathlib.Tactic.SplitIfs
-
 /-!
 # Cast of natural numbers
 
@@ -56,7 +55,8 @@ instance [NatCast R] : CoeHTCT ℕ R where coe := Nat.cast
 -- the following four declarations are not in mathlib3 and are relevant to the way numeric
 -- literals are handled in Lean 4.
 
-class Nat.AtLeastTwo (n : Nat) : Prop where
+/-- A type class for natural numbers which are greater than or equal to `2`. -/
+class Nat.AtLeastTwo (n : ℕ) : Prop where
   prop : n ≥ 2
 
 instance : Nat.AtLeastTwo (n + 2) where
@@ -79,7 +79,9 @@ instance [NatCast R] [Nat.AtLeastTwo n] : OfNat R n where
 It also contains data for the unique homomorphism `ℕ → R`. -/
 class AddMonoidWithOne (R : Type u) extends NatCast R, AddMonoid R, One R where
   natCast := Nat.unaryCast
+  /-- The canonical map `ℕ → R` sends `0 : ℕ` to `0 : R`. -/
   natCast_zero : natCast 0 = 0 := by intros; rfl
+  /-- The canonical map `ℕ → R` is a homomorphism. -/
   natCast_succ : ∀ n, natCast (n + 1) = natCast n + 1 := by intros; rfl
 #align add_monoid_with_one AddMonoidWithOne
 #align add_monoid_with_one.to_has_nat_cast AddMonoidWithOne.toNatCast

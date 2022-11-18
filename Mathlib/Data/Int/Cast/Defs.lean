@@ -32,17 +32,23 @@ protected def Int.castDef {R : Type u} [NatCast R] [Neg R] : ℤ → R
   | Int.negSucc n => -(n + 1 : ℕ)
 #align int.cast_def Int.castDef
 
-/-- Type class for the canonical homomorphism `ℤ → R`.
--/
+/-- Type class for the canonical homomorphism `ℤ → R`. -/
 class IntCast (R : Type u) where
+  /-- The canonical map `ℤ → R`. -/
   intCast : ℤ → R
 #align has_int_cast IntCast
 
 /-! ### Additive groups with one -/
 
+/-- An `AddGroupWithOne` is an `AddGroup` with a 1. It also contains data for the unique
+homomorphisms `ℕ → R` and `ℤ → R`. -/
 class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGroup R where
+  /-- The canonical homorphism `ℤ → R`. -/
   intCast := Int.castDef
+  /-- The canonical homorphism `ℤ → R` agrees with the one from `ℕ → R` on `ℕ`. -/
   intCast_ofNat : ∀ n : ℕ, intCast (n : ℕ) = Nat.cast n := by intros; rfl
+  /-- The canonical homorphism `ℤ → R` for negative values is just the negation of the values
+  of the canonical homomorphism `ℕ → R`. -/
   intCast_negSucc : ∀ n : ℕ, intCast (Int.negSucc n) = - Nat.cast (n + 1) := by intros; rfl
 #align add_group_with_one AddGroupWithOne
 #align add_group_with_one.to_int_cast AddGroupWithOne.toIntCast
