@@ -285,7 +285,7 @@ end IsWellFounded
 
 theorem WellFounded.asymmetric {α : Sort _} {r : α → α → Prop} (h : WellFounded r) (a b) :
     r a b → ¬r b a :=
-  fun hab hba  => @WellFoundedRelation.asymmetric _ ⟨_, h⟩ _ _ hab hba
+  @WellFoundedRelation.asymmetric _ ⟨_, h⟩ _ _
 
 -- see Note [lower instance priority]
 instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsAsymm α r :=
