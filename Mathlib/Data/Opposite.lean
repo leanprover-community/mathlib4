@@ -46,7 +46,7 @@ def Opposite : Sort u :=
 #align opposite Opposite
 
 -- mathport name: «expr ᵒᵖ»
-/-- `Opposite α` is denoted `αᵒᵖ` -/
+@[inherit_doc]
 notation:max -- Use a high right binding power (like that of postfix ⁻¹) so that, for example,
 -- `presheaf Cᵒᵖ` parses as `presheaf (Cᵒᵖ)` and not `(presheaf C)ᵒᵖ`.
 α "ᵒᵖ" => Opposite α
