@@ -644,7 +644,7 @@ def piCongrRight {α} {β₁ β₂ : α → Sort _} (F : ∀ a, β₁ a ≃ β�
 This is `function.swap` as an `equiv`. -/
 @[simps apply]
 def piComm {α β} (φ : α → β → Sort _) : (∀ a b, φ a b) ≃ ∀ b a, φ a b :=
-  ⟨swap, swap, fun x => rfl, fun y => rfl⟩
+  ⟨swap, swap, fun _ => rfl, fun _ => rfl⟩
 #align equiv.Pi_comm Equiv.piComm
 
 @[simp]
