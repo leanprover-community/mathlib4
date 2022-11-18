@@ -557,8 +557,8 @@ def psigmaEquivSigma {α} (β : α → Type _) : (Σ' i, β i) ≃ Σ i, β i wh
 def psigmaEquivSigmaPLift {α} (β : α → Sort _) : (Σ' i, β i) ≃ Σ i : PLift α, PLift (β i.down) where
   toFun a := ⟨PLift.up a.1, PLift.up a.2⟩
   invFun a := ⟨a.1.down, a.2.down⟩
-  left_inv | ⟨_, _⟩ => rfl
-  right_inv | ⟨_, _⟩ => rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
 #align equiv.psigma_equiv_sigma_plift Equiv.psigmaEquivSigmaPLift
 
 /-- A family of equivalences `Π a, β₁ a ≃ β₂ a` generates an equivalence between `Σ' a, β₁ a` and
