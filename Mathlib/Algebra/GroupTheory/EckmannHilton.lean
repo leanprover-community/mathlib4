@@ -92,7 +92,9 @@ operation, then the magma structure is a commutative monoid. -/
       operation, then the additive magma structure is a commutative additive monoid."]
 def CommMonoid [h : MulOneClass X]
     (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : CommMonoid X :=
-  { h with mul := (· * ·), one := 1, mul_comm := (mul_comm h₁ MulOneClass.IsUnital distrib).comm, mul_assoc := (mul_assoc h₁ MulOneClass.IsUnital distrib).assoc }
+  { h with
+      mul := (· * ·), one := 1, mul_comm := (mul_comm h₁ MulOneClass.IsUnital distrib).comm,
+      mul_assoc := (mul_assoc h₁ MulOneClass.IsUnital distrib).assoc }
 #align eckmann_hilton.comm_monoid EckmannHilton.CommMonoid
 
 /-- If a type carries a group structure that distributes over a unital binary operation,
@@ -103,7 +105,7 @@ then the group is commutative. -/
       operation, then the additive group is commutative."]
 def commGroup [G : Group X]
     (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : CommGroup X :=
-  { EckmannHilton.CommMonoid h₁ distrib, G with }
+  { EckmannHilton.CommMonoid h₁ distrib, G with .. }
 #align eckmann_hilton.comm_group EckmannHilton.CommGroup
 
 end EckmannHilton
