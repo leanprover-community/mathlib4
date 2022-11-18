@@ -1,5 +1,8 @@
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.NeZero
+import Mathlib.Data.Nat.Cast.Defs
+/- The import `Mathlib.Data.Nat.Cast.Defs` should only present until `AddGroupWithOne` gets
+gets moved to the appropriate place: `Mathlib.Data.Int.Cast.Defs` -/
 
 theorem eq_of_sub_eq_zero' [AddGroup R] {a b : R} (h : a - b = 0) : a = b :=
   add_right_cancel <| show a + (-b) = b + (-b) by rw [← sub_eq_add_neg, h, add_neg_self]
@@ -32,42 +35,6 @@ class GroupWithZero (G₀ : Type u) extends DivInvMonoid G₀, MonoidWithZero G�
 
 export GroupWithZero (inv_zero)
 attribute [simp] inv_zero
-
-/-! ### Additive monoids with one -/
-
-class AddMonoidWithOne (R : Type u) extends AddMonoid R, One R where
-  natCast : ℕ → R
-  natCast_zero : natCast 0 = 0
-  natCast_succ : ∀ n, natCast (n + 1) = natCast n + 1
-
-@[coe]
-def Nat.cast [AddMonoidWithOne R] : ℕ → R := AddMonoidWithOne.natCast
-
-instance [AddMonoidWithOne R] : CoeTail ℕ R where coe := Nat.cast
-instance [AddMonoidWithOne R] : CoeHTCT ℕ R where coe := Nat.cast
-
-@[simp, norm_cast] theorem Nat.cast_zero [AddMonoidWithOne R] : ((0 : ℕ) : R) = 0 :=
-  AddMonoidWithOne.natCast_zero
-@[simp 500, norm_cast 500]
-theorem Nat.cast_succ [AddMonoidWithOne R] : ((Nat.succ n : ℕ) : R) = (n : R) + 1 :=
-  AddMonoidWithOne.natCast_succ _
-@[simp, norm_cast]
-theorem Nat.cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by simp
-
-@[simp, norm_cast] theorem Nat.cast_add [AddMonoidWithOne R] : ((m + n : ℕ) : R) = (m : R) + n := by
-  induction n <;> simp_all [add_succ, add_assoc]
-
-class Nat.AtLeastTwo (n : Nat) : Prop where
-  prop : n ≥ 2
-instance : Nat.AtLeastTwo (n + 2) where
-  prop := Nat.succ_le_succ $ Nat.succ_le_succ $ Nat.zero_le _
-
-@[nolint unusedArguments]
-instance [AddMonoidWithOne R] [Nat.AtLeastTwo n] : OfNat R n where
-  ofNat := n.cast
-
-@[simp, norm_cast] theorem Nat.cast_ofNat [AddMonoidWithOne R] [Nat.AtLeastTwo n] :
-  (Nat.cast (OfNat.ofNat n) : R) = OfNat.ofNat n := rfl
 
 /-! ### Additive groups with one -/
 
