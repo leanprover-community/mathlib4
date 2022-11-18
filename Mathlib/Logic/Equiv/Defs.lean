@@ -132,9 +132,9 @@ instance inhabited' : Inhabited (α ≃ α) := ⟨Equiv.refl α⟩
 protected def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.right_inv, e.left_inv⟩
 
 /-- See Note [custom simps projection] -/
-def Simps.symmApply (e : α ≃ β) : β → α := e.symm
+def simps.symm_apply (e : α ≃ β) : β → α := e.symm
 
-initialize_simps_projections Equiv (toFun → apply, invFun → symmApply)
+initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
 
 /-- Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. -/
 -- Porting note: `trans` attribute rejects this lemma because of implicit arguments.
@@ -545,15 +545,15 @@ end
 section
 
 /-- A `PSigma`-type is equivalent to the corresponding `Sigma`-type. -/
-@[simps apply symmApply]
+@[simps apply symm_apply]
 def psigmaEquivSigma {α} (β : α → Type _) : (Σ' i, β i) ≃ Σ i, β i where
   toFun a := ⟨a.1, a.2⟩
   invFun a := ⟨a.1, a.2⟩
-  left_inv | ⟨_, _⟩ => rfl
-  right_inv | ⟨_, _⟩ => rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- A `psigma`-type is equivalent to the corresponding `sigma`-type. -/
-@[simps apply symmApply]
+@[simps apply symm_apply]
 def psigmaEquivSigmaPLift {α} (β : α → Sort _) : (Σ' i, β i) ≃ Σ i : PLift α, PLift (β i.down) where
   toFun a := ⟨PLift.up a.1, PLift.up a.2⟩
   invFun a := ⟨a.1.down, a.2.down⟩
@@ -684,7 +684,7 @@ def sigmaCongr {α₁ α₂} {β₁ : α₁ → Sort _} {β₂ : α₂ → Sort 
   (sigmaCongrRight F).trans (sigmaCongrLeft f)
 
 /-- `sigma` type with a constant fiber is equivalent to the product. -/
-@[simps apply symmApply] def sigmaEquivProd (α β : Type _) : (Σ _ : α, β) ≃ α × β :=
+@[simps apply symm_apply] def sigmaEquivProd (α β : Type _) : (Σ _ : α, β) ≃ α × β :=
   ⟨fun a => ⟨a.1, a.2⟩, fun a => ⟨a.1, a.2⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
 
 /-- If each fiber of a `sigma` type is equivalent to a fixed type, then the sigma type
