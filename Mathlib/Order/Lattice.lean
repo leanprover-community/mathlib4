@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathbin.Order.Monotone
-import Mathbin.Tactic.Simps
-import Mathbin.Tactic.PiInstances
+import Mathlib.Order.Monotone
+import Mathlib.Tactic.Simps.Basic
+--import Mathlib.Tactic.PiInstances
 
 /-!
 # (Semi-)lattices
@@ -54,12 +54,14 @@ universe u v w
 variable {α : Type u} {β : Type v}
 
 -- TODO: move this eventually, if we decide to use them
-attribute [ematch] le_trans lt_of_le_of_lt lt_of_lt_of_le lt_trans
+-- Porting note: no ematch attribute
+--attribute [ematch] le_trans lt_of_le_of_lt lt_of_lt_of_le lt_trans
 
 section
 
 -- TODO: this seems crazy, but it also seems to work reasonably well
-@[ematch]
+-- Porting note: no ematch attribute
+--@[ematch]
 theorem le_antisymm' [PartialOrder α] : ∀ {a b : α}, a ≤ b → b ≤ a → a = b :=
   @le_antisymm _ _
 #align le_antisymm' le_antisymm'
@@ -75,7 +77,8 @@ end
 /-- A `semilattice_sup` is a join-semilattice, that is, a partial order
   with a join (a.k.a. lub / least upper bound, sup / supremum) operation
   `⊔` which is the least element larger than both factors. -/
-@[protect_proj]
+-- Porting note: no protect_proj attribute
+--@[protect_proj]
 class SemilatticeSup (α : Type u) extends HasSup α, PartialOrder α where
   le_sup_left : ∀ a b : α, a ≤ a ⊔ b
   le_sup_right : ∀ a b : α, b ≤ a ⊔ b
@@ -88,20 +91,21 @@ join-semilattice.
 The partial order is defined so that `a ≤ b` unfolds to `a ⊔ b = b`; cf. `sup_eq_right`.
 -/
 def SemilatticeSup.mk' {α : Type _} [HasSup α] (sup_comm : ∀ a b : α, a ⊔ b = b ⊔ a)
-    (sup_assoc : ∀ a b c : α, a ⊔ b ⊔ c = a ⊔ (b ⊔ c)) (sup_idem : ∀ a : α, a ⊔ a = a) : SemilatticeSup α where
+    (sup_assoc : ∀ a b c : α, a ⊔ b ⊔ c = a ⊔ (b ⊔ c)) (sup_idem : ∀ a : α, a ⊔ a = a) :
+    SemilatticeSup α where
   sup := (· ⊔ ·)
   le a b := a ⊔ b = b
   le_refl := sup_idem
   le_trans a b c hab hbc := by
-    dsimp only [(· ≤ ·)] at *
-    rwa [← hbc, ← sup_assoc, hab]
+    -- Porting note: dsimp doesn't work here?
+    show a ⊔ c = c
+    rw [← hbc, ← sup_assoc, hab]
   le_antisymm a b hab hba := by
-    dsimp only [(· ≤ ·)] at *
     rwa [← hba, sup_comm]
   le_sup_left a b := show a ⊔ (a ⊔ b) = a ⊔ b by rw [← sup_assoc, sup_idem]
   le_sup_right a b := show b ⊔ (a ⊔ b) = a ⊔ b by rw [sup_comm, sup_assoc, sup_idem]
   sup_le a b c hac hbc := by
-    dsimp only [(· ≤ ·), Preorder.Le] at *
+    show (a ⊔ b) ⊔ c = c
     rwa [sup_assoc, hbc]
 #align semilattice_sup.mk' SemilatticeSup.mk'
 
@@ -120,7 +124,8 @@ theorem le_sup_left : a ≤ a ⊔ b :=
   SemilatticeSup.le_sup_left a b
 #align le_sup_left le_sup_left
 
-@[ematch]
+-- Porting note: no ematch attribute
+--@[ematch]
 theorem le_sup_left' : a ≤ a ⊔ b :=
   le_sup_left
 #align le_sup_left' le_sup_left'
@@ -130,7 +135,8 @@ theorem le_sup_right : b ≤ a ⊔ b :=
   SemilatticeSup.le_sup_right a b
 #align le_sup_right le_sup_right
 
-@[ematch]
+-- Porting note: no ematch attribute
+--@[ematch]
 theorem le_sup_right' : b ≤ a ⊔ b :=
   le_sup_right
 #align le_sup_right' le_sup_right'
@@ -238,7 +244,7 @@ instance sup_is_commutative : IsCommutative α (· ⊔ ·) :=
 #align sup_is_commutative sup_is_commutative
 
 theorem sup_assoc : a ⊔ b ⊔ c = a ⊔ (b ⊔ c) :=
-  eq_of_forall_ge_iff $ fun x => by simp only [sup_le_iff, and_assoc']
+  eq_of_forall_ge_iff $ fun x => by simp only [sup_le_iff]; rw [and_assoc]
 #align sup_assoc sup_assoc
 
 instance sup_is_associative : IsAssociative α (· ⊔ ·) :=
@@ -343,7 +349,8 @@ end SemilatticeSup
 /-- A `semilattice_inf` is a meet-semilattice, that is, a partial order
   with a meet (a.k.a. glb / greatest lower bound, inf / infimum) operation
   `⊓` which is the greatest element smaller than both factors. -/
-@[protect_proj]
+-- Porting note: no protect_proj attribute
+--@[protect_proj]
 class SemilatticeInf (α : Type u) extends HasInf α, PartialOrder α where
   inf_le_left : ∀ a b : α, a ⊓ b ≤ a
   inf_le_right : ∀ a b : α, a ⊓ b ≤ b
@@ -351,7 +358,8 @@ class SemilatticeInf (α : Type u) extends HasInf α, PartialOrder α where
 #align semilattice_inf SemilatticeInf
 
 instance (α) [SemilatticeInf α] : SemilatticeSup αᵒᵈ :=
-  { OrderDual.partialOrder α, OrderDual.hasSup α with le_sup_left := SemilatticeInf.inf_le_left,
+  { OrderDual.partialOrder α, OrderDual.hasSup α with
+    le_sup_left := SemilatticeInf.inf_le_left,
     le_sup_right := SemilatticeInf.inf_le_right,
     sup_le := fun a b c hca hcb => @SemilatticeInf.le_inf α _ _ _ _ hca hcb }
 
@@ -372,7 +380,8 @@ theorem inf_le_left : a ⊓ b ≤ a :=
   SemilatticeInf.inf_le_left a b
 #align inf_le_left inf_le_left
 
-@[ematch]
+-- Porting note: no ematch attribute
+--@[ematch]
 theorem inf_le_left' : a ⊓ b ≤ a :=
   SemilatticeInf.inf_le_left a b
 #align inf_le_left' inf_le_left'
@@ -382,7 +391,8 @@ theorem inf_le_right : a ⊓ b ≤ b :=
   SemilatticeInf.inf_le_right a b
 #align inf_le_right inf_le_right
 
-@[ematch]
+-- Porting note: no ematch attribute
+--@[ematch]
 theorem inf_le_right' : a ⊓ b ≤ b :=
   SemilatticeInf.inf_le_right a b
 #align inf_le_right' inf_le_right'
@@ -598,7 +608,8 @@ def SemilatticeInf.mk' {α : Type _} [HasInf α] (inf_comm : ∀ a b : α, a ⊓
 
 
 /-- A lattice is a join-semilattice which is also a meet-semilattice. -/
-@[protect_proj]
+-- Porting note: no protect_proj attribute
+--@[protect_proj]
 class Lattice (α : Type u) extends SemilatticeSup α, SemilatticeInf α
 #align lattice Lattice
 
@@ -672,7 +683,8 @@ theorem inf_le_sup : a ⊓ b ≤ a ⊔ b :=
 theorem inf_lt_sup : a ⊓ b < a ⊔ b ↔ a ≠ b := by
   constructor
   · rintro H rfl
-    simpa using H
+    -- Porting note: wa simpa using H (goal False)
+    simp at H
 
   · refine' fun Hne => lt_iff_le_and_ne.2 ⟨inf_le_sup, fun Heq => Hne _⟩
     refine' le_antisymm _ _
@@ -742,7 +754,8 @@ A classic example of a distributive lattice
 is the lattice of subsets of a set, and in fact this example is
 generic in the sense that every distributive lattice is realizable
 as a sublattice of a powerset lattice. -/
-@[protect_proj]
+-- Porting note: no protect_proj attribute
+--@[protect_proj]
 class DistribLattice (α) extends Lattice α where
   le_sup_inf : ∀ x y z : α, (x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ y ⊓ z
 #align distrib_lattice DistribLattice
@@ -752,7 +765,7 @@ section DistribLattice
 variable [DistribLattice α] {x y z : α}
 
 theorem le_sup_inf : ∀ {x y z : α}, (x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ y ⊓ z :=
-  DistribLattice.le_sup_inf
+  fun {x y z} => DistribLattice.le_sup_inf x y z
 #align le_sup_inf le_sup_inf
 
 theorem sup_inf_left : x ⊔ y ⊓ z = (x ⊔ y) ⊓ (x ⊔ z) :=
@@ -1026,12 +1039,12 @@ namespace Monotone
 
 /-- Pointwise supremum of two monotone functions is a monotone function. -/
 protected theorem sup [Preorder α] [SemilatticeSup β] {f g : α → β} (hf : Monotone f) (hg : Monotone g) :
-    Monotone (f ⊔ g) := fun x y h => sup_le_sup (hf h) (hg h)
+    Monotone (f ⊔ g) := fun _ _ h => sup_le_sup (hf h) (hg h)
 #align monotone.sup Monotone.sup
 
 /-- Pointwise infimum of two monotone functions is a monotone function. -/
 protected theorem inf [Preorder α] [SemilatticeInf β] {f g : α → β} (hf : Monotone f) (hg : Monotone g) :
-    Monotone (f ⊓ g) := fun x y h => inf_le_inf (hf h) (hg h)
+    Monotone (f ⊓ g) := fun _ _ h => inf_le_inf (hf h) (hg h)
 #align monotone.inf Monotone.inf
 
 /-- Pointwise maximum of two monotone functions is a monotone function. -/
@@ -1081,7 +1094,8 @@ namespace MonotoneOn
 
 /-- Pointwise supremum of two monotone functions is a monotone function. -/
 protected theorem sup [Preorder α] [SemilatticeSup β] {f g : α → β} {s : Set α} (hf : MonotoneOn f s)
-    (hg : MonotoneOn g s) : MonotoneOn (f ⊔ g) s := fun x hx y hy h => sup_le_sup (hf hx hy h) (hg hx hy h)
+    (hg : MonotoneOn g s) : MonotoneOn (f ⊔ g) s :=
+  fun _ hx _ hy h => sup_le_sup (hf hx hy h) (hg hx hy h)
 #align monotone_on.sup MonotoneOn.sup
 
 /-- Pointwise infimum of two monotone functions is a monotone function. -/
@@ -1108,12 +1122,12 @@ namespace Antitone
 
 /-- Pointwise supremum of two monotone functions is a monotone function. -/
 protected theorem sup [Preorder α] [SemilatticeSup β] {f g : α → β} (hf : Antitone f) (hg : Antitone g) :
-    Antitone (f ⊔ g) := fun x y h => sup_le_sup (hf h) (hg h)
+    Antitone (f ⊔ g) := fun _ _ h => sup_le_sup (hf h) (hg h)
 #align antitone.sup Antitone.sup
 
 /-- Pointwise infimum of two monotone functions is a monotone function. -/
 protected theorem inf [Preorder α] [SemilatticeInf β] {f g : α → β} (hf : Antitone f) (hg : Antitone g) :
-    Antitone (f ⊓ g) := fun x y h => inf_le_inf (hf h) (hg h)
+    Antitone (f ⊓ g) := fun _ _ h => inf_le_inf (hf h) (hg h)
 #align antitone.inf Antitone.inf
 
 /-- Pointwise maximum of two monotone functions is a monotone function. -/
@@ -1154,7 +1168,8 @@ namespace AntitoneOn
 
 /-- Pointwise supremum of two antitone functions is a antitone function. -/
 protected theorem sup [Preorder α] [SemilatticeSup β] {f g : α → β} {s : Set α} (hf : AntitoneOn f s)
-    (hg : AntitoneOn g s) : AntitoneOn (f ⊔ g) s := fun x hx y hy h => sup_le_sup (hf hx hy h) (hg hx hy h)
+    (hg : AntitoneOn g s) : AntitoneOn (f ⊔ g) s :=
+  fun _ hx _ hy h => sup_le_sup (hf hx hy h) (hg hx hy h)
 #align antitone_on.sup AntitoneOn.sup
 
 /-- Pointwise infimum of two antitone functions is a antitone function. -/
@@ -1241,18 +1256,23 @@ theorem inf_def [HasInf α] [HasInf β] (p q : α × β) : p ⊓ q = (p.fst ⊓ 
 #align prod.inf_def Prod.inf_def
 
 instance [SemilatticeSup α] [SemilatticeSup β] : SemilatticeSup (α × β) :=
-  { Prod.partialOrder α β, Prod.hasSup α β with sup_le := fun a b c h₁ h₂ => ⟨sup_le h₁.1 h₂.1, sup_le h₁.2 h₂.2⟩,
-    le_sup_left := fun a b => ⟨le_sup_left, le_sup_left⟩, le_sup_right := fun a b => ⟨le_sup_right, le_sup_right⟩ }
+  { Prod.partialOrder α β, Prod.hasSup α β with
+    sup_le := fun a b c h₁ h₂ => ⟨sup_le h₁.1 h₂.1, sup_le h₁.2 h₂.2⟩,
+    le_sup_left := fun a b => ⟨le_sup_left, le_sup_left⟩,
+    le_sup_right := fun a b => ⟨le_sup_right, le_sup_right⟩ }
 
 instance [SemilatticeInf α] [SemilatticeInf β] : SemilatticeInf (α × β) :=
-  { Prod.partialOrder α β, Prod.hasInf α β with le_inf := fun a b c h₁ h₂ => ⟨le_inf h₁.1 h₂.1, le_inf h₁.2 h₂.2⟩,
-    inf_le_left := fun a b => ⟨inf_le_left, inf_le_left⟩, inf_le_right := fun a b => ⟨inf_le_right, inf_le_right⟩ }
+  { Prod.partialOrder α β, Prod.hasInf α β with
+    le_inf := fun a b c h₁ h₂ => ⟨le_inf h₁.1 h₂.1, le_inf h₁.2 h₂.2⟩,
+    inf_le_left := fun a b => ⟨inf_le_left, inf_le_left⟩,
+    inf_le_right := fun a b => ⟨inf_le_right, inf_le_right⟩ }
 
 instance [Lattice α] [Lattice β] : Lattice (α × β) :=
   { Prod.semilatticeInf α β, Prod.semilatticeSup α β with }
 
 instance [DistribLattice α] [DistribLattice β] : DistribLattice (α × β) :=
-  { Prod.lattice α β with le_sup_inf := fun a b c => ⟨le_sup_inf, le_sup_inf⟩ }
+  { Prod.lattice α β with
+    le_sup_inf := fun a b c => ⟨le_sup_inf, le_sup_inf⟩ }
 
 end Prod
 
@@ -1268,7 +1288,8 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected def semilatticeSup [SemilatticeSup α] {P : α → Prop} (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) :
     SemilatticeSup { x : α // P x } :=
-  { Subtype.partialOrder P with sup := fun x y => ⟨x.1 ⊔ y.1, Psup x.2 y.2⟩,
+  { Subtype.partialOrder P with
+    sup := fun x y => ⟨x.1 ⊔ y.1, Psup x.2 y.2⟩,
     le_sup_left := fun x y => @le_sup_left _ _ (x : α) y, le_sup_right := fun x y => @le_sup_right _ _ (x : α) y,
     sup_le := fun x y z h1 h2 => @sup_le α _ _ _ _ h1 h2 }
 #align subtype.semilattice_sup Subtype.semilatticeSup
