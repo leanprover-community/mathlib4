@@ -124,7 +124,7 @@ If `coeTrans` is tried first, then `Nat.castCoe` doesn't get a chance to apply.
 
 namespace Nat
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem cast_zero : ((0 : ℕ) : R) = 0 :=
   AddMonoidWithOne.natCast_zero
 #align nat.cast_zero Nat.cast_zero
@@ -155,12 +155,12 @@ namespace Nat
 
 variable {R : Type _}
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by
   rw [cast_succ, Nat.cast_zero, zero_add]
 #align nat.cast_one Nat.cast_oneₓ
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem cast_add [AddMonoidWithOne R] (m n : ℕ) : ((m + n : ℕ) : R) = m + n := by
   induction n <;> simp [add_succ, add_assoc, Nat.add_zero, Nat.cast_one, Nat.cast_zero, *]
 #align nat.cast_add Nat.cast_addₓ
