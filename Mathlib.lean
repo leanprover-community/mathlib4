@@ -17,6 +17,7 @@ import Mathlib.Algebra.Order.Monoid
 import Mathlib.Algebra.Order.MonoidLemmas
 import Mathlib.Algebra.Order.Ring
 import Mathlib.Algebra.PEmptyInstances
+import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.Control.Random
