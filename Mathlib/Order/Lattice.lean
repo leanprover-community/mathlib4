@@ -910,9 +910,10 @@ def Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α] [Decidable
 #align lattice.to_linear_order Lattice.toLinearOrder
 
 -- see Note [lower instance priority]
-instance (priority := 100) LinearOrder.toDistribLattice {α : Type u} [o : LinearOrder α] : DistribLattice α :=
+instance (priority := 100) LinearOrder.toDistribLattice {α : Type u} [LinearOrder α] :
+  DistribLattice α :=
   { LinearOrder.toLattice with
-    le_sup_inf := fun a b c =>
+    le_sup_inf := fun _ b c =>
       match le_total b c with
       | Or.inl h => inf_le_of_left_le $ sup_le_sup_left (le_inf (le_refl b) h) _
       | Or.inr h => inf_le_of_right_le $ sup_le_sup_left (le_inf h (le_refl c)) _ }
