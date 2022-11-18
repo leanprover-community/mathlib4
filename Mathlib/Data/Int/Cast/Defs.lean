@@ -24,7 +24,7 @@ Preferentially, the homomorphism is written as a coercion.
 
 universe u
 
---attribute [simp] Int.ofNat_eq_coe
+attribute [simp] Int.ofNat_eq_coe
 
 /-- Default value for `IntCast.intCast` in an `AddGroupWithOne`. -/
 protected def Int.castDef {R : Type u} [NatCast R] [Neg R] : ℤ → R
@@ -77,13 +77,17 @@ theorem cast_negSucc [AddGroupWithOne R] : (cast (negSucc n) : R) = (-(Nat.cast 
 
 @[simp, norm_cast] theorem cast_zero [AddGroupWithOne R] : ((0 : ℤ) : R) = 0 := by
   erw [cast_ofNat, Nat.cast_zero]
+#align int.cast_zero Int.cast_zero
 @[simp, norm_cast] theorem cast_one [AddGroupWithOne R] : ((1 : ℤ) : R) = 1 := by
   erw [cast_ofNat, Nat.cast_one]
+#align int.cast_one Int.cast_one
 
 end Int
 
 /-- An `AddCommGroupWithOne` is an `AddGroupWithOne` satisfying `a + b = b + a`. -/
 class AddCommGroupWithOne (R : Type u) extends AddCommGroup R, AddGroupWithOne R
 #align add_comm_group_with_one AddCommGroupWithOne
+#align add_comm_group_with_one.to_add_comm_group AddCommGroupWithOne.toAddCommGroup
+#align add_comm_group_with_one.to_add_group_with_one AddCommGroupWithOne.toAddGroupWithOne
 
 open Nat
