@@ -77,12 +77,10 @@ end
 /-- A `semilattice_sup` is a join-semilattice, that is, a partial order
   with a join (a.k.a. lub / least upper bound, sup / supremum) operation
   `⊔` which is the least element larger than both factors. -/
--- Porting note: no protect_proj attribute
---@[protect_proj]
 class SemilatticeSup (α : Type u) extends HasSup α, PartialOrder α where
-  le_sup_left : ∀ a b : α, a ≤ a ⊔ b
-  le_sup_right : ∀ a b : α, b ≤ a ⊔ b
-  sup_le : ∀ a b c : α, a ≤ c → b ≤ c → a ⊔ b ≤ c
+  protected le_sup_left : ∀ a b : α, a ≤ a ⊔ b
+  protected le_sup_right : ∀ a b : α, b ≤ a ⊔ b
+  protected sup_le : ∀ a b c : α, a ≤ c → b ≤ c → a ⊔ b ≤ c
 #align semilattice_sup SemilatticeSup
 
 /-- A type with a commutative, associative and idempotent binary `sup` operation has the structure of a
@@ -349,12 +347,10 @@ end SemilatticeSup
 /-- A `semilattice_inf` is a meet-semilattice, that is, a partial order
   with a meet (a.k.a. glb / greatest lower bound, inf / infimum) operation
   `⊓` which is the greatest element smaller than both factors. -/
--- Porting note: no protect_proj attribute
---@[protect_proj]
 class SemilatticeInf (α : Type u) extends HasInf α, PartialOrder α where
-  inf_le_left : ∀ a b : α, a ⊓ b ≤ a
-  inf_le_right : ∀ a b : α, a ⊓ b ≤ b
-  le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ b ⊓ c
+  protected inf_le_left : ∀ a b : α, a ⊓ b ≤ a
+  protected inf_le_right : ∀ a b : α, a ⊓ b ≤ b
+  protected le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ b ⊓ c
 #align semilattice_inf SemilatticeInf
 
 instance (α) [SemilatticeInf α] : SemilatticeSup αᵒᵈ :=
@@ -608,8 +604,6 @@ def SemilatticeInf.mk' {α : Type _} [HasInf α] (inf_comm : ∀ a b : α, a ⊓
 
 
 /-- A lattice is a join-semilattice which is also a meet-semilattice. -/
--- Porting note: no protect_proj attribute
---@[protect_proj]
 class Lattice (α : Type u) extends SemilatticeSup α, SemilatticeInf α
 #align lattice Lattice
 
@@ -754,10 +748,8 @@ A classic example of a distributive lattice
 is the lattice of subsets of a set, and in fact this example is
 generic in the sense that every distributive lattice is realizable
 as a sublattice of a powerset lattice. -/
--- Porting note: no protect_proj attribute
---@[protect_proj]
 class DistribLattice (α) extends Lattice α where
-  le_sup_inf : ∀ x y z : α, (x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ y ⊓ z
+  protected le_sup_inf : ∀ x y z : α, (x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ y ⊓ z
 #align distrib_lattice DistribLattice
 
 section DistribLattice
