@@ -32,7 +32,7 @@ Instead such identities become separate proof obligations when verifying that a
 complex we've constructed is of the desired shape.
 
 If `α` is an `AddRightCancelSemigroup`, then we define `up α : ComplexShape α`,
-the shape appropriate for cohomology,so `d : X i ⟶ X j` is nonzero only when `j = i + 1`,
+the shape appropriate for cohomology, so `d : X i ⟶ X j` is nonzero only when `j = i + 1`,
 as well as `down α : ComplexShape α`, appropriate for homology,
 so `d : X i ⟶ X j` is nonzero only when `i = j + 1`.
 (Later we'll introduce `CochainComplex` and `ChainComplex` as abbreviations for
