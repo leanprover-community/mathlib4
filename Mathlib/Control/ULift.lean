@@ -40,7 +40,7 @@ protected def seq (f : PLift (α → β)) (x : Unit → PLift α) : PLift β :=
 #align plift.seq PLift.seq
 
 @[simp]
-theorem seq_up (f : α → β) (x : α) : (PLift.up f).seq (PLift.up x) = PLift.up (f x) :=
+theorem seq_up (f : α → β) (x : α) : (PLift.up f).seq (fun _ => PLift.up x) = PLift.up (f x) :=
   rfl
 #align plift.seq_up PLift.seq_up
 
@@ -80,8 +80,9 @@ instance : LawfulMonad PLift where
   bind_assoc := @fun _ _ _ ⟨_⟩ _ _ => rfl
 
 @[simp]
-theorem rec.constant {α : Sort u} {β : Type v} (b : β) : (@PLift.rec α (fun _ => β) fun _ => b) = fun _ => b :=
-  funext fun x => PLift.casesOn x fun a => Eq.refl (PLift.rec (fun a' => b) { down := a })
+theorem rec.constant {α : Sort u} {β : Type v} (b : β) :
+    (@PLift.rec α (fun _ => β) fun _ => b) = fun _ => b :=
+        funext fun x => PLift.casesOn x fun a => Eq.refl (PLift.rec (fun a' => b) { down := a })
 #align plift.rec.constant PLift.rec.constant
 
 end PLift
@@ -112,7 +113,7 @@ protected def seq {α β} (f : ULift (α → β)) (x : Unit → ULift α) : ULif
 #align ulift.seq ULift.seq
 
 @[simp]
-theorem seq_up (f : α → β) (x : α) : (ULift.up f).seq (ULift.up x) = ULift.up (f x) :=
+theorem seq_up (f : α → β) (x : α) : (ULift.up f).seq (fun _ => ULift.up x) = ULift.up (f x) :=
   rfl
 #align ULift.seq_up ULift.seq_up
 
@@ -152,8 +153,9 @@ instance : LawfulMonad ULift where
   bind_assoc := @fun _ _ _ ⟨_⟩ _ _ => rfl
 
 @[simp]
-theorem rec.constant {α : Type u} {β : Sort v} (b : β) : (@ULift.rec α (fun _ => β) fun _ => b) = fun _ => b :=
-  funext fun x => ULift.casesOn x fun a => Eq.refl (ULift.rec (fun a' => b) { down := a })
+theorem rec.constant {α : Type u} {β : Sort v} (b : β) :
+     (@ULift.rec α (fun _ => β) fun _ => b) = fun _ => b :=
+        funext fun x => ULift.casesOn x fun a => Eq.refl (ULift.rec (fun a' => b) { down := a })
 #align ULift.rec.constant ULift.rec.constant
 
 end ULift
