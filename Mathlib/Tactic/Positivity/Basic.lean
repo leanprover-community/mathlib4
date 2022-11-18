@@ -9,6 +9,7 @@ import Mathlib.Tactic.Clear!
 import Mathlib.Logic.Nontrivial
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Order.Ring
+import Mathlib.Algebra.Order.Ring.Lemmas
 import Qq.Match
 
 /-!
@@ -41,19 +42,9 @@ theorem mul_nonneg_of_nonneg_of_pos [OrderedSemiring α] {a b : α}
 
 class NoZeroDivisors (α : Type u) [MonoidWithZero α] : Prop
 
-class PosMulStrictMono (α : Type u) [MulZeroClass α] [PartialOrder α] : Prop
-
 instance [OrderedSemiring α] : PosMulStrictMono α := sorry
 
-theorem mul_pos [MulZeroClass α] [PartialOrder α] [PosMulStrictMono α]
-    {a b : α} (ha : 0 < a) (hb : 0 < b) : 0 < a * b := sorry
-
-class PosMulMono (α : Type u) [MulZeroClass α] [PartialOrder α] : Prop
-
 instance [OrderedSemiring α] : PosMulMono α := sorry
-
-theorem mul_nonneg [MulZeroClass α] [PartialOrder α] [PosMulMono α]
-    {a b : α} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b := sorry
 
 class OrderedMonoidWithZero (α : Type _) extends PartialOrder α, MonoidWithZero α
 
