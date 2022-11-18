@@ -21,7 +21,6 @@ import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
-import Mathlib.Tactic.CommandQuote
 import Mathlib.Tactic.Congr
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Contrapose
@@ -39,9 +38,12 @@ import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.PermuteGoals
+import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl
@@ -53,6 +55,7 @@ import Mathlib.Tactic.Replace
 import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.RunCmd
+import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro
@@ -199,15 +202,7 @@ macro ak:Term.attrKind "notation3"
 
 end Parser.Command
 
-namespace Parser.Term
-
-/- S -/ syntax "quoteₓ " term : term
-/- S -/ syntax "pquoteₓ " term : term
-/- S -/ syntax "ppquoteₓ " term : term
-/- S -/ syntax "%%ₓ" term : term
-
-end Term
-
+namespace Parser
 namespace Tactic
 
 /- S -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
@@ -219,8 +214,6 @@ namespace Tactic
 /- B -/ syntax (name := cc) "cc" : tactic
 
 /- M -/ syntax (name := unfoldProjs) "unfold_projs" (config)? (ppSpace location)? : tactic
-
-/- E -/ syntax (name := inferAutoParam) "infer_auto_param" : tactic
 
 /- S -/ syntax (name := rsimp) "rsimp" : tactic
 /- S -/ syntax (name := compVal) "comp_val" : tactic
@@ -242,8 +235,6 @@ namespace Tactic
 /- E -/ syntax (name := unfoldWf) "unfold_wf" : tactic
 /- M -/ syntax (name := unfoldAux) "unfold_aux" : tactic
 /- S -/ syntax (name := «continue») "continue " tacticSeq : tactic
-/- M -/ syntax (name := generalizeHyp) "generalize " atomic(ident " : ")? term:51 " = " ident
-  ppSpace location : tactic
 /- M -/ syntax (name := clean) "clean " term : tactic
 /- B -/ syntax (name := refineStruct) "refine_struct " term : tactic
 /- M -/ syntax (name := matchHyp) "match_hyp " ("(" &"m" " := " term ") ")? ident " : " term :
@@ -336,8 +327,6 @@ syntax termList := " [" term,* "]"
 
 /- E -/ syntax (name := noncommRing) "noncomm_ring" : tactic
 
-/- B -/ syntax (name := linearCombination) "linear_combination" (config)? (colGt term)? : tactic
-
 /- B -/ syntax (name := linarith) "linarith" (config)? (&" only")? (" [" term,* "]")? : tactic
 /- B -/ syntax (name := linarith!) "linarith!" (config)? (&" only")? (" [" term,* "]")? : tactic
 /- M -/ syntax (name := nlinarith) "nlinarith" (config)? (&" only")? (" [" term,* "]")? : tactic
@@ -406,8 +395,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 
 /- M -/ syntax (name := computeDegreeLE) "compute_degree_le" : tactic
 
-/- B -/ syntax (name := positivity) "positivity" : tactic
-
 /- E -/ syntax (name := qify) "qify" (simpArgs)? (ppSpace location)? : tactic
 
 /- S -/ syntax (name := mkDecorations) "mk_decorations" : tactic
@@ -452,6 +439,8 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := pure_coherence) "pure_coherence" : tactic
 /- M -/ syntax (name := coherence) "coherence" : tactic
 
+/- E -/ syntax (name := pgameWFTac) "pgame_wf_tac" : tactic
+
 namespace Conv
 
 -- https://github.com/leanprover-community/mathlib/issues/2882
@@ -488,31 +477,10 @@ end Attr
 namespace Command
 
 /- N -/ syntax (name := addTacticDoc) (docComment)? "add_tactic_doc " term : command
-/- N -/ syntax (name := addDeclDoc) docComment "add_decl_doc " ident : command
-
-/- S -/ syntax (name := setupTacticParser) "setup_tactic_parser" : command
-/- N -/ syntax (name := mkSimpAttribute) "mk_simp_attribute " ident
-  (" from" (ppSpace ident)+)? (" := " str)? : command
 
 /- M -/ syntax (name := addHintTactic) "add_hint_tactic " tactic : command
 
 /- S -/ syntax (name := explode) "#explode " ident : command
-
-syntax (name := localized) "localized " "[" ident "] " command : command
-macro_rules
-  | `(localized [$ns] notation $[$prec:precedence]? $[$n:namedName]? $[$prio:namedPrio]?
-       $sym => $t) =>
-    let ns := mkIdentFrom ns <| rootNamespace ++ ns.getId
-    `(with_weak_namespace $ns
-      scoped notation $[$prec:precedence]? $[$n:namedName]? $[$prio:namedPrio]? $sym => $t)
-  | `(localized [$ns] $_:attrKind $mixfixKind $prec:precedence $[$n:namedName]? $[$prio:namedPrio]?
-       $sym => $t) =>
-    let ns := mkIdentFrom ns <| rootNamespace ++ ns.getId
-    `(with_weak_namespace $ns
-      scoped $mixfixKind $prec:precedence $[$n:namedName]? $[$prio:namedPrio]? $sym => $t)
-  | `(localized [$ns] attribute [$attr:attr] $ids*) =>
-    let ns := mkIdentFrom ns <| rootNamespace ++ ns.getId
-    `(with_weak_namespace $ns attribute [scoped $attr:attr] $ids*)
 
 /- S -/ syntax (name := listUnusedDecls) "#list_unused_decls" : command
 

@@ -24,7 +24,6 @@ variable {α β γ : Sort _} {f : α → β}
   `Function.eval x : (∀ x, β x) → β x`. -/
 @[reducible, simp] def eval {β : α → Sort _} (x : α) (f : ∀ x, β x) : β x := f x
 
-@[simp]
 theorem eval_apply {β : α → Sort _} (x : α) (f : ∀ x, β x) : eval x f = f x :=
   rfl
 
@@ -78,6 +77,7 @@ theorem Injective.eq_iff' (I : Injective f) {a b : α} {c : β} (h : f b = c) : 
 
 theorem Injective.ne (hf : Injective f) {a₁ a₂ : α} : a₁ ≠ a₂ → f a₁ ≠ f a₂ :=
   mt fun h => hf h
+#align function.injective.ne Function.Injective.ne
 
 theorem Injective.ne_iff (hf : Injective f) {x y : α} : f x ≠ f y ↔ x ≠ y :=
   ⟨mt <| congr_arg f, hf.ne⟩
