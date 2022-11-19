@@ -911,23 +911,23 @@ theorem min_min_min_comm : min (min a b) (min c d) = min (min a c) (min b d) :=
 
 end LinearOrder
 
-theorem sup_eq_max_default [SemilatticeSup α] [DecidableRel ((· ≤ ·) : α → α → Prop)]
+theorem sup_eq_maxDefault [SemilatticeSup α] [DecidableRel ((· ≤ ·) : α → α → Prop)]
     [IsTotal α (· ≤ ·)] :
     (· ⊔ ·) = (maxDefault : α → α → α) := by
   ext (x y)
   unfold maxDefault
   split <;> rename_i h'
   exacts[sup_of_le_right h', sup_of_le_left $ (total_of (· ≤ ·) x y).resolve_left h']
-#align sup_eq_max_default sup_eq_max_default
+#align sup_eq_max_default sup_eq_maxDefault
 
-theorem inf_eq_min_default [SemilatticeInf α] [DecidableRel ((· ≤ ·) : α → α → Prop)]
+theorem inf_eq_minDefault [SemilatticeInf α] [DecidableRel ((· ≤ ·) : α → α → Prop)]
     [IsTotal α (· ≤ ·)] :
     (· ⊓ ·) = (minDefault : α → α → α) := by
   ext (x y)
   unfold minDefault
   split <;> rename_i h'
   exacts[inf_of_le_left h', inf_of_le_right $ (total_of (· ≤ ·) x y).resolve_left h']
-#align inf_eq_min_default inf_eq_min_default
+#align inf_eq_min_default inf_eq_minDefault
 
 /-- A lattice with total order is a linear order.
 
@@ -942,9 +942,9 @@ def Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α]
     decidable_lt := ‹_›,
     le_total := total_of (· ≤ ·),
     max := (· ⊔ ·),
-    max_def := by exact congr_fun₂ sup_eq_max_default,
+    max_def := by exact congr_fun₂ sup_eq_maxDefault,
     min := (· ⊓ ·),
-    min_def := by exact congr_fun₂ inf_eq_min_default }
+    min_def := by exact congr_fun₂ inf_eq_minDefault }
 #align lattice.to_linear_order Lattice.toLinearOrder
 
 -- see Note [lower instance priority]
