@@ -57,10 +57,10 @@ def toList : LazyList α → List α
 /-- Returns the first element of the lazy list,
 or `default` if the lazy list is empty.
 -/
-def head [Inhabited α] : LazyList α → α
+def headI [Inhabited α] : LazyList α → α
   | nil => default
   | cons h _ => h
-#align lazy_list.head LazyList.head
+#align lazy_list.head LazyList.headI
 
 /-- Removes the first element of the lazy list.
 -/
