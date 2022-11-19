@@ -3,11 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Data.Bool.Basic
+import Mathlib.Init.Algebra.Order
 import Mathlib.Order.Monotone
 import Mathlib.Tactic.Simps.Basic
-import Mathlib.Data.Bool.Basic
---import Mathlib.Tactic.PiInstances
-import Mathlib.Init.Algebra.Order
 
 /-!
 # (Semi-)lattices
@@ -581,7 +580,8 @@ theorem inf_le_ite (s s' : α) (P : Prop) [Decidable P] : s ⊓ s' ≤ ite P s s
 
 end SemilatticeInf
 
-/-- A type with a commutative, associative and idempotent binary `inf` operation has the structure of a
+/--
+A type with a commutative, associative and idempotent binary `inf` operation has the structure of a
 meet-semilattice.
 
 The partial order is defined so that `a ≤ b` unfolds to `b ⊓ a = a`; cf. `inf_eq_right`.
