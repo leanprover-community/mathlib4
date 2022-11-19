@@ -16,6 +16,7 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.GeneralizeProofs
+import Mathlib.Init.Data.Sigma.Basic
 -- **TODO** review tactic imports to see what we actually used.
 
 -- **TODO** remove these later
@@ -1383,7 +1384,8 @@ theorem ofBijective_symm_apply_apply (f : α → β) (hf : Bijective f) (x : α)
   (ofBijective f hf).symm_apply_apply x
 #align equiv.of_bijective_symm_apply_apply Equiv.ofBijective_symm_apply_apply
 
-instance : CanLift (α → β) (α ≃ β) coeFn Bijective where prf f hf := ⟨ofBijective f hf, rfl⟩
+-- Porting note: `lift` tactic is not implemented yet.
+-- instance : CanLift (α → β) (α ≃ β) coeFn Bijective where prf f hf := ⟨ofBijective f hf, rfl⟩
 
 section
 
