@@ -1275,10 +1275,10 @@ def piSplitAt {α : Type _} [DecidableEq α] (i : α) (β : α → Type _) :
   toFun f := ⟨f i, fun j => f j⟩
   invFun f j := if h : j = i then h.symm.rec f.1 else f.2 ⟨j, h⟩
   right_inv f := by
-    ext
+    ext x
     exacts[dif_pos rfl, (dif_neg x.2).trans (by cases x <;> rfl)]
   left_inv f := by
-    ext
+    ext x
     dsimp only
     split_ifs
     · subst h
@@ -1297,64 +1297,66 @@ def funSplitAt {α : Type _} [DecidableEq α] (i : α) (β : Type _) :
 
 end
 
--- Porting note: this section requires some thought about what the statements should actually be!
--- Haven't touched any align statements in this section yet.
-section SubtypeEquivCodomain
+section subtypeEquivCodomain
 
 variable {X : Type _} {Y : Type _} [DecidableEq X] {x : X}
 
 /-- The type of all functions `X → Y` with prescribed values for all `x' ≠ x`
 is equivalent to the codomain `Y`. -/
-def subtypeEquivCodomain (f : { x' // x' ≠ x } → Y) : { g : X → Y // g ∘ coe = f } ≃ Y :=
+def subtypeEquivCodomain (f : { x' // x' ≠ x } → Y) :
+    { g : X → Y // (fun x : { x' // x' ≠ x } => g x) = f } ≃ Y :=
   (subtypePreimage _ f).trans <|
     @funUnique { x' // ¬x' ≠ x } _ <|
       show Unique { x' // ¬x' ≠ x } from
         @Equiv.unique _ _
           (show Unique { x' // x' = x } from {
-            default := ⟨x, rfl⟩, uniq := fun ⟨x', h⟩ => Subtype.val_injective h })
-          (subtype_equiv_right fun a => not_not)
+            default := ⟨x, rfl⟩, uniq := fun ⟨_, h⟩ => Subtype.val_injective h })
+          (subtypeEquivRight fun _ => not_not)
 #align equiv.subtype_equiv_codomain Equiv.subtypeEquivCodomain
 
 @[simp]
-theorem coe_subtype_equiv_codomain (f : { x' // x' ≠ x } → Y) :
-    (subtypeEquivCodomain f : { g : X → Y // g ∘ coe = f } → Y) = fun g => (g : X → Y) x :=
+theorem coe_subtypeEquivCodomain (f : { x' // x' ≠ x } → Y) :
+    (subtypeEquivCodomain f : _ → Y) =
+      fun g : { g : X → Y // (fun x : { x' // x' ≠ x } => g x) = f } => (g : X → Y) x :=
   rfl
-#align equiv.coe_subtype_equiv_codomain Equiv.coe_subtype_equiv_codomain
+#align equiv.coe_subtype_equiv_codomain Equiv.coe_subtypeEquivCodomain
 
 @[simp]
-theorem subtype_equiv_codomain_apply (f : { x' // x' ≠ x } → Y) (g : { g : X → Y // g ∘ coe = f }) :
+theorem subtypeEquivCodomain_apply (f : { x' // x' ≠ x } → Y) (g) :
     subtypeEquivCodomain f g = (g : X → Y) x :=
   rfl
-#align equiv.subtype_equiv_codomain_apply Equiv.subtype_equiv_codomain_apply
+#align equiv.subtype_equiv_codomain_apply Equiv.subtypeEquivCodomain_apply
 
-theorem coe_subtype_equiv_codomain_symm (f : { x' // x' ≠ x } → Y) :
-    ((subtypeEquivCodomain f).symm : Y → { g : X → Y // g ∘ coe = f }) = fun y =>
+theorem coe_subtypeEquivCodomain_symm (f : { x' // x' ≠ x } → Y) :
+    ((subtypeEquivCodomain f).symm : Y → _) = fun y =>
       ⟨fun x' => if h : x' ≠ x then f ⟨x', h⟩ else y, by
         funext x'
-        dsimp
-        erw [dif_pos x'.2, Subtype.coe_eta]⟩ :=
+        simp only [ne_eq, Subtype.coe_eta, dite_eq_ite, ite_not, ite_eq_right_iff]
+        intro w
+        exfalso
+        exact x'.property w⟩ :=
   rfl
-#align equiv.coe_subtype_equiv_codomain_symm Equiv.coe_subtype_equiv_codomain_symm
+#align equiv.coe_subtype_equiv_codomain_symm Equiv.coe_subtypeEquivCodomain_symm
 
 @[simp]
-theorem subtype_equiv_codomain_symm_apply (f : { x' // x' ≠ x } → Y) (y : Y) (x' : X) :
+theorem subtypeEquivCodomain_symm_apply (f : { x' // x' ≠ x } → Y) (y : Y) (x' : X) :
     ((subtypeEquivCodomain f).symm y : X → Y) x' = if h : x' ≠ x then f ⟨x', h⟩ else y :=
   rfl
-#align equiv.subtype_equiv_codomain_symm_apply Equiv.subtype_equiv_codomain_symm_apply
+#align equiv.subtype_equiv_codomain_symm_apply Equiv.subtypeEquivCodomain_symm_apply
 
 @[simp]
-theorem subtype_equiv_codomain_symm_apply_eq (f : { x' // x' ≠ x } → Y) (y : Y) :
+theorem subtypeEquivCodomain_symm_apply_eq (f : { x' // x' ≠ x } → Y) (y : Y) :
     ((subtypeEquivCodomain f).symm y : X → Y) x = y :=
   dif_neg (not_not.mpr rfl)
-#align equiv.subtype_equiv_codomain_symm_apply_eq Equiv.subtype_equiv_codomain_symm_apply_eq
+#align equiv.subtype_equiv_codomain_symm_apply_eq Equiv.subtypeEquivCodomain_symm_apply_eq
 
-theorem subtype_equiv_codomain_symm_apply_ne
+theorem subtypeEquivCodomain_symm_apply_ne
     (f : { x' // x' ≠ x } → Y) (y : Y) (x' : X) (h : x' ≠ x) :
     ((subtypeEquivCodomain f).symm y : X → Y) x' = f ⟨x', h⟩ :=
   dif_pos h
-#align equiv.subtype_equiv_codomain_symm_apply_ne Equiv.subtype_equiv_codomain_symm_apply_ne
+#align equiv.subtype_equiv_codomain_symm_apply_ne Equiv.subtypeEquivCodomain_symm_apply_ne
 
-end SubtypeEquivCodomain
+end subtypeEquivCodomain
 
 /-- If `f` is a bijective function, then its domain is equivalent to its codomain. -/
 @[simps apply]
