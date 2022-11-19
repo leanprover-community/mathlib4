@@ -804,20 +804,13 @@ theorem eq_of_inf_eq_sup_eq {α : Type u} [DistribLattice α] {a b c : α} (h₁
 
 end DistribLattice
 
--- Porting note: try and remove this again
-def DistribLattice.ofInfSupLe_aux [Lattice α]
-  (inf_sup_le : ∀ a b c : α, a ⊓ (b ⊔ c) ≤ a ⊓ b ⊔ a ⊓ c) :
-  DistribLattice α where
-  __ := inferInstanceAs (Lattice αᵒᵈ)
-  le_sup_inf := inf_sup_le
-
 -- See note [reducible non-instances]
 /-- Prove distributivity of an existing lattice from the dual distributive law. -/
 @[reducible]
 def DistribLattice.ofInfSupLe [Lattice α] (inf_sup_le : ∀ a b c : α, a ⊓ (b ⊔ c) ≤ a ⊓ b ⊔ a ⊓ c) :
   DistribLattice α where
   __ := inferInstanceAs (Lattice αᵒᵈ)
-  __ := @OrderDual.distribLattice αᵒᵈ (DistribLattice.ofInfSupLe_aux inf_sup_le)
+  __ := @OrderDual.distribLattice αᵒᵈ {inferInstanceAs (Lattice αᵒᵈ) with le_sup_inf := inf_sup_le}
 #align distrib_lattice.of_inf_sup_le DistribLattice.ofInfSupLe
 
 /-!
