@@ -183,7 +183,7 @@ end add_zero
 
 section One
 
-variable [outParam <| One M] [outParam <| One N]
+variable [One M] [One N]
 
 /-- `one_hom M N` is the type of functions `M → N` that preserve one.
 
