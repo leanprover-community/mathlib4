@@ -15,6 +15,8 @@ import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.CasesM
+import Mathlib.Tactic.GeneralizeProofs
+-- **TODO** review tactic imports to see what we actually used.
 
 -- **TODO** remove these later
 set_option autoImplicit false
