@@ -14,6 +14,7 @@ import Mathlib.Logic.Function.Conjugate
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.CasesM
 
 -- **TODO** remove these later
 set_option autoImplicit false
@@ -1472,18 +1473,23 @@ def swapCore (a b r : α) : α :=
 #align equiv.swap_core Equiv.swapCore
 
 theorem swapCore_self (r a : α) : swapCore a a r = r := by
-  unfold swap_core
-  split_ifs <;> cc
+  unfold swapCore
+  split_ifs <;> simp [*]
 #align equiv.swap_core_self Equiv.swapCore_self
 
 theorem swapCore_swapCore (r a b : α) : swapCore a b (swapCore a b r) = r := by
-  unfold swap_core
+  unfold swapCore
+  -- Porting note: cc missing.
+  -- `casesm` would work here, with `casesm _ = _, ¬ _ = _`,
+  -- if it would just continue past failures on hypotheses matching the pattern
   split_ifs <;> cc
 #align equiv.swap_core_swap_core Equiv.swapCore_swapCore
 
 theorem swapCore_comm (r a b : α) : swapCore a b r = swapCore b a r := by
-  unfold swap_core
-  split_ifs <;> cc
+  unfold swapCore
+  -- Porting note: whatever solution works for `swapCore_swapCore` will work here too.
+  split_ifs with h₁ h₂ h₃ <;> simp
+  · cases h₁; cases h₂; rfl
 #align equiv.swap_core_comm Equiv.swapCore_comm
 
 /-- `swap a b` is the permutation that swaps `a` and `b` and
