@@ -31,7 +31,7 @@ add_tactic_doc tde
   if let some tde := tdes[0]? then
     guard (tde.snd == "meta!")
 
--- 2. Test add_tactic_dic: use the docstring of a single declaration from decl_names
+-- 2. Test add_tactic_doc: use the docstring of a single declaration from decl_names
 add_tactic_doc tde
 
 #eval show TermElabM _ from do
@@ -40,7 +40,7 @@ add_tactic_doc tde
   if let some tde := tdes[0]? then
     guard (tde.snd == "My docstring for :one")
 
--- 3. Test add_tactic_dic: use inherit_description_from
+-- 3. Test add_tactic_doc: use inherit_description_from
 add_tactic_doc tde2
 
 #eval show TermElabM _ from do
