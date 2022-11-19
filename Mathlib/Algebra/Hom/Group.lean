@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
+import Mathlib.Init.CcLemmas
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
@@ -201,7 +202,7 @@ structure OneHom (M : Type _) (N : Type _) [One M] [One N] where
 /-- `one_hom_class F M N` states that `F` is a type of one-preserving homomorphisms.
 You should extend this typeclass when you extend `one_hom`.
 -/
-@[to_additive]
+@[to_additive ZeroHomClass]
 class OneHomClass (F : Type _) (M N : outParam <| Type _)
   [outParam <| One M] [outParam <| One N] extends FunLike F M fun _ => N where
   map_one : ∀ f : F, f 1 = 1
@@ -220,19 +221,18 @@ theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
 #align map_one map_one
 
 @[to_additive]
-theorem map_eq_one_iff [OneHomClass F M N] (f : F) (hf : Function.Injective f) {x : M} : f x = 1 ↔ x = 1 :=
-  hf.eq_iff' (map_one f)
+theorem map_eq_one_iff [OneHomClass F M N] (f : F) (hf : Function.Injective f) {x : M} :
+  f x = 1 ↔ x = 1 := hf.eq_iff' (map_one f)
 #align map_eq_one_iff map_eq_one_iff
 
 @[to_additive]
-theorem map_ne_one_iff {R S F : Type _} [One R] [One S] [OneHomClass F R S] (f : F) (hf : Function.Injective f)
-    {x : R} : f x ≠ 1 ↔ x ≠ 1 :=
-  (map_eq_one_iff f hf).Not
+theorem map_ne_one_iff {R S F : Type _} [One R] [One S] [OneHomClass F R S] (f : F)
+  (hf : Function.Injective f) {x : R} : f x ≠ 1 ↔ x ≠ 1 := (map_eq_one_iff f hf).not
 #align map_ne_one_iff map_ne_one_iff
 
 @[to_additive]
-theorem ne_one_of_map {R S F : Type _} [One R] [One S] [OneHomClass F R S] {f : F} {x : R} (hx : f x ≠ 1) : x ≠ 1 :=
-  ne_of_apply_ne f <| ne_of_ne_of_eq hx (map_one f).symm
+theorem ne_one_of_map {R S F : Type _} [One R] [One S] [OneHomClass F R S] {f : F} {x : R}
+  (hx : f x ≠ 1) : x ≠ 1 := ne_of_apply_ne f <| ne_of_ne_of_eq hx (map_one f).symm
 #align ne_one_of_map ne_one_of_map
 
 @[to_additive]
