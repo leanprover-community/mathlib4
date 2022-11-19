@@ -4,7 +4,7 @@ Lint a file or files from mathlib for style.
 
 Sample usage:
 
-    $ ./scripts/lint-style.py $(find src archive -name '*.lean')
+    $ ./scripts/lint-style.py $(find Mathlib -name '*.lean')
 
 which will lint all of the Lean files in the specified directories.
 
@@ -23,9 +23,11 @@ that contain the relative path, whilst linting absolute paths (like
 absolute path.
 
 This script can also be used to regenerate the list of allowed / ignored style
-exceptions by redirecting the output to ``style-exceptions.txt``:
+exceptions by redirecting the output to ``style-exceptions.txt``. Use:
 
-    $ ./scripts/lint-style.py $(find src archive -name '*.lean') > scripts/style-exceptions.txt
+    $ ./scripts/update-style-exceptions.sh
+
+to perform this update.
 """
 
 # TODO: This is adapted from the linter for mathlib3. It should be rewritten in Lean.

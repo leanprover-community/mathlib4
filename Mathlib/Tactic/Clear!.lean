@@ -5,22 +5,14 @@ Authors: Joshua Clune
 -/
 import Lean
 
-open Lean.Meta
+/-! # `clear!` tactic -/
 
-namespace Lean.Elab.Tactic
+namespace Mathlib.Tactic
+open Lean Meta Elab.Tactic
 
 /-- A variant of `clear` which clears not only the given hypotheses but also any other hypotheses
     depending on them -/
-syntax (name := clear!) "clear!" (ppSpace colGt ident)* : tactic
-
-elab_rules : tactic
-  | `(tactic| clear! $hs:ident*) => do
-    let fvarIds ← getFVarIds hs
-    liftMetaTactic1 fun goal => do
-      let mut toClear : Array FVarId := #[]
-      let lctx ← getLCtx
-      for fvar in fvarIds do
-        let deps := (← collectForwardDeps #[mkFVar fvar] true).map (·.fvarId!)
-        if ← deps.allM fun dep => return (← isClass? (lctx.get! dep).type).isNone then
-          toClear := toClear ++ deps
-      goal.tryClearMany toClear
+elab (name := clear!) "clear!" hs:(ppSpace colGt ident)* : tactic => do
+  let fvarIds ← getFVarIds hs
+  liftMetaTactic1 fun goal => do
+    goal.tryClearMany <| (← collectForwardDeps (fvarIds.map .fvar) true).map (·.fvarId!)

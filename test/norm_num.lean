@@ -102,11 +102,14 @@ example : 10 - 5 * 5 + (7 - 3) * 6 = 27 - 3 := by norm_num
 def foo : ℕ := 1
 
 example : foo = 1 := by norm_num
+section
+  variable (α : Type u) [AddMonoidWithOne α]
+  example : (1 + 0 : α) = (0 + 1 : α) := by norm_num
+  example : (0 + (2 + 3) + 1 : α) = 6 := by norm_num
+end
 
 section
   variable (α : Type u) [Semiring α]
-  example : (1 + 0 : α) = (0 + 1 : α) := by norm_num
-  example : (0 + (2 + 3) + 1 : α) = 6 := by norm_num
   example : (70 * (33 + 2) : α) = 2450 := by norm_num
   example : (8 + 2 ^ 2 * 3 : α) = 20 := by norm_num
   example : ((2 * 1 + 1) ^ 2 : α) = (3 * 3 : α) := by norm_num

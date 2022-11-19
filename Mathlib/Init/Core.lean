@@ -30,6 +30,7 @@ import Std.Classes.SetNotation
 #align quot.ind Quot.ind
 
 #align heq HEq
+#align prod Prod
 #align pprod PProd
 
 #align and.left And.left
@@ -83,7 +84,7 @@ class AndThen' (α : Type u) (β : Type v) (σ : outParam <| Type w) where
 #align has_union Union
 #align has_equiv HasEquivₓ -- universe levels don't match
 #align has_inter Inter
-#align has_sdiff Sdiff
+#align has_sdiff SDiff
 
 #align has_subset HasSubset
 #align has_subset.subset HasSubset.Subset
@@ -106,9 +107,11 @@ attribute [simp] insert_emptyc_eq
 
 @[deprecated] def Std.Priority.default : Nat := 1000
 @[deprecated] def Std.Priority.max : Nat := 4294967295
+set_option linter.deprecated false in
 @[deprecated] protected def Nat.prio := Std.Priority.default + 100
 @[deprecated] def Std.Prec.max : Nat := 1024
 @[deprecated] def Std.Prec.arrow : Nat := 25
+set_option linter.deprecated false in
 @[deprecated] def Std.Prec.maxPlus : Nat := Std.Prec.max + 10
 
 #align has_sizeof SizeOf

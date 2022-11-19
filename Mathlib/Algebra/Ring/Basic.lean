@@ -60,7 +60,7 @@ lemma Nat.cast_pow [Semiring R] {m n : ℕ} : (m ^ n).cast = (m.cast ^ n : R) :=
 theorem Nat.cast_commute [Semiring α] (n : ℕ) (x : α) : Commute (↑n) x := by
   induction n with
   | zero => rw [Nat.cast_zero]; exact Commute.zero_left x
-  | succ n ihn => rw [Nat.cast_succ] <;> exact ihn.add_left (Commute.one_left x)
+  | succ n ihn => rw [Nat.cast_succ]; exact ihn.add_left (Commute.one_left x)
 
 end Semiring
 
