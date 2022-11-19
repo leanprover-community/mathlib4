@@ -767,7 +767,7 @@ theorem exists_prop_congr' {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h �
     Exists q = ∃ h : p', q' (hp.2 h) :=
   propext (exists_prop_congr hq hp)
 
-/-- See `is_empty.exists_iff` for the `false` version. -/
+/-- See `IsEmpty.exists_iff` for the `false` version. -/
 @[simp] theorem exists_true_left (p : True → Prop) : (∃ x, p x) ↔ p True.intro :=
   exists_prop_of_true _
 
@@ -783,7 +783,7 @@ theorem forall_prop_congr' {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h �
     (∀ h, q h) = ∀ h : p', q' (hp.2 h) :=
   propext (forall_prop_congr hq hp)
 
-/-- See `is_empty.forall_iff` for the `false` version. -/
+/-- See `IsEmpty.forall_iff` for the `false` version. -/
 @[simp] theorem forall_true_left (p : True → Prop) : (∀ x, p x) ↔ p True.intro :=
   forall_prop_of_true _
 

@@ -2,7 +2,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
-import Mathlib.Data.Equiv.Basic
+import Mathlib.Logic.Equiv.Defs
 import Mathlib.Data.Prod.Basic
 
 -- set_option trace.simps.debug true

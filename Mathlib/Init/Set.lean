@@ -5,6 +5,7 @@ Authors: Leonardo de Moura
 -/
 import Lean.Parser.Term
 import Std.Classes.SetNotation
+import Mathlib.Mathport.Rename
 
 /-!
 
@@ -39,11 +40,12 @@ p
 
 namespace Set
 
-protected def mem (a : α) (s : Set α) :=
+/-- Membership in a set -/
+protected def Mem (a : α) (s : Set α) : Prop :=
 s a
 
 instance : Membership α (Set α) :=
-⟨Set.mem⟩
+⟨Set.Mem⟩
 
 theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
 funext (fun x => propext (h x))
@@ -77,6 +79,7 @@ macro (priority := low) "{ " t:term " | " bs:extBinders " }" : term =>
   `({ x | ∃ᵉ $bs:extBinders, $t = x })
 
 def univ : Set α := {_a | True}
+#align set.univ Set.univ
 
 protected def insert (a : α) (s : Set α) : Set α :=
 {b | b = a ∨ b ∈ s}
