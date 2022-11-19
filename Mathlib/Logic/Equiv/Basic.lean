@@ -1300,8 +1300,6 @@ def funSplitAt {α : Type _} [DecidableEq α] (i : α) (β : Type _) :
 
 end
 
--- Porting note (@semorrison): We need to redo these, I've changed the translation incorrectly.
--- Please see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/logic.2Eequiv.2Ebasic/near/310956459
 section subtypeEquivCodomain
 
 variable {X : Type _} {Y : Type _} [DecidableEq X] {x : X}
@@ -1309,7 +1307,7 @@ variable {X : Type _} {Y : Type _} [DecidableEq X] {x : X}
 /-- The type of all functions `X → Y` with prescribed values for all `x' ≠ x`
 is equivalent to the codomain `Y`. -/
 def subtypeEquivCodomain (f : { x' // x' ≠ x } → Y) :
-    { g : X → Y // (fun x : { x' // x' ≠ x } => g x) = f } ≃ Y :=
+    { g : X → Y // g ∘ (↑) = f } ≃ Y :=
   (subtypePreimage _ f).trans <|
     @funUnique { x' // ¬x' ≠ x } _ <|
       show Unique { x' // ¬x' ≠ x } from
@@ -1322,7 +1320,7 @@ def subtypeEquivCodomain (f : { x' // x' ≠ x } → Y) :
 @[simp]
 theorem coe_subtypeEquivCodomain (f : { x' // x' ≠ x } → Y) :
     (subtypeEquivCodomain f : _ → Y) =
-      fun g : { g : X → Y // (fun x : { x' // x' ≠ x } => g x) = f } => (g : X → Y) x :=
+      fun g : { g : X → Y // g ∘ (↑) = f } => (g : X → Y) x :=
   rfl
 #align equiv.coe_subtype_equiv_codomain Equiv.coe_subtypeEquivCodomain
 
@@ -1336,7 +1334,7 @@ theorem coe_subtypeEquivCodomain_symm (f : { x' // x' ≠ x } → Y) :
     ((subtypeEquivCodomain f).symm : Y → _) = fun y =>
       ⟨fun x' => if h : x' ≠ x then f ⟨x', h⟩ else y, by
         funext x'
-        simp only [ne_eq, Subtype.coe_eta, dite_eq_ite, ite_not, ite_eq_right_iff]
+        simp only [ne_eq, dite_not, comp_apply, Subtype.coe_eta, dite_eq_ite, ite_eq_right_iff]
         intro w
         exfalso
         exact x'.property w⟩ :=
