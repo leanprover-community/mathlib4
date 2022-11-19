@@ -1511,7 +1511,7 @@ theorem swap_apply_of_ne_of_ne {a b x : α} : x ≠ a → x ≠ b → swap a b x
 
 @[simp]
 theorem swap_swap (a b : α) : (swap a b).trans (swap a b) = Equiv.refl _ :=
-  ext fun x => swapCore_swapCore _ _ _
+  ext fun _ => swapCore_swapCore _ _ _
 #align equiv.swap_swap Equiv.swap_swap
 
 @[simp]
@@ -1824,7 +1824,7 @@ theorem Function.Injective.swap_apply
 theorem Function.Injective.swap_comp
     [DecidableEq α] [DecidableEq β] {f : α → β} (hf : Function.Injective f) (x y : α) :
     Equiv.swap (f x) (f y) ∘ f = f ∘ Equiv.swap x y :=
-  funext fun z => hf.swap_apply _ _ _
+  funext fun _ => hf.swap_apply _ _ _
 #align function.injective.swap_comp Function.Injective.swap_comp
 
 /-- If `α` is a subsingleton, then it is equivalent to `α × α`. -/
