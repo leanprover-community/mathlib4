@@ -1704,19 +1704,14 @@ variable (P : α → Sort w) (e : α ≃ β)
 /-- Transport dependent functions through an equivalence of the base space.
 -/
 @[simps]
-def piCongrLeft' : (∀ a, P a) ≃ ∀ b, P (e.symm b) where
+def piCongrLeft' (P : α → Sort _) (e : α ≃ β) : (∀ a, P a) ≃ ∀ b, P (e.symm b) where
   toFun f x := f (e.symm x)
-  invFun f x := by
-    rw [← e.symm_apply_apply x]
-    exact f (e x)
-  left_inv f :=
-    funext fun x =>
-      eq_of_heq
-        ((eq_rec_heq _ _).trans
-          (by
-            dsimp
-            rw [e.symm_apply_apply]))
-  right_inv f := funext fun x => eq_of_heq ((eq_rec_heq _ _).trans (by rw [e.apply_symm_apply]))
+  invFun f x := (e.symm_apply_apply x).ndrec (f (e x))
+  left_inv f := funext fun x =>
+    (by rintro _ rfl; rfl : ∀ {y} (h : y = x), h.ndrec (f y) = f x) (e.symm_apply_apply x)
+  right_inv f := funext fun x =>
+    (by rintro _ rfl; rfl : ∀ {y} (h : y = x), (congr_arg e.symm h).ndrec (f y) = f x)
+      (e.apply_symm_apply x)
 #align equiv.Pi_congr_left' Equiv.piCongrLeft'
 
 end
