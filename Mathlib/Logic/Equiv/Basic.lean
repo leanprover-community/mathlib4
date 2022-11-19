@@ -1808,7 +1808,7 @@ variable {α₁ β₁ : Type _} (e : α₁ ≃ β₁) (f : α₁ → α₁ → �
 theorem semiconj_conj (f : α₁ → α₁) : Semiconj e f (e.conj f) := fun x => by simp
 #align equiv.semiconj_conj Equiv.semiconj_conj
 
-theorem semiconj₂_conj : Semiconj₂ e f (e.arrowCongr e.conj f) := fun x y => by simp
+theorem semiconj₂_conj : Semiconj₂ e f (e.arrowCongr e.conj f) := fun x y => by simp [arrowCongr]
 #align equiv.semiconj₂_conj Equiv.semiconj₂_conj
 
 instance [IsAssociative α₁ f] : IsAssociative β₁ (e.arrowCongr (e.arrowCongr e) f) :=
