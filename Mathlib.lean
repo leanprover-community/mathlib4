@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Abs
+import Mathlib.Algebra.HierarchyDesign
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
