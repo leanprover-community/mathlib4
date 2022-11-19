@@ -788,11 +788,17 @@ def prodExtendRight : Perm (α₁ × β₁) where
   left_inv := by
     rintro ⟨k', x⟩
     dsimp only
-    split_ifs with h <;> simp [h]
+    split_ifs with h₁ h₂
+    · simp [h₁]
+    · simp at h₂
+    · simp
   right_inv := by
     rintro ⟨k', x⟩
     dsimp only
-    split_ifs with h <;> simp [h]
+    split_ifs with h₁ h₂
+    · simp [h₁]
+    · simp at h₂
+    · simp
 #align equiv.perm.prod_extend_right Equiv.Perm.prodExtendRight
 
 @[simp]
