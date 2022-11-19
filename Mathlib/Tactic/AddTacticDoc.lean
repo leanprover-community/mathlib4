@@ -39,14 +39,15 @@ initialize docNamesExtension : SimplePersistentEnvExtension (TacticDocEntry × S
     addEntryFn    := λ xs x => x :: xs
   }
 
-elab "add_tactic_doc " tdeStx:term : command => do
+elab metaDocString:docComment ? "add_tactic_doc " tdeStx:term : command => do
   -- 1. Turn tde:TSyntax argument into the actual tde:TacticDocEntry object
   let tdeName : Name ← resolveGlobalConstNoOverloadWithInfo tdeStx
   let tde : TacticDocEntry ← unsafe evalConstCheck TacticDocEntry ``TacticDocEntry tdeName
   -- 2. Determine tde's docstring
-  let tdeDoc ←
-    if let some docString ← findDocString? (← getEnv) tdeName then
-      pure docString
+  let tdeDoc : String ←
+    if let some metaDocString := metaDocString then
+      let metaDocString ← getDocStringText metaDocString
+      pure metaDocString
     else
       let inheritFrom ←
         match tde.inherit_description_from, tde.decl_names with
