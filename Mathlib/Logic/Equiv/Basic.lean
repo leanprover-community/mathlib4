@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 Ported by: Kevin Buzzard, Ruben Vorster
 -/
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Subtype
@@ -820,10 +821,10 @@ theorem eq_of_prodExtendRight_ne {e : Perm β₁} {a a' : α₁} {b : β₁}
 
 @[simp]
 theorem fst_prodExtendRight (ab : α₁ × β₁) : (prodExtendRight a e ab).fst = ab.fst := by
-  rw [prodExtendRight, coe_fn_mk]
+  rw [prodExtendRight]
+  dsimp only
   split_ifs with h
   · rw [h]
-
   · rfl
 #align equiv.perm.fst_prod_extend_right Equiv.Perm.fst_prodExtendRight
 
@@ -982,8 +983,8 @@ def boolProdEquivSum (α : Type u) : Bool × α ≃ Sum α α where
 def boolArrowEquivProd (α : Type u) : (Bool → α) ≃ α × α where
   toFun f := (f true, f false)
   invFun p b := cond b p.1 p.2
-  left_inv f := funext <| Bool.forall_bool.2 ⟨rfl, rfl⟩
-  right_inv := fun ⟨x, y⟩ => rfl
+  left_inv _ := funext <| Bool.forall_bool.2 ⟨rfl, rfl⟩
+  right_inv := fun _ => rfl
 #align equiv.bool_arrow_equiv_prod Equiv.boolArrowEquivProd
 
 end
