@@ -12,7 +12,7 @@ import Std.Util.TermUnsafe
 We generate html documentation from mathlib source code.
 Throughout mathlib, we add documentation entries using `add_tactic_doc` command.
 Then [doc-gen](https://github.com/leanprover-community/doc-gen) calls `getTacticDocEntries`
-to gather all documentation entries, and generate html docs.
+to gather all documentation entries, and generates html docs.
 -/
 
 open Lean Elab
