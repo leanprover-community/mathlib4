@@ -12,6 +12,7 @@ import Mathlib.Data.Sum.Basic
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Contrapose
 
 -- **TODO** remove these later
 set_option autoImplicit false
