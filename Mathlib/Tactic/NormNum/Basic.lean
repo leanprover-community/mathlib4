@@ -104,7 +104,7 @@ theorem isInt_cast {R} [Ring R] (n m : ℤ) :
 
 theorem isNat_add {α} [AddMonoidWithOne α] : {a b : α} → {a' b' c : ℕ} →
     IsNat a a' → IsNat b b' → Nat.add a' b' = c → IsNat (a + b) c
-  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨Nat.cast_add.symm⟩
+  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Nat.cast_add _ _).symm⟩
 
 theorem isInt_add {α} [Ring α] : {a b : α} → {a' b' c : ℤ} →
     IsInt a a' → IsInt b b' → Int.add a' b' = c → IsInt (a + b) c

@@ -37,6 +37,7 @@ import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Cast
+import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.KVMap
@@ -50,6 +51,7 @@ import Mathlib.Data.List.Range
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Num.Basic
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
@@ -114,8 +116,11 @@ import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Mathport.Syntax
 import Mathlib.Order.Basic
+import Mathlib.Order.Compare
+import Mathlib.Order.Max
 import Mathlib.Order.Monotone
 import Mathlib.Order.RelClasses
+import Mathlib.Order.Synonym
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
