@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Logic.Nontrivial
 
 /-!
 # Semirings and rings
@@ -40,26 +41,21 @@ open Function
 -/
 
 
-#print Distrib /-
 /-- A typeclass stating that multiplication is left and right distributive
 over addition. -/
-@[protect_proj]
 class Distrib (R : Type _) extends Mul R, Add R where
-  left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c
-  right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c
+  protected left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c
+  protected right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c
 #align distrib Distrib
--/
 
 /-- A typeclass stating that multiplication is left distributive over addition. -/
-@[protect_proj]
 class LeftDistribClass (R : Type _) [Mul R] [Add R] where
-  left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c
+  protected left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c
 #align left_distrib_class LeftDistribClass
 
 /-- A typeclass stating that multiplication is right distributive over addition. -/
-@[protect_proj]
 class RightDistribClass (R : Type _) [Mul R] [Add R] where
-  right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c
+  protected right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c
 #align right_distrib_class RightDistribClass
 
 -- see Note [lower instance priority]
@@ -93,37 +89,23 @@ theorem distrib_three_right [Mul R] [Add R] [RightDistribClass R] (a b c d : R) 
 -/
 
 
-#print NonUnitalNonAssocSemiring /-
 /-- A not-necessarily-unital, not-necessarily-associative semiring. -/
-@[protect_proj]
 class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
 #align non_unital_non_assoc_semiring NonUnitalNonAssocSemiring
--/
 
-#print NonUnitalSemiring /-
 /-- An associative but not-necessarily unital semiring. -/
-@[protect_proj]
 class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α
 #align non_unital_semiring NonUnitalSemiring
--/
 
-#print NonAssocSemiring /-
 /-- A unital but not-necessarily-associative semiring. -/
-@[protect_proj]
 class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α, AddCommMonoidWithOne α
 #align non_assoc_semiring NonAssocSemiring
--/
 
-#print Semiring /-
-/-- A semiring is a type with the following structures: additive commutative monoid
-(`add_comm_monoid`), multiplicative monoid (`monoid`), distributive laws (`distrib`), and
-multiplication by zero law (`mul_zero_class`). The actual definition extends `monoid_with_zero`
-instead of `monoid` and `mul_zero_class`. -/
-@[protect_proj]
 class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
 #align semiring Semiring
--/
 
+-- Porting note: no OfNat α 2
+/-
 section HasOneHasAdd
 
 variable [One α] [Add α]
@@ -133,6 +115,7 @@ theorem one_add_one_eq_two : 1 + 1 = (2 : α) :=
 #align one_add_one_eq_two one_add_one_eq_two
 
 end HasOneHasAdd
+-/
 
 section DistribMulOneClass
 
@@ -150,6 +133,8 @@ theorem one_add_mul [RightDistribClass α] (a b : α) : (1 + a) * b = b + a * b 
 theorem mul_one_add [LeftDistribClass α] (a b : α) : a * (1 + b) = a + a * b := by rw [mul_add, mul_one]
 #align mul_one_add mul_one_add
 
+-- Porting note: no OfNat α 2
+/-
 theorem two_mul [RightDistribClass α] (n : α) : 2 * n = n + n :=
   Eq.trans (right_distrib 1 1 n) (by simp)
 #align two_mul two_mul
@@ -161,6 +146,7 @@ theorem bit0_eq_two_mul [RightDistribClass α] (n : α) : bit0 n = 2 * n :=
 theorem mul_two [LeftDistribClass α] (n : α) : n * 2 = n + n :=
   (left_distrib n 1 1).trans (by simp)
 #align mul_two mul_two
+-/
 
 end DistribMulOneClass
 
@@ -208,7 +194,7 @@ theorem ite_mul_zero_right {α : Type _} [MulZeroClass α] (P : Prop) [Decidable
 
 theorem ite_and_mul_zero {α : Type _} [MulZeroClass α] (P Q : Prop) [Decidable P] [Decidable Q] (a b : α) :
     ite (P ∧ Q) (a * b) 0 = ite P a 0 * ite Q b 0 := by
-  simp only [← ite_and, ite_mul, mul_ite, mul_zero, zero_mul, and_comm']
+  simp only [← ite_and, ite_mul, mul_ite, mul_zero, zero_mul, and_comm]
 #align ite_and_mul_zero ite_and_mul_zero
 
 end Semiring
@@ -217,36 +203,33 @@ end Semiring
 In other words, it is a type with the following structures: additive commutative monoid
 (`add_comm_monoid`), commutative semigroup (`comm_semigroup`), distributive laws (`distrib`), and
 multiplication by zero law (`mul_zero_class`). -/
-@[protect_proj]
 class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemigroup α
 #align non_unital_comm_semiring NonUnitalCommSemiring
 
-#print CommSemiring /-
-/-- A commutative semiring is a `semiring` with commutative multiplication. In other words, it is a
-type with the following structures: additive commutative monoid (`add_comm_monoid`), multiplicative
-commutative monoid (`comm_monoid`), distributive laws (`distrib`), and multiplication by zero law
-(`mul_zero_class`). -/
-@[protect_proj]
-class CommSemiring (α : Type u) extends Semiring α, CommMonoid α
+class CommSemiring (R : Type u) extends Semiring R, CommMonoid R where
+  -- TODO: doesn't work
+  protected right_distrib a b c := (by rw [mul_comm, mul_add, mul_comm c, mul_comm c])
 #align comm_semiring CommSemiring
--/
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] : NonUnitalCommSemiring α :=
-  { CommSemiring.toCommMonoid α, CommSemiring.toSemiring α with }
+  { inferInstanceAs (CommMonoid α), inferInstanceAs (CommSemiring α) with }
 #align comm_semiring.to_non_unital_comm_semiring CommSemiring.toNonUnitalCommSemiring
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toCommMonoidWithZero [CommSemiring α] : CommMonoidWithZero α :=
-  { CommSemiring.toCommMonoid α, CommSemiring.toSemiring α with }
+  { inferInstanceAs (CommMonoid α), inferInstanceAs (CommSemiring α) with }
 #align comm_semiring.to_comm_monoid_with_zero CommSemiring.toCommMonoidWithZero
 
 section CommSemiring
 
 variable [CommSemiring α] {a b c : α}
 
+set_option warningAsError false
+
 theorem add_mul_self_eq (a b : α) : (a + b) * (a + b) = a * a + 2 * a * b + b * b := by
-  simp only [two_mul, add_mul, mul_add, add_assoc, mul_comm b]
+  sorry
+  --simp only [two_mul, add_mul, mul_add, add_assoc, mul_comm b]
 #align add_mul_self_eq add_mul_self_eq
 
 end CommSemiring
@@ -334,7 +317,7 @@ section MulZeroClass
 variable [MulZeroClass α] [HasDistribNeg α]
 
 instance (priority := 100) MulZeroClass.negZeroClass : NegZeroClass α :=
-  { MulZeroClass.toHasZero α, HasDistribNeg.toHasInvolutiveNeg α with
+  { inferInstanceAs (Zero α), inferInstanceAs (HasInvolutiveNeg α) with
     neg_zero := by rw [← zero_mul (0 : α), ← neg_mul, mul_zero, mul_zero] }
 #align mul_zero_class.neg_zero_class MulZeroClass.negZeroClass
 
@@ -348,30 +331,21 @@ end HasDistribNeg
 
 
 /-- A not-necessarily-unital, not-necessarily-associative ring. -/
-@[protect_proj]
 class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
 #align non_unital_non_assoc_ring NonUnitalNonAssocRing
 
 -- We defer the instance `non_unital_non_assoc_ring.to_has_distrib_neg` to `algebra.ring.basic`
 -- as it relies on the lemma `eq_neg_of_add_eq_zero_left`.
 /-- An associative but not-necessarily unital ring. -/
-@[protect_proj]
 class NonUnitalRing (α : Type _) extends NonUnitalNonAssocRing α, NonUnitalSemiring α
 #align non_unital_ring NonUnitalRing
 
 /-- A unital but not-necessarily-associative ring. -/
-@[protect_proj]
 class NonAssocRing (α : Type _) extends NonUnitalNonAssocRing α, NonAssocSemiring α, AddGroupWithOne α
 #align non_assoc_ring NonAssocRing
 
-#print Ring /-
-/-- A ring is a type with the following structures: additive commutative group (`add_comm_group`),
-multiplicative monoid (`monoid`), and distributive laws (`distrib`).  Equivalently, a ring is a
-`semiring` with a negation operation making it an additive group.  -/
-@[protect_proj]
-class Ring (α : Type u) extends AddCommGroupWithOne α, Monoid α, Distrib α
+class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 #align ring Ring
--/
 
 section NonUnitalNonAssocRing
 
@@ -390,11 +364,9 @@ theorem mul_sub_left_distrib (a b c : α) : a * (b - c) = a * b - a * c := by
 
 alias mul_sub_left_distrib ← mul_sub
 
-#print mul_sub_right_distrib /-
-theorem mul_sub_right_distrib (a b c : α) : (a - b) * c = a * c - b * c := by
+theorem mul_sub_right_distrib [NonUnitalNonAssocRing R] (a b c : R) : (a - b) * c = a * c - b * c := by
   simpa only [sub_eq_add_neg, neg_mul_eq_neg_mul] using add_mul a (-b) c
 #align mul_sub_right_distrib mul_sub_right_distrib
--/
 
 alias mul_sub_right_distrib ← sub_mul
 
@@ -414,7 +386,7 @@ theorem mul_add_eq_mul_add_iff_sub_mul_add_eq : a * e + c = b * e + d ↔ (a - b
         rw [← h]
         simp
     _ ↔ (a - b) * e + c = d := by simp [sub_mul, sub_add_eq_add_sub]
-    
+
 #align mul_add_eq_mul_add_iff_sub_mul_add_eq mul_add_eq_mul_add_iff_sub_mul_add_eq
 
 /-- A simplification of one side of an equation exploiting right distributivity in rings
@@ -422,10 +394,8 @@ theorem mul_add_eq_mul_add_iff_sub_mul_add_eq : a * e + c = b * e + d ↔ (a - b
 theorem sub_mul_add_eq_of_mul_add_eq_mul_add : a * e + c = b * e + d → (a - b) * e + c = d := fun h =>
   calc
     (a - b) * e + c = a * e + c - b * e := by simp [sub_mul, sub_add_eq_add_sub]
-    _ = d := by
-      rw [h]
-      simp [@add_sub_cancel α]
-    
+    _ = d := by rw [h]; simp [@add_sub_cancel α]
+
 #align sub_mul_add_eq_of_mul_add_eq_mul_add sub_mul_add_eq_of_mul_add_eq_mul_add
 
 end NonUnitalNonAssocRing
@@ -452,7 +422,7 @@ section Ring
 
 variable [Ring α] {a b c d e : α}
 
--- A (unital, associative) ring is a not-necessarily-unital ring 
+-- A (unital, associative) ring is a not-necessarily-unital ring
 -- see Note [lower instance priority]
 instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α :=
   { ‹Ring α› with
@@ -460,7 +430,7 @@ instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α :=
     mul_zero := fun a => add_left_cancel <| show a * 0 + a * 0 = a * 0 + 0 by rw [← mul_add, add_zero, add_zero] }
 #align ring.to_non_unital_ring Ring.toNonUnitalRing
 
--- A (unital, associative) ring is a not-necessarily-associative ring 
+-- A (unital, associative) ring is a not-necessarily-associative ring
 -- see Note [lower instance priority]
 instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α :=
   { ‹Ring α› with
@@ -468,20 +438,17 @@ instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α :=
     mul_zero := fun a => add_left_cancel <| show a * 0 + a * 0 = a * 0 + 0 by rw [← mul_add, add_zero, add_zero] }
 #align ring.to_non_assoc_ring Ring.toNonAssocRing
 
-#print Ring.toSemiring /-
 /- The instance from `ring` to `semiring` happens often in linear algebra, for which all the basic
 definitions are given in terms of semirings, but many applications use rings or fields. We increase
 a little bit its priority above 100 to try it quickly, but remaining below the default 1000 so that
 more specific instances are tried first. -/
-instance (priority := 200) Ring.toSemiring : Semiring α :=
-  { ‹Ring α›, Ring.toNonUnitalRing with }
+instance (priority := 200) : Semiring α :=
+  { ‹Ring α› with }
 #align ring.to_semiring Ring.toSemiring
--/
 
 end Ring
 
 /-- A non-unital commutative ring is a `non_unital_ring` with commutative multiplication. -/
-@[protect_proj]
 class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, CommSemigroup α
 #align non_unital_comm_ring NonUnitalCommRing
 
@@ -491,19 +458,12 @@ instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUni
   { s with }
 #align non_unital_comm_ring.to_non_unital_comm_semiring NonUnitalCommRing.toNonUnitalCommSemiring
 
-#print CommRing /-
-/-- A commutative ring is a `ring` with commutative multiplication. -/
-@[protect_proj]
 class CommRing (α : Type u) extends Ring α, CommMonoid α
 #align comm_ring CommRing
--/
 
-#print CommRing.toCommSemiring /-
--- see Note [lower instance priority]
 instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
   { s with mul_zero := mul_zero, zero_mul := zero_mul }
 #align comm_ring.to_comm_semiring CommRing.toCommSemiring
--/
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommRing.toNonUnitalCommRing [s : CommRing α] : NonUnitalCommRing α :=
@@ -515,7 +475,5 @@ instance (priority := 100) CommRing.toNonUnitalCommRing [s : CommRing α] : NonU
 
   This is implemented as a mixin for `ring α`.
   To obtain an integral domain use `[comm_ring α] [is_domain α]`. -/
-@[protect_proj]
 class IsDomain (α : Type u) [Ring α] extends NoZeroDivisors α, Nontrivial α : Prop
 #align is_domain IsDomain
-
