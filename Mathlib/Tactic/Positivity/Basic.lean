@@ -9,6 +9,7 @@ import Mathlib.Tactic.Clear!
 import Mathlib.Logic.Nontrivial
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Order.Ring
+import Mathlib.Algebra.GroupWithZero.Defs
 import Qq.Match
 
 /-!
@@ -38,8 +39,6 @@ theorem mul_nonneg_of_pos_of_nonneg [OrderedSemiring α] {a b : α}
     (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b := sorry
 theorem mul_nonneg_of_nonneg_of_pos [OrderedSemiring α] {a b : α}
     (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a * b := sorry
-
-class NoZeroDivisors (α : Type u) [MonoidWithZero α] : Prop
 
 class PosMulStrictMono (α : Type u) [MulZeroClass α] [PartialOrder α] : Prop
 
