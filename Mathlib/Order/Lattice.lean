@@ -7,6 +7,7 @@ import Mathlib.Order.Monotone
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Data.Bool.Basic
 --import Mathlib.Tactic.PiInstances
+import Mathlib.Init.Algebra.Order
 
 /-!
 # (Semi-)lattices
@@ -909,15 +910,6 @@ theorem min_min_min_comm : min (min a b) (min c d) = min (min a c) (min b d) :=
 #align min_min_min_comm min_min_min_comm
 
 end LinearOrder
-
--- TODO Move
-/-- Default definition of `max`. -/
-def maxDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
-if a ≤ b then b else a
-
-/-- Default definition of `min`. -/
-def minDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
-if a ≤ b then a else b
 
 theorem sup_eq_max_default [SemilatticeSup α] [DecidableRel ((· ≤ ·) : α → α → Prop)]
     [IsTotal α (· ≤ ·)] :
