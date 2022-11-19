@@ -1280,6 +1280,8 @@ def piSplitAt {α : Type _} [DecidableEq α] (i : α) (β : α → Type _) :
     exacts[dif_pos rfl, (dif_neg x.2).trans (by cases x <;> rfl)]
   left_inv f := by
     ext x
+    -- Porting note: this is broken, waiting on a Lean 4 bugfix:
+    -- https://github.com/leanprover/lean4/pull/1856
     dsimp only
     split_ifs
     · subst h
