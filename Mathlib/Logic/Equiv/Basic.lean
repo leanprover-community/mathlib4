@@ -1300,6 +1300,8 @@ def funSplitAt {α : Type _} [DecidableEq α] (i : α) (β : Type _) :
 
 end
 
+-- Porting note (@semorrison): We need to redo these, I've changed the translation incorrectly.
+-- Please see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/logic.2Eequiv.2Ebasic/near/310956459
 section subtypeEquivCodomain
 
 variable {X : Type _} {Y : Type _} [DecidableEq X] {x : X}
