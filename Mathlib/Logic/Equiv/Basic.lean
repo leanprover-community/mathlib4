@@ -1009,7 +1009,7 @@ def natSumPunitEquivNat : Sum ℕ PUnit.{u + 1} ≃ ℕ :=
 /-- The type of integer numbers is equivalent to `ℕ ⊕ ℕ`. -/
 def intEquivNatSumNat : ℤ ≃ Sum ℕ ℕ where
   toFun z := Int.casesOn z inl inr
-  invFun := Sum.elim coe Int.negSucc
+  invFun := Sum.elim Int.ofNat Int.negSucc
   left_inv := by rintro (m | n) <;> rfl
   right_inv := by rintro (m | n) <;> rfl
 #align equiv.int_equiv_nat_sum_nat Equiv.intEquivNatSumNat
@@ -1118,7 +1118,7 @@ version allows the “inner” predicate to depend on `h : p a`. -/
 def subtypeSubtypeEquivSubtypeExists {α : Type u} (p : α → Prop) (q : Subtype p → Prop) :
     Subtype q ≃ { a : α // ∃ h : p a, q ⟨a, h⟩ } :=
   ⟨fun a =>
-    ⟨a, a.1.2, by
+    ⟨a.1, a.1.2, by
       rcases a with ⟨⟨a, hap⟩, haq⟩
       exact haq⟩,
     fun a => ⟨⟨a, a.2.fst⟩, a.2.snd⟩, fun ⟨⟨a, ha⟩, h⟩ => rfl, fun ⟨a, h₁, h₂⟩ => rfl⟩
@@ -1128,7 +1128,8 @@ def subtypeSubtypeEquivSubtypeExists {α : Type u} (p : α → Prop) (q : Subtyp
 @[simps]
 def subtypeSubtypeEquivSubtypeInter {α : Type u} (p q : α → Prop) :
     { x : Subtype p // q x.1 } ≃ Subtype fun x => p x ∧ q x :=
-  (subtypeSubtypeEquivSubtypeExists p _).trans <| subtypeEquivRight fun x => exists_prop
+  (subtypeSubtypeEquivSubtypeExists p _).trans <|
+    subtypeEquivRight fun x => @exists_prop (q x) (p x)
 #align equiv.subtype_subtype_equiv_subtype_inter Equiv.subtypeSubtypeEquivSubtypeInter
 
 /-- If the outer subtype has more restrictive predicate than the inner one,
@@ -1179,8 +1180,8 @@ def sigmaSubtypeFiberEquivSubtype {α : Type u} {β : Type v} (f : α → β) {p
         Subtype q, { x : Subtype p // Subtype.mk (f x) ((h x).1 x.2) = y } := by {
           apply sigmaCongrRight
           intro y
-          symm
-          refine' (subtype_subtype_equiv_subtype_exists _ _).trans (subtype_equiv_right _)
+          apply Equiv.symm
+          refine' (subtypeSubtypeEquivSubtypeExists _ _).trans (subtypeEquivRight _)
           intro x
           exact ⟨fun ⟨hp, h'⟩ => congr_arg Subtype.val h', fun h' => ⟨(h x).2 (h'.symm ▸ y.2),
             Subtype.eq h'⟩⟩ }
