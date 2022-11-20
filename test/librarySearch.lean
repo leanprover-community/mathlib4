@@ -60,7 +60,7 @@ inductive P : ℕ → Prop
 theorem lemma_with_gt_in_head (a : ℕ) (h : P a) : 0 > a := by cases h; assumption
 
 -- This lemma with `false` as its head symbols should also be found for goals with head symbol `¬`.
-theorem lemma_with_false_in_head (a b : ℕ) (h1 : a < b) (h2 : P a) : False :=
+theorem lemma_with_false_in_head (a b : ℕ) (_h1 : a < b) (h2 : P a) : False :=
 by apply Nat.not_lt_zero; cases h2; assumption
 
 example (a : ℕ) (h : P a) : 0 > a := by library_search -- says `exact lemma_with_gt_in_head a h`
@@ -89,9 +89,9 @@ axiom F (a b : ℕ) : f a ≤ f b ↔ a ≤ b
 
 -- TODO theorem nonzero_gt_one (n : ℕ) : ¬ n = 0 → n ≥ 1 := by library_search   -- `exact nat.pos_of_ne_zero`
 
-example (L M : List (List ℕ)) : List ℕ := by library_search using L
+example (L _M : List (List ℕ)) : List ℕ := by library_search using L
 
-example (P Q : List ℕ) (h : ℕ) : List ℕ := by library_search using h, P
+example (P _Q : List ℕ) (h : ℕ) : List ℕ := by library_search using h, P
 
 -- These tests for `using` require moving the required subexpressions check deeper into solveByElim
 

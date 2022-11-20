@@ -50,7 +50,7 @@ initialize librarySearchLemmas : DeclCache (DiscrTree Name true) ←
       pure $ lemmas.insertCore keys name
 
 /-- Shortcut for calling `solveByElimImpl`. -/
-def solveByElim (g : MVarId) (depth) := Lean.Tactic.solveByElimImpl false [] depth g
+def solveByElim (g : MVarId) (depth) := Mathlib.Tactic.SolveByElim.solveByElimImpl false [] depth g
 
 /--
 Try to solve the goal either by:

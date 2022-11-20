@@ -19,7 +19,7 @@ example (x : Nat) (h : x + x - x = 3) : x + x - x = 3 := by
   guard_hyp w := x
   guard_hyp h : w + w - w = 3
   guard_hyp h2 : w = y
-  set z := w with h3
+  set z := w with _h3
   set a := 3
   guard_target = z + z - z = a
   set i'm_the_goal : Prop := z + z - z = a
@@ -28,6 +28,6 @@ example (x : Nat) (h : x + x - x = 3) : x + x - x = 3 := by
 
 example (x : Nat) (h : x - x = 0) : x = x := by
   set y : Nat := x
-  set! z := y + 1 with ← eq1
-  set! p : x - x = 0 := h with eq2
+  set! z := y + 1 with ← _eq1
+  set! p : x - x = 0 := h with _eq2
   rfl

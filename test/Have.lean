@@ -26,20 +26,20 @@ example {a : Nat} : a = a := by
   exact this
 
 example : True := by
-  (let N) -- FIXME: lean4#1670
+  (let _N) -- FIXME: lean4#1670
   exact Nat
   have
   · exact 0
-  have h : Nat
+  have _h : Nat
   · exact 5
-  have h' x : x < x + 1
+  have _h' x : x < x + 1
   · exact Nat.lt.base x
-  have h'' (x : Nat) : x < x + 1
+  have _h'' (x : Nat) : x < x + 1
   · exact Nat.lt.base x
-  let m
+  let _m
   · exact 6
-  let m' x (y : Nat) : x + y = y + x
+  let _m' x (y : Nat) : x + y = y + x
   rw [Nat.add_comm]
-  have q
+  have _q
   · exact 6
   simp

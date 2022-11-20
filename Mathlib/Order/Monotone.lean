@@ -183,22 +183,22 @@ theorem strictAnti_toDual_comp_iff : StrictAnti (toDual ∘ f) ↔ StrictMono f 
 @[simp]
 theorem strictMonoOn_comp_ofDual_iff : StrictMonoOn (f ∘ ofDual) s ↔ StrictAntiOn f s :=
   forall₂_swap
-#align strict_mono_on_comp_of_dual_iff strictMono_on_comp_ofDual_iff
+#align strict_mono_on_comp_of_dual_iff strictMonoOn_comp_ofDual_iff
 
 @[simp]
 theorem strictAntiOn_comp_ofDual_iff : StrictAntiOn (f ∘ ofDual) s ↔ StrictMonoOn f s :=
   forall₂_swap
-#align strict_anti_on_comp_of_dual_iff strictAnti_on_comp_ofDual_iff
+#align strict_anti_on_comp_of_dual_iff strictAntiOn_comp_ofDual_iff
 
 @[simp]
 theorem strictMonoOn_toDual_comp_iff : StrictMonoOn (toDual ∘ f) s ↔ StrictAntiOn f s :=
   Iff.rfl
-#align strict_mono_on_to_dual_comp_iff strictMono_on_toDual_comp_iff
+#align strict_mono_on_to_dual_comp_iff strictMonoOn_toDual_comp_iff
 
 @[simp]
 theorem strictAntiOn_toDual_comp_iff : StrictAntiOn (toDual ∘ f) s ↔ StrictMonoOn f s :=
   Iff.rfl
-#align strict_anti_on_to_dual_comp_iff strictAnti_on_toDual_comp_iff
+#align strict_anti_on_to_dual_comp_iff strictAntiOn_toDual_comp_iff
 
 protected theorem Monotone.dual (hf : Monotone f) : Monotone (toDual ∘ f ∘ ofDual) :=
   swap hf
@@ -446,7 +446,7 @@ end Subsingleton
 theorem monotone_id [Preorder α] : Monotone (id : α → α) := fun _ _ => id
 
 theorem monotoneOn_id [Preorder α] {s : Set α} : MonotoneOn id s := fun _ _ _ _ => id
-#align monotone_on_id monotonOn_id
+#align monotone_on_id monotoneOn_id
 
 theorem strictMono_id [Preorder α] : StrictMono (id : α → α) := fun _ _ => id
 #align strict_mono_id strictMono_id
@@ -520,7 +520,7 @@ theorem StrictAnti.isMin_of_apply (hf : StrictAnti f) (ha : IsMax (f a)) : IsMin
   of_not_not fun h =>
     let ⟨_, hb⟩ := not_is_min_iff.1 h
     (hf hb).not_is_max ha
-#align strict_anti.is_min_of_apply StrictAnti.is_In_of_apply
+#align strict_anti.is_min_of_apply StrictAnti.isMin_of_apply
 
 protected theorem StrictMono.ite' (hf : StrictMono f) (hg : StrictMono g) {p : α → Prop}
     [DecidablePred p]
@@ -652,7 +652,7 @@ theorem foldl_strictMono [Preorder α] {f : α → β → α} (H : ∀ b, Strict
 
 theorem foldr_strictMono [Preorder β] {f : α → β → β} (H : ∀ a, StrictMono (f a)) (l : List α) :
     StrictMono fun b => l.foldr f b := fun _ _ h => List.recOn l h fun i _ hl => H i hl
-#align list.foldr_strict_mono List.foldr_strict_mono
+#align list.foldr_strict_mono List.foldr_strictMono
 
 end Fold
 
@@ -848,7 +848,7 @@ theorem antitone_nat_of_succ_le {f : ℕ → α} (hf : ∀ n, f (n + 1) ≤ f n)
 
 theorem strictMono_nat_of_lt_succ {f : ℕ → α} (hf : ∀ n, f n < f (n + 1)) : StrictMono f :=
   Nat.rel_of_forall_rel_succ_of_lt (· < ·) hf
-#align strict_mono_nat_of_lt_succ strict_mono_nat_of_lt_succ
+#align strict_mono_nat_of_lt_succ strictMono_nat_of_lt_succ
 
 theorem strictAnti_nat_of_succ_lt {f : ℕ → α} (hf : ∀ n, f (n + 1) < f n) : StrictAnti f :=
   @strictMono_nat_of_lt_succ αᵒᵈ _ f hf
