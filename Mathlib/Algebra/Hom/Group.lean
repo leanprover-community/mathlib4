@@ -446,57 +446,64 @@ attribute [to_additive_reorder 8, to_additive] map_zpow
 
 end mul_one
 
--- section MulZeroOne
+section MulZeroOne
 
--- variable [MulZeroOneClass M] [MulZeroOneClass N]
+variable [MulZeroOneClass M] [MulZeroOneClass N]
 
--- /-- `M →*₀ N` is the type of functions `M → N` that preserve
--- the `monoid_with_zero` structure.
+/-- `M →*₀ N` is the type of functions `M → N` that preserve
+the `monoid_with_zero` structure.
 
--- `monoid_with_zero_hom` is also used for group homomorphisms.
+`monoid_with_zero_hom` is also used for group homomorphisms.
 
--- When possible, instead of parametrizing results over `(f : M →*₀ N)`,
--- you should parametrize over `(F : Type*) [monoid_with_zero_hom_class F M N] (f : F)`.
+When possible, instead of parametrizing results over `(f : M →*₀ N)`,
+you should parametrize over `(F : Type*) [monoid_with_zero_hom_class F M N] (f : F)`.
 
--- When you extend this structure, make sure to extend `monoid_with_zero_hom_class`.
--- -/
--- structure MonoidWithZeroHom (M : Type _) (N : Type _) [MulZeroOneClass M] [MulZeroOneClass N] extends ZeroHom M N,
---   MonoidHom M N
--- #align monoid_with_zero_hom MonoidWithZeroHom
+When you extend this structure, make sure to extend `monoid_with_zero_hom_class`.
+-/
+structure MonoidWithZeroHom (M : Type _) (N : Type _)
+  [MulZeroOneClass M] [MulZeroOneClass N] extends ZeroHom M N, MonoidHom M N
+#align monoid_with_zero_hom MonoidWithZeroHom
 
+-- Porting note: attributes omitted
 -- attribute [nolint doc_blame] MonoidWithZeroHom.toMonoidHom
 
 -- attribute [nolint doc_blame] MonoidWithZeroHom.toZeroHom
 
--- -- mathport name: «expr →*₀ »
--- infixr:25 " →*₀ " => MonoidWithZeroHom
+-- mathport name: «expr →*₀ »
+infixr:25 " →*₀ " => MonoidWithZeroHom
 
--- /-- `monoid_with_zero_hom_class F M N` states that `F` is a type of
--- `monoid_with_zero`-preserving homomorphisms.
+/-- `monoid_with_zero_hom_class F M N` states that `F` is a type of
+`monoid_with_zero`-preserving homomorphisms.
 
--- You should also extend this typeclass when you extend `monoid_with_zero_hom`.
--- -/
--- class MonoidWithZeroHomClass (F : Type _) (M N : outParam <| Type _) [MulZeroOneClass M] [MulZeroOneClass N] extends
---   MonoidHomClass F M N, ZeroHomClass F M N
--- #align monoid_with_zero_hom_class MonoidWithZeroHomClass
+You should also extend this typeclass when you extend `monoid_with_zero_hom`.
+-/
+class MonoidWithZeroHomClass (F : Type _) (M N : outParam <| Type _)
+  [outParam <| MulZeroOneClass M] [outParam <| MulZeroOneClass N] extends
+  MonoidHomClass F M N, ZeroHomClass F M N
+#align monoid_with_zero_hom_class MonoidWithZeroHomClass
 
--- instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M →*₀ N) M N where
---   coe := MonoidWithZeroHom.toFun
---   coe_injective' f g h := by cases f <;> cases g <;> congr
---   map_mul := MonoidWithZeroHom.map_mul'
---   map_one := MonoidWithZeroHom.map_one'
---   map_zero := MonoidWithZeroHom.mapZero
--- #align monoid_with_zero_hom.monoid_with_zero_hom_class MonoidWithZeroHom.monoidWithZeroHomClass
+instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M →*₀ N) M N where
+  coe f := f.toFun
+  coe_injective' f g h := by
+    cases f
+    cases g
+    congr
+    apply ZeroHom.zeroHomClass.coe_injective'
+    exact h
+  map_mul := MonoidWithZeroHom.map_mul'
+  map_one := MonoidWithZeroHom.map_one'
+  map_zero f := f.map_zero'
+#align monoid_with_zero_hom.monoid_with_zero_hom_class MonoidWithZeroHom.monoidWithZeroHomClass
 
--- instance [MonoidWithZeroHomClass F M N] : CoeTC F (M →*₀ N) :=
---   ⟨fun f => { toFun := f, map_one' := map_one f, mapZero := map_zero f, map_mul' := map_mul f }⟩
+instance [MonoidWithZeroHomClass F M N] : CoeTC F (M →*₀ N) :=
+  ⟨fun f => { toFun := f, map_one' := map_one f, mapZero := map_zero f, map_mul' := map_mul f }⟩
 
--- @[simp]
--- theorem MonoidWithZeroHom.coe_coe [MonoidWithZeroHomClass F M N] (f : F) : ((f : M →*₀ N) : M → N) = f :=
---   rfl
--- #align monoid_with_zero_hom.coe_coe MonoidWithZeroHom.coe_coe
+@[simp]
+theorem MonoidWithZeroHom.coe_coe [MonoidWithZeroHomClass F M N] (f : F) : ((f : M →*₀ N) : M → N) = f :=
+  rfl
+#align monoid_with_zero_hom.coe_coe MonoidWithZeroHom.coe_coe
 
--- end MulZeroOne
+end MulZeroOne
 
 -- -- completely uninteresting lemmas about coercion to function, that all homs need
 -- section Coes
