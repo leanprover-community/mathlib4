@@ -54,6 +54,7 @@ import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Num.Basic
+import Mathlib.Data.Opposite
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.PNat.Defs
