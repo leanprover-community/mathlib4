@@ -55,8 +55,8 @@ theorem isNat_one (α) [AddMonoidWithOne α] : IsNat (One.one : α) (nat_lit 1) 
   match e with
   | ~q(One.one) => return (.isNat sα (mkRawNatLit 1) q(isNat_one $α) : Result q(One.one))
 
-theorem isNat_ofNat (α : Type u_1) [AddMonoidWithOne α] (n : ℕ) [OfNat α n]
-  [LawfulOfNat α n] : IsNat (OfNat.ofNat n : α) n := ⟨LawfulOfNat.eq_ofNat.symm⟩
+theorem isNat_ofNat (α : Type u_1) [AddMonoidWithOne α] {a : α} {n : ℕ}
+    (h : n = a) : IsNat a n := ⟨h.symm⟩
 
 /-- The `norm_num` extension which identifies an expression `OfNat.ofNat n`, returning `n`. -/
 @[norm_num OfNat.ofNat _] def evalOfNat : NormNumExt where eval {u α} e := do
@@ -65,9 +65,9 @@ theorem isNat_ofNat (α : Type u_1) [AddMonoidWithOne α] (n : ℕ) [OfNat α n]
   | ~q(@OfNat.ofNat _ $n $oα) =>
     let n : Q(ℕ) ← whnf n
     guard n.isNatLit
-    have : Q(OfNat $α $n) := oα
-    _ ← synthInstanceQ (q(LawfulOfNat $α $n) : Q(Prop))
-    return (.isNat sα n q(isNat_ofNat $α $n) : Result q((OfNat.ofNat $n : $α)))
+    let ⟨a, (pa : Q($n = $e))⟩ ← mkOfNat α sα n
+    guard <|← isDefEq a e
+    return .isNat sα n (q(isNat_ofNat $α $pa) : Expr)
 
 theorem isNat_cast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
@@ -79,7 +79,7 @@ theorem isNat_cast {R} [AddMonoidWithOne R] (n m : ℕ) :
   | ~q(Nat.cast $a) =>
     let ⟨na, pa⟩ ← deriveNat a q(instAddMonoidWithOneNat)
     let pa : Q(IsNat $a $na) := pa
-    return (.isNat sα na q(@isNat_cast $α _ $a $na $pa) : Result q((Nat.cast $a : $α)))
+    return (.isNat sα na q(@isNat_cast $α _ $a $na $pa) : Result q(Nat.cast $a : $α))
 
 theorem isNat_int_cast {R} [Ring R] (n : ℤ) (m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
@@ -96,15 +96,15 @@ theorem isInt_cast {R} [Ring R] (n m : ℤ) :
     | .isNat _ na pa =>
       let sα : Q(AddMonoidWithOne $α) := q(instAddMonoidWithOne)
       let pa : Q(@IsNat _ instAddMonoidWithOne $a $na) := pa
-      return (.isNat sα na q(@isNat_int_cast $α _ $a $na $pa) : Result q((Int.cast $a : $α)))
+      return (.isNat sα na q(@isNat_int_cast $α _ $a $na $pa) : Result q(Int.cast $a : $α))
     | .isNegNat _ na pa =>
       let pa : Q(@IsInt _ instRingInt $a (.negOfNat $na)) := pa
-      return (.isNegNat rα na q(isInt_cast $a (.negOfNat $na) $pa) : Result q((Int.cast $a : $α)))
+      return (.isNegNat rα na q(isInt_cast $a (.negOfNat $na) $pa) : Result q(Int.cast $a : $α))
     | _ => failure
 
 theorem isNat_add {α} [AddMonoidWithOne α] : {a b : α} → {a' b' c : ℕ} →
     IsNat a a' → IsNat b b' → Nat.add a' b' = c → IsNat (a + b) c
-  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨Nat.cast_add.symm⟩
+  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Nat.cast_add _ _).symm⟩
 
 theorem isInt_add {α} [Ring α] : {a b : α} → {a' b' c : ℤ} →
     IsInt a a' → IsInt b b' → Int.add a' b' = c → IsInt (a + b) c
