@@ -108,18 +108,18 @@ class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZe
 class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
 #align semiring Semiring
 
--- Porting note: no OfNat α 2
-/-
-section HasOneHasAdd
+section AddMonoidWithOne
 
-variable [One α] [Add α]
+variable [AddMonoidWithOne α]
 
-theorem one_add_one_eq_two : 1 + 1 = (2 : α) :=
-  rfl
+-- TODO: Move to `Data.Nat.Cast.Defs`?
+theorem one_add_one_eq_two : 1 + 1 = (2 : α) := by
+  rw [←Nat.cast_one, ←Nat.cast_add]
+  apply congrArg
+  decide
 #align one_add_one_eq_two one_add_one_eq_two
 
-end HasOneHasAdd
--/
+end AddMonoidWithOne
 
 section DistribMulOneClass
 
@@ -141,10 +141,8 @@ theorem mul_one_add [LeftDistribClass α] (a b : α) : a * (1 + b) = a + a * b :
   rw [mul_add, mul_one]
 #align mul_one_add mul_one_add
 
--- Porting note: no OfNat α 2
-/-
-theorem two_mul [RightDistribClass α] (n : α) : 2 * n = n + n :=
-  Eq.trans (right_distrib 1 1 n) (by simp)
+theorem two_mul [AddMonoidWithOne β] [MulOneClass β] [RightDistribClass β] (n : β) : 2 * n = n + n :=
+  Eq.trans ?_ <| Eq.trans (right_distrib 1 1 n) (by rw [one_mul])
 #align two_mul two_mul
 
 theorem bit0_eq_two_mul [RightDistribClass α] (n : α) : bit0 n = 2 * n :=
@@ -154,7 +152,6 @@ theorem bit0_eq_two_mul [RightDistribClass α] (n : α) : bit0 n = 2 * n :=
 theorem mul_two [LeftDistribClass α] (n : α) : n * 2 = n + n :=
   (left_distrib n 1 1).trans (by simp)
 #align mul_two mul_two
--/
 
 end DistribMulOneClass
 
@@ -182,12 +179,12 @@ theorem ite_mul {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
 -- `mul_ite` and `ite_mul`.
 attribute [simp] mul_ite ite_mul
 
-@[simp]
+-- Porting note: no @[simp] because simp proves it
 theorem mul_boole {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
     (a * if P then 1 else 0) = if P then a else 0 := by simp
 #align mul_boole mul_boole
 
-@[simp]
+-- Porting note: no @[simp] because simp proves it
 theorem boole_mul {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
     (if P then 1 else 0) * a = if P then a else 0 := by simp
 #align boole_mul boole_mul
@@ -234,8 +231,6 @@ instance (priority := 100) CommSemiring.toCommMonoidWithZero [CommSemiring α] :
 section CommSemiring
 
 variable [CommSemiring α] {a b c : α}
-
-set_option warningAsError false
 
 theorem add_mul_self_eq (a b : α) : (a + b) * (a + b) = a * a + 2 * a * b + b * b := by
   sorry
