@@ -132,27 +132,25 @@ variable [MulZeroOneClass M₀] [Nontrivial M₀] {a b : M₀}
 variable (M₀)
 
 /-- In a nontrivial monoid with zero, zero and one are different. -/
-instance NeZero.one : NeZero (1 : M₀) :=
-  ⟨by
-    intro h
-    rcases exists_pair_ne M₀ with ⟨x, y, hx⟩
-    apply hx
-    calc
-      x = 1 * x := by rw [one_mul]
-      _ = 0 := by rw [h, zero_mul]
-      _ = 1 * y := by rw [h, zero_mul]
-      _ = y := by rw [one_mul]
-      ⟩
+instance NeZero.one : NeZero (1 : M₀) := ⟨by
+  intro h
+  rcases exists_pair_ne M₀ with ⟨x, y, hx⟩
+  apply hx
+  calc
+    x = 1 * x := by rw [one_mul]
+    _ = 0 := by rw [h, zero_mul]
+    _ = 1 * y := by rw [h, zero_mul]
+    _ = y := by rw [one_mul]⟩
 #align ne_zero.one NeZero.one
 
 variable {M₀}
 
 /-- Pullback a `nontrivial` instance along a function sending `0` to `0` and `1` to `1`. -/
-theorem pullback_nonzero [Zero M₀'] [One M₀'] (f : M₀' → M₀) (zero : f 0 = 0) (one : f 1 = 1) : Nontrivial M₀' :=
-  ⟨⟨0, 1,
-      mt (congr_arg f) <| by
-        rw [zero, one]
-        exact zero_ne_one⟩⟩
+theorem pullback_nonzero [Zero M₀'] [One M₀'] (f : M₀' → M₀) (zero : f 0 = 0) (one : f 1 = 1) :
+    Nontrivial M₀' :=
+  ⟨⟨0, 1, mt (congr_arg f) <| by
+    rw [zero, one]
+    exact zero_ne_one⟩⟩
 
 end NeZero
 
@@ -160,11 +158,9 @@ section MulZeroClass
 
 variable [MulZeroClass M₀]
 
-theorem mul_eq_zero_of_left {a : M₀} (h : a = 0) (b : M₀) : a * b = 0 :=
-  h.symm ▸ zero_mul b
+theorem mul_eq_zero_of_left {a : M₀} (h : a = 0) (b : M₀) : a * b = 0 := h.symm ▸ zero_mul b
 
-theorem mul_eq_zero_of_right (a : M₀) {b : M₀} (h : b = 0) : a * b = 0 :=
-  h.symm ▸ mul_zero a
+theorem mul_eq_zero_of_right (a : M₀) {b : M₀} (h : b = 0) : a * b = 0 := h.symm ▸ mul_zero a
 
 variable [NoZeroDivisors M₀] {a b : M₀}
 
@@ -172,7 +168,8 @@ variable [NoZeroDivisors M₀] {a b : M₀}
 equals zero. -/
 @[simp]
 theorem mul_eq_zero : a * b = 0 ↔ a = 0 ∨ b = 0 :=
-  ⟨eq_zero_or_eq_zero_of_mul_eq_zero, fun o => o.elim (fun h => mul_eq_zero_of_left h b) (mul_eq_zero_of_right a)⟩
+  ⟨eq_zero_or_eq_zero_of_mul_eq_zero,
+    fun o => o.elim (fun h => mul_eq_zero_of_left h b) (mul_eq_zero_of_right a)⟩
 
 /-- If `α` has no zero divisors, then the product of two elements equals zero iff one of them
 equals zero. -/
@@ -181,8 +178,7 @@ theorem zero_eq_mul : 0 = a * b ↔ a = 0 ∨ b = 0 := by rw [eq_comm, mul_eq_ze
 
 /-- If `α` has no zero divisors, then the product of two elements is nonzero iff both of them
 are nonzero. -/
-theorem mul_ne_zero_iff : a * b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 :=
-  mul_eq_zero.not.trans not_or
+theorem mul_ne_zero_iff : a * b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 := mul_eq_zero.not.trans not_or
 
 /-- If `α` has no zero divisors, then for elements `a, b : α`, `a * b` equals zero iff so is
 `b * a`. -/
@@ -191,17 +187,14 @@ theorem mul_eq_zero_comm : a * b = 0 ↔ b * a = 0 :=
 
 /-- If `α` has no zero divisors, then for elements `a, b : α`, `a * b` is nonzero iff so is
 `b * a`. -/
-theorem mul_ne_zero_comm : a * b ≠ 0 ↔ b * a ≠ 0 :=
-  mul_eq_zero_comm.not
+theorem mul_ne_zero_comm : a * b ≠ 0 ↔ b * a ≠ 0 := mul_eq_zero_comm.not
 
 theorem mul_self_eq_zero : a * a = 0 ↔ a = 0 := by simp
 
 theorem zero_eq_mul_self : 0 = a * a ↔ a = 0 := by simp
 
-theorem mul_self_ne_zero : a * a ≠ 0 ↔ a ≠ 0 :=
-  mul_self_eq_zero.not
+theorem mul_self_ne_zero : a * a ≠ 0 ↔ a ≠ 0 := mul_self_eq_zero.not
 
-theorem zero_ne_mul_self : 0 ≠ a * a ↔ a ≠ 0 :=
-  zero_eq_mul_self.not
+theorem zero_ne_mul_self : 0 ≠ a * a ↔ a ≠ 0 := zero_eq_mul_self.not
 
 end MulZeroClass
