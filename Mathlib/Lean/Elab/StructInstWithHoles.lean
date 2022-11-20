@@ -9,6 +9,10 @@ import Lean.Meta.Structure
 import Lean.Elab.App
 import Lean.Elab.Binders
 
+--Linting
+import Std.Tactic.Lint.Frontend
+import Std.Tactic.Lint.Misc
+
 namespace Lean.Elab.Term.StructInstWithHoles --!!
 
 open Meta
@@ -16,13 +20,15 @@ open TSyntax.Compat
 
 --!! All instances of "missing" used to be "default", except in function names
 --!! `allDefault` was changed to `allMissing`.
-/-
-  # What this does
+/-!
+  # Structure Instances With (Variadic) Holes
 
-  This file defines a term elaboration for structure instances that include "variadic holes", i.e.
-  holes of "variable length", which are represented via via the syntax `?..`, `?..!`, etc., e.g.
-  `{ x := 0, ?.. }`. This serves to port the functionality of mathlib3's `refine_struct { .. }`,
-  but via `refine` (e.g. `refine { ?.. }`).
+  This file defines a term elaborator for structure instance syntax that includes "variadic holes",
+  i.e. holes of "variable length", which are represented via via the syntax `?..`, `?..!`, etc.,
+  e.g. `{ x := 0, ?.. }`.
+
+  This serves to port the functionality of mathlib3's `refine_struct { .. }`, but via `refine`
+  (e.g. `refine { ?.. }`).
 
   Lean currently already supports one form of variadic hole in structure instances, namely `..`,
   which fills all unspecified fields with natural metavariables and which is frequently used in
@@ -241,7 +247,7 @@ open TSyntax.Compat
     * We check the variadic hole config and don't run `propagateLoop` if it says not to. (We start
     with a `do` to accommodate this.)
 
-    * At the end, if there is a variadic hole, we run `assignRemainingDefaultsToHoles` (a new
+    * At the end, if there is a variadic hole, we run `assignRemainingDefaultsToFieldHoles` (a new
     function which does what you expect)
 
   ## New Code
@@ -277,10 +283,24 @@ open TSyntax.Compat
 -/
 
 --!!/ We use parsers in anticipation of this possibly being merged into core.
+/--
+  A synthetic variadic hole. When used in structure instance syntax, it fills the unspecified
+  fields with metavariables named by the field. It synthesizes defaults when possible.
+  It can be followed by an identifier to specify a prefix for the names of the holes.
+ -/
 def vH?dd        := leading_parser "?.." >> Parser.optional Parser.ident
+/--
+  A synthetic variadic hole that does not synthesize any defaults. When used in structure instance
+  syntax, it fills the unspecified fields with metavariables named by the field. It synthesizes
+  defaults when possible. It can be followed by an identifier to specify a prefix for the names of
+  the holes.
+ -/
 def vH?dd!       := leading_parser "?..!" >> Parser.optional Parser.ident
+/-- A natural variadic hole that does not synthesize defaults. -/
 def vHdd!        := leading_parser "..!"
+/-- A natural variadic hole that synthesizes defaults when possible. -/
 def vHdd         := leading_parser "..."
+/-- A variadic hole that fills multiple spots with holes.  -/
 def variadicHole := leading_parser (vH?dd <|> vH?dd! <|> vHdd! <|> vHdd)
 
 open Lean.Parser Lean.Parser.Term in
@@ -292,8 +312,10 @@ A *structure update* of an existing value can be given via `with`:
 `{ point with x := 1 }`.
 The structure type can be specified if not inferable:
 `{ x := 1, y := 2 : Point }`.
-`?..` fills fields with automatically-named holes:
-`{ x := 1, ?.. : Point3D }` creates `?y`, `?z`.
+`..` can be used in pattern-matching to fill all unspecified fields with `_`:
+`match s with | { x := 1, .. } => ...`
+`?..` fills all unspecified fields with automatically-named goals:
+if a `Foo` has fields `x`, `y`, `z`, `{ x := 1, ?.. } : Foo` creates `?y`, `?z`.
 -/
 @[term_parser] def structInstWithHoles := leading_parser "{" >> ppHardSpace >> Lean.Parser.optional
 (atomic (sepBy1 termParser ", " >> " with "))
@@ -303,6 +325,10 @@ The structure type can be specified if not inferable:
 --!!\
 
 --!! changed attr name and name
+/--
+  Syntactically move any type specification outside of the structure instance syntax:
+  `{ x := 0 : Foo }` becomes `{ x := 0 } : Foo`.
+-/
 @[macro structInstWithHoles] def expandStructInstWithHolesExpectedType : Macro := fun stx =>
   let expectedArg := stx[4]
   if expectedArg.isNone then
@@ -361,30 +387,51 @@ where
           let r ← go sources (sourcesNew.push sourceNew)
           `(let src := $source; $r)
 
+/-- Information for any explicit sources encountered (i.e. some `sᵢ` in `s₁, ..., sₙ with`) -/
 structure ExplicitSourceInfo where
+  /-- The syntax of some `sᵢ` in `s₁, ..., sₙ with` -/
   stx        : Syntax
+  /-- The name of some structure `sᵢ` in `s₁, ..., sₙ with` -/
   structName : Name
   deriving Inhabited
 
 --!!/
+/--
+  Information deduced from variadic hole syntax, as well as the raw
+  syntax itself and any identifiers that were found.
+-/
 structure VariadicHoleConfig where
+  /-- The raw variadic hole syntax encountered (`?..`, `..`, etc.)-/
   stx         : TSyntax ``variadicHole
+  /-- An optional name `x` found in `?..x` or `?..!x`, to be used as a prefix. -/
   name        : Option Name := none
+  /-- Whether the holes should be synthetic and automatically named. -/
   isSynthetic : Bool
+  /-- Whether defaults should attempt to be synthesized before filling fields with holes. -/
   useDefaults : Bool
   deriving Inhabited, Repr
 --!!\
 
+/--
+  Information on other sources of field values via structure update syntax or variadic holes.
+
+  Collects of explicit source info (preceding `with` in structure updates) and implicit source
+  info (for specification of holes, e.g. `..` or `?..`).
+-/
 structure Source where
-  explicit : Array ExplicitSourceInfo -- `s₁ ... sₙ with`
+  /-- info for all `sᵢ` in `s₁, ..., sₙ with` -/
+  explicit : Array ExplicitSourceInfo
+  /-- info for any variadic hole syntax encountered (`?..`, `..`, etc.) -/
   implicit : Option VariadicHoleConfig --!!
   deriving Inhabited
 
+/-- Check if neither an explicit nor an implicit source has been specified. -/
 def Source.isNone : Source → Bool
   | { explicit := #[], implicit := none } => true
   | _ => false
 
 --!!/
+/-- Process variadic hole syntax into a VariadicHoleConfig. -/
 def getVariadicHoleConfig? : TSyntax ``variadicHole → Option VariadicHoleConfig
 | stx => match stx with
   | `(variadicHole|?..$[$x:ident]?) => some
@@ -398,12 +445,21 @@ def getVariadicHoleConfig? : TSyntax ``variadicHole → Option VariadicHoleConfi
   | _ => none --~~? Should this be unreachable!?
 --!!\
 
-/-- `optional (atomic (sepBy1 termParser ", " >> " with ")` -/
+/--
+  Put an array of source syntax into a form which matches
+  `optional (atomic (sepBy1 termParser ", " >> " with ")`, e.g. `s₁, s₂, s₃ with`.
+
+  Should only be called when `sources` is a nonempty `Array`.
+  -/
 private def mkSourcesWithSyntax (sources : Array Syntax) : Syntax :=
   let ref := sources[0]!
   let stx := Syntax.mkSep sources (mkAtomFrom ref ", ")
   mkNullNode #[stx, mkAtomFrom ref "with "]
 
+/--
+  Extract and process both explicit (`s₁, ..., sₙ with`) and implicit (`..`, `?..`, etc.) source
+  syntax from structure syntax.
+-/
 private def getStructSource (structStx : Syntax) : TermElabM Source :=
   withRef structStx do
     let explicitSource := structStx[1]
@@ -466,6 +522,7 @@ private def isModifyOp? (stx : Syntax) : TermElabM (Option Syntax) := do
   | some s => if s[0][0].getKind == ``Lean.Parser.Term.structInstArrayRef then return s? else
   return none
 
+/-- Elaborate `modifyOp`s given a single explicit source. -/
 private def elabModifyOp (stx modifyOp : Syntax) (sources : Array ExplicitSourceInfo)
 (expectedType? : Option Expr) : TermElabM Expr := do
   if sources.size > 1 then
@@ -499,7 +556,8 @@ private def elabModifyOp (stx modifyOp : Syntax) (sources : Array ExplicitSource
   This method tries to postpone execution if the expected type is not available.
 
   If the expected type is available and it is a structure, then we use it.
-  Otherwise, we use the type of the first source. -/
+  Otherwise, we use the type of the first source.
+-/
 private def getStructName (expectedType? : Option Expr) (sourceView : Source) : TermElabM Name := do
   tryPostponeIfNoneOrMVar expectedType?
   let useSource : Unit → TermElabM Name := fun _ => do
@@ -528,9 +586,15 @@ where
     else
       throwError "invalid \{...} notation, {kind} type is not of the form (C ...){indentExpr type}"
 
+/-- Information on the left hand side of a binding encountered in structure syntax. -/
 inductive FieldLHS where
+  /-- A representation of the name of a field as encountered in binding syntax (e.g. `x` in
+      `x := ...`). -/
   | fieldName  (ref : Syntax) (name : Name)
+  /-- A representation of the index of a field as encountered in binding syntax (e.g. `3` in
+      `3 := ...`). -/
   | fieldIndex (ref : Syntax) (idx : Nat)
+  /-- A representation of a modifyOp as encountered in binding syntax. -/
   | modifyOp   (ref : Syntax) (index : Syntax)
   deriving Inhabited
 
@@ -540,54 +604,95 @@ instance : ToFormat FieldLHS := ⟨fun lhs =>
   | .fieldIndex _ i => format i
   | .modifyOp _ i   => "[" ++ i.prettyPrint ++ "]"⟩
 
+/--
+  A limited, pre-expression description of the values of fields. Only terms given by raw syntax,
+  nested values (for subobjects), and missing values are can be specified.
+
+  The polymorphism via its `Type` argument is only used for nested `FieldVal`s, which need to
+  know what type their argument should be. In practice, we only ever take this argument to be
+  `Struct`.
+  -/
 inductive FieldVal (σ : Type) where
+  /-- Term syntax encountered on the RHS of a binding, e.g. `1+1` in `x := 1+1`. -/
   | term  (stx : Syntax) : FieldVal σ
+  /-- A nested `FieldVal`, which in practice is used to hold subobjects as `Struct`s. -/
   | nested (s : σ)       : FieldVal σ
-  | missing              : FieldVal σ -- mark that field is missing
+  /-- An indication that this field was missing, i.e. not specified explicitly in the syntax. -/
+  | missing              : FieldVal σ
   deriving Inhabited
 
+/--
+  A representation of a field in a structure. This contains the original syntax of the field
+  (`ref`), a representation of the LHS of the `:=` binding (`lhs`), the pre-expression `FieldVal`
+  (`val`), and the actual expression that we take to be the value of the field (`expr?`).
+
+  `expr?` begins as `none`, and is modified over the course of this code as we figure out whether
+  we need to elaborate some syntax encountered (e.g. if `.term stx` is in `val`) or if the field
+  value is `.missing` (in which case we make a metavariable).
+-/
 structure Field (σ : Type) where
+  /-- The syntax of the binding used to specify this field. -/
   ref   : Syntax
+  /-- Information on the LHS of the binding used to specify this field. -/
   lhs   : List FieldLHS
+  /-- The basic content of the field value, prior to elaboration. -/
   val   : FieldVal σ
+  /-- The elaborated value of the field in question as it becomes available, which starts
+      out as `none` and is updated during `elabStruct` with either elaborated terms or
+      metavariables which may get assigned to synthesized defaults. -/
   expr? : Option Expr := none
   deriving Inhabited
 
+/-- Check if the LHS of the binding specifying a field is a single `FieldLHS`. -/
 def Field.isSimple {σ} : Field σ → Bool
   | { lhs := [_], .. } => true
   | _                  => false
 
-inductive Struct where
-  /-- Remark: the field `params` is used for .missing value propagation. It is initially empty, and
+/--
+  The organized content of the structure instance.
+
+  The field `params` is used for `.missing` value propagation. It is initially empty, and
   then set at `elabStruct`. -/
+inductive Struct where
   | mk (ref : Syntax) (structName : Name) (params : Array (Name × Expr))
   (fields : List (Field Struct)) (source : Source)
   deriving Inhabited
 
+/-- Abbreviation for `List (Field Struct)`: A list of representations of the structure's fields. -/
 abbrev Fields := List (Field Struct)
 
+/-- The original syntax of the structure instance. -/
 def Struct.ref : Struct → Syntax
   | ⟨ref, _, _, _, _⟩ => ref
 
+/-- The name of the structure. -/
 def Struct.structName : Struct → Name
   | ⟨_, structName, _, _, _⟩ => structName
 
+/-- Parameters used during the initial processing of `.missing` fields. Initially `none`, and set
+    at `elabStruct`. -/
 def Struct.params : Struct → Array (Name × Expr)
   | ⟨_, _, params, _, _⟩ => params
 
+/-- The list of `fields` in the structure instance as `Field Struct`s. Updated over the course of
+    the elaboration to include computed values. -/
 def Struct.fields : Struct → Fields
   | ⟨_, _, _, fields, _⟩ => fields
 
+/-- Information on other sources of values for the structure. Namely, any structures preceding
+    `with` in structure update syntax and any variadic holes (`..`, `?..`) following the field
+    bindings. -/
 def Struct.source : Struct → Source
   | ⟨_, _, _, _, s⟩ => s
 
-/-- `true` iff all fields of the given structure are marked as `missing` -/
+/-- `true` iff all fields of the given structure are marked as `.missing`. -/
 partial def Struct.allMissing (s : Struct) : Bool :=
   s.fields.all fun { val := val,  .. } => match val with
     | .term _   => false
     | .missing  => true
     | .nested s => allMissing s
 
+/-- Pretty-prints a field (`Field Struct`). Uses the field LHS's and its `val : FieldVal Struct`. -/
 def formatField (formatStruct : Struct → Format) (field : Field Struct) : Format :=
   Format.joinSep field.lhs " . " ++ " := " ++
     match field.val with
@@ -595,6 +700,7 @@ def formatField (formatStruct : Struct → Format) (field : Field Struct) : Form
     | .nested s => formatStruct s
     | .missing  => "<missing>" --!!
 
+/-- Pretty-prints a `Struct`. -/
 partial def formatStruct : Struct → Format
   | ⟨_, _,          _, fields, source⟩ =>
     let fieldsFmt := Format.joinSep (fields.map (formatField formatStruct)) ", "
@@ -613,7 +719,10 @@ instance : ToString Struct := ⟨toString ∘ format⟩
 instance : ToFormat (Field Struct) := ⟨formatField formatStruct⟩
 instance : ToString (Field Struct) := ⟨toString ∘ format⟩
 
-/-
+/--
+Turns a `FieldLHS` into syntax. The first argument specifies whether this is the first in a list of
+`FieldLHS`'s or not.
+
 Recall that `structInstField` elements have the form
 ```
    def structInstField  := leading_parser structInstLVal >> " := " >> termParser
@@ -621,18 +730,23 @@ Recall that `structInstField` elements have the form
    >> many (("." >> (ident <|> numLit)) <|> structInstArrayRef)
    def structInstArrayRef := leading_parser "[" >> termParser >>"]"
 ```
+
+Remark: this code relies on the fact that `expandStruct` only transforms `fieldLHS.fieldName`
 -/
--- Remark: this code relies on the fact that `expandStruct` only transforms `fieldLHS.fieldName`
 def FieldLHS.toSyntax (first : Bool) : FieldLHS → Syntax
   | .modifyOp   stx _    => stx
   | .fieldName  stx name => if first then mkIdentFrom stx name
     else mkGroupNode #[mkAtomFrom stx ".", mkIdentFrom stx name]
   | .fieldIndex stx _    => if first then stx else mkGroupNode #[mkAtomFrom stx ".", stx]
 
+/-- Extracts the `stx` from a `.term stx : FieldVal Struct`. Panics when called on any other
+    constructor of `FieldVal Struct`. -/
 def FieldVal.toSyntax : FieldVal Struct → Syntax
   | .term stx => stx
   | _         => unreachable!
 
+/-- Turns a field (as a `Field Struct`) into syntax if has a `val` of the form `.term stx`; panics
+    otherwise. Panics if the `lhs` is an empty list. -/
 def Field.toSyntax : Field Struct → Syntax
   | field =>
     let stx := field.ref
@@ -642,6 +756,7 @@ def Field.toSyntax : Field Struct → Syntax
       #[first.toSyntax true, mkNullNode <| rest.toArray.map (FieldLHS.toSyntax false) ]
     | _ => unreachable!
 
+/-- Processes syntax into a `FieldLHS`. -/
 private def toFieldLHS (stx : Syntax) : MacroM FieldLHS :=
   if stx.getKind == ``Lean.Parser.Term.structInstArrayRef then
     return FieldLHS.modifyOp stx stx[1]
@@ -654,13 +769,13 @@ private def toFieldLHS (stx : Syntax) : MacroM FieldLHS :=
       | some idx => return FieldLHS.fieldIndex stx idx
       | none     => Macro.throwError "unexpected structure syntax"
 
+/-- Processes structure instance syntax into a `Struct` given the `structName` and its `source`s. -/
 private def mkStructView (stx : Syntax) (structName : Name) (source : Source) : MacroM Struct := do
   /- Recall that `stx` is of the form
      ```
      leading_parser "{" >> optional (atomic (sepBy1 termParser ", " >> " with "))
                  >> sepByIndent (structInstFieldAbbrev <|> structInstField) ...
-                --!!
-                 >> variadicHole
+                 >> variadicHole --!!
                  >> optional (" : " >> termParser)
                  >> " }"
      ```
@@ -674,22 +789,27 @@ private def mkStructView (stx : Syntax) (structName : Name) (source : Source) : 
     return { ref := fieldStx, lhs := first :: rest, val := FieldVal.term val : Field Struct }
   return ⟨stx, structName, #[], fields, source⟩
 
+/-- (Monadic) Modifies a `Struct`'s fields with a monadic function. -/
 def Struct.modifyFieldsM {m : Type → Type} [Monad m] (s : Struct) (f : Fields → m Fields) :
 m Struct :=
   match s with
   | ⟨ref, structName, params, fields, source⟩ =>
     return ⟨ref, structName, params, (← f fields), source⟩
 
+/-- Modify a `Struct`'s `Fields` with a function. -/
 def Struct.modifyFields (s : Struct) (f : Fields → Fields) : Struct :=
   Id.run <| s.modifyFieldsM f
 
+/-- Overwrite a `Struct`'s fields. -/
 def Struct.setFields (s : Struct) (fields : Fields) : Struct :=
   s.modifyFields fun _ => fields
 
+/-- Overwrite a `Struct`'s params. -/
 def Struct.setParams (s : Struct) (ps : Array (Name × Expr)) : Struct :=
   match s with
   | ⟨ref, structName, _, fields, source⟩ => ⟨ref, structName, ps, fields, source⟩
 
+/-- Breaks down non-anonymous names in the lhs of fields into lists of their components.  -/
 private def expandCompositeFields (s : Struct) : Struct :=
   s.modifyFields fun fields => fields.map fun field => match field with
     | { lhs := .fieldName _ (.str Name.anonymous ..) :: _, .. } => field
@@ -698,6 +818,8 @@ private def expandCompositeFields (s : Struct) : Struct :=
       { field with lhs := newEntries ++ rest }
     | _ => field
 
+/-- Replaces field lhs's that are specified by index with the name of the field (as registered in
+    the structure). -/
 private def expandNumLitFields (s : Struct) : TermElabM Struct :=
   s.modifyFieldsM fun fields => do
     let env ← getEnv
@@ -749,8 +871,13 @@ private def expandParentFields (s : Struct) : TermElabM Struct := do
           | _ => throwErrorAt ref "failed to access field '{fieldName}' in parent structure"
     | _ => return field
 
+/-- Abbreviation for `HashMap Name Fields`: A hash map from field names to lists of representations
+    of fields. -/
 private abbrev FieldMap := HashMap Name Fields
 
+/-- Creates a hash map from field names to lists of representations of fields. The length of the
+    list can be greater than one if the field is not simple. Panics if the lhs of a field is empty.
+    -/
 private def mkFieldMap (fields : Fields) : TermElabM FieldMap :=
   fields.foldlM (init := {}) fun fieldMap field =>
     match field.lhs with
@@ -764,21 +891,28 @@ private def mkFieldMap (fields : Fields) : TermElabM FieldMap :=
       | _ => return fieldMap.insert fieldName [field]
     | _ => unreachable!
 
+/-- Unwraps a `Field Struct` from a list of length one, and otherwise returns `none`. -/
 private def isSimpleField? : Fields → Option (Field Struct)
   | [field] => if field.isSimple then some field else none
   | _       => none
 
+/-- Finds the index of the field name in its third argument in the list of field names in its
+    second. The first argument, the name of the structure, is used only for descriptive error
+    messages. -/
 private def getFieldIdx (structName : Name) (fieldNames : Array Name) (fieldName : Name) :
 TermElabM Nat := do
   match fieldNames.findIdx? fun n => n == fieldName with
   | some idx => return idx
   | none     => throwError "field '{fieldName}' is not a valid field of '{structName}'"
 
+/-- Constructs the syntax for a field projection. Only does so if the given field name is in fact a
+    field of the given structure name; returns `none` otherwise. -/
 def mkProjStx? (s : Syntax) (structName : Name) (fieldName : Name) : TermElabM (Option Syntax) := do
   if (findField? (← getEnv) structName fieldName).isNone then
     return none
   return some <| mkNode ``Parser.Term.proj #[s, mkAtomFrom s ".", mkIdentFrom s fieldName]
 
+/-- Gets a field from a list of fields by name. If not found, returns `none`. -/
 def findField? (fields : Fields) (fieldName : Name) : Option (Field Struct) :=
   fields.find? fun field =>
     match field.lhs with
@@ -787,6 +921,11 @@ def findField? (fields : Fields) (fieldName : Name) : Option (Field Struct) :=
 
 mutual
 
+  /-- Group fields that belong to a subobject as a `Struct` under that subobject field via a
+      `.nested s` `FieldVal`. For example, a `Struct` representing
+      `{ toFoo.x := 1, toFoo.y := 2, z := 3 }` will become one representing
+      `{ toFoo := { x := 1, y := 2 }, z := 3 }`.
+  -/
   private partial def groupFields (s : Struct) : TermElabM Struct := do
     let env ← getEnv
     withRef s.ref do
@@ -818,6 +957,13 @@ mutual
             let valStx ← updateSource valStx
             return { field with lhs := [field.lhs.head!], val := FieldVal.term valStx }
 
+  /--
+    Add `val : FieldVal`s to fields as specified by the sources.
+
+    If a value is found in the explicit sources (prior to `with`), add it as a `.term` or a
+    `.nested` `FieldVal`, as appropriate. If not, check for `..`, and make a hole via syntax as a
+    `.term`. Otherwise, mark the field as as `.missing`.
+  -/
   private partial def addMissingFields (s : Struct) : TermElabM Struct := do
     let env ← getEnv
     let fieldNames := getStructureFields env s.structName
@@ -848,7 +994,7 @@ mutual
               addField (FieldVal.term val)
             else
               --!!/ Use hole syntax as a term in the natural, no-defaults (..) case;
-              --    otherwise add it as a missing field.
+              --    otherwise mark it as a missing field.
               match s.source.implicit with
               | some { isSynthetic := false, useDefaults := false, .. } =>
                 addField (FieldVal.term (mkHole ref))
@@ -856,6 +1002,9 @@ mutual
               --!!\
       return s.setFields fields.reverse
 
+  /-- Put the `Struct` into canonical form by expanding different ways of specifying fields
+      (composite, by index, subobject); group fields by subobject; and incorporate values (or
+      holes) sources. -/
   private partial def expandStruct (s : Struct) : TermElabM Struct := do
     let s := expandCompositeFields s
     let s ← expandNumLitFields s
@@ -865,12 +1014,19 @@ mutual
 
 end
 
+/-- Information about the constructor. -/
 structure CtorHeaderResult where
+  /-- The constructor function itself as an `Expr`. -/
   ctorFn     : Expr
+  /-- The type of the constructor as an `Expr`. -/
   ctorFnType : Expr
+  /-- Metavariables for instances. -/
   instMVars  : Array MVarId
+  /-- Named parameters encountered in bindings of the type and the expressions used for them. -/
   params     : Array (Name × Expr)
 
+/-- Helper function that processes the constructor and its type until its first parameter reaches 0.
+-/
 private def mkCtorHeaderAux :
 Nat → Expr → Expr → Array MVarId → Array (Name × Expr) → TermElabM CtorHeaderResult
   | 0,   type, ctorFn, instMVars, params =>
@@ -888,11 +1044,16 @@ Nat → Expr → Expr → Array MVarId → Array (Name × Expr) → TermElabM Ct
         mkCtorHeaderAux n (b.instantiate1 a) (mkApp ctorFn a) instMVars (params.push (paramName, a))
     | _ => throwError "unexpected constructor type"
 
+/-- Burrows into the body of a `.forallE` expression `n` times if possible, and returns the result.
+    If an expression not of the form `.forallE` is encountered along the way, return `none`.  -/
 private partial def getForallBody : Nat → Expr → Option Expr
   | i+1, .forallE _ _ b _ => getForallBody i b
   | _+1, _                => none
   | 0,   type             => type
 
+/-- When the expected type is known, attempt to get the type of the constructor by stripping `n`
+    `.forallE`'s off of the expression and then assigning metavariables by `isDefEq`'ing with
+    the expected type. -/
 private def propagateExpectedType (type : Expr) (numFields : Nat) (expectedType? : Option Expr) :
 TermElabM Unit := do
   match expectedType? with
@@ -904,6 +1065,7 @@ TermElabM Unit := do
         unless typeBody.hasLooseBVars do
           discard <| isDefEq expectedType typeBody
 
+/-- Process information about a given `ConstructorVal`. -/
 private def mkCtorHeader (ctorVal : ConstructorVal) (expectedType? : Option Expr) :
 TermElabM CtorHeaderResult := do
   let us ← mkFreshLevelMVars ctorVal.levelParams.length
@@ -914,16 +1076,22 @@ TermElabM CtorHeaderResult := do
   synthesizeAppInstMVars r.instMVars r.ctorFn
   return r
 
+/-- Annotate an expression to indicate that it must be synthesized as a default value.
+    In practice, the expression is a metavariable. -/
 def markDefaultMissing (e : Expr) : Expr :=
   mkAnnotation `structInstDefault e
 
+/-- Check if an expression has been annotated in a way that indicates it should be synthesized
+    during the default loop. -/
 def defaultMissing? (e : Expr) : Option Expr :=
   annotation? `structInstDefault e
 
+/-- Provide a descriptive error message if the structure instance elaboration fails. -/
 def throwFailedToElabField {α} (fieldName : Name) (structName : Name) (msgData : MessageData) :
 TermElabM α :=
   throwError "failed to elaborate field '{fieldName}' of '{structName}, {msgData}"
 
+/-- Attempt to synthesize an -/
 def trySynthStructInstance? (s : Struct) (expectedType : Expr) : TermElabM (Option Expr) := do
   if !s.allMissing then
     return none
@@ -931,6 +1099,11 @@ def trySynthStructInstance? (s : Struct) (expectedType : Expr) : TermElabM (Opti
     try synthInstance? expectedType catch _ => return none
 
 --!!/ By Mario Carneiro
+/-- Use an expression in syntax. Example: ``(foo $(← toSyntax e))`.
+
+    This works by creating syntax for a metavariable, then elaborating that syntax and assigning
+    the metavariable to the expression in question.
+ -/
 def toSyntax (e : Expr) (type? : Option Expr := none) : TermElabM Syntax := withFreshMacroScope do
   let stx ← `(?a)
   let mvar ← elabTerm stx type?
@@ -938,16 +1111,40 @@ def toSyntax (e : Expr) (type? : Option Expr := none) : TermElabM Syntax := with
   pure stx
 --!!\
 
+/--
+  The result of running `elabStruct` on a `Struct`, containing:
+  * `struct : Struct`, now with updated `expr?` values in its fields, representing the values for
+    those fields.
+  * `val : Expr`, the constructor applied to the field values (`expr?`s). This is the actual
+    expression that the structure instance elaborates to. (Note that this is distinct from the
+    `val` of each field, which is a `FieldVal`.)
+  * `instMVars : Array MVarId`, used forkeeping track of instances.
+  -/
 structure ElabStructResult where
+  /-- The structure's constructor applied to the field values (`expr?`s). This is the actual
+      expression that the structure instance elaborates to. -/
   val       : Expr
+  /-- The `struct` that was fed to `elabStruct`, but now with updated `expr?` values for all of its
+      fields containing their values as expressions. -/
   struct    : Struct
+  /-- Used for keeping track of instances. -/
   instMVars : Array MVarId
 
-elab "faq_throw_error" : tactic =>
-  Lean.Elab.Tactic.withMainContext do
-let goal ← Lean.Elab.Tactic.getMainGoal
-Lean.Meta.throwTacticEx `faq_throw_error goal "throwing an error at the current goal"
+/--
+  Elaborates a `Struct` into an `ElabStructResult`.
 
+  This computes expressions for all fields of a structure (in `expr?`) on the basis of `FieldVal`s
+  while simultaneously building the elaboration of the structure instance itself, in the form of
+  its constructor applied to the expressions for each of its fields in turn.
+
+  `.term stx` `FieldVals` are elaborated while ensuring the type (as given by the constructor's
+  type), `.nested s` `FieldVals` are recursed into. `.missing` `FieldVals` are replaced with
+  metavariables and annotated to indicate that they will get assigned during the default synthesis
+  loop. Note that in this case the same metavariable is used both in the `expr?` field and the
+  final constructed expression (`val`), so that assigning it gives access to the value in both
+  places. The one exception is if an `autoParam` is encountered in the type, in which case the
+  tactic is elaborated.
+-/
 private partial def elabStruct (s : Struct) (expectedType? : Option Expr) :
 TermElabM ElabStructResult := withRef s.ref do
   let env ← getEnv
@@ -1039,9 +1236,12 @@ TermElabM ElabStructResult := withRef s.ref do
 
 namespace ImplicitFields
 
+/-- Updated as we search for default values. We must search for default values overriden in derived
+    structures. -/
 structure Context where
-  -- We must search for default values overriden in derived structures
+  /-- `Struct`s in the context which might supply default values. -/
   structs : Array Struct := #[]
+  /-- The names of structures in the context which might supply default values. -/
   allStructNames : Array Name := #[]
   /--
   Consider the following example:
@@ -1076,9 +1276,13 @@ structure Context where
   -/
   maxDistance : Nat := 0
 
+/-- Stores an indicator of whether progress has been made during a round in the default loop. -/
 structure State where
+  /-- Indicates whether progress has been made during a round in the default loop. -/
   progress : Bool := false
 
+/-- Collects the names of all nested structures in a `Struct` (at any depth), including the name of
+    the structure itself. -/
 partial def collectStructNames (struct : Struct) (names : Array Name) : Array Name :=
   let names := names.push struct.structName
   struct.fields.foldl (init := names) fun names field =>
@@ -1086,12 +1290,16 @@ partial def collectStructNames (struct : Struct) (names : Array Name) : Array Na
     | .nested struct => collectStructNames struct names
     | _ => names
 
+/-- Gets the maximum depth at which any structure is nested within the given structure, i.e. the
+    height of its subobject poset. -/
 partial def getHierarchyDepth (struct : Struct) : Nat :=
   struct.fields.foldl (init := 0) fun max field =>
     match field.val with
     | .nested struct => Nat.max max (getHierarchyDepth struct + 1)
     | _ => max
 
+/-- (Monadic) Checks if the value of a field (`expr?`) is an unassigned metavariable that is
+    annotated to indicate that it should be synthesized during the default loop. -/
 def isDefaultMissing? [Monad m] [MonadMCtx m] (field : Field Struct) : m Bool := do
   if let some expr := field.expr? then
     if let some (.mvar mvarId) := defaultMissing? expr then
@@ -1099,6 +1307,9 @@ def isDefaultMissing? [Monad m] [MonadMCtx m] (field : Field Struct) : m Bool :=
         return true
   return false
 
+/-- (Monadic) Gets the first encountered field in a `Struct` whose value (`expr?`) is an unassigned
+    metavariable that is annotated to indicate that it should be synthesized during the default
+    loop. -/
 partial def findDefaultMissing? [Monad m] [MonadMCtx m] (struct : Struct) :
 m (Option (Field Struct)) :=
   struct.fields.findSomeM? fun field => do
@@ -1106,10 +1317,15 @@ m (Option (Field Struct)) :=
    | .nested struct => findDefaultMissing? struct
    | _ => return if (← isDefaultMissing? field) then field else none
 
+/-- (Monadic) Gets an array containing all fields in the `Struct` whose value (`expr?`) is an
+    unassigned metavariable that is annotated to indicate that it should be synthesized during the
+    default loop. -/
 partial def allDefaultMissing [Monad m] [MonadMCtx m] (struct : Struct) :
 m (Array (Field Struct)) :=
   go struct *> get |>.run' #[]
 where
+  /-- Loop through all fields in the `Struct`, recursing if a `.nested` one is found, and storing
+      the field in a mutable array if it `isDefaultMissing?` -/
   go (struct : Struct) : StateT (Array (Field Struct)) m Unit :=
     for field in struct.fields do
       if let .nested struct := field.val then
@@ -1117,16 +1333,25 @@ where
       else if (← isDefaultMissing? field) then
         modify (·.push field)
 
+/-- Gets the name of a field, assuming that its `lhs` is of the form `[.fieldName _ fieldName]`.
+    Panics otherwise. -/
 def getFieldName (field : Field Struct) : Name :=
   match field.lhs with
   | [.fieldName _ fieldName] => fieldName
   | _ => unreachable!
 
+/-- Abbreviation for `ReaderT Context (StateRefT State TermElabM)`: A monad transformation of
+    `TermElabM` that lets us access the `Context` (relevant for checking if default values are
+    overridden) and keeping track of whether progress has been made during a round of the default
+    loop (`State`). -/
 abbrev M := ReaderT Context (StateRefT State TermElabM)
 
+/-- Checks if the round has completed by checking that progress has been made and that the
+    `maxDistance > 0`. -/
 def isRoundDone : M Bool := do
   return (← get).progress && (← read).maxDistance > 0
 
+/-- Gets the value (`expr?`) of a field in a `Struct` given the name of the field. -/
 def getFieldValue? (struct : Struct) (fieldName : Name) : Option Expr :=
   struct.fields.findSome? fun field =>
     if getFieldName field == fieldName then
@@ -1135,19 +1360,30 @@ def getFieldValue? (struct : Struct) (fieldName : Name) : Option Expr :=
       none
 
 --!!/
+section NamedGoalsWithMetadata
+/-- A convenient representation of the metadata attached to named goals produced by `?..` syntax. -/
 structure FieldHoleMData where
+  /-- The index of the named goal used for name conflict resolution when dealing with multiple
+      occcurrences of `?..`. Each conflicting use of `?..` should generate field holes with
+      different indices. An index of `0` indicates that no name conflicts were found with any
+      existing goals. -/
   index      : Nat
+  /-- The syntax of the structure instance that contained the `?..` syntax. -/
   structRef  : Syntax
-  fieldRef   : Syntax
+  /-- The name of the structure that contained the `?..` syntax. -/
   structName : Name
+  /-- The name of the field this goal represents. -/
   fieldName  : Name
+  /-- The name to be prefixed to the name of this goal. `Name.anonymous` indicates that no name is
+      to be prefixed. -/
   prefixName : Name
 
+/-- Creates the metadata for a field's named goal given the field, the `Struct`, and the
+    conflict-resolution index. -/
 def mkFieldHoleMData (index : Nat) (field : Field Struct) (struct : Struct) : FieldHoleMData :=
   {
     index,
     structRef  := struct.ref
-    fieldRef   := field.ref
     structName := struct.structName
     fieldName  := getFieldName field
     prefixName := match struct.source.implicit with
@@ -1156,6 +1392,7 @@ def mkFieldHoleMData (index : Nat) (field : Field Struct) (struct : Struct) : Fi
   }
 
 open KVMap in
+/-- Gets the field hole metadata from a metavariable if present. -/
 def getFieldHoleMDataFromMVar? (decl : MetavarDecl) : Option FieldHoleMData :=
   match decl.type with
   | .mdata md _ =>
@@ -1164,7 +1401,6 @@ def getFieldHoleMDataFromMVar? (decl : MetavarDecl) : Option FieldHoleMData :=
       {
         index      := getNat md `index
         structRef  := getSyntax md `structRef
-        fieldRef   := getSyntax md `fieldRef
         structName := getName md `structName
         fieldName  := getName md `fieldName
         prefixName := getName md `prefixName
@@ -1172,40 +1408,43 @@ def getFieldHoleMDataFromMVar? (decl : MetavarDecl) : Option FieldHoleMData :=
     else none
   | _ => none
 
+/-- Checks if a metavariable decl is a named field hole created by `?..` syntax. -/
 def isFieldHole (decl : MetavarDecl) : Bool :=
   match decl.type with
   | .mdata md _ => KVMap.getBool md `fieldHole
   | _           => false
 
-/--
-  Merges two `KVMap`s, overwriting the values of any shared keys with those in the second `KVMap`.
--/
+section KVMap
+/-- Merges two `KVMap`s, overwriting the values of any shared keys with those in the second `KVMap`
+    -/
 def mergeKVMap : KVMap → KVMap → KVMap :=
   fun m₀ m₁ => Id.run do
     let mut m := m₀
     for (name, data) in m₁ do
       m := KVMap.insert m name data
     return m
-/--
-  Turns a list of key-value pairs (e.g. ``[(`a, ofBool true), (`b, ofNat 2), ...]``) into a `KVMap`.
--/
+
+/-- Turns a list of key-value pairs (e.g. ``[(`a, ofBool true), (`b, ofNat 2), ...]``) into a
+    `KVMap`. -/
 def toKVMap : List (Name × DataValue) → KVMap
 | l => l.foldl (fun m (n, d) => KVMap.insert m n d) {}
 
+end KVMap
+
 open DataValue in
+/-- Turns a representation of field hole metadata into actual metadata (a `KVMap`). -/
 def mkFieldHoleMDataKVMap (f : FieldHoleMData) : KVMap :=
   toKVMap [
     (`fieldHole  , ofBool   true        ),
     (`index      , ofNat    f.index     ),
     (`structRef  , ofSyntax f.structRef ),
-    (`fieldRef   , ofSyntax f.fieldRef  ),
     (`structName , ofName   f.structName),
     (`fieldName  , ofName   f.fieldName ),
     (`prefixName , ofName   f.prefixName)
   ]
 
 /--
-  Creates a metavariable with `metadata` attached to its `type`.
+  Create a metavariable with `metadata` attached to its `type`.
   If there's any existing metadata on `type`, `metadata` is preferentially merged into it.
   -/
 def mkFreshExprMVarWithMData (type : Expr) (metadata : KVMap) (kind : MetavarKind := default)
@@ -1219,6 +1458,8 @@ def mkFreshExprMVarWithMData (type : Expr) (metadata : KVMap) (kind : MetavarKin
       Expr.mdata metadata type
   mkFreshExprMVar annotatedType (kind := kind) (userName := userName)
 
+/-- Make a fresh expression metavariable for a field, named accordingly, and with metadata
+    attached. -/
 def mkFreshFieldNamedMVar (type : Expr) (index : Nat) (prefixName : Option Name)
 (field : Field Struct) (struct : Struct) : MetaM Expr :=
   let fieldHoleMData := mkFieldHoleMDataKVMap <| mkFieldHoleMData index field struct
@@ -1230,12 +1471,16 @@ def mkFreshFieldNamedMVar (type : Expr) (index : Nat) (prefixName : Option Name)
   let name := if index == 0 then name else name.appendIndexAfter index
   mkFreshExprMVarWithMData type fieldHoleMData (kind := .syntheticOpaque) (userName := name)
 
+/-- Given the names of two structures, check if they have any field names in common. -/
 def fieldsOverlap (env : Environment) (structName₀ : Name) (structName₁ : Name) : Bool :=
   let fields₀ := getStructureFieldsFlattened env structName₀ false
   let fields₁ := getStructureFieldsFlattened env structName₁ false
   fields₀.any (fun field => fields₁.contains field)
 
---~~ Monadic code for tracing:
+--~~ Monadic code to enable tracing:
+/-- If the provided metavariable decl is a named field hole created by `?..` syntax, check if it
+    conflicts with the current structure and prefix name. If so, return its index. Otherwise,
+    return `none`. -/
 def getConflictingIndex? (env : Environment) (s : Struct) (prefixName : Name) (decl : MetavarDecl)
 : TermElabM (Option Nat) := do
   let fieldHoleMData? := getFieldHoleMDataFromMVar? decl
@@ -1253,6 +1498,17 @@ def getConflictingIndex? (env : Environment) (s : Struct) (prefixName : Name) (d
     else return none
   | none => return none
 
+/-- Get the next non-conflicting index among all metavariable conflicts.
+    A metavariable conflicts iff all of the following are true:
+
+    * it is a named field hole created by `?..` syntax
+    * it is not from the same occurrence of `?..`
+    * it has the same prefix name (possibly `Name.anonymous` if it does not have a prefix)
+    * it belongs to a structure that has field names in common with the current structure
+
+    Note that this gets the index one greater than the maximum conflicting index, not the next
+    "available" index. We take a "wide berth" approach to avoid situations where it might appear
+    like two goals are from the same occurrence of `?..` despite this not being the case. -/
 def nextIndexGivenCollisions (env : Environment) (mctx : MetavarContext) (s : Struct)
 : TermElabM Nat := do
   let prefixName := match s.source.implicit with
@@ -1266,7 +1522,11 @@ def nextIndexGivenCollisions (env : Environment) (mctx : MetavarContext) (s : St
   | some i => return i+1
   | none   => return 0
 
-def assignRemainingDefaultsToHoles (struct : Struct) : TermElabM Unit :=
+--~~ Check for unreachable code after the decisions have been made.
+/-- Assign all fields which did not get synthesized during the default loop (but which were marked
+    as such) to appropriately-named field holes with metadata in the case of `?..` syntax (and to
+    natural holes when the `?` is absent). -/
+def assignRemainingDefaultsToFieldHoles (struct : Struct) : TermElabM Unit :=
 --~~? withRef?
 --~~? If so, do we use a synthetic ref or not? What's with that?
   withRef struct.ref do
@@ -1293,8 +1553,12 @@ def assignRemainingDefaultsToHoles (struct : Struct) : TermElabM Unit :=
         | _ => unreachable!
       | none => unreachable!
   | none => return ()
---!!\
 
+end NamedGoalsWithMetadata
+--!!\
+/-- A helper function that applies lambdas whose parameters are field names to the corresponding
+    field values until it finds a non-lambda, using propagated parameters instead of field names if
+    necessary along the way. Returns `none` if it finds a lambda that's not of this form. -/
 partial def mkDefaultValueAux? (struct : Struct) : Expr → TermElabM (Option Expr)
   | .lam n d b c => withRef struct.ref do
     if c.isExplicit then
@@ -1323,6 +1587,8 @@ partial def mkDefaultValueAux? (struct : Struct) : Expr → TermElabM (Option Ex
     else
       return some e
 
+/-- If possible, make a default value by applying lambdas in the given constant to the appropriate
+    field values or propagated parameter values. -/
 def mkDefaultValue? (struct : Struct) (cinfo : ConstantInfo) : TermElabM (Option Expr) :=
   withRef struct.ref do
   let us ← mkFreshLevelMVarsFor cinfo
@@ -1362,6 +1628,11 @@ partial def reduce (structNames : Array Name) (e : Expr) : MetaM Expr := do
     | none     => return e
   | e => return e
 
+/--
+  Attempt to synthesize the default value for a field, looping through nested structures if
+  necessary. If a default value is found, assign it to the metavariable that we created for the
+  field's value back in `elabStruct`, and return `true`. Otherwise return `false`.
+-/
 partial def tryToSynthesizeDefault (structs : Array Struct) (allStructNames : Array Name)
 (maxDistance : Nat) (fieldName : Name) (mvarId : MVarId) : TermElabM Bool :=
   let rec loop (i : Nat) (dist : Nat) := do
@@ -1389,6 +1660,19 @@ partial def tryToSynthesizeDefault (structs : Array Struct) (allStructNames : Ar
       return false
   loop 0 0
 
+/-- The main loop of `tryToSynthesizeDefault`, which keeps track of which struct out of an array of
+    all nested structs is being considered, as well as the distance to make sure it doesn't exceed
+    the `maxDistance` (see the documentation for `Context.maxDistance`). -/
+add_decl_doc tryToSynthesizeDefault.loop
+
+/--
+  A step within the default synthesis loop. We proceed only if the round is not done. We loop
+  through all fields in the structure, attempting to synthesize a default via
+  `tryToSynthesizeDefault` when possible. If we succeed, we set `progress := true` in the `State`.
+
+  Note: by now, all `expr?`s should be `some expr` from `elabStruct`, even if that `expr` is a
+  metavariable; as such, we panic if one of them is `none`.
+-/
 partial def step (struct : Struct) : M Unit :=
   unless (← isRoundDone) do
     withReader (fun ctx => { ctx with structs := ctx.structs.push struct }) do
@@ -1408,6 +1692,21 @@ partial def step (struct : Struct) : M Unit :=
                   modify fun _ => { progress := true }
             | _ => pure ()
 
+/--
+  The workhorse of the default synthesis loop.
+
+  If there are no fields left that need to be synthesized during the default loop, we return from
+  the loop.
+
+  Otherwise, when we find a field that ought to be synthesized during the default loop, we take a
+  `step`. If we've made `progress`, we call `propagateLoop` again and reset the depth to `0`. If we
+  haven't, we call `propagateLoop` again with a higher depth.
+
+  If the depth ever exceeds the hierarchy depth, we know that we've searched all nested structures,
+  but no default values were to be found. In this case, we either throw an error with the missing
+  fields, or, if a variadic hole is present (e.g. `?..`), simply return from the loop (at which
+  point the remaining holes will be assigned by `assignRemainingDefaultsToFieldHoles` ).
+-/
 partial def propagateLoop (hierarchyDepth : Nat) (d : Nat) (struct : Struct) : M Unit := do
   match (← findDefaultMissing? struct) with
   | none       => return () -- Done
@@ -1437,6 +1736,15 @@ partial def propagateLoop (hierarchyDepth : Nat) (d : Nat) (struct : Struct) : M
       else
         propagateLoop hierarchyDepth (d+1) struct
 
+/--
+  The default synthesis loop.
+
+  We call our workhorse function `propagateLoop` with appropriate initial values, which implements
+  the loop itself (unless there is a variadic hole that specifies defaults are not to be used).
+
+  Then, if there is a variadic hole, we assign the remaining metavariables that couldn't be
+  synthesized into default values to (named) field holes.
+-/
 def propagate (struct : Struct) : TermElabM Unit := do --!! added do
   let hierarchyDepth := getHierarchyDepth struct
   let structNames := collectStructNames struct #[]
@@ -1444,10 +1752,14 @@ def propagate (struct : Struct) : TermElabM Unit := do --!! added do
   if vhc?.all (·.useDefaults) then --!!
     propagateLoop hierarchyDepth 0 struct { allStructNames := structNames } |>.run' {}
   if vhc?.isSome then --!!
-    assignRemainingDefaultsToHoles struct --!!
+    assignRemainingDefaultsToFieldHoles struct --!!
 
 end ImplicitFields
 
+/--
+  The main content of the elaboration, during which we normalize the `Struct`'s form, call
+  `elabStruct` to compute field values and construct the elaborated expression, run the default
+  synthesis loop (and provide named field holes if warranted), and synthesize instances. -/
 private def elabStructInstAux (stx : Syntax) (expectedType? : Option Expr) (source : Source)
 : TermElabM Expr := do
   let structName ← getStructName expectedType? source
@@ -1480,6 +1792,7 @@ private def elabStructInstAux (stx : Syntax) (expectedType? : Option Expr) (sour
   return r
 
 --!! changed attribute and name
+/-- The term elaborator for structure instance syntax that includes variadic holes (`?..`). -/
 @[term_elab structInstWithHoles] def elabStructInstWithHoles : TermElab := fun stx expectedType? =>
 do
   match (← expandNonAtomicExplicitSources stx) with
@@ -1496,7 +1809,9 @@ do
 
 section haveFieldProj
 
+/-- `as foo` names the field projection `foo`. -/
 declare_syntax_cat asname
+/-- `as foo` names the field projection `foo`. -/
 syntax "as" ident : asname
 
 -- couldn't write elab "haveFieldProj" f:(ident)? x:("as" n:ident)? : tactic
