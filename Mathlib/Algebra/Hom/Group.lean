@@ -369,38 +369,42 @@ theorem map_mul_eq_one [MonoidHomClass F M N] (f : F) {a b : M} (h : a * b = 1) 
 #align map_mul_eq_one map_mul_eq_one
 
 @[to_additive]
-theorem map_div' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f : F) (hf : ∀ a, f a⁻¹ = (f a)⁻¹)
-    (a b : G) : f (a / b) = f a / f b := by rw [div_eq_mul_inv, div_eq_mul_inv, map_mul, hf]
+theorem map_div' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
+  (f : F) (hf : ∀ a, f a⁻¹ = (f a)⁻¹) (a b : G) : f (a / b) = f a / f b :=
+  by rw [div_eq_mul_inv, div_eq_mul_inv, map_mul, hf]
 #align map_div' map_div'
 
 /-- Group homomorphisms preserve inverse. -/
 @[simp, to_additive "Additive group homomorphisms preserve negation."]
-theorem map_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (a : G) : f a⁻¹ = (f a)⁻¹ :=
+theorem map_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
+  (f : F) (a : G) : f a⁻¹ = (f a)⁻¹ :=
   eq_inv_of_mul_eq_one_left <| map_mul_eq_one f <| inv_mul_self _
 #align map_inv map_inv
 
 /-- Group homomorphisms preserve division. -/
 @[simp, to_additive "Additive group homomorphisms preserve subtraction."]
 theorem map_mul_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (a b : G) :
-    f (a * b⁻¹) = f a * (f b)⁻¹ := by rw [map_mul, map_inv]
+  f (a * b⁻¹) = f a * (f b)⁻¹ := by rw [map_mul, map_inv]
 #align map_mul_inv map_mul_inv
 
 /-- Group homomorphisms preserve division. -/
 @[simp, to_additive "Additive group homomorphisms preserve subtraction."]
-theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) : ∀ a b, f (a / b) = f a / f b :=
-  map_div' _ <| map_inv f
+theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
+  ∀ a b, f (a / b) = f a / f b := map_div' _ <| map_inv f
 #align map_div map_div
 
 -- Porting note: I had some with `to_additive` here,
 -- so have just given separate proofs.
 @[simp]
-theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) : ∀ n : ℕ, f (a ^ n) = f a ^ n
+theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
+  ∀ n : ℕ, f (a ^ n) = f a ^ n
   | 0 => by rw [pow_zero, pow_zero, map_one]
   | n + 1 => by rw [pow_succ, pow_succ, map_mul, map_pow f a n]
 #align map_pow map_pow
 
 @[simp]
-theorem map_nsmul [AddMonoid G] [AddMonoid H] [AddMonoidHomClass F G H] (f : F) : ∀ (n : ℕ) (a : G), f (n • a) = n • f a
+theorem map_nsmul [AddMonoid G] [AddMonoid H] [AddMonoidHomClass F G H] (f : F) :
+  ∀ (n : ℕ) (a : G), f (n • a) = n • f a
   | 0, a => by rw [zero_nsmul, zero_nsmul, map_zero]
   | n + 1, a => by rw [succ_nsmul, succ_nsmul, map_add, map_nsmul f n a]
 #align map_nsmul map_nsmul
@@ -409,8 +413,8 @@ attribute [to_additive_reorder 8] map_pow
 
 -- Porting note: restore `to_additive`
 -- @[to_additive]
-theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f : F) (hf : ∀ x : G, f x⁻¹ = (f x)⁻¹)
-    (a : G) : ∀ n : ℤ, f (a ^ n) = f a ^ n
+theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
+  (f : F) (hf : ∀ x : G, f x⁻¹ = (f x)⁻¹) (a : G) : ∀ n : ℤ, f (a ^ n) = f a ^ n
   | (n : ℕ) => by rw [zpow_ofNat, map_pow, zpow_ofNat]
   | Int.negSucc n => by rw [zpow_negSucc, hf, map_pow, ← zpow_negSucc, ← zpow_negSucc]
 #align map_zpow' map_zpow'
@@ -419,19 +423,23 @@ theorem map_zsmul' [SubNegMonoid G] [SubNegMonoid H] [AddMonoidHomClass F G H] (
   | (n : ℕ) => by rw [ofNat_zsmul, map_nsmul, ofNat_zsmul]
   | Int.negSucc n => by rw [negSucc_zsmul, hf, map_nsmul, ← negSucc_zsmul, ← negSucc_zsmul]
 #align map_zsmul' map_zsmul'
+attribute [to_additive] map_zpow'
 
 -- to_additive puts the arguments in the wrong order, so generate an auxiliary lemma, then
 -- swap its arguments.
+-- Porting note: restore `to_additive`
 /-- Group homomorphisms preserve integer power. -/
 @[simp]
-theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n :=
-  map_zpow' f (map_inv f) g n
+theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
+  (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n
 #align map_zpow map_zpow
+@[simp]
+theorem map_zsmul.aux [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass F G H]
+  (f : F) (g : G) (n : ℤ) : f (n • g) = n • f g := map_zsmul' f (map_neg f) g n
 
 /-- Additive group homomorphisms preserve integer scaling. -/
-theorem map_zsmul [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass F G H] (f : F) (n : ℤ) (g : G) :
-    f (n • g) = n • f g :=
-  MapZsmul.aux f g n
+theorem map_zsmul [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass F G H]
+  (f : F) (n : ℤ) (g : G) : f (n • g) = n • f g := map_zsmul.aux f g n
 #align map_zsmul map_zsmul
 
 attribute [to_additive_reorder 8, to_additive] map_zpow
