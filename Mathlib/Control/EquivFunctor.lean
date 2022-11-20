@@ -24,7 +24,7 @@ open Function
 
 To construct an `EquivFunctor`, it suffices to supply just the function `f α → f β` from
 an equivalence `α ≃ β`, and then prove the functor laws. It's then a consequence that
-this function is part of an equivalence, provided by `EquivFunctor.map_equiv`.
+this function is part of an equivalence, provided by `EquivFunctor.mapEquiv`.
 -/
 class EquivFunctor (f : Type u₀ → Type u₁) where
   /-- `f` preserves equality-/
