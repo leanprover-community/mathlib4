@@ -29,6 +29,8 @@ open Function
 
 variable {ι F α β γ δ : Type _}
 
+-- Porting note: with Lean4 nightly 2022-11-20, `outParam (Zero β)` can be `Zero β`.
+
 /-- `NonNegHomClass F α β` states that `F` is a type of nonnegative morphisms. -/
 class NonNegHomClass (F : Type _) (α β : outParam (Type _)) [outParam (Zero β)] [outParam (LE β)]
   extends FunLike F α fun _ => β where
