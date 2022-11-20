@@ -391,32 +391,33 @@ theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) : �
   map_div' _ <| map_inv f
 #align map_div map_div
 
--- to_additive puts the arguments in the wrong order, so generate an auxiliary lemma, then
--- swap its arguments.
-@[to_additive MapNsmul.aux, simp]
+-- Porting note: I had some with `to_additive` here,
+-- so have just given separate proofs.
+@[simp]
 theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) : ∀ n : ℕ, f (a ^ n) = f a ^ n
   | 0 => by rw [pow_zero, pow_zero, map_one]
-  | n + 1 => by rw [pow_succ, pow_succ, map_mul, map_pow]
+  | n + 1 => by rw [pow_succ, pow_succ, map_mul, map_pow f a n]
 #align map_pow map_pow
 
 @[simp]
-theorem map_nsmul [AddMonoid G] [AddMonoid H] [AddMonoidHomClass F G H] (f : F) (n : ℕ) (a : G) : f (n • a) = n • f a :=
-  MapNsmul.aux f a n
+theorem map_nsmul [AddMonoid G] [AddMonoid H] [AddMonoidHomClass F G H] (f : F) : ∀ (n : ℕ) (a : G), f (n • a) = n • f a
+  | 0, a => by rw [zero_nsmul, zero_nsmul, map_zero]
+  | n + 1, a => by rw [succ_nsmul, succ_nsmul, map_add, map_nsmul f n a]
 #align map_nsmul map_nsmul
 
-attribute [to_additive_reorder 8, to_additive] map_pow
+attribute [to_additive_reorder 8] map_pow
 
 @[to_additive]
 theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f : F) (hf : ∀ x : G, f x⁻¹ = (f x)⁻¹)
     (a : G) : ∀ n : ℤ, f (a ^ n) = f a ^ n
   | (n : ℕ) => by rw [zpow_coe_nat, map_pow, zpow_coe_nat]
-  | -[n+1] => by rw [zpow_neg_succ_of_nat, hf, map_pow, ← zpow_neg_succ_of_nat]
+  | Int.negSucc n => by rw [zpow_neg_succ_of_nat, hf, map_pow, ← zpow_neg_succ_of_nat]
 #align map_zpow' map_zpow'
 
 -- to_additive puts the arguments in the wrong order, so generate an auxiliary lemma, then
 -- swap its arguments.
 /-- Group homomorphisms preserve integer power. -/
-@[to_additive MapZsmul.aux, simp]
+@[simp]
 theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n :=
   map_zpow' f (map_inv f) g n
 #align map_zpow map_zpow
