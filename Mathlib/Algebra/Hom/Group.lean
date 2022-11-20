@@ -352,6 +352,9 @@ instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
   map_one f := f.toOneHom.map_one'
 #align monoid_hom.monoid_hom_class MonoidHom.monoidHomClass
 
+-- Porting notes: help to_additive translate. This should ideally be handled by the tactic
+attribute [to_additive AddMonoidHomClass.toZeroHomClass] MonoidHomClass.toOneHomClass
+
 @[to_additive]
 instance [MonoidHomClass F M N] : CoeTC F (M →* N) :=
   ⟨fun f => { toFun := f, map_one' := map_one f, map_mul' := map_mul f }⟩
