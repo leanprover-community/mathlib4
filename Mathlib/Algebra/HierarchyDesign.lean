@@ -92,7 +92,7 @@ when applicable:
   def Function.Surjective.Z [Z M₁] (f : M₁ → M₂) (hf : f.Surjective)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : Z M₂ := ...
   ```
-* Instances transferred elementwise to `FinSupp`s, like `FinSupp.semigroup`.
+* Instances transferred elementwise to `Finsupp`s, like `Finsupp.semigroup`.
   See `Mathilb.Data.Finsupp.Pointwise` for more examples.
   ```
   instance FinSupp.Z [Z β] : Z (α →₀ β) := ...
