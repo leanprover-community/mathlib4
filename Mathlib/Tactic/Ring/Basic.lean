@@ -835,7 +835,7 @@ theorem cast_pos : IsNat (a : R) n → a = n.rawCast + 0
 theorem cast_zero : IsNat (a : R) (nat_lit 0) → a = 0
   | ⟨e⟩ => by simp [e]
 
-theorem cast_neg {R} [Ring R] (a : R) : IsInt a (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
+theorem cast_neg {R} [Ring R] {a : R} : IsInt a (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
   | ⟨e⟩ => by simp [e]
 
 /-- Converts a proof by `norm_num` that `e` is a numeral, into a normalization as a monomial:
@@ -852,7 +852,7 @@ def evalCast : NormNum.Result e → Option (Result (ExSum sα) e)
     let p : Q(IsNat $e $lit) := p
     pure ⟨_, (ExProd.mkNat sα lit.natLit!).2.toSum, (q(cast_pos $p) : Expr)⟩
   | .isNegNat rα lit p =>
-    pure ⟨_, (ExProd.mkNegNat _ rα lit.natLit!).2.toSum, (q(@cast_neg _ $α _ _ $p) : Expr)⟩
+    pure ⟨_, (ExProd.mkNegNat _ rα lit.natLit!).2.toSum, (q(cast_neg $p) : Expr)⟩
   | _ => none
 
 theorem atom_pf (a : R) : a = a ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast + 0 := by simp

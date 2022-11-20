@@ -298,17 +298,14 @@ section MulOneClass
 variable [MulOneClass α] [HasDistribNeg α]
 
 theorem neg_eq_neg_one_mul (a : α) : -a = -1 * a := by simp
-#align neg_eq_neg_one_mul neg_eq_neg_one_mul
 
 /-- An element of a ring multiplied by the additive inverse of one is the element's additive
   inverse. -/
 theorem mul_neg_one (a : α) : a * -1 = -a := by simp
-#align mul_neg_one mul_neg_one
 
 /-- The additive inverse of one multiplied by an element of a ring is the element's additive
   inverse. -/
 theorem neg_one_mul (a : α) : -1 * a = -a := by simp
-#align neg_one_mul neg_one_mul
 
 end MulOneClass
 
@@ -316,9 +313,9 @@ section MulZeroClass
 
 variable [MulZeroClass α] [HasDistribNeg α]
 
-instance (priority := 100) MulZeroClass.negZeroClass : NegZeroClass α :=
-  { inferInstanceAs (Zero α), inferInstanceAs (HasInvolutiveNeg α) with
-    neg_zero := by rw [← zero_mul (0 : α), ← neg_mul, mul_zero, mul_zero] }
+instance (priority := 100) MulZeroClass.negZeroClass : NegZeroClass α where
+  __ := inferInstanceAs (Zero α); __ := inferInstanceAs (HasInvolutiveNeg α)
+  neg_zero := by rw [← zero_mul (0 : α), ← neg_mul, mul_zero, mul_zero]
 #align mul_zero_class.neg_zero_class MulZeroClass.negZeroClass
 
 end MulZeroClass
@@ -391,8 +388,8 @@ theorem mul_add_eq_mul_add_iff_sub_mul_add_eq : a * e + c = b * e + d ↔ (a - b
 
 /-- A simplification of one side of an equation exploiting right distributivity in rings
   and the definition of subtraction. -/
-theorem sub_mul_add_eq_of_mul_add_eq_mul_add : a * e + c = b * e + d → (a - b) * e + c = d := fun h =>
-  calc
+theorem sub_mul_add_eq_of_mul_add_eq_mul_add : a * e + c = b * e + d → (a - b) * e + c = d :=
+  fun h => calc
     (a - b) * e + c = a * e + c - b * e := by simp [sub_mul, sub_add_eq_add_sub]
     _ = d := by rw [h]; simp [@add_sub_cancel α]
 
@@ -405,16 +402,12 @@ section NonAssocRing
 variable [NonAssocRing α]
 
 theorem sub_one_mul (a b : α) : (a - 1) * b = a * b - b := by rw [sub_mul, one_mul]
-#align sub_one_mul sub_one_mul
 
 theorem mul_sub_one (a b : α) : a * (b - 1) = a * b - a := by rw [mul_sub, mul_one]
-#align mul_sub_one mul_sub_one
 
 theorem one_sub_mul (a b : α) : (1 - a) * b = b - a * b := by rw [sub_mul, one_mul]
-#align one_sub_mul one_sub_mul
 
 theorem mul_one_sub (a b : α) : a * (1 - b) = a - a * b := by rw [mul_sub, mul_one]
-#align mul_one_sub mul_one_sub
 
 end NonAssocRing
 
@@ -424,18 +417,18 @@ variable [Ring α] {a b c d e : α}
 
 -- A (unital, associative) ring is a not-necessarily-unital ring
 -- see Note [lower instance priority]
-instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α :=
-  { ‹Ring α› with
-    zero_mul := fun a => add_left_cancel <| show 0 * a + 0 * a = 0 * a + 0 by rw [← add_mul, zero_add, add_zero],
-    mul_zero := fun a => add_left_cancel <| show a * 0 + a * 0 = a * 0 + 0 by rw [← mul_add, add_zero, add_zero] }
+instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α where
+  __ := ‹Ring α›
+  zero_mul := fun a => add_left_cancel (a := 0 * a) <| by rw [← add_mul, zero_add, add_zero]
+  mul_zero := fun a => add_left_cancel (a := a * 0) <| by rw [← mul_add, add_zero, add_zero]
 #align ring.to_non_unital_ring Ring.toNonUnitalRing
 
 -- A (unital, associative) ring is a not-necessarily-associative ring
 -- see Note [lower instance priority]
-instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α :=
-  { ‹Ring α› with
-    zero_mul := fun a => add_left_cancel <| show 0 * a + 0 * a = 0 * a + 0 by rw [← add_mul, zero_add, add_zero],
-    mul_zero := fun a => add_left_cancel <| show a * 0 + a * 0 = a * 0 + 0 by rw [← mul_add, add_zero, add_zero] }
+instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α where
+  __ := ‹Ring α›
+  zero_mul := fun a => add_left_cancel (a := 0 * a) <| by rw [← add_mul, zero_add, add_zero]
+  mul_zero := fun a => add_left_cancel (a := a * 0) <| by rw [← mul_add, add_zero, add_zero]
 #align ring.to_non_assoc_ring Ring.toNonAssocRing
 
 /- The instance from `ring` to `semiring` happens often in linear algebra, for which all the basic
@@ -462,12 +455,12 @@ class CommRing (α : Type u) extends Ring α, CommMonoid α
 #align comm_ring CommRing
 
 instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
-  { s with mul_zero := mul_zero, zero_mul := zero_mul }
+  { s with }
 #align comm_ring.to_comm_semiring CommRing.toCommSemiring
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommRing.toNonUnitalCommRing [s : CommRing α] : NonUnitalCommRing α :=
-  { s with mul_zero := mul_zero, zero_mul := zero_mul }
+  { s with }
 #align comm_ring.to_non_unital_comm_ring CommRing.toNonUnitalCommRing
 
 /-- A domain is a nontrivial ring with no zero divisors, i.e. satisfying
