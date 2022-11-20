@@ -23,6 +23,7 @@ import Mathlib.Algebra.Order.Ring
 import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.Defs
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.Control.Random
 import Mathlib.Control.ULift

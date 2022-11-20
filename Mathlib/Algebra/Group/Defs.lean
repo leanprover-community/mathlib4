@@ -112,11 +112,13 @@ end Mul
 /-- A semigroup is a type with an associative `(*)`. -/
 @[ext]
 class Semigroup (G : Type u) extends Mul G where
+  /-- Multiplication is associative -/
   mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
 
 /-- An additive semigroup is a type with an associative `(+)`. -/
 @[ext]
 class AddSemigroup (G : Type u) extends Add G where
+  /-- Addition is associative -/
   add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
 
 attribute [to_additive] Semigroup
@@ -234,13 +236,17 @@ end RightCancelSemigroup
 /-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
 `1 * a = a` and `a * 1 = a` for all `a : M`. -/
 class MulOneClass (M : Type u) extends One M, Mul M where
+  /-- One is a left neutral element for multiplication -/
   one_mul : ∀ a : M, 1 * a = a
+  /-- One is a right neutral element for multiplication -/
   mul_one : ∀ a : M, a * 1 = a
 
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
 `0 + a = a` and `a + 0 = a` for all `a : M`. -/
 class AddZeroClass (M : Type u) extends Zero M, Add M where
+  /-- Zero is a left neutral element for addition -/
   zero_add : ∀ a : M, 0 + a = a
+  /-- Zero is a right neutral element for addition -/
   add_zero : ∀ a : M, a + 0 = a
 
 attribute [to_additive] MulOneClass
