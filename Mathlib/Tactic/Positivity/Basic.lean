@@ -9,6 +9,7 @@ import Mathlib.Tactic.Clear!
 import Mathlib.Logic.Nontrivial
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Order.Ring
+import Mathlib.Algebra.GroupWithZero.Defs
 import Qq.Match
 
 /-!
@@ -24,22 +25,10 @@ open Function
 -- FIXME: remove this when the sorries are gone
 set_option warningAsError false
 
-theorem add_pos [AddZeroClass α] [PartialOrder α] [CovariantClass α α (·+·) (·<·)]
-    {a b : α} (ha : 0 < a) (hb : 0 < b) : 0 < a + b := sorry
-theorem lt_add_of_pos_of_le
-    [AddZeroClass α] [PartialOrder α] [CovariantClass α α (swap (·+·)) (·<·)]
-    {a b c : α} (ha : 0 < a) (hbc : b ≤ c) : b < a + c := sorry
-theorem lt_add_of_le_of_pos [AddZeroClass α] [PartialOrder α] [CovariantClass α α (·+·) (·<·)]
-    {a b c : α} (hbc : b ≤ c) (ha : 0 < a) : b < c + a := sorry
-theorem add_nonneg [AddZeroClass α] [PartialOrder α] [CovariantClass α α (·+·) (·≤·)]
-    {a b : α} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a + b := sorry
-
 theorem mul_nonneg_of_pos_of_nonneg [OrderedSemiring α] {a b : α}
     (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b := sorry
 theorem mul_nonneg_of_nonneg_of_pos [OrderedSemiring α] {a b : α}
     (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a * b := sorry
-
-class NoZeroDivisors (α : Type u) [MonoidWithZero α] : Prop
 
 class PosMulStrictMono (α : Type u) [MulZeroClass α] [PartialOrder α] : Prop
 
@@ -69,16 +58,15 @@ theorem pow_nonneg [OrderedSemiring α] {a : α} (H : 0 ≤ a) (n : ℕ) : 0 ≤
 theorem pow_ne_zero [MonoidWithZero M] [NoZeroDivisors M] {a : M} (n : ℕ) (h : a ≠ 0) :
   a ^ n ≠ 0 := sorry
 
-variable [OrderedSemiring α] {a b : α}
+lemma mul_ne_zero [Zero α] [Mul α] [NoZeroDivisors α]
+    {a b : α} (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 :=
+  fun H => (eq_zero_or_eq_zero_of_mul_eq_zero H).elim ha hb
 
-lemma mul_ne_zero [OrderedSemiring α] [NoZeroDivisors α]
-    {a b : α} (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 := sorry
-
-lemma mul_ne_zero_of_ne_zero_of_pos [OrderedSemiring α] [NoZeroDivisors α]
+lemma mul_ne_zero_of_ne_zero_of_pos [Zero α] [Mul α] [PartialOrder α] [NoZeroDivisors α]
     {a b : α} (ha : a ≠ 0) (hb : 0 < b) : a * b ≠ 0 :=
   mul_ne_zero ha (ne_of_gt hb)
 
-lemma mul_ne_zero_of_pos_of_ne_zero [OrderedSemiring α] [NoZeroDivisors α]
+lemma mul_ne_zero_of_pos_of_ne_zero [Zero α] [Mul α] [PartialOrder α] [NoZeroDivisors α]
     {a b : α} (ha : 0 < a) (hb : b ≠ 0) : a * b ≠ 0 :=
   mul_ne_zero (ne_of_gt ha) hb
 
@@ -139,20 +127,14 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     have pb' : Q(by clear! «$zα» «$pα»; exact 0 ≤ $b) := pb
     pure (.nonnegative (by clear! zα pα; exact q(mul_nonneg $pa' $pb') : Expr))
   | .positive pa, .nonzero pb =>
-    have pa' : Q(by clear! «$zα» «$pα»; exact 0 < $a) := pa
-    have pb' : Q(by clear! «$zα» «$pα»; exact $b ≠ 0) := pb
     let _a ← synthInstanceQ (q(NoZeroDivisors $α) : Q(Prop))
-    pure (.nonzero (q(mul_ne_zero_of_pos_of_ne_zero $pa' $pb') : Expr))
+    pure (.nonzero (q(mul_ne_zero_of_pos_of_ne_zero $pa $pb) : Expr))
   | .nonzero pa, .positive pb =>
-    have pa' : Q(by clear! «$zα» «$pα»; exact $a ≠ 0) := pa
-    have pb' : Q(by clear! «$zα» «$pα»; exact 0 < $b) := pb
     let _a ← synthInstanceQ (q(NoZeroDivisors $α) : Q(Prop))
-    pure (.nonzero (q(mul_ne_zero_of_ne_zero_of_pos $pa' $pb') : Expr))
+    pure (.nonzero (q(mul_ne_zero_of_ne_zero_of_pos $pa $pb) : Expr))
   | .nonzero pa, .nonzero pb =>
-    have pa' : Q(by clear! «$zα» «$pα»; exact $a ≠ 0) := pa
-    have pb' : Q(by clear! «$zα» «$pα»; exact $b ≠ 0) := pb
     let _a ← synthInstanceQ (q(NoZeroDivisors $α) : Q(Prop))
-    pure (.nonzero (q(mul_ne_zero $pa' $pb') : Expr))
+    pure (.nonzero (q(mul_ne_zero $pa $pb) : Expr))
   | _, _ => pure .none
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ 0`.
@@ -183,7 +165,7 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
       pure (.nonnegative (q(pow_nonneg $pa' $b) : Expr))
     let ofNonzero pa (oα : Q(OrderedSemiring $α)) : MetaM (Strictness zα pα e) := do
       have pa' : Q(by clear! «$zα» «$pα»; exact $a ≠ 0) := pa
-      let _a ← synthInstanceQ (q(NoZeroDivisors $α) : Q(Prop))
+      let _a ← synthInstanceQ (q(by clear! «$zα» «$pα»; exact NoZeroDivisors $α) : Q(Prop))
       pure (.nonzero (q(pow_ne_zero $b $pa') : Expr))
     match ra with
     | .positive pa =>

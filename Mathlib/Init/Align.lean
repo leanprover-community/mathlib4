@@ -241,3 +241,4 @@ actual theorems in the files.
 
 #align subrelation.accessible Subrelation.accessibleₓ
 #align inv_image.accessible InvImage.accessibleₓ
+#align prod.rprod Prod.RProd

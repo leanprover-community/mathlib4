@@ -8,7 +8,7 @@ import Std.Tactic.NormCast.Ext
 import Mathlib.Tactic.SudoSetOption
 import Mathlib.Util.Simp
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Data.Nat.Cast.Defs
 
 open Lean Meta Simp
 
