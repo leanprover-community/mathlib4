@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
+import Mathlib.Init.Data.Nat.Basic
 /-!
 # Definition of `Stream'` and functions on streams
 
@@ -12,8 +13,6 @@ infinite list. In this file we define `Stream'` and some functions that take and
 Note that we already have `Stream` to represent a similar object, hence the awkward naming.
 
 -/
-
-local notation "ℕ"=> Nat
 
 universe u v w
 /-- A stream `Stream' α` is an infinite sequence of elements of `α`. -/
