@@ -44,17 +44,21 @@ open Function
 /-- A typeclass stating that multiplication is left and right distributive
 over addition. -/
 class Distrib (R : Type _) extends Mul R, Add R where
+  /-- Multiplication is left distributive over addition -/
   protected left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c
+  /-- Multiplication is right distributive over addition -/
   protected right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c
 #align distrib Distrib
 
 /-- A typeclass stating that multiplication is left distributive over addition. -/
 class LeftDistribClass (R : Type _) [Mul R] [Add R] where
+  /-- Multiplication is left distributive over addition -/
   protected left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c
 #align left_distrib_class LeftDistribClass
 
 /-- A typeclass stating that multiplication is right distributive over addition. -/
 class RightDistribClass (R : Type _) [Mul R] [Add R] where
+  /-- Multiplication is right distributive over addition -/
   protected right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c
 #align right_distrib_class RightDistribClass
 
@@ -219,9 +223,7 @@ multiplication by zero law (`mul_zero_class`). -/
 class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemigroup α
 #align non_unital_comm_semiring NonUnitalCommSemiring
 
-class CommSemiring (R : Type u) extends Semiring R, CommMonoid R where
-  -- TODO: doesn't work
-  protected right_distrib a b c := (by rw [mul_comm, mul_add, mul_comm c, mul_comm c])
+class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
 #align comm_semiring CommSemiring
 
 -- see Note [lower instance priority]
@@ -253,7 +255,9 @@ section HasDistribNeg
 This is useful for dealing with submonoids of a ring that contain `-1` without having to duplicate
 lemmas. -/
 class HasDistribNeg (α : Type _) [Mul α] extends HasInvolutiveNeg α where
+  /-- Negation is left distributive over multiplication -/
   neg_mul : ∀ x y : α, -x * y = -(x * y)
+  /-- Negation is right distributive over multiplication -/
   mul_neg : ∀ x y : α, x * -y = -(x * y)
 #align has_distrib_neg HasDistribNeg
 
