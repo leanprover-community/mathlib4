@@ -6,6 +6,10 @@ Ported by: Scott Morrison
 -/
 import Mathlib.Init.Logic
 
+/-!
+# Lemmas about `Sigma` from Lean 3 core.
+-/
+
 universe u v
 
 theorem ex_of_psig {α : Type u} {p : α → Prop} : (Σ'x, p x) → ∃ x, p x
