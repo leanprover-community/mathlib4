@@ -44,7 +44,7 @@ theorem map₂_def {α β γ : Type _} (f : α → β → γ) (a : Option α) (b
   by cases a <;> rfl
 #align option.map₂_def Option.map₂_def
 
--- In Lean3, was `@[simp]` but now `simp` can prove it
+-- porting note: In Lean3, was `@[simp]` but now `simp` can prove it
 theorem map₂_some_some (f : α → β → γ) (a : α) (b : β) : map₂ f (some a) (some b) = f a b := rfl
 #align option.map₂_some_some Option.map₂_some_some
 
@@ -64,13 +64,13 @@ theorem map₂_coe_left (f : α → β → γ) (a : α) (b : Option β) : map₂
   rfl
 #align option.map₂_coe_left Option.map₂_coe_left
 
--- This proof was `rfl` in Lean3, but now is not.
+-- porting note: This proof was `rfl` in Lean3, but now is not.
 @[simp]
 theorem map₂_coe_right (f : α → β → γ) (a : Option α) (b : β) : map₂ f a b = a.map fun a => f a b :=
   by cases a <;> rfl
 #align option.map₂_coe_right Option.map₂_coe_right
 
--- Removed the `@[simp]` tag as membership of an `Option` is no-longer simp-normal,
+-- porting note: Removed the `@[simp]` tag as membership of an `Option` is no-longer simp-normal.
 theorem mem_map₂_iff {c : γ} : c ∈ map₂ f a b ↔ ∃ a' b', a' ∈ a ∧ b' ∈ b ∧ f a' b' = c :=
   by simp [map₂]
 #align option.mem_map₂_iff Option.mem_map₂_iff
