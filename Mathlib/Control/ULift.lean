@@ -5,7 +5,6 @@ Authors: Scott Morrison, Jannis Limperg
 -/
 
 import Mathlib.Mathport.Rename
-import Lean.Elab.Tactic
 
 /-!
 # Monadic instances for `ULift` and `PLift`
@@ -94,11 +93,11 @@ variable {α : Type u} {β : Type v}
 
 /-- Functorial action. -/
 protected def map (f : α → β) (a : ULift α) : ULift β :=
-  ULift.up (f a.down)
+  ULift.up.{u} (f a.down)
 #align ulift.map ULift.map
 
 @[simp]
-theorem map_up (f : α → β) (a : α) : (ULift.up a).map f = ULift.up (f a) :=
+theorem map_up (f : α → β) (a : α) : (ULift.up.{u} a).map f = ULift.up.{u} (f a) :=
   rfl
 #align ulift.map_up ULift.map_up
 
@@ -110,7 +109,7 @@ protected def pure : α → ULift α :=
 
 /-- Applicative sequencing. -/
 protected def seq {α β} (f : ULift (α → β)) (x : Unit → ULift α) : ULift β :=
-  ULift.up (f.down (x ()).down)
+  ULift.up.{u} (f.down (x ()).down)
 #align ulift.seq ULift.seq
 
 @[simp]
