@@ -154,8 +154,7 @@ variable (α)
 instance [Nontrivial α] : Nontrivial αᵐᵒᵖ :=
   op_injective.nontrivial
 
-instance [Nontrivial α] : Nontrivial αᵃᵒᵖ :=
-  AddOpposite.op_injective.nontrivial
+attribute [to_additive AddOpposite.instNontrivialAddOpposite] MulOpposite.instNontrivialMulOpposite
 
 @[to_additive]
 instance [Inhabited α] : Inhabited αᵐᵒᵖ :=
