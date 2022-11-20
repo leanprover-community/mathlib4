@@ -19,7 +19,7 @@ related by the summand's relation.
 ## See also
 
 Related files are:
-* `Data.Finset.Colex`: Colexicographic order on finite sets.
+* `Combinatorics.CoLex`: Colexicographic order on finite sets.
 * `Data.List.Lex`: Lexicographic order on lists.
 * `Data.Sigma.Order`: Lexicographic order on `Σ i, α i` per say.
 * `Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
