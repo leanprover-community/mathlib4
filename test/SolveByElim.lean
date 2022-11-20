@@ -35,8 +35,24 @@ example (P₁ P₂: α → Prop) (f: forall (a: α), P₁ a → P₂ a → β)
         (a: α) (ha₁: P₁ a) (ha₂ : P₂ a) : β := by
   solve_by_elim
 
--- With proper backtracking this should work (and did in mathlib3).
--- example (P₁ P₂: α → Prop) (f: forall (a: α), P₁ a → P₂ a → β)
---         (a: α) (ha₁: P₁ a)
---         (a': α) (ha'₁: P₁ a') (ha'₂: P₂ a'): β := by
---   solve_by_elim
+example {X : Type} (x : X) : x = x := by
+  fail_if_success solve_by_elim only -- needs the `rfl` lemma
+  solve_by_elim
+
+-- Needs to apply `rfl` twice, with different implicit arguments each time.
+-- A naive implementation of solve_by_elim would get stuck.
+example {X : Type} (x y : X) (p : Prop) (h: x = x → y = y → p) : p := by solve_by_elim
+
+example : True := by
+  fail_if_success solve_by_elim only -- needs the `trivial` lemma
+  solve_by_elim
+
+-- Requires backtracking.
+example (P₁ P₂: α → Prop) (f: forall (a: α), P₁ a → P₂ a → β)
+        (a: α) (ha₁: P₁ a)
+        (a': α) (ha'₁: P₁ a') (ha'₂: P₂ a'): β := by
+  solve_by_elim
+
+-- TODO this works in mathlib3 but not here yet, for some reason.
+-- example {α : Type} {a b : α → Prop} (h₀ : b = a) (y : α) : a y = b y :=
+-- by solve_by_elim
