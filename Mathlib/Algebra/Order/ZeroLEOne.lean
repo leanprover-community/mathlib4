@@ -47,6 +47,8 @@ theorem zero_le_four [Preorder α] [One α] [AddZeroClass α] [ZeroLEOneClass α
   add_nonneg zero_le_three zero_le_one
 #align zero_le_four zero_le_four
 
+lemma one_eq_one [One α] [AddZeroClass α] : ((1 : ℕ).unaryCast : α) = 1 := zero_add 1
+
 lemma one_add_one [One α] [AddZeroClass α] : (1 : α) + 1 = (2 : ℕ).unaryCast := by
   change 1 + 1 = (0 + 1) + 1
   rw [zero_add 1]
