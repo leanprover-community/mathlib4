@@ -21,8 +21,7 @@ variable {α β : Type _}
 
 
 @[to_additive]
-instance [h : One α] : One αᵒᵈ :=
-  h
+instance [h : One α] : One αᵒᵈ := h
 
 @[to_additive]
 instance [h : Mul α] : Mul αᵒᵈ :=
