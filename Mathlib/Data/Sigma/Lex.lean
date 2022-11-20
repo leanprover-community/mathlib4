@@ -18,14 +18,13 @@ related by the summand's relation.
 
 ## See also
 
---Porting note: fix these once the files are ported.
 Related files are:
-* `data.finset.colex`: Colexicographic order on finite sets.
-* `data.list.lex`: Lexicographic order on lists.
-* `data.sigma.order`: Lexicographic order on `Σ i, α i` per say.
-* `data.psigma.order`: Lexicographic order on `Σ' i, α i`.
-* `data.prod.lex`: Lexicographic order on `α × β`. Can be thought of as the special case of
-  `sigma.lex` where all summands are the same
+* `Data.Finset.Colex`: Colexicographic order on finite sets.
+* `Data.List.Lex`: Lexicographic order on lists.
+* `Data.Sigma.Order`: Lexicographic order on `Σ i, α i` per say.
+* `Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
+* `Data.Prod.Lex`: Lexicographic order on `α × β`. Can be thought of as the special case of
+  `Sigma.Lex` where all summands are the same
 -/
 
 
