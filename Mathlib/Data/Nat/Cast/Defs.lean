@@ -232,3 +232,8 @@ lemma pos_of_neZero_natCast (R) [AddMonoidWithOne R] {n : ℕ} [NeZero (n : R)] 
 #align ne_zero.pos_of_ne_zero_coe NeZero.pos_of_neZero_natCast
 
 end NeZero
+
+theorem one_add_one_eq_two [AddMonoidWithOne α] : 1 + 1 = (2 : α) := by
+  rw [←Nat.cast_one, ←Nat.cast_add]
+  apply congrArg
+  decide

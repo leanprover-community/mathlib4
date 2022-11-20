@@ -112,19 +112,6 @@ class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZe
 class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
 #align semiring Semiring
 
-section AddMonoidWithOne
-
-variable [AddMonoidWithOne α]
-
--- TODO: Move to `Data.Nat.Cast.Defs`?
-theorem one_add_one_eq_two : 1 + 1 = (2 : α) := by
-  rw [←Nat.cast_one, ←Nat.cast_add]
-  apply congrArg
-  decide
-#align one_add_one_eq_two one_add_one_eq_two
-
-end AddMonoidWithOne
-
 section DistribMulOneClass
 
 variable [Add α] [MulOneClass α]
@@ -156,15 +143,11 @@ theorem two_mul (n : α) : 2 * n = n + n :=
   (congrArg₂ _ one_add_one_eq_two.symm rfl).trans <| (right_distrib 1 1 n).trans (by rw [one_mul])
 #align two_mul two_mul
 
-section deprecated
-set_option linter.deprecated false
-
 -- Porting note: was [has_add α] [mul_one_class α] [right_distrib_class α]
+set_option linter.deprecated false in
 theorem bit0_eq_two_mul (n : α) : bit0 n = 2 * n :=
   (two_mul _).symm
 #align bit0_eq_two_mul bit0_eq_two_mul
-
-end deprecated
 
 -- Porting note: was [has_add α] [mul_one_class α] [left_distrib_class α]
 theorem mul_two (n : α) : n * 2 = n + n :=
