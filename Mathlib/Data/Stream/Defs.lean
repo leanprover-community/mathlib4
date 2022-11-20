@@ -5,7 +5,7 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
 /-!
-# Definition of `Stream` and functions on streams
+# Definition of `Stream'` and functions on streams
 
 A stream `Stream' α` is an infinite sequence of elements of `α`. One can also think about it as an
 infinite list. In this file we define `Stream'` and some functions that take and/or return streams.
@@ -16,7 +16,7 @@ Note that we already have `Stream` to represent a similar object, hence the awkw
 local notation "ℕ"=> Nat
 
 universe u v w
-/-- A stream `Stream α` is an infinite sequence of elements of `α`. -/
+/-- A stream `Stream' α` is an infinite sequence of elements of `α`. -/
 def Stream' (α : Type u) := ℕ → α
 #align stream Stream'
 
@@ -69,7 +69,8 @@ def map (f : α → β) (s : Stream' α) : Stream' β := fun n => f (nth s n)
 
 /-- Zip two streams using a binary operation:
 `Stream'.nth n (Stream'.zip f s₁ s₂) = f (Stream'.nth s₁) (Stream'.nth s₂)`. -/
-def zip (f : α → β → δ) (s₁ : Stream' α) (s₂ : Stream' β) : Stream' δ := fun n => f (nth s₁ n) (nth s₂ n)
+def zip (f : α → β → δ) (s₁ : Stream' α) (s₂ : Stream' β) : Stream' δ :=
+  fun n => f (nth s₁ n) (nth s₂ n)
 #align stream.zip Stream'.zip
 
 /-- Enumerate a stream by tagging each element with its index. -/

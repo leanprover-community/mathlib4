@@ -65,6 +65,7 @@ import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Quot
 import Mathlib.Data.Sigma.Basic
+import Mathlib.Data.Stream.Defs
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
