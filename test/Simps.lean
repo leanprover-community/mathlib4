@@ -2,7 +2,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
-import Mathlib.Data.Equiv.Basic
+import Mathlib.Logic.Equiv.Defs
 import Mathlib.Data.Prod.Basic
 
 -- set_option trace.simps.debug true
@@ -34,7 +34,7 @@ run_cmd liftTermElabM <| do
 structure Foo2 (α : Type _) : Type _ where
   elim : α × α
 
-def Foo2.simps.elim (α : Type _) : Foo2 α → α × α := fun x => (x.elim.1, x.elim.2)
+def Foo2.Simps.elim (α : Type _) : Foo2 α → α × α := fun x => (x.elim.1, x.elim.2)
 
 initialize_simps_projections Foo2
 
@@ -70,7 +70,7 @@ initialize_simps_projections Top
 
 structure NewTop (α β : Type _) extends Right α β, Left α
 
-def NewTop.simps.newElim {α β : Type _} (x : NewTop α β) : α × α := x.elim
+def NewTop.Simps.newElim {α β : Type _} (x : NewTop α β) : α × α := x.elim
 
 initialize_simps_projections NewTop (toRight_toFoo2_elim → newElim)
 
@@ -578,7 +578,7 @@ instance : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
 /-- See Note [custom simps projection] -/
-def Equiv.simps.invFun (e : α ≃ β) : β → α := e.symm
+def Equiv.Simps.invFun (e : α ≃ β) : β → α := e.symm
 
 /-- Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. -/
 @[simps (config := {simpRhs := true})]
@@ -602,7 +602,7 @@ local infix:25 (priority := high) " ≃ " => FaultyManualCoercion.Equiv
 variable {α β γ : Sort _}
 
 /-- See Note [custom simps projection] -/
-noncomputable def Equiv.simps.invFun (e : α ≃ β) : β → α := Classical.choice ⟨e.invFun⟩
+noncomputable def Equiv.Simps.invFun (e : α ≃ β) : β → α := Classical.choice ⟨e.invFun⟩
 
 run_cmd liftTermElabM <| do
   successIfFail (simpsGetRawProjections `FaultyManualCoercion.Equiv)
@@ -628,7 +628,7 @@ instance : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
 /-- See Note [custom simps projection] -/
-def Equiv.simps.invFun (e : α ≃ β) : β → α := e.symm
+def Equiv.Simps.invFun (e : α ≃ β) : β → α := e.symm
 
 initialize_simps_projections Equiv
 
@@ -660,7 +660,7 @@ instance : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
 /-- See Note [custom simps projection] -/
-def Equiv.simps.invFun {α : Type u} {β : Type v} (e : α ≃ β) : β → α := e.symm
+def Equiv.Simps.invFun {α : Type u} {β : Type v} (e : α ≃ β) : β → α := e.symm
 
 run_cmd liftTermElabM <| do
   successIfFail (simpsGetRawProjections `FaultyUniverses.Equiv)
@@ -690,7 +690,7 @@ def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
 /-- See Note [custom simps projection] -/
 -- test: intentionally using different unvierse levels for Equiv.symm than for Equiv
-def Equiv.simps.invFun {α : Sort w} {β : Sort u} (e : α ≃ β) : β → α := e.symm
+def Equiv.Simps.invFun {α : Sort w} {β : Sort u} (e : α ≃ β) : β → α := e.symm
 
 -- check whether we can generate custom projections even if the universe names don't match
 initialize_simps_projections Equiv
@@ -712,7 +712,7 @@ instance : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
 /-- See Note [custom simps projection] -/
-def Equiv.simps.symm_apply (e : α ≃ β) : β → α := e.symm
+def Equiv.Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 
 initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
 
@@ -752,7 +752,7 @@ instance : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
 /-- See Note [custom simps projection] -/
-def Equiv.simps.symm_apply (e : α ≃ β) : β → α := e.symm
+def Equiv.Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 initialize_simps_projections Equiv (toFun → coe as_prefix, invFun → symm_apply)
 
 run_cmd liftTermElabM <| do
@@ -999,8 +999,8 @@ def DecoratedEquiv.symm {α β : Sort _} (e : DecoratedEquiv α β) : DecoratedE
   P_toFun := e.P_invFun
   P_invFun := e.P_toFun }
 
-def DecoratedEquiv.simps.apply {α β : Sort _} (e : DecoratedEquiv α β) : α → β := e
-def DecoratedEquiv.simps.symm_apply {α β : Sort _} (e : DecoratedEquiv α β) : β → α := e.symm
+def DecoratedEquiv.Simps.apply {α β : Sort _} (e : DecoratedEquiv α β) : α → β := e
+def DecoratedEquiv.Simps.symm_apply {α β : Sort _} (e : DecoratedEquiv α β) : β → α := e.symm
 
 initialize_simps_projections DecoratedEquiv
   (toEquiv'_toFun → apply, toEquiv'_invFun → symm_apply, -toEquiv')
@@ -1052,8 +1052,8 @@ def FurtherDecoratedEquiv.symm {α β : Sort _} (e : FurtherDecoratedEquiv α β
   Q_toFun := e.Q_invFun
   Q_invFun := e.Q_toFun }
 
-def FurtherDecoratedEquiv.simps.apply {α β : Sort _} (e : FurtherDecoratedEquiv α β) : α → β := e
-def FurtherDecoratedEquiv.simps.symm_apply {α β : Sort _} (e : FurtherDecoratedEquiv α β) :
+def FurtherDecoratedEquiv.Simps.apply {α β : Sort _} (e : FurtherDecoratedEquiv α β) : α → β := e
+def FurtherDecoratedEquiv.Simps.symm_apply {α β : Sort _} (e : FurtherDecoratedEquiv α β) :
   β → α := e.symm
 
 initialize_simps_projections FurtherDecoratedEquiv
@@ -1091,8 +1091,8 @@ def OneMore.symm {α β : Sort _} (e : OneMore α β) :
   OneMore β α :=
 { toFurtherDecoratedEquiv := e.toFurtherDecoratedEquiv.symm }
 
-def OneMore.simps.apply {α β : Sort _} (e : OneMore α β) : α → β := e
-def OneMore.simps.symm_apply {α β : Sort _} (e : OneMore α β) : β → α := e.symm
+def OneMore.Simps.apply {α β : Sort _} (e : OneMore α β) : α → β := e
+def OneMore.Simps.symm_apply {α β : Sort _} (e : OneMore α β) : β → α := e.symm
 
 initialize_simps_projections OneMore
   (toFurtherDecoratedEquiv_toDecoratedEquiv_toEquiv'_toFun → apply,
@@ -1137,7 +1137,7 @@ instance (M N : Type _) [AddMonoid M] [AddMonoid N] : CoeFun (M →+ N) (λ _ =>
 class AddHomPlus [Add ι] [∀ i, AddCommMonoid (A i)] :=
 (mul {i} : A i →+ A i)
 
-def AddHomPlus.simps.apply [Add ι] [∀ i, AddCommMonoid (A i)] [AddHomPlus A] {i : ι} (x : A i) :
+def AddHomPlus.Simps.apply [Add ι] [∀ i, AddCommMonoid (A i)] [AddHomPlus A] {i : ι} (x : A i) :
   A i :=
 AddHomPlus.mul x
 
@@ -1146,7 +1146,7 @@ initialize_simps_projections AddHomPlus (mul_toZeroHom_toFun → apply, -mul)
 class AddHomPlus2 [Add ι] :=
 (mul {i j} : A i ≃ (A j ≃ A (i + j)))
 
-def AddHomPlus2.simps.mul [Add ι] [AddHomPlus2 A] {i j : ι}
+def AddHomPlus2.Simps.mul [Add ι] [AddHomPlus2 A] {i j : ι}
   (x : A i) (y : A j) : A (i + j) :=
 AddHomPlus2.mul x y
 

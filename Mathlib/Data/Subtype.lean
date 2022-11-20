@@ -28,10 +28,6 @@ namespace Subtype
 
 variable {α β γ : Sort _} {p q : α → Prop}
 
-/-- See Note [custom simps projection] -/
-def Simps.coe (x : Subtype p) : α :=
-  x
-
 initialize_simps_projections Subtype (val → coe)
 
 /-- A version of `x.property` or `x.2` where `p` is syntactically applied to the coercion of `x`
