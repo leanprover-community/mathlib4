@@ -8,14 +8,6 @@ import Lean.Parser.Term
 import Lean.Meta.Structure
 import Lean.Elab.App
 import Lean.Elab.Binders
-
-namespace Lean.Elab.Term.StructInstWithHoles --!!
-
-open Meta
-open TSyntax.Compat
-
---!! All instances of "missing" used to be "default", except in function names
---!! `allDefault` was changed to `allMissing`.
 /-!
   # Structure Instances With (Variadic) Holes
 
@@ -277,6 +269,13 @@ open TSyntax.Compat
   * What about the linting style?
 
 -/
+namespace Lean.Elab.Term.StructInstWithHoles --!!
+
+open Meta
+open TSyntax.Compat
+
+--!! All instances of "missing" used to be "default", except in function names
+--!! `allDefault` was changed to `allMissing`.
 
 --!!/ We use parsers in anticipation of this possibly being merged into core.
 /--
