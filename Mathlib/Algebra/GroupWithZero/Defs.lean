@@ -65,8 +65,13 @@ class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M�
 and right absorbing. -/
 class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulZeroOneClass M₀, SemigroupWithZero M₀
 
-export MulZeroClass (zero_mul mul_zero)
-attribute [simp] zero_mul mul_zero
+/-- A type `M` is a `CancelMonoidWithZero` if it is a monoid with zero element, `0` is left
+and right absorbing, and left/right multiplication by a non-zero element is injective. -/
+class CancelMonoidWithZero (M₀ : Type _) extends MonoidWithZero M₀ where
+  /-- Left multiplication by a non-zero element is injective. -/
+  protected mul_left_cancel_of_ne_zero : ∀ {a b c : M₀}, a ≠ 0 → a * b = a * c → b = c
+  /-- Right multiplication by a non-zero element is injective. -/
+  protected mul_right_cancel_of_ne_zero : ∀ {a b c : M₀}, b ≠ 0 → a * b = c * b → a = c
 
 section CancelMonoidWithZero
 
@@ -117,32 +122,6 @@ if it is a commutative monoid with zero element (distinct from `1`)
 such that every nonzero element is invertible.
 The type is required to come with an “inverse” function, and the inverse of `0` must be `0`. -/
 class CommGroupWithZero (G₀ : Type _) extends CommMonoidWithZero G₀, GroupWithZero G₀
-
-/-- A type `M` is a `CancelMonoidWithZero` if it is a monoid with zero element, `0` is left
-and right absorbing, and left/right multiplication by a non-zero element is injective. -/
-class CancelMonoidWithZero (M₀ : Type u) extends MonoidWithZero M₀ where
-  /-- Left multiplication by a non-zero element is injective. -/
-  protected mul_left_cancel_of_ne_zero : ∀ {a b c : M₀}, a ≠ 0 → a * b = a * c → b = c
-  /-- Right multiplication by a non-zero element is injective. -/
-  protected mul_right_cancel_of_ne_zero : ∀ {a b c : M₀}, b ≠ 0 → a * b = c * b → a = c
-
-section CancelMonoidWithZero
-
-variable [CancelMonoidWithZero M₀] {a b c : M₀}
-
-lemma mul_left_cancel₀ (ha : a ≠ 0) (h : a * b = a * c) : b = c :=
-CancelMonoidWithZero.mul_left_cancel_of_ne_zero ha h
-
-lemma mul_right_cancel₀ (hb : b ≠ 0) (h : a * b = c * b) : a = c :=
-CancelMonoidWithZero.mul_right_cancel_of_ne_zero hb h
-
-lemma mul_right_injective₀ (ha : a ≠ 0) : Function.Injective (a * ·) :=
-λ _ _ => mul_left_cancel₀ ha
-
-lemma mul_left_injective₀ (hb : b ≠ 0) : Function.Injective (· * b) :=
-λ _ _ => mul_right_cancel₀ hb
-
-end CancelMonoidWithZero
 
 section NeZero
 
