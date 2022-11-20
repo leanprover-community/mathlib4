@@ -17,30 +17,29 @@ with `1`.
 
 ## Main definition
 
-`char_zero` is the typeclass of an additive monoid with one such that the natural homomorphism
+`CharZero` is the typeclass of an additive monoid with one such that the natural homomorphism
 from the natural numbers into it is injective.
 
 ## TODO
 
-* Unify with `char_p` (possibly using an out-parameter)
+* Unify with `CharP` (possibly using an out-parameter)
 -/
-
-set_option autoImplicit false
 
 /-- Typeclass for monoids with characteristic zero.
   (This is usually stated on fields but it makes sense for any additive monoid with 1.)
-*Warning*: for a semiring `R`, `char_zero R` and `char_p R 0` need not coincide.
-* `char_zero R` requires an injection `ℕ ↪ R`;
-* `char_p R 0` asks that only `0 : ℕ` maps to `0 : R` under the map `ℕ → R`.
+*Warning*: for a semiring `R`, `CharZero R` and `CharP R 0` need not coincide.
+* `CharZero R` requires an injection `ℕ ↪ R`;
+* `CharP R 0` asks that only `0 : ℕ` maps to `0 : R` under the map `ℕ → R`.
 For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorbing), shows that
-`char_zero {0, 1}` does not hold and yet `char_p {0, 1} 0` does.
+`CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does.
 This example is formalized in `counterexamples/char_p_zero_ne_char_zero`.
  -/
 class CharZero (R : Type _) [AddMonoidWithOne R] : Prop where
   cast_injective : Function.Injective (Nat.cast : ℕ → R)
 #align char_zero CharZero
 
-theorem char_zero_of_inj_zero {R : Type _} [AddGroupWithOne R] (H : ∀ n : ℕ, (n : R) = 0 → n = 0) : CharZero R :=
+theorem charZero_of_inj_zero {R : Type _} [AddGroupWithOne R] (H : ∀ n : ℕ, (n : R) = 0 → n = 0) :
+    CharZero R :=
   ⟨@fun m n h => by
     induction' m with m ih generalizing n
     · rw [H n]
@@ -52,7 +51,7 @@ theorem char_zero_of_inj_zero {R : Type _} [AddGroupWithOne R] (H : ∀ n : ℕ,
 
     simp only [Nat.cast_succ, add_right_cancel_iff] at h
     rwa [ih]⟩
-#align char_zero_of_inj_zero char_zero_of_inj_zero
+#align char_zero_of_inj_zero charZero_of_inj_zero
 
 namespace Nat
 
@@ -76,7 +75,10 @@ theorem cast_ne_zero {n : ℕ} : (n : R) ≠ 0 ↔ n ≠ 0 :=
   not_congr cast_eq_zero
 #align nat.cast_ne_zero Nat.cast_ne_zero
 
-theorem cast_add_one_ne_zero (n : ℕ) : (n + 1 : R) ≠ 0 := by exact_mod_cast n.succ_ne_zero
+theorem cast_add_one_ne_zero (n : ℕ) : (n + 1 : R) ≠ 0 := by
+  -- porting note: old proof was `exact_mod_cast n.succ_ne_zero`
+  norm_cast
+  exact n.succ_ne_zero
 #align nat.cast_add_one_ne_zero Nat.cast_add_one_ne_zero
 
 @[simp, norm_cast]
@@ -92,8 +94,8 @@ end Nat
 
 namespace NeZero
 
-instance char_zero {M} {n : ℕ} [NeZero n] [AddMonoidWithOne M] [CharZero M] : NeZero (n : M) :=
+instance charZero {M} {n : ℕ} [NeZero n] [AddMonoidWithOne M] [CharZero M] : NeZero (n : M) :=
   ⟨Nat.cast_ne_zero.mpr out⟩
-#align ne_zero.char_zero NeZero.char_zero
+#align ne_zero.char_zero NeZero.charZero
 
 end NeZero
