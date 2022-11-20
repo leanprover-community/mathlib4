@@ -64,17 +64,20 @@ instance (priority := 100) Distrib.leftDistribClass (R : Type _) [Distrib R] : L
 #align distrib.left_distrib_class Distrib.leftDistribClass
 
 -- see Note [lower instance priority]
-instance (priority := 100) Distrib.rightDistribClass (R : Type _) [Distrib R] : RightDistribClass R :=
+instance (priority := 100) Distrib.rightDistribClass (R : Type _) [Distrib R] :
+    RightDistribClass R :=
   ⟨Distrib.right_distrib⟩
 #align distrib.right_distrib_class Distrib.rightDistribClass
 
-theorem left_distrib [Mul R] [Add R] [LeftDistribClass R] (a b c : R) : a * (b + c) = a * b + a * c :=
+theorem left_distrib [Mul R] [Add R] [LeftDistribClass R] (a b c : R) :
+    a * (b + c) = a * b + a * c :=
   LeftDistribClass.left_distrib a b c
 #align left_distrib left_distrib
 
 alias left_distrib ← mul_add
 
-theorem right_distrib [Mul R] [Add R] [RightDistribClass R] (a b c : R) : (a + b) * c = a * c + b * c :=
+theorem right_distrib [Mul R] [Add R] [RightDistribClass R] (a b c : R) :
+    (a + b) * c = a * c + b * c :=
   RightDistribClass.right_distrib a b c
 #align right_distrib right_distrib
 
@@ -98,7 +101,8 @@ class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, Semi
 #align non_unital_semiring NonUnitalSemiring
 
 /-- A unital but not-necessarily-associative semiring. -/
-class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α, AddCommMonoidWithOne α
+class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α,
+    AddCommMonoidWithOne α
 #align non_assoc_semiring NonAssocSemiring
 
 class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
@@ -121,16 +125,20 @@ section DistribMulOneClass
 
 variable [Add α] [MulOneClass α]
 
-theorem add_one_mul [RightDistribClass α] (a b : α) : (a + 1) * b = a * b + b := by rw [add_mul, one_mul]
+theorem add_one_mul [RightDistribClass α] (a b : α) : (a + 1) * b = a * b + b := by
+  rw [add_mul, one_mul]
 #align add_one_mul add_one_mul
 
-theorem mul_add_one [LeftDistribClass α] (a b : α) : a * (b + 1) = a * b + a := by rw [mul_add, mul_one]
+theorem mul_add_one [LeftDistribClass α] (a b : α) : a * (b + 1) = a * b + a := by
+  rw [mul_add, mul_one]
 #align mul_add_one mul_add_one
 
-theorem one_add_mul [RightDistribClass α] (a b : α) : (1 + a) * b = b + a * b := by rw [add_mul, one_mul]
+theorem one_add_mul [RightDistribClass α] (a b : α) : (1 + a) * b = b + a * b := by
+  rw [add_mul, one_mul]
 #align one_add_mul one_add_mul
 
-theorem mul_one_add [LeftDistribClass α] (a b : α) : a * (1 + b) = a + a * b := by rw [mul_add, mul_one]
+theorem mul_one_add [LeftDistribClass α] (a b : α) : a * (1 + b) = a + a * b := by
+  rw [mul_add, mul_one]
 #align mul_one_add mul_one_add
 
 -- Porting note: no OfNat α 2
@@ -192,8 +200,8 @@ theorem ite_mul_zero_right {α : Type _} [MulZeroClass α] (P : Prop) [Decidable
     ite P (a * b) 0 = a * ite P b 0 := by by_cases h : P <;> simp [h]
 #align ite_mul_zero_right ite_mul_zero_right
 
-theorem ite_and_mul_zero {α : Type _} [MulZeroClass α] (P Q : Prop) [Decidable P] [Decidable Q] (a b : α) :
-    ite (P ∧ Q) (a * b) 0 = ite P a 0 * ite Q b 0 := by
+theorem ite_and_mul_zero {α : Type _} [MulZeroClass α] (P Q : Prop) [Decidable P] [Decidable Q]
+    (a b : α) : ite (P ∧ Q) (a * b) 0 = ite P a 0 * ite Q b 0 := by
   simp only [← ite_and, ite_mul, mul_ite, mul_zero, zero_mul, and_comm]
 #align ite_and_mul_zero ite_and_mul_zero
 
@@ -212,12 +220,14 @@ class CommSemiring (R : Type u) extends Semiring R, CommMonoid R where
 #align comm_semiring CommSemiring
 
 -- see Note [lower instance priority]
-instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] : NonUnitalCommSemiring α :=
+instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] :
+    NonUnitalCommSemiring α :=
   { inferInstanceAs (CommMonoid α), inferInstanceAs (CommSemiring α) with }
 #align comm_semiring.to_non_unital_comm_semiring CommSemiring.toNonUnitalCommSemiring
 
 -- see Note [lower instance priority]
-instance (priority := 100) CommSemiring.toCommMonoidWithZero [CommSemiring α] : CommMonoidWithZero α :=
+instance (priority := 100) CommSemiring.toCommMonoidWithZero [CommSemiring α] :
+    CommMonoidWithZero α :=
   { inferInstanceAs (CommMonoid α), inferInstanceAs (CommSemiring α) with }
 #align comm_semiring.to_comm_monoid_with_zero CommSemiring.toCommMonoidWithZero
 
@@ -249,23 +259,11 @@ section Mul
 
 variable [Mul α] [HasDistribNeg α]
 
-/- warning: neg_mul -> neg_mul is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} [_inst_1 : Mul.{u} α] [_inst_2 : HasDistribNeg.{u} α _inst_1] (a : α) (b : α), Eq.{succ u} α (HMul.hMul.{u u u} α α α (instHMul.{u} α _inst_1) (Neg.neg.{u} α (HasInvolutiveNeg.toHasNeg.{u} α (HasDistribNeg.toHasInvolutiveNeg.{u} α _inst_1 _inst_2)) a) b) (Neg.neg.{u} α (HasInvolutiveNeg.toHasNeg.{u} α (HasDistribNeg.toHasInvolutiveNeg.{u} α _inst_1 _inst_2)) (HMul.hMul.{u u u} α α α (instHMul.{u} α _inst_1) a b))
-but is expected to have type
-  forall {R : Type.{u_1}} [inst._@.Mathlib.Algebra.Ring.Basic._hyg.646 : Ring.{u_1} R] (a : R) (b : R), Eq.{succ u_1} R (HMul.hMul.{u_1 u_1 u_1} R R R (instHMul.{u_1} R (NonUnitalNonAssocSemiring.toMul.{u_1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} R (Semiring.toNonAssocSemiring.{u_1} R (Ring.toSemiring.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.646))))) (Neg.neg.{u_1} R (Ring.toNeg.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.646) a) b) (Neg.neg.{u_1} R (Ring.toNeg.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.646) (HMul.hMul.{u_1 u_1 u_1} R R R (instHMul.{u_1} R (NonUnitalNonAssocSemiring.toMul.{u_1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} R (Semiring.toNonAssocSemiring.{u_1} R (Ring.toSemiring.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.646))))) a b))
-Case conversion may be inaccurate. Consider using '#align neg_mul neg_mulₓ'. -/
 @[simp]
 theorem neg_mul (a b : α) : -a * b = -(a * b) :=
   HasDistribNeg.neg_mul _ _
 #align neg_mul neg_mul
 
-/- warning: mul_neg -> mul_neg is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} [_inst_1 : Mul.{u} α] [_inst_2 : HasDistribNeg.{u} α _inst_1] (a : α) (b : α), Eq.{succ u} α (HMul.hMul.{u u u} α α α (instHMul.{u} α _inst_1) a (Neg.neg.{u} α (HasInvolutiveNeg.toHasNeg.{u} α (HasDistribNeg.toHasInvolutiveNeg.{u} α _inst_1 _inst_2)) b)) (Neg.neg.{u} α (HasInvolutiveNeg.toHasNeg.{u} α (HasDistribNeg.toHasInvolutiveNeg.{u} α _inst_1 _inst_2)) (HMul.hMul.{u u u} α α α (instHMul.{u} α _inst_1) a b))
-but is expected to have type
-  forall {R : Type.{u_1}} [inst._@.Mathlib.Algebra.Ring.Basic._hyg.704 : Ring.{u_1} R] (a : R) (b : R), Eq.{succ u_1} R (HMul.hMul.{u_1 u_1 u_1} R R R (instHMul.{u_1} R (NonUnitalNonAssocSemiring.toMul.{u_1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} R (Semiring.toNonAssocSemiring.{u_1} R (Ring.toSemiring.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.704))))) a (Neg.neg.{u_1} R (Ring.toNeg.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.704) b)) (Neg.neg.{u_1} R (Ring.toNeg.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.704) (HMul.hMul.{u_1 u_1 u_1} R R R (instHMul.{u_1} R (NonUnitalNonAssocSemiring.toMul.{u_1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} R (Semiring.toNonAssocSemiring.{u_1} R (Ring.toSemiring.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.704))))) a b))
-Case conversion may be inaccurate. Consider using '#align mul_neg mul_negₓ'. -/
 @[simp]
 theorem mul_neg (a b : α) : a * -b = -(a * b) :=
   HasDistribNeg.mul_neg _ _
@@ -274,12 +272,6 @@ theorem mul_neg (a b : α) : a * -b = -(a * b) :=
 theorem neg_mul_neg (a b : α) : -a * -b = a * b := by simp
 #align neg_mul_neg neg_mul_neg
 
-/- warning: neg_mul_eq_neg_mul -> neg_mul_eq_neg_mul is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} [_inst_1 : Mul.{u} α] [_inst_2 : HasDistribNeg.{u} α _inst_1] (a : α) (b : α), Eq.{succ u} α (Neg.neg.{u} α (HasInvolutiveNeg.toHasNeg.{u} α (HasDistribNeg.toHasInvolutiveNeg.{u} α _inst_1 _inst_2)) (HMul.hMul.{u u u} α α α (instHMul.{u} α _inst_1) a b)) (HMul.hMul.{u u u} α α α (instHMul.{u} α _inst_1) (Neg.neg.{u} α (HasInvolutiveNeg.toHasNeg.{u} α (HasDistribNeg.toHasInvolutiveNeg.{u} α _inst_1 _inst_2)) a) b)
-but is expected to have type
-  forall {R : Type.{u_1}} [inst._@.Mathlib.Algebra.Ring.Basic._hyg.758 : Ring.{u_1} R] (a : R) (b : R), Eq.{succ u_1} R (Neg.neg.{u_1} R (Ring.toNeg.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.758) (HMul.hMul.{u_1 u_1 u_1} R R R (instHMul.{u_1} R (NonUnitalNonAssocSemiring.toMul.{u_1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} R (Semiring.toNonAssocSemiring.{u_1} R (Ring.toSemiring.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.758))))) a b)) (HMul.hMul.{u_1 u_1 u_1} R R R (instHMul.{u_1} R (NonUnitalNonAssocSemiring.toMul.{u_1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} R (Semiring.toNonAssocSemiring.{u_1} R (Ring.toSemiring.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.758))))) (Neg.neg.{u_1} R (Ring.toNeg.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.758) a) b)
-Case conversion may be inaccurate. Consider using '#align neg_mul_eq_neg_mul neg_mul_eq_neg_mulₓ'. -/
 theorem neg_mul_eq_neg_mul (a b : α) : -(a * b) = -a * b :=
   (neg_mul _ _).symm
 #align neg_mul_eq_neg_mul neg_mul_eq_neg_mul
@@ -338,7 +330,8 @@ class NonUnitalRing (α : Type _) extends NonUnitalNonAssocRing α, NonUnitalSem
 #align non_unital_ring NonUnitalRing
 
 /-- A unital but not-necessarily-associative ring. -/
-class NonAssocRing (α : Type _) extends NonUnitalNonAssocRing α, NonAssocSemiring α, AddGroupWithOne α
+class NonAssocRing (α : Type _) extends NonUnitalNonAssocRing α, NonAssocSemiring α,
+    AddGroupWithOne α
 #align non_assoc_ring NonAssocRing
 
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
@@ -361,7 +354,8 @@ theorem mul_sub_left_distrib (a b c : α) : a * (b - c) = a * b - a * c := by
 
 alias mul_sub_left_distrib ← mul_sub
 
-theorem mul_sub_right_distrib [NonUnitalNonAssocRing R] (a b c : R) : (a - b) * c = a * c - b * c := by
+theorem mul_sub_right_distrib [NonUnitalNonAssocRing R] (a b c : R) :
+    (a - b) * c = a * c - b * c := by
   simpa only [sub_eq_add_neg, neg_mul_eq_neg_mul] using add_mul a (-b) c
 #align mul_sub_right_distrib mul_sub_right_distrib
 
