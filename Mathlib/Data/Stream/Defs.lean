@@ -5,19 +5,19 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
 /-!
-# Definition of `stream` and functions on streams
+# Definition of `Stream` and functions on streams
 
-A stream `stream α` is an infinite sequence of elements of `α`. One can also think about it as an
-infinite list. In this file we define `stream` and some functions that take and/or return streams.
+A stream `Stream' α` is an infinite sequence of elements of `α`. One can also think about it as an
+infinite list. In this file we define `Stream'` and some functions that take and/or return streams.
+Note that we already have `Stream` to represent a similar object, hence the awkward naming.
+
 -/
-
 
 local notation "ℕ"=> Nat
 
 universe u v w
-/-- A stream `stream α` is an infinite sequence of elements of `α`. -/
-def Stream' (α : Type u) :=
-  ℕ → α
+/-- A stream `Stream α` is an infinite sequence of elements of `α`. -/
+def Stream' (α : Type u) := ℕ → α
 #align stream Stream'
 
 open Nat
@@ -35,12 +35,11 @@ def cons (a : α) (s : Stream' α) : Stream' α
 -- mathport name: stream.cons
 notation h "::" t => cons h t
 
-/-- Head of a stream: `stream.head s = stream.nth 0 s`. -/
-def head (s : Stream' α) : α :=
-  s 0
+/-- Head of a stream: `Stream'.head s = Stream'.nth s 0`. -/
+def head (s : Stream' α) : α := s 0
 #align stream.head Stream'.head
 
-/-- Tail of a stream: `stream.tail (h :: t) = t`. -/
+/-- Tail of a stream: `Stream'.tail (h :: t) = t`. -/
 def tail (s : Stream' α) : Stream' α := fun i => s (i + 1)
 #align stream.tail Stream'.tail
 
@@ -60,7 +59,7 @@ def All (p : α → Prop) (s : Stream' α) := ∀ n, p (nth s n)
 def Any (p : α → Prop) (s : Stream' α) := ∃ n, p (nth s n)
 #align stream.any Stream'.Any
 
-/-- `a ∈ s` means that `a = stream.nth n s` for some `n`. -/
+/-- `a ∈ s` means that `a = Stream'.nth n s` for some `n`. -/
 instance : Membership α (Stream' α) :=
   ⟨fun a s => Any (fun b => a = b) s⟩
 
@@ -69,7 +68,7 @@ def map (f : α → β) (s : Stream' α) : Stream' β := fun n => f (nth s n)
 #align stream.map Stream'.map
 
 /-- Zip two streams using a binary operation:
-`stream.nth n (stream.zip f s₁ s₂) = f (stream.nth s₁) (stream.nth s₂)`. -/
+`Stream'.nth n (Stream'.zip f s₁ s₂) = f (Stream'.nth s₁) (Stream'.nth s₂)`. -/
 def zip (f : α → β → δ) (s₁ : Stream' α) (s₂ : Stream' β) : Stream' δ := fun n => f (nth s₁ n) (nth s₂ n)
 #align stream.zip Stream'.zip
 
@@ -77,7 +76,7 @@ def zip (f : α → β → δ) (s₁ : Stream' α) (s₂ : Stream' β) : Stream'
 def enum (s : Stream' α) : Stream' (ℕ × α) := fun n => (n, s.nth n)
 #align stream.enum Stream'.enum
 
-/-- The constant stream: `stream.nth n (stream.const a) = a`. -/
+/-- The constant stream: `Stream'.nth n (Stream'.const a) = a`. -/
 def const (a : α) : Stream' α := fun _ => a
 #align stream.const Stream'.const
 
@@ -145,12 +144,12 @@ def take : ℕ → Stream' α → List α
   | n + 1, s => List.cons (head s) (take n (tail s))
 #align stream.take Stream'.take
 
-/-- An auxiliary definition for `stream.cycle` corecursive def -/
+/-- An auxiliary definition for `Stream'.cycle` corecursive def -/
 protected def cycleF : α × List α × α × List α → α
   | (v, _, _, _) => v
 #align stream.cycle_f Stream'.cycleF
 
-/-- An auxiliary definition for `stream.cycle` corecursive def -/
+/-- An auxiliary definition for `Stream'.cycle` corecursive def -/
 protected def cycleG : α × List α × α × List α → α × List α × α × List α
   | (_, [], v₀, l₀) => (v₀, l₀, v₀, l₀)
   | (_, List.cons v₂ l₂, v₀, l₀) => (v₂, l₂, v₀, l₀)
@@ -162,12 +161,12 @@ def cycle : ∀ l : List α, l ≠ [] → Stream' α
   | List.cons a l, _ => corec Stream'.cycleF Stream'.cycleG (a, l, a, l)
 #align stream.cycle Stream'.cycle
 
-/-- Tails of a stream, starting with `stream.tail s`. -/
+/-- Tails of a stream, starting with `Stream'.tail s`. -/
 def tails (s : Stream' α) : Stream' (Stream' α) :=
   corec id tail (tail s)
 #align stream.tails Stream'.tails
 
-/-- An auxiliary definition for `stream.inits`. -/
+/-- An auxiliary definition for `Stream'.inits`. -/
 def initsCore (l : List α) (s : Stream' α) : Stream' (List α) :=
   corecOn (l, s) (fun ⟨a, _⟩ => a) fun p =>
     match p with
@@ -179,7 +178,7 @@ def inits (s : Stream' α) : Stream' (List α) :=
   initsCore [head s] (tail s)
 #align stream.inits Stream'.inits
 
-/-- A constant stream, same as `stream.const`. -/
+/-- A constant stream, same as `Stream'.const`. -/
 def pure (a : α) : Stream' α :=
   const a
 #align stream.pure Stream'.pure
@@ -190,9 +189,9 @@ def apply (f : Stream' (α → β)) (s : Stream' α) : Stream' β := fun n => (n
 
 -- mathport name: «expr ⊛ »
 infixl:75 " ⊛ " => apply
+-- PORTING NOTE: "input as \o*" was here but doesn't work for the above notation
 
--- input as \o*
-/-- The stream of natural numbers: `stream.nth n stream.nats = n`. -/
+/-- The stream of natural numbers: `Stream'.nth n Stream'.nats = n`. -/
 def nats : Stream' Nat := fun n => n
 #align stream.nats Stream'.nats
 
