@@ -300,19 +300,19 @@ theorem sumCongr_apply {α β : Type _} (ea : Equiv.Perm α) (eb : Equiv.Perm β
   Equiv.sumCongr_apply ea eb x
 #align equiv.perm.sum_congr_apply Equiv.Perm.sumCongr_apply
 
+-- porting note: it seems the general theorem about `Equiv` is now applied, so there's no need
+-- to have this version also have `@[simp]`. Similarly for below.
 @[simp]
 theorem sumCongr_trans {α β : Sort _} (e : Equiv.Perm α) (f : Equiv.Perm β) (g : Equiv.Perm α)
     (h : Equiv.Perm β) : (sumCongr e f).trans (sumCongr g h) = sumCongr (e.trans g) (f.trans h) :=
   Equiv.sumCongr_trans e f g h
 #align equiv.perm.sum_congr_trans Equiv.Perm.sumCongr_trans
 
-@[simp]
 theorem sumCongr_symm {α β : Sort _} (e : Equiv.Perm α) (f : Equiv.Perm β) :
     (sumCongr e f).symm = sumCongr e.symm f.symm :=
   Equiv.sumCongr_symm e f
 #align equiv.perm.sum_congr_symm Equiv.Perm.sumCongr_symm
 
-@[simp]
 theorem sumCongr_refl {α β : Sort _} :
     sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (Sum α β) :=
   Equiv.sumCongr_refl
@@ -1349,7 +1349,6 @@ theorem subtypeEquivCodomain_symm_apply (f : { x' // x' ≠ x } → Y) (y : Y) (
   rfl
 #align equiv.subtype_equiv_codomain_symm_apply Equiv.subtypeEquivCodomain_symm_apply
 
-@[simp]
 theorem subtypeEquivCodomain_symm_apply_eq (f : { x' // x' ≠ x } → Y) (y : Y) :
     ((subtypeEquivCodomain f).symm y : X → Y) x = y :=
   dif_neg (not_not.mpr rfl)
@@ -1929,3 +1928,4 @@ theorem piCongrLeft''_symm_update [DecidableEq α] [DecidableEq β] (P : α → 
 #align function.Pi_congr_left'_symm_update Function.piCongrLeft'_symm_update
 
 end Function
+#lint
