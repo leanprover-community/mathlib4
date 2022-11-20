@@ -40,7 +40,7 @@ private def isBlackListed (declName : Name) : MetaM Bool := do
    || isNoConfusion env declName
   <||> isRec declName <||> isMatcher declName
 
-initialize librarySearchLemmas : DeclCache (DiscrTree Name) ←
+initialize librarySearchLemmas : DeclCache (DiscrTree Name true) ←
   DeclCache.mk "librarySearch: init cache" {} fun name constInfo lemmas => do
     if constInfo.isUnsafe then return lemmas
     if ← isBlackListed name then return lemmas
@@ -50,7 +50,7 @@ initialize librarySearchLemmas : DeclCache (DiscrTree Name) ←
       pure $ lemmas.insertCore keys name
 
 /-- Shortcut for calling `solveByElimImpl`. -/
-def solveByElim (g : MVarId) (depth) := solveByElimImpl false [] depth g
+def solveByElim (g : MVarId) (depth) := SolveByElim.solveByElimImpl false [] depth g
 
 /--
 Try to solve the goal either by:
@@ -68,7 +68,7 @@ unless the goal was completely solved.)
 (Note that if `solveByElim` solves some but not all subsidiary goals,
 this is not currently tracked.)
 -/
-def librarySearch (goal : MVarId) (lemmas : DiscrTree Name) (required : List Expr)
+def librarySearch (goal : MVarId) (lemmas : DiscrTree Name s) (required : List Expr)
     (solveByElimDepth := 6) : MetaM <| Option (Array <| MetavarContext × List MVarId) := do
   profileitM Exception "librarySearch" (← getOptions) do
   let ty ← goal.getType

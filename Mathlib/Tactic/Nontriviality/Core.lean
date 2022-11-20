@@ -12,17 +12,21 @@ import Mathlib.Tactic.SolveByElim
 namespace Mathlib.Tactic.Nontriviality
 open Lean Elab Meta Tactic Linter Std.Linter UnreachableTactic Qq
 
+/-- The `@[nontriviality]` simp set is used by the `nontriviality` tactic to automatically
+discharge theorems about the trivial case (where we know `Subsingleton α` and many theorems
+in e.g. groups are trivially true). -/
 register_simp_attr nontriviality
-
-def nontrivialityByAssumption (g : MVarId) : MetaM Unit := do
-  g.inferInstance <|> do
-    let lems ← [``nontrivial_of_ne, ``nontrivial_of_lt].mapM mkConstWithFreshMVarLevels
-    solveByElimImpl false lems 6 g
 
 theorem subsingleton_or_nontrivial_elim {p : Prop} {α : Type u}
     (h₁ : Subsingleton α → p) (h₂ : Nontrivial α → p) : p :=
   (subsingleton_or_nontrivial α).elim @h₁ @h₂
 
+/--
+Tries to generate a `Nontrivial α` instance by performing case analysis on
+`subsingleton_or_nontrivial α`,
+attempting to discharge the subsingleton branch using lemmas with `@[nontriviality]` attribute,
+including `Subsingleton.le` and `eq_iff_true_of_subsingleton`.
+-/
 def nontrivialityByElim (α : Q(Type u)) (g : MVarId) (simpArgs : Array Syntax) : MetaM MVarId := do
   let p : Q(Prop) ← g.getType
   guard (← inferType p).isProp
@@ -38,6 +42,14 @@ def nontrivialityByElim (α : Q(Type u)) (g : MVarId) (simpArgs : Array Syntax) 
   let g₂ : Q(Nontrivial $α → $p) ← mkFreshExprMVarQ q(Nontrivial $α → $p)
   g.assign q(@subsingleton_or_nontrivial_elim $p $α $g₁ $g₂)
   pure g₂.mvarId!
+
+/--
+Tries to generate a `nontrivial α` instance using `nontrivial_of_ne` or `nontrivial_of_lt`
+and local hypotheses.
+-/
+def nontrivialityByAssumption (g : MVarId) : MetaM Unit := do
+  g.inferInstance <|> do
+    SolveByElim.solveByElimImpl false [← `(nontrivial_of_ne), ← `(nontrivial_of_lt)] 6 g
 
 /-- Attempts to generate a `Nontrivial α` hypothesis.
 
@@ -84,6 +96,7 @@ example {α : Type} (a b : α) (h : a = b) : myeq a b := by
 syntax (name := nontriviality) "nontriviality" (ppSpace (colGt term))?
   (" using " Parser.Tactic.simpArg,+)? : tactic
 
+/-- Elaborator for the `nontriviality` tactic. -/
 @[tactic nontriviality] def elabNontriviality : Tactic := fun stx => do
     let g ← getMainGoal
     let α ← match stx[1].getOptional? with
