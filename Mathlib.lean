@@ -121,6 +121,7 @@ import Mathlib.Mathport.Rename
 import Mathlib.Mathport.Syntax
 import Mathlib.Order.Basic
 import Mathlib.Order.Compare
+import Mathlib.Order.GameAdd
 import Mathlib.Order.Max
 import Mathlib.Order.Monotone
 import Mathlib.Order.RelClasses
