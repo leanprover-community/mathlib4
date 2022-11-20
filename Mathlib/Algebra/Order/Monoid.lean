@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.CovariantAndContravariant
-import Mathlib.Algebra.Order.MonoidLemmas
+import Mathlib.Algebra.Order.Monoid.Lemmas
 
 /-!
 # Ordered monoids
