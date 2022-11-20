@@ -38,14 +38,13 @@ variable (α : Sort u)
     definitionally of the form `op X`, which greatly simplifies the
     definition of the structure of the opposite category, for example.
 
-  (If Lean supported definitional eta equality for records, we could
+  (Now that Lean 4 supports definitional eta equality for records, we could
   achieve the same goals using a structure with one field.)
 -/
 def Opposite : Sort u :=
   α
 #align opposite Opposite
 
--- mathport name: «expr ᵒᵖ»
 @[inherit_doc]
 notation:max -- Use a high right binding power (like that of postfix ⁻¹) so that, for example,
 -- `presheaf Cᵒᵖ` parses as `presheaf (Cᵒᵖ)` and not `(presheaf C)ᵒᵖ`.
@@ -56,11 +55,13 @@ namespace Opposite
 variable {α}
 
 /-- The canonical map `α → αᵒᵖ`. -/
+-- Porting note: pp_nodot has not been implemented.
 --@[pp_nodot]
 def op : α → αᵒᵖ :=
   id
 
 /-- The canonical map `αᵒᵖ → α`. -/
+-- Porting note: pp_nodot has not been implemented.
 --@[pp_nodot]
 def unop : αᵒᵖ → α :=
   id
@@ -114,46 +115,9 @@ theorem unop_eq_iff_eq_op {x} {y : α} : unop x = y ↔ x = op y :=
 instance [Inhabited α] : Inhabited αᵒᵖ :=
   ⟨op default⟩
 
-/-- A recursor for `Opposite`. Use as `induction x using opposite.rec`. -/
+/-- A recursor for `Opposite`. Use as `induction x using Opposite.rec`. -/
 @[simp]
 protected def rec {F : αᵒᵖ → Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
 
 end Opposite
 
-namespace Tactic
-
-open Opposite
-
-namespace OpInduction
-
-/- Test if `e : expr` is of type `opposite α` for some `α`.
-unsafe def is_opposite (e : expr) : tactic Bool := do
-  let t ← infer_type e
-  let q(Opposite _) ← whnf t |
-    return false
-  return tt
-#align tactic.op_induction.is_opposite tactic.op_induction.is_opposite -/
-
-/- Find the first hypothesis of type `opposite _`. Fail if no such hypothesis exist in the local
-context.
-unsafe def find_opposite_hyp : tactic Name := do
-  let lc ← local_context
-  let h :: _ ← lc.mfilter $ is_opposite |
-    fail "No hypotheses of the form Xᵒᵖ"
-  return h
-#align tactic.op_induction.find_opposite_hyp tactic.op_induction.find_opposite_hyp -/
-
-end OpInduction
-
-open OpInduction
-
-/- A version of `induction x using opposite.rec` which finds the appropriate hypothesis
-automatically, for use with `local attribute [tidy] op_induction'`. This is necessary because
-`induction x` is not able to deduce that `opposite.rec` should be used.
-unsafe def op_induction' : tactic Unit := do
-  let h ← find_opposite_hyp
-  let h' ← tactic.get_local h
-  tactic.induction' h' [] `opposite.rec
-#align tactic.op_induction' tactic.op_induction' -/
-
-end Tactic
