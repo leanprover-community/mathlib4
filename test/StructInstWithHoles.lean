@@ -12,9 +12,9 @@ example := by refine { ?.. : Bar }; case y => exact 0
 example := by refine { ?..a : Bar }; case a.y => exact 0
 example := by refine { ?..! : Bar }; case x | y | z => exact 0;
 example := by refine { ?..!a : Bar }; case a.x | a.y | a.z => exact 0;
-example := by refine' { ... : Bar }; exact 0
+-- example := by refine' { ... : Bar }; exact 0
 example := by refine' { .. : Bar };  exact 0; exact 0; exact 0
-example := by refine' { ..! : Bar }; exact 0; exact 0; exact 0
+-- example := by refine' { ..! : Bar }; exact 0; exact 0; exact 0
 
 structure rflFoo where
   x  : Nat
