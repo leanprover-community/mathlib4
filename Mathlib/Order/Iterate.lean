@@ -18,8 +18,6 @@ a circle homeomorphism.
 -/
 
 
-variable {α β : Type _}
-
 open Function
 
 namespace Monotone
@@ -195,7 +193,6 @@ theorem iterate_pos_lt_iff_map_lt (h : Commute f g) (hf : Monotone f) (hg : Stri
   · simp only [*, iterate_pos_lt_of_map_lt]
   · simp only [*, h.iterate_eq_of_map_eq, lt_irrefl]
   · simp only [lt_asymm H, lt_asymm (h.symm.iterate_pos_lt_of_map_lt' hg hf H hn)]
-
 #align function.commute.iterate_pos_lt_iff_map_lt Function.Commute.iterate_pos_lt_iff_map_lt
 
 theorem iterate_pos_lt_iff_map_lt' (h : Commute f g) (hf : StrictMono f) (hg : Monotone g) {x n}
