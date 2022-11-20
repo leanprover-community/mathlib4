@@ -34,13 +34,13 @@ For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorb
 `CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does.
 This example is formalized in `counterexamples/char_p_zero_ne_char_zero`.
  -/
-class CharZero (R : Type _) [AddMonoidWithOne R] : Prop where
+class CharZero (R) [AddMonoidWithOne R] : Prop where
   /-- An additive monoid with one has charateristic zero if the canonical map `ℕ → R` is
   injective. -/
   cast_injective : Function.Injective (Nat.cast : ℕ → R)
 #align char_zero CharZero
 
-theorem charZero_of_inj_zero {R : Type _} [AddGroupWithOne R] (H : ∀ n : ℕ, (n : R) = 0 → n = 0) :
+theorem charZero_of_inj_zero [AddGroupWithOne R] (H : ∀ n : ℕ, (n : R) = 0 → n = 0) :
     CharZero R :=
   ⟨@fun m n h => by
     induction' m with m ih generalizing n
@@ -57,7 +57,7 @@ theorem charZero_of_inj_zero {R : Type _} [AddGroupWithOne R] (H : ∀ n : ℕ, 
 
 namespace Nat
 
-variable {R : Type _} [AddMonoidWithOne R] [CharZero R]
+variable [AddMonoidWithOne R] [CharZero R]
 
 theorem cast_injective : Function.Injective (Nat.cast : ℕ → R) :=
   CharZero.cast_injective
