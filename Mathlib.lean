@@ -11,6 +11,7 @@ import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.HierarchyDesign
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.Group
