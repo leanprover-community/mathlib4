@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Gabriel Ebner
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.NeZero
 import Mathlib.Tactic.SplitIfs
+
 /-!
 # Cast of natural numbers
 
@@ -21,9 +22,6 @@ Preferentially, the homomorphism is written as the coercion `Nat.cast`.
 * `AddMonoidWithOne`: Type class for which `Nat.cast` is a canonical monoid homomorphism from `ℕ`.
 * `Nat.cast`: Canonical homomorphism `ℕ → R`.
 -/
-
-
-universe u
 
 /-- The numeral `((0+1)+⋯)+1`. -/
 protected def Nat.unaryCast {R : Type u} [One R] [Zero R] [Add R] : ℕ → R
@@ -50,7 +48,6 @@ instance [NatCast R] : CoeTail ℕ R where coe := Nat.cast
 
 -- see note [coercion into rings]
 instance [NatCast R] : CoeHTCT ℕ R where coe := Nat.cast
-
 
 -- the following four declarations are not in mathlib3 and are relevant to the way numeric
 -- literals are handled in Lean 4.
@@ -96,35 +93,24 @@ class AddCommMonoidWithOne (R : Type _) extends AddMonoidWithOne R, AddCommMonoi
 #align add_comm_monoid_with_one.to_add_monoid_with_one AddCommMonoidWithOne.toAddMonoidWithOne
 #align add_comm_monoid_with_one.to_add_comm_monoid AddCommMonoidWithOne.toAddCommMonoid
 
-section
-
-variable {R : Type _} [AddMonoidWithOne R]
-
 library_note "coercion into rings"
-/-- Coercions such as `Nat.castCoe` that go from a concrete structure such as
+/--
+Coercions such as `Nat.castCoe` that go from a concrete structure such as
 `ℕ` to an arbitrary ring `R` should be set up as follows:
 ```lean
-@[priority 900] instance : CoeTC ℕ R := ⟨...⟩
+instance : CoeTail ℕ R where coe := ...
+instance : CoeHTCT ℕ R where coe := ...
 ```
 
-It needs to be `CoeTC` instead of `Coe` because otherwise type-class
+It needs to be `CoeTail` instead of `Coe` because otherwise type-class
 inference would loop when constructing the transitive coercion `ℕ → ℕ → ℕ → ...`.
-The reduced priority is necessary so that it doesn't conflict with instances
-such as `CoeTC R (option R)`.
-
-For this to work, we reduce the priority of the `coeBase` and `coeTrans`
-instances because we want the instances for `CoeTC` to be tried in the
-following order:
-
- 1. `CoeTC` instances declared in mathlib (such as `CoeTC R (withTop R)`, etc.)
- 2. `coeBase`, which contains instances such as `Coe (fin n) n`
- 3. `Nat.castCoe : CoeTC ℕ R` etc.
- 4. `coeTrans`
-
-If `coeTrans` is tried first, then `Nat.castCoe` doesn't get a chance to apply.
+Sometimes we also need to declare the `CoeHTCT` instance
+if we need to shadow another coercion
+(e.g. `Nat.cast` should be used over `Int.ofNat`).
 -/
 
 namespace Nat
+variable [AddMonoidWithOne R]
 
 @[simp, norm_cast]
 theorem cast_zero : ((0 : ℕ) : R) = 0 :=
@@ -151,11 +137,7 @@ theorem cast_ite (P : Prop) [Decidable P] (m n : ℕ) :
 
 end Nat
 
-end
-
 namespace Nat
-
-variable {R : Type _}
 
 @[simp, norm_cast]
 theorem cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by

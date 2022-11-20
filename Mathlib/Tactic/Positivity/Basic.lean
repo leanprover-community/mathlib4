@@ -175,7 +175,7 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
       pure (.nonnegative (q(pow_nonneg $pa' $b) : Expr))
     let ofNonzero pa (oα : Q(OrderedSemiring $α)) : MetaM (Strictness zα pα e) := do
       have pa' : Q(by clear! «$zα» «$pα»; exact $a ≠ 0) := pa
-      let _a ← synthInstanceQ (q(NoZeroDivisors $α) : Q(Prop))
+      let _a ← synthInstanceQ (q(by clear! «$zα» «$pα»; exact NoZeroDivisors $α) : Q(Prop))
       pure (.nonzero (q(pow_ne_zero $b $pa') : Expr))
     match ra with
     | .positive pa =>

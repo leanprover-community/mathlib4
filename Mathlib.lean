@@ -10,6 +10,7 @@ import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.Group
 import Mathlib.Algebra.Order.Monoid
@@ -54,6 +55,7 @@ import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Num.Basic
+import Mathlib.Data.Opposite
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.PNat.Defs
