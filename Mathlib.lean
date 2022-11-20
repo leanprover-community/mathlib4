@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Abs
+import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
@@ -14,13 +15,14 @@ import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.Group
 import Mathlib.Algebra.Order.Monoid
-import Mathlib.Algebra.Order.MonoidLemmas
+import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Algebra.Order.Ring
 import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.Control.Random
+import Mathlib.Control.ULift
 import Mathlib.Control.Writer
 import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs

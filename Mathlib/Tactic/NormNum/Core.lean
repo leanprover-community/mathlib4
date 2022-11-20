@@ -43,20 +43,8 @@ of typeclass arguments required in each use of a number literal at type `α`.
 -/
 @[simp] def _root_.Nat.rawCast [AddMonoidWithOne α] (n : ℕ) : α := n
 
-/-- Asserting that the `OfNat α n` instance provides the same value as the coercion. -/
-class LawfulOfNat (α) [AddMonoidWithOne α] (n) [OfNat α n] : Prop where
-  /-- Assert `n = (OfNat.ofNat n α)`, with the parametrising instance. -/
-  eq_ofNat : n = (@OfNat.ofNat _ n ‹_› : α)
-
-instance (α) [AddMonoidWithOne α] [Nat.AtLeastTwo n] : LawfulOfNat α n := ⟨rfl⟩
-instance (α) [AddMonoidWithOne α] : LawfulOfNat α (nat_lit 0) := ⟨Nat.cast_zero⟩
-instance (α) [AddMonoidWithOne α] : LawfulOfNat α (nat_lit 1) := ⟨Nat.cast_one⟩
-instance : LawfulOfNat ℕ n := ⟨show n = Nat.cast n by simp⟩
-instance : LawfulOfNat ℤ n := ⟨show Int.ofNat n = Nat.cast n by simp⟩
-
-theorem IsNat.to_eq [AddMonoidWithOne α] (n) [OfNat α n] [LawfulOfNat α n] :
-    (a : α) → IsNat a n → a = OfNat.ofNat n
-  | _, ⟨rfl⟩ => LawfulOfNat.eq_ofNat
+theorem IsNat.to_eq [AddMonoidWithOne α] {n} : {a a' : α} → IsNat a n → n = a' → a = a'
+  | _, _, ⟨rfl⟩, rfl => rfl
 
 theorem IsNat.to_raw_eq [AddMonoidWithOne α] : IsNat (a : α) n → a = n.rawCast
   | ⟨e⟩ => e
@@ -91,12 +79,12 @@ theorem IsInt.to_raw_eq [Ring α] : IsInt (a : α) n → a = n.rawCast
 
 theorem IsInt.of_raw (α) [Ring α] (n : ℤ) : IsInt (n.rawCast : α) n := ⟨rfl⟩
 
-theorem IsInt.neg_to_eq {α} [Ring α] (n) [OfNat α n] [LawfulOfNat α n] :
-    (a : α) → IsInt a (.negOfNat n) → a = -OfNat.ofNat n
-  | _, ⟨rfl⟩ => by simp [Int.negOfNat_eq, Int.cast_neg]; apply LawfulOfNat.eq_ofNat
+theorem IsInt.neg_to_eq {α} [Ring α] {n} :
+    {a a' : α} → IsInt a (.negOfNat n) → n = a' → a = -a'
+  | _, _, ⟨rfl⟩, rfl => by simp [Int.negOfNat_eq, Int.cast_neg]
 
-theorem IsInt.nonneg_to_eq {α} [Ring α] (n) [OfNat α n] [LawfulOfNat α n]
-    (a : α) (h : IsInt a (.ofNat n)) : a = OfNat.ofNat n := h.to_isNat.to_eq
+theorem IsInt.nonneg_to_eq {α} [Ring α] {n}
+    {a a' : α} (h : IsInt a (.ofNat n)) (e : n = a') : a = a' := h.to_isNat.to_eq e
 
 /-- Represent an integer as a typed expression. -/
 def mkRawIntLit (n : ℤ) : Q(ℤ) :=
@@ -245,17 +233,41 @@ def Result.ofRawInt {α : Q(Type u)} (n : ℤ) (e : Q($α)) : Result e :=
     .isNegNat rα lit (q(IsInt.of_raw $α (.negOfNat $lit)) : Expr)
 
 /--
-Convert a `Result` to a `Simp.Result`.
+Constructs an `ofNat` application `a'` with the canonical instance, together with a proof that
+the instance is equal to the result of `Nat.cast` on the given `AddMonoidWithOne` instance.
+
+This function is performance-critical, as many higher level tactics have to construct numerals.
+So rather than using typeclass search we hardcode the (relatively small) set of solutions
+to the typeclass problem.
 -/
+def mkOfNat (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
+    MetaM ((a' : Q($α)) × Q($lit = $a')) := do
+  if α.isConstOf ``Nat then
+    let a' : Q(ℕ) := q(OfNat.ofNat $lit : ℕ)
+    pure ⟨a', (q(Eq.refl $a') : Expr)⟩
+  else if α.isConstOf ``Int then
+    let a' : Q(ℤ) := q(OfNat.ofNat $lit : ℤ)
+    pure ⟨a', (q(Eq.refl $a') : Expr)⟩
+  else
+    let some n := lit.natLit? | failure
+    match n with
+    | 0 => pure ⟨q(0 : $α), (q(Nat.cast_zero (R := $α)) : Expr)⟩
+    | 1 => pure ⟨q(1 : $α), (q(Nat.cast_one (R := $α)) : Expr)⟩
+    | k+2 =>
+      let k : Q(ℕ) := mkRawNatLit k
+      let _x : Q(Nat.AtLeastTwo $lit) :=
+        (q(instAtLeastTwoHAddNatInstHAddInstAddNatOfNat (n := $k)) : Expr)
+      let a' : Q($α) := q(OfNat.ofNat $lit)
+      pure ⟨a', (q(Eq.refl $a') : Expr)⟩
+
+/-- Convert a `Result` to a `Simp.Result`. -/
 def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.Result
-  | .isNat _sα lit p => do
-    let _ofNatInst ← synthInstanceQ (q(OfNat $α $lit) : Q(Type u))
-    let _lawfulInst ← synthInstanceQ (q(LawfulOfNat $α $lit) : Q(Prop))
-    return { expr := q((OfNat.ofNat $lit : $α)), proof? := q(IsNat.to_eq $lit $e $p) }
+  | .isNat sα lit p => do
+    let ⟨a', pa'⟩ ← mkOfNat α sα lit
+    return { expr := a', proof? := q(IsNat.to_eq $p $pa') }
   | .isNegNat _rα lit p => do
-    let _ofNatInst ← synthInstanceQ (q(OfNat $α $lit) : Q(Type u))
-    let _lawfulInst ← synthInstanceQ (q(LawfulOfNat $α $lit) : Q(Prop))
-    return { expr := q(-(OfNat.ofNat $lit : $α)), proof? := q(IsInt.neg_to_eq $lit $e $p) }
+    let ⟨a', pa'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
+    return { expr := q(-$a'), proof? := q(IsInt.neg_to_eq $p $pa') }
   | .isRat _ .. => failure -- TODO
 
 /--
@@ -299,18 +311,19 @@ def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := d
     let lit : Q(ℕ) := e
     return .isNat (q(instAddMonoidWithOneNat) : Q(AddMonoidWithOne ℕ))
       lit (q(IsNat.raw_refl $lit) : Expr)
-  let s ← saveState
-  let arr ← (normNumExt.getState (← getEnv)).2.getMatch e
-  for ext in arr do
-    if (bif post then ext.post else ext.pre) then
-      try
-        let new ← ext.eval e
-        trace[Tactic.norm_num] "{e} ==> {new}"
-        return new
-      catch err =>
-        trace[Tactic.norm_num] "{e} failed: {err.toMessageData}"
-        s.restore
-  throwError "{e}: no norm_nums apply"
+  profileitM Exception "norm_num" (← getOptions) do
+    let s ← saveState
+    let arr ← (normNumExt.getState (← getEnv)).2.getMatch e
+    for ext in arr do
+      if (bif post then ext.post else ext.pre) then
+        try
+          let new ← ext.eval e
+          trace[Tactic.norm_num] "{e} ==> {new}"
+          return new
+        catch err =>
+          trace[Tactic.norm_num] "{e} failed: {err.toMessageData}"
+          s.restore
+    throwError "{e}: no norm_nums apply"
 
 /-- Run each registered `norm_num` extension on a typed expression `e : α`,
 returning a typed expression `lit : ℕ`, and a proof of `isNat e lit`. -/
