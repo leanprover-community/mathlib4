@@ -107,9 +107,11 @@ theorem gt_of_ge_of_gt {a b c : α} (h₁ : a ≥ b) (h₂ : b > c) : a > c :=
 lt_of_lt_of_le h₂ h₁
 
 instance : @Trans α α α LE.le LE.le LE.le := ⟨le_trans⟩
+instance : @Trans α α α LT.lt LT.lt LT.lt := ⟨lt_trans⟩
 instance : @Trans α α α LT.lt LE.le LT.lt := ⟨lt_of_lt_of_le⟩
 instance : @Trans α α α LE.le LT.lt LT.lt := ⟨lt_of_le_of_lt⟩
 instance : @Trans α α α GE.ge GE.ge GE.ge := ⟨ge_trans⟩
+instance : @Trans α α α GT.gt GT.gt GT.gt := ⟨gt_trans⟩
 instance : @Trans α α α GT.gt GE.ge GT.gt := ⟨gt_of_gt_of_ge⟩
 instance : @Trans α α α GE.ge GT.gt GT.gt := ⟨gt_of_ge_of_gt⟩
 

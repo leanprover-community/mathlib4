@@ -25,16 +25,6 @@ open Function
 -- FIXME: remove this when the sorries are gone
 set_option warningAsError false
 
-theorem add_pos [AddZeroClass α] [PartialOrder α] [CovariantClass α α (·+·) (·<·)]
-    {a b : α} (ha : 0 < a) (hb : 0 < b) : 0 < a + b := sorry
-theorem lt_add_of_pos_of_le
-    [AddZeroClass α] [PartialOrder α] [CovariantClass α α (swap (·+·)) (·<·)]
-    {a b c : α} (ha : 0 < a) (hbc : b ≤ c) : b < a + c := sorry
-theorem lt_add_of_le_of_pos [AddZeroClass α] [PartialOrder α] [CovariantClass α α (·+·) (·<·)]
-    {a b c : α} (hbc : b ≤ c) (ha : 0 < a) : b < c + a := sorry
-theorem add_nonneg [AddZeroClass α] [PartialOrder α] [CovariantClass α α (·+·) (·≤·)]
-    {a b : α} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a + b := sorry
-
 theorem mul_nonneg_of_pos_of_nonneg [OrderedSemiring α] {a b : α}
     (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b := sorry
 theorem mul_nonneg_of_nonneg_of_pos [OrderedSemiring α] {a b : α}
