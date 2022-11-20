@@ -3,21 +3,29 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathbin.Data.Int.Cast.Defs
+import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Tactic.NormCast.Tactic
 
 /-!
+
 # Characteristic zero
+
 A ring `R` is called of characteristic zero if every natural number `n` is non-zero when considered
 as an element of `R`. Since this definition doesn't mention the multiplicative structure of `R`
 except for the existence of `1` in this file characteristic zero is defined for additive monoids
 with `1`.
+
 ## Main definition
+
 `char_zero` is the typeclass of an additive monoid with one such that the natural homomorphism
 from the natural numbers into it is injective.
+
 ## TODO
+
 * Unify with `char_p` (possibly using an out-parameter)
 -/
 
+set_option autoImplicit false
 
 /-- Typeclass for monoids with characteristic zero.
   (This is usually stated on fields but it makes sense for any additive monoid with 1.)
@@ -29,11 +37,11 @@ For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorb
 This example is formalized in `counterexamples/char_p_zero_ne_char_zero`.
  -/
 class CharZero (R : Type _) [AddMonoidWithOne R] : Prop where
-  cast_injective : Function.Injective (coe : ℕ → R)
+  cast_injective : Function.Injective (Nat.cast : ℕ → R)
 #align char_zero CharZero
 
 theorem char_zero_of_inj_zero {R : Type _} [AddGroupWithOne R] (H : ∀ n : ℕ, (n : R) = 0 → n = 0) : CharZero R :=
-  ⟨fun m n h => by
+  ⟨@fun m n h => by
     induction' m with m ih generalizing n
     · rw [H n]
       rw [← h, Nat.cast_zero]
@@ -42,7 +50,7 @@ theorem char_zero_of_inj_zero {R : Type _} [AddGroupWithOne R] (H : ∀ n : ℕ,
     · apply H
       rw [h, Nat.cast_zero]
 
-    simp_rw [Nat.cast_succ, add_right_cancel_iff] at h
+    simp only [Nat.cast_succ, add_right_cancel_iff] at h
     rwa [ih]⟩
 #align char_zero_of_inj_zero char_zero_of_inj_zero
 
@@ -50,7 +58,7 @@ namespace Nat
 
 variable {R : Type _} [AddMonoidWithOne R] [CharZero R]
 
-theorem cast_injective : Function.Injective (coe : ℕ → R) :=
+theorem cast_injective : Function.Injective (Nat.cast : ℕ → R) :=
   CharZero.cast_injective
 #align nat.cast_injective Nat.cast_injective
 
@@ -77,7 +85,7 @@ theorem cast_eq_one {n : ℕ} : (n : R) = 1 ↔ n = 1 := by rw [← cast_one, ca
 
 @[norm_cast]
 theorem cast_ne_one {n : ℕ} : (n : R) ≠ 1 ↔ n ≠ 1 :=
-  cast_eq_one.Not
+  cast_eq_one.not
 #align nat.cast_ne_one Nat.cast_ne_one
 
 end Nat
