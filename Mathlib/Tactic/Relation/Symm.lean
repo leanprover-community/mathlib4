@@ -17,7 +17,8 @@ namespace Mathlib.Tactic
 open Lean Meta
 
 /-- Environment extensions for symm lemmas -/
-initialize symmExt : SimpleScopedEnvExtension (Name × Array DiscrTree.Key) (DiscrTree Name) ←
+initialize symmExt :
+    SimpleScopedEnvExtension (Name × Array (DiscrTree.Key true)) (DiscrTree Name true) ←
   registerSimpleScopedEnvExtension {
     addEntry := fun dt (n, ks) => dt.insertCore ks n
     initial := {}
