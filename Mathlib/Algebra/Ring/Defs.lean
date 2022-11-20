@@ -141,23 +141,31 @@ theorem mul_one_add [LeftDistribClass α] (a b : α) : a * (1 + b) = a + a * b :
   rw [mul_add, mul_one]
 #align mul_one_add mul_one_add
 
-theorem two_mul [AddMonoidWithOne β] [MulOneClass β] [RightDistribClass β] (n : β) : 2 * n = n + n :=
-  Eq.trans ?_ <| Eq.trans (right_distrib 1 1 n) (by rw [one_mul])
-#align two_mul two_mul
-
-theorem bit0_eq_two_mul [RightDistribClass α] (n : α) : bit0 n = 2 * n :=
-  (two_mul _).symm
-#align bit0_eq_two_mul bit0_eq_two_mul
-
-theorem mul_two [LeftDistribClass α] (n : α) : n * 2 = n + n :=
-  (left_distrib n 1 1).trans (by simp)
-#align mul_two mul_two
-
 end DistribMulOneClass
 
 section Semiring
 
 variable [Semiring α]
+
+-- Porting note: was [has_add α] [mul_one_class α] [right_distrib_class α]
+theorem two_mul (n : α) : 2 * n = n + n :=
+  (congrArg₂ _ one_add_one_eq_two.symm rfl).trans <| (right_distrib 1 1 n).trans (by rw [one_mul])
+#align two_mul two_mul
+
+section deprecated
+set_option linter.deprecated false
+
+-- Porting note: was [has_add α] [mul_one_class α] [right_distrib_class α]
+theorem bit0_eq_two_mul (n : α) : bit0 n = 2 * n :=
+  (two_mul _).symm
+#align bit0_eq_two_mul bit0_eq_two_mul
+
+end deprecated
+
+-- Porting note: was [has_add α] [mul_one_class α] [left_distrib_class α]
+theorem mul_two (n : α) : n * 2 = n + n :=
+  (congrArg₂ _ rfl one_add_one_eq_two.symm).trans <| (left_distrib n 1 1).trans (by rw [mul_one])
+#align mul_two mul_two
 
 @[to_additive]
 theorem mul_ite {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
@@ -233,8 +241,7 @@ section CommSemiring
 variable [CommSemiring α] {a b c : α}
 
 theorem add_mul_self_eq (a b : α) : (a + b) * (a + b) = a * a + 2 * a * b + b * b := by
-  sorry
-  --simp only [two_mul, add_mul, mul_add, add_assoc, mul_comm b]
+  simp only [two_mul, add_mul, mul_add, add_assoc, mul_comm b]
 #align add_mul_self_eq add_mul_self_eq
 
 end CommSemiring
