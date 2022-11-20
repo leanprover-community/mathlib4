@@ -171,7 +171,7 @@ instance [IsTrichotomous ι r] [∀ i, IsTrichotomous (α i) (s i)] : IsTrichoto
 
 end Sigma
 
-/-! ### `psigma` -/
+/-! ### `PSigma` -/
 
 
 namespace PSigma
