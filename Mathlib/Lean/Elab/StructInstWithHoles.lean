@@ -9,10 +9,6 @@ import Lean.Meta.Structure
 import Lean.Elab.App
 import Lean.Elab.Binders
 
---Linting
-import Std.Tactic.Lint.Frontend
-import Std.Tactic.Lint.Misc
-
 namespace Lean.Elab.Term.StructInstWithHoles --!!
 
 open Meta
