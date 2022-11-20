@@ -749,7 +749,8 @@ theorem sigmaEquivProd_sigmaCongrRight :
     (sigmaEquivProd α₁ β₁).symm.trans (sigmaCongrRight e)
     = (prodCongrRight e).trans (sigmaEquivProd α₁ β₂).symm := by
   ext ⟨a, b⟩ : 1
-  simp
+  simp only [trans_apply, sigmaCongrRight_apply, prodCongr_right_apply]
+  rfl
 #align equiv.sigma_equiv_prod_sigma_congr_right Equiv.sigmaEquivProd_sigmaCongrRight
 
 -- See also `Equiv.ofPreimageEquiv`.
@@ -1210,16 +1211,17 @@ def sigmaOptionEquivOfSome {α : Type u} (p : Option α → Type v) (h : p none 
   (sigmaSubtypeEquivOfSubset _ _ h').symm.trans (sigmaCongrLeft' (optionIsSomeEquiv α))
 #align equiv.sigma_option_equiv_of_some Equiv.sigmaOptionEquivOfSome
 
+-- ericr: this definition doesn't seem nice indentation-wise; is this just the Lean4 style?
 /-- The `pi`-type `Π i, π i` is equivalent to the type of sections `f : ι → Σ i, π i` of the
 `sigma` type such that for all `i` we have `(f i).fst = i`. -/
 def piEquivSubtypeSigma (ι : Type _) (π : ι → Type _) :
     (∀ i, π i) ≃ { f : ι → Σi, π i // ∀ i, (f i).1 = i } :=
-  ⟨fun f => ⟨fun i => ⟨i, f i⟩, fun i => rfl⟩, fun f i => by
-    rw [← f.2 i]
-    exact (f.1 i).2, fun f => funext fun i => rfl, fun ⟨f, hf⟩ =>
-    Subtype.eq <|
-      funext fun i =>
-        Sigma.eq (hf i).symm <| eq_of_heq <| rec_heq_of_heq _ <| rec_heq_of_heq _ <| HEq.refl _⟩
+  ⟨fun f => ⟨fun i => ⟨i, f i⟩, fun i => rfl⟩,
+  fun f i => by rw [← f.2 i]; exact (f.1 i).2,
+  fun f => funext fun i => rfl,
+  fun ⟨f, hf⟩ =>
+    Subtype.eq <| funext fun i =>
+      Sigma.eq (hf i).symm <| eq_of_heq <| rec_heq_of_heq _ <| by simp⟩
 #align equiv.pi_equiv_subtype_sigma Equiv.piEquivSubtypeSigma
 
 /-- The set of functions `f : Π a, β a` such that for all `a` we have `p a (f a)` is equivalent
@@ -1280,12 +1282,12 @@ def piSplitAt {α : Type _} [DecidableEq α] (i : α) (β : α → Type _) :
   invFun f j := if h : j = i then h.symm.rec f.1 else f.2 ⟨j, h⟩
   right_inv f := by
     ext x
-    exacts[dif_pos rfl, (dif_neg x.2).trans (by cases x <;> rfl)]
+    exacts[dif_pos rfl, (dif_neg x.2).trans (by cases x; rfl)]
   left_inv f := by
     ext x
     dsimp only
     split_ifs with h
-    · subst h
+    · subst h; rfl
     · rfl
 
 #align equiv.pi_split_at Equiv.piSplitAt
@@ -1485,7 +1487,14 @@ theorem swapCore_swapCore (r a b : α) : swapCore a b (swapCore a b r) = r := by
   -- Porting note: cc missing.
   -- `casesm` would work here, with `casesm _ = _, ¬ _ = _`,
   -- if it would just continue past failures on hypotheses matching the pattern
-  split_ifs <;> cc
+  split_ifs with h₁ h₂ h₃ h₄ h₅
+  · subst h₁; exact h₂
+  · subst h₁; rfl
+  · cases h₃ rfl
+  · exact h₄.symm
+  · cases h₅ rfl
+  · cases h₅ rfl
+  · rfl
 #align equiv.swap_core_swap_core Equiv.swapCore_swapCore
 
 theorem swapCore_comm (r a b : α) : swapCore a b r = swapCore b a r := by
@@ -1814,11 +1823,20 @@ instance [IsAssociative α₁ f] : IsAssociative β₁ (e.arrowCongr (e.arrowCon
 instance [IsIdempotent α₁ f] : IsIdempotent β₁ (e.arrowCongr (e.arrowCongr e) f) :=
   (e.semiconj₂_conj f).isIdempotent_right e.surjective
 
+-- porting note: the coe changes make `EmbeddingLike.apply_eq_iff_eq` almost impossible to use
 instance [IsLeftCancel α₁ f] : IsLeftCancel β₁ (e.arrowCongr (e.arrowCongr e) f) :=
-  ⟨e.surjective.forall₃.2 fun x y z => by simpa using @IsLeftCancel.left_cancel _ f _ x y z⟩
+  ⟨e.surjective.forall₃.2 fun x y z => by
+    simp only [arrowCongr, coe_fn_symm_mk, comp_apply, symm_apply_apply]
+    intro h
+    rw [@IsLeftCancel.left_cancel _ f _ x y z _]
+    exact e.injective h⟩
 
 instance [IsRightCancel α₁ f] : IsRightCancel β₁ (e.arrowCongr (e.arrowCongr e) f) :=
-  ⟨e.surjective.forall₃.2 fun x y z => by simpa using @IsRightCancel.right_cancel _ f _ x y z⟩
+  ⟨e.surjective.forall₃.2 fun x y z => by
+    simp only [arrowCongr, coe_fn_symm_mk, comp_apply, symm_apply_apply]
+    intro h
+    rw [@IsRightCancel.right_cancel _ f _ x y z _]
+    exact e.injective h⟩
 
 end BinaryOp
 
@@ -1885,14 +1903,21 @@ theorem update_apply_equiv_apply {α β α' : Sort _} [DecidableEq α'] [Decidab
   congr_fun (update_comp_equiv f g a v) a'
 #align function.update_apply_equiv_apply Function.update_apply_equiv_apply
 
+-- porting note: EmbeddingLike.apply_eq_iff_eq broken here too
 theorem piCongrLeft'_update [DecidableEq α] [DecidableEq β] (P : α → Sort _) (e : α ≃ β)
     (f : ∀ a, P a) (b : β) (x : P (e.symm b)) :
     e.piCongrLeft' P (update f (e.symm b) x) = update (e.piCongrLeft' P f) b x := by
   ext b'
   rcases eq_or_ne b' b with (rfl | h)
   · simp
-
-  · simp [h]
+  · simp only [Equiv.piCongrLeft'_apply, ne_eq, h, not_false_iff, update_noteq]
+    rw [update_noteq _]
+    rw [ne_eq]
+    intro h'
+    /- an example of something that should work, or also putting `EmbeddingLike.apply_eq_iff_eq`
+      in the `simp` should too:
+    have := (EmbeddingLike.apply_eq_iff_eq e).mp h' -/
+    cases e.symm.injective h' |> h
 
 #align function.Pi_congr_left'_update Function.piCongrLeft'_update
 
