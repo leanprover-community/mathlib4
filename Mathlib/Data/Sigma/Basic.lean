@@ -144,20 +144,24 @@ def Prod.toSigma {α β} (p : α × β) : Σ_ : α, β :=
   ⟨p.1, p.2⟩
 
 @[simp]
-theorem Prod.fst_comp_to_sigma {α β} : Sigma.fst ∘ @Prod.toSigma α β = Prod.fst :=
+theorem Prod.fst_comp_toSigma {α β} : Sigma.fst ∘ @Prod.toSigma α β = Prod.fst :=
   rfl
+#align prod.fst_comp_to_sigma Prod.fst_comp_toSigma
 
 @[simp]
-theorem Prod.fst_to_sigma {α β} (x : α × β) : (Prod.toSigma x).fst = x.fst :=
+theorem Prod.fst_toSigma {α β} (x : α × β) : (Prod.toSigma x).fst = x.fst :=
   rfl
+#align prod.fst_to_sigma Prod.fst_toSigma
 
 @[simp]
-theorem Prod.snd_to_sigma {α β} (x : α × β) : (Prod.toSigma x).snd = x.snd :=
+theorem Prod.snd_toSigma {α β} (x : α × β) : (Prod.toSigma x).snd = x.snd :=
   rfl
+#align prod.snd_to_sigma Prod.snd_toSigma
 
 @[simp]
-theorem Prod.to_sigma_mk {α β} (x : α) (y : β) : (x, y).toSigma = ⟨x, y⟩ :=
+theorem Prod.toSigma_mk {α β} (x : α) (y : β) : (x, y).toSigma = ⟨x, y⟩ :=
   rfl
+#align prod.to_sigma_mk Prod.toSigma_mk
 
 -- Porting note: the meta instance `has_reflect (Σa, β a)` was removed here.
 
