@@ -21,7 +21,7 @@ namespace Lean.Elab.Term.CoeImpl
 
 /-- Elaborator for the `(↑)`, `(⇑)`, and `(↥)` notations. -/
 def elabPartiallyAppliedCoe (sym : String) (expectedType : Expr)
-    (mkCoe : (b a x : Expr) → TermElabM Expr) : TermElabM Expr := do
+    (mkCoe : (expectedType x : Expr) → TermElabM Expr) : TermElabM Expr := do
   let expectedType ← instantiateMVars expectedType
   let Expr.forallE _ a b .. := expectedType | do
     tryPostpone
@@ -31,50 +31,46 @@ def elabPartiallyAppliedCoe (sym : String) (expectedType : Expr)
     throwError "({sym}) must have a non-dependent function type, not{indentExpr expectedType}"
   if a.hasExprMVar then tryPostpone
   let f ← withLocalDeclD `x a fun x => do
-    mkLambdaFVars #[x] (← mkCoe b a x)
+    mkLambdaFVars #[x] (← mkCoe b x)
   return f.etaExpanded?.getD f
 
 /-- Partially applied coercion.  Equivalent to the η-reduction of `(↑ ·)` -/
 elab "(" "↑" ")" : term <= expectedType =>
-  elabPartiallyAppliedCoe "↑" expectedType fun b a x => do
+  elabPartiallyAppliedCoe "↑" expectedType fun b x => do
     if b.hasExprMVar then tryPostpone
-    mkCoe b a x
-
-/-- `mkFunCoe a x` coerces an expression `x` of type `a` to a function. -/
-def mkFunCoe (a x : Expr) : MetaM Expr := do
-  let v ← mkFreshLevelMVar
-  let type ← mkArrow a (mkSort v)
-  let γ ← mkFreshExprMVar type
-  let u ← getLevel a
-  let coeFunInstType := mkAppN (.const ``CoeFun [u, v]) #[a, γ]
-  let inst ← synthInstance coeFunInstType
-  expandCoe <| mkAppN (.const ``CoeFun.coe [u, v]) #[a, γ, inst, x]
+    if let .some e ← coerce? x b then
+      return e
+    else
+      throwError "cannot coerce{indentExpr x}\nto type{indentExpr b}"
 
 /-- `⇑ t` coerces `t` to a function. -/
 elab "⇑" m:term : term => do
   let x ← elabTerm m none
-  mkFunCoe (← inferType x) x
+  if let some ty ← coerceToFunction? x then
+    return ty
+  else
+    throwError "cannot coerce to function{indentExpr x}"
 
 /-- Partially applied function coercion.  Equivalent to the η-reduction of `(⇑ ·)` -/
 elab "(" "⇑" ")" : term <= expectedType =>
-  elabPartiallyAppliedCoe "⇑" expectedType fun b a x => do
-    ensureHasType b (← mkFunCoe a x)
-
-/-- `mkSortCoe a x` coerces an expression `x` of type `a` to a type. -/
-def mkSortCoe (a x : Expr) : MetaM Expr := do
-  let b ← mkFreshTypeMVar
-  let u ← getLevel a
-  let v ← getLevel b
-  let coeSortInstType := mkAppN (Lean.mkConst ``CoeSort [u, v]) #[a, b]
-  let inst ← synthInstance coeSortInstType
-  expandCoe <| mkAppN (Lean.mkConst ``CoeSort.coe [u, v]) #[a, b, inst, x]
+  elabPartiallyAppliedCoe "⇑" expectedType fun b x => do
+    if let some ty ← coerceToFunction? x then
+      ensureHasType b ty
+    else
+      throwError "cannot coerce to function{indentExpr x}"
 
 /-- `↥ t` coerces `t` to a type. -/
 elab "↥" t:term : term => do
   let x ← elabTerm t none
-  mkSortCoe (← inferType x) x
+  if let some ty ← coerceToSort? x then
+    return ty
+  else
+    throwError "cannot coerce to sort{indentExpr x}"
 
 /-- Partially applied type coercion.  Equivalent to the η-reduction of `(↥ ·)` -/
 elab "(" "↥" ")" : term <= expectedType =>
-  elabPartiallyAppliedCoe "↥" expectedType fun b a x => do
-    ensureHasType b (← mkSortCoe a x)
+  elabPartiallyAppliedCoe "↥" expectedType fun b x => do
+    if let some ty ← coerceToSort? x then
+      ensureHasType b ty
+    else
+      throwError "cannot coerce to sort{indentExpr x}"

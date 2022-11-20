@@ -22,3 +22,6 @@ instance SemigroupPEmpty : Semigroup PEmpty.{u + 1} where
   mul_assoc x y z := by cases x
 
 #align semigroup_pempty SemigroupPEmpty
+
+-- Porting note : to_additive should do this automatically.
+attribute [instance] AddSemigroupPEmpty
