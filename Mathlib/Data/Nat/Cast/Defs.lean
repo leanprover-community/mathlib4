@@ -46,6 +46,9 @@ protected def Nat.cast {R : Type u} [NatCast R] : ℕ → R :=
 -- see note [coercion into rings]
 instance [NatCast R] : CoeTail ℕ R where coe := Nat.cast
 
+-- see note [coercion into rings]
+instance [NatCast R] : CoeHTCT ℕ R where coe := Nat.cast
+
 -- the following four declarations are not in mathlib3 and are relevant to the way numeric
 -- literals are handled in Lean 4.
 
@@ -96,10 +99,14 @@ Coercions such as `Nat.castCoe` that go from a concrete structure such as
 `ℕ` to an arbitrary ring `R` should be set up as follows:
 ```lean
 instance : CoeTail ℕ R where coe := ...
+instance : CoeHTCT ℕ R where coe := ...
 ```
 
 It needs to be `CoeTail` instead of `Coe` because otherwise type-class
 inference would loop when constructing the transitive coercion `ℕ → ℕ → ℕ → ...`.
+Sometimes we also need to declare the `CoeHTCT` instance
+if we need to shadow another coercion
+(e.g. `Nat.cast` should be used over `Int.ofNat`).
 -/
 
 namespace Nat
