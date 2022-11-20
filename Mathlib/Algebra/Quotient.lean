@@ -53,7 +53,8 @@ This differs from `has_quotient.quotient'` in that the `A` argument is
  goal state.
 -/
 @[reducible]
-def HasQuotient.quotient (A : outParam <| Type u) {B : Type v} [HasQuotient A B] (b : B) : Type max u v :=
+def HasQuotient.quotient (A : outParam <| Type u) {B : Type v}
+    [HasQuotient A B] (b : B) : Type max u v :=
   HasQuotient.quotient' b
 #align has_quotient.quotient HasQuotient.quotient
 
