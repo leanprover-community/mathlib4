@@ -9,7 +9,7 @@ import Mathlib.Tactic.Clear!
 import Mathlib.Logic.Nontrivial
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Order.Ring
-import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.GroupWithZero.Basic
 import Qq.Match
 
 /-!
@@ -57,10 +57,6 @@ theorem pow_nonneg [OrderedSemiring α] {a : α} (H : 0 ≤ a) (n : ℕ) : 0 ≤
 
 theorem pow_ne_zero [MonoidWithZero M] [NoZeroDivisors M] {a : M} (n : ℕ) (h : a ≠ 0) :
   a ^ n ≠ 0 := sorry
-
-lemma mul_ne_zero [Zero α] [Mul α] [NoZeroDivisors α]
-    {a b : α} (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 :=
-  fun H => (eq_zero_or_eq_zero_of_mul_eq_zero H).elim ha hb
 
 lemma mul_ne_zero_of_ne_zero_of_pos [Zero α] [Mul α] [PartialOrder α] [NoZeroDivisors α]
     {a b : α} (ha : a ≠ 0) (hb : 0 < b) : a * b ≠ 0 :=

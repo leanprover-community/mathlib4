@@ -7,6 +7,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Group.OrderSynonym
+import Mathlib.Tactic.SimpRw
 
 /-!
 # Groups with an adjoined zero element
@@ -83,12 +84,6 @@ theorem eq_zero_of_mul_self_eq_zero (h : a * a = 0) : a = 0 :=
   (eq_zero_or_eq_zero_of_mul_eq_zero h).elim id id
 #align eq_zero_of_mul_self_eq_zero eq_zero_of_mul_self_eq_zero
 
-/- warning: mul_ne_zero -> mul_ne_zero is a dubious translation:
-lean 3 declaration is
-  forall {M₀ : Type.{u_2}} [_inst_1 : Mul.{u_2} M₀] [_inst_2 : Zero.{u_2} M₀] [_inst_3 : NoZeroDivisors.{u_2} M₀ _inst_1 _inst_2] {a : M₀} {b : M₀}, (Ne.{succ u_2} M₀ a (OfNat.ofNat.{u_2} M₀ 0 (OfNat.mk.{u_2} M₀ 0 (Zero.zero.{u_2} M₀ _inst_2)))) -> (Ne.{succ u_2} M₀ b (OfNat.ofNat.{u_2} M₀ 0 (OfNat.mk.{u_2} M₀ 0 (Zero.zero.{u_2} M₀ _inst_2)))) -> (Ne.{succ u_2} M₀ (HMul.hMul.{u_2 u_2 u_2} M₀ M₀ M₀ (instHMul.{u_2} M₀ _inst_1) a b) (OfNat.ofNat.{u_2} M₀ 0 (OfNat.mk.{u_2} M₀ 0 (Zero.zero.{u_2} M₀ _inst_2))))
-but is expected to have type
-  forall {α : Type.{u_1}} [inst._@.Mathlib.Tactic.Positivity.Basic._hyg.625 : OrderedSemiring.{u_1} α] [inst._@.Mathlib.Tactic.Positivity.Basic._hyg.628 : NoZeroDivisors.{u_1} α (Semiring.toMonoidWithZero.{u_1} α (OrderedSemiring.toSemiring.{u_1} α inst._@.Mathlib.Tactic.Positivity.Basic._hyg.625))] {a : α} {b : α}, (Ne.{succ u_1} α a (OfNat.ofNat.{u_1} α 0 (Zero.toOfNat0.{u_1} α (MonoidWithZero.toZero.{u_1} α (Semiring.toMonoidWithZero.{u_1} α (OrderedSemiring.toSemiring.{u_1} α inst._@.Mathlib.Tactic.Positivity.Basic._hyg.625)))))) -> (Ne.{succ u_1} α b (OfNat.ofNat.{u_1} α 0 (Zero.toOfNat0.{u_1} α (MonoidWithZero.toZero.{u_1} α (Semiring.toMonoidWithZero.{u_1} α (OrderedSemiring.toSemiring.{u_1} α inst._@.Mathlib.Tactic.Positivity.Basic._hyg.625)))))) -> (Ne.{succ u_1} α (HMul.hMul.{u_1 u_1 u_1} α α α (instHMul.{u_1} α (NonUnitalNonAssocSemiring.toMul.{u_1} α (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} α (Semiring.toNonAssocSemiring.{u_1} α (OrderedSemiring.toSemiring.{u_1} α inst._@.Mathlib.Tactic.Positivity.Basic._hyg.625))))) a b) (OfNat.ofNat.{u_1} α 0 (Zero.toOfNat0.{u_1} α (MonoidWithZero.toZero.{u_1} α (Semiring.toMonoidWithZero.{u_1} α (OrderedSemiring.toSemiring.{u_1} α inst._@.Mathlib.Tactic.Positivity.Basic._hyg.625))))))
-Case conversion may be inaccurate. Consider using '#align mul_ne_zero mul_ne_zeroₓ'. -/
 @[field_simps]
 theorem mul_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 :=
   mt eq_zero_or_eq_zero_of_mul_eq_zero <| not_or.mpr ⟨ha, hb⟩
@@ -98,7 +93,8 @@ end Mul
 
 namespace NeZero
 
-instance mul [Zero M₀] [Mul M₀] [NoZeroDivisors M₀] {x y : M₀} [NeZero x] [NeZero y] : NeZero (x * y) :=
+instance mul [Zero M₀] [Mul M₀] [NoZeroDivisors M₀] {x y : M₀} [NeZero x] [NeZero y] :
+    NeZero (x * y) :=
   ⟨mul_ne_zero out out⟩
 #align ne_zero.mul NeZero.mul
 
@@ -111,7 +107,8 @@ section
 variable [MulZeroOneClass M₀]
 
 /-- In a monoid with zero, if zero equals one, then zero is the only element. -/
-theorem eq_zero_of_zero_eq_one (h : (0 : M₀) = 1) (a : M₀) : a = 0 := by rw [← mul_one a, ← h, mul_zero]
+theorem eq_zero_of_zero_eq_one (h : (0 : M₀) = 1) (a : M₀) : a = 0 := by
+  rw [← mul_one a, ← h, mul_zero]
 #align eq_zero_of_zero_eq_one eq_zero_of_zero_eq_one
 
 /-- In a monoid with zero, if zero equals one, then zero is the unique element.
@@ -253,11 +250,13 @@ theorem inv_mul_cancel (h : a ≠ 0) : a⁻¹ * a = 1 :=
 
 #align inv_mul_cancel inv_mul_cancel
 
-theorem GroupWithZero.mul_left_injective (h : x ≠ 0) : Function.Injective fun y => x * y := fun y y' w => by
+theorem GroupWithZero.mul_left_injective (h : x ≠ 0) :
+    Function.Injective fun y => x * y := fun y y' w => by
   simpa only [← mul_assoc, inv_mul_cancel h, one_mul] using congr_arg (fun y => x⁻¹ * y) w
 #align group_with_zero.mul_left_injective GroupWithZero.mul_left_injective
 
-theorem GroupWithZero.mul_right_injective (h : x ≠ 0) : Function.Injective fun y => y * x := fun y y' w => by
+theorem GroupWithZero.mul_right_injective (h : x ≠ 0) :
+    Function.Injective fun y => y * x := fun y y' w => by
   simpa only [mul_assoc, mul_inv_cancel _ h, mul_one] using congr_arg (fun y => y * x⁻¹) w
 #align group_with_zero.mul_right_injective GroupWithZero.mul_right_injective
 
@@ -373,7 +372,8 @@ theorem div_self_mul_self' (a : G₀) : a / (a * a) = a⁻¹ :=
 
 #align div_self_mul_self' div_self_mul_self'
 
-theorem one_div_ne_zero {a : G₀} (h : a ≠ 0) : 1 / a ≠ 0 := by simpa only [one_div] using inv_ne_zero h
+theorem one_div_ne_zero {a : G₀} (h : a ≠ 0) : 1 / a ≠ 0 := by
+  simpa only [one_div] using inv_ne_zero h
 #align one_div_ne_zero one_div_ne_zero
 
 @[simp]
@@ -416,7 +416,8 @@ section CommGroupWithZero
 
 variable [CommGroupWithZero G₀] {a b c d : G₀}
 
-theorem div_mul_eq_mul_div₀ (a b c : G₀) : a / c * b = a * b / c := by simp_rw [div_eq_mul_inv, mul_assoc, mul_comm c⁻¹]
+theorem div_mul_eq_mul_div₀ (a b c : G₀) : a / c * b = a * b / c := by
+  simp_rw [div_eq_mul_inv, mul_assoc, mul_comm c⁻¹]
 #align div_mul_eq_mul_div₀ div_mul_eq_mul_div₀
 
 end CommGroupWithZero
@@ -426,65 +427,45 @@ end CommGroupWithZero
 
 open OrderDual
 
-instance [h : MulZeroClass α] : MulZeroClass αᵒᵈ :=
-  h
+instance [h : MulZeroClass α] : MulZeroClass αᵒᵈ := h
 
-instance [h : MulZeroOneClass α] : MulZeroOneClass αᵒᵈ :=
-  h
+instance [h : MulZeroOneClass α] : MulZeroOneClass αᵒᵈ := h
 
-instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors αᵒᵈ :=
-  h
+instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors αᵒᵈ := h
 
-instance [h : SemigroupWithZero α] : SemigroupWithZero αᵒᵈ :=
-  h
+instance [h : SemigroupWithZero α] : SemigroupWithZero αᵒᵈ := h
 
-instance [h : MonoidWithZero α] : MonoidWithZero αᵒᵈ :=
-  h
+instance [h : MonoidWithZero α] : MonoidWithZero αᵒᵈ := h
 
-instance [h : CancelMonoidWithZero α] : CancelMonoidWithZero αᵒᵈ :=
-  h
+instance [h : CancelMonoidWithZero α] : CancelMonoidWithZero αᵒᵈ := h
 
-instance [h : CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ :=
-  h
+instance [h : CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ := h
 
-instance [h : CancelCommMonoidWithZero α] : CancelCommMonoidWithZero αᵒᵈ :=
-  h
+instance [h : CancelCommMonoidWithZero α] : CancelCommMonoidWithZero αᵒᵈ := h
 
-instance [h : GroupWithZero α] : GroupWithZero αᵒᵈ :=
-  h
+instance [h : GroupWithZero α] : GroupWithZero αᵒᵈ := h
 
-instance [h : CommGroupWithZero α] : CommGroupWithZero αᵒᵈ :=
-  h
+instance [h : CommGroupWithZero α] : CommGroupWithZero αᵒᵈ := h
 
 /-! ### Lexicographic order -/
 
 
-instance [h : MulZeroClass α] : MulZeroClass (Lex α) :=
-  h
+instance [h : MulZeroClass α] : MulZeroClass (Lex α) := h
 
-instance [h : MulZeroOneClass α] : MulZeroOneClass (Lex α) :=
-  h
+instance [h : MulZeroOneClass α] : MulZeroOneClass (Lex α) := h
 
-instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors (Lex α) :=
-  h
+instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors (Lex α) := h
 
-instance [h : SemigroupWithZero α] : SemigroupWithZero (Lex α) :=
-  h
+instance [h : SemigroupWithZero α] : SemigroupWithZero (Lex α) := h
 
-instance [h : MonoidWithZero α] : MonoidWithZero (Lex α) :=
-  h
+instance [h : MonoidWithZero α] : MonoidWithZero (Lex α) := h
 
-instance [h : CancelMonoidWithZero α] : CancelMonoidWithZero (Lex α) :=
-  h
+instance [h : CancelMonoidWithZero α] : CancelMonoidWithZero (Lex α) := h
 
-instance [h : CommMonoidWithZero α] : CommMonoidWithZero (Lex α) :=
-  h
+instance [h : CommMonoidWithZero α] : CommMonoidWithZero (Lex α) := h
 
-instance [h : CancelCommMonoidWithZero α] : CancelCommMonoidWithZero (Lex α) :=
-  h
+instance [h : CancelCommMonoidWithZero α] : CancelCommMonoidWithZero (Lex α) := h
 
-instance [h : GroupWithZero α] : GroupWithZero (Lex α) :=
-  h
+instance [h : GroupWithZero α] : GroupWithZero (Lex α) := h
 
-instance [h : CommGroupWithZero α] : CommGroupWithZero (Lex α) :=
-  h
+instance [h : CommGroupWithZero α] : CommGroupWithZero (Lex α) := h
