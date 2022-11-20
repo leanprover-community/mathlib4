@@ -41,10 +41,10 @@ such as groups, modules and rings.
 `A` is a parameter, despite being unused in the definition below, so it appears in the notation.
 -/
 class HasQuotient (A : outParam <| Type u) (B : Type v) where
-  Quotient' : B → Type max u v
+  quotient' : B → Type max u v
 #align has_quotient HasQuotient
 
--- Will be provided by e.g. `ideal.quotient.inhabited`
+-- Will be provided by e.g. `Ideal.quotient.inhabited`
 /-- `HasQuotient.quotient A b` (with notation `A ⧸ b`) is the quotient
  of the type `A` by `b`.
 
@@ -54,7 +54,7 @@ This differs from `has_quotient.quotient'` in that the `A` argument is
 -/
 @[reducible]
 def HasQuotient.quotient (A : outParam <| Type u) {B : Type v} [HasQuotient A B] (b : B) : Type max u v :=
-  HasQuotient.Quotient' b
+  HasQuotient.quotient' b
 #align has_quotient.quotient HasQuotient.quotient
 
 notation:35 G " ⧸ " H:34 => HasQuotient.quotient G H
