@@ -204,7 +204,7 @@ structure OneHom (M : Type _) (N : Type _) [One M] [One N] where
 /-- `one_hom_class F M N` states that `F` is a type of one-preserving homomorphisms.
 You should extend this typeclass when you extend `one_hom`.
 -/
-@[to_additive ZeroHomClass]
+@[to_additive]
 class OneHomClass (F : Type _) (M N : outParam <| Type _)
   [outParam <| One M] [outParam <| One N] extends FunLike F M fun _ => N where
   map_one : ∀ f : F, f 1 = 1
@@ -274,7 +274,7 @@ infixr:25 " →ₙ* " => MulHom
 You should declare an instance of this typeclass when you extend `mul_hom`.
 -/
 -- Porting notes: see porting notes of ZeroHomClass
-@[to_additive AddHomClass]
+@[to_additive]
 class MulHomClass (F : Type _) (M N : outParam <| Type _)
   [outParam <| Mul M] [outParam <| Mul N] extends FunLike F M fun _ => N where
   map_mul : ∀ (f : F) (x y : M), f (x * y) = f x * f y
@@ -331,7 +331,7 @@ infixr:25 " →* " => MonoidHom
 /-- `monoid_hom_class F M N` states that `F` is a type of `monoid`-preserving homomorphisms.
 You should also extend this typeclass when you extend `monoid_hom`. -/
 -- Porting notes: see porting notes of ZeroHomClass
-@[to_additive AddMonoidHomClass
+@[to_additive
   "`AddMonoidHomClass F M N` states that `F` is a type of `AddMonoid`-preserving homomorphisms.
   You should also extend this typeclass when you extend `AddMonoidHom`."]
 class MonoidHomClass (F : Type _) (M N : outParam <| Type _)
