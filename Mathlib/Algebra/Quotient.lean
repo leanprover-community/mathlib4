@@ -21,7 +21,7 @@ The following notation is introduced:
 
 * `G ⧸ H` stands for the quotient of the type `G` by some term `H`
   (for example, `H` can be a normal subgroup of `G`).
-  To implement this notation for other quotients, you should provide a `has_quotient` instance.
+  To implement this notation for other quotients, you should provide a `HasQuotient` instance.
   Note that since `G` can usually be inferred from `H`, `_ ⧸ H` can also be used,
   but this is less readable.
 
