@@ -22,8 +22,6 @@
  ["docBlame", "LeftDistributive"],
  ["docBlame", "LeftIdentity"],
  ["docBlame", "MonadWriter"],
- ["docBlame", "MonoidWithZero"],
- ["docBlame", "NoZeroDivisors"],
  ["docBlame", "NonContradictory"],
  ["docBlame", "One"],
  ["docBlame", "OrderedMonoidWithZero"],
