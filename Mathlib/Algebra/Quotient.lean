@@ -34,7 +34,7 @@ ideal quotient, quotient ring
 
 universe u v
 
-/-- `has_quotient A B` is a notation typeclass that allows us to write `A ⧸ b` for `b : B`.
+/-- `HasQuotient A B` is a notation typeclass that allows us to write `A ⧸ b` for `b : B`.
 This allows the usual notation for quotients of algebraic structures,
 such as groups, modules and rings.
 
@@ -53,8 +53,8 @@ This differs from `has_quotient.quotient'` in that the `A` argument is
  goal state.
 -/
 @[reducible]
-def HasQuotient.Quotient (A : outParam <| Type u) {B : Type v} [HasQuotient A B] (b : B) : Type max u v :=
+def HasQuotient.quotient (A : outParam <| Type u) {B : Type v} [HasQuotient A B] (b : B) : Type max u v :=
   HasQuotient.Quotient' b
-#align has_quotient.quotient HasQuotient.Quotient
+#align has_quotient.quotient HasQuotient.quotient
 
-notation:35 G " ⧸ " H:34 => HasQuotient.Quotient G H
+notation:35 G " ⧸ " H:34 => HasQuotient.quotient G H
