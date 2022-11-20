@@ -17,16 +17,16 @@ the present file is about their interaction.
 
 ## Main definitions
 
-* `distrib`: Typeclass for distributivity of multiplication over addition.
-* `has_distrib_neg`: Typeclass for commutativity of negation and multiplication. This is useful when
+* `Distrib`: Typeclass for distributivity of multiplication over addition.
+* `HasDistribNeg`: Typeclass for commutativity of negation and multiplication. This is useful when
   dealing with multiplicative submonoids which are closed under negation without being closed under
   addition, for example `units`.
-* `(non_unital_)(non_assoc_)(semi)ring`: Typeclasses for possibly non-unital or non-associative
+* `(NonUnital_)(NonAssoc_)(Semi)ring`: Typeclasses for possibly non-unital or non-associative
   rings and semirings. Some combinations are not defined yet because they haven't found use.
 
 ## Tags
 
-`semiring`, `comm_semiring`, `ring`, `comm_ring`, `domain`, `is_domain`, `nonzero`, `units`
+`Semiring`, `CommSemiring`, `Ring`, `CommRing`, domain, `IsDomain`, nonzero, units
 -/
 
 
@@ -216,10 +216,10 @@ theorem ite_and_mul_zero {α : Type _} [MulZeroClass α] (P Q : Prop) [Decidable
   simp only [← ite_and, ite_mul, mul_ite, mul_zero, zero_mul, and_comm]
 #align ite_and_mul_zero ite_and_mul_zero
 
-/-- A non-unital commutative semiring is a `non_unital_semiring` with commutative multiplication.
+/-- A non-unital commutative semiring is a `NonUnitalSemiring` with commutative multiplication.
 In other words, it is a type with the following structures: additive commutative monoid
-(`add_comm_monoid`), commutative semigroup (`comm_semigroup`), distributive laws (`distrib`), and
-multiplication by zero law (`mul_zero_class`). -/
+(`AddCommMonoid`), commutative semigroup (`CommSemigroup`), distributive laws (`Distrib`), and
+multiplication by zero law (`MulZeroClass`). -/
 class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemigroup α
 #align non_unital_comm_semiring NonUnitalCommSemiring
 
@@ -430,7 +430,7 @@ instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α where
   mul_zero := fun a => add_left_cancel (a := a * 0) <| by rw [← mul_add, add_zero, add_zero]
 #align ring.to_non_assoc_ring Ring.toNonAssocRing
 
-/- The instance from `ring` to `semiring` happens often in linear algebra, for which all the basic
+/- The instance from `Ring` to `Semiring` happens often in linear algebra, for which all the basic
 definitions are given in terms of semirings, but many applications use rings or fields. We increase
 a little bit its priority above 100 to try it quickly, but remaining below the default 1000 so that
 more specific instances are tried first. -/
@@ -440,7 +440,7 @@ instance (priority := 200) : Semiring α :=
 
 end Ring
 
-/-- A non-unital commutative ring is a `non_unital_ring` with commutative multiplication. -/
+/-- A non-unital commutative ring is a `NonUnitalRing` with commutative multiplication. -/
 class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, CommSemigroup α
 #align non_unital_comm_ring NonUnitalCommRing
 
@@ -465,7 +465,7 @@ instance (priority := 100) CommRing.toNonUnitalCommRing [s : CommRing α] : NonU
 /-- A domain is a nontrivial ring with no zero divisors, i.e. satisfying
   the condition `a * b = 0 ↔ a = 0 ∨ b = 0`.
 
-  This is implemented as a mixin for `ring α`.
-  To obtain an integral domain use `[comm_ring α] [is_domain α]`. -/
+  This is implemented as a mixin for `Ring α`.
+  To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
 class IsDomain (α : Type u) [Ring α] extends NoZeroDivisors α, Nontrivial α : Prop
 #align is_domain IsDomain
