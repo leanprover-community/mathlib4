@@ -14,6 +14,7 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.Group
+import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Monoid
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Algebra.Order.Ring
@@ -121,6 +122,7 @@ import Mathlib.Mathport.Rename
 import Mathlib.Mathport.Syntax
 import Mathlib.Order.Basic
 import Mathlib.Order.Compare
+import Mathlib.Order.GameAdd
 import Mathlib.Order.Max
 import Mathlib.Order.Monotone
 import Mathlib.Order.RelClasses

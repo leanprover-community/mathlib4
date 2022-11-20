@@ -50,7 +50,7 @@ initialize librarySearchLemmas : DeclCache (DiscrTree Name true) ←
       pure $ lemmas.insertCore keys name
 
 /-- Shortcut for calling `solveByElimImpl`. -/
-def solveByElim (g : MVarId) (depth) := solveByElimImpl false [] depth g
+def solveByElim (g : MVarId) (depth) := SolveByElim.solveByElimImpl false [] depth g
 
 /--
 Try to solve the goal either by:
