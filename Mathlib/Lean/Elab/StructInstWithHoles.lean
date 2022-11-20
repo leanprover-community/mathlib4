@@ -291,12 +291,14 @@ def vH?dd        := leading_parser "?.." >> Parser.optional Parser.ident
   the holes.
  -/
 def vH?dd!       := leading_parser "?..!" >> Parser.optional Parser.ident
+/-~~! Removed for now.
 /-- A natural variadic hole that does not synthesize defaults. -/
 def vHdd!        := leading_parser "..!"
 /-- A natural variadic hole that synthesizes defaults when possible. -/
 def vHdd         := leading_parser "..."
+-/
 /-- A variadic hole that fills multiple spots with holes.  -/
-def variadicHole := leading_parser (vH?dd <|> vH?dd! <|> vHdd! <|> vHdd)
+def variadicHole := leading_parser (vH?dd <|> vH?dd! /-~~! <|> vHdd! <|> vHdd -/)
 
 open Lean.Parser Lean.Parser.Term in
 /--
@@ -433,10 +435,12 @@ def getVariadicHoleConfig? : TSyntax ``variadicHole → Option VariadicHoleConfi
     {stx, isSynthetic := true, useDefaults := true, name := x.map Syntax.getId}
   | `(variadicHole|?..!$[$x:ident]?) => some
     {stx, isSynthetic := true, useDefaults := false, name := x.map Syntax.getId}
+  /-~~! Removed for now.
   | `(variadicHole|...) => some
     {stx, isSynthetic := false, useDefaults := true}
   | `(variadicHole|..!) => some
     {stx, isSynthetic := false, useDefaults := false}
+  -/
   | _ => none --~~? Should this be unreachable!?
 --!!\
 
