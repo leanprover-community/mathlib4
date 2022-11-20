@@ -407,11 +407,12 @@ theorem map_nsmul [AddMonoid G] [AddMonoid H] [AddMonoidHomClass F G H] (f : F) 
 
 attribute [to_additive_reorder 8] map_pow
 
-@[to_additive]
+-- Porting note: restore `to_additive`
+-- @[to_additive]
 theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f : F) (hf : ∀ x : G, f x⁻¹ = (f x)⁻¹)
     (a : G) : ∀ n : ℤ, f (a ^ n) = f a ^ n
-  | (n : ℕ) => by rw [zpow_coe_nat, map_pow, zpow_coe_nat]
-  | Int.negSucc n => by rw [zpow_neg_succ_of_nat, hf, map_pow, ← zpow_neg_succ_of_nat]
+  | (n : ℕ) => by rw [zpow_ofNat, map_pow, zpow_ofNat]
+  | Int.negSucc n => by rw [negSucc_zsmul, hf, map_pow, ← negSucc_zsmul]
 #align map_zpow' map_zpow'
 
 -- to_additive puts the arguments in the wrong order, so generate an auxiliary lemma, then
