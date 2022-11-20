@@ -59,51 +59,51 @@ one should attempt to add the following constructions and results,
 when applicable:
 
 * Instances transferred elementwise to products, like `Prod.Monoid`.
-  See `algebra.group.prod` for more examples.
+  See `Mathilb.Algebra.Group.Prod` for more examples.
   ```
   instance Prod.Z [Z M] [Z N] : Z (M × N) := ...
   ```
 * Instances transferred elementwise to pi types, like `Pi.Monoid`.
-  See `algebra.group.pi` for more examples.
+  See `Mathilb.Algebra.Group.Pi` for more examples.
   ```
   instance Pi.Z [∀ i, Z $ f i] : Z (Π i : I, f i) := ...
   ```
 * Instances transferred to `MulOpposite M`, like `MulOpposite.Monoid`.
-  See `algebra.opposites` for more examples.
+  See `Mathilb.Algebra.Opposites` for more examples.
   ```
   instance MulOpposite.Z [Z M] : Z (MulOpposite M) := ...
   ```
 * Instances transferred to `ULift M`, like `ULift.Monoid`.
-  See `algebra.group.ulift` for more examples.
+  See `Mathilb.Algebra.Group.ULift` for more examples.
   ```
   instance ULift.Z [Z M] : Z (ULift M) := ...
   ```
 * Definitions for transferring the proof fields of instances along
   injective or surjective functions that agree on the data fields,
-  like `Function.injective.Monoid` and `Function.surjective.Monoid`.
+  like `Function.Injective.monoid` and `Function.Surjective.monoid`.
   We make these definitions `@[reducible]`, see note [reducible non-instances].
-  See `algebra.group.inj_surj` for more examples.
+  See `Mathilb.Algebra.Group.InjSurj` for more examples.
   ```
   @[reducible]
-  def Function.injective.Z [Z M₂] (f : M₁ → M₂) (hf : f.injective)
+  def Function.Injective.Z [Z M₂] (f : M₁ → M₂) (hf : f.Injective)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : Z M₁ := ...
 
   @[reducible]
-  def Function.surjective.Z [Z M₁] (f : M₁ → M₂) (hf : f.surjective)
+  def Function.Surjective.Z [Z M₁] (f : M₁ → M₂) (hf : f.Surjective)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : Z M₂ := ...
   ```
-* Instances transferred elementwise to `FinSupp`s, like `FinSupp.Semigroup`.
-  See `data.finsupp.pointwise` for more examples.
+* Instances transferred elementwise to `FinSupp`s, like `FinSupp.semigroup`.
+  See `Mathilb.Data.Finsupp.Pointwise` for more examples.
   ```
   instance FinSupp.Z [Z β] : Z (α →₀ β) := ...
   ```
-* Instances transferred elementwise to `Set`s, like `Set.Monoid`.
-  See `algebra.pointwise` for more examples.
+* Instances transferred elementwise to `Set`s, like `Set.monoid`.
+  See `Mathilb.Algebra.Pointwise` for more examples.
   ```
   instance Set.Z [Z α] : Z (Set α) := ...
   ```
-* Definitions for transferring the entire structure across an equivalence, like `Equiv.Monoid`.
-  See `data.equiv.transfer_instance` for more examples. See also the `transport` tactic.
+* Definitions for transferring the entire structure across an equivalence, like `Equiv.monoid`.
+  See `Mathilb.Data.Equiv.TransferInstance` for more examples. See also the `transport` tactic.
   ```
   def Equiv.Z (e : α ≃ β) [Z β] : Z α := ...
   /- When there is a new notion of `Z`-equiv: -/
@@ -120,14 +120,14 @@ This can be a lot of work; for now try to closely follow the existing examples
 We would very much like to provide some automation here, but a prerequisite will be making
 all the existing APIs more uniform.
 
-If `Z` extends `Y`, then `subZ` should usually extend `subY`.
+If `Z` extends `Y`, then `SubZ` should usually extend `SubY`.
 
 When `Z` adds only new proof fields to an existing structure `Y`,
 you should provide instances transferring
-`Z α` to `Z (subY α)`, like `Submonoid.toCommMonoid`.
-Typically this is done using the `Function.injective.Z` definition mentioned above.
+`Z α` to `Z (SubY α)`, like `Submonoid.toCommMonoid`.
+Typically this is done using the `Function.Injective.Z` definition mentioned above.
 ```
-instance subY.toZ [Z α] : Z (subY α) :=
+instance SubY.toZ [Z α] : Z (SubY α) :=
 coe_injective.Z coe ...
 ```
 
