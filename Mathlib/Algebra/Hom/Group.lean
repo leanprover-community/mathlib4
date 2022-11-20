@@ -79,7 +79,6 @@ variable {G : Type _} {H : Type _}
 variable {F : Type _}
 
 -- homs
--- for easy multiple inheritance
 section Zero
 
 /-- `zero_hom M N` is the type of functions `M → N` that preserve zero.
@@ -98,6 +97,8 @@ structure ZeroHom (M : Type _) (N : Type _) [Zero M] [Zero N] where
 
 You should extend this typeclass when you extend `zero_hom`.
 -/
+-- Porting notes: `outParam` is added to instances `[Zero M] [Zero N]` until issue
+-- https://github.com/leanprover/lean4/issues/1852 is resolved
 class ZeroHomClass (F : Type _) (M N : outParam <| Type _) [outParam <| Zero M] [outParam <| Zero N]
   extends FunLike F M fun _ => N where
   map_zero : ∀ f : F, f 0 = 0
@@ -158,7 +159,8 @@ you should parametrize over `(F : Type*) [add_monoid_hom_class F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `add_monoid_hom_class`.
 -/
-structure AddMonoidHom (M : Type _) (N : Type _) [AddZeroClass M] [AddZeroClass N] extends ZeroHom M N, AddHom M N
+structure AddMonoidHom (M : Type _) (N : Type _) [AddZeroClass M] [AddZeroClass N] extends
+  ZeroHom M N, AddHom M N
 #align add_monoid_hom AddMonoidHom
 
 -- Porting note: attributes omitted
@@ -246,174 +248,185 @@ theorem OneHom.coe_coe [OneHomClass F M N] (f : F) : ((f : OneHom M N) : M → N
 
 end One
 
--- section Mul
+section Mul
 
--- variable [Mul M] [Mul N]
+variable [Mul M] [Mul N]
 
--- /-- `M →ₙ* N` is the type of functions `M → N` that preserve multiplication. The `ₙ` in the notation
--- stands for "non-unital" because it is intended to match the notation for `non_unital_alg_hom` and
--- `non_unital_ring_hom`, so a `mul_hom` is a non-unital monoid hom.
+/-- `M →ₙ* N` is the type of functions `M → N` that preserve multiplication. The `ₙ` in the notation
+stands for "non-unital" because it is intended to match the notation for `non_unital_alg_hom` and
+`non_unital_ring_hom`, so a `mul_hom` is a non-unital monoid hom.
 
--- When possible, instead of parametrizing results over `(f : M →ₙ* N)`,
--- you should parametrize over `(F : Type*) [mul_hom_class F M N] (f : F)`.
--- When you extend this structure, make sure to extend `mul_hom_class`.
--- -/
--- @[to_additive]
--- structure MulHom (M : Type _) (N : Type _) [Mul M] [Mul N] where
---   toFun : M → N
---   map_mul' : ∀ x y, toFun (x * y) = toFun x * toFun y
--- #align mul_hom MulHom
+When possible, instead of parametrizing results over `(f : M →ₙ* N)`,
+you should parametrize over `(F : Type*) [mul_hom_class F M N] (f : F)`.
+When you extend this structure, make sure to extend `mul_hom_class`.
+-/
+@[to_additive]
+structure MulHom (M : Type _) (N : Type _) [Mul M] [Mul N] where
+  toFun : M → N
+  map_mul' : ∀ x y, toFun (x * y) = toFun x * toFun y
+#align mul_hom MulHom
 
--- -- mathport name: «expr →ₙ* »
--- infixr:25 " →ₙ* " => MulHom
+-- mathport name: «expr →ₙ* »
+infixr:25 " →ₙ* " => MulHom
 
--- /-- `mul_hom_class F M N` states that `F` is a type of multiplication-preserving homomorphisms.
+/-- `mul_hom_class F M N` states that `F` is a type of multiplication-preserving homomorphisms.
 
--- You should declare an instance of this typeclass when you extend `mul_hom`.
--- -/
--- @[to_additive]
--- class MulHomClass (F : Type _) (M N : outParam <| Type _) [Mul M] [Mul N] extends FunLike F M fun _ => N where
---   map_mul : ∀ (f : F) (x y : M), f (x * y) = f x * f y
--- #align mul_hom_class MulHomClass
+You should declare an instance of this typeclass when you extend `mul_hom`.
+-/
+-- Porting notes: see porting notes of ZeroHomClass
+@[to_additive AddHomClass]
+class MulHomClass (F : Type _) (M N : outParam <| Type _)
+  [outParam <| Mul M] [outParam <| Mul N] extends FunLike F M fun _ => N where
+  map_mul : ∀ (f : F) (x y : M), f (x * y) = f x * f y
+#align mul_hom_class MulHomClass
 
--- @[to_additive]
--- instance MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
---   coe := MulHom.toFun
---   coe_injective' f g h := by cases f <;> cases g <;> congr
---   map_mul := MulHom.map_mul'
--- #align mul_hom.mul_hom_class MulHom.mulHomClass
+@[to_additive]
+instance MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
+  coe := MulHom.toFun
+  coe_injective' f g h := by cases f; cases g; congr
+  map_mul := MulHom.map_mul'
+#align mul_hom.mul_hom_class MulHom.mulHomClass
 
--- @[simp, to_additive]
--- theorem map_mul [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
---   MulHomClass.map_mul f x y
--- #align map_mul map_mul
+@[simp, to_additive]
+theorem map_mul [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
+  MulHomClass.map_mul f x y
+#align map_mul map_mul
 
--- @[to_additive]
--- instance [MulHomClass F M N] : CoeTC F (M →ₙ* N) :=
---   ⟨fun f => { toFun := f, map_mul' := map_mul f }⟩
+@[to_additive]
+instance [MulHomClass F M N] : CoeTC F (M →ₙ* N) :=
+  ⟨fun f => { toFun := f, map_mul' := map_mul f }⟩
 
--- @[simp, to_additive]
--- theorem MulHom.coe_coe [MulHomClass F M N] (f : F) : ((f : MulHom M N) : M → N) = f :=
---   rfl
--- #align mul_hom.coe_coe MulHom.coe_coe
+@[simp, to_additive]
+theorem MulHom.coe_coe [MulHomClass F M N] (f : F) : ((f : MulHom M N) : M → N) = f :=
+  rfl
+#align mul_hom.coe_coe MulHom.coe_coe
 
--- end Mul
+end Mul
 
--- section mul_one
+section mul_one
 
--- variable [MulOneClass M] [MulOneClass N]
+variable [MulOneClass M] [MulOneClass N]
 
--- /-- `M →* N` is the type of functions `M → N` that preserve the `monoid` structure.
--- `monoid_hom` is also used for group homomorphisms.
+/-- `M →* N` is the type of functions `M → N` that preserve the `monoid` structure.
+`monoid_hom` is also used for group homomorphisms.
 
--- When possible, instead of parametrizing results over `(f : M →+ N)`,
--- you should parametrize over `(F : Type*) [monoid_hom_class F M N] (f : F)`.
+When possible, instead of parametrizing results over `(f : M →+ N)`,
+you should parametrize over `(F : Type*) [monoid_hom_class F M N] (f : F)`.
 
--- When you extend this structure, make sure to extend `monoid_hom_class`.
--- -/
--- @[to_additive]
--- structure MonoidHom (M : Type _) (N : Type _) [MulOneClass M] [MulOneClass N] extends OneHom M N, M →ₙ* N
--- #align monoid_hom MonoidHom
+When you extend this structure, make sure to extend `monoid_hom_class`.
+-/
+@[to_additive]
+structure MonoidHom (M : Type _) (N : Type _) [MulOneClass M] [MulOneClass N] extends
+  OneHom M N, M →ₙ* N
+#align monoid_hom MonoidHom
 
+-- Porting notes: attributes omitted
 -- attribute [nolint doc_blame] MonoidHom.toMulHom
 
 -- attribute [nolint doc_blame] MonoidHom.toOneHom
 
--- -- mathport name: «expr →* »
--- infixr:25 " →* " => MonoidHom
+-- mathport name: «expr →* »
+infixr:25 " →* " => MonoidHom
 
--- /-- `monoid_hom_class F M N` states that `F` is a type of `monoid`-preserving homomorphisms.
--- You should also extend this typeclass when you extend `monoid_hom`. -/
--- @[to_additive
---       "`add_monoid_hom_class F M N` states that `F` is a type of `add_monoid`-preserving homomorphisms.\nYou should also extend this typeclass when you extend `add_monoid_hom`."]
--- class MonoidHomClass (F : Type _) (M N : outParam <| Type _) [MulOneClass M] [MulOneClass N] extends MulHomClass F M N,
---   OneHomClass F M N
--- #align monoid_hom_class MonoidHomClass
+/-- `monoid_hom_class F M N` states that `F` is a type of `monoid`-preserving homomorphisms.
+You should also extend this typeclass when you extend `monoid_hom`. -/
+-- Porting notes: see porting notes of ZeroHomClass
+@[to_additive AddMonoidHomClass
+  "`AddMonoidHomClass F M N` states that `F` is a type of `AddMonoid`-preserving homomorphisms.
+  You should also extend this typeclass when you extend `AddMonoidHom`."]
+class MonoidHomClass (F : Type _) (M N : outParam <| Type _)
+  [outParam <| MulOneClass M] [outParam <| MulOneClass N] extends
+  MulHomClass F M N, OneHomClass F M N
+#align monoid_hom_class MonoidHomClass
 
--- @[to_additive]
--- instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
---   coe := MonoidHom.toFun
---   coe_injective' f g h := by cases f <;> cases g <;> congr
---   map_mul := MonoidHom.map_mul'
---   map_one := MonoidHom.map_one'
--- #align monoid_hom.monoid_hom_class MonoidHom.monoidHomClass
+@[to_additive]
+instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
+  coe f := f.toFun
+  coe_injective' f g h := by
+    cases f
+    cases g
+    congr
+    apply OneHom.oneHomClass.coe_injective'
+    exact h
+  map_mul := MonoidHom.map_mul'
+  map_one f := f.toOneHom.map_one'
+#align monoid_hom.monoid_hom_class MonoidHom.monoidHomClass
 
--- @[to_additive]
--- instance [MonoidHomClass F M N] : CoeTC F (M →* N) :=
---   ⟨fun f => { toFun := f, map_one' := map_one f, map_mul' := map_mul f }⟩
+@[to_additive]
+instance [MonoidHomClass F M N] : CoeTC F (M →* N) :=
+  ⟨fun f => { toFun := f, map_one' := map_one f, map_mul' := map_mul f }⟩
 
--- @[simp, to_additive]
--- theorem MonoidHom.coe_coe [MonoidHomClass F M N] (f : F) : ((f : M →* N) : M → N) = f :=
---   rfl
--- #align monoid_hom.coe_coe MonoidHom.coe_coe
+@[simp, to_additive]
+theorem MonoidHom.coe_coe [MonoidHomClass F M N] (f : F) : ((f : M →* N) : M → N) = f := rfl
+#align monoid_hom.coe_coe MonoidHom.coe_coe
 
--- @[to_additive]
--- theorem map_mul_eq_one [MonoidHomClass F M N] (f : F) {a b : M} (h : a * b = 1) : f a * f b = 1 := by
---   rw [← map_mul, h, map_one]
--- #align map_mul_eq_one map_mul_eq_one
+@[to_additive]
+theorem map_mul_eq_one [MonoidHomClass F M N] (f : F) {a b : M} (h : a * b = 1) : f a * f b = 1 :=
+  by rw [← map_mul, h, map_one]
+#align map_mul_eq_one map_mul_eq_one
 
--- @[to_additive]
--- theorem map_div' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f : F) (hf : ∀ a, f a⁻¹ = (f a)⁻¹)
---     (a b : G) : f (a / b) = f a / f b := by rw [div_eq_mul_inv, div_eq_mul_inv, map_mul, hf]
--- #align map_div' map_div'
+@[to_additive]
+theorem map_div' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f : F) (hf : ∀ a, f a⁻¹ = (f a)⁻¹)
+    (a b : G) : f (a / b) = f a / f b := by rw [div_eq_mul_inv, div_eq_mul_inv, map_mul, hf]
+#align map_div' map_div'
 
--- /-- Group homomorphisms preserve inverse. -/
--- @[simp, to_additive "Additive group homomorphisms preserve negation."]
--- theorem map_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (a : G) : f a⁻¹ = (f a)⁻¹ :=
---   eq_inv_of_mul_eq_one_left <| map_mul_eq_one f <| inv_mul_self _
--- #align map_inv map_inv
+/-- Group homomorphisms preserve inverse. -/
+@[simp, to_additive "Additive group homomorphisms preserve negation."]
+theorem map_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (a : G) : f a⁻¹ = (f a)⁻¹ :=
+  eq_inv_of_mul_eq_one_left <| map_mul_eq_one f <| inv_mul_self _
+#align map_inv map_inv
 
--- /-- Group homomorphisms preserve division. -/
--- @[simp, to_additive "Additive group homomorphisms preserve subtraction."]
--- theorem map_mul_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (a b : G) :
---     f (a * b⁻¹) = f a * (f b)⁻¹ := by rw [map_mul, map_inv]
--- #align map_mul_inv map_mul_inv
+/-- Group homomorphisms preserve division. -/
+@[simp, to_additive "Additive group homomorphisms preserve subtraction."]
+theorem map_mul_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (a b : G) :
+    f (a * b⁻¹) = f a * (f b)⁻¹ := by rw [map_mul, map_inv]
+#align map_mul_inv map_mul_inv
 
--- /-- Group homomorphisms preserve division. -/
--- @[simp, to_additive "Additive group homomorphisms preserve subtraction."]
--- theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) : ∀ a b, f (a / b) = f a / f b :=
---   map_div' _ <| map_inv f
--- #align map_div map_div
+/-- Group homomorphisms preserve division. -/
+@[simp, to_additive "Additive group homomorphisms preserve subtraction."]
+theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) : ∀ a b, f (a / b) = f a / f b :=
+  map_div' _ <| map_inv f
+#align map_div map_div
 
--- -- to_additive puts the arguments in the wrong order, so generate an auxiliary lemma, then
--- -- swap its arguments.
--- @[to_additive MapNsmul.aux, simp]
--- theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) : ∀ n : ℕ, f (a ^ n) = f a ^ n
---   | 0 => by rw [pow_zero, pow_zero, map_one]
---   | n + 1 => by rw [pow_succ, pow_succ, map_mul, map_pow]
--- #align map_pow map_pow
+-- to_additive puts the arguments in the wrong order, so generate an auxiliary lemma, then
+-- swap its arguments.
+@[to_additive MapNsmul.aux, simp]
+theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) : ∀ n : ℕ, f (a ^ n) = f a ^ n
+  | 0 => by rw [pow_zero, pow_zero, map_one]
+  | n + 1 => by rw [pow_succ, pow_succ, map_mul, map_pow]
+#align map_pow map_pow
 
--- @[simp]
--- theorem map_nsmul [AddMonoid G] [AddMonoid H] [AddMonoidHomClass F G H] (f : F) (n : ℕ) (a : G) : f (n • a) = n • f a :=
---   MapNsmul.aux f a n
--- #align map_nsmul map_nsmul
+@[simp]
+theorem map_nsmul [AddMonoid G] [AddMonoid H] [AddMonoidHomClass F G H] (f : F) (n : ℕ) (a : G) : f (n • a) = n • f a :=
+  MapNsmul.aux f a n
+#align map_nsmul map_nsmul
 
--- attribute [to_additive_reorder 8, to_additive] map_pow
+attribute [to_additive_reorder 8, to_additive] map_pow
 
--- @[to_additive]
--- theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f : F) (hf : ∀ x : G, f x⁻¹ = (f x)⁻¹)
---     (a : G) : ∀ n : ℤ, f (a ^ n) = f a ^ n
---   | (n : ℕ) => by rw [zpow_coe_nat, map_pow, zpow_coe_nat]
---   | -[n+1] => by rw [zpow_neg_succ_of_nat, hf, map_pow, ← zpow_neg_succ_of_nat]
--- #align map_zpow' map_zpow'
+@[to_additive]
+theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f : F) (hf : ∀ x : G, f x⁻¹ = (f x)⁻¹)
+    (a : G) : ∀ n : ℤ, f (a ^ n) = f a ^ n
+  | (n : ℕ) => by rw [zpow_coe_nat, map_pow, zpow_coe_nat]
+  | -[n+1] => by rw [zpow_neg_succ_of_nat, hf, map_pow, ← zpow_neg_succ_of_nat]
+#align map_zpow' map_zpow'
 
--- -- to_additive puts the arguments in the wrong order, so generate an auxiliary lemma, then
--- -- swap its arguments.
--- /-- Group homomorphisms preserve integer power. -/
--- @[to_additive MapZsmul.aux, simp]
--- theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n :=
---   map_zpow' f (map_inv f) g n
--- #align map_zpow map_zpow
+-- to_additive puts the arguments in the wrong order, so generate an auxiliary lemma, then
+-- swap its arguments.
+/-- Group homomorphisms preserve integer power. -/
+@[to_additive MapZsmul.aux, simp]
+theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n :=
+  map_zpow' f (map_inv f) g n
+#align map_zpow map_zpow
 
--- /-- Additive group homomorphisms preserve integer scaling. -/
--- theorem map_zsmul [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass F G H] (f : F) (n : ℤ) (g : G) :
---     f (n • g) = n • f g :=
---   MapZsmul.aux f g n
--- #align map_zsmul map_zsmul
+/-- Additive group homomorphisms preserve integer scaling. -/
+theorem map_zsmul [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass F G H] (f : F) (n : ℤ) (g : G) :
+    f (n • g) = n • f g :=
+  MapZsmul.aux f g n
+#align map_zsmul map_zsmul
 
--- attribute [to_additive_reorder 8, to_additive] map_zpow
+attribute [to_additive_reorder 8, to_additive] map_zpow
 
--- end mul_one
+end mul_one
 
 -- section MulZeroOne
 
