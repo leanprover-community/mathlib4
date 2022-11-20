@@ -171,6 +171,8 @@ theorem mul_two (n : α) : n * 2 = n + n :=
   (congrArg₂ _ rfl one_add_one_eq_two.symm).trans <| (left_distrib n 1 1).trans (by rw [mul_one])
 #align mul_two mul_two
 
+end Semiring
+
 @[to_additive]
 theorem mul_ite {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
     (a * if P then b else c) = if P then a * b else a * c := by split_ifs <;> rfl
@@ -213,8 +215,6 @@ theorem ite_and_mul_zero {α : Type _} [MulZeroClass α] (P Q : Prop) [Decidable
     (a b : α) : ite (P ∧ Q) (a * b) 0 = ite P a 0 * ite Q b 0 := by
   simp only [← ite_and, ite_mul, mul_ite, mul_zero, zero_mul, and_comm]
 #align ite_and_mul_zero ite_and_mul_zero
-
-end Semiring
 
 /-- A non-unital commutative semiring is a `non_unital_semiring` with commutative multiplication.
 In other words, it is a type with the following structures: additive commutative monoid
