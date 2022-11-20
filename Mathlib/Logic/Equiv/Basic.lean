@@ -4,23 +4,18 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 Ported by: Kevin Buzzard, Ruben Vorster
 -/
-import Mathlib.Logic.Equiv.Defs
 import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
+import Mathlib.Init.Data.Sigma.Basic
+import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.GeneralizeProofs
-import Mathlib.Init.Data.Sigma.Basic
--- **TODO** review tactic imports to see what we actually used.
-
--- **TODO** remove these later
-set_option autoImplicit false
 
 /-!
 # Equivalence between types
@@ -49,6 +44,8 @@ In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lea
 equivalence, congruence, bijective map
 -/
 
+-- **TODO** remove these later
+set_option autoImplicit false
 
 open Function
 
