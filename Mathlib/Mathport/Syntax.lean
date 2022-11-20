@@ -439,6 +439,8 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- M -/ syntax (name := pure_coherence) "pure_coherence" : tactic
 /- M -/ syntax (name := coherence) "coherence" : tactic
 
+/- E -/ syntax (name := pgameWFTac) "pgame_wf_tac" : tactic
+
 namespace Conv
 
 -- https://github.com/leanprover-community/mathlib/issues/2882
