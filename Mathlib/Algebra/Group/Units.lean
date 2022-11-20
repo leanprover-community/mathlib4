@@ -70,7 +70,7 @@ structure AddUnits (α : Type u) [AddMonoid α] where
   /-- `neg` is the left additive inverse of `val` in the base `AddMonoid`. -/
   neg_val : neg + val = 0
 
-attribute [to_additive AddUnits] Units
+attribute [to_additive] Units
 
 section HasElem
 
@@ -84,18 +84,11 @@ namespace Units
 
 variable [Monoid α]
 
+@[to_additive]
 instance : Coe αˣ α :=
   ⟨val⟩
 
--- Porting note: `to_additive` didn't generate this
-variable {β : Type _} [AddMonoid β] in
-instance : Coe (AddUnits β) β :=
-  ⟨AddUnits.val⟩
-
-attribute [to_additive instCoeAddUnits] instCoeUnits
-
--- Porting note: `to_additive` names the instance `instInvUnits` currently
-@[to_additive AddUnits.instNegAddUnits]
+@[to_additive]
 instance : Inv αˣ :=
   ⟨fun u => ⟨u.2, u.1, u.4, u.3⟩⟩
 
@@ -456,14 +449,14 @@ variable {M : Type _} {N : Type _}
 /-- An element `a : M` of a monoid is a unit if it has a two-sided inverse.
 The actual definition says that `a` is equal to some `u : Mˣ`, where
 `Mˣ` is a bundled version of `IsUnit`. -/
-@[to_additive IsAddUnit
+@[to_additive
       "An element `a : M` of an AddMonoid is an `AddUnit` if it has\na two-sided additive inverse.
       The actual definition says that `a` is equal to some\n`u : add_units M`,
       where `AddUnits M` is a bundled version of `IsAddUnit`."]
 def IsUnit [Monoid M] (a : M) : Prop :=
   ∃ u : Mˣ, (u : M) = a
 
-@[nontriviality, to_additive isAddUnit_of_subsingleton]
+@[nontriviality, to_additive]
 theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
   ⟨⟨a, a, Subsingleton.elim _ _, Subsingleton.elim _ _⟩, rfl⟩
 #align is_unit_of_subsingleton isUnit_of_subsingleton
@@ -510,7 +503,7 @@ theorem IsUnit.exists_left_inv [Monoid M] {a : M} (h : IsUnit a) : ∃ b, b * a 
 theorem isUnit_iff_exists_inv [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, a * b = 1 :=
   ⟨fun h => h.exists_right_inv, fun ⟨b, hab⟩ => isUnit_of_mul_eq_one _ b hab⟩
 attribute [to_additive isAddUnit_iff_exists_neg.match_1] isUnit_iff_exists_inv.match_1
-attribute [to_additive isAddUnit_iff_exists_neg] isUnit_iff_exists_inv
+attribute [to_additive] isUnit_iff_exists_inv
 #align is_unit_iff_exists_inv isUnit_iff_exists_inv
 #align is_add_unit_iff_exists_neg isAddUnit_iff_exists_neg
 
@@ -521,7 +514,7 @@ theorem isUnit_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, b * 
 -- Porting note: manually added because `to_additive` complained
 theorem isAddUnit_iff_exists_neg' [AddCommMonoid M] {a : M} : IsAddUnit a ↔ ∃ b, b + a = 0 := by
   simp [isAddUnit_iff_exists_neg, add_comm]
-attribute [to_additive isAddUnit_iff_exists_neg'] isUnit_iff_exists_inv'
+attribute [to_additive] isUnit_iff_exists_inv'
 #align is_add_unit_iff_exists_neg' isAddUnit_iff_exists_neg'
 
 @[to_additive]
@@ -567,7 +560,7 @@ theorem isUnit_of_mul_isUnit_left [CommMonoid M] {x y : M} (hu : IsUnit (x * y))
   isUnit_iff_exists_inv.2 ⟨y * z, by rwa [← mul_assoc]⟩
 #align is_unit_of_mul_is_unit_left isUnit_of_mul_isUnit_left
 attribute [to_additive isAddUnit_of_add_isAddUnit_left.match_1] isUnit_of_mul_isUnit_left.match_1
-attribute [to_additive isAddUnit_of_add_isAddUnit_left] isUnit_of_mul_isUnit_left
+attribute [to_additive] isUnit_of_mul_isUnit_left
 #align is_add_unit_of_add_is_unit_left isAddUnit_of_add_isAddUnit_left
 
 @[to_additive]
