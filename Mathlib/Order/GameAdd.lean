@@ -10,14 +10,14 @@ import Mathlib.Order.Basic
 # Game addition relation
 
 This file defines, given relations `rα : α → α → Prop` and `rβ : β → β → Prop`, a relation
-`prod.GameAdd` on pairs, such that `GameAdd rα rβ x y` iff `x` can be reached from `y` by
+`Prod.GameAdd` on pairs, such that `GameAdd rα rβ x y` iff `x` can be reached from `y` by
 decreasing either entry (with respect to `rα` and `rβ`). It is so called since it models the
 subsequency relation on the addition of combinatorial games.
 
 ## Main definitions and results
 
 - `Prod.GameAdd`: the game addition relation on ordered pairs.
-- `WellFounded.Prod_GameAdd`: formalizes induction on ordered pairs, where exactly one entry
+- `WellFounded.prod_gameAdd`: formalizes induction on ordered pairs, where exactly one entry
   decreases at a time.
 
 ## Todo
@@ -27,7 +27,7 @@ subsequency relation on the addition of combinatorial games.
 -/
 
 
-variable {α β : Type _} (rα : α → α → Prop) (rβ : β → β → Prop)
+variable (rα : α → α → Prop) (rβ : β → β → Prop)
 
 namespace Prod
 
@@ -60,7 +60,7 @@ variable {rα rβ}
 /-- If `a` is accessible under `rα` and `b` is accessible under `rβ`, then `(a, b)` is
   accessible under `Prod.GameAdd rα rβ`. Notice that `Prod.lexAccessible` requires the
   stronger condition `∀ b, Acc rβ b`. -/
-theorem Acc.prod_gameAdd {a b} (ha : Acc rα a) (hb : Acc rβ b) :
+theorem Acc.prod_gameAdd (ha : Acc rα a) (hb : Acc rβ b) :
     Acc (Prod.GameAdd rα rβ) (a, b) := by
   induction' ha with a ha iha generalizing b
   induction' hb with b hb ihb
