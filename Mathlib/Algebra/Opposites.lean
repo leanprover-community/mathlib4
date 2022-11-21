@@ -40,16 +40,16 @@ open Function
 /-- Multiplicative opposite of a type. This type inherits all additive structures on `α` and
 reverses left and right in multiplication.-/
 @[to_additive
-      "Additive opposite of a type. This type inherits all multiplicative structures on\n
+      "Additive opposite of a type. This type inherits all multiplicative structures on
       `α` and reverses left and right in addition."]
 def MulOpposite (α : Type u) : Type u :=
   α
 #align mul_opposite MulOpposite
 
--- mathport name: «expr ᵐᵒᵖ»
+/-- Multiplicative opposite of a type. -/
 postfix:max "ᵐᵒᵖ" => MulOpposite
 
--- mathport name: «expr ᵃᵒᵖ»
+/-- Additive opposite of a type. -/
 postfix:max "ᵃᵒᵖ" => AddOpposite
 
 variable {α : Type u}
@@ -150,32 +150,36 @@ theorem unop_inj {x y : αᵐᵒᵖ} : unop x = unop y ↔ x = y :=
 
 variable (α)
 
--- @[to_additive]
+@[to_additive]
 instance [Nontrivial α] : Nontrivial αᵐᵒᵖ :=
   op_injective.nontrivial
-
-attribute [to_additive AddOpposite.instNontrivialAddOpposite] MulOpposite.instNontrivialMulOpposite
+attribute [instance] AddOpposite.instNontrivialAddOpposite
 
 @[to_additive]
 instance [Inhabited α] : Inhabited αᵐᵒᵖ :=
   ⟨op default⟩
+attribute [instance] AddOpposite.instInhabitedAddOpposite
 
 @[to_additive]
 instance [Subsingleton α] : Subsingleton αᵐᵒᵖ :=
   unop_injective.subsingleton
+attribute [instance] AddOpposite.instSubsingletonAddOpposite
 
 @[to_additive]
 instance [Unique α] : Unique αᵐᵒᵖ :=
   Unique.mk' _
+attribute [instance] AddOpposite.instUniqueAddOpposite
 
 @[to_additive]
 instance [IsEmpty α] : IsEmpty αᵐᵒᵖ :=
   Function.isEmpty unop
+attribute [instance] AddOpposite.instIsEmptyAddOpposite
 
 instance [Zero α] : Zero αᵐᵒᵖ where zero := op 0
 
 @[to_additive]
 instance [One α] : One αᵐᵒᵖ where one := op 1
+attribute [instance] AddOpposite.instZeroAddOpposite
 
 instance [Add α] : Add αᵐᵒᵖ where add x y := op (unop x + unop y)
 
@@ -188,16 +192,20 @@ instance [HasInvolutiveNeg α] : HasInvolutiveNeg αᵐᵒᵖ :=
 
 @[to_additive]
 instance [Mul α] : Mul αᵐᵒᵖ where mul x y := op (unop y * unop x)
+attribute [instance] AddOpposite.instAddAddOpposite
 
 @[to_additive]
 instance [Inv α] : Inv αᵐᵒᵖ where inv x := op $ (unop x)⁻¹
+attribute [instance] AddOpposite.instNegAddOpposite
 
 @[to_additive]
 instance [HasInvolutiveInv α] : HasInvolutiveInv αᵐᵒᵖ :=
   { MulOpposite.instInvMulOpposite α with inv_inv := fun _ => unop_injective $ inv_inv _ }
+attribute [instance] AddOpposite.instHasInvolutiveNegAddOpposite
 
 @[to_additive]
 instance (R : Type _) [HasSmul R α] : HasSmul R αᵐᵒᵖ where smul c x := op (c • unop x)
+attribute [instance] AddOpposite.instHasVaddAddOpposite
 
 section
 
