@@ -55,7 +55,7 @@ theorem cast_zero : ((0 : ℤ) : R) = 0 :=
   (AddGroupWithOne.intCast_ofNat 0).trans Nat.cast_zero
 #align int.cast_zero Int.cast_zeroₓ
 
-@[simp high, nolint simpNF, norm_cast] -- this lemma competes with `Int.ofNat_eq_cast` to come later
+@[simp high, nolint simpNF] -- this lemma competes with `Int.ofNat_eq_cast` to come later
 theorem cast_ofNat (n : ℕ) : ((n : ℤ) : R) = n :=
   AddGroupWithOne.intCast_ofNat _
 #align int.cast_coe_nat Int.cast_ofNatₓ
@@ -65,14 +65,14 @@ theorem cast_one : ((1 : ℤ) : R) = 1 := by
   erw [cast_ofNat, Nat.cast_one]
 #align int.cast_one Int.cast_oneₓ
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem cast_neg : ∀ n, ((-n : ℤ) : R) = -n
   | (0 : ℕ) => by erw [cast_zero, neg_zero]
   | (n + 1 : ℕ) => by erw [cast_ofNat, cast_negSucc]
   | -[n+1] => by erw [cast_ofNat, cast_negSucc, neg_neg]
 #align int.cast_neg Int.cast_negₓ
 
-@[simp]
+@[simp, norm_cast]
 theorem cast_subNatNat (m n) : ((Int.subNatNat m n : ℤ) : R) = m - n := by
   unfold subNatNat
   cases e : n - m
@@ -89,7 +89,7 @@ theorem cast_subNatNat (m n) : ((Int.subNatNat m n : ℤ) : R) = m - n := by
 theorem cast_negOfNat (n : ℕ) : ((negOfNat n : ℤ) : R) = -n := by simp [Int.cast_neg, negOfNat_eq]
 #align int.cast_neg_of_nat Int.cast_negOfNat
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem cast_add : ∀ m n, ((m + n : ℤ) : R) = m + n
   | (m : ℕ), (n : ℕ) => by simp [← Int.ofNat_add, Nat.cast_add]
   | (m : ℕ), -[n+1] => by erw [cast_subNatNat, cast_ofNat, cast_negSucc, sub_eq_add_neg]
@@ -102,7 +102,7 @@ theorem cast_add : ∀ m n, ((m + n : ℤ) : R) = m + n
         Nat.add_right_comm m n 1, Nat.add_assoc, Nat.add_comm]
 #align int.cast_add Int.cast_addₓ
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem cast_sub (m n) : ((m - n : ℤ) : R) = m - n := by
   simp [Int.sub_eq_add_neg, sub_eq_add_neg, Int.cast_neg, Int.cast_add]
 #align int.cast_sub Int.cast_subₓ
