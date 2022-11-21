@@ -84,8 +84,9 @@ namespace Units
 
 variable [Monoid α]
 
+-- Porting note: unclear whether this should be a `CoeHead` or `CoeTail`
 @[to_additive]
-instance : Coe αˣ α :=
+instance : CoeHead αˣ α :=
   ⟨val⟩
 
 @[to_additive]
