@@ -25,7 +25,11 @@ import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.CategoryTheory.Functor.Basic
+import Mathlib.CategoryTheory.Functor.Category
+import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+import Mathlib.CategoryTheory.NatTrans
 import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Control.Random
 import Mathlib.Control.ULift
