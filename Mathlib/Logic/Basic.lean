@@ -146,6 +146,9 @@ theorem PLift.down_injective {α : Sort _} : Function.Injective (@PLift.down α)
 @[simp] theorem eq_iff_eq_cancel_right {a b : α} : (∀ {c}, a = c ↔ b = c) ↔ a = b :=
   ⟨fun h => by rw [h], fun h a => by rw [h]⟩
 
+lemma ne_and_eq_iff_right {α : Type _} {a b c : α} (h : b ≠ c) : a ≠ b ∧ a = c ↔ a = c :=
+  and_iff_right_of_imp (fun h2 => h2.symm ▸ h.symm)
+
 /-- Wrapper for adding elementary propositions to the type class systems.
 Warning: this can easily be abused. See the rest of this docstring for details.
 
