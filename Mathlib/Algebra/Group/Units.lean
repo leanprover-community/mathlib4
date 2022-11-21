@@ -85,23 +85,23 @@ namespace Units
 variable [Monoid α]
 
 -- Porting note: unclear whether this should be a `CoeHead` or `CoeTail`
-@[to_additive]
+/-- A unit can be interpreted as a term in the base `Monoid`. -/
+@[to_additive "An additive unit can be interpreted as a term in the base `AddMonoid`."]
 instance : CoeHead αˣ α :=
   ⟨val⟩
 
-@[to_additive]
+/-- The inverse of a unit in a `Monoid`. -/
+@[to_additive "The additive inverse of an additive unit in an `AddMonoid`."]
 instance : Inv αˣ :=
   ⟨fun u => ⟨u.2, u.1, u.4, u.3⟩⟩
 
--- Porting note: before, had `@[to_additive " See Note [custom simps projection] "]`
 /-- See Note [custom simps projection] -/
-@[to_additive]
+@[to_additive "See Note [custom simps projection]"]
 def Simps.coe (u : αˣ) : α :=
   u
 
--- Porting note: before, had `@[to_additive " See Note [custom simps projection] "]`
 /-- See Note [custom simps projection] -/
-@[to_additive]
+@[to_additive "See Note [custom simps projection]"]
 def Simps.coeInv (u : αˣ) : α :=
   ((u⁻¹ : αˣ) : α)
 
@@ -134,7 +134,9 @@ theorem eq_iff {a b : αˣ} : (a : α) = b ↔ a = b :=
 theorem ext_iff {a b : αˣ} : a = b ↔ (a : α) = b :=
   eq_iff.symm
 
-@[to_additive]
+/-- Units have decidable equality if the base `Monoid` has deciable equality. -/
+@[to_additive "Additive units have decidable equality
+if the base `AddMonoid` has deciable equality."]
 instance [DecidableEq α] : DecidableEq αˣ := fun _ _ => decidable_of_iff' _ ext_iff
 
 @[simp, to_additive]
@@ -142,7 +144,7 @@ theorem mk_coe (u : αˣ) (y h₁ h₂) : mk (u : α) y h₁ h₂ = u :=
   ext rfl
 
 /-- Copy a unit, adjusting definition equalities. -/
-@[to_additive "Copy an `add_unit`, adjusting definitional equalities.", simps]
+@[to_additive "Copy an `AddUnit`, adjusting definitional equalities.", simps]
 def copy (u : αˣ) (val : α) (hv : val = u) (inv : α) (hi : inv = ↑u⁻¹) : αˣ :=
   { val, inv, inv_val := hv.symm ▸ hi.symm ▸ u.inv_val, val_inv := hv.symm ▸ hi.symm ▸ u.val_inv }
 
@@ -150,7 +152,8 @@ def copy (u : αˣ) (val : α) (hv : val = u) (inv : α) (hi : inv = ↑u⁻¹) 
 theorem copy_eq (u : αˣ) (val hv inv hi) : u.copy val hv inv hi = u :=
   ext hv
 
-@[to_additive]
+/-- Units of a monoid form have a multiplication and multiplicative identity. -/
+@[to_additive "Additive units of an additive monoid have an addition and an additive identity."]
 instance : MulOneClass αˣ where
   mul u₁ u₂ :=
     ⟨u₁.val * u₂.val, u₂.inv * u₁.inv,
@@ -168,16 +171,21 @@ instance : Group αˣ :=
     mul_assoc := fun _ _ _ => ext <| mul_assoc _ _ _,
     inv := Inv.inv, mul_left_inv := fun u => ext u.inv_val }
 
-@[to_additive]
+/-- Units of a commutitive monoid form a commutitive group. -/
+@[to_additive "Additive units of an additive commutitive monoid form
+an additive commutitive group."]
 instance {α} [CommMonoid α] : CommGroup αˣ :=
   { (inferInstance : Group αˣ) with
     mul_comm := fun _ _ => ext <| mul_comm _ _ }
 
-@[to_additive]
+/-- Units of a monoid are inhabited because `1` is a unit. -/
+@[to_additive "Additive units of an additive monoid are inhabtied because `0` is an additive unit."]
 instance : Inhabited αˣ :=
   ⟨1⟩
 
-@[to_additive]
+/-- Units of a monoid have a representation of the base value in the `Monoid`. -/
+@[to_additive "Additive units of an addditive monoid have a representation of the base value in
+the `AddMonoid`."]
 instance [Repr α] : Repr αˣ :=
   ⟨reprPrec ∘ val⟩
 
@@ -204,9 +212,9 @@ theorem coe_eq_one {a : αˣ} : (a : α) = 1 ↔ a = 1 := by rw [← Units.coe_o
 theorem inv_mk (x y : α) (h₁ h₂) : (mk x y h₁ h₂)⁻¹ = mk y x h₂ h₁ :=
   rfl
 
-@[simp, to_additive]
-theorem val_eq_coe : a.val = (↑a : α) :=
-  rfl
+-- Porting note: coercions are now eagerly elaborated, so no need for `val_eq_coe`
+#noalign Units.val_eq_coe
+#noalign AddUnits.val_eq_coe
 
 @[simp, to_additive]
 theorem inv_eq_coe_inv : a.inv = ((a⁻¹ : αˣ) : α) :=
@@ -334,11 +342,11 @@ variable [Monoid α] {a b c : α}
 
 /-- Partial division. It is defined when the
   second argument is invertible, and unlike the division operator
-  in `division_ring` it is not totalized at zero. -/
+  in `DivisionRing` it is not totalized at zero. -/
 def divp (a : α) (u : Units α) : α :=
   a * (u⁻¹ : αˣ)
 
--- mathport name: «expr /ₚ »
+@[inherit_doc]
 infixl:70 " /ₚ " => divp
 
 @[simp]
@@ -467,16 +475,17 @@ attribute [nontriviality] isAddUnit_of_subsingleton
 
 -- Porting note: removing the `CanLift` instance
 
-@[to_additive]
+/-- A subsingleton `Monoid` has a unique unit. -/
+@[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]
 instance [Monoid M] [Subsingleton M] : Unique Mˣ where
   default := 1
   uniq a := Units.coe_eq_one.mp <| Subsingleton.elim (a : M) 1
 
-@[simp, to_additive isAddUnit_AddUnit]
+@[simp, to_additive]
 protected theorem Units.isUnit [Monoid M] (u : Mˣ) : IsUnit (u : M) :=
   ⟨u, rfl⟩
 #align units.is_unit Units.isUnit
-#align is_add_unit_add_unit isAddUnit_Add_unit
+#align is_add_unit_add_unit AddUnits.isAddUnit
 
 @[simp, to_additive]
 theorem isUnit_one [Monoid M] : IsUnit (1 : M) :=
@@ -536,8 +545,8 @@ attribute [to_additive] Units.isUnit_mul_units.match_1
 attribute [to_additive
   "Addition of a `u : add_units M` on the right doesn't\naffect `IsAddUnit`."]
   Units.isUnit_mul_units
-#align units.is_unit_mul_units isUnit_mul_units
-#align add_units.is_add_unit_add_add_units isAddUnit_add_addUnits
+#align units.is_unit_mul_units Units.isUnit_mul_units
+#align add_units.is_add_unit_add_add_units AddUnits.isAddUnit_add_addUnits
 
 -- Porting note: have to explicitly tag `match_1`
 /-- Multiplication by a `u : Mˣ` on the left doesn't affect `IsUnit`. -/
@@ -553,7 +562,7 @@ theorem Units.isUnit_units_mul {M : Type _} [Monoid M] (u : Mˣ) (a : M) :
 attribute [to_additive] Units.isUnit_units_mul.match_1
 attribute [to_additive "Addition of a `u : add_units M` on the left doesn't affect `IsAddUnit`."]
   Units.isUnit_units_mul
-#align add_units.is_add_unit_units_add AddUnits.isAddUnit_units_add
+#align add_units.is_add_unit_units_add AddUnits.isAddUnit_addUnits_add
 
 -- Porting note: have to explicitly tag `match_1` and give names
 theorem isUnit_of_mul_isUnit_left [CommMonoid M] {x y : M} (hu : IsUnit (x * y)) : IsUnit x :=
@@ -594,7 +603,7 @@ an additive monoid which is an additive unit. When `α` is a `SubtractionMonoid`
 protected noncomputable def _root_.IsAddUnit.addUnit [AddMonoid N] {a : N} (h : IsAddUnit a) :
     AddUnits N :=
   (Classical.choose h).copy a (Classical.choose_spec h).symm _ rfl
-#align is_add_unit.add_unit IsUnit.addUnit
+#align is_add_unit.add_unit IsAddUnit.addUnit
 attribute [to_additive IsAddUnit.addUnit] IsUnit.unit
 
 @[simp, to_additive]
@@ -670,7 +679,7 @@ section NoncomputableDefs
 
 variable {M : Type _}
 
-/-- Constructs a `group` structure on a `monoid` consisting only of units. -/
+/-- Constructs a `Group` structure on a `monoid` consisting only of units. -/
 noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Group M :=
   { hM with
     inv := fun a => ↑(h a).unit⁻¹,
@@ -678,7 +687,7 @@ noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Grou
       change ↑(h a).unit⁻¹ * a = 1
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }
 
-/-- Constructs a `comm_group` structure on a `comm_monoid` consisting only of units. -/
+/-- Constructs a `CommGroup` structure on a `CommMonoid` consisting only of units. -/
 noncomputable def commGroupOfIsUnit [hM : CommMonoid M] (h : ∀ a : M, IsUnit a) : CommGroup M :=
   { hM with
     inv := fun a => ↑(h a).unit⁻¹,
