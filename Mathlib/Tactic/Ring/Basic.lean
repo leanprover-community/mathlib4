@@ -835,7 +835,7 @@ theorem cast_pos : IsNat (a : R) n → a = n.rawCast + 0
 theorem cast_zero : IsNat (a : R) (nat_lit 0) → a = 0
   | ⟨e⟩ => by simp [e]
 
-theorem cast_neg [Ring R] : IsInt (a : R) (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
+theorem cast_neg {R} [Ring R] {a : R} : IsInt a (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
   | ⟨e⟩ => by simp [e]
 
 /-- Converts a proof by `norm_num` that `e` is a numeral, into a normalization as a monomial:

@@ -225,7 +225,7 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] 
 instance isTotal_left {r : α → α → Prop} {s : β → β → Prop} [IsTotal α r] :
     IsTotal (α × β) (Lex r s) :=
   ⟨fun ⟨a₁, _⟩ ⟨a₂, _⟩ => (IsTotal.total a₁ a₂).imp (Lex.left _ _) (Lex.left _ _)⟩
-#align is_total_left isTotal_left
+#align prod.is_total_left Prod.isTotal_left
 
 instance isTotal_right {r : α → α → Prop} {s : β → β → Prop} [IsTrichotomous α r] [IsTotal β s] :
     IsTotal (α × β) (Lex r s) :=
@@ -234,7 +234,7 @@ instance isTotal_right {r : α → α → Prop} {s : β → β → Prop} [IsTric
     · exact Or.inl (.left _ _ hij)
     · exact (total_of s a b).imp (.right _) (.right _)
     · exact Or.inr (.left _ _ hji) ⟩
-#align is_total_right isTotal_right
+#align prod.is_total_right Prod.isTotal_right
 
 end Prod
 

@@ -266,7 +266,7 @@ def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.
     let ⟨a', pa'⟩ ← mkOfNat α sα lit
     return { expr := a', proof? := q(IsNat.to_eq $p $pa') }
   | .isNegNat _rα lit p => do
-    let ⟨a', pa'⟩ ← mkOfNat α q(NonUnitalNonAssocSemiring.toAddMonoidWithOne) lit
+    let ⟨a', pa'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
     return { expr := q(-$a'), proof? := q(IsInt.neg_to_eq $p $pa') }
   | .isRat _ .. => failure -- TODO
 

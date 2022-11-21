@@ -5,6 +5,7 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.OrderSynonym
 import Mathlib.Algebra.Group.Semiconj
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupPower.Basic
@@ -22,6 +23,7 @@ import Mathlib.Algebra.Order.Ring
 import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.Defs
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.Control.Random
 import Mathlib.Control.ULift
