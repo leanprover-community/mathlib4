@@ -19,7 +19,7 @@ An element of a `Monoid` is a unit if it has a two-sided inverse.
 * `Units M`: the group of units (i.e., invertible elements) of a monoid.
 * `isUnit x`: a predicate asserting that `x` is a unit (i.e., invertible element) of a monoid.
 
-For both declarations, there is an additive counterpart: `AddUnits` and `OsAddUnit`.
+For both declarations, there is an additive counterpart: `AddUnits` and `IsAddUnit`.
 
 ## Notation
 
@@ -103,11 +103,13 @@ variable [Monoid α]
 @[to_additive "An additive unit can be interpreted as a term in the base `AddMonoid`."]
 instance : CoeHead αˣ α :=
   ⟨val⟩
+attribute [instance] AddUnits.instCoeHeadAddUnits
 
 /-- The inverse of a unit in a `Monoid`. -/
 @[to_additive "The additive inverse of an additive unit in an `AddMonoid`."]
 instance : Inv αˣ :=
   ⟨fun u => ⟨u.2, u.1, u.4, u.3⟩⟩
+attribute [instance] AddUnits.instNegAddUnits
 
 /- porting note: the result of these definitions is syntactically equal to `Units.val` and
 `Units.inv` because of the way coercions work in Lean 4, so there is no need for these custom
@@ -152,6 +154,7 @@ theorem ext_iff {a b : αˣ} : a = b ↔ (a : α) = b :=
 @[to_additive "Additive units have decidable equality
 if the base `AddMonoid` has deciable equality."]
 instance [DecidableEq α] : DecidableEq αˣ := fun _ _ => decidable_of_iff' _ ext_iff
+attribute [instance] AddUnits.instDecidableEqAddUnits
 
 @[simp, to_additive]
 theorem mk_val (u : αˣ) (y h₁ h₂) : mk (u : α) y h₁ h₂ = u :=
@@ -182,6 +185,7 @@ instance : MulOneClass αˣ where
   one := ⟨1, 1, one_mul 1, one_mul 1⟩
   one_mul u := ext <| one_mul (u : α)
   mul_one u := ext <| mul_one (u : α)
+attribute [instance] AddUnits.instAddZeroClassAddUnits
 
 /-- Units of a monoid form a group. -/
 @[to_additive "Additive units of an additive monoid form an additive group."]
@@ -190,24 +194,28 @@ instance : Group αˣ :=
     one := 1,
     mul_assoc := fun _ _ _ => ext <| mul_assoc _ _ _,
     inv := Inv.inv, mul_left_inv := fun u => ext u.inv_val }
+attribute [instance] AddUnits.instAddGroupAddUnits
 
-/-- Units of a commutitive monoid form a commutitive group. -/
-@[to_additive "Additive units of an additive commutitive monoid form
+/-- Units of a commutitive monoid form a commutative group. -/
+@[to_additive "Additive units of an additive commutative monoid form
 an additive commutitive group."]
 instance {α} [CommMonoid α] : CommGroup αˣ :=
   { (inferInstance : Group αˣ) with
     mul_comm := fun _ _ => ext <| mul_comm _ _ }
+attribute [instance] AddUnits.instAddCommGroupAddUnitsToAddMonoid
 
 /-- Units of a monoid are inhabited because `1` is a unit. -/
 @[to_additive "Additive units of an additive monoid are inhabited because `0` is an additive unit."]
 instance : Inhabited αˣ :=
   ⟨1⟩
+attribute [instance] AddUnits.instInhabitedAddUnits
 
 /-- Units of a monoid have a representation of the base value in the `Monoid`. -/
 @[to_additive "Additive units of an addditive monoid have a representation of the base value in
 the `AddMonoid`."]
 instance [Repr α] : Repr αˣ :=
   ⟨reprPrec ∘ val⟩
+attribute [instance] AddUnits.instReprAddUnits
 
 variable (a b c : αˣ) {u : αˣ}
 
@@ -518,11 +526,13 @@ attribute [nontriviality] isAddUnit_of_subsingleton
 
 -- Porting note: removing the `CanLift` instance
 
+-- Porting note: `[to_additive]` places the instance in the `Units` namespace by default
 /-- A subsingleton `Monoid` has a unique unit. -/
-@[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]
+@[to_additive AddUnits.instUniqueAddUnits "A subsingleton `AddMonoid` has a unique additive unit."]
 instance [Monoid M] [Subsingleton M] : Unique Mˣ where
   default := 1
   uniq a := Units.val_eq_one.mp <| Subsingleton.elim (a : M) 1
+attribute [instance] AddUnits.instUniqueAddUnits
 
 @[simp, to_additive]
 protected theorem Units.isUnit [Monoid M] (u : Mˣ) : IsUnit (u : M) :=
@@ -673,8 +683,10 @@ theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
 #align is_add_unit.add_coe_neg IsAddUnit.add_val_neg
 
 /-- `IsUnit x` is decidable if we can decide if `x` comes from `Mˣ`. -/
+@[to_additive]
 instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) :=
   h
+attribute [instance] IsAddUnit.instDecidableIsAddUnit
 
 -- Porting note: have to explicitly tag `match_1`
 theorem mul_left_inj (h : IsUnit a) : b * a = c * a ↔ b = c :=
