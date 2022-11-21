@@ -545,21 +545,31 @@ instance MonoidWithZeroHom.coeToZeroHom {mM : MulZeroOneClass M} {mN : MulZeroOn
 
 -- Porting note: several `coe_eq_xxx` lemmas removed due to new `coe` in Lean4
 
--- Fallback `has_coe_toFun` instances to help the elaborator
-@[to_additive]
-instance {mM : One M} {mN : One N} : CoeFun (OneHom M N) fun _ => M → N :=
-  ⟨OneHom.toFun⟩
+-- Fallback `CoeFun` instances to help the elaborator
+attribute [coe] OneHom.toFun
 
 @[to_additive]
-instance {mM : Mul M} {mN : Mul N} : CoeFun (M →ₙ* N) fun _ => M → N :=
-  ⟨MulHom.toFun⟩
+instance {mM : One M} {mN : One N} : CoeFun (OneHom M N) fun _ => M → N := ⟨OneHom.toFun⟩
+
+attribute [coe] MulHom.toFun
+
+@[to_additive]
+instance {mM : Mul M} {mN : Mul N} : CoeFun (M →ₙ* N) fun _ => M → N := ⟨MulHom.toFun⟩
+
+-- Porting note: `MonoidHom.toFun` is not recognised but also can't be defined (!?)
+@[coe, to_additive]
+def MonoidHom.coeToFun {mM : MulOneClass M} {mN : MulOneClass N} (f : M →* N) := f.toFun
 
 @[to_additive]
 instance {mM : MulOneClass M} {mN : MulOneClass N} : CoeFun (M →* N) fun _ => M → N :=
-  ⟨MonoidHom.toFun⟩
+  ⟨MonoidHom.coeToFun⟩
+
+@[coe]
+def MonoidWithZeroHom.coeToFun {mM : MulZeroOneClass M} {mN : MulZeroOneClass N} (f : M →*₀ N) :=
+  f.toFun
 
 instance {mM : MulZeroOneClass M} {mN : MulZeroOneClass N} : CoeFun (M →*₀ N) fun _ => M → N :=
-  ⟨MonoidWithZeroHom.toFun⟩
+  ⟨MonoidWithZeroHom.coeToFun⟩
 
 -- these must come after the coe_toFun definitions
 initialize_simps_projections ZeroHom (toFun → apply)
