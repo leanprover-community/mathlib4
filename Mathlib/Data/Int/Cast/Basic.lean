@@ -30,7 +30,7 @@ variable {R : Type u} [AddGroupWithOne R]
 theorem cast_sub {m n} (h : m ≤ n) : ((n - m : ℕ) : R) = n - m :=
   eq_sub_of_add_eq <| by rw [← cast_add, Nat.sub_add_cancel h]
 #align nat.cast_sub Nat.cast_subₓ
--- I think this was a dubious translation because of `HasLiftT` appearing in the type signature
+-- `HasLiftT` appeared in the type signature
 
 @[simp, norm_cast]
 theorem cast_pred : ∀ {n}, 0 < n → ((n - 1 : ℕ) : R) = n - 1
@@ -50,25 +50,25 @@ variable {R : Type u} [AddGroupWithOne R]
 theorem cast_negSucc (n : ℕ) : (-[n+1] : R) = -(n + 1 : ℕ) :=
   AddGroupWithOne.intCast_negSucc n
 #align int.cast_neg_succ_of_nat Int.cast_negSuccₓ
--- dubious because for some reason it expected `n` to be implicit, and `HasLiftT`
+-- expected `n` to be implicit, and `HasLiftT`
 
 @[simp, norm_cast]
 theorem cast_zero : ((0 : ℤ) : R) = 0 :=
   (AddGroupWithOne.intCast_ofNat 0).trans Nat.cast_zero
 #align int.cast_zero Int.cast_zeroₓ
--- dubious because of `HasLiftT`
+-- type had `HasLiftT`
 
 @[simp high, nolint simpNF] -- this lemma competes with `Int.ofNat_eq_cast` to come later
 theorem cast_ofNat (n : ℕ) : ((n : ℤ) : R) = n :=
   AddGroupWithOne.intCast_ofNat _
 #align int.cast_coe_nat Int.cast_ofNatₓ
--- dubious because for some reason it expected `n` to be implicit, and `HasLiftT`
+-- expected `n` to be implicit, and `HasLiftT`
 
 @[simp, norm_cast]
 theorem cast_one : ((1 : ℤ) : R) = 1 := by
   erw [cast_ofNat, Nat.cast_one]
 #align int.cast_one Int.cast_oneₓ
--- dubious because of `HasLiftT`
+-- type had `HasLiftT`
 
 @[simp, norm_cast]
 theorem cast_neg : ∀ n, ((-n : ℤ) : R) = -n
@@ -76,7 +76,7 @@ theorem cast_neg : ∀ n, ((-n : ℤ) : R) = -n
   | (n + 1 : ℕ) => by erw [cast_ofNat, cast_negSucc]
   | -[n+1] => by erw [cast_ofNat, cast_negSucc, neg_neg]
 #align int.cast_neg Int.cast_negₓ
--- dubious because of `HasLiftT`
+-- type had `HasLiftT`
 
 @[simp, norm_cast]
 theorem cast_subNatNat (m n) : ((Int.subNatNat m n : ℤ) : R) = m - n := by
@@ -87,7 +87,7 @@ theorem cast_subNatNat (m n) : ((Int.subNatNat m n : ℤ) : R) = m - n := by
   · rw [cast_negSucc, Nat.add_one, ← e, Nat.cast_sub <| _root_.le_of_lt <| Nat.lt_of_sub_eq_succ e,
       neg_sub]
 #align int.cast_sub_nat_nat Int.cast_subNatNatₓ
--- dubious because of `HasLiftT`
+-- type had `HasLiftT`
 
 #align int.neg_of_nat_eq Int.negOfNat_eq
 
@@ -107,13 +107,13 @@ theorem cast_add : ∀ m n, ((m + n : ℤ) : R) = m + n
       rw [cast_negSucc, cast_negSucc, cast_negSucc, ← neg_add_rev, ← Nat.cast_add,
         Nat.add_right_comm m n 1, Nat.add_assoc, Nat.add_comm]
 #align int.cast_add Int.cast_addₓ
--- dubious because of `HasLiftT`
+-- type had `HasLiftT`
 
 @[simp, norm_cast]
 theorem cast_sub (m n) : ((m - n : ℤ) : R) = m - n := by
   simp [Int.sub_eq_add_neg, sub_eq_add_neg, Int.cast_neg, Int.cast_add]
 #align int.cast_sub Int.cast_subₓ
--- dubious because of `HasLiftT`
+-- type had `HasLiftT`
 
 section deprecated
 set_option linter.deprecated false
