@@ -27,11 +27,11 @@ an equivalence `α ≃ β`, and then prove the functor laws. It's then a consequ
 this function is part of an equivalence, provided by `EquivFunctor.mapEquiv`.
 -/
 class EquivFunctor (f : Type u₀ → Type u₁) where
-  /-- `f` preserves equality-/
+  /-- The action of `f` on isomorphisms. -/
   map : ∀ {α β}, α ≃ β → f α → f β
-  /-- `map` of `f` preserves reflectivity-/
+  /-- `map` of `f` preserves the identity morphism. -/
   map_refl' : ∀ α, map (Equiv.refl α) = @id (f α) := by rfl
-  /-- composition of `map`s of `f` over equality preserve transitivity-/
+  /-- `map` is functorial on equivalences. -/
   map_trans' : ∀ {α β γ} (k : α ≃ β) (h : β ≃ γ), map (k.trans h) = map h ∘ map k := by rfl
 #align equiv_functor EquivFunctor
 
