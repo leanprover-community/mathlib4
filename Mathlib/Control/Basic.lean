@@ -81,7 +81,7 @@ variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 
 open List
 
-/-- A generalization of `List.partitionM` which partitions the list according to a monadic
+/-- A generalization of `List.partition` which partitions the list according to a monadic
 predicate. `List.partition` corresponds to the case where `f = Id`. -/
 def List.partitionM {f : Type → Type} [Monad f] {α : Type} (p : α → f Bool) :
     List α → f (List α × List α)
