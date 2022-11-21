@@ -3,12 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathbin.Order.RelClasses
+import Mathlib.Order.RelClasses
 
 /-!
 # Lexicographic ordering of lists.
 
-The lexicographic order on `list α` is defined by `L < M` iff
+The lexicographic order on `List α` is defined by `L < M` iff
 * `[] < (a :: L)` for any `a` and `L`,
 * `(a :: L) < (b :: M)` where `a < b`, or
 * `(a :: L) < (a :: M)` where `L < M`.
@@ -16,11 +16,11 @@ The lexicographic order on `list α` is defined by `L < M` iff
 ## See also
 
 Related files are:
-* `data.finset.colex`: Colexicographic order on finite sets.
-* `data.psigma.order`: Lexicographic order on `Σ' i, α i`.
-* `data.pi.lex`: Lexicographic order on `Πₗ i, α i`.
-* `data.sigma.order`: Lexicographic order on `Σ i, α i`.
-* `data.prod.lex`: Lexicographic order on `α × β`.
+* `Mathlib.Data.Finset.Colex`: Colexicographic order on finite sets.
+* `Mathlib.Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
+* `Mathlib.Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
+* `Mathlib.Data.Sigma.Order`: Lexicographic order on `Σ i, α i`.
+* `Mathlib.Data.Prod.Lex`: Lexicographic order on `α × β`.
 -/
 
 
@@ -35,19 +35,23 @@ variable {α : Type u}
 /-! ### lexicographic ordering -/
 
 
-/-- Given a strict order `<` on `α`, the lexicographic strict order on `list α`, for which
+/-- Given a strict order `<` on `α`, the lexicographic strict order on `List α`, for which
 `[a0, ..., an] < [b0, ..., b_k]` if `a0 < b0` or `a0 = b0` and `[a1, ..., an] < [b1, ..., bk]`.
 The definition is given for any relation `r`, not only strict orders. -/
 inductive Lex (r : α → α → Prop) : List α → List α → Prop
-  | nil {a l} : lex [] (a :: l)
-  | cons {a l₁ l₂} (h : lex l₁ l₂) : lex (a :: l₁) (a :: l₂)
-  | rel {a₁ l₁ a₂ l₂} (h : r a₁ a₂) : lex (a₁ :: l₁) (a₂ :: l₂)
+  | nil {a l} : Lex r [] (a :: l)
+  | cons {a l₁ l₂} (h : Lex r l₁ l₂) : Lex r (a :: l₁) (a :: l₂)
+  | rel {a₁ l₁ a₂ l₂} (h : r a₁ a₂) : Lex r (a₁ :: l₁) (a₂ :: l₂)
 #align list.lex List.Lex
+#align list.lex.nil List.Lex.nil
+#align list.lex.cons List.Lex.cons
+#align list.lex.rel List.Lex.rel
 
 namespace Lex
 
-theorem cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} : Lex r (a :: l₁) (a :: l₂) ↔ Lex r l₁ l₂ :=
-  ⟨fun h => by cases' h with _ _ _ _ _ h _ _ _ _ h <;> [exact h, exact (irrefl_of r a h).elim], Lex.cons⟩
+theorem cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
+    Lex r (a :: l₁) (a :: l₂) ↔ Lex r l₁ l₂ :=
+  ⟨fun h => by cases' h with _ _ _ _ _ h _ _ _ _ h; exacts [h, (irrefl_of r a h).elim], Lex.cons⟩
 #align list.lex.cons_iff List.Lex.cons_iff
 
 @[simp]
@@ -55,10 +59,9 @@ theorem not_nil_right (r : α → α → Prop) (l : List α) : ¬Lex r l [] :=
   fun.
 #align list.lex.not_nil_right List.Lex.not_nil_right
 
-instance is_order_connected (r : α → α → Prop) [IsOrderConnected α r] [IsTrichotomous α r] :
-    IsOrderConnected (List α) (Lex r) :=
-  ⟨fun l₁ =>
-    match l₁ with
+instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTrichotomous α r] :
+    IsOrderConnected (List α) (Lex r) where
+  conn := fun l₁ l₂ l₃ r' => match l₁, l₂, l₃, r' with
     | _, [], c :: l₃, nil => Or.inr nil
     | _, [], c :: l₃, rel _ => Or.inr nil
     | _, [], c :: l₃, cons _ => Or.inr nil
@@ -67,12 +70,9 @@ instance is_order_connected (r : α → α → Prop) [IsOrderConnected α r] [Is
     | a :: l₁, b :: l₂, _ :: l₃, cons h => by
       rcases trichotomous_of r a b with (ab | rfl | ab)
       · exact Or.inl (rel ab)
-        
-      · exact (_match _ l₂ _ h).imp cons cons
-        
+      · exact sorry --(_match _ l₂ _ h).imp cons cons
       · exact Or.inr (rel ab)
-        ⟩
-#align list.lex.is_order_connected List.Lex.is_order_connected
+#align list.lex.is_order_connected List.Lex.isOrderConnected
 
 instance is_trichotomous (r : α → α → Prop) [IsTrichotomous α r] : IsTrichotomous (List α) (Lex r) :=
   ⟨fun l₁ =>
@@ -83,9 +83,9 @@ instance is_trichotomous (r : α → α → Prop) [IsTrichotomous α r] : IsTric
     | a :: l₁, b :: l₂ => by
       rcases trichotomous_of r a b with (ab | rfl | ab)
       · exact Or.inl (rel ab)
-        
+
       · exact (_match l₁ l₂).imp cons (Or.imp (congr_arg _) cons)
-        
+
       · exact Or.inr (Or.inr (rel ab))
         ⟩
 #align list.lex.is_trichotomous List.Lex.is_trichotomous
@@ -111,16 +111,16 @@ instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r]
     refine' decidable_of_iff (r a b ∨ a = b ∧ lex r l₁ l₂) ⟨fun h => _, fun h => _⟩
     · rcases h with (h | ⟨rfl, h⟩)
       · exact lex.rel h
-        
+
       · exact lex.cons h
-        
-      
+
+
     · rcases h with (_ | h | h)
       · exact Or.inr ⟨rfl, h⟩
-        
+
       · exact Or.inl h
-        
-      
+
+
 #align list.lex.decidable_rel List.Lex.decidableRel
 
 theorem append_right (r : α → α → Prop) : ∀ {s₁ s₂} (t), Lex r s₁ s₂ → Lex r s₁ (s₂ ++ t)
@@ -150,18 +150,18 @@ theorem _root_.decidable.list.lex.ne_iff [DecidableEq α] {l₁ l₂ : List α} 
   ⟨to_ne, fun h => by
     induction' l₁ with a l₁ IH generalizing l₂ <;> cases' l₂ with b l₂
     · contradiction
-      
+
     · apply nil
-      
+
     · exact (not_lt_of_ge H).elim (succ_pos _)
-      
+
     · by_cases ab : a = b
       · subst b
         apply cons
         exact IH (le_of_succ_le_succ H) (mt (congr_arg _) h)
-        
+
       · exact rel ab
-        
+
       ⟩
 #align list.lex._root_.decidable.list.lex.ne_iff list.lex._root_.decidable.list.lex.ne_iff
 
@@ -262,4 +262,3 @@ instance hasLe' [LinearOrder α] : LE (List α) :=
 #align list.has_le' List.hasLe'
 
 end List
-
