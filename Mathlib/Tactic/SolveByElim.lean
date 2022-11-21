@@ -22,7 +22,7 @@ def Lean.Meta.getLocalHyps : MetaM (Array Expr) := do
     if !d.isImplementationDetail then hs := hs.push d.toExpr
   return hs
 
-initialize registerTraceClass `solveByElim
+initialize registerTraceClass `Meta.Tactic.solveByElim
 
 namespace Mathlib.Tactic.SolveByElim
 
@@ -71,7 +71,7 @@ def mkAssumptionSet (noDflt : Bool) (hs : List (TSyntax `term)) :
 do
   let hs := hs.map (λ s => Elab.Term.elabTerm s.raw none)
   let hs := if noDflt then hs else
-    ([←`(rfl),←`(trivial),←`(congrFun),←`(congrArg)].map
+    ([← `(rfl), ← `(trivial), ← `(congrFun), ← `(congrArg)].map
        (λ s => Elab.Term.elabTerm s.raw none)) ++ hs
   let locals : TermElabM (List Expr) := if noDflt then pure [] else pure (← getLocalHyps).toList
   return (hs, locals)
@@ -82,7 +82,7 @@ def solveByElimAux (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)
       | 0 => throwError "solve_by_elim exceeded its recursion limit"
       | n + 1 => do
   let goal ← getMainGoal
-  trace[solveByElim] "Working on: {goal}"
+  trace[Meta.Tactic.solveByElim] "Working on: {goal}"
   let es ← Elab.Term.TermElabM.run' do
     let ctx' ← ctx
     let lemmas' ← lemmas.mapM id
@@ -90,11 +90,10 @@ def solveByElimAux (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)
 
   -- We attempt to find an expression which can be applied,
   -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
-  es.firstM (fun e => do
-    trace[solveByElim] "Trying to apply: {e}"
+  es.firstM fun e => do
+    trace[Meta.Tactic.solveByElim] "Trying to apply: {e}"
     liftMetaTactic (fun mvarId => mvarId.apply e)
-    solveByElimAux lemmas ctx n)
-
+    solveByElimAux lemmas ctx n
 
 /-- Attempt to solve the given metavariable by repeating applying one of the given expressions,
 or a local hypothesis. -/
@@ -117,20 +116,36 @@ By default, the assumptions passed to `apply` are the local context, `rfl`, `tri
 `congrFun` and `congrArg`.
 
 The assumptions can be modified with similar syntax as for `simp`:
-* `solve_by_elim [h₁, h₂, ..., hᵣ]` also applies the named lemmas.
-* (not implemented yet) `solve_by_elim with attr₁ ... attrᵣ` also applies all lemmas tagged with
-  the specified attributes.
+* `solve_by_elim [h₁, h₂, ..., hᵣ, attr₁, ... attrᵣ]` also applies the named lemmas, as well as
+  all lemmas tagged with the specified attributes.
 * `solve_by_elim only [h₁, h₂, ..., hᵣ]` does not include the local context,
   `rfl`, `trivial`, `congrFun`, or `congrArg` unless they are explicitly included.
 * (not implemented yet) `solve_by_elim [-id_1, ... -id_n]` uses the default assumptions,
    removing the specified ones.
 
 TODO: configurability via optional arguments.
+<!--
+`solve_by_elim*` tries to solve all goals together, using backtracking if a solution for one goal
+makes other goals impossible.
+
+optional arguments passed via a configuration argument as `solve_by_elim (config := { ... })`
+- `maxDepth`: number of attempts at discharging generated sub-goals
+- `discharger`: a subsidiary tactic to try at each step when no lemmas apply
+  (e.g. `cc` may be helpful).
+- `preApply`: a subsidiary tactic to run at each step before applying lemmas (e.g. `intros`).
+- `accept`: a subsidiary tactic `List Expr → Tactic` that at each step,
+  before any lemmas are applied, is passed the original proof terms
+  as reported by `getGoals` when `solve_by_elim` started
+  (but which may by now have been partially solved by previous `apply` steps).
+  If the `accept` tactic fails,
+  `solve_by_elim` will abort searching the current branch and backtrack.
+  This may be used to filter results, either at every step of the search,
+  or filtering complete results
+  (by testing for the absence of metavariables, and then the filtering condition).
+-->
 -/
 syntax (name := solveByElim) "solve_by_elim" "*"? (config)? (&" only")? (simpArgs)? : tactic
 
 elab_rules : tactic | `(tactic| solve_by_elim $[only%$o]? $[[$[$t:term],*]]?) => withMainContext do
   let es := (t.getD #[]).toList
   solveByElimImpl o.isSome es 6 (← getMainGoal)
-
-end Mathlib.Tactic.SolveByElim
