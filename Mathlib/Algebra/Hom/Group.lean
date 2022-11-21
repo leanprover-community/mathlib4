@@ -212,12 +212,19 @@ class OneHomClass (F : Type _) (M N : outParam <| Type _)
   map_one : ∀ f : F, f 1 = 1
 #align one_hom_class OneHomClass
 
-@[to_additive]
+-- Porting note: restore `to_additive`
+-- @[to_additive]
 instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
   coe := OneHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
   map_one := OneHom.map_one'
 #align one_hom.one_hom_class OneHom.oneHomClass
+instance ZeroHom.zeroHomClass {M N} [Zero M] [Zero N] : ZeroHomClass (ZeroHom M N) M N where
+  coe := ZeroHom.toFun
+  coe_injective' f g h := by cases f; cases g; congr
+  map_zero := ZeroHom.map_zero'
+#align zero_hom.zero_hom_class ZeroHom.zeroHomClass
+attribute [to_additive ZeroHom.zeroHomClass] OneHom.oneHomClass
 
 @[simp, to_additive]
 theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
@@ -545,35 +552,17 @@ instance MonoidWithZeroHom.coeToZeroHom {mM : MulZeroOneClass M} {mN : MulZeroOn
 
 -- Porting note: several `coe_eq_xxx` lemmas removed due to new `coe` in Lean4
 
--- Fallback `CoeFun` instances to help the elaborator
 attribute [coe] OneHom.toFun
 attribute [coe] ZeroHom.toFun
-
--- Porting note: Why isn't to_additive working properly here?
--- @[to_additive]
-instance {mM : One M} {mN : One N} : CoeFun (OneHom M N) fun _ => M → N := ⟨OneHom.toFun⟩
-instance {mM : Zero M} {mN : Zero N} : CoeFun (ZeroHom M N) fun _ => M → N := ⟨ZeroHom.toFun⟩
-
 attribute [coe] MulHom.toFun
 attribute [coe] AddHom.toFun
-
-@[to_additive]
-instance {mM : Mul M} {mN : Mul N} : CoeFun (M →ₙ* N) fun _ => M → N := ⟨MulHom.toFun⟩
-
--- Porting note: `MonoidHom.toFun` is not recognised but also can't be defined (!?)
-@[coe, to_additive]
-def MonoidHom.coeToFun {mM : MulOneClass M} {mN : MulOneClass N} (f : M →* N) := f.toFun
-
-@[to_additive]
-instance {mM : MulOneClass M} {mN : MulOneClass N} : CoeFun (M →* N) fun _ => M → N :=
-  ⟨MonoidHom.coeToFun⟩
 
 @[coe]
 def MonoidWithZeroHom.coeToFun {mM : MulZeroOneClass M} {mN : MulZeroOneClass N} (f : M →*₀ N) :=
   f.toFun
 
-instance {mM : MulZeroOneClass M} {mN : MulZeroOneClass N} : CoeFun (M →*₀ N) fun _ => M → N :=
-  ⟨MonoidWithZeroHom.coeToFun⟩
+-- instance {mM : MulZeroOneClass M} {mN : MulZeroOneClass N} : CoeFun (M →*₀ N) fun _ => M → N :=
+--   ⟨MonoidWithZeroHom.coeToFun⟩
 
 -- these must come after the coe_toFun definitions
 initialize_simps_projections ZeroHom (toFun → apply)
@@ -601,7 +590,7 @@ theorem MonoidHom.coe_mk [MulOneClass M] [MulOneClass N] (f hmul) :
 
 @[simp]
 theorem MonoidWithZeroHom.coe_mk [MulZeroOneClass M] [MulZeroOneClass N] (f h1 hmul) :
-  (MonoidWithZeroHom.mk f h1 hmul : M → N) = f := rfl
+  (MonoidWithZeroHom.mk f h1 hmul : M → N) = (f : M → N) := rfl
 #align monoid_with_zero_hom.coe_mk MonoidWithZeroHom.coe_mk
 
 @[simp, to_additive]
