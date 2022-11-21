@@ -547,11 +547,15 @@ instance MonoidWithZeroHom.coeToZeroHom {mM : MulZeroOneClass M} {mN : MulZeroOn
 
 -- Fallback `CoeFun` instances to help the elaborator
 attribute [coe] OneHom.toFun
+attribute [coe] ZeroHom.toFun
 
-@[to_additive]
+-- Porting note: Why isn't to_additive working properly here?
+-- @[to_additive]
 instance {mM : One M} {mN : One N} : CoeFun (OneHom M N) fun _ => M → N := ⟨OneHom.toFun⟩
+instance {mM : Zero M} {mN : Zero N} : CoeFun (ZeroHom M N) fun _ => M → N := ⟨ZeroHom.toFun⟩
 
 attribute [coe] MulHom.toFun
+attribute [coe] AddHom.toFun
 
 @[to_additive]
 instance {mM : Mul M} {mN : Mul N} : CoeFun (M →ₙ* N) fun _ => M → N := ⟨MulHom.toFun⟩
@@ -573,102 +577,74 @@ instance {mM : MulZeroOneClass M} {mN : MulZeroOneClass N} : CoeFun (M →*₀ N
 
 -- these must come after the coe_toFun definitions
 initialize_simps_projections ZeroHom (toFun → apply)
-
 initialize_simps_projections AddHom (toFun → apply)
-
-initialize_simps_projections AddMonoidHom (toFun → apply)
-
+initialize_simps_projections AddMonoidHom (toZeroHom_toFun → apply, -toZeroHom)
 initialize_simps_projections OneHom (toFun → apply)
-
 initialize_simps_projections MulHom (toFun → apply)
+initialize_simps_projections MonoidHom (toOneHom_toFun → apply, -toOneHom)
+initialize_simps_projections MonoidWithZeroHom (toZeroHom_toFun → apply, -toZeroHom)
 
-initialize_simps_projections MonoidHom (toFun → apply)
-
-initialize_simps_projections MonoidWithZeroHom (toFun → apply)
-
-@[simp, to_additive]
-theorem OneHom.toFun_eq_coe [One M] [One N] (f : OneHom M N) : f.toFun = f :=
-  rfl
-#align one_hom.toFun_eq_coe OneHom.toFun_eq_coe
+-- Porting note: removed several `toFun_eq_coe` lemmas due to new Coe in Lean4
 
 @[simp, to_additive]
-theorem MulHom.toFun_eq_coe [Mul M] [Mul N] (f : M →ₙ* N) : f.toFun = f :=
-  rfl
-#align mul_hom.toFun_eq_coe MulHom.toFun_eq_coe
-
-@[simp, to_additive]
-theorem MonoidHom.toFun_eq_coe [MulOneClass M] [MulOneClass N] (f : M →* N) : f.toFun = f :=
-  rfl
-#align monoid_hom.toFun_eq_coe MonoidHom.toFun_eq_coe
-
-@[simp]
-theorem MonoidWithZeroHom.toFun_eq_coe [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) : f.toFun = f :=
-  rfl
-#align monoid_with_zero_hom.toFun_eq_coe MonoidWithZeroHom.toFun_eq_coe
-
-@[simp, to_additive]
-theorem OneHom.coe_mk [One M] [One N] (f : M → N) (h1) : (OneHom.mk f h1 : M → N) = f :=
-  rfl
+theorem OneHom.coe_mk [One M] [One N] (f : M → N) (h1) : (OneHom.mk f h1 : M → N) = f := rfl
 #align one_hom.coe_mk OneHom.coe_mk
 
 @[simp, to_additive]
-theorem MulHom.coe_mk [Mul M] [Mul N] (f : M → N) (hmul) : (MulHom.mk f hmul : M → N) = f :=
-  rfl
+theorem MulHom.coe_mk [Mul M] [Mul N] (f : M → N) (hmul) : (MulHom.mk f hmul : M → N) = f := rfl
 #align mul_hom.coe_mk MulHom.coe_mk
 
 @[simp, to_additive]
-theorem MonoidHom.coe_mk [MulOneClass M] [MulOneClass N] (f : M → N) (h1 hmul) : (MonoidHom.mk f h1 hmul : M → N) = f :=
-  rfl
+theorem MonoidHom.coe_mk [MulOneClass M] [MulOneClass N] (f hmul) :
+  (MonoidHom.mk f hmul : M → N) = f := rfl
 #align monoid_hom.coe_mk MonoidHom.coe_mk
 
 @[simp]
-theorem MonoidWithZeroHom.coe_mk [MulZeroOneClass M] [MulZeroOneClass N] (f : M → N) (h0 h1 hmul) :
-    (MonoidWithZeroHom.mk f h0 h1 hmul : M → N) = f :=
-  rfl
+theorem MonoidWithZeroHom.coe_mk [MulZeroOneClass M] [MulZeroOneClass N] (f h1 hmul) :
+  (MonoidWithZeroHom.mk f h1 hmul : M → N) = f := rfl
 #align monoid_with_zero_hom.coe_mk MonoidWithZeroHom.coe_mk
 
 @[simp, to_additive]
-theorem MonoidHom.to_one_hom_coe [MulOneClass M] [MulOneClass N] (f : M →* N) : (f.toOneHom : M → N) = f :=
-  rfl
-#align monoid_hom.to_one_hom_coe MonoidHom.to_one_hom_coe
+theorem MonoidHom.to_oneHom_coe [MulOneClass M] [MulOneClass N] (f : M →* N) :
+  (f.toOneHom : M → N) = f := rfl
+#align monoid_hom.to_one_hom_coe MonoidHom.to_oneHom_coe
 
 @[simp, to_additive]
-theorem MonoidHom.to_mul_hom_coe [MulOneClass M] [MulOneClass N] (f : M →* N) : (f.toMulHom : M → N) = f :=
-  rfl
-#align monoid_hom.to_mul_hom_coe MonoidHom.to_mul_hom_coe
+theorem MonoidHom.to_mulHom_coe [MulOneClass M] [MulOneClass N] (f : M →* N) :
+  (f.toMulHom : M → N) = f := rfl
+#align monoid_hom.to_mul_hom_coe MonoidHom.to_mulHom_coe
 
 @[simp]
-theorem MonoidWithZeroHom.to_zero_hom_coe [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) :
-    (f.toZeroHom : M → N) = f :=
-  rfl
-#align monoid_with_zero_hom.to_zero_hom_coe MonoidWithZeroHom.to_zero_hom_coe
+theorem MonoidWithZeroHom.to_zeroHom_coe [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) :
+  (f.toZeroHom : M → N) = f := rfl
+#align monoid_with_zero_hom.to_zero_hom_coe MonoidWithZeroHom.to_zeroHom_coe
 
 @[simp]
-theorem MonoidWithZeroHom.to_monoid_hom_coe [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) :
-    (f.toMonoidHom : M → N) = f :=
-  rfl
-#align monoid_with_zero_hom.to_monoid_hom_coe MonoidWithZeroHom.to_monoid_hom_coe
+theorem MonoidWithZeroHom.to_monoidHom_coe [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) :
+  (f.toMonoidHom : M → N) = f := rfl
+#align monoid_with_zero_hom.to_monoid_hom_coe MonoidWithZeroHom.to_monoidHom_coe
 
-@[ext.1, to_additive]
+@[ext, to_additive]
 theorem OneHom.ext [One M] [One N] ⦃f g : OneHom M N⦄ (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext _ _ h
 #align one_hom.ext OneHom.ext
 
-@[ext.1, to_additive]
+@[ext, to_additive]
 theorem MulHom.ext [Mul M] [Mul N] ⦃f g : M →ₙ* N⦄ (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext _ _ h
 #align mul_hom.ext MulHom.ext
 
-@[ext.1, to_additive]
+@[ext, to_additive]
 theorem MonoidHom.ext [MulOneClass M] [MulOneClass N] ⦃f g : M →* N⦄ (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext _ _ h
 #align monoid_hom.ext MonoidHom.ext
 
-@[ext.1]
-theorem MonoidWithZeroHom.ext [MulZeroOneClass M] [MulZeroOneClass N] ⦃f g : M →*₀ N⦄ (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext _ _ h
+@[ext]
+theorem MonoidWithZeroHom.ext [MulZeroOneClass M] [MulZeroOneClass N] ⦃f g : M →*₀ N⦄
+  (h : ∀ x, f x = g x) : f = g := FunLike.ext _ _ h
 #align monoid_with_zero_hom.ext MonoidWithZeroHom.ext
 
+-- Porting note: should these lemmas be ported?
 section Deprecated
 
 /-- Deprecated: use `fun_like.congr_fun` instead. -/
@@ -685,14 +661,13 @@ theorem MulHom.congr_fun [Mul M] [Mul N] {f g : M →ₙ* N} (h : f = g) (x : M)
 
 /-- Deprecated: use `fun_like.congr_fun` instead. -/
 @[to_additive "Deprecated: use `fun_like.congr_fun` instead."]
-theorem MonoidHom.congr_fun [MulOneClass M] [MulOneClass N] {f g : M →* N} (h : f = g) (x : M) : f x = g x :=
-  FunLike.congr_fun h x
+theorem MonoidHom.congr_fun [MulOneClass M] [MulOneClass N] {f g : M →* N} (h : f = g) (x : M) :
+  f x = g x := FunLike.congr_fun h x
 #align monoid_hom.congr_fun MonoidHom.congr_fun
 
 /-- Deprecated: use `fun_like.congr_fun` instead. -/
-theorem MonoidWithZeroHom.congr_fun [MulZeroOneClass M] [MulZeroOneClass N] {f g : M →*₀ N} (h : f = g) (x : M) :
-    f x = g x :=
-  FunLike.congr_fun h x
+theorem MonoidWithZeroHom.congr_fun [MulZeroOneClass M] [MulZeroOneClass N] {f g : M →*₀ N}
+  (h : f = g) (x : M) : f x = g x := FunLike.congr_fun h x
 #align monoid_with_zero_hom.congr_fun MonoidWithZeroHom.congr_fun
 
 /-- Deprecated: use `fun_like.congr_arg` instead. -/
@@ -709,14 +684,13 @@ theorem MulHom.congr_arg [Mul M] [Mul N] (f : M →ₙ* N) {x y : M} (h : x = y)
 
 /-- Deprecated: use `fun_like.congr_arg` instead. -/
 @[to_additive "Deprecated: use `fun_like.congr_arg` instead."]
-theorem MonoidHom.congr_arg [MulOneClass M] [MulOneClass N] (f : M →* N) {x y : M} (h : x = y) : f x = f y :=
-  FunLike.congr_arg f h
+theorem MonoidHom.congr_arg [MulOneClass M] [MulOneClass N] (f : M →* N) {x y : M} (h : x = y) :
+  f x = f y := FunLike.congr_arg f h
 #align monoid_hom.congr_arg MonoidHom.congr_arg
 
 /-- Deprecated: use `fun_like.congr_arg` instead. -/
-theorem MonoidWithZeroHom.congr_arg [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) {x y : M} (h : x = y) :
-    f x = f y :=
-  FunLike.congr_arg f h
+theorem MonoidWithZeroHom.congr_arg [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) {x y : M}
+  (h : x = y) : f x = f y := FunLike.congr_arg f h
 #align monoid_with_zero_hom.congr_arg MonoidWithZeroHom.congr_arg
 
 /-- Deprecated: use `fun_like.coe_injective` instead. -/
@@ -733,14 +707,13 @@ theorem MulHom.coe_inj [Mul M] [Mul N] ⦃f g : M →ₙ* N⦄ (h : (f : M → N
 
 /-- Deprecated: use `fun_like.coe_injective` instead. -/
 @[to_additive "Deprecated: use `fun_like.coe_injective` instead."]
-theorem MonoidHom.coe_inj [MulOneClass M] [MulOneClass N] ⦃f g : M →* N⦄ (h : (f : M → N) = g) : f = g :=
-  FunLike.coe_injective h
+theorem MonoidHom.coe_inj [MulOneClass M] [MulOneClass N] ⦃f g : M →* N⦄ (h : (f : M → N) = g) :
+  f = g := FunLike.coe_injective h
 #align monoid_hom.coe_inj MonoidHom.coe_inj
 
 /-- Deprecated: use `fun_like.coe_injective` instead. -/
-theorem MonoidWithZeroHom.coe_inj [MulZeroOneClass M] [MulZeroOneClass N] ⦃f g : M →*₀ N⦄ (h : (f : M → N) = g) :
-    f = g :=
-  FunLike.coe_injective h
+theorem MonoidWithZeroHom.coe_inj [MulZeroOneClass M] [MulZeroOneClass N] ⦃f g : M →*₀ N⦄
+  (h : (f : M → N) = g) : f = g := FunLike.coe_injective h
 #align monoid_with_zero_hom.coe_inj MonoidWithZeroHom.coe_inj
 
 /-- Deprecated: use `fun_like.ext_iff` instead. -/
@@ -762,8 +735,8 @@ theorem MonoidHom.ext_iff [MulOneClass M] [MulOneClass N] {f g : M →* N} : f =
 #align monoid_hom.ext_iff MonoidHom.ext_iff
 
 /-- Deprecated: use `fun_like.ext_iff` instead. -/
-theorem MonoidWithZeroHom.ext_iff [MulZeroOneClass M] [MulZeroOneClass N] {f g : M →*₀ N} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+theorem MonoidWithZeroHom.ext_iff [MulZeroOneClass M] [MulZeroOneClass N] {f g : M →*₀ N} :
+  f = g ↔ ∀ x, f x = g x := FunLike.ext_iff
 #align monoid_with_zero_hom.ext_iff MonoidWithZeroHom.ext_iff
 
 end Deprecated
@@ -779,14 +752,13 @@ theorem MulHom.mk_coe [Mul M] [Mul N] (f : M →ₙ* N) (hmul) : MulHom.mk f hmu
 #align mul_hom.mk_coe MulHom.mk_coe
 
 @[simp, to_additive]
-theorem MonoidHom.mk_coe [MulOneClass M] [MulOneClass N] (f : M →* N) (h1 hmul) : MonoidHom.mk f h1 hmul = f :=
-  MonoidHom.ext fun _ => rfl
+theorem MonoidHom.mk_coe [MulOneClass M] [MulOneClass N] (f : M →* N) (hmul) :
+  MonoidHom.mk f hmul = f := MonoidHom.ext fun _ => rfl
 #align monoid_hom.mk_coe MonoidHom.mk_coe
 
 @[simp]
-theorem MonoidWithZeroHom.mk_coe [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) (h0 h1 hmul) :
-    MonoidWithZeroHom.mk f h0 h1 hmul = f :=
-  MonoidWithZeroHom.ext fun _ => rfl
+theorem MonoidWithZeroHom.mk_coe [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) (h1 hmul) :
+  MonoidWithZeroHom.mk f h1 hmul = f := MonoidWithZeroHom.ext fun _ => rfl
 #align monoid_with_zero_hom.mk_coe MonoidWithZeroHom.mk_coe
 
 end Coes
