@@ -82,7 +82,6 @@ theorem cast_subNatNat (m n) : ((Int.subNatNat m n : ℤ) : R) = m - n := by
       neg_sub]
 #align int.cast_sub_nat_nat Int.cast_subNatNatₓ
 
--- porting note: already exists in `Std`, but still needs `#align`ed
 #align int.neg_of_nat_eq Int.negOfNat_eq
 
 @[simp]
