@@ -19,6 +19,7 @@ However if `C` and `D` are both large categories at the same universe level,
 this is a small category at the next higher level.
 -/
 
+set_option warningAsError false
 
 namespace CategoryTheory
 
@@ -43,7 +44,15 @@ instance Functor.category : Category.{max u₁ v₂} (C ⥤ D) where
   Hom F G := NatTrans F G
   id F := NatTrans.id F
   comp α β := vcomp α β
-  comp_id' := sorry
+  comp_id' := by
+    intros
+    -- Sad that `ext` won't do this, indexing??
+    apply NatTrans.ext
+    ext X
+    intros
+    erw [vcomp_app] -- Lame, c.f. https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/unfolding.20earlier.20fields
+    erw [id_app'] -- Lame
+    simp
   id_comp' := sorry
   assoc' := sorry
 #align category_theory.functor.category CategoryTheory.Functor.category
