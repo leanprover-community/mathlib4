@@ -35,9 +35,9 @@ universe u
 
 variable {α : Type u}
 
-/-- Units of a `monoid`, bundled version. Notation: `αˣ`.
+/-- Units of a `Monoid`, bundled version. Notation: `αˣ`.
 
-An element of a `monoid` is a unit if it has a two-sided inverse.
+An element of a `Monoid` is a unit if it has a two-sided inverse.
 This version bundles the inverse element so that it can be computed.
 For a predicate see `isUnit`. -/
 structure Units (α : Type u) [Monoid α] where
@@ -49,6 +49,13 @@ structure Units (α : Type u) [Monoid α] where
   val_inv : val * inv = 1
   /-- `inv` is the left inverse of `val` in the base `Monoid`. -/
   inv_val : inv * val = 1
+#align units Units
+#align units.val Units.val
+#align units.inv Units.inv
+#align units.val_inv Units.val_inv
+#align units.inv_val Units.inv_val
+
+attribute [coe] Units.val
 
 -- mathport name: «expr ˣ»
 @[inherit_doc]
@@ -69,14 +76,21 @@ structure AddUnits (α : Type u) [AddMonoid α] where
   val_neg : val + neg = 0
   /-- `neg` is the left additive inverse of `val` in the base `AddMonoid`. -/
   neg_val : neg + val = 0
+#align add_units AddUnits
+#align add_units.val AddUnits.val
+#align add_units.neg AddUnits.neg
+#align add_units.val_neg AddUnits.val_neg
+#align add_units.neg_val AddUnits.neg_val
 
 attribute [to_additive] Units
+attribute [coe] AddUnits.val
 
 section HasElem
 
 @[to_additive]
-theorem unique_has_one {α : Type _} [Unique α] [One α] : default = (1 : α) :=
+theorem unique_one {α : Type _} [Unique α] [One α] : default = (1 : α) :=
   Unique.default_eq 1
+#align unique_has_one unique_one
 
 end HasElem
 
@@ -95,44 +109,44 @@ instance : CoeHead αˣ α :=
 instance : Inv αˣ :=
   ⟨fun u => ⟨u.2, u.1, u.4, u.3⟩⟩
 
-/-- See Note [custom simps projection] -/
-@[to_additive "See Note [custom simps projection]"]
-def Simps.coe (u : αˣ) : α :=
-  u
-
-/-- See Note [custom simps projection] -/
-@[to_additive "See Note [custom simps projection]"]
-def Simps.coeInv (u : αˣ) : α :=
-  ((u⁻¹ : αˣ) : α)
-
-initialize_simps_projections Units (val → coe as_prefix, inv → coeInv as_prefix)
-
-initialize_simps_projections AddUnits (val → coe as_prefix, neg → coeNeg as_prefix)
+/- porting note: the result of these definitions is syntactically equal to `Units.val` and
+`Units.inv` because of the way coercions work in Lean 4, so there is no need for these custom
+`simp` projections. -/
+#noalign units.simps.coe
+#noalign add_units.simps.coe
+#noalign units.simps.coe_inv
+#noalign add_units.simps.coe_neg
 
 -- Porting note: removed `simp` tag because of the tautology
 @[to_additive]
-theorem coe_mk (a : α) (b h₁ h₂) : ↑(Units.mk a b h₁ h₂) = a :=
+theorem val_mk (a : α) (b h₁ h₂) : ↑(Units.mk a b h₁ h₂) = a :=
   rfl
+#align units.coe_mk Units.val_mk
+#align add_units.coe_mk AddUnits.val_mk
 
 @[ext]
 theorem ext : Function.Injective (fun (u : αˣ) => (u : α))
   | ⟨v, i₁, vi₁, iv₁⟩, ⟨v', i₂, vi₂, iv₂⟩, e => by
     simp only at e; subst v'; congr;
     simpa only [iv₂, vi₁, one_mul, mul_one] using mul_assoc i₂ v i₁
+#align units.ext Units.ext
 
 -- Porting note: `@[ext, to_additive]` didn't work on it's own
 attribute [to_additive] Units.ext.match_1
 attribute [to_additive] Units.ext
+#align add_units.ext AddUnits.ext
 
--- Porting note: "norm_cast: badly shaped lemma, lhs must contain at least one coe"
--- so `@[norm_cast]` removed
-@[to_additive]
+@[to_additive, norm_cast]
 theorem eq_iff {a b : αˣ} : (a : α) = b ↔ a = b :=
   ext.eq_iff
+#align units.eq_iff Units.eq_iff
+#align add_units.eq_iff AddUnits.eq_iff
 
 @[to_additive]
 theorem ext_iff {a b : αˣ} : a = b ↔ (a : α) = b :=
   eq_iff.symm
+#align units.ext_iff Units.ext_iff
+#align add_units.ext_iff AddUnits.ext_iff
 
 /-- Units have decidable equality if the base `Monoid` has deciable equality. -/
 @[to_additive "Additive units have decidable equality
@@ -140,17 +154,23 @@ if the base `AddMonoid` has deciable equality."]
 instance [DecidableEq α] : DecidableEq αˣ := fun _ _ => decidable_of_iff' _ ext_iff
 
 @[simp, to_additive]
-theorem mk_coe (u : αˣ) (y h₁ h₂) : mk (u : α) y h₁ h₂ = u :=
+theorem mk_val (u : αˣ) (y h₁ h₂) : mk (u : α) y h₁ h₂ = u :=
   ext rfl
+#align units.mk_coe Units.mk_val
+#align add_units.mk_coe Units.mk_val
 
 /-- Copy a unit, adjusting definition equalities. -/
 @[to_additive "Copy an `AddUnit`, adjusting definitional equalities.", simps]
 def copy (u : αˣ) (val : α) (hv : val = u) (inv : α) (hi : inv = ↑u⁻¹) : αˣ :=
   { val, inv, inv_val := hv.symm ▸ hi.symm ▸ u.inv_val, val_inv := hv.symm ▸ hi.symm ▸ u.val_inv }
+#align units.copy Units.copy
+#align add_units.copy AddUnits.copy
 
 @[to_additive]
 theorem copy_eq (u : αˣ) (val hv inv hi) : u.copy val hv inv hi = u :=
   ext hv
+#align units.copy_eq Units.copy_eq
+#align add_units.copy_eq AddUnits.copy_eq
 
 /-- Units of a monoid form have a multiplication and multiplicative identity. -/
 @[to_additive "Additive units of an additive monoid have an addition and an additive identity."]
@@ -179,7 +199,7 @@ instance {α} [CommMonoid α] : CommGroup αˣ :=
     mul_comm := fun _ _ => ext <| mul_comm _ _ }
 
 /-- Units of a monoid are inhabited because `1` is a unit. -/
-@[to_additive "Additive units of an additive monoid are inhabtied because `0` is an additive unit."]
+@[to_additive "Additive units of an additive monoid are inhabited because `0` is an additive unit."]
 instance : Inhabited αˣ :=
   ⟨1⟩
 
@@ -191,64 +211,85 @@ instance [Repr α] : Repr αˣ :=
 
 variable (a b c : αˣ) {u : αˣ}
 
--- Porting note: "norm_cast: badly shaped lemma, lhs must contain at least one coe"
--- so `@[norm_cast]` removed
-@[simp, to_additive]
-theorem coe_mul : (↑(a * b) : α) = a * b :=
+@[simp, to_additive, norm_cast]
+theorem val_mul : (↑(a * b) : α) = a * b :=
   rfl
+#align units.coe_mul Units.val_mul
+#align add_units.coe_add AddUnits.val_add
 
--- Porting note: "norm_cast: badly shaped lemma, lhs must contain at least one coe"
--- so `@[norm_cast]` removed
-@[simp, to_additive]
-theorem coe_one : ((1 : αˣ) : α) = 1 :=
+@[simp, to_additive, norm_cast]
+theorem val_one : ((1 : αˣ) : α) = 1 :=
   rfl
+#align units.coe_one Units.val_one
+#align add_units.coe_zero AddUnits.val_zero
 
--- Porting note: "norm_cast: badly shaped lemma, lhs must contain at least one coe"
--- so `@[norm_cast]` removed
-@[simp, to_additive]
-theorem coe_eq_one {a : αˣ} : (a : α) = 1 ↔ a = 1 := by rw [← Units.coe_one, eq_iff]
+@[simp, to_additive, norm_cast]
+theorem val_eq_one {a : αˣ} : (a : α) = 1 ↔ a = 1 := by rw [← Units.val_one, eq_iff]
+#align units.coe_eq_one Units.val_eq_one
+#align add_units.coe_eq_zero AddUnits.val_eq_zero
 
 @[simp, to_additive]
 theorem inv_mk (x y : α) (h₁ h₂) : (mk x y h₁ h₂)⁻¹ = mk y x h₂ h₁ :=
   rfl
+#align units.inv_mk Units.inv_mk
+#align add_units.neg_mk AddUnits.neg_mk
 
 -- Porting note: coercions are now eagerly elaborated, so no need for `val_eq_coe`
-#noalign Units.val_eq_coe
-#noalign AddUnits.val_eq_coe
+#noalign units.val_eq_coe
+#noalign add_units.val_eq_coe
 
-@[simp, to_additive]
-theorem inv_eq_coe_inv : a.inv = ((a⁻¹ : αˣ) : α) :=
+-- Porting note: the lower priority is needed to appease the `simpNF` linter
+@[simp 900, to_additive]
+theorem inv_eq_val_inv : a.inv = ((a⁻¹ : αˣ) : α) :=
   rfl
+#align units.inv_eq_coe_inv Units.inv_eq_val_inv
+#align add_units.neg_eq_coe_neg AddUnits.neg_eq_val_neg
 
 @[simp, to_additive]
 theorem inv_mul : (↑a⁻¹ * a : α) = 1 :=
   inv_val _
+#align units.inv_mul Units.inv_mul
+#align add_units.neg_add AddUnits.neg_add
 
 @[simp, to_additive]
 theorem mul_inv : (a * ↑a⁻¹ : α) = 1 :=
   val_inv _
+#align units.mul_inv Units.mul_inv
+#align add_units.add_neg AddUnits.add_neg
 
 @[to_additive]
 theorem inv_mul_of_eq {a : α} (h : ↑u = a) : ↑u⁻¹ * a = 1 := by rw [← h, u.inv_mul]
+#align units.inv_mul_of_eq Units.inv_mul_of_eq
+#align add_units.neg_add_of_eq AddUnits.neg_add_of_eq
 
 @[to_additive]
 theorem mul_inv_of_eq {a : α} (h : ↑u = a) : a * ↑u⁻¹ = 1 := by rw [← h, u.mul_inv]
+#align units.mul_inv_of_eq Units.mul_inv_of_eq
+#align add_units.add_neg_of_eq AddUnits.add_neg_of_eq
 
 @[simp, to_additive]
 theorem mul_inv_cancel_left (a : αˣ) (b : α) : (a : α) * (↑a⁻¹ * b) = b := by
   rw [← mul_assoc, mul_inv, one_mul]
+#align units.mul_inv_cancel_left Units.mul_inv_cancel_left
+#align add_units.add_neg_cancel_left AddUnits.add_neg_cancel_left
 
 @[simp, to_additive]
 theorem inv_mul_cancel_left (a : αˣ) (b : α) : (↑a⁻¹ : α) * (a * b) = b := by
   rw [← mul_assoc, inv_mul, one_mul]
+#align units.inv_mul_cancel_left Units.inv_mul_cancel_left
+#align add_units.neg_add_cancel_left AddUnits.neg_add_cancel_left
 
 @[simp, to_additive]
 theorem mul_inv_cancel_right (a : α) (b : αˣ) : a * b * ↑b⁻¹ = a := by
   rw [mul_assoc, mul_inv, mul_one]
+#align units.mul_inv_cancel_right Units.mul_inv_cancel_right
+#align add_units.add_neg_cancel_right AddUnits.add_neg_cancel_right
 
 @[simp, to_additive]
 theorem inv_mul_cancel_right (a : α) (b : αˣ) : a * ↑b⁻¹ * b = a := by
   rw [mul_assoc, inv_mul, mul_one]
+#align units.inv_mul_cancel_right Units.inv_mul_cancel_right
+#align add_units.neg_add_cancel_right AddUnits.neg_add_cancel_right
 
 @[simp, to_additive]
 theorem mul_right_inj (a : αˣ) {b c : α} : (a : α) * b = a * c ↔ b = c :=
@@ -319,22 +360,23 @@ theorem inv_unique {u₁ u₂ : αˣ} (h : (↑u₁ : α) = ↑u₂) : (↑u₁�
   Units.inv_eq_of_mul_eq_one_right <| by rw [h, u₂.mul_inv]
 
 @[simp, to_additive]
-theorem coe_inv {M : Type _} [DivisionMonoid M] (u : Units M) : ↑u⁻¹ = (u⁻¹ : M) :=
+theorem val_inv_eq_inv_val {M : Type _} [DivisionMonoid M] (u : Units M) : ↑u⁻¹ = (u⁻¹ : M) :=
   Eq.symm <| inv_eq_of_mul_eq_one_right u.mul_inv
+#align units.coe_inv Units.val_inv_eq_inv_val
 
 end Units
 
 /-- For `a, b` in a `comm_monoid` such that `a * b = 1`, makes a unit out of `a`. -/
 @[to_additive
-  "For `a, b` in an `add_comm_monoid` such that `a + b = 0`, makes an add_unit\nout of `a`."]
+  "For `a, b` in an `add_comm_monoid` such that `a + b = 0`, makes an add_unit out of `a`."]
 def Units.mkOfMulEqOne [CommMonoid α] (a b : α) (hab : a * b = 1) : αˣ :=
   ⟨a, b, hab, (mul_comm b a).trans hab⟩
 
 @[simp, to_additive]
-theorem Units.coe_mkOfMulEqOne [CommMonoid α] {a b : α} (h : a * b = 1) :
+theorem Units.val_mkOfMulEqOne [CommMonoid α] {a b : α} (h : a * b = 1) :
     (Units.mkOfMulEqOne a b h : α) = a :=
   rfl
-#align units.coe_mk_of_mul_eq_one Units.coe_mkOfMulEqOne
+#align units.coe_mk_of_mul_eq_one Units.val_mkOfMulEqOne
 
 section Monoid
 
@@ -383,7 +425,7 @@ theorem divp_left_inj (u : αˣ) {a b : α} : a /ₚ u = b /ₚ u ↔ a = b :=
 
 @[field_simps]
 theorem divp_divp_eq_divp_mul (x : α) (u₁ u₂ : αˣ) : x /ₚ u₁ /ₚ u₂ = x /ₚ (u₂ * u₁) := by
-  simp only [divp, mul_inv_rev, Units.coe_mul, mul_assoc]
+  simp only [divp, mul_inv_rev, Units.val_mul, mul_assoc]
 
 @[field_simps]
 theorem divp_eq_iff_mul_eq {x : α} {u : αˣ} {y : α} : x /ₚ u = y ↔ y * u = x :=
@@ -416,8 +458,9 @@ theorem inv_eq_one_divp' (u : αˣ) : ((1 / u : αˣ) : α) = 1 /ₚ u := by
 lifts the calculation to `α`.
 -/
 @[field_simps]
-theorem coe_div_eq_divp (u₁ u₂ : αˣ) : ↑(u₁ / u₂) = ↑u₁ /ₚ u₂ := by
-  rw [divp, division_def, Units.coe_mul]
+theorem val_div_eq_divp (u₁ u₂ : αˣ) : ↑(u₁ / u₂) = ↑u₁ /ₚ u₂ := by
+  rw [divp, division_def, Units.val_mul]
+#align coe_div_eq_divp val_div_eq_divp
 
 end Monoid
 
@@ -479,7 +522,7 @@ attribute [nontriviality] isAddUnit_of_subsingleton
 @[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]
 instance [Monoid M] [Subsingleton M] : Unique Mˣ where
   default := 1
-  uniq a := Units.coe_eq_one.mp <| Subsingleton.elim (a : M) 1
+  uniq a := Units.val_eq_one.mp <| Subsingleton.elim (a : M) 1
 
 @[simp, to_additive]
 protected theorem Units.isUnit [Monoid M] (u : Mˣ) : IsUnit (u : M) :=
@@ -530,7 +573,7 @@ attribute [to_additive] isUnit_iff_exists_inv'
 @[to_additive]
 theorem IsUnit.mul [Monoid M] {x y : M} : IsUnit x → IsUnit y → IsUnit (x * y) := by
   rintro ⟨x, rfl⟩ ⟨y, rfl⟩
-  exact ⟨x * y, Units.coe_mul _ _⟩
+  exact ⟨x * y, Units.val_mul _ _⟩
 
 -- Porting note: have to explicitly tag `match_1`
 /-- Multiplication by a `u : Mˣ` on the right doesn't affect `IsUnit`. -/
@@ -538,7 +581,7 @@ theorem IsUnit.mul [Monoid M] {x y : M} : IsUnit x → IsUnit y → IsUnit (x * 
 theorem Units.isUnit_mul_units [Monoid M] (a : M) (u : Mˣ) : IsUnit (a * u) ↔ IsUnit a :=
   Iff.intro
     (fun ⟨v, hv⟩ => by
-      have : IsUnit (a * ↑u * ↑u⁻¹) := by exists v * u⁻¹; rw [← hv, Units.coe_mul]
+      have : IsUnit (a * ↑u * ↑u⁻¹) := by exists v * u⁻¹; rw [← hv, Units.val_mul]
       rwa [mul_assoc, Units.mul_inv, mul_one] at this)
     fun v => v.mul u.isUnit
 attribute [to_additive] Units.isUnit_mul_units.match_1
@@ -555,7 +598,7 @@ theorem Units.isUnit_units_mul {M : Type _} [Monoid M] (u : Mˣ) (a : M) :
     IsUnit (↑u * a) ↔ IsUnit a :=
   Iff.intro
     (fun ⟨v, hv⟩ => by
-      have : IsUnit (↑u⁻¹ * (↑u * a)) := by exists u⁻¹ * v; rw [← hv, Units.coe_mul]
+      have : IsUnit (↑u⁻¹ * (↑u * a)) := by exists u⁻¹ * v; rw [← hv, Units.val_mul]
       rwa [← mul_assoc, Units.inv_mul, one_mul] at this)
     u.isUnit.mul
 #align units.is_unit_units_mul Units.isUnit_units_mul
@@ -607,21 +650,27 @@ protected noncomputable def _root_.IsAddUnit.addUnit [AddMonoid N] {a : N} (h : 
 attribute [to_additive IsAddUnit.addUnit] IsUnit.unit
 
 @[simp, to_additive]
-theorem unit_of_coe_units {a : Mˣ} (h : IsUnit (a : M)) : h.unit = a :=
+theorem unit_of_val_units {a : Mˣ} (h : IsUnit (a : M)) : h.unit = a :=
   Units.ext <| rfl
+#align is_unit.unit_of_coe_units IsUnit.unit_of_val_units
+#align is_add_unit.unit_of_coe_units IsAddUnit.addUnit_of_val_addUnits
 
 @[simp, to_additive]
 theorem unit_spec (h : IsUnit a) : ↑h.unit = a :=
   rfl
 
 @[simp, to_additive]
-theorem coe_inv_mul (h : IsUnit a) : ↑h.unit⁻¹ * a = 1 :=
+theorem val_inv_mul (h : IsUnit a) : ↑h.unit⁻¹ * a = 1 :=
   Units.mul_inv _
+#align is_unit.coe_inv_mul IsUnit.val_inv_mul
+#align is_add_unit.coe_neg_add IsAddUnit.val_neg_add
 
 -- Porting note: mathlib3 proof used `convert`
 @[simp, to_additive]
-theorem mul_coe_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
+theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
   rw [←h.unit.mul_inv]; congr
+#align is_unit.mul_coe_inv IsUnit.mul_val_inv
+#align is_add_unit.add_coe_neg IsAddUnit.add_val_neg
 
 /-- `IsUnit x` is decidable if we can decide if `x` comes from `Mˣ`. -/
 instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) :=
@@ -662,12 +711,12 @@ variable [DivisionMonoid M] {a : M}
 @[simp, to_additive]
 protected theorem inv_mul_cancel : IsUnit a → a⁻¹ * a = 1 := by
   rintro ⟨u, rfl⟩
-  rw [← Units.coe_inv, Units.inv_mul]
+  rw [← Units.val_inv_eq_inv_val, Units.inv_mul]
 
 @[simp, to_additive]
 protected theorem mul_inv_cancel : IsUnit a → a * a⁻¹ = 1 := by
   rintro ⟨u, rfl⟩
-  rw [← Units.coe_inv, Units.mul_inv]
+  rw [← Units.val_inv_eq_inv_val, Units.mul_inv]
 
 end IsUnit
 
@@ -686,6 +735,7 @@ noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Grou
     mul_left_inv := fun a => by
       change ↑(h a).unit⁻¹ * a = 1
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }
+#align group_of_is_unit groupOfIsUnit
 
 /-- Constructs a `CommGroup` structure on a `CommMonoid` consisting only of units. -/
 noncomputable def commGroupOfIsUnit [hM : CommMonoid M] (h : ∀ a : M, IsUnit a) : CommGroup M :=
@@ -694,5 +744,6 @@ noncomputable def commGroupOfIsUnit [hM : CommMonoid M] (h : ∀ a : M, IsUnit a
     mul_left_inv := fun a => by
       change ↑(h a).unit⁻¹ * a = 1
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }
+#align comm_group_of_is_unit commGroupOfIsUnit
 
 end NoncomputableDefs
