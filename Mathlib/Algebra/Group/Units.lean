@@ -374,9 +374,9 @@ theorem val_inv_eq_inv_val {M : Type _} [DivisionMonoid M] (u : Units M) : ↑u�
 
 end Units
 
-/-- For `a, b` in a `comm_monoid` such that `a * b = 1`, makes a unit out of `a`. -/
+/-- For `a, b` in a `CommMonoid` such that `a * b = 1`, makes a unit out of `a`. -/
 @[to_additive
-  "For `a, b` in an `add_comm_monoid` such that `a + b = 0`, makes an add_unit out of `a`."]
+  "For `a, b` in an `AddCommMonoid` such that `a + b = 0`, makes an add_unit out of `a`."]
 def Units.mkOfMulEqOne [CommMonoid α] (a b : α) (hab : a * b = 1) : αˣ :=
   ⟨a, b, hab, (mul_comm b a).trans hab⟩
 
@@ -495,7 +495,7 @@ end CommMonoid
 /-!
 # `IsUnit` predicate
 
-In this file we define the `IsUnit` predicate on a `MOnoid`, and
+In this file we define the `IsUnit` predicate on a `Monoid`, and
 prove a few basic properties. For the bundled version see `Units`. See
 also `Prime`, `Associated`, and `Irreducible` in `Algebra.Associated`.
 
@@ -506,12 +506,12 @@ section IsUnit
 
 variable {M : Type _} {N : Type _}
 
-/-- An element `a : M` of a monoid is a unit if it has a two-sided inverse.
+/-- An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse.
 The actual definition says that `a` is equal to some `u : Mˣ`, where
 `Mˣ` is a bundled version of `IsUnit`. -/
 @[to_additive
-      "An element `a : M` of an AddMonoid is an `AddUnit` if it has\na two-sided additive inverse.
-      The actual definition says that `a` is equal to some\n`u : add_units M`,
+      "An element `a : M` of an `AddMonoid` is an `AddUnit` if it has a two-sided additive inverse.
+      The actual definition says that `a` is equal to some `u : AddUnits M`,
       where `AddUnits M` is a bundled version of `IsAddUnit`."]
 def IsUnit [Monoid M] (a : M) : Prop :=
   ∃ u : Mˣ, (u : M) = a
@@ -675,7 +675,6 @@ theorem val_inv_mul (h : IsUnit a) : ↑h.unit⁻¹ * a = 1 :=
 #align is_unit.coe_inv_mul IsUnit.val_inv_mul
 #align is_add_unit.coe_neg_add IsAddUnit.val_neg_add
 
--- Porting note: mathlib3 proof used `convert`
 @[simp, to_additive]
 theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
   rw [←h.unit.mul_inv]; congr
