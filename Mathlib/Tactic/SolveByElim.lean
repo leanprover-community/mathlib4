@@ -76,24 +76,32 @@ do
   let locals : TermElabM (List Expr) := if noDflt then pure [] else pure (← getLocalHyps).toList
   return (hs, locals)
 
+def exceptEmoji : Except ε α → String
+  | .error _ => crossEmoji
+  | .ok _ => checkEmoji
+
 /-- Attempt to solve the given metavariable by repeating applying a list of facts. -/
 def solveByElimAux (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)) (n : Nat) :
     TacticM Unit := Tactic.done <|> match n with
       | 0 => throwError "solve_by_elim exceeded its recursion limit"
       | n + 1 => do
   let goal ← getMainGoal
-  trace[Meta.Tactic.solveByElim] "Working on: {goal}"
-  let es ← Elab.Term.TermElabM.run' do
-    let ctx' ← ctx
-    let lemmas' ← lemmas.mapM id
-    pure (lemmas' ++ ctx')
+  withTraceNode `Meta.Tactic.solveByElim
+    -- Note: the `addMessageContextFull` is so that the goal before any unification took place
+    -- is displayed.
+    (return m!"{exceptEmoji ·} working on: {← addMessageContextFull goal}")
+    do
+      let es ← Elab.Term.TermElabM.run' do
+        let ctx' ← ctx
+        let lemmas' ← lemmas.mapM id
+        pure (lemmas' ++ ctx')
 
-  -- We attempt to find an expression which can be applied,
-  -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
-  es.firstM fun e => do
-    trace[Meta.Tactic.solveByElim] "Trying to apply: {e}"
-    liftMetaTactic (fun mvarId => mvarId.apply e)
-    solveByElimAux lemmas ctx n
+      -- We attempt to find an expression which can be applied,
+      -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
+      es.firstM fun e => withTraceNode `Meta.Tactic.solveByElim
+          (return m!"{exceptEmoji ·} trying to apply: {e}") do
+        liftMetaTactic (fun mvarId => mvarId.apply e)
+        solveByElimAux lemmas ctx n
 
 /-- Attempt to solve the given metavariable by repeating applying one of the given expressions,
 or a local hypothesis. -/
