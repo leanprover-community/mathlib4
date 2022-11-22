@@ -87,9 +87,9 @@ def applySimpResultToProp' (proof : Expr) (prop : Expr) (r : Simp.Result) : Meta
 def zifyProof (simpArgs : Option (Syntax.TSepArray `Lean.Parser.Tactic.simpStar ","))
   (proof : Expr) (prop : Expr) :
     TacticM (Expr × Expr) := do
-  let ({ ctx, ..} : MkSimpContextResult) ←mkZifyContext simpArgs
-  let (r, _) ← Lean.Meta.simp prop ctx
-  return ← applySimpResultToProp' proof prop r
+  let ctx_result ← mkZifyContext simpArgs
+  let (r, _) ← Lean.Meta.simp prop ctx_result.ctx
+  applySimpResultToProp' proof prop r
 
 @[zify_simps] lemma nat_cast_eq (a b : ℕ) : a = b ↔ (a : ℤ) = (b : ℤ) := Int.ofNat_inj.symm
 @[zify_simps] lemma nat_cast_le (a b : ℕ) : a ≤ b ↔ (a : ℤ) ≤ (b : ℤ) := Int.ofNat_le.symm
