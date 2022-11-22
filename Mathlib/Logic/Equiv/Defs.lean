@@ -92,6 +92,9 @@ instance : EquivLike (α ≃ β) α β where
   right_inv := right_inv
   coe_injective' e₁ e₂ h₁ h₂ := by cases e₁; cases e₂; congr
 
+@[simp] theorem coe_fn_mk (f : α → β) (g l r) : (Equiv.mk f g l r : α → β) = f :=
+rfl
+
 /-- The map `(r ≃ s) → (r → s)` is injective. -/
 theorem coe_fn_injective : @Function.Injective (α ≃ β) (α → β) (fun e => e) :=
   FunLike.coe_injective'

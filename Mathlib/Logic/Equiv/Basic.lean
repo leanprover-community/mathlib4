@@ -813,7 +813,7 @@ theorem eq_of_prodExtendRight_ne {e : Perm β₁} {a a' : α₁} {b : β₁}
 @[simp]
 theorem fst_prodExtendRight (ab : α₁ × β₁) : (prodExtendRight a e ab).fst = ab.fst := by
   rw [prodExtendRight]
-  dsimp only
+  dsimp
   split_ifs with h
   · rw [h]
   · rfl
@@ -1803,20 +1803,11 @@ instance [IsAssociative α₁ f] : IsAssociative β₁ (e.arrowCongr (e.arrowCon
 instance [IsIdempotent α₁ f] : IsIdempotent β₁ (e.arrowCongr (e.arrowCongr e) f) :=
   (e.semiconj₂_conj f).isIdempotent_right e.surjective
 
--- porting note: the coe changes make `EmbeddingLike.apply_eq_iff_eq` almost impossible to use
 instance [IsLeftCancel α₁ f] : IsLeftCancel β₁ (e.arrowCongr (e.arrowCongr e) f) :=
-  ⟨e.surjective.forall₃.2 fun x y z => by
-    simp only [arrowCongr, coe_fn_symm_mk, comp_apply, symm_apply_apply]
-    intro h
-    rw [@IsLeftCancel.left_cancel _ f _ x y z _]
-    exact e.injective h⟩
+  ⟨e.surjective.forall₃.2 fun x y z => by simpa using @IsLeftCancel.left_cancel _ f _ x y z⟩
 
 instance [IsRightCancel α₁ f] : IsRightCancel β₁ (e.arrowCongr (e.arrowCongr e) f) :=
-  ⟨e.surjective.forall₃.2 fun x y z => by
-    simp only [arrowCongr, coe_fn_symm_mk, comp_apply, symm_apply_apply]
-    intro h
-    rw [@IsRightCancel.right_cancel _ f _ x y z _]
-    exact e.injective h⟩
+  ⟨e.surjective.forall₃.2 fun x y z => by simpa using @IsRightCancel.right_cancel _ f _ x y z⟩
 
 end BinaryOp
 
