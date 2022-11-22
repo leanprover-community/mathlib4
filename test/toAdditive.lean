@@ -158,11 +158,9 @@ end noncomputablee
 @[to_additive]
 def IsUnit [Mul M] (a : M) : Prop := a ≠ a
 
-
 @[to_additive]
 theorem isUnit_iff_exists_inv [Mul M] {a : M} : IsUnit a ↔ ∃ _ : α, a ≠ a :=
   ⟨fun h => absurd rfl h, fun ⟨_, hab⟩ => hab⟩
-
 
 /-!
 Some arbitrary tests to check whether additive names are guessed correctly.
