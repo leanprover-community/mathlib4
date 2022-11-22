@@ -15,7 +15,7 @@ This file contains general lemmas and instances to work with the interactions be
 an action on a Type.
 
 The intended application is the splitting of the ordering from the algebraic assumptions on the
-operations in the `ordered_[...]` hierarchy.
+operations in the `Ordered[...]` hierarchy.
 
 The strategy is to introduce two more flexible typeclasses, `CovariantClass` and
 `ContravariantClass`:
@@ -23,13 +23,13 @@ The strategy is to introduce two more flexible typeclasses, `CovariantClass` and
 * `CovariantClass` models the implication `a ≤ b → c * a ≤ c * b` (multiplication is monotone),
 * `ContravariantClass` models the implication `a * b < a * c → b < c`.
 
-Since `co(ntra)variant_class` takes as input the operation (typically `(+)` or `(*)`) and the order
+Since `Co(ntra)variantClass` takes as input the operation (typically `(+)` or `(*)`) and the order
 relation (typically `(≤)` or `(<)`), these are the only two typeclasses that I have used.
 
 The general approach is to formulate the lemma that you are interested in and prove it, with the
-`ordered_[...]` typeclass of your liking.  After that, you convert the single typeclass,
-say `[ordered_cancel_monoid M]`, into three typeclasses, e.g.
-`[left_cancel_semigroup M] [partial_order M] [CovariantClass M M (function.swap (*)) (≤)]`
+`Ordered[...]` typeclass of your liking.  After that, you convert the single typeclass,
+say `[OrderedCancelMonoid M]`, into three typeclasses, e.g.
+`[LeftCancelSemigroup M] [PartialOrder M] [CovariantClass M M (Function.swap (*)) (≤)]`
 and have a go at seeing if the proof still works!
 
 Note that it is possible to combine several co(ntra)variant_class assumptions together.
@@ -41,14 +41,14 @@ A formal remark is that normally `CovariantClass` uses the `(≤)`-relation, whi
 `ContravariantClass` uses the `(<)`-relation. This need not be the case in general, but seems to be
 the most common usage. In the opposite direction, the implication
 ```lean
-[semigroup α] [partial_order α] [ContravariantClass α α (*) (≤)] => left_cancel_semigroup α
+[Semigroup α] [PartialOrder α] [ContravariantClass α α (*) (≤)] => left_cancel_semigroup α
 ```
-holds -- note the `co*ntra*` assumption on the `(≤)`-relation.
+holds -- note the `Co*ntra*` assumption on the `(≤)`-relation.
 
 # Formalization notes
 
-We stick to the convention of using `function.swap (*)` (or `function.swap (+)`), for the
-typeclass assumptions, since `function.swap` is slightly better behaved than `flip`.
+We stick to the convention of using `Function.swap (*)` (or `Function.swap (+)`), for the
+typeclass assumptions, since `Function.swap` is slightly better behaved than `flip`.
 However, sometimes as a **non-typeclass** assumption, we prefer `flip (*)` (or `flip (+)`),
 as it is easier to use.
 
@@ -64,7 +64,7 @@ and we have switched to the `Trans` typeclass from Lean 4 core.
 -- TODO: convert `has_exists_mul_of_le`, `has_exists_add_of_le`?
 -- TODO: relationship with `con/add_con`
 -- TODO: include equivalence of `left_cancel_semigroup` with
--- `semigroup partial_order ContravariantClass α α (*) (≤)`?
+-- `Semigroup PartialOrder ContravariantClass α α (*) (≤)`?
 -- TODO : use ⇒, as per Eric's suggestion?  See
 -- https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/ordered.20stuff/near/236148738
 -- for a discussion.
@@ -162,8 +162,8 @@ instance (priority := 100) Group.covconv [Group N] [CovariantClass N N (· * ·)
   ⟨Group.covariant_iff_contravariant.mp CovariantClass.elim⟩
 
 -- Porting note: as at 2022-11-13, `to_additive` doesn't copy the `instance` attribute
--- so we need to do it manually. I don't know how to copy the priority.
-attribute [instance] AddGroup.covconv
+-- so we need to do it manually.
+attribute [instance 100] AddGroup.covconv
 
 @[to_additive]
 theorem Group.covariant_swap_iff_contravariant_swap [Group N] :
@@ -180,7 +180,7 @@ instance (priority := 100) Group.covconv_swap [Group N] [CovariantClass N N (swa
     ContravariantClass N N (swap (· * ·)) r :=
   ⟨Group.covariant_swap_iff_contravariant_swap.mp CovariantClass.elim⟩
 
-attribute [instance] AddGroup.covconv_swap
+attribute [instance 100] AddGroup.covconv_swap
 
 section Trans
 

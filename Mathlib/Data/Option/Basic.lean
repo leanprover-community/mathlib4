@@ -50,8 +50,9 @@ theorem coe_get {o : Option α} (h : o.isSome) : ((Option.get _ h : α) : Option
 theorem eq_of_mem_of_mem {a : α} {o1 o2 : Option α} (h1 : a ∈ o1) (h2 : a ∈ o2) : o1 = o2 :=
   h1.trans h2.symm
 
-theorem Mem.left_unique : Relator.LeftUnique ((· ∈ ·) : α → Option α → Prop) :=
+theorem Mem.leftUnique : Relator.LeftUnique ((· ∈ ·) : α → Option α → Prop) :=
 fun _ _ _=> mem_unique
+#align option.mem.left_unique Option.Mem.leftUnique
 
 theorem some_injective (α : Type _) : Function.Injective (@some α) := fun _ _ => some_inj.mp
 
@@ -258,7 +259,7 @@ theorem orElse_none' (x : Option α) : x.orElse (fun _ => none) = x := by cases 
 
 #align option.not_is_some_iff_eq_none Option.not_isSome_iff_eq_none
 
-#align option.ne_none_iff_is_some Option.ne_none_iff_is_some
+#align option.ne_none_iff_is_some Option.ne_none_iff_isSome
 
 theorem iget_mem [Inhabited α] : ∀ {o : Option α}, isSome o → o.iget ∈ o
   | some _, _ => rfl

@@ -24,7 +24,6 @@ example (_delete_this : Type) (_delete_this_dep : _delete_this) (_delete_this_rw
   clear_
   fail_if_success
     rw [← _delete_this_rw]
-    assumption
   exact 0
 
 -- Confirms that clear_ does not clear hypotheses when they have dependencies that should not be cleared

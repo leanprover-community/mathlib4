@@ -157,8 +157,6 @@ theorem and_self_iff : p ∧ p ↔ p := iff_of_eq (and_self _)
 
 #align eq_true_intro eq_true
 #align eq_false_intro eq_false
-#align eq_false eq_false_eq
-#align eq_true eq_true_eq
 
 @[deprecated or_comm] theorem or_comm' (a b) : a ∨ b ↔ b ∨ a := or_comm
 #align or.comm or_comm
@@ -442,6 +440,13 @@ def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
 
 /-- A relation is transitive if `x ≺ y` and `y ≺ z` together imply `x ≺ z`. -/
 def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
+
+lemma Equivalence.reflexive {r : β → β → Prop} (h : Equivalence r) : Reflexive r := h.refl
+
+lemma Equivalence.symmetric {r : β → β → Prop} (h : Equivalence r) : Symmetric r := λ _ _ => h.symm
+
+lemma Equivalence.transitive  {r : β → β → Prop}(h : Equivalence r) : Transitive r :=
+  λ _ _ _ => h.trans
 
 /-- A relation is total if for all `x` and `y`, either `x ≺ y` or `y ≺ x`. -/
 def Total := ∀ x y, x ≺ y ∨ y ≺ x
