@@ -487,7 +487,7 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   nsmul_succ' : ∀ (n : ℕ) (x), nsmul n.succ x = x + nsmul n x := by intros; rfl
 
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
-@[to_additive AddMonoid]
+@[to_additive]
 class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   npow : ℕ → M → M := npowRec
   npow_zero' : ∀ x, npow 0 x = 1 := by intros; rfl
@@ -607,7 +607,7 @@ attribute [to_additive AddCancelMonoid.toAddRightCancelMonoid] CancelMonoid.toRi
 class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMonoid M
 
 /-- Commutative version of `CancelMonoid`. -/
-@[to_additive AddCancelCommMonoid]
+@[to_additive]
 class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
 
 attribute [to_additive AddCancelCommMonoid.toAddCommMonoid] CancelCommMonoid.toCommMonoid
@@ -662,7 +662,7 @@ class HasInvolutiveNeg (A : Type _) extends Neg A where
   neg_neg : ∀ x : A, - -x = x
 
 /-- Auxiliary typeclass for types with an involutive `Inv`. -/
-@[to_additive HasInvolutiveNeg]
+@[to_additive]
 class HasInvolutiveInv (G : Type _) extends Inv G where
   inv_inv : ∀ x : G, x⁻¹⁻¹ = x
 
@@ -762,7 +762,7 @@ class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
 
 attribute [to_additive SubNegMonoid] DivInvMonoid
 
-instance DivInvMonoid.hasPow {M} [DivInvMonoid M] : Pow M ℤ :=
+instance DivInvMonoid.Pow {M} [DivInvMonoid M] : Pow M ℤ :=
   ⟨fun x n ↦ DivInvMonoid.zpow n x⟩
 
 instance SubNegMonoid.SMulInt {M} [SubNegMonoid M] : SMul ℤ M :=
