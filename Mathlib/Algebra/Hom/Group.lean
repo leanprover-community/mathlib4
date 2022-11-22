@@ -1669,15 +1669,23 @@ protected def MonoidHom.coe [MulOneClass M] [MulOneClass N] [CoeIsMonoidHom M N]
 
 variable {M N}
 
-@[simp, to_additive] -- Porting note: restore `norm_cast`
+@[simp] -- Porting note: restore `norm_cast`, `to_additive`
 theorem coe_pow [Monoid M] [Monoid N] [CoeIsMonoidHom M N] (a : M) (n : ℕ) : ↑(a ^ n) = (↑a : N) ^ n :=
   map_pow (MonoidHom.coe M N) a n
 #align coe_pow coe_pow
+@[simp]
+theorem coe_nsmul [AddMonoid M] [AddMonoid N] [CoeIsAddMonoidHom M N] (a : M) (n : ℕ) :
+  ↑(n • a) = n • (↑a : N) := map_nsmul (AddMonoidHom.coe M N) n a
+#align coe_nsmul coe_nsmul
 
-@[simp, to_additive] -- Porting note: restore `norm_cast`
+@[simp] -- Porting note: restore `norm_cast`, `to_additive`
 theorem coe_zpow [Group M] [Group N] [CoeIsMonoidHom M N] (a : M) (n : ℤ) : ↑(a ^ n) = (↑a : N) ^ n :=
   map_zpow (MonoidHom.coe M N) a n
 #align coe_zpow coe_zpow
+@[simp]
+theorem coe_zsmul [AddGroup M] [AddGroup N] [CoeIsAddMonoidHom M N] (a : M) (n : ℤ) :
+  ↑(n • a) = n • (↑a : N) := map_zsmul (AddMonoidHom.coe M N) n a
+#align coe_zsmul coe_zsmul
 
 @[simp, to_additive] -- Porting note: restore `norm_cast`
 theorem coe_inv [Group G] [DivisionMonoid H] [Coe G H] [CoeIsMonoidHom G H] (a : G) : ↑a⁻¹ = (↑a : H)⁻¹ :=
@@ -1701,7 +1709,7 @@ class CoeIsMonoidWithZeroHom [MonoidWithZero M] [MonoidWithZero N] extends CoeIs
 bundled as a monoid with zero homomorphism. -/
 @[simps (config := { fullyApplied := false })]
 protected def MonoidWithZeroHom.coe [MonoidWithZero M] [MonoidWithZero N] [CoeIsMonoidWithZeroHom M N] : M →*₀ N :=
-  { MonoidHom.coe M N, ZeroHom.coe M N with toFun := coe }
+  { MonoidHom.coe M N, ZeroHom.coe M N with toFun := Coe.coe }
 #align monoid_with_zero_hom.coe MonoidWithZeroHom.coe
 
 end coe
