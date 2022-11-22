@@ -154,6 +154,16 @@ run_cmd (do
   if isNoncomputable (← getEnv) `Bar.bar' then throwError "bar' should be computable")
 end noncomputablee
 
+/- Check that `to_additive` works if a `_match` aux declaration is created. -/
+@[to_additive]
+def IsUnit [Mul M] (a : M) : Prop := a ≠ a
+
+
+@[to_additive]
+theorem isUnit_iff_exists_inv [Mul M] {a : M} : IsUnit a ↔ ∃ _ : α, a ≠ a :=
+  ⟨fun h => absurd rfl h, fun ⟨_, hab⟩ => hab⟩
+
+
 /-!
 Some arbitrary tests to check whether additive names are guessed correctly.
 -/

@@ -30,7 +30,13 @@ open Std
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" num* : attr
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg" num : attr
 syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
-syntax (name := to_additive) "to_additive" "!"? "?"? (ppSpace ident)? (ppSpace str)? : attr
+syntax to_additiveRest := (ppSpace ident)? (ppSpace str)?
+syntax (name := to_additive) "to_additive" "!"? "?"? to_additiveRest : attr
+
+macro "to_additive!"  rest:to_additiveRest : attr => `(attr| to_additive !   $rest)
+macro "to_additive?"  rest:to_additiveRest : attr => `(attr| to_additive   ? $rest)
+macro "to_additive!?" rest:to_additiveRest : attr => `(attr| to_additive ! ? $rest)
+macro "to_additive?!" rest:to_additiveRest : attr => `(attr| to_additive ! ? $rest)
 
 /--
 This function takes a String and splits it into separate parts based on the following
@@ -284,11 +290,15 @@ def updateDecl
 
 /-- Lean 4 makes declarations which are not internal
 (that is, head string starts with `_`) but which should be transformed.
-eg `proof_1` in `Lean.Meta.mkAuxDefinitionFor` this might be better fixed in core.
-This method is polyfill for that. -/
-def isInternal' : Name → Bool
-  | n@(.str _ s) => s.startsWith "proof_" || n.isInternal
-  | n => Name.isInternal n
+e.g. `proof_1` in `Lean.Meta.mkAuxDefinitionFor` this might be better fixed in core.
+This method is polyfill for that.
+Note: this declaration also occurs as `shouldIgnore` in the Lean 4 file `test/lean/run/printDecls`.
+-/
+def isInternal' (declName : Name) : Bool :=
+  declName.isInternal ||
+  match declName with
+  | .str _ s => "match_".isPrefixOf s || "proof_".isPrefixOf s || "eq_".isPrefixOf s
+  | _        => true
 
 /-- transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
 using the transforms dictionary.
