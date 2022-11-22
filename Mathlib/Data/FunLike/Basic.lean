@@ -148,7 +148,8 @@ instance (priority := 100) : CoeFun F fun _ => ∀ a : α, β a where coe := Fun
   Tactic.NormCast.registerCoercion ``FunLike.coe
     (some { numArgs := 5, coercee := 4, type := .coeFun })
 
-@[simp]
+-- Porting note: no longer needed as `simp` lemma
+-- @[simp]
 theorem coe_eq_coe_fn : (FunLike.coe : F → ∀ a : α, β a) = (fun f => ↑f) :=
   rfl
 

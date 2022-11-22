@@ -949,23 +949,21 @@ def OneHom.comp [One M] [One N] [One P] (hnp : OneHom N P) (hmn : OneHom M N) : 
   map_one' := by simp
 #align one_hom.comp OneHom.comp
 
--- Porting note: `FunLike.coe_eq_coe_fn` causes `simp` to go into recursion loop
--- remove `[-FunLike.coe_eq_coe_fn]` once that's fixed
 /-- Composition of `MulHom`s as a `MulHom`. -/
 @[to_additive]
 def MulHom.comp [Mul M] [Mul N] [Mul P] (hnp : N →ₙ* P) (hmn : M →ₙ* N) : M →ₙ* P where
   toFun := hnp ∘ hmn
-  map_mul' x y := by simp [-FunLike.coe_eq_coe_fn]
+  map_mul' x y := by simp
 #align mul_hom.comp MulHom.comp
 
--- Porting note: remove `[-FunLike.coe_eq_coe_fn]`, restore `by simp`
+-- Porting note: restore `by simp`
 /-- Composition of monoid morphisms as a monoid morphism. -/
 @[to_additive]
 def MonoidHom.comp [MulOneClass M] [MulOneClass N] [MulOneClass P] (hnp : N →* P) (hmn : M →* N) :
   M →* P where
   toFun := hnp ∘ hmn
   map_one' := by rw [Function.comp_apply, map_one, map_one]
-  map_mul' := by simp [-FunLike.coe_eq_coe_fn]
+  map_mul' := by simp
 #align monoid_hom.comp MonoidHom.comp
 
 -- Porting note: something strange in `map_one'`, where the goal is `↑1 = 1` via
@@ -976,7 +974,7 @@ def MonoidWithZeroHom.comp [MulZeroOneClass M] [MulZeroOneClass N] [MulZeroOneCl
   toFun := hnp ∘ hmn
   map_zero' := by rw [Function.comp_apply, map_zero, map_zero]
   map_one' := by dsimp only []; rw [Function.comp_apply, map_one, map_one]
-  map_mul' := by simp [-FunLike.coe_eq_coe_fn]
+  map_mul' := by simp
 #align monoid_with_zero_hom.comp MonoidWithZeroHom.comp
 
 /-- Composition of `ZeroHom`s as a `ZeroHom`. -/
