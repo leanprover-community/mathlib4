@@ -369,13 +369,17 @@ theorem if_congr_prop {b c x y u v : Prop} [Decidable b] [Decidable c] (h_c : b 
     (h_e : y ↔ v) : ite b x y ↔ ite c u v :=
   if_ctx_congr_prop h_c (λ _ => h_t) (λ _ => h_e)
 
--- lean4#1867
 theorem if_ctx_simp_congr_prop {b c x y u v : Prop} [Decidable b] (h_c : b ↔ c) (h_t : c → (x ↔ u))
+    -- FIXME: after https://github.com/leanprover/lean4/issues/1867 is fixed,
+    -- this should be changed back to:
+    -- (h_e : ¬c → (y ↔ v)) : ite b x y ↔ ite c (h := decidable_of_decidable_of_iff h_c) u v :=
     (h_e : ¬c → (y ↔ v)) : ite b x y ↔ @ite _ c (decidable_of_decidable_of_iff h_c) u v :=
   if_ctx_congr_prop (dec_c := decidable_of_decidable_of_iff h_c) h_c h_t h_e
 
--- lean4#1867
 theorem if_simp_congr_prop {b c x y u v : Prop} [Decidable b] (h_c : b ↔ c) (h_t : x ↔ u)
+    -- FIXME: after https://github.com/leanprover/lean4/issues/1867 is fixed,
+    -- this should be changed back to:
+    -- (h_e : y ↔ v) : ite b x y ↔ (ite c (h := decidable_of_decidable_of_iff h_c) u v) :=
     (h_e : y ↔ v) : ite b x y ↔ (@ite _ c (decidable_of_decidable_of_iff h_c) u v) :=
   if_ctx_simp_congr_prop h_c (λ _ => h_t) (λ _ => h_e)
 
@@ -391,11 +395,13 @@ theorem dif_ctx_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : 
   | isFalse h₁, isTrue h₂ => absurd h₂ (Iff.mp (not_congr h_c) h₁)
   | isTrue h₁, isFalse h₂ => absurd h₁ (Iff.mpr (not_congr h_c) h₂)
 
--- lean4#1867
 theorem dif_ctx_simp_congr {α : Sort u} {b c : Prop} [Decidable b]
     {x : b → α} {u : c → α} {y : ¬b → α} {v : ¬c → α}
     (h_c : b ↔ c) (h_t : ∀ h : c, x (Iff.mpr h_c h) = u h)
     (h_e : ∀ h : ¬c, y (Iff.mpr (not_congr h_c) h) = v h) :
+    -- FIXME: after https://github.com/leanprover/lean4/issues/1867 is fixed,
+    -- this should be changed back to:
+    -- dite b x y = dite c (h := decidable_of_decidable_of_iff h_c) u v :=
     dite b x y = @dite _ c (decidable_of_decidable_of_iff h_c) u v :=
   dif_ctx_congr (dec_c := decidable_of_decidable_of_iff h_c) h_c h_t h_e
 
