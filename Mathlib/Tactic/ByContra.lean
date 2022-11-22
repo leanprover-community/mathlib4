@@ -10,7 +10,7 @@ open Lean Lean.Parser Parser.Tactic Elab Command Elab.Tactic Meta
 
 /--
 If the target of the main goal is a proposition `p`,
-`by_contra'` reduces the goal to proving `false` using the additional hypothesis `this : ¬ p`.
+`by_contra'` reduces the goal to proving `False` using the additional hypothesis `this : ¬ p`.
 `by_contra' h` can be used to name the hypothesis `h : ¬ p`.
 The hypothesis `¬ p` will be negation normalized using `push_neg`.
 For instance, `¬ a < b` will be changed to `b ≤ a`.
@@ -20,18 +20,15 @@ The resulting hypothesis is the pre-normalized form, `q`.
 If the name `h` is not explicitly provided, then `this` will be used as name.
 This tactic uses classical reasoning.
 It is a variant on the tactic `by_contra`.
-Examples (IMPORTANT: these will not work until `push_neg` is implemented):
+Examples:
 ```lean
-example : 1 < 2 :=
-begin
-  by_contra' h,
-  -- h : 2 ≤ 1 ⊢ false
-end
-example : 1 < 2 :=
-begin
-  by_contra' h : ¬ 1 < 2,
-  -- h : ¬ 1 < 2 ⊢ false
-end
+example : 1 < 2 := by
+  by_contra' h
+  -- h : 2 ≤ 1 ⊢ False
+
+example : 1 < 2 := by
+  by_contra' h : ¬ 1 < 2
+  -- h : ¬ 1 < 2 ⊢ False
 ```
 -/
 syntax (name := byContra') "by_contra'" (ppSpace colGt binderIdent)? Term.optType : tactic

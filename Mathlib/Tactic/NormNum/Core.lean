@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 import Std.Lean.Parser
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Tactic.Conv
 import Qq.MetaM
 import Qq.Delab
@@ -43,20 +43,8 @@ of typeclass arguments required in each use of a number literal at type `α`.
 -/
 @[simp] def _root_.Nat.rawCast [AddMonoidWithOne α] (n : ℕ) : α := n
 
-/-- Asserting that the `OfNat α n` instance provides the same value as the coercion. -/
-class LawfulOfNat (α) [AddMonoidWithOne α] (n) [OfNat α n] : Prop where
-  /-- Assert `n = (OfNat.ofNat n α)`, with the parametrising instance. -/
-  eq_ofNat : n = (@OfNat.ofNat _ n ‹_› : α)
-
-instance (α) [AddMonoidWithOne α] [Nat.AtLeastTwo n] : LawfulOfNat α n := ⟨rfl⟩
-instance (α) [AddMonoidWithOne α] : LawfulOfNat α (nat_lit 0) := ⟨Nat.cast_zero⟩
-instance (α) [AddMonoidWithOne α] : LawfulOfNat α (nat_lit 1) := ⟨Nat.cast_one⟩
-instance : LawfulOfNat ℕ n := ⟨show n = Nat.cast n by simp⟩
-instance : LawfulOfNat ℤ n := ⟨show Int.ofNat n = Nat.cast n by simp⟩
-
-theorem IsNat.to_eq [AddMonoidWithOne α] (n) [OfNat α n] [LawfulOfNat α n] :
-    (a : α) → IsNat a n → a = OfNat.ofNat n
-  | _, ⟨rfl⟩ => LawfulOfNat.eq_ofNat
+theorem IsNat.to_eq [AddMonoidWithOne α] {n} : {a a' : α} → IsNat a n → n = a' → a = a'
+  | _, _, ⟨rfl⟩, rfl => rfl
 
 theorem IsNat.to_raw_eq [AddMonoidWithOne α] : IsNat (a : α) n → a = n.rawCast
   | ⟨e⟩ => e
@@ -91,12 +79,12 @@ theorem IsInt.to_raw_eq [Ring α] : IsInt (a : α) n → a = n.rawCast
 
 theorem IsInt.of_raw (α) [Ring α] (n : ℤ) : IsInt (n.rawCast : α) n := ⟨rfl⟩
 
-theorem IsInt.neg_to_eq {α} [Ring α] (n) [OfNat α n] [LawfulOfNat α n] :
-    (a : α) → IsInt a (.negOfNat n) → a = -OfNat.ofNat n
-  | _, ⟨rfl⟩ => by simp [Int.negOfNat_eq, Int.cast_neg]; apply LawfulOfNat.eq_ofNat
+theorem IsInt.neg_to_eq {α} [Ring α] {n} :
+    {a a' : α} → IsInt a (.negOfNat n) → n = a' → a = -a'
+  | _, _, ⟨rfl⟩, rfl => by simp [Int.negOfNat_eq, Int.cast_neg]
 
-theorem IsInt.nonneg_to_eq {α} [Ring α] (n) [OfNat α n] [LawfulOfNat α n]
-    (a : α) (h : IsInt a (.ofNat n)) : a = OfNat.ofNat n := h.to_isNat.to_eq
+theorem IsInt.nonneg_to_eq {α} [Ring α] {n}
+    {a a' : α} (h : IsInt a (.ofNat n)) (e : n = a') : a = a' := h.to_isNat.to_eq e
 
 /-- Represent an integer as a typed expression. -/
 def mkRawIntLit (n : ℤ) : Q(ℤ) :=
@@ -245,17 +233,41 @@ def Result.ofRawInt {α : Q(Type u)} (n : ℤ) (e : Q($α)) : Result e :=
     .isNegNat rα lit (q(IsInt.of_raw $α (.negOfNat $lit)) : Expr)
 
 /--
-Convert a `Result` to a `Simp.Result`.
+Constructs an `ofNat` application `a'` with the canonical instance, together with a proof that
+the instance is equal to the result of `Nat.cast` on the given `AddMonoidWithOne` instance.
+
+This function is performance-critical, as many higher level tactics have to construct numerals.
+So rather than using typeclass search we hardcode the (relatively small) set of solutions
+to the typeclass problem.
 -/
+def mkOfNat (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
+    MetaM ((a' : Q($α)) × Q($lit = $a')) := do
+  if α.isConstOf ``Nat then
+    let a' : Q(ℕ) := q(OfNat.ofNat $lit : ℕ)
+    pure ⟨a', (q(Eq.refl $a') : Expr)⟩
+  else if α.isConstOf ``Int then
+    let a' : Q(ℤ) := q(OfNat.ofNat $lit : ℤ)
+    pure ⟨a', (q(Eq.refl $a') : Expr)⟩
+  else
+    let some n := lit.natLit? | failure
+    match n with
+    | 0 => pure ⟨q(0 : $α), (q(Nat.cast_zero (R := $α)) : Expr)⟩
+    | 1 => pure ⟨q(1 : $α), (q(Nat.cast_one (R := $α)) : Expr)⟩
+    | k+2 =>
+      let k : Q(ℕ) := mkRawNatLit k
+      let _x : Q(Nat.AtLeastTwo $lit) :=
+        (q(instAtLeastTwoHAddNatInstHAddInstAddNatOfNat (n := $k)) : Expr)
+      let a' : Q($α) := q(OfNat.ofNat $lit)
+      pure ⟨a', (q(Eq.refl $a') : Expr)⟩
+
+/-- Convert a `Result` to a `Simp.Result`. -/
 def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.Result
-  | .isNat _sα lit p => do
-    let _ofNatInst ← synthInstanceQ (q(OfNat $α $lit) : Q(Type u))
-    let _lawfulInst ← synthInstanceQ (q(LawfulOfNat $α $lit) : Q(Prop))
-    return { expr := q((OfNat.ofNat $lit : $α)), proof? := q(IsNat.to_eq $lit $e $p) }
+  | .isNat sα lit p => do
+    let ⟨a', pa'⟩ ← mkOfNat α sα lit
+    return { expr := a', proof? := q(IsNat.to_eq $p $pa') }
   | .isNegNat _rα lit p => do
-    let _ofNatInst ← synthInstanceQ (q(OfNat $α $lit) : Q(Type u))
-    let _lawfulInst ← synthInstanceQ (q(LawfulOfNat $α $lit) : Q(Prop))
-    return { expr := q(-(OfNat.ofNat $lit : $α)), proof? := q(IsInt.neg_to_eq $lit $e $p) }
+    let ⟨a', pa'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
+    return { expr := q(-$a'), proof? := q(IsInt.neg_to_eq $p $pa') }
   | .isRat _ .. => failure -- TODO
 
 /--
@@ -276,21 +288,21 @@ def mkNormNumExt (n : Name) : ImportM NormNumExt := do
 
 /-- Each `norm_num` extension is labelled with a collection of patterns
 which determine the expressions to which it should be applied. -/
-abbrev Entry := Array (Array DiscrTree.Key) × Name
+abbrev Entry := Array (Array (DiscrTree.Key true)) × Name
 /-- Environment extensions for `norm_num` declarations -/
 initialize normNumExt : PersistentEnvExtension Entry (Entry × NormNumExt)
-    (List Entry × DiscrTree NormNumExt) ←
+    (List Entry × DiscrTree NormNumExt true) ←
   -- we only need this to deduplicate entries in the DiscrTree
-  have : BEq NormNumExt := ⟨fun _ _ => false⟩
-  let insert kss v dt := kss.foldl (fun dt ks => dt.insertCore ks v) dt
+  have : BEq NormNumExt := ⟨fun _ _ ↦ false⟩
+  let insert kss v dt := kss.foldl (fun dt ks ↦ dt.insertCore ks v) dt
   registerPersistentEnvExtension {
     mkInitial := pure ([], {})
-    addImportedFn := fun s => do
-      let dt ← s.foldlM (init := {}) fun dt s => s.foldlM (init := dt) fun dt (kss, n) => do
+    addImportedFn := fun s ↦ do
+      let dt ← s.foldlM (init := {}) fun dt s ↦ s.foldlM (init := dt) fun dt (kss, n) ↦ do
         pure (insert kss (← mkNormNumExt n) dt)
       pure ([], dt)
-    addEntryFn := fun (entries, s) ((kss, n), ext) => ((kss, n) :: entries, insert kss ext s)
-    exportEntriesFn := fun s => s.1.reverse.toArray
+    addEntryFn := fun (entries, s) ((kss, n), ext) ↦ ((kss, n) :: entries, insert kss ext s)
+    exportEntriesFn := fun s ↦ s.1.reverse.toArray
   }
 
 /-- Run each registered `norm_num` extension on an expression, returning a `NormNum.Result`. -/
@@ -299,18 +311,19 @@ def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := d
     let lit : Q(ℕ) := e
     return .isNat (q(instAddMonoidWithOneNat) : Q(AddMonoidWithOne ℕ))
       lit (q(IsNat.raw_refl $lit) : Expr)
-  let s ← saveState
-  let arr ← (normNumExt.getState (← getEnv)).2.getMatch e
-  for ext in arr do
-    if (bif post then ext.post else ext.pre) then
-      try
-        let new ← ext.eval e
-        trace[Tactic.norm_num] "{e} ==> {new}"
-        return new
-      catch err =>
-        trace[Tactic.norm_num] "{e} failed: {err.toMessageData}"
-        s.restore
-  throwError "{e}: no norm_nums apply"
+  profileitM Exception "norm_num" (← getOptions) do
+    let s ← saveState
+    let arr ← (normNumExt.getState (← getEnv)).2.getMatch e
+    for ext in arr do
+      if (bif post then ext.post else ext.pre) then
+        try
+          let new ← ext.eval e
+          trace[Tactic.norm_num] "{e} ==> {new}"
+          return new
+        catch err =>
+          trace[Tactic.norm_num] "{e} failed: {err.toMessageData}"
+          s.restore
+    throwError "{e}: no norm_nums apply"
 
 /-- Run each registered `norm_num` extension on a typed expression `e : α`,
 returning a typed expression `lit : ℕ`, and a proof of `isNat e lit`. -/
@@ -374,7 +387,7 @@ initialize registerBuiltinAttribute {
   name := `norm_num
   descr := "adds a norm_num extension"
   applicationTime := .afterCompilation
-  add := fun declName stx kind => match stx with
+  add := fun declName stx kind ↦ match stx with
     | `(attr| norm_num $es,*) => do
       unless kind == AttributeKind.global do
         throwError "invalid attribute 'norm_num', must be global"
@@ -383,7 +396,7 @@ initialize registerBuiltinAttribute {
         throwError "invalid attribute 'norm_num', declaration is in an imported module"
       if (IR.getSorryDep env declName).isSome then return -- ignore in progress definitions
       let ext ← mkNormNumExt declName
-      let keys ← MetaM.run' <| es.getElems.mapM fun stx => do
+      let keys ← MetaM.run' <| es.getElems.mapM fun stx ↦ do
         let e ← TermElabM.run' <| withSaveInfoContext <| withAutoBoundImplicit <|
           withReader ({ · with ignoreTCFailures := true }) do
             let e ← elabTerm stx none
@@ -419,14 +432,14 @@ mutual
   /-- A `Methods` implementation which calls `norm_num`. -/
   partial def methods : Simp.Methods :=
     if useSimp then {
-      pre := fun e => do
+      pre := fun e ↦ do
         Simp.andThen (← Simp.preDefault e discharge) tryNormNum?
-      post := fun e => do
+      post := fun e ↦ do
         Simp.andThen (← Simp.postDefault e discharge) (tryNormNum? (post := true))
       discharge? := discharge
     } else {
-      pre := fun e => Simp.andThen (.visit { expr := e }) tryNormNum?
-      post := fun e => Simp.andThen (.visit { expr := e }) (tryNormNum? (post := true))
+      pre := fun e ↦ Simp.andThen (.visit { expr := e }) tryNormNum?
+      post := fun e ↦ Simp.andThen (.visit { expr := e }) (tryNormNum? (post := true))
       discharge? := discharge
     }
 
@@ -480,7 +493,7 @@ def normNumAt (g : MVarId) (ctx : Simp.Context) (fvarIdsToSimp : Array FVarId)
     let some gNew := res | return none
     g := gNew
   let (fvarIdsNew, gNew) ← g.assertHypotheses toAssert
-  let toClear := fvarIdsToSimp.filter fun fvarId => !replaced.contains fvarId
+  let toClear := fvarIdsToSimp.filter fun fvarId ↦ !replaced.contains fvarId
   let gNew ← gNew.tryClearMany toClear
   return some (fvarIdsNew, gNew)
 
@@ -544,14 +557,14 @@ open Lean Elab Tactic
 @[inherit_doc normNum1] syntax (name := normNum1Conv) "norm_num1" : conv
 
 /-- Elaborator for `norm_num1` conv tactic. -/
-@[tactic normNum1Conv] def elabNormNum1Conv : Tactic := fun _ => withMainContext do
+@[tactic normNum1Conv] def elabNormNum1Conv : Tactic := fun _ ↦ withMainContext do
   let ctx ← getSimpContext mkNullNode true
   Conv.applySimpResult (← deriveSimp ctx (← instantiateMVars (← Conv.getLhs)) (useSimp := false))
 
 @[inherit_doc normNum] syntax (name := normNumConv) "norm_num" &" only"? (simpArgs)? : conv
 
 /-- Elaborator for `norm_num` conv tactic. -/
-@[tactic normNumConv] def elabNormNumConv : Tactic := fun stx => withMainContext do
+@[tactic normNumConv] def elabNormNumConv : Tactic := fun stx ↦ withMainContext do
   let ctx ← getSimpContext stx[2] !stx[1].isNone
   Conv.applySimpResult (← deriveSimp ctx (← instantiateMVars (← Conv.getLhs)) (useSimp := true))
 
