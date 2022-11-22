@@ -30,7 +30,6 @@ open Lean
 open Lean.Meta
 open Lean.Parser.Tactic
 open Lean.Elab.Tactic
-open Lean.Elab.Tactic.Simp
 
 /--
 The `zify` tactic is used to shift propositions from `ℕ` to `ℤ`.
@@ -87,7 +86,7 @@ def applySimpResultToProp' (proof : Expr) (prop : Expr) (r : Simp.Result) : Meta
 def zifyProof (simpArgs : Option (Syntax.TSepArray `Lean.Parser.Tactic.simpStar ","))
   (proof : Expr) (prop : Expr) : TacticM (Expr × Expr) := do
   let ctx_result ← mkZifyContext simpArgs
-  let (r, _) ← Lean.Meta.simp prop ctx_result.ctx
+  let (r, _) ← simp prop ctx_result.ctx
   applySimpResultToProp' proof prop r
 
 @[zify_simps] lemma nat_cast_eq (a b : ℕ) : a = b ↔ (a : ℤ) = (b : ℤ) := Int.ofNat_inj.symm
