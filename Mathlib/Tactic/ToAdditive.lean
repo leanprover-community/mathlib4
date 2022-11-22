@@ -361,7 +361,7 @@ allow us to iterate the attributes applied to a given decalaration.
 -/
 -- TODO once we can copy `instance`, tidy up `Algebra/CovariantAndContravariant.lean` and
 -- `Algebra/Group/OrderSynonym.lean`.
-def copyAttributes (src tgt : Name) : CoreM Unit := do
+def copySimpAttribute (src tgt : Name) : CoreM Unit := do
   -- [todo] other simp theorems
   let some ext ← getSimpExtension? `simp | return
   let thms ← ext.getTheorems
@@ -373,8 +373,15 @@ def copyAttributes (src tgt : Name) : CoreM Unit := do
     (inv := false)
     (attrKind := AttributeKind.global)
     (prio := 1000) |>.run'
+
+/-- foo -/
+def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if (← isInstance src) then
     discard <| addInstance tgt AttributeKind.local 0 |>.run {} {}
+
+/-- bar -/
+def copyAttributes (src tgt : Name) : CoreM Unit :=
+  copySimpAttribute src tgt *> copyInstanceAttribute src tgt
 
 /--
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
