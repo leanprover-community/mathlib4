@@ -290,7 +290,6 @@ theorem sumCongr_apply (ea : Equiv.Perm α) (eb : Equiv.Perm β) (x : Sum α β)
 
 -- porting note: it seems the general theorem about `Equiv` is now applied, so there's no need
 -- to have this version also have `@[simp]`. Similarly for below.
-@[simp]
 theorem sumCongr_trans (e : Equiv.Perm α) (f : Equiv.Perm β) (g : Equiv.Perm α)
     (h : Equiv.Perm β) : (sumCongr e f).trans (sumCongr g h) = sumCongr (e.trans g) (f.trans h) :=
   Equiv.sumCongr_trans e f g h
@@ -502,8 +501,8 @@ theorem sumCompl_apply_symm_of_pos (p : α → Prop) [DecidablePred p] (a : α) 
 #align equiv.sum_compl_apply_symm_of_pos Equiv.sumCompl_apply_symm_of_pos
 
 @[simp]
-theorem sumCompl_apply_symm_of_neg (p : α → Prop) [DecidablePred p] (a : α)
-    (h : ¬p a) : (sumCompl p).symm a = Sum.inr ⟨a, h⟩ :=
+theorem sumCompl_apply_symm_of_neg (p : α → Prop) [DecidablePred p] (a : α) (h : ¬p a) :
+    (sumCompl p).symm a = Sum.inr ⟨a, h⟩ :=
   dif_neg h
 #align equiv.sum_compl_apply_symm_of_neg Equiv.sumCompl_apply_symm_of_neg
 
