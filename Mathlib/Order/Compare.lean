@@ -169,7 +169,7 @@ theorem cmpLE_toDual [LE α] [@DecidableRel α (· ≤ ·)] (x y : α) :
 #align cmp_le_to_dual cmpLE_toDual
 
 @[simp]
-theorem cmp_LE_of_dual [LE α] [@DecidableRel α (· ≤ ·)] (x y : αᵒᵈ) :
+theorem cmpLE_ofDual [LE α] [@DecidableRel α (· ≤ ·)] (x y : αᵒᵈ) :
     cmpLE (ofDual x) (ofDual y) = cmpLE y x :=
   rfl
 #align cmp_le_of_dual cmpLE_ofDual

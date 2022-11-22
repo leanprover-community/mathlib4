@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Order.Monoid
-import Mathlib.Algebra.Order.MonoidLemmas
+import Mathlib.Algebra.Order.Monoid.Lemmas
 
 /-!
 # Ordered groups
@@ -38,7 +38,7 @@ attribute [to_additive OrderedAddCommGroup] OrderedCommGroup
 @[to_additive]
 instance OrderedCommGroup.to_covariantClass_left_le [OrderedCommGroup α] :
     CovariantClass α α (· * ·) (· ≤ ·) where
-  elim := fun a b c bc => OrderedCommGroup.mul_le_mul_left b c bc a
+  elim := fun a b c bc ↦ OrderedCommGroup.mul_le_mul_left b c bc a
 
 -- TODO `to_additive` should copy this
 attribute [instance] OrderedAddCommGroup.to_covariantClass_left_le
@@ -47,7 +47,7 @@ attribute [instance] OrderedAddCommGroup.to_covariantClass_left_le
 @[to_additive OrderedAddCommGroup.toOrderedCancelAddCommMonoid]
 instance (priority := 100) OrderedCommGroup.toOrderedCancelCommMonoid [s : OrderedCommGroup α] :
     OrderedCancelCommMonoid α :=
-  { s with le_of_mul_le_mul_left := fun a _ _ => (mul_le_mul_iff_left a).mp }
+  { s with le_of_mul_le_mul_left := fun a _ _ ↦ (mul_le_mul_iff_left a).mp }
 
 attribute [instance] OrderedAddCommGroup.toOrderedCancelAddCommMonoid
 

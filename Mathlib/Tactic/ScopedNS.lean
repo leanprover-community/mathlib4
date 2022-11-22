@@ -31,16 +31,24 @@ scoped[Nat.Count] attribute [instance] CountSet.fintype
 -/
 syntax (name := scopedNS) "scoped" "[" ident "] " command : command
 macro_rules
-  | `(scoped[$ns] notation $[$prec:precedence]? $[$n:namedName]? $[$prio:namedPrio]?
-       $sym => $t) =>
-    let ns := mkIdentFrom ns <| rootNamespace ++ ns.getId
-    `(with_weak_namespace $ns
-      scoped notation $[$prec:precedence]? $[$n:namedName]? $[$prio:namedPrio]? $sym => $t)
-  | `(scoped[$ns] $mixfixKind:prefix $prec:precedence $[$n:namedName]? $[$prio:namedPrio]?
-       $sym => $t) =>
-    let ns := mkIdentFrom ns <| rootNamespace ++ ns.getId
-    `(with_weak_namespace $ns
-      scoped $mixfixKind $prec:precedence $[$n:namedName]? $[$prio:namedPrio]? $sym => $t)
-  | `(scoped[$ns] attribute [$attr:attr] $ids*) =>
-    let ns := mkIdentFrom ns <| rootNamespace ++ ns.getId
-    `(with_weak_namespace $ns attribute [scoped $attr:attr] $ids*)
+  | `(scoped[$ns] notation $prec $(n)? $(prio)? $sym* => $t) =>
+    `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
+      scoped notation $(prec)? $(n)? $(prio)? $sym* => $t)
+  | `(scoped[$ns] $mk:prefix $prec $(n)? $(prio)? $sym => $t) =>
+    `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
+      scoped $mk:prefix $prec $(n)? $(prio)? $sym => $t)
+  | `(scoped[$ns] $mk:infix $prec $(n)? $(prio)? $sym => $t) =>
+    `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
+      scoped $mk:infix $prec $(n)? $(prio)? $sym => $t)
+  | `(scoped[$ns] $mk:infixl $prec $(n)? $(prio)? $sym => $t) =>
+    `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
+      scoped $mk:infixl $prec $(n)? $(prio)? $sym => $t)
+  | `(scoped[$ns] $mk:infixr $prec $(n)? $(prio)? $sym => $t) =>
+    `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
+      scoped $mk:infixr $prec $(n)? $(prio)? $sym => $t)
+  | `(scoped[$ns] $mk:postfix $prec $(n)? $(prio)? $sym => $t) =>
+    `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
+      scoped $mk:postfix $prec $(n)? $(prio)? $sym => $t)
+  | `(scoped[$ns] attribute [$[$attr:attr],*] $ids*) =>
+    `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
+      attribute [$[scoped $attr:attr],*] $ids*)

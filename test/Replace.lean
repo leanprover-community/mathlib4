@@ -5,7 +5,9 @@ Authors: Arthur Paulino
 -/
 import Mathlib.Tactic.Replace
 
--- tests with a explicitly named hipothesis
+set_option linter.unusedVariables false
+
+-- tests with a explicitly named hypothesis
 
 example (h : Int) : Nat := by
   replace h : Nat := 0

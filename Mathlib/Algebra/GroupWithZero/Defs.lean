@@ -41,7 +41,9 @@ Monoid.npow_succ'
 /-- Typeclass for expressing that a type `M₀` with multiplication and a zero satisfies
 `0 * a = 0` and `a * 0 = 0` for all `a : M₀`. -/
 class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
+  /-- Zero is a left absorbing element for multiplication -/
   zero_mul : ∀ a : M₀, 0 * a = 0
+  /-- Zero is a right absorbing element for multiplication -/
   mul_zero : ∀ a : M₀, a * 0 = 0
 
 export MulZeroClass (zero_mul mul_zero)
