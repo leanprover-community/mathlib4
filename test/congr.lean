@@ -40,7 +40,7 @@ axiom List.sum : List Nat → Nat
 example {ls : List Nat} :
     (ls.map fun x => (ls.map fun y => 1 + y).sum + 1) =
     (ls.map fun x => (ls.map fun y => Nat.succ y).sum + 1) := by
-  rcongr (x y)
+  rcongr (_x y)
   guard_target =ₐ 1 + y = y.succ
   rw [Nat.add_comm]
 

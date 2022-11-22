@@ -1,36 +1,15 @@
 import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Tactic.Spread
+import Mathlib.Algebra.Ring.Defs
 
 /-
 # Semirings and rings
 -/
 
-/-- A typeclass stating that multiplication is left and right distributive
-over addition. -/
-class Distrib (R : Type u) extends Mul R, Add R where
-  left_distrib : ∀ a b c : R, a * (b + c) = (a * b) + (a * c)
-  right_distrib : ∀ a b c : R, (a + b) * c = (a * c) + (b * c)
 
 export Distrib (left_distrib right_distrib)
-
-section
-variable {R} [Distrib R]
-theorem mul_add (a b c : R) : a * (b + c) = a * b + a * c := Distrib.left_distrib a b c
-theorem add_mul (a b c : R) : (a + b) * c = a * c + b * c := Distrib.right_distrib a b c
-end
-
-/-- A not-necessarily-unital, not-necessarily-associative semiring. -/
-class NonUnitalNonAssocSemiring (R : Type u) extends
-  AddCommMonoid R, Distrib R, MulZeroClass R, AddMonoidWithOne R
-
-/-- An associative but not-necessarily unital semiring. -/
-class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α
-
-/-- A unital but not-necessarily-associative semiring. -/
-class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α
-
-class Semiring (R : Type u) extends NonUnitalSemiring R, NonAssocSemiring R, MonoidWithZero R
 
 section Semiring
 
@@ -64,28 +43,8 @@ theorem Nat.cast_commute [Semiring α] (n : ℕ) (x : α) : Commute (↑n) x := 
 
 end Semiring
 
-class CommSemiring (R : Type u) extends Semiring R, CommMonoid R where
-  -- TODO: doesn't work
-  right_distrib a b c := (by rw [mul_comm, mul_add, mul_comm c, mul_comm c])
-
-class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
-
 example [Ring R] : HasInvolutiveNeg R := inferInstance
 
-@[simp] theorem neg_mul {R} [Ring R] (a b : R) : (-a) * b = -(a * b) :=
-  eq_of_sub_eq_zero' <| by rw [sub_eq_add_neg, neg_neg, ← add_mul, neg_add_self, zero_mul]
-
-@[simp] lemma mul_neg [Ring R] (a b : R) : a * -b = - (a * b) :=
-  eq_of_sub_eq_zero' <| by rw [sub_eq_add_neg, neg_neg, ← mul_add, neg_add_self, mul_zero]
-
-theorem neg_mul_eq_neg_mul {R} [Ring R] (a b : R) : -(a * b) = (-a) * b := (neg_mul ..).symm
-
-theorem mul_sub_right_distrib [Ring R] (a b c : R) : (a - b) * c = a * c - b * c := by
-  simpa only [sub_eq_add_neg, neg_mul_eq_neg_mul] using add_mul a (-b) c
-
-alias mul_sub_right_distrib ← sub_mul
-
-class CommRing (R : Type u) extends Ring R, CommSemiring R
 
 /- Instances -/
 

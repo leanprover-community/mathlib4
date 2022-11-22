@@ -151,6 +151,11 @@ partial def M.run
       else fun e ↦ pure { expr := e }
   x nctx rctx s
 
+/-- Overrides the default error message in `ring1` to use a prettified version of the goal. -/
+initialize ringCleanupRef.set fun e => do
+  M.run (← IO.mkRef {}) { recursive := false } fun nctx _ _ =>
+    return (← nctx.simp { expr := e } nctx.ctx |>.run {}).1.expr
+
 open Elab.Tactic Parser.Tactic
 /-- Use `ring_nf` to rewrite the main goal. -/
 def ringNFTarget (s : IO.Ref Ring.State) (cfg : Config) : TacticM Unit := withMainContext do
@@ -226,7 +231,7 @@ elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:(config ?) : tactic => do
 Tactic for evaluating expressions in *commutative* (semi)rings, allowing for variables in the
 exponent.
 
-* `ring!` will use a more aggessive reducibility setting to determine equality of atoms.
+* `ring!` will use a more aggressive reducibility setting to determine equality of atoms.
 * `ring1` fails if the target is not an equality.
 
 For example:

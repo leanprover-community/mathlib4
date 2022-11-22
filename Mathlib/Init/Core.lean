@@ -7,6 +7,7 @@ notation, basic datatypes and type classes
 -/
 import Mathlib.Mathport.Rename
 import Std.Classes.SetNotation
+import Std.Classes.Dvd
 
 /-! ### alignments from lean 3 `init.core` -/
 
@@ -21,7 +22,7 @@ import Std.Classes.SetNotation
 #align punit.star PUnit.unit
 #align unit.star Unit.unit
 
-#align thunk Thunk'
+#align thunk Thunkₓ
 
 -- Note: we do not currently auto-align constants.
 #align quot Quot
@@ -75,11 +76,11 @@ def PProd.mk.injArrow {α : Type u} {β : Type v} {x₁ : α} {y₁ : β} {x₂ 
 #align has_lt LT
 #align has_lt.lt LT.lt
 #align has_append Append
-#align has_andthen AndThen'
 
 @[deprecated AndThen]
 class AndThen' (α : Type u) (β : Type v) (σ : outParam <| Type w) where
   andthen : α → β → σ
+#align has_andthen AndThen'
 
 #align has_union Union
 #align has_equiv HasEquivₓ -- universe levels don't match
@@ -101,7 +102,7 @@ class AndThen' (α : Type u) (β : Type v) (σ : outParam <| Type w) where
 #align gt GT.gt
 #align ge GE.ge
 
-#align is_lawful_singleton LawfulSingleton
+#align is_lawful_singleton IsLawfulSingleton
 
 attribute [simp] insert_emptyc_eq
 

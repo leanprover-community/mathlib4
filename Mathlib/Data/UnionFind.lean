@@ -147,7 +147,7 @@ theorem setParent {arr : Array (UFNode α)} {n} {m : UFModel n} (hm : m.Models a
   (i j H hi x) (hp : x.parent = j.1) (hrk : x.rank = arr[i].rank) :
   (m.setParent i j H).Models (arr.set ⟨i.1, hi⟩ x) :=
   ⟨hm.1.set
-      (fun k h ↦ by simp [UFModel.setParent, h.symm])
+      (fun k (h : (k:ℕ) ≠ i) ↦ by simp [UFModel.setParent, h.symm])
       (fun h ↦ by simp [UFModel.setParent, hp]),
     hm.2.set (fun _ _ ↦ rfl) (fun _ ↦ hrk.trans $ hm.2.get_eq ..)⟩
 
@@ -239,7 +239,7 @@ def findAux (self : UnionFind α) (x : Fin self.size) :
     refine ⟨n, m, _, hm,
       hm'.setParent x' root (by rw [e]; exact this) hx _ rfl rfl, e,
       ⟨root.2, ?_⟩, le_of_lt this⟩
-    have := show x.1 ≠ root from mt (congrArg _) (ne_of_lt this)
+    have : x.1 ≠ root := mt (congrArg _) (ne_of_lt this); dsimp only at this
     simp [UFModel.setParent, this, hr]
 termination_by _ α self x => self.rankMax - self.rank x
 

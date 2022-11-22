@@ -36,7 +36,7 @@ instance : IsEmpty (Fin 0) :=
 
 protected theorem Function.isEmpty [IsEmpty β] (f : α → β) : IsEmpty α :=
   ⟨fun x ↦ IsEmpty.false (f x)⟩
-#align function.is_empty function.isEmpty
+#align function.is_empty Function.isEmpty
 
 instance {p : α → Sort _} [h : Nonempty α] [∀ x, IsEmpty (p x)] : IsEmpty (∀ x, p x) :=
   h.elim fun x ↦ Function.isEmpty <| Function.eval x
@@ -183,7 +183,7 @@ theorem isEmpty_plift {α} : IsEmpty (PLift α) ↔ IsEmpty α := by
   simp only [← not_nonempty_iff, nonempty_plift, iff_self]
 #align is_empty_plift isEmpty_plift
 
-theorem well_founded_of_empty {α} [IsEmpty α] (r : α → α → Prop) : WellFounded r :=
+theorem wellFounded_of_isEmpty {α} [IsEmpty α] (r : α → α → Prop) : WellFounded r :=
   ⟨isEmptyElim⟩
 #align well_founded_of_empty wellFounded_of_isEmpty
 
@@ -200,7 +200,7 @@ theorem not_isEmpty_of_nonempty [h : Nonempty α] : ¬IsEmpty α :=
 
 variable {α}
 
-theorem Function.extend_of_empty [IsEmpty α] (f : α → β) (g : α → γ) (h : β → γ) :
+theorem Function.extend_of_isEmpty [IsEmpty α] (f : α → β) (g : α → γ) (h : β → γ) :
     Function.extend f g h = h :=
   funext fun _ ↦ (Function.extend_apply' _ _ _) fun ⟨a, _⟩ ↦ isEmptyElim a
 #align function.extend_of_empty Function.extend_of_isEmpty

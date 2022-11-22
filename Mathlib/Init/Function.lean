@@ -87,14 +87,14 @@ def LeftInverse (g : β → α) (f : α → β) : Prop := ∀ x, g (f x) = x
 
 /-- `HasLeftInverse f` means that `f` has an unspecified left inverse. -/
 def HasLeftInverse (f : α → β) : Prop := ∃ finv : β → α, LeftInverse finv f
-#align has_left_inverse HasLeftInverse
+#align function.has_left_inverse Function.HasLeftInverse
 
 /-- `RightInverse g f` means that g is a right inverse to f. That is, `f ∘ g = id`. -/
 def RightInverse (g : β → α) (f : α → β) : Prop := LeftInverse f g
 
 /-- `hasRightInverse f` means that `f` has an unspecified right inverse. -/
 def HasRightInverse (f : α → β) : Prop := ∃ finv : β → α, RightInverse finv f
-#align has_right_inverse HasRightInverse
+#align function.has_right_inverse Function.HasRightInverse
 
 theorem LeftInverse.injective {g : β → α} {f : α → β} : LeftInverse g f → Injective f :=
 λ h a b hf => h a ▸ h b ▸ hf ▸ rfl

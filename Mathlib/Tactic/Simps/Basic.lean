@@ -179,11 +179,11 @@ derives two `simp` lemmas:
   notation is used instead of the corresponding projection.
   [TODO: not yet implemented for heterogenous operations like `HMul` and `HAdd`]
 * You can specify custom projections, by giving a declaration with name
-  `{StructureName}.simps.{projectionName}`. See Note [custom simps projection].
+  `{StructureName}.Simps.{projectionName}`. See Note [custom simps projection].
 
   Example:
   ```lean
-  def Equiv.simps.invFun (e : α ≃ β) : β → α := e.symm
+  def Equiv.Simps.invFun (e : α ≃ β) : β → α := e.symm
   @[simps] def Equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ e₁, e₁.symm ∘ e₂.symm⟩
   ```
@@ -339,13 +339,13 @@ Some common uses:
   then you have to specify explicitly that you want to use a coercion
   as a custom projection. For example
   ```
-    def relEmbedding.simps.apply (h : r ↪r s) : α → β := h
+    def relEmbedding.Simps.apply (h : r ↪r s) : α → β := h
     initialize_simps_projections relEmbedding (to_embedding_toFun → apply, -to_embedding)
   ```
 * If you have an isomorphism-like structure (like `Equiv`) you often want to define a custom
   projection for the inverse:
   ```
-    def Equiv.simps.symm_apply (e : α ≃ β) : β → α := e.symm
+    def Equiv.Simps.symm_apply (e : α ≃ β) : β → α := e.symm
     initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
   ```
 -/
@@ -359,7 +359,7 @@ macro "initialize_simps_projections?" rest:simpsProj : command =>
 end Command
 end Lean.Parser
 
-initialize registerTraceClass `simps.verbose
+initialize registerTraceClass `Simps.verbose
 initialize registerTraceClass `simps.debug
 
 /-- Projection data for a single projection of a structure -/
@@ -527,7 +527,7 @@ def simpsFindCustomProjection (str : Name) (proj : ParsedProjectionData)
   (rawUnivs : List Level) (trc : Bool) : CoreM ParsedProjectionData := do
   let env ← getEnv
   let (rawExpr, nrs) ← MetaM.run' (getCompositeOfProjections str proj.origName.getString!)
-  match env.find? (str ++ `simps ++ proj.newName) with
+  match env.find? (str ++ `Simps ++ proj.newName) with
   | some d@(.defnInfo _) =>
     let customProj := d.instantiateValueLevelParams! rawUnivs
     if trc then
@@ -617,7 +617,7 @@ attribute instead. See the documentation for this attribute for the data this ta
 
 The returned universe levels are the universe levels of the structure. For the projections there
 are three cases
-* If the declaration `{StructureName}.simps.{projectionName}` has been declared, then the value
+* If the declaration `{StructureName}.Simps.{projectionName}` has been declared, then the value
   of this declaration is used (after checking that it is definitionally equal to the actual
   projection. If you rename the projection name, the declaration should have the *new* projection
   name.
@@ -685,7 +685,7 @@ def simpsGetRawProjections (str : Name) (traceIfExists : Bool := false)
 library_note "custom simps projection"/--
 You can specify custom projections for the `@[simps]` attribute.
 To do this for the projection `MyStructure.originalProjection` by adding a declaration
-`MyStructure.simps.myProjection` that is definitionally equal to
+`MyStructure.Simps.myProjection` that is definitionally equal to
 `MyStructure.originalProjection` but has the projection in the desired (simp-normal) form.
 Then you can call
 ```

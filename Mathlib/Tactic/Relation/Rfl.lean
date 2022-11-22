@@ -18,7 +18,8 @@ namespace Mathlib.Tactic
 open Lean Meta
 
 /-- Environment extensions for `refl` lemmas -/
-initialize reflExt : SimpleScopedEnvExtension (Name × Array DiscrTree.Key) (DiscrTree Name) ←
+initialize reflExt :
+    SimpleScopedEnvExtension (Name × Array (DiscrTree.Key true)) (DiscrTree Name true) ←
   registerSimpleScopedEnvExtension {
     addEntry := fun dt (n, ks) ↦ dt.insertCore ks n
     initial := {}

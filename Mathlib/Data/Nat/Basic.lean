@@ -3,8 +3,11 @@ import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Tactic.Basic
 import Mathlib.Logic.Basic
+import Mathlib.Logic.Nontrivial
 
 namespace Nat
+
+instance : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
 attribute [simp] succ_ne_zero lt_succ_self
 

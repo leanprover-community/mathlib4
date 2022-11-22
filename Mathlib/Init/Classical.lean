@@ -12,8 +12,8 @@ import Mathlib.Init.Logic
 
 namespace Classical
 
-#align inhabited_of_nonempty inhabited_of_nonempty
-#align inhabited_of_exists inhabited_of_exists
+#align classical.inhabited_of_nonempty Classical.inhabited_of_nonempty
+#align classical.inhabited_of_exists Classical.inhabited_of_exists
 
 attribute [local instance] propDecidable
 attribute [local instance] decidableInhabited

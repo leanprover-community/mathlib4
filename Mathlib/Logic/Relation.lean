@@ -191,7 +191,7 @@ protected def Map (r : α → β → Prop) (f : α → γ) (g : β → δ) : γ 
 variable {r : α → α → Prop} {a b c d : α}
 
 /-- `ReflTransGen r`: reflexive transitive closure of `r` -/
-@[mk_iff Relation.ReflTransGen.cases_tail_iff]
+@[mk_iff ReflTransGen.cases_tail_iff]
 inductive ReflTransGen (r : α → α → Prop) (a : α) : α → Prop
   | refl : ReflTransGen r a a
   | tail {b c} : ReflTransGen r a b → r b c → ReflTransGen r a c
@@ -418,17 +418,17 @@ theorem transGen_eq_self (trans : Transitive r) : TransGen r = r :=
           induction h
           case single _ hc => exact hc
           case tail c d _ hcd hac => exact trans hac hcd, TransGen.single⟩
-#align relation.trans_gen.trans_gen_eq_self Relation.TransGen.transGen_eq_self
+#align relation.trans_gen_eq_self Relation.transGen_eq_self
 
 theorem transitive_transGen : Transitive (TransGen r) := fun _ _ _ ↦ TransGen.trans
-#align relation.trans_gen.transitive_trans_gen Relation.TransGen.transitive_transGen
+#align relation.transitive_trans_gen Relation.transitive_transGen
 
 instance : IsTrans α (TransGen r) :=
   ⟨@TransGen.trans α r⟩
 
 theorem transGen_idem : TransGen (TransGen r) = TransGen r :=
   transGen_eq_self transitive_transGen
-#align relation.trans_gen.trans_gen_idem Relation.TransGen.transGen_idem
+#align relation.trans_gen_idem Relation.transGen_idem
 
 theorem TransGen.lift {p : β → β → Prop} {a b : α} (f : α → β) (h : ∀ a b, r a b → p (f a) (f b))
     (hab : TransGen r a b) : TransGen p (f a) (f b) := by
@@ -519,7 +519,7 @@ theorem ReflTransGen.lift' {p : β → β → Prop} {a b : α} (f : α → β)
 theorem reflTransGen_closed {p : α → α → Prop} :
     (∀ a b, r a b → ReflTransGen p a b) → ReflTransGen r a b → ReflTransGen p a b :=
   ReflTransGen.lift' id
-#align relation.refl_trans_gen_closed RElation.reflTransGen_closed
+#align relation.refl_trans_gen_closed Relation.reflTransGen_closed
 
 theorem ReflTransGen.swap (h : ReflTransGen r b a) : ReflTransGen (swap r) a b := by
   induction' h with b c hab hbc ih
@@ -589,7 +589,7 @@ theorem equivalence_join_reflTransGen
     (h : ∀ a b c, r a b → r a c → ∃ d, ReflGen r b d ∧ ReflTransGen r c d) :
     Equivalence (Join (ReflTransGen r)) :=
   equivalence_join reflexive_reflTransGen transitive_reflTransGen fun _ _ _ ↦ church_rosser h
-#align relation.join.equivalence_join_refl_trans_gen Relation.Join.equivalence_join_reflTransGen
+#align relation.equivalence_join_refl_trans_gen Relation.equivalence_join_reflTransGen
 
 theorem join_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) (h : ∀ a b, r' a b → r a b) :
     Join r' a b → r a b
@@ -605,7 +605,7 @@ theorem reflTransGen_of_transitive_reflexive {r' : α → α → Prop} (hr : Ref
 theorem reflTransGen_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) :
     (∀ a b, r' a b → r a b) → ReflTransGen r' a b → r a b :=
   reflTransGen_of_transitive_reflexive hr.1 (fun _ _ _ ↦ hr.trans)
-#align refl_trans_gen_of_equivalence reflTransGen_of_equivalence
+#align relation.refl_trans_gen_of_equivalence Relation.reflTransGen_of_equivalence
 
 end Join
 

@@ -34,14 +34,14 @@ theorem mem_range' {m : ℕ} : ∀ {s n : ℕ}, m ∈ range' s n ↔ s ≤ m ∧
     mem_cons.trans <| by
       simp only [mem_range', or_and_left, or_iff_right_of_imp this, l, Nat.add_right_comm]; rfl
 
-theorem rangeAux_range' : ∀ s n : ℕ, rangeAux s (range' s n) = range' 0 (n + s)
+theorem range_loop_range' : ∀ s n : ℕ, range.loop s (range' s n) = range' 0 (n + s)
   | 0, n => rfl
   | s + 1, n => by
     rw [show n + (s + 1) = n + 1 + s from Nat.add_right_comm n s 1]
-    exact rangeAux_range' s (n + 1)
+    exact range_loop_range' s (n + 1)
 
 theorem range_eq_range' (n : ℕ) : range n = range' 0 n :=
-  (rangeAux_range' n 0).trans <| by rw [Nat.zero_add]
+  (range_loop_range' n 0).trans <| by rw [Nat.zero_add]
 
 @[simp]
 theorem mem_range {m n : ℕ} : m ∈ range n ↔ m < n := by

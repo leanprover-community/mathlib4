@@ -72,7 +72,7 @@ theorem decide_or (p q : Prop) [Decidable p] [Decidable q] : decide (p ∨ q) = 
 @[simp]
 theorem decide_eq {p q : Prop} [Decidable p] [Decidable q] : decide p = decide q ↔ (p ↔ q) :=
   ⟨fun h ↦ (coe_decide p).symm.trans <| by simp [h], decide_congr⟩
-#align bool.decide_eq Bool.to_bool_eq
+#align bool.to_bool_eq Bool.decide_eq
 
 theorem not_false' : ¬false := fun.
 #align bool.not_ff Bool.not_false'

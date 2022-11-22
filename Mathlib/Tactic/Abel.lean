@@ -544,7 +544,7 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:(config ?) loc:(ppSpace location)? :
 /--
 Tactic for evaluating expressions in abelian groups.
 
-* `abel!` will use a more aggessive reducibility setting to determine equality of atoms.
+* `abel!` will use a more aggressive reducibility setting to determine equality of atoms.
 * `abel1` fails if the target is not an equality.
 
 For example:

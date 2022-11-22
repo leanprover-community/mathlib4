@@ -17,11 +17,11 @@ example (p q r : Prop) : p → q → r → p ∧ q ∧ r := by
 example (p q r : Prop) : p → q → r → p ∧ q ∧ r := by
   intros a b c
   constructor
-  fail_if_success on_goal -3 => exact a
+  fail_if_success on_goal -3 => unreachable!
   fail_if_success on_goal -1 => exact a
-  fail_if_success on_goal 0 => exact a
+  fail_if_success on_goal 0 => unreachable!
   fail_if_success on_goal 2 => exact a
-  fail_if_success on_goal 3 => exact a
+  fail_if_success on_goal 3 => unreachable!
   on_goal 1 => exact a
   constructor
   swap

@@ -157,8 +157,6 @@ theorem and_self_iff : p ∧ p ↔ p := iff_of_eq (and_self _)
 
 #align eq_true_intro eq_true
 #align eq_false_intro eq_false
-#align eq_false eq_false_eq
-#align eq_true eq_true_eq
 
 @[deprecated or_comm] theorem or_comm' (a b) : a ∨ b ↔ b ∨ a := or_comm
 #align or.comm or_comm

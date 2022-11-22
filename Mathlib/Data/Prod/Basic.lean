@@ -222,17 +222,19 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] 
     | (_, _), (_, _), .right _ _,     .left  _ _ hr₂ => (irrefl _ hr₂).elim
     | (_, _), (_, _), .right _ hs₁,   .right _ hs₂   => antisymm hs₁ hs₂ ▸ rfl⟩
 
-instance is_total_left {r : α → α → Prop} {s : β → β → Prop} [IsTotal α r] :
+instance isTotal_left {r : α → α → Prop} {s : β → β → Prop} [IsTotal α r] :
     IsTotal (α × β) (Lex r s) :=
   ⟨fun ⟨a₁, _⟩ ⟨a₂, _⟩ ↦ (IsTotal.total a₁ a₂).imp (Lex.left _ _) (Lex.left _ _)⟩
+#align prod.is_total_left Prod.isTotal_left
 
-instance is_total_right {r : α → α → Prop} {s : β → β → Prop} [IsTrichotomous α r] [IsTotal β s] :
+instance isTotal_right {r : α → α → Prop} {s : β → β → Prop} [IsTrichotomous α r] [IsTotal β s] :
     IsTotal (α × β) (Lex r s) :=
   ⟨fun ⟨i, a⟩ ⟨j, b⟩ ↦ by
     obtain hij | rfl | hji := trichotomous_of r i j
     · exact Or.inl (.left _ _ hij)
     · exact (total_of s a b).imp (.right _) (.right _)
     · exact Or.inr (.left _ _ hji) ⟩
+#align prod.is_total_right Prod.isTotal_right
 
 end Prod
 

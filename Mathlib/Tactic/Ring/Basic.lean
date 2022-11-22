@@ -156,7 +156,7 @@ inductive ExProd : ∀ {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) �
 /-- A polynomial expression, which is a sum of monomials. -/
 inductive ExSum : ∀ {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) → Type
   /-- Zero is a polynomial. `e` is the expression `0`. -/
-  | zero {α : Q(Type u)} {sα : Q(CommSemiring $α)} : ExSum sα q((0 : $α))
+  | zero {α : Q(Type u)} {sα : Q(CommSemiring $α)} : ExSum sα q(0 : $α)
   /-- A sum `a + b` is a polynomial if `a` is a monomial and `b` is another polynomial. -/
   | add {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a b : Q($α)} :
     ExProd sα a → ExSum sα b → ExSum sα q($a + $b)
@@ -256,7 +256,7 @@ Constructs the expression corresponding to `.const n`.
 -/
 def ExProd.mkNat (n : ℕ) : (e : Q($α)) × ExProd sα e :=
   let lit : Q(ℕ) := mkRawNatLit n
-  ⟨q((($lit).rawCast : $α)), .const n⟩
+  ⟨q(($lit).rawCast : $α), .const n⟩
 
 /--
 Constructs the expression corresponding to `.const (-n)`.
@@ -264,7 +264,7 @@ Constructs the expression corresponding to `.const (-n)`.
 -/
 def ExProd.mkNegNat (_ : Q(Ring $α)) (n : ℕ) : (e : Q($α)) × ExProd sα e :=
   let lit : Q(ℕ) := mkRawNatLit n
-  ⟨q(((Int.negOfNat $lit).rawCast : $α)), .const (-n)⟩
+  ⟨q((Int.negOfNat $lit).rawCast : $α), .const (-n)⟩
 
 section
 variable {sα}
@@ -333,7 +333,7 @@ theorem add_pf_add_overlap
 
 theorem add_pf_add_overlap_zero
     (h : IsNat (a₁ + b₁) (nat_lit 0)) (h₄ : a₂ + b₂ = c) : (a₁ + a₂ : R) + (b₁ + b₂) = c := by
-  subst_vars; rw [add_add_add_comm, h.to_eq, add_pf_zero_add]
+  subst_vars; rw [add_add_add_comm, h.1, Nat.cast_zero, add_pf_zero_add]
 
 theorem add_pf_add_lt (a₁ : R) (_ : a₂ + b = c) : (a₁ + a₂) + b = a₁ + c := by simp [*, add_assoc]
 
@@ -835,7 +835,7 @@ theorem cast_pos : IsNat (a : R) n → a = n.rawCast + 0
 theorem cast_zero : IsNat (a : R) (nat_lit 0) → a = 0
   | ⟨e⟩ => by simp [e]
 
-theorem cast_neg [Ring R] : IsInt (a : R) (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
+theorem cast_neg {R} [Ring R] {a : R} : IsInt a (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
   | ⟨e⟩ => by simp [e]
 
 /-- Converts a proof by `norm_num` that `e` is a numeral, into a normalization as a monomial:
@@ -900,43 +900,52 @@ This is the main driver of `ring`, which calls out to `evalAdd`, `evalMul` etc.
 -/
 partial def eval {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     (c : Cache α) (e : Q($α)) : RingM (Result (ExSum sα) e) := do
-  match e with
-  | ~q($a + $b) =>
-    let ⟨_, va, pa⟩ ← eval sα c a
-    let ⟨_, vb, pb⟩ ← eval sα c b
-    let ⟨c, vc, p⟩ := evalAdd sα va vb
-    pure ⟨c, vc, (q(add_congr $pa $pb $p) : Expr)⟩
-  | ~q($a * $b) =>
-    let ⟨_, va, pa⟩ ← eval sα c a
-    let ⟨_, vb, pb⟩ ← eval sα c b
-    let ⟨c, vc, p⟩ := evalMul sα va vb
-    pure ⟨c, vc, (q(mul_congr $pa $pb $p) : Expr)⟩
-  | ~q(($a : ℕ) • $b) =>
-    let ⟨_, va, pa⟩ ← eval sℕ .nat a
-    let ⟨_, vb, pb⟩ ← eval sα c b
-    let ⟨c, vc, p⟩ ← evalNSMul sα va vb
-    pure ⟨c, vc, (q(nsmul_congr $pa $pb $p) : Expr)⟩
-  | ~q($a ^ $b) =>
-    let ⟨_, va, pa⟩ ← eval sα c a
-    let ⟨_, vb, pb⟩ ← eval sℕ .nat b
-    let ⟨c, vc, p⟩ := evalPow sα va vb
-    pure ⟨c, vc, (q(pow_congr $pa $pb $p) : Expr)⟩
-  | _ =>
-    let els := do
-      try evalCast sα (← derive e)
-      catch _ => evalAtom sα e
-    let some rα := c.rα | els
-    match e with
+  let els := do
+    try evalCast sα (← derive e)
+    catch _ => evalAtom sα e
+  let .const n _ := (← withReducible <| whnf e).getAppFn | els
+  match n, c.rα with
+  | ``HAdd.hAdd, _ | ``Add.add, _ => match e with
+    | ~q($a + $b) =>
+      let ⟨_, va, pa⟩ ← eval sα c a
+      let ⟨_, vb, pb⟩ ← eval sα c b
+      let ⟨c, vc, p⟩ := evalAdd sα va vb
+      pure ⟨c, vc, (q(add_congr $pa $pb $p) : Expr)⟩
+    | _ => els
+  | ``HMul.hMul, _ | ``Mul.mul, _ => match e with
+    | ~q($a * $b) =>
+      let ⟨_, va, pa⟩ ← eval sα c a
+      let ⟨_, vb, pb⟩ ← eval sα c b
+      let ⟨c, vc, p⟩ := evalMul sα va vb
+      pure ⟨c, vc, (q(mul_congr $pa $pb $p) : Expr)⟩
+    | _ => els
+  | ``HasSmul.smul, _ => match e with
+    | ~q(($a : ℕ) • $b) =>
+      let ⟨_, va, pa⟩ ← eval sℕ .nat a
+      let ⟨_, vb, pb⟩ ← eval sα c b
+      let ⟨c, vc, p⟩ ← evalNSMul sα va vb
+      pure ⟨c, vc, (q(nsmul_congr $pa $pb $p) : Expr)⟩
+    | _ => els
+  | ``HPow.hPow, _ | ``Pow.pow, _ => match e with
+    | ~q($a ^ $b) =>
+      let ⟨_, va, pa⟩ ← eval sα c a
+      let ⟨_, vb, pb⟩ ← eval sℕ .nat b
+      let ⟨c, vc, p⟩ := evalPow sα va vb
+      pure ⟨c, vc, (q(pow_congr $pa $pb $p) : Expr)⟩
+    | _ => els
+  | ``Neg.neg, some rα => match e with
     | ~q(-$a) =>
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨b, vb, p⟩ := evalNeg sα rα va
       pure ⟨b, vb, (q(neg_congr $pa $p) : Expr)⟩
+  | ``HSub.hSub, some rα | ``Sub.sub, some rα => match e with
     | ~q($a - $b) => do
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ := evalSub sα rα va vb
       pure ⟨c, vc, (q(sub_congr $pa $pb $p) : Expr)⟩
     | _ => els
+  | _, _ => els
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
 
@@ -947,6 +956,13 @@ def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α
 
 theorem of_eq (_ : (a : R) = c) (_ : b = c) : a = b := by subst_vars; rfl
 
+/--
+This is a routine which is used to clean up the unsolved subgoal
+of a failed `ring1` application. It is overridden in `Mathlib.Tactic.Ring.RingNF`
+to apply the `ring_nf` simp set to the goal.
+-/
+initialize ringCleanupRef : IO.Ref (Expr → MetaM Expr) ← IO.mkRef pure
+
 /-- Frontend of `ring1`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
 def proveEq (g : MVarId) : RingM Unit := do
   let some (α, e₁, e₂) := (← instantiateMVars (← g.getType)).eq?
@@ -956,12 +972,14 @@ def proveEq (g : MVarId) : RingM Unit := do
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
   let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
   let c := { rα := (← trySynthInstanceQ (q(Ring $α) : Q(Type u))).toOption }
-  let ⟨a, va, pa⟩ ← eval sα c e₁
-  let ⟨b, vb, pb⟩ ← eval sα c e₂
-  unless va.eq vb do
-    throwError "ring failed, ring expressions not equal: \n{a}\n  !=\n{b}"
-  let pb : Q($e₂ = $a) := pb
-  g.assign q(of_eq $pa $pb)
+  profileitM Exception "ring" (← getOptions) do
+    let ⟨a, va, pa⟩ ← eval sα c e₁
+    let ⟨b, vb, pb⟩ ← eval sα c e₂
+    unless va.eq vb do
+      let g ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a = $b))
+      throwError "ring failed, ring expressions not equal\n{g.mvarId!}"
+    let pb : Q($e₂ = $a) := pb
+    g.assign q(of_eq $pa $pb)
 
 /--
 Tactic for solving equations of *commutative* (semi)rings,
