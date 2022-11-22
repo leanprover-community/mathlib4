@@ -373,6 +373,8 @@ def copyAttributes (src tgt : Name) : CoreM Unit := do
     (inv := false)
     (attrKind := AttributeKind.global)
     (prio := 1000) |>.run'
+  if (← isInstance src) then
+    discard <| addInstance tgt AttributeKind.local 0 |>.run {} {}
 
 /--
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and

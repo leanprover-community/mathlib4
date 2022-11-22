@@ -163,7 +163,7 @@ instance (priority := 100) Group.covconv [Group N] [CovariantClass N N (· * ·)
 
 -- Porting note: as at 2022-11-13, `to_additive` doesn't copy the `instance` attribute
 -- so we need to do it manually.
-attribute [instance 100] AddGroup.covconv
+--attribute [instance 100] AddGroup.covconv
 
 @[to_additive]
 theorem Group.covariant_swap_iff_contravariant_swap [Group N] :
