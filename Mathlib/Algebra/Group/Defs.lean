@@ -280,7 +280,7 @@ instance (priority := 100) AddLeftCancelSemigroup.to_IsLeftCancelAdd (G : Type u
     [AddLeftCancelSemigroup G] : isLeftCancelAdd G :=
   { add_left_cancel := AddLeftCancelSemigroup.add_left_cancel }
 
-attribute [to_additive ddLeftCancelSemigroup.to_IsLeftCancelAdd]
+attribute [to_additive AddLeftCancelSemigroup.to_IsLeftCancelAdd]
   LeftCancelSemigroup.to_IsLeftCancelMul
 
 end LeftCancelSemigroup
