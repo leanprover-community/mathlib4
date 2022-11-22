@@ -894,11 +894,11 @@ def invMonoidHom : α →* α where
 
 @[simp]
 theorem coe_invMonoidHom : (invMonoidHom : α → α) = Inv.inv := rfl
-#align coe_inv_monoid_hom coe_inv_monoid_hom
+#align coe_inv_monoid_hom coe_invMonoidHom
 
 @[simp]
 theorem invMonoidHom_apply (a : α) : invMonoidHom a = a⁻¹ := rfl
-#align inv_monoid_hom_apply inv_monoid_hom_apply
+#align inv_monoid_hom_apply invMonoidHom_apply
 
 end DivisionCommMonoid
 
@@ -1433,7 +1433,7 @@ theorem _root_.injective_iff_map_eq_one {G H} [Group G] [MulOneClass H] [MonoidH
   (f : F) : Function.Injective f ↔ ∀ a, f a = 1 → a = 1 :=
   ⟨fun h x => (map_eq_one_iff f h).mp, fun h x y hxy =>
     mul_inv_eq_one.1 <| h _ <| by rw [map_mul, hxy, ← map_mul, mul_inv_self, map_one]⟩
-#align monoid_hom._root_.injective_iff_map_eq_one monoid_hom._root_.injective_iff_map_eq_one
+#align injective_iff_map_eq_one injective_iff_map_eq_one
 
 /-- A homomorphism from a group to a monoid is injective iff its kernel is trivial,
 stated as an iff on the triviality of the kernel.
@@ -1446,7 +1446,7 @@ theorem _root_.injective_iff_map_eq_one' {G H} [Group G] [MulOneClass H] [Monoid
   (f : F) : Function.Injective f ↔ ∀ a, f a = 1 ↔ a = 1 :=
   (injective_iff_map_eq_one f).trans <|
     forall_congr' fun _ => ⟨fun h => ⟨h, fun H => H.symm ▸ map_one f⟩, Iff.mp⟩
-#align monoid_hom._root_.injective_iff_map_eq_one' monoid_hom._root_.injective_iff_map_eq_one'
+#align injective_iff_map_eq_one' injective_iff_map_eq_one'
 
 /-- Makes a group homomorphism from a proof that the map preserves multiplication. -/
 @[to_additive "Makes an additive group homomorphism from a proof that the map preserves addition.",
