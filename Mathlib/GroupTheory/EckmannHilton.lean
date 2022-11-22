@@ -59,7 +59,7 @@ theorem one : e₁ = e₂ := by
 /-- If a type carries two unital binary operations that distribute over each other,
 then these operations are equal.
 
-In fact, they give a commutative monoid structure, see `eckmann_hilton.comm_monoid`. -/
+In fact, they give a commutative monoid structure, see `eckmann_hilton.CommMonoid`. -/
 theorem mul : m₁ = m₂ := by
   funext a b
   calc
@@ -71,7 +71,7 @@ theorem mul : m₁ = m₂ := by
 /-- If a type carries two unital binary operations that distribute over each other,
 then these operations are commutative.
 
-In fact, they give a commutative monoid structure, see `eckmann_hilton.comm_monoid`. -/
+In fact, they give a commutative monoid structure, see `eckmann_hilton.CommMonoid`. -/
 theorem mul_comm : IsCommutative _ m₂ :=
   ⟨fun a b => by simpa [mul h₁ h₂ distrib, h₂.left_id, h₂.right_id] using distrib e₂ a b e₂⟩
 #align eckmann_hilton.mul_comm EckmannHilton.mul_comm
@@ -79,7 +79,7 @@ theorem mul_comm : IsCommutative _ m₂ :=
 /-- If a type carries two unital binary operations that distribute over each other,
 then these operations are associative.
 
-In fact, they give a commutative monoid structure, see `eckmann_hilton.comm_monoid`. -/
+In fact, they give a commutative monoid structure, see `eckmann_hilton.CommMonoid`. -/
 theorem mul_assoc : IsAssociative _ m₂ :=
   ⟨fun a b c => by simpa [mul h₁ h₂ distrib, h₂.left_id, h₂.right_id] using distrib a b e₂ c⟩
 #align eckmann_hilton.mul_assoc EckmannHilton.mul_assoc
