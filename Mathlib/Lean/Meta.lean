@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Lean.Elab
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
+import Mathlib.Util.MapsTo
 
 /-! ## Additional utilities in `Lean.Meta` -/
 
@@ -30,10 +31,10 @@ def _root_.Lean.MVarId.replace (g : MVarId) (hyp : FVarId) (typeNew proof : Expr
 where
   /-- Finds the `LocalDecl` for the FVar in `e` with the highest index. -/
   findMaxFVar (e : Expr) : StateRefT LocalDecl MetaM Unit :=
-    e.forEach' fun e => do
+    e.forEach' fun e ↦ do
       if e.isFVar then
         let ldecl' ← e.fvarId!.getDecl
-        modify fun ldecl => if ldecl'.index > ldecl.index then ldecl' else ldecl
+        modify fun ldecl ↦ if ldecl'.index > ldecl.index then ldecl' else ldecl
         return false
       else
         return e.hasFVar
