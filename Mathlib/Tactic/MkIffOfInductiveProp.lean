@@ -25,7 +25,7 @@ the `mk_iff` attribute.
 
 namespace Mathlib.Tactic.MkIff
 
-open Lean Meta
+open Lean Meta Elab
 
 /-- `select m n` runs `tactic.right` `m` times, and then `tactic.left` `(n-m)` times.
 Fails if `n < m`. -/
@@ -160,16 +160,16 @@ close the resulting subgoals.
 def splitThenConstructor (mvar : MVarId) (n : Nat) : MetaM Unit :=
 match n with
 | 0   => do
-  let (subgoals',_) ← Elab.Term.TermElabM.run $ Elab.Tactic.run mvar do
-    Elab.Tactic.evalTactic (←`(tactic| constructor))
+  let (subgoals',_) ← Term.TermElabM.run $ Tactic.run mvar do
+    Tactic.evalTactic (←`(tactic| constructor))
   let [] := subgoals' | throwError "expected no subgoals"
   pure ()
 | n  + 1 => do
-  let (subgoals,_) ← Elab.Term.TermElabM.run $ Elab.Tactic.run mvar do
-    Elab.Tactic.evalTactic (←`(tactic| refine ⟨?_,?_⟩))
+  let (subgoals,_) ← Term.TermElabM.run $ Tactic.run mvar do
+    Tactic.evalTactic (←`(tactic| refine ⟨?_,?_⟩))
   let [sg1, sg2] := subgoals | throwError "expected two subgoals"
-  let (subgoals',_) ← Elab.Term.TermElabM.run $ Elab.Tactic.run sg1 do
-    Elab.Tactic.evalTactic (←`(tactic| constructor))
+  let (subgoals',_) ← Term.TermElabM.run $ Tactic.run sg1 do
+    Tactic.evalTactic (←`(tactic| constructor))
   let [] := subgoals' | throwError "expected no subgoals"
   splitThenConstructor sg2 n
 
@@ -282,7 +282,7 @@ def toInductive (mvar : MVarId) (cs : List Name)
 
 /-- Implementation for both `mk_iff` and `mk_iff_of_inductive_prop`.y
 -/
-def mkIffOfInductivePropImpl (ind : Name) (rel : Name) : MetaM Unit := do
+def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM Unit := do
   let .inductInfo inductVal ← getConstInfo ind |
     throwError "mk_iff only applies to inductive declarations"
   let constrs := inductVal.ctors
@@ -319,6 +319,11 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) : MetaM Unit := do
     type := thmTy
     value := ← instantiateMVars mvar
   }
+  addDeclarationRanges rel {
+    range := ← getDeclarationRange (← getRef)
+    selectionRange := ← getDeclarationRange relStx
+  }
+  addConstInfo relStx rel
 
 /--
 Applying the `mk_iff` attribute to an inductively-defined proposition `mk_iff` makes an `iff` rule
@@ -384,17 +389,17 @@ syntax (name := mkIffOfInductiveProp) "mk_iff_of_inductive_prop" ident ident : c
 
 elab_rules : command
 | `(command| mk_iff_of_inductive_prop $i:ident $r:ident) =>
-    Elab.Command.liftCoreM do
-      Lean.Meta.MetaM.run' do
-        mkIffOfInductivePropImpl i.getId r.getId
+    Command.liftCoreM <| MetaM.run' do
+      mkIffOfInductivePropImpl i.getId r.getId r
 
 initialize Lean.registerBuiltinAttribute {
   name := `mkIff
   descr := "Generate an `iff` lemma for an inductive `Prop`."
   add := fun decl stx _ => Lean.Meta.MetaM.run' do
-    let tgt ← (match stx with
-               | `(attr| mk_iff $tgt:ident) => pure tgt.getId
-               | `(attr| mk_iff) => pure $ decl.appendAfter "_iff"
-               | _ => throwError "unrecognized syntax")
-    mkIffOfInductivePropImpl decl tgt
+    let (tgt, idStx) ← match stx with
+      | `(attr| mk_iff $tgt:ident) =>
+        pure ((← mkDeclName (← getCurrNamespace) {} tgt.getId).1, tgt.raw)
+      | `(attr| mk_iff) => pure (decl.appendAfter "_iff", stx)
+      | _ => throwError "unrecognized syntax"
+    mkIffOfInductivePropImpl decl tgt idStx
 }

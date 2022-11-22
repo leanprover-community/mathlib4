@@ -77,6 +77,7 @@ theorem Injective.eq_iff' (I : Injective f) {a b : α} {c : β} (h : f b = c) : 
 
 theorem Injective.ne (hf : Injective f) {a₁ a₂ : α} : a₁ ≠ a₂ → f a₁ ≠ f a₂ :=
   mt fun h => hf h
+#align function.injective.ne Function.Injective.ne
 
 theorem Injective.ne_iff (hf : Injective f) {x y : α} : f x ≠ f y ↔ x ≠ y :=
   ⟨mt <| congr_arg f, hf.ne⟩
@@ -288,12 +289,12 @@ theorem RightInverse.comp {f : α → β} {g : β → α} {h : β → γ} {i : �
 theorem LeftInverse.rightInverse {f : α → β} {g : β → α} (h : LeftInverse g f) : RightInverse f g :=
   h
 
-#align left_inverse.right_inverse LeftInverse.rightInverse
+#align function.left_inverse.right_inverse Function.LeftInverse.rightInverse
 
 theorem RightInverse.leftInverse {f : α → β} {g : β → α} (h : RightInverse g f) : LeftInverse f g :=
   h
 
-#align right_inverse.left_inverse RightInverse.leftInverse
+#align function.right_inverse.left_inverse Function.RightInverse.leftInverse
 
 theorem LeftInverse.surjective {f : α → β} {g : β → α} (h : LeftInverse f g) : Surjective f :=
   h.rightInverse.surjective
@@ -743,11 +744,11 @@ theorem comp_self : f ∘ f = id :=
 
 protected theorem leftInverse : LeftInverse f f := h
 
-#align involutive.left_inverse Involutive.leftInverse
+#align involutive.left_inverse Function.Involutive.leftInverse
 
 protected theorem rightInverse : RightInverse f f := h
 
-#align involutive.right_inverse Involutive.rightInverse
+#align involutive.right_inverse Function.Involutive.rightInverse
 
 protected theorem injective : Injective f := h.leftInverse.injective
 

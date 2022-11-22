@@ -371,8 +371,13 @@ protected theorem Function.mtr : (¬a → ¬b) → b → a := not_imp_not.mp
 #align decidable.or_congr_right Decidable.or_congr_right'
 #align decidable.or_iff_not_imp_right Decidable.or_iff_not_imp_rightₓ -- reorder implicits
 #align decidable.imp_iff_or_not Decidable.imp_iff_or_notₓ -- reorder implicits
+
+theorem or_congr_left' (h : ¬c → (a ↔ b)) : a ∨ c ↔ b ∨ c := Decidable.or_congr_left' h
 #align or_congr_left or_congr_left'
+
+theorem or_congr_right' (h : ¬a → (b ↔ c)) : a ∨ b ↔ a ∨ c := Decidable.or_congr_right' h
 #align or_congr_right or_congr_right'ₓ -- reorder implicits
+
 #align or_iff_left or_iff_leftₓ -- reorder implicits
 
 /-! ### Declarations about distributivity -/
@@ -724,12 +729,12 @@ theorem forall_or_left {q} {p : α → Prop} : (∀ x, q ∨ p x) ↔ q ∨ ∀ 
 #align forall_or_distrib_left forall_or_left
 
 -- See Note [decidable namespace]
-protected theorem Decidable.forall_or_distrib_right {q} {p : α → Prop} [Decidable q] :
+protected theorem Decidable.forall_or_right {q} {p : α → Prop} [Decidable q] :
     (∀ x, p x ∨ q) ↔ (∀ x, p x) ∨ q := by simp [or_comm, Decidable.forall_or_left]
 #align decidable.forall_or_distrib_right Decidable.forall_or_right
 
-theorem forall_or_distrib_right {q} {p : α → Prop} : (∀ x, p x ∨ q) ↔ (∀ x, p x) ∨ q :=
-  Decidable.forall_or_distrib_right
+theorem forall_or_right {q} {p : α → Prop} : (∀ x, p x ∨ q) ↔ (∀ x, p x) ∨ q :=
+  Decidable.forall_or_right
 #align forall_or_distrib_right forall_or_right
 
 theorem exists_unique_prop {p q : Prop} : (∃! _ : p, q) ↔ p ∧ q := by simp
@@ -795,7 +800,7 @@ theorem ExistsUnique.elim₂ {α : Sort _} {p : α → Sort _} [∀ x, Subsingle
   exact fun x ⟨hxp, hxq⟩ H => h₁ x hxp hxq fun y hyp hyq => H y ⟨hyp, hyq⟩
 #align exists_unique.elim2 ExistsUnique.elim₂
 
-theorem ExistsUnique.intro2 {α : Sort _} {p : α → Sort _} [∀ x, Subsingleton (p x)]
+theorem ExistsUnique.intro₂ {α : Sort _} {p : α → Sort _} [∀ x, Subsingleton (p x)]
     {q : ∀ (x : α) (_ : p x), Prop} (w : α) (hp : p w) (hq : q w hp)
     (H : ∀ (y) (hy : p y), q y hy → y = w) : ∃! (x : _) (hx : p x), q x hx := by
   simp only [exists_unique_iff_exists]
@@ -807,7 +812,7 @@ theorem ExistsUnique.exists₂ {α : Sort _} {p : α → Sort _} {q : ∀ (x : �
   h.exists.imp fun _ hx => hx.exists
 #align exists_unique.exists2 ExistsUnique.exists₂
 
-theorem ExistsUnique.unique2 {α : Sort _} {p : α → Sort _} [∀ x, Subsingleton (p x)]
+theorem ExistsUnique.unique₂ {α : Sort _} {p : α → Sort _} [∀ x, Subsingleton (p x)]
     {q : ∀ (x : α) (_ : p x), Prop} (h : ∃! (x : _) (hx : p x), q x hx) {y₁ y₂ : α}
     (hpy₁ : p y₁) (hqy₁ : q y₁ hpy₁) (hpy₂ : p y₂) (hqy₂ : q y₂ hpy₂) : y₁ = y₂ := by
   simp only [exists_unique_iff_exists] at h
@@ -856,7 +861,7 @@ protected noncomputable def byContradiction' {α : Sort _} (H : ¬(α → False)
 /-- `classical.byContradiction'` is equivalent to lean's axiom `classical.choice`. -/
 def choice_of_byContradiction' {α : Sort _} (contra : ¬(α → False) → α) : Nonempty α → α :=
   fun H => contra H.elim
-#align classical.choice_of_by_contradiction' choice_of_byContradiction'
+#align classical.choice_of_by_contradiction' Classical.choice_of_byContradiction'
 
 end Classical
 
@@ -937,7 +942,7 @@ theorem not_ball : (¬∀ x h, P x h) ↔ ∃ x h, ¬P x h := Decidable.not_ball
 theorem ball_true_iff (p : α → Prop) : (∀ x, p x → True) ↔ True :=
   iff_true_intro fun _ _ => trivial
 
-theorem ball_and_distrib : (∀ x h, P x h ∧ Q x h) ↔ (∀ x h, P x h) ∧ ∀ x h, Q x h :=
+theorem ball_and : (∀ x h, P x h ∧ Q x h) ↔ (∀ x h, P x h) ∧ ∀ x h, Q x h :=
   Iff.trans (forall_congr' fun _ => forall_and) forall_and
 #align ball_and_distrib ball_and
 
