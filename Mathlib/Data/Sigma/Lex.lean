@@ -45,19 +45,13 @@ theorem lex_iff : Lex r s a b ↔ r a.1 b.1 ∨ ∃ h : a.1 = b.1, s b.1 (h.rec 
   constructor
   · rintro (⟨a, b, hij⟩ | ⟨a, b, hab⟩)
     · exact Or.inl hij
-
     · exact Or.inr ⟨rfl, hab⟩
-
-
   · obtain ⟨i, a⟩ := a
     obtain ⟨j, b⟩ := b
     dsimp only
     rintro (h | ⟨rfl, h⟩)
     · exact Lex.left _ _ h
-
     · exact Lex.right _ _ h
-
-
 #align sigma.lex_iff Sigma.lex_iff
 
 instance Lex.decidable (r : ι → ι → Prop) (s : ∀ i, α i → α i → Prop) [DecidableEq ι]
@@ -69,9 +63,7 @@ theorem Lex.mono (hr : ∀ a b, r₁ a b → r₂ a b) (hs : ∀ i a b, s₁ i a
     (h : Lex r₁ s₁ a b) : Lex r₂ s₂ a b := by
   obtain ⟨a, b, hij⟩ | ⟨a, b, hab⟩ := h
   · exact Lex.left _ _ (hr _ _ hij)
-
   · exact Lex.right _ _ (hs _ _ _ hab)
-
 #align sigma.lex.mono Sigma.Lex.mono
 
 theorem Lex.monoLeft (hr : ∀ a b, r₁ a b → r₂ a b) {a b : Σ i, α i} (h : Lex r₁ s a b) :
@@ -88,7 +80,6 @@ theorem lex_swap : Lex (Function.swap r) s a b ↔ Lex r (fun i => Function.swap
   constructor <;>
     · rintro (⟨a, b, h⟩ | ⟨a, b, h⟩)
       exacts [Lex.left _ _ h, Lex.right _ _ h]
-
 #align sigma.lex_swap Sigma.lex_swap
 
 instance [∀ i, IsRefl (α i) (s i)] : IsRefl _ (Lex r s) :=
@@ -98,7 +89,6 @@ instance [IsIrrefl ι r] [∀ i, IsIrrefl (α i) (s i)] : IsIrrefl _ (Lex r s) :
   ⟨by
     rintro _ (⟨a, b, hi⟩ | ⟨a, b, ha⟩)
     · exact irrefl _ hi
-
     · exact irrefl _ ha
       ⟩
 
@@ -106,19 +96,14 @@ instance [IsTrans ι r] [∀ i, IsTrans (α i) (s i)] : IsTrans _ (Lex r s) :=
   ⟨by
     rintro _ _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩) (⟨_, c, hk⟩ | ⟨_, c, hc⟩)
     · exact Lex.left _ _ (trans hij hk)
-
     · exact Lex.left _ _ hij
-
     · exact Lex.left _ _ hk
-
-    · exact Lex.right _ _ (trans hab hc)
-      ⟩
+    · exact Lex.right _ _ (trans hab hc)⟩
 
 instance [IsSymm ι r] [∀ i, IsSymm (α i) (s i)] : IsSymm _ (Lex r s) :=
   ⟨by
     rintro _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩)
     · exact Lex.left _ _ (symm hij)
-
     · exact Lex.right _ _ (symm hab)
       ⟩
 
@@ -128,45 +113,30 @@ instance [IsAsymm ι r] [∀ i, IsAntisymm (α i) (s i)] : IsAntisymm _ (Lex r s
   ⟨by
     rintro _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩) (⟨_, _, hji⟩ | ⟨_, _, hba⟩)
     · exact (asymm hij hji).elim
-
     · exact (irrefl _ hij).elim
-
     · exact (irrefl _ hji).elim
-
-    · exact ext rfl (heq_of_eq $ antisymm hab hba)
-      ⟩
+    · exact ext rfl (heq_of_eq $ antisymm hab hba)⟩
 
 instance [IsTrichotomous ι r] [∀ i, IsTotal (α i) (s i)] : IsTotal _ (Lex r s) :=
   ⟨by
     rintro ⟨i, a⟩ ⟨j, b⟩
     obtain hij | rfl | hji := trichotomous_of r i j
     · exact Or.inl (Lex.left _ _ hij)
-
     · obtain hab | hba := total_of (s i) a b
       · exact Or.inl (Lex.right _ _ hab)
-
       · exact Or.inr (Lex.right _ _ hba)
-
-
-    · exact Or.inr (Lex.left _ _ hji)
-      ⟩
+    · exact Or.inr (Lex.left _ _ hji)⟩
 
 instance [IsTrichotomous ι r] [∀ i, IsTrichotomous (α i) (s i)] : IsTrichotomous _ (Lex r s) :=
   ⟨by
     rintro ⟨i, a⟩ ⟨j, b⟩
     obtain hij | rfl | hji := trichotomous_of r i j
     · exact Or.inl (Lex.left _ _ hij)
-
     · obtain hab | rfl | hba := trichotomous_of (s i) a b
       · exact Or.inl (Lex.right _ _ hab)
-
       · exact Or.inr (Or.inl rfl)
-
       · exact Or.inr (Or.inr $ Lex.right _ _ hba)
-
-
-    · exact Or.inr (Or.inr $ Lex.left _ _ hji)
-      ⟩
+    · exact Or.inr (Or.inr $ Lex.left _ _ hji)⟩
 
 end Sigma
 
@@ -182,16 +152,12 @@ theorem lex_iff {a b : Σ' i, α i} :
   constructor
   · rintro (⟨a, b, hij⟩ | ⟨i, hab⟩)
     · exact Or.inl hij
-
     · exact Or.inr ⟨rfl, hab⟩
-
-
   · obtain ⟨i, a⟩ := a
     obtain ⟨j, b⟩ := b
     dsimp only
     rintro (h | ⟨rfl, h⟩)
     · exact Lex.left _ _ h
-
     · exact Lex.right _ h
 
 
@@ -207,9 +173,7 @@ theorem Lex.mono {r₁ r₂ : ι → ι → Prop} {s₁ s₂ : ∀ i, α i → �
     (h : Lex r₁ s₁ a b) : Lex r₂ s₂ a b := by
   obtain ⟨a, b, hij⟩ | ⟨i, hab⟩ := h
   · exact Lex.left _ _ (hr _ _ hij)
-
   · exact Lex.right _ (hs _ _ _ hab)
-
 #align psigma.lex.mono PSigma.Lex.mono
 
 theorem Lex.mono_left {r₁ r₂ : ι → ι → Prop} {s : ∀ i, α i → α i → Prop}
