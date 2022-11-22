@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joshua Clune
 -/
 import Lean
+import Mathlib.Util.MapsTo
 
 open Lean.Meta
 
@@ -15,7 +16,7 @@ syntax (name := clearExcept) "clear " "*" " - " (colGt ident)* : tactic
 elab_rules : tactic
   | `(tactic| clear * - $hs:ident*) => do
     let fvarIds ← getFVarIds hs
-    liftMetaTactic1 fun goal => do
+    liftMetaTactic1 fun goal ↦ do
       let mut toClear : Array FVarId := #[]
       for decl in ← getLCtx do
         unless fvarIds.contains decl.fvarId do

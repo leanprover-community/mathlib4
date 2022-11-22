@@ -117,7 +117,7 @@ example : foo x y = 1 + y := by
 -/
 macro (name := squeezeScope) "squeeze_scope " seq:tacticSeq : tactic => do
   let a ← withFreshMacroScope `(a)
-  let seq ← seq.raw.rewriteBottomUpM fun stx =>
+  let seq ← seq.raw.rewriteBottomUpM fun stx ↦
     match stx.getKind with
     | ``dsimp | ``simpAll | ``simp => do
       withFreshMacroScope `(tactic| squeeze_wrap $a x => $stx)
@@ -139,17 +139,17 @@ initialize squeezeScopes : IO.Ref (NameMap (NameMap (Syntax × List Simp.UsedSim
 elab_rules : tactic
   | `(tactic| squeeze_scope $a => $tac) => do
     let a := a.getId
-    let old ← squeezeScopes.modifyGet fun map => (map.find? a, map.insert a {})
+    let old ← squeezeScopes.modifyGet fun map ↦ (map.find? a, map.insert a {})
     let reset map := match old with | some old => map.insert a old | none => map.erase a
     let new ← try
       Elab.Tactic.evalTactic tac
-      squeezeScopes.modifyGet fun map => (map.find? a, reset map)
+      squeezeScopes.modifyGet fun map ↦ (map.find? a, reset map)
     catch e =>
       squeezeScopes.modify reset
       throw e
     if let some new := new then
       for (_, stx, usedSimps) in new do
-        let usedSimps := usedSimps.foldl (fun s usedSimps => usedSimps.fold .insert s) {}
+        let usedSimps := usedSimps.foldl (fun s usedSimps ↦ usedSimps.fold .insert s) {}
         Elab.Tactic.traceSimpCall stx usedSimps
 
 -- TODO: move to core
@@ -180,7 +180,7 @@ elab_rules : tactic
     let usedSimps ← match stx.getKind with
     | ``Parser.Tactic.simp => do
       let { ctx, dischargeWrapper } ← withMainContext <| mkSimpContext stx (eraseLocal := false)
-      dischargeWrapper.with fun discharge? =>
+      dischargeWrapper.with fun discharge? ↦
         simpLocation ctx discharge? (expandOptLocation stx[5])
     | ``Parser.Tactic.simpAll => do
       let { ctx, .. } ← mkSimpContext stx
@@ -195,7 +195,7 @@ elab_rules : tactic
       dsimpLocation' ctx (expandOptLocation stx[5])
     | _ => Elab.throwUnsupportedSyntax
     let a := a.getId; let x := x.getId
-    squeezeScopes.modify fun map => Id.run do
+    squeezeScopes.modify fun map ↦ Id.run do
       let some map1 := map.find? a | return map
       let newSimps := match map1.find? x with
       | some (stx, oldSimps) => (stx, usedSimps :: oldSimps)
