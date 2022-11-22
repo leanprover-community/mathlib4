@@ -446,7 +446,7 @@ analysis](https://hal.inria.fr/hal-02463336).
 
 
 /-!
-### Design note on `add_monoid` and `monoid`
+### Design note on `AddMonoid` and `Monoid`
 
 An `AddMonoid` has a natural `ℕ`-action, defined by `n • a = a + ... + a`, that we want to declare
 as an instance as it makes it possible to use the language of linear algebra. However, there are
