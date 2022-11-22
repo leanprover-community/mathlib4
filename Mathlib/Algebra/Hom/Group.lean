@@ -1192,8 +1192,7 @@ namespace Monoid
 variable (M) [MulOneClass M]
 
 /-- The monoid of endomorphisms. -/
-protected def EndCat :=
-  M →* M
+protected def EndCat := M →* M
 #align monoid.End Monoid.EndCat
 
 namespace EndCat
@@ -1205,70 +1204,61 @@ instance : Monoid (Monoid.EndCat M) where
   mul_one := MonoidHom.comp_id
   one_mul := MonoidHom.id_comp
 
-instance : Inhabited (Monoid.EndCat M) :=
-  ⟨1⟩
+instance : Inhabited (Monoid.EndCat M) := ⟨1⟩
 
-instance : MonoidHomClass (Monoid.EndCat M) M M :=
-  MonoidHom.monoidHomClass
+instance : MonoidHomClass (Monoid.EndCat M) M M := MonoidHom.monoidHomClass
 
 end EndCat
 
 @[simp]
-theorem coe_one : ((1 : Monoid.EndCat M) : M → M) = id :=
-  rfl
+theorem coe_one : ((1 : Monoid.EndCat M) : M → M) = id := rfl
 #align monoid.coe_one Monoid.coe_one
 
 @[simp]
-theorem coe_mul (f g) : ((f * g : Monoid.EndCat M) : M → M) = f ∘ g :=
-  rfl
+theorem coe_mul (f g) : ((f * g : Monoid.EndCat M) : M → M) = f ∘ g := rfl
 #align monoid.coe_mul Monoid.coe_mul
 
 end Monoid
 
-namespace AddMonoid
+-- Porting note: `coe_mul` seems to go into an instance loop involving `Monoid (Monoid.EndCat M)`
+-- namespace AddMonoid
 
-variable (A : Type _) [AddZeroClass A]
+-- variable (A : Type _) [AddZeroClass A]
 
-/-- The monoid of endomorphisms. -/
-protected def EndCat :=
-  A →+ A
-#align add_monoid.End AddMonoid.EndCat
+-- /-- The monoid of endomorphisms. -/
+-- protected def EndCat := A →+ A
+-- #align add_monoid.End AddMonoid.EndCat
 
-namespace EndCat
+-- namespace EndCat
 
-instance : Monoid (AddMonoid.EndCat A) where
-  mul := AddMonoidHom.comp
-  one := AddMonoidHom.id A
-  mul_assoc _ _ _ := AddMonoidHom.comp_assoc _ _ _
-  mul_one := AddMonoidHom.comp_id
-  one_mul := AddMonoidHom.id_comp
+-- instance : Monoid (AddMonoid.EndCat A) where
+--   mul := AddMonoidHom.comp
+--   one := AddMonoidHom.id A
+--   mul_assoc _ _ _ := AddMonoidHom.comp_assoc _ _ _
+--   mul_one := AddMonoidHom.comp_id
+--   one_mul := AddMonoidHom.id_comp
 
-instance : Inhabited (AddMonoid.EndCat A) :=
-  ⟨1⟩
+-- instance : Inhabited (AddMonoid.EndCat A) := ⟨1⟩
 
-instance : AddMonoidHomClass (AddMonoid.EndCat A) A A :=
-  AddMonoidHom.addMonoidHomClass
+-- instance : AddMonoidHomClass (AddMonoid.EndCat A) A A := AddMonoidHom.addMonoidHomClass
 
-end EndCat
+-- end EndCat
 
-@[simp]
-theorem coe_one : ((1 : AddMonoid.EndCat A) : A → A) = id :=
-  rfl
-#align add_monoid.coe_one AddMonoid.coe_one
+-- @[simp]
+-- theorem coe_one : ((1 : AddMonoid.EndCat A) : A → A) = id := rfl
+-- #align add_monoid.coe_one AddMonoid.coe_one
 
-@[simp]
-theorem coe_mul (f g) : ((f * g : AddMonoid.EndCat A) : A → A) = f ∘ g :=
-  rfl
-#align add_monoid.coe_mul AddMonoid.coe_mul
+-- @[simp]
+-- theorem coe_mul (f g) : ((f * g : AddMonoid.EndCat A) : A → A) = f ∘ g := rfl
+-- #align add_monoid.coe_mul AddMonoid.coe_mul
 
-end AddMonoid
+-- end AddMonoid
 
 end EndCat
 
 /-- `1` is the homomorphism sending all elements to `1`. -/
 @[to_additive]
-instance [One M] [One N] : One (OneHom M N) :=
-  ⟨⟨fun _ => 1, rfl⟩⟩
+instance [One M] [One N] : One (OneHom M N) := ⟨⟨fun _ => 1, rfl⟩⟩
 
 /-- `1` is the multiplicative homomorphism sending all elements to `1`. -/
 @[to_additive]
