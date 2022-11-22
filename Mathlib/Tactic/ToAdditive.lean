@@ -30,12 +30,17 @@ open Std
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" num* : attr
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg" num : attr
 syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
+/-- Remaining arguments of `to_additive`. -/
 syntax to_additiveRest := (ppSpace ident)? (ppSpace str)?
 syntax (name := to_additive) "to_additive" "!"? "?"? to_additiveRest : attr
 
+/-- The `to_additive` attribute. -/
 macro "to_additive!"  rest:to_additiveRest : attr => `(attr| to_additive !   $rest)
+/-- The `to_additive` attribute. -/
 macro "to_additive?"  rest:to_additiveRest : attr => `(attr| to_additive   ? $rest)
+/-- The `to_additive` attribute. -/
 macro "to_additive!?" rest:to_additiveRest : attr => `(attr| to_additive ! ? $rest)
+/-- The `to_additive` attribute. -/
 macro "to_additive?!" rest:to_additiveRest : attr => `(attr| to_additive ! ? $rest)
 
 /--
