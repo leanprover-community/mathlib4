@@ -143,8 +143,7 @@ theorem some_remove_none_iff {x : α} : some (removeNone e x) = e none ↔ e.sym
     have h1 := congr_arg e.symm h
     rw [symm_apply_apply] at h1
     simp only [false_iff_iff, apply_eq_iff_eq]
-    simp [h1]
-
+    simp [h1, apply_eq_iff_eq]
 
 #align equiv.some_remove_none_iff Equiv.some_remove_none_iff
 
