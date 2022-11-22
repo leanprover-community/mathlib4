@@ -33,12 +33,10 @@ import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.BinaryHeap
 import Mathlib.Data.Bool.Basic
-import Mathlib.Data.Brackets
+import Mathlib.Data.Bracket
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
-import Mathlib.Data.Bracket
 import Mathlib.Data.DList.Basic
-import Mathlib.Data.Equiv.Basic
 import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Fin2
