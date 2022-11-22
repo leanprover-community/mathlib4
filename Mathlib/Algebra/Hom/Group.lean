@@ -1505,19 +1505,19 @@ homomorphism sending `x` to `-(f x)`. -/
 add_decl_doc AddMonoidHom.instNegAddMonoidHomToAddZeroClassToAddMonoidToSubNegAddMonoidToAddGroup
 
 @[simp, to_additive]
-theorem inv_apply {M G} {_ : MulOneClass M} {gG : CommGroup G} (f : M →* G) (x : M) :
+theorem inv_apply {M G} {_ : MulOneClass M} {_ : CommGroup G} (f : M →* G) (x : M) :
   f⁻¹ x = (f x)⁻¹ := rfl
 #align monoid_hom.inv_apply MonoidHom.inv_apply
 
 @[simp, to_additive]
-theorem inv_comp {M N A} {_ : MulOneClass M} {gN : MulOneClass N} {gA : CommGroup A}
+theorem inv_comp {M N A} {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommGroup A}
   (φ : N →* A) (ψ : M →* N) : φ⁻¹.comp ψ = (φ.comp ψ)⁻¹ := by
   ext
   simp only [Function.comp_apply, inv_apply, coe_comp]
 #align monoid_hom.inv_comp MonoidHom.inv_comp
 
 @[simp, to_additive]
-theorem comp_inv {M A B} {_ : MulOneClass M} {mA : CommGroup A} {mB : CommGroup B}
+theorem comp_inv {M A B} {_ : MulOneClass M} {_ : CommGroup A} {_ : CommGroup B}
   (φ : A →* B) (ψ : M →* A) : φ.comp ψ⁻¹ = (φ.comp ψ)⁻¹ := by
   ext
   simp only [Function.comp_apply, inv_apply, map_inv, coe_comp]
@@ -1535,7 +1535,7 @@ is the homomorphism sending `x` to `(f x) - (g x)`. -/
 add_decl_doc AddMonoidHom.instSubAddMonoidHomToAddZeroClassToAddMonoidToSubNegAddMonoidToAddGroup
 
 @[simp, to_additive]
-theorem div_apply {M G} {_ : MulOneClass M} {gG : CommGroup G} (f g : M →* G) (x : M) :
+theorem div_apply {M G} {_ : MulOneClass M} {_ : CommGroup G} (f g : M →* G) (x : M) :
   (f / g) x = f x / g x := rfl
 #align monoid_hom.div_apply MonoidHom.div_apply
 
