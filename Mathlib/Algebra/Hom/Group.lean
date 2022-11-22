@@ -14,7 +14,7 @@ import Mathlib.Data.FunLike.Basic
 # Monoid and group homomorphisms
 
 This file defines the bundled structures for monoid and group homomorphisms. Namely, we define
-`monoid_hom` (resp., `add_monoid_hom`) to be bundled homomorphisms between multiplicative (resp.,
+`MonoidHom` (resp., `AddMonoidHom`) to be bundled homomorphisms between multiplicative (resp.,
 additive) monoids or groups.
 
 We also define coercion to a function, and  usual operations: composition, identity homomorphism,
@@ -23,49 +23,49 @@ pointwise multiplication and pointwise inversion.
 This file also defines the lesser-used (and notation-less) homomorphism types which are used as
 building blocks for other homomorphisms:
 
-* `zero_hom`
-* `one_hom`
-* `add_hom`
-* `mul_hom`
-* `monoid_with_zero_hom`
+* `ZeroHom`
+* `OneHom`
+* `AddHom`
+* `MulHom`
+* `MonoidWithZeroHom`
 
 Finally, we define classes that state the coercion operator `↑` (a.k.a. `coe`) is a homomorphism:
- * `coe_is_one_hom`/`coe_is_zero_hom`
- * `coe_is_mul_hom`/`coe_is_add_monoid_hom`
- * `coe_is_monoid_hom`/`coe_is_add_monoid_hom`
- * `coe_is_monoid_with_zero_hom`
+ * `CoeIsOneHom`/`CoeIsZeroHom`
+ * `CoeIsMulHom`/`CoeIsAddMonoidHom`
+ * `CoeIsMonoidHom`/`CoeIsAddMonoidHom`
+ * `CoeIsMonoidWithZeroHom`
 These come with a selection of `simp` lemmas stating that `↑` preserves the corresponding operation:
 `coe_add`, `coe_mul`, `coe_zero`, `coe_one`, `coe_pow`, `coe_nsmul`, `coe_zpow`, `coe_zsmul`,
-`coe_bit0`, `coe_bit1`, `coe_sub`, `coe_neg`, ..., etc.
+`coe_sub`, `coe_neg`, ..., etc.
 
 ## Notations
 
-* `→+`: Bundled `add_monoid` homs. Also use for `add_group` homs.
-* `→*`: Bundled `monoid` homs. Also use for `group` homs.
-* `→*₀`: Bundled `monoid_with_zero` homs. Also use for `group_with_zero` homs.
-* `→ₙ*`: Bundled `semigroup` homs.
+* `→+`: Bundled `AddMonoid` homs. Also use for `AddGroup` homs.
+* `→*`: Bundled `Monoid` homs. Also use for `Group` homs.
+* `→*₀`: Bundled `MonoidWithZero` homs. Also use for `GroupWithZero` homs.
+* `→ₙ*`: Bundled `Semigroup` homs.
 
 ## Implementation notes
 
 There's a coercion from bundled homs to fun, and the canonical
 notation is to use the bundled hom as a function via this coercion.
 
-There is no `group_hom` -- the idea is that `monoid_hom` is used.
-The constructor for `monoid_hom` needs a proof of `map_one` as well
-as `map_mul`; a separate constructor `monoid_hom.mk'` will construct
+There is no `GroupHom` -- the idea is that `MonoidHom` is used.
+The constructor for `MonoidHom` needs a proof of `map_one` as well
+as `map_mul`; a separate constructor `MonoidHom.mk'` will construct
 group homs (i.e. monoid homs between groups) given only a proof
 that multiplication is preserved,
 
 Implicit `{}` brackets are often used instead of type class `[]` brackets.  This is done when the
-instances can be inferred because they are implicit arguments to the type `monoid_hom`.  When they
+instances can be inferred because they are implicit arguments to the type `MonoidHom`.  When they
 can be inferred from the type it is faster to use this method than to use type class inference.
 
 Historically this file also included definitions of unbundled homomorphism classes; they were
-deprecated and moved to `deprecated/group`.
+deprecated and moved to `Deprecated/Group`.
 
 ## Tags
 
-monoid_hom, add_monoid_hom
+MonoidHom, AddMonoidHom
 
 -/
 
@@ -81,12 +81,12 @@ variable {F : Type _}
 -- homs
 section Zero
 
-/-- `zero_hom M N` is the type of functions `M → N` that preserve zero.
+/-- `ZeroHom M N` is the type of functions `M → N` that preserve zero.
 
-When possible, instead of parametrizing results over `(f : zero_hom M N)`,
-you should parametrize over `(F : Type*) [zero_hom_class F M N] (f : F)`.
+When possible, instead of parametrizing results over `(f : ZeroHom M N)`,
+you should parametrize over `(F : Type*) [ZeroHomClass F M N] (f : F)`.
 
-When you extend this structure, make sure to also extend `zero_hom_class`.
+When you extend this structure, make sure to also extend `ZeroHomClass`.
 -/
 structure ZeroHom (M : Type _) (N : Type _) [Zero M] [Zero N] where
   toFun : M → N
@@ -94,9 +94,9 @@ structure ZeroHom (M : Type _) (N : Type _) [Zero M] [Zero N] where
 #align zero_hom ZeroHom
 #align zero_hom.map_zero' ZeroHom.map_zero'
 
-/-- `zero_hom_class F M N` states that `F` is a type of zero-preserving homomorphisms.
+/-- `ZeroHomClass F M N` states that `F` is a type of zero-preserving homomorphisms.
 
-You should extend this typeclass when you extend `zero_hom`.
+You should extend this typeclass when you extend `ZeroHom`.
 -/
 -- Porting note: `outParam` is added to instances `[Zero M] [Zero N]` until issue
 -- https://github.com/leanprover/lean4/issues/1852 is resolved
@@ -127,20 +127,20 @@ end NeZero
 
 section Add
 
-/-- `add_hom M N` is the type of functions `M → N` that preserve addition.
+/-- `AddHom M N` is the type of functions `M → N` that preserve addition.
 
-When possible, instead of parametrizing results over `(f : add_hom M N)`,
-you should parametrize over `(F : Type*) [add_hom_class F M N] (f : F)`.
+When possible, instead of parametrizing results over `(f : AddHom M N)`,
+you should parametrize over `(F : Type*) [AddHomClass F M N] (f : F)`.
 
-When you extend this structure, make sure to extend `add_hom_class`.
+When you extend this structure, make sure to extend `AddHomClass`.
 -/
 structure AddHom (M : Type _) (N : Type _) [Add M] [Add N] where
   toFun : M → N
   map_add' : ∀ x y, toFun (x + y) = toFun x + toFun y
 #align add_hom AddHom
 
-/-- `add_hom_class F M N` states that `F` is a type of addition-preserving homomorphisms.
-You should declare an instance of this typeclass when you extend `add_hom`.
+/-- `AddHomClass F M N` states that `F` is a type of addition-preserving homomorphisms.
+You should declare an instance of this typeclass when you extend `AddHom`.
 -/
 class AddHomClass (F : Type _) (M N : outParam <| Type _)
   [outParam <| Add M] [outParam <| Add N] extends FunLike F M fun _ => N where
@@ -152,14 +152,14 @@ end Add
 
 section add_zero
 
-/-- `M →+ N` is the type of functions `M → N` that preserve the `add_zero_class` structure.
+/-- `M →+ N` is the type of functions `M → N` that preserve the `AddZeroClass` structure.
 
-`add_monoid_hom` is also used for group homomorphisms.
+`AddMonoidHom` is also used for group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : M →+ N)`,
-you should parametrize over `(F : Type*) [add_monoid_hom_class F M N] (f : F)`.
+you should parametrize over `(F : Type*) [AddMonoidHomClass F M N] (f : F)`.
 
-When you extend this structure, make sure to extend `add_monoid_hom_class`.
+When you extend this structure, make sure to extend `AddMonoidHomClass`.
 -/
 structure AddMonoidHom (M : Type _) (N : Type _) [AddZeroClass M] [AddZeroClass N] extends
   ZeroHom M N, AddHom M N
@@ -173,10 +173,10 @@ structure AddMonoidHom (M : Type _) (N : Type _) [AddZeroClass M] [AddZeroClass 
 -- mathport name: «expr →+ »
 infixr:25 " →+ " => AddMonoidHom
 
-/-- `add_monoid_hom_class F M N` states that `F` is a type of `add_zero_class`-preserving
+/-- `AddMonoidHomClass F M N` states that `F` is a type of `AddZeroClass`-preserving
 homomorphisms.
 
-You should also extend this typeclass when you extend `add_monoid_hom`.
+You should also extend this typeclass when you extend `AddMonoidHom`.
 -/
 class AddMonoidHomClass (F : Type _) (M N : outParam <| Type _)
   [outParam <| AddZeroClass M] [outParam <| AddZeroClass N] extends
@@ -190,12 +190,12 @@ section One
 
 variable [One M] [One N]
 
-/-- `one_hom M N` is the type of functions `M → N` that preserve one.
+/-- `OneHom M N` is the type of functions `M → N` that preserve one.
 
-When possible, instead of parametrizing results over `(f : one_hom M N)`,
-you should parametrize over `(F : Type*) [one_hom_class F M N] (f : F)`.
+When possible, instead of parametrizing results over `(f : OneHom M N)`,
+you should parametrize over `(F : Type*) [OneHomClass F M N] (f : F)`.
 
-When you extend this structure, make sure to also extend `one_hom_class`.
+When you extend this structure, make sure to also extend `OneHomClass`.
 -/
 @[to_additive]
 structure OneHom (M : Type _) (N : Type _) [One M] [One N] where
@@ -203,8 +203,8 @@ structure OneHom (M : Type _) (N : Type _) [One M] [One N] where
   map_one' : toFun 1 = 1
 #align one_hom OneHom
 
-/-- `one_hom_class F M N` states that `F` is a type of one-preserving homomorphisms.
-You should extend this typeclass when you extend `one_hom`.
+/-- `OneHomClass F M N` states that `F` is a type of one-preserving homomorphisms.
+You should extend this typeclass when you extend `OneHom`.
 -/
 @[to_additive]
 class OneHomClass (F : Type _) (M N : outParam <| Type _)
@@ -261,12 +261,12 @@ section Mul
 variable [Mul M] [Mul N]
 
 /-- `M →ₙ* N` is the type of functions `M → N` that preserve multiplication. The `ₙ` in the notation
-stands for "non-unital" because it is intended to match the notation for `non_unital_alg_hom` and
-`non_unital_ring_hom`, so a `mul_hom` is a non-unital monoid hom.
+stands for "non-unital" because it is intended to match the notation for `NonUnitalAlgHom` and
+`NonUnitalRingHom`, so a `MulHom` is a non-unital monoid hom.
 
 When possible, instead of parametrizing results over `(f : M →ₙ* N)`,
-you should parametrize over `(F : Type*) [mul_hom_class F M N] (f : F)`.
-When you extend this structure, make sure to extend `mul_hom_class`.
+you should parametrize over `(F : Type*) [MulHomClass F M N] (f : F)`.
+When you extend this structure, make sure to extend `MulHomClass`.
 -/
 @[to_additive]
 structure MulHom (M : Type _) (N : Type _) [Mul M] [Mul N] where
@@ -277,11 +277,11 @@ structure MulHom (M : Type _) (N : Type _) [Mul M] [Mul N] where
 -- mathport name: «expr →ₙ* »
 infixr:25 " →ₙ* " => MulHom
 
-/-- `mul_hom_class F M N` states that `F` is a type of multiplication-preserving homomorphisms.
+/-- `MulHomClass F M N` states that `F` is a type of multiplication-preserving homomorphisms.
 
-You should declare an instance of this typeclass when you extend `mul_hom`.
+You should declare an instance of this typeclass when you extend `MulHom`.
 -/
--- Porting note: see porting note of ZeroHomClass
+-- Porting note: see porting note of `ZeroHomClass`
 @[to_additive]
 class MulHomClass (F : Type _) (M N : outParam <| Type _)
   [outParam <| Mul M] [outParam <| Mul N] extends FunLike F M fun _ => N where
@@ -314,13 +314,13 @@ section mul_one
 
 variable [MulOneClass M] [MulOneClass N]
 
-/-- `M →* N` is the type of functions `M → N` that preserve the `monoid` structure.
-`monoid_hom` is also used for group homomorphisms.
+/-- `M →* N` is the type of functions `M → N` that preserve the `Monoid` structure.
+`MonoidHom` is also used for group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : M →+ N)`,
-you should parametrize over `(F : Type*) [monoid_hom_class F M N] (f : F)`.
+you should parametrize over `(F : Type*) [MonoidHomClass F M N] (f : F)`.
 
-When you extend this structure, make sure to extend `monoid_hom_class`.
+When you extend this structure, make sure to extend `MonoidHomClass`.
 -/
 @[to_additive]
 structure MonoidHom (M : Type _) (N : Type _) [MulOneClass M] [MulOneClass N] extends
@@ -337,9 +337,9 @@ attribute [to_additive AddMonoidHom.toAddHom] MonoidHom.toMulHom
 -- mathport name: «expr →* »
 infixr:25 " →* " => MonoidHom
 
-/-- `monoid_hom_class F M N` states that `F` is a type of `monoid`-preserving homomorphisms.
-You should also extend this typeclass when you extend `monoid_hom`. -/
--- Porting note: see porting note of ZeroHomClass
+/-- `MonoidHomClass F M N` states that `F` is a type of `Monoid`-preserving homomorphisms.
+You should also extend this typeclass when you extend `MonoidHom`. -/
+-- Porting note: see porting note of `ZeroHomClass`
 @[to_additive]
 class MonoidHomClass (F : Type _) (M N : outParam <| Type _)
   [outParam <| MulOneClass M] [outParam <| MulOneClass N] extends
@@ -472,14 +472,14 @@ section MulZeroOne
 variable [MulZeroOneClass M] [MulZeroOneClass N]
 
 /-- `M →*₀ N` is the type of functions `M → N` that preserve
-the `monoid_with_zero` structure.
+the `MonoidWithZero` structure.
 
-`monoid_with_zero_hom` is also used for group homomorphisms.
+`MonoidWithZeroHom` is also used for group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : M →*₀ N)`,
-you should parametrize over `(F : Type*) [monoid_with_zero_hom_class F M N] (f : F)`.
+you should parametrize over `(F : Type*) [MonoidWithZeroHomClass F M N] (f : F)`.
 
-When you extend this structure, make sure to extend `monoid_with_zero_hom_class`.
+When you extend this structure, make sure to extend `MonoidWithZeroHomClass`.
 -/
 structure MonoidWithZeroHom (M : Type _) (N : Type _)
   [MulZeroOneClass M] [MulZeroOneClass N] extends ZeroHom M N, MonoidHom M N
@@ -493,10 +493,10 @@ structure MonoidWithZeroHom (M : Type _) (N : Type _)
 -- mathport name: «expr →*₀ »
 infixr:25 " →*₀ " => MonoidWithZeroHom
 
-/-- `monoid_with_zero_hom_class F M N` states that `F` is a type of
-`monoid_with_zero`-preserving homomorphisms.
+/-- `MonoidWithZeroHomClass F M N` states that `F` is a type of
+`MonoidWithZero`-preserving homomorphisms.
 
-You should also extend this typeclass when you extend `monoid_with_zero_hom`.
+You should also extend this typeclass when you extend `MonoidWithZeroHom`.
 -/
 class MonoidWithZeroHomClass (F : Type _) (M N : outParam <| Type _)
   [outParam <| MulZeroOneClass M] [outParam <| MulZeroOneClass N] extends
@@ -536,7 +536,7 @@ attribute [coe] MonoidHom.toOneHom
 attribute [coe] AddMonoidHom.toZeroHom
 
 @[to_additive]
-instance MonoidHom.coeToOneHom {mM : MulOneClass M} {mN : MulOneClass N} :
+instance MonoidHom.coeToOneHom {_ : MulOneClass M} {_ : MulOneClass N} :
   Coe (M →* N) (OneHom M N) := ⟨MonoidHom.toOneHom⟩
 #align monoid_hom.has_coe_to_one_hom MonoidHom.coeToOneHom
 
@@ -544,19 +544,19 @@ attribute [coe] MonoidHom.toMulHom
 attribute [coe] AddMonoidHom.toAddHom
 
 @[to_additive]
-instance MonoidHom.coeToMulHom {mM : MulOneClass M} {mN : MulOneClass N} :
+instance MonoidHom.coeToMulHom {_ : MulOneClass M} {_ : MulOneClass N} :
   Coe (M →* N) (M →ₙ* N) := ⟨MonoidHom.toMulHom⟩
 #align monoid_hom.has_coe_to_mul_hom MonoidHom.coeToMulHom
 
 attribute [coe] MonoidWithZeroHom.toMonoidHom
 
-instance MonoidWithZeroHom.coeToMonoidHom {mM : MulZeroOneClass M} {mN : MulZeroOneClass N} :
+instance MonoidWithZeroHom.coeToMonoidHom {_ : MulZeroOneClass M} {_ : MulZeroOneClass N} :
   Coe (M →*₀ N) (M →* N) := ⟨MonoidWithZeroHom.toMonoidHom⟩
 #align monoid_with_zero_hom.has_coe_to_monoid_hom MonoidWithZeroHom.coeToMonoidHom
 
 attribute [coe] MonoidWithZeroHom.toZeroHom
 
-instance MonoidWithZeroHom.coeToZeroHom {mM : MulZeroOneClass M} {mN : MulZeroOneClass N} :
+instance MonoidWithZeroHom.coeToZeroHom {_ : MulZeroOneClass M} {_ : MulZeroOneClass N} :
   Coe (M →*₀ N) (ZeroHom M N) := ⟨MonoidWithZeroHom.toZeroHom⟩
 #align monoid_with_zero_hom.has_coe_to_zero_hom MonoidWithZeroHom.coeToZeroHom
 
@@ -755,41 +755,41 @@ theorem MonoidWithZeroHom.mk_coe [MulZeroOneClass M] [MulZeroOneClass N] (f : M 
 
 end Coes
 
-/-- Copy of a `one_hom` with a new `toFun` equal to the old one. Useful to fix definitional
+/-- Copy of a `OneHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 @[to_additive
-  "Copy of a `zero_hom` with a new `toFun` equal to the old one. Useful to fix
+  "Copy of a `ZeroHom` with a new `toFun` equal to the old one. Useful to fix
   definitional equalities."]
-protected def OneHom.copy {hM : One M} {hN : One N} (f : OneHom M N) (f' : M → N) (h : f' = f) :
+protected def OneHom.copy {_ : One M} {_ : One N} (f : OneHom M N) (f' : M → N) (h : f' = f) :
   OneHom M N where
   toFun := f'
   map_one' := h.symm ▸ f.map_one'
 #align one_hom.copy OneHom.copy
 
-/-- Copy of a `mul_hom` with a new `toFun` equal to the old one. Useful to fix definitional
+/-- Copy of a `MulHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 @[to_additive
-  "Copy of an `add_hom` with a new `toFun` equal to the old one. Useful to fix
+  "Copy of an `AddHom` with a new `toFun` equal to the old one. Useful to fix
   definitional equalities."]
-protected def MulHom.copy {hM : Mul M} {hN : Mul N} (f : M →ₙ* N) (f' : M → N) (h : f' = f) :
+protected def MulHom.copy {_ : Mul M} {_ : Mul N} (f : M →ₙ* N) (f' : M → N) (h : f' = f) :
   M →ₙ* N where
   toFun := f'
   map_mul' := h.symm ▸ f.map_mul'
 #align mul_hom.copy MulHom.copy
 
-/-- Copy of a `monoid_hom` with a new `toFun` equal to the old one. Useful to fix
+/-- Copy of a `MonoidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 @[to_additive
-    "Copy of an `add_monoid_hom` with a new `toFun` equal to the old one. Useful to fix
+    "Copy of an `AddMonoidHom` with a new `toFun` equal to the old one. Useful to fix
     definitional equalities."]
-protected def MonoidHom.copy {hM : MulOneClass M} {hN : MulOneClass N} (f : M →* N) (f' : M → N)
+protected def MonoidHom.copy {_ : MulOneClass M} {_ : MulOneClass N} (f : M →* N) (f' : M → N)
   (h : f' = f) : M →* N :=
   { f.toOneHom.copy f' h, f.toMulHom.copy f' h with }
 #align monoid_hom.copy MonoidHom.copy
 
-/-- Copy of a `monoid_hom` with a new `toFun` equal to the old one. Useful to fix
+/-- Copy of a `MonoidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
-protected def MonoidWithZeroHom.copy {hM : MulZeroOneClass M} {hN : MulZeroOneClass N} (f : M →*₀ N)
+protected def MonoidWithZeroHom.copy {_ : MulZeroOneClass M} {_ : MulZeroOneClass N} (f : M →*₀ N)
   (f' : M → N) (h : f' = f) : M →* N :=
   { f.toZeroHom.copy f' h, f.toMonoidHom.copy f' h with }
 #align monoid_with_zero_hom.copy MonoidWithZeroHom.copy
@@ -836,11 +836,11 @@ add_decl_doc AddMonoidHom.map_add
 
 namespace MonoidHom
 
-variable {mM : MulOneClass M} {mN : MulOneClass N} [MonoidHomClass F M N]
+variable {_ : MulOneClass M} {_ : MulOneClass N} [MonoidHomClass F M N]
 
 -- Porting note: restore `to_additive`
 /-- Given a monoid homomorphism `f : M →* N` and an element `x : M`, if `x` has a right inverse,
-then `f x` has a right inverse too. For elements invertible on both sides see `is_unit.map`. -/
+then `f x` has a right inverse too. For elements invertible on both sides see `IsUnit.map`. -/
 -- @[to_additive
 --   "Given an AddMonoid homomorphism `f : M →+ N` and an element `x : M`, if `x` has
 --   a right inverse, then `f x` has a right inverse too."]
@@ -850,7 +850,7 @@ theorem map_exists_right_inv (f : F) {x : M} (hx : ∃ y, x * y = 1) : ∃ y, f 
 #align monoid_hom.map_exists_right_inv MonoidHom.map_exists_right_inv
 /-- Given an AddMonoid homomorphism `f : M →+ N` and an element `x : M`, if `x` has
 a right inverse, then `f x` has a right inverse too. -/
-theorem map_exists_right_neg {M N F} {mM : AddZeroClass M} {mN : AddZeroClass N}
+theorem map_exists_right_neg {M N F} {_ : AddZeroClass M} {_ : AddZeroClass N}
   [AddMonoidHomClass F M N] (f : F) {x : M} (hx : ∃ y, x + y = 0) : ∃ y, f x + y = 0 :=
   let ⟨y, hy⟩ := hx
   ⟨f y, map_add_eq_zero f hy⟩
@@ -858,19 +858,19 @@ theorem map_exists_right_neg {M N F} {mM : AddZeroClass M} {mN : AddZeroClass N}
 
 -- Porting note: restore `to_additive`
 /-- Given a monoid homomorphism `f : M →* N` and an element `x : M`, if `x` has a left inverse,
-then `f x` has a left inverse too. For elements invertible on both sides see `is_unit.map`. -/
+then `f x` has a left inverse too. For elements invertible on both sides see `IsUnit.map`. -/
 -- @[to_additive
 --   "Given an AddMonoid homomorphism `f : M →+ N` and an element `x : M`, if `x` has
 --   a left inverse, then `f x` has a left inverse too. For elements invertible on both sides see
---   `is_add_unit.map`."]
+--   `IsAddUnit.map`."]
 theorem map_exists_left_inv (f : F) {x : M} (hx : ∃ y, y * x = 1) : ∃ y, y * f x = 1 :=
   let ⟨y, hy⟩ := hx
   ⟨f y, map_mul_eq_one f hy⟩
 #align monoid_hom.map_exists_left_inv MonoidHom.map_exists_left_inv
 /-- Given an AddMonoid homomorphism `f : M →+ N` and an element `x : M`, if `x` has
 a left inverse, then `f x` has a left inverse too. For elements invertible on both sides see
-`is_add_unit.map`. -/
-theorem map_exists_left_neg {M N F} {mM : AddZeroClass M} {mN : AddZeroClass N}
+`IsAddUnit.map`. -/
+theorem map_exists_left_neg {M N F} {_ : AddZeroClass M} {_ : AddZeroClass N}
   [AddMonoidHomClass F M N] (f : F) {x : M} (hx : ∃ y, y + x = 0) : ∃ y, y + f x = 0 :=
   let ⟨y, hy⟩ := hx
   ⟨f y, map_add_eq_zero f hy⟩
@@ -978,10 +978,10 @@ def MonoidWithZeroHom.comp [MulZeroOneClass M] [MulZeroOneClass N] [MulZeroOneCl
   map_mul' := by simp [-FunLike.coe_eq_coe_fn]
 #align monoid_with_zero_hom.comp MonoidWithZeroHom.comp
 
-/-- Composition of `zero_hom`s as a `zero_hom`. -/
+/-- Composition of `ZeroHom`s as a `ZeroHom`. -/
 add_decl_doc ZeroHom.comp
 
-/-- Composition of `add_hom`s as a `add_hom`. -/
+/-- Composition of `AddHom`s as a `AddHom`. -/
 add_decl_doc AddHom.comp
 
 /-- Composition of additive monoid morphisms as an additive monoid morphism. -/
@@ -1185,6 +1185,7 @@ protected theorem AddMonoidHom.map_zsmul' [SubNegMonoid M] [SubNegMonoid N] (f :
 
 section End
 
+-- Porting note: this part causes instance loop
 -- namespace Monoid
 
 -- variable (M) [MulOneClass M]
@@ -1305,7 +1306,7 @@ instance [Mul M] [MulOneClass N] : Inhabited (M →ₙ* N) := ⟨1⟩
 @[to_additive]
 instance [MulOneClass M] [MulOneClass N] : Inhabited (M →* N) := ⟨1⟩
 
--- unlike the other homs, `monoid_with_zero_hom` does not have a `1` or `0`
+-- unlike the other homs, `MonoidWithZeroHom` does not have a `1` or `0`
 instance [MulZeroOneClass M] : Inhabited (M →*₀ M) := ⟨MonoidWithZeroHom.id M⟩
 
 namespace MulHom
@@ -1326,7 +1327,7 @@ additive morphism sending `x` to `f x + g x`. -/
 add_decl_doc AddHom.instAddAddHomToAddToAddSemigroup
 
 @[simp, to_additive]
-theorem mul_apply {M N} {mM : Mul M} {mN : CommSemigroup N} (f g : M →ₙ* N) (x : M) :
+theorem mul_apply {M N} {_ : Mul M} {_ : CommSemigroup N} (f g : M →ₙ* N) (x : M) :
   (f * g) x = f x * g x := rfl
 #align mul_hom.mul_apply MulHom.mul_apply
 
@@ -1353,7 +1354,7 @@ variable [Group G] [CommGroup H]
 /-- Given two monoid morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid morphism
 sending `x` to `f x * g x`. -/
 @[to_additive]
-instance {M N} {mM : MulOneClass M} [CommMonoid N] : Mul (M →* N) :=
+instance {M N} {_ : MulOneClass M} [CommMonoid N] : Mul (M →* N) :=
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
       map_one' := show f 1 * g 1 = 1 by rw [map_one, map_one, mul_one],
@@ -1368,7 +1369,7 @@ additive monoid morphism sending `x` to `f x + g x`. -/
 add_decl_doc AddMonoidHom.instAddAddMonoidHomToAddZeroClassToAddMonoid
 
 @[simp, to_additive]
-theorem mul_apply {M N} {mM : MulOneClass M} {mN : CommMonoid N} (f g : M →* N) (x : M) :
+theorem mul_apply {M N} {_ : MulOneClass M} {_ : CommMonoid N} (f g : M →* N) (x : M) :
   (f * g) x = f x * g x := rfl
 #align monoid_hom.mul_apply MonoidHom.mul_apply
 
@@ -1461,9 +1462,9 @@ def mk' (f : M → G) (map_mul : ∀ a b : M, f (a * b) = f a * f b) : M →* G 
 See also `monoid_hom.of_map_div` for a version using `λ x y, x / y`.
 -/
 @[to_additive
-    "Makes an additive group homomorphism from a proof that the map preserves
-    the operation `λ a b, a + -b`. See also `add_monoid_hom.of_map_sub` for a version using
-    `λ a b, a - b`."]
+  "Makes an additive group homomorphism from a proof that the map preserves
+  the operation `fun a b => a + -b`. See also `AddMonoidHom.ofMapSub` for a version using
+  `fun a b => a - b`."]
 def ofMapMulInv {H : Type _} [Group H] (f : G → H)
   (map_div : ∀ a b : G, f (a * b⁻¹) = f a * (f b)⁻¹) : G →* H :=
   (mk' f) fun x y =>
@@ -1504,19 +1505,19 @@ homomorphism sending `x` to `-(f x)`. -/
 add_decl_doc AddMonoidHom.instNegAddMonoidHomToAddZeroClassToAddMonoidToSubNegAddMonoidToAddGroup
 
 @[simp, to_additive]
-theorem inv_apply {M G} {mM : MulOneClass M} {gG : CommGroup G} (f : M →* G) (x : M) :
+theorem inv_apply {M G} {_ : MulOneClass M} {gG : CommGroup G} (f : M →* G) (x : M) :
   f⁻¹ x = (f x)⁻¹ := rfl
 #align monoid_hom.inv_apply MonoidHom.inv_apply
 
 @[simp, to_additive]
-theorem inv_comp {M N A} {mM : MulOneClass M} {gN : MulOneClass N} {gA : CommGroup A}
+theorem inv_comp {M N A} {_ : MulOneClass M} {gN : MulOneClass N} {gA : CommGroup A}
   (φ : N →* A) (ψ : M →* N) : φ⁻¹.comp ψ = (φ.comp ψ)⁻¹ := by
   ext
   simp only [Function.comp_apply, inv_apply, coe_comp]
 #align monoid_hom.inv_comp MonoidHom.inv_comp
 
 @[simp, to_additive]
-theorem comp_inv {M A B} {mM : MulOneClass M} {mA : CommGroup A} {mB : CommGroup B}
+theorem comp_inv {M A B} {_ : MulOneClass M} {mA : CommGroup A} {mB : CommGroup B}
   (φ : A →* B) (ψ : M →* A) : φ.comp ψ⁻¹ = (φ.comp ψ)⁻¹ := by
   ext
   simp only [Function.comp_apply, inv_apply, map_inv, coe_comp]
@@ -1534,7 +1535,7 @@ is the homomorphism sending `x` to `(f x) - (g x)`. -/
 add_decl_doc AddMonoidHom.instSubAddMonoidHomToAddZeroClassToAddMonoidToSubNegAddMonoidToAddGroup
 
 @[simp, to_additive]
-theorem div_apply {M G} {mM : MulOneClass M} {gG : CommGroup G} (f g : M →* G) (x : M) :
+theorem div_apply {M G} {_ : MulOneClass M} {gG : CommGroup G} (f g : M →* G) (x : M) :
   (f / g) x = f x / g x := rfl
 #align monoid_hom.div_apply MonoidHom.div_apply
 
@@ -1549,7 +1550,7 @@ protected theorem AddMonoidHom.map_zsmul [AddGroup α] [SubtractionMonoid β]
 
 /-- Given two monoid with zero morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid
 with zero morphism sending `x` to `f x * g x`. -/
-instance {M N} {hM : MulZeroOneClass M} [CommMonoidWithZero N] : Mul (M →*₀ N) :=
+instance {M N} {_ : MulZeroOneClass M} [CommMonoidWithZero N] : Mul (M →*₀ N) :=
   ⟨fun f g => { (f * g : M →* N) with
     toFun := fun a => f a * g a,
     map_zero' := by dsimp only []; rw [map_zero, zero_mul] }⟩
@@ -1559,20 +1560,20 @@ section coe
 
 /-! ### Coercions as bundled morphisms
 
-The classes `coe_is_mul_hom`, `coe_is_monoid_hom`, etc. state that the coercion map `↑`
+The classes `CoeIsMulHom`, `CoeIsMonoidHom`, etc. state that the coercion map `↑`
 (a.k.a. `coe`) is a homomorphism.
 
-These classes are unbundled (they take an instance of `has_lift_t R S` as a parameter, rather than
-extending `has_lift_t` or one of its subclasses) for two reasons:
+These classes are unbundled (they take an instance of `Coe R S` as a parameter, rather than
+extending `Coe` or one of its subclasses) for two reasons:
  * We wouldn't have to introduce new classes that handle transitivity (and probably cause diamonds)
  * It doesn't matter whether a coercion is written with `has_coe` or `has_lift`, you can give it
-   a homomorphism structure in exactly the same way.
+   a homomorphism structure in exactly the same way. (Porting note: does this point still hold?)
 -/
 
 
 variable (M N) [Coe M N]
 
-/-- `coe_is_zero_hom M N` is a class stating that the coercion map `↑ : M → N` (a.k.a. `coe`)
+/-- `CoeIsZeroHom M N` is a class stating that the coercion map `↑ : M → N` (a.k.a. `coe`)
 is an zero-preserving homomorphism.
 -/
 class CoeIsZeroHom [Zero M] [Zero N] : Prop where
@@ -1583,7 +1584,7 @@ export CoeIsZeroHom (coe_zero)
 
 attribute [simp] coe_zero -- Porting note: restore `norm_cast`
 
-/-- `coe_is_one_hom M N` is a class stating that the coercion map `↑ : M → N` (a.k.a. `coe`)
+/-- `CoeIsOneHom M N` is a class stating that the coercion map `↑ : M → N` (a.k.a. `coe`)
 is a one-preserving homomorphism.
 -/
 @[to_additive]
@@ -1606,7 +1607,7 @@ protected def OneHom.coe [One M] [One N] [CoeIsOneHom M N] : OneHom M N where
   map_one' := coe_one
 #align one_hom.coe OneHom.coe
 
-/-- `coe_is_add_hom M N` is a class stating that the coercion map `↑ : M → N` (a.k.a. `coe`)
+/-- `CoeIsAddHom M N` is a class stating that the coercion map `↑ : M → N` (a.k.a. `coe`)
 is an additive homomorphism.
 -/
 class CoeIsAddHom [Add M] [Add N] : Prop where
@@ -1617,7 +1618,7 @@ export CoeIsAddHom (coe_add)
 
 attribute [simp] coe_add -- Porting note: restore `norm_cast`
 
-/-- `coe_is_mul_hom M N` is a class stating that the coercion map `↑ : M → N` (a.k.a. `coe`)
+/-- `CoeIsMulHom M N` is a class stating that the coercion map `↑ : M → N` (a.k.a. `coe`)
 is a multiplicative homomorphism.
 -/
 @[to_additive]
@@ -1639,23 +1640,23 @@ protected def MulHom.coe [Mul M] [Mul N] [CoeIsMulHom M N] : MulHom M N where
   map_mul' := coe_mul
 #align mul_hom.coe MulHom.coe
 
-/-- `coe_is_add_monoid_hom M N` is a class stating that the coercion map `↑ : M → N` (a.k.a. `coe`)
+/-- `CoeIsAddMonoidHom M N` is a class stating that the coercion map `↑ : M → N` (a.k.a. `coe`)
 is an additive monoid homomorphism.
 -/
 class CoeIsAddMonoidHom [AddZeroClass M] [AddZeroClass N] extends CoeIsZeroHom M N, CoeIsAddHom M N
 #align coe_is_add_monoid_hom CoeIsAddMonoidHom
 
-/-- `coe_is_monoid_hom M N` is a class stating that the coercion map `↑ : M → N` (a.k.a. `coe`)
+/-- `CoeIsMonoidHom M N` is a class stating that the coercion map `↑ : M → N` (a.k.a. `coe`)
 is a monoid homomorphism.
 -/
 @[to_additive]
 class CoeIsMonoidHom [MulOneClass M] [MulOneClass N] extends CoeIsOneHom M N, CoeIsMulHom M N
 #align coe_is_monoid_hom CoeIsMonoidHom
 
-/-- `monoid_hom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
+/-- `MonoidHom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
 bundled as a monoid homomorphism. -/
 @[to_additive
-    "`add_monoid_hom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
+    "`AddMonoidHom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
     bundled as an additive monoid homomorphism.",
     simps (config := { fullyApplied := false })]
 protected def MonoidHom.coe [MulOneClass M] [MulOneClass N] [CoeIsMonoidHom M N] : M →* N :=
