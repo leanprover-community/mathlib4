@@ -15,14 +15,9 @@ actual theorems in the files.
 -/
 
 -- Implementation detail
-#align _sorry_placeholder_ _sorry_placeholder_
+set_option align.precheck false in #align _sorry_placeholder_ _sorry_placeholder_
 
 /-! ## `init.algebra.classes` -/
-
-/-! ## `init.algebra.order` -/
-
-#align preorder.to_has_le Preorder.toLE
-#align preorder.to_has_lt Preorder.toLT
 
 /-! ## `init.cc_lemmas` -/
 
@@ -78,8 +73,9 @@ actual theorems in the files.
 
 /-! ## `init.data.array.default` -/
 
-#align array Array'
-#align mk_array mkArray'
+-- These are TODOs, but we need to avoid aligning to `Array` which is significantly different
+set_option align.precheck false in #align array Array'
+set_option align.precheck false in #align mk_array mkArray'
 
 /-! ## `init.data.char.basic` -/
 
@@ -99,19 +95,19 @@ actual theorems in the files.
 
 /-! ## `init.data.list.basic` -/
 
-#align list.erase List.erase'
-#align list.bag_inter List.bagInter'
-#align list.diff List.diff'
-#align list.head List.head'
-#align list.filter List.filter'
-#align list.partition List.partition'
-#align list.drop_while List.dropWhile'
-#align list.after List.after'
-#align list.span List.span'
-#align list.index_of List.indexOf'
-#align list.remove_all List.removeAll'
-#align list.is_prefix_of List.isPrefixOf'
-#align list.is_suffix_of List.isSuffixOf'
+#align list.erase List.eraseₓ
+#align list.bag_inter List.bagInterₓ
+#align list.diff List.diffₓ
+#align list.head List.headₓ
+#align list.filter List.filterₓ
+#align list.partition List.partitionₓ
+#align list.drop_while List.dropWhileₓ
+#align list.after List.afterₓ
+#align list.span List.spanₓ
+#align list.index_of List.indexOfₓ
+#align list.remove_all List.removeAllₓ
+#align list.is_prefix_of List.isPrefixOfₓ
+#align list.is_suffix_of List.isSuffixOfₓ
 #align list.lt List.lt
 
 /-! ## `init.data.nat.basic` -/
@@ -120,7 +116,7 @@ actual theorems in the files.
 #align nat.less_than_or_equal Nat.le
 #align nat.le Nat.le
 #align nat.lt Nat.lt
-#align nat.repeat Nat.repeat'
+#align nat.repeat Nat.repeatₓ
 
 /-! ## `init.data.nat.div` -/
 
@@ -129,7 +125,7 @@ actual theorems in the files.
 #align nat.le_of_add_le_add_right Nat.le_of_add_le_add_rightₓ
 #align nat.mul_lt_mul Nat.mul_lt_mulₓ
 #align nat.mul_lt_mul' Nat.mul_lt_mul'ₓ
-#align nat.discriminate Nat.discriminateₓ
+#noalign nat.discriminate
 #align nat.sub_one_sub_lt Nat.sub_one_sub_ltₓ
 #align nat.div_eq_sub_div Nat.div_eq_sub_divₓ
 #align nat.div_eq_of_eq_mul_left Nat.div_eq_of_eq_mul_leftₓ
@@ -165,7 +161,7 @@ actual theorems in the files.
 /-! ## `init.data.repr` -/
 
 #align has_repr Repr
-#align nat.to_digits Nat.toDigits'
+set_option align.precheck false in #align nat.to_digits Nat.toDigits'
 
 /-! ## `init.data.setoid` -/
 
@@ -211,7 +207,7 @@ actual theorems in the files.
 
 /-! ## `init.meta.name` -/
 
-#align auto_param autoParam'
+#align auto_param autoParamₓ
 
 /-! ## `init.meta.options` -/
 
@@ -241,3 +237,4 @@ actual theorems in the files.
 
 #align subrelation.accessible Subrelation.accessibleₓ
 #align inv_image.accessible InvImage.accessibleₓ
+#align prod.rprod Prod.RProd

@@ -40,6 +40,8 @@ import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.ModCases
+import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.PermuteGoals
@@ -118,24 +120,24 @@ macro_rules
 macro_rules
   | `(expandBinders% ($x => $term) ($y:ident $[: $ty]?) $binders*, $res) => do
     let ty := ty.getD (← `(_))
-    term.replaceM fun x' => do
+    term.replaceM fun x' ↦ do
       unless x == x' do return none
-      `(fun $y:ident : $ty => expandBinders% ($x => $term) $[$binders]*, $res)
+      `(fun $y:ident : $ty ↦ expandBinders% ($x => $term) $[$binders]*, $res)
   | `(expandBinders% ($x => $term) ($y:ident $pred:binderPred) $binders*, $res) =>
-    term.replaceM fun x' => do
+    term.replaceM fun x' ↦ do
       unless x == x' do return none
-      `(fun $y:ident => expandBinders% ($x => $term) (h : satisfiesBinderPred% $y $pred)
+      `(fun $y:ident ↦ expandBinders% ($x => $term) (h : satisfiesBinderPred% $y $pred)
         $[$binders]*, $res)
 
 macro (name := expandFoldl) "expandFoldl% "
   "(" x:ident y:ident " => " term:term ")" init:term:max "[" args:term,* "]" : term =>
-  args.getElems.foldlM (init := init) fun res arg => do
-    term.replaceM fun e =>
+  args.getElems.foldlM (init := init) fun res arg ↦ do
+    term.replaceM fun e ↦
       return if e == x then some res else if e == y then some arg else none
 macro (name := expandFoldr) "expandFoldr% "
   "(" x:ident y:ident " => " term:term ")" init:term:max "[" args:term,* "]" : term =>
-  args.getElems.foldrM (init := init) fun arg res => do
-    term.replaceM fun e =>
+  args.getElems.foldrM (init := init) fun arg res ↦ do
+    term.replaceM fun e ↦
       return if e == x then some arg else if e == y then some res else none
 
 /-- Keywording indicating whether to use a left- or right-fold. -/
@@ -398,9 +400,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 /- E -/ syntax (name := qify) "qify" (simpArgs)? (ppSpace location)? : tactic
 
 /- S -/ syntax (name := mkDecorations) "mk_decorations" : tactic
-
-/- M -/ syntax (name := nontriviality) "nontriviality"
-  (ppSpace (colGt term))? (" using " simpArg,+)? : tactic
 
 /- M -/ syntax (name := filterUpwards) "filter_upwards" (termList)?
   (" with" term:max*)? (" using" term)? : tactic
