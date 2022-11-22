@@ -377,7 +377,7 @@ def copySimpAttribute (src tgt : Name) : CoreM Unit := do
 /-- foo -/
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if (← isInstance src) then
-    addInstance tgt AttributeKind.global 1000 |>.run'
+    addInstance tgt AttributeKind.global 100 |>.run'
 
 /-- bar -/
 def copyAttributes (src tgt : Name) : CoreM Unit :=
