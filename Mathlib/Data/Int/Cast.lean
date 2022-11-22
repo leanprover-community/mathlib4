@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Algebra.Ring.Basic
 
@@ -23,7 +23,7 @@ namespace Int
 
 @[simp, norm_cast]
 theorem cast_mul [Ring α] : -- FIXME: NonAssocRing
-    ∀ m n, ((m * n : ℤ) : α) = m * n := fun m =>
+    ∀ m n, ((m * n : ℤ) : α) = m * n := fun m ↦
   Int.inductionOn' m 0 (by simp)
-    (fun k _ ih n => by simp [add_mul, ih])
-    (fun k _ ih n => by simp [sub_mul, ih])
+    (fun k _ ih n ↦ by simp [add_mul, ih])
+    (fun k _ ih n ↦ by simp [sub_mul, ih])
