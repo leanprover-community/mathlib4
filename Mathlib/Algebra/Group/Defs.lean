@@ -280,6 +280,9 @@ instance (priority := 100) AddLeftCancelSemigroup.to_isLeftCancelAdd (G : Type u
     [AddLeftCancelSemigroup G] : isLeftCancelAdd G :=
   { add_left_cancel := AddLeftCancelSemigroup.add_left_cancel }
 
+attribute [to_additive ddLeftCancelSemigroup.to_isLeftCancelAdd]
+  LeftCancelSemigroup.to_IsLeftCancelMul
+
 end LeftCancelSemigroup
 
 /-- A `RightCancelSemigroup` is a semigroup such that `a * b = c * b` implies `a = c`. -/
@@ -328,6 +331,9 @@ instance (priority := 100) RightCancelSemigroup.to_IsRightCancelMul (G : Type u)
 instance (priority := 100) AddRightCancelSemigroup.to_isRightCancelAdd (G : Type u)
     [AddRightCancelSemigroup G] : isRightCancelAdd G :=
   { add_right_cancel := AddRightCancelSemigroup.add_right_cancel }
+
+attribute [to_additive AddRightCancelSemigroup.to_isRightCancelAdd]
+  RightCancelSemigroup.to_IsRightCancelMul
 
 end RightCancelSemigroup
 
@@ -638,6 +644,8 @@ instance (priority := 100) AddCancelMonoid.to_isCancelAdd (M : Type u) [AddCance
     isCancelAdd M :=
   { add_left_cancel := AddLeftCancelSemigroup.add_left_cancel
     add_right_cancel := AddRightCancelSemigroup.add_right_cancel }
+
+attribute [to_additive AddCancelMonoid.to_isCancelAdd] CancelMonoid.to_IsCancelMul
 
 end CancelMonoid
 
