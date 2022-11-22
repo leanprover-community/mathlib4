@@ -4,11 +4,11 @@ open Lake DSL
 
 package mathlib
 
-@[default_target]
+@[defaultTarget]
 lean_lib Mathlib where
   moreLeanArgs := #["-DwarningAsError=true"]
 
-@[default_target]
+@[defaultTarget]
 lean_exe runLinter where
   root := `scripts.runLinter
   supportInterpreter := true
