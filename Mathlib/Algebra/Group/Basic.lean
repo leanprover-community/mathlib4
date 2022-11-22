@@ -290,8 +290,7 @@ instance (priority := 100) DivisionMonoid.toDivInvOneMonoid : DivInvOneMonoid α
     inv_one := by simpa only [one_div, inv_inv] using (inv_div (1 : α) 1).symm }
 
 -- FIXME this isn't being copied by `to_additive`
--- FIXME how to set priority?
-attribute [instance] SubtractionMonoid.toSubNegZeroMonoid
+attribute [instance 100] SubtractionMonoid.toSubNegZeroMonoid
 
 variable {a b c}
 
