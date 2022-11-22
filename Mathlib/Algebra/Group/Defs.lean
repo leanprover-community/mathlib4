@@ -851,8 +851,7 @@ instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
     inv_eq_of_mul := fun _ _ ↦ inv_eq_of_mul }
 
 -- FIXME this isn't being copied by `to_additive`
--- FIXME how to set priority?
-attribute [instance] AddGroup.toSubtractionMonoid
+attribute [instance 100] AddGroup.toSubtractionMonoid
 
 -- see Note [lower instance priority]
 @[to_additive AddGroup.toAddCancelMonoid]
@@ -862,8 +861,7 @@ instance (priority := 100) Group.toCancelMonoid : CancelMonoid G :=
     mul_left_cancel := fun a b c h ↦ by rw [← inv_mul_cancel_left a b, h, inv_mul_cancel_left] }
 
 -- FIXME this isn't being copied by `to_additive`
--- FIXME how to set priority?
-attribute [instance] AddGroup.toAddCancelMonoid
+attribute [instance 100] AddGroup.toAddCancelMonoid
 
 end Group
 
