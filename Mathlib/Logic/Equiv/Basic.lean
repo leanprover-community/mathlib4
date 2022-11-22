@@ -290,7 +290,6 @@ theorem sumCongr_apply (ea : Equiv.Perm α) (eb : Equiv.Perm β) (x : Sum α β)
 
 -- porting note: it seems the general theorem about `Equiv` is now applied, so there's no need
 -- to have this version also have `@[simp]`. Similarly for below.
-@[simp]
 theorem sumCongr_trans (e : Equiv.Perm α) (f : Equiv.Perm β) (g : Equiv.Perm α)
     (h : Equiv.Perm β) : (sumCongr e f).trans (sumCongr g h) = sumCongr (e.trans g) (f.trans h) :=
   Equiv.sumCongr_trans e f g h
@@ -404,11 +403,7 @@ theorem optionEquivSumPUnit_none : optionEquivSumPUnit α none = Sum.inr PUnit.u
 theorem optionEquivSumPUnit_some (a) : optionEquivSumPUnit α (some a) = Sum.inl a :=
   rfl
 #align equiv.option_equiv_sum_punit_some Equiv.optionEquivSumPUnit_some
-
-@[simp]
-theorem optionEquivSumPUnit_coe (a : α) : optionEquivSumPUnit α a = Sum.inl a :=
-  rfl
-#align equiv.option_equiv_sum_punit_coe Equiv.optionEquivSumPUnit_coe
+#align equiv.option_equiv_sum_punit_coe Equiv.optionEquivSumPUnit_some
 
 @[simp]
 theorem optionEquivSumPUnit_symm_inl (a) : (optionEquivSumPUnit α).symm (Sum.inl a) = a :=
@@ -495,13 +490,14 @@ theorem sumCompl_apply_inr (p : α → Prop) [DecidablePred p] (x : { a // ¬p a
   rfl
 #align equiv.sum_compl_apply_inr Equiv.sumCompl_apply_inr
 
-@[simp]
+-- porting note: this had its `@[simp]` attribute removed, because the simpNF linter complained and
+-- it doesn't seem like a good simp lemma? similarly for `sumCompl_apply_symm_of_neg` and
+-- `Perm.subtypeCongr.{left,right}_apply`
 theorem sumCompl_apply_symm_of_pos (p : α → Prop) [DecidablePred p] (a : α) (h : p a) :
     (sumCompl p).symm a = Sum.inl ⟨a, h⟩ :=
   dif_pos h
 #align equiv.sum_compl_apply_symm_of_pos Equiv.sumCompl_apply_symm_of_pos
 
-@[simp]
 theorem sumCompl_apply_symm_of_neg (p : α → Prop) [DecidablePred p] (a : α)
     (h : ¬p a) : (sumCompl p).symm a = Sum.inr ⟨a, h⟩ :=
   dif_neg h
@@ -528,10 +524,10 @@ def Perm.subtypeCongr : Equiv.Perm ε :=
 
 theorem Perm.subtypeCongr.apply (a : ε) : ep.subtypeCongr en a =
     if h : p a then (ep ⟨a, h⟩ : ε) else en ⟨a, h⟩ := by
-  by_cases h : p a <;> simp [Perm.subtypeCongr, h]
+  by_cases h : p a <;>
+  simp [Perm.subtypeCongr, h, sumCompl_apply_symm_of_pos, sumCompl_apply_symm_of_neg]
 #align equiv.perm.subtype_congr.apply Equiv.Perm.subtypeCongr.apply
 
-@[simp]
 theorem Perm.subtypeCongr.left_apply {a : ε} (h : p a) : ep.subtypeCongr en a = ep ⟨a, h⟩ := by
   simp [Perm.subtypeCongr.apply, h]
 #align equiv.perm.subtype_congr.left_apply Equiv.Perm.subtypeCongr.left_apply
@@ -541,7 +537,6 @@ theorem Perm.subtypeCongr.left_apply_subtype (a : { a // p a }) : ep.subtypeCong
     Perm.subtypeCongr.left_apply ep en a.property
 #align equiv.perm.subtype_congr.left_apply_subtype Equiv.Perm.subtypeCongr.left_apply_subtype
 
-@[simp]
 theorem Perm.subtypeCongr.right_apply {a : ε} (h : ¬p a) : ep.subtypeCongr en a = en ⟨a, h⟩ := by
   simp [Perm.subtypeCongr.apply, h]
 #align equiv.perm.subtype_congr.right_apply Equiv.Perm.subtypeCongr.right_apply
@@ -555,19 +550,15 @@ theorem Perm.subtypeCongr.right_apply_subtype (a : { a // ¬p a }) : ep.subtypeC
 theorem Perm.subtypeCongr.refl :
     Perm.subtypeCongr (Equiv.refl { a // p a }) (Equiv.refl { a // ¬p a }) = Equiv.refl ε := by
   ext x
-  by_cases h:p x <;> simp [h]
+  by_cases h:p x <;> simp [h, subtypeCongr.left_apply, subtypeCongr.right_apply]
 #align equiv.perm.subtype_congr.refl Equiv.Perm.subtypeCongr.refl
 
 @[simp]
 theorem Perm.subtypeCongr.symm : (ep.subtypeCongr en).symm = Perm.subtypeCongr ep.symm en.symm := by
   ext x
   by_cases h:p x
-  · have : p (ep.symm ⟨x, h⟩) := Subtype.property _
-    simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
-
-  · have : ¬p (en.symm ⟨x, h⟩) := Subtype.property (en.symm _)
-    simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
-
+  · simp [Perm.subtypeCongr.apply, h, symm_apply_eq]
+  · simp [Perm.subtypeCongr.apply, h, symm_apply_eq]
 #align equiv.perm.subtype_congr.symm Equiv.Perm.subtypeCongr.symm
 
 @[simp]
@@ -576,12 +567,8 @@ theorem Perm.subtypeCongr.trans :
     = Perm.subtypeCongr (ep.trans ep') (en.trans en') := by
   ext x
   by_cases h:p x
-  · have : p (ep ⟨x, h⟩) := Subtype.property _
-    simp [Perm.subtypeCongr.apply, h, this]
-
-  · have : ¬p (en ⟨x, h⟩) := Subtype.property (en _)
-    simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
-
+  · simp [Perm.subtypeCongr.apply, h]
+  · simp [Perm.subtypeCongr.apply, h, symm_apply_eq]
 #align equiv.perm.subtype_congr.trans Equiv.Perm.subtypeCongr.trans
 
 end sumCompl
@@ -1386,11 +1373,11 @@ theorem Perm.extendDomain_apply_image (a : α') : e.extendDomain f (f a) = f (e 
 
 theorem Perm.extendDomain_apply_subtype {b : β'} (h : p b) :
     e.extendDomain f b = f (e (f.symm ⟨b, h⟩)) := by
-  simp [Perm.extendDomain, h]
+  simp [Perm.extendDomain, h, subtypeCongr.left_apply]
 #align equiv.perm.extend_domain_apply_subtype Equiv.Perm.extendDomain_apply_subtype
 
 theorem Perm.extendDomain_apply_not_subtype {b : β'} (h : ¬p b) : e.extendDomain f b = b := by
-  simp [Perm.extendDomain, h]
+  simp [Perm.extendDomain, h, subtypeCongr.right_apply]
 #align equiv.perm.extend_domain_apply_not_subtype Equiv.Perm.extendDomain_apply_not_subtype
 
 @[simp]
@@ -1908,4 +1895,3 @@ theorem piCongrLeft'_symm_update [DecidableEq α] [DecidableEq β] (P : α → S
 #align function.Pi_congr_left'_symm_update Function.piCongrLeft'_symm_update
 
 end Function
-#lint
