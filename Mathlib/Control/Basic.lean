@@ -22,9 +22,11 @@ variable {f : Type u → Type v} [Functor f] [LawfulFunctor f]
 theorem Functor.map_map (m : α → β) (g : β → γ) (x : f α) : g <$> m <$> x = (g ∘ m) <$> x :=
   (comp_map _ _ _).symm
 #align functor.map_map Functor.map_mapₓ
+-- order of implicits
 
 attribute [simp] id_map'
 #align id_map' id_map'ₓ
+-- order of implicits
 
 end Functor
 
@@ -103,6 +105,7 @@ theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
 #align seq_bind_eq seq_bind_eq
 
 #align seq_eq_bind_map seq_eq_bind_mapₓ
+-- order of implicits and `Seq.seq` has a lazily evaluated second argument using `Unit`
 
 @[functor_norm]
 theorem fish_pure {α β} (f : α → m β) : f >=> pure = f := by simp only [(· >=> ·), functor_norm]
@@ -205,6 +208,7 @@ protected def bind {α β} : Sum e α → (α → Sum e β) → Sum e β
   | inl x, _ => inl x
   | inr x, f => f x
 #align sum.bind Sum.bindₓ
+-- incorrectly marked as a bad translation by mathport
 
 instance : Monad (Sum.{v, u} e) where
   pure := @Sum.inr e
