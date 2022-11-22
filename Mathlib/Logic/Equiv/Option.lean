@@ -195,7 +195,7 @@ def option_subtype [DecidableEq β] (x : β) : { e : Option α ≃ β // e none 
   right_inv e := by
     ext a
     rfl
-#align equiv.option_subtype Equiv.optionSubtype
+#align equiv.option_subtype Equiv.option_subtype
 
 @[simp]
 theorem option_subtype_apply_apply [DecidableEq β] (x : β) (e : { e : Option α ≃ β // e none = x }) (a : α) (h) :
