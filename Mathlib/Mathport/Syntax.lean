@@ -40,6 +40,8 @@ import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.ModCases
+import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.PermuteGoals
@@ -118,24 +120,24 @@ macro_rules
 macro_rules
   | `(expandBinders% ($x => $term) ($y:ident $[: $ty]?) $binders*, $res) => do
     let ty := ty.getD (← `(_))
-    term.replaceM fun x' => do
+    term.replaceM fun x' ↦ do
       unless x == x' do return none
-      `(fun $y:ident : $ty => expandBinders% ($x => $term) $[$binders]*, $res)
+      `(fun $y:ident : $ty ↦ expandBinders% ($x => $term) $[$binders]*, $res)
   | `(expandBinders% ($x => $term) ($y:ident $pred:binderPred) $binders*, $res) =>
-    term.replaceM fun x' => do
+    term.replaceM fun x' ↦ do
       unless x == x' do return none
-      `(fun $y:ident => expandBinders% ($x => $term) (h : satisfiesBinderPred% $y $pred)
+      `(fun $y:ident ↦ expandBinders% ($x => $term) (h : satisfiesBinderPred% $y $pred)
         $[$binders]*, $res)
 
 macro (name := expandFoldl) "expandFoldl% "
   "(" x:ident y:ident " => " term:term ")" init:term:max "[" args:term,* "]" : term =>
-  args.getElems.foldlM (init := init) fun res arg => do
-    term.replaceM fun e =>
+  args.getElems.foldlM (init := init) fun res arg ↦ do
+    term.replaceM fun e ↦
       return if e == x then some res else if e == y then some arg else none
 macro (name := expandFoldr) "expandFoldr% "
   "(" x:ident y:ident " => " term:term ")" init:term:max "[" args:term,* "]" : term =>
-  args.getElems.foldrM (init := init) fun arg res => do
-    term.replaceM fun e =>
+  args.getElems.foldrM (init := init) fun arg res ↦ do
+    term.replaceM fun e ↦
       return if e == x then some arg else if e == y then some res else none
 
 /-- Keywording indicating whether to use a left- or right-fold. -/
@@ -202,15 +204,7 @@ macro ak:Term.attrKind "notation3"
 
 end Parser.Command
 
-namespace Parser.Term
-
-/- S -/ syntax "quoteₓ " term : term
-/- S -/ syntax "pquoteₓ " term : term
-/- S -/ syntax "ppquoteₓ " term : term
-/- S -/ syntax "%%ₓ" term : term
-
-end Term
-
+namespace Parser
 namespace Tactic
 
 /- S -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
@@ -222,8 +216,6 @@ namespace Tactic
 /- B -/ syntax (name := cc) "cc" : tactic
 
 /- M -/ syntax (name := unfoldProjs) "unfold_projs" (config)? (ppSpace location)? : tactic
-
-/- E -/ syntax (name := inferAutoParam) "infer_auto_param" : tactic
 
 /- S -/ syntax (name := rsimp) "rsimp" : tactic
 /- S -/ syntax (name := compVal) "comp_val" : tactic
@@ -245,8 +237,6 @@ namespace Tactic
 /- E -/ syntax (name := unfoldWf) "unfold_wf" : tactic
 /- M -/ syntax (name := unfoldAux) "unfold_aux" : tactic
 /- S -/ syntax (name := «continue») "continue " tacticSeq : tactic
-/- M -/ syntax (name := generalizeHyp) "generalize " atomic(ident " : ")? term:51 " = " ident
-  ppSpace location : tactic
 /- M -/ syntax (name := clean) "clean " term : tactic
 /- B -/ syntax (name := refineStruct) "refine_struct " term : tactic
 /- M -/ syntax (name := matchHyp) "match_hyp " ("(" &"m" " := " term ") ")? ident " : " term :
@@ -411,9 +401,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 
 /- S -/ syntax (name := mkDecorations) "mk_decorations" : tactic
 
-/- M -/ syntax (name := nontriviality) "nontriviality"
-  (ppSpace (colGt term))? (" using " simpArg,+)? : tactic
-
 /- M -/ syntax (name := filterUpwards) "filter_upwards" (termList)?
   (" with" term:max*)? (" using" term)? : tactic
 
@@ -450,6 +437,8 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 
 /- M -/ syntax (name := pure_coherence) "pure_coherence" : tactic
 /- M -/ syntax (name := coherence) "coherence" : tactic
+
+/- E -/ syntax (name := pgameWFTac) "pgame_wf_tac" : tactic
 
 namespace Conv
 

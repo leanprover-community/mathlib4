@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 import Mathlib.Tactic.Spread
-import Mathlib.Tactic.ToAdditive
 import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Data.List.Basic
+
+import Std.Tactic.Lint.Frontend
+import Std.Tactic.Lint.Misc
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -63,23 +65,23 @@ infixr:73 " • " => SMul.smul
 attribute [to_additive] Nat
 attribute [to_additive] Int
 
-attribute [to_additive Add] Mul
-attribute [to_additive Sub] Div
-attribute [to_additive HAdd] HMul
-attribute [to_additive instHAdd] instHMul
-attribute [to_additive HSub] HDiv
-attribute [to_additive instHNeg] instHDiv
+attribute [to_additive] Mul
+attribute [to_additive] Div
+attribute [to_additive] HMul
+attribute [to_additive] instHMul
+attribute [to_additive] HDiv
+attribute [to_additive] instHDiv
 
 attribute [to_additive_reorder 1] HPow
 attribute [to_additive_reorder 1 4] HPow.hPow
-attribute [to_additive HMul] HPow
+attribute [to_additive] HPow
 
 universe u
 
 variable {G : Type _}
 
 /-- Class of types that have an inversion operation. -/
-@[to_additive Neg]
+@[to_additive]
 class Inv (α : Type u) where
   /-- Invert an element of α. -/
   inv : α → α
@@ -99,11 +101,11 @@ variable [Mul G]
 
 /-- `leftMul g` denotes left multiplication by `g` -/
 @[to_additive "`left_add g` denotes left addition by `g`"]
-def leftMul : G → G → G := fun g : G => fun x : G => g * x
+def leftMul : G → G → G := fun g : G ↦ fun x : G ↦ g * x
 
 /-- `rightMul g` denotes right multiplication by `g` -/
 @[to_additive "`right_add g` denotes right addition by `g`"]
-def rightMul : G → G → G := fun g : G => fun x : G => x * g
+def rightMul : G → G → G := fun g : G ↦ fun x : G ↦ x * g
 
 /-- A mixin for left cancellative multiplication. -/
 class IsLeftCancelMul (G : Type u) [Mul G] : Prop where
@@ -142,14 +144,16 @@ end Mul
 /-- A semigroup is a type with an associative `(*)`. -/
 @[ext]
 class Semigroup (G : Type u) extends Mul G where
+  /-- Multiplication is associative -/
   mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
 
 /-- An additive semigroup is a type with an associative `(+)`. -/
 @[ext]
 class AddSemigroup (G : Type u) extends Add G where
+  /-- Addition is associative -/
   add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
 
-attribute [to_additive AddSemigroup] Semigroup
+attribute [to_additive] Semigroup
 
 section Semigroup
 
@@ -173,7 +177,7 @@ class AddCommSemigroup (G : Type u) extends AddSemigroup G where
   /-- Addition is commutative in an additive commutative semigroup. -/
   add_comm : ∀ a b : G, a + b = b + a
 
-attribute [to_additive AddCommSemigroup] CommSemigroup
+attribute [to_additive] CommSemigroup
 
 section CommSemigroup
 
@@ -240,7 +244,7 @@ class LeftCancelSemigroup (G : Type u) extends Semigroup G where
 class AddLeftCancelSemigroup (G : Type u) extends AddSemigroup G where
   add_left_cancel : ∀ a b c : G, a + b = a + c → b = c
 
-attribute [to_additive AddLeftCancelSemigroup] LeftCancelSemigroup
+attribute [to_additive] LeftCancelSemigroup
 
 section LeftCancelSemigroup
 
@@ -255,7 +259,7 @@ theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
   ⟨mul_left_cancel, congr_arg _⟩
 
 @[to_additive]
-theorem mul_right_injective (a : G) : Function.Injective ((· * ·) a) := fun _ _ => mul_left_cancel
+theorem mul_right_injective (a : G) : Function.Injective ((· * ·) a) := fun _ _ ↦ mul_left_cancel
 
 @[simp, to_additive]
 theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
@@ -289,7 +293,7 @@ class RightCancelSemigroup (G : Type u) extends Semigroup G where
 class AddRightCancelSemigroup (G : Type u) extends AddSemigroup G where
   add_right_cancel : ∀ a b c : G, a + b = c + b → a = c
 
-attribute [to_additive AddRightCancelSemigroup] RightCancelSemigroup
+attribute [to_additive] RightCancelSemigroup
 
 section RightCancelSemigroup
 
@@ -304,7 +308,7 @@ theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
   ⟨mul_right_cancel, congr_arg (· * a)⟩
 
 @[to_additive]
-theorem mul_left_injective (a : G) : Function.Injective (· * a) := fun _ _ => mul_right_cancel
+theorem mul_left_injective (a : G) : Function.Injective (· * a) := fun _ _ ↦ mul_right_cancel
 
 @[simp, to_additive]
 theorem mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
@@ -330,16 +334,20 @@ end RightCancelSemigroup
 /-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
 `1 * a = a` and `a * 1 = a` for all `a : M`. -/
 class MulOneClass (M : Type u) extends One M, Mul M where
+  /-- One is a left neutral element for multiplication -/
   one_mul : ∀ a : M, 1 * a = a
+  /-- One is a right neutral element for multiplication -/
   mul_one : ∀ a : M, a * 1 = a
 
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
 `0 + a = a` and `a + 0 = a` for all `a : M`. -/
 class AddZeroClass (M : Type u) extends Zero M, Add M where
+  /-- Zero is a left neutral element for addition -/
   zero_add : ∀ a : M, 0 + a = a
+  /-- Zero is a right neutral element for addition -/
   add_zero : ∀ a : M, a + 0 = a
 
-attribute [to_additive AddZeroClass] MulOneClass
+attribute [to_additive] MulOneClass
 
 @[ext, to_additive]
 theorem MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
@@ -381,7 +389,7 @@ def nsmulRec [Zero M] [Add M] : ℕ → M → M
   | 0, _ => 0
   | n + 1, a => a + nsmulRec n a
 
-attribute [to_additive nsmulRec] npowRec
+attribute [to_additive] npowRec
 
 end
 
@@ -490,7 +498,7 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
 
 @[default_instance high] instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
-  ⟨fun x n => Monoid.npow n x⟩
+  ⟨fun x n ↦ Monoid.npow n x⟩
 
 instance AddMonoid.SMul {M : Type _} [AddMonoid M] : SMul ℕ M :=
   ⟨AddMonoid.nsmul⟩
@@ -547,7 +555,7 @@ end Monoid
 class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 
 /-- A commutative monoid is a monoid with commutative `(*)`. -/
-@[to_additive AddCommMonoid]
+@[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
 
 attribute [to_additive AddCommMonoid.toAddCommSemigroup] CommMonoid.toCommSemigroup
@@ -560,7 +568,7 @@ is useful to define the sum over the empty set, so `AddLeftCancelSemigroup` is n
 class AddLeftCancelMonoid (M : Type u) extends AddLeftCancelSemigroup M, AddMonoid M
 
 /-- A monoid in which multiplication is left-cancellative. -/
-@[to_additive AddLeftCancelMonoid]
+@[to_additive]
 class LeftCancelMonoid (M : Type u) extends LeftCancelSemigroup M, Monoid M
 
 attribute [to_additive AddLeftCancelMonoid.toAddMonoid] LeftCancelMonoid.toMonoid
@@ -575,7 +583,7 @@ is useful to define the sum over the empty set, so `AddRightCancelSemigroup` is 
 class AddRightCancelMonoid (M : Type u) extends AddRightCancelSemigroup M, AddMonoid M
 
 /-- A monoid in which multiplication is right-cancellative. -/
-@[to_additive AddRightCancelMonoid]
+@[to_additive]
 class RightCancelMonoid (M : Type u) extends RightCancelSemigroup M, Monoid M
 
 attribute [to_additive AddRightCancelMonoid.toAddMonoid] RightCancelMonoid.toMonoid
@@ -590,7 +598,7 @@ is useful to define the sum over the empty set, so `AddRightCancelMonoid` is not
 class AddCancelMonoid (M : Type u) extends AddLeftCancelMonoid M, AddRightCancelMonoid M
 
 /-- A monoid in which multiplication is cancellative. -/
-@[to_additive AddCancelMonoid]
+@[to_additive]
 class CancelMonoid (M : Type u) extends LeftCancelMonoid M, RightCancelMonoid M
 
 attribute [to_additive AddCancelMonoid.toAddRightCancelMonoid] CancelMonoid.toRightCancelMonoid
@@ -604,11 +612,19 @@ class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
 
 attribute [to_additive AddCancelCommMonoid.toAddCommMonoid] CancelCommMonoid.toCommMonoid
 
+-- TODO
+-- porting notes: Once to_additive works, we should not need to copy this attribute manually.
+attribute [instance] AddCancelCommMonoid.toAddCommMonoid
+
 -- see Note [lower instance priority]
-@[to_additive]
+@[to_additive CancelCommMonoid.toAddCancelMonoid]
 instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelCommMonoid M] :
     CancelMonoid M :=
-  { mul_right_cancel := fun a b c h => mul_left_cancel <| by rw [mul_comm, h, mul_comm] }
+  { mul_right_cancel := fun a b c h ↦ mul_left_cancel <| by rw [mul_comm, h, mul_comm] }
+
+-- TODO
+-- porting notes: Once to_additive works, we should not need to copy this attribute manually.
+attribute [instance] CancelCommMonoid.toAddCancelMonoid
 
 /-- Any `CancelMonoid G` satisfies `IsCancelMul G`. -/
 instance (priority := 100) CancelMonoid.to_IsCancelMul (M : Type u) [CancelMonoid M] :
@@ -637,7 +653,7 @@ def zsmulRec {M : Type _} [Zero M] [Add M] [Neg M] : ℤ → M → M
   | Int.ofNat n, a => nsmulRec n a
   | Int.negSucc n, a => -nsmulRec n.succ a
 
-attribute [to_additive zsmulRec] zpowRec
+attribute [to_additive] zpowRec
 
 section HasInvolutiveInv
 
@@ -746,8 +762,8 @@ class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
 
 attribute [to_additive SubNegMonoid] DivInvMonoid
 
-instance DivInvMonoid.Pow {M} [DivInvMonoid M] : Pow M ℤ :=
-  ⟨fun x n => DivInvMonoid.zpow n x⟩
+instance DivInvMonoid.hasPow {M} [DivInvMonoid M] : Pow M ℤ :=
+  ⟨fun x n ↦ DivInvMonoid.zpow n x⟩
 
 instance SubNegMonoid.SMulInt {M} [SubNegMonoid M] : SMul ℤ M :=
   ⟨SubNegMonoid.zsmul⟩
@@ -815,7 +831,7 @@ class NegZeroClass (G : Type _) extends Zero G, Neg G where
 class SubNegZeroMonoid (G : Type _) extends SubNegMonoid G, NegZeroClass G
 
 /-- Typeclass for expressing that `1⁻¹ = 1`. -/
-@[to_additive NegZeroClass]
+@[to_additive]
 class InvOneClass (G : Type _) extends One G, Inv G where
   inv_one : (1 : G)⁻¹ = 1
 
@@ -896,7 +912,7 @@ with a default so that `a - b = a + -b` holds by definition.
 class AddGroup (A : Type u) extends SubNegMonoid A where
   add_left_neg : ∀ a : A, -a + a = 0
 
-attribute [to_additive AddGroup] Group
+attribute [to_additive] Group
 
 section Group
 
@@ -940,10 +956,10 @@ theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a :=
 
 @[to_additive AddGroup.toSubtractionMonoid]
 instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
-  { inv_inv := fun a => inv_eq_of_mul (mul_left_inv a)
+  { inv_inv := fun a ↦ inv_eq_of_mul (mul_left_inv a)
     mul_inv_rev :=
-      fun a b => inv_eq_of_mul <| by rw [mul_assoc, mul_inv_cancel_left, mul_right_inv]
-    inv_eq_of_mul := fun _ _ => inv_eq_of_mul }
+      fun a b ↦ inv_eq_of_mul <| by rw [mul_assoc, mul_inv_cancel_left, mul_right_inv]
+    inv_eq_of_mul := fun _ _ ↦ inv_eq_of_mul }
 
 -- FIXME this isn't being copied by `to_additive`
 -- FIXME how to set priority?
@@ -953,8 +969,8 @@ attribute [instance] AddGroup.toSubtractionMonoid
 @[to_additive AddGroup.toAddCancelMonoid]
 instance (priority := 100) Group.toCancelMonoid : CancelMonoid G :=
   { ‹Group G› with
-    mul_right_cancel := fun a b c h => by rw [← mul_inv_cancel_right a b, h, mul_inv_cancel_right]
-    mul_left_cancel := fun a b c h => by rw [← inv_mul_cancel_left a b, h, inv_mul_cancel_left] }
+    mul_right_cancel := fun a b c h ↦ by rw [← mul_inv_cancel_right a b, h, mul_inv_cancel_right]
+    mul_left_cancel := fun a b c h ↦ by rw [← inv_mul_cancel_left a b, h, inv_mul_cancel_left] }
 
 -- FIXME this isn't being copied by `to_additive`
 -- FIXME how to set priority?
@@ -970,7 +986,7 @@ theorem Group.toDivInvMonoid_injective {G : Type _} :
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 
 /-- A commutative group is a group with commutative `(*)`. -/
-@[to_additive AddCommGroup]
+@[to_additive]
 class CommGroup (G : Type u) extends Group G, CommMonoid G
 
 attribute [to_additive AddCommGroup.toAddCommMonoid] CommGroup.toCommMonoid
@@ -986,15 +1002,23 @@ section CommGroup
 variable [CommGroup G]
 
 -- see Note [lower instance priority]
-@[to_additive]
+@[to_additive AddCommGroup.toAddCancelCommMonoid]
 instance (priority := 100) CommGroup.toCancelCommMonoid : CancelCommMonoid G :=
   { ‹CommGroup G›, Group.toCancelMonoid with }
-attribute [instance 100] AddCommGroup.toCancelCommMonoid -- FIXME
+attribute [instance 100] AddCommGroup.toAddCancelCommMonoid
+
+-- TODO
+-- porting notes: Once to_additive works, we should not need to copy this attribute manually.
+attribute [instance] AddCommGroup.toAddCancelCommMonoid
 
 -- see Note [lower instance priority]
-@[to_additive]
+@[to_additive AddCommGroup.toSubtractionCommMonoid]
 instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G :=
   { ‹CommGroup G›, Group.toDivisionMonoid with }
-attribute [instance 100] AddCommGroup.toDivisionCommMonoid -- FIXME
+attribute [instance 100] AddCommGroup.toSubtractionCommMonoid
+
+-- TODO
+-- porting notes: Once to_additive works, we should not need to copy this attribute manually.
+attribute [instance] AddCommGroup.toSubtractionCommMonoid
 
 end CommGroup
