@@ -1542,7 +1542,8 @@ end MonoidHom
 
 -- Porting note: delete once `to_additive` in `MonoidHom.map_zpow` is fixed
 /-- Additive group homomorphisms preserve integer scaling. -/
-protected theorem AddMonoidHom.map_zsmul [AddGroup α] [SubtractionMonoid β] (f : α →+ β) (g : α) (n : ℤ) :
+protected theorem AddMonoidHom.map_zsmul [AddGroup α] [SubtractionMonoid β]
+  (f : α →+ β) (g : α) (n : ℤ) :
   f (n • g) = n • f g := map_zsmul f n g
 #align add_monoid_hom.map_zsmul AddMonoidHom.map_zsmul
 
@@ -1596,7 +1597,9 @@ attribute [simp] coe_one -- Porting note: restore `norm_cast`
 
 /-- `one_hom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
 bundled as a one-preserving homomorphism. -/
-@[to_additive "`zero_hom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),\nbundled as a zero-preserving homomorphism.",
+@[to_additive
+  "`zero_hom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
+  bundled as a zero-preserving homomorphism.",
   simps (config := { fullyApplied := false })]
 protected def OneHom.coe [One M] [One N] [CoeIsOneHom M N] : OneHom M N where
   toFun := Coe.coe
@@ -1628,22 +1631,13 @@ attribute [simp] coe_mul -- Porting note: restore `norm_cast`
 
 /-- `mul_hom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
 bundled as a multiplicative homomorphism. -/
-@[to_additive "`add_hom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),\nbundled as an additive homomorphism.",
+@[to_additive "`add_hom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
+  bundled as an additive homomorphism.",
   simps (config := { fullyApplied := false })]
 protected def MulHom.coe [Mul M] [Mul N] [CoeIsMulHom M N] : MulHom M N where
   toFun := Coe.coe
   map_mul' := coe_mul
 #align mul_hom.coe MulHom.coe
-
-@[simp] -- Porting note: restore `norm_cast`
-theorem coe_bit0 [Add M] [Add N] [CoeIsAddHom M N] (x : M) : ↑(bit0 x) = bit0 (↑x : N) :=
-  coe_add _ _
-#align coe_bit0 coe_bit0
-
-@[simp] -- Porting note: restore `norm_cast`
-theorem coe_bit1 [One M] [Add M] [One N] [Add N] [CoeIsOneHom M N] [CoeIsAddHom M N] (x : M) :
-    ↑(bit1 x) = bit1 (↑x : N) := by simp [bit1]
-#align coe_bit1 coe_bit1
 
 /-- `coe_is_add_monoid_hom M N` is a class stating that the coercion map `↑ : M → N` (a.k.a. `coe`)
 is an additive monoid homomorphism.
@@ -1661,8 +1655,9 @@ class CoeIsMonoidHom [MulOneClass M] [MulOneClass N] extends CoeIsOneHom M N, Co
 /-- `monoid_hom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
 bundled as a monoid homomorphism. -/
 @[to_additive
-      "`add_monoid_hom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),\nbundled as an additive monoid homomorphism.",
-  simps (config := { fullyApplied := false })]
+    "`add_monoid_hom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
+    bundled as an additive monoid homomorphism.",
+    simps (config := { fullyApplied := false })]
 protected def MonoidHom.coe [MulOneClass M] [MulOneClass N] [CoeIsMonoidHom M N] : M →* N :=
   { OneHom.coe M N, MulHom.coe M N with toFun := Coe.coe }
 #align monoid_hom.coe MonoidHom.coe
@@ -1670,8 +1665,8 @@ protected def MonoidHom.coe [MulOneClass M] [MulOneClass N] [CoeIsMonoidHom M N]
 variable {M N}
 
 @[simp] -- Porting note: restore `norm_cast`, `to_additive`
-theorem coe_pow [Monoid M] [Monoid N] [CoeIsMonoidHom M N] (a : M) (n : ℕ) : ↑(a ^ n) = (↑a : N) ^ n :=
-  map_pow (MonoidHom.coe M N) a n
+theorem coe_pow [Monoid M] [Monoid N] [CoeIsMonoidHom M N] (a : M) (n : ℕ) : ↑(a ^ n) =
+  (↑a : N) ^ n := map_pow (MonoidHom.coe M N) a n
 #align coe_pow coe_pow
 @[simp]
 theorem coe_nsmul [AddMonoid M] [AddMonoid N] [CoeIsAddMonoidHom M N] (a : M) (n : ℕ) :
@@ -1679,8 +1674,8 @@ theorem coe_nsmul [AddMonoid M] [AddMonoid N] [CoeIsAddMonoidHom M N] (a : M) (n
 #align coe_nsmul coe_nsmul
 
 @[simp] -- Porting note: restore `norm_cast`, `to_additive`
-theorem coe_zpow [Group M] [Group N] [CoeIsMonoidHom M N] (a : M) (n : ℤ) : ↑(a ^ n) = (↑a : N) ^ n :=
-  map_zpow (MonoidHom.coe M N) a n
+theorem coe_zpow [Group M] [Group N] [CoeIsMonoidHom M N] (a : M) (n : ℤ) :
+  ↑(a ^ n) = (↑a : N) ^ n := map_zpow (MonoidHom.coe M N) a n
 #align coe_zpow coe_zpow
 @[simp]
 theorem coe_zsmul [AddGroup M] [AddGroup N] [CoeIsAddMonoidHom M N] (a : M) (n : ℤ) :
@@ -1688,13 +1683,13 @@ theorem coe_zsmul [AddGroup M] [AddGroup N] [CoeIsAddMonoidHom M N] (a : M) (n :
 #align coe_zsmul coe_zsmul
 
 @[simp, to_additive] -- Porting note: restore `norm_cast`
-theorem coe_inv [Group G] [DivisionMonoid H] [Coe G H] [CoeIsMonoidHom G H] (a : G) : ↑a⁻¹ = (↑a : H)⁻¹ :=
-  map_inv (MonoidHom.coe G H) a
+theorem coe_inv [Group G] [DivisionMonoid H] [Coe G H] [CoeIsMonoidHom G H] (a : G) :
+  ↑a⁻¹ = (↑a : H)⁻¹ := map_inv (MonoidHom.coe G H) a
 #align coe_inv coe_inv
 
 @[simp, to_additive] -- Porting note: restore `norm_cast`
-theorem coe_div [Group G] [DivisionMonoid H] [Coe G H] [CoeIsMonoidHom G H] (a b : G) : ↑(a / b) = (↑a : H) / ↑b :=
-  map_div (MonoidHom.coe G H) a b
+theorem coe_div [Group G] [DivisionMonoid H] [Coe G H] [CoeIsMonoidHom G H] (a b : G) :
+  ↑(a / b) = (↑a : H) / ↑b := map_div (MonoidHom.coe G H) a b
 #align coe_div coe_div
 
 variable (M N)
@@ -1702,13 +1697,15 @@ variable (M N)
 /-- `coe_monoid_with-zero_hom M N` is a class stating that the coercion map `↑ : M → N`
 (a.k.a. `coe`) is a monoid with zero homomorphism.
 -/
-class CoeIsMonoidWithZeroHom [MonoidWithZero M] [MonoidWithZero N] extends CoeIsMonoidHom M N, CoeIsZeroHom M N
+class CoeIsMonoidWithZeroHom [MonoidWithZero M] [MonoidWithZero N] extends
+  CoeIsMonoidHom M N, CoeIsZeroHom M N
 #align coe_is_monoid_with_zero_hom CoeIsMonoidWithZeroHom
 
 /-- `monoid_with_zero_hom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
 bundled as a monoid with zero homomorphism. -/
 @[simps (config := { fullyApplied := false })]
-protected def MonoidWithZeroHom.coe [MonoidWithZero M] [MonoidWithZero N] [CoeIsMonoidWithZeroHom M N] : M →*₀ N :=
+protected def MonoidWithZeroHom.coe [MonoidWithZero M] [MonoidWithZero N]
+  [CoeIsMonoidWithZeroHom M N] : M →*₀ N :=
   { MonoidHom.coe M N, ZeroHom.coe M N with toFun := Coe.coe }
 #align monoid_with_zero_hom.coe MonoidWithZeroHom.coe
 
