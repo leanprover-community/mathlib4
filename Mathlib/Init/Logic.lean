@@ -8,7 +8,6 @@ import Std.Tactic.Lint.Basic
 import Std.Logic
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.SimpTrace
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
