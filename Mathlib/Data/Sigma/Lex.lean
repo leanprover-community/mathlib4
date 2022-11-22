@@ -66,12 +66,12 @@ theorem Lex.mono (hr : ∀ a b, r₁ a b → r₂ a b) (hs : ∀ i a b, s₁ i a
   · exact Lex.right _ _ (hs _ _ _ hab)
 #align sigma.lex.mono Sigma.Lex.mono
 
-theorem Lex.monoLeft (hr : ∀ a b, r₁ a b → r₂ a b) {a b : Σ i, α i} (h : Lex r₁ s a b) :
+theorem Lex.mono_left (hr : ∀ a b, r₁ a b → r₂ a b) {a b : Σ i, α i} (h : Lex r₁ s a b) :
     Lex r₂ s a b :=
   h.mono hr $ fun _ _ _ => id
 #align sigma.lex.mono_left Sigma.Lex.monoLeft
 
-theorem Lex.monoRight (hs : ∀ i a b, s₁ i a b → s₂ i a b) {a b : Σ i, α i} (h : Lex r s₁ a b) :
+theorem Lex.mono_right (hs : ∀ i a b, s₁ i a b → s₂ i a b) {a b : Σ i, α i} (h : Lex r s₁ a b) :
     Lex r s₂ a b :=
   h.mono (fun _ _ => id) hs
 #align sigma.lex.mono_right Sigma.Lex.monoRight
