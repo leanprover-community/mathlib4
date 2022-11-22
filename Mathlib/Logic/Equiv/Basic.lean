@@ -1907,4 +1907,3 @@ theorem piCongrLeft'_symm_update [DecidableEq α] [DecidableEq β] (P : α → S
 #align function.Pi_congr_left'_symm_update Function.piCongrLeft'_symm_update
 
 end Function
-#lint
