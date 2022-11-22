@@ -25,6 +25,7 @@ import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+import Mathlib.Control.EquivFunctor
 import Mathlib.Control.Random
 import Mathlib.Control.ULift
 import Mathlib.Control.Writer
