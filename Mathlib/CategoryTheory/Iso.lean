@@ -79,9 +79,9 @@ theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
     cases this
     rfl
   calc
-    α.inv = α.inv ≫ β.hom ≫ β.inv := by rw [Iso.hom_inv_id, Category.comp_id]
-    _ = (α.inv ≫ α.hom) ≫ β.inv := by rw [Category.assoc, ← w]
-    _ = β.inv := by rw [Iso.inv_hom_id, Category.id_comp]
+    α.inv = α.inv ≫ β.hom ≫ β.inv   := by rw [Iso.hom_inv_id, Category.comp_id]
+    _     = (α.inv ≫ α.hom) ≫ β.inv := by rw [Category.assoc, ← w]
+    _     = β.inv                   := by rw [Iso.inv_hom_id, Category.id_comp]
 
 #align category_theory.iso.ext CategoryTheory.Iso.ext
 

@@ -21,6 +21,13 @@ this is a small category at the next higher level.
 
 set_option warningAsError false
 
+section
+open Lean Elab Tactic
+
+def extCore : TacticM Unit := do evalTactic (← `(tactic| ext))
+
+end
+
 namespace CategoryTheory
 
 -- declare the `v`'s first; see note [category_theory universes].
@@ -69,6 +76,14 @@ namespace NatTrans
 -- or the `ext` will not retrieve it from the cache.
 @[ext]
 theorem ext' {α β : F ⟶ G} (w : α.app = β.app) : α = β := NatTrans.ext _ _ w
+
+-- FIXME Report that rule sets don't survive across files?
+declare_aesop_rule_sets [CategoryTheory]
+
+-- TODO Perhaps we should just turn on `ext` in aesop?
+attribute [aesop safe apply (rule_sets [CategoryTheory])] NatTrans.ext'
+
+attribute [aesop safe tactic (rule_sets [CategoryTheory])] extCore
 
 @[simp]
 theorem vcomp_eq_comp (α : F ⟶ G) (β : G ⟶ H) : vcomp α β = α ≫ β := rfl
@@ -131,43 +146,45 @@ theorem hcomp_id_app {H : D ⥤ E} (α : F ⟶ G) (X : C) : (α ◫ 𝟙 H).app 
 theorem id_hcomp_app {H : E ⥤ C} (α : F ⟶ G) (X : E) : (𝟙 H ◫ α).app X = α.app _ := by simp
 #align category_theory.nat_trans.id_hcomp_app CategoryTheory.NatTrans.id_hcomp_app
 
+set_option trace.aesop.steps true in
 -- Note that we don't yet prove a `hcomp_assoc` lemma here: even stating it is painful, because we
 -- need to use associativity of functor composition. (It's true without the explicit associator,
 -- because functor composition is definitionally associative,
 -- but relying on the definitional equality causes bad problems with elaboration later.)
 theorem exchange {I J K : D ⥤ E} (α : F ⟶ G) (β : G ⟶ H) (γ : I ⟶ J) (δ : J ⟶ K) :
     (α ≫ β) ◫ (γ ≫ δ) = (α ◫ γ) ≫ β ◫ δ := by
-  sorry
-  -- ext <;> simp
+  -- aesop (rule_sets [CategoryTheory])
+  -- apply NatTrans.ext'
+  ext; simp
 #align category_theory.nat_trans.exchange CategoryTheory.NatTrans.exchange
 
 end NatTrans
 
-open NatTrans
+-- open NatTrans
 
-namespace Functor
+-- namespace Functor
 
-/-- Flip the arguments of a bifunctor. See also `currying.lean`. -/
-@[simps]
-protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
-  obj k :=
-    { obj := fun j => (F.obj j).obj k,
-      map := fun f => (F.map f).app k, }
-  map f := { app := fun j => (F.obj j).map f }
-#align category_theory.functor.flip CategoryTheory.Functor.flip
+-- /-- Flip the arguments of a bifunctor. See also `currying.lean`. -/
+-- @[simps]
+-- protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
+--   obj k :=
+--     { obj := fun j => (F.obj j).obj k,
+--       map := fun f => (F.map f).app k, }
+--   map f := { app := fun j => (F.obj j).map f }
+-- #align category_theory.functor.flip CategoryTheory.Functor.flip
 
-end Functor
+-- end Functor
 
-@[simp, reassoc]
-theorem map_hom_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
-    (F.map e.hom).app Z ≫ (F.map e.inv).app Z = 𝟙 _ := by
-  simp [← NatTrans.comp_app, ← Functor.map_comp]
-#align category_theory.map_hom_inv_app CategoryTheory.map_hom_inv_app
+-- @[simp, reassoc]
+-- theorem map_hom_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
+--     (F.map e.hom).app Z ≫ (F.map e.inv).app Z = 𝟙 _ := by
+--   simp [← NatTrans.comp_app, ← Functor.map_comp]
+-- #align category_theory.map_hom_inv_app CategoryTheory.map_hom_inv_app
 
-@[simp, reassoc]
-theorem map_inv_hom_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
-    (F.map e.inv).app Z ≫ (F.map e.hom).app Z = 𝟙 _ := by
-  simp [← NatTrans.comp_app, ← Functor.map_comp]
-#align category_theory.map_inv_hom_app CategoryTheory.map_inv_hom_app
+-- @[simp, reassoc]
+-- theorem map_inv_hom_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
+--     (F.map e.inv).app Z ≫ (F.map e.hom).app Z = 𝟙 _ := by
+--   simp [← NatTrans.comp_app, ← Functor.map_comp]
+-- #align category_theory.map_inv_hom_app CategoryTheory.map_inv_hom_app
 
 end CategoryTheory

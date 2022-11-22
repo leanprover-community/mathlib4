@@ -51,6 +51,12 @@ structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
   naturality' : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), F.map f ≫ app Y = app X ≫ G.map f := by aesop
 #align category_theory.nat_trans CategoryTheory.NatTrans
 
+-- FIXME Report that rule sets don't survive across files?
+declare_aesop_rule_sets [CategoryTheory]
+
+-- TODO Perhaps we should just turn on `ext` in aesop?
+attribute [aesop safe apply (rule_sets [CategoryTheory])] NatTrans.ext
+
 restate_axiom NatTrans.naturality'
 
 -- Rather arbitrarily, we say that the 'simpler' form is
@@ -84,7 +90,6 @@ variable {F G H I : C ⥤ D}
 /-- `vcomp α β` is the vertical compositions of natural transformations. -/
 def vcomp (α : NatTrans F G) (β : NatTrans G H) : NatTrans F H where
   app X := α.app X ≫ β.app X
-  naturality' := sorry
 #align category_theory.nat_trans.vcomp CategoryTheory.NatTrans.vcomp
 
 -- functor_category will rewrite (vcomp α β) to (α ≫ β), so this is not a
@@ -107,8 +112,7 @@ commutes.
 -/
 example {F G : C ⥤ D} (α : NatTrans F G) {X Y U V : C} (f : X ⟶ Y) (g : Y ⟶ U) (h : U ⟶ V) :
     α.app X ≫ G.map f ≫ G.map g ≫ G.map h = F.map f ≫ F.map g ≫ F.map h ≫ α.app V := by
-  sorry
-  -- simp
+  simp
 
 end NatTrans
 
