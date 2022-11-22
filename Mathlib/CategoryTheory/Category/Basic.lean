@@ -298,6 +298,8 @@ variable [Category.{v} C]
 
 universe u'
 
+-- Porting note:
+-- `simp` isn't working as expected here, reported as https://github.com/leanprover/lean4/issues/1869
 instance uliftCategory : Category.{v} (ULift.{u'} C) where
   Hom X Y := X.down ⟶ Y.down
   id X := 𝟙 X.down
