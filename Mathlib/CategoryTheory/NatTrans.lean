@@ -51,9 +51,6 @@ structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
   naturality' : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), F.map f ≫ app Y = app X ≫ G.map f := by aesop
 #align category_theory.nat_trans CategoryTheory.NatTrans
 
--- FIXME Report that rule sets don't survive across files?
-declare_aesop_rule_sets [CategoryTheory]
-
 -- TODO Perhaps we should just turn on `ext` in aesop?
 attribute [aesop safe apply (rule_sets [CategoryTheory])] NatTrans.ext
 

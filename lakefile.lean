@@ -21,4 +21,4 @@ require Qq from git "https://github.com/gebner/quote4" @ "master"
 
 -- Breaks mathport CI due to https://github.com/leanprover/lake/issues/137
 -- TODO: reenable once Lake 4.1.0 is out
--- require aesop from git "https://github.com/JLimperg/aesop" @ "master"
+require aesop from git "https://github.com/JLimperg/aesop" @ "master"
