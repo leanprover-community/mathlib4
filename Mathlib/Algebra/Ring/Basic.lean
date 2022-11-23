@@ -1,6 +1,6 @@
 import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Tactic.Spread
 import Mathlib.Algebra.Ring.Defs
 
@@ -115,7 +115,7 @@ instance : CommRing ℤ where
 
 @[simp, norm_cast]
 lemma cast_Nat_cast [AddGroupWithOne R] : (Int.cast (Nat.cast n) : R) = Nat.cast n :=
-  Int.cast_ofNat
+  Int.cast_ofNat _
 
 @[simp, norm_cast]
 lemma cast_eq_cast_iff_Nat (m n : ℕ) : (m : ℤ) = (n : ℤ) ↔ m = n := ofNat_inj
