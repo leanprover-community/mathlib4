@@ -41,7 +41,7 @@ open Function
 @[to_additive OrderedAddCommMonoid.to_covariantClass_left]
 instance OrderedCommMonoid.to_covariantClass_left (M : Type _) [OrderedCommMonoid M] :
     CovariantClass M M (· * ·) (· ≤ ·) where
-  elim := fun a _ _ bc => OrderedCommMonoid.mul_le_mul_left _ _ bc a
+  elim := fun a _ _ bc ↦ OrderedCommMonoid.mul_le_mul_left _ _ bc a
 
 -- TODO `to_additive` should copy this
 attribute [instance] OrderedAddCommMonoid.to_covariantClass_left

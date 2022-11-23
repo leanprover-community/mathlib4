@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
 -/
 import Mathlib.Order.Basic
 import Mathlib.Logic.IsEmpty
+import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Unbundled relation classes
@@ -238,13 +239,9 @@ instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTot
 
 -- Porting note: no `mk_iff` yet, so hard-coded iff
 /-- A well-founded relation. Not to be confused with `isWellOrder`. -/
--- @[mk_iff]
-class IsWellFounded (α : Type u) (r : α → α → Prop) : Prop where
+@[mk_iff] class IsWellFounded (α : Type u) (r : α → α → Prop) : Prop where
   /-- The relation is `WellFounded`, as a proposition. -/
   wf : WellFounded r
-
-theorem IsWellFounded_iff (α : Type u) (r : α → α → Prop) : IsWellFounded α r ↔ WellFounded r :=
-  ⟨fun h => h.wf, IsWellFounded.mk⟩
 
 #align has_well_founded WellFoundedRelation
 #align has_well_founded.R WellFoundedRelation.rel
@@ -430,7 +427,7 @@ instance [Subsingleton α] : IsWellOrder α EmptyRelation :=
 instance (priority := 100) [IsEmpty α] (r : α → α → Prop) : IsWellOrder α r where
   trichotomous := isEmptyElim
   trans := isEmptyElim
-  wf := well_founded_of_empty r
+  wf := wellFounded_of_isEmpty r
 
 instance [IsWellFounded α r] [IsWellFounded β s] : IsWellFounded (α × β) (Prod.Lex r s) :=
   ⟨(Prod.lex (IsWellFounded.toWellFoundedRelation _) (IsWellFounded.toWellFoundedRelation _)).wf⟩
@@ -799,15 +796,13 @@ theorem transitive_gt [Preorder α] : Transitive (@GT.gt α _) :=
 instance OrderDual.is_total_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal αᵒᵈ (· ≤ ·) :=
   @IsTotal.swap α _ h
 
-#align nat.lt_wf Nat.lt_wfRel.wf
 instance : WellFoundedLt ℕ :=
   ⟨Nat.lt_wfRel.wf⟩
+#align nat.lt_wf Nat.lt_wfRel
 
 instance Nat.lt.isWellOrder : IsWellOrder ℕ (· < ·) where
 #align nat.lt.is_well_order Nat.lt.isWellOrder
 
-instance [LinearOrder α] [h : IsWellOrder α (· < ·)] : IsWellOrder αᵒᵈ (· > ·) :=
-  h
+instance [LinearOrder α] [h : IsWellOrder α (· < ·)] : IsWellOrder αᵒᵈ (· > ·) := h
 
-instance [LinearOrder α] [h : IsWellOrder α (· > ·)] : IsWellOrder αᵒᵈ (· < ·) :=
-  h
+instance [LinearOrder α] [h : IsWellOrder α (· > ·)] : IsWellOrder αᵒᵈ (· < ·) := h
