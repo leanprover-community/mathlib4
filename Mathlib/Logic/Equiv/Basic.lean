@@ -601,7 +601,7 @@ def subtypePreimage : { x : α → β // x ∘ Subtype.val = x₀ } ≃ ({ a // 
   right_inv x :=
     funext fun ⟨a, h⟩ =>
       show dite (p a) _ _ = _ by
-        dsimp
+        dsimp only
         rw [dif_neg h]
 #align equiv.subtype_preimage Equiv.subtypePreimage
 
