@@ -638,7 +638,6 @@ def piComm (φ : α → β → Sort _) : (∀ a b, φ a b) ≃ ∀ b a, φ a b :
   ⟨swap, swap, fun _ => rfl, fun _ => rfl⟩
 #align equiv.Pi_comm Equiv.piComm
 
--- up to here **TODO** remove this
 @[simp]
 theorem piComm_symm {φ : α → β → Sort _} : (piComm φ).symm = (piComm <| swap φ) :=
   rfl
