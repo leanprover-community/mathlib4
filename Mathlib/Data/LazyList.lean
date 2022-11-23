@@ -136,11 +136,11 @@ This definition is meta because it creates an infinite list.
 -/
 unsafe def iterates (f : α → α) : α → LazyList α
   | x => cons x (iterates f (f x))
--- #align lazy_list.iterates lazy_list.iterates
+#align lazy_list.iterates LazyList.iterates
 
 /-- The infinite lazy list `[i, i+1, i+2, ...]` -/
 unsafe def iota (i : Nat) : LazyList Nat :=
   iterates Nat.succ i
--- #align lazy_list.iota lazy_list.iota
+#align lazy_list.iota LazyList.iota
 
 end LazyList
