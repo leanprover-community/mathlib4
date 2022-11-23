@@ -797,8 +797,8 @@ protected def MulHom.copy {_ : Mul M} {_ : Mul N} (f : M →ₙ* N) (f' : M → 
 /-- Copy of a `MonoidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 @[to_additive
-    "Copy of an `AddMonoidHom` with a new `toFun` equal to the old one. Useful to fix
-    definitional equalities."]
+  "Copy of an `AddMonoidHom` with a new `toFun` equal to the old one. Useful to fix
+  definitional equalities."]
 protected def MonoidHom.copy {_ : MulOneClass M} {_ : MulOneClass N} (f : M →* N) (f' : M → N)
   (h : f' = f) : M →* N :=
   { f.toOneHom.copy f' h, f.toMulHom.copy f' h with }
@@ -1360,7 +1360,7 @@ theorem mul_comp [Mul M] [Mul N] [CommSemigroup P] (g₁ g₂ : N →ₙ* P) (f 
 
 @[to_additive]
 theorem comp_mul [Mul M] [CommSemigroup N] [CommSemigroup P] (g : N →ₙ* P) (f₁ f₂ : M →ₙ* N) :
-    g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
+  g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
   ext
   simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
 #align mul_hom.comp_mul MulHom.comp_mul
@@ -1410,13 +1410,12 @@ theorem comp_one [MulOneClass M] [MulOneClass N] [MulOneClass P] (f : N →* P) 
 -- Porting note: uncomment these when the instance loop in the `End` section is fixed
 -- @[to_additive]
 -- theorem mul_comp [MulOneClass M] [MulOneClass N] [CommMonoid P] (g₁ g₂ : N →* P) (f : M →* N) :
---     (g₁ * g₂).comp f = g₁.comp f * g₂.comp f :=
---   rfl
+--   (g₁ * g₂).comp f = g₁.comp f * g₂.comp f := rfl
 -- #align monoid_hom.mul_comp MonoidHom.mul_comp
 
 -- @[to_additive]
 -- theorem comp_mul [MulOneClass M] [CommMonoid N] [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
---     g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
+--   g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
 --   ext
 --   simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
 -- #align monoid_hom.comp_mul MonoidHom.comp_mul
@@ -1449,9 +1448,9 @@ protected theorem map_mul_inv [Group α] [DivisionMonoid β] (f : α →* β) (g
 /-- A homomorphism from a group to a monoid is injective iff its kernel is trivial.
 For the iff statement on the triviality of the kernel, see `injective_iff_map_eq_one'`.  -/
 @[to_additive
-    "A homomorphism from an additive group to an additive monoid is injective iff
-    its kernel is trivial. For the iff statement on the triviality of the kernel,
-    see `injective_iff_map_eq_zero'`."]
+  "A homomorphism from an additive group to an additive monoid is injective iff
+  its kernel is trivial. For the iff statement on the triviality of the kernel,
+  see `injective_iff_map_eq_zero'`."]
 theorem _root_.injective_iff_map_eq_one {G H} [Group G] [MulOneClass H] [MonoidHomClass F G H]
   (f : F) : Function.Injective f ↔ ∀ a, f a = 1 → a = 1 :=
   ⟨fun h x => (map_eq_one_iff f h).mp, fun h x y hxy =>
@@ -1462,9 +1461,9 @@ theorem _root_.injective_iff_map_eq_one {G H} [Group G] [MulOneClass H] [MonoidH
 stated as an iff on the triviality of the kernel.
 For the implication, see `injective_iff_map_eq_one`. -/
 @[to_additive
-    "A homomorphism from an additive group to an additive monoid is injective iff its
-    kernel is trivial, stated as an iff on the triviality of the kernel. For the implication, see
-    `injective_iff_map_eq_zero`."]
+  "A homomorphism from an additive group to an additive monoid is injective iff its
+  kernel is trivial, stated as an iff on the triviality of the kernel. For the implication, see
+  `injective_iff_map_eq_zero`."]
 theorem _root_.injective_iff_map_eq_one' {G H} [Group G] [MulOneClass H] [MonoidHomClass F G H]
   (f : F) : Function.Injective f ↔ ∀ a, f a = 1 ↔ a = 1 :=
   (injective_iff_map_eq_one f).trans <|
@@ -1682,9 +1681,9 @@ class CoeIsMonoidHom [MulOneClass M] [MulOneClass N] extends CoeIsOneHom M N, Co
 /-- `MonoidHom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
 bundled as a monoid homomorphism. -/
 @[to_additive
-    "`AddMonoidHom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
-    bundled as an additive monoid homomorphism.",
-    simps (config := { fullyApplied := false })]
+  "`AddMonoidHom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
+  bundled as an additive monoid homomorphism.",
+  simps (config := { fullyApplied := false })]
 protected def MonoidHom.coe [MulOneClass M] [MulOneClass N] [CoeIsMonoidHom M N] : M →* N :=
   { OneHom.coe M N, MulHom.coe M N with toFun := Coe.coe }
 #align monoid_hom.coe MonoidHom.coe
