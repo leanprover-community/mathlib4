@@ -95,6 +95,7 @@ import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Init.Data.Prod
 import Mathlib.Init.Data.Quot
 import Mathlib.Init.Data.Rat
+import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Propext
@@ -108,6 +109,7 @@ import Mathlib.Lean.Expr.Traverse
 import Mathlib.Lean.LocalContext
 import Mathlib.Lean.Meta
 import Mathlib.Logic.Basic
+import Mathlib.Logic.Equiv.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Logic.Equiv.MfldSimpsAttr
@@ -149,13 +151,11 @@ import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
-import Mathlib.Tactic.Congr
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
-import Mathlib.Tactic.DocCommands
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Expect
 import Mathlib.Tactic.FinCases
@@ -200,11 +200,9 @@ import Mathlib.Tactic.Ring.RingNF
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.ScopedNS
-import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.SimpTrace
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SolveByElim
@@ -225,6 +223,7 @@ import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
+import Mathlib.Util.MapsTo
 import Mathlib.Util.MemoFix
 import Mathlib.Util.Simp
 import Mathlib.Util.Syntax

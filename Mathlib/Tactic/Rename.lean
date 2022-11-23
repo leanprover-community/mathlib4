@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
 import Lean
+import Mathlib.Util.MapsTo
 
 namespace Mathlib.Tactic
 
@@ -19,7 +20,7 @@ syntax (name := rename') "rename'" (ppSpace renameArg),* : tactic
 elab_rules : tactic
   | `(tactic| rename' $[$as:term => $bs:ident],*) => do
     let ids ← getFVarIds as
-    liftMetaTactic1 fun goal => do
+    liftMetaTactic1 fun goal ↦ do
       let mut lctx ← getLCtx
       for fvar in ids, tgt in bs do
         lctx := lctx.setUserName fvar tgt.getId

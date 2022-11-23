@@ -98,7 +98,7 @@ def solveByElimAux (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)
 /-- Attempt to solve the given metavariable by repeating applying one of the given expressions,
 or a local hypothesis. -/
 def solveByElimImpl (only : Bool) (es : List (TSyntax `term)) (n : Nat) (g : MVarId) :
-    MetaM Unit := do
+    MetaM Unit := g.withContext do
   let ⟨lemmas, ctx⟩ ← mkAssumptionSet only es
   let _ ← Elab.Term.TermElabM.run' (Elab.Tactic.run g (solveByElimAux lemmas ctx n))
   pure ()
@@ -146,6 +146,6 @@ optional arguments passed via a configuration argument as `solve_by_elim (config
 -/
 syntax (name := solveByElim) "solve_by_elim" "*"? (config)? (&" only")? (simpArgs)? : tactic
 
-elab_rules : tactic | `(tactic| solve_by_elim $[only%$o]? $[[$[$t:term],*]]?) => withMainContext do
+elab_rules : tactic | `(tactic| solve_by_elim $[only%$o]? $[[$[$t:term],*]]?) => do
   let es := (t.getD #[]).toList
   solveByElimImpl o.isSome es 6 (← getMainGoal)
