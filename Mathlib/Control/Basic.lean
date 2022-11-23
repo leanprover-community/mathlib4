@@ -69,7 +69,7 @@ theorem seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
 @[functor_norm]
 theorem map_seq (f : β → γ) (x : F (α → β)) (y : F α) :
     f <$> (x <*> y) = (f ∘ ·) <$> x <*> y := by
-  simp [← pure_seq] <;> simp [seq_assoc]
+  simp only [← pure_seq]; simp [seq_assoc]
 #align map_seq map_seq
 
 end Applicative
@@ -91,7 +91,7 @@ def List.partitionM {f : Type → Type} [Monad f] {α : Type} (p : α → f Bool
   | x :: xs => condM (p x)
     (Prod.map (cons x) id <$> List.partitionM p xs)
     (Prod.map id (cons x) <$> List.partitionM p xs)
-#align list.mpartition List.mpartition
+#align list.mpartition List.partitionM
 
 theorem map_bind (x : m α) {g : α → m β} {f : β → γ} :
     f <$> (x >>= g) = x >>= fun a => f <$> g a := by
@@ -178,7 +178,7 @@ section Alternative
 variable {F : Type → Type v} [Alternative F]
 
 -- [todo] add notation for `Functor.mapConst` and port `functor.map_const_rev`
-/-- Returns `pure true` if the computatoin succeeds and `pure false` otherwise. -/
+/-- Returns `pure true` if the computation succeeds and `pure false` otherwise. -/
 def succeeds {α} (x : F α) : F Bool :=
   Functor.mapConst true x <|> pure false
 #align succeeds succeeds
@@ -190,12 +190,12 @@ def tryM {α} (x : F α) : F Unit :=
 
 @[simp]
 theorem guard_true {h : Decidable True} : @guard F _ True h = pure () := by simp [guard, if_pos]
-#align guard_true guard_True
+#align guard_true guard_true
 
 @[simp]
 theorem guard_false {h : Decidable False} : @guard F _ False h = failure :=
   by simp [guard, if_neg not_false]
-#align guard_false guard_False
+#align guard_false guard_false
 
 end Alternative
 
@@ -266,4 +266,4 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
         rw [@CommApplicative.commutative_prod m h] <;>
         simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]
 
-#align is_comm_applicative.commutative_map IsCommApplicative.commutative_map
+#align is_comm_applicative.commutative_map CommApplicative.commutative_map
