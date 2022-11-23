@@ -27,10 +27,25 @@ open Lean.Elab
 open Lean.Elab.Command
 open Std
 
+/-- The  `to_additive_ignore_args` attribute. -/
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" num* : attr
+/-- The  `to_additive_relevant_arg` attribute. -/
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg" num : attr
+/-- The  `to_additive_reorder` attribute. -/
 syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
-syntax (name := to_additive) "to_additive" "!"? "?"? (ppSpace ident)? (ppSpace str)? : attr
+/-- Remaining arguments of `to_additive`. -/
+syntax to_additiveRest := (ppSpace ident)? (ppSpace str)?
+/-- The `to_additive` attribute. -/
+syntax (name := to_additive) "to_additive" "!"? "?"? to_additiveRest : attr
+
+/-- The `to_additive` attribute. -/
+macro "to_additive!"  rest:to_additiveRest : attr => `(attr| to_additive !   $rest)
+/-- The `to_additive` attribute. -/
+macro "to_additive?"  rest:to_additiveRest : attr => `(attr| to_additive   ? $rest)
+/-- The `to_additive` attribute. -/
+macro "to_additive!?" rest:to_additiveRest : attr => `(attr| to_additive ! ? $rest)
+/-- The `to_additive` attribute. -/
+macro "to_additive?!" rest:to_additiveRest : attr => `(attr| to_additive ! ? $rest)
 
 /--
 This function takes a String and splits it into separate parts based on the following
@@ -75,6 +90,12 @@ namespace ToAdditive
 initialize registerTraceClass `to_additive
 initialize registerTraceClass `to_additive_detail
 
+/--
+An attribute that tells `@[to_additive]` that certain arguments of this definition are not
+involved when using `@[to_additive]`.
+This helps the heuristic of `@[to_additive]` by also transforming definitions if `ℕ` or another
+fixed type occurs as one of these arguments.
+-/
 initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
     name  := `to_additive_ignore_args
@@ -93,6 +114,15 @@ This value is used in `additiveTestAux`. -/
 def ignore [Functor M] [MonadEnv M]: Name → M (Option (List Nat))
   | n => (ignoreArgsAttr.find? · n) <$> getEnv
 
+/--
+An attribute that stores all the declarations that needs their arguments reordered when
+applying `@[to_additive]`. Currently, we only support swapping consecutive arguments.
+The list of the natural numbers contains the positions of the first of the two arguments
+to be swapped.
+If the first two arguments are swapped, the first two universe variables are also swapped.
+Example: `@[to_additive_reorder 1 4]` swaps the first two arguments and the arguments in
+positions 4 and 5.
+-/
 initialize reorderAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
     name := `to_additive_reorder
@@ -113,6 +143,27 @@ should be swapped with the next one. -/
 def shouldReorder [Functor M] [MonadEnv M]: Name → Nat → M Bool
   | n, i => (i ∈ ·) <$> (getReorder n)
 
+/--
+An attribute that is automatically added to declarations tagged with `@[to_additive]`, if needed.
+
+This attribute tells which argument is the type where this declaration uses the multiplicative
+structure. If there are multiple argument, we typically tag the first one.
+If this argument contains a fixed type, this declaration will note be additivized.
+See the Heuristics section of `to_additive.attr` for more details.
+
+If a declaration is not tagged, it is presumed that the first argument is relevant.
+`@[to_additive]` uses the function `to_additive.first_multiplicative_arg` to automatically tag
+declarations. It is ok to update it manually if the automatic tagging made an error.
+
+Implementation note: we only allow exactly 1 relevant argument, even though some declarations
+(like `prod.group`) have multiple arguments with a multiplicative structure on it.
+The reason is that whether we additivize a declaration is an all-or-nothing decision, and if
+we will not be able to additivize declarations that (e.g.) talk about multiplication on `ℕ × α`
+anyway.
+
+Warning: adding `@[to_additive_reorder]` with an equal or smaller number than the number in this
+attribute is currently not supported.
+-/
 initialize relevantArgAttr : NameMapExtension Nat ←
   registerNameMapAttribute {
     name := `to_additive_relevant_arg
@@ -131,7 +182,7 @@ def isRelevant [Monad M] [MonadEnv M] (n : Name) (i : Nat) : M Bool := do
   | some j => return i == j
   | none => return i == 0
 
-/- Maps multiplicative names to their additive counterparts. -/
+/-- Maps multiplicative names to their additive counterparts. -/
 initialize translations : NameMapExtension Name ← registerNameMapExtension _
 
 /-- Get the multiplicative → additive translation for the given name. -/
@@ -284,11 +335,15 @@ def updateDecl
 
 /-- Lean 4 makes declarations which are not internal
 (that is, head string starts with `_`) but which should be transformed.
-eg `proof_1` in `Lean.Meta.mkAuxDefinitionFor` this might be better fixed in core.
-This method is polyfill for that. -/
-def isInternal' : Name → Bool
-  | n@(.str _ s) => s.startsWith "proof_" || n.isInternal
-  | n => Name.isInternal n
+e.g. `proof_1` in `Lean.Meta.mkAuxDefinitionFor` this might be better fixed in core.
+This method is polyfill for that.
+Note: this declaration also occurs as `shouldIgnore` in the Lean 4 file `test/lean/run/printDecls`.
+-/
+def isInternal' (declName : Name) : Bool :=
+  declName.isInternal ||
+  match declName with
+  | .str _ s => "match_".isPrefixOf s || "proof_".isPrefixOf s || "eq_".isPrefixOf s
+  | _        => true
 
 /-- transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
 using the transforms dictionary.
@@ -646,7 +701,7 @@ def addToAdditiveAttr (src : Name) (val : ValueType) : AttrM Unit := do
     addDocString tgt doc
   return ()
 
-/-!
+/--
 The attribute `to_additive` can be used to automatically transport theorems
 and definitions (but not inductive types and structures) from a multiplicative
 theory to an additive theory.
@@ -857,6 +912,5 @@ initialize registerBuiltinAttribute {
     -- we have to as well to be able to copy attributes correctly.
     applicationTime := .afterCompilation
   }
-
 
 end ToAdditive

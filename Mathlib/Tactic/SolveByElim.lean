@@ -76,29 +76,38 @@ do
   let locals : TermElabM (List Expr) := if noDflt then pure [] else pure (← getLocalHyps).toList
   return (hs, locals)
 
+/-- Visualize an `Except` using a checkmark or a cross. -/
+def exceptEmoji : Except ε α → String
+  | .error _ => crossEmoji
+  | .ok _ => checkEmoji
+
 /-- Attempt to solve the given metavariable by repeating applying a list of facts. -/
 def solveByElimAux (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)) (n : Nat) :
     TacticM Unit := Tactic.done <|> match n with
       | 0 => throwError "solve_by_elim exceeded its recursion limit"
       | n + 1 => do
   let goal ← getMainGoal
-  trace[Meta.Tactic.solveByElim] "Working on: {goal}"
-  let es ← Elab.Term.TermElabM.run' do
-    let ctx' ← ctx
-    let lemmas' ← lemmas.mapM id
-    pure (lemmas' ++ ctx')
+  withTraceNode `Meta.Tactic.solveByElim
+    -- Note: the `addMessageContextFull` is so that we show the goal using the mvar context before
+    -- the `do` block below runs, potentially unifying mvars in the goal.
+    (return m!"{exceptEmoji ·} working on: {← addMessageContextFull goal}")
+    do
+      let es ← Elab.Term.TermElabM.run' do
+        let ctx' ← ctx
+        let lemmas' ← lemmas.mapM id
+        pure (lemmas' ++ ctx')
 
-  -- We attempt to find an expression which can be applied,
-  -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
-  es.firstM fun e => do
-    trace[Meta.Tactic.solveByElim] "Trying to apply: {e}"
-    liftMetaTactic (fun mvarId => mvarId.apply e)
-    solveByElimAux lemmas ctx n
+      -- We attempt to find an expression which can be applied,
+      -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
+      es.firstM fun e => withTraceNode `Meta.Tactic.solveByElim
+          (return m!"{exceptEmoji ·} tried to apply: {e}") do
+        liftMetaTactic (fun mvarId => mvarId.apply e)
+        solveByElimAux lemmas ctx n
 
 /-- Attempt to solve the given metavariable by repeating applying one of the given expressions,
 or a local hypothesis. -/
 def solveByElimImpl (only : Bool) (es : List (TSyntax `term)) (n : Nat) (g : MVarId) :
-    MetaM Unit := do
+    MetaM Unit := g.withContext do
   let ⟨lemmas, ctx⟩ ← mkAssumptionSet only es
   let _ ← Elab.Term.TermElabM.run' (Elab.Tactic.run g (solveByElimAux lemmas ctx n))
   pure ()
@@ -146,6 +155,6 @@ optional arguments passed via a configuration argument as `solve_by_elim (config
 -/
 syntax (name := solveByElim) "solve_by_elim" "*"? (config)? (&" only")? (simpArgs)? : tactic
 
-elab_rules : tactic | `(tactic| solve_by_elim $[only%$o]? $[[$[$t:term],*]]?) => withMainContext do
+elab_rules : tactic | `(tactic| solve_by_elim $[only%$o]? $[[$[$t:term],*]]?) => do
   let es := (t.getD #[]).toList
   solveByElimImpl o.isSome es 6 (← getMainGoal)

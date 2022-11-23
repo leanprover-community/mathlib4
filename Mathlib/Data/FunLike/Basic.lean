@@ -148,9 +148,8 @@ instance (priority := 100) : CoeFun F fun _ ↦ ∀ a : α, β a where coe := Fu
   Tactic.NormCast.registerCoercion ``FunLike.coe
     (some { numArgs := 5, coercee := 4, type := .coeFun })
 
-@[simp]
-theorem coe_eq_coe_fn : (FunLike.coe : F → ∀ a : α, β a) = (fun f ↦ ↑f) :=
-  rfl
+-- @[simp] -- porting note: this loops in lean 4
+theorem coe_eq_coe_fn : (FunLike.coe (F := F)) = (fun f => ↑f) := rfl
 
 theorem coe_injective : Function.Injective (fun f : F ↦ (f : ∀ a : α, β a)) :=
   FunLike.coe_injective'
