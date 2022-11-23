@@ -129,14 +129,14 @@ protected theorem «forall» {p : αᵒᵈ → Prop} : (∀ a, p a) ↔ ∀ a, p
 protected theorem «exists» {p : αᵒᵈ → Prop} : (∃ a, p a) ↔ ∃ a, p (toDual a) :=
   Iff.rfl
 
-alias toDual_le_toDual ↔ _ LE.le.dual
+alias toDual_le_toDual ↔ _ _root_.LE.le.dual
 
-alias toDual_lt_toDual ↔ _ LT.lt.dual
+alias toDual_lt_toDual ↔ _ _root_.LT.lt.dual
 
-alias ofDual_le_ofDual ↔ _ LE.le.ofDual
+alias ofDual_le_ofDual ↔ _ _root_.LE.le.ofDual
 #align has_le.le.of_dual LE.le.ofDual
 
-alias ofDual_lt_ofDual ↔ _ LT.lt.ofDual
+alias ofDual_lt_ofDual ↔ _ _root_.LT.lt.ofDual
 #align has_lt.lt.of_dual LT.lt.ofDual
 
 end OrderDual
@@ -164,7 +164,7 @@ theorem toLex_symm_eq : (@toLex α).symm = ofLex :=
 #align to_lex_symm_eq toLex_symm_eq
 
 @[simp]
-theorem of_lex_symm_eq : (@ofLex α).symm = toLex :=
+theorem ofLex_symm_eq : (@ofLex α).symm = toLex :=
   rfl
 #align of_lex_symm_eq ofLex_symm_eq
 
