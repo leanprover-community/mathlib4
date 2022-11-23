@@ -33,10 +33,10 @@ instance [h : Inv α] : Inv αᵒᵈ := h
 instance [h : Div α] : Div αᵒᵈ := h
 
 @[to_additive]
-instance [h : HasSmul α β] : HasSmul α βᵒᵈ := h
+instance [h : SMul α β] : SMul α βᵒᵈ := h
 
 @[to_additive]
-instance OrderDual.hasSmul' [h : HasSmul α β] : HasSmul αᵒᵈ β := h
+instance OrderDual.hasSmul' [h : SMul α β] : SMul αᵒᵈ β := h
 #align order_dual.has_smul' OrderDual.hasSmul'
 
 @[to_additive OrderDual.hasSmul]
@@ -131,19 +131,19 @@ theorem ofDual_div [Div α] (a b : αᵒᵈ) : ofDual (a / b) = ofDual a / ofDua
 #align of_dual_div ofDual_div
 
 @[simp, to_additive]
-theorem toDual_smul [HasSmul α β] (a : α) (b : β) : toDual (a • b) = a • toDual b := rfl
+theorem toDual_smul [SMul α β] (a : α) (b : β) : toDual (a • b) = a • toDual b := rfl
 #align to_dual_smul toDual_smul
 
 @[simp, to_additive]
-theorem ofDual_smul [HasSmul α β] (a : α) (b : βᵒᵈ) : ofDual (a • b) = a • ofDual b := rfl
+theorem ofDual_smul [SMul α β] (a : α) (b : βᵒᵈ) : ofDual (a • b) = a • ofDual b := rfl
 #align of_dual_smul ofDual_smul
 
 @[simp, to_additive]
-theorem toDual_smul' [HasSmul α β] (a : α) (b : β) : toDual a • b = a • b := rfl
+theorem toDual_smul' [SMul α β] (a : α) (b : β) : toDual a • b = a • b := rfl
 #align to_dual_smul' toDual_smul'
 
 @[simp, to_additive]
-theorem ofDual_smul' [HasSmul α β] (a : αᵒᵈ) (b : β) : ofDual a • b = a • b := rfl
+theorem ofDual_smul' [SMul α β] (a : αᵒᵈ) (b : β) : ofDual a • b = a • b := rfl
 #align of_dual_smul' ofDual_smul'
 
 @[simp, to_additive toDual_smul, to_additive_reorder 1 4]
@@ -178,10 +178,10 @@ instance [h : Inv α] : Inv (Lex α) := h
 instance [h : Div α] : Div (Lex α) := h
 
 @[to_additive]
-instance [h : HasSmul α β] : HasSmul α (Lex β) := h
+instance [h : SMul α β] : SMul α (Lex β) := h
 
 @[to_additive]
-instance Lex.hasSmul' [h : HasSmul α β] : HasSmul (Lex α) β := h
+instance Lex.hasSmul' [h : SMul α β] : SMul (Lex α) β := h
 #align lex.has_smul' Lex.hasSmul'
 
 @[to_additive Lex.hasSmul]
@@ -276,19 +276,19 @@ theorem ofLex_div [Div α] (a b : Lex α) : ofLex (a / b) = ofLex a / ofLex b :=
 #align of_lex_div ofLex_div
 
 @[simp, to_additive]
-theorem toLex_smul [HasSmul α β] (a : α) (b : β) : toLex (a • b) = a • toLex b := rfl
+theorem toLex_smul [SMul α β] (a : α) (b : β) : toLex (a • b) = a • toLex b := rfl
 #align to_lex_smul toLex_smul
 
 @[simp, to_additive]
-theorem ofLex_smul [HasSmul α β] (a : α) (b : Lex β) : ofLex (a • b) = a • ofLex b := rfl
+theorem ofLex_smul [SMul α β] (a : α) (b : Lex β) : ofLex (a • b) = a • ofLex b := rfl
 #align of_lex_smul ofLex_smul
 
 @[simp, to_additive]
-theorem toLex_smul' [HasSmul α β] (a : α) (b : β) : toLex a • b = a • b := rfl
+theorem toLex_smul' [SMul α β] (a : α) (b : β) : toLex a • b = a • b := rfl
 #align to_lex_smul' toLex_smul'
 
 @[simp, to_additive]
-theorem ofLex_smul' [HasSmul α β] (a : Lex α) (b : β) : ofLex a • b = a • b := rfl
+theorem ofLex_smul' [SMul α β] (a : Lex α) (b : β) : ofLex a • b = a • b := rfl
 #align of_lex_smul' ofLex_smul'
 
 @[simp, to_additive toLex_smul, to_additive_reorder 1 4]
@@ -308,13 +308,13 @@ theorem pow_ofLex [Pow α β] (a : α) (b : Lex β) : a ^ ofLex b = a ^ b := rfl
 #align pow_of_lex pow_ofLex
 
 attribute [instance 100] instZeroOrderDual instAddOrderDual instNegOrderDual instSubOrderDual
-  instHasVaddOrderDual hasVadd' hasSmul instAddSemigroupOrderDual instAddCommSemigroupOrderDual
+  instVAddOrderDual hasVadd' hasSmul instAddSemigroupOrderDual instAddCommSemigroupOrderDual
   instAddLeftCancelSemigroupOrderDual instAddRightCancelSemigroupOrderDual instAddZeroClassOrderDual
   instAddMonoidOrderDual instAddCommMonoidOrderDual instAddLeftCancelMonoidOrderDual
   instAddRightCancelMonoidOrderDual instAddCancelMonoidOrderDual instAddCancelCommMonoidOrderDual
   instHasInvolutiveNegOrderDual instSubNegAddMonoidOrderDual subtractionMonoid subtractionCommMonoid
   instAddGroupOrderDual instAddCommGroupOrderDual instZeroLex instAddLex instNegLex instSubLex
-  instHasVaddLex Lex.hasVadd' Lex.hasSmul instAddSemigroupLex instAddCommSemigroupLex
+  instVAddLex Lex.hasVadd' Lex.hasSmul instAddSemigroupLex instAddCommSemigroupLex
   instAddLeftCancelSemigroupLex instAddRightCancelSemigroupLex instAddZeroClassLex instAddMonoidLex
   instAddCommMonoidLex instAddLeftCancelMonoidLex instAddRightCancelMonoidLex instAddCancelMonoidLex
   instAddCancelCommMonoidLex instHasInvolutiveNegLex instSubNegAddMonoidLex instAddGroupLex

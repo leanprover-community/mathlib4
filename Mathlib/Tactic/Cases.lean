@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Lean
 import Std.Tactic.OpenPrivate
 import Std.Data.List.Basic
+import Mathlib.Lean.Expr.Basic
 
 /-!
 
@@ -41,17 +42,18 @@ open private getAltNumFields in evalCases ElimApp.evalAlts.go in
 def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg : Syntax)
     (numEqs := 0) (numGeneralized := 0) (toClear : Array FVarId := #[]) :
     TermElabM (Array MVarId) := do
-  let mut names := if withArg.isNone then [] else
-    withArg[1].getArgs.map (getNameOfIdent' ·[0]) |>.toList
+  let mut names : List Syntax := withArg[1].getArgs |>.toList
   let mut subgoals := #[]
   for { name := altName, mvarId := g, .. } in alts do
     let numFields ← getAltNumFields elimInfo altName
-    let (altVarNames, names') := names.splitAtD numFields `_
+    let (altVarNames, names') := names.splitAtD numFields (Unhygienic.run `(_))
     names := names'
-    let (_, g) ← g.introN numFields altVarNames
-    let some (g, _) ← Cases.unifyEqs? numEqs g {} | pure ()
+    let (fvars, g) ← g.introN numFields <| altVarNames.map (getNameOfIdent' ·[0])
+    let some (g, subst) ← Cases.unifyEqs? numEqs g {} | pure ()
     let (_, g) ← g.introNP numGeneralized
     let g ← liftM $ toClear.foldlM (·.tryClear) g
+    for fvar in fvars, stx in altVarNames do
+      g.withContext <| (subst.apply <| .fvar fvar).addLocalVarInfoForBinderIdent ⟨stx⟩
     subgoals := subgoals.push g
   pure subgoals
 
