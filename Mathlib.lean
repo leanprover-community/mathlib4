@@ -20,6 +20,7 @@ import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Monoid
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Algebra.Order.Ring
+import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Ring.Basic
@@ -81,6 +82,7 @@ import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
 import Mathlib.Data.UInt
 import Mathlib.Data.UnionFind
+import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
