@@ -57,6 +57,7 @@ instance Functor.category : Category.{max u₁ v₂} (C ⥤ D) where
   comp_id' := by
     intros
     -- Sad that `ext` won't do this, indexing??
+    -- https://leanprover.zulipchat.com/#narrow/stream/348111-std4/topic/ext.20is.20weaker/near/311851300
     apply NatTrans.ext
     ext X
     intros

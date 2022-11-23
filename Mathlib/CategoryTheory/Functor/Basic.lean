@@ -36,8 +36,8 @@ See <https://stacks.math.columbia.edu/tag/001B>.
 -/
 structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
     extends Prefunctor C D : Type max v₁ v₂ u₁ u₂ where
-  map_id' : ∀ X : C, map (𝟙 X) = 𝟙 (obj X) := by aesop
-  map_comp' : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z), map (f ≫ g) = map f ≫ map g := by aesop
+  map_id : ∀ X : C, map (𝟙 X) = 𝟙 (obj X) := by aesop
+  map_comp : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z), map (f ≫ g) = map f ≫ map g := by aesop
 #align category_theory.functor CategoryTheory.Functor
 
 /-- The prefunctor between the underlying quivers. -/
@@ -49,12 +49,7 @@ end
 -- For example, `C × D ⥤ E` should parse as `(C × D) ⥤ E` not `C × (D ⥤ E)`.
 infixr:26 " ⥤ " => Functor -- type as \func
 
-restate_axiom Functor.map_id'
-
 attribute [simp] Functor.map_id
-
-restate_axiom Functor.map_comp'
-
 attribute [simp, reassoc] Functor.map_comp
 
 namespace Functor
