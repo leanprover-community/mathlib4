@@ -134,6 +134,7 @@ protected def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.right_
 
 /-- See Note [custom simps projection] -/
 def Simps.apply (e : α ≃ β) : α → β := e
+/-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 
 initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
