@@ -5,6 +5,7 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.OrderSynonym
 import Mathlib.Algebra.Group.Semiconj
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupPower.Basic
@@ -23,7 +24,9 @@ import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.Defs
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+import Mathlib.Control.EquivFunctor
 import Mathlib.Control.Random
 import Mathlib.Control.ULift
 import Mathlib.Control.Writer
@@ -146,13 +149,11 @@ import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
-import Mathlib.Tactic.Congr
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
-import Mathlib.Tactic.DocCommands
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Expect
 import Mathlib.Tactic.FinCases
@@ -169,6 +170,9 @@ import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.ModCases
+import Mathlib.Tactic.Nontriviality
+import Mathlib.Tactic.Nontriviality.Core
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormCast.Tactic
 import Mathlib.Tactic.NormNum
@@ -194,11 +198,9 @@ import Mathlib.Tactic.Ring.RingNF
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.ScopedNS
-import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.SimpTrace
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SolveByElim
@@ -219,6 +221,7 @@ import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
 import Mathlib.Util.Export
 import Mathlib.Util.IncludeStr
+import Mathlib.Util.MapsTo
 import Mathlib.Util.MemoFix
 import Mathlib.Util.Simp
 import Mathlib.Util.Syntax

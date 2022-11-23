@@ -27,7 +27,7 @@ example (a b : Nat) : ¬¬ a = b → a = b := by
   by_contra H
   contradiction
 
-example (p q : Prop) : ¬¬ p → p := by
+example (p _q : Prop) : ¬¬ p → p := by
   intros
   by_contra H
   contradiction

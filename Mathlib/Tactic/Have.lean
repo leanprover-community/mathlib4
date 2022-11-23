@@ -5,6 +5,7 @@ Authors: Arthur Paulino, Edward Ayers, Mario Carneiro
 -/
 import Lean
 import Mathlib.Data.Array.Defs
+import Mathlib.Util.MapsTo
 
 /--
 Uses `checkColGt` to prevent
@@ -40,7 +41,7 @@ def haveLetCore (goal : MVarId) (name : Option Syntax) (bis : Array Syntax)
   goal.withContext do
     let n := if let some n := name then n.getId else `this
     let elabBinders k := if bis.isEmpty then k #[] else elabBinders bis k
-    let (goal1, t, p) ← elabBinders fun es => do
+    let (goal1, t, p) ← elabBinders fun es ↦ do
       let t ← match t with
       | none => mkFreshTypeMVar
       | some t => Tactic.elabTerm.go t none
