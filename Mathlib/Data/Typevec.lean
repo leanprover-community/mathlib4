@@ -3,9 +3,11 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 -/
-import Mathbin.Data.Fin.Fin2
-import Mathbin.Logic.Function.Basic
-import Mathbin.Tactic.Basic
+import Mathlib.Data.Fin.Fin2
+import Mathlib.Logic.Function.Basic
+import Mathlib.Tactic.Basic
+import Mathlib.Tactic.ScopedNS
+import Mathlib.Tactic.Replace
 
 /-!
 
@@ -13,7 +15,7 @@ import Mathbin.Tactic.Basic
 
 ## Features
 
-* `typevec n` - n-tuples of types
+* `Typevec n` - n-tuples of types
 * `α ⟹ β`    - n-tuples of maps
 * `f ⊚ g`     - composition
 
@@ -22,9 +24,9 @@ Also, support functions for operating with n-tuples of types, such as:
 * `append1 α β`    - append type `β` to n-tuple `α` to obtain an (n+1)-tuple
 * `drop α`         - drops the last element of an (n+1)-tuple
 * `last α`         - returns the last element of an (n+1)-tuple
-* `append_fun f g` - appends a function g to an n-tuple of functions
-* `drop_fun f`     - drops the last function from an n+1-tuple
-* `last_fun f`     - returns the last function of a tuple.
+* `appendFun f g` - appends a function g to an n-tuple of functions
+* `dropFun f`     - drops the last function from an n+1-tuple
+* `lastFun f`     - returns the last function of a tuple.
 
 Since e.g. `append1 α.drop α.last` is propositionally equal to `α` but not definitionally equal
 to it, we need support functions and lemmas to mediate between constructions.
@@ -33,8 +35,7 @@ to it, we need support functions and lemmas to mediate between constructions.
 
 universe u v w
 
-/-- n-tuples of types, as a category
--/
+/-- n-tuples of types, as a category -/
 def Typevec (n : ℕ) :=
   Fin2 n → Type _
 #align typevec Typevec
@@ -46,28 +47,32 @@ namespace Typevec
 
 variable {n : ℕ}
 
-/-- arrow in the category of `typevec` -/
+/-- arrow in the category of `Typevec` -/
 def Arrow (α β : Typevec n) :=
   ∀ i : Fin2 n, α i → β i
 #align typevec.arrow Typevec.Arrow
 
 -- mathport name: typevec.arrow
-scoped[Mvfunctor] infixl:40 " ⟹ " => Typevec.Arrow
+-- porting note: this should be `scoped[MVFunctor]` but I couldn't get that to work.
+scoped infixl:40 " ⟹ " => Typevec.Arrow
+attribute [inherit_doc Typevec.Arrow] «term_⟹_»
 
 instance Arrow.inhabited (α β : Typevec n) [∀ i, Inhabited (β i)] : Inhabited (α ⟹ β) :=
   ⟨fun _ _ => default⟩
 #align typevec.arrow.inhabited Typevec.Arrow.inhabited
 
 /-- identity of arrow composition -/
-def id {α : Typevec n} : α ⟹ α := fun i x => x
+def id {α : Typevec n} : α ⟹ α := fun _ x => x
 #align typevec.id Typevec.id
 
-/-- arrow composition in the category of `typevec` -/
+/-- arrow composition in the category of `Typevec` -/
 def comp {α β γ : Typevec n} (g : β ⟹ γ) (f : α ⟹ β) : α ⟹ γ := fun i x => g i (f i x)
 #align typevec.comp Typevec.comp
 
 -- mathport name: typevec.comp
-scoped[Mvfunctor] infixr:80 " ⊚ " => Typevec.comp
+-- porting note: this should be `scoped[MVFunctor]` but I couldn't get that to work.
+scoped infixr:80 " ⊚ " => Typevec.comp
+attribute [inherit_doc Typevec.comp] «term_⊚_»
 
 -- type as \oo
 @[simp]
@@ -80,19 +85,19 @@ theorem comp_id {α β : Typevec n} (f : α ⟹ β) : f ⊚ id = f :=
   rfl
 #align typevec.comp_id Typevec.comp_id
 
-theorem comp_assoc {α β γ δ : Typevec n} (h : γ ⟹ δ) (g : β ⟹ γ) (f : α ⟹ β) : (h ⊚ g) ⊚ f = h ⊚ g ⊚ f :=
+theorem comp_assoc {α β γ δ : Typevec n} (h : γ ⟹ δ) (g : β ⟹ γ) (f : α ⟹ β) :
+    (h ⊚ g) ⊚ f = h ⊚ g ⊚ f :=
   rfl
 #align typevec.comp_assoc Typevec.comp_assoc
 
-/-- Support for extending a typevec by one element.
--/
+/-- Support for extending a `Typevec` by one element. -/
 def append1 (α : Typevec n) (β : Type _) : Typevec (n + 1)
   | Fin2.fs i => α i
   | Fin2.fz => β
 #align typevec.append1 Typevec.append1
 
 -- mathport name: typevec.append1
-infixl:67 " ::: " => append1
+@[inherit_doc] infixl:67 " ::: " => append1
 
 /-- retain only a `n-length` prefix of the argument -/
 def drop (α : Typevec.{u} (n + 1)) : Typevec n := fun i => α i.fs
@@ -111,7 +116,8 @@ theorem drop_append1 {α : Typevec n} {β : Type _} {i : Fin2 n} : drop (append1
   rfl
 #align typevec.drop_append1 Typevec.drop_append1
 
-theorem drop_append1' {α : Typevec n} {β : Type _} : drop (append1 α β) = α := by ext <;> apply drop_append1
+theorem drop_append1' {α : Typevec n} {β : Type _} : drop (append1 α β) = α :=
+  funext <| fun _ => drop_append1
 #align typevec.drop_append1' Typevec.drop_append1'
 
 theorem last_append1 {α : Typevec n} {β : Type _} : Last (append1 α β) = β :=
@@ -126,7 +132,7 @@ theorem append1_drop_last (α : Typevec (n + 1)) : append1 (drop α) (Last α) =
 /-- cases on `(n+1)-length` vectors -/
 @[elab_as_elim]
 def append1Cases {C : Typevec (n + 1) → Sort u} (H : ∀ α β, C (append1 α β)) (γ) : C γ := by
-  rw [← @append1_drop_last _ γ] <;> apply H
+  rw [← @append1_drop_last _ γ]; apply H
 #align typevec.append1_cases Typevec.append1Cases
 
 @[simp]
@@ -135,21 +141,20 @@ theorem append1_cases_append1 {C : Typevec (n + 1) → Sort u} (H : ∀ α β, C
   rfl
 #align typevec.append1_cases_append1 Typevec.append1_cases_append1
 
-/-- append an arrow and a function for arbitrary source and target
-type vectors -/
+/-- append an arrow and a function for arbitrary source and target type vectors -/
 def splitFun {α α' : Typevec (n + 1)} (f : drop α ⟹ drop α') (g : Last α → Last α') : α ⟹ α'
   | Fin2.fs i => f i
   | Fin2.fz => g
 #align typevec.split_fun Typevec.splitFun
 
-/-- append an arrow and a function as well as their respective source
-and target types / typevecs -/
-def appendFun {α α' : Typevec n} {β β' : Type _} (f : α ⟹ α') (g : β → β') : append1 α β ⟹ append1 α' β' :=
+/-- append an arrow and a function as well as their respective source and target types / typevecs -/
+def appendFun {α α' : Typevec n} {β β' : Type _} (f : α ⟹ α') (g : β → β') :
+    append1 α β ⟹ append1 α' β' :=
   splitFun f g
 #align typevec.append_fun Typevec.appendFun
 
 -- mathport name: typevec.append_fun
-infixl:0 " ::: " => appendFun
+@[inherit_doc] infixl:0 " ::: " => appendFun
 
 /-- split off the prefix of an arrow -/
 def dropFun {α β : Typevec (n + 1)} (f : α ⟹ β) : drop α ⟹ drop β := fun i => f i.fs
@@ -160,12 +165,18 @@ def lastFun {α β : Typevec (n + 1)} (f : α ⟹ β) : Last α → Last β :=
   f Fin2.fz
 #align typevec.last_fun Typevec.lastFun
 
+-- porting note: Lean wasn't able to infer the motive in term mode
 /-- arrow in the category of `0-length` vectors -/
-def nilFun {α : Typevec 0} {β : Typevec 0} : α ⟹ β := fun i => Fin2.elim0 i
+def nilFun {α : Typevec 0} {β : Typevec 0} : α ⟹ β := fun i => by apply Fin2.elim0 i
 #align typevec.nil_fun Typevec.nilFun
 
 theorem eq_of_drop_last_eq {α β : Typevec (n + 1)} {f g : α ⟹ β} (h₀ : dropFun f = dropFun g)
-    (h₁ : lastFun f = lastFun g) : f = g := by replace h₀ := congr_fun h₀ <;> ext1 ⟨⟩ <;> apply_assumption
+    (h₁ : lastFun f = lastFun g) : f = g := by
+  replace h₀ := congr_fun h₀ <;>
+  refine funext <| fun i => ?_
+  sorry
+  -- ext1 ⟨⟩;
+  --apply_assumption
 #align typevec.eq_of_drop_last_eq Typevec.eq_of_drop_last_eq
 
 @[simp]
@@ -176,12 +187,12 @@ theorem drop_fun_split_fun {α α' : Typevec (n + 1)} (f : drop α ⟹ drop α')
 
 /-- turn an equality into an arrow -/
 def Arrow.mp {α β : Typevec n} (h : α = β) : α ⟹ β
-  | i => Eq.mp (congr_fun h _)
+  | _ => Eq.mp (congr_fun h _)
 #align typevec.arrow.mp Typevec.Arrow.mp
 
 /-- turn an equality into an arrow, with reverse direction -/
 def Arrow.mpr {α β : Typevec n} (h : α = β) : β ⟹ α
-  | i => Eq.mpr (congr_fun h _)
+  | _ => Eq.mpr (congr_fun h _)
 #align typevec.arrow.mpr Typevec.Arrow.mpr
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -204,23 +215,26 @@ theorem last_fun_split_fun {α α' : Typevec (n + 1)} (f : drop α ⟹ drop α')
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
-theorem drop_fun_append_fun {α α' : Typevec n} {β β' : Type _} (f : α ⟹ α') (g : β → β') : dropFun (f ::: g) = f :=
+theorem drop_fun_append_fun {α α' : Typevec n} {β β' : Type _} (f : α ⟹ α') (g : β → β') :
+    dropFun (f ::: g) = f :=
   rfl
 #align typevec.drop_fun_append_fun Typevec.drop_fun_append_fun
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
-theorem last_fun_append_fun {α α' : Typevec n} {β β' : Type _} (f : α ⟹ α') (g : β → β') : lastFun (f ::: g) = g :=
+theorem last_fun_append_fun {α α' : Typevec n} {β β' : Type _} (f : α ⟹ α') (g : β → β') :
+    lastFun (f ::: g) = g :=
   rfl
 #align typevec.last_fun_append_fun Typevec.last_fun_append_fun
 
-theorem split_drop_fun_last_fun {α α' : Typevec (n + 1)} (f : α ⟹ α') : splitFun (dropFun f) (lastFun f) = f :=
+theorem split_drop_fun_last_fun {α α' : Typevec (n + 1)} (f : α ⟹ α') :
+    splitFun (dropFun f) (lastFun f) = f :=
   eq_of_drop_last_eq rfl rfl
 #align typevec.split_drop_fun_last_fun Typevec.split_drop_fun_last_fun
 
 theorem split_fun_inj {α α' : Typevec (n + 1)} {f f' : drop α ⟹ drop α'} {g g' : Last α → Last α'}
     (H : splitFun f g = splitFun f' g') : f = f' ∧ g = g' := by
-  rw [← drop_fun_split_fun f g, H, ← last_fun_split_fun f g, H] <;> simp
+  rw [← drop_fun_split_fun f g, H, ← last_fun_split_fun f g, H]; simp
 #align typevec.split_fun_inj Typevec.split_fun_inj
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -230,14 +244,15 @@ theorem append_fun_inj {α α' : Typevec n} {β β' : Type _} {f f' : α ⟹ α'
   split_fun_inj
 #align typevec.append_fun_inj Typevec.append_fun_inj
 
-theorem split_fun_comp {α₀ α₁ α₂ : Typevec (n + 1)} (f₀ : drop α₀ ⟹ drop α₁) (f₁ : drop α₁ ⟹ drop α₂)
-    (g₀ : Last α₀ → Last α₁) (g₁ : Last α₁ → Last α₂) :
+theorem split_fun_comp {α₀ α₁ α₂ : Typevec (n + 1)} (f₀ : drop α₀ ⟹ drop α₁)
+    (f₁ : drop α₁ ⟹ drop α₂) (g₀ : Last α₀ → Last α₁) (g₁ : Last α₁ → Last α₂) :
     splitFun (f₁ ⊚ f₀) (g₁ ∘ g₀) = splitFun f₁ g₁ ⊚ splitFun f₀ g₀ :=
   eq_of_drop_last_eq rfl rfl
 #align typevec.split_fun_comp Typevec.split_fun_comp
 
-theorem append_fun_comp_split_fun {α γ : Typevec n} {β δ : Type _} {ε : Typevec (n + 1)} (f₀ : drop ε ⟹ α) (f₁ : α ⟹ γ)
-    (g₀ : Last ε → β) (g₁ : β → δ) : appendFun f₁ g₁ ⊚ splitFun f₀ g₀ = splitFun (f₁ ⊚ f₀) (g₁ ∘ g₀) :=
+theorem append_fun_comp_split_fun {α γ : Typevec n} {β δ : Type _} {ε : Typevec (n + 1)}
+    (f₀ : drop ε ⟹ α) (f₁ : α ⟹ γ) (g₀ : Last ε → β) (g₁ : β → δ) :
+    appendFun f₁ g₁ ⊚ splitFun f₀ g₀ = splitFun (f₁ ⊚ f₀) (g₁ ∘ g₀) :=
   (split_fun_comp _ _ _ _).symm
 #align typevec.append_fun_comp_split_fun Typevec.append_fun_comp_split_fun
 
@@ -639,9 +654,9 @@ theorem prod_id : ∀ {n} {α β : Typevec.{u} n}, (id ⊗' id) = (id : α ⊗ �
   induction i
   · cases a
     rfl
-    
+
   · apply i_ih
-    
+
 #align typevec.prod_id Typevec.prod_id
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -775,4 +790,3 @@ theorem subtype_val_to_subtype' {α : Typevec n} (r : α ⊗ α ⟹ repeat n Pro
 #align typevec.subtype_val_to_subtype' Typevec.subtype_val_to_subtype'
 
 end Typevec
-
