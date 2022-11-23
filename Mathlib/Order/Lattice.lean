@@ -324,11 +324,11 @@ theorem SemilatticeSup.ext_sup {α} {A B : SemilatticeSup α}
 theorem SemilatticeSup.ext {α} {A B : SemilatticeSup α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
     A = B := by
-  have := PartialOrder.ext H
-  have ss := funext fun x => funext $ SemilatticeSup.ext_sup H x
+  have ss : A.toHasSup = B.toHasSup := by ext; apply SemilatticeSup.ext_sup H
   cases A
   cases B
-  injection this <;> congr
+  cases PartialOrder.ext H
+  congr <;> apply proof_irrel_heq
 #align semilattice_sup.ext SemilatticeSup.ext
 
 theorem ite_le_sup (s s' : α) (P : Prop) [Decidable P] : ite P s s' ≤ s ⊔ s' :=
@@ -562,11 +562,11 @@ theorem SemilatticeInf.ext_inf {α} {A B : SemilatticeInf α}
 theorem SemilatticeInf.ext {α} {A B : SemilatticeInf α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
     A = B := by
-  have := PartialOrder.ext H
-  have ss := funext fun x => funext $ SemilatticeInf.ext_inf H x
+  have ss : A.toHasInf = B.toHasInf := by ext; apply SemilatticeInf.ext_inf H
   cases A
   cases B
-  injection this <;> congr
+  cases PartialOrder.ext H
+  congr <;> apply proof_irrel_heq
 #align semilattice_inf.ext SemilatticeInf.ext
 
 theorem SemilatticeInf.dual_dual (α : Type _) [H : SemilatticeInf α] :

@@ -684,13 +684,13 @@ end MinMaxRec
 
 
 /-- Typeclass for the `⊔` (`\lub`) notation -/
-@[notation_class]
+@[notation_class, ext]
 class HasSup (α : Type u) where
   /-- Least upper bound (`\lub` notation) -/
   sup : α → α → α
 
 /-- Typeclass for the `⊓` (`\glb`) notation -/
-@[notation_class]
+@[notation_class, ext]
 class HasInf (α : Type u) where
   /-- Greatest lower bound (`\glb` notation) -/
   inf : α → α → α
