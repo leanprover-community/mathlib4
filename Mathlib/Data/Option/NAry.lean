@@ -17,8 +17,9 @@ on intervals.
 
 ## Notes
 
-This file is very similar to the n-ary section of `data.set.basic`, to `data.finset.n_ary` and to
-`order.filter.n_ary`. Please keep them in sync.
+This file is very similar to the n-ary section of `Mathlib.Data.Set.Basic`, to
+`Mathlib.Data.Finset.NAry` and to `Mathlib.Order.Filter.NAry`. Please keep them in sync.
+(porting note - only some of these may exist right now!)
 
 We do not define `Option.map₃` as its only purpose so far would be to prove properties of
 `Option.map₂` and casing already fulfills this task.
