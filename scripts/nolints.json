@@ -1,7 +1,4 @@
-[["defLemma", "List.Lex.isOrderConnected.aux"],
- ["defLemma", "List.Lex.isTrichotomous.aux"],
- ["defLemma", "List.Lex.isAsymm.aux"],
- ["docBlame", "AddGroupWithOne"],
+[["docBlame", "AddGroupWithOne"],
  ["docBlame", "AddMonoidWithOne"],
  ["docBlame", "AndThen'"],
  ["docBlame", "AsFalse"],
