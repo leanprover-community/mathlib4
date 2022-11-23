@@ -361,11 +361,14 @@ theorem sumAssoc_symm_apply_inr_inr {α β γ} (c) : (sumAssoc α β γ).symm (i
 
 /-- Sum with `IsEmpty` is equivalent to the original type. -/
 @[simps symm_apply]
-def sumEmpty (α β) [IsEmpty β] : Sum α β ≃ α :=
-  ⟨Sum.elim id isEmptyElim, inl, fun s => by
+def sumEmpty (α β) [IsEmpty β] : Sum α β ≃ α where
+  toFun := Sum.elim id isEmptyElim
+  invFun := inl
+  left_inv s := by
     rcases s with (_ | x)
-    rfl
-    exact isEmptyElim x, fun a => rfl⟩
+    · rfl
+    · exact isEmptyElim x
+  right_inv _ := rfl
 #align equiv.sum_empty Equiv.sumEmpty
 
 @[simp]
@@ -818,12 +821,11 @@ section
 
 /-- The type of functions to a product `α × β` is equivalent to the type of pairs of functions
 `γ → α` and `γ → β`. -/
-def arrowProdEquivProdArrow (α β γ : Type _) : (γ → α × β) ≃ (γ → α) × (γ → β) :=
-  ⟨fun f => (fun c => (f c).1, fun c => (f c).2), fun p c => (p.1 c, p.2 c),
-    fun f => funext fun c => Prod.mk.eta,
-      fun p => by
-      cases p
-      rfl⟩
+def arrowProdEquivProdArrow (α β γ : Type _) : (γ → α × β) ≃ (γ → α) × (γ → β) where
+  toFun := fun f => (fun c => (f c).1, fun c => (f c).2)
+  invFun := fun p c => (p.1 c, p.2 c)
+  left_inv := fun f => funext fun c => Prod.mk.eta
+  right_inv := fun p => by cases p; rfl
 #align equiv.arrow_prod_equiv_prod_arrow Equiv.arrowProdEquivProdArrow
 
 open Sum
