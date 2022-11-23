@@ -3,8 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.Lattice
 import Mathlib.Data.Option.Basic
+import Mathlib.Order.Lattice
+import Mathlib.Tactic.Classical
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.PushNeg
 
 /-!
 # ⊤ and ⊥, bounded lattices and variants
@@ -83,10 +86,11 @@ section OrderTop
 noncomputable def topOrderOrNoTopOrder (α : Type _) [LE α] : PSum (OrderTop α) (NoTopOrder α) := by
   by_cases H : ∀ a : α, ∃ b, ¬b ≤ a
   · exact PSum.inr ⟨H⟩
-    
-  · push_neg  at H
-    exact PSum.inl ⟨_, Classical.choose_spec H⟩
-    
+
+  · push_neg at H
+    letI : HasTop α := ⟨Classical.choose H⟩
+    exact PSum.inl ⟨Classical.choose_spec H⟩
+
 #align top_order_or_no_top_order topOrderOrNoTopOrder
 
 section LE
@@ -110,7 +114,7 @@ variable [Preorder α] [OrderTop α] {a b : α}
 
 @[simp]
 theorem is_max_top : IsMax (⊤ : α) :=
-  is_top_top.IsMax
+  is_top_top.is_max
 #align is_max_top is_max_top
 
 @[simp]
@@ -119,7 +123,7 @@ theorem not_top_lt : ¬⊤ < a :=
 #align not_top_lt not_top_lt
 
 theorem ne_top_of_lt (h : a < b) : a ≠ ⊤ :=
-  (h.trans_le le_top).Ne
+  (h.trans_le le_top).ne
 #align ne_top_of_lt ne_top_of_lt
 
 alias ne_top_of_lt ← LT.lt.ne_top
@@ -130,20 +134,20 @@ variable [PartialOrder α] [OrderTop α] [Preorder β] {f : α → β} {a b : α
 
 @[simp]
 theorem is_max_iff_eq_top : IsMax a ↔ a = ⊤ :=
-  ⟨fun h => h.eq_of_le le_top, fun h b _ => h.symm ▸ le_top⟩
+  ⟨fun h => h.eq_of_le le_top, fun h _ _ => h.symm ▸ le_top⟩
 #align is_max_iff_eq_top is_max_iff_eq_top
 
 @[simp]
 theorem is_top_iff_eq_top : IsTop a ↔ a = ⊤ :=
-  ⟨fun h => h.IsMax.eq_of_le le_top, fun h b => h.symm ▸ le_top⟩
+  ⟨fun h => h.is_max.eq_of_le le_top, fun h _ => h.symm ▸ le_top⟩
 #align is_top_iff_eq_top is_top_iff_eq_top
 
 theorem not_is_max_iff_ne_top : ¬IsMax a ↔ a ≠ ⊤ :=
-  is_max_iff_eq_top.Not
+  is_max_iff_eq_top.not
 #align not_is_max_iff_ne_top not_is_max_iff_ne_top
 
 theorem not_is_top_iff_ne_top : ¬IsTop a ↔ a ≠ ⊤ :=
-  is_top_iff_eq_top.Not
+  is_top_iff_eq_top.not
 #align not_is_top_iff_ne_top not_is_top_iff_ne_top
 
 alias is_max_iff_eq_top ↔ IsMax.eq_top _
@@ -189,11 +193,11 @@ theorem Ne.lt_top' (h : ⊤ ≠ a) : a < ⊤ :=
 #align ne.lt_top' Ne.lt_top'
 
 theorem ne_top_of_le_ne_top (hb : b ≠ ⊤) (hab : a ≤ b) : a ≠ ⊤ :=
-  (hab.trans_lt hb.lt_top).Ne
+  (hab.trans_lt hb.lt_top).ne
 #align ne_top_of_le_ne_top ne_top_of_le_ne_top
 
 theorem StrictMono.apply_eq_top_iff (hf : StrictMono f) : f a = f ⊤ ↔ a = ⊤ :=
-  ⟨fun h => not_lt_top_iff.1 fun ha => (hf ha).Ne h, congr_arg _⟩
+  ⟨fun h => not_lt_top_iff.1 fun ha => (hf ha).ne h, congr_arg _⟩
 #align strict_mono.apply_eq_top_iff StrictMono.apply_eq_top_iff
 
 theorem StrictAnti.apply_eq_top_iff (hf : StrictAnti f) : f a = f ⊤ ↔ a = ⊤ :=
@@ -203,14 +207,14 @@ theorem StrictAnti.apply_eq_top_iff (hf : StrictAnti f) : f a = f ⊤ ↔ a = �
 variable [Nontrivial α]
 
 theorem not_is_min_top : ¬IsMin (⊤ : α) := fun h =>
-  let ⟨a, ha⟩ := exists_ne (⊤ : α)
+  let ⟨_, ha⟩ := exists_ne (⊤ : α)
   ha <| top_le_iff.1 <| h le_top
 #align not_is_min_top not_is_min_top
 
 end OrderTop
 
-theorem StrictMono.maximal_preimage_top [LinearOrder α] [Preorder β] [OrderTop β] {f : α → β} (H : StrictMono f) {a}
-    (h_top : f a = ⊤) (x : α) : x ≤ a :=
+theorem StrictMono.maximal_preimage_top [LinearOrder α] [Preorder β] [OrderTop β] {f : α → β}
+    (H : StrictMono f) {a} (h_top : f a = ⊤) (x : α) : x ≤ a :=
   H.maximal_of_maximal_image
     (fun p => by
       rw [h_top]
@@ -218,16 +222,9 @@ theorem StrictMono.maximal_preimage_top [LinearOrder α] [Preorder β] [OrderTop
     x
 #align strict_mono.maximal_preimage_top StrictMono.maximal_preimage_top
 
-theorem OrderTop.ext_top {α} {hA : PartialOrder α} (A : OrderTop α) {hB : PartialOrder α} (B : OrderTop α)
-    (H :
-      ∀ x y : α,
-        (haveI := hA
-          x ≤ y) ↔
-          x ≤ y) :
-    (haveI := A
-        ⊤ :
-        α) =
-      ⊤ :=
+theorem OrderTop.ext_top {α} {hA : PartialOrder α} (A : OrderTop α) {hB : PartialOrder α}
+    (B : OrderTop α) (H : ∀ x y : α, (haveI := hA; x ≤ y) ↔ x ≤ y) :
+    (haveI := A; ⊤ : α) = ⊤ :=
   top_unique <| by rw [← H] <;> apply le_top
 #align order_top.ext_top OrderTop.ext_top
 
@@ -252,10 +249,11 @@ section OrderBot
 noncomputable def botOrderOrNoBotOrder (α : Type _) [LE α] : PSum (OrderBot α) (NoBotOrder α) := by
   by_cases H : ∀ a : α, ∃ b, ¬a ≤ b
   · exact PSum.inr ⟨H⟩
-    
-  · push_neg  at H
-    exact PSum.inl ⟨_, Classical.choose_spec H⟩
-    
+
+  · push_neg at H
+    letI : HasBot α := ⟨Classical.choose H⟩
+    exact PSum.inl ⟨Classical.choose_spec H⟩
+
 #align bot_order_or_no_bot_order botOrderOrNoBotOrder
 
 section LE
@@ -283,11 +281,13 @@ instance [HasBot α] : HasTop αᵒᵈ :=
 instance [HasTop α] : HasBot αᵒᵈ :=
   ⟨(⊤ : α)⟩
 
-instance [LE α] [OrderBot α] : OrderTop αᵒᵈ :=
-  { OrderDual.hasTop α with le_top := @bot_le α _ _ }
+instance [LE α] [OrderBot α] : OrderTop αᵒᵈ where
+  __ := inferInstanceAs (HasTop αᵒᵈ)
+  le_top := @bot_le α _ _
 
-instance [LE α] [OrderTop α] : OrderBot αᵒᵈ :=
-  { OrderDual.hasBot α with bot_le := @le_top α _ _ }
+instance [LE α] [OrderTop α] : OrderBot αᵒᵈ where
+  __ := inferInstanceAs (HasBot αᵒᵈ)
+  bot_le := @le_top α _ _
 
 @[simp]
 theorem of_dual_bot [HasTop α] : ofDual ⊥ = (⊤ : α) :=
@@ -317,7 +317,7 @@ variable [Preorder α] [OrderBot α] {a b : α}
 
 @[simp]
 theorem is_min_bot : IsMin (⊥ : α) :=
-  is_bot_bot.IsMin
+  is_bot_bot.is_min
 #align is_min_bot is_min_bot
 
 @[simp]
@@ -342,15 +342,15 @@ theorem is_min_iff_eq_bot : IsMin a ↔ a = ⊥ :=
 
 @[simp]
 theorem is_bot_iff_eq_bot : IsBot a ↔ a = ⊥ :=
-  ⟨fun h => h.IsMin.eq_of_ge bot_le, fun h b => h.symm ▸ bot_le⟩
+  ⟨fun h => h.is_min.eq_of_ge bot_le, fun h b => h.symm ▸ bot_le⟩
 #align is_bot_iff_eq_bot is_bot_iff_eq_bot
 
 theorem not_is_min_iff_ne_bot : ¬IsMin a ↔ a ≠ ⊥ :=
-  is_min_iff_eq_bot.Not
+  is_min_iff_eq_bot.not
 #align not_is_min_iff_ne_bot not_is_min_iff_ne_bot
 
 theorem not_is_bot_iff_ne_bot : ¬IsBot a ↔ a ≠ ⊥ :=
-  is_bot_iff_eq_bot.Not
+  is_bot_iff_eq_bot.not
 #align not_is_bot_iff_ne_bot not_is_bot_iff_ne_bot
 
 alias is_min_iff_eq_bot ↔ IsMin.eq_bot _
@@ -419,8 +419,8 @@ theorem not_is_max_bot : ¬IsMax (⊥ : α) :=
 
 end OrderBot
 
-theorem StrictMono.minimal_preimage_bot [LinearOrder α] [PartialOrder β] [OrderBot β] {f : α → β} (H : StrictMono f) {a}
-    (h_bot : f a = ⊥) (x : α) : a ≤ x :=
+theorem StrictMono.minimal_preimage_bot [LinearOrder α] [PartialOrder β] [OrderBot β] {f : α → β}
+    (H : StrictMono f) {a} (h_bot : f a = ⊥) (x : α) : a ≤ x :=
   H.minimal_of_minimal_image
     (fun p => by
       rw [h_bot]
@@ -428,16 +428,9 @@ theorem StrictMono.minimal_preimage_bot [LinearOrder α] [PartialOrder β] [Orde
     x
 #align strict_mono.minimal_preimage_bot StrictMono.minimal_preimage_bot
 
-theorem OrderBot.ext_bot {α} {hA : PartialOrder α} (A : OrderBot α) {hB : PartialOrder α} (B : OrderBot α)
-    (H :
-      ∀ x y : α,
-        (haveI := hA
-          x ≤ y) ↔
-          x ≤ y) :
-    (haveI := A
-        ⊥ :
-        α) =
-      ⊥ :=
+theorem OrderBot.ext_bot {α} {hA : PartialOrder α} (A : OrderBot α) {hB : PartialOrder α}
+    (B : OrderBot α) (H : ∀ x y : α, (haveI := hA; x ≤ y) ↔ x ≤ y) :
+    (haveI := A; ⊥ : α) = ⊥ :=
   bot_unique <| by rw [← H] <;> apply bot_le
 #align order_bot.ext_bot OrderBot.ext_bot
 
@@ -530,8 +523,9 @@ end SemilatticeInfBot
 class BoundedOrder (α : Type u) [LE α] extends OrderTop α, OrderBot α
 #align bounded_order BoundedOrder
 
-instance (α : Type u) [LE α] [BoundedOrder α] : BoundedOrder αᵒᵈ :=
-  { OrderDual.orderTop α, OrderDual.orderBot α with }
+instance (α : Type u) [LE α] [BoundedOrder α] : BoundedOrder αᵒᵈ where
+  __ := inferInstanceAs (OrderTop αᵒᵈ)
+  __ := inferInstanceAs (OrderBot αᵒᵈ)
 
 theorem BoundedOrder.ext {α} [PartialOrder α] {A B : BoundedOrder α} : A = B := by
   have ht : @BoundedOrder.toOrderTop α _ A = @BoundedOrder.toOrderTop α _ B := OrderTop.ext
@@ -542,22 +536,29 @@ theorem BoundedOrder.ext {α} [PartialOrder α] {A B : BoundedOrder α} : A = B 
   injection hb with h'
   convert rfl
   · exact h.symm
-    
+
   · exact h'.symm
-    
+
 #align bounded_order.ext BoundedOrder.ext
 
 /-- Propositions form a distributive lattice. -/
-instance PropCat.distribLattice : DistribLattice Prop :=
-  { PropCat.partialOrder with sup := Or, le_sup_left := @Or.inl, le_sup_right := @Or.inr,
-    sup_le := fun a b c => Or.ndrec, inf := And, inf_le_left := @And.left, inf_le_right := @And.right,
-    le_inf := fun a b c Hab Hac Ha => And.intro (Hab Ha) (Hac Ha), le_sup_inf := fun a b c => or_and_left.2 }
+instance PropCat.distribLattice : DistribLattice Prop where
+  __ := PropCat.partialOrder
+  sup := Or
+  le_sup_left := @Or.inl
+  le_sup_right := @Or.inr
+  sup_le := fun _ _ _ => Or.rec
+  inf := And
+  inf_le_left := @And.left
+  inf_le_right := @And.right
+  le_inf := fun _ _ _ Hab Hac Ha => And.intro (Hab Ha) (Hac Ha)
+  le_sup_inf := fun _ _ _ => or_and_left.2
 #align Prop.distrib_lattice PropCat.distribLattice
 
 /-- Propositions form a bounded order. -/
 instance PropCat.boundedOrder : BoundedOrder Prop where
   top := True
-  le_top a Ha := True.intro
+  le_top _ _ := True.intro
   bot := False
   bot_le := @False.elim
 #align Prop.bounded_order PropCat.boundedOrder
@@ -570,78 +571,16 @@ theorem PropCat.top_eq_true : (⊤ : Prop) = True :=
   rfl
 #align Prop.top_eq_true PropCat.top_eq_true
 
+-- Parting note: was `tauto!`
 instance PropCat.le_is_total : IsTotal Prop (· ≤ ·) :=
   ⟨fun p q => by
     change (p → q) ∨ (q → p)
-    tauto!⟩
+    by_cases hp : p <;> by_cases hq : q <;> simp [hp, hq]⟩
 #align Prop.le_is_total PropCat.le_is_total
 
-/- failed to parenthesize: parenthesize: uncaught backtrack exception
-[PrettyPrinter.parenthesize.input] (Command.declaration
-     (Command.declModifiers [] [] [] [(Command.noncomputable "noncomputable")] [] [])
-     (Command.instance
-      (Term.attrKind [])
-      "instance"
-      []
-      [(Command.declId `PropCat.linearOrder [])]
-      (Command.declSig [] (Term.typeSpec ":" (Term.app `LinearOrder [(Term.prop "Prop")])))
-      (Command.declValSimple
-       ":="
-       (Term.byTactic
-        "by"
-        (Tactic.tacticSeq
-         (Tactic.tacticSeq1Indented
-          [(Tactic.«tactic_<;>_»
-            (Mathlib.Tactic.tacticClassical_ (Tactic.skip "skip"))
-            "<;>"
-            (Tactic.exact "exact" (Term.app `Lattice.toLinearOrder [(Term.prop "Prop")])))])))
-       [])
-      []
-      []))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.instance', expected 'Lean.Parser.Command.abbrev'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.instance', expected 'Lean.Parser.Command.def'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.instance', expected 'Lean.Parser.Command.theorem'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.instance', expected 'Lean.Parser.Command.opaque'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.byTactic
-       "by"
-       (Tactic.tacticSeq
-        (Tactic.tacticSeq1Indented
-         [(Tactic.«tactic_<;>_»
-           (Mathlib.Tactic.tacticClassical_ (Tactic.skip "skip"))
-           "<;>"
-           (Tactic.exact "exact" (Term.app `Lattice.toLinearOrder [(Term.prop "Prop")])))])))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Tactic.tacticSeq1Indented', expected 'Lean.Parser.Tactic.tacticSeqBracketed'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.«tactic_<;>_»
-       (Mathlib.Tactic.tacticClassical_ (Tactic.skip "skip"))
-       "<;>"
-       (Tactic.exact "exact" (Term.app `Lattice.toLinearOrder [(Term.prop "Prop")])))
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.exact "exact" (Term.app `Lattice.toLinearOrder [(Term.prop "Prop")]))
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.app `Lattice.toLinearOrder [(Term.prop "Prop")])
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.prop', expected 'Lean.Parser.Term.namedArgument'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Term.prop', expected 'Lean.Parser.Term.ellipsis'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.prop "Prop")
-[PrettyPrinter.parenthesize] ...precedences are 1023 >? 1024, (none, [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1022, term))
-      `Lattice.toLinearOrder
-[PrettyPrinter.parenthesize] ...precedences are 1024 >? 1024, (none, [anonymous]) <=? (some 1022, term)
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022, (some 1023, term) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1, tactic))
-      (Mathlib.Tactic.tacticClassical_ (Tactic.skip "skip"))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Tactic.skip', expected 'Lean.Parser.Tactic.tacticSeq'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.declValSimple', expected 'Lean.Parser.Command.declValEqns'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.declValSimple', expected 'Lean.Parser.Command.whereStructInst'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.instance', expected 'Lean.Parser.Command.axiom'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.instance', expected 'Lean.Parser.Command.example'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.instance', expected 'Lean.Parser.Command.inductive'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.instance', expected 'Lean.Parser.Command.classInductive'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.instance', expected 'Lean.Parser.Command.structure'-/-- failed to format: format: uncaught backtrack exception
-noncomputable instance PropCat.linearOrder : LinearOrder Prop := by skip <;> exact Lattice.toLinearOrder Prop
+noncomputable instance PropCat.linearOrder : LinearOrder Prop := by
+  classical
+  exact Lattice.toLinearOrder Prop
 #align Prop.linear_order PropCat.linearOrder
 
 @[simp]
@@ -666,7 +605,7 @@ section Preorder
 variable [Preorder α]
 
 theorem monotone_and {p q : α → Prop} (m_p : Monotone p) (m_q : Monotone q) : Monotone fun x => p x ∧ q x :=
-  fun a b h => And.imp (m_p h) (m_q h)
+  fun _ _ h => And.imp (m_p h) (m_q h)
 #align monotone_and monotone_and
 
 -- Note: by finish [monotone] doesn't work
@@ -674,32 +613,34 @@ theorem monotone_or {p q : α → Prop} (m_p : Monotone p) (m_q : Monotone q) : 
   Or.imp (m_p h) (m_q h)
 #align monotone_or monotone_or
 
-theorem monotone_le {x : α} : Monotone ((· ≤ ·) x) := fun y z h' h => h.trans h'
+theorem monotone_le {x : α} : Monotone ((· ≤ ·) x) := fun _ _ h' h => h.trans h'
 #align monotone_le monotone_le
 
-theorem monotone_lt {x : α} : Monotone ((· < ·) x) := fun y z h' h => h.trans_le h'
+theorem monotone_lt {x : α} : Monotone ((· < ·) x) := fun _ _ h' h => h.trans_le h'
 #align monotone_lt monotone_lt
 
-theorem antitone_le {x : α} : Antitone (· ≤ x) := fun y z h' h => h'.trans h
+theorem antitone_le {x : α} : Antitone (· ≤ x) := fun _ _ h' h => h'.trans h
 #align antitone_le antitone_le
 
-theorem antitone_lt {x : α} : Antitone (· < x) := fun y z h' h => h'.trans_lt h
+theorem antitone_lt {x : α} : Antitone (· < x) := fun _ _ h' h => h'.trans_lt h
 #align antitone_lt antitone_lt
 
-theorem Monotone.forall {P : β → α → Prop} (hP : ∀ x, Monotone (P x)) : Monotone fun y => ∀ x, P x y :=
-  fun y y' hy h x => hP x hy <| h x
+theorem Monotone.forall {P : β → α → Prop} (hP : ∀ x, Monotone (P x)) :
+    Monotone fun y => ∀ x, P x y :=
+  fun _ _ hy h x => hP x hy <| h x
 #align monotone.forall Monotone.forall
 
-theorem Antitone.forall {P : β → α → Prop} (hP : ∀ x, Antitone (P x)) : Antitone fun y => ∀ x, P x y :=
-  fun y y' hy h x => hP x hy (h x)
+theorem Antitone.forall {P : β → α → Prop} (hP : ∀ x, Antitone (P x)) :
+    Antitone fun y => ∀ x, P x y :=
+  fun _ _ hy h x => hP x hy (h x)
 #align antitone.forall Antitone.forall
 
 theorem Monotone.ball {P : β → α → Prop} {s : Set β} (hP : ∀ x ∈ s, Monotone (P x)) :
-    Monotone fun y => ∀ x ∈ s, P x y := fun y y' hy h x hx => hP x hx hy (h x hx)
+    Monotone fun y => ∀ x ∈ s, P x y := fun _ _ hy h x hx => hP x hx hy (h x hx)
 #align monotone.ball Monotone.ball
 
 theorem Antitone.ball {P : β → α → Prop} {s : Set β} (hP : ∀ x ∈ s, Antitone (P x)) :
-    Antitone fun y => ∀ x ∈ s, P x y := fun y y' hy h x hx => hP x hx hy (h x hx)
+    Antitone fun y => ∀ x ∈ s, P x y := fun _ _ hy h x hx => hP x hx hy (h x hx)
 #align antitone.ball Antitone.ball
 
 end Preorder
@@ -708,8 +649,9 @@ section SemilatticeSup
 
 variable [SemilatticeSup α]
 
-theorem exists_ge_and_iff_exists {P : α → Prop} {x₀ : α} (hP : Monotone P) : (∃ x, x₀ ≤ x ∧ P x) ↔ ∃ x, P x :=
-  ⟨fun h => h.imp fun x h => h.2, fun ⟨x, hx⟩ => ⟨x ⊔ x₀, le_sup_right, hP le_sup_left hx⟩⟩
+theorem exists_ge_and_iff_exists {P : α → Prop} {x₀ : α} (hP : Monotone P) :
+    (∃ x, x₀ ≤ x ∧ P x) ↔ ∃ x, P x :=
+  ⟨fun h => h.imp fun _ h => h.2, fun ⟨x, hx⟩ => ⟨x ⊔ x₀, le_sup_right, hP le_sup_left hx⟩⟩
 #align exists_ge_and_iff_exists exists_ge_and_iff_exists
 
 end SemilatticeSup
@@ -718,8 +660,10 @@ section SemilatticeInf
 
 variable [SemilatticeInf α]
 
-theorem exists_le_and_iff_exists {P : α → Prop} {x₀ : α} (hP : Antitone P) : (∃ x, x ≤ x₀ ∧ P x) ↔ ∃ x, P x :=
-  exists_ge_and_iff_exists hP.dual_left
+-- Porting note: was `hP.dual_left`
+theorem exists_le_and_iff_exists {P : α → Prop} {x₀ : α} (hP : Antitone P) :
+    (∃ x, x ≤ x₀ ∧ P x) ↔ ∃ x, P x :=
+  exists_ge_and_iff_exists <| Antitone.dual_left hP
 #align exists_le_and_iff_exists exists_le_and_iff_exists
 
 end SemilatticeInf
@@ -758,13 +702,14 @@ theorem top_def [∀ i, HasTop (α' i)] : (⊤ : ∀ i, α' i) = fun i => ⊤ :=
 #align pi.top_def Pi.top_def
 
 instance [∀ i, LE (α' i)] [∀ i, OrderTop (α' i)] : OrderTop (∀ i, α' i) :=
-  { Pi.hasTop with le_top := fun _ _ => le_top }
+  { inferInstanceAs (HasTop (∀ i, α' i)) with le_top := fun _ _ => le_top }
 
 instance [∀ i, LE (α' i)] [∀ i, OrderBot (α' i)] : OrderBot (∀ i, α' i) :=
-  { Pi.hasBot with bot_le := fun _ _ => bot_le }
+  { inferInstanceAs (HasBot (∀ i, α' i)) with bot_le := fun _ _ => bot_le }
 
-instance [∀ i, LE (α' i)] [∀ i, BoundedOrder (α' i)] : BoundedOrder (∀ i, α' i) :=
-  { Pi.orderTop, Pi.orderBot with }
+instance [∀ i, LE (α' i)] [∀ i, BoundedOrder (α' i)] : BoundedOrder (∀ i, α' i) where
+  __ := inferInstanceAs (OrderTop (∀ i, α' i))
+  __ := inferInstanceAs (OrderBot (∀ i, α' i))
 
 end Pi
 
@@ -801,10 +746,11 @@ section lift
 @[reducible]
 def OrderTop.lift [LE α] [HasTop α] [LE β] [OrderTop β] (f : α → β) (map_le : ∀ a b, f a ≤ f b → a ≤ b)
     (map_top : f ⊤ = ⊤) : OrderTop α :=
-  ⟨⊤, fun a =>
+  ⟨fun a =>
     map_le _ _ <| by
       rw [map_top]
-      exact le_top⟩
+      -- Porting note: lean3 didn't need the type annotation
+      exact @le_top β _ _ _⟩
 #align order_top.lift OrderTop.lift
 
 -- See note [reducible non-instances]
@@ -812,10 +758,11 @@ def OrderTop.lift [LE α] [HasTop α] [LE β] [OrderTop β] (f : α → β) (map
 @[reducible]
 def OrderBot.lift [LE α] [HasBot α] [LE β] [OrderBot β] (f : α → β) (map_le : ∀ a b, f a ≤ f b → a ≤ b)
     (map_bot : f ⊥ = ⊥) : OrderBot α :=
-  ⟨⊥, fun a =>
+  ⟨fun a =>
     map_le _ _ <| by
       rw [map_bot]
-      exact bot_le⟩
+      -- Porting note: lean3 didn't need the type annotation
+      exact @bot_le β _ _ _⟩
 #align order_bot.lift OrderBot.lift
 
 -- See note [reducible non-instances]
@@ -902,19 +849,20 @@ theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
 
 /-- Recursor for `with_bot` using the preferred forms `⊥` and `↑a`. -/
 @[elab_as_elim]
-def recBotCoe {C : WithBot α → Sort _} (h₁ : C ⊥) (h₂ : ∀ a : α, C a) : ∀ n : WithBot α, C n :=
-  Option.rec h₁ h₂
+def recBotCoe {C : WithBot α → Sort _} (h₁ : C ⊥) (h₂ : ∀ a : α, C a) : ∀ n : WithBot α, C n
+  | ⊥ => h₁
+  | some n => h₂ n
 #align with_bot.rec_bot_coe WithBot.recBotCoe
 
 @[simp]
-theorem rec_bot_coe_bot {C : WithBot α → Sort _} (d : C ⊥) (f : ∀ a : α, C a) : @recBotCoe _ C d f ⊥ = d :=
+theorem recBotCoe_bot {C : WithBot α → Sort _} (d : C ⊥) (f : ∀ a : α, C a) : @recBotCoe _ C d f ⊥ = d :=
   rfl
-#align with_bot.rec_bot_coe_bot WithBot.rec_bot_coe_bot
+#align with_bot.rec_bot_coe_bot WithBot.recBotCoe_bot
 
 @[simp]
-theorem rec_bot_coe_coe {C : WithBot α → Sort _} (d : C ⊥) (f : ∀ a : α, C a) (x : α) : @recBotCoe _ C d f ↑x = f x :=
+theorem recBotCoe_coe {C : WithBot α → Sort _} (d : C ⊥) (f : ∀ a : α, C a) (x : α) : @recBotCoe _ C d f ↑x = f x :=
   rfl
-#align with_bot.rec_bot_coe_coe WithBot.rec_bot_coe_coe
+#align with_bot.rec_bot_coe_coe WithBot.recBotCoe_coe
 
 /-- Specialization of `option.get_or_else` to values in `with_bot α` that respects API boundaries.
 -/
@@ -932,7 +880,8 @@ theorem unbot'_coe {α} (d x : α) : unbot' d x = x :=
   rfl
 #align with_bot.unbot'_coe WithBot.unbot'_coe
 
-@[norm_cast]
+-- Porting note: norm_cast: badly shaped lemma, lhs must contain at least one coe  some a = some b
+-- @[norm_cast]
 theorem coe_eq_coe : (a : WithBot α) = b ↔ a = b :=
   Option.some_inj
 #align with_bot.coe_eq_coe WithBot.coe_eq_coe
@@ -970,8 +919,11 @@ def unbot : ∀ x : WithBot α, x ≠ ⊥ → α
 @[simp]
 theorem coe_unbot (x : WithBot α) (h : x ≠ ⊥) : (x.unbot h : WithBot α) = x := by
   cases x
-  simpa using h
-  rfl
+  -- Porting note: was `simpa using h`
+  · exfalso
+    apply h
+    rfl
+  · rfl
 #align with_bot.coe_unbot WithBot.coe_unbot
 
 @[simp]
@@ -1007,7 +959,7 @@ instance : OrderBot (WithBot α) :=
 
 instance [OrderTop α] : OrderTop (WithBot α) where
   top := some ⊤
-  le_top o a ha := by cases ha <;> exact ⟨_, rfl, le_top⟩
+  le_top o a ha := by cases ha; exact ⟨_, rfl, le_top⟩
 
 instance [OrderTop α] : BoundedOrder (WithBot α) :=
   { WithBot.orderTop, WithBot.orderBot with }
@@ -1097,9 +1049,9 @@ instance [PartialOrder α] : PartialOrder (WithBot α) :=
       cases' o₁ with a
       · cases' o₂ with b
         · rfl
-          
+
         rcases h₂ b rfl with ⟨_, ⟨⟩, _⟩
-        
+
       · rcases h₁ a rfl with ⟨b, ⟨⟩, h₁'⟩
         rcases h₂ b rfl with ⟨_, ⟨⟩, h₂'⟩
         rw [le_antisymm h₁' h₂']
@@ -1169,9 +1121,9 @@ instance [SemilatticeSup α] : SemilatticeSup (WithBot α) :=
     sup_le := fun o₁ o₂ o₃ h₁ h₂ a ha => by
       cases' o₁ with b <;> cases' o₂ with c <;> cases ha
       · exact h₂ a rfl
-        
+
       · exact h₁ a rfl
-        
+
       · rcases h₁ b rfl with ⟨d, ⟨⟩, h₁'⟩
         simp at h₂
         exact ⟨d, rfl, sup_le h₁' h₂⟩
@@ -1290,9 +1242,9 @@ theorem lt_iff_exists_coe_btwn [Preorder α] [DenselyOrdered α] [NoMinOrder α]
 
 instance [LE α] [NoTopOrder α] [Nonempty α] : NoTopOrder (WithBot α) :=
   ⟨by
-    apply rec_bot_coe
+    apply recBotCoe
     · exact ‹Nonempty α›.elim fun a => ⟨a, not_coe_le_bot a⟩
-      
+
     · intro a
       obtain ⟨b, h⟩ := exists_not_le a
       exact ⟨b, by rwa [coe_le_coe]⟩
@@ -1303,7 +1255,7 @@ instance [LT α] [NoMaxOrder α] [Nonempty α] : NoMaxOrder (WithBot α) :=
     apply WithBot.recBotCoe
     · apply ‹Nonempty α›.elim
       exact fun a => ⟨a, WithBot.bot_lt_coe a⟩
-      
+
     · intro a
       obtain ⟨b, ha⟩ := exists_gt a
       exact ⟨b, with_bot.coe_lt_coe.mpr ha⟩
@@ -1870,9 +1822,9 @@ instance [SemilatticeInf α] : SemilatticeInf (WithTop α) :=
     le_inf := fun o₁ o₂ o₃ h₁ h₂ a ha => by
       cases' o₂ with b <;> cases' o₃ with c <;> cases ha
       · exact h₂ a rfl
-        
+
       · exact h₁ a rfl
-        
+
       · rcases h₁ b rfl with ⟨d, ⟨⟩, h₁'⟩
         simp at h₂
         exact ⟨d, rfl, le_inf h₁' h₂⟩
@@ -2667,7 +2619,7 @@ theorem inf_left_le_of_le_sup_right (h : IsCompl x y) (hle : a ≤ b ⊔ y) : a 
     _ = b ⊓ x ⊔ y ⊓ x := inf_sup_right
     _ = b ⊓ x := by rw [h.symm.inf_eq_bot, sup_bot_eq]
     _ ≤ b := inf_le_left
-    
+
 #align is_compl.inf_left_le_of_le_sup_right IsCompl.inf_left_le_of_le_sup_right
 
 theorem le_sup_right_iff_inf_left_le {a b} (h : IsCompl x y) : a ≤ b ⊔ y ↔ a ⊓ x ≤ b :=
@@ -2743,10 +2695,10 @@ protected theorem disjoint_iff [OrderBot α] [OrderBot β] {x y : α × β} :
   · intro h
     refine' ⟨fun a hx hy => (@h (a, ⊥) ⟨hx, _⟩ ⟨hy, _⟩).1, fun b hx hy => (@h (⊥, b) ⟨_, hx⟩ ⟨_, hy⟩).2⟩
     all_goals exact bot_le
-    
+
   · rintro ⟨ha, hb⟩ z hza hzb
     refine' ⟨ha hza.1 hzb.1, hb hza.2 hzb.2⟩
-    
+
 #align prod.disjoint_iff Prod.disjoint_iff
 
 protected theorem codisjoint_iff [OrderTop α] [OrderTop β] {x y : α × β} :
@@ -2770,15 +2722,15 @@ theorem disjoint_iff [∀ i, OrderBot (α' i)] {f g : ∀ i, α' i} : Disjoint f
   · intro h i x hf hg
     refine' (update_le_iff.mp <| h (update_le_iff.mpr ⟨hf, fun _ _ => _⟩) (update_le_iff.mpr ⟨hg, fun _ _ => _⟩)).1
     · exact ⊥
-      
+
     · exact bot_le
-      
+
     · exact bot_le
-      
-    
+
+
   · intro h x hf hg i
     apply h i (hf i) (hg i)
-    
+
 #align pi.disjoint_iff Pi.disjoint_iff
 
 theorem codisjoint_iff [∀ i, OrderTop (α' i)] {f g : ∀ i, α' i} : Codisjoint f g ↔ ∀ i, Codisjoint (f i) (g i) :=
@@ -2909,4 +2861,3 @@ theorem bot_eq_ff : ⊥ = ff :=
 #align bot_eq_ff bot_eq_ff
 
 end Bool
-
