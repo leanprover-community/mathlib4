@@ -129,10 +129,10 @@ instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One $ f i] : One ((
 run_cmd do
   let n ← (Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg
     `Test.pi.has_one)
-  if n != 2 then throwError "{n} != 1"
+  if n != 2 then throwError "{n} != 2"
   let n ← (Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg
     `Test.foo_mul)
-  if n != 5 then throwError "{n} != 4"
+  if n != 5 then throwError "{n} != 5"
 
 end
 
