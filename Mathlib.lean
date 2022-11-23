@@ -24,6 +24,7 @@ import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Ring.OrderSynonym
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.Control.Basic
 import Mathlib.Control.EquivFunctor
@@ -130,6 +131,7 @@ import Mathlib.Mathport.Syntax
 import Mathlib.Order.Basic
 import Mathlib.Order.Compare
 import Mathlib.Order.GameAdd
+import Mathlib.Order.Iterate
 import Mathlib.Order.Max
 import Mathlib.Order.Monotone
 import Mathlib.Order.RelClasses
@@ -150,13 +152,11 @@ import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
-import Mathlib.Tactic.Congr
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
-import Mathlib.Tactic.DocCommands
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Expect
 import Mathlib.Tactic.FinCases
@@ -201,11 +201,9 @@ import Mathlib.Tactic.Ring.RingNF
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.ScopedNS
-import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.SimpTrace
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SolveByElim
