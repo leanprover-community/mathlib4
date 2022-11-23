@@ -21,13 +21,11 @@ import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
-import Mathlib.Tactic.Congr
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
-import Mathlib.Tactic.DocCommands
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
@@ -58,12 +56,10 @@ import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.ScopedNS
-import Mathlib.Tactic.SeqFocus
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.SimpTrace
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Substs
@@ -209,7 +205,6 @@ namespace Tactic
 
 /- S -/ syntax (name := propagateTags) "propagate_tags " tacticSeq : tactic
 /- S -/ syntax (name := mapply) "mapply " term : tactic
-/- S -/ syntax (name := withCases) "with_cases " tacticSeq : tactic
 /- S -/ syntax "destruct " term : tactic
 /- N -/ syntax (name := abstract) "abstract" (ppSpace ident)? ppSpace tacticSeq : tactic
 
@@ -220,15 +215,6 @@ namespace Tactic
 /- S -/ syntax (name := rsimp) "rsimp" : tactic
 /- S -/ syntax (name := compVal) "comp_val" : tactic
 /- S -/ syntax (name := async) "async " tacticSeq : tactic
-
-/- E -/ syntax (name := apply') "apply' " term : tactic
-/- E -/ syntax (name := fapply') "fapply' " term : tactic
-/- E -/ syntax (name := eapply') "eapply' " term : tactic
-/- E -/ syntax (name := applyWith') "apply_with' " (config)? term : tactic
-/- E -/ syntax (name := mapply') "mapply' " term : tactic
-/- E -/ syntax (name := rfl') "rfl'" : tactic
-/- E -/ syntax (name := symm') "symm'" (ppSpace location)? : tactic
-/- E -/ syntax (name := trans') "trans'" (ppSpace term)? : tactic
 
 /- M -/ syntax (name := injectionsAndClear) "injections_and_clear" : tactic
 

@@ -8,7 +8,6 @@ import Std.Tactic.Lint.Basic
 import Std.Logic
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.SimpTrace
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
@@ -370,11 +369,17 @@ theorem if_congr_prop {b c x y u v : Prop} [Decidable b] [Decidable c] (h_c : b 
   if_ctx_congr_prop h_c (λ _ => h_t) (λ _ => h_e)
 
 theorem if_ctx_simp_congr_prop {b c x y u v : Prop} [Decidable b] (h_c : b ↔ c) (h_t : c → (x ↔ u))
-    (h_e : ¬c → (y ↔ v)) : ite b x y ↔ ite c (h := decidable_of_decidable_of_iff h_c) u v :=
+    -- FIXME: after https://github.com/leanprover/lean4/issues/1867 is fixed,
+    -- this should be changed back to:
+    -- (h_e : ¬c → (y ↔ v)) : ite b x y ↔ ite c (h := decidable_of_decidable_of_iff h_c) u v :=
+    (h_e : ¬c → (y ↔ v)) : ite b x y ↔ @ite _ c (decidable_of_decidable_of_iff h_c) u v :=
   if_ctx_congr_prop (dec_c := decidable_of_decidable_of_iff h_c) h_c h_t h_e
 
 theorem if_simp_congr_prop {b c x y u v : Prop} [Decidable b] (h_c : b ↔ c) (h_t : x ↔ u)
-    (h_e : y ↔ v) : ite b x y ↔ (ite c (h := decidable_of_decidable_of_iff h_c) u v) :=
+    -- FIXME: after https://github.com/leanprover/lean4/issues/1867 is fixed,
+    -- this should be changed back to:
+    -- (h_e : y ↔ v) : ite b x y ↔ (ite c (h := decidable_of_decidable_of_iff h_c) u v) :=
+    (h_e : y ↔ v) : ite b x y ↔ (@ite _ c (decidable_of_decidable_of_iff h_c) u v) :=
   if_ctx_simp_congr_prop h_c (λ _ => h_t) (λ _ => h_e)
 
 -- @[congr]
@@ -393,7 +398,10 @@ theorem dif_ctx_simp_congr {α : Sort u} {b c : Prop} [Decidable b]
     {x : b → α} {u : c → α} {y : ¬b → α} {v : ¬c → α}
     (h_c : b ↔ c) (h_t : ∀ h : c, x (Iff.mpr h_c h) = u h)
     (h_e : ∀ h : ¬c, y (Iff.mpr (not_congr h_c) h) = v h) :
-    dite b x y = dite c (h := decidable_of_decidable_of_iff h_c) u v :=
+    -- FIXME: after https://github.com/leanprover/lean4/issues/1867 is fixed,
+    -- this should be changed back to:
+    -- dite b x y = dite c (h := decidable_of_decidable_of_iff h_c) u v :=
+    dite b x y = @dite _ c (decidable_of_decidable_of_iff h_c) u v :=
   dif_ctx_congr (dec_c := decidable_of_decidable_of_iff h_c) h_c h_t h_e
 
 def AsTrue (c : Prop) [Decidable c] : Prop := if c then True else False
