@@ -510,8 +510,6 @@ def subtypeCongr {p q : α → Prop} [DecidablePred p] [DecidablePred q]
   (sumCompl p).symm.trans ((sumCongr e f).trans (sumCompl q))
 #align equiv.subtype_congr Equiv.subtypeCongr
 
-open Equiv
-
 variable {p : ε → Prop} [DecidablePred p]
 
 variable (ep ep' : Perm { a // p a }) (en en' : Perm { a // ¬p a })
