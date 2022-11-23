@@ -1425,7 +1425,9 @@ def subtypeQuotientEquivQuotientSubtype (p₁ : α → Prop) [s₁ : Setoid α] 
   invFun a :=
     Quotient.liftOn a (fun a => (⟨⟦a.1⟧, (hp₂ _).1 a.2⟩ : { x // p₂ x })) fun a b hab =>
       Subtype.ext_val (Quotient.sound ((h _ _).1 hab))
+  -- Porting note:
   -- for some reason, doing this as a `fun ⟨a, ha⟩ => ` block breaks things.
+  -- There is a stand-alone version of this at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/logic.2Eequiv.2Ebasic.20mathlib4.23631/near/311869098
   left_inv t := by rcases t with ⟨a, ha⟩; exact Quotient.inductionOn a (fun b hb => rfl) ha
   right_inv a := Quotient.inductionOn a fun ⟨a, ha⟩ => rfl
 #align equiv.subtype_quotient_equiv_quotient_subtype Equiv.subtypeQuotientEquivQuotientSubtype
