@@ -596,8 +596,8 @@ def subtypePreimage : { x : α → β // x ∘ Subtype.val = x₀ } ≃ ({ a // 
       funext fun a => by
         dsimp only
         split_ifs
-        { rw [← hx]; rfl }
-        { rfl }
+        · rw [← hx]; rfl
+        · rfl
   right_inv x :=
     funext fun ⟨a, h⟩ =>
       show dite (p a) _ _ = _ by
