@@ -127,7 +127,7 @@ def prodAssoc (α β γ) : (α × β) × γ ≃ α × β × γ :=
     fun ⟨_, ⟨_, _⟩⟩ => rfl⟩
 #align equiv.prod_assoc Equiv.prodAssoc
 
-/-- Functions on `α × β` are equivalent to functions `α → β → γ`. -/
+/-- `γ`-valued functions on `α × β` are equivalent to functions `α → β → γ`. -/
 @[simps (config := { fullyApplied := false })]
 def curry (α β γ) : (α × β → γ) ≃ (α → β → γ) where
   toFun := Function.curry
