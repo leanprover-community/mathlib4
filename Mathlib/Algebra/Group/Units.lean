@@ -57,7 +57,6 @@ structure Units (α : Type u) [Monoid α] where
 
 attribute [coe] Units.val
 
--- mathport name: «expr ˣ»
 @[inherit_doc]
 postfix:1024 "ˣ" => Units
 
