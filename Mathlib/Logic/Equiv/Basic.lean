@@ -594,7 +594,7 @@ def subtypePreimage : { x : α → β // x ∘ Subtype.val = x₀ } ≃ ({ a // 
   left_inv := fun ⟨x, hx⟩ =>
     Subtype.val_injective <|
       funext fun a => by
-        dsimp
+        dsimp only
         split_ifs
         { rw [← hx]; rfl }
         { rfl }
