@@ -41,6 +41,9 @@ instance instOne [∀ i, One <| f i] : One (∀ i : I, f i) :=
 
 #align pi.has_one Pi.instOne
 
+-- Porting note : Atm to_additive does not copy the `instance` attribute.
+attribute [instance] Pi.instZero
+
 @[simp, to_additive]
 theorem one_apply [∀ i, One <| f i] : (1 : ∀ i, f i) i = 1 :=
   rfl
@@ -67,6 +70,9 @@ instance instMul [∀ i, Mul <| f i] : Mul (∀ i : I, f i) :=
 
 #align pi.has_mul Pi.instMul
 
+-- Porting note : Atm to_additive does not copy the `instance` attribute.
+attribute [instance] Pi.instAdd
+
 @[simp, to_additive]
 theorem mul_apply [∀ i, Mul <| f i] : (x * y) i = x i * y i :=
   rfl
@@ -84,8 +90,13 @@ theorem mul_comp [Mul γ] (x y : β → γ) (z : α → β) : (x * y) ∘ z = x 
   rfl
 
 @[to_additive]
-instance instHasSmul [∀ i, HasSmul α <| f i] : HasSmul α (∀ i : I, f i) :=
+instance instSmul [∀ i, HasSmul α <| f i] : HasSmul α (∀ i : I, f i) :=
   ⟨fun s x => fun i => s • x i⟩
+
+#align pi.has_smul Pi.instSmul
+
+-- Porting note : Atm to_additive does not copy the `instance` attribute.
+attribute [instance] Pi.instVadd
 
 @[simp, to_additive]
 theorem smul_apply [∀ i, HasSmul α <| f i] (s : α) (x : ∀ i, f i) (i : I) : (s • x) i = s • x i :=
@@ -103,7 +114,7 @@ theorem smul_const [HasSmul α β] (a : α) (b : β) : a • const I b = const I
 theorem smul_comp [HasSmul α γ] (a : α) (x : β → γ) (y : I → β) : (a • x) ∘ y = a • x ∘ y :=
   rfl
 
-@[to_additive Pi.instHasSmul]
+@[to_additive Pi.instSmul]
 instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
   ⟨fun x b i => x i ^ b⟩
 
@@ -124,20 +135,34 @@ theorem const_pow [Pow β α] (b : β) (a : α) : const I b ^ a = const I (b ^ a
 theorem pow_comp [Pow γ α] (x : β → γ) (a : α) (y : I → β) : (x ^ a) ∘ y = x ∘ y ^ a :=
   rfl
 
--- -- Porting note : deprecated. not ported.
--- @[simp]
--- theorem bit0_apply [∀ i, Add <| f i] : (bit0 x) i = bit0 (x i) :=
---   rfl
---
--- @[simp]
--- theorem bit1_apply [∀ i, Add <| f i] [∀ i, One <| f i] : (bit1 x) i = bit1 (x i) :=
---   rfl
+example [∀ i, Add <| f i] : Add <| ∀ i, f i := inferInstance
+
+/-!
+Porting note: `bit0` and `bit1` are deprecated. This section can be removed entirely
+(without replacement?).
+-/
+section deprecated
+
+set_option linter.deprecated false
+
+@[simp, deprecated]
+theorem bit0_apply [∀ i, Add <| f i] : (bit0 x) i = bit0 (x i) :=
+  rfl
+
+@[simp, deprecated]
+theorem bit1_apply [∀ i, Add <| f i] [∀ i, One <| f i] : (bit1 x) i = bit1 (x i) :=
+  rfl
+
+end deprecated
 
 @[to_additive]
 instance instInv [∀ i, Inv <| f i] : Inv (∀ i : I, f i) :=
   ⟨fun f i => (f i)⁻¹⟩
 
 #align pi.has_inv Pi.instInv
+
+-- Porting note : Atm to_additive does not copy the `instance` attribute.
+attribute [instance] Pi.instNeg
 
 @[simp, to_additive]
 theorem inv_apply [∀ i, Inv <| f i] : x⁻¹ i = (x i)⁻¹ :=
@@ -160,6 +185,9 @@ instance instDiv [∀ i, Div <| f i] : Div (∀ i : I, f i) :=
   ⟨fun f g i => f i / g i⟩
 
 #align pi.has_div Pi.instDiv
+
+-- Porting note : Atm to_additive does not copy the `instance` attribute.
+attribute [instance] Pi.instSub
 
 @[simp, to_additive]
 theorem div_apply [∀ i, Div <| f i] : (x / y) i = x i / y i :=
@@ -384,11 +412,3 @@ theorem elim_div_div [Div γ] : Sum.elim (a / a') (b / b') = Sum.elim a b / Sum.
   cases x <;> rfl
 
 end Sum
-
--- Porting note : Atm it seems that to_additive does not copy the `instance` attribute
--- These can be removed once it does.
-attribute [instance] Pi.instZero
-attribute [instance] Pi.instAdd
-attribute [instance] Pi.instHasVadd
-attribute [instance] Pi.instNeg
-attribute [instance] Pi.instSub
