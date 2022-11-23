@@ -426,12 +426,11 @@ def copySimpAttribute (src tgt : Name) : CoreM Unit := do
 [todo] it seems not to work when the `to_additive` is added as an attribute later. -/
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if (← isInstance src) then
-    -- [todo] add priority and correct `AttributeKind`
+    -- [todo] add priority and correct `AttributeKind`. This depends on missing API in core, see
+    -- https://github.com/leanprover/lean4/issues/1878
     addInstance tgt AttributeKind.global 100 |>.run'
 
-/-- [todo] add more attributes. A change is coming to core that should
-allow us to iterate the attributes applied to a given decalaration.
--/
+/-- [todo] add more attributes. -/
 def copyAttributes (src tgt : Name) : CoreM Unit := do
   copySimpAttribute src tgt
   copyInstanceAttribute src tgt
