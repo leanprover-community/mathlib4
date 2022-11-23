@@ -981,7 +981,7 @@ def natEquivNatSumPUnit : ℕ ≃ Sum ℕ PUnit where
   toFun n := Nat.casesOn n (inr PUnit.unit) inl
   invFun := Sum.elim Nat.succ fun _ => 0
   left_inv n := by cases n <;> rfl
-  right_inv := by rintro (_ | _ | _) <;> rfl
+  right_inv := by rintro (_ | _) <;> rfl
 #align equiv.nat_equiv_nat_sum_punit Equiv.natEquivNatSumPUnit
 
 /-- `ℕ ⊕ Punit` is equivalent to `ℕ`. -/
