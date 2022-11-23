@@ -170,7 +170,7 @@ initialize relevantArgAttr : NameMapExtension Nat ←
     descr := "Auxiliary attribute for `to_additive` stating" ++
       " which arguments are the types with a multiplicative structure."
     add := fun
-    | _, `(attr| to_additive_relevant_arg $id) => pure <| id.1.isNatLit?.get!
+    | _, `(attr| to_additive_relevant_arg $id) => pure <| id.1.isNatLit?.get!.pred
     | _, stx => throwError "unexpected to_additive_relevant_arg syntax {stx}"
   }
 
@@ -239,26 +239,26 @@ def additiveTest (e : Expr) : M Bool := do
     additiveTestAux false e
 
 /--
-`e.applyReplacementFun f test` applies `f` to each identifier
-(inductive type, defined function etc) in an expression, unless
+`applyReplacementFun e` replaces the expression `e` with its additive counterpart.
+It translates each identifier (inductive type, defined function etc) in an expression, unless
 * The identifier occurs in an application with first argument `arg`; and
 * `test arg` is false.
 However, if `f` is in the dictionary `relevant`, then the argument `relevant.find f`
 is tested, instead of the first argument.
 
-Reorder contains the information about what arguments to reorder:
-e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorder.find g = some [1]`.
-We assume that all functions where we want to reorder arguments are fully applied.
-This can be done by applying `etaExpand` first.
+It will also reorder arguments of certain functions, using `shouldReorder`:
+e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorderAttr.find? env g = some [1]`.
 -/
 def applyReplacementFun : Expr → MetaM Expr :=
   Lean.Expr.replaceRecMeta fun r e ↦ do
     trace[to_additive_detail] "applyReplacementFun: replace at {e}"
     match e with
+    -- todo: don't replace this in a type where additiveTest holds
     | .lit (.natVal 1) => pure <| mkRawNatLit 0
     | .const n₀ ls => do
       let n₁ := Name.mapPrefix (findTranslation? <|← getEnv) n₀
-      trace[to_additive_detail] "applyReplacementFun: {n₀} → {n₁}"
+      if n₀ != n₁ then
+        trace[to_additive_detail] "applyReplacementFun: {n₀} → {n₁}"
       let ls : List Level ← (do -- [todo] just get Lean to figure out the levels?
         if ← shouldReorder n₀ 1 then
             return ls.get! 1::ls.head!::ls.drop 2
@@ -366,7 +366,7 @@ partial def transformDeclAux
   if env.contains tgt then
     return
   let srcDecl ← getConstInfo src
-  -- we first transform all the declarations of the form `pre._proof_i`
+  -- we first transform all auxilliary declarations generated when elaborating `pre`
   for n in srcDecl.type.listNamesWithPrefix pre do
     transformDeclAux none pre tgt_pre n
   if let some value := srcDecl.value? then
@@ -450,7 +450,7 @@ Find the first argument of `nm` that has a multiplicative type-class on it.
 Returns 1 if there are no types with a multiplicative class as arguments.
 E.g. `prod.group` returns 1, and `pi.has_one` returns 2.
 -/
-def firstMultiplicativeArg (nm : Name) : MetaM (Option Nat) := do
+def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
   forallTelescopeReducing (← getConstInfo nm).type fun xs _ ↦ do
     -- xs are the arguments to the constant
     let xs := xs.toList
@@ -466,8 +466,8 @@ def firstMultiplicativeArg (nm : Name) : MetaM (Option Nat) := do
           xs.findIdx? fun x ↦ Expr.containsFVar tgt_arg x.fvarId!
     trace[to_additive_detail] "firstMultiplicativeArg: {l}"
     match l.join with
-    | [] => return none
-    | (head :: tail) => return some <| tail.foldr Nat.min head
+    | [] => return 1
+    | (head :: tail) => return 1 + tail.foldr Nat.min head
 
 /-- `ValueType` is the type of the arguments that can be provided to `to_additive`. -/
 structure ValueType : Type where
@@ -633,12 +633,12 @@ def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
     throwError "to_additive: can't transport {src} to itself."
   return res
 
-private def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (List String)) : CoreM Unit := do
+private def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name)) : CoreM Unit := do
   let srcFields ← f src
   let tgtFields ← f tgt
-  if srcFields.length != tgtFields.length then
+  if srcFields.size != tgtFields.size then
     throwError "Failed to map fields of {src}, {tgt} with {srcFields} ↦ {tgtFields}"
-  for (srcField, tgtField) in List.zip srcFields tgtFields do
+  for (srcField, tgtField) in srcFields.zip tgtFields do
     if srcField != tgtField then
       insertTranslation (src ++ srcField) (tgt ++ tgtField)
 
@@ -647,12 +647,9 @@ so that future uses of `to_additive` will map them to the corresponding `tgt` fi
 def proceedFields (src tgt : Name) : CoreM Unit := do
   let env : Environment ← getEnv
   let aux := proceedFieldsAux src tgt
-  aux (fun n ↦ do
-    let fields := if isStructure env n then getStructureFieldsFlattened env n else #[]
-    return fields |> .map Name.toString |> Array.toList
-  )
-  -- [todo] run to_additive on the constructors of n:
-  -- aux (fun n ↦ (env.constructorsOf n).mmap $ ...
+  aux fun n ↦ pure <| if isStructure env n then getStructureFields env n else #[]
+  -- We don't have to run toAdditive on the constructor of a structure, since the use of
+  -- `Name.mapPrefix` will do that automatically.
 
 private def elabToAdditiveAux (ref : Syntax) (replaceAll trace : Bool) (tgt : Option Syntax)
     (doc : Option Syntax) : ValueType :=
@@ -661,8 +658,7 @@ private def elabToAdditiveAux (ref : Syntax) (replaceAll trace : Bool) (tgt : Op
     tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
     doc := doc.bind (·.isStrLit?)
     allowAutoName := false
-    ref
-  }
+    ref }
 
 private def elabToAdditive : Syntax → CoreM ValueType
   | `(attr| to_additive%$tk $[!%$replaceAll]? $[?%$trace]? $[$tgt]? $[$doc]?) =>
@@ -676,7 +672,8 @@ def addToAdditiveAttr (src : Name) (val : ValueType) : AttrM Unit := do
   if let some tgt' := findTranslation? (← getEnv) src then
     throwError "{src} already has a to_additive translation {tgt'}."
   insertTranslation src tgt
-  if let some firstMultArg ← (MetaM.run' <| firstMultiplicativeArg src) then
+  let firstMultArg ← MetaM.run' <| firstMultiplicativeArg src
+  if firstMultArg != 1 then
     trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
     relevantArgAttr.add src firstMultArg
   if (← getEnv).contains tgt then
