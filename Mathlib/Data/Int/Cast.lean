@@ -23,7 +23,7 @@ namespace Int
 
 @[simp, norm_cast]
 theorem cast_mul [Ring α] : -- FIXME: NonAssocRing
-    ∀ m n, ((m * n : ℤ) : α) = m * n := fun m =>
+    ∀ m n, ((m * n : ℤ) : α) = m * n := fun m ↦
   Int.inductionOn' m 0 (by simp)
-    (fun k _ ih n => by simp [add_mul, ih])
-    (fun k _ ih n => by simp [sub_mul, ih])
+    (fun k _ ih n ↦ by simp [add_mul, ih])
+    (fun k _ ih n ↦ by simp [sub_mul, ih])
