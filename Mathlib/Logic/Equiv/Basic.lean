@@ -1581,7 +1581,7 @@ theorem swap_apply_eq_iff {x y z w : α} : swap x y z = w ↔ z = swap x y w := 
 #align equiv.swap_apply_eq_iff Equiv.swap_apply_eq_iff
 
 theorem swap_apply_ne_self_iff {a b x : α} : swap a b x ≠ x ↔ a ≠ b ∧ (x = a ∨ x = b) := by
-  by_cases hab:a = b
+  by_cases hab : a = b
   · simp [hab]
 
   by_cases hax : x = a
