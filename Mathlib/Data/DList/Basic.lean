@@ -31,12 +31,12 @@ def DList.join {α : Type _} : List (Std.DList α) → Std.DList α
 
 /-- Convert a lazily-evaluated `List` to a `DList` -/
 -- Ported from Lean 3 core
-def DList.lazy_OfList (l : Thunk (List α)) : Std.DList α :=
+def DList.lazy_ofList (l : Thunk (List α)) : Std.DList α :=
 ⟨fun xs => l.get ++ xs, fun t => by simp⟩
-#align dlist.lazy_of_list Std.DList.lazy_OfList
+#align dlist.lazy_of_list Std.DList.lazy_ofList
 
 @[simp]
-theorem DList_singleton {α : Type _} {a : α} : Std.DList.singleton a = DList.lazy_OfList [a] :=
+theorem DList_singleton {α : Type _} {a : α} : Std.DList.singleton a = DList.lazy_ofList [a] :=
   rfl
 #align dlist_singleton Std.DList_singleton
 
