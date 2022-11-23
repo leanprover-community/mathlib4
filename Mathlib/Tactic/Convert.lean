@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Lean
+import Mathlib.Util.MapsTo
 
 /-!
 # The `convert` tactic.
@@ -77,7 +78,7 @@ elab_rules : tactic
 | `(tactic| convert $[←%$sym]? $term $[using $n]?) => withMainContext do
   let (e, gs) ← elabTermWithHoles term
     (← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))) (← getMainTag)
-  liftMetaTactic fun g => return (← g.convert e sym.isSome (n.map (·.getNat))) ++ gs
+  liftMetaTactic fun g ↦ return (← g.convert e sym.isSome (n.map (·.getNat))) ++ gs
 
 -- FIXME restore when `add_tactic_doc` is ported.
 -- add_tactic_doc
