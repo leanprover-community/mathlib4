@@ -181,7 +181,7 @@ def option_subtype [DecidableEq β] (x : β) :
         simp
         exact apply_symm_apply _ _ }
   invFun e :=
-    ⟨{ toFun := fun a => casesOn' a x (coe ∘ e),
+    ⟨{ toFun := fun a => casesOn' a x (Subtype.val ∘ toFun ∘ e),
           invFun := fun b => if h : b = x then none else e.symm ⟨b, h⟩,
         left_inv := fun a => by
           cases a
