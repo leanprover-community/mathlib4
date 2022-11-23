@@ -20,6 +20,7 @@ An element of a `Monoid` is a unit if it has a two-sided inverse.
 * `IsUnit x`: a predicate asserting that `x` is a unit (i.e., invertible element) of a monoid.
 
 For both declarations, there is an additive counterpart: `AddUnits` and `IsAddUnit`.
+See also `Prime`, `Associated`, and `Irreducible` in `Mathlib.Algebra.Associated`.
 
 ## Notation
 
@@ -490,11 +491,6 @@ end CommMonoid
 
 /-!
 # `IsUnit` predicate
-
-In this file we define the `IsUnit` predicate on a `Monoid`, and
-prove a few basic properties. For the bundled version see `Units`. See
-also `Prime`, `Associated`, and `Irreducible` in `Algebra.Associated`.
-
 -/
 
 
