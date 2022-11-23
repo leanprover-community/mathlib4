@@ -5,7 +5,6 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Monotone
-import Mathlib.Data.Nat.Basic
 
 /-!
 # Inequalities on iterates
