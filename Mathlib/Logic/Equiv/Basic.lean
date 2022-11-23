@@ -387,8 +387,8 @@ theorem emptySum_apply_inr [IsEmpty α] (b : β) : emptySum α β (Sum.inr b) = 
 /-- `Option α` is equivalent to `α ⊕ punit` -/
 def optionEquivSumPUnit (α) : Option α ≃ Sum α PUnit :=
   ⟨fun o => o.elim (inr PUnit.unit) inl, fun s => s.elim some fun _ => none,
-    fun o => by cases o <;> rfl, fun s => by
-      rcases s with (_ | ⟨⟨⟩⟩) <;> rfl⟩
+    fun o => by cases o <;> rfl,
+    fun s => by rcases s with (_ | ⟨⟨⟩⟩) <;> rfl⟩
 #align equiv.option_equiv_sum_punit Equiv.optionEquivSumPUnit
 
 @[simp]
