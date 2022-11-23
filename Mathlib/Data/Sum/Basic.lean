@@ -48,12 +48,10 @@ theorem «forall» {p : Sum α β → Prop} : (∀ x, p x) ↔ (∀ a, p (inl a)
 
 @[simp]
 theorem «exists» {p : Sum α β → Prop} : (∃ x, p x) ↔ (∃ a, p (inl a)) ∨ ∃ b, p (inr b) :=
-  ⟨fun h ↦
-    match h with
+  ⟨ fun
     | ⟨inl a, h⟩ => Or.inl ⟨a, h⟩
     | ⟨inr b, h⟩ => Or.inr ⟨b, h⟩,
-    fun h ↦
-    match h with
+    fun
     | Or.inl ⟨a, h⟩ => ⟨inl a, h⟩
     | Or.inr ⟨b, h⟩ => ⟨inr b, h⟩⟩
 
@@ -386,7 +384,7 @@ theorem Lex.mono_right (hs : ∀ a b, s₁ a b → s₂ a b) (h : Lex r s₁ x y
   h.mono (fun _ _ ↦ id) hs
 
 theorem lex_acc_inl {a} (aca : Acc r a) : Acc (Lex r s) (inl a) := by
-  induction' aca with a H IH
+  induction' aca with a _ IH
   constructor
   intro y h
   cases' h with a' _ h'
@@ -394,14 +392,12 @@ theorem lex_acc_inl {a} (aca : Acc r a) : Acc (Lex r s) (inl a) := by
 
 theorem lex_acc_inr (aca : ∀ a, Acc (Lex r s) (inl a)) {b} (acb : Acc s b) :
     Acc (Lex r s) (inr b) := by
-  induction' acb with b H IH
+  induction' acb with b _ IH
   constructor
   intro y h
   cases' h with _ _ _ b' _ h' a
   · exact IH _ h'
-
   · exact aca _
-
 
 theorem lex_wf (ha : WellFounded r) (hb : WellFounded s) : WellFounded (Lex r s) :=
   have aca : ∀ a, Acc (Lex r s) (inl a) := fun a ↦ lex_acc_inl (ha.apply a)
@@ -455,25 +451,22 @@ theorem elim_lam_const_lam_const (c : γ) :
 theorem elim_update_left [DecidableEq α] [DecidableEq β] (f : α → γ) (g : β → γ) (i : α) (c : γ) :
     Sum.elim (Function.update f i c) g = Function.update (Sum.elim f g) (inl i) c := by
   ext x
-  rcases x with (x|x)
+  rcases x with x | x
   · by_cases h : x = i
     · subst h
       simp
     · simp [h]
   · simp
-
 
 theorem elim_update_right [DecidableEq α] [DecidableEq β] (f : α → γ) (g : β → γ) (i : β) (c : γ) :
     Sum.elim f (Function.update g i c) = Function.update (Sum.elim f g) (inr i) c := by
   ext x
-  rcases x with (x|x)
+  rcases x with x | x
   · simp
   · by_cases h : x = i
     · subst h
       simp
     · simp [h]
-
-
 
 end Sum
 
@@ -482,7 +475,6 @@ end Sum
 
 Abbreviations for the maps from the summands to `α ⊕ β ⊕ γ`. This is useful for pattern-matching.
 -/
-
 
 namespace Sum3
 

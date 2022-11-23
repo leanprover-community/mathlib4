@@ -53,13 +53,13 @@ def Compares [LT α] : Ordering → α → α → Prop
   | gt, a, b => a > b
 
 @[simp]
-lemma Compares_lt [LT α] (a b : α) : Compares lt a b = (a < b) := rfl
+lemma compares_lt [LT α] (a b : α) : Compares lt a b = (a < b) := rfl
 
 @[simp]
-lemma Compares_eq [LT α] (a b : α) : Compares eq a b = (a = b) := rfl
+lemma compares_eq [LT α] (a b : α) : Compares eq a b = (a = b) := rfl
 
 @[simp]
-lemma Compares_gt [LT α] (a b : α) : Compares gt a b = (a > b) := rfl
+lemma compares_gt [LT α] (a b : α) : Compares gt a b = (a > b) := rfl
 
 theorem compares_swap [LT α] {a b : α} {o : Ordering} : o.swap.Compares a b ↔ o.Compares b a := by
   cases o

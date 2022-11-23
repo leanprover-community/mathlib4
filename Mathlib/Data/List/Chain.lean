@@ -38,7 +38,7 @@ theorem Chain.imp {R S : α → α → Prop} (H : ∀ a b, R a b → S a b) {a :
   p.imp' H (H a)
 
 protected theorem Pairwise.chain (p : Pairwise R (a :: l)) : Chain R a l := by
-  rcases Pairwise_cons.1 p with ⟨r,p'⟩
+  rcases pairwise_cons.1 p with ⟨r,p'⟩
   clear p
   induction p' generalizing a with
   | nil => exact Chain.nil
