@@ -1587,7 +1587,7 @@ theorem swap_apply_ne_self_iff {a b x : α} : swap a b x ≠ x ↔ a ≠ b ∧ (
   by_cases hax:x = a
   · simp [hax, eq_comm]
 
-  by_cases hbx:x = b
+  by_cases hbx : x = b
   · simp [hbx]
 
   simp [hab, hax, hbx, swap_apply_of_ne_of_ne]
