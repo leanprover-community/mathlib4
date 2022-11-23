@@ -680,7 +680,6 @@ theorem inf_le_sup : a ⊓ b ≤ a ⊔ b :=
 theorem inf_lt_sup : a ⊓ b < a ⊔ b ↔ a ≠ b := by
   constructor
   · rintro H rfl
-    -- Porting note: was simpa using H (goal False)
     simp at H
 
   · refine' fun Hne => lt_iff_le_and_ne.2 ⟨inf_le_sup, fun Heq => Hne _⟩
