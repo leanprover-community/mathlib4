@@ -101,6 +101,7 @@ def SemilatticeSup.mk' {α : Type _} [HasSup α] (sup_comm : ∀ a b : α, a ⊔
   le_refl := sup_idem
   le_trans a b c hab hbc := by
     -- Porting note: dsimp doesn't work here?
+    -- This is the same issue as discussed at https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/unfolding.20earlier.20fields
     show a ⊔ c = c
     rw [← hbc, ← sup_assoc, hab]
   le_antisymm a b hab hba := by
