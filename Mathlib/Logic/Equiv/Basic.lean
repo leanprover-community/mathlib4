@@ -1187,37 +1187,41 @@ def sigmaOptionEquivOfSome (p : Option α → Type v) (h : p none → False) :
   (sigmaSubtypeEquivOfSubset _ _ h').symm.trans (sigmaCongrLeft' (optionIsSomeEquiv α))
 #align equiv.sigma_option_equiv_of_some Equiv.sigmaOptionEquivOfSome
 
--- ericr: this definition doesn't seem nice indentation-wise; is this just the Lean4 style?
 /-- The `Pi`-type `∀ i, π i` is equivalent to the type of sections `f : ι → Σ i, π i` of the
 `Sigma` type such that for all `i` we have `(f i).fst = i`. -/
 def piEquivSubtypeSigma (ι) (π : ι → Type _) :
-    (∀ i, π i) ≃ { f : ι → Σ i, π i // ∀ i, (f i).1 = i } :=
-  ⟨fun f => ⟨fun i => ⟨i, f i⟩, fun i => rfl⟩,
-  fun f i => by rw [← f.2 i]; exact (f.1 i).2,
-  fun f => funext fun i => rfl,
-  fun ⟨f, hf⟩ =>
+    (∀ i, π i) ≃ { f : ι → Σ i, π i // ∀ i, (f i).1 = i } where
+  toFun := fun f => ⟨fun i => ⟨i, f i⟩, fun i => rfl⟩
+  invFun := fun f i => by rw [← f.2 i]; exact (f.1 i).2
+  left_inv := fun f => funext fun i => rfl
+  right_inv := fun ⟨f, hf⟩ =>
     Subtype.eq <| funext fun i =>
-      Sigma.eq (hf i).symm <| eq_of_heq <| rec_heq_of_heq _ <| by simp⟩
+      Sigma.eq (hf i).symm <| eq_of_heq <| rec_heq_of_heq _ <| by simp
 #align equiv.pi_equiv_subtype_sigma Equiv.piEquivSubtypeSigma
 
 /-- The type of functions `f : ∀ a, β a` such that for all `a` we have `p a (f a)` is equivalent
 to the type of functions `∀ a, {b : β a // p a b}`. -/
 def subtypePiEquivPi {β : α → Sort v} {p : ∀ a, β a → Prop} :
-    { f : ∀ a, β a // ∀ a, p a (f a) } ≃ ∀ a, { b : β a // p a b } :=
-  ⟨fun f a => ⟨f.1 a, f.2 a⟩, fun f => ⟨fun a => (f a).1, fun a => (f a).2⟩, by
+    { f : ∀ a, β a // ∀ a, p a (f a) } ≃ ∀ a, { b : β a // p a b } where
+  toFun := fun f a => ⟨f.1 a, f.2 a⟩
+  invFun := fun f => ⟨fun a => (f a).1, fun a => (f a).2⟩
+  left_inv := by
     rintro ⟨f, h⟩
-    rfl, by
+    rfl
+  right_inv := by
     rintro f
     funext a
-    exact Subtype.ext_val rfl⟩
+    exact Subtype.ext_val rfl
 #align equiv.subtype_pi_equiv_pi Equiv.subtypePiEquivPi
 
 /-- A subtype of a product defined by componentwise conditions
 is equivalent to a product of subtypes. -/
 def subtypeProdEquivProd {p : α → Prop} {q : β → Prop} :
-    { c : α × β // p c.1 ∧ q c.2 } ≃ { a // p a } × { b // q b } :=
-  ⟨fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩, fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩,
-    fun ⟨⟨_, _⟩, ⟨_, _⟩⟩ => rfl, fun ⟨⟨_, _⟩, ⟨_, _⟩⟩ => rfl⟩
+    { c : α × β // p c.1 ∧ q c.2 } ≃ { a // p a } × { b // q b } where
+  toFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
+  invFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
+  left_inv := fun ⟨⟨_, _⟩, ⟨_, _⟩⟩ => rfl
+  right_inv := fun ⟨⟨_, _⟩, ⟨_, _⟩⟩ => rfl
 #align equiv.subtype_prod_equiv_prod Equiv.subtypeProdEquivProd
 
 /-- A subtype of a `Prod` is equivalent to a sigma type whose fibers are subtypes. -/
