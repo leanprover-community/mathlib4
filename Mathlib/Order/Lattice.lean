@@ -645,14 +645,11 @@ def Lattice.mk' {α : Type _} [HasSup α] [HasInf α] (sup_comm : ∀ a b : α, 
 
   let semilatt_inf_inst := SemilatticeInf.mk' inf_comm inf_assoc inf_idem
   let semilatt_sup_inst := SemilatticeSup.mk' sup_comm sup_assoc sup_idem
-  let
-    partial_order_inst :=-- here we help Lean to see that the two partial orders are equal
-      @SemilatticeSup.toPartialOrder
-      _ semilatt_sup_inst
-  have partial_order_eq : partial_order_inst = @SemilatticeInf.toPartialOrder _ semilatt_inf_inst :=
-    semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder _ _ _ _ _ _ sup_inf_self
-    inf_sup_self
-  { partial_order_inst, semilatt_sup_inst, semilatt_inf_inst with
+  have partial_order_eq : @SemilatticeSup.toPartialOrder _ semilatt_sup_inst =
+                          @SemilatticeInf.toPartialOrder _ semilatt_inf_inst :=
+    semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder _ _ _ _ _ _
+      sup_inf_self inf_sup_self
+  { semilatt_sup_inst, semilatt_inf_inst with
     inf_le_left := fun a b => by
       rw [partial_order_eq]
       apply inf_le_left,
@@ -721,11 +718,11 @@ theorem sup_eq_iff_inf_eq : a ⊔ b = b ↔ a ⊓ b = a := by rw [sup_eq_right, 
 theorem Lattice.ext {α} {A B : Lattice α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
     A = B := by
-  have SS : @Lattice.toSemilatticeSup α A = @Lattice.toSemilatticeSup α B := SemilatticeSup.ext H
-  have II := SemilatticeInf.ext H
   cases A
   cases B
-  injection SS <;> injection II <;> congr
+  cases SemilatticeSup.ext H
+  cases SemilatticeInf.ext H
+  congr
 #align lattice.ext Lattice.ext
 
 end Lattice
