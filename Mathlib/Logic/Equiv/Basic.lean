@@ -5,14 +5,11 @@ Authors: Leonardo de Moura, Mario Carneiro
 Ported by: Kevin Buzzard, Ruben Vorster, Scott Morrison, Eric Rodriguez
 -/
 import Mathlib.Data.Bool.Basic
-import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sigma.Basic
-import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Function.Conjugate
-import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.GeneralizeProofs
@@ -130,7 +127,7 @@ def prodAssoc (α β γ) : (α × β) × γ ≃ α × β × γ :=
     fun ⟨_, ⟨_, _⟩⟩ => rfl⟩
 #align equiv.prod_assoc Equiv.prodAssoc
 
-/-- Functions on `α × β` are equivalent to functions `α → β → γ`. -/
+/-- `γ`-valued functions on `α × β` are equivalent to functions `α → β → γ`. -/
 @[simps (config := { fullyApplied := false })]
 def curry (α β γ) : (α × β → γ) ≃ (α → β → γ) where
   toFun := Function.curry
@@ -390,8 +387,8 @@ theorem emptySum_apply_inr [IsEmpty α] (b : β) : emptySum α β (Sum.inr b) = 
 /-- `Option α` is equivalent to `α ⊕ punit` -/
 def optionEquivSumPUnit (α) : Option α ≃ Sum α PUnit :=
   ⟨fun o => o.elim (inr PUnit.unit) inl, fun s => s.elim some fun _ => none,
-    fun o => by cases o <;> rfl, fun s => by
-      rcases s with (_ | ⟨⟨⟩⟩) <;> rfl⟩
+    fun o => by cases o <;> rfl,
+    fun s => by rcases s with (_ | ⟨⟨⟩⟩) <;> rfl⟩
 #align equiv.option_equiv_sum_punit Equiv.optionEquivSumPUnit
 
 @[simp]
@@ -513,8 +510,6 @@ def subtypeCongr {p q : α → Prop} [DecidablePred p] [DecidablePred q]
   (sumCompl p).symm.trans ((sumCongr e f).trans (sumCompl q))
 #align equiv.subtype_congr Equiv.subtypeCongr
 
-open Equiv
-
 variable {p : ε → Prop} [DecidablePred p]
 
 variable (ep ep' : Perm { a // p a }) (en en' : Perm { a // ¬p a })
@@ -599,14 +594,14 @@ def subtypePreimage : { x : α → β // x ∘ Subtype.val = x₀ } ≃ ({ a // 
   left_inv := fun ⟨x, hx⟩ =>
     Subtype.val_injective <|
       funext fun a => by
-        dsimp
+        dsimp only
         split_ifs
-        { rw [← hx]; rfl }
-        { rfl }
+        · rw [← hx]; rfl
+        · rfl
   right_inv x :=
     funext fun ⟨a, h⟩ =>
       show dite (p a) _ _ = _ by
-        dsimp
+        dsimp only
         rw [dif_neg h]
 #align equiv.subtype_preimage Equiv.subtypePreimage
 
@@ -638,7 +633,6 @@ def piComm (φ : α → β → Sort _) : (∀ a b, φ a b) ≃ ∀ b a, φ a b :
   ⟨swap, swap, fun _ => rfl, fun _ => rfl⟩
 #align equiv.Pi_comm Equiv.piComm
 
--- up to here **TODO** remove this
 @[simp]
 theorem piComm_symm {φ : α → β → Sort _} : (piComm φ).symm = (piComm <| swap φ) :=
   rfl
@@ -987,7 +981,7 @@ def natEquivNatSumPUnit : ℕ ≃ Sum ℕ PUnit where
   toFun n := Nat.casesOn n (inr PUnit.unit) inl
   invFun := Sum.elim Nat.succ fun _ => 0
   left_inv n := by cases n <;> rfl
-  right_inv := by rintro (_ | _ | _) <;> rfl
+  right_inv := by rintro (_ | _) <;> rfl
 #align equiv.nat_equiv_nat_sum_punit Equiv.natEquivNatSumPUnit
 
 /-- `ℕ ⊕ Punit` is equivalent to `ℕ`. -/
@@ -1555,7 +1549,7 @@ theorem symm_trans_swap_trans [DecidableEq β] (a b : α) (e : α ≃ β) :
     have : ∀ a, e.symm x = a ↔ x = e a := fun a => by
       rw [@eq_comm _ (e.symm x)]
       constructor <;> intros <;> simp_all
-    simp [swap_apply_def, this]
+    simp [trans_apply, swap_apply_def, this]
     split_ifs <;> simp
 #align equiv.symm_trans_swap_trans Equiv.symm_trans_swap_trans
 
@@ -1573,10 +1567,10 @@ theorem swap_apply_self (i j a : α) : swap i j (swap i j a) = a := by
 /-- A function is invariant to a swap if it is equal at both elements -/
 theorem apply_swap_eq_self {v : α → β} {i j : α} (hv : v i = v j) (k : α) :
     v (swap i j k) = v k := by
-  by_cases hi:k = i
+  by_cases hi : k = i
   · rw [hi, swap_apply_left, hv]
 
-  by_cases hj:k = j
+  by_cases hj : k = j
   · rw [hj, swap_apply_right, hv]
 
   rw [swap_apply_of_ne_of_ne hi hj]
@@ -1587,13 +1581,13 @@ theorem swap_apply_eq_iff {x y z w : α} : swap x y z = w ↔ z = swap x y w := 
 #align equiv.swap_apply_eq_iff Equiv.swap_apply_eq_iff
 
 theorem swap_apply_ne_self_iff {a b x : α} : swap a b x ≠ x ↔ a ≠ b ∧ (x = a ∨ x = b) := by
-  by_cases hab:a = b
+  by_cases hab : a = b
   · simp [hab]
 
-  by_cases hax:x = a
+  by_cases hax : x = a
   · simp [hax, eq_comm]
 
-  by_cases hbx:x = b
+  by_cases hbx : x = b
   · simp [hbx]
 
   simp [hab, hax, hbx, swap_apply_of_ne_of_ne]
@@ -1606,7 +1600,8 @@ theorem sumCongr_swap_refl {α β : Sort _} [DecidableEq α] [DecidableEq β] (i
     Equiv.Perm.sumCongr (Equiv.swap i j) (Equiv.refl β) = Equiv.swap (Sum.inl i) (Sum.inl j) := by
   ext x
   cases x
-  · simp [Sum.map, swap_apply_def]
+  · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp.right_id, Sum.elim_inl, comp_apply,
+      swap_apply_def, Sum.inl.injEq]
     split_ifs <;> rfl
 
   · simp [Sum.map, swap_apply_of_ne_of_ne]
@@ -1620,7 +1615,8 @@ theorem sumCongr_refl_swap {α β : Sort _} [DecidableEq α] [DecidableEq β] (i
   cases x
   · simp [Sum.map, swap_apply_of_ne_of_ne]
 
-  · simp [Sum.map, swap_apply_def]
+  · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp.right_id, Sum.elim_inr, comp_apply,
+      swap_apply_def, Sum.inr.injEq]
     split_ifs <;> rfl
 
 #align equiv.perm.sumCongr_refl_swap Equiv.Perm.sumCongr_refl_swap
@@ -1634,8 +1630,7 @@ def setValue (f : α ≃ β) (a : α) (b : β) : α ≃ β :=
 
 @[simp]
 theorem setValue_eq (f : α ≃ β) (a : α) (b : β) : setValue f a b a = b := by
-  dsimp [setValue]
-  simp [swap_apply_left]
+  simp [setValue, swap_apply_left]
 #align equiv.set_value_eq Equiv.setValue_eq
 
 end Swap

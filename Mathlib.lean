@@ -24,6 +24,7 @@ import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Ring.OrderSynonym
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.Control.EquivFunctor
 import Mathlib.Control.Random
@@ -50,9 +51,11 @@ import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.KVMap
+import Mathlib.Data.LazyList
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Card
 import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Lex
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Perm
@@ -65,11 +68,13 @@ import Mathlib.Data.Num.Basic
 import Mathlib.Data.Opposite
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
+import Mathlib.Data.Option.NAry
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Quot
 import Mathlib.Data.Sigma.Basic
+import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
@@ -131,6 +136,7 @@ import Mathlib.Mathport.Syntax
 import Mathlib.Order.Basic
 import Mathlib.Order.Compare
 import Mathlib.Order.GameAdd
+import Mathlib.Order.Iterate
 import Mathlib.Order.Max
 import Mathlib.Order.Monotone
 import Mathlib.Order.RelClasses
