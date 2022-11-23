@@ -17,7 +17,7 @@ An element of a `Monoid` is a unit if it has a two-sided inverse.
 ## Main declarations
 
 * `Units M`: the group of units (i.e., invertible elements) of a monoid.
-* `isUnit x`: a predicate asserting that `x` is a unit (i.e., invertible element) of a monoid.
+* `IsUnit x`: a predicate asserting that `x` is a unit (i.e., invertible element) of a monoid.
 
 For both declarations, there is an additive counterpart: `AddUnits` and `IsAddUnit`.
 
@@ -39,7 +39,7 @@ variable {α : Type u}
 
 An element of a `Monoid` is a unit if it has a two-sided inverse.
 This version bundles the inverse element so that it can be computed.
-For a predicate see `isUnit`. -/
+For a predicate see `IsUnit`. -/
 structure Units (α : Type u) [Monoid α] where
   /-- The underlying value in the base `Monoid`. -/
   val : α
