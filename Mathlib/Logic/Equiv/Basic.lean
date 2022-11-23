@@ -1614,7 +1614,8 @@ theorem sumCongr_refl_swap {α β : Sort _} [DecidableEq α] [DecidableEq β] (i
   cases x
   · simp [Sum.map, swap_apply_of_ne_of_ne]
 
-  · simp [Sum.map, swap_apply_def]
+  · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp.right_id, Sum.elim_inr, comp_apply,
+      swap_apply_def, Sum.inr.injEq]
     split_ifs <;> rfl
 
 #align equiv.perm.sumCongr_refl_swap Equiv.Perm.sumCongr_refl_swap
