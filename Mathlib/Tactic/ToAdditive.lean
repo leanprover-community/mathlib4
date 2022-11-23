@@ -27,10 +27,25 @@ open Lean.Elab
 open Lean.Elab.Command
 open Std
 
+/-- The  `to_additive_ignore_args` attribute. -/
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" num* : attr
+/-- The  `to_additive_relevant_arg` attribute. -/
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg" num : attr
+/-- The  `to_additive_reorder` attribute. -/
 syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
-syntax (name := to_additive) "to_additive" "!"? "?"? (ppSpace ident)? (ppSpace str)? : attr
+/-- Remaining arguments of `to_additive`. -/
+syntax to_additiveRest := (ppSpace ident)? (ppSpace str)?
+/-- The `to_additive` attribute. -/
+syntax (name := to_additive) "to_additive" "!"? "?"? to_additiveRest : attr
+
+/-- The `to_additive` attribute. -/
+macro "to_additive!"  rest:to_additiveRest : attr => `(attr| to_additive !   $rest)
+/-- The `to_additive` attribute. -/
+macro "to_additive?"  rest:to_additiveRest : attr => `(attr| to_additive   ? $rest)
+/-- The `to_additive` attribute. -/
+macro "to_additive!?" rest:to_additiveRest : attr => `(attr| to_additive ! ? $rest)
+/-- The `to_additive` attribute. -/
+macro "to_additive?!" rest:to_additiveRest : attr => `(attr| to_additive ! ? $rest)
 
 /--
 This function takes a String and splits it into separate parts based on the following
@@ -75,12 +90,18 @@ namespace ToAdditive
 initialize registerTraceClass `to_additive
 initialize registerTraceClass `to_additive_detail
 
+/--
+An attribute that tells `@[to_additive]` that certain arguments of this definition are not
+involved when using `@[to_additive]`.
+This helps the heuristic of `@[to_additive]` by also transforming definitions if `ℕ` or another
+fixed type occurs as one of these arguments.
+-/
 initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
     name  := `to_additive_ignore_args
     descr :=
       "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized."
-    add   := fun _ stx => do
+    add   := fun _ stx ↦ do
         let ids ← match stx with
           | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
           | _ => throwError "unexpected to_additive_ignore_args syntax {stx}"
@@ -93,6 +114,15 @@ This value is used in `additiveTestAux`. -/
 def ignore [Functor M] [MonadEnv M]: Name → M (Option (List Nat))
   | n => (ignoreArgsAttr.find? · n) <$> getEnv
 
+/--
+An attribute that stores all the declarations that needs their arguments reordered when
+applying `@[to_additive]`. Currently, we only support swapping consecutive arguments.
+The list of the natural numbers contains the positions of the first of the two arguments
+to be swapped.
+If the first two arguments are swapped, the first two universe variables are also swapped.
+Example: `@[to_additive_reorder 1 4]` swaps the first two arguments and the arguments in
+positions 4 and 5.
+-/
 initialize reorderAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
     name := `to_additive_reorder
@@ -113,6 +143,27 @@ should be swapped with the next one. -/
 def shouldReorder [Functor M] [MonadEnv M]: Name → Nat → M Bool
   | n, i => (i ∈ ·) <$> (getReorder n)
 
+/--
+An attribute that is automatically added to declarations tagged with `@[to_additive]`, if needed.
+
+This attribute tells which argument is the type where this declaration uses the multiplicative
+structure. If there are multiple argument, we typically tag the first one.
+If this argument contains a fixed type, this declaration will note be additivized.
+See the Heuristics section of `to_additive.attr` for more details.
+
+If a declaration is not tagged, it is presumed that the first argument is relevant.
+`@[to_additive]` uses the function `to_additive.first_multiplicative_arg` to automatically tag
+declarations. It is ok to update it manually if the automatic tagging made an error.
+
+Implementation note: we only allow exactly 1 relevant argument, even though some declarations
+(like `prod.group`) have multiple arguments with a multiplicative structure on it.
+The reason is that whether we additivize a declaration is an all-or-nothing decision, and if
+we will not be able to additivize declarations that (e.g.) talk about multiplication on `ℕ × α`
+anyway.
+
+Warning: adding `@[to_additive_reorder]` with an equal or smaller number than the number in this
+attribute is currently not supported.
+-/
 initialize relevantArgAttr : NameMapExtension Nat ←
   registerNameMapAttribute {
     name := `to_additive_relevant_arg
@@ -131,7 +182,7 @@ def isRelevant [Monad M] [MonadEnv M] (n : Name) (i : Nat) : M Bool := do
   | some j => return i == j
   | none => return i == 0
 
-/- Maps multiplicative names to their additive counterparts. -/
+/-- Maps multiplicative names to their additive counterparts. -/
 initialize translations : NameMapExtension Name ← registerNameMapExtension _
 
 /-- Get the multiplicative → additive translation for the given name. -/
@@ -201,7 +252,7 @@ We assume that all functions where we want to reorder arguments are fully applie
 This can be done by applying `etaExpand` first.
 -/
 def applyReplacementFun : Expr → MetaM Expr :=
-  Lean.Expr.replaceRecMeta fun r e => do
+  Lean.Expr.replaceRecMeta fun r e ↦ do
     trace[to_additive_detail] "applyReplacementFun: replace at {e}"
     match e with
     | .lit (.natVal 1) => pure <| mkRawNatLit 0
@@ -246,13 +297,13 @@ def applyReplacementFun : Expr → MetaM Expr :=
 
 /-- Eta expands `e` at most `n` times.-/
 def etaExpandN (n : Nat) (e : Expr): MetaM Expr := do
-  forallBoundedTelescope (← inferType e) (some n) fun xs _ => mkLambdaFVars xs (mkAppN e xs)
+  forallBoundedTelescope (← inferType e) (some n) fun xs _ ↦ mkLambdaFVars xs (mkAppN e xs)
 
 /-- `e.expand` eta-expands all expressions that have as head a constant `n` in
 `reorder`. They are expanded until they are applied to one more argument than the maximum in
 `reorder.find n`. -/
 def expand (e : Expr) : MetaM Expr := do
-  let e₂ ←e.replaceRecMeta $ fun r e => do
+  let e₂ ←e.replaceRecMeta $ fun r e ↦ do
     let e0 := e.getAppFn
     let es := e.getAppArgs
     let some e0n := e0.constName? | return none
@@ -284,11 +335,15 @@ def updateDecl
 
 /-- Lean 4 makes declarations which are not internal
 (that is, head string starts with `_`) but which should be transformed.
-eg `proof_1` in `Lean.Meta.mkAuxDefinitionFor` this might be better fixed in core.
-This method is polyfill for that. -/
-def isInternal' : Name → Bool
-  | n@(.str _ s) => s.startsWith "proof_" || n.isInternal
-  | n => Name.isInternal n
+e.g. `proof_1` in `Lean.Meta.mkAuxDefinitionFor` this might be better fixed in core.
+This method is polyfill for that.
+Note: this declaration also occurs as `shouldIgnore` in the Lean 4 file `test/lean/run/printDecls`.
+-/
+def isInternal' (declName : Name) : Bool :=
+  declName.isInternal ||
+  match declName with
+  | .str _ s => "match_".isPrefixOf s || "proof_".isPrefixOf s || "eq_".isPrefixOf s
+  | _        => true
 
 /-- transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
 using the transforms dictionary.
@@ -296,7 +351,7 @@ using the transforms dictionary.
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
 partial def transformDeclAux
-  (ref : Option Syntax) (pre tgt_pre : Name) : Name → CoreM Unit := fun src => do
+  (ref : Option Syntax) (pre tgt_pre : Name) : Name → CoreM Unit := fun src ↦ do
   -- if this declaration is not `pre` or an internal declaration, we do nothing.
   if not (src == pre || isInternal' src) then
     if (findTranslation? (← getEnv) src).isSome then
@@ -306,7 +361,7 @@ partial def transformDeclAux
       }Workaround: move {src} to a different namespace."
   let env ← getEnv
   -- we find the additive name of `src`
-  let tgt := src.mapPrefix (fun n => if n == pre then some tgt_pre else none)
+  let tgt := src.mapPrefix (fun n ↦ if n == pre then some tgt_pre else none)
   -- we skip if we already transformed this declaration before
   if env.contains tgt then
     return
@@ -332,7 +387,11 @@ partial def transformDeclAux
       of `to_additive.attr`, section `Troubleshooting`.
       Failed to add declaration\n{trgDecl.name}:\n{msg}"
     | _ => panic! "unreachable"
-  addAndCompile trgDecl.toDeclaration!
+  if isNoncomputable env src then
+    addDecl trgDecl.toDeclaration!
+    setEnv $ addNoncomputable (← getEnv) trgDecl.name
+  else
+    addAndCompile trgDecl.toDeclaration!
   -- now add declaration ranges so jump-to-definition works
   addDeclarationRanges tgt {
     range := ← getDeclarationRange (← getRef)
@@ -355,7 +414,8 @@ are not stored by the environment.
 [todo] add more attributes. A change is coming to core that should
 allow us to iterate the attributes applied to a given decalaration.
 -/
--- TODO once we can copy `instance`, tidy up `Algebra/CovariantAndContravariant.lean`.
+-- TODO once we can copy `instance`, tidy up `Algebra/CovariantAndContravariant.lean` and
+-- `Algebra/Group/OrderSynonym.lean`.
 def copyAttributes (src tgt : Name) : CoreM Unit := do
   -- [todo] other simp theorems
   let some ext ← getSimpExtension? `simp | return
@@ -391,19 +451,19 @@ Returns 1 if there are no types with a multiplicative class as arguments.
 E.g. `prod.group` returns 1, and `pi.has_one` returns 2.
 -/
 def firstMultiplicativeArg (nm : Name) : MetaM (Option Nat) := do
-  forallTelescopeReducing (← getConstInfo nm).type fun xs _ => do
+  forallTelescopeReducing (← getConstInfo nm).type fun xs _ ↦ do
     -- xs are the arguments to the constant
     let xs := xs.toList
-    let l ← xs.mapM fun x => do
+    let l ← xs.mapM fun x ↦ do
       -- x is an argument and i is the index
       -- write `x : (y₀ : α₀) → ... → (yₙ : αₙ) → tgt_fn tgt_args₀ ... tgt_argsₘ`
-      forallTelescopeReducing (← inferType x) fun _ys tgt => do
+      forallTelescopeReducing (← inferType x) fun _ys tgt ↦ do
         let (_tgt_fn, tgt_args) := tgt.getAppFnArgs
         if let some c := tgt.getAppFn.constName? then
           if findTranslation? (← getEnv) c |>.isNone then
             return []
-        return tgt_args.toList.filterMap fun tgt_arg =>
-          xs.findIdx? fun x => Expr.containsFVar tgt_arg x.fvarId!
+        return tgt_args.toList.filterMap fun tgt_arg ↦
+          xs.findIdx? fun x ↦ Expr.containsFVar tgt_arg x.fvarId!
     trace[to_additive_detail] "firstMultiplicativeArg: {l}"
     match l.join with
     | [] => return none
@@ -587,12 +647,12 @@ so that future uses of `to_additive` will map them to the corresponding `tgt` fi
 def proceedFields (src tgt : Name) : CoreM Unit := do
   let env : Environment ← getEnv
   let aux := proceedFieldsAux src tgt
-  aux (fun n => do
+  aux (fun n ↦ do
     let fields := if isStructure env n then getStructureFieldsFlattened env n else #[]
     return fields |> .map Name.toString |> Array.toList
   )
   -- [todo] run to_additive on the constructors of n:
-  -- aux (fun n => (env.constructorsOf n).mmap $ ...
+  -- aux (fun n ↦ (env.constructorsOf n).mmap $ ...
 
 private def elabToAdditiveAux (ref : Syntax) (replaceAll trace : Bool) (tgt : Option Syntax)
     (doc : Option Syntax) : ValueType :=
@@ -627,14 +687,14 @@ def addToAdditiveAttr (src : Name) (val : ValueType) : AttrM Unit := do
     -- tgt doesn't exist, so let's make it
     let shouldTrace := val.trace || ((← getOptions) |>.getBool `trace.to_additive)
     withOptions
-      (fun o => o |>.setBool `to_additive.replaceAll val.replaceAll
+      (fun o ↦ o |>.setBool `to_additive.replaceAll val.replaceAll
                   |>.setBool `trace.to_additive shouldTrace)
       (transformDecl val.ref src tgt)
   if let some doc := val.doc then
     addDocString tgt doc
   return ()
 
-/-!
+/--
 The attribute `to_additive` can be used to automatically transport theorems
 and definitions (but not inductive types and structures) from a multiplicative
 theory to an additive theory.
@@ -836,7 +896,7 @@ that the new name differs from the original one.
 initialize registerBuiltinAttribute {
     name := `to_additive
     descr := "Transport multiplicative to additive"
-    add := fun src stx kind => do
+    add := fun src stx kind ↦ do
       if (kind != AttributeKind.global) then
         throwError "`to_additive` can't be used as a local attribute"
       let val ← elabToAdditive stx
@@ -845,6 +905,5 @@ initialize registerBuiltinAttribute {
     -- we have to as well to be able to copy attributes correctly.
     applicationTime := .afterCompilation
   }
-
 
 end ToAdditive

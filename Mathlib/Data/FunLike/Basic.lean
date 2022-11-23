@@ -142,22 +142,21 @@ variable {F α β} [i : FunLike F α β]
 -- Give this a priority between `coe_fn_trans` and the default priority
 -- `α` and `β` are out_params, so this instance should not be dangerous
 -- Porting note: @[nolint dangerous_instance]
-instance (priority := 100) : CoeFun F fun _ => ∀ a : α, β a where coe := FunLike.coe
+instance (priority := 100) : CoeFun F fun _ ↦ ∀ a : α, β a where coe := FunLike.coe
 
 #eval Lean.Elab.Command.liftTermElabM do
-  Tactic.NormCast.registerCoercion ``FunLike.coe
+  Std.Tactic.Coe.registerCoercion ``FunLike.coe
     (some { numArgs := 5, coercee := 4, type := .coeFun })
 
-@[simp]
-theorem coe_eq_coe_fn : (FunLike.coe : F → ∀ a : α, β a) = (fun f => ↑f) :=
-  rfl
+-- @[simp] -- porting note: this loops in lean 4
+theorem coe_eq_coe_fn : (FunLike.coe (F := F)) = (fun f => ↑f) := rfl
 
-theorem coe_injective : Function.Injective (fun f : F => (f : ∀ a : α, β a)) :=
+theorem coe_injective : Function.Injective (fun f : F ↦ (f : ∀ a : α, β a)) :=
   FunLike.coe_injective'
 
 @[simp]
 theorem coe_fn_eq {f g : F} : (f : ∀ a : α, β a) = (g : ∀ a : α, β a) ↔ f = g :=
-  ⟨fun h => FunLike.coe_injective' h, fun h => by cases h; rfl⟩
+  ⟨fun h ↦ FunLike.coe_injective' h, fun h ↦ by cases h; rfl⟩
 
 theorem ext' {f g : F} (h : (f : ∀ a : α, β a) = (g : ∀ a : α, β a)) : f = g :=
   FunLike.coe_injective' h
@@ -188,7 +187,7 @@ section NonDependent
 
 /-! ### `FunLike F α (λ _, β)` where `β` does not depend on `a : α` -/
 
-variable {F α β : Sort _} [i : FunLike F α fun _ => β]
+variable {F α β : Sort _} [i : FunLike F α fun _ ↦ β]
 
 namespace FunLike
 
