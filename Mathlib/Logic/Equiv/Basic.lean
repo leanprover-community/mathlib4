@@ -1628,8 +1628,7 @@ def setValue (f : α ≃ β) (a : α) (b : β) : α ≃ β :=
 
 @[simp]
 theorem setValue_eq (f : α ≃ β) (a : α) (b : β) : setValue f a b a = b := by
-  dsimp [setValue]
-  simp [swap_apply_left]
+  simp [setValue, swap_apply_left]
 #align equiv.set_value_eq Equiv.setValue_eq
 
 end Swap
