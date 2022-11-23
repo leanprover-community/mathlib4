@@ -524,10 +524,6 @@ instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelC
     CancelMonoid M :=
   { mul_right_cancel := fun a b c h ↦ mul_left_cancel <| by rw [mul_comm, h, mul_comm] }
 
--- TODO
--- porting notes: Once to_additive works, we should not need to copy this attribute manually.
-attribute [instance] CancelCommMonoid.toAddCancelMonoid
-
 end CancelMonoid
 
 /-- The fundamental power operation in a group. `zpow_rec n a = a*a*...*a` n times, for integer `n`.
@@ -850,20 +846,12 @@ instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
       fun a b ↦ inv_eq_of_mul <| by rw [mul_assoc, mul_inv_cancel_left, mul_right_inv]
     inv_eq_of_mul := fun _ _ ↦ inv_eq_of_mul }
 
--- FIXME this isn't being copied by `to_additive`
--- FIXME how to set priority?
-attribute [instance] AddGroup.toSubtractionMonoid
-
 -- see Note [lower instance priority]
 @[to_additive AddGroup.toAddCancelMonoid]
 instance (priority := 100) Group.toCancelMonoid : CancelMonoid G :=
   { ‹Group G› with
     mul_right_cancel := fun a b c h ↦ by rw [← mul_inv_cancel_right a b, h, mul_inv_cancel_right]
     mul_left_cancel := fun a b c h ↦ by rw [← inv_mul_cancel_left a b, h, inv_mul_cancel_left] }
-
--- FIXME this isn't being copied by `to_additive`
--- FIXME how to set priority?
-attribute [instance] AddGroup.toAddCancelMonoid
 
 end Group
 
@@ -894,20 +882,10 @@ variable [CommGroup G]
 @[to_additive AddCommGroup.toAddCancelCommMonoid]
 instance (priority := 100) CommGroup.toCancelCommMonoid : CancelCommMonoid G :=
   { ‹CommGroup G›, Group.toCancelMonoid with }
-attribute [instance 100] AddCommGroup.toAddCancelCommMonoid
-
--- TODO
--- porting notes: Once to_additive works, we should not need to copy this attribute manually.
-attribute [instance] AddCommGroup.toAddCancelCommMonoid
 
 -- see Note [lower instance priority]
 @[to_additive AddCommGroup.toSubtractionCommMonoid]
 instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G :=
   { ‹CommGroup G›, Group.toDivisionMonoid with }
-attribute [instance 100] AddCommGroup.toSubtractionCommMonoid
-
--- TODO
--- porting notes: Once to_additive works, we should not need to copy this attribute manually.
-attribute [instance] AddCommGroup.toSubtractionCommMonoid
 
 end CommGroup

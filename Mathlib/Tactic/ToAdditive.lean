@@ -379,7 +379,7 @@ def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if (← isInstance src) then
     --dbg_trace f!"Creating instance for {tgt}"
     addInstance tgt AttributeKind.global 100 |>.run'
-    addInstance tgt AttributeKind.local 200 |>.run'
+    --addInstance tgt AttributeKind.local 200 |>.run'
 
 /-- bar -/
 def copyAttributes (src tgt : Name) : CoreM Unit := do
