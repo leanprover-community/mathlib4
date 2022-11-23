@@ -1600,7 +1600,8 @@ theorem sumCongr_swap_refl {α β : Sort _} [DecidableEq α] [DecidableEq β] (i
     Equiv.Perm.sumCongr (Equiv.swap i j) (Equiv.refl β) = Equiv.swap (Sum.inl i) (Sum.inl j) := by
   ext x
   cases x
-  · simp [Sum.map, swap_apply_def]
+  · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp.right_id, Sum.elim_inl, comp_apply,
+      swap_apply_def, Sum.inl.injEq]
     split_ifs <;> rfl
 
   · simp [Sum.map, swap_apply_of_ne_of_ne]
