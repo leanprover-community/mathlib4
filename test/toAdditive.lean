@@ -41,17 +41,14 @@ theorem bar1_works : bar1 3 4 = 3 * 4 := by decide
 
 infix:80 " ^ " => my_has_pow.pow
 
-instance dummy_pow : my_has_pow ℕ $ PLift ℤ := ⟨fun _ _ => 0⟩
-instance dummy_smul : my_has_scalar (PLift ℤ) ℕ := ⟨fun _ _ => 0⟩
-attribute [to_additive dummy_smul] dummy_pow
+instance dummy_pow : my_has_pow ℕ $ PLift ℤ := ⟨fun _ _ => 5⟩
 
 set_option pp.universes true
 @[to_additive bar2]
 def foo2 {α} [my_has_pow α ℕ] (x : α) (n : ℕ) (m : PLift ℤ) : α := x ^ (n ^ m)
 
-theorem foo2_works : foo2 2 3 (PLift.up 2) = Nat.pow 2 0 := by decide
--- [todo] should it still be using dummy?
-theorem bar2_works : bar2 2 3 (PLift.up 2) =  2 * (dummy_smul.1 (PLift.up 2) 3) := by decide
+theorem foo2_works : foo2 2 3 (PLift.up 2) = Nat.pow 2 5 := by decide
+theorem bar2_works : bar2 2 3 (PLift.up 2) =  2 * 5 := by decide
 
 @[to_additive bar3]
 def foo3 {α} [my_has_pow α ℕ] (x : α) : ℕ → α := @my_has_pow.pow α ℕ _ x
@@ -76,6 +73,12 @@ def foo7 := @my_has_pow.pow
 
 theorem foo7_works : foo7 2 3 = Nat.pow 2 3 := by decide
 theorem bar7_works : bar7 2 3 =  2 * 3 := by decide
+
+/-- Check that we don't additivize `Nat` expressions. -/
+@[to_additive bar8]
+def foo8 (a b : ℕ) := a * b
+
+theorem bar8_works : bar8 2 3 = 6 := by decide
 
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do
@@ -126,18 +129,19 @@ instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One $ f i] : One ((
 run_cmd do
   let n ← (Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg
     `Test.pi.has_one)
-  if n != some 1 then throwError "{n} != 1"
+  if n != 2 then throwError "{n} != 1"
   let n ← (Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg
     `Test.foo_mul)
-  if n != some 4 then throwError "{n} != 4"
+  if n != 5 then throwError "{n} != 4"
 
 end
 
 @[to_additive]
 def nat_pi_has_one {α : Type} [One α] : One ((x : Nat) → α) := by infer_instance
 
-@[to_additive]
-def pi_nat_has_one {I : Type} : One ((x : I) → Nat)  := pi.has_one
+-- TODO: fixed after numerals are fixed
+-- @[to_additive]
+-- def pi_nat_has_one {I : Type} : One ((x : I) → Nat)  := pi.has_one
 
 section noncomputablee
 
@@ -147,7 +151,7 @@ noncomputable def Foo.foo (h : ∃ _ : α, True) : α := Classical.choose h
 @[to_additive Bar.bar']
 def Foo.foo' : ℕ := 2
 
-#eval Bar.bar'
+theorem Bar.bar'_works : Bar.bar' = 2 := by decide
 
 run_cmd (do
   if !isNoncomputable (← getEnv) `Bar.bar then throwError "bar shouldn't be computable"

@@ -60,11 +60,6 @@ infixl:65 " +ᵥ " => HasVadd.vadd
 infixl:65 " -ᵥ " => HasVsub.vsub
 infixr:73 " • " => HasSmul.smul
 
--- [todo] is this correct? I think it's needed to ensure that additiveTest
--- succeeds if the relevant arg involves Nat.
-attribute [to_additive] Nat
-attribute [to_additive] Int
-
 attribute [to_additive] Mul
 attribute [to_additive] Div
 attribute [to_additive] HMul
@@ -72,8 +67,9 @@ attribute [to_additive] instHMul
 attribute [to_additive] HDiv
 attribute [to_additive] instHDiv
 
+attribute [to_additive_relevant_arg 3] HMul HAdd HAdd.hAdd HMul.hMul
 attribute [to_additive_reorder 1] HPow
-attribute [to_additive_reorder 1 4] HPow.hPow
+attribute [to_additive_reorder 1 5] HPow.hPow
 attribute [to_additive] HPow
 
 universe u
@@ -378,7 +374,7 @@ need right away.
 
 In the definition, we use `n.succ` instead of `n + 1` in the `nsmul_succ'` and `npow_succ'` fields
 to make sure that `to_additive` is not confused (otherwise, it would try to convert `1 : ℕ`
-to `0 : ℕ`).
+to `0 : ℕ`). Todo: fix this in `to_additive`
 -/
 
 
