@@ -1570,7 +1570,7 @@ theorem apply_swap_eq_self {v : α → β} {i j : α} (hv : v i = v j) (k : α) 
   by_cases hi : k = i
   · rw [hi, swap_apply_left, hv]
 
-  by_cases hj:k = j
+  by_cases hj : k = j
   · rw [hj, swap_apply_right, hv]
 
   rw [swap_apply_of_ne_of_ne hi hj]
