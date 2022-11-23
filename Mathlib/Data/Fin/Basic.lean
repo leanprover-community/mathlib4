@@ -74,6 +74,7 @@ section
 
 variable {n : Nat} [Nonempty (Fin n)]
 
+@[to_additive_fixed_numeral]
 instance : OfNat (Fin n) a where
   ofNat := Fin.ofNat' a Fin.size_positive'
 
