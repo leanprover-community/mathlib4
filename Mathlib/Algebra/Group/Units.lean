@@ -126,16 +126,13 @@ theorem val_mk (a : α) (b h₁ h₂) : ↑(Units.mk a b h₁ h₂) = a :=
 #align units.coe_mk Units.val_mk
 #align add_units.coe_mk AddUnits.val_mk
 
-@[ext]
+@[ext, to_additive]
 theorem ext : Function.Injective (fun (u : αˣ) => (u : α))
   | ⟨v, i₁, vi₁, iv₁⟩, ⟨v', i₂, vi₂, iv₂⟩, e => by
     simp only at e; subst v'; congr;
     simpa only [iv₂, vi₁, one_mul, mul_one] using mul_assoc i₂ v i₁
 #align units.ext Units.ext
 
--- Porting note: `@[ext, to_additive]` didn't work on it's own
-attribute [to_additive] Units.ext.match_1
-attribute [to_additive] Units.ext
 #align add_units.ext AddUnits.ext
 
 @[to_additive, norm_cast]
@@ -562,22 +559,18 @@ theorem IsUnit.exists_left_inv [Monoid M] {a : M} (h : IsUnit a) : ∃ b, b * a 
   rcases h with ⟨⟨a, b, _, hba⟩, rfl⟩
   exact ⟨b, hba⟩
 
--- Porting note: have to explicitly tag `match_1` and give names
+@[to_additive]
 theorem isUnit_iff_exists_inv [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, a * b = 1 :=
   ⟨fun h => h.exists_right_inv, fun ⟨b, hab⟩ => isUnit_of_mul_eq_one _ b hab⟩
-attribute [to_additive isAddUnit_iff_exists_neg.match_1] isUnit_iff_exists_inv.match_1
-attribute [to_additive] isUnit_iff_exists_inv
 #align is_unit_iff_exists_inv isUnit_iff_exists_inv
 #align is_add_unit_iff_exists_neg isAddUnit_iff_exists_neg
 
+-- Porting note: `to_additive` complains if using `simp [isUnit_iff_exists_inv, mul_comm]` proof
+@[to_additive]
 theorem isUnit_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, b * a = 1 := by
-  simp [isUnit_iff_exists_inv, mul_comm]
+  rw [isUnit_iff_exists_inv]
+  simp [mul_comm]
 #align is_unit_iff_exists_inv' isUnit_iff_exists_inv'
-
--- Porting note: manually added because `to_additive` complained
-theorem isAddUnit_iff_exists_neg' [AddCommMonoid M] {a : M} : IsAddUnit a ↔ ∃ b, b + a = 0 := by
-  simp [isAddUnit_iff_exists_neg, add_comm]
-attribute [to_additive] isUnit_iff_exists_inv'
 #align is_add_unit_iff_exists_neg' isAddUnit_iff_exists_neg'
 
 @[to_additive]
@@ -585,25 +578,19 @@ theorem IsUnit.mul [Monoid M] {x y : M} : IsUnit x → IsUnit y → IsUnit (x * 
   rintro ⟨x, rfl⟩ ⟨y, rfl⟩
   exact ⟨x * y, Units.val_mul _ _⟩
 
--- Porting note: have to explicitly tag `match_1`
 /-- Multiplication by a `u : Mˣ` on the right doesn't affect `IsUnit`. -/
-@[simp]
+@[simp, to_additive "Addition of a `u : add_units M` on the right doesn't affect `IsAddUnit`."]
 theorem Units.isUnit_mul_units [Monoid M] (a : M) (u : Mˣ) : IsUnit (a * u) ↔ IsUnit a :=
   Iff.intro
     (fun ⟨v, hv⟩ => by
       have : IsUnit (a * ↑u * ↑u⁻¹) := by exists v * u⁻¹; rw [← hv, Units.val_mul]
       rwa [mul_assoc, Units.mul_inv, mul_one] at this)
     fun v => v.mul u.isUnit
-attribute [to_additive] Units.isUnit_mul_units.match_1
-attribute [to_additive
-  "Addition of a `u : add_units M` on the right doesn't\naffect `IsAddUnit`."]
-  Units.isUnit_mul_units
 #align units.is_unit_mul_units Units.isUnit_mul_units
 #align add_units.is_add_unit_add_add_units AddUnits.isAddUnit_add_addUnits
 
--- Porting note: have to explicitly tag `match_1`
 /-- Multiplication by a `u : Mˣ` on the left doesn't affect `IsUnit`. -/
-@[simp]
+@[simp, to_additive "Addition of a `u : add_units M` on the left doesn't affect `IsAddUnit`."]
 theorem Units.isUnit_units_mul {M : Type _} [Monoid M] (u : Mˣ) (a : M) :
     IsUnit (↑u * a) ↔ IsUnit a :=
   Iff.intro
@@ -612,18 +599,13 @@ theorem Units.isUnit_units_mul {M : Type _} [Monoid M] (u : Mˣ) (a : M) :
       rwa [← mul_assoc, Units.inv_mul, one_mul] at this)
     u.isUnit.mul
 #align units.is_unit_units_mul Units.isUnit_units_mul
-attribute [to_additive] Units.isUnit_units_mul.match_1
-attribute [to_additive "Addition of a `u : add_units M` on the left doesn't affect `IsAddUnit`."]
-  Units.isUnit_units_mul
 #align add_units.is_add_unit_units_add AddUnits.isAddUnit_addUnits_add
 
--- Porting note: have to explicitly tag `match_1` and give names
+@[to_additive]
 theorem isUnit_of_mul_isUnit_left [CommMonoid M] {x y : M} (hu : IsUnit (x * y)) : IsUnit x :=
   let ⟨z, hz⟩ := isUnit_iff_exists_inv.1 hu
   isUnit_iff_exists_inv.2 ⟨y * z, by rwa [← mul_assoc]⟩
 #align is_unit_of_mul_is_unit_left isUnit_of_mul_isUnit_left
-attribute [to_additive isAddUnit_of_add_isAddUnit_left.match_1] isUnit_of_mul_isUnit_left.match_1
-attribute [to_additive] isUnit_of_mul_isUnit_left
 #align is_add_unit_of_add_is_unit_left isAddUnit_of_add_isAddUnit_left
 
 @[to_additive]
@@ -687,12 +669,10 @@ instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) 
   h
 attribute [instance] IsAddUnit.instDecidableIsAddUnit
 
--- Porting note: have to explicitly tag `match_1`
+@[to_additive]
 theorem mul_left_inj (h : IsUnit a) : b * a = c * a ↔ b = c :=
   let ⟨u, hu⟩ := h
   hu ▸ u.mul_left_inj
-attribute [to_additive] mul_left_inj.match_1
-attribute [to_additive] mul_left_inj
 
 @[to_additive]
 theorem mul_right_inj (h : IsUnit a) : a * b = a * c ↔ b = c :=
