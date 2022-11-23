@@ -125,9 +125,9 @@ run_cmd do
   Elab.Command.liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namespace)
 
 -- [todo] currently this test breaks.
--- example : (add_units.mk_of_add_eq_zero 0 0 (by simp) : ℕ)
---         = (add_units.mk_of_add_eq_zero 0 0 (by simp) : ℕ) :=
--- by normCast
+-- example : (AddUnits.mk_of_add_eq_zero 0 0 (by simp) : ℕ)
+--         = (AddUnits.mk_of_add_eq_zero 0 0 (by simp) : ℕ) :=
+-- by norm_cast
 
 section
 
@@ -145,19 +145,20 @@ instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One $ f i] : One ((
 run_cmd do
   let n ← (Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg
     `Test.pi.has_one)
-  if n != 2 then throwError "{n} != 2"
+  if n != 1 then throwError "{n} != 1"
   let n ← (Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg
     `Test.foo_mul)
-  if n != 5 then throwError "{n} != 5"
+  if n != 4 then throwError "{n} != 4"
 
 end
 
 @[to_additive]
 def nat_pi_has_one {α : Type} [One α] : One ((x : Nat) → α) := by infer_instance
 
--- TODO: fixed after numerals are fixed
--- @[to_additive]
--- def pi_nat_has_one {I : Type} : One ((x : I) → Nat)  := pi.has_one
+@[to_additive]
+def pi_nat_has_one {I : Type} : One ((x : I) → Nat)  := pi.has_one
+
+example : @pi_nat_has_one = @pi_nat_has_zero := rfl
 
 section noncomputablee
 

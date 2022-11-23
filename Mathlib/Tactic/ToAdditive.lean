@@ -33,6 +33,8 @@ syntax (name := to_additive_ignore_args) "to_additive_ignore_args" num* : attr
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg" num : attr
 /-- The  `to_additive_reorder` attribute. -/
 syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
+/-- The  `to_additive_fixed_numeral` attribute. -/
+syntax (name := to_additive_fixed_numeral) "to_additive_fixed_numeral" "?"? : attr
 /-- Remaining arguments of `to_additive`. -/
 syntax to_additiveRest := (ppSpace ident)? (ppSpace str)?
 /-- The `to_additive` attribute. -/
@@ -104,7 +106,7 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
     add   := fun _ stx ↦ do
         let ids ← match stx with
           | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
-          | _ => throwError "unexpected to_additive_ignore_args syntax {stx}"
+          | _ => throwUnsupportedSyntax
         return ids.toList
   }
 
@@ -131,8 +133,7 @@ initialize reorderAttr : NameMapExtension (List Nat) ←
     add := fun
     | _, `(attr| to_additive_reorder $[$ids:num]*) =>
       pure <| Array.toList <| ids.map (·.1.isNatLit?.get!)
-    | _, stx => throwError "unexpected to_additive_reorder syntax {stx}"
-  }
+    | _, _ => throwUnsupportedSyntax }
 
 /-- Get the reorder list (defined using `@[to_additive_reorder ...]`) for the given declaration. -/
 def getReorder [Functor M] [MonadEnv M]: Name →  M (List Nat)
@@ -171,8 +172,7 @@ initialize relevantArgAttr : NameMapExtension Nat ←
       " which arguments are the types with a multiplicative structure."
     add := fun
     | _, `(attr| to_additive_relevant_arg $id) => pure <| id.1.isNatLit?.get!.pred
-    | _, stx => throwError "unexpected to_additive_relevant_arg syntax {stx}"
-  }
+    | _, _ => throwUnsupportedSyntax }
 
 /-- Given a declaration name and an argument index, determines whether it
 is relevant. This is used in `applyReplacementFun` where more detail on what it
@@ -181,6 +181,25 @@ def isRelevant [Monad M] [MonadEnv M] (n : Name) (i : Nat) : M Bool := do
   match relevantArgAttr.find? (← getEnv) n with
   | some j => return i == j
   | none => return i == 0
+
+/--
+An attribute that stores all the declarations that deal with numeric literals on fixed types.
+*  `@[to_additive_fixed_numeral]` should be added to all functions that take a numeral as argument
+  that should never be changed by `@[to_additive]` (because it represents a numeral in a fixed
+  type).
+* `@[to_additive_fixed_numeral?]` should be added to all functions that take a numeral as argument
+  that should only be changed if `additiveTest` succeeds on the first argument, i.e. when the
+  numeral is only translated if the first argument is a variable (or consists of variables).
+-/
+initialize fixedNumeralAttr : NameMapExtension Bool ←
+  registerNameMapAttribute {
+    name := `to_additive_fixed_numeral
+    descr :=
+      "Auxiliary attribute for `to_additive` that stores functions that have numerals as argument."
+    add := fun
+    | _, `(attr| to_additive_fixed_numeral $[?%$conditional]?) =>
+      pure <| conditional.isSome
+    | _, _ => throwUnsupportedSyntax }
 
 /-- Maps multiplicative names to their additive counterparts. -/
 initialize translations : NameMapExtension Name ← registerNameMapExtension _
@@ -238,6 +257,13 @@ def additiveTest (e : Expr) : M Bool := do
   else
     additiveTestAux false e
 
+/-- Checks whether a numeral should be translated. -/
+def shouldTranslateNumeral [Monad M] [MonadEnv M] (n : Name) (firstArg : Expr) : M Bool := do
+  match fixedNumeralAttr.find? (← getEnv) n with
+  | some true => additiveTest firstArg
+  | some false => return false
+  | none => return true
+
 /--
 `applyReplacementFun e` replaces the expression `e` with its additive counterpart.
 It translates each identifier (inductive type, defined function etc) in an expression, unless
@@ -286,18 +312,21 @@ def applyReplacementFun : Expr → MetaM Expr :=
         let c1 ← isRelevant nm gArgs.size
         let c2 := gf.isConst
         let c3 ← additiveTest x
+        if c1 && c2 && c3 then
+          trace[to_additive_detail]
+            "applyReplacementFun: {x} doesn't contain a fixed type, so we will change {nm}"
         if c1 && c2 && not c3 then
           -- the test failed, so don't update the function body.
           trace[to_additive_detail]
-            "applyReplacementFun: isRelevant and test failed: {nm} {gArgs} {x}"
+            "applyReplacementFun: {x} contains a fixed type, so {nm} is not changed"
           let x ← r x
           let args ← gArgs.mapM r
           return some $ mkApp (mkAppN gf args) x
         /- Do not replace numerals in specific types. -/
-        if (nm == `OfNat.ofNat || nm == `OfNat) && gArgs.size == 2 then
-          if not (← additiveTest gArgs[0]!) then
-            trace[to_additive_detail] "applyReplacementFun: Do not change numeral {g.app x}"
-            return some <| g.app x
+        let firstArg := if h : gArgs.size > 0 then gArgs[0] else x
+        if not (← shouldTranslateNumeral nm firstArg) then
+          trace[to_additive_detail] "applyReplacementFun: Do not change numeral {g.app x}"
+          return some <| g.app x
       return e.updateApp! (← r g) (← r x)
     | _ => return none
 
@@ -482,8 +511,8 @@ def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
           xs.findIdx? fun x ↦ Expr.containsFVar tgt_arg x.fvarId!
     trace[to_additive_detail] "firstMultiplicativeArg: {l}"
     match l.join with
-    | [] => return 1
-    | (head :: tail) => return 1 + tail.foldr Nat.min head
+    | [] => return 0
+    | (head :: tail) => return tail.foldr Nat.min head
 
 /-- `ValueType` is the type of the arguments that can be provided to `to_additive`. -/
 structure ValueType : Type where
@@ -689,7 +718,7 @@ def addToAdditiveAttr (src : Name) (val : ValueType) : AttrM Unit := do
     throwError "{src} already has a to_additive translation {tgt'}."
   insertTranslation src tgt
   let firstMultArg ← MetaM.run' <| firstMultiplicativeArg src
-  if firstMultArg != 1 then
+  if firstMultArg != 0 then
     trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
     relevantArgAttr.add src firstMultArg
   if (← getEnv).contains tgt then
