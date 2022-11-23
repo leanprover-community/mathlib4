@@ -162,43 +162,44 @@ theorem optionCongr_injective : Function.Injective (optionCongr : α ≃ β → 
   Function.LeftInverse.injective removeNone_option_congr
 #align equiv.option_congr_injective Equiv.optionCongr_injective
 
+set_option maxHeartbeats 600000 -- next def times out with default heartbeats (200000)
+
 /-- Equivalences between `Option α` and `β` that send `none` to `x` are equivalent to
 equivalences between `α` and `{y : β // y ≠ x}`. -/
 def option_subtype [DecidableEq β] (x : β) :
     { e : Option α ≃ β // e none = x } ≃ (α ≃ { y : β // y ≠ x }) where
   toFun e :=
     { toFun :=
-        fun a => ⟨e a, ((EquivLike.injective _).ne_iff' e.property).2 (some_ne_none _)⟩,
+        fun a => ⟨(e : Option α ≃ β) a, ((EquivLike.injective _).ne_iff' e.property).2 (some_ne_none _)⟩,
       invFun := fun b =>
         get _
           (ne_none_iff_isSome.1
             (((EquivLike.injective _).ne_iff'
               ((apply_eq_iff_eq_symm_apply _).1 e.property).symm).2 b.property)),
       left_inv := fun a => by
-        rw [← some_inj, some_get, ← coe_def]
+        rw [← some_inj, some_get]
         exact symm_apply_apply (e : Option α ≃ β) a,
       right_inv := fun b => by
         ext
-        simp
-        exact apply_symm_apply _ _ }
+        simp }
   invFun e :=
-    ⟨{ toFun := fun a => casesOn' a x (Subtype.val ∘ toFun ∘ e),
-          invFun := fun b => if h : b = x then none else e.symm ⟨b, h⟩,
+    ⟨{  toFun := fun a => casesOn' a x (Subtype.val ∘ e),
+        invFun := fun b => if h : b = x then none else e.symm ⟨b, h⟩,
         left_inv := fun a => by
-          cases a
-          · simp
-
-          simp only [casesOn'_some, Function.comp_apply, Subtype.coe_eta,
-                     symm_apply_apply, dite_eq_ite]
-          exact if_neg (e a).property,
-        right_inv := fun b => by by_cases h : b = x <;> simp [h] },
+          cases a with
+          | none => simp
+          | some a =>
+            simp only [casesOn'_some, Function.comp_apply, Subtype.coe_eta,
+              symm_apply_apply, dite_eq_ite]
+            exact if_neg (e a).property,
+        right_inv := fun b =>  by by_cases h : b = x <;> simp [h] },
       rfl⟩
   left_inv e := by
     ext a
     cases a
     · simpa using e.property.symm
 
-    · simpa
+    · simp
 
   right_inv e := by
     ext a
@@ -230,11 +231,8 @@ theorem option_subtype_apply_symm_apply
 #align equiv.option_subtype_apply_symm_apply Equiv.option_subtype_apply_symm_apply
 
 @[simp]
-theorem option_subtype_symm_apply_apply_coe
-    [DecidableEq β]
-    (x : β)
-    (e : α ≃ { y : β // y ≠ x })
-    (a : α) : (option_subtype x).symm e a = e a :=
+theorem option_subtype_symm_apply_apply_coe [DecidableEq β] (x : β) (e : α ≃ { y : β // y ≠ x })
+    (a : α) : ((option_subtype x).symm e : Option α ≃ β) a = e a :=
   rfl
 #align equiv.option_subtype_symm_apply_apply_coe Equiv.option_subtype_symm_apply_apply_coe
 
@@ -243,7 +241,7 @@ theorem option_subtype_symm_apply_apply_some
     [DecidableEq β]
     (x : β)
     (e : α ≃ { y : β // y ≠ x })
-    (a : α) : (option_subtype x).symm e (some a) = e a :=
+    (a : α) : ((option_subtype x).symm e : Option α ≃ β) (some a) = e a :=
   rfl
 #align equiv.option_subtype_symm_apply_apply_some Equiv.option_subtype_symm_apply_apply_some
 
@@ -251,7 +249,7 @@ theorem option_subtype_symm_apply_apply_some
 theorem option_subtype_symm_apply_apply_none
     [DecidableEq β]
     (x : β)
-    (e : α ≃ { y : β // y ≠ x }) : (option_subtype x).symm e none = x :=
+    (e : α ≃ { y : β // y ≠ x }) : ((option_subtype x).symm e : Option α ≃ β) none = x :=
   rfl
 #align equiv.option_subtype_symm_apply_apply_none Equiv.option_subtype_symm_apply_apply_none
 
