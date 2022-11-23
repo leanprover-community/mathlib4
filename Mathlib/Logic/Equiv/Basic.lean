@@ -1567,7 +1567,7 @@ theorem swap_apply_self (i j a : α) : swap i j (swap i j a) = a := by
 /-- A function is invariant to a swap if it is equal at both elements -/
 theorem apply_swap_eq_self {v : α → β} {i j : α} (hv : v i = v j) (k : α) :
     v (swap i j k) = v k := by
-  by_cases hi:k = i
+  by_cases hi : k = i
   · rw [hi, swap_apply_left, hv]
 
   by_cases hj:k = j
