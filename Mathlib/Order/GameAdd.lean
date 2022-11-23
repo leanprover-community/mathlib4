@@ -62,7 +62,7 @@ variable {rα rβ}
   stronger condition `∀ b, Acc rβ b`. -/
 theorem Acc.prod_gameAdd (ha : Acc rα a) (hb : Acc rβ b) :
     Acc (Prod.GameAdd rα rβ) (a, b) := by
-  induction' ha with a ha iha generalizing b
+  induction' ha with a _ iha generalizing b
   induction' hb with b hb ihb
   refine' Acc.intro _ fun h => _
   rintro (⟨ra⟩ | ⟨rb⟩)

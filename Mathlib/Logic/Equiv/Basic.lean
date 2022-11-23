@@ -361,11 +361,14 @@ theorem sumAssoc_symm_apply_inr_inr {α β γ} (c) : (sumAssoc α β γ).symm (i
 
 /-- Sum with `IsEmpty` is equivalent to the original type. -/
 @[simps symm_apply]
-def sumEmpty (α β) [IsEmpty β] : Sum α β ≃ α :=
-  ⟨Sum.elim id isEmptyElim, inl, fun s => by
+def sumEmpty (α β) [IsEmpty β] : Sum α β ≃ α where
+  toFun := Sum.elim id isEmptyElim
+  invFun := inl
+  left_inv s := by
     rcases s with (_ | x)
-    rfl
-    exact isEmptyElim x, fun a => rfl⟩
+    · rfl
+    · exact isEmptyElim x
+  right_inv _ := rfl
 #align equiv.sum_empty Equiv.sumEmpty
 
 @[simp]
@@ -818,12 +821,11 @@ section
 
 /-- The type of functions to a product `α × β` is equivalent to the type of pairs of functions
 `γ → α` and `γ → β`. -/
-def arrowProdEquivProdArrow (α β γ : Type _) : (γ → α × β) ≃ (γ → α) × (γ → β) :=
-  ⟨fun f => (fun c => (f c).1, fun c => (f c).2), fun p c => (p.1 c, p.2 c),
-    fun f => funext fun c => Prod.mk.eta,
-      fun p => by
-      cases p
-      rfl⟩
+def arrowProdEquivProdArrow (α β γ : Type _) : (γ → α × β) ≃ (γ → α) × (γ → β) where
+  toFun := fun f => (fun c => (f c).1, fun c => (f c).2)
+  invFun := fun p c => (p.1 c, p.2 c)
+  left_inv := fun f => funext fun c => Prod.mk.eta
+  right_inv := fun p => by cases p; rfl
 #align equiv.arrow_prod_equiv_prod_arrow Equiv.arrowProdEquivProdArrow
 
 open Sum
@@ -1185,37 +1187,41 @@ def sigmaOptionEquivOfSome (p : Option α → Type v) (h : p none → False) :
   (sigmaSubtypeEquivOfSubset _ _ h').symm.trans (sigmaCongrLeft' (optionIsSomeEquiv α))
 #align equiv.sigma_option_equiv_of_some Equiv.sigmaOptionEquivOfSome
 
--- ericr: this definition doesn't seem nice indentation-wise; is this just the Lean4 style?
 /-- The `Pi`-type `∀ i, π i` is equivalent to the type of sections `f : ι → Σ i, π i` of the
 `Sigma` type such that for all `i` we have `(f i).fst = i`. -/
 def piEquivSubtypeSigma (ι) (π : ι → Type _) :
-    (∀ i, π i) ≃ { f : ι → Σ i, π i // ∀ i, (f i).1 = i } :=
-  ⟨fun f => ⟨fun i => ⟨i, f i⟩, fun i => rfl⟩,
-  fun f i => by rw [← f.2 i]; exact (f.1 i).2,
-  fun f => funext fun i => rfl,
-  fun ⟨f, hf⟩ =>
+    (∀ i, π i) ≃ { f : ι → Σ i, π i // ∀ i, (f i).1 = i } where
+  toFun := fun f => ⟨fun i => ⟨i, f i⟩, fun i => rfl⟩
+  invFun := fun f i => by rw [← f.2 i]; exact (f.1 i).2
+  left_inv := fun f => funext fun i => rfl
+  right_inv := fun ⟨f, hf⟩ =>
     Subtype.eq <| funext fun i =>
-      Sigma.eq (hf i).symm <| eq_of_heq <| rec_heq_of_heq _ <| by simp⟩
+      Sigma.eq (hf i).symm <| eq_of_heq <| rec_heq_of_heq _ <| by simp
 #align equiv.pi_equiv_subtype_sigma Equiv.piEquivSubtypeSigma
 
 /-- The type of functions `f : ∀ a, β a` such that for all `a` we have `p a (f a)` is equivalent
 to the type of functions `∀ a, {b : β a // p a b}`. -/
 def subtypePiEquivPi {β : α → Sort v} {p : ∀ a, β a → Prop} :
-    { f : ∀ a, β a // ∀ a, p a (f a) } ≃ ∀ a, { b : β a // p a b } :=
-  ⟨fun f a => ⟨f.1 a, f.2 a⟩, fun f => ⟨fun a => (f a).1, fun a => (f a).2⟩, by
+    { f : ∀ a, β a // ∀ a, p a (f a) } ≃ ∀ a, { b : β a // p a b } where
+  toFun := fun f a => ⟨f.1 a, f.2 a⟩
+  invFun := fun f => ⟨fun a => (f a).1, fun a => (f a).2⟩
+  left_inv := by
     rintro ⟨f, h⟩
-    rfl, by
+    rfl
+  right_inv := by
     rintro f
     funext a
-    exact Subtype.ext_val rfl⟩
+    exact Subtype.ext_val rfl
 #align equiv.subtype_pi_equiv_pi Equiv.subtypePiEquivPi
 
 /-- A subtype of a product defined by componentwise conditions
 is equivalent to a product of subtypes. -/
 def subtypeProdEquivProd {p : α → Prop} {q : β → Prop} :
-    { c : α × β // p c.1 ∧ q c.2 } ≃ { a // p a } × { b // q b } :=
-  ⟨fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩, fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩,
-    fun ⟨⟨_, _⟩, ⟨_, _⟩⟩ => rfl, fun ⟨⟨_, _⟩, ⟨_, _⟩⟩ => rfl⟩
+    { c : α × β // p c.1 ∧ q c.2 } ≃ { a // p a } × { b // q b } where
+  toFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
+  invFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
+  left_inv := fun ⟨⟨_, _⟩, ⟨_, _⟩⟩ => rfl
+  right_inv := fun ⟨⟨_, _⟩, ⟨_, _⟩⟩ => rfl
 #align equiv.subtype_prod_equiv_prod Equiv.subtypeProdEquivProd
 
 /-- A subtype of a `Prod` is equivalent to a sigma type whose fibers are subtypes. -/
@@ -1419,8 +1425,7 @@ def subtypeQuotientEquivQuotientSubtype (p₁ : α → Prop) [s₁ : Setoid α] 
   invFun a :=
     Quotient.liftOn a (fun a => (⟨⟦a.1⟧, (hp₂ _).1 a.2⟩ : { x // p₂ x })) fun a b hab =>
       Subtype.ext_val (Quotient.sound ((h _ _).1 hab))
-  -- for some reason, doing this as a `fun ⟨a, ha⟩ => ` block breaks things.
-  left_inv t := by rcases t with ⟨a, ha⟩; exact Quotient.inductionOn a (fun b hb => rfl) ha
+  left_inv := by exact fun ⟨a, ha⟩ => Quotient.inductionOn a (fun b hb => rfl) ha
   right_inv a := Quotient.inductionOn a fun ⟨a, ha⟩ => rfl
 #align equiv.subtype_quotient_equiv_quotient_subtype Equiv.subtypeQuotientEquivQuotientSubtype
 
