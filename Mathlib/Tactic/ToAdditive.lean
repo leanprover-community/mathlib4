@@ -253,7 +253,6 @@ def applyReplacementFun : Expr → MetaM Expr :=
   Lean.Expr.replaceRecMeta fun r e ↦ do
     trace[to_additive_detail] "applyReplacementFun: replace at {e}"
     match e with
-    -- todo: don't replace this in a type where additiveTest holds
     | .lit (.natVal 1) => pure <| mkRawNatLit 0
     | .const n₀ ls => do
       let n₁ := Name.mapPrefix (findTranslation? <|← getEnv) n₀
