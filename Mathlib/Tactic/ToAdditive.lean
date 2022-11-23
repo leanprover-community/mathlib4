@@ -352,15 +352,7 @@ partial def transformDeclAux
   if isProtected (← getEnv) src then
     setEnv $ addProtected (← getEnv) tgt
 
-/-- This should copy all of the attributes on src to tgt.
-At the moment it only copies `simp` attributes because attributes
-are not stored by the environment.
-
-[todo] add more attributes. A change is coming to core that should
-allow us to iterate the attributes applied to a given decalaration.
--/
--- TODO once we can copy `instance`, tidy up `Algebra/CovariantAndContravariant.lean` and
--- `Algebra/Group/OrderSynonym.lean`.
+/-- Copy the simp attribute in a `to_additive` -/
 def copySimpAttribute (src tgt : Name) : CoreM Unit := do
   -- [todo] other simp theorems
   let some ext ← getSimpExtension? `simp | return
@@ -374,14 +366,17 @@ def copySimpAttribute (src tgt : Name) : CoreM Unit := do
     (attrKind := AttributeKind.global)
     (prio := 1000) |>.run'
 
-/-- foo -/
+/-- Copy the instance attribute in a `to_additive`
+
+[todo] it seems not to work when the `to_additive` is added as an attribute later. -/
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if (← isInstance src) then
-    --dbg_trace f!"Creating instance for {tgt}"
+    -- [todo] add priority and correct `AttributeKind`
     addInstance tgt AttributeKind.global 100 |>.run'
-    --addInstance tgt AttributeKind.local 200 |>.run'
 
-/-- bar -/
+/-- [todo] add more attributes. A change is coming to core that should
+allow us to iterate the attributes applied to a given decalaration.
+-/
 def copyAttributes (src tgt : Name) : CoreM Unit := do
   copySimpAttribute src tgt
   copyInstanceAttribute src tgt
