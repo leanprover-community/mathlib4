@@ -80,6 +80,22 @@ def foo8 (a b : ℕ) := a * b
 
 theorem bar8_works : bar8 2 3 = 6 := by decide
 
+/-- Check that we don't additivize `Nat` numerals. -/
+@[to_additive bar9]
+def foo9 := 1
+
+theorem bar9_works : bar9 = 1 := by decide
+
+@[to_additive bar10]
+def foo10 (n m : ℕ) := HPow.hPow n m + n * m * 2 + 1 * 0 + 37 * 1 + 2
+
+theorem bar10_works : bar10 = foo10 := by rfl
+
+@[to_additive bar11]
+def foo11 (n : ℕ) (m : ℤ) := n * m * 2 + 1 * 0 + 37 * 1 + 2
+
+theorem bar11_works : bar11 = foo11 := by rfl
+
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do
   let c ← getConstInfo `Test.foo6
