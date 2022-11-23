@@ -377,11 +377,14 @@ def copySimpAttribute (src tgt : Name) : CoreM Unit := do
 /-- foo -/
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if (← isInstance src) then
+    --dbg_trace f!"Creating instance for {tgt}"
     addInstance tgt AttributeKind.global 100 |>.run'
+    addInstance tgt AttributeKind.local 200 |>.run'
 
 /-- bar -/
-def copyAttributes (src tgt : Name) : CoreM Unit :=
-  copySimpAttribute src tgt *> copyInstanceAttribute src tgt
+def copyAttributes (src tgt : Name) : CoreM Unit := do
+  copySimpAttribute src tgt
+  copyInstanceAttribute src tgt
 
 /--
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
