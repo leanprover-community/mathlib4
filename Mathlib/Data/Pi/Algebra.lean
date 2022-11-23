@@ -90,31 +90,31 @@ theorem mul_comp [Mul γ] (x y : β → γ) (z : α → β) : (x * y) ∘ z = x 
   rfl
 
 @[to_additive]
-instance instSmul [∀ i, HasSmul α <| f i] : HasSmul α (∀ i : I, f i) :=
+instance instSMul [∀ i, SMul α <| f i] : SMul α (∀ i : I, f i) :=
   ⟨fun s x => fun i => s • x i⟩
 
-#align pi.has_smul Pi.instSmul
+#align pi.has_smul Pi.instSMul
 
 -- Porting note : Atm to_additive does not copy the `instance` attribute.
-attribute [instance] Pi.instVadd
+attribute [instance] Pi.instVAdd
 
 @[simp, to_additive]
-theorem smul_apply [∀ i, HasSmul α <| f i] (s : α) (x : ∀ i, f i) (i : I) : (s • x) i = s • x i :=
+theorem smul_apply [∀ i, SMul α <| f i] (s : α) (x : ∀ i, f i) (i : I) : (s • x) i = s • x i :=
   rfl
 
 @[to_additive]
-theorem smul_def [∀ i, HasSmul α <| f i] (s : α) (x : ∀ i, f i) : s • x = fun i => s • x i :=
+theorem smul_def [∀ i, SMul α <| f i] (s : α) (x : ∀ i, f i) : s • x = fun i => s • x i :=
   rfl
 
 @[simp, to_additive]
-theorem smul_const [HasSmul α β] (a : α) (b : β) : a • const I b = const I (a • b) :=
+theorem smul_const [SMul α β] (a : α) (b : β) : a • const I b = const I (a • b) :=
   rfl
 
 @[to_additive]
-theorem smul_comp [HasSmul α γ] (a : α) (x : β → γ) (y : I → β) : (a • x) ∘ y = a • x ∘ y :=
+theorem smul_comp [SMul α γ] (a : α) (x : β → γ) (y : I → β) : (a • x) ∘ y = a • x ∘ y :=
   rfl
 
-@[to_additive Pi.instSmul]
+@[to_additive Pi.instSMul]
 instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
   ⟨fun x b i => x i ^ b⟩
 
@@ -234,20 +234,20 @@ theorem mul_single_one (i : I) : mulSingle i (1 : f i) = 1 :=
   Function.update_eq_self _ _
 
 -- Porting notes:
--- 1) Why do I have to specify `(fun (_ : I) => β)` explicitely?
+-- 1) Why do I have to specify the type of `mulSingle i x` explicitly?
 -- 2) Why do I have to specify the type of `(1 : I → β)`?
 -- 3) Removed `{β : Sort _}` as `[One β]` converts it to a type anyways.
 /-- On non-dependent functions, `Pi.mulSingle` can be expressed as an `ite` -/
-@[to_additive "On non-dependent functions, `Pi.Single` can be expressed as an `ite`"]
+@[to_additive "On non-dependent functions, `Pi.single` can be expressed as an `ite`"]
 theorem mul_single_apply [One β] (i : I) (x : β) (i' : I) :
-    @mulSingle _ (fun (_ : I) => β) _ _ i x i' = if i' = i then x else 1 :=
+    (mulSingle i x : I → β) i' = if i' = i then x else 1 :=
   Function.update_apply (1 : I → β) i x i'
 
 -- Porting notes : Same as above.
 /-- On non-dependent functions, `Pi.mulSingle` is symmetric in the two indices. -/
 @[to_additive "On non-dependent functions, `Pi.single` is symmetric in the two indices."]
 theorem mul_single_comm [One β] (i : I) (x : β) (i' : I) :
-    @mulSingle _ (fun (_ : I) => β) _ _ i x i' = @mulSingle _ (fun (_ : I) => β) _ _ i' x i := by
+    (mulSingle i x : I → β) i' = (mulSingle i' x : I → β) i := by
   simp [mul_single_apply, eq_comm]
 
 @[to_additive]
