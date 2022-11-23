@@ -1032,17 +1032,21 @@ theorem inf_def [∀ i, HasInf (α' i)] (f g : ∀ i, α' i) : f ⊓ g = fun i =
   rfl
 #align pi.inf_def Pi.inf_def
 
-instance semilatticeSup [∀ i, SemilatticeSup (α' i)] : SemilatticeSup (∀ i, α' i) := by
-  refine_struct { Pi.partialOrder with sup := (· ⊔ ·) } <;> pi_instance_derive_field
+instance semilatticeSup [∀ i, SemilatticeSup (α' i)] : SemilatticeSup (∀ i, α' i) where
+  le_sup_left _ _ _ := le_sup_left
+  le_sup_right _ _ _ := le_sup_right
+  sup_le _ _ _ ac bc i := sup_le (ac i) (bc i)
 
-instance semilatticeInf [∀ i, SemilatticeInf (α' i)] : SemilatticeInf (∀ i, α' i) := by
-  refine_struct { Pi.partialOrder with inf := (· ⊓ ·) } <;> pi_instance_derive_field
+instance semilatticeInf [∀ i, SemilatticeInf (α' i)] : SemilatticeInf (∀ i, α' i) where
+  inf_le_left _ _ _ := inf_le_left
+  inf_le_right _ _ _ := inf_le_right
+  le_inf _ _ _ ac bc i := le_inf (ac i) (bc i)
 
 instance lattice [∀ i, Lattice (α' i)] : Lattice (∀ i, α' i) :=
   { Pi.semilatticeSup, Pi.semilatticeInf with }
 
-instance [∀ i, DistribLattice (α' i)] : DistribLattice (∀ i, α' i) := by
-  refine_struct { Pi.lattice with } <;> pi_instance_derive_field
+instance [∀ i, DistribLattice (α' i)] : DistribLattice (∀ i, α' i) where
+  le_sup_inf _ _ _ _ := le_sup_inf
 
 end Pi
 
@@ -1461,3 +1465,5 @@ end lift
 --To avoid noncomputability poisoning from `Bool.completeBooleanAlgebra`
 instance : DistribLattice Bool :=
   LinearOrder.toDistribLattice
+
+#lint
