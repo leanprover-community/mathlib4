@@ -20,18 +20,18 @@ of `sup` over `inf`, on the left or on the right.
 
 ## Main declarations
 
-* `semilattice_sup`: a type class for join semilattices
-* `semilattice_sup.mk'`: an alternative constructor for `semilattice_sup` via proofs that `⊔` is
+* `SemilatticeSup`: a type class for join semilattices
+* `SemilatticeSup.mk'`: an alternative constructor for `SemilatticeSup` via proofs that `⊔` is
   commutative, associative and idempotent.
-* `semilattice_inf`: a type class for meet semilattices
-* `semilattice_sup.mk'`: an alternative constructor for `semilattice_inf` via proofs that `⊓` is
+* `SemilatticeInf`: a type class for meet semilattices
+* `SemilatticeSup.mk'`: an alternative constructor for `SemilatticeInf` via proofs that `⊓` is
   commutative, associative and idempotent.
 
-* `lattice`: a type class for lattices
-* `lattice.mk'`: an alternative constructor for `lattice` via profs that `⊔` and `⊓` are
+* `Lattice`: a type class for lattices
+* `Lattice.mk'`: an alternative constructor for `Lattice` via profs that `⊔` and `⊓` are
   commutative, associative and satisfy a pair of "absorption laws".
 
-* `distrib_lattice`: a type class for distributive lattices.
+* `DistribLattice`: a type class for distributive lattices.
 
 ## Notations
 
@@ -75,7 +75,7 @@ end
 
 
 -- TODO: automatic construction of dual definitions / theorems
-/-- A `semilattice_sup` is a join-semilattice, that is, a partial order
+/-- A `SemilatticeSup` is a join-semilattice, that is, a partial order
   with a join (a.k.a. lub / least upper bound, sup / supremum) operation
   `⊔` which is the least element larger than both factors. -/
 class SemilatticeSup (α : Type u) extends HasSup α, PartialOrder α where
@@ -342,7 +342,7 @@ end SemilatticeSup
 -/
 
 
-/-- A `semilattice_inf` is a meet-semilattice, that is, a partial order
+/-- A `SemilatticeInf` is a meet-semilattice, that is, a partial order
   with a meet (a.k.a. glb / greatest lower bound, inf / infimum) operation
   `⊓` which is the greatest element smaller than both factors. -/
 class SemilatticeInf (α : Type u) extends HasInf α, PartialOrder α where
@@ -606,10 +606,10 @@ class Lattice (α : Type u) extends SemilatticeSup α, SemilatticeInf α
 instance (α) [Lattice α] : Lattice αᵒᵈ :=
   { OrderDual.semilatticeSup α, OrderDual.semilatticeInf α with }
 
-/-- The partial orders from `semilattice_sup_mk'` and `semilattice_inf_mk'` agree
+/-- The partial orders from `SemilatticeSup_mk'` and `SemilatticeInf_mk'` agree
 if `sup` and `inf` satisfy the lattice absorption laws `sup_inf_self` (`a ⊔ a ⊓ b = a`)
 and `inf_sup_self` (`a ⊓ (a ⊔ b) = a`). -/
-theorem semilattice_sup_mk'_partial_order_eq_semilattice_inf_mk'_partial_order
+theorem semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder
     {α : Type _} [HasSup α] [HasInf α]
     (sup_comm : ∀ a b : α, a ⊔ b = b ⊔ a) (sup_assoc : ∀ a b c : α, a ⊔ b ⊔ c = a ⊔ (b ⊔ c))
     (sup_idem : ∀ a : α, a ⊔ a = a) (inf_comm : ∀ a b : α, a ⊓ b = b ⊓ a)
@@ -622,7 +622,7 @@ theorem semilattice_sup_mk'_partial_order_eq_semilattice_inf_mk'_partial_order
       ⟨fun h => by rw [← h, inf_comm, inf_sup_self], fun h => by rw [← h, sup_comm, sup_inf_self]⟩
 #align
   semilattice_sup_mk'_partial_order_eq_semilattice_inf_mk'_partial_order
-  semilattice_sup_mk'_partial_order_eq_semilattice_inf_mk'_partial_order
+  semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder
 
 /-- A type with a pair of commutative and associative binary operations which satisfy two absorption
 laws relating the two operations has the structure of a lattice.
@@ -650,7 +650,7 @@ def Lattice.mk' {α : Type _} [HasSup α] [HasInf α] (sup_comm : ∀ a b : α, 
       @SemilatticeSup.toPartialOrder
       _ semilatt_sup_inst
   have partial_order_eq : partial_order_inst = @SemilatticeInf.toPartialOrder _ semilatt_inf_inst :=
-    semilattice_sup_mk'_partial_order_eq_semilattice_inf_mk'_partial_order _ _ _ _ _ _ sup_inf_self
+    semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder _ _ _ _ _ _ sup_inf_self
     inf_sup_self
   { partial_order_inst, semilatt_sup_inst, semilatt_inf_inst with
     inf_le_left := fun a b => by
@@ -740,7 +740,7 @@ equivalent distributive properties (of `sup` over `inf` or `inf` over `sup`,
 on the left or right).
 
 The definition here chooses `le_sup_inf`: `(x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ (y ⊓ z)`. To prove distributivity
-from the dual law, use `distrib_lattice.of_inf_sup_le`.
+from the dual law, use `DistribLattice.of_inf_sup_le`.
 
 A classic example of a distributive lattice
 is the lattice of subsets of a set, and in fact this example is
@@ -1390,8 +1390,8 @@ end Subtype
 
 section lift
 
-/-- A type endowed with `⊔` is a `semilattice_sup`, if it admits an injective map that
-preserves `⊔` to a `semilattice_sup`.
+/-- A type endowed with `⊔` is a `SemilatticeSup`, if it admits an injective map that
+preserves `⊔` to a `SemilatticeSup`.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.semilatticeSup [HasSup α] [SemilatticeSup β] (f : α → β)
@@ -1412,8 +1412,8 @@ protected def Function.Injective.semilatticeSup [HasSup α] [SemilatticeSup β] 
       exact sup_le ha hb }
 #align function.injective.semilattice_sup Function.Injective.semilatticeSup
 
-/-- A type endowed with `⊓` is a `semilattice_inf`, if it admits an injective map that
-preserves `⊓` to a `semilattice_inf`.
+/-- A type endowed with `⊓` is a `SemilatticeInf`, if it admits an injective map that
+preserves `⊓` to a `SemilatticeInf`.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.semilatticeInf [HasInf α] [SemilatticeInf β] (f : α → β)
@@ -1434,8 +1434,8 @@ protected def Function.Injective.semilatticeInf [HasInf α] [SemilatticeInf β] 
       exact le_inf ha hb }
 #align function.injective.semilattice_inf Function.Injective.semilatticeInf
 
-/-- A type endowed with `⊔` and `⊓` is a `lattice`, if it admits an injective map that
-preserves `⊔` and `⊓` to a `lattice`.
+/-- A type endowed with `⊔` and `⊓` is a `Lattice`, if it admits an injective map that
+preserves `⊔` and `⊓` to a `Lattice`.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.lattice [HasSup α] [HasInf α] [Lattice β] (f : α → β)
@@ -1444,8 +1444,8 @@ protected def Function.Injective.lattice [HasSup α] [HasInf α] [Lattice β] (f
   { hf_inj.semilatticeSup f map_sup, hf_inj.semilatticeInf f map_inf with }
 #align function.injective.lattice Function.Injective.lattice
 
-/-- A type endowed with `⊔` and `⊓` is a `distrib_lattice`, if it admits an injective map that
-preserves `⊔` and `⊓` to a `distrib_lattice`.
+/-- A type endowed with `⊔` and `⊓` is a `DistribLattice`, if it admits an injective map that
+preserves `⊔` and `⊓` to a `DistribLattice`.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.distribLattice [HasSup α] [HasInf α] [DistribLattice β] (f : α → β)
@@ -1461,6 +1461,6 @@ protected def Function.Injective.distribLattice [HasSup α] [HasInf α] [Distrib
 
 end lift
 
---To avoid noncomputability poisoning from `bool.complete_boolean_algebra`
+--To avoid noncomputability poisoning from `Bool.completeBooleanAlgebra`
 instance : DistribLattice Bool :=
   LinearOrder.toDistribLattice
