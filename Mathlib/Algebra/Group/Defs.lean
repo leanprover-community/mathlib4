@@ -101,22 +101,24 @@ variable [Mul G]
 
 /-- `left_mul g` denotes left multiplication by `g` -/
 @[to_additive "`left_add g` denotes left addition by `g`"]
-def leftMul : G → G → G := fun g : G => fun x : G => g * x
+def leftMul : G → G → G := fun g : G ↦ fun x : G ↦ g * x
 
 /-- `right_mul g` denotes right multiplication by `g` -/
 @[to_additive "`right_add g` denotes right addition by `g`"]
-def rightMul : G → G → G := fun g : G => fun x : G => x * g
+def rightMul : G → G → G := fun g : G ↦ fun x : G ↦ x * g
 
 end Mul
 
 /-- A semigroup is a type with an associative `(*)`. -/
 @[ext]
 class Semigroup (G : Type u) extends Mul G where
+  /-- Multiplication is associative -/
   mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
 
 /-- An additive semigroup is a type with an associative `(+)`. -/
 @[ext]
 class AddSemigroup (G : Type u) extends Add G where
+  /-- Addition is associative -/
   add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
 
 attribute [to_additive] Semigroup
@@ -181,7 +183,7 @@ theorem mul_left_cancel_iff : a * b = a * c ↔ b = c :=
   ⟨mul_left_cancel, congr_arg _⟩
 
 @[to_additive]
-theorem mul_right_injective (a : G) : Function.Injective ((· * ·) a) := fun _ _ => mul_left_cancel
+theorem mul_right_injective (a : G) : Function.Injective ((· * ·) a) := fun _ _ ↦ mul_left_cancel
 
 @[simp, to_additive]
 theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
@@ -219,7 +221,7 @@ theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
   ⟨mul_right_cancel, congr_arg (· * a)⟩
 
 @[to_additive]
-theorem mul_left_injective (a : G) : Function.Injective (· * a) := fun _ _ => mul_right_cancel
+theorem mul_left_injective (a : G) : Function.Injective (· * a) := fun _ _ ↦ mul_right_cancel
 
 @[simp, to_additive]
 theorem mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
@@ -234,13 +236,17 @@ end RightCancelSemigroup
 /-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
 `1 * a = a` and `a * 1 = a` for all `a : M`. -/
 class MulOneClass (M : Type u) extends One M, Mul M where
+  /-- One is a left neutral element for multiplication -/
   one_mul : ∀ a : M, 1 * a = a
+  /-- One is a right neutral element for multiplication -/
   mul_one : ∀ a : M, a * 1 = a
 
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
 `0 + a = a` and `a + 0 = a` for all `a : M`. -/
 class AddZeroClass (M : Type u) extends Zero M, Add M where
+  /-- Zero is a left neutral element for addition -/
   zero_add : ∀ a : M, 0 + a = a
+  /-- Zero is a right neutral element for addition -/
   add_zero : ∀ a : M, a + 0 = a
 
 attribute [to_additive] MulOneClass
@@ -394,7 +400,7 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
 
 @[default_instance high] instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
-  ⟨fun x n => Monoid.npow n x⟩
+  ⟨fun x n ↦ Monoid.npow n x⟩
 
 instance AddMonoid.HasSmul {M : Type _} [AddMonoid M] : HasSmul ℕ M :=
   ⟨AddMonoid.nsmul⟩
@@ -516,7 +522,7 @@ attribute [instance] AddCancelCommMonoid.toAddCommMonoid
 @[to_additive CancelCommMonoid.toAddCancelMonoid]
 instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelCommMonoid M] :
     CancelMonoid M :=
-  { mul_right_cancel := fun a b c h => mul_left_cancel <| by rw [mul_comm, h, mul_comm] }
+  { mul_right_cancel := fun a b c h ↦ mul_left_cancel <| by rw [mul_comm, h, mul_comm] }
 
 -- TODO
 -- porting notes: Once to_additive works, we should not need to copy this attribute manually.
@@ -646,7 +652,7 @@ class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
 attribute [to_additive SubNegMonoid] DivInvMonoid
 
 instance DivInvMonoid.hasPow {M} [DivInvMonoid M] : Pow M ℤ :=
-  ⟨fun x n => DivInvMonoid.zpow n x⟩
+  ⟨fun x n ↦ DivInvMonoid.zpow n x⟩
 
 instance SubNegMonoid.hasSmulInt {M} [SubNegMonoid M] : HasSmul ℤ M :=
   ⟨SubNegMonoid.zsmul⟩
@@ -839,25 +845,23 @@ theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a :=
 
 @[to_additive AddGroup.toSubtractionMonoid]
 instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
-  { inv_inv := fun a => inv_eq_of_mul (mul_left_inv a)
+  { inv_inv := fun a ↦ inv_eq_of_mul (mul_left_inv a)
     mul_inv_rev :=
-      fun a b => inv_eq_of_mul <| by rw [mul_assoc, mul_inv_cancel_left, mul_right_inv]
-    inv_eq_of_mul := fun _ _ => inv_eq_of_mul }
+      fun a b ↦ inv_eq_of_mul <| by rw [mul_assoc, mul_inv_cancel_left, mul_right_inv]
+    inv_eq_of_mul := fun _ _ ↦ inv_eq_of_mul }
 
 -- FIXME this isn't being copied by `to_additive`
--- FIXME how to set priority?
-attribute [instance] AddGroup.toSubtractionMonoid
+attribute [instance 100] AddGroup.toSubtractionMonoid
 
 -- see Note [lower instance priority]
 @[to_additive AddGroup.toAddCancelMonoid]
 instance (priority := 100) Group.toCancelMonoid : CancelMonoid G :=
   { ‹Group G› with
-    mul_right_cancel := fun a b c h => by rw [← mul_inv_cancel_right a b, h, mul_inv_cancel_right]
-    mul_left_cancel := fun a b c h => by rw [← inv_mul_cancel_left a b, h, inv_mul_cancel_left] }
+    mul_right_cancel := fun a b c h ↦ by rw [← mul_inv_cancel_right a b, h, mul_inv_cancel_right]
+    mul_left_cancel := fun a b c h ↦ by rw [← inv_mul_cancel_left a b, h, inv_mul_cancel_left] }
 
 -- FIXME this isn't being copied by `to_additive`
--- FIXME how to set priority?
-attribute [instance] AddGroup.toAddCancelMonoid
+attribute [instance 100] AddGroup.toAddCancelMonoid
 
 end Group
 

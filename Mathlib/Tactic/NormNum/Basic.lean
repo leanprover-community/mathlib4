@@ -204,8 +204,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return (.isInt rα zc (z := c) (q(isInt_mul $pa $pb $r) : Expr) : Result q($a * $b))
     match ra, rb with
     | .isNat _ na pa, .isNat mα nb pb =>
-      let pa : Q(@IsNat _ NonUnitalNonAssocSemiring.toAddMonoidWithOne $a $na) := pa
-      let pb : Q(@IsNat _ NonUnitalNonAssocSemiring.toAddMonoidWithOne $b $nb) := pb
+      let pa : Q(@IsNat _ AddCommMonoidWithOne.toAddMonoidWithOne $a $na) := pa
+      let pb : Q(@IsNat _ AddCommMonoidWithOne.toAddMonoidWithOne $b $nb) := pb
       have c : Q(ℕ) := mkRawNatLit (na.natLit! * nb.natLit!)
       let r : Q(Nat.mul $na $nb = $c) := (q(Eq.refl $c) : Expr)
       return (.isNat mα c (q(isNat_mul (α := $α) $pa $pb $r) : Expr) : Result q($a * $b))
@@ -237,7 +237,7 @@ def evalPow : NormNumExt where eval {u α} e := do
   core : Option (Result e) := do
     match ra with
     | .isNat sα na pa =>
-      let pa : Q(@IsNat _ NonUnitalNonAssocSemiring.toAddMonoidWithOne $a $na) := pa
+      let pa : Q(@IsNat _ AddCommMonoidWithOne.toAddMonoidWithOne $a $na) := pa
       have c : Q(ℕ) := mkRawNatLit (na.natLit! ^ nb.natLit!)
       let r : Q(Nat.pow $na $nb = $c) := (q(Eq.refl $c) : Expr)
       let pb : Q(IsNat $b $nb) := pb

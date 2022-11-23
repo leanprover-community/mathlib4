@@ -32,11 +32,13 @@ section Preorder
 -/
 
 /-- A preorder is a reflexive, transitive relation `≤` with `a < b` defined in the obvious way. -/
-class Preorder (α : Type u) extends LE α, LT α :=
-(le_refl : ∀ a : α, a ≤ a)
-(le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c)
-(lt := λ a b => a ≤ b ∧ ¬ b ≤ a)
-(lt_iff_le_not_le : ∀ a b : α, a < b ↔ (a ≤ b ∧ ¬ b ≤ a) := by intros; rfl)
+class Preorder (α : Type u) extends LE α, LT α where
+  le_refl : ∀ a : α, a ≤ a
+  le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
+  lt := λ a b => a ≤ b ∧ ¬ b ≤ a
+  lt_iff_le_not_le : ∀ a b : α, a < b ↔ (a ≤ b ∧ ¬ b ≤ a) := by intros; rfl
+#align preorder.to_has_le Preorder.toLE
+#align preorder.to_has_lt Preorder.toLT
 
 variable [Preorder α]
 
