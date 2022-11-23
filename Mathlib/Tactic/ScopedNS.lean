@@ -31,7 +31,7 @@ scoped[Nat.Count] attribute [instance] CountSet.fintype
 -/
 syntax (name := scopedNS) "scoped" "[" ident "] " command : command
 macro_rules
-  | `(scoped[$ns] notation $prec $(n)? $(prio)? $sym* => $t) =>
+  | `(scoped[$ns] notation $(prec)? $(n)? $(prio)? $sym* => $t) =>
     `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
       scoped notation $(prec)? $(n)? $(prio)? $sym* => $t)
   | `(scoped[$ns] $mk:prefix $prec $(n)? $(prio)? $sym => $t) =>
