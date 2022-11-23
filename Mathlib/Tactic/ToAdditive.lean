@@ -270,6 +270,7 @@ def applyReplacementFun : Expr → MetaM Expr :=
         let gArgs := g.getAppArgs
         -- e = `(nm y₁ .. yₙ x)
         trace[to_additive_detail] "applyReplacementFun: app {nm} {gArgs} {x}"
+        /- Test if arguments should be reordered. -/
         if h : gArgs.size > 0 then
           let c1 ← shouldReorder nm gArgs.size
           let c2 ← additiveTest gArgs[0]
@@ -282,6 +283,7 @@ def applyReplacementFun : Expr → MetaM Expr :=
             trace[to_additive_detail]
               "applyReplacementFun: reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter:  {e₂}"
             return some e₂
+        /- Test if the head should not be replaced. -/
         let c1 ← isRelevant nm gArgs.size
         let c2 := gf.isConst
         let c3 ← additiveTest x
@@ -292,6 +294,11 @@ def applyReplacementFun : Expr → MetaM Expr :=
           let x ← r x
           let args ← gArgs.mapM r
           return some $ mkApp (mkAppN gf args) x
+        /- Do not replace numberals in specific types. -/
+        if (nm == `OfNat.ofNat || nm == `OfNat) && gArgs.size == 2 then
+          if not (← additiveTest gArgs[0]!) then
+            trace[to_additive_detail] "applyReplacementFun: Do not change numeral {g.app x}"
+            return some <| g.app x
       return e.updateApp! (← r g) (← r x)
     | _ => return none
 
