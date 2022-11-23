@@ -7,11 +7,11 @@ import Mathlib.Mathport.Rename
 /-!
 # Lazy lists
 
-The type `lazy_list α` is a lazy list with elements of type `α`.
+The type `LazyList α` is a lazy list with elements of type `α`.
 In the VM, these are potentially infinite lists
 where all elements after the first are computed on-demand.
 (This is only useful for execution in the VM,
-logically we can prove that `lazy_list α` is isomorphic to `list α`.)
+logically we can prove that `LazyList α` is isomorphic to `List α`.)
 -/
 
 
