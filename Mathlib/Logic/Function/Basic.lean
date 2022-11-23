@@ -69,6 +69,10 @@ theorem ne_iff {β : α → Sort _} {f₁ f₂ : ∀ a, β a} : f₁ ≠ f₂ �
 protected theorem Bijective.injective {f : α → β} (hf : Bijective f) : Injective f := hf.1
 protected theorem Bijective.surjective {f : α → β} (hf : Bijective f) : Surjective f := hf.2
 
+-- Porting note : mathlib3port wrote `().Injective` instead of `().injective`.
+#align function.bijective.injective Function.Bijective.injective
+#align function.bijective.surjective Function.Bijective.surjective
+
 theorem Injective.eq_iff (I : Injective f) {a b : α} : f a = f b ↔ a = b :=
   ⟨@I _ _, congr_arg f⟩
 

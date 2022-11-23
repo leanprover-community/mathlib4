@@ -338,10 +338,6 @@ theorem bijective_pi_map {F : ∀ i, f i → g i} (hF : ∀ i, Bijective (F i)) 
     Bijective fun x : ∀ i, f i => fun i => F i (x i) :=
   ⟨injective_pi_map fun i => (hF i).injective, surjective_pi_map fun i => (hF i).surjective⟩
 
-
-#align bijective.injective Bijective.injective
-#align bijective.surjective Bijective.surjective
-
 end Function
 
 /-- If the one function is surjective, the codomain is trivial. -/
