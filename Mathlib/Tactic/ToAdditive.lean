@@ -294,7 +294,7 @@ def applyReplacementFun : Expr → MetaM Expr :=
           let x ← r x
           let args ← gArgs.mapM r
           return some $ mkApp (mkAppN gf args) x
-        /- Do not replace numberals in specific types. -/
+        /- Do not replace numerals in specific types. -/
         if (nm == `OfNat.ofNat || nm == `OfNat) && gArgs.size == 2 then
           if not (← additiveTest gArgs[0]!) then
             trace[to_additive_detail] "applyReplacementFun: Do not change numeral {g.app x}"

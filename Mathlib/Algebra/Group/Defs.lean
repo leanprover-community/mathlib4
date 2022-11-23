@@ -475,25 +475,27 @@ the `npow` field when defining multiplicative objects.
 A basic theory for the power function on monoids and the `ℕ`-action on additive monoids is built in
 the file `Algebra.GroupPower.Basic`. For now, we only register the most basic properties that we
 need right away.
-
-In the definition, we use `n.succ` instead of `n + 1` in the `nsmul_succ'` and `npow_succ'` fields
-to make sure that `to_additive` is not confused (otherwise, it would try to convert `1 : ℕ`
-to `0 : ℕ`). Todo: fix this in `to_additive`
 -/
 
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   nsmul : ℕ → M → M := nsmulRec
-  nsmul_zero' : ∀ x, nsmul 0 x = 0 := by intros; rfl
-  nsmul_succ' : ∀ (n : ℕ) (x), nsmul n.succ x = x + nsmul n x := by intros; rfl
+  nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
+  nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = x + nsmul n x := by intros; rfl
+
+#align add_monoid.nsmul_zero' AddMonoid.nsmul_zero
+#align add_monoid.nsmul_succ' AddMonoid.nsmul_succ
 
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
 class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   npow : ℕ → M → M := npowRec
-  npow_zero' : ∀ x, npow 0 x = 1 := by intros; rfl
-  npow_succ' : ∀ (n : ℕ) (x), npow n.succ x = x * npow n x := by intros; rfl
+  npow_zero : ∀ x, npow 0 x = 1 := by intros; rfl
+  npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = x * npow n x := by intros; rfl
+
+#align monoid.npow_zero' Monoid.npow_zero
+#align monoid.npow_succ' Monoid.npow_succ
 
 -- FIXME I wouldn't have thought this is necessary. Is is a bug in `to_additive`?
 -- It seems that it isn't operating on the second parent.
@@ -517,10 +519,10 @@ theorem nsmul_eq_smul (n : ℕ) (x : M) : AddMonoid.nsmul n x = n • x :=
   rfl
 
 theorem zero_nsmul (a : M) : 0 • a = 0 :=
-  AddMonoid.nsmul_zero' _
+  AddMonoid.nsmul_zero _
 
 theorem succ_nsmul (a : M) (n : ℕ) : (n + 1) • a = a + n • a :=
-  AddMonoid.nsmul_succ' n a
+  AddMonoid.nsmul_succ n a
 
 end
 
@@ -535,11 +537,11 @@ theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
 -- the attributes are intentionally out of order. `zero_smul` proves `zero_nsmul`.
 @[to_additive zero_nsmul, simp]
 theorem pow_zero (a : M) : a ^ 0 = 1 :=
-  Monoid.npow_zero' _
+  Monoid.npow_zero _
 
 @[to_additive succ_nsmul]
 theorem pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a * a ^ n :=
-  Monoid.npow_succ' n a
+  Monoid.npow_succ n a
 
 end
 
