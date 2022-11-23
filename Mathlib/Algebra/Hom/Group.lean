@@ -403,11 +403,12 @@ theorem map_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
   eq_inv_of_mul_eq_one_left <| map_mul_eq_one f <| inv_mul_self _
 #align map_inv map_inv
 
-/-- Group homomorphisms preserve division. -/
-@[simp, to_additive "Additive group homomorphisms preserve subtraction."]
-theorem map_mul_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (a b : G) :
-  f (a * b⁻¹) = f a * (f b)⁻¹ := by rw [map_mul, map_inv]
-#align map_mul_inv map_mul_inv
+-- Porting note: redundant `simp` lemma
+-- /-- Group homomorphisms preserve division. -/
+-- @[simp, to_additive "Additive group homomorphisms preserve subtraction."]
+-- theorem map_mul_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (a b : G) :
+--   f (a * b⁻¹) = f a * (f b)⁻¹ := by rw [map_mul, map_inv]
+-- #align map_mul_inv map_mul_inv
 
 /-- Group homomorphisms preserve division. -/
 @[simp, to_additive "Additive group homomorphisms preserve subtraction."]
@@ -604,7 +605,7 @@ theorem MonoidHom.to_oneHom_coe [MulOneClass M] [MulOneClass N] (f : M →* N) :
 
 @[simp, to_additive]
 theorem MonoidHom.to_mulHom_coe [MulOneClass M] [MulOneClass N] (f : M →* N) :
-  (f.toMulHom : M → N) = f := rfl
+  f.toMulHom.toFun = f := rfl
 #align monoid_hom.to_mul_hom_coe MonoidHom.to_mulHom_coe
 
 @[simp]
@@ -614,7 +615,7 @@ theorem MonoidWithZeroHom.to_zeroHom_coe [MulZeroOneClass M] [MulZeroOneClass N]
 
 @[simp]
 theorem MonoidWithZeroHom.to_monoidHom_coe [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) :
-  (f.toMonoidHom : M → N) = f := rfl
+  f.toMonoidHom.toFun = f := rfl
 #align monoid_with_zero_hom.to_monoid_hom_coe MonoidWithZeroHom.to_monoidHom_coe
 
 @[ext, to_additive]
@@ -1420,7 +1421,7 @@ protected theorem map_div [Group α] [DivisionMonoid β] (f : α →* β) (g h :
 /-- Group homomorphisms preserve division. -/
 @[to_additive "Additive group homomorphisms preserve subtraction."]
 protected theorem map_mul_inv [Group α] [DivisionMonoid β] (f : α →* β) (g h : α) :
-  f (g * h⁻¹) = f g * (f h)⁻¹ := map_mul_inv f g h
+  f (g * h⁻¹) = f g * (f h)⁻¹ := by simp
 #align monoid_hom.map_mul_inv MonoidHom.map_mul_inv
 
 /-- A homomorphism from a group to a monoid is injective iff its kernel is trivial.
@@ -1694,14 +1695,14 @@ theorem coe_div [Group G] [DivisionMonoid H] [Coe G H] [CoeIsMonoidHom G H] (a b
 
 variable (M N)
 
-/-- `coe_monoid_with-zero_hom M N` is a class stating that the coercion map `↑ : M → N`
+/-- `coe_monoidWithZeroHom M N` is a class stating that the coercion map `↑ : M → N`
 (a.k.a. `coe`) is a monoid with zero homomorphism.
 -/
 class CoeIsMonoidWithZeroHom [MonoidWithZero M] [MonoidWithZero N] extends
   CoeIsMonoidHom M N, CoeIsZeroHom M N
 #align coe_is_monoid_with_zero_hom CoeIsMonoidWithZeroHom
 
-/-- `monoid_with_zero_hom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
+/-- `monoidWithZeroHom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
 bundled as a monoid with zero homomorphism. -/
 @[simps (config := { fullyApplied := false })]
 protected def MonoidWithZeroHom.coe [MonoidWithZero M] [MonoidWithZero N]
