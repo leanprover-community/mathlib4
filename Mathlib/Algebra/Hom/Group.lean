@@ -90,7 +90,9 @@ you should parametrize over `(F : Type*) [ZeroHomClass F M N] (f : F)`.
 When you extend this structure, make sure to also extend `ZeroHomClass`.
 -/
 structure ZeroHom (M : Type _) (N : Type _) [Zero M] [Zero N] where
+  /-- The underlying function -/
   toFun : M → N
+  /-- The proposition that the function preserves 0 -/
   map_zero' : toFun 0 = 0
 #align zero_hom ZeroHom
 #align zero_hom.map_zero' ZeroHom.map_zero'
@@ -103,6 +105,7 @@ You should extend this typeclass when you extend `ZeroHom`.
 -- https://github.com/leanprover/lean4/issues/1852 is resolved
 class ZeroHomClass (F : Type _) (M N : outParam <| Type _) [outParam <| Zero M] [outParam <| Zero N]
   extends FunLike F M fun _ => N where
+  /-- The proposition that the function preserves 0 -/
   map_zero : ∀ f : F, f 0 = 0
 #align zero_hom_class ZeroHomClass
 #align zero_hom_class.map_zero ZeroHomClass.map_zero
@@ -118,7 +121,7 @@ theorem of_map {R M} [Zero R] [Zero M] [ZeroHomClass F R M]
 #align ne_zero.of_map NeZero.of_map
 
 theorem of_injective {R M} [Zero R] {r : R} [NeZero r] [Zero M] [ZeroHomClass F R M] {f : F}
-    (hf : Function.Injective f) : NeZero (f r) :=
+  (hf : Function.Injective f) : NeZero (f r) :=
   ⟨by
     rw [← ZeroHomClass.map_zero f]
     exact hf.ne NeZero.out⟩
@@ -136,7 +139,9 @@ you should parametrize over `(F : Type*) [AddHomClass F M N] (f : F)`.
 When you extend this structure, make sure to extend `AddHomClass`.
 -/
 structure AddHom (M : Type _) (N : Type _) [Add M] [Add N] where
+  /-- The underlying function -/
   toFun : M → N
+  /-- The proposition that the function preserves addition -/
   map_add' : ∀ x y, toFun (x + y) = toFun x + toFun y
 #align add_hom AddHom
 
@@ -145,6 +150,7 @@ You should declare an instance of this typeclass when you extend `AddHom`.
 -/
 class AddHomClass (F : Type _) (M N : outParam <| Type _)
   [outParam <| Add M] [outParam <| Add N] extends FunLike F M fun _ => N where
+  /-- The proposition that the function preserves addition -/
   map_add : ∀ (f : F) (x y : M), f (x + y) = f x + f y
 #align add_hom_class AddHomClass
 
@@ -166,12 +172,10 @@ structure AddMonoidHom (M : Type _) (N : Type _) [AddZeroClass M] [AddZeroClass 
   ZeroHom M N, AddHom M N
 #align add_monoid_hom AddMonoidHom
 
--- Porting note: attributes omitted
--- attribute [nolint doc_blame] AddMonoidHom.toAddHom
+attribute [nolint docBlame] AddMonoidHom.toAddHom
+attribute [nolint docBlame] AddMonoidHom.toZeroHom
 
--- attribute [nolint doc_blame] AddMonoidHom.toZeroHom
-
--- mathport name: «expr →+ »
+/-- `M →+ N` denotes the type of additive monoid homomorphisms from `M` to `N`. -/
 infixr:25 " →+ " => AddMonoidHom
 
 /-- `AddMonoidHomClass F M N` states that `F` is a type of `AddZeroClass`-preserving
@@ -200,7 +204,9 @@ When you extend this structure, make sure to also extend `OneHomClass`.
 -/
 @[to_additive]
 structure OneHom (M : Type _) (N : Type _) [One M] [One N] where
+  /-- The underlying function -/
   toFun : M → N
+  /-- The proposition that the function preserves 1 -/
   map_one' : toFun 1 = 1
 #align one_hom OneHom
 
@@ -210,6 +216,7 @@ You should extend this typeclass when you extend `OneHom`.
 @[to_additive]
 class OneHomClass (F : Type _) (M N : outParam <| Type _)
   [outParam <| One M] [outParam <| One N] extends FunLike F M fun _ => N where
+  /-- The proposition that the function preserves 1 -/
   map_one : ∀ f : F, f 1 = 1
 #align one_hom_class OneHomClass
 
@@ -247,7 +254,8 @@ theorem ne_one_of_map {R S F : Type _} [One R] [One S] [OneHomClass F R S] {f : 
   (hx : f x ≠ 1) : x ≠ 1 := ne_of_apply_ne f <| ne_of_ne_of_eq hx (map_one f).symm
 #align ne_one_of_map ne_one_of_map
 
-@[to_additive]
+/-- Any type that is a `OneHomClass` can be cast into a `OneHom`. -/
+@[to_additive "Any type that is a `ZeroHomClass` can be cast into a `ZeroHom`."]
 instance [OneHomClass F M N] : CoeTC F (OneHom M N) :=
   ⟨fun f => { toFun := f, map_one' := map_one f }⟩
 
@@ -271,11 +279,13 @@ When you extend this structure, make sure to extend `MulHomClass`.
 -/
 @[to_additive]
 structure MulHom (M : Type _) (N : Type _) [Mul M] [Mul N] where
+  /-- The underlying function -/
   toFun : M → N
+  /-- The proposition that the function preserves multiplication -/
   map_mul' : ∀ x y, toFun (x * y) = toFun x * toFun y
 #align mul_hom MulHom
 
--- mathport name: «expr →ₙ* »
+/-- `M →ₙ* N` denotes the type of multiplication-preserving maps from `M` to `N`. -/
 infixr:25 " →ₙ* " => MulHom
 
 /-- `MulHomClass F M N` states that `F` is a type of multiplication-preserving homomorphisms.
@@ -286,10 +296,12 @@ You should declare an instance of this typeclass when you extend `MulHom`.
 @[to_additive]
 class MulHomClass (F : Type _) (M N : outParam <| Type _)
   [outParam <| Mul M] [outParam <| Mul N] extends FunLike F M fun _ => N where
+  /-- The proposition that the function preserves multiplication -/
   map_mul : ∀ (f : F) (x y : M), f (x * y) = f x * f y
 #align mul_hom_class MulHomClass
 
-@[to_additive]
+/-- `MulHom` is a type of multiplication-preseving homomorphisms -/
+@[to_additive "`AddHom` is a type of addition-preserving homomorphisms"]
 instance MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
   coe := MulHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
@@ -301,7 +313,8 @@ theorem map_mul [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
   MulHomClass.map_mul f x y
 #align map_mul map_mul
 
-@[to_additive]
+/-- Any type that is a `MulHomClass` can be cast into a `MulHom`. -/
+@[to_additive "Any type that is an `AddHomClass` can be cast into an `AddHom`."]
 instance [MulHomClass F M N] : CoeTC F (M →ₙ* N) :=
   ⟨fun f => { toFun := f, map_mul' := map_mul f }⟩
 
@@ -330,12 +343,10 @@ structure MonoidHom (M : Type _) (N : Type _) [MulOneClass M] [MulOneClass N] ex
 -- Porting note: remove once `to_additive` is updated
 attribute [to_additive AddMonoidHom.toAddHom] MonoidHom.toMulHom
 
--- Porting note: attributes omitted
--- attribute [nolint doc_blame] MonoidHom.toMulHom
+attribute [nolint docBlame] MonoidHom.toMulHom
+attribute [nolint docBlame] MonoidHom.toOneHom
 
--- attribute [nolint doc_blame] MonoidHom.toOneHom
-
--- mathport name: «expr →* »
+/-- `M →* N` denotes the type of monoid homomorphisms from `M` to `N`. -/
 infixr:25 " →* " => MonoidHom
 
 /-- `MonoidHomClass F M N` states that `F` is a type of `Monoid`-preserving homomorphisms.
@@ -377,7 +388,8 @@ attribute [to_additive AddMonoidHom.addMonoidHomClass] MonoidHom.monoidHomClass
 -- Porting note: help to_additive translate. This should ideally be handled by the tactic
 attribute [to_additive AddMonoidHomClass.toZeroHomClass] MonoidHomClass.toOneHomClass
 
-@[to_additive]
+/-- Any type that is a `MonoidHomClass` can be cast into a `MonoidHom`. -/
+@[to_additive "Any type that is a `AddMonoidHomClass` can be cast into a `AddMonoidHom`."]
 instance [MonoidHomClass F M N] : CoeTC F (M →* N) :=
   ⟨fun f => { toFun := f, map_one' := map_one f, map_mul' := map_mul f }⟩
 
@@ -487,12 +499,10 @@ structure MonoidWithZeroHom (M : Type _) (N : Type _)
   [MulZeroOneClass M] [MulZeroOneClass N] extends ZeroHom M N, MonoidHom M N
 #align monoid_with_zero_hom MonoidWithZeroHom
 
--- Porting note: attributes omitted
--- attribute [nolint doc_blame] MonoidWithZeroHom.toMonoidHom
+attribute [nolint docBlame] MonoidWithZeroHom.toMonoidHom
+attribute [nolint docBlame] MonoidWithZeroHom.toZeroHom
 
--- attribute [nolint doc_blame] MonoidWithZeroHom.toZeroHom
-
--- mathport name: «expr →*₀ »
+/-- `M →*₀ N` denotes the type of zero-preserving monoid homomorphisms from `M` to `N`. -/
 infixr:25 " →*₀ " => MonoidWithZeroHom
 
 /-- `MonoidWithZeroHomClass F M N` states that `F` is a type of
@@ -518,6 +528,7 @@ instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M �
   map_zero f := f.map_zero'
 #align monoid_with_zero_hom.monoid_with_zero_hom_class MonoidWithZeroHom.monoidWithZeroHomClass
 
+/-- Any type that is a `MonoidWithZeroHomClass` can be cast into a `MonoidWithZeroHom`. -/
 instance [MonoidWithZeroHomClass F M N] : CoeTC F (M →*₀ N) :=
   ⟨fun f => { toFun := f, map_one' := map_one f, map_zero' := map_zero f, map_mul' := map_mul f }⟩
 
@@ -537,7 +548,8 @@ section Coes
 attribute [coe] MonoidHom.toOneHom
 attribute [coe] AddMonoidHom.toZeroHom
 
-@[to_additive]
+/-- `MonoidHom` down-cast to a `OneHom`, forgetting the multiplicative property. -/
+@[to_additive "`AddMonoidHom` down-cast to a `ZeroHom`, forgetting the additive property"]
 instance MonoidHom.coeToOneHom {_ : MulOneClass M} {_ : MulOneClass N} :
   Coe (M →* N) (OneHom M N) := ⟨MonoidHom.toOneHom⟩
 #align monoid_hom.has_coe_to_one_hom MonoidHom.coeToOneHom
@@ -545,19 +557,22 @@ instance MonoidHom.coeToOneHom {_ : MulOneClass M} {_ : MulOneClass N} :
 attribute [coe] MonoidHom.toMulHom
 attribute [coe] AddMonoidHom.toAddHom
 
-@[to_additive]
+/-- `MonoidHom` down-cast to a `MulHom`, forgetting the 1-preserving property. -/
+@[to_additive "`AddMonoidHom` down-cast to an `AddHom`, forgetting the 0-preserving property."]
 instance MonoidHom.coeToMulHom {_ : MulOneClass M} {_ : MulOneClass N} :
   Coe (M →* N) (M →ₙ* N) := ⟨MonoidHom.toMulHom⟩
 #align monoid_hom.has_coe_to_mul_hom MonoidHom.coeToMulHom
 
 attribute [coe] MonoidWithZeroHom.toMonoidHom
 
+/-- `MonoidWithZeroHom` down-cast to a `MonoidHom`, forgetting the 0-preserving property. -/
 instance MonoidWithZeroHom.coeToMonoidHom {_ : MulZeroOneClass M} {_ : MulZeroOneClass N} :
   Coe (M →*₀ N) (M →* N) := ⟨MonoidWithZeroHom.toMonoidHom⟩
 #align monoid_with_zero_hom.has_coe_to_monoid_hom MonoidWithZeroHom.coeToMonoidHom
 
 attribute [coe] MonoidWithZeroHom.toZeroHom
 
+/-- `MonoidWithZeroHom` down-cast to a `ZeroHom`, forgetting the monoidal property. -/
 instance MonoidWithZeroHom.coeToZeroHom {_ : MulZeroOneClass M} {_ : MulZeroOneClass N} :
   Coe (M →*₀ N) (ZeroHom M N) := ⟨MonoidWithZeroHom.toZeroHom⟩
 #align monoid_with_zero_hom.has_coe_to_zero_hom MonoidWithZeroHom.coeToZeroHom
@@ -1104,26 +1119,26 @@ theorem MonoidWithZeroHom.cancel_left [MulZeroOneClass M] [MulZeroOneClass N] [M
 #align monoid_with_zero_hom.cancel_left MonoidWithZeroHom.cancel_left
 
 @[to_additive]
-theorem MonoidHom.to_one_hom_injective [MulOneClass M] [MulOneClass N] :
+theorem MonoidHom.to_oneHom_injective [MulOneClass M] [MulOneClass N] :
   Function.Injective (MonoidHom.toOneHom : (M →* N) → OneHom M N) :=
   fun _ _ h => MonoidHom.ext <| OneHom.ext_iff.mp h
-#align monoid_hom.to_one_hom_injective MonoidHom.to_one_hom_injective
+#align monoid_hom.to_one_hom_injective MonoidHom.to_oneHom_injective
 
 @[to_additive]
-theorem MonoidHom.to_mul_hom_injective [MulOneClass M] [MulOneClass N] :
+theorem MonoidHom.to_mulHom_injective [MulOneClass M] [MulOneClass N] :
   Function.Injective (MonoidHom.toMulHom : (M →* N) → M →ₙ* N) :=
   fun _ _ h => MonoidHom.ext <| MulHom.ext_iff.mp h
-#align monoid_hom.to_mul_hom_injective MonoidHom.to_mul_hom_injective
+#align monoid_hom.to_mul_hom_injective MonoidHom.to_mulHom_injective
 
-theorem MonoidWithZeroHom.to_monoid_hom_injective [MulZeroOneClass M] [MulZeroOneClass N] :
+theorem MonoidWithZeroHom.to_monoidHom_injective [MulZeroOneClass M] [MulZeroOneClass N] :
   Function.Injective (MonoidWithZeroHom.toMonoidHom : (M →*₀ N) → M →* N) :=
   fun _ _ h => MonoidWithZeroHom.ext <| MonoidHom.ext_iff.mp h
-#align monoid_with_zero_hom.to_monoid_hom_injective MonoidWithZeroHom.to_monoid_hom_injective
+#align monoid_with_zero_hom.to_monoid_hom_injective MonoidWithZeroHom.to_monoidHom_injective
 
-theorem MonoidWithZeroHom.to_zero_hom_injective [MulZeroOneClass M] [MulZeroOneClass N] :
+theorem MonoidWithZeroHom.to_zeroHom_injective [MulZeroOneClass M] [MulZeroOneClass N] :
   Function.Injective (MonoidWithZeroHom.toZeroHom : (M →*₀ N) → ZeroHom M N) :=
   fun _ _ h => MonoidWithZeroHom.ext <| ZeroHom.ext_iff.mp h
-#align monoid_with_zero_hom.to_zero_hom_injective MonoidWithZeroHom.to_zero_hom_injective
+#align monoid_with_zero_hom.to_zero_hom_injective MonoidWithZeroHom.to_zeroHom_injective
 
 @[simp, to_additive]
 theorem OneHom.comp_id [One M] [One N] (f : OneHom M N) : f.comp (OneHom.id M) = f :=
@@ -1300,11 +1315,18 @@ theorem OneHom.comp_one [One M] [One N] [One P] (f : OneHom N P) : f.comp (1 : O
 @[to_additive]
 instance [One M] [One N] : Inhabited (OneHom M N) := ⟨1⟩
 
+attribute [nolint docBlame] instInhabitedOneHom
+attribute [nolint docBlame] instInhabitedZeroHom
+
 @[to_additive]
 instance [Mul M] [MulOneClass N] : Inhabited (M →ₙ* N) := ⟨1⟩
 
 @[to_additive]
 instance [MulOneClass M] [MulOneClass N] : Inhabited (M →* N) := ⟨1⟩
+
+attribute [nolint docBlame] instInhabitedAddHomToAdd
+attribute [nolint docBlame] instInhabitedMonoidHom
+attribute [nolint docBlame] instInhabitedAddMonoidHom
 
 -- unlike the other homs, `MonoidWithZeroHom` does not have a `1` or `0`
 instance [MulZeroOneClass M] : Inhabited (M →*₀ M) := ⟨MonoidWithZeroHom.id M⟩
@@ -1458,8 +1480,8 @@ def mk' (f : M → G) (map_mul : ∀ a b : M, f (a * b) = f a * f b) : M →* G 
   map_one' := mul_left_eq_self.1 <| by rw [← map_mul, mul_one]
 #align monoid_hom.mk' MonoidHom.mk'
 
-/-- Makes a group homomorphism from a proof that the map preserves right division `λ x y, x * y⁻¹`.
-See also `monoid_hom.of_map_div` for a version using `λ x y, x / y`.
+/-- Makes a group homomorphism from a proof that the map preserves right division
+`fun x y => x * y⁻¹`. See also `MonoidHom.of_map_div` for a version using `fun x y => x / y`.
 -/
 @[to_additive
   "Makes an additive group homomorphism from a proof that the map preserves
@@ -1577,6 +1599,7 @@ variable (M N) [Coe M N]
 is an zero-preserving homomorphism.
 -/
 class CoeIsZeroHom [Zero M] [Zero N] : Prop where
+  /-- The proposition that the coecion preserves 0 -/
   coe_zero : (↑(0 : M) : N) = 0
 #align coe_is_zero_hom CoeIsZeroHom
 
@@ -1589,6 +1612,7 @@ is a one-preserving homomorphism.
 -/
 @[to_additive]
 class CoeIsOneHom [One M] [One N] : Prop where
+  /-- The proposition that the coecion preserves 1 -/
   coe_one : (↑(1 : M) : N) = 1
 #align coe_is_one_hom CoeIsOneHom
 
@@ -1596,10 +1620,10 @@ export CoeIsOneHom (coe_one)
 
 attribute [simp] coe_one -- Porting note: restore `norm_cast`
 
-/-- `one_hom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
+/-- `OneHom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
 bundled as a one-preserving homomorphism. -/
 @[to_additive
-  "`zero_hom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
+  "`ZeroHom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
   bundled as a zero-preserving homomorphism.",
   simps (config := { fullyApplied := false })]
 protected def OneHom.coe [One M] [One N] [CoeIsOneHom M N] : OneHom M N where
@@ -1611,6 +1635,7 @@ protected def OneHom.coe [One M] [One N] [CoeIsOneHom M N] : OneHom M N where
 is an additive homomorphism.
 -/
 class CoeIsAddHom [Add M] [Add N] : Prop where
+  /-- The proposition that the coecion preserves addition -/
   coe_add : ∀ x y : M, (↑(x + y) : N) = ↑x + ↑y
 #align coe_is_add_hom CoeIsAddHom
 
@@ -1623,6 +1648,7 @@ is a multiplicative homomorphism.
 -/
 @[to_additive]
 class CoeIsMulHom [Mul M] [Mul N] : Prop where
+  /-- The proposition that the coecion preserves multiplication -/
   coe_mul : ∀ x y : M, (↑(x * y) : N) = ↑x * ↑y
 #align coe_is_mul_hom CoeIsMulHom
 
@@ -1630,9 +1656,9 @@ export CoeIsMulHom (coe_mul)
 
 attribute [simp] coe_mul -- Porting note: restore `norm_cast`
 
-/-- `mul_hom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
+/-- `MulHom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
 bundled as a multiplicative homomorphism. -/
-@[to_additive "`add_hom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
+@[to_additive "`AddHom.coe M N` is the map `↑ : M → N` (a.k.a. `coe`),
   bundled as an additive homomorphism.",
   simps (config := { fullyApplied := false })]
 protected def MulHom.coe [Mul M] [Mul N] [CoeIsMulHom M N] : MulHom M N where
