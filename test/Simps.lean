@@ -34,7 +34,7 @@ run_cmd liftTermElabM <| do
 structure Foo2 (α : Type _) : Type _ where
   elim : α × α
 
-def Foo2.simps.elim (α : Type _) : Foo2 α → α × α := fun x => (x.elim.1, x.elim.2)
+def Foo2.Simps.elim (α : Type _) : Foo2 α → α × α := fun x => (x.elim.1, x.elim.2)
 
 initialize_simps_projections Foo2
 
@@ -70,7 +70,7 @@ initialize_simps_projections Top
 
 structure NewTop (α β : Type _) extends Right α β, Left α
 
-def NewTop.simps.newElim {α β : Type _} (x : NewTop α β) : α × α := x.elim
+def NewTop.Simps.newElim {α β : Type _} (x : NewTop α β) : α × α := x.elim
 
 initialize_simps_projections NewTop (toRight_toFoo2_elim → newElim)
 
@@ -124,12 +124,12 @@ example (n : ℕ) : foo.rfl.invFun n = n := by rw [foo.rfl_invFun]
 -- note: in Lean 4 the first test succeeds without `@[simps]`, however, the remaining tests don't
 example : foo.1 = 1 := by simp
 example {a : ℕ} {h : 1 = a} : foo.1 = a := by rw [foo_fst, h]
-example {a : ℕ} {h : 1 = a} : foo.1 = a := by simp <;> rw [h]
-example {a : ℤ} {h : 2 = a} : foo.2 = a := by simp <;> rw [h]
-example {a : ℕ} {h : 1 = a} : foo.1 = a := by dsimp <;> rw [h] -- check that dsimp also unfolds
-example {a : ℤ} {h : 2 = a} : foo.2 = a := by dsimp <;> rw [h]
-example {α} (x y : α) (h : x = y) : foo.rfl.toFun x = y := by simp <;> rw [h]
-example {α} (x y : α) (h : x = y) : foo.rfl.invFun x = y := by simp <;> rw [h]
+example {a : ℕ} {h : 1 = a} : foo.1 = a := by simp; rw [h]
+example {a : ℤ} {h : 2 = a} : foo.2 = a := by simp; rw [h]
+example {a : ℕ} {h : 1 = a} : foo.1 = a := by dsimp; rw [h] -- check that dsimp also unfolds
+example {a : ℤ} {h : 2 = a} : foo.2 = a := by dsimp; rw [h]
+example {α} (x y : α) (h : x = y) : foo.rfl.toFun x = y := by simp; rw [h]
+example {α} (x y : α) (h : x = y) : foo.rfl.invFun x = y := by simp; rw [h]
 -- example {α} (x y : α) (h : x = y) : foo.rfl.toFun = @id α := by { successIfFail {simp}, rfl }
 
 /- check some failures -/
@@ -367,8 +367,8 @@ example {α} {b : Bool} {x} (h : (⟨3, 5⟩ : MyProd _ _) = x) : (@test α).ext
 @[simps (config := {simpRhs := true})] def Equiv'.trans {α β γ} (f : α ≃ β) (g : β ≃ γ) : α ≃ γ :=
 ⟨ g.toFun ∘ f.toFun,
   f.invFun ∘ g.invFun,
-  (by intro x <;> simp [Equiv'.left_inv _ _]),
-  (by intro x <;> simp [Equiv'.right_inv _ _])⟩
+  (by intro x; simp [Equiv'.left_inv _ _]),
+  (by intro x; simp [Equiv'.right_inv _ _])⟩
 
 
 example {α β γ : Type} (f : α ≃ β) (g : β ≃ γ) (x : α) {z : γ} (h : g.toFun (f.toFun x) = z) :
@@ -378,13 +378,13 @@ example {α β γ : Type} (f : α ≃ β) (g : β ≃ γ) (x : α) {z : γ} (h :
 
 attribute [local simp] Nat.zero_add Nat.one_mul Nat.mul_one
 @[simps (config := {simpRhs := true})] def myNatEquiv : ℕ ≃ ℕ :=
-⟨λ n => 0 + n, λ n => 1 * n * 1, by intro n <;> simp, by intro n <;> simp⟩
+⟨λ n => 0 + n, λ n => 1 * n * 1, by intro n; simp, by intro n; simp⟩
 
 example (n : ℕ) : myNatEquiv.toFun (myNatEquiv.toFun $ myNatEquiv.invFun n) = n :=
 by { /-successIfFail { rfl },-/ simp only [myNatEquiv_toFun, myNatEquiv_invFun] }
 
 @[simps (config := {simpRhs := true})] def succeed_without_simplification_possible : ℕ ≃ ℕ :=
-⟨λ n => n, λ n => n, by intro n <;> rfl, by intro n <;> rfl⟩
+⟨λ n => n, λ n => n, by intro n; rfl, by intro n; rfl⟩
 
 
 /- test that we don't recursively take projections of `prod` and `PProd` -/
@@ -437,10 +437,10 @@ infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 
 @[ext] theorem types.ext {X Y : Type u} {f g : X ⟶ Y} : (∀ x, f x = g x) → f = g := funext
 
-example (X : Type u) {x : Type u} (h : (X → X) = x) : (X ⟶ X) = x := by simp <;> rw [h]
-example (X : Type u) {f : X → X} (h : ∀ x, f x = x) : 𝟙 X = f := by ext <;> simp <;> rw [h]
+example (X : Type u) {x : Type u} (h : (X → X) = x) : (X ⟶ X) = x := by simp; rw [h]
+example (X : Type u) {f : X → X} (h : ∀ x, f x = x) : 𝟙 X = f := by ext; simp; rw [h]
 example (X Y Z : Type u) (f : X ⟶ Y) (g : Y ⟶ Z) {k : X → Z} (h : ∀ x, g (f x) = k x) :
-  f ≫ g = k := by ext <;> simp <;> rw [h]
+  f ≫ g = k := by ext; simp; rw [h]
 
 namespace coercing
 
@@ -453,8 +453,8 @@ instance : CoeSort FooStr Type := ⟨FooStr.c⟩
 @[simps] def foo : FooStr := ⟨ℕ, 3⟩
 @[simps] def foo2 : FooStr := ⟨ℕ, 34⟩
 
-example {x : Type} (h : ℕ = x) : foo = x := by simp only [foo_c] <;> rw [h]
-example {x : ℕ} (h : (3 : ℕ) = x) : foo.x = x := by simp only [foo_x] <;> rw [h]
+example {x : Type} (h : ℕ = x) : foo = x := by simp only [foo_c]; rw [h]
+example {x : ℕ} (h : (3 : ℕ) = x) : foo.x = x := by simp only [foo_x]; rw [h]
 
 structure VooStr (n : ℕ) :=
  (c : Type)
@@ -465,8 +465,8 @@ instance (n : ℕ) : CoeSort (VooStr n) Type := ⟨VooStr.c⟩
 @[simps] def voo : VooStr 7 := ⟨ℕ, 3⟩
 @[simps] def voo2 : VooStr 4 := ⟨ℕ, 34⟩
 
-example {x : Type} (h : ℕ = x) : voo = x := by simp only [voo_c] <;> rw [h]
-example {x : ℕ} (h : (3 : ℕ) = x) : voo.x = x := by simp only [voo_x] <;> rw [h]
+example {x : Type} (h : ℕ = x) : voo = x := by simp only [voo_c]; rw [h]
+example {x : ℕ} (h : (3 : ℕ) = x) : voo.x = x := by simp only [voo_x]; rw [h]
 
 structure Equiv2 (α : Sort _) (β : Sort _) :=
 (toFun    : α → β)
@@ -480,8 +480,8 @@ instance {α β} : CoeFun (Equiv2 α β) (λ _ => α → β) := ⟨Equiv2.toFun�
 ⟨λ x => x, λ x => x, λ _ => rfl, λ _ => rfl⟩
 
 example {α} (x x' : α) (h : x = x') : coercing.rfl2 x = x' := by rw [coercing.rfl2_toFun, h]
-example {α} (x x' : α) (h : x = x') : coercing.rfl2 x = x' := by simp <;> rw [h]
-example {α} (x x' : α) (h : x = x') : coercing.rfl2.invFun x = x' := by simp <;> rw [h]
+example {α} (x x' : α) (h : x = x') : coercing.rfl2 x = x' := by simp; rw [h]
+example {α} (x x' : α) (h : x = x') : coercing.rfl2.invFun x = x' := by simp; rw [h]
 
 @[simps] protected def Equiv2.symm {α β} (f : Equiv2 α β) : Equiv2 β α :=
 ⟨f.invFun, f, f.right_inv, f.left_inv⟩
@@ -492,12 +492,12 @@ example {α} (x x' : α) (h : x = x') : coercing.rfl2.invFun x = x' := by simp <
 @[simps (config := {fullyApplied := false})] protected def Equiv2.symm3 {α β} (f : Equiv2 α β) : Equiv2 β α :=
 ⟨f.invFun, f, f.right_inv, f.left_inv⟩
 
-example {α β} (f : Equiv2 α β) (y : β) {x} (h : f.invFun y = x) : f.symm y = x := by simp <;> rw [h]
-example {α β} (f : Equiv2 α β) (x : α) {z} (h : f x = z) : f.symm.invFun x = z := by simp <;> rw [h]
+example {α β} (f : Equiv2 α β) (y : β) {x} (h : f.invFun y = x) : f.symm y = x := by simp; rw [h]
+example {α β} (f : Equiv2 α β) (x : α) {z} (h : f x = z) : f.symm.invFun x = z := by simp; rw [h]
 
 -- example {α β} (f : Equiv2 α β) {x} (h : f = x) : f.symm.invFun = x :=
 -- by { /-successIfFail {simp <;> rw [h]} <;>-/ rfl }
-example {α β} (f : Equiv2 α β) {x} (h : f = x) : f.symm3.invFun = x := by simp <;> rw [h]
+example {α β} (f : Equiv2 α β) {x} (h : f = x) : f.symm3.invFun = x := by simp; rw [h]
 
 class Semigroup (G : Type u) extends Mul G where
   mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
@@ -578,7 +578,7 @@ instance : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
 /-- See Note [custom simps projection] -/
-def Equiv.simps.invFun (e : α ≃ β) : β → α := e.symm
+def Equiv.Simps.invFun (e : α ≃ β) : β → α := e.symm
 
 /-- Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. -/
 @[simps (config := {simpRhs := true})]
@@ -587,7 +587,7 @@ protected def Equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
 
 example (e₁ : α ≃ β) (e₂ : β ≃ γ) (x : γ) {z} (h : e₁.symm (e₂.symm x) = z) :
   (e₁.trans e₂).symm x = z :=
-by simp only [Equiv.trans_invFun] <;> rw [h]
+by simp only [Equiv.trans_invFun]; rw [h]
 
 end ManualCoercion
 
@@ -602,7 +602,7 @@ local infix:25 (priority := high) " ≃ " => FaultyManualCoercion.Equiv
 variable {α β γ : Sort _}
 
 /-- See Note [custom simps projection] -/
-noncomputable def Equiv.simps.invFun (e : α ≃ β) : β → α := Classical.choice ⟨e.invFun⟩
+noncomputable def Equiv.Simps.invFun (e : α ≃ β) : β → α := Classical.choice ⟨e.invFun⟩
 
 run_cmd liftTermElabM <| do
   successIfFail (simpsGetRawProjections `FaultyManualCoercion.Equiv)
@@ -628,7 +628,7 @@ instance : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
 /-- See Note [custom simps projection] -/
-def Equiv.simps.invFun (e : α ≃ β) : β → α := e.symm
+def Equiv.Simps.invFun (e : α ≃ β) : β → α := e.symm
 
 initialize_simps_projections Equiv
 
@@ -641,7 +641,7 @@ protected def Equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
 
 example (e₁ : α ≃ β) (e₂ : β ≃ γ) (x : γ) {z} (h : e₁.symm (e₂.symm x) = z) :
   (e₁.trans e₂).symm x = z :=
-by simp only [Equiv.trans_invFun] <;> rw [h]
+by simp only [Equiv.trans_invFun]; rw [h]
 
 end ManualInitialize
 
@@ -660,7 +660,7 @@ instance : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
 /-- See Note [custom simps projection] -/
-def Equiv.simps.invFun {α : Type u} {β : Type v} (e : α ≃ β) : β → α := e.symm
+def Equiv.Simps.invFun {α : Type u} {β : Type v} (e : α ≃ β) : β → α := e.symm
 
 run_cmd liftTermElabM <| do
   successIfFail (simpsGetRawProjections `FaultyUniverses.Equiv)
@@ -690,7 +690,7 @@ def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
 /-- See Note [custom simps projection] -/
 -- test: intentionally using different unvierse levels for Equiv.symm than for Equiv
-def Equiv.simps.invFun {α : Sort w} {β : Sort u} (e : α ≃ β) : β → α := e.symm
+def Equiv.Simps.invFun {α : Sort w} {β : Sort u} (e : α ≃ β) : β → α := e.symm
 
 -- check whether we can generate custom projections even if the universe names don't match
 initialize_simps_projections Equiv
@@ -712,7 +712,7 @@ instance : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
 /-- See Note [custom simps projection] -/
-def Equiv.simps.symm_apply (e : α ≃ β) : β → α := e.symm
+def Equiv.Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 
 initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
 
@@ -725,11 +725,11 @@ protected def Equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
 ⟨e₂ ∘ (e₁ : α → β), e₁.symm ∘ (e₂.symm : γ → β)⟩
 
 example (e₁ : α ≃ β) (e₂ : β ≃ γ) (x : α) {z} (h : e₂ (e₁ x) = z) : (e₁.trans e₂) x = z :=
-by simp only [Equiv.trans_apply] <;> rw [h]
+by simp only [Equiv.trans_apply]; rw [h]
 
 example (e₁ : α ≃ β) (e₂ : β ≃ γ) (x : γ) {z} (h : e₁.symm (e₂.symm x) = z) :
   (e₁.trans e₂).symm x = z :=
-by simp only [Equiv.trans_symm_apply] <;> rw [h]
+by simp only [Equiv.trans_symm_apply]; rw [h]
 
 -- the new projection names are parsed correctly (the old projection names won't work anymore)
 @[simps apply symm_apply] protected def Equiv.trans2 (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
@@ -752,7 +752,7 @@ instance : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
 /-- See Note [custom simps projection] -/
-def Equiv.simps.symm_apply (e : α ≃ β) : β → α := e.symm
+def Equiv.Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 initialize_simps_projections Equiv (toFun → coe as_prefix, invFun → symm_apply)
 
 run_cmd liftTermElabM <| do
@@ -999,8 +999,8 @@ def DecoratedEquiv.symm {α β : Sort _} (e : DecoratedEquiv α β) : DecoratedE
   P_toFun := e.P_invFun
   P_invFun := e.P_toFun }
 
-def DecoratedEquiv.simps.apply {α β : Sort _} (e : DecoratedEquiv α β) : α → β := e
-def DecoratedEquiv.simps.symm_apply {α β : Sort _} (e : DecoratedEquiv α β) : β → α := e.symm
+def DecoratedEquiv.Simps.apply {α β : Sort _} (e : DecoratedEquiv α β) : α → β := e
+def DecoratedEquiv.Simps.symm_apply {α β : Sort _} (e : DecoratedEquiv α β) : β → α := e.symm
 
 initialize_simps_projections DecoratedEquiv
   (toEquiv'_toFun → apply, toEquiv'_invFun → symm_apply, -toEquiv')
@@ -1052,8 +1052,8 @@ def FurtherDecoratedEquiv.symm {α β : Sort _} (e : FurtherDecoratedEquiv α β
   Q_toFun := e.Q_invFun
   Q_invFun := e.Q_toFun }
 
-def FurtherDecoratedEquiv.simps.apply {α β : Sort _} (e : FurtherDecoratedEquiv α β) : α → β := e
-def FurtherDecoratedEquiv.simps.symm_apply {α β : Sort _} (e : FurtherDecoratedEquiv α β) :
+def FurtherDecoratedEquiv.Simps.apply {α β : Sort _} (e : FurtherDecoratedEquiv α β) : α → β := e
+def FurtherDecoratedEquiv.Simps.symm_apply {α β : Sort _} (e : FurtherDecoratedEquiv α β) :
   β → α := e.symm
 
 initialize_simps_projections FurtherDecoratedEquiv
@@ -1091,8 +1091,8 @@ def OneMore.symm {α β : Sort _} (e : OneMore α β) :
   OneMore β α :=
 { toFurtherDecoratedEquiv := e.toFurtherDecoratedEquiv.symm }
 
-def OneMore.simps.apply {α β : Sort _} (e : OneMore α β) : α → β := e
-def OneMore.simps.symm_apply {α β : Sort _} (e : OneMore α β) : β → α := e.symm
+def OneMore.Simps.apply {α β : Sort _} (e : OneMore α β) : α → β := e
+def OneMore.Simps.symm_apply {α β : Sort _} (e : OneMore α β) : β → α := e.symm
 
 initialize_simps_projections OneMore
   (toFurtherDecoratedEquiv_toDecoratedEquiv_toEquiv'_toFun → apply,
@@ -1110,8 +1110,7 @@ initialize_simps_projections OneMore
   Q_toFun  := λ y => ⟨y, rfl⟩
   Q_invFun := λ y => ⟨y, rfl⟩ }
 
-example {α : Type} (x : α) : (fffoo α).symm x = x :=
-by dsimp <;> guard_target = x = x <;> rfl
+example {α : Type} (x : α) : (fffoo α).symm x = x := by dsimp
 
 @[simps apply to_dequiv_apply toFurtherDecoratedEquiv_apply to_dequiv]
 def fffoo2 (α : Type) : OneMore α α := fffoo α
@@ -1137,7 +1136,7 @@ instance (M N : Type _) [AddMonoid M] [AddMonoid N] : CoeFun (M →+ N) (λ _ =>
 class AddHomPlus [Add ι] [∀ i, AddCommMonoid (A i)] :=
 (mul {i} : A i →+ A i)
 
-def AddHomPlus.simps.apply [Add ι] [∀ i, AddCommMonoid (A i)] [AddHomPlus A] {i : ι} (x : A i) :
+def AddHomPlus.Simps.apply [Add ι] [∀ i, AddCommMonoid (A i)] [AddHomPlus A] {i : ι} (x : A i) :
   A i :=
 AddHomPlus.mul x
 
@@ -1146,7 +1145,7 @@ initialize_simps_projections AddHomPlus (mul_toZeroHom_toFun → apply, -mul)
 class AddHomPlus2 [Add ι] :=
 (mul {i j} : A i ≃ (A j ≃ A (i + j)))
 
-def AddHomPlus2.simps.mul [Add ι] [AddHomPlus2 A] {i j : ι}
+def AddHomPlus2.Simps.mul [Add ι] [AddHomPlus2 A] {i j : ι}
   (x : A i) (y : A j) : A (i + j) :=
 AddHomPlus2.mul x y
 

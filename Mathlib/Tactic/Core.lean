@@ -62,10 +62,6 @@ def setProtected {m : Type → Type} [MonadEnv m] (nm : Name) : m Unit :=
 
 namespace Parser.Tactic
 
--- syntax dsimpArg := simpErase <|> simpLemma
-def dsimpArg := simpErase.binary `orelse simpLemma
-
-syntax dsimpArgs := " [" dsimpArg,* "]"
 syntax withArgs := " with " (colGt ident)+
 syntax usingArg := " using " term
 

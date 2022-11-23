@@ -21,7 +21,7 @@
    "name": "Unicode",
    "inputRev": "main"},
   {"url": "https://github.com/leanprover/std4",
-   "rev": "006a0357c5d5bde9ee1898c1da1382e341d6c7f2",
+   "rev": "eaac7d455caa50a9c493f9c0c1fd13aaadfe3b03",
    "name": "std",
    "inputRev": "main"},
   {"url": "https://github.com/leanprover/lake",
