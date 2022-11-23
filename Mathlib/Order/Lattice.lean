@@ -79,8 +79,11 @@ end
   with a join (a.k.a. lub / least upper bound, sup / supremum) operation
   `⊔` which is the least element larger than both factors. -/
 class SemilatticeSup (α : Type u) extends HasSup α, PartialOrder α where
+  /-- The supremum is an upper bound on the first argument -/
   protected le_sup_left : ∀ a b : α, a ≤ a ⊔ b
+  /-- The supremum is an upper bound on the second argument -/
   protected le_sup_right : ∀ a b : α, b ≤ a ⊔ b
+  /-- The supremum is the *least* upper bound -/
   protected sup_le : ∀ a b c : α, a ≤ c → b ≤ c → a ⊔ b ≤ c
 #align semilattice_sup SemilatticeSup
 
@@ -229,8 +232,8 @@ theorem sup_le_sup_right (h₁ : a ≤ b) (c) : a ⊔ c ≤ b ⊔ c :=
   sup_le_sup h₁ le_rfl
 #align sup_le_sup_right sup_le_sup_right
 
-@[simp]
-theorem sup_idem : a ⊔ a = a := by apply le_antisymm <;> simp
+-- Porting note: was @[simp]
+theorem sup_idem : a ⊔ a = a := by simp
 #align sup_idem sup_idem
 
 instance sup_is_idempotent : IsIdempotent α (· ⊔ ·) :=
@@ -256,12 +259,12 @@ theorem sup_left_right_swap (a b c : α) : a ⊔ b ⊔ c = c ⊔ b ⊔ a := by
   rw [sup_comm, @sup_comm _ _ a, sup_assoc]
 #align sup_left_right_swap sup_left_right_swap
 
-@[simp]
-theorem sup_left_idem : a ⊔ (a ⊔ b) = a ⊔ b := by rw [← sup_assoc, sup_idem]
+-- Porting note: was @[simp]
+theorem sup_left_idem : a ⊔ (a ⊔ b) = a ⊔ b := by simp
 #align sup_left_idem sup_left_idem
 
-@[simp]
-theorem sup_right_idem : a ⊔ b ⊔ b = a ⊔ b := by rw [sup_assoc, sup_idem]
+-- Porting note: was @[simp]
+theorem sup_right_idem : a ⊔ b ⊔ b = a ⊔ b := by simp
 #align sup_right_idem sup_right_idem
 
 theorem sup_left_comm (a b c : α) : a ⊔ (b ⊔ c) = b ⊔ (a ⊔ c) := by
@@ -346,8 +349,11 @@ end SemilatticeSup
   with a meet (a.k.a. glb / greatest lower bound, inf / infimum) operation
   `⊓` which is the greatest element smaller than both factors. -/
 class SemilatticeInf (α : Type u) extends HasInf α, PartialOrder α where
+  /-- The infimum is an lower bound on the first argument -/
   protected inf_le_left : ∀ a b : α, a ⊓ b ≤ a
+  /-- The infimum is an lower bound on the second argument -/
   protected inf_le_right : ∀ a b : α, a ⊓ b ≤ b
+  /-- The infimum is the *greatest* lower bound -/
   protected le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ b ⊓ c
 #align semilattice_inf SemilatticeInf
 
@@ -473,7 +479,7 @@ theorem inf_le_inf_left (a : α) {b c : α} (h : b ≤ c) : a ⊓ b ≤ a ⊓ c 
   inf_le_inf le_rfl h
 #align inf_le_inf_left inf_le_inf_left
 
-@[simp]
+-- Porting note: was @[simp]
 theorem inf_idem : a ⊓ a = a :=
   @sup_idem αᵒᵈ _ _
 #align inf_idem inf_idem
@@ -502,12 +508,12 @@ theorem inf_left_right_swap (a b c : α) : a ⊓ b ⊓ c = c ⊓ b ⊓ a :=
   @sup_left_right_swap αᵒᵈ _ _ _ _
 #align inf_left_right_swap inf_left_right_swap
 
-@[simp]
+-- Porting note: was @[simp]
 theorem inf_left_idem : a ⊓ (a ⊓ b) = a ⊓ b :=
   @sup_left_idem αᵒᵈ _ a b
 #align inf_left_idem inf_left_idem
 
-@[simp]
+-- Porting note: was @[simp]
 theorem inf_right_idem : a ⊓ b ⊓ b = a ⊓ b :=
   @sup_right_idem αᵒᵈ _ a b
 #align inf_right_idem inf_right_idem
@@ -683,13 +689,8 @@ theorem inf_lt_sup : a ⊓ b < a ⊔ b ↔ a ≠ b := by
 
 #align inf_lt_sup inf_lt_sup
 
-@[simp]
-theorem sup_le_inf : a ⊔ b ≤ a ⊓ b ↔ a = b :=
-  ⟨fun h => le_antisymm (le_sup_left.trans $ h.trans inf_le_right)
-    (le_sup_right.trans $ h.trans inf_le_left),
-   by
-    rintro rfl
-    simp⟩
+-- Porting note: was @[simp]
+theorem sup_le_inf : a ⊔ b ≤ a ⊓ b ↔ a = b := by simp [le_antisymm_iff, and_comm]
 #align sup_le_inf sup_le_inf
 
 /-!
@@ -744,6 +745,7 @@ is the lattice of subsets of a set, and in fact this example is
 generic in the sense that every distributive lattice is realizable
 as a sublattice of a powerset lattice. -/
 class DistribLattice (α) extends Lattice α where
+  /-- The infimum distributes over the supremum -/
   protected le_sup_inf : ∀ x y z : α, (x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ y ⊓ z
 #align distrib_lattice DistribLattice
 
@@ -1465,5 +1467,3 @@ end lift
 --To avoid noncomputability poisoning from `Bool.completeBooleanAlgebra`
 instance : DistribLattice Bool :=
   LinearOrder.toDistribLattice
-
-#lint
