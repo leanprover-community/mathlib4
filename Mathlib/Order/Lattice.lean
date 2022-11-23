@@ -349,9 +349,9 @@ end SemilatticeSup
   with a meet (a.k.a. glb / greatest lower bound, inf / infimum) operation
   `⊓` which is the greatest element smaller than both factors. -/
 class SemilatticeInf (α : Type u) extends HasInf α, PartialOrder α where
-  /-- The infimum is an lower bound on the first argument -/
+  /-- The infimum is a lower bound on the first argument -/
   protected inf_le_left : ∀ a b : α, a ⊓ b ≤ a
-  /-- The infimum is an lower bound on the second argument -/
+  /-- The infimum is a lower bound on the second argument -/
   protected inf_le_right : ∀ a b : α, a ⊓ b ≤ b
   /-- The infimum is the *greatest* lower bound -/
   protected le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ b ⊓ c
