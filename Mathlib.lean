@@ -51,6 +51,7 @@ import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.KVMap
+import Mathlib.Data.LazyList
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Card
 import Mathlib.Data.List.Chain
