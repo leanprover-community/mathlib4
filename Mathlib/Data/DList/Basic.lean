@@ -24,19 +24,19 @@ namespace Std
 
 /-- Concatenates a list of difference lists to form a single difference list. Similar to
 `List.join`. -/
-def DList.join {α : Type _} : List (Std.DList α) → Std.DList α
-  | [] => Std.DList.empty
+def DList.join {α : Type _} : List (DList α) → DList α
+  | [] => DList.empty
   | x :: xs => x ++ DList.join xs
 #align dlist.join Std.DList.join
 
 /-- Convert a lazily-evaluated `List` to a `DList` -/
 -- Ported from Lean 3 core
-def DList.lazy_ofList (l : Thunk (List α)) : Std.DList α :=
+def DList.lazy_ofList (l : Thunk (List α)) : DList α :=
 ⟨fun xs => l.get ++ xs, fun t => by simp⟩
 #align dlist.lazy_of_list Std.DList.lazy_ofList
 
 @[simp]
-theorem DList_singleton {α : Type _} {a : α} : Std.DList.singleton a = DList.lazy_ofList [a] :=
+theorem DList_singleton {α : Type _} {a : α} : DList.singleton a = DList.lazy_ofList [a] :=
   rfl
 #align dlist_singleton Std.DList_singleton
 
