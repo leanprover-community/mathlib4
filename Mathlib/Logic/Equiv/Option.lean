@@ -209,16 +209,14 @@ theorem option_subtype_apply_apply
       [DecidableEq β] (x : β)
       (e : { e : Option α ≃ β // e none = x })
       (a : α)
-      (h) : option_subtype x e a = ⟨(e : Option α ≃ β) a, h⟩ :=
-  rfl
+      (h) : option_subtype x e a = ⟨(e : Option α ≃ β) a, h⟩ := rfl
 #align equiv.option_subtype_apply_apply Equiv.option_subtype_apply_apply
 
 @[simp]
 theorem coe_option_subtype_apply_apply
       [DecidableEq β] (x : β)
       (e : { e : Option α ≃ β // e none = x })
-      (a : α) : ↑(option_subtype x e a) = (e : Option α ≃ β) a :=
-  rfl
+      (a : α) : ↑(option_subtype x e a) = (e : Option α ≃ β) a := rfl
 #align equiv.coe_option_subtype_apply_apply Equiv.coe_option_subtype_apply_apply
 
 @[simp]
