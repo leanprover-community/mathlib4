@@ -48,3 +48,14 @@ add_tactic_doc tde2
   guard (tdes.length == 3)
   if let some tde := tdes[0]? then
     guard (tde.snd == "My docstring for :three")
+
+-- 4. Test add_tactic_doc: create the tacticDocEntry on the fly
+add_tactic_doc {
+  name       := "never defined separately",
+  category   := DocCategory.hole_cmd,
+  decl_names := [`one]
+}
+
+#eval show TermElabM _ from do
+  let tdes ← tactic.getTacticDocEntries
+  guard (tdes.length == 4)

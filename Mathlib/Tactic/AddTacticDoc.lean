@@ -5,6 +5,9 @@ Authors: Robert Y. Lewis, Evgenia Karunus
 -/
 
 import Std.Util.TermUnsafe
+import Lean
+
+open Lean Elab Term Command
 
 /-!
 # Documentation commands
@@ -14,8 +17,6 @@ Throughout mathlib, we add documentation entries using `add_tactic_doc` command.
 Then [doc-gen](https://github.com/leanprover-community/doc-gen) calls `getTacticDocEntries`
 to gather all documentation entries, and generates html docs.
 -/
-
-open Lean Elab
 
 /-- The possible categories for `tacticDocEntry.category`. -/
 inductive DocCategory where
@@ -114,10 +115,9 @@ the `add_tactic_doc` invocation.
 Note that providing a badly formed `tactic_doc_entry` to the command can result in strange error
 messages.
 -/
-elab metaDocString:docComment ? "add_tactic_doc " tdeStx:term : command => do
+elab metaDocString:docComment ? "add_tactic_doc " tdeStx:term : command => liftTermElabM do
   -- 1. Turn tde:TSyntax argument into the actual tde:TacticDocEntry object
-  let tdeName : Name ← resolveGlobalConstNoOverloadWithInfo tdeStx
-  let tde : TacticDocEntry ← unsafe evalConstCheck TacticDocEntry ``TacticDocEntry tdeName
+  let tde ← unsafe evalTerm TacticDocEntry (mkConst ``TacticDocEntry) tdeStx
   -- 2. Determine tde's docstring
   let tdeDoc : String ←
     if let some metaDocString := metaDocString then
