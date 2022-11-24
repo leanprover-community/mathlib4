@@ -7,10 +7,8 @@ Authors: Robert Y. Lewis, Evgenia Karunus
 import Std.Util.TermUnsafe
 import Lean
 
-open Lean Elab Term Command
-
 /-!
-# Documentation commands
+# add_tactic_doc command
 
 We generate html documentation from mathlib source code.
 Throughout mathlib, we add documentation entries using `add_tactic_doc` command.
@@ -60,6 +58,8 @@ def TacticDocEntry.toJson (tde : TacticDocEntry) (description : String) : Lean.J
     ("tags",        Lean.Json.arr (List.toArray (tde.tags.map Lean.Json.str))),
     ("description", description)
   ]
+
+open Lean Elab Term Command
 
 /--
 Serves as a global storage for all `TacticDocEntry`s we have added throughout mathlib codebase.
