@@ -43,6 +43,24 @@ actions and register the following instances:
 
 open Function
 
+/--
+The notation typeclass for heterogeneous scalar multiplication.
+This enables the notation `a • b : γ` where `a : α`, `b : β`.
+-/
+class HVAdd (α : Type u) (β : Type v) (γ : outParam (Type w)) where
+  /-- `a +ᵥ b` computes the sum of `a` and `b`.
+  The meaning of this notation is type-dependent. -/
+  hVAdd : α → β → γ
+
+/--
+The notation typeclass for heterogeneous scalar multiplication.
+This enables the notation `a • b : γ` where `a : α`, `b : β`.
+-/
+class HSMul (α : Type u) (β : Type v) (γ : outParam (Type w)) where
+  /-- `a • b` computes the product of `a` and `b`.
+  The meaning of this notation is type-dependent. -/
+  hSMul : α → β → γ
+
 /-- Type class for the `+ᵥ` notation. -/
 class VAdd (G : Type _) (P : Type _) where
   vadd : G → P → P
@@ -56,9 +74,15 @@ class HasVsub (G : outParam (Type _)) (P : Type _) where
 class SMul (M : Type _) (α : Type _) where
   smul : M → α → α
 
-infixl:65 " +ᵥ " => VAdd.vadd
+instance instHVAdd [VAdd α β] : HVAdd α β β where
+  hVAdd := VAdd.vadd
+
+instance instHSMul [SMul α β] : HSMul α β β where
+  hSMul := SMul.smul
+
+infixl:65 " +ᵥ " => HVAdd.hVAdd
 infixl:65 " -ᵥ " => HasVsub.vsub
-infixr:73 " • " => SMul.smul
+infixr:73 " • " => HSMul.hSMul
 
 attribute [to_additive] Mul
 attribute [to_additive] Div
@@ -67,10 +91,19 @@ attribute [to_additive] instHMul
 attribute [to_additive] HDiv
 attribute [to_additive] instHDiv
 
-attribute [to_additive_relevant_arg 3] HMul HAdd HAdd.hAdd HMul.hMul
+attribute [to_additive_relevant_arg 3] HMul HAdd HPow HSMul
+attribute [to_additive_relevant_arg 3] HAdd.hAdd HMul.hMul HPow.hPow HSMul.hSMul
 attribute [to_additive_reorder 1] HPow
 attribute [to_additive_reorder 1 5] HPow.hPow
-attribute [to_additive] HPow
+attribute [to_additive_reorder 1] Pow
+attribute [to_additive_reorder 1 4] Pow.pow
+attribute [to_additive SMul] Pow
+attribute [to_additive_reorder 1] instHPow
+attribute [to_additive instHSMul] instHPow
+attribute [to_additive HSMul] HPow
+
+attribute [to_additive instHVAdd] instHSMul
+attribute [to_additive HVAdd] HSMul
 
 universe u
 
@@ -507,24 +540,7 @@ attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
 instance AddMonoid.SMul {M : Type _} [AddMonoid M] : SMul ℕ M :=
   ⟨AddMonoid.nsmul⟩
 
-attribute [to_additive AddMonoid.SMulNat] Monoid.Pow
-
-section
--- FIXME The lemmas in this section should be done by `to_additive` below, but it fails.
-
-variable {M : Type _} [AddMonoid M]
-
-@[simp]
-theorem nsmul_eq_smul (n : ℕ) (x : M) : AddMonoid.nsmul n x = n • x :=
-  rfl
-
-theorem zero_nsmul (a : M) : 0 • a = 0 :=
-  AddMonoid.nsmul_zero _
-
-theorem succ_nsmul (a : M) (n : ℕ) : (n + 1) • a = a + n • a :=
-  AddMonoid.nsmul_succ n a
-
-end
+attribute [to_additive AddMonoid.SMul] Monoid.Pow
 
 section
 
@@ -773,36 +789,22 @@ section DivInvMonoid
 
 variable [DivInvMonoid G] {a b : G}
 
--- TODO restore @[to_additive zsmul_eq_smul]
-@[simp] theorem zpow_eq_pow (n : ℤ) (x : G) : DivInvMonoid.zpow n x = x ^ n := rfl
-theorem zsmul_eq_smul {G} [SubNegMonoid G] (n : ℤ) (x : G) : SubNegMonoid.zsmul n x = n • x := rfl
-attribute [to_additive zsmul_eq_smul] zpow_eq_pow
+@[simp, to_additive zsmul_eq_smul] theorem zpow_eq_pow (n : ℤ) (x : G) :
+    DivInvMonoid.zpow n x = x ^ n :=
+  rfl
 
--- TODO restore @[to_additive zero_zsmul]
-@[simp] theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
+@[simp, to_additive zero_zsmul] theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
   DivInvMonoid.zpow_zero' a
-theorem zero_zsmul {G} [SubNegMonoid G] (a : G) : (0 : ℤ) • a = 0 :=
-  SubNegMonoid.zsmul_zero' a
-attribute [to_additive zero_zsmul] zpow_zero
 
--- TODO restore @[to_additive ofNat_zsmul]
-@[norm_cast]
+@[norm_cast, to_additive ofNat_zsmul]
 theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
   | 0 => (zpow_zero _).trans (pow_zero _).symm
   | n + 1 => calc
     a ^ (↑(n + 1) : ℤ) = a * a ^ (n : ℤ) := DivInvMonoid.zpow_succ' _ _
     _ = a * a ^ n := congr_arg ((· * ·) a) (zpow_ofNat a n)
     _ = a ^ (n + 1) := (pow_succ _ _).symm
-theorem ofNat_zsmul {G} [SubNegMonoid G] (a : G) : ∀ n : ℕ, (n : ℤ) • a = n • a
-  | 0 => (zero_zsmul _).trans (zero_nsmul _).symm
-  | n + 1 => calc
-    (↑(n + 1) : ℤ) • a = a + (n : ℤ) • a := SubNegMonoid.zsmul_succ' _ _
-    _ = a + n • a := congr_arg ((· + ·) a) (ofNat_zsmul a n)
-    _ = (n + 1) • a := (succ_nsmul _ _).symm
-attribute [to_additive ofNat_zsmul] zpow_ofNat
 
--- TODO restore @[to_additive]
-@[simp]
+@[simp, to_additive]
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
   rw [← zpow_ofNat]
   exact DivInvMonoid.zpow_neg' n a
