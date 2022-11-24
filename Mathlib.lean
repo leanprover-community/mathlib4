@@ -74,6 +74,7 @@ import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Quot
+import Mathlib.Data.Rat.Init
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.String.Defs
@@ -81,6 +82,7 @@ import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
 import Mathlib.Data.UInt
+import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.Init.Algebra.Classes
@@ -101,7 +103,6 @@ import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Init.Data.Prod
 import Mathlib.Init.Data.Quot
-import Mathlib.Init.Data.Rat
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Init.Function
 import Mathlib.Init.Logic

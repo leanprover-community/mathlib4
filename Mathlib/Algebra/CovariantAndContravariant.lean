@@ -161,10 +161,6 @@ instance (priority := 100) Group.covconv [Group N] [CovariantClass N N (· * ·)
     ContravariantClass N N (· * ·) r :=
   ⟨Group.covariant_iff_contravariant.mp CovariantClass.elim⟩
 
--- Porting note: as at 2022-11-13, `to_additive` doesn't copy the `instance` attribute
--- so we need to do it manually.
-attribute [instance 100] AddGroup.covconv
-
 @[to_additive]
 theorem Group.covariant_swap_iff_contravariant_swap [Group N] :
     Covariant N N (swap (· * ·)) r ↔ Contravariant N N (swap (· * ·)) r := by
@@ -180,7 +176,6 @@ instance (priority := 100) Group.covconv_swap [Group N] [CovariantClass N N (swa
     ContravariantClass N N (swap (· * ·)) r :=
   ⟨Group.covariant_swap_iff_contravariant_swap.mp CovariantClass.elim⟩
 
-attribute [instance 100] AddGroup.covconv_swap
 
 section Trans
 
@@ -307,42 +302,30 @@ instance contravariant_mul_lt_of_covariant_mul_le [Mul N] [LinearOrder N]
     [CovariantClass N N (· * ·) (· ≤ ·)] : ContravariantClass N N (· * ·) (· < ·) where
   elim := (covariant_le_iff_contravariant_lt N N (· * ·)).mp CovariantClass.elim
 
-attribute [instance] contravariant_add_lt_of_covariant_add_le
-
 @[to_additive]
 instance covariant_mul_lt_of_contravariant_mul_le [Mul N] [LinearOrder N]
     [ContravariantClass N N (· * ·) (· ≤ ·)] : CovariantClass N N (· * ·) (· < ·) where
   elim := (covariant_lt_iff_contravariant_le N N (· * ·)).mpr ContravariantClass.elim
-
-attribute [instance] covariant_add_lt_of_contravariant_add_le
 
 @[to_additive]
 instance covariant_swap_mul_le_of_covariant_mul_le [CommSemigroup N] [LE N]
     [CovariantClass N N (· * ·) (· ≤ ·)] : CovariantClass N N (swap (· * ·)) (· ≤ ·) where
   elim := (covariant_flip_mul_iff N (· ≤ ·)).mpr CovariantClass.elim
 
-attribute [instance] covariant_swap_add_le_of_covariant_add_le
-
 @[to_additive]
 instance contravariant_swap_mul_le_of_contravariant_mul_le [CommSemigroup N] [LE N]
     [ContravariantClass N N (· * ·) (· ≤ ·)] : ContravariantClass N N (swap (· * ·)) (· ≤ ·) where
   elim := (contravariant_flip_mul_iff N (· ≤ ·)).mpr ContravariantClass.elim
-
-attribute [instance] contravariant_swap_add_le_of_contravariant_add_le
 
 @[to_additive]
 instance contravariant_swap_mul_lt_of_contravariant_mul_lt [CommSemigroup N] [LT N]
     [ContravariantClass N N (· * ·) (· < ·)] : ContravariantClass N N (swap (· * ·)) (· < ·) where
   elim := (contravariant_flip_mul_iff N (· < ·)).mpr ContravariantClass.elim
 
-attribute [instance] contravariant_swap_add_lt_of_contravariant_add_lt
-
 @[to_additive]
 instance covariant_swap_mul_lt_of_covariant_mul_lt [CommSemigroup N] [LT N]
     [CovariantClass N N (· * ·) (· < ·)] : CovariantClass N N (swap (· * ·)) (· < ·) where
   elim := (covariant_flip_mul_iff N (· < ·)).mpr CovariantClass.elim
-
-attribute [instance] covariant_swap_add_lt_of_covariant_add_lt
 
 @[to_additive]
 instance LeftCancelSemigroup.covariant_mul_lt_of_covariant_mul_le [LeftCancelSemigroup N]
@@ -352,8 +335,6 @@ instance LeftCancelSemigroup.covariant_mul_lt_of_covariant_mul_le [LeftCancelSem
     cases' lt_iff_le_and_ne.mp bc with bc cb
     exact lt_iff_le_and_ne.mpr ⟨CovariantClass.elim a bc, (mul_ne_mul_right a).mpr cb⟩
 
-attribute [instance] AddLeftCancelSemigroup.covariant_add_lt_of_covariant_add_le
-
 @[to_additive]
 instance RightCancelSemigroup.covariant_swap_mul_lt_of_covariant_swap_mul_le
     [RightCancelSemigroup N] [PartialOrder N] [CovariantClass N N (swap (· * ·)) (· ≤ ·)] :
@@ -361,8 +342,6 @@ instance RightCancelSemigroup.covariant_swap_mul_lt_of_covariant_swap_mul_le
   elim a b c bc := by
     cases' lt_iff_le_and_ne.mp bc with bc cb
     exact lt_iff_le_and_ne.mpr ⟨CovariantClass.elim a bc, (mul_ne_mul_left a).mpr cb⟩
-
-attribute [instance] AddRightCancelSemigroup.covariant_swap_add_lt_of_covariant_swap_add_le
 
 @[to_additive]
 instance LeftCancelSemigroup.contravariant_mul_le_of_contravariant_mul_lt [LeftCancelSemigroup N]
@@ -373,8 +352,6 @@ instance LeftCancelSemigroup.contravariant_mul_le_of_contravariant_mul_lt [LeftC
     · exact ((mul_right_inj a).mp h).le
     · exact (ContravariantClass.elim _ h).le
 
-attribute [instance] AddLeftCancelSemigroup.contravariant_add_le_of_contravariant_add_lt
-
 @[to_additive]
 instance RightCancelSemigroup.contravariant_swap_mul_le_of_contravariant_swap_mul_lt
     [RightCancelSemigroup N] [PartialOrder N] [ContravariantClass N N (swap (· * ·)) (· < ·)] :
@@ -383,7 +360,5 @@ instance RightCancelSemigroup.contravariant_swap_mul_le_of_contravariant_swap_mu
     cases' le_iff_eq_or_lt.mp bc with h h
     · exact ((mul_left_inj a).mp h).le
     · exact (ContravariantClass.elim _ h).le
-
-attribute [instance] AddRightCancelSemigroup.contravariant_swap_add_le_of_contravariant_swap_add_lt
 
 end Variants
