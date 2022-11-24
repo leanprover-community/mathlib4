@@ -70,12 +70,14 @@ theorem ofDual_toDual (a : α) : ofDual (toDual a) = a :=
   rfl
 #align order_dual.of_dual_to_dual OrderDual.ofDual_toDual
 
-@[simp]
+-- Porting note:
+-- removed @[simp] since this already follows by `simp only [EmbeddingLike.apply_eq_iff_eq]`
 theorem toDual_inj {a b : α} : toDual a = toDual b ↔ a = b :=
   Iff.rfl
 #align order_dual.to_dual_inj OrderDual.toDual_inj
 
-@[simp]
+-- Porting note:
+-- removed @[simp] since this already follows by `simp only [EmbeddingLike.apply_eq_iff_eq]`
 theorem ofDual_inj {a b : αᵒᵈ} : ofDual a = ofDual b ↔ a = b :=
   Iff.rfl
 #align order_dual.of_dual_inj OrderDual.ofDual_inj
@@ -178,12 +180,14 @@ theorem ofLex_toLex (a : α) : ofLex (toLex a) = a :=
   rfl
 #align of_lex_to_lex ofLex_toLex
 
-@[simp]
+-- Porting note:
+-- removed @[simp] since this already follows by `simp only [EmbeddingLike.apply_eq_iff_eq]`
 theorem toLex_inj {a b : α} : toLex a = toLex b ↔ a = b :=
   Iff.rfl
 #align to_lex_inj toLex_inj
 
-@[simp]
+-- Porting note:
+-- removed @[simp] since this already follows by `simp only [EmbeddingLike.apply_eq_iff_eq]`
 theorem ofLex_inj {a b : Lex α} : ofLex a = ofLex b ↔ a = b :=
   Iff.rfl
 #align of_lex_inj ofLex_inj
