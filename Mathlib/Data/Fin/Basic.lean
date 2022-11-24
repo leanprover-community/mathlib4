@@ -119,7 +119,7 @@ theorem Fin.mod_lt : ∀ (i : Fin n) {m : Fin n}, (0 : Fin n) < m → (i % m) < 
     rw [(Nat.mod_eq_of_lt (Nat.lt_trans a_mod_lt mLt) : a % m % n = a % m)]
     exact Nat.mod_lt _ zero_lt
 
-/- Aux lemma that makes nsmul_succ' easier -/
+/- Aux lemma that makes nsmul_succ easier -/
 protected lemma Fin.nsmuls_eq (x : Nat) : ∀ (a : Fin n),
   ((Fin.ofNat' x Fin.size_positive') * a) = Fin.ofNat' (x * a.val) Fin.size_positive'
 | ⟨a, isLt⟩ => by
@@ -196,10 +196,10 @@ instance : AddCommMonoid (Fin n) where
     exact Nat.mod_eq_of_lt a.isLt
 
   nsmul := fun x a ↦ (Fin.ofNat' x a.size_positive) * a
-  nsmul_zero' := fun _ ↦ by
+  nsmul_zero := fun _ ↦ by
     apply Fin.eq_of_val_eq
     simp [Fin.mul_def, Fin.ofNat', Fin.zero_def, Nat.zero_mul, Nat.zero_mod]
-  nsmul_succ' := fun x a ↦ by
+  nsmul_succ := fun x a ↦ by
     simp only [Fin.nsmuls_eq]
     simp [Fin.ofNat', Fin.add_def]
     exact congrArg (fun x ↦ x % n) (Nat.add_comm (x * a.val) (a.val) ▸ Nat.succ_mul x a.val)
@@ -229,8 +229,8 @@ instance : MonoidWithZero (Fin n) where
   __ := inferInstanceAs (CommSemigroup (Fin n))
   mul_one := Fin.mul_one
   one_mul _ := by rw [mul_comm, Fin.mul_one]
-  npow_zero' _ := rfl
-  npow_succ' _ _ := rfl
+  npow_zero _ := rfl
+  npow_succ _ _ := rfl
   zero_mul x := by
     apply Fin.eq_of_val_eq
     simp only [Fin.mul_def, Fin.zero_def, Nat.zero_mul, Nat.zero_mod]
