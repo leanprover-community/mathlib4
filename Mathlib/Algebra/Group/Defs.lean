@@ -35,17 +35,17 @@ actions and register the following instances:
 ## Notation
 
 - `+`, `-`, `*`, `/`, `^` : the usual arithmetic operations; the underlying functions are
-  `Add.add`, `Neg.neg`/`Sub.sub`, `Mul.mul`, `Div.div`, and `Pow.pow`.
-- `a • b` is used as notation for `SMul.smul a b`.
-- `a +ᵥ b` is used as notation for `VAdd.vadd a b`.
+  `Add.add`, `Neg.neg`/`Sub.sub`, `Mul.mul`, `Div.div`, and `HPow.hPow`.
+- `a • b` is used as notation for `HSMul.hSMul a b`.
+- `a +ᵥ b` is used as notation for `HVAdd.hVAdd a b`.
 
 -/
 
 open Function
 
 /--
-The notation typeclass for heterogeneous scalar multiplication.
-This enables the notation `a • b : γ` where `a : α`, `b : β`.
+The notation typeclass for heterogeneous additive actions.
+This enables the notation `a +ᵥ b : γ` where `a : α`, `b : β`.
 -/
 class HVAdd (α : Type u) (β : Type v) (γ : outParam (Type w)) where
   /-- `a +ᵥ b` computes the sum of `a` and `b`.
