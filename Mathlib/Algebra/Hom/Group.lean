@@ -855,43 +855,26 @@ namespace MonoidHom
 
 variable {_ : MulOneClass M} {_ : MulOneClass N} [MonoidHomClass F M N]
 
--- Porting note: restore `to_additive`
 /-- Given a monoid homomorphism `f : M →* N` and an element `x : M`, if `x` has a right inverse,
 then `f x` has a right inverse too. For elements invertible on both sides see `IsUnit.map`. -/
--- @[to_additive
---   "Given an AddMonoid homomorphism `f : M →+ N` and an element `x : M`, if `x` has
---   a right inverse, then `f x` has a right inverse too."]
+@[to_additive
+  "Given an AddMonoid homomorphism `f : M →+ N` and an element `x : M`, if `x` has
+  a right inverse, then `f x` has a right inverse too."]
 theorem map_exists_right_inv (f : F) {x : M} (hx : ∃ y, x * y = 1) : ∃ y, f x * y = 1 :=
   let ⟨y, hy⟩ := hx
   ⟨f y, map_mul_eq_one f hy⟩
 #align monoid_hom.map_exists_right_inv MonoidHom.map_exists_right_inv
-/-- Given an AddMonoid homomorphism `f : M →+ N` and an element `x : M`, if `x` has
-a right inverse, then `f x` has a right inverse too. -/
-theorem map_exists_right_neg {M N F} {_ : AddZeroClass M} {_ : AddZeroClass N}
-  [AddMonoidHomClass F M N] (f : F) {x : M} (hx : ∃ y, x + y = 0) : ∃ y, f x + y = 0 :=
-  let ⟨y, hy⟩ := hx
-  ⟨f y, map_add_eq_zero f hy⟩
-#align monoid_hom.map_exists_right_neg MonoidHom.map_exists_right_neg
 
--- Porting note: restore `to_additive`
 /-- Given a monoid homomorphism `f : M →* N` and an element `x : M`, if `x` has a left inverse,
 then `f x` has a left inverse too. For elements invertible on both sides see `IsUnit.map`. -/
--- @[to_additive
---   "Given an AddMonoid homomorphism `f : M →+ N` and an element `x : M`, if `x` has
---   a left inverse, then `f x` has a left inverse too. For elements invertible on both sides see
---   `IsAddUnit.map`."]
+@[to_additive
+  "Given an AddMonoid homomorphism `f : M →+ N` and an element `x : M`, if `x` has
+  a left inverse, then `f x` has a left inverse too. For elements invertible on both sides see
+  `IsAddUnit.map`."]
 theorem map_exists_left_inv (f : F) {x : M} (hx : ∃ y, y * x = 1) : ∃ y, y * f x = 1 :=
   let ⟨y, hy⟩ := hx
   ⟨f y, map_mul_eq_one f hy⟩
 #align monoid_hom.map_exists_left_inv MonoidHom.map_exists_left_inv
-/-- Given an AddMonoid homomorphism `f : M →+ N` and an element `x : M`, if `x` has
-a left inverse, then `f x` has a left inverse too. For elements invertible on both sides see
-`IsAddUnit.map`. -/
-theorem map_exists_left_neg {M N F} {_ : AddZeroClass M} {_ : AddZeroClass N}
-  [AddMonoidHomClass F M N] (f : F) {x : M} (hx : ∃ y, y + x = 0) : ∃ y, y + f x = 0 :=
-  let ⟨y, hy⟩ := hx
-  ⟨f y, map_add_eq_zero f hy⟩
-#align monoid_hom.map_exists_left_neg MonoidHom.map_exists_left_neg
 
 end MonoidHom
 
