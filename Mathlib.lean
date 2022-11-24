@@ -16,6 +16,7 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.HierarchyDesign
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.Group
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Monoid
