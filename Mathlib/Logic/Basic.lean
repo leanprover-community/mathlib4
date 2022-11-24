@@ -145,6 +145,9 @@ theorem PLift.down_injective {α : Sort _} : Function.Injective (@PLift.down α)
 @[simp] theorem eq_iff_eq_cancel_right {a b : α} : (∀ {c}, a = c ↔ b = c) ↔ a = b :=
   ⟨fun h ↦ by rw [h], fun h a ↦ by rw [h]⟩
 
+lemma ne_and_eq_iff_right {α : Sort _} {a b c : α} (h : b ≠ c) : a ≠ b ∧ a = c ↔ a = c :=
+  and_iff_right_of_imp (fun h2 => h2.symm ▸ h.symm)
+
 /-- Wrapper for adding elementary propositions to the type class systems.
 Warning: this can easily be abused. See the rest of this docstring for details.
 
@@ -304,6 +307,10 @@ theorem xor_comm (a b) : Xor' a b = Xor' b a := by simp [Xor', and_comm, or_comm
 instance : IsCommutative Prop Xor' := ⟨xor_comm⟩
 
 @[simp] theorem xor_self (a : Prop) : Xor' a a = False := by simp [Xor']
+@[simp] theorem xor_not_left : Xor' (¬a) b ↔ (a ↔ b) := by by_cases a <;> simp [*]
+@[simp] theorem xor_not_right : Xor' a (¬b) ↔ (a ↔ b) := by by_cases a <;> simp [*]
+theorem xor_not_not : Xor' (¬a) (¬b) ↔ Xor' a b := by simp [Xor', or_comm, and_comm]
+protected theorem xor.or (h : Xor' a b) : a ∨ b := h.imp And.left And.left
 
 /-! ### Declarations about `and` -/
 
@@ -446,7 +453,9 @@ theorem and_iff_not_or_not : a ∧ b ↔ ¬(¬a ∨ ¬b) := Decidable.and_iff_no
 @[simp] theorem not_xor (P Q : Prop) : ¬Xor' P Q ↔ (P ↔ Q) := by
   simp only [not_and, Xor', not_or, not_not, ← iff_iff_implies_and_implies, iff_self]
 
-theorem xor_iff_not_iff (P Q : Prop) : Xor' P Q ↔ ¬(P ↔ Q) := by rw [iff_not_comm, not_xor]
+theorem xor_iff_not_iff (P Q : Prop) : Xor' P Q ↔ ¬ (P ↔ Q) := (not_xor P Q).not_right
+theorem xor_iff_iff_not : Xor' a b ↔ (a ↔ ¬b) := by simp only [← @xor_not_right a, not_not]; rfl
+theorem xor_iff_not_iff' : Xor' a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]; rfl
 
 end Propositional
 

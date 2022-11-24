@@ -57,16 +57,16 @@ instance : CommSemiring ℕ where
   mul_one := Nat.mul_one
   one_mul := Nat.one_mul
   npow (n x) := x ^ n
-  npow_zero' := Nat.pow_zero
-  npow_succ' n x := by simp [Nat.pow_succ, Nat.mul_comm]
+  npow_zero := Nat.pow_zero
+  npow_succ n x := by simp [Nat.pow_succ, Nat.mul_comm]
   mul_assoc := Nat.mul_assoc
   add_comm := Nat.add_comm
   add_assoc := Nat.add_assoc
   add_zero := Nat.add_zero
   zero_add := Nat.zero_add
   nsmul := (·*·)
-  nsmul_zero' := Nat.zero_mul
-  nsmul_succ' n x := by simp [Nat.add_comm, (Nat.succ_mul n x)]
+  nsmul_zero := Nat.zero_mul
+  nsmul_succ n x := by simp [Nat.add_comm, (Nat.succ_mul n x)]
   zero_mul := Nat.zero_mul
   mul_zero := Nat.mul_zero
   natCast := (·)
@@ -88,8 +88,8 @@ instance : CommRing ℤ where
   mul_one := Int.mul_one
   one_mul := Int.one_mul
   npow n x := x ^ n
-  npow_zero' _ := rfl
-  npow_succ' _ _ := by rw [Int.mul_comm]; rfl
+  npow_zero _ := rfl
+  npow_succ _ _ := by rw [Int.mul_comm]; rfl
   mul_assoc := Int.mul_assoc
   add_comm := Int.add_comm
   add_assoc := Int.add_assoc
@@ -97,8 +97,8 @@ instance : CommRing ℤ where
   zero_add := Int.zero_add
   add_left_neg := Int.add_left_neg
   nsmul := (·*·)
-  nsmul_zero' := Int.zero_mul
-  nsmul_succ' n x := by
+  nsmul_zero := Int.zero_mul
+  nsmul_succ n x := by
     show ofNat (Nat.succ n) * x = x + ofNat n * x
     rw [Int.ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
