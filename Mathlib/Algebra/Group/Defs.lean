@@ -723,11 +723,16 @@ explanations on this.
 -/
 class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
   div a b := a * b⁻¹
+  /-- `a / b := a * b⁻¹` -/
   div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ := by intros; rfl
+  /-- The power operation: `a ^ n = a * ··· * a`; `a ^ (-n) = a⁻¹ * ··· a⁻¹` (`n` times) -/
   zpow : ℤ → G → G := zpowRec
+  /-- `a ^ 0 = 1` -/
   zpow_zero' : ∀ a : G, zpow 0 a = 1 := by intros; rfl
+  /-- `a ^ (n + 1) = a * a ^ n` -/
   zpow_succ' (n : ℕ) (a : G) : zpow (Int.ofNat n.succ) a = a * zpow (Int.ofNat n) a := by
     intros; rfl
+  /-- `a ^ -(n + 1) = (a ^ (n + 1))⁻¹` -/
   zpow_neg' (n : ℕ) (a : G) : zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ := by intros; rfl
 
 /-- A `SubNegMonoid` is an `AddMonoid` with unary `-` and binary `-` operations
