@@ -609,47 +609,78 @@ along a function `f : α → β` to a function `β → γ`,
 by using the values of `g` on the range of `f`
 and the values of an auxiliary function `e' : β → γ` elsewhere.
 
-Mostly useful when `f` is injective. -/
+Mostly useful when `f` is injective, or more generally when `g.factors_through f` -/
 -- Explicit Sort so that `α` isn't inferred to be Prop via `exists_prop_decidable`
 def extend {α : Sort u} {β γ} (f : α → β) (g : α → γ) (e' : β → γ) : β → γ := fun b ↦
   if h : ∃ a, f a = b then g (Classical.choose h) else e' b
+
+/-- g factors through f : `f a = f b → g a = g b` -/
+def FactorsThrough (g : α → γ) (f : α → β) : Prop :=
+  ∀ ⦃a b⦄, f a = f b → g a = g b
 
 theorem extend_def (f : α → β) (g : α → γ) (e' : β → γ) (b : β) [Decidable (∃ a, f a = b)] :
     extend f g e' b = if h : ∃ a, f a = b then g (Classical.choose h) else e' b := by
   unfold extend
   congr
 
-@[simp]
-theorem extend_apply (hf : Injective f) (g : α → γ) (e' : β → γ) (a : α) :
-    extend f g e' (f a) = g a := by
+lemma Injective.FactorsThrough (hf : Injective f) (g : α → γ) : g.FactorsThrough f :=
+  fun _ _ h => congr_arg g (hf h)
+
+lemma FactorsThrough.extend_apply {g : α → γ} (hf : g.FactorsThrough f) (e' : β → γ) (a : α) :
+  extend f g e' (f a) = g a := by
   simp only [extend_def, dif_pos, exists_apply_eq_apply]
-  exact congr_arg g (hf $ Classical.choose_spec (exists_apply_eq_apply f a))
+  exact hf (Classical.choose_spec (exists_apply_eq_apply f a))
+
+@[simp]
+theorem Injective.extend_apply (hf : Injective f) (g : α → γ) (e' : β → γ) (a : α) :
+    extend f g e' (f a) = g a :=
+  (hf.FactorsThrough g).extend_apply e' a
 
 @[simp]
 theorem extend_apply' (g : α → γ) (e' : β → γ) (b : β) (hb : ¬∃ a, f a = b) :
     extend f g e' b = e' b := by
   simp [Function.extend_def, hb]
 
-theorem apply_extend {δ} (hf : Injective f) (F : γ → δ) (g : α → γ) (e' : β → γ) (b : β) :
-    F (extend f g e' b) = extend f (F ∘ g) (F ∘ e') b := by
-  by_cases hb:∃ a, f a = b
-  · cases' hb with a ha
+lemma factorsThrough_iff (g : α → γ) [Nonempty γ] :
+  g.FactorsThrough f ↔ ∃ (e : β → γ), g = e ∘ f :=
+⟨fun hf => ⟨extend f g (const β (Classical.arbitrary γ)),
+      funext (fun x => by simp only [comp_apply, hf.extend_apply])⟩,
+  fun h _ _ hf => by rw [Classical.choose_spec h, comp_apply, comp_apply, hf]⟩
+
+lemma FactorsThrough.apply_extend {δ} {g : α → γ} (hf : FactorsThrough g f)
+  (F : γ → δ) (e' : β → γ) (b : β) :
+  F (extend f g e' b) = extend f (F ∘ g) (F ∘ e') b := by
+  by_cases hb : ∃ a, f a = b
+  case pos =>
+    rcases hb with ⟨a, ha⟩
     subst b
-    rw [extend_apply hf, extend_apply hf]
-    rfl
-  · rw [extend_apply' _ _ _ hb, extend_apply' _ _ _ hb]
-    rfl
+    rw [hf.extend_apply, FactorsThrough.extend_apply, comp]
+    case intro.hf =>
+      intro a b h
+      simp only [comp_apply]
+      apply congr_arg
+      exact hf h
+  case neg =>
+    rw [extend_apply' _ _ _ hb, extend_apply' _ _ _ hb, comp]
+
+lemma Injective.apply_extend {δ} (hf : Injective f) (F : γ → δ) (g : α → γ) (e' : β → γ) (b : β) :
+  F (extend f g e' b) = extend f (F ∘ g) (F ∘ e') b :=
+  (hf.FactorsThrough g).apply_extend F e' b
 
 theorem extend_injective (hf : Injective f) (e' : β → γ) : Injective fun g ↦ extend f g e' := by
   intro g₁ g₂ hg
   refine' funext fun x ↦ _
   have H := congr_fun hg (f x)
-  simp only [hf, extend_apply] at H
+  simp only [hf.extend_apply] at H
   exact H
+
+lemma FactorsThrough.extend_comp {g : α → γ} (e' : β → γ) (hf : FactorsThrough g f) :
+  extend f g e' ∘ f = g :=
+  funext $ fun a => hf.extend_apply e' a
 
 @[simp]
 theorem extend_comp (hf : Injective f) (g : α → γ) (e' : β → γ) : extend f g e' ∘ f = g :=
-  funext fun a ↦ extend_apply hf g e' a
+  funext fun a ↦ hf.extend_apply g e' a
 
 theorem Injective.surjective_comp_right' (hf : Injective f) (g₀ : β → γ) :
     Surjective fun g : β → γ ↦ g ∘ f :=
