@@ -99,7 +99,9 @@ variable [Pow M₁ ℕ]
 
 /-- A type endowed with `1` and `*` is a monoid, if it admits an injective map that preserves `1`
 and `*` to a monoid.  See note [reducible non-instances]. -/
-@[reducible, to_additive]
+@[reducible, to_additive "A type endowed with `0` and `+` is an additive monoid, if it admits an
+injective map that preserves `0` and `+` to an additive monoid. See note
+[reducible non-instances]."]
 protected def monoid [Monoid M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : Monoid M₁ :=
   { hf.mulOneClass f one mul, hf.semigroup f mul with
