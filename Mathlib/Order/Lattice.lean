@@ -845,10 +845,8 @@ theorem sup_ind (a b : α) {p : α → Prop} (ha : p a) (hb : p b) : p (a ⊔ b)
 
 @[simp]
 theorem le_sup_iff : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c := by
-  -- Porting note: why is this necessary?
-  have := inferInstanceAs (IsTotal α (· ≤ ·))
   exact ⟨fun h =>
-    (total_of (· ≤ ·) c b).imp
+    (le_total c b).imp
       (fun bc => by rwa [sup_eq_left.2 bc] at h)
       (fun bc => by rwa [sup_eq_right.2 bc] at h),
     fun h => h.elim le_sup_of_le_left le_sup_of_le_right⟩
@@ -856,10 +854,8 @@ theorem le_sup_iff : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c := by
 
 @[simp]
 theorem lt_sup_iff : a < b ⊔ c ↔ a < b ∨ a < c := by
-  -- Porting note: why is this necessary?
-  have := inferInstanceAs (IsTotal α (· ≤ ·))
   exact ⟨fun h =>
-    (total_of (· ≤ ·) c b).imp
+    (le_total c b).imp
       (fun bc => by rwa [sup_eq_left.2 bc] at h)
       (fun bc => by rwa [sup_eq_right.2 bc] at h),
     fun h => h.elim lt_sup_of_lt_left lt_sup_of_lt_right⟩
