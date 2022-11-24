@@ -6,7 +6,7 @@ Authors: Kyle Miller
 import Mathlib.Logic.Equiv.Basic
 
 /-!
-# Definition of the `finite` typeclass
+# Definition of the `Finite` typeclass
 
 This file defines a typeclass `Finite` saying that `α : Sort*` is finite. A type is `Finite` if it
 is equivalent to `Fin n` for some `n`. We also define `Infinite α` as a typeclass equivalent to
