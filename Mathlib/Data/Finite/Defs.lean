@@ -92,21 +92,21 @@ instance {α : Type v} [Finite α] : Finite (ULift.{u} α) :=
 `isEmpty (Fintype α)` or `isEmpty (Finite α)`. -/
 class Infinite (α : Sort _) : Prop where
   /-- assertion that `α` is `¬Finite`-/
-  notFinite : ¬Finite α
+  not_finite : ¬Finite α
 #align infinite Infinite
 
 @[simp]
-theorem notFinite_iff_infinite : ¬Finite α ↔ Infinite α :=
+theorem not_finite_iff_infinite : ¬Finite α ↔ Infinite α :=
   ⟨Infinite.mk, fun h => h.1⟩
-#align not_finite_iff_infinite notFinite_iff_infinite
+#align not_finite_iff_infinite not_finite_iff_infinite
 
 @[simp]
 theorem not_infinite_iff_finite : ¬Infinite α ↔ Finite α :=
-  notFinite_iff_infinite.not_right.symm
+  not_finite_iff_infinite.not_right.symm
 #align not_infinite_iff_finite not_infinite_iff_finite
 
 theorem Equiv.infinite_iff (e : α ≃ β) : Infinite α ↔ Infinite β :=
-  notFinite_iff_infinite.symm.trans <| e.finite_iff.not.trans notFinite_iff_infinite
+  not_finite_iff_infinite.symm.trans <| e.finite_iff.not.trans not_finite_iff_infinite
 #align equiv.infinite_iff Equiv.infinite_iff
 
 instance [Infinite α] : Infinite (PLift α) :=
@@ -116,20 +116,20 @@ instance {α : Type v} [Infinite α] : Infinite (ULift.{u} α) :=
   Equiv.ulift.infinite_iff.2 ‹_›
 
 theorem finite_orInfinite (α : Sort _) : Finite α ∨ Infinite α :=
-  or_iff_not_imp_left.2 notFinite_iff_infinite.1
+  or_iff_not_imp_left.2 not_finite_iff_infinite.1
 #align finite_or_infinite finite_orInfinite
 
 /-- `Infinite α` is not `Finite`-/
-theorem notFinite (α : Sort _) [Infinite α] [Finite α] : False :=
-  @Infinite.notFinite α ‹_› ‹_›
-#align not_finite notFinite
+theorem not_finite (α : Sort _) [Infinite α] [Finite α] : False :=
+  @Infinite.not_finite α ‹_› ‹_›
+#align not_finite not_finite
 
 protected theorem Finite.false [Infinite α] (_ : Finite α) : False :=
-  notFinite α
+  not_finite α
 #align finite.false Finite.false
 
 protected theorem Infinite.false [Finite α] (_ : Infinite α) : False :=
-  @Infinite.notFinite α ‹_› ‹_›
+  @Infinite.not_finite α ‹_› ‹_›
 #align infinite.false Infinite.false
 
 alias not_infinite_iff_finite ↔ Finite.of_not_infinite Finite.not_infinite
