@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Data.Sum.Basic
+import Mathlib.Tactic.Classical
 
 /-!
 # Instances and theorems on pi types
@@ -40,9 +41,7 @@ instance instOne [∀ i, One <| f i] : One (∀ i : I, f i) :=
   ⟨fun _ => 1⟩
 
 #align pi.has_one Pi.instOne
-
--- Porting note : Atm to_additive does not copy the `instance` attribute.
-attribute [instance] Pi.instZero
+#align pi.has_zero Pi.instZero
 
 @[simp, to_additive]
 theorem one_apply [∀ i, One <| f i] : (1 : ∀ i, f i) i = 1 :=
@@ -69,9 +68,7 @@ instance instMul [∀ i, Mul <| f i] : Mul (∀ i : I, f i) :=
   ⟨fun f g i => f i * g i⟩
 
 #align pi.has_mul Pi.instMul
-
--- Porting note : Atm to_additive does not copy the `instance` attribute.
-attribute [instance] Pi.instAdd
+#align pi.has_add Pi.instAdd
 
 @[simp, to_additive]
 theorem mul_apply [∀ i, Mul <| f i] : (x * y) i = x i * y i :=
@@ -94,9 +91,7 @@ instance instSMul [∀ i, SMul α <| f i] : SMul α (∀ i : I, f i) :=
   ⟨fun s x => fun i => s • x i⟩
 
 #align pi.has_smul Pi.instSMul
-
--- Porting note : Atm to_additive does not copy the `instance` attribute.
-attribute [instance] Pi.instVAdd
+#align pi.has_vadd Pi.instVAdd
 
 @[simp, to_additive]
 theorem smul_apply [∀ i, SMul α <| f i] (s : α) (x : ∀ i, f i) (i : I) : (s • x) i = s • x i :=
@@ -160,9 +155,7 @@ instance instInv [∀ i, Inv <| f i] : Inv (∀ i : I, f i) :=
   ⟨fun f i => (f i)⁻¹⟩
 
 #align pi.has_inv Pi.instInv
-
--- Porting note : Atm to_additive does not copy the `instance` attribute.
-attribute [instance] Pi.instNeg
+#align pi.has_neg Pi.instNeg
 
 @[simp, to_additive]
 theorem inv_apply [∀ i, Inv <| f i] : x⁻¹ i = (x i)⁻¹ :=
@@ -185,9 +178,7 @@ instance instDiv [∀ i, Div <| f i] : Div (∀ i : I, f i) :=
   ⟨fun f g i => f i / g i⟩
 
 #align pi.has_div Pi.instDiv
-
--- Porting note : Atm to_additive does not copy the `instance` attribute.
-attribute [instance] Pi.instSub
+#align pi.has_sub Pi.instSub
 
 @[simp, to_additive]
 theorem div_apply [∀ i, Div <| f i] : (x / y) i = x i / y i :=
@@ -217,20 +208,20 @@ def mulSingle (i : I) (x : f i) : ∀ (j : I), f j :=
   Function.update 1 i x
 
 @[simp, to_additive]
-theorem mul_single_eq_same (i : I) (x : f i) : mulSingle i x i = x :=
+theorem mulSingle_eq_same (i : I) (x : f i) : mulSingle i x i = x :=
   Function.update_same i x _
 
 @[simp, to_additive]
-theorem mul_single_eq_of_ne {i i' : I} (h : i' ≠ i) (x : f i) : mulSingle i x i' = 1 :=
+theorem mulSingle_eq_of_ne {i i' : I} (h : i' ≠ i) (x : f i) : mulSingle i x i' = 1 :=
   Function.update_noteq h x _
 
-/-- Abbreviation for `mul_single_eq_of_ne h.symm`, for ease of use by `simp`. -/
+/-- Abbreviation for `mulSingle_eq_of_ne h.symm`, for ease of use by `simp`. -/
 @[simp, to_additive "Abbreviation for `single_eq_of_ne h.symm`, for ease of\nuse by `simp`."]
-theorem mul_single_eq_of_ne' {i i' : I} (h : i ≠ i') (x : f i) : mulSingle i x i' = 1 :=
-  mul_single_eq_of_ne h.symm x
+theorem mulSingle_eq_of_ne' {i i' : I} (h : i ≠ i') (x : f i) : mulSingle i x i' = 1 :=
+  mulSingle_eq_of_ne h.symm x
 
 @[simp, to_additive]
-theorem mul_single_one (i : I) : mulSingle i (1 : f i) = 1 :=
+theorem mulSingle_one (i : I) : mulSingle i (1 : f i) = 1 :=
   Function.update_eq_self _ _
 
 -- Porting notes:
@@ -239,53 +230,67 @@ theorem mul_single_one (i : I) : mulSingle i (1 : f i) = 1 :=
 -- 3) Removed `{β : Sort _}` as `[One β]` converts it to a type anyways.
 /-- On non-dependent functions, `Pi.mulSingle` can be expressed as an `ite` -/
 @[to_additive "On non-dependent functions, `Pi.single` can be expressed as an `ite`"]
-theorem mul_single_apply [One β] (i : I) (x : β) (i' : I) :
+theorem mulSingle_apply [One β] (i : I) (x : β) (i' : I) :
     (mulSingle i x : I → β) i' = if i' = i then x else 1 :=
   Function.update_apply (1 : I → β) i x i'
 
 -- Porting notes : Same as above.
 /-- On non-dependent functions, `Pi.mulSingle` is symmetric in the two indices. -/
 @[to_additive "On non-dependent functions, `Pi.single` is symmetric in the two indices."]
-theorem mul_single_comm [One β] (i : I) (x : β) (i' : I) :
+theorem mulSingle_comm [One β] (i : I) (x : β) (i' : I) :
     (mulSingle i x : I → β) i' = (mulSingle i' x : I → β) i := by
-  simp [mul_single_apply, eq_comm]
+  simp [mulSingle_apply, eq_comm]
 
 @[to_additive]
-theorem apply_mul_single (f' : ∀ i, f i → g i) (hf' : ∀ i, f' i 1 = 1) (i : I) (x : f i) (j : I) :
+theorem apply_mulSingle (f' : ∀ i, f i → g i) (hf' : ∀ i, f' i 1 = 1) (i : I) (x : f i) (j : I) :
     f' j (mulSingle i x j) = mulSingle i (f' i x) j := by
   simpa only [Pi.one_apply, hf', mulSingle] using Function.apply_update f' 1 i x j
 
 @[to_additive apply_single₂]
-theorem apply_mul_single₂ (f' : ∀ i, f i → g i → h i) (hf' : ∀ i, f' i 1 1 = 1) (i : I)
+theorem apply_mulSingle₂ (f' : ∀ i, f i → g i → h i) (hf' : ∀ i, f' i 1 1 = 1) (i : I)
     (x : f i) (y : g i) (j : I) :
     f' j (mulSingle i x j) (mulSingle i y j) = mulSingle i (f' i x y) j := by
   by_cases h : j = i
   · subst h
-    simp only [mul_single_eq_same]
+    simp only [mulSingle_eq_same]
 
-  · simp only [mul_single_eq_of_ne h, hf']
+  · simp only [mulSingle_eq_of_ne h, hf']
 
 @[to_additive]
-theorem mul_single_op {g : I → Type _} [∀ i, One (g i)] (op : ∀ i, f i → g i)
+theorem mulSingle_op {g : I → Type _} [∀ i, One (g i)] (op : ∀ i, f i → g i)
     (h : ∀ i, op i 1 = 1) (i : I) (x : f i) :
     mulSingle i (op i x) = fun j => op j (mulSingle i x j) :=
-  Eq.symm <| funext <| apply_mul_single op h i x
+  Eq.symm <| funext <| apply_mulSingle op h i x
 
 @[to_additive]
-theorem mul_single_op₂ {g₁ g₂ : I → Type _} [∀ i, One (g₁ i)] [∀ i, One (g₂ i)]
+theorem mulSingle_op₂ {g₁ g₂ : I → Type _} [∀ i, One (g₁ i)] [∀ i, One (g₂ i)]
     (op : ∀ i, g₁ i → g₂ i → f i) (h : ∀ i, op i 1 1 = 1) (i : I) (x₁ : g₁ i) (x₂ : g₂ i) :
     mulSingle i (op i x₁ x₂) = fun j => op j (mulSingle i x₁ j) (mulSingle i x₂ j) :=
-  Eq.symm <| funext <| apply_mul_single₂ op h i x₁ x₂
+  Eq.symm <| funext <| apply_mulSingle₂ op h i x₁ x₂
 
 variable (f)
 
 @[to_additive]
-theorem mul_single_injective (i : I) : Function.Injective (mulSingle i : f i → ∀ i, f i) :=
+theorem mulSingle_injective (i : I) : Function.Injective (mulSingle i : f i → ∀ i, f i) :=
   Function.update_injective _ i
 
 @[simp, to_additive]
-theorem mul_single_inj (i : I) {x y : f i} : mulSingle i x = mulSingle i y ↔ x = y :=
-  (Pi.mul_single_injective _ _).eq_iff
+theorem mulSingle_inj (i : I) {x y : f i} : mulSingle i x = mulSingle i y ↔ x = y :=
+  (Pi.mulSingle_injective _ _).eq_iff
+
+#align pi.mul_single_eq_same Pi.mulSingle_eq_same
+#align pi.mul_single_eq_of_ne Pi.mulSingle_eq_of_ne
+#align pi.mul_single_eq_of_ne' Pi.mulSingle_eq_of_ne'
+#align pi.mul_single_one Pi.mulSingle_one
+#align pi.mul_single_apply Pi.mulSingle_apply
+#align pi.mul_single_comm Pi.mulSingle_comm
+#align pi.apply_mul_single Pi.apply_mulSingle
+#align pi.apply_mul_single₂ Pi.apply_mulSingle₂
+#align pi.mul_single_op Pi.mulSingle_op
+#align pi.mul_single_op₂ Pi.mulSingle_op₂
+#align pi.mul_single_injective Pi.mulSingle_injective
+#align pi.mul_single_inj Pi.mulSingle_inj
+
 
 end
 
@@ -300,6 +305,8 @@ protected def prod (f' : ∀ i, f i) (g' : ∀ i, g i) (i : I) : f i × g i :=
 theorem prod_fst_snd₂ : (fun (i : α × β) => i) = id :=
   funext fun _ => Prod.mk.eta
 
+-- Porting note : These two are simp-normal-form versions of the lemmas below.
+-- They should probably be placed in a lower file and be renamed.
 @[simp]
 theorem prod_snd_fst₂ : (fun (i : α × β) => (i.snd, i.fst)) = Prod.swap :=
   rfl
@@ -310,6 +317,8 @@ theorem prod_snd_fst₂ : (fun (i : α × β) => (i.snd, i.fst)) = Prod.swap :=
 theorem prod_fst_snd : Pi.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
   funext fun _ => Prod.mk.eta
 
+-- Porting note : Linter says these two are not in simp-normal-form. Above is the normal
+-- form version.
 -- @[simp]
 theorem prod_snd_fst : Pi.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = Prod.swap :=
   rfl
