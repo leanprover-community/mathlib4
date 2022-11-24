@@ -958,48 +958,48 @@ instance Nat.distribLattice : DistribLattice ℕ := by infer_instance
 open OrderDual
 
 @[simp]
-theorem of_dual_inf [HasSup α] (a b : αᵒᵈ) : ofDual (a ⊓ b) = ofDual a ⊔ ofDual b :=
+theorem ofDual_inf [HasSup α] (a b : αᵒᵈ) : ofDual (a ⊓ b) = ofDual a ⊔ ofDual b :=
   rfl
-#align of_dual_inf of_dual_inf
+#align of_dual_inf ofDual_inf
 
 @[simp]
-theorem of_dual_sup [HasInf α] (a b : αᵒᵈ) : ofDual (a ⊔ b) = ofDual a ⊓ ofDual b :=
+theorem ofDual_sup [HasInf α] (a b : αᵒᵈ) : ofDual (a ⊔ b) = ofDual a ⊓ ofDual b :=
   rfl
-#align of_dual_sup of_dual_sup
+#align of_dual_sup ofDual_sup
 
 @[simp]
-theorem to_dual_inf [HasInf α] (a b : α) : toDual (a ⊓ b) = toDual a ⊔ toDual b :=
+theorem toDual_inf [HasInf α] (a b : α) : toDual (a ⊓ b) = toDual a ⊔ toDual b :=
   rfl
-#align to_dual_inf to_dual_inf
+#align to_dual_inf toDual_inf
 
 @[simp]
-theorem to_dual_sup [HasSup α] (a b : α) : toDual (a ⊔ b) = toDual a ⊓ toDual b :=
+theorem toDual_sup [HasSup α] (a b : α) : toDual (a ⊔ b) = toDual a ⊓ toDual b :=
   rfl
-#align to_dual_sup to_dual_sup
+#align to_dual_sup toDual_sup
 
 section LinearOrder
 
 variable [LinearOrder α]
 
 @[simp]
-theorem of_dual_min (a b : αᵒᵈ) : ofDual (min a b) = max (ofDual a) (ofDual b) :=
+theorem ofDual_min (a b : αᵒᵈ) : ofDual (min a b) = max (ofDual a) (ofDual b) :=
   rfl
-#align of_dual_min of_dual_min
+#align of_dual_min ofDual_min
 
 @[simp]
-theorem of_dual_max (a b : αᵒᵈ) : ofDual (max a b) = min (ofDual a) (ofDual b) :=
+theorem ofDual_max (a b : αᵒᵈ) : ofDual (max a b) = min (ofDual a) (ofDual b) :=
   rfl
-#align of_dual_max of_dual_max
+#align of_dual_max ofDual_max
 
 @[simp]
-theorem to_dual_min (a b : α) : toDual (min a b) = max (toDual a) (toDual b) :=
+theorem toDual_min (a b : α) : toDual (min a b) = max (toDual a) (toDual b) :=
   rfl
-#align to_dual_min to_dual_min
+#align to_dual_min toDual_min
 
 @[simp]
-theorem to_dual_max (a b : α) : toDual (max a b) = min (toDual a) (toDual b) :=
+theorem toDual_max (a b : α) : toDual (max a b) = min (toDual a) (toDual b) :=
   rfl
-#align to_dual_max to_dual_max
+#align to_dual_max toDual_max
 
 end LinearOrder
 
