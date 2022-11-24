@@ -237,24 +237,24 @@ theorem sup_le_sup_right (h₁ : a ≤ b) (c) : a ⊔ c ≤ b ⊔ c :=
 theorem sup_idem : a ⊔ a = a := by simp
 #align sup_idem sup_idem
 
-instance sup_is_idempotent : IsIdempotent α (· ⊔ ·) :=
+instance sup_isIdempotent : IsIdempotent α (· ⊔ ·) :=
   ⟨@sup_idem _ _⟩
-#align sup_is_idempotent sup_is_idempotent
+#align sup_is_idempotent sup_isIdempotent
 
 theorem sup_comm : a ⊔ b = b ⊔ a := by apply le_antisymm <;> simp
 #align sup_comm sup_comm
 
-instance sup_is_commutative : IsCommutative α (· ⊔ ·) :=
+instance sup_isCommutative : IsCommutative α (· ⊔ ·) :=
   ⟨@sup_comm _ _⟩
-#align sup_is_commutative sup_is_commutative
+#align sup_is_commutative sup_isCommutative
 
 theorem sup_assoc : a ⊔ b ⊔ c = a ⊔ (b ⊔ c) :=
   eq_of_forall_ge_iff $ fun x => by simp only [sup_le_iff]; rw [and_assoc]
 #align sup_assoc sup_assoc
 
-instance sup_is_associative : IsAssociative α (· ⊔ ·) :=
+instance sup_isAssociative : IsAssociative α (· ⊔ ·) :=
   ⟨@sup_assoc _ _⟩
-#align sup_is_associative sup_is_associative
+#align sup_is_associative sup_isAssociative
 
 theorem sup_left_right_swap (a b c : α) : a ⊔ b ⊔ c = c ⊔ b ⊔ a := by
   rw [sup_comm, @sup_comm _ _ a, sup_assoc]
@@ -485,25 +485,25 @@ theorem inf_idem : a ⊓ a = a :=
   @sup_idem αᵒᵈ _ _
 #align inf_idem inf_idem
 
-instance inf_is_idempotent : IsIdempotent α (· ⊓ ·) :=
+instance inf_isIdempotent : IsIdempotent α (· ⊓ ·) :=
   ⟨@inf_idem _ _⟩
-#align inf_is_idempotent inf_is_idempotent
+#align inf_is_idempotent inf_isIdempotent
 
 theorem inf_comm : a ⊓ b = b ⊓ a :=
   @sup_comm αᵒᵈ _ _ _
 #align inf_comm inf_comm
 
-instance inf_is_commutative : IsCommutative α (· ⊓ ·) :=
+instance inf_isCommutative : IsCommutative α (· ⊓ ·) :=
   ⟨@inf_comm _ _⟩
-#align inf_is_commutative inf_is_commutative
+#align inf_is_commutative inf_isCommutative
 
 theorem inf_assoc : a ⊓ b ⊓ c = a ⊓ (b ⊓ c) :=
   @sup_assoc αᵒᵈ _ a b c
 #align inf_assoc inf_assoc
 
-instance inf_is_associative : IsAssociative α (· ⊓ ·) :=
+instance inf_isAssociative : IsAssociative α (· ⊓ ·) :=
   ⟨@inf_assoc _ _⟩
-#align inf_is_associative inf_is_associative
+#align inf_is_associative inf_isAssociative
 
 theorem inf_left_right_swap (a b c : α) : a ⊓ b ⊓ c = c ⊓ b ⊓ a :=
   @sup_left_right_swap αᵒᵈ _ _ _ _
