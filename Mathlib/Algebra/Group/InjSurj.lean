@@ -269,7 +269,7 @@ protected def addGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ
   { hf.addGroup f zero add neg sub nsmul zsmul,
     hf.addMonoidWithOne f zero one add nsmul nat_cast with
     intCast := Int.cast,
-    intCast_ofNat := fun n => hf (by rw [nat_cast, ←Int.cast, int_cast, Int.cast_ofNat]), --(by simp only [nat_cast, int_cast, Int.cast_ofNat]),
+    intCast_ofNat := fun n => hf (by rw [nat_cast, ←Int.cast, int_cast, Int.cast_ofNat]),
     intCast_negSucc := fun n => hf (by erw [int_cast, neg, nat_cast, Int.cast_negSucc] ) }
 #align function.injective.add_group_with_one Function.Injective.addGroupWithOne
 
