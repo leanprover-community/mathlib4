@@ -555,7 +555,7 @@ theorem linearOrder.dual_dual (α : Type _) [H : LinearOrder α] : instLinearOrd
 
 end OrderDual
 
-/-! ### `has_compl` -/
+/-! ### `HasCompl` -/
 
 
 /-- Set / lattice complement -/

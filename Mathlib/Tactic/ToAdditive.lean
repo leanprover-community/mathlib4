@@ -488,7 +488,7 @@ def transformDecl (ref : Option Syntax) (src tgt : Name) : CoreM Unit := do
 /--
 Find the first argument of `nm` that has a multiplicative type-class on it.
 Returns 1 if there are no types with a multiplicative class as arguments.
-E.g. `prod.group` returns 1, and `pi.has_one` returns 2.
+E.g. `Prod.Group` returns 1, and `Pi.One` returns 2.
 -/
 def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
   forallTelescopeReducing (← getConstInfo nm).type fun xs _ ↦ do
@@ -817,7 +817,7 @@ There are some exceptions to this heuristic:
   positions `n1`, `n2`, ... will not be checked for unapplied identifiers (start counting from 1).
   For example, `cont_mdiff_map` has attribute `@[to_additive_ignore_args 21]`, which means
   that its 21st argument `(n : WithTop Nat)` can contain `Nat`
-  (usually in the form `has_top.top Nat ...`) and still be additivized.
+  (usually in the form `Top.top Nat ...`) and still be additivized.
   So `@Mul.mul (C^∞⟮I, N; I', G⟯) _ f g` will be additivized.
 
 ### Troubleshooting

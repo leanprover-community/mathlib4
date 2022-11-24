@@ -710,11 +710,11 @@ The default for `div` is such that `a / b = a * b⁻¹` holds by definition.
 
 Adding `div` as a field rather than defining `a / b := a * b⁻¹` allows us to
 avoid certain classes of unification failures, for example:
-Let `foo X` be a type with a `∀ X, Div (foo X)` instance but no
-`∀ X, Inv (foo X)`, e.g. when `foo X` is a `euclidean_domain`. Suppose we
-also have an instance `∀ X [cromulent X], GroupWithZero (foo X)`. Then the
-`(/)` coming from `group_with_zero_has_div` cannot be definitionally equal to
-the `(/)` coming from `foo.has_div`.
+Let `Foo X` be a type with a `∀ X, Div (Foo X)` instance but no
+`∀ X, Inv (Foo X)`, e.g. when `Foo X` is a `EuclideanDomain`. Suppose we
+also have an instance `∀ X [Cromulent X], GroupWithZero (Foo X)`. Then the
+`(/)` coming from `GroupWithZero.div` cannot be definitionally equal to
+the `(/)` coming from `Foo.div`.
 
 In the same way, adding a `zpow` field makes it possible to avoid definitional failures
 in diamonds. See the definition of `Monoid` and Note [forgetful inheritance] for more
