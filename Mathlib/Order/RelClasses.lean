@@ -237,7 +237,6 @@ instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTot
 /-! ### Well-order -/
 
 
--- Porting note: no `mk_iff` yet, so hard-coded iff
 /-- A well-founded relation. Not to be confused with `isWellOrder`. -/
 @[mk_iff] class IsWellFounded (α : Type u) (r : α → α → Prop) : Prop where
   /-- The relation is `WellFounded`, as a proposition. -/
