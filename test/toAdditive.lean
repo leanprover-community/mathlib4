@@ -197,6 +197,19 @@ def IsUnit [Mul M] (a : M) : Prop := a ≠ a
 theorem isUnit_iff_exists_inv [Mul M] {a : M} : IsUnit a ↔ ∃ _ : α, a ≠ a :=
   ⟨fun h => absurd rfl h, fun ⟨_, hab⟩ => hab⟩
 
+/-! Test that `@[to_additive]` correctly translates auxiliary declarations that do not have the
+original declaration name as prefix.-/
+@[to_additive]
+def IsUnit' [Monoid M] (a : M) : Prop := ∃ b : M, a * b = 1
+
+@[to_additive]
+theorem isUnit'_iff_exists_inv [CommMonoid M] {a : M} : IsUnit' a ↔ ∃ b, a * b = 1 := Iff.rfl
+
+@[to_additive]
+theorem isUnit'_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit' a ↔ ∃ b, b * a = 1 := by
+  simp [isUnit'_iff_exists_inv, mul_comm]
+
+
 /-!
 Some arbitrary tests to check whether additive names are guessed correctly.
 -/
