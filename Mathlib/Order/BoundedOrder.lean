@@ -291,24 +291,24 @@ instance [LE α] [OrderTop α] : OrderBot αᵒᵈ where
   bot_le := @le_top α _ _
 
 @[simp]
-theorem of_dual_bot [HasTop α] : ofDual ⊥ = (⊤ : α) :=
+theorem ofDual_bot [HasTop α] : ofDual ⊥ = (⊤ : α) :=
   rfl
-#align order_dual.of_dual_bot OrderDual.of_dual_bot
+#align order_dual.of_dual_bot OrderDual.ofDual_bot
 
 @[simp]
-theorem of_dual_top [HasBot α] : ofDual ⊤ = (⊥ : α) :=
+theorem ofDual_top [HasBot α] : ofDual ⊤ = (⊥ : α) :=
   rfl
-#align order_dual.of_dual_top OrderDual.of_dual_top
+#align order_dual.of_dual_top OrderDual.ofDual_top
 
 @[simp]
-theorem to_dual_bot [HasBot α] : toDual (⊥ : α) = ⊤ :=
+theorem toDual_bot [HasBot α] : toDual (⊥ : α) = ⊤ :=
   rfl
-#align order_dual.to_dual_bot OrderDual.to_dual_bot
+#align order_dual.to_dual_bot OrderDual.toDual_bot
 
 @[simp]
-theorem to_dual_top [HasTop α] : toDual (⊤ : α) = ⊥ :=
+theorem toDual_top [HasTop α] : toDual (⊤ : α) = ⊥ :=
   rfl
-#align order_dual.to_dual_top OrderDual.to_dual_top
+#align order_dual.to_dual_top OrderDual.toDual_top
 
 end OrderDual
 
@@ -778,7 +778,7 @@ def BoundedOrder.lift [LE α] [HasTop α] [HasBot α] [LE β] [BoundedOrder β] 
 
 end lift
 
-/-! ### `with_bot`, `with_top` -/
+/-! ### `WithBot`, `WithTop` -/
 
 
 /-- Attach `⊥` to a type. -/
@@ -867,7 +867,7 @@ theorem recBotCoe_coe {C : WithBot α → Sort _} (d : C ⊥) (f : ∀ a : α, C
   rfl
 #align with_bot.rec_bot_coe_coe WithBot.recBotCoe_coe
 
-/-- Specialization of `option.get_or_else` to values in `with_bot α` that respects API boundaries.
+/-- Specialization of `option.get_or_else` to values in `WithBot α` that respects API boundaries.
 -/
 def unbot' (d : α) (x : WithBot α) : α :=
   recBotCoe d id x
@@ -889,7 +889,7 @@ theorem coe_eq_coe : (a : WithBot α) = b ↔ a = b :=
   Option.some_inj
 #align with_bot.coe_eq_coe WithBot.coe_eq_coe
 
-/-- Lift a map `f : α → β` to `with_bot α → with_bot β`. Implemented using `option.map`. -/
+/-- Lift a map `f : α → β` to `WithBot α → WithBot β`. Implemented using `option.map`. -/
 def map (f : α → β) : WithBot α → WithBot β :=
   Option.map f
 #align with_bot.map WithBot.map
@@ -913,7 +913,7 @@ theorem ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x 
   Option.ne_none_iff_exists
 #align with_bot.ne_bot_iff_exists WithBot.ne_bot_iff_exists
 
-/-- Deconstruct a `x : with_bot α` to the underlying value in `α`, given a proof that `x ≠ ⊥`. -/
+/-- Deconstruct a `x : WithBot α` to the underlying value in `α`, given a proof that `x ≠ ⊥`. -/
 def unbot : ∀ x : WithBot α, x ≠ ⊥ → α
   | ⊥, h => absurd rfl h
   | some x, _ => x
@@ -986,10 +986,10 @@ theorem le_coe_iff : ∀ {x : WithBot α}, x ≤ b ↔ ∀ a, x = ↑a → a ≤
   | none => by simp [none_eq_bot]
 #align with_bot.le_coe_iff WithBot.le_coe_iff
 
-protected theorem _root_.is_max.with_bot (h : IsMax a) : IsMax (a : WithBot α)
+protected theorem _root_.IsMax.withBot (h : IsMax a) : IsMax (a : WithBot α)
   | none, _ => bot_le
   | some b, hb => some_le_some.2 <| h <| some_le_some.1 hb
-#align with_bot._root_.is_max.with_bot with_bot._root_.is_max.with_bot
+#align with_bot._root_.is_max.with_bot with_bot._root_.IsMax.withBot
 
 end LE
 
@@ -1079,22 +1079,22 @@ theorem monotone_map_iff [Preorder α] [Preorder β] {f : α → β} : Monotone 
   monotone_iff.trans <| by simp [Monotone]
 #align with_bot.monotone_map_iff WithBot.monotone_map_iff
 
-alias monotone_map_iff ↔ _ _root_.monotone.with_bot_map
+alias monotone_map_iff ↔ _ _root_.Monotone.withBot_map
 
-theorem strict_mono_iff [Preorder α] [Preorder β] {f : WithBot α → β} :
+theorem strictMono_iff [Preorder α] [Preorder β] {f : WithBot α → β} :
     StrictMono f ↔ StrictMono (f ∘ coe : α → β) ∧ ∀ x : α, f ⊥ < f x :=
   ⟨fun h => ⟨h.comp WithBot.coe_strict_mono, fun x => h (bot_lt_coe _)⟩, fun h =>
     WithBot.forall.2
       ⟨WithBot.forall.2 ⟨flip absurd (lt_irrefl _), fun x _ => h.2 x⟩, fun x =>
         WithBot.forall.2 ⟨fun h => (not_lt_bot h).elim, fun y hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩
-#align with_bot.strict_mono_iff WithBot.strict_mono_iff
+#align with_bot.strict_mono_iff WithBot.strictMono_iff
 
 @[simp]
-theorem strict_mono_map_iff [Preorder α] [Preorder β] {f : α → β} : StrictMono (WithBot.map f) ↔ StrictMono f :=
+theorem strictMono_map_iff [Preorder α] [Preorder β] {f : α → β} : StrictMono (WithBot.map f) ↔ StrictMono f :=
   strict_mono_iff.trans <| by simp [StrictMono, bot_lt_coe]
-#align with_bot.strict_mono_map_iff WithBot.strict_mono_map_iff
+#align with_bot.strict_mono_map_iff WithBot.strictMono_map_iff
 
-alias strict_mono_map_iff ↔ _ _root_.strict_mono.with_bot_map
+alias strict_mono_map_iff ↔ _ _root_.StrictMono.withBot_map
 
 theorem map_le_iff [Preorder α] [Preorder β] (f : α → β) (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
     ∀ a b : WithBot α, a.map f ≤ b.map f ↔ a ≤ b
@@ -1198,13 +1198,13 @@ instance [LinearOrder α] : LinearOrder (WithBot α) := by
   classical
   exact Lattice.toLinearOrder _
 
--- this is not marked simp because the corresponding with_top lemmas are used
+-- this is not marked simp because the corresponding WithTop lemmas are used
 @[norm_cast]
 theorem coe_min [LinearOrder α] (x y : α) : ((min x y : α) : WithBot α) = min x y :=
   rfl
 #align with_bot.coe_min WithBot.coe_min
 
--- this is not marked simp because the corresponding with_top lemmas are used
+-- this is not marked simp because the corresponding WithTop lemmas are used
 @[norm_cast]
 theorem coe_max [LinearOrder α] (x y : α) : ((max x y : α) : WithBot α) = max x y :=
   rfl
@@ -1264,12 +1264,12 @@ instance [LT α] [NoMaxOrder α] [Nonempty α] : NoMaxOrder (WithBot α) :=
 
     · intro a
       obtain ⟨b, ha⟩ := exists_gt a
-      exact ⟨b, with_bot.coe_lt_coe.mpr ha⟩
+      exact ⟨b, WithBot.coe_lt_coe.mpr ha⟩
       ⟩
 
 end WithBot
 
---TODO(Mario): Construct using order dual on with_bot
+--TODO(Mario): Construct using order dual on WithBot
 /-- Attach `⊤` to a type. -/
 def WithTop (α : Type _) :=
   Option α
@@ -1330,7 +1330,7 @@ theorem coe_ne_top : (a : WithTop α) ≠ ⊤ :=
   fun.
 #align with_top.coe_ne_top WithTop.coe_ne_top
 
-/-- Recursor for `with_top` using the preferred forms `⊤` and `↑a`. -/
+/-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/
 @[elab_as_elim]
 def recTopCoe {C : WithTop α → Sort _} (h₁ : C ⊤) (h₂ : ∀ a : α, C a) : ∀ n : WithTop α, C n :=
   Option.rec h₁ h₂
@@ -1346,65 +1346,65 @@ theorem rec_top_coe_coe {C : WithTop α → Sort _} (d : C ⊤) (f : ∀ a : α,
   rfl
 #align with_top.rec_top_coe_coe WithTop.rec_top_coe_coe
 
-/-- `with_top.to_dual` is the equivalence sending `⊤` to `⊥` and any `a : α` to `to_dual a : αᵒᵈ`.
-See `with_top.to_dual_bot_equiv` for the related order-iso.
+/-- `WithTop.toDual` is the equivalence sending `⊤` to `⊥` and any `a : α` to `toDual a : αᵒᵈ`.
+See `WithTop.toDual_bot_equiv` for the related order-iso.
 -/
 protected def toDual : WithTop α ≃ WithBot αᵒᵈ :=
   Equiv.refl _
 #align with_top.to_dual WithTop.toDual
 
-/-- `with_top.of_dual` is the equivalence sending `⊤` to `⊥` and any `a : αᵒᵈ` to `of_dual a : α`.
-See `with_top.to_dual_bot_equiv` for the related order-iso.
+/-- `WithTop.ofDual` is the equivalence sending `⊤` to `⊥` and any `a : αᵒᵈ` to `ofDual a : α`.
+See `WithTop.toDual_bot_equiv` for the related order-iso.
 -/
 protected def ofDual : WithTop αᵒᵈ ≃ WithBot α :=
   Equiv.refl _
 #align with_top.of_dual WithTop.ofDual
 
-/-- `with_bot.to_dual` is the equivalence sending `⊥` to `⊤` and any `a : α` to `to_dual a : αᵒᵈ`.
-See `with_bot.to_dual_top_equiv` for the related order-iso.
+/-- `WithBot.toDual` is the equivalence sending `⊥` to `⊤` and any `a : α` to `toDual a : αᵒᵈ`.
+See `WithBot.toDual_top_equiv` for the related order-iso.
 -/
-protected def _root_.with_bot.to_dual : WithBot α ≃ WithTop αᵒᵈ :=
+protected def _root_.WithBot.toDual : WithBot α ≃ WithTop αᵒᵈ :=
   Equiv.refl _
-#align with_top._root_.with_bot.to_dual with_top._root_.with_bot.to_dual
+#align with_top._root_.with_bot.to_dual WithBot.toDual
 
-/-- `with_bot.of_dual` is the equivalence sending `⊥` to `⊤` and any `a : αᵒᵈ` to `of_dual a : α`.
-See `with_bot.to_dual_top_equiv` for the related order-iso.
+/-- `WithBot.ofDual` is the equivalence sending `⊥` to `⊤` and any `a : αᵒᵈ` to `ofDual a : α`.
+See `WithBot.toDual_top_equiv` for the related order-iso.
 -/
-protected def _root_.with_bot.of_dual : WithBot αᵒᵈ ≃ WithTop α :=
+protected def _root_.WithBot.ofDual : WithBot αᵒᵈ ≃ WithTop α :=
   Equiv.refl _
-#align with_top._root_.with_bot.of_dual with_top._root_.with_bot.of_dual
+#align with_top._root_.with_bot.of_dual WithBot.ofDual
 
 @[simp]
-theorem to_dual_symm_apply (a : WithBot αᵒᵈ) : WithTop.toDual.symm a = a.ofDual :=
+theorem toDual_symm_apply (a : WithBot αᵒᵈ) : WithTop.toDual.symm a = a.ofDual :=
   rfl
-#align with_top.to_dual_symm_apply WithTop.to_dual_symm_apply
+#align with_top.to_dual_symm_apply WithTop.toDual_symm_apply
 
 @[simp]
-theorem of_dual_symm_apply (a : WithBot α) : WithTop.ofDual.symm a = a.toDual :=
+theorem ofDual_symm_apply (a : WithBot α) : WithTop.ofDual.symm a = a.toDual :=
   rfl
-#align with_top.of_dual_symm_apply WithTop.of_dual_symm_apply
+#align with_top.of_dual_symm_apply WithTop.ofDual_symm_apply
 
 @[simp]
-theorem to_dual_apply_top : WithTop.toDual (⊤ : WithTop α) = ⊥ :=
+theorem toDual_apply_top : WithTop.toDual (⊤ : WithTop α) = ⊥ :=
   rfl
-#align with_top.to_dual_apply_top WithTop.to_dual_apply_top
+#align with_top.to_dual_apply_top WithTop.toDual_apply_top
 
 @[simp]
-theorem of_dual_apply_top : WithTop.ofDual (⊤ : WithTop α) = ⊥ :=
+theorem ofDual_apply_top : WithTop.ofDual (⊤ : WithTop α) = ⊥ :=
   rfl
-#align with_top.of_dual_apply_top WithTop.of_dual_apply_top
+#align with_top.of_dual_apply_top WithTop.ofDual_apply_top
 
 @[simp]
-theorem to_dual_apply_coe (a : α) : WithTop.toDual (a : WithTop α) = toDual a :=
+theorem toDual_apply_coe (a : α) : WithTop.toDual (a : WithTop α) = toDual a :=
   rfl
-#align with_top.to_dual_apply_coe WithTop.to_dual_apply_coe
+#align with_top.to_dual_apply_coe WithTop.toDual_apply_coe
 
 @[simp]
-theorem of_dual_apply_coe (a : αᵒᵈ) : WithTop.ofDual (a : WithTop αᵒᵈ) = ofDual a :=
+theorem ofDual_apply_coe (a : αᵒᵈ) : WithTop.ofDual (a : WithTop αᵒᵈ) = ofDual a :=
   rfl
-#align with_top.of_dual_apply_coe WithTop.of_dual_apply_coe
+#align with_top.of_dual_apply_coe WithTop.ofDual_apply_coe
 
-/-- Specialization of `option.get_or_else` to values in `with_top α` that respects API boundaries.
+/-- Specialization of `option.get_or_else` to values in `WithTop α` that respects API boundaries.
 -/
 def untop' (d : α) (x : WithTop α) : α :=
   recTopCoe d id x
@@ -1425,7 +1425,7 @@ theorem coe_eq_coe : (a : WithTop α) = b ↔ a = b :=
   Option.some_inj
 #align with_top.coe_eq_coe WithTop.coe_eq_coe
 
-/-- Lift a map `f : α → β` to `with_top α → with_top β`. Implemented using `option.map`. -/
+/-- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `option.map`. -/
 def map (f : α → β) : WithTop α → WithTop β :=
   Option.map f
 #align with_top.map WithTop.map
@@ -1445,29 +1445,29 @@ theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ 
   Option.map_comm h _
 #align with_top.map_comm WithTop.map_comm
 
-theorem map_to_dual (f : αᵒᵈ → βᵒᵈ) (a : WithBot α) : map f (WithBot.toDual a) = a.map (to_dual ∘ f) :=
+theorem map_toDual (f : αᵒᵈ → βᵒᵈ) (a : WithBot α) : map f (WithBot.toDual a) = a.map (toDual ∘ f) :=
   rfl
-#align with_top.map_to_dual WithTop.map_to_dual
+#align with_top.map_to_dual WithTop.map_toDual
 
-theorem map_of_dual (f : α → β) (a : WithBot αᵒᵈ) : map f (WithBot.ofDual a) = a.map (of_dual ∘ f) :=
+theorem map_ofDual (f : α → β) (a : WithBot αᵒᵈ) : map f (WithBot.ofDual a) = a.map (ofDual ∘ f) :=
   rfl
-#align with_top.map_of_dual WithTop.map_of_dual
+#align with_top.map_of_dual WithTop.map_ofDual
 
-theorem to_dual_map (f : α → β) (a : WithTop α) :
-    WithTop.toDual (map f a) = WithBot.map (to_dual ∘ f ∘ of_dual) a.toDual :=
+theorem toDual_map (f : α → β) (a : WithTop α) :
+    WithTop.toDual (map f a) = WithBot.map (toDual ∘ f ∘ ofDual) a.toDual :=
   rfl
-#align with_top.to_dual_map WithTop.to_dual_map
+#align with_top.to_dual_map WithTop.toDual_map
 
-theorem of_dual_map (f : αᵒᵈ → βᵒᵈ) (a : WithTop αᵒᵈ) :
-    WithTop.ofDual (map f a) = WithBot.map (of_dual ∘ f ∘ to_dual) a.ofDual :=
+theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithTop αᵒᵈ) :
+    WithTop.ofDual (map f a) = WithBot.map (ofDual ∘ f ∘ toDual) a.ofDual :=
   rfl
-#align with_top.of_dual_map WithTop.of_dual_map
+#align with_top.of_dual_map WithTop.ofDual_map
 
 theorem ne_top_iff_exists {x : WithTop α} : x ≠ ⊤ ↔ ∃ a : α, ↑a = x :=
   Option.ne_none_iff_exists
 #align with_top.ne_top_iff_exists WithTop.ne_top_iff_exists
 
-/-- Deconstruct a `x : with_top α` to the underlying value in `α`, given a proof that `x ≠ ⊤`. -/
+/-- Deconstruct a `x : WithTop α` to the underlying value in `α`, given a proof that `x ≠ ⊤`. -/
 def untop : ∀ x : WithTop α, x ≠ ⊤ → α :=
   WithBot.unbot
 #align with_top.untop WithTop.untop
@@ -1492,39 +1492,39 @@ variable [LE α]
 instance (priority := 10) : LE (WithTop α) :=
   ⟨fun o₁ o₂ : Option α => ∀ a ∈ o₂, ∃ b ∈ o₁, b ≤ a⟩
 
-theorem to_dual_le_iff {a : WithTop α} {b : WithBot αᵒᵈ} :
+theorem toDual_le_iff {a : WithTop α} {b : WithBot αᵒᵈ} :
     WithTop.toDual a ≤ b ↔ WithBot.ofDual b ≤ a :=
   Iff.rfl
-#align with_top.to_dual_le_iff WithTop.to_dual_le_iff
+#align with_top.to_dual_le_iff WithTop.toDual_le_iff
 
-theorem le_to_dual_iff {a : WithBot αᵒᵈ} {b : WithTop α} :
+theorem le_toDual_iff {a : WithBot αᵒᵈ} {b : WithTop α} :
     a ≤ WithTop.toDual b ↔ b ≤ WithBot.ofDual a :=
   Iff.rfl
-#align with_top.le_to_dual_iff WithTop.le_to_dual_iff
+#align with_top.le_to_dual_iff WithTop.le_toDual_iff
 
 @[simp]
-theorem to_dual_le_to_dual_iff {a b : WithTop α} : WithTop.toDual a ≤ WithTop.toDual b ↔ b ≤ a :=
+theorem toDual_le_toDual_iff {a b : WithTop α} : WithTop.toDual a ≤ WithTop.toDual b ↔ b ≤ a :=
   Iff.rfl
-#align with_top.to_dual_le_to_dual_iff WithTop.to_dual_le_to_dual_iff
+#align with_top.to_dual_le_to_dual_iff WithTop.toDual_le_toDual_iff
 
-theorem of_dual_le_iff {a : WithTop αᵒᵈ} {b : WithBot α} :
+theorem ofDual_le_iff {a : WithTop αᵒᵈ} {b : WithBot α} :
     WithTop.ofDual a ≤ b ↔ WithBot.toDual b ≤ a :=
   Iff.rfl
-#align with_top.of_dual_le_iff WithTop.of_dual_le_iff
+#align with_top.of_dual_le_iff WithTop.ofDual_le_iff
 
-theorem le_of_dual_iff {a : WithBot α} {b : WithTop αᵒᵈ} :
+theorem le_ofDual_iff {a : WithBot α} {b : WithTop αᵒᵈ} :
     a ≤ WithTop.ofDual b ↔ b ≤ WithBot.toDual a :=
   Iff.rfl
-#align with_top.le_of_dual_iff WithTop.le_of_dual_iff
+#align with_top.le_of_dual_iff WithTop.le_ofDual_iff
 
 @[simp]
-theorem of_dual_le_of_dual_iff {a b : WithTop αᵒᵈ} : WithTop.ofDual a ≤ WithTop.ofDual b ↔ b ≤ a :=
+theorem ofDual_le_ofDual_iff {a b : WithTop αᵒᵈ} : WithTop.ofDual a ≤ WithTop.ofDual b ↔ b ≤ a :=
   Iff.rfl
-#align with_top.of_dual_le_of_dual_iff WithTop.of_dual_le_of_dual_iff
+#align with_top.of_dual_le_of_dual_iff WithTop.ofDual_le_ofDual_iff
 
 @[simp, norm_cast]
 theorem coe_le_coe : (a : WithTop α) ≤ b ↔ a ≤ b := by
-  simp only [← to_dual_le_to_dual_iff, to_dual_apply_coe, WithBot.coe_le_coe, to_dual_le_to_dual]
+  simp only [← toDual_le_toDual_iff, toDual_apply_coe, WithBot.coe_le_coe, toDual_le_toDual]
 #align with_top.coe_le_coe WithTop.coe_le_coe
 
 @[simp]
@@ -1534,7 +1534,7 @@ theorem some_le_some : @LE.le (WithTop α) _ (some a) (some b) ↔ a ≤ b :=
 
 @[simp]
 theorem le_none {a : WithTop α} : @LE.le (WithTop α) _ a none :=
-  to_dual_le_to_dual_iff.mp WithBot.none_le
+  toDual_le_toDual_iff.mp WithBot.none_le
 #align with_top.le_none WithTop.le_none
 
 instance : OrderTop (WithTop α) :=
@@ -1556,21 +1556,21 @@ theorem le_coe : ∀ {o : Option α}, a ∈ o → (@LE.le (WithTop α) _ o b ↔
 #align with_top.le_coe WithTop.le_coe
 
 theorem le_coe_iff {x : WithTop α} : x ≤ b ↔ ∃ a : α, x = a ∧ a ≤ b := by
-  simpa [← to_dual_le_to_dual_iff, WithBot.coe_le_iff]
+  simpa [← toDual_le_toDual_iff, WithBot.coe_le_iff]
 #align with_top.le_coe_iff WithTop.le_coe_iff
 
 theorem coe_le_iff {x : WithTop α} : ↑a ≤ x ↔ ∀ b, x = ↑b → a ≤ b := by
-  simp only [← to_dual_le_to_dual_iff, to_dual_apply_coe, WithBot.le_coe_iff, OrderDual.forall,
-    to_dual_le_to_dual]
+  simp only [← toDual_le_toDual_iff, toDual_apply_coe, WithBot.le_coe_iff, OrderDual.forall,
+    toDual_le_toDual]
   exact forall₂_congr fun _ _ => Iff.rfl
 #align with_top.coe_le_iff WithTop.coe_le_iff
 
-protected theorem _root_.is_min.with_top (h : IsMin a) : IsMin (a : WithTop α) := by
-  -- defeq to is_max_to_dual_iff.mp (is_max.with_bot _), but that breaks API boundary
+protected theorem _root_.IsMin.withTop (h : IsMin a) : IsMin (a : WithTop α) := by
+  -- defeq to is_max_toDual_iff.mp (is_max.with_bot _), but that breaks API boundary
   intro _ hb
-  rw [← to_dual_le_to_dual_iff] at hb
-  simpa [to_dual_le_iff] using (IsMax.with_bot h : IsMax (to_dual a : WithBot αᵒᵈ)) hb
-#align with_top._root_.is_min.with_top with_top._root_.is_min.with_top
+  rw [← toDual_le_toDual_iff] at hb
+  simpa [toDual_le_iff] using (IsMax.with_bot h : IsMax (toDual a : WithBot αᵒᵈ)) hb
+#align with_top._root_.is_min.with_top WithTop._root_.IsMin.withTop
 
 end LE
 
@@ -1581,35 +1581,35 @@ variable [LT α]
 instance (priority := 10) : LT (WithTop α) :=
   ⟨fun o₁ o₂ : Option α => ∃ b ∈ o₁, ∀ a ∈ o₂, b < a⟩
 
-theorem to_dual_lt_iff {a : WithTop α} {b : WithBot αᵒᵈ} :
+theorem toDual_lt_iff {a : WithTop α} {b : WithBot αᵒᵈ} :
     WithTop.toDual a < b ↔ WithBot.ofDual b < a :=
   Iff.rfl
-#align with_top.to_dual_lt_iff WithTop.to_dual_lt_iff
+#align with_top.to_dual_lt_iff WithTop.toDual_lt_iff
 
-theorem lt_to_dual_iff {a : WithBot αᵒᵈ} {b : WithTop α} :
+theorem lt_toDual_iff {a : WithBot αᵒᵈ} {b : WithTop α} :
     a < WithTop.toDual b ↔ b < WithBot.ofDual a :=
   Iff.rfl
-#align with_top.lt_to_dual_iff WithTop.lt_to_dual_iff
+#align with_top.lt_to_dual_iff WithTop.lt_toDual_iff
 
 @[simp]
-theorem to_dual_lt_to_dual_iff {a b : WithTop α} : WithTop.toDual a < WithTop.toDual b ↔ b < a :=
+theorem toDual_lt_toDual_iff {a b : WithTop α} : WithTop.toDual a < WithTop.toDual b ↔ b < a :=
   Iff.rfl
-#align with_top.to_dual_lt_to_dual_iff WithTop.to_dual_lt_to_dual_iff
+#align with_top.to_dual_lt_to_dual_iff WithTop.toDual_lt_toDual_iff
 
-theorem of_dual_lt_iff {a : WithTop αᵒᵈ} {b : WithBot α} :
+theorem ofDual_lt_iff {a : WithTop αᵒᵈ} {b : WithBot α} :
     WithTop.ofDual a < b ↔ WithBot.toDual b < a :=
   Iff.rfl
-#align with_top.of_dual_lt_iff WithTop.of_dual_lt_iff
+#align with_top.of_dual_lt_iff WithTop.ofDual_lt_iff
 
-theorem lt_of_dual_iff {a : WithBot α} {b : WithTop αᵒᵈ} :
+theorem lt_ofDual_iff {a : WithBot α} {b : WithTop αᵒᵈ} :
     a < WithTop.ofDual b ↔ b < WithBot.toDual a :=
   Iff.rfl
-#align with_top.lt_of_dual_iff WithTop.lt_of_dual_iff
+#align with_top.lt_of_dual_iff WithTop.lt_ofDual_iff
 
 @[simp]
-theorem of_dual_lt_of_dual_iff {a b : WithTop αᵒᵈ} : WithTop.ofDual a < WithTop.ofDual b ↔ b < a :=
+theorem ofDual_lt_ofDual_iff {a b : WithTop αᵒᵈ} : WithTop.ofDual a < WithTop.ofDual b ↔ b < a :=
   Iff.rfl
-#align with_top.of_dual_lt_of_dual_iff WithTop.of_dual_lt_of_dual_iff
+#align with_top.of_dual_lt_of_dual_iff WithTop.ofDual_lt_ofDual_iff
 
 end LT
 
@@ -1618,88 +1618,88 @@ end WithTop
 namespace WithBot
 
 @[simp]
-theorem to_dual_symm_apply (a : WithTop αᵒᵈ) : WithBot.toDual.symm a = a.ofDual :=
+theorem toDual_symm_apply (a : WithTop αᵒᵈ) : WithBot.toDual.symm a = a.ofDual :=
   rfl
-#align with_bot.to_dual_symm_apply WithBot.to_dual_symm_apply
+#align with_bot.to_dual_symm_apply WithBot.toDual_symm_apply
 
 @[simp]
-theorem of_dual_symm_apply (a : WithTop α) : WithBot.ofDual.symm a = a.toDual :=
+theorem ofDual_symm_apply (a : WithTop α) : WithBot.ofDual.symm a = a.toDual :=
   rfl
-#align with_bot.of_dual_symm_apply WithBot.of_dual_symm_apply
+#align with_bot.of_dual_symm_apply WithBot.ofDual_symm_apply
 
 @[simp]
-theorem to_dual_apply_bot : WithBot.toDual (⊥ : WithBot α) = ⊤ :=
+theorem toDual_apply_bot : WithBot.toDual (⊥ : WithBot α) = ⊤ :=
   rfl
-#align with_bot.to_dual_apply_bot WithBot.to_dual_apply_bot
+#align with_bot.to_dual_apply_bot WithBot.toDual_apply_bot
 
 @[simp]
-theorem of_dual_apply_bot : WithBot.ofDual (⊥ : WithBot α) = ⊤ :=
+theorem ofDual_apply_bot : WithBot.ofDual (⊥ : WithBot α) = ⊤ :=
   rfl
-#align with_bot.of_dual_apply_bot WithBot.of_dual_apply_bot
+#align with_bot.of_dual_apply_bot WithBot.ofDual_apply_bot
 
 @[simp]
-theorem to_dual_apply_coe (a : α) : WithBot.toDual (a : WithBot α) = toDual a :=
+theorem toDual_apply_coe (a : α) : WithBot.toDual (a : WithBot α) = toDual a :=
   rfl
-#align with_bot.to_dual_apply_coe WithBot.to_dual_apply_coe
+#align with_bot.to_dual_apply_coe WithBot.toDual_apply_coe
 
 @[simp]
-theorem of_dual_apply_coe (a : αᵒᵈ) : WithBot.ofDual (a : WithBot αᵒᵈ) = ofDual a :=
+theorem ofDual_apply_coe (a : αᵒᵈ) : WithBot.ofDual (a : WithBot αᵒᵈ) = ofDual a :=
   rfl
-#align with_bot.of_dual_apply_coe WithBot.of_dual_apply_coe
+#align with_bot.of_dual_apply_coe WithBot.ofDual_apply_coe
 
-theorem map_to_dual (f : αᵒᵈ → βᵒᵈ) (a : WithTop α) :
-    WithBot.map f (WithTop.toDual a) = a.map (to_dual ∘ f) :=
+theorem map_toDual (f : αᵒᵈ → βᵒᵈ) (a : WithTop α) :
+    WithBot.map f (WithTop.toDual a) = a.map (toDual ∘ f) :=
   rfl
-#align with_bot.map_to_dual WithBot.map_to_dual
+#align with_bot.map_to_dual WithBot.map_toDual
 
-theorem map_of_dual (f : α → β) (a : WithTop αᵒᵈ) :
-    WithBot.map f (WithTop.ofDual a) = a.map (of_dual ∘ f) :=
+theorem map_ofDual (f : α → β) (a : WithTop αᵒᵈ) :
+    WithBot.map f (WithTop.ofDual a) = a.map (ofDual ∘ f) :=
   rfl
-#align with_bot.map_of_dual WithBot.map_of_dual
+#align with_bot.map_of_dual WithBot.map_ofDual
 
-theorem to_dual_map (f : α → β) (a : WithBot α) :
-    WithBot.toDual (WithBot.map f a) = map (to_dual ∘ f ∘ of_dual) a.toDual :=
+theorem toDual_map (f : α → β) (a : WithBot α) :
+    WithBot.toDual (WithBot.map f a) = map (toDual ∘ f ∘ ofDual) a.toDual :=
   rfl
-#align with_bot.to_dual_map WithBot.to_dual_map
+#align with_bot.to_dual_map WithBot.toDual_map
 
-theorem of_dual_map (f : αᵒᵈ → βᵒᵈ) (a : WithBot αᵒᵈ) :
-    WithBot.ofDual (WithBot.map f a) = map (of_dual ∘ f ∘ to_dual) a.ofDual :=
+theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithBot αᵒᵈ) :
+    WithBot.ofDual (WithBot.map f a) = map (ofDual ∘ f ∘ toDual) a.ofDual :=
   rfl
-#align with_bot.of_dual_map WithBot.of_dual_map
+#align with_bot.of_dual_map WithBot.ofDual_map
 
 section LE
 
 variable [LE α] {a b : α}
 
-theorem to_dual_le_iff {a : WithBot α} {b : WithTop αᵒᵈ} :
+theorem toDual_le_iff {a : WithBot α} {b : WithTop αᵒᵈ} :
     WithBot.toDual a ≤ b ↔ WithTop.ofDual b ≤ a :=
   Iff.rfl
-#align with_bot.to_dual_le_iff WithBot.to_dual_le_iff
+#align with_bot.to_dual_le_iff WithBot.toDual_le_iff
 
-theorem le_to_dual_iff {a : WithTop αᵒᵈ} {b : WithBot α} :
+theorem le_toDual_iff {a : WithTop αᵒᵈ} {b : WithBot α} :
     a ≤ WithBot.toDual b ↔ b ≤ WithTop.ofDual a :=
   Iff.rfl
-#align with_bot.le_to_dual_iff WithBot.le_to_dual_iff
+#align with_bot.le_to_dual_iff WithBot.le_toDual_iff
 
 @[simp]
-theorem to_dual_le_to_dual_iff {a b : WithBot α} : WithBot.toDual a ≤ WithBot.toDual b ↔ b ≤ a :=
+theorem toDual_le_toDual_iff {a b : WithBot α} : WithBot.toDual a ≤ WithBot.toDual b ↔ b ≤ a :=
   Iff.rfl
-#align with_bot.to_dual_le_to_dual_iff WithBot.to_dual_le_to_dual_iff
+#align with_bot.to_dual_le_to_dual_iff WithBot.toDual_le_toDual_iff
 
-theorem of_dual_le_iff {a : WithBot αᵒᵈ} {b : WithTop α} :
+theorem ofDual_le_iff {a : WithBot αᵒᵈ} {b : WithTop α} :
     WithBot.ofDual a ≤ b ↔ WithTop.toDual b ≤ a :=
   Iff.rfl
-#align with_bot.of_dual_le_iff WithBot.of_dual_le_iff
+#align with_bot.of_dual_le_iff WithBot.ofDual_le_iff
 
-theorem le_of_dual_iff {a : WithTop α} {b : WithBot αᵒᵈ} :
+theorem le_ofDual_iff {a : WithTop α} {b : WithBot αᵒᵈ} :
     a ≤ WithBot.ofDual b ↔ b ≤ WithTop.toDual a :=
   Iff.rfl
-#align with_bot.le_of_dual_iff WithBot.le_of_dual_iff
+#align with_bot.le_of_dual_iff WithBot.le_ofDual_iff
 
 @[simp]
-theorem of_dual_le_of_dual_iff {a b : WithBot αᵒᵈ} : WithBot.ofDual a ≤ WithBot.ofDual b ↔ b ≤ a :=
+theorem ofDual_le_ofDual_iff {a b : WithBot αᵒᵈ} : WithBot.ofDual a ≤ WithBot.ofDual b ↔ b ≤ a :=
   Iff.rfl
-#align with_bot.of_dual_le_of_dual_iff WithBot.of_dual_le_of_dual_iff
+#align with_bot.of_dual_le_of_dual_iff WithBot.ofDual_le_ofDual_iff
 
 end LE
 
@@ -1707,35 +1707,35 @@ section LT
 
 variable [LT α] {a b : α}
 
-theorem to_dual_lt_iff {a : WithBot α} {b : WithTop αᵒᵈ} :
+theorem toDual_lt_iff {a : WithBot α} {b : WithTop αᵒᵈ} :
     WithBot.toDual a < b ↔ WithTop.ofDual b < a :=
   Iff.rfl
-#align with_bot.to_dual_lt_iff WithBot.to_dual_lt_iff
+#align with_bot.to_dual_lt_iff WithBot.toDual_lt_iff
 
-theorem lt_to_dual_iff {a : WithTop αᵒᵈ} {b : WithBot α} :
+theorem lt_toDual_iff {a : WithTop αᵒᵈ} {b : WithBot α} :
     a < WithBot.toDual b ↔ b < WithTop.ofDual a :=
   Iff.rfl
-#align with_bot.lt_to_dual_iff WithBot.lt_to_dual_iff
+#align with_bot.lt_to_dual_iff WithBot.lt_toDual_iff
 
 @[simp]
-theorem to_dual_lt_to_dual_iff {a b : WithBot α} : WithBot.toDual a < WithBot.toDual b ↔ b < a :=
+theorem toDual_lt_toDual_iff {a b : WithBot α} : WithBot.toDual a < WithBot.toDual b ↔ b < a :=
   Iff.rfl
-#align with_bot.to_dual_lt_to_dual_iff WithBot.to_dual_lt_to_dual_iff
+#align with_bot.to_dual_lt_to_dual_iff WithBot.toDual_lt_toDual_iff
 
-theorem of_dual_lt_iff {a : WithBot αᵒᵈ} {b : WithTop α} :
+theorem ofDual_lt_iff {a : WithBot αᵒᵈ} {b : WithTop α} :
     WithBot.ofDual a < b ↔ WithTop.toDual b < a :=
   Iff.rfl
-#align with_bot.of_dual_lt_iff WithBot.of_dual_lt_iff
+#align with_bot.of_dual_lt_iff WithBot.ofDual_lt_iff
 
-theorem lt_of_dual_iff {a : WithTop α} {b : WithBot αᵒᵈ} :
+theorem lt_ofDual_iff {a : WithTop α} {b : WithBot αᵒᵈ} :
     a < WithBot.ofDual b ↔ b < WithTop.toDual a :=
   Iff.rfl
-#align with_bot.lt_of_dual_iff WithBot.lt_of_dual_iff
+#align with_bot.lt_of_dual_iff WithBot.lt_ofDual_iff
 
 @[simp]
-theorem of_dual_lt_of_dual_iff {a b : WithBot αᵒᵈ} : WithBot.ofDual a < WithBot.ofDual b ↔ b < a :=
+theorem ofDual_lt_ofDual_iff {a b : WithBot αᵒᵈ} : WithBot.ofDual a < WithBot.ofDual b ↔ b < a :=
   Iff.rfl
-#align with_bot.of_dual_lt_of_dual_iff WithBot.of_dual_lt_of_dual_iff
+#align with_bot.of_dual_lt_of_dual_iff WithBot.ofDual_lt_ofDual_iff
 
 end LT
 
@@ -1749,7 +1749,7 @@ variable [LT α] {a b : α}
 
 @[simp, norm_cast]
 theorem coe_lt_coe : (a : WithTop α) < b ↔ a < b := by
-  simp only [← to_dual_lt_to_dual_iff, to_dual_apply_coe, WithBot.coe_lt_coe, to_dual_lt_to_dual]
+  simp only [← toDual_lt_toDual_iff, toDual_apply_coe, WithBot.coe_lt_coe, toDual_lt_toDual]
 #align with_top.coe_lt_coe WithTop.coe_lt_coe
 
 @[simp]
@@ -1758,7 +1758,7 @@ theorem some_lt_some : @LT.lt (WithTop α) _ (some a) (some b) ↔ a < b :=
 #align with_top.some_lt_some WithTop.some_lt_some
 
 theorem coe_lt_top (a : α) : (a : WithTop α) < ⊤ := by
-  simpa [← to_dual_lt_to_dual_iff] using WithBot.bot_lt_coe _
+  simpa [← toDual_lt_toDual_iff] using WithBot.bot_lt_coe _
 #align with_top.coe_lt_top WithTop.coe_lt_top
 
 @[simp]
@@ -1768,18 +1768,18 @@ theorem some_lt_none (a : α) : @LT.lt (WithTop α) _ (some a) none :=
 
 @[simp]
 theorem not_none_lt (a : WithTop α) : ¬@LT.lt (WithTop α) _ none a := by
-  rw [← to_dual_lt_to_dual_iff]
+  rw [← toDual_lt_toDual_iff]
   exact WithBot.not_lt_none _
 #align with_top.not_none_lt WithTop.not_none_lt
 
 theorem lt_iff_exists_coe {a b : WithTop α} : a < b ↔ ∃ p : α, a = p ∧ ↑p < b := by
-  rw [← to_dual_lt_to_dual_iff, WithBot.lt_iff_exists_coe, OrderDual.exists]
+  rw [← toDual_lt_toDual_iff, WithBot.lt_iff_exists_coe, OrderDual.exists]
   exact exists_congr fun _ => and_congr_left' Iff.rfl
 #align with_top.lt_iff_exists_coe WithTop.lt_iff_exists_coe
 
 theorem coe_lt_iff {x : WithTop α} : ↑a < x ↔ ∀ b, x = ↑b → a < b := by
-  simp only [← to_dual_lt_to_dual_iff, WithBot.lt_coe_iff, to_dual_apply_coe, OrderDual.forall,
-    to_dual_lt_to_dual]
+  simp only [← toDual_lt_toDual_iff, WithBot.lt_coe_iff, toDual_apply_coe, OrderDual.forall,
+    toDual_lt_toDual]
   exact forall₂_congr fun _ _ => Iff.rfl
 #align with_top.coe_lt_iff WithTop.coe_lt_iff
 
@@ -1788,16 +1788,16 @@ end LT
 instance [Preorder α] : Preorder (WithTop α) where
   le := (· ≤ ·)
   lt := (· < ·)
-  lt_iff_le_not_le := by simp [← to_dual_lt_to_dual_iff, lt_iff_le_not_le]
-  le_refl _ := to_dual_le_to_dual_iff.mp le_rfl
+  lt_iff_le_not_le := by simp [← toDual_lt_toDual_iff, lt_iff_le_not_le]
+  le_refl _ := toDual_le_toDual_iff.mp le_rfl
   le_trans _ _ _ := by
-    simp_rw [← to_dual_le_to_dual_iff]
+    simp_rw [← toDual_le_toDual_iff]
     exact Function.swap le_trans
 
 instance [PartialOrder α] : PartialOrder (WithTop α) :=
   { WithTop.preorder with
     le_antisymm := fun _ _ => by
-      simp_rw [← to_dual_le_to_dual_iff]
+      simp_rw [← toDual_le_toDual_iff]
       exact Function.swap le_antisymm }
 
 theorem coe_strict_mono [Preorder α] : StrictMono (coe : α → WithTop α) := fun a b => some_lt_some.2
@@ -1820,28 +1820,28 @@ theorem monotone_map_iff [Preorder α] [Preorder β] {f : α → β} :
   monotone_iff.trans <| by simp [Monotone]
 #align with_top.monotone_map_iff WithTop.monotone_map_iff
 
-alias monotone_map_iff ↔ _ _root_.monotone.with_top_map
+alias monotone_map_iff ↔ _ _root_.monotone.withTop_map
 
-theorem strict_mono_iff [Preorder α] [Preorder β] {f : WithTop α → β} :
+theorem strictMono_iff [Preorder α] [Preorder β] {f : WithTop α → β} :
     StrictMono f ↔ StrictMono (f ∘ coe : α → β) ∧ ∀ x : α, f x < f ⊤ :=
   ⟨fun h => ⟨h.comp WithTop.coe_strict_mono, fun x => h (coe_lt_top _)⟩, fun h =>
     WithTop.forall.2
       ⟨WithTop.forall.2 ⟨flip absurd (lt_irrefl _), fun x h => (not_top_lt h).elim⟩, fun x =>
         WithTop.forall.2 ⟨fun _ => h.2 x, fun y hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩
-#align with_top.strict_mono_iff WithTop.strict_mono_iff
+#align with_top.strict_mono_iff WithTop.strictMono_iff
 
 @[simp]
-theorem strict_mono_map_iff [Preorder α] [Preorder β] {f : α → β} :
+theorem strictMono_map_iff [Preorder α] [Preorder β] {f : α → β} :
     StrictMono (WithTop.map f) ↔ StrictMono f :=
   strict_mono_iff.trans <| by simp [StrictMono, coe_lt_top]
-#align with_top.strict_mono_map_iff WithTop.strict_mono_map_iff
+#align with_top.strict_mono_map_iff WithTop.strictMono_map_iff
 
-alias strict_mono_map_iff ↔ _ _root_.strict_mono.with_top_map
+alias strict_mono_map_iff ↔ _ _root_.StrictMono.withTop_map
 
 theorem map_le_iff [Preorder α] [Preorder β] (f : α → β) (a b : WithTop α)
     (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
     a.map f ≤ b.map f ↔ a ≤ b := by
-  rw [← to_dual_le_to_dual_iff, to_dual_map, to_dual_map, WithBot.map_le_iff, to_dual_le_to_dual_iff]
+  rw [← toDual_le_toDual_iff, toDual_map, toDual_map, WithBot.map_le_iff, toDual_le_toDual_iff]
   simp [mono_iff]
 #align with_top.map_le_iff WithTop.map_le_iff
 
@@ -1900,16 +1900,16 @@ instance [DistribLattice α] : DistribLattice (WithTop α) :=
       | (a₁ : α), (a₂ : α), (a₃ : α) => coe_le_coe.mpr le_sup_inf }
 
 instance decidableLe [LE α] [@DecidableRel α (· ≤ ·)] : @DecidableRel (WithTop α) (· ≤ ·) :=
-  fun _ _ => decidable_of_decidable_of_iff (WithBot.decidableLe _ _) to_dual_le_to_dual_iff
+  fun _ _ => decidable_of_decidable_of_iff (WithBot.decidableLe _ _) toDual_le_toDual_iff
 #align with_top.decidable_le WithTop.decidableLe
 
 instance decidableLt [LT α] [@DecidableRel α (· < ·)] : @DecidableRel (WithTop α) (· < ·) :=
-  fun _ _ => decidable_of_decidable_of_iff (WithBot.decidableLt _ _) to_dual_lt_to_dual_iff
+  fun _ _ => decidable_of_decidable_of_iff (WithBot.decidableLt _ _) toDual_lt_toDual_iff
 #align with_top.decidable_lt WithTop.decidableLt
 
 instance is_total_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithTop α) (· ≤ ·) :=
   ⟨fun _ _ => by
-    simp_rw [← to_dual_le_to_dual_iff]
+    simp_rw [← toDual_le_toDual_iff]
     exact total_of _ _ _⟩
 #align with_top.is_total_le WithTop.is_total_le
 
@@ -1943,27 +1943,27 @@ theorem well_founded_gt [Preorder α] (h : @WellFounded α (· > ·)) :
     @WellFounded (WithTop α) (· > ·) :=
   ⟨fun a => by
     -- ideally, use rel_hom_class.acc, but that is defined later
-    have : Acc (· < ·) a.to_dual := WellFounded.apply (WithBot.well_founded_lt h) _
+    have : Acc (· < ·) a.toDual := WellFounded.apply (WithBot.well_founded_lt h) _
     revert this
-    generalize ha : a.to_dual = b
+    generalize ha : a.toDual = b
     intro ac
     induction' ac with _ H IH generalizing a
     subst ha
-    exact ⟨_, fun a' h => IH a'.toDual (to_dual_lt_to_dual.mpr h) _ rfl⟩⟩
+    exact ⟨_, fun a' h => IH a'.toDual (toDual_lt_toDual.mpr h) _ rfl⟩⟩
 #align with_top.well_founded_gt WithTop.well_founded_gt
 
-theorem _root_.with_bot.well_founded_gt [Preorder α] (h : @WellFounded α (· > ·)) :
+theorem _root_.WithBot.well_founded_gt [Preorder α] (h : @WellFounded α (· > ·)) :
     @WellFounded (WithBot α) (· > ·) :=
   ⟨fun a => by
     -- ideally, use rel_hom_class.acc, but that is defined later
-    have : Acc (· < ·) a.to_dual := WellFounded.apply (WithTop.well_founded_lt h) _
+    have : Acc (· < ·) a.toDual := WellFounded.apply (WithTop.well_founded_lt h) _
     revert this
-    generalize ha : a.to_dual = b
+    generalize ha : a.toDual = b
     intro ac
     induction' ac with _ H IH generalizing a
     subst ha
-    exact ⟨_, fun a' h => IH a'.toDual (to_dual_lt_to_dual.mpr h) _ rfl⟩⟩
-#align with_top._root_.with_bot.well_founded_gt with_top._root_.with_bot.well_founded_gt
+    exact ⟨_, fun a' h => IH a'.toDual (toDual_lt_toDual.mpr h) _ rfl⟩⟩
+#align with_top._root_.with_bot.well_founded_gt WithTop._root_.WithBot.well_founded_gt
 
 instance Trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
     IsTrichotomous (WithTop α) (· < ·) :=
@@ -1989,25 +1989,25 @@ instance IsWellOrder.gt [Preorder α] [h : IsWellOrder α (· > ·)] :
     IsWellOrder (WithTop α) (· > ·) where wf := well_founded_gt h.wf
 #align with_top.is_well_order.gt WithTop.IsWellOrder.gt
 
-instance _root_.with_bot.trichotomous.lt [Preorder α] [h : IsTrichotomous α (· < ·)] :
+instance _root_.WithBot.trichotomous.lt [Preorder α] [h : IsTrichotomous α (· < ·)] :
     IsTrichotomous (WithBot α) (· < ·) :=
   @WithTop.Trichotomous.gt αᵒᵈ _ h
-#align with_top._root_.with_bot.trichotomous.lt with_top._root_.with_bot.trichotomous.lt
+#align with_top._root_.with_bot.trichotomous.lt WithTop._root_.WithBot.trichotomous.lt
 
-instance _root_.with_bot.is_well_order.lt [Preorder α] [h : IsWellOrder α (· < ·)] :
+instance _root_.WithBot.is_well_order.lt [Preorder α] [h : IsWellOrder α (· < ·)] :
     IsWellOrder (WithBot α) (· < ·) :=
   @WithTop.IsWellOrder.gt αᵒᵈ _ h
-#align with_top._root_.with_bot.is_well_order.lt with_top._root_.with_bot.is_well_order.lt
+#align with_top._root_.with_bot.is_well_order.lt WithTop._root_.WithBot.is_well_order.lt
 
-instance _root_.with_bot.trichotomous.gt [Preorder α] [h : IsTrichotomous α (· > ·)] :
+instance _root_.WithBot.trichotomous.gt [Preorder α] [h : IsTrichotomous α (· > ·)] :
     IsTrichotomous (WithBot α) (· > ·) :=
   @WithTop.Trichotomous.lt αᵒᵈ _ h
-#align with_top._root_.with_bot.trichotomous.gt with_top._root_.with_bot.trichotomous.gt
+#align with_top._root_.with_bot.trichotomous.gt WithTop._root_.WithBot.trichotomous.gt
 
-instance _root_.with_bot.is_well_order.gt [Preorder α] [h : IsWellOrder α (· > ·)] :
+instance _root_.WithBot.is_well_order.gt [Preorder α] [h : IsWellOrder α (· > ·)] :
     IsWellOrder (WithBot α) (· > ·) :=
   @WithTop.IsWellOrder.lt αᵒᵈ _ h
-#align with_top._root_.with_bot.is_well_order.gt with_top._root_.with_bot.is_well_order.gt
+#align with_top._root_.with_bot.is_well_order.gt WithTop._root_.WithBot.is_well_order.gt
 
 instance [LT α] [DenselyOrdered α] [NoMaxOrder α] : DenselyOrdered (WithTop α) :=
   OrderDual.densely_ordered (WithBot αᵒᵈ)
@@ -2571,28 +2571,28 @@ theorem Codisjoint.dual [SemilatticeSup α] [OrderTop α] {a b : α} :
 #align codisjoint.dual Codisjoint.dual
 
 @[simp]
-theorem disjoint_to_dual_iff [SemilatticeSup α] [OrderTop α] {a b : α} :
+theorem disjoint_toDual_iff [SemilatticeSup α] [OrderTop α] {a b : α} :
     Disjoint (toDual a) (toDual b) ↔ Codisjoint a b :=
   Iff.rfl
-#align disjoint_to_dual_iff disjoint_to_dual_iff
+#align disjoint_to_dual_iff disjoint_toDual_iff
 
 @[simp]
-theorem disjoint_of_dual_iff [SemilatticeInf α] [OrderBot α] {a b : αᵒᵈ} :
+theorem disjoint_ofDual_iff [SemilatticeInf α] [OrderBot α] {a b : αᵒᵈ} :
     Disjoint (ofDual a) (ofDual b) ↔ Codisjoint a b :=
   Iff.rfl
-#align disjoint_of_dual_iff disjoint_of_dual_iff
+#align disjoint_of_dual_iff disjoint_ofDual_iff
 
 @[simp]
-theorem codisjoint_to_dual_iff [SemilatticeInf α] [OrderBot α] {a b : α} :
+theorem codisjoint_toDual_iff [SemilatticeInf α] [OrderBot α] {a b : α} :
     Codisjoint (toDual a) (toDual b) ↔ Disjoint a b :=
   Iff.rfl
-#align codisjoint_to_dual_iff codisjoint_to_dual_iff
+#align codisjoint_to_dual_iff codisjoint_toDual_iff
 
 @[simp]
-theorem codisjoint_of_dual_iff [SemilatticeSup α] [OrderTop α] {a b : αᵒᵈ} :
+theorem codisjoint_ofDual_iff [SemilatticeSup α] [OrderTop α] {a b : αᵒᵈ} :
     Codisjoint (ofDual a) (ofDual b) ↔ Disjoint a b :=
   Iff.rfl
-#align codisjoint_of_dual_iff codisjoint_of_dual_iff
+#align codisjoint_of_dual_iff codisjoint_ofDual_iff
 
 section DistribLattice
 
@@ -2633,9 +2633,9 @@ theorem dual (h : IsCompl x y) : IsCompl (toDual x) (toDual y) :=
   ⟨h.2, h.1⟩
 #align is_compl.dual IsCompl.dual
 
-theorem of_dual {a b : αᵒᵈ} (h : IsCompl a b) : IsCompl (ofDual a) (ofDual b) :=
+theorem ofDual {a b : αᵒᵈ} (h : IsCompl a b) : IsCompl (ofDual a) (ofDual b) :=
   ⟨h.2, h.1⟩
-#align is_compl.of_dual IsCompl.of_dual
+#align is_compl.of_dual IsCompl.ofDual
 
 end BoundedPartialOrder
 
@@ -2819,14 +2819,14 @@ section
 variable [Lattice α] [BoundedOrder α] {a b x : α}
 
 @[simp]
-theorem is_compl_to_dual_iff : IsCompl (toDual a) (toDual b) ↔ IsCompl a b :=
-  ⟨IsCompl.of_dual, IsCompl.dual⟩
-#align is_compl_to_dual_iff is_compl_to_dual_iff
+theorem is_compl_toDual_iff : IsCompl (toDual a) (toDual b) ↔ IsCompl a b :=
+  ⟨IsCompl.ofDual, IsCompl.dual⟩
+#align is_compl_to_dual_iff is_compl_toDual_iff
 
 @[simp]
-theorem is_compl_of_dual_iff {a b : αᵒᵈ} : IsCompl (ofDual a) (ofDual b) ↔ IsCompl a b :=
-  ⟨IsCompl.dual, IsCompl.of_dual⟩
-#align is_compl_of_dual_iff is_compl_of_dual_iff
+theorem is_compl_ofDual_iff {a b : αᵒᵈ} : IsCompl (ofDual a) (ofDual b) ↔ IsCompl a b :=
+  ⟨IsCompl.dual, IsCompl.ofDual⟩
+#align is_compl_of_dual_iff is_compl_ofDual_iff
 
 theorem is_compl_bot_top : IsCompl (⊥ : α) ⊤ :=
   IsCompl.of_eq bot_inf_eq sup_top_eq
