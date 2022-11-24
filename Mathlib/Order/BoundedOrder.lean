@@ -104,8 +104,8 @@ theorem le_top : a ≤ ⊤ :=
 #align le_top le_top
 
 @[simp]
-theorem is_top_top : IsTop (⊤ : α) := fun _ => le_top
-#align is_top_top is_top_top
+theorem isTop_top : IsTop (⊤ : α) := fun _ => le_top
+#align is_top_top isTop_top
 
 end LE
 
@@ -114,13 +114,13 @@ section Preorder
 variable [Preorder α] [OrderTop α] {a b : α}
 
 @[simp]
-theorem is_max_top : IsMax (⊤ : α) :=
-  is_top_top.is_max
-#align is_max_top is_max_top
+theorem isMax_top : IsMax (⊤ : α) :=
+  isTop_top.is_max
+#align is_max_top isMax_top
 
 @[simp]
 theorem not_top_lt : ¬⊤ < a :=
-  is_max_top.not_lt
+  isMax_top.not_lt
 #align not_top_lt not_top_lt
 
 theorem ne_top_of_lt (h : a < b) : a ≠ ⊤ :=
@@ -134,26 +134,26 @@ end Preorder
 variable [PartialOrder α] [OrderTop α] [Preorder β] {f : α → β} {a b : α}
 
 @[simp]
-theorem is_max_iff_eq_top : IsMax a ↔ a = ⊤ :=
+theorem isMax_iff_eq_top : IsMax a ↔ a = ⊤ :=
   ⟨fun h => h.eq_of_le le_top, fun h _ _ => h.symm ▸ le_top⟩
-#align is_max_iff_eq_top is_max_iff_eq_top
+#align is_max_iff_eq_top isMax_iff_eq_top
 
 @[simp]
-theorem is_top_iff_eq_top : IsTop a ↔ a = ⊤ :=
+theorem isTop_iff_eq_top : IsTop a ↔ a = ⊤ :=
   ⟨fun h => h.is_max.eq_of_le le_top, fun h _ => h.symm ▸ le_top⟩
-#align is_top_iff_eq_top is_top_iff_eq_top
+#align is_top_iff_eq_top isTop_iff_eq_top
 
-theorem not_is_max_iff_ne_top : ¬IsMax a ↔ a ≠ ⊤ :=
-  is_max_iff_eq_top.not
-#align not_is_max_iff_ne_top not_is_max_iff_ne_top
+theorem not_isMax_iff_ne_top : ¬IsMax a ↔ a ≠ ⊤ :=
+  isMax_iff_eq_top.not
+#align not_is_max_iff_ne_top not_isMax_iff_ne_top
 
-theorem not_is_top_iff_ne_top : ¬IsTop a ↔ a ≠ ⊤ :=
-  is_top_iff_eq_top.not
-#align not_is_top_iff_ne_top not_is_top_iff_ne_top
+theorem not_isTop_iff_ne_top : ¬IsTop a ↔ a ≠ ⊤ :=
+  isTop_iff_eq_top.not
+#align not_is_top_iff_ne_top not_isTop_iff_ne_top
 
-alias is_max_iff_eq_top ↔ IsMax.eq_top _
+alias isMax_iff_eq_top ↔ IsMax.eq_top _
 
-alias is_top_iff_eq_top ↔ IsTop.eq_top _
+alias isTop_iff_eq_top ↔ IsTop.eq_top _
 
 @[simp]
 theorem top_le_iff : ⊤ ≤ a ↔ a = ⊤ :=
@@ -207,10 +207,10 @@ theorem StrictAnti.apply_eq_top_iff (hf : StrictAnti f) : f a = f ⊤ ↔ a = �
 
 variable [Nontrivial α]
 
-theorem not_is_min_top : ¬IsMin (⊤ : α) := fun h =>
+theorem not_isMin_top : ¬IsMin (⊤ : α) := fun h =>
   let ⟨_, ha⟩ := exists_ne (⊤ : α)
   ha <| top_le_iff.1 <| h le_top
-#align not_is_min_top not_is_min_top
+#align not_is_min_top not_isMin_top
 
 end OrderTop
 
@@ -267,8 +267,8 @@ theorem bot_le : ⊥ ≤ a :=
 #align bot_le bot_le
 
 @[simp]
-theorem is_bot_bot : IsBot (⊥ : α) := fun _ => bot_le
-#align is_bot_bot is_bot_bot
+theorem isBot_bot : IsBot (⊥ : α) := fun _ => bot_le
+#align is_bot_bot isBot_bot
 
 end LE
 
@@ -317,13 +317,13 @@ section Preorder
 variable [Preorder α] [OrderBot α] {a b : α}
 
 @[simp]
-theorem is_min_bot : IsMin (⊥ : α) :=
-  is_bot_bot.is_min
-#align is_min_bot is_min_bot
+theorem isMin_bot : IsMin (⊥ : α) :=
+  isBot_bot.is_min
+#align is_min_bot isMin_bot
 
 @[simp]
 theorem not_lt_bot : ¬a < ⊥ :=
-  is_min_bot.not_lt
+  isMin_bot.not_lt
 #align not_lt_bot not_lt_bot
 
 theorem ne_bot_of_gt (h : a < b) : b ≠ ⊥ :=
@@ -337,26 +337,26 @@ end Preorder
 variable [PartialOrder α] [OrderBot α] [Preorder β] {f : α → β} {a b : α}
 
 @[simp]
-theorem is_min_iff_eq_bot : IsMin a ↔ a = ⊥ :=
+theorem isMin_iff_eq_bot : IsMin a ↔ a = ⊥ :=
   ⟨fun h => h.eq_of_ge bot_le, fun h _ _ => h.symm ▸ bot_le⟩
-#align is_min_iff_eq_bot is_min_iff_eq_bot
+#align is_min_iff_eq_bot isMin_iff_eq_bot
 
 @[simp]
-theorem is_bot_iff_eq_bot : IsBot a ↔ a = ⊥ :=
+theorem isBot_iff_eq_bot : IsBot a ↔ a = ⊥ :=
   ⟨fun h => h.is_min.eq_of_ge bot_le, fun h _ => h.symm ▸ bot_le⟩
-#align is_bot_iff_eq_bot is_bot_iff_eq_bot
+#align is_bot_iff_eq_bot isBot_iff_eq_bot
 
-theorem not_is_min_iff_ne_bot : ¬IsMin a ↔ a ≠ ⊥ :=
-  is_min_iff_eq_bot.not
-#align not_is_min_iff_ne_bot not_is_min_iff_ne_bot
+theorem not_isMin_iff_ne_bot : ¬IsMin a ↔ a ≠ ⊥ :=
+  isMin_iff_eq_bot.not
+#align not_is_min_iff_ne_bot not_isMin_iff_ne_bot
 
-theorem not_is_bot_iff_ne_bot : ¬IsBot a ↔ a ≠ ⊥ :=
-  is_bot_iff_eq_bot.not
-#align not_is_bot_iff_ne_bot not_is_bot_iff_ne_bot
+theorem not_isBot_iff_ne_bot : ¬IsBot a ↔ a ≠ ⊥ :=
+  isBot_iff_eq_bot.not
+#align not_is_bot_iff_ne_bot not_isBot_iff_ne_bot
 
-alias is_min_iff_eq_bot ↔ IsMin.eq_bot _
+alias isMin_iff_eq_bot ↔ IsMin.eq_bot _
 
-alias is_bot_iff_eq_bot ↔ IsBot.eq_bot _
+alias isBot_iff_eq_bot ↔ IsBot.eq_bot _
 
 @[simp]
 theorem le_bot_iff : a ≤ ⊥ ↔ a = ⊥ :=
@@ -414,9 +414,9 @@ theorem StrictAnti.apply_eq_bot_iff (hf : StrictAnti f) : f a = f ⊥ ↔ a = �
 
 variable [Nontrivial α]
 
-theorem not_is_max_bot : ¬IsMax (⊥ : α) :=
-  @not_is_min_top αᵒᵈ _ _ _
-#align not_is_max_bot not_is_max_bot
+theorem not_isMax_bot : ¬IsMax (⊥ : α) :=
+  @not_isMin_top αᵒᵈ _ _ _
+#align not_is_max_bot not_isMax_bot
 
 end OrderBot
 
