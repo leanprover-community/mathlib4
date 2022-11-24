@@ -516,8 +516,7 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 #align monoid.npow_zero' Monoid.npow_zero
 #align monoid.npow_succ' Monoid.npow_succ
 
--- FIXME I wouldn't have thought this is necessary. Is is a bug in `to_additive`?
--- It seems that it isn't operating on the second parent.
+-- Bug #660
 attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
 
 @[default_instance high] instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
@@ -615,6 +614,8 @@ class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMon
 /-- Commutative version of `CancelMonoid`. -/
 @[to_additive]
 class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
+attribute [to_additive AddCancelCommMonoid.toAddCommMonoid] CancelCommMonoid.toCommMonoid
+
 attribute [to_additive AddCancelCommMonoid.toAddCommMonoid] CancelCommMonoid.toCommMonoid
 
 -- see Note [lower instance priority]
@@ -821,7 +822,7 @@ class InvOneClass (G : Type _) extends One G, Inv G where
 @[to_additive SubNegZeroMonoid]
 class DivInvOneMonoid (G : Type _) extends DivInvMonoid G, InvOneClass G
 
--- FIXME: `to_additive` is not operating on the second parent.
+-- FIXME: `to_additive` is not operating on the second parent. (#660)
 attribute [to_additive SubNegZeroMonoid.toNegZeroClass] DivInvOneMonoid.toInvOneClass
 
 variable [InvOneClass G]
@@ -964,8 +965,6 @@ class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 class CommGroup (G : Type u) extends Group G, CommMonoid G
 
 attribute [to_additive AddCommGroup.toAddCommMonoid] CommGroup.toCommMonoid
-
-attribute [instance] AddCommGroup.toAddCommMonoid
 
 @[to_additive]
 theorem CommGroup.toGroup_injective {G : Type u} : Function.Injective (@CommGroup.toGroup G) := by
