@@ -10,8 +10,6 @@ import Mathlib.Data.Option.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Logic.Equiv.Basic
 
--- **TODO** remove this
-set_option autoImplicit false
 /-!
 # Injective functions
 -/
