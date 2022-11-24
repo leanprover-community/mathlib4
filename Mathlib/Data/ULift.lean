@@ -6,11 +6,11 @@ Authors: Yury Kudryashov
 import Mathlib.Logic.Equiv.Basic
 
 /-!
-# Extra lemmas about `Ulift` and `Plift`
+# Extra lemmas about `ULift` and `PLift`
 
 In this file we provide `Subsingleton`, `Unique`, `DecidableEq`, and `isEmpty` instances for
-`Ulift α` and `Plift α`. We also prove `Ulift.forall`, `Ulift.exists`, `Plift.forall`, and
-`Plift.exists`.
+`ULift α` and `PLift α`. We also prove `ULift.forall`, `ULift.exists`, `PLift.forall`, and
+`PLift.exists`.
 -/
 
 universe u v
