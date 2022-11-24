@@ -145,7 +145,7 @@ variable {F α β} [i : FunLike F α β]
 instance (priority := 100) : CoeFun F fun _ ↦ ∀ a : α, β a where coe := FunLike.coe
 
 #eval Lean.Elab.Command.liftTermElabM do
-  Tactic.NormCast.registerCoercion ``FunLike.coe
+  Std.Tactic.Coe.registerCoercion ``FunLike.coe
     (some { numArgs := 5, coercee := 4, type := .coeFun })
 
 -- @[simp] -- porting note: this loops in lean 4
@@ -178,6 +178,10 @@ theorem ne_iff {f g : F} : f ≠ g ↔ ∃ a, f a ≠ g a :=
 
 theorem exists_ne {f g : F} (h : f ≠ g) : ∃ x, f x ≠ g x :=
   ne_iff.mp h
+
+/-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search.-/
+lemma subsingleton_cod [∀ a, Subsingleton (β a)] : Subsingleton F :=
+⟨fun _ _ ↦ coe_injective $ Subsingleton.elim _ _⟩
 
 end FunLike
 

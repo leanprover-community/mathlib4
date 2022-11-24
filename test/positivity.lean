@@ -9,10 +9,11 @@ This tactic proves goals of the form `0 ≤ a` and `0 < a`.
 open Function
 
 instance [OrderedSemiring α] : OrderedMonoidWithZero α :=
-  { inferInstanceAs (PartialOrder α), inferInstanceAs (MonoidWithZero α) with }
+  { inferInstanceAs (PartialOrder α), inferInstanceAs (MonoidWithZero α) with
+    zero_le_one := sorry }
 
 instance [LinearOrderedRing α] : OrderedSemiring α := by
-  refine' { inferInstanceAs (LinearOrderedRing α) with .. } <;> sorry
+  refine' { inferInstanceAs (LinearOrderedRing α) with .. }; sorry
 
 instance [OrderedSemiring α] : CovariantClass α α (·+·) (·<·) := sorry
 

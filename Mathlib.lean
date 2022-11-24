@@ -21,6 +21,7 @@ import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Monoid
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Algebra.Order.Ring
+import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Ring.Basic
@@ -74,6 +75,7 @@ import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Quot
+import Mathlib.Data.Rat.Init
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.String.Defs
@@ -81,7 +83,9 @@ import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
 import Mathlib.Data.UInt
+import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
+import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
@@ -100,7 +104,7 @@ import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Init.Data.Prod
 import Mathlib.Init.Data.Quot
-import Mathlib.Init.Data.Rat
+import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Init.Function
 import Mathlib.Init.Logic
 import Mathlib.Init.Propext
@@ -114,6 +118,7 @@ import Mathlib.Lean.Expr.Traverse
 import Mathlib.Lean.LocalContext
 import Mathlib.Lean.Meta
 import Mathlib.Logic.Basic
+import Mathlib.Logic.Equiv.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Logic.Equiv.MfldSimpsAttr
