@@ -43,13 +43,14 @@ actions and register the following instances:
 
 open Function
 
-/-- Type class for the `+ᵥ` notation. -/
-class VAdd (G : Type _) (P : Type _) where
-  vadd : G → P → P
-
-/-- Type class for the `-ᵥ` notation. -/
-class HasVsub (G : outParam (Type _)) (P : Type _) where
-  vsub : P → P → G
+/--
+The notation typeclass for heterogeneous scalar multiplication.
+This enables the notation `a • b : γ` where `a : α`, `b : β`.
+-/
+class HVAdd (α : Type u) (β : Type v) (γ : outParam (Type w)) where
+  /-- `a +ᵥ b` computes the sum of `a` and `b`.
+  The meaning of this notation is type-dependent. -/
+  hVAdd : α → β → γ
 
 /--
 The notation typeclass for heterogeneous scalar multiplication.
@@ -60,15 +61,26 @@ class HSMul (α : Type u) (β : Type v) (γ : outParam (Type w)) where
   The meaning of this notation is type-dependent. -/
   hSMul : α → β → γ
 
+/-- Type class for the `+ᵥ` notation. -/
+class VAdd (G : Type _) (P : Type _) where
+  vadd : G → P → P
+
+/-- Type class for the `-ᵥ` notation. -/
+class HasVsub (G : outParam (Type _)) (P : Type _) where
+  vsub : P → P → G
+
 /-- Typeclass for types with a scalar multiplication operation, denoted `•` (`\bu`) -/
 @[ext, to_additive]
 class SMul (M : Type _) (α : Type _) where
   smul : M → α → α
 
-instance instHSmul [SMul α β] : HSMul α β β where
+instance instHVAdd [VAdd α β] : HVAdd α β β where
+  hVAdd := VAdd.vadd
+
+instance instHSMul [SMul α β] : HSMul α β β where
   hSMul := SMul.smul
 
-infixl:65 " +ᵥ " => VAdd.vadd
+infixl:65 " +ᵥ " => HVAdd.hVAdd
 infixl:65 " -ᵥ " => HasVsub.vsub
 infixr:73 " • " => HSMul.hSMul
 
@@ -79,15 +91,18 @@ attribute [to_additive] instHMul
 attribute [to_additive] HDiv
 attribute [to_additive] instHDiv
 
-attribute [to_additive_relevant_arg 3] HMul HAdd HAdd.hAdd HMul.hMul
+attribute [to_additive_relevant_arg 3] HMul HAdd HPow HAdd.hAdd HMul.hMul HPow.hPow
 attribute [to_additive_reorder 1] HPow
 attribute [to_additive_reorder 1 5] HPow.hPow
 attribute [to_additive_reorder 1] Pow
 attribute [to_additive_reorder 1 4] Pow.pow
 attribute [to_additive SMul] Pow
 attribute [to_additive_reorder 1] instHPow
-attribute [to_additive instHSmul] instHPow
+attribute [to_additive instHSMul] instHPow
 attribute [to_additive HSMul] HPow
+
+attribute [to_additive instHVAdd] instHSMul
+attribute [to_additive HVAdd] HSMul
 
 universe u
 
