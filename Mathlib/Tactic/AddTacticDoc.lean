@@ -92,7 +92,7 @@ add_tactic_doc
 The argument to `add_tactic_doc` is a structure of type `TacticDocEntry`.
 * `name` refers to the display name of the tactic; it is used as the header of the doc entry.
 * `category` refers to the category of doc entry.
-  Options: `doc_category.tactic`, `doc_category.cmd`, `doc_category.hole_cmd`, `doc_category.attr`
+  Options: `DocCategory.tactic`, `DocCategory.cmd`, `DocCategory.hole_cmd`, `DocCategory.attr`
 * `decl_names` is a list of the declarations associated with this doc. For instance,
   the entry for `linarith` would set ``decl_names := [`tactic.interactive.linarith]``.
   Some entries may cover multiple declarations.
