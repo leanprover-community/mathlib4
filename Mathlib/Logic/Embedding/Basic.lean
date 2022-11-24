@@ -71,13 +71,13 @@ protected def Equiv.toEmbedding : α ↪ β :=
 #align equiv.to_embedding Equiv.toEmbedding
 
 @[simp]
-theorem Equiv.coe_to_embedding : (f.toEmbedding : α → β) = f :=
+theorem Equiv.coe_toEmbedding : (f.toEmbedding : α → β) = f :=
   rfl
-#align equiv.coe_to_embedding Equiv.coe_to_embedding
+#align equiv.coe_to_embedding Equiv.coe_toEmbedding
 
-theorem Equiv.to_embedding_apply (a : α) : f.toEmbedding a = f a :=
+theorem Equiv.toEmbedding_apply (a : α) : f.toEmbedding a = f a :=
   rfl
-#align equiv.to_embedding_apply Equiv.to_embedding_apply
+#align equiv.to_embedding_apply Equiv.toEmbedding_apply
 
 instance Equiv.coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
   ⟨Equiv.toEmbedding⟩
@@ -91,20 +91,13 @@ instance Equiv.Perm.coeEmbedding : Coe (Equiv.Perm α) (α ↪ α) :=
 -- port note : `theorem Equiv.coe_eq_to_embedding : ↑f = f.toEmbedding` is a
 -- syntactic tautology in Lean 4
 
-/-- Given an equivalence to a subtype, produce an embedding to the elements of the corresponding
-set. -/
-@[simps]
-def Equiv.asEmbedding {p : β → Prop} (e : α ≃ Subtype p) : α ↪ β :=
-  ⟨(fun x ↦ x.val : Subtype p → β) ∘ (e : α → Subtype p), Subtype.coe_injective.comp e.injective⟩
-#align equiv.as_embedding Equiv.asEmbedding
-
 end Equiv
 
 namespace Function
 
 namespace Embedding
 
-theorem coe_injective {α β} : @Function.Injective (α ↪ β) (α → β) (λ f => ↑f) :=
+theorem coe_injective {α β} : @Injective (α ↪ β) (α → β) (λ f => ↑f) :=
   FunLike.coe_injective
 #align function.embedding.coe_injective Function.Embedding.coe_injective
 
@@ -172,7 +165,7 @@ theorem equiv_symm_to_embedding_trans_to_embedding {α β : Sort _} (e : α ≃ 
   Function.Embedding.equiv_symm_to_embedding_trans_to_embedding
 
 /-- Transfer an embedding along a pair of equivalences. -/
-@[simps (config := { simpRhs := true })]
+@[simps (config := { fullyApplied := false, simpRhs := true })]
 protected def congr {α : Sort u} {β : Sort v} {γ : Sort w} {δ : Sort x} (e₁ : α ≃ β) (e₂ : γ ≃ δ)
     (f : α ↪ γ) : β ↪ δ :=
   (Equiv.toEmbedding e₁.symm).trans (f.trans e₂.toEmbedding)
@@ -200,6 +193,7 @@ def setValue {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = 
   ⟨fun a' => if a' = a then b else if f a' = b then f a else f a', by
     intro x y (h : ite _ _ _ = ite _ _ _)
     -- This used to be almost automatic with `split_ifs` and `cc`
+    -- split_ifs  at h <;> try subst b <;> try simp only [f.injective.eq_iff] at * <;> cc⟩
     simp only [ite_eq_iff, eq_ite_iff, and_true, f.injective.eq_iff] at h
     rcases h with (⟨rfl, rfl | ⟨_, ⟨hx, rfl⟩ | ⟨h₁, rfl⟩⟩⟩ | ⟨hya, ⟨rfl, ⟨rfl, hyx⟩ |
       ⟨hxa, hxy | ⟨_, rfl⟩⟩⟩ | ⟨hyb, ⟨rfl, rfl⟩ | ⟨_, ⟨rfl, rfl⟩ | ⟨_, rfl⟩⟩⟩⟩)
@@ -217,6 +211,10 @@ theorem set_value_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidabl
 protected def some {α} : α ↪ Option α :=
   ⟨some, Option.some_injective α⟩
 #align function.embedding.some Function.Embedding.some
+
+-- porting note: Lean 4 unfolds coercion `α → Option α` to `some`, so there is no separate
+-- `Function.Embedding.coeOption`.
+#align function.embedding.coe_option Function.Embedding.some
 
 /-- A version of `option.map` for `function.embedding`s. -/
 @[simps (config := { fullyApplied := false })]
@@ -379,18 +377,26 @@ end Function
 
 namespace Equiv
 
-open Function.Embedding
+open Function Embedding
+
+/-- Given an equivalence to a subtype, produce an embedding to the elements of the corresponding
+set. -/
+@[simps]
+def asEmbedding {p : β → Prop} (e : α ≃ Subtype p) : α ↪ β :=
+  e.toEmbedding.trans (subtype p)
+#align equiv.as_embedding Equiv.asEmbedding
 
 /-- The type of embeddings `α ↪ β` is equivalent to
     the subtype of all injective functions `α → β`. -/
 def subtypeInjectiveEquivEmbedding (α β : Sort _) :
-    { f : α → β // Function.Injective f } ≃ (α ↪ β) where
+    { f : α → β // Injective f } ≃ (α ↪ β) where
   toFun f := ⟨f.val, f.property⟩
   invFun f := ⟨f, f.injective⟩
   left_inv _ := rfl
   right_inv _ := rfl
 #align equiv.subtype_injective_equiv_embedding Equiv.subtypeInjectiveEquivEmbedding
 
+-- porting note: in Lean 3 this had `@[congr]`
 /-- If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then the type of embeddings `α₁ ↪ β₁`
 is equivalent to the type of embeddings `α₂ ↪ β₂`. -/
 @[simps apply]
@@ -434,7 +440,7 @@ theorem embedding_congr_apply_trans {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort 
 #align equiv.embedding_congr_apply_trans Equiv.embedding_congr_apply_trans
 
 @[simp]
-theorem refl_to_embedding {α : Type _} : (Equiv.refl α).toEmbedding = Function.Embedding.refl α :=
+theorem refl_to_embedding {α : Type _} : (Equiv.refl α).toEmbedding = Embedding.refl α :=
   rfl
 #align equiv.refl_to_embedding Equiv.refl_to_embedding
 
