@@ -616,6 +616,8 @@ class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMon
 @[to_additive]
 class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
 
+attribute [to_additive AddCancelCommMonoid.toAddCommMonoid] CancelCommMonoid.toCommMonoid
+
 -- see Note [lower instance priority]
 @[to_additive CancelCommMonoid.toAddCancelMonoid]
 instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelCommMonoid M] :
