@@ -97,13 +97,13 @@ attribute [to_additive_reorder 1] HPow
 attribute [to_additive_reorder 1 5] HPow.hPow
 attribute [to_additive_reorder 1] Pow
 attribute [to_additive_reorder 1 4] Pow.pow
-attribute [to_additive SMul] Pow
+attribute [to_additive] Pow
 attribute [to_additive_reorder 1] instHPow
-attribute [to_additive instHSMul] instHPow
-attribute [to_additive HSMul] HPow
+attribute [to_additive] instHPow
+attribute [to_additive] HPow
 
-attribute [to_additive instHVAdd] instHSMul
-attribute [to_additive HVAdd] HSMul
+attribute [to_additive] instHSMul
+attribute [to_additive] HSMul
 
 universe u
 
@@ -546,7 +546,7 @@ section
 
 variable {M : Type _} [Monoid M]
 
-@[simp, to_additive nsmul_eq_smul]
+@[simp, to_additive]
 theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
   rfl
 
@@ -789,7 +789,7 @@ section DivInvMonoid
 
 variable [DivInvMonoid G] {a b : G}
 
-@[simp, to_additive zsmul_eq_smul] theorem zpow_eq_pow (n : ℤ) (x : G) :
+@[simp, to_additive] theorem zpow_eq_pow (n : ℤ) (x : G) :
     DivInvMonoid.zpow n x = x ^ n :=
   rfl
 
