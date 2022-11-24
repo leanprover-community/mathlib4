@@ -9,6 +9,7 @@ import Mathlib.Data.Prod.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Data.Sum.Basic
 import Mathlib.Tactic.Classical
+import Mathlib.Tactic.Convert
 
 /-!
 # Instances and theorems on pi types
@@ -291,7 +292,6 @@ theorem mulSingle_inj (i : I) {x y : f i} : mulSingle i x = mulSingle i y ↔ x 
 #align pi.mul_single_injective Pi.mulSingle_injective
 #align pi.mul_single_inj Pi.mulSingle_inj
 
-
 end
 
 /-- The mapping into a product type built from maps into each component. -/
@@ -333,29 +333,30 @@ section Extend
 theorem extend_one [One γ] (f : α → β) : Function.extend f (1 : α → γ) (1 : β → γ) = 1 :=
   funext fun _ => by apply ite_self
 
--- Porting note : Had to add `[∀ x, Decidable (∃ a, f a = x)]` to these
--- next 3 theorems to proof them, but not sure that's correct.
 @[to_additive]
-theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ)
-    [∀ x, Decidable (∃ a, f a = x)]:
+theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ):
     Function.extend f (g₁ * g₂) (e₁ * e₂) = Function.extend f g₁ e₁ * Function.extend f g₂ e₂ := by
+  classical
   funext x
-  simp [Function.extend_def, apply_dite₂]
+  simp only [not_exists, extend_def, Pi.mul_apply, apply_dite₂, dite_eq_ite, ite_self]
 -- Porting note : This was the converted proof term not using tactic mode:
 -- `funext fun _ => by convert (apply_dite₂ (· * ·) _ _ _ _ _).symm`
+-- The Lean3 statement was
+-- `funext $ λ _, by convert (apply_dite2 (*) _ _ _ _ _).symm`
 
 @[to_additive]
-theorem extend_inv [Inv γ] (f : α → β) (g : α → γ) (e : β → γ) [∀ x, Decidable (∃ a, f a = x)] :
+theorem extend_inv [Inv γ] (f : α → β) (g : α → γ) (e : β → γ) :
     Function.extend f g⁻¹ e⁻¹ = (Function.extend f g e)⁻¹ := by
+  classical
   funext x
-  simp [Function.extend_def, apply_dite Inv.inv]
+  simp only [not_exists, extend_def, Pi.inv_apply, apply_dite Inv.inv]
 -- Porting note : This was the converted proof term not using tactic mode:
 -- `funext fun _ => by convert (apply_dite Inv.inv _ _ _).symm`
 
 @[to_additive]
-theorem extend_div [Div γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ)
-    [∀ x, Decidable (∃ a, f a = x)] :
+theorem extend_div [Div γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ) :
     Function.extend f (g₁ / g₂) (e₁ / e₂) = Function.extend f g₁ e₁ / Function.extend f g₂ e₂ := by
+  classical
   funext x
   simp [Function.extend_def, apply_dite₂]
 -- Porting note : This was the converted proof term not using tactic mode:
@@ -384,9 +385,11 @@ def uniqueOfSurjectiveOne (α : Type _) {β : Type _} [One β] (h : Function.Sur
   h.uniqueOfSurjectiveConst α (1 : β)
 
 @[to_additive Subsingleton.pi_single_eq]
-theorem Subsingleton.pi_mul_single_eq {α : Type _} [DecidableEq I] [Subsingleton I] [One α]
+theorem Subsingleton.pi_mulSingle_eq {α : Type _} [DecidableEq I] [Subsingleton I] [One α]
     (i : I) (x : α) : Pi.mulSingle i x = fun _ => x :=
-  funext fun j => by rw [Subsingleton.elim j i, Pi.mul_single_eq_same]
+  funext fun j => by rw [Subsingleton.elim j i, Pi.mulSingle_eq_same]
+
+#align subsingleton.pi_mul_single_eq Subsingleton.pi_mulSingle_eq
 
 namespace Sum
 
@@ -397,14 +400,17 @@ theorem elim_one_one [One γ] : Sum.elim (1 : α → γ) (1 : β → γ) = 1 :=
   Sum.elim_const_const 1
 
 @[simp, to_additive]
-theorem elim_mul_single_one [DecidableEq α] [DecidableEq β] [One γ] (i : α) (c : γ) :
+theorem elim_mulSingle_one [DecidableEq α] [DecidableEq β] [One γ] (i : α) (c : γ) :
     Sum.elim (Pi.mulSingle i c) (1 : β → γ) = Pi.mulSingle (Sum.inl i) c := by
   simp only [Pi.mulSingle, Sum.elim_update_left, elim_one_one]
 
 @[simp, to_additive]
-theorem elim_one_mul_single [DecidableEq α] [DecidableEq β] [One γ] (i : β) (c : γ) :
+theorem elim_one_mulSingle [DecidableEq α] [DecidableEq β] [One γ] (i : β) (c : γ) :
     Sum.elim (1 : α → γ) (Pi.mulSingle i c) = Pi.mulSingle (Sum.inr i) c := by
   simp only [Pi.mulSingle, Sum.elim_update_right, elim_one_one]
+
+#align sum.elim_mul_single_one Sum.elim_mulSingle_one
+#align sum.elim_one_mul_single Sum.elim_one_mulSingle
 
 @[to_additive]
 theorem elim_inv_inv [Inv γ] : Sum.elim a⁻¹ b⁻¹ = (Sum.elim a b)⁻¹ :=
