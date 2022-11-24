@@ -80,6 +80,7 @@ import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
 import Mathlib.Data.UInt
+import Mathlib.Data.Ulift
 import Mathlib.Data.UnionFind
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions

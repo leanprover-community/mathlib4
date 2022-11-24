@@ -3,14 +3,14 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Logic.Equiv.Basic
+import Mathlib.Logic.Equiv.Defs
 
 /-!
-# Extra lemmas about `ulift` and `plift`
+# Extra lemmas about `Ulift` and `Plift`
 
-In this file we provide `subsingleton`, `unique`, `decidable_eq`, and `is_empty` instances for
-`ulift α` and `plift α`. We also prove `ulift.forall`, `ulift.exists`, `plift.forall`, and
-`plift.exists`.
+In this file we provide `Subsingleton`, `Unique`, `DecidableEq`, and `isEmpty` instances for
+`Ulift α` and `Plift α`. We also prove `Ulift.forall`, `Ulift.exists`, `Plift.forall`, and
+`Plift.exists`.
 -/
 
 
