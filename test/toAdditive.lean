@@ -175,6 +175,20 @@ run_cmd (do
   if isNoncomputable (← getEnv) `Bar.bar' then throwError "bar' should be computable")
 end noncomputablee
 
+section instances
+
+class FooClass (α) : Prop where
+  refle : ∀ a : α, a = a
+
+@[to_additive]
+instance FooClass_one [One α] : FooClass α := ⟨λ _ => rfl ⟩
+
+lemma one_fooClass [One α] : FooClass α := by infer_instance
+
+lemma zero_fooClass [Zero α] : FooClass α := by infer_instance
+
+end instances
+
 /- Check that `to_additive` works if a `_match` aux declaration is created. -/
 @[to_additive]
 def IsUnit [Mul M] (a : M) : Prop := a ≠ a

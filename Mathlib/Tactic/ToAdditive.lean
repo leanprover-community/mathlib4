@@ -442,16 +442,8 @@ partial def transformDeclAux
   if isProtected (← getEnv) src then
     setEnv $ addProtected (← getEnv) tgt
 
-/-- This should copy all of the attributes on src to tgt.
-At the moment it only copies `simp` attributes because attributes
-are not stored by the environment.
-
-[todo] add more attributes. A change is coming to core that should
-allow us to iterate the attributes applied to a given decalaration.
--/
--- TODO once we can copy `instance`, tidy up `Algebra/CovariantAndContravariant.lean` and
--- `Algebra/Group/OrderSynonym.lean`.
-def copyAttributes (src tgt : Name) : CoreM Unit := do
+/-- Copy the simp attribute in a `to_additive` -/
+def copySimpAttribute (src tgt : Name) : CoreM Unit := do
   -- [todo] other simp theorems
   let some ext ← getSimpExtension? `simp | return
   let thms ← ext.getTheorems
@@ -463,6 +455,20 @@ def copyAttributes (src tgt : Name) : CoreM Unit := do
     (inv := false)
     (attrKind := AttributeKind.global)
     (prio := 1000) |>.run'
+
+/-- Copy the instance attribute in a `to_additive`
+
+[todo] it seems not to work when the `to_additive` is added as an attribute later. -/
+def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
+  if (← isInstance src) then
+    -- [todo] add priority and correct `AttributeKind`. This depends on missing API in core, see
+    -- https://github.com/leanprover/lean4/issues/1878
+    addInstance tgt AttributeKind.global 100 |>.run'
+
+/-- [todo] add more attributes. -/
+def copyAttributes (src tgt : Name) : CoreM Unit := do
+  copySimpAttribute src tgt
+  copyInstanceAttribute src tgt
 
 /--
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and

@@ -306,16 +306,3 @@ theorem pow_toLex [Pow α β] (a : α) (b : β) : a ^ toLex b = a ^ b := rfl
 @[simp, to_additive ofLex_smul, to_additive_reorder 1 4]
 theorem pow_ofLex [Pow α β] (a : α) (b : Lex β) : a ^ ofLex b = a ^ b := rfl
 #align pow_of_lex pow_ofLex
-
-attribute [instance 100] instZeroOrderDual instAddOrderDual instNegOrderDual instSubOrderDual
-  instVAddOrderDual hasVadd' hasSmul instAddSemigroupOrderDual instAddCommSemigroupOrderDual
-  instAddLeftCancelSemigroupOrderDual instAddRightCancelSemigroupOrderDual instAddZeroClassOrderDual
-  instAddMonoidOrderDual instAddCommMonoidOrderDual instAddLeftCancelMonoidOrderDual
-  instAddRightCancelMonoidOrderDual instAddCancelMonoidOrderDual instAddCancelCommMonoidOrderDual
-  instHasInvolutiveNegOrderDual instSubNegAddMonoidOrderDual subtractionMonoid subtractionCommMonoid
-  instAddGroupOrderDual instAddCommGroupOrderDual instZeroLex instAddLex instNegLex instSubLex
-  instVAddLex Lex.hasVadd' Lex.hasSmul instAddSemigroupLex instAddCommSemigroupLex
-  instAddLeftCancelSemigroupLex instAddRightCancelSemigroupLex instAddZeroClassLex instAddMonoidLex
-  instAddCommMonoidLex instAddLeftCancelMonoidLex instAddRightCancelMonoidLex instAddCancelMonoidLex
-  instAddCancelCommMonoidLex instHasInvolutiveNegLex instSubNegAddMonoidLex instAddGroupLex
-  instAddCommGroupLex
