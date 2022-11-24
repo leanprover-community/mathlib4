@@ -41,17 +41,14 @@ theorem bar1_works : bar1 3 4 = 3 * 4 := by decide
 
 infix:80 " ^ " => my_has_pow.pow
 
-instance dummy_pow : my_has_pow ℕ $ PLift ℤ := ⟨fun _ _ => 0⟩
-instance dummy_smul : my_has_scalar (PLift ℤ) ℕ := ⟨fun _ _ => 0⟩
-attribute [to_additive dummy_smul] dummy_pow
+instance dummy_pow : my_has_pow ℕ $ PLift ℤ := ⟨fun _ _ => 5⟩
 
 set_option pp.universes true
 @[to_additive bar2]
 def foo2 {α} [my_has_pow α ℕ] (x : α) (n : ℕ) (m : PLift ℤ) : α := x ^ (n ^ m)
 
-theorem foo2_works : foo2 2 3 (PLift.up 2) = Nat.pow 2 0 := by decide
--- [todo] should it still be using dummy?
-theorem bar2_works : bar2 2 3 (PLift.up 2) =  2 * (dummy_smul.1 (PLift.up 2) 3) := by decide
+theorem foo2_works : foo2 2 3 (PLift.up 2) = Nat.pow 2 5 := by decide
+theorem bar2_works : bar2 2 3 (PLift.up 2) =  2 * 5 := by decide
 
 @[to_additive bar3]
 def foo3 {α} [my_has_pow α ℕ] (x : α) : ℕ → α := @my_has_pow.pow α ℕ _ x
@@ -76,6 +73,28 @@ def foo7 := @my_has_pow.pow
 
 theorem foo7_works : foo7 2 3 = Nat.pow 2 3 := by decide
 theorem bar7_works : bar7 2 3 =  2 * 3 := by decide
+
+/-- Check that we don't additivize `Nat` expressions. -/
+@[to_additive bar8]
+def foo8 (a b : ℕ) := a * b
+
+theorem bar8_works : bar8 2 3 = 6 := by decide
+
+/-- Check that we don't additivize `Nat` numerals. -/
+@[to_additive bar9]
+def foo9 := 1
+
+theorem bar9_works : bar9 = 1 := by decide
+
+@[to_additive bar10]
+def foo10 (n m : ℕ) := HPow.hPow n m + n * m * 2 + 1 * 0 + 37 * 1 + 2
+
+theorem bar10_works : bar10 = foo10 := by rfl
+
+@[to_additive bar11]
+def foo11 (n : ℕ) (m : ℤ) := n * m * 2 + 1 * 0 + 37 * 1 + 2
+
+theorem bar11_works : bar11 = foo11 := by rfl
 
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do
@@ -106,9 +125,9 @@ run_cmd do
   Elab.Command.liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namespace)
 
 -- [todo] currently this test breaks.
--- example : (add_units.mk_of_add_eq_zero 0 0 (by simp) : ℕ)
---         = (add_units.mk_of_add_eq_zero 0 0 (by simp) : ℕ) :=
--- by normCast
+-- example : (AddUnits.mk_of_add_eq_zero 0 0 (by simp) : ℕ)
+--         = (AddUnits.mk_of_add_eq_zero 0 0 (by simp) : ℕ) :=
+-- by norm_cast
 
 section
 
@@ -126,10 +145,10 @@ instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One $ f i] : One ((
 run_cmd do
   let n ← (Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg
     `Test.pi.has_one)
-  if n != some 1 then throwError "{n} != 1"
+  if n != 1 then throwError "{n} != 1"
   let n ← (Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.firstMultiplicativeArg
     `Test.foo_mul)
-  if n != some 4 then throwError "{n} != 4"
+  if n != 4 then throwError "{n} != 4"
 
 end
 
@@ -139,6 +158,8 @@ def nat_pi_has_one {α : Type} [One α] : One ((x : Nat) → α) := by infer_ins
 @[to_additive]
 def pi_nat_has_one {I : Type} : One ((x : I) → Nat)  := pi.has_one
 
+example : @pi_nat_has_one = @pi_nat_has_zero := rfl
+
 section noncomputablee
 
 @[to_additive Bar.bar]
@@ -147,12 +168,34 @@ noncomputable def Foo.foo (h : ∃ _ : α, True) : α := Classical.choose h
 @[to_additive Bar.bar']
 def Foo.foo' : ℕ := 2
 
-#eval Bar.bar'
+theorem Bar.bar'_works : Bar.bar' = 2 := by decide
 
 run_cmd (do
   if !isNoncomputable (← getEnv) `Bar.bar then throwError "bar shouldn't be computable"
   if isNoncomputable (← getEnv) `Bar.bar' then throwError "bar' should be computable")
 end noncomputablee
+
+section instances
+
+class FooClass (α) : Prop where
+  refle : ∀ a : α, a = a
+
+@[to_additive]
+instance FooClass_one [One α] : FooClass α := ⟨λ _ => rfl ⟩
+
+lemma one_fooClass [One α] : FooClass α := by infer_instance
+
+lemma zero_fooClass [Zero α] : FooClass α := by infer_instance
+
+end instances
+
+/- Check that `to_additive` works if a `_match` aux declaration is created. -/
+@[to_additive]
+def IsUnit [Mul M] (a : M) : Prop := a ≠ a
+
+@[to_additive]
+theorem isUnit_iff_exists_inv [Mul M] {a : M} : IsUnit a ↔ ∃ _ : α, a ≠ a :=
+  ⟨fun h => absurd rfl h, fun ⟨_, hab⟩ => hab⟩
 
 /-!
 Some arbitrary tests to check whether additive names are guessed correctly.

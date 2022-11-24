@@ -44,50 +44,54 @@ deriving instance DecidableEq for Sum
 
 @[simp]
 theorem «forall» {p : Sum α β → Prop} : (∀ x, p x) ↔ (∀ a, p (inl a)) ∧ ∀ b, p (inr b) :=
-  ⟨fun h => ⟨fun _ => h _, fun _ => h _⟩, fun ⟨h₁, h₂⟩ => Sum.rec h₁ h₂⟩
+  ⟨fun h ↦ ⟨fun _ ↦ h _, fun _ ↦ h _⟩, fun ⟨h₁, h₂⟩ ↦ Sum.rec h₁ h₂⟩
 
 @[simp]
 theorem «exists» {p : Sum α β → Prop} : (∃ x, p x) ↔ (∃ a, p (inl a)) ∨ ∃ b, p (inr b) :=
-  ⟨fun h =>
-    match h with
+  ⟨ fun
     | ⟨inl a, h⟩ => Or.inl ⟨a, h⟩
     | ⟨inr b, h⟩ => Or.inr ⟨b, h⟩,
-    fun h =>
-    match h with
+    fun
     | Or.inl ⟨a, h⟩ => ⟨inl a, h⟩
     | Or.inr ⟨b, h⟩ => ⟨inr b, h⟩⟩
 
-theorem inl_injective : Function.Injective (inl : α → Sum α β) := fun _ _ => inl.inj
+theorem inl_injective : Function.Injective (inl : α → Sum α β) := fun _ _ ↦ inl.inj
 
-theorem inr_injective : Function.Injective (inr : β → Sum α β) := fun _ _ => inr.inj
+theorem inr_injective : Function.Injective (inr : β → Sum α β) := fun _ _ ↦ inr.inj
 
 section get
 
 /-- Check if a sum is `inl` and if so, retrieve its contents. -/
-@[simp]
 def getLeft : Sum α β → Option α
   | inl a => some a
   | inr _ => none
 
 /-- Check if a sum is `inr` and if so, retrieve its contents. -/
-@[simp]
 def getRight : Sum α β → Option β
   | inr b => some b
   | inl _ => none
 
 /-- Check if a sum is `inl`. -/
-@[simp]
 def isLeft : Sum α β → Bool
   | inl _ => true
   | inr _ => false
 
 /-- Check if a sum is `inr`. -/
-@[simp]
 def isRight : Sum α β → Bool
   | inl _ => false
   | inr _ => true
 
 variable {x y : Sum α β}
+
+@[simp] theorem getLeft_inl (x : α) : (inl x : α ⊕ β).getLeft = some x := rfl
+@[simp] theorem getLeft_inr (x : β) : (inr x : α ⊕ β).getLeft = none := rfl
+@[simp] theorem getRight_inl (x : α) : (inl x : α ⊕ β).getRight = none := rfl
+@[simp] theorem getRight_inr (x : β) : (inr x : α ⊕ β).getRight = some x := rfl
+
+@[simp] theorem isLeft_inl (x : α) : (inl x : α ⊕ β).isLeft = true := rfl
+@[simp] theorem isLeft_inr (x : β) : (inr x : α ⊕ β).isLeft = false := rfl
+@[simp] theorem isRight_inl (x : α) : (inl x : α ⊕ β).isRight = false := rfl
+@[simp] theorem isRight_inr (x : β) : (inr x : α ⊕ β).isRight = true := rfl
 
 theorem getLeft_eq_none_iff : x.getLeft = none ↔ x.isRight := by
   cases x <;> simp only [getLeft, isRight, eq_self_iff_true]
@@ -98,6 +102,34 @@ theorem getRight_eq_none_iff : x.getRight = none ↔ x.isLeft := by
   cases x <;> simp only [getRight, isLeft, eq_self_iff_true]
 
 #align sum.get_right_eq_none_iff Sum.getRight_eq_none_iff
+
+@[simp]
+theorem not_isLeft (x : Sum α β) : not x.isLeft = x.isRight := by cases x <;> rfl
+#align sum.bnot_is_left Sum.not_isLeft
+
+@[simp]
+theorem isLeft_eq_false : x.isLeft = false ↔ x.isRight := by cases x <;> simp
+#align sum.is_left_eq_ff Sum.isLeft_eq_false
+
+theorem Not_isLeft : ¬x.isLeft ↔ x.isRight := by simp
+#align sum.not_is_left Sum.Not_isLeft
+
+@[simp]
+theorem not_isRight (x : Sum α β) : !x.isRight = x.isLeft := by cases x <;> rfl
+#align sum.bnot_is_right Sum.not_isRight
+
+@[simp]
+theorem isRight_eq_false : x.isRight = false ↔ x.isLeft := by cases x <;> simp
+#align sum.is_right_eq_ff Sum.isRight_eq_false
+
+theorem Not_isRight : ¬x.isRight ↔ x.isLeft := by simp
+#align sum.not_is_right Sum.Not_isRight
+
+theorem isLeft_iff : x.isLeft ↔ ∃ y, x = Sum.inl y := by cases x <;> simp
+#align sum.is_left_iff Sum.isLeft_iff
+
+theorem isRight_iff : x.isRight ↔ ∃ y, x = Sum.inr y := by cases x <;> simp
+#align sum.is_right_iff Sum.isRight_iff
 
 end get
 
@@ -115,7 +147,7 @@ theorem inr_ne_inl {a : α} {b : β} : inr b ≠ inl a :=
 
 /-- Define a function on `α ⊕ β` by giving separate definitions on `α` and `β`. -/
 protected def elim {α β γ : Sort _} (f : α → γ) (g : β → γ) : Sum α β → γ :=
-  fun x => Sum.casesOn x f g
+  fun x ↦ Sum.casesOn x f g
 
 @[simp]
 theorem elim_inl {α β γ : Sort _} (f : α → γ) (g : β → γ) (x : α) : Sum.elim f g (inl x) = f x :=
@@ -135,15 +167,15 @@ theorem elim_comp_inr {α β γ : Sort _} (f : α → γ) (g : β → γ) : Sum.
 
 @[simp]
 theorem elim_inl_inr {α β : Sort _} : @Sum.elim α β _ inl inr = id :=
-  funext fun x => Sum.casesOn x (fun _ => rfl) fun _ => rfl
+  funext fun x ↦ Sum.casesOn x (fun _ ↦ rfl) fun _ ↦ rfl
 
 theorem comp_elim {α β γ δ : Sort _} (f : γ → δ) (g : α → γ) (h : β → γ) :
     f ∘ Sum.elim g h = Sum.elim (f ∘ g) (f ∘ h) :=
-  funext fun x => Sum.casesOn x (fun _ => rfl) fun _ => rfl
+  funext fun x ↦ Sum.casesOn x (fun _ ↦ rfl) fun _ ↦ rfl
 
 @[simp]
 theorem elim_comp_inl_inr {α β γ : Sort _} (f : Sum α β → γ) : Sum.elim (f ∘ inl) (f ∘ inr) = f :=
-  funext fun x => Sum.casesOn x (fun _ => rfl) fun _ => rfl
+  funext fun x ↦ Sum.casesOn x (fun _ ↦ rfl) fun _ ↦ rfl
 
 /-- Map `α ⊕ β` to `α' ⊕ β'` sending `α` to `α'` and `β` to `β'`. -/
 protected def map (f : α → α') (g : β → β') : Sum α β → Sum α' β' :=
@@ -170,10 +202,30 @@ theorem map_comp_map {α'' β''} (f' : α' → α'') (g' : β' → β'') (f : α
 
 @[simp]
 theorem map_id_id (α β) : Sum.map (@id α) (@id β) = id :=
-  funext fun x => Sum.recOn x (fun _ => rfl) fun _ => rfl
+  funext fun x ↦ Sum.recOn x (fun _ ↦ rfl) fun _ ↦ rfl
 
 theorem elim_comp_map {α β γ δ ε : Sort _} {f₁ : α → β} {f₂ : β → ε} {g₁ : γ → δ} {g₂ : δ → ε} :
     Sum.elim f₂ g₂ ∘ Sum.map f₁ g₁ = Sum.elim (f₂ ∘ f₁) (g₂ ∘ g₁) := by ext (_ | _) <;> rfl
+
+@[simp]
+theorem isLeft_map (f : α → β) (g : γ → δ) (x : Sum α γ) : isLeft (x.map f g) = isLeft x :=
+by cases x <;> rfl
+#align sum.is_left_map Sum.isLeft_map
+
+@[simp]
+theorem isRight_map (f : α → β) (g : γ → δ) (x : Sum α γ) : isRight (x.map f g) = isRight x :=
+by cases x <;> rfl
+#align sum.is_right_map Sum.isRight_map
+
+@[simp]
+theorem getLeft_map (f : α → β) (g : γ → δ) (x : Sum α γ) : (x.map f g).getLeft = x.getLeft.map f :=
+by cases x <;> rfl
+#align sum.get_left_map Sum.getLeft_map
+
+@[simp]
+theorem getRight_map (f : α → β) (g : γ → δ) (x : α ⊕ γ) :
+  (x.map f g).getRight = x.getRight.map g := by cases x <;> rfl
+#align sum.get_right_map Sum.getRight_map
 
 open Function (update update_eq_iff update_comp_eq_of_injective update_comp_eq_of_forall_ne)
 
@@ -200,7 +252,7 @@ theorem update_inl_apply_inl [DecidableEq α] [DecidableEq (Sum α β)] {f : Sum
 @[simp]
 theorem update_inl_comp_inr [DecidableEq (Sum α β)] {f : Sum α β → γ} {i : α} {x : γ} :
     update f (inl i) x ∘ inr = f ∘ inr :=
-  (update_comp_eq_of_forall_ne _ _) fun _ => inr_ne_inl
+  (update_comp_eq_of_forall_ne _ _) fun _ ↦ inr_ne_inl
 
 theorem update_inl_apply_inr [DecidableEq (Sum α β)] {f : Sum α β → γ} {i : α} {j : β} {x : γ} :
     update f (inl i) x (inr j) = f (inr j) :=
@@ -209,7 +261,7 @@ theorem update_inl_apply_inr [DecidableEq (Sum α β)] {f : Sum α β → γ} {i
 @[simp]
 theorem update_inr_comp_inl [DecidableEq (Sum α β)] {f : Sum α β → γ} {i : β} {x : γ} :
     update f (inr i) x ∘ inl = f ∘ inl :=
-  (update_comp_eq_of_forall_ne _ _) fun _ => inl_ne_inr
+  (update_comp_eq_of_forall_ne _ _) fun _ ↦ inl_ne_inr
 
 theorem update_inr_apply_inl [DecidableEq (Sum α β)] {f : Sum α β → γ} {i : α} {j : β} {x : γ} :
     update f (inr j) x (inl i) = f (inl i) :=
@@ -252,6 +304,22 @@ theorem swap_left_inverse : Function.LeftInverse (@swap α β) swap :=
 theorem swap_right_inverse : Function.RightInverse (@swap α β) swap :=
   swap_swap
 
+@[simp]
+theorem isLeft_swap (x : Sum α β) : x.swap.isLeft = x.isRight := by cases x <;> rfl
+#align sum.is_left_swap Sum.isLeft_swap
+
+@[simp]
+theorem isRight_swap (x : Sum α β) : x.swap.isRight = x.isLeft := by cases x <;> rfl
+#align sum.is_right_swap Sum.isRight_swap
+
+@[simp]
+theorem getLeft_swap (x : Sum α β) : x.swap.getLeft = x.getRight := by cases x <;> rfl
+#align sum.get_left_swap Sum.getLeft_swap
+
+@[simp]
+theorem getRight_swap (x : Sum α β) : x.swap.getRight = x.getLeft := by cases x <;> rfl
+#align sum.get_right_swap Sum.getRight_swap
+
 section LiftRel
 
 /-- Lifts pointwise two relations between `α` and `γ` and between `β` and `δ` to a relation between
@@ -265,7 +333,7 @@ variable {r r₁ r₂ : α → γ → Prop} {s s₁ s₂ : β → δ → Prop} {
 
 @[simp]
 theorem liftRel_inl_inl : LiftRel r s (inl a) (inl c) ↔ r a c :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     cases h
     assumption, LiftRel.inl⟩
 
@@ -285,7 +353,7 @@ theorem not_liftRel_inr_inl : ¬LiftRel r s (inr b) (inl c) :=
 
 @[simp]
 theorem liftRel_inr_inr : LiftRel r s (inr b) (inr d) ↔ s b d :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     cases h
     assumption, LiftRel.inr⟩
 
@@ -306,11 +374,11 @@ theorem LiftRel.mono (hr : ∀ a b, r₁ a b → r₂ a b) (hs : ∀ a b, s₁ a
 
 theorem LiftRel.mono_left (hr : ∀ a b, r₁ a b → r₂ a b) (h : LiftRel r₁ s x y) :
     LiftRel r₂ s x y :=
-  (h.mono hr) fun _ _ => id
+  (h.mono hr) fun _ _ ↦ id
 
 theorem LiftRel.mono_right (hs : ∀ a b, s₁ a b → s₂ a b) (h : LiftRel r s₁ x y) :
     LiftRel r s₂ x y :=
-  h.mono (fun _ _ => id) hs
+  h.mono (fun _ _ ↦ id) hs
 
 protected theorem LiftRel.swap (h : LiftRel r s x y) : LiftRel s r x.swap y.swap := by
   cases h
@@ -319,7 +387,7 @@ protected theorem LiftRel.swap (h : LiftRel r s x y) : LiftRel s r x.swap y.swap
 
 @[simp]
 theorem liftRel_swap_iff : LiftRel s r x.swap y.swap ↔ LiftRel r s x y :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [← swap_swap x, ← swap_swap y]
     exact h.swap, LiftRel.swap⟩
 
@@ -343,13 +411,13 @@ variable {r r₁ r₂ : α → α → Prop} {s s₁ s₂ : β → β → Prop} {
 
 @[simp]
 theorem lex_inl_inl : Lex r s (inl a₁) (inl a₂) ↔ r a₁ a₂ :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     cases h
     assumption, Lex.inl⟩
 
 @[simp]
 theorem lex_inr_inr : Lex r s (inr b₁) (inr b₂) ↔ s b₁ b₂ :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     cases h
     assumption, Lex.inr⟩
 
@@ -380,13 +448,13 @@ theorem Lex.mono (hr : ∀ a b, r₁ a b → r₂ a b) (hs : ∀ a b, s₁ a b �
   · exact Lex.sep _ _
 
 theorem Lex.mono_left (hr : ∀ a b, r₁ a b → r₂ a b) (h : Lex r₁ s x y) : Lex r₂ s x y :=
-  (h.mono hr) fun _ _ => id
+  (h.mono hr) fun _ _ ↦ id
 
 theorem Lex.mono_right (hs : ∀ a b, s₁ a b → s₂ a b) (h : Lex r s₁ x y) : Lex r s₂ x y :=
-  h.mono (fun _ _ => id) hs
+  h.mono (fun _ _ ↦ id) hs
 
 theorem lex_acc_inl {a} (aca : Acc r a) : Acc (Lex r s) (inl a) := by
-  induction' aca with a H IH
+  induction' aca with a _ IH
   constructor
   intro y h
   cases' h with a' _ h'
@@ -394,18 +462,16 @@ theorem lex_acc_inl {a} (aca : Acc r a) : Acc (Lex r s) (inl a) := by
 
 theorem lex_acc_inr (aca : ∀ a, Acc (Lex r s) (inl a)) {b} (acb : Acc s b) :
     Acc (Lex r s) (inr b) := by
-  induction' acb with b H IH
+  induction' acb with b _ IH
   constructor
   intro y h
   cases' h with _ _ _ b' _ h' a
   · exact IH _ h'
-
   · exact aca _
 
-
 theorem lex_wf (ha : WellFounded r) (hb : WellFounded s) : WellFounded (Lex r s) :=
-  have aca : ∀ a, Acc (Lex r s) (inl a) := fun a => lex_acc_inl (ha.apply a)
-  ⟨fun x => Sum.recOn x aca fun b => lex_acc_inr aca (hb.apply b)⟩
+  have aca : ∀ a, Acc (Lex r s) (inl a) := fun a ↦ lex_acc_inl (ha.apply a)
+  ⟨fun x ↦ Sum.recOn x aca fun b ↦ lex_acc_inr aca (hb.apply b)⟩
 
 end Lex
 
@@ -449,31 +515,28 @@ theorem elim_const_const (c : γ) :
 
 @[simp]
 theorem elim_lam_const_lam_const (c : γ) :
-    (Sum.elim (fun _ : α => c) fun _ : β => c) = fun _ => c :=
+    (Sum.elim (fun _ : α ↦ c) fun _ : β ↦ c) = fun _ ↦ c :=
   Sum.elim_const_const c
 
 theorem elim_update_left [DecidableEq α] [DecidableEq β] (f : α → γ) (g : β → γ) (i : α) (c : γ) :
     Sum.elim (Function.update f i c) g = Function.update (Sum.elim f g) (inl i) c := by
   ext x
-  rcases x with (x|x)
+  rcases x with x | x
   · by_cases h : x = i
     · subst h
       simp
     · simp [h]
   · simp
-
 
 theorem elim_update_right [DecidableEq α] [DecidableEq β] (f : α → γ) (g : β → γ) (i : β) (c : γ) :
     Sum.elim f (Function.update g i c) = Function.update (Sum.elim f g) (inr i) c := by
   ext x
-  rcases x with (x|x)
+  rcases x with x | x
   · simp
   · by_cases h : x = i
     · subst h
       simp
     · simp [h]
-
-
 
 end Sum
 
@@ -482,7 +545,6 @@ end Sum
 
 Abbreviations for the maps from the summands to `α ⊕ β ⊕ γ`. This is useful for pattern-matching.
 -/
-
 
 namespace Sum3
 
