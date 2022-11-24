@@ -289,9 +289,6 @@ instance (priority := 100) DivisionMonoid.toDivInvOneMonoid : DivInvOneMonoid α
   { DivisionMonoid.toDivInvMonoid with
     inv_one := by simpa only [one_div, inv_inv] using (inv_div (1 : α) 1).symm }
 
--- FIXME this isn't being copied by `to_additive`
-attribute [instance 100] SubtractionMonoid.toSubNegZeroMonoid
-
 variable {a b c}
 
 @[simp, to_additive]
@@ -582,7 +579,7 @@ theorem leftInverse_inv_mul_mul_right (c : G) :
 #align left_inverse_inv_mul_mul_right leftInverse_inv_mul_mul_right
 #align left_inverse_neg_add_add_right leftInverse_neg_add_add_right
 
--- TODO @[to_additive]
+@[to_additive]
 theorem exists_npow_eq_one_of_zpow_eq_one {n : ℤ} (hn : n ≠ 0) {x : G} (h : x ^ n = 1) :
     ∃ n : ℕ, 0 < n ∧ x ^ n = 1 := by
   cases' n with n n

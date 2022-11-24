@@ -364,9 +364,13 @@ partial def eval (c : Context) (e : Expr) : MetaM (NormalExpr × Expr) := do
       if ¬ c.is_group then failure
       let (e', p) ← eval c $ c.iapp ``smul #[e₁, e₂]
       return (e', c.app ``unfold_zsmul c.inst #[e₁, e₂, e', p])
-  | (``HasSmul.smul, #[.const ``Int _, _, _, e₁, e₂]) =>
+  | (``SMul.smul, #[.const ``Int _, _, _, e₁, e₂]) =>
     evalSMul' c (eval c) true e e₁ e₂
-  | (``HasSmul.smul, #[.const ``Nat _, _, _, e₁, e₂]) =>
+  | (``SMul.smul, #[.const ``Nat _, _, _, e₁, e₂]) =>
+    evalSMul' c (eval c) false e e₁ e₂
+  | (``HSMul.hSMul, #[.const ``Int _, _, _, _, e₁, e₂]) =>
+    evalSMul' c (eval c) true e e₁ e₂
+  | (``HSMul.hSMul, #[.const ``Nat _, _, _, _, e₁, e₂]) =>
     evalSMul' c (eval c) false e e₁ e₂
   | (``smul, #[_, _, e₁, e₂]) => evalSMul' c (eval c) false e e₁ e₂
   | (``smulg, #[_, _, e₁, e₂]) => evalSMul' c (eval c) true e e₁ e₂

@@ -130,13 +130,17 @@ theorem antitone_comp_ofDual_iff : Antitone (f ∘ ofDual) ↔ Monotone f :=
   forall_swap
 #align antitone_comp_of_dual_iff antitone_comp_ofDual_iff
 
+-- Porting note:
+-- Here (and below) without the type ascription, Lean is seeing through the
+-- defeq `βᵒᵈ = β` and picking up the wrong `Preorder` instance.
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/logic.2Eequiv.2Ebasic.20mathlib4.23631/near/311744939
 @[simp]
-theorem monotone_toDual_comp_iff : Monotone (toDual ∘ f) ↔ Antitone f :=
+theorem monotone_toDual_comp_iff : Monotone (toDual ∘ f : α → βᵒᵈ) ↔ Antitone f :=
   Iff.rfl
 #align monotone_to_dual_comp_iff monotone_toDual_comp_iff
 
 @[simp]
-theorem antitone_toDual_comp_iff : Antitone (toDual ∘ f) ↔ Monotone f :=
+theorem antitone_toDual_comp_iff : Antitone (toDual ∘ f : α → βᵒᵈ) ↔ Monotone f :=
   Iff.rfl
 #align antitone_to_dual_comp_iff antitone_toDual_comp_iff
 
@@ -151,12 +155,12 @@ theorem antitoneOn_comp_ofDual_iff : AntitoneOn (f ∘ ofDual) s ↔ MonotoneOn 
 #align antitone_on_comp_of_dual_iff antitoneOn_comp_ofDual_iff
 
 @[simp]
-theorem monotoneOn_toDual_comp_iff : MonotoneOn (toDual ∘ f) s ↔ AntitoneOn f s :=
+theorem monotoneOn_toDual_comp_iff : MonotoneOn (toDual ∘ f : α → βᵒᵈ) s ↔ AntitoneOn f s :=
   Iff.rfl
 #align monotone_on_to_dual_comp_iff monotoneOn_toDual_comp_iff
 
 @[simp]
-theorem antitoneOn_toDual_comp_iff : AntitoneOn (toDual ∘ f) s ↔ MonotoneOn f s :=
+theorem antitoneOn_toDual_comp_iff : AntitoneOn (toDual ∘ f : α → βᵒᵈ) s ↔ MonotoneOn f s :=
   Iff.rfl
 #align antitone_on_to_dual_comp_iff antitoneOn_toDual_comp_iff
 
@@ -171,12 +175,12 @@ theorem strictAnti_comp_ofDual_iff : StrictAnti (f ∘ ofDual) ↔ StrictMono f 
 #align strict_anti_comp_of_dual_iff strictAnti_comp_ofDual_iff
 
 @[simp]
-theorem strictMono_toDual_comp_iff : StrictMono (toDual ∘ f) ↔ StrictAnti f :=
+theorem strictMono_toDual_comp_iff : StrictMono (toDual ∘ f : α → βᵒᵈ) ↔ StrictAnti f :=
   Iff.rfl
 #align strict_mono_to_dual_comp_iff strictMono_toDual_comp_iff
 
 @[simp]
-theorem strictAnti_toDual_comp_iff : StrictAnti (toDual ∘ f) ↔ StrictMono f :=
+theorem strictAnti_toDual_comp_iff : StrictAnti (toDual ∘ f : α → βᵒᵈ) ↔ StrictMono f :=
   Iff.rfl
 #align strict_anti_to_dual_comp_iff strictAnti_toDual_comp_iff
 
@@ -191,39 +195,43 @@ theorem strictAntiOn_comp_ofDual_iff : StrictAntiOn (f ∘ ofDual) s ↔ StrictM
 #align strict_anti_on_comp_of_dual_iff strictAntiOn_comp_ofDual_iff
 
 @[simp]
-theorem strictMonoOn_toDual_comp_iff : StrictMonoOn (toDual ∘ f) s ↔ StrictAntiOn f s :=
+theorem strictMonoOn_toDual_comp_iff : StrictMonoOn (toDual ∘ f : α → βᵒᵈ) s ↔ StrictAntiOn f s :=
   Iff.rfl
 #align strict_mono_on_to_dual_comp_iff strictMonoOn_toDual_comp_iff
 
 @[simp]
-theorem strictAntiOn_toDual_comp_iff : StrictAntiOn (toDual ∘ f) s ↔ StrictMonoOn f s :=
+theorem strictAntiOn_toDual_comp_iff : StrictAntiOn (toDual ∘ f : α → βᵒᵈ) s ↔ StrictMonoOn f s :=
   Iff.rfl
 #align strict_anti_on_to_dual_comp_iff strictAntiOn_toDual_comp_iff
 
-protected theorem Monotone.dual (hf : Monotone f) : Monotone (toDual ∘ f ∘ ofDual) :=
+protected theorem Monotone.dual (hf : Monotone f) : Monotone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) :=
   swap hf
 
-protected theorem Antitone.dual (hf : Antitone f) : Antitone (toDual ∘ f ∘ ofDual) :=
+protected theorem Antitone.dual (hf : Antitone f) : Antitone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) :=
   swap hf
 
-protected theorem MonotoneOn.dual (hf : MonotoneOn f s) : MonotoneOn (toDual ∘ f ∘ ofDual) s :=
+protected theorem MonotoneOn.dual (hf : MonotoneOn f s) :
+    MonotoneOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s :=
   swap₂ hf
 
-protected theorem AntitoneOn.dual (hf : AntitoneOn f s) : AntitoneOn (toDual ∘ f ∘ ofDual) s :=
+protected theorem AntitoneOn.dual (hf : AntitoneOn f s) :
+    AntitoneOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s :=
   swap₂ hf
 
-protected theorem StrictMono.dual (hf : StrictMono f) : StrictMono (toDual ∘ f ∘ ofDual) :=
+protected theorem StrictMono.dual (hf : StrictMono f) :
+    StrictMono (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) :=
   swap hf
 
-protected theorem StrictAnti.dual (hf : StrictAnti f) : StrictAnti (toDual ∘ f ∘ ofDual) :=
+protected theorem StrictAnti.dual (hf : StrictAnti f) :
+    StrictAnti (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) :=
   swap hf
 
 protected theorem StrictMonoOn.dual (hf : StrictMonoOn f s) :
-    StrictMonoOn (toDual ∘ f ∘ ofDual) s :=
+    StrictMonoOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s :=
   swap₂ hf
 
 protected theorem StrictAntiOn.dual (hf : StrictAntiOn f s) :
-    StrictAntiOn (toDual ∘ f ∘ ofDual) s :=
+    StrictAntiOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s :=
   swap₂ hf
 
 alias antitone_comp_ofDual_iff ↔ _ Monotone.dual_left
