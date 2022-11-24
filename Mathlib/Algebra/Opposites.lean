@@ -12,20 +12,20 @@ import Mathlib.Logic.IsEmpty
 
 # Multiplicative opposite and algebraic operations on it
 
-In this file we define `mul_opposite α = αᵐᵒᵖ` to be the multiplicative opposite of `α`. It inherits
+In this file we define `MulOpposite α = αᵐᵒᵖ` to be the multiplicative opposite of `α`. It inherits
 all additive algebraic structures on `α` (in other files), and reverses the order of multipliers in
-multiplicative structures, i.e., `op (x * y) = op y * op x`, where `mul_opposite.op` is the
+multiplicative structures, i.e., `op (x * y) = op y * op x`, where `MulOpposite.op` is the
 canonical map from `α` to `αᵐᵒᵖ`.
 
-We also define `add_opposite α = αᵃᵒᵖ` to be the additive opposite of `α`. It inherits all
+We also define `AddOpposite α = αᵃᵒᵖ` to be the additive opposite of `α`. It inherits all
 multiplicative algebraic structures on `α` (in other files), and reverses the order of summands in
-additive structures, i.e. `op (x + y) = op y + op x`, where `add_opposite.op` is the canonical map
+additive structures, i.e. `op (x + y) = op y + op x`, where `AddOpposite.op` is the canonical map
 from `α` to `αᵃᵒᵖ`.
 
 ## Notation
 
-* `αᵐᵒᵖ = mul_opposite α`
-* `αᵃᵒᵖ = add_opposite α`
+* `αᵐᵒᵖ = MulOpposite α`
+* `αᵃᵒᵖ = AddOpposite α`
 
 ## Tags
 
@@ -54,7 +54,7 @@ postfix:max "ᵃᵒᵖ" => AddOpposite
 
 namespace MulOpposite
 
-/-- The element of `mul_opposite α` that represents `x : α`. -/
+/-- The element of `MulOpposite α` that represents `x : α`. -/
 -- porting note: the attribute `pp_nodot` does not exist yet
 --@[pp_nodot,
 @[to_additive "The element of `αᵃᵒᵖ` that represents `x : α`."]
@@ -91,8 +91,8 @@ theorem unop_comp_op : (unop : αᵐᵒᵖ → α) ∘ op = id :=
   rfl
 #align mul_opposite.unop_comp_op MulOpposite.unop_comp_op
 
-/-- A recursor for `mul_opposite`. Use as `induction x using mul_opposite.rec`. -/
-@[simp, to_additive "A recursor for `add_opposite`. Use as `induction x using add_opposite.rec`."]
+/-- A recursor for `MulOpposite`. Use as `induction x using MulOpposite.rec`. -/
+@[simp, to_additive "A recursor for `AddOpposite`. Use as `induction x using AddOpposite.rec`."]
 protected def rec {F : ∀ _ : αᵐᵒᵖ, Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
 #align mul_opposite.rec MulOpposite.rec
 
