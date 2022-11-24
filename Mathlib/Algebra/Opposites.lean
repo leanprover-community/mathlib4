@@ -52,11 +52,10 @@ postfix:max "ᵐᵒᵖ" => MulOpposite
 /-- Additive opposite of a type. -/
 postfix:max "ᵃᵒᵖ" => AddOpposite
 
-variable {α : Type u}
-
 namespace MulOpposite
 
 /-- The element of `mul_opposite α` that represents `x : α`. -/
+-- porting note: the attribute `pp_nodot` does not exist yet
 --@[pp_nodot,
 @[to_additive "The element of `αᵃᵒᵖ` that represents `x : α`."]
 def op : α → αᵐᵒᵖ :=
@@ -70,7 +69,7 @@ def unop : αᵐᵒᵖ → α :=
   id
 #align mul_opposite.unop MulOpposite.unop
 
---attribute [pp_nodot] AddOpposite.op AddOpposite.unop
+-- attribute [pp_nodot] AddOpposite.op AddOpposite.unop
 
 @[simp, to_additive]
 theorem unop_op (x : α) : unop (op x) = x :=
@@ -204,12 +203,9 @@ instance [HasInvolutiveInv α] : HasInvolutiveInv αᵐᵒᵖ :=
 attribute [instance] AddOpposite.instHasInvolutiveNegAddOpposite
 
 @[to_additive]
-instance (R : Type _) [HasSmul R α] : HasSmul R αᵐᵒᵖ where smul c x := op (c • unop x)
-attribute [instance] AddOpposite.instHasVaddAddOpposite
+instance (R : Type _) [SMul R α] : SMul R αᵐᵒᵖ where smul c x := op (c • unop x)
 
 section
-
---variable (α)
 
 @[simp]
 theorem op_zero [Zero α] : op (0 : α) = 0 :=
@@ -284,12 +280,12 @@ theorem unop_sub [Sub α] (x y : αᵐᵒᵖ) : unop (x - y) = unop x - unop y :
 #align mul_opposite.unop_sub MulOpposite.unop_sub
 
 @[simp, to_additive]
-theorem op_smul {R : Type _} [HasSmul R α] (c : R) (a : α) : op (c • a) = c • op a :=
+theorem op_smul {R : Type _} [SMul R α] (c : R) (a : α) : op (c • a) = c • op a :=
   rfl
 #align mul_opposite.op_smul MulOpposite.op_smul
 
 @[simp, to_additive]
-theorem unop_smul {R : Type _} [HasSmul R α] (c : R) (a : αᵐᵒᵖ) : unop (c • a) = c • unop a :=
+theorem unop_smul {R : Type _} [SMul R α] (c : R) (a : αᵐᵒᵖ) : unop (c • a) = c • unop a :=
   rfl
 #align mul_opposite.unop_smul MulOpposite.unop_smul
 
