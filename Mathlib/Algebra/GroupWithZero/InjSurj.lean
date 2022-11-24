@@ -23,8 +23,8 @@ variable [MulZeroClass M₀] {a b : M₀}
 /-- Pullback a `MulZeroClass` instance along an injective function.
 See note [reducible non-instances]. -/
 @[reducible]
-protected def Function.Injective.mulZeroClass [Mul M₀'] [Zero M₀'] (f : M₀' → M₀) (hf : Injective f) (zero : f 0 = 0)
-    (mul : ∀ a b, f (a * b) = f a * f b) : MulZeroClass M₀' where
+protected def Function.Injective.mulZeroClass [Mul M₀'] [Zero M₀'] (f : M₀' → M₀) (hf : Injective f)
+    (zero : f 0 = 0) (mul : ∀ a b, f (a * b) = f a * f b) : MulZeroClass M₀' where
   mul := (· * ·)
   zero := 0
   zero_mul a := hf <| by simp only [mul, zero, zero_mul]
@@ -34,8 +34,9 @@ protected def Function.Injective.mulZeroClass [Mul M₀'] [Zero M₀'] (f : M₀
 /-- Pushforward a `MulZeroClass` instance along an surjective function.
 See note [reducible non-instances]. -/
 @[reducible]
-protected def Function.Surjective.mulZeroClass [Mul M₀'] [Zero M₀'] (f : M₀ → M₀') (hf : Surjective f) (zero : f 0 = 0)
-    (mul : ∀ a b, f (a * b) = f a * f b) : MulZeroClass M₀' where
+protected def Function.Surjective.mulZeroClass [Mul M₀'] [Zero M₀'] (f : M₀ → M₀')
+    (hf : Surjective f) (zero : f 0 = 0) (mul : ∀ a b, f (a * b) = f a * f b) :
+    MulZeroClass M₀' where
   mul := (· * ·)
   zero := 0
   mul_zero := hf.forall.2 fun x => by simp only [← zero, ← mul, mul_zero]
