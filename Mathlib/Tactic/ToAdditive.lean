@@ -406,14 +406,9 @@ partial def transformDeclAux
   if env.contains tgt then
     return
   let srcDecl ← getConstInfo src
-<<<<<<< HEAD
   let prefixes : NameSet := .ofList [pre, env.mainModule ++ `_auxLemma]
   -- we first transform all auxilliary declarations generated when elaborating `pre`
   for n in srcDecl.type.listNamesWithPrefixes prefixes do
-=======
-  -- we first transform all auxilliary declarations generated when elaborating `pre`
-  for n in srcDecl.type.listNamesWithPrefix pre do
->>>>>>> origin/master
     transformDeclAux none pre tgt_pre n
   if let some value := srcDecl.value? then
     for n in value.listNamesWithPrefixes prefixes do
