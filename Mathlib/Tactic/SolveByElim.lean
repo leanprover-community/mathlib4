@@ -81,6 +81,7 @@ def exceptEmoji : Except ε α → String
   | .error _ => crossEmoji
   | .ok _ => checkEmoji
 
+/-- Elaborate the context and the list of lemmas -/
 def elabContextLemmas (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)) :
     MetaM (List Expr) := Elab.Term.TermElabM.run' do
   let ctx' ← ctx
@@ -162,6 +163,25 @@ elab_rules : tactic | `(tactic| solve_by_elim $[only%$o]? $[[$[$t:term],*]]?) =>
   let es := (t.getD #[]).toList
   solveByElimImpl o.isSome es 6 (← getMainGoal)
 
+/--
+`apply_assumption` looks for an assumption of the form `... → ∀ _, ... → head`
+where `head` matches the current goal.
+
+[todo] not yet implemented:
+If this fails, `apply_assumption` will call `symmetry` and try again.
+
+[todo] not yet implemented:
+If this also fails, `apply_assumption` will call `exfalso` and try again,
+so that if there is an assumption of the form `P → ¬ Q`, the new tactic state
+will have two goals, `P` and `Q`.
+
+[todo] not yet implemented:
+Optional arguments:
+- `lemmas`: a list of expressions to apply, instead of the local constants
+- `tac`: a tactic to run on each subgoal after applying an assumption; if
+  this tactic fails, the corresponding assumption will be rejected and
+  the next one will be attempted.
+-/
 syntax (name := applyAssumption) "apply_assumption" : tactic
 
 elab_rules : tactic | `(tactic| apply_assumption) => do
