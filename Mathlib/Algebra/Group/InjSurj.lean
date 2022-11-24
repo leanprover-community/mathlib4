@@ -85,8 +85,8 @@ variable [One M₁]
 
 /-- A type endowed with `1` and `*` is a `MulOneClass`, if it admits an injective map that
 preserves `1` and `*` to a `MulOneClass`.  See note [reducible non-instances]. -/
-@[reducible, to_additive "A type endowed with `0` and `+` is an add_zero_class, if it admits an
-injective map that preserves `0` and `+` to an add_zero_class."]
+@[reducible, to_additive "A type endowed with `0` and `+` is an `AddZeroClass`, if it admits an
+injective map that preserves `0` and `+` to an `AddZeroClass`."]
 protected def mulOneClass [MulOneClass M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) : MulOneClass M₁ :=
   { ‹One M₁›, ‹Mul M₁› with
@@ -234,7 +234,7 @@ See note [reducible non-instances]. -/
 @[reducible, to_additive subtractionCommMonoid "A type endowed with `0`, `+`, unary `-`, and binary
 `-` is a `SubtractionCommMonoid` if it admits an injective map that preserves `0`, `+`, unary `-`,
 and binary `-` to a `SubtractionCommMonoid`. This version takes custom `nsmul` and `zsmul` as
-`[has_smul ℕ M₁]` and `[has_smul ℤ M₁]` arguments."]
+`[SMul ℕ M₁]` and `[SMul ℤ M₁]` arguments."]
 protected def divisionCommMonoid [DivisionCommMonoid M₂] (f : M₁ → M₂) (hf : Injective f)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
