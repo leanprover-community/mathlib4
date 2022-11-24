@@ -8,6 +8,7 @@ import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Replace
+import Mathlib.Tactic.SolveByElim
 
 /-!
 
@@ -53,9 +54,8 @@ def Arrow (α β : Typevec n) :=
 #align typevec.arrow Typevec.Arrow
 
 -- mathport name: typevec.arrow
--- porting note: this should be `scoped[MVFunctor]` but I couldn't get that to work.
-scoped infixl:40 " ⟹ " => Typevec.Arrow
-attribute [inherit_doc Typevec.Arrow] «term_⟹_»
+@[inherit_doc] scoped[MVFunctor] infixl:40 " ⟹ " => Typevec.Arrow
+open MVFunctor
 
 instance Arrow.inhabited (α β : Typevec n) [∀ i, Inhabited (β i)] : Inhabited (α ⟹ β) :=
   ⟨fun _ _ => default⟩
@@ -70,9 +70,7 @@ def comp {α β γ : Typevec n} (g : β ⟹ γ) (f : α ⟹ β) : α ⟹ γ := f
 #align typevec.comp Typevec.comp
 
 -- mathport name: typevec.comp
--- porting note: this should be `scoped[MVFunctor]` but I couldn't get that to work.
-scoped infixr:80 " ⊚ " => Typevec.comp
-attribute [inherit_doc Typevec.comp] «term_⊚_»
+@[inherit_doc] scoped[MVFunctor] infixr:80 " ⊚ " => Typevec.comp
 
 -- type as \oo
 @[simp]
@@ -172,11 +170,13 @@ def nilFun {α : Typevec 0} {β : Typevec 0} : α ⟹ β := fun i => by apply Fi
 
 theorem eq_of_drop_last_eq {α β : Typevec (n + 1)} {f g : α ⟹ β} (h₀ : dropFun f = dropFun g)
     (h₁ : lastFun f = lastFun g) : f = g := by
-  replace h₀ := congr_fun h₀ <;>
-  refine funext <| fun i => ?_
-  sorry
-  -- ext1 ⟨⟩;
-  --apply_assumption
+  -- FIXME: congr_fun h₀ <;> ext1 ⟨⟩ <;> apply_assumption
+  replace h₀ := congr_fun h₀;
+  refine funext ?_
+  rintro x
+  cases x
+  exact h₁
+  exact h₀ _
 #align typevec.eq_of_drop_last_eq Typevec.eq_of_drop_last_eq
 
 @[simp]
