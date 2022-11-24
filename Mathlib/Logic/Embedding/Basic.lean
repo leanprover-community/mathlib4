@@ -350,13 +350,15 @@ theorem arrow_congr_right_apply {α : Sort u} {β : Sort v} {γ : Sort w} (e : �
 /-- An embedding `e : α ↪ β` defines an embedding `(α → γ) ↪ (β → γ)` for any inhabited type `γ`.
 This embedding sends each `f : α → γ` to a function `g : β → γ` such that `g ∘ e = f` and
 `g y = default` whenever `y ∉ range e`. -/
-noncomputable def arrowCongrLeft {α : Sort u} {β : Sort v} {γ : Sort w} [Inhabited γ] (e : α ↪ β) : (α → γ) ↪ β → γ :=
+noncomputable def arrowCongrLeft {α : Sort u} {β : Sort v} {γ : Sort w} [Inhabited γ] (e : α ↪ β) :
+    (α → γ) ↪ β → γ :=
   ⟨fun f => extend e f default, fun f₁ f₂ h =>
     funext fun x => by simpa only [extend_apply e.injective] using congr_fun h (e x)⟩
 #align function.embedding.arrow_congr_left Function.Embedding.arrowCongrLeft
 
 /-- Restrict both domain and codomain of an embedding. -/
-protected def subtypeMap {α β} {p : α → Prop} {q : β → Prop} (f : α ↪ β) (h : ∀ ⦃x⦄, p x → q (f x)) :
+protected def subtypeMap {α β} {p : α → Prop} {q : β → Prop} (f : α ↪ β)
+    (h : ∀ ⦃x⦄, p x → q (f x)) :
     { x : α // p x } ↪ { y : β // q y } :=
   ⟨Subtype.map f h, Subtype.map_injective h f.2⟩
 #align function.embedding.subtype_map Function.Embedding.subtypeMap
@@ -383,7 +385,8 @@ open Function.Embedding
 
 /-- The type of embeddings `α ↪ β` is equivalent to
     the subtype of all injective functions `α → β`. -/
-def subtypeInjectiveEquivEmbedding (α β : Sort _) : { f : α → β // Function.Injective f } ≃ (α ↪ β) where
+def subtypeInjectiveEquivEmbedding (α β : Sort _) :
+    { f : α → β // Function.Injective f } ≃ (α ↪ β) where
   toFun f := ⟨f.val, f.property⟩
   invFun f := ⟨f, f.injective⟩
   left_inv _ := rfl
@@ -405,14 +408,16 @@ def embeddingCongr {α β γ δ : Sort _} (h : α ≃ β) (h' : γ ≃ δ) : (α
 #align equiv.embedding_congr Equiv.embeddingCongr
 
 @[simp]
-theorem embedding_congr_refl {α β : Sort _} : embeddingCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α ↪ β) :=
+theorem embedding_congr_refl {α β : Sort _} :
+    embeddingCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α ↪ β) :=
   rfl
 #align equiv.embedding_congr_refl Equiv.embedding_congr_refl
 
 @[simp]
-theorem embedding_congr_trans {α₁ β₁ α₂ β₂ α₃ β₃ : Sort _} (e₁ : α₁ ≃ α₂) (e₁' : β₁ ≃ β₂) (e₂ : α₂ ≃ α₃)
-    (e₂' : β₂ ≃ β₃) :
-    embeddingCongr (e₁.trans e₂) (e₁'.trans e₂') = (embeddingCongr e₁ e₁').trans (embeddingCongr e₂ e₂') :=
+theorem embedding_congr_trans {α₁ β₁ α₂ β₂ α₃ β₃ : Sort _} (e₁ : α₁ ≃ α₂) (e₁' : β₁ ≃ β₂)
+    (e₂ : α₂ ≃ α₃) (e₂' : β₂ ≃ β₃) :
+    embeddingCongr (e₁.trans e₂) (e₁'.trans e₂') =
+      (embeddingCongr e₁ e₁').trans (embeddingCongr e₂ e₂') :=
   rfl
 #align equiv.embedding_congr_trans Equiv.embedding_congr_trans
 
@@ -422,9 +427,10 @@ theorem embedding_congr_symm {α₁ β₁ α₂ β₂ : Sort _} (e₁ : α₁ �
   rfl
 #align equiv.embedding_congr_symm Equiv.embedding_congr_symm
 
-theorem embedding_congr_apply_trans {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort _} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) (ec : γ₁ ≃ γ₂)
-    (f : α₁ ↪ β₁) (g : β₁ ↪ γ₁) :
-    Equiv.embeddingCongr ea ec (f.trans g) = (Equiv.embeddingCongr ea eb f).trans (Equiv.embeddingCongr eb ec g) := by
+theorem embedding_congr_apply_trans {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort _} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂)
+    (ec : γ₁ ≃ γ₂) (f : α₁ ↪ β₁) (g : β₁ ↪ γ₁) :
+    Equiv.embeddingCongr ea ec (f.trans g) =
+      (Equiv.embeddingCongr ea eb f).trans (Equiv.embeddingCongr eb ec g) := by
   ext
   simp
 #align equiv.embedding_congr_apply_trans Equiv.embedding_congr_apply_trans
@@ -448,19 +454,22 @@ variable {α : Type _}
 
 /-- A subtype `{x // p x ∨ q x}` over a disjunction of `p q : α → Prop` can be injectively split
 into a sum of subtypes `{x // p x} ⊕ {x // q x}` such that `¬ p x` is sent to the right. -/
-def subtypeOrLeftEmbedding (p q : α → Prop) [DecidablePred p] : { x // p x ∨ q x } ↪ Sum { x // p x } { x // q x } :=
+def subtypeOrLeftEmbedding (p q : α → Prop) [DecidablePred p] :
+    { x // p x ∨ q x } ↪ Sum { x // p x } { x // q x } :=
   ⟨fun x => if h : p x then Sum.inl ⟨x, h⟩ else Sum.inr ⟨x, x.prop.resolve_left h⟩, by
     intro x y
     dsimp only
     split_ifs <;> simp [Subtype.ext_iff]⟩
 #align subtype_or_left_embedding subtypeOrLeftEmbedding
 
-theorem subtype_or_left_embedding_apply_left {p q : α → Prop} [DecidablePred p] (x : { x // p x ∨ q x }) (hx : p x) :
+theorem subtype_or_left_embedding_apply_left {p q : α → Prop} [DecidablePred p]
+    (x : { x // p x ∨ q x }) (hx : p x) :
     subtypeOrLeftEmbedding p q x = Sum.inl ⟨x, hx⟩ :=
   dif_pos hx
 #align subtype_or_left_embedding_apply_left subtype_or_left_embedding_apply_left
 
-theorem subtype_or_left_embedding_apply_right {p q : α → Prop} [DecidablePred p] (x : { x // p x ∨ q x }) (hx : ¬p x) :
+theorem subtype_or_left_embedding_apply_right {p q : α → Prop} [DecidablePred p]
+    (x : { x // p x ∨ q x }) (hx : ¬p x) :
     subtypeOrLeftEmbedding p q x = Sum.inr ⟨x, x.prop.resolve_left hx⟩ :=
   dif_neg hx
 #align subtype_or_left_embedding_apply_right subtype_or_left_embedding_apply_right
