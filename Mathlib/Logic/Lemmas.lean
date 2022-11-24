@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 
 import Mathlib.Tactic.SplitIfs
+import Mathlib.Logic.Basic
 
 /-!
 # More basic logic properties
