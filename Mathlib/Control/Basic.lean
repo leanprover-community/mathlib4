@@ -35,17 +35,17 @@ section Applicative
 variable {F : Type u → Type v} [Applicative F]
 
 /-- A generalization of `List.zipWith` which combines list elements with an `Applicative`. -/
-def zipMWith {α₁ α₂ φ : Type u} (f : α₁ → α₂ → F φ) : ∀ (_ : List α₁) (_ : List α₂), F (List φ)
-  | x :: xs, y :: ys => (· :: ·) <$> f x y <*> zipMWith f xs ys
+def zipWithM {α₁ α₂ φ : Type u} (f : α₁ → α₂ → F φ) : ∀ (_ : List α₁) (_ : List α₂), F (List φ)
+  | x :: xs, y :: ys => (· :: ·) <$> f x y <*> zipWithM f xs ys
   | _, _ => pure []
-#align mzip_with zipMWith
+#align mzip_with zipWithM
 
-/-- Like `zipMWith` but evaluates the result as it traverses the lists using `*>`. -/
-def zipMWith' (f : α → β → F γ) : List α → List β → F PUnit
-  | x :: xs, y :: ys => f x y *> zipMWith' f xs ys
+/-- Like `zipWithM` but evaluates the result as it traverses the lists using `*>`. -/
+def zipWithM' (f : α → β → F γ) : List α → List β → F PUnit
+  | x :: xs, y :: ys => f x y *> zipWithM' f xs ys
   | [], _ => pure PUnit.unit
   | _, [] => pure PUnit.unit
-#align mzip_with' zipMWith'
+#align mzip_with' zipWithM'
 
 variable [LawfulApplicative F]
 
@@ -128,23 +128,23 @@ variable {m' : Type v → Type w} [Monad m']
 
 /-- Takes a value `β` and `List α` and accumulates pairs according to a monadic function `f`.
 Accumulation occurs from the right (i.e., starting from the tail of the list). -/
-def List.mapMAccumR (f : α → β' → m' (β' × γ')) : β' → List α → m' (β' × List γ')
+def List.mapAccumRM (f : α → β' → m' (β' × γ')) : β' → List α → m' (β' × List γ')
   | a, [] => pure (a, [])
   | a, x :: xs => do
-    let (a', ys) ← List.mapMAccumR f a xs
+    let (a', ys) ← List.mapAccumRM f a xs
     let (a'', y) ← f x a'
     pure (a'', y :: ys)
-#align list.mmap_accumr List.mapMAccumR
+#align list.mmap_accumr List.mapAccumRM
 
 /-- Takes a value `β` and `List α` and accumulates pairs according to a monadic function `f`.
 Accumulation occurs from the left (i.e., starting from the head of the list). -/
-def List.mapMAccumL (f : β' → α → m' (β' × γ')) : β' → List α → m' (β' × List γ')
+def List.mapAccumLM (f : β' → α → m' (β' × γ')) : β' → List α → m' (β' × List γ')
   | a, [] => pure (a, [])
   | a, x :: xs => do
     let (a', y) ← f a x
-    let (a'', ys) ← List.mapMAccumL f a' xs
+    let (a'', ys) ← List.mapAccumLM f a' xs
     pure (a'', y :: ys)
-#align list.mmap_accuml List.mapMAccumL
+#align list.mmap_accuml List.mapAccumLM
 
 end Monad
 
@@ -207,8 +207,8 @@ variable {e : Type v}
 protected def bind {α β} : Sum e α → (α → Sum e β) → Sum e β
   | inl x, _ => inl x
   | inr x, f => f x
-#align sum.bind Sum.bindₓ
--- incorrectly marked as a bad translation by mathport
+#align sum.bind Sum.bind
+-- incorrectly marked as a bad translation by mathport, so we do not mark with `ₓ`.
 
 instance : Monad (Sum.{v, u} e) where
   pure := @Sum.inr e
