@@ -683,10 +683,9 @@ theorem inf_lt_sup : a ⊓ b < a ⊔ b ↔ a ≠ b := by
     simp at H
 
   · refine' fun Hne => lt_iff_le_and_ne.2 ⟨inf_le_sup, fun Heq => Hne _⟩
-    refine' le_antisymm _ _
-    exacts[le_sup_left.trans (Heq.symm.trans_le inf_le_right),
-      le_sup_right.trans (Heq.symm.trans_le inf_le_left)]
-
+    exact le_antisymm
+      (le_sup_left.trans (Heq.symm.trans_le inf_le_right))
+      (le_sup_right.trans (Heq.symm.trans_le inf_le_left))
 #align inf_lt_sup inf_lt_sup
 
 -- Porting note: was @[simp]
@@ -716,8 +715,7 @@ theorem sup_inf_self : a ⊔ a ⊓ b = a := by simp
 theorem sup_eq_iff_inf_eq : a ⊔ b = b ↔ a ⊓ b = a := by rw [sup_eq_right, ← inf_eq_left]
 #align sup_eq_iff_inf_eq sup_eq_iff_inf_eq
 
-theorem Lattice.ext {α} {A B : Lattice α}
-    (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
+theorem Lattice.ext {α} {A B : Lattice α} (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
     A = B := by
   cases A
   cases B
@@ -904,7 +902,7 @@ theorem sup_eq_maxDefault [SemilatticeSup α] [DecidableRel ((· ≤ ·) : α �
     (· ⊔ ·) = (maxDefault : α → α → α) := by
   ext (x y)
   unfold maxDefault
-  split <;> rename_i h'
+  split_ifs with h'
   exacts[sup_of_le_right h', sup_of_le_left $ (total_of (· ≤ ·) x y).resolve_left h']
 #align sup_eq_max_default sup_eq_maxDefault
 
@@ -913,7 +911,7 @@ theorem inf_eq_minDefault [SemilatticeInf α] [DecidableRel ((· ≤ ·) : α �
     (· ⊓ ·) = (minDefault : α → α → α) := by
   ext (x y)
   unfold minDefault
-  split <;> rename_i h'
+  split_ifs with h'
   exacts[inf_of_le_left h', inf_of_le_right $ (total_of (· ≤ ·) x y).resolve_left h']
 #align inf_eq_min_default inf_eq_minDefault
 
@@ -1327,9 +1325,9 @@ protected def semilatticeSup [SemilatticeSup α] {P : α → Prop}
     SemilatticeSup { x : α // P x } :=
   { inferInstanceAs (PartialOrder (Subtype P)) with
     sup := fun x y => ⟨x.1 ⊔ y.1, Psup x.2 y.2⟩,
-    le_sup_left := fun x y => @le_sup_left _ _ (x : α) y,
-    le_sup_right := fun x y => @le_sup_right _ _ (x : α) y,
-    sup_le := fun _ _ _ h1 h2 => @sup_le α _ _ _ _ h1 h2 }
+    le_sup_left := fun _ _ => le_sup_left,
+    le_sup_right := fun _ _ => le_sup_right,
+    sup_le := fun _ _ _ h1 h2 => sup_le h1 h2 }
 #align subtype.semilattice_sup Subtype.semilatticeSup
 
 /-- A subtype forms a `⊓`-semilattice if `⊓` preserves the property.
@@ -1340,9 +1338,9 @@ protected def semilatticeInf [SemilatticeInf α] {P : α → Prop}
     SemilatticeInf { x : α // P x } :=
   { inferInstanceAs (PartialOrder (Subtype P)) with
     inf := fun x y => ⟨x.1 ⊓ y.1, Pinf x.2 y.2⟩,
-    inf_le_left := fun x y => @inf_le_left _ _ (x : α) y,
-    inf_le_right := fun x y => @inf_le_right _ _ (x : α) y,
-    le_inf := fun _ _ _ h1 h2 => @le_inf α _ _ _ _ h1 h2 }
+    inf_le_left := fun _ _ => inf_le_left,
+    inf_le_right := fun _ _ => inf_le_right,
+    le_inf := fun _ _ _ h1 h2 => le_inf h1 h2 }
 #align subtype.semilattice_inf Subtype.semilatticeInf
 
 /-- A subtype forms a lattice if `⊔` and `⊓` preserve the property.
