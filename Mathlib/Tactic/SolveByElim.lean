@@ -81,6 +81,12 @@ def exceptEmoji : Except ε α → String
   | .error _ => crossEmoji
   | .ok _ => checkEmoji
 
+def elabContextLemmas (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)) :
+    MetaM (List Expr) := Elab.Term.TermElabM.run' do
+  let ctx' ← ctx
+  let lemmas' ← lemmas.mapM id
+  pure (lemmas' ++ ctx')
+
 /-- Attempt to solve the given metavariable by repeating applying a list of facts. -/
 def solveByElimAux (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)) (n : Nat) :
     TacticM Unit := Tactic.done <|> match n with
@@ -92,10 +98,7 @@ def solveByElimAux (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)
     -- the `do` block below runs, potentially unifying mvars in the goal.
     (return m!"{exceptEmoji ·} working on: {← addMessageContextFull goal}")
     do
-      let es ← Elab.Term.TermElabM.run' do
-        let ctx' ← ctx
-        let lemmas' ← lemmas.mapM id
-        pure (lemmas' ++ ctx')
+      let es ← elabContextLemmas lemmas ctx
 
       -- We attempt to find an expression which can be applied,
       -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
@@ -158,3 +161,9 @@ syntax (name := solveByElim) "solve_by_elim" "*"? (config)? (&" only")? (simpArg
 elab_rules : tactic | `(tactic| solve_by_elim $[only%$o]? $[[$[$t:term],*]]?) => do
   let es := (t.getD #[]).toList
   solveByElimImpl o.isSome es 6 (← getMainGoal)
+
+syntax (name := applyAssumption) "apply_assumption" : tactic
+
+elab_rules : tactic | `(tactic| apply_assumption) => do
+  let ⟨lemmas, ctx⟩ ← mkAssumptionSet false []
+  (← elabContextLemmas lemmas ctx).firstM fun e => (liftMetaTactic (Lean.MVarId.apply · e))
