@@ -457,6 +457,8 @@ namespace Attr
 
 /- M -/ syntax (name := elementwise) "elementwise" (ppSpace ident)? : attr
 
+/- N -/ syntax (name := pp_nodot) "pp_nodot" : attr
+
 end Attr
 
 namespace Command
