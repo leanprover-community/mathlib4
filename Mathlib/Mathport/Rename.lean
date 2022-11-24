@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Selsam
 -/
 import Lean
+import Mathlib.Util.MapsTo
 
 namespace Mathlib.Prelude.Rename
 
@@ -62,7 +63,7 @@ def getRenameMap (env : Environment) : RenameMap :=
   renameExtension.getState env
 
 def addNameAlignment (n3 : Name) (n4 : Name) (synthetic := false) (dubious := "") : CoreM Unit := do
-  modifyEnv fun env => renameExtension.addEntry env { n3, n4, synthetic, dubious }
+  modifyEnv fun env ↦ renameExtension.addEntry env { n3, n4, synthetic, dubious }
 
 /-- The `@[binport]` attribute should not be added manually, it is added automatically by mathport
 to definitions that it created based on a lean 3 definition (as opposed to pre-existing
