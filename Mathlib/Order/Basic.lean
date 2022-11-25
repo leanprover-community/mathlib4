@@ -424,7 +424,8 @@ theorem le_implies_le_of_le_of_le {a b c d : α} [Preorder α] (hca : c ≤ a) (
 @[ext]
 theorem Preorder.toLE_injective {α : Type _} : Function.Injective (@Preorder.toLE α) :=
   fun A B h ↦ match A, B with
-  | { lt := A_lt, lt_iff_le_not_le := A_iff, .. }, { lt := B_lt, lt_iff_le_not_le := B_iff, .. } => by
+  | { lt := A_lt, lt_iff_le_not_le := A_iff, .. },
+    { lt := B_lt, lt_iff_le_not_le := B_iff, .. } => by
     cases h
     have : A_lt = B_lt := by
       funext a b
