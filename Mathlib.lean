@@ -145,6 +145,7 @@ import Mathlib.Order.GameAdd
 import Mathlib.Order.Iterate
 import Mathlib.Order.Lattice
 import Mathlib.Order.Max
+import Mathlib.Order.MinMax
 import Mathlib.Order.Monotone
 import Mathlib.Order.RelClasses
 import Mathlib.Order.Synonym
