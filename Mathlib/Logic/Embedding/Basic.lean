@@ -141,12 +141,13 @@ protected def refl (α : Sort _) : α ↪ α :=
 #align function.embedding.refl Function.Embedding.refl
 
 -- porting note: in Lean 3 this was tagged `@[trans]`
--- **TODO** Do I need to make a `Trans` instance?
 /-- Composition of `f : α ↪ β` and `g : β ↪ γ`. -/
 @[simps (config := { simpRhs := true })]
 protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
   ⟨g ∘ f, g.injective.comp f.injective⟩
 #align function.embedding.trans Function.Embedding.trans
+
+instance : Trans Embedding Embedding Embedding := ⟨Embedding.trans⟩
 
 @[simp]
 theorem equiv_to_embedding_trans_symm_to_embedding {α β : Sort _} (e : α ≃ β) :
