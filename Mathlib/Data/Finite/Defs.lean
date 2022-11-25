@@ -115,9 +115,9 @@ instance [Infinite α] : Infinite (PLift α) :=
 instance {α : Type v} [Infinite α] : Infinite (ULift.{u} α) :=
   Equiv.ulift.infinite_iff.2 ‹_›
 
-theorem finite_orInfinite (α : Sort _) : Finite α ∨ Infinite α :=
+theorem finite_or_infinite (α : Sort _) : Finite α ∨ Infinite α :=
   or_iff_not_imp_left.2 not_finite_iff_infinite.1
-#align finite_or_infinite finite_orInfinite
+#align finite_or_infinite finite_or_infinite
 
 /-- `Infinite α` is not `Finite`-/
 theorem not_finite (α : Sort _) [Infinite α] [Finite α] : False :=
