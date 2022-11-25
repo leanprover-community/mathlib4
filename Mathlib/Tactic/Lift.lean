@@ -3,7 +3,8 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathbin.Tactic.Rcases
+import Mathlib.Tactic.Cases
+import Mathlib.Init.Data.Int.Order
 
 /-!
 # lift tactic
@@ -23,39 +24,39 @@ class CanLift (α β : Sort _) (coe : outParam <| β → α) (cond : outParam <|
   prf : ∀ x : α, cond x → ∃ y : β, coe y = x
 #align can_lift CanLift
 
-instance : CanLift ℤ ℕ coe ((· ≤ ·) 0) :=
-  ⟨fun n hn => ⟨n.natAbs, Int.natAbs_of_nonneg hn⟩⟩
+instance : CanLift ℤ ℕ (fun n : ℕ ↦ n) ((· ≤ ·) 0) :=
+  ⟨fun n hn ↦ ⟨n.natAbs, Int.natAbs_of_nonneg hn⟩⟩
 
 /-- Enable automatic handling of pi types in `can_lift`. -/
 instance Pi.canLift (ι : Sort _) (α β : ι → Sort _) (coe : ∀ i, β i → α i) (P : ∀ i, α i → Prop)
-    [∀ i : ι, CanLift (α i) (β i) (coe i) (P i)] :
-    CanLift (∀ i : ι, α i) (∀ i : ι, β i) (fun f i => coe i (f i)) fun f =>
-      ∀ i,
-        P i
-          (f
-            i) where prf f hf :=
-    ⟨fun i => Classical.choose (CanLift.prf (f i) (hf i)),
-      funext fun i => Classical.choose_spec (CanLift.prf (f i) (hf i))⟩
+    [∀ i, CanLift (α i) (β i) (coe i) (P i)] :
+    CanLift (∀ i, α i) (∀ i, β i) (fun f i ↦ coe i (f i)) fun f ↦ ∀ i, P i (f i) where
+  prf f hf := ⟨fun i => Classical.choose (CanLift.prf (f i) (hf i)),
+    funext fun i => Classical.choose_spec (CanLift.prf (f i) (hf i))⟩
 #align pi.can_lift Pi.canLift
 
-theorem Subtype.exists_pi_extension {ι : Sort _} {α : ι → Sort _} [ne : ∀ i, Nonempty (α i)] {p : ι → Prop}
-    (f : ∀ i : Subtype p, α i) : ∃ g : ∀ i : ι, α i, (fun i : Subtype p => g i) = f := by classical
-  refine' ⟨fun i => if hi : p i then f ⟨i, hi⟩ else Classical.choice (Ne i), funext _⟩
-  rintro ⟨i, hi⟩
-  exact dif_pos hi
+theorem Subtype.exists_pi_extension {ι : Sort _} {α : ι → Sort _} [ne : ∀ i, Nonempty (α i)]
+    {p : ι → Prop} (f : ∀ i : Subtype p, α i) :
+    ∃ g : ∀ i : ι, α i, (fun i : Subtype p => g i) = f := by
+  haveI : DecidablePred p := fun i ↦ Classical.propDecidable (p i)
+  exact ⟨fun i => if hi : p i then f ⟨i, hi⟩ else Classical.choice (ne i),
+    funext fun i ↦ dif_pos i.2⟩
 #align subtype.exists_pi_extension Subtype.exists_pi_extension
 
-instance PiSubtype.canLift (ι : Sort _) (α : ι → Sort _) [ne : ∀ i, Nonempty (α i)] (p : ι → Prop) :
-    CanLift (∀ i : Subtype p, α i) (∀ i, α i) (fun f i => f i) fun _ =>
-      True where prf f _ := Subtype.exists_pi_extension f
+instance PiSubtype.canLift (ι : Sort _) (α : ι → Sort _) [∀ i, Nonempty (α i)] (p : ι → Prop) :
+    CanLift (∀ i : Subtype p, α i) (∀ i, α i) (fun f i => f i) fun _ => True where
+  prf f _ := Subtype.exists_pi_extension f
 #align pi_subtype.can_lift PiSubtype.canLift
 
-instance PiSubtype.canLift' (ι : Sort _) (α : Sort _) [ne : Nonempty α] (p : ι → Prop) :
+-- TODO: test if we need this instance in Lean 4
+instance PiSubtype.canLift' (ι : Sort _) (α : Sort _) [Nonempty α] (p : ι → Prop) :
     CanLift (Subtype p → α) (ι → α) (fun f i => f i) fun _ => True :=
   PiSubtype.canLift ι (fun _ => α) p
 #align pi_subtype.can_lift' PiSubtype.canLift'
 
-instance Subtype.canLift {α : Sort _} (p : α → Prop) : CanLift α { x // p x } coe p where prf a ha := ⟨⟨a, ha⟩, rfl⟩
+instance Subtype.canLift {α : Sort _} (p : α → Prop) :
+    CanLift α { x // p x } Subtype.val p where prf a ha :=
+  ⟨⟨a, ha⟩, rfl⟩
 #align subtype.can_lift Subtype.canLift
 
 open Tactic
