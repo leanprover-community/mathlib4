@@ -2325,11 +2325,11 @@ theorem disjoint_assoc : Disjoint (a ⊓ b) c ↔ Disjoint a (b ⊓ c) := by
 #align disjoint_assoc disjoint_assoc
 
 theorem disjoint_left_comm : Disjoint a (b ⊓ c) ↔ Disjoint b (a ⊓ c) := by
-  simp_rw [disjoint_iff_inf_le, inf_left_comm]
+  simp_rw [disjoint_iff_inf_le, inf_left_comm]; rfl
 #align disjoint_left_comm disjoint_left_comm
 
 theorem disjoint_right_comm : Disjoint (a ⊓ b) c ↔ Disjoint (a ⊓ c) b := by
-  simp_rw [disjoint_iff_inf_le, inf_right_comm]
+  simp_rw [disjoint_iff_inf_le, inf_right_comm]; rfl
 #align disjoint_right_comm disjoint_right_comm
 
 variable (c)
@@ -2368,12 +2368,12 @@ variable [DistribLattice α] [OrderBot α] {a b c : α}
 
 @[simp]
 theorem disjoint_sup_left : Disjoint (a ⊔ b) c ↔ Disjoint a c ∧ Disjoint b c := by
-  simp only [disjoint_iff, inf_sup_right, sup_eq_bot_iff]
+  simp only [disjoint_iff, inf_sup_right, sup_eq_bot_iff]; rfl
 #align disjoint_sup_left disjoint_sup_left
 
 @[simp]
 theorem disjoint_sup_right : Disjoint a (b ⊔ c) ↔ Disjoint a b ∧ Disjoint a c := by
-  simp only [disjoint_iff, inf_sup_left, sup_eq_bot_iff]
+  simp only [disjoint_iff, inf_sup_left, sup_eq_bot_iff]; rfl
 #align disjoint_sup_right disjoint_sup_right
 
 theorem Disjoint.sup_left (ha : Disjoint a c) (hb : Disjoint b c) : Disjoint (a ⊔ b) c :=
@@ -2825,14 +2825,17 @@ theorem PropCat.disjoint_iff {P Q : Prop} : Disjoint P Q ↔ ¬(P ∧ Q) :=
 #align Prop.disjoint_iff PropCat.disjoint_iff
 
 @[simp]
-theorem PropCat.codisjoint_iff {P Q : Prop} : Codisjoint P Q ↔ P ∨ Q :=
-  codisjoint_iff_le_sup.trans <| forall_const _
+theorem PropCat.codisjoint_iff {P Q : Prop} : Codisjoint P Q ↔ P ∨ Q := by
+  refine codisjoint_iff_le_sup.trans ?_
+  simp only [le_Prop_eq, sup_Prop_eq, eq_iff_iff, PropCat.top_eq_true]
+  exact forall_const _
 #align Prop.codisjoint_iff PropCat.codisjoint_iff
 
 @[simp]
 theorem PropCat.isCompl_iff {P Q : Prop} : IsCompl P Q ↔ ¬(P ↔ Q) := by
   rw [is_compl_iff, PropCat.disjoint_iff, PropCat.codisjoint_iff, not_iff]
-  tauto
+  -- Porting note: was `tauto`
+  by_cases hP : P <;> by_cases hQ : Q <;> simp [hP, hQ]
 #align Prop.is_compl_iff PropCat.isCompl_iff
 
 section
@@ -2927,13 +2930,13 @@ instance : BoundedOrder Bool where
   bot_le _ := false_le
 
 @[simp]
-theorem top_eq_tt : ⊤ = tt :=
+theorem top_eq_true : ⊤ = true :=
   rfl
-#align top_eq_tt top_eq_tt
+#align top_eq_tt top_eq_true
 
 @[simp]
-theorem bot_eq_ff : ⊥ = ff :=
+theorem bot_eq_false : ⊥ = false :=
   rfl
-#align bot_eq_ff bot_eq_ff
+#align bot_eq_ff bot_eq_false
 
 end Bool
