@@ -189,7 +189,8 @@ Given a list `ls` of lists of proofs of comparisons, `findLinarithContradiction 
 prove `false` by calling `linarith` on each list in succession. It will stop at the first proof of
 `false`, and fail if no contradiction is found with any list.
 -/
-def findLinarithContradiction (cfg : LinarithConfig) (g : MVarId) (ls : List (List Expr)) : MetaM Expr :=
+def findLinarithContradiction (cfg : LinarithConfig) (g : MVarId) (ls : List (List Expr)) :
+    MetaM Expr :=
   ls.firstM (fun L => proveFalseByLinarith cfg g L)
     <|> throwError "linarith failed to find a contradiction"
 
