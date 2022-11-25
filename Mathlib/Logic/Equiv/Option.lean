@@ -14,7 +14,7 @@ import Mathlib.Logic.Equiv.Defs
 
 We define
 * `Equiv.optionCongr`: the `Option α ≃ Option β` constructed from `e : α ≃ β` by sending `none` to
-  `none`, and applying a `e` elsewhere.
+  `none`, and applying `e` elsewhere.
 * `Equiv.removeNone`: the `α ≃ β` constructed from `Option α ≃ Option β` by removing `none` from
   both sides.
 -/
@@ -120,18 +120,18 @@ def removeNone : α ≃ β where
 #align equiv.remove_none Equiv.removeNone
 
 @[simp]
-theorem remove_none_symm : (removeNone e).symm = removeNone e.symm :=
+theorem removeNone_symm : (removeNone e).symm = removeNone e.symm :=
   rfl
-#align equiv.remove_none_symm Equiv.remove_none_symm
+#align equiv.remove_none_symm Equiv.removeNone_symm
 
-theorem remove_none_some {x : α} (h : ∃ x', e (some x) = some x') :
+theorem removeNone_some {x : α} (h : ∃ x', e (some x) = some x') :
     some (removeNone e x) = e (some x) :=
   removeNone_aux_some e h
-#align equiv.remove_none_some Equiv.remove_none_some
+#align equiv.remove_none_some Equiv.removeNone_some
 
-theorem remove_none_none {x : α} (h : e (some x) = none) : some (removeNone e x) = e none :=
+theorem removeNone_none {x : α} (h : e (some x) = none) : some (removeNone e x) = e none :=
   removeNone_aux_none e h
-#align equiv.remove_none_none Equiv.remove_none_none
+#align equiv.remove_none_none Equiv.removeNone_none
 
 @[simp]
 theorem option_symm_apply_none_iff : e.symm none = none ↔ e none = none :=
@@ -140,10 +140,10 @@ theorem option_symm_apply_none_iff : e.symm none = none ↔ e none = none :=
 
 theorem some_removeNone_iff {x : α} : some (removeNone e x) = e none ↔ e.symm none = some x := by
   cases' h : e (some x) with a
-  · rw [remove_none_none _ h]
+  · rw [removeNone_none _ h]
     simpa using (congr_arg e.symm h).symm
 
-  · rw [remove_none_some _ ⟨a, h⟩]
+  · rw [removeNone_some _ ⟨a, h⟩]
     have h1 := congr_arg e.symm h
     rw [symm_apply_apply] at h1
     simp only [false_iff_iff, apply_eq_iff_eq]
@@ -153,7 +153,7 @@ theorem some_removeNone_iff {x : α} : some (removeNone e x) = e none ↔ e.symm
 
 @[simp]
 theorem removeNone_option_congr (e : α ≃ β) : removeNone e.optionCongr = e :=
-  Equiv.ext fun x => Option.some_injective _ <| remove_none_some _ ⟨e x, by simp [EquivFunctor.map]⟩
+  Equiv.ext fun x => Option.some_injective _ <| removeNone_some _ ⟨e x, by simp [EquivFunctor.map]⟩
 #align equiv.remove_none_option_congr Equiv.removeNone_option_congr
 
 end RemoveNone
