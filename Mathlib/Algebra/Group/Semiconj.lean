@@ -35,7 +35,7 @@ def SemiconjBy [Mul M] (a x y : M) : Prop :=
 namespace SemiconjBy
 
 /-- Equality behind `SemiconjBy a x y`; useful for rewriting. -/
-@[to_additive "Equality behind `add_semiconj_by a x y`; useful for rewriting."]
+@[to_additive "Equality behind `AddSemiconjBy a x y`; useful for rewriting."]
 protected theorem eq [Mul S] {a x y : S} (h : SemiconjBy a x y) : a * x = y * a :=
   h
 #align semiconj_by.eq SemiconjBy.eq
@@ -216,6 +216,6 @@ theorem semiconjBy_iff_eq [CancelCommMonoid M] {a x y : M} : SemiconjBy a x y �
 
 /-- `a` semiconjugates `x` to `a * x * a⁻¹`. -/
 @[to_additive "`a` semiconjugates `x` to `a + x + -a`."]
-theorem Units.mk_semiconj_by [Monoid M] (u : Mˣ) (x : M) : SemiconjBy (↑u) x (u * x * ↑u⁻¹) := by
+theorem Units.mk_semiconjBy [Monoid M] (u : Mˣ) (x : M) : SemiconjBy (↑u) x (u * x * ↑u⁻¹) := by
   unfold SemiconjBy; rw [Units.inv_mul_cancel_right]
-#align units.mk_semiconj_by Units.mk_semiconj_by
+#align units.mk_semiconj_by Units.mk_semiconjBy
