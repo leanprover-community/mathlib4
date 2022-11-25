@@ -222,7 +222,7 @@ def checkGuessName (s t : String) : Elab.Command.CommandElabM Unit :=
 
 run_cmd
   checkGuessName "HMul_Eq_LEOne_Conj₂MulLT'" "HAdd_Eq_Nonpos_Conj₂AddLT'"
-  checkGuessName "OneMulSmulInvDivPow"       "ZeroAddVaddNegSubNsmul"
+  checkGuessName "OneMulSMulInvDivPow"       "ZeroAddVAddNegSubSMul"
   checkGuessName "ProdFinprodNpowZpow"       "SumFinsumNsmulZsmul"
 
   -- The current design swaps all instances of `Comm`+`Add` in order to have
@@ -247,14 +247,9 @@ run_cmd
   checkGuessName "leftCancelMonoid" "addLeftCancelMonoid"
 
   checkGuessName "LTOne_LEOne_OneLE_OneLT" "Neg_Nonpos_Nonneg_Pos"
-
-  -- The current design splits this as `LTH, Mul, HPow, LEH, Div` before it translates.
-  -- This is kinda a bug.
-  checkGuessName "LTHMulHPowLEHDiv" "LTHAddHMulLEHSub"
+  checkGuessName "LTHMulHPowLEHDiv" "LTHAddHSMulLEHSub"
   checkGuessName "OneLEHMul" "NonnegHAdd"
-
-  -- -- TODO: This fails at the moment:
-  -- checkGuessName "OneLTHPow" "PosHMul"
+  checkGuessName "OneLTHPow" "PosHSMul"
 
 end guessName
 

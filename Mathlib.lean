@@ -12,11 +12,13 @@ import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.HierarchyDesign
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.Group
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Monoid

@@ -981,7 +981,7 @@ theorem le_Prop_eq : ((· ≤ ·) : Prop → Prop → Prop) = (fun p q ↦ p →
 theorem subrelation_iff_le {r s : α → α → Prop} : Subrelation r s ↔ r ≤ s :=
   Iff.rfl
 
-instance PropCat.partialOrder : PartialOrder Prop where
+instance : PartialOrder Prop where
   __ := inferInstanceAs (LE Prop)
   le_refl := fun _ ↦ id
   le_trans := fun a b c f g ↦ g ∘ f
