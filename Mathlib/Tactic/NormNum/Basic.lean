@@ -38,47 +38,48 @@ partial def _root_.Lean.Expr.numeral? (e : Expr) : Option ℕ :=
 namespace Meta.NormNum
 open Qq
 
-theorem isNat_zero (α) [Semiring α] : IsNat (Zero.zero : α) (nat_lit 0) := ⟨Nat.cast_zero.symm⟩
+theorem isNat_zero (α) [AddMonoidWithOne α] : IsNat (Zero.zero : α) (nat_lit 0) :=
+  ⟨Nat.cast_zero.symm⟩
 
 /-- The `norm_num` extension which identifies the expression `Zero.zero`, returning `0`. -/
 @[norm_num Zero.zero] def evalZero : NormNumExt where eval {u α} e := do
-  let sα ← inferSemiring α
+  let sα ← inferAddMonoidWithOne α
   match e with
   | ~q(Zero.zero) => return (.isNat sα (mkRawNatLit 0) q(isNat_zero $α) : Result q(Zero.zero))
 
-theorem isNat_one (α) [Semiring α] : IsNat (One.one : α) (nat_lit 1) := ⟨Nat.cast_one.symm⟩
+theorem isNat_one (α) [AddMonoidWithOne α] : IsNat (One.one : α) (nat_lit 1) := ⟨Nat.cast_one.symm⟩
 
 /-- The `norm_num` extension which identifies the expression `One.one`, returning `1`. -/
 @[norm_num One.one] def evalOne : NormNumExt where eval {u α} e := do
-  let sα ← inferSemiring α
+  let sα ← inferAddMonoidWithOne α
   match e with
   | ~q(One.one) => return (.isNat sα (mkRawNatLit 1) q(isNat_one $α) : Result q(One.one))
 
-theorem isNat_ofNat (α : Type u_1) [Semiring α] (n : ℕ) [OfNat α n]
-  [LawfulOfNat α n] : IsNat (OfNat.ofNat n : α) n := ⟨LawfulOfNat.eq_ofNat.symm⟩
+theorem isNat_ofNat (α : Type u_1) [AddMonoidWithOne α] {a : α} {n : ℕ}
+    (h : n = a) : IsNat a n := ⟨h.symm⟩
 
 /-- The `norm_num` extension which identifies an expression `OfNat.ofNat n`, returning `n`. -/
 @[norm_num OfNat.ofNat _] def evalOfNat : NormNumExt where eval {u α} e := do
-  let sα ← inferSemiring α
+  let sα ← inferAddMonoidWithOne α
   match e with
   | ~q(@OfNat.ofNat _ $n $oα) =>
     let n : Q(ℕ) ← whnf n
     guard n.isNatLit
-    have : Q(OfNat $α $n) := oα
-    _ ← synthInstanceQ (q(LawfulOfNat $α $n) : Q(Prop))
-    return (.isNat sα n q(isNat_ofNat $α $n) : Result q((OfNat.ofNat $n : $α)))
+    let ⟨a, (pa : Q($n = $e))⟩ ← mkOfNat α sα n
+    guard <|← isDefEq a e
+    return .isNat sα n (q(isNat_ofNat $α $pa) : Expr)
 
-theorem isNat_cast {R} [Semiring R] (n m : ℕ) :
+theorem isNat_cast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
 
 /-- The `norm_num` extension which identifies an expression `Nat.cast n`, returning `n`. -/
 @[norm_num Nat.cast _] def evalNatCast : NormNumExt where eval {u α} e := do
-  let sα ← inferSemiring α
+  let sα ← inferAddMonoidWithOne α
   match e with
   | ~q(Nat.cast $a) =>
-    let ⟨na, pa⟩ ← deriveNat a q(instSemiringNat)
+    let ⟨na, pa⟩ ← deriveNat a q(instAddMonoidWithOneNat)
     let pa : Q(IsNat $a $na) := pa
-    return (.isNat sα na q(@isNat_cast $α _ $a $na $pa) : Result q((Nat.cast $a : $α)))
+    return (.isNat sα na q(@isNat_cast $α _ $a $na $pa) : Result q(Nat.cast $a : $α))
 
 theorem isNat_int_cast {R} [Ring R] (n : ℤ) (m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
@@ -93,17 +94,17 @@ theorem isInt_cast {R} [Ring R] (n m : ℤ) :
   | ~q(Int.cast $a) =>
     match ← derive (α := q(ℤ)) a with
     | .isNat _ na pa =>
-      let sα : Q(Semiring $α) := q(Ring.toSemiring)
-      let pa : Q(@IsNat _ Ring.toSemiring $a $na) := pa
-      return (.isNat sα na q(@isNat_int_cast $α _ $a $na $pa) : Result q((Int.cast $a : $α)))
+      let sα : Q(AddMonoidWithOne $α) := q(instAddMonoidWithOne)
+      let pa : Q(@IsNat _ instAddMonoidWithOne $a $na) := pa
+      return (.isNat sα na q(@isNat_int_cast $α _ $a $na $pa) : Result q(Int.cast $a : $α))
     | .isNegNat _ na pa =>
       let pa : Q(@IsInt _ instRingInt $a (.negOfNat $na)) := pa
-      return (.isNegNat rα na q(isInt_cast $a (.negOfNat $na) $pa) : Result q((Int.cast $a : $α)))
+      return (.isNegNat rα na q(isInt_cast $a (.negOfNat $na) $pa) : Result q(Int.cast $a : $α))
     | _ => failure
 
-theorem isNat_add {α} [Semiring α] : {a b : α} → {a' b' c : ℕ} →
+theorem isNat_add {α} [AddMonoidWithOne α] : {a b : α} → {a' b' c : ℕ} →
     IsNat a a' → IsNat b b' → Nat.add a' b' = c → IsNat (a + b) c
-  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨Nat.cast_add.symm⟩
+  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Nat.cast_add _ _).symm⟩
 
 theorem isInt_add {α} [Ring α] : {a b : α} → {a' b' c : ℤ} →
     IsInt a a' → IsInt b b' → Int.add a' b' = c → IsInt (a + b) c
@@ -189,12 +190,9 @@ theorem isInt_mul {α} [Ring α] : {a b : α} → {a' b' c : ℤ} →
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ * _, Mul.mul _ _] def evalMul : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q($α))) (b : Q($α)) ← withReducible (whnf e) | failure
+  let sα ← inferSemiring α
   let ra ← derive a; let rb ← derive b
-  match ra, rb with
-  | .isNat _ .., .isNat _ .. | .isNat _ .., .isNegNat _ ..
-  | .isNegNat _ .., .isNat _ .. | .isNegNat _ .., .isNegNat _ .. =>
-    guard <|← withNewMCtxDepth <| isDefEq f q(HMul.hMul (α := $α))
-  | _, _ => failure
+  guard <|← withNewMCtxDepth <| isDefEq f q(HMul.hMul (α := $α))
   let rec
   /-- Main part of `evalMul`. -/
   core : Option (Result e) := do
@@ -203,13 +201,14 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       let zc := za * zb
       have c := mkRawIntLit zc
       let r : Q(Int.mul $na $nb = $c) := (q(Eq.refl $c) : Expr)
-      return (.isInt rα zc q(isInt_mul $pa $pb $r) : Result q($a * $b))
+      return (.isInt rα zc (z := c) (q(isInt_mul $pa $pb $r) : Expr) : Result q($a * $b))
     match ra, rb with
-    | .isNat _ na pa, .isNat sα nb pb =>
-      have pa : Q(IsNat $a $na) := pa
+    | .isNat _ na pa, .isNat mα nb pb =>
+      let pa : Q(@IsNat _ AddCommMonoidWithOne.toAddMonoidWithOne $a $na) := pa
+      let pb : Q(@IsNat _ AddCommMonoidWithOne.toAddMonoidWithOne $b $nb) := pb
       have c : Q(ℕ) := mkRawNatLit (na.natLit! * nb.natLit!)
       let r : Q(Nat.mul $na $nb = $c) := (q(Eq.refl $c) : Expr)
-      return (.isNat sα c q(isNat_mul $pa $pb $r) : Result q($a * $b))
+      return (.isNat mα c (q(isNat_mul (α := $α) $pa $pb $r) : Expr) : Result q($a * $b))
     | .isNat _ .., .isNegNat rα ..
     | .isNegNat rα .., .isNat _ ..
     | .isNegNat _ .., .isNegNat rα .. => intArm rα
@@ -229,26 +228,25 @@ such that `norm_num` successfully recognises both `a` and `b`, with `b : ℕ`. -
 @[norm_num (_ : α) ^ (_ : ℕ), Pow.pow _ (_ : ℕ)]
 def evalPow : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q($α))) (b : Q(ℕ)) ← withReducible (whnf e) | failure
-  let ⟨nb, pb⟩ ← deriveNat b q(instSemiringNat)
+  let ⟨nb, pb⟩ ← deriveNat b q(instAddMonoidWithOneNat)
+  let sα ← inferSemiring α
   let ra ← derive a
-  match ra with
-  | .isNat _ .. | .isNegNat _ .. =>
-    guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
-  | _ => failure
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
   let rec
   /-- Main part of `evalPow`. -/
   core : Option (Result e) := do
     match ra with
     | .isNat sα na pa =>
+      let pa : Q(@IsNat _ AddCommMonoidWithOne.toAddMonoidWithOne $a $na) := pa
       have c : Q(ℕ) := mkRawNatLit (na.natLit! ^ nb.natLit!)
       let r : Q(Nat.pow $na $nb = $c) := (q(Eq.refl $c) : Expr)
       let pb : Q(IsNat $b $nb) := pb
-      return (.isNat sα c q(isNat_pow $pa $pb $r) : Result q($a ^ $b))
+      return (.isNat sα c (q(isNat_pow $pa $pb $r) : Expr) : Result q($a ^ $b))
     | .isNegNat rα .. =>
       let ⟨za, na, pa⟩ ← ra.toInt
       let zc := za ^ nb.natLit!
       let c := mkRawIntLit zc
       let r : Q(Int.pow $na $nb = $c) := (q(Eq.refl $c) : Expr)
-      return (.isInt rα zc (z := c) q(isInt_pow $pa $pb $r) : Result q($a ^ $b))
+      return (.isInt rα zc (z := c) (q(isInt_pow $pa $pb $r) : Expr) : Result q($a ^ $b))
     | _ => failure
   core

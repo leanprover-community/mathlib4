@@ -146,9 +146,9 @@ instance Nat.shrinkable : Shrinkable Nat where
 def Fin.shrink {n : Nat} (m : Fin n.succ) :
     List { y : Fin n.succ // WellFoundedRelation.rel y m } :=
   let shrinks := Nat.shrink m.val
-  shrinks.map (λ x => {x with property := by
+  shrinks.map (λ x => { x with property := (by
     simp_wf
-    exact Nat.succ_lt_succ $ lt_of_le_of_lt (Nat.mod_le _ _) x.property})
+    exact Nat.succ_lt_succ $ lt_of_le_of_lt (Nat.mod_le _ _) x.property) })
 
 instance Fin.shrinkable {n : Nat} : Shrinkable (Fin n.succ) where
   shrink := Fin.shrink
@@ -166,9 +166,9 @@ instance Char.shrinkable : Shrinkable Char := {}
 instance Prod.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] : Shrinkable (Prod α β) where
   shrink := λ (fst,snd) =>
     let shrink1 := shrA.shrink fst |>.map
-      fun ⟨x, _⟩ => ⟨(x, snd), by simp_wf; apply Prod.Lex.left; simp_all_arith⟩
+      fun ⟨x, _⟩ ↦ ⟨(x, snd), by simp_wf; apply Prod.Lex.left; simp_all_arith⟩
     let shrink2 := shrB.shrink snd |>.map
-      fun ⟨x, _⟩ => ⟨(fst, x), by simp_wf; apply Prod.Lex.right; simp_all_arith⟩
+      fun ⟨x, _⟩ ↦ ⟨(fst, x), by simp_wf; apply Prod.Lex.right; simp_all_arith⟩
     shrink1 ++ shrink2
 
 end Shrinkers

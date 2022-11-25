@@ -7,6 +7,7 @@ notation, basic datatypes and type classes
 -/
 import Mathlib.Mathport.Rename
 import Std.Classes.SetNotation
+import Std.Classes.Dvd
 
 /-! ### alignments from lean 3 `init.core` -/
 
@@ -21,7 +22,7 @@ import Std.Classes.SetNotation
 #align punit.star PUnit.unit
 #align unit.star Unit.unit
 
-#align thunk Thunk'
+#align thunk Thunkₓ
 
 -- Note: we do not currently auto-align constants.
 #align quot Quot
@@ -30,6 +31,7 @@ import Std.Classes.SetNotation
 #align quot.ind Quot.ind
 
 #align heq HEq
+#align prod Prod
 #align pprod PProd
 
 #align and.left And.left
@@ -45,11 +47,11 @@ import Std.Classes.SetNotation
 
 def Prod.mk.injArrow {α : Type u} {β : Type v} {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
     (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort w⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
-  fun h₁ _ h₂ => Prod.noConfusion h₁ h₂
+  fun h₁ _ h₂ ↦ Prod.noConfusion h₁ h₂
 
 def PProd.mk.injArrow {α : Type u} {β : Type v} {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
     (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort w⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
-  fun h₁ _ h₂ => Prod.noConfusion h₁ h₂
+  fun h₁ _ h₂ ↦ Prod.noConfusion h₁ h₂
 
 #align psum PSum
 #align or.intro_right Or.intro_rightₓ -- reorder implicits
@@ -74,16 +76,16 @@ def PProd.mk.injArrow {α : Type u} {β : Type v} {x₁ : α} {y₁ : β} {x₂ 
 #align has_lt LT
 #align has_lt.lt LT.lt
 #align has_append Append
-#align has_andthen AndThen'
 
 @[deprecated AndThen]
 class AndThen' (α : Type u) (β : Type v) (σ : outParam <| Type w) where
   andthen : α → β → σ
+#align has_andthen AndThen'
 
 #align has_union Union
 #align has_equiv HasEquivₓ -- universe levels don't match
 #align has_inter Inter
-#align has_sdiff Sdiff
+#align has_sdiff SDiff
 
 #align has_subset HasSubset
 #align has_subset.subset HasSubset.Subset
@@ -100,15 +102,17 @@ class AndThen' (α : Type u) (β : Type v) (σ : outParam <| Type w) where
 #align gt GT.gt
 #align ge GE.ge
 
-#align is_lawful_singleton LawfulSingleton
+#align is_lawful_singleton IsLawfulSingleton
 
 attribute [simp] insert_emptyc_eq
 
 @[deprecated] def Std.Priority.default : Nat := 1000
 @[deprecated] def Std.Priority.max : Nat := 4294967295
+set_option linter.deprecated false in
 @[deprecated] protected def Nat.prio := Std.Priority.default + 100
 @[deprecated] def Std.Prec.max : Nat := 1024
 @[deprecated] def Std.Prec.arrow : Nat := 25
+set_option linter.deprecated false in
 @[deprecated] def Std.Prec.maxPlus : Nat := Std.Prec.max + 10
 
 #align has_sizeof SizeOf

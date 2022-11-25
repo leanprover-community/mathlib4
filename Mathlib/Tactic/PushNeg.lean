@@ -8,6 +8,7 @@ import Lean
 import Mathlib.Lean.Expr
 import Mathlib.Logic.Basic
 import Mathlib.Init.Algebra.Order
+import Mathlib.Tactic.Conv
 
 namespace Mathlib.Tactic.PushNeg
 
@@ -83,30 +84,63 @@ partial def transformNegation (e : Expr) : SimpM Simp.Step := do
       let Simp.Step.visit r₂ ← transformNegation r₁.expr | return Simp.Step.visit r₁
       return Simp.Step.visit (← Simp.mkEqTrans r₁ r₂)
 
-/-- Execute main loop of `push_neg` at the main goal. -/
-def pushNegTarget : TacticM Unit := withMainContext do
+/-- Common entry point to `push_neg` as a conv. -/
+def pushNegCore (tgt : Expr) : MetaM Simp.Result := do
   let myctx : Simp.Context :=
     { config := { eta := true },
       simpTheorems := #[ ]
       congrTheorems := (← getSimpCongrTheorems) }
+  (·.1) <$> Simp.main tgt myctx (methods := { pre := transformNegation })
+
+/--
+Push negations into the conclusion of an expression.
+For instance, an expression `¬ ∀ x, ∃ y, x ≤ y` will be transformed by `push_neg` into
+`∃ x, ∀ y, y < x`. Variable names are conserved.
+This tactic pushes negations inside expressions. For instance, given a hypothesis
+```lean
+| ¬ ∀ ε > 0, ∃ δ > 0, ∀ x, |x - x₀| ≤ δ → |f x - y₀| ≤ ε)
+```
+writing `push_neg` will turn the target into
+```lean
+| ∃ ε, ε > 0 ∧ ∀ δ, δ > 0 → (∃ x, |x - x₀| ≤ δ ∧ ε < |f x - y₀|),
+```
+(The pretty printer does *not* use the abreviations `∀ δ > 0` and `∃ ε > 0` but this issue
+has nothing to do with `push_neg`).
+
+Note that names are conserved by this tactic, contrary to what would happen with `simp`
+using the relevant lemmas.
+
+This tactic has two modes: in standard mode, it transforms `¬(p ∧ q)` into `p → ¬q`, whereas in
+distrib mode it produces `¬p ∨ ¬q`. To use distrib mode, use `set_option push_neg.use_distrib true`.
+-/
+syntax (name := pushNegConv) "push_neg" : conv
+
+/-- Execute `push_neg` as a conv tactic. -/
+@[tactic pushNegConv] def elabPushNegConv : Tactic := fun _ ↦ withMainContext do
+  Conv.applySimpResult (← pushNegCore (← instantiateMVars (← Conv.getLhs)))
+
+/--
+The syntax is `#push_neg e`, where `e` is an expression,
+which will print the `push_neg` form of `e`.
+
+`#push_neg` understands local variables, so you can use them to introduce parameters.
+-/
+macro (name := pushNeg) tk:"#push_neg " e:term : command => `(command| #conv%$tk push_neg => $e)
+
+/-- Execute main loop of `push_neg` at the main goal. -/
+def pushNegTarget : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let tgt ← instantiateMVars (← goal.getType)
-  let (myres, _) ← Simp.main tgt myctx (methods := { pre := transformNegation })
-  replaceMainGoal [← applySimpResultToTarget goal tgt myres]
+  replaceMainGoal [← applySimpResultToTarget goal tgt (← pushNegCore tgt)]
 
 /-- Execute main loop of `push_neg` at a local hypothesis. -/
 def pushNegLocalDecl (fvarId : FVarId): TacticM Unit := withMainContext do
   let ldecl ← fvarId.getDecl
   if ldecl.isAuxDecl then return
-  let tgt := (← fvarId.getDecl).type
-  let tgt ← instantiateMVars tgt
-  let myctx : Simp.Context :=
-    { config := { eta := true },
-      simpTheorems := #[ ]
-      congrTheorems := (← getSimpCongrTheorems) }
+  let tgt ← instantiateMVars ldecl.type
   let goal ← getMainGoal
-  let (myres, _) ← Simp.main tgt myctx (methods := { pre := transformNegation })
-  let some ⟨_, newGoal⟩ ← applySimpResultToLocalDecl goal fvarId myres False | throwError "fail"
+  let myres ← pushNegCore tgt
+  let some (_, newGoal) ← applySimpResultToLocalDecl goal fvarId myres False | failure
   replaceMainGoal [newGoal]
 
 /--
@@ -132,12 +166,9 @@ using say `push_neg at h h' ⊢` as usual.
 This tactic has two modes: in standard mode, it transforms `¬(p ∧ q)` into `p → ¬q`, whereas in
 distrib mode it produces `¬p ∨ ¬q`. To use distrib mode, use `set_option push_neg.use_distrib true`.
 -/
-elab "push_neg " loc:(ppSpace location)? : tactic =>
-  match loc with
-  | none => pushNegTarget
-  | some loc =>
-      let loc := expandLocation loc
-      withLocation loc
-        pushNegLocalDecl
-        pushNegTarget
-        (fun _ => logInfo "push_neg couldn't find a negation to push")
+elab "push_neg" loc:(ppSpace location)? : tactic =>
+  let loc := (loc.map expandLocation).getD (.targets #[] true)
+  withLocation loc
+    pushNegLocalDecl
+    pushNegTarget
+    (fun _ ↦ logInfo "push_neg couldn't find a negation to push")

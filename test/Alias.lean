@@ -3,8 +3,12 @@ import Mathlib
 namespace Alias
 namespace A
 
+/-- doc string for foo -/
 theorem foo : 1 + 1 = 2 := rfl
+
+/-- doc string for `alias foo` -/
 alias foo ← foo1 foo2 foo3 _root_.B.foo4
+
 example : 1 + 1 = 2 := foo1
 example : 1 + 1 = 2 := foo2
 example : 1 + 1 = 2 := foo3
@@ -32,6 +36,7 @@ alias a_iff_a_and_a ↔ _ backward
 example : True → True ∧ True := forward True
 example : True ∧ True → True := backward True
 
+/-- doc string for `alias a_iff_a_and_a` -/
 alias a_iff_a_and_a ↔ ..
 example : True → True ∧ True := a_and_a_of_a True
 example : True ∧ True → True := a_of_a_and_a True

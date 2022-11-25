@@ -3,9 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, David Renshaw
 -/
-import Lean.Elab.Command
-import Lean.Elab.Term
 import Lean
+import Mathlib.Util.MapsTo
 
 /-!
 # The `alias` command
@@ -73,6 +72,24 @@ def appendNamespace (ns : Name) : Name → Name
 | .num p n          => Name.mkNum (appendNamespace ns p) n
 | .anonymous        => ns
 
+/-- An alias can be in one of three forms -/
+inductive Target
+| plain : Name → Target
+| forward : Name → Target
+| backwards : Name → Target
+
+/-- The name underlying an alias target -/
+def Target.toName : Target → Name
+| Target.plain n => n
+| Target.forward n => n
+| Target.backwards n => n
+
+/-- The docstring for an alias. -/
+def Target.toString : Target → String
+| Target.plain n => s!"**Alias** of `{n}`."
+| Target.forward n => s!"**Alias** of the forward direction of `{n}`."
+| Target.backwards n => s!"**Alias** of the reverse direction of `{n}`."
+
 /-- Elaborates an `alias ←` command. -/
 @[command_elab «alias»] def elabAlias : Command.CommandElab
 | `($[$doc]? alias $name:ident ← $aliases:ident*) => do
@@ -102,7 +119,10 @@ def appendNamespace (ns : Name) : Name → Name
     Command.liftTermElabM do
       Lean.addDecl decl
       Term.addTermInfo' a (← mkConstWithLevelParams declName) (isBinder := true)
-    -- TODO add doc string
+      let target := Target.plain resolved
+      let docString := match doc with | none => target.toString
+                                      | some d => d.getDocString
+      addDocString declName docString
 | _ => throwUnsupportedSyntax
 
 /--
@@ -110,7 +130,7 @@ def appendNamespace (ns : Name) : Name → Name
   of the implication directions (determined by `mp`).
 -/
 def mkIffMpApp (mp : Bool) (prf : Expr) : MetaM Expr := do
-  Meta.forallTelescope (← Meta.inferType prf) fun xs ty => do
+  Meta.forallTelescope (← Meta.inferType prf) fun xs ty ↦ do
     let some (lhs, rhs) := ty.iff?
       | throwError "Target theorem must have the form `∀ x y z, a ↔ b`"
     Meta.mkLambdaFVars xs <|
@@ -120,8 +140,9 @@ def mkIffMpApp (mp : Bool) (prf : Expr) : MetaM Expr := do
   Given a constant representing an iff decl, adds a decl for one of the implication
   directions.
 -/
-def aliasIff (ci : ConstantInfo) (ref : Syntax) (al : Name) (isForward : Bool) :
-    TermElabM Unit := do
+def aliasIff (doc : Option (TSyntax `Lean.Parser.Command.docComment)) (ci : ConstantInfo)
+  (ref : Syntax) (al : Name) (isForward : Bool) :
+  TermElabM Unit := do
   let ls := ci.levelParams
   let v ← mkIffMpApp isForward ci.value!
   let t' ← Meta.inferType v
@@ -137,6 +158,10 @@ def aliasIff (ci : ConstantInfo) (ref : Syntax) (al : Name) (isForward : Bool) :
     levelParams := ls
   }
   Term.addTermInfo' ref (← mkConstWithLevelParams al) (isBinder := true)
+  let target := if isForward then Target.forward ci.name else Target.backwards ci.name
+  let docString := match doc with | none => target.toString
+                                  | some d => d.getDocString
+  addDocString al docString
 
 /-- Elaborates an `alias ↔` command. -/
 @[command_elab aliasLR] def elabAliasLR : Command.CommandElab
@@ -146,9 +171,9 @@ def aliasIff (ci : ConstantInfo) (ref : Syntax) (al : Name) (isForward : Bool) :
   let ns ← getCurrNamespace
   Command.liftTermElabM do
     if let `(binderIdent| $x:ident) := left then
-      aliasIff constant x (appendNamespace ns x.getId) true
+      aliasIff doc constant x (appendNamespace ns x.getId) true
     if let `(binderIdent| $x:ident) := right then
-      aliasIff constant x (appendNamespace ns x.getId) false
+      aliasIff doc constant x (appendNamespace ns x.getId) false
 | _ => throwUnsupportedSyntax
 
 /-- Elaborates an `alias ↔ ..` command. -/
@@ -166,9 +191,8 @@ def aliasIff (ci : ConstantInfo) (ref : Syntax) (al : Name) (isForward : Bool) :
   let forwardName := Name.mkStr parent forward
   let backwardName := Name.mkStr parent backward
   Command.liftTermElabM do
-    aliasIff constant tk forwardName true
-    aliasIff constant tk backwardName false
-  -- TODO add doc string
+    aliasIff doc constant tk forwardName true
+    aliasIff doc constant tk backwardName false
 | _ => throwUnsupportedSyntax
 
 end Alias

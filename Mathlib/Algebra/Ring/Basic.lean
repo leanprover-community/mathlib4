@@ -1,36 +1,15 @@
 import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Tactic.Spread
+import Mathlib.Algebra.Ring.Defs
 
 /-
 # Semirings and rings
 -/
 
-/-- A typeclass stating that multiplication is left and right distributive
-over addition. -/
-class Distrib (R : Type u) extends Mul R, Add R where
-  left_distrib : ∀ a b c : R, a * (b + c) = (a * b) + (a * c)
-  right_distrib : ∀ a b c : R, (a + b) * c = (a * c) + (b * c)
 
 export Distrib (left_distrib right_distrib)
-
-section
-variable {R} [Distrib R]
-theorem mul_add (a b c : R) : a * (b + c) = a * b + a * c := Distrib.left_distrib a b c
-theorem add_mul (a b c : R) : (a + b) * c = a * c + b * c := Distrib.right_distrib a b c
-end
-
-/-- A not-necessarily-unital, not-necessarily-associative semiring. -/
-class NonUnitalNonAssocSemiring (R : Type u) extends
-  AddCommMonoid R, Distrib R, MulZeroClass R, AddMonoidWithOne R
-
-/-- An associative but not-necessarily unital semiring. -/
-class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α
-
-/-- A unital but not-necessarily-associative semiring. -/
-class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α
-
-class Semiring (R : Type u) extends NonUnitalSemiring R, NonAssocSemiring R, MonoidWithZero R
 
 section Semiring
 
@@ -60,32 +39,12 @@ lemma Nat.cast_pow [Semiring R] {m n : ℕ} : (m ^ n).cast = (m.cast ^ n : R) :=
 theorem Nat.cast_commute [Semiring α] (n : ℕ) (x : α) : Commute (↑n) x := by
   induction n with
   | zero => rw [Nat.cast_zero]; exact Commute.zero_left x
-  | succ n ihn => rw [Nat.cast_succ] <;> exact ihn.add_left (Commute.one_left x)
+  | succ n ihn => rw [Nat.cast_succ]; exact ihn.add_left (Commute.one_left x)
 
 end Semiring
 
-class CommSemiring (R : Type u) extends Semiring R, CommMonoid R where
-  -- TODO: doesn't work
-  right_distrib a b c := (by rw [mul_comm, mul_add, mul_comm c, mul_comm c])
-
-class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
-
 example [Ring R] : HasInvolutiveNeg R := inferInstance
 
-@[simp] theorem neg_mul {R} [Ring R] (a b : R) : (-a) * b = -(a * b) :=
-  eq_of_sub_eq_zero' <| by rw [sub_eq_add_neg, neg_neg, ← add_mul, neg_add_self, zero_mul]
-
-@[simp] lemma mul_neg [Ring R] (a b : R) : a * -b = - (a * b) :=
-  eq_of_sub_eq_zero' <| by rw [sub_eq_add_neg, neg_neg, ← mul_add, neg_add_self, mul_zero]
-
-theorem neg_mul_eq_neg_mul {R} [Ring R] (a b : R) : -(a * b) = (-a) * b := (neg_mul ..).symm
-
-theorem mul_sub_right_distrib [Ring R] (a b c : R) : (a - b) * c = a * c - b * c := by
-  simpa only [sub_eq_add_neg, neg_mul_eq_neg_mul] using add_mul a (-b) c
-
-alias mul_sub_right_distrib ← sub_mul
-
-class CommRing (R : Type u) extends Ring R, CommSemiring R
 
 /- Instances -/
 
@@ -98,16 +57,16 @@ instance : CommSemiring ℕ where
   mul_one := Nat.mul_one
   one_mul := Nat.one_mul
   npow (n x) := x ^ n
-  npow_zero' := Nat.pow_zero
-  npow_succ' n x := by simp [Nat.pow_succ, Nat.mul_comm]
+  npow_zero := Nat.pow_zero
+  npow_succ n x := by simp [Nat.pow_succ, Nat.mul_comm]
   mul_assoc := Nat.mul_assoc
   add_comm := Nat.add_comm
   add_assoc := Nat.add_assoc
   add_zero := Nat.add_zero
   zero_add := Nat.zero_add
   nsmul := (·*·)
-  nsmul_zero' := Nat.zero_mul
-  nsmul_succ' n x := by simp [Nat.add_comm, (Nat.succ_mul n x)]
+  nsmul_zero := Nat.zero_mul
+  nsmul_succ n x := by simp [Nat.add_comm, (Nat.succ_mul n x)]
   zero_mul := Nat.zero_mul
   mul_zero := Nat.mul_zero
   natCast := (·)
@@ -129,8 +88,8 @@ instance : CommRing ℤ where
   mul_one := Int.mul_one
   one_mul := Int.one_mul
   npow n x := x ^ n
-  npow_zero' _ := rfl
-  npow_succ' _ _ := by rw [Int.mul_comm]; rfl
+  npow_zero _ := rfl
+  npow_succ _ _ := by rw [Int.mul_comm]; rfl
   mul_assoc := Int.mul_assoc
   add_comm := Int.add_comm
   add_assoc := Int.add_assoc
@@ -138,8 +97,8 @@ instance : CommRing ℤ where
   zero_add := Int.zero_add
   add_left_neg := Int.add_left_neg
   nsmul := (·*·)
-  nsmul_zero' := Int.zero_mul
-  nsmul_succ' n x := by
+  nsmul_zero := Int.zero_mul
+  nsmul_succ n x := by
     show ofNat (Nat.succ n) * x = x + ofNat n * x
     rw [Int.ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
@@ -156,7 +115,7 @@ instance : CommRing ℤ where
 
 @[simp, norm_cast]
 lemma cast_Nat_cast [AddGroupWithOne R] : (Int.cast (Nat.cast n) : R) = Nat.cast n :=
-  Int.cast_ofNat
+  Int.cast_ofNat _
 
 @[simp, norm_cast]
 lemma cast_eq_cast_iff_Nat (m n : ℕ) : (m : ℤ) = (n : ℤ) ↔ m = n := ofNat_inj

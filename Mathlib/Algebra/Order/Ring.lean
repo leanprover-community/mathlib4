@@ -151,8 +151,10 @@ and multiplication by a positive number is strictly monotone. -/
 class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
   /-- In a strict ordered ring, `0 ≤ 1`. -/
   zero_le_one : 0 ≤ (1 : α)
-  /-- The product of two positive elements is positive. -/
-  mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b
+  /-- Left multiplication by a positive element is strictly monotone. -/
+  mul_lt_mul_of_pos_left : ∀ a b c : α, a < b → 0 < c → c * a < c * b
+  /-- Right multiplication by a positive element is strictly monotone. -/
+  mul_lt_mul_of_pos_right : ∀ a b c : α, a < b → 0 < c → a * c < b * c
 
 /-- A `strict_ordered_comm_ring` is a commutative ring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/

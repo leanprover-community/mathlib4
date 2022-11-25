@@ -58,13 +58,13 @@ attribute [class] Unique
 attribute [nolint simpNF] Unique.mk.injEq
 
 theorem unique_iff_exists_unique (α : Sort u) : Nonempty (Unique α) ↔ ∃! _ : α, True :=
-  ⟨fun ⟨u⟩ => ⟨u.default, trivial, fun a _ => u.uniq a⟩,
-   fun ⟨a, _, h⟩ => ⟨⟨⟨a⟩, fun _ => h _ trivial⟩⟩⟩
+  ⟨fun ⟨u⟩ ↦ ⟨u.default, trivial, fun a _ ↦ u.uniq a⟩,
+   fun ⟨a, _, h⟩ ↦ ⟨⟨⟨a⟩, fun _ ↦ h _ trivial⟩⟩⟩
 
 theorem unique_subtype_iff_exists_unique {α} (p : α → Prop) :
     Nonempty (Unique (Subtype p)) ↔ ∃! a, p a :=
-  ⟨fun ⟨u⟩ => ⟨u.default.1, u.default.2, fun a h => congr_arg Subtype.val (u.uniq ⟨a, h⟩)⟩,
-   fun ⟨a, ha, he⟩ => ⟨⟨⟨⟨a, ha⟩⟩, fun ⟨b, hb⟩ => by
+  ⟨fun ⟨u⟩ ↦ ⟨u.default.1, u.default.2, fun a h ↦ congr_arg Subtype.val (u.uniq ⟨a, h⟩)⟩,
+   fun ⟨a, ha, he⟩ ↦ ⟨⟨⟨⟨a, ha⟩⟩, fun ⟨b, hb⟩ ↦ by
       congr
       exact he b hb⟩⟩⟩
 
@@ -83,14 +83,18 @@ instance PUnit.unique : Unique PUnit.{u} where
   default := PUnit.unit
   uniq x := subsingleton x _
 
-@[simp]
+-- Porting note:
+-- This should not require a nolint,
+-- but it is currently failing due to a problem in the linter discussed at
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60simpNF.60.20error.20.22unknown.20metavariable.22
+@[simp, nolint simpNF]
 theorem PUnit.default_eq_unit : (default : PUnit) = PUnit.unit :=
   rfl
 
 #align punit.default_eq_star PUnit.default_eq_unit
 
 /-- Every provable proposition is unique, as all proofs are equal. -/
-def uniqueProp {p : Prop} (h : p) : Unique p where
+def uniqueProp {p : Prop} (h : p) : Unique.{0} p where
   default := h
   uniq _ := rfl
 
@@ -136,16 +140,16 @@ instance (priority := 100) : Subsingleton α :=
   subsingleton_of_forall_eq _ eq_default
 
 theorem forall_iff {p : α → Prop} : (∀ a, p a) ↔ p default :=
-  ⟨fun h => h _, fun h x => by rwa [Unique.eq_default x]⟩
+  ⟨fun h ↦ h _, fun h x ↦ by rwa [Unique.eq_default x]⟩
 
 theorem exists_iff {p : α → Prop} : Exists p ↔ p default :=
-  ⟨fun ⟨a, ha⟩ => eq_default a ▸ ha, Exists.intro default⟩
+  ⟨fun ⟨a, ha⟩ ↦ eq_default a ▸ ha, Exists.intro default⟩
 
 end
 
 @[ext]
 protected theorem subsingleton_unique' : ∀ h₁ h₂ : Unique α, h₁ = h₂
-  | ⟨⟨x⟩, h⟩, ⟨⟨y⟩, _⟩ => by congr <;> rw [h x, h y]
+  | ⟨⟨x⟩, h⟩, ⟨⟨y⟩, _⟩ => by congr; rw [h x, h y]
 
 instance subsingleton_unique : Subsingleton (Unique α) :=
   ⟨Unique.subsingleton_unique'⟩
@@ -154,18 +158,18 @@ instance subsingleton_unique : Subsingleton (Unique α) :=
 a loop in the class inheritance graph. -/
 @[reducible]
 def mk' (α : Sort u) [h₁ : Inhabited α] [Subsingleton α] : Unique α :=
-  { h₁ with uniq := fun _ => Subsingleton.elim _ _ }
+  { h₁ with uniq := fun _ ↦ Subsingleton.elim _ _ }
 
 end Unique
 
 theorem unique_iff_subsingleton_and_nonempty (α : Sort u) :
     Nonempty (Unique α) ↔ Subsingleton α ∧ Nonempty α :=
-  ⟨fun ⟨u⟩ => by constructor <;> exact inferInstance,
-   fun ⟨hs, hn⟩ => ⟨by inhabit α; exact Unique.mk' α⟩⟩
+  ⟨fun ⟨u⟩ ↦ by constructor <;> exact inferInstance,
+   fun ⟨hs, hn⟩ ↦ ⟨by inhabit α; exact Unique.mk' α⟩⟩
 
 @[simp]
 theorem Pi.default_def {β : α → Sort v} [∀ a, Inhabited (β a)] :
-    @default (∀ a, β a) _ = fun a : α => @default (β a) _ :=
+    @default (∀ a, β a) _ = fun a : α ↦ @default (β a) _ :=
   rfl
 
 theorem Pi.default_apply {β : α → Sort v} [∀ a, Inhabited (β a)] (a : α) :
@@ -173,7 +177,7 @@ theorem Pi.default_apply {β : α → Sort v} [∀ a, Inhabited (β a)] (a : α)
   rfl
 
 instance Pi.unique {β : α → Sort v} [∀ a, Unique (β a)] : Unique (∀ a, β a) where
-  uniq := fun _ => funext fun _ => Unique.eq_default _
+  uniq := fun _ ↦ funext fun _ ↦ Unique.eq_default _
 
 /-- There is a unique function on an empty domain. -/
 instance Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, β a) where
@@ -187,7 +191,7 @@ theorem eq_const_of_unique [Unique α] (f : α → β) : f = Function.const α (
 
 theorem heq_const_of_unique [Unique α] {β : α → Sort v} (f : ∀ a, β a) :
     HEq f (Function.const α (f default)) :=
-  (Function.hfunext rfl) fun i _ _ => by rw [Subsingleton.elim i default]; rfl
+  (Function.hfunext rfl) fun i _ _ ↦ by rw [Subsingleton.elim i default]; rfl
 
 namespace Function
 
@@ -196,16 +200,16 @@ variable {f : α → β}
 /-- If the codomain of an injective function is a subsingleton, then the domain
 is a subsingleton as well. -/
 protected theorem Injective.subsingleton (hf : Injective f) [Subsingleton β] : Subsingleton α :=
-  ⟨fun _ _ => hf <| Subsingleton.elim _ _⟩
+  ⟨fun _ _ ↦ hf <| Subsingleton.elim _ _⟩
 
 /-- If the domain of a surjective function is a subsingleton, then the codomain is a subsingleton as
 well. -/
 protected theorem Surjective.subsingleton [Subsingleton α] (hf : Surjective f) : Subsingleton β :=
-  ⟨hf.forall₂.2 fun x y => congr_arg f <| Subsingleton.elim x y⟩
+  ⟨hf.forall₂.2 fun x y ↦ congr_arg f <| Subsingleton.elim x y⟩
 
 /-- If the domain of a surjective function is a singleton,
 then the codomain is a singleton as well. -/
-protected def Surjective.unique (hf : Surjective f) [Unique α] : Unique β :=
+protected def Surjective.unique (f : α → β) (hf : Surjective f) [Unique.{u} α] : Unique β :=
   @Unique.mk' _ ⟨f default⟩ hf.subsingleton
 
 /-- If `α` is inhabited and admits an injective map to a subsingleton type, then `α` is `Unique`. -/
@@ -215,7 +219,7 @@ protected def Injective.unique [Inhabited α] [Subsingleton β] (hf : Injective 
 /-- If a constant function is surjective, then the codomain is a singleton. -/
 def Surjective.uniqueOfSurjectiveConst (α : Type _) {β : Type _} (b : β)
     (h : Function.Surjective (Function.const α b)) : Unique β :=
-  @uniqueOfSubsingleton _ (subsingleton_of_forall_eq b <| h.forall.mpr fun _ => rfl) b
+  @uniqueOfSubsingleton _ (subsingleton_of_forall_eq b <| h.forall.mpr fun _ ↦ rfl) b
 
 end Function
 
@@ -228,13 +232,14 @@ theorem Unique.bijective {A B} [Unique A] [Unique B] {f : A → B} : Function.Bi
 namespace Option
 
 /-- `option α` is a `subsingleton` if and only if `α` is empty. -/
-theorem subsingleton_iff_is_empty {α : Type u} : Subsingleton (Option α) ↔ IsEmpty α :=
-  ⟨fun h => ⟨fun x => Option.noConfusion <| @Subsingleton.elim _ h x none⟩,
-   fun h => ⟨fun x y =>
-     Option.casesOn x (Option.casesOn y rfl fun x => h.elim x) fun x => h.elim x⟩⟩
+theorem subsingleton_iff_isEmpty {α : Type u} : Subsingleton (Option α) ↔ IsEmpty α :=
+  ⟨fun h ↦ ⟨fun x ↦ Option.noConfusion <| @Subsingleton.elim _ h x none⟩,
+   fun h ↦ ⟨fun x y ↦
+     Option.casesOn x (Option.casesOn y rfl fun x ↦ h.elim x) fun x ↦ h.elim x⟩⟩
+#align option.subsingleton_iff_is_empty Option.subsingleton_iff_isEmpty
 
 instance {α} [IsEmpty α] : Unique (Option α) :=
-  @Unique.mk' _ _ (subsingleton_iff_is_empty.2 ‹_›)
+  @Unique.mk' _ _ (subsingleton_iff_isEmpty.2 ‹_›)
 
 end Option
 
@@ -243,10 +248,10 @@ variable {α : Sort u}
 
 instance Unique.subtypeEq (y : α) : Unique { x // x = y } where
   default := ⟨y, rfl⟩
-  uniq := fun ⟨x, hx⟩ => by congr
+  uniq := fun ⟨x, hx⟩ ↦ by congr
 
 instance Unique.subtypeEq' (y : α) : Unique { x // y = x } where
   default := ⟨y, rfl⟩
-  uniq := fun ⟨x, hx⟩ => by subst hx; congr
+  uniq := fun ⟨x, hx⟩ ↦ by subst hx; congr
 
 end Subtype

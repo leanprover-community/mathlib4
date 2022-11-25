@@ -12,8 +12,8 @@ import Mathlib.Init.Logic
 
 namespace Classical
 
-#align inhabited_of_nonempty inhabited_of_nonempty
-#align inhabited_of_exists inhabited_of_exists
+#align classical.inhabited_of_nonempty Classical.inhabited_of_nonempty
+#align classical.inhabited_of_exists Classical.inhabited_of_exists
 
 attribute [local instance] propDecidable
 attribute [local instance] decidableInhabited
@@ -23,7 +23,7 @@ alias propComplete ← prop_complete -- TODO: fix in core
 
 @[elab_as_elim] theorem cases_true_false (p : Prop → Prop)
     (h1 : p True) (h2 : p False) (a : Prop) : p a :=
-  Or.elim (prop_complete a) (fun ht : a = True => ht.symm ▸ h1) fun hf : a = False => hf.symm ▸ h2
+  Or.elim (prop_complete a) (fun ht : a = True ↦ ht.symm ▸ h1) fun hf : a = False ↦ hf.symm ▸ h2
 
 theorem cases_on (a : Prop) {p : Prop → Prop} (h1 : p True) (h2 : p False) : p a :=
   @cases_true_false p h1 h2 a

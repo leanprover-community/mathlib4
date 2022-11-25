@@ -5,23 +5,23 @@ example (p q r : Prop) : p → q → r → p ∧ q ∧ r := by
   intros
   constructor
   on_goal 2 =>
-    guard_target == q ∧ r
+    guard_target = q ∧ r
     constructor
     assumption
     -- Note that we have not closed all the subgoals here.
-  guard_target == p
+  guard_target = p
   assumption
-  guard_target == r
+  guard_target = r
   assumption
 
 example (p q r : Prop) : p → q → r → p ∧ q ∧ r := by
   intros a b c
   constructor
-  fail_if_success on_goal -3 => exact a
+  fail_if_success on_goal -3 => unreachable!
   fail_if_success on_goal -1 => exact a
-  fail_if_success on_goal 0 => exact a
+  fail_if_success on_goal 0 => unreachable!
   fail_if_success on_goal 2 => exact a
-  fail_if_success on_goal 3 => exact a
+  fail_if_success on_goal 3 => unreachable!
   on_goal 1 => exact a
   constructor
   swap

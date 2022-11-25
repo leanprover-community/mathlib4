@@ -1,12 +1,19 @@
+/-
+Copyright (c) 2022 Joshua Clune. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joshua Clune
+-/
 import Lean
+import Mathlib.Util.MapsTo
 
-open Lean.Meta
+/-! # `clear_` tactic -/
 
-namespace Lean.Elab.Tactic
+namespace Mathlib.Tactic
+open Lean Meta Elab.Tactic
 
 /-- Clear all hypotheses starting with `_`, like `_match` and `_let_match`. -/
 elab (name := clear_) "clear_" : tactic =>
-  liftMetaTactic1 fun goal => do
+  liftMetaTactic1 fun goal ↦ do
     let mut toClear := #[]
     for decl in ← getLCtx do
       if let Name.str _ str := decl.userName then

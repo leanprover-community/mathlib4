@@ -3,8 +3,10 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Lean.Elab
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
+import Mathlib.Util.MapsTo
 
 /-! ## Additional utilities in `Lean.Meta` -/
 
@@ -29,10 +31,22 @@ def _root_.Lean.MVarId.replace (g : MVarId) (hyp : FVarId) (typeNew proof : Expr
 where
   /-- Finds the `LocalDecl` for the FVar in `e` with the highest index. -/
   findMaxFVar (e : Expr) : StateRefT LocalDecl MetaM Unit :=
-    e.forEach' fun e => do
+    e.forEach' fun e ↦ do
       if e.isFVar then
         let ldecl' ← e.fvarId!.getDecl
-        modify fun ldecl => if ldecl'.index > ldecl.index then ldecl' else ldecl
+        modify fun ldecl ↦ if ldecl'.index > ldecl.index then ldecl' else ldecl
         return false
       else
         return e.hasFVar
+
+
+/-- Has the effect of `refine ⟨e₁,e₂,⋯, ?_⟩`.
+-/
+def _root_.Lean.MVarId.existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
+  es.foldlM (λ mv e => do
+      let (subgoals,_) ← Elab.Term.TermElabM.run $ Elab.Tactic.run mv do
+        Elab.Tactic.evalTactic (←`(tactic| refine ⟨?_,?_⟩))
+      let [sg1, sg2] := subgoals | throwError "expected two subgoals"
+      sg1.assign e
+      pure sg2)
+    mvar

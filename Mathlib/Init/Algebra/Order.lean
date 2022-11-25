@@ -1,13 +1,10 @@
 /-
-Ported by Deniz Aydin from the lean3 prelude:
-https://github.com/leanprover-community/lean/blob/master/library/init/algebra/order.lean
-
-Original file's license:
-  Copyright (c) 2016 Microsoft Corporation. All rights reserved.
-  Released under Apache 2.0 license as described in the file LICENSE.
-  Authors: Leonardo de Moura
+Copyright (c) 2016 Microsoft Corporation. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Leonardo de Moura, Deniz Aydin
 -/
 import Mathlib.Init.Logic
+import Mathlib.Tactic.Relation.Rfl
 
 /-!
 # Orders
@@ -35,16 +32,18 @@ section Preorder
 -/
 
 /-- A preorder is a reflexive, transitive relation `≤` with `a < b` defined in the obvious way. -/
-class Preorder (α : Type u) extends LE α, LT α :=
-(le_refl : ∀ a : α, a ≤ a)
-(le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c)
-(lt := λ a b => a ≤ b ∧ ¬ b ≤ a)
-(lt_iff_le_not_le : ∀ a b : α, a < b ↔ (a ≤ b ∧ ¬ b ≤ a)) -- . order_laws_tac)
+class Preorder (α : Type u) extends LE α, LT α where
+  le_refl : ∀ a : α, a ≤ a
+  le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
+  lt := λ a b => a ≤ b ∧ ¬ b ≤ a
+  lt_iff_le_not_le : ∀ a b : α, a < b ↔ (a ≤ b ∧ ¬ b ≤ a) := by intros; rfl
+#align preorder.to_has_le Preorder.toLE
+#align preorder.to_has_lt Preorder.toLT
 
 variable [Preorder α]
 
 /-- The relation `≤` on a preorder is reflexive. -/
-@[simp] theorem le_refl : ∀ (a : α), a ≤ a :=
+@[simp, refl] theorem le_refl : ∀ (a : α), a ≤ a :=
 Preorder.le_refl
 
 /-- The relation `≤` on a preorder is transitive. -/
@@ -110,9 +109,11 @@ theorem gt_of_ge_of_gt {a b c : α} (h₁ : a ≥ b) (h₂ : b > c) : a > c :=
 lt_of_lt_of_le h₂ h₁
 
 instance : @Trans α α α LE.le LE.le LE.le := ⟨le_trans⟩
+instance : @Trans α α α LT.lt LT.lt LT.lt := ⟨lt_trans⟩
 instance : @Trans α α α LT.lt LE.le LT.lt := ⟨lt_of_lt_of_le⟩
 instance : @Trans α α α LE.le LT.lt LT.lt := ⟨lt_of_le_of_lt⟩
 instance : @Trans α α α GE.ge GE.ge GE.ge := ⟨ge_trans⟩
+instance : @Trans α α α GT.gt GT.gt GT.gt := ⟨gt_trans⟩
 instance : @Trans α α α GT.gt GE.ge GT.gt := ⟨gt_of_gt_of_ge⟩
 instance : @Trans α α α GE.ge GT.gt GT.gt := ⟨gt_of_ge_of_gt⟩
 
@@ -204,6 +205,14 @@ section LinearOrder
 /-!
 ### Definition of `LinearOrder` and lemmas about types with a linear order
 -/
+
+/-- Default definition of `max`. -/
+def maxDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
+if a ≤ b then b else a
+
+/-- Default definition of `min`. -/
+def minDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
+if a ≤ b then a else b
 
 /-- A linear order is reflexive, transitive, antisymmetric and total relation `≤`.
 We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. -/

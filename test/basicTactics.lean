@@ -14,7 +14,7 @@ example (n : Nat) : Nat := by
   let m : Nat := 1
   guard_hyp m := 1
   guard_hyp m : Nat := 1
-  guard_target == Nat
+  guard_target = Nat
   exact 0
 
 example (a b : Nat) : a ≠ b → ¬ a = b := by
@@ -27,7 +27,7 @@ example (a b : Nat) : ¬¬ a = b → a = b := by
   by_contra H
   contradiction
 
-example (p q : Prop) : ¬¬ p → p := by
+example (p _q : Prop) : ¬¬ p → p := by
   intros
   by_contra H
   contradiction

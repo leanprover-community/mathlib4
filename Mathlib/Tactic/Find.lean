@@ -26,8 +26,7 @@ open Lean.Meta
 open Lean.Elab
 open Lean.Elab
 
-namespace Tactic
-namespace Find
+namespace Mathlib.Tactic.Find
 
 private partial def matchHyps : List Expr → List Expr → List Expr → MetaM Bool
   | p::ps, oldHyps, h::newHyps => do
@@ -50,7 +49,7 @@ private def isBlackListed (declName : Name) : MetaM Bool := do
   <||> isMatcher declName
 
 initialize findDeclsPerHead : DeclCache (Lean.HashMap HeadIndex (Array Name)) ←
-  DeclCache.mk "#find: init cache" {} fun _ c headMap => do
+  DeclCache.mk "#find: init cache" {} fun _ c headMap ↦ do
     if (← isBlackListed c.name) then
       return headMap
     -- TODO: this should perhaps use `forallTelescopeReducing` instead,
@@ -69,7 +68,7 @@ def findType (t : Expr) : TermElabM Unit := withReducible do
   for n in (← findDeclsPerHead.get).findD head #[] do
     let c := env.find? n |>.get!
     let cTy := c.instantiateTypeLevelParams (← mkFreshLevelMVars c.numLevelParams)
-    let found ← forallTelescopeReducing cTy fun cParams cTy' => do
+    let found ← forallTelescopeReducing cTy fun cParams cTy' ↦ do
       let pat := pat.expr.instantiateLevelParamsArray pat.paramNames
         (← mkFreshLevelMVars pat.numMVars).toArray
       let (_, _, pat) ← lambdaMetaTelescope pat
@@ -133,6 +132,3 @@ elab "#find" t:term : tactic => do
   let t ← Term.elabTerm t none
   Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
   findType t
-
-end Find
-end Tactic
