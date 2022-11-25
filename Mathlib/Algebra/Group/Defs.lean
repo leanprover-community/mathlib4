@@ -3,13 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-import Mathlib.Tactic.Spread
+
 import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Int.Basic
-import Mathlib.Data.List.Basic
-
-import Std.Tactic.Lint.Frontend
-import Std.Tactic.Lint.Misc
+import Mathlib.Logic.Function.Basic
 
 /-!
 # Typeclasses for (semi)groups and monoids
