@@ -123,7 +123,9 @@ def isNatIntCoe (e : Expr) : Option Expr :=
   | (``Nat.cast, #[.const ``Int [], _, n]) => some n
   | _ => none
 
-/-- `getNatComparisons e` returns a list of all subexpressions of `e` of the form `((t : ℕ) : ℤ)`. -/
+/--
+`getNatComparisons e` returns a list of all subexpressions of `e` of the form `((t : ℕ) : ℤ)`.
+-/
 partial def getNatComparisons (e : Expr) : List Expr :=
   match isNatIntCoe e with
   | some n => [n]
@@ -151,7 +153,8 @@ partial def getNatComparisons (e : Expr) : List Expr :=
 --          infer_type h >>= guardb ∘ is_nat_prop >> zify_proof [] h <|> return h,
 --    nonnegs ← l.mfoldl (λ (es : expr_set) h, do
 --      (a, b) ← infer_type h >>= get_rel_sides,
---      return $ (es.insert_list (getNatComparisons a)).insert_list (getNatComparisons b)) mk_rb_set,
+--      return $
+--        (es.insert_list (getNatComparisons a)).insert_list (getNatComparisons b)) mk_rb_set,
 --    (++) l <$> nonnegs.to_list.mmap mk_coe_nat_nonneg_prf }
 end natToInt
 
@@ -185,9 +188,11 @@ def mkNonstrictIntProof (pf : Expr) : MetaM Expr := do
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
   | (``Not, #[P]) => match P.getAppFnArgs with
     | (``LE.le, #[_, _, a, b]) =>
-      return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) (← mkAppM `le_of_not_gt #[pf])
+      return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]])
+        (← mkAppM `le_of_not_gt #[pf])
     | (``GE.ge, #[_, _, a, b]) =>
-      return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) (← mkAppM `le_of_not_gt #[pf])
+      return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]])
+        (← mkAppM `le_of_not_gt #[pf])
     | _ => throwError "mkNonstrictIntProof failed: proof is not an inequality"
   | _ => throwError "mkNonstrictIntProof failed: proof is not an inequality"
 
@@ -333,7 +338,8 @@ end nlinarith
 -- TODO the `removeNe` preprocesor
 section removeNe
 -- /--
--- `remove_ne_aux` case splits on any proof `h : a ≠ b` in the input, turning it into `a < b ∨ a > b`.
+-- `remove_ne_aux` case splits on any proof `h : a ≠ b` in the input,
+-- turning it into `a < b ∨ a > b`.
 -- This produces `2^n` branches when there are `n` such hypotheses in the input.
 -- -/
 -- meta def remove_ne_aux : list expr → tactic (list branch) :=
