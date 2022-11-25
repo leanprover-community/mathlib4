@@ -226,6 +226,16 @@ theorem min_right_comm (a b c : α) : min (min a b) c = min (min a c) b :=
   right_comm min min_comm min_assoc a b c
 #align min_right_comm min_right_comm
 
+theorem Max.left_comm' (a b c : α) : max a (max b c) = max b (max a c) := by
+  apply left_comm
+  . apply max_comm
+  . apply max_assoc
+
+theorem Max.right_comm' (a b c : α)  :max (max a b) c = max (max a c) b := by
+  apply right_comm
+  . apply max_comm
+  . apply max_assoc
+
 theorem Max.left_comm (a b c : α) : max a (max b c) = max b (max a c) :=
   left_comm max max_comm max_assoc a b c
 #align max.left_comm Max.left_comm
