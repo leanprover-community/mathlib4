@@ -3,9 +3,9 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathbin.Order.Basic
-import Mathbin.Algebra.GroupWithZero.Basic
-import Mathbin.Algebra.Ring.Defs
+import Mathlib.Order.Basic
+import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Basic operations on the natural numbers
