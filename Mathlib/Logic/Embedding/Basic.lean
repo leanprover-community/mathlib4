@@ -24,7 +24,6 @@ structure Embedding (α : Sort _) (β : Sort _) where
   inj' : Injective toFun
 #align function.embedding Function.Embedding
 
--- mathport name: «expr ↪ »
 /-- An embedding, a.k.a. a bundled injective function. -/
 infixr:25 " ↪ " => Embedding
 
