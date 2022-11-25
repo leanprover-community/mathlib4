@@ -5,7 +5,6 @@ Authors: Robert Y. Lewis
 -/
 
 import Std.Data.RBMap.Basic
-import Mathlib.Data.HashMap
 import Mathlib.Tactic.Linarith.Datatypes
 
 /-!
