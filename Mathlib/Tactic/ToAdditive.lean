@@ -396,17 +396,27 @@ partial def transformDeclAux
       }Workaround: move {src} to a different namespace."
   let env ← getEnv
   -- we find the additive name of `src`
-  let tgt := src.mapPrefix (fun n ↦ if n == pre then some tgt_pre else none)
+  let tgt := src.mapPrefix (fun n ↦ if n == pre then some tgt_pre else
+    if n == mkPrivateName env pre then some <| mkPrivateName env tgt_pre else
+    if n == env.mainModule ++ `_auxLemma then env.mainModule ++ `_auxAddLemma else none)
+  if tgt == src then
+    throwError "@[to_additive] doesn't know how to translate {src}, since the additive version has {
+      ""}the same name. This is a bug in @[to_additive]."
   -- we skip if we already transformed this declaration before
   if env.contains tgt then
     return
   let srcDecl ← getConstInfo src
+  let prefixes : NameSet := .ofList [pre, env.mainModule ++ `_auxLemma]
   -- we first transform all auxilliary declarations generated when elaborating `pre`
-  for n in srcDecl.type.listNamesWithPrefix pre do
+  for n in srcDecl.type.listNamesWithPrefixes prefixes do
     transformDeclAux none pre tgt_pre n
   if let some value := srcDecl.value? then
-    for n in value.listNamesWithPrefix pre do
+    for n in value.listNamesWithPrefixes prefixes do
       transformDeclAux none pre tgt_pre n
+  -- if the auxilliary declaration doesn't have prefix `pre`, then we have to add this declaration
+  -- to the translation dictionary, since otherwise we cannot find the additive name.
+  if !pre.isPrefixOf src then
+    insertTranslation src tgt
   -- now transform the source declaration
   let trgDecl : ConstantInfo ← MetaM.run' $ updateDecl tgt srcDecl
   if ¬ trgDecl.hasValue then
