@@ -32,13 +32,13 @@ Lemmas using this class are named using `tsub` instead of `sub` (short for "trun
 This is to avoid naming conflicts with similar lemmas about ordered groups.
 
 We provide a second version of most results that require `[ContravariantClass α α (+) (≤)]`. In the
-second version we replace this type-class assumption by explicit `add_le_cancellable` assumptions.
+second version we replace this type-class assumption by explicit `AddLeCancellable` assumptions.
 
 TODO: maybe we should make a multiplicative version of this, so that we can replace some identical
 lemmas about subtraction/division in `Ordered[Add]CommGroup` with these.
 
-TODO: generalize `nat.le_of_le_of_sub_le_sub_right`, `nat.sub_le_sub_right_iff`,
-  `nat.mul_self_sub_mul_self_eq`
+TODO: generalize `Nat.le_of_le_of_sub_le_sub_right`, `Nat.sub_le_sub_right_iff`,
+  `Nat.mul_self_sub_mul_self_eq`
 -/
 
 
@@ -51,6 +51,7 @@ This is satisfied both by the subtraction in additive ordered groups and by trun
 in canonically ordered monoids on many specific types.
 -/
 class HasOrderedSub (α : Type _) [LE α] [Add α] [Sub α] where
+  /-- `a - b` provides a lower bound on `c` such that `a ≤ c + b`. -/
   tsub_le_iff_right : ∀ a b c : α, a - b ≤ c ↔ a ≤ c + b
 #align has_ordered_sub HasOrderedSub
 
@@ -189,7 +190,7 @@ theorem add_tsub_add_le_tsub_right : a + c - (b + c) ≤ a - b := by
 
 end Cov
 
-/-! #### Lemmas that assume that an element is `add_le_cancellable` -/
+/-! #### Lemmas that assume that an element is `AddLeCancellable` -/
 
 
 namespace AddLeCancellable
@@ -312,7 +313,8 @@ protected theorem lt_add_of_tsub_lt_left (hb : AddLeCancellable b) (h : a - b < 
   simp [hb] at h
 #align add_le_cancellable.lt_add_of_tsub_lt_left AddLeCancellable.lt_add_of_tsub_lt_left
 
-protected theorem lt_add_of_tsub_lt_right (hc : AddLeCancellable c) (h : a - c < b) : a < b + c := by
+protected theorem lt_add_of_tsub_lt_right (hc : AddLeCancellable c) (h : a - c < b) :
+    a < b + c := by
   rw [lt_iff_le_and_ne, ← tsub_le_iff_right]
   refine' ⟨h.le, _⟩
   rintro rfl
