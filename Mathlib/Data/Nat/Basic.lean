@@ -6,6 +6,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Order.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Tactic.PushNeg
 
 /-!
 # Basic operations on the natural numbers
@@ -55,11 +56,11 @@ instance : CommSemiring ℕ where
   mul_zero := Nat.mul_zero
   mul_comm := Nat.mul_comm
   natCast n := n
-  nat_cast_zero := rfl
-  nat_cast_succ n := rfl
+  natCast_zero := rfl
+  natCast_succ n := rfl
   nsmul m n := m * n
-  nsmul_zero' := Nat.zero_mul
-  nsmul_succ' n x := by rw [Nat.succ_eq_add_one, Nat.add_comm, Nat.right_distrib, Nat.one_mul]
+  nsmul_zero := Nat.zero_mul
+  nsmul_succ n x := by dsimp only; rw [Nat.add_comm, Nat.right_distrib, Nat.one_mul]
 
 /-! Extra instances to short-circuit type class resolution and ensure computability -/
 
@@ -98,20 +99,19 @@ protected theorem Nat.nsmul_eq_mul (m n : ℕ) : m • n = m * n :=
   rfl
 #align nat.nsmul_eq_mul Nat.nsmul_eq_mul
 
-#print Nat.eq_of_mul_eq_mul_right /-
-theorem Nat.eq_of_mul_eq_mul_right {n m k : ℕ} (Hm : 0 < m) (H : n * m = k * m) : n = k := by
-  rw [mul_comm n m, mul_comm k m] at H <;> exact Nat.eq_of_mul_eq_mul_left Hm H
+-- Moved to core
 #align nat.eq_of_mul_eq_mul_right Nat.eq_of_mul_eq_mul_right
--/
 
 instance Nat.cancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ :=
   { (inferInstance : CommMonoidWithZero ℕ) with
-    mul_left_cancel_of_ne_zero := fun _ _ _ h1 h2 => Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h1) h2,
-    mul_right_cancel_of_ne_zero := fun _ _ _ h1 h2 => Nat.eq_of_mul_eq_mul_right (Nat.pos_of_ne_zero h1) h2 }
+    mul_left_cancel_of_ne_zero := fun {_ _ _} h1 h2 => Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h1) h2,
+    mul_right_cancel_of_ne_zero := fun {_ _ _} h1 h2 => Nat.eq_of_mul_eq_mul_right (Nat.pos_of_ne_zero h1) h2 }
 #align nat.cancel_comm_monoid_with_zero Nat.cancelCommMonoidWithZero
 
 attribute [simp]
-  Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero Nat.zero_ne_bit1 Nat.bit1_ne_zero Nat.bit0_ne_one Nat.one_ne_bit0 Nat.bit0_ne_bit1 Nat.bit1_ne_bit0
+  Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero
+  -- Nat.zero_ne_bit1 Nat.bit1_ne_zero Nat.bit0_ne_one Nat.one_ne_bit0 Nat.bit0_ne_bit1
+  -- Nat.bit1_ne_bit0
 
 variable {m n k : ℕ}
 
@@ -124,7 +124,7 @@ namespace Nat
 
 @[simp]
 theorem and_forall_succ {p : ℕ → Prop} : (p 0 ∧ ∀ n, p (n + 1)) ↔ ∀ n, p n :=
-  ⟨fun h n => Nat.casesOn n h.1 h.2, fun h => ⟨h _, fun n => h _⟩⟩
+  ⟨fun h n => Nat.casesOn n h.1 h.2, fun h => ⟨h _, fun _ => h _⟩⟩
 #align nat.and_forall_succ Nat.and_forall_succ
 
 @[simp]
@@ -137,14 +137,12 @@ theorem or_exists_succ {p : ℕ → Prop} : (p 0 ∨ ∃ n, p (n + 1)) ↔ ∃ n
 /-! ### `succ` -/
 
 
-theorem _root_.has_lt.lt.nat_succ_le {n m : ℕ} (h : n < m) : succ n ≤ m :=
+theorem _root_.LT.lt.nat_succ_le {n m : ℕ} (h : n < m) : succ n ≤ m :=
   succ_le_of_lt h
-#align nat._root_.has_lt.lt.nat_succ_le nat._root_.has_lt.lt.nat_succ_le
+#align nat._root_.has_lt.lt.nat_succ_le LT.lt.nat_succ_le
 
-#print Nat.succ_eq_one_add /-
-theorem succ_eq_one_add (n : ℕ) : n.succ = 1 + n := by rw [Nat.succ_eq_add_one, Nat.add_comm]
+-- Moved to Std
 #align nat.succ_eq_one_add Nat.succ_eq_one_add
--/
 
 theorem eq_of_lt_succ_of_not_lt {a b : ℕ} (h1 : a < b + 1) (h2 : ¬a < b) : a = b :=
   have h3 : a ≤ b := le_of_lt_succ h1
@@ -155,23 +153,18 @@ theorem eq_of_le_of_lt_succ {n m : ℕ} (h₁ : n ≤ m) (h₂ : m < n + 1) : m 
   Nat.le_antisymm (le_of_succ_le_succ h₂) h₁
 #align nat.eq_of_le_of_lt_succ Nat.eq_of_le_of_lt_succ
 
-#print Nat.one_add /-
-theorem one_add (n : ℕ) : 1 + n = succ n := by simp [add_comm]
+-- Moved to Std
 #align nat.one_add Nat.one_add
--/
 
 @[simp]
 theorem succ_pos' {n : ℕ} : 0 < succ n :=
   succ_pos n
 #align nat.succ_pos' Nat.succ_pos'
 
-#print Nat.succ_inj' /-
-theorem succ_inj' {n m : ℕ} : succ n = succ m ↔ n = m :=
-  ⟨succ.inj, congr_arg _⟩
+-- Moved to Std
 #align nat.succ_inj' Nat.succ_inj'
--/
 
-theorem succ_injective : Function.Injective Nat.succ := fun x y => succ.inj
+theorem succ_injective : Function.Injective Nat.succ := fun _ _ => succ.inj
 #align nat.succ_injective Nat.succ_injective
 
 theorem succ_ne_succ {n m : ℕ} : succ n ≠ succ m ↔ n ≠ m :=
@@ -224,7 +217,7 @@ theorem lt_add_one_iff {a b : ℕ} : a < b + 1 ↔ a ≤ b :=
 #align nat.lt_add_one_iff Nat.lt_add_one_iff
 
 -- A flipped version of `lt_add_one_iff`.
-theorem lt_one_add_iff {a b : ℕ} : a < 1 + b ↔ a ≤ b := by simp only [add_comm, lt_succ_iff]
+theorem lt_one_add_iff {a b : ℕ} : a < 1 + b ↔ a ≤ b := by simp only [add_comm, lt_succ_iff]; rfl
 #align nat.lt_one_add_iff Nat.lt_one_add_iff
 
 -- This is true reflexively, by the definition of `≤` on ℕ,
@@ -233,7 +226,7 @@ theorem add_one_le_iff {a b : ℕ} : a + 1 ≤ b ↔ a < b :=
   Iff.refl _
 #align nat.add_one_le_iff Nat.add_one_le_iff
 
-theorem one_add_le_iff {a b : ℕ} : 1 + a ≤ b ↔ a < b := by simp only [add_comm, add_one_le_iff]
+theorem one_add_le_iff {a b : ℕ} : 1 + a ≤ b ↔ a < b := by simp only [add_comm, add_one_le_iff]; rfl
 #align nat.one_add_le_iff Nat.one_add_le_iff
 
 theorem of_le_succ {n m : ℕ} (H : n ≤ m.succ) : n ≤ m ∨ n = m.succ :=
@@ -260,7 +253,7 @@ theorem two_lt_of_ne : ∀ {n}, n ≠ 0 → n ≠ 1 → n ≠ 2 → 2 < n
 #align nat.two_lt_of_ne Nat.two_lt_of_ne
 
 theorem forall_lt_succ {P : ℕ → Prop} {n : ℕ} : (∀ m < n + 1, P m) ↔ (∀ m < n, P m) ∧ P n := by
-  simp only [lt_succ_iff, Decidable.le_iff_eq_or_lt, forall_eq_or_imp, and_comm]
+  simp only [lt_succ_iff, Decidable.le_iff_eq_or_lt, forall_eq_or_imp, and_comm]; rfl
 #align nat.forall_lt_succ Nat.forall_lt_succ
 
 theorem exists_lt_succ {P : ℕ → Prop} {n : ℕ} : (∃ m < n + 1, P m) ↔ (∃ m < n, P m) ∨ P n := by
@@ -290,12 +283,12 @@ theorem exists_eq_add_of_le : ∀ {m n : ℕ}, m ≤ n → ∃ k : ℕ, n = m + 
   | 0, n + 1, h => ⟨n + 1, by simp⟩
   | m + 1, n + 1, h =>
     let ⟨k, hk⟩ := exists_eq_add_of_le (Nat.le_of_succ_le_succ h)
-    ⟨k, by simp [hk, add_comm, add_left_comm]⟩
+    ⟨k, by simp [hk, add_comm, add_left_comm]; rfl⟩
 #align nat.exists_eq_add_of_le Nat.exists_eq_add_of_le
 
 theorem exists_eq_add_of_lt : ∀ {m n : ℕ}, m < n → ∃ k : ℕ, n = m + k + 1
   | 0, 0, h => False.elim <| lt_irrefl _ h
-  | 0, n + 1, h => ⟨n, by simp⟩
+  | 0, n + 1, _ => ⟨n, by simp⟩
   | m + 1, n + 1, h =>
     let ⟨k, hk⟩ := exists_eq_add_of_le (Nat.le_of_succ_le_succ h)
     ⟨k, by simp [hk]⟩
@@ -326,25 +319,18 @@ theorem pred_eq_succ_iff {n m : ℕ} : pred n = succ m ↔ n = m + 2 := by cases
 theorem pred_sub (n m : ℕ) : pred n - m = pred (n - m) := by rw [← Nat.sub_one, Nat.sub_sub, one_add, sub_succ]
 #align nat.pred_sub Nat.pred_sub
 
-/- warning: nat.le_pred_of_lt -> Nat.le_pred_of_lt is a dubious translation:
-lean 3 declaration is
-  forall {n : Nat} {m : Nat}, (LT.lt.{0} Nat Nat.hasLt m n) -> (LE.le.{0} Nat Nat.hasLe m (HSub.hSub.{0 0 0} Nat Nat Nat (instHSub.{0} Nat Nat.hasSub) n (OfNat.ofNat.{0} Nat 1 (OfNat.mk.{0} Nat 1 (One.one.{0} Nat Nat.hasOne)))))
-but is expected to have type
-  forall {m : Nat} {n : Nat}, (LT.lt.{0} Nat instLTNat m n) -> (LE.le.{0} Nat instLENat m (HSub.hSub.{0 0 0} Nat Nat Nat (instHSub.{0} Nat instSubNat) n (OfNat.ofNat.{0} Nat 1 (instOfNatNat 1))))
-Case conversion may be inaccurate. Consider using '#align nat.le_pred_of_lt Nat.le_pred_of_ltₓ'. -/
-theorem le_pred_of_lt {n m : ℕ} (h : m < n) : m ≤ n - 1 :=
-  Nat.sub_le_sub_right h 1
+-- Moved to Std
 #align nat.le_pred_of_lt Nat.le_pred_of_lt
 
 theorem le_of_pred_lt {m n : ℕ} : pred m < n → m ≤ n :=
   match m with
   | 0 => le_of_lt
-  | m + 1 => id
+  | _ + 1 => id
 #align nat.le_of_pred_lt Nat.le_of_pred_lt
 
 /-- This ensures that `simp` succeeds on `pred (n + 1) = n`. -/
 @[simp]
-theorem pred_one_add (n : ℕ) : pred (1 + n) = n := by rw [add_comm, add_one, pred_succ]
+theorem pred_one_add (n : ℕ) : pred (1 + n) = n := by rw [add_comm, add_one, Nat.pred_succ]
 #align nat.pred_one_add Nat.pred_one_add
 
 /-! ### `mul` -/
@@ -396,17 +382,21 @@ theorem rec_add_one {C : ℕ → Sort u} (h0 : C 0) (h : ∀ n, C n → C (n + 1
 
 /-- Recursion starting at a non-zero number: given a map `C k → C (k+1)` for each `k`,
 there is a map from `C n` to each `C m`, `n ≤ m`. For a version where the assumption is only made
-when `k ≥ n`, see `le_rec_on'`. -/
+when `k ≥ n`, see `leRecOn`. -/
 @[elab_as_elim]
 def leRecOn {C : ℕ → Sort u} {n : ℕ} : ∀ {m : ℕ}, n ≤ m → (∀ {k}, C k → C (k + 1)) → C n → C m
-  | 0, H, next, x => Eq.recOn (Nat.eq_zero_of_le_zero H) x
+  | 0, H, _, x => Eq.recOn (Nat.eq_zero_of_le_zero H) x
   | m + 1, H, next, x =>
-    Or.by_cases (of_le_succ H) (fun h : n ≤ m => next <| le_rec_on h (@next) x) fun h : n = m + 1 => Eq.recOn h x
+    Or.by_cases (of_le_succ H) (fun h : n ≤ m => next <| leRecOn h (@next) x) fun h : n = m + 1 => Eq.recOn h x
 #align nat.le_rec_on Nat.leRecOn
 
-theorem le_rec_on_self {C : ℕ → Sort u} {n} {h : n ≤ n} {next} (x : C n) : (leRecOn h next x : C n) = x := by
-  cases n <;> unfold le_rec_on Or.by_cases <;> rw [dif_neg n.not_succ_le_self]
-#align nat.le_rec_on_self Nat.le_rec_on_self
+theorem leRecOn_self {C : ℕ → Sort u} {n} {h : n ≤ n} {next : ∀ {k}, C k → C (k + 1)} (x : C n) :
+    (leRecOn h next x : C n) = x := by
+  cases n <;> unfold leRecOn Eq.recOn
+  · simp
+  · unfold Or.by_cases
+    rw [dif_neg (Nat.not_succ_le_self _)]
+#align nat.le_rec_on_self Nat.leRecOn_self
 
 theorem le_rec_on_succ {C : ℕ → Sort u} {n m} (h1 : n ≤ m) {h2 : n ≤ m + 1} {next} (x : C n) :
     (leRecOn h2 (@next) x : C (m + 1)) = next (leRecOn h1 (@next) x : C m) := by conv =>
