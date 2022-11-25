@@ -150,66 +150,66 @@ def IsMax (a : α) : Prop :=
   ∀ ⦃b⦄, a ≤ b → b ≤ a
 
 @[simp]
-theorem not_is_bot [NoBotOrder α] (a : α) : ¬IsBot a := fun h =>
+theorem not_isBot [NoBotOrder α] (a : α) : ¬IsBot a := fun h =>
   let ⟨_, hb⟩ := exists_not_ge a
   hb <| h _
 
 @[simp]
-theorem not_is_top [NoTopOrder α] (a : α) : ¬IsTop a := fun h =>
+theorem not_isTop [NoTopOrder α] (a : α) : ¬IsTop a := fun h =>
   let ⟨_, hb⟩ := exists_not_le a
   hb <| h _
 
-protected theorem IsBot.is_min (h : IsBot a) : IsMin a := fun b _ => h b
+protected theorem IsBot.isMin (h : IsBot a) : IsMin a := fun b _ => h b
 
-protected theorem IsTop.is_max (h : IsTop a) : IsMax a := fun b _ => h b
+protected theorem IsTop.isMax (h : IsTop a) : IsMax a := fun b _ => h b
 
 @[simp]
-theorem is_bot_to_dual_iff : IsBot (toDual a) ↔ IsTop a :=
+theorem isBot_toDual_iff : IsBot (toDual a) ↔ IsTop a :=
   Iff.rfl
 
 @[simp]
-theorem is_top_to_dual_iff : IsTop (toDual a) ↔ IsBot a :=
+theorem isTop_toDual_iff : IsTop (toDual a) ↔ IsBot a :=
   Iff.rfl
 
 @[simp]
-theorem is_min_to_dual_iff : IsMin (toDual a) ↔ IsMax a :=
+theorem isMin_toDual_iff : IsMin (toDual a) ↔ IsMax a :=
   Iff.rfl
 
 @[simp]
-theorem is_max_to_dual_iff : IsMax (toDual a) ↔ IsMin a :=
+theorem isMax_toDual_iff : IsMax (toDual a) ↔ IsMin a :=
   Iff.rfl
 
 @[simp]
-theorem is_bot_of_dual_iff {a : αᵒᵈ} : IsBot (ofDual a) ↔ IsTop a :=
+theorem isBot_ofDual_iff {a : αᵒᵈ} : IsBot (ofDual a) ↔ IsTop a :=
   Iff.rfl
 
 @[simp]
-theorem is_top_of_dual_iff {a : αᵒᵈ} : IsTop (ofDual a) ↔ IsBot a :=
+theorem isTop_ofDual_iff {a : αᵒᵈ} : IsTop (ofDual a) ↔ IsBot a :=
   Iff.rfl
 
 @[simp]
-theorem is_min_of_dual_iff {a : αᵒᵈ} : IsMin (ofDual a) ↔ IsMax a :=
+theorem isMin_ofDual_iff {a : αᵒᵈ} : IsMin (ofDual a) ↔ IsMax a :=
   Iff.rfl
 
 @[simp]
-theorem is_max_of_dual_iff {a : αᵒᵈ} : IsMax (ofDual a) ↔ IsMin a :=
+theorem isMax_ofDual_iff {a : αᵒᵈ} : IsMax (ofDual a) ↔ IsMin a :=
   Iff.rfl
 
-alias is_bot_to_dual_iff ↔ _ IsTop.to_dual
+alias isBot_toDual_iff ↔ _ IsTop.to_dual
 
-alias is_top_to_dual_iff ↔ _ IsBot.to_dual
+alias isTop_toDual_iff ↔ _ IsBot.to_dual
 
-alias is_min_to_dual_iff ↔ _ IsMax.to_dual
+alias isMin_toDual_iff ↔ _ IsMax.to_dual
 
-alias is_max_to_dual_iff ↔ _ IsMin.to_dual
+alias isMax_toDual_iff ↔ _ IsMin.to_dual
 
-alias is_bot_of_dual_iff ↔ _ IsTop.of_dual
+alias isBot_ofDual_iff ↔ _ IsTop.of_dual
 
-alias is_top_of_dual_iff ↔ _ IsBot.of_dual
+alias isTop_ofDual_iff ↔ _ IsBot.of_dual
 
-alias is_min_of_dual_iff ↔ _ IsMax.of_dual
+alias isMin_ofDual_iff ↔ _ IsMax.of_dual
 
-alias is_max_of_dual_iff ↔ _ IsMin.of_dual
+alias isMax_ofDual_iff ↔ _ IsMin.of_dual
 
 end LE
 
@@ -230,50 +230,50 @@ theorem IsMin.not_lt (h : IsMin a) : ¬b < a := fun hb => hb.not_le <| h hb.le
 theorem IsMax.not_lt (h : IsMax a) : ¬a < b := fun hb => hb.not_le <| h hb.le
 
 @[simp]
-theorem not_is_min_of_lt (h : b < a) : ¬IsMin a := fun ha => ha.not_lt h
+theorem not_isMin_of_lt (h : b < a) : ¬IsMin a := fun ha => ha.not_lt h
 
 @[simp]
-theorem not_is_max_of_lt (h : a < b) : ¬IsMax a := fun ha => ha.not_lt h
+theorem not_isMax_of_lt (h : a < b) : ¬IsMax a := fun ha => ha.not_lt h
 
-alias not_is_min_of_lt ← LT.lt.not_is_min
+alias not_isMin_of_lt ← LT.lt.not_is_min
 
-alias not_is_max_of_lt ← LT.lt.not_is_max
+alias not_isMax_of_lt ← LT.lt.not_is_max
 
-theorem is_min_iff_forall_not_lt : IsMin a ↔ ∀ b, ¬b < a :=
+theorem isMin_iff_forall_not_lt : IsMin a ↔ ∀ b, ¬b < a :=
   ⟨fun h _ => h.not_lt, fun h _ hba => of_not_not fun hab => h _ <| hba.lt_of_not_le hab⟩
 
-theorem is_max_iff_forall_not_lt : IsMax a ↔ ∀ b, ¬a < b :=
+theorem isMax_iff_forall_not_lt : IsMax a ↔ ∀ b, ¬a < b :=
   ⟨fun h _ => h.not_lt, fun h _ hba => of_not_not fun hab => h _ <| hba.lt_of_not_le hab⟩
 
 @[simp]
-theorem not_is_min_iff : ¬IsMin a ↔ ∃ b, b < a := by
+theorem not_isMin_iff : ¬IsMin a ↔ ∃ b, b < a := by
   simp [lt_iff_le_not_le, IsMin, not_forall, exists_prop]
 
 @[simp]
-theorem not_is_max_iff : ¬IsMax a ↔ ∃ b, a < b := by
+theorem not_isMax_iff : ¬IsMax a ↔ ∃ b, a < b := by
   simp [lt_iff_le_not_le, IsMax, not_forall, exists_prop]
 
 @[simp]
-theorem not_is_min [NoMinOrder α] (a : α) : ¬IsMin a :=
-  not_is_min_iff.2 <| exists_lt a
+theorem not_isMin [NoMinOrder α] (a : α) : ¬IsMin a :=
+  not_isMin_iff.2 <| exists_lt a
 
 @[simp]
-theorem not_is_max [NoMaxOrder α] (a : α) : ¬IsMax a :=
-  not_is_max_iff.2 <| exists_gt a
+theorem not_isMax [NoMaxOrder α] (a : α) : ¬IsMax a :=
+  not_isMax_iff.2 <| exists_gt a
 
 namespace Subsingleton
 
 variable [Subsingleton α]
 
-protected theorem is_bot (a : α) : IsBot a := fun _ => (Subsingleton.elim _ _).le
+protected theorem isBot (a : α) : IsBot a := fun _ => (Subsingleton.elim _ _).le
 
-protected theorem is_top (a : α) : IsTop a := fun _ => (Subsingleton.elim _ _).le
+protected theorem isTop (a : α) : IsTop a := fun _ => (Subsingleton.elim _ _).le
 
-protected theorem is_min (a : α) : IsMin a :=
-  (Subsingleton.is_bot _).is_min
+protected theorem isMin (a : α) : IsMin a :=
+  (Subsingleton.isBot _).isMin
 
-protected theorem is_max (a : α) : IsMax a :=
-  (Subsingleton.is_top _).is_max
+protected theorem isMax (a : α) : IsMax a :=
+  (Subsingleton.isTop _).isMax
 
 end Subsingleton
 
@@ -329,16 +329,16 @@ theorem IsMax.fst (hx : IsMax x) : IsMax x.1 :=
 theorem IsMax.snd (hx : IsMax x) : IsMax x.2 :=
   fun c hc => (hx <| show x ≤ (x.1, c) from (and_iff_right le_rfl).2 hc).2
 
-theorem Prod.is_bot_iff : IsBot x ↔ IsBot x.1 ∧ IsBot x.2 :=
+theorem Prod.isBot_iff : IsBot x ↔ IsBot x.1 ∧ IsBot x.2 :=
   ⟨fun hx => ⟨hx.fst, hx.snd⟩, fun h => h.1.prod_mk h.2⟩
 
-theorem Prod.is_top_iff : IsTop x ↔ IsTop x.1 ∧ IsTop x.2 :=
+theorem Prod.isTop_iff : IsTop x ↔ IsTop x.1 ∧ IsTop x.2 :=
   ⟨fun hx => ⟨hx.fst, hx.snd⟩, fun h => h.1.prod_mk h.2⟩
 
-theorem Prod.is_min_iff : IsMin x ↔ IsMin x.1 ∧ IsMin x.2 :=
+theorem Prod.isMin_iff : IsMin x ↔ IsMin x.1 ∧ IsMin x.2 :=
   ⟨fun hx => ⟨hx.fst, hx.snd⟩, fun h => h.1.prod_mk h.2⟩
 
-theorem Prod.is_max_iff : IsMax x ↔ IsMax x.1 ∧ IsMax x.2 :=
+theorem Prod.isMax_iff : IsMax x ↔ IsMax x.1 ∧ IsMax x.2 :=
   ⟨fun hx => ⟨hx.fst, hx.snd⟩, fun h => h.1.prod_mk h.2⟩
 
 end Prod

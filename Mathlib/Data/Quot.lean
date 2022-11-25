@@ -95,6 +95,11 @@ theorem liftOn_mk (a : α) (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f
   rfl
 #align quot.lift_on_mk Quot.liftOn_mk
 
+@[simp] theorem surjective_lift {f : α → γ} (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) :
+    Function.Surjective (lift f h) ↔ Function.Surjective f :=
+  ⟨fun hf => hf.comp Quot.exists_rep, fun hf y => let ⟨x, hx⟩ := hf y; ⟨Quot.mk _ x, hx⟩⟩
+#align quot.surjective_lift Quot.surjective_lift
+
 /-- Descends a function `f : α → β → γ` to quotients of `α` and `β`. -/
 -- porting note: removed `@[elab_as_elim]`, gave "unexpected resulting type γ"
 -- porting note: removed `@[reducible]` because it caused extremely slow `simp`
@@ -541,6 +546,11 @@ protected def liftOn' (q : Quotient s₁) (f : α → φ) (h : ∀ a b, @Setoid.
 protected theorem liftOn'_mk'' (f : α → φ) (h) (x : α) :
     Quotient.liftOn' (@Quotient.mk'' _ s₁ x) f h = f x :=
   rfl
+
+@[simp] lemma surjective_liftOn' {f : α → φ} (h) :
+    Function.Surjective (λ x : Quotient s₁ => x.liftOn' f h) ↔ Function.Surjective f :=
+  Quot.surjective_lift _
+#align quotient.surjective_lift_on' Quotient.surjective_liftOn'
 
 /-- A version of `quotient.liftOn₂` taking `{s₁ : setoid α} {s₂ : setoid β}` as implicit arguments
 instead of instance arguments. -/

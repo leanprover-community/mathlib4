@@ -74,12 +74,12 @@ local macro "genIntDeclars" typeName:ident : command => do
         mul_one  := by simp [mul_def, one_def]
         one_mul  := by simp [mul_def, one_def]
         nsmul n a := ⟨AddMonoid.nsmul n a.val⟩
-        nsmul_zero' x := congrArg mk (AddMonoid.nsmul_zero' x.val)
-        nsmul_succ' n a := congrArg mk (AddMonoid.nsmul_succ' n a.val)
+        nsmul_zero x := congrArg mk (AddMonoid.nsmul_zero x.val)
+        nsmul_succ n a := congrArg mk (AddMonoid.nsmul_succ n a.val)
         zero_mul := by simp [mul_def, zero_def]
         mul_zero := by simp [mul_def, zero_def]
-        npow_zero' := fun _ ↦ rfl
-        npow_succ' := fun _ _ ↦ rfl
+        npow_zero := fun _ ↦ rfl
+        npow_succ := fun _ _ ↦ rfl
         right_distrib a b c := by
           simp only [mul_def, add_def]
           apply eq_of_val_eq

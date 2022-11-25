@@ -1,0 +1,20 @@
+{"version": 3,
+ "packages":
+ [{"git":
+   {"url": "https://github.com/JLimperg/aesop",
+    "subDir?": null,
+    "rev": "2e457511b82e4cedfdce86a81045711f747f32b5",
+    "name": "aesop",
+    "inputRev?": "master"}},
+  {"git":
+   {"url": "https://github.com/leanprover/std4",
+    "subDir?": null,
+    "rev": "c7a08a351d39cdcb014c0bdbbc41550b436d54f5",
+    "name": "std",
+    "inputRev?": "main"}},
+  {"git":
+   {"url": "https://github.com/gebner/quote4",
+    "subDir?": null,
+    "rev": "7ac99aa3fac487bec1d5860e751b99c7418298cf",
+    "name": "Qq",
+    "inputRev?": "master"}}]}
