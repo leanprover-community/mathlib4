@@ -23,10 +23,6 @@ import Mathlib.Algebra.Order.Group
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Monoid
 import Mathlib.Algebra.Order.Monoid.Lemmas
-<<<<<<< HEAD
-import Mathlib.Algebra.Order.MonoidLemmas
-=======
->>>>>>> origin/master
 import Mathlib.Algebra.Order.Ring
 import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.PEmptyInstances
@@ -85,14 +81,8 @@ import Mathlib.Data.Option.NAry
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.PProd
-<<<<<<< HEAD
-import Mathlib.Data.Rat.Defs
-import Mathlib.Data.Rat.Order
-import Mathlib.Data.RBMap
-=======
 import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Init
->>>>>>> origin/master
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.String.Defs
@@ -197,7 +187,6 @@ import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
-<<<<<<< HEAD
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Linarith.Elimination
@@ -206,13 +195,11 @@ import Mathlib.Tactic.Linarith.Lemmas
 import Mathlib.Tactic.Linarith.Parsing
 import Mathlib.Tactic.Linarith.Preprocessing
 import Mathlib.Tactic.Linarith.Verification
-=======
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.ModCases
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Nontriviality.Core
->>>>>>> origin/master
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormCast.Tactic
 import Mathlib.Tactic.NormNum
