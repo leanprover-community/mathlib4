@@ -54,6 +54,7 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
+import Mathlib.Data.HashMap
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Cast
 import Mathlib.Data.Int.Cast.Basic
@@ -82,7 +83,6 @@ import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Quot
-import Mathlib.Data.RBMap
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order

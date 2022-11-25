@@ -9,7 +9,6 @@ import Mathlib.Algebra.Order.Monoid
 import Mathlib.Algebra.Order.Group
 import Mathlib.Logic.Nontrivial
 
-
 /-!
 # Ordered rings and semirings
 
@@ -103,6 +102,8 @@ We're still missing some typeclasses, like
 * `canonically_ordered_semiring`
 They have yet to come up in practice.
 -/
+
+set_option warningAsError false
 
 /-- An `OrderedSemiring α` is a semiring `α` with a partial order such that
 addition is monotone and multiplication by a positive number is strictly monotone. -/
@@ -211,7 +212,8 @@ instance (priority := 100) StrictOrderedRing.toStrictOrderedSemiring : StrictOrd
 
 -- see Note [lower instance priority]
 instance (priority := 100) StrictOrderedRing.toOrderedRing : OrderedRing α :=
-  { ‹StrictOrderedRing α› with }
+  { ‹StrictOrderedRing α› with
+    mul_pos := sorry, }
 
 end StrictOrderedRing
 

@@ -1,5 +1,17 @@
+/-
+Copyright (c) 2022 Scott Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Scott Morrison
+-/
+
 import Std.Data.Rat
 import Mathlib.Algebra.Ring.Basic
+
+/-!
+# Stub port for `linarith`.
+-/
+
+set_option warningAsError false
 
 instance : AddCommGroup Rat where
   add_comm := sorry

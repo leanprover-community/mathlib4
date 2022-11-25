@@ -1,5 +1,16 @@
+/-
+Copyright (c) 2022 Scott Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Scott Morrison
+-/
 import Mathlib.Data.Rat.Defs
 import Mathlib.Algebra.Order.Ring
+
+/-!
+# Stub port for `linarith`.
+-/
+
+set_option warningAsError false
 
 instance : Preorder Rat where
   le               := (· ≤· )
@@ -19,10 +30,11 @@ instance : LinearOrder Rat where
 instance : LinearOrderedCommRing Rat where
   add_le_add_left := sorry
   zero_le_one := sorry
-  mul_pos := sorry
   le_total := sorry
   decidable_le := sorry
   exists_pair_ne := sorry
   mul_comm := sorry
   min_def := sorry
   max_def := sorry
+  mul_lt_mul_of_pos_left := sorry
+  mul_lt_mul_of_pos_right := sorry

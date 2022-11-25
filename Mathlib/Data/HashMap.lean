@@ -1,5 +1,15 @@
-import Std.Data.RBMap
+/-
+Copyright (c) 2022 Scott Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Scott Morrison
+-/
 import Std.Data.HashMap
+
+/-!
+# Additional API for `RBMap`.
+
+These should be replaced by proper implementations in Std.
+-/
 
 namespace Std.HashMap
 
@@ -11,7 +21,7 @@ m.fold (fun ks k _ => k :: ks) []
 def values (m : HashMap α β) : List β :=
 m.fold (fun vs _ v => v :: vs) []
 
-def consVal (self : HashMap α (List β)) (a : α) (b : β) :=
+def consVal (self : HashMap α (List β)) (a : α) (b : β) : HashMap α (List β) :=
 match self.find? a with
 | none => self.insert a [b]
 | some L => self.insert a (b::L)

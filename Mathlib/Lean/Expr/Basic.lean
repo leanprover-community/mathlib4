@@ -119,12 +119,12 @@ open Meta
 
 /-- Construct the term of type `α` for a given natural number
 (doing typeclass search for the `OfNat` instance required). -/
-def ofNat (α : Expr) (n : ℕ) : MetaM Expr := do
+def ofNat (α : Expr) (n : Nat) : MetaM Expr := do
   mkAppOptM ``OfNat.ofNat #[α, mkRawNatLit n, none]
 
 /-- Construct the term of type `α` for a given integer
 (doing typeclass search for the `OfNat` and `Neg` instances required). -/
-def ofInt (α : Expr) : ℤ → MetaM Expr
+def ofInt (α : Expr) : Int → MetaM Expr
 | Int.ofNat n => Expr.ofNat α n
 | Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n+1)]
 

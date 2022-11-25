@@ -126,12 +126,6 @@ def Lean.Elab.Tactic.liftMetaFinishingTactic (tac : MVarId → MetaM Unit) : Tac
 def Lean.mkConst' (constName : Name) : MetaM Expr := do
   return mkConst constName (← (← getConstInfo constName).levelParams.mapM fun _ => mkFreshLevelMVar)
 
-def Lean.getLocalHyps {m : Type → Type} [Monad m] [MonadLCtx m] : m (Array Expr) := do
-  let mut hs := #[]
-  for d in ← getLCtx do
-    if !d.isImplementationDetail then hs := hs.push d.toExpr
-  return hs
-
 -- There is a `TacticM` level version of this, but it's useful to have in `MetaM`.
 def Lean.Expr.ensureHasNoMVars (e : Expr) : MetaM Unit := do
   let e ← instantiateMVars e
