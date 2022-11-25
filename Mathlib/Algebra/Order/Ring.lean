@@ -222,12 +222,13 @@ section StrictOrderedCommRing
 variable [StrictOrderedCommRing α]
 
 -- See note [lower instance priority]
-instance (priority := 100) StrictOrderedCommRing.toStrictOrderedCommSemiring : StrictOrderedCommSemiring α :=
+instance (priority := 100) StrictOrderedCommRing.toStrictOrderedCommSemiring :
+    StrictOrderedCommSemiring α :=
   { ‹StrictOrderedCommRing α›, StrictOrderedRing.toStrictOrderedSemiring with }
 
 end StrictOrderedCommRing
 
 -- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedCommRing.toStrictOrderedCommRing [d : LinearOrderedCommRing α] :
-    StrictOrderedCommRing α :=
+instance (priority := 100) LinearOrderedCommRing.toStrictOrderedCommRing
+    [d : LinearOrderedCommRing α] : StrictOrderedCommRing α :=
   { d with }
