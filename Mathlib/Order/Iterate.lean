@@ -5,7 +5,6 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Monotone
-import Mathlib.Data.Nat.Basic
 
 /-!
 # Inequalities on iterates
@@ -91,7 +90,9 @@ open Function
 
 theorem le_iterate_comp_of_le (hf : Monotone f) (H : h ∘ g ≤ f ∘ h) (n : ℕ) :
     h ∘ g^[n] ≤ f^[n] ∘ h := fun x => by
-  apply hf.seq_le_seq n <;> intros <;> simp [iterate_succ', -iterate_succ] <;> exact H _
+  apply hf.seq_le_seq n <;> intros <;>
+    simp [iterate_succ', -iterate_succ, comp_apply, id_eq, le_refl]
+  case hx => exact H _
 #align monotone.le_iterate_comp_of_le Monotone.le_iterate_comp_of_le
 
 theorem iterate_comp_le_of_le (hf : Monotone f) (H : f ∘ h ≤ h ∘ g) (n : ℕ) :

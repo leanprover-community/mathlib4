@@ -157,7 +157,7 @@ theorem Perm.pairwise_iff {R : α → α → Prop} (S : Symmetric R) :
   | @cons a h d _ ih =>
     obtain ⟨s₂, t₂, rfl⟩ := mem_split (p.subset (.head ..) : a ∈ l₂)
     have p' := (p.trans perm_middle).cons_inv
-    exact (pairwise_middle S).2 (Pairwise_cons.2 ⟨fun b m ↦ d _ (p'.symm.subset m), ih p'⟩)
+    exact (pairwise_middle S).2 (pairwise_cons.2 ⟨fun b m ↦ d _ (p'.symm.subset m), ih p'⟩)
 
 theorem Perm.nodup_iff {l₁ l₂ : List α} : l₁ ~ l₂ → (Nodup l₁ ↔ Nodup l₂) :=
   Perm.pairwise_iff <| @Ne.symm α

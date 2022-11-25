@@ -8,8 +8,10 @@ import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.Clear!
 import Mathlib.Logic.Nontrivial
 import Mathlib.Algebra.CovariantAndContravariant
+import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Order.Ring
-import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.Order.Ring.Lemmas
 import Qq.Match
 
 /-!
@@ -22,45 +24,70 @@ section Nonsense
 open Function
 -- TODO: these classes are mostly nonsense stubs which should be replaced by the real things
 -- when the theory files are ready
--- FIXME: remove this when the sorries are gone
-set_option warningAsError false
+
+instance [OrderedSemiring α] : PosMulStrictMono α :=
+  ⟨fun ⟨_, ha⟩ _ _ h => OrderedSemiring.mul_lt_mul_of_pos_left _ _ _ h ha⟩
+
+instance [StrictOrderedRing α] : PosMulStrictMono α :=
+  ⟨fun ⟨_, ha⟩ _ _ h => StrictOrderedRing.mul_lt_mul_of_pos_left _ _ _ h ha⟩
 
 theorem mul_nonneg_of_pos_of_nonneg [OrderedSemiring α] {a b : α}
-    (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b := sorry
+    (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b :=
+  mul_nonneg ha.le hb
 theorem mul_nonneg_of_nonneg_of_pos [OrderedSemiring α] {a b : α}
-    (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a * b := sorry
+    (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a * b :=
+  mul_nonneg ha hb.le
 
-class PosMulStrictMono (α : Type u) [MulZeroClass α] [PartialOrder α] : Prop
-
-instance [OrderedSemiring α] : PosMulStrictMono α := sorry
-
-theorem mul_pos [MulZeroClass α] [PartialOrder α] [PosMulStrictMono α]
-    {a b : α} (ha : 0 < a) (hb : 0 < b) : 0 < a * b := sorry
-
-class PosMulMono (α : Type u) [MulZeroClass α] [PartialOrder α] : Prop
-
-instance [OrderedSemiring α] : PosMulMono α := sorry
-
-theorem mul_nonneg [MulZeroClass α] [PartialOrder α] [PosMulMono α]
-    {a b : α} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b := sorry
-
-class OrderedMonoidWithZero (α : Type _) extends PartialOrder α, MonoidWithZero α
+class OrderedMonoidWithZero (α : Type _) extends PartialOrder α, MonoidWithZero α where
+  /-- In an ordered monoid with zero, `0 ≤ 1`. -/
+  zero_le_one : (0 : α) ≤ 1
 
 lemma pow_zero_pos [OrderedMonoidWithZero α] [Nontrivial α] (a : α) : 0 < a ^ 0 :=
-  sorry
+  (OrderedMonoidWithZero.zero_le_one.lt_of_ne (zero_ne_one (α := α))).trans_le (pow_zero a).ge
 
-theorem pow_bit0_nonneg [LinearOrderedRing α] (a : α) (n : ℕ) : 0 ≤ a ^ (2 * n) := sorry
+theorem pow_bit0_nonneg [LinearOrderedRing α] (a : α) (n : ℕ) : 0 ≤ a ^ (2 * n) := by
+  have : 2 = 1 + 1 := rfl
+  have mul_nonneg_of_nonpos_of_nonpos : ∀ a b : α, a ≤ 0 → b ≤ 0 → (0 : α) ≤ a * b :=
+    fun a b ha hb => by
+      rcases ha.eq_or_lt with rfl|ha
+      · simp
+      rcases hb.eq_or_lt with rfl|hb
+      · simp
+      · rw [←Left.neg_pos_iff] at ha hb
+        simpa using (mul_pos ha hb).le
+  have mul_self_nonneg : ∀ a : α, (0 : α) ≤ a * a := fun a => (le_total 0 a).elim
+    (fun h => mul_nonneg h h)
+    (fun h => mul_nonneg_of_nonpos_of_nonpos _ _ h h)
+  rw [this, add_mul, one_mul, pow_add]
+  exact mul_self_nonneg _
 
-theorem pow_pos [StrictOrderedSemiring α] {a : α} (H : 0 < a) (n : ℕ) : 0 < a ^ n := sorry
+instance [StrictOrderedSemiring α] : OrderedMonoidWithZero α :=
+  { __ := inferInstanceAs (StrictOrderedSemiring α) }
 
-theorem pow_nonneg [OrderedSemiring α] {a : α} (H : 0 ≤ a) (n : ℕ) : 0 ≤ a ^ n := sorry
+instance [StrictOrderedSemiring α] : MulPosStrictMono α :=
+  ⟨fun ⟨_, ha⟩ _ _ h => StrictOrderedSemiring.mul_lt_mul_of_pos_right _ _ _ h ha⟩
+
+theorem pow_pos [StrictOrderedSemiring α] {a : α} (H : 0 < a) (n : ℕ) : 0 < a ^ n := by
+  have : Nontrivial α := ⟨_, _, H.ne⟩
+  induction' n with n IH
+  · exact pow_zero_pos _
+  · rw [pow_succ, ←zero_mul (a ^ n)]
+    exact mul_lt_mul_of_pos_right H IH
+
+theorem pow_nonneg [OrderedSemiring α] {a : α} (H : 0 ≤ a) (n : ℕ) : 0 ≤ a ^ n := by
+  induction' n with n IH
+  · simpa using OrderedSemiring.zero_le_one (α := α)
+  · rw [pow_succ]
+    exact mul_nonneg H IH
 
 theorem pow_ne_zero [MonoidWithZero M] [NoZeroDivisors M] {a : M} (n : ℕ) (h : a ≠ 0) :
-  a ^ n ≠ 0 := sorry
-
-lemma mul_ne_zero [Zero α] [Mul α] [NoZeroDivisors α]
-    {a b : α} (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 :=
-  fun H => (eq_zero_or_eq_zero_of_mul_eq_zero H).elim ha hb
+    a ^ n ≠ 0 := by
+  refine mt (fun H => ?_) h
+  induction' n with n IH
+  · rw [pow_zero] at H
+    rw [←mul_one a, H, mul_zero]
+  · rw [pow_succ, mul_eq_zero] at H
+    exact H.casesOn id IH
 
 lemma mul_ne_zero_of_ne_zero_of_pos [Zero α] [Mul α] [PartialOrder α] [NoZeroDivisors α]
     {a b : α} (ha : a ≠ 0) (hb : 0 < b) : a * b ≠ 0 :=
