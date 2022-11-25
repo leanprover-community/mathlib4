@@ -214,8 +214,9 @@ theorem min_lt_max : min a b < max a b ↔ a ≠ b :=
   inf_lt_sup
 #align min_lt_max min_lt_max
 
-theorem max_lt_max (h₁ : a < c) (h₂ : b < d) : max a b < max c d := by
-  simp [lt_max_iff, max_lt_iff, *]
+-- Porting note: was `by simp [lt_max_iff, max_lt_iff, *]`
+theorem max_lt_max (h₁ : a < c) (h₂ : b < d) : max a b < max c d :=
+max_lt (lt_max_of_lt_left h₁) (lt_max_of_lt_right h₂)
 #align max_lt_max max_lt_max
 
 theorem min_lt_min (h₁ : a < c) (h₂ : b < d) : min a b < min c d :=
@@ -237,11 +238,11 @@ theorem Max.right_comm' (a b c : α)  :max (max a b) c = max (max a c) b := by
   . apply max_assoc
 
 theorem Max.left_comm (a b c : α) : max a (max b c) = max b (max a c) :=
-  left_comm max max_comm max_assoc a b c
+  _root_.left_comm max max_comm max_assoc a b c
 #align max.left_comm Max.left_comm
 
 theorem Max.right_comm (a b c : α) : max (max a b) c = max (max a c) b :=
-  right_comm max max_comm max_assoc a b c
+  _root_.right_comm max max_comm max_assoc a b c
 #align max.right_comm Max.right_comm
 
 theorem MonotoneOn.map_max (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
