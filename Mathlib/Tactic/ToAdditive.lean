@@ -707,6 +707,10 @@ private def elabToAdditive : Syntax → CoreM ValueType
 /-- `addToAdditiveAttr src val` adds a `@[to_additive]` attribute to `src` with configuration `val`.
 See the attribute implementation for more details. -/
 def addToAdditiveAttr (src : Name) (val : ValueType) : AttrM Unit := do
+  let shouldTrace := val.trace || ((← getOptions) |>.getBool `trace.to_additive)
+  withOptions
+    (fun o ↦ o |>.setBool `to_additive.replaceAll val.replaceAll
+               |>.setBool `trace.to_additive shouldTrace) <| do
   let tgt ← targetName src val.tgt val.allowAutoName
   if let some tgt' := findTranslation? (← getEnv) src then
     throwError "{src} already has a to_additive translation {tgt'}."
@@ -721,11 +725,7 @@ def addToAdditiveAttr (src : Name) (val : ValueType) : AttrM Unit := do
     proceedFields src tgt
   else
     -- tgt doesn't exist, so let's make it
-    let shouldTrace := val.trace || ((← getOptions) |>.getBool `trace.to_additive)
-    withOptions
-      (fun o ↦ o |>.setBool `to_additive.replaceAll val.replaceAll
-                  |>.setBool `trace.to_additive shouldTrace)
-      (transformDecl val.ref src tgt)
+    transformDecl val.ref src tgt
   if let some doc := val.doc then
     addDocString tgt doc
   return ()
