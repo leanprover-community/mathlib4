@@ -200,7 +200,7 @@ theorem max_succ_succ {m n : ℕ} : max (succ m) (succ n) = succ (max m n) := by
   · rw [not_le] at h1
     have h2 := le_of_lt h1
     rw [max_eq_left h2, max_eq_left (succ_le_succ h2)]
-    
+
 #align nat.max_succ_succ Nat.max_succ_succ
 
 theorem not_succ_lt_self {n : ℕ} : ¬succ n < n :=
@@ -248,7 +248,7 @@ theorem div_le_iff_le_mul_add_pred {m n k : ℕ} (n0 : 0 < n) : m / n ≤ k ↔ 
   rw [← lt_succ_iff, div_lt_iff_lt_mul n0, succ_mul, mul_comm]
   cases n
   · cases n0
-    
+
   exact lt_succ_iff
 #align nat.div_le_iff_le_mul_add_pred Nat.div_le_iff_le_mul_add_pred
 
@@ -422,7 +422,7 @@ theorem le_rec_on_trans {C : ℕ → Sort u} {n m k} (hnm : n ≤ m) (hmk : m �
     (leRecOn (le_trans hnm hmk) (@next) x : C k) = leRecOn hmk (@next) (leRecOn hnm (@next) x) := by
   induction' hmk with k hmk ih
   · rw [le_rec_on_self]
-    
+
   rw [le_rec_on_succ (le_trans hnm hmk), ih, le_rec_on_succ]
 #align nat.le_rec_on_trans Nat.le_rec_on_trans
 
@@ -436,7 +436,7 @@ theorem le_rec_on_injective {C : ℕ → Sort u} {n m} (hnm : n ≤ m) (next : �
   induction' hnm with m hnm ih
   · intro x y H
     rwa [le_rec_on_self, le_rec_on_self] at H
-    
+
   intro x y H
   rw [le_rec_on_succ hnm, le_rec_on_succ hnm] at H
   exact ih (Hnext _ H)
@@ -448,7 +448,7 @@ theorem le_rec_on_surjective {C : ℕ → Sort u} {n m} (hnm : n ≤ m) (next : 
   · intro x
     use x
     rw [le_rec_on_self]
-    
+
   intro x
   rcases Hnext _ x with ⟨w, rfl⟩
   rcases ih w with ⟨x, rfl⟩
@@ -531,9 +531,9 @@ def evenOddRec {P : ℕ → Sort _} (h0 : P 0) (h_even : ∀ (n) (ih : P n), P (
   refine' @binary_rec P h0 (fun b i hi => _) n
   cases b
   · simpa [bit, bit0_val i] using h_even i hi
-    
+
   · simpa [bit, bit1_val i] using h_odd i hi
-    
+
 #align nat.even_odd_rec Nat.evenOddRec
 
 @[simp]
@@ -548,14 +548,14 @@ theorem even_odd_rec_even (n : ℕ) (P : ℕ → Sort _) (h0 : P 0) (h_even : �
     @evenOddRec _ h0 h_even h_odd (2 * n) = h_even n (evenOddRec h0 h_even h_odd n) := by
   convert binary_rec_eq _ ff n
   · exact (bit0_eq_two_mul _).symm
-    
+
   · exact (bit0_eq_two_mul _).symm
-    
+
   · apply heq_of_cast_eq
     rfl
-    
+
   · exact H
-    
+
 #align nat.even_odd_rec_even Nat.even_odd_rec_even
 
 @[simp]
@@ -564,14 +564,14 @@ theorem even_odd_rec_odd (n : ℕ) (P : ℕ → Sort _) (h0 : P 0) (h_even : ∀
     @evenOddRec _ h0 h_even h_odd (2 * n + 1) = h_odd n (evenOddRec h0 h_even h_odd n) := by
   convert binary_rec_eq _ tt n
   · exact (bit0_eq_two_mul _).symm
-    
+
   · exact (bit0_eq_two_mul _).symm
-    
+
   · apply heq_of_cast_eq
     rfl
-    
+
   · exact H
-    
+
 #align nat.even_odd_rec_odd Nat.even_odd_rec_odd
 
 /-- Given `P : ℕ → ℕ → Sort*`, if for all `a b : ℕ` we can extend `P` from the rectangle
@@ -616,13 +616,13 @@ def decreasingInduction' {P : ℕ → Sort _} {m n : ℕ} (h : ∀ k < n, m ≤ 
   · intro n mn ih h hP
     apply ih
     · exact fun k hk => h k hk.step
-      
+
     · exact h n (lt_succ_self n) mn hP
-      
-    
+
+
   · intro h hP
     exact hP
-    
+
 #align nat.decreasing_induction' Nat.decreasingInduction'
 
 /-! ### `div` -/
@@ -852,9 +852,9 @@ theorem mul_div_le (m n : ℕ) : n * (m / n) ≤ m := by
   cases' Nat.eq_zero_or_pos n with n0 h
   · rw [n0, zero_mul]
     exact m.zero_le
-    
+
   · rw [mul_comm, ← Nat.le_div_iff_mul_le' h]
-    
+
 #align nat.mul_div_le Nat.mul_div_le
 -/
 
@@ -883,10 +883,10 @@ theorem find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < 
   constructor
   · rintro rfl
     exact ⟨Nat.find_spec h, fun _ => Nat.find_min h⟩
-    
+
   · rintro ⟨hm, hlt⟩
     exact le_antisymm (Nat.find_min' h hm) (not_lt.1 <| imp_not_comm.1 (hlt _) <| Nat.find_spec h)
-    
+
 #align nat.find_eq_iff Nat.find_eq_iff
 
 @[simp]
@@ -1086,21 +1086,21 @@ instance decidableBallLt (n : Nat) (P : ∀ k < n, Prop) : ∀ [H : ∀ n h, Dec
   by
   induction' n with n IH <;> intro <;> skip
   · exact is_true fun n => by decide
-    
+
   cases' IH fun k h => P k (lt_succ_of_lt h) with h
   · refine' is_false (mt _ h)
     intro hn k h
     apply hn
-    
+
   by_cases p : P n (lt_succ_self n)
   · exact
       is_true fun k h' =>
         (le_of_lt_succ h').lt_or_eq_dec.elim (h _) fun e =>
           match k, e, h' with
           | _, rfl, h => p
-    
+
   · exact is_false (mt (fun hn => hn _ _) p)
-    
+
 #align nat.decidable_ball_lt Nat.decidableBallLt
 
 instance decidableForallFin {n : ℕ} (P : Fin n → Prop) [H : DecidablePred P] : Decidable (∀ i, P i) :=
@@ -1124,4 +1124,3 @@ instance decidableExistsLe {P : ℕ → Prop} [h : DecidablePred P] : DecidableP
 #align nat.decidable_exists_le Nat.decidableExistsLe
 
 end Nat
-
