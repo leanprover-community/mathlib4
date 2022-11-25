@@ -31,8 +31,10 @@ import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.OrderSynonym
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+import Mathlib.Control.Basic
 import Mathlib.Control.EquivFunctor
 import Mathlib.Control.Random
+import Mathlib.Control.SimpSet
 import Mathlib.Control.ULift
 import Mathlib.Control.Writer
 import Mathlib.Data.Array.Basic
@@ -42,9 +44,11 @@ import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Bracket
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
+import Mathlib.Data.DList.Basic
 import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Fin2
+import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.FunLike.Basic
