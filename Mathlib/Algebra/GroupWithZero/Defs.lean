@@ -48,10 +48,12 @@ class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
 
 /-- A mixin for left cancellative multiplication by nonzero elements. -/
 class IsLeftCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
+  /-- Multiplicatin by a nonzero element is left cancellative. -/
   protected mul_left_cancel_of_ne_zero : ∀ {a b c : M₀}, a ≠ 0 → a * b = a * c → b = c
 
 /-- A mixin for right cancellative multiplication by nonzero elements. -/
 class IsRightCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
+  /-- Multiplicatin by a nonzero element is right cancellative. -/
   protected mul_right_cancel_of_ne_zero : ∀ {a b c : M₀}, b ≠ 0 → a * b = c * b → a = c
 
 /-- A mixin for cancellative multiplication by nonzero elements. -/
