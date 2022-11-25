@@ -724,7 +724,7 @@ theorem lt_div_mul_add {a b : ℕ} (hb : 0 < b) : a < a / b * b + b := by
 
 @[simp]
 protected theorem div_left_inj {a b d : ℕ} (hda : d ∣ a) (hdb : d ∣ b) : a / d = b / d ↔ a = b := by
-  refine' ⟨fun h => _, congr_arg _⟩
+  refine ⟨fun h => ?_, congr_arg fun n => n / d⟩
   rw [← Nat.mul_div_cancel' hda, ← Nat.mul_div_cancel' hdb, h]
 #align nat.div_left_inj Nat.div_left_inj
 
@@ -914,30 +914,31 @@ section FindGreatest
 exists -/
 protected def findGreatest (P : ℕ → Prop) [DecidablePred P] : ℕ → ℕ
   | 0 => 0
-  | n + 1 => if P (n + 1) then n + 1 else find_greatest n
+  | n + 1 => if P (n + 1) then n + 1 else Nat.findGreatest P n
 #align nat.find_greatest Nat.findGreatest
 
 variable {P Q : ℕ → Prop} [DecidablePred P] {b : ℕ}
 
 @[simp]
-theorem find_greatest_zero : Nat.findGreatest P 0 = 0 :=
+theorem findGreatest_zero : Nat.findGreatest P 0 = 0 :=
   rfl
-#align nat.find_greatest_zero Nat.find_greatest_zero
+#align nat.find_greatest_zero Nat.findGreatest_zero
 
-theorem find_greatest_succ (n : ℕ) : Nat.findGreatest P (n + 1) = if P (n + 1) then n + 1 else Nat.findGreatest P n :=
+theorem findGreatest_succ (n : ℕ) :
+    Nat.findGreatest P (n + 1) = if P (n + 1) then n + 1 else Nat.findGreatest P n :=
   rfl
-#align nat.find_greatest_succ Nat.find_greatest_succ
+#align nat.find_greatest_succ Nat.findGreatest_succ
 
 @[simp]
-theorem find_greatest_eq : ∀ {b}, P b → Nat.findGreatest P b = b
-  | 0, h => rfl
+theorem findGreatest_eq : ∀ {b}, P b → Nat.findGreatest P b = b
+  | 0, _ => rfl
   | n + 1, h => by simp [Nat.findGreatest, h]
-#align nat.find_greatest_eq Nat.find_greatest_eq
+#align nat.find_greatest_eq Nat.findGreatest_eq
 
 @[simp]
-theorem find_greatest_of_not (h : ¬P (b + 1)) : Nat.findGreatest P (b + 1) = Nat.findGreatest P b := by
+theorem findGreatest_of_not (h : ¬P (b + 1)) : Nat.findGreatest P (b + 1) = Nat.findGreatest P b := by
   simp [Nat.findGreatest, h]
-#align nat.find_greatest_of_not Nat.find_greatest_of_not
+#align nat.find_greatest_of_not Nat.findGreatest_of_not
 
 end FindGreatest
 
@@ -1058,24 +1059,24 @@ theorem bit_cases_on_inj {C : ℕ → Sort u} (H₁ H₂ : ∀ b n, C (bit b n))
 /-! ### decidability of predicates -/
 
 
-instance decidableBallLt (n : Nat) (P : ∀ k < n, Prop) : ∀ [H : ∀ n h, Decidable (P n h)], Decidable (∀ n h, P n h) :=
-  by
+instance decidableBallLt (n : Nat) (P : ∀ k < n, Prop) :
+    ∀ [H : ∀ n h, Decidable (P n h)], Decidable (∀ n h, P n h) := by
   induction' n with n IH <;> intro <;> skip
-  · exact is_true fun n => by decide
+  · exact isTrue fun n => by decide
 
   cases' IH fun k h => P k (lt_succ_of_lt h) with h
-  · refine' is_false (mt _ h)
+  · refine' isFalse (mt _ h)
     intro hn k h
     apply hn
 
   by_cases p : P n (lt_succ_self n)
   · exact
-      is_true fun k h' =>
+      isTrue fun k h' =>
         (le_of_lt_succ h').lt_or_eq_dec.elim (h _) fun e =>
           match k, e, h' with
           | _, rfl, h => p
 
-  · exact is_false (mt (fun hn => hn _ _) p)
+  · exact isFalse (mt (fun hn => hn _ _) p)
 
 #align nat.decidable_ball_lt Nat.decidableBallLt
 
