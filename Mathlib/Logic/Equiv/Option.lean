@@ -166,7 +166,7 @@ set_option maxHeartbeats 600000 -- next def times out with default heartbeats (2
 
 /-- Equivalences between `Option α` and `β` that send `none` to `x` are equivalent to
 equivalences between `α` and `{y : β // y ≠ x}`. -/
-def option_subtype [DecidableEq β] (x : β) :
+def optionSubtype [DecidableEq β] (x : β) :
     { e : Option α ≃ β // e none = x } ≃ (α ≃ { y : β // y ≠ x }) where
   toFun e :=
     { toFun := fun a =>
@@ -204,61 +204,61 @@ def option_subtype [DecidableEq β] (x : β) :
   right_inv e := by
     ext a
     rfl
-#align equiv.option_subtype Equiv.option_subtype
+#align equiv.option_subtype Equiv.optionSubtype
 
 @[simp]
-theorem option_subtype_apply_apply
+theorem optionSubtype_apply_apply
       [DecidableEq β] (x : β)
       (e : { e : Option α ≃ β // e none = x })
       (a : α)
-      (h) : option_subtype x e a = ⟨(e : Option α ≃ β) a, h⟩ := rfl
-#align equiv.option_subtype_apply_apply Equiv.option_subtype_apply_apply
+      (h) : optionSubtype x e a = ⟨(e : Option α ≃ β) a, h⟩ := rfl
+#align equiv.option_subtype_apply_apply Equiv.optionSubtype_apply_apply
 
 @[simp]
-theorem coe_option_subtype_apply_apply
+theorem coe_optionSubtype_apply_apply
       [DecidableEq β] (x : β)
       (e : { e : Option α ≃ β // e none = x })
-      (a : α) : ↑(option_subtype x e a) = (e : Option α ≃ β) a := rfl
-#align equiv.coe_option_subtype_apply_apply Equiv.coe_option_subtype_apply_apply
+      (a : α) : ↑(optionSubtype x e a) = (e : Option α ≃ β) a := rfl
+#align equiv.coe_option_subtype_apply_apply Equiv.coe_optionSubtype_apply_apply
 
 @[simp]
-theorem option_subtype_apply_symm_apply
+theorem optionSubtype_apply_symm_apply
     [DecidableEq β] (x : β)
     (e : { e : Option α ≃ β // e none = x })
-    (b : { y : β // y ≠ x }) : ↑((option_subtype x e).symm b) = (e : Option α ≃ β).symm b := by
-  dsimp only [option_subtype]
+    (b : { y : β // y ≠ x }) : ↑((optionSubtype x e).symm b) = (e : Option α ≃ β).symm b := by
+  dsimp only [optionSubtype]
   simp
-#align equiv.option_subtype_apply_symm_apply Equiv.option_subtype_apply_symm_apply
+#align equiv.option_subtype_apply_symm_apply Equiv.optionSubtype_apply_symm_apply
 
 @[simp]
-theorem option_subtype_symm_apply_apply_coe [DecidableEq β] (x : β) (e : α ≃ { y : β // y ≠ x })
-    (a : α) : ((option_subtype x).symm e : Option α ≃ β) a = e a :=
+theorem optionSubtype_symm_apply_apply_coe [DecidableEq β] (x : β) (e : α ≃ { y : β // y ≠ x })
+    (a : α) : ((optionSubtype x).symm e : Option α ≃ β) a = e a :=
   rfl
-#align equiv.option_subtype_symm_apply_apply_coe Equiv.option_subtype_symm_apply_apply_coe
+#align equiv.option_subtype_symm_apply_apply_coe Equiv.optionSubtype_symm_apply_apply_coe
 
 @[simp]
-theorem option_subtype_symm_apply_apply_some
+theorem optionSubtype_symm_apply_apply_some
     [DecidableEq β]
     (x : β)
     (e : α ≃ { y : β // y ≠ x })
-    (a : α) : ((option_subtype x).symm e : Option α ≃ β) (some a) = e a :=
+    (a : α) : ((optionSubtype x).symm e : Option α ≃ β) (some a) = e a :=
   rfl
-#align equiv.option_subtype_symm_apply_apply_some Equiv.option_subtype_symm_apply_apply_some
+#align equiv.option_subtype_symm_apply_apply_some Equiv.optionSubtype_symm_apply_apply_some
 
 @[simp]
-theorem option_subtype_symm_apply_apply_none
+theorem optionSubtype_symm_apply_apply_none
     [DecidableEq β]
     (x : β)
-    (e : α ≃ { y : β // y ≠ x }) : ((option_subtype x).symm e : Option α ≃ β) none = x :=
+    (e : α ≃ { y : β // y ≠ x }) : ((optionSubtype x).symm e : Option α ≃ β) none = x :=
   rfl
-#align equiv.option_subtype_symm_apply_apply_none Equiv.option_subtype_symm_apply_apply_none
+#align equiv.option_subtype_symm_apply_apply_none Equiv.optionSubtype_symm_apply_apply_none
 
 @[simp]
-theorem option_subtype_symm_apply_symm_apply [DecidableEq β] (x : β) (e : α ≃ { y : β // y ≠ x })
-    (b : { y : β // y ≠ x }) : ((option_subtype x).symm e : Option α ≃ β).symm b = e.symm b := by
-  simp only [option_subtype, coe_fn_symm_mk, Subtype.coe_mk,
+theorem optionSubtype_symm_apply_symm_apply [DecidableEq β] (x : β) (e : α ≃ { y : β // y ≠ x })
+    (b : { y : β // y ≠ x }) : ((optionSubtype x).symm e : Option α ≃ β).symm b = e.symm b := by
+  simp only [optionSubtype, coe_fn_symm_mk, Subtype.coe_mk,
              Subtype.coe_eta, dite_eq_ite, ite_eq_right_iff]
   exact fun h => False.elim (b.property h)
-#align equiv.option_subtype_symm_apply_symm_apply Equiv.option_subtype_symm_apply_symm_apply
+#align equiv.option_subtype_symm_apply_symm_apply Equiv.optionSubtype_symm_apply_symm_apply
 
 end Equiv
