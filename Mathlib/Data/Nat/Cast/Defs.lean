@@ -210,7 +210,7 @@ protected def AddMonoidWithOne.unary {R : Type _} [AddMonoid R] [One R] : AddMon
 protected def AddMonoidWithOne.binary {R : Type _} [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with
     natCast := Nat.binCast,
-    natCast_zero := by simp only [Nat.binCast, Nat.cast]; rfl,
+    natCast_zero := by simp only [Nat.binCast, Nat.cast],
     natCast_succ := fun n => by
       dsimp only [NatCast.natCast]
       letI : AddMonoidWithOne R := AddMonoidWithOne.unary
