@@ -152,14 +152,14 @@ theorem some_removeNone_iff {x : α} : some (removeNone e x) = e none ↔ e.symm
 #align equiv.some_remove_none_iff Equiv.some_removeNone_iff
 
 @[simp]
-theorem removeNone_option_congr (e : α ≃ β) : removeNone e.optionCongr = e :=
+theorem removeNone_optionCongr (e : α ≃ β) : removeNone e.optionCongr = e :=
   Equiv.ext fun x => Option.some_injective _ <| removeNone_some _ ⟨e x, by simp [EquivFunctor.map]⟩
-#align equiv.remove_none_option_congr Equiv.removeNone_option_congr
+#align equiv.remove_none_option_congr Equiv.removeNone_optionCongr
 
 end RemoveNone
 
 theorem optionCongr_injective : Function.Injective (optionCongr : α ≃ β → Option α ≃ Option β) :=
-  Function.LeftInverse.injective removeNone_option_congr
+  Function.LeftInverse.injective removeNone_optionCongr
 #align equiv.option_congr_injective Equiv.optionCongr_injective
 
 set_option maxHeartbeats 600000 -- next def times out with default heartbeats (200000)
