@@ -47,13 +47,13 @@ variable {α : Type u} {β : Type v} {γ δ : Type _}
 
 
 /-- Typeclass for the `⊤` (`\top`) notation -/
-@[notation_class]
+@[notation_class, ext]
 class HasTop (α : Type u) where
   top : α
 #align has_top HasTop
 
 /-- Typeclass for the `⊥` (`\bot`) notation -/
-@[notation_class]
+@[notation_class, ext]
 class HasBot (α : Type u) where
   bot : α
 #align has_bot HasBot
@@ -225,16 +225,19 @@ theorem StrictMono.maximal_preimage_top [LinearOrder α] [Preorder β] [OrderTop
 
 theorem OrderTop.ext_top {α} {hA : PartialOrder α} (A : OrderTop α) {hB : PartialOrder α}
     (B : OrderTop α) (H : ∀ x y : α, (haveI := hA; x ≤ y) ↔ x ≤ y) :
-    (haveI := A; ⊤ : α) = ⊤ :=
-  top_unique <| by rw [← H] <;> apply le_top
+    (haveI := A; ⊤ : α) = ⊤ := by
+  cases PartialOrder.ext H
+  apply top_unique
+  rw [← H]
 #align order_top.ext_top OrderTop.ext_top
 
 theorem OrderTop.ext {α} [PartialOrder α] {A B : OrderTop α} : A = B := by
-  have tt := OrderTop.ext_top A B fun _ _ => Iff.rfl
   cases' A with _ ha
   cases' B with _ hb
   congr
-  exact le_antisymm (hb _) (ha _)
+  · ext
+    exact le_antisymm (hb _) (ha _)
+  · apply proof_irrel_heq
 #align order_top.ext OrderTop.ext
 
 /-- An order is an `order_bot` if it has a least element.
@@ -431,16 +434,19 @@ theorem StrictMono.minimal_preimage_bot [LinearOrder α] [PartialOrder β] [Orde
 
 theorem OrderBot.ext_bot {α} {hA : PartialOrder α} (A : OrderBot α) {hB : PartialOrder α}
     (B : OrderBot α) (H : ∀ x y : α, (haveI := hA; x ≤ y) ↔ x ≤ y) :
-    (haveI := A; ⊥ : α) = ⊥ :=
-  bot_unique <| by rw [← H] <;> apply bot_le
+    (haveI := A; ⊥ : α) = ⊥ := by
+  cases PartialOrder.ext H
+  apply bot_unique
+  rw [← H]
 #align order_bot.ext_bot OrderBot.ext_bot
 
 theorem OrderBot.ext {α} [PartialOrder α] {A B : OrderBot α} : A = B := by
-  have tt := OrderBot.ext_bot A B fun _ _ => Iff.rfl
   cases' A with a ha
   cases' B with b hb
   congr
-  exact le_antisymm (ha _) (hb _)
+  · ext
+    exact le_antisymm (ha _) (hb _)
+  · apply proof_irrel_heq
 #align order_bot.ext OrderBot.ext
 
 section SemilatticeSupTop
@@ -533,13 +539,7 @@ theorem BoundedOrder.ext {α} [PartialOrder α] {A B : BoundedOrder α} : A = B 
   have hb : @BoundedOrder.toOrderBot α _ A = @BoundedOrder.toOrderBot α _ B := OrderBot.ext
   cases A
   cases B
-  injection ht with h
-  injection hb with h'
-  convert rfl
-  · exact h.symm
-
-  · exact h'.symm
-
+  congr
 #align bounded_order.ext BoundedOrder.ext
 
 /-- Propositions form a distributive lattice. -/
