@@ -3,11 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.Prod.PProd
-import Mathlib.Data.Sigma.Basic
-import Mathlib.Data.Option.Basic
-import Mathlib.Data.Subtype
 import Mathlib.Logic.Equiv.Basic
 
 /-!
@@ -19,9 +15,7 @@ universe u v w x
 
 namespace Function
 
--- depending on cardinalities, an injective function may not exist
--- @[nolint has_nonempty_instance]
--- **TODO** make an instance anyway
+-- port note: in Lean 3 this was tagged @[nolint has_nonempty_instance]
 /-- `α ↪ β` is a bundled injective function. -/
 structure Embedding (α : Sort _) (β : Sort _) where
   /-- An embedding as a function. Use coercion instead. -/
