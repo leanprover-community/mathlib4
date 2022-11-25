@@ -882,8 +882,7 @@ end Preorder
 /-- The pointwise partial order on a product.
     (The lexicographic ordering is defined in `Order.Lexicographic`, and the instances are
     available via the type synonym `α ×ₗ β = α × β`.) -/
-instance partialOrder (α : Type u) (β : Type v) [PartialOrder α] [PartialOrder β] :
-  PartialOrder (α × β) where
+instance (α : Type u) (β : Type v) [PartialOrder α] [PartialOrder β] : PartialOrder (α × β) where
   __ := inferInstanceAs (Preorder (α × β))
   le_antisymm := fun _ _ ⟨hac, hbd⟩ ⟨hca, hdb⟩ ↦ Prod.ext' (hac.antisymm hca) (hbd.antisymm hdb)
 
