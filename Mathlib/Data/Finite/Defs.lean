@@ -89,7 +89,7 @@ instance {α : Type v} [Finite α] : Finite (ULift.{u} α) :=
   Finite.of_equiv α Equiv.ulift.symm
 
 /-- A type is said to be infinite if it is not finite. Note that `Infinite α` is equivalent to
-`isEmpty (Fintype α)` or `isEmpty (Finite α)`. -/
+`IsEmpty (Fintype α)` or `IsEmpty (Finite α)`. -/
 class Infinite (α : Sort _) : Prop where
   /-- assertion that `α` is `¬Finite`-/
   not_finite : ¬Finite α
