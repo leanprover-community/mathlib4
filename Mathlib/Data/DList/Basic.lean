@@ -41,7 +41,7 @@ theorem DList_singleton {α : Type _} {a : α} : DList.singleton a = DList.lazy_
 #align dlist_singleton Std.DList_singleton
 
 @[simp]
-theorem DList_lazy {α : Type _} {l : List α} : DList.lazy_OfList l = Std.DList.ofList l :=
+theorem DList_lazy {α : Type _} {l : List α} : DList.lazy_ofList l = Std.DList.ofList l :=
   rfl
 #align dlist_lazy Std.DList_lazy
 
