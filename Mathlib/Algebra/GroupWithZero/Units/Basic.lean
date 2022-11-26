@@ -162,7 +162,9 @@ theorem isUnit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
   ⟨fun h => by
     cases subsingleton_or_nontrivial M₀
     · convert h
-      exact Subsingleton.elim _ _ -- porting note: had to add this? Not sure why
+      -- Porting note:
+      -- This is needed due to a regression in `convert` noted in https://github.com/leanprover-community/mathlib4/issues/739
+      exact Subsingleton.elim _ _
     · contrapose h
       rw [Ring.inverse_non_unit _ h]
       exact not_isUnit_zero
@@ -181,8 +183,7 @@ variable {a b : G₀}
   or the `/ₚ` operation, it is possible to write a division
   as a partial function with three arguments. -/
 def mk0 (a : G₀) (ha : a ≠ 0) : G₀ˣ :=
-  ⟨a, a⁻¹, mul_inv_cancel _ ha, inv_mul_cancel ha⟩
-  -- porting note: `mul_inv_cancel` has an extra explicit argument now?
+  ⟨a, a⁻¹, mul_inv_cancel ha, inv_mul_cancel ha⟩
 #align units.mk0 Units.mk0
 
 @[simp]
@@ -203,7 +204,7 @@ theorem mk0_val (u : G₀ˣ) (h : (u : G₀) ≠ 0) : mk0 (u : G₀) h = u :=
 
 -- porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem mul_inv' (u : G₀ˣ) : (u : G₀) * u⁻¹ = 1 := by
-  convert mul_inv_cancel _ u.ne_zero; exact val_inv_eq_inv_val u
+  convert mul_inv_cancel u.ne_zero; exact val_inv_eq_inv_val u
   -- porting note: this is concerning, this required an extra step and doesn't hold definitionally
 #align units.mul_inv' Units.mul_inv'
 
