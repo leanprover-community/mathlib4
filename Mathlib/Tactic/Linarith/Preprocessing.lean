@@ -209,7 +209,8 @@ def natToInt : GlobalBranchingPreprocessor :=
           pure h'
         else
           -- `zifyProof` turned our comparison into something that wasn't a comparison
-          -- (probably replacing `n = n` with `True`!)
+          -- probably replacing `n = n` with `True`, because of
+          -- https://github.com/leanprover-community/mathlib4/issues/741
           -- so we just keep the original hypothesis.
           pure h
       else
