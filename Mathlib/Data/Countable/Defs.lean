@@ -69,7 +69,7 @@ instance {β : Type v} [Countable β] : Countable (ULift.{u} β) :=
   Countable.of_equiv _ Equiv.ulift.symm
 
 /-!
-### Operations on `Sort*`s
+### Operations on `Sort _`s
 -/
 
 
