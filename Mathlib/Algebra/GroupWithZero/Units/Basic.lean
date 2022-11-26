@@ -3,10 +3,12 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathbin.Algebra.GroupWithZero.Basic
-import Mathbin.Algebra.Group.Units
-import Mathbin.Tactic.Nontriviality
-import Mathbin.Tactic.AssertExists
+import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.Group.Units
+import Mathlib.Tactic.Nontriviality
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Contrapose
+-- import Mathlib.Tactic.AssertExists
 
 /-!
 # Lemmas about units in a `monoid_with_zero` or a `group_with_zero`.
@@ -38,7 +40,7 @@ theorem mul_left_eq_zero (u : M₀ˣ) {a : M₀} : a * u = 0 ↔ a = 0 :=
 
 @[simp]
 theorem mul_right_eq_zero (u : M₀ˣ) {a : M₀} : ↑u * a = 0 ↔ a = 0 :=
-  ⟨fun h => by simpa using mul_eq_zero_of_right (↑u⁻¹) h, mul_eq_zero_of_right u⟩
+  ⟨fun h => by simpa using mul_eq_zero_of_right (↑u⁻¹) h, mul_eq_zero_of_right (u : M₀)⟩
 #align units.mul_right_eq_zero Units.mul_right_eq_zero
 
 end Units
@@ -47,7 +49,7 @@ namespace IsUnit
 
 theorem ne_zero [Nontrivial M₀] {a : M₀} (ha : IsUnit a) : a ≠ 0 :=
   let ⟨u, hu⟩ := ha
-  hu ▸ u.NeZero
+  hu ▸ u.ne_zero
 #align is_unit.ne_zero IsUnit.ne_zero
 
 theorem mul_right_eq_zero {a b : M₀} (ha : IsUnit a) : a * b = 0 ↔ b = 0 :=
@@ -65,7 +67,7 @@ end IsUnit
 @[simp]
 theorem is_unit_zero_iff : IsUnit (0 : M₀) ↔ (0 : M₀) = 1 :=
   ⟨fun ⟨⟨_, a, (a0 : 0 * a = 1), _⟩, rfl⟩ => by rwa [zero_mul] at a0, fun h =>
-    @is_unit_of_subsingleton _ _ (subsingleton_of_zero_eq_one h) 0⟩
+    @isUnit_of_subsingleton _ _ (subsingleton_of_zero_eq_one h) 0⟩
 #align is_unit_zero_iff is_unit_zero_iff
 
 @[simp]
@@ -83,13 +85,13 @@ than partially) defined inverse function for some purposes, including for calcul
 
 Note that while this is in the `ring` namespace for brevity, it requires the weaker assumption
 `monoid_with_zero M₀` instead of `ring M₀`. -/
-noncomputable def inverse : M₀ → M₀ := fun x => if h : IsUnit x then ((h.Unit⁻¹ : M₀ˣ) : M₀) else 0
+noncomputable def inverse : M₀ → M₀ := fun x => if h : IsUnit x then ((h.unit⁻¹ : M₀ˣ) : M₀) else 0
 #align ring.inverse Ring.inverse
 
 /-- By definition, if `x` is invertible then `inverse x = x⁻¹`. -/
 @[simp]
 theorem inverse_unit (u : M₀ˣ) : inverse (u : M₀) = (u⁻¹ : M₀ˣ) := by
-  simp only [Units.is_unit, inverse, dif_pos]
+  simp only [Units.isUnit, inverse, dif_pos]
   exact Units.inv_unique rfl
 #align ring.inverse_unit Ring.inverse_unit
 
@@ -159,7 +161,7 @@ theorem is_unit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :
   ⟨fun h => by
     cases subsingleton_or_nontrivial M₀
     · convert h
-      
+      exact Subsingleton.elim _ _ -- porting note: had to add this? Not sure why
     · contrapose h
       rw [Ring.inverse_non_unit _ h]
       exact not_is_unit_zero
@@ -178,7 +180,8 @@ variable {a b : G₀}
   or the `/ₚ` operation, it is possible to write a division
   as a partial function with three arguments. -/
 def mk0 (a : G₀) (ha : a ≠ 0) : G₀ˣ :=
-  ⟨a, a⁻¹, mul_inv_cancel ha, inv_mul_cancel ha⟩
+  ⟨a, a⁻¹, mul_inv_cancel _ ha, inv_mul_cancel ha⟩
+  -- porting note: `mul_inv_cancel` has an extra explicit argument now?
 #align units.mk0 Units.mk0
 
 @[simp]
@@ -198,29 +201,34 @@ theorem mk0_coe (u : G₀ˣ) (h : (u : G₀) ≠ 0) : mk0 (u : G₀) h = u :=
 #align units.mk0_coe Units.mk0_coe
 
 @[simp]
-theorem mul_inv' (u : G₀ˣ) : (u : G₀) * u⁻¹ = 1 :=
-  mul_inv_cancel u.NeZero
+theorem mul_inv' (u : G₀ˣ) : (u : G₀) * u⁻¹ = 1 := by
+  convert mul_inv_cancel _ u.ne_zero; exact val_inv_eq_inv_val u
+  -- porting note: this is concerning, this required an extra step and doesn't hold definitionally
 #align units.mul_inv' Units.mul_inv'
 
 @[simp]
 theorem inv_mul' (u : G₀ˣ) : (u⁻¹ : G₀) * u = 1 :=
-  inv_mul_cancel u.NeZero
+  inv_mul_cancel u.ne_zero
 #align units.inv_mul' Units.inv_mul'
 
 @[simp]
 theorem mk0_inj {a b : G₀} (ha : a ≠ 0) (hb : b ≠ 0) : Units.mk0 a ha = Units.mk0 b hb ↔ a = b :=
-  ⟨fun h => by injection h, fun h => Units.ext h⟩
+  ⟨fun h => by injection h; assumption, fun h => Units.ext h⟩
+  -- `assumption` was necessary, apparently `injection` doesn't run it?
 #align units.mk0_inj Units.mk0_inj
 
 /-- In a group with zero, an existential over a unit can be rewritten in terms of `units.mk0`. -/
 theorem exists0 {p : G₀ˣ → Prop} : (∃ g : G₀ˣ, p g) ↔ ∃ (g : G₀)(hg : g ≠ 0), p (Units.mk0 g hg) :=
-  ⟨fun ⟨g, pg⟩ => ⟨g, g.NeZero, (g.mk0_coe g.NeZero).symm ▸ pg⟩, fun ⟨g, hg, pg⟩ => ⟨Units.mk0 g hg, pg⟩⟩
+  ⟨fun ⟨g, pg⟩ => ⟨g, g.ne_zero, (g.mk0_coe g.ne_zero).symm ▸ pg⟩,
+  fun ⟨g, hg, pg⟩ => ⟨Units.mk0 g hg, pg⟩⟩
 #align units.exists0 Units.exists0
 
 /-- An alternative version of `units.exists0`. This one is useful if Lean cannot
 figure out `p` when using `units.exists0` from right to left. -/
-theorem exists0' {p : ∀ g : G₀, g ≠ 0 → Prop} : (∃ (g : G₀)(hg : g ≠ 0), p g hg) ↔ ∃ g : G₀ˣ, p g g.NeZero :=
-  Iff.trans (by simp_rw [coe_mk0]) exists0.symm
+theorem exists0' {p : ∀ g : G₀, g ≠ 0 → Prop} :
+    (∃ (g : G₀)(hg : g ≠ 0), p g hg) ↔ ∃ g : G₀ˣ, p g g.ne_zero :=
+  Iff.trans (by simp_rw [coe_mk0]; rfl) exists0.symm
+  -- porting note: had to add the `rfl`
 #align units.exists0' Units.exists0'
 
 @[simp]
@@ -231,11 +239,11 @@ theorem _root_.group_with_zero.eq_zero_or_unit (a : G₀) : a = 0 ∨ ∃ u : G�
   by_cases h : a = 0
   · left
     exact h
-    
+
   · right
-    simpa only [eq_comm] using units.exists_iff_ne_zero.mpr h
-    
-#align units._root_.group_with_zero.eq_zero_or_unit units._root_.group_with_zero.eq_zero_or_unit
+    simpa only [eq_comm] using Units.exists_iff_ne_zero.mpr h
+
+#align units._root_.group_with_zero.eq_zero_or_unit group_with_zero.eq_zero_or_unit
 
 end Units
 
@@ -244,7 +252,7 @@ section GroupWithZero
 variable [GroupWithZero G₀] {a b c : G₀}
 
 theorem IsUnit.mk0 (x : G₀) (hx : x ≠ 0) : IsUnit x :=
-  (Units.mk0 x hx).IsUnit
+  (Units.mk0 x hx).isUnit
 #align is_unit.mk0 IsUnit.mk0
 
 theorem is_unit_iff_ne_zero : IsUnit a ↔ a ≠ 0 :=
@@ -253,21 +261,23 @@ theorem is_unit_iff_ne_zero : IsUnit a ↔ a ≠ 0 :=
 
 alias is_unit_iff_ne_zero ↔ _ Ne.is_unit
 
-attribute [protected] Ne.is_unit
+-- porting note: can't add this attribute?
+-- attribute [protected] Ne.is_unit
 
 -- see Note [lower instance priority]
 instance (priority := 10) GroupWithZero.no_zero_divisors : NoZeroDivisors G₀ :=
   { (‹_› : GroupWithZero G₀) with
-    eq_zero_or_eq_zero_of_mul_eq_zero := fun a b h => by
+    eq_zero_or_eq_zero_of_mul_eq_zero := @fun a b h => by
       contrapose! h
-      exact (Units.mk0 a h.1 * Units.mk0 b h.2).NeZero }
+      exact (Units.mk0 a h.1 * Units.mk0 b h.2).ne_zero }
 #align group_with_zero.no_zero_divisors GroupWithZero.no_zero_divisors
 
 -- see Note [lower instance priority]
 instance (priority := 10) GroupWithZero.cancelMonoidWithZero : CancelMonoidWithZero G₀ :=
   { (‹_› : GroupWithZero G₀) with
-    mul_left_cancel_of_ne_zero := fun x y z hx h => by rw [← inv_mul_cancel_left₀ hx y, h, inv_mul_cancel_left₀ hx z],
-    mul_right_cancel_of_ne_zero := fun x y z hy h => by
+    mul_left_cancel_of_ne_zero := @fun x y z hx h => by
+      rw [← inv_mul_cancel_left₀ hx y, h, inv_mul_cancel_left₀ hx z],
+    mul_right_cancel_of_ne_zero := @fun x y z hy h => by
       rw [← mul_inv_cancel_right₀ hy x, h, mul_inv_cancel_right₀ hy z] }
 #align group_with_zero.cancel_monoid_with_zero GroupWithZero.cancelMonoidWithZero
 
@@ -290,15 +300,15 @@ theorem div_eq_zero_iff : a / b = 0 ↔ a = 0 ∨ b = 0 := by simp [div_eq_mul_i
 #align div_eq_zero_iff div_eq_zero_iff
 
 theorem div_ne_zero_iff : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 :=
-  div_eq_zero_iff.Not.trans not_or
+  div_eq_zero_iff.not.trans not_or
 #align div_ne_zero_iff div_ne_zero_iff
 
 theorem Ring.inverse_eq_inv (a : G₀) : Ring.inverse a = a⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
   · simp
-    
+
   · exact Ring.inverse_unit (Units.mk0 a ha)
-    
+
 #align ring.inverse_eq_inv Ring.inverse_eq_inv
 
 @[simp]
@@ -315,7 +325,8 @@ variable [CommGroupWithZero G₀] {a b c d : G₀}
 
 -- see Note [lower instance priority]
 instance (priority := 10) CommGroupWithZero.cancelCommMonoidWithZero : CancelCommMonoidWithZero G₀ :=
-  { GroupWithZero.cancelMonoidWithZero, CommGroupWithZero.toCommMonoidWithZero G₀ with }
+  { GroupWithZero.cancelMonoidWithZero,
+    CommGroupWithZero.toCommMonoidWithZero with }
 #align comm_group_with_zero.cancel_comm_monoid_with_zero CommGroupWithZero.cancelCommMonoidWithZero
 
 -- See note [lower instance priority]
@@ -335,9 +346,11 @@ variable {M : Type _} [Nontrivial M]
   consisting only of units and 0. -/
 noncomputable def groupWithZeroOfIsUnitOrEqZero [hM : MonoidWithZero M] (h : ∀ a : M, IsUnit a ∨ a = 0) :
     GroupWithZero M :=
-  { hM with inv := fun a => if h0 : a = 0 then 0 else ↑((h a).resolve_right h0).Unit⁻¹, inv_zero := dif_pos rfl,
+  { hM with
+    inv := fun a => if h0 : a = 0 then 0 else ↑((h a).resolve_right h0).unit⁻¹,
+    inv_zero := dif_pos rfl,
     mul_inv_cancel := fun a h0 => by
-      change (a * if h0 : a = 0 then 0 else ↑((h a).resolve_right h0).Unit⁻¹) = 1
+      change (a * if h0 : a = 0 then 0 else ↑((h a).resolve_right h0).unit⁻¹) = 1
       rw [dif_neg h0, Units.mul_inv_eq_iff_eq_mul, one_mul, IsUnit.unit_spec],
     exists_pair_ne := Nontrivial.exists_pair_ne }
 #align group_with_zero_of_is_unit_or_eq_zero groupWithZeroOfIsUnitOrEqZero
