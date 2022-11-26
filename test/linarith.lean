@@ -182,24 +182,25 @@ example (h : 1 < 0) (g : ¬ 37 < 42) (k : True) /-(l : (-7 : ℤ) < 5)-/: 3 < 7 
   linarith [(rfl : 0 = 0)]
 
 -- FIXME zify is using `eq.refl`, because it relies on `simp`.
+-- See https://github.com/leanprover-community/mathlib4/issues/741
 
 -- example (h : 1 < 0) : 3 = 7 := by
 --   linarith [Int.zero_lt_one]
 --   all_goals admit
 
--- example (x y z : ℕ) (hx : x ≤ 3*y) (h2 : y ≤ 2*z) (h3 : x ≥ 6*z) : x = 3*y := by
---   linarith
-
 example (h1 : (1 : ℕ) < 1) : False := by
   linarith
 
--- example (a b c : ℕ) : a + b ≥ a := by
+example (a b c : ℕ) : a + b ≥ a := by
+  linarith
+
+example (a b i : ℕ) (h1 :  ¬ a < i) (h2 : b < i) (h3 : a ≤ b) : False := by
+  linarith
+
+-- example (x y z : ℕ) (hx : x ≤ 3*y) (h2 : y ≤ 2*z) (h3 : x ≥ 6*z) : x = 3*y := by
 --   linarith
 
 -- example (a b c : ℕ) : ¬ a + b < a := by
---   linarith
-
--- example (a b i : ℕ) (h1 :  ¬ a < i) (h2 : b < i) (h3 : a ≤ b) : False := by
 --   linarith
 
 -- example (n : ℕ) (h1 : n ≤ 3) (h2 : n > 2) : n = 3 := by linarith
@@ -213,9 +214,9 @@ example (h1 : (1 : ℕ) < 1) : False := by
 -- example (a b c : ℚ) (h1 : 1 / a < b) (h2 : b < c) : 1 / a < c := by
 --   linarith
 
--- example (N : ℕ) (n : ℕ) (Hirrelevant : n > N) (A : Rat) (l : Rat) (h : A - l ≤ -(A - l))
---     (h_1 : ¬A ≤ -A) (h_2 : ¬l ≤ -l) (h_3 : -(A - l) < 1) :  A < l + 1 := by
---   linarith
+example (N : ℕ) (n : ℕ) (Hirrelevant : n > N) (A : Rat) (l : Rat) (h : A - l ≤ -(A - l))
+    (h_1 : ¬A ≤ -A) (h_2 : ¬l ≤ -l) (h_3 : -(A - l) < 1) :  A < l + 1 := by
+  linarith
 
 -- example (d : Rat) (q n : ℕ) (h1 : ((q : Rat) - 1)*n ≥ 0) (h2 : d = 2/3*(((q : Rat) - 1)*n)) :
 --     d ≤ ((q : Rat) - 1)*n := by
@@ -454,11 +455,8 @@ example (u v x y A B : Rat)
 
 -- example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x ^ 2 := by nlinarith
 
--- axiom foo {x : int} : 1 ≤ x → 1 ≤ x*x
--- lemma bar (x y: int)(h : 0 ≤ y ∧ 1 ≤ x) : 1 ≤ y + x*x := by linarith [foo h.2]
+-- axiom foo {x : Int} : 1 ≤ x → 1 ≤ x*x
+-- lemma bar (x y: Int) (h : 0 ≤ y ∧ 1 ≤ x) : 1 ≤ y + x * x := by linarith [foo h.2]
 
 -- -- issue #9822
--- lemma mytest (j : ℕ) (h : 0 < j) : j-1 < j:=
--- begin
---   linarith,
--- end
+-- lemma mytest (j : ℕ) (h : 0 < j) : j-1 < j:= by linarith
