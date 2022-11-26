@@ -5,6 +5,8 @@ Authors: Robert Y. Lewis
 -/
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Zify
+import Std.Data.RBMap.Basic
+import Mathlib.Data.HashMap
 
 /-!
 # Linarith preprocessing
@@ -101,45 +103,56 @@ def removeNegations : Preprocessor :=
 
 end removeNegations
 
--- FIXME the `natToInt : GlobalPreprocessor` from mathlib3
--- will need to wait for a port of `zify_proof`.
--- (`zify` was ported, but purely as porcelain, no plumbing.)
-section natToInt
+-- FIXME We need `zifyProof` to live in `MetaM`, not `TacticM`.
+-- section natToInt
 
-/--
-`is_nat_prop tp` is true iff `tp` is an inequality or equality between natural numbers
-or the negation thereof.
--/
-partial def isNatProp (e : Expr) : Bool :=
-  match e.getAppFnArgs with
-  | (``Eq, #[.const ``Nat [], _, _]) => true
-  | (``LE.le, #[.const ``Nat [], _, _, _]) => true
-  | (``LT.lt, #[.const ``Nat [], _, _, _]) => true
-  | (``GE.ge, #[.const ``Nat [], _, _, _]) => true
-  | (``GT.gt, #[.const ``Nat [], _, _, _]) => true
-  | (``Not, #[e]) => isNatProp e
-  | _ => false
+-- open Mathlib.Tactic.Zify
 
-/-- If `e` is of the form `((n : ℕ) : ℤ)`, `isNatIntCoe e` returns `n : ℕ`. -/
-def isNatIntCoe (e : Expr) : Option Expr :=
-  match e.getAppFnArgs with
-  | (``Nat.cast, #[.const ``Int [], _, n]) => some n
-  | _ => none
+-- /--
+-- `isNatProp tp` is true iff `tp` is an inequality or equality between natural numbers
+-- or the negation thereof.
+-- -/
+-- partial def isNatProp (e : Expr) : Bool :=
+--   match e.getAppFnArgs with
+--   | (``Eq, #[.const ``Nat [], _, _]) => true
+--   | (``LE.le, #[.const ``Nat [], _, _, _]) => true
+--   | (``LT.lt, #[.const ``Nat [], _, _, _]) => true
+--   | (``GE.ge, #[.const ``Nat [], _, _, _]) => true
+--   | (``GT.gt, #[.const ``Nat [], _, _, _]) => true
+--   | (``Not, #[e]) => isNatProp e
+--   | _ => false
 
-/--
-`getNatComparisons e` returns a list of all subexpressions of `e` of the form `((t : ℕ) : ℤ)`.
--/
-partial def getNatComparisons (e : Expr) : List Expr :=
-  match isNatIntCoe e with
-  | some n => [n]
-  | none => match e.getAppFnArgs with
-    | (``HAdd.hAdd, #[_, _, _, _, a, b]) => getNatComparisons a ++ getNatComparisons b
-    | (``HMul.hMul, #[_, _, _, _, a, b]) => getNatComparisons a ++ getNatComparisons b
-    | _ => []
+-- /-- If `e` is of the form `((n : ℕ) : ℤ)`, `isNatIntCoe e` returns `n : ℕ`. -/
+-- def isNatIntCoe (e : Expr) : Option Expr :=
+--   match e.getAppFnArgs with
+--   | (``Nat.cast, #[.const ``Int [], _, n]) => some n
+--   | _ => none
+
+-- /--
+-- `getNatComparisons e` returns a list of all subexpressions of `e` of the form `((t : ℕ) : ℤ)`.
+-- -/
+-- partial def getNatComparisons (e : Expr) : List Expr :=
+--   match isNatIntCoe e with
+--   | some n => [n]
+--   | none => match e.getAppFnArgs with
+--     | (``HAdd.hAdd, #[_, _, _, _, a, b]) => getNatComparisons a ++ getNatComparisons b
+--     | (``HMul.hMul, #[_, _, _, _, a, b]) => getNatComparisons a ++ getNatComparisons b
+--     | _ => []
 
 -- /-- If `e : ℕ`, returns a proof of `0 ≤ (e : ℤ)`. -/
 -- def mk_coe_nat_nonneg_prf (e : Expr) : MetaM Expr :=
--- mkAppM `int.coe_nat_nonneg #[e]
+-- mkAppM ``Int.coe_nat_nonneg #[e]
+
+-- open Std
+
+-- /-- Ordering on `Expr`. -/
+-- def Expr.compare (a b : Expr) : Ordering :=
+--   if Expr.lt a b then
+--     .lt
+--   else if a.equal b then
+--     .eq
+--   else
+--     .gt
 
 -- /--
 -- If `h` is an equality or inequality between natural numbers,
@@ -147,19 +160,25 @@ partial def getNatComparisons (e : Expr) : List Expr :=
 -- It also adds the facts that the integers involved are nonnegative.
 -- To avoid adding the same nonnegativity facts many times, it is a global preprocessor.
 --  -/
--- meta def natToInt : global_preprocessor :=
+-- def natToInt : GlobalPreprocessor :=
 -- { name := "move nats to ints",
---   transform := λ l,
--- -- we lock the tactic state here because a `simplify` call inside of
--- -- `zify_proof` corrupts the tactic state when run under `io.run_tactic`.
--- do l ← lock_tactic_state $ l.mmap $ λ h,
---          infer_type h >>= guardb ∘ is_nat_prop >> zify_proof [] h <|> return h,
---    nonnegs ← l.mfoldl (λ (es : expr_set) h, do
---      (a, b) ← infer_type h >>= get_rel_sides,
---      return $
---        (es.insert_list (getNatComparisons a)).insert_list (getNatComparisons b)) mk_rb_set,
---    (++) l <$> nonnegs.to_list.mmap mk_coe_nat_nonneg_prf }
-end natToInt
+--   transform := fun l => do
+--     -- FIXME in mathlib3 we called `lock_tactic_state` because `zifyProof` had side effects.
+--     -- Do we need that here?
+--     let l ← l.mapM $ fun h => do
+--       let t ← inferType h
+--       if (isNatProp t) then
+--         let (h', _) ← zifyProof none h t
+--         pure h'
+--       else
+--         pure h
+--     let nonnegs ← l.foldlM (fun (es : RBSet Expr Expr.compare) h => do
+--       let (a, b) ← getRelSides (← inferType h)
+--       pure $
+--         (es.insertList (getNatComparisons a)).insertList (getNatComparisons b)) RBSet.empty
+--     pure ((← nonnegs.toList.mapM mk_coe_nat_nonneg_prf) ++ l : List Expr) }
+
+-- end natToInt
 
 section strengthenStrictInt
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Std.Data.HashMap
+import Std.Data.RBMap
 
 /-!
 # Additional API for `RBMap`.
@@ -30,3 +31,11 @@ match self.find? a with
 | some L => self.insert a (b::L)
 
 end Std.HashMap
+
+namespace Std.RBSet
+
+/-- Insert all elements of a list into an `RBSet`. -/
+def insertList (m : RBSet α cmp) (L : List α) : RBSet α cmp :=
+L.foldl (fun m a => m.insert a) m
+
+end Std.RBSet
