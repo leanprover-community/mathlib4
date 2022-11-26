@@ -684,13 +684,13 @@ end MinMaxRec
 
 
 /-- Typeclass for the `⊔` (`\lub`) notation -/
-@[notation_class]
+@[notation_class, ext]
 class HasSup (α : Type u) where
   /-- Least upper bound (`\lub` notation) -/
   sup : α → α → α
 
 /-- Typeclass for the `⊓` (`\glb`) notation -/
-@[notation_class]
+@[notation_class, ext]
 class HasInf (α : Type u) where
   /-- Greatest lower bound (`\glb` notation) -/
   inf : α → α → α
@@ -981,7 +981,7 @@ theorem le_Prop_eq : ((· ≤ ·) : Prop → Prop → Prop) = (fun p q ↦ p →
 theorem subrelation_iff_le {r s : α → α → Prop} : Subrelation r s ↔ r ≤ s :=
   Iff.rfl
 
-instance PropCat.partialOrder : PartialOrder Prop where
+instance : PartialOrder Prop where
   __ := inferInstanceAs (LE Prop)
   le_refl := fun _ ↦ id
   le_trans := fun a b c f g ↦ g ∘ f

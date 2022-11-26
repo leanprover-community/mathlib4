@@ -3,13 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-import Mathlib.Tactic.Spread
+
 import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Int.Basic
-import Mathlib.Data.List.Basic
-
-import Std.Tactic.Lint.Frontend
-import Std.Tactic.Lint.Misc
+import Mathlib.Logic.Function.Basic
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -97,13 +94,13 @@ attribute [to_additive_reorder 1] HPow
 attribute [to_additive_reorder 1 5] HPow.hPow
 attribute [to_additive_reorder 1] Pow
 attribute [to_additive_reorder 1 4] Pow.pow
-attribute [to_additive SMul] Pow
+attribute [to_additive] Pow
 attribute [to_additive_reorder 1] instHPow
-attribute [to_additive instHSMul] instHPow
-attribute [to_additive HSMul] HPow
+attribute [to_additive] instHPow
+attribute [to_additive] HPow
 
-attribute [to_additive instHVAdd] instHSMul
-attribute [to_additive HVAdd] HSMul
+attribute [to_additive] instHSMul
+attribute [to_additive] HSMul
 
 universe u
 
@@ -516,8 +513,7 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 #align monoid.npow_zero' Monoid.npow_zero
 #align monoid.npow_succ' Monoid.npow_succ
 
--- FIXME I wouldn't have thought this is necessary. Is is a bug in `to_additive`?
--- It seems that it isn't operating on the second parent.
+-- Bug #660
 attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
 
 @[default_instance high] instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
@@ -532,7 +528,7 @@ section
 
 variable {M : Type _} [Monoid M]
 
-@[simp, to_additive nsmul_eq_smul]
+@[simp, to_additive]
 theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
   rfl
 
@@ -615,6 +611,8 @@ class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMon
 /-- Commutative version of `CancelMonoid`. -/
 @[to_additive]
 class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
+
+attribute [to_additive AddCancelCommMonoid.toAddCommMonoid] CancelCommMonoid.toCommMonoid
 
 -- see Note [lower instance priority]
 @[to_additive CancelCommMonoid.toAddCancelMonoid]
@@ -722,11 +720,16 @@ explanations on this.
 -/
 class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
   div a b := a * b⁻¹
+  /-- `a / b := a * b⁻¹` -/
   div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ := by intros; rfl
+  /-- The power operation: `a ^ n = a * ··· * a`; `a ^ (-n) = a⁻¹ * ··· a⁻¹` (`n` times) -/
   zpow : ℤ → G → G := zpowRec
+  /-- `a ^ 0 = 1` -/
   zpow_zero' : ∀ a : G, zpow 0 a = 1 := by intros; rfl
+  /-- `a ^ (n + 1) = a * a ^ n` -/
   zpow_succ' (n : ℕ) (a : G) : zpow (Int.ofNat n.succ) a = a * zpow (Int.ofNat n) a := by
     intros; rfl
+  /-- `a ^ -(n + 1) = (a ^ (n + 1))⁻¹` -/
   zpow_neg' (n : ℕ) (a : G) : zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ := by intros; rfl
 
 /-- A `SubNegMonoid` is an `AddMonoid` with unary `-` and binary `-` operations
@@ -769,7 +772,7 @@ section DivInvMonoid
 
 variable [DivInvMonoid G] {a b : G}
 
-@[simp, to_additive zsmul_eq_smul] theorem zpow_eq_pow (n : ℤ) (x : G) :
+@[simp, to_additive] theorem zpow_eq_pow (n : ℤ) (x : G) :
     DivInvMonoid.zpow n x = x ^ n :=
   rfl
 
@@ -820,7 +823,7 @@ class InvOneClass (G : Type _) extends One G, Inv G where
 @[to_additive SubNegZeroMonoid]
 class DivInvOneMonoid (G : Type _) extends DivInvMonoid G, InvOneClass G
 
--- FIXME: `to_additive` is not operating on the second parent.
+-- FIXME: `to_additive` is not operating on the second parent. (#660)
 attribute [to_additive SubNegZeroMonoid.toNegZeroClass] DivInvOneMonoid.toInvOneClass
 
 variable [InvOneClass G]
@@ -963,8 +966,6 @@ class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 class CommGroup (G : Type u) extends Group G, CommMonoid G
 
 attribute [to_additive AddCommGroup.toAddCommMonoid] CommGroup.toCommMonoid
-
-attribute [instance] AddCommGroup.toAddCommMonoid
 
 @[to_additive]
 theorem CommGroup.toGroup_injective {G : Type u} : Function.Injective (@CommGroup.toGroup G) := by

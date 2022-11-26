@@ -29,18 +29,16 @@ open Function
 
 variable {ι F α β γ δ : Type _}
 
--- Porting note: with Lean4 nightly 2022-11-20, `outParam (Zero β)` can be `Zero β`.
-
 /-- `NonNegHomClass F α β` states that `F` is a type of nonnegative morphisms. -/
-class NonNegHomClass (F : Type _) (α β : outParam (Type _)) [outParam (Zero β)] [outParam (LE β)]
-  extends FunLike F α fun _ => β where
+class NonNegHomClass (F : Type _) (α β : outParam (Type _)) [Zero β] [LE β] extends
+  FunLike F α fun _ => β where
   /-- the image of any element is non negative. -/
   map_nonneg (f : F) : ∀ a, 0 ≤ f a
 #align nonneg_hom_class NonNegHomClass
 
 /-- `SubAdditiveHomClass F α β` states that `F` is a type of subadditive morphisms. -/
-class SubAdditiveHomClass (F : Type _) (α β : outParam (Type _)) [outParam (Add α)]
-  [outParam (Add β)] [outParam (LE β)] extends FunLike F α fun _ => β where
+class SubAdditiveHomClass (F : Type _) (α β : outParam (Type _)) [Add α] [Add β] [LE β] extends
+  FunLike F α fun _ => β where
   /-- the image of a sum is less or equal than the sum of the images. -/
   map_add_le_add (f : F) : ∀ a b, f (a + b) ≤ f a + f b
 #align subadditive_hom_class SubAdditiveHomClass
