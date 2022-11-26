@@ -49,6 +49,10 @@ macro "to_additive!?" rest:to_additiveRest : attr => `(attr| to_additive ! ? $re
 /-- The `to_additive` attribute. -/
 macro "to_additive?!" rest:to_additiveRest : attr => `(attr| to_additive ! ? $rest)
 
+/-- A set of strings of names that are written in all-caps. -/
+def allCapitalNames : RBTree String compare :=
+.ofList ["LE", "LT", "WF"]
+
 /--
 This function takes a String and splits it into separate parts based on the following
 (naming conventions)[https://github.com/leanprover-community/mathlib4/wiki#naming-convention].
@@ -59,31 +63,17 @@ E.g. `#eval  "InvHMulLEConjugate₂Smul_ne_top".splitCase` yields
 partial def String.splitCase (s : String) (i₀ : Pos := 0) (r : List String := []) : List String :=
   -- We test if we need to split between `i₀` and `i₁`.
   let i₁ := s.next i₀
-  let i₂ := s.next i₁
   if s.atEnd i₁ then
     -- If `i₀` is the last position, return the list.
     let r := s::r
     r.reverse
-  -- First, we split on both sides of `_` to keep them there when rejoining the string.
-  else if (s.get i₀ = '_') || (s.get i₁ = '_') then
-    let r := (s.extract 0 i₁)::r
-    splitCase (s.extract i₁ s.endPos) 0 r
-  -- Otherwise, we only ever split when there is an upper case at `i₁`.
-  else if (s.get i₁).isUpper then
-    -- There are two cases we need to split:
-    if (s.get i₀).isUpper then
-      -- 1) If `i₀` and `i₁` are upper, `i₂` is not upper, and `i₀ > 0`.
-      -- This prevents single capital letters being split.
-      -- Example: Splits `LEOne`to `LE`, `One` but leaves `HMul` together.
-      if (i₀ ≠ 0) && ¬((s.get i₂).isUpper) then
-        let r := (s.extract 0 i₁)::r
-        splitCase (s.extract i₁ s.endPos) 0 r
-      else
-        splitCase s i₁ r
-    -- 2) Upper `i₁` is preceeded by non-upper `i₀`.
-    else
-      let r := (s.extract 0 i₁)::r
-      splitCase (s.extract i₁ s.endPos) 0 r
+  /- We split the string in three cases
+  * We split on both sides of `_` to keep them there when rejoining the string;
+  * We split after a sequence of capital letters in `allCapitalNames`;
+  * We split after a lower-case letter that is followed by an upper-case letter. -/
+  else if s.get i₀ == '_' || s.get i₁ == '_' ||
+    ((s.get i₁).isUpper && (!(s.get i₀).isUpper || allCapitalNames.contains (s.extract 0 i₁))) then
+    splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
   else
     splitCase s i₁ r
 
@@ -107,8 +97,7 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
         let ids ← match stx with
           | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
           | _ => throwUnsupportedSyntax
-        return ids.toList
-  }
+        return ids.toList }
 
 /-- Gets the set of arguments that should be ignored for the given name
 (according to `@[to_additive_ignore_args ...]`).
@@ -407,7 +396,7 @@ partial def transformDeclAux
     return
   let srcDecl ← getConstInfo src
   let prefixes : NameSet := .ofList [pre, env.mainModule ++ `_auxLemma]
-  -- we first transform all auxilliary declarations generated when elaborating `pre`
+  -- we first transform all auxiliary declarations generated when elaborating `pre`
   for n in srcDecl.type.listNamesWithPrefixes prefixes do
     transformDeclAux none pre tgt_pre n
   if let some value := srcDecl.value? then
@@ -541,8 +530,7 @@ structure ValueType : Type where
   deriving Repr
 
 /-- Helper for `capitalizeLike`. -/
-partial def capitalizeLikeAux (s : String) (i : String.Pos := 0) : String →  String :=
-  fun p =>
+partial def capitalizeLikeAux (s : String) (i : String.Pos := 0) (p : String) : String :=
   if p.atEnd i || s.atEnd i then
     p
   else
@@ -558,7 +546,9 @@ partial def capitalizeLikeAux (s : String) (i : String.Pos := 0) : String →  S
 def capitalizeLike (r : String) (s : String) :=
   capitalizeLikeAux r 0 s
 
-/-- Capitalize First element of a list like `s`. -/
+/-- Capitalize First element of a list like `s`.
+Note that we need to capitalize multiple characters in some cases,
+in examples like `HMul` or `hAdd`. -/
 def capitalizeFirstLike (s : String) : List String → List String
   | x :: r => capitalizeLike s x :: r
   | [] => []
@@ -578,10 +568,11 @@ private def nameDict : String → List String
 | "div"         => ["sub"]
 | "prod"        => ["sum"]
 | "hmul"        => ["hadd"]
+| "hsmul"       => ["hvadd"]
 | "hdiv"        => ["hsub"]
-| "hpow"        => ["hmul"]
+| "hpow"        => ["hsmul"]
 | "finprod"     => ["finsum"]
-| "pow"         => ["nsmul"]
+| "pow"         => ["smul"]
 | "npow"        => ["nsmul"]
 | "zpow"        => ["zsmul"]
 | "monoid"      => ["add", "Monoid"]
@@ -634,19 +625,16 @@ def fixAbbreviation : List String → List String
 | "Add" :: "Support" :: s           => "Support" :: fixAbbreviation s
 | "add" :: "Support" :: s           => "support" :: fixAbbreviation s
 | "add" :: "_" :: "support" :: s    => "support" :: fixAbbreviation s
- -- TODO: Is it `TSupport` or `Tsupport`?
 | "Add" :: "TSupport" :: s          => "TSupport" :: fixAbbreviation s
 | "add" :: "TSupport" :: s          => "tsupport" :: fixAbbreviation s
 | "add" :: "_" :: "tsupport" :: s   => "tsupport" :: fixAbbreviation s
 | "Add" :: "Indicator" :: s         => "Indicator" :: fixAbbreviation s
 | "add" :: "Indicator" :: s         => "indicator" :: fixAbbreviation s
 | "add" :: "_" :: "indicator" :: s  => "indicator" :: fixAbbreviation s
--- TODO: Bug in `splitCase` splits like ["LEH", "Pow"] instead of ["LE", "HPow"].
--- Currently we just fix these cases manually.
-| "HNsmul" :: s                     => "HMul" :: fixAbbreviation s
-| "hnsmul" :: s                     => "hmul" :: fixAbbreviation s
-| "Zero" :: "LEH" :: s              => "NonnegH" :: fixAbbreviation s
-| "Zero" :: "LTH" :: s              => "PosH" :: fixAbbreviation s
+-- the capitalization heuristic of `applyNameDict` doesn't work in the following cases
+| "Smul"  :: s                      => "SMul" :: fixAbbreviation s
+| "HSmul" :: s                      => "HSMul" :: fixAbbreviation s
+| "hSmul" :: s                      => "hSMul" :: fixAbbreviation s
 | x :: s                            => x :: fixAbbreviation s
 | []                                => []
 
@@ -719,6 +707,10 @@ private def elabToAdditive : Syntax → CoreM ValueType
 /-- `addToAdditiveAttr src val` adds a `@[to_additive]` attribute to `src` with configuration `val`.
 See the attribute implementation for more details. -/
 def addToAdditiveAttr (src : Name) (val : ValueType) : AttrM Unit := do
+  let shouldTrace := val.trace || ((← getOptions) |>.getBool `trace.to_additive)
+  withOptions
+    (fun o ↦ o |>.setBool `to_additive.replaceAll val.replaceAll
+               |>.setBool `trace.to_additive shouldTrace) <| do
   let tgt ← targetName src val.tgt val.allowAutoName
   if let some tgt' := findTranslation? (← getEnv) src then
     throwError "{src} already has a to_additive translation {tgt'}."
@@ -733,11 +725,7 @@ def addToAdditiveAttr (src : Name) (val : ValueType) : AttrM Unit := do
     proceedFields src tgt
   else
     -- tgt doesn't exist, so let's make it
-    let shouldTrace := val.trace || ((← getOptions) |>.getBool `trace.to_additive)
-    withOptions
-      (fun o ↦ o |>.setBool `to_additive.replaceAll val.replaceAll
-                  |>.setBool `trace.to_additive shouldTrace)
-      (transformDecl val.ref src tgt)
+    transformDecl val.ref src tgt
   if let some doc := val.doc then
     addDocString tgt doc
   return ()

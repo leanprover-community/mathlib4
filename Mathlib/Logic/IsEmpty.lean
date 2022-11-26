@@ -12,7 +12,7 @@ In this file we define a typeclass `IsEmpty`, which expresses that a type has no
 
 ## Main declaration
 
-* `isEmpty`: a typeclass that expresses that a type is empty.
+* `IsEmpty`: a typeclass that expresses that a type is empty.
 -/
 
 
