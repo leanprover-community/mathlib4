@@ -50,6 +50,9 @@ instance : Distrib ℤ          := by infer_instance
 #align int.neg_succ_mul_coe_nat Int.negSucc_mul_ofNat
 #align int.neg_succ_mul_neg_succ Int.negSucc_mul_negSucc
 
+instance : Nontrivial ℤ :=
+  ⟨⟨0, 1, Int.zero_ne_one⟩⟩
+
 @[simp, norm_cast] theorem coe_nat_le {m n : ℕ} : (↑m : ℤ) ≤ ↑n ↔ m ≤ n := ofNat_le
 #align int.coe_nat_le Int.coe_nat_le
 
