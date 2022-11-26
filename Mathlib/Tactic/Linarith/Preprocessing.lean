@@ -26,7 +26,8 @@ is the main list, and generally none of these should be skipped unless you know 
 
 namespace Lean.Elab.Tactic
 
-@[inline] private def TacticM.runCore (x : TacticM α) (ctx : Context) (s : State) : TermElabM (α × State) :=
+@[inline] private def TacticM.runCore (x : TacticM α) (ctx : Context) (s : State) :
+    TermElabM (α × State) :=
   x ctx |>.run s
 
 @[inline] private def TacticM.runCore' (x : TacticM α) (ctx : Context) (s : State) : TermElabM α :=
