@@ -193,7 +193,8 @@ theorem map_mk {α β} (h : α → β) (x : F (G α)) : h <$> Comp.mk x = Comp.m
 #align functor.comp.map_mk Functor.Comp.map_mk
 
 @[simp]
-protected theorem run_map {α β} (h : α → β) (x : Comp F G α) : (h <$> x).run = (· <$> ·) h <$> x.run :=
+protected theorem run_map {α β} (h : α → β) (x : Comp F G α) :
+    (h <$> x).run = (· <$> ·) h <$> x.run :=
   rfl
 #align functor.comp.run_map Functor.Comp.run_map
 
