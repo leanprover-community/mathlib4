@@ -202,7 +202,7 @@ protected def Function.Injective.groupWithZero [Zero G₀'] [Mul G₀'] [One G�
     pullback_nonzero f zero one with
     inv_zero := hf <| by erw [inv, zero, inv_zero],
     mul_inv_cancel := fun x hx => hf <| by
-      erw [one, mul, inv, mul_inv_cancel _ ((hf.ne_iff' zero).2 hx)] }
+      erw [one, mul, inv, mul_inv_cancel ((hf.ne_iff' zero).2 hx)] }
 #align function.injective.group_with_zero Function.Injective.groupWithZero
 
 /-- Pushforward a `GroupWithZero` along an surjective function.
@@ -217,7 +217,7 @@ protected def Function.Surjective.groupWithZero [Zero G₀'] [Mul G₀'] [One G�
   { hf.monoidWithZero f zero one mul npow, hf.divInvMonoid f one mul inv div npow zpow with
     inv_zero := by erw [← zero, ← inv, inv_zero],
     mul_inv_cancel := hf.forall.2 fun x hx => by
-        erw [← inv, ← mul, mul_inv_cancel _ (mt (congr_arg f) <| fun h ↦ hx (h.trans zero)), one]
+        erw [← inv, ← mul, mul_inv_cancel (mt (congr_arg f) <| fun h ↦ hx (h.trans zero)), one]
     exists_pair_ne := ⟨0, 1, h01⟩ }
 #align function.surjective.group_with_zero Function.Surjective.groupWithZero
 
