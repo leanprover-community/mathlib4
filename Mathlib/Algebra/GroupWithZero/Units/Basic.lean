@@ -265,6 +265,7 @@ alias isUnit_iff_ne_zero ↔ _ Ne.isUnit
 #align ne.is_unit Ne.isUnit
 
 -- porting note: can't add this attribute?
+-- https://github.com/leanprover-community/mathlib4/issues/740
 -- attribute [protected] Ne.is_unit
 
 -- see Note [lower instance priority]
