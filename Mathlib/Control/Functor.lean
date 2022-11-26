@@ -5,7 +5,6 @@ Authors: Simon Hudon
 -/
 import Mathlib.Control.Basic
 import Mathlib.Init.Set
-import Std.Tactic.Lint.Misc
 
 /-!
 # Functors
@@ -25,7 +24,7 @@ This module provides additional lemmas, definitions, and instances for `Functor`
 functor, applicative
 -/
 
-set_option autoImplicit false
+
 attribute [functor_norm] seq_assoc pure_seq map_pure seq_map_assoc map_seq
 
 universe u v w
@@ -38,13 +37,13 @@ variable {α β γ : Type u}
 
 variable [Functor F] [LawfulFunctor F]
 
-theorem Functor.map_id : (· <$> ·) id = (id : F α → F α) := by
-  apply funext <;> apply id_map
+theorem Functor.map_id : (· <$> ·) id = (id : F α → F α) := by apply funext <;> apply id_map
 #align functor.map_id Functor.map_id
 
 theorem Functor.map_comp_map (f : α → β) (g : β → γ) :
     ((· <$> ·) g ∘ (· <$> ·) f : F α → F γ) = (· <$> ·) (g ∘ f) :=
   funext <| fun _ => (comp_map _ _ _).symm
+  -- porting note: was `apply funext <;> intro <;> sorry --rw [comp_map]` but `rw` failed?
 #align functor.map_comp_map Functor.map_comp_map
 
 theorem Functor.ext {F} :
@@ -52,7 +51,8 @@ theorem Functor.ext {F} :
     (_H : ∀ (α β) (f : α → β) (x : F α), @Functor.map _ F1 _ _ f x = @Functor.map _ F2 _ _ f x),
     F1 = F2
   | ⟨m, mc⟩, ⟨m', mc'⟩, H1, H2, H => by
-    cases show @m = @m' by funext α β f x; apply H -- I did use `H`? but it complained?
+    cases show @m = @m' by funext α β f x; apply H
+    -- porting note: Lean marks `H` as an unused variable?
     congr
     funext α β
     have E1 := @map_const _ ⟨@m, @mc⟩ H1
@@ -62,10 +62,11 @@ theorem Functor.ext {F} :
 
 end Functor
 
-/-- Introduce the `id` functor. Incidentally, this is `pure` for
+/-- Introduce the `id` functor. Incidentally, this is `Pure` for
 `id` as a `Monad` and as an `Applicative` functor. -/
 def id.mk {α : Sort u} : α → id α :=
   id
+#align id.mk id.mk
 
 namespace Functor
 
@@ -107,9 +108,9 @@ protected def map {γ α β} (_f : α → β) (x : Const γ β) : Const γ α :=
   x
 #align functor.const.map Functor.Const.map
 
-instance Functor {γ} : Functor (Const γ) where map := @Const.map γ
+instance functor {γ} : Functor (Const γ) where map := @Const.map γ
 
-instance LawfulFunctor {γ} : LawfulFunctor (Const γ) := by constructor <;> intros <;> rfl
+instance lawfulFunctor {γ} : LawfulFunctor (Const γ) := by constructor <;> intros <;> rfl
 
 instance {α β} [Inhabited α] : Inhabited (Const α β) :=
   ⟨(default : α)⟩
@@ -125,7 +126,7 @@ def AddConst (α : Type _) :=
 #align functor.add_const Functor.AddConst
 
 /-- `AddConst.mk` is the canonical map `α → AddConst α β`, which is the identity,
-where `AddConst α β = const α β`. It can be used as a pattern to extract this value. -/
+where `AddConst α β = Const α β`. It can be used as a pattern to extract this value. -/
 @[match_pattern]
 def AddConst.mk {α β} (x : α) : AddConst α β :=
   x
@@ -136,18 +137,18 @@ def AddConst.run {α β} : AddConst α β → α :=
   id
 #align functor.add_const.run Functor.AddConst.run
 
-instance AddConst.Functor {γ} : Functor (AddConst γ) :=
-  @Const.Functor γ
-#align functor.add_const.functor Functor.AddConst.Functor
+instance AddConst.functor {γ} : Functor (AddConst γ) :=
+  @Const.functor γ
+#align functor.add_const.functor Functor.AddConst.functor
 
-instance AddConst.LawfulFunctor {γ} : LawfulFunctor (AddConst γ) :=
-  @Const.LawfulFunctor γ
-#align functor.add_const.is_lawful_functor Functor.AddConst.LawfulFunctor
+instance AddConst.lawfulFunctor {γ} : LawfulFunctor (AddConst γ) :=
+  @Const.lawfulFunctor γ
+#align functor.add_const.is_lawful_functor Functor.AddConst.lawfulFunctor
 
 instance {α β} [Inhabited α] : Inhabited (AddConst α β) :=
   ⟨(default : α)⟩
 
-/-- `Functor.Comp` is a wrapper around `Function.comp` for types.
+/-- `Functor.Comp` is a wrapper around `Function.Comp` for types.
     It prevents Lean's type class resolution mechanism from trying
     a `Functor (Comp F id)` when `functor F` would do. -/
 def Comp (F : Type u → Type w) (G : Type v → Type u) (α : Type v) : Type w :=
@@ -184,7 +185,7 @@ protected def map {α β : Type v} (h : α → β) : Comp F G α → Comp F G β
   | Comp.mk x => Comp.mk ((· <$> ·) h <$> x)
 #align functor.comp.map Functor.Comp.map
 
-protected instance Functor : Functor (Comp F G) where map := @Comp.map F G _ _
+instance functor : Functor (Comp F G) where map := @Comp.map F G _ _
 
 @[functor_norm]
 theorem map_mk {α β} (h : α → β) (x : F (G α)) : h <$> Comp.mk x = Comp.mk ((· <$> ·) h <$> x) :=
@@ -192,8 +193,7 @@ theorem map_mk {α β} (h : α → β) (x : F (G α)) : h <$> Comp.mk x = Comp.m
 #align functor.comp.map_mk Functor.Comp.map_mk
 
 @[simp]
-protected theorem run_map {α β} (h : α → β) (x : Comp F G α) :
-    (h <$> x).run = (· <$> ·) h <$> x.run :=
+protected theorem run_map {α β} (h : α → β) (x : Comp F G α) : (h <$> x).run = (· <$> ·) h <$> x.run :=
   rfl
 #align functor.comp.run_map Functor.Comp.run_map
 
@@ -203,26 +203,31 @@ variable {α β γ : Type v}
 
 protected theorem id_map : ∀ x : Comp F G α, Comp.map id x = x
   | Comp.mk x => by simp [Comp.map, Functor.map_id]; rfl
+  -- porting note: `rfl` wasn't needed in mathlib3
 #align functor.comp.id_map Functor.Comp.id_map
 
+-- porting note: because `LawfulFunctor G` wasn't needed in the proof we need `autoImplicit`s off
+set_option autoImplicit false in
 protected theorem comp_map (g' : α → β) (h : β → γ) :
     ∀ x : Comp F G α, Comp.map (h ∘ g') x = Comp.map h (Comp.map g' x)
   | Comp.mk x => by simp [Comp.map, Comp.mk, Functor.map_comp_map, functor_norm]
+  -- porting note: `Comp.mk` wasn't needed in mathlib3
 #align functor.comp.comp_map Functor.Comp.comp_map
 
-protected instance LawfulFunctor : LawfulFunctor (Comp F G) where
+instance lawfulFunctor : LawfulFunctor (Comp F G) where
   map_const := rfl
   id_map := @Comp.id_map F G _ _ _ _
   comp_map := @Comp.comp_map F G _ _ _ _
 
+-- porting note: had to use switch to `Id` from `id` because this has the `Functor` instance.
 theorem functor_comp_id {F} [AF : Functor F] [LawfulFunctor F] :
-  @Comp.Functor F Id _ _ = AF :=
-  @Functor.ext F _ AF (@Comp.LawfulFunctor F Id _ _ _ _) _ fun _ _ _ _ => rfl
+    @Comp.functor F Id _ _ = AF :=
+  @Functor.ext F _ AF (@Comp.lawfulFunctor F Id _ _ _ _) _ fun _ _ _ _ => rfl
 #align functor.comp.functor_comp_id Functor.Comp.functor_comp_id
 
-theorem functor_id_comp {F} [AF : Functor F] [LawfulFunctor F] :
-  @Comp.Functor Id F _ _ = AF :=
-  @Functor.ext F _ AF (@Comp.LawfulFunctor Id F _ _ _ _) _ fun _ _ _ _ => rfl
+-- porting note: had to use switch to `Id` from `id` because this has the `Functor` instance.
+theorem functor_id_comp {F} [AF : Functor F] [LawfulFunctor F] : @Comp.functor Id F _ _ = AF :=
+  @Functor.ext F _ AF (@Comp.lawfulFunctor Id F _ _ _ _) _ fun _ _ _ _ => rfl
 #align functor.comp.functor_id_comp Functor.Comp.functor_id_comp
 
 end Comp
@@ -241,7 +246,8 @@ variable [Applicative F] [Applicative G]
 protected def seq {α β : Type v} : Comp F G (α → β) → (Unit → Comp F G α) → Comp F G β
   | Comp.mk f, g => match g () with
     | Comp.mk x => Comp.mk <| (· <*> ·) <$> f <*> x
-#align functor.comp.seq Functor.Comp.seq
+#align functor.comp.seq Functor.Comp.seqₓ
+-- `ₓ` because the type of `Seq.seq` doesn't match `has_seq.seq`
 
 instance : Pure (Comp F G) :=
   ⟨fun x => Comp.mk <| pure <| pure x⟩
