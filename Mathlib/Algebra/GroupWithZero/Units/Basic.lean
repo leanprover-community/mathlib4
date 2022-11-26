@@ -259,7 +259,8 @@ theorem isUnit_iff_ne_zero : IsUnit a ↔ a ≠ 0 :=
   Units.exists_iff_ne_zero
 #align is_unit_iff_ne_zero isUnit_iff_ne_zero
 
-alias isUnit_iff_ne_zero ↔ _ Ne.is_unit
+alias isUnit_iff_ne_zero ↔ _ Ne.isUnit
+#align ne.is_unit Ne.isUnit
 
 -- porting note: can't add this attribute?
 -- attribute [protected] Ne.is_unit
