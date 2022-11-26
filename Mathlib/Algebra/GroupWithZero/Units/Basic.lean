@@ -69,7 +69,7 @@ theorem isUnit_zero_iff : IsUnit (0 : M₀) ↔ (0 : M₀) = 1 :=
     @isUnit_of_subsingleton _ _ (subsingleton_of_zero_eq_one h) 0⟩
 #align is_unit_zero_iff isUnit_zero_iff
 
-@[simp]
+-- porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem not_isUnit_zero [Nontrivial M₀] : ¬IsUnit (0 : M₀) :=
   mt isUnit_zero_iff.1 zero_ne_one
 #align not_is_unit_zero not_isUnit_zero
@@ -201,13 +201,13 @@ theorem mk0_val (u : G₀ˣ) (h : (u : G₀) ≠ 0) : mk0 (u : G₀) h = u :=
   Units.ext rfl
 #align units.mk0_coe Units.mk0_val
 
-@[simp]
+-- porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem mul_inv' (u : G₀ˣ) : (u : G₀) * u⁻¹ = 1 := by
   convert mul_inv_cancel _ u.ne_zero; exact val_inv_eq_inv_val u
   -- porting note: this is concerning, this required an extra step and doesn't hold definitionally
 #align units.mul_inv' Units.mul_inv'
 
-@[simp]
+-- porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem inv_mul' (u : G₀ˣ) : (u⁻¹ : G₀) * u = 1 :=
   inv_mul_cancel u.ne_zero
 #align units.inv_mul' Units.inv_mul'
