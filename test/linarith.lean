@@ -85,8 +85,9 @@ example (a b c : Rat) (h2 : b + 2 > 3 + b) : False := by
 example (a b c : Rat) (h2 : b + 2 > 3 + b) : False := by
   linarith
 
+-- We haven't implemented `restrict_type` yet.
 -- example (a b c : ℚ) (x y : ℤ) (h1 : x ≤ 3*y) (h2 : b + 2 > 3 + b) : false :=
--- by linarith {restrict_type := ℚ}
+-- by linarith (config := {restrict_type := ℚ})
 
 example (g v V c h : Rat) (h1 : h = 0) (h2 : v = V) (h3 : V > 0) (h4 : g > 0)
     (h5 : 0 ≤ c) (h6 : c < 1) : v ≤ V := by
@@ -177,9 +178,10 @@ by
     linarith (config := {split_hypotheses := false})
   linarith
 
--- example (h : 1 < 0) (g : ¬ 37 < 42) (k : True) /-(l : (-7 : ℤ) < 5)-/: 3 < 7 := by
---   linarith [(rfl : 0 = 0)]
---   all_goals admit
+example (h : 1 < 0) (g : ¬ 37 < 42) (k : True) /-(l : (-7 : ℤ) < 5)-/: 3 < 7 := by
+  linarith [(rfl : 0 = 0)]
+
+-- FIXME zify is using `eq.refl`, because it relies on `simp`.
 
 -- example (h : 1 < 0) : 3 = 7 := by
 --   linarith [Int.zero_lt_one]
@@ -188,8 +190,8 @@ by
 -- example (x y z : ℕ) (hx : x ≤ 3*y) (h2 : y ≤ 2*z) (h3 : x ≥ 6*z) : x = 3*y := by
 --   linarith
 
--- example (h1 : (1 : ℕ) < 1) : False := by
---   linarith
+example (h1 : (1 : ℕ) < 1) : False := by
+  linarith
 
 -- example (a b c : ℕ) : a + b ≥ a := by
 --   linarith

@@ -24,6 +24,41 @@ preprocessing steps by adding them to the `LinarithConfig` object. `Linarith.def
 is the main list, and generally none of these should be skipped unless you know what you're doing.
 -/
 
+namespace Lean.Elab.Tactic
+
+@[inline] private def TacticM.runCore (x : TacticM α) (ctx : Context) (s : State) : TermElabM (α × State) :=
+  x ctx |>.run s
+
+@[inline] private def TacticM.runCore' (x : TacticM α) (ctx : Context) (s : State) : TermElabM α :=
+  Prod.fst <$> x.runCore ctx s
+
+/-- Copy of `Lean.Elab.Tactic.run` that can return a value. -/
+-- We need this because Lean 4 core only provides `TacticM` functions for building simp contexts,
+-- making it quite painful to call `simp` from `MetaM`.
+def run_for (mvarId : MVarId) (x : TacticM α) : TermElabM (Option α × List MVarId) :=
+  mvarId.withContext do
+   let pendingMVarsSaved := (← get).pendingMVars
+   modify fun s => { s with pendingMVars := [] }
+   let aux : TacticM (Option α × List MVarId) :=
+     /- Important: the following `try` does not backtrack the state.
+        This is intentional because we don't want to backtrack the error message
+        when we catch the "abort internal exception"
+        We must define `run` here because we define `MonadExcept` instance for `TacticM` -/
+     try
+       let a ← x
+       pure (a, ← getUnsolvedGoals)
+     catch ex =>
+       if isAbortTacticException ex then
+         pure (none, ← getUnsolvedGoals)
+       else
+         throw ex
+   try
+     aux.runCore' { elaborator := .anonymous } { goals := [mvarId] }
+   finally
+     modify fun s => { s with pendingMVars := pendingMVarsSaved }
+
+  end Lean.Elab.Tactic
+
 namespace Linarith
 
 /-! ### Preprocessing -/
@@ -51,7 +86,7 @@ end splitConjunctions
 section filterComparisons
 
 /-- Implementation of the `filterComparisons` preprocessor. -/
-partial def filter_comparisons_aux (e : Expr) : Bool :=
+partial def filterComparisons_aux (e : Expr) : Bool :=
   match e.getAppFnArgs with
   | (``Eq, _) | (``LE.le, _) | (``LT.lt, _) | (``GE.ge, _) | (``GT.gt, _) => true
   | (``Not, #[e]) => match e.getAppFnArgs with
@@ -66,7 +101,7 @@ def filterComparisons : Preprocessor :=
 { name := "filter terms that are not proofs of comparisons",
   transform := fun h => do
    let tp ← instantiateMVars (← inferType h)
-   if (← isProp tp) && filter_comparisons_aux tp then return [h]
+   if (← isProp tp) && filterComparisons_aux tp then return [h]
    else return [] }
 
 end filterComparisons
@@ -103,82 +138,90 @@ def removeNegations : Preprocessor :=
 
 end removeNegations
 
--- FIXME We need `zifyProof` to live in `MetaM`, not `TacticM`.
--- section natToInt
+section natToInt
 
--- open Mathlib.Tactic.Zify
+open Mathlib.Tactic.Zify
 
--- /--
--- `isNatProp tp` is true iff `tp` is an inequality or equality between natural numbers
--- or the negation thereof.
--- -/
--- partial def isNatProp (e : Expr) : Bool :=
---   match e.getAppFnArgs with
---   | (``Eq, #[.const ``Nat [], _, _]) => true
---   | (``LE.le, #[.const ``Nat [], _, _, _]) => true
---   | (``LT.lt, #[.const ``Nat [], _, _, _]) => true
---   | (``GE.ge, #[.const ``Nat [], _, _, _]) => true
---   | (``GT.gt, #[.const ``Nat [], _, _, _]) => true
---   | (``Not, #[e]) => isNatProp e
---   | _ => false
+/--
+`isNatProp tp` is true iff `tp` is an inequality or equality between natural numbers
+or the negation thereof.
+-/
+partial def isNatProp (e : Expr) : Bool :=
+  match e.getAppFnArgs with
+  | (``Eq, #[.const ``Nat [], _, _]) => true
+  | (``LE.le, #[.const ``Nat [], _, _, _]) => true
+  | (``LT.lt, #[.const ``Nat [], _, _, _]) => true
+  | (``GE.ge, #[.const ``Nat [], _, _, _]) => true
+  | (``GT.gt, #[.const ``Nat [], _, _, _]) => true
+  | (``Not, #[e]) => isNatProp e
+  | _ => false
 
--- /-- If `e` is of the form `((n : ℕ) : ℤ)`, `isNatIntCoe e` returns `n : ℕ`. -/
--- def isNatIntCoe (e : Expr) : Option Expr :=
---   match e.getAppFnArgs with
---   | (``Nat.cast, #[.const ``Int [], _, n]) => some n
---   | _ => none
+/-- If `e` is of the form `((n : ℕ) : ℤ)`, `isNatIntCoe e` returns `n : ℕ`. -/
+def isNatIntCoe (e : Expr) : Option Expr :=
+  match e.getAppFnArgs with
+  | (``Nat.cast, #[.const ``Int [], _, n]) => some n
+  | _ => none
 
--- /--
--- `getNatComparisons e` returns a list of all subexpressions of `e` of the form `((t : ℕ) : ℤ)`.
--- -/
--- partial def getNatComparisons (e : Expr) : List Expr :=
---   match isNatIntCoe e with
---   | some n => [n]
---   | none => match e.getAppFnArgs with
---     | (``HAdd.hAdd, #[_, _, _, _, a, b]) => getNatComparisons a ++ getNatComparisons b
---     | (``HMul.hMul, #[_, _, _, _, a, b]) => getNatComparisons a ++ getNatComparisons b
---     | _ => []
+/--
+`getNatComparisons e` returns a list of all subexpressions of `e` of the form `((t : ℕ) : ℤ)`.
+-/
+partial def getNatComparisons (e : Expr) : List Expr :=
+  match isNatIntCoe e with
+  | some n => [n]
+  | none => match e.getAppFnArgs with
+    | (``HAdd.hAdd, #[_, _, _, _, a, b]) => getNatComparisons a ++ getNatComparisons b
+    | (``HMul.hMul, #[_, _, _, _, a, b]) => getNatComparisons a ++ getNatComparisons b
+    | _ => []
 
--- /-- If `e : ℕ`, returns a proof of `0 ≤ (e : ℤ)`. -/
--- def mk_coe_nat_nonneg_prf (e : Expr) : MetaM Expr :=
--- mkAppM ``Int.coe_nat_nonneg #[e]
+/-- If `e : ℕ`, returns a proof of `0 ≤ (e : ℤ)`. -/
+def mk_coe_nat_nonneg_prf (e : Expr) : MetaM Expr :=
+mkAppM ``Int.coe_nat_nonneg #[e]
 
--- open Std
+open Std
 
--- /-- Ordering on `Expr`. -/
--- def Expr.compare (a b : Expr) : Ordering :=
---   if Expr.lt a b then
---     .lt
---   else if a.equal b then
---     .eq
---   else
---     .gt
+/-- Ordering on `Expr`. -/
+def Expr.compare (a b : Expr) : Ordering :=
+  if Expr.lt a b then
+    .lt
+  else if a.equal b then
+    .eq
+  else
+    .gt
 
--- /--
--- If `h` is an equality or inequality between natural numbers,
--- `natToInt` lifts this inequality to the integers.
--- It also adds the facts that the integers involved are nonnegative.
--- To avoid adding the same nonnegativity facts many times, it is a global preprocessor.
---  -/
--- def natToInt : GlobalPreprocessor :=
--- { name := "move nats to ints",
---   transform := fun l => do
---     -- FIXME in mathlib3 we called `lock_tactic_state` because `zifyProof` had side effects.
---     -- Do we need that here?
---     let l ← l.mapM $ fun h => do
---       let t ← inferType h
---       if (isNatProp t) then
---         let (h', _) ← zifyProof none h t
---         pure h'
---       else
---         pure h
---     let nonnegs ← l.foldlM (fun (es : RBSet Expr Expr.compare) h => do
---       let (a, b) ← getRelSides (← inferType h)
---       pure $
---         (es.insertList (getNatComparisons a)).insertList (getNatComparisons b)) RBSet.empty
---     pure ((← nonnegs.toList.mapM mk_coe_nat_nonneg_prf) ++ l : List Expr) }
+/--
+If `h` is an equality or inequality between natural numbers,
+`natToInt` lifts this inequality to the integers.
+It also adds the facts that the integers involved are nonnegative.
+To avoid adding the same nonnegativity facts many times, it is a global preprocessor.
+ -/
+def natToInt : GlobalBranchingPreprocessor :=
+{ name := "move nats to ints",
+  transform := fun g l => do
+    -- FIXME in mathlib3 we called `lock_tactic_state` because `zifyProof` had side effects.
+    -- Do we need that here?
+    let l ← l.mapM $ fun h => do
+      let t ← inferType h
+      if (isNatProp t) then
+        let (some (h', t'), _) ← Term.TermElabM.run' (Tactic.run_for g (zifyProof none h t))
+          | throwError "zifyProof failed on {h}"
+        if filterComparisons_aux t' then
+          pure h'
+        else
+          -- `zifyProof` turned our comparison into something that wasn't a comparison
+          -- (probably replacing `n = n` with `True`!)
+          -- so we just keep the original hypothesis.
+          pure h
+      else
+        pure h
+    let nonnegs ← l.foldlM (fun (es : RBSet Expr Expr.compare) h => do
+      try
+        let (a, b) ← getRelSides (← inferType h)
+        pure $
+          (es.insertList (getNatComparisons a)).insertList (getNatComparisons b)
+      catch _ => pure es) RBSet.empty
+    pure [(g, ((← nonnegs.toList.mapM mk_coe_nat_nonneg_prf) ++ l : List Expr))] }
 
--- end natToInt
+end natToInt
 
 section strengthenStrictInt
 
@@ -392,7 +435,7 @@ end removeNe
 The default list of preprocessors, in the order they should typically run.
 -/
 def default_preprocessors : List GlobalBranchingPreprocessor :=
-[filterComparisons, removeNegations/-, natToInt-/, strengthenStrictInt,
+[filterComparisons, removeNegations, natToInt, strengthenStrictInt,
   compWithZero/-, cancelDenoms-/]
 
 /--
