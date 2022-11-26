@@ -395,11 +395,7 @@ theorem map_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
 #align map_inv map_inv
 
 -- Porting note: redundant `simp` lemma
--- /-- Group homomorphisms preserve division. -/
--- @[simp, to_additive "Additive group homomorphisms preserve subtraction."]
--- theorem map_mul_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (a b : G) :
---   f (a * b⁻¹) = f a * (f b)⁻¹ := by rw [map_mul, map_inv]
--- #align map_mul_inv map_mul_inv
+#noalign map_mul_inv
 
 /-- Group homomorphisms preserve division. -/
 @[simp, to_additive "Additive group homomorphisms preserve subtraction."]
@@ -591,24 +587,24 @@ theorem MonoidWithZeroHom.coe_mk [MulZeroOneClass M] [MulZeroOneClass N] (f h1 h
 #align monoid_with_zero_hom.coe_mk MonoidWithZeroHom.coe_mk
 
 @[simp, to_additive]
-theorem MonoidHom.to_oneHom_coe [MulOneClass M] [MulOneClass N] (f : M →* N) :
+theorem MonoidHom.toOneHom_coe [MulOneClass M] [MulOneClass N] (f : M →* N) :
   (f.toOneHom : M → N) = f := rfl
-#align monoid_hom.to_one_hom_coe MonoidHom.to_oneHom_coe
+#align monoid_hom.to_one_hom_coe MonoidHom.toOneHom_coe
 
 @[simp, to_additive]
-theorem MonoidHom.to_mulHom_coe [MulOneClass M] [MulOneClass N] (f : M →* N) :
+theorem MonoidHom.toMulHom_coe [MulOneClass M] [MulOneClass N] (f : M →* N) :
   f.toMulHom.toFun = f := rfl
-#align monoid_hom.to_mul_hom_coe MonoidHom.to_mulHom_coe
+#align monoid_hom.to_mul_hom_coe MonoidHom.toMulHom_coe
 
 @[simp]
-theorem MonoidWithZeroHom.to_zeroHom_coe [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) :
+theorem MonoidWithZeroHom.toZeroHom_coe [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) :
   (f.toZeroHom : M → N) = f := rfl
-#align monoid_with_zero_hom.to_zero_hom_coe MonoidWithZeroHom.to_zeroHom_coe
+#align monoid_with_zero_hom.to_zero_hom_coe MonoidWithZeroHom.toZeroHom_coe
 
 @[simp]
-theorem MonoidWithZeroHom.to_monoidHom_coe [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) :
+theorem MonoidWithZeroHom.toMonoidHom_coe [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) :
   f.toMonoidHom.toFun = f := rfl
-#align monoid_with_zero_hom.to_monoid_hom_coe MonoidWithZeroHom.to_monoidHom_coe
+#align monoid_with_zero_hom.to_monoid_hom_coe MonoidWithZeroHom.toMonoidHom_coe
 
 @[ext, to_additive]
 theorem OneHom.ext [One M] [One N] ⦃f g : OneHom M N⦄ (h : ∀ x, f x = g x) : f = g :=
@@ -1079,26 +1075,26 @@ theorem MonoidWithZeroHom.cancel_left [MulZeroOneClass M] [MulZeroOneClass N] [M
 #align monoid_with_zero_hom.cancel_left MonoidWithZeroHom.cancel_left
 
 @[to_additive]
-theorem MonoidHom.to_oneHom_injective [MulOneClass M] [MulOneClass N] :
+theorem MonoidHom.toOneHom_injective [MulOneClass M] [MulOneClass N] :
   Function.Injective (MonoidHom.toOneHom : (M →* N) → OneHom M N) :=
   fun _ _ h => MonoidHom.ext <| OneHom.ext_iff.mp h
-#align monoid_hom.to_one_hom_injective MonoidHom.to_oneHom_injective
+#align monoid_hom.to_one_hom_injective MonoidHom.toOneHom_injective
 
 @[to_additive]
-theorem MonoidHom.to_mulHom_injective [MulOneClass M] [MulOneClass N] :
+theorem MonoidHom.toMulHom_injective [MulOneClass M] [MulOneClass N] :
   Function.Injective (MonoidHom.toMulHom : (M →* N) → M →ₙ* N) :=
   fun _ _ h => MonoidHom.ext <| MulHom.ext_iff.mp h
-#align monoid_hom.to_mul_hom_injective MonoidHom.to_mulHom_injective
+#align monoid_hom.to_mul_hom_injective MonoidHom.toMulHom_injective
 
-theorem MonoidWithZeroHom.to_monoidHom_injective [MulZeroOneClass M] [MulZeroOneClass N] :
+theorem MonoidWithZeroHom.toMonoidHom_injective [MulZeroOneClass M] [MulZeroOneClass N] :
   Function.Injective (MonoidWithZeroHom.toMonoidHom : (M →*₀ N) → M →* N) :=
   fun _ _ h => MonoidWithZeroHom.ext <| MonoidHom.ext_iff.mp h
-#align monoid_with_zero_hom.to_monoid_hom_injective MonoidWithZeroHom.to_monoidHom_injective
+#align monoid_with_zero_hom.to_monoid_hom_injective MonoidWithZeroHom.toMonoidHom_injective
 
-theorem MonoidWithZeroHom.to_zeroHom_injective [MulZeroOneClass M] [MulZeroOneClass N] :
+theorem MonoidWithZeroHom.toZeroHom_injective [MulZeroOneClass M] [MulZeroOneClass N] :
   Function.Injective (MonoidWithZeroHom.toZeroHom : (M →*₀ N) → ZeroHom M N) :=
   fun _ _ h => MonoidWithZeroHom.ext <| ZeroHom.ext_iff.mp h
-#align monoid_with_zero_hom.to_zero_hom_injective MonoidWithZeroHom.to_zeroHom_injective
+#align monoid_with_zero_hom.to_zero_hom_injective MonoidWithZeroHom.toZeroHom_injective
 
 @[simp, to_additive]
 theorem OneHom.comp_id [One M] [One N] (f : OneHom M N) : f.comp (OneHom.id M) = f :=
@@ -1558,7 +1554,7 @@ variable (M N) [Coe M N]
 is an zero-preserving homomorphism.
 -/
 class CoeIsZeroHom [Zero M] [Zero N] : Prop where
-  /-- The proposition that the coecion preserves 0 -/
+  /-- The proposition that the coercion preserves 0 -/
   coe_zero : (↑(0 : M) : N) = 0
 #align coe_is_zero_hom CoeIsZeroHom
 
@@ -1571,7 +1567,7 @@ is a one-preserving homomorphism.
 -/
 @[to_additive]
 class CoeIsOneHom [One M] [One N] : Prop where
-  /-- The proposition that the coecion preserves 1 -/
+  /-- The proposition that the coercion preserves 1 -/
   coe_one : (↑(1 : M) : N) = 1
 #align coe_is_one_hom CoeIsOneHom
 
@@ -1594,7 +1590,7 @@ protected def OneHom.coe [One M] [One N] [CoeIsOneHom M N] : OneHom M N where
 is an additive homomorphism.
 -/
 class CoeIsAddHom [Add M] [Add N] : Prop where
-  /-- The proposition that the coecion preserves addition -/
+  /-- The proposition that the coercion preserves addition -/
   coe_add : ∀ x y : M, (↑(x + y) : N) = ↑x + ↑y
 #align coe_is_add_hom CoeIsAddHom
 
@@ -1607,7 +1603,7 @@ is a multiplicative homomorphism.
 -/
 @[to_additive]
 class CoeIsMulHom [Mul M] [Mul N] : Prop where
-  /-- The proposition that the coecion preserves multiplication -/
+  /-- The proposition that the coercion preserves multiplication -/
   coe_mul : ∀ x y : M, (↑(x * y) : N) = ↑x * ↑y
 #align coe_is_mul_hom CoeIsMulHom
 
