@@ -783,10 +783,13 @@ protected theorem rightInverse : RightInverse f f := h
 #align involutive.right_inverse Function.Involutive.rightInverse
 
 protected theorem injective : Injective f := h.leftInverse.injective
+#align function.involutive.injective Function.Involutive.injective
 
 protected theorem surjective : Surjective f := fun x ↦ ⟨f x, h x⟩
+#align function.involutive.surjective Function.Involutive.surjective
 
 protected theorem bijective : Bijective f := ⟨h.injective, h.surjective⟩
+#align function.involutive.bijective Function.Involutive.bijective
 
 /-- Involuting an `ite` of an involuted value `x : α` negates the `Prop` condition in the `ite`. -/
 protected theorem ite_not (P : Prop) [Decidable P] (x : α) : f (ite P x (f x)) = ite (¬P) x (f x) :=
