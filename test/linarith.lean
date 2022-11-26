@@ -79,9 +79,8 @@ section cancel_denoms
 -- by linarith
 end cancel_denoms
 
--- FIXME parsing the config is not working correctly
--- example (a b c : Rat) (h2 : b + 2 > 3 + b) : False := by
---   linarith {discharger := do evalTactic (←`(tactic| ring))}
+example (a b c : Rat) (h2 : b + 2 > 3 + b) : False := by
+  linarith (config := {discharger := do Lean.Elab.Tactic.evalTactic (←`(tactic| ring))})
 
 example (a b c : Rat) (h2 : b + 2 > 3 + b) : False := by
   linarith
@@ -167,17 +166,15 @@ end term_arguments
 example (a b c : Rat) (h2 : b > 0) (h3 : b < 0) : Nat.prime 10 := by
   linarith
 
--- FIXME `exfalso := ff` is not being parsed.
--- example (a b c : Rat) (h2 : (2 : Rat) > 3)  : a + b - c ≥ 3 :=
--- by linarith {exfalso := ff}
+example (a b c : Rat) (h2 : (2 : Rat) > 3)  : a + b - c ≥ 3 :=
+by linarith (config := {exfalso := false})
 
 -- Verify that we split conjunctions in hypotheses.
 example (x y : Rat)
     (h : 6 + ((x + 4) * x + (6 + 3 * y) * y) = 3 ∧ (x + 4) * x ≥ 0 ∧ (6 + 3 * y) * y ≥ 0) : False :=
 by
-  -- FIXME configuration option is not being parsed.
-  -- fail_if_success
-  --   linarith {split_hypotheses := false}
+  fail_if_success
+    linarith (config := {split_hypotheses := false})
   linarith
 
 -- example (h : 1 < 0) (g : ¬ 37 < 42) (k : True) /-(l : (-7 : ℤ) < 5)-/: 3 < 7 := by
