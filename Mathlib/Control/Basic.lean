@@ -22,9 +22,11 @@ variable {f : Type u → Type v} [Functor f] [LawfulFunctor f]
 theorem Functor.map_map (m : α → β) (g : β → γ) (x : f α) : g <$> m <$> x = (g ∘ m) <$> x :=
   (comp_map _ _ _).symm
 #align functor.map_map Functor.map_mapₓ
+-- order of implicits
 
 attribute [simp] id_map'
 #align id_map' id_map'ₓ
+-- order of implicits
 
 end Functor
 
@@ -33,17 +35,17 @@ section Applicative
 variable {F : Type u → Type v} [Applicative F]
 
 /-- A generalization of `List.zipWith` which combines list elements with an `Applicative`. -/
-def zipMWith {α₁ α₂ φ : Type u} (f : α₁ → α₂ → F φ) : ∀ (_ : List α₁) (_ : List α₂), F (List φ)
-  | x :: xs, y :: ys => (· :: ·) <$> f x y <*> zipMWith f xs ys
+def zipWithM {α₁ α₂ φ : Type u} (f : α₁ → α₂ → F φ) : ∀ (_ : List α₁) (_ : List α₂), F (List φ)
+  | x :: xs, y :: ys => (· :: ·) <$> f x y <*> zipWithM f xs ys
   | _, _ => pure []
-#align mzip_with zipMWith
+#align mzip_with zipWithM
 
-/-- Like `zipMWith` but evaluates the result as it traverses the lists using `*>`. -/
-def zipMWith' (f : α → β → F γ) : List α → List β → F PUnit
-  | x :: xs, y :: ys => f x y *> zipMWith' f xs ys
+/-- Like `zipWithM` but evaluates the result as it traverses the lists using `*>`. -/
+def zipWithM' (f : α → β → F γ) : List α → List β → F PUnit
+  | x :: xs, y :: ys => f x y *> zipWithM' f xs ys
   | [], _ => pure PUnit.unit
   | _, [] => pure PUnit.unit
-#align mzip_with' zipMWith'
+#align mzip_with' zipWithM'
 
 variable [LawfulApplicative F]
 
@@ -67,7 +69,7 @@ theorem seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
 @[functor_norm]
 theorem map_seq (f : β → γ) (x : F (α → β)) (y : F α) :
     f <$> (x <*> y) = (f ∘ ·) <$> x <*> y := by
-  simp [← pure_seq] <;> simp [seq_assoc]
+  simp only [← pure_seq]; simp [seq_assoc]
 #align map_seq map_seq
 
 end Applicative
@@ -81,7 +83,7 @@ variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 
 open List
 
-/-- A generalization of `List.partitionM` which partitions the list according to a monadic
+/-- A generalization of `List.partition` which partitions the list according to a monadic
 predicate. `List.partition` corresponds to the case where `f = Id`. -/
 def List.partitionM {f : Type → Type} [Monad f] {α : Type} (p : α → f Bool) :
     List α → f (List α × List α)
@@ -89,7 +91,7 @@ def List.partitionM {f : Type → Type} [Monad f] {α : Type} (p : α → f Bool
   | x :: xs => condM (p x)
     (Prod.map (cons x) id <$> List.partitionM p xs)
     (Prod.map id (cons x) <$> List.partitionM p xs)
-#align list.mpartition List.mpartition
+#align list.mpartition List.partitionM
 
 theorem map_bind (x : m α) {g : α → m β} {f : β → γ} :
     f <$> (x >>= g) = x >>= fun a => f <$> g a := by
@@ -103,6 +105,7 @@ theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
 #align seq_bind_eq seq_bind_eq
 
 #align seq_eq_bind_map seq_eq_bind_mapₓ
+-- order of implicits and `Seq.seq` has a lazily evaluated second argument using `Unit`
 
 @[functor_norm]
 theorem fish_pure {α β} (f : α → m β) : f >=> pure = f := by simp only [(· >=> ·), functor_norm]
@@ -125,23 +128,23 @@ variable {m' : Type v → Type w} [Monad m']
 
 /-- Takes a value `β` and `List α` and accumulates pairs according to a monadic function `f`.
 Accumulation occurs from the right (i.e., starting from the tail of the list). -/
-def List.mapMAccumR (f : α → β' → m' (β' × γ')) : β' → List α → m' (β' × List γ')
+def List.mapAccumRM (f : α → β' → m' (β' × γ')) : β' → List α → m' (β' × List γ')
   | a, [] => pure (a, [])
   | a, x :: xs => do
-    let (a', ys) ← List.mapMAccumR f a xs
+    let (a', ys) ← List.mapAccumRM f a xs
     let (a'', y) ← f x a'
     pure (a'', y :: ys)
-#align list.mmap_accumr List.mapMAccumR
+#align list.mmap_accumr List.mapAccumRM
 
 /-- Takes a value `β` and `List α` and accumulates pairs according to a monadic function `f`.
 Accumulation occurs from the left (i.e., starting from the head of the list). -/
-def List.mapMAccumL (f : β' → α → m' (β' × γ')) : β' → List α → m' (β' × List γ')
+def List.mapAccumLM (f : β' → α → m' (β' × γ')) : β' → List α → m' (β' × List γ')
   | a, [] => pure (a, [])
   | a, x :: xs => do
     let (a', y) ← f a x
-    let (a'', ys) ← List.mapMAccumL f a' xs
+    let (a'', ys) ← List.mapAccumLM f a' xs
     pure (a'', y :: ys)
-#align list.mmap_accuml List.mapMAccumL
+#align list.mmap_accuml List.mapAccumLM
 
 end Monad
 
@@ -175,7 +178,7 @@ section Alternative
 variable {F : Type → Type v} [Alternative F]
 
 -- [todo] add notation for `Functor.mapConst` and port `functor.map_const_rev`
-/-- Returns `pure true` if the computatoin succeeds and `pure false` otherwise. -/
+/-- Returns `pure true` if the computation succeeds and `pure false` otherwise. -/
 def succeeds {α} (x : F α) : F Bool :=
   Functor.mapConst true x <|> pure false
 #align succeeds succeeds
@@ -187,12 +190,12 @@ def tryM {α} (x : F α) : F Unit :=
 
 @[simp]
 theorem guard_true {h : Decidable True} : @guard F _ True h = pure () := by simp [guard, if_pos]
-#align guard_true guard_True
+#align guard_true guard_true
 
 @[simp]
 theorem guard_false {h : Decidable False} : @guard F _ False h = failure :=
   by simp [guard, if_neg not_false]
-#align guard_false guard_False
+#align guard_false guard_false
 
 end Alternative
 
@@ -204,7 +207,8 @@ variable {e : Type v}
 protected def bind {α β} : Sum e α → (α → Sum e β) → Sum e β
   | inl x, _ => inl x
   | inr x, f => f x
-#align sum.bind Sum.bindₓ
+#align sum.bind Sum.bind
+-- incorrectly marked as a bad translation by mathport, so we do not mark with `ₓ`.
 
 instance : Monad (Sum.{v, u} e) where
   pure := @Sum.inr e
@@ -262,4 +266,4 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
         rw [@CommApplicative.commutative_prod m h] <;>
         simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]
 
-#align is_comm_applicative.commutative_map IsCommApplicative.commutative_map
+#align is_comm_applicative.commutative_map CommApplicative.commutative_map

@@ -25,7 +25,7 @@ the `mk_iff` attribute.
 
 namespace Mathlib.Tactic.MkIff
 
-open Lean Meta
+open Lean Meta Elab
 
 /-- `select m n` runs `tactic.right` `m` times, and then `tactic.left` `(n-m)` times.
 Fails if `n < m`. -/
@@ -56,7 +56,7 @@ partial def compactRelation :
         let (bs, as_ps', subst) := compactRelation bs as_ps
         (b::bs, as_ps', subst)
     | (ps₁, (a, _) :: ps₂) => -- found one that matches b. Remove it.
-      let i := fun e => e.replaceFVar b a
+      let i := fun e ↦ e.replaceFVar b a
       let (bs, as_ps', subst) := compactRelation (bs.map i) ((ps₁ ++ ps₂).map (λ⟨a, p⟩ => (a, i p)))
       (none :: bs, as_ps', i ∘ subst)
 
@@ -124,10 +124,10 @@ while proving the iff theorem, and a proposition representing the constructor.
 def constrToProp (univs : List Level) (params : List Expr) (idxs : List Expr) (c : Name) :
   MetaM (Shape × Expr)  :=
 do let type := (← getConstInfo c).instantiateTypeLevelParams univs
-   let type' ← Meta.forallBoundedTelescope type (params.length) fun fvars ty => do
+   let type' ← Meta.forallBoundedTelescope type (params.length) fun fvars ty ↦ do
      pure $ ty.replaceFVars fvars params.toArray
 
-   Meta.forallTelescope type' fun fvars ty => do
+   Meta.forallTelescope type' fun fvars ty ↦ do
      let idxs_inst := ty.getAppArgs.toList.drop params.length
      let (bs, eqs, subst) := compactRelation fvars.toList (idxs.zip idxs_inst)
      let eqs ← eqs.mapM (λ⟨idx, inst⟩ => do
@@ -160,16 +160,16 @@ close the resulting subgoals.
 def splitThenConstructor (mvar : MVarId) (n : Nat) : MetaM Unit :=
 match n with
 | 0   => do
-  let (subgoals',_) ← Elab.Term.TermElabM.run $ Elab.Tactic.run mvar do
-    Elab.Tactic.evalTactic (←`(tactic| constructor))
+  let (subgoals',_) ← Term.TermElabM.run $ Tactic.run mvar do
+    Tactic.evalTactic (←`(tactic| constructor))
   let [] := subgoals' | throwError "expected no subgoals"
   pure ()
 | n  + 1 => do
-  let (subgoals,_) ← Elab.Term.TermElabM.run $ Elab.Tactic.run mvar do
-    Elab.Tactic.evalTactic (←`(tactic| refine ⟨?_,?_⟩))
+  let (subgoals,_) ← Term.TermElabM.run $ Tactic.run mvar do
+    Tactic.evalTactic (←`(tactic| refine ⟨?_,?_⟩))
   let [sg1, sg2] := subgoals | throwError "expected two subgoals"
-  let (subgoals',_) ← Elab.Term.TermElabM.run $ Elab.Tactic.run sg1 do
-    Elab.Tactic.evalTactic (←`(tactic| constructor))
+  let (subgoals',_) ← Term.TermElabM.run $ Tactic.run sg1 do
+    Tactic.evalTactic (←`(tactic| constructor))
   let [] := subgoals' | throwError "expected no subgoals"
   splitThenConstructor sg2 n
 
@@ -180,7 +180,7 @@ def toCases (mvar : MVarId) (shape : List Shape) : MetaM Unit :=
 do
   let ⟨h, mvar'⟩ ← mvar.intro1
   let subgoals ← mvar'.cases h
-  let _ ← (shape.zip subgoals.toList).enum.mapM fun ⟨p, ⟨⟨shape, t⟩, subgoal⟩⟩ => do
+  let _ ← (shape.zip subgoals.toList).enum.mapM fun ⟨p, ⟨⟨shape, t⟩, subgoal⟩⟩ ↦ do
     let vars := subgoal.fields
     let si := (shape.zip vars.toList).filterMap (λ ⟨c,v⟩ => if c then some v else none)
     let mvar'' ← select p (subgoals.size - 1) subgoal.mvarId
@@ -282,7 +282,7 @@ def toInductive (mvar : MVarId) (cs : List Name)
 
 /-- Implementation for both `mk_iff` and `mk_iff_of_inductive_prop`.y
 -/
-def mkIffOfInductivePropImpl (ind : Name) (rel : Name) : MetaM Unit := do
+def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM Unit := do
   let .inductInfo inductVal ← getConstInfo ind |
     throwError "mk_iff only applies to inductive declarations"
   let constrs := inductVal.ctors
@@ -294,7 +294,7 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) : MetaM Unit := do
   /- we use these names for our universe parameters, maybe we should construct a copy of them
   using `uniq_name` -/
 
-  let (thmTy,shape) ← Meta.forallTelescope type fun fvars ty => do
+  let (thmTy,shape) ← Meta.forallTelescope type fun fvars ty ↦ do
     if !ty.isProp then throwError "mk_iff only applies to prop-valued declarations"
     let lhs := mkAppN (mkConst ind univs) fvars
     let fvars' := fvars.toList
@@ -319,6 +319,11 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) : MetaM Unit := do
     type := thmTy
     value := ← instantiateMVars mvar
   }
+  addDeclarationRanges rel {
+    range := ← getDeclarationRange (← getRef)
+    selectionRange := ← getDeclarationRange relStx
+  }
+  addConstInfo relStx rel
 
 /--
 Applying the `mk_iff` attribute to an inductively-defined proposition `mk_iff` makes an `iff` rule
@@ -333,28 +338,28 @@ be just `c = i` for some index `i`.
 For example, if we try the following:
 ```lean
 @[mk_iff]
-structure foo (m n : Nat) : Prop where
+structure Foo (m n : Nat) : Prop where
   equal : m = n
   sum_eq_two : m + n = 2
 ```
 
-Then `#check foo_iff` returns:
+Then `#check Foo_iff` returns:
 ```lean
-foo_iff : ∀ (m n : Nat), foo m n ↔ m = n ∧ m + n = 2
+Foo_iff : ∀ (m n : Nat), Foo m n ↔ m = n ∧ m + n = 2
 ```
 
 You can add an optional string after `mk_iff` to change the name of the generated lemma.
 For example, if we try the following:
 ```lean
 @[mk_iff bar]
-structure foo (m n : Nat) : Prop where
+structure Foo (m n : Nat) : Prop where
   equal : m = n
   sum_eq_two : m + n = 2
 ```
 
 Then `#check bar` returns:
 ```lean
-bar : ∀ (m n : ℕ), foo m n ↔ m = n ∧ m + n = 2
+bar : ∀ (m n : ℕ), Foo m n ↔ m = n ∧ m + n = 2
 ```
 
 See also the user command `mk_iff_of_inductive_prop`.
@@ -384,17 +389,17 @@ syntax (name := mkIffOfInductiveProp) "mk_iff_of_inductive_prop" ident ident : c
 
 elab_rules : command
 | `(command| mk_iff_of_inductive_prop $i:ident $r:ident) =>
-    Elab.Command.liftCoreM do
-      Lean.Meta.MetaM.run' do
-        mkIffOfInductivePropImpl i.getId r.getId
+    Command.liftCoreM <| MetaM.run' do
+      mkIffOfInductivePropImpl i.getId r.getId r
 
 initialize Lean.registerBuiltinAttribute {
   name := `mkIff
   descr := "Generate an `iff` lemma for an inductive `Prop`."
   add := fun decl stx _ => Lean.Meta.MetaM.run' do
-    let tgt ← (match stx with
-               | `(attr| mk_iff $tgt:ident) => pure tgt.getId
-               | `(attr| mk_iff) => pure $ decl.appendAfter "_iff"
-               | _ => throwError "unrecognized syntax")
-    mkIffOfInductivePropImpl decl tgt
+    let (tgt, idStx) ← match stx with
+      | `(attr| mk_iff $tgt:ident) =>
+        pure ((← mkDeclName (← getCurrNamespace) {} tgt.getId).1, tgt.raw)
+      | `(attr| mk_iff) => pure (decl.appendAfter "_iff", stx)
+      | _ => throwError "unrecognized syntax"
+    mkIffOfInductivePropImpl decl tgt idStx
 }

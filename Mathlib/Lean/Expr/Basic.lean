@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lew
 Floris van Doorn, E.W.Ayers, Arthur Paulino
 -/
 import Lean
+import Mathlib.Util.MapsTo
 
 /-!
 # Additional operations on Expr and related types
@@ -114,9 +115,9 @@ def natLit! : Expr → Nat
   | lit (Literal.natVal v) => v
   | _                      => panic! "nat literal expected"
 
-/-- Returns a `NameSet` of all constants in an expression starting with a certain prefix. -/
-def listNamesWithPrefix (pre : Name) (e : Expr) : NameSet :=
-  e.foldConsts ∅ fun n l => if n.getPrefix == pre then l.insert n else l
+/-- Returns a `NameSet` of all constants in an expression starting with a prefix in `pre`. -/
+def listNamesWithPrefixes (pre : NameSet) (e : Expr) : NameSet :=
+  e.foldConsts ∅ fun n l ↦ if pre.contains n.getPrefix then l.insert n else l
 
 def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M Expr
   | app f a => mkApp f <$> modifier a
@@ -149,7 +150,7 @@ def modifyArgM [Monad M] (modifier : Expr → M Expr) (e : Expr) (i : Nat) (n :=
     M Expr := do
   let some a := getArg? e i | return e
   let a ← modifier a
-  return modifyArg (fun _ => a) e i n
+  return modifyArg (fun _ ↦ a) e i n
 
 /-- Traverses an expression `e` and renames bound variables named `old` to `new`. -/
 def renameBVar (e : Expr) (old new : Name) : Expr :=
@@ -169,11 +170,19 @@ def getBinderName (e : Expr) : MetaM (Option Name) := do
   | .forallE (binderName := n) .. | .lam (binderName := n) .. => pure (some n)
   | _ => pure none
 
-open Lean.Elab.Term in
+open Lean.Elab.Term
 /-- Annotates a `binderIdent` with the binder information from an `fvar`. -/
 def addLocalVarInfoForBinderIdent (fvar : Expr) : TSyntax ``binderIdent → TermElabM Unit
 | `(binderIdent| $n:ident) => Elab.Term.addLocalVarInfo n fvar
 | tk => Elab.Term.addLocalVarInfo (Unhygienic.run `(_%$tk)) fvar
+
+/-- Converts an `Expr` into a `Syntax`, by creating a fresh metavariable
+assigned to the expr and  returning a named metavariable syntax `?a`. -/
+def toSyntax (e : Expr) : TermElabM Syntax.Term := withFreshMacroScope do
+  let stx ← `(?a)
+  let mvar ← elabTermEnsuringType stx (← Meta.inferType e)
+  mvar.mvarId!.assign e
+  pure stx
 
 end Expr
 

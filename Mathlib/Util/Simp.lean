@@ -6,6 +6,7 @@ Authors: Gabriel Ebner
 
 import Lean
 import Std.Tactic.OpenPrivate
+import Mathlib.Util.MapsTo
 
 /-!
 # Helper functions for the `norm_cast` tactic.
@@ -20,11 +21,11 @@ namespace Lean
 
 namespace Meta.DiscrTree
 
-partial def Trie.getElements : Trie α → Array α
+partial def Trie.getElements : Trie α s → Array α
   | Trie.node vs children =>
-    vs ++ children.concatMap fun (_, child) => child.getElements
+    vs ++ children.concatMap fun (_, child) ↦ child.getElements
 
-def getElements (d : DiscrTree α) : Array α :=
+def getElements (d : DiscrTree α s) : Array α :=
   d.1.toList.toArray.concatMap fun (_, child) => child.getElements
 
 end Meta.DiscrTree
