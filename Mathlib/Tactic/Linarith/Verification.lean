@@ -66,7 +66,9 @@ def mulExpr (n : ℕ) (e : Expr) : MetaM Expr := do
 def addExprs' {α : Q(Type $u)} (_inst : Q(AddMonoid $α)) : List Q($α) → Q($α)
 | []   => q(0)
 | h::t => go h t
-  where go (p : Q($α)) : List Q($α) → Q($α)
+  where
+  /-- Inner loop for `addExprs'`. -/
+  go (p : Q($α)) : List Q($α) → Q($α)
   | [] => p
   | [q] => q($p + $q)
   | q::t => go q($p + $q) t

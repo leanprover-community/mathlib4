@@ -190,10 +190,6 @@ def inferSemiring (α : Q(Type u)) : MetaM Q(Semiring $α) :=
 def inferRing (α : Q(Type u)) : MetaM Q(Ring $α) :=
   return ← synthInstanceQ (q(Ring $α) : Q(Type u)) <|> throwError "not a semiring"
 
-def Result.isZero : Result e → Bool
-  | .isNat _ lit _ => lit.natLit! == 0
-  | _ => false
-
 /--
 Extract from a `Result` the integer value (as both a term and an expression),
 and the proof that the original expression is equal to this integer.

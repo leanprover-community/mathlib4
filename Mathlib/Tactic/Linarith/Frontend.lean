@@ -119,6 +119,7 @@ linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear progra
 open Lean Elab Tactic Meta
 open Std
 
+/-- Analogue of `liftMetaTactic` for tactics that do no return any goals. -/
 def Lean.Elab.Tactic.liftMetaFinishingTactic (tac : MVarId → MetaM Unit) : TacticM Unit :=
   liftMetaTactic fun g => do tac g; pure []
 
@@ -126,6 +127,7 @@ def Lean.Elab.Tactic.liftMetaFinishingTactic (tac : MVarId → MetaM Unit) : Tac
 def Lean.mkConst' (constName : Name) : MetaM Expr := do
   return mkConst constName (← (← getConstInfo constName).levelParams.mapM fun _ => mkFreshLevelMVar)
 
+/-- Check that an expression contains no metavariables (after instantiation). -/
 -- There is a `TacticM` level version of this, but it's useful to have in `MetaM`.
 def Lean.Expr.ensureHasNoMVars (e : Expr) : MetaM Unit := do
   let e ← instantiateMVars e
@@ -358,6 +360,9 @@ syntax (name := linarith) "linarith" (config)? (&" only")? (" [" term,* "]")? : 
 @[inherit_doc linarith]
 syntax (name := linarith!) "linarith!" (config)? (&" only")? (" [" term,* "]")? : tactic
 
+/--
+Allow elaboration of `LinarithConfig` arguments to tactics.
+-/
 declare_config_elab elabLinarithConfig Linarith.LinarithConfig
 
 elab_rules : tactic

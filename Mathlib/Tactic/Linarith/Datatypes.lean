@@ -168,9 +168,12 @@ Index 0 is reserved for constants, i.e. `coeffs.find 0` is the coefficient of 1.
 The represented term is `coeffs.sum (λ ⟨k, v⟩, v * Var[k])`.
 str determines the strength of the comparison -- is it < 0, ≤ 0, or = 0?
 -/
-structure Comp : Type :=
-  (str : Ineq)
-  (coeffs : Linexp)
+structure Comp : Type where
+  /-- The strength of the comparison, `<`, `≤`, or `=`. -/
+  str : Ineq
+  /-- The coefficients of the comparison, stored as list of pairs `(i, a)`,
+  where `i` is the index of a recorded atom, and `a` is the coefficient. -/
+  coeffs : Linexp
 deriving Inhabited, Repr
 
 /-- `c.vars` returns the list of variables that appear in the linear expression contained in `c`. -/
@@ -220,18 +223,23 @@ The return type is `List Expr`, since some preprocessing steps may create multip
 and some may remove a hypothesis from the list.
 A "no-op" preprocessor should return its input as a singleton list.
 -/
-structure Preprocessor : Type :=
-  (name : String)
-  (transform : Expr → MetaM (List Expr))
+structure Preprocessor : Type where
+  /-- The name of the preprocessor, used in trace output. -/
+  name : String
+  /-- Replace a hypothesis by a list of hypotheses. These expressions are the proof terms. -/
+  transform : Expr → MetaM (List Expr)
 
 /--
 Some preprocessors need to examine the full list of hypotheses instead of working item by item.
 As with `Preprocessor`, the input to a `GlobalPreprocessor` is replaced by, not added to, its
 output.
 -/
-structure GlobalPreprocessor : Type :=
-  (name : String)
-  (transform : List Expr → MetaM (List Expr))
+structure GlobalPreprocessor : Type where
+  /-- The name of the global preprocessor, used in trace output. -/
+  name : String
+  /-- Replace the collection of all hypotheses with new hypotheses.
+  These expressions are proof terms. -/
+  transform : List Expr → MetaM (List Expr)
 
 /--
 Some preprocessors perform branching case splits. A `Branch` is used to track one of these case
@@ -248,9 +256,12 @@ Each branch is independent, so hypotheses that appear in multiple branches shoul
 The preprocessor is responsible for making sure that each branch contains the correct goal
 metavariable.
 -/
-structure GlobalBranchingPreprocessor : Type :=
-  (name : String)
-  (transform : MVarId → List Expr → MetaM (List Branch))
+structure GlobalBranchingPreprocessor : Type where
+  /-- The name of the global branching preprocessor, used in trace output. -/
+  name : String
+  /-- Given a goal, and a list of hypotheses,
+  produce a list of pairs (consisting of a goal and list of hypotheses). -/
+  transform : MVarId → List Expr → MetaM (List Branch)
 
 /--
 A `Preprocessor` lifts to a `GlobalPreprocessor` by folding it over the input list.
@@ -305,20 +316,28 @@ def CertificateOracle : Type :=
 open Meta
 
 /-- A configuration object for `linarith`. -/
-structure LinarithConfig : Type :=
-   -- TODO There should be a def for this, rather than calling `evalTactic`?
-  (discharger : TacticM Unit := do evalTactic (←`(tactic| ring)))
+structure LinarithConfig : Type where
+  /-- Discharger to prove that a candidate linear combination of hypothesis is zero. -/
+  -- TODO There should be a def for this, rather than calling `evalTactic`?
+  discharger : TacticM Unit := do evalTactic (←`(tactic| ring))
   -- We can't actually store a `Type` here,
   -- as we want `LinarithConfig : Type` rather than ` : Type 1`,
   -- so that we can define `elabLinarithConfig : Lean.Syntax → Lean.Elab.TermElabM LinarithConfig`.
   -- For now, we simply don't support restricting the type.
   -- (restrict_type : Option Type := none)
-  (exfalso : Bool := true)
-  (transparency : TransparencyMode := .reducible)
-  (split_hypotheses : Bool := true)
-  (split_ne : Bool := false)
-  (preprocessors : Option (List GlobalBranchingPreprocessor) := none)
-  (oracle : Option CertificateOracle := none)
+  /-- Prove goals which are not linear comparisons by first calling `exfalso`. -/
+  exfalso : Bool := true
+  /-- Transparency mode for identifying atomic expressions in comparisons. -/
+  transparency : TransparencyMode := .reducible
+  /-- Split conjunctions in hypotheses. -/
+  split_hypotheses : Bool := true
+  /-- Split `≠` in hypotheses, by branching in cases `<` and `>`. -/
+  split_ne : Bool := false
+  /-- Override the list of preprocessors. -/
+  preprocessors : Option (List GlobalBranchingPreprocessor) := none
+  /-- Specify an oracle for identifying candidate contradictions.
+  The only implementation here is Fourier-Motzkin elimination. -/
+  oracle : Option CertificateOracle := none
 
 /--
 `cfg.updateReducibility reduce_default` will change the transparency setting of `cfg` to

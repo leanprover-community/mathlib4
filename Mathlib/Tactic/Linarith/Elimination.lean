@@ -97,13 +97,23 @@ We track these sets in order to compute whether the history of a `PComp` is *min
 Checking this directly is expensive, but effective approximations can be defined in terms of these
 sets. During the variable elimination process, a `PComp` with non-minimal history can be discarded.
 -/
-structure PComp : Type :=
-  (c : Comp)
-  (src : CompSource)
-  (history : RBSet ℕ Ord.compare)
-  (effective : RBSet ℕ Ord.compare)
-  (implicit : RBSet ℕ Ord.compare)
-  (vars : RBSet ℕ Ord.compare)
+structure PComp : Type where
+  /-- The comparison `Σ cᵢ*xᵢ R 0`. -/
+  c : Comp
+  /-- We track how the comparison was constructed by adding and scaling previous comparisons,
+  back to the original assumptions. -/
+  src : CompSource
+  /-- The set of original assumptions which have been used in constructing this comparison. -/
+  history : RBSet ℕ Ord.compare
+  /-- The variables which have been *effectively eliminated*,
+  i.e. the by running the elimination algorithm on that variable. -/
+  effective : RBSet ℕ Ord.compare
+  /-- The variables which have been *implicitly eliminated*.
+  These are variables that appear in the historical set,
+  do not appear in `c` itself, and are not in `effective.-/
+  implicit : RBSet ℕ Ord.compare
+  /-- The union of all variables appearing in original assumptions appearing in the `history` set. -/
+  vars : RBSet ℕ Ord.compare
 
 /--
 Any comparison whose history is not minimal is redundant,
@@ -187,6 +197,7 @@ instance PComp.ToFormat : ToFormat PComp :=
 instance PComp.ToString : ToString PComp :=
   ⟨fun p => toString p.c.coeffs ++ toString p.c.str ++ "0"⟩
 
+/-- A collection of comparisons. -/
 abbrev PCompSet := RBSet PComp PComp.cmp
 
 /-! ### Elimination procedure -/
@@ -240,9 +251,11 @@ The state for the elimination monad.
 The elimination procedure proceeds by eliminating variable `v` from `comps` progressively
 in decreasing order.
 -/
-structure LinarithData : Type :=
-  (maxVar : ℕ)
-  (comps : PCompSet)
+structure LinarithData : Type where
+  /-- The largest variable index that has not been (officially) eliminated. -/
+  maxVar : ℕ
+  /-- The set of comparisions. -/
+  comps : PCompSet
 
 /--
 The linarith monad extends an exceptional monad with a `LinarithData` state.

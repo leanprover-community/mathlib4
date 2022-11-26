@@ -31,6 +31,7 @@ open Qq
 
 section splitConjunctions
 
+/-- Implementation of the `splitConjunctions` preprocessor. -/
 partial def splitConjunctions_aux (proof : Expr) : MetaM (List Expr) := do
   match (← instantiateMVars (← inferType proof)).getAppFnArgs with
   | (``And, #[_, _]) =>
@@ -38,6 +39,7 @@ partial def splitConjunctions_aux (proof : Expr) : MetaM (List Expr) := do
       (← splitConjunctions_aux (← mkAppM ``And.right #[proof])))
   | _ => pure [proof]
 
+/-- Processor thaat recursively replaces `P ∧ Q` hypotheses with the pair `P` and `Q`. -/
 def splitConjunctions : Preprocessor :=
 { name := "split conjunctions",
   transform := splitConjunctions_aux }
@@ -46,6 +48,7 @@ end splitConjunctions
 
 section filterComparisons
 
+/-- Implementation of the `filterComparisons` preprocessor. -/
 partial def filter_comparisons_aux (e : Expr) : Bool :=
   match e.getAppFnArgs with
   | (``Eq, _) | (``LE.le, _) | (``LT.lt, _) | (``GE.ge, _) | (``GT.gt, _) => true
@@ -211,6 +214,7 @@ end strengthenStrictInt
 
 section compWithZero
 
+/-- Implementation of `rearrangeComparison`, after type inference. -/
 partial def rearrangeComparison_aux (proof e : Expr) : MetaM Expr :=
   match e.getAppFnArgs with
   | (``LE.le, #[_, _, a, b]) => match a.getAppFnArgs, b.getAppFnArgs with
