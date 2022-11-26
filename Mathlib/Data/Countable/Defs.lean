@@ -9,7 +9,7 @@ import Mathlib.Tactic.MkIffOfInductiveProp
 /-!
 # Countable types
 
-In this file we define a typeclass saying that a given `Sort*` is countable. See also `encodable`
+In this file we define a typeclass saying that a given `Sort _` is countable. See also `Encodable`
 for a version that singles out a specific encoding of elements of `α` by natural numbers.
 
 This file also provides a few instances of this typeclass. More instances can be found in other
