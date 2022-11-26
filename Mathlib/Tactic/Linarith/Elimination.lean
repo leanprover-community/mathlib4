@@ -112,7 +112,8 @@ structure PComp : Type where
   These are variables that appear in the historical set,
   do not appear in `c` itself, and are not in `effective.-/
   implicit : RBSet ℕ Ord.compare
-  /-- The union of all variables appearing in original assumptions appearing in the `history` set. -/
+  /-- The union of all variables appearing in those original assumptions
+  which appear in the `history` set. -/
   vars : RBSet ℕ Ord.compare
 
 /--
