@@ -277,7 +277,7 @@ theorem tsub_right_comm : a - b - c = a - c - b := by
 
 #align tsub_right_comm tsub_right_comm
 
-/-! ### Lemmas that assume that an element is `add_le_cancellable`. -/
+/-! ### Lemmas that assume that an element is `AddLECancellable`. -/
 
 
 namespace AddLECancellable
