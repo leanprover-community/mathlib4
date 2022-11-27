@@ -629,7 +629,7 @@ theorem bot_apply [∀ i, HasBot (α' i)] (i : ι) : (⊥ : ∀ i, α' i) i = �
   rfl
 #align pi.bot_apply Pi.bot_apply
 
-theorem bot_def [∀ i, HasBot (α' i)] : (⊥ : ∀ i, α' i) = fun i => ⊥ :=
+theorem bot_def [∀ i, HasBot (α' i)] : (⊥ : ∀ i, α' i) = fun _ => ⊥ :=
   rfl
 #align pi.bot_def Pi.bot_def
 
@@ -764,11 +764,11 @@ theorem mk_top [OrderTop α] [OrderTop (Subtype p)] (htop : p ⊤) : mk ⊤ htop
 #align subtype.mk_top Subtype.mk_top
 
 theorem coe_bot [OrderBot α] [OrderBot (Subtype p)] (hbot : p ⊥) : ((⊥ : Subtype p) : α) = ⊥ :=
-  congr_arg coe (mk_bot hbot).symm
+  congr_arg Subtype.val (mk_bot hbot).symm
 #align subtype.coe_bot Subtype.coe_bot
 
 theorem coe_top [OrderTop α] [OrderTop (Subtype p)] (htop : p ⊤) : ((⊤ : Subtype p) : α) = ⊤ :=
-  congr_arg coe (mk_top htop).symm
+  congr_arg Subtype.val (mk_top htop).symm
 #align subtype.coe_top Subtype.coe_top
 
 @[simp]
