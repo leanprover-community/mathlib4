@@ -97,12 +97,6 @@ theorem mul_right (hab : Commute a b) (hac : Commute a c) : Commute a (b * c) :=
 #align commute.mul_right Commute.mul_rightₓ
 #align add_commute.add_right AddCommute.add_rightₓ
 -- I think `ₓ` is necessary because of the `mul` vs `HMul` distinction
-/- warning: commute.mul_right -> Commute.mul_right is a dubious translation:
-lean 3 declaration is
-  forall {S : Type.{u_2}} [_inst_1 : Semigroup.{u_2} S] {a : S} {b : S} {c : S}, (Commute.{u_2} S (Semigroup.toHasMul.{u_2} S _inst_1) a b) -> (Commute.{u_2} S (Semigroup.toHasMul.{u_2} S _inst_1) a c) -> (Commute.{u_2} S (Semigroup.toHasMul.{u_2} S _inst_1) a (HMul.hMul.{u_2 u_2 u_2} S S S (instHMul.{u_2} S (Semigroup.toHasMul.{u_2} S _inst_1)) b c))
-but is expected to have type
-  forall {S : Type.{u_1}} [inst._@.Mathlib.Algebra.Group.Commute._hyg.141 : Semigroup.{u_1} S] {a : S} {b : S} {c : S}, (Commute.{u_1} S (Semigroup.toMul.{u_1} S inst._@.Mathlib.Algebra.Group.Commute._hyg.141) a b) -> (Commute.{u_1} S (Semigroup.toMul.{u_1} S inst._@.Mathlib.Algebra.Group.Commute._hyg.141) a c) -> (Commute.{u_1} S (Semigroup.toMul.{u_1} S inst._@.Mathlib.Algebra.Group.Commute._hyg.141) a (HMul.hMul.{u_1 u_1 u_1} S S S (instHMul.{u_1} S (Semigroup.toMul.{u_1} S inst._@.Mathlib.Algebra.Group.Commute._hyg.141)) b c))
-Case conversion may be inaccurate. Consider using '#align commute.mul_right Commute.mul_rightₓ'. -/
 
 /-- If both `a` and `b` commute with `c`, then their product commutes with `c`. -/
 @[simp, to_additive "If both `a` and `b` commute with `c`, then their product commutes with `c`."]
@@ -111,12 +105,6 @@ theorem mul_left (hac : Commute a c) (hbc : Commute b c) : Commute (a * b) c :=
 #align commute.mul_left Commute.mul_leftₓ
 #align add_commute.add_left AddCommute.add_leftₓ
 -- I think `ₓ` is necessary because of the `mul` vs `HMul` distinction
-/- warning: commute.mul_left -> Commute.mul_left is a dubious translation:
-lean 3 declaration is
-  forall {S : Type.{u_2}} [_inst_1 : Semigroup.{u_2} S] {a : S} {b : S} {c : S}, (Commute.{u_2} S (Semigroup.toHasMul.{u_2} S _inst_1) a c) -> (Commute.{u_2} S (Semigroup.toHasMul.{u_2} S _inst_1) b c) -> (Commute.{u_2} S (Semigroup.toHasMul.{u_2} S _inst_1) (HMul.hMul.{u_2 u_2 u_2} S S S (instHMul.{u_2} S (Semigroup.toHasMul.{u_2} S _inst_1)) a b) c)
-but is expected to have type
-  forall {S : Type.{u_1}} [inst._@.Mathlib.Algebra.Group.Commute._hyg.168 : Semigroup.{u_1} S] {a : S} {b : S} {c : S}, (Commute.{u_1} S (Semigroup.toMul.{u_1} S inst._@.Mathlib.Algebra.Group.Commute._hyg.168) a c) -> (Commute.{u_1} S (Semigroup.toMul.{u_1} S inst._@.Mathlib.Algebra.Group.Commute._hyg.168) b c) -> (Commute.{u_1} S (Semigroup.toMul.{u_1} S inst._@.Mathlib.Algebra.Group.Commute._hyg.168) (HMul.hMul.{u_1 u_1 u_1} S S S (instHMul.{u_1} S (Semigroup.toMul.{u_1} S inst._@.Mathlib.Algebra.Group.Commute._hyg.168)) a b) c)
-Case conversion may be inaccurate. Consider using '#align commute.mul_left Commute.mul_leftₓ'. -/
 
 @[to_additive]
 protected theorem right_comm (h : Commute b c) (a : S) : a * b * c = a * c * b :=
@@ -124,12 +112,6 @@ protected theorem right_comm (h : Commute b c) (a : S) : a * b * c = a * c * b :
 #align commute.right_comm Commute.right_commₓ
 #align add_commute.right_comm AddCommute.right_commₓ
 -- I think `ₓ` is necessary because of the `mul` vs `HMul` distinction
-/- warning: commute.right_comm -> Commute.right_comm is a dubious translation:
-lean 3 declaration is
-  forall {S : Type.{u_2}} [_inst_1 : Semigroup.{u_2} S] {b : S} {c : S}, (Commute.{u_2} S (Semigroup.toHasMul.{u_2} S _inst_1) b c) -> (forall (a : S), Eq.{succ u_2} S (HMul.hMul.{u_2 u_2 u_2} S S S (instHMul.{u_2} S (Semigroup.toHasMul.{u_2} S _inst_1)) (HMul.hMul.{u_2 u_2 u_2} S S S (instHMul.{u_2} S (Semigroup.toHasMul.{u_2} S _inst_1)) a b) c) (HMul.hMul.{u_2 u_2 u_2} S S S (instHMul.{u_2} S (Semigroup.toHasMul.{u_2} S _inst_1)) (HMul.hMul.{u_2 u_2 u_2} S S S (instHMul.{u_2} S (Semigroup.toHasMul.{u_2} S _inst_1)) a c) b))
-but is expected to have type
-  forall {S : Type.{u_1}} [inst._@.Mathlib.Algebra.Group.Commute._hyg.195 : Semigroup.{u_1} S] {b : S} {c : S}, (Commute.{u_1} S (Semigroup.toMul.{u_1} S inst._@.Mathlib.Algebra.Group.Commute._hyg.195) b c) -> (forall (a : S), Eq.{succ u_1} S (HMul.hMul.{u_1 u_1 u_1} S S S (instHMul.{u_1} S (Semigroup.toMul.{u_1} S inst._@.Mathlib.Algebra.Group.Commute._hyg.195)) (HMul.hMul.{u_1 u_1 u_1} S S S (instHMul.{u_1} S (Semigroup.toMul.{u_1} S inst._@.Mathlib.Algebra.Group.Commute._hyg.195)) a b) c) (HMul.hMul.{u_1 u_1 u_1} S S S (instHMul.{u_1} S (Semigroup.toMul.{u_1} S inst._@.Mathlib.Algebra.Group.Commute._hyg.195)) (HMul.hMul.{u_1 u_1 u_1} S S S (instHMul.{u_1} S (Semigroup.toMul.{u_1} S inst._@.Mathlib.Algebra.Group.Commute._hyg.195)) a c) b))
-Case conversion may be inaccurate. Consider using '#align commute.right_comm Commute.right_commₓ'. -/
 
 @[to_additive]
 protected theorem left_comm (h : Commute a b) (c) : a * (b * c) = b * (a * c) :=
@@ -137,12 +119,6 @@ protected theorem left_comm (h : Commute a b) (c) : a * (b * c) = b * (a * c) :=
 #align commute.left_comm Commute.left_commₓ
 #align add_commute.left_comm AddCommute.left_commₓ
 -- I think `ₓ` is necessary because of the `mul` vs `HMul` distinction
-/- warning: commute.left_comm -> Commute.left_comm is a dubious translation:
-lean 3 declaration is
-  forall {S : Type.{u_2}} [_inst_1 : Semigroup.{u_2} S] {a : S} {b : S}, (Commute.{u_2} S (Semigroup.toHasMul.{u_2} S _inst_1) a b) -> (forall (c : S), Eq.{succ u_2} S (HMul.hMul.{u_2 u_2 u_2} S S S (instHMul.{u_2} S (Semigroup.toHasMul.{u_2} S _inst_1)) a (HMul.hMul.{u_2 u_2 u_2} S S S (instHMul.{u_2} S (Semigroup.toHasMul.{u_2} S _inst_1)) b c)) (HMul.hMul.{u_2 u_2 u_2} S S S (instHMul.{u_2} S (Semigroup.toHasMul.{u_2} S _inst_1)) b (HMul.hMul.{u_2 u_2 u_2} S S S (instHMul.{u_2} S (Semigroup.toHasMul.{u_2} S _inst_1)) a c)))
-but is expected to have type
-  forall {S : Type.{u_1}} [inst._@.Mathlib.Algebra.Group.Commute._hyg.226 : Semigroup.{u_1} S] {a : S} {b : S}, (Commute.{u_1} S (Semigroup.toMul.{u_1} S inst._@.Mathlib.Algebra.Group.Commute._hyg.226) a b) -> (forall (c : S), Eq.{succ u_1} S (HMul.hMul.{u_1 u_1 u_1} S S S (instHMul.{u_1} S (Semigroup.toMul.{u_1} S inst._@.Mathlib.Algebra.Group.Commute._hyg.226)) a (HMul.hMul.{u_1 u_1 u_1} S S S (instHMul.{u_1} S (Semigroup.toMul.{u_1} S inst._@.Mathlib.Algebra.Group.Commute._hyg.226)) b c)) (HMul.hMul.{u_1 u_1 u_1} S S S (instHMul.{u_1} S (Semigroup.toMul.{u_1} S inst._@.Mathlib.Algebra.Group.Commute._hyg.226)) b (HMul.hMul.{u_1 u_1 u_1} S S S (instHMul.{u_1} S (Semigroup.toMul.{u_1} S inst._@.Mathlib.Algebra.Group.Commute._hyg.226)) a c)))
-Case conversion may be inaccurate. Consider using '#align commute.left_comm Commute.left_commₓ'. -/
 
 end Semigroup
 
@@ -152,12 +128,6 @@ protected theorem all {S : Type _} [CommSemigroup S] (a b : S) : Commute a b :=
 #align commute.all Commute.allₓ
 #align add_commute.all AddCommute.allₓ
 -- not sure why this needs an `ₓ`, maybe instance names not aligned?
-/- warning: commute.all -> Commute.all is a dubious translation:
-lean 3 declaration is
-  forall {S : Type.{u_1}} [_inst_1 : CommSemigroup.{u_1} S] (a : S) (b : S), Commute.{u_1} S (Semigroup.toHasMul.{u_1} S (CommSemigroup.toSemigroup.{u_1} S _inst_1)) a b
-but is expected to have type
-  forall {S : Type.{u_1}} [inst._@.Mathlib.Algebra.Group.Commute._hyg.258 : CommSemigroup.{u_1} S] (a : S) (b : S), Commute.{u_1} S (Semigroup.toMul.{u_1} S (CommSemigroup.toSemigroup.{u_1} S inst._@.Mathlib.Algebra.Group.Commute._hyg.258)) a b
-Case conversion may be inaccurate. Consider using '#align commute.all Commute.allₓ'. -/
 
 section MulOneClass
 
@@ -169,12 +139,6 @@ theorem one_right (a : M) : Commute a 1 :=
 #align commute.one_right Commute.one_rightₓ
 #align add_commute.zero_right AddCommute.zero_rightₓ
 -- I think `ₓ` is necessary because `One.toOfNat1` appears in the Lean 4 version
-/- warning: commute.one_right -> Commute.one_right is a dubious translation:
-lean 3 declaration is
-  forall {M : Type.{u_2}} [_inst_1 : MulOneClass.{u_2} M] (a : M), Commute.{u_2} M (MulOneClass.toHasMul.{u_2} M _inst_1) a (OfNat.ofNat.{u_2} M 1 (OfNat.mk.{u_2} M 1 (One.one.{u_2} M (MulOneClass.toHasOne.{u_2} M _inst_1))))
-but is expected to have type
-  forall {M : Type.{u_1}} [inst._@.Mathlib.Algebra.Group.Commute._hyg.281 : MulOneClass.{u_1} M] (a : M), Commute.{u_1} M (MulOneClass.toMul.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.281) a (OfNat.ofNat.{u_1} M 1 (One.toOfNat1.{u_1} M (MulOneClass.toOne.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.281)))
-Case conversion may be inaccurate. Consider using '#align commute.one_right Commute.one_rightₓ'. -/
 
 @[simp, to_additive]
 theorem one_left (a : M) : Commute 1 a :=
@@ -182,12 +146,6 @@ theorem one_left (a : M) : Commute 1 a :=
 #align commute.one_left Commute.one_leftₓ
 #align add_commute.zero_left AddCommute.zero_leftₓ
 -- I think `ₓ` is necessary because `One.toOfNat1` appears in the Lean 4 version
-/- warning: commute.one_left -> Commute.one_left is a dubious translation:
-lean 3 declaration is
-  forall {M : Type.{u_2}} [_inst_1 : MulOneClass.{u_2} M] (a : M), Commute.{u_2} M (MulOneClass.toHasMul.{u_2} M _inst_1) (OfNat.ofNat.{u_2} M 1 (OfNat.mk.{u_2} M 1 (One.one.{u_2} M (MulOneClass.toHasOne.{u_2} M _inst_1)))) a
-but is expected to have type
-  forall {M : Type.{u_1}} [inst._@.Mathlib.Algebra.Group.Commute._hyg.293 : MulOneClass.{u_1} M] (a : M), Commute.{u_1} M (MulOneClass.toMul.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.293) (OfNat.ofNat.{u_1} M 1 (One.toOfNat1.{u_1} M (MulOneClass.toOne.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.293))) a
-Case conversion may be inaccurate. Consider using '#align commute.one_left Commute.one_leftₓ'. -/
 
 end MulOneClass
 
@@ -201,12 +159,6 @@ theorem pow_right (h : Commute a b) (n : ℕ) : Commute a (b ^ n) :=
 #align commute.pow_right Commute.pow_rightₓ
 #align add_commute.smul_right AddCommute.smul_rightₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
-/- warning: commute.pow_right -> Commute.pow_right is a dubious translation:
-lean 3 declaration is
-  forall {M : Type.{u_2}} [_inst_1 : Monoid.{u_2} M] {a : M} {b : M}, (Commute.{u_2} M (MulOneClass.toHasMul.{u_2} M (Monoid.toMulOneClass.{u_2} M _inst_1)) a b) -> (forall (n : Nat), Commute.{u_2} M (MulOneClass.toHasMul.{u_2} M (Monoid.toMulOneClass.{u_2} M _inst_1)) a (HPow.hPow.{u_2 0 u_2} M Nat M (instHPow.{u_2 0} M Nat (Monoid.hasPow.{u_2} M _inst_1)) b n))
-but is expected to have type
-  forall {M : Type.{u_1}} [inst._@.Mathlib.Algebra.Group.Commute._hyg.319 : Monoid.{u_1} M] {a : M} {b : M}, (Commute.{u_1} M (MulOneClass.toMul.{u_1} M (Monoid.toMulOneClass.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.319)) a b) -> (forall (n : Nat), Commute.{u_1} M (MulOneClass.toMul.{u_1} M (Monoid.toMulOneClass.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.319)) a (HPow.hPow.{u_1 0 u_1} M Nat M (instHPow.{u_1 0} M Nat (Monoid.Pow.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.319)) b n))
-Case conversion may be inaccurate. Consider using '#align commute.pow_right Commute.pow_rightₓ'. -/
 
 @[simp, to_additive]
 theorem pow_left (h : Commute a b) (n : ℕ) : Commute (a ^ n) b :=
@@ -214,12 +166,6 @@ theorem pow_left (h : Commute a b) (n : ℕ) : Commute (a ^ n) b :=
 #align commute.pow_left Commute.pow_leftₓ
 #align add_commute.smul_left AddCommute.smul_leftₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
-/- warning: commute.pow_left -> Commute.pow_left is a dubious translation:
-lean 3 declaration is
-  forall {M : Type.{u_2}} [_inst_1 : Monoid.{u_2} M] {a : M} {b : M}, (Commute.{u_2} M (MulOneClass.toHasMul.{u_2} M (Monoid.toMulOneClass.{u_2} M _inst_1)) a b) -> (forall (n : Nat), Commute.{u_2} M (MulOneClass.toHasMul.{u_2} M (Monoid.toMulOneClass.{u_2} M _inst_1)) (HPow.hPow.{u_2 0 u_2} M Nat M (instHPow.{u_2 0} M Nat (Monoid.hasPow.{u_2} M _inst_1)) a n) b)
-but is expected to have type
-  forall {M : Type.{u_1}} [inst._@.Mathlib.Algebra.Group.Commute._hyg.345 : Monoid.{u_1} M] {a : M} {b : M}, (Commute.{u_1} M (MulOneClass.toMul.{u_1} M (Monoid.toMulOneClass.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.345)) a b) -> (forall (n : Nat), Commute.{u_1} M (MulOneClass.toMul.{u_1} M (Monoid.toMulOneClass.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.345)) (HPow.hPow.{u_1 0 u_1} M Nat M (instHPow.{u_1 0} M Nat (Monoid.Pow.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.345)) a n) b)
-Case conversion may be inaccurate. Consider using '#align commute.pow_left Commute.pow_leftₓ'. -/
 
 @[simp, to_additive]
 theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
@@ -227,12 +173,6 @@ theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
 #align commute.pow_pow Commute.pow_powₓ
 #align add_commute.smul_smul AddCommute.smul_smulₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
-/- warning: commute.pow_pow -> Commute.pow_pow is a dubious translation:
-lean 3 declaration is
-  forall {M : Type.{u_2}} [_inst_1 : Monoid.{u_2} M] {a : M} {b : M}, (Commute.{u_2} M (MulOneClass.toHasMul.{u_2} M (Monoid.toMulOneClass.{u_2} M _inst_1)) a b) -> (forall (m : Nat) (n : Nat), Commute.{u_2} M (MulOneClass.toHasMul.{u_2} M (Monoid.toMulOneClass.{u_2} M _inst_1)) (HPow.hPow.{u_2 0 u_2} M Nat M (instHPow.{u_2 0} M Nat (Monoid.hasPow.{u_2} M _inst_1)) a m) (HPow.hPow.{u_2 0 u_2} M Nat M (instHPow.{u_2 0} M Nat (Monoid.hasPow.{u_2} M _inst_1)) b n))
-but is expected to have type
-  forall {M : Type.{u_1}} [inst._@.Mathlib.Algebra.Group.Commute._hyg.373 : Monoid.{u_1} M] {a : M} {b : M}, (Commute.{u_1} M (MulOneClass.toMul.{u_1} M (Monoid.toMulOneClass.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.373)) a b) -> (forall (m : Nat) (n : Nat), Commute.{u_1} M (MulOneClass.toMul.{u_1} M (Monoid.toMulOneClass.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.373)) (HPow.hPow.{u_1 0 u_1} M Nat M (instHPow.{u_1 0} M Nat (Monoid.Pow.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.373)) a m) (HPow.hPow.{u_1 0 u_1} M Nat M (instHPow.{u_1 0} M Nat (Monoid.Pow.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.373)) b n))
-Case conversion may be inaccurate. Consider using '#align commute.pow_pow Commute.pow_powₓ'. -/
 
 @[simp, to_additive]
 theorem self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
@@ -240,24 +180,12 @@ theorem self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
 #align commute.self_pow Commute.self_powₓ
 #align add_commute.self_smul AddCommute.self_smulₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
-/- warning: commute.self_pow -> Commute.self_pow is a dubious translation:
-lean 3 declaration is
-  forall {M : Type.{u_2}} [_inst_1 : Monoid.{u_2} M] (a : M) (n : Nat), Commute.{u_2} M (MulOneClass.toHasMul.{u_2} M (Monoid.toMulOneClass.{u_2} M _inst_1)) a (HPow.hPow.{u_2 0 u_2} M Nat M (instHPow.{u_2 0} M Nat (Monoid.hasPow.{u_2} M _inst_1)) a n)
-but is expected to have type
-  forall {M : Type.{u_1}} [inst._@.Mathlib.Algebra.Group.Commute._hyg.411 : Monoid.{u_1} M] (a : M) (n : Nat), Commute.{u_1} M (MulOneClass.toMul.{u_1} M (Monoid.toMulOneClass.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.411)) a (HPow.hPow.{u_1 0 u_1} M Nat M (instHPow.{u_1 0} M Nat (Monoid.Pow.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.411)) a n)
-Case conversion may be inaccurate. Consider using '#align commute.self_pow Commute.self_powₓ'. -/
 
 @[simp, to_additive]
 theorem pow_self (a : M) (n : ℕ) : Commute (a ^ n) a :=
   (Commute.refl a).pow_left n
 #align add_commute.smul_self AddCommute.smul_selfₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
-/- warning: commute.pow_self -> Commute.pow_self is a dubious translation:
-lean 3 declaration is
-  forall {M : Type.{u_2}} [_inst_1 : Monoid.{u_2} M] (a : M) (n : Nat), Commute.{u_2} M (MulOneClass.toHasMul.{u_2} M (Monoid.toMulOneClass.{u_2} M _inst_1)) (HPow.hPow.{u_2 0 u_2} M Nat M (instHPow.{u_2 0} M Nat (Monoid.hasPow.{u_2} M _inst_1)) a n) a
-but is expected to have type
-  forall {M : Type.{u_1}} [inst._@.Mathlib.Algebra.Group.Commute._hyg.438 : Monoid.{u_1} M] (a : M) (n : Nat), Commute.{u_1} M (MulOneClass.toMul.{u_1} M (Monoid.toMulOneClass.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.438)) (HPow.hPow.{u_1 0 u_1} M Nat M (instHPow.{u_1 0} M Nat (Monoid.Pow.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.438)) a n) a
-Case conversion may be inaccurate. Consider using '#align commute.pow_self Commute.pow_selfₓ'. -/
 
 @[simp, to_additive]
 theorem pow_pow_self (a : M) (m n : ℕ) : Commute (a ^ m) (a ^ n) :=
@@ -265,12 +193,6 @@ theorem pow_pow_self (a : M) (m n : ℕ) : Commute (a ^ m) (a ^ n) :=
 #align commute.pow_pow_self Commute.pow_pow_selfₓ
 #align add_commute.smul_smul_self AddCommute.smul_smul_selfₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
-/- warning: commute.pow_pow_self -> Commute.pow_pow_self is a dubious translation:
-lean 3 declaration is
-  forall {M : Type.{u_2}} [_inst_1 : Monoid.{u_2} M] (a : M) (m : Nat) (n : Nat), Commute.{u_2} M (MulOneClass.toHasMul.{u_2} M (Monoid.toMulOneClass.{u_2} M _inst_1)) (HPow.hPow.{u_2 0 u_2} M Nat M (instHPow.{u_2 0} M Nat (Monoid.hasPow.{u_2} M _inst_1)) a m) (HPow.hPow.{u_2 0 u_2} M Nat M (instHPow.{u_2 0} M Nat (Monoid.hasPow.{u_2} M _inst_1)) a n)
-but is expected to have type
-  forall {M : Type.{u_1}} [inst._@.Mathlib.Algebra.Group.Commute._hyg.465 : Monoid.{u_1} M] (a : M) (m : Nat) (n : Nat), Commute.{u_1} M (MulOneClass.toMul.{u_1} M (Monoid.toMulOneClass.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.465)) (HPow.hPow.{u_1 0 u_1} M Nat M (instHPow.{u_1 0} M Nat (Monoid.Pow.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.465)) a m) (HPow.hPow.{u_1 0 u_1} M Nat M (instHPow.{u_1 0} M Nat (Monoid.Pow.{u_1} M inst._@.Mathlib.Algebra.Group.Commute._hyg.465)) a n)
-Case conversion may be inaccurate. Consider using '#align commute.pow_pow_self Commute.pow_pow_selfₓ'. -/
 
 @[to_additive succ_nsmul']
 theorem _root_.pow_succ' (a : M) (n : ℕ) : a ^ (n + 1) = a ^ n * a :=
