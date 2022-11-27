@@ -197,6 +197,19 @@ def IsUnit [Mul M] (a : M) : Prop := a ≠ a
 theorem isUnit_iff_exists_inv [Mul M] {a : M} : IsUnit a ↔ ∃ _ : α, a ≠ a :=
   ⟨fun h => absurd rfl h, fun ⟨_, hab⟩ => hab⟩
 
+/-! Test that `@[to_additive]` correctly translates auxiliary declarations that do not have the
+original declaration name as prefix.-/
+@[to_additive]
+def IsUnit' [Monoid M] (a : M) : Prop := ∃ b : M, a * b = 1
+
+@[to_additive]
+theorem isUnit'_iff_exists_inv [CommMonoid M] {a : M} : IsUnit' a ↔ ∃ b, a * b = 1 := Iff.rfl
+
+@[to_additive]
+theorem isUnit'_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit' a ↔ ∃ b, b * a = 1 := by
+  simp [isUnit'_iff_exists_inv, mul_comm]
+
+
 /-!
 Some arbitrary tests to check whether additive names are guessed correctly.
 -/
@@ -209,7 +222,7 @@ def checkGuessName (s t : String) : Elab.Command.CommandElabM Unit :=
 
 run_cmd
   checkGuessName "HMul_Eq_LEOne_Conj₂MulLT'" "HAdd_Eq_Nonpos_Conj₂AddLT'"
-  checkGuessName "OneMulSmulInvDivPow"       "ZeroAddVaddNegSubNsmul"
+  checkGuessName "OneMulSMulInvDivPow"       "ZeroAddVAddNegSubSMul"
   checkGuessName "ProdFinprodNpowZpow"       "SumFinsumNsmulZsmul"
 
   -- The current design swaps all instances of `Comm`+`Add` in order to have
@@ -234,14 +247,9 @@ run_cmd
   checkGuessName "leftCancelMonoid" "addLeftCancelMonoid"
 
   checkGuessName "LTOne_LEOne_OneLE_OneLT" "Neg_Nonpos_Nonneg_Pos"
-
-  -- The current design splits this as `LTH, Mul, HPow, LEH, Div` before it translates.
-  -- This is kinda a bug.
-  checkGuessName "LTHMulHPowLEHDiv" "LTHAddHMulLEHSub"
+  checkGuessName "LTHMulHPowLEHDiv" "LTHAddHSMulLEHSub"
   checkGuessName "OneLEHMul" "NonnegHAdd"
-
-  -- -- TODO: This fails at the moment:
-  -- checkGuessName "OneLTHPow" "PosHMul"
+  checkGuessName "OneLTHPow" "PosHSMul"
 
 end guessName
 
