@@ -24,10 +24,11 @@ set_option warningAsError false
 section
 open Lean Elab Tactic
 
--- https://github.com/leanprover/std4/pull/33
-def extCore' : TacticM Unit := do do
-    let gs ← Std.Tactic.Ext.extCore (← getMainGoal) [] 1000000 true
-    replaceMainGoal <| gs.map (·.1) |>.toList
+-- After https://github.com/leanprover/std4/pull/33
+-- we can just `evalTactic (← (tactic| ext))`
+def extCore' : TacticM Unit := do
+  let gs ← Std.Tactic.Ext.extCore (← getMainGoal) [] 1000000 true
+  replaceMainGoal <| gs.map (·.1) |>.toList
 
 end
 

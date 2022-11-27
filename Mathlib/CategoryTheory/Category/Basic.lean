@@ -32,8 +32,6 @@ I am experimenting with using the `aesop` tactic as a replacement for `tidy`.
 -/
 
 
-set_option warningAsError false
-
 library_note "category_theory universes"/--
 The typeclass `Category C` describes morphisms associated to objects of type `C : Type u`.
 
@@ -94,6 +92,12 @@ notation "𝟙" => CategoryStruct.id  -- type as \b1
 
 infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 
+declare_aesop_rule_sets [CategoryTheory]
+
+/-- A thin wrapper for `aesop`, which adds the `CategoryTheory` rule set. -/
+macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause*: tactic =>
+  `(tactic| aesop $c* (rule_sets [CategoryTheory]))
+
 /-- The typeclass `Category C` describes morphisms associated to objects of type `C`.
 The universe levels of the objects and morphisms are unconstrained, and will often need to be
 specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallCategory`.)
@@ -101,21 +105,15 @@ specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallC
 See <https://stacks.math.columbia.edu/tag/0014>.
 -/
 class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1) where
-  id_comp' : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by aesop
-  comp_id' : ∀ {X Y : obj} (f : X ⟶ Y), f ≫ 𝟙 Y = f := by aesop
-  assoc' : ∀ {W X Y Z : obj} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z), (f ≫ g) ≫ h = f ≫ g ≫ h := by aesop
+  id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by aesop_cat
+  comp_id : ∀ {X Y : obj} (f : X ⟶ Y), f ≫ 𝟙 Y = f := by aesop_cat
+  assoc : ∀ {W X Y Z : obj} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z), (f ≫ g) ≫ h = f ≫ g ≫ h :=
+    by aesop_cat
 #align category_theory.category CategoryTheory.Category
 
 -- Porting note: `restate_axiom` should not be necessary in lean4
 -- Hopefully we can just remove the backticks from field names,
 -- then delete the invocation of `restate_axiom`.
-
--- `restate_axiom` is a command that creates a lemma from a structure field,
--- discarding any auto_param wrappers from the type.
--- (It removes a backtick from the name, if it finds one, and otherwise adds "_lemma".)
-restate_axiom Category.id_comp'
-restate_axiom Category.comp_id'
-restate_axiom Category.assoc'
 
 attribute [simp] Category.id_comp Category.comp_id Category.assoc
 attribute [trans] CategoryStruct.comp
@@ -154,23 +152,25 @@ infixr:80 " =≫ " => eq_whisker
 
 infixr:80 " ≫= " => whisker_eq
 
-theorem eq_of_comp_left_eq {f g : X ⟶ Y} (w : ∀ {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h) : f = g := by
+theorem eq_of_comp_left_eq {f g : X ⟶ Y} (w : ∀ {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h) :
+    f = g := by
   convert w (𝟙 Y) <;>
   aesop
 #align category_theory.eq_of_comp_left_eq CategoryTheory.eq_of_comp_left_eq
 
-theorem eq_of_comp_right_eq {f g : Y ⟶ Z} (w : ∀ {X : C} (h : X ⟶ Y), h ≫ f = h ≫ g) : f = g := by
+theorem eq_of_comp_right_eq {f g : Y ⟶ Z} (w : ∀ {X : C} (h : X ⟶ Y), h ≫ f = h ≫ g) :
+    f = g := by
   convert w (𝟙 Y) <;>
   aesop
 #align category_theory.eq_of_comp_right_eq CategoryTheory.eq_of_comp_right_eq
 
-theorem eq_of_comp_left_eq' (f g : X ⟶ Y) (w : (fun {Z : C} (h : Y ⟶ Z) => f ≫ h) = fun {Z : C} (h : Y ⟶ Z) => g ≫ h) :
-    f = g :=
+theorem eq_of_comp_left_eq' (f g : X ⟶ Y)
+    (w : (fun {Z} (h : Y ⟶ Z) => f ≫ h) = fun {Z} (h : Y ⟶ Z) => g ≫ h) : f = g :=
   eq_of_comp_left_eq @fun Z h => by convert congr_fun (congr_fun w Z) h
 #align category_theory.eq_of_comp_left_eq' CategoryTheory.eq_of_comp_left_eq'
 
-theorem eq_of_comp_right_eq' (f g : Y ⟶ Z) (w : (fun {X : C} (h : X ⟶ Y) => h ≫ f) = fun {X : C} (h : X ⟶ Y) => h ≫ g) :
-    f = g :=
+theorem eq_of_comp_right_eq' (f g : Y ⟶ Z)
+    (w : (fun {X} (h : X ⟶ Y) => h ≫ f) = fun {X} (h : X ⟶ Y) => h ≫ g) : f = g :=
   eq_of_comp_right_eq @fun X h => by convert congr_fun (congr_fun w X) h
 #align category_theory.eq_of_comp_right_eq' CategoryTheory.eq_of_comp_right_eq'
 
@@ -185,19 +185,19 @@ theorem id_of_comp_right_id (f : X ⟶ X) (w : ∀ {Y : C} (g : Y ⟶ X), g ≫ 
 #align category_theory.id_of_comp_right_id CategoryTheory.id_of_comp_right_id
 
 theorem comp_ite {P : Prop} [Decidable P] {X Y Z : C} (f : X ⟶ Y) (g g' : Y ⟶ Z) :
-    (f ≫ if P then g else g') = if P then f ≫ g else f ≫ g' := by split_ifs <;> rfl
+    (f ≫ if P then g else g') = if P then f ≫ g else f ≫ g' := by aesop
 #align category_theory.comp_ite CategoryTheory.comp_ite
 
 theorem ite_comp {P : Prop} [Decidable P] {X Y Z : C} (f f' : X ⟶ Y) (g : Y ⟶ Z) :
-    (if P then f else f') ≫ g = if P then f ≫ g else f' ≫ g := by split_ifs <;> rfl
+    (if P then f else f') ≫ g = if P then f ≫ g else f' ≫ g := by aesop
 #align category_theory.ite_comp CategoryTheory.ite_comp
 
 theorem comp_dite {P : Prop} [Decidable P] {X Y Z : C} (f : X ⟶ Y) (g : P → (Y ⟶ Z)) (g' : ¬P → (Y ⟶ Z)) :
-    (f ≫ if h : P then g h else g' h) = if h : P then f ≫ g h else f ≫ g' h := by split_ifs <;> rfl
+    (f ≫ if h : P then g h else g' h) = if h : P then f ≫ g h else f ≫ g' h := by aesop
 #align category_theory.comp_dite CategoryTheory.comp_dite
 
 theorem dite_comp {P : Prop} [Decidable P] {X Y Z : C} (f : P → (X ⟶ Y)) (f' : ¬P → (X ⟶ Y)) (g : Y ⟶ Z) :
-    (if h : P then f h else f' h) ≫ g = if h : P then f h ≫ g else f' h ≫ g := by split_ifs <;> rfl
+    (if h : P then f h else f' h) ≫ g = if h : P then f h ≫ g else f' h ≫ g := by aesop
 #align category_theory.dite_comp CategoryTheory.dite_comp
 
 /-- A morphism `f` is an epimorphism if it can be "cancelled" when precomposed:
@@ -219,10 +219,10 @@ class Mono (f : X ⟶ Y) : Prop where
 #align category_theory.mono CategoryTheory.Mono
 
 instance (X : C) : Epi (𝟙 X) :=
-  ⟨fun g h w => by simpa using w⟩
+  ⟨fun g h w => by aesop⟩
 
 instance (X : C) : Mono (𝟙 X) :=
-  ⟨fun g h w => by simpa using w⟩
+  ⟨fun g h w => by aesop⟩
 
 theorem cancel_epi (f : X ⟶ Y) [Epi f] {g h : Y ⟶ Z} : f ≫ g = f ≫ h ↔ g = h :=
   ⟨fun p => Epi.left_cancellation g h p, congr_arg _⟩
@@ -272,7 +272,8 @@ theorem mono_of_mono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Mono (f ≫ g)] : 
   exact (cancel_mono _).1 w
 #align category_theory.mono_of_mono CategoryTheory.mono_of_mono
 
-theorem mono_of_mono_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Mono h] (w : f ≫ g = h) : Mono f := by
+theorem mono_of_mono_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Mono h]
+    (w : f ≫ g = h) : Mono f := by
   subst h
   exact mono_of_mono f g
 #align category_theory.mono_of_mono_fac CategoryTheory.mono_of_mono_fac
@@ -286,7 +287,8 @@ theorem epi_of_epi {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi (f ≫ g)] : Epi
   exact (cancel_epi _).1 w
 #align category_theory.epi_of_epi CategoryTheory.epi_of_epi
 
-theorem epi_of_epi_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Epi h] (w : f ≫ g = h) : Epi g := by
+theorem epi_of_epi_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Epi h]
+    (w : f ≫ g = h) : Epi g := by
   subst h; exact epi_of_epi f g
 #align category_theory.epi_of_epi_fac CategoryTheory.epi_of_epi_fac
 
@@ -300,15 +302,10 @@ variable [Category.{v} C]
 
 universe u'
 
--- Porting note:
--- `simp` isn't working as expected here, reported as https://github.com/leanprover/lean4/issues/1869
 instance uliftCategory : Category.{v} (ULift.{u'} C) where
   Hom X Y := X.down ⟶ Y.down
   id X := 𝟙 X.down
   comp f g := f ≫ g
-  comp_id' := sorry
-  id_comp' := sorry
-  assoc' := sorry
 #align category_theory.ulift_category CategoryTheory.uliftCategory
 
 -- We verify that this previous instance can lift small categories to large categories.
@@ -317,8 +314,6 @@ example (D : Type u) [SmallCategory D] : LargeCategory (ULift.{u + 1} D) := by i
 end
 
 end CategoryTheory
-
-declare_aesop_rule_sets [CategoryTheory]
 
 -- Porting note: We hope that this will become less necessary,
 -- as in Lean4 `simp` will automatically enter "`dsimp` mode" when needed with dependent arguments.
