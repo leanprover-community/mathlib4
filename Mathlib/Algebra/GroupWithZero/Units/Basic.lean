@@ -367,7 +367,6 @@ noncomputable def commGroupWithZeroOfIsUnitOrEqZero [hM : CommMonoidWithZero M]
 
 end NoncomputableDefs
 
--- porting note: Seems like `assert_exists` is not implemented yet, so cannot deal with this yet
-/- ./././Mathport/Syntax/Translate/Command.lean:719:14: unsupported user command assert_not_exists
--/
 -- Guard against import creep
+-- porting note: command not ported yet (added in mathlib#17416)
+-- assert_not_exists multiplicative
