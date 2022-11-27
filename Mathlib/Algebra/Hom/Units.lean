@@ -63,7 +63,7 @@ namespace Units
 variable {α : Type _} {M : Type u} {N : Type v} {P : Type w} [Monoid M] [Monoid N] [Monoid P]
 
 /-- The group homomorphism on units induced by a `MonoidHom`. -/
-@[to_additive "The `add_group` homomorphism on `add_unit`s induced by an `add_MonoidHom`."]
+@[to_additive "The `add_group` homomorphism on `AddUnit`s induced by an `AddMonoidHom`."]
 def map (f : M →* N) : Mˣ →* Nˣ :=
   MonoidHom.mk'
     (fun u => ⟨f u.val, f u.inv,
@@ -118,20 +118,20 @@ section DivisionMonoid
 variable [DivisionMonoid α]
 
 @[simp, norm_cast, to_additive]
-theorem coe_div : ∀ u₁ u₂ : αˣ, ↑(u₁ / u₂) = (u₁ / u₂ : α) :=
+theorem val_div_eq_div_val : ∀ u₁ u₂ : αˣ, ↑(u₁ / u₂) = (u₁ / u₂ : α) :=
   (Units.coeHom α).map_div
-#align units.coe_div Units.coe_div
+#align units.coe_div Units.val_div_eq_div_val
 
--- Porting note: restore `to_additive`
+-- Porting note: restore `to_additive`. Names follows `Algebra.Group.Units`
 @[simp, norm_cast]
-theorem coe_zpow : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
+theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
   (Units.coeHom α).map_zpow
-#align units.coe_zpow Units.coe_zpow
+#align units.coe_zpow Units.val_zpow_eq_zpow_val
 @[simp, norm_cast]
-theorem coe_zsmul {α} [SubtractionMonoid α] :
+theorem val_zsmul_eq_zsmul_val {α} [SubtractionMonoid α] :
   ∀ (u : AddUnits α) (n : ℤ), ((n • u : AddUnits α) : α) = n • (u : α) :=
   (AddUnits.coeHom α).map_zsmul
-#align units.coe_zsmul Units.coe_zsmul
+#align units.coe_zsmul Units.val_zsmul_eq_zsmul_val
 
 @[field_simps]
 theorem _root_.divp_eq_div (a : α) (u : αˣ) : a /ₚ u = a / u :=
@@ -148,8 +148,8 @@ end DivisionMonoid
 /-- If a map `g : M → Nˣ` agrees with a homomorphism `f : M →* N`, then
 this map is a monoid homomorphism too. -/
 @[to_additive
-  "If a map `g : M → add_units N` agrees with a homomorphism `f : M →+ N`, then this map
-  is an add_monoid homomorphism too."]
+  "If a map `g : M → AddUnits N` agrees with a homomorphism `f : M →+ N`, then this map
+  is an AddMonoid homomorphism too."]
 def liftRight (f : M →* N) (g : M → Nˣ) (h : ∀ x, ↑(g x) = f x) : M →* Nˣ where
   toFun := g
   map_one' := by ext; dsimp only; rw [h 1]; exact f.map_one -- Porting note: why is `dsimp` needed?
@@ -157,21 +157,21 @@ def liftRight (f : M →* N) (g : M → Nˣ) (h : ∀ x, ↑(g x) = f x) : M →
 #align units.lift_right Units.liftRight
 
 @[simp, to_additive]
-theorem coe_lift_right {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
+theorem coe_liftRight {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
   (liftRight f g h x : N) = f x := h x
-#align units.coe_lift_right Units.coe_lift_right
+#align units.coe_lift_right Units.coe_liftRight
 
 @[simp, to_additive]
-theorem mul_lift_right_inv {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
+theorem mul_liftRight_inv {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
   f x * ↑(liftRight f g h x)⁻¹ = 1 :=
-  by rw [Units.mul_inv_eq_iff_eq_mul, one_mul, coe_lift_right]
-#align units.mul_lift_right_inv Units.mul_lift_right_inv
+  by rw [Units.mul_inv_eq_iff_eq_mul, one_mul, coe_liftRight]
+#align units.mul_lift_right_inv Units.mul_liftRight_inv
 
 @[simp, to_additive]
-theorem lift_right_inv_mul {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
+theorem liftRight_inv_mul {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
   ↑(liftRight f g h x)⁻¹ * f x = 1 :=
-  by rw [Units.inv_mul_eq_iff_eq_mul, mul_one, coe_lift_right]
-#align units.lift_right_inv_mul Units.lift_right_inv_mul
+  by rw [Units.inv_mul_eq_iff_eq_mul, mul_one, coe_liftRight]
+#align units.lift_right_inv_mul Units.liftRight_inv_mul
 
 end Units
 
@@ -179,11 +179,11 @@ namespace MonoidHom
 
 /-- If `f` is a homomorphism from a group `G` to a monoid `M`,
 then its image lies in the units of `M`,
-and `f.to_hom_units` is the corresponding monoid homomorphism from `G` to `Mˣ`. -/
+and `f.toHomUnits` is the corresponding monoid homomorphism from `G` to `Mˣ`. -/
 @[to_additive
-    "If `f` is a homomorphism from an additive group `G` to an additive monoid `M`,
-    then its image lies in the `add_units` of `M`,
-    and `f.to_hom_units` is the corresponding homomorphism from `G` to `add_units M`."]
+  "If `f` is a homomorphism from an additive group `G` to an additive monoid `M`,
+  then its image lies in the `AddUnits` of `M`,
+  and `f.toHomUnits` is the corresponding homomorphism from `G` to `AddUnits M`."]
 def toHomUnits {G M : Type _} [Group G] [Monoid M] (f : G →* M) : G →* Mˣ :=
   Units.liftRight f (fun g => ⟨f g, f g⁻¹, map_mul_eq_one f (mul_inv_self _),
     map_mul_eq_one f (inv_mul_self _)⟩)
@@ -191,9 +191,9 @@ def toHomUnits {G M : Type _} [Group G] [Monoid M] (f : G →* M) : G →* Mˣ :
 #align monoid_hom.to_hom_units MonoidHom.toHomUnits
 
 @[simp, to_additive]
-theorem coe_to_hom_units {G M : Type _} [Group G] [Monoid M] (f : G →* M) (g : G) :
+theorem coe_toHomUnits {G M : Type _} [Group G] [Monoid M] (f : G →* M) (g : G) :
   (f.toHomUnits g : M) = f g := rfl
-#align monoid_hom.coe_to_hom_units MonoidHom.coe_to_hom_units
+#align monoid_hom.coe_to_hom_units MonoidHom.coe_toHomUnits
 
 end MonoidHom
 
@@ -211,16 +211,16 @@ theorem map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) : IsUnit (f x)
 #align is_unit.map IsUnit.map
 
 @[to_additive]
-theorem of_left_inverse [MonoidHomClass F M N] [MonoidHomClass G N M] {f : F} {x : M} (g : G)
+theorem of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M] {f : F} {x : M} (g : G)
   (hfg : Function.LeftInverse g f) (h : IsUnit (f x)) : IsUnit x :=
   by simpa only [hfg x] using h.map g
-#align is_unit.of_left_inverse IsUnit.of_left_inverse
+#align is_unit.of_left_inverse IsUnit.of_leftInverse
 
 @[to_additive]
-theorem _root_.is_unit_map_of_left_inverse [MonoidHomClass F M N] [MonoidHomClass G N M]
+theorem _root_.is_unit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M]
   {f : F} {x : M} (g : G) (hfg : Function.LeftInverse g f) :
-  IsUnit (f x) ↔ IsUnit x := ⟨of_left_inverse g hfg, map _⟩
-#align is_unit_map_of_left_inverse is_unit_map_of_left_inverse
+  IsUnit (f x) ↔ IsUnit x := ⟨of_leftInverse g hfg, map _⟩
+#align is_unit_map_of_left_inverse is_unit_map_of_leftInverse
 
 /-- If a homomorphism `f : M →* N` sends each element to an `is_unit`, then it can be lifted
 to `f : M →* Nˣ`. See also `units.lift_right` for a computable version. -/
@@ -232,19 +232,19 @@ noncomputable def liftRight (f : M →* N) (hf : ∀ x, IsUnit (f x)) : M →* N
 #align is_unit.lift_right IsUnit.liftRight
 
 @[to_additive]
-theorem coe_lift_right (f : M →* N) (hf : ∀ x, IsUnit (f x)) (x) :
+theorem coe_liftRight (f : M →* N) (hf : ∀ x, IsUnit (f x)) (x) :
   (IsUnit.liftRight f hf x : N) = f x := rfl
-#align is_unit.coe_lift_right IsUnit.coe_lift_right
+#align is_unit.coe_lift_right IsUnit.coe_liftRight
 
 @[simp, to_additive]
-theorem mul_lift_right_inv (f : M →* N) (h : ∀ x, IsUnit (f x)) (x) :
-  f x * ↑(IsUnit.liftRight f h x)⁻¹ = 1 := Units.mul_lift_right_inv (fun _ => rfl) x
-#align is_unit.mul_lift_right_inv IsUnit.mul_lift_right_inv
+theorem mul_liftRight_inv (f : M →* N) (h : ∀ x, IsUnit (f x)) (x) :
+  f x * ↑(IsUnit.liftRight f h x)⁻¹ = 1 := Units.mul_liftRight_inv (fun _ => rfl) x
+#align is_unit.mul_lift_right_inv IsUnit.mul_liftRight_inv
 
 @[simp, to_additive]
-theorem lift_right_inv_mul (f : M →* N) (h : ∀ x, IsUnit (f x)) (x) :
-  ↑(IsUnit.liftRight f h x)⁻¹ * f x = 1 := Units.lift_right_inv_mul (fun _ => rfl) x
-#align is_unit.lift_right_inv_mul IsUnit.lift_right_inv_mul
+theorem liftRight_inv_mul (f : M →* N) (h : ∀ x, IsUnit (f x)) (x) :
+  ↑(IsUnit.liftRight f h x)⁻¹ * f x = 1 := Units.liftRight_inv_mul (fun _ => rfl) x
+#align is_unit.lift_right_inv_mul IsUnit.liftRight_inv_mul
 
 end Monoid
 
