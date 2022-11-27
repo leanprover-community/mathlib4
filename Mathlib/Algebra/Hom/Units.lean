@@ -102,7 +102,7 @@ variable {M}
 theorem coeHom_apply (x : Mˣ) : coeHom M x = ↑x := rfl
 #align units.coe_hom_apply Units.coeHom_apply
 
--- Porting note: restore `to_additive`. Names follows `Algebra.Group.Units`
+-- Porting note: restore `to_additive`. Names follow `Algebra.Group.Units`
 @[simp, norm_cast]
 theorem val_pow_eq_pow_val (u : Mˣ) (n : ℕ) : ((u ^ n : Mˣ) : M) = (u : M) ^ n :=
   (Units.coeHom M).map_pow u n
@@ -122,7 +122,7 @@ theorem val_div_eq_div_val : ∀ u₁ u₂ : αˣ, ↑(u₁ / u₂) = (u₁ / u�
   (Units.coeHom α).map_div
 #align units.coe_div Units.val_div_eq_div_val
 
--- Porting note: restore `to_additive`. Names follows `Algebra.Group.Units`
+-- Porting note: restore `to_additive`. Names follow `Algebra.Group.Units`
 @[simp, norm_cast]
 theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
   (Units.coeHom α).map_zpow
