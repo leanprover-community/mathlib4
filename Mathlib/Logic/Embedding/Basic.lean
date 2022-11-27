@@ -48,8 +48,8 @@ variable {α : Sort u} {β : Sort v} (f : α ≃ β)
 
 /-- Convert an `α ≃ β` to `α ↪ β`.
 
-This is also available as a coercion `equiv.coe_embedding`.
-The explicit `equiv.to_embedding` version is preferred though, since the coercion can have issues
+This is also available as a coercion `equiv.coeEmbedding`.
+The explicit `equiv.toEmbedding` version is preferred though, since the coercion can have issues
 inferring the type of the resulting embedding. For example:
 
 ```lean
@@ -110,9 +110,9 @@ theorem toFun_eq_coe {α β} (f : α ↪ β) : toFun f = f :=
 #align function.embedding.to_fun_eq_coe Function.Embedding.toFun_eq_coe
 
 @[simp]
-theorem coe_fn_mk {α β} (f : α → β) (i) : (@mk _ _ f i : α → β) = f :=
+theorem coeFn_mk {α β} (f : α → β) (i) : (@mk _ _ f i : α → β) = f :=
   rfl
-#align function.embedding.coe_fn_mk Function.Embedding.coe_fn_mk
+#align function.embedding.coe_fn_mk Function.Embedding.coeFn_mk
 
 @[simp]
 theorem mk_coe {α β : Type _} (f : α ↪ β) (inj) : (⟨f, inj⟩ : α ↪ β) = f :=
@@ -143,20 +143,20 @@ protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
 instance : Trans Embedding Embedding Embedding := ⟨Embedding.trans⟩
 
 @[simp]
-theorem equiv_to_embedding_trans_symm_to_embedding {α β : Sort _} (e : α ≃ β) :
+theorem equiv_toEmbedding_trans_symm_toEmbedding {α β : Sort _} (e : α ≃ β) :
     e.toEmbedding.trans e.symm.toEmbedding = Embedding.refl _ := by
   ext
   simp
 #align function.embedding.equiv_to_embedding_trans_symm_to_embedding
-  Function.Embedding.equiv_to_embedding_trans_symm_to_embedding
+  Function.Embedding.equiv_toEmbedding_trans_symm_toEmbedding
 
 @[simp]
-theorem equiv_symm_to_embedding_trans_to_embedding {α β : Sort _} (e : α ≃ β) :
+theorem equiv_symm_toEmbedding_trans_toEmbedding {α β : Sort _} (e : α ≃ β) :
     e.symm.toEmbedding.trans e.toEmbedding = Embedding.refl _ := by
   ext
   simp
 #align function.embedding.equiv_symm_to_embedding_trans_to_embedding
-  Function.Embedding.equiv_symm_to_embedding_trans_to_embedding
+  Function.Embedding.equiv_symm_toEmbedding_trans_toEmbedding
 
 /-- Transfer an embedding along a pair of equivalences. -/
 @[simps (config := { fullyApplied := false, simpRhs := true })]
@@ -261,7 +261,7 @@ def prodMap {α β γ δ : Type _} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α ×
 #align function.embedding.prod_map Function.Embedding.prodMap
 
 @[simp]
-theorem coe_prod_map {α β γ δ : Type _} (e₁ : α ↪ β) (e₂ : γ ↪ δ) :
+theorem coe_prodMap {α β γ δ : Type _} (e₁ : α ↪ β) (e₂ : γ ↪ δ) :
     e₁.prodMap e₂ = Prod.map e₁ e₂ :=
   rfl
 #align function.embedding.coe_prod_map Function.Embedding.coe_prod_map
@@ -434,15 +434,15 @@ theorem embedding_congr_apply_trans {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort 
 #align equiv.embedding_congr_apply_trans Equiv.embedding_congr_apply_trans
 
 @[simp]
-theorem refl_to_embedding {α : Type _} : (Equiv.refl α).toEmbedding = Embedding.refl α :=
+theorem refl_toEmbedding {α : Type _} : (Equiv.refl α).toEmbedding = Embedding.refl α :=
   rfl
-#align equiv.refl_to_embedding Equiv.refl_to_embedding
+#align equiv.refl_to_embedding Equiv.refl_toEmbedding
 
 @[simp]
-theorem trans_to_embedding {α β γ : Type _} (e : α ≃ β) (f : β ≃ γ) :
+theorem trans_toEmbedding {α β γ : Type _} (e : α ≃ β) (f : β ≃ γ) :
     (e.trans f).toEmbedding = e.toEmbedding.trans f.toEmbedding :=
   rfl
-#align equiv.trans_to_embedding Equiv.trans_to_embedding
+#align equiv.trans_to_embedding Equiv.trans_toEmbedding
 
 end Equiv
 
