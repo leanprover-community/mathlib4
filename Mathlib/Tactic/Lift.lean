@@ -138,15 +138,15 @@ elab_rules : tactic | `(tactic| lift $e to $t $[using $h]? $[with $ns*]?) => do
         (.one Syntax.missing)) (← getMainGoal))
     match prf with
     | .fvar prf => do
-        withMainContext do
-          for ldecl in ← getLCtx do
-            logInfo m!"{ldecl.userName}: {ldecl.fvarId.name}"
-        if ns[2]? ≠ some (← prf.getUserName) then replaceMainGoal [(← (← getMainGoal).clear prf)]
+        let name ← prf.getUserName
+        let g ← getMainGoal
+        g.withContext do
+          let decl ← getLocalDeclFromUserName name
+          if ns[2]? ≠ some name then replaceMainGoal [(← g.clear decl.fvarId)]
     | _ => return ()
 
 end Mathlib.Tactic
 
-example (n : ℤ) (hn : 0 ≤ n) : ∃ k : ℕ, n + 1 = k := by
-  lift n to ℕ using hn
-  clear hn
-  exact ⟨n + 1, rfl⟩
+example (n : ℤ) (hn : 0 ≤ n - 2) : ∃ k : ℕ, n + 1 = k := by
+  lift n - 2 to ℕ using hn with k hk
+--  exact ⟨n + 1, rfl⟩
