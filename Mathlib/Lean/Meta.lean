@@ -50,3 +50,22 @@ def _root_.Lean.MVarId.existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId :
       sg1.assign e
       pure sg2)
     mvar
+
+/--
+Given a monadic function `deduce` that takes a type and a term of that type and produces a new term,
+lifts this to the monadic function that opens a `∀` telescope, applies `deduce` to the body,
+and then builds the lambda telescope term for the new term.
+-/
+def mapForallTelescope' (deduce : Expr → Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
+  forallTelescope (← Meta.inferType forallTerm) fun xs ty => do
+    Meta.mkLambdaFVars xs (← deduce ty (mkAppN forallTerm xs))
+
+/--
+Given a monadic function `deduce` that takes a term and produces a new term,
+lifts this to the monadic function that opens a `∀` telescope, applies `deduce` to the body,
+and then builds the lambda telescope term for the new term.
+-/
+def mapForallTelescope (deduce : Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
+  mapForallTelescope' (fun _ e => deduce e) forallTerm
+
+end Lean.Meta
