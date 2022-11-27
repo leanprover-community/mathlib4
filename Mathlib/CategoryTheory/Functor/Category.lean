@@ -19,19 +19,6 @@ However if `C` and `D` are both large categories at the same universe level,
 this is a small category at the next higher level.
 -/
 
-set_option warningAsError false
-
-section
-open Lean Elab Tactic
-
--- After https://github.com/leanprover/std4/pull/33
--- we can just `evalTactic (← (tactic| ext))`
-def extCore' : TacticM Unit := do
-  let gs ← Std.Tactic.Ext.extCore (← getMainGoal) [] 1000000 true
-  replaceMainGoal <| gs.map (·.1) |>.toList
-
-end
-
 namespace CategoryTheory
 
 -- declare the `v`'s first; see note [category_theory universes].
@@ -42,6 +29,9 @@ open NatTrans Category CategoryTheory.Functor
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
 attribute [local simp] vcomp_app
+
+variable {C D} {E : Type u₃} [Category.{v₃} E]
+variable {F G H I : C ⥤ D}
 
 /-- `Functor.category C D` gives the category structure on functors and natural transformations
 between categories `C` and `D`.
@@ -55,23 +45,29 @@ instance Functor.category : Category.{max u₁ v₂} (C ⥤ D) where
   Hom F G := NatTrans F G
   id F := NatTrans.id F
   comp α β := vcomp α β
-  comp_id' := by
+  comp_id := by
+    -- aesop_cat can't do this, because it won't apply `NatTrans.ext`.
     intros
-    -- Sad that `ext` won't do this, indexing??
+    -- Sad that `ext` won't do this, because of the new indexing scheme.
     -- https://leanprover.zulipchat.com/#narrow/stream/348111-std4/topic/ext.20is.20weaker/near/311851300
     apply NatTrans.ext
     ext X
     intros
-    erw [vcomp_app] -- Lame, c.f. https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/unfolding.20earlier.20fields
-    erw [id_app'] -- Again, lame
     simp
-  id_comp' := sorry
-  assoc' := sorry
+  -- Similar complaints for these two fields.
+  id_comp := by
+    intros
+    apply NatTrans.ext
+    ext X
+    intros
+    simp
+  assoc := by
+    intros
+    apply NatTrans.ext
+    ext X
+    intros
+    simp
 #align category_theory.functor.category CategoryTheory.Functor.category
-
-variable {C D} {E : Type u₃} [Category.{v₃} E]
-
-variable {F G H I : C ⥤ D}
 
 namespace NatTrans
 
@@ -81,9 +77,6 @@ namespace NatTrans
 -- or the `ext` will not retrieve it from the cache.
 @[ext]
 theorem ext' {α β : F ⟶ G} (w : α.app = β.app) : α = β := NatTrans.ext _ _ w
-
--- TODO Perhaps we should just turn on `ext` in aesop?
-attribute [aesop safe tactic (rule_sets [CategoryTheory])] extCore'
 
 @[simp]
 theorem vcomp_eq_comp (α : F ⟶ G) (β : G ⟶ H) : vcomp α β = α ≫ β := rfl
@@ -132,7 +125,7 @@ theorem epi_of_epi_app (α : F ⟶ G) [∀ X : C, Epi (α.app X)] : Epi α :=
 @[simps]
 def hcomp {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) : F ⋙ H ⟶ G ⋙ I where
   app := fun X : C => β.app (F.obj X) ≫ I.map (α.app X)
-  naturality' X Y f := by
+  naturality X Y f := by
     rw [Functor.comp_map, Functor.comp_map, ← assoc, naturality, assoc, ← map_comp I, naturality,
       map_comp, assoc]
 #align category_theory.nat_trans.hcomp CategoryTheory.NatTrans.hcomp

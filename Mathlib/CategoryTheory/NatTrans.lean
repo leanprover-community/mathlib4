@@ -30,8 +30,6 @@ Introduces notations
 
 -/
 
-set_option warningAsError false
-
 namespace CategoryTheory
 
 -- declare the `v`'s first; see note [category_theory universes].
@@ -48,20 +46,18 @@ Naturality is expressed by `α.naturality`.
 @[ext]
 structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
   app : ∀ X : C, F.obj X ⟶ G.obj X
-  naturality' : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), F.map f ≫ app Y = app X ≫ G.map f := by aesop
+  naturality : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), F.map f ≫ app Y = app X ≫ G.map f := by aesop_cat
 #align category_theory.nat_trans CategoryTheory.NatTrans
 
 -- TODO Perhaps we should just turn on `ext` in aesop?
 attribute [aesop safe apply (rule_sets [CategoryTheory])] NatTrans.ext
 
-restate_axiom NatTrans.naturality'
-
 -- Rather arbitrarily, we say that the 'simpler' form is
 -- components of natural transfomations moving earlier.
 attribute [simp, reassoc] NatTrans.naturality
 
-theorem congr_app {F G : C ⥤ D} {α β : NatTrans F G} (h : α = β) (X : C) : α.app X = β.app X :=
-  congr_fun (congr_arg NatTrans.app h) X
+theorem congr_app {F G : C ⥤ D} {α β : NatTrans F G} (h : α = β) (X : C) : α.app X = β.app X := by
+  aesop_cat
 #align category_theory.congr_app CategoryTheory.congr_app
 
 namespace NatTrans

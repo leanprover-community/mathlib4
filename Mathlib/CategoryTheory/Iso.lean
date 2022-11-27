@@ -32,8 +32,6 @@ This file defines isomorphisms between objects of a category.
 category, category theory, isomorphism
 -/
 
-set_option warningAsError false
-
 universe v u
 
 -- morphism levels before object levels. See note [category_theory universes].
@@ -52,21 +50,15 @@ See <https://stacks.math.columbia.edu/tag/0017>.
 structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   hom : X ⟶ Y
   inv : Y ⟶ X
-  hom_inv_id' : hom ≫ inv = 𝟙 X := by aesop
-  inv_hom_id' : inv ≫ hom = 𝟙 Y := by aesop
+  hom_inv_id : hom ≫ inv = 𝟙 X := by aesop_cat
+  inv_hom_id : inv ≫ hom = 𝟙 Y := by aesop_cat
 #align category_theory.iso CategoryTheory.Iso
-
-restate_axiom Iso.hom_inv_id'
-
-restate_axiom Iso.inv_hom_id'
 
 attribute [simp, reassoc] Iso.hom_inv_id Iso.inv_hom_id
 
 infixr:10 " ≅ " => Iso -- type as \cong or \iso
 
-variable {C : Type u} [Category.{v} C]
-
-variable {X Y Z : C}
+variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
 namespace Iso
 
@@ -90,8 +82,6 @@ theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
 def symm (I : X ≅ Y) : Y ≅ X where
   hom := I.inv
   inv := I.hom
-  hom_inv_id' := I.inv_hom_id'
-  inv_hom_id' := I.hom_inv_id'
 #align category_theory.iso.symm CategoryTheory.Iso.symm
 
 @[simp]
@@ -106,8 +96,8 @@ theorem symm_inv (α : X ≅ Y) : α.symm.inv = α.hom :=
 
 @[simp]
 theorem symm_mk {X Y : C} (hom : X ⟶ Y) (inv : Y ⟶ X) (hom_inv_id) (inv_hom_id) :
-    Iso.symm { hom, inv, hom_inv_id' := hom_inv_id, inv_hom_id' := inv_hom_id } =
-      { hom := inv, inv := hom, hom_inv_id' := inv_hom_id, inv_hom_id' := hom_inv_id } :=
+    Iso.symm { hom, inv, hom_inv_id := hom_inv_id, inv_hom_id := inv_hom_id } =
+      { hom := inv, inv := hom, hom_inv_id := inv_hom_id, inv_hom_id := hom_inv_id } :=
   rfl
 #align category_theory.iso.symm_mk CategoryTheory.Iso.symm_mk
 
@@ -142,19 +132,17 @@ theorem refl_symm (X : C) : (Iso.refl X).symm = Iso.refl X := rfl
 def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
   hom := α.hom ≫ β.hom
   inv := β.inv ≫ α.inv
-  hom_inv_id' := sorry
-  inv_hom_id' := sorry
 #align category_theory.iso.trans CategoryTheory.Iso.trans
 
 infixr:80 " ≪≫ " => Iso.trans
 
 -- type as `\ll \gg`.
 @[simp]
-theorem trans_mk {X Y Z : C} (hom : X ⟶ Y) (inv : Y ⟶ X) (hom_inv_id) (inv_hom_id) (hom' : Y ⟶ Z) (inv' : Z ⟶ Y)
-    (hom_inv_id') (inv_hom_id') (hom_inv_id'') (inv_hom_id'') :
-    Iso.trans { hom, inv, hom_inv_id' := hom_inv_id, inv_hom_id' := inv_hom_id }
-        { hom := hom', inv := inv', hom_inv_id', inv_hom_id' } =
-      { hom := hom ≫ hom', inv := inv' ≫ inv, hom_inv_id' := hom_inv_id'', inv_hom_id' := inv_hom_id'' } :=
+theorem trans_mk {X Y Z : C} (hom : X ⟶ Y) (inv : Y ⟶ X) (hom_inv_id) (inv_hom_id)
+    (hom' : Y ⟶ Z) (inv' : Z ⟶ Y) (hom_inv_id') (inv_hom_id') (hom_inv_id'') (inv_hom_id'') :
+    Iso.trans { hom, inv, hom_inv_id := hom_inv_id, inv_hom_id := inv_hom_id }
+        { hom := hom', inv := inv', hom_inv_id := hom_inv_id', inv_hom_id := inv_hom_id' } =
+      { hom := hom ≫ hom', inv := inv' ≫ inv, hom_inv_id := hom_inv_id'', inv_hom_id := inv_hom_id'' } :=
   rfl
 #align category_theory.iso.trans_mk CategoryTheory.Iso.trans_mk
 
@@ -164,7 +152,8 @@ theorem trans_symm (α : X ≅ Y) (β : Y ≅ Z) : (α ≪≫ β).symm = β.symm
 #align category_theory.iso.trans_symm CategoryTheory.Iso.trans_symm
 
 @[simp]
-theorem trans_assoc {Z' : C} (α : X ≅ Y) (β : Y ≅ Z) (γ : Z ≅ Z') : (α ≪≫ β) ≪≫ γ = α ≪≫ β ≪≫ γ := by
+theorem trans_assoc {Z' : C} (α : X ≅ Y) (β : Y ≅ Z) (γ : Z ≅ Z') :
+    (α ≪≫ β) ≪≫ γ = α ≪≫ β ≪≫ γ := by
   ext; simp only [trans_hom, Category.assoc]
 #align category_theory.iso.trans_assoc CategoryTheory.Iso.trans_assoc
 
@@ -197,8 +186,7 @@ theorem self_symm_id_assoc (α : X ≅ Y) (β : X ≅ Z) : α ≪≫ α.symm ≪
 #align category_theory.iso.self_symm_id_assoc CategoryTheory.Iso.self_symm_id_assoc
 
 theorem inv_comp_eq (α : X ≅ Y) {f : X ⟶ Z} {g : Y ⟶ Z} : α.inv ≫ f = g ↔ f = α.hom ≫ g :=
-  sorry
-  -- ⟨fun H => by simp [H.symm], fun H => by simp [H]⟩
+  ⟨fun H => by simp [H.symm], fun H => by simp [H]⟩
 #align category_theory.iso.inv_comp_eq CategoryTheory.Iso.inv_comp_eq
 
 theorem eq_inv_comp (α : X ≅ Y) {f : X ⟶ Z} {g : Y ⟶ Z} : g = α.inv ≫ f ↔ α.hom ≫ g = f :=
@@ -246,28 +234,46 @@ class IsIso (f : X ⟶ Y) : Prop where
 
 /-- The inverse of a morphism `f` when we have `[is_iso f]`.
 -/
-noncomputable def inv (f : X ⟶ Y) [I : IsIso f] :=
+noncomputable def inv (f : X ⟶ Y) [I : IsIso f] : Y ⟶ X :=
   Classical.choose I.1
 #align category_theory.inv CategoryTheory.inv
 
 namespace IsIso
 
-@[simp, reassoc]
+@[simp]
 theorem hom_inv_id (f : X ⟶ Y) [I : IsIso f] : f ≫ inv f = 𝟙 X :=
   (Classical.choose_spec I.1).left
 #align category_theory.is_iso.hom_inv_id CategoryTheory.IsIso.hom_inv_id
 
-@[simp, reassoc]
+@[simp]
 theorem inv_hom_id (f : X ⟶ Y) [I : IsIso f] : inv f ≫ f = 𝟙 Y :=
   (Classical.choose_spec I.1).right
 #align category_theory.is_iso.inv_hom_id CategoryTheory.IsIso.inv_hom_id
+
+-- FIXME putting @[reassoc] on the `hom_inv_id` above somehow unfolds `inv`
+-- This happens even if we make `inv` irreducible!
+-- I don't understand how this is happening: it is likely a bug.
+
+-- attribute [reassoc] hom_inv_id inv_hom_id
+-- #print hom_inv_id_assoc
+--   theorem CategoryTheory.IsIso.hom_inv_id_assoc {X Y : C} (f : X ⟶ Y) [I : IsIso f]
+--     {Z : C} (h : X ⟶ Z),
+--     f ≫ Classical.choose (_ : Exists fun inv ↦ f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y) ≫ h = h := ...
+
+@[simp]
+theorem hom_inv_id_assoc (f : X ⟶ Y) [I : IsIso f] {Z} (g : X ⟶ Z) : f ≫ inv f ≫ g = g := by
+  simp [← Category.assoc]
+
+@[simp]
+theorem inv_hom_id_assoc (f : X ⟶ Y) [I : IsIso f] {Z} (g : Y ⟶ Z) : inv f ≫ f ≫ g = g := by
+  simp [← Category.assoc]
 
 end IsIso
 
 open IsIso
 
 /-- Reinterpret a morphism `f` with an `is_iso f` instance as an `iso`. -/
-noncomputable def asIso (f : X ⟶ Y) [h : IsIso f] : X ≅ Y :=
+noncomputable def asIso (f : X ⟶ Y) [IsIso f] : X ≅ Y :=
   ⟨f, inv f, hom_inv_id f, inv_hom_id f⟩
 #align category_theory.as_iso CategoryTheory.asIso
 
@@ -286,8 +292,7 @@ namespace IsIso
 -- see Note [lower instance priority]
 instance (priority := 100) epi_of_iso (f : X ⟶ Y) [IsIso f] : Epi f where
   left_cancellation g h w := by
-    sorry
-    -- rw [← IsIso.inv_hom_id_assoc f g, w, IsIso.inv_hom_id_assoc f h]
+    rw [← IsIso.inv_hom_id_assoc f g, w, IsIso.inv_hom_id_assoc f h]
 #align category_theory.is_iso.epi_of_iso CategoryTheory.IsIso.epi_of_iso
 
 -- see Note [lower instance priority]
@@ -348,8 +353,7 @@ theorem inv_id : inv (𝟙 X) = 𝟙 X := by
 @[simp]
 theorem inv_comp [IsIso f] [IsIso h] : inv (f ≫ h) = inv h ≫ inv f := by
   apply inv_eq_of_hom_inv_id
-  sorry
-  -- simp
+  simp
 #align category_theory.is_iso.inv_comp CategoryTheory.IsIso.inv_comp
 
 @[simp]
@@ -535,8 +539,8 @@ variable [Category.{v₂} D]
 def mapIso (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.obj X ≅ F.obj Y where
   hom := F.map i.hom
   inv := F.map i.inv
-  hom_inv_id' := by rw [← map_comp, Iso.hom_inv_id, ← map_id]
-  inv_hom_id' := by rw [← map_comp, Iso.inv_hom_id, ← map_id]
+  hom_inv_id := by rw [← map_comp, Iso.hom_inv_id, ← map_id]
+  inv_hom_id := by rw [← map_comp, Iso.inv_hom_id, ← map_id]
 #align category_theory.functor.map_iso CategoryTheory.Functor.mapIso
 
 @[simp]

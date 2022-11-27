@@ -18,6 +18,10 @@ def mapForallTelescope' (deduce : Expr → Expr → MetaM Expr) (forallTerm : Ex
   forallTelescope (← Meta.inferType forallTerm) fun xs ty => do
     Meta.mkLambdaFVars xs (← deduce ty (mkAppN forallTerm xs))
 
+#eval do
+  let r ← mapForallTelescope' (fun ty e => pure e) q(fun {n : Nat} (m : Nat) => n + m)
+  dbg_trace r
+
 /--
 Given a monadic function `deduce` that takes a term and produces a new term,
 lifts this to the monadic function that opens a `∀` telescope, applies `deduce` to the body,
@@ -148,22 +152,16 @@ def categorySimp (e : Expr) : MetaM Simp.Result :=
 def deriveType (derive : Expr → MetaM Simp.Result) (e : Expr) : MetaM Expr := do
   match (← derive (← inferType e)) with
   | ⟨ty', none, _⟩ => mkExpectedTypeHint e ty'
-  | ⟨_, some prf, _⟩ => mkEqMP prf e
+  -- We use `mkExpectedTypeHint` in this branch as well, in order to preserve the binder types.
+  | ⟨ty', some prf, _⟩ => mkExpectedTypeHint (← mkEqMP prf e) ty'
 
 /--
-Given an equation `f = g` between morphisms in a category (possibly afer a forall binder),
-produce the equation `∀ h, f ≫ h = g ≫ h`,
+Given an equation `f = g` between morphisms `X ⟶ Y` in a category (possibly afer a forall binder),
+produce the equation `∀ {Z} (h : Y ⟶ Z), f ≫ h = g ≫ h`,
 but with compositions fully right associated and identities removed.
 -/
 def reassoc (e : Expr) : MetaM Expr := do
   mapForallTelescope (fun e => do deriveType categorySimp (← mkAppM `eq_whisker' #[e])) e
-
-
-#eval do
-  let e ← reassoc q(w)
-  let t ← inferType e
-  -- dbg_trace "{e}"
-  dbg_trace f!"{t}"
 
 open Lean.Elab
 

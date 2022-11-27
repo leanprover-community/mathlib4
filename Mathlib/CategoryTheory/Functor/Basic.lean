@@ -36,8 +36,8 @@ See <https://stacks.math.columbia.edu/tag/001B>.
 -/
 structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
     extends Prefunctor C D : Type max v₁ v₂ u₁ u₂ where
-  map_id : ∀ X : C, map (𝟙 X) = 𝟙 (obj X) := by aesop
-  map_comp : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z), map (f ≫ g) = map f ≫ map g := by aesop
+  map_id : ∀ X : C, map (𝟙 X) = 𝟙 (obj X) := by aesop_cat
+  map_comp : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z), map (f ≫ g) = map f ≫ map g := by aesop_cat
 #align category_theory.functor CategoryTheory.Functor
 
 /-- The prefunctor between the underlying quivers. -/
@@ -117,8 +117,7 @@ protected theorem id_comp (F : C ⥤ D) : 𝟭 C ⋙ F = F := by cases F; rfl
 @[simp]
 theorem map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
     (f : P → (X ⟶ Y)) (g : ¬P → (X ⟶ Y)) :
-    F.map (if h : P then f h else g h) = if h : P then F.map (f h) else F.map (g h) := by
-  split_ifs <;> rfl
+    F.map (if h : P then f h else g h) = if h : P then F.map (f h) else F.map (g h) := by aesop_cat
 #align category_theory.functor.map_dite CategoryTheory.Functor.map_dite
 
 @[simp]

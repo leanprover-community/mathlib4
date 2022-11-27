@@ -76,6 +76,18 @@ Often, however, it's not even necessary to include the `.{v}`.
 If it is omitted a "free" universe will be used.
 -/
 
+namespace Std.Tactic.Ext
+open Lean Elab Tactic
+
+/-- A wrapper for `ext` that will fail is it does not make progress. -/
+-- After https://github.com/leanprover/std4/pull/33
+-- we can just `evalTactic (← (tactic| ext))`
+-- (But it would be good to have a name for that, too, so we can pass it to aesop.)
+def extCore' : TacticM Unit := do
+  let gs ← Std.Tactic.Ext.extCore (← getMainGoal) [] 1000000 true
+  replaceMainGoal <| gs.map (·.1) |>.toList
+
+end Std.Tactic.Ext
 
 universe v u
 
@@ -97,6 +109,9 @@ declare_aesop_rule_sets [CategoryTheory]
 /-- A thin wrapper for `aesop`, which adds the `CategoryTheory` rule set. -/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause*: tactic =>
   `(tactic| aesop $c* (rule_sets [CategoryTheory]))
+
+-- We turn on `ext` inside `aesop_cat`.
+attribute [aesop safe tactic (rule_sets [CategoryTheory])] Std.Tactic.Ext.extCore'
 
 /-- The typeclass `Category C` describes morphisms associated to objects of type `C`.
 The universe levels of the objects and morphisms are unconstrained, and will often need to be
