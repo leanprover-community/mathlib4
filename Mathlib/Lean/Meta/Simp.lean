@@ -24,7 +24,7 @@ def simpOnlyNames (lemmas : List Name) (e : Expr) : MetaM Simp.Result := do
 
 /--
 Given a simplifier `S : Expr → MetaM Simp.Result`,
-and an expresssion `e : Expr`, run `derive` on the type of `e`, and then
+and an expresssion `e : Expr`, run `S` on the type of `e`, and then
 convert `e` into that simplified type, using a combination of type hints and `Eq.mp`.
 -/
 def simpType (S : Expr → MetaM Simp.Result) (e : Expr) : MetaM Expr := do
