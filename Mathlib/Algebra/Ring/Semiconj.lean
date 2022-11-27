@@ -98,4 +98,3 @@ theorem sub_left (ha : SemiconjBy a x y) (hb : SemiconjBy b x y) :
 end
 
 end SemiconjBy
-#lint
