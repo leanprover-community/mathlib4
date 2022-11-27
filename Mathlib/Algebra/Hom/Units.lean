@@ -150,8 +150,8 @@ this map is a monoid homomorphism too. -/
   is an add_monoid homomorphism too."]
 def liftRight (f : M →* N) (g : M → Nˣ) (h : ∀ x, ↑(g x) = f x) : M →* Nˣ where
   toFun := g
-  map_one' := Units.ext <| (h 1).symm ▸ f.map_one
-  map_mul' x y := Units.ext <| by simp only [h, coe_mul, f.map_mul]
+  map_one' := by ext; dsimp only; rw [h 1]; exact f.map_one -- Porting note: why is `dsimp` needed?
+  map_mul' x y := Units.ext <| by simp only [h, val_mul, f.map_mul]
 #align units.lift_right Units.liftRight
 
 @[simp, to_additive]
@@ -200,7 +200,7 @@ variable [Monoid M] [Monoid N]
 
 @[to_additive]
 theorem map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) : IsUnit (f x) := by
-  rcases h with ⟨y, rfl⟩ <;> exact (Units.map (f : M →* N) y).IsUnit
+  rcases h with ⟨y, rfl⟩; exact (Units.map (f : M →* N) y).isUnit
 #align is_unit.map IsUnit.map
 
 @[to_additive]
@@ -212,14 +212,14 @@ theorem of_left_inverse [MonoidHomClass F M N] [MonoidHomClass G N M] {f : F} {x
 theorem _root_.is_unit_map_of_left_inverse [MonoidHomClass F M N] [MonoidHomClass G N M] {f : F} {x : M} (g : G)
     (hfg : Function.LeftInverse g f) : IsUnit (f x) ↔ IsUnit x :=
   ⟨of_left_inverse g hfg, map _⟩
-#align is_unit._root_.is_unit_map_of_left_inverse is_unit._root_.is_unit_map_of_left_inverse
+#align is_unit_map_of_left_inverse is_unit_map_of_left_inverse
 
 /-- If a homomorphism `f : M →* N` sends each element to an `is_unit`, then it can be lifted
 to `f : M →* Nˣ`. See also `units.lift_right` for a computable version. -/
 @[to_additive
       "If a homomorphism `f : M →+ N` sends each element to an `is_add_unit`, then it can be\nlifted to `f : M →+ add_units N`. See also `add_units.lift_right` for a computable version."]
 noncomputable def liftRight (f : M →* N) (hf : ∀ x, IsUnit (f x)) : M →* Nˣ :=
-  (Units.liftRight f fun x => (hf x).Unit) fun x => rfl
+  (Units.liftRight f fun x => (hf x).unit) fun _ => rfl
 #align is_unit.lift_right IsUnit.liftRight
 
 @[to_additive]
@@ -336,10 +336,10 @@ protected theorem one_div_mul_cancel (h : IsUnit a) : 1 / a * a = 1 := by simp [
 #align is_unit.one_div_mul_cancel IsUnit.one_div_mul_cancel
 
 @[to_additive]
-theorem inv : IsUnit a → IsUnit a⁻¹ := by
-  rintro ⟨u, rfl⟩
-  rw [← Units.coe_inv]
-  exact Units.is_unit _
+theorem inv (h : IsUnit a) : IsUnit a⁻¹ := by
+  rcases h with ⟨u, hu⟩
+  rw [←hu, ← Units.val_inv_eq_inv_val]
+  exact Units.isUnit _
 #align is_unit.inv IsUnit.inv
 
 @[to_additive]
@@ -350,7 +350,7 @@ theorem div (ha : IsUnit a) (hb : IsUnit b) : IsUnit (a / b) := by
 
 @[to_additive]
 protected theorem div_left_inj (h : IsUnit c) : a / c = b / c ↔ a = b := by
-  simp_rw [div_eq_mul_inv]
+  simp only [div_eq_mul_inv]
   exact Units.mul_left_inj h.inv.unit'
 #align is_unit.div_left_inj IsUnit.div_left_inj
 
