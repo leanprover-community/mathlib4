@@ -48,14 +48,20 @@ the role of morphisms.
 See <https://stacks.math.columbia.edu/tag/0017>.
 -/
 structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
+  /-- The forward direction of an isomorphism. -/
   hom : X ⟶ Y
+  /-- The backwards direction of an isomorphism. -/
   inv : Y ⟶ X
+  /-- Composition of the two directions of an isomorphism is the identity on the source. -/
   hom_inv_id : hom ≫ inv = 𝟙 X := by aesop_cat
+  /-- Composition of the two directions of an isomorphism in reverse order
+  is the identity on the target. -/
   inv_hom_id : inv ≫ hom = 𝟙 Y := by aesop_cat
 #align category_theory.iso CategoryTheory.Iso
 
 attribute [simp, reassoc] Iso.hom_inv_id Iso.inv_hom_id
 
+/-- Notation for an isomorphism in a category. -/
 infixr:10 " ≅ " => Iso -- type as \cong or \iso
 
 variable {C : Type u} [Category.{v} C] {X Y Z : C}
@@ -134,6 +140,7 @@ def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
   inv := β.inv ≫ α.inv
 #align category_theory.iso.trans CategoryTheory.Iso.trans
 
+/-- Notation for composition of isomorphisms. -/
 infixr:80 " ≪≫ " => Iso.trans -- type as `\ll \gg`.
 
 @[simp]
@@ -229,6 +236,7 @@ end Iso
 
 /-- `is_iso` typeclass expressing that a morphism is invertible. -/
 class IsIso (f : X ⟶ Y) : Prop where
+  /-- The existence of an inverse morphism. -/
   out : ∃ inv : Y ⟶ X, f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y
 #align category_theory.is_iso CategoryTheory.IsIso
 

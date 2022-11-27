@@ -60,7 +60,10 @@ initialize registerBuiltinAttribute {
     | ConstantInfo.thmInfo info =>
       addAndCompile <| .thmDecl { info with type := newType, name := tgt, value := newValue }
     | ConstantInfo.defnInfo info =>
-      addAndCompile <| .defnDecl { info with type := newType, name := tgt, value := newValue }
+      -- It looks a bit weird that we use `.thmDecl` here too,
+      -- but apparently structure fields are created using `def`
+      -- even with they are propositional. If `reassoc` worked, it was a `Prop` anyway.
+      addAndCompile <| .thmDecl { info with type := newType, name := tgt, value := newValue }
     | _ => throwError "Constant {src} is not a theorem or definition."
     if isProtected (← getEnv) src then
       setEnv $ addProtected (← getEnv) tgt

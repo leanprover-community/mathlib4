@@ -130,6 +130,7 @@ def hcomp {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) : F ⋙ H ⟶ G ⋙ I wh
       map_comp, assoc]
 #align category_theory.nat_trans.hcomp CategoryTheory.NatTrans.hcomp
 
+/-- Notation for horizontal composition of natural transformations. -/
 infixl:80 " ◫ " => hcomp
 
 theorem hcomp_id_app {H : D ⥤ E} (α : F ⟶ G) (X : C) : (α ◫ 𝟙 H).app X = H.map (α.app X) := by

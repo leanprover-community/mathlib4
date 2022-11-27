@@ -96,12 +96,16 @@ namespace CategoryTheory
 /-- A preliminary structure on the way to defining a category,
 containing the data, but none of the axioms. -/
 class CategoryStruct (obj : Type u) extends Quiver.{v + 1} obj : Type max u (v + 1) where
+  /-- The identity morphism on an object. -/
   id : ∀ X : obj, Hom X X
+  /-- Composition of morphisms in a category, written `f ≫ g`. -/
   comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z)
 #align category_theory.category_struct CategoryTheory.CategoryStruct
 
+/-- Notation for the identity morphism in a category. -/
 notation "𝟙" => CategoryStruct.id  -- type as \b1
 
+/-- Notation for composition of morphisms in a category. -/
 infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 
 declare_aesop_rule_sets [CategoryTheory]
@@ -120,8 +124,11 @@ specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallC
 See <https://stacks.math.columbia.edu/tag/0014>.
 -/
 class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1) where
+  /-- Identity morphisms are left identities for composition. -/
   id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by aesop_cat
+  /-- Identity morphisms are right identities for composition. -/
   comp_id : ∀ {X Y : obj} (f : X ⟶ Y), f ≫ 𝟙 Y = f := by aesop_cat
+  /-- Composition in a category is associative. -/
   assoc : ∀ {W X Y Z : obj} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z), (f ≫ g) ≫ h = f ≫ g ≫ h :=
     by aesop_cat
 #align category_theory.category CategoryTheory.Category
@@ -163,8 +170,16 @@ theorem eq_whisker {f g : X ⟶ Y} (w : f = g) (h : Y ⟶ Z) : f ≫ h = g ≫ h
 theorem whisker_eq (f : X ⟶ Y) {g h : Y ⟶ Z} (w : g = h) : f ≫ g = f ≫ h := by rw [w]
 #align category_theory.whisker_eq CategoryTheory.whisker_eq
 
+/--
+Notation for whiskering an equation by a morphism (on the right).
+If `f g : X ⟶ Y` and `w : f = g` and `h : Y ⟶ Z`, then `w =≫ h : f ≫ h = g ≫ h`.
+-/
 infixr:80 " =≫ " => eq_whisker
 
+/--
+Notation for whiskering an equation by a morphism (on the left).
+If `g h : Y ⟶ Z` and `w : g = h` and `h : X ⟶ Y`, then `f ≫= w : f ≫ g = f ≫ h`.
+-/
 infixr:80 " ≫= " => whisker_eq
 
 theorem eq_of_comp_left_eq {f g : X ⟶ Y} (w : ∀ {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h) :
@@ -217,21 +232,23 @@ theorem dite_comp {P : Prop} [Decidable P]
     (if h : P then f h else f' h) ≫ g = if h : P then f h ≫ g else f' h ≫ g := by aesop
 #align category_theory.dite_comp CategoryTheory.dite_comp
 
-/-- A morphism `f` is an epimorphism if it can be "cancelled" when precomposed:
+/-- A morphism `f` is an epimorphism if it can be cancelled when precomposed:
 `f ≫ g = f ≫ h` implies `g = h`.
 
 See <https://stacks.math.columbia.edu/tag/003B>.
 -/
 class Epi (f : X ⟶ Y) : Prop where
+  /-- A morphism `f` is an epimorphism if it can be cancelled when precomposed. -/
   left_cancellation : ∀ {Z : C} (g h : Y ⟶ Z), f ≫ g = f ≫ h → g = h
 #align category_theory.epi CategoryTheory.Epi
 
-/-- A morphism `f` is a monomorphism if it can be "cancelled" when postcomposed:
+/-- A morphism `f` is a monomorphism if it can be cancelled when postcomposed:
 `g ≫ f = h ≫ f` implies `g = h`.
 
 See <https://stacks.math.columbia.edu/tag/003B>.
 -/
 class Mono (f : X ⟶ Y) : Prop where
+  /-- A morphism `f` is an epimorphism if it can be cancelled when postcomposed. -/
   right_cancellation : ∀ {Z : C} (g h : Z ⟶ X), g ≫ f = h ≫ f → g = h
 #align category_theory.mono CategoryTheory.Mono
 

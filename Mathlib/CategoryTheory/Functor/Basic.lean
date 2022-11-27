@@ -50,7 +50,7 @@ end
 infixr:26 " ⥤ " => Functor -- type as \func
 
 attribute [simp] Functor.map_id
-attribute [simp, reassoc] Functor.map_comp
+attribute [reassoc, simp] Functor.map_comp
 
 namespace Functor
 
@@ -120,11 +120,11 @@ theorem map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
     F.map (if h : P then f h else g h) = if h : P then F.map (f h) else F.map (g h) := by aesop_cat
 #align category_theory.functor.map_dite CategoryTheory.Functor.map_dite
 
-@[simp]
+-- Porting note: this no longer needs to be `@[simp]`, as `simp` sees through it.
 theorem to_prefunctor_obj (F : C ⥤ D) (X : C) : F.toPrefunctor.obj X = F.obj X := rfl
 #align category_theory.functor.to_prefunctor_obj CategoryTheory.Functor.to_prefunctor_obj
 
-@[simp]
+-- Porting note: this no longer needs to be `@[simp]`, as `simp` sees through it.
 theorem to_prefunctor_map (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
     F.toPrefunctor.map f = F.map f := rfl
 #align category_theory.functor.to_prefunctor_map CategoryTheory.Functor.to_prefunctor_map

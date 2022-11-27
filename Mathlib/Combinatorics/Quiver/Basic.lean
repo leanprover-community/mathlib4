@@ -40,16 +40,23 @@ Because `Category` will later extend this class, we call the field `hom`.
 Except when constructing instances, you should rarely see this, and use the `⟶` notation instead.
 -/
 class Quiver (V : Type u) where
+  /-- The type of edges/arrows/morphisms between a given source and target. -/
   Hom : V → V → Sort v
 #align quiver Quiver
 #align quiver.hom Quiver.Hom
 
+/--
+Notation for the type of edges/arrows/morphisms between a given source and target
+in a quiver or category.
+-/
 infixr:10 " ⟶ " => Quiver.Hom
 
 /-- A morphism of quivers. As we will later have categorical functors extend this structure,
 we call it a `prefunctor`. -/
 structure Prefunctor (V : Type u₁) [Quiver.{v₁} V] (W : Type u₂) [Quiver.{v₂} W] where
+  /-- The action of a (pre)functor on vertices/objects. -/
   obj : V → W
+  /-- The action of a (pre)functor on edges/arrows/morphisms. -/
   map : ∀ {X Y : V}, (X ⟶ Y) → (obj X ⟶ obj Y)
 #align prefunctor Prefunctor
 
@@ -95,10 +102,13 @@ theorem comp_assoc {U V W Z : Type _} [Quiver U] [Quiver V] [Quiver W] [Quiver Z
   rfl
 #align prefunctor.comp_assoc Prefunctor.comp_assoc
 
+/-- Notation for a prefunctor between quivers. -/
 infixl:50 " ⥤q " => Prefunctor
 
+/-- Notation for composition of prefunctors. -/
 infixl:50 " ⋙q " => Prefunctor.comp
 
+/-- Notation for the identity prefunctor on a quiver. -/
 notation "𝟭q" => id
 
 end Prefunctor
