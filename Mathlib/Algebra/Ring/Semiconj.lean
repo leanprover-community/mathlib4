@@ -3,18 +3,18 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathbin.Algebra.Group.Semiconj
-import Mathbin.Algebra.Ring.Defs
+import Mathlib.Algebra.Group.Semiconj
+import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Semirings and rings
 
 This file gives lemmas about semirings, rings and domains.
-This is analogous to `algebra.group.basic`,
+This is analogous to `Mathlib.Algebra.Group.Basic`,
 the difference being that the former is about `+` and `*` separately, while
 the present file is about their interaction.
 
-For the definitions of semirings and rings see `algebra.ring.defs`.
+For the definitions of semirings and rings see `Mathlib.Algebra.Ring.Defs`.
 
 -/
 
@@ -29,19 +29,22 @@ namespace SemiconjBy
 
 @[simp]
 theorem add_right [Distrib R] {a x y x' y' : R} (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
-    SemiconjBy a (x + x') (y + y') := by simp only [SemiconjBy, left_distrib, right_distrib, h.eq, h'.eq]
+    SemiconjBy a (x + x') (y + y') := by
+  simp only [SemiconjBy, left_distrib, right_distrib, h.eq, h'.eq]
 #align semiconj_by.add_right SemiconjBy.add_right
 
 @[simp]
-theorem add_left [Distrib R] {a b x y : R} (ha : SemiconjBy a x y) (hb : SemiconjBy b x y) : SemiconjBy (a + b) x y :=
-  by simp only [SemiconjBy, left_distrib, right_distrib, ha.eq, hb.eq]
+theorem add_left [Distrib R] {a b x y : R} (ha : SemiconjBy a x y) (hb : SemiconjBy b x y) :
+    SemiconjBy (a + b) x y := by
+  simp only [SemiconjBy, left_distrib, right_distrib, ha.eq, hb.eq]
 #align semiconj_by.add_left SemiconjBy.add_left
 
 section
 
 variable [Mul R] [HasDistribNeg R] {a x y : R}
 
-theorem neg_right (h : SemiconjBy a x y) : SemiconjBy a (-x) (-y) := by simp only [SemiconjBy, h.eq, neg_mul, mul_neg]
+theorem neg_right (h : SemiconjBy a x y) : SemiconjBy a (-x) (-y) := by
+  simp only [SemiconjBy, h.eq, neg_mul, mul_neg]
 #align semiconj_by.neg_right SemiconjBy.neg_right
 
 @[simp]
@@ -49,7 +52,8 @@ theorem neg_right_iff : SemiconjBy a (-x) (-y) ↔ SemiconjBy a x y :=
   ⟨fun h => neg_neg x ▸ neg_neg y ▸ h.neg_right, SemiconjBy.neg_right⟩
 #align semiconj_by.neg_right_iff SemiconjBy.neg_right_iff
 
-theorem neg_left (h : SemiconjBy a x y) : SemiconjBy (-a) x y := by simp only [SemiconjBy, h.eq, neg_mul, mul_neg]
+theorem neg_left (h : SemiconjBy a x y) : SemiconjBy (-a) x y := by
+  simp only [SemiconjBy, h.eq, neg_mul, mul_neg]
 #align semiconj_by.neg_left SemiconjBy.neg_left
 
 @[simp]
@@ -80,16 +84,17 @@ section
 variable [NonUnitalNonAssocRing R] {a b x y x' y' : R}
 
 @[simp]
-theorem sub_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') : SemiconjBy a (x - x') (y - y') := by
+theorem sub_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
+    SemiconjBy a (x - x') (y - y') := by
   simpa only [sub_eq_add_neg] using h.add_right h'.neg_right
 #align semiconj_by.sub_right SemiconjBy.sub_right
 
 @[simp]
-theorem sub_left (ha : SemiconjBy a x y) (hb : SemiconjBy b x y) : SemiconjBy (a - b) x y := by
+theorem sub_left (ha : SemiconjBy a x y) (hb : SemiconjBy b x y) :
+    SemiconjBy (a - b) x y := by
   simpa only [sub_eq_add_neg] using ha.add_left hb.neg_left
 #align semiconj_by.sub_left SemiconjBy.sub_left
 
 end
 
 end SemiconjBy
-
