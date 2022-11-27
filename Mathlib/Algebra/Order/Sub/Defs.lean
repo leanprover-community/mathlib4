@@ -15,7 +15,7 @@ This file proves lemmas relating (truncated) subtraction with an order. We provi
 `HasOrderedSub` stating that `a - b ≤ c ↔ a ≤ c + b`.
 
 The subtraction discussed here could both be normal subtraction in an additive group or truncated
-subtraction on a canonically ordered monoid (`ℕ`, `Multiset`, `PartEnat`, `Ennreal`, ...)
+subtraction on a canonically ordered monoid (`ℕ`, `Multiset`, `PartENat`, `ENNReal`, ...)
 
 ## Implementation details
 
@@ -32,7 +32,7 @@ Lemmas using this class are named using `tsub` instead of `sub` (short for "trun
 This is to avoid naming conflicts with similar lemmas about ordered groups.
 
 We provide a second version of most results that require `[ContravariantClass α α (+) (≤)]`. In the
-second version we replace this type-class assumption by explicit `AddLeCancellable` assumptions.
+second version we replace this type-class assumption by explicit `AddLECancellable` assumptions.
 
 TODO: maybe we should make a multiplicative version of this, so that we can replace some identical
 lemmas about subtraction/division in `Ordered[Add]CommGroup` with these.
@@ -190,29 +190,29 @@ theorem add_tsub_add_le_tsub_right : a + c - (b + c) ≤ a - b := by
 
 end Cov
 
-/-! #### Lemmas that assume that an element is `AddLeCancellable` -/
+/-! #### Lemmas that assume that an element is `AddLECancellable` -/
 
 
-namespace AddLeCancellable
+namespace AddLECancellable
 
-protected theorem le_add_tsub_swap (hb : AddLeCancellable b) : a ≤ b + a - b :=
+protected theorem le_add_tsub_swap (hb : AddLECancellable b) : a ≤ b + a - b :=
   hb le_add_tsub
-#align add_le_cancellable.le_add_tsub_swap AddLeCancellable.le_add_tsub_swap
+#align add_le_cancellable.le_add_tsub_swap AddLECancellable.le_add_tsub_swap
 
-protected theorem le_add_tsub (hb : AddLeCancellable b) : a ≤ a + b - b := by
+protected theorem le_add_tsub (hb : AddLECancellable b) : a ≤ a + b - b := by
   rw [add_comm]
   exact hb.le_add_tsub_swap
-#align add_le_cancellable.le_add_tsub AddLeCancellable.le_add_tsub
+#align add_le_cancellable.le_add_tsub AddLECancellable.le_add_tsub
 
-protected theorem le_tsub_of_add_le_left (ha : AddLeCancellable a) (h : a + b ≤ c) : b ≤ c - a :=
+protected theorem le_tsub_of_add_le_left (ha : AddLECancellable a) (h : a + b ≤ c) : b ≤ c - a :=
   ha <| h.trans le_add_tsub
-#align add_le_cancellable.le_tsub_of_add_le_left AddLeCancellable.le_tsub_of_add_le_left
+#align add_le_cancellable.le_tsub_of_add_le_left AddLECancellable.le_tsub_of_add_le_left
 
-protected theorem le_tsub_of_add_le_right (hb : AddLeCancellable b) (h : a + b ≤ c) : a ≤ c - b :=
+protected theorem le_tsub_of_add_le_right (hb : AddLECancellable b) (h : a + b ≤ c) : a ≤ c - b :=
   hb.le_tsub_of_add_le_left <| by rwa [add_comm]
-#align add_le_cancellable.le_tsub_of_add_le_right AddLeCancellable.le_tsub_of_add_le_right
+#align add_le_cancellable.le_tsub_of_add_le_right AddLECancellable.le_tsub_of_add_le_right
 
-end AddLeCancellable
+end AddLECancellable
 
 /-! ### Lemmas where addition is order-reflecting -/
 
@@ -222,19 +222,19 @@ section Contra
 variable [ContravariantClass α α (· + ·) (· ≤ ·)]
 
 theorem le_add_tsub_swap : a ≤ b + a - b :=
-  Contravariant.AddLeCancellable.le_add_tsub_swap
+  Contravariant.AddLECancellable.le_add_tsub_swap
 #align le_add_tsub_swap le_add_tsub_swap
 
 theorem le_add_tsub' : a ≤ a + b - b :=
-  Contravariant.AddLeCancellable.le_add_tsub
+  Contravariant.AddLECancellable.le_add_tsub
 #align le_add_tsub' le_add_tsub'
 
 theorem le_tsub_of_add_le_left (h : a + b ≤ c) : b ≤ c - a :=
-  Contravariant.AddLeCancellable.le_tsub_of_add_le_left h
+  Contravariant.AddLECancellable.le_tsub_of_add_le_left h
 #align le_tsub_of_add_le_left le_tsub_of_add_le_left
 
 theorem le_tsub_of_add_le_right (h : a + b ≤ c) : a ≤ c - b :=
-  Contravariant.AddLeCancellable.le_tsub_of_add_le_right h
+  Contravariant.AddLECancellable.le_tsub_of_add_le_right h
 #align le_tsub_of_add_le_right le_tsub_of_add_le_right
 
 end Contra
@@ -280,58 +280,58 @@ theorem tsub_right_comm : a - b - c = a - c - b := by
 /-! ### Lemmas that assume that an element is `add_le_cancellable`. -/
 
 
-namespace AddLeCancellable
+namespace AddLECancellable
 
-protected theorem tsub_eq_of_eq_add (hb : AddLeCancellable b) (h : a = c + b) : a - b = c :=
+protected theorem tsub_eq_of_eq_add (hb : AddLECancellable b) (h : a = c + b) : a - b = c :=
   le_antisymm (tsub_le_iff_right.mpr h.le) <| by
     rw [h]
     exact hb.le_add_tsub
-#align add_le_cancellable.tsub_eq_of_eq_add AddLeCancellable.tsub_eq_of_eq_add
+#align add_le_cancellable.tsub_eq_of_eq_add AddLECancellable.tsub_eq_of_eq_add
 
-protected theorem eq_tsub_of_add_eq (hc : AddLeCancellable c) (h : a + c = b) : a = b - c :=
+protected theorem eq_tsub_of_add_eq (hc : AddLECancellable c) (h : a + c = b) : a = b - c :=
   (hc.tsub_eq_of_eq_add h.symm).symm
-#align add_le_cancellable.eq_tsub_of_add_eq AddLeCancellable.eq_tsub_of_add_eq
+#align add_le_cancellable.eq_tsub_of_add_eq AddLECancellable.eq_tsub_of_add_eq
 
-protected theorem tsub_eq_of_eq_add_rev (hb : AddLeCancellable b) (h : a = b + c) : a - b = c :=
+protected theorem tsub_eq_of_eq_add_rev (hb : AddLECancellable b) (h : a = b + c) : a - b = c :=
   hb.tsub_eq_of_eq_add <| by rw [add_comm, h]
-#align add_le_cancellable.tsub_eq_of_eq_add_rev AddLeCancellable.tsub_eq_of_eq_add_rev
+#align add_le_cancellable.tsub_eq_of_eq_add_rev AddLECancellable.tsub_eq_of_eq_add_rev
 
 @[simp]
-protected theorem add_tsub_cancel_right (hb : AddLeCancellable b) : a + b - b = a :=
+protected theorem add_tsub_cancel_right (hb : AddLECancellable b) : a + b - b = a :=
   hb.tsub_eq_of_eq_add <| by rw [add_comm]
-#align add_le_cancellable.add_tsub_cancel_right AddLeCancellable.add_tsub_cancel_right
+#align add_le_cancellable.add_tsub_cancel_right AddLECancellable.add_tsub_cancel_right
 
 @[simp]
-protected theorem add_tsub_cancel_left (ha : AddLeCancellable a) : a + b - a = b :=
+protected theorem add_tsub_cancel_left (ha : AddLECancellable a) : a + b - a = b :=
   ha.tsub_eq_of_eq_add <| add_comm a b
-#align add_le_cancellable.add_tsub_cancel_left AddLeCancellable.add_tsub_cancel_left
+#align add_le_cancellable.add_tsub_cancel_left AddLECancellable.add_tsub_cancel_left
 
-protected theorem lt_add_of_tsub_lt_left (hb : AddLeCancellable b) (h : a - b < c) : a < b + c := by
+protected theorem lt_add_of_tsub_lt_left (hb : AddLECancellable b) (h : a - b < c) : a < b + c := by
   rw [lt_iff_le_and_ne, ← tsub_le_iff_left]
   refine' ⟨h.le, _⟩
   rintro rfl
   simp [hb] at h
-#align add_le_cancellable.lt_add_of_tsub_lt_left AddLeCancellable.lt_add_of_tsub_lt_left
+#align add_le_cancellable.lt_add_of_tsub_lt_left AddLECancellable.lt_add_of_tsub_lt_left
 
-protected theorem lt_add_of_tsub_lt_right (hc : AddLeCancellable c) (h : a - c < b) :
+protected theorem lt_add_of_tsub_lt_right (hc : AddLECancellable c) (h : a - c < b) :
     a < b + c := by
   rw [lt_iff_le_and_ne, ← tsub_le_iff_right]
   refine' ⟨h.le, _⟩
   rintro rfl
   simp [hc] at h
-#align add_le_cancellable.lt_add_of_tsub_lt_right AddLeCancellable.lt_add_of_tsub_lt_right
+#align add_le_cancellable.lt_add_of_tsub_lt_right AddLECancellable.lt_add_of_tsub_lt_right
 
-protected theorem lt_tsub_of_add_lt_right (hc : AddLeCancellable c) (h : a + c < b) : a < b - c :=
+protected theorem lt_tsub_of_add_lt_right (hc : AddLECancellable c) (h : a + c < b) : a < b - c :=
   (hc.le_tsub_of_add_le_right h.le).lt_of_ne <| by
     rintro rfl
     exact h.not_le le_tsub_add
-#align add_le_cancellable.lt_tsub_of_add_lt_right AddLeCancellable.lt_tsub_of_add_lt_right
+#align add_le_cancellable.lt_tsub_of_add_lt_right AddLECancellable.lt_tsub_of_add_lt_right
 
-protected theorem lt_tsub_of_add_lt_left (ha : AddLeCancellable a) (h : a + c < b) : c < b - a :=
+protected theorem lt_tsub_of_add_lt_left (ha : AddLECancellable a) (h : a + c < b) : c < b - a :=
   ha.lt_tsub_of_add_lt_right <| by rwa [add_comm]
-#align add_le_cancellable.lt_tsub_of_add_lt_left AddLeCancellable.lt_tsub_of_add_lt_left
+#align add_le_cancellable.lt_tsub_of_add_lt_left AddLECancellable.lt_tsub_of_add_lt_left
 
-end AddLeCancellable
+end AddLECancellable
 
 /-! #### Lemmas where addition is order-reflecting. -/
 
@@ -341,43 +341,43 @@ section Contra
 variable [ContravariantClass α α (· + ·) (· ≤ ·)]
 
 theorem tsub_eq_of_eq_add (h : a = c + b) : a - b = c :=
-  Contravariant.AddLeCancellable.tsub_eq_of_eq_add h
+  Contravariant.AddLECancellable.tsub_eq_of_eq_add h
 #align tsub_eq_of_eq_add tsub_eq_of_eq_add
 
 theorem eq_tsub_of_add_eq (h : a + c = b) : a = b - c :=
-  Contravariant.AddLeCancellable.eq_tsub_of_add_eq h
+  Contravariant.AddLECancellable.eq_tsub_of_add_eq h
 #align eq_tsub_of_add_eq eq_tsub_of_add_eq
 
 theorem tsub_eq_of_eq_add_rev (h : a = b + c) : a - b = c :=
-  Contravariant.AddLeCancellable.tsub_eq_of_eq_add_rev h
+  Contravariant.AddLECancellable.tsub_eq_of_eq_add_rev h
 #align tsub_eq_of_eq_add_rev tsub_eq_of_eq_add_rev
 
 @[simp]
 theorem add_tsub_cancel_right (a b : α) : a + b - b = a :=
-  Contravariant.AddLeCancellable.add_tsub_cancel_right
+  Contravariant.AddLECancellable.add_tsub_cancel_right
 #align add_tsub_cancel_right add_tsub_cancel_right
 
 @[simp]
 theorem add_tsub_cancel_left (a b : α) : a + b - a = b :=
-  Contravariant.AddLeCancellable.add_tsub_cancel_left
+  Contravariant.AddLECancellable.add_tsub_cancel_left
 #align add_tsub_cancel_left add_tsub_cancel_left
 
 theorem lt_add_of_tsub_lt_left (h : a - b < c) : a < b + c :=
-  Contravariant.AddLeCancellable.lt_add_of_tsub_lt_left h
+  Contravariant.AddLECancellable.lt_add_of_tsub_lt_left h
 #align lt_add_of_tsub_lt_left lt_add_of_tsub_lt_left
 
 theorem lt_add_of_tsub_lt_right (h : a - c < b) : a < b + c :=
-  Contravariant.AddLeCancellable.lt_add_of_tsub_lt_right h
+  Contravariant.AddLECancellable.lt_add_of_tsub_lt_right h
 #align lt_add_of_tsub_lt_right lt_add_of_tsub_lt_right
 
-/-- This lemma (and some of its corollaries) also holds for `Ennreal`, but this proof doesn't work
+/-- This lemma (and some of its corollaries) also holds for `ENNReal`, but this proof doesn't work
 for it. Maybe we should add this lemma as field to `HasOrderedSub`? -/
 theorem lt_tsub_of_add_lt_left : a + c < b → c < b - a :=
-  Contravariant.AddLeCancellable.lt_tsub_of_add_lt_left
+  Contravariant.AddLECancellable.lt_tsub_of_add_lt_left
 #align lt_tsub_of_add_lt_left lt_tsub_of_add_lt_left
 
 theorem lt_tsub_of_add_lt_right : a + c < b → a < b - c :=
-  Contravariant.AddLeCancellable.lt_tsub_of_add_lt_right
+  Contravariant.AddLECancellable.lt_tsub_of_add_lt_right
 #align lt_tsub_of_add_lt_right lt_tsub_of_add_lt_right
 
 end Contra
@@ -446,7 +446,7 @@ variable [PartialOrder α] [AddCommMonoid α] [Sub α] [HasOrderedSub α]
 
 @[simp]
 theorem tsub_zero (a : α) : a - 0 = a :=
-  AddLeCancellable.tsub_eq_of_eq_add add_le_cancellable_zero (add_zero _).symm
+  AddLECancellable.tsub_eq_of_eq_add addLECancellable_zero (add_zero _).symm
 #align tsub_zero tsub_zero
 
 end OrderedAddCommMonoid
