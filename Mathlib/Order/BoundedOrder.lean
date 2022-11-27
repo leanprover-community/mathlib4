@@ -540,8 +540,8 @@ theorem BoundedOrder.ext {α} [PartialOrder α] {A B : BoundedOrder α} : A = B 
 #align bounded_order.ext BoundedOrder.ext
 
 /-- Propositions form a distributive lattice. -/
-instance PropCat.distribLattice : DistribLattice Prop where
-  __ := PropCat.partialOrder
+instance : DistribLattice Prop where
+  __ := inferInstanceAs (PartialOrder Prop)
   sup := Or
   le_sup_left := @Or.inl
   le_sup_right := @Or.inr
@@ -551,35 +551,32 @@ instance PropCat.distribLattice : DistribLattice Prop where
   inf_le_right := @And.right
   le_inf := fun _ _ _ Hab Hac Ha => And.intro (Hab Ha) (Hac Ha)
   le_sup_inf := fun _ _ _ => or_and_left.2
-#align Prop.distrib_lattice PropCat.distribLattice
 
 /-- Propositions form a bounded order. -/
-instance PropCat.boundedOrder : BoundedOrder Prop where
+instance : BoundedOrder Prop where
   top := True
   le_top _ _ := True.intro
   bot := False
   bot_le := @False.elim
-#align Prop.bounded_order PropCat.boundedOrder
 
-theorem PropCat.bot_eq_false : (⊥ : Prop) = False :=
+theorem Prop.bot_eq_false : (⊥ : Prop) = False :=
   rfl
-#align Prop.bot_eq_false PropCat.bot_eq_false
+#align Prop.bot_eq_false Prop.bot_eq_false
 
-theorem PropCat.top_eq_true : (⊤ : Prop) = True :=
+theorem Prop.top_eq_true : (⊤ : Prop) = True :=
   rfl
-#align Prop.top_eq_true PropCat.top_eq_true
+#align Prop.top_eq_true Prop.top_eq_true
 
 -- Porting note: was `tauto!`
-instance PropCat.le_is_total : IsTotal Prop (· ≤ ·) :=
+instance Prop.le_isTotal : IsTotal Prop (· ≤ ·) :=
   ⟨fun p q => by
     change (p → q) ∨ (q → p)
     by_cases hp : p <;> by_cases hq : q <;> simp [hp, hq]⟩
-#align Prop.le_is_total PropCat.le_is_total
+#align Prop.le_is_total Prop.le_isTotal
 
-noncomputable instance PropCat.linearOrder : LinearOrder Prop := by
+noncomputable instance : LinearOrder Prop := by
   classical
   exact Lattice.toLinearOrder Prop
-#align Prop.linear_order PropCat.linearOrder
 
 @[simp]
 theorem sup_Prop_eq : (· ⊔ ·) = (· ∨ ·) :=
