@@ -19,34 +19,34 @@ theorem iff_eq_true_of_eq {a b : Prop} (h : a = b) : (a ↔ b) = True :=
   h ▸ propext (iff_self_iff _)
 
 theorem and_eq_of_eq_true_left {a b : Prop} (h : a = True) : (a ∧ b) = b :=
-  h.symm ▸ propext true_and_iff
+  h.symm ▸ propext (true_and_iff _)
 
 theorem and_eq_of_eq_true_right {a b : Prop} (h : b = True) : (a ∧ b) = a :=
-  h.symm ▸ propext and_true_iff
+  h.symm ▸ propext (and_true_iff _)
 
 theorem and_eq_of_eq_false_left {a b : Prop} (h : a = False) : (a ∧ b) = False :=
-  h.symm ▸ propext false_and_iff
+  h.symm ▸ propext (false_and_iff _)
 
 theorem and_eq_of_eq_false_right {a b : Prop} (h : b = False) : (a ∧ b) = False :=
-  h.symm ▸ propext and_false_iff
+  h.symm ▸ propext (and_false_iff _)
 
 theorem and_eq_of_eq {a b : Prop} (h : a = b) : (a ∧ b) = a :=
-  h ▸ propext and_self_iff
+  h ▸ propext (and_self_iff _)
 
 theorem or_eq_of_eq_true_left {a b : Prop} (h : a = True) : (a ∨ b) = True :=
-  h.symm ▸ propext true_or_iff
+  h.symm ▸ propext (true_or_iff _)
 
 theorem or_eq_of_eq_true_right {a b : Prop} (h : b = True) : (a ∨ b) = True :=
-  h.symm ▸ propext or_true_iff
+  h.symm ▸ propext (or_true_iff _)
 
 theorem or_eq_of_eq_false_left {a b : Prop} (h : a = False) : (a ∨ b) = b :=
-  h.symm ▸ propext false_or_iff
+  h.symm ▸ propext (false_or_iff _)
 
 theorem or_eq_of_eq_false_right {a b : Prop} (h : b = False) : (a ∨ b) = a :=
-  h.symm ▸ propext or_false_iff
+  h.symm ▸ propext (or_false_iff _)
 
 theorem or_eq_of_eq {a b : Prop} (h : a = b) : (a ∨ b) = a :=
-  h ▸ propext or_self_iff
+  h ▸ propext (or_self_iff _)
 
 theorem imp_eq_of_eq_true_left {a b : Prop} (h : a = True) : (a → b) = b :=
   h.symm ▸ propext ⟨fun h ↦ h trivial, fun h₁ _ ↦ h₁⟩
