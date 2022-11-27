@@ -10,18 +10,18 @@ import Mathlib.Algebra.Group.Units
 # Monoid homomorphisms and units
 
 This file allows to lift monoid homomorphisms to group homomorphisms of their units subgroups. It
-also contains unrelated results about `units` that depend on `monoid_hom`.
+also contains unrelated results about `Units` that depend on `MonoidHom`.
 
 ## Main declarations
 
-* `units.map`: Turn an homomorphism from `α` to `β` monoids into an homomorphism from `αˣ` to `βˣ`.
-* `monoid_hom.to_hom_units`: Turn an homomorphism from a group `α` to `β` into an homomorphism from
+* `Units.map`: Turn an homomorphism from `α` to `β` monoids into an homomorphism from `αˣ` to `βˣ`.
+* `MonoidHom.toHomUnits`: Turn an homomorphism from a group `α` to `β` into an homomorphism from
   `α` to `βˣ`.
 
 ## TODO
 
 The results that don't mention homomorphisms should be proved (earlier?) in a different file and be
-used to golf the basic `group` lemmas.
+used to golf the basic `Group` lemmas.
 -/
 
 
@@ -62,8 +62,8 @@ namespace Units
 
 variable {α : Type _} {M : Type u} {N : Type v} {P : Type w} [Monoid M] [Monoid N] [Monoid P]
 
-/-- The group homomorphism on units induced by a `monoid_hom`. -/
-@[to_additive "The `add_group` homomorphism on `add_unit`s induced by an `add_monoid_hom`."]
+/-- The group homomorphism on units induced by a `MonoidHom`. -/
+@[to_additive "The `add_group` homomorphism on `add_unit`s induced by an `add_MonoidHom`."]
 def map (f : M →* N) : Mˣ →* Nˣ :=
   MonoidHom.mk'
     (fun u => ⟨f u.val, f u.inv,
@@ -99,20 +99,19 @@ def coeHom : Mˣ →* M :=
 variable {M}
 
 @[simp, to_additive]
-theorem coe_hom_apply (x : Mˣ) : coeHom M x = ↑x :=
-  rfl
-#align units.coe_hom_apply Units.coe_hom_apply
+theorem coeHom_apply (x : Mˣ) : coeHom M x = ↑x := rfl
+#align units.coe_hom_apply Units.coeHom_apply
 
--- Porting note: restore `to_additive`
+-- Porting note: restore `to_additive`. Names follows `Algebra.Group.Units`
 @[simp, norm_cast]
-theorem coe_pow (u : Mˣ) (n : ℕ) : ((u ^ n : Mˣ) : M) = (u : M) ^ n :=
+theorem val_pow_eq_pow_val (u : Mˣ) (n : ℕ) : ((u ^ n : Mˣ) : M) = (u : M) ^ n :=
   (Units.coeHom M).map_pow u n
-#align units.coe_pow Units.coe_pow
+#align units.coe_pow Units.val_pow_eq_pow_val
 @[simp, norm_cast]
-theorem coe_nsmul {M} [AddMonoid M] (u : AddUnits M) (n : ℕ) :
+theorem val_nsmul_eq_nsmul_val {M} [AddMonoid M] (u : AddUnits M) (n : ℕ) :
   ((u ^ n : AddUnits M) : M) = (u : M) ^ n :=
   (AddUnits.coeHom M).map_nsmul u n
-#align units.coe_nsmul Units.coe_nsmul
+#align units.coe_nsmul Units.val_nsmul_eq_nsmul_val
 
 section DivisionMonoid
 
