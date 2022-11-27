@@ -36,7 +36,7 @@ variable [Mul R]
 is injective. -/
 @[to_additive "An add-left-regular element is an element `c` such that addition on the left by `c`\nis injective. -/\n"]
 def IsLeftRegular (c : R) :=
-  ((· * ·) c).Injective
+  (c * ·).Injective
 #align is_left_regular IsLeftRegular
 
 /-- A right-regular element is an element `c` such that multiplication on the right by `c`
@@ -49,7 +49,7 @@ def IsRightRegular (c : R) :=
 /-- An add-regular element is an element `c` such that addition by `c` both on the left and
 on the right is injective. -/
 structure IsAddRegular {R : Type _} [Add R] (c : R) : Prop where
-  left : IsAddLeftRegular c
+  left : IsAddLeftRegular c -- Porting note: It seems like to_additive is misbehaving
   right : IsAddRightRegular c
 #align is_add_regular IsAddRegular
 
@@ -63,10 +63,10 @@ structure IsRegular (c : R) : Prop where
 attribute [to_additive] IsRegular
 
 @[to_additive]
-protected theorem MulLeCancellable.is_left_regular [PartialOrder R] {a : R} (ha : MulLeCancellable a) :
+protected theorem MulLECancellable.is_left_regular [PartialOrder R] {a : R} (ha : MulLECancellable a) :
     IsLeftRegular a :=
   ha.Injective
-#align mul_le_cancellable.is_left_regular MulLeCancellable.is_left_regular
+#align mul_le_cancellable.is_left_regular MulLECancellable.is_left_regular
 
 theorem IsLeftRegular.right_of_commute {a : R} (ca : ∀ b, Commute a b) (h : IsLeftRegular a) : IsRightRegular a :=
   fun x y xy => h <| (ca x).trans <| xy.trans <| (ca y).symm
@@ -85,7 +85,7 @@ variable [Semigroup R] {a b : R}
 /-- In a semigroup, the product of left-regular elements is left-regular. -/
 @[to_additive "In an additive semigroup, the sum of add-left-regular elements is add-left.regular."]
 theorem IsLeftRegular.mul (lra : IsLeftRegular a) (lrb : IsLeftRegular b) : IsLeftRegular (a * b) :=
-  show Function.Injective ((· * ·) (a * b)) from comp_mul_left a b ▸ lra.comp lrb
+  show Function.Injective (((a * b) * ·)) from comp_mul_left a b ▸ lra.comp lrb
 #align is_left_regular.mul IsLeftRegular.mul
 
 /-- In a semigroup, the product of right-regular elements is right-regular. -/
@@ -171,12 +171,12 @@ theorem IsRightRegular.subsingleton (h : IsRightRegular (0 : R)) : Subsingleton 
 
 /-- The element `0` is regular if and only if `R` is trivial. -/
 theorem IsRegular.subsingleton (h : IsRegular (0 : R)) : Subsingleton R :=
-  h.left.Subsingleton
+  h.left.subsingleton
 #align is_regular.subsingleton IsRegular.subsingleton
 
 /-- The element `0` is left-regular if and only if `R` is trivial. -/
 theorem is_left_regular_zero_iff_subsingleton : IsLeftRegular (0 : R) ↔ Subsingleton R :=
-  ⟨fun h => h.Subsingleton, fun H a b h => @Subsingleton.elim _ H a b⟩
+  ⟨fun h => h.subsingleton, fun H a b _ => @Subsingleton.elim _ H a b⟩
 #align is_left_regular_zero_iff_subsingleton is_left_regular_zero_iff_subsingleton
 
 /-- In a non-trivial `mul_zero_class`, the `0` element is not left-regular. -/
@@ -188,7 +188,7 @@ theorem not_is_left_regular_zero_iff : ¬IsLeftRegular (0 : R) ↔ Nontrivial R 
 
 /-- The element `0` is right-regular if and only if `R` is trivial. -/
 theorem is_right_regular_zero_iff_subsingleton : IsRightRegular (0 : R) ↔ Subsingleton R :=
-  ⟨fun h => h.Subsingleton, fun H a b h => @Subsingleton.elim _ H a b⟩
+  ⟨fun h => h.subsingleton, fun H a b _ => @Subsingleton.elim _ H a b⟩
 #align is_right_regular_zero_iff_subsingleton is_right_regular_zero_iff_subsingleton
 
 /-- In a non-trivial `mul_zero_class`, the `0` element is not right-regular. -/
@@ -200,7 +200,7 @@ theorem not_is_right_regular_zero_iff : ¬IsRightRegular (0 : R) ↔ Nontrivial 
 
 /-- The element `0` is regular if and only if `R` is trivial. -/
 theorem is_regular_iff_subsingleton : IsRegular (0 : R) ↔ Subsingleton R :=
-  ⟨fun h => h.left.Subsingleton, fun h =>
+  ⟨fun h => h.left.subsingleton, fun h =>
     ⟨is_left_regular_zero_iff_subsingleton.mpr h, is_right_regular_zero_iff_subsingleton.mpr h⟩⟩
 #align is_regular_iff_subsingleton is_regular_iff_subsingleton
 
@@ -209,7 +209,7 @@ theorem IsLeftRegular.ne_zero [Nontrivial R] (la : IsLeftRegular a) : a ≠ 0 :=
   rintro rfl
   rcases exists_pair_ne R with ⟨x, y, xy⟩
   refine' xy (la _)
-  rw [zero_mul, zero_mul]
+  rw [zero_mul, zero_mul] -- Porting note: This seems like this should work. A difference in lean4?
 #align is_left_regular.ne_zero IsLeftRegular.ne_zero
 
 /-- A right-regular element of a `nontrivial` `mul_zero_class` is non-zero. -/
@@ -222,7 +222,7 @@ theorem IsRightRegular.ne_zero [Nontrivial R] (ra : IsRightRegular a) : a ≠ 0 
 
 /-- A regular element of a `nontrivial` `mul_zero_class` is non-zero. -/
 theorem IsRegular.ne_zero [Nontrivial R] (la : IsRegular a) : a ≠ 0 :=
-  la.left.NeZero
+  la.left.ne_zero
 #align is_regular.ne_zero IsRegular.ne_zero
 
 /-- In a non-trivial ring, the element `0` is not left-regular -- with typeclasses. -/
@@ -334,7 +334,7 @@ variable [CancelMonoidWithZero R] {a : R}
 
 /-- Non-zero elements of an integral domain are regular. -/
 theorem is_regular_of_ne_zero (a0 : a ≠ 0) : IsRegular a :=
-  ⟨fun b c => (mul_right_inj' a0).mp, fun b c => (mul_left_inj' a0).mp⟩
+  ⟨fun _ _ => (mul_right_inj' a0).mp, fun _ _ => (mul_left_inj' a0).mp⟩
 #align is_regular_of_ne_zero is_regular_of_ne_zero
 
 /-- In a non-trivial integral domain, an element is regular iff it is non-zero. -/
