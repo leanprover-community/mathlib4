@@ -7,7 +7,7 @@ import Lean
 import Std.Tactic.RCases
 import Mathlib.Tactic.Cache
 import Aesop.Util.Basic
--- Porting note: we import `Aesop.Util.Basic` for `HashSet.insertMany`,
+-- We import `Aesop.Util.Basic` for `HashSet.insertMany`,
 -- which should be moved to `Std`.
 
 open Lean (HashSet)
