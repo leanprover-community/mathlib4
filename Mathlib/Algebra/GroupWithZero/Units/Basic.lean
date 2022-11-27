@@ -203,9 +203,8 @@ theorem mk0_val (u : G₀ˣ) (h : (u : G₀) ≠ 0) : mk0 (u : G₀) h = u :=
 #align units.mk0_coe Units.mk0_val
 
 -- porting note: removed `simp` tag because `simpNF` says it's redundant
-theorem mul_inv' (u : G₀ˣ) : (u : G₀) * u⁻¹ = 1 := by
-  convert mul_inv_cancel u.ne_zero; exact val_inv_eq_inv_val u
-  -- porting note: this is concerning, this required an extra step and doesn't hold definitionally
+theorem mul_inv' (u : G₀ˣ) : u * (u : G₀)⁻¹ = 1 :=
+  mul_inv_cancel u.ne_zero
 #align units.mul_inv' Units.mul_inv'
 
 -- porting note: removed `simp` tag because `simpNF` says it's redundant
