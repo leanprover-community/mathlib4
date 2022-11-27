@@ -226,19 +226,19 @@ theorem units_inv_left_iff : Commute (↑u⁻¹) a ↔ Commute (↑u) a :=
 
 @[to_additive]
 theorem units_val : Commute u₁ u₂ → Commute (u₁ : M) u₂ :=
-  SemiconjBy.units_coe
+  SemiconjBy.units_val
 #align commute.units_coe Commute.units_val
 #align add_commute.add_units_coe AddCommute.addUnits_val
 
 @[to_additive]
 theorem units_of_val : Commute (u₁ : M) u₂ → Commute u₁ u₂ :=
-  SemiconjBy.units_of_coe
+  SemiconjBy.units_of_val
 #align commute.units_of_coe Commute.units_of_val
 #align add_commute.add_units_of_coe AddCommute.addUnits_of_val
 
 @[simp, to_additive]
 theorem units_val_iff : Commute (u₁ : M) u₂ ↔ Commute u₁ u₂ :=
-  SemiconjBy.units_coe_iff
+  SemiconjBy.units_val_iff
 #align commute.units_coe_iff Commute.units_val_iff
 #align add_commute.add_units_coe_iff AddCommute.addUnits_val_iff
 
