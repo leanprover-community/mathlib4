@@ -92,10 +92,7 @@ instance (priority := 100) Finite.to_countable [Finite α] : Countable α :=
 instance : Countable PUnit.{u} :=
   Subsingleton.to_countable
 
--- Porting note: removed @[nolint instance_priority] as
--- there is not (yet?) a linter to complain about the fact
--- that this instance always applies
-instance Prop.countable (p : Prop) : Countable p :=
+instance (priority := 100) Prop.countable (p : Prop) : Countable p :=
   Subsingleton.to_countable
 
 instance Bool.countable : Countable Bool :=
