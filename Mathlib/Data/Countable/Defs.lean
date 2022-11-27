@@ -95,13 +95,13 @@ instance : Countable PUnit.{u} :=
 -- Porting note: removed @[nolint instance_priority] as
 -- there is not (yet?) a linter to complain about the fact
 -- that this instance always applies
-instance PropCat.countable (p : Prop) : Countable p :=
+instance Prop.countable (p : Prop) : Countable p :=
   Subsingleton.to_countable
 
 instance Bool.countable : Countable Bool :=
   ⟨⟨fun b => cond b 0 1, Bool.injective_iff.2 Nat.one_ne_zero⟩⟩
 
-instance PropCat.countable' : Countable Prop :=
+instance Prop.countable' : Countable Prop :=
   Countable.of_equiv Bool Equiv.propEquivBool.symm
 
 instance (priority := 500) [Countable α] {r : α → α → Prop} : Countable (Quot r) :=
