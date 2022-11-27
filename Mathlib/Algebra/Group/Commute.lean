@@ -11,7 +11,7 @@ import Mathlib.Algebra.Group.Semiconj
 We define the predicate `Commute a b := a * b = b * a` and provide some operations on terms
 `(h : Commute a b)`. E.g., if `a`, `b`, and c are elements of a semiring, and that
 `hb : Commute a b` and `hc : Commute a c`.  Then `hb.pow_left 5` proves `Commute (a ^ 5) b` and
-`(hb.pow_right 2).add_right (hb.mul_right hc)` proves `commute a (b ^ 2 + b * c)`.
+`(hb.pow_right 2).add_right (hb.mul_right hc)` proves `Commute a (b ^ 2 + b * c)`.
 
 Lean does not immediately recognise these terms as equations, so for rewriting we need syntax like
 `rw [(hb.pow_left 5).eq]` rather than just `rw [hb.pow_left 5]`.
@@ -381,6 +381,7 @@ theorem inv_mul_cancel_comm : a⁻¹ * b * a = b :=
 @[simp, to_additive]
 theorem inv_mul_cancel_comm_assoc : a⁻¹ * (b * a) = b :=
   (Commute.all a b).inv_mul_cancel_assoc
+#align inv_mul_cancel_comm_assoc inv_mul_cancel_comm_assoc
 #align neg_add_cancel_comm_assoc neg_add_cancel_comm_assoc
 
 end CommGroup
