@@ -1,5 +1,24 @@
+/-
+Copyright (c) 2022 Scott Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Scott Morrison
+-/
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Lean.Meta.Simp
+
+/-!
+# The `reasoc` attribute
+
+Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`,
+where `f g : X ⟶ Y` in some category
+will create a new lemmas named `F_assoc` of shape
+`∀ .. {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h`
+but with the conclusions simplified used the axioms for a category
+(`Category.comp_id`, `Category.id_comp`, and `Category.assoc`).
+
+This is useful for generating lemmas which the simplifier can use even on expressions
+that are already right associated.
+-/
 
 open Lean Meta Elab Tactic
 

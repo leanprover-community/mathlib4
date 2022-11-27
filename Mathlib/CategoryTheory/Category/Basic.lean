@@ -207,11 +207,13 @@ theorem ite_comp {P : Prop} [Decidable P] {X Y Z : C} (f f' : X ⟶ Y) (g : Y �
     (if P then f else f') ≫ g = if P then f ≫ g else f' ≫ g := by aesop
 #align category_theory.ite_comp CategoryTheory.ite_comp
 
-theorem comp_dite {P : Prop} [Decidable P] {X Y Z : C} (f : X ⟶ Y) (g : P → (Y ⟶ Z)) (g' : ¬P → (Y ⟶ Z)) :
+theorem comp_dite {P : Prop} [Decidable P]
+    {X Y Z : C} (f : X ⟶ Y) (g : P → (Y ⟶ Z)) (g' : ¬P → (Y ⟶ Z)) :
     (f ≫ if h : P then g h else g' h) = if h : P then f ≫ g h else f ≫ g' h := by aesop
 #align category_theory.comp_dite CategoryTheory.comp_dite
 
-theorem dite_comp {P : Prop} [Decidable P] {X Y Z : C} (f : P → (X ⟶ Y)) (f' : ¬P → (X ⟶ Y)) (g : Y ⟶ Z) :
+theorem dite_comp {P : Prop} [Decidable P]
+    {X Y Z : C} (f : P → (X ⟶ Y)) (f' : ¬P → (X ⟶ Y)) (g : Y ⟶ Z) :
     (if h : P then f h else f' h) ≫ g = if h : P then f h ≫ g else f' h ≫ g := by aesop
 #align category_theory.dite_comp CategoryTheory.dite_comp
 
@@ -333,7 +335,8 @@ end CategoryTheory
 -- Porting note: We hope that this will become less necessary,
 -- as in Lean4 `simp` will automatically enter "`dsimp` mode" when needed with dependent arguments.
 -- Optimistically, we will eventually remove this library note.
-library_note "dsimp, simp"/-- Many proofs in the category theory library use the `dsimp, simp` pattern,
+library_note "dsimp, simp"
+/-- Many proofs in the category theory library use the `dsimp, simp` pattern,
 which typically isn't necessary elsewhere.
 
 One would usually hope that the same effect could be achieved simply with `simp`.
