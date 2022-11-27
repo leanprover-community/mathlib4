@@ -383,7 +383,8 @@ def parseCompAndExpr (e : Expr) : MetaM (Ineq × Expr) := do
   | (``LE.le, #[_, _, e, z]) => if z.zero? then return (Ineq.le, e) else throwNotZero z
   | (``Eq, #[_, e, z]) => if z.zero? then return (Ineq.eq, e) else throwNotZero z
   | _ => throwError "invalid comparison: {e}"
-  where throwNotZero (z : Expr) := throwError "invalid comparison, rhs not zero: {z}"
+  where /-- helper function for error message -/
+  throwNotZero (z : Expr) := throwError "invalid comparison, rhs not zero: {z}"
 
 /--
 `mkSingleCompZeroOf c h` assumes that `h` is a proof of `t R 0`.
