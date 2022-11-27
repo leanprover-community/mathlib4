@@ -30,19 +30,21 @@ open Function
 universe u v w
 
 @[to_additive]
-theorem Group.is_unit {G} [Group G] (g : G) : IsUnit g :=
+theorem Group.IsUnit {G} [Group G] (g : G) : IsUnit g :=
   ⟨⟨g, g⁻¹, mul_inv_self g, inv_mul_self g⟩, rfl⟩
-#align group.is_unit Group.is_unit
+#align group.is_unit Group.IsUnit
 
 section MonoidHomClass
 
 /-- If two homomorphisms from a division monoid to a monoid are equal at a unit `x`, then they are
 equal at `x⁻¹`. -/
 @[to_additive
-      "If two homomorphisms from a subtraction monoid to an additive monoid are equal at an\nadditive unit `x`, then they are equal at `-x`."]
-theorem IsUnit.eq_on_inv {F G N} [DivisionMonoid G] [Monoid N] [MonoidHomClass F G N] {x : G} (hx : IsUnit x) (f g : F)
-    (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
-  left_inv_eq_right_inv (map_mul_eq_one f hx.inv_mul_cancel) <| h.symm ▸ map_mul_eq_one g <| hx.mul_inv_cancel
+  "If two homomorphisms from a subtraction monoid to an additive monoid are equal at an
+  additive unit `x`, then they are equal at `-x`."]
+theorem IsUnit.eq_on_inv {F G N} [DivisionMonoid G] [Monoid N] [MonoidHomClass F G N]
+  {x : G} (hx : IsUnit x) (f g : F) (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
+left_inv_eq_right_inv (map_mul_eq_one f hx.inv_mul_cancel)
+  (h.symm ▸ map_mul_eq_one g (hx.mul_inv_cancel))
 #align is_unit.eq_on_inv IsUnit.eq_on_inv
 
 /-- If two homomorphism from a group to a monoid are equal at `x`, then they are equal at `x⁻¹`. -/
@@ -50,7 +52,7 @@ theorem IsUnit.eq_on_inv {F G N} [DivisionMonoid G] [Monoid N] [MonoidHomClass F
       "If two homomorphism from an additive group to an additive monoid are equal at `x`,\nthen they are equal at `-x`."]
 theorem eq_on_inv {F G M} [Group G] [Monoid M] [MonoidHomClass F G M] (f g : F) {x : G} (h : f x = g x) :
     f x⁻¹ = g x⁻¹ :=
-  (Group.is_unit x).eq_on_inv f g h
+  (Group.IsUnit x).eq_on_inv f g h
 #align eq_on_inv eq_on_inv
 
 end MonoidHomClass
@@ -68,30 +70,27 @@ def map (f : M →* N) : Mˣ →* Nˣ :=
 #align units.map Units.map
 
 @[simp, to_additive]
-theorem coe_map (f : M →* N) (x : Mˣ) : ↑(map f x) = f x :=
-  rfl
+theorem coe_map (f : M →* N) (x : Mˣ) : ↑(map f x) = f x := rfl
 #align units.coe_map Units.coe_map
 
 @[simp, to_additive]
-theorem coe_map_inv (f : M →* N) (u : Mˣ) : ↑(map f u)⁻¹ = f ↑u⁻¹ :=
-  rfl
+theorem coe_map_inv (f : M →* N) (u : Mˣ) : ↑(map f u)⁻¹ = f ↑u⁻¹ := rfl
 #align units.coe_map_inv Units.coe_map_inv
 
 @[simp, to_additive]
-theorem map_comp (f : M →* N) (g : N →* P) : map (g.comp f) = (map g).comp (map f) :=
-  rfl
+theorem map_comp (f : M →* N) (g : N →* P) : map (g.comp f) = (map g).comp (map f) := rfl
 #align units.map_comp Units.map_comp
 
 variable (M)
 
 @[simp, to_additive]
-theorem map_id : map (MonoidHom.id M) = MonoidHom.id Mˣ := by ext <;> rfl
+theorem map_id : map (MonoidHom.id M) = MonoidHom.id Mˣ := by ext; rfl
 #align units.map_id Units.map_id
 
 /-- Coercion `Mˣ → M` as a monoid homomorphism. -/
-@[to_additive "Coercion `add_units M → M` as an add_monoid homomorphism."]
+@[to_additive "Coercion `AddUnits M → M` as an AddMonoid homomorphism."]
 def coeHom : Mˣ →* M :=
-  ⟨coe, coe_one, coe_mul⟩
+  ⟨⟨Units.val, val_one⟩, val_mul⟩
 #align units.coe_hom Units.coeHom
 
 variable {M}
@@ -101,10 +100,16 @@ theorem coe_hom_apply (x : Mˣ) : coeHom M x = ↑x :=
   rfl
 #align units.coe_hom_apply Units.coe_hom_apply
 
-@[simp, norm_cast, to_additive]
-theorem coe_pow (u : Mˣ) (n : ℕ) : ((u ^ n : Mˣ) : M) = u ^ n :=
+-- Porting note: restore `to_additive`
+@[simp, norm_cast]
+theorem coe_pow (u : Mˣ) (n : ℕ) : ((u ^ n : Mˣ) : M) = (u : M) ^ n :=
   (Units.coeHom M).map_pow u n
 #align units.coe_pow Units.coe_pow
+@[simp, norm_cast]
+theorem coe_nsmul {M} [AddMonoid M] (u : AddUnits M) (n : ℕ) :
+  ((u ^ n : AddUnits M) : M) = (u : M) ^ n :=
+  (AddUnits.coeHom M).map_nsmul u n
+#align units.coe_nsmul Units.coe_nsmul
 
 section DivisionMonoid
 
@@ -115,26 +120,34 @@ theorem coe_div : ∀ u₁ u₂ : αˣ, ↑(u₁ / u₂) = (u₁ / u₂ : α) :=
   (Units.coeHom α).map_div
 #align units.coe_div Units.coe_div
 
-@[simp, norm_cast, to_additive]
-theorem coe_zpow : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = u ^ n :=
+-- Porting note: restore `to_additive`
+@[simp, norm_cast]
+theorem coe_zpow : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
   (Units.coeHom α).map_zpow
 #align units.coe_zpow Units.coe_zpow
+@[simp, norm_cast]
+theorem coe_zsmul {α} [SubtractionMonoid α] :
+  ∀ (u : AddUnits α) (n : ℤ), ((n • u : AddUnits α) : α) = n • (u : α) :=
+  (AddUnits.coeHom α).map_zsmul
+#align units.coe_zsmul Units.coe_zsmul
 
 @[field_simps]
-theorem _root_.divp_eq_div (a : α) (u : αˣ) : a /ₚ u = a / u := by rw [div_eq_mul_inv, divp, u.coe_inv]
-#align units._root_.divp_eq_div units._root_.divp_eq_div
+theorem _root_.divp_eq_div (a : α) (u : αˣ) : a /ₚ u = a / u :=
+  by rw [div_eq_mul_inv, divp, u.val_inv_eq_inv_val]
+#align divp_eq_div divp_eq_div
 
 @[simp, to_additive]
 theorem _root_.map_units_inv {F : Type _} [MonoidHomClass F M α] (f : F) (u : Units M) : f ↑u⁻¹ = (f u)⁻¹ :=
   ((f : M →* α).comp (Units.coeHom M)).map_inv u
-#align units._root_.map_units_inv units._root_.map_units_inv
+#align map_units_inv map_units_inv
 
 end DivisionMonoid
 
 /-- If a map `g : M → Nˣ` agrees with a homomorphism `f : M →* N`, then
 this map is a monoid homomorphism too. -/
 @[to_additive
-      "If a map `g : M → add_units N` agrees with a homomorphism `f : M →+ N`, then this map\nis an add_monoid homomorphism too."]
+  "If a map `g : M → add_units N` agrees with a homomorphism `f : M →+ N`, then this map
+  is an add_monoid homomorphism too."]
 def liftRight (f : M →* N) (g : M → Nˣ) (h : ∀ x, ↑(g x) = f x) : M →* Nˣ where
   toFun := g
   map_one' := Units.ext <| (h 1).symm ▸ f.map_one
