@@ -264,7 +264,7 @@ def prodMap {α β γ δ : Type _} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α ×
 theorem coe_prodMap {α β γ δ : Type _} (e₁ : α ↪ β) (e₂ : γ ↪ δ) :
     e₁.prodMap e₂ = Prod.map e₁ e₂ :=
   rfl
-#align function.embedding.coe_prod_map Function.Embedding.coe_prod_map
+#align function.embedding.coe_prod_map Function.Embedding.coe_prodMap
 
 /-- If `e₁` and `e₂` are embeddings, then so is `λ ⟨a, b⟩, ⟨e₁ a, e₂ b⟩ : pprod α γ → pprod β δ`. -/
 def pprodMap {α β γ δ : Sort _} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : PProd α γ ↪ PProd β δ :=
