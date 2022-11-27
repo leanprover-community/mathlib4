@@ -12,14 +12,14 @@ import Mathlib.Order.Lattice
 # Ordered Subtraction
 
 This file proves lemmas relating (truncated) subtraction with an order. We provide a class
-`HasOrderedSub` stating that `a - b ≤ c ↔ a ≤ c + b`.
+`OrderedSub` stating that `a - b ≤ c ↔ a ≤ c + b`.
 
 The subtraction discussed here could both be normal subtraction in an additive group or truncated
 subtraction on a canonically ordered monoid (`ℕ`, `Multiset`, `PartENat`, `ENNReal`, ...)
 
 ## Implementation details
 
-`HasOrderedSub` is a mixin type-class, so that we can use the results in this file even in cases
+`OrderedSub` is a mixin type-class, so that we can use the results in this file even in cases
 where we don't have a `CanonicallyOrderedAddMonoid` instance
 (even though that is our main focus). Conversely, this means we can use
 `CanonicallyOrderedAddMonoid` without necessarily having to define a subtraction.
@@ -44,24 +44,24 @@ TODO: generalize `Nat.le_of_le_of_sub_le_sub_right`, `Nat.sub_le_sub_right_iff`,
 
 variable {α β : Type _}
 
-/-- `HasOrderedSub α` means that `α` has a subtraction characterized by `a - b ≤ c ↔ a ≤ c + b`.
+/-- `OrderedSub α` means that `α` has a subtraction characterized by `a - b ≤ c ↔ a ≤ c + b`.
 In other words, `a - b` is the least `c` such that `a ≤ b + c`.
 
 This is satisfied both by the subtraction in additive ordered groups and by truncated subtraction
 in canonically ordered monoids on many specific types.
 -/
-class HasOrderedSub (α : Type _) [LE α] [Add α] [Sub α] where
+class OrderedSub (α : Type _) [LE α] [Add α] [Sub α] where
   /-- `a - b` provides a lower bound on `c` such that `a ≤ c + b`. -/
   tsub_le_iff_right : ∀ a b c : α, a - b ≤ c ↔ a ≤ c + b
-#align has_ordered_sub HasOrderedSub
+#align has_ordered_sub OrderedSub
 
 section Add
 
-variable [Preorder α] [Add α] [Sub α] [HasOrderedSub α] {a b c d : α}
+variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b c d : α}
 
 @[simp]
 theorem tsub_le_iff_right : a - b ≤ c ↔ a ≤ c + b :=
-  HasOrderedSub.tsub_le_iff_right a b c
+  OrderedSub.tsub_le_iff_right a b c
 #align tsub_le_iff_right tsub_le_iff_right
 
 /-- See `add_tsub_cancel_right` for the equality if `ContravariantClass α α (+) (≤)`. -/
@@ -86,7 +86,7 @@ variable [Preorder α]
 
 section AddCommSemigroup
 
-variable [AddCommSemigroup α] [Sub α] [HasOrderedSub α] {a b c d : α}
+variable [AddCommSemigroup α] [Sub α] [OrderedSub α] {a b c d : α}
 
 theorem tsub_le_iff_left : a - b ≤ c ↔ a ≤ b + c := by rw [tsub_le_iff_right, add_comm]
 #align tsub_le_iff_left tsub_le_iff_left
@@ -241,7 +241,7 @@ end Contra
 
 end AddCommSemigroup
 
-variable [AddCommMonoid α] [Sub α] [HasOrderedSub α] {a b c d : α}
+variable [AddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
 
 theorem tsub_nonpos : a - b ≤ 0 ↔ a ≤ b := by rw [tsub_le_iff_left, add_zero]
 #align tsub_nonpos tsub_nonpos
@@ -253,7 +253,7 @@ end Preorder
 /-! ### Partial order -/
 
 
-variable [PartialOrder α] [AddCommSemigroup α] [Sub α] [HasOrderedSub α] {a b c d : α}
+variable [PartialOrder α] [AddCommSemigroup α] [Sub α] [OrderedSub α] {a b c d : α}
 
 theorem tsub_tsub (b a c : α) : b - a - c = b - (a + c) := by
   apply le_antisymm
@@ -371,7 +371,7 @@ theorem lt_add_of_tsub_lt_right (h : a - c < b) : a < b + c :=
 #align lt_add_of_tsub_lt_right lt_add_of_tsub_lt_right
 
 /-- This lemma (and some of its corollaries) also holds for `ENNReal`, but this proof doesn't work
-for it. Maybe we should add this lemma as field to `HasOrderedSub`? -/
+for it. Maybe we should add this lemma as field to `OrderedSub`? -/
 theorem lt_tsub_of_add_lt_left : a + c < b → c < b - a :=
   Contravariant.AddLECancellable.lt_tsub_of_add_lt_left
 #align lt_tsub_of_add_lt_left lt_tsub_of_add_lt_left
@@ -406,7 +406,7 @@ end OrderedAddCommSemigroup
 
 section LinearOrder
 
-variable {a b c d : α} [LinearOrder α] [AddCommSemigroup α] [Sub α] [HasOrderedSub α]
+variable {a b c d : α} [LinearOrder α] [AddCommSemigroup α] [Sub α] [OrderedSub α]
 
 /-- See `lt_of_tsub_lt_tsub_right_of_le` for a weaker statement in a partial order. -/
 theorem lt_of_tsub_lt_tsub_right (h : a - c < b - c) : a < b :=
@@ -442,7 +442,7 @@ end LinearOrder
 
 section OrderedAddCommMonoid
 
-variable [PartialOrder α] [AddCommMonoid α] [Sub α] [HasOrderedSub α]
+variable [PartialOrder α] [AddCommMonoid α] [Sub α] [OrderedSub α]
 
 @[simp]
 theorem tsub_zero (a : α) : a - 0 = a :=
