@@ -2,6 +2,7 @@
 Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
+Ported by: Scott Morrison
 -/
 import Mathlib.Tactic.Linarith.Lemmas
 import Mathlib.Tactic.Ring
@@ -151,7 +152,6 @@ def toConstMulName : Ineq → Name
 | lt => ``mul_neg
 | le => ``mul_nonpos
 | eq => ``mul_eq
-
 
 instance : ToString Ineq := ⟨toString⟩
 
@@ -356,8 +356,6 @@ def LinarithConfig.updateReducibility (cfg : LinarithConfig) (reduce_default : B
 These functions are used by multiple modules, so we put them here for accessibility.
 -/
 
-open tactic
-
 /--
 `getRelSides e` returns the left and right hand sides of `e` if `e` is a comparison,
 and fails otherwise.
@@ -378,14 +376,14 @@ def getRelSides (e : Expr) : MetaM (Expr × Expr) := do
 `parseCompAndExpr e` checks if `e` is of the form `t < 0`, `t ≤ 0`, or `t = 0`.
 If it is, it returns the comparison along with `t`.
 -/
--- FIXME this isn't checking the RHS is zero.
 def parseCompAndExpr (e : Expr) : MetaM (Ineq × Expr) := do
   let e ← instantiateMVars e
   match e.getAppFnArgs with
-  | (``LT.lt, #[_, _, e, _]) => return (Ineq.lt, e)
-  | (``LE.le, #[_, _, e, _]) => return (Ineq.le, e)
-  | (``Eq, #[_, e, _]) => return (Ineq.eq, e)
+  | (``LT.lt, #[_, _, e, z]) => if z.zero? then return (Ineq.lt, e) else throwNotZero z
+  | (``LE.le, #[_, _, e, z]) => if z.zero? then return (Ineq.le, e) else throwNotZero z
+  | (``Eq, #[_, e, z]) => if z.zero? then return (Ineq.eq, e) else throwNotZero z
   | _ => throwError "invalid comparison: {e}"
+  where throwNotZero (z : Expr) := throwError "invalid comparison, rhs not zero: {z}"
 
 /--
 `mkSingleCompZeroOf c h` assumes that `h` is a proof of `t R 0`.

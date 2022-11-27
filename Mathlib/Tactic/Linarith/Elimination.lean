@@ -2,6 +2,7 @@
 Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
+Ported by: Scott Morrison
 -/
 import Mathlib.Tactic.Linarith.Datatypes
 
@@ -71,7 +72,7 @@ def CompSource.toString : CompSource → String
 | (CompSource.add c1 c2) => CompSource.toString c1 ++ " + " ++ CompSource.toString c2
 | (CompSource.scale n c) => ToString.toString n ++ " * " ++ CompSource.toString c
 
-instance CompSource.ToFormat : ToFormat CompSource :=
+instance : ToFormat CompSource :=
   ⟨fun a => CompSource.toString a⟩
 
 /--
@@ -192,10 +193,10 @@ def PComp.assump (c : Comp) (n : ℕ) : PComp where
   implicit := .empty
   vars := .ofList c.vars _
 
-instance PComp.ToFormat : ToFormat PComp :=
+instance : ToFormat PComp :=
   ⟨fun p => format p.c.coeffs ++ toString p.c.str ++ "0"⟩
 
-instance PComp.ToString : ToString PComp :=
+instance : ToString PComp :=
   ⟨fun p => toString p.c.coeffs ++ toString p.c.str ++ "0"⟩
 
 /-- A collection of comparisons. -/
@@ -209,10 +210,8 @@ def elimVar (c1 c2 : Comp) (a : ℕ) : Option (ℕ × ℕ) :=
   let v1 := c1.coeffOf a
   let v2 := c2.coeffOf a
   if v1 * v2 < 0 then
-    let vlcm :=  Nat.lcm v1.natAbs v2.natAbs
-    let  v1' := vlcm / v1.natAbs
-    let  v2' := vlcm / v2.natAbs
-    some ⟨v1', v2'⟩
+    let vlcm := Nat.lcm v1.natAbs v2.natAbs
+    some ⟨vlcm / v1.natAbs, vlcm / v2.natAbs⟩
   else none
 
 /--
@@ -236,12 +235,7 @@ for every `p' ∈ comps`.
 def elimWithSet (a : ℕ) (p : PComp) (comps : PCompSet) : PCompSet :=
   comps.foldl (fun s pc =>
   match pelimVar p pc a with
-  | some pc => if pc.maybeMinimal a then
-      dbg_trace "adding {pc}"
-      s.insert pc
-    else
-      dbg_trace "rejecting {pc}"
-      s
+  | some pc => if pc.maybeMinimal a then s.insert pc else s
   | none => s) RBSet.empty
 
 /--
@@ -275,7 +269,7 @@ def getPCompSet : LinarithM PCompSet :=
 
 /-- Throws an exception if a contradictory `PComp` is contained in the current state. -/
 def validate : LinarithM Unit := do
-  match (←getPCompSet).toList.find? (fun p : PComp => p.isContr) with
+  match (← getPCompSet).toList.find? (fun p : PComp => p.isContr) with
   | none => return ()
   | some c => throw c
 
@@ -310,11 +304,8 @@ from the `linarith` state.
 def elimVarM (a : ℕ) : LinarithM Unit := do
   let vs ← getMaxVar
   if (a ≤ vs) then (do
-    let ⟨pos, neg, notPresent⟩ ← splitSetByVarSign a <$> getPCompSet
-    let cs' := pos.foldl (fun s p => s.union (elimWithSet a p neg)) notPresent
-    dbg_trace "elimVarM {a}"
-    dbg_trace "{cs'.toList}"
-    update (vs - 1) cs')
+    let ⟨pos, neg, notPresent⟩ := splitSetByVarSign a (← getPCompSet)
+    update (vs - 1) (pos.foldl (fun s p => s.union (elimWithSet a p neg)) notPresent))
   else
     pure ()
 
@@ -323,9 +314,7 @@ def elimVarM (a : ℕ) : LinarithM Unit := do
 ground comparisons. If this succeeds without exception, the original `linarith` state is consistent.
 -/
 def elimAllVarsM : LinarithM Unit := do
-  let mv ← getMaxVar
-  dbg_trace "{(← getPCompSet).toList}"
-  for i in (List.range $ mv + 1).reverse do
+  for i in (List.range ((← getMaxVar) + 1)).reverse do
     elimVarM i
 
 /--

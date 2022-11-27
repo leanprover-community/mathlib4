@@ -8,9 +8,11 @@ import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
 import Mathlib.Util.MapsTo
 
-/-! ## Additional utilities in `Lean.Meta` -/
+/-! ## Additional utilities in `Lean.MVarId` -/
 
-namespace Lean.Meta
+open Lean Meta
+
+namespace Lean.MVarId
 
 /--
 Replace hypothesis `hyp` in goal `g` with `proof : typeNew`.
@@ -18,7 +20,7 @@ The new hypothesis is given the same user name as the original,
 it attempts to avoid reordering hypotheses, and the original is cleared if possible.
 -/
 -- adapted from Lean.Meta.replaceLocalDeclCore
-def _root_.Lean.MVarId.replace (g : MVarId) (hyp : FVarId) (typeNew proof : Expr) :
+def replace (g : MVarId) (hyp : FVarId) (typeNew proof : Expr) :
     MetaM AssertAfterResult :=
   g.withContext do
     let ldecl ← hyp.getDecl
@@ -39,10 +41,9 @@ where
       else
         return e.hasFVar
 
-
 /-- Has the effect of `refine ⟨e₁,e₂,⋯, ?_⟩`.
 -/
-def _root_.Lean.MVarId.existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
+def existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
   es.foldlM (λ mv e => do
       let (subgoals,_) ← Elab.Term.TermElabM.run $ Elab.Tactic.run mv do
         Elab.Tactic.evalTactic (←`(tactic| refine ⟨?_,?_⟩))
@@ -50,3 +51,13 @@ def _root_.Lean.MVarId.existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId :
       sg1.assign e
       pure sg2)
     mvar
+
+end Lean.MVarId
+
+namespace Lean.Elab.Tactic
+
+/-- Analogue of `liftMetaTactic` for tactics that do not return any goals. -/
+def liftMetaFinishingTactic (tac : MVarId → MetaM Unit) : TacticM Unit :=
+  liftMetaTactic fun g => do tac g; pure []
+
+end Lean.Elab.Tactic

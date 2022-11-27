@@ -94,6 +94,12 @@ def toDeclaration! : ConstantInfo → Declaration
 
 end ConstantInfo
 
+open Meta
+
+/-- Same as `mkConst`, but with fresh level metavariables. -/
+def mkConst' (constName : Name) : MetaM Expr := do
+  return mkConst constName (← (← getConstInfo constName).levelParams.mapM fun _ => mkFreshLevelMVar)
+
 namespace Expr
 
 /-! ### Declarations about `Expr` -/
@@ -117,6 +123,13 @@ def natLit! : Expr → Nat
 
 open Meta
 
+/-- Check that an expression contains no metavariables (after instantiation). -/
+-- There is a `TacticM` level version of this, but it's useful to have in `MetaM`.
+def ensureHasNoMVars (e : Expr) : MetaM Unit := do
+  let e ← instantiateMVars e
+  if e.hasExprMVar then
+    throwError "tactic failed, resulting expression contains metavariables{indentExpr e}"
+
 /-- Construct the term of type `α` for a given natural number
 (doing typeclass search for the `OfNat` instance required). -/
 def ofNat (α : Expr) (n : Nat) : MetaM Expr := do
@@ -127,6 +140,30 @@ def ofNat (α : Expr) (n : Nat) : MetaM Expr := do
 def ofInt (α : Expr) : Int → MetaM Expr
 | Int.ofNat n => Expr.ofNat α n
 | Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n+1)]
+
+/--
+  Return `some n` if `e` is one of the following
+  - A nat literal (numeral)
+  - `Nat.zero`
+  - `Nat.succ x` where `isNumeral x`
+  - `OfNat.ofNat _ x _` where `isNumeral x` -/
+partial def numeral? (e : Expr) : Option Nat :=
+  if let some n := e.natLit? then n
+  else
+    let f := e.getAppFn
+    if !f.isConst then none
+    else
+      let fName := f.constName!
+      if fName == ``Nat.succ && e.getAppNumArgs == 1 then (numeral? e.appArg!).map Nat.succ
+      else if fName == ``OfNat.ofNat && e.getAppNumArgs == 3 then numeral? (e.getArg! 1)
+      else if fName == ``Nat.zero && e.getAppNumArgs == 0 then some 0
+      else none
+
+/-- Test if an expression is either `Nat.zero`, or `OfNat.ofNat 0`. -/
+def zero? (e : Expr) : Bool :=
+  match e.numeral? with
+  | some 0 => true
+  | _ => false
 
 /-- Returns a `NameSet` of all constants in an expression starting with a prefix in `pre`. -/
 def listNamesWithPrefixes (pre : NameSet) (e : Expr) : NameSet :=

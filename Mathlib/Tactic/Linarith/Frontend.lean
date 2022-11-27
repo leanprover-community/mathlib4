@@ -2,6 +2,7 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
+Ported by: Scott Morrison
 -/
 import Mathlib.Data.HashMap
 import Mathlib.Tactic.Linarith.Verification
@@ -119,20 +120,6 @@ linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear progra
 open Lean Elab Tactic Meta
 open Std
 
-/-- Analogue of `liftMetaTactic` for tactics that do no return any goals. -/
-def Lean.Elab.Tactic.liftMetaFinishingTactic (tac : MVarId → MetaM Unit) : TacticM Unit :=
-  liftMetaTactic fun g => do tac g; pure []
-
-/-- Same as `mkConst`, but with fresh level metavariables. -/
-def Lean.mkConst' (constName : Name) : MetaM Expr := do
-  return mkConst constName (← (← getConstInfo constName).levelParams.mapM fun _ => mkFreshLevelMVar)
-
-/-- Check that an expression contains no metavariables (after instantiation). -/
--- There is a `TacticM` level version of this, but it's useful to have in `MetaM`.
-def Lean.Expr.ensureHasNoMVars (e : Expr) : MetaM Unit := do
-  let e ← instantiateMVars e
-  if e.hasExprMVar then
-    throwError "tactic failed, resulting expression contains metavariables{indentExpr e}"
 
 namespace Linarith
 
@@ -254,10 +241,8 @@ if it does not succeed at doing this.
 * If `cfg.transparency := semireducible`,
   it will unfold semireducible definitions when trying to match atomic expressions.
 -/
--- This is a finishing tactic, so we return `Unit` instead of `List MVarId`.
-partial def linarith (only_on : Bool) (hyps : List Expr)
-  (cfg : LinarithConfig := {}) (g : MVarId) : MetaM Unit :=
-do
+partial def linarith (only_on : Bool) (hyps : List Expr) (cfg : LinarithConfig := {})
+    (g : MVarId) : MetaM Unit := do
   -- if the target is an equality, we run `linarith` twice, to prove ≤ and ≥.
   if (← g.getType).isEq then do
     trace[linarith] "target is an equality: splitting"
@@ -300,9 +285,7 @@ end Linarith
 
 /-! ### User facing functions -/
 
-open Lean Elab Tactic Meta
-open Parser Tactic
-open Syntax
+open Parser Tactic Syntax
 
 /--
 `linarith` attempts to find a contradiction between hypotheses that are linear (in)equalities.
@@ -311,7 +294,7 @@ Equivalently, it can prove a linear inequality by assuming its negation and prov
 In theory, `linarith` should prove any goal that is true in the theory of linear arithmetic over
 the rationals. While there is some special handling for non-dense orders like `nat` and `int`,
 this tactic is not complete for these theories and will not prove every true goal. It will solve
-goals over arbitrary types that instantiate `linear_ordered_comm_ring`.
+goals over arbitrary types that instantiate `LinearOrderedCommRing`.
 
 An example:
 ```lean
@@ -335,7 +318,7 @@ by linarith
 will fail, because `linarith` will not identify `x` and `id x`. `linarith!` will.
 This can sometimes be expensive.
 
-`linarith {discharger := tac, restrict_type := tp, exfalso := ff}` takes a config object with five
+`linarith (config := { .. })` takes a config object with five
 optional arguments:
 * `discharger` specifies a tactic to be used for reducing an algebraic equation in the
   proof stage. The default is `ring`. Other options include `simp` for basic
