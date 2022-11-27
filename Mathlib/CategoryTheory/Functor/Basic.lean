@@ -36,7 +36,9 @@ See <https://stacks.math.columbia.edu/tag/001B>.
 -/
 structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
     extends Prefunctor C D : Type max v₁ v₂ u₁ u₂ where
+  /-- A functor preserves identity morphisms. -/
   map_id : ∀ X : C, map (𝟙 X) = 𝟙 (obj X) := by aesop_cat
+  /-- A functor preserves composition. -/
   map_comp : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z), map (f ≫ g) = map f ≫ map g := by aesop_cat
 #align category_theory.functor CategoryTheory.Functor
 
@@ -45,6 +47,7 @@ add_decl_doc Functor.toPrefunctor
 
 end
 
+/-- Notation for a functor between categories. -/
 -- A functor is basically a function, so give ⥤ a similar precedence to → (25).
 -- For example, `C × D ⥤ E` should parse as `(C × D) ⥤ E` not `C × (D ⥤ E)`.
 infixr:26 " ⥤ " => Functor -- type as \func
@@ -68,6 +71,7 @@ protected def id : C ⥤ C where
   map f := f
 #align category_theory.functor.id CategoryTheory.Functor.id
 
+/-- Notation for the identity functor on a category. -/
 notation "𝟭" => Functor.id -- Type this as `\sb1`
 
 instance : Inhabited (C ⥤ C) :=
@@ -98,6 +102,7 @@ def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
   map f := G.map (F.map f)
 #align category_theory.functor.comp CategoryTheory.Functor.comp
 
+/-- Notation for composition of functors. -/
 infixr:80 " ⋙ " => comp
 
 @[simp]
@@ -120,14 +125,8 @@ theorem map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
     F.map (if h : P then f h else g h) = if h : P then F.map (f h) else F.map (g h) := by aesop_cat
 #align category_theory.functor.map_dite CategoryTheory.Functor.map_dite
 
--- Porting note: this no longer needs to be `@[simp]`, as `simp` sees through it.
-theorem to_prefunctor_obj (F : C ⥤ D) (X : C) : F.toPrefunctor.obj X = F.obj X := rfl
-#align category_theory.functor.to_prefunctor_obj CategoryTheory.Functor.to_prefunctor_obj
-
--- Porting note: this no longer needs to be `@[simp]`, as `simp` sees through it.
-theorem to_prefunctor_map (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
-    F.toPrefunctor.map f = F.map f := rfl
-#align category_theory.functor.to_prefunctor_map CategoryTheory.Functor.to_prefunctor_map
+-- Porting note: `to_prefunctor_obj` and `to_prefunctor_map` are now tautologies,
+-- so have not been ported.
 
 @[simp]
 theorem to_prefunctor_comp (F : C ⥤ D) (G : D ⥤ E) :
