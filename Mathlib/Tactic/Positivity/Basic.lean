@@ -25,11 +25,11 @@ open Function
 -- TODO: these classes are mostly nonsense stubs which should be replaced by the real things
 -- when the theory files are ready
 
-instance [OrderedSemiring α] : PosMulStrictMono α :=
-  ⟨fun ⟨_, ha⟩ _ _ h => OrderedSemiring.mul_lt_mul_of_pos_left _ _ _ h ha⟩
+instance [OrderedSemiring α] : PosMulMono α :=
+  ⟨fun ⟨_, ha⟩ _ _ h => OrderedSemiring.mul_le_mul_of_nonneg_left _ _ _ h ha⟩
 
-instance [StrictOrderedRing α] : PosMulStrictMono α :=
-  ⟨fun ⟨_, ha⟩ _ _ h => StrictOrderedRing.mul_lt_mul_of_pos_left _ _ _ h ha⟩
+instance [StrictOrderedSemiring α] : PosMulStrictMono α :=
+  ⟨fun ⟨_, ha⟩ _ _ h => StrictOrderedSemiring.mul_lt_mul_of_pos_left _ _ _ h ha⟩
 
 theorem mul_nonneg_of_pos_of_nonneg [OrderedSemiring α] {a b : α}
     (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b :=
@@ -133,14 +133,14 @@ such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity _ * _, Mul.mul _ _] def evalMul : PositivityExt where eval {u α} zα pα e := do
   let .app (.app f (a : Q($α))) (b : Q($α)) ← withReducible (whnf e) | throwError "not *"
   let ra ← core zα pα a; let rb ← core zα pα b
-  let _a ← synthInstanceQ (q(OrderedSemiring $α) : Q(Type u))
+  let _a ← synthInstanceQ (q(StrictOrderedSemiring $α) : Q(Type u))
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HMul.hMul (α := $α))
   -- FIXME: this code is pretty horrible, we should improve Qq or something
   match ra, rb with
   | .positive pa, .positive pb =>
     have pa' : Q(by clear! «$zα» «$pα»; exact 0 < $a) := pa
     have pb' : Q(by clear! «$zα» «$pα»; exact 0 < $b) := pb
-    pure (.positive (by clear! zα pα; exact q(mul_pos $pa' $pb') : Expr))
+    pure (.positive (by clear! zα pα; exact q(@mul_pos $α _ _ _ _ _ $pa' $pb') : Expr))
   | .positive pa, .nonnegative pb =>
     have pa' : Q(by clear! «$zα» «$pα»; exact 0 < $a) := pa
     have pb' : Q(by clear! «$zα» «$pα»; exact 0 ≤ $b) := pb

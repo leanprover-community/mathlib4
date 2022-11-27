@@ -212,7 +212,7 @@ theorem mul_inv_cancel_left₀ (h : a ≠ 0) (b : G₀) : a * (a⁻¹ * b) = b :
 
 -- Porting note: used `simpa` to prove `False` in lean3
 theorem inv_ne_zero (h : a ≠ 0) : a⁻¹ ≠ 0 := fun a_eq_0 => by
-  have := mul_inv_cancel a h
+  have := mul_inv_cancel h
   simp [a_eq_0] at this
 
 @[simp]
@@ -289,7 +289,7 @@ theorem mul_self_mul_inv (a : G₀) : a * a * a⁻¹ = a := by
   by_cases h : a = 0
   · rw [h, inv_zero, mul_zero]
 
-  · rw [mul_assoc, mul_inv_cancel _ h, mul_one]
+  · rw [mul_assoc, mul_inv_cancel h, mul_one]
 
 
 /-- Multiplying `a` by its inverse and then by itself results in `a`
@@ -299,7 +299,7 @@ theorem mul_inv_mul_self (a : G₀) : a * a⁻¹ * a = a := by
   by_cases h : a = 0
   · rw [h, inv_zero, mul_zero]
 
-  · rw [mul_inv_cancel _ h, one_mul]
+  · rw [mul_inv_cancel h, one_mul]
 
 
 /-- Multiplying `a⁻¹` by `a` twice results in `a` (whether or not `a`
@@ -356,7 +356,7 @@ theorem eq_zero_of_one_div_eq_zero {a : G₀} (h : 1 / a = 0) : a = 0 :=
   Classical.byCases (fun ha => ha) fun ha => ((one_div_ne_zero ha) h).elim
 
 theorem mul_left_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => a * g := fun g =>
-  ⟨a⁻¹ * g, by simp [← mul_assoc, mul_inv_cancel _ h]⟩
+  ⟨a⁻¹ * g, by simp [← mul_assoc, mul_inv_cancel h]⟩
 
 theorem mul_right_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => g * a := fun g =>
   ⟨g * a⁻¹, by simp [mul_assoc, inv_mul_cancel h]⟩

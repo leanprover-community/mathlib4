@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Order.Ring
 
 /-!
 # Order instances on the integers
@@ -22,7 +23,20 @@ This file contains:
   induction on numbers less than `b`.
 -/
 
+set_option warningAsError false
+
 namespace Int
+
+instance : LinearOrderedCommRing ℤ where
+  mul_comm := sorry
+  add_le_add_left := sorry
+  zero_le_one := sorry
+  mul_lt_mul_of_pos_left := sorry
+  mul_lt_mul_of_pos_right := sorry
+  le_total := sorry
+  decidable_le := sorry
+  min_def := sorry
+  max_def := sorry
 
 /-- Inductively define a function on `ℤ` by defining it at `b`, for the `succ` of a number greater
 than `b`, and the `pred` of a number less than `b`. -/
