@@ -18,7 +18,7 @@ import Mathlib.Tactic.Basic
 ## Implementation Details
 
 Set of rewrite rules and automation for monads in general and
-`reader_t`, `state_t`, `except_t` and `option_t` in particular.
+`ReaderT`, `StateT`, `ExceptT` and `OptionT` in particular.
 
 The rewrite rules for monads are carefully chosen so that `simp with
 functor_norm` will not introduce monadic vocabulary in a context where
@@ -64,10 +64,10 @@ theorem map_eq_bind_pure_comp (m : Type u → Type v) [Monad m] [LawfulMonad m] 
     f <$> x = x >>= pure ∘ f := (bind_pure_comp f x).symm
 #align map_eq_bind_pure_comp map_eq_bind_pure_comp
 
-/-- run a `state_t` program and discard the final state -/
+/-- run a `StateT` program and discard the final state -/
 def StateT.eval {m : Type u → Type v} [Functor m] {σ α} (cmd : StateT σ m α) (s : σ) : m α :=
   Prod.fst <$> cmd.run s
-#align state_t.eval StateTₓ.eval
+#align state_t.eval StateT.eval
 
 universe u₀ u₁ v₀ v₁
 
@@ -76,11 +76,11 @@ their respective function spaces -/
 def StateT.equiv {m₁ : Type u₀ → Type v₀} {m₂ : Type u₁ → Type v₁} {α₁ σ₁ : Type u₀} {α₂ σ₂ : Type u₁}
     (F : (σ₁ → m₁ (α₁ × σ₁)) ≃ (σ₂ → m₂ (α₂ × σ₂))) : StateT σ₁ m₁ α₁ ≃ StateT σ₂ m₂ α₂ :=
   F
-#align state_t.equiv StateTₓ.equiv
+#align state_t.equiv StateT.equiv
 
 /-- reduce the equivalence between two reader monads to the equivalence between
 their respective function spaces -/
 def ReaderT.equiv {m₁ : Type u₀ → Type v₀} {m₂ : Type u₁ → Type v₁} {α₁ ρ₁ : Type u₀} {α₂ ρ₂ : Type u₁}
     (F : (ρ₁ → m₁ α₁) ≃ (ρ₂ → m₂ α₂)) : ReaderT ρ₁ m₁ α₁ ≃ ReaderT ρ₂ m₂ α₂ :=
   F
-#align reader_t.equiv ReaderTₓ.equiv
+#align reader_t.equiv ReaderT.equiv
