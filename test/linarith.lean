@@ -12,7 +12,8 @@ example : StrictOrderedRing ℤ := LinearOrderedRing.toStrictOrderedRing
 example : StrictOrderedSemiring ℤ := StrictOrderedRing.toStrictOrderedSemiring
 example : OrderedSemiring ℤ := StrictOrderedSemiring.toOrderedSemiring
 example : OrderedAddCommMonoid ℤ := OrderedSemiring.toOrderedAddCommMonoid
-example : CovariantClass ℤ ℤ (Function.swap (·+·)) (·≤·) := OrderedAddCommMonoid.to_covariantClass_right ℤ
+example : CovariantClass ℤ ℤ (Function.swap (·+·)) (·≤·) :=
+  OrderedAddCommMonoid.to_covariantClass_right ℤ
 example : CovariantClass ℤ ℤ (Function.swap (·+·)) (·≤·) := inferInstance
 
 example [LinearOrderedCommRing α] {a b : α} (h : a < b) (w : b < a) : False := by

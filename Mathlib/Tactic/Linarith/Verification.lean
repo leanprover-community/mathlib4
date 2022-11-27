@@ -59,7 +59,7 @@ if n = 1 then e else
 When elaborated, the coefficient will be a native numeral of the same type as `e`.
 -/
 def mulExpr (n : ℕ) (e : Expr) : MetaM Expr := do
-  let ⟨u, α, e⟩ ← inferTypeQ' e
+  let ⟨_, α, e⟩ ← inferTypeQ' e
   let inst : Q(Semiring $α) ← synthInstanceQ q(Semiring $α)
   return mulExpr' n inst e
 
@@ -78,7 +78,7 @@ def addExprs' {α : Q(Type $u)} (_inst : Q(AddMonoid $α)) : List Q($α) → Q($
 def addExprs : List Expr → MetaM Expr
 | [] => return q(0) -- This may not be of the intended type; use with caution.
 | L@(h::_) => do
-  let ⟨u, α, _⟩ ← inferTypeQ' h
+  let ⟨_, α, _⟩ ← inferTypeQ' h
   let inst : Q(AddMonoid $α) ← synthInstanceQ q(AddMonoid $α)
   -- This is not type safe; we just assume all the `Expr`s in the tail have the same type:
   return addExprs' inst L
@@ -100,11 +100,11 @@ def addIneq : Ineq → Ineq → (Name × Ineq)
 | lt, lt => (``Left.add_neg, lt)
 
 /--
-`mkLtZeroProof coeffs pfs` takes a list of proofs of the form `tᵢ Rᵢ 0`,
+`mkLTZeroProof coeffs pfs` takes a list of proofs of the form `tᵢ Rᵢ 0`,
 paired with coefficients `cᵢ`.
 It produces a proof that `∑cᵢ * tᵢ R 0`, where `R` is as strong as possible.
 -/
-def mkLtZeroProof : List (Expr × ℕ) → MetaM Expr
+def mkLTZeroProof : List (Expr × ℕ) → MetaM Expr
 | [] => throwError "no linear hypotheses found"
 | [(h, c)] => do
      let (_, t) ← mkSingleCompZeroOf c h
@@ -221,10 +221,8 @@ def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM
     trace[linarith] m!"The expression\n  {sm}\nshould be both 0 and negative"
     -- we prove that `sm = 0`, typically with `ring`.
     let sm_eq_zero ← proveEqZeroUsing cfg.discharger sm
-    -- trace[linarith] m!"We have proved that it is zero: {sm_eq_zero}"
     -- we also prove that `sm < 0`
-    let sm_lt_zero ← mkLtZeroProof zip
-    -- trace[linarith] m!"We have proved that it is negative: {sm_lt_zero}"
+    let sm_lt_zero ← mkLTZeroProof zip
     -- this is a contradiction.
     let pftp ← inferType sm_lt_zero
     let ⟨_, nep, _⟩ ← g.rewrite pftp sm_eq_zero
