@@ -19,23 +19,22 @@ instances for `Prop` and `fun`.
 
 ## Main declarations
 
-* `has_<top/bot> α`: Typeclasses to declare the `⊤`/`⊥` notation.
-* `order_<top/bot> α`: Order with a top/bottom element.
-* `bounded_order α`: Order with a top and bottom element.
-* `with_<top/bot> α`: Equips `option α` with the order on `α` plus `none` as the top/bottom element.
-* `is_compl x y`: In a bounded lattice, predicate for "`x` is a complement of `y`". Note that in a
+* `Has<Top/Not> α`: Typeclasses to declare the `⊤`/`⊥` notation.
+* `Order<Top/Not> α`: Order with a top/bottom element.
+* `BoundedOrder α`: Order with a top and bottom element.
+* `With<Top/Bot> α`: Equips `Option α` with the order on `α` plus `none` as the top/bottom element.
+* `IsCompl x y`: In a bounded lattice, predicate for "`x` is a complement of `y`". Note that in a
   non distributive lattice, an element can have several complements.
-* `complemented_lattice α`: Typeclass stating that any element of a lattice has a complement.
+* `ComplementedLattice α`: Typeclass stating that any element of a lattice has a complement.
 
 ## Common lattices
 
-* Distributive lattices with a bottom element. Notated by `[distrib_lattice α] [order_bot α]`
-  It captures the properties of `disjoint` that are common to `generalized_boolean_algebra` and
-  `distrib_lattice` when `order_bot`.
-* Bounded and distributive lattice. Notated by `[distrib_lattice α] [bounded_order α]`.
-  Typical examples include `Prop` and `set α`.
+* Distributive lattices with a bottom element. Notated by `[DistribLattice α] [OrderBot α]`
+  It captures the properties of `Disjoint` that are common to `GeneralizedBooleanAlgebra` and
+  `DistribLattice` when `OrderBot`.
+* Bounded and distributive lattice. Notated by `[DistribLattice α] [BoundedOrder α]`.
+  Typical examples include `Prop` and `Det α`.
 -/
-
 
 open Function OrderDual
 
@@ -58,10 +57,8 @@ class HasBot (α : Type u) where
   bot : α
 #align has_bot HasBot
 
--- mathport name: «expr⊤»
 notation "⊤" => HasTop.top
 
--- mathport name: «expr⊥»
 notation "⊥" => HasBot.bot
 
 instance (priority := 100) has_top_nonempty (α : Type u) [HasTop α] : Nonempty α :=
@@ -74,7 +71,7 @@ instance (priority := 100) has_bot_nonempty (α : Type u) [HasBot α] : Nonempty
 
 attribute [match_pattern] HasBot.bot HasTop.top
 
-/-- An order is an `order_top` if it has a greatest element.
+/-- An order is an `OrderTop` if it has a greatest element.
 We state this using a data mixin, holding the value of `⊤` and the greatest element constraint. -/
 class OrderTop (α : Type u) [LE α] extends HasTop α where
   le_top : ∀ a : α, a ≤ ⊤
@@ -82,8 +79,8 @@ class OrderTop (α : Type u) [LE α] extends HasTop α where
 
 section OrderTop
 
-/-- An order is (noncomputably) either an `order_top` or a `no_order_top`. Use as
-`casesI bot_order_or_no_bot_order α`. -/
+/-- An order is (noncomputably) either an `OrderTop` or a `NoTopOrder`. Use as
+`casesI topOrderOrNoTopOrder α`. -/
 noncomputable def topOrderOrNoTopOrder (α : Type _) [LE α] : PSum (OrderTop α) (NoTopOrder α) := by
   by_cases H : ∀ a : α, ∃ b, ¬b ≤ a
   · exact PSum.inr ⟨H⟩
@@ -240,7 +237,7 @@ theorem OrderTop.ext {α} [PartialOrder α] {A B : OrderTop α} : A = B := by
   · apply proof_irrel_heq
 #align order_top.ext OrderTop.ext
 
-/-- An order is an `order_bot` if it has a least element.
+/-- An order is an `OrderBot` if it has a least element.
 We state this using a data mixin, holding the value of `⊥` and the least element constraint. -/
 class OrderBot (α : Type u) [LE α] extends HasBot α where
   bot_le : ∀ a : α, ⊥ ≤ a
@@ -248,8 +245,8 @@ class OrderBot (α : Type u) [LE α] extends HasBot α where
 
 section OrderBot
 
-/-- An order is (noncomputably) either an `order_bot` or a `no_order_bot`. Use as
-`casesI bot_order_or_no_bot_order α`. -/
+/-- An order is (noncomputably) either an `OrderBot` or a `NoBotOrder`. Use as
+`casesI botOrderOrNoBotOrder α`. -/
 noncomputable def botOrderOrNoBotOrder (α : Type _) [LE α] : PSum (OrderBot α) (NoBotOrder α) := by
   by_cases H : ∀ a : α, ∃ b, ¬a ≤ b
   · exact PSum.inr ⟨H⟩
@@ -746,7 +743,7 @@ end Subsingleton
 section lift
 
 -- See note [reducible non-instances]
-/-- Pullback an `order_top`. -/
+/-- Pullback an `OrderTop`. -/
 @[reducible]
 def OrderTop.lift [LE α] [HasTop α] [LE β] [OrderTop β] (f : α → β)
     (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_top : f ⊤ = ⊤) : OrderTop α :=
@@ -758,7 +755,7 @@ def OrderTop.lift [LE α] [HasTop α] [LE β] [OrderTop β] (f : α → β)
 #align order_top.lift OrderTop.lift
 
 -- See note [reducible non-instances]
-/-- Pullback an `order_bot`. -/
+/-- Pullback an `OrderBot`. -/
 @[reducible]
 def OrderBot.lift [LE α] [HasBot α] [LE β] [OrderBot β] (f : α → β)
     (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_bot : f ⊥ = ⊥) : OrderBot α :=
@@ -770,7 +767,7 @@ def OrderBot.lift [LE α] [HasBot α] [LE β] [OrderBot β] (f : α → β)
 #align order_bot.lift OrderBot.lift
 
 -- See note [reducible non-instances]
-/-- Pullback a `bounded_order`. -/
+/-- Pullback a `BoundedOrder`. -/
 @[reducible]
 def BoundedOrder.lift [LE α] [HasTop α] [HasBot α] [LE β] [BoundedOrder β] (f : α → β)
     (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : BoundedOrder α :=
@@ -851,7 +848,7 @@ theorem coe_ne_bot : (a : WithBot α) ≠ (⊥ : WithBot α) :=
   fun.
 #align with_bot.coe_ne_bot WithBot.coe_ne_bot
 
-/-- Recursor for `with_bot` using the preferred forms `⊥` and `↑a`. -/
+/-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
 @[elab_as_elim]
 def recBotCoe {C : WithBot α → Sort _} (h₁ : C ⊥) (h₂ : ∀ a : α, C a) : ∀ n : WithBot α, C n
   | ⊥ => h₁
@@ -870,7 +867,7 @@ theorem recBotCoe_coe {C : WithBot α → Sort _} (d : C ⊥) (f : ∀ a : α, C
   rfl
 #align with_bot.rec_bot_coe_coe WithBot.recBotCoe_coe
 
-/-- Specialization of `option.get_or_else` to values in `WithBot α` that respects API boundaries.
+/-- Specialization of `Option.get_or_else` to values in `WithBot α` that respects API boundaries.
 -/
 def unbot' (d : α) (x : WithBot α) : α :=
   recBotCoe d id x
@@ -892,7 +889,7 @@ theorem coe_eq_coe : (a : WithBot α) = b ↔ a = b :=
   Option.some_inj
 #align with_bot.coe_eq_coe WithBot.coe_eq_coe
 
-/-- Lift a map `f : α → β` to `WithBot α → WithBot β`. Implemented using `option.map`. -/
+/-- Lift a map `f : α → β` to `WithBot α → WithBot β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithBot α → WithBot β :=
   Option.map f
 #align with_bot.map WithBot.map
@@ -1419,7 +1416,7 @@ theorem ofDual_apply_coe (a : αᵒᵈ) : WithTop.ofDual (a : WithTop αᵒᵈ) 
   rfl
 #align with_top.of_dual_apply_coe WithTop.ofDual_apply_coe
 
-/-- Specialization of `option.get_or_else` to values in `WithTop α` that respects API boundaries.
+/-- Specialization of `Option.get_or_else` to values in `WithTop α` that respects API boundaries.
 -/
 def untop' (d : α) (x : WithTop α) : α :=
   recTopCoe d id x
@@ -1440,7 +1437,7 @@ theorem coe_eq_coe : (a : WithTop α) = b ↔ a = b :=
   Option.some_inj
 #align with_top.coe_eq_coe WithTop.coe_eq_coe
 
-/-- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `option.map`. -/
+/-- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithTop α → WithTop β :=
   Option.map f
 #align with_top.map WithTop.map
@@ -2222,7 +2219,7 @@ variable [PartialOrder α] [OrderBot α] {a b c d : α}
   (This generalizes disjoint sets, viewed as members of the subset lattice.)
 
 Note that we define this without reference to `⊓`, as this allows us to talk about orders where
-the infimum is not unique, or where implementing `has_inf` would require additional `decidable`
+the infimum is not unique, or where implementing `hasInf` would require additional `decidable`
 arguments. -/
 def Disjoint (a b : α) : Prop :=
   ∀ ⦃x⦄, x ≤ a → x ≤ b → x ≤ ⊥
@@ -2405,7 +2402,7 @@ variable [PartialOrder α] [OrderTop α] {a b c d : α}
 /-- Two elements of a lattice are codisjoint if their sup is the top element.
 
 Note that we define this without reference to `⊔`, as this allows us to talk about orders where
-the supremum is not unique, or where implement `has_sup` would require additional `decidable`
+the supremum is not unique, or where implement `hasSup` would require additional `decidable`
 arguments. -/
 def Codisjoint (a b : α) : Prop :=
   ∀ ⦃x⦄, a ≤ x → b ≤ x → ⊤ ≤ x
