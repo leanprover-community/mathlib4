@@ -25,42 +25,6 @@ preprocessing steps by adding them to the `LinarithConfig` object. `Linarith.def
 is the main list, and generally none of these should be skipped unless you know what you're doing.
 -/
 
-namespace Lean.Elab.Tactic
-
-@[inline] private def TacticM.runCore (x : TacticM α) (ctx : Context) (s : State) :
-    TermElabM (α × State) :=
-  x ctx |>.run s
-
-@[inline] private def TacticM.runCore' (x : TacticM α) (ctx : Context) (s : State) : TermElabM α :=
-  Prod.fst <$> x.runCore ctx s
-
-/-- Copy of `Lean.Elab.Tactic.run` that can return a value. -/
--- We need this because Lean 4 core only provides `TacticM` functions for building simp contexts,
--- making it quite painful to call `simp` from `MetaM`.
-def run_for (mvarId : MVarId) (x : TacticM α) : TermElabM (Option α × List MVarId) :=
-  mvarId.withContext do
-   let pendingMVarsSaved := (← get).pendingMVars
-   modify fun s => { s with pendingMVars := [] }
-   let aux : TacticM (Option α × List MVarId) :=
-     /- Important: the following `try` does not backtrack the state.
-        This is intentional because we don't want to backtrack the error message
-        when we catch the "abort internal exception"
-        We must define `run` here because we define `MonadExcept` instance for `TacticM` -/
-     try
-       let a ← x
-       pure (a, ← getUnsolvedGoals)
-     catch ex =>
-       if isAbortTacticException ex then
-         pure (none, ← getUnsolvedGoals)
-       else
-         throw ex
-   try
-     aux.runCore' { elaborator := .anonymous } { goals := [mvarId] }
-   finally
-     modify fun s => { s with pendingMVars := pendingMVarsSaved }
-
-  end Lean.Elab.Tactic
-
 namespace Linarith
 
 /-! ### Preprocessing -/
@@ -68,45 +32,37 @@ namespace Linarith
 open Lean Elab Tactic Meta
 open Qq
 
-section splitConjunctions
-
-/-- Implementation of the `splitConjunctions` preprocessor. -/
-partial def splitConjunctions_aux (proof : Expr) : MetaM (List Expr) := do
+/-- Processor thaat recursively replaces `P ∧ Q` hypotheses with the pair `P` and `Q`. -/
+partial def splitConjunctions : Preprocessor :=
+{ name := "split conjunctions",
+  transform := aux }
+  where
+  /-- Implementation of the `splitConjunctions` preprocessor. -/
+  aux (proof : Expr) : MetaM (List Expr) := do
   match (← instantiateMVars (← inferType proof)).getAppFnArgs with
   | (``And, #[_, _]) =>
-    pure ((← splitConjunctions_aux (← mkAppM ``And.left #[proof])) ++
-      (← splitConjunctions_aux (← mkAppM ``And.right #[proof])))
+    pure ((← aux (← mkAppM ``And.left #[proof])) ++
+      (← aux (← mkAppM ``And.right #[proof])))
   | _ => pure [proof]
 
-/-- Processor thaat recursively replaces `P ∧ Q` hypotheses with the pair `P` and `Q`. -/
-def splitConjunctions : Preprocessor :=
-{ name := "split conjunctions",
-  transform := splitConjunctions_aux }
-
-end splitConjunctions
-
-section filterComparisons
-
-/-- Implementation of the `filterComparisons` preprocessor. -/
-partial def filterComparisons_aux (e : Expr) : Bool :=
+/--
+Removes any expressions that are not proofs of inequalities, equalities, or negations thereof.
+-/
+partial def filterComparisons : Preprocessor :=
+  { name := "filter terms that are not proofs of comparisons",
+    transform := fun h => do
+    let tp ← instantiateMVars (← inferType h)
+    if (← isProp tp) && aux tp then return [h]
+    else return [] }
+  where
+  /-- Implementation of the `filterComparisons` preprocessor. -/
+  aux (e : Expr) : Bool :=
   match e.getAppFnArgs with
   | (``Eq, _) | (``LE.le, _) | (``LT.lt, _) | (``GE.ge, _) | (``GT.gt, _) => true
   | (``Not, #[e]) => match e.getAppFnArgs with
     | (``LE.le, _) | (``LT.lt, _) | (``GE.ge, _) | (``GT.gt, _) => true
     | _ => false
   | _ => false
-
-/--
-Removes any expressions that are not proofs of inequalities, equalities, or negations thereof.
--/
-def filterComparisons : Preprocessor :=
-{ name := "filter terms that are not proofs of comparisons",
-  transform := fun h => do
-   let tp ← instantiateMVars (← inferType h)
-   if (← isProp tp) && filterComparisons_aux tp then return [h]
-   else return [] }
-
-end filterComparisons
 
 section removeNegations
 
@@ -182,13 +138,9 @@ mkAppM ``Int.coe_nat_nonneg #[e]
 open Std
 
 /-- Ordering on `Expr`. -/
+-- We only define this so we can use `RBSet Expr`. Perhaps `HashSet` would be more appropriate?
 def Expr.compare (a b : Expr) : Ordering :=
-  if Expr.lt a b then
-    .lt
-  else if a.equal b then
-    .eq
-  else
-    .gt
+  if Expr.lt a b then .lt else if a.equal b then .eq else .gt
 
 /--
 If `h` is an equality or inequality between natural numbers,
@@ -199,14 +151,12 @@ To avoid adding the same nonnegativity facts many times, it is a global preproce
 def natToInt : GlobalBranchingPreprocessor :=
 { name := "move nats to ints",
   transform := fun g l => do
-    -- FIXME in mathlib3 we called `lock_tactic_state` because `zifyProof` had side effects.
-    -- Do we need that here?
     let l ← l.mapM $ fun h => do
       let t ← inferType h
       if (isNatProp t) then
-        let (some (h', t'), _) ← Term.TermElabM.run' (Tactic.run_for g (zifyProof none h t))
+        let (some (h', t'), _) ← Term.TermElabM.run' (run_for g (zifyProof none h t))
           | throwError "zifyProof failed on {h}"
-        if filterComparisons_aux t' then
+        if filterComparisons.aux t' then
           pure h'
         else
           -- `zifyProof` turned our comparison into something that wasn't a comparison
@@ -241,7 +191,6 @@ def isStrictIntComparison (e : Expr) : Bool :=
     | (``GE.ge, #[.const ``Int [], _, _, _]) => true
     | _ => false
   | _ => false
-
 
 /--
 If `pf` is a proof of a strict inequality `(a : ℤ) < b`,
@@ -279,8 +228,15 @@ end strengthenStrictInt
 
 section compWithZero
 
-/-- Implementation of `rearrangeComparison`, after type inference. -/
-partial def rearrangeComparison_aux (proof e : Expr) : MetaM Expr :=
+/--
+`rearrangeComparison e` takes a proof `e` of an equality, inequality, or negation thereof,
+and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
+ -/
+partial def rearrangeComparison (e : Expr) : MetaM Expr := do
+  aux e (← instantiateMVars (← inferType e))
+  where
+  /-- Implementation of `rearrangeComparison`, after type inference. -/
+  aux (proof e : Expr) : MetaM Expr :=
   match e.getAppFnArgs with
   | (``LE.le, #[_, _, a, b]) => match a.getAppFnArgs, b.getAppFnArgs with
     | _, (``OfNat.ofNat, #[_, .lit (.natVal 0), _]) => return proof
@@ -304,18 +260,11 @@ partial def rearrangeComparison_aux (proof e : Expr) : MetaM Expr :=
     | _, _                                          => mkAppM ``sub_nonpos_of_le #[proof]
   | (``Not, #[a]) => do
     let nproof ← flipNegatedComparison proof a
-    rearrangeComparison_aux nproof (← inferType nproof)
-  | a => throwError m!"couldn't rearrange comp {a}"
+    aux nproof (← inferType nproof)
+  | a => throwError m!"couldn't rearrange comparison {a}"
 
 /--
-`rearrangeComparison e` takes a proof `e` of an equality, inequality, or negation thereof,
-and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
- -/
-def rearrangeComparison (e : Expr) : MetaM Expr := do
-  rearrangeComparison_aux e (← instantiateMVars (← inferType e))
-
-/--
-`mk_comp_with_zero h` takes a proof `h` of an equality, inequality, or negation thereof,
+`compWithZero h` takes a proof `h` of an equality, inequality, or negation thereof,
 and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
  -/
 def compWithZero : Preprocessor :=
@@ -449,9 +398,7 @@ Note that a preprocessor may produce multiple or no expressions from each input 
 so the size of the list may change.
 -/
 def preprocess (pps : List GlobalBranchingPreprocessor) (g : MVarId) (l : List Expr) :
-    MetaM (List Branch) := do
-  pps.foldlM (fun ls pp =>
-    List.join <$> (ls.mapM $ fun b => do pp.process b.1 b.2))
-    [(g, l)]
+    MetaM (List Branch) :=
+  pps.foldlM (fun ls pp => do pure (← ls.mapM $ fun b => do pp.process b.1 b.2).join) [(g, l)]
 
 end Linarith
