@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Logic.Nontrivial
+import Mathlib.Tactic.Spread
 
 /-!
 # Semirings and rings

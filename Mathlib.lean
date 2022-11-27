@@ -30,10 +30,14 @@ import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.OrderSynonym
+import Mathlib.Algebra.Ring.Units
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+import Mathlib.Control.Basic
 import Mathlib.Control.EquivFunctor
 import Mathlib.Control.Random
+import Mathlib.Control.SimpSet
 import Mathlib.Control.ULift
 import Mathlib.Control.Writer
 import Mathlib.Data.Array.Basic
@@ -43,9 +47,12 @@ import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Bracket
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
+import Mathlib.Data.Countable.Defs
+import Mathlib.Data.DList.Basic
 import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Fin2
+import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.FunLike.Basic
@@ -79,7 +86,9 @@ import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Quot
+import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Init
+import Mathlib.Data.Rat.Order
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.String.Defs
@@ -146,6 +155,7 @@ import Mathlib.Order.GameAdd
 import Mathlib.Order.Iterate
 import Mathlib.Order.Lattice
 import Mathlib.Order.Max
+import Mathlib.Order.MinMax
 import Mathlib.Order.Monotone
 import Mathlib.Order.RelClasses
 import Mathlib.Order.Synonym
