@@ -6,22 +6,12 @@ Authors: Gabriel Ebner, Siddhartha Gadgil, Jannis Limperg
 import Lean
 import Std.Tactic.RCases
 import Mathlib.Tactic.Cache
+import Aesop.Util.Basic
+-- Porting note: we import `Aesop.Util.Basic` for `HashSet.insertMany`,
+-- which should be moved to `Std`.
 
 open Lean (HashSet)
 open Lean Meta Elab Tactic
-
-namespace Lean.HashSet
-
-/-- Insert many elements into a HashSet. -/
-def insertMany [ForIn Id ρ α] [BEq α] [Hashable α] (s : HashSet α) (as : ρ) :
-    HashSet α := Id.run do
-  let mut s := s
-  for a in as do
-    s := s.insert a
-  return s
-
-end Lean.HashSet
-
 
 namespace Mathlib.Tactic
 
