@@ -33,6 +33,7 @@ import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.OrderSynonym
+import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Units
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.Control.Basic
