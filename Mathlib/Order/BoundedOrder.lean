@@ -112,7 +112,7 @@ variable [Preorder α] [OrderTop α] {a b : α}
 
 @[simp]
 theorem isMax_top : IsMax (⊤ : α) :=
-  isTop_top.is_max
+  isTop_top.isMax
 #align is_max_top isMax_top
 
 @[simp]
@@ -137,7 +137,7 @@ theorem isMax_iff_eq_top : IsMax a ↔ a = ⊤ :=
 
 @[simp]
 theorem isTop_iff_eq_top : IsTop a ↔ a = ⊤ :=
-  ⟨fun h => h.is_max.eq_of_le le_top, fun h _ => h.symm ▸ le_top⟩
+  ⟨fun h => h.isMax.eq_of_le le_top, fun h _ => h.symm ▸ le_top⟩
 #align is_top_iff_eq_top isTop_iff_eq_top
 
 theorem not_isMax_iff_ne_top : ¬IsMax a ↔ a ≠ ⊤ :=
@@ -318,7 +318,7 @@ variable [Preorder α] [OrderBot α] {a b : α}
 
 @[simp]
 theorem isMin_bot : IsMin (⊥ : α) :=
-  isBot_bot.is_min
+  isBot_bot.isMin
 #align is_min_bot isMin_bot
 
 @[simp]
@@ -343,7 +343,7 @@ theorem isMin_iff_eq_bot : IsMin a ↔ a = ⊥ :=
 
 @[simp]
 theorem isBot_iff_eq_bot : IsBot a ↔ a = ⊥ :=
-  ⟨fun h => h.is_min.eq_of_ge bot_le, fun h _ => h.symm ▸ bot_le⟩
+  ⟨fun h => h.isMin.eq_of_ge bot_le, fun h _ => h.symm ▸ bot_le⟩
 #align is_bot_iff_eq_bot isBot_iff_eq_bot
 
 theorem not_isMin_iff_ne_bot : ¬IsMin a ↔ a ≠ ⊥ :=
@@ -590,6 +590,8 @@ theorem sup_Prop_eq : (· ⊔ ·) = (· ∨ ·) :=
 theorem inf_Prop_eq : (· ⊓ ·) = (· ∧ ·) :=
   rfl
 #align inf_Prop_eq inf_Prop_eq
+
+#exit
 
 section Logic
 
@@ -1026,7 +1028,8 @@ theorem bot_lt_coe (a : α) : (⊥ : WithBot α) < a :=
 #align with_bot.bot_lt_coe WithBot.bot_lt_coe
 
 @[simp]
-theorem not_lt_none (a : WithBot α) : ¬@LT.lt (WithBot α) _ a none := fun ⟨_, h, _⟩ => Option.not_mem_none _ h
+theorem not_lt_none (a : WithBot α) : ¬@LT.lt (WithBot α) _ a none :=
+  fun ⟨_, h, _⟩ => Option.not_mem_none _ h
 #align with_bot.not_lt_none WithBot.not_lt_none
 
 theorem lt_iff_exists_coe : ∀ {a b : WithBot α}, a < b ↔ ∃ p : α, b = p ∧ a < p
@@ -1220,8 +1223,10 @@ theorem coe_max [LinearOrder α] (x y : α) : ((max x y : α) : WithBot α) = ma
   rfl
 #align with_bot.coe_max WithBot.coe_max
 
-theorem well_founded_lt [Preorder α] (h : @WellFounded α (· < ·)) : @WellFounded (WithBot α) (· < ·) :=
-  have acc_bot : Acc ((· < ·) : WithBot α → WithBot α → Prop) ⊥ := Acc.intro _ fun a ha => (not_le_of_gt ha bot_le).elim
+theorem well_founded_lt [Preorder α] (h : @WellFounded α (· < ·)) :
+    @WellFounded (WithBot α) (· < ·) :=
+  have acc_bot : Acc ((· < ·) : WithBot α → WithBot α → Prop) ⊥ :=
+    Acc.intro _ fun a ha => (not_le_of_gt ha bot_le).elim
   ⟨fun a =>
     Option.recOn a acc_bot fun a =>
       Acc.intro _ fun b =>
@@ -1229,11 +1234,13 @@ theorem well_founded_lt [Preorder α] (h : @WellFounded α (· < ·)) : @WellFou
           WellFounded.induction h b
             (show
               ∀ b : α,
-                (∀ c, c < b → (c : WithBot α) < a → Acc ((· < ·) : WithBot α → WithBot α → Prop) c) →
+                (∀ c, c < b → (c : WithBot α) < a →
+                  Acc ((· < ·) : WithBot α → WithBot α → Prop) c) →
                   (b : WithBot α) < a → Acc ((· < ·) : WithBot α → WithBot α → Prop) b
               from fun b ih hba =>
               Acc.intro _ fun c =>
-                Option.recOn c (fun _ => acc_bot) fun c hc => ih _ (some_lt_some.1 hc) (lt_trans hc hba))⟩
+                Option.recOn c (fun _ => acc_bot) fun c hc => ih _ (some_lt_some.1 hc)
+                  (lt_trans hc hba))⟩
 #align with_bot.well_founded_lt WithBot.well_founded_lt
 
 instance [LT α] [DenselyOrdered α] [NoMinOrder α] : DenselyOrdered (WithBot α) :=
@@ -1949,11 +1956,14 @@ theorem well_founded_lt [Preorder α] (h : @WellFounded α (· < ·)) :
     Acc.intro _
       (WellFounded.induction h a
         (show
-          ∀ b, (∀ c, c < b → ∀ d : WithTop α, d < some c → Acc (· < ·) d) → ∀ y : WithTop α, y < some b → Acc (· < ·) y
+          ∀ b, (∀ c, c < b → ∀ d : WithTop α, d < some c → Acc (· < ·) d) →
+            ∀ y : WithTop α, y < some b → Acc (· < ·) y
           from fun b ih c =>
-          Option.recOn c (fun hc => (not_lt_of_ge le_top hc).elim) fun c hc => Acc.intro _ (ih _ (some_lt_some.1 hc))))
+          Option.recOn c (fun hc => (not_lt_of_ge le_top hc).elim) fun c hc =>
+            Acc.intro _ (ih _ (some_lt_some.1 hc))))
   ⟨fun a =>
-    Option.recOn a (Acc.intro _ fun y => Option.recOn y (fun h => (lt_irrefl _ h).elim) fun _ _ => acc_some _) acc_some⟩
+    Option.recOn a (Acc.intro _ fun y => Option.recOn y
+      (fun h => (lt_irrefl _ h).elim) fun _ _ => acc_some _) acc_some⟩
 #align with_top.well_founded_lt WithTop.well_founded_lt
 
 theorem well_founded_gt [Preorder α] (h : @WellFounded α (· > ·)) :
@@ -2763,7 +2773,8 @@ protected theorem disjoint_iff [OrderBot α] [OrderBot β] {x y : α × β} :
     Disjoint x y ↔ Disjoint x.1 y.1 ∧ Disjoint x.2 y.2 := by
   constructor
   · intro h
-    refine' ⟨fun a hx hy => (@h (a, ⊥) ⟨hx, _⟩ ⟨hy, _⟩).1, fun b hx hy => (@h (⊥, b) ⟨_, hx⟩ ⟨_, hy⟩).2⟩
+    refine' ⟨fun a hx hy => (@h (a, ⊥) ⟨hx, _⟩ ⟨hy, _⟩).1,
+      fun b hx hy => (@h (⊥, b) ⟨_, hx⟩ ⟨_, hy⟩).2⟩
     all_goals exact bot_le
 
   · rintro ⟨ha, hb⟩ z hza hzb
@@ -2791,7 +2802,8 @@ theorem disjoint_iff [∀ i, OrderBot (α' i)] {f g : ∀ i, α' i} :
     Disjoint f g ↔ ∀ i, Disjoint (f i) (g i) := by
   constructor
   · intro h i x hf hg
-    refine' (update_le_iff.mp <| h (update_le_iff.mpr ⟨hf, fun _ _ => _⟩) (update_le_iff.mpr ⟨hg, fun _ _ => _⟩)).1
+    refine' (update_le_iff.mp <| h (update_le_iff.mpr ⟨hf, fun _ _ => _⟩)
+      (update_le_iff.mpr ⟨hg, fun _ _ => _⟩)).1
     · exact ⊥
 
     · exact bot_le
