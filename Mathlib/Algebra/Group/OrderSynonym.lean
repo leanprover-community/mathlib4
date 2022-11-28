@@ -40,12 +40,12 @@ instance OrderDual.SMul' [h : SMul α β] : SMul αᵒᵈ β := h
 #align order_dual.has_smul' OrderDual.SMul'
 
 @[to_additive OrderDual.SMul]
-instance OrderDual.hasPow [h : Pow α β] : Pow αᵒᵈ β := h
-#align order_dual.has_pow OrderDual.hasPow
+protected instance OrderDual.Pow [h : Pow α β] : Pow αᵒᵈ β := h
+#align order_dual.has_pow OrderDual.Pow
 
 @[to_additive OrderDual.SMul']
-instance OrderDual.hasPow' [h : Pow α β] : Pow α βᵒᵈ := h
-#align order_dual.has_pow' OrderDual.hasPow'
+instance OrderDual.Pow' [h : Pow α β] : Pow α βᵒᵈ := h
+#align order_dual.has_pow' OrderDual.Pow'
 
 @[to_additive]
 instance [h : Semigroup α] : Semigroup αᵒᵈ := h
@@ -185,12 +185,12 @@ instance Lex.SMul' [h : SMul α β] : SMul (Lex α) β := h
 #align lex.has_smul' Lex.SMul'
 
 @[to_additive Lex.SMul]
-instance Lex.hasPow [h : Pow α β] : Pow (Lex α) β := h
-#align lex.has_pow Lex.hasPow
+protected instance Lex.Pow [h : Pow α β] : Pow (Lex α) β := h
+#align lex.has_pow Lex.Pow
 
 @[to_additive Lex.SMul']
-instance Lex.hasPow' [h : Pow α β] : Pow α (Lex β) := h
-#align lex.has_pow' Lex.hasPow'
+instance Lex.Pow' [h : Pow α β] : Pow α (Lex β) := h
+#align lex.has_pow' Lex.Pow'
 
 @[to_additive]
 instance [h : Semigroup α] : Semigroup (Lex α) := h

@@ -113,7 +113,7 @@ end Abbreviations
 
 variable {α} {a b c d : α}
 
-section HasMulZero
+section MulZero
 
 variable [Mul α] [Zero α]
 
@@ -283,7 +283,7 @@ theorem mul_pos_mono_iff_mul_pos_reflect_lt : MulPosMono α ↔ MulPosReflectLT 
 
 end LinearOrder
 
-end HasMulZero
+end MulZero
 
 section MulZeroClass
 
