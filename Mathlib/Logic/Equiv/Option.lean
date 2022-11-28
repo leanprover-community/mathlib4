@@ -55,10 +55,10 @@ theorem optionCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
 
 /-- When `α` and `β` are in the same universe, this is the same as the result of
 `EquivFunctor.map_equiv`. -/
-theorem optionCongr_eq_equivFunction_mapEquiv {α β : Type _} (e : α ≃ β) :
+theorem optionCongr_eq_equivFunctor_mapEquiv {α β : Type _} (e : α ≃ β) :
     optionCongr e = EquivFunctor.mapEquiv Option e :=
   rfl
-#align equiv.option_congr_eq_equiv_function_map_equiv Equiv.optionCongr_eq_equivFunction_mapEquiv
+#align equiv.option_congr_eq_equiv_function_map_equiv Equiv.optionCongr_eq_equivFunctor_mapEquiv
 
 end OptionCongr
 
