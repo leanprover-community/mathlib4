@@ -230,8 +230,8 @@ theorem OrderTop.ext_top {α} {hA : PartialOrder α} (A : OrderTop α) {hB : Par
 #align order_top.ext_top OrderTop.ext_top
 
 theorem OrderTop.ext {α} [PartialOrder α] {A B : OrderTop α} : A = B := by
-  cases' A with _ ha
-  cases' B with _ hb
+  rcases A with ⟨ha⟩
+  rcases B with ⟨hb⟩
   congr
   · ext
     exact le_antisymm (hb _) (ha _)
@@ -440,8 +440,8 @@ theorem OrderBot.ext_bot {α} {hA : PartialOrder α} (A : OrderBot α) {hB : Par
 #align order_bot.ext_bot OrderBot.ext_bot
 
 theorem OrderBot.ext {α} [PartialOrder α] {A B : OrderBot α} : A = B := by
-  cases' A with a ha
-  cases' B with b hb
+  rcases A with ⟨ha⟩
+  rcases B with ⟨hb⟩
   congr
   · ext
     exact le_antisymm (ha _) (hb _)
