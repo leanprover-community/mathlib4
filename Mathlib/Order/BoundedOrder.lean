@@ -44,17 +44,21 @@ variable {α : Type u} {β : Type v} {γ δ : Type _}
 /-- Typeclass for the `⊤` (`\top`) notation -/
 @[notation_class, ext]
 class HasTop (α : Type u) where
+  /-- The top (`⊤`, `\top`) element -/
   top : α
 #align has_top HasTop
 
 /-- Typeclass for the `⊥` (`\bot`) notation -/
 @[notation_class, ext]
 class HasBot (α : Type u) where
+  /-- The bot (`⊥`, `\bot`) element -/
   bot : α
 #align has_bot HasBot
 
+/-- The top (`⊤`, `\top`) element -/
 notation "⊤" => HasTop.top
 
+/-- The bot (`⊥`, `\bot`) element -/
 notation "⊥" => HasBot.bot
 
 instance (priority := 100) has_top_nonempty (α : Type u) [HasTop α] : Nonempty α :=
@@ -70,6 +74,7 @@ attribute [match_pattern] HasBot.bot HasTop.top
 /-- An order is an `OrderTop` if it has a greatest element.
 We state this using a data mixin, holding the value of `⊤` and the greatest element constraint. -/
 class OrderTop (α : Type u) [LE α] extends HasTop α where
+  /-- `⊤` is the greatest element -/
   le_top : ∀ a : α, a ≤ ⊤
 #align order_top OrderTop
 
@@ -236,6 +241,7 @@ theorem OrderTop.ext {α} [PartialOrder α] {A B : OrderTop α} : A = B := by
 /-- An order is an `OrderBot` if it has a least element.
 We state this using a data mixin, holding the value of `⊥` and the least element constraint. -/
 class OrderBot (α : Type u) [LE α] extends HasBot α where
+  /-- `⊥` is the least element -/
   bot_le : ∀ a : α, ⊥ ≤ a
 #align order_bot OrderBot
 
@@ -446,12 +452,12 @@ section SemilatticeSupTop
 
 variable [SemilatticeSup α] [OrderTop α] {a : α}
 
-@[simp]
+-- Porting note: Not simp because simp can prove it
 theorem top_sup_eq : ⊤ ⊔ a = ⊤ :=
   sup_of_le_left le_top
 #align top_sup_eq top_sup_eq
 
-@[simp]
+-- Porting note: Not simp because simp can prove it
 theorem sup_top_eq : a ⊔ ⊤ = ⊤ :=
   sup_of_le_right le_top
 #align sup_top_eq sup_top_eq
@@ -462,12 +468,12 @@ section SemilatticeSupBot
 
 variable [SemilatticeSup α] [OrderBot α] {a b : α}
 
-@[simp]
+-- Porting note: Not simp because simp can prove it
 theorem bot_sup_eq : ⊥ ⊔ a = a :=
   sup_of_le_right bot_le
 #align bot_sup_eq bot_sup_eq
 
-@[simp]
+-- Porting note: Not simp because simp can prove it
 theorem sup_bot_eq : a ⊔ ⊥ = a :=
   sup_of_le_left bot_le
 #align sup_bot_eq sup_bot_eq
@@ -482,12 +488,12 @@ section SemilatticeInfTop
 
 variable [SemilatticeInf α] [OrderTop α] {a b : α}
 
-@[simp]
+-- Porting note: Not simp because simp can prove it
 theorem top_inf_eq : ⊤ ⊓ a = a :=
   inf_of_le_right le_top
 #align top_inf_eq top_inf_eq
 
-@[simp]
+-- Porting note: Not simp because simp can prove it
 theorem inf_top_eq : a ⊓ ⊤ = a :=
   inf_of_le_left le_top
 #align inf_top_eq inf_top_eq
@@ -503,12 +509,12 @@ section SemilatticeInfBot
 
 variable [SemilatticeInf α] [OrderBot α] {a : α}
 
-@[simp]
+-- Porting note: Not simp because simp can prove it
 theorem bot_inf_eq : ⊥ ⊓ a = ⊥ :=
   inf_of_le_left bot_le
 #align bot_inf_eq bot_inf_eq
 
-@[simp]
+-- Porting note: Not simp because simp can prove it
 theorem inf_bot_eq : a ⊓ ⊥ = ⊥ :=
   inf_of_le_right bot_le
 #align inf_bot_eq inf_bot_eq
