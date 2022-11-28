@@ -476,8 +476,10 @@ This is used to implement `@[to_additive]`.
 -/
 def transformDecl (ref : Option Syntax) (src tgt : Name) : CoreM Unit := do
   transformDeclAux ref src tgt src
-  let srcEqns? ← MetaM.run' (getEqnsFor? src)
-  let tgtEqns? ← MetaM.run' (getEqnsFor? src)
+  /- We need to generate all equation lemmas for `src`, otherwise they will be generated later
+  when doing a `rw`, but not for `tgt`. -/
+  let srcEqns? ← MetaM.run' (getEqnsFor? src true)
+  let tgtEqns? ← MetaM.run' (getEqnsFor? tgt true)
   -- now transform all of the equational lemmas
   match srcEqns?, tgtEqns? with
   | some srcEqns, some tgtEqns =>
