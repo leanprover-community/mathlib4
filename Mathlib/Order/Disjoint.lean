@@ -8,15 +8,15 @@ import Mathlib.Order.BoundedOrder
 /-!
 # Disjointness and complements
 
-This file defines `disjoint`, `codisjoint`, and the `is_compl` predicate.
+This file defines `Disjoint`, `Codisjoint`, and the `IsCompl` predicate.
 
 ## Main declarations
 
-* `disjoint x y`: two elements of a lattice are disjoint if their `inf` is the bottom element.
-* `codisjoint x y`: two elements of a lattice are codisjoint if their `join` is the top element.
-* `is_compl x y`: In a bounded lattice, predicate for "`x` is a complement of `y`". Note that in a
+* `Disjoint x y`: two elements of a lattice are disjoint if their `inf` is the bottom element.
+* `Codisjoint x y`: two elements of a lattice are codisjoint if their `join` is the top element.
+* `IsCompl x y`: In a bounded lattice, predicate for "`x` is a complement of `y`". Note that in a
   non distributive lattice, an element can have several complements.
-* `complemented_lattice α`: Typeclass stating that any element of a lattice has a complement.
+* `ComplementedLattice α`: Typeclass stating that any element of a lattice has a complement.
 
 -/
 
@@ -74,8 +74,8 @@ theorem Disjoint.mono_right : b ≤ c → Disjoint a c → Disjoint a b :=
 theorem disjoint_self : Disjoint a a ↔ a = ⊥ :=
   ⟨fun hd ↦ bot_unique <| hd le_rfl le_rfl, fun h _ ha _ ↦ ha.trans_eq h⟩
 
-/- TODO: Rename `disjoint.eq_bot` to `disjoint.inf_eq` and `disjoint.eq_bot_of_self` to
-`disjoint.eq_bot` -/
+/- TODO: Rename `Disjoint.eq_bot` to `Disjoint.inf_eq` and `Disjoint.eq_bot_of_self` to
+`Disjoint.eq_bot` -/
 alias disjoint_self ↔ Disjoint.eq_bot_of_self _
 
 theorem Disjoint.ne (ha : a ≠ ⊥) (hab : Disjoint a b) : a ≠ b :=
@@ -248,8 +248,8 @@ theorem Codisjoint.mono_right : b ≤ c → Codisjoint a b → Codisjoint a c :=
 theorem codisjoint_self : Codisjoint a a ↔ a = ⊤ :=
   ⟨fun hd ↦ top_unique <| hd le_rfl le_rfl, fun h _ ha _ ↦ h.symm.trans_le ha⟩
 
-/- TODO: Rename `codisjoint.eq_top` to `codisjoint.sup_eq` and `codisjoint.eq_top_of_self` to
-`codisjoint.eq_top` -/
+/- TODO: Rename `Codisjoint.eq_top` to `Codisjoint.sup_eq` and `Codisjoint.eq_top_of_self` to
+`Codisjoint.eq_top` -/
 alias codisjoint_self ↔ Codisjoint.eq_top_of_self _
 
 theorem Codisjoint.ne (ha : a ≠ ⊤) (hab : Codisjoint a b) : a ≠ b :=
@@ -423,7 +423,9 @@ section IsCompl
 
 /-- Two elements `x` and `y` are complements of each other if `x ⊔ y = ⊤` and `x ⊓ y = ⊥`. -/
 structure IsCompl [PartialOrder α] [BoundedOrder α] (x y : α) : Prop where
+  /-- If `x` and `y` are to be complementary in an order, they should be disjoint. -/
   protected Disjoint : Disjoint x y
+  /-- If `x` and `y` are to be complementary in an order, they should be codisjoint. -/
   protected Codisjoint : Codisjoint x y
 #align is_compl IsCompl
 
@@ -613,6 +615,7 @@ end
 /-- A complemented bounded lattice is one where every element has a (not necessarily unique)
 complement. -/
 class ComplementedLattice (α) [Lattice α] [BoundedOrder α] : Prop where
+  /-- In a `ComplementedLattice`, every element admits a complement. -/
   exists_is_compl : ∀ a : α, ∃ b : α, IsCompl a b
 #align complemented_lattice ComplementedLattice
 
