@@ -3,19 +3,19 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathbin.Algebra.Ring.Semiconj
-import Mathbin.Algebra.Ring.Units
-import Mathbin.Algebra.Group.Commute
+import Mathlib.Algebra.Ring.Semiconj
+import Mathlib.Algebra.Ring.Units
+import Mathlib.Algebra.Group.Commute
 
 /-!
 # Semirings and rings
 
 This file gives lemmas about semirings, rings and domains.
-This is analogous to `algebra.group.basic`,
+This is analogous to `Mathlib.Algebra.Group.Basic`,
 the difference being that the former is about `+` and `*` separately, while
 the present file is about their interaction.
 
-For the definitions of semirings and rings see `algebra.ring.defs`.
+For the definitions of semirings and rings see `Mathlib.Algebra.Ring.Defs`.
 
 -/
 
@@ -37,7 +37,8 @@ Case conversion may be inaccurate. Consider using '#align commute.add_right Comm
 @[simp]
 theorem add_right [Distrib R] {a b c : R} : Commute a b → Commute a c → Commute a (b + c) :=
   SemiconjBy.add_right
-#align commute.add_right Commute.add_right
+#align commute.add_right Commute.add_rightₓ
+-- for some reason mathport expected `Semiring` instead of `Distrib`?
 
 /- warning: commute.add_left -> Commute.add_left is a dubious translation:
 lean 3 declaration is
@@ -48,36 +49,49 @@ Case conversion may be inaccurate. Consider using '#align commute.add_left Commu
 @[simp]
 theorem add_left [Distrib R] {a b c : R} : Commute a c → Commute b c → Commute (a + b) c :=
   SemiconjBy.add_left
-#align commute.add_left Commute.add_left
+#align commute.add_left Commute.add_leftₓ
+-- for some reason mathport expected `Semiring` instead of `Distrib`?
 
+section deprecated
+set_option linter.deprecated false
+
+@[deprecated]
 theorem bit0_right [Distrib R] {x y : R} (h : Commute x y) : Commute x (bit0 y) :=
   h.add_right h
 #align commute.bit0_right Commute.bit0_right
 
+@[deprecated]
 theorem bit0_left [Distrib R] {x y : R} (h : Commute x y) : Commute (bit0 x) y :=
   h.add_left h
 #align commute.bit0_left Commute.bit0_left
 
+@[deprecated]
 theorem bit1_right [NonAssocSemiring R] {x y : R} (h : Commute x y) : Commute x (bit1 y) :=
   h.bit0_right.add_right (Commute.one_right x)
 #align commute.bit1_right Commute.bit1_right
 
+@[deprecated]
 theorem bit1_left [NonAssocSemiring R] {x y : R} (h : Commute x y) : Commute (bit1 x) y :=
   h.bit0_left.add_left (Commute.one_left y)
 #align commute.bit1_left Commute.bit1_left
 
+end deprecated
+
 /-- Representation of a difference of two squares of commuting elements as a product. -/
 theorem mul_self_sub_mul_self_eq [NonUnitalNonAssocRing R] {a b : R} (h : Commute a b) :
-    a * a - b * b = (a + b) * (a - b) := by rw [add_mul, mul_sub, mul_sub, h.eq, sub_add_sub_cancel]
+    a * a - b * b = (a + b) * (a - b) := by
+  rw [add_mul, mul_sub, mul_sub, h.eq, sub_add_sub_cancel]
 #align commute.mul_self_sub_mul_self_eq Commute.mul_self_sub_mul_self_eq
 
 theorem mul_self_sub_mul_self_eq' [NonUnitalNonAssocRing R] {a b : R} (h : Commute a b) :
-    a * a - b * b = (a - b) * (a + b) := by rw [mul_add, sub_mul, sub_mul, h.eq, sub_add_sub_cancel]
+    a * a - b * b = (a - b) * (a + b) := by
+  rw [mul_add, sub_mul, sub_mul, h.eq, sub_add_sub_cancel]
 #align commute.mul_self_sub_mul_self_eq' Commute.mul_self_sub_mul_self_eq'
 
-theorem mul_self_eq_mul_self_iff [NonUnitalNonAssocRing R] [NoZeroDivisors R] {a b : R} (h : Commute a b) :
-    a * a = b * b ↔ a = b ∨ a = -b := by
-  rw [← sub_eq_zero, h.mul_self_sub_mul_self_eq, mul_eq_zero, or_comm', sub_eq_zero, add_eq_zero_iff_eq_neg]
+theorem mul_self_eq_mul_self_iff [NonUnitalNonAssocRing R] [NoZeroDivisors R] {a b : R}
+    (h : Commute a b) : a * a = b * b ↔ a = b ∨ a = -b := by
+  rw [← sub_eq_zero, h.mul_self_sub_mul_self_eq, mul_eq_zero, or_comm, sub_eq_zero,
+    add_eq_zero_iff_eq_neg]
 #align commute.mul_self_eq_mul_self_iff Commute.mul_self_eq_mul_self_iff
 
 section
@@ -147,11 +161,13 @@ theorem mul_self_sub_one [NonAssocRing R] (a : R) : a * a - 1 = (a + 1) * (a - 1
   rw [← (Commute.one_right a).mul_self_sub_mul_self_eq, mul_one]
 #align mul_self_sub_one mul_self_sub_one
 
-theorem mul_self_eq_mul_self_iff [CommRing R] [NoZeroDivisors R] {a b : R} : a * a = b * b ↔ a = b ∨ a = -b :=
+theorem mul_self_eq_mul_self_iff [CommRing R] [NoZeroDivisors R] {a b : R} :
+    a * a = b * b ↔ a = b ∨ a = -b :=
   (Commute.all a b).mul_self_eq_mul_self_iff
 #align mul_self_eq_mul_self_iff mul_self_eq_mul_self_iff
 
-theorem mul_self_eq_one_iff [NonAssocRing R] [NoZeroDivisors R] {a : R} : a * a = 1 ↔ a = 1 ∨ a = -1 := by
+theorem mul_self_eq_one_iff [NonAssocRing R] [NoZeroDivisors R] {a : R} :
+    a * a = 1 ↔ a = 1 ∨ a = -1 := by
   rw [← (Commute.one_right a).mul_self_eq_mul_self_iff, mul_one]
 #align mul_self_eq_one_iff mul_self_eq_one_iff
 
@@ -167,4 +183,3 @@ theorem inv_eq_self_iff [Ring R] [NoZeroDivisors R] (u : Rˣ) : u⁻¹ = u ↔ u
 #align units.inv_eq_self_iff Units.inv_eq_self_iff
 
 end Units
-
