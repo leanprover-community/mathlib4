@@ -378,11 +378,13 @@ end Codisjoint
 
 open OrderDual
 
-theorem Disjoint.dual [SemilatticeInf α] [OrderBot α] {a b : α} : Disjoint a b → Codisjoint (toDual a) (toDual b) :=
+theorem Disjoint.dual [SemilatticeInf α] [OrderBot α] {a b : α} :
+    Disjoint a b → Codisjoint (toDual a) (toDual b) :=
   id
 #align disjoint.dual Disjoint.dual
 
-theorem Codisjoint.dual [SemilatticeSup α] [OrderTop α] {a b : α} : Codisjoint a b → Disjoint (toDual a) (toDual b) :=
+theorem Codisjoint.dual [SemilatticeSup α] [OrderTop α] {a b : α} :
+    Codisjoint a b → Disjoint (toDual a) (toDual b) :=
   id
 #align codisjoint.dual Codisjoint.dual
 
@@ -554,7 +556,8 @@ protected theorem disjoint_iff [OrderBot α] [OrderBot β] {x y : α × β} :
     Disjoint x y ↔ Disjoint x.1 y.1 ∧ Disjoint x.2 y.2 := by
   constructor
   · intro h
-    refine' ⟨fun a hx hy ↦ (@h (a, ⊥) ⟨hx, _⟩ ⟨hy, _⟩).1, fun b hx hy ↦ (@h (⊥, b) ⟨_, hx⟩ ⟨_, hy⟩).2⟩
+    refine' ⟨fun a hx hy ↦ (@h (a, ⊥) ⟨hx, _⟩ ⟨hy, _⟩).1,
+      fun b hx hy ↦ (@h (⊥, b) ⟨_, hx⟩ ⟨_, hy⟩).2⟩
     all_goals exact bot_le
 
   · rintro ⟨ha, hb⟩ z hza hzb
