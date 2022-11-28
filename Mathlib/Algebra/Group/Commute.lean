@@ -275,7 +275,7 @@ theorem isUnit_mul_iff (h : Commute a b) : IsUnit (a * b) ↔ IsUnit a ∧ IsUni
 
 @[simp, to_additive]
 theorem _root_.isUnit_mul_self_iff : IsUnit (a * a) ↔ IsUnit a :=
-  (Commute.refl a).isUnit_mul_iff.trans and_self_iff
+  (Commute.refl a).isUnit_mul_iff.trans (and_self_iff _)
   -- porting note: `and_self_iff` now has an implicit argument instead of an explicit one.
 #align is_unit_mul_self_iff isUnit_mul_self_iff
 #align is_add_unit_add_self_iff isAddUnit_add_self_iff
