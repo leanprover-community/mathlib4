@@ -179,6 +179,10 @@ theorem ne_iff {f g : F} : f ≠ g ↔ ∃ a, f a ≠ g a :=
 theorem exists_ne {f g : F} (h : f ≠ g) : ∃ x, f x ≠ g x :=
   ne_iff.mp h
 
+/-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search.-/
+lemma subsingleton_cod [∀ a, Subsingleton (β a)] : Subsingleton F :=
+⟨fun _ _ ↦ coe_injective $ Subsingleton.elim _ _⟩
+
 end FunLike
 
 end Dependent
