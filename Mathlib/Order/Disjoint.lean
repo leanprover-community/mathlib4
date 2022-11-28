@@ -364,6 +364,7 @@ theorem Codisjoint.inf_right (hb : Codisjoint a b) (hc : Codisjoint a c) : Codis
 #align codisjoint.inf_right Codisjoint.inf_right
 
 -- porting note: the mathlib3 proof did not need `a` to be provided explicitly
+-- This is likely due to https://github.com/leanprover/lean4/issues/1891.
 theorem Codisjoint.left_le_of_le_inf_right (h : a ⊓ b ≤ c) (hd : Codisjoint b c) : a ≤ c :=
   @Disjoint.left_le_of_le_sup_right αᵒᵈ _ _ _ a _ h hd.symm
 #align codisjoint.left_le_of_le_inf_right Codisjoint.left_le_of_le_inf_right
