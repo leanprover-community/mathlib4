@@ -461,9 +461,9 @@ def copySimpAttribute (src tgt : Name) : CoreM Unit := do
 [todo] it seems not to work when the `to_additive` is added as an attribute later. -/
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if (← isInstance src) then
-    --let prio := (← getInstancePriority? src).elim 100 id
+    let prio := (← getInstancePriority? src).elim 100 id
     let attr_kind := (← getInstanceAttrKind? src).elim AttributeKind.global id
-    addInstance tgt attr_kind 100 |>.run'
+    addInstance tgt attr_kind prio |>.run'
 
 /-- [todo] add more attributes. -/
 def copyAttributes (src tgt : Name) : CoreM Unit := do
