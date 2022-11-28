@@ -34,14 +34,14 @@ variable [Mul R]
 
 /-- A left-regular element is an element `c` such that multiplication on the left by `c`
 is injective. -/
-@[to_additive "An add-left-regular element is an element `c` such that addition on the left by `c`\nis injective. -/\n"]
+@[to_additive IsAddLeftRegular "An add-left-regular element is an element `c` such that addition on the left by `c`\nis injective. -/\n"]
 def IsLeftRegular (c : R) :=
   (c * ·).Injective
 #align is_left_regular IsLeftRegular
 
 /-- A right-regular element is an element `c` such that multiplication on the right by `c`
 is injective. -/
-@[to_additive "An add-right-regular element is an element `c` such that addition on the right by `c`\nis injective."]
+@[to_additive IsAddRightRegular "An add-right-regular element is an element `c` such that addition on the right by `c`\nis injective."]
 def IsRightRegular (c : R) :=
   (· * c).Injective
 #align is_right_regular IsRightRegular
@@ -60,7 +60,7 @@ structure IsRegular (c : R) : Prop where
   right : IsRightRegular c
 #align is_regular IsRegular
 
-attribute [to_additive] IsRegular
+attribute [to_additive IsAddRegular] IsRegular
 
 @[to_additive]
 protected theorem MulLECancellable.is_left_regular [PartialOrder R] {a : R} (ha : MulLECancellable a) :
