@@ -12,6 +12,7 @@ import Lean
 import Lean.Data
 import Lean.Elab.Term
 import Std.Lean.NameMapAttribute
+import Std.Data.Option.Basic
 
 /-!
 # The `@[to_additive]` attribute.
@@ -460,9 +461,9 @@ def copySimpAttribute (src tgt : Name) : CoreM Unit := do
 [todo] it seems not to work when the `to_additive` is added as an attribute later. -/
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if (← isInstance src) then
-    -- [todo] add priority and correct `AttributeKind`. This depends on missing API in core, see
-    -- https://github.com/leanprover/lean4/issues/1878
-    addInstance tgt AttributeKind.global 100 |>.run'
+    let prio := (← getInstancePriority? src).elim 100 id
+    let attr_kind := (← getInstanceAttrKind? src).elim AttributeKind.global id
+    addInstance tgt attr_kind prio |>.run'
 
 /-- [todo] add more attributes. -/
 def copyAttributes (src tgt : Name) : CoreM Unit := do
@@ -607,6 +608,8 @@ def applyNameDict : List String → List String
 There are a few abbreviations we use. For example "Nonneg" instead of "ZeroLE"
 or "addComm" instead of "commAdd".
 Note: The input to this function is case sensitive!
+Todo: A lot of abbreviations here are manual fixes and there might be room to
+      improve the naming logic to reduce the size of `fixAbbreviation`.
 -/
 def fixAbbreviation : List String → List String
 | "cancel" :: "Add" :: s            => "addCancel" :: fixAbbreviation s
@@ -639,6 +642,15 @@ def fixAbbreviation : List String → List String
 | "Add" :: "Indicator" :: s         => "Indicator" :: fixAbbreviation s
 | "add" :: "Indicator" :: s         => "indicator" :: fixAbbreviation s
 | "add" :: "_" :: "indicator" :: s  => "indicator" :: fixAbbreviation s
+-- "Regular" is well-used in mathlib3 with various meanings (e.g. in
+-- measure theory) and a direct translation
+-- "regular" --> ["add", "Regular"] in `nameDict` above seems error-prone.
+| "is" :: "Regular" :: s            => "isAddRegular" :: fixAbbreviation s
+| "Is" :: "Regular" :: s            => "IsAddRegular" :: fixAbbreviation s
+| "is" :: "Left" :: "Regular" :: s  => "isAddLeftRegular" :: fixAbbreviation s
+| "Is" :: "Left" :: "Regular" :: s  => "IsAddLeftRegular" :: fixAbbreviation s
+| "is" :: "Right" :: "Regular" :: s => "isAddRightRegular" :: fixAbbreviation s
+| "Is" :: "Right" :: "Regular" :: s => "IsAddRightRegular" :: fixAbbreviation s
 -- the capitalization heuristic of `applyNameDict` doesn't work in the following cases
 | "Smul"  :: s                      => "SMul" :: fixAbbreviation s
 | "HSmul" :: s                      => "HSMul" :: fixAbbreviation s
