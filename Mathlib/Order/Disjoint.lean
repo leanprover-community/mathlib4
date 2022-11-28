@@ -388,24 +388,28 @@ theorem Codisjoint.dual [SemilatticeSup α] [OrderTop α] {a b : α} :
 #align codisjoint.dual Codisjoint.dual
 
 @[simp]
-theorem disjoint_to_dual_iff [SemilatticeSup α] [OrderTop α] {a b : α} :
+theorem disjoint_toDual_iff [SemilatticeSup α] [OrderTop α] {a b : α} :
     Disjoint (toDual a) (toDual b) ↔ Codisjoint a b :=
   Iff.rfl
+#align disjoint_to_dual_iff disjoint_toDual_iff
 
 @[simp]
-theorem disjoint_of_dual_iff [SemilatticeInf α] [OrderBot α] {a b : αᵒᵈ} :
+theorem disjoint_ofDual_iff [SemilatticeInf α] [OrderBot α] {a b : αᵒᵈ} :
     Disjoint (ofDual a) (ofDual b) ↔ Codisjoint a b :=
   Iff.rfl
+#align disjoint_of_dual_iff disjoint_ofDual_iff
 
 @[simp]
-theorem codisjoint_to_dual_iff [SemilatticeInf α] [OrderBot α] {a b : α} :
+theorem codisjoint_toDual_iff [SemilatticeInf α] [OrderBot α] {a b : α} :
     Codisjoint (toDual a) (toDual b) ↔ Disjoint a b :=
   Iff.rfl
+#align codisjoint_to_dual_iff codisjoint_toDual_iff
 
 @[simp]
-theorem codisjoint_of_dual_iff [SemilatticeSup α] [OrderTop α] {a b : αᵒᵈ} :
+theorem codisjoint_ofDual_iff [SemilatticeSup α] [OrderTop α] {a b : αᵒᵈ} :
     Codisjoint (ofDual a) (ofDual b) ↔ Disjoint a b :=
   Iff.rfl
+#align codisjoint_of_dual_iff codisjoint_ofDual_iff
 
 section DistribLattice
 
@@ -448,9 +452,9 @@ theorem dual (h : IsCompl x y) : IsCompl (toDual x) (toDual y) :=
   ⟨h.2, h.1⟩
 #align is_compl.dual IsCompl.dual
 
-theorem of_dual {a b : αᵒᵈ} (h : IsCompl a b) : IsCompl (ofDual a) (ofDual b) :=
+theorem ofDual {a b : αᵒᵈ} (h : IsCompl a b) : IsCompl (ofDual a) (ofDual b) :=
   ⟨h.2, h.1⟩
-#align is_compl.of_dual IsCompl.of_dual
+#align is_compl.of_dual IsCompl.ofDual
 
 end BoundedPartialOrder
 
@@ -585,14 +589,14 @@ section
 variable [Lattice α] [BoundedOrder α] {a b x : α}
 
 @[simp]
-theorem IsCompl_to_dual_iff : IsCompl (toDual a) (toDual b) ↔ IsCompl a b :=
-  ⟨IsCompl.of_dual, IsCompl.dual⟩
-#align is_compl_to_dual_iff IsCompl_to_dual_iff
+theorem IsCompl_toDual_iff : IsCompl (toDual a) (toDual b) ↔ IsCompl a b :=
+  ⟨IsCompl.ofDual, IsCompl.dual⟩
+#align is_compl_to_dual_iff IsCompl_toDual_iff
 
 @[simp]
-theorem IsCompl_of_dual_iff {a b : αᵒᵈ} : IsCompl (ofDual a) (ofDual b) ↔ IsCompl a b :=
-  ⟨IsCompl.dual, IsCompl.of_dual⟩
-#align is_compl_of_dual_iff IsCompl_of_dual_iff
+theorem IsCompl_ofDual_iff {a b : αᵒᵈ} : IsCompl (ofDual a) (ofDual b) ↔ IsCompl a b :=
+  ⟨IsCompl.dual, IsCompl.ofDual⟩
+#align is_compl_of_dual_iff IsCompl_ofDual_iff
 
 theorem IsCompl_bot_top : IsCompl (⊥ : α) ⊤ :=
   IsCompl.of_eq bot_inf_eq sup_top_eq
