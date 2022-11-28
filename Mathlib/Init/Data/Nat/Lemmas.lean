@@ -98,6 +98,8 @@ private def lbp (m n : ℕ) : Prop := m = n + 1 ∧ ∀ k, k ≤ n → ¬p k
 
 variable [DecidablePred p] (H : ∃ n, p n)
 
+variable {p}
+
 private def wf_lbp : WellFounded (lbp p) := by
   refine ⟨let ⟨n, pn⟩ := H; ?_⟩
   suffices ∀ m k, n ≤ k + m → Acc (lbp p) k from fun a ↦ this _ _ (Nat.le_add_left _ _)
@@ -107,7 +109,7 @@ private def wf_lbp : WellFounded (lbp p) := by
   | succ m IH => exact IH _ (by rw [Nat.add_right_comm]; exact kn)
 
 protected def find_x : {n // p n ∧ ∀ m, m < n → ¬p m} :=
-(wf_lbp p H).fix' (C := fun k ↦ (∀n, n < k → ¬p n) → {n // p n ∧ ∀ m, m < n → ¬p m})
+(wf_lbp H).fix' (C := fun k ↦ (∀n, n < k → ¬p n) → {n // p n ∧ ∀ m, m < n → ¬p m})
   (fun m IH al ↦ if pm : p m then ⟨m, pm, al⟩ else
       have this : ∀ n, n ≤ m → ¬p n := fun n h ↦
         (lt_or_eq_of_le h).elim (al n) fun e ↦ by rw [e]; exact pm
@@ -126,15 +128,14 @@ The API for `nat.find` is:
 * `nat.find_min` is the proof that if `m < nat.find hp` then `m` does not satisfy `p`.
 * `nat.find_min'` is the proof that if `m` does satisfy `p` then `nat.find hp ≤ m`.
 -/
+protected def find : ℕ := (Nat.find_x H).1
 
-protected def find : ℕ := (Nat.find_x p H).1
+protected lemma find_spec : p (Nat.find H) := (Nat.find_x H).2.1
 
-protected lemma find_spec : p (Nat.find p H) := (Nat.find_x p H).2.1
+protected lemma find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m := @(Nat.find_x H).2.2
 
-protected lemma find_min : ∀ {m : ℕ}, m < Nat.find p H → ¬p m := @(Nat.find_x p H).2.2
-
-protected lemma find_min' {m : ℕ} (h : p m) : Nat.find p H ≤ m :=
-not_lt.1 fun l ↦ Nat.find_min p H l h
+protected lemma find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
+not_lt.1 fun l ↦ Nat.find_min H l h
 
 end find
 
