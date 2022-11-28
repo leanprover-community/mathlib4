@@ -474,7 +474,10 @@ theorem strongRecOn'_beta {P : ℕ → Sort _} {h} {n : ℕ} :
 @[elab_as_elim]
 theorem le_induction {P : Nat → Prop} {m} (h0 : P m) (h1 : ∀ n, m ≤ n → P n → P (n + 1)) :
     ∀ n, m ≤ n → P n := by
-  apply Nat.le.ndrec h0 <;> exact h1
+  apply Nat.le.rec
+  · exact h0
+  · intros n hn
+    apply h1 n hn
 #align nat.le_induction Nat.le_induction
 
 /-- Decreasing induction: if `P (k+1)` implies `P k`, then `P n` implies `P m` for all `m ≤ n`.
