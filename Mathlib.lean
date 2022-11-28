@@ -133,6 +133,7 @@ import Mathlib.Lean.Expr.Traverse
 import Mathlib.Lean.LocalContext
 import Mathlib.Lean.Meta
 import Mathlib.Logic.Basic
+import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Equiv.LocalEquiv
