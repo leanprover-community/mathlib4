@@ -223,10 +223,10 @@ theorem StrictMono.maximal_preimage_top [LinearOrder α] [Preorder β] [OrderTop
 
 theorem OrderTop.ext_top {α} {hA : PartialOrder α} (A : OrderTop α) {hB : PartialOrder α}
     (B : OrderTop α) (H : ∀ x y : α, (haveI := hA; x ≤ y) ↔ x ≤ y) :
-    (haveI := A; ⊤ : α) = ⊤ := by
+    (@Top.top α (@OrderTop.toTop α hA.toLE A)) = (@Top.top α (@OrderTop.toTop α hB.toLE B)) := by
   cases PartialOrder.ext H
   apply top_unique
-  rw [← H]
+  exact @le_top _ _ A _
 #align order_top.ext_top OrderTop.ext_top
 
 theorem OrderTop.ext {α} [PartialOrder α] {A B : OrderTop α} : A = B := by
@@ -433,10 +433,10 @@ theorem StrictMono.minimal_preimage_bot [LinearOrder α] [PartialOrder β] [Orde
 
 theorem OrderBot.ext_bot {α} {hA : PartialOrder α} (A : OrderBot α) {hB : PartialOrder α}
     (B : OrderBot α) (H : ∀ x y : α, (haveI := hA; x ≤ y) ↔ x ≤ y) :
-    (haveI := A; ⊥ : α) = ⊥ := by
+    (@Bot.bot α (@OrderBot.toBot α hA.toLE A)) = (@Bot.bot α (@OrderBot.toBot α hB.toLE B)) := by
   cases PartialOrder.ext H
   apply bot_unique
-  rw [← H]
+  exact @bot_le _ _ A _
 #align order_bot.ext_bot OrderBot.ext_bot
 
 theorem OrderBot.ext {α} [PartialOrder α] {A B : OrderBot α} : A = B := by
