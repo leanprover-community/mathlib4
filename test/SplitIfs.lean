@@ -63,3 +63,12 @@ example (p q : Prop) [Decidable p] [Decidable q] :
 example : True := by
   fail_if_success { split_ifs }
   trivial
+
+open Classical in
+example (P Q : Prop) (w : if P then (if Q then true else true) else true = true) : true := by
+  split_ifs at w
+  · trivial
+  · trivial
+  · trivial
+
+
