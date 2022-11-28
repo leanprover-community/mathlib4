@@ -71,5 +71,3 @@ example (P Q : Prop) (w : if P then (if Q then true else true) else true = true)
   · trivial
   · trivial
   · trivial
-
-
