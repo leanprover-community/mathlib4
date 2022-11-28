@@ -6,6 +6,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Order.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Tactic.Convert
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Use
 
@@ -250,7 +251,8 @@ theorem two_lt_of_ne : ∀ {n}, n ≠ 0 → n ≠ 1 → n ≠ 2 → 2 < n
   | 0, h, _, _ => (h rfl).elim
   | 1, _, h, _ => (h rfl).elim
   | 2, _, _, h => (h rfl).elim
-  | n + 3, _, _, _ => by decide
+  -- Porting note: was `by decide`
+  | n + 3, _, _, _ => by rw [Nat.lt_iff_add_one_le]; convert Nat.le_add_left 3 n
 #align nat.two_lt_of_ne Nat.two_lt_of_ne
 
 theorem forall_lt_succ {P : ℕ → Prop} {n : ℕ} : (∀ m < n + 1, P m) ↔ (∀ m < n, P m) ∧ P n := by
@@ -875,17 +877,17 @@ theorem find_lt_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h < n ↔ ∃ m 
 
 @[simp]
 theorem find_le_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h ≤ n ↔ ∃ m ≤ n, p m := by
-  simp only [exists_prop, ← lt_succ_iff, find_lt_iff]
+  simp only [exists_prop, ← lt_succ_iff, find_lt_iff]; rfl
 #align nat.find_le_iff Nat.find_le_iff
 
 @[simp]
 theorem le_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n ≤ Nat.find h ↔ ∀ m < n, ¬p m := by
-  simp_rw [← not_lt, find_lt_iff, not_exists]
+  simp_rw [← not_lt, find_lt_iff, not_exists, not_and]; rfl
 #align nat.le_find_iff Nat.le_find_iff
 
 @[simp]
 theorem lt_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n < Nat.find h ↔ ∀ m ≤ n, ¬p m := by
-  simp only [← succ_le_iff, le_find_iff, succ_le_succ_iff]
+  simp only [← succ_le_iff, le_find_iff, succ_le_succ_iff]; rfl
 #align nat.lt_find_iff Nat.lt_find_iff
 
 @[simp]
