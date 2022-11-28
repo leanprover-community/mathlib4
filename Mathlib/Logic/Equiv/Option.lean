@@ -162,8 +162,6 @@ theorem optionCongr_injective : Function.Injective (optionCongr : α ≃ β → 
   Function.LeftInverse.injective removeNone_optionCongr
 #align equiv.option_congr_injective Equiv.optionCongr_injective
 
-set_option maxHeartbeats 600000 -- next def times out with default heartbeats (200000)
-
 /-- Equivalences between `Option α` and `β` that send `none` to `x` are equivalent to
 equivalences between `α` and `{y : β // y ≠ x}`. -/
 def optionSubtype [DecidableEq β] (x : β) :
@@ -192,15 +190,17 @@ def optionSubtype [DecidableEq β] (x : β) :
             simp only [casesOn'_some, Function.comp_apply, Subtype.coe_eta,
               symm_apply_apply, dite_eq_ite]
             exact if_neg (e a).property,
-        right_inv := fun b =>  by by_cases h : b = x <;> simp [h] },
+        right_inv := fun b => by
+          by_cases h : b = x <;> simp [h] },
       rfl⟩
   left_inv e := by
     ext a
     cases a
     · simpa using e.property.symm
-
-    · simp
-
+    -- Porting note: this cases had been by `simpa`,
+    -- but `simp` here is mysteriously slow, even after squeezing.
+    -- `rfl` closes the goal quickly, so we use that.
+    · rfl
   right_inv e := by
     ext a
     rfl
