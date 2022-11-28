@@ -476,8 +476,9 @@ This is used to implement `@[to_additive]`.
 -/
 def transformDecl (ref : Option Syntax) (src tgt : Name) : CoreM Unit := do
   transformDeclAux ref src tgt src
-  /- We need to generate all equation lemmas for `src`, otherwise they will be generated later
-  when doing a `rw`, but not for `tgt`. -/
+  /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
+  definitions. If we don't do that, the equation lemma for `src` might be generated later
+  when doing a `rw`, but it won't be generated for `tgt`. -/
   let srcEqns? ← MetaM.run' (getEqnsFor? src true)
   let tgtEqns? ← MetaM.run' (getEqnsFor? tgt true)
   -- now transform all of the equational lemmas
