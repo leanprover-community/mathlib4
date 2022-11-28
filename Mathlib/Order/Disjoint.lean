@@ -428,9 +428,10 @@ structure IsCompl [PartialOrder α] [BoundedOrder α] (x y : α) : Prop where
   protected Codisjoint : Codisjoint x y
 #align is_compl IsCompl
 
-theorem is_compl_iff [PartialOrder α] [BoundedOrder α] {a b : α} :
+theorem IsCompl_iff [PartialOrder α] [BoundedOrder α] {a b : α} :
     IsCompl a b ↔ Disjoint a b ∧ Codisjoint a b :=
   ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
+#align is_compl_iff IsCompl_iff
 
 namespace IsCompl
 
@@ -571,11 +572,11 @@ protected theorem codisjoint_iff [OrderTop α] [OrderTop β] {x y : α × β} :
   @Prod.disjoint_iff αᵒᵈ βᵒᵈ _ _ _ _ _ _
 #align prod.codisjoint_iff Prod.codisjoint_iff
 
-protected theorem is_compl_iff [BoundedOrder α] [BoundedOrder β] {x y : α × β} :
+protected theorem IsCompl_iff [BoundedOrder α] [BoundedOrder β] {x y : α × β} :
     IsCompl x y ↔ IsCompl x.1 y.1 ∧ IsCompl x.2 y.2 := by
-  simp_rw [is_compl_iff, Prod.disjoint_iff, Prod.codisjoint_iff, and_and_and_comm]
+  simp_rw [IsCompl_iff, Prod.disjoint_iff, Prod.codisjoint_iff, and_and_and_comm]
   rfl
-#align prod.is_compl_iff Prod.is_compl_iff
+#align prod.is_compl_iff Prod.IsCompl_iff
 
 end Prod
 
@@ -584,30 +585,38 @@ section
 variable [Lattice α] [BoundedOrder α] {a b x : α}
 
 @[simp]
-theorem is_compl_to_dual_iff : IsCompl (toDual a) (toDual b) ↔ IsCompl a b :=
+theorem IsCompl_to_dual_iff : IsCompl (toDual a) (toDual b) ↔ IsCompl a b :=
   ⟨IsCompl.of_dual, IsCompl.dual⟩
+#align is_compl_to_dual_iff IsCompl_to_dual_iff
 
 @[simp]
-theorem is_compl_of_dual_iff {a b : αᵒᵈ} : IsCompl (ofDual a) (ofDual b) ↔ IsCompl a b :=
+theorem IsCompl_of_dual_iff {a b : αᵒᵈ} : IsCompl (ofDual a) (ofDual b) ↔ IsCompl a b :=
   ⟨IsCompl.dual, IsCompl.of_dual⟩
+#align is_compl_of_dual_iff IsCompl_of_dual_iff
 
-theorem is_compl_bot_top : IsCompl (⊥ : α) ⊤ :=
+theorem IsCompl_bot_top : IsCompl (⊥ : α) ⊤ :=
   IsCompl.of_eq bot_inf_eq sup_top_eq
+#align is_compl_bot_top IsCompl_bot_top
 
-theorem is_compl_top_bot : IsCompl (⊤ : α) ⊥ :=
+theorem IsCompl_top_bot : IsCompl (⊤ : α) ⊥ :=
   IsCompl.of_eq inf_bot_eq top_sup_eq
+#align is_compl_top_bot IsCompl_top_bot
 
-theorem eq_top_of_is_compl_bot (h : IsCompl x ⊥) : x = ⊤ :=
+theorem eq_top_of_IsCompl_bot (h : IsCompl x ⊥) : x = ⊤ :=
   sup_bot_eq.symm.trans h.sup_eq_top
+#align eq_top_of_is_compl_bot eq_top_of_IsCompl_bot
 
-theorem eq_top_of_bot_is_compl (h : IsCompl ⊥ x) : x = ⊤ :=
-  eq_top_of_is_compl_bot h.symm
+theorem eq_top_of_bot_IsCompl (h : IsCompl ⊥ x) : x = ⊤ :=
+  eq_top_of_IsCompl_bot h.symm
+#align eq_top_of_bot_is_compl eq_top_of_bot_IsCompl
 
-theorem eq_bot_of_is_compl_top (h : IsCompl x ⊤) : x = ⊥ :=
-  eq_top_of_is_compl_bot h.dual
+theorem eq_bot_of_IsCompl_top (h : IsCompl x ⊤) : x = ⊥ :=
+  eq_top_of_IsCompl_bot h.dual
+#align eq_bot_of_is_compl_top eq_bot_of_IsCompl_top
 
-theorem eq_bot_of_top_is_compl (h : IsCompl ⊤ x) : x = ⊥ :=
-  eq_top_of_bot_is_compl h.dual
+theorem eq_bot_of_top_IsCompl (h : IsCompl ⊤ x) : x = ⊥ :=
+  eq_top_of_bot_IsCompl h.dual
+#align eq_bot_of_top_is_compl eq_bot_of_top_IsCompl
 
 end
 
@@ -615,10 +624,10 @@ end
 complement. -/
 class ComplementedLattice (α) [Lattice α] [BoundedOrder α] : Prop where
   /-- In a `ComplementedLattice`, every element admits a complement. -/
-  exists_is_compl : ∀ a : α, ∃ b : α, IsCompl a b
+  exists_IsCompl : ∀ a : α, ∃ b : α, IsCompl a b
 #align complemented_lattice ComplementedLattice
 
-export ComplementedLattice (exists_is_compl)
+export ComplementedLattice (exists_IsCompl)
 
 namespace ComplementedLattice
 
@@ -626,7 +635,7 @@ variable [Lattice α] [BoundedOrder α] [ComplementedLattice α]
 
 instance : ComplementedLattice αᵒᵈ :=
   ⟨fun a ↦
-    let ⟨b, hb⟩ := exists_is_compl (show α from a)
+    let ⟨b, hb⟩ := exists_IsCompl (show α from a)
     ⟨b, hb.dual⟩⟩
 
 end ComplementedLattice
