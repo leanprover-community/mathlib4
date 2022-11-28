@@ -367,14 +367,25 @@ instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
 -- Porting note: help to_additive translate. This should ideally be handled by the tactic
 attribute [to_additive AddMonoidHomClass.toZeroHomClass] MonoidHomClass.toOneHomClass
 
+-- Porting note: restore `to_additive`
 /-- Any type that is a `MonoidHomClass` can be cast into a `MonoidHom`. -/
-@[to_additive "Any type that is a `AddMonoidHomClass` can be cast into a `AddMonoidHom`."]
+-- @[to_additive "Any type that is a `AddMonoidHomClass` can be cast into a `AddMonoidHom`."]
 instance [MonoidHomClass F M N] : CoeTC F (M →* N) :=
   ⟨fun f => { toFun := f, map_one' := map_one f, map_mul' := map_mul f }⟩
+/-- Any type that is a `AddMonoidHomClass` can be cast into a `AddMonoidHom`. -/
+instance [AddZeroClass M] [AddZeroClass N] [AddMonoidHomClass F M N] : CoeTC F (M →+ N) :=
+  ⟨fun f => { toFun := f, map_zero' := map_zero f, map_add' := map_add f }⟩
+attribute [to_additive instCoeTCAddMonoidHom] instCoeTCMonoidHom
 
-@[simp, to_additive]
+-- Porting note: restore `to_additive`
+@[simp]
 theorem MonoidHom.coe_coe [MonoidHomClass F M N] (f : F) : ((f : M →* N) : M → N) = f := rfl
 #align monoid_hom.coe_coe MonoidHom.coe_coe
+@[simp]
+theorem AddMonoidHom.coe_coe [AddZeroClass M] [AddZeroClass N] [AddMonoidHomClass F M N] (f : F) :
+  ((f : M →+ N) : M → N) = f := rfl
+#align add_monoid_hom.coe_coe AddMonoidHom.coe_coe
+attribute [to_additive AddMonoidHom.coe_coe] MonoidHom.coe_coe
 
 @[to_additive]
 theorem map_mul_eq_one [MonoidHomClass F M N] (f : F) {a b : M} (h : a * b = 1) : f a * f b = 1 :=
