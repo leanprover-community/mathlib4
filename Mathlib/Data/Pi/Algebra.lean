@@ -9,7 +9,6 @@ import Mathlib.Data.Prod.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Data.Sum.Basic
 import Mathlib.Tactic.Classical
-import Mathlib.Tactic.Convert
 
 /-!
 # Instances and theorems on pi types
