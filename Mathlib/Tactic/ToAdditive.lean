@@ -476,13 +476,18 @@ This is used to implement `@[to_additive]`.
 -/
 def transformDecl (ref : Option Syntax) (src tgt : Name) : CoreM Unit := do
   transformDeclAux ref src tgt src
-  let eqns? ← MetaM.run' (getEqnsFor? src true)
+  let srcEqns? ← MetaM.run' (getEqnsFor? src)
+  let tgtEqns? ← MetaM.run' (getEqnsFor? src)
   -- now transform all of the equational lemmas
-  if let some eqns := eqns? then
-    for src_eqn in eqns do
-      transformDeclAux none src tgt src_eqn
-      -- [todo] copy attributes for equations
-      -- [todo] add equation lemmas to tgt_eqn
+  match srcEqns?, tgtEqns? with
+  | some srcEqns, some tgtEqns =>
+    if srcEqns.size != tgtEqns.size then
+      throwError "{src} and {tgt} do not have the same number of equation lemmas"
+    for (srcEqn, tgtEqn) in srcEqns.zip tgtEqns do
+      insertTranslation srcEqn tgtEqn
+      copyAttributes srcEqn tgtEqn
+  | none, none => pure ()
+  | _, _ => throwError "Exactly one of {src} and {tgt} has equation lemmas, the other one hasn't"
   copyAttributes src tgt
 
 /--
