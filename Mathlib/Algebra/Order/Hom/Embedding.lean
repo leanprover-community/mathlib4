@@ -19,7 +19,8 @@ section LeftOrRightCancelSemigroup
 by left multiplication by a fixed element.
  -/
 @[to_additive
-      "The embedding of a left cancellative additive semigroup into itself\n   by left translation by a fixed element.",
+      "The embedding of a left cancellative additive semigroup into itself
+         by left translation by a fixed element.",
   simps]
 def mulLeftEmbedding {G : Type _} [LeftCancelSemigroup G] (g : G) : G ↪ G where
   toFun h := g * h
@@ -30,7 +31,8 @@ def mulLeftEmbedding {G : Type _} [LeftCancelSemigroup G] (g : G) : G ↪ G wher
 by right multiplication by a fixed element.
  -/
 @[to_additive
-      "The embedding of a right cancellative additive semigroup into itself\n   by right translation by a fixed element.",
+      "The embedding of a right cancellative additive semigroup into itself
+         by right translation by a fixed element.",
   simps]
 def mulRightEmbedding {G : Type _} [RightCancelSemigroup G] (g : G) : G ↪ G where
   toFun h := h * g
