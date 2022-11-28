@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Group.Commute
+import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Tactic.Spread
@@ -19,14 +19,6 @@ section Semiring
 
 @[simp] theorem Commute.zero_left [Semiring R] (a : R) : Commute 0 a :=
   (zero_mul _).trans (mul_zero _).symm
-
-@[simp] theorem Commute.add_right [Semiring R] {a b c : R} (h : Commute a b) (h' : Commute a c) :
-    Commute a (b + c) := by
-  simp only [Commute, SemiconjBy, left_distrib, right_distrib, h.eq, h'.eq]
-
-@[simp] theorem Commute.add_left [Semiring R] {a b c : R} (h : Commute a c) (h' : Commute b c) :
-    Commute (a + b) c := by
-  simp only [Commute, SemiconjBy, left_distrib, right_distrib, h.eq, h'.eq]
 
 @[simp]
 lemma Nat.cast_mul [Semiring R] {m n : ℕ} : (m * n).cast = (m.cast * n.cast : R) := by
