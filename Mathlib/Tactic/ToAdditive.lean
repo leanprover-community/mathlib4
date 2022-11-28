@@ -462,8 +462,8 @@ def copySimpAttribute (src tgt : Name) : CoreM Unit := do
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if (← isInstance src) then
     let prio := (← getInstancePriority? src).elim 100 id
-    let attr_kind := (← getInstanceAttrKind? src).elim AttributeKind.global id
-    addInstance tgt attr_kind prio |>.run'
+    --let attr_kind := (← getInstanceAttrKind? src).elim AttributeKind.global id
+    addInstance tgt AttributeKind.global prio |>.run'
 
 /-- [todo] add more attributes. -/
 def copyAttributes (src tgt : Name) : CoreM Unit := do
