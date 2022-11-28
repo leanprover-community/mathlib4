@@ -68,6 +68,7 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
+import Mathlib.Data.HashMap
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Cast
 import Mathlib.Data.Int.Cast.Basic
@@ -208,6 +209,14 @@ import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Linarith.Datatypes
+import Mathlib.Tactic.Linarith.Elimination
+import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Tactic.Linarith.Lemmas
+import Mathlib.Tactic.Linarith.Parsing
+import Mathlib.Tactic.Linarith.Preprocessing
+import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.ModCases
