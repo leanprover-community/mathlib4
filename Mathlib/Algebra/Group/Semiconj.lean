@@ -141,22 +141,22 @@ theorem units_inv_symm_left_iff {a : Mˣ} {x y : M} : SemiconjBy (↑a⁻¹) y x
 #align add_semiconj_by.add_units_neg_symm_left_iff AddSemiconjBy.addUnits_neg_symm_left_iff
 
 @[to_additive]
-theorem units_coe {a x y : Mˣ} (h : SemiconjBy a x y) : SemiconjBy (a : M) x y :=
+theorem units_val {a x y : Mˣ} (h : SemiconjBy a x y) : SemiconjBy (a : M) x y :=
   congr_arg Units.val h
-#align semiconj_by.units_coe SemiconjBy.units_coe
-#align add_semiconj_by.add_units_coe AddSemiconjBy.addUnits_coe
+#align semiconj_by.units_coe SemiconjBy.units_val
+#align add_semiconj_by.add_units_coe AddSemiconjBy.addUnits_val
 
 @[to_additive]
-theorem units_of_coe {a x y : Mˣ} (h : SemiconjBy (a : M) x y) : SemiconjBy a x y :=
+theorem units_of_val {a x y : Mˣ} (h : SemiconjBy (a : M) x y) : SemiconjBy a x y :=
   Units.ext h
-#align semiconj_by.units_of_coe SemiconjBy.units_of_coe
-#align add_semiconj_by.addUnits_of_coe AddSemiconjBy.addUnits_of_coe
+#align semiconj_by.units_of_coe SemiconjBy.units_of_val
+#align add_semiconj_by.addUnits_of_coe AddSemiconjBy.addUnits_of_val
 
 @[simp, to_additive]
-theorem units_coe_iff {a x y : Mˣ} : SemiconjBy (a : M) x y ↔ SemiconjBy a x y :=
-  ⟨units_of_coe, units_coe⟩
-#align semiconj_by.units_coe_iff SemiconjBy.units_coe_iff
-#align add_semiconj_by.add_units_coe_iff AddSemiconjBy.addUnits_coe_iff
+theorem units_val_iff {a x y : Mˣ} : SemiconjBy (a : M) x y ↔ SemiconjBy a x y :=
+  ⟨units_of_val, units_val⟩
+#align semiconj_by.units_coe_iff SemiconjBy.units_val_iff
+#align add_semiconj_by.add_units_coe_iff AddSemiconjBy.addUnits_val_iff
 
 @[simp, to_additive]
 theorem pow_right {a x y : M} (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (x ^ n) (y ^ n) := by

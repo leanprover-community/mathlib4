@@ -36,16 +36,16 @@ instance [h : Div α] : Div αᵒᵈ := h
 instance [h : SMul α β] : SMul α βᵒᵈ := h
 
 @[to_additive]
-instance OrderDual.SMul' [h : SMul α β] : SMul αᵒᵈ β := h
-#align order_dual.has_smul' OrderDual.SMul'
+instance instSMulOrderDual' [h : SMul α β] : SMul αᵒᵈ β := h
+#align order_dual.has_smul' instSMulOrderDual'
 
-@[to_additive OrderDual.SMul]
-instance OrderDual.hasPow [h : Pow α β] : Pow αᵒᵈ β := h
-#align order_dual.has_pow OrderDual.hasPow
+@[to_additive]
+instance [h : Pow α β] : Pow αᵒᵈ β := h
+#align order_dual.has_pow instPowOrderDual
 
-@[to_additive OrderDual.SMul']
-instance OrderDual.hasPow' [h : Pow α β] : Pow α βᵒᵈ := h
-#align order_dual.has_pow' OrderDual.hasPow'
+@[to_additive]
+instance instPowOrderDual' [h : Pow α β] : Pow α βᵒᵈ := h
+#align order_dual.has_pow' instPowOrderDual'
 
 @[to_additive]
 instance [h : Semigroup α] : Semigroup αᵒᵈ := h
@@ -181,16 +181,16 @@ instance [h : Div α] : Div (Lex α) := h
 instance [h : SMul α β] : SMul α (Lex β) := h
 
 @[to_additive]
-instance Lex.SMul' [h : SMul α β] : SMul (Lex α) β := h
-#align lex.has_smul' Lex.SMul'
+instance instSMulLex' [h : SMul α β] : SMul (Lex α) β := h
+#align lex.has_smul' instSMulLex'
 
-@[to_additive Lex.SMul]
-instance Lex.hasPow [h : Pow α β] : Pow (Lex α) β := h
-#align lex.has_pow Lex.hasPow
+@[to_additive]
+instance [h : Pow α β] : Pow (Lex α) β := h
+#align lex.has_pow instPowLex
 
-@[to_additive Lex.SMul']
-instance Lex.hasPow' [h : Pow α β] : Pow α (Lex β) := h
-#align lex.has_pow' Lex.hasPow'
+@[to_additive]
+instance instPowLex' [h : Pow α β] : Pow α (Lex β) := h
+#align lex.has_pow' instPowLex'
 
 @[to_additive]
 instance [h : Semigroup α] : Semigroup (Lex α) := h
