@@ -28,7 +28,7 @@ variable {α β γ : Type _}
 
 section OptionCongr
 
-/-- A universe-polymorphic version of `EquivFunctor.map_equiv Option e`. -/
+/-- A universe-polymorphic version of `EquivFunctor.mapEquiv Option e`. -/
 @[simps apply]
 def optionCongr (e : α ≃ β) : Option α ≃ Option β where
   toFun := Option.map e
@@ -54,7 +54,7 @@ theorem optionCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
 #align equiv.option_congr_trans Equiv.optionCongr_trans
 
 /-- When `α` and `β` are in the same universe, this is the same as the result of
-`EquivFunctor.map_equiv`. -/
+`EquivFunctor.mapEquiv`. -/
 theorem optionCongr_eq_equivFunctor_mapEquiv {α β : Type _} (e : α ≃ β) :
     optionCongr e = EquivFunctor.mapEquiv Option e :=
   rfl
