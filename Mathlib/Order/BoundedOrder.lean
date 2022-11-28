@@ -19,7 +19,7 @@ instances for `Prop` and `fun`.
 
 ## Main declarations
 
-* `Has<Top/Not> α`: Typeclasses to declare the `⊤`/`⊥` notation.
+* `<Top/Not> α`: Typeclasses to declare the `⊤`/`⊥` notation.
 * `Order<Top/Not> α`: Order with a top/bottom element.
 * `BoundedOrder α`: Order with a top and bottom element.
 
@@ -43,37 +43,37 @@ variable {α : Type u} {β : Type v} {γ δ : Type _}
 
 /-- Typeclass for the `⊤` (`\top`) notation -/
 @[notation_class, ext]
-class HasTop (α : Type u) where
+class Top (α : Type u) where
   /-- The top (`⊤`, `\top`) element -/
   top : α
-#align has_top HasTop
+#align has_top Top
 
 /-- Typeclass for the `⊥` (`\bot`) notation -/
 @[notation_class, ext]
-class HasBot (α : Type u) where
+class Bot (α : Type u) where
   /-- The bot (`⊥`, `\bot`) element -/
   bot : α
-#align has_bot HasBot
+#align has_bot Bot
 
 /-- The top (`⊤`, `\top`) element -/
-notation "⊤" => HasTop.top
+notation "⊤" => Top.top
 
 /-- The bot (`⊥`, `\bot`) element -/
-notation "⊥" => HasBot.bot
+notation "⊥" => Bot.bot
 
-instance (priority := 100) has_top_nonempty (α : Type u) [HasTop α] : Nonempty α :=
+instance (priority := 100) top_nonempty (α : Type u) [Top α] : Nonempty α :=
   ⟨⊤⟩
-#align has_top_nonempty has_top_nonempty
+#align has_top_nonempty top_nonempty
 
-instance (priority := 100) has_bot_nonempty (α : Type u) [HasBot α] : Nonempty α :=
+instance (priority := 100) bot_nonempty (α : Type u) [Bot α] : Nonempty α :=
   ⟨⊥⟩
-#align has_bot_nonempty has_bot_nonempty
+#align has_bot_nonempty bot_nonempty
 
-attribute [match_pattern] HasBot.bot HasTop.top
+attribute [match_pattern] Bot.bot Top.top
 
 /-- An order is an `OrderTop` if it has a greatest element.
 We state this using a data mixin, holding the value of `⊤` and the greatest element constraint. -/
-class OrderTop (α : Type u) [LE α] extends HasTop α where
+class OrderTop (α : Type u) [LE α] extends Top α where
   /-- `⊤` is the greatest element -/
   le_top : ∀ a : α, a ≤ ⊤
 #align order_top OrderTop
@@ -87,7 +87,7 @@ noncomputable def topOrderOrNoTopOrder (α : Type _) [LE α] : PSum (OrderTop α
   · exact PSum.inr ⟨H⟩
 
   · push_neg at H
-    letI : HasTop α := ⟨Classical.choose H⟩
+    letI : Top α := ⟨Classical.choose H⟩
     exact PSum.inl ⟨Classical.choose_spec H⟩
 
 #align top_order_or_no_top_order topOrderOrNoTopOrder
@@ -240,7 +240,7 @@ theorem OrderTop.ext {α} [PartialOrder α] {A B : OrderTop α} : A = B := by
 
 /-- An order is an `OrderBot` if it has a least element.
 We state this using a data mixin, holding the value of `⊥` and the least element constraint. -/
-class OrderBot (α : Type u) [LE α] extends HasBot α where
+class OrderBot (α : Type u) [LE α] extends Bot α where
   /-- `⊥` is the least element -/
   bot_le : ∀ a : α, ⊥ ≤ a
 #align order_bot OrderBot
@@ -254,7 +254,7 @@ noncomputable def botOrderOrNoBotOrder (α : Type _) [LE α] : PSum (OrderBot α
   · exact PSum.inr ⟨H⟩
 
   · push_neg at H
-    letI : HasBot α := ⟨Classical.choose H⟩
+    letI : Bot α := ⟨Classical.choose H⟩
     exact PSum.inl ⟨Classical.choose_spec H⟩
 
 #align bot_order_or_no_bot_order botOrderOrNoBotOrder
@@ -278,37 +278,37 @@ namespace OrderDual
 
 variable (α)
 
-instance [HasBot α] : HasTop αᵒᵈ :=
+instance [Bot α] : Top αᵒᵈ :=
   ⟨(⊥ : α)⟩
 
-instance [HasTop α] : HasBot αᵒᵈ :=
+instance [Top α] : Bot αᵒᵈ :=
   ⟨(⊤ : α)⟩
 
 instance [LE α] [OrderBot α] : OrderTop αᵒᵈ where
-  __ := inferInstanceAs (HasTop αᵒᵈ)
+  __ := inferInstanceAs (Top αᵒᵈ)
   le_top := @bot_le α _ _
 
 instance [LE α] [OrderTop α] : OrderBot αᵒᵈ where
-  __ := inferInstanceAs (HasBot αᵒᵈ)
+  __ := inferInstanceAs (Bot αᵒᵈ)
   bot_le := @le_top α _ _
 
 @[simp]
-theorem ofDual_bot [HasTop α] : ofDual ⊥ = (⊤ : α) :=
+theorem ofDual_bot [Top α] : ofDual ⊥ = (⊤ : α) :=
   rfl
 #align order_dual.of_dual_bot OrderDual.ofDual_bot
 
 @[simp]
-theorem ofDual_top [HasBot α] : ofDual ⊤ = (⊥ : α) :=
+theorem ofDual_top [Bot α] : ofDual ⊤ = (⊥ : α) :=
   rfl
 #align order_dual.of_dual_top OrderDual.ofDual_top
 
 @[simp]
-theorem toDual_bot [HasBot α] : toDual (⊥ : α) = ⊤ :=
+theorem toDual_bot [Bot α] : toDual (⊥ : α) = ⊤ :=
   rfl
 #align order_dual.to_dual_bot OrderDual.toDual_bot
 
 @[simp]
-theorem toDual_top [HasTop α] : toDual (⊤ : α) = ⊥ :=
+theorem toDual_top [Top α] : toDual (⊤ : α) = ⊥ :=
   rfl
 #align order_dual.to_dual_top OrderDual.toDual_top
 
@@ -627,35 +627,35 @@ namespace Pi
 
 variable {ι : Type _} {α' : ι → Type _}
 
-instance [∀ i, HasBot (α' i)] : HasBot (∀ i, α' i) :=
+instance [∀ i, Bot (α' i)] : Bot (∀ i, α' i) :=
   ⟨fun _ => ⊥⟩
 
 @[simp]
-theorem bot_apply [∀ i, HasBot (α' i)] (i : ι) : (⊥ : ∀ i, α' i) i = ⊥ :=
+theorem bot_apply [∀ i, Bot (α' i)] (i : ι) : (⊥ : ∀ i, α' i) i = ⊥ :=
   rfl
 #align pi.bot_apply Pi.bot_apply
 
-theorem bot_def [∀ i, HasBot (α' i)] : (⊥ : ∀ i, α' i) = fun _ => ⊥ :=
+theorem bot_def [∀ i, Bot (α' i)] : (⊥ : ∀ i, α' i) = fun _ => ⊥ :=
   rfl
 #align pi.bot_def Pi.bot_def
 
-instance [∀ i, HasTop (α' i)] : HasTop (∀ i, α' i) :=
+instance [∀ i, Top (α' i)] : Top (∀ i, α' i) :=
   ⟨fun _ => ⊤⟩
 
 @[simp]
-theorem top_apply [∀ i, HasTop (α' i)] (i : ι) : (⊤ : ∀ i, α' i) i = ⊤ :=
+theorem top_apply [∀ i, Top (α' i)] (i : ι) : (⊤ : ∀ i, α' i) i = ⊤ :=
   rfl
 #align pi.top_apply Pi.top_apply
 
-theorem top_def [∀ i, HasTop (α' i)] : (⊤ : ∀ i, α' i) = fun _ => ⊤ :=
+theorem top_def [∀ i, Top (α' i)] : (⊤ : ∀ i, α' i) = fun _ => ⊤ :=
   rfl
 #align pi.top_def Pi.top_def
 
 instance [∀ i, LE (α' i)] [∀ i, OrderTop (α' i)] : OrderTop (∀ i, α' i) :=
-  { inferInstanceAs (HasTop (∀ i, α' i)) with le_top := fun _ _ => le_top }
+  { inferInstanceAs (Top (∀ i, α' i)) with le_top := fun _ _ => le_top }
 
 instance [∀ i, LE (α' i)] [∀ i, OrderBot (α' i)] : OrderBot (∀ i, α' i) :=
-  { inferInstanceAs (HasBot (∀ i, α' i)) with bot_le := fun _ _ => bot_le }
+  { inferInstanceAs (Bot (∀ i, α' i)) with bot_le := fun _ _ => bot_le }
 
 instance [∀ i, LE (α' i)] [∀ i, BoundedOrder (α' i)] : BoundedOrder (∀ i, α' i) where
   __ := inferInstanceAs (OrderTop (∀ i, α' i))
@@ -695,7 +695,7 @@ section lift
 -- See note [reducible non-instances]
 /-- Pullback an `OrderTop`. -/
 @[reducible]
-def OrderTop.lift [LE α] [HasTop α] [LE β] [OrderTop β] (f : α → β)
+def OrderTop.lift [LE α] [Top α] [LE β] [OrderTop β] (f : α → β)
     (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_top : f ⊤ = ⊤) : OrderTop α :=
   ⟨fun a =>
     map_le _ _ <| by
@@ -707,7 +707,7 @@ def OrderTop.lift [LE α] [HasTop α] [LE β] [OrderTop β] (f : α → β)
 -- See note [reducible non-instances]
 /-- Pullback an `OrderBot`. -/
 @[reducible]
-def OrderBot.lift [LE α] [HasBot α] [LE β] [OrderBot β] (f : α → β)
+def OrderBot.lift [LE α] [Bot α] [LE β] [OrderBot β] (f : α → β)
     (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_bot : f ⊥ = ⊥) : OrderBot α :=
   ⟨fun a =>
     map_le _ _ <| by
@@ -719,7 +719,7 @@ def OrderBot.lift [LE α] [HasBot α] [LE β] [OrderBot β] (f : α → β)
 -- See note [reducible non-instances]
 /-- Pullback a `BoundedOrder`. -/
 @[reducible]
-def BoundedOrder.lift [LE α] [HasTop α] [HasBot α] [LE β] [BoundedOrder β] (f : α → β)
+def BoundedOrder.lift [LE α] [Top α] [Bot α] [LE β] [BoundedOrder β] (f : α → β)
     (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : BoundedOrder α :=
   { OrderTop.lift f map_le map_top, OrderBot.lift f map_le map_bot with }
 #align bounded_order.lift BoundedOrder.lift
@@ -807,18 +807,18 @@ namespace Prod
 
 variable (α β)
 
-instance [HasTop α] [HasTop β] : HasTop (α × β) :=
+instance [Top α] [Top β] : Top (α × β) :=
   ⟨⟨⊤, ⊤⟩⟩
 
-instance [HasBot α] [HasBot β] : HasBot (α × β) :=
+instance [Bot α] [Bot β] : Bot (α × β) :=
   ⟨⟨⊥, ⊥⟩⟩
 
 instance [LE α] [LE β] [OrderTop α] [OrderTop β] : OrderTop (α × β) where
-  __ := inferInstanceAs (HasTop (α × β))
+  __ := inferInstanceAs (Top (α × β))
   le_top _ := ⟨le_top, le_top⟩
 
 instance [LE α] [LE β] [OrderBot α] [OrderBot β] : OrderBot (α × β) where
-  __ := inferInstanceAs (HasBot (α × β))
+  __ := inferInstanceAs (Bot (α × β))
   bot_le _ := ⟨bot_le, bot_le⟩
 
 instance [LE α] [LE β] [BoundedOrder α] [BoundedOrder β] : BoundedOrder (α × β) where
