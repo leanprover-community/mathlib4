@@ -15,6 +15,7 @@ import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.HierarchyDesign
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.NeZero
@@ -25,11 +26,15 @@ import Mathlib.Algebra.Order.Monoid
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Algebra.Order.Ring
 import Mathlib.Algebra.Order.Ring.Lemmas
+import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.OrderSynonym
+import Mathlib.Algebra.Ring.Semiconj
+import Mathlib.Algebra.Ring.Units
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.Control.Basic
 import Mathlib.Control.EquivFunctor
@@ -45,6 +50,7 @@ import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Bracket
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
+import Mathlib.Data.Countable.Defs
 import Mathlib.Data.DList.Basic
 import Mathlib.Data.Equiv.Functor
 import Mathlib.Data.Fin.Basic
@@ -83,7 +89,9 @@ import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Quot
+import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Init
+import Mathlib.Data.Rat.Order
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.String.Defs
@@ -126,6 +134,7 @@ import Mathlib.Lean.Expr.Traverse
 import Mathlib.Lean.LocalContext
 import Mathlib.Lean.Meta
 import Mathlib.Logic.Basic
+import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Equiv.LocalEquiv
@@ -150,6 +159,7 @@ import Mathlib.Order.GameAdd
 import Mathlib.Order.Iterate
 import Mathlib.Order.Lattice
 import Mathlib.Order.Max
+import Mathlib.Order.MinMax
 import Mathlib.Order.Monotone
 import Mathlib.Order.RelClasses
 import Mathlib.Order.Synonym
