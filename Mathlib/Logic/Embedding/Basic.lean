@@ -165,12 +165,12 @@ protected def congr {α : Sort u} {β : Sort v} {γ : Sort w} {δ : Sort x} (e�
   (Equiv.toEmbedding e₁.symm).trans (f.trans e₂.toEmbedding)
 #align function.embedding.congr Function.Embedding.congr
 
-/-- A right inverse `surj_inv` of a surjective function as an `embedding`. -/
+/-- A right inverse `surjInv` of a surjective function as an `Embedding`. -/
 protected noncomputable def ofSurjective {α β} (f : β → α) (hf : Surjective f) : α ↪ β :=
   ⟨surjInv hf, injective_surjInv _⟩
 #align function.embedding.of_surjective Function.Embedding.ofSurjective
 
-/-- Convert a surjective `embedding` to an `equiv` -/
+/-- Convert a surjective `Embedding` to an `Equiv` -/
 protected noncomputable def equivOfSurjective {α β} (f : α ↪ β) (hf : Surjective f) : α ≃ β :=
   Equiv.ofBijective f ⟨f.injective, hf⟩
 #align function.embedding.equiv_of_surjective Function.Embedding.equivOfSurjective
@@ -195,10 +195,10 @@ def setValue {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = 
       (hxa rfl).elim, (hyb rfl).elim, (hya rfl).elim, rfl]⟩
 #align function.embedding.set_value Function.Embedding.setValue
 
-theorem set_value_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
+theorem setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
     [∀ a', Decidable (f a' = b)] : setValue f a b a = b := by
   simp [setValue]
-#align function.embedding.set_value_eq Function.Embedding.set_value_eq
+#align function.embedding.set_value_eq Function.Embedding.setValue_eq
 
 /-- Embedding into `option α` using `some`. -/
 @[simps (config := { fullyApplied := false })]
@@ -281,9 +281,9 @@ def sumMap {α β γ δ : Type _} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : Sum α
 #align function.embedding.sum_map Function.Embedding.sumMap
 
 @[simp]
-theorem coe_sum_map {α β γ δ} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : sumMap e₁ e₂ = Sum.map e₁ e₂ :=
+theorem coe_sumMap {α β γ δ} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : sumMap e₁ e₂ = Sum.map e₁ e₂ :=
   rfl
-#align function.embedding.coe_sum_map Function.Embedding.coe_sum_map
+#align function.embedding.coe_sum_map Function.Embedding.coe_sumMap
 
 /-- The embedding of `α` into the sum `α ⊕ β`. -/
 @[simps]
@@ -332,10 +332,10 @@ def arrowCongrRight {α : Sort u} {β : Sort v} {γ : Sort w} (e : α ↪ β) : 
 #align function.embedding.arrow_congr_right Function.Embedding.arrowCongrRight
 
 @[simp]
-theorem arrow_congr_right_apply {α : Sort u} {β : Sort v} {γ : Sort w} (e : α ↪ β) (f : γ ↪ α) :
+theorem arrowCongrRight_apply {α : Sort u} {β : Sort v} {γ : Sort w} (e : α ↪ β) (f : γ ↪ α) :
     arrowCongrRight e f = e ∘ f :=
   rfl
-#align function.embedding.arrow_congr_right_apply Function.Embedding.arrow_congr_right_apply
+#align function.embedding.arrow_congr_right_apply Function.Embedding.arrowCongrRight_apply
 
 /-- An embedding `e : α ↪ β` defines an embedding `(α → γ) ↪ (β → γ)` for any inhabited type `γ`.
 This embedding sends each `f : α → γ` to a function `g : β → γ` such that `g ∘ e = f` and
