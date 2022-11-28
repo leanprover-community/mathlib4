@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Order.Monoid
+import Mathlib.Algebra.Order.Monoid.Cancel
 import Mathlib.Algebra.Order.Monoid.Lemmas
 
 /-!
