@@ -52,20 +52,20 @@ def _root_.Lean.MVarId.existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId :
     mvar
 
 /--
-Given a monadic function `deduce` that takes a type and a term of that type and produces a new term,
-lifts this to the monadic function that opens a `∀` telescope, applies `deduce` to the body,
+Given a monadic function `F` that takes a type and a term of that type and produces a new term,
+lifts this to the monadic function that opens a `∀` telescope, applies `F` to the body,
 and then builds the lambda telescope term for the new term.
 -/
-def mapForallTelescope' (deduce : Expr → Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
+def mapForallTelescope' (F : Expr → Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
   forallTelescope (← Meta.inferType forallTerm) fun xs ty => do
-    Meta.mkLambdaFVars xs (← deduce ty (mkAppN forallTerm xs))
+    Meta.mkLambdaFVars xs (← F ty (mkAppN forallTerm xs))
 
 /--
-Given a monadic function `deduce` that takes a term and produces a new term,
-lifts this to the monadic function that opens a `∀` telescope, applies `deduce` to the body,
+Given a monadic function `F` that takes a term and produces a new term,
+lifts this to the monadic function that opens a `∀` telescope, applies `F` to the body,
 and then builds the lambda telescope term for the new term.
 -/
-def mapForallTelescope (deduce : Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
-  mapForallTelescope' (fun _ e => deduce e) forallTerm
+def mapForallTelescope (F : Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
+  mapForallTelescope' (fun _ e => F e) forallTerm
 
 end Lean.Meta
