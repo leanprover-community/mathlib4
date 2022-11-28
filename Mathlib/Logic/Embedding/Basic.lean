@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.Option.Basic
 import Mathlib.Data.Prod.PProd
 import Mathlib.Logic.Equiv.Basic
 
@@ -343,7 +344,7 @@ This embedding sends each `f : α → γ` to a function `g : β → γ` such tha
 noncomputable def arrowCongrLeft {α : Sort u} {β : Sort v} {γ : Sort w} [Inhabited γ] (e : α ↪ β) :
     (α → γ) ↪ β → γ :=
   ⟨fun f => extend e f default, fun f₁ f₂ h =>
-    funext fun x => by simpa only [extend_apply e.injective] using congr_fun h (e x)⟩
+    funext fun x => by simpa only [e.injective.extend_apply] using congr_fun h (e x)⟩
 #align function.embedding.arrow_congr_left Function.Embedding.arrowCongrLeft
 
 /-- Restrict both domain and codomain of an embedding. -/
@@ -406,32 +407,32 @@ def embeddingCongr {α β γ δ : Sort _} (h : α ≃ β) (h' : γ ≃ δ) : (α
 #align equiv.embedding_congr Equiv.embeddingCongr
 
 @[simp]
-theorem embedding_congr_refl {α β : Sort _} :
+theorem embeddingCongr_refl {α β : Sort _} :
     embeddingCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α ↪ β) :=
   rfl
-#align equiv.embedding_congr_refl Equiv.embedding_congr_refl
+#align equiv.embedding_congr_refl Equiv.embeddingCongr_refl
 
 @[simp]
-theorem embedding_congr_trans {α₁ β₁ α₂ β₂ α₃ β₃ : Sort _} (e₁ : α₁ ≃ α₂) (e₁' : β₁ ≃ β₂)
+theorem embeddingCongr_trans {α₁ β₁ α₂ β₂ α₃ β₃ : Sort _} (e₁ : α₁ ≃ α₂) (e₁' : β₁ ≃ β₂)
     (e₂ : α₂ ≃ α₃) (e₂' : β₂ ≃ β₃) :
     embeddingCongr (e₁.trans e₂) (e₁'.trans e₂') =
       (embeddingCongr e₁ e₁').trans (embeddingCongr e₂ e₂') :=
   rfl
-#align equiv.embedding_congr_trans Equiv.embedding_congr_trans
+#align equiv.embedding_congr_trans Equiv.embeddingCongr_trans
 
 @[simp]
-theorem embedding_congr_symm {α₁ β₁ α₂ β₂ : Sort _} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
+theorem embeddingCongr_symm {α₁ β₁ α₂ β₂ : Sort _} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
     (embeddingCongr e₁ e₂).symm = embeddingCongr e₁.symm e₂.symm :=
   rfl
-#align equiv.embedding_congr_symm Equiv.embedding_congr_symm
+#align equiv.embedding_congr_symm Equiv.embeddingCongr_symm
 
-theorem embedding_congr_apply_trans {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort _} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂)
+theorem embeddingCongr_apply_trans {α₁ β₁ γ₁ α₂ β₂ γ₂ : Sort _} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂)
     (ec : γ₁ ≃ γ₂) (f : α₁ ↪ β₁) (g : β₁ ↪ γ₁) :
     Equiv.embeddingCongr ea ec (f.trans g) =
       (Equiv.embeddingCongr ea eb f).trans (Equiv.embeddingCongr eb ec g) := by
   ext
   simp
-#align equiv.embedding_congr_apply_trans Equiv.embedding_congr_apply_trans
+#align equiv.embedding_congr_apply_trans Equiv.embeddingCongr_apply_trans
 
 @[simp]
 theorem refl_toEmbedding {α : Type _} : (Equiv.refl α).toEmbedding = Embedding.refl α :=
@@ -460,17 +461,17 @@ def subtypeOrLeftEmbedding (p q : α → Prop) [DecidablePred p] :
     split_ifs <;> simp [Subtype.ext_iff]⟩
 #align subtype_or_left_embedding subtypeOrLeftEmbedding
 
-theorem subtype_or_left_embedding_apply_left {p q : α → Prop} [DecidablePred p]
+theorem subtypeOrLeftEmbedding_apply_left {p q : α → Prop} [DecidablePred p]
     (x : { x // p x ∨ q x }) (hx : p x) :
     subtypeOrLeftEmbedding p q x = Sum.inl ⟨x, hx⟩ :=
   dif_pos hx
-#align subtype_or_left_embedding_apply_left subtype_or_left_embedding_apply_left
+#align subtype_or_left_embedding_apply_left subtypeOrLeftEmbedding_apply_left
 
-theorem subtype_or_left_embedding_apply_right {p q : α → Prop} [DecidablePred p]
+theorem subtypeOrLeftEmbedding_apply_right {p q : α → Prop} [DecidablePred p]
     (x : { x // p x ∨ q x }) (hx : ¬p x) :
     subtypeOrLeftEmbedding p q x = Sum.inr ⟨x, x.prop.resolve_left hx⟩ :=
   dif_neg hx
-#align subtype_or_left_embedding_apply_right subtype_or_left_embedding_apply_right
+#align subtype_or_left_embedding_apply_right subtypeOrLeftEmbedding_apply_right
 
 /-- A subtype `{x // p x}` can be injectively sent to into a subtype `{x // q x}`,
 if `p x → q x` for all `x : α`. -/
