@@ -212,18 +212,26 @@ def mulSingle (i : I) (x : f i) : ∀ (j : I), f j :=
 theorem mulSingle_eq_same (i : I) (x : f i) : mulSingle i x i = x :=
   Function.update_same i x _
 
+#align pi.mul_single_eq_same Pi.mulSingle_eq_same
+
 @[simp, to_additive]
 theorem mulSingle_eq_of_ne {i i' : I} (h : i' ≠ i) (x : f i) : mulSingle i x i' = 1 :=
   Function.update_noteq h x _
+
+#align pi.mul_single_eq_of_ne Pi.mulSingle_eq_of_ne
 
 /-- Abbreviation for `mulSingle_eq_of_ne h.symm`, for ease of use by `simp`. -/
 @[simp, to_additive "Abbreviation for `single_eq_of_ne h.symm`, for ease of\nuse by `simp`."]
 theorem mulSingle_eq_of_ne' {i i' : I} (h : i ≠ i') (x : f i) : mulSingle i x i' = 1 :=
   mulSingle_eq_of_ne h.symm x
 
+#align pi.mul_single_eq_of_ne' Pi.mulSingle_eq_of_ne'
+
 @[simp, to_additive]
 theorem mulSingle_one (i : I) : mulSingle i (1 : f i) = 1 :=
   Function.update_eq_self _ _
+
+#align pi.mul_single_one Pi.mulSingle_one
 
 -- Porting notes:
 -- 1) Why do I have to specify the type of `mulSingle i x` explicitly?
@@ -235,6 +243,8 @@ theorem mulSingle_apply [One β] (i : I) (x : β) (i' : I) :
     (mulSingle i x : I → β) i' = if i' = i then x else 1 :=
   Function.update_apply (1 : I → β) i x i'
 
+#align pi.mul_single_apply Pi.mulSingle_apply
+
 -- Porting notes : Same as above.
 /-- On non-dependent functions, `Pi.mulSingle` is symmetric in the two indices. -/
 @[to_additive "On non-dependent functions, `Pi.single` is symmetric in the two indices."]
@@ -242,10 +252,14 @@ theorem mulSingle_comm [One β] (i : I) (x : β) (i' : I) :
     (mulSingle i x : I → β) i' = (mulSingle i' x : I → β) i := by
   simp [mulSingle_apply, eq_comm]
 
+#align pi.mul_single_comm Pi.mulSingle_comm
+
 @[to_additive]
 theorem apply_mulSingle (f' : ∀ i, f i → g i) (hf' : ∀ i, f' i 1 = 1) (i : I) (x : f i) (j : I) :
     f' j (mulSingle i x j) = mulSingle i (f' i x) j := by
   simpa only [Pi.one_apply, hf', mulSingle] using Function.apply_update f' 1 i x j
+
+#align pi.apply_mul_single Pi.apply_mulSingle
 
 @[to_additive apply_single₂]
 theorem apply_mulSingle₂ (f' : ∀ i, f i → g i → h i) (hf' : ∀ i, f' i 1 1 = 1) (i : I)
@@ -257,11 +271,15 @@ theorem apply_mulSingle₂ (f' : ∀ i, f i → g i → h i) (hf' : ∀ i, f' i 
 
   · simp only [mulSingle_eq_of_ne h, hf']
 
+#align pi.apply_mul_single₂ Pi.apply_mulSingle₂
+
 @[to_additive]
 theorem mulSingle_op {g : I → Type _} [∀ i, One (g i)] (op : ∀ i, f i → g i)
     (h : ∀ i, op i 1 = 1) (i : I) (x : f i) :
     mulSingle i (op i x) = fun j => op j (mulSingle i x j) :=
   Eq.symm <| funext <| apply_mulSingle op h i x
+
+#align pi.mul_single_op Pi.mulSingle_op
 
 @[to_additive]
 theorem mulSingle_op₂ {g₁ g₂ : I → Type _} [∀ i, One (g₁ i)] [∀ i, One (g₂ i)]
@@ -271,25 +289,18 @@ theorem mulSingle_op₂ {g₁ g₂ : I → Type _} [∀ i, One (g₁ i)] [∀ i,
 
 variable (f)
 
+#align pi.mul_single_op₂ Pi.mulSingle_op₂
+
 @[to_additive]
 theorem mulSingle_injective (i : I) : Function.Injective (mulSingle i : f i → ∀ i, f i) :=
   Function.update_injective _ i
+
+#align pi.mul_single_injective Pi.mulSingle_injective
 
 @[simp, to_additive]
 theorem mulSingle_inj (i : I) {x y : f i} : mulSingle i x = mulSingle i y ↔ x = y :=
   (Pi.mulSingle_injective _ _).eq_iff
 
-#align pi.mul_single_eq_same Pi.mulSingle_eq_same
-#align pi.mul_single_eq_of_ne Pi.mulSingle_eq_of_ne
-#align pi.mul_single_eq_of_ne' Pi.mulSingle_eq_of_ne'
-#align pi.mul_single_one Pi.mulSingle_one
-#align pi.mul_single_apply Pi.mulSingle_apply
-#align pi.mul_single_comm Pi.mulSingle_comm
-#align pi.apply_mul_single Pi.apply_mulSingle
-#align pi.apply_mul_single₂ Pi.apply_mulSingle₂
-#align pi.mul_single_op Pi.mulSingle_op
-#align pi.mul_single_op₂ Pi.mulSingle_op₂
-#align pi.mul_single_injective Pi.mulSingle_injective
 #align pi.mul_single_inj Pi.mulSingle_inj
 
 end
@@ -299,26 +310,12 @@ end
 protected def prod (f' : ∀ i, f i) (g' : ∀ i, g i) (i : I) : f i × g i :=
   (f' i, g' i)
 
--- Porting note : These two are simp-normal-form versions of the lemmas below.
--- They should probably be placed in a lower file and be renamed.
-@[simp]
-theorem prod_fst_snd₂ : (fun (i : α × β) => i) = id :=
-  funext fun _ => Prod.mk.eta
-
--- Porting note : These two are simp-normal-form versions of the lemmas below.
--- They should probably be placed in a lower file and be renamed.
-@[simp]
-theorem prod_snd_fst₂ : (fun (i : α × β) => (i.snd, i.fst)) = Prod.swap :=
-  rfl
-
--- Porting note : Linter says these two are not in simp-normal-form. Above is the normal
--- form version.
+-- Porting note : simp now unfolds the lhs, so we are not marking these as simp.
 -- @[simp]
 theorem prod_fst_snd : Pi.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
   funext fun _ => Prod.mk.eta
 
--- Porting note : Linter says these two are not in simp-normal-form. Above is the normal
--- form version.
+-- Porting note : simp now unfolds the lhs, so we are not marking these as simp.
 -- @[simp]
 theorem prod_snd_fst : Pi.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = Prod.swap :=
   rfl
@@ -339,10 +336,13 @@ theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ :
   classical
   funext x
   simp only [not_exists, extend_def, Pi.mul_apply, apply_dite₂, dite_eq_ite, ite_self]
--- Porting note : This was the converted proof term not using tactic mode:
--- `funext fun _ => by convert (apply_dite₂ (· * ·) _ _ _ _ _).symm`
--- The Lean3 statement was
+-- Porting note: The Lean3 statement was
 -- `funext $ λ _, by convert (apply_dite2 (*) _ _ _ _ _).symm`
+-- which converts to
+-- `funext fun _ => by convert (apply_dite₂ (· * ·) _ _ _ _ _).symm`
+-- However this does not work, and we're not sure why.
+
+
 
 @[to_additive]
 theorem extend_inv [Inv γ] (f : α → β) (g : α → γ) (e : β → γ) :
@@ -350,8 +350,11 @@ theorem extend_inv [Inv γ] (f : α → β) (g : α → γ) (e : β → γ) :
   classical
   funext x
   simp only [not_exists, extend_def, Pi.inv_apply, apply_dite Inv.inv]
--- Porting note : This was the converted proof term not using tactic mode:
+-- Porting note: The Lean3 statement was
+-- `funext $ λ _, by convert (apply_dite has_inv.inv _ _ _).symm`
+-- which converts to
 -- `funext fun _ => by convert (apply_dite Inv.inv _ _ _).symm`
+-- However this does not work, and we're not sure why.
 
 @[to_additive]
 theorem extend_div [Div γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ : β → γ) :
@@ -359,8 +362,11 @@ theorem extend_div [Div γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ :
   classical
   funext x
   simp [Function.extend_def, apply_dite₂]
--- Porting note : This was the converted proof term not using tactic mode:
+-- Porting note: The Lean3 statement was
+-- `funext $ λ _, by convert (apply_dite2 (/) _ _ _ _ _).symm`
+-- which converts to
 -- `funext fun _ => by convert (apply_dite₂ (· / ·) _ _ _ _ _).symm`
+-- However this does not work, and we're not sure why.
 
 end Extend
 
