@@ -12,6 +12,7 @@ import Lean
 import Lean.Data
 import Lean.Elab.Term
 import Std.Lean.NameMapAttribute
+import Std.Data.Option.Basic
 
 /-!
 # The `@[to_additive]` attribute.
@@ -460,9 +461,9 @@ def copySimpAttribute (src tgt : Name) : CoreM Unit := do
 [todo] it seems not to work when the `to_additive` is added as an attribute later. -/
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if (← isInstance src) then
-    -- [todo] add priority and correct `AttributeKind`. This depends on missing API in core, see
-    -- https://github.com/leanprover/lean4/issues/1878
-    addInstance tgt AttributeKind.global 100 |>.run'
+    let prio := (← getInstancePriority? src).elim 100 id
+    let attr_kind := (← getInstanceAttrKind? src).elim AttributeKind.global id
+    addInstance tgt attr_kind prio |>.run'
 
 /-- [todo] add more attributes. -/
 def copyAttributes (src tgt : Name) : CoreM Unit := do
