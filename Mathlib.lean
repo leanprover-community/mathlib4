@@ -29,6 +29,7 @@ import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Quotient
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.InjSurj
