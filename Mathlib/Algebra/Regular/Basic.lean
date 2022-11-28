@@ -208,8 +208,8 @@ theorem is_regular_iff_subsingleton : IsRegular (0 : R) ↔ Subsingleton R :=
 theorem IsLeftRegular.ne_zero [Nontrivial R] (la : IsLeftRegular a) : a ≠ 0 := by
   rintro rfl
   rcases exists_pair_ne R with ⟨x, y, xy⟩
-  refine' xy (la _)
-  rw [zero_mul, zero_mul] -- Porting note: This seems like this should work. A difference in lean4?
+  refine' xy (la (_ : 0 * x = 0 * y)) -- Porting note: lean4 seems to need the type signature
+  rw [zero_mul, zero_mul]
 #align is_left_regular.ne_zero IsLeftRegular.ne_zero
 
 /-- A right-regular element of a `nontrivial` `mul_zero_class` is non-zero. -/
