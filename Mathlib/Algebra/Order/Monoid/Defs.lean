@@ -81,10 +81,10 @@ theorem Mul.to_CovariantClass_right (M : Type _) [Mul M] [PartialOrder M]
 
 end OrderedInstances
 
--- FIXME porting note: should this be kept since `bit0` is deprecated?
--- theorem bit0_pos [OrderedAddCommMonoid α] {a : α} (h : 0 < a) : 0 < bit0 a :=
---   add_pos' h h
--- #align bit0_pos bit0_pos
+set_option linter.deprecated false in
+@[deprecated] theorem bit0_pos [OrderedAddCommMonoid α] {a : α} (h : 0 < a) : 0 < bit0 a :=
+  add_pos' h h
+#align bit0_pos bit0_pos
 
 /-- A linearly ordered additive commutative monoid. -/
 class LinearOrderedAddCommMonoid (α : Type _) extends LinearOrder α, OrderedAddCommMonoid α
