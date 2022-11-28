@@ -32,7 +32,8 @@ I am experimenting with using the `aesop` tactic as a replacement for `tidy`.
 -/
 
 
-library_note "category_theory universes"/--
+library_note "category_theory universes"
+/--
 The typeclass `Category C` describes morphisms associated to objects of type `C : Type u`.
 
 The universe levels of the objects and morphisms are independent, and will often need to be
