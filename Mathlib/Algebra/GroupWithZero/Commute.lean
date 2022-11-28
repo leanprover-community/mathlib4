@@ -46,29 +46,15 @@ theorem Commute.ring_inverse_ring_inverse {a b : M₀} (h : Commute a b) :
 
 namespace Commute
 
-/- warning: commute.zero_right -> Commute.zero_right is a dubious translation:
-lean 3 declaration is
-  forall {G₀ : Type.{u_3}} [_inst_2 : MulZeroClass.{u_3} G₀] (a : G₀), Commute.{u_3} G₀ (MulZeroClass.toHasMul.{u_3} G₀ _inst_2) a (OfNat.ofNat.{u_3} G₀ 0 (OfNat.mk.{u_3} G₀ 0 (Zero.zero.{u_3} G₀ (MulZeroClass.toHasZero.{u_3} G₀ _inst_2))))
-but is expected to have type
-  forall {R : Type.{u_1}} [inst._@.Mathlib.Algebra.Ring.Basic._hyg.11 : Semiring.{u_1} R] (a : R), Commute.{u_1} R (NonUnitalNonAssocSemiring.toMul.{u_1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} R (Semiring.toNonAssocSemiring.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.11))) a (OfNat.ofNat.{u_1} R 0 (Zero.toOfNat0.{u_1} R (MonoidWithZero.toZero.{u_1} R (Semiring.toMonoidWithZero.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.11))))
-Case conversion may be inaccurate. Consider using '#align commute.zero_right Commute.zero_rightₓ'. -/
 @[simp]
 theorem zero_right [MulZeroClass G₀] (a : G₀) : Commute a 0 :=
   SemiconjBy.zero_right a
-#align commute.zero_right Commute.zero_rightₓ
--- mathport expects `Semiring` instead of `MulZeroClass`?
+#align commute.zero_right Commute.zero_right
 
-/- warning: commute.zero_left -> Commute.zero_left is a dubious translation:
-lean 3 declaration is
-  forall {G₀ : Type.{u_3}} [_inst_2 : MulZeroClass.{u_3} G₀] (a : G₀), Commute.{u_3} G₀ (MulZeroClass.toHasMul.{u_3} G₀ _inst_2) (OfNat.ofNat.{u_3} G₀ 0 (OfNat.mk.{u_3} G₀ 0 (Zero.zero.{u_3} G₀ (MulZeroClass.toHasZero.{u_3} G₀ _inst_2)))) a
-but is expected to have type
-  forall {R : Type.{u_1}} [inst._@.Mathlib.Algebra.Ring.Basic._hyg.36 : Semiring.{u_1} R] (a : R), Commute.{u_1} R (NonUnitalNonAssocSemiring.toMul.{u_1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} R (Semiring.toNonAssocSemiring.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.36))) (OfNat.ofNat.{u_1} R 0 (Zero.toOfNat0.{u_1} R (MonoidWithZero.toZero.{u_1} R (Semiring.toMonoidWithZero.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.36)))) a
-Case conversion may be inaccurate. Consider using '#align commute.zero_left Commute.zero_leftₓ'. -/
 @[simp]
 theorem zero_left [MulZeroClass G₀] (a : G₀) : Commute 0 a :=
   SemiconjBy.zero_left a a
-#align commute.zero_left Commute.zero_leftₓ
--- mathport expects `Semiring` instead of `MulZeroClass`?
+#align commute.zero_left Commute.zero_left
 
 variable [GroupWithZero G₀] {a b c : G₀}
 
