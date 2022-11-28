@@ -631,6 +631,12 @@ def fixAbbreviation : List String → List String
 | "Add" :: "Indicator" :: s         => "Indicator" :: fixAbbreviation s
 | "add" :: "Indicator" :: s         => "indicator" :: fixAbbreviation s
 | "add" :: "_" :: "indicator" :: s  => "indicator" :: fixAbbreviation s
+| "is" :: "Regular" :: s            => "isAddRegular" :: fixAbbreviation s
+| "Is" :: "Regular" :: s            => "IsAddRegular" :: fixAbbreviation s
+| "is" :: "Left" :: "Regular" :: s  => "isAddLeftRegular" :: fixAbbreviation s
+| "Is" :: "Left" :: "Regular" :: s  => "IsAddLeftRegular" :: fixAbbreviation s
+| "is" :: "Right" :: "Regular" :: s => "isAddRightRegular" :: fixAbbreviation s
+| "Is" :: "Right" :: "Regular" :: s => "IsAddRightRegular" :: fixAbbreviation s
 -- the capitalization heuristic of `applyNameDict` doesn't work in the following cases
 | "Smul"  :: s                      => "SMul" :: fixAbbreviation s
 | "HSmul" :: s                      => "HSMul" :: fixAbbreviation s
