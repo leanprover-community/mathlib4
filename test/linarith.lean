@@ -4,18 +4,6 @@ import Mathlib.Data.Int.Order.Basic
 
 set_option linter.unusedVariables false
 
--- Verify that instances are available.
--- This block of examples can be deleted later.
-example : LinearOrderedCommRing ℤ := inferInstance
-example : LinearOrderedRing ℤ := LinearOrderedCommRing.toLinearOrderedRing
-example : StrictOrderedRing ℤ := LinearOrderedRing.toStrictOrderedRing
-example : StrictOrderedSemiring ℤ := StrictOrderedRing.toStrictOrderedSemiring
-example : OrderedSemiring ℤ := StrictOrderedSemiring.toOrderedSemiring
-example : OrderedAddCommMonoid ℤ := OrderedSemiring.toOrderedAddCommMonoid
-example : CovariantClass ℤ ℤ (Function.swap (·+·)) (·≤·) :=
-  OrderedAddCommMonoid.to_covariantClass_right ℤ
-example : CovariantClass ℤ ℤ (Function.swap (·+·)) (·≤·) := inferInstance
-
 example [LinearOrderedCommRing α] {a b : α} (h : a < b) (w : b < a) : False := by
   linarith
 
