@@ -28,24 +28,12 @@ open Function
 
 namespace Commute
 
-/- warning: commute.add_right -> Commute.add_right is a dubious translation:
-lean 3 declaration is
-  forall {R : Type.{x}} [_inst_1 : Distrib.{x} R] {a : R} {b : R} {c : R}, (Commute.{x} R (Distrib.toHasMul.{x} R _inst_1) a b) -> (Commute.{x} R (Distrib.toHasMul.{x} R _inst_1) a c) -> (Commute.{x} R (Distrib.toHasMul.{x} R _inst_1) a (HAdd.hAdd.{x x x} R R R (instHAdd.{x} R (Distrib.toHasAdd.{x} R _inst_1)) b c))
-but is expected to have type
-  forall {R : Type.{u_1}} [inst._@.Mathlib.Algebra.Ring.Basic._hyg.61 : Semiring.{u_1} R] {a : R} {b : R} {c : R}, (Commute.{u_1} R (NonUnitalNonAssocSemiring.toMul.{u_1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} R (Semiring.toNonAssocSemiring.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.61))) a b) -> (Commute.{u_1} R (NonUnitalNonAssocSemiring.toMul.{u_1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} R (Semiring.toNonAssocSemiring.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.61))) a c) -> (Commute.{u_1} R (NonUnitalNonAssocSemiring.toMul.{u_1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} R (Semiring.toNonAssocSemiring.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.61))) a (HAdd.hAdd.{u_1 u_1 u_1} R R R (instHAdd.{u_1} R (Distrib.toAdd.{u_1} R (NonUnitalNonAssocSemiring.toDistrib.{u_1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} R (Semiring.toNonAssocSemiring.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.61))))) b c))
-Case conversion may be inaccurate. Consider using '#align commute.add_right Commute.add_rightₓ'. -/
 @[simp]
 theorem add_right [Distrib R] {a b c : R} : Commute a b → Commute a c → Commute a (b + c) :=
   SemiconjBy.add_right
 #align commute.add_right Commute.add_rightₓ
 -- for some reason mathport expected `Semiring` instead of `Distrib`?
 
-/- warning: commute.add_left -> Commute.add_left is a dubious translation:
-lean 3 declaration is
-  forall {R : Type.{x}} [_inst_1 : Distrib.{x} R] {a : R} {b : R} {c : R}, (Commute.{x} R (Distrib.toHasMul.{x} R _inst_1) a c) -> (Commute.{x} R (Distrib.toHasMul.{x} R _inst_1) b c) -> (Commute.{x} R (Distrib.toHasMul.{x} R _inst_1) (HAdd.hAdd.{x x x} R R R (instHAdd.{x} R (Distrib.toHasAdd.{x} R _inst_1)) a b) c)
-but is expected to have type
-  forall {R : Type.{u_1}} [inst._@.Mathlib.Algebra.Ring.Basic._hyg.96 : Semiring.{u_1} R] {a : R} {b : R} {c : R}, (Commute.{u_1} R (NonUnitalNonAssocSemiring.toMul.{u_1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} R (Semiring.toNonAssocSemiring.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.96))) a c) -> (Commute.{u_1} R (NonUnitalNonAssocSemiring.toMul.{u_1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} R (Semiring.toNonAssocSemiring.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.96))) b c) -> (Commute.{u_1} R (NonUnitalNonAssocSemiring.toMul.{u_1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} R (Semiring.toNonAssocSemiring.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.96))) (HAdd.hAdd.{u_1 u_1 u_1} R R R (instHAdd.{u_1} R (Distrib.toAdd.{u_1} R (NonUnitalNonAssocSemiring.toDistrib.{u_1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} R (Semiring.toNonAssocSemiring.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.96))))) a b) c)
-Case conversion may be inaccurate. Consider using '#align commute.add_left Commute.add_leftₓ'. -/
 @[simp]
 theorem add_left [Distrib R] {a b c : R} : Commute a c → Commute b c → Commute (a + b) c :=
   SemiconjBy.add_left
