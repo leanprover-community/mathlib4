@@ -787,7 +787,7 @@ theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
     _ = a * a ^ n := congr_arg ((· * ·) a) (zpow_ofNat a n)
     _ = a ^ (n + 1) := (pow_succ _ _).symm
 
-@[simp, to_additive]
+@[simp]
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
   rw [← zpow_ofNat]
   exact DivInvMonoid.zpow_neg' n a
