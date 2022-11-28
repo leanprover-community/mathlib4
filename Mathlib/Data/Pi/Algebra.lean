@@ -342,8 +342,6 @@ theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ :
 -- `funext fun _ => by convert (apply_dite₂ (· * ·) _ _ _ _ _).symm`
 -- However this does not work, and we're not sure why.
 
-
-
 @[to_additive]
 theorem extend_inv [Inv γ] (f : α → β) (g : α → γ) (e : β → γ) :
     Function.extend f g⁻¹ e⁻¹ = (Function.extend f g e)⁻¹ := by
