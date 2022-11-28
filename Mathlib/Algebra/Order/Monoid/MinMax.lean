@@ -3,8 +3,9 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathbin.Order.MinMax
-import Mathbin.Algebra.Order.Monoid.Lemmas
+import Mathlib.Order.MinMax
+import Mathlib.Algebra.Order.Monoid.Lemmas
+import Mathlib.Tactic.Contrapose
 
 /-!
 # Lemmas about `min` and `max` in an ordered monoid.
@@ -50,22 +51,20 @@ theorem max_mul_mul_left (a b c : α) : max (a * b) (a * c) = a * max b c :=
 #align max_mul_mul_left max_mul_mul_left
 
 @[to_additive]
-theorem lt_or_lt_of_mul_lt_mul [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a b m n : α} (h : m * n < a * b) :
-    m < a ∨ n < b := by
+theorem lt_or_lt_of_mul_lt_mul [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a b m n : α}
+    (h : m * n < a * b) : m < a ∨ n < b := by
   contrapose! h
   exact mul_le_mul' h.1 h.2
 #align lt_or_lt_of_mul_lt_mul lt_or_lt_of_mul_lt_mul
 
 @[to_additive]
 theorem mul_lt_mul_iff_of_le_of_le [CovariantClass α α (Function.swap (· * ·)) (· < ·)]
-    [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a b c d : α} (ac : a ≤ c)
-    (bd : b ≤ d) : a * b < c * d ↔ a < c ∨ b < d := by
+    [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)]
+    {a b c d : α} (ac : a ≤ c) (bd : b ≤ d) : a * b < c * d ↔ a < c ∨ b < d := by
   refine' ⟨lt_or_lt_of_mul_lt_mul, fun h => _⟩
   cases' h with ha hb
   · exact mul_lt_mul_of_lt_of_le ha bd
-    
   · exact mul_lt_mul_of_le_of_lt ac hb
-    
 #align mul_lt_mul_iff_of_le_of_le mul_lt_mul_iff_of_le_of_le
 
 end Left
@@ -91,21 +90,22 @@ end Mul
 variable [MulOneClass α]
 
 @[to_additive]
-theorem min_le_mul_of_one_le_right [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} (hb : 1 ≤ b) : min a b ≤ a * b :=
+theorem min_le_mul_of_one_le_right [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} (hb : 1 ≤ b) :
+    min a b ≤ a * b :=
   min_le_iff.2 <| Or.inl <| le_mul_of_one_le_right' hb
 #align min_le_mul_of_one_le_right min_le_mul_of_one_le_right
 
 @[to_additive]
-theorem min_le_mul_of_one_le_left [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a b : α} (ha : 1 ≤ a) :
-    min a b ≤ a * b :=
+theorem min_le_mul_of_one_le_left [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a b : α}
+    (ha : 1 ≤ a) : min a b ≤ a * b :=
   min_le_iff.2 <| Or.inr <| le_mul_of_one_le_left' ha
 #align min_le_mul_of_one_le_left min_le_mul_of_one_le_left
 
 @[to_additive]
-theorem max_le_mul_of_one_le [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)]
-    {a b : α} (ha : 1 ≤ a) (hb : 1 ≤ b) : max a b ≤ a * b :=
+theorem max_le_mul_of_one_le [CovariantClass α α (· * ·) (· ≤ ·)]
+    [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a b : α} (ha : 1 ≤ a) (hb : 1 ≤ b) :
+    max a b ≤ a * b :=
   max_le_iff.2 ⟨le_mul_of_one_le_right' hb, le_mul_of_one_le_left' ha⟩
 #align max_le_mul_of_one_le max_le_mul_of_one_le
 
 end CovariantClassMulLe
-

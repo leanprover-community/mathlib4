@@ -25,6 +25,7 @@ import Mathlib.Algebra.Order.Group
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Monoid
 import Mathlib.Algebra.Order.Monoid.Lemmas
+import Mathlib.Algebra.Order.Monoid.MinMax
 import Mathlib.Algebra.Order.Ring
 import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.Order.Sub.Defs
