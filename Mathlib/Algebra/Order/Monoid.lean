@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.CovariantAndContravariant
-import Mathlib.Algebra.Order.MonoidLemmas
+import Mathlib.Algebra.Order.Monoid.Lemmas
 
 /-!
 # Ordered monoids
@@ -41,10 +41,7 @@ open Function
 @[to_additive OrderedAddCommMonoid.to_covariantClass_left]
 instance OrderedCommMonoid.to_covariantClass_left (M : Type _) [OrderedCommMonoid M] :
     CovariantClass M M (· * ·) (· ≤ ·) where
-  elim := fun a _ _ bc => OrderedCommMonoid.mul_le_mul_left _ _ bc a
-
--- TODO `to_additive` should copy this
-attribute [instance] OrderedAddCommMonoid.to_covariantClass_left
+  elim := fun a _ _ bc ↦ OrderedCommMonoid.mul_le_mul_left _ _ bc a
 
 /- This instance can be proven with `by apply_instance`.  However, `with_bot ℕ` does not
 pick up a `CovariantClass M M (function.swap (*)) (≤)` instance without it (see PR mathlib#7940). -/
@@ -52,9 +49,6 @@ pick up a `CovariantClass M M (function.swap (*)) (≤)` instance without it (se
 instance OrderedCommMonoid.to_covariantClass_right (M : Type _) [OrderedCommMonoid M] :
     CovariantClass M M (swap (· * ·)) (· ≤ ·) :=
   covariant_swap_mul_le_of_covariant_mul_le M
-
--- TODO `to_additive` should copy this
-attribute [instance] OrderedAddCommMonoid.to_covariantClass_right
 
 /- This is not an instance, to avoid creating a loop in the type-class system: in a
 `left_cancel_semigroup` with a `partial_order`, assuming `CovariantClass M M (*) (≤)` implies
@@ -65,9 +59,6 @@ theorem Mul.to_covariantClass_left (M : Type _) [Mul M] [PartialOrder M]
   ⟨covariant_le_of_covariant_lt _ _ _ CovariantClass.elim⟩
 #align Mul.to_covariant_class_left Mul.to_covariantClass_left
 
--- TODO `to_additive` should copy this
-attribute [instance] Add.to_covariantClass_left
-
 /- This is not an instance, to avoid creating a loop in the type-class system: in a
 `right_cancel_semigroup` with a `partial_order`, assuming `CovariantClass M M (swap (*)) (<)`
 implies `CovariantClass M M (swap (*)) (≤)`, see
@@ -77,10 +68,6 @@ theorem Mul.to_covariantClass_right (M : Type _) [Mul M] [PartialOrder M]
     [CovariantClass M M (swap (· * ·)) (· < ·)] : CovariantClass M M (swap (· * ·)) (· ≤ ·) :=
   ⟨covariant_le_of_covariant_lt _ _ _ CovariantClass.elim⟩
 #align Mul.to_covariant_class_right Mul.to_covariantClass_right
-
-
--- TODO `to_additive` should copy this
-attribute [instance] Add.to_covariantClass_right
 
 end OrderedInstances
 
@@ -110,9 +97,6 @@ class OrderedCancelCommMonoid (α : Type u) extends CommMonoid α, PartialOrder 
 instance (priority := 100) OrderedCancelCommMonoid.toOrderedCommMonoid [OrderedCancelCommMonoid α] :
     OrderedCommMonoid α :=
   { ‹OrderedCancelCommMonoid α› with }
-
--- TODO `to_additive` should copy this
-attribute [instance] OrderedCancelAddCommMonoid.toOrderedAddCommMonoid
 
 /-- A linearly ordered additive commutative monoid. -/
 class LinearOrderedAddCommMonoid (α : Type _) extends LinearOrder α, OrderedAddCommMonoid α

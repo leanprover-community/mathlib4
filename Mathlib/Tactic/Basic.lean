@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Lean
 import Std
 import Mathlib.Tactic.Cases
+import Mathlib.Util.MapsTo
 
 namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
@@ -18,8 +19,18 @@ syntax (name := «variables») "variables" (bracketedBinder)* : command
     elabVariable (← `(variable%$pos $binders*))
   | _ => throwUnsupportedSyntax
 
-macro mods:declModifiers "lemma" n:declId sig:declSig val:declVal : command =>
-  `($mods:declModifiers theorem $n $sig $val)
+/-- `lemma` means the same as `theorem`. It is used to denote "less important" theorems -/
+syntax (name := lemma)
+  declModifiers group("lemma" declId declSig declVal Parser.Command.terminationSuffix) : command
+
+/-- Implementation of the `lemma` command, by macro expansion to `theorem`. -/
+@[macro «lemma»] def expandLemma : Macro := fun stx =>
+  -- FIXME: this should be a macro match, but terminationSuffix is not easy to bind correctly.
+  -- This implementation ensures that any future changes to `theorem` are reflected in `lemma`
+  let stx := stx.modifyArg 1 fun stx =>
+    let stx := stx.modifyArg 0 (mkAtomFrom · "theorem" (canonical := true))
+    stx.setKind ``Parser.Command.theorem
+  pure <| stx.setKind ``Parser.Command.declaration
 
 /-- `change` is a synonym for `show`,
 and can be used to replace a goal with a definitionally equal one. -/
@@ -76,7 +87,7 @@ h₂ : b = c
 ```
 -/
 syntax (name := introv) "introv " (colGt binderIdent)* : tactic
-@[tactic introv] partial def evalIntrov : Tactic := fun stx => do
+@[tactic introv] partial def evalIntrov : Tactic := fun stx ↦ do
   match stx with
   | `(tactic| introv)                     => introsDep
   | `(tactic| introv $h:ident $hs:binderIdent*) =>
@@ -94,7 +105,7 @@ where
         introsDep
     | _ => pure ()
   intro1PStep : TacticM Unit :=
-    liftMetaTactic fun goal => do
+    liftMetaTactic fun goal ↦ do
       let (_, goal) ← goal.intro1P
       pure [goal]
 

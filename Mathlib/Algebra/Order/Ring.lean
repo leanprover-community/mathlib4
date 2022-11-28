@@ -9,7 +9,6 @@ import Mathlib.Algebra.Order.Monoid
 import Mathlib.Algebra.Order.Group
 import Mathlib.Logic.Nontrivial
 
-
 /-!
 # Ordered rings and semirings
 
@@ -104,25 +103,27 @@ We're still missing some typeclasses, like
 They have yet to come up in practice.
 -/
 
+set_option warningAsError false
+
 /-- An `OrderedSemiring α` is a semiring `α` with a partial order such that
 addition is monotone and multiplication by a positive number is strictly monotone. -/
-class OrderedSemiring (α : Type u) extends Semiring α, OrderedCancelAddCommMonoid α where
+class OrderedSemiring (α : Type u) extends Semiring α, OrderedAddCommMonoid α where
   /-- `0 ≤ 1` in any ordered semiring. -/
   zero_le_one : (0 : α) ≤ 1
-  /-- In an ordered semiring, we can multiply an inequality `a < b` on the left
-  by a positive element `0 < c` to obtain `c * a < c * b`. -/
-  mul_lt_mul_of_pos_left : ∀ a b c : α, a < b → 0 < c → c * a < c * b
-  /-- In an ordered semiring, we can multiply an inequality `a < b` on the right
-  by a positive element `0 < c` to obtain `a * c < b * c`. -/
-  mul_lt_mul_of_pos_right : ∀ a b c : α, a < b → 0 < c → a * c < b * c
+  /-- In an ordered semiring, we can multiply an inequality `a ≤ b` on the left
+  by a non-negative element `0 ≤ c` to obtain `c * a ≤ c * b`. -/
+  mul_le_mul_of_nonneg_left  : ∀ a b c : α, a ≤ b → 0 ≤ c → c * a ≤ c * b
+  /-- In an ordered semiring, we can multiply an inequality `a ≤ b` on the right
+  by a non-negative element `0 ≤ c` to obtain `a * c ≤ b * c`. -/
+  mul_le_mul_of_nonneg_right : ∀ a b c : α, a ≤ b → 0 ≤ c → a * c ≤ b * c
 
 /-- An `OrderedRing α` is a ring `α` with a partial order such that
-addition is monotone and multiplication by a positive number is strictly monotone. -/
+addition is monotone and multiplication by a non-negative number is monotone. -/
 class OrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
   /-- `0 ≤ 1` in any ordered ring. -/
   zero_le_one : 0 ≤ (1 : α)
-  /-- The product of positive elements is positive. -/
-  mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b
+  /-- The product of non-negative elements is non-negative. -/
+  mul_nonneg : ∀ a b : α, 0 ≤ a → 0 ≤ b → 0 ≤ a * b
 
 /-- An `ordered_comm_semiring` is a commutative semiring with a partial order such that addition is
 monotone and multiplication by a nonnegative number is monotone. -/
@@ -151,8 +152,10 @@ and multiplication by a positive number is strictly monotone. -/
 class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
   /-- In a strict ordered ring, `0 ≤ 1`. -/
   zero_le_one : 0 ≤ (1 : α)
-  /-- The product of two positive elements is positive. -/
-  mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b
+  /-- Left multiplication by a positive element is strictly monotone. -/
+  mul_lt_mul_of_pos_left : ∀ a b c : α, a < b → 0 < c → c * a < c * b
+  /-- Right multiplication by a positive element is strictly monotone. -/
+  mul_lt_mul_of_pos_right : ∀ a b c : α, a < b → 0 < c → a * c < b * c
 
 /-- A `strict_ordered_comm_ring` is a commutative ring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
@@ -179,4 +182,54 @@ class LinearOrderedRing (α : Type u) extends StrictOrderedRing α, LinearOrder 
 monotone and multiplication by a positive number is strictly monotone. -/
 class LinearOrderedCommRing (α : Type u) extends LinearOrderedRing α, CommMonoid α
 
-#print LinearOrderedCommRing.mul_comm
+-- see Note [lower instance priority]
+instance (priority := 100) OrderedRing.toOrderedSemiring [OrderedRing α] : OrderedSemiring α :=
+  { ‹OrderedRing α›, (Ring.toSemiring : Semiring α) with
+    mul_le_mul_of_nonneg_left := sorry,
+    mul_le_mul_of_nonneg_right := sorry }
+
+section StrictOrderedSemiring
+
+variable [StrictOrderedSemiring α]
+
+-- see Note [lower instance priority]
+instance (priority := 100) StrictOrderedSemiring.toOrderedSemiring : OrderedSemiring α :=
+  { ‹StrictOrderedSemiring α› with
+    mul_le_mul_of_nonneg_left := sorry
+    mul_le_mul_of_nonneg_right := sorry }
+
+end StrictOrderedSemiring
+
+section StrictOrderedRing
+
+variable [StrictOrderedRing α]
+
+-- see Note [lower instance priority]
+instance (priority := 100) StrictOrderedRing.toStrictOrderedSemiring : StrictOrderedSemiring α :=
+  { ‹StrictOrderedRing α›, (Ring.toSemiring : Semiring α) with
+    le_of_add_le_add_left := sorry,
+    mul_lt_mul_of_pos_left := sorry,
+    mul_lt_mul_of_pos_right := sorry }
+
+-- see Note [lower instance priority]
+instance (priority := 100) StrictOrderedRing.toOrderedRing : OrderedRing α :=
+  { ‹StrictOrderedRing α› with
+    mul_nonneg := sorry, }
+
+end StrictOrderedRing
+
+section StrictOrderedCommRing
+
+variable [StrictOrderedCommRing α]
+
+-- See note [lower instance priority]
+instance (priority := 100) StrictOrderedCommRing.toStrictOrderedCommSemiring :
+    StrictOrderedCommSemiring α :=
+  { ‹StrictOrderedCommRing α›, StrictOrderedRing.toStrictOrderedSemiring with }
+
+end StrictOrderedCommRing
+
+-- see Note [lower instance priority]
+instance (priority := 100) LinearOrderedCommRing.toStrictOrderedCommRing
+    [d : LinearOrderedCommRing α] : StrictOrderedCommRing α :=
+  { d with }
