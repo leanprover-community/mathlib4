@@ -47,12 +47,11 @@ theorem Functor.map_comp_map (f : α → β) (g : β → γ) :
 #align functor.map_comp_map Functor.map_comp_map
 
 theorem Functor.ext {F} :
-    ∀ {F1 : Functor F} {F2 : Functor F} [@LawfulFunctor F F1] [@LawfulFunctor F F2]
-    (_H : ∀ (α β) (f : α → β) (x : F α), @Functor.map _ F1 _ _ f x = @Functor.map _ F2 _ _ f x),
+    ∀ {F1 : Functor F} {F2 : Functor F} [@LawfulFunctor F F1] [@LawfulFunctor F F2],
+    (∀ (α β) (f : α → β) (x : F α), @Functor.map _ F1 _ _ f x = @Functor.map _ F2 _ _ f x) →
     F1 = F2
   | ⟨m, mc⟩, ⟨m', mc'⟩, H1, H2, H => by
     cases show @m = @m' by funext α β f x; apply H
-    -- porting note: Lean marks `H` as an unused variable?
     congr
     funext α β
     have E1 := @map_const _ ⟨@m, @mc⟩ H1
