@@ -246,6 +246,10 @@ run_cmd
   checkGuessName "LeftCancelMonoid" "AddLeftCancelMonoid"
   checkGuessName "leftCancelMonoid" "addLeftCancelMonoid"
 
+  checkGuessName "IsLeftRegular" "IsAddLeftRegular"
+  checkGuessName "isRightRegular" "isAddRightRegular"
+  checkGuessName "IsRegular" "IsAddRegular"
+
   checkGuessName "LTOne_LEOne_OneLE_OneLT" "Neg_Nonpos_Nonneg_Pos"
   checkGuessName "LTHMulHPowLEHDiv" "LTHAddHSMulLEHSub"
   checkGuessName "OneLEHMul" "NonnegHAdd"

@@ -105,7 +105,7 @@ private def valueKnown (cond : Expr) : TacticM Bool := do
 Stops if it encounters a condition in the passed-in `List Expr`.
 -/
 private partial def splitIfsCore (loc : Location) (hNames : IO.Ref (List Name)) :
-  List Expr → TacticM Unit := fun done ↦ do
+  List Expr → TacticM Unit := fun done ↦ withMainContext do
   let some (_,cond) ← findIfCondAt loc
       | Meta.throwTacticEx `split_ifs (←getMainGoal) "no if-the-else conditions to split"
 
