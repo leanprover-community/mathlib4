@@ -67,6 +67,7 @@ example : True := by
 open Classical in
 example (P Q : Prop) (w : if P then (if Q then true else true) else true = true) : true := by
   split_ifs at w
+  -- check that we've fully split w into three subgoals
   · trivial
   · trivial
   · trivial
