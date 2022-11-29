@@ -194,72 +194,72 @@ theorem mul_le_mul_right [MulPosMono α] [MulPosMonoRev α] (a0 : 0 < a) : b * a
   @rel_iff_cov α>0 α (fun x y => y * x) (· ≤ ·) _ _ ⟨a, a0⟩ _ _
 
 theorem mul_le_mul_of_le_of_leₚ [PosMulMono α] [MulPosMono α]
-  (h₁ : a ≤ b) (h₂ : c ≤ d) (a0 : 0 ≤ a) (d0 : 0 ≤ d) : a * c ≤ b * d :=
-(mul_le_mul_of_nonneg_left h₂ a0).trans (mul_le_mul_of_nonneg_right h₁ d0)
+    (h₁ : a ≤ b) (h₂ : c ≤ d) (a0 : 0 ≤ a) (d0 : 0 ≤ d) : a * c ≤ b * d :=
+  (mul_le_mul_of_nonneg_left h₂ a0).trans (mul_le_mul_of_nonneg_right h₁ d0)
 
 theorem mul_le_mul_of_le_of_leₚ' [PosMulMono α] [MulPosMono α]
-  (h₁ : a ≤ b) (h₂ : c ≤ d) (c0 : 0 ≤ c) (b0 : 0 ≤ b) : a * c ≤ b * d :=
-(mul_le_mul_of_nonneg_right h₁ c0).trans (mul_le_mul_of_nonneg_left h₂ b0)
+    (h₁ : a ≤ b) (h₂ : c ≤ d) (c0 : 0 ≤ c) (b0 : 0 ≤ b) : a * c ≤ b * d :=
+  (mul_le_mul_of_nonneg_right h₁ c0).trans (mul_le_mul_of_nonneg_left h₂ b0)
 
 theorem mul_lt_mul_of_le_of_ltₚ [PosMulStrictMono α] [MulPosMono α]
-  (h₁ : a ≤ b) (h₂ : c < d) (a0 : 0 < a) (d0 : 0 ≤ d) : a * c < b * d :=
-(mul_lt_mul_of_pos_left h₂ a0).trans_le (mul_le_mul_of_nonneg_right h₁ d0)
+    (h₁ : a ≤ b) (h₂ : c < d) (a0 : 0 < a) (d0 : 0 ≤ d) : a * c < b * d :=
+  (mul_lt_mul_of_pos_left h₂ a0).trans_le (mul_le_mul_of_nonneg_right h₁ d0)
 
 theorem mul_lt_mul_of_le_of_ltₚ' [PosMulStrictMono α] [MulPosMono α]
-  (h₁ : a ≤ b) (h₂ : c < d) (c0 : 0 ≤ c) (b0 : 0 < b) : a * c < b * d :=
-(mul_le_mul_of_nonneg_right h₁ c0).trans_lt (mul_lt_mul_of_pos_left h₂ b0)
+    (h₁ : a ≤ b) (h₂ : c < d) (c0 : 0 ≤ c) (b0 : 0 < b) : a * c < b * d :=
+  (mul_le_mul_of_nonneg_right h₁ c0).trans_lt (mul_lt_mul_of_pos_left h₂ b0)
 
 theorem mul_lt_mul_of_lt_of_leₚ [PosMulMono α] [MulPosStrictMono α]
-  (h₁ : a < b) (h₂ : c ≤ d) (a0 : 0 ≤ a) (d0 : 0 < d) : a * c < b * d :=
-(mul_le_mul_of_nonneg_left h₂ a0).trans_lt (mul_lt_mul_of_pos_right h₁ d0)
+    (h₁ : a < b) (h₂ : c ≤ d) (a0 : 0 ≤ a) (d0 : 0 < d) : a * c < b * d :=
+  (mul_le_mul_of_nonneg_left h₂ a0).trans_lt (mul_lt_mul_of_pos_right h₁ d0)
 
 theorem mul_lt_mul_of_lt_of_leₚ' [PosMulMono α] [MulPosStrictMono α]
-  (h₁ : a < b) (h₂ : c ≤ d) (c0 : 0 < c) (b0 : 0 ≤ b) : a * c < b * d :=
-(mul_lt_mul_of_pos_right h₁ c0).trans_le (mul_le_mul_of_nonneg_left h₂ b0)
+    (h₁ : a < b) (h₂ : c ≤ d) (c0 : 0 < c) (b0 : 0 ≤ b) : a * c < b * d :=
+  (mul_lt_mul_of_pos_right h₁ c0).trans_le (mul_le_mul_of_nonneg_left h₂ b0)
 
 theorem mul_lt_mul_of_lt_of_ltₚ [PosMulStrictMono α] [MulPosStrictMono α]
-  (h₁ : a < b) (h₂ : c < d) (a0 : 0 < a) (d0 : 0 < d) : a * c < b * d :=
-(mul_lt_mul_of_pos_left h₂ a0).trans (mul_lt_mul_of_pos_right h₁ d0)
+    (h₁ : a < b) (h₂ : c < d) (a0 : 0 < a) (d0 : 0 < d) : a * c < b * d :=
+  (mul_lt_mul_of_pos_left h₂ a0).trans (mul_lt_mul_of_pos_right h₁ d0)
 
 theorem mul_lt_mul_of_lt_of_ltₚ' [PosMulStrictMono α] [MulPosStrictMono α]
-  (h₁ : a < b) (h₂ : c < d) (c0 : 0 < c) (b0 : 0 < b) : a * c < b * d :=
-(mul_lt_mul_of_pos_right h₁ c0).trans (mul_lt_mul_of_pos_left h₂ b0)
+    (h₁ : a < b) (h₂ : c < d) (c0 : 0 < c) (b0 : 0 < b) : a * c < b * d :=
+  (mul_lt_mul_of_pos_right h₁ c0).trans (mul_lt_mul_of_pos_left h₂ b0)
 
 alias mul_le_mul_of_le_of_leₚ' ← mul_le_mul -- this name was in `Algebra.Order.Ring.Defs`
 alias mul_lt_mul_of_lt_of_leₚ' ← mul_lt_mul -- this name was in `Algebra.Order.Ring.Defs`
 alias mul_lt_mul_of_le_of_ltₚ' ← mul_lt_mul' -- this name was in `Algebra.Order.Ring.Defs`
 
 theorem mul_le_of_mul_le_leftₚ [PosMulMono α]
-  (h : a * b ≤ c) (hle : d ≤ b) (a0 : 0 ≤ a) : a * d ≤ c :=
-(mul_le_mul_of_nonneg_left hle a0).trans h
+    (h : a * b ≤ c) (hle : d ≤ b) (a0 : 0 ≤ a) : a * d ≤ c :=
+  (mul_le_mul_of_nonneg_left hle a0).trans h
 
 theorem mul_lt_of_mul_lt_leftₚ [PosMulMono α]
-  (h : a * b < c) (hle : d ≤ b) (a0 : 0 ≤ a) : a * d < c :=
-(mul_le_mul_of_nonneg_left hle a0).trans_lt h
+    (h : a * b < c) (hle : d ≤ b) (a0 : 0 ≤ a) : a * d < c :=
+  (mul_le_mul_of_nonneg_left hle a0).trans_lt h
 
 theorem le_mul_of_le_mul_leftₚ [PosMulMono α]
-  (h : a ≤ b * c) (hle : c ≤ d) (b0 : 0 ≤ b) : a ≤ b * d :=
-h.trans (mul_le_mul_of_nonneg_left hle b0)
+    (h : a ≤ b * c) (hle : c ≤ d) (b0 : 0 ≤ b) : a ≤ b * d :=
+  h.trans (mul_le_mul_of_nonneg_left hle b0)
 
 theorem lt_mul_of_lt_mul_leftₚ [PosMulMono α]
-  (h : a < b * c) (hle : c ≤ d) (b0 : 0 ≤ b) : a < b * d :=
-h.trans_le (mul_le_mul_of_nonneg_left hle b0)
+    (h : a < b * c) (hle : c ≤ d) (b0 : 0 ≤ b) : a < b * d :=
+  h.trans_le (mul_le_mul_of_nonneg_left hle b0)
 
 theorem mul_le_of_mul_le_rightₚ [MulPosMono α]
-  (h : a * b ≤ c) (hle : d ≤ a) (b0 : 0 ≤ b) : d * b ≤ c :=
-(mul_le_mul_of_nonneg_right hle b0).trans h
+    (h : a * b ≤ c) (hle : d ≤ a) (b0 : 0 ≤ b) : d * b ≤ c :=
+  (mul_le_mul_of_nonneg_right hle b0).trans h
 
 theorem mul_lt_of_mul_lt_rightₚ [MulPosMono α]
-  (h : a * b < c) (hle : d ≤ a) (b0 : 0 ≤ b) : d * b < c :=
-(mul_le_mul_of_nonneg_right hle b0).trans_lt h
+    (h : a * b < c) (hle : d ≤ a) (b0 : 0 ≤ b) : d * b < c :=
+  (mul_le_mul_of_nonneg_right hle b0).trans_lt h
 
 theorem le_mul_of_le_mul_rightₚ [MulPosMono α]
-  (h : a ≤ b * c) (hle : b ≤ d) (c0 : 0 ≤ c) : a ≤ d * c :=
-h.trans (mul_le_mul_of_nonneg_right hle c0)
+    (h : a ≤ b * c) (hle : b ≤ d) (c0 : 0 ≤ c) : a ≤ d * c :=
+  h.trans (mul_le_mul_of_nonneg_right hle c0)
 
 theorem lt_mul_of_lt_mul_rightₚ [MulPosMono α]
-  (h : a < b * c) (hle : b ≤ d) (c0 : 0 ≤ c) : a < d * c :=
-h.trans_le (mul_le_mul_of_nonneg_right hle c0)
+    (h : a < b * c) (hle : b ≤ d) (c0 : 0 ≤ c) : a < d * c :=
+  h.trans_le (mul_le_mul_of_nonneg_right hle c0)
 
 alias mul_le_of_mul_le_leftₚ ← mul_le_of_mul_le_of_nonneg_left
 alias mul_lt_of_mul_lt_leftₚ ← mul_lt_of_mul_lt_of_nonneg_left
@@ -386,13 +386,13 @@ theorem pos_iff_pos_of_mul_pos [PosMulReflectLT α] [MulPosReflectLT α] (hab : 
 
 /-- Assumes left strict covariance. -/
 theorem left.mul_lt_mulₚ [PosMulStrictMono α] [MulPosMono α]
-  (h₁ : a < b) (h₂ : c < d) (a0 : 0 ≤ a) (c0 : 0 ≤ c) : a * c < b * d :=
-mul_lt_mul_of_le_of_ltₚ' h₁.le h₂ c0 (a0.trans_lt h₁)
+    (h₁ : a < b) (h₂ : c < d) (a0 : 0 ≤ a) (c0 : 0 ≤ c) : a * c < b * d :=
+  mul_lt_mul_of_le_of_ltₚ' h₁.le h₂ c0 (a0.trans_lt h₁)
 
 /-- Assumes right strict covariance. -/
 theorem right.mul_lt_mulₚ [PosMulMono α] [MulPosStrictMono α]
-  (h₁ : a < b) (h₂ : c < d) (a0 : 0 ≤ a) (c0 : 0 ≤ c) : a * c < b * d :=
-mul_lt_mul_of_lt_of_leₚ h₁ h₂.le a0 (c0.trans_lt h₂)
+    (h₁ : a < b) (h₂ : c < d) (a0 : 0 ≤ a) (c0 : 0 ≤ c) : a * c < b * d :=
+  mul_lt_mul_of_lt_of_leₚ h₁ h₂.le a0 (c0.trans_lt h₂)
 
 alias left.mul_lt_mulₚ ← mul_lt_mulₚ
 alias left.mul_lt_mulₚ ← mul_lt_mul'' -- this name was in `Algebra.Order.Ring.Defs`
@@ -538,20 +538,20 @@ theorem neg_iff_neg_of_mul_pos [PosMulMono α] [MulPosMono α] (hab : 0 < a * b)
   ⟨neg_of_mul_pos_right hab ∘ le_of_lt, neg_of_mul_pos_left hab ∘ le_of_lt⟩
 
 theorem Left.neg_of_mul_neg_right [PosMulMono α] (h : a * b < 0) (a0 : 0 ≤ a) : b < 0 :=
-lt_of_not_ge fun b0 : b ≥ 0 => (Left.mul_nonneg a0 b0).not_lt h
+  lt_of_not_ge fun b0 : b ≥ 0 => (Left.mul_nonneg a0 b0).not_lt h
 
 alias Left.neg_of_mul_neg_right ← neg_of_mul_neg_right
 
 theorem Right.neg_of_mul_neg_right [MulPosMono α] (h : a * b < 0) (a0 : 0 ≤ a) : b < 0 :=
-lt_of_not_ge fun b0 : b ≥ 0 => (Right.mul_nonneg a0 b0).not_lt h
+  lt_of_not_ge fun b0 : b ≥ 0 => (Right.mul_nonneg a0 b0).not_lt h
 
 theorem Left.neg_of_mul_neg_left [PosMulMono α] (h : a * b < 0) (b0 : 0 ≤ b) : a < 0 :=
-lt_of_not_ge fun a0 : a ≥ 0 => (Left.mul_nonneg a0 b0).not_lt h
+  lt_of_not_ge fun a0 : a ≥ 0 => (Left.mul_nonneg a0 b0).not_lt h
 
 alias Left.neg_of_mul_neg_left ← neg_of_mul_neg_left
 
 theorem Right.neg_of_mul_neg_left [MulPosMono α] (h : a * b < 0) (b0 : 0 ≤ b) : a < 0 :=
-lt_of_not_ge fun a0 : a ≥ 0 => (Right.mul_nonneg a0 b0).not_lt h
+  lt_of_not_ge fun a0 : a ≥ 0 => (Right.mul_nonneg a0 b0).not_lt h
 
 end LinearOrder
 
