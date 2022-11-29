@@ -713,6 +713,8 @@ private def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name)) 
   for (srcField, tgtField) in srcFields.zip tgtFields do
     if srcField != tgtField then
       insertTranslation (src ++ srcField) (tgt ++ tgtField)
+    else
+      trace[to_additive] "Translation {src ++ srcField} ↦ {tgt ++ tgtField} is automatic."
 
 /-- Add the structure fields of `src` to the translations dictionary
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
