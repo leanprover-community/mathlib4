@@ -1171,18 +1171,19 @@ theorem well_founded_lt [Preorder α] (h : @WellFounded α (· < ·)) :
 
 open OrderDual
 
-theorem well_founded_gt [Preorder α] (h : @WellFounded α (· > ·)) : @WellFounded (WithTop α) (· > ·) :=
+theorem well_founded_gt [Preorder α] (h : @WellFounded α (· > ·)) :
+    @WellFounded (WithTop α) (· > ·) :=
   ⟨fun a => by
     -- ideally, use rel_hom_class.acc, but that is defined later
     have : Acc (· < ·) (WithTop.toDual a) := WellFounded.apply (WithBot.well_founded_lt
       (by convert h)) _
     revert this
-    generalize ha : WithTop.toDual a = b
+    generalize ha : WithBot.toDual a = b
     intro ac
-    revert a
+    dsimp at ac
     induction' ac with _ H IH generalizing a
     subst ha
-    exact ⟨_, fun a' h => IH (toDual a') (toDual_lt_toDual.mpr h)⟩⟩
+    exact ⟨_, fun a' h => IH (WithTop.toDual a') (toDual_lt_toDual.mpr h) _ rfl⟩⟩
 #align with_top.well_founded_gt WithTop.well_founded_gt
 
 theorem _root_.WithBot.well_founded_gt [Preorder α] (h : @WellFounded α (· > ·)) :
@@ -1194,9 +1195,10 @@ theorem _root_.WithBot.well_founded_gt [Preorder α] (h : @WellFounded α (· > 
     revert this
     generalize ha : WithBot.toDual a = b
     intro ac
+    dsimp at ac
     induction' ac with _ H IH generalizing a
     subst ha
-    exact ⟨_, fun a' h => IH a'.toDual (toDual_lt_toDual.mpr h) _ rfl⟩⟩
+    exact ⟨_, fun a' h => IH (WithBot.toDual a') (toDual_lt_toDual.mpr h) _ rfl⟩⟩
 #align with_bot.well_founded_gt WithBot.well_founded_gt
 
 instance Trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] : IsTrichotomous (WithTop α) (· < ·) :=
@@ -1240,7 +1242,8 @@ instance _root_.WithBot.trichotomous.gt [Preorder α] [h : IsTrichotomous α (·
   @WithTop.Trichotomous.lt αᵒᵈ _ h
 #align with_bot.trichotomous.gt WithBot.trichotomous.gt
 
-instance _root_.WithBot.is_well_order.gt [Preorder α] [h : IsWellOrder α (· > ·)] : IsWellOrder (WithBot α) (· > ·) :=
+instance _root_.WithBot.is_well_order.gt [Preorder α] [h : IsWellOrder α (· > ·)] :
+    IsWellOrder (WithBot α) (· > ·) :=
   @WithTop.IsWellOrder.lt αᵒᵈ _ h
 #align with_top._root_.with_bot.is_well_order.gt WithBot.is_well_order.gt
 
@@ -1250,10 +1253,10 @@ instance [LT α] [DenselyOrdered α] [NoMaxOrder α] : DenselyOrdered (WithTop �
 theorem lt_iff_exists_coe_btwn [Preorder α] [DenselyOrdered α] [NoMaxOrder α] {a b : WithTop α} :
     a < b ↔ ∃ x : α, a < ↑x ∧ ↑x < b :=
   ⟨fun h =>
-    let ⟨y, hy⟩ := exists_between h
+    let ⟨_, hy⟩ := exists_between h
     let ⟨x, hx⟩ := lt_iff_exists_coe.1 hy.2
     ⟨x, hx.1 ▸ hy⟩,
-    fun ⟨x, hx⟩ => lt_trans hx.1 hx.2⟩
+    fun ⟨_, hx⟩ => lt_trans hx.1 hx.2⟩
 #align with_top.lt_iff_exists_coe_btwn WithTop.lt_iff_exists_coe_btwn
 
 instance [LE α] [NoBotOrder α] [Nonempty α] : NoBotOrder (WithTop α) :=
