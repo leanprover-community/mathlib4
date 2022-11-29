@@ -12,6 +12,7 @@ import Lean
 import Lean.Data
 import Lean.Elab.Term
 import Std.Lean.NameMapAttribute
+import Std.Data.Option.Basic
 
 /-!
 # The `@[to_additive]` attribute.
@@ -460,9 +461,9 @@ def copySimpAttribute (src tgt : Name) : CoreM Unit := do
 [todo] it seems not to work when the `to_additive` is added as an attribute later. -/
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if (← isInstance src) then
-    -- [todo] add priority and correct `AttributeKind`. This depends on missing API in core, see
-    -- https://github.com/leanprover/lean4/issues/1878
-    addInstance tgt AttributeKind.global 100 |>.run'
+    let prio := (← getInstancePriority? src).elim 100 id
+    let attr_kind := (← getInstanceAttrKind? src).elim AttributeKind.global id
+    addInstance tgt attr_kind prio |>.run'
 
 /-- [todo] add more attributes. -/
 def copyAttributes (src tgt : Name) : CoreM Unit := do
@@ -476,19 +477,27 @@ This is used to implement `@[to_additive]`.
 -/
 def transformDecl (ref : Option Syntax) (src tgt : Name) : CoreM Unit := do
   transformDeclAux ref src tgt src
-  let eqns? ← MetaM.run' (getEqnsFor? src true)
+  /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
+  definitions. If we don't do that, the equation lemma for `src` might be generated later
+  when doing a `rw`, but it won't be generated for `tgt`. -/
+  let srcEqns? ← MetaM.run' (getEqnsFor? src true)
+  let tgtEqns? ← MetaM.run' (getEqnsFor? tgt true)
   -- now transform all of the equational lemmas
-  if let some eqns := eqns? then
-    for src_eqn in eqns do
-      transformDeclAux none src tgt src_eqn
-      -- [todo] copy attributes for equations
-      -- [todo] add equation lemmas to tgt_eqn
+  match srcEqns?, tgtEqns? with
+  | some srcEqns, some tgtEqns =>
+    if srcEqns.size != tgtEqns.size then
+      throwError "{src} and {tgt} do not have the same number of equation lemmas"
+    for (srcEqn, tgtEqn) in srcEqns.zip tgtEqns do
+      insertTranslation srcEqn tgtEqn
+      copyAttributes srcEqn tgtEqn
+  | none, none => pure ()
+  | _, _ => throwError "Exactly one of {src} and {tgt} has equation lemmas, the other one hasn't"
   copyAttributes src tgt
 
 /--
 Find the first argument of `nm` that has a multiplicative type-class on it.
 Returns 1 if there are no types with a multiplicative class as arguments.
-E.g. `prod.group` returns 1, and `pi.has_one` returns 2.
+E.g. `Prod.Group` returns 1, and `Pi.One` returns 2.
 -/
 def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
   forallTelescopeReducing (← getConstInfo nm).type fun xs _ ↦ do
@@ -599,6 +608,8 @@ def applyNameDict : List String → List String
 There are a few abbreviations we use. For example "Nonneg" instead of "ZeroLE"
 or "addComm" instead of "commAdd".
 Note: The input to this function is case sensitive!
+Todo: A lot of abbreviations here are manual fixes and there might be room to
+      improve the naming logic to reduce the size of `fixAbbreviation`.
 -/
 def fixAbbreviation : List String → List String
 | "cancel" :: "Add" :: s            => "addCancel" :: fixAbbreviation s
@@ -631,6 +642,15 @@ def fixAbbreviation : List String → List String
 | "Add" :: "Indicator" :: s         => "Indicator" :: fixAbbreviation s
 | "add" :: "Indicator" :: s         => "indicator" :: fixAbbreviation s
 | "add" :: "_" :: "indicator" :: s  => "indicator" :: fixAbbreviation s
+-- "Regular" is well-used in mathlib3 with various meanings (e.g. in
+-- measure theory) and a direct translation
+-- "regular" --> ["add", "Regular"] in `nameDict` above seems error-prone.
+| "is" :: "Regular" :: s            => "isAddRegular" :: fixAbbreviation s
+| "Is" :: "Regular" :: s            => "IsAddRegular" :: fixAbbreviation s
+| "is" :: "Left" :: "Regular" :: s  => "isAddLeftRegular" :: fixAbbreviation s
+| "Is" :: "Left" :: "Regular" :: s  => "IsAddLeftRegular" :: fixAbbreviation s
+| "is" :: "Right" :: "Regular" :: s => "isAddRightRegular" :: fixAbbreviation s
+| "Is" :: "Right" :: "Regular" :: s => "IsAddRightRegular" :: fixAbbreviation s
 -- the capitalization heuristic of `applyNameDict` doesn't work in the following cases
 | "Smul"  :: s                      => "SMul" :: fixAbbreviation s
 | "HSmul" :: s                      => "HSMul" :: fixAbbreviation s
@@ -817,7 +837,7 @@ There are some exceptions to this heuristic:
   positions `n1`, `n2`, ... will not be checked for unapplied identifiers (start counting from 1).
   For example, `cont_mdiff_map` has attribute `@[to_additive_ignore_args 21]`, which means
   that its 21st argument `(n : WithTop Nat)` can contain `Nat`
-  (usually in the form `has_top.top Nat ...`) and still be additivized.
+  (usually in the form `Top.top Nat ...`) and still be additivized.
   So `@Mul.mul (C^∞⟮I, N; I', G⟯) _ f g` will be additivized.
 
 ### Troubleshooting

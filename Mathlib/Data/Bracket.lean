@@ -21,7 +21,7 @@ We introduce the notation `⁅x, y⁆` for the `bracket` of any `Bracket` struct
 these are the Unicode "square with quill" brackets rather than the usual square brackets.
 -/
 
-/-- The has_bracket class has three intended uses:
+/-- The `Bracket` class has three intended uses:
   1. for certain binary operations on structures, like the product `⁅x, y⁆` of two elements
     `x`, `y` in a Lie algebra or the commutator of two elements `x` and `y` in a group.
   2. for certain actions of one structure on another, like the action `⁅x, m⁆` of an element `x`
