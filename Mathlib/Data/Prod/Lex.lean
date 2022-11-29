@@ -35,7 +35,7 @@ namespace Prod.Lex
 
 -- mathport name: «expr ×ₗ »
 -- porting note: `Prod.Lex` is not protected in core, hence the `_root_.` prefix
-notation:35 α " ×ₗ " β:34 => _root_.Lex (Prod α β)
+@[inherit_doc] notation:35 α " ×ₗ " β:34 => _root_.Lex (Prod α β)
 
 -- porting note: I think we just don't need this anymore?
 -- unsafe instance [has_to_format α] [has_to_format β] : has_to_format (α ×ₗ β) :=
