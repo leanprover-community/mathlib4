@@ -46,7 +46,7 @@ macro "to_additive!?" rest:to_additiveRest : attr => `(attr| to_additive ! ? $re
 macro "to_additive?!" rest:to_additiveRest : attr => `(attr| to_additive ! ? $rest)
 
 /-- A set of strings of names that end in a capital letter.
-* If the string contains a lowercase letter, the string should be split between the first occurence
+* If the string contains a lowercase letter, the string should be split between the first occurrence
   of a lower-case letter followed by a upper-case letter.
 * If multiple strings have the same prefix, they should be grouped by prefix
 * In this case, the second list should be prefix-free
