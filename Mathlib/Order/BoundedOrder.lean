@@ -19,8 +19,8 @@ instances for `Prop` and `fun`.
 
 ## Main declarations
 
-* `<Top/Not> α`: Typeclasses to declare the `⊤`/`⊥` notation.
-* `Order<Top/Not> α`: Order with a top/bottom element.
+* `<Top/Bot> α`: Typeclasses to declare the `⊤`/`⊥` notation.
+* `Order<Top/Bot> α`: Order with a top/bottom element.
 * `BoundedOrder α`: Order with a top and bottom element.
 
 ## Common lattices
