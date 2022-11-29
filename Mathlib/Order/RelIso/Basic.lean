@@ -239,21 +239,10 @@ def Simps.apply (h : r ↪r s) : α → β :=
   h
 #align rel_embedding.simps.apply RelEmbedding.Simps.apply
 
-@[simp]
-theorem to_rel_hom_eq_coe (f : r ↪r s) : f.toRelHom = f :=
-  rfl
-#align rel_embedding.to_rel_hom_eq_coe RelEmbedding.to_rel_hom_eq_coe
-
-@[simp]
-theorem coe_coe_fn (f : r ↪r s) : ((f : r →r s) : α → β) = f :=
-  rfl
-#align rel_embedding.coe_coe_fn RelEmbedding.coe_coe_fn
-
 theorem injective (f : r ↪r s) : Injective f :=
   f.inj'
 #align rel_embedding.injective RelEmbedding.injective
 
-@[simp]
 theorem inj (f : r ↪r s) {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 #align rel_embedding.inj RelEmbedding.inj
@@ -261,11 +250,6 @@ theorem inj (f : r ↪r s) {a b} : f a = f b ↔ a = b :=
 theorem map_rel_iff (f : r ↪r s) {a b} : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align rel_embedding.map_rel_iff RelEmbedding.map_rel_iff
-
-@[simp]
-theorem coe_fn_to_embedding (f : r ↪r s) : (f.toEmbedding : α → β) = f :=
-  rfl
-#align rel_embedding.coe_fn_to_embedding RelEmbedding.coe_fn_to_embedding
 
 /-- The map `coe_fn : (r ↪r s) → (α → β)` is injective. -/
 theorem coe_fn_injective : Injective fun f : r ↪r s => (f : α → β) :=
@@ -570,16 +554,6 @@ instance : RelHomClass (r ≃r s) r s where
   coe_injective' := Equiv.coe_fn_injective.comp to_equiv_injective
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
-@[simp]
-theorem to_rel_embedding_eq_coe (f : r ≃r s) : f.toRelEmbedding = f :=
-  rfl
-#align rel_iso.to_rel_embedding_eq_coe RelIso.to_rel_embedding_eq_coe
-
-@[simp]
-theorem coe_coe_fn (f : r ≃r s) : ((f : r ↪r s) : α → β) = f :=
-  rfl
-#align rel_iso.coe_coe_fn RelIso.coe_coe_fn
-
 theorem map_rel_iff (f : r ≃r s) {a b} : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align rel_iso.map_rel_iff RelIso.map_rel_iff
@@ -722,7 +696,6 @@ protected theorem surjective (e : r ≃r s) : Surjective e :=
   e.toEquiv.surjective
 #align rel_iso.surjective RelIso.surjective
 
-@[simp]
 theorem eq_iff_eq (f : r ≃r s) {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 #align rel_iso.eq_iff_eq RelIso.eq_iff_eq
