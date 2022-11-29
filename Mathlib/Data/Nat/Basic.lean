@@ -106,8 +106,10 @@ protected theorem Nat.nsmul_eq_mul (m n : ℕ) : m • n = m * n :=
 
 instance Nat.cancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ :=
   { (inferInstance : CommMonoidWithZero ℕ) with
-    mul_left_cancel_of_ne_zero := fun {_ _ _} h1 h2 => Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h1) h2,
-    mul_right_cancel_of_ne_zero := fun {_ _ _} h1 h2 => Nat.eq_of_mul_eq_mul_right (Nat.pos_of_ne_zero h1) h2 }
+    mul_left_cancel_of_ne_zero :=
+      fun {_ _ _} h1 h2 => Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h1) h2,
+    mul_right_cancel_of_ne_zero :=
+      fun {_ _ _} h1 h2 => Nat.eq_of_mul_eq_mul_right (Nat.pos_of_ne_zero h1) h2 }
 #align nat.cancel_comm_monoid_with_zero Nat.cancelCommMonoidWithZero
 
 attribute [simp]
@@ -316,10 +318,12 @@ theorem pred_eq_of_eq_succ {m n : ℕ} (H : m = n.succ) : m.pred = n := by simp 
 #align nat.pred_eq_of_eq_succ Nat.pred_eq_of_eq_succ
 
 @[simp]
-theorem pred_eq_succ_iff {n m : ℕ} : pred n = succ m ↔ n = m + 2 := by cases n <;> constructor <;> rintro ⟨⟩ <;> rfl
+theorem pred_eq_succ_iff {n m : ℕ} : pred n = succ m ↔ n = m + 2 := by
+  cases n <;> constructor <;> rintro ⟨⟩ <;> rfl
 #align nat.pred_eq_succ_iff Nat.pred_eq_succ_iff
 
-theorem pred_sub (n m : ℕ) : pred n - m = pred (n - m) := by rw [← Nat.sub_one, Nat.sub_sub, one_add, sub_succ]
+theorem pred_sub (n m : ℕ) : pred n - m = pred (n - m) := by
+  rw [← Nat.sub_one, Nat.sub_sub, one_add, sub_succ]
 #align nat.pred_sub Nat.pred_sub
 
 -- Moved to Std
@@ -340,7 +344,8 @@ theorem pred_one_add (n : ℕ) : pred (1 + n) = n := by rw [add_comm, add_one, N
 
 
 theorem two_mul_ne_two_mul_add_one {n m} : 2 * n ≠ 2 * m + 1 :=
-  mt (congr_arg (· % 2)) (by rw [add_comm, add_mul_mod_self_left, mul_mod_right, mod_eq_of_lt] <;> simp)
+  mt (congr_arg (· % 2))
+    (by rw [add_comm, add_mul_mod_self_left, mul_mod_right, mod_eq_of_lt] <;> simp)
 #align nat.two_mul_ne_two_mul_add_one Nat.two_mul_ne_two_mul_add_one
 
 theorem mul_ne_mul_left {a b c : ℕ} (ha : 0 < a) : b * a ≠ c * a ↔ b ≠ c :=
@@ -373,7 +378,8 @@ proved above, and some of the results in later sections depend on the definition
 
 
 @[simp]
-theorem rec_zero {C : ℕ → Sort u} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) : (Nat.rec h0 h : ∀ n, C n) 0 = h0 :=
+theorem rec_zero {C : ℕ → Sort u} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) :
+    (Nat.rec h0 h : ∀ n, C n) 0 = h0 :=
   rfl
 #align nat.rec_zero Nat.rec_zero
 
@@ -390,7 +396,8 @@ when `k ≥ n`, see `leRecOn`. -/
 def leRecOn {C : ℕ → Sort u} {n : ℕ} : ∀ {m : ℕ}, n ≤ m → (∀ {k}, C k → C (k + 1)) → C n → C m
   | 0, H, _, x => Eq.recOn (Nat.eq_zero_of_le_zero H) x
   | m + 1, H, next, x =>
-    Or.by_cases (of_le_succ H) (fun h : n ≤ m => next <| leRecOn h (@next) x) fun h : n = m + 1 => Eq.recOn h x
+    Or.by_cases (of_le_succ H) (fun h : n ≤ m => next <| leRecOn h (@next) x)
+      fun h : n = m + 1 => Eq.recOn h x
 #align nat.le_rec_on Nat.leRecOn
 
 theorem leRecOn_self {C : ℕ → Sort u} {n} {h : n ≤ n} {next : ∀ {k}, C k → C (k + 1)} (x : C n) :
@@ -613,7 +620,8 @@ def leRecOn' {C : ℕ → Sort _} {n : ℕ} :
     ∀ {m : ℕ}, n ≤ m → (∀ ⦃k⦄, n ≤ k → C k → C (k + 1)) → C n → C m
   | 0, H, _, x => Eq.recOn (Nat.eq_zero_of_le_zero H) x
   | m + 1, H, next, x =>
-    Or.by_cases (of_le_succ H) (fun h : n ≤ m => next h <| leRecOn' h next x) fun h : n = m + 1 => Eq.recOn h x
+    Or.by_cases (of_le_succ H) (fun h : n ≤ m => next h <| leRecOn' h next x)
+      fun h : n = m + 1 => Eq.recOn h x
 #align nat.le_rec_on' Nat.leRecOn'
 
 /-- Decreasing induction: if `P (k+1)` implies `P k` for all `m ≤ k < n`, then `P n` implies `P m`.
@@ -655,7 +663,8 @@ theorem div_lt_iff_lt_mul' {x y : ℕ} {k : ℕ} (k0 : 0 < k) : x / k < y ↔ x 
   lt_iff_lt_of_le_iff_le <| le_div_iff_mul_le' k0
 #align nat.div_lt_iff_lt_mul' Nat.div_lt_iff_lt_mul'
 
-theorem one_le_div_iff {a b : ℕ} (hb : 0 < b) : 1 ≤ a / b ↔ b ≤ a := by rw [le_div_iff_mul_le hb, one_mul]
+theorem one_le_div_iff {a b : ℕ} (hb : 0 < b) : 1 ≤ a / b ↔ b ≤ a := by
+  rw [le_div_iff_mul_le hb, one_mul]
 #align nat.one_le_div_iff Nat.one_le_div_iff
 
 theorem div_lt_one_iff {a b : ℕ} (hb : 0 < b) : a / b < 1 ↔ a < b :=
@@ -696,11 +705,13 @@ protected theorem eq_mul_of_div_eq_right {a b c : ℕ} (H1 : b ∣ a) (H2 : a / 
   rw [← H2, Nat.mul_div_cancel' H1]
 #align nat.eq_mul_of_div_eq_right Nat.eq_mul_of_div_eq_right
 
-protected theorem div_eq_iff_eq_mul_right {a b c : ℕ} (H : 0 < b) (H' : b ∣ a) : a / b = c ↔ a = b * c :=
+protected theorem div_eq_iff_eq_mul_right {a b c : ℕ} (H : 0 < b) (H' : b ∣ a) :
+    a / b = c ↔ a = b * c :=
   ⟨Nat.eq_mul_of_div_eq_right H', Nat.div_eq_of_eq_mul_right H⟩
 #align nat.div_eq_iff_eq_mul_right Nat.div_eq_iff_eq_mul_right
 
-protected theorem div_eq_iff_eq_mul_left {a b c : ℕ} (H : 0 < b) (H' : b ∣ a) : a / b = c ↔ a = c * b := by
+protected theorem div_eq_iff_eq_mul_left {a b c : ℕ} (H : 0 < b) (H' : b ∣ a) :
+    a / b = c ↔ a = c * b := by
   rw [mul_comm] <;> exact Nat.div_eq_iff_eq_mul_right H H'
 #align nat.div_eq_iff_eq_mul_left Nat.div_eq_iff_eq_mul_left
 
@@ -763,9 +774,12 @@ theorem div_add_mod' (m k : ℕ) : m / k * k + m % k = m := by
   exact div_add_mod _ _
 #align nat.div_add_mod' Nat.div_add_mod'
 
-protected theorem div_mod_unique {n k m d : ℕ} (h : 0 < k) : n / k = d ∧ n % k = m ↔ m + k * d = n ∧ m < k :=
+protected theorem div_mod_unique {n k m d : ℕ} (h : 0 < k) :
+    n / k = d ∧ n % k = m ↔ m + k * d = n ∧ m < k :=
   ⟨fun ⟨e₁, e₂⟩ => e₁ ▸ e₂ ▸ ⟨mod_add_div _ _, mod_lt _ h⟩, fun ⟨h₁, h₂⟩ =>
-    h₁ ▸ by rw [add_mul_div_left _ _ h, add_mul_mod_self_left]; simp [div_eq_of_lt, mod_eq_of_lt, h₂]⟩
+    h₁ ▸ by
+      rw [add_mul_div_left _ _ h, add_mul_mod_self_left]
+      simp [div_eq_of_lt, mod_eq_of_lt, h₂]⟩
 #align nat.div_mod_unique Nat.div_mod_unique
 
 protected theorem dvd_add_left {k m n : ℕ} (h : k ∣ n) : k ∣ m + n ↔ k ∣ m :=
@@ -799,11 +813,13 @@ theorem mod_mod_of_dvd (n : Nat) {m k : Nat} (h : m ∣ k) : n % k % m = n % m :
 #align nat.add_mod_mod Nat.add_mod_mod
 #align nat.add_mod Nat.add_mod
 
-theorem add_mod_eq_add_mod_right {m n k : ℕ} (i : ℕ) (H : m % n = k % n) : (m + i) % n = (k + i) % n := by
+theorem add_mod_eq_add_mod_right {m n k : ℕ} (i : ℕ) (H : m % n = k % n) :
+    (m + i) % n = (k + i) % n := by
   rw [← mod_add_mod, ← mod_add_mod k, H]
 #align nat.add_mod_eq_add_mod_right Nat.add_mod_eq_add_mod_right
 
-theorem add_mod_eq_add_mod_left {m n k : ℕ} (i : ℕ) (H : m % n = k % n) : (i + m) % n = (i + k) % n := by
+theorem add_mod_eq_add_mod_left {m n k : ℕ} (i : ℕ) (H : m % n = k % n) :
+    (i + m) % n = (i + k) % n := by
   rw [add_comm, add_mod_eq_add_mod_right _ H, add_comm]
 #align nat.add_mod_eq_add_mod_left Nat.add_mod_eq_add_mod_left
 
@@ -847,10 +863,12 @@ theorem lt_mul_div_succ (m : ℕ) {n : ℕ} (n0 : 0 < n) : m < n * (m / n + 1) :
 theorem mul_add_mod (a b c : ℕ) : (a * b + c) % b = c % b := by simp [Nat.add_mod]
 #align nat.mul_add_mod Nat.mul_add_mod
 
-theorem mul_add_mod_of_lt {a b c : ℕ} (h : c < b) : (a * b + c) % b = c := by rw [Nat.mul_add_mod, Nat.mod_eq_of_lt h]
+theorem mul_add_mod_of_lt {a b c : ℕ} (h : c < b) : (a * b + c) % b = c := by
+  rw [Nat.mul_add_mod, Nat.mod_eq_of_lt h]
 #align nat.mul_add_mod_of_lt Nat.mul_add_mod_of_lt
 
-theorem pred_eq_self_iff {n : ℕ} : n.pred = n ↔ n = 0 := by cases n <;> simp [(Nat.succ_ne_self _).symm]
+theorem pred_eq_self_iff {n : ℕ} : n.pred = n ↔ n = 0 := by
+  cases n <;> simp [(Nat.succ_ne_self _).symm]
 #align nat.pred_eq_self_iff Nat.pred_eq_self_iff
 
 /-! ### `find` -/
@@ -872,7 +890,8 @@ theorem find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < 
 
 @[simp]
 theorem find_lt_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h < n ↔ ∃ m < n, p m :=
-  ⟨fun h2 => ⟨Nat.find h, h2, Nat.find_spec h⟩, fun ⟨m, hmn, hm⟩ => (Nat.find_min' h hm).trans_lt hmn⟩
+  ⟨fun h2 => ⟨Nat.find h, h2, Nat.find_spec h⟩,
+   fun ⟨_, hmn, hm⟩ => (Nat.find_min' h hm).trans_lt hmn⟩
 #align nat.find_lt_iff Nat.find_lt_iff
 
 @[simp]
@@ -894,7 +913,8 @@ theorem lt_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n < Nat.find h ↔ ∀ m 
 theorem find_eq_zero (h : ∃ n : ℕ, p n) : Nat.find h = 0 ↔ p 0 := by simp [find_eq_iff]
 #align nat.find_eq_zero Nat.find_eq_zero
 
-theorem find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} : Nat.find hp ≤ Nat.find hq :=
+theorem find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} :
+    Nat.find hp ≤ Nat.find hq :=
   Nat.find_min' _ (h _ (Nat.find_spec hq))
 #align nat.find_mono Nat.find_mono
 
@@ -902,7 +922,8 @@ theorem find_le {h : ∃ n, p n} (hn : p n) : Nat.find h ≤ n :=
   (Nat.find_le_iff _ _).2 ⟨n, le_rfl, hn⟩
 #align nat.find_le Nat.find_le
 
-theorem find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬p 0) : Nat.find h₁ = Nat.find h₂ + 1 := by
+theorem find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬p 0) :
+    Nat.find h₁ = Nat.find h₂ + 1 := by
   refine' (find_eq_iff _).2 ⟨Nat.find_spec h₂, fun n hn => _⟩
   cases' n with n
   exacts[h0, @Nat.find_min (fun n => p (n + 1)) _ h₂ _ (succ_lt_succ_iff.1 hn)]
@@ -941,7 +962,8 @@ theorem findGreatest_eq : ∀ {b}, P b → Nat.findGreatest P b = b
 #align nat.find_greatest_eq Nat.findGreatest_eq
 
 @[simp]
-theorem findGreatest_of_not (h : ¬P (b + 1)) : Nat.findGreatest P (b + 1) = Nat.findGreatest P b := by
+theorem findGreatest_of_not (h : ¬P (b + 1)) :
+    Nat.findGreatest P (b + 1) = Nat.findGreatest P b := by
   simp [Nat.findGreatest, h]
 #align nat.find_greatest_of_not Nat.findGreatest_of_not
 
@@ -951,7 +973,8 @@ end FindGreatest
 
 
 @[simp]
-theorem bodd_div2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := by unfold bodd div2 <;> cases bodd_div2 n <;> rfl
+theorem bodd_div2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := by
+  unfold bodd div2 <;> cases bodd_div2 n <;> rfl
 #align nat.bodd_div2_eq Nat.bodd_div2_eq
 
 @[simp]
@@ -1039,12 +1062,14 @@ theorem bit_cases_on_bit {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (b : Bo
 #align nat.bit_cases_on_bit Nat.bit_cases_on_bit
 
 @[simp]
-theorem bit_cases_on_bit0 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ) : bitCasesOn (bit0 n) H = H false n :=
+theorem bit_cases_on_bit0 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ) :
+    bitCasesOn (bit0 n) H = H false n :=
   bit_cases_on_bit H false n
 #align nat.bit_cases_on_bit0 Nat.bit_cases_on_bit0
 
 @[simp]
-theorem bit_cases_on_bit1 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ) : bitCasesOn (bit1 n) H = H true n :=
+theorem bit_cases_on_bit1 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ) :
+    bitCasesOn (bit1 n) H = H true n :=
   bit_cases_on_bit H true n
 #align nat.bit_cases_on_bit1 Nat.bit_cases_on_bit1
 
@@ -1085,23 +1110,27 @@ instance decidableBallLt (n : Nat) (P : ∀ k < n, Prop) :
 
 #align nat.decidable_ball_lt Nat.decidableBallLt
 
-instance decidableForallFin {n : ℕ} (P : Fin n → Prop) [H : DecidablePred P] : Decidable (∀ i, P i) :=
+instance decidableForallFin {n : ℕ} (P : Fin n → Prop) [H : DecidablePred P] :
+    Decidable (∀ i, P i) :=
   decidable_of_iff (∀ k h, P ⟨k, h⟩) ⟨fun a ⟨k, h⟩ => a k h, fun a k h => a ⟨k, h⟩⟩
 #align nat.decidable_forall_fin Nat.decidableForallFin
 
-instance decidableBallLe (n : ℕ) (P : ∀ k ≤ n, Prop) [H : ∀ n h, Decidable (P n h)] : Decidable (∀ n h, P n h) :=
+instance decidableBallLe (n : ℕ) (P : ∀ k ≤ n, Prop) [H : ∀ n h, Decidable (P n h)] :
+    Decidable (∀ n h, P n h) :=
   decidable_of_iff (∀ (k) (h : k < succ n), P k (le_of_lt_succ h))
     ⟨fun a k h => a k (lt_succ_of_le h), fun a k h => a k _⟩
 #align nat.decidable_ball_le Nat.decidableBallLe
 
-instance decidableExistsLt {P : ℕ → Prop} [h : DecidablePred P] : DecidablePred fun n => ∃ m : ℕ, m < n ∧ P m
+instance decidableExistsLt {P : ℕ → Prop} [h : DecidablePred P] :
+    DecidablePred fun n => ∃ m : ℕ, m < n ∧ P m
   | 0 => isFalse (by simp)
   | n + 1 =>
     decidable_of_decidable_of_iff (@Or.decidable _ _ (decidable_exists_lt n) (h n))
       (by simp only [lt_succ_iff_lt_or_eq, or_and_right, exists_or, exists_eq_left])
 #align nat.decidable_exists_lt Nat.decidableExistsLt
 
-instance decidableExistsLe {P : ℕ → Prop} [h : DecidablePred P] : DecidablePred fun n => ∃ m : ℕ, m ≤ n ∧ P m :=
+instance decidableExistsLe {P : ℕ → Prop} [h : DecidablePred P] :
+    DecidablePred fun n => ∃ m : ℕ, m ≤ n ∧ P m :=
   fun n => decidable_of_iff (∃ m, m < n + 1 ∧ P m) (exists_congr fun x => and_congr_left' lt_succ_iff)
 #align nat.decidable_exists_le Nat.decidableExistsLe
 
