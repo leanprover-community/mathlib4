@@ -621,7 +621,8 @@ Optionally, this command accepts three optional arguments:
   has the attribute `@[simpsStructure]`.
 * The `rules` argument specifies whether projections should be added, renamed, used as prefix, and
   not used by default.
-* if `trc` is true, this tactic will trace information.
+* if `trc` is true, this tactic will trace information just as if
+  `set_option trace.simps.verbose true` was set.
 -/
 def simpsGetRawProjections (str : Name) (traceIfExists : Bool := false)
   (rules : Array ProjectionRule := #[]) (trc := false) :
@@ -633,7 +634,7 @@ def simpsGetRawProjections (str : Name) (traceIfExists : Bool := false)
     -- `initialize_simps_projections`.
     withOptions (· |>.updateBool `trace.simps.verbose (traceIfExists || ·)) <| do
       trace[simps.verbose]
-        "{projectionsInfo data.2.toList "Already found projection information for structure" str}"
+        projectionsInfo data.2.toList "Already found projection information for structure" str
     return data
   trace[simps.verbose] "[simps] > generating projection information for structure {str}."
   trace[simps.debug] "Applying the rules {rules}."
@@ -651,7 +652,7 @@ def simpsGetRawProjections (str : Name) (traceIfExists : Bool := false)
     match (← MetaM.run' <| isProof proj.expr) with
     | true => pure { proj with isDefault := false }
     | false => pure proj
-  trace[simps.verbose] "{projectionsInfo projs.toList "generated projections for" str}"
+  trace[simps.verbose] projectionsInfo projs.toList "generated projections for" str
   simpsStructure.add str (rawLevels, projs)
   trace[simps.debug] "Generated raw projection data:\n{(rawLevels, projs)}"
   pure (rawLevels, projs)
@@ -711,8 +712,6 @@ structure Simps.Config where
   E.g. if we write `@[simps] def e : α × β ≃ β × α := ...` we will generate `e_apply` and not
   `e_apply_fst`. -/
   notRecursive := [`Prod, `PProd]
-  /-- Output tracing messages. Can be set to `true` by writing `@[simps?]`. -/
-  trace := false
   /-- Output debug messages. Not used much, use `set_option simps.debug true` instead. -/
   debug := false
   /-- [TODO] Add `@[to_additive]` to all generated lemmas. This can be set by marking the
@@ -775,7 +774,7 @@ def simpsGetProjectionExprs (tgt : Expr) (rhs : Expr) (cfg : Simps.Config) :
   let str := tgt.getAppFn.constName?.getD default
   -- the fields of the object
   let rhsArgs := rhs.getAppArgs.toList.drop params.size
-  let (rawUnivs, projDeclata) ← simpsGetRawProjections str false #[] cfg.trace
+  let (rawUnivs, projDeclata) ← simpsGetRawProjections str
   return projDeclata.map fun proj ↦
     (rhsArgs.getD (a₀ := default) proj.projNrs.head!,
       { proj with
@@ -826,7 +825,9 @@ def simpsAddProjection (declName : Name) (type lhs rhs : Expr) (args : Array Exp
     addSimpTheorem simpExtension declName true false .global <| eval_prio default
   -- cfg.attrs.mapM fun nm ↦ setAttribute nm declName tt -- todo: deal with attributes
   if let some tgt := cfg.addAdditive then
-    ToAdditive.addToAdditiveAttr declName ⟨false, cfg.trace, tgt, none, true, ref⟩
+    ToAdditive.addToAdditiveAttr declName
+      -- tracing seems to fail
+      ⟨false, (← getOptions) |>.getBool `trace.to_additive, tgt, none, true, ref⟩
 
 /--
 Perform head-structure-eta-reduction on expression `e`. That is, if `e` is of the form
@@ -982,7 +983,7 @@ partial def simpsAddProjections (nm : Name) (type lhs rhs : Expr)
   If `trc` is true, trace as if `trace.simps.verbose` is true. -/
 def simpsTac (ref : Syntax) (nm : Name) (cfg : Simps.Config := {}) (todo : List String := [])
     (trc := false) : AttrM (Array Name) :=
-  withOptions (· |>.updateBool `trace.simps.verbose (trc || cfg.trace || ·)) <| do
+  withOptions (· |>.updateBool `trace.simps.verbose (trc || ·)) <| do
   let env ← getEnv
   let some d := env.find? nm | throwError "Declaration {nm} doesn't exist."
   let lhs : Expr := mkConst d.name <| d.levelParams.map Level.param

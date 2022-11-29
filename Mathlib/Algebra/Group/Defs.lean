@@ -594,6 +594,7 @@ end RightCancelMonoid
 
 section CancelMonoid
 
+
 /-- An additive monoid in which addition is cancellative on both sides.
 Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
 is useful to define the sum over the empty set, so `AddRightCancelMonoid` is not enough. -/
