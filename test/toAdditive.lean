@@ -105,7 +105,7 @@ run_cmd do
   Elab.Command.liftCoreM <| addAndCompile decl
   -- test that we cannot transport a declaration to itself
   successIfFail <| Elab.Command.liftCoreM <|
-    ToAdditive.addToAdditiveAttr `bar11_works { ref := .missing }
+    ToAdditive.addToAdditiveAttr `bar11_works { ref := ← getRef }
 
 /-! Test the namespace bug (#8733). This code should *not* generate a lemma
   `add_some_def.in_namespace`. -/
