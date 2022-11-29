@@ -185,11 +185,7 @@ theorem one_lt_succ_succ (n : ℕ) : 1 < n.succ.succ :=
   succ_lt_succ <| succ_pos n
 #align nat.one_lt_succ_succ Nat.one_lt_succ_succ
 
-#print Nat.succ_le_succ_iff /-
-theorem succ_le_succ_iff {m n : ℕ} : succ m ≤ succ n ↔ m ≤ n :=
-  ⟨le_of_succ_le_succ, succ_le_succ⟩
-#align nat.succ_le_succ_iff Nat.succ_le_succ_iff
--/
+-- Porting note: Nat.succ_le_succ_iff is in Std
 
 theorem max_succ_succ {m n : ℕ} : max (succ m) (succ n) = succ (max m n) := by
   by_cases h1 : m ≤ n
