@@ -335,6 +335,7 @@ structure MonoidHom (M : Type _) (N : Type _) [MulOneClass M] [MulOneClass N] ex
   OneHom M N, M →ₙ* N
 #align monoid_hom MonoidHom
 -- Porting note: remove once `to_additive` is updated
+-- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
 attribute [to_additive] MonoidHom.toMulHom
 
 attribute [nolint docBlame] MonoidHom.toMulHom
@@ -365,7 +366,8 @@ instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
 #align monoid_hom.monoid_hom_class MonoidHom.monoidHomClass
 #align add_monoid_hom.add_monoid_hom_class AddMonoidHom.addMonoidHomClass
 
--- Porting note: help to_additive translate. This should ideally be handled by the tactic
+-- Porting note: we need to add an extra `to_additive`.
+-- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
 attribute [to_additive] MonoidHomClass.toOneHomClass
 
 /-- Any type that is a `MonoidHomClass` can be cast into a `MonoidHom`. -/
@@ -416,7 +418,6 @@ theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
 #align map_div map_div
 #align map_sub map_sub
 
--- Porting note: restore `to_additive`
 @[simp, to_additive]
 theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
   ∀ n : ℕ, f (a ^ n) = f a ^ n
@@ -524,7 +525,6 @@ section Coes
 
 /-! Bundled morphisms can be down-cast to weaker bundlings -/
 
--- Porting note: new coe syntax
 attribute [coe] MonoidHom.toOneHom
 attribute [coe] AddMonoidHom.toZeroHom
 
@@ -643,109 +643,112 @@ theorem MonoidWithZeroHom.ext [MulZeroOneClass M] [MulZeroOneClass N] ⦃f g : M
   (h : ∀ x, f x = g x) : f = g := FunLike.ext _ _ h
 #align monoid_with_zero_hom.ext MonoidWithZeroHom.ext
 
--- Porting note: should these lemmas be ported?
 section Deprecated
 
-/-- Deprecated: use `fun_like.congr_fun` instead. -/
-@[to_additive "Deprecated: use `fun_like.congr_fun` instead."]
+/-- Deprecated: use `FunLike.congr_fun` instead. -/
+@[deprecated, to_additive "Deprecated: use `FunLike.congr_fun` instead."]
 theorem OneHom.congr_fun [One M] [One N] {f g : OneHom M N} (h : f = g) (x : M) : f x = g x :=
   FunLike.congr_fun h x
 #align one_hom.congr_fun OneHom.congr_fun
 #align zero_hom.congr_fun ZeroHom.congr_fun
 
-/-- Deprecated: use `fun_like.congr_fun` instead. -/
-@[to_additive "Deprecated: use `fun_like.congr_fun` instead."]
+/-- Deprecated: use `FunLike.congr_fun` instead. -/
+@[deprecated, to_additive "Deprecated: use `FunLike.congr_fun` instead."]
 theorem MulHom.congr_fun [Mul M] [Mul N] {f g : M →ₙ* N} (h : f = g) (x : M) : f x = g x :=
   FunLike.congr_fun h x
 #align mul_hom.congr_fun MulHom.congr_fun
 #align add_hom.congr_fun AddHom.congr_fun
 
-/-- Deprecated: use `fun_like.congr_fun` instead. -/
-@[to_additive "Deprecated: use `fun_like.congr_fun` instead."]
+/-- Deprecated: use `FunLike.congr_fun` instead. -/
+@[deprecated, to_additive "Deprecated: use `FunLike.congr_fun` instead."]
 theorem MonoidHom.congr_fun [MulOneClass M] [MulOneClass N] {f g : M →* N} (h : f = g) (x : M) :
   f x = g x := FunLike.congr_fun h x
 #align monoid_hom.congr_fun MonoidHom.congr_fun
 #align add_monoid_hom.congr_fun AddMonoidHom.congr_fun
 
-/-- Deprecated: use `fun_like.congr_fun` instead. -/
+/-- Deprecated: use `FunLike.congr_fun` instead. -/
+@[deprecated]
 theorem MonoidWithZeroHom.congr_fun [MulZeroOneClass M] [MulZeroOneClass N] {f g : M →*₀ N}
   (h : f = g) (x : M) : f x = g x := FunLike.congr_fun h x
 #align monoid_with_zero_hom.congr_fun MonoidWithZeroHom.congr_fun
 
-/-- Deprecated: use `fun_like.congr_arg` instead. -/
-@[to_additive "Deprecated: use `fun_like.congr_arg` instead."]
+/-- Deprecated: use `FunLike.congr_arg` instead. -/
+@[deprecated, to_additive "Deprecated: use `FunLike.congr_arg` instead."]
 theorem OneHom.congr_arg [One M] [One N] (f : OneHom M N) {x y : M} (h : x = y) : f x = f y :=
   FunLike.congr_arg f h
 #align one_hom.congr_arg OneHom.congr_arg
 #align zero_hom.congr_arg ZeroHom.congr_arg
 
-/-- Deprecated: use `fun_like.congr_arg` instead. -/
-@[to_additive "Deprecated: use `fun_like.congr_arg` instead."]
+/-- Deprecated: use `FunLike.congr_arg` instead. -/
+@[deprecated, to_additive "Deprecated: use `FunLike.congr_arg` instead."]
 theorem MulHom.congr_arg [Mul M] [Mul N] (f : M →ₙ* N) {x y : M} (h : x = y) : f x = f y :=
   FunLike.congr_arg f h
 #align mul_hom.congr_arg MulHom.congr_arg
 #align add_hom.congr_arg AddHom.congr_arg
 
-/-- Deprecated: use `fun_like.congr_arg` instead. -/
-@[to_additive "Deprecated: use `fun_like.congr_arg` instead."]
+/-- Deprecated: use `FunLike.congr_arg` instead. -/
+@[deprecated, to_additive "Deprecated: use `FunLike.congr_arg` instead."]
 theorem MonoidHom.congr_arg [MulOneClass M] [MulOneClass N] (f : M →* N) {x y : M} (h : x = y) :
   f x = f y := FunLike.congr_arg f h
 #align monoid_hom.congr_arg MonoidHom.congr_arg
 #align add_monoid_hom.congr_arg AddMonoidHom.congr_arg
 
-/-- Deprecated: use `fun_like.congr_arg` instead. -/
+/-- Deprecated: use `FunLike.congr_arg` instead. -/
+@[deprecated]
 theorem MonoidWithZeroHom.congr_arg [MulZeroOneClass M] [MulZeroOneClass N] (f : M →*₀ N) {x y : M}
   (h : x = y) : f x = f y := FunLike.congr_arg f h
 #align monoid_with_zero_hom.congr_arg MonoidWithZeroHom.congr_arg
 
-/-- Deprecated: use `fun_like.coe_injective` instead. -/
-@[to_additive "Deprecated: use `fun_like.coe_injective` instead."]
+/-- Deprecated: use `FunLike.coe_injective` instead. -/
+@[deprecated, to_additive "Deprecated: use `FunLike.coe_injective` instead."]
 theorem OneHom.coe_inj [One M] [One N] ⦃f g : OneHom M N⦄ (h : (f : M → N) = g) : f = g :=
   FunLike.coe_injective h
 #align one_hom.coe_inj OneHom.coe_inj
 #align zero_hom.coe_inj ZeroHom.coe_inj
 
-/-- Deprecated: use `fun_like.coe_injective` instead. -/
-@[to_additive "Deprecated: use `fun_like.coe_injective` instead."]
+/-- Deprecated: use `FunLike.coe_injective` instead. -/
+@[deprecated, to_additive "Deprecated: use `FunLike.coe_injective` instead."]
 theorem MulHom.coe_inj [Mul M] [Mul N] ⦃f g : M →ₙ* N⦄ (h : (f : M → N) = g) : f = g :=
   FunLike.coe_injective h
 #align mul_hom.coe_inj MulHom.coe_inj
 #align add_hom.coe_inj AddHom.coe_inj
 
-/-- Deprecated: use `fun_like.coe_injective` instead. -/
-@[to_additive "Deprecated: use `fun_like.coe_injective` instead."]
+/-- Deprecated: use `FunLike.coe_injective` instead. -/
+@[deprecated, to_additive "Deprecated: use `FunLike.coe_injective` instead."]
 theorem MonoidHom.coe_inj [MulOneClass M] [MulOneClass N] ⦃f g : M →* N⦄ (h : (f : M → N) = g) :
   f = g := FunLike.coe_injective h
 #align monoid_hom.coe_inj MonoidHom.coe_inj
 #align add_monoid_hom.coe_inj AddMonoidHom.coe_inj
 
-/-- Deprecated: use `fun_like.coe_injective` instead. -/
+/-- Deprecated: use `FunLike.coe_injective` instead. -/
+@[deprecated]
 theorem MonoidWithZeroHom.coe_inj [MulZeroOneClass M] [MulZeroOneClass N] ⦃f g : M →*₀ N⦄
   (h : (f : M → N) = g) : f = g := FunLike.coe_injective h
 #align monoid_with_zero_hom.coe_inj MonoidWithZeroHom.coe_inj
 
-/-- Deprecated: use `fun_like.ext_iff` instead. -/
-@[to_additive "Deprecated: use `fun_like.ext_iff` instead."]
+/-- Deprecated: use `FunLike.ext_iff` instead. -/
+@[deprecated, to_additive "Deprecated: use `FunLike.ext_iff` instead."]
 theorem OneHom.ext_iff [One M] [One N] {f g : OneHom M N} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
 #align one_hom.ext_iff OneHom.ext_iff
 #align zero_hom.ext_iff ZeroHom.ext_iff
 
-/-- Deprecated: use `fun_like.ext_iff` instead. -/
-@[to_additive "Deprecated: use `fun_like.ext_iff` instead."]
+/-- Deprecated: use `FunLike.ext_iff` instead. -/
+@[deprecated, to_additive "Deprecated: use `FunLike.ext_iff` instead."]
 theorem MulHom.ext_iff [Mul M] [Mul N] {f g : M →ₙ* N} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
 #align mul_hom.ext_iff MulHom.ext_iff
 #align add_hom.ext_iff AddHom.ext_iff
 
-/-- Deprecated: use `fun_like.ext_iff` instead. -/
-@[to_additive "Deprecated: use `fun_like.ext_iff` instead."]
+/-- Deprecated: use `FunLike.ext_iff` instead. -/
+@[deprecated, to_additive "Deprecated: use `FunLike.ext_iff` instead."]
 theorem MonoidHom.ext_iff [MulOneClass M] [MulOneClass N] {f g : M →* N} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
 #align monoid_hom.ext_iff MonoidHom.ext_iff
 #align add_monoid_hom.ext_iff AddMonoidHom.ext_iff
 
-/-- Deprecated: use `fun_like.ext_iff` instead. -/
+/-- Deprecated: use `FunLike.ext_iff` instead. -/
+@[deprecated]
 theorem MonoidWithZeroHom.ext_iff [MulZeroOneClass M] [MulZeroOneClass N] {f g : M →*₀ N} :
   f = g ↔ ∀ x, f x = g x := FunLike.ext_iff
 #align monoid_with_zero_hom.ext_iff MonoidWithZeroHom.ext_iff
@@ -1079,14 +1082,14 @@ theorem MonoidWithZeroHom.comp_assoc {Q : Type _} [MulZeroOneClass M] [MulZeroOn
 @[to_additive]
 theorem OneHom.cancel_right [One M] [One N] [One P] {g₁ g₂ : OneHom N P} {f : OneHom M N}
   (hf : Function.Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => OneHom.ext <| hf.forall.2 (OneHom.ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h => OneHom.ext <| hf.forall.2 (FunLike.ext_iff.1 h), fun h => h ▸ rfl⟩
 #align one_hom.cancel_right OneHom.cancel_right
 #align zero_hom.cancel_right ZeroHom.cancel_right
 
 @[to_additive]
 theorem MulHom.cancel_right [Mul M] [Mul N] [Mul P] {g₁ g₂ : N →ₙ* P} {f : M →ₙ* N}
   (hf : Function.Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => MulHom.ext <| hf.forall.2 (MulHom.ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h => MulHom.ext <| hf.forall.2 (FunLike.ext_iff.1 h), fun h => h ▸ rfl⟩
 #align mul_hom.cancel_right MulHom.cancel_right
 #align add_hom.cancel_right AddHom.cancel_right
 
@@ -1094,14 +1097,14 @@ theorem MulHom.cancel_right [Mul M] [Mul N] [Mul P] {g₁ g₂ : N →ₙ* P} {f
 theorem MonoidHom.cancel_right [MulOneClass M] [MulOneClass N] [MulOneClass P]
   {g₁ g₂ : N →* P} {f : M →* N} (hf : Function.Surjective f) :
   g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => MonoidHom.ext <| hf.forall.2 (MonoidHom.ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h => MonoidHom.ext <| hf.forall.2 (FunLike.ext_iff.1 h), fun h => h ▸ rfl⟩
 #align monoid_hom.cancel_right MonoidHom.cancel_right
 #align add_monoid_hom.cancel_right AddMonoidHom.cancel_right
 
 theorem MonoidWithZeroHom.cancel_right [MulZeroOneClass M] [MulZeroOneClass N] [MulZeroOneClass P]
   {g₁ g₂ : N →*₀ P} {f : M →*₀ N} (hf : Function.Surjective f) :
   g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => MonoidWithZeroHom.ext <| hf.forall.2 (MonoidWithZeroHom.ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h => MonoidWithZeroHom.ext <| hf.forall.2 (FunLike.ext_iff.1 h), fun h => h ▸ rfl⟩
 #align monoid_with_zero_hom.cancel_right MonoidWithZeroHom.cancel_right
 
 @[to_additive]
@@ -1227,38 +1230,40 @@ protected theorem AddMonoidHom.map_zsmul' [SubNegMonoid M] [SubNegMonoid N] (f :
 section End
 
 -- Porting note: this part causes instance loop
--- namespace Monoid
+-- This may be fixed by https://github.com/leanprover/lean4/issues/1891
+-- in nightly-2022-11-30
+namespace Monoid
 
--- variable (M) [MulOneClass M]
+variable (M) [MulOneClass M]
 
--- /-- The monoid of endomorphisms. -/
--- protected def End := M →* M
--- #align monoid.End Monoid.End
+/-- The monoid of endomorphisms. -/
+protected def End := M →* M
+#align monoid.End Monoid.End
 
--- namespace End
+namespace End
 
--- instance : Monoid (Monoid.End M) where
---   mul := MonoidHom.comp
---   one := MonoidHom.id M
---   mul_assoc _ _ _ := MonoidHom.comp_assoc _ _ _
---   mul_one := MonoidHom.comp_id
---   one_mul := MonoidHom.id_comp
+instance : Monoid (Monoid.End M) where
+  mul := MonoidHom.comp
+  one := MonoidHom.id M
+  mul_assoc _ _ _ := MonoidHom.comp_assoc _ _ _
+  mul_one := MonoidHom.comp_id
+  one_mul := MonoidHom.id_comp
 
--- instance : Inhabited (Monoid.End M) := ⟨1⟩
+instance : Inhabited (Monoid.End M) := ⟨1⟩
 
--- instance : MonoidHomClass (Monoid.End M) M M := MonoidHom.monoidHomClass
+instance : MonoidHomClass (Monoid.End M) M M := MonoidHom.monoidHomClass
 
--- end End
+end End
 
--- @[simp]
--- theorem coe_one : ((1 : Monoid.End M) : M → M) = id := rfl
--- #align monoid.coe_one Monoid.coe_one
+@[simp]
+theorem coe_one : ((1 : Monoid.End M) : M → M) = id := rfl
+#align monoid.coe_one Monoid.coe_one
 
--- @[simp]
--- theorem coe_mul (f g) : ((f * g : Monoid.End M) : M → M) = f ∘ g := rfl
--- #align monoid.coe_mul Monoid.coe_mul
+@[simp]
+theorem coe_mul (f g) : ((f * g : Monoid.End M) : M → M) = f ∘ g := rfl
+#align monoid.coe_mul Monoid.coe_mul
 
--- end Monoid
+end Monoid
 
 -- Porting note: `coe_mul` seems to go into an instance loop involving `Monoid (Monoid.End M)`
 namespace AddMonoid
@@ -1443,20 +1448,20 @@ theorem comp_one [MulOneClass M] [MulOneClass N] [MulOneClass P] (f : N →* P) 
 #align monoid_hom.comp_one MonoidHom.comp_one
 #align add_monoid_hom.comp_zero AddMonoidHom.comp_zero
 
--- Porting note: uncomment these when the instance loop in the `End` section is fixed
--- @[to_additive]
--- theorem mul_comp [MulOneClass M] [MulOneClass N] [CommMonoid P] (g₁ g₂ : N →* P) (f : M →* N) :
---   (g₁ * g₂).comp f = g₁.comp f * g₂.comp f := rfl
--- #align monoid_hom.mul_comp MonoidHom.mul_comp
--- #align add_monoid_hom.add_comp AddMonoidHom.add_comp
+-- Porting note: these are broken because of the instance loop in the `End` section
+@[to_additive]
+theorem mul_comp [MulOneClass M] [MulOneClass N] [CommMonoid P] (g₁ g₂ : N →* P) (f : M →* N) :
+  (g₁ * g₂).comp f = g₁.comp f * g₂.comp f := rfl
+#align monoid_hom.mul_comp MonoidHom.mul_comp
+#align add_monoid_hom.add_comp AddMonoidHom.add_comp
 
--- @[to_additive]
--- theorem comp_mul [MulOneClass M] [CommMonoid N] [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
---   g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
---   ext
---   simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
--- #align monoid_hom.comp_mul MonoidHom.comp_mul
--- #align add_monoid_hom.comp_add AddMonoidHom.comp_add
+@[to_additive]
+theorem comp_mul [MulOneClass M] [CommMonoid N] [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
+  g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
+  ext
+  simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
+#align monoid_hom.comp_mul MonoidHom.comp_mul
+#align add_monoid_hom.comp_add AddMonoidHom.comp_add
 
 /-- Group homomorphisms preserve inverse. -/
 @[to_additive "Additive group homomorphisms preserve negation."]
