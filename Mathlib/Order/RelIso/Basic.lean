@@ -42,7 +42,9 @@ variable {α β γ δ : Type _} {r : α → α → Prop} {s : β → β → Prop
 /-- A relation homomorphism with respect to a given pair of relations `r` and `s`
 is a function `f : α → β` such that `r a b → s (f a) (f b)`. -/
 structure RelHom {α β : Type _} (r : α → α → Prop) (s : β → β → Prop) where
+  /-- The underlying function of a `RelHom` -/
   toFun : α → β
+  /-- A `RelHom` sends related elements to related elements -/
   map_rel' : ∀ {a b}, r a b → s (toFun a) (toFun b)
 #align rel_hom RelHom
 
@@ -59,6 +61,7 @@ matching problem that Lean usually can't do unaided.
 -/
 class RelHomClass (F : Type _) {α β : outParam <| Type _} (r : outParam <| α → α → Prop)
   (s : outParam <| β → β → Prop) extends FunLike F α fun _ => β where
+  /-- A `RelHomClass` sends related elements to related elements -/
   map_rel : ∀ (f : F) {a b}, r a b → s (f a) (f b)
 #align rel_hom_class RelHomClass
 
@@ -192,6 +195,7 @@ theorem Surjective.well_founded_iff {f : α → β} (hf : Surjective f)
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
 is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
 structure RelEmbedding {α β : Type _} (r : α → α → Prop) (s : β → β → Prop) extends α ↪ β where
+  /-- Elements are related iff they are related after apply a `RelEmbedding` -/
   map_rel_iff' : ∀ {a b}, s (toEmbedding a) (toEmbedding b) ↔ r a b
 #align rel_embedding RelEmbedding
 
@@ -521,6 +525,7 @@ end RelEmbedding
 
 /-- A relation isomorphism is an equivalence that is also a relation embedding. -/
 structure RelIso {α β : Type _} (r : α → α → Prop) (s : β → β → Prop) extends α ≃ β where
+  /-- Elements are related iff they are related after apply a `RelIso` -/
   map_rel_iff' : ∀ {a b}, s (toEquiv a) (toEquiv b) ↔ r a b
 #align rel_iso RelIso
 
