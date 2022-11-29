@@ -5,12 +5,7 @@ Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 Ported by: E.W.Ayers
 -/
 import Mathlib.Data.String.Defs
-import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Expr.ReplaceRec
-import Mathlib.Lean.Expr
-import Lean
-import Lean.Data
-import Lean.Elab.Term
 import Std.Lean.NameMapAttribute
 import Std.Data.Option.Basic
 
@@ -50,9 +45,20 @@ macro "to_additive!?" rest:to_additiveRest : attr => `(attr| to_additive ! ? $re
 /-- The `to_additive` attribute. -/
 macro "to_additive?!" rest:to_additiveRest : attr => `(attr| to_additive ! ? $rest)
 
-/-- A set of strings of names that are written in all-caps. -/
-def allCapitalNames : RBTree String compare :=
-.ofList ["LE", "LT", "WF"]
+/-- A set of strings of names that end in a capital letter.
+* If the string contains a lowercase letter, the string should be split between the first occurence
+  of a lower-case letter followed by a upper-case letter.
+* If multiple strings have the same prefix, they should be grouped by prefix
+* In this case, the second list should be prefix-free
+  (no element can be a prefix of a later element)
+
+Todo: automate the translation from `String` to an element in this `RBMap`
+  (but this would require having something similar to the `rb_lmap` from Lean 3). -/
+def endCapitalNames : Lean.RBMap String (List String) compare :=
+-- endCapitalNamesOfList ["LE", "LT", "WF", "CoeTC", "CoeT", "CoeHTCT"]
+.ofList [("LE", [""]), ("LT", [""]), ("WF", [""]), ("Coe", ["TC", "T", "HTCT"])]
+
+
 
 /--
 This function takes a String and splits it into separate parts based on the following
@@ -62,24 +68,30 @@ E.g. `#eval  "InvHMulLEConjugate₂Smul_ne_top".splitCase` yields
 `["Inv", "HMul", "LE", "Conjugate₂", "Smul", "_", "ne", "_", "top"]`.
 -/
 partial def String.splitCase (s : String) (i₀ : Pos := 0) (r : List String := []) : List String :=
+Id.run do
   -- We test if we need to split between `i₀` and `i₁`.
   let i₁ := s.next i₀
   if s.atEnd i₁ then
     -- If `i₀` is the last position, return the list.
     let r := s::r
-    r.reverse
+    return r.reverse
   /- We split the string in three cases
   * We split on both sides of `_` to keep them there when rejoining the string;
-  * We split after a sequence of capital letters in `allCapitalNames`;
-  * We split after a lower-case letter that is followed by an upper-case letter. -/
-  else if s.get i₀ == '_' || s.get i₁ == '_' ||
-    ((s.get i₁).isUpper && (!(s.get i₀).isUpper || allCapitalNames.contains (s.extract 0 i₁))) then
-    splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
-  else
-    splitCase s i₁ r
+  * We split after a name in `endCapitalNames`;
+  * We split after a lower-case letter that is followed by an upper-case letter
+    (unless it is part of a name in `endCapitalNames`). -/
+  if s.get i₀ == '_' || s.get i₁ == '_' then
+    return splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
+  if (s.get i₁).isUpper then
+    if let some strs := endCapitalNames.find? (s.extract 0 i₁) then
+      if let some (pref, newS) := strs.findSome?
+        fun x : String => x.isPrefixOf? (s.extract i₁ s.endPos) |>.map (x, ·) then
+        return splitCase newS 0 <| (s.extract 0 i₁ ++ pref)::r
+    if !(s.get i₀).isUpper then
+      return splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
+  return splitCase s i₁ r
 
 namespace ToAdditive
-
 initialize registerTraceClass `to_additive
 initialize registerTraceClass `to_additive_detail
 
@@ -271,7 +283,7 @@ def applyReplacementFun : Expr → MetaM Expr :=
     match e with
     | .lit (.natVal 1) => pure <| mkRawNatLit 0
     | .const n₀ ls => do
-      let n₁ := Name.mapPrefix (findTranslation? <|← getEnv) n₀
+      let n₁ := n₀.mapPrefix (findTranslation? <|← getEnv)
       if n₀ != n₁ then
         trace[to_additive_detail] "applyReplacementFun: {n₀} → {n₁}"
       let ls : List Level ← (do -- [todo] just get Lean to figure out the levels?
@@ -530,7 +542,9 @@ structure ValueType : Type where
   /-- An optional doc string.-/
   doc : Option String := none
   /-- If `allowAutoName` is `false` (default) then
-  `@[to_additive]` will check whether the given name can be auto-generated. -/
+  `@[to_additive]` will check whether the given name can be auto-generated.
+  If it is set to true, the given name will always be used (so `tgt` should not be `Name.anonymous`)
+  -/
   allowAutoName : Bool := false
   /-- The `Syntax` element corresponding to the original multiplicative declaration
   (or the `to_additive` attribute if it is added later),
@@ -675,21 +689,21 @@ def guessName : String → String :=
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
 def targetName (src tgt : Name) (allowAutoName : Bool) : CoreM Name := do
-  let res ← do
-    if tgt.getPrefix != Name.anonymous || allowAutoName then
-      return tgt
-    let .str pre s := src | throwError "to_additive: can't transport {src}"
-    let tgt_auto := guessName s
-    if tgt.toString == tgt_auto then
-      dbg_trace "{src}: correctly autogenerated target name {tgt_auto
-        }, you may remove the explicit {tgt} argument."
-    let pre := pre.mapPrefix <| findTranslation? (← getEnv)
-    if tgt == Name.anonymous then
-      return Name.mkStr pre tgt_auto
-    else
-      return  Name.mkStr pre tgt.toString
+  let .str pre s := src | throwError "to_additive: can't transport {src}"
+  trace[to_additive_detail] "The name {s} splits as {s.splitCase}"
+  let tgt_auto := guessName s
+  let depth := tgt.getNumParts
+  let pre := pre.mapPrefix <| findTranslation? (← getEnv)
+  let (pre1, pre2) := pre.splitAt (depth - 1)
+  if tgt == pre2.str tgt_auto && !allowAutoName then
+    dbg_trace "to_additive correctly autogenerated target name for {src}. {"\n"
+      }You may remove the explicit argument {tgt}."
+  let res := if tgt == .anonymous then pre.str tgt_auto else pre1 ++ tgt
+  -- we allow translating to itself if `tgt == src`, which is occasionally useful for `additiveTest`
   if res == src && tgt != src then
     throwError "to_additive: can't transport {src} to itself."
+  if tgt != .anonymous then
+    trace[to_additive_detail] "The automatically generated name would be {pre.str tgt_auto}"
   return res
 
 private def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name)) : CoreM Unit := do

@@ -63,34 +63,13 @@ There are some small changes in the attribute. None of them should have great ef
 structures, projections, simp, simplifier, generates declarations
 -/
 
--- move
-namespace String
-
-/-- `isPrefixOf? s pre` returns `some post` if `s = pre ++ post`.
-  If `pre` is not a prefix of `s`, it returns `none`. -/
-def isPrefixOf? (s pre : String) : Option String :=
-  if startsWith s pre then some <| s.drop pre.length else none
-
-end String
-
 open Lean Meta Parser Elab Term Command
-
-/-- Update the last component of a name. -/
-def Lean.Name.updateLast (f : String → String) : Name → Name
-| .str n s => .str n (f s)
-| n        => n
 
 /-- `updateName nm s is_prefix` adds `s` to the last component of `nm`,
   either as prefix or as suffix (specified by `isPrefix`), separated by `_`.
   Used by `simps_add_projections`. -/
 def updateName (nm : Name) (s : String) (isPrefix : Bool) : Name :=
   nm.updateLast fun s' ↦ if isPrefix then s ++ "_" ++ s' else s' ++ "_" ++ s
-
-/-- Get the last field of a name as a string.
-Doesn't raise an error when the last component is a numeric field. -/
-def Lean.Name.getString : Name → String
-| .str _ s => s
-| _        => ""
 
 -- move
 namespace Lean.Meta
@@ -455,7 +434,7 @@ partial def getCompositeOfProjectionsAux (str : Name) (proj : String) (x : Expr)
   let env ← getEnv
   let projs := (getStructureInfo? env str).get!
   let projInfo := projs.fieldNames.toList.mapIdx fun n p ↦
-    return (← proj.isPrefixOf? ("_" ++ p.getString!), n, p)
+    return (← ("_" ++ p.getString!).isPrefixOf? proj, n, p)
   let some (projRest, index, projName) := (projInfo.filterMap id).getLast?
     | throwError "Failed to find constructor {proj.drop 1} in structure {str}."
   let strDecl := (env.find? str).get!
@@ -992,7 +971,7 @@ partial def simpsAddProjections (nm : Name) (type lhs rhs : Expr)
       }be customly defined for `simps`, and differ from the projection names of the structure."
   let nms ← projInfo.concatMapM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ ↦ do
     let newType ← inferType newRhs
-    let newTodo := todo.filterMap fun x ↦ x.isPrefixOf? ("_" ++ proj.getString)
+    let newTodo := todo.filterMap fun x ↦ ("_" ++ proj.getString).isPrefixOf? x
     -- we only continue with this field if it is default or mentioned in todo
     if !(isDefault && todo.isEmpty) && newTodo.isEmpty then return #[]
     let newLhs := projExpr.instantiateLambdasOrApps #[lhsAp]

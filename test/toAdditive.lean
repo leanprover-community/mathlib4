@@ -160,7 +160,7 @@ def pi_nat_has_one {I : Type} : One ((x : I) → Nat)  := pi.has_one
 
 example : @pi_nat_has_one = @pi_nat_has_zero := rfl
 
-section noncomputablee
+section test_noncomputable
 
 @[to_additive Bar.bar]
 noncomputable def Foo.foo (h : ∃ _ : α, True) : α := Classical.choose h
@@ -171,9 +171,9 @@ def Foo.foo' : ℕ := 2
 theorem Bar.bar'_works : Bar.bar' = 2 := by decide
 
 run_cmd (do
-  if !isNoncomputable (← getEnv) `Bar.bar then throwError "bar shouldn't be computable"
-  if isNoncomputable (← getEnv) `Bar.bar' then throwError "bar' should be computable")
-end noncomputablee
+  if !isNoncomputable (← getEnv) `Test.Bar.bar then throwError "bar shouldn't be computable"
+  if isNoncomputable (← getEnv) `Test.Bar.bar' then throwError "bar' should be computable")
+end test_noncomputable
 
 section instances
 
@@ -254,6 +254,9 @@ run_cmd
   checkGuessName "LTHMulHPowLEHDiv" "LTHAddHSMulLEHSub"
   checkGuessName "OneLEHMul" "NonnegHAdd"
   checkGuessName "OneLTHPow" "PosHSMul"
+  checkGuessName "instCoeTCOneHom" "instCoeTCZeroHom"
+  checkGuessName "instCoeTOneHom" "instCoeTZeroHom"
+  checkGuessName "instCoeOneHom" "instCoeZeroHom"
 
 end guessName
 
