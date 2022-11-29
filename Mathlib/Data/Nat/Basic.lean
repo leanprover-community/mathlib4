@@ -912,47 +912,44 @@ end FindGreatest
 
 /-! ### decidability of predicates -/
 
-instance decidableBallLt (n : Nat) (P : ∀ k < n, Prop) :
-    ∀ [H : ∀ n h, Decidable (P n h)], Decidable (∀ n h, P n h) := by
-  induction' n with n IH <;> intro <;> skip
-  · exact isTrue fun n => by decide
-
-  cases' IH fun k h => P k (lt_succ_of_lt h) with h
+instance decidableBallLt :
+    ∀ (n : Nat) (P : ∀ k < n, Prop) [∀ n h, Decidable (P n h)], Decidable (∀ n h, P n h)
+| 0, P, _ => isTrue fun n h => by cases h
+| (n+1), P, H => by
+  cases' decidableBallLt n fun k h => P k (lt_succ_of_lt h) with h h
   · refine' isFalse (mt _ h)
     intro hn k h
     apply hn
-
   by_cases p : P n (lt_succ_self n)
   · exact
       isTrue fun k h' =>
         (le_of_lt_succ h').lt_or_eq_dec.elim (h _) fun e =>
           match k, e, h' with
-          | _, rfl, h => p
-
+          | _, rfl, _ => p
   · exact isFalse (mt (fun hn => hn _ _) p)
 
 #align nat.decidable_ball_lt Nat.decidableBallLt
 
-instance decidableForallFin {n : ℕ} (P : Fin n → Prop) [H : DecidablePred P] :
+instance decidableForallFin {n : ℕ} (P : Fin n → Prop) [DecidablePred P] :
     Decidable (∀ i, P i) :=
   decidable_of_iff (∀ k h, P ⟨k, h⟩) ⟨fun a ⟨k, h⟩ => a k h, fun a k h => a ⟨k, h⟩⟩
 #align nat.decidable_forall_fin Nat.decidableForallFin
 
-instance decidableBallLe (n : ℕ) (P : ∀ k ≤ n, Prop) [H : ∀ n h, Decidable (P n h)] :
+instance decidableBallLe (n : ℕ) (P : ∀ k ≤ n, Prop) [∀ n h, Decidable (P n h)] :
     Decidable (∀ n h, P n h) :=
   decidable_of_iff (∀ (k) (h : k < succ n), P k (le_of_lt_succ h))
-    ⟨fun a k h => a k (lt_succ_of_le h), fun a k h => a k _⟩
+    ⟨fun a k h => a k (lt_succ_of_le h), fun a k _ => a k _⟩
 #align nat.decidable_ball_le Nat.decidableBallLe
 
 instance decidableExistsLt {P : ℕ → Prop} [h : DecidablePred P] :
     DecidablePred fun n => ∃ m : ℕ, m < n ∧ P m
   | 0 => isFalse (by simp)
   | n + 1 =>
-    decidable_of_decidable_of_iff (@Or.decidable _ _ (decidable_exists_lt n) (h n))
-      (by simp only [lt_succ_iff_lt_or_eq, or_and_right, exists_or, exists_eq_left])
+    @decidable_of_decidable_of_iff _ _ (@instDecidableOr _ _ (decidableExistsLt n) (h n))
+      (by simp only [lt_succ_iff_lt_or_eq, or_and_right, exists_or, exists_eq_left]; apply Iff.refl)
 #align nat.decidable_exists_lt Nat.decidableExistsLt
 
-instance decidableExistsLe {P : ℕ → Prop} [h : DecidablePred P] :
+instance decidableExistsLe {P : ℕ → Prop} [DecidablePred P] :
     DecidablePred fun n => ∃ m : ℕ, m ≤ n ∧ P m :=
   fun n => decidable_of_iff (∃ m, m < n + 1 ∧ P m)
     (exists_congr fun _ => and_congr_left' lt_succ_iff)
