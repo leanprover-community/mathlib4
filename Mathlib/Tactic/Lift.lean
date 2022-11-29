@@ -112,9 +112,10 @@ def isPropGoal : TacticM Bool := do
   withMainContext <| return (← inferType (← getMainTarget)).isProp
 
 elab_rules : tactic | `(tactic| lift $e to $t $[using $h]? $[with $ns*]?) => do
-  if !(← isPropGoal) then throwError
+  let goal ← getMainGoal
+  goal.withContext do
+    if !(← inferType (← goal.getType)).isProp then throwError
       "lift tactic failed. Tactic is only applicable when the target is a proposition."
-  withMainContext do
     let e ← elabTerm e none
     let ns := (ns.getD #[]).map Syntax.getId
     if !(e.isFVar ∨ ns.size ≥ 2) then throwError
@@ -131,11 +132,13 @@ elab_rules : tactic | `(tactic| lift $e to $t $[using $h]? $[with $ns*]?) => do
     let inst ← instantiateMVars inst
     let p' := p.app e
     let prf := (← h.mapM (fun h ↦ elabTermEnsuringType h p')).getD (← mkFreshExprMVar (some p'))
+    let varName ← if ns ≠ #[] then pure ns[0]! else e.fvarId!.getUserName
     let eqName := ns[1]?.getD `rfl
     let prf_ex ← mkAppOptM ``CanLift.prf #[none, none, coe, p, inst, e, prf]
-    replaceMainGoal (← Std.Tactic.RCases.rcases #[(none, ← prf_ex.toSyntax)]
-      (.tuple Syntax.missing <| [(ns[0]?.getD (← e.fvarId!.getUserName)), eqName].map
-        (.one Syntax.missing)) (← getMainGoal))
+    let prf_ex ← instantiateMVars prf_ex
+    let prfSyn ← prf_ex.toSyntax
+    replaceMainGoal (← Std.Tactic.RCases.rcases #[(none, prfSyn)]
+      (.tuple Syntax.missing <| [varName, eqName].map (.one Syntax.missing)) goal)
     match prf with
     | .fvar prf => do
         let name ← prf.getUserName
@@ -146,7 +149,3 @@ elab_rules : tactic | `(tactic| lift $e to $t $[using $h]? $[with $ns*]?) => do
     | _ => return ()
 
 end Mathlib.Tactic
-
-example (n : ℤ) (hn : 0 ≤ n - 2) : ∃ k : ℕ, n + 1 = k := by
-  lift n - 2 to ℕ using hn with k hk
---  exact ⟨n + 1, rfl⟩
