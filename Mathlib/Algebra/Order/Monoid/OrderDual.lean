@@ -77,6 +77,9 @@ instance [OrderedCommMonoid α] : OrderedCommMonoid αᵒᵈ :=
 @[to_additive OrderedCancelAddCommMonoid.to_contravariant_class]
 instance OrderedCancelCommMonoid.to_contravariant_class [OrderedCancelCommMonoid α] :
     ContravariantClass αᵒᵈ αᵒᵈ Mul.mul LE.le where
+    -- Porting note: We need to specify the implicit arguments here because of
+    -- https://github.com/leanprover/lean4/issues/1892
+    -- We should be able to remove this after nightly-2022-11-30 arrives.
     elim a b c := @OrderedCancelCommMonoid.le_of_mul_le_mul_left α _ a c b
 #align
   order_dual.ordered_cancel_comm_monoid.to_contravariant_class
