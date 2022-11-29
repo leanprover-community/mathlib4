@@ -5,6 +5,10 @@ jobs:
     name: Lint styleJOB_NAME
     runs-on: STYLE_LINT_RUNNER
     steps:
+      - name: cleanup
+        run: |
+          rm -rf *
+
       - uses: actions/checkout@v2
 
       - name: install Python
@@ -22,6 +26,10 @@ jobs:
     name: Check all files importedJOB_NAME
     runs-on: ubuntu-latest
     steps:
+      - name: cleanup
+        run: |
+          rm -rf *
+
       - uses: actions/checkout@v2
 
       - name: update Mathlib.lean
@@ -36,6 +44,10 @@ jobs:
     name: BuildJOB_NAME
     runs-on: ubuntu-latest
     steps:
+      - name: cleanup
+        run: |
+          rm -rf *
+
       - name: install elan
         run: |
           set -o pipefail
