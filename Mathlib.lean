@@ -169,6 +169,7 @@ import Mathlib.Order.Max
 import Mathlib.Order.MinMax
 import Mathlib.Order.Monotone
 import Mathlib.Order.RelClasses
+import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.Synonym
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
