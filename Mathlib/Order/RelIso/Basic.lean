@@ -49,6 +49,8 @@ structure RelHom {α β : Type _} (r : α → α → Prop) (s : β → β → Pr
 #align rel_hom RelHom
 
 -- mathport name: «expr →r »
+/-- A relation homomorphism with respect to a given pair of relations `r` and `s`
+is a function `f : α → β` such that `r a b → s (f a) (f b)`. -/
 infixl:25 " →r " => RelHom
 
 section
@@ -200,6 +202,8 @@ structure RelEmbedding {α β : Type _} (r : α → α → Prop) (s : β → β 
 #align rel_embedding RelEmbedding
 
 -- mathport name: «expr ↪r »
+/-- A relation embedding with respect to a given pair of relations `r` and `s`
+is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
 infixl:25 " ↪r " => RelEmbedding
 
 /-- The induced relation on a subtype is an embedding under the natural inclusion. -/
@@ -530,6 +534,7 @@ structure RelIso {α β : Type _} (r : α → α → Prop) (s : β → β → Pr
 #align rel_iso RelIso
 
 -- mathport name: «expr ≃r »
+/-- A relation isomorphism is an equivalence that is also a relation embedding. -/
 infixl:25 " ≃r " => RelIso
 
 namespace RelIso
