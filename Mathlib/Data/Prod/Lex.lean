@@ -146,12 +146,7 @@ instance linearOrder (α β : Type _) [LinearOrder α] [LinearOrder β] : Linear
     le_total := total_of (Prod.Lex _ _),
     decidable_le := Prod.Lex.decidable _ _,
     decidable_lt := Prod.Lex.decidable _ _,
-    decidable_eq := Lex.decidableEq _ _,
-    min := fun a b => @ite _ (a ≤ b) (Prod.Lex.decidable _ _ a b) a b,
-    max := fun a b => @ite _ (a ≤ b) (Prod.Lex.decidable _ _ a b) b a }
--- porting note: It was rather a pain to add these `min` and `max` definitions manually, whereas
--- in Lean 3 it would have been handled automatically (because there we have no `has_min` or
--- `has_max` classes). Is there a better way to do this?
+    decidable_eq := Lex.decidableEq _ _, }
 #align prod.lex.linear_order Prod.Lex.linearOrder
 
 instance orderBot [PartialOrder α] [Preorder β] [OrderBot α] [OrderBot β] : OrderBot (α ×ₗ β) where
