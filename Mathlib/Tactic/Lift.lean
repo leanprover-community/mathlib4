@@ -21,6 +21,7 @@ lift, tactic
 /-- A class specifying that you can lift elements from `α` to `β` assuming `cond` is true.
   Used by the tactic `lift`. -/
 class CanLift (α β : Sort _) (coe : outParam <| β → α) (cond : outParam <| α → Prop) where
+  /-- An element of `α` that satisfies `cond` belongs to the range of `coe`. -/
   prf : ∀ x : α, cond x → ∃ y : β, coe y = x
 #align can_lift CanLift
 
@@ -60,6 +61,7 @@ instance Subtype.canLift {α : Sort _} (p : α → Prop) :
 #align subtype.can_lift Subtype.canLift
 
 open Lean in
+/-- If a `Lean.Expr` has form `Lean.Expr.fvar n`, then returns `some n`, otherwise `none`. -/
 def Lean.Expr.fvarId? : Expr → Option FVarId
 | .fvar n => n
 | _ => none
@@ -107,9 +109,6 @@ propositions concerning `z` will still be over `ℤ`. `zify` changes proposition
 subtype) to propositions about `ℤ` (the supertype), without changing the type of any variable.
 -/
 syntax (name := lift) "lift " term " to " term (" using " term)? (" with " (colGt ident)+)? : tactic
-
-def isPropGoal : TacticM Bool := do
-  withMainContext <| return (← inferType (← getMainTarget)).isProp
 
 elab_rules : tactic | `(tactic| lift $e to $t $[using $h]? $[with $ns*]?) => do
   let goal ← getMainGoal
