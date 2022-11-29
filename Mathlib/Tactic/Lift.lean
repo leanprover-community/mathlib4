@@ -139,6 +139,13 @@ elab_rules : tactic | `(tactic| lift $e to $t $[using $h]? $[with $ns*]?) => do
     let prfSyn ← prf_ex.toSyntax
     replaceMainGoal (← Std.Tactic.RCases.rcases #[(none, prfSyn)]
       (.tuple Syntax.missing <| [varName, eqName].map (.one Syntax.missing)) goal)
+    if eqName ≠ `rfl then
+      -- We want to run `simp only [← $eqName] at *`,
+      -- but `eqName` is just a user facing name, and we need to resolve it first.
+      -- This feels like we swimming against the current, but we convert it from
+      -- `Name` to `LocalDecl` to `FVarId` to `Expr` to `Syntax`...
+      let eq : Term ← (Expr.fvar (← getLocalDeclFromUserName eqName).fvarId).toSyntax
+      evalTactic (← `(tactic| simp only [← $eq] at *))
     match prf with
     | .fvar prf => do
         let name ← prf.getUserName
