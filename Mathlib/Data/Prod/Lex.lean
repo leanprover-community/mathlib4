@@ -56,11 +56,13 @@ instance instLE (α β : Type _) [LT α] [LE β] : LE (α ×ₗ β) where le := 
 instance instLT (α β : Type _) [LT α] [LT β] : LT (α ×ₗ β) where lt := Prod.Lex (· < ·) (· < ·)
 #align prod.lex.has_lt Prod.Lex.instLT
 
-theorem le_iff [LT α] [LE β] (a b : α × β) : toLex a ≤ toLex b ↔ a.1 < b.1 ∨ a.1 = b.1 ∧ a.2 ≤ b.2 :=
+theorem le_iff [LT α] [LE β] (a b : α × β) :
+    toLex a ≤ toLex b ↔ a.1 < b.1 ∨ a.1 = b.1 ∧ a.2 ≤ b.2 :=
   Prod.lex_def (· < ·) (· ≤ ·)
 #align prod.lex.le_iff Prod.Lex.le_iff
 
-theorem lt_iff [LT α] [LT β] (a b : α × β) : toLex a < toLex b ↔ a.1 < b.1 ∨ a.1 = b.1 ∧ a.2 < b.2 :=
+theorem lt_iff [LT α] [LT β] (a b : α × β) :
+    toLex a < toLex b ↔ a.1 < b.1 ∨ a.1 = b.1 ∧ a.2 < b.2 :=
   Prod.lex_def (· < ·) (· < ·)
 #align prod.lex.lt_iff Prod.Lex.lt_iff
 
