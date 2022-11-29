@@ -39,11 +39,12 @@ functor, applicative, monad, simp
 /- ./././Mathport/Syntax/Translate/Tactic/Mathlib/Core.lean:61:9: unsupported: weird string -/
 /- failed to parenthesize: unknown constant 'Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr'
 [PrettyPrinter.parenthesize.input] (Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr
-     [(Command.docComment
-       "/--"
-       "./././Mathport/Syntax/Translate/Tactic/Mathlib/Core.lean:61:9: unsupported: weird string -/")]
-     "register_simp_attr"
-     `monad_norm)-/-- failed to format: unknown constant 'Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr'
+  [(Command.docComment
+    "/--"
+    "./././Mathport/Syntax/Translate/Tactic/Mathlib/Core.lean:61:9: unsupported: weird string -/")]
+    "register_simp_attr"
+    `monad_norm)-/
+-- failed to format: unknown constant 'Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr'
 /-- ./././Mathport/Syntax/Translate/Tactic/Mathlib/Core.lean:61:9: unsupported: weird string -/
   register_simp_attr
   monad_norm
@@ -57,30 +58,28 @@ attribute [functor_norm] bind_assoc pure_bind bind_pure
 
 attribute [monad_norm] seq_eq_bind_map
 
-universe u v
 
 @[monad_norm]
-theorem map_eq_bind_pure_comp (m : Type u → Type v) [Monad m] [LawfulMonad m] {α β : Type u} (f : α → β) (x : m α) :
-    f <$> x = x >>= pure ∘ f := (bind_pure_comp f x).symm
+theorem map_eq_bind_pure_comp (m : Type u → Type v) [Monad m] [LawfulMonad m]
+    (f : α → β) (x : m α) : f <$> x = x >>= pure ∘ f :=
+  (bind_pure_comp f x).symm
 #align map_eq_bind_pure_comp map_eq_bind_pure_comp
 
 /-- run a `StateT` program and discard the final state -/
-def StateT.eval {m : Type u → Type v} [Functor m] {σ α} (cmd : StateT σ m α) (s : σ) : m α :=
+def StateT.eval {m : Type u → Type v} [Functor m] (cmd : StateT σ m α) (s : σ) : m α :=
   Prod.fst <$> cmd.run s
 #align state_t.eval StateT.eval
 
-universe u₀ u₁ v₀ v₁
-
 /-- reduce the equivalence between two state monads to the equivalence between
 their respective function spaces -/
-def StateT.equiv {m₁ : Type u₀ → Type v₀} {m₂ : Type u₁ → Type v₁} {α₁ σ₁ : Type u₀} {α₂ σ₂ : Type u₁}
+def StateT.equiv {m₁ : Type u₀ → Type v₀} {m₂ : Type u₁ → Type v₁}
     (F : (σ₁ → m₁ (α₁ × σ₁)) ≃ (σ₂ → m₂ (α₂ × σ₂))) : StateT σ₁ m₁ α₁ ≃ StateT σ₂ m₂ α₂ :=
   F
 #align state_t.equiv StateT.equiv
 
 /-- reduce the equivalence between two reader monads to the equivalence between
 their respective function spaces -/
-def ReaderT.equiv {m₁ : Type u₀ → Type v₀} {m₂ : Type u₁ → Type v₁} {α₁ ρ₁ : Type u₀} {α₂ ρ₂ : Type u₁}
+def ReaderT.equiv {m₁ : Type u₀ → Type v₀} {m₂ : Type u₁ → Type v₁}
     (F : (ρ₁ → m₁ α₁) ≃ (ρ₂ → m₂ α₂)) : ReaderT ρ₁ m₁ α₁ ≃ ReaderT ρ₂ m₂ α₂ :=
   F
 #align reader_t.equiv ReaderT.equiv
