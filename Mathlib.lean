@@ -96,6 +96,7 @@ import Mathlib.Data.Option.NAry
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Data.Prod.Basic
+import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Defs
