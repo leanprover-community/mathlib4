@@ -708,11 +708,11 @@ The default for `div` is such that `a / b = a * b⁻¹` holds by definition.
 
 Adding `div` as a field rather than defining `a / b := a * b⁻¹` allows us to
 avoid certain classes of unification failures, for example:
-Let `foo X` be a type with a `∀ X, Div (foo X)` instance but no
-`∀ X, Inv (foo X)`, e.g. when `foo X` is a `euclidean_domain`. Suppose we
-also have an instance `∀ X [cromulent X], GroupWithZero (foo X)`. Then the
-`(/)` coming from `group_with_zero_has_div` cannot be definitionally equal to
-the `(/)` coming from `foo.has_div`.
+Let `Foo X` be a type with a `∀ X, Div (Foo X)` instance but no
+`∀ X, Inv (Foo X)`, e.g. when `Foo X` is a `EuclideanDomain`. Suppose we
+also have an instance `∀ X [Cromulent X], GroupWithZero (Foo X)`. Then the
+`(/)` coming from `GroupWithZero.div` cannot be definitionally equal to
+the `(/)` coming from `Foo.Div`.
 
 In the same way, adding a `zpow` field makes it possible to avoid definitional failures
 in diamonds. See the definition of `Monoid` and Note [forgetful inheritance] for more
@@ -739,11 +739,11 @@ The default for `sub` is such that `a - b = a + -b` holds by definition.
 
 Adding `sub` as a field rather than defining `a - b := a + -b` allows us to
 avoid certain classes of unification failures, for example:
-Let `foo X` be a type with a `∀ X, has_sub (foo X)` instance but no
-`∀ X, Neg (foo X)`. Suppose we also have an instance
-`∀ X [cromulent X], AddGroup (foo X)`. Then the `(-)` coming from
-`AddGroup.has_sub` cannot be definitionally equal to the `(-)` coming from
-`foo.has_sub`.
+Let `foo X` be a type with a `∀ X, Sub (Foo X)` instance but no
+`∀ X, Neg (Foo X)`. Suppose we also have an instance
+`∀ X [Cromulent X], AddGroup (Foo X)`. Then the `(-)` coming from
+`AddGroup.sub` cannot be definitionally equal to the `(-)` coming from
+`Foo.Sub`.
 
 In the same way, adding a `zsmul` field makes it possible to avoid definitional failures
 in diamonds. See the definition of `AddMonoid` and Note [forgetful inheritance] for more
