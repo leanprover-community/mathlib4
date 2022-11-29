@@ -82,10 +82,11 @@ add_decl_doc MulEquiv.toEquiv
 /-- The `mul_hom` underlying a `mul_equiv`. -/
 add_decl_doc MulEquiv.toMulHom
 
+-- Porting note: `outParam` inserted in `Mul A`, `Mul B`
 /-- `mul_equiv_class F A B` states that `F` is a type of multiplication-preserving morphisms.
 You should extend this class when you extend `mul_equiv`. -/
 @[to_additive]
-class MulEquivClass (F A B : Type _) [Mul A] [Mul B] extends EquivLike F A B where
+class MulEquivClass (F A B : Type _) [outParam <| Mul A] [outParam <| Mul B] extends EquivLike F A B where
   map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
 #align mul_equiv_class MulEquivClass
 
@@ -102,69 +103,67 @@ variable (F)
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) [Mul M] [Mul N] [h : MulEquivClass F M N] : MulHomClass F M N :=
-  { h with coe := (coe : F → M → N), coe_injective' := @FunLike.coe_injective F _ _ _ }
+  { h with coe := h.coe, coe_injective' := FunLike.coe_injective' }
 
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] : MonoidHomClass F M N :=
-  { MulEquivClass.mulHomClass F with coe := (coe : F → M → N),
+  { MulEquivClass.instMulHomClass F with
+    coe := fun _ => _,
     map_one := fun e =>
       calc
         e 1 = e 1 * 1 := (mul_one _).symm
-        _ = e 1 * e (inv e (1 : N) : M) := congr_arg _ (right_inv e 1).symm
-        _ = e (inv e (1 : N)) := by rw [← map_mul, one_mul]
-        _ = 1 := right_inv e 1
+        _ = e 1 * e (MulEquivClass.toEquivLike.inv e (1 : N) : M) := congr_arg _ (MulEquivClass.toEquivLike.right_inv e 1).symm
+        _ = e (MulEquivClass.toEquivLike.inv e (1 : N)) := by rw [← map_mul, one_mul]
+        _ = 1 := MulEquivClass.toEquivLike.right_inv e 1
          }
 
 -- See note [lower instance priority]
 instance (priority := 100) toMonoidWithZeroHomClass {α β : Type _} [MulZeroOneClass α] [MulZeroOneClass β]
     [MulEquivClass F α β] : MonoidWithZeroHomClass F α β :=
-  { MulEquivClass.monoidHomClass _ with
+  { MulEquivClass.instMonoidHomClass _ with
     map_zero := fun e =>
       calc
         e 0 = e 0 * e (EquivLike.inv e 0) := by rw [← map_mul, zero_mul]
-        _ = 0 := by
-          convert mul_zero _
-          exact EquivLike.right_inv e _
-         }
+        _ = 0 := by simp }
 #align mul_equiv_class.to_monoid_with_zero_hom_class MulEquivClass.toMonoidWithZeroHomClass
 
 variable {F}
 
 @[simp, to_additive]
-theorem map_eq_one_iff {M N} [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] (h : F) {x : M} : h x = 1 ↔ x = 1 :=
-  map_eq_one_iff h (EquivLike.injective h)
+theorem map_eq_one_iff {M N} [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] (h : F) {x : M} :
+  h x = 1 ↔ x = 1 := _root_.map_eq_one_iff h (EquivLike.injective h)
 #align mul_equiv_class.map_eq_one_iff MulEquivClass.map_eq_one_iff
 
 @[to_additive]
-theorem map_ne_one_iff {M N} [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] (h : F) {x : M} : h x ≠ 1 ↔ x ≠ 1 :=
-  map_ne_one_iff h (EquivLike.injective h)
+theorem map_ne_one_iff {M N} [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] (h : F) {x : M} :
+  h x ≠ 1 ↔ x ≠ 1 := _root_.map_ne_one_iff h (EquivLike.injective h)
 #align mul_equiv_class.map_ne_one_iff MulEquivClass.map_ne_one_iff
 
 end MulEquivClass
-
+-- TODO: add [coe] attributes
 @[to_additive]
 instance [Mul α] [Mul β] [MulEquivClass F α β] : CoeTC F (α ≃* β) :=
   ⟨fun f =>
     { toFun := f, invFun := EquivLike.inv f, left_inv := EquivLike.left_inv f, right_inv := EquivLike.right_inv f,
-      map_mul' := map_mul f }⟩
+      map_mul' := MulEquivClass.map_mul f }⟩
 
 namespace MulEquiv
 
 @[to_additive]
-instance [Mul M] [Mul N] : CoeFun (M ≃* N) fun _ => M → N :=
-  ⟨MulEquiv.toFun⟩
+instance [Mul M] [Mul N] : CoeFun (M ≃* N) fun _ => M → N := ⟨fun f => f.toFun⟩
 
 @[to_additive]
 instance [Mul M] [Mul N] : MulEquivClass (M ≃* N) M N where
-  coe := toFun
-  inv := invFun
-  left_inv := left_inv
-  right_inv := right_inv
+  coe f := f.toFun
+  inv f := f.invFun
+  left_inv f := f.left_inv
+  right_inv f := f.right_inv
   coe_injective' f g h₁ h₂ := by
     cases f
     cases g
     congr
+    apply Equiv.coe_fn_injective h₁
   map_mul := map_mul'
 
 variable [Mul M] [Mul N] [Mul P] [Mul Q]
@@ -180,19 +179,24 @@ theorem to_fun_eq_coe {f : M ≃* N} : f.toFun = f :=
 #align mul_equiv.to_fun_eq_coe MulEquiv.to_fun_eq_coe
 
 @[simp, to_additive]
-theorem coe_to_equiv {f : M ≃* N} : ⇑(f : M ≃ N) = f :=
+theorem coe_to_equiv {f : M ≃* N} : (f : M ≃ N) = f.toFun :=
   rfl
 #align mul_equiv.coe_to_equiv MulEquiv.coe_to_equiv
 
-@[simp, to_additive]
-theorem coe_to_mul_hom {f : M ≃* N} : ⇑f.toMulHom = f :=
+-- Porting note: restore `to_additive`
+@[simp]
+theorem coe_toMulHom {f : M ≃* N} : f.toMulHom = f.toFun :=
   rfl
-#align mul_equiv.coe_to_mul_hom MulEquiv.coe_to_mul_hom
+#align mul_equiv.coe_to_mul_hom MulEquiv.coe_toMulHom
+@[simp]
+theorem _root_.AddEquiv.coe_toAddHom [Add M] [Add N] {f : M ≃+ N} : f.toAddHom = f.toFun :=
+  rfl
+#align add_equiv.coe_to_add_hom AddEquiv.coe_toAddHom
 
 /-- A multiplicative isomorphism preserves multiplication. -/
 @[to_additive "An additive isomorphism preserves addition."]
 protected theorem map_mul (f : M ≃* N) : ∀ x y, f (x * y) = f x * f y :=
-  map_mul f
+  _root_.map_mul f
 #align mul_equiv.map_mul MulEquiv.map_mul
 
 /-- Makes a multiplicative isomorphism from a bijection which preserves multiplication. -/
