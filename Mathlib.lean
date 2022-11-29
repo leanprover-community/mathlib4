@@ -176,6 +176,7 @@ import Mathlib.Order.MinMax
 import Mathlib.Order.Monotone
 import Mathlib.Order.RelClasses
 import Mathlib.Order.Synonym
+import Mathlib.Order.WithBot
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
