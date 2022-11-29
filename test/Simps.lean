@@ -887,9 +887,17 @@ example (x : Bool) {z} (h : id x = z) : myRingHom x = z := by
 
 /- check interaction with the `@[to_additive]` attribute -/
 
-@[to_additive, simps]
+-- set_option trace.simps.debug true
+
+@[to_additive]
 instance {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨λ p q => ⟨p.1 * q.1, p.2 * q.2⟩⟩
 
+attribute [simps?] instMulProd
+
+#check instMulProd_mul
+#check instMulProd
+#check instAddProd
+#check instAddProd_add
 -- todo: to_additive interaction
 -- run_cmd liftTermElabM <| do
 --   let env ← getEnv
