@@ -33,13 +33,9 @@ variable {α β γ : Type _}
 
 namespace Prod.Lex
 
--- mathport name: «expr ×ₗ »
 -- porting note: `Prod.Lex` is not protected in core, hence the `_root_.` prefix
+-- This will be fixed in nightly-2022-11-30
 @[inherit_doc] notation:35 α " ×ₗ " β:34 => _root_.Lex (Prod α β)
-
--- porting note: I think we just don't need this anymore?
--- unsafe instance [has_to_format α] [has_to_format β] : has_to_format (α ×ₗ β) :=
-  --prod.has_to_format
 
 instance decidableEq (α β : Type _) [DecidableEq α] [DecidableEq β] : DecidableEq (α ×ₗ β) :=
   instDecidableEqProd
@@ -112,6 +108,8 @@ variable [PartialOrder α] [Preorder β]
 
 -- porting note: type class search sees right through the type synonrm for `α ×ₗ β` and uses the
 -- `Preorder` structure for `α × β` instead
+-- This is hopefully the same problems as in https://github.com/leanprover/lean4/issues/1891
+-- and will be fixed in nightly-2022-11-30
 theorem toLex_mono : @Monotone _ _ _ (Prod.Lex.preorder α β) (toLex : α × β → α ×ₗ β) := by
   rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ ⟨ha, hb⟩
   obtain rfl | ha : a₁ = a₂ ∨ _ := ha.eq_or_lt
@@ -121,6 +119,8 @@ theorem toLex_mono : @Monotone _ _ _ (Prod.Lex.preorder α β) (toLex : α × β
 
 -- porting note: type class search sees right through the type synonrm for `α ×ₗ β` and uses the
 -- `Preorder` structure for `α × β` instead
+-- This is hopefully the same problems as in https://github.com/leanprover/lean4/issues/1891
+-- and will be fixed in nightly-2022-11-30
 theorem toLex_strictMono : @StrictMono _ _ _ (Prod.Lex.preorder α β) (toLex : α × β → α ×ₗ β) := by
   rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ h
   obtain rfl | ha : a₁ = a₂ ∨ _ := h.le.1.eq_or_lt
