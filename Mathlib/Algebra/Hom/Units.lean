@@ -109,7 +109,7 @@ theorem val_pow_eq_pow_val (u : Mˣ) (n : ℕ) : ((u ^ n : Mˣ) : M) = (u : M) ^
 #align units.coe_pow Units.val_pow_eq_pow_val
 @[simp, norm_cast]
 theorem val_nsmul_eq_nsmul_val {M} [AddMonoid M] (u : AddUnits M) (n : ℕ) :
-  ((u ^ n : AddUnits M) : M) = (u : M) ^ n :=
+  ((n • u : AddUnits M) : M) = n • (u : M) :=
   (AddUnits.coeHom M).map_nsmul u n
 #align units.coe_nsmul Units.val_nsmul_eq_nsmul_val
 
