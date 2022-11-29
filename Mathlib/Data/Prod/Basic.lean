@@ -175,7 +175,7 @@ theorem fst_eq_iff : ∀ {p : α × β} {x : α}, p.1 = x ↔ p = (x, p.2)
 theorem snd_eq_iff : ∀ {p : α × β} {x : β}, p.2 = x ↔ p = (p.1, x)
   | ⟨a, b⟩, x => by simp
 
-theorem Lex_def (r : α → α → Prop) (s : β → β → Prop) {p q : α × β} :
+theorem lex_def (r : α → α → Prop) (s : β → β → Prop) {p q : α × β} :
     Prod.Lex r s p q ↔ r p.1 q.1 ∨ p.1 = q.1 ∧ s p.2 q.2 :=
   ⟨fun h ↦ by cases h <;> simp [*], fun h ↦
     match p, q, h with
@@ -185,7 +185,7 @@ theorem Lex_def (r : α → α → Prop) (s : β → β → Prop) {p q : α × �
 instance Lex.decidable [DecidableEq α]
     (r : α → α → Prop) (s : β → β → Prop) [DecidableRel r] [DecidableRel s] :
     DecidableRel (Prod.Lex r s) :=
-  fun _ _ ↦ decidable_of_decidable_of_iff (Lex_def r s).symm
+  fun _ _ ↦ decidable_of_decidable_of_iff (lex_def r s).symm
 
 @[refl]
 theorem Lex.refl_left (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] : ∀ x, Prod.Lex r s x x

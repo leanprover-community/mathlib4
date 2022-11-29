@@ -27,9 +27,6 @@ theorem add_nsmul (a : M) (m n : ℕ) : (m + n) • a = m • a + n • a := by
   | zero => rw [Nat.zero_add, zero_nsmul, zero_add]
   | succ m ih => rw [Nat.succ_add, Nat.succ_eq_add_one, succ_nsmul, ih, succ_nsmul, add_assoc]
 
-theorem succ_nsmul' (a : M) (n : ℕ) : (n + 1) • a = n • a + a := by
-  rw [add_nsmul, one_nsmul]
-
 end AddMonoid
 
 section Monoid
@@ -59,8 +56,6 @@ theorem Commute.mul_pow {a b : M} (h : Commute a b) (n : ℕ) : (a * b) ^ n = a 
   induction' n with n ih
   · rw [pow_zero, pow_zero, pow_zero, one_mul]
   · simp only [pow_succ, ih, ← mul_assoc, (h.pow_left n).right_comm]
-
-attribute [to_additive succ_nsmul'] pow_succ'
 
 end Monoid
 
