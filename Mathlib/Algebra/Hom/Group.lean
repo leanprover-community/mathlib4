@@ -326,7 +326,7 @@ structure MonoidHom (M : Type _) (N : Type _) [MulOneClass M] [MulOneClass N] ex
   OneHom M N, M →ₙ* N
 #align monoid_hom MonoidHom
 -- Porting note: remove once `to_additive` is updated
-attribute [to_additive AddMonoidHom.toAddHom] MonoidHom.toMulHom
+attribute [to_additive] MonoidHom.toMulHom
 
 attribute [nolint docBlame] MonoidHom.toMulHom
 attribute [nolint docBlame] MonoidHom.toOneHom
@@ -356,7 +356,7 @@ instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
 #align monoid_hom.monoid_hom_class MonoidHom.monoidHomClass
 
 -- Porting note: help to_additive translate. This should ideally be handled by the tactic
-attribute [to_additive AddMonoidHomClass.toZeroHomClass] MonoidHomClass.toOneHomClass
+attribute [to_additive] MonoidHomClass.toOneHomClass
 
 /-- Any type that is a `MonoidHomClass` can be cast into a `MonoidHom`. -/
 @[to_additive "Any type that is a `AddMonoidHomClass` can be cast into a `AddMonoidHom`."]
@@ -366,16 +366,10 @@ instance [MonoidHomClass F M N] : CoeTC F (M →* N) :=
 instance [AddZeroClass M] [AddZeroClass N] [AddMonoidHomClass F M N] : CoeTC F (M →+ N) :=
   ⟨fun f => { toFun := f, map_zero' := map_zero f, map_add' := map_add f }⟩
 
--- Porting note: restore `to_additive`
-@[simp]
+@[simp, to_additive]
 theorem MonoidHom.coe_coe [MonoidHomClass F M N] (f : F) : ((f : M →* N) : M → N) = f := rfl
 #align monoid_hom.coe_coe MonoidHom.coe_coe
-
-@[simp]
-theorem AddMonoidHom.coe_coe [AddZeroClass M] [AddZeroClass N] [AddMonoidHomClass F M N] (f : F) :
-  ((f : M →+ N) : M → N) = f := rfl
 #align add_monoid_hom.coe_coe AddMonoidHom.coe_coe
-attribute [to_additive AddMonoidHom.coe_coe] MonoidHom.coe_coe
 
 @[to_additive]
 theorem map_mul_eq_one [MonoidHomClass F M N] (f : F) {a b : M} (h : a * b = 1) : f a * f b = 1 :=
