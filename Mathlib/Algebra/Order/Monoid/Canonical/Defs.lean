@@ -40,7 +40,7 @@ export HasExistsAddOfLe (exists_add_of_le)
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) Group.has_exists_mul_of_le (α : Type u) [Group α] [LE α] : HasExistsMulOfLe α :=
-  ⟨fun a b hab => ⟨a⁻¹ * b, (mul_inv_cancel_left _ _).symm⟩⟩
+  ⟨fun {a b} _ => ⟨a⁻¹ * b, (mul_inv_cancel_left _ _).symm⟩⟩
 #align group.has_exists_mul_of_le Group.has_exists_mul_of_le
 
 section MulOneClass
@@ -79,19 +79,19 @@ theorem le_iff_forall_one_lt_lt_mul' : a ≤ b ↔ ∀ ε, 1 < ε → a < b * ε
 
 end HasExistsMulOfLe
 
-#print CanonicallyOrderedAddMonoid /-
+
 /-- A canonically ordered additive monoid is an ordered commutative additive monoid
   in which the ordering coincides with the subtractibility relation,
   which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
   This is satisfied by the natural numbers, for example, but not
   the integers or other nontrivial `ordered_add_comm_group`s. -/
 @[protect_proj]
-class CanonicallyOrderedAddMonoid (α : Type _) extends OrderedAddCommMonoid α, HasBot α where
+class CanonicallyOrderedAddMonoid (α : Type _) extends OrderedAddCommMonoid α, Bot α where
   bot_le : ∀ x : α, ⊥ ≤ x
   exists_add_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a + c
   le_self_add : ∀ a b : α, a ≤ a + b
 #align canonically_ordered_add_monoid CanonicallyOrderedAddMonoid
--/
+
 
 -- see Note [lower instance priority]
 instance (priority := 100) CanonicallyOrderedAddMonoid.toOrderBot (α : Type u) [h : CanonicallyOrderedAddMonoid α] :
@@ -109,7 +109,7 @@ instance (priority := 100) CanonicallyOrderedAddMonoid.toOrderBot (α : Type u) 
   be more natural that collections of all things ≥ 1).
 -/
 @[protect_proj, to_additive]
-class CanonicallyOrderedMonoid (α : Type _) extends OrderedCommMonoid α, HasBot α where
+class CanonicallyOrderedMonoid (α : Type _) extends OrderedCommMonoid α, Bot α where
   bot_le : ∀ x : α, ⊥ ≤ x
   exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a * c
   le_self_mul : ∀ a b : α, a ≤ a * b
@@ -172,7 +172,9 @@ theorem le_iff_exists_mul : a ≤ b ↔ ∃ c, b = a * c :=
 #align le_iff_exists_mul le_iff_exists_mul
 
 @[to_additive]
-theorem le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by simpa only [mul_comm _ a] using le_iff_exists_mul
+theorem le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by
+  simp only [mul_comm _ a, le_iff_exists_mul]
+  rfl
 #align le_iff_exists_mul' le_iff_exists_mul'
 
 @[simp, to_additive zero_le]
@@ -208,6 +210,7 @@ theorem eq_one_or_one_lt : a = 1 ∨ 1 < a :=
 @[simp, to_additive add_pos_iff]
 theorem one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by
   simp only [one_lt_iff_ne_one, Ne.def, mul_eq_one_iff, not_and_or]
+  rfl -- Porting note: Should this be needed? It wasn't needed in lean3
 #align one_lt_mul_iff one_lt_mul_iff
 
 @[to_additive]
@@ -215,6 +218,7 @@ theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _)(hc : 1 < c), a * c = b
   obtain ⟨c, hc⟩ := le_iff_exists_mul.1 h.le
   refine' ⟨c, one_lt_iff_ne_one.2 _, hc.symm⟩
   rintro rfl
+  -- Porting note: simpa seems to continue to try and solve the goal after it has been solved
   simpa [hc, lt_irrefl] using h
 #align exists_one_lt_mul_of_lt exists_one_lt_mul_of_lt
 
@@ -236,17 +240,17 @@ theorem le_mul_right (h : a ≤ b) : a ≤ b * c :=
 
 @[to_additive]
 theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔ ∃ c > 1, b = a * c := by
-  simp_rw [lt_iff_le_and_ne, and_comm', le_iff_exists_mul, ← exists_and_left, exists_prop]
+  -- Porting note: simp_rw was more aggressive in lean4
+  rw [lt_iff_le_and_ne, le_iff_exists_mul, ←exists_and_right]
   apply exists_congr
   intro c
-  rw [and_congr_left_iff, gt_iff_lt]
+  rw [and_comm, and_congr_left_iff, gt_iff_lt]
   rintro rfl
   constructor
   · rw [one_lt_iff_ne_one]
     apply mt
     rintro rfl
     rw [mul_one]
-
   · rw [← (self_le_mul_right a c).lt_iff_ne]
     apply lt_mul_of_one_lt_right'
 
@@ -272,7 +276,7 @@ theorem of_gt {M} [CanonicallyOrderedAddMonoid M] {x y : M} (h : x < y) : NeZero
 -- on `zmod`'s ring structure. We cannot just set this to be any `x < y`, else that becomes a
 -- metavariable and it will hugely slow down typeclass inference.
 instance (priority := 10) of_gt' {M} [CanonicallyOrderedAddMonoid M] [One M] {y : M} [Fact (1 < y)] : NeZero y :=
-  of_gt <| Fact.out <| 1 < y
+  of_gt <| @Fact.out (1 < y) _ -- Port note: Fact.out has different type signature from mathlib3
 #align ne_zero.of_gt' NeZero.of_gt'
 
 instance bit0 {M} [CanonicallyOrderedAddMonoid M] {x : M} [NeZero x] : NeZero (bit0 x) :=
@@ -300,7 +304,7 @@ variable [CanonicallyLinearOrderedMonoid α]
 -- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 100) CanonicallyLinearOrderedMonoid.semilatticeSup : SemilatticeSup α :=
-  { LinearOrder.toLattice with }
+  { LinearOrder.toLattice with } -- Porting note: found in Order.Lattice. No longer imported
 #align canonically_linear_ordered_monoid.semilattice_sup CanonicallyLinearOrderedMonoid.semilatticeSup
 
 @[to_additive]
