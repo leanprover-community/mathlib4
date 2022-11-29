@@ -92,8 +92,10 @@ structure ZeroHom (M : Type _) (N : Type _) [Zero M] [Zero N] where
 
 You should extend this typeclass when you extend `ZeroHom`.
 -/
--- Porting note: `outParam` is added to instances `[Zero M] [Zero N]` until issue
--- https://github.com/leanprover/lean4/issues/1852 is resolved
+-- Porting note: We'd hoped that we could remove `outParam` from the instances `[Zero M] [Zero N]`
+-- after https://github.com/leanprover/lean4/issues/1852 was resolved.
+-- While the declaration itself is now allowed, there are subsequent failures that
+-- need to be diagnosed.
 class ZeroHomClass (F : Type _) (M N : outParam (Type _)) [outParam (Zero M)] [outParam (Zero N)]
   extends FunLike F M fun _ => N where
   /-- The proposition that the function preserves 0 -/
@@ -356,20 +358,19 @@ instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
 -- Porting note: help to_additive translate. This should ideally be handled by the tactic
 attribute [to_additive AddMonoidHomClass.toZeroHomClass] MonoidHomClass.toOneHomClass
 
--- Porting note: restore `to_additive`
 /-- Any type that is a `MonoidHomClass` can be cast into a `MonoidHom`. -/
--- @[to_additive "Any type that is a `AddMonoidHomClass` can be cast into a `AddMonoidHom`."]
+@[to_additive "Any type that is a `AddMonoidHomClass` can be cast into a `AddMonoidHom`."]
 instance [MonoidHomClass F M N] : CoeTC F (M →* N) :=
   ⟨fun f => { toFun := f, map_one' := map_one f, map_mul' := map_mul f }⟩
 /-- Any type that is a `AddMonoidHomClass` can be cast into a `AddMonoidHom`. -/
 instance [AddZeroClass M] [AddZeroClass N] [AddMonoidHomClass F M N] : CoeTC F (M →+ N) :=
   ⟨fun f => { toFun := f, map_zero' := map_zero f, map_add' := map_add f }⟩
-attribute [to_additive instCoeTCAddMonoidHom] instCoeTCMonoidHom
 
 -- Porting note: restore `to_additive`
 @[simp]
 theorem MonoidHom.coe_coe [MonoidHomClass F M N] (f : F) : ((f : M →* N) : M → N) = f := rfl
 #align monoid_hom.coe_coe MonoidHom.coe_coe
+
 @[simp]
 theorem AddMonoidHom.coe_coe [AddZeroClass M] [AddZeroClass N] [AddMonoidHomClass F M N] (f : F) :
   ((f : M →+ N) : M → N) = f := rfl
@@ -410,6 +411,7 @@ theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
   | 0 => by rw [pow_zero, pow_zero, map_one]
   | n + 1 => by rw [pow_succ, pow_succ, map_mul, map_pow f a n]
 #align map_pow map_pow
+
 @[simp]
 theorem map_nsmul [AddMonoid G] [AddMonoid H] [AddMonoidHomClass F G H] (f : F) :
   ∀ (n : ℕ) (a : G), f (n • a) = n • f a
@@ -927,7 +929,7 @@ def MulHom.comp [Mul M] [Mul N] [Mul P] (hnp : N →ₙ* P) (hmn : M →ₙ* N) 
   map_mul' x y := by simp
 #align mul_hom.comp MulHom.comp
 
--- Porting note: restore `by simp`
+-- Porting note: `map_one'` should just be `by simp`
 /-- Composition of monoid morphisms as a monoid morphism. -/
 @[to_additive]
 def MonoidHom.comp [MulOneClass M] [MulOneClass N] [MulOneClass P] (hnp : N →* P) (hmn : M →* N) :
@@ -937,8 +939,7 @@ def MonoidHom.comp [MulOneClass M] [MulOneClass N] [MulOneClass P] (hnp : N →*
   map_mul' := by simp
 #align monoid_hom.comp MonoidHom.comp
 
--- Porting note: something strange in `map_one'`, where the goal is `↑1 = 1` via
--- `MulZeroOneClass.toZero`
+-- Porting note: `map_one'` should just be `by simp`
 /-- Composition of `MonoidWithZeroHom`s as a `MonoidWithZeroHom`. -/
 def MonoidWithZeroHom.comp [MulZeroOneClass M] [MulZeroOneClass N] [MulZeroOneClass P]
   (hnp : N →*₀ P) (hmn : M →*₀ N) : M →*₀ P where
@@ -1381,12 +1382,12 @@ protected theorem map_inv [Group α] [DivisionMonoid β] (f : α →* β) (a : �
   f a⁻¹ = (f a)⁻¹ := map_inv f _
 #align monoid_hom.map_inv MonoidHom.map_inv
 
--- Porting note: restore `to_additive`, delete `AddMonoidHom.map_zsmul` below
 /-- Group homomorphisms preserve integer power. -/
--- @[to_additive "Additive group homomorphisms preserve integer scaling."]
+@[to_additive "Additive group homomorphisms preserve integer scaling."]
 protected theorem map_zpow [Group α] [DivisionMonoid β] (f : α →* β) (g : α) (n : ℤ) :
   f (g ^ n) = f g ^ n := map_zpow f g n
 #align monoid_hom.map_zpow MonoidHom.map_zpow
+#align add_monoid_hom.map_zsmul AddMonoidHom.map_zsmul
 
 /-- Group homomorphisms preserve division. -/
 @[to_additive "Additive group homomorphisms preserve subtraction."]
@@ -1516,13 +1517,6 @@ theorem div_apply {M G} {_ : MulOneClass M} {_ : CommGroup G} (f g : M →* G) (
 #align monoid_hom.div_apply MonoidHom.div_apply
 
 end MonoidHom
-
--- Porting note: delete once `to_additive` in `MonoidHom.map_zpow` is fixed
-/-- Additive group homomorphisms preserve integer scaling. -/
-protected theorem AddMonoidHom.map_zsmul [AddGroup α] [SubtractionMonoid β]
-  (f : α →+ β) (g : α) (n : ℤ) :
-  f (n • g) = n • f g := map_zsmul f n g
-#align add_monoid_hom.map_zsmul AddMonoidHom.map_zsmul
 
 /-- Given two monoid with zero morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid
 with zero morphism sending `x` to `f x * g x`. -/
