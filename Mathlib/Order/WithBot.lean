@@ -33,6 +33,7 @@ instance [Repr α] : Repr (WithBot α) :=
     | none => "⊥"
     | some a => "↑" ++ repr a⟩
 
+/-- The canonical map from `α` into `WithBot α` -/
 @[coe] def some : α → WithBot α :=
   Option.some
 
@@ -374,7 +375,7 @@ instance [SemilatticeSup α] : SemilatticeSup (WithBot α) :=
         exact ⟨d, rfl, sup_le h₁' h₂⟩
          }
 
-theorem coe_sup [SemilatticeSup α] (a b : α) : ((a ⊔ b : α) : WithBot α) = a ⊔ b :=
+theorem coe_sup [SemilatticeSup α] (a b : α) : ((a ⊔ b : α) : WithBot α) = (a : WithBot α) ⊔ b :=
   rfl
 #align with_bot.coe_sup WithBot.coe_sup
 
@@ -395,7 +396,7 @@ instance [SemilatticeInf α] : SemilatticeInf (WithBot α) :=
       rcases h₂ a rfl with ⟨c, ⟨⟩, ac⟩
       exact ⟨_, rfl, le_inf ab ac⟩ }
 
-theorem coe_inf [SemilatticeInf α] (a b : α) : ((a ⊓ b : α) : WithBot α) = a ⊓ b :=
+theorem coe_inf [SemilatticeInf α] (a b : α) : ((a ⊓ b : α) : WithBot α) = (a : WithBot α) ⊓ b :=
   rfl
 #align with_bot.coe_inf WithBot.coe_inf
 
@@ -531,6 +532,7 @@ instance [Repr α] : Repr (WithTop α) :=
     | none => "⊤"
     | some a => "↑" ++ repr a⟩
 
+/-- The canonical map from `α` into `WithTop α` -/
 @[coe] def some : α → WithTop α :=
   Option.some
 
@@ -1106,7 +1108,7 @@ instance [SemilatticeInf α] : SemilatticeInf (WithTop α) :=
         exact ⟨d, rfl, le_inf h₁' h₂⟩
          }
 
-theorem coe_inf [SemilatticeInf α] (a b : α) : ((a ⊓ b : α) : WithTop α) = a ⊓ b :=
+theorem coe_inf [SemilatticeInf α] (a b : α) : ((a ⊓ b : α) : WithTop α) = (a : WithTop α) ⊓ b :=
   rfl
 #align with_top.coe_inf WithTop.coe_inf
 
@@ -1127,7 +1129,7 @@ instance [SemilatticeSup α] : SemilatticeSup (WithTop α) :=
       rcases h₂ a rfl with ⟨c, ⟨⟩, ac⟩
       exact ⟨_, rfl, sup_le ab ac⟩ }
 
-theorem coe_sup [SemilatticeSup α] (a b : α) : ((a ⊔ b : α) : WithTop α) = a ⊔ b :=
+theorem coe_sup [SemilatticeSup α] (a b : α) : ((a ⊔ b : α) : WithTop α) = (a : WithTop α) ⊔ b :=
   rfl
 #align with_top.coe_sup WithTop.coe_sup
 
