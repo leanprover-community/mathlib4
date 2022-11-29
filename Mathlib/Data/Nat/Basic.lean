@@ -698,7 +698,7 @@ theorem mul_div_le_mul_div_assoc (a b c : ℕ) : a * (b / c) ≤ a * b / c :=
   if hc0 : c = 0 then by simp [hc0]
   else
     (Nat.le_div_iff_mul_le (Nat.pos_of_ne_zero hc0)).2
-      (by rw [mul_assoc] <;> exact Nat.mul_le_mul_left _ (Nat.div_mul_le_self _ _))
+      (by rw [mul_assoc]; exact Nat.mul_le_mul_left _ (Nat.div_mul_le_self _ _))
 #align nat.mul_div_le_mul_div_assoc Nat.mul_div_le_mul_div_assoc
 
 protected theorem eq_mul_of_div_eq_right {a b c : ℕ} (H1 : b ∣ a) (H2 : a / b = c) : a = b * c := by
@@ -712,7 +712,8 @@ protected theorem div_eq_iff_eq_mul_right {a b c : ℕ} (H : 0 < b) (H' : b ∣ 
 
 protected theorem div_eq_iff_eq_mul_left {a b c : ℕ} (H : 0 < b) (H' : b ∣ a) :
     a / b = c ↔ a = c * b := by
-  rw [mul_comm] <;> exact Nat.div_eq_iff_eq_mul_right H H'
+  rw [mul_comm]
+  exact Nat.div_eq_iff_eq_mul_right H H'
 #align nat.div_eq_iff_eq_mul_left Nat.div_eq_iff_eq_mul_left
 
 protected theorem eq_mul_of_div_eq_left {a b c : ℕ} (H1 : b ∣ a) (H2 : a / b = c) : a = c * b := by
@@ -758,11 +759,7 @@ theorem mod_succ_eq_iff_lt {a b : ℕ} : a % b.succ = a ↔ a < b.succ :=
   mod_eq_iff_lt (succ_ne_zero _)
 #align nat.mod_succ_eq_iff_lt Nat.mod_succ_eq_iff_lt
 
-#print Nat.div_add_mod /-
-theorem div_add_mod (m k : ℕ) : k * (m / k) + m % k = m :=
-  (Nat.add_comm _ _).trans (mod_add_div _ _)
-#align nat.div_add_mod Nat.div_add_mod
--/
+-- Porting note `Nat.div_add_mod` is now in core.
 
 theorem mod_add_div' (m k : ℕ) : m % k + m / k * k = m := by
   rw [mul_comm]
@@ -828,9 +825,7 @@ theorem add_mod_eq_add_mod_left {m n k : ℕ} (i : ℕ) (H : m % n = k % n) :
 
 theorem mul_dvd_of_dvd_div {a b c : ℕ} (hab : c ∣ b) (h : a ∣ b / c) : c * a ∣ b :=
   have h1 : ∃ d, b / c = a * d := h
-  have h2 : ∃ e, b = c * e := hab
   let ⟨d, hd⟩ := h1
-  let ⟨e, he⟩ := h2
   have h3 : b = a * d * c := Nat.eq_mul_of_div_eq_left hab hd
   -- Porting note: was `cc`
   show ∃ d, b = c * a * d from ⟨d, by rwa [mul_comm, ←mul_assoc] at h3⟩
@@ -1131,7 +1126,8 @@ instance decidableExistsLt {P : ℕ → Prop} [h : DecidablePred P] :
 
 instance decidableExistsLe {P : ℕ → Prop} [h : DecidablePred P] :
     DecidablePred fun n => ∃ m : ℕ, m ≤ n ∧ P m :=
-  fun n => decidable_of_iff (∃ m, m < n + 1 ∧ P m) (exists_congr fun x => and_congr_left' lt_succ_iff)
+  fun n => decidable_of_iff (∃ m, m < n + 1 ∧ P m)
+    (exists_congr fun _ => and_congr_left' lt_succ_iff)
 #align nat.decidable_exists_le Nat.decidableExistsLe
 
 end Nat
