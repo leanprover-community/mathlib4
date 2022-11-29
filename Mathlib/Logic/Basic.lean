@@ -50,73 +50,6 @@ instance (priority := 10) decidableEq_of_subsingleton [Subsingleton α] : Decida
 instance (α : Sort _) [Subsingleton α] (p : α → Prop) : Subsingleton (Subtype p) :=
   ⟨fun ⟨x, _⟩ ⟨y, _⟩ ↦ by cases Subsingleton.elim x y; rfl⟩
 
--- Porting note: I suspect we don't need the following lemmas anymore, since we don't
--- have a separate `coe_fn` anymore.
-
--- Porting note: The following simp lemma has `Coe` and `CoeTC` switched because `coeTrans` in
--- `Init.Coe` as the transitive closure on the other position.
--- /-- Add an instance to "undo" coercion transitivity into a chain of coercions, because
---     most simp lemmas are stated with respect to simple coercions and will not match when
---     part of a chain. -/
---  @[simp] theorem coe_coe [CoeTC α β] [Coe β γ] (a : α) : @CoeTC.coe α γ _ a = (a : β) := rfl
-
--- theorem coe_fn_coe_trans {α β γ δ} [Coe α β] [HasCoeTCAux β γ] [CoeFun γ δ] (x : α) :
---     @coeFn α _ _ x = @coeFn β _ _ x :=
---   rfl
-
--- /-- Non-dependent version of `coe_fn_coe_trans`, helps `rw` figure out the argument. -/
--- theorem coe_fn_coe_trans' {α β γ} {δ : outParam <| _} [Coe α β] [HasCoeTAux β γ]
---     [CoeFun γ fun _ ↦ δ] (x : α) : @coeFn α _ _ x = @coeFn β _ _ x :=
---   rfl
-
--- @[simp] theorem coe_fn_coe_base {α β γ} [Coe α β] [CoeFun β γ] (x : α) :
---    coe α _ _ x = @coeFn β _ _ x :=
---  rfl
-
--- /-- Non-dependent version of `coe_fn_coe_base`, helps `rw` figure out the argument. -/
--- theorem coe_fn_coe_base' {α β} {γ : outParam <| _} [Coe α β] [CoeFun β fun _ ↦ γ] (x : α) :
---     @coeFn α _ _ x = @coeFn β _ _ x :=
---   rfl
-
--- -- This instance should have low priority, to ensure we follow the chain
--- -- `set_like → has_coe_to_sort`
--- attribute [instance] coeSortTrans
-
--- theorem coe_sort_coe_trans {α β γ δ} [Coe α β] [HasCoeTAux β γ] [CoeSort γ δ] (x : α) :
---     @coeSort α _ _ x = @coeSort β _ _ x :=
---   rfl
-
-library_note "function coercion" /--
-Many structures such as bundled morphisms coerce to functions so that you can
-transparently apply them to arguments. For example, if `e : α ≃ β` and `a : α`
-then you can write `e a` and this is elaborated as `⇑e a`. This type of
-coercion is implemented using the `has_coe_to_fun` type class. There is one
-important consideration:
-
-If a type coerces to another type which in turn coerces to a function,
-then it **must** implement `has_coe_to_fun` directly:
-```lean
-structure sparkling_equiv (α β) extends α ≃ β
-
--- if we add a `has_coe` instance,
-instance {α β} : has_coe (sparkling_equiv α β) (α ≃ β) :=
-⟨sparkling_equiv.to_equiv⟩
-
--- then a `has_coe_to_fun` instance **must** be added as well:
-instance {α β} : has_coe_to_fun (sparkling_equiv α β) :=
-⟨λ _, α → β, λ f, f.to_equiv.to_fun⟩
-```
-
-(Rationale: if we do not declare the direct coercion, then `⇑e a` is not in
-simp-normal form. The lemma `coe_fn_coe_base` will unfold it to `⇑↑e a`. This
-often causes loops in the simplifier.)
--/
-
--- @[simp]
--- theorem coe_sort_coe_base {α β γ} [Coe α β] [CoeSort β γ] (x : α) :
---     @coeSort α _ _ x = @coeSort β _ _ x :=
---   rfl
-
 #align pempty PEmpty
 
 theorem congr_heq {α β γ : Sort _} {f : α → γ} {g : β → γ} {x : α} {y : β}
@@ -982,6 +915,9 @@ theorem dite_eq_iff : dite P A B = c ↔ (∃ h, A h = c) ∨ ∃ h, B h = c := 
 
 theorem ite_eq_iff : ite P a b = c ↔ P ∧ a = c ∨ ¬P ∧ b = c :=
   dite_eq_iff.trans <| by simp only; rw [exists_prop, exists_prop]
+
+theorem eq_ite_iff : a = ite P b c ↔ P ∧ a = b ∨ ¬P ∧ a = c :=
+eq_comm.trans <| ite_eq_iff.trans <| (Iff.rfl.and eq_comm).or (Iff.rfl.and eq_comm)
 
 theorem dite_eq_iff' : dite P A B = c ↔ (∀ h, A h = c) ∧ ∀ h, B h = c :=
   ⟨fun he ↦ ⟨fun h ↦ (dif_pos h).symm.trans he, fun h ↦ (dif_neg h).symm.trans he⟩, fun he ↦
