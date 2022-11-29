@@ -85,13 +85,14 @@ Id.run do
   if (s.get i₁).isUpper then
     if let some strs := endCapitalNames.find? (s.extract 0 i₁) then
       if let some (pref, newS) := strs.findSome?
-        fun x : String => x.isPrefixOf? (s.extract i₁ s.endPos) |>.map (x, ·) then
+        fun x ↦ x.isPrefixOf? (s.extract i₁ s.endPos) |>.map (x, ·) then
         return splitCase newS 0 <| (s.extract 0 i₁ ++ pref)::r
     if !(s.get i₀).isUpper then
       return splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
   return splitCase s i₁ r
 
 namespace ToAdditive
+
 initialize registerTraceClass `to_additive
 initialize registerTraceClass `to_additive_detail
 
@@ -542,9 +543,7 @@ structure ValueType : Type where
   /-- An optional doc string.-/
   doc : Option String := none
   /-- If `allowAutoName` is `false` (default) then
-  `@[to_additive]` will check whether the given name can be auto-generated.
-  If it is set to true, the given name will always be used (so `tgt` should not be `Name.anonymous`)
-  -/
+  `@[to_additive]` will check whether the given name can be auto-generated. -/
   allowAutoName : Bool := false
   /-- The `Syntax` element corresponding to the original multiplicative declaration
   (or the `to_additive` attribute if it is added later),
