@@ -533,67 +533,15 @@ theorem decreasingInduction_succ_left {P : ℕ → Sort _} (h : ∀ n, P (n + 1)
   apply Nat.le_succ
 #align nat.decreasing_induction_succ_left Nat.decreasingInduction_succ_left
 
-/-- Recursion principle on even and odd numbers: if we have `P 0`, and for all `i : ℕ` we can
-extend from `P i` to both `P (2 * i)` and `P (2 * i + 1)`, then we have `P n` for all `n : ℕ`.
-This is nothing more than a wrapper around `nat.binary_rec`, to avoid having to switch to
-dealing with `bit0` and `bit1`. -/
-@[elab_as_elim]
-def evenOddRec {P : ℕ → Sort _} (h0 : P 0) (h_even : ∀ (n) (ih : P n), P (2 * n))
-    (h_odd : ∀ (n) (ih : P n), P (2 * n + 1)) (n : ℕ) : P n := by
-  refine' @binary_rec P h0 (fun b i hi => _) n
-  cases b
-  · simpa [bit, bit0_val i] using h_even i hi
-
-  · simpa [bit, bit1_val i] using h_odd i hi
-
-#align nat.even_odd_rec Nat.evenOddRec
-
-@[simp]
-theorem evenOddRec_zero (P : ℕ → Sort _) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
-    (h_odd : ∀ i, P i → P (2 * i + 1)) : @evenOddRec _ h0 h_even h_odd 0 = h0 :=
-  binary_rec_zero _ _
-#align nat.even_odd_rec_zero Nat.evenOddRec_zero
-
-@[simp]
-theorem evenOddRec_even (n : ℕ) (P : ℕ → Sort _) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
-    (h_odd : ∀ i, P i → P (2 * i + 1)) (H : h_even 0 h0 = h0) :
-    @evenOddRec _ h0 h_even h_odd (2 * n) = h_even n (evenOddRec h0 h_even h_odd n) := by
-  convert binary_rec_eq _ ff n
-  · exact (bit0_eq_two_mul _).symm
-
-  · exact (bit0_eq_two_mul _).symm
-
-  · apply heq_of_cast_eq
-    rfl
-
-  · exact H
-
-#align nat.even_odd_rec_even Nat.evenOddRec_even
-
-@[simp]
-theorem evenOddRec_odd (n : ℕ) (P : ℕ → Sort _) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
-    (h_odd : ∀ i, P i → P (2 * i + 1)) (H : h_even 0 h0 = h0) :
-    @evenOddRec _ h0 h_even h_odd (2 * n + 1) = h_odd n (evenOddRec h0 h_even h_odd n) := by
-  convert binary_rec_eq _ tt n
-  · exact (bit0_eq_two_mul _).symm
-
-  · exact (bit0_eq_two_mul _).symm
-
-  · apply heq_of_cast_eq
-    rfl
-
-  · exact H
-
-#align nat.even_odd_rec_odd Nat.evenOddRec_odd
-
 /-- Given `P : ℕ → ℕ → Sort*`, if for all `a b : ℕ` we can extend `P` from the rectangle
 strictly below `(a,b)` to `P a b`, then we have `P n m` for all `n m : ℕ`.
 Note that for non-`Prop` output it is preferable to use the equation compiler directly if possible,
 since this produces equation lemmas. -/
-@[elab_as_elim]
+-- Porting note: error `unexpected eliminator resulting type P _x✝.1 _x✝.2` on `@[elab_as_elim]`.
+-- @[elab_as_elim]
 def strongSubRecursion {P : ℕ → ℕ → Sort _} (H : ∀ a b, (∀ x y, x < a → y < b → P x y) → P a b) :
     ∀ n m : ℕ, P n m
-  | n, m => H n m fun x y hx hy => strongSubRecursion H x y
+  | n, m => H n m fun x y _ _ => strongSubRecursion H x y
 #align nat.strong_sub_recursion Nat.strongSubRecursion
 
 /-- Given `P : ℕ → ℕ → Sort*`, if we have `P i 0` and `P 0 i` for all `i : ℕ`,
@@ -601,12 +549,14 @@ and for any `x y : ℕ` we can extend `P` from `(x,y+1)` and `(x+1,y)` to `(x+1,
 then we have `P n m` for all `n m : ℕ`.
 Note that for non-`Prop` output it is preferable to use the equation compiler directly if possible,
 since this produces equation lemmas. -/
-@[elab_as_elim]
+-- Porting note: error `unexpected eliminator resulting type P _x✝.1 _x✝.2` on `@[elab_as_elim]`.
+-- @[elab_as_elim]
 def pincerRecursion {P : ℕ → ℕ → Sort _} (Ha0 : ∀ a : ℕ, P a 0) (H0b : ∀ b : ℕ, P 0 b)
     (H : ∀ x y : ℕ, P x y.succ → P x.succ y → P x.succ y.succ) : ∀ n m : ℕ, P n m
   | a, 0 => Ha0 a
   | 0, b => H0b b
   | Nat.succ a, Nat.succ b => H _ _ (pincerRecursion Ha0 H0b H _ _) (pincerRecursion Ha0 H0b H _ _)
+termination_by pincerRecursion Ha0 Hab H n m => n + m
 #align nat.pincer_recursion Nat.pincerRecursion
 
 /-- Recursion starting at a non-zero number: given a map `C k → C (k+1)` for each `k ≥ n`,
@@ -626,7 +576,7 @@ Also works for functions to `Sort*`. Weakens the assumptions of `decreasing_indu
 def decreasingInduction' {P : ℕ → Sort _} {m n : ℕ} (h : ∀ k < n, m ≤ k → P (k + 1) → P k)
     (mn : m ≤ n) (hP : P n) :
     P m := by
-  -- induction mn using nat.le_rec_on' generalizing h hP -- this doesn't work unfortunately
+  -- induction mn using Nat.leRecOn' generalizing h hP -- this doesn't work unfortunately
   refine' leRecOn' mn _ _ h hP <;>
   clear h hP mn n
   · intro n mn ih h hP
@@ -960,125 +910,7 @@ theorem findGreatest_of_not (h : ¬P (b + 1)) :
 
 end FindGreatest
 
-/-! ### `bodd_div2` and `bodd` -/
-
-
-@[simp]
-theorem bodd_div2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := by
-  unfold bodd div2 <;> cases bodd_div2 n <;> rfl
-#align nat.bodd_div2_eq Nat.bodd_div2_eq
-
-@[simp]
-theorem bodd_bit0 (n) : bodd (bit0 n) = ff :=
-  bodd_bit false n
-#align nat.bodd_bit0 Nat.bodd_bit0
-
-@[simp]
-theorem bodd_bit1 (n) : bodd (bit1 n) = tt :=
-  bodd_bit true n
-#align nat.bodd_bit1 Nat.bodd_bit1
-
-@[simp]
-theorem div2_bit0 (n) : div2 (bit0 n) = n :=
-  div2_bit false n
-#align nat.div2_bit0 Nat.div2_bit0
-
-@[simp]
-theorem div2_bit1 (n) : div2 (bit1 n) = n :=
-  div2_bit true n
-#align nat.div2_bit1 Nat.div2_bit1
-
-/-! ### `bit0` and `bit1` -/
-
-
--- There is no need to prove `bit0_eq_zero : bit0 n = 0 ↔ n = 0`
--- as this is true for any `[semiring R] [no_zero_divisors R] [char_zero R]`
--- However the lemmas `bit0_eq_bit0`, `bit1_eq_bit1`, `bit1_eq_one`, `one_eq_bit1`
--- need `[ring R] [no_zero_divisors R] [char_zero R]` in general,
--- so we prove `ℕ` specialized versions here.
-@[simp]
-theorem bit0_eq_bit0 {m n : ℕ} : bit0 m = bit0 n ↔ m = n :=
-  ⟨Nat.bit0_inj, fun h => by subst h⟩
-#align nat.bit0_eq_bit0 Nat.bit0_eq_bit0
-
-@[simp]
-theorem bit1_eq_bit1 {m n : ℕ} : bit1 m = bit1 n ↔ m = n :=
-  ⟨Nat.bit1_inj, fun h => by subst h⟩
-#align nat.bit1_eq_bit1 Nat.bit1_eq_bit1
-
-@[simp]
-theorem bit1_eq_one {n : ℕ} : bit1 n = 1 ↔ n = 0 :=
-  ⟨@Nat.bit1_inj n 0, fun h => by subst h⟩
-#align nat.bit1_eq_one Nat.bit1_eq_one
-
-@[simp]
-theorem one_eq_bit1 {n : ℕ} : 1 = bit1 n ↔ n = 0 :=
-  ⟨fun h => (@Nat.bit1_inj 0 n h).symm, fun h => by subst h⟩
-#align nat.one_eq_bit1 Nat.one_eq_bit1
-
-theorem bit_add : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit false n + bit b m
-  | tt => bit1_add
-  | ff => bit0_add
-#align nat.bit_add Nat.bit_add
-
-theorem bit_add' : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit b n + bit false m
-  | tt => bit1_add'
-  | ff => bit0_add
-#align nat.bit_add' Nat.bit_add'
-
-theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
-  cases b <;> [exact Nat.bit0_ne_zero h, exact Nat.bit1_ne_zero _]
-#align nat.bit_ne_zero Nat.bit_ne_zero
-
-theorem bit0_mod_two : bit0 n % 2 = 0 := by
-  rw [Nat.mod_two_of_bodd]
-  simp
-#align nat.bit0_mod_two Nat.bit0_mod_two
-
-theorem bit1_mod_two : bit1 n % 2 = 1 := by
-  rw [Nat.mod_two_of_bodd]
-  simp
-#align nat.bit1_mod_two Nat.bit1_mod_two
-
-theorem pos_of_bit0_pos {n : ℕ} (h : 0 < bit0 n) : 0 < n := by
-  cases n
-  cases h
-  apply succ_pos
-#align nat.pos_of_bit0_pos Nat.pos_of_bit0_pos
-
-@[simp]
-theorem bit_cases_on_bit {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (b : Bool) (n : ℕ) :
-    bitCasesOn (bit b n) H = H b n :=
-  eq_of_heq <| (eq_rec_heq _ _).trans <| by rw [bodd_bit, div2_bit]
-#align nat.bit_cases_on_bit Nat.bit_cases_on_bit
-
-@[simp]
-theorem bit_cases_on_bit0 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ) :
-    bitCasesOn (bit0 n) H = H false n :=
-  bit_cases_on_bit H false n
-#align nat.bit_cases_on_bit0 Nat.bit_cases_on_bit0
-
-@[simp]
-theorem bit_cases_on_bit1 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ) :
-    bitCasesOn (bit1 n) H = H true n :=
-  bit_cases_on_bit H true n
-#align nat.bit_cases_on_bit1 Nat.bit_cases_on_bit1
-
-theorem bit_cases_on_injective {C : ℕ → Sort u} :
-    Function.Injective fun H : ∀ b n, C (bit b n) => fun n => bitCasesOn n H := by
-  intro H₁ H₂ h
-  ext (b n)
-  simpa only [bit_cases_on_bit] using congr_fun h (bit b n)
-#align nat.bit_cases_on_injective Nat.bit_cases_on_injective
-
-@[simp]
-theorem bit_cases_on_inj {C : ℕ → Sort u} (H₁ H₂ : ∀ b n, C (bit b n)) :
-    ((fun n => bitCasesOn n H₁) = fun n => bitCasesOn n H₂) ↔ H₁ = H₂ :=
-  bit_cases_on_injective.eq_iff
-#align nat.bit_cases_on_inj Nat.bit_cases_on_inj
-
 /-! ### decidability of predicates -/
-
 
 instance decidableBallLt (n : Nat) (P : ∀ k < n, Prop) :
     ∀ [H : ∀ n h, Decidable (P n h)], Decidable (∀ n h, P n h) := by
