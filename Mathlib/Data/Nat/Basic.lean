@@ -945,7 +945,7 @@ instance decidableExistsLt {P : ℕ → Prop} [h : DecidablePred P] :
     DecidablePred fun n => ∃ m : ℕ, m < n ∧ P m
   | 0 => isFalse (by simp)
   | n + 1 =>
-    @decidable_of_decidable_of_iff _ _ (@instDecidableOr _ _ (decidableExistsLt n) (h n))
+    @decidable_of_decidable_of_iff _ _ (Or.decidable _ _ (decidableExistsLt n) (h n))
       (by simp only [lt_succ_iff_lt_or_eq, or_and_right, exists_or, exists_eq_left]; apply Iff.refl)
 #align nat.decidable_exists_lt Nat.decidableExistsLt
 
