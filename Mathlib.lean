@@ -27,7 +27,8 @@ import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.Group
 import Mathlib.Algebra.Order.Hom.Basic
-import Mathlib.Algebra.Order.Monoid
+import Mathlib.Algebra.Order.Monoid.Cancel.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Algebra.Order.Monoid.MinMax
 import Mathlib.Algebra.Order.Ring
@@ -69,6 +70,7 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
+import Mathlib.Data.HashMap
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Cast
 import Mathlib.Data.Int.Cast.Basic
@@ -166,6 +168,7 @@ import Mathlib.Mathport.Syntax
 import Mathlib.Order.Basic
 import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Compare
+import Mathlib.Order.Disjoint
 import Mathlib.Order.GameAdd
 import Mathlib.Order.Iterate
 import Mathlib.Order.Lattice
@@ -209,6 +212,14 @@ import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Linarith.Datatypes
+import Mathlib.Tactic.Linarith.Elimination
+import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Tactic.Linarith.Lemmas
+import Mathlib.Tactic.Linarith.Parsing
+import Mathlib.Tactic.Linarith.Preprocessing
+import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.ModCases
