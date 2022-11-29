@@ -99,8 +99,8 @@ class CanonicallyOrderedAddMonoid (α : Type _) extends OrderedAddCommMonoid α,
 
 
 -- see Note [lower instance priority]
-instance (priority := 100) CanonicallyOrderedAddMonoid.toOrderBot (α : Type u) [h : CanonicallyOrderedAddMonoid α] :
-    OrderBot α :=
+instance (priority := 100) CanonicallyOrderedAddMonoid.toOrderBot (α : Type u)
+    [h : CanonicallyOrderedAddMonoid α] : OrderBot α :=
   { h with }
 #align canonically_ordered_add_monoid.to_order_bot CanonicallyOrderedAddMonoid.toOrderBot
 
