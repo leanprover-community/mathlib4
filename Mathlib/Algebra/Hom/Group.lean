@@ -1435,8 +1435,8 @@ variable [Group G] [CommGroup H]
 --         show f (x * y) * g (x * y) = f x * g x * (f y * g y)
 --         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
 
--- /-- Given two additive monoid morphisms `f`, `g` to an additive commutative monoid, `f + g` is the
--- additive monoid morphism sending `x` to `f x + g x`. -/
+-- /-- Given two additive monoid morphisms `f`, `g` to an additive commutative monoid,
+-- `f + g` is the additive monoid morphism sending `x` to `f x + g x`. -/
 -- add_decl_doc AddMonoidHom.instAddAddMonoidHomToAddZeroClassToAddMonoid
 
 -- @[simp, to_additive]
