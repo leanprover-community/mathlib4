@@ -7,22 +7,23 @@ Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Tactic.Convert
 import Std.Data.Rat
+import Mathlib.Data.Rat.Init
 
 /-!
 # Division (semi)rings and (semi)fields
 
 This file introduces fields and division rings (also known as skewfields) and proves some basic
-statements about them. For a more extensive theory of fields, see the `field_theory` folder.
+statements about them. For a more extensive theory of fields, see the `FieldTheory` folder.
 
 ## Main definitions
 
-* `division_semiring`: Nontrivial semiring with multiplicative inverses for nonzero elements.
-* `division_ring`: : Nontrivial ring with multiplicative inverses for nonzero elements.
-* `semifield`: Commutative division semiring.
-* `field`: Commutative division ring.
-* `is_field`: Predicate on a (semi)ring that it is a (semi)field, i.e. that the multiplication is
+* `DivisionSemiring`: Nontrivial semiring with multiplicative inverses for nonzero elements.
+* `DivisionRing`: : Nontrivial ring with multiplicative inverses for nonzero elements.
+* `Semifield`: Commutative division semiring.
+* `Field`: Commutative division ring.
+* `IsField`: Predicate on a (semi)ring that it is a (semi)field, i.e. that the multiplication is
   commutative, that it has more than one element and that all non-zero elements have a
-  multiplicative inverse. In contrast to `field`, which contains the data of a function associating
+  multiplicative inverse. In contrast to `Field`, which contains the data of a function associating
   to an element of the field its multiplicative inverse, this predicate only assumes the existence
   and can therefore more easily be used to e.g. transfer along ring isomorphisms.
 
@@ -56,7 +57,7 @@ variable {α β K : Type _}
 is defined as `(a / b : K) = (a : K) * (b : K)⁻¹`.
 Use `coe` instead of `rat.cast_rec` for better definitional behaviour.
 -/
-def Rat.castRec [HasLiftT ℕ K] [HasLiftT ℤ K] [Mul K] [Inv K] : ℚ → K
+def Rat.castRec [Coe ℕ K] [Coe ℤ K] [Mul K] [Inv K] : ℚ → K
   | ⟨a, b, _, _⟩ => ↑a * (↑b)⁻¹
 #align rat.cast_rec Rat.castRec
 
