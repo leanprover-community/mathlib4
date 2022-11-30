@@ -576,23 +576,18 @@ Also works for functions to `Sort*`. Weakens the assumptions of `decreasing_indu
 def decreasingInduction' {P : ℕ → Sort _} {m n : ℕ} (h : ∀ k < n, m ≤ k → P (k + 1) → P k)
     (mn : m ≤ n) (hP : P n) :
     P m := by
-  -- induction mn using Nat.leRecOn' generalizing h hP -- this doesn't work unfortunately
-  refine' leRecOn' mn _ _ h hP <;>
-  clear h hP mn n
+  revert h hP
+  refine' leRecOn' mn _ _
   · intro n mn ih h hP
     apply ih
     · exact fun k hk => h k (Nat.lt.step hk)
-
     · exact h n (lt_succ_self n) mn hP
-
-
-  · intro h hP
+  · intro _ hP
     exact hP
 
 #align nat.decreasing_induction' Nat.decreasingInduction'
 
 /-! ### `div` -/
-
 
 attribute [simp] Nat.div_self
 
