@@ -30,6 +30,7 @@ import Mathlib.Algebra.Order.Monoid.Cancel.Defs
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Algebra.Order.Monoid.MinMax
+import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Ring
 import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.Order.Sub.Defs
@@ -41,6 +42,7 @@ import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.OrderSynonym
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Units
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
@@ -97,6 +99,7 @@ import Mathlib.Data.Option.NAry
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Data.Prod.Basic
+import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Defs
@@ -174,8 +177,10 @@ import Mathlib.Order.Lattice
 import Mathlib.Order.Max
 import Mathlib.Order.MinMax
 import Mathlib.Order.Monotone
+import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
 import Mathlib.Order.Synonym
+import Mathlib.Order.WithBot
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
