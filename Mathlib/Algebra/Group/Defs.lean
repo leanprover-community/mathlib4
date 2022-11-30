@@ -3,13 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-import Mathlib.Tactic.Spread
+
 import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Int.Basic
-import Mathlib.Data.List.Basic
-
-import Std.Tactic.Lint.Frontend
-import Std.Tactic.Lint.Misc
+import Mathlib.Logic.Function.Basic
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -35,17 +32,17 @@ actions and register the following instances:
 ## Notation
 
 - `+`, `-`, `*`, `/`, `^` : the usual arithmetic operations; the underlying functions are
-  `Add.add`, `Neg.neg`/`Sub.sub`, `Mul.mul`, `Div.div`, and `Pow.pow`.
-- `a • b` is used as notation for `SMul.smul a b`.
-- `a +ᵥ b` is used as notation for `VAdd.vadd a b`.
+  `Add.add`, `Neg.neg`/`Sub.sub`, `Mul.mul`, `Div.div`, and `HPow.hPow`.
+- `a • b` is used as notation for `HSMul.hSMul a b`.
+- `a +ᵥ b` is used as notation for `HVAdd.hVAdd a b`.
 
 -/
 
 open Function
 
 /--
-The notation typeclass for heterogeneous scalar multiplication.
-This enables the notation `a • b : γ` where `a : α`, `b : β`.
+The notation typeclass for heterogeneous additive actions.
+This enables the notation `a +ᵥ b : γ` where `a : α`, `b : β`.
 -/
 class HVAdd (α : Type u) (β : Type v) (γ : outParam (Type w)) where
   /-- `a +ᵥ b` computes the sum of `a` and `b`.
@@ -97,13 +94,13 @@ attribute [to_additive_reorder 1] HPow
 attribute [to_additive_reorder 1 5] HPow.hPow
 attribute [to_additive_reorder 1] Pow
 attribute [to_additive_reorder 1 4] Pow.pow
-attribute [to_additive SMul] Pow
+attribute [to_additive] Pow
 attribute [to_additive_reorder 1] instHPow
-attribute [to_additive instHSMul] instHPow
-attribute [to_additive HSMul] HPow
+attribute [to_additive] instHPow
+attribute [to_additive] HPow
 
-attribute [to_additive instHVAdd] instHSMul
-attribute [to_additive HVAdd] HSMul
+attribute [to_additive] instHSMul
+attribute [to_additive] HSMul
 
 universe u
 
@@ -516,9 +513,8 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 #align monoid.npow_zero' Monoid.npow_zero
 #align monoid.npow_succ' Monoid.npow_succ
 
--- FIXME I wouldn't have thought this is necessary. Is is a bug in `to_additive`?
--- It seems that it isn't operating on the second parent.
-attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
+-- Bug #660
+attribute [to_additive] Monoid.toMulOneClass
 
 @[default_instance high] instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
   ⟨fun x n ↦ Monoid.npow n x⟩
@@ -526,13 +522,13 @@ attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
 instance AddMonoid.SMul {M : Type _} [AddMonoid M] : SMul ℕ M :=
   ⟨AddMonoid.nsmul⟩
 
-attribute [to_additive AddMonoid.SMul] Monoid.Pow
+attribute [to_additive] Monoid.Pow
 
 section
 
 variable {M : Type _} [Monoid M]
 
-@[simp, to_additive nsmul_eq_smul]
+@[simp, to_additive]
 theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
   rfl
 
@@ -564,7 +560,7 @@ class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
 
-attribute [to_additive AddCommMonoid.toAddCommSemigroup] CommMonoid.toCommSemigroup
+attribute [to_additive] CommMonoid.toCommSemigroup
 
 section LeftCancelMonoid
 
@@ -577,7 +573,7 @@ class AddLeftCancelMonoid (M : Type u) extends AddLeftCancelSemigroup M, AddMono
 @[to_additive]
 class LeftCancelMonoid (M : Type u) extends LeftCancelSemigroup M, Monoid M
 
-attribute [to_additive AddLeftCancelMonoid.toAddMonoid] LeftCancelMonoid.toMonoid
+attribute [to_additive] LeftCancelMonoid.toMonoid
 
 end LeftCancelMonoid
 
@@ -592,7 +588,7 @@ class AddRightCancelMonoid (M : Type u) extends AddRightCancelSemigroup M, AddMo
 @[to_additive]
 class RightCancelMonoid (M : Type u) extends RightCancelSemigroup M, Monoid M
 
-attribute [to_additive AddRightCancelMonoid.toAddMonoid] RightCancelMonoid.toMonoid
+attribute [to_additive] RightCancelMonoid.toMonoid
 
 end RightCancelMonoid
 
@@ -607,7 +603,7 @@ class AddCancelMonoid (M : Type u) extends AddLeftCancelMonoid M, AddRightCancel
 @[to_additive]
 class CancelMonoid (M : Type u) extends LeftCancelMonoid M, RightCancelMonoid M
 
-attribute [to_additive AddCancelMonoid.toAddRightCancelMonoid] CancelMonoid.toRightCancelMonoid
+attribute [to_additive] CancelMonoid.toRightCancelMonoid
 
 /-- Commutative version of `AddCancelMonoid`. -/
 class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMonoid M
@@ -615,6 +611,8 @@ class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMon
 /-- Commutative version of `CancelMonoid`. -/
 @[to_additive]
 class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
+
+attribute [to_additive] CancelCommMonoid.toCommMonoid
 
 -- see Note [lower instance priority]
 @[to_additive CancelCommMonoid.toAddCancelMonoid]
@@ -710,11 +708,11 @@ The default for `div` is such that `a / b = a * b⁻¹` holds by definition.
 
 Adding `div` as a field rather than defining `a / b := a * b⁻¹` allows us to
 avoid certain classes of unification failures, for example:
-Let `foo X` be a type with a `∀ X, Div (foo X)` instance but no
-`∀ X, Inv (foo X)`, e.g. when `foo X` is a `euclidean_domain`. Suppose we
-also have an instance `∀ X [cromulent X], GroupWithZero (foo X)`. Then the
-`(/)` coming from `group_with_zero_has_div` cannot be definitionally equal to
-the `(/)` coming from `foo.has_div`.
+Let `Foo X` be a type with a `∀ X, Div (Foo X)` instance but no
+`∀ X, Inv (Foo X)`, e.g. when `Foo X` is a `EuclideanDomain`. Suppose we
+also have an instance `∀ X [Cromulent X], GroupWithZero (Foo X)`. Then the
+`(/)` coming from `GroupWithZero.div` cannot be definitionally equal to
+the `(/)` coming from `Foo.Div`.
 
 In the same way, adding a `zpow` field makes it possible to avoid definitional failures
 in diamonds. See the definition of `Monoid` and Note [forgetful inheritance] for more
@@ -722,11 +720,16 @@ explanations on this.
 -/
 class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
   div a b := a * b⁻¹
+  /-- `a / b := a * b⁻¹` -/
   div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ := by intros; rfl
+  /-- The power operation: `a ^ n = a * ··· * a`; `a ^ (-n) = a⁻¹ * ··· a⁻¹` (`n` times) -/
   zpow : ℤ → G → G := zpowRec
+  /-- `a ^ 0 = 1` -/
   zpow_zero' : ∀ a : G, zpow 0 a = 1 := by intros; rfl
+  /-- `a ^ (n + 1) = a * a ^ n` -/
   zpow_succ' (n : ℕ) (a : G) : zpow (Int.ofNat n.succ) a = a * zpow (Int.ofNat n) a := by
     intros; rfl
+  /-- `a ^ -(n + 1) = (a ^ (n + 1))⁻¹` -/
   zpow_neg' (n : ℕ) (a : G) : zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ := by intros; rfl
 
 /-- A `SubNegMonoid` is an `AddMonoid` with unary `-` and binary `-` operations
@@ -736,11 +739,11 @@ The default for `sub` is such that `a - b = a + -b` holds by definition.
 
 Adding `sub` as a field rather than defining `a - b := a + -b` allows us to
 avoid certain classes of unification failures, for example:
-Let `foo X` be a type with a `∀ X, has_sub (foo X)` instance but no
-`∀ X, Neg (foo X)`. Suppose we also have an instance
-`∀ X [cromulent X], AddGroup (foo X)`. Then the `(-)` coming from
-`AddGroup.has_sub` cannot be definitionally equal to the `(-)` coming from
-`foo.has_sub`.
+Let `foo X` be a type with a `∀ X, Sub (Foo X)` instance but no
+`∀ X, Neg (Foo X)`. Suppose we also have an instance
+`∀ X [Cromulent X], AddGroup (Foo X)`. Then the `(-)` coming from
+`AddGroup.sub` cannot be definitionally equal to the `(-)` coming from
+`Foo.Sub`.
 
 In the same way, adding a `zsmul` field makes it possible to avoid definitional failures
 in diamonds. See the definition of `AddMonoid` and Note [forgetful inheritance] for more
@@ -769,7 +772,7 @@ section DivInvMonoid
 
 variable [DivInvMonoid G] {a b : G}
 
-@[simp, to_additive zsmul_eq_smul] theorem zpow_eq_pow (n : ℤ) (x : G) :
+@[simp, to_additive] theorem zpow_eq_pow (n : ℤ) (x : G) :
     DivInvMonoid.zpow n x = x ^ n :=
   rfl
 
@@ -820,8 +823,8 @@ class InvOneClass (G : Type _) extends One G, Inv G where
 @[to_additive SubNegZeroMonoid]
 class DivInvOneMonoid (G : Type _) extends DivInvMonoid G, InvOneClass G
 
--- FIXME: `to_additive` is not operating on the second parent.
-attribute [to_additive SubNegZeroMonoid.toNegZeroClass] DivInvOneMonoid.toInvOneClass
+-- FIXME: `to_additive` is not operating on the second parent. (#660)
+attribute [to_additive] DivInvOneMonoid.toInvOneClass
 
 variable [InvOneClass G]
 
@@ -850,7 +853,7 @@ class DivisionMonoid (G : Type u) extends DivInvMonoid G, HasInvolutiveInv G whe
   involutivity of inversion. -/
   inv_eq_of_mul (a b : G) : a * b = 1 → a⁻¹ = b
 
-attribute [to_additive SubtractionMonoid.toHasInvolutiveNeg] DivisionMonoid.toHasInvolutiveInv
+attribute [to_additive] DivisionMonoid.toHasInvolutiveInv
 
 section DivisionMonoid
 
@@ -875,7 +878,7 @@ This is the immediate common ancestor of `comm_group` and `CommGroupWithZero`. -
 @[to_additive SubtractionCommMonoid]
 class DivisionCommMonoid (G : Type u) extends DivisionMonoid G, CommMonoid G
 
-attribute [to_additive SubtractionCommMonoid.toAddCommMonoid] DivisionCommMonoid.toCommMonoid
+attribute [to_additive] DivisionCommMonoid.toCommMonoid
 
 /-- A `group` is a `monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
 
@@ -943,7 +946,7 @@ instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
     inv_eq_of_mul := fun _ _ ↦ inv_eq_of_mul }
 
 -- see Note [lower instance priority]
-@[to_additive AddGroup.toAddCancelMonoid]
+@[to_additive]
 instance (priority := 100) Group.toCancelMonoid : CancelMonoid G :=
   { ‹Group G› with
     mul_right_cancel := fun a b c h ↦ by rw [← mul_inv_cancel_right a b, h, mul_inv_cancel_right]
@@ -962,9 +965,7 @@ class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 @[to_additive]
 class CommGroup (G : Type u) extends Group G, CommMonoid G
 
-attribute [to_additive AddCommGroup.toAddCommMonoid] CommGroup.toCommMonoid
-
-attribute [instance] AddCommGroup.toAddCommMonoid
+attribute [to_additive] CommGroup.toCommMonoid
 
 @[to_additive]
 theorem CommGroup.toGroup_injective {G : Type u} : Function.Injective (@CommGroup.toGroup G) := by
@@ -975,12 +976,12 @@ section CommGroup
 variable [CommGroup G]
 
 -- see Note [lower instance priority]
-@[to_additive AddCommGroup.toAddCancelCommMonoid]
+@[to_additive]
 instance (priority := 100) CommGroup.toCancelCommMonoid : CancelCommMonoid G :=
   { ‹CommGroup G›, Group.toCancelMonoid with }
 
 -- see Note [lower instance priority]
-@[to_additive AddCommGroup.toSubtractionCommMonoid]
+@[to_additive]
 instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G :=
   { ‹CommGroup G›, Group.toDivisionMonoid with }
 

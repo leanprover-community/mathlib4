@@ -424,12 +424,13 @@ theorem le_implies_le_of_le_of_le {a b c d : α} [Preorder α] (hca : c ≤ a) (
 @[ext]
 theorem Preorder.toLE_injective {α : Type _} : Function.Injective (@Preorder.toLE α) :=
   fun A B h ↦ match A, B with
-  | { lt := A_lt, .. }, { lt := B_lt, ..} => by
+  | { lt := A_lt, lt_iff_le_not_le := A_iff, .. },
+    { lt := B_lt, lt_iff_le_not_le := B_iff, .. } => by
     cases h
     have : A_lt = B_lt := by
       funext a b
       show (LT.mk A_lt).lt a b = (LT.mk B_lt).lt a b
-      simp [*]
+      rw [A_iff, B_iff]
     cases this
     congr
 #align preorder.to_has_le_injective Preorder.toLE_injective
@@ -448,18 +449,19 @@ theorem PartialOrder.toPreorder_injective {α : Type _} :
 theorem LinearOrder.toPartialOrder_injective {α : Type _} :
     Function.Injective (@LinearOrder.toPartialOrder α) :=
   fun A B h ↦ match A, B with
-  | { min := A_min, max := A_max, .. },
-    { min := B_min, max := B_max, .. } => by
+  | { le := A_le, lt := A_lt, decidable_le := A_decidable_le,
+      min := A_min, max := A_max, min_def := A_min_def, max_def := A_max_def, .. },
+    { le := B_le, lt := B_lt, decidable_le := B_decidable_le,
+      min := B_min, max := B_max, min_def := B_min_def, max_def := B_max_def, .. } => by
     cases h
+    obtain rfl : A_decidable_le = B_decidable_le := Subsingleton.elim _ _
     have : A_min = B_min := by
       funext a b
-      show (Min.mk A_min).min a b = (Min.mk B_min).min a b
-      simp [*]; split <;> rfl
+      exact (A_min_def _ _).trans (B_min_def _ _).symm
     cases this
     have : A_max = B_max := by
       funext a b
-      show (Max.mk A_max).max a b = (Max.mk B_max).max a b
-      simp [*]; split <;> rfl
+      exact (A_max_def _ _).trans (B_max_def _ _).symm
     cases this
     congr <;> exact Subsingleton.elim _ _
 #align linear_order.to_partial_order_injective LinearOrder.toPartialOrder_injective
@@ -555,7 +557,7 @@ theorem linearOrder.dual_dual (α : Type _) [H : LinearOrder α] : instLinearOrd
 
 end OrderDual
 
-/-! ### `has_compl` -/
+/-! ### `HasCompl` -/
 
 
 /-- Set / lattice complement -/
@@ -684,13 +686,13 @@ end MinMaxRec
 
 
 /-- Typeclass for the `⊔` (`\lub`) notation -/
-@[notation_class]
+@[notation_class, ext]
 class HasSup (α : Type u) where
   /-- Least upper bound (`\lub` notation) -/
   sup : α → α → α
 
 /-- Typeclass for the `⊓` (`\glb`) notation -/
-@[notation_class]
+@[notation_class, ext]
 class HasInf (α : Type u) where
   /-- Greatest lower bound (`\glb` notation) -/
   inf : α → α → α
@@ -945,9 +947,7 @@ instance : LinearOrder PUnit where
   le_trans    := by intros; trivial
   le_total    := by intros; exact Or.inl trivial
   le_antisymm := by intros; rfl
-  lt_iff_le_not_le := by
-    simp only [and_not_self, iff_false]
-    exact fun _ _ h ↦ False.elim h
+  lt_iff_le_not_le := by simp only [not_true, and_false, iff_self, forall_const]
 
 theorem max_eq : max a b = star :=
   rfl
@@ -981,7 +981,7 @@ theorem le_Prop_eq : ((· ≤ ·) : Prop → Prop → Prop) = (fun p q ↦ p →
 theorem subrelation_iff_le {r s : α → α → Prop} : Subrelation r s ↔ r ≤ s :=
   Iff.rfl
 
-instance PropCat.partialOrder : PartialOrder Prop where
+instance : PartialOrder Prop where
   __ := inferInstanceAs (LE Prop)
   le_refl := fun _ ↦ id
   le_trans := fun a b c f g ↦ g ∘ f
