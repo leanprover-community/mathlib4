@@ -6,6 +6,7 @@ Floris van Doorn, E.W.Ayers, Arthur Paulino
 -/
 import Lean
 import Mathlib.Util.MapsTo
+import Std.Data.List.Basic
 
 /-!
 # Additional operations on Expr and related types
@@ -42,6 +43,34 @@ def mapPrefix (f : Name → Option Name) (n : Name) : Name := Id.run do
   | anonymous => anonymous
   | str n' s => mkStr (mapPrefix f n') s
   | num n' i => mkNum (mapPrefix f n') i
+
+/-- Build a name from components. For example ``from_components [`foo, `bar]`` becomes
+  ``` `foo.bar```.
+  It is the inverse of `Name.components` on list of names that have single components. -/
+def fromComponents : List Name → Name := go .anonymous where
+  /-- Auxiliary for `Name.fromComponents` -/
+  go : Name → List Name → Name
+  | n, []        => n
+  | n, s :: rest => go (s.updatePrefix n) rest
+
+/-- Update the last component of a name. -/
+def updateLast (f : String → String) : Name → Name
+| .str n s => .str n (f s)
+| n        => n
+
+/-- Get the last field of a name as a string.
+Doesn't raise an error when the last component is a numeric field. -/
+def getString : Name → String
+| .str _ s => s
+| .num _ n => toString n
+| .anonymous => ""
+
+/-- `nm.splitAt n` splits a name `nm` in two parts, such that the *second* part has depth `n`, i.e.
+  `(nm.splitAt n).2.getNumParts = n` (assuming `nm.getNumParts ≥ n`).
+  Example: ``splitAt `foo.bar.baz.back.bat 1 = (`foo.bar.baz.back, `bat)``. -/
+def splitAt (nm : Name) (n : Nat) : Name × Name :=
+  let (nm2, nm1) := (nm.componentsRev.splitAt n)
+  (.fromComponents <| nm1.reverse, .fromComponents <| nm2.reverse)
 
 end Name
 

@@ -518,13 +518,12 @@ attribute [nontriviality] isAddUnit_of_subsingleton
 
 -- Porting note: removing the `CanLift` instance
 
--- Porting note: `[to_additive]` places the instance in the `Units` namespace by default
 /-- A subsingleton `Monoid` has a unique unit. -/
-@[to_additive AddUnits.instUniqueAddUnits "A subsingleton `AddMonoid` has a unique additive unit."]
+@[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]
 instance [Monoid M] [Subsingleton M] : Unique Mˣ where
   default := 1
   uniq a := Units.val_eq_one.mp <| Subsingleton.elim (a : M) 1
-attribute [instance] AddUnits.instUniqueAddUnits
+
 
 @[simp, to_additive]
 protected theorem Units.isUnit [Monoid M] (u : Mˣ) : IsUnit (u : M) :=
@@ -634,7 +633,7 @@ protected noncomputable def _root_.IsAddUnit.addUnit [AddMonoid N] {a : N} (h : 
     AddUnits N :=
   (Classical.choose h).copy a (Classical.choose_spec h).symm _ rfl
 #align is_add_unit.add_unit IsAddUnit.addUnit
-attribute [to_additive IsAddUnit.addUnit] IsUnit.unit
+attribute [to_additive] IsUnit.unit
 
 @[simp, to_additive]
 theorem unit_of_val_units {a : Mˣ} (h : IsUnit (a : M)) : h.unit = a :=
