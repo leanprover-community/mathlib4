@@ -125,7 +125,7 @@ section no_zero_divisors
 
 variable (α)
 
-lemma IsLeftCancelMulZero.to_NoZeroDivisors [Ring α] [IsLeftCancelMulZero α] :
+lemma IsLeftCancelMulZero.toNoZeroDivisors [Ring α] [IsLeftCancelMulZero α] :
     NoZeroDivisors α :=
 { eq_zero_or_eq_zero_of_mul_eq_zero := @fun x y h ↦ by
     by_cases hx : x = 0
@@ -135,9 +135,9 @@ lemma IsLeftCancelMulZero.to_NoZeroDivisors [Ring α] [IsLeftCancelMulZero α] :
       rw [← sub_zero (x * y), ← mul_zero x, ← mul_sub] at h
       convert (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero) hx h
       rw [sub_zero] } }
-#align is_left_cancel_mul_zero.to_no_zero_divisors IsLeftCancelMulZero.to_NoZeroDivisors
+#align is_left_cancel_mul_zero.to_no_zero_divisors IsLeftCancelMulZero.toNoZeroDivisors
 
-lemma IsRightCancelMulZero.to_NoZeroDivisors [Ring α] [IsRightCancelMulZero α] :
+lemma IsRightCancelMulZero.toNoZeroDivisors [Ring α] [IsRightCancelMulZero α] :
     NoZeroDivisors α :=
 { eq_zero_or_eq_zero_of_mul_eq_zero := @fun x y h ↦ by
     by_cases hy : y = 0
@@ -147,9 +147,9 @@ lemma IsRightCancelMulZero.to_NoZeroDivisors [Ring α] [IsRightCancelMulZero α]
       rw [← sub_zero (x * y), ← zero_mul y, ← sub_mul] at h
       convert (IsRightCancelMulZero.mul_right_cancel_of_ne_zero) hy h
       rw [sub_zero] } }
-#align is_right_cancel_mul_zero.to_no_zero_divisors IsRightCancelMulZero.to_NoZeroDivisors
+#align is_right_cancel_mul_zero.to_no_zero_divisors IsRightCancelMulZero.toNoZeroDivisors
 
-instance (priority := 100) NoZeroDivisors.to_IsCancelMulZero [Ring α] [NoZeroDivisors α] :
+instance (priority := 100) NoZeroDivisors.toIsCancelMulZero [Ring α] [NoZeroDivisors α] :
     IsCancelMulZero α :=
 { mul_left_cancel_of_ne_zero := fun ha h ↦ by
     rw [← sub_eq_zero, ← mul_sub] at h
@@ -157,16 +157,16 @@ instance (priority := 100) NoZeroDivisors.to_IsCancelMulZero [Ring α] [NoZeroDi
   mul_right_cancel_of_ne_zero := fun hb h ↦ by
     rw [← sub_eq_zero, ← sub_mul] at h
     exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hb) }
-#align no_zero_divisors.to_is_cancel_mul_zero NoZeroDivisors.to_IsCancelMulZero
+#align no_zero_divisors.to_is_cancel_mul_zero NoZeroDivisors.toIsCancelMulZero
 
-lemma NoZeroDivisors.to_IsDomain [Ring α] [h : Nontrivial α] [NoZeroDivisors α] :
+lemma NoZeroDivisors.toIsDomain [Ring α] [h : Nontrivial α] [NoZeroDivisors α] :
   IsDomain α :=
-{ NoZeroDivisors.to_IsCancelMulZero α, h with .. }
-#align no_zero_divisors.to_is_domain.to_no_zero_divisors NoZeroDivisors.to_IsDomain
+{ NoZeroDivisors.toIsCancelMulZero α, h with .. }
+#align no_zero_divisors.to_is_domain.to_no_zero_divisors NoZeroDivisors.toIsDomain
 
-instance (priority := 100) IsDomain.to_NoZeroDivisors [Ring α] [IsDomain α] :
+instance (priority := 100) IsDomain.toNoZeroDivisors [Ring α] [IsDomain α] :
     NoZeroDivisors α :=
-IsRightCancelMulZero.to_NoZeroDivisors α
-#align is_domain.to_no_zero_divisors IsDomain.to_NoZeroDivisors
+IsRightCancelMulZero.toNoZeroDivisors α
+#align is_domain.to_no_zero_divisors IsDomain.toNoZeroDivisors
 
 end no_zero_divisors
