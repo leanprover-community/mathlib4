@@ -329,7 +329,7 @@ theorem SemilatticeSup.ext {α} {A B : SemilatticeSup α}
   cases A
   cases B
   cases PartialOrder.ext H
-  congr <;> apply proof_irrel_heq
+  congr
 #align semilattice_sup.ext SemilatticeSup.ext
 
 theorem ite_le_sup (s s' : α) (P : Prop) [Decidable P] : ite P s s' ≤ s ⊔ s' :=
@@ -567,7 +567,7 @@ theorem SemilatticeInf.ext {α} {A B : SemilatticeInf α}
   cases A
   cases B
   cases PartialOrder.ext H
-  congr <;> apply proof_irrel_heq
+  congr
 #align semilattice_inf.ext SemilatticeInf.ext
 
 theorem SemilatticeInf.dual_dual (α : Type _) [H : SemilatticeInf α] :
