@@ -18,13 +18,16 @@ def simpTheoremsOfNames (lemmas : List Name) : MetaM SimpTheorems := do
   lemmas.foldlM (·.addConst ·) (← simpOnlyBuiltins.foldlM (·.addConst ·) {})
 
 /-- Simplify an expression using only a list of lemmas specified by name. -/
+-- TODO We need to write a `mkSimpContext` in `MetaM`
+-- that supports all the bells and whistles in `simp`.
+-- It should generalize this, and another partial implementation in `Tactic.Simps.Basic`.
 def simpOnlyNames (lemmas : List Name) (e : Expr) : MetaM Simp.Result := do
   (·.1) <$> simp e
     { simpTheorems := #[← simpTheoremsOfNames lemmas], congrTheorems := ← getSimpCongrTheorems }
 
 /--
 Given a simplifier `S : Expr → MetaM Simp.Result`,
-and an expresssion `e : Expr`, run `S` on the type of `e`, and then
+and an expression `e : Expr`, run `S` on the type of `e`, and then
 convert `e` into that simplified type, using a combination of type hints and `Eq.mp`.
 -/
 def simpType (S : Expr → MetaM Simp.Result) (e : Expr) : MetaM Expr := do
