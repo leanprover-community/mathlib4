@@ -37,9 +37,9 @@ a beginner in using Lean and are confused by that, you can read more about why t
 taken in Kevin Buzzard's
 [blogpost](https://xenaproject.wordpress.com/2020/07/05/division-by-zero-in-type-theory-a-faq/)
 
-A division ring or field is an example of a `group_with_zero`. If you cannot find
+A division ring or field is an example of a `GroupWithZero`. If you cannot find
 a division ring / field lemma that does not involve `+`, you can try looking for
-a `group_with_zero` lemma instead.
+a `GroupWithZero` lemma instead.
 
 ## Tags
 
@@ -55,9 +55,9 @@ variable {α β K : Type _}
 
 /-- The default definition of the coercion `(↑(a : ℚ) : K)` for a division ring `K`
 is defined as `(a / b : K) = (a : K) * (b : K)⁻¹`.
-Use `coe` instead of `rat.cast_rec` for better definitional behaviour.
+Use `coe` instead of `rat.castRec` for better definitional behaviour.
 -/
-def Rat.castRec [Coe ℕ K] [Coe ℤ K] [Mul K] [Inv K] : ℚ → K
+def Rat.castRec [CoeTail ℕ K] [CoeTail ℤ K] [Mul K] [Inv K] : ℚ → K
   | ⟨a, b, _, _⟩ => ↑a * (↑b)⁻¹
 #align rat.cast_rec Rat.castRec
 
@@ -69,35 +69,35 @@ class HasRatCast (K : Type u) where
 
 /-- The default definition of the scalar multiplication `(a : ℚ) • (x : K)` for a division ring `K`
 is given by `a • x = (↑ a) * x`.
-Use `(a : ℚ) • (x : K)` instead of `qsmul_rec` for better definitional behaviour.
+Use `(a : ℚ) • (x : K)` instead of `qsmulRec` for better definitional behaviour.
 -/
 def qsmulRec (coe : ℚ → K) [Mul K] (a : ℚ) (x : K) : K :=
   coe a * x
 #align qsmul_rec qsmulRec
 
-/-- A `division_semiring` is a `semiring` with multiplicative inverses for nonzero elements. -/
+/-- A `DivisionSemiring` is a `Semiring` with multiplicative inverses for nonzero elements. -/
 class DivisionSemiring (α : Type _) extends Semiring α, GroupWithZero α
 #align division_semiring DivisionSemiring
 
-/-- A `division_ring` is a `ring` with multiplicative inverses for nonzero elements.
+/-- A `DivisionRing` is a `Ring` with multiplicative inverses for nonzero elements.
 
-An instance of `division_ring K` includes maps `rat_cast : ℚ → K` and `qsmul : ℚ → K → K`.
-If the division ring has positive characteristic p, we define `rat_cast (1 / p) = 1 / 0 = 0`
+An instance of `DivisionRing K` includes maps `ratCast : ℚ → K` and `qsmul : ℚ → K → K`.
+If the division ring has positive characteristic p, we define `ratCast (1 / p) = 1 / 0 = 0`
 for consistency with our division by zero convention.
-The fields `rat_cast` and `qsmul` are needed to implement the
-`algebra_rat [division_ring K] : algebra ℚ K` instance, since we need to control the specific
+The fields `ratCast` and `qsmul` are needed to implement the
+`algebraRat [DivisionRing K] : Algebra ℚ K` instance, since we need to control the specific
 definitions for some special cases of `K` (in particular `K = ℚ` itself).
 See also Note [forgetful inheritance].
 -/
 class DivisionRing (K : Type u) extends Ring K, DivInvMonoid K, Nontrivial K, HasRatCast K where
-  protected mul_inv_cancel : ∀ {a : K}, a ≠ 0 → a * a⁻¹ = 1
+  protected mul_inv_cancel : ∀ (a : K), a ≠ 0 → a * a⁻¹ = 1
   protected inv_zero : (0 : K)⁻¹ = 0
   protected ratCast := Rat.castRec
-  protected rat_cast_mk : ∀ (a : ℤ) (b : ℕ) (h1 h2), rat_cast ⟨a, b, h1, h2⟩ = a * b⁻¹ := by
+  protected ratCastMk : ∀ (a : ℤ) (b : ℕ) (h1 h2), ratCast ⟨a, b, h1, h2⟩ = a * (b : K)⁻¹ := by
     intros
     rfl
-  protected qsmul : ℚ → K → K := qsmulRec rat_cast
-  protected qsmul_eq_mul' : ∀ (a : ℚ) (x : K), qsmul a x = rat_cast a * x := by
+  protected qsmul : ℚ → K → K := qsmulRec ratCast
+  protected qsmul_eq_mul' : ∀ (a : ℚ) (x : K), qsmul a x = ratCast a * x := by
     intros
     rfl
 #align division_ring DivisionRing
@@ -107,17 +107,17 @@ instance (priority := 100) DivisionRing.toDivisionSemiring [DivisionRing α] : D
   { ‹DivisionRing α›, (inferInstance : Semiring α) with }
 #align division_ring.to_division_semiring DivisionRing.toDivisionSemiring
 
-/-- A `semifield` is a `comm_semiring` with multiplicative inverses for nonzero elements. -/
+/-- A `Semifield` is a `CommSemiring` with multiplicative inverses for nonzero elements. -/
 class Semifield (α : Type _) extends CommSemiring α, DivisionSemiring α, CommGroupWithZero α
 #align semifield Semifield
 
-/-- A `field` is a `comm_ring` with multiplicative inverses for nonzero elements.
+/-- A `Field` is a `CommRing` with multiplicative inverses for nonzero elements.
 
-An instance of `field K` includes maps `of_rat : ℚ → K` and `qsmul : ℚ → K → K`.
-If the field has positive characteristic p, we define `of_rat (1 / p) = 1 / 0 = 0`
+An instance of `Field K` includes maps `ratCast : ℚ → K` and `qsmul : ℚ → K → K`.
+If the field has positive characteristic p, we define `ratCast (1 / p) = 1 / 0 = 0`
 for consistency with our division by zero convention.
-The fields `of_rat` and `qsmul are needed to implement the
-`algebra_rat [division_ring K] : algebra ℚ K` instance, since we need to control the specific
+The fields `ratCast` and `qsmul` are needed to implement the
+`algebraRat [DivisionRing K] : Algebra ℚ K` instance, since we need to control the specific
 definitions for some special cases of `K` (in particular `K = ℚ` itself).
 See also Note [forgetful inheritance].
 -/
@@ -139,15 +139,15 @@ instance (priority := 900) castCoe {K : Type _} [HasRatCast K] : CoeTC ℚ K :=
   ⟨HasRatCast.ratCast⟩
 #align rat.cast_coe Rat.castCoe
 
-theorem cast_mk' (a b h1 h2) : ((⟨a, b, h1, h2⟩ : ℚ) : K) = a * b⁻¹ :=
-  DivisionRing.rat_cast_mk _ _ _ _
+theorem cast_mk' (a b h1 h2) : ((⟨a, b, h1, h2⟩ : ℚ) : K) = a * (b : K)⁻¹ :=
+  DivisionRing.ratCastMk _ _ _ _
 #align rat.cast_mk' Rat.cast_mk'
 
-theorem cast_def : ∀ r : ℚ, (r : K) = r.num / r.denom
-  | ⟨a, b, h1, h2⟩ => (cast_mk' _ _ _ _).trans (div_eq_mul_inv _ _).symm
+theorem cast_def : ∀ r : ℚ, (r : K) = r.num / r.den
+  | ⟨_, _, _, _⟩ => (cast_mk' _ _ _ _).trans (div_eq_mul_inv _ _).symm
 #align rat.cast_def Rat.cast_def
 
-instance (priority := 100) smulDivisionRing : HasSmul ℚ K :=
+instance (priority := 100) smulDivisionRing : SMul ℚ K :=
   ⟨DivisionRing.qsmul⟩
 #align rat.smul_division_ring Rat.smulDivisionRing
 
@@ -186,7 +186,8 @@ structure IsField (R : Type u) [Semiring R] : Prop where
 
 /-- Transferring from `semifield` to `is_field`. -/
 theorem Semifield.toIsField (R : Type u) [Semifield R] : IsField R :=
-  { ‹Semifield R› with mul_inv_cancel := fun a ha => ⟨a⁻¹, mul_inv_cancel ha⟩ }
+  { ‹Semifield R› with
+    mul_inv_cancel := fun a ha => ⟨a⁻¹, mul_inv_cancel ha⟩ }
 #align semifield.to_is_field Semifield.toIsField
 
 /-- Transferring from `field` to `is_field`. -/
@@ -200,11 +201,11 @@ theorem IsField.nontrivial {R : Type u} [Semiring R] (h : IsField R) : Nontrivia
 #align is_field.nontrivial IsField.nontrivial
 
 @[simp]
-theorem not_is_field_of_subsingleton (R : Type u) [Semiring R] [Subsingleton R] : ¬IsField R :=
+theorem not_isField_of_subsingleton (R : Type u) [Semiring R] [Subsingleton R] : ¬IsField R :=
   fun h =>
   let ⟨_, _, h⟩ := h.exists_pair_ne
   h (Subsingleton.elim _ _)
-#align not_is_field_of_subsingleton not_is_field_of_subsingleton
+#align not_is_field_of_subsingleton not_isField_of_subsingleton
 
 open Classical
 
@@ -224,7 +225,7 @@ noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field 
 #align is_field.to_field IsField.toField
 
 /-- For each field, and for each nonzero element of said field, there is a unique inverse.
-Since `is_field` doesn't remember the data of an `inv` function and as such,
+Since `IsField` doesn't remember the data of an `inv` function and as such,
 a lemma that there is a unique inverse could be useful.
 -/
 theorem uniq_inv_of_is_field (R : Type u) [Ring R] (hf : IsField R) :
