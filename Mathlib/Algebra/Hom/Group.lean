@@ -1139,6 +1139,9 @@ theorem MonoidWithZeroHom.cancel_left [MulZeroOneClass M] [MulZeroOneClass N] [M
     MonoidWithZeroHom.comp_apply], fun h => h ▸ rfl⟩
 #align monoid_with_zero_hom.cancel_left MonoidWithZeroHom.cancel_left
 
+set_option linter.deprecated false in
+section
+
 @[to_additive]
 theorem MonoidHom.toOneHom_injective [MulOneClass M] [MulOneClass N] :
   Function.Injective (MonoidHom.toOneHom : (M →* N) → OneHom M N) :=
@@ -1157,6 +1160,8 @@ theorem MonoidWithZeroHom.toMonoidHom_injective [MulZeroOneClass M] [MulZeroOneC
   Function.Injective (MonoidWithZeroHom.toMonoidHom : (M →*₀ N) → M →* N) :=
   fun _ _ h => MonoidWithZeroHom.ext <| MonoidHom.ext_iff.mp h
 #align monoid_with_zero_hom.to_monoid_hom_injective MonoidWithZeroHom.toMonoidHom_injective
+
+end
 
 theorem MonoidWithZeroHom.toZeroHom_injective [MulZeroOneClass M] [MulZeroOneClass N] :
   Function.Injective (MonoidWithZeroHom.toZeroHom : (M →*₀ N) → ZeroHom M N) :=
@@ -1263,41 +1268,44 @@ theorem coe_mul (f g) : ((f * g : Monoid.End M) : M → M) = f ∘ g := rfl
 
 end Monoid
 
--- Porting note: `coe_mul` seems to go into an instance loop involving `Monoid (Monoid.End M)`
-namespace AddMonoid
+-- Porting note:
+-- This section needs to be restored after we have a resolution for the issue discussed at
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/instance.20loop.3F
 
-variable (A : Type _) [AddZeroClass A]
+-- namespace AddMonoid
 
-/-- The monoid of endomorphisms. -/
-protected def End := A →+ A
-#align add_monoid.End AddMonoid.End
+-- variable (A : Type _) [AddZeroClass A]
 
-namespace End
+-- /-- The monoid of endomorphisms. -/
+-- protected def End := A →+ A
+-- #align add_monoid.End AddMonoid.End
 
-instance : Monoid (AddMonoid.End A) where
-  mul := AddMonoidHom.comp
-  one := AddMonoidHom.id A
-  mul_assoc _ _ _ := AddMonoidHom.comp_assoc _ _ _
-  mul_one := AddMonoidHom.comp_id
-  one_mul := AddMonoidHom.id_comp
+-- namespace End
 
-instance : Inhabited (AddMonoid.End A) := ⟨1⟩
+-- instance : Monoid (AddMonoid.End A) where
+--   mul := AddMonoidHom.comp
+--   one := AddMonoidHom.id A
+--   mul_assoc _ _ _ := AddMonoidHom.comp_assoc _ _ _
+--   mul_one := AddMonoidHom.comp_id
+--   one_mul := AddMonoidHom.id_comp
 
-instance : AddMonoidHomClass (AddMonoid.End A) A A := AddMonoidHom.addMonoidHomClass
+-- instance : Inhabited (AddMonoid.End A) := ⟨1⟩
 
-end End
+-- instance : AddMonoidHomClass (AddMonoid.End A) A A := AddMonoidHom.addMonoidHomClass
 
-@[simp]
-theorem coe_one : ((1 : AddMonoid.End A) : A → A) = id := rfl
-#align add_monoid.coe_one AddMonoid.coe_one
+-- end End
 
-@[simp]
-theorem coe_mul (f g) : ((f * g : AddMonoid.End A) : A → A) = f ∘ g := rfl
-#align add_monoid.coe_mul AddMonoid.coe_mul
+-- @[simp]
+-- theorem coe_one : ((1 : AddMonoid.End A) : A → A) = id := rfl
+-- #align add_monoid.coe_one AddMonoid.coe_one
 
-end AddMonoid
+-- @[simp]
+-- theorem coe_mul (f g) : ((f * g : AddMonoid.End A) : A → A) = f ∘ g := rfl
+-- #align add_monoid.coe_mul AddMonoid.coe_mul
 
-end End
+-- end AddMonoid
+
+-- end End
 
 /-- `1` is the homomorphism sending all elements to `1`. -/
 @[to_additive]
@@ -1409,28 +1417,33 @@ variable [mM : MulOneClass M] [mN : MulOneClass N] [mP : MulOneClass P]
 
 variable [Group G] [CommGroup H]
 
-/-- Given two monoid morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid morphism
-sending `x` to `f x * g x`. -/
-@[to_additive]
-instance {M N} {_ : MulOneClass M} [CommMonoid N] : Mul (M →* N) :=
-  ⟨fun f g =>
-    { toFun := fun m => f m * g m,
-      map_one' := show f 1 * g 1 = 1 by rw [map_one, map_one, mul_one],
-      -- Porting note: why doesn't `simp` work here?
-      map_mul' := fun x y => by
-        intros
-        show f (x * y) * g (x * y) = f x * g x * (f y * g y)
-        rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
+-- Porting note:
+-- This is another example of the problem with `End` above,
+-- and the next two declarations need to be
+-- restored after we have a resolution in the discussion at
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/instance.20loop.3F
+-- /-- Given two monoid morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid morphism
+-- sending `x` to `f x * g x`. -/
+-- @[to_additive]
+-- instance {M N} {_ : MulOneClass M} [CommMonoid N] : Mul (M →* N) :=
+--   ⟨fun f g =>
+--     { toFun := fun m => f m * g m,
+--       map_one' := show f 1 * g 1 = 1 by rw [map_one, map_one, mul_one],
+--       -- Porting note: why doesn't `simp` work here?
+--       map_mul' := fun x y => by
+--         intros
+--         show f (x * y) * g (x * y) = f x * g x * (f y * g y)
+--         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
 
-/-- Given two additive monoid morphisms `f`, `g` to an additive commutative monoid, `f + g` is the
-additive monoid morphism sending `x` to `f x + g x`. -/
-add_decl_doc AddMonoidHom.instAddAddMonoidHomToAddZeroClassToAddMonoid
+-- /-- Given two additive monoid morphisms `f`, `g` to an additive commutative monoid, `f + g` is the
+-- additive monoid morphism sending `x` to `f x + g x`. -/
+-- add_decl_doc AddMonoidHom.instAddAddMonoidHomToAddZeroClassToAddMonoid
 
-@[simp, to_additive]
-theorem mul_apply {M N} {_ : MulOneClass M} {_ : CommMonoid N} (f g : M →* N) (x : M) :
-  (f * g) x = f x * g x := rfl
-#align monoid_hom.mul_apply MonoidHom.mul_apply
-#align add_monoid_hom.add_apply AddMonoidHom.add_apply
+-- @[simp, to_additive]
+-- theorem mul_apply {M N} {_ : MulOneClass M} {_ : CommMonoid N} (f g : M →* N) (x : M) :
+--   (f * g) x = f x * g x := rfl
+-- #align monoid_hom.mul_apply MonoidHom.mul_apply
+-- #align add_monoid_hom.add_apply AddMonoidHom.add_apply
 
 @[simp, to_additive]
 theorem one_comp [MulOneClass M] [MulOneClass N] [MulOneClass P] (f : M →* N) :
@@ -1446,20 +1459,21 @@ theorem comp_one [MulOneClass M] [MulOneClass N] [MulOneClass P] (f : N →* P) 
 #align monoid_hom.comp_one MonoidHom.comp_one
 #align add_monoid_hom.comp_zero AddMonoidHom.comp_zero
 
--- Porting note: these are broken because of the instance loop in the `End` section
-@[to_additive]
-theorem mul_comp [MulOneClass M] [MulOneClass N] [CommMonoid P] (g₁ g₂ : N →* P) (f : M →* N) :
-  (g₁ * g₂).comp f = g₁.comp f * g₂.comp f := rfl
-#align monoid_hom.mul_comp MonoidHom.mul_comp
-#align add_monoid_hom.add_comp AddMonoidHom.add_comp
+-- Porting note: these need to be restored after we have a resolution for the issue discussed in
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/instance.20loop.3F
+-- @[to_additive]
+-- theorem mul_comp [MulOneClass M] [MulOneClass N] [CommMonoid P] (g₁ g₂ : N →* P) (f : M →* N) :
+--   (g₁ * g₂).comp f = g₁.comp f * g₂.comp f := rfl
+-- #align monoid_hom.mul_comp MonoidHom.mul_comp
+-- #align add_monoid_hom.add_comp AddMonoidHom.add_comp
 
-@[to_additive]
-theorem comp_mul [MulOneClass M] [CommMonoid N] [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
-  g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
-  ext
-  simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
-#align monoid_hom.comp_mul MonoidHom.comp_mul
-#align add_monoid_hom.comp_add AddMonoidHom.comp_add
+-- @[to_additive]
+-- theorem comp_mul [MulOneClass M] [CommMonoid N] [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
+--   g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
+--   ext
+--   simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
+-- #align monoid_hom.comp_mul MonoidHom.comp_mul
+-- #align add_monoid_hom.comp_add AddMonoidHom.comp_add
 
 /-- Group homomorphisms preserve inverse. -/
 @[to_additive "Additive group homomorphisms preserve negation."]
