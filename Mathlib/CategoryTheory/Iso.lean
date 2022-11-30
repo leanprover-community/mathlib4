@@ -18,7 +18,7 @@ This file defines isomorphisms between objects of a category.
   note that `IsIso f` is a `Prop`, and only asserts the existence of an inverse.
   Of course, this inverse is unique, so it doesn't cost us much to use choice to retrieve it.
 - `inv f`, for the inverse of a morphism with `[IsIso f]`
-- `as_iso` : convert from `IsIso` to `Iso` (noncomputable);
+- `asIso` : convert from `IsIso` to `Iso` (noncomputable);
 - `of_iso` : convert from `Iso` to `IsIso`;
 - standard operations on isomorphisms (composition, inverse etc)
 
