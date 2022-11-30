@@ -54,7 +54,6 @@ theorem Applicative.ext {F} :
     obtain ⟨seqLeft_eq1, seqRight_eq1, pure_seq1, -⟩ := L1
     obtain ⟨seqLeft_eq2, seqRight_eq2, pure_seq2, -⟩ := L2
     obtain rfl : F1 = F2 := by
-      skip
       apply Functor.ext
       intros
       exact (pure_seq1 _ _).symm.trans (pure_seq2 _ _)
