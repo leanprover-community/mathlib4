@@ -4,12 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Control.Functor
-import Std.Tactic.Ext
-
--- **TODO** delete this
-import Mathlib.Tactic.PrintPrefix
-set_option autoImplicit false
-
+import Mathlib.Data.Option.Defs
 
 /-!
 # Traversable type class
@@ -18,30 +13,28 @@ Type classes for traversing collections. The concepts and laws are taken from
 <http://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Traversable.html>
 
 Traversable collections are a generalization of functors. Whereas
-functors (such as `list`) allow us to apply a function to every
+functors (such as `List`) allow us to apply a function to every
 element, it does not allow functions which external effects encoded in
-a monad. Consider for instance a functor `invite : email → io response`
+a monad. Consider for instance a functor `invite : email → IO response`
 that takes an email address, sends an email and waits for a
-response. If we have a list `guests : list email`, using calling
+response. If we have a list `guests : List email`, using calling
 `invite` using `map` gives us the following:
-`map invite guests : list (io response)`.  It is not what we need. We need something of
-type `io (list response)`. Instead of using `map`, we can use `traverse` to
-send all the invites: `traverse invite guests : io (list response)`.
+`map invite guests : List (IO response)`.  It is not what we need. We need something of
+type `IO (List response)`. Instead of using `map`, we can use `traverse` to
+send all the invites: `traverse invite guests : IO (List response)`.
 `traverse` applies `invite` to every element of `guests` and combines
 all the resulting effects. In the example, the effect is encoded in the
-monad `io` but any applicative functor is accepted by `traverse`.
+monad `IO` but any applicative functor is accepted by `traverse`.
 
 For more on how to use traversable, consider the Haskell tutorial:
 <https://en.wikibooks.org/wiki/Haskell/Traversable>
 
-**TODO** capitalise
-
 ## Main definitions
-  * `traversable` type class - exposes the `traverse` function
+  * `Traversable` type class - exposes the `traverse` function
   * `sequence` - based on `traverse`,
     turns a collection of effects into an effect returning a collection
-  * `is_lawful_traversable` - laws for a traversable functor
-  * `applicative_transformation` - the notion of a natural transformation for applicative functors
+  * `IsLawfulTraversable` - laws for a traversable functor
+  * `ApplicativeTransformation` - the notion of a natural transformation for applicative functors
 
 ## Tags
 
@@ -73,7 +66,7 @@ variable (G : Type u → Type w) [Applicative G] [LawfulApplicative G]
 /-- A transformation between applicative functors.  It is a natural
 transformation such that `app` preserves the `has_pure.pure` and
 `functor.map` (`<*>`) operations. See
-`applicative_transformation.preserves_map` for naturality. -/
+`ApplicativeTransformation.preserves_map` for naturality. -/
 structure ApplicativeTransformation : Type max (u + 1) v w where
   app : ∀ α : Type u, F α → G α
   preserves_pure' : ∀ {α : Type u} (x : α), app _ (pure x) = pure x
@@ -88,12 +81,8 @@ variable (F : Type u → Type v) [Applicative F] [LawfulApplicative F]
 
 variable (G : Type u → Type w) [Applicative G] [LawfulApplicative G]
 
--- porting note: this definition is needed because coercions to function are eagerly expanded
--- in Lean 4 but we want alpha to be implicit
-def app' (h : ApplicativeTransformation F G) {α} : F α → G α := ApplicativeTransformation.app h _
-
 instance : CoeFun (ApplicativeTransformation F G) fun _ => ∀ {α}, F α → G α :=
-  ⟨ApplicativeTransformation.app' F G⟩
+  ⟨λ η => η.app _⟩
 
 variable {F G}
 
@@ -113,11 +102,13 @@ protected theorem congr_fun (η η' : ApplicativeTransformation F G) (h : η = �
   congrArg (fun η'' : ApplicativeTransformation F G => η'' x) h
 #align applicative_transformation.congr_fun ApplicativeTransformation.congr_fun
 
-protected theorem congr_arg (η : ApplicativeTransformation F G) {α : Type u} {x y : F α} (h : x = y) : η x = η y :=
+protected theorem congr_arg (η : ApplicativeTransformation F G) {α : Type u} {x y : F α}
+    (h : x = y) : η x = η y :=
   congrArg (fun z : F α => η z) h
 #align applicative_transformation.congr_arg ApplicativeTransformation.congr_arg
 
-theorem coe_inj ⦃η η' : ApplicativeTransformation F G⦄ (h : (η : ∀ α, F α → G α) = η') : η = η' := by
+theorem coe_inj ⦃η η' : ApplicativeTransformation F G⦄ (h : (η : ∀ α, F α → G α) = η') :
+    η = η' := by
   cases η
   cases η'
   congr
@@ -131,7 +122,8 @@ theorem ext ⦃η η' : ApplicativeTransformation F G⦄ (h : ∀ (α : Type u) 
   exact funext (h α)
 #align applicative_transformation.ext ApplicativeTransformation.ext
 
-theorem ext_iff {η η' : ApplicativeTransformation F G} : η = η' ↔ ∀ (α : Type u) (x : F α), η x = η' x :=
+theorem ext_iff {η η' : ApplicativeTransformation F G} :
+    η = η' ↔ ∀ (α : Type u) (x : F α), η x = η' x :=
   ⟨fun h _ _ => h ▸ rfl, fun h => ext h⟩
 #align applicative_transformation.ext_iff ApplicativeTransformation.ext_iff
 
@@ -149,7 +141,8 @@ theorem preserves_seq {α β : Type u} : ∀ (x : F (α → β)) (y : F α), η 
   η.preserves_seq'
 #align applicative_transformation.preserves_seq ApplicativeTransformation.preserves_seq
 
--- porting note: this name change is in core and looks like it's not aligned
+-- porting note: this name change is in core and looks like it's not aligned;
+-- **TODO** is there a better place to align it than here?
 #align is_lawful_applicative.pure_seq_eq_map LawfulApplicative.pure_seq
 
 @[functor_norm]
@@ -179,21 +172,22 @@ universe s t
 variable {H : Type u → Type s} [Applicative H] [LawfulApplicative H]
 
 /-- The composition of applicative transformations. -/
-def comp (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G) : ApplicativeTransformation F H where
+def comp (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G) :
+    ApplicativeTransformation F H where
   app α x := η' (η x)
   preserves_pure' x := by simp [functor_norm]
   preserves_seq' x y := by simp [functor_norm]
 #align applicative_transformation.comp ApplicativeTransformation.comp
 
 @[simp]
-theorem comp_apply (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G) {α : Type u} (x : F α) :
-    η'.comp η x = η' (η x) :=
+theorem comp_apply (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G)
+    {α : Type u} (x : F α) : η'.comp η x = η' (η x) :=
   rfl
 #align applicative_transformation.comp_apply ApplicativeTransformation.comp_apply
 
-theorem comp_assoc {I : Type u → Type t} [Applicative I] [LawfulApplicative I] (η'' : ApplicativeTransformation H I)
-    (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G) :
-    (η''.comp η').comp η = η''.comp (η'.comp η) :=
+theorem comp_assoc {I : Type u → Type t} [Applicative I] [LawfulApplicative I]
+    (η'' : ApplicativeTransformation H I) (η' : ApplicativeTransformation G H)
+    (η : ApplicativeTransformation F G) : (η''.comp η').comp η = η''.comp (η'.comp η) :=
   rfl
 #align applicative_transformation.comp_assoc ApplicativeTransformation.comp_assoc
 
@@ -213,9 +207,9 @@ open ApplicativeTransformation
 
 /-- A traversable functor is a functor along with a way to commute
 with all applicative functors (see `sequence`).  For example, if `t`
-is the traversable functor `list` and `m` is the applicative functor
-`io`, then given a function `f : α → io β`, the function `functor.map f` is
-`list α → list (io β)`, but `traverse f` is `list α → io (list β)`. -/
+is the traversable functor `List` and `m` is the applicative functor
+`IO`, then given a function `f : α → IO β`, the function `Functor.map f` is
+`List α → List (IO β)`, but `traverse f` is `List α → IO (List β)`. -/
 class Traversable (t : Type u → Type u) extends Functor t where
   traverse : ∀ {m : Type u → Type u} [Applicative m] {α β}, (α → m β) → t α → m (t β)
 #align traversable Traversable
@@ -241,35 +235,31 @@ def sequence [Traversable t] : t (f α) → f (t α) :=
 
 end Functions
 
-#check Monad
-#print prefix Monad
-
-#synth Monad id
-
-example : Monad id
-example : Applicative id := Monad.toApplicative
-
 /-- A traversable functor is lawful if its `traverse` satisfies a
-number of additional properties.  It must send `id.mk` to `id.mk`,
+number of additional properties.  It must send `pure : α → Id α` to `pure`,
 send the composition of applicative functors to the composition of the
 `traverse` of each, send each function `f` to `λ x, f <$> x`, and
 satisfy a naturality condition with respect to applicative
 transformations. -/
-class IsLawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFunctor t : Type (u + 1) where
-  id_traverse : ∀ {α} (x : t α), traverse id.mk x = x
+class IsLawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFunctor t :
+    Type (u + 1) where
+  id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = x
   comp_traverse :
-    ∀ {F G} [Applicative F] [Applicative G] [LawfulApplicative F] [LawfulApplicative G] {α β γ} (f : β → F γ)
-      (g : α → G β) (x : t α), traverse (comp.mk ∘ map f ∘ g) x = Comp.mk (map (traverse f) (traverse g x))
-  traverse_eq_map_id : ∀ {α β} (f : α → β) (x : t α), traverse (id.mk ∘ f) x = id.mk (f <$> x)
+    ∀ {F G} [Applicative F] [Applicative G] [LawfulApplicative F] [LawfulApplicative G] {α β γ}
+      (f : β → F γ) (g : α → G β) (x : t α),
+      traverse (Functor.Comp.mk ∘ map f ∘ g) x = Comp.mk (map (traverse f) (traverse g x))
+  traverse_eq_map_id : ∀ {α β} (f : α → β) (x : t α),
+    traverse ((pure : β → Id β) ∘ f) x = id.mk (f <$> x)
   naturality :
     ∀ {F G} [Applicative F] [Applicative G] [LawfulApplicative F] [LawfulApplicative G]
-      (η : ApplicativeTransformation F G) {α β} (f : α → F β) (x : t α), η (traverse f x) = traverse (@η _ ∘ f) x
+      (η : ApplicativeTransformation F G) {α β} (f : α → F β) (x : t α),
+      η (traverse f x) = traverse (@η _ ∘ f) x
 #align is_lawful_traversable IsLawfulTraversable
 
-instance : Traversable id :=
-  ⟨fun _ _ _ _ => id⟩
+instance : Traversable Id :=
+⟨id⟩
 
-instance : IsLawfulTraversable id := by refine' { .. } <;> intros <;> rfl
+instance : IsLawfulTraversable Id := by refine' { .. } <;> intros <;> rfl
 
 section
 
@@ -277,6 +267,19 @@ variable {F : Type u → Type v} [Applicative F]
 
 instance : Traversable Option :=
   ⟨@Option.traverse⟩
+
+-- **TODO** where does this declaration go and should I worry about the dubious translation?
+-- I got this from the autoport of `Data.List.Defs`
+/- warning: list.traverse -> List.traverse is a dubious translation:
+lean 3 declaration is
+  forall {F : Type.{u} -> Type.{v}} [_inst_1 : Applicative.{u v} F] {α : Type.{u_1}} {β : Type.{u}}, (α -> (F β)) -> (List.{u_1} α) -> (F (List.{u} β))
+but is expected to have type
+  forall {F : Type.{u} -> Type.{v}} [_inst_1 : Applicative.{u v} F] {α : Type.{_aux_param_0}} {β : Type.{u}}, (α -> (F β)) -> (List.{_aux_param_0} α) -> (F (List.{u} β))
+Case conversion may be inaccurate. Consider using '#align list.traverse List.traverseₓ'. -/
+protected def List.traverse {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β) : List α → F (List β)
+  | [] => pure []
+  | x :: xs => List.cons <$> f x <*> List.traverse f xs
+#align list.traverse List.traverse
 
 instance : Traversable List :=
   ⟨@List.traverse⟩
