@@ -57,6 +57,8 @@ instance [DecidableEq α] : SDiff (List α) :=
 #align list.sections List.sections
 #align list.revzip List.revzip
 #align list.product List.product
+/-- Notation for calculating the product of a `List`
+-/
 infixr:82
   " ×ˢ " =>-- This notation binds more strongly than (pre)images, unions and intersections.
   List.product
@@ -96,11 +98,14 @@ infixr:82
 #align list.is_prefix List.isPrefix
 #align list.is_suffix List.isSuffix
 #align list.is_infix List.isInfix
--- mathport name: «expr <+: »
+/-- Notation for `List.isPrefix`
+-/
 infixl:50 " <+: " => isPrefix
--- mathport name: «expr <:+ »
+/--  Notation for `List.isSuffix`
+-/
 infixl:50 " <:+ " => isSuffix
--- mathport name: «expr <:+: »
+/-- Notation for `List.isInfix`
+-/
 infixl:50 " <:+: " => isInfix
 #align list.mmap_filter List.filterMapM
 #align list.slice List.dropSlice
@@ -314,7 +319,8 @@ def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List �
 private def meas : (Σ'_ : List α, List α) → ℕ × ℕ
   | ⟨l, i⟩ => (length l + length i, length l)
 
--- mathport name: «expr ≺ »
+/-- Local notation for termination relationship used in `rec` below
+-/
 local infixl:50 " ≺ " => InvImage (Prod.Lex (· < ·) (· < ·)) meas
 
 /-- A recursor for pairs of lists. To have `C l₁ l₂` for all `l₁`, `l₂`, it suffices to have it for
@@ -495,6 +501,9 @@ def mapDiagM' {m} [Monad m] {α} (f : α → α → m Unit) : List α → m Unit
   | h :: t => (f h h >> t.mapM' (f h)) >> t.mapDiagM'
 #align list.mmap'_diag List.mapDiagM'
 
+/-- Map each element of a `List` to an action, evaluate these actions in order,
+    and collect the results.
+-/
 protected def traverse
     {F : Type u → Type v}
     [Applicative F]
