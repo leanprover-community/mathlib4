@@ -21,8 +21,8 @@ isomorphisms.
   `r a b ↔ s (f a) (f b)`.
 * `RelIso`: Relation isomorphism. A `RelIso r s` is an equivalence `f : α ≃ β` such that
   `r a b ↔ s (f a) (f b)`.
-* `sum_lex_congr`, `prod_lex_congr`: Creates a relation homomorphism between two `sum_lex` or two
-  `prod_lex` from relation homomorphisms between their arguments.
+* `sumLexCongr`, `prodLexCongr`: Creates a relation homomorphism between two `Sum.Lex` or two
+  `Prod.Lex` from relation homomorphisms between their arguments.
 
 ## Notation
 
@@ -114,9 +114,9 @@ protected theorem map_rel (f : r →r s) {a b} : r a b → s (f a) (f b) :=
 #align rel_hom.map_rel RelHom.map_rel
 
 @[simp]
-theorem coe_fn_to_fun (f : r →r s) : f.toFun = (f : α → β) :=
+theorem coe_fn_toFun (f : r →r s) : f.toFun = (f : α → β) :=
   rfl
-#align rel_hom.coe_fn_to_fun RelHom.coe_fn_to_fun
+#align rel_hom.coe_fn_to_fun RelHom.coe_fn_toFun
 
 /-- The map `coe_fn : (r →r s) → (α → β)` is injective. -/
 theorem coe_fn_injective : Injective fun (f : r →r s) => (f : α → β) :=
@@ -184,14 +184,14 @@ theorem Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
     WellFounded r ↔ WellFounded s :=
   Iff.intro
     (by
-      refine' RelHomClass.well_founded (RelHom.mk _ _ : s →r r)
+      refine RelHomClass.wellFounded (RelHom.mk ?_ ?_ : s →r r)
       · exact Classical.choose hf.hasRightInverse
 
       intro a b h
       apply o.2
       convert h
       iterate 2 apply Classical.choose_spec hf.hasRightInverse)
-    (RelHomClass.well_founded (⟨f, o.1⟩ : r →r s))
+    (RelHomClass.wellFounded (⟨f, o.1⟩ : r →r s))
 #align surjective.well_founded_iff Surjective.wellFounded_iff
 
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
@@ -311,58 +311,58 @@ theorem eq_preimage (f : r ↪r s) : r = f ⁻¹'o s := by
   exact f.map_rel_iff.symm
 #align rel_embedding.eq_preimage RelEmbedding.eq_preimage
 
-protected theorem is_irrefl (f : r ↪r s) [IsIrrefl β s] : IsIrrefl α r :=
+protected theorem isIrrefl (f : r ↪r s) [IsIrrefl β s] : IsIrrefl α r :=
   ⟨fun a => mt f.map_rel_iff.2 (irrefl (f a))⟩
-#align rel_embedding.is_irrefl RelEmbedding.is_irrefl
+#align rel_embedding.is_irrefl RelEmbedding.isIrrefl
 
-protected theorem is_refl (f : r ↪r s) [IsRefl β s] : IsRefl α r :=
+protected theorem isRefl (f : r ↪r s) [IsRefl β s] : IsRefl α r :=
   ⟨fun _ => f.map_rel_iff.1 <| refl _⟩
-#align rel_embedding.is_refl RelEmbedding.is_refl
+#align rel_embedding.is_refl RelEmbedding.isRefl
 
-protected theorem is_symm (f : r ↪r s) [IsSymm β s] : IsSymm α r :=
+protected theorem isSymm (f : r ↪r s) [IsSymm β s] : IsSymm α r :=
   ⟨fun _ _ => imp_imp_imp f.map_rel_iff.2 f.map_rel_iff.1 symm⟩
-#align rel_embedding.is_symm RelEmbedding.is_symm
+#align rel_embedding.is_symm RelEmbedding.isSymm
 
-protected theorem is_asymm (f : r ↪r s) [IsAsymm β s] : IsAsymm α r :=
+protected theorem isAsymm (f : r ↪r s) [IsAsymm β s] : IsAsymm α r :=
   ⟨fun _ _ h₁ h₂ => asymm (f.map_rel_iff.2 h₁) (f.map_rel_iff.2 h₂)⟩
-#align rel_embedding.is_asymm RelEmbedding.is_asymm
+#align rel_embedding.is_asymm RelEmbedding.isAsymm
 
-protected theorem is_antisymm : ∀ (_ : r ↪r s) [IsAntisymm β s], IsAntisymm α r
+protected theorem isAntisymm : ∀ (_ : r ↪r s) [IsAntisymm β s], IsAntisymm α r
   | ⟨f, o⟩, ⟨H⟩ => ⟨fun _ _ h₁ h₂ => f.inj' (H _ _ (o.2 h₁) (o.2 h₂))⟩
-#align rel_embedding.is_antisymm RelEmbedding.is_antisymm
+#align rel_embedding.is_antisymm RelEmbedding.isAntisymm
 
-protected theorem is_trans : ∀ (_ : r ↪r s) [IsTrans β s], IsTrans α r
+protected theorem isTrans : ∀ (_ : r ↪r s) [IsTrans β s], IsTrans α r
   | ⟨_, o⟩, ⟨H⟩ => ⟨fun _ _ _ h₁ h₂ => o.1 (H _ _ _ (o.2 h₁) (o.2 h₂))⟩
-#align rel_embedding.is_trans RelEmbedding.is_trans
+#align rel_embedding.is_trans RelEmbedding.isTrans
 
-protected theorem is_total : ∀ (_ : r ↪r s) [IsTotal β s], IsTotal α r
+protected theorem isTotal : ∀ (_ : r ↪r s) [IsTotal β s], IsTotal α r
   | ⟨_, o⟩, ⟨H⟩ => ⟨fun _ _ => (or_congr o o).1 (H _ _)⟩
-#align rel_embedding.is_total RelEmbedding.is_total
+#align rel_embedding.is_total RelEmbedding.isTotal
 
-protected theorem is_preorder : ∀ (_ : r ↪r s) [IsPreorder β s], IsPreorder α r
-  | f, _ => { f.is_refl, f.is_trans with }
-#align rel_embedding.is_preorder RelEmbedding.is_preorder
+protected theorem isPreorder : ∀ (_ : r ↪r s) [IsPreorder β s], IsPreorder α r
+  | f, _ => { f.isRefl, f.isTrans with }
+#align rel_embedding.is_preorder RelEmbedding.isPreorder
 
-protected theorem is_partial_order : ∀ (_ : r ↪r s) [IsPartialOrder β s], IsPartialOrder α r
-  | f, _ => { f.is_preorder, f.is_antisymm with }
-#align rel_embedding.is_partial_order RelEmbedding.is_partial_order
+protected theorem isPartialOrder : ∀ (_ : r ↪r s) [IsPartialOrder β s], IsPartialOrder α r
+  | f, _ => { f.isPreorder, f.isAntisymm with }
+#align rel_embedding.is_partial_order RelEmbedding.isPartialOrder
 
-protected theorem is_linear_order : ∀ (_ : r ↪r s) [IsLinearOrder β s], IsLinearOrder α r
-  | f, _ => { f.is_partial_order, f.is_total with }
-#align rel_embedding.is_linear_order RelEmbedding.is_linear_order
+protected theorem isLinearOrder : ∀ (_ : r ↪r s) [IsLinearOrder β s], IsLinearOrder α r
+  | f, _ => { f.isPartialOrder, f.isTotal with }
+#align rel_embedding.is_linear_order RelEmbedding.isLinearOrder
 
-protected theorem is_strict_order : ∀ (_ : r ↪r s) [IsStrictOrder β s], IsStrictOrder α r
-  | f, _ => { f.is_irrefl, f.is_trans with }
-#align rel_embedding.is_strict_order RelEmbedding.is_strict_order
+protected theorem isStrictOrder : ∀ (_ : r ↪r s) [IsStrictOrder β s], IsStrictOrder α r
+  | f, _ => { f.isIrrefl, f.isTrans with }
+#align rel_embedding.is_strict_order RelEmbedding.isStrictOrder
 
-protected theorem is_trichotomous : ∀ (_ : r ↪r s) [IsTrichotomous β s], IsTrichotomous α r
+protected theorem isTrichotomous : ∀ (_ : r ↪r s) [IsTrichotomous β s], IsTrichotomous α r
   | ⟨f, o⟩, ⟨H⟩ => ⟨fun _ _ => (or_congr o (or_congr f.inj'.eq_iff o)).1 (H _ _)⟩
-#align rel_embedding.is_trichotomous RelEmbedding.is_trichotomous
+#align rel_embedding.is_trichotomous RelEmbedding.isTrichotomous
 
-protected theorem is_strict_total_order : ∀ (_ : r ↪r s) [IsStrictTotalOrder β s],
+protected theorem isStrictTotalOrder : ∀ (_ : r ↪r s) [IsStrictTotalOrder β s],
     IsStrictTotalOrder α r
-  | f, _ => { f.is_trichotomous, f.is_strict_order with }
-#align rel_embedding.is_strict_total_order RelEmbedding.is_strict_total_order
+  | f, _ => { f.isTrichotomous, f.isStrictOrder with }
+#align rel_embedding.is_strict_total_order RelEmbedding.isStrictTotalOrder
 
 protected theorem acc (f : r ↪r s) (a : α) : Acc s (f a) → Acc r a := by
   generalize h : f a = b
@@ -372,13 +372,13 @@ protected theorem acc (f : r ↪r s) (a : α) : Acc s (f a) → Acc r a := by
   exact ⟨_, fun a' h => IH (f a') (f.map_rel_iff.2 h) _ rfl⟩
 #align rel_embedding.acc RelEmbedding.acc
 
-protected theorem well_founded : ∀ (_ : r ↪r s) (_ : WellFounded s), WellFounded r
+protected theorem wellFounded : ∀ (_ : r ↪r s) (_ : WellFounded s), WellFounded r
   | f, ⟨H⟩ => ⟨fun _ => f.acc _ (H _)⟩
-#align rel_embedding.well_founded RelEmbedding.well_founded
+#align rel_embedding.well_founded RelEmbedding.wellFounded
 
-protected theorem is_well_order : ∀ (_ : r ↪r s) [IsWellOrder β s], IsWellOrder α r
-  | f, H => { f.is_strict_total_order with wf := f.well_founded H.wf }
-#align rel_embedding.is_well_order RelEmbedding.is_well_order
+protected theorem isWellOrder : ∀ (_ : r ↪r s) [IsWellOrder β s], IsWellOrder α r
+  | f, H => { f.isStrictTotalOrder with wf := f.wellFounded H.wf }
+#align rel_embedding.is_well_order RelEmbedding.isWellOrder
 
 /-- `quotient.out` as a relation embedding between the lift of a relation and the relation. -/
 @[simps]
@@ -391,7 +391,7 @@ noncomputable def _root_.Quotient.outRelEmbedding [s : Setoid α] {r : α → α
 
 /-- A relation is well founded iff its lift to a quotient is. -/
 @[simp]
-theorem _root_.well_founded_lift₂_iff [s : Setoid α] {r : α → α → Prop}
+theorem _root_.wellFounded_lift₂_iff [s : Setoid α] {r : α → α → Prop}
     {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} :
     WellFounded (Quotient.lift₂ r H) ↔ WellFounded r :=
   ⟨fun hr => by
@@ -401,10 +401,10 @@ theorem _root_.well_founded_lift₂_iff [s : Setoid α] {r : α → α → Prop}
       rintro x IH a rfl
       exact ⟨_, @fun b hb => IH ⟦b⟧ hb _ rfl⟩
       ,
-    (Quotient.outRelEmbedding H).well_founded⟩
-#align well_founded_lift₂_iff well_founded_lift₂_iff
+    (Quotient.outRelEmbedding H).wellFounded⟩
+#align well_founded_lift₂_iff wellFounded_lift₂_iff
 
-alias well_founded_lift₂_iff ↔ well_founded.of_quotient_lift₂ well_founded.quotient_lift₂
+alias wellFounded_lift₂_iff ↔ WellFounded.of_quotient_lift₂ WellFounded.quotient_lift₂
 
 /-- To define an relation embedding from an antisymmetric relation `r` to a reflexive relation `s`
 it suffices to give a function together with a proof that it satisfies `s (f a) (f b) ↔ r a b`.
@@ -544,10 +544,10 @@ def toRelEmbedding (f : r ≃r s) : r ↪r s :=
   ⟨f.toEquiv.toEmbedding, f.map_rel_iff'⟩
 #align rel_iso.to_rel_embedding RelIso.toRelEmbedding
 
-theorem to_equiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
+theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
   | ⟨e₁, o₁⟩, ⟨e₂, _⟩, h => by
     congr
-#align rel_iso.to_equiv_injective RelIso.to_equiv_injective
+#align rel_iso.to_equiv_injective RelIso.toEquiv_injective
 
 instance : Coe (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
@@ -559,7 +559,7 @@ instance : CoeFun (r ≃r s) fun _ => α → β :=
 -- TODO: define and instantiate a `rel_iso_class` when `equiv_like` is defined
 instance : RelHomClass (r ≃r s) r s where
   coe := fun x => x
-  coe_injective' := Equiv.coe_fn_injective.comp to_equiv_injective
+  coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
 theorem map_rel_iff (f : r ≃r s) {a b} : s (f a) (f b) ↔ r a b :=
@@ -573,9 +573,9 @@ theorem coe_fn_mk (f : α ≃ β) (o : ∀ ⦃a b⦄, s (f a) (f b) ↔ r a b) :
 #align rel_iso.coe_fn_mk RelIso.coe_fn_mk
 
 @[simp]
-theorem coe_fn_to_equiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
+theorem coe_fn_toEquiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
   rfl
-#align rel_iso.coe_fn_to_equiv RelIso.coe_fn_to_equiv
+#align rel_iso.coe_fn_to_equiv RelIso.coe_fn_toEquiv
 
 /-- The map `coe_fn : (r ≃r s) → (α → β)` is injective. Lean fails to parse
 `function.injective (λ e : r ≃r s, (e : α → β))`, so we use a trick to say the same. -/
@@ -715,7 +715,7 @@ protected def preimage (f : α ≃ β) (s : β → β → Prop) : f ⁻¹'o s �
 
 instance IsWellOrder.preimage {α : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
     IsWellOrder β (f ⁻¹'o r) :=
-  @RelEmbedding.is_well_order _ _ (f ⁻¹'o r) r (RelIso.preimage f r) _
+  @RelEmbedding.isWellOrder _ _ (f ⁻¹'o r) r (RelIso.preimage f r) _
 #align rel_iso.is_well_order.preimage RelIso.IsWellOrder.preimage
 
 instance IsWellOrder.ulift {α : Type u} (r : α → α → Prop) [IsWellOrder α r] :
