@@ -231,7 +231,7 @@ instance : CoeFun (r ↪r s) fun _ => α → β :=
   ⟨fun o => o.toEmbedding⟩
 
 -- TODO: define and instantiate a `rel_embedding_class` when `embedding_like` is defined
-instance x : RelHomClass (r ↪r s) r s where
+instance : RelHomClass (r ↪r s) r s where
   coe := fun x => x
   coe_injective' f g h := by
     rcases f with ⟨⟨⟩⟩
@@ -451,7 +451,7 @@ def ofIsEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] : r
   ⟨Embedding.ofIsEmpty, @fun a => isEmptyElim a⟩
 #align rel_embedding.of_is_empty RelEmbedding.ofIsEmpty
 
-/-- `Sum.inl` as a relation embedding into `sum.lift_rel r s`. -/
+/-- `Sum.inl` as a relation embedding into `Sum.LiftRel r s`. -/
 @[simps]
 def sumLiftRelInl (r : α → α → Prop) (s : β → β → Prop) : r ↪r Sum.LiftRel r s where
   toFun := Sum.inl
@@ -459,7 +459,7 @@ def sumLiftRelInl (r : α → α → Prop) (s : β → β → Prop) : r ↪r Sum
   map_rel_iff' := Sum.liftRel_inl_inl
 #align rel_embedding.sum_lift_rel_inl RelEmbedding.sumLiftRelInl
 
-/-- `Sum.inr` as a relation embedding into `sum.lift_rel r s`. -/
+/-- `Sum.inr` as a relation embedding into `Sum.LiftRel r s`. -/
 @[simps]
 def sumLiftRelInr (r : α → α → Prop) (s : β → β → Prop) : s ↪r Sum.LiftRel r s where
   toFun := Sum.inr
@@ -467,7 +467,7 @@ def sumLiftRelInr (r : α → α → Prop) (s : β → β → Prop) : s ↪r Sum
   map_rel_iff' := Sum.liftRel_inr_inr
 #align rel_embedding.sum_lift_rel_inr RelEmbedding.sumLiftRelInr
 
-/-- `Sum.map` as a relation embedding between `sum.lift_rel` relations. -/
+/-- `Sum.map` as a relation embedding between `Sum.LiftRel` relations. -/
 @[simps]
 def sumLiftRelMap (f : r ↪r s) (g : t ↪r u) : Sum.LiftRel r t ↪r Sum.LiftRel s u where
   toFun := Sum.map f g
@@ -475,7 +475,7 @@ def sumLiftRelMap (f : r ↪r s) (g : t ↪r u) : Sum.LiftRel r t ↪r Sum.LiftR
   map_rel_iff' := by rintro (a | b) (c | d) <;> simp [f.map_rel_iff, g.map_rel_iff]
 #align rel_embedding.sum_lift_rel_map RelEmbedding.sumLiftRelMap
 
-/-- `sum.inl` as a relation embedding into `sum.lex r s`. -/
+/-- `Sum.inl` as a relation embedding into `Sum.Lex r s`. -/
 @[simps]
 def sumLexInl (r : α → α → Prop) (s : β → β → Prop) : r ↪r Sum.Lex r s where
   toFun := Sum.inl
@@ -483,7 +483,7 @@ def sumLexInl (r : α → α → Prop) (s : β → β → Prop) : r ↪r Sum.Lex
   map_rel_iff' := Sum.lex_inl_inl
 #align rel_embedding.sum_lex_inl RelEmbedding.sumLexInl
 
-/-- `sum.inr` as a relation embedding into `sum.lex r s`. -/
+/-- `Sum.inr` as a relation embedding into `Sum.Lex r s`. -/
 @[simps]
 def sumLexInr (r : α → α → Prop) (s : β → β → Prop) : s ↪r Sum.Lex r s where
   toFun := Sum.inr
@@ -491,7 +491,7 @@ def sumLexInr (r : α → α → Prop) (s : β → β → Prop) : s ↪r Sum.Lex
   map_rel_iff' := Sum.lex_inr_inr
 #align rel_embedding.sum_lex_inr RelEmbedding.sumLexInr
 
-/-- `sum.map` as a relation embedding between `sum.lex` relations. -/
+/-- `Sum.map` as a relation embedding between `Sum.Lex` relations. -/
 @[simps]
 def sumLexMap (f : r ↪r s) (g : t ↪r u) : Sum.Lex r t ↪r Sum.Lex s u where
   toFun := Sum.map f g
@@ -499,7 +499,7 @@ def sumLexMap (f : r ↪r s) (g : t ↪r u) : Sum.Lex r t ↪r Sum.Lex s u where
   map_rel_iff' := by rintro (a | b) (c | d) <;> simp [f.map_rel_iff, g.map_rel_iff]
 #align rel_embedding.sum_lex_map RelEmbedding.sumLexMap
 
-/-- `λ b, prod.mk a b` as a relation embedding. -/
+/-- `λ b, Prod.mk a b` as a relation embedding. -/
 @[simps]
 def prodLexMkLeft (s : β → β → Prop) {a : α} (h : ¬r a a) : s ↪r Prod.Lex r s where
   toFun := Prod.mk a
@@ -507,7 +507,7 @@ def prodLexMkLeft (s : β → β → Prop) {a : α} (h : ¬r a a) : s ↪r Prod.
   map_rel_iff' := by simp [Prod.lex_def, h]
 #align rel_embedding.prod_lex_mk_left RelEmbedding.prodLexMkLeft
 
-/-- `λ a, prod.mk a b` as a relation embedding. -/
+/-- `λ a, Prod.mk a b` as a relation embedding. -/
 @[simps]
 def prodLexMkRight (r : α → α → Prop) {b : β} (h : ¬s b b) : r ↪r Prod.Lex r s where
   toFun a := (a, b)
@@ -515,7 +515,7 @@ def prodLexMkRight (r : α → α → Prop) {b : β} (h : ¬s b b) : r ↪r Prod
   map_rel_iff' := by simp [Prod.lex_def, h]
 #align rel_embedding.prod_lex_mk_right RelEmbedding.prodLexMkRight
 
-/-- `prod.map` as a relation embedding. -/
+/-- `Prod.map` as a relation embedding. -/
 @[simps]
 def prodLexMap (f : r ↪r s) (g : t ↪r u) : Prod.Lex r t ↪r Prod.Lex s u where
   toFun := Prod.map f g
@@ -537,7 +537,7 @@ infixl:25 " ≃r " => RelIso
 namespace RelIso
 
 /-- Convert an `rel_iso` to an `rel_embedding`. This function is also available as a coercion
-but often it is easier to write `f.to_rel_embedding` than to write explicitly `r` and `s`
+but often it is easier to write `f.toRelEmbedding` than to write explicitly `r` and `s`
 in the target type. -/
 def toRelEmbedding (f : r ≃r s) : r ↪r s :=
   ⟨f.toEquiv.toEmbedding, f.map_rel_iff'⟩
@@ -555,7 +555,7 @@ instance : Coe (r ≃r s) (r ↪r s) :=
 instance : CoeFun (r ≃r s) fun _ => α → β :=
   ⟨fun f => f⟩
 
--- TODO: define and instantiate a `rel_iso_class` when `equiv_like` is defined
+-- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : RelHomClass (r ≃r s) r s where
   coe := fun x => x
   coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
@@ -658,9 +658,7 @@ protected theorem cast_trans {α β γ : Type u} {r : α → α → Prop} {s : �
     {t : γ → γ → Prop} (h₁ : α = β)
     (h₁' : β = γ) (h₂ : HEq r s) (h₂' : HEq s t) :
     (RelIso.cast h₁ h₂).trans (RelIso.cast h₁' h₂') = RelIso.cast (h₁.trans h₁') (h₂.trans h₂') :=
-  ext fun x => by
-    subst h₁
-    rfl
+  ext fun x => by subst h₁; rfl
 #align rel_iso.cast_trans RelIso.cast_trans
 
 /-- a relation isomorphism is also a relation isomorphism between dual relations. -/
