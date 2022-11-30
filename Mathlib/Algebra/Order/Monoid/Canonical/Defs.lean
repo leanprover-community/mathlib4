@@ -282,13 +282,14 @@ theorem of_gt {M} [CanonicallyOrderedAddMonoid M] {x y : M} (h : x < y) : NeZero
 #align ne_zero.of_gt NeZero.of_gt
 
 -- 1 < p is still an often-used `Fact`, due to `Nat.Prime` implying it, and it implying `Nontrivial`
--- on `Zmod`'s ring structure. We cannot just set this to be any `x < y`, else that becomes a
+-- on `ZMod`'s ring structure. We cannot just set this to be any `x < y`, else that becomes a
 -- metavariable and it will hugely slow down typeclass inference.
 instance (priority := 10) of_gt' [CanonicallyOrderedAddMonoid M] [One M] {y : M} [Fact (1 < y)] :
   -- Port note: Fact.out has different type signature from mathlib3
   NeZero y := of_gt <| @Fact.out (1 < y) _
 #align ne_zero.of_gt' NeZero.of_gt'
 
+set_option linter.deprecated false in
 instance bit0 {M} [CanonicallyOrderedAddMonoid M] {x : M} [NeZero x] : NeZero (bit0 x) :=
   of_pos <| bit0_pos <| NeZero.pos x
 #align ne_zero.bit0 NeZero.bit0
