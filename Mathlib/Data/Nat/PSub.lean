@@ -9,14 +9,14 @@ import Mathlib.Data.Nat.Basic
 /-!
 # Partial predecessor and partial subtraction on the natural numbers
 
-The usual definition of natural number subtraction (`nat.sub`) returns 0 as a "garbage value" for
-`a - b` when `a < b`. Similarly, `nat.pred 0` is defined to be `0`. The functions in this file
-wrap the result in an `option` type instead:
+The usual definition of natural number subtraction (`Nat.sub`) returns 0 as a "garbage value" for
+`a - b` when `a < b`. Similarly, `Nat.pred 0` is defined to be `0`. The functions in this file
+wrap the result in an `Option` type instead:
 
 ## Main definitions
 
-- `nat.ppred`: a partial predecessor operation
-- `nat.psub`: a partial subtraction operation
+- `Nat.ppred`: a partial predecessor operation
+- `Nat.psub`: a partial subtraction operation
 
 -/
 
