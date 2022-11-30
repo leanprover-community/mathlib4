@@ -41,6 +41,7 @@ import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.OrderSynonym
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Units
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
