@@ -57,5 +57,5 @@ elab "recover" tacs:tacticSeq : tactic => do
     unless ← mvarId.isAssigned <||> mvarId.isDelayedAssigned do
       unassigned := unassigned.insert mvarId
     let unassignedMVarDependencies ← getUnassignedGoalMVarDependencies mvarId
-    unassigned := unassigned.insertMany' unassignedMVarDependencies.toList
+    unassigned := unassigned.insertMany unassignedMVarDependencies.toList
   setGoals <| ((← getGoals) ++ unassigned.toList).eraseDups
