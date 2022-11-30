@@ -89,12 +89,11 @@ end ExistsMulOfLE
   which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
   This is satisfied by the natural numbers, for example, but not
   the integers or other nontrivial `OrderedAddCommGroup`s. -/
-@[protect_proj]
 class CanonicallyOrderedAddMonoid (α : Type _) extends OrderedAddCommMonoid α, Bot α where
   /-- `⊥` is the least element -/
-  bot_le : ∀ x : α, ⊥ ≤ x
-  exists_add_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a + c
-  le_self_add : ∀ a b : α, a ≤ a + b
+  protected bot_le : ∀ x : α, ⊥ ≤ x
+  protected exists_add_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a + c
+  protected le_self_add : ∀ a b : α, a ≤ a + b
 #align canonically_ordered_add_monoid CanonicallyOrderedAddMonoid
 
 
@@ -104,7 +103,6 @@ instance (priority := 100) CanonicallyOrderedAddMonoid.toOrderBot (α : Type u)
   { h with }
 #align canonically_ordered_add_monoid.to_order_bot CanonicallyOrderedAddMonoid.toOrderBot
 
--- Porting note: Should this documentation string differs from `CanonicallyOrderedAddMonoid`
 /-- A canonically ordered monoid is an ordered commutative monoid
   in which the ordering coincides with the divisibility relation,
   which is to say, `a ≤ b` iff there exists `c` with `b = a * c`.
@@ -114,12 +112,12 @@ instance (priority := 100) CanonicallyOrderedAddMonoid.toOrderBot (α : Type u)
   Dedekind domain satisfy this; collections of all things ≤ 1 seem to
   be more natural that collections of all things ≥ 1).
 -/
-@[protect_proj, to_additive]
+@[to_additive]
 class CanonicallyOrderedMonoid (α : Type _) extends OrderedCommMonoid α, Bot α where
   /-- `⊥` is the least element -/
-  bot_le : ∀ x : α, ⊥ ≤ x
-  exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a * c
-  le_self_mul : ∀ a b : α, a ≤ a * b
+  protected bot_le : ∀ x : α, ⊥ ≤ x
+  protected exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a * c
+  protected le_self_mul : ∀ a b : α, a ≤ a * b
 #align canonically_ordered_monoid CanonicallyOrderedMonoid
 
 -- see Note [lower instance priority]
@@ -222,12 +220,13 @@ theorem one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by
 #align one_lt_mul_iff one_lt_mul_iff
 
 @[to_additive]
-theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _)(hc : 1 < c), a * c = b := by
+theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _) (_ : 1 < c), a * c = b := by
   obtain ⟨c, hc⟩ := le_iff_exists_mul.1 h.le
   refine' ⟨c, one_lt_iff_ne_one.2 _, hc.symm⟩
   rintro rfl
   -- Porting note: simpa seems to continue to try and solve the goal after it has been solved
-  simpa [hc, lt_irrefl] using h
+  --simpa [hc, lt_irrefl] using h
+  simp [hc, lt_irrefl] at h
 #align exists_one_lt_mul_of_lt exists_one_lt_mul_of_lt
 
 @[to_additive]
@@ -249,9 +248,11 @@ theorem le_mul_right (h : a ≤ b) : a ≤ b * c :=
 @[to_additive]
 theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔ ∃ c > 1, b = a * c := by
   -- Porting note: simp_rw was more aggressive in lean4
+  -- simp_rw [lt_iff_le_and_ne, and_comm', le_iff_exists_mul, ← exists_and_left, exists_prop]
   rw [lt_iff_le_and_ne, le_iff_exists_mul, ←exists_and_right]
   apply exists_congr
   intro c
+  -- rw [and_congr_left_iff, gt_iff_lt]
   rw [and_comm, and_congr_left_iff, gt_iff_lt]
   rintro rfl
   constructor
@@ -296,14 +297,13 @@ end NeZero
 
 /-- A canonically linear-ordered additive monoid is a canonically ordered additive monoid
     whose ordering is a linear order. -/
-@[protect_proj]
 class CanonicallyLinearOrderedAddMonoid (α : Type _)
   extends CanonicallyOrderedAddMonoid α, LinearOrder α
 #align canonically_linear_ordered_add_monoid CanonicallyLinearOrderedAddMonoid
 
 /-- A canonically linear-ordered monoid is a canonically ordered monoid
     whose ordering is a linear order. -/
-@[protect_proj, to_additive]
+@[to_additive]
 class CanonicallyLinearOrderedMonoid (α : Type _) extends CanonicallyOrderedMonoid α, LinearOrder α
 #align canonically_linear_ordered_monoid CanonicallyLinearOrderedMonoid
 
@@ -314,7 +314,7 @@ variable [CanonicallyLinearOrderedMonoid α]
 -- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 100) CanonicallyLinearOrderedMonoid.semilatticeSup : SemilatticeSup α :=
-  { LinearOrder.toLattice with } -- Porting note: found in Order.Lattice. No longer imported
+  { instLattice with }
 #align canonically_linear_ordered_monoid.semilattice_sup
   CanonicallyLinearOrderedMonoid.semilatticeSup
 #align canonically_linear_ordered_add_monoid.semilattice_sup
