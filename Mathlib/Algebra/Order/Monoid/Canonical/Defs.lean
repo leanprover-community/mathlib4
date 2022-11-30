@@ -30,6 +30,7 @@ class ExistsMulOfLE (α : Type u) [Mul α] [LE α] : Prop where
 if `a ≤ b`, then there is some `c` for which `a + c = b`. This is a weaker version
 of the condition on canonical orderings defined by `CanonicallyOrderedAddMonoid`. -/
 class ExistsAddOfLE (α : Type u) [Add α] [LE α] : Prop where
+  /-- For `a ≤ b`, there is a `c` so `b = a + c`. -/
   exists_add_of_le : ∀ {a b : α}, a ≤ b → ∃ c : α, b = a + c
 #align has_exists_add_of_le ExistsAddOfLE
 
@@ -92,7 +93,9 @@ end ExistsMulOfLE
 class CanonicallyOrderedAddMonoid (α : Type _) extends OrderedAddCommMonoid α, Bot α where
   /-- `⊥` is the least element -/
   protected bot_le : ∀ x : α, ⊥ ≤ x
+  /-- For `a ≤ b`, there is a `c` so `b = a + c`. -/
   protected exists_add_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a + c
+  /-- For any `a` and `b`, `a ≤ a + b` -/
   protected le_self_add : ∀ a b : α, a ≤ a + b
 #align canonically_ordered_add_monoid CanonicallyOrderedAddMonoid
 
@@ -116,7 +119,9 @@ instance (priority := 100) CanonicallyOrderedAddMonoid.toOrderBot (α : Type u)
 class CanonicallyOrderedMonoid (α : Type _) extends OrderedCommMonoid α, Bot α where
   /-- `⊥` is the least element -/
   protected bot_le : ∀ x : α, ⊥ ≤ x
+  /-- For `a ≤ b`, there is a `c` so `b = a * c`. -/
   protected exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a * c
+  /-- For any `a` and `b`, `a ≤ a * b` -/
   protected le_self_mul : ∀ a b : α, a ≤ a * b
 #align canonically_ordered_monoid CanonicallyOrderedMonoid
 
@@ -335,12 +340,14 @@ theorem min_mul_distrib' (a b c : α) : min (a * b) c = min (min a c * min b c) 
   simpa [min_comm _ c] using min_mul_distrib c a b
 #align min_mul_distrib' min_mul_distrib'
 
-@[simp, to_additive]
+-- Porting note: no longer `@[simp]`, as `simp` can prove this.
+@[to_additive]
 theorem one_min (a : α) : min 1 a = 1 :=
   min_eq_left (one_le a)
 #align one_min one_min
 
-@[simp, to_additive]
+-- Porting note: no longer `@[simp]`, as `simp` can prove this.
+@[to_additive]
 theorem min_one (a : α) : min a 1 = 1 :=
   min_eq_right (one_le a)
 #align min_one min_one
