@@ -29,60 +29,57 @@ variable {α β γ δ ε ζ : Type _}
 instance [DecidableEq α] : SDiff (List α) :=
   ⟨List.diff⟩
 
--- Defined in `Std` so not ported
--- List.splitAt
--- List.splitOnP
--- List.splitOn
--- List.concat
--- List.toArray
--- List.modifyNthTail
--- List.modifyHead
--- List.modifyNth
--- List.modifyLast
--- List.insertNth
--- List.takeWhile
--- List.scanl
--- List.scanr
--- List.partitionMap
--- List.indexesValues
--- List.indexesOf
--- List.lookmap
--- List.countp
--- List.count
--- List.inits
--- List.tails
--- List.sublists'
--- List.sublists
--- List.Forall₂
--- List.transpose
--- List.sections
--- List.revzip
--- List.product
--- mathport name: list.product
+#align list.split_at List.splitAt
+#align list.split_on_p List.splitOnP
+#align list.split_on List.splitOn
+#align list.concat List.concat
+#align list.to_array List.toArray
+#align list.modify_nth_tail List.modifyNthTail
+#align list.modify_head List.modifyHead
+#align list.modify_nth List.modifyNth
+#align list.modify_last List.modifyLast
+#align list.insert_nth List.insertNth
+#align list.take_while List.takeWhile
+#align list.scanl List.scanl
+#align list.scanr List.scanr
+#align list.partition_map List.partitionMap
+#align list.indexes_values List.indexesValues
+#align list.indexes_of List.indexesOf
+#align list.lookmap List.lookmap
+#align list.countp List.countp
+#align list.count List.count
+#align list.inits List.inits
+#align list.tails List.tails
+#align list.sublists' List.sublists'
+#align list.sublists List.sublists
+#align list.forall₂ List.Forall₂
+#align list.transpose List.transpose
+#align list.sections List.sections
+#align list.revzip List.revzip
+#align list.product List.product
 infixr:82
   " ×ˢ " =>-- This notation binds more strongly than (pre)images, unions and intersections.
   List.product
-
--- List.sigma
--- List.ofFn
--- List.ofFnNthVal
--- List.Disjoint
--- List.Pairwise
--- List.pariwise_cons
--- List.decidablePairwise
--- List.pwFilter
--- List.Chain
--- List.Chain'
--- in Mathlib.Data.List.Chain: List.chain_cons
--- List.Nodup
--- List.nodupDecidable
--- List.range'
--- List.reduceOption
--- List.ilast'
--- List.last'
--- List.rotate
--- List.rotate'
--- List.getRest
+#align list.sigma List.sigma
+#align list.of_fn List.ofFn
+#align list.of_fn_nth_val List.ofFnNthVal
+#align list.disjoint List.Disjoint
+#align list.pairwise List.Pairwise
+#align list.pairwise_cons List.pairwise_cons
+#align list.decidable_pairwise List.instDecidablePairwise
+#align list.pw_filter List.pwFilter
+#align list.chain List.Chain
+#align list.chain' List.Chain'
+#align list.chain_cons List.chain_cons
+#align list.nodup List.Nodup
+#align list.nodup_decidable List.nodupDecidable
+#align list.range' List.range'
+#align list.reduce_option List.reduceOption
+#align list.ilast' List.ilast'
+#align list.last' List.last'
+#align list.rotate List.rotate
+#align list.rotate' List.rotate'
+#align list.get_rest List.getRest
 
 -- The following exist in `Std` with name changes, noted through `#align`
 
