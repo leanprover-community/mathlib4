@@ -108,8 +108,8 @@ theorem pure_seq_eq_map (f : α → β) (x : Comp F G α) : pure f <*> x = f <$>
 
 -- TODO: the first two results were handled by `control_laws_tac` in mathlib3
 instance : LawfulApplicative (Comp F G) where
-  seqLeft_eq := sorry
-  seqRight_eq := sorry
+  seqLeft_eq := by intros; rfl
+  seqRight_eq := by intros; rfl
   pure_seq := @Comp.pure_seq_eq_map F G _ _ _ _
   map_pure := @Comp.map_pure F G _ _ _ _
   seq_pure := @Comp.seq_pure F G _ _ _ _
@@ -166,11 +166,11 @@ instance {α} [One α] [Mul α] : Applicative (Const α) where
 -- Also, `simp` didn't close `refl` goals.
 
 instance {α} [Monoid α] : LawfulApplicative (Const α) := by
-  refine' { .. } <;> intros <;> simp [mul_assoc, (· <$> ·), Seq.seq, pure] <;> exact rfl
+  refine' { .. } <;> intros <;> simp [mul_assoc, (· <$> ·), Seq.seq, pure] <;> rfl
 
 instance {α} [Zero α] [Add α] : Applicative (AddConst α) where
   pure _ := (0 : α)
   seq f x := (show α from f) + (show α from x Unit.unit)
 
 instance {α} [AddMonoid α] : LawfulApplicative (AddConst α) := by
-  refine' { .. } <;> intros <;> simp [add_assoc, (· <$> ·), Seq.seq, pure] <;> exact rfl
+  refine' { .. } <;> intros <;> simp [add_assoc, (· <$> ·), Seq.seq, pure] <;> rfl
