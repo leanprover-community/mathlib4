@@ -130,8 +130,6 @@ theorem const_pow [Pow β α] (b : β) (a : α) : const I b ^ a = const I (b ^ a
 theorem pow_comp [Pow γ α] (x : β → γ) (a : α) (y : I → β) : (x ^ a) ∘ y = x ∘ y ^ a :=
   rfl
 
-example [∀ i, Add <| f i] : Add <| ∀ i, f i := inferInstance
-
 /-!
 Porting note: `bit0` and `bit1` are deprecated. This section can be removed entirely
 (without replacement?).
