@@ -69,21 +69,9 @@ See https://github.com/leanprover-community/mathlib/issues/2269
 def mkAssumptionSet (noDflt : Bool) (hs : List (TSyntax `term)) :
     MetaM (List (TermElabM Expr) × TermElabM (List Expr)) :=
 do
+  let hs := if noDflt then hs else [← `(rfl), ← `(trivial), ← `(congrFun), ← `(congrArg)] ++ hs
   let hs := hs.map (λ s => Elab.Term.elabTerm s.raw none)
-  let hs := if noDflt then hs else
-    ([← `(rfl), ← `(trivial), ← `(congrFun), ← `(congrArg)].map
-       (λ s => Elab.Term.elabTerm s.raw none)) ++ hs
   let locals : TermElabM (List Expr) := if noDflt then pure [] else pure (← getLocalHyps).toList
-  return (hs, locals)
-
-def mkAssumptionSet' (_noDflt : Bool) (hs : List (TSyntax `term)) :
-    MetaM (List (TermElabM Expr) × TermElabM (List Expr)) :=
-do
-  let hs := hs.map (λ s => Elab.Term.elabTerm s.raw none)
-  let hs := --if noDflt then hs else
-    ([← `(rfl), ← `(trivial), ← `(congrArg)].map
-       (λ s => Elab.Term.elabTerm s.raw none)) ++ hs
-  let locals : TermElabM (List Expr) := pure (← getLocalHyps).toList
   return (hs, locals)
 
 /-- Visualize an `Except` using a checkmark or a cross. -/
@@ -194,6 +182,7 @@ Optional arguments:
 -/
 syntax (name := applyAssumption) "apply_assumption" : tactic
 
-elab_rules : tactic | `(tactic| apply_assumption) => do
-  let ⟨lemmas, ctx⟩ ← mkAssumptionSet' true []
-  (← elabContextLemmas lemmas ctx).firstM fun e => (liftMetaTactic (Lean.MVarId.apply · e))
+elab_rules : tactic | `(tactic| apply_assumption) => withMainContext do
+  let ctx := (← getLocalHyps).toList
+  let lemmas := [← `(rfl), ← `(trivial), ← `(congrArg)].map (λ s => Elab.Term.elabTerm s.raw none)
+  (← elabContextLemmas lemmas (pure ctx)).firstM fun e => (liftMetaTactic (Lean.MVarId.apply · e))
