@@ -35,10 +35,6 @@ functor, applicative, monad, simp
 
 -/
 
--- Porting note: this fails; perhaps in Lean 3 we could add an attribute to an attribute?
--- Note sure if something needs to replace this.
--- attribute [monad_norm] functor_norm
-
 attribute [ext] ReaderT.ext StateT.ext ExceptT.ext Option.ext
 
 attribute [functor_norm] bind_assoc pure_bind bind_pure
