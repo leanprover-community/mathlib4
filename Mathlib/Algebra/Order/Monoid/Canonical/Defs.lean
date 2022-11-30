@@ -20,7 +20,6 @@ variable {α : Type u}
 /-- An `OrderCommMonoid` with one-sided 'division' in the sense that
 if `a ≤ b`, there is some `c` for which `a * c = b`. This is a weaker version
 of the condition on canonical orderings defined by `CanonicallyOrderedMonoid`. -/
--- Porting note: Is there a better name for this? OrderedLeftDivision?
 class ExistsMulOfLE (α : Type u) [Mul α] [LE α] : Prop where
   /-- For `a ≤ b`, `a` left divides `b` -/
   exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c : α, b = a * c
@@ -229,8 +228,6 @@ theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _) (_ : 1 < c), a * c = b
   obtain ⟨c, hc⟩ := le_iff_exists_mul.1 h.le
   refine' ⟨c, one_lt_iff_ne_one.2 _, hc.symm⟩
   rintro rfl
-  -- Porting note: simpa seems to continue to try and solve the goal after it has been solved
-  --simpa [hc, lt_irrefl] using h
   simp [hc, lt_irrefl] at h
 #align exists_one_lt_mul_of_lt exists_one_lt_mul_of_lt
 
@@ -252,12 +249,9 @@ theorem le_mul_right (h : a ≤ b) : a ≤ b * c :=
 
 @[to_additive]
 theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔ ∃ c > 1, b = a * c := by
-  -- Porting note: simp_rw was more aggressive in lean4
-  -- simp_rw [lt_iff_le_and_ne, and_comm', le_iff_exists_mul, ← exists_and_left, exists_prop]
   rw [lt_iff_le_and_ne, le_iff_exists_mul, ←exists_and_right]
   apply exists_congr
   intro c
-  -- rw [and_congr_left_iff, gt_iff_lt]
   rw [and_comm, and_congr_left_iff, gt_iff_lt]
   rintro rfl
   constructor
