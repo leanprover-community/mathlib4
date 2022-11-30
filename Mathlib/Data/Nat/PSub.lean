@@ -25,22 +25,31 @@ namespace Nat
 
 /-- Partial predecessor operation. Returns `ppred n = some m`
   if `n = m + 1`, otherwise `none`. -/
-@[simp]
 def ppred : ℕ → Option ℕ
   | 0 => none
   | n + 1 => some n
 #align nat.ppred Nat.ppred
 
+@[simp]
+theorem ppred_zero : ppred 0 = none := rfl
+
+@[simp]
+theorem ppred_succ : ppred (succ n) = some n := rfl
+
 /-- Partial subtraction operation. Returns `psub m n = some k`
   if `m = n + k`, otherwise `none`. -/
-@[simp]
 def psub (m : ℕ) : ℕ → Option ℕ
   | 0 => some m
   | n + 1 => psub m n >>= ppred
 #align nat.psub Nat.psub
 
--- Porting note: mathport failed to align `option.get_or_else` with `Option.getD`
+@[simp]
+theorem psub_zero : psub m 0 = some m := rfl
 
+@[simp]
+theorem psub_succ : psub m (succ n) = psub m n >>= ppred := rfl
+
+-- Porting note: mathport failed to align `option.get_or_else` with `Option.getD`
 theorem pred_eq_ppred (n : ℕ) : pred n = (ppred n).getD 0 := by cases n <;> rfl
 #align nat.pred_eq_ppred Nat.pred_eq_ppred
 
@@ -65,7 +74,6 @@ theorem ppred_eq_none : ∀ {n : ℕ}, ppred n = none ↔ n = 0
 #align nat.ppred_eq_none Nat.ppred_eq_none
 
 -- Porting note: `simp` eagerly expanded `psub` and `ppred` so it couldn't apply the `simp` lemmas
-
 theorem psub_eq_some {m : ℕ} : ∀ {n k}, psub m n = some k ↔ k + n = m
   | 0, k => by simp [eq_comm]
   | n + 1, k => by
@@ -94,15 +102,12 @@ theorem psub_eq_sub {m n} (h : n ≤ m) : psub m n = some (m - n) :=
 #align nat.psub_eq_sub Nat.psub_eq_sub
 
 -- Porting note: we only have the simp lemma `Option.bind_some` which uses `Option.bind` not `>>=`
-
 theorem psub_add (m n k) :
-    psub m (n + k) = (do
-      let x ← psub m n
-      psub x k) :=
+    psub m (n + k) = (do psub (← psub m n) k) :=
   by
     induction k
     simp [Option.bind_eq_bind, Option.bind_some]
-    simp [*]
+    simp [*, Nat.add_succ]
 
 #align nat.psub_add Nat.psub_add
 
