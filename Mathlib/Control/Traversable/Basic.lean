@@ -144,10 +144,6 @@ theorem preserves_seq {α β : Type u} : ∀ (x : F (α → β)) (y : F α), η 
   η.preserves_seq'
 #align applicative_transformation.preserves_seq ApplicativeTransformation.preserves_seq
 
--- porting note: this name change is in core and looks like it's not aligned;
--- **TODO** is there a better place to align it than here?
-#align is_lawful_applicative.pure_seq_eq_map LawfulApplicative.pure_seq
-
 @[functor_norm]
 theorem preserves_map {α β} (x : α → β) (y : F α) : η (x <$> y) = x <$> η y := by
   rw [← pure_seq, η.preserves_seq] ; simp [functor_norm]
@@ -279,16 +275,9 @@ variable {F : Type u → Type v} [Applicative F]
 instance : Traversable Option :=
   ⟨@Option.traverse⟩
 
--- **TODO** where does this declaration go and should I worry about the dubious translation?
--- I got this from the autoport of `Data.List.Defs`
-/- warning: list.traverse -> List.traverse is a dubious translation:
-lean 3 declaration is
-  forall {F : Type.{u} -> Type.{v}} [_inst_1 : Applicative.{u v} F] {α : Type.{u_1}}
-    {β : Type.{u}}, (α -> (F β)) -> (List.{u_1} α) -> (F (List.{u} β))
-but is expected to have type
-  forall {F : Type.{u} -> Type.{v}} [_inst_1 : Applicative.{u v} F] {α : Type.{_aux_param_0}}
-    {β : Type.{u}}, (α -> (F β)) -> (List.{_aux_param_0} α) -> (F (List.{u} β))
-Case conversion may be inaccurate. Consider using '#align list.traverse List.traverseₓ'. -/
+-- **TODO** This def should go in `Data.List.Defs`.
+
+/-- `List` is a traversable functor. -/
 protected def List.traverse {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β) :
     List α → F (List β)
   | [] => pure []
@@ -308,6 +297,10 @@ variable {F : Type u → Type u}
 
 variable [Applicative F]
 
+-- porting note: this was marked as a dubious translation but the only issue seems to be
+-- a universe issue; this may be a bug in mathlib3port. Discussion here
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/why.20dubious.3F/
+
 /- warning: sum.traverse -> Sum.traverse is a dubious translation:
 lean 3 declaration is
   forall {σ : Type.{u}} {F : Type.{u} -> Type.{u}} [_inst_1 : Applicative.{u u} F]
@@ -318,6 +311,7 @@ but is expected to have type
     {α : Type.{_aux_param_0}} {β : Type.{u}}, (α -> (F β)) -> (Sum.{u _aux_param_0} σ α) ->
     (F (Sum.{u u} σ β))
 Case conversion may be inaccurate. Consider using '#align sum.traverse Sum.traverseₓ'. -/
+
 /-- Defines a `traverse` function on the second component of a sum type.
 This is used to give a `traversable` instance for the functor `σ ⊕ -`. -/
 protected def traverse {α β} (f : α → F β) : Sum σ α → F (Sum σ β)
@@ -329,4 +323,3 @@ end Sum
 
 instance {σ : Type u} : Traversable.{u} (Sum σ) :=
   ⟨@Sum.traverse _⟩
-#lint
