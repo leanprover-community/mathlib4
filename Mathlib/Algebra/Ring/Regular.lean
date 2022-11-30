@@ -31,9 +31,9 @@ theorem is_right_regular_of_non_zero_divisor [NonUnitalNonAssocRing α] (k : α)
 
 theorem is_regular_of_ne_zero' [NonUnitalNonAssocRing α] [NoZeroDivisors α] {k : α} (hk : k ≠ 0) :
     IsRegular k :=
-  ⟨is_left_regular_of_non_zero_divisor k fun x h =>
+  ⟨is_left_regular_of_non_zero_divisor k fun _ h =>
       (NoZeroDivisors.eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_left hk,
-    is_right_regular_of_non_zero_divisor k fun x h =>
+    is_right_regular_of_non_zero_divisor k fun _ h =>
       (NoZeroDivisors.eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hk⟩
 #align is_regular_of_ne_zero' is_regular_of_ne_zero'
 
@@ -41,7 +41,7 @@ theorem is_regular_iff_ne_zero' [Nontrivial α] [NonUnitalNonAssocRing α] [NoZe
     {k : α} : IsRegular k ↔ k ≠ 0 :=
   ⟨fun h => by
     rintro rfl
-    exact not_not.mpr h.left not_is_left_regular_zero, is_regular_of_ne_zero'⟩
+    exact not_not.mpr h.left not_isLeftRegular_zero, is_regular_of_ne_zero'⟩
 #align is_regular_iff_ne_zero' is_regular_iff_ne_zero'
 
 /-- A ring with no zero divisors is a `cancel_monoid_with_zero`.
@@ -50,9 +50,9 @@ Note this is not an instance as it forms a typeclass loop. -/
 @[reducible]
 def NoZeroDivisors.toCancelMonoidWithZero [Ring α] [NoZeroDivisors α] : CancelMonoidWithZero α :=
   { (by infer_instance : MonoidWithZero α) with
-    mul_left_cancel_of_ne_zero := fun a b c ha =>
+    mul_left_cancel_of_ne_zero := fun ha =>
       @IsRegular.left _ _ _ (is_regular_of_ne_zero' ha) _ _,
-    mul_right_cancel_of_ne_zero := fun a b c hb =>
+    mul_right_cancel_of_ne_zero := fun hb =>
       @IsRegular.right _ _ _ (is_regular_of_ne_zero' hb) _ _ }
 #align no_zero_divisors.to_cancel_monoid_with_zero NoZeroDivisors.toCancelMonoidWithZero
 
