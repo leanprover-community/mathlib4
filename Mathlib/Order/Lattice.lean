@@ -1019,21 +1019,21 @@ theorem inf_def [∀ i, HasInf (α' i)] (f g : ∀ i, α' i) : f ⊓ g = fun i =
   rfl
 #align pi.inf_def Pi.inf_def
 
-instance [∀ i, SemilatticeSup (α' i)] : SemilatticeSup (∀ i, α' i) where
+instance semilatticeSup [∀ i, SemilatticeSup (α' i)] : SemilatticeSup (∀ i, α' i) where
   le_sup_left _ _ _ := le_sup_left
   le_sup_right _ _ _ := le_sup_right
   sup_le _ _ _ ac bc i := sup_le (ac i) (bc i)
 
-instance [∀ i, SemilatticeInf (α' i)] : SemilatticeInf (∀ i, α' i) where
+instance semilatticeInf [∀ i, SemilatticeInf (α' i)] : SemilatticeInf (∀ i, α' i) where
   inf_le_left _ _ _ := inf_le_left
   inf_le_right _ _ _ := inf_le_right
   le_inf _ _ _ ac bc i := le_inf (ac i) (bc i)
 
-instance [∀ i, Lattice (α' i)] : Lattice (∀ i, α' i) where
+instance lattice [∀ i, Lattice (α' i)] : Lattice (∀ i, α' i) where
   __ := inferInstanceAs (SemilatticeSup (∀ i, α' i))
   __ := inferInstanceAs (SemilatticeInf (∀ i, α' i))
 
-instance [∀ i, DistribLattice (α' i)] : DistribLattice (∀ i, α' i) where
+instance distribLattice [∀ i, DistribLattice (α' i)] : DistribLattice (∀ i, α' i) where
   le_sup_inf _ _ _ _ := le_sup_inf
 
 end Pi

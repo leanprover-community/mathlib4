@@ -908,7 +908,7 @@ section Bool
 
 open Bool
 
-instance : BoundedOrder Bool where
+instance Bool.boundedOrder : BoundedOrder Bool where
   top := true
   le_top _ := le_true
   bot := false
