@@ -1230,8 +1230,6 @@ protected theorem AddMonoidHom.map_zsmul' [SubNegMonoid M] [SubNegMonoid N] (f :
 section End
 
 -- Porting note: this part causes instance loop
--- This may be fixed by https://github.com/leanprover/lean4/issues/1891
--- in nightly-2022-11-30
 namespace Monoid
 
 variable (M) [MulOneClass M]
