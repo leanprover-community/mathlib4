@@ -185,12 +185,15 @@ def mfind {α} {m : Type u → Type v} [Monad m] [Alternative m] (tac : α → m
 /-- `mbfind' p l` returns the first element `a` of `l` for which `p a` returns
 true. `mbfind'` short-circuits, so `p` is not necessarily run on every `a` in
 `l`. This is a monadic version of `list.find`. -/
-def mbfind' {m : Type u → Type v} [Monad m] {α : Type u} (p : α → m (ULift Bool)) : List α → m (Option α)
+def findM?'
+    {m : Type u → Type v}
+    [Monad m] {α : Type u}
+    (p : α → m (ULift Bool)) : List α → m (Option α)
   | [] => pure none
   | x :: xs => do
     let ⟨px⟩ ← p x
-    if px then pure (some x) else mbfind' p xs
-#align list.mbfind' List.mbfind'
+    if px then pure (some x) else findM?' p xs
+#align list.mbfind' List.findM?'
 
 section
 
@@ -304,7 +307,7 @@ defined) is the list of lists of the form `insert_nth n t (ys ++ ts)` for `0 ≤
 def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List α → β) → List α × List β
   | [], f => (ts, r)
   | y :: ys, f =>
-    let (us, zs) := permutationsAux2 t ys fun x : List α => f (y :: x)
+    let (us, zs) := permutationsAux2 t ys r (fun x: List α => f (y :: x))
     (y :: us, f (t :: y :: us) :: zs)
 #align list.permutations_aux2 List.permutationsAux2
 
@@ -328,7 +331,8 @@ def PermutationsAux.rec {C : List α → List α → Sort v} (H0 : ∀ is, C [] 
         rw [Nat.succ_add] <;> exact Prod.Lex.right _ (lt_succ_self _)
     have h2 : ⟨is, []⟩ ≺ ⟨t :: ts, is⟩ := Prod.Lex.left _ _ (Nat.lt_add_of_pos_left (succ_pos _))
     H1 t ts is (PermutationsAux.rec H0 H1 ts (t :: is)) (PermutationsAux.rec H0 H1 is [])
-    termination_by' ⟨(· ≺ ·), @InvImage.wf _ _ _ meas (Prod.lex_wf lt_wf lt_wf)⟩
+    termination_by'
+      ⟨(· ≺ ·), @InvImage.wf _ _ _ meas (Prod.instWellFoundedRelationProd lt_wfRel lt_wfRel)⟩
 #align list.permutations_aux.rec List.PermutationsAux.rec
 
 /-- An auxiliary function for defining `permutations`. `permutations_aux ts is` is the set of all
@@ -574,17 +578,7 @@ def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : Li
 
 
 
-
-/-- `to_rbmap as` is the map that associates each index `i` of `as` with the
-corresponding element of `as`.
-
-```
-to_rbmap ['a', 'b', 'c'] = rbmap_of [(0, 'a'), (1, 'b'), (2, 'c')]
-```
--/
-def toRbmap {α : Type _} : List α → RBMap ℕ α :=
-  foldlIdx (fun i mapp a => mapp.insert i a) (mkRbmap ℕ α)
-#align list.to_rbmap List.toRbmap
+#align list.to_rbmap List.toRBMap
 
 
 /-- Asynchronous version of `List.map`.
