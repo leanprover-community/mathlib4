@@ -49,6 +49,7 @@ import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.EquivFunctor
 import Mathlib.Control.Functor
+import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Random
 import Mathlib.Control.SimpSet
 import Mathlib.Control.ULift
