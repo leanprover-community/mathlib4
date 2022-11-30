@@ -119,3 +119,54 @@ end Int
 theorem zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (n : ℤ) = a ^ n := zpow_ofNat ..
 theorem coe_nat_zsmul [SubNegMonoid G] (a : G) (n : ℕ) : (n : ℤ) • a = n • a := ofNat_zsmul ..
 attribute [to_additive coe_nat_zsmul] zpow_coe_nat
+
+
+section no_zero_divisors
+
+variable (α)
+
+lemma IsLeftCancelMulZero.to_NoZeroDivisors [Ring α] [IsLeftCancelMulZero α] :
+    NoZeroDivisors α :=
+{ eq_zero_or_eq_zero_of_mul_eq_zero := @fun x y h ↦ by
+    by_cases hx : x = 0
+    { left
+      exact hx }
+    { right
+      rw [← sub_zero (x * y), ← mul_zero x, ← mul_sub] at h
+      convert (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero) hx h
+      rw [sub_zero] } }
+#align is_left_cancel_mul_zero.to_no_zero_divisors IsLeftCancelMulZero.to_NoZeroDivisors
+
+lemma IsRightCancelMulZero.to_NoZeroDivisors [Ring α] [IsRightCancelMulZero α] :
+    NoZeroDivisors α :=
+{ eq_zero_or_eq_zero_of_mul_eq_zero := @fun x y h ↦ by
+    by_cases hy : y = 0
+    { right
+      exact hy }
+    { left
+      rw [← sub_zero (x * y), ← zero_mul y, ← sub_mul] at h
+      convert (IsRightCancelMulZero.mul_right_cancel_of_ne_zero) hy h
+      rw [sub_zero] } }
+#align is_right_cancel_mul_zero.to_no_zero_divisors IsRightCancelMulZero.to_NoZeroDivisors
+
+instance (priority := 100) NoZeroDivisors.to_IsCancelMulZero [Ring α] [NoZeroDivisors α] :
+    IsCancelMulZero α :=
+{ mul_left_cancel_of_ne_zero := fun ha h ↦ by
+    rw [← sub_eq_zero, ← mul_sub] at h
+    exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_left ha)
+  mul_right_cancel_of_ne_zero := fun hb h ↦ by
+    rw [← sub_eq_zero, ← sub_mul] at h
+    exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hb) }
+#align no_zero_divisors.to_is_cancel_mul_zero NoZeroDivisors.to_IsCancelMulZero
+
+lemma NoZeroDivisors.to_IsDomain [Ring α] [h : Nontrivial α] [NoZeroDivisors α] :
+  IsDomain α :=
+{ NoZeroDivisors.to_IsCancelMulZero α, h with .. }
+#align no_zero_divisors.to_is_domain.to_no_zero_divisors NoZeroDivisors.to_IsDomain
+
+instance (priority := 100) IsDomain.to_NoZeroDivisors [Ring α] [IsDomain α] :
+    NoZeroDivisors α :=
+IsRightCancelMulZero.to_NoZeroDivisors α
+#align is_domain.to_no_zero_divisors IsDomain.to_NoZeroDivisors
+
+end no_zero_divisors
