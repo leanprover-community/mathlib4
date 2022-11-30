@@ -29,6 +29,7 @@ import Mathlib.Algebra.Order.Monoid.Cancel.Defs
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Algebra.Order.Monoid.MinMax
+import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Ring
 import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.Order.Sub.Defs
@@ -40,12 +41,15 @@ import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.OrderSynonym
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Units
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.EquivFunctor
 import Mathlib.Control.Functor
+import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Random
 import Mathlib.Control.SimpSet
 import Mathlib.Control.ULift
@@ -96,6 +100,7 @@ import Mathlib.Data.Option.NAry
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Data.Prod.Basic
+import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Defs
@@ -142,6 +147,7 @@ import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr.Traverse
 import Mathlib.Lean.LocalContext
 import Mathlib.Lean.Meta
+import Mathlib.Lean.Meta.Simp
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Equiv.Basic
@@ -173,8 +179,10 @@ import Mathlib.Order.Lattice
 import Mathlib.Order.Max
 import Mathlib.Order.MinMax
 import Mathlib.Order.Monotone
+import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
 import Mathlib.Order.Synonym
+import Mathlib.Order.WithBot
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyFun
