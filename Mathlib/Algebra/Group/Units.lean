@@ -614,6 +614,8 @@ namespace IsUnit
 theorem mul_iff [CommMonoid M] {x y : M} : IsUnit (x * y) ↔ IsUnit x ∧ IsUnit y :=
   ⟨fun h => ⟨isUnit_of_mul_isUnit_left h, isUnit_of_mul_isUnit_right h⟩,
    fun h => IsUnit.mul h.1 h.2⟩
+#align is_unit.mul_iff IsUnit.mul_iff
+#align is_add_unit.add_iff IsAddUnit.add_iff
 
 section Monoid
 
