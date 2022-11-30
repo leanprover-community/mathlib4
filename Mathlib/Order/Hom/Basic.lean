@@ -76,7 +76,7 @@ variable {F α β γ δ : Type _}
 /-- Bundled monotone (aka, increasing) function -/
 structure OrderHom (α β : Type _) [Preorder α] [Preorder β] where
   toFun : α → β
-  monotone' : Monotone to_fun
+  monotone' : Monotone toFun
 #align order_hom OrderHom
 
 /-- Notation for an `OrderHom`. -/
@@ -122,12 +122,13 @@ export OrderIsoClass (map_le_map_iff)
 attribute [simp] map_le_map_iff
 
 instance [LE α] [LE β] [OrderIsoClass F α β] : CoeTC F (α ≃o β) :=
-  ⟨fun f => ⟨f, fun _ _ => map_le_map_iff f⟩⟩
+  ⟨fun f => ⟨f, map_le_map_iff f⟩⟩
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toOrderHomClass [LE α] [LE β] [OrderIsoClass F α β] :
     OrderHomClass F α β :=
-  { EquivLike.toEmbeddingLike with map_rel := fun f a b => (map_le_map_iff f).2 }
+  { EquivLike.toEmbeddingLike with
+    map_rel := fun f a b => (map_le_map_iff f).2 }
 #align order_iso_class.to_order_hom_class OrderIsoClass.toOrderHomClass
 
 namespace OrderHomClass
@@ -166,8 +167,6 @@ theorem le_map_inv_iff (f : F) {a : α} {b : β} : a ≤ EquivLike.inv f b ↔ f
 end LE
 
 variable [Preorder α] [Preorder β] [OrderIsoClass F α β]
-
-include β
 
 theorem map_lt_map_iff (f : F) {a b : α} : f a < f b ↔ a < b :=
   lt_iff_lt_of_le_iff_le' (map_le_map_iff f) (map_le_map_iff f)
