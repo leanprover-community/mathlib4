@@ -75,13 +75,13 @@ namespace RelHomClass
 
 variable {F : Type _}
 
-protected theorem is_irrefl [RelHomClass F r s] (f : F) : ∀ [IsIrrefl β s], IsIrrefl α r
+protected theorem isIrrefl [RelHomClass F r s] (f : F) : ∀ [IsIrrefl β s], IsIrrefl α r
   | ⟨H⟩ => ⟨fun _ h => H _ (map_rel f h)⟩
-#align rel_hom_class.is_irrefl RelHomClass.is_irrefl
+#align rel_hom_class.is_irrefl RelHomClass.isIrrefl
 
-protected theorem is_asymm [RelHomClass F r s] (f : F) : ∀ [IsAsymm β s], IsAsymm α r
+protected theorem isAsymm [RelHomClass F r s] (f : F) : ∀ [IsAsymm β s], IsAsymm α r
   | ⟨H⟩ => ⟨fun _ _ h₁ h₂ => H _ _ (map_rel f h₁) (map_rel f h₂)⟩
-#align rel_hom_class.is_asymm RelHomClass.is_asymm
+#align rel_hom_class.is_asymm RelHomClass.isAsymm
 
 protected theorem acc [RelHomClass F r s] (f : F) (a : α) : Acc s (f a) → Acc r a := by
   generalize h : f a = b
@@ -91,9 +91,9 @@ protected theorem acc [RelHomClass F r s] (f : F) (a : α) : Acc s (f a) → Acc
   exact ⟨_, fun a' h => IH (f a') (map_rel f h) _ rfl⟩
 #align rel_hom_class.acc RelHomClass.acc
 
-protected theorem well_founded [RelHomClass F r s] (f : F) : ∀ _ : WellFounded s, WellFounded r
+protected theorem wellFounded [RelHomClass F r s] (f : F) : ∀ _ : WellFounded s, WellFounded r
   | ⟨H⟩ => ⟨fun _ => RelHomClass.acc f _ (H _)⟩
-#align rel_hom_class.well_founded RelHomClass.well_founded
+#align rel_hom_class.well_founded RelHomClass.wellFounded
 
 end RelHomClass
 
@@ -179,7 +179,7 @@ theorem RelHom.injective_of_increasing [IsTrichotomous α r] [IsIrrefl β s] (f 
 #align rel_hom.injective_of_increasing RelHom.injective_of_increasing
 
 -- TODO: define a `rel_iff_class` so we don't have to do all the `convert` trickery?
-theorem Surjective.well_founded_iff {f : α → β} (hf : Surjective f)
+theorem Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
     (o : ∀ {a b}, r a b ↔ s (f a) (f b)) :
     WellFounded r ↔ WellFounded s :=
   Iff.intro
@@ -192,7 +192,7 @@ theorem Surjective.well_founded_iff {f : α → β} (hf : Surjective f)
       convert h
       iterate 2 apply Classical.choose_spec hf.hasRightInverse)
     (RelHomClass.well_founded (⟨f, o.1⟩ : r →r s))
-#align surjective.well_founded_iff Surjective.well_founded_iff
+#align surjective.well_founded_iff Surjective.wellFounded_iff
 
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
 is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
@@ -201,7 +201,6 @@ structure RelEmbedding {α β : Type _} (r : α → α → Prop) (s : β → β 
   map_rel_iff' : ∀ {a b}, s (toEmbedding a) (toEmbedding b) ↔ r a b
 #align rel_embedding RelEmbedding
 
--- mathport name: «expr ↪r »
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
 is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
 infixl:25 " ↪r " => RelEmbedding
@@ -418,11 +417,11 @@ def ofMapRelIff (f : α → β) [IsAntisymm α r] [IsRefl β s] (hf : ∀ a b, s
 #align rel_embedding.of_map_rel_iff RelEmbedding.ofMapRelIff
 
 @[simp]
-theorem of_map_rel_iff_coe (f : α → β) [IsAntisymm α r] [IsRefl β s]
+theorem ofMapRelIff_coe (f : α → β) [IsAntisymm α r] [IsRefl β s]
     (hf : ∀ a b, s (f a) (f b) ↔ r a b) :
     (ofMapRelIff f hf : r ↪r s) = f :=
   rfl
-#align rel_embedding.of_map_rel_iff_coe RelEmbedding.of_map_rel_iff_coe
+#align rel_embedding.of_map_rel_iff_coe RelEmbedding.ofMapRelIff_coe
 
 /-- It suffices to prove `f` is monotone between strict relations
   to show it is a relation embedding. -/
@@ -443,10 +442,10 @@ def ofMonotone [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H : ∀ a b
 #align rel_embedding.of_monotone RelEmbedding.ofMonotone
 
 @[simp]
-theorem of_monotone_coe [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H) :
+theorem ofMonotone_coe [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H) :
     (@ofMonotone _ _ r s _ _ f H : α → β) = f :=
   rfl
-#align rel_embedding.of_monotone_coe RelEmbedding.of_monotone_coe
+#align rel_embedding.of_monotone_coe RelEmbedding.ofMonotone_coe
 
 /-- A relation embedding from an empty type. -/
 def ofIsEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] : r ↪r s :=
@@ -533,7 +532,6 @@ structure RelIso {α β : Type _} (r : α → α → Prop) (s : β → β → Pr
   map_rel_iff' : ∀ {a b}, s (toEquiv a) (toEquiv b) ↔ r a b
 #align rel_iso RelIso
 
--- mathport name: «expr ≃r »
 /-- A relation isomorphism is an equivalence that is also a relation embedding. -/
 infixl:25 " ≃r " => RelIso
 
