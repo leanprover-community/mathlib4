@@ -68,8 +68,11 @@ transformation such that `app` preserves the `has_pure.pure` and
 `functor.map` (`<*>`) operations. See
 `ApplicativeTransformation.preserves_map` for naturality. -/
 structure ApplicativeTransformation : Type max (u + 1) v w where
+  /-- The function on objects defined by an `ApplicativeTransformation`. -/
   app : ∀ α : Type u, F α → G α
+  /-- An `ApplicativeTransformation` preserves `pure`. -/
   preserves_pure' : ∀ {α : Type u} (x : α), app _ (pure x) = pure x
+  /-- An `ApplicativeTransformation` intertwines `seq`. -/
   preserves_seq' : ∀ {α β : Type u} (x : F (α → β)) (y : F α), app _ (x <*> y) = app _ x <*> app _ y
 #align applicative_transformation ApplicativeTransformation
 
@@ -185,7 +188,9 @@ theorem comp_apply (η' : ApplicativeTransformation G H) (η : ApplicativeTransf
   rfl
 #align applicative_transformation.comp_apply ApplicativeTransformation.comp_apply
 
-theorem comp_assoc {I : Type u → Type t} [Applicative I] [LawfulApplicative I]
+-- porting note: in mathlib3 we also had the assumption `[LawfulApplicative I]` because
+-- this was assumed
+theorem comp_assoc {I : Type u → Type t} [Applicative I]
     (η'' : ApplicativeTransformation H I) (η' : ApplicativeTransformation G H)
     (η : ApplicativeTransformation F G) : (η''.comp η').comp η = η''.comp (η'.comp η) :=
   rfl
@@ -211,6 +216,7 @@ is the traversable functor `List` and `m` is the applicative functor
 `IO`, then given a function `f : α → IO β`, the function `Functor.map f` is
 `List α → List (IO β)`, but `traverse f` is `List α → IO (List β)`. -/
 class Traversable (t : Type u → Type u) extends Functor t where
+  /-- The function commuting a traversable functor `t` with an arbitrary applicative functor `m`. -/
   traverse : ∀ {m : Type u → Type u} [Applicative m] {α β}, (α → m β) → t α → m (t β)
 #align traversable Traversable
 
@@ -243,13 +249,18 @@ satisfy a naturality condition with respect to applicative
 transformations. -/
 class IsLawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFunctor t :
     Type (u + 1) where
+  /-- `traverse` plays well with `pure` of the identity monad-/
   id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = x
+  /-- `traverse` plays well with composition of applicative functors. -/
   comp_traverse :
     ∀ {F G} [Applicative F] [Applicative G] [LawfulApplicative F] [LawfulApplicative G] {α β γ}
       (f : β → F γ) (g : α → G β) (x : t α),
       traverse (Functor.Comp.mk ∘ map f ∘ g) x = Comp.mk (map (traverse f) (traverse g x))
+  /-- An axiom for `traverse` involving `pure : β → Id β`. -/
   traverse_eq_map_id : ∀ {α β} (f : α → β) (x : t α),
     traverse ((pure : β → Id β) ∘ f) x = id.mk (f <$> x)
+  /-- The naturality axiom explaining how lawful traversable functors should play with
+  lawful applicative functors. -/
   naturality :
     ∀ {F G} [Applicative F] [Applicative G] [LawfulApplicative F] [LawfulApplicative G]
       (η : ApplicativeTransformation F G) {α β} (f : α → F β) (x : t α),
@@ -272,11 +283,14 @@ instance : Traversable Option :=
 -- I got this from the autoport of `Data.List.Defs`
 /- warning: list.traverse -> List.traverse is a dubious translation:
 lean 3 declaration is
-  forall {F : Type.{u} -> Type.{v}} [_inst_1 : Applicative.{u v} F] {α : Type.{u_1}} {β : Type.{u}}, (α -> (F β)) -> (List.{u_1} α) -> (F (List.{u} β))
+  forall {F : Type.{u} -> Type.{v}} [_inst_1 : Applicative.{u v} F] {α : Type.{u_1}}
+    {β : Type.{u}}, (α -> (F β)) -> (List.{u_1} α) -> (F (List.{u} β))
 but is expected to have type
-  forall {F : Type.{u} -> Type.{v}} [_inst_1 : Applicative.{u v} F] {α : Type.{_aux_param_0}} {β : Type.{u}}, (α -> (F β)) -> (List.{_aux_param_0} α) -> (F (List.{u} β))
+  forall {F : Type.{u} -> Type.{v}} [_inst_1 : Applicative.{u v} F] {α : Type.{_aux_param_0}}
+    {β : Type.{u}}, (α -> (F β)) -> (List.{_aux_param_0} α) -> (F (List.{u} β))
 Case conversion may be inaccurate. Consider using '#align list.traverse List.traverseₓ'. -/
-protected def List.traverse {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β) : List α → F (List β)
+protected def List.traverse {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β) :
+    List α → F (List β)
   | [] => pure []
   | x :: xs => List.cons <$> f x <*> List.traverse f xs
 #align list.traverse List.traverse
@@ -296,9 +310,13 @@ variable [Applicative F]
 
 /- warning: sum.traverse -> Sum.traverse is a dubious translation:
 lean 3 declaration is
-  forall {σ : Type.{u}} {F : Type.{u} -> Type.{u}} [_inst_1 : Applicative.{u u} F] {α : Type.{u_1}} {β : Type.{u}}, (α -> (F β)) -> (Sum.{u u_1} σ α) -> (F (Sum.{u u} σ β))
+  forall {σ : Type.{u}} {F : Type.{u} -> Type.{u}} [_inst_1 : Applicative.{u u} F]
+    {α : Type.{u_1}} {β : Type.{u}}, (α -> (F β)) -> (Sum.{u u_1} σ α) ->
+    (F (Sum.{u u} σ β))
 but is expected to have type
-  forall {σ : Type.{u}} {F : Type.{u} -> Type.{u}} [_inst_1 : Applicative.{u u} F] {α : Type.{_aux_param_0}} {β : Type.{u}}, (α -> (F β)) -> (Sum.{u _aux_param_0} σ α) -> (F (Sum.{u u} σ β))
+  forall {σ : Type.{u}} {F : Type.{u} -> Type.{u}} [_inst_1 : Applicative.{u u} F]
+    {α : Type.{_aux_param_0}} {β : Type.{u}}, (α -> (F β)) -> (Sum.{u _aux_param_0} σ α) ->
+    (F (Sum.{u u} σ β))
 Case conversion may be inaccurate. Consider using '#align sum.traverse Sum.traverseₓ'. -/
 /-- Defines a `traverse` function on the second component of a sum type.
 This is used to give a `traversable` instance for the functor `σ ⊕ -`. -/
@@ -311,3 +329,4 @@ end Sum
 
 instance {σ : Type u} : Traversable.{u} (Sum σ) :=
   ⟨@Sum.traverse _⟩
+#lint
