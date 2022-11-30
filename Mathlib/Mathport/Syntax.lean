@@ -36,6 +36,7 @@ import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
+import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.ModCases
@@ -315,8 +316,6 @@ syntax termList := " [" term,* "]"
 
 /- E -/ syntax (name := noncommRing) "noncomm_ring" : tactic
 
-/- B -/ syntax (name := linarith) "linarith" (config)? (&" only")? (" [" term,* "]")? : tactic
-/- B -/ syntax (name := linarith!) "linarith!" (config)? (&" only")? (" [" term,* "]")? : tactic
 /- M -/ syntax (name := nlinarith) "nlinarith" (config)? (&" only")? (" [" term,* "]")? : tactic
 /- M -/ syntax (name := nlinarith!) "nlinarith!" (config)? (&" only")? (" [" term,* "]")? : tactic
 /- S -/ syntax (name := polyrith) "polyrith" (&" only")? (" [" term,* "]")? : tactic
@@ -456,6 +455,8 @@ namespace Attr
 /- M -/ syntax (name := reassoc) "reassoc" (ppSpace ident)? : attr
 
 /- M -/ syntax (name := elementwise) "elementwise" (ppSpace ident)? : attr
+
+/- N -/ syntax (name := pp_nodot) "pp_nodot" : attr
 
 end Attr
 

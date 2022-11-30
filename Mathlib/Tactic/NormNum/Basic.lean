@@ -17,24 +17,6 @@ This file adds `norm_num` plugins for `+`, `*` and `^` along with other basic op
 namespace Mathlib
 open Lean Meta
 
-/--
-  Return `some n` if `e` is one of the following
-  - A nat literal (numeral)
-  - `Nat.zero`
-  - `Nat.succ x` where `isNumeral x`
-  - `OfNat.ofNat _ x _` where `isNumeral x` -/
-partial def _root_.Lean.Expr.numeral? (e : Expr) : Option ℕ :=
-  if let some n := e.natLit? then n
-  else
-    let f := e.getAppFn
-    if !f.isConst then none
-    else
-      let fName := f.constName!
-      if fName == ``Nat.succ && e.getAppNumArgs == 1 then (numeral? e.appArg!).map Nat.succ
-      else if fName == ``OfNat.ofNat && e.getAppNumArgs == 3 then numeral? (e.getArg! 1)
-      else if fName == ``Nat.zero && e.getAppNumArgs == 0 then some 0
-      else none
-
 namespace Meta.NormNum
 open Qq
 

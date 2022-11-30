@@ -19,8 +19,8 @@ instances for `Prop` and `fun`.
 
 ## Main declarations
 
-* `<Top/Not> α`: Typeclasses to declare the `⊤`/`⊥` notation.
-* `Order<Top/Not> α`: Order with a top/bottom element.
+* `<Top/Bot> α`: Typeclasses to declare the `⊤`/`⊥` notation.
+* `Order<Top/Bot> α`: Order with a top/bottom element.
 * `BoundedOrder α`: Order with a top and bottom element.
 
 ## Common lattices
@@ -233,9 +233,8 @@ theorem OrderTop.ext {α} [PartialOrder α] {A B : OrderTop α} : A = B := by
   rcases A with ⟨ha⟩
   rcases B with ⟨hb⟩
   congr
-  · ext
-    exact le_antisymm (hb _) (ha _)
-  · apply proof_irrel_heq
+  ext
+  exact le_antisymm (hb _) (ha _)
 #align order_top.ext OrderTop.ext
 
 /-- An order is an `OrderBot` if it has a least element.
@@ -443,9 +442,8 @@ theorem OrderBot.ext {α} [PartialOrder α] {A B : OrderBot α} : A = B := by
   rcases A with ⟨ha⟩
   rcases B with ⟨hb⟩
   congr
-  · ext
-    exact le_antisymm (ha _) (hb _)
-  · apply proof_irrel_heq
+  ext
+  exact le_antisymm (ha _) (hb _)
 #align order_bot.ext OrderBot.ext
 
 section SemilatticeSupTop
