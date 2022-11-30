@@ -175,6 +175,7 @@ import Mathlib.Order.Lattice
 import Mathlib.Order.Max
 import Mathlib.Order.MinMax
 import Mathlib.Order.Monotone
+import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
 import Mathlib.Order.Synonym
 import Mathlib.Order.WithBot
