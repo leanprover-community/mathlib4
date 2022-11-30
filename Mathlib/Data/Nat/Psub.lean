@@ -3,8 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathbin.Data.Option.Basic
-import Mathbin.Data.Nat.Basic
+import Mathlib.Data.Option.Basic
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Partial predecessor and partial subtraction on the natural numbers
@@ -36,35 +36,42 @@ def ppred : ℕ → Option ℕ
 @[simp]
 def psub (m : ℕ) : ℕ → Option ℕ
   | 0 => some m
-  | n + 1 => psub n >>= ppred
+  | n + 1 => psub m n >>= ppred
 #align nat.psub Nat.psub
 
-theorem pred_eq_ppred (n : ℕ) : pred n = (ppred n).getOrElse 0 := by cases n <;> rfl
+-- Porting note: mathport failed to align `option.get_or_else` with `Option.getD`
+
+theorem pred_eq_ppred (n : ℕ) : pred n = (ppred n).getD 0 := by cases n <;> rfl
 #align nat.pred_eq_ppred Nat.pred_eq_ppred
 
-theorem sub_eq_psub (m : ℕ) : ∀ n, m - n = (psub m n).getOrElse 0
+theorem sub_eq_psub (m : ℕ) : ∀ n, m - n = (psub m n).getD 0
   | 0 => rfl
-  | n + 1 => (pred_eq_ppred (m - n)).trans <| by rw [sub_eq_psub, psub] <;> cases psub m n <;> rfl
+  | n + 1 => (pred_eq_ppred (m - n)).trans <| by rw [sub_eq_psub m n, psub]; cases psub m n <;> rfl
 #align nat.sub_eq_psub Nat.sub_eq_psub
 
 @[simp]
 theorem ppred_eq_some {m : ℕ} : ∀ {n}, ppred n = some m ↔ succ m = n
   | 0 => by constructor <;> intro h <;> contradiction
-  | n + 1 => by dsimp <;> constructor <;> intro h <;> injection h <;> subst n
+  | n + 1 => by constructor <;> intro h <;> injection h <;> subst m <;> rfl
 #align nat.ppred_eq_some Nat.ppred_eq_some
+
+-- Porting note: `contradiction` required an `intro` for the goals
+-- `ppred (n + 1) = none → n + 1 = 0` and `n + 1 = 0 → ppred (n + 1) = none`
 
 @[simp]
 theorem ppred_eq_none : ∀ {n : ℕ}, ppred n = none ↔ n = 0
   | 0 => by simp
-  | n + 1 => by dsimp <;> constructor <;> contradiction
+  | n + 1 => by constructor <;> intro <;> contradiction
 #align nat.ppred_eq_none Nat.ppred_eq_none
+
+-- Porting note: `simp` eagerly expanded `psub` and `ppred` so it couldn't apply the `simp` lemmas
 
 theorem psub_eq_some {m : ℕ} : ∀ {n k}, psub m n = some k ↔ k + n = m
   | 0, k => by simp [eq_comm]
   | n + 1, k => by
-    dsimp
-    apply option.bind_eq_some.trans
-    simp [psub_eq_some, add_comm, add_left_comm, Nat.succ_eq_add_one]
+    apply Option.bind_eq_some.trans
+    simp only [psub_eq_some, ppred_eq_some]
+    simp [add_comm, add_left_comm, Nat.succ_eq_add_one]
 #align nat.psub_eq_some Nat.psub_eq_some
 
 theorem psub_eq_none {m n : ℕ} : psub m n = none ↔ m < n := by
@@ -86,11 +93,17 @@ theorem psub_eq_sub {m n} (h : n ≤ m) : psub m n = some (m - n) :=
   psub_eq_some.2 <| Nat.sub_add_cancel h
 #align nat.psub_eq_sub Nat.psub_eq_sub
 
+-- Porting note: we only have the simp lemma `Option.bind_some` which uses `Option.bind` not `>>=`
+
 theorem psub_add (m n k) :
-    psub m (n + k) = do
+    psub m (n + k) = (do
       let x ← psub m n
-      psub x k :=
-  by induction k <;> simp [*, add_succ, bind_assoc]
+      psub x k) :=
+  by
+    induction k
+    simp [Option.bind_eq_bind, Option.bind_some]
+    simp [*]
+
 #align nat.psub_add Nat.psub_add
 
 /-- Same as `psub`, but with a more efficient implementation. -/
@@ -100,9 +113,10 @@ def psub' (m n : ℕ) : Option ℕ :=
 #align nat.psub' Nat.psub'
 
 theorem psub'_eq_psub (m n) : psub' m n = psub m n := by
-  rw [psub'] <;> split_ifs <;> [exact (psub_eq_sub h).symm,
-    exact (psub_eq_none.2 (not_le.1 h)).symm]
+  rw [psub']
+  split_ifs with h h
+  exact (psub_eq_sub h).symm
+  exact (psub_eq_none.2 (not_le.1 h)).symm
 #align nat.psub'_eq_psub Nat.psub'_eq_psub
 
 end Nat
-
