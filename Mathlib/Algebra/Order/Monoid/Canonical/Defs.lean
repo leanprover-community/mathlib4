@@ -290,7 +290,7 @@ theorem of_gt {M} [CanonicallyOrderedAddMonoid M] {x y : M} (h : x < y) : NeZero
 -- on `ZMod`'s ring structure. We cannot just set this to be any `x < y`, else that becomes a
 -- metavariable and it will hugely slow down typeclass inference.
 instance (priority := 10) of_gt' [CanonicallyOrderedAddMonoid M] [One M] {y : M} [Fact (1 < y)] :
-  -- Port note: Fact.out has different type signature from mathlib3
+  -- Porting note: Fact.out has different type signature from mathlib3
   NeZero y := of_gt <| @Fact.out (1 < y) _
 #align ne_zero.of_gt' NeZero.of_gt'
 
