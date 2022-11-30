@@ -6,7 +6,10 @@ Authors: Anatole Dedecker
 
 import Lean.Meta.Tactic.Simp
 
-/-! Simp set for `functor_norm` -/
+/-! Simp set for `functor_norm` and `monad_norm` -/
 
 /-- Simp set for `functor_norm` -/
 register_simp_attr functor_norm
+
+/-- Simp set for `functor_norm` -/
+register_simp_attr monad_norm

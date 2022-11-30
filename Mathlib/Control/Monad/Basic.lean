@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Basic
+import Mathlib.Control.SimpSet
 
 /-!
 # Monad
@@ -35,24 +35,11 @@ functor, applicative, monad, simp
 
 -/
 
+-- Porting note: this fails; perhaps in Lean 3 we could add an attribute to an attribute?
+-- Note sure if something needs to replace this.
+-- attribute [monad_norm] functor_norm
 
-/- ./././Mathport/Syntax/Translate/Tactic/Mathlib/Core.lean:61:9: unsupported: weird string -/
-/- failed to parenthesize: unknown constant 'Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr'
-[PrettyPrinter.parenthesize.input] (Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr
-  [(Command.docComment
-    "/--"
-    "./././Mathport/Syntax/Translate/Tactic/Mathlib/Core.lean:61:9: unsupported: weird string -/")]
-    "register_simp_attr"
-    `monad_norm)-/
--- failed to format: unknown constant 'Lean.Meta._root_.Lean.Parser.Command.registerSimpAttr'
-/-- ./././Mathport/Syntax/Translate/Tactic/Mathlib/Core.lean:61:9: unsupported: weird string -/
-  register_simp_attr
-  monad_norm
-
-/- [mathport] port note: move this to another file, it won't work here -/
-attribute [monad_norm] functor_norm
-
-attribute [ext.1] ReaderT.ext StateT.ext ExceptT.ext OptionT.ext
+attribute [ext] ReaderT.ext StateT.ext ExceptT.ext Option.ext
 
 attribute [functor_norm] bind_assoc pure_bind bind_pure
 
