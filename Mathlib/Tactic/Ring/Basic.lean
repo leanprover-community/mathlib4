@@ -87,7 +87,7 @@ structure Context :=
   red : TransparencyMode
   /-- A simplification to apply to atomic expressions when they are encountered,
   before interning them in the atom list. -/
-  evalAtom : Expr → MetaM Simp.Result := fun e => pure { expr := e }
+  evalAtom : Expr → MetaM Simp.Result := fun e ↦ pure { expr := e }
   deriving Inhabited
 
 /-- The mutable state of the `RingM` monad. -/
@@ -109,7 +109,7 @@ def addAtom (e : Expr) : RingM Nat := do
     have : i < c.atoms.size := h.2
     if ← withTransparency (← read).red <| isDefEq e c.atoms[i] then
       return i
-  modifyGet fun c => (c.atoms.size, { c with atoms := c.atoms.push e })
+  modifyGet fun c ↦ (c.atoms.size, { c with atoms := c.atoms.push e })
 
 /-- A shortcut instance for `CommSemiring ℕ` used by ring. -/
 def instCommSemiringNat : CommSemiring ℕ := inferInstance
@@ -880,7 +880,7 @@ theorem mul_congr (_ : a = a') (_ : b = b')
     (_ : a' * b' = c) : (a * b : R) = c := by subst_vars; rfl
 
 theorem nsmul_congr (_ : (a : ℕ) = a') (_ : b = b')
-    (_ : a' • b' = c) : (a • b : R) = c := by subst_vars; rfl
+    (_ : a' • b' = c) : (a • (b : R)) = c := by subst_vars; rfl
 
 theorem pow_congr (_ : a = a') (_ : b = b')
     (_ : a' ^ b' = c) : (a ^ b : R) = c := by subst_vars; rfl
@@ -919,8 +919,8 @@ partial def eval {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
       let ⟨c, vc, p⟩ := evalMul sα va vb
       pure ⟨c, vc, (q(mul_congr $pa $pb $p) : Expr)⟩
     | _ => els
-  | ``HasSmul.smul, _ => match e with
-    | ~q(($a : ℕ) • $b) =>
+  | ``HSMul.hSMul, _ => match e with
+    | ~q(($a : ℕ) • ($b : «$α»)) =>
       let ⟨_, va, pa⟩ ← eval sℕ .nat a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ ← evalNSMul sα va vb
@@ -989,7 +989,7 @@ allowing variables in the exponent.
 * The variant `ring1!` will use a more aggressive reducibility setting
   to determine equality of atoms.
 -/
-elab (name := ring1) "ring1" tk:"!"? : tactic => liftMetaMAtMain fun g => do
+elab (name := ring1) "ring1" tk:"!"? : tactic => liftMetaMAtMain fun g ↦ do
   RingM.run (if tk.isSome then .default else .reducible) (proveEq g)
 
 @[inherit_doc ring1] macro "ring1!" : tactic => `(tactic| ring1 !)

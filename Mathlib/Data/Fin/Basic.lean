@@ -4,11 +4,28 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
 
+namespace Nat
+
+/- Up -/
+
+/-- A well-ordered relation for "upwards" induction on the natural numbers up to some bound `ub`. -/
+def Up (ub a i : ℕ) := i < a ∧ i < ub
+
+lemma Up.next {ub i} (h : i < ub) : Up ub (i+1) i := ⟨Nat.lt_succ_self _, h⟩
+
+lemma Up.WF (ub) : WellFounded (Up ub) :=
+  Subrelation.wf (h₂ := (measure (ub - .)).wf) fun ⟨ia, iu⟩ ↦ Nat.sub_lt_sub_left iu ia
+
+/-- A well-ordered relation for "upwards" induction on the natural numbers up to some bound `ub`. -/
+def upRel (ub : ℕ) : WellFoundedRelation Nat := ⟨Up ub, Up.WF ub⟩
+
+end Nat
+
 instance : Subsingleton (Fin 0) where
   allEq := fun.
 
 instance : Subsingleton (Fin 1) where
-  allEq := fun ⟨0, _⟩ ⟨0, _⟩ => rfl
+  allEq := fun ⟨0, _⟩ ⟨0, _⟩ ↦ rfl
 
 /-- If you actually have an element of `Fin n`, then the `n` is always positive -/
 lemma Fin.size_positive : Fin n → 0 < n
@@ -24,7 +41,7 @@ lemma Fin.ext_iff {a b : Fin n} : a = b ↔ a.val = b.val :=
   ⟨congrArg _, ext⟩
 
 lemma Fin.size_positive' [Nonempty (Fin n)] : 0 < n :=
-  ‹Nonempty (Fin n)›.elim fun i => Fin.size_positive i
+  ‹Nonempty (Fin n)›.elim fun i ↦ Fin.size_positive i
 
 @[simp]
 protected theorem Fin.eta (a : Fin n) (h : (a : ℕ) < n) : (⟨(a : ℕ), h⟩ : Fin n) = a := by
@@ -74,6 +91,7 @@ section
 
 variable {n : Nat} [Nonempty (Fin n)]
 
+@[to_additive_fixed_numeral]
 instance : OfNat (Fin n) a where
   ofNat := Fin.ofNat' a Fin.size_positive'
 
@@ -118,7 +136,7 @@ theorem Fin.mod_lt : ∀ (i : Fin n) {m : Fin n}, (0 : Fin n) < m → (i % m) < 
     rw [(Nat.mod_eq_of_lt (Nat.lt_trans a_mod_lt mLt) : a % m % n = a % m)]
     exact Nat.mod_lt _ zero_lt
 
-/- Aux lemma that makes nsmul_succ' easier -/
+/- Aux lemma that makes nsmul_succ easier -/
 protected lemma Fin.nsmuls_eq (x : Nat) : ∀ (a : Fin n),
   ((Fin.ofNat' x Fin.size_positive') * a) = Fin.ofNat' (x * a.val) Fin.size_positive'
 | ⟨a, isLt⟩ => by
@@ -194,14 +212,14 @@ instance : AddCommMonoid (Fin n) where
     simp only [Fin.add_def, Fin.zero_def, Nat.zero_add]
     exact Nat.mod_eq_of_lt a.isLt
 
-  nsmul := fun x a => (Fin.ofNat' x a.size_positive) * a
-  nsmul_zero' := fun _ => by
+  nsmul := fun x a ↦ (Fin.ofNat' x a.size_positive) * a
+  nsmul_zero := fun _ ↦ by
     apply Fin.eq_of_val_eq
     simp [Fin.mul_def, Fin.ofNat', Fin.zero_def, Nat.zero_mul, Nat.zero_mod]
-  nsmul_succ' := fun x a => by
+  nsmul_succ := fun x a ↦ by
     simp only [Fin.nsmuls_eq]
     simp [Fin.ofNat', Fin.add_def]
-    exact congrArg (fun x => x % n) (Nat.add_comm (x * a.val) (a.val) ▸ Nat.succ_mul x a.val)
+    exact congrArg (fun x ↦ x % n) (Nat.add_comm (x * a.val) (a.val) ▸ Nat.succ_mul x a.val)
 
 instance : AddMonoidWithOne (Fin n) where
   __ := inferInstanceAs (AddCommMonoid (Fin n))
@@ -228,8 +246,8 @@ instance : MonoidWithZero (Fin n) where
   __ := inferInstanceAs (CommSemigroup (Fin n))
   mul_one := Fin.mul_one
   one_mul _ := by rw [mul_comm, Fin.mul_one]
-  npow_zero' _ := rfl
-  npow_succ' _ _ := rfl
+  npow_zero _ := rfl
+  npow_succ _ _ := rfl
   zero_mul x := by
     apply Fin.eq_of_val_eq
     simp only [Fin.mul_def, Fin.zero_def, Nat.zero_mul, Nat.zero_mod]
@@ -287,8 +305,8 @@ instance : CommRing (Fin n) where
   __ := inferInstanceAs (AddGroupWithOne (Fin n))
   __ := inferInstanceAs (CommSemiring (Fin n))
 
-lemma Fin.gt_wf : WellFounded (fun a b : Fin n => b < a) :=
-  Subrelation.wf (fun {_ i} h => ⟨h, i.2⟩) (invImage (fun i => i.1) (Nat.upRel n)).wf
+lemma Fin.gt_wf : WellFounded (fun a b : Fin n ↦ b < a) :=
+  Subrelation.wf (fun {_ i} h ↦ ⟨h, i.2⟩) (invImage (fun i ↦ i.1) (Nat.upRel n)).wf
 
 /-- A well-ordered relation for "upwards" induction on `Fin n`. -/
 def Fin.upRel (n : ℕ) : WellFoundedRelation (Fin n) := ⟨_, gt_wf⟩

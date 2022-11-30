@@ -6,10 +6,13 @@ Authors: Mario Carneiro
 import Lean.Elab
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
+import Mathlib.Util.MapsTo
 
-/-! ## Additional utilities in `Lean.Meta` -/
+/-! ## Additional utilities in `Lean.MVarId` -/
 
-namespace Lean.Meta
+open Lean Meta
+
+namespace Lean.MVarId
 
 /--
 Replace hypothesis `hyp` in goal `g` with `proof : typeNew`.
@@ -17,7 +20,7 @@ The new hypothesis is given the same user name as the original,
 it attempts to avoid reordering hypotheses, and the original is cleared if possible.
 -/
 -- adapted from Lean.Meta.replaceLocalDeclCore
-def _root_.Lean.MVarId.replace (g : MVarId) (hyp : FVarId) (typeNew proof : Expr) :
+def replace (g : MVarId) (hyp : FVarId) (typeNew proof : Expr) :
     MetaM AssertAfterResult :=
   g.withContext do
     let ldecl ← hyp.getDecl
@@ -30,18 +33,17 @@ def _root_.Lean.MVarId.replace (g : MVarId) (hyp : FVarId) (typeNew proof : Expr
 where
   /-- Finds the `LocalDecl` for the FVar in `e` with the highest index. -/
   findMaxFVar (e : Expr) : StateRefT LocalDecl MetaM Unit :=
-    e.forEach' fun e => do
+    e.forEach' fun e ↦ do
       if e.isFVar then
         let ldecl' ← e.fvarId!.getDecl
-        modify fun ldecl => if ldecl'.index > ldecl.index then ldecl' else ldecl
+        modify fun ldecl ↦ if ldecl'.index > ldecl.index then ldecl' else ldecl
         return false
       else
         return e.hasFVar
 
-
 /-- Has the effect of `refine ⟨e₁,e₂,⋯, ?_⟩`.
 -/
-def _root_.Lean.MVarId.existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
+def existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
   es.foldlM (λ mv e => do
       let (subgoals,_) ← Elab.Term.TermElabM.run $ Elab.Tactic.run mv do
         Elab.Tactic.evalTactic (←`(tactic| refine ⟨?_,?_⟩))
@@ -49,3 +51,66 @@ def _root_.Lean.MVarId.existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId :
       sg1.assign e
       pure sg2)
     mvar
+
+end Lean.MVarId
+
+namespace Lean.Meta
+
+/--
+Given a monadic function `F` that takes a type and a term of that type and produces a new term,
+lifts this to the monadic function that opens a `∀` telescope, applies `F` to the body,
+and then builds the lambda telescope term for the new term.
+-/
+def mapForallTelescope' (F : Expr → Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
+  forallTelescope (← Meta.inferType forallTerm) fun xs ty => do
+    Meta.mkLambdaFVars xs (← F ty (mkAppN forallTerm xs))
+
+/--
+Given a monadic function `F` that takes a term and produces a new term,
+lifts this to the monadic function that opens a `∀` telescope, applies `F` to the body,
+and then builds the lambda telescope term for the new term.
+-/
+def mapForallTelescope (F : Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
+  mapForallTelescope' (fun _ e => F e) forallTerm
+
+end Lean.Meta
+
+namespace Lean.Elab.Tactic
+
+/-- Analogue of `liftMetaTactic` for tactics that do not return any goals. -/
+def liftMetaFinishingTactic (tac : MVarId → MetaM Unit) : TacticM Unit :=
+  liftMetaTactic fun g => do tac g; pure []
+
+@[inline] private def TacticM.runCore (x : TacticM α) (ctx : Context) (s : State) :
+    TermElabM (α × State) :=
+  x ctx |>.run s
+
+@[inline] private def TacticM.runCore' (x : TacticM α) (ctx : Context) (s : State) : TermElabM α :=
+  Prod.fst <$> x.runCore ctx s
+
+/-- Copy of `Lean.Elab.Tactic.run` that can return a value. -/
+-- We need this because Lean 4 core only provides `TacticM` functions for building simp contexts,
+-- making it quite painful to call `simp` from `MetaM`.
+def run_for (mvarId : MVarId) (x : TacticM α) : TermElabM (Option α × List MVarId) :=
+  mvarId.withContext do
+   let pendingMVarsSaved := (← get).pendingMVars
+   modify fun s => { s with pendingMVars := [] }
+   let aux : TacticM (Option α × List MVarId) :=
+     /- Important: the following `try` does not backtrack the state.
+        This is intentional because we don't want to backtrack the error message
+        when we catch the "abort internal exception"
+        We must define `run` here because we define `MonadExcept` instance for `TacticM` -/
+     try
+       let a ← x
+       pure (a, ← getUnsolvedGoals)
+     catch ex =>
+       if isAbortTacticException ex then
+         pure (none, ← getUnsolvedGoals)
+       else
+         throw ex
+   try
+     aux.runCore' { elaborator := .anonymous } { goals := [mvarId] }
+   finally
+     modify fun s => { s with pendingMVars := pendingMVarsSaved }
+
+end Lean.Elab.Tactic

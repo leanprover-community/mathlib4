@@ -47,11 +47,11 @@ import Std.Classes.Dvd
 
 def Prod.mk.injArrow {α : Type u} {β : Type v} {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
     (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort w⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
-  fun h₁ _ h₂ => Prod.noConfusion h₁ h₂
+  fun h₁ _ h₂ ↦ Prod.noConfusion h₁ h₂
 
 def PProd.mk.injArrow {α : Type u} {β : Type v} {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
     (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort w⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
-  fun h₁ _ h₂ => Prod.noConfusion h₁ h₂
+  fun h₁ _ h₂ ↦ Prod.noConfusion h₁ h₂
 
 #align psum PSum
 #align or.intro_right Or.intro_rightₓ -- reorder implicits

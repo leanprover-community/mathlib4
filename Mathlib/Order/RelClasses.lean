@@ -103,7 +103,7 @@ protected theorem IsTotal.is_trichotomous (r) [IsTotal α r] : IsTrichotomous α
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsTotal.to_is_refl (r) [IsTotal α r] : IsRefl α r :=
-  ⟨fun a => or_self_iff.1 <| total_of r a a⟩
+  ⟨fun a => (or_self_iff _).1 <| total_of r a a⟩
 
 theorem ne_of_irrefl {r} [IsIrrefl α r] : ∀ {x y : α}, r x y → x ≠ y
   | _, _, h, rfl => irrefl _ h
@@ -237,7 +237,6 @@ instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTot
 /-! ### Well-order -/
 
 
--- Porting note: no `mk_iff` yet, so hard-coded iff
 /-- A well-founded relation. Not to be confused with `isWellOrder`. -/
 @[mk_iff] class IsWellFounded (α : Type u) (r : α → α → Prop) : Prop where
   /-- The relation is `WellFounded`, as a proposition. -/
@@ -793,7 +792,7 @@ theorem transitive_ge [Preorder α] : Transitive (@GE.ge α _) :=
 theorem transitive_gt [Preorder α] : Transitive (@GT.gt α _) :=
   transitive_of_trans _
 
-instance OrderDual.is_total_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal αᵒᵈ (· ≤ ·) :=
+instance OrderDual.isTotal_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal αᵒᵈ (· ≤ ·) :=
   @IsTotal.swap α _ h
 
 instance : WellFoundedLt ℕ :=

@@ -1,6 +1,7 @@
-import Mathlib.Algebra.Group.Commute
+import Mathlib.Algebra.GroupWithZero.Commute
+import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Tactic.Spread
 import Mathlib.Algebra.Ring.Defs
 
@@ -12,21 +13,6 @@ import Mathlib.Algebra.Ring.Defs
 export Distrib (left_distrib right_distrib)
 
 section Semiring
-
--- TODO: put these in the right place
-@[simp] theorem Commute.zero_right [Semiring R] (a : R) : Commute a 0 :=
-  (mul_zero _).trans (zero_mul _).symm
-
-@[simp] theorem Commute.zero_left [Semiring R] (a : R) : Commute 0 a :=
-  (zero_mul _).trans (mul_zero _).symm
-
-@[simp] theorem Commute.add_right [Semiring R] {a b c : R} (h : Commute a b) (h' : Commute a c) :
-    Commute a (b + c) := by
-  simp only [Commute, SemiconjBy, left_distrib, right_distrib, h.eq, h'.eq]
-
-@[simp] theorem Commute.add_left [Semiring R] {a b c : R} (h : Commute a c) (h' : Commute b c) :
-    Commute (a + b) c := by
-  simp only [Commute, SemiconjBy, left_distrib, right_distrib, h.eq, h'.eq]
 
 @[simp]
 lemma Nat.cast_mul [Semiring R] {m n : ℕ} : (m * n).cast = (m.cast * n.cast : R) := by
@@ -57,16 +43,16 @@ instance : CommSemiring ℕ where
   mul_one := Nat.mul_one
   one_mul := Nat.one_mul
   npow (n x) := x ^ n
-  npow_zero' := Nat.pow_zero
-  npow_succ' n x := by simp [Nat.pow_succ, Nat.mul_comm]
+  npow_zero := Nat.pow_zero
+  npow_succ n x := by simp [Nat.pow_succ, Nat.mul_comm]
   mul_assoc := Nat.mul_assoc
   add_comm := Nat.add_comm
   add_assoc := Nat.add_assoc
   add_zero := Nat.add_zero
   zero_add := Nat.zero_add
   nsmul := (·*·)
-  nsmul_zero' := Nat.zero_mul
-  nsmul_succ' n x := by simp [Nat.add_comm, (Nat.succ_mul n x)]
+  nsmul_zero := Nat.zero_mul
+  nsmul_succ n x := by simp [Nat.add_comm, (Nat.succ_mul n x)]
   zero_mul := Nat.zero_mul
   mul_zero := Nat.mul_zero
   natCast := (·)
@@ -88,8 +74,8 @@ instance : CommRing ℤ where
   mul_one := Int.mul_one
   one_mul := Int.one_mul
   npow n x := x ^ n
-  npow_zero' _ := rfl
-  npow_succ' _ _ := by rw [Int.mul_comm]; rfl
+  npow_zero _ := rfl
+  npow_succ _ _ := by rw [Int.mul_comm]; rfl
   mul_assoc := Int.mul_assoc
   add_comm := Int.add_comm
   add_assoc := Int.add_assoc
@@ -97,8 +83,8 @@ instance : CommRing ℤ where
   zero_add := Int.zero_add
   add_left_neg := Int.add_left_neg
   nsmul := (·*·)
-  nsmul_zero' := Int.zero_mul
-  nsmul_succ' n x := by
+  nsmul_zero := Int.zero_mul
+  nsmul_succ n x := by
     show ofNat (Nat.succ n) * x = x + ofNat n * x
     rw [Int.ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
@@ -115,7 +101,7 @@ instance : CommRing ℤ where
 
 @[simp, norm_cast]
 lemma cast_Nat_cast [AddGroupWithOne R] : (Int.cast (Nat.cast n) : R) = Nat.cast n :=
-  Int.cast_ofNat
+  Int.cast_ofNat _
 
 @[simp, norm_cast]
 lemma cast_eq_cast_iff_Nat (m n : ℕ) : (m : ℤ) = (n : ℤ) ↔ m = n := ofNat_inj

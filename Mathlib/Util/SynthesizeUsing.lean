@@ -21,7 +21,7 @@ The tactic `tac` may leave goals open, these remain as metavariables in the retu
 -- In Lean3 this was called `solve_aux`,
 -- and took a `TacticM α` and captured the produced value in `α`.
 -- As this was barely used, we've simplified here.
-def synthesizeUsing (type : Expr) (tac : TacticM Unit) : TermElabM Expr := do
+def synthesizeUsing (type : Expr) (tac : TacticM Unit) : MetaM Expr := do
   let m ← mkFreshExprMVar type
-  let _ ← run m.mvarId! tac
+  let _ ← (run m.mvarId! tac).run'
   instantiateMVars m
