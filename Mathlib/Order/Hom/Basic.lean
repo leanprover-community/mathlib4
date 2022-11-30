@@ -8,6 +8,7 @@ import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.Disjoint
 -- import Mathlib.Tactic.Monotonicity.Basic
 -- import Mathlib.Tactic.AssertExists
+import Mathlib.Tactic.Replace
 
 /-!
 # Order homomorphisms
@@ -127,8 +128,9 @@ instance [LE α] [LE β] [OrderIsoClass F α β] : CoeTC F (α ≃o β) :=
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toOrderHomClass [LE α] [LE β] [OrderIsoClass F α β] :
     OrderHomClass F α β :=
-  { EquivLike.toEmbeddingLike with
-    map_rel := fun f a b => (map_le_map_iff f).2 }
+  -- Porting note: Shouldn't need to mention `OrderIsoClass.toEquivLike` explicitly
+  { @EquivLike.toEmbeddingLike F α β (OrderIsoClass.toEquivLike) with
+    map_rel := fun f _ _ => (map_le_map_iff f).2 }
 #align order_iso_class.to_order_hom_class OrderIsoClass.toOrderHomClass
 
 namespace OrderHomClass
@@ -202,7 +204,7 @@ protected theorem monotone (f : α →o β) : Monotone f :=
 #align order_hom.monotone OrderHom.monotone
 
 protected theorem mono (f : α →o β) : Monotone f :=
-  f.Monotone
+  f.monotone
 #align order_hom.mono OrderHom.mono
 
 instance : OrderHomClass (α →o β) α β where
@@ -211,7 +213,7 @@ instance : OrderHomClass (α →o β) α β where
     cases f
     cases g
     congr
-  map_rel f := f.Monotone
+  map_rel f _ _ h := f.monotone h
 
 @[simp]
 theorem to_fun_eq_coe {f : α →o β} : f.toFun = f :=
@@ -390,7 +392,7 @@ def prodₘ : (α →o β) →o (α →o γ) →o α →o β × γ :=
 /-- Diagonal embedding of `α` into `α × α` as a `order_hom`. -/
 @[simps]
 def diag : α →o α × α :=
-  id.Prod id
+  id.prod id
 #align order_hom.diag OrderHom.diag
 
 /-- Restriction of `f : α →o α →o β` to the diagonal. -/
@@ -408,22 +410,22 @@ def fst : α × β →o α :=
 /-- `prod.snd` as a `order_hom`. -/
 @[simps]
 def snd : α × β →o β :=
-  ⟨Prod.snd, fun x y h => h.2⟩
+  ⟨Prod.snd, fun _ _ h => h.2⟩
 #align order_hom.snd OrderHom.snd
 
 @[simp]
-theorem fst_prod_snd : (fst : α × β →o α).Prod snd = id := by
+theorem fst_prod_snd : (fst : α × β →o α).prod snd = id := by
   ext ⟨x, y⟩ : 2
   rfl
 #align order_hom.fst_prod_snd OrderHom.fst_prod_snd
 
 @[simp]
-theorem fst_comp_prod (f : α →o β) (g : α →o γ) : fst.comp (f.Prod g) = f :=
+theorem fst_comp_prod (f : α →o β) (g : α →o γ) : fst.comp (f.prod g) = f :=
   ext _ _ rfl
 #align order_hom.fst_comp_prod OrderHom.fst_comp_prod
 
 @[simp]
-theorem snd_comp_prod (f : α →o β) (g : α →o γ) : snd.comp (f.Prod g) = g :=
+theorem snd_comp_prod (f : α →o β) (g : α →o γ) : snd.comp (f.prod g) = g :=
   ext _ _ rfl
 #align order_hom.snd_comp_prod OrderHom.snd_comp_prod
 
@@ -434,7 +436,7 @@ def prodIso :
     (α →o β × γ) ≃o
       (α →o β) × (α →o γ) where
   toFun f := (fst.comp f, snd.comp f)
-  invFun f := f.1.Prod f.2
+  invFun f := f.1.prod f.2
   left_inv f := by ext <;> rfl
   right_inv f := by ext <;> rfl
   map_rel_iff' f g := forall_and.symm
@@ -450,7 +452,7 @@ variable {ι : Type _} {π : ι → Type _} [∀ i, Preorder (π i)]
 
 /-- Evaluation of an unbundled function at a point (`function.eval`) as a `order_hom`. -/
 @[simps (config := { fullyApplied := false })]
-def Pi.evalOrderHom (i : ι) : (∀ j, π j) →o π i :=
+def _root_.Pi.evalOrderHom (i : ι) : (∀ j, π j) →o π i :=
   ⟨Function.eval i, Function.monotone_eval i⟩
 #align pi.eval_order_hom Pi.evalOrderHom
 
@@ -588,7 +590,7 @@ variable [Preorder α] [Preorder β] (f : α ↪o β)
 
 /-- `<` is preserved by order embeddings of preorders. -/
 def ltEmbedding : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop) :=
-  { f with map_rel_iff' := by intros <;> simp [lt_iff_le_not_le, f.map_rel_iff] }
+  { f with map_rel_iff' := by intros; simp [lt_iff_le_not_le, f.map_rel_iff] }
 #align order_embedding.lt_embedding OrderEmbedding.ltEmbedding
 
 @[simp]
@@ -608,27 +610,27 @@ theorem lt_iff_lt {a b} : f a < f b ↔ a < b :=
 
 @[simp]
 theorem eq_iff_eq {a b} : f a = f b ↔ a = b :=
-  f.Injective.eq_iff
+  f.injective.eq_iff
 #align order_embedding.eq_iff_eq OrderEmbedding.eq_iff_eq
 
 protected theorem monotone : Monotone f :=
   OrderHomClass.monotone f
 #align order_embedding.monotone OrderEmbedding.monotone
 
-protected theorem strict_mono : StrictMono f := fun x y => f.lt_iff_lt.2
-#align order_embedding.strict_mono OrderEmbedding.strict_mono
+protected theorem strictMono : StrictMono f := fun _ _ => f.lt_iff_lt.2
+#align order_embedding.strict_mono OrderEmbedding.strictMono
 
 protected theorem acc (a : α) : Acc (· < ·) (f a) → Acc (· < ·) a :=
-  f.ltEmbedding.Acc a
+  f.ltEmbedding.acc a
 #align order_embedding.acc OrderEmbedding.acc
 
 protected theorem well_founded :
     WellFounded ((· < ·) : β → β → Prop) → WellFounded ((· < ·) : α → α → Prop) :=
-  f.ltEmbedding.WellFounded
+  f.ltEmbedding.wellFounded
 #align order_embedding.well_founded OrderEmbedding.well_founded
 
 protected theorem is_well_order [IsWellOrder β (· < ·)] : IsWellOrder α (· < ·) :=
-  f.ltEmbedding.IsWellOrder
+  f.ltEmbedding.isWellOrder
 #align order_embedding.is_well_order OrderEmbedding.is_well_order
 
 /-- An order embedding is also an order embedding between dual orders. -/
@@ -669,10 +671,10 @@ def ofStrictMono {α β} [LinearOrder α] [Preorder β] (f : α → β) (h : Str
 #align order_embedding.of_strict_mono OrderEmbedding.ofStrictMono
 
 @[simp]
-theorem coe_of_strict_mono {α β} [LinearOrder α] [Preorder β] {f : α → β} (h : StrictMono f) :
+theorem coe_ofStrictMono {α β} [LinearOrder α] [Preorder β] {f : α → β} (h : StrictMono f) :
     ⇑(ofStrictMono f h) = f :=
   rfl
-#align order_embedding.coe_of_strict_mono OrderEmbedding.coe_of_strict_mono
+#align order_embedding.coe_of_strict_mono OrderEmbedding.coe_ofStrictMono
 
 /-- Embedding of a subtype into the ambient type as an `order_embedding`. -/
 @[simps (config := { fullyApplied := false })]
@@ -685,7 +687,7 @@ def subtype (p : α → Prop) : Subtype p ↪o α :=
 def toOrderHom {X Y : Type _} [Preorder X] [Preorder Y] (f : X ↪o Y) :
     X →o Y where
   toFun := f
-  monotone' := f.Monotone
+  monotone' := f.monotone
 #align order_embedding.to_order_hom OrderEmbedding.toOrderHom
 
 end OrderEmbedding
@@ -711,7 +713,7 @@ end RelHom
 theorem RelEmbedding.to_order_hom_injective
     (f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) :
     Function.Injective (f : ((· < ·) : α → α → Prop) →r ((· < ·) : β → β → Prop)).toOrderHom :=
-  fun _ _ h => f.Injective h
+  fun _ _ h => f.injective h
 #align rel_embedding.to_order_hom_injective RelEmbedding.to_order_hom_injective
 
 end RelHom
@@ -755,15 +757,15 @@ theorem coe_to_order_embedding (e : α ≃o β) : ⇑e.toOrderEmbedding = e :=
 #align order_iso.coe_to_order_embedding OrderIso.coe_to_order_embedding
 
 protected theorem bijective (e : α ≃o β) : Function.Bijective e :=
-  e.toEquiv.Bijective
+  e.toEquiv.bijective
 #align order_iso.bijective OrderIso.bijective
 
 protected theorem injective (e : α ≃o β) : Function.Injective e :=
-  e.toEquiv.Injective
+  e.toEquiv.injective
 #align order_iso.injective OrderIso.injective
 
 protected theorem surjective (e : α ≃o β) : Function.Surjective e :=
-  e.toEquiv.Surjective
+  e.toEquiv.surjective
 #align order_iso.surjective OrderIso.surjective
 
 @[simp]
@@ -943,12 +945,12 @@ end Le
 variable [Preorder α] [Preorder β] [Preorder γ]
 
 protected theorem monotone (e : α ≃o β) : Monotone e :=
-  e.toOrderEmbedding.Monotone
+  e.toOrderEmbedding.monotone
 #align order_iso.monotone OrderIso.monotone
 
-protected theorem strict_mono (e : α ≃o β) : StrictMono e :=
-  e.toOrderEmbedding.StrictMono
-#align order_iso.strict_mono OrderIso.strict_mono
+protected theorem strictMono (e : α ≃o β) : StrictMono e :=
+  e.toOrderEmbedding.strictMono
+#align order_iso.strict_mono OrderIso.strictMono
 
 @[simp]
 theorem lt_iff_lt (e : α ≃o β) {x y : α} : e x < e y ↔ x < y :=
@@ -1066,16 +1068,16 @@ def toOrderIso (e : α ≃ β) (h₁ : Monotone e) (h₂ : Monotone e.symm) : α
 #align equiv.to_order_iso Equiv.toOrderIso
 
 @[simp]
-theorem coe_to_order_iso (e : α ≃ β) (h₁ : Monotone e) (h₂ : Monotone e.symm) :
+theorem coe_toOrderIso (e : α ≃ β) (h₁ : Monotone e) (h₂ : Monotone e.symm) :
     ⇑(e.toOrderIso h₁ h₂) = e :=
   rfl
-#align equiv.coe_to_order_iso Equiv.coe_to_order_iso
+#align equiv.coe_to_order_iso Equiv.coe_toOrderIso
 
 @[simp]
-theorem to_order_iso_to_equiv (e : α ≃ β) (h₁ : Monotone e) (h₂ : Monotone e.symm) :
+theorem toOrderIso_toEquiv (e : α ≃ β) (h₁ : Monotone e) (h₂ : Monotone e.symm) :
     (e.toOrderIso h₁ h₂).toEquiv = e :=
   rfl
-#align equiv.to_order_iso_to_equiv Equiv.to_order_iso_to_equiv
+#align equiv.to_order_iso_to_equiv Equiv.toOrderIso_toEquiv
 
 end Equiv
 
@@ -1329,5 +1331,6 @@ end BoundedOrder
 
 end LatticeIsos
 
-/- ./././Mathport/Syntax/Translate/Command.lean:719:14: unsupported user command assert_not_exists -/
 -- Developments relating order homs and sets belong in `order.hom.set` or later.
+-- porting note: command not ported yet (added in mathlib#17416)
+-- assert_not_exists set.range
