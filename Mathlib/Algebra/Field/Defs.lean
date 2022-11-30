@@ -64,6 +64,7 @@ def Rat.castRec [CoeTail ℕ K] [CoeTail ℤ K] [Mul K] [Inv K] : ℚ → K
 /-- Type class for the canonical homomorphism `ℚ → K`.
 -/
 class HasRatCast (K : Type u) where
+  /-- The canonical homomorphism `ℚ → K`. -/
   protected ratCast : ℚ → K
 #align has_rat_cast HasRatCast
 
@@ -90,13 +91,19 @@ definitions for some special cases of `K` (in particular `K = ℚ` itself).
 See also Note [forgetful inheritance].
 -/
 class DivisionRing (K : Type u) extends Ring K, DivInvMonoid K, Nontrivial K, HasRatCast K where
+  /-- For a nonzero `a`, `a⁻¹` is a right multiplicative inverse. -/
   protected mul_inv_cancel : ∀ (a : K), a ≠ 0 → a * a⁻¹ = 1
+  /-- We define the inverse of `0` to be `0`. -/
   protected inv_zero : (0 : K)⁻¹ = 0
   protected ratCast := Rat.castRec
+  /-- However `ratCast` is defined, propositionally it must be equal to `a * b⁻¹`. -/
   protected ratCastMk : ∀ (a : ℤ) (b : ℕ) (h1 h2), ratCast ⟨a, b, h1, h2⟩ = a * (b : K)⁻¹ := by
     intros
     rfl
+  /-- Multiplication by a rational number. -/
   protected qsmul : ℚ → K → K := qsmulRec ratCast
+  /-- However `qsmul` is defined,
+  propositionally it must be equal to multiplication by `ratCast`. -/
   protected qsmul_eq_mul' : ∀ (a : ℚ) (x : K), qsmul a x = ratCast a * x := by
     intros
     rfl
@@ -179,15 +186,18 @@ and can therefore be easily transported along ring isomorphisms.
 Additionaly, this is useful when trying to prove that
 a particular ring structure extends to a (semi)field. -/
 structure IsField (R : Type u) [Semiring R] : Prop where
+  /-- For a semiring to be a field, it must have two distinct elements. -/
   exists_pair_ne : ∃ x y : R, x ≠ y
+  /-- Fields are commutative. -/
   mul_comm : ∀ x y : R, x * y = y * x
+  /-- Nonzero elements have multiplicative inverses. -/
   mul_inv_cancel : ∀ {a : R}, a ≠ 0 → ∃ b, a * b = 1
 #align is_field IsField
 
 /-- Transferring from `semifield` to `is_field`. -/
 theorem Semifield.toIsField (R : Type u) [Semifield R] : IsField R :=
   { ‹Semifield R› with
-    mul_inv_cancel := fun a ha => ⟨a⁻¹, mul_inv_cancel ha⟩ }
+    mul_inv_cancel := @fun a ha => ⟨a⁻¹, mul_inv_cancel a ha⟩ }
 #align semifield.to_is_field Semifield.toIsField
 
 /-- Transferring from `field` to `is_field`. -/
