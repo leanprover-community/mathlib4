@@ -538,6 +538,7 @@ strictly below `(a,b)` to `P a b`, then we have `P n m` for all `n m : ℕ`.
 Note that for non-`Prop` output it is preferable to use the equation compiler directly if possible,
 since this produces equation lemmas. -/
 -- Porting note: error `unexpected eliminator resulting type P _x✝.1 _x✝.2` on `@[elab_as_elim]`.
+-- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/elab_as_elim/near/312963332
 -- @[elab_as_elim]
 def strongSubRecursion {P : ℕ → ℕ → Sort _} (H : ∀ a b, (∀ x y, x < a → y < b → P x y) → P a b) :
     ∀ n m : ℕ, P n m
@@ -550,6 +551,7 @@ then we have `P n m` for all `n m : ℕ`.
 Note that for non-`Prop` output it is preferable to use the equation compiler directly if possible,
 since this produces equation lemmas. -/
 -- Porting note: error `unexpected eliminator resulting type P _x✝.1 _x✝.2` on `@[elab_as_elim]`.
+-- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/elab_as_elim/near/312963332
 -- @[elab_as_elim]
 def pincerRecursion {P : ℕ → ℕ → Sort _} (Ha0 : ∀ a : ℕ, P a 0) (H0b : ∀ b : ℕ, P 0 b)
     (H : ∀ x y : ℕ, P x y.succ → P x.succ y → P x.succ y.succ) : ∀ n m : ℕ, P n m
