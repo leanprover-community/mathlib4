@@ -93,6 +93,7 @@ import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Cast.Defs
+import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Num.Basic
 import Mathlib.Data.Opposite
