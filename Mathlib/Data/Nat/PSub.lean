@@ -73,7 +73,6 @@ theorem ppred_eq_none : ∀ {n : ℕ}, ppred n = none ↔ n = 0
   | n + 1 => by constructor <;> intro <;> contradiction
 #align nat.ppred_eq_none Nat.ppred_eq_none
 
--- Porting note: `simp` eagerly expanded `psub` and `ppred` so it couldn't apply the `simp` lemmas
 theorem psub_eq_some {m : ℕ} : ∀ {n k}, psub m n = some k ↔ k + n = m
   | 0, k => by simp [eq_comm]
   | n + 1, k => by
