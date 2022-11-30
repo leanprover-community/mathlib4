@@ -887,35 +887,42 @@ example (x : Bool) {z} (h : id x = z) : myRingHom x = z := by
 
 /- check interaction with the `@[to_additive]` attribute -/
 
-@[to_additive, simps]
+-- set_option trace.simps.debug true
+
+@[to_additive instAddProd] -- todo: want to write simps here
 instance {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨λ p q => ⟨p.1 * q.1, p.2 * q.2⟩⟩
 
--- todo: to_additive interaction
--- run_cmd liftTermElabM <| do
---   let env ← getEnv
---   guard <| env.find? `prod.Mul_mul |>.isSome
---   guard <| env.find? `prod.Add_add |>.isSome
---   -- has_attribute `to_additive `prod.Mul
---   -- has_attribute `to_additive `prod.Mul_mul
---   guard <| hasSimpAttribute env `Prod.Mul_mul
---   guard <| hasSimpAttribute env `Prod.Add_add
+attribute [simps] instMulProd
 
+run_cmd liftTermElabM <| do
+  let env ← getEnv
+  guard <| env.find? `instMulProd_mul |>.isSome
+  guard <| env.find? `instAddProd_add |>.isSome
+  -- hasAttribute `to_additive `instMulProd
+  -- hasAttribute `to_additive `instMulProd_mul
+  guard <| hasSimpAttribute env `instMulProd_mul
+  guard <| hasSimpAttribute env `instAddProd_add
+
+-- todo: heterogenous notation_class
 -- example {M N} [Mul M] [Mul N] (p q : M × N) : p * q = ⟨p.1 * q.1, p.2 * q.2⟩ := by simp
 -- example {M N} [Add M] [Add N] (p q : M × N) : p + q = ⟨p.1 + q.1, p.2 + q.2⟩ := by simp
 
 /- The names of the generated simp lemmas for the additive version are not great if the definition
   had a custom additive name -/
-@[to_additive my_add_instance, simps]
+@[to_additive my_add_instance] -- todo: want to write simps here
 instance my_instance {M N} [One M] [One N] : One (M × N) := ⟨(1, 1)⟩
+attribute [simps] my_instance
 
--- run_cmd liftTermElabM <| do
---   get_decl `my_instance_one
---   get_decl `my_add_instance_zero
---   -- has_attribute `to_additive `my_instance -- todo
---   -- has_attribute `to_additive `my_instance_one
---   guard <| hasSimpAttribute `my_instance_one
---   guard <| hasSimpAttribute `my_add_instance_zero
+run_cmd liftTermElabM <| do
+  let env ← getEnv
+  guard <| env.find? `my_instance_one |>.isSome
+  guard <| env.find? `my_add_instance_zero |>.isSome
+  -- hasAttribute `to_additive `my_instance -- todo
+  -- hasAttribute `to_additive `my_instance_one
+  guard <| hasSimpAttribute env `my_instance_one
+  guard <| hasSimpAttribute env `my_add_instance_zero
 
+-- todo: heterogenous notation_class
 -- example {M N} [One M] [One N] : (1 : M × N) = ⟨1, 1⟩ := by simp
 -- example {M N} [Zero M] [Zero N] : (0 : M × N) = ⟨0, 0⟩ := by simp
 
@@ -947,7 +954,7 @@ structure MyType :=
 --   guard_hyp y : { x : Fin 3 // true }
 --   contradiction
 
--- todo: to_additive interaction
+-- this test might not apply to Lean 4
 -- /- Test that `to_additive` copies the `@[_rfl_lemma]` attribute correctly -/
 -- @[to_additive, simps]
 -- def monoid_hom.my_comp {M N P : Type _} [mul_one_class M] [mul_one_class N] [mul_one_class P]
@@ -969,13 +976,14 @@ structure MyType :=
 --   rfl
 
 -- test that `to_additive` works with a custom name
-@[to_additive some_test2, simps]
+@[to_additive some_test2] -- todo: want to write simps here
 def some_test1 (M : Type _) [CommMonoid M] : Subtype (λ _ : M => True) := ⟨1, trivial⟩
 
--- todo: to_additive interaction
--- run_cmd liftTermElabM <| do
---   let env ← getEnv
---   guard <| env.find? `some_test2_coe |>.isSome
+attribute [simps] some_test1
+
+run_cmd liftTermElabM <| do
+  let env ← getEnv
+  guard <| env.find? `some_test2_val |>.isSome
 
 end
 

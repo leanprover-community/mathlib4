@@ -41,9 +41,11 @@ import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.OrderSynonym
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Units
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.EquivFunctor
 import Mathlib.Control.Functor
@@ -144,6 +146,7 @@ import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr.Traverse
 import Mathlib.Lean.LocalContext
 import Mathlib.Lean.Meta
+import Mathlib.Lean.Meta.Simp
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Equiv.Basic
