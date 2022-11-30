@@ -139,7 +139,7 @@ private theorem sdiff_le' : x \ y ≤ x :=
 private theorem sdiff_sup_self' : y \ x ⊔ x = y ⊔ x :=
   calc
     y \ x ⊔ x = y \ x ⊔ (x ⊔ x ⊓ y) := by rw [sup_inf_self]
-    _ = y ⊓ x ⊔ y \ x ⊔ x := by sorry -- ac_refl
+    _ = y ⊓ x ⊔ y \ x ⊔ x := by ac_rfl
     _ = y ⊔ x := by rw [sup_inf_sdiff]
 
 @[simp]
@@ -149,11 +149,11 @@ theorem sdiff_inf_sdiff : x \ y ⊓ y \ x = ⊥ :=
       ⊥ = x ⊓ y ⊓ x \ y := by rw [inf_inf_sdiff]
       _ = x ⊓ (y ⊓ x ⊔ y \ x) ⊓ x \ y := by rw [sup_inf_sdiff]
       _ = (x ⊓ (y ⊓ x) ⊔ x ⊓ y \ x) ⊓ x \ y := by rw [inf_sup_left]
-      _ = (y ⊓ (x ⊓ x) ⊔ x ⊓ y \ x) ⊓ x \ y := by sorry -- ac_rfl
+      _ = (y ⊓ (x ⊓ x) ⊔ x ⊓ y \ x) ⊓ x \ y := by ac_rfl
       _ = (y ⊓ x ⊔ x ⊓ y \ x) ⊓ x \ y := by rw [inf_idem]
       _ = x ⊓ y ⊓ x \ y ⊔ x ⊓ y \ x ⊓ x \ y := by rw [inf_sup_right, @inf_comm _ _ x y]
       _ = x ⊓ y \ x ⊓ x \ y := by rw [inf_inf_sdiff, bot_sup_eq]
-      _ = x ⊓ x \ y ⊓ y \ x := by sorry -- ac_rfl
+      _ = x ⊓ x \ y ⊓ y \ x := by ac_rfl
       _ = x \ y ⊓ y \ x := by rw [inf_of_le_right sdiff_le']
 
 #align sdiff_inf_sdiff sdiff_inf_sdiff
@@ -193,7 +193,7 @@ instance (priority := 100) GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgeb
             y ⊔ y \ x = y := sup_of_le_left sdiff_le'
             _ ≤ y ⊔ (x ⊔ z) := le_sup_left
             _ = y \ x ⊔ x ⊔ z := by rw [← sup_assoc, ← @sdiff_sup_self' _ x y]
-            _ = x ⊔ z ⊔ y \ x := by sorry -- ac_rfl
+            _ = x ⊔ z ⊔ y \ x := by ac_rfl
             ),
         fun h =>
         le_of_inf_le_sup_le
@@ -284,15 +284,15 @@ theorem sdiff_sup : y \ (x ⊔ z) = y \ x ⊓ y \ z :=
     (calc
       y ⊓ (x ⊔ z) ⊔ y \ x ⊓ y \ z = (y ⊓ (x ⊔ z) ⊔ y \ x) ⊓ (y ⊓ (x ⊔ z) ⊔ y \ z) := by rw [sup_inf_left]
       _ = (y ⊓ x ⊔ y ⊓ z ⊔ y \ x) ⊓ (y ⊓ x ⊔ y ⊓ z ⊔ y \ z) := by rw [@inf_sup_left _ _ y]
-      _ = (y ⊓ z ⊔ (y ⊓ x ⊔ y \ x)) ⊓ (y ⊓ x ⊔ (y ⊓ z ⊔ y \ z)) := by sorry -- ac_rfl
+      _ = (y ⊓ z ⊔ (y ⊓ x ⊔ y \ x)) ⊓ (y ⊓ x ⊔ (y ⊓ z ⊔ y \ z)) := by ac_rfl
       _ = (y ⊓ z ⊔ y) ⊓ (y ⊓ x ⊔ y) := by rw [sup_inf_sdiff, sup_inf_sdiff]
-      _ = (y ⊔ y ⊓ z) ⊓ (y ⊔ y ⊓ x) := by sorry -- ac_rfl
+      _ = (y ⊔ y ⊓ z) ⊓ (y ⊔ y ⊓ x) := by ac_rfl
       _ = y := by rw [sup_inf_self, sup_inf_self, inf_idem]
       )
     (calc
       y ⊓ (x ⊔ z) ⊓ (y \ x ⊓ y \ z) = (y ⊓ x ⊔ y ⊓ z) ⊓ (y \ x ⊓ y \ z) := by rw [inf_sup_left]
       _ = y ⊓ x ⊓ (y \ x ⊓ y \ z) ⊔ y ⊓ z ⊓ (y \ x ⊓ y \ z) := by rw [inf_sup_right]
-      _ = y ⊓ x ⊓ y \ x ⊓ y \ z ⊔ y \ x ⊓ (y \ z ⊓ (y ⊓ z)) := by sorry -- ac_rfl
+      _ = y ⊓ x ⊓ y \ x ⊓ y \ z ⊔ y \ x ⊓ (y \ z ⊓ (y ⊓ z)) := by ac_rfl
       _ = ⊥ := by rw [inf_inf_sdiff, bot_inf_eq, bot_sup_eq, @inf_comm _ _ (y \ z), inf_inf_sdiff, inf_bot_eq]
       )
 #align sdiff_sup sdiff_sup
@@ -342,19 +342,19 @@ theorem sdiff_sdiff_right : x \ (y \ z) = x \ y ⊔ x ⊓ y ⊓ z := by
   apply sdiff_unique
   · calc
       x ⊓ y \ z ⊔ (z ⊓ x ⊔ x \ y) = (x ⊔ (z ⊓ x ⊔ x \ y)) ⊓ (y \ z ⊔ (z ⊓ x ⊔ x \ y)) := by rw [sup_inf_right]
-      _ = (x ⊔ x ⊓ z ⊔ x \ y) ⊓ (y \ z ⊔ (x ⊓ z ⊔ x \ y)) := by sorry -- ac_rfl
+      _ = (x ⊔ x ⊓ z ⊔ x \ y) ⊓ (y \ z ⊔ (x ⊓ z ⊔ x \ y)) := by ac_rfl
       _ = x ⊓ (y \ z ⊔ x ⊓ z ⊔ x \ y) := by rw [sup_inf_self, sup_sdiff_left, ← sup_assoc]
       _ = x ⊓ (y \ z ⊓ (z ⊔ y) ⊔ x ⊓ (z ⊔ y) ⊔ x \ y) := by rw [sup_inf_left, sdiff_sup_self', inf_sup_right, @sup_comm _ _ y]
       _ = x ⊓ (y \ z ⊔ (x ⊓ z ⊔ x ⊓ y) ⊔ x \ y) := by rw [inf_sdiff_sup_right, @inf_sup_left _ _ x z y]
-      _ = x ⊓ (y \ z ⊔ (x ⊓ z ⊔ (x ⊓ y ⊔ x \ y))) := by sorry -- ac_rfl
+      _ = x ⊓ (y \ z ⊔ (x ⊓ z ⊔ (x ⊓ y ⊔ x \ y))) := by ac_rfl
       _ = x ⊓ (y \ z ⊔ (x ⊔ x ⊓ z)) := by rw [sup_inf_sdiff, @sup_comm _ _ (x ⊓ z)]
       _ = x := by rw [sup_inf_self, sup_comm, inf_sup_self]
   · calc
       x ⊓ y \ z ⊓ (z ⊓ x ⊔ x \ y) = x ⊓ y \ z ⊓ (z ⊓ x) ⊔ x ⊓ y \ z ⊓ x \ y := by rw [inf_sup_left]
-      _ = x ⊓ (y \ z ⊓ z ⊓ x) ⊔ x ⊓ y \ z ⊓ x \ y := by sorry -- ac_rfl
+      _ = x ⊓ (y \ z ⊓ z ⊓ x) ⊔ x ⊓ y \ z ⊓ x \ y := by ac_rfl
       _ = x ⊓ y \ z ⊓ x \ y := by rw [inf_sdiff_self_left, bot_inf_eq, inf_bot_eq, bot_sup_eq]
       _ = x ⊓ (y \ z ⊓ y) ⊓ x \ y := by conv_lhs => rw [← inf_sdiff_left]
-      _ = x ⊓ (y \ z ⊓ (y ⊓ x \ y)) := by sorry -- ac_rfl
+      _ = x ⊓ (y \ z ⊓ (y ⊓ x \ y)) := by ac_rfl
       _ = ⊥ := by rw [inf_sdiff_self_right, inf_bot_eq, inf_bot_eq]
 
 
@@ -363,7 +363,7 @@ theorem sdiff_sdiff_right : x \ (y \ z) = x \ y ⊔ x ⊓ y ⊓ z := by
 theorem sdiff_sdiff_right' : x \ (y \ z) = x \ y ⊔ x ⊓ z :=
   calc
     x \ (y \ z) = x \ y ⊔ x ⊓ y ⊓ z := sdiff_sdiff_right
-    _ = z ⊓ x ⊓ y ⊔ x \ y := by sorry -- ac_rfl
+    _ = z ⊓ x ⊓ y ⊔ x \ y := by ac_rfl
     _ = x \ y ⊔ x ⊓ z := by rw [sup_inf_inf_sdiff, sup_comm, inf_comm]
 
 #align sdiff_sdiff_right' sdiff_sdiff_right'
@@ -397,7 +397,7 @@ theorem sdiff_sdiff_sup_sdiff : z \ (x \ y ⊔ y \ x) = z ⊓ (z \ x ⊔ y) ⊓ 
     z \ (x \ y ⊔ y \ x) = (z \ x ⊔ z ⊓ x ⊓ y) ⊓ (z \ y ⊔ z ⊓ y ⊓ x) := by rw [sdiff_sup, sdiff_sdiff_right, sdiff_sdiff_right]
     _ = z ⊓ (z \ x ⊔ y) ⊓ (z \ y ⊔ z ⊓ y ⊓ x) := by rw [sup_inf_left, sup_comm, sup_inf_sdiff]
     _ = z ⊓ (z \ x ⊔ y) ⊓ (z ⊓ (z \ y ⊔ x)) := by rw [sup_inf_left, @sup_comm _ _ (z \ y), sup_inf_sdiff]
-    _ = z ⊓ z ⊓ (z \ x ⊔ y) ⊓ (z \ y ⊔ x) := by sorry -- ac_rfl
+    _ = z ⊓ z ⊓ (z \ x ⊔ y) ⊓ (z \ y ⊔ x) := by ac_rfl
     _ = z ⊓ (z \ x ⊔ y) ⊓ (z \ y ⊔ x) := by rw [inf_idem]
 
 #align sdiff_sdiff_sup_sdiff sdiff_sdiff_sup_sdiff
@@ -406,9 +406,9 @@ theorem sdiff_sdiff_sup_sdiff' : z \ (x \ y ⊔ y \ x) = z ⊓ x ⊓ y ⊔ z \ x
   calc
     z \ (x \ y ⊔ y \ x) = z \ (x \ y) ⊓ z \ (y \ x) := sdiff_sup
     _ = (z \ x ⊔ z ⊓ x ⊓ y) ⊓ (z \ y ⊔ z ⊓ y ⊓ x) := by rw [sdiff_sdiff_right, sdiff_sdiff_right]
-    _ = (z \ x ⊔ z ⊓ y ⊓ x) ⊓ (z \ y ⊔ z ⊓ y ⊓ x) := by sorry -- ac_rfl
+    _ = (z \ x ⊔ z ⊓ y ⊓ x) ⊓ (z \ y ⊔ z ⊓ y ⊓ x) := by ac_rfl
     _ = z \ x ⊓ z \ y ⊔ z ⊓ y ⊓ x := sup_inf_right.symm
-    _ = z ⊓ x ⊓ y ⊔ z \ x ⊓ z \ y := by sorry -- ac_rfl
+    _ = z ⊓ x ⊓ y ⊔ z \ x ⊓ z \ y := by ac_rfl
 
 #align sdiff_sdiff_sup_sdiff' sdiff_sdiff_sup_sdiff'
 
@@ -417,13 +417,13 @@ theorem inf_sdiff : (x ⊓ y) \ z = x \ z ⊓ y \ z :=
     (calc
       x ⊓ y ⊓ z ⊔ x \ z ⊓ y \ z = (x ⊓ y ⊓ z ⊔ x \ z) ⊓ (x ⊓ y ⊓ z ⊔ y \ z) := by rw [sup_inf_left]
       _ = (x ⊓ y ⊓ (z ⊔ x) ⊔ x \ z) ⊓ (x ⊓ y ⊓ z ⊔ y \ z) := by rw [sup_inf_right, sup_sdiff_self_right, inf_sup_right, inf_sdiff_sup_right]
-      _ = (y ⊓ (x ⊓ (x ⊔ z)) ⊔ x \ z) ⊓ (x ⊓ y ⊓ z ⊔ y \ z) := by sorry -- ac_rfl
+      _ = (y ⊓ (x ⊓ (x ⊔ z)) ⊔ x \ z) ⊓ (x ⊓ y ⊓ z ⊔ y \ z) := by ac_rfl
       _ = (y ⊓ x ⊔ x \ z) ⊓ (x ⊓ y ⊔ y \ z) := by rw [inf_sup_self, sup_inf_inf_sdiff]
       _ = x ⊓ y ⊔ x \ z ⊓ y \ z := by rw [@inf_comm _ _ y, sup_inf_left]
       _ = x ⊓ y := sup_eq_left.2 (inf_le_inf sdiff_le sdiff_le)
       )
     (calc
-      x ⊓ y ⊓ z ⊓ (x \ z ⊓ y \ z) = x ⊓ y ⊓ (z ⊓ x \ z) ⊓ y \ z := by sorry -- ac_rfl
+      x ⊓ y ⊓ z ⊓ (x \ z ⊓ y \ z) = x ⊓ y ⊓ (z ⊓ x \ z) ⊓ y \ z := by ac_rfl
       _ = ⊥ := by rw [inf_sdiff_self_right, inf_bot_eq, bot_inf_eq]
       )
 #align inf_sdiff inf_sdiff
@@ -436,7 +436,7 @@ theorem inf_sdiff_assoc : (x ⊓ y) \ z = x ⊓ y \ z :=
       _ = x ⊓ y := by rw [sup_inf_sdiff]
       )
     (calc
-      x ⊓ y ⊓ z ⊓ (x ⊓ y \ z) = x ⊓ x ⊓ (y ⊓ z ⊓ y \ z) := by sorry -- ac_rfl
+      x ⊓ y ⊓ z ⊓ (x ⊓ y \ z) = x ⊓ x ⊓ (y ⊓ z ⊓ y \ z) := by ac_rfl
       _ = ⊥ := by rw [inf_inf_sdiff, inf_bot_eq]
       )
 #align inf_sdiff_assoc inf_sdiff_assoc
@@ -456,7 +456,7 @@ theorem sup_eq_sdiff_sup_sdiff_sup_inf : x ⊔ y = x \ y ⊔ y \ x ⊔ x ⊓ y :
   Eq.symm <|
     calc
       x \ y ⊔ y \ x ⊔ x ⊓ y = (x \ y ⊔ y \ x ⊔ x) ⊓ (x \ y ⊔ y \ x ⊔ y) := by rw [sup_inf_left]
-      _ = (x \ y ⊔ x ⊔ y \ x) ⊓ (x \ y ⊔ (y \ x ⊔ y)) := by sorry -- ac_rfl
+      _ = (x \ y ⊔ x ⊔ y \ x) ⊓ (x \ y ⊔ (y \ x ⊔ y)) := by ac_rfl
       _ = (x ⊔ y \ x) ⊓ (x \ y ⊔ y) := by rw [sup_sdiff_right, sup_sdiff_right]
       _ = x ⊔ y := by rw [sup_sdiff_self_right, sup_sdiff_self_left, inf_idem]
 
@@ -658,7 +658,7 @@ theorem compl_inf : (x ⊓ y)ᶜ = xᶜ ⊔ yᶜ :=
 
 @[simp]
 theorem compl_le_compl_iff_le : yᶜ ≤ xᶜ ↔ x ≤ y :=
-  ⟨fun h => by have h := compl_le_compl h <;> simp at h <;> assumption, compl_le_compl⟩
+  ⟨fun h => by have h := compl_le_compl h; simp at h; assumption, compl_le_compl⟩
 #align compl_le_compl_iff_le compl_le_compl_iff_le
 
 theorem compl_le_of_compl_le (h : yᶜ ≤ x) : xᶜ ≤ y := by simpa only [compl_compl] using compl_le_compl h
