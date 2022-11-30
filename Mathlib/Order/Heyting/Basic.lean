@@ -61,6 +61,7 @@ variable {ι α β : Type _}
 /-- Syntax typeclass for Heyting implication `⇨`. -/
 @[notation_class]
 class HImp (α : Type _) where
+  /-- Heyting implication `⇨` -/
   himp : α → α → α
 #align has_himp HImp
 
@@ -72,6 +73,7 @@ underestimates while `HNot` overestimates. In boolean algebras, they are equal. 
 -/
 @[notation_class]
 class HNot (α : Type _) where
+  /-- Heyting negation `￢` -/
   hnot : α → α
 #align has_hnot HNot
 
@@ -79,8 +81,10 @@ export HImp (himp)
 export SDiff (sdiff)
 export HNot (hnot)
 
+/-- Heyting implication -/
 infixr:60 " ⇨ " => himp
 
+/-- Heyting negation -/
 prefix:72 "￢" => hnot
 
 section
@@ -175,7 +179,9 @@ Heyting implication such that `a ⇨` is right adjoint to `a ⊓`.
 
  This generalizes `heyting_algebra` by not requiring a bottom element. -/
 class GeneralizedHeytingAlgebra (α : Type _) extends Lattice α, Top α, HImp α where
+  /-- `⊤` is a greatest element -/
   le_top : ∀ a : α, a ≤ ⊤
+  /-- `a ⇨` is right adjoint to `a ⊓` -/
   le_himp_iff (a b c : α) : a ≤ b ⇨ c ↔ a ⊓ b ≤ c
 #align generalized_heyting_algebra GeneralizedHeytingAlgebra
 
@@ -184,27 +190,35 @@ such that `\ a` is right adjoint to `⊔ a`.
 
 This generalizes `coheyting_algebra` by not requiring a top element. -/
 class GeneralizedCoheytingAlgebra (α : Type _) extends Lattice α, Bot α, SDiff α where
+  /-- `⊥` is a least element -/
   bot_le : ∀ a : α, ⊥ ≤ a
+  /-- `\ a` is right adjoint to `⊔ a` -/
   sdiff_le_iff (a b c : α) : a \ b ≤ c ↔ a ≤ b ⊔ c
 #align generalized_coheyting_algebra GeneralizedCoheytingAlgebra
 
 /-- A Heyting algebra is a bounded lattice with an additional binary operation `⇨` called Heyting
 implication such that `a ⇨` is right adjoint to `a ⊓`. -/
 class HeytingAlgebra (α : Type _) extends GeneralizedHeytingAlgebra α, Bot α, HasCompl α where
+  /-- `⊥` is a least element -/
   bot_le : ∀ a : α, ⊥ ≤ a
+  /-- `a ⇨` is right adjoint to `a ⊓` -/
   himp_bot (a : α) : a ⇨ ⊥ = aᶜ
 #align heyting_algebra HeytingAlgebra
 
 /-- A co-Heyting algebra is a bounded  lattice with an additional binary difference operation `\`
 such that `\ a` is right adjoint to `⊔ a`. -/
 class CoheytingAlgebra (α : Type _) extends GeneralizedCoheytingAlgebra α, Top α, HNot α where
+  /-- `⊤` is a greatest element -/
   le_top : ∀ a : α, a ≤ ⊤
+  /-- `⊤ \ a` is `￢a` -/
   top_sdiff (a : α) : ⊤ \ a = ￢a
 #align coheyting_algebra CoheytingAlgebra
 
 /-- A bi-Heyting algebra is a Heyting algebra that is also a co-Heyting algebra. -/
 class BiheytingAlgebra (α : Type _) extends HeytingAlgebra α, SDiff α, HNot α where
+  /-- `\ a` is right adjoint to `⊔ a` -/
   sdiff_le_iff (a b c : α) : a \ b ≤ c ↔ a ≤ b ⊔ c
+  /-- `⊤ \ a` is `￢a` -/
   top_sdiff (a : α) : ⊤ \ a = ￢a
 #align biheyting_algebra BiheytingAlgebra
 
