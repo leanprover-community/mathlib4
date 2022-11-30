@@ -44,7 +44,13 @@ import Mathlib.Algebra.Ring.OrderSynonym
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Units
+import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+import Mathlib.CategoryTheory.Functor.Basic
+import Mathlib.CategoryTheory.Functor.Category
+import Mathlib.CategoryTheory.Iso
+import Mathlib.CategoryTheory.NatTrans
+import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.EquivFunctor
@@ -244,6 +250,7 @@ import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.PushNeg
+import Mathlib.Tactic.Reassoc
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
