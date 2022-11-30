@@ -125,13 +125,16 @@ namespace Nat
 ### Recursion and `forall`/`exists`
 -/
 
-
-@[simp]
+-- Porting note:
+-- this doesn't work as a simp lemma in Lean 4
+-- @[simp]
 theorem and_forall_succ {p : ℕ → Prop} : (p 0 ∧ ∀ n, p (n + 1)) ↔ ∀ n, p n :=
   ⟨fun h n => Nat.casesOn n h.1 h.2, fun h => ⟨h _, fun _ => h _⟩⟩
 #align nat.and_forall_succ Nat.and_forall_succ
 
-@[simp]
+-- Porting note:
+-- this doesn't work as a simp lemma in Lean 4
+-- @[simp]
 theorem or_exists_succ {p : ℕ → Prop} : (p 0 ∨ ∃ n, p (n + 1)) ↔ ∃ n, p n :=
   ⟨fun h => h.elim (fun h0 => ⟨0, h0⟩) fun ⟨n, hn⟩ => ⟨n + 1, hn⟩, by
     rintro ⟨_ | n, hn⟩
@@ -175,7 +178,7 @@ theorem succ_ne_succ {n m : ℕ} : succ n ≠ succ m ↔ n ≠ m :=
   succ_injective.ne_iff
 #align nat.succ_ne_succ Nat.succ_ne_succ
 
-@[simp]
+-- Porting note: no longer a simp lemma, as simp can prove this
 theorem succ_succ_ne_one (n : ℕ) : n.succ.succ ≠ 1 :=
   succ_ne_succ.mpr n.succ_ne_zero
 #align nat.succ_succ_ne_one Nat.succ_succ_ne_one
