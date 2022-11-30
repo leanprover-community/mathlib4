@@ -48,7 +48,6 @@ structure RelHom {α β : Type _} (r : α → α → Prop) (s : β → β → Pr
   map_rel' : ∀ {a b}, r a b → s (toFun a) (toFun b)
 #align rel_hom RelHom
 
--- mathport name: «expr →r »
 /-- A relation homomorphism with respect to a given pair of relations `r` and `s`
 is a function `f : α → β` such that `r a b → s (f a) (f b)`. -/
 infixl:25 " →r " => RelHom
@@ -161,15 +160,15 @@ theorem injective_of_increasing (r : α → α → Prop) (s : β → β → Prop
     [IsIrrefl β s] (f : α → β) (hf : ∀ {x y}, r x y → s (f x) (f y)) : Injective f := by
   intro x y hxy
   rcases trichotomous_of r x y with (h | h | h)
-  have := hf h
-  rw [hxy] at this
-  exfalso
-  exact irrefl_of s (f y) this
-  exact h
-  have := hf h
-  rw [hxy] at this
-  exfalso
-  exact irrefl_of s (f y) this
+  · have := hf h
+    rw [hxy] at this
+    exfalso
+    exact irrefl_of s (f y) this
+  · exact h
+  · have := hf h
+    rw [hxy] at this
+    exfalso
+    exact irrefl_of s (f y) this
 #align injective_of_increasing injective_of_increasing
 
 /-- An increasing function is injective -/
