@@ -176,7 +176,8 @@ protected theorem tsub_lt_tsub_iff_left_of_le_of_le [ContravariantClass α α (�
     a - b < a - c ↔ c < b :=
   ⟨hb.lt_of_tsub_lt_tsub_left_of_le h₂, hab.tsub_lt_tsub_left_of_le h₁⟩
 #align
-  add_le_cancellable.tsub_lt_tsub_iff_left_of_le_of_le AddLECancellable.tsub_lt_tsub_iff_left_of_le_of_le
+  add_le_cancellable.tsub_lt_tsub_iff_left_of_le_of_le
+  AddLECancellable.tsub_lt_tsub_iff_left_of_le_of_le
 
 @[simp]
 protected theorem add_tsub_tsub_cancel (hac : AddLECancellable (a - c)) (h : c ≤ a) :
