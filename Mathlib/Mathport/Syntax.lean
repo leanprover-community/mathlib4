@@ -452,8 +452,6 @@ namespace Attr
 
 /- M -/ syntax (name := mono) "mono" (ppSpace Tactic.mono.side)? : attr
 
-/- M -/ syntax (name := reassoc) "reassoc" (ppSpace ident)? : attr
-
 /- M -/ syntax (name := elementwise) "elementwise" (ppSpace ident)? : attr
 
 /- N -/ syntax (name := pp_nodot) "pp_nodot" : attr
