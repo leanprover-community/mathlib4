@@ -1342,43 +1342,43 @@ instance : BiheytingAlgebra PUnit.{u+1} :=
     sdiff_le_iff := fun _ _ _ => Iff.rfl }
 
 @[simp]
-theorem top_eq : (⊤ : PUnit) = star :=
+theorem top_eq : (⊤ : PUnit) = unit :=
   rfl
 #align punit.top_eq PUnit.top_eq
 
 @[simp]
-theorem bot_eq : (⊥ : PUnit) = star :=
+theorem bot_eq : (⊥ : PUnit) = unit :=
   rfl
 #align punit.bot_eq PUnit.bot_eq
 
 @[simp]
-theorem sup_eq : a ⊔ b = star :=
+theorem sup_eq : a ⊔ b = unit :=
   rfl
 #align punit.sup_eq PUnit.sup_eq
 
 @[simp]
-theorem inf_eq : a ⊓ b = star :=
+theorem inf_eq : a ⊓ b = unit :=
   rfl
 #align punit.inf_eq PUnit.inf_eq
 
 @[simp]
-theorem compl_eq : aᶜ = star :=
+theorem compl_eq : aᶜ = unit :=
   rfl
 #align punit.compl_eq PUnit.compl_eq
 
 @[simp]
-theorem sdiff_eq : a \ b = star :=
+theorem sdiff_eq : a \ b = unit :=
   rfl
 #align punit.sdiff_eq PUnit.sdiff_eq
 
 @[simp, nolint simpNF]
-theorem hnot_eq : ￢a = star :=
+theorem hnot_eq : ￢a = unit :=
   rfl
 #align punit.hnot_eq PUnit.hnot_eq
 
 -- eligible for `dsimp`
 @[simp]
-theorem himp_eq : a ⇨ b = star :=
+theorem himp_eq : a ⇨ b = unit :=
   rfl
 #align punit.himp_eq PUnit.himp_eq
 
