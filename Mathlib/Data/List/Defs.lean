@@ -101,12 +101,6 @@ def alternatingProd {G : Type _} [One G] [Mul G] [Inv G] : List G → G
 #align list.partition_map List.partitionMap
 #align list.find List.find?
 
--- TODO: move
-@[reducible] def Functor.mapConstRev {f : Type u → Type v} [Functor f] {α β : Type u} :
-  f β → α → f α :=
-fun a b => Functor.mapConst b a
-infix:100 " $> " => Functor.mapConstRev
-
 /-- `mfind tac l` returns the first element of `l` on which `tac` succeeds, and
 fails otherwise. -/
 def findM {α} {m : Type u → Type v} [Monad m] [Alternative m] (tac : α → m PUnit) : List α → m α :=
