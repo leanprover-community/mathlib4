@@ -152,8 +152,8 @@ def natToInt : GlobalBranchingPreprocessor :=
 { name := "move nats to ints",
   transform := fun g l => do
     let l ← l.mapM $ fun h => do
-      let t ← inferType h
-      if (isNatProp t) then
+      let t ← instantiateMVars (← inferType h)
+      if isNatProp t then
         let (some (h', t'), _) ← Term.TermElabM.run' (run_for g (zifyProof none h t))
           | throwError "zifyProof failed on {h}"
         if filterComparisons.aux t' then
@@ -202,14 +202,14 @@ def mkNonstrictIntProof (pf : Expr) : MetaM Expr := do
   | (``LT.lt, #[_, _, a, b]) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
   | (``GT.gt, #[_, _, a, b]) =>
-    return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
+    return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[b, a]]) pf
   | (``Not, #[P]) => match P.getAppFnArgs with
     | (``LE.le, #[_, _, a, b]) =>
-      return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]])
-        (← mkAppM `le_of_not_gt #[pf])
+      return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[b, a]])
+        (← mkAppM ``lt_of_not_ge #[pf])
     | (``GE.ge, #[_, _, a, b]) =>
       return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]])
-        (← mkAppM `le_of_not_gt #[pf])
+        (← mkAppM ``lt_of_not_ge #[pf])
     | _ => throwError "mkNonstrictIntProof failed: proof is not an inequality"
   | _ => throwError "mkNonstrictIntProof failed: proof is not an inequality"
 

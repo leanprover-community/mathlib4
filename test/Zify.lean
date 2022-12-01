@@ -8,6 +8,13 @@ import Mathlib.Tactic.Zify
 import Std.Tactic.GuardExpr
 import Mathlib.Tactic.LibrarySearch
 
+example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
+  zify
+  guard_target =~ (c : ℤ) < (a : ℤ) + 3 * (b : ℤ)
+  zify at h
+  guard_hyp h :~ ¬(x : ℤ) * (y : ℤ) * (z : ℤ) < (0 : ℤ)
+  sorry
+
 -- TODO: These are verbatim copies of the tests from mathlib3. It would be nice to add more.
 
 set_option pp.coercions false
