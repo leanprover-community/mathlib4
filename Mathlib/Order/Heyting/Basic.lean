@@ -1,31 +1,3 @@
--- variable {α : Type _}
-
--- class BoundedOrder (α : Type u) [LE α]
-
--- class DistribLattice (α) extends LE α
-
--- def Disjoint [DistribLattice α] (a b : α) : Prop := sorry
-
--- def Codisjoint [DistribLattice α] (a b : α) : Prop := sorry
-
--- def DistribLattice.ofNothing [LE α] : DistribLattice α := { }
-
--- theorem Disjoint.le_of_codisjoint [DistribLattice α] [BoundedOrder α] {a b c : α}
---     (hab : Disjoint a b) (hbc : Codisjoint b c) : a ≤ c :=
---   sorry
-
--- class HeytingAlgebra (α : Type _) extends LE α
-
--- instance (priority := 100) HeytingAlgebra.toDistribLattice [HeytingAlgebra α] : DistribLattice α :=
---   DistribLattice.ofNothing
-
--- instance (priority := 100) HeytingAlgebra.toBoundedOrder [HeytingAlgebra α] : BoundedOrder α :=
---   sorry
-
--- example [HeytingAlgebra α] {a b c : α} (h₁ : Disjoint a b) (h₂ : Codisjoint b c) : a ≤ c :=
---   Disjoint.le_of_codisjoint h₁ h₂
--- -- failed to synthesize instance BoundedOrder α
-
 /-
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -97,7 +69,8 @@ class HImp (α : Type _) where
 
 The difference between `HasCompl` and `HNot` is that the former belongs to Heyting algebras,
 while the latter belongs to co-Heyting algebras. They are both pseudo-complements, but `compl`
-underestimates while `HNot` overestimates. In boolean algebras, they are equal. See `hnot_eq_compl`.
+underestimates while `HNot` overestimates. In boolean algebras, they are equal.
+See `hnot_eq_compl`.
 -/
 @[notation_class]
 class HNot (α : Type _) where
@@ -213,8 +186,8 @@ class GeneralizedHeytingAlgebra (α : Type _) extends Lattice α, Top α, HImp �
   le_himp_iff (a b c : α) : a ≤ b ⇨ c ↔ a ⊓ b ≤ c
 #align generalized_heyting_algebra GeneralizedHeytingAlgebra
 
-/-- A generalized co-Heyting algebra is a lattice with an additional binary difference operation `\`
-such that `\ a` is right adjoint to `⊔ a`.
+/-- A generalized co-Heyting algebra is a lattice with an additional binary
+difference operation `\` such that `\ a` is right adjoint to `⊔ a`.
 
 This generalizes `coheyting_algebra` by not requiring a top element. -/
 class GeneralizedCoheytingAlgebra (α : Type _) extends Lattice α, Bot α, SDiff α where
@@ -263,7 +236,7 @@ instance (priority := 100) GeneralizedCoheytingAlgebra.toOrderBot [GeneralizedCo
 #align generalized_coheyting_algebra.to_order_bot GeneralizedCoheytingAlgebra.toOrderBot
 
 -- See note [lower instance priority]
-instance (priority := 10000) HeytingAlgebra.toBoundedOrder [inst : HeytingAlgebra α] : BoundedOrder α :=
+instance (priority := 100) HeytingAlgebra.toBoundedOrder [HeytingAlgebra α] : BoundedOrder α :=
   { bot_le := ‹HeytingAlgebra α›.bot_le }
 --#align heyting_algebra.to_bounded_order HeytingAlgebra.toBoundedOrder
 
@@ -761,7 +734,8 @@ instance (priority := 100) GeneralizedCoheytingAlgebra.toDistribLattice : Distri
   { ‹GeneralizedCoheytingAlgebra α› with
     le_sup_inf :=
       fun a b c => by simp_rw [← sdiff_le_iff, le_inf_iff, sdiff_le_iff, ← le_inf_iff]; rfl }
-#align generalized_coheyting_algebra.to_distrib_lattice GeneralizedCoheytingAlgebra.toDistribLattice
+#align generalized_coheyting_algebra.to_distrib_lattice
+  GeneralizedCoheytingAlgebra.toDistribLattice
 
 instance : GeneralizedHeytingAlgebra αᵒᵈ :=
   { OrderDual.lattice α, OrderDual.orderTop α with
