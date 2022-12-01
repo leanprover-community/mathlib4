@@ -356,7 +356,6 @@ theorem le_himp : a ≤ b ⇨ a :=
 #align le_himp le_himp
 
 -- `p → p → q ↔ p → q`
-@[simp]
 theorem le_himp_iff_left : a ≤ a ⇨ b ↔ a ≤ b := by rw [le_himp_iff, inf_idem]
 #align le_himp_iff_left le_himp_iff_left
 
@@ -409,11 +408,14 @@ theorem himp_himp (a b c : α) : a ⇨ b ⇨ c = a ⊓ b ⇨ c :=
 #align himp_himp himp_himp
 
 -- `(q → r) → (p → q) → q → r`
-@[simp]
 theorem himp_le_himp_himp_himp : b ⇨ c ≤ (a ⇨ b) ⇨ a ⇨ c := by
   rw [le_himp_iff, le_himp_iff, inf_assoc, himp_inf_self, ← inf_assoc, himp_inf_self, inf_assoc]
   exact inf_le_left
 #align himp_le_himp_himp_himp himp_le_himp_himp_himp
+
+@[simp]
+theorem himp_inf_himp_inf_le : (b ⇨ c) ⊓ (a ⇨ b) ⊓ a ≤ c :=
+  by simpa using @himp_le_himp_himp_himp
 
 -- `p → q → r ↔ q → p → r`
 theorem himp_left_comm (a b c : α) : a ⇨ b ⇨ c = b ⇨ a ⇨ c := by simp_rw [himp_himp, inf_comm]
@@ -539,7 +541,6 @@ theorem Disjoint.disjoint_sdiff_right (h : Disjoint a b) : Disjoint a (b \ c) :=
   h.mono_right sdiff_le
 #align disjoint.disjoint_sdiff_right Disjoint.disjoint_sdiff_right
 
-@[simp]
 theorem sdiff_le_iff_left : a \ b ≤ b ↔ a ≤ b := by rw [sdiff_le_iff, sup_idem]
 #align sdiff_le_iff_left sdiff_le_iff_left
 
@@ -555,22 +556,18 @@ theorem le_sup_sdiff : a ≤ b ⊔ a \ b :=
 theorem le_sdiff_sup : a ≤ a \ b ⊔ b := by rw [sup_comm, ← sdiff_le_iff]
 #align le_sdiff_sup le_sdiff_sup
 
-@[simp]
 theorem sup_sdiff_left : a ⊔ a \ b = a :=
   sup_of_le_left sdiff_le
 #align sup_sdiff_left sup_sdiff_left
 
-@[simp]
 theorem sup_sdiff_right : a \ b ⊔ a = a :=
   sup_of_le_right sdiff_le
 #align sup_sdiff_right sup_sdiff_right
 
-@[simp]
 theorem inf_sdiff_left : a \ b ⊓ a = a \ b :=
   inf_of_le_left sdiff_le
 #align inf_sdiff_left inf_sdiff_left
 
-@[simp]
 theorem inf_sdiff_right : a ⊓ a \ b = a \ b :=
   inf_of_le_right sdiff_le
 #align inf_sdiff_right inf_sdiff_right
@@ -626,12 +623,15 @@ theorem bot_sdiff : ⊥ \ a = ⊥ :=
   sdiff_eq_bot_iff.2 bot_le
 #align bot_sdiff bot_sdiff
 
-@[simp]
 theorem sdiff_sdiff_sdiff_le_sdiff : (a \ b) \ (a \ c) ≤ c \ b := by
   rw [sdiff_le_iff, sdiff_le_iff, sup_left_comm, sup_sdiff_self, sup_left_comm, sdiff_sup_self,
     sup_left_comm]
   exact le_sup_left
 #align sdiff_sdiff_sdiff_le_sdiff sdiff_sdiff_sdiff_le_sdiff
+
+@[simp]
+theorem le_sup_sdiff_sup_sdiff : a ≤ b ⊔ (a \ c ⊔ c \ b) :=
+  by simpa using @sdiff_sdiff_sdiff_le_sdiff
 
 theorem sdiff_sdiff (a b c : α) : (a \ b) \ c = a \ (b ⊔ c) :=
   eq_of_forall_ge_iff fun d => by simp_rw [sdiff_le_iff, sup_assoc]; rfl
@@ -1351,12 +1351,12 @@ theorem bot_eq : (⊥ : PUnit) = unit :=
   rfl
 #align punit.bot_eq PUnit.bot_eq
 
-@[simp]
+@[simp, nolint simpNF]
 theorem sup_eq : a ⊔ b = unit :=
   rfl
 #align punit.sup_eq PUnit.sup_eq
 
-@[simp]
+@[simp, nolint simpNF]
 theorem inf_eq : a ⊓ b = unit :=
   rfl
 #align punit.inf_eq PUnit.inf_eq
@@ -1366,7 +1366,7 @@ theorem compl_eq : aᶜ = unit :=
   rfl
 #align punit.compl_eq PUnit.compl_eq
 
-@[simp]
+@[simp, nolint simpNF]
 theorem sdiff_eq : a \ b = unit :=
   rfl
 #align punit.sdiff_eq PUnit.sdiff_eq
@@ -1377,7 +1377,7 @@ theorem hnot_eq : ￢a = unit :=
 #align punit.hnot_eq PUnit.hnot_eq
 
 -- eligible for `dsimp`
-@[simp]
+@[simp, nolint simpNF]
 theorem himp_eq : a ⇨ b = unit :=
   rfl
 #align punit.himp_eq PUnit.himp_eq
