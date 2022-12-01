@@ -105,12 +105,12 @@ def alternatingProd {G : Type _} [One G] [Mul G] [Inv G] : List G → G
 @[reducible] def Functor.mapConstRev {f : Type u → Type v} [Functor f] {α β : Type u} :
   f β → α → f α :=
 fun a b => Functor.mapConst b a
---infixr ` $> `:100  := functor.map_const_rev
+infix:100 " $> " => Functor.mapConstRev
 
 /-- `mfind tac l` returns the first element of `l` on which `tac` succeeds, and
 fails otherwise. -/
 def findM {α} {m : Type u → Type v} [Monad m] [Alternative m] (tac : α → m PUnit) : List α → m α :=
-  List.firstM <| fun a => Functor.mapConstRev (tac a) a
+  List.firstM <| fun a => (tac a) $> a
 #align list.mfind List.findM
 
 /-- `mbfind' p l` returns the first element `a` of `l` for which `p a` returns
