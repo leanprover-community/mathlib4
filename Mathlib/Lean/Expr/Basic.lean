@@ -85,25 +85,28 @@ def isThm : ConstantInfo → Bool
   | thmInfo _ => true
   | _          => false
 
-def updateName : ConstantInfo → Name → ConstantInfo
-  | defnInfo   info, n => defnInfo   {info with name := n}
-  | axiomInfo  info, n => axiomInfo  {info with name := n}
-  | thmInfo    info, n => thmInfo    {info with name := n}
-  | opaqueInfo info, n => opaqueInfo {info with name := n}
-  | quotInfo   info, n => quotInfo   {info with name := n}
-  | inductInfo info, n => inductInfo {info with name := n}
-  | ctorInfo   info, n => ctorInfo   {info with name := n}
-  | recInfo    info, n => recInfo    {info with name := n}
+def updateConstantVal : ConstantInfo → ConstantVal → ConstantInfo
+  | defnInfo   info, v => defnInfo   {info with toConstantVal := v}
+  | axiomInfo  info, v => axiomInfo  {info with toConstantVal := v}
+  | thmInfo    info, v => thmInfo    {info with toConstantVal := v}
+  | opaqueInfo info, v => opaqueInfo {info with toConstantVal := v}
+  | quotInfo   info, v => quotInfo   {info with toConstantVal := v}
+  | inductInfo info, v => inductInfo {info with toConstantVal := v}
+  | ctorInfo   info, v => ctorInfo   {info with toConstantVal := v}
+  | recInfo    info, v => recInfo    {info with toConstantVal := v}
 
-def updateType : ConstantInfo → Expr → ConstantInfo
-  | defnInfo   info, y => defnInfo   {info with type := y}
-  | axiomInfo  info, y => axiomInfo  {info with type := y}
-  | thmInfo    info, y => thmInfo    {info with type := y}
-  | opaqueInfo info, y => opaqueInfo {info with type := y}
-  | quotInfo   info, y => quotInfo   {info with type := y}
-  | inductInfo info, y => inductInfo {info with type := y}
-  | ctorInfo   info, y => ctorInfo   {info with type := y}
-  | recInfo    info, y => recInfo    {info with type := y}
+@[inline]
+def updateName (c : ConstantInfo) (name : Name) : ConstantInfo :=
+  c.updateConstantVal {c.toConstantVal with name}
+
+@[inline]
+def updateType (c : ConstantInfo) (type : Expr) : ConstantInfo :=
+  c.updateConstantVal {c.toConstantVal with type}
+
+@[inline]
+def updateLevelParams (c : ConstantInfo) (levelParams : List Name) :
+  ConstantInfo :=
+  c.updateConstantVal {c.toConstantVal with levelParams}
 
 def updateValue : ConstantInfo → Expr → ConstantInfo
   | defnInfo   info, v => defnInfo   {info with value := v}

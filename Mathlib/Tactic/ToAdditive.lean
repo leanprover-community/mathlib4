@@ -293,6 +293,12 @@ def shouldTranslateNumeral [Monad M] [MonadEnv M] (n : Name) (firstArg : Expr) :
   | some false => return false
   | none => return true
 
+/-- Swap the first two elements of a list -/
+def _root_.List.swapFirstTwo {α : Type _} : List α → List α
+| []      => []
+| [x]     => [x]
+| x::y::l => y::x::l
+
 /--
 `applyReplacementFun e` replaces the expression `e` with its additive counterpart.
 It translates each identifier (inductive type, defined function etc) in an expression, unless
@@ -313,10 +319,7 @@ def applyReplacementFun : Expr → MetaM Expr :=
       let n₁ := n₀.mapPrefix (findTranslation? <|← getEnv)
       if n₀ != n₁ then
         trace[to_additive_detail] "applyReplacementFun: {n₀} → {n₁}"
-      let ls : List Level ← (do -- [todo] just get Lean to figure out the levels?
-        if ← shouldReorder n₀ 1 then
-            return ls.get! 1::ls.head!::ls.drop 2
-        return ls)
+      let ls : List Level := if ← shouldReorder n₀ 1 then ls.swapFirstTwo else ls
       return some $ Lean.mkConst n₁ ls
     | .app g x => do
       let gf := g.getAppFn
@@ -416,6 +419,8 @@ def updateDecl
   (tgt : Name) (srcDecl : ConstantInfo) (reorder : List Nat := [])
   : MetaM ConstantInfo := do
   let mut decl := srcDecl.updateName tgt
+  if 1 ∈ reorder then
+    decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
   decl := decl.updateType <| ← applyReplacementFun <| ← (reorderForall · reorder) <|
     ← expand decl.type
   if let some v := decl.value? then
