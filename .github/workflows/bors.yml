@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: cleanup
         run: |
-          rm -rf *
+          find . -name . -o -prune -exec rm -rf -- {} +
 
       - uses: actions/checkout@v2
 
@@ -42,7 +42,7 @@ jobs:
     steps:
       - name: cleanup
         run: |
-          rm -rf *
+          find . -name . -o -prune -exec rm -rf -- {} +
 
       - uses: actions/checkout@v2
 
@@ -60,7 +60,7 @@ jobs:
     steps:
       - name: cleanup
         run: |
-          rm -rf *
+          find . -name . -o -prune -exec rm -rf -- {} +
 
       - name: install elan
         run: |
