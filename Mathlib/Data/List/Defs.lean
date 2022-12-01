@@ -179,7 +179,8 @@ section mapIdxA
 
 variable {m : Type v → Type w} [Applicative m]
 
--- FIXME: Idx, find the right appplicative suffix
+-- porting notes: These already exist with a `Monad` typeclass constraint
+-- could either delete, or go with the suggested `A` suffix.
 
 /-- Auxiliary definition for `mmap_with_index`. -/
 def mapIdxAAux {α β} (f : ℕ → α → m β) : ℕ → List α → m (List β)
@@ -577,6 +578,7 @@ def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : Li
 #align list.to_chunks List.toChunks
 
 -- porting notes -- was `unsafe` but removed for Lean 4 port
+-- TODO: naming is awkward...
 /-- Asynchronous version of `List.map`.
 -/
 def map_async_chunked {α β} (f : α → β) (xs : List α) (chunk_size := 1024) : List β :=
