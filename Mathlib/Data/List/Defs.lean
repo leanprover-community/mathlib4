@@ -223,8 +223,8 @@ infixl:50 " <:+: " => isInfix
 #align list.sublists List.sublists
 #align list.forall₂ List.Forall₂
 
--- TODO: keep? seems to be orphaned. Search in mathlib codebase for refs.
-/--
+/-- Definition of a `sublists` function with an explicit list construction function
+    Used in `Data.Lists.Sublists`: TODO: move there when ported.
 -/
 def sublistsAux₁ : List α → (List α → List β) → List β
   | [], _ => []
