@@ -239,6 +239,7 @@ structure Config : Type where
   /-- If `allowAutoName` is `false` (default) then
   `@[to_additive]` will check whether the given name can be auto-generated. -/
   allowAutoName : Bool := false
+  reorder : List Nat := []
   /-- The `Syntax` element corresponding to the original multiplicative declaration
   (or the `to_additive` attribute if it is added later),
   which we need for adding definition ranges. -/
