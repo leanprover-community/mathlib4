@@ -338,7 +338,7 @@ macro "initialize_simps_projections?" rest:simpsProj : command =>
 end Command
 end Lean.Parser
 
-initialize registerTraceClass `Simps.verbose
+initialize registerTraceClass `simps.verbose
 initialize registerTraceClass `simps.debug
 
 /-- Projection data for a single projection of a structure -/
@@ -503,14 +503,14 @@ def simpsApplyProjectionRules (str : Name) (rules : Array ProjectionRule) :
 /-- Auxilliary function for `simpsGetRawProjections`.
 Find custom projections declared by the user. -/
 def simpsFindCustomProjection (str : Name) (proj : ParsedProjectionData)
-  (rawUnivs : List Level) (trc : Bool) : CoreM ParsedProjectionData := do
+  (rawUnivs : List Level) : CoreM ParsedProjectionData := do
   let env ← getEnv
   let (rawExpr, nrs) ← MetaM.run' (getCompositeOfProjections str proj.origName.getString!)
   match env.find? (str ++ `Simps ++ proj.newName) with
   | some d@(.defnInfo _) =>
     let customProj := d.instantiateValueLevelParams! rawUnivs
-    if trc then
-      logInfo m!"[simps] > found custom projection for {proj.newName}:\n        > {customProj}"
+    trace[simps.verbose] "[simps] > found custom projection for {proj.newName}:\n        > {
+      customProj}"
     match (← MetaM.run' $ isDefEq customProj rawExpr) with
     | true => pure { proj with expr? := some customProj, projNrs := nrs, isChanged := true }
     | false =>
@@ -529,8 +529,9 @@ def simpsFindCustomProjection (str : Name) (proj : ParsedProjectionData)
 
 /-- Auxilliary function for `simpsGetRawProjections`.
 Resolve a single notation class in `simpsFindAutomaticProjections`. -/
+-- currently unused
 def simpsResolveNotationClass (projs : Array ParsedProjectionData)
-    (className : Name) (args : Array Expr) (eStr : Expr) (rawUnivs : List Level) (trc : Bool) :
+    (className : Name) (args : Array Expr) (eStr : Expr) (rawUnivs : List Level) :
     MetaM (Array ParsedProjectionData) := do
   let env ← getEnv
   let classInfo := (getStructureInfo? env className).get!
@@ -551,30 +552,27 @@ def simpsResolveNotationClass (projs : Array ParsedProjectionData)
       trace[simps.debug] "info: ({relevantProj}, {rawExprLambda})"
       pure (relevantProj, rawExprLambda)
   let some pos := projs.findIdx? fun x ↦ some x.origName == relevantProj | do
-    if trc then
-      logInfo m!"[simps] > Warning: The structure has an instance for {className}, {""
+    trace[simps.verbose] "[simps] > Warning: The structure has an instance for {className}, {""
         }but it is not definitionally equal to any projection."
     failure -- will be caught by `simpsFindAutomaticProjections`
   trace[simps.debug] "The raw projection is:\n {rawExprLambda}"
   projs.mapIdxM fun nr x ↦ do
     unless nr.1 = pos do return x
     if x.isChanged then
-      if trc then
-        logInfo m!"[simps] > Warning: Projection {relevantProj} is definitionally equal to\n  {""
-          }{rawExprLambda}\nHowever, this is not used since a custom simps projection is {""
-          }specified by the user."
+      trace[simps.verbose] "[simps] > Warning: Projection {relevantProj} is definitionally equal to{
+          indentExpr rawExprLambda}\nHowever, this is not used since a custom simps projection is {
+            ""}specified by the user."
       return x
-    if trc then
-      logInfo m!"[simps] > Using notation from {className} for projection {relevantProj}."
+    trace[simps.verbose] "[simps] > Using notation from {className} for projection {relevantProj}."
     return { x with expr? := some rawExprLambda }
 
 /-- Auxilliary function for `simpsGetRawProjections`.
 Find custom projections, automatically found by simps.
 These come from algebraic notation classes, like `+`. -/
--- if performance becomes a problem, possible heuristic: use the names of the projections to
--- skip all classes that don't have the corresponding field.
+-- todo: just navigate all projections and check if there is one called "add"/"mul" etc.
+-- currently unused
 def simpsFindAutomaticProjections (str : Name) (projs : Array ParsedProjectionData)
-  (strType : Expr) (rawUnivs : List Level) (trc : Bool) : CoreM (Array ParsedProjectionData) := do
+  (strType : Expr) (rawUnivs : List Level) : CoreM (Array ParsedProjectionData) := do
   let env ← getEnv
   MetaM.run' <| forallTelescope strType fun args _ ↦ do
     let eStr := mkAppN (.const str rawUnivs) args
@@ -582,7 +580,7 @@ def simpsFindAutomaticProjections (str : Name) (projs : Array ParsedProjectionDa
     let mut projs := projs
     if args.size == 1 then -- can be wrong if additional type-class arguments??
       for (className, _) in automaticProjs do
-        try projs ← simpsResolveNotationClass projs className args eStr rawUnivs trc
+        try projs ← simpsResolveNotationClass projs className args eStr rawUnivs
         catch _ => pure ()
     return projs
 
@@ -623,40 +621,38 @@ Optionally, this command accepts three optional arguments:
   has the attribute `@[simpsStructure]`.
 * The `rules` argument specifies whether projections should be added, renamed, used as prefix, and
   not used by default.
-* if `trc` is true, this tactic will trace information.
+* if `trc` is true, this tactic will trace information just as if
+  `set_option trace.simps.verbose true` was set.
 -/
 def simpsGetRawProjections (str : Name) (traceIfExists : Bool := false)
   (rules : Array ProjectionRule := #[]) (trc := false) :
   CoreM (List Name × Array ProjectionData) := do
+  withOptions (· |>.updateBool `trace.simps.verbose (trc || ·)) <| do
   let env ← getEnv
-  let trc := trc || (← getOptions).getBool `trace.simps.verbose
-  -- to do: double check tracing
   if let some data := (simpsStructure.getState env).find? str then
     -- We always print the projections when they already exists and are called by
     -- `initialize_simps_projections`.
-    if traceIfExists || (← getOptions).getBool `trace.simps.verbose then
-      logInfo <|
+    withOptions (· |>.updateBool `trace.simps.verbose (traceIfExists || ·)) <| do
+      trace[simps.verbose]
         projectionsInfo data.2.toList "Already found projection information for structure" str
     return data
-  if trc then
-    logInfo m!"[simps] > generating projection information for structure {str}."
+  trace[simps.verbose] "[simps] > generating projection information for structure {str}."
   trace[simps.debug] "Applying the rules {rules}."
   let some strDecl := env.find? str
     | throwError "No such declaration {str}." -- maybe unreachable
   let rawLevels := strDecl.levelParams
   let rawUnivs := rawLevels.map Level.param
   let projs ← simpsApplyProjectionRules str rules
-  let projs ← projs.mapM fun proj ↦ simpsFindCustomProjection str proj rawUnivs trc
+  let projs ← projs.mapM fun proj ↦ simpsFindCustomProjection str proj rawUnivs
   -- the following will not work properly with Lean 4-style structure bundling
-  -- let projs ← simpsFindAutomaticProjections str projs strDecl.type rawUnivs trc
+  -- let projs ← simpsFindAutomaticProjections str projs strDecl.type rawUnivs
   let projs := projs.map (·.toProjectionData)
-  -- make all proof non-default.
+  -- make all proofs non-default.
   let projs ← projs.mapM fun proj ↦ do
     match (← MetaM.run' <| isProof proj.expr) with
     | true => pure { proj with isDefault := false }
     | false => pure proj
-  if trc then
-    logInfo <| projectionsInfo projs.toList "generated projections for" str
+  trace[simps.verbose] projectionsInfo projs.toList "generated projections for" str
   simpsStructure.add str (rawLevels, projs)
   trace[simps.debug] "Generated raw projection data:\n{(rawLevels, projs)}"
   pure (rawLevels, projs)
@@ -716,8 +712,6 @@ structure Simps.Config where
   E.g. if we write `@[simps] def e : α × β ≃ β × α := ...` we will generate `e_apply` and not
   `e_apply_fst`. -/
   notRecursive := [`Prod, `PProd]
-  /-- Output tracing messages. Can be set to `true` by writing `@[simps?]`. -/
-  trace := false
   /-- Output debug messages. Not used much, use `set_option simps.debug true` instead. -/
   debug := false
   /-- [TODO] Add `@[to_additive]` to all generated lemmas. This can be set by marking the
@@ -780,7 +774,7 @@ def simpsGetProjectionExprs (tgt : Expr) (rhs : Expr) (cfg : Simps.Config) :
   let str := tgt.getAppFn.constName?.getD default
   -- the fields of the object
   let rhsArgs := rhs.getAppArgs.toList.drop params.size
-  let (rawUnivs, projDeclata) ← simpsGetRawProjections str false #[] cfg.trace
+  let (rawUnivs, projDeclata) ← simpsGetRawProjections str
   return projDeclata.map fun proj ↦
     (rhsArgs.getD (a₀ := default) proj.projNrs.head!,
       { proj with
@@ -818,8 +812,7 @@ def simpsAddProjection (declName : Name) (type lhs rhs : Expr) (args : Array Exp
   let eqAp := mkApp3 (mkConst `Eq [lvl]) type lhs rhs
   let declType ← mkForallFVars args eqAp
   let declValue ← mkLambdaFVars args prf
-  if cfg.trace then
-    logInfo m!"[simps] > adding projection {declName}:\n        > {declType}"
+  trace[simps.verbose] "[simps] > adding projection {declName}:\n        > {declType}"
   try
     addDecl <| .thmDecl {
       name := declName
@@ -832,7 +825,9 @@ def simpsAddProjection (declName : Name) (type lhs rhs : Expr) (args : Array Exp
     addSimpTheorem simpExtension declName true false .global <| eval_prio default
   -- cfg.attrs.mapM fun nm ↦ setAttribute nm declName tt -- todo: deal with attributes
   if let some tgt := cfg.addAdditive then
-    ToAdditive.addToAdditiveAttr declName ⟨false, cfg.trace, tgt, none, true, ref⟩
+    ToAdditive.addToAdditiveAttr declName
+      -- tracing seems to fail
+      ⟨false, (← getOptions) |>.getBool `trace.to_additive, tgt, none, true, ref⟩
 
 /--
 Perform head-structure-eta-reduction on expression `e`. That is, if `e` is of the form
@@ -919,8 +914,7 @@ partial def simpsAddProjections (nm : Name) (type lhs rhs : Expr)
   if !rhsWhnf.getAppFn.isConstOf ctor then
     -- if I'm about to run into an error, try to set the transparency for `rhsMd` higher.
     if cfg.rhsMd == .reducible && (mustBeStr || !todoNext.isEmpty || !toApply.isEmpty) then
-      if cfg.trace then
-        logInfo m!"[simps] > The given definition is not a constructor {""
+      trace[simps.verbose] "[simps] > The given definition is not a constructor {""
           }application:\n        >   {rhsWhnf}\n        > Retrying with the options {""
           }\{rhsMd := semireducible, simpRhs := tt}."
       let nms ← simpsAddProjections nm type lhs rhs args mustBeStr
@@ -988,16 +982,15 @@ partial def simpsAddProjections (nm : Name) (type lhs rhs : Expr)
   If `shortNm` is true, the generated names will only use the last projection name.
   If `trc` is true, trace as if `trace.simps.verbose` is true. -/
 def simpsTac (ref : Syntax) (nm : Name) (cfg : Simps.Config := {}) (todo : List String := [])
-    (trc := false) : AttrM (Array Name) := do
+    (trc := false) : AttrM (Array Name) :=
+  withOptions (· |>.updateBool `trace.simps.verbose (trc || ·)) <| do
   let env ← getEnv
   let some d := env.find? nm | throwError "Declaration {nm} doesn't exist."
   let lhs : Expr := mkConst d.name <| d.levelParams.map Level.param
   let todo := todo.eraseDup.map fun proj ↦ "_" ++ proj
-  let mut cfg :=
-    { cfg with trace := cfg.trace || (← getOptions).getBool `trace.simps.verbose || trc }
+  let mut cfg := cfg
   if let some addAdditive := ToAdditive.findTranslation? env nm then
-    if cfg.trace then
-      logInfo m!"[simps] > @[to_additive] will be added to all generated lemmas."
+    trace[simps.verbose] "[simps] > @[to_additive] will be added to all generated lemmas."
     cfg := { cfg with addAdditive }
   MetaM.run' <| simpsAddProjections ref d.levelParams
     nm d.type lhs (d.value?.getD default) #[] (mustBeStr := true) cfg todo []

@@ -47,8 +47,6 @@ Heyting algebras are the order theoretic equivalent of cartesian-closed categori
 Heyting, Brouwer, algebra, implication, negation, intuitionistic
 -/
 
-set_option warningAsError false
-
 open Function OrderDual
 
 universe u
@@ -61,6 +59,7 @@ variable {ι α β : Type _}
 /-- Syntax typeclass for Heyting implication `⇨`. -/
 @[notation_class]
 class HImp (α : Type _) where
+  /-- Heyting implication `⇨` -/
   himp : α → α → α
 #align has_himp HImp
 
@@ -68,10 +67,12 @@ class HImp (α : Type _) where
 
 The difference between `HasCompl` and `HNot` is that the former belongs to Heyting algebras,
 while the latter belongs to co-Heyting algebras. They are both pseudo-complements, but `compl`
-underestimates while `HNot` overestimates. In boolean algebras, they are equal. See `hnot_eq_compl`.
+underestimates while `HNot` overestimates. In boolean algebras, they are equal.
+See `hnot_eq_compl`.
 -/
 @[notation_class]
 class HNot (α : Type _) where
+  /-- Heyting negation `￢` -/
   hnot : α → α
 #align has_hnot HNot
 
@@ -79,8 +80,10 @@ export HImp (himp)
 export SDiff (sdiff)
 export HNot (hnot)
 
+/-- Heyting implication -/
 infixr:60 " ⇨ " => himp
 
+/-- Heyting negation -/
 prefix:72 "￢" => hnot
 
 section
@@ -175,36 +178,46 @@ Heyting implication such that `a ⇨` is right adjoint to `a ⊓`.
 
  This generalizes `heyting_algebra` by not requiring a bottom element. -/
 class GeneralizedHeytingAlgebra (α : Type _) extends Lattice α, Top α, HImp α where
+  /-- `⊤` is a greatest element -/
   le_top : ∀ a : α, a ≤ ⊤
+  /-- `a ⇨` is right adjoint to `a ⊓` -/
   le_himp_iff (a b c : α) : a ≤ b ⇨ c ↔ a ⊓ b ≤ c
 #align generalized_heyting_algebra GeneralizedHeytingAlgebra
 
-/-- A generalized co-Heyting algebra is a lattice with an additional binary difference operation `\`
-such that `\ a` is right adjoint to `⊔ a`.
+/-- A generalized co-Heyting algebra is a lattice with an additional binary
+difference operation `\` such that `\ a` is right adjoint to `⊔ a`.
 
 This generalizes `coheyting_algebra` by not requiring a top element. -/
 class GeneralizedCoheytingAlgebra (α : Type _) extends Lattice α, Bot α, SDiff α where
+  /-- `⊥` is a least element -/
   bot_le : ∀ a : α, ⊥ ≤ a
+  /-- `\ a` is right adjoint to `⊔ a` -/
   sdiff_le_iff (a b c : α) : a \ b ≤ c ↔ a ≤ b ⊔ c
 #align generalized_coheyting_algebra GeneralizedCoheytingAlgebra
 
 /-- A Heyting algebra is a bounded lattice with an additional binary operation `⇨` called Heyting
 implication such that `a ⇨` is right adjoint to `a ⊓`. -/
 class HeytingAlgebra (α : Type _) extends GeneralizedHeytingAlgebra α, Bot α, HasCompl α where
+  /-- `⊥` is a least element -/
   bot_le : ∀ a : α, ⊥ ≤ a
+  /-- `a ⇨` is right adjoint to `a ⊓` -/
   himp_bot (a : α) : a ⇨ ⊥ = aᶜ
 #align heyting_algebra HeytingAlgebra
 
 /-- A co-Heyting algebra is a bounded  lattice with an additional binary difference operation `\`
 such that `\ a` is right adjoint to `⊔ a`. -/
 class CoheytingAlgebra (α : Type _) extends GeneralizedCoheytingAlgebra α, Top α, HNot α where
+  /-- `⊤` is a greatest element -/
   le_top : ∀ a : α, a ≤ ⊤
+  /-- `⊤ \ a` is `￢a` -/
   top_sdiff (a : α) : ⊤ \ a = ￢a
 #align coheyting_algebra CoheytingAlgebra
 
 /-- A bi-Heyting algebra is a Heyting algebra that is also a co-Heyting algebra. -/
 class BiheytingAlgebra (α : Type _) extends HeytingAlgebra α, SDiff α, HNot α where
+  /-- `\ a` is right adjoint to `⊔ a` -/
   sdiff_le_iff (a b c : α) : a \ b ≤ c ↔ a ≤ b ⊔ c
+  /-- `⊤ \ a` is `￢a` -/
   top_sdiff (a : α) : ⊤ \ a = ￢a
 #align biheyting_algebra BiheytingAlgebra
 
@@ -222,8 +235,8 @@ instance (priority := 100) GeneralizedCoheytingAlgebra.toOrderBot [GeneralizedCo
 
 -- See note [lower instance priority]
 instance (priority := 100) HeytingAlgebra.toBoundedOrder [HeytingAlgebra α] : BoundedOrder α :=
-  { ‹HeytingAlgebra α› with }
-#align heyting_algebra.to_bounded_order HeytingAlgebra.toBoundedOrder
+  { bot_le := ‹HeytingAlgebra α›.bot_le }
+--#align heyting_algebra.to_bounded_order HeytingAlgebra.toBoundedOrder
 
 -- See note [lower instance priority]
 instance (priority := 100) CoheytingAlgebra.toBoundedOrder [CoheytingAlgebra α] : BoundedOrder α :=
@@ -314,7 +327,6 @@ theorem le_himp : a ≤ b ⇨ a :=
 #align le_himp le_himp
 
 -- `p → p → q ↔ p → q`
-@[simp]
 theorem le_himp_iff_left : a ≤ a ⇨ b ↔ a ≤ b := by rw [le_himp_iff, inf_idem]
 #align le_himp_iff_left le_himp_iff_left
 
@@ -367,11 +379,14 @@ theorem himp_himp (a b c : α) : a ⇨ b ⇨ c = a ⊓ b ⇨ c :=
 #align himp_himp himp_himp
 
 -- `(q → r) → (p → q) → q → r`
-@[simp]
 theorem himp_le_himp_himp_himp : b ⇨ c ≤ (a ⇨ b) ⇨ a ⇨ c := by
   rw [le_himp_iff, le_himp_iff, inf_assoc, himp_inf_self, ← inf_assoc, himp_inf_self, inf_assoc]
   exact inf_le_left
 #align himp_le_himp_himp_himp himp_le_himp_himp_himp
+
+@[simp]
+theorem himp_inf_himp_inf_le : (b ⇨ c) ⊓ (a ⇨ b) ⊓ a ≤ c :=
+  by simpa using @himp_le_himp_himp_himp
 
 -- `p → q → r ↔ q → p → r`
 theorem himp_left_comm (a b c : α) : a ⇨ b ⇨ c = b ⇨ a ⇨ c := by simp_rw [himp_himp, inf_comm]
@@ -463,10 +478,9 @@ instance Prod.generalizedHeytingAlgebra [GeneralizedHeytingAlgebra β] :
 #align prod.generalized_heyting_algebra Prod.generalizedHeytingAlgebra
 
 instance Pi.generalizedHeytingAlgebra {α : ι → Type _} [∀ i, GeneralizedHeytingAlgebra (α i)] :
-    GeneralizedHeytingAlgebra (∀ i, α i) := by
-  sorry
-  -- pi_instance
-  -- exact fun a b c => forall_congr' fun i => le_himp_iff
+    GeneralizedHeytingAlgebra (∀ i, α i) :=
+  { Pi.instLatticeForAll, Pi.instOrderTopForAllInstLEForAll with
+    le_himp_iff := fun i => by simp [le_def] }
 #align pi.generalized_heyting_algebra Pi.generalizedHeytingAlgebra
 
 end GeneralizedHeytingAlgebra
@@ -498,7 +512,6 @@ theorem Disjoint.disjoint_sdiff_right (h : Disjoint a b) : Disjoint a (b \ c) :=
   h.mono_right sdiff_le
 #align disjoint.disjoint_sdiff_right Disjoint.disjoint_sdiff_right
 
-@[simp]
 theorem sdiff_le_iff_left : a \ b ≤ b ↔ a ≤ b := by rw [sdiff_le_iff, sup_idem]
 #align sdiff_le_iff_left sdiff_le_iff_left
 
@@ -514,22 +527,18 @@ theorem le_sup_sdiff : a ≤ b ⊔ a \ b :=
 theorem le_sdiff_sup : a ≤ a \ b ⊔ b := by rw [sup_comm, ← sdiff_le_iff]
 #align le_sdiff_sup le_sdiff_sup
 
-@[simp]
 theorem sup_sdiff_left : a ⊔ a \ b = a :=
   sup_of_le_left sdiff_le
 #align sup_sdiff_left sup_sdiff_left
 
-@[simp]
 theorem sup_sdiff_right : a \ b ⊔ a = a :=
   sup_of_le_right sdiff_le
 #align sup_sdiff_right sup_sdiff_right
 
-@[simp]
 theorem inf_sdiff_left : a \ b ⊓ a = a \ b :=
   inf_of_le_left sdiff_le
 #align inf_sdiff_left inf_sdiff_left
 
-@[simp]
 theorem inf_sdiff_right : a ⊓ a \ b = a \ b :=
   inf_of_le_right sdiff_le
 #align inf_sdiff_right inf_sdiff_right
@@ -585,12 +594,15 @@ theorem bot_sdiff : ⊥ \ a = ⊥ :=
   sdiff_eq_bot_iff.2 bot_le
 #align bot_sdiff bot_sdiff
 
-@[simp]
 theorem sdiff_sdiff_sdiff_le_sdiff : (a \ b) \ (a \ c) ≤ c \ b := by
   rw [sdiff_le_iff, sdiff_le_iff, sup_left_comm, sup_sdiff_self, sup_left_comm, sdiff_sup_self,
     sup_left_comm]
   exact le_sup_left
 #align sdiff_sdiff_sdiff_le_sdiff sdiff_sdiff_sdiff_le_sdiff
+
+@[simp]
+theorem le_sup_sdiff_sup_sdiff : a ≤ b ⊔ (a \ c ⊔ c \ b) :=
+  by simpa using @sdiff_sdiff_sdiff_le_sdiff
 
 theorem sdiff_sdiff (a b c : α) : (a \ b) \ c = a \ (b ⊔ c) :=
   eq_of_forall_ge_iff fun d => by simp_rw [sdiff_le_iff, sup_assoc]; rfl
@@ -720,7 +732,8 @@ instance (priority := 100) GeneralizedCoheytingAlgebra.toDistribLattice : Distri
   { ‹GeneralizedCoheytingAlgebra α› with
     le_sup_inf :=
       fun a b c => by simp_rw [← sdiff_le_iff, le_inf_iff, sdiff_le_iff, ← le_inf_iff]; rfl }
-#align generalized_coheyting_algebra.to_distrib_lattice GeneralizedCoheytingAlgebra.toDistribLattice
+#align generalized_coheyting_algebra.to_distrib_lattice
+  GeneralizedCoheytingAlgebra.toDistribLattice
 
 instance : GeneralizedHeytingAlgebra αᵒᵈ :=
   { OrderDual.lattice α, OrderDual.orderTop α with
@@ -736,10 +749,9 @@ instance Prod.generalizedCoheytingAlgebra [GeneralizedCoheytingAlgebra β] :
 #align prod.generalized_coheyting_algebra Prod.generalizedCoheytingAlgebra
 
 instance Pi.generalizedCoheytingAlgebra {α : ι → Type _} [∀ i, GeneralizedCoheytingAlgebra (α i)] :
-    GeneralizedCoheytingAlgebra (∀ i, α i) := by
-  sorry
-  -- pi_instance
-  -- exact fun a b c => forall_congr' fun i => sdiff_le_iff
+    GeneralizedCoheytingAlgebra (∀ i, α i) :=
+  { Pi.instLatticeForAll, Pi.instOrderBotForAllInstLEForAll with
+    sdiff_le_iff := fun i => by simp [le_def] }
 #align pi.generalized_coheyting_algebra Pi.generalizedCoheytingAlgebra
 
 end GeneralizedCoheytingAlgebra
@@ -825,15 +837,11 @@ theorem LE.le.disjoint_compl_right (h : a ≤ b) : Disjoint a (bᶜ) :=
 #align has_le.le.disjoint_compl_right LE.le.disjoint_compl_right
 
 theorem IsCompl.compl_eq (h : IsCompl a b) : aᶜ = b :=
-  sorry
-  -- Hopefully will work in nightly-2022-11-30
-  -- h.1.le_compl_left.antisymm' <| Disjoint.le_of_codisjoint disjoint_compl_left h.2
+  h.1.le_compl_left.antisymm' <| Disjoint.le_of_codisjoint disjoint_compl_left h.2
 #align is_compl.compl_eq IsCompl.compl_eq
 
 theorem IsCompl.eq_compl (h : IsCompl a b) : a = bᶜ :=
-  sorry
-  -- Hopefully will work in nightly-2022-11-30
-  -- h.1.le_compl_right.antisymm <| Disjoint.le_of_codisjoint disjoint_compl_left h.2.symm
+  h.1.le_compl_right.antisymm <| Disjoint.le_of_codisjoint disjoint_compl_left h.2.symm
 #align is_compl.eq_compl IsCompl.eq_compl
 
 theorem compl_unique (h₀ : a ⊓ b = ⊥) (h₁ : a ⊔ b = ⊤) : aᶜ = b :=
@@ -918,40 +926,33 @@ theorem compl_compl_himp_distrib (a b : α) : (a ⇨ b)ᶜᶜ = aᶜᶜ ⇨ bᶜ
 #align compl_compl_himp_distrib compl_compl_himp_distrib
 
 instance : CoheytingAlgebra αᵒᵈ :=
-  sorry
-  -- Hopefully will work in nightly-2022-11-30
-  -- { OrderDual.lattice α, OrderDual.boundedOrder α with
-  --   hnot := toDual ∘ compl ∘ ofDual,
-  --   sdiff := fun a b => toDual (ofDual b ⇨ ofDual a),
-  --   sdiff_le_iff := fun a b c => by
-  --     rw [sup_comm]
-  --     exact le_himp_iff,
-  --   top_sdiff := himp_bot }
+  { OrderDual.lattice α, OrderDual.boundedOrder α with
+    hnot := toDual ∘ compl ∘ ofDual,
+    sdiff := fun a b => toDual (ofDual b ⇨ ofDual a),
+    sdiff_le_iff := fun a b c => by
+      rw [sup_comm]
+      exact le_himp_iff,
+    top_sdiff := @himp_bot α _ }
 
 @[simp]
 theorem of_dual_hnot (a : αᵒᵈ) : ofDual (￢a) = ofDual aᶜ :=
-  sorry
-  -- rfl
+  rfl
 #align of_dual_hnot of_dual_hnot
 
 @[simp]
 theorem to_dual_compl (a : α) : toDual (aᶜ) = ￢toDual a :=
-  sorry
-  -- rfl
+  rfl
 #align to_dual_compl to_dual_compl
 
 instance Prod.heytingAlgebra [HeytingAlgebra β] : HeytingAlgebra (α × β) :=
-  sorry
-  -- Hopefully will work in nightly-2022-11-30
-  -- { Prod.generalizedHeytingAlgebra, Prod.boundedOrder α β, Prod.hasCompl α β with
-  --   himp_bot := fun a => Prod.ext (himp_bot a.1) (himp_bot a.2) }
+  { Prod.generalizedHeytingAlgebra, Prod.boundedOrder α β, Prod.hasCompl α β with
+     himp_bot := fun a => Prod.ext_iff.2 ⟨himp_bot a.1, himp_bot a.2⟩ }
 #align prod.heyting_algebra Prod.heytingAlgebra
 
 instance Pi.heytingAlgebra {α : ι → Type _} [∀ i, HeytingAlgebra (α i)] :
-    HeytingAlgebra (∀ i, α i) := by
-  sorry
-  -- pi_instance
-  -- exact fun a b c => forall_congr' fun i => le_himp_iff
+    HeytingAlgebra (∀ i, α i) :=
+  { instOrderBotForAllInstLEForAll, Pi.generalizedHeytingAlgebra with
+    himp_bot := fun f => funext fun i => himp_bot (f i) }
 #align pi.heyting_algebra Pi.heytingAlgebra
 
 end HeytingAlgebra
@@ -1105,20 +1106,17 @@ theorem hnot_hnot_sdiff_distrib (a b : α) : ￢￢(a \ b) = ￢￢a \ ￢￢b :
 #align hnot_hnot_sdiff_distrib hnot_hnot_sdiff_distrib
 
 instance : HeytingAlgebra αᵒᵈ :=
-  sorry
-  -- Hopefully will work in nightly-2022-11-30
-  -- { OrderDual.lattice α, OrderDual.boundedOrder α with
-  --   compl := toDual ∘ hnot ∘ ofDual,
-  --   himp := fun a b => toDual (ofDual b \ ofDual a),
-  --   le_himp_iff := fun a b c => by
-  --     rw [inf_comm]
-  --     exact sdiff_le_iff,
-  --   himp_bot := top_sdiff' }
+  { OrderDual.lattice α, OrderDual.boundedOrder α with
+    compl := toDual ∘ hnot ∘ ofDual,
+    himp := fun a b => toDual (ofDual b \ ofDual a),
+    le_himp_iff := fun a b c => by
+      rw [inf_comm]
+      exact sdiff_le_iff,
+    himp_bot := @top_sdiff' α _ }
 
 @[simp]
 theorem of_dual_compl (a : αᵒᵈ) : ofDual (aᶜ) = ￢ofDual a :=
-  sorry
-  -- rfl
+  rfl
 #align of_dual_compl of_dual_compl
 
 @[simp]
@@ -1128,8 +1126,7 @@ theorem of_dual_himp (a b : αᵒᵈ) : ofDual (a ⇨ b) = ofDual b \ ofDual a :
 
 @[simp]
 theorem to_dual_hnot (a : α) : toDual (￢a) = toDual aᶜ :=
-  sorry
-  -- rfl
+  rfl
 #align to_dual_hnot to_dual_hnot
 
 @[simp]
@@ -1138,18 +1135,15 @@ theorem to_dual_sdiff (a b : α) : toDual (a \ b) = toDual b ⇨ toDual a :=
 #align to_dual_sdiff to_dual_sdiff
 
 instance Prod.coheytingAlgebra [CoheytingAlgebra β] : CoheytingAlgebra (α × β) :=
-  sorry
-  -- Hopefully will work in nightly-2022-11-30
-  -- { Prod.lattice α β, Prod.boundedOrder α β, Prod.sdiff α β, Prod.hnot α β with
-  --   sdiff_le_iff := fun a b c => and_congr sdiff_le_iff sdiff_le_iff,
-  --   top_sdiff := fun a => Prod.ext (top_sdiff' a.1) (top_sdiff' a.2) }
+  { Prod.lattice α β, Prod.boundedOrder α β, Prod.sdiff α β, Prod.hnot α β with
+    sdiff_le_iff := fun _ _ _ => and_congr sdiff_le_iff sdiff_le_iff,
+    top_sdiff := fun a => Prod.ext_iff.2 ⟨top_sdiff' a.1, top_sdiff' a.2⟩ }
 #align prod.coheyting_algebra Prod.coheytingAlgebra
 
 instance Pi.coheytingAlgebra {α : ι → Type _} [∀ i, CoheytingAlgebra (α i)] :
-    CoheytingAlgebra (∀ i, α i) := by
-  sorry
-  -- pi_instance
-  -- exact fun a b c => forall_congr' fun i => sdiff_le_iff
+    CoheytingAlgebra (∀ i, α i) :=
+  { instOrderTopForAllInstLEForAll, Pi.generalizedCoheytingAlgebra with
+    top_sdiff := fun f => funext fun i => top_sdiff' (f i) }
 #align pi.coheyting_algebra Pi.coheytingAlgebra
 
 end CoheytingAlgebra
@@ -1296,53 +1290,67 @@ namespace PUnit
 
 variable (a b : PUnit.{u + 1})
 
-instance : BiheytingAlgebra PUnit := by
-  sorry
-  -- refine_struct
-  --       { PUnit.linearOrder with top := star, bot := star, sup := fun _ _ => star,
-  --         inf := fun _ _ => star, compl := fun _ => star, sdiff := fun _ _ => star,
-  --         hnot := fun _ => star, himp := fun _ _ => star } <;>
-  --     intros <;>
-  --   first |trivial|exact Subsingleton.elim _ _
+instance : BiheytingAlgebra PUnit.{u+1} :=
+  { instLinearOrderPUnit.{u} with
+    top := unit,
+    bot := unit,
+    sup := fun _ _ => unit,
+    inf := fun _ _ => unit,
+    compl := fun _ => unit,
+    sdiff := fun _ _ => unit,
+    hnot := fun _ => unit,
+    himp := fun _ _ => unit,
+    le_top := fun _ => trivial,
+    le_sup_left := fun _ _ => trivial,
+    le_sup_right := fun _ _ => trivial,
+    sup_le := fun _ _ _ _ _ => trivial,
+    inf_le_left := fun _ _ => trivial,
+    inf_le_right := fun _ _ => trivial,
+    le_inf := fun _ _ _ _ _ => trivial,
+    bot_le := fun _ => trivial,
+    le_himp_iff := fun _ _ _ => Iff.rfl,
+    himp_bot := fun _ => rfl,
+    top_sdiff := fun _ => rfl,
+    sdiff_le_iff := fun _ _ _ => Iff.rfl }
 
 @[simp]
-theorem top_eq : (⊤ : PUnit) = star :=
+theorem top_eq : (⊤ : PUnit) = unit :=
   rfl
 #align punit.top_eq PUnit.top_eq
 
 @[simp]
-theorem bot_eq : (⊥ : PUnit) = star :=
+theorem bot_eq : (⊥ : PUnit) = unit :=
   rfl
 #align punit.bot_eq PUnit.bot_eq
 
-@[simp]
-theorem sup_eq : a ⊔ b = star :=
+@[simp, nolint simpNF]
+theorem sup_eq : a ⊔ b = unit :=
   rfl
 #align punit.sup_eq PUnit.sup_eq
 
-@[simp]
-theorem inf_eq : a ⊓ b = star :=
+@[simp, nolint simpNF]
+theorem inf_eq : a ⊓ b = unit :=
   rfl
 #align punit.inf_eq PUnit.inf_eq
 
 @[simp]
-theorem compl_eq : aᶜ = star :=
+theorem compl_eq : aᶜ = unit :=
   rfl
 #align punit.compl_eq PUnit.compl_eq
 
-@[simp]
-theorem sdiff_eq : a \ b = star :=
+@[simp, nolint simpNF]
+theorem sdiff_eq : a \ b = unit :=
   rfl
 #align punit.sdiff_eq PUnit.sdiff_eq
 
 @[simp, nolint simpNF]
-theorem hnot_eq : ￢a = star :=
+theorem hnot_eq : ￢a = unit :=
   rfl
 #align punit.hnot_eq PUnit.hnot_eq
 
 -- eligible for `dsimp`
-@[simp]
-theorem himp_eq : a ⇨ b = star :=
+@[simp, nolint simpNF]
+theorem himp_eq : a ⇨ b = unit :=
   rfl
 #align punit.himp_eq PUnit.himp_eq
 

@@ -170,12 +170,8 @@ by
 example (h : 1 < 0) (g : ¬ 37 < 42) (k : True) /-(l : (-7 : ℤ) < 5)-/: 3 < 7 := by
   linarith [(rfl : 0 = 0)]
 
--- FIXME zify is using `eq.refl`, because it relies on `simp`.
--- See https://github.com/leanprover-community/mathlib4/issues/741
-
--- example (h : 1 < 0) : 3 = 7 := by
---   linarith [Int.zero_lt_one]
---   all_goals admit
+example (h : 1 < 0) : 3 = 7 := by
+  linarith [Int.zero_lt_one]
 
 example (h1 : (1 : ℕ) < 1) : False := by
   linarith
@@ -186,19 +182,39 @@ example (a b c : ℕ) : a + b ≥ a := by
 example (a b i : ℕ) (h1 :  ¬ a < i) (h2 : b < i) (h3 : a ≤ b) : False := by
   linarith
 
--- example (x y z : ℕ) (hx : x ≤ 3*y) (h2 : y ≤ 2*z) (h3 : x ≥ 6*z) : x = 3*y := by
---   linarith
+example (x y : ℕ) (h : x < 3 * y) : True := by
+  zify at h
+  trivial
 
--- example (a b c : ℕ) : ¬ a + b < a := by
---   linarith
+example : (Nat.cast 2 : ℤ) = 2 := Nat.cast_ofNat
 
--- example (n : ℕ) (h1 : n ≤ 3) (h2 : n > 2) : n = 3 := by linarith
+example (x y z : ℕ) (hx : x ≤ 3*y) (h2 : y ≤ 2*z) (h3 : x ≥ 6*z) : x = 3*y := by
+  linarith
 
--- example (z : ℕ) (hz : ¬ z ≥ 2) (h2 : ¬ z + 1 ≤ 2) : false := by
---   linarith
+example (a b c : ℕ) : ¬ a + b < a := by
+  linarith
 
--- example (z : ℕ) (hz : ¬ z ≥ 2) : z + 1 ≤ 2 := by
---   linarith
+example (n : ℕ) (h1 : n ≤ 3) (h2 : n > 2) : n = 3 := by
+  linarith
+
+example (z : ℕ) (hz : ¬ z ≥ 2) (h2 : ¬ z + 1 ≤ 2) : False := by
+  linarith
+
+example (z : ℕ) (hz : ¬ z ≥ 2) : z + 1 ≤ 2 := by
+  linarith
+
+example (i : ℤ) (hi : i > 5) : 2 * i + 3 > 11 := by
+  linarith
+
+example (m : ℕ) : m * m + m + (2 * m + 2) = m * m + m + (m + 1) + (m + 1) := by
+  linarith
+
+example (mess : ℕ → ℕ) (S n : ℕ) :
+    mess S + (n * mess S + n * 2 + 1) < n * mess S + mess S + (n * 2 + 2) := by
+  linarith
+
+example (p n p' n' : ℕ) (h : p + n' = p' + n) : n + p' = n' + p := by
+  linarith
 
 -- example (a b c : ℚ) (h1 : 1 / a < b) (h2 : b < c) : 1 / a < c := by
 --   linarith

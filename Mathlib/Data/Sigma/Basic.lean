@@ -182,7 +182,7 @@ theorem elim_val {γ} (f : ∀ a, β a → γ) (a b) : PSigma.elim f ⟨a, b⟩ 
 instance [Inhabited α] [Inhabited (β default)] : Inhabited (PSigma β) :=
   ⟨⟨default, default⟩⟩
 
-instance [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] : DecidableEq (PSigma β)
+instance decidableEq [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] : DecidableEq (PSigma β)
   | ⟨a₁, b₁⟩, ⟨a₂, b₂⟩ =>
     match a₁, b₁, a₂, b₂, h₁ a₁ a₂ with
     | _, b₁, _, b₂, isTrue (Eq.refl _) =>

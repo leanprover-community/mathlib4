@@ -91,7 +91,6 @@ theorem or_eq_true_eq_eq_true_or_eq_true (a b : Bool) :
     ((a || b) = true) = (a = true ∨ b = true) := by simp
 #align bor_eq_true_eq_eq_tt_or_eq_tt Bool.or_eq_true_eq_eq_true_or_eq_true
 
-@[simp]
 theorem not_eq_true_eq_eq_false (a : Bool) : (not a = true) = (a = false) := by cases a <;> simp
 #align bnot_eq_true_eq_eq_ff Bool.not_eq_true_eq_eq_false
 
@@ -107,7 +106,6 @@ theorem or_eq_false_eq_eq_false_and_eq_false (a b : Bool) :
   cases a <;> cases b <;> simp
 #align bor_eq_false_eq_eq_ff_and_eq_ff Bool.or_eq_false_eq_eq_false_and_eq_false
 
-@[simp]
 theorem not_eq_false_eq_eq_true (a : Bool) : (not a = false) = (a = true) := by cases a <;> simp
 #align bnot_eq_ff_eq_eq_tt Bool.not_eq_false_eq_eq_true
 
