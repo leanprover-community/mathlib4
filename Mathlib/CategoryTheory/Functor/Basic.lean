@@ -129,9 +129,9 @@ theorem map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
 -- so have not been ported.
 
 @[simp]
-theorem to_prefunctor_comp (F : C ⥤ D) (G : D ⥤ E) :
+theorem toPrefunctor_comp (F : C ⥤ D) (G : D ⥤ E) :
     F.toPrefunctor.comp G.toPrefunctor = (F ⋙ G).toPrefunctor := rfl
-#align category_theory.functor.to_prefunctor_comp CategoryTheory.Functor.to_prefunctor_comp
+#align category_theory.functor.to_prefunctor_comp CategoryTheory.Functor.toPrefunctor_comp
 
 end
 
