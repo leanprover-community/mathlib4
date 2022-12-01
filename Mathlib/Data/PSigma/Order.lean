@@ -23,7 +23,7 @@ Related files are:
 * `Data.Prod.Lex`: Lexicographic order on `α × β`.
 ## TODO
 Define the disjoint order on `Σ' i, α i`, where `x ≤ y` only if `x.fst = y.fst`.
-Prove that a sigma type is a `no_max_order`, `no_min_order`, `densely_ordered` when its summands
+Prove that a sigma type is a `NoMaxOrder`, `NoMinOrder`, `DenselyOrdered` when its summands
 are.
 -/
 
