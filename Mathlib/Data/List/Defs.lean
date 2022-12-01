@@ -101,10 +101,16 @@ def alternatingProd {G : Type _} [One G] [Mul G] [Inv G] : List G → G
 #align list.partition_map List.partitionMap
 #align list.find List.find?
 
+-- TODO: move
+@[reducible] def Functor.mapConstRev {f : Type u → Type v} [Functor f] {α β : Type u} :
+  f β → α → f α :=
+fun a b => Functor.mapConst b a
+--infixr ` $> `:100  := functor.map_const_rev
+
 /-- `mfind tac l` returns the first element of `l` on which `tac` succeeds, and
 fails otherwise. -/
 def findM {α} {m : Type u → Type v} [Monad m] [Alternative m] (tac : α → m PUnit) : List α → m α :=
-  List.firstM fun a => m (tac a) $> a
+  List.firstM <| fun a => Functor.mapConstRev (tac a) a
 #align list.mfind List.findM
 
 /-- `mbfind' p l` returns the first element `a` of `l` for which `p a` returns
@@ -255,9 +261,9 @@ defined) is the list of lists of the form `insert_nth n t (ys ++ ts)` for `0 ≤
         [1, 10, 2, 3, 4, 5, 6],
         [1, 2, 10, 3, 4, 5, 6]]) -/
 def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List α → β) → List α × List β
-  | [], f => (ts, r)
+  | [], _ => (ts, r)
   | y :: ys, f =>
-    let (us, zs) := permutationsAux2 t ys r (fun x: List α => f (y :: x))
+    let (us, zs) := permutationsAux2 t ys r ys (fun x: List α => f (y :: x))
     (y :: us, f (t :: y :: us) :: zs)
 #align list.permutations_aux2 List.permutationsAux2
 
@@ -372,11 +378,14 @@ infixr:82
 
 section Chain
 
-instance decidableChain [DecidableRel R] (a : α) (l : List α) : Decidable (Chain R a l) := by
-  induction l generalizing a <;> simp only [List.Chain.nil, chain_cons] <;> skip <;> infer_instance
+noncomputable instance decidableChain [DecidableRel R] (a : α) (l : List α) :
+    Decidable (Chain R a l) := by
+  induction l generalizing a with
+  | nil => simp only [List.Chain.nil]; infer_instance
+  | cons a as ih => haveI := ih; simp only [List.chain_cons]; infer_instance
 #align list.decidable_chain List.decidableChain
 
-instance decidableChain' [DecidableRel R] (l : List α) : Decidable (Chain' R l) := by
+noncomputable instance decidableChain' [DecidableRel R] (l : List α) : Decidable (Chain' R l) := by
   cases l <;> dsimp only [List.Chain'] <;> infer_instance
 #align list.decidable_chain' List.decidableChain'
 
@@ -428,11 +437,12 @@ of `a ∈ l` and `p a`. -/
 def chooseX : ∀ l : List α, ∀ hp : ∃ a, a ∈ l ∧ p a, { a // a ∈ l ∧ p a }
   | [], hp => False.elim (Exists.elim hp fun a h => not_mem_nil a h.left)
   | l :: ls, hp =>
-    if pl : p l then ⟨l, ⟨Or.inl rfl, pl⟩⟩
+    if pl : p l then ⟨l, ⟨mem_cons.mpr <| Or.inl rfl, pl⟩⟩
     else
       let ⟨a, ⟨a_mem_ls, pa⟩⟩ :=
-        chooseX ls (hp.imp fun b ⟨o, h₂⟩ => ⟨o.resolve_left fun e => pl <| e ▸ h₂, h₂⟩)
-      ⟨a, ⟨Or.inr a_mem_ls, pa⟩⟩
+        chooseX ls
+          (hp.imp fun _ ⟨o, h₂⟩ => ⟨(mem_cons.mp o).resolve_left fun e => pl <| e ▸ h₂, h₂⟩)
+      ⟨a, ⟨mem_cons.mpr <| Or.inr a_mem_ls, pa⟩⟩
 #align list.choose_x List.chooseX
 
 /-- Given a decidable predicate `p` and a proof of existence of `a ∈ l` such that `p a`,
