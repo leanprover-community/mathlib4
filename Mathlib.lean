@@ -109,6 +109,7 @@ import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.PNat.Defs
+import Mathlib.Data.PSigma.Order
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.Lex
