@@ -3,10 +3,11 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Logic.Basic
-import Mathlib.Data.Nat.Basic
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Control.Functor
 import Mathlib.Data.List.Chain
+import Mathlib.Data.Nat.Basic
+import Mathlib.Logic.Basic
 import Std.Tactic.Lint.Basic
 import Std.Data.RBMap.Basic
 
@@ -45,7 +46,7 @@ instance [DecidableEq α] : SDiff (List α) :=
 /-- "default" `nth` function: returns `d` instead of `none` in the case
   that the index is out of bounds. -/
 @[nolint unusedArguments]
-def nthd (d : α) : ∀ (l : List α) (n : ℕ), α
+def nthd (d : α) : ∀ (_ : List α) (_ : ℕ), α
   | [], _ => d
   | x :: _, 0 => x
   | _ :: xs, n + 1 => nthd d xs n
@@ -54,7 +55,7 @@ def nthd (d : α) : ∀ (l : List α) (n : ℕ), α
 /-- "inhabited" `nth` function: returns `default` instead of `none` in the case
   that the index is out of bounds. -/
 @[nolint unusedArguments]
-def inth [h : Inhabited α] (l : List α) (n : Nat) : α :=
+def inth [Inhabited α] (l : List α) (n : Nat) : α :=
   nthd default l n
 #align list.inth List.inth
 
@@ -428,7 +429,7 @@ variable (p : α → Prop) [DecidablePred p] (l : List α)
 /-- Given a decidable predicate `p` and a proof of existence of `a ∈ l` such that `p a`,
 choose the first element with this property. This version returns both `a` and proofs
 of `a ∈ l` and `p a`. -/
-def chooseX : ∀ l : List α, ∀ hp : ∃ a, a ∈ l ∧ p a, { a // a ∈ l ∧ p a }
+def chooseX : ∀ l : List α, ∀ _ : ∃ a, a ∈ l ∧ p a, { a // a ∈ l ∧ p a }
   | [], hp => False.elim (Exists.elim hp fun a h => not_mem_nil a h.left)
   | l :: ls, hp =>
     if pl : p l then ⟨l, ⟨mem_cons.mpr <| Or.inl rfl, pl⟩⟩
