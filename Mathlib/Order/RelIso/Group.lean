@@ -3,8 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathbin.Algebra.Group.Defs
-import Mathbin.Order.RelIso.Basic
+import Mathlib.Algebra.Group.Defs
+import Mathlib.Order.RelIso.Basic
 
 /-!
 # Relation isomorphisms form a group
@@ -25,14 +25,14 @@ instance : Group (r ≃r r) where
   mul_left_inv f := ext f.symm_apply_apply
 
 @[simp]
-theorem coe_one : ⇑(1 : r ≃r r) = id :=
+theorem toFun_one : (1 : r ≃r r).toFun = id :=
   rfl
-#align rel_iso.coe_one RelIso.coe_one
+#align rel_iso.coe_one RelIso.toFun_one
 
 @[simp]
-theorem coe_mul (e₁ e₂ : r ≃r r) : ⇑(e₁ * e₂) = e₁ ∘ e₂ :=
+theorem toFun_mul (e₁ e₂ : r ≃r r) : (e₁ * e₂).toFun = e₁ ∘ e₂ :=
   rfl
-#align rel_iso.coe_mul RelIso.coe_mul
+#align rel_iso.coe_mul RelIso.toFun_mul
 
 theorem mul_apply (e₁ e₂ : r ≃r r) (x : α) : (e₁ * e₂) x = e₁ (e₂ x) :=
   rfl
@@ -49,4 +49,3 @@ theorem apply_inv_self (e : r ≃r r) (x) : e (e⁻¹ x) = x :=
 #align rel_iso.apply_inv_self RelIso.apply_inv_self
 
 end RelIso
-
