@@ -14,9 +14,15 @@ import Std.Data.RBMap.Basic
 ## Definitions on lists
 
 This file contains various definitions on lists. It does not contain
-proofs about these definitions, those are contained in other files in `data/list`
+proofs about these definitions, those are contained in other files in `Data.List`
 -/
 
+-- Porting notes
+-- Many of the definitions in `Data.List.Defs` were already defined upstream in `Std4`
+-- These have been annotated with `#align`s
+-- To make this easier for review, the `#align`s have been placed in order of occurrence
+-- in `mathlib`
+-- TODO: post port, reorder `#align`s to the end.
 
 namespace List
 
@@ -33,104 +39,8 @@ instance [DecidableEq α] : SDiff (List α) :=
 #align list.split_on_p List.splitOnP
 #align list.split_on List.splitOn
 #align list.concat List.concat
-#align list.to_array List.toArray
-#align list.modify_nth_tail List.modifyNthTail
-#align list.modify_head List.modifyHead
-#align list.modify_nth List.modifyNth
-#align list.modify_last List.modifyLast
-#align list.insert_nth List.insertNth
-#align list.take_while List.takeWhile
-#align list.scanl List.scanl
-#align list.scanr List.scanr
-#align list.partition_map List.partitionMap
-#align list.indexes_values List.indexesValues
-#align list.indexes_of List.indexesOf
-#align list.lookmap List.lookmap
-#align list.countp List.countp
-#align list.count List.count
-#align list.inits List.inits
-#align list.tails List.tails
-#align list.sublists' List.sublists'
-#align list.sublists List.sublists
-#align list.forall₂ List.Forall₂
-#align list.transpose List.transpose
-#align list.sections List.sections
-#align list.revzip List.revzip
-#align list.product List.product
-/-- Notation for calculating the product of a `List`
--/
-infixr:82
-  " ×ˢ " =>-- This notation binds more strongly than (pre)images, unions and intersections.
-  List.product
-#align list.sigma List.sigma
-#align list.of_fn List.ofFn
-#align list.of_fn_nth_val List.ofFnNthVal
-#align list.disjoint List.Disjoint
-#align list.pairwise List.Pairwise
-#align list.pairwise_cons List.pairwise_cons
-#align list.decidable_pairwise List.instDecidablePairwise
-#align list.pw_filter List.pwFilter
-#align list.chain List.Chain
-#align list.chain' List.Chain'
-#align list.chain_cons List.chain_cons
-#align list.nodup List.Nodup
-#align list.nodup_decidable List.nodupDecidable
-#align list.range' List.range'
-#align list.reduce_option List.reduceOption
-#align list.ilast' List.ilast'
-#align list.last' List.last'
-#align list.rotate List.rotate
-#align list.rotate' List.rotate'
-#align list.get_rest List.getRest
-
--- The following exist in `Std` with name changes, noted through `#align`
-
--- name changed in Std
 #align list.head' List.head?
-#align list.find List.find?
-#align list.take' List.takeD
-#align list.find_indexes List.findIdxs
-#align list.mbfind List.findM?
-#align list.many List.anyM
-#align list.mall List.allM
-#align list.foldr_with_index List.foldrIdx
-#align list.foldl_with_index List.foldlIdx
-#align list.is_prefix List.isPrefix
-#align list.is_suffix List.isSuffix
-#align list.is_infix List.isInfix
-/-- Notation for `List.isPrefix`
--/
-infixl:50 " <+: " => isPrefix
-/--  Notation for `List.isSuffix`
--/
-infixl:50 " <:+ " => isSuffix
-/-- Notation for `List.isInfix`
--/
-infixl:50 " <:+: " => isInfix
-#align list.mmap_filter List.filterMapM
-#align list.slice List.dropSlice
-#align list.zip_right List.zipRight
-#align list.zip_left' List.zipLeft'
-#align list.zip_right' List.zipRight'
-#align list.zip_left List.zipLeft
-#align list.all_some List.allSome
-#align list.fill_nones List.fillNones
-#align list.take_list List.takeList
-#align list.to_chunks_aux List.toChunksAux
-#align list.to_chunks List.toChunks
-#align list.map_with_prefix_suffix_aux List.mapWithPrefixSuffixAux
-#align list.map_with_prefix_suffix List.mapWithPrefixSuffix
-#align list.map_with_complement List.mapWithComplement
-
-
-
-
-
-
-
-
-
-
+#align list.to_array List.toArray
 
 /-- "default" `nth` function: returns `d` instead of `none` in the case
   that the index is out of bounds. -/
@@ -148,6 +58,15 @@ def inth [h : Inhabited α] (l : List α) (n : Nat) : α :=
   nthd default l n
 #align list.inth List.inth
 
+#align list.modify_nth_tail List.modifyNthTail
+#align list.modify_head List.modifyHead
+#align list.modify_nth List.modifyNth
+#align list.modify_last List.modifyLast
+#align list.insert_nth List.insertNth
+#align list.take' List.takeD
+#align list.take_while List.takeWhile
+#align list.scanl List.scanl
+#align list.scanr List.scanr
 
 /-- Product of a list.
 
@@ -179,13 +98,14 @@ def alternatingProd {G : Type _} [One G] [Mul G] [Inv G] : List G → G
   | g :: h :: t => g * h⁻¹ * alternatingProd t
 #align list.alternating_prod List.alternatingProd
 
-
+#align list.partition_map List.partitionMap
+#align list.find List.find?
 
 /-- `mfind tac l` returns the first element of `l` on which `tac` succeeds, and
 fails otherwise. -/
-def mfind {α} {m : Type u → Type v} [Monad m] [Alternative m] (tac : α → m PUnit) : List α → m α :=
+def findM {α} {m : Type u → Type v} [Monad m] [Alternative m] (tac : α → m PUnit) : List α → m α :=
   List.firstM fun a => m (tac a) $> a
-#align list.mfind List.mfind
+#align list.mfind List.findM
 
 /-- `mbfind' p l` returns the first element `a` of `l` for which `p a` returns
 true. `mbfind'` short-circuits, so `p` is not necessarily run on every `a` in
@@ -200,11 +120,13 @@ def findM?'
     if px then pure (some x) else findM?' p xs
 #align list.mbfind' List.findM?'
 
+#align list.mbfind List.findM?
+#align list.many List.anyM
+#align list.mall List.allM
+
 section
 
 variable {m : Type → Type v} [Monad m]
-
-
 
 /-- `orM xs` runs the actions in `xs`, returning true if any of them returns
 true. `orM` short-circuits, so if an action returns true, later actions are
@@ -222,9 +144,13 @@ def andM : List (m Bool) → m Bool :=
 
 end
 
+#align list.foldr_with_index List.foldrIdx
+#align list.foldl_with_index List.foldlIdx
+#align list.find_indexes List.findIdxs
+#align list.indexes_values List.indexesValues
+#align list.indexes_of List.indexesOf
 
-
-section MfoldWithIndex
+section foldIdxM
 
 variable {m : Type v → Type w} [Monad m]
 
@@ -246,41 +172,63 @@ def foldrIdxM {α β} (f : ℕ → α → β → m β) (b : β) (as : List α) :
     (pure b)
 #align list.mfoldr_with_index List.foldrIdxM
 
-end MfoldWithIndex
+end foldIdxM
 
-section MmapWithIndex
+
+section mapIdxA
 
 variable {m : Type v → Type w} [Applicative m]
 
 -- FIXME: Idx, find the right appplicative suffix
 
 /-- Auxiliary definition for `mmap_with_index`. -/
-def mmapWithIndexAux {α β} (f : ℕ → α → m β) : ℕ → List α → m (List β)
+def mapIdxAAux {α β} (f : ℕ → α → m β) : ℕ → List α → m (List β)
   | _, [] => pure []
-  | i, a :: as => List.cons <$> f i a <*> mmapWithIndexAux f (i + 1) as
-#align list.mmap_with_index_aux List.mmapWithIndexAux
+  | i, a :: as => List.cons <$> f i a <*> mapIdxAAux f (i + 1) as
+#align list.mmap_with_index_aux List.mapIdxAAux
 
 /-- Applicative variant of `map_with_index`. -/
-def mmapWithIndex {α β} (f : ℕ → α → m β) (as : List α) : m (List β) :=
-  mmapWithIndexAux f 0 as
-#align list.mmap_with_index List.mmapWithIndex
+def mapIdxA {α β} (f : ℕ → α → m β) (as : List α) : m (List β) :=
+  mapIdxAAux f 0 as
+#align list.mmap_with_index List.mapIdxA
 
 /-- Auxiliary definition for `mmap_with_index'`. -/
-def mmapWithIndex'Aux {α} (f : ℕ → α → m PUnit) : ℕ → List α → m PUnit
+def mapIdxAAux' {α} (f : ℕ → α → m PUnit) : ℕ → List α → m PUnit
   | _, [] => pure ⟨⟩
-  | i, a :: as => f i a *> mmapWithIndex'Aux f (i + 1) as
-#align list.mmap_with_index'_aux List.mmapWithIndex'Aux
+  | i, a :: as => f i a *> mapIdxAAux' f (i + 1) as
+#align list.mmap_with_index'_aux List.mapIdxAAux'
 
 /-- A variant of `mmap_with_index` specialised to applicative actions which
 return `unit`. -/
-def mmapWithIndex' {α} (f : ℕ → α → m PUnit) (as : List α) : m PUnit :=
-  mmapWithIndex'Aux f 0 as
-#align list.mmap_with_index' List.mmapWithIndex'
+def mapIdxA' {α} (f : ℕ → α → m PUnit) (as : List α) : m PUnit :=
+  mapIdxAAux' f 0 as
+#align list.mmap_with_index' List.mapIdxA'
 
-end MmapWithIndex
+end mapIdxA
 
+#align list.lookmap List.lookmap
+#align list.countp List.countp
+#align list.count List.count
+#align list.is_prefix List.isPrefix
+#align list.is_suffix List.isSuffix
+#align list.is_infix List.isInfix
+/-- Notation for `List.isPrefix`
+-/
+infixl:50 " <+: " => isPrefix
+/--  Notation for `List.isSuffix`
+-/
+infixl:50 " <:+ " => isSuffix
+/-- Notation for `List.isInfix`
+-/
+infixl:50 " <:+: " => isInfix
 
--- keep?
+#align list.inits List.inits
+#align list.tails List.tails
+#align list.sublists' List.sublists'
+#align list.sublists List.sublists
+#align list.forall₂ List.Forall₂
+
+-- TODO: keep? seems to be orphaned. Search in mathlib codebase for refs.
 /--
 -/
 def sublistsAux₁ : List α → (List α → List β) → List β
@@ -297,6 +245,8 @@ def All₂ (p : α → Prop) : List α → Prop
   | x :: l => p x ∧ All₂ p l
 #align list.all₂ List.All₂
 
+#align list.transpose List.transpose
+#align list.sections List.sections
 
 section Permutations
 
@@ -406,7 +356,24 @@ def extractp (p : α → Prop) [DecidablePred p] : List α → Option α × List
       (a', a :: l')
 #align list.extractp List.extractp
 
-
+#align list.revzip List.revzip
+#align list.product List.product
+/-- Notation for calculating the product of a `List`
+-/
+infixr:82
+  " ×ˢ " =>-- This notation binds more strongly than (pre)images, unions and intersections.
+  List.product
+#align list.sigma List.sigma
+#align list.of_fn List.ofFn
+#align list.of_fn_nth_val List.ofFnNthVal
+#align list.disjoint List.Disjoint
+#align list.pairwise List.Pairwise
+#align list.pairwise_cons List.pairwise_cons
+#align list.decidable_pairwise List.instDecidablePairwise
+#align list.pw_filter List.pwFilter
+#align list.chain List.Chain
+#align list.chain' List.Chain'
+#align list.chain_cons List.chain_cons
 
 section Chain
 
@@ -420,9 +387,11 @@ instance decidableChain' [DecidableRel R] (l : List α) : Decidable (Chain' R l)
 
 end Chain
 
+#align list.nodup List.Nodup
+#align list.nodup_decidable List.nodupDecidable
 
 /-- `dedup l` removes duplicates from `l` (taking only the last occurrence).
-  Defined as `pw_filter (≠)`.
+  Defined as `pwFilter (≠)`.
 
      dedup [1, 0, 2, 2, 1] = [0, 2, 1] -/
 def dedup [DecidableEq α] : List α → List α :=
@@ -437,6 +406,7 @@ def destutter' (R : α → α → Prop) [DecidableRel R] : α → List α → Li
   | a, h :: l => if R a h then a :: destutter' R h l else destutter' R a l
 #align list.destutter' List.destutter'
 
+-- TODO: should below be "lazily"?
 /-- Greedily create a sublist of `l` such that, for every two adjacent elements `a, b ∈ l`,
 `R a b` holds. Mostly used with ≠; for example, `destutter (≠) [1, 2, 2, 1, 1] = [1, 2, 1]`,
 `destutter (≠) [1, 2, 3, 3] = [1, 2, 3]`, `destutter (<) [1, 2, 5, 2, 3, 4, 9] = [1, 2, 5, 9]`. -/
@@ -445,6 +415,12 @@ def destutter (R : α → α → Prop) [DecidableRel R] : List α → List α
   | [] => []
 #align list.destutter List.destutter
 
+#align list.range' List.range'
+#align list.reduce_option List.reduceOption
+#align list.ilast' List.ilast'
+#align list.last' List.last'
+#align list.rotate List.rotate
+#align list.rotate' List.rotate'
 
 
 section Choose
@@ -472,6 +448,8 @@ def choose (hp : ∃ a, a ∈ l ∧ p a) : α :=
 #align list.choose List.choose
 
 end Choose
+
+#align list.mmap_filter List.filterMapM
 
 /-- `mapUpperTriangleM f l` calls `f` on all elements in the upper triangular part of `l × l`.
 That is, for each `e ∈ l`, it will run `f e e` and then `f e e'`
@@ -513,6 +491,8 @@ protected def traverse
   | x :: xs => List.cons <$> f x <*> List.traverse f xs
 #align list.traverse List.traverse
 
+#align list.get_rest List.getRest
+#align list.slice List.dropSlice
 
 /-- Left-biased version of `list.map₂`. `map₂_left' f as bs` applies `f` to each
 pair of elements `aᵢ ∈ as` and `bᵢ ∈ bs`. If `bs` is shorter than `as`, `f` is
@@ -585,16 +565,24 @@ def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : Li
   map₂Left (flip f) bs as
 #align list.map₂_right List.map₂Right
 
-
-
+#align list.zip_right List.zipRight
+#align list.zip_left' List.zipLeft'
+#align list.zip_right' List.zipRight'
+#align list.zip_left List.zipLeft
+#align list.all_some List.allSome
+#align list.fill_nones List.fillNones
+#align list.take_list List.takeList
 #align list.to_rbmap List.toRBMap
+#align list.to_chunks_aux List.toChunksAux
+#align list.to_chunks List.toChunks
 
-
+-- porting notes -- was `unsafe` but removed for Lean 4 port
 /-- Asynchronous version of `List.map`.
 -/
-unsafe def map_async_chunked {α β} (f : α → β) (xs : List α) (chunk_size := 1024) : List β :=
+def map_async_chunked {α β} (f : α → β) (xs : List α) (chunk_size := 1024) : List β :=
   ((xs.toChunks chunk_size).map fun xs => Task.spawn fun _ => List.map f xs).bind Task.get
 #align list.map_async_chunked List.map_async_chunked
+
 
 /-!
 We add some n-ary versions of `list.zip_with` for functions with more than two arguments.
@@ -604,7 +592,6 @@ For example, `zip_with3 f xs ys zs` could also be written as
 or as
 `(zip xs $ zip ys zs).map $ λ ⟨x, y, z⟩, f x y z`.
 -/
-
 
 /-- Ternary version of `list.zip_with`. -/
 def zipWith3 (f : α → β → γ → δ) : List α → List β → List γ → List δ
@@ -633,6 +620,11 @@ def replaceIf : List α → List Bool → List α → List α
   | l, [], _ => l
   | n :: ns, tf :: bs, e@(c :: cs) => if tf then c :: ns.replaceIf bs cs else n :: ns.replaceIf bs e
 #align list.replace_if List.replaceIf
+
+#align list.map_with_prefix_suffix_aux List.mapWithPrefixSuffixAux
+#align list.map_with_prefix_suffix List.mapWithPrefixSuffix
+#align list.map_with_complement List.mapWithComplement
+
 
 end List
 #lint
