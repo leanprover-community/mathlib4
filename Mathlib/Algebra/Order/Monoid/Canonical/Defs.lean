@@ -154,12 +154,12 @@ theorem le_mul_self : a ≤ b * a := by
   exact le_self_mul
 #align le_mul_self le_mul_self
 
-@[to_additive]
+@[simp, to_additive]
 theorem self_le_mul_right (a b : α) : a ≤ a * b :=
   le_self_mul
 #align self_le_mul_right self_le_mul_right
 
-@[to_additive]
+@[simp, to_additive]
 theorem self_le_mul_left (a b : α) : a ≤ b * a :=
   le_mul_self
 #align self_le_mul_left self_le_mul_left

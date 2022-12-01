@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Sub.Defs
-
+import Mathlib.Tactic.LibrarySearch
 /-!
 # Lemmas about subtraction in canonically ordered monoids
 -/
@@ -330,17 +330,14 @@ alias tsub_eq_zero_iff_le ↔ _ tsub_eq_zero_of_le
 
 attribute [simp] tsub_eq_zero_of_le
 
-@[simp]
 theorem tsub_self (a : α) : a - a = 0 :=
   tsub_eq_zero_of_le le_rfl
 #align tsub_self tsub_self
 
-@[simp]
 theorem tsub_le_self : a - b ≤ a :=
   tsub_le_iff_left.mpr <| le_add_left le_rfl
 #align tsub_le_self tsub_le_self
 
-@[simp]
 theorem zero_tsub (a : α) : 0 - a = 0 :=
   tsub_eq_zero_of_le <| zero_le a
 #align zero_tsub zero_tsub
