@@ -67,8 +67,7 @@ a second time with different values of the metavariables.
 See https://github.com/leanprover-community/mathlib/issues/2269
 -/
 def mkAssumptionSet (noDflt : Bool) (hs : List (TSyntax `term)) :
-    MetaM (List (TermElabM Expr) × TermElabM (List Expr)) :=
-do
+    MetaM (List (TermElabM Expr) × TermElabM (List Expr)) := do
   let hs := if noDflt then hs else [← `(rfl), ← `(trivial), ← `(congrFun), ← `(congrArg)] ++ hs
   let hs := hs.map (λ s => Elab.Term.elabTerm s.raw none)
   let locals : TermElabM (List Expr) := if noDflt then pure [] else pure (← getLocalHyps).toList
@@ -82,9 +81,7 @@ def exceptEmoji : Except ε α → String
 /-- Elaborate the context and the list of lemmas -/
 def elabContextLemmas (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)) :
     MetaM (List Expr) := Elab.Term.TermElabM.run' do
-  let ctx' ← ctx
-  let lemmas' ← lemmas.mapM id
-  pure (lemmas' ++ ctx')
+  pure ((← lemmas.mapM id) ++ (← ctx))
 
 /-- Attempt to solve the given metavariable by repeating applying a list of facts. -/
 def solveByElimAux (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)) (n : Nat) :
