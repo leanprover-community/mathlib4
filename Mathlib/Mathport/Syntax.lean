@@ -151,7 +151,7 @@ syntax notation3Item := strLit <|> bindersItem <|> identOptScoped <|> foldAction
 `notation3` declares notation using Lean 3-style syntax.
 Only to be used for mathport.
 -/
-macro ak:Term.attrKind "notation3"
+macro doc:(docComment)? ak:Term.attrKind "notation3"
     prec:(precedence)? name:(namedName)? prio:(namedPrio)?
     lits:(notation3Item)+ " => " val:term : command => do
   let mut boundNames : Lean.HashMap Name Syntax := {}
@@ -196,7 +196,7 @@ macro ak:Term.attrKind "notation3"
   let val ← val.replaceM fun
     | Syntax.ident _ _ id .. => pure $ boundNames.find? id
     | _ => pure none
-  `($ak:attrKind macro $[$prec]? $[$name]? $[$prio]? $[$macroArgs]* : term => do
+  `($[$doc:docComment]? $ak:attrKind macro $[$prec]? $[$name]? $[$prio]? $[$macroArgs]* : term => do
     `($val:term))
 
 end Parser.Command
