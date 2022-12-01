@@ -745,7 +745,8 @@ def addToAdditiveAttr (src : Name) (cfg : Config) : AttrM Unit :=
   if firstMultArg != 0 then
     trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
     relevantArgAttr.add src firstMultArg
-  if (← getEnv).contains tgt then
+  let alreadyExists := (← getEnv).contains tgt
+  if alreadyExists then
     -- since `tgt` already exists, we just need to add translations `src.x ↦ tgt.x'`
     -- for any subfields.
     proceedFields src tgt
@@ -755,7 +756,7 @@ def addToAdditiveAttr (src : Name) (cfg : Config) : AttrM Unit :=
   -- add pop-up information when mousing over `additive_name` of `@[to_additive additive_name]`
   -- (the information will be over the attribute of no additive name is given)
   pushInfoLeaf <| .ofTermInfo {
-    elaborator := .anonymous, lctx := {}, expectedType? := none, isBinder := true,
+    elaborator := .anonymous, lctx := {}, expectedType? := none, isBinder := !alreadyExists,
     stx := cfg.ref, expr := ← mkConstWithLevelParams tgt }
   if let some doc := cfg.doc then
     addDocString tgt doc
