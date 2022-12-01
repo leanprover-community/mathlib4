@@ -14,11 +14,11 @@ export Distrib (left_distrib right_distrib)
 
 section Semiring
 
-@[simp]
+@[simp, norm_cast]
 lemma Nat.cast_mul [Semiring R] {m n : ℕ} : (m * n).cast = (m.cast * n.cast : R) := by
   induction n generalizing m <;> simp_all [mul_succ, mul_add]
 
-@[simp]
+@[simp, norm_cast]
 lemma Nat.cast_pow [Semiring R] {m n : ℕ} : (m ^ n).cast = (m.cast ^ n : R) := by
   induction n generalizing m <;> simp_all [Nat.pow_succ', _root_.pow_succ'', pow_zero]
 
