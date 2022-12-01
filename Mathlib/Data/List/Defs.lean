@@ -175,37 +175,31 @@ def foldrIdxM {α β} (f : ℕ → α → β → m β) (b : β) (as : List α) :
 end foldIdxM
 
 
-section mapIdxA
+section mapIdxM
 
-variable {m : Type v → Type w} [Applicative m]
+-- porting notes: This was defined in `mathlib` with an `Applicative`
+-- constraint on `m` and have been `#align`ed to the `Std` versions defined
+-- with a with a `Monad` typeclass constraint
+-- since all `Monad`s are `Applicative` this won't cause issues
+-- downstream & `Monad`ic code is more performant per Mario C
 
--- porting notes: These already exist with a `Monad` typeclass constraint
--- could either delete, or go with the suggested `A` suffix.
+#align list.mmap_with_index List.mapIdxM
 
-/-- Auxiliary definition for `mmap_with_index`. -/
-def mapIdxAAux {α β} (f : ℕ → α → m β) : ℕ → List α → m (List β)
-  | _, [] => pure []
-  | i, a :: as => List.cons <$> f i a <*> mapIdxAAux f (i + 1) as
-#align list.mmap_with_index_aux List.mapIdxAAux
-
-/-- Applicative variant of `map_with_index`. -/
-def mapIdxA {α β} (f : ℕ → α → m β) (as : List α) : m (List β) :=
-  mapIdxAAux f 0 as
-#align list.mmap_with_index List.mapIdxA
+variable {m : Type v → Type w} [Monad m]
 
 /-- Auxiliary definition for `mmap_with_index'`. -/
-def mapIdxAAux' {α} (f : ℕ → α → m PUnit) : ℕ → List α → m PUnit
+def mapIdxMAux' {α} (f : ℕ → α → m PUnit) : ℕ → List α → m PUnit
   | _, [] => pure ⟨⟩
-  | i, a :: as => f i a *> mapIdxAAux' f (i + 1) as
-#align list.mmap_with_index'_aux List.mapIdxAAux'
+  | i, a :: as => f i a *> mapIdxMAux' f (i + 1) as
+#align list.mmap_with_index'_aux List.mapIdxMAux'
 
 /-- A variant of `mmap_with_index` specialised to applicative actions which
 return `unit`. -/
-def mapIdxA' {α} (f : ℕ → α → m PUnit) (as : List α) : m PUnit :=
-  mapIdxAAux' f 0 as
-#align list.mmap_with_index' List.mapIdxA'
+def mapIdxM' {α} (f : ℕ → α → m PUnit) (as : List α) : m PUnit :=
+  mapIdxMAux' f 0 as
+#align list.mmap_with_index' List.mapIdxM'
 
-end mapIdxA
+end mapIdxM
 
 #align list.lookmap List.lookmap
 #align list.countp List.countp
