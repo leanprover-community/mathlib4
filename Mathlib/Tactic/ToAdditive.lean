@@ -33,7 +33,7 @@ syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
 /-- The  `to_additive_fixed_numeral` attribute. -/
 syntax (name := to_additive_fixed_numeral) "to_additive_fixed_numeral" "?"? : attr
 /-- Remaining arguments of `to_additive`. -/
-syntax to_additiveRest := (ppSpace ident)? (ppSpace str)?
+syntax to_additiveRest := (ppSpace ident)? (ppSpace str)? ("(" &"reorder" ":=" num+ ")")?
 /-- The `to_additive` attribute. -/
 syntax (name := to_additive) "to_additive" "!"? "?"? to_additiveRest : attr
 
@@ -135,7 +135,10 @@ initialize reorderAttr : NameMapExtension (List Nat) ←
     descr :=
       "Auxiliary attribute for `to_additive` that stores arguments that need to be reordered."
     add := fun
-    | _, `(attr| to_additive_reorder $[$ids:num]*) =>
+    | _, `(attr| to_additive_reorder $[$ids:num]*) => do
+      logInfo m!"Using this attribute is deprecated. Use `@[to_additive (reorder := <nums>)]` {""
+        }instead.\nThat will also generate the additive version with the arguments swapped, {""
+        }so you are probably able to remove the explicit additive declaration."
       pure <| Array.toList <| ids.map (·.1.isNatLit?.get!)
     | _, _ => throwUnsupportedSyntax }
 
@@ -239,6 +242,7 @@ structure Config : Type where
   /-- If `allowAutoName` is `false` (default) then
   `@[to_additive]` will check whether the given name can be auto-generated. -/
   allowAutoName : Bool := false
+  /-- The arguments that should be reordered by `to_additive` -/
   reorder : List Nat := []
   /-- The `Syntax` element corresponding to the original multiplicative declaration
   (or the `to_additive` attribute if it is added later),
@@ -721,18 +725,16 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
   -- We don't have to run toAdditive on the constructor of a structure, since the use of
   -- `Name.mapPrefix` will do that automatically.
 
-private def elabToAdditiveAux (ref : Syntax) (replaceAll trace : Bool) (tgt : Option Syntax)
-    (doc : Option Syntax) : Config :=
-  { replaceAll := replaceAll
-    trace := trace
-    tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
-    doc := doc.bind (·.isStrLit?)
-    allowAutoName := false
-    ref }
-
 private def elabToAdditive : Syntax → CoreM Config
-  | `(attr| to_additive%$tk $[!%$replaceAll]? $[?%$trace]? $[$tgt]? $[$doc]?) =>
-    return elabToAdditiveAux ((tgt.map (·.raw)).getD tk) replaceAll.isSome trace.isSome tgt doc
+  | `(attr| to_additive%$tk $[!%$replaceAll]? $[?%$trace]? $[$tgt]? $[$doc]?
+      $[(reorder := $[$reorder:num]*)]?) =>
+    return { replaceAll := replaceAll.isSome
+             trace := trace.isSome
+             tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
+             doc := doc.bind (·.raw.isStrLit?)
+             allowAutoName := false
+             reorder := reorder |>.map (·.toList.map (·.raw.isNatLit?.get!)) |>.getD []
+             ref := (tgt.map (·.raw)).getD tk }
   | _ => throwUnsupportedSyntax
 
 /-- `addToAdditiveAttr src cfg` adds a `@[to_additive]` attribute to `src` with configuration `cfg`.
