@@ -16,7 +16,6 @@ namespace Int
 
 /-! ### units -/
 
--- Porting note: we may need some aligns for `natAbs` lemmas: mathport thinks they're `nat_abs`
 @[simp]
 theorem units_natAbs (u : ℤˣ) : natAbs u = 1 :=
   Units.ext_iff.1 <|
@@ -33,7 +32,6 @@ theorem isUnit_eq_one_or {a : ℤ} : IsUnit a → a = 1 ∨ a = -1
   | ⟨_, hx⟩ => hx ▸ (units_eq_one_or _).imp (congr_arg Units.val) (congr_arg Units.val)
 #align int.is_unit_eq_one_or Int.isUnit_eq_one_or
 
--- Porting note: strangely, mathport respects naming of `isUnit_one` but not `isUnit_one.neg`
 theorem isUnit_iff {a : ℤ} : IsUnit a ↔ a = 1 ∨ a = -1 := by
   refine' ⟨fun h => isUnit_eq_one_or h, fun h => _⟩
   rcases h with (rfl | rfl)
@@ -93,7 +91,7 @@ alias isUnit_iff_natAbs_eq ↔ isUnit.natAbs_eq _
 -- presumably because `(n : ℤ)` is `Nat.cast` and not just `ofNat`
 @[norm_cast]
 theorem ofNat_isUnit {n : ℕ} : IsUnit (n : ℤ) ↔ IsUnit n := by
-  simp [Nat.isUnit_iff, isUnit_iff_natAbs_eq, natAbs_ofNat]
+  simp [isUnit_iff_natAbs_eq]
 #align int.of_nat_is_unit Int.ofNat_isUnit
 
 theorem isUnit_mul_self {a : ℤ} (ha : IsUnit a) : a * a = 1 :=
