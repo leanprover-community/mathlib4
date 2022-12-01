@@ -143,13 +143,13 @@ initialize reorderAttr : NameMapExtension (List Nat) ←
     | _, _ => throwUnsupportedSyntax }
 
 /-- Get the reorder list (defined using `@[to_additive_reorder ...]`) for the given declaration. -/
-def getReorder [Functor M] [MonadEnv M]: Name →  M (List Nat)
+def getReorder [Functor M] [MonadEnv M] : Name → M (List Nat)
   | n => (reorderAttr.find? · n |>.getD []) <$> getEnv
 
 /-- Given a declaration name and an argument index, determines whether this index
 should be swapped with the next one. -/
-def shouldReorder [Functor M] [MonadEnv M]: Name → Nat → M Bool
-  | n, i => (i ∈ ·) <$> (getReorder n)
+def shouldReorder [Functor M] [MonadEnv M] : Name → Nat → M Bool
+  | n, i => (i ∈ ·) <$> getReorder n
 
 /--
 An attribute that is automatically added to declarations tagged with `@[to_additive]`, if needed.
@@ -387,14 +387,39 @@ def expand (e : Expr) : MetaM Expr := do
   trace[to_additive_detail] "expand:\nBefore: {e}\nAfter:  {e₂}"
   return e₂
 
+/-- Reorder pi-binders. See doc of `reorderAttr` for the interpretation of the argument -/
+def reorderForall (src : Expr) (reorder : List Nat := []) : MetaM Expr := do
+  if reorder == [] then
+    return src
+  forallTelescope src fun xs e => do
+    let xs ← reorder.foldrM (init := xs) fun i xs =>
+      if h : i < xs.size then
+        pure <| xs.swap ⟨i - 1, Nat.lt_of_le_of_lt i.pred_le h⟩ ⟨i, h⟩
+      else
+        throwError "the declaration does not have enough arguments to reorder the given arguments."
+    mkForallFVars xs e
+
+/-- Reorder lambda-binders. See doc of `reorderAttr` for the interpretation of the argument -/
+def reorderLambda (src : Expr) (reorder : List Nat := []) : MetaM Expr := do
+  if reorder == [] then
+    return src
+  lambdaTelescope src fun xs e => do
+    let xs ← reorder.foldrM (init := xs) fun i xs =>
+      if h : i < xs.size then
+        pure <| xs.swap ⟨i - 1, Nat.lt_of_le_of_lt i.pred_le h⟩ ⟨i, h⟩
+      else
+        throwError "the declaration does not have enough arguments to reorder the given arguments."
+    mkLambdaFVars xs e
+
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
 def updateDecl
-  (tgt : Name) (srcDecl : ConstantInfo)
+  (tgt : Name) (srcDecl : ConstantInfo) (reorder : List Nat := [])
   : MetaM ConstantInfo := do
   let mut decl := srcDecl.updateName tgt
-  decl := decl.updateType $ (← applyReplacementFun (← expand decl.type))
+  decl := decl.updateType <| ← applyReplacementFun <| ← (reorderForall · reorder) <|
+    ← expand decl.type
   if let some v := decl.value? then
-    decl := decl.updateValue (← applyReplacementFun (← expand v))
+    decl := decl.updateValue <| ← applyReplacementFun <| ← (reorderLambda · reorder) <| ← expand v
   return decl
 
 /-- Lean 4 makes declarations which are not internal
@@ -447,7 +472,8 @@ partial def transformDeclAux
   if !pre.isPrefixOf src then
     insertTranslation src tgt
   -- now transform the source declaration
-  let trgDecl : ConstantInfo ← MetaM.run' $ updateDecl tgt srcDecl
+  let trgDecl : ConstantInfo ←
+    MetaM.run' <| updateDecl tgt srcDecl <| if src == pre then cfg.reorder else []
   if !trgDecl.hasValue then
     throwError "Expected {tgt} to have a value."
   trace[to_additive] "generating\n{tgt} :=\n  {trgDecl.value!}"
@@ -467,6 +493,8 @@ partial def transformDeclAux
   else
     addAndCompile trgDecl.toDeclaration!
   -- now add declaration ranges so jump-to-definition works
+  -- note: we currently also do this for auxiliary declarations, while they are not normally
+  -- generated for those. We could change that.
   addDeclarationRanges tgt {
     range := ← getDeclarationRange (← getRef)
     selectionRange := ← getDeclarationRange cfg.ref }
@@ -748,6 +776,8 @@ def addToAdditiveAttr (src : Name) (cfg : Config) : AttrM Unit :=
   if firstMultArg != 0 then
     trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
     relevantArgAttr.add src firstMultArg
+  if cfg.reorder != [] then
+    reorderAttr.add src cfg.reorder
   let alreadyExists := (← getEnv).contains tgt
   if alreadyExists then
     -- since `tgt` already exists, we just need to add translations `src.x ↦ tgt.x'`

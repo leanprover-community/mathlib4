@@ -90,14 +90,11 @@ attribute [to_additive] instHDiv
 
 attribute [to_additive_relevant_arg 3] HMul HAdd HPow HSMul
 attribute [to_additive_relevant_arg 3] HAdd.hAdd HMul.hMul HPow.hPow HSMul.hSMul
-attribute [to_additive_reorder 1] HPow
 attribute [to_additive_reorder 1 5] HPow.hPow
-attribute [to_additive_reorder 1] Pow
 attribute [to_additive_reorder 1 4] Pow.pow
-attribute [to_additive] Pow
-attribute [to_additive_reorder 1] instHPow
-attribute [to_additive] instHPow
-attribute [to_additive] HPow
+attribute [to_additive (reorder := 1)] Pow
+attribute [to_additive (reorder := 1)] instHPow
+attribute [to_additive (reorder := 1)] HPow
 
 attribute [to_additive] instHSMul
 attribute [to_additive] HSMul

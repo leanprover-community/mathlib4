@@ -96,6 +96,12 @@ def foo11 (n : ℕ) (m : ℤ) := n * m * 2 + 1 * 0 + 37 * 1 + 2
 
 theorem bar11_works : bar11 = foo11 := by rfl
 
+@[to_additive? bar12]
+def foo12 (_ : Nat) (_ : Int) : Fin 37 := ⟨2, by decide⟩
+
+#check Test.bar12.proof_1
+#check Test.foo12
+
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do
   let c ← getConstInfo `Test.foo6
