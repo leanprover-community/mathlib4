@@ -3,8 +3,8 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathbin.Algebra.Order.Monoid.Canonical.Defs
-import Mathbin.Algebra.Order.Sub.Defs
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Algebra.Order.Sub.Defs
 
 /-!
 # Lemmas about subtraction in canonically ordered monoids
@@ -13,9 +13,9 @@ import Mathbin.Algebra.Order.Sub.Defs
 
 variable {α : Type _}
 
-section HasExistsAddOfLe
+section ExistsAddOfLE
 
-variable [AddCommSemigroup α] [PartialOrder α] [HasExistsAddOfLe α]
+variable [AddCommSemigroup α] [PartialOrder α] [ExistsAddOfLE α]
   [CovariantClass α α (· + ·) (· ≤ ·)] [Sub α] [OrderedSub α] {a b c d : α}
 
 @[simp]
@@ -43,7 +43,7 @@ theorem tsub_le_tsub_iff_right (h : c ≤ b) : a - c ≤ b - c ↔ a ≤ b := by
 #align tsub_le_tsub_iff_right tsub_le_tsub_iff_right
 
 theorem tsub_left_inj (h1 : c ≤ a) (h2 : c ≤ b) : a - c = b - c ↔ a = b := by
-  simp_rw [le_antisymm_iff, tsub_le_tsub_iff_right h1, tsub_le_tsub_iff_right h2]
+  simp_rw [le_antisymm_iff, tsub_le_tsub_iff_right h1, tsub_le_tsub_iff_right h2]; rfl
 #align tsub_left_inj tsub_left_inj
 
 theorem tsub_inj_left (h₁ : a ≤ b) (h₂ : a ≤ c) : b - a = c - a → b = c :=
@@ -66,7 +66,7 @@ theorem tsub_tsub_tsub_cancel_right (h : c ≤ b) : a - c - (b - c) = a - b := b
   rw [tsub_tsub, add_tsub_cancel_of_le h]
 #align tsub_tsub_tsub_cancel_right tsub_tsub_tsub_cancel_right
 
-/-! #### Lemmas that assume that an element is `add_le_cancellable`. -/
+/-! #### Lemmas that assume that an element is `AddLECancellable`. -/
 
 
 namespace AddLECancellable
@@ -302,7 +302,7 @@ theorem tsub_tsub_tsub_cancel_left (h : b ≤ a) : a - c - (a - b) = b - c :=
 
 end Contra
 
-end HasExistsAddOfLe
+end ExistsAddOfLE
 
 /-! ### Lemmas in a canonically ordered monoid. -/
 
@@ -373,7 +373,7 @@ protected theorem tsub_le_tsub_iff_left (ha : AddLECancellable a) (hc : AddLECan
 protected theorem tsub_right_inj (ha : AddLECancellable a) (hb : AddLECancellable b)
     (hc : AddLECancellable c) (hba : b ≤ a) (hca : c ≤ a) : a - b = a - c ↔ b = c := by
   simp_rw [le_antisymm_iff, ha.tsub_le_tsub_iff_left hb hba, ha.tsub_le_tsub_iff_left hc hca,
-    and_comm']
+    and_comm]; rfl
 #align add_le_cancellable.tsub_right_inj AddLECancellable.tsub_right_inj
 
 end AddLECancellable
@@ -396,7 +396,7 @@ theorem tsub_right_inj (hba : b ≤ a) (hca : c ≤ a) : a - b = a - c ↔ b = c
 
 variable (α)
 
-/-- A `canonically_ordered_add_monoid` with ordered subtraction and order-reflecting addition is
+/-- A `CanonicallyOrderedAddMonoid` with ordered subtraction and order-reflecting addition is
 cancellative. This is not an instance at it would form a typeclass loop.
 
 See note [reducible non-instances]. -/
@@ -406,7 +406,8 @@ def CanonicallyOrderedAddMonoid.toAddCancelCommMonoid : AddCancelCommMonoid α :
     add_left_cancel := fun a b c h => by
       simpa only [add_tsub_cancel_left] using congr_arg (fun x => x - a) h }
 #align
-  canonically_ordered_add_monoid.to_add_cancel_comm_monoid CanonicallyOrderedAddMonoid.toAddCancelCommMonoid
+  canonically_ordered_add_monoid.to_add_cancel_comm_monoid
+  CanonicallyOrderedAddMonoid.toAddCancelCommMonoid
 
 end Contra
 
@@ -469,7 +470,7 @@ section Contra
 
 variable [ContravariantClass α α (· + ·) (· ≤ ·)]
 
-/-- This lemma also holds for `ennreal`, but we need a different proof for that. -/
+/-- This lemma also holds for `ENNReal`, but we need a different proof for that. -/
 theorem tsub_lt_tsub_iff_right (h : c ≤ a) : a - c < b - c ↔ a < b :=
   Contravariant.AddLECancellable.tsub_lt_tsub_iff_right h
 #align tsub_lt_tsub_iff_right tsub_lt_tsub_iff_right
@@ -513,4 +514,3 @@ theorem tsub_add_min : a - b + min a b = a := by
 #align tsub_add_min tsub_add_min
 
 end CanonicallyLinearOrderedAddMonoid
-
