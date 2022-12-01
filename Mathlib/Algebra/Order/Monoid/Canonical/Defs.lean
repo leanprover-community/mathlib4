@@ -314,7 +314,7 @@ variable [CanonicallyLinearOrderedMonoid α]
 -- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 100) CanonicallyLinearOrderedMonoid.semilatticeSup : SemilatticeSup α :=
-  { instLattice with }
+  { LinearOrder.toLattice with }
 #align canonically_linear_ordered_monoid.semilattice_sup
   CanonicallyLinearOrderedMonoid.semilatticeSup
 #align canonically_linear_ordered_add_monoid.semilattice_sup
