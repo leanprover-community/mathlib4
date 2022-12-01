@@ -194,6 +194,7 @@ import Mathlib.Order.Monotone
 import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic
+import Mathlib.Order.RelIso.Group
 import Mathlib.Order.Synonym
 import Mathlib.Order.WithBot
 import Mathlib.Tactic.Abel
