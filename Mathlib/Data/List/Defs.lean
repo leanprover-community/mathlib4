@@ -45,18 +45,13 @@ instance [DecidableEq α] : SDiff (List α) :=
 /-- "default" `nth` function: returns `d` instead of `none` in the case
   that the index is out of bounds. -/
 @[nolint unusedArguments]
-def nthd (d : α) : ∀ (_ : List α) (_ : ℕ), α
+def getD' (d : α) : ∀ (_ : List α) (_ : ℕ), α
   | [], _ => d
   | x :: _, 0 => x
   | _ :: xs, n + 1 => nthd d xs n
 #align list.nthd List.nthd
 
-/-- "inhabited" `nth` function: returns `default` instead of `none` in the case
-  that the index is out of bounds. -/
-def nthI [Inhabited α] (l : List α) (n : Nat) : α :=
-  nthd default l n
-#align list.inth List.nthI
-
+#align list.inth List.getD
 #align list.modify_nth_tail List.modifyNthTail
 #align list.modify_head List.modifyHead
 #align list.modify_nth List.modifyNth
