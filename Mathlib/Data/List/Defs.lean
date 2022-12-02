@@ -179,7 +179,7 @@ section mapIdxM
 
 -- porting notes: This was defined in `mathlib` with an `Applicative`
 -- constraint on `m` and have been `#align`ed to the `Std` versions defined
--- with a with a `Monad` typeclass constraint
+-- with a `Monad` typeclass constraint
 -- since all `Monad`s are `Applicative` this won't cause issues
 -- downstream & `Monad`ic code is more performant per Mario C
 
