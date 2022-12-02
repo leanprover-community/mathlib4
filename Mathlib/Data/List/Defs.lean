@@ -276,7 +276,7 @@ def permutationsAux.rec {C : List α → List α → Sort v} (H0 : ∀ is, C [] 
 /-- An auxiliary function for defining `permutations`. `permutations_aux ts is` is the set of all
 permutations of `is ++ ts` that do not fix `ts`. -/
 def permutationsAux : List α → List α → List (List α) :=
-  @permutationsAux.rec (fun _ _ => List (List α)) (fun is => []) fun t ts is IH1 IH2 =>
+  permutationsAux.rec (fun _ => []) fun t ts is IH1 IH2 =>
     foldr (fun y r => (permutationsAux2 t ts r y id).2) IH1 (is :: IH2)
 #align list.permutations_aux List.permutationsAux
 
