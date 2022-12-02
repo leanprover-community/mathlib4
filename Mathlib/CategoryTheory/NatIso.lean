@@ -142,9 +142,7 @@ theorem cancel_natIso_inv_right {X : D} {Y : C} (f f' : X ⟶ G.obj Y) :
 theorem cancel_natIso_hom_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X ⟶ F.obj Y)
     (f' : W ⟶ X') (g' : X' ⟶ F.obj Y) :
     f ≫ g ≫ α.hom.app Y = f' ≫ g' ≫ α.hom.app Y ↔ f ≫ g = f' ≫ g' := by
-  -- Porting note: not entirely sure why category.assoc won't rewrite.
-  -- My guess is that it has something to do with its type in mathlib4
-  simp only [← category.assoc, cancel_mono]
+  simp only [← Category.assoc, cancel_mono, refl]
 #align
   category_theory.nat_iso.cancel_nat_iso_hom_right_assoc
   CategoryTheory.NatIso.cancel_natIso_hom_right_assoc
@@ -153,7 +151,7 @@ theorem cancel_natIso_hom_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X 
 theorem cancel_natIso_inv_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X ⟶ G.obj Y)
     (f' : W ⟶ X') (g' : X' ⟶ G.obj Y) :
     f ≫ g ≫ α.inv.app Y = f' ≫ g' ≫ α.inv.app Y ↔ f ≫ g = f' ≫ g' := by
-  simp only [← category.assoc, cancel_mono]
+  simp only [← Category.assoc, cancel_mono, refl]
 #align
   category_theory.nat_iso.cancel_nat_iso_inv_right_assoc
   CategoryTheory.NatIso.cancel_natIso_inv_right_assoc
@@ -171,13 +169,15 @@ variable {X Y : C}
 
 theorem naturality_1 (α : F ≅ G) (f : X ⟶ Y) : α.inv.app X ≫ F.map f ≫ α.hom.app Y = G.map f := by
   -- Porting note: This is a direct translation of what mathlib3's simp tactic is doing
-  -- Iso.inv_hom_id_app_assoc isn't being rewritten
+  -- Iso.inv_hom_id_app_assoc has type `α.inv.app X ≫ α.hom.app X ≫ f' = f'` in mathlib3
+  -- In mathlib4 it has type `app (α.inv ≫ α.hom) X ≫ h = app (𝟙 G) X ≫ h`
+  -- Unsure if this is an intended divergence
   rw [naturality, Iso.inv_hom_id_app_assoc]
 #align category_theory.nat_iso.naturality_1 CategoryTheory.NatIso.naturality_1
 
 theorem naturality_2 (α : F ≅ G) (f : X ⟶ Y) : α.hom.app X ≫ G.map f ≫ α.inv.app Y = F.map f := by
   -- Porting note: same as above but with Iso.inv_hom_id_assoc
-  rw [naturality, Iso.inv_hom_id_assoc]
+  rw [naturality, Iso.hom_inv_id_app_assoc]
 #align category_theory.nat_iso.naturality_2 CategoryTheory.NatIso.naturality_2
 
 theorem naturality_1' (α : F ⟶ G) (f : X ⟶ Y) [IsIso (α.app X)] :
@@ -187,7 +187,7 @@ theorem naturality_1' (α : F ⟶ G) (f : X ⟶ Y) [IsIso (α.app X)] :
 @[simp, reassoc]
 theorem naturality_2' (α : F ⟶ G) (f : X ⟶ Y) [IsIso (α.app Y)] :
     α.app X ≫ G.map f ≫ inv (α.app Y) = F.map f := by
-  rw [← category.assoc, ← naturality, category.assoc, IsIso.hom_inv_id, category.comp_id]
+  rw [← Category.assoc, ← naturality, Category.assoc, IsIso.hom_inv_id, Category.comp_id]
 #align category_theory.nat_iso.naturality_2' CategoryTheory.NatIso.naturality_2'
 
 /-- The components of a natural isomorphism are isomorphisms.
@@ -228,6 +228,9 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
         have h := congr_arg (fun f => (app X).inv ≫ f ≫ (app Y).inv) (naturality f).symm
         simp only [Iso.inv_hom_id_assoc, Iso.hom_inv_id, assoc, comp_id, cancel_mono] at h
         exact h }
+  -- Porting note: aesop_cat would need to use ext lemmas to prove these
+  hom_inv_id := by ext; simp
+  inv_hom_id := by ext; simp
 #align category_theory.nat_iso.of_components CategoryTheory.NatIso.ofComponents
 
 @[simp]
