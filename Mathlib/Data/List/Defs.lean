@@ -479,8 +479,8 @@ def mapDiagM' {m} [Monad m] {α} (f : α → α → m Unit) : List α → m Unit
 --   | h :: t => (f h h >> t.mapM' (f h)) >> t.mapDiagM'
   | [] => return ()
   | h :: t => do
-    _ <- f h h
-    _ <- t.mapM' (f h)
+    _ ← f h h
+    _ ← t.mapM' (f h)
     t.mapDiagM' f
 #align list.mmap'_diag List.mapDiagM'
 
