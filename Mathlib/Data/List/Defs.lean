@@ -53,9 +53,9 @@ def nthd (d : α) : ∀ (_ : List α) (_ : ℕ), α
 
 /-- "inhabited" `nth` function: returns `default` instead of `none` in the case
   that the index is out of bounds. -/
-def inth [Inhabited α] (l : List α) (n : Nat) : α :=
+def nthI [Inhabited α] (l : List α) (n : Nat) : α :=
   nthd default l n
-#align list.inth List.inth
+#align list.inth List.nthI
 
 #align list.modify_nth_tail List.modifyNthTail
 #align list.modify_head List.modifyHead
