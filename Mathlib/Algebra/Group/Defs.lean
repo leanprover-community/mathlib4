@@ -81,23 +81,12 @@ infixl:65 " +ᵥ " => HVAdd.hVAdd
 infixl:65 " -ᵥ " => HasVsub.vsub
 infixr:73 " • " => HSMul.hSMul
 
-attribute [to_additive] Mul
-attribute [to_additive] Div
-attribute [to_additive] HMul
-attribute [to_additive] instHMul
-attribute [to_additive] HDiv
-attribute [to_additive] instHDiv
-
+attribute [to_additive] Mul Div HMul instHMul HDiv instHDiv instHSMul HSMul
 attribute [to_additive_relevant_arg 3] HMul HAdd HPow HSMul
 attribute [to_additive_relevant_arg 3] HAdd.hAdd HMul.hMul HPow.hPow HSMul.hSMul
-attribute [to_additive_reorder 1 5] HPow.hPow
-attribute [to_additive_reorder 1 4] Pow.pow
-attribute [to_additive (reorder := 1)] Pow
-attribute [to_additive (reorder := 1)] instHPow
-attribute [to_additive (reorder := 1)] HPow
-
-attribute [to_additive] instHSMul
-attribute [to_additive] HSMul
+attribute [to_additive (reorder := 1)] Pow instHPow HPow
+attribute [to_additive (reorder := 1 5)] HPow.hPow
+attribute [to_additive (reorder := 1 4)] Pow.pow
 
 universe u
 

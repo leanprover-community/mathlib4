@@ -77,14 +77,18 @@ end Name
 
 namespace ConstantInfo
 
+/-- Checks whether this `ConstantInfo` is a definition, -/
 def isDef : ConstantInfo → Bool
   | defnInfo _ => true
   | _          => false
 
+/-- Checks whether this `ConstantInfo` is a theorem, -/
 def isThm : ConstantInfo → Bool
   | thmInfo _ => true
   | _          => false
 
+/-- Update `ConstantVal` (the data common to all constructors of `ConstantInfo`)
+in a `ConstantInfo`. -/
 def updateConstantVal : ConstantInfo → ConstantVal → ConstantInfo
   | defnInfo   info, v => defnInfo   {info with toConstantVal := v}
   | axiomInfo  info, v => axiomInfo  {info with toConstantVal := v}
@@ -95,25 +99,27 @@ def updateConstantVal : ConstantInfo → ConstantVal → ConstantInfo
   | ctorInfo   info, v => ctorInfo   {info with toConstantVal := v}
   | recInfo    info, v => recInfo    {info with toConstantVal := v}
 
-@[inline]
+/-- Update the name of a `ConstantInfo`. -/
 def updateName (c : ConstantInfo) (name : Name) : ConstantInfo :=
   c.updateConstantVal {c.toConstantVal with name}
 
-@[inline]
+/-- Update the type of a `ConstantInfo`. -/
 def updateType (c : ConstantInfo) (type : Expr) : ConstantInfo :=
   c.updateConstantVal {c.toConstantVal with type}
 
-@[inline]
+/-- Update the level parameters of a `ConstantInfo`. -/
 def updateLevelParams (c : ConstantInfo) (levelParams : List Name) :
   ConstantInfo :=
   c.updateConstantVal {c.toConstantVal with levelParams}
 
+/-- Update the value of a `ConstantInfo`, if it has one. -/
 def updateValue : ConstantInfo → Expr → ConstantInfo
   | defnInfo   info, v => defnInfo   {info with value := v}
   | thmInfo    info, v => thmInfo    {info with value := v}
   | opaqueInfo info, v => opaqueInfo {info with value := v}
   | d, _ => d
 
+/-- Turn a `ConstantInfo` into a declaration. -/
 def toDeclaration! : ConstantInfo → Declaration
   | defnInfo   info => Declaration.defnDecl info
   | thmInfo    info => Declaration.thmDecl     info

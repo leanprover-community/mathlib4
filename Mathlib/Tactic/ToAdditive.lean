@@ -138,7 +138,7 @@ initialize reorderAttr : NameMapExtension (List Nat) ←
     | _, `(attr| to_additive_reorder $[$ids:num]*) => do
       logInfo m!"Using this attribute is deprecated. Use `@[to_additive (reorder := <nums>)]` {""
         }instead.\nThat will also generate the additive version with the arguments swapped, {""
-        }so you are probably able to remove the explicit additive declaration."
+        }so you are probably able to remove the manually written additive declaration."
       pure <| Array.toList <| ids.map (·.1.isNatLit?.get!)
     | _, _ => throwUnsupportedSyntax }
 
@@ -399,7 +399,8 @@ def reorderForall (src : Expr) (reorder : List Nat := []) : MetaM Expr := do
       if h : i < xs.size then
         pure <| xs.swap ⟨i - 1, Nat.lt_of_le_of_lt i.pred_le h⟩ ⟨i, h⟩
       else
-        throwError "the declaration does not have enough arguments to reorder the given arguments."
+        throwError "the declaration does not have enough arguments to reorder the given arguments: {
+          xs.size} ≤ {i}"
     mkForallFVars xs e
 
 /-- Reorder lambda-binders. See doc of `reorderAttr` for the interpretation of the argument -/
@@ -411,7 +412,9 @@ def reorderLambda (src : Expr) (reorder : List Nat := []) : MetaM Expr := do
       if h : i < xs.size then
         pure <| xs.swap ⟨i - 1, Nat.lt_of_le_of_lt i.pred_le h⟩ ⟨i, h⟩
       else
-        throwError "the declaration does not have enough arguments to reorder the given arguments."
+        throwError "the declaration does not have enough arguments to reorder the given arguments. {
+          xs.size} ≤ {i}.\nIf this is a field projection, make sure to use `@[to_additive]` on {""
+          }the field first."
     mkLambdaFVars xs e
 
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
@@ -591,9 +594,9 @@ partial def capitalizeLikeAux (s : String) (i : String.Pos := 0) (p : String) : 
   else
     let j := p.next i
     if (s.get i).isLower then
-      capitalizeLikeAux s j (p.set i (p.get i |>.toLower))
+      capitalizeLikeAux s j <| p.set i (p.get i |>.toLower)
     else if (s.get i).isUpper then
-      capitalizeLikeAux s j (p.set i (p.get i |>.toUpper))
+      capitalizeLikeAux s j <| p.set i (p.get i |>.toUpper)
     else
       capitalizeLikeAux s j p
 
@@ -776,13 +779,16 @@ def addToAdditiveAttr (src : Name) (cfg : Config) : AttrM Unit :=
   withOptions (· |>.setBool `to_additive.replaceAll cfg.replaceAll
                  |>.updateBool `trace.to_additive (cfg.trace || ·)) <| do
   let tgt ← targetName src cfg.tgt cfg.allowAutoName
+  if cfg.reorder != [] then
+    reorderAttr.add src cfg.reorder
+    -- we allow using this attribute if it's only to add the reorder configuration
+    if findTranslation? (←getEnv) src |>.isSome then
+      return
   insertTranslation src tgt
   let firstMultArg ← MetaM.run' <| firstMultiplicativeArg src
   if firstMultArg != 0 then
     trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
     relevantArgAttr.add src firstMultArg
-  if cfg.reorder != [] then
-    reorderAttr.add src cfg.reorder
   let alreadyExists := (← getEnv).contains tgt
   if alreadyExists then
     -- since `tgt` already exists, we just need to add translations `src.x ↦ tgt.x'`
@@ -798,7 +804,6 @@ def addToAdditiveAttr (src : Name) (cfg : Config) : AttrM Unit :=
     stx := cfg.ref, expr := ← mkConstWithLevelParams tgt }
   if let some doc := cfg.doc then
     addDocString tgt doc
-  return ()
 
 /--
 The attribute `to_additive` can be used to automatically transport theorems
