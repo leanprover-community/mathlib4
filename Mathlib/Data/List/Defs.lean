@@ -42,7 +42,7 @@ instance [DecidableEq α] : SDiff (List α) :=
 #align list.head' List.head?
 #align list.to_array List.toArray
 #align list.nthd List.getD
-/-- "inhabited" `nth` function: returns `default` instead of `none` in the case
+/-- "inhabited" `get` function: returns `default` instead of `none` in the case
   that the index is out of bounds. -/
 def getI [Inhabited α] (l : List α) (n : Nat) : α :=
   getD  l n default
