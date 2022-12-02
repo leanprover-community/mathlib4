@@ -48,11 +48,15 @@ import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Units
 import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Functor.Category
+import Mathlib.CategoryTheory.Functor.Default
+import Mathlib.CategoryTheory.Functor.Functorial
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.NatTrans
+import Mathlib.CategoryTheory.Thin
 import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Control.Applicative
