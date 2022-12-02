@@ -150,7 +150,7 @@ elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
       g.withContext do
         let decl ← getLocalDeclFromUserName name
         if prfName.map Syntax.getId ≠ some name then replaceMainGoal [(← g.clear decl.fvarId)]
-  | _ => return ()
-  if h.isNone then evalTactic (← `(tactic| swap))
+  | _ => pure ()
+  if h.isNone then setGoals (prf.mvarId! :: (← getGoals))
 
 end Mathlib.Tactic
