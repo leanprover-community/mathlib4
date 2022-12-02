@@ -15,11 +15,12 @@ set_option autoImplicit false
 
 This file contains different results about adjoining an element to an algebraic structure which then
 behaves like a zero or a one. An example is adjoining a one to a semigroup to obtain a monoid. That
-this provides an example of an adjunction is proved in `algebra.category.Mon.adjunctions`.
+this provides an example of an adjunction is proved in
+`Mathlib.Algebra.Category.MonCat.Adjunctions`.
 
-Another result says that adjoining to a group an element `zero` gives a `group_with_zero`. For more
+Another result says that adjoining to a group an element `Zero` gives a `GroupWithZero`. For more
 information about these structures (which are not that standard in informal mathematics, see
-`algebra.group_with_zero.basic`)
+`Mathlib.Algebra.GroupWithZero.Basic`)
 -/
 
 
@@ -188,6 +189,7 @@ def coeMulHom [Mul α] : α →ₙ* WithOne α where
 
 end
 
+#exit
 section lift
 
 variable [Mul α] [MulOneClass β]
