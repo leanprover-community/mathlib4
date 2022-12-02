@@ -106,6 +106,9 @@ def foo14 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : α := (x ^ y) 
 @[to_additive bar15 (reorder := 1 4)]
 lemma foo15 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = (x ^ y) ^ y := rfl
 
+@[to_additive bar16 (reorder := 1 4)]
+lemma foo16 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = (x ^ y) ^ y := foo15 x y
+
 
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do
