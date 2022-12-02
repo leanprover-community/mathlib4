@@ -92,12 +92,12 @@ variable {F G : C ⥤ D}
 
 instance hom_app_IsIso (α : F ≅ G) (X : C) : IsIso (α.hom.app X) :=
   ⟨⟨α.inv.app X,
-      ⟨by rw [← comp_app, Iso.hom_inv_id, ← id_app], by rw [← comp_app, Iso.inv_hom_id, ← id_app]⟩⟩⟩
+    ⟨by rw [← comp_app, Iso.hom_inv_id, ← id_app], by rw [← comp_app, Iso.inv_hom_id, ← id_app]⟩⟩⟩
 #align category_theory.nat_iso.hom_app_is_iso CategoryTheory.NatIso.hom_app_IsIso
 
 instance inv_app_IsIso (α : F ≅ G) (X : C) : IsIso (α.inv.app X) :=
   ⟨⟨α.hom.app X,
-      ⟨by rw [← comp_app, Iso.inv_hom_id, ← id_app], by rw [← comp_app, Iso.hom_inv_id, ← id_app]⟩⟩⟩
+    ⟨by rw [← comp_app, Iso.inv_hom_id, ← id_app], by rw [← comp_app, Iso.hom_inv_id, ← id_app]⟩⟩⟩
 #align category_theory.nat_iso.inv_app_is_iso CategoryTheory.NatIso.inv_app_IsIso
 
 section
@@ -146,7 +146,8 @@ theorem cancel_NatIso_hom_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X 
   -- My guess is that it has something to do with its type in mathlib4
   simp only [← category.assoc, cancel_mono]
 #align
-  category_theory.nat_iso.cancel_nat_iso_hom_right_assoc CategoryTheory.NatIso.cancel_NatIso_hom_right_assoc
+  category_theory.nat_iso.cancel_nat_iso_hom_right_assoc
+  CategoryTheory.NatIso.cancel_NatIso_hom_right_assoc
 
 @[simp]
 theorem cancel_NatIso_inv_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X ⟶ G.obj Y)
@@ -154,7 +155,8 @@ theorem cancel_NatIso_inv_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X 
     f ≫ g ≫ α.inv.app Y = f' ≫ g' ≫ α.inv.app Y ↔ f ≫ g = f' ≫ g' := by
   simp only [← category.assoc, cancel_mono]
 #align
-  category_theory.nat_iso.cancel_nat_iso_inv_right_assoc CategoryTheory.NatIso.cancel_NatIso_inv_right_assoc
+  category_theory.nat_iso.cancel_nat_iso_inv_right_assoc
+  CategoryTheory.NatIso.cancel_NatIso_inv_right_assoc
 
 @[simp]
 theorem inv_inv_app {F G : C ⥤ D} (e : F ≅ G) (X : C) : inv (e.inv.app X) = e.hom.app X := by
@@ -253,7 +255,7 @@ def hcomp {F G : C ⥤ D} {H I : D ⥤ E} (α : F ≅ G) (β : H ≅ I) : F ⋙ 
 theorem IsIso_map_iff {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) {X Y : C} (f : X ⟶ Y) :
     IsIso (F₁.map f) ↔ IsIso (F₂.map f) := by
   revert F₁ F₂
-  suffices ∀ {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) (hf : IsIso (F₁.map f)), IsIso (F₂.map f) by
+  suffices ∀ {F₁ F₂ : C ⥤ D} (_ : F₁ ≅ F₂) (_ : IsIso (F₁.map f)), IsIso (F₂.map f) by
     exact fun F₁ F₂ e => ⟨this e, this e.symm⟩
   intro F₁ F₂ e hf
   refine' IsIso.mk ⟨e.inv.app Y ≫ inv (F₁.map f) ≫ e.hom.app X, _, _⟩
