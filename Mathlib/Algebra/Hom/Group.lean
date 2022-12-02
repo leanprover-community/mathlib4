@@ -92,11 +92,7 @@ structure ZeroHom (M : Type _) (N : Type _) [Zero M] [Zero N] where
 
 You should extend this typeclass when you extend `ZeroHom`.
 -/
--- Porting note: We'd hoped that we could remove `outParam` from the instances `[Zero M] [Zero N]`
--- after https://github.com/leanprover/lean4/issues/1852 was resolved.
--- While the declaration itself is now allowed, there are subsequent failures that
--- need to be diagnosed.
-class ZeroHomClass (F : Type _) (M N : outParam (Type _)) [outParam (Zero M)] [outParam (Zero N)]
+class ZeroHomClass (F : Type _) (M N : outParam (Type _)) [Zero M] [Zero N]
   extends FunLike F M fun _ => N where
   /-- The proposition that the function preserves 0 -/
   map_zero : ∀ f : F, f 0 = 0
@@ -283,9 +279,8 @@ infixr:25 " →ₙ* " => MulHom
 
 You should declare an instance of this typeclass when you extend `MulHom`.
 -/
--- Porting note: see porting note of `ZeroHomClass`
 @[to_additive]
-class MulHomClass (F : Type _) (M N : outParam (Type _)) [outParam (Mul M)] [outParam (Mul N)]
+class MulHomClass (F : Type _) (M N : outParam (Type _)) [Mul M] [Mul N]
   extends FunLike F M fun _ => N where
   /-- The proposition that the function preserves multiplication -/
   map_mul : ∀ (f : F) (x y : M), f (x * y) = f x * f y
@@ -346,10 +341,9 @@ infixr:25 " →* " => MonoidHom
 
 /-- `MonoidHomClass F M N` states that `F` is a type of `Monoid`-preserving homomorphisms.
 You should also extend this typeclass when you extend `MonoidHom`. -/
--- Porting note: see porting note of `ZeroHomClass`
 @[to_additive]
-class MonoidHomClass (F : Type _) (M N : outParam (Type _)) [outParam (MulOneClass M)]
-   [outParam (MulOneClass N)] extends MulHomClass F M N, OneHomClass F M N
+class MonoidHomClass (F : Type _) (M N : outParam (Type _)) [MulOneClass M] [MulOneClass N]
+  extends MulHomClass F M N, OneHomClass F M N
 #align monoid_hom_class MonoidHomClass
 
 @[to_additive]
@@ -442,24 +436,11 @@ theorem map_zsmul' [SubNegMonoid G] [SubNegMonoid H] [AddMonoidHomClass F G H]
 #align map_zsmul' map_zsmul'
 attribute [to_additive] map_zpow'
 
--- to_additive puts the arguments in the wrong order, so generate an auxiliary lemma, then
--- swap its arguments.
--- Porting note: restore `to_additive`
 /-- Group homomorphisms preserve integer power. -/
-@[simp]
+@[simp, to_additive "Additive group homomorphisms preserve integer scaling." (reorder := 8)]
 theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
   (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n
 #align map_zpow map_zpow
-@[simp]
-theorem map_zsmul.aux [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass F G H]
-  (f : F) (g : G) (n : ℤ) : f (n • g) = n • f g := map_zsmul' f (map_neg f) g n
-
-/-- Additive group homomorphisms preserve integer scaling. -/
-theorem map_zsmul [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass F G H]
-  (f : F) (n : ℤ) (g : G) : f (n • g) = n • f g := map_zsmul.aux f g n
-#align map_zsmul map_zsmul
-
-attribute [to_additive_reorder 8, to_additive] map_zpow
 
 end mul_one
 
@@ -978,24 +959,22 @@ def MulHom.comp [Mul M] [Mul N] [Mul P] (hnp : N →ₙ* P) (hmn : M →ₙ* N) 
 #align mul_hom.comp MulHom.comp
 #align add_hom.comp AddHom.comp
 
--- Porting note: `map_one'` should just be `by simp`
 /-- Composition of monoid morphisms as a monoid morphism. -/
 @[to_additive]
 def MonoidHom.comp [MulOneClass M] [MulOneClass N] [MulOneClass P] (hnp : N →* P) (hmn : M →* N) :
   M →* P where
   toFun := hnp ∘ hmn
-  map_one' := by rw [Function.comp_apply, map_one, map_one]
+  map_one' := by simp
   map_mul' := by simp
 #align monoid_hom.comp MonoidHom.comp
 #align add_monoid_hom.comp AddMonoidHom.comp
 
--- Porting note: `map_one'` should just be `by simp`
 /-- Composition of `MonoidWithZeroHom`s as a `MonoidWithZeroHom`. -/
 def MonoidWithZeroHom.comp [MulZeroOneClass M] [MulZeroOneClass N] [MulZeroOneClass P]
   (hnp : N →*₀ P) (hmn : M →*₀ N) : M →*₀ P where
   toFun := hnp ∘ hmn
   map_zero' := by rw [Function.comp_apply, map_zero, map_zero]
-  map_one' := by dsimp only []; rw [Function.comp_apply, map_one, map_one]
+  map_one' := by simp
   map_mul' := by simp
 #align monoid_with_zero_hom.comp MonoidWithZeroHom.comp
 
@@ -1234,7 +1213,6 @@ protected theorem AddMonoidHom.map_zsmul' [SubNegMonoid M] [SubNegMonoid N] (f :
 
 section End
 
--- Porting note: this part causes instance loop
 namespace Monoid
 
 variable (M) [MulOneClass M]
@@ -1268,44 +1246,40 @@ theorem coe_mul (f g) : ((f * g : Monoid.End M) : M → M) = f ∘ g := rfl
 
 end Monoid
 
--- Porting note:
--- This section needs to be restored after we have a resolution for
--- https://github.com/leanprover/lean4/issues/1901
+namespace AddMonoid
 
--- namespace AddMonoid
+variable (A : Type _) [AddZeroClass A]
 
--- variable (A : Type _) [AddZeroClass A]
+/-- The monoid of endomorphisms. -/
+protected def End := A →+ A
+#align add_monoid.End AddMonoid.End
 
--- /-- The monoid of endomorphisms. -/
--- protected def End := A →+ A
--- #align add_monoid.End AddMonoid.End
+namespace End
 
--- namespace End
+instance : Monoid (AddMonoid.End A) where
+  mul := AddMonoidHom.comp
+  one := AddMonoidHom.id A
+  mul_assoc _ _ _ := AddMonoidHom.comp_assoc _ _ _
+  mul_one := AddMonoidHom.comp_id
+  one_mul := AddMonoidHom.id_comp
 
--- instance : Monoid (AddMonoid.End A) where
---   mul := AddMonoidHom.comp
---   one := AddMonoidHom.id A
---   mul_assoc _ _ _ := AddMonoidHom.comp_assoc _ _ _
---   mul_one := AddMonoidHom.comp_id
---   one_mul := AddMonoidHom.id_comp
+instance : Inhabited (AddMonoid.End A) := ⟨1⟩
 
--- instance : Inhabited (AddMonoid.End A) := ⟨1⟩
+instance : AddMonoidHomClass (AddMonoid.End A) A A := AddMonoidHom.addMonoidHomClass
 
--- instance : AddMonoidHomClass (AddMonoid.End A) A A := AddMonoidHom.addMonoidHomClass
+end End
 
--- end End
+@[simp]
+theorem coe_one : ((1 : AddMonoid.End A) : A → A) = id := rfl
+#align add_monoid.coe_one AddMonoid.coe_one
 
--- @[simp]
--- theorem coe_one : ((1 : AddMonoid.End A) : A → A) = id := rfl
--- #align add_monoid.coe_one AddMonoid.coe_one
+@[simp]
+theorem coe_mul (f g) : ((f * g : AddMonoid.End A) : A → A) = f ∘ g := rfl
+#align add_monoid.coe_mul AddMonoid.coe_mul
 
--- @[simp]
--- theorem coe_mul (f g) : ((f * g : AddMonoid.End A) : A → A) = f ∘ g := rfl
--- #align add_monoid.coe_mul AddMonoid.coe_mul
+end AddMonoid
 
--- end AddMonoid
-
--- end End
+end End
 
 /-- `1` is the homomorphism sending all elements to `1`. -/
 @[to_additive]
@@ -1413,38 +1387,29 @@ end MulHom
 
 namespace MonoidHom
 
-variable [mM : MulOneClass M] [mN : MulOneClass N] [mP : MulOneClass P]
-
 variable [Group G] [CommGroup H]
 
--- Porting note:
--- This is another example of the problem with `End` above,
--- and the next two declarations need to be
--- restored after we have a resolution for
--- https://github.com/leanprover/lean4/issues/1901
+/-- Given two monoid morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid morphism
+sending `x` to `f x * g x`. -/
+@[to_additive]
+instance mul {M N} {_ : MulOneClass M} [CommMonoid N] : Mul (M →* N) :=
+  ⟨fun f g =>
+    { toFun := fun m => f m * g m,
+      map_one' := show f 1 * g 1 = 1 by simp,
+      map_mul' := fun x y => by
+        intros
+        show f (x * y) * g (x * y) = f x * g x * (f y * g y)
+        rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
 
--- /-- Given two monoid morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid morphism
--- sending `x` to `f x * g x`. -/
--- @[to_additive]
--- instance {M N} {_ : MulOneClass M} [CommMonoid N] : Mul (M →* N) :=
---   ⟨fun f g =>
---     { toFun := fun m => f m * g m,
---       map_one' := show f 1 * g 1 = 1 by rw [map_one, map_one, mul_one],
---       -- Porting note: why doesn't `simp` work here?
---       map_mul' := fun x y => by
---         intros
---         show f (x * y) * g (x * y) = f x * g x * (f y * g y)
---         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
+/-- Given two additive monoid morphisms `f`, `g` to an additive commutative monoid,
+`f + g` is the additive monoid morphism sending `x` to `f x + g x`. -/
+add_decl_doc AddMonoidHom.add
 
--- /-- Given two additive monoid morphisms `f`, `g` to an additive commutative monoid,
--- `f + g` is the additive monoid morphism sending `x` to `f x + g x`. -/
--- add_decl_doc AddMonoidHom.instAddAddMonoidHomToAddZeroClassToAddMonoid
-
--- @[simp, to_additive]
--- theorem mul_apply {M N} {_ : MulOneClass M} {_ : CommMonoid N} (f g : M →* N) (x : M) :
---   (f * g) x = f x * g x := rfl
--- #align monoid_hom.mul_apply MonoidHom.mul_apply
--- #align add_monoid_hom.add_apply AddMonoidHom.add_apply
+@[simp, to_additive]
+theorem mul_apply {M N} {_ : MulOneClass M} {_ : CommMonoid N} (f g : M →* N) (x : M) :
+  (f * g) x = f x * g x := rfl
+#align monoid_hom.mul_apply MonoidHom.mul_apply
+#align add_monoid_hom.add_apply AddMonoidHom.add_apply
 
 @[simp, to_additive]
 theorem one_comp [MulOneClass M] [MulOneClass N] [MulOneClass P] (f : M →* N) :
@@ -1460,21 +1425,19 @@ theorem comp_one [MulOneClass M] [MulOneClass N] [MulOneClass P] (f : N →* P) 
 #align monoid_hom.comp_one MonoidHom.comp_one
 #align add_monoid_hom.comp_zero AddMonoidHom.comp_zero
 
--- Porting note: these need to be restored after we have a resolution for
--- https://github.com/leanprover/lean4/issues/1901
--- @[to_additive]
--- theorem mul_comp [MulOneClass M] [MulOneClass N] [CommMonoid P] (g₁ g₂ : N →* P) (f : M →* N) :
---   (g₁ * g₂).comp f = g₁.comp f * g₂.comp f := rfl
--- #align monoid_hom.mul_comp MonoidHom.mul_comp
--- #align add_monoid_hom.add_comp AddMonoidHom.add_comp
+@[to_additive]
+theorem mul_comp [MulOneClass M] [MulOneClass N] [CommMonoid P] (g₁ g₂ : N →* P) (f : M →* N) :
+  (g₁ * g₂).comp f = g₁.comp f * g₂.comp f := rfl
+#align monoid_hom.mul_comp MonoidHom.mul_comp
+#align add_monoid_hom.add_comp AddMonoidHom.add_comp
 
--- @[to_additive]
--- theorem comp_mul [MulOneClass M] [CommMonoid N] [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
---   g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
---   ext
---   simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
--- #align monoid_hom.comp_mul MonoidHom.comp_mul
--- #align add_monoid_hom.comp_add AddMonoidHom.comp_add
+@[to_additive]
+theorem comp_mul [MulOneClass M] [CommMonoid N] [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
+  g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
+  ext
+  simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
+#align monoid_hom.comp_mul MonoidHom.comp_mul
+#align add_monoid_hom.comp_add AddMonoidHom.comp_add
 
 /-- Group homomorphisms preserve inverse. -/
 @[to_additive "Additive group homomorphisms preserve negation."]
@@ -1504,35 +1467,34 @@ protected theorem map_mul_inv [Group α] [DivisionMonoid β] (f : α →* β) (g
 #align monoid_hom.map_mul_inv MonoidHom.map_mul_inv
 #align add_monoid_hom.map_add_neg AddMonoidHom.map_add_neg
 
--- Porting note: these need to be restored after we have a resolution for
--- https://github.com/leanprover/lean4/issues/1901
+/-- A homomorphism from a group to a monoid is injective iff its kernel is trivial.
+For the iff statement on the triviality of the kernel, see `injective_iff_map_eq_one'`.  -/
+@[to_additive
+  "A homomorphism from an additive group to an additive monoid is injective iff
+  its kernel is trivial. For the iff statement on the triviality of the kernel,
+  see `injective_iff_map_eq_zero'`."]
+theorem _root_.injective_iff_map_eq_one {G H} [Group G] [MulOneClass H] [MonoidHomClass F G H]
+  (f : F) : Function.Injective f ↔ ∀ a, f a = 1 → a = 1 :=
+  ⟨fun h x => (map_eq_one_iff f h).mp, fun h x y hxy =>
+    mul_inv_eq_one.1 <| h _ <| by rw [map_mul, hxy, ← map_mul, mul_inv_self, map_one]⟩
+#align injective_iff_map_eq_one injective_iff_map_eq_one
+#align injective_iff_map_eq_zero injective_iff_map_eq_zero
 
--- /-- A homomorphism from a group to a monoid is injective iff its kernel is trivial.
--- For the iff statement on the triviality of the kernel, see `injective_iff_map_eq_one'`.  -/
--- @[to_additive
---   "A homomorphism from an additive group to an additive monoid is injective iff
---   its kernel is trivial. For the iff statement on the triviality of the kernel,
---   see `injective_iff_map_eq_zero'`."]
--- theorem _root_.injective_iff_map_eq_one {G H} [Group G] [MulOneClass H] [MonoidHomClass F G H]
---   (f : F) : Function.Injective f ↔ ∀ a, f a = 1 → a = 1 :=
---   ⟨fun h x => (map_eq_one_iff f h).mp, fun h x y hxy =>
---     mul_inv_eq_one.1 <| h _ <| by rw [map_mul, hxy, ← map_mul, mul_inv_self, map_one]⟩
--- #align injective_iff_map_eq_one injective_iff_map_eq_one
--- #align injective_iff_map_eq_zero injective_iff_map_eq_zero
+/-- A homomorphism from a group to a monoid is injective iff its kernel is trivial,
+stated as an iff on the triviality of the kernel.
+For the implication, see `injective_iff_map_eq_one`. -/
+@[to_additive
+  "A homomorphism from an additive group to an additive monoid is injective iff its
+  kernel is trivial, stated as an iff on the triviality of the kernel. For the implication, see
+  `injective_iff_map_eq_zero`."]
+theorem _root_.injective_iff_map_eq_one' {G H} [Group G] [MulOneClass H] [MonoidHomClass F G H]
+  (f : F) : Function.Injective f ↔ ∀ a, f a = 1 ↔ a = 1 :=
+  (injective_iff_map_eq_one f).trans <|
+    forall_congr' fun _ => ⟨fun h => ⟨h, fun H => H.symm ▸ map_one f⟩, Iff.mp⟩
+#align injective_iff_map_eq_one' injective_iff_map_eq_one'
+#align injective_iff_map_eq_zero' injective_iff_map_eq_zero'
 
--- /-- A homomorphism from a group to a monoid is injective iff its kernel is trivial,
--- stated as an iff on the triviality of the kernel.
--- For the implication, see `injective_iff_map_eq_one`. -/
--- @[to_additive
---   "A homomorphism from an additive group to an additive monoid is injective iff its
---   kernel is trivial, stated as an iff on the triviality of the kernel. For the implication, see
---   `injective_iff_map_eq_zero`."]
--- theorem _root_.injective_iff_map_eq_one' {G H} [Group G] [MulOneClass H] [MonoidHomClass F G H]
---   (f : F) : Function.Injective f ↔ ∀ a, f a = 1 ↔ a = 1 :=
---   (injective_iff_map_eq_one f).trans <|
---     forall_congr' fun _ => ⟨fun h => ⟨h, fun H => H.symm ▸ map_one f⟩, Iff.mp⟩
--- #align injective_iff_map_eq_one' injective_iff_map_eq_one'
--- #align injective_iff_map_eq_zero' injective_iff_map_eq_zero'
+variable [MulOneClass M]
 
 /-- Makes a group homomorphism from a proof that the map preserves multiplication. -/
 @[to_additive "Makes an additive group homomorphism from a proof that the map preserves addition.",
@@ -1634,13 +1596,10 @@ theorem div_apply {M G} {_ : MulOneClass M} {_ : CommGroup G} (f g : M →* G) (
 
 end MonoidHom
 
--- Porting note: this needs to be restored after we have a resolution for
--- https://github.com/leanprover/lean4/issues/1901
-
--- /-- Given two monoid with zero morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid
--- with zero morphism sending `x` to `f x * g x`. -/
--- instance {M N} {_ : MulZeroOneClass M} [CommMonoidWithZero N] : Mul (M →*₀ N) :=
---   ⟨fun f g => { (f * g : M →* N) with
---     toFun := fun a => f a * g a,
---     map_zero' := by dsimp only []; rw [map_zero, zero_mul] }⟩
---     -- Porting note: why do we need `dsimp` here?
+/-- Given two monoid with zero morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid
+with zero morphism sending `x` to `f x * g x`. -/
+instance {M N} {_ : MulZeroOneClass M} [CommMonoidWithZero N] : Mul (M →*₀ N) :=
+  ⟨fun f g => { (f * g : M →* N) with
+    toFun := fun a => f a * g a,
+    map_zero' := by dsimp only []; rw [map_zero, zero_mul] }⟩
+    -- Porting note: why do we need `dsimp` here?
