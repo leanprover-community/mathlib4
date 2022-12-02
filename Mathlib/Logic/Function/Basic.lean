@@ -120,10 +120,10 @@ lemma Injective.dite (p : α → Prop) [DecidablePred p]
 by intros x₁ x₂ h
    dsimp only at h
    by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
-   · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h); assumption
+   · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
    · rw [dif_pos h₁, dif_neg h₂] at h; exact (im_disj h).elim
    · rw [dif_neg h₁, dif_pos h₂] at h; exact (im_disj h.symm).elim
-   · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h); assumption
+   · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h)
 
 theorem Surjective.of_comp {g : γ → α} (S : Surjective (f ∘ g)) : Surjective f := fun y ↦
   let ⟨x, h⟩ := S y

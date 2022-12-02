@@ -514,7 +514,7 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 #align monoid.npow_succ' Monoid.npow_succ
 
 -- Bug #660
-attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
+attribute [to_additive] Monoid.toMulOneClass
 
 @[default_instance high] instance Monoid.Pow {M : Type _} [Monoid M] : Pow M ℕ :=
   ⟨fun x n ↦ Monoid.npow n x⟩
@@ -522,7 +522,7 @@ attribute [to_additive AddMonoid.toAddZeroClass] Monoid.toMulOneClass
 instance AddMonoid.SMul {M : Type _} [AddMonoid M] : SMul ℕ M :=
   ⟨AddMonoid.nsmul⟩
 
-attribute [to_additive AddMonoid.SMul] Monoid.Pow
+attribute [to_additive] Monoid.Pow
 
 section
 
@@ -560,7 +560,7 @@ class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
 
-attribute [to_additive AddCommMonoid.toAddCommSemigroup] CommMonoid.toCommSemigroup
+attribute [to_additive] CommMonoid.toCommSemigroup
 
 section LeftCancelMonoid
 
@@ -573,7 +573,7 @@ class AddLeftCancelMonoid (M : Type u) extends AddLeftCancelSemigroup M, AddMono
 @[to_additive]
 class LeftCancelMonoid (M : Type u) extends LeftCancelSemigroup M, Monoid M
 
-attribute [to_additive AddLeftCancelMonoid.toAddMonoid] LeftCancelMonoid.toMonoid
+attribute [to_additive] LeftCancelMonoid.toMonoid
 
 end LeftCancelMonoid
 
@@ -588,7 +588,7 @@ class AddRightCancelMonoid (M : Type u) extends AddRightCancelSemigroup M, AddMo
 @[to_additive]
 class RightCancelMonoid (M : Type u) extends RightCancelSemigroup M, Monoid M
 
-attribute [to_additive AddRightCancelMonoid.toAddMonoid] RightCancelMonoid.toMonoid
+attribute [to_additive] RightCancelMonoid.toMonoid
 
 end RightCancelMonoid
 
@@ -603,7 +603,7 @@ class AddCancelMonoid (M : Type u) extends AddLeftCancelMonoid M, AddRightCancel
 @[to_additive]
 class CancelMonoid (M : Type u) extends LeftCancelMonoid M, RightCancelMonoid M
 
-attribute [to_additive AddCancelMonoid.toAddRightCancelMonoid] CancelMonoid.toRightCancelMonoid
+attribute [to_additive] CancelMonoid.toRightCancelMonoid
 
 /-- Commutative version of `AddCancelMonoid`. -/
 class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMonoid M
@@ -612,7 +612,7 @@ class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMon
 @[to_additive]
 class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
 
-attribute [to_additive AddCancelCommMonoid.toAddCommMonoid] CancelCommMonoid.toCommMonoid
+attribute [to_additive] CancelCommMonoid.toCommMonoid
 
 -- see Note [lower instance priority]
 @[to_additive CancelCommMonoid.toAddCancelMonoid]
@@ -830,7 +830,7 @@ class InvOneClass (G : Type _) extends One G, Inv G where
 class DivInvOneMonoid (G : Type _) extends DivInvMonoid G, InvOneClass G
 
 -- FIXME: `to_additive` is not operating on the second parent. (#660)
-attribute [to_additive SubNegZeroMonoid.toNegZeroClass] DivInvOneMonoid.toInvOneClass
+attribute [to_additive] DivInvOneMonoid.toInvOneClass
 
 variable [InvOneClass G]
 
@@ -859,7 +859,7 @@ class DivisionMonoid (G : Type u) extends DivInvMonoid G, HasInvolutiveInv G whe
   involutivity of inversion. -/
   inv_eq_of_mul (a b : G) : a * b = 1 → a⁻¹ = b
 
-attribute [to_additive SubtractionMonoid.toHasInvolutiveNeg] DivisionMonoid.toHasInvolutiveInv
+attribute [to_additive] DivisionMonoid.toHasInvolutiveInv
 
 section DivisionMonoid
 
@@ -884,7 +884,7 @@ This is the immediate common ancestor of `comm_group` and `CommGroupWithZero`. -
 @[to_additive SubtractionCommMonoid]
 class DivisionCommMonoid (G : Type u) extends DivisionMonoid G, CommMonoid G
 
-attribute [to_additive SubtractionCommMonoid.toAddCommMonoid] DivisionCommMonoid.toCommMonoid
+attribute [to_additive] DivisionCommMonoid.toCommMonoid
 
 /-- A `group` is a `monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
 
@@ -952,7 +952,7 @@ instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
     inv_eq_of_mul := fun _ _ ↦ inv_eq_of_mul }
 
 -- see Note [lower instance priority]
-@[to_additive AddGroup.toAddCancelMonoid]
+@[to_additive]
 instance (priority := 100) Group.toCancelMonoid : CancelMonoid G :=
   { ‹Group G› with
     mul_right_cancel := fun a b c h ↦ by rw [← mul_inv_cancel_right a b, h, mul_inv_cancel_right]
@@ -971,7 +971,7 @@ class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 @[to_additive]
 class CommGroup (G : Type u) extends Group G, CommMonoid G
 
-attribute [to_additive AddCommGroup.toAddCommMonoid] CommGroup.toCommMonoid
+attribute [to_additive] CommGroup.toCommMonoid
 
 @[to_additive]
 theorem CommGroup.toGroup_injective {G : Type u} : Function.Injective (@CommGroup.toGroup G) := by
@@ -982,12 +982,12 @@ section CommGroup
 variable [CommGroup G]
 
 -- see Note [lower instance priority]
-@[to_additive AddCommGroup.toAddCancelCommMonoid]
+@[to_additive]
 instance (priority := 100) CommGroup.toCancelCommMonoid : CancelCommMonoid G :=
   { ‹CommGroup G›, Group.toCancelMonoid with }
 
 -- see Note [lower instance priority]
-@[to_additive AddCommGroup.toSubtractionCommMonoid]
+@[to_additive]
 instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G :=
   { ‹CommGroup G›, Group.toDivisionMonoid with }
 
