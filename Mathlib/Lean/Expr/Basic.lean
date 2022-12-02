@@ -152,8 +152,8 @@ def natLit! : Expr → Nat
 
 /-- If a `Expr` has form `.fvar n`, then returns `some n`, otherwise `none`. -/
 def fvarId? : Expr → Option FVarId
-| .fvar n => n
-| _ => none
+  | .fvar n => n
+  | _ => none
 
 open Meta
 
