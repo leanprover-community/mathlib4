@@ -209,7 +209,7 @@ let single_process : MVarId → List Expr → MetaM Expr :=
    | none => findLinarithContradiction cfg g hyp_set.values
 let preprocessors :=
   (if cfg.split_hypotheses then [Linarith.splitConjunctions.globalize.branching] else []) ++
-  cfg.preprocessors.getD default_preprocessors
+  cfg.preprocessors.getD defaultPreprocessors
 -- TODO restore when the `removeNe` preprocessor is implemented
 -- let preprocessors := if cfg.split_ne then Linarith.removeNe::preprocessors else preprocessors
 do
