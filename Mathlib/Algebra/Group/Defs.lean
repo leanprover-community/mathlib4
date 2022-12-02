@@ -204,6 +204,11 @@ variable [CommSemigroup G]
 theorem mul_comm : ∀ a b : G, a * b = b * a :=
   CommSemigroup.mul_comm
 
+@[to_additive]
+instance CommSemigroup.to_isCommutative : IsCommutative G (· * ·) :=
+  ⟨mul_comm⟩
+#align comm_semigroup.to_is_commutative CommSemigroup.to_isCommutative
+
 /-- Any `CommSemigroup G` that satisfies `IsRightCancelMul G` also satisfies
 `IsLeftCancelMul G`. -/
 @[to_additive AddCommSemigroup.IsRightCancelAdd.to_IsLeftCancelAdd "Any
