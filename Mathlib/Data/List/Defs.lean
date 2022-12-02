@@ -267,22 +267,18 @@ private def meas : (Σ'_ : List α, List α) → ℕ × ℕ
 -/
 local infixl:50 " ≺ " => InvImage (Prod.Lex (· < ·) (· < ·)) meas
 
+
+-- porting comment removed `[elab_as_elim]` per Mario C
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Status.20of.20data.2Elist.2Edefs.3F/near/313571979
 /-- A recursor for pairs of lists. To have `C l₁ l₂` for all `l₁`, `l₂`, it suffices to have it for
 `l₂ = []` and to be able to pour the elements of `l₁` into `l₂`. -/
-@[elab_as_elim]
 def permutationsAux.rec {C : List α → List α → Sort v} (H0 : ∀ is, C [] is)
     (H1 : ∀ t ts is, C ts (t :: is) → C is [] → C (t :: ts) is) : ∀ l₁ l₂, C l₁ l₂
   | [], is => H0 is
   | t :: ts, is =>
-    have h1 : ⟨ts, t :: is⟩ ≺ ⟨t :: ts, is⟩ :=
-      show Prod.Lex _ _
-           (succ (length ts + length is), length ts)
-           (succ (length ts) + length is, length (t :: ts)) by
-        rw [Nat.succ_add] <;> exact Prod.Lex.right _ (lt_succ_self _)
-    have h2 : ⟨is, []⟩ ≺ ⟨t :: ts, is⟩ := Prod.Lex.left _ _ (Nat.lt_add_of_pos_left (succ_pos _))
-    H1 t ts is (permutationsAux.rec H0 H1 ts (t :: is)) (permutationsAux.rec H0 H1 is [])
-    termination_by'
-      ⟨(· ≺ ·), @InvImage.wf _ _ _ meas (Prod.instWellFoundedRelationProd lt_wfRel lt_wfRel)⟩
+      H1 t ts is (permutationsAux.rec H0 H1 ts (t :: is)) (permutationsAux.rec H0 H1 is [])
+  termination_by _ ts is => (length ts + length is, length ts)
+  decreasing_by simp_wf; simp [Nat.succ_add]; decreasing_tactic
 #align list.permutations_aux.rec List.permutationsAux.rec
 
 /-- An auxiliary function for defining `permutations`. `permutations_aux ts is` is the set of all
