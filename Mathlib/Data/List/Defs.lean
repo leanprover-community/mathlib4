@@ -555,7 +555,7 @@ def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : Li
 -/
 def mapAsyncChunked {α β} (f : α → β) (xs : List α) (chunk_size := 1024) : List β :=
   ((xs.toChunks chunk_size).map fun xs => Task.spawn fun _ => List.map f xs).bind Task.get
-#align list.map_async_chunked List.map_async_chunked
+#align list.map_async_chunked List.mapAsyncChunked
 
 
 /-!
