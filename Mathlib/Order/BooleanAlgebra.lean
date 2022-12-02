@@ -80,7 +80,9 @@ operation `\` (called `sdiff`, after "set difference") satisfying `(a ⊓ b) ⊔
 This is a generalization of Boolean algebras which applies to `finset α` for arbitrary
 (not-necessarily-`fintype`) `α`. -/
 class GeneralizedBooleanAlgebra (α : Type u) extends DistribLattice α, SDiff α, Bot α where
+  /-- For any `a`, `b`, `(a ⊓ b) ⊔ (a / b) = a` -/
   sup_inf_sdiff : ∀ a b : α, a ⊓ b ⊔ a \ b = a
+  /-- For any `a`, `b`, `(a ⊓ b) ⊓ (a / b) = ⊥` -/
   inf_inf_sdiff : ∀ a b : α, a ⊓ b ⊓ a \ b = ⊥
 #align generalized_boolean_algebra GeneralizedBooleanAlgebra
 
@@ -506,13 +508,21 @@ order axioms of those classes here. A "forgetful" instance back to `bounded_orde
 -/
 class BooleanAlgebra (α : Type u) extends
     DistribLattice α, HasCompl α, SDiff α, HImp α, Top α, Bot α where
+  /-- The infinum of `x` and `xᶜ` is less equal `⊥` -/
   inf_compl_le_bot : ∀ x : α, x ⊓ xᶜ ≤ ⊥
+  /-- The supremum of `x` and `xᶜ` is greater or equal `⊤` -/
   top_le_sup_compl : ∀ x : α, ⊤ ≤ x ⊔ xᶜ
+  /-- `⊤` is the greatest element -/
   le_top : ∀ a : α, a ≤ ⊤
+  /-- `⊥` is the least element -/
   bot_le : ∀ a : α, ⊥ ≤ a
+  /-- `x \ y` is equal to `x ⊓ yᶜ` -/
   sdiff := fun x y => x ⊓ yᶜ
+  /-- `x ⇨ y` is equal to `y ⊔ xᶜ` -/
   himp := fun x y => y ⊔ xᶜ
+  /-- `x \ y` is equal to `x ⊓ yᶜ` -/
   sdiff_eq : ∀ x y : α, x \ y = x ⊓ yᶜ := by aesop
+  /-- `x ⇨ y` is equal to `y ⊔ xᶜ` -/
   himp_eq : ∀ x y : α, x ⇨ y = y ⊔ xᶜ := by aesop
 #align boolean_algebra BooleanAlgebra
 
@@ -539,7 +549,6 @@ section BooleanAlgebra
 
 variable [BooleanAlgebra α]
 
-@[simp]
 theorem inf_compl_eq_bot' : x ⊓ xᶜ = ⊥ :=
   bot_unique <| BooleanAlgebra.inf_compl_le_bot x
 #align inf_compl_eq_bot' inf_compl_eq_bot'
@@ -593,9 +602,9 @@ theorem hnot_eq_compl : ￢x = xᶜ :=
   rfl
 #align hnot_eq_compl hnot_eq_compl
 
-@[simp]
+/- NOTE: Is this theorem needed at all or can we use `top_sdiff'`. -/
 theorem top_sdiff : ⊤ \ x = xᶜ :=
-  top_sdiff' _
+  top_sdiff' x
 #align top_sdiff top_sdiff
 
 theorem eq_compl_iff_is_compl : x = yᶜ ↔ IsCompl x y :=
@@ -709,7 +718,6 @@ theorem compl_himp : (x ⇨ y)ᶜ = x \ y :=
   @compl_sdiff αᵒᵈ _ _ _
 #align compl_himp compl_himp
 
-@[simp]
 theorem compl_sdiff_compl : xᶜ \ yᶜ = y \ x := by rw [sdiff_compl, sdiff_eq, inf_comm]
 #align compl_sdiff_compl compl_sdiff_compl
 
