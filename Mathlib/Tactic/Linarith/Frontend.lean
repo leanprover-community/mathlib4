@@ -244,7 +244,7 @@ if it does not succeed at doing this.
 partial def linarith (only_on : Bool) (hyps : List Expr) (cfg : LinarithConfig := {})
     (g : MVarId) : MetaM Unit := do
   -- if the target is an equality, we run `linarith` twice, to prove ≤ and ≥.
-  if (← instantiateMVars (← g.getType)).isEq then do
+  if (← g.getType').isEq then do
     trace[linarith] "target is an equality: splitting"
     let [g₁, g₂] ← g.apply (← mkConst' ``eq_of_not_lt_of_not_gt) | failure
     linarith only_on hyps cfg g₁
