@@ -101,10 +101,12 @@ theorem sq_nonneg [LinearOrderedRing R] (a : R) : 0 ≤ a ^ 2 := sorry
 
 theorem mul_self_nonneg [LinearOrderedRing R] (a : R) : 0 ≤ a * a := sorry
 
+@[nolint unusedArguments]
 theorem mul_pos_of_neg_of_neg [StrictOrderedRing R] {a b : R} (ha : a < 0) (hb : b < 0) :
     0 < a * b :=
   sorry
 
+@[nolint unusedArguments]
 theorem mul_nonneg_of_nonpos_of_nonpos [OrderedRing R] {a b : R} (ha : a ≤ 0) (hb : b ≤ 0) :
     0 ≤ a * b :=
   sorry
