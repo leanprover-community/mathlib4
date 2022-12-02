@@ -29,8 +29,7 @@ theorem Nat.cast_commute [Semiring α] (n : ℕ) (x : α) : Commute (↑n) x := 
 
 end Semiring
 
-example [Ring R] : HasInvolutiveNeg R := inferInstance
-
+example [Ring R] : InvolutiveNeg R := inferInstance
 
 /- Instances -/
 

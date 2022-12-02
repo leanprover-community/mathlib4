@@ -160,7 +160,7 @@ instance [Sub α] : Sub αᵐᵒᵖ where sub x y := op (unop x - unop y)
 
 instance [Neg α] : Neg αᵐᵒᵖ where neg x := op $ -unop x
 
-instance [HasInvolutiveNeg α] : HasInvolutiveNeg αᵐᵒᵖ :=
+instance [InvolutiveNeg α] : InvolutiveNeg αᵐᵒᵖ :=
   { MulOpposite.instNegMulOpposite α with neg_neg := fun _ => unop_injective $ neg_neg _ }
 
 @[to_additive]
@@ -170,7 +170,7 @@ instance [Mul α] : Mul αᵐᵒᵖ where mul x y := op (unop y * unop x)
 instance [Inv α] : Inv αᵐᵒᵖ where inv x := op $ (unop x)⁻¹
 
 @[to_additive]
-instance [HasInvolutiveInv α] : HasInvolutiveInv αᵐᵒᵖ :=
+instance [InvolutiveInv α] : InvolutiveInv αᵐᵒᵖ :=
   { MulOpposite.instInvMulOpposite α with inv_inv := fun _ => unop_injective $ inv_inv _ }
 
 @[to_additive]
@@ -323,7 +323,7 @@ theorem unop_mul [Mul α] (a b : αᵃᵒᵖ) : unop (a * b) = unop a * unop b :
 
 instance [Inv α] : Inv αᵃᵒᵖ where inv a := op (unop a)⁻¹
 
-instance [HasInvolutiveInv α] : HasInvolutiveInv αᵃᵒᵖ :=
+instance [InvolutiveInv α] : InvolutiveInv αᵃᵒᵖ :=
   { AddOpposite.instInvAddOpposite with inv_inv := fun _ => unop_injective $ inv_inv _ }
 
 @[simp]
