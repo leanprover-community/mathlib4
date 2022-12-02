@@ -260,14 +260,6 @@ def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List �
     (y :: us, f (t :: y :: us) :: zs)
 #align list.permutations_aux2 List.permutationsAux2
 
-private def meas : (Σ'_ : List α, List α) → ℕ × ℕ
-  | ⟨l, i⟩ => (length l + length i, length l)
-
-/-- Local notation for termination relationship used in `rec` below
--/
-local infixl:50 " ≺ " => InvImage (Prod.Lex (· < ·) (· < ·)) meas
-
-
 -- porting comment removed `[elab_as_elim]` per Mario C
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Status.20of.20data.2Elist.2Edefs.3F/near/313571979
 /-- A recursor for pairs of lists. To have `C l₁ l₂` for all `l₁`, `l₂`, it suffices to have it for
