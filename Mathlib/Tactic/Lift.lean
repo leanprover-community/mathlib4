@@ -61,14 +61,9 @@ instance Subtype.canLift {α : Sort _} (p : α → Prop) :
   ⟨⟨a, ha⟩, rfl⟩
 #align subtype.can_lift Subtype.canLift
 
-open Lean Parser Tactic Elab Tactic Meta
-
-/-- If a `Lean.Expr` has form `Lean.Expr.fvar n`, then returns `some n`, otherwise `none`. -/
-def Lean.Expr.fvarId? : Expr → Option FVarId
-  | .fvar n => n
-  | _ => none
-
 namespace Mathlib.Tactic
+
+open Lean Parser Tactic Elab Tactic Meta
 
 /-- Lift an expression to another type.
 * Usage: `'lift' expr 'to' expr ('using' expr)? ('with' id (id id?)?)?`.
