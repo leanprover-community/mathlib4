@@ -271,7 +271,7 @@ local infixl:50 " ≺ " => InvImage (Prod.Lex (· < ·) (· < ·)) meas
 /-- A recursor for pairs of lists. To have `C l₁ l₂` for all `l₁`, `l₂`, it suffices to have it for
 `l₂ = []` and to be able to pour the elements of `l₁` into `l₂`. -/
 @[elab_as_elim]
-def PermutationsAux.rec {C : List α → List α → Sort v} (H0 : ∀ is, C [] is)
+def permutationsAux.rec {C : List α → List α → Sort v} (H0 : ∀ is, C [] is)
     (H1 : ∀ t ts is, C ts (t :: is) → C is [] → C (t :: ts) is) : ∀ l₁ l₂, C l₁ l₂
   | [], is => H0 is
   | t :: ts, is =>
