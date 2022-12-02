@@ -158,7 +158,8 @@ theorem cancel_nat_iso_inv_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X
 
 @[simp]
 theorem inv_inv_app {F G : C ⥤ D} (e : F ≅ G) (X : C) : inv (e.inv.app X) = e.hom.app X := by
-  ext
+  -- Porting note: originally an ext lemma. No longer in mathlib4
+  apply IsIso.inv_eq_of_hom_inv_id
   simp
 #align category_theory.nat_iso.inv_inv_app CategoryTheory.NatIso.inv_inv_app
 
@@ -167,11 +168,14 @@ end
 variable {X Y : C}
 
 theorem naturality_1 (α : F ≅ G) (f : X ⟶ Y) : α.inv.app X ≫ F.map f ≫ α.hom.app Y = G.map f := by
-  simp
+  -- Porting note: This is a direct translation of what mathlib3's simp tactic is doing
+  -- Iso.inv_hom_id_app_assoc isn't being rewritten
+  rw [naturality, Iso.inv_hom_id_app_assoc]
 #align category_theory.nat_iso.naturality_1 CategoryTheory.NatIso.naturality_1
 
 theorem naturality_2 (α : F ≅ G) (f : X ⟶ Y) : α.hom.app X ≫ G.map f ≫ α.inv.app Y = F.map f := by
-  simp
+  -- Porting note: same as above but with Iso.inv_hom_id_assoc
+  rw [naturality, Iso.inv_hom_id_assoc]
 #align category_theory.nat_iso.naturality_2 CategoryTheory.NatIso.naturality_2
 
 theorem naturality_1' (α : F ⟶ G) (f : X ⟶ Y) [IsIso (α.app X)] :
