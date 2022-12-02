@@ -287,6 +287,7 @@ end Linarith
 
 open Parser Tactic Syntax
 
+/-- Syntax for the arguments of `linarith`, after the optional `!`. -/
 syntax linarithArgsRest := (config)? (&" only")? (" [" term,* "]")?
 
 /--
