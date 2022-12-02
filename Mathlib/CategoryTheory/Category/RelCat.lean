@@ -28,7 +28,7 @@ instance rel : LargeCategory RelCat where
   Hom X Y := X → Y → Prop
   id X x y := x = y
   comp f g x z := ∃ y, f x y ∧ g y z
-  assoc f g h := by aesop (add safe apply funext)
+  assoc f g h := by aesop_cat
 #align category_theory.rel CategoryTheory.rel
 
 end CategoryTheory

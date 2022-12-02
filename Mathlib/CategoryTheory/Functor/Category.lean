@@ -45,28 +45,6 @@ instance Functor.category : Category.{max u₁ v₂} (C ⥤ D) where
   Hom F G := NatTrans F G
   id F := NatTrans.id F
   comp α β := vcomp α β
-  comp_id := by
-    -- aesop_cat can't do this, because it won't apply `NatTrans.ext`.
-    intros
-    -- Sad that `ext` won't do this, because of the new indexing scheme.
-    -- https://leanprover.zulipchat.com/#narrow/stream/348111-std4/topic/ext.20is.20weaker/near/311851300
-    apply NatTrans.ext
-    ext X
-    intros
-    simp
-  -- Similar complaints for these two fields.
-  id_comp := by
-    intros
-    apply NatTrans.ext
-    ext X
-    intros
-    simp
-  assoc := by
-    intros
-    apply NatTrans.ext
-    ext X
-    intros
-    simp
 #align category_theory.functor.category CategoryTheory.Functor.category
 
 namespace NatTrans
@@ -146,7 +124,7 @@ theorem id_hcomp_app {H : E ⥤ C} (α : F ⟶ G) (X : E) : (𝟙 H ◫ α).app 
 -- but relying on the definitional equality causes bad problems with elaboration later.)
 theorem exchange {I J K : D ⥤ E} (α : F ⟶ G) (β : G ⟶ H) (γ : I ⟶ J) (δ : J ⟶ K) :
     (α ≫ β) ◫ (γ ≫ δ) = (α ◫ γ) ≫ β ◫ δ := by
-  aesop (rule_sets [CategoryTheory])
+  aesop_cat
 #align category_theory.nat_trans.exchange CategoryTheory.NatTrans.exchange
 
 end NatTrans
