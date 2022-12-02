@@ -166,14 +166,14 @@ example : IsAssociative α (· * ·) := inferInstance
 @[to_additive]
 instance [Semigroup α] : Monoid (WithOne α) :=
   { instMulOneClassWithOne with mul_assoc := (Option.liftOrGet_isAssociative _).1 }
---  { instMulOneClassWithOne with mul_assoc := (Option.liftOrGet_isAssociative _).1 }
 
-example [Semigroup α] : @Monoid.toMulOneClass _ (@WithOne.monoid α _) = @WithOne.mulOneClass α _ :=
+example [Semigroup α] :
+    @Monoid.toMulOneClass _ (@instMonoidWithOne α _) = @instMulOneClassWithOne α _ :=
   rfl
 
 @[to_additive]
 instance [CommSemigroup α] : CommMonoid (WithOne α) :=
-  { WithOne.monoid with mul_comm := (Option.liftOrGet_isCommutative _).1 }
+  { instMonoidWithOne with mul_comm := (Option.liftOrGet_isCommutative _).1 }
 
 section
 
