@@ -779,7 +779,9 @@ def addToAdditiveAttr (src : Name) (cfg : Config) : AttrM Unit :=
   withOptions (· |>.setBool `to_additive.replaceAll cfg.replaceAll
                  |>.updateBool `trace.to_additive (cfg.trace || ·)) <| do
   let tgt ← targetName src cfg.tgt cfg.allowAutoName
+  let alreadyExists := (← getEnv).contains tgt
   if cfg.reorder != [] then
+    trace[to_additive] "@[to_additive] will reorder the arguments of {tgt}."
     reorderAttr.add src cfg.reorder
     -- we allow using this attribute if it's only to add the reorder configuration
     if findTranslation? (←getEnv) src |>.isSome then
@@ -789,7 +791,6 @@ def addToAdditiveAttr (src : Name) (cfg : Config) : AttrM Unit :=
   if firstMultArg != 0 then
     trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
     relevantArgAttr.add src firstMultArg
-  let alreadyExists := (← getEnv).contains tgt
   if alreadyExists then
     -- since `tgt` already exists, we just need to add translations `src.x ↦ tgt.x'`
     -- for any subfields.
