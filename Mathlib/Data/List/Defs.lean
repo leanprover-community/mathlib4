@@ -280,15 +280,15 @@ def permutationsAux.rec {C : List α → List α → Sort v} (H0 : ∀ is, C [] 
            (succ (length ts) + length is, length (t :: ts)) by
         rw [Nat.succ_add] <;> exact Prod.Lex.right _ (lt_succ_self _)
     have h2 : ⟨is, []⟩ ≺ ⟨t :: ts, is⟩ := Prod.Lex.left _ _ (Nat.lt_add_of_pos_left (succ_pos _))
-    H1 t ts is (PermutationsAux.rec H0 H1 ts (t :: is)) (PermutationsAux.rec H0 H1 is [])
+    H1 t ts is (permutationsAux.rec H0 H1 ts (t :: is)) (permutationsAux.rec H0 H1 is [])
     termination_by'
       ⟨(· ≺ ·), @InvImage.wf _ _ _ meas (Prod.instWellFoundedRelationProd lt_wfRel lt_wfRel)⟩
-#align list.permutations_aux.rec List.PermutationsAux.rec
+#align list.permutations_aux.rec List.permutationsAux.rec
 
 /-- An auxiliary function for defining `permutations`. `permutations_aux ts is` is the set of all
 permutations of `is ++ ts` that do not fix `ts`. -/
 def permutationsAux : List α → List α → List (List α) :=
-  @PermutationsAux.rec (fun _ _ => List (List α)) (fun is => []) fun t ts is IH1 IH2 =>
+  @permutationsAux.rec (fun _ _ => List (List α)) (fun is => []) fun t ts is IH1 IH2 =>
     foldr (fun y r => (permutationsAux2 t ts r y id).2) IH1 (is :: IH2)
 #align list.permutations_aux List.permutationsAux
 
