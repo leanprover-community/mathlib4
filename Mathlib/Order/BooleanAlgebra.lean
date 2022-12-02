@@ -508,9 +508,9 @@ order axioms of those classes here. A "forgetful" instance back to `bounded_orde
 -/
 class BooleanAlgebra (α : Type u) extends
     DistribLattice α, HasCompl α, SDiff α, HImp α, Top α, Bot α where
-  /-- The infinum of `x` and `xᶜ` is less equal `⊥` -/
+  /-- The infimum of `x` and `xᶜ` is at most `⊥` -/
   inf_compl_le_bot : ∀ x : α, x ⊓ xᶜ ≤ ⊥
-  /-- The supremum of `x` and `xᶜ` is greater or equal `⊤` -/
+  /-- The supremum of `x` and `xᶜ` is at least `⊤` -/
   top_le_sup_compl : ∀ x : α, ⊤ ≤ x ⊔ xᶜ
   /-- `⊤` is the greatest element -/
   le_top : ∀ a : α, a ≤ ⊤
