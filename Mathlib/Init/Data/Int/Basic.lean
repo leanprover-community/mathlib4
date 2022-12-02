@@ -85,6 +85,8 @@ protected theorem neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 
 #align int.sub_nat_nat_of_lt Int.subNatNat_of_lt
 #align int.nat_abs_of_nat Int.natAbs_ofNat
 
+#align int.nat_abs Int.natAbs
+
 @[deprecated natAbs_eq_zero]
 theorem eq_zero_of_natAbs_eq_zero : ∀ {a : ℤ}, natAbs a = 0 → a = 0 := natAbs_eq_zero.1
 #align int.eq_zero_of_nat_abs_eq_zero Int.eq_zero_of_natAbs_eq_zero
