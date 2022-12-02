@@ -783,10 +783,16 @@ theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
     _ = a * a ^ n := congr_arg ((· * ·) a) (zpow_ofNat a n)
     _ = a ^ (n + 1) := (pow_succ _ _).symm
 
-@[simp, to_additive]
+@[simp]
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
   rw [← zpow_ofNat]
   exact DivInvMonoid.zpow_neg' n a
+@[simp]
+theorem negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
+  Int.negSucc n • a = -((n + 1) • a) := by
+  rw [← ofNat_zsmul]
+  exact SubNegMonoid.zsmul_neg' n a
+attribute [to_additive negSucc_zsmul] zpow_negSucc
 
 /-- Dividing by an element is the same as multiplying by its inverse.
 
