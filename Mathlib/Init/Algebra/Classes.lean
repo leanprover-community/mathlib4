@@ -68,6 +68,9 @@ class IsSymmOp (α : Type u) (β : outParam (Type v)) (op : outParam (α → α 
 class IsCommutative (α : Type u) (op : α → α → α) : Prop where
   comm : ∀ a b, op a b = op b a
 
+instance [IsCommutative α op] : Lean.IsCommutative op where
+  comm := IsCommutative.comm
+
 instance (priority := 100) is_symm_op_of_is_commutative (α : Type u) (op : α → α → α)
     [IsCommutative α op] : IsSymmOp α α op where symm_op :=
   IsCommutative.comm
@@ -76,6 +79,9 @@ instance (priority := 100) is_symm_op_of_is_commutative (α : Type u) (op : α �
 class IsAssociative (α : Type u) (op : α → α → α) : Prop where
   assoc : ∀ a b c, op (op a b) c = op a (op b c)
 
+instance [IsAssociative α op] : Lean.IsAssociative op where
+  assoc := IsAssociative.assoc
+
 /-- A binary operation with a left identity. -/
 class IsLeftId (α : Type u) (op : α → α → α) (o : outParam α) : Prop where
   left_id : ∀ a, op o a = a
@@ -83,6 +89,10 @@ class IsLeftId (α : Type u) (op : α → α → α) (o : outParam α) : Prop wh
 /-- A binary operation with a right identity. -/
 class IsRightId (α : Type u) (op : α → α → α) (o : outParam α) : Prop where
   right_id : ∀ a, op a o = a
+
+instance [IsLeftId α op o] [IsRightId α op o] : Lean.IsNeutral op o where
+  left_neutral := IsLeftId.left_id
+  right_neutral := IsRightId.right_id
 
 -- -- class IsLeftNull (α : Type u) (op : α → α → α) (o : outParam α) : Prop where
 --   left_null : ∀ a, op o a = o
@@ -98,6 +108,9 @@ class IsRightCancel (α : Type u) (op : α → α → α) : Prop where
 
 class IsIdempotent (α : Type u) (op : α → α → α) : Prop where
   idempotent : ∀ a, op a a = a
+
+instance [IsIdempotent α op] : Lean.IsIdempotent op where
+  idempotent := IsIdempotent.idempotent
 
 --class IsLeftDistrib (α : Type u) (op₁ : α → α → α) (op₂ : outParam <| α → α → α) : Prop where
 --   left_distrib : ∀ a b c, op₁ a (op₂ b c) = op₂ (op₁ a b) (op₁ a c)

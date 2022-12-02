@@ -48,12 +48,16 @@ import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.Units
 import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Functor.Category
+import Mathlib.CategoryTheory.Functor.Default
+import Mathlib.CategoryTheory.Functor.Functorial
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
+import Mathlib.CategoryTheory.Thin
 import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Control.Applicative
@@ -123,6 +127,7 @@ import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
+import Mathlib.Data.Stream.Defs
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
@@ -185,6 +190,7 @@ import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Mathport.Syntax
 import Mathlib.Order.Basic
+import Mathlib.Order.BooleanAlgebra
 import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Compare
 import Mathlib.Order.Disjoint
