@@ -371,14 +371,13 @@ example (u v x y A B : Rat)
   intros
   linarith
 
+-- TODO this needs the `cancelDenoms` preprocessor.
 -- example (A B : ℚ) : (0 < A) → (1 ≤ B) → (0 < A / 8 * B) := by
 --   intros
 --   nlinarith
 
 example (x y : ℚ) : 0 ≤ x ^2 + y ^2 := by
   nlinarith
-
-set_option trace.linarith true
 
 example (x y : ℚ) : 0 ≤ x*x + y*y := by
   nlinarith
@@ -389,8 +388,13 @@ example (x y : ℚ) : x = 0 → y = 0 → x*x + y*y = 0 := by
 
 lemma norm_eq_zero_iff {x y : ℚ} : x * x + y * y = 0 ↔ x = 0 ∧ y = 0 := by
   constructor
-  · intro; constructor; nlinarith
+  · intro
+    constructor <;>
+      nlinarith
   · intro; nlinarith
+
+lemma norm_zero_left {x y : ℚ} (h1 : x * x + y * y = 0) : x = 0 := by
+  nlinarith
 
 lemma norm_nonpos_right {x y : ℚ} (h1 : x * x + y * y ≤ 0) : y = 0 := by
   nlinarith

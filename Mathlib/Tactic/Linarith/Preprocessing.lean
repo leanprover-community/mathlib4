@@ -301,13 +301,12 @@ section cancelDenoms
 -- <|> return [pf] }
 end cancelDenoms
 
--- TODO `nlinarith` can wait for later
 section nlinarith
 /--
-`findSquares m e` collects all terms of the form `a ^ 2` and `a * a` that appear in `e`
-and adds them to the set `m`.
-A pair `(a, tt)` is added to `m` when `a^2` appears in `e`, and `(a, ff)` is added to `m`
-when `a*a` appears in `e`.  -/
+`findSquares s e` collects all terms of the form `a ^ 2` and `a * a` that appear in `e`
+and adds them to the set `s`.
+A pair `(a, true)` is added to `s` when `a^2` appears in `e`,
+and `(a, false)` is added to `s` when `a*a` appears in `e`.  -/
 partial def findSquares (s : HashSet (Expr × Bool)) (e : Expr) : MetaM (HashSet (Expr × Bool)) :=
 match e.getAppFnArgs with
 | (``HPow.hPow, #[_, _, _, _, a, b]) => match b.numeral? with
@@ -323,14 +322,15 @@ match e.getAppFnArgs with
 | _ => e.foldlM findSquares s
 
 /--
-`mmap_upper_triangle f l` calls `f` on all elements in the upper triangular part of `l × l`.
+`mapUpperTriangleM f l` calls `f` on all elements in the upper triangular part of `l × l`.
 That is, for each `e ∈ l`, it will run `f e e` and then `f e e'`
 for each `e'` that appears after `e` in `l`.
 
-Example: suppose `l = [1, 2, 3]`. `mmap_upper_triangle f l` will produce the list
+Example: suppose `l = [1, 2, 3]`. `mapUpperTriangleM f l` will produce the list
 `[f 1 1, f 1 2, f 1 3, f 2 2, f 2 3, f 3 3]`.
 -/
-def _root_.List.mapUpperTriangleM {m} [Monad m] {α β : Type u} (f : α → α → m β) : List α → m (List β)
+def _root_.List.mapUpperTriangleM {m} [Monad m] {α β : Type u} (f : α → α → m β) :
+    List α → m (List β)
 | [] => return []
 | (h::t) => do return ((← f h h) :: (← t.mapM (f h))) ++ (← t.mapUpperTriangleM f)
 
@@ -346,7 +346,8 @@ This preprocessor is typically run last, after all inputs have been canonized.
 def nlinarithExtras : GlobalPreprocessor :=
 { name := "nonlinear arithmetic extras",
   transform := fun ls => do
-    let s ← ls.foldrM (fun h s' => inferType h >>= findSquares s') HashSet.empty
+    let s ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
+      HashSet.empty
     let new_es ← s.foldM (fun new_es (⟨e, is_sq⟩ : Expr × Bool) =>
       ((do
         let p ← mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
