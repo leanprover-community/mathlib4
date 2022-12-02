@@ -344,6 +344,22 @@ syntax (name := linarith) "linarith" (config)? (&" only")? (" [" term,* "]")? : 
 syntax (name := linarith!) "linarith!" (config)? (&" only")? (" [" term,* "]")? : tactic
 
 /--
+An extension of `linarith` with some preprocessing to allow it to solve some nonlinear arithmetic
+problems. (Based on Coq's `nra` tactic.) See `linarith` for the available syntax of options,
+which are inherited by `nlinarith`; that is, `nlinarith!` and `nlinarith only [h1, h2]` all work as
+in `linarith`. The preprocessing is as follows:
+
+* For every subterm `a ^ 2` or `a * a` in a hypothesis or the goal,
+  the assumption `0 ≤ a ^ 2` or `0 ≤ a * a` is added to the context.
+* For every pair of hypotheses `a1 R1 b1`, `a2 R2 b2` in the context, `R1, R2 ∈ {<, ≤, =}`,
+  the assumption `0 R' (b1 - a1) * (b2 - a2)` is added to the context (non-recursively),
+  where `R ∈ {<, ≤, =}` is the appropriate comparison derived from `R1, R2`.
+-/
+syntax (name := nlinarith) "nlinarith" (config)? (&" only")? (" [" term,* "]")? : tactic
+@[inherit_doc nlinarith]
+syntax (name := nlinarith!) "nlinarith!" (config)? (&" only")? (" [" term,* "]")? : tactic
+
+/--
 Allow elaboration of `LinarithConfig` arguments to tactics.
 -/
 declare_config_elab elabLinarithConfig Linarith.LinarithConfig
@@ -373,28 +389,37 @@ elab_rules : tactic
 --   decl_names := [`tactic.interactive.linarith],
 --   tags       := ["arithmetic", "decision procedure", "finishing"] }
 
--- TODO port nlinarith as well:
-/-
-An extension of `linarith` with some preprocessing to allow it to solve some nonlinear arithmetic
-problems. (Based on Coq's `nra` tactic.) See `linarith` for the available syntax of options,
-which are inherited by `nlinarith`; that is, `nlinarith!` and `nlinarith only [h1, h2]` all work as
-in `linarith`. The preprocessing is as follows:
+open Linarith
 
-* For every subterm `a ^ 2` or `a * a` in a hypothesis or the goal,
-  the assumption `0 ≤ a ^ 2` or `0 ≤ a * a` is added to the context.
-* For every pair of hypotheses `a1 R1 b1`, `a2 R2 b2` in the context, `R1, R2 ∈ {<, ≤, =}`,
-  the assumption `0 R' (b1 - a1) * (b2 - a2)` is added to the context (non-recursively),
-  where `R ∈ {<, ≤, =}` is the appropriate comparison derived from `R1, R2`.
--/
--- meta def tactic.interactive.nlinarith (red : parse ((tk "!")?))
---   (restr : parse ((tk "only")?)) (hyps : parse pexpr_list?)
---   (cfg : linarith_config := {}) : tactic unit :=
--- tactic.linarith red.is_some restr.is_some (hyps.get_or_else [])
---   { cfg with preprocessors := some $
---       cfg.preprocessors.get_or_else default_preprocessors ++ [nlinarith_extras] }
+elab_rules : tactic
+  | `(tactic| nlinarith $[$cfg]? $[only%$o]? $[[$args,*]]?) => do
+    let cfg ← elabLinarithConfig (mkOptionalNode cfg)
+    let cfg :=
+    { cfg with
+      preprocessors := some (cfg.preprocessors.getD defaultPreprocessors ++
+        [(nlinarithExtras : GlobalBranchingPreprocessor)]) }
+    liftMetaFinishingTactic <|
+      Linarith.linarith o.isSome
+        (← ((args.map (TSepArray.getElems)).getD {}).mapM (elabTerm ·.raw none)).toList
+        cfg
 
+-- FIXME We have to repeat all that just to handle the `!`?
+elab_rules : tactic
+  | `(tactic| nlinarith! $[$cfg]? $[only%$o]? $[[$args,*]]?) => do
+    let cfg ← elabLinarithConfig (mkOptionalNode cfg)
+    let cfg :=
+    { cfg with
+      preprocessors := some (cfg.preprocessors.getD defaultPreprocessors ++
+        [(nlinarithExtras : GlobalBranchingPreprocessor)]) }
+    liftMetaFinishingTactic <|
+      Linarith.linarith o.isSome
+        (← ((args.map (TSepArray.getElems)).getD {}).mapM (elabTerm ·.raw none)).toList
+        (cfg.updateReducibility true)
+
+-- TODO restore this when `hint` is ported.
 -- add_hint_tactic "nlinarith"
 
+-- TODO restore this when `add_tactic_doc` is ported
 -- add_tactic_doc
 -- { name       := "nlinarith",
 --   category   := doc_category.tactic,
