@@ -92,7 +92,8 @@ instance : EquivLike (α ≃ β) α β where
   right_inv := right_inv
   coe_injective' e₁ e₂ h₁ h₂ := by cases e₁; cases e₂; congr
 
-instance : CoeFun (α ≃ β) fun _ => α → β := ⟨toFun⟩
+@[simp] theorem coe_fn_mk (f : α → β) (g l r) : (Equiv.mk f g l r : α → β) = f :=
+rfl
 
 /-- The map `(r ≃ s) → (r → s)` is injective. -/
 theorem coe_fn_injective : @Function.Injective (α ≃ β) (α → β) (fun e => e) :=
@@ -132,9 +133,18 @@ instance inhabited' : Inhabited (α ≃ α) := ⟨Equiv.refl α⟩
 protected def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.right_inv, e.left_inv⟩
 
 /-- See Note [custom simps projection] -/
+def Simps.apply (e : α ≃ β) : α → β := e
+/-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : α ≃ β) : β → α := e.symm
 
 initialize_simps_projections Equiv (toFun → apply, invFun → symm_apply)
+
+-- Porting note:
+-- Added these lemmas as restatements of `left_inv` and `right_inv`,
+-- which use the coercions.
+-- We might even consider switching the names, and having these as a public API.
+theorem left_inv' (e : α ≃ β) : Function.LeftInverse e.symm e := e.left_inv
+theorem right_inv' (e : α ≃ β) : Function.RightInverse e.symm e := e.right_inv
 
 /-- Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. -/
 -- Porting note: `trans` attribute rejects this lemma because of implicit arguments.
@@ -151,13 +161,17 @@ instance : Trans Equiv Equiv Equiv where
 @[simp] theorem inv_fun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
 
 protected theorem injective (e : α ≃ β) : Injective e := EquivLike.injective e
+#align equiv.injective Equiv.injective
 
 protected theorem surjective (e : α ≃ β) : Surjective e := EquivLike.surjective e
+#align equiv.surjective Equiv.surjective
 
 protected theorem bijective (e : α ≃ β) : Bijective e := EquivLike.bijective e
+#align equiv.bijective Equiv.bijective
 
 protected theorem subsingleton (e : α ≃ β) [Subsingleton β] : Subsingleton α :=
   e.injective.subsingleton
+#align equiv.subsingleton Equiv.subsingleton
 
 protected theorem subsingleton.symm (e : α ≃ β) [Subsingleton α] : Subsingleton β :=
   e.symm.injective.subsingleton
@@ -662,7 +676,7 @@ end Perm
 @[simps apply] def sigmaCongrLeft {β : α₂ → Sort _} (e : α₁ ≃ α₂) :
     (Σ a : α₁, β (e a)) ≃ Σ a : α₂, β a where
   toFun a := ⟨e a.1, a.2⟩
-  invFun a := ⟨e.symm a.1, (e.right_inv a.1).symm ▸ a.2⟩
+  invFun a := ⟨e.symm a.1, (e.right_inv' a.1).symm ▸ a.2⟩
   -- porting note: this was a pretty gnarly match already, and it got worse after porting
   left_inv := fun ⟨a, b⟩ =>
     match (motive := ∀ a' (h : a' = a), Sigma.mk _ (congr_arg e h.symm ▸ b) = ⟨a, b⟩)

@@ -18,17 +18,6 @@ open Lean Elab Meta Tactic Qq
 -- FIXME: remove this when the sorries are gone
 set_option warningAsError false
 
-/-- Construct the term of type `α` for a given natural number
-(doing typeclass search for the `OfNat` instance required). -/
-def _root_.Lean.Expr.ofNat (α : Expr) (n : ℕ) : MetaM Expr := do
-  mkAppOptM ``OfNat.ofNat #[α, mkRawNatLit n, none]
-
-/-- Construct the term of type `α` for a given integer
-(doing typeclass search for the `OfNat` and `Neg` instances required). -/
-def _root_.Lean.Expr.ofInt (α : Expr) : ℤ → MetaM Expr
-| Int.ofNat n => Expr.ofNat α n
-| Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n+1)]
-
 initialize registerTraceClass `abel
 initialize registerTraceClass `abel.detail
 
@@ -367,6 +356,10 @@ partial def eval (c : Context) (e : Expr) : MetaM (NormalExpr × Expr) := do
   | (``SMul.smul, #[.const ``Int _, _, _, e₁, e₂]) =>
     evalSMul' c (eval c) true e e₁ e₂
   | (``SMul.smul, #[.const ``Nat _, _, _, e₁, e₂]) =>
+    evalSMul' c (eval c) false e e₁ e₂
+  | (``HSMul.hSMul, #[.const ``Int _, _, _, _, e₁, e₂]) =>
+    evalSMul' c (eval c) true e e₁ e₂
+  | (``HSMul.hSMul, #[.const ``Nat _, _, _, _, e₁, e₂]) =>
     evalSMul' c (eval c) false e e₁ e₂
   | (``smul, #[_, _, e₁, e₂]) => evalSMul' c (eval c) false e e₁ e₂
   | (``smulg, #[_, _, e₁, e₂]) => evalSMul' c (eval c) true e e₁ e₂

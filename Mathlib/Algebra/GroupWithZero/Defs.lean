@@ -36,7 +36,7 @@ theorem eq_of_sub_eq_zero' [AddGroup R] {a b : R} (h : a - b = 0) : a = b :=
 -- This theorem was introduced during ad-hoc porting
 -- and hopefully can be removed again after `Mathlib.Algebra.Ring.Basic` is fully ported.
 theorem pow_succ'' [Monoid M] : ∀ (n : ℕ) (a : M), a ^ n.succ = a * a ^ n :=
-Monoid.npow_succ'
+Monoid.npow_succ
 
 /-- Typeclass for expressing that a type `M₀` with multiplication and a zero satisfies
 `0 * a = 0` and `a * 0 = 0` for all `a : M₀`. -/
@@ -45,6 +45,20 @@ class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
   zero_mul : ∀ a : M₀, 0 * a = 0
   /-- Zero is a right absorbing element for multiplication -/
   mul_zero : ∀ a : M₀, a * 0 = 0
+
+/-- A mixin for left cancellative multiplication by nonzero elements. -/
+class IsLeftCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
+  /-- Multiplicatin by a nonzero element is left cancellative. -/
+  protected mul_left_cancel_of_ne_zero : ∀ {a b c : M₀}, a ≠ 0 → a * b = a * c → b = c
+
+/-- A mixin for right cancellative multiplication by nonzero elements. -/
+class IsRightCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
+  /-- Multiplicatin by a nonzero element is right cancellative. -/
+  protected mul_right_cancel_of_ne_zero : ∀ {a b c : M₀}, b ≠ 0 → a * b = c * b → a = c
+
+/-- A mixin for cancellative multiplication by nonzero elements. -/
+class IsCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀]
+  extends IsLeftCancelMulZero M₀, IsRightCancelMulZero M₀ : Prop
 
 export MulZeroClass (zero_mul mul_zero)
 attribute [simp] zero_mul mul_zero
@@ -91,11 +105,48 @@ theorem mul_right_injective₀ (ha : a ≠ 0) : Function.Injective ((· * ·) a)
 theorem mul_left_injective₀ (hb : b ≠ 0) : Function.Injective fun a => a * b :=
   fun _ _ => mul_right_cancel₀ hb
 
+/-- A `CancelMonoidWithZero` satisfies `IsCancelMulZero`. -/
+instance (priority := 100) CancelMonoidWithZero.to_IsCancelMulZero : IsCancelMulZero M₀ :=
+{ mul_left_cancel_of_ne_zero := fun ha h ↦
+    CancelMonoidWithZero.mul_left_cancel_of_ne_zero ha h
+  mul_right_cancel_of_ne_zero :=  fun hb h ↦
+    CancelMonoidWithZero.mul_right_cancel_of_ne_zero hb h, }
+
 end CancelMonoidWithZero
 
 /-- A type `M` is a commutative “monoid with zero” if it is a commutative monoid with zero
 element, and `0` is left and right absorbing. -/
 class CommMonoidWithZero (M₀ : Type _) extends CommMonoid M₀, MonoidWithZero M₀
+
+namespace CommMonoidWithZero
+
+variable [CommMonoidWithZero M₀]
+
+lemma IsLeftCancelMulZero.to_IsRightCancelMulZero [IsLeftCancelMulZero M₀] :
+    IsRightCancelMulZero M₀ :=
+{ mul_right_cancel_of_ne_zero := by
+    intros a b c ha h
+    rw [mul_comm, mul_comm c] at h
+    exact IsLeftCancelMulZero.mul_left_cancel_of_ne_zero ha h }
+
+lemma IsRightCancelMulZero.to_IsLeftCancelMulZero [IsRightCancelMulZero M₀] :
+    IsLeftCancelMulZero M₀ :=
+{ mul_left_cancel_of_ne_zero := by
+    intros a b c ha h
+    rw [mul_comm a, mul_comm a c] at h
+    exact IsRightCancelMulZero.mul_right_cancel_of_ne_zero ha h }
+
+lemma IsLeftCancelMulZero.to_IsCancelMulZero [IsLeftCancelMulZero M₀] :
+    IsCancelMulZero M₀ :=
+{ mul_right_cancel_of_ne_zero := fun ha h ↦
+    IsLeftCancelMulZero.to_IsRightCancelMulZero.mul_right_cancel_of_ne_zero ha h }
+
+lemma IsRightCancelMulZero.to_IsCancelMulZero [IsRightCancelMulZero M₀] :
+    IsCancelMulZero M₀ :=
+{ mul_left_cancel_of_ne_zero := fun ha h ↦
+    IsRightCancelMulZero.to_IsLeftCancelMulZero.mul_left_cancel_of_ne_zero ha h }
+
+end CommMonoidWithZero
 
 /-- A type `M` is a `CancelCommMonoidWithZero` if it is a commutative monoid with zero element,
  `0` is left and right absorbing,
@@ -108,16 +159,17 @@ The type is required to come with an “inverse” function, and the inverse of 
 
 Examples include division rings and the ordered monoids that are the
 target of valuations in general valuation theory.-/
-class GroupWithZero (G₀ : Type u) extends DivInvMonoid G₀, MonoidWithZero G₀ where
-  /-- There are two distinct elements in a group with zero. -/
-  exists_pair_ne : ∃ (x y : G₀), x ≠ y
+class GroupWithZero (G₀ : Type u) extends MonoidWithZero G₀, DivInvMonoid G₀, Nontrivial G₀ where
   /-- The inverse of `0` in a group with zero is `0`. -/
   inv_zero : (0 : G₀)⁻¹ = 0
   /-- Every nonzero element of a group with zero is invertible. -/
   mul_inv_cancel (a : G₀) : a ≠ 0 → a * a⁻¹ = 1
 
-export GroupWithZero (inv_zero mul_inv_cancel)
-attribute [simp] inv_zero mul_inv_cancel
+export GroupWithZero (inv_zero)
+attribute [simp] inv_zero
+
+@[simp] lemma mul_inv_cancel [GroupWithZero G₀] {a : G₀} (h : a ≠ 0) : a * a⁻¹ = 1 :=
+GroupWithZero.mul_inv_cancel a h
 
 /-- A type `G₀` is a commutative “group with zero”
 if it is a commutative monoid with zero element (distinct from `1`)

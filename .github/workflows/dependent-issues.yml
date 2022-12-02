@@ -1,0 +1,35 @@
+name: Dependent Issues
+
+on:
+  schedule:
+    - cron: '*/15 * * * *' # run every 15 minutes
+
+jobs:
+  cancel:
+    name: 'Cancel Previous Runs (dependent issues)'
+    runs-on: ubuntu-latest
+    # timeout-minutes: 3
+    steps:
+      - uses: styfle/cancel-workflow-action@0.9.0
+        with:
+          all_but_latest: true
+          access_token: ${{ github.token }}
+
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: z0al/dependent-issues@v1
+        env:
+          # (Required) The token to use to make API calls to GitHub.
+          GITHUB_TOKEN: ${{ secrets.DEPENDENT_ISSUES_TOKEN }}
+        with:
+          # (Optional) The label to use to mark dependent issues
+          label: blocked-by-other-PR
+
+          # (Optional) Enable checking for dependencies in issues. Enable by
+          # setting the value to "on". Default "off"
+          check_issues: off
+
+          # (Optional) A comma-separated list of keywords. Default
+          # "depends on, blocked by"
+          keywords: "- \\[ \\] depends on:,- \\[x\\] depends on:"

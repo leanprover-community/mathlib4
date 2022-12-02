@@ -3,6 +3,8 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Simon Hudon, Scott Morrison
 -/
+
+import Mathlib.Control.Basic
 import Mathlib.Logic.Equiv.Defs
 
 /-!
@@ -21,11 +23,6 @@ open Equiv
 namespace Functor
 
 variable (f : Type u → Type v) [Functor f] [LawfulFunctor f]
-
--- this is in control.basic in Lean 3
-theorem map_map (m : α → β) (g : β → γ) (x : f α) :
-  g <$> (m <$> x) = (g ∘ m) <$> x :=
-(comp_map _ _ _).symm
 
 /-- Apply a functor to an `equiv`. -/
 def map_equiv (h : α ≃ β) : f α ≃ f β where

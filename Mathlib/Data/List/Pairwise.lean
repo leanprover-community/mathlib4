@@ -30,7 +30,7 @@ theorem pairwise_singleton (R) (a : α) : Pairwise R [a] := by
   simp [Pairwise.nil]
 
 theorem rel_of_pairwise_cons (p : (a :: l).Pairwise R) : ∀ {a'}, a' ∈ l → R a a' :=
-  (Pairwise_cons.1 p).1 _
+  (pairwise_cons.1 p).1 _
 
 theorem Pairwise.imp_of_mem {S : α → α → Prop} {l : List α}
     (H : ∀ {a b}, a ∈ l → b ∈ l → R a b → S a b) (p : Pairwise R l) : Pairwise S l := by

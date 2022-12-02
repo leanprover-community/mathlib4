@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Order.Monoid
+import Mathlib.Algebra.Order.Monoid.Cancel.Defs
 import Mathlib.Algebra.Order.Monoid.Lemmas
 
 /-!
@@ -33,23 +33,18 @@ class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
   /-- Multiplication is monotone in a ordered commutative group. -/
   mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
 
-attribute [to_additive OrderedAddCommGroup] OrderedCommGroup
+attribute [to_additive] OrderedCommGroup
 
 @[to_additive]
 instance OrderedCommGroup.to_covariantClass_left_le [OrderedCommGroup α] :
     CovariantClass α α (· * ·) (· ≤ ·) where
   elim := fun a b c bc ↦ OrderedCommGroup.mul_le_mul_left b c bc a
 
--- TODO `to_additive` should copy this
-attribute [instance] OrderedAddCommGroup.to_covariantClass_left_le
-
 -- see Note [lower instance priority]
 @[to_additive OrderedAddCommGroup.toOrderedCancelAddCommMonoid]
 instance (priority := 100) OrderedCommGroup.toOrderedCancelCommMonoid [s : OrderedCommGroup α] :
     OrderedCancelCommMonoid α :=
   { s with le_of_mul_le_mul_left := fun a _ _ ↦ (mul_le_mul_iff_left a).mp }
-
-attribute [instance] OrderedAddCommGroup.toOrderedCancelAddCommMonoid
 
 section Group
 variable [Group α] [LT α]
