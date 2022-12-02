@@ -478,8 +478,12 @@ theorem sup_lt_of_lt_sdiff_right (h : x < z \ y) (hyz : y ≤ z) : x ⊔ y < z :
   exact (sdiff_le_sdiff_of_sup_le_sup_right h').trans sdiff_le
 #align sup_lt_of_lt_sdiff_right sup_lt_of_lt_sdiff_right
 
+-- Porting note:
+-- Once `pi_instance` has been ported, this is just `by pi_instance`.
 instance Pi.generalizedBooleanAlgebra {α : Type u} {β : Type v} [GeneralizedBooleanAlgebra β] :
-    GeneralizedBooleanAlgebra (α → β) := sorry -- by pi_instance
+    GeneralizedBooleanAlgebra (α → β) where
+  sup_inf_sdiff := fun f g => funext fun a => sup_inf_sdiff (f a) (g a)
+  inf_inf_sdiff := fun f g => funext fun a => inf_inf_sdiff (f a) (g a)
 #align pi.generalized_boolean_algebra Pi.generalizedBooleanAlgebra
 
 end GeneralizedBooleanAlgebra
@@ -681,18 +685,15 @@ theorem compl_le_iff_compl_le : xᶜ ≤ y ↔ yᶜ ≤ x :=
 theorem sdiff_compl : x \ yᶜ = x ⊓ y := by rw [sdiff_eq, compl_compl]
 #align sdiff_compl sdiff_compl
 
--- Porting note:
--- Hopefully these problems will disappear with nightly-2022-11-30
 instance : BooleanAlgebra αᵒᵈ :=
-  sorry
-  -- { OrderDual.distribLattice α, OrderDual.boundedOrder α with
-  --   compl := fun a => toDual (ofDual aᶜ),
-  --   sdiff :=
-  --     fun a b => toDual (ofDual b ⇨ ofDual a), himp := fun a b => toDual (ofDual b \ ofDual a),
-  --   inf_compl_le_bot := fun a => (@codisjoint_hnot_right _ _ (ofDual a)).top_le,
-  --   top_le_sup_compl := fun a => (@disjoint_compl_right _ _ (ofDual a)).le_bot,
-  --   sdiff_eq := fun _ _ => himp_eq,
-  --   himp_eq := fun _ _ => sdiff_eq }
+  { OrderDual.distribLattice α, OrderDual.boundedOrder α with
+    compl := fun a => toDual (ofDual aᶜ),
+    sdiff :=
+      fun a b => toDual (ofDual b ⇨ ofDual a), himp := fun a b => toDual (ofDual b \ ofDual a),
+    inf_compl_le_bot := fun a => (@codisjoint_hnot_right _ _ (ofDual a)).top_le,
+    top_le_sup_compl := fun a => (@disjoint_compl_right _ _ (ofDual a)).le_bot,
+    sdiff_eq := fun _ _ => @himp_eq α _ _ _,
+    himp_eq := fun _ _ => @sdiff_eq α _ _ _, }
 
 @[simp]
 theorem sup_inf_inf_compl : x ⊓ y ⊔ x ⊓ yᶜ = x := by rw [← sdiff_eq, sup_inf_sdiff _ _]
@@ -705,8 +706,7 @@ theorem compl_sdiff : (x \ y)ᶜ = x ⇨ y := by
 
 @[simp]
 theorem compl_himp : (x ⇨ y)ᶜ = x \ y :=
-  sorry
-  -- @compl_sdiff αᵒᵈ _ _ _
+  @compl_sdiff αᵒᵈ _ _ _
 #align compl_himp compl_himp
 
 @[simp]
@@ -715,8 +715,7 @@ theorem compl_sdiff_compl : xᶜ \ yᶜ = y \ x := by rw [sdiff_compl, sdiff_eq,
 
 @[simp]
 theorem compl_himp_compl : xᶜ ⇨ yᶜ = y ⇨ x :=
-  sorry
-  -- @compl_sdiff_compl αᵒᵈ _ _ _
+  @compl_sdiff_compl αᵒᵈ _ _ _
 #align compl_himp_compl compl_himp_compl
 
 theorem disjoint_compl_left_iff : Disjoint (xᶜ) y ↔ y ≤ x := by
@@ -737,15 +736,13 @@ instance Prop.booleanAlgebra : BooleanAlgebra Prop :=
     top_le_sup_compl := fun p _ => Classical.em p }
 #align Prop.boolean_algebra Prop.booleanAlgebra
 
--- FIXME I don't know what is wrong here:
 instance Pi.booleanAlgebra {ι : Type u} {α : ι → Type v} [∀ i, BooleanAlgebra (α i)] :
     BooleanAlgebra (∀ i, α i) :=
-  sorry
-  -- { Pi.sdiff, Pi.heytingAlgebra, @Pi.distribLattice ι α _ with
-  --   sdiff_eq := fun x y => funext fun i => sdiff_eq,
-  --   himp_eq := fun x y => funext fun i => himp_eq,
-  --   inf_compl_le_bot := fun _ _ => BooleanAlgebra.inf_compl_le_bot _,
-  --   top_le_sup_compl := fun _ _ => BooleanAlgebra.top_le_sup_compl _ }
+  { Pi.sdiff, Pi.heytingAlgebra, @Pi.distribLattice ι α _ with
+    sdiff_eq := fun _ _ => funext fun _ => sdiff_eq,
+    himp_eq := fun _ _ => funext fun _ => himp_eq,
+    inf_compl_le_bot := fun _ _ => BooleanAlgebra.inf_compl_le_bot _,
+    top_le_sup_compl := fun _ _ => BooleanAlgebra.top_le_sup_compl _ }
 #align pi.boolean_algebra Pi.booleanAlgebra
 
 instance : BooleanAlgebra Bool :=
@@ -811,21 +808,18 @@ protected def Function.Injective.booleanAlgebra [HasSup α] [HasInf α] [Top α]
       fun a => ((map_inf _ _).trans <| by rw [map_compl, inf_compl_eq_bot, map_bot]).le,
     top_le_sup_compl :=
       fun a => ((map_sup _ _).trans <| by rw [map_compl, sup_compl_eq_top, map_top]).ge,
-    sdiff_eq := fun a b =>
-      -- FIXME I don't know what is wrong in this proof.
-      sorry
-      -- hf <|
-      --   (map_sdiff _ _).trans <|
-      --     sdiff_eq.trans <| by
-      --       convert (map_inf _ _).symm
-      --       exact (map_compl _).symm
-          }
+    sdiff_eq := fun a b => by
+      refine hf ((map_sdiff _ _).trans (sdiff_eq.trans ?_))
+      rw [map_inf, map_compl] }
 #align function.injective.boolean_algebra Function.Injective.booleanAlgebra
 
 end lift
 
--- Porting note: needs refine_struct
-instance : BooleanAlgebra PUnit := by
-  sorry
-  -- refine_struct { PUnit.biheytingAlgebra with } <;>
-  --   intros <;> first |trivial|exact Subsingleton.elim _ _
+-- Porting note: when `refine_struct` is ported this can be by:
+-- refine_struct { PUnit.biheytingAlgebra with } <;>
+--   intros <;> first |trivial|exact Subsingleton.elim _ _
+instance PUnit.booleanAlgebra : BooleanAlgebra PUnit :=
+  { PUnit.biheytingAlgebra with
+    le_sup_inf := by intros; trivial
+    inf_compl_le_bot := by intros; trivial
+    top_le_sup_compl := by intros; trivial }

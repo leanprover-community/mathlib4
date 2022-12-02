@@ -1290,7 +1290,7 @@ namespace PUnit
 
 variable (a b : PUnit.{u + 1})
 
-instance : BiheytingAlgebra PUnit.{u+1} :=
+instance biheytingAlgebra : BiheytingAlgebra PUnit.{u+1} :=
   { instLinearOrderPUnit.{u} with
     top := unit,
     bot := unit,
