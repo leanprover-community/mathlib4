@@ -133,10 +133,13 @@ initialize reorderAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
     name := `to_additive_reorder
     descr :=
-      "Auxiliary attribute for `to_additive` that stores arguments that need to be reordered."
+      "Auxiliary attribute for `to_additive` that stores arguments that need to be reordered.
+        This should not appear in any file.
+        We keep it as an attribute for now so that mathport can still use it, and it can generate a
+        warning."
     add := fun
     | _, `(attr| to_additive_reorder $[$ids:num]*) => do
-      logInfo m!"Using this attribute is deprecated. Use `@[to_additive (reorder := <nums>)]` {""
+      logInfo m!"Using this attribute is deprecated. Use `@[to_additive (reorder := <num>)]` {""
         }instead.\nThat will also generate the additive version with the arguments swapped, {""
         }so you are probably able to remove the manually written additive declaration."
       pure <| Array.toList <| ids.map (·.1.isNatLit?.get!)

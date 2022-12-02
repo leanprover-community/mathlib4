@@ -28,7 +28,6 @@ class my_has_scalar (M : Type u) (α : Type v) :=
 (smul : M → α → α)
 
 instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
-
 attribute [to_additive my_has_scalar (reorder := 1)] my_has_pow
 attribute [to_additive (reorder := 1 4)] my_has_pow.pow
 
