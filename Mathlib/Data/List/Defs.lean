@@ -107,9 +107,9 @@ def findM {α} {m : Type u → Type v} [Monad m] [Alternative m] (tac : α → m
   List.firstM <| fun a => (tac a) $> a
 #align list.mfind List.findM
 
-/-- `mbfind' p l` returns the first element `a` of `l` for which `p a` returns
-true. `mbfind'` short-circuits, so `p` is not necessarily run on every `a` in
-`l`. This is a monadic version of `list.find`. -/
+/-- `findM? p l` returns the first element `a` of `l` for which `p a` returns
+true. `findM?` short-circuits, so `p` is not necessarily run on every `a` in
+`l`. This is a monadic version of `List.find`. -/
 def findM?'
     {m : Type u → Type v}
     [Monad m] {α : Type u}
