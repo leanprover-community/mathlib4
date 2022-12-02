@@ -225,6 +225,26 @@ You can enable this with `@[to_additive!]`-/
 def replaceAll [Functor M] [MonadOptions M] : M Bool :=
   (·.getBool `to_additive.replaceAll) <$> getOptions
 
+/-- `Config` is the type of the arguments that can be provided to `to_additive`. -/
+structure Config : Type where
+  /-- Replace all multiplicative declarations, do not use the heuristic. -/
+  replaceAll : Bool := false
+  /-- View the trace of the to_additive procedure.
+  Equivalent to `set_option trace.to_additive true`. -/
+  trace : Bool := false
+  /-- The name of the target (the additive declaration).-/
+  tgt : Name := Name.anonymous
+  /-- An optional doc string.-/
+  doc : Option String := none
+  /-- If `allowAutoName` is `false` (default) then
+  `@[to_additive]` will check whether the given name can be auto-generated. -/
+  allowAutoName : Bool := false
+  /-- The `Syntax` element corresponding to the original multiplicative declaration
+  (or the `to_additive` attribute if it is added later),
+  which we need for adding definition ranges. -/
+  ref : Syntax
+  deriving Repr
+
 variable [Monad M] [MonadOptions M] [MonadEnv M]
 
 /-- Auxilliary function for `additiveTest`. The bool argument *only* matters when applied
@@ -390,7 +410,7 @@ using the transforms dictionary.
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
 partial def transformDeclAux
-  (ref : Option Syntax) (pre tgt_pre : Name) : Name → CoreM Unit := fun src ↦ do
+  (cfg : Config) (pre tgt_pre : Name) : Name → CoreM Unit := fun src ↦ do
   -- if this declaration is not `pre` or an internal declaration, we do nothing.
   if not (src == pre || isInternal' src) then
     if (findTranslation? (← getEnv) src).isSome then
@@ -413,19 +433,19 @@ partial def transformDeclAux
   let prefixes : NameSet := .ofList [pre, env.mainModule ++ `_auxLemma]
   -- we first transform all auxiliary declarations generated when elaborating `pre`
   for n in srcDecl.type.listNamesWithPrefixes prefixes do
-    transformDeclAux none pre tgt_pre n
+    transformDeclAux cfg pre tgt_pre n
   if let some value := srcDecl.value? then
     for n in value.listNamesWithPrefixes prefixes do
-      transformDeclAux none pre tgt_pre n
+      transformDeclAux cfg pre tgt_pre n
   -- if the auxilliary declaration doesn't have prefix `pre`, then we have to add this declaration
   -- to the translation dictionary, since otherwise we cannot find the additive name.
   if !pre.isPrefixOf src then
     insertTranslation src tgt
   -- now transform the source declaration
   let trgDecl : ConstantInfo ← MetaM.run' $ updateDecl tgt srcDecl
-  if ¬ trgDecl.hasValue then
-    throwError "Expected {trgDecl.name} to have a value."
-  trace[to_additive] "generating\n{trgDecl.name} :=\n  {trgDecl.value!}"
+  if !trgDecl.hasValue then
+    throwError "Expected {tgt} to have a value."
+  trace[to_additive] "generating\n{tgt} :=\n  {trgDecl.value!}"
   try
     -- make sure that the type is correct,
     -- and emit a more helpful error message if it fails
@@ -434,25 +454,17 @@ partial def transformDeclAux
     | Exception.error _ msg => throwError "@[to_additive] failed.
       Type mismatch in additive declaration. For help, see the docstring
       of `to_additive.attr`, section `Troubleshooting`.
-      Failed to add declaration\n{trgDecl.name}:\n{msg}"
+      Failed to add declaration\n{tgt}:\n{msg}"
     | _ => panic! "unreachable"
   if isNoncomputable env src then
     addDecl trgDecl.toDeclaration!
-    setEnv $ addNoncomputable (← getEnv) trgDecl.name
+    setEnv $ addNoncomputable (← getEnv) tgt
   else
     addAndCompile trgDecl.toDeclaration!
   -- now add declaration ranges so jump-to-definition works
   addDeclarationRanges tgt {
     range := ← getDeclarationRange (← getRef)
-    selectionRange := ← getDeclarationRange (ref.getD (← getRef))
-  }
-  if let some ref := ref then
-    -- TODO: make a function for this
-    pushInfoLeaf <| .ofTermInfo {
-      elaborator := .anonymous, lctx := {}, expectedType? := none
-      stx := ref, isBinder := true
-      expr := ← mkConstWithLevelParams trgDecl.name
-    }
+    selectionRange := ← getDeclarationRange cfg.ref }
   if isProtected (← getEnv) src then
     setEnv $ addProtected (← getEnv) tgt
 
@@ -491,8 +503,8 @@ Make a new copy of a declaration, replacing fragments of the names of identifier
 the body using the `translations` dictionary.
 This is used to implement `@[to_additive]`.
 -/
-def transformDecl (ref : Option Syntax) (src tgt : Name) : CoreM Unit := do
-  transformDeclAux ref src tgt src
+def transformDecl (cfg : Config) (src tgt : Name) : CoreM Unit := do
+  transformDeclAux cfg src tgt src
   /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
   definitions. If we don't do that, the equation lemma for `src` might be generated later
   when doing a `rw`, but it won't be generated for `tgt`. -/
@@ -533,26 +545,6 @@ def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
     match l.join with
     | [] => return 0
     | (head :: tail) => return tail.foldr Nat.min head
-
-/-- `ValueType` is the type of the arguments that can be provided to `to_additive`. -/
-structure ValueType : Type where
-  /-- Replace all multiplicative declarations, do not use the heuristic. -/
-  replaceAll : Bool := false
-  /-- View the trace of the to_additive procedure.
-  Equivalent to `set_option trace.to_additive true`. -/
-  trace : Bool := false
-  /-- The name of the target (the additive declaration).-/
-  tgt : Name := Name.anonymous
-  /-- An optional doc string.-/
-  doc : Option String := none
-  /-- If `allowAutoName` is `false` (default) then
-  `@[to_additive]` will check whether the given name can be auto-generated. -/
-  allowAutoName : Bool := false
-  /-- The `Syntax` element corresponding to the original multiplicative declaration
-  (or the `to_additive` attribute if it is added later),
-  which we need for adding definition ranges. -/
-  ref : Syntax
-  deriving Repr
 
 /-- Helper for `capitalizeLike`. -/
 partial def capitalizeLikeAux (s : String) (i : String.Pos := 0) (p : String) : String :=
@@ -729,7 +721,7 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
   -- `Name.mapPrefix` will do that automatically.
 
 private def elabToAdditiveAux (ref : Syntax) (replaceAll trace : Bool) (tgt : Option Syntax)
-    (doc : Option Syntax) : ValueType :=
+    (doc : Option Syntax) : Config :=
   { replaceAll := replaceAll
     trace := trace
     tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
@@ -737,30 +729,36 @@ private def elabToAdditiveAux (ref : Syntax) (replaceAll trace : Bool) (tgt : Op
     allowAutoName := false
     ref }
 
-private def elabToAdditive : Syntax → CoreM ValueType
+private def elabToAdditive : Syntax → CoreM Config
   | `(attr| to_additive%$tk $[!%$replaceAll]? $[?%$trace]? $[$tgt]? $[$doc]?) =>
     return elabToAdditiveAux ((tgt.map (·.raw)).getD tk) replaceAll.isSome trace.isSome tgt doc
   | _ => throwUnsupportedSyntax
 
-/-- `addToAdditiveAttr src val` adds a `@[to_additive]` attribute to `src` with configuration `val`.
+/-- `addToAdditiveAttr src cfg` adds a `@[to_additive]` attribute to `src` with configuration `cfg`.
 See the attribute implementation for more details. -/
-def addToAdditiveAttr (src : Name) (val : ValueType) : AttrM Unit :=
-  withOptions (· |>.setBool `to_additive.replaceAll val.replaceAll
-                 |>.updateBool `trace.to_additive (val.trace || ·)) <| do
-  let tgt ← targetName src val.tgt val.allowAutoName
+def addToAdditiveAttr (src : Name) (cfg : Config) : AttrM Unit :=
+  withOptions (· |>.setBool `to_additive.replaceAll cfg.replaceAll
+                 |>.updateBool `trace.to_additive (cfg.trace || ·)) <| do
+  let tgt ← targetName src cfg.tgt cfg.allowAutoName
   insertTranslation src tgt
   let firstMultArg ← MetaM.run' <| firstMultiplicativeArg src
   if firstMultArg != 0 then
     trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
     relevantArgAttr.add src firstMultArg
-  if (← getEnv).contains tgt then
+  let alreadyExists := (← getEnv).contains tgt
+  if alreadyExists then
     -- since `tgt` already exists, we just need to add translations `src.x ↦ tgt.x'`
     -- for any subfields.
     proceedFields src tgt
   else
     -- tgt doesn't exist, so let's make it
-    transformDecl val.ref src tgt
-  if let some doc := val.doc then
+    transformDecl cfg src tgt
+  -- add pop-up information when mousing over `additive_name` of `@[to_additive additive_name]`
+  -- (the information will be over the attribute of no additive name is given)
+  pushInfoLeaf <| .ofTermInfo {
+    elaborator := .anonymous, lctx := {}, expectedType? := none, isBinder := !alreadyExists,
+    stx := cfg.ref, expr := ← mkConstWithLevelParams tgt }
+  if let some doc := cfg.doc then
     addDocString tgt doc
   return ()
 
@@ -969,8 +967,8 @@ initialize registerBuiltinAttribute {
     add := fun src stx kind ↦ do
       if (kind != AttributeKind.global) then
         throwError "`to_additive` can't be used as a local attribute"
-      let val ← elabToAdditive stx
-      addToAdditiveAttr src val
+      let cfg ← elabToAdditive stx
+      addToAdditiveAttr src cfg
     -- Because `@[simp]` runs after compilation,
     -- we have to as well to be able to copy attributes correctly.
     applicationTime := .afterCompilation

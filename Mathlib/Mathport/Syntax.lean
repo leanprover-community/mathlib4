@@ -247,8 +247,6 @@ namespace Tactic
 /- S -/ syntax (name := revertTargetDeps) "revert_target_deps" : tactic
 /- E -/ syntax (name := clearValue) "clear_value" (ppSpace colGt ident)* : tactic
 
-/- M -/ syntax (name := applyAssumption) "apply_assumption" : tactic
-
 /- S -/ syntax (name := hint) "hint" : tactic
 
 /- M -/ syntax (name := congrM) "congrm " term : tactic
