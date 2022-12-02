@@ -315,7 +315,7 @@ match e.getAppFnArgs with
     let s ← findSquares s a
     return (s.insert (a, true))
   | _ => e.foldlM findSquares s
-| (``HMul, #[_, _, _, _, a, b]) => if a.equal b then do
+| (``HMul.hMul, #[_, _, _, _, a, b]) => if a.equal b then do
     let s ← findSquares s a
     return (s.insert (a, false))
   else
