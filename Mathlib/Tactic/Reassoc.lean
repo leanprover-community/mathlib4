@@ -45,6 +45,7 @@ def reassoc (e : Expr) : MetaM Expr := do
 initialize registerBuiltinAttribute {
   name := `reassoc
   descr := ""
+  applicationTime := .afterCompilation
   add := fun src ref _ => MetaM.run' do
     let tgt := match src with
       | Name.str n s => Name.mkStr n $ s ++ "_assoc"

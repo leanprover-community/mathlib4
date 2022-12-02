@@ -168,16 +168,11 @@ end
 variable {X Y : C}
 
 theorem naturality_1 (α : F ≅ G) (f : X ⟶ Y) : α.inv.app X ≫ F.map f ≫ α.hom.app Y = G.map f := by
-  -- Porting note: This is a direct translation of what mathlib3's simp tactic is doing
-  -- Iso.inv_hom_id_app_assoc has type `α.inv.app X ≫ α.hom.app X ≫ f' = f'` in mathlib3
-  -- In mathlib4 it has type `app (α.inv ≫ α.hom) X ≫ h = app (𝟙 G) X ≫ h`
-  -- Unsure if this is an intended divergence
-  rw [naturality, Iso.inv_hom_id_app_assoc]
+  simp
 #align category_theory.nat_iso.naturality_1 CategoryTheory.NatIso.naturality_1
 
 theorem naturality_2 (α : F ≅ G) (f : X ⟶ Y) : α.hom.app X ≫ G.map f ≫ α.inv.app Y = F.map f := by
-  -- Porting note: same as above but with Iso.inv_hom_id_assoc
-  rw [naturality, Iso.hom_inv_id_app_assoc]
+  simp
 #align category_theory.nat_iso.naturality_2 CategoryTheory.NatIso.naturality_2
 
 theorem naturality_1' (α : F ⟶ G) (f : X ⟶ Y) [IsIso (α.app X)] :
@@ -228,9 +223,6 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
         have h := congr_arg (fun f => (app X).inv ≫ f ≫ (app Y).inv) (naturality f).symm
         simp only [Iso.inv_hom_id_assoc, Iso.hom_inv_id, assoc, comp_id, cancel_mono] at h
         exact h }
-  -- Porting note: aesop_cat would need to use ext lemmas to prove these
-  hom_inv_id := by ext; simp
-  inv_hom_id := by ext; simp
 #align category_theory.nat_iso.of_components CategoryTheory.NatIso.ofComponents
 
 @[simp]
