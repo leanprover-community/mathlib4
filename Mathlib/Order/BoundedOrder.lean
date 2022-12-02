@@ -277,17 +277,17 @@ namespace OrderDual
 
 variable (α)
 
-instance [Bot α] : Top αᵒᵈ :=
+instance top [Bot α] : Top αᵒᵈ :=
   ⟨(⊥ : α)⟩
 
-instance [Top α] : Bot αᵒᵈ :=
+instance bot [Top α] : Bot αᵒᵈ :=
   ⟨(⊤ : α)⟩
 
-instance [LE α] [OrderBot α] : OrderTop αᵒᵈ where
+instance orderTop [LE α] [OrderBot α] : OrderTop αᵒᵈ where
   __ := inferInstanceAs (Top αᵒᵈ)
   le_top := @bot_le α _ _
 
-instance [LE α] [OrderTop α] : OrderBot αᵒᵈ where
+instance orderBot [LE α] [OrderTop α] : OrderBot αᵒᵈ where
   __ := inferInstanceAs (Bot αᵒᵈ)
   bot_le := @le_top α _ _
 
@@ -527,7 +527,7 @@ end SemilatticeInfBot
 class BoundedOrder (α : Type u) [LE α] extends OrderTop α, OrderBot α
 #align bounded_order BoundedOrder
 
-instance (α : Type u) [LE α] [BoundedOrder α] : BoundedOrder αᵒᵈ where
+instance OrderDual.boundedOrder (α : Type u) [LE α] [BoundedOrder α] : BoundedOrder αᵒᵈ where
   __ := inferInstanceAs (OrderTop αᵒᵈ)
   __ := inferInstanceAs (OrderBot αᵒᵈ)
 
@@ -805,21 +805,21 @@ namespace Prod
 
 variable (α β)
 
-instance [Top α] [Top β] : Top (α × β) :=
+instance top [Top α] [Top β] : Top (α × β) :=
   ⟨⟨⊤, ⊤⟩⟩
 
-instance [Bot α] [Bot β] : Bot (α × β) :=
+instance bot [Bot α] [Bot β] : Bot (α × β) :=
   ⟨⟨⊥, ⊥⟩⟩
 
-instance [LE α] [LE β] [OrderTop α] [OrderTop β] : OrderTop (α × β) where
+instance orderTop [LE α] [LE β] [OrderTop α] [OrderTop β] : OrderTop (α × β) where
   __ := inferInstanceAs (Top (α × β))
   le_top _ := ⟨le_top, le_top⟩
 
-instance [LE α] [LE β] [OrderBot α] [OrderBot β] : OrderBot (α × β) where
+instance orderBot [LE α] [LE β] [OrderBot α] [OrderBot β] : OrderBot (α × β) where
   __ := inferInstanceAs (Bot (α × β))
   bot_le _ := ⟨bot_le, bot_le⟩
 
-instance [LE α] [LE β] [BoundedOrder α] [BoundedOrder β] : BoundedOrder (α × β) where
+instance boundedOrder [LE α] [LE β] [BoundedOrder α] [BoundedOrder β] : BoundedOrder (α × β) where
   __ := inferInstanceAs (OrderTop (α × β))
   __ := inferInstanceAs (OrderBot (α × β))
 
