@@ -7,8 +7,6 @@ import Mathlib.Logic.Equiv.Option
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.Disjoint
 import Mathlib.Order.WithBot
--- import Mathlib.Tactic.Monotonicity.Basic
--- import Mathlib.Tactic.AssertExists
 import Mathlib.Tactic.Replace
 
 /-!
