@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.PermuteGoals
 import Mathlib.Init.Data.Int.Order
 
 /-!
@@ -60,15 +61,14 @@ instance Subtype.canLift {α : Sort _} (p : α → Prop) :
   ⟨⟨a, ha⟩, rfl⟩
 #align subtype.can_lift Subtype.canLift
 
-open Lean in
+open Lean Parser Tactic Elab Tactic Meta
+
 /-- If a `Lean.Expr` has form `Lean.Expr.fvar n`, then returns `some n`, otherwise `none`. -/
 def Lean.Expr.fvarId? : Expr → Option FVarId
-| .fvar n => n
-| _ => none
+  | .fvar n => n
+  | _ => none
 
 namespace Mathlib.Tactic
-
-open Lean Parser Tactic Elab Tactic Meta
 
 /-- Lift an expression to another type.
 * Usage: `'lift' expr 'to' expr ('using' expr)? ('with' id (id id?)?)?`.
@@ -108,50 +108,54 @@ integer `z` (in the supertype) to `ℕ` (the subtype), given a proof that `z ≥
 propositions concerning `z` will still be over `ℤ`. `zify` changes propositions about `ℕ` (the
 subtype) to propositions about `ℤ` (the supertype), without changing the type of any variable.
 -/
-syntax (name := lift) "lift " term " to " term (" using " term)? (" with " (colGt ident)+)? : tactic
+syntax (name := lift) "lift " term " to " term (" using " term)?
+  (" with " ident (colGt ident)? (colGt ident)?)? : tactic
 
-elab_rules : tactic | `(tactic| lift $e to $t $[using $h]? $[with $ns*]?) => do
+/-- Generate instance for the `lift` tactic. -/
+def Lift.getInst (old_tp new_tp : Expr) : MetaM (Expr × Expr × Expr) := do
+  let coe ← mkFreshExprMVar (some $ .forallE `a new_tp old_tp .default)
+  let p ← mkFreshExprMVar (some $ .forallE `a old_tp (.sort .zero) .default)
+  let inst_type ← mkAppM ``CanLift #[old_tp, new_tp, coe, p]
+  let inst ← synthInstance inst_type -- TODO: catch error
+  return (← instantiateMVars p, ← instantiateMVars coe, ← instantiateMVars inst)
+
+elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
+    $[with $varName $eqName $prfName]?) => withMainContext do
+  let e ← elabTerm e none
   let goal ← getMainGoal
-  goal.withContext do
-    if !(← inferType (← goal.getType)).isProp then throwError
-      "lift tactic failed. Tactic is only applicable when the target is a proposition."
-    let e ← elabTerm e none
-    let ns := (ns.getD #[]).map Syntax.getId
-    if !(e.isFVar ∨ ns.size ≥ 2) then throwError
-      ("lift tactic failed. To lift an expression, providing explicit names for the new variable" ++
-      " and the assumption.")
-    let old_tp ← inferType e
-    let new_tp ← Term.elabType t
-    let coe ← mkFreshExprMVar (some $ .forallE `a new_tp old_tp .default)
-    let p ← mkFreshExprMVar (some $ .forallE `a old_tp (.sort .zero) .default)
-    let inst_type ← mkAppM ``CanLift #[old_tp, new_tp, coe, p]
-    let inst ← synthInstance inst_type -- TODO: catch error
-    let p ← instantiateMVars p
-    let coe ← instantiateMVars coe
-    let inst ← instantiateMVars inst
-    let p' := p.app e
-    let prf := (← h.mapM (fun h ↦ elabTermEnsuringType h p')).getD (← mkFreshExprMVar (some p'))
-    let varName ← if ns ≠ #[] then pure ns[0]! else e.fvarId!.getUserName
-    let eqName := ns[1]?.getD `rfl
-    let prf_ex ← mkAppOptM ``CanLift.prf #[none, none, coe, p, inst, e, prf]
-    let prf_ex ← instantiateMVars prf_ex
-    let prfSyn ← prf_ex.toSyntax
-    replaceMainGoal (← Std.Tactic.RCases.rcases #[(none, prfSyn)]
-      (.tuple Syntax.missing <| [varName, eqName].map (.one Syntax.missing)) goal)
-    if eqName ≠ `rfl then
-      -- We want to run `simp only [← $eqName] at *`,
-      -- but `eqName` is just a user facing name, and we need to resolve it first.
-      -- This feels like we swimming against the current, but we convert it from
-      -- `Name` to `LocalDecl` to `FVarId` to `Expr` to `Syntax`...
-      let eq : Term ← (Expr.fvar (← getLocalDeclFromUserName eqName).fvarId).toSyntax
-      evalTactic (← `(tactic| simp only [← $eq] at *))
-    match prf with
-    | .fvar prf => do
-        let name ← prf.getUserName
-        let g ← getMainGoal
-        g.withContext do
-          let decl ← getLocalDeclFromUserName name
-          if ns[2]? ≠ some name then replaceMainGoal [(← g.clear decl.fvarId)]
-    | _ => return ()
+  if !(← inferType (← goal.getType)).isProp then throwError
+    "lift tactic failed. Tactic is only applicable when the target is a proposition."
+  if !e.isFVar ∧ eqName.isNone then throwError
+    ("lift tactic failed. To lift an expression, providing explicit names for the new variable" ++
+    " and the assumption.")
+  let (p, coe, inst) ← Lift.getInst (← inferType e) (← Term.elabType t)
+  let prf ←  match h with
+    | some h => elabTermEnsuringType h (p.app e)
+    | none => mkFreshExprMVar (some (p.app e))
+  let varName ← match varName with
+    | some varName => pure varName.getId
+    | none => e.fvarId!.getUserName
+  let eqName := (eqName.map Syntax.getId).getD `rfl
+  let prf_ex ← mkAppOptM ``CanLift.prf #[none, none, coe, p, inst, e, prf]
+  let prf_ex ← instantiateMVars prf_ex
+  let prfSyn ← prf_ex.toSyntax
+  replaceMainGoal (← Std.Tactic.RCases.rcases #[(none, prfSyn)]
+    (.tuple Syntax.missing <| [varName, eqName].map (.one Syntax.missing)) goal)
+  if eqName ≠ `rfl then
+    -- We want to run `simp only [← $eqName] at *`,
+    -- but `eqName` is just a user facing name, and we need to resolve it first.
+    -- This feels like we swimming against the current, but we convert it from
+    -- `Name` to `LocalDecl` to `FVarId` to `Expr` to `Syntax`...
+    let eq : Term ← (Expr.fvar (← getLocalDeclFromUserName eqName).fvarId).toSyntax
+    evalTactic (← `(tactic| simp only [← $eq] at *))
+  match prf with
+  | .fvar prf => do
+      let name ← prf.getUserName
+      let g ← getMainGoal
+      g.withContext do
+        let decl ← getLocalDeclFromUserName name
+        if prfName.map Syntax.getId ≠ some name then replaceMainGoal [(← g.clear decl.fvarId)]
+  | _ => return ()
+  if h.isNone then evalTactic (← `(tactic| swap))
 
 end Mathlib.Tactic
