@@ -42,6 +42,9 @@ instance [DecidableEq α] : SDiff (List α) :=
 #align list.head' List.head?
 #align list.to_array List.toArray
 #align list.nthd List.getD
+-- porting notes: see
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/List.2Ehead/near/313204716
+-- for the fooI naming convention.
 /-- "inhabited" `get` function: returns `default` instead of `none` in the case
   that the index is out of bounds. -/
 def getI [Inhabited α] (l : List α) (n : Nat) : α :=
