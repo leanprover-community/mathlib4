@@ -837,7 +837,10 @@ def simpsAddProjection (declName : Name) (type lhs rhs : Expr) (args : Array Exp
   if let some tgt := cfg.addAdditive then
     ToAdditive.addToAdditiveAttr declName
       -- tracing seems to fail
-      ⟨false, (← getOptions) |>.getBool `trace.to_additive, tgt, none, true, ref⟩
+      { trace := (← getOptions) |>.getBool `trace.to_additive,
+        allowAutoName := true
+        tgt
+        ref }
 
 /--
 Perform head-structure-eta-reduction on expression `e`. That is, if `e` is of the form
