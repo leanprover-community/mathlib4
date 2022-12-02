@@ -31,7 +31,6 @@ def cons (a : α) (s : Stream' α) : Stream' α
   | n + 1 => s n
 #align stream.cons Stream'.cons
 
--- mathport name: stream.cons
 notation h "::" t => cons h t
 
 /-- Head of a stream: `Stream'.head s = Stream'.nth s 0`. -/
@@ -116,7 +115,6 @@ def interleave (s₁ s₂ : Stream' α) : Stream' α :=
   corecOn (s₁, s₂) (fun ⟨s₁, _⟩ => head s₁) fun ⟨s₁, s₂⟩ => (s₂, tail s₁)
 #align stream.interleave Stream'.interleave
 
--- mathport name: «expr ⋈ »
 infixl:65 " ⋈ " => interleave
 
 /-- Elements of a stream with even indices. -/
@@ -135,7 +133,6 @@ def appendStream' : List α → Stream' α → Stream' α
   | List.cons a l, s => a::appendStream' l s
 #align stream.append_stream Stream'.appendStream'
 
--- mathport name: «expr ++ₛ »
 infixl:65 " ++ₛ " => appendStream'
 
 /-- `take n s` returns a list of the `n` first elements of stream `s` -/
@@ -187,7 +184,6 @@ def pure (a : α) : Stream' α :=
 def apply (f : Stream' (α → β)) (s : Stream' α) : Stream' β := fun n => (nth f n) (nth s n)
 #align stream.apply Stream'.apply
 
--- mathport name: «expr ⊛ »
 infixl:75 " ⊛ " => apply
 -- PORTING NOTE: "input as \o*" was here but doesn't work for the above notation
 
