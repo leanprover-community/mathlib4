@@ -232,14 +232,14 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
 
 @[simp]
 theorem ofComponents.app (app' : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (X) :
-    (ofComponents app' naturality).app X = app' X := by tidy
+    (ofComponents app' naturality).app X = app' X := by aesop
 #align category_theory.nat_iso.of_components.app CategoryTheory.NatIso.ofComponents.app
 
 -- Making this an instance would cause a typeclass inference loop with `IsIso_app_of_IsIso`.
 /-- A natural transformation is an isomorphism if all its components are isomorphisms.
 -/
 theorem IsIso_of_IsIso_app (α : F ⟶ G) [∀ X : C, IsIso (α.app X)] : IsIso α :=
-  ⟨(IsIso.of_iso (ofComponents (fun X => asIso (α.app X)) (by tidy))).1⟩
+  ⟨(IsIso.of_iso (ofComponents (fun X => asIso (α.app X)) (by aesop))).1⟩
 #align category_theory.nat_iso.is_iso_of_is_iso_app CategoryTheory.NatIso.IsIso_of_IsIso_app
 
 /-- Horizontal composition of natural isomorphisms. -/
