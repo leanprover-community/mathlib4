@@ -23,7 +23,6 @@ proofs about these definitions, those are contained in other files in `Data.List
 -- These have been annotated with `#align`s
 -- To make this easier for review, the `#align`s have been placed in order of occurrence
 -- in `mathlib`
--- TODO: post port, reorder `#align`s to the end.
 
 namespace List
 
