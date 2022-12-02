@@ -322,19 +322,6 @@ match e.getAppFnArgs with
 | _ => e.foldlM findSquares s
 
 /--
-`mapUpperTriangleM f l` calls `f` on all elements in the upper triangular part of `l × l`.
-That is, for each `e ∈ l`, it will run `f e e` and then `f e e'`
-for each `e'` that appears after `e` in `l`.
-
-Example: suppose `l = [1, 2, 3]`. `mapUpperTriangleM f l` will produce the list
-`[f 1 1, f 1 2, f 1 3, f 2 2, f 2 3, f 3 3]`.
--/
-def _root_.List.mapUpperTriangleM {m} [Monad m] {α β : Type u} (f : α → α → m β) :
-    List α → m (List β)
-| [] => return []
-| (h::t) => do return ((← f h h) :: (← t.mapM (f h))) ++ (← t.mapUpperTriangleM f)
-
-/--
 `nlinarithExtras` is the preprocessor corresponding to the `nlinarith` tactic.
 
 * For every term `t` such that `t^2` or `t*t` appears in the input, adds a proof of `t^2 ≥ 0`
@@ -362,7 +349,7 @@ def nlinarithExtras : GlobalPreprocessor :=
         let ⟨ine, _⟩ ← parseCompAndExpr tp
         pure (ine, e)
       catch _ => pure (Ineq.lt, e))
-    let products ← with_comps.mapUpperTriangleM $ fun (⟨posa, a⟩ : Ineq × Expr) ⟨posb, b⟩ =>
+    let products ← with_comps.mapDiagM $ fun (⟨posa, a⟩ : Ineq × Expr) ⟨posb, b⟩ =>
       try
         (some <$> match posa, posb with
           | Ineq.eq, _ => mkAppM ``zero_mul_eq #[a, b]
