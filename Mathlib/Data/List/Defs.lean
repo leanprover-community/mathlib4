@@ -447,22 +447,7 @@ def choose (hp : ∃ a, a ∈ l ∧ p a) : α :=
 end Choose
 
 #align list.mmap_filter List.filterMapM
-
-/-- `mapUpperTriangleM f l` calls `f` on all elements in the upper triangular part of `l × l`.
-That is, for each `e ∈ l`, it will run `f e e` and then `f e e'`
-for each `e'` that appears after `e` in `l`.
-
-Example: suppose `l = [1, 2, 3]`. `mapUpperTriangleM f l` will produce the list
-`[f 1 1, f 1 2, f 1 3, f 2 2, f 2 3, f 3 3]`.
--/
-def mapUpperTriangleM {m} [Monad m] {α β : Type u} (f : α → α → m β) : List α → m (List β)
-  | [] => return []
-  | h :: t => do
-    let v ← f h h
-    let l ← t.mapM (f h)
-    let t ← t.mapUpperTriangleM f
-    return v :: l ++ t
-#align list.mmap_upper_triangle List.mapUpperTriangleM
+#align list.mmap_upper_triangle List.mapDiagM
 
 /-- `mapDiagM' f l` calls `f` on all elements in the upper triangular part of `l × l`.
 That is, for each `e ∈ l`, it will run `f e e` and then `f e e'`
