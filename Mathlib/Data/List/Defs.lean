@@ -53,7 +53,6 @@ def nthd (d : α) : ∀ (_ : List α) (_ : ℕ), α
 
 /-- "inhabited" `nth` function: returns `default` instead of `none` in the case
   that the index is out of bounds. -/
-@[nolint unusedArguments]
 def inth [Inhabited α] (l : List α) (n : Nat) : α :=
   nthd default l n
 #align list.inth List.inth
