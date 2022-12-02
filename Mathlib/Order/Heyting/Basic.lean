@@ -479,7 +479,7 @@ instance Prod.generalizedHeytingAlgebra [GeneralizedHeytingAlgebra β] :
 
 instance Pi.generalizedHeytingAlgebra {α : ι → Type _} [∀ i, GeneralizedHeytingAlgebra (α i)] :
     GeneralizedHeytingAlgebra (∀ i, α i) :=
-  { Pi.instLatticeForAll, Pi.instOrderTopForAllInstLEForAll with
+  { Pi.lattice, Pi.orderTop with
     le_himp_iff := fun i => by simp [le_def] }
 #align pi.generalized_heyting_algebra Pi.generalizedHeytingAlgebra
 
@@ -750,7 +750,7 @@ instance Prod.generalizedCoheytingAlgebra [GeneralizedCoheytingAlgebra β] :
 
 instance Pi.generalizedCoheytingAlgebra {α : ι → Type _} [∀ i, GeneralizedCoheytingAlgebra (α i)] :
     GeneralizedCoheytingAlgebra (∀ i, α i) :=
-  { Pi.instLatticeForAll, Pi.instOrderBotForAllInstLEForAll with
+  { Pi.lattice, Pi.orderBot with
     sdiff_le_iff := fun i => by simp [le_def] }
 #align pi.generalized_coheyting_algebra Pi.generalizedCoheytingAlgebra
 
@@ -951,7 +951,7 @@ instance Prod.heytingAlgebra [HeytingAlgebra β] : HeytingAlgebra (α × β) :=
 
 instance Pi.heytingAlgebra {α : ι → Type _} [∀ i, HeytingAlgebra (α i)] :
     HeytingAlgebra (∀ i, α i) :=
-  { instOrderBotForAllInstLEForAll, Pi.generalizedHeytingAlgebra with
+  { Pi.orderBot, Pi.generalizedHeytingAlgebra with
     himp_bot := fun f => funext fun i => himp_bot (f i) }
 #align pi.heyting_algebra Pi.heytingAlgebra
 
@@ -1142,7 +1142,7 @@ instance Prod.coheytingAlgebra [CoheytingAlgebra β] : CoheytingAlgebra (α × �
 
 instance Pi.coheytingAlgebra {α : ι → Type _} [∀ i, CoheytingAlgebra (α i)] :
     CoheytingAlgebra (∀ i, α i) :=
-  { instOrderTopForAllInstLEForAll, Pi.generalizedCoheytingAlgebra with
+  { Pi.orderTop, Pi.generalizedCoheytingAlgebra with
     top_sdiff := fun f => funext fun i => top_sdiff' (f i) }
 #align pi.coheyting_algebra Pi.coheytingAlgebra
 
