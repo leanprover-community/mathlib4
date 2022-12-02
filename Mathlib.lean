@@ -51,6 +51,7 @@ import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Functor.Category
+import Mathlib.CategoryTheory.Functor.Default
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.Combinatorics.Quiver.Basic
