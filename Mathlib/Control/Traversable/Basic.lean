@@ -3,8 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Functor
-import Mathlib.Data.Option.Defs
+import Mathlib.Data.List.Defs
 
 /-!
 # Traversable type class
@@ -274,15 +273,6 @@ variable {F : Type u → Type v} [Applicative F]
 
 instance : Traversable Option :=
   ⟨@Option.traverse⟩
-
--- **TODO** This def should go in `Data.List.Defs`.
-
-/-- `List` is a traversable functor. -/
-protected def List.traverse {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β) :
-    List α → F (List β)
-  | [] => pure []
-  | x :: xs => List.cons <$> f x <*> List.traverse f xs
-#align list.traverse List.traverse
 
 instance : Traversable List :=
   ⟨@List.traverse⟩
