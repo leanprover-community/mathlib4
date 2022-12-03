@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Johan Commelin
 import Mathlib.Order.WithBot
 import Mathlib.Algebra.Ring.Defs
 
-set_option autoImplicit true -- *TODO* remove this
 /-!
 # Adjoining a zero/one to semigroups and related algebraic structures
 
@@ -138,7 +137,6 @@ theorem ne_one_iff_exists {x : WithOne α} : x ≠ 1 ↔ ∃ a : α, ↑a = x :=
   Option.ne_none_iff_exists
 #align with_one.ne_one_iff_exists WithOne.ne_one_iff_exists
 
--- **TODO** waiting for `lift` tactic
 -- porting note : waiting for `lift` tactic
 --@[to_additive]
 --instance canLift : CanLift (WithOne α) α coe fun a => a ≠ 1 where prf a := ne_one_iff_exists.1
@@ -159,7 +157,7 @@ protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 �
   Option.casesOn
 #align with_one.cases_on WithOne.cases_on
 
--- **TODO** Is this now incorrect?
+-- porting note: in Lean 3 there was the following comment:
 -- the `show` statements in the proofs are important, because otherwise the generated lemmas
 -- `with_one.mul_one_class._proof_{1,2}` have an ill-typed statement after `with_one` is made
 -- irreducible.
@@ -167,7 +165,6 @@ protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 �
 instance [Mul α] : MulOneClass (WithOne α) where
   mul := (· * ·)
   one := 1
-  -- I can kill those `show`s, right?
   one_mul := show ∀ x : WithOne α, 1 * x = x from (Option.liftOrGet_isLeftId _).1
   mul_one := show ∀ x : WithOne α, x * 1 = x from (Option.liftOrGet_isRightId _).1
 
