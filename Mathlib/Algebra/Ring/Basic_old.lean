@@ -11,8 +11,10 @@ import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Tactic.Spread
 import Mathlib.Algebra.Ring.Defs
 
-/-
+/-!
 # Semirings and rings
+
+This is the ad-hoc ported version and should be removed.
 -/
 
 
