@@ -833,7 +833,8 @@ lemma not_monotone_not_antitone_iff_exists_lt_lt :
     (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
   simp_rw [not_monotone_not_antitone_iff_exists_le_le, ←and_assoc]
   refine' exists₃_congr (fun a b c ↦ and_congr_left $
-    fun h ↦ (Ne.le_iff_lt _).and $ Ne.le_iff_lt _); rintro rfl; simpa using h
+    fun h ↦ (Ne.le_iff_lt _).and $ Ne.le_iff_lt _) <;>
+  (rintro rfl; simp at h)
 
 /-!
 ### Strictly monotone functions and `cmp`
