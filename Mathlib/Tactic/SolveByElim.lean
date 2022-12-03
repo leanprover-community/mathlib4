@@ -26,6 +26,44 @@ initialize registerTraceClass `Meta.Tactic.solveByElim
 
 namespace Mathlib.Tactic.SolveByElim
 
+/-- Visualize an `Except` using a checkmark or a cross. -/
+def exceptEmoji : Except ε α → String
+  | .error _ => crossEmoji
+  | .ok _ => checkEmoji
+
+/-- Elaborate the context and the list of lemmas -/
+def elabContextLemmas (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)) :
+    MetaM (List Expr) := Elab.Term.TermElabM.run' do
+  pure ((← lemmas.mapM id) ++ (← ctx))
+
+def solveByElimCore (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
+    (n : Nat) (goals acc : List MVarId) : MetaM (List MVarId) := do
+  match goals with
+  /- If there are no active goals, return the accumulated goals: -/
+  | [] => return acc
+  | g :: gs =>
+  /- Discard any goals which have already been assigned. -/
+  if ← g.isAssigned then
+    solveByElimCore cfg lemmas ctx n gs acc
+  else
+  match n with
+  | 0 => throwError "solve_by_elim exceeded the recursion limit"
+  | n + 1 => do
+  withTraceNode `Meta.Tactic.solveByElim
+    -- Note: the `addMessageContextFull` is so that we show the goal using the mvar context before
+    -- the `do` block below runs, potentially unifying mvars in the goal.
+    (return m!"{exceptEmoji ·} working on: {← addMessageContextFull g}")
+    do
+      let es ← elabContextLemmas lemmas ctx
+
+      -- We attempt to find an expression which can be applied,
+      -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
+      es.firstM fun e => withTraceNode `Meta.Tactic.solveByElim
+          (return m!"{exceptEmoji ·} tried to apply: {e}") do
+        let gs := (← g.apply e) ++ gs
+        solveByElimCore cfg lemmas ctx n gs acc
+termination_by solveByElimCore lemmas ctx n goals acc => (n, goals)
+
 open Lean.Parser.Tactic
 
 /--
@@ -73,59 +111,13 @@ def mkAssumptionSet (noDflt : Bool) (hs : List (TSyntax `term)) :
   let locals : TermElabM (List Expr) := if noDflt then pure [] else pure (← getLocalHyps).toList
   return (hs, locals)
 
-/-- Visualize an `Except` using a checkmark or a cross. -/
-def exceptEmoji : Except ε α → String
-  | .error _ => crossEmoji
-  | .ok _ => checkEmoji
-
-/-- Elaborate the context and the list of lemmas -/
-def elabContextLemmas (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)) :
-    MetaM (List Expr) := Elab.Term.TermElabM.run' do
-  pure ((← lemmas.mapM id) ++ (← ctx))
-
--- proc : MVarId → MetaM (List MVarId) -- arbitrary tactic to run on every subgoal
--- suspend : MVarId → MetaM Bool -- if true, don't attempt to apply any further lemmas, just return as a new goal
--- accept : MVarId → MetaM Bool -- when no further lemmas apply, if true, return as a new goal, otherwise fail
-
-partial def solveByElimCore (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
-    (n : Nat) (goals acc : List MVarId) : MetaM (List MVarId) := do
-  match goals with
-  /- If there are no active goals, return the accumulated goals: -/
-  | [] => return acc
-  | g :: gs =>
-  /- Discard any goals which have already been assigned. -/
-  if ← g.isAssigned then
-    solveByElimCore lemmas ctx (n+1) gs acc
-  else
-  match n with
-  | 0 => throwError "solve_by_elim exceeded the recursion limit"
-  | n + 1 => do
-  withTraceNode `Meta.Tactic.solveByElim
-    -- Note: the `addMessageContextFull` is so that we show the goal using the mvar context before
-    -- the `do` block below runs, potentially unifying mvars in the goal.
-    (return m!"{exceptEmoji ·} working on: {← addMessageContextFull g}")
-    do
-      let es ← elabContextLemmas lemmas ctx
-
-      -- We attempt to find an expression which can be applied,
-      -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
-      es.firstM fun e => withTraceNode `Meta.Tactic.solveByElim
-          (return m!"{exceptEmoji ·} tried to apply: {e}") do
-        let gs := (← g.apply e) ++ gs
-        solveByElimCore lemmas ctx n gs acc
-
-/-- Attempt to solve the given metavariable by repeating applying a list of facts. -/
-def solveByElimTactic (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)) (n : Nat) :
-    TacticM Unit := Tactic.done <|> do
-  let goal ← getMainGoal
-  replaceMainGoal (← solveByElimCore lemmas ctx n [goal] [])
-
-/-- Attempt to solve the given metavariable by repeating applying one of the given expressions,
+/-- Attempt to solve the main goal by repeating applying one of the given expressions,
 or a local hypothesis. -/
 def solveByElimSyntax (only : Bool) (es : List (TSyntax `term)) (n : Nat) (g : MVarId) :
     MetaM Unit := g.withContext do
   let ⟨lemmas, ctx⟩ ← mkAssumptionSet only es
-  let _ ← Elab.Term.TermElabM.run' (Elab.Tactic.run g (solveByElimTactic lemmas ctx n))
+  let [] ← solveByElimCore {} lemmas ctx n [g] [] |
+    throwError "solve_by_elim unexpectedly returned subgoals"
   pure ()
 
 /--
