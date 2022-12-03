@@ -57,7 +57,7 @@ def head : Vector α (Nat.succ n) → α
   | ⟨a :: _, _⟩ => a
 #align vector.head Vector.head
 
-/-- the head of a vector obtained by prepending is the element prepended -/
+/-- The head of a vector obtained by prepending is the element prepended. -/
 theorem head_cons (a : α) : ∀ v : Vector α n, head (cons a v) = a
   | ⟨_, _⟩ => rfl
 #align vector.head_cons Vector.head_cons
