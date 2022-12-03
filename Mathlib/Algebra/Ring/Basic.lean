@@ -37,6 +37,19 @@ def mulRight [Distrib R] (r : R) : AddHom R R :=
 
 end AddHom
 
+section AddHomClass
+
+variable {F : Type _} [NonAssocSemiring α] [NonAssocSemiring β] [AddHomClass F α β]
+
+set_option linter.deprecated false in
+/-- Additive homomorphisms preserve `bit0`. -/
+@[deprecated, simp]
+theorem map_bit0 (f : F) (a : α) : (f (bit0 a) : β) = bit0 (f a) :=
+  map_add _ _ _
+#align map_bit0 map_bit0
+
+end AddHomClass
+
 namespace AddMonoidHom
 
 /-- Left multiplication by an element of a (semi)ring is an `add_monoid_hom` -/
