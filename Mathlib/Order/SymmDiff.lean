@@ -515,19 +515,19 @@ theorem symm_diff_right_involutive (a : α) : Involutive ((· ∆ ·) a) :=
 #align symm_diff_right_involutive symm_diff_right_involutive
 
 theorem symm_diff_left_injective (a : α) : Injective (· ∆ a) :=
-  (symm_diff_left_involutive _).Injective
+  Function.Involutive.injective (symm_diff_left_involutive a)
 #align symm_diff_left_injective symm_diff_left_injective
 
 theorem symm_diff_right_injective (a : α) : Injective ((· ∆ ·) a) :=
-  (symm_diff_right_involutive _).Injective
+  Function.Involutive.injective (symm_diff_right_involutive _)
 #align symm_diff_right_injective symm_diff_right_injective
 
 theorem symm_diff_left_surjective (a : α) : Surjective (· ∆ a) :=
-  (symm_diff_left_involutive _).Surjective
+  Function.Involutive.surjective (symm_diff_left_involutive _)
 #align symm_diff_left_surjective symm_diff_left_surjective
 
 theorem symm_diff_right_surjective (a : α) : Surjective ((· ∆ ·) a) :=
-  (symm_diff_right_involutive _).Surjective
+  Function.Involutive.surjective (symm_diff_right_involutive _)
 #align symm_diff_right_surjective symm_diff_right_surjective
 
 variable {a b c}
