@@ -24,9 +24,10 @@ class Functorial (F : C → D) : Type max v₁ v₂ u₁ u₂ where
   /-- A functorial map extends to an action on morphisms. -/
   map' : ∀ {X Y : C}, (X ⟶ Y) → (F X ⟶ F Y)
   /-- A functorial map preserves identities. -/
-  map_id' : ∀ X : C, map' (𝟙 X) = 𝟙 (F X) := by aesop
+  map_id' : ∀ X : C, map' (𝟙 X) = 𝟙 (F X) := by aesop_cat
   /-- A functorial map preserves composition of morphisms. -/
-  map_comp' : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z), map' (f ≫ g) = map' f ≫ map' g := by aesop
+  map_comp' : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z), map' (f ≫ g) = map' f ≫ map' g := by
+    aesop_cat
 #align category_theory.functorial CategoryTheory.Functorial
 #align category_theory.functorial.map CategoryTheory.Functorial.map'
 
