@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Std.Lean.Parser
-import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.Basic_old -- Porting note replace this by ??
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Tactic.Conv
 import Qq.MetaM

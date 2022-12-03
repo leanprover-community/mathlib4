@@ -5,7 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Tactic.Convert
 import Mathlib.Init.Data.Int.Order
-import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.Basic_old
 import Mathlib.Order.Monotone
 import Mathlib.Logic.Nontrivial
 
