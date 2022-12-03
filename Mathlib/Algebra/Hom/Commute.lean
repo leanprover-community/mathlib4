@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
-import Mathbin.Algebra.Hom.Group
-import Mathbin.Algebra.Group.Commute
+import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Group.Commute
 
 /-!
 # Multiplicative homomorphisms respect semiconjugation and commutation.
@@ -23,8 +23,7 @@ protected theorem SemiconjBy.map [MulHomClass F M N] (h : SemiconjBy a x y) (f :
 
 @[simp, to_additive]
 protected theorem Commute.map [MulHomClass F M N] (h : Commute x y) (f : F) : Commute (f x) (f y) :=
-  h.map f
+  SemiconjBy.map h f
 #align commute.map Commute.map
 
 end Commute
-
