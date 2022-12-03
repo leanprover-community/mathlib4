@@ -153,15 +153,17 @@ section LE
 
 variable [LE α] [LE β] [OrderIsoClass F α β]
 
+-- Porting note: needed to add explicit arguments to map_le_map_iff
 @[simp]
 theorem map_inv_le_iff (f : F) {a : α} {b : β} : EquivLike.inv f b ≤ a ↔ b ≤ f a := by
-  convert (map_le_map_iff _).symm
-  exact (EquivLike.right_inv _ _).symm
+  convert (@map_le_map_iff _ _ _ _ _ _ f (EquivLike.inv f b) a).symm
+  exact (EquivLike.right_inv f _).symm
 #align map_inv_le_iff map_inv_le_iff
 
+-- Porting note: needed to add explicit arguments to map_le_map_iff
 @[simp]
 theorem le_map_inv_iff (f : F) {a : α} {b : β} : a ≤ EquivLike.inv f b ↔ f a ≤ b := by
-  convert (map_le_map_iff _).symm
+  convert (@map_le_map_iff _ _ _ _ _ _ f a (EquivLike.inv f b)).symm
   exact (EquivLike.right_inv _ _).symm
 #align le_map_inv_iff le_map_inv_iff
 
@@ -169,7 +171,8 @@ end LE
 
 variable [Preorder α] [Preorder β] [OrderIsoClass F α β]
 
-theorem map_lt_map_iff (f : F) {a b : α} : f a < f b ↔ a < b :=
+-- Porting note: needed to add explicit coercions
+theorem map_lt_map_iff (f : F) {a b : α} : (f : α → β) a < (f : α → β) b ↔ a < b :=
   lt_iff_lt_of_le_iff_le' (map_le_map_iff f) (map_le_map_iff f)
 #align map_lt_map_iff map_lt_map_iff
 
