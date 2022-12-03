@@ -13,38 +13,52 @@ import Mathlib.Data.FunLike.Basic
 
 /-!
 # Monoid and group homomorphisms
+
 This file defines the bundled structures for monoid and group homomorphisms. Namely, we define
 `MonoidHom` (resp., `AddMonoidHom`) to be bundled homomorphisms between multiplicative (resp.,
 additive) monoids or groups.
+
 We also define coercion to a function, and  usual operations: composition, identity homomorphism,
 pointwise multiplication and pointwise inversion.
+
 This file also defines the lesser-used (and notation-less) homomorphism types which are used as
 building blocks for other homomorphisms:
+
 * `ZeroHom`
 * `OneHom`
 * `AddHom`
 * `MulHom`
 * `MonoidWithZeroHom`
+
 ## Notations
+
 * `→+`: Bundled `AddMonoid` homs. Also use for `AddGroup` homs.
 * `→*`: Bundled `Monoid` homs. Also use for `Group` homs.
 * `→*₀`: Bundled `MonoidWithZero` homs. Also use for `GroupWithZero` homs.
 * `→ₙ*`: Bundled `Semigroup` homs.
+
 ## Implementation notes
+
 There's a coercion from bundled homs to fun, and the canonical
 notation is to use the bundled hom as a function via this coercion.
+
 There is no `GroupHom` -- the idea is that `MonoidHom` is used.
 The constructor for `MonoidHom` needs a proof of `map_one` as well
 as `map_mul`; a separate constructor `MonoidHom.mk'` will construct
 group homs (i.e. monoid homs between groups) given only a proof
 that multiplication is preserved,
+
 Implicit `{}` brackets are often used instead of type class `[]` brackets.  This is done when the
 instances can be inferred because they are implicit arguments to the type `MonoidHom`.  When they
 can be inferred from the type it is faster to use this method than to use type class inference.
+
 Historically this file also included definitions of unbundled homomorphism classes; they were
 deprecated and moved to `Deprecated/Group`.
+
 ## Tags
+
 MonoidHom, AddMonoidHom
+
 -/
 
 
@@ -60,8 +74,10 @@ variable {F : Type _}
 section Zero
 
 /-- `ZeroHom M N` is the type of functions `M → N` that preserve zero.
+
 When possible, instead of parametrizing results over `(f : ZeroHom M N)`,
 you should parametrize over `(F : Type*) [ZeroHomClass F M N] (f : F)`.
+
 When you extend this structure, make sure to also extend `ZeroHomClass`.
 -/
 structure ZeroHom (M : Type _) (N : Type _) [Zero M] [Zero N] where
@@ -73,6 +89,7 @@ structure ZeroHom (M : Type _) (N : Type _) [Zero M] [Zero N] where
 #align zero_hom.map_zero' ZeroHom.map_zero'
 
 /-- `ZeroHomClass F M N` states that `F` is a type of zero-preserving homomorphisms.
+
 You should extend this typeclass when you extend `ZeroHom`.
 -/
 class ZeroHomClass (F : Type _) (M N : outParam (Type _)) [Zero M] [Zero N]
@@ -104,8 +121,10 @@ end NeZero
 section Add
 
 /-- `AddHom M N` is the type of functions `M → N` that preserve addition.
+
 When possible, instead of parametrizing results over `(f : AddHom M N)`,
 you should parametrize over `(F : Type*) [AddHomClass F M N] (f : F)`.
+
 When you extend this structure, make sure to extend `AddHomClass`.
 -/
 structure AddHom (M : Type _) (N : Type _) [Add M] [Add N] where
@@ -130,9 +149,12 @@ end Add
 section add_zero
 
 /-- `M →+ N` is the type of functions `M → N` that preserve the `AddZeroClass` structure.
+
 `AddMonoidHom` is also used for group homomorphisms.
+
 When possible, instead of parametrizing results over `(f : M →+ N)`,
 you should parametrize over `(F : Type*) [AddMonoidHomClass F M N] (f : F)`.
+
 When you extend this structure, make sure to extend `AddMonoidHomClass`.
 -/
 structure AddMonoidHom (M : Type _) (N : Type _) [AddZeroClass M] [AddZeroClass N] extends
@@ -147,6 +169,7 @@ infixr:25 " →+ " => AddMonoidHom
 
 /-- `AddMonoidHomClass F M N` states that `F` is a type of `AddZeroClass`-preserving
 homomorphisms.
+
 You should also extend this typeclass when you extend `AddMonoidHom`.
 -/
 class AddMonoidHomClass (F : Type _) (M N : outParam (Type _)) [outParam (AddZeroClass M)]
@@ -161,8 +184,10 @@ section One
 variable [One M] [One N]
 
 /-- `OneHom M N` is the type of functions `M → N` that preserve one.
+
 When possible, instead of parametrizing results over `(f : OneHom M N)`,
 you should parametrize over `(F : Type*) [OneHomClass F M N] (f : F)`.
+
 When you extend this structure, make sure to also extend `OneHomClass`.
 -/
 @[to_additive]
@@ -234,6 +259,7 @@ variable [Mul M] [Mul N]
 /-- `M →ₙ* N` is the type of functions `M → N` that preserve multiplication. The `ₙ` in the notation
 stands for "non-unital" because it is intended to match the notation for `NonUnitalAlgHom` and
 `NonUnitalRingHom`, so a `MulHom` is a non-unital monoid hom.
+
 When possible, instead of parametrizing results over `(f : M →ₙ* N)`,
 you should parametrize over `(F : Type*) [MulHomClass F M N] (f : F)`.
 When you extend this structure, make sure to extend `MulHomClass`.
@@ -250,6 +276,7 @@ structure MulHom (M : Type _) (N : Type _) [Mul M] [Mul N] where
 infixr:25 " →ₙ* " => MulHom
 
 /-- `MulHomClass F M N` states that `F` is a type of multiplication-preserving homomorphisms.
+
 You should declare an instance of this typeclass when you extend `MulHom`.
 -/
 @[to_additive]
@@ -292,8 +319,10 @@ variable [MulOneClass M] [MulOneClass N]
 
 /-- `M →* N` is the type of functions `M → N` that preserve the `Monoid` structure.
 `MonoidHom` is also used for group homomorphisms.
+
 When possible, instead of parametrizing results over `(f : M →+ N)`,
 you should parametrize over `(F : Type*) [MonoidHomClass F M N] (f : F)`.
+
 When you extend this structure, make sure to extend `MonoidHomClass`.
 -/
 @[to_additive]
@@ -421,9 +450,12 @@ variable [MulZeroOneClass M] [MulZeroOneClass N]
 
 /-- `M →*₀ N` is the type of functions `M → N` that preserve
 the `MonoidWithZero` structure.
+
 `MonoidWithZeroHom` is also used for group homomorphisms.
+
 When possible, instead of parametrizing results over `(f : M →*₀ N)`,
 you should parametrize over `(F : Type*) [MonoidWithZeroHomClass F M N] (f : F)`.
+
 When you extend this structure, make sure to extend `MonoidWithZeroHomClass`.
 -/
 structure MonoidWithZeroHom (M : Type _) (N : Type _)
@@ -438,6 +470,7 @@ infixr:25 " →*₀ " => MonoidWithZeroHom
 
 /-- `MonoidWithZeroHomClass F M N` states that `F` is a type of
 `MonoidWithZero`-preserving homomorphisms.
+
 You should also extend this typeclass when you extend `MonoidWithZeroHom`.
 -/
 class MonoidWithZeroHomClass (F : Type _) (M N : outParam (Type _)) [outParam (MulZeroOneClass M)]
