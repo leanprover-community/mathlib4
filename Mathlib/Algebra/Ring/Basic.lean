@@ -85,7 +85,8 @@ variable [Mul α] [HasDistribNeg α]
 open MulOpposite
 
 instance : HasDistribNeg αᵐᵒᵖ :=
-  { MulOpposite.hasInvolutiveNeg _ with neg_mul := fun _ _ => unop_injective <| mul_neg _ _,
+  { MulOpposite.instHasInvolutiveNegMulOpposite _ with
+    neg_mul := fun _ _ => unop_injective <| mul_neg _ _,
     mul_neg := fun _ _ => unop_injective <| neg_mul _ _ }
 
 end Mul
