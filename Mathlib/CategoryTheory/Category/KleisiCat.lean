@@ -9,12 +9,12 @@ import Mathlib.CategoryTheory.Category.Basic
 # The Kleisli construction on the Type category
 
 Define the Kleisli category for (control) monads.
-`category_theory/monad/kleisli` defines the general version for a monad on `C`, and demonstrates
+`CategoryTheory/Monad/Kleisli` defines the general version for a monad on `C`, and demonstrates
 the equivalence between the two.
 
 ## TODO
 
-Generalise this to work with category_theory.monad
+Generalise this to work with CategoryTheory.Monad
 -/
 
 
@@ -24,8 +24,9 @@ namespace CategoryTheory
 
 /-- The Kleisli category on the (type-)monad `m`. Note that the monad is not assumed to be lawful
 yet. -/
-@[nolint unused_arguments]
-def KleisliCat (m : Type u → Type v) :=
+-- Porting note: Should this be kept?
+-- @[nolint unused_arguments]
+def KleisliCat (_ : Type u → Type v) :=
   Type u
 #align category_theory.Kleisli CategoryTheory.KleisliCat
 
@@ -37,8 +38,8 @@ def KleisliCat.mk (m) (α : Type u) : KleisliCat m :=
 instance KleisliCat.categoryStruct {m} [Monad.{u, v} m] :
     CategoryStruct (KleisliCat m) where
   Hom α β := α → m β
-  id α x := pure x
-  comp X Y Z f g := f >=> g
+  id _ x := pure x
+  comp f g := f >=> g
 #align category_theory.Kleisli.category_struct CategoryTheory.KleisliCat.categoryStruct
 
 instance KleisliCat.category {m} [Monad.{u, v} m] [LawfulMonad m] : Category (KleisliCat m) := by
