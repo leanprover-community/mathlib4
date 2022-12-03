@@ -158,9 +158,7 @@ theorem cancel_natIso_inv_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X 
 
 @[simp]
 theorem inv_inv_app {F G : C ⥤ D} (e : F ≅ G) (X : C) : inv (e.inv.app X) = e.hom.app X := by
-  -- Porting note: originally an ext lemma. No longer in mathlib4
-  apply IsIso.inv_eq_of_hom_inv_id
-  simp
+  aesop_cat
 #align category_theory.nat_iso.inv_inv_app CategoryTheory.NatIso.inv_inv_app
 
 end
@@ -195,7 +193,9 @@ instance isIso_app_of_isIso (α : F ⟶ G) [IsIso α] (X) : IsIso (α.app X) :=
 
 @[simp]
 theorem isIso_inv_app (α : F ⟶ G) [IsIso α] (X) : (inv α).app X = inv (α.app X) := by
-  -- Porting note: ext doesn't seem to be doing anything here. Replaced with explicit theorem
+  -- Porting note: the next lemma used to be in `ext`, but that is no longer allowed.
+  -- We've added an aesop apply rule;
+  -- it would be nice to have a hook to run those without aesop warning it didn't close the goal.
   apply IsIso.eq_inv_of_hom_inv_id
   rw [← NatTrans.comp_app]
   simp
@@ -204,9 +204,7 @@ theorem isIso_inv_app (α : F ⟶ G) [IsIso α] (X) : (inv α).app X = inv (α.a
 @[simp]
 theorem inv_map_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     inv ((F.map e.inv).app Z) = (F.map e.hom).app Z := by
-  -- Porting note: ext doesn't seem to be doing anything here. Replaced with explicit theorem
-  apply IsIso.inv_eq_of_hom_inv_id
-  simp
+  aesop_cat
 #align category_theory.nat_iso.inv_map_inv_app CategoryTheory.NatIso.inv_map_inv_app
 
 /-- Construct a natural isomorphism between functors by giving object level isomorphisms,
