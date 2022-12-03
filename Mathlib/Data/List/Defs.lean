@@ -63,7 +63,7 @@ def getI [Inhabited α] (l : List α) (n : Nat) : α :=
 
 /-- Product of a list.
 
-     prod [a, b, c] = ((1 * a) * b) * c -/
+     `prod [a, b, c] = ((1 * a) * b) * c` -/
 def prod [Mul α] [One α] : List α → α :=
   foldl (· * ·) 1
 #align list.prod List.prod
