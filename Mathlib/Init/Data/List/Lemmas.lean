@@ -18,7 +18,7 @@ open List Nat
 
 namespace List
 
-/-- length of list obtained by `map₂` on a pair of lists is the length of the shorter of the two -/
+/-- Length of list obtained by `map₂` on a pair of lists is the length of the shorter of the two. -/
 @[simp]
 theorem length_map₂ (f : α → β → γ) (l₁) : ∀ l₂, length (map₂ f l₁ l₂) =
     min (length l₁) (length l₂) := by
@@ -26,13 +26,13 @@ theorem length_map₂ (f : α → β → γ) (l₁) : ∀ l₂, length (map₂ f
     simp [*, add_one, min_succ_succ, Nat.zero_min, Nat.min_zero]
 #align list.length_map₂ List.length_map₂
 
-/-- length of the list consisting of an element repeated `n` times is `n` -/
+/-- Length of the list consisting of an element repeated `n` times is `n`. -/
 @[simp]
 theorem length_repeat (a : α) (n : ℕ) : length («repeat»  a n) = n := by induction n <;> simp [*]
 #align list.length_repeat List.length_repeat
 
-/-- length of the list on removing the `i`th element
-when `i` is less than the length of the original list -/
+/-- Length of the list on removing the `i`th element
+when `i` is less than the length of the original list. -/
 theorem length_remove_nth : ∀ (l : List α) (i : ℕ),
     i < length l → length (removeNth l i) = length l - 1
   | [], _, _ => rfl
@@ -59,8 +59,8 @@ section MapAccumr
 
 variable {φ : Type w₁} {σ : Type w₂}
 
-/-- runs a function over a list returning the intermediate results and a
-a final result
+/-- Runs a function over a list returning the intermediate results and a
+a final result.
 -/
 def mapAccumr (f : α → σ → σ × β) : List α → σ → σ × List β
   | [], c => (c, [])
@@ -70,7 +70,7 @@ def mapAccumr (f : α → σ → σ × β) : List α → σ → σ × List β
     (z.1, z.2 :: r.2)
 #align list.map_accumr List.mapAccumr
 
-/-- length of the list obtained by `mapAccumr` -/
+/-- Length of the list obtained by `mapAccumr`. -/
 @[simp]
 theorem length_map_accumr : ∀ (f : α → σ → σ × β) (x : List α) (s : σ),
     length (mapAccumr f x s).2 = length x
@@ -84,7 +84,7 @@ section MapAccumr₂
 
 variable {φ : Type w₁} {σ : Type w₂}
 
-/-- runs a function over two lists returning the intermediate results and a
+/-- Runs a function over two lists returning the intermediate results and a
  a final result.
 -/
 def mapAccumr₂ (f : α → β → σ → σ × φ) : List α → List β → σ → σ × List φ
@@ -96,7 +96,7 @@ def mapAccumr₂ (f : α → β → σ → σ × φ) : List α → List β → �
     (q.1, q.2 :: r.2)
 #align list.map_accumr₂ List.mapAccumr₂
 
-/-- length of a list obtained using `mapAccumr₂` -/
+/-- Length of a list obtained using `mapAccumr₂`. -/
 @[simp]
 theorem length_map_accumr₂ :
     ∀ (f : α → β → σ → σ × φ) (x y c), length (mapAccumr₂ f x y c).2 = min (length x) (length y)
