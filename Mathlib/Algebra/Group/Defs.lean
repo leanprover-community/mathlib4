@@ -175,6 +175,11 @@ variable [Semigroup G]
 theorem mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
   Semigroup.mul_assoc
 
+@[to_additive]
+instance Semigroup.to_isAssociative : IsAssociative G (· * ·) :=
+  ⟨mul_assoc⟩
+#align semigroup.to_is_associative Semigroup.to_isAssociative
+
 end Semigroup
 
 /-- A commutative semigroup is a type with an associative commutative `(*)`. -/
@@ -198,6 +203,11 @@ variable [CommSemigroup G]
 @[to_additive]
 theorem mul_comm : ∀ a b : G, a * b = b * a :=
   CommSemigroup.mul_comm
+
+@[to_additive]
+instance CommSemigroup.to_isCommutative : IsCommutative G (· * ·) :=
+  ⟨mul_comm⟩
+#align comm_semigroup.to_is_commutative CommSemigroup.to_isCommutative
 
 /-- Any `CommSemigroup G` that satisfies `IsRightCancelMul G` also satisfies
 `IsLeftCancelMul G`. -/
@@ -773,10 +783,16 @@ theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
     _ = a * a ^ n := congr_arg ((· * ·) a) (zpow_ofNat a n)
     _ = a ^ (n + 1) := (pow_succ _ _).symm
 
-@[simp, to_additive]
+@[simp]
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
   rw [← zpow_ofNat]
   exact DivInvMonoid.zpow_neg' n a
+@[simp]
+theorem negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
+  Int.negSucc n • a = -((n + 1) • a) := by
+  rw [← ofNat_zsmul]
+  exact SubNegMonoid.zsmul_neg' n a
+attribute [to_additive negSucc_zsmul] zpow_negSucc
 
 /-- Dividing by an element is the same as multiplying by its inverse.
 
