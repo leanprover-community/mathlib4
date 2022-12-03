@@ -72,7 +72,7 @@ def prod [Mul α] [One α] : List α → α :=
 -- dependencies.
 /-- Sum of a list.
 
-     sum [a, b, c] = ((0 + a) + b) + c -/
+     `sum [a, b, c] = ((0 + a) + b) + c` -/
 def sum [Add α] [Zero α] : List α → α :=
   foldl (· + ·) 0
 #align list.sum List.sum
