@@ -51,7 +51,7 @@ def length (_ : Vector α n) : ℕ :=
 
 open Nat
 
-/-- the first element of a vector with length at least `1` -/
+/-- The first element of a vector with length at least `1`. -/
 def head : Vector α (Nat.succ n) → α
   | ⟨[], h⟩ => by contradiction
   | ⟨a :: _, _⟩ => a
