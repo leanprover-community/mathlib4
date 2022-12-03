@@ -8,12 +8,13 @@ import Std.Data.List.Basic
 import Std.Data.List.Lemmas
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
+
 /-!
 The type `Vector` represents lists with fixed length.
 -/
 
 universe u v w
-
+/-- `Vector α n` is the type of lists of length `n` with elements of type `α`. -/
 def Vector (α : Type u) (n : ℕ) :=
   { l : List α // l.length = n }
 #align vector Vector
@@ -28,55 +29,68 @@ instance [DecidableEq α] : DecidableEq (Vector α n) := by
   unfold Vector
   infer_instance
 
+/-- the empty vector with elements of type `α` -/
 @[match_pattern]
 def nil : Vector α 0 :=
   ⟨[], rfl⟩
 #align vector.nil Vector.nil
 
+/-- If `a : α` and `l : Vector α n`, then `cons a l`, is the vector of length `n + 1`
+whose first element is a and with l as the rest of the list. -/
 @[match_pattern]
 def cons : α → Vector α n → Vector α (Nat.succ n)
   | a, ⟨v, h⟩ => ⟨a :: v, congrArg Nat.succ h⟩
 #align vector.cons Vector.cons
 
-@[reducible]
+
+/-- The length of a vector -/
+@[reducible, nolint unusedArguments]
 def length (_ : Vector α n) : ℕ :=
   n
 #align vector.length Vector.length
 
 open Nat
 
+/-- the first element of a vector with length at least `1` -/
 def head : Vector α (Nat.succ n) → α
   | ⟨[], h⟩ => by contradiction
   | ⟨a :: _, _⟩ => a
 #align vector.head Vector.head
 
+/-- the head of a vector obtained by prepending is the element prepended -/
 theorem head_cons (a : α) : ∀ v : Vector α n, head (cons a v) = a
   | ⟨_, _⟩ => rfl
 #align vector.head_cons Vector.head_cons
 
+/-- the tail of a vector, with an empty vector having empty tail  -/
 def tail : Vector α n → Vector α (n - 1)
   | ⟨[], h⟩ => ⟨[], congrArg pred h⟩
   | ⟨_ :: v, h⟩ => ⟨v, congrArg pred h⟩
 #align vector.tail Vector.tail
 
+/-- the tail of a vector obtained by prepending is the vector prepended to -/
 theorem tail_cons (a : α) : ∀ v : Vector α n, tail (cons a v) = v
   | ⟨_, _⟩ => rfl
 #align vector.tail_cons Vector.tail_cons
 
+/-- prepending the head of a vector to its tail gives the vector -/
 @[simp]
 theorem cons_head_tail : ∀ v : Vector α (succ n), cons (head v) (tail v) = v
   | ⟨[], h⟩ => by contradiction
   | ⟨a :: v, h⟩ => rfl
 #align vector.cons_head_tail Vector.cons_head_tail
 
+/-- list obtained from a vector -/
 def toList (v : Vector α n) : List α :=
   v.1
 #align vector.to_list Vector.toList
 
+/-- nth element of a vector, indexed by a `Fin` type -/
 def nth : ∀ _ : Vector α n, Fin n → α
   | ⟨l, h⟩, i => l.nthLe i.1 (by rw [h] ; exact i.2)
 #align vector.nth Vector.nth
 
+/-- appending a vector to another -/
 def append {n m : Nat} : Vector α n → Vector α m → Vector α (n + m)
   | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩
 #align vector.append Vector.append
@@ -97,6 +111,7 @@ but is expected to have type
   (List.length.{_aux_param_0} α l)) l (rfl.{1} ℕ (List.length.{_aux_param_0} α l)))) ->
   (forall {n : ℕ} (v : Vector.{_aux_param_0} α n), C n v)
 Case conversion may be inaccurate. Consider using '#align vector.elim Vector.elimₓ'. -/
+/-- elimination rule for `Vector` -/
 @[elab_as_elim]
 def elim {α} {C : ∀ {n}, Vector α n → Sort u}
     (H : ∀ l : List α, C ⟨l, rfl⟩) {n : ℕ} : ∀ v : Vector α n, C v
@@ -105,40 +120,48 @@ def elim {α} {C : ∀ {n}, Vector α n → Sort u}
     | _, rfl => H l
 #align vector.elim Vector.elim
 
--- map
+/-- map a vector under a function -/
 def map (f : α → β) : Vector α n → Vector β n
   | ⟨l, h⟩ => ⟨List.map f l, by simp [*]⟩
 #align vector.map Vector.map
 
+/-- a `nil` vector maps to a `nil` vector -/
 @[simp]
 theorem map_nil (f : α → β) : map f nil = nil :=
   rfl
 #align vector.map_nil Vector.map_nil
 
+/-- `map` is natural with respect to `cons` -/
 theorem map_cons (f : α → β) (a : α) : ∀ v : Vector α n, map f (cons a v) = cons (f a) (map f v)
   | ⟨_, _⟩ => rfl
 #align vector.map_cons Vector.map_cons
 
+/-- mapping two vectors under a curried function of two variables -/
 def map₂ (f : α → β → φ) : Vector α n → Vector β n → Vector φ n
   | ⟨x, _⟩, ⟨y, _⟩ => ⟨List.map₂ f x y, by simp [*]⟩
 #align vector.map₂ Vector.map₂
 
+/-- vector obtained by repeating an element -/
 def «repeat» (a : α) (n : ℕ) : Vector α n :=
   ⟨List.repeat a n, List.length_repeat a n⟩
 #align vector.repeat Vector.repeat
 
+/-- drop `i` elements from a vector of length `n`; we can have `i > n` -/
 def drop (i : ℕ) : Vector α n → Vector α (n - i)
   | ⟨l, p⟩ => ⟨List.drop i l, by simp [*]⟩
 #align vector.drop Vector.drop
 
+/-- take `i` elements from a vector of length `n`; we can have `i > n` -/
 def take (i : ℕ) : Vector α n → Vector α (min i n)
   | ⟨l, p⟩ => ⟨List.take i l, by simp [*]⟩
 #align vector.take Vector.take
 
+/-- remove the element at position `i` from a vector of length `n`-/
 def removeNth (i : Fin n) : Vector α n → Vector α (n - 1)
   | ⟨l, p⟩ => ⟨List.removeNth l i.1, by rw [l.length_remove_nth i.1] <;> rw [p] ; exact i.2⟩
 #align vector.remove_nth Vector.removeNth
 
+/-- vector of length `n` from a function on `Fin n`-/
 def ofFn : ∀ {n}, (Fin n → α) → Vector α n
   | 0, _ => nil
   | _ + 1, f => cons (f 0) (ofFn fun i => f i.succ)
@@ -150,12 +173,18 @@ open Prod
 
 variable {σ : Type}
 
+/-- runs a function over a vector returning the intermediate results and a
+a final result
+-/
 def mapAccumr (f : α → σ → σ × β) : Vector α n → σ → σ × Vector β n
   | ⟨x, px⟩, c =>
     let res := List.mapAccumr f x c
     ⟨res.1, res.2, by simp [*]⟩
 #align vector.map_accumr Vector.mapAccumr
 
+/-- runs a function over a pair of vectors returning the intermediate results and a
+a final result
+-/
 def mapAccumr₂ {α β σ φ : Type} (f : α → β → σ → σ × φ) :
     Vector α n → Vector β n → σ → σ × Vector φ n
   | ⟨x, px⟩, ⟨y, py⟩, c =>
@@ -165,35 +194,44 @@ def mapAccumr₂ {α β σ φ : Type} (f : α → β → σ → σ × φ) :
 
 end Accum
 
+/-- vector is determined by the underlying list -/
 protected theorem eq {n : ℕ} : ∀ a1 a2 : Vector α n, toList a1 = toList a2 → a1 = a2
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 #align vector.eq Vector.eq
 
+/-- a vector of length `0` is a `nil` vector -/
 protected theorem eq_nil (v : Vector α 0) : v = nil :=
   v.eq nil (List.eq_nil_of_length_eq_zero v.2)
 #align vector.eq_nil Vector.eq_nil
 
+/-- vector of length from a list `v`
+with witness that `v` has length `n` maps to `v` under `toList`  -/
 @[simp]
 theorem to_list_mk (v : List α) (P : List.length v = n) : toList (Subtype.mk v P) = v :=
   rfl
 #align vector.to_list_mk Vector.to_list_mk
 
+/-- a nil vector maps to a nil list -/
 @[simp]
 theorem to_list_nil : toList nil = @List.nil α :=
   rfl
 #align vector.to_list_nil Vector.to_list_nil
 
+/-- the length of the list to which a vector of length `n` maps is `n` -/
 @[simp]
 theorem to_list_length (v : Vector α n) : (toList v).length = n :=
   v.2
 #align vector.to_list_length Vector.to_list_length
 
+/-- `toList` of `cons` of a vector and an element is
+the `cons` of the list obtained by `toList` and the element -/
 @[simp]
 theorem to_list_cons (a : α) (v : Vector α n) : toList (cons a v) = a :: toList v := by
   cases v
   rfl
 #align vector.to_list_cons Vector.to_list_cons
 
+/-- appending of vectors corresponds under `toList` to appending of lists -/
 @[simp]
 theorem to_list_append {n m : ℕ} (v : Vector α n) (w : Vector α m) :
    toList (append v w) = toList v ++ toList w := by
@@ -202,12 +240,14 @@ theorem to_list_append {n m : ℕ} (v : Vector α n) (w : Vector α m) :
   rfl
 #align vector.to_list_append Vector.to_list_append
 
+/-- `drop` of vectors corresponds under `toList` to `drop` of lists -/
 @[simp]
 theorem to_list_drop {n m : ℕ} (v : Vector α m) : toList (drop n v) = List.drop n (toList v) := by
   cases v
   rfl
 #align vector.to_list_drop Vector.to_list_drop
 
+/-- `take` of vectors corresponds under `toList` to `take` of lists -/
 @[simp]
 theorem to_list_take {n m : ℕ} (v : Vector α m) : toList (take n v) = List.take n (toList v) := by
   cases v
