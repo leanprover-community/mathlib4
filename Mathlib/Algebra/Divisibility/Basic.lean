@@ -9,7 +9,7 @@ import Mathlib.Algebra.Hom.Group
 /-!
 # Divisibility
 
-This file defines the basics of the divisibility relation in the context of `(comm_)` `monoid`s.
+This file defines the basics of the divisibility relation in the context of `(Comm)` `Monoid`s.
 
 ## Main definitions
 
