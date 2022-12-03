@@ -1,13 +1,16 @@
+/-
+Copyright (c) 2016 Microsoft Corporation. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Leonardo de Moura
+-/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Basic
 import Std.Data.Nat.Lemmas
 import Std.Data.List.Basic
-
-/-
-Copyright (c) 2016 Microsoft Corporation. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Author: Leonardo de Moura
+/-!
+Definitions for `List` not (yet) in `Std`
 -/
+
 
 open Decidable List
 

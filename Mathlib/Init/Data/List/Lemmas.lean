@@ -1,25 +1,35 @@
+/-
+Copyright (c) 2016 Microsoft Corporation. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Leonardo de Moura
+-/
 import Mathlib.Mathport.Rename
 import Std.Data.List.Basic
 import Std.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
-
 import Mathlib.Init.Data.List.Basic
+/-!
+Lemmas for `List` not (yet) in `Std`
+-/
 
 
 open List Nat
 
 namespace List
 @[simp]
-theorem length_map₂ (f : α → β → γ) (l₁) : ∀ l₂, length (map₂ f l₁ l₂) = min (length l₁) (length l₂) := by
-  induction l₁ <;> intro l₂ <;> cases l₂ <;> simp [*, add_one, min_succ_succ, Nat.zero_min, Nat.min_zero]
+theorem length_map₂ (f : α → β → γ) (l₁) : ∀ l₂, length (map₂ f l₁ l₂) =
+    min (length l₁) (length l₂) := by
+  induction l₁ <;> intro l₂ <;> cases l₂ <;>
+    simp [*, add_one, min_succ_succ, Nat.zero_min, Nat.min_zero]
 #align list.length_map₂ List.length_map₂
 
 @[simp]
 theorem length_repeat (a : α) (n : ℕ) : length («repeat»  a n) = n := by induction n <;> simp [*]
 #align list.length_repeat List.length_repeat
 
-theorem length_remove_nth : ∀ (l : List α) (i : ℕ), i < length l → length (removeNth l i) = length l - 1
+theorem length_remove_nth : ∀ (l : List α) (i : ℕ),
+    i < length l → length (removeNth l i) = length l - 1
   | [], _, _ => rfl
   | _ :: xs, 0, _ => by
      simp [removeNth]
@@ -55,7 +65,8 @@ def mapAccumr (f : α → σ → σ × β) : List α → σ → σ × List β
 #align list.map_accumr List.mapAccumr
 
 @[simp]
-theorem length_map_accumr : ∀ (f : α → σ → σ × β) (x : List α) (s : σ), length (mapAccumr f x s).2 = length x
+theorem length_map_accumr : ∀ (f : α → σ → σ × β) (x : List α) (s : σ),
+    length (mapAccumr f x s).2 = length x
   | f, _ :: x, s => congrArg succ (length_map_accumr f x s)
   | _, [], _ => rfl
 #align list.length_map_accumr List.length_map_accumr

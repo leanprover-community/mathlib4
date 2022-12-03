@@ -1,12 +1,20 @@
+/-
+Copyright (c) 2016 Microsoft Corporation. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Leonardo de Moura
+-/
 import Mathlib.Mathport.Rename
 import Std.Data.List.Basic
 import Std.Data.List.Lemmas
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
+/-!
+The type `Vector` represents lists with fixed length.
+-/
 
 universe u v w
 
-def Vector (α : Type u) (n : Nat) :=
+def Vector (α : Type u) (n : ℕ) :=
   { l : List α // l.length = n }
 #align vector Vector
 
@@ -14,7 +22,7 @@ namespace Vector
 
 variable {α : Type u} {β : Type v} {φ : Type w}
 
-variable {n : Nat}
+variable {n : ℕ}
 
 instance [DecidableEq α] : DecidableEq (Vector α n) := by
   unfold Vector
@@ -31,7 +39,7 @@ def cons : α → Vector α n → Vector α (Nat.succ n)
 #align vector.cons Vector.cons
 
 @[reducible]
-def length (_ : Vector α n) : Nat :=
+def length (_ : Vector α n) : ℕ :=
   n
 #align vector.length Vector.length
 
@@ -75,12 +83,23 @@ def append {n m : Nat} : Vector α n → Vector α m → Vector α (n + m)
 
 /- warning: vector.elim -> Vector.elim is a dubious translation:
 lean 3 declaration is
-  forall {α : Type.{u_1}} {C : forall {n : Nat}, (Vector.{u_1} α n) -> Sort.{u}}, (forall (l : List.{u_1} α), C (List.length.{u_1} α l) (Subtype.mk.{succ u_1} (List.{u_1} α) (fun (l_1 : List.{u_1} α) => Eq.{1} Nat (List.length.{u_1} α l_1) (List.length.{u_1} α l)) l (Vector.Elim._proof_1.{u_1} α l))) -> (forall {n : Nat} (v : Vector.{u_1} α n), C n v)
+  forall {α : Type.{u_1}} {C : forall {n : ℕ},
+  (Vector.{u_1} α n) -> Sort.{u}}, (forall (l : List.{u_1} α),
+  C (List.length.{u_1} α l) (Subtype.mk.{succ u_1} (List.{u_1} α)
+  (fun (l_1 : List.{u_1} α) => Eq.{1} ℕ (List.length.{u_1} α l_1)
+  (List.length.{u_1} α l)) l (Vector.Elim._proof_1.{u_1} α l))) ->
+  (forall {n : ℕ} (v : Vector.{u_1} α n), C n v)
 but is expected to have type
-  forall {α : Type.{_aux_param_0}} {C : forall {n : Nat}, (Vector.{_aux_param_0} α n) -> Sort.{u}}, (forall (l : List.{_aux_param_0} α), C (List.length.{_aux_param_0} α l) (Subtype.mk.{succ _aux_param_0} (List.{_aux_param_0} α) (fun (l_1 : List.{_aux_param_0} α) => Eq.{1} Nat (List.length.{_aux_param_0} α l_1) (List.length.{_aux_param_0} α l)) l (rfl.{1} Nat (List.length.{_aux_param_0} α l)))) -> (forall {n : Nat} (v : Vector.{_aux_param_0} α n), C n v)
+  forall {α : Type.{_aux_param_0}} {C : forall {n : ℕ}, (Vector.{_aux_param_0} α n) -> Sort.{u}},
+  (forall (l : List.{_aux_param_0} α),
+  C (List.length.{_aux_param_0} α l) (Subtype.mk.{succ _aux_param_0} (List.{_aux_param_0} α)
+  (fun (l_1 : List.{_aux_param_0} α) => Eq.{1} ℕ (List.length.{_aux_param_0} α l_1)
+  (List.length.{_aux_param_0} α l)) l (rfl.{1} ℕ (List.length.{_aux_param_0} α l)))) ->
+  (forall {n : ℕ} (v : Vector.{_aux_param_0} α n), C n v)
 Case conversion may be inaccurate. Consider using '#align vector.elim Vector.elimₓ'. -/
 @[elab_as_elim]
-def elim {α} {C : ∀ {n}, Vector α n → Sort u} (H : ∀ l : List α, C ⟨l, rfl⟩) {n : Nat} : ∀ v : Vector α n, C v
+def elim {α} {C : ∀ {n}, Vector α n → Sort u}
+    (H : ∀ l : List α, C ⟨l, rfl⟩) {n : ℕ} : ∀ v : Vector α n, C v
   | ⟨l, h⟩ =>
     match n, h with
     | _, rfl => H l
@@ -104,15 +123,15 @@ def map₂ (f : α → β → φ) : Vector α n → Vector β n → Vector φ n
   | ⟨x, _⟩, ⟨y, _⟩ => ⟨List.map₂ f x y, by simp [*]⟩
 #align vector.map₂ Vector.map₂
 
-def «repeat» (a : α) (n : Nat) : Vector α n :=
+def «repeat» (a : α) (n : ℕ) : Vector α n :=
   ⟨List.repeat a n, List.length_repeat a n⟩
 #align vector.repeat Vector.repeat
 
-def drop (i : Nat) : Vector α n → Vector α (n - i)
+def drop (i : ℕ) : Vector α n → Vector α (n - i)
   | ⟨l, p⟩ => ⟨List.drop i l, by simp [*]⟩
 #align vector.drop Vector.drop
 
-def take (i : Nat) : Vector α n → Vector α (min i n)
+def take (i : ℕ) : Vector α n → Vector α (min i n)
   | ⟨l, p⟩ => ⟨List.take i l, by simp [*]⟩
 #align vector.take Vector.take
 
@@ -137,7 +156,8 @@ def mapAccumr (f : α → σ → σ × β) : Vector α n → σ → σ × Vector
     ⟨res.1, res.2, by simp [*]⟩
 #align vector.map_accumr Vector.mapAccumr
 
-def mapAccumr₂ {α β σ φ : Type} (f : α → β → σ → σ × φ) : Vector α n → Vector β n → σ → σ × Vector φ n
+def mapAccumr₂ {α β σ φ : Type} (f : α → β → σ → σ × φ) :
+    Vector α n → Vector β n → σ → σ × Vector φ n
   | ⟨x, px⟩, ⟨y, py⟩, c =>
     let res := List.mapAccumr₂ f x y c
     ⟨res.1, res.2, by simp [*]⟩
@@ -145,7 +165,7 @@ def mapAccumr₂ {α β σ φ : Type} (f : α → β → σ → σ × φ) : Vect
 
 end Accum
 
-protected theorem eq {n : Nat} : ∀ a1 a2 : Vector α n, toList a1 = toList a2 → a1 = a2
+protected theorem eq {n : ℕ} : ∀ a1 a2 : Vector α n, toList a1 = toList a2 → a1 = a2
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 #align vector.eq Vector.eq
 
@@ -175,20 +195,21 @@ theorem to_list_cons (a : α) (v : Vector α n) : toList (cons a v) = a :: toLis
 #align vector.to_list_cons Vector.to_list_cons
 
 @[simp]
-theorem to_list_append {n m : Nat} (v : Vector α n) (w : Vector α m) : toList (append v w) = toList v ++ toList w := by
+theorem to_list_append {n m : ℕ} (v : Vector α n) (w : Vector α m) :
+   toList (append v w) = toList v ++ toList w := by
   cases v
   cases w
   rfl
 #align vector.to_list_append Vector.to_list_append
 
 @[simp]
-theorem to_list_drop {n m : Nat} (v : Vector α m) : toList (drop n v) = List.drop n (toList v) := by
+theorem to_list_drop {n m : ℕ} (v : Vector α m) : toList (drop n v) = List.drop n (toList v) := by
   cases v
   rfl
 #align vector.to_list_drop Vector.to_list_drop
 
 @[simp]
-theorem to_list_take {n m : Nat} (v : Vector α m) : toList (take n v) = List.take n (toList v) := by
+theorem to_list_take {n m : ℕ} (v : Vector α m) : toList (take n v) = List.take n (toList v) := by
   cases v
   rfl
 #align vector.to_list_take Vector.to_list_take
