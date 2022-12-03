@@ -314,15 +314,3 @@ end Sum
 
 instance {σ : Type u} : Traversable.{u} (Sum σ) :=
   ⟨@Sum.traverse _⟩
-
-/-
-sum.traverse.{u_1 u_2} : Π {σ : Type u_1}
-  {F : Type u_1 → Type u_1} [_inst_1 : applicative.{u_1 u_1} F] {α : Type u_2} {β : Type u_1},
-    (α → F β) → σ ⊕ α → F (σ ⊕ β)
-
-@Sum.traverse.{u_1, u_2} : {σ : Type u_1} →
-  {F : Type u_1 → Type u_1} →
-    [inst : Applicative.{u_1, u_1} F] →
-      {α : Type u_2} → {β : Type u_1} → (α → F β) → Sum.{u_1, u_2} σ α → F (Sum.{u_1, u_1} σ β)-/
-set_option pp.universes true
-#check @Sum.traverse
