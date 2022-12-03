@@ -227,11 +227,11 @@ theorem of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M] {f : F} {x 
 #align is_add_unit.of_left_inverse IsAddUnit.of_leftInverse
 
 @[to_additive]
-theorem _root_.is_unit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M]
+theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M]
   {f : F} {x : M} (g : G) (hfg : Function.LeftInverse g f) :
   IsUnit (f x) ↔ IsUnit x := ⟨of_leftInverse g hfg, map _⟩
-#align is_unit_map_of_left_inverse is_unit_map_of_leftInverse
-#align is_add_unit_map_of_left_inverse is_addUnit_map_of_leftInverse
+#align is_unit_map_of_left_inverse isUnit_map_of_leftInverse
+#align is_add_unit_map_of_left_inverse isAddUnit_map_of_leftInverse
 
 /-- If a homomorphism `f : M →* N` sends each element to an `is_unit`, then it can be lifted
 to `f : M →* Nˣ`. See also `units.lift_right` for a computable version. -/
