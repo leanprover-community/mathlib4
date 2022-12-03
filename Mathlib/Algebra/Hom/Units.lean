@@ -66,7 +66,7 @@ namespace Units
 variable {α : Type _} {M : Type u} {N : Type v} {P : Type w} [Monoid M] [Monoid N] [Monoid P]
 
 /-- The group homomorphism on units induced by a `MonoidHom`. -/
-@[to_additive "The `add_group` homomorphism on `AddUnit`s induced by an `AddMonoidHom`."]
+@[to_additive "The additive homomorphism on `AddUnit`s induced by an `AddMonoidHom`."]
 def map (f : M →* N) : Mˣ →* Nˣ :=
   MonoidHom.mk'
     (fun u => ⟨f u.val, f u.inv,
@@ -112,16 +112,11 @@ theorem coeHom_apply (x : Mˣ) : coeHom M x = ↑x := rfl
 #align units.coe_hom_apply Units.coeHom_apply
 #align add_units.coe_hom_apply AddUnits.coeHom_apply
 
--- Porting note: restore `to_additive`. Names follow `Algebra.Group.Units`
-@[simp, norm_cast]
+@[simp, norm_cast, to_additive AddUnits.val_nsmul_eq_nsmul_val]
 theorem val_pow_eq_pow_val (u : Mˣ) (n : ℕ) : ((u ^ n : Mˣ) : M) = (u : M) ^ n :=
   (Units.coeHom M).map_pow u n
 #align units.coe_pow Units.val_pow_eq_pow_val
-@[simp, norm_cast]
-theorem val_nsmul_eq_nsmul_val {M} [AddMonoid M] (u : AddUnits M) (n : ℕ) :
-  ((n • u : AddUnits M) : M) = n • (u : M) :=
-  (AddUnits.coeHom M).map_nsmul u n
-#align units.coe_nsmul Units.val_nsmul_eq_nsmul_val
+#align add_units.coe_nsmul AddUnits.val_nsmul_eq_nsmul_val
 
 section DivisionMonoid
 
@@ -133,16 +128,11 @@ theorem val_div_eq_div_val : ∀ u₁ u₂ : αˣ, ↑(u₁ / u₂) = (u₁ / u�
 #align units.coe_div Units.val_div_eq_div_val
 #align add_units.coe_neg AddUnits.val_neg_eq_neg_val
 
--- Porting note: restore `to_additive`. Names follow `Algebra.Group.Units`
-@[simp, norm_cast]
+@[simp, norm_cast, to_additive]
 theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
   (Units.coeHom α).map_zpow
 #align units.coe_zpow Units.val_zpow_eq_zpow_val
-@[simp, norm_cast]
-theorem val_zsmul_eq_zsmul_val {α} [SubtractionMonoid α] :
-  ∀ (u : AddUnits α) (n : ℤ), ((n • u : AddUnits α) : α) = n • (u : α) :=
-  (AddUnits.coeHom α).map_zsmul
-#align units.coe_zsmul Units.val_zsmul_eq_zsmul_val
+#align add_units.coe_zsmul AddUnits.val_zsmul_eq_zsmul_val
 
 @[field_simps]
 theorem _root_.divp_eq_div (a : α) (u : αˣ) : a /ₚ u = a / u :=
