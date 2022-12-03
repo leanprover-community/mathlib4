@@ -29,7 +29,8 @@ theorem length_map₂ (f : α → β → γ) (l₁) : ∀ l₂, length (map₂ f
 
 /-- Length of the list consisting of an element repeated `n` times is `n`. -/
 @[simp]
-theorem length_repeat (a : α) (n : ℕ) : length («repeat»  a n) = n := by induction n <;> simp [*]
+theorem length_repeat (a : α) (n : ℕ) : length («repeat»  a n) = n := by
+  induction n <;> simp [*]
 #align list.length_repeat List.length_repeat
 
 /-- Length of the list on removing the `i`th element
