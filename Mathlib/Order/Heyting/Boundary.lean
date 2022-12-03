@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.BooleanAlgebra
+import Mathlib.Tactic.ScopedNS
 
 /-!
 # Co-Heyting boundary
@@ -14,11 +15,11 @@ boundary.
 
 ## Main declarations
 
-* `coheyting.boundary`: Co-Heyting boundary. `coheyting.boundary a = a ⊓ ￢a`
+* `Coheyting.boundary`: Co-Heyting boundary. `Coheyting.boundary a = a ⊓ ￢a`
 
 ## Notation
 
-`∂ a` is notation for `coheyting.boundary a` in locale `heyting`.
+`∂ a` is notation for `Coheyting.boundary a` in locale `Heyting`.
 -/
 
 
@@ -36,7 +37,10 @@ def boundary (a : α) : α :=
 
 -- mathport name: «expr∂ »
 scoped[Heyting] prefix:120 "∂ " => Coheyting.boundary
+-- Porting note: Should the notation be automatically included in the current scope?
+open Heyting
 
+-- Porting note: Should hnot be named hNot?
 theorem inf_hnot_self (a : α) : a ⊓ ￢a = ∂ a :=
   rfl
 #align coheyting.inf_hnot_self Coheyting.inf_hnot_self
@@ -88,33 +92,41 @@ theorem boundary_sup_le : ∂ (a ⊔ b) ≤ ∂ a ⊔ ∂ b := by
       (inf_le_inf_left _ <| hnot_anti le_sup_right)
 #align coheyting.boundary_sup_le Coheyting.boundary_sup_le
 
-/- The intuitionistic version of `coheyting.boundary_le_boundary_sup_sup_boundary_inf_left`. Either
+/- The intuitionistic version of `Coheyting.boundary_le_boundary_sup_sup_boundary_inf_left`. Either
 proof can be obtained from the other using the equivalence of Heyting algebras and intuitionistic
 logic and duality between Heyting and co-Heyting algebras. It is crucial that the following proof be
 intuitionistic. -/
 example (a b : Prop) : (a ∧ b ∨ ¬(a ∧ b)) ∧ ((a ∨ b) ∨ ¬(a ∨ b)) → a ∨ ¬a := by
-  rintro ⟨⟨ha, hb⟩ | hnab, (ha | hb) | hnab⟩ <;> try exact Or.inl ha
+  rintro ⟨⟨ha, _⟩ | hnab, (ha | hb) | hnab⟩ <;> try exact Or.inl ha
   · exact Or.inr fun ha => hnab ⟨ha, hb⟩
   · exact Or.inr fun ha => hnab <| Or.inl ha
 
 theorem boundary_le_boundary_sup_sup_boundary_inf_left : ∂ a ≤ ∂ (a ⊔ b) ⊔ ∂ (a ⊓ b) := by
+  -- Porting note: the following simp generates the same term as mathlib3 if you remove
+  -- sup_inf_right from both. With sup_inf_right included, mathlib4 and mathlib3 generate
+  -- different terms
   simp only [boundary, sup_inf_left, sup_inf_right, sup_right_idem, le_inf_iff, sup_assoc,
     @sup_comm _ _ _ a]
-  refine' ⟨⟨⟨_, _⟩, _⟩, ⟨_, _⟩, _⟩ <;> try exact le_sup_of_le_left inf_le_left <;>
-    refine' inf_le_of_right_le _
-  · rw [hnot_le_iff_codisjoint_right, codisjoint_left_comm]
+  -- Porting note: Not sure how to chain the `refine inf_le_of_right_le ?_` tactic after
+  -- `try exact le_sup_of_le_left inf_le_left`
+  refine ⟨⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩, ?_, ?_⟩ <;> try exact le_sup_of_le_left inf_le_left
+  · refine inf_le_of_right_le ?_
+    rw [hnot_le_iff_codisjoint_right, codisjoint_left_comm]
     exact codisjoint_hnot_left
-  · refine' le_sup_of_le_right _
+  · refine inf_le_of_right_le ?_
+    refine le_sup_of_le_right ?_
     rw [hnot_le_iff_codisjoint_right]
     exact codisjoint_hnot_right.mono_right (hnot_anti inf_le_left)
 #align
-  coheyting.boundary_le_boundary_sup_sup_boundary_inf_left Coheyting.boundary_le_boundary_sup_sup_boundary_inf_left
+  coheyting.boundary_le_boundary_sup_sup_boundary_inf_left
+  Coheyting.boundary_le_boundary_sup_sup_boundary_inf_left
 
 theorem boundary_le_boundary_sup_sup_boundary_inf_right : ∂ b ≤ ∂ (a ⊔ b) ⊔ ∂ (a ⊓ b) := by
   rw [@sup_comm _ _ a, inf_comm]
   exact boundary_le_boundary_sup_sup_boundary_inf_left
 #align
-  coheyting.boundary_le_boundary_sup_sup_boundary_inf_right Coheyting.boundary_le_boundary_sup_sup_boundary_inf_right
+  coheyting.boundary_le_boundary_sup_sup_boundary_inf_right
+  Coheyting.boundary_le_boundary_sup_sup_boundary_inf_right
 
 theorem boundary_sup_sup_boundary_inf (a b : α) : ∂ (a ⊔ b) ⊔ ∂ (a ⊓ b) = ∂ a ⊔ ∂ b :=
   le_antisymm (sup_le boundary_sup_le boundary_inf_le) <|
