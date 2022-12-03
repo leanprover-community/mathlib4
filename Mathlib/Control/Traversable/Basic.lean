@@ -288,7 +288,8 @@ variable {F : Type u → Type u}
 variable [Applicative F]
 
 -- porting note: this was marked as a dubious translation but the only issue seems to be
--- a universe issue; this may be a bug in mathlib3port. Discussion here
+-- a universe issue; this may be a bug in mathlib3port. I've carefully checked the universes
+-- in mathlib3 and mathlib4 and they seem to match up exactly. Discussion here
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/why.20dubious.3F/
 
 /- warning: sum.traverse -> Sum.traverse is a dubious translation:
@@ -313,3 +314,15 @@ end Sum
 
 instance {σ : Type u} : Traversable.{u} (Sum σ) :=
   ⟨@Sum.traverse _⟩
+
+/-
+sum.traverse.{u_1 u_2} : Π {σ : Type u_1}
+  {F : Type u_1 → Type u_1} [_inst_1 : applicative.{u_1 u_1} F] {α : Type u_2} {β : Type u_1},
+    (α → F β) → σ ⊕ α → F (σ ⊕ β)
+
+@Sum.traverse.{u_1, u_2} : {σ : Type u_1} →
+  {F : Type u_1 → Type u_1} →
+    [inst : Applicative.{u_1, u_1} F] →
+      {α : Type u_2} → {β : Type u_1} → (α → F β) → Sum.{u_1, u_2} σ α → F (Sum.{u_1, u_1} σ β)-/
+set_option pp.universes true
+#check @Sum.traverse
