@@ -18,7 +18,7 @@ open List Nat
 
 namespace List
 
-/-- Length of list obtained by `map₂` on a pair of lists is the length of the shorter of the two. -/
+/-- Length of the list obtained by `map₂` on a pair of lists is the length of the shorter of the two. -/
 @[simp]
 theorem length_map₂ (f : α → β → γ) (l₁) : ∀ l₂, length (map₂ f l₁ l₂) =
     min (length l₁) (length l₂) := by
