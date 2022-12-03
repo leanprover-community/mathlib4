@@ -3,8 +3,8 @@ Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bryan Gin-ge Chen, Yaël Dillies
 -/
-import Mathbin.Order.BooleanAlgebra
-import Mathbin.Logic.Equiv.Basic
+import Mathlib.Order.BooleanAlgebra
+import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Symmetric difference and bi-implication
@@ -61,7 +61,7 @@ def symmDiff [HasSup α] [SDiff α] (a b : α) : α :=
 
 /-- The Heyting bi-implication is `(b ⇨ a) ⊓ (a ⇨ b)`. This generalizes equivalence of
 propositions. -/
-def bihimp [HasInf α] [HasHimp α] (a b : α) : α :=
+def bihimp [HasInf α] [HImp α] (a b : α) : α :=
   (b ⇨ a) ⊓ (a ⇨ b)
 #align bihimp bihimp
 
@@ -78,7 +78,7 @@ theorem symm_diff_def [HasSup α] [SDiff α] (a b : α) : a ∆ b = a \ b ⊔ b 
   rfl
 #align symm_diff_def symm_diff_def
 
-theorem bihimp_def [HasInf α] [HasHimp α] (a b : α) : a ⇔ b = (b ⇨ a) ⊓ (a ⇨ b) :=
+theorem bihimp_def [HasInf α] [HImp α] (a b : α) : a ⇔ b = (b ⇨ a) ⊓ (a ⇨ b) :=
   rfl
 #align bihimp_def bihimp_def
 
@@ -109,7 +109,7 @@ theorem of_dual_bihimp (a b : αᵒᵈ) : ofDual (a ⇔ b) = ofDual a ∆ ofDual
   rfl
 #align of_dual_bihimp of_dual_bihimp
 
-theorem symm_diff_comm : a ∆ b = b ∆ a := by simp only [(· ∆ ·), sup_comm]
+theorem symm_diff_comm : a ∆ b = b ∆ a := by simp only [symmDiff, sup_comm]
 #align symm_diff_comm symm_diff_comm
 
 instance symm_diff_is_comm : IsCommutative α (· ∆ ·) :=
@@ -117,11 +117,11 @@ instance symm_diff_is_comm : IsCommutative α (· ∆ ·) :=
 #align symm_diff_is_comm symm_diff_is_comm
 
 @[simp]
-theorem symm_diff_self : a ∆ a = ⊥ := by rw [(· ∆ ·), sup_idem, sdiff_self]
+theorem symm_diff_self : a ∆ a = ⊥ := by rw [symmDiff, sup_idem, sdiff_self]
 #align symm_diff_self symm_diff_self
 
 @[simp]
-theorem symm_diff_bot : a ∆ ⊥ = a := by rw [(· ∆ ·), sdiff_bot, bot_sdiff, sup_bot_eq]
+theorem symm_diff_bot : a ∆ ⊥ = a := by rw [symmDiff, sdiff_bot, bot_sdiff, sup_bot_eq]
 #align symm_diff_bot symm_diff_bot
 
 @[simp]
@@ -131,6 +131,7 @@ theorem bot_symm_diff : ⊥ ∆ a = a := by rw [symm_diff_comm, symm_diff_bot]
 @[simp]
 theorem symm_diff_eq_bot {a b : α} : a ∆ b = ⊥ ↔ a = b := by
   simp_rw [symmDiff, sup_eq_bot_iff, sdiff_eq_bot_iff, le_antisymm_iff]
+  rfl
 #align symm_diff_eq_bot symm_diff_eq_bot
 
 theorem symm_diff_of_le {a b : α} (h : a ≤ b) : a ∆ b = b \ a := by
@@ -147,6 +148,7 @@ theorem symm_diff_le {a b c : α} (ha : a ≤ b ⊔ c) (hb : b ≤ a ⊔ c) : a 
 
 theorem symm_diff_le_iff {a b c : α} : a ∆ b ≤ c ↔ a ≤ b ⊔ c ∧ b ≤ a ⊔ c := by
   simp_rw [symmDiff, sup_le_iff, sdiff_le_iff]
+  rfl
 #align symm_diff_le_iff symm_diff_le_iff
 
 @[simp]
@@ -158,7 +160,7 @@ theorem symm_diff_eq_sup_sdiff_inf : a ∆ b = (a ⊔ b) \ (a ⊓ b) := by simp 
 #align symm_diff_eq_sup_sdiff_inf symm_diff_eq_sup_sdiff_inf
 
 theorem Disjoint.symm_diff_eq_sup {a b : α} (h : Disjoint a b) : a ∆ b = a ⊔ b := by
-  rw [(· ∆ ·), h.sdiff_eq_left, h.sdiff_eq_right]
+  rw [symmDiff, h.sdiff_eq_left, h.sdiff_eq_right]
 #align disjoint.symm_diff_eq_sup Disjoint.symm_diff_eq_sup
 
 theorem symm_diff_sdiff : a ∆ b \ c = a \ (b ⊔ c) ⊔ b \ (a ⊔ c) := by
@@ -238,11 +240,11 @@ instance bihimp_is_comm : IsCommutative α (· ⇔ ·) :=
 #align bihimp_is_comm bihimp_is_comm
 
 @[simp]
-theorem bihimp_self : a ⇔ a = ⊤ := by rw [(· ⇔ ·), inf_idem, himp_self]
+theorem bihimp_self : a ⇔ a = ⊤ := by rw [bihimp, inf_idem, himp_self]
 #align bihimp_self bihimp_self
 
 @[simp]
-theorem bihimp_top : a ⇔ ⊤ = a := by rw [(· ⇔ ·), himp_top, top_himp, inf_top_eq]
+theorem bihimp_top : a ⇔ ⊤ = a := by rw [bihimp, himp_top, top_himp, inf_top_eq]
 #align bihimp_top bihimp_top
 
 @[simp]
@@ -268,6 +270,7 @@ theorem le_bihimp {a b c : α} (hb : a ⊓ b ≤ c) (hc : a ⊓ c ≤ b) : a ≤
 
 theorem le_bihimp_iff {a b c : α} : a ≤ b ⇔ c ↔ a ⊓ b ≤ c ∧ a ⊓ c ≤ b := by
   simp_rw [bihimp, le_inf_iff, le_himp_iff, and_comm]
+  rfl
 #align le_bihimp_iff le_bihimp_iff
 
 @[simp]
@@ -279,7 +282,7 @@ theorem bihimp_eq_inf_himp_inf : a ⇔ b = a ⊔ b ⇨ a ⊓ b := by simp [himp_
 #align bihimp_eq_inf_himp_inf bihimp_eq_inf_himp_inf
 
 theorem Codisjoint.bihimp_eq_inf {a b : α} (h : Codisjoint a b) : a ⇔ b = a ⊓ b := by
-  rw [(· ⇔ ·), h.himp_eq_left, h.himp_eq_right]
+  rw [bihimp, h.himp_eq_left, h.himp_eq_right]
 #align codisjoint.bihimp_eq_inf Codisjoint.bihimp_eq_inf
 
 theorem himp_bihimp : a ⇨ b ⇔ c = (a ⊓ c ⇨ b) ⊓ (a ⊓ b ⇨ c) := by
@@ -458,7 +461,7 @@ theorem symm_diff_symm_diff_left :
     _ = a \ (b ⊔ c) ⊔ b \ (a ⊔ c) ⊔ (c \ (a ⊔ b) ⊔ c ⊓ a ⊓ b) := by
       rw [sdiff_symm_diff', @sup_comm _ _ (c ⊓ a ⊓ b), symm_diff_sdiff]
     _ = a \ (b ⊔ c) ⊔ b \ (a ⊔ c) ⊔ c \ (a ⊔ b) ⊔ a ⊓ b ⊓ c := by ac_rfl
-    
+
 #align symm_diff_symm_diff_left symm_diff_symm_diff_left
 
 theorem symm_diff_symm_diff_right :
@@ -468,7 +471,7 @@ theorem symm_diff_symm_diff_right :
     _ = a \ (b ⊔ c) ⊔ a ⊓ b ⊓ c ⊔ (b \ (c ⊔ a) ⊔ c \ (b ⊔ a)) := by
       rw [sdiff_symm_diff', @sup_comm _ _ (a ⊓ b ⊓ c), symm_diff_sdiff]
     _ = a \ (b ⊔ c) ⊔ b \ (a ⊔ c) ⊔ c \ (a ⊔ b) ⊔ a ⊓ b ⊓ c := by ac_rfl
-    
+
 #align symm_diff_symm_diff_right symm_diff_symm_diff_right
 
 theorem symm_diff_assoc : a ∆ b ∆ c = a ∆ (b ∆ c) := by
@@ -544,7 +547,7 @@ theorem symm_diff_eq_left : a ∆ b = a ↔ b = ⊥ :=
   calc
     a ∆ b = a ↔ a ∆ b = a ∆ ⊥ := by rw [symm_diff_bot]
     _ ↔ b = ⊥ := by rw [symm_diff_right_inj]
-    
+
 #align symm_diff_eq_left symm_diff_eq_left
 
 @[simp]
@@ -552,7 +555,7 @@ theorem symm_diff_eq_right : a ∆ b = b ↔ a = ⊥ := by rw [symm_diff_comm, s
 #align symm_diff_eq_right symm_diff_eq_right
 
 protected theorem Disjoint.symm_diff_left (ha : Disjoint a c) (hb : Disjoint b c) :
-    Disjoint (a ∆ b) c := by 
+    Disjoint (a ∆ b) c := by
   rw [symm_diff_eq_sup_sdiff_inf]
   exact (ha.sup_left hb).disjoint_sdiff_left
 #align disjoint.symm_diff_left Disjoint.symm_diff_left
@@ -785,7 +788,7 @@ theorem symm_diff_symm_diff_right' :
       · congr 1
         rw [inf_comm, inf_assoc]
       · apply inf_left_right_swap
-    
+
 #align symm_diff_symm_diff_right' symm_diff_symm_diff_right'
 
 variable {a b c}
@@ -871,4 +874,3 @@ theorem bihimp_apply [∀ i, GeneralizedHeytingAlgebra (π i)] (a b : ∀ i, π 
 #align pi.bihimp_apply Pi.bihimp_apply
 
 end Pi
-
