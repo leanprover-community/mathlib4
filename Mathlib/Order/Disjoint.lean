@@ -363,11 +363,8 @@ theorem Codisjoint.inf_right (hb : Codisjoint a b) (hc : Codisjoint a c) : Codis
   codisjoint_inf_right.2 ⟨hb, hc⟩
 #align codisjoint.inf_right Codisjoint.inf_right
 
--- porting note: the `(e :)` trick for elaboration order wasn't needed in Lean 3.
--- see https://github.com/leanprover/lean4/issues/1892 and
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/type.20synonym.20trickery.20not.20working
 theorem Codisjoint.left_le_of_le_inf_right (h : a ⊓ b ≤ c) (hd : Codisjoint b c) : a ≤ c :=
-  (@Disjoint.left_le_of_le_sup_right αᵒᵈ _ _ _ _ _ h hd.symm :)
+  @Disjoint.left_le_of_le_sup_right αᵒᵈ _ _ _ _ _ h hd.symm
 #align codisjoint.left_le_of_le_inf_right Codisjoint.left_le_of_le_inf_right
 
 theorem Codisjoint.left_le_of_le_inf_left (h : b ⊓ a ≤ c) (hd : Codisjoint b c) : a ≤ c :=

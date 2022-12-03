@@ -649,13 +649,13 @@ theorem top_def [∀ i, Top (α' i)] : (⊤ : ∀ i, α' i) = fun _ => ⊤ :=
   rfl
 #align pi.top_def Pi.top_def
 
-instance [∀ i, LE (α' i)] [∀ i, OrderTop (α' i)] : OrderTop (∀ i, α' i) :=
+instance orderTop [∀ i, LE (α' i)] [∀ i, OrderTop (α' i)] : OrderTop (∀ i, α' i) :=
   { inferInstanceAs (Top (∀ i, α' i)) with le_top := fun _ _ => le_top }
 
-instance [∀ i, LE (α' i)] [∀ i, OrderBot (α' i)] : OrderBot (∀ i, α' i) :=
+instance orderBot [∀ i, LE (α' i)] [∀ i, OrderBot (α' i)] : OrderBot (∀ i, α' i) :=
   { inferInstanceAs (Bot (∀ i, α' i)) with bot_le := fun _ _ => bot_le }
 
-instance [∀ i, LE (α' i)] [∀ i, BoundedOrder (α' i)] : BoundedOrder (∀ i, α' i) where
+instance boundedOrder [∀ i, LE (α' i)] [∀ i, BoundedOrder (α' i)] : BoundedOrder (∀ i, α' i) where
   __ := inferInstanceAs (OrderTop (∀ i, α' i))
   __ := inferInstanceAs (OrderBot (∀ i, α' i))
 
@@ -908,7 +908,7 @@ section Bool
 
 open Bool
 
-instance : BoundedOrder Bool where
+instance Bool.boundedOrder : BoundedOrder Bool where
   top := true
   le_top _ := le_true
   bot := false

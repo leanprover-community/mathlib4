@@ -1,4 +1,5 @@
 import Mathlib.Tactic.Linarith
+import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Int.Order.Basic
 
@@ -167,7 +168,7 @@ by
     linarith (config := {split_hypotheses := false})
   linarith
 
-example (h : 1 < 0) (g : ¬ 37 < 42) (k : True) /-(l : (-7 : ℤ) < 5)-/: 3 < 7 := by
+example (h : 1 < 0) (g : ¬ 37 < 42) (k : True) (l : (-7 : ℤ) < 5) : 3 < 7 := by
   linarith [(rfl : 0 = 0)]
 
 example (h : 1 < 0) : 3 = 7 := by
@@ -237,28 +238,26 @@ example (N : ℕ) (n : ℕ) (Hirrelevant : n > N) (A : Rat) (l : Rat) (h : A - l
 -- example (x y z : ℚ) (hx : x < 5) (hy : y < 5000000000) (hz : z > 34*y) : x ≤ 5 :=
 -- by linarith only [hx]
 
--- example (u v x y A B : ℚ)
--- (a : 0 < A)
--- (a_1 : 0 <= 1 - A)
--- (a_2 : 0 <= B - 1)
--- (a_3 : 0 <= B - x)
--- (a_4 : 0 <= B - y)
--- (a_5 : 0 <= u)
--- (a_6 : 0 <= v)
--- (a_7 : 0 < A - u)
--- (a_8 : 0 < A - v) :
---  u * y + v * x + u * v < 3 * A * B :=
---  by nlinarith
+example (u v x y A B : ℚ)
+(a : 0 < A)
+(a_1 : 0 <= 1 - A)
+(a_2 : 0 <= B - 1)
+(a_3 : 0 <= B - x)
+(a_4 : 0 <= B - y)
+(a_5 : 0 <= u)
+(a_6 : 0 <= v)
+(a_7 : 0 < A - u)
+(a_8 : 0 < A - v) :
+ u * y + v * x + u * v < 3 * A * B :=
+ by nlinarith
 
--- example (u v x y A B : ℚ) : (0 < A) → (A ≤ 1) → (1 ≤ B)
--- → (x ≤ B) → ( y ≤ B)
--- → (0 ≤ u ) → (0 ≤ v )
--- → (u < A) → ( v < A)
--- → (u * y + v * x + u * v < 3 * A * B) :=
--- begin
---   intros,
---   nlinarith
--- end
+example (u v x y A B : ℚ) : (0 < A) → (A ≤ 1) → (1 ≤ B)
+→ (x ≤ B) → ( y ≤ B)
+→ (0 ≤ u ) → (0 ≤ v )
+→ (u < A) → ( v < A)
+→ (u * y + v * x + u * v < 3 * A * B) := by
+  intros
+  nlinarith
 
 example (u v x y A B : Rat)
 (a_7 : 0 < A - u)
@@ -372,36 +371,40 @@ example (u v x y A B : Rat)
   intros
   linarith
 
--- example (A B : ℚ) : (0 < A) → (1 ≤ B) → (0 < A / 8 * B) :=
--- begin
---   intros, nlinarith
--- end
+-- TODO this needs the `cancelDenoms` preprocessor.
+-- example (A B : ℚ) : (0 < A) → (1 ≤ B) → (0 < A / 8 * B) := by
+--   intros
+--   nlinarith
 
--- example (x y : ℚ) : 0 ≤ x ^2 + y ^2 :=
--- by nlinarith
+example (x y : ℚ) : 0 ≤ x ^2 + y ^2 := by
+  nlinarith
 
--- example (x y : ℚ) : 0 ≤ x*x + y*y :=
--- by nlinarith
+example (x y : ℚ) : 0 ≤ x*x + y*y := by
+  nlinarith
 
--- example (x y : ℚ) : x = 0 → y = 0 → x*x + y*y = 0 :=
--- by intros; nlinarith
+example (x y : ℚ) : x = 0 → y = 0 → x*x + y*y = 0 := by
+  intros
+  nlinarith
 
--- lemma norm_eq_zero_iff {x y : ℚ} : x * x + y * y = 0 ↔ x = 0 ∧ y = 0 :=
--- begin
---   split,
---   { intro, split; nlinarith },
---   { intro, nlinarith }
--- end
+lemma norm_eq_zero_iff {x y : ℚ} : x * x + y * y = 0 ↔ x = 0 ∧ y = 0 := by
+  constructor
+  · intro
+    constructor <;>
+      nlinarith
+  · intro; nlinarith
 
--- lemma norm_nonpos_right {x y : ℚ} (h1 : x * x + y * y ≤ 0) : y = 0 :=
--- by nlinarith
+lemma norm_zero_left {x y : ℚ} (h1 : x * x + y * y = 0) : x = 0 := by
+  nlinarith
 
--- lemma norm_nonpos_left (x y : ℚ) (h1 : x * x + y * y ≤ 0) : x = 0 :=
--- by nlinarith
+lemma norm_nonpos_right {x y : ℚ} (h1 : x * x + y * y ≤ 0) : y = 0 := by
+  nlinarith
 
--- variables {E : Type*} [add_group E]
--- example (f : ℤ → E) (h : 0 = f 0) : 1 ≤ 2 := by nlinarith
--- example (a : E) (h : a = a) : 1 ≤ 2  := by nlinarith
+lemma norm_nonpos_left (x y : ℚ) (h1 : x * x + y * y ≤ 0) : x = 0 := by
+  nlinarith
+
+variable {E : Type _} [AddGroup E]
+example (f : ℤ → E) (h : 0 = f 0) : 1 ≤ 2 := by nlinarith
+example (a : E) (h : a = a) : 1 ≤ 2  := by nlinarith
 
 -- -- test that the apply bug doesn't affect linarith preprocessing
 
@@ -415,13 +418,13 @@ example (u v x y A B : Rat)
 -- example (a : α) (ha : a < 2) : a ≤ a :=
 -- by linarith
 
--- example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
---   p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) :=
--- by nlinarith
+example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
+  p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) :=
+by nlinarith
 
 -- -- Tests involving a norm, including that squares in a type where `sq_nonneg` does not apply
 -- -- do not cause an exception
--- variables {R : Type*} [ring R] (abs : R → ℚ)
+-- variables {R : Type _} [Ring R] (abs : R → ℚ)
 
 -- lemma abs_nonneg' : ∀ r, 0 ≤ abs r := (fact.out false).elim
 
@@ -456,12 +459,12 @@ example (u v x y A B : Rat)
 -- example (a b c : ℚ) (h : a ≠ b) (h2 : a ≥ b) (h3 : b ≠ c) : a > b :=
 -- by linarith {split_ne := tt}
 
--- example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x * x := by nlinarith
+example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x * x := by nlinarith
 
--- example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x ^ 2 := by nlinarith
+example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x ^ 2 := by nlinarith
 
--- axiom foo {x : Int} : 1 ≤ x → 1 ≤ x*x
--- lemma bar (x y: Int) (h : 0 ≤ y ∧ 1 ≤ x) : 1 ≤ y + x * x := by linarith [foo h.2]
+axiom foo {x : Int} : 1 ≤ x → 1 ≤ x*x
+lemma bar (x y: Int) (h : 0 ≤ y ∧ 1 ≤ x) : 1 ≤ y + x * x := by linarith [foo h.2]
 
 -- -- issue #9822
 -- lemma mytest (j : ℕ) (h : 0 < j) : j-1 < j:= by linarith
