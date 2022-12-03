@@ -6,7 +6,7 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.Zify.Attr
-import Mathlib.Algebra.Ring.Basic_old
+import Mathlib.Algebra.Ring.Basic
 
 /-!
 # `zify` tactic
