@@ -334,24 +334,24 @@ run_cmd liftTermElabM <| do
     #[`specify.specify4_snd_snd, `specify.specify4_snd]
   guard <| simpsAttr.getParam? env `specify.specify5 ==
     #[`specify.specify5_fst, `specify.specify5_snd]
-  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} ["fst_fst"]
+  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} [("fst_fst", .missing)]
 --     "Invalid simp lemma specify.specify1_fst_fst.
 -- Projection fst doesn't exist, because target is not a structure."
-  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} ["foo_fst"]
+  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} [("foo_fst", .missing)]
 --     "Invalid simp lemma specify.specify1_foo_fst. Structure prod does not have projection foo.
 -- The known projections are:
 --   [fst, snd]
 -- You can also see this information by running
 --   `initialize_simps_projections? prod`.
 -- Note: these projection names might not correspond to the projection names of the structure."
-  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} ["snd_bar"]
+  _ ← successIfFail <| simpsTac .missing `specify.specify1 {} [("snd_bar", .missing)]
 --     "Invalid simp lemma specify.specify1_snd_bar. Structure prod does not have projection bar.
 -- The known projections are:
 --   [fst, snd]
 -- You can also see this information by running
 --   `initialize_simps_projections? prod`.
 -- Note: these projection names might not correspond to the projection names of the structure."
-  _ ← successIfFail <| simpsTac .missing `specify.specify5 {} ["snd_snd"]
+  _ ← successIfFail <| simpsTac .missing `specify.specify5 {} [("snd_snd", .missing)]
 --     "Invalid simp lemma specify.specify5_snd_snd.
 -- The given definition is not a constructor application:
 --   Classical.choice specify.specify5._proof_1"

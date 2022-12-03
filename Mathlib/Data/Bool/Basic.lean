@@ -297,7 +297,7 @@ theorem not_inj : ∀ {a b : Bool}, !a = !b → a = b := by decide
 -- Porting note: having to unfold here is not pretty.
 -- There is a discussion on zulip about this at
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/LinearOrder.20in.20mathlib3.2F4/near/308228493
-instance : LinearOrder Bool where
+instance linearOrder : LinearOrder Bool where
   le := fun a b ↦ a = false ∨ b = true
   le_refl := by unfold LE.le; decide
   le_trans := by unfold LE.le; decide
@@ -309,7 +309,7 @@ instance : LinearOrder Bool where
   max_def := λ a b => by cases a <;> cases b <;> decide
   min := and
   min_def := λ a b => by cases a <;> cases b <;> decide
-#align bool.linear_order Bool.instLinearOrderBool
+#align bool.linear_order Bool.linearOrder
 
 @[simp]
 theorem false_le {x : Bool} : false ≤ x :=
