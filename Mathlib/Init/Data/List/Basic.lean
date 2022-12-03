@@ -31,7 +31,6 @@ def nth : List α → ℕ → Option α
 #align list.nth List.nth
 
 /-- nth element of a list `l` given `n < l.length` -/
-@[simp]
 def nthLe : ∀ (l : List α) (n), n < l.length → α
   | [], n, h => absurd h n.not_lt_zero
   | a :: _, 0, _ => a
