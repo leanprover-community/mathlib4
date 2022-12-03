@@ -54,7 +54,8 @@ example (P₁ P₂ : α → Prop) (f : ∀ (a: α), P₁ a → P₂ a → β)
     (a' : α) (ha'₁ : P₁ a') (ha'₂ : P₂ a') : β := by
   solve_by_elim
 
--- TODO this works in mathlib3 but not here yet, for some reason.
+-- TODO this works in mathlib3 but not here yet,
+-- because we don't use symmetry.
 -- example {α : Type} {a b : α → Prop} (h₀ : b = a) (y : α) : a y = b y :=
 -- by solve_by_elim
 

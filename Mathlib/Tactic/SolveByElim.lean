@@ -36,33 +36,104 @@ def elabContextLemmas (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Ex
     MetaM (List Expr) := Elab.Term.TermElabM.run' do
   pure ((← lemmas.mapM id) ++ (← ctx))
 
+/-- Configuration structure to control the behaviour of `solve_by_elim`,
+by modifying intermediate goals, returning goals as subgoals, and discharging subgoals. -/
+structure Config where
+  /-- An arbitrary procedure which can be used to modify the list of goals
+    before each attempt to apply a lemma.
+    Called as `proc orig goals`, where `orig` are the original goals for `solve_by_elim`,
+    and `goals` are the current goals.
+    Returning `some l` will replace the active goals with `l` and recurse.
+    Returning `none` will proceed to applying lemmas.
+    Failure will cause backtracking.
+    (defaults to none) -/
+  proc : List MVarId → List MVarId → MetaM (Option (List MVarId)) := fun _ _ => pure none
+  /-- If `suspend g`, then we do not attempt to apply any further lemmas,
+     but return `g` as a new subgoal. (defaults to `false`) -/
+  suspend : MVarId → MetaM Bool := fun _ => pure false
+  /-- `discharge g` is called on goals for which no lemmas apply.
+    If `none` we return `g` as a new subgoal.
+    If `some l`, we replace `g` by `l` in the list of active goals, and recurse.
+    If failure, we backtrack. (defaults to failure) -/
+  discharge : MVarId → MetaM (Option (List MVarId)) := fun _ => failure
+
+namespace Config
+
+/-- Create or modify a `Config` which allows a class of goals to be returned as subgoals. -/
+def accept (cfg : Config := {}) (test : MVarId → MetaM Bool) : Config :=
+{ cfg with
+  discharge := fun g => do
+    if (← test g) then
+      pure none
+    else
+      cfg.discharge g }
+
+/-- Create or modify a `Config` which does no backtracking. -/
+def noBackTracking (cfg : Config := {}) : Config := cfg.accept fun _ => pure true
+
+/--
+Create or modify a `Config` which runs a tactic on the main goal.
+If that tactic fails, fall back to the `proc` behaviour of `cfg`.
+-/
+def mainGoalProc (cfg : Config := {}) (proc : MVarId → MetaM (List MVarId)) : Config :=
+{ cfg with
+  proc := fun orig goals => match goals with
+  | [] => pure none
+  | g :: gs => try
+      return (← proc g) ++ gs
+    catch _ => cfg.proc orig goals }
+
+/-- Create or modify a `Config` which calls `intro` on each goal before applying lemmas. -/
+def intros (cfg : Config := {}) : Config :=
+  mainGoalProc cfg fun g => do pure [(← g.intro1P).2]
+
+end Config
+
 def solveByElimCore (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
-    (n : Nat) (goals acc : List MVarId) : MetaM (List MVarId) := do
-  match goals with
-  /- If there are no active goals, return the accumulated goals: -/
-  | [] => return acc
-  | g :: gs =>
-  /- Discard any goals which have already been assigned. -/
-  if ← g.isAssigned then
-    solveByElimCore cfg lemmas ctx n gs acc
-  else
+    (n : Nat) (orig goals acc : List MVarId) : MetaM (List MVarId) := do
   match n with
   | 0 => throwError "solve_by_elim exceeded the recursion limit"
   | n + 1 => do
+  match ← cfg.proc orig goals with
+  | some goals' => solveByElimCore cfg lemmas ctx n orig goals' acc
+  | none =>
+  match goals with
+  -- If there are no active goals, return the accumulated goals:
+  | [] => return acc
+  | g :: gs =>
+  -- Discard any goals which have already been assigned.
+  if ← g.isAssigned then
+    solveByElimCore cfg lemmas ctx (n+1) orig gs acc
+  else
   withTraceNode `Meta.Tactic.solveByElim
     -- Note: the `addMessageContextFull` is so that we show the goal using the mvar context before
     -- the `do` block below runs, potentially unifying mvars in the goal.
     (return m!"{exceptEmoji ·} working on: {← addMessageContextFull g}")
     do
+      -- Check if we should suspend the search here:
+      if (← cfg.suspend g) then
+        withTraceNode `Meta.Tactic.solveByElim
+          (fun _ => return m!"⏸️ suspending search and returning as subgoal") do
+        solveByElimCore cfg lemmas ctx (n+1) orig gs (g :: acc)
+      else
       let es ← elabContextLemmas lemmas ctx
-
-      -- We attempt to find an expression which can be applied,
-      -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
-      es.firstM fun e => withTraceNode `Meta.Tactic.solveByElim
-          (return m!"{exceptEmoji ·} tried to apply: {e}") do
-        let gs := (← g.apply e) ++ gs
-        solveByElimCore cfg lemmas ctx n gs acc
-termination_by solveByElimCore lemmas ctx n goals acc => (n, goals)
+      try
+        -- We attempt to find an expression which can be applied,
+        -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
+        es.firstM fun e => withTraceNode `Meta.Tactic.solveByElim
+            (return m!"{exceptEmoji ·} tried to apply: {e}") do
+          let gs := (← g.apply e) ++ gs
+          solveByElimCore cfg lemmas ctx n orig gs acc
+      catch _ =>
+        -- No lemmas could be applied:
+        match (← cfg.discharge g) with
+        | none => (withTraceNode `Meta.Tactic.solveByElim
+            (fun _ => return m!"⏭️ deemed acceptable, returning as subgoal") do
+          solveByElimCore cfg lemmas ctx (n+1) orig gs (g :: acc))
+        | some l => (withTraceNode `Meta.Tactic.solveByElim
+            (fun _ => return m!"⏬ discharger generated new subgoals") do
+          solveByElimCore cfg lemmas ctx n orig (l ++ gs) acc)
+termination_by solveByElimCore lemmas ctx n orig goals acc => (n, goals)
 
 open Lean.Parser.Tactic
 
@@ -116,7 +187,7 @@ or a local hypothesis. -/
 def solveByElimSyntax (only : Bool) (es : List (TSyntax `term)) (n : Nat) (g : MVarId) :
     MetaM Unit := g.withContext do
   let ⟨lemmas, ctx⟩ ← mkAssumptionSet only es
-  let [] ← solveByElimCore {} lemmas ctx n [g] [] |
+  let [] ← solveByElimCore {} lemmas ctx n [g] [g] [] |
     throwError "solve_by_elim unexpectedly returned subgoals"
   pure ()
 
@@ -165,7 +236,7 @@ syntax (name := solveByElim) "solve_by_elim" "*"? (config)? (&" only")? (simpArg
 
 elab_rules : tactic | `(tactic| solve_by_elim $[only%$o]? $[[$[$t:term],*]]?) => do
   let es := (t.getD #[]).toList
-  solveByElimSyntax o.isSome es 6 (← getMainGoal)
+  solveByElimSyntax o.isSome es 8 (← getMainGoal)
 
 /--
 `apply_assumption` looks for an assumption of the form `... → ∀ _, ... → head`
