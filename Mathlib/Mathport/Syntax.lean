@@ -43,6 +43,7 @@ import Mathlib.Tactic.ModCases
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.PushNeg
@@ -358,7 +359,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
   tactic
 /- B -/ syntax (name := equivRwType) "equiv_rw_type" (config)? term : tactic
 
-/- N -/ syntax (name := nthRw) "nth_rw " num rwRuleSeq (ppSpace location)? : tactic
 /- E -/ syntax (name := nthRwLHS) "nth_rw_lhs " num rwRuleSeq (ppSpace location)? : tactic
 /- E -/ syntax (name := nthRwRHS) "nth_rw_rhs " num rwRuleSeq (ppSpace location)? : tactic
 
