@@ -46,7 +46,7 @@ def rewriteLocalDecl' (stx : Syntax) (symm : Bool) (fvarId : FVarId)
 to be rewritten.
 
 Note: The occurrences are counted beginning with `1` and not `0`, this is different than in
-mathlib3. -/
+mathlib3. The translation will be handled by mathport. -/
 syntax (name := nthRewriteSeq) "nth_rewrite " (config)? num rwRuleSeq (ppSpace location)? : tactic
 
 @[inherit_doc nthRewriteSeq, tactic nthRewriteSeq] def evalNthRewriteSeq : Tactic := fun stx => do
