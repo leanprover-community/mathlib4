@@ -78,7 +78,7 @@ instance : Inhabited (WithOne α) :=
 instance [Nonempty α] : Nontrivial (WithOne α) :=
   Option.nontrivial
 
--- porting note: this new declaration is here to make `(a : WithOne α)` have type `WithOne α` ;
+-- porting note: this new declaration is here to make `((a : α): WithOne α)` have type `WithOne α` ;
 -- otherwise the coercion kicks in and it becomes `Option.some a : WithOne α` which
 -- becomes `Option.some a : Option α`.
 /-- The canonical map from `α` into `WithOne α` -/
@@ -86,6 +86,8 @@ instance [Nonempty α] : Nontrivial (WithOne α) :=
 def coe : α → WithOne α :=
   Option.some
 
+-- porting note : `@[coe, to_additive]` doesn't tag the to-additivised declaration
+-- with coe, in contrast to Lean 3, so we have to do it manually.
 attribute [coe] WithZero.coe
 
 @[to_additive]
@@ -222,13 +224,12 @@ theorem coe_mul {α : Type u} [Mul α] {a b : α} : ((a * b : α) : WithZero α)
 #align with_zero.coe_mul WithZero.coe_mul
 
 -- porting note: this used to be `@[simp]` in Lean 3 but in Lean 4 `simp` can already
--- prove it
+-- prove it because we've just proved we're in MulZeroClass.
 theorem zero_mul {α : Type u} [Mul α] (a : WithZero α) : 0 * a = 0 :=
   rfl
 #align with_zero.zero_mul WithZero.zero_mul
 
 -- porting note: in Lean 3 this was `@[simp]` but in Lean 4 `simp` can already prove it.
---@[simp]
 theorem mul_zero {α : Type u} [Mul α] (a : WithZero α) : a * 0 = 0 := by cases a <;> rfl
 #align with_zero.mul_zero WithZero.mul_zero
 
