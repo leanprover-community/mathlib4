@@ -185,10 +185,18 @@ theorem coe_mul [Mul α] (a b : α) : ((a * b : α) : WithOne α) = a * b :=
   rfl
 #align with_one.coe_mul WithOne.coe_mul
 
+-- porting note: in Mathlib3 `[norm_cast, to_additive]` would put the `norm_cast` attribute
+-- on the additivised declaration. At the time of writing I think this isn't true in Mathlib4
+attribute [norm_cast] WithZero.coe_add
+
 @[simp, norm_cast, to_additive]
 theorem coe_inv [Inv α] (a : α) : ((a⁻¹ : α) : WithOne α) = (a : WithOne α)⁻¹ :=
   rfl
 #align with_one.coe_inv WithOne.coe_inv
+
+-- porting note: in Mathlib3 `[norm_cast, to_additive]` would put the `norm_cast` attribute
+-- on the additivised declaration. At the time of writing I think this isn't true in Mathlib4
+attribute [norm_cast] WithZero.coe_neg
 
 end WithOne
 
