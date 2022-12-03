@@ -29,7 +29,7 @@ instance [DecidableEq α] : DecidableEq (Vector α n) := by
   unfold Vector
   infer_instance
 
-/-- the empty vector with elements of type `α` -/
+/-- The empty vector with elements of type `α` -/
 @[match_pattern]
 def nil : Vector α 0 :=
   ⟨[], rfl⟩
@@ -43,7 +43,7 @@ def cons : α → Vector α n → Vector α (Nat.succ n)
 #align vector.cons Vector.cons
 
 
-/-- The length of a vector -/
+/-- The length of a vector. -/
 @[reducible, nolint unusedArguments]
 def length (_ : Vector α n) : ℕ :=
   n
