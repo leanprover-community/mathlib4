@@ -2,6 +2,7 @@
 Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bryan Gin-ge Chen, Yaël Dillies
+Ported by: Frédéric Dupuis
 -/
 import Mathlib.Order.BooleanAlgebra
 import Mathlib.Logic.Equiv.Basic
@@ -461,7 +462,6 @@ theorem symm_diff_symm_diff_left :
     _ = a \ (b ⊔ c) ⊔ b \ (a ⊔ c) ⊔ (c \ (a ⊔ b) ⊔ c ⊓ a ⊓ b) := by
       rw [sdiff_symm_diff', @sup_comm _ _ (c ⊓ a ⊓ b), symm_diff_sdiff]
     _ = a \ (b ⊔ c) ⊔ b \ (a ⊔ c) ⊔ c \ (a ⊔ b) ⊔ a ⊓ b ⊓ c := by ac_rfl
-
 #align symm_diff_symm_diff_left symm_diff_symm_diff_left
 
 theorem symm_diff_symm_diff_right :
@@ -471,7 +471,6 @@ theorem symm_diff_symm_diff_right :
     _ = a \ (b ⊔ c) ⊔ a ⊓ b ⊓ c ⊔ (b \ (c ⊔ a) ⊔ c \ (b ⊔ a)) := by
       rw [sdiff_symm_diff', @sup_comm _ _ (a ⊓ b ⊓ c), symm_diff_sdiff]
     _ = a \ (b ⊔ c) ⊔ b \ (a ⊔ c) ⊔ c \ (a ⊔ b) ⊔ a ⊓ b ⊓ c := by ac_rfl
-
 #align symm_diff_symm_diff_right symm_diff_symm_diff_right
 
 theorem symm_diff_assoc : a ∆ b ∆ c = a ∆ (b ∆ c) := by
@@ -547,7 +546,6 @@ theorem symm_diff_eq_left : a ∆ b = a ↔ b = ⊥ :=
   calc
     a ∆ b = a ↔ a ∆ b = a ∆ ⊥ := by rw [symm_diff_bot]
     _ ↔ b = ⊥ := by rw [symm_diff_right_inj]
-
 #align symm_diff_eq_left symm_diff_eq_left
 
 @[simp]
@@ -788,7 +786,6 @@ theorem symm_diff_symm_diff_right' :
       · congr 1
         rw [inf_comm, inf_assoc]
       · apply inf_left_right_swap
-
 #align symm_diff_symm_diff_right' symm_diff_symm_diff_right'
 
 variable {a b c}
