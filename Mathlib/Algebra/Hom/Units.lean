@@ -30,10 +30,10 @@ open Function
 universe u v w
 
 @[to_additive]
-theorem Group.IsUnit {G} [Group G] (g : G) : IsUnit g :=
+theorem Group.isUnit {G} [Group G] (g : G) : IsUnit g :=
   ⟨⟨g, g⁻¹, mul_inv_self g, inv_mul_self g⟩, rfl⟩
-#align group.is_unit Group.IsUnit
-#align add_group.is_unit AddGroup.IsAddUnit
+#align group.is_unit Group.isUnit
+#align add_group.is_unit AddGroup.isAddUnit
 
 section MonoidHomClass
 
@@ -55,7 +55,7 @@ left_inv_eq_right_inv (map_mul_eq_one f hx.inv_mul_cancel)
     then they are equal at `-x`."]
 theorem eq_on_inv {F G M} [Group G] [Monoid M] [MonoidHomClass F G M]
   (f g : F) {x : G} (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
-  (Group.IsUnit x).eq_on_inv f g h
+  (Group.isUnit x).eq_on_inv f g h
 #align eq_on_inv eq_on_inv
 #align eq_on_neg eq_on_neg
 
