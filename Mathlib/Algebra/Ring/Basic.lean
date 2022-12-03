@@ -2,6 +2,7 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
+Ported by: Moritz Doll
 -/
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Hom.Group
@@ -9,17 +10,14 @@ import Mathlib.Algebra.Opposites
 
 /-!
 # Semirings and rings
+
 This file gives lemmas about semirings, rings and domains.
 This is analogous to `algebra.group.basic`,
 the difference being that the former is about `+` and `*` separately, while
 the present file is about their interaction.
+
 For the definitions of semirings and rings see `algebra.ring.defs`.
 -/
-
-
-universe u v w x
-
-variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
 
 open Function
 
@@ -27,13 +25,13 @@ namespace AddHom
 
 /-- Left multiplication by an element of a type with distributive multiplication is an `add_hom`. -/
 @[simps (config := { fullyApplied := false })]
-def mulLeft {R : Type _} [Distrib R] (r : R) : AddHom R R :=
+def mulLeft [Distrib R] (r : R) : AddHom R R :=
   ⟨(· * ·) r, mul_add r⟩
 #align add_hom.mul_left AddHom.mulLeft
 
 /-- Left multiplication by an element of a type with distributive multiplication is an `add_hom`. -/
 @[simps (config := { fullyApplied := false })]
-def mulRight {R : Type _} [Distrib R] (r : R) : AddHom R R :=
+def mulRight [Distrib R] (r : R) : AddHom R R :=
   ⟨fun a => a * r, fun _ _ => add_mul _ _ r⟩
 #align add_hom.mul_right AddHom.mulRight
 
@@ -42,7 +40,7 @@ end AddHom
 namespace AddMonoidHom
 
 /-- Left multiplication by an element of a (semi)ring is an `add_monoid_hom` -/
-def mulLeft {R : Type _} [NonUnitalNonAssocSemiring R] (r : R) :
+def mulLeft [NonUnitalNonAssocSemiring R] (r : R) :
     R →+ R where
   toFun := (· * ·) r
   map_zero' := mul_zero r
@@ -50,13 +48,13 @@ def mulLeft {R : Type _} [NonUnitalNonAssocSemiring R] (r : R) :
 #align add_monoid_hom.mul_left AddMonoidHom.mulLeft
 
 @[simp]
-theorem coe_mul_left {R : Type _} [NonUnitalNonAssocSemiring R] (r : R) :
+theorem coe_mul_left [NonUnitalNonAssocSemiring R] (r : R) :
     (mulLeft r) = (r * ·) :=
   rfl
 #align add_monoid_hom.coe_mul_left AddMonoidHom.coe_mul_left
 
 /-- Right multiplication by an element of a (semi)ring is an `add_monoid_hom` -/
-def mulRight {R : Type _} [NonUnitalNonAssocSemiring R] (r : R) :
+def mulRight [NonUnitalNonAssocSemiring R] (r : R) :
     R →+ R where
   toFun a := a * r
   map_zero' := zero_mul r
@@ -64,12 +62,12 @@ def mulRight {R : Type _} [NonUnitalNonAssocSemiring R] (r : R) :
 #align add_monoid_hom.mul_right AddMonoidHom.mulRight
 
 @[simp]
-theorem coe_mul_right {R : Type _} [NonUnitalNonAssocSemiring R] (r : R) :
+theorem coe_mul_right [NonUnitalNonAssocSemiring R] (r : R) :
     (mulRight r) = (· * r) :=
   rfl
 #align add_monoid_hom.coe_mul_right AddMonoidHom.coe_mul_right
 
-theorem mul_right_apply {R : Type _} [NonUnitalNonAssocSemiring R] (a r : R) :
+theorem mul_right_apply [NonUnitalNonAssocSemiring R] (a r : R) :
     mulRight r a = a * r :=
   rfl
 #align add_monoid_hom.mul_right_apply AddMonoidHom.mul_right_apply
@@ -127,8 +125,6 @@ theorem succ_ne_self [NonAssocRing α] [Nontrivial α] (a : α) : a + 1 ≠ a :=
   one_ne_zero ((add_right_inj a).mp (by simp [h]))
 #align succ_ne_self succ_ne_self
 
-theorem pred_ne_self [NonAssocRing α] [Nontrivial α] (a : α) : a - 1 ≠ a := by
-  intro h
-  refine one_ne_zero (neg_injective ((add_right_inj a).mp ?_))
-  rw [←sub_eq_add_neg, h, neg_zero, add_zero]
+theorem pred_ne_self [NonAssocRing α] [Nontrivial α] (a : α) : a - 1 ≠ a := fun h ↦
+  one_ne_zero (neg_injective ((add_right_inj a).mp (by simp [←sub_eq_add_neg, h])))
 #align pred_ne_self pred_ne_self
