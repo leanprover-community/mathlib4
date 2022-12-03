@@ -298,4 +298,10 @@ theorem of_mem_supp {α : Type u} {x : F α} {p : α → Prop} (h : Liftp p x) :
   fun _ hy => hy h
 #align functor.of_mem_supp Functor.of_mem_supp
 
+@[reducible] def mapConstRev {f : Type u → Type v} [Functor f] {α β : Type u} :
+    f β → α → f α :=
+  fun a b => Functor.mapConst b a
+#align functor.map_const_rev Functor.mapConstRev
+infix:100 " $> " => Functor.mapConstRev
+
 end Functor
