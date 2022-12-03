@@ -6,8 +6,6 @@ Authors: Moritz Doll, Robert Y. Lewis
 
 import Mathlib.Tactic.Zify
 import Std.Tactic.GuardExpr
-import Mathlib.Tactic.LibrarySearch
-import Mathlib.Algebra.Ring.Basic
 
 example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   zify
