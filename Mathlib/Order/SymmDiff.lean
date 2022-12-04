@@ -71,7 +71,6 @@ def bihimp [HasInf α] [HImp α] (a b : α) : α :=
 /-- Notation for symmDiff -/
 infixl:100 " ∆ " =>  symmDiff
 
--- mathport name: «expr ⇔ »
 /-- Notation for bihimp -/
 infixl:100 " ⇔ " => bihimp
 
