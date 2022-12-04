@@ -22,15 +22,15 @@ variable {α : Type u}
 
 namespace WithZero
 
-instance contravariant_class_mul_lt {α : Type u} [Mul α] [PartialOrder α]
+instance contravariant_class_mul_lt [Mul α] [PartialOrder α]
     [ContravariantClass α α (· * ·) (· < ·)] :
     ContravariantClass (WithZero α) (WithZero α) (· * ·) (· < ·) := by
   refine' ⟨fun a b c h => _⟩
   have := ((zero_le _).trans_lt h).ne'
-  lift a to α using left_ne_zero_of_mul this
-  lift c to α using right_ne_zero_of_mul this
+  induction a using WithZero.recZeroCoe; · exfalso; exact left_ne_zero_of_mul this rfl
+  induction c using WithZero.recZeroCoe; · exfalso; exact right_ne_zero_of_mul this rfl
   induction b using WithZero.recZeroCoe
-  exacts[zero_lt_coe _, coe_lt_coe.mpr (lt_of_mul_lt_mul_left' <| coe_lt_coe.mp h)]
+  exacts [zero_lt_coe _, coe_lt_coe.mpr (lt_of_mul_lt_mul_left' <| coe_lt_coe.mp h)]
 #align with_zero.contravariant_class_mul_lt WithZero.contravariant_class_mul_lt
 
 end WithZero
