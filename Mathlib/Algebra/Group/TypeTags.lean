@@ -69,12 +69,12 @@ end Additive
 
 namespace Multiplicative
 
-/-- Reinterpret `x : α` as an element of `multiplicative α`. -/
+/-- Reinterpret `x : α` as an element of `Multiplicative α`. -/
 def ofAdd : α ≃ Multiplicative α :=
   ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
 #align multiplicative.of_add Multiplicative.ofAdd
 
-/-- Reinterpret `x : multiplicative α` as an element of `α`. -/
+/-- Reinterpret `x : Multiplicative α` as an element of `α`. -/
 def toAdd : Multiplicative α ≃ α := ofAdd.symm
 #align multiplicative.to_add Multiplicative.toAdd
 
@@ -379,12 +379,12 @@ instance [AddCommGroup α] : CommGroup (Multiplicative α) :=
 def AddMonoidHom.toMultiplicative [AddZeroClass α] [AddZeroClass β] :
     (α →+ β) ≃ (Multiplicative α →* Multiplicative β) where
   toFun f := {
-    toFun := fun a => toMul (f (ofMul a))
+    toFun := fun a => ofAdd (f (toAdd a))
     map_mul' := f.map_add
     map_one' := f.map_zero
   }
   invFun f := {
-    toFun := fun a => ofMul (f (toMul a))
+    toFun := fun a => toAdd (f (ofAdd a))
     map_add' := f.map_mul
     map_zero' := f.map_one
   }
@@ -397,12 +397,12 @@ def AddMonoidHom.toMultiplicative [AddZeroClass α] [AddZeroClass β] :
 def MonoidHom.toAdditive [MulOneClass α] [MulOneClass β] :
     (α →* β) ≃ (Additive α →+ Additive β) where
   toFun f := {
-    toFun := fun a => toAdd (f (ofAdd a))
+    toFun := fun a => ofMul (f (toMul a))
     map_add' := f.map_mul
     map_zero' := f.map_one
   }
   invFun f := {
-    toFun := fun a => ofAdd (f (toAdd a))
+    toFun := fun a => toMul (f (ofMul a))
     map_mul' := f.map_add
     map_one' := f.map_zero
   }
@@ -415,12 +415,12 @@ def MonoidHom.toAdditive [MulOneClass α] [MulOneClass β] :
 def AddMonoidHom.toMultiplicative' [MulOneClass α] [AddZeroClass β] :
     (Additive α →+ β) ≃ (α →* Multiplicative β) where
   toFun f := {
-    toFun := fun a => toMul (f (toAdd a))
+    toFun := fun a => ofAdd (f (ofMul a))
     map_mul' := f.map_add
     map_one' := f.map_zero
   }
   invFun f := {
-    toFun := fun a => ofMul (f (ofAdd a))
+    toFun := fun a => toAdd (f (toMul a))
     map_add' := f.map_mul
     map_zero' := f.map_one
   }
@@ -440,12 +440,12 @@ def MonoidHom.toAdditive' [MulOneClass α] [AddZeroClass β] :
 def AddMonoidHom.toMultiplicative'' [AddZeroClass α] [MulOneClass β] :
     (α →+ Additive β) ≃ (Multiplicative α →* β) where
   toFun f := {
-    toFun := fun a => ofAdd (f (ofMul a))
+    toFun := fun a => toMul (f (toAdd a))
     map_mul' := f.map_add
     map_one' := f.map_zero
   }
   invFun f := {
-    toFun := fun a => toAdd (f (toMul a))
+    toFun := fun a => ofMul (f (ofAdd a))
     map_add' := f.map_mul
     map_zero' := f.map_one
   }
