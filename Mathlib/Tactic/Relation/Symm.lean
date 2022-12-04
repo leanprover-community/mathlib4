@@ -43,11 +43,44 @@ initialize registerBuiltinAttribute {
 
 end Mathlib.Tactic
 
-namespace Lean.MVarId
 open Mathlib.Tactic
 
+namespace Lean.Expr
+
 /--
-Internal implementation of `Lean.MVarId.symm` and of the user-facing tactic.
+Internal implementation of `Lean.Expr.symm`, `Lean.MVarId.symm`, and the user-facing tactic.
+
+`tgt` should be of the form `a ~ b`, and is used to index the symm lemmas.
+
+`k lem args body` should calculate a result,
+given a candidate `symm` lemma `lem`, which will have type `∀ args, body`.
+
+In `Lean.Expr.symm` this result will be a new `Expr`,
+and in `Lean.MVarId.symm` this result will be a new goal.
+-/
+def symmAux (tgt : Expr) (k : Expr → Array Expr → Expr → MetaM α) : MetaM α := do
+  let .app (.app rel _) _ := tgt
+    | throwError "symmetry lemmas only apply to binary relations, not{indentExpr tgt}"
+  for lem in ← (symmExt.getState (← getEnv)).getMatch rel do
+    try
+      let lem ← mkConstWithFreshMVarLevels lem
+      let (args, _, body) ← withReducible <| forallMetaTelescopeReducing (← inferType lem)
+      return (← k lem args body)
+    catch _ => pure ()
+  throwError "no applicable symmetry lemma found for{indentExpr tgt}"
+
+/-- Given a term `e : a ~ b`, construct a term in `b ~ a` using `@[symm]` lemmas. -/
+def symm (e : Expr) : MetaM Expr := do
+  symmAux (← inferType e) fun lem args body => do
+    let .true ← isDefEq args.back e | failure
+    mkExpectedTypeHint (mkAppN lem args) (← instantiateMVars body)
+
+end Lean.Expr
+
+namespace Lean.MVarId
+
+/--
+Internal implementation of `Lean.MVarId.symm` and the user-facing tactic.
 
 `tgt` should be of the form `a ~ b`, and is used to index the symm lemmas.
 
@@ -58,17 +91,10 @@ Depending on whether we are working on a hypothesis or a goal,
 -/
 def symmAux (tgt : Expr) (k : Expr → Array Expr → Expr → MVarId → MetaM MVarId) (g : MVarId) :
     MetaM MVarId := do
-  let .app (.app rel _) _ := tgt
-    | throwError "symmetry lemmas only apply to binary relations, not{indentExpr tgt}"
-  for lem in ← (symmExt.getState (← getEnv)).getMatch rel do
-    try
-      let lem ← mkConstWithFreshMVarLevels lem
-      let (args, _, body) ← withReducible <| forallMetaTelescopeReducing (← inferType lem)
-      let g' ← k lem args body g
-      g'.setTag (← g.getTag)
-      return g'
-    catch _ => pure ()
-  throwError "no applicable symmetry lemma found for{indentExpr tgt}"
+  tgt.symmAux fun lem args body => do
+    let g' ← k lem args body g
+    g'.setTag (← g.getTag)
+    return g'
 
 /-- Apply a symmetry lemma (i.e. marked with `@[symm]`) to a metavariable. -/
 def symm (g : MVarId) : MetaM MVarId := do
@@ -77,11 +103,27 @@ def symm (g : MVarId) : MetaM MVarId := do
     g.assign (mkAppN lem args)
     return args.back.mvarId!
 
+/-- Use a symmetry lemma (i.e. marked with `@[symm]`) to replace a hypothesis in a goal. -/
+def symmAt (h : FVarId) (g : MVarId) : MetaM MVarId := do
+  let h' ← (Expr.fvar h).symm
+  pure (← g.replace h (← inferType h') h').mvarId
+
+/-- For every hypothesis `h : a ~ b` where a `@[symm]` lemma is available,
+add a hypothesis `h.symm : b ~ a`. -/
+-- We could omit duplicate propositions, and avoid clobbering names, but don't for now.
+def symmSaturate (g : MVarId) : MetaM MVarId := g.withContext do
+  let mut g' := g
+  for h in ← getLocalHyps do try
+    (_, g') ← g'.note ((← h.fvarId!.getUserName).str "symm") none (← h.symm)
+  catch _ => g' ← pure g'
+  return g'
+
 end Lean.MVarId
 
 namespace Mathlib.Tactic
 
-open Lean.Elab.Tactic in
+open Lean.Elab.Tactic
+
 /--
 * `symm` applies to a goal whose target has the form `t ~ u` where `~` is a symmetric relation,
   that is, a relation which has a symmetry lemma tagged with the attribute [symm].
@@ -89,9 +131,10 @@ open Lean.Elab.Tactic in
 * `symm at h` will rewrite a hypothesis `h : t ~ u` to `h : u ~ t`.
 -/
 elab "symm" loc:((Parser.Tactic.location)?) : tactic =>
-  let atHyp h := liftMetaTactic1 fun g => do
-    g.symmAux (← h.getType) fun lem args body g => do
-      let .true ← isDefEq args.back (.fvar h) | failure
-      pure (← g.replace h (← instantiateMVars body) (mkAppN lem args)).mvarId
+  let atHyp h := liftMetaTactic1 fun g => g.symmAt h
   let atTarget := liftMetaTactic1 fun g => g.symm
   withLocation (expandOptLocation loc) atHyp atTarget fun _ ↦ throwError "symm made no progress"
+
+/-- For every hypothesis `h : a ~ b` where a `@[symm]` lemma is available,
+add a hypothesis `h.symm : b ~ a`. -/
+elab "symm_saturate" : tactic => liftMetaTactic1 fun g => g.symmSaturate

@@ -13,3 +13,7 @@ def sameParity : Nat → Nat → Prop
 @[symm] def sameParity_symm (n m : Nat) : sameParity n m → sameParity m n := Eq.symm
 
 example (a b : Nat) : sameParity a b → sameParity b a := by intros; symm; assumption
+
+example (a b c : Nat) (ab : a = b) (bc : b = c): c = a := by
+  symm_saturate
+  apply Eq.trans <;> assumption

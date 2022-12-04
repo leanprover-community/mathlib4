@@ -41,6 +41,11 @@ where
       else
         return e.hasFVar
 
+/-- Add the hypothesis `h : t`, given `v : t`, and return the new `FVarId`. -/
+def note (h : Name := .anonymous) (t : Option Expr) (v : Expr) (g : MVarId) :
+    MetaM (FVarId × MVarId) := do
+  (← g.assert h (t.getD (← inferType v)) v).intro1P
+
 /-- Has the effect of `refine ⟨e₁,e₂,⋯, ?_⟩`.
 -/
 def existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
@@ -55,6 +60,13 @@ def existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
 end Lean.MVarId
 
 namespace Lean.Meta
+
+/-- Return local hypotheses which are not "implementation detail", as `Expr`s. -/
+def getLocalHyps : MetaM (Array Expr) := do
+  let mut hs := #[]
+  for d in ← getLCtx do
+    if !d.isImplementationDetail then hs := hs.push d.toExpr
+  return hs
 
 /--
 Given a monadic function `F` that takes a type and a term of that type and produces a new term,

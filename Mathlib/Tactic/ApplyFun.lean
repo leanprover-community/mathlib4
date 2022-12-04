@@ -22,14 +22,6 @@ open Lean Parser Tactic Elab Tactic Meta
 
 initialize registerTraceClass `apply_fun
 
-/--
-`g.note n ty by` creates a new hypothesis with name `n`, type `ty`, and proof `by`.
-If `ty` is omitted it is inferred from `by`.
--/
-def _root_.Lean.MVarId.note (g : MVarId) (n : Name := .anonymous) (type : Option Expr)
-    (body : Expr) : MetaM (FVarId × MVarId) := do
-  (←(g.assert n (type.getD (← inferType body)) body)).intro1P
-
 /-- Apply a function to a hypothesis. -/
 def applyFunHyp (f : Expr) (using? : Option Expr) (h : FVarId) (g : MVarId) :
     MetaM (List MVarId) := do

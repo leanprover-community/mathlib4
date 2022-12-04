@@ -49,12 +49,14 @@ initialize librarySearchLemmas : DeclCache (DiscrTree Name true) ←
       let keys ← withReducible <| DiscrTree.mkPath type
       pure $ lemmas.insertCore keys name
 
-/-- Shortcut for calling `solveByElimImpl`. -/
+/-- Shortcut for calling `solveByElim`. -/
 def solveByElim (g : MVarId) (depth) := do
   _ ← SolveByElim.solveByElim.processSyntax
     -- There is a ~7% time penalty for using `exfalso`,
-    --     and a ~40% time penalty for using `symm`.
-    {maxDepth := depth, exfalso := false, symm := false} false [] [g]
+    --     and a ~40% time penalty for using `symm`
+    -- (measured via `lake build && time lake env lean test/librarySearch.lean`).
+    -- For now both are disabled.
+    {maxDepth := depth, exfalso := false, symm := false} false false [] [] [g]
   pure ()
 
 /--
