@@ -114,15 +114,6 @@ protected def ret {α : Type u} (a : α) : List α :=
   [a]
 #align list.ret List.ret
 
-/-- Less-than-or-equal for lists. -/
-@[reducible]
-protected def Le [LT α] (a b : List α) : Prop :=
-  ¬b < a
-#align list.le List.Le
-
-instance [LT α] : LE (List α) :=
-  ⟨List.Le⟩
-
 /-- `≤` implies not `>` for lists. -/
 theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
 #align list.le_eq_not_gt List.le_eq_not_gt

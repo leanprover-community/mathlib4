@@ -33,20 +33,6 @@ theorem length_repeat (a : α) (n : ℕ) : length («repeat»  a n) = n := by
   induction n <;> simp [*]
 #align list.length_repeat List.length_repeat
 
-/-- Length of the list on removing the `i`th element
-when `i` is less than the length of the original list. -/
-theorem length_removeNth : ∀ (l : List α) (i : ℕ),
-    i < length l → length (removeNth l i) = length l - 1
-  | [], _, _ => rfl
-  | _ :: xs, 0, _ => by
-     simp [removeNth]
-  | _ :: xs, i + 1, h => by
-    have : i < length xs := lt_of_succ_lt_succ h
-    simp [removeNth, length_remove_nth xs i this, Nat.sub_one,
-      Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (Nat.zero_le _) this)]
-
-#align list.length_remove_nth List.length_remove_nth
-
 section MapAccumr
 
 variable {φ : Type w₁} {σ : Type w₂}
@@ -66,12 +52,11 @@ def mapAccumr (f : α → σ → σ × β) : List α → σ → σ × List β
 @[simp]
 theorem length_mapAccumr : ∀ (f : α → σ → σ × β) (x : List α) (s : σ),
     length (mapAccumr f x s).2 = length x
-  | f, _ :: x, s => congrArg succ (length_map_accumr f x s)
+  | f, _ :: x, s => congrArg succ (length_mapAccumr f x s)
   | _, [], _ => rfl
-#align list.length_map_accumr List.length_map_accumr
+#align list.length_map_accumr List.length_mapAccumr
 
 end MapAccumr
-
 section MapAccumr₂
 
 variable {φ : Type w₁} {σ : Type w₂}
@@ -95,13 +80,13 @@ theorem length_mapAccumr₂ :
   | f, _ :: x, _ :: y, c =>
     calc
       succ (length (mapAccumr₂ f x y c).2) = succ (min (length x) (length y)) :=
-        congrArg succ (length_map_accumr₂ f x y c)
+        congrArg succ (length_mapAccumr₂ f x y c)
       _ = min (succ (length x)) (succ (length y)) := Eq.symm (min_succ_succ (length x) (length y))
 
   | _, _ :: _, [], _ => rfl
   | _, [], _ :: _, _ => rfl
   | _, [], [], _ => rfl
-#align list.length_map_accumr₂ List.length_map_accumr₂
+#align list.length_map_accumr₂ List.length_mapAccumr₂
 
 end MapAccumr₂
 

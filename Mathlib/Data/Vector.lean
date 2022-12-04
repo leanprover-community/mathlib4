@@ -158,7 +158,7 @@ def take (i : ℕ) : Vector α n → Vector α (min i n)
 
 /-- Remove the element at position `i` from a vector of length `n`. -/
 def removeNth (i : Fin n) : Vector α n → Vector α (n - 1)
-  | ⟨l, p⟩ => ⟨List.removeNth l i.1, by rw [l.length_remove_nth i.1] <;> rw [p] ; exact i.2⟩
+  | ⟨l, p⟩ => ⟨List.removeNth l i.1, by rw [l.length_removeNth] <;> rw [p] ; exact i.2⟩
 #align vector.remove_nth Vector.removeNth
 
 /-- Vector of length `n` from a function on `Fin n`. -/
