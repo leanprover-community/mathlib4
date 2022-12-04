@@ -3,11 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathbin.Algebra.Group.TypeTags
-import Mathbin.Algebra.Group.Commute
-import Mathbin.Algebra.Hom.Group
-import Mathbin.Algebra.Opposites
-import Mathbin.Logic.Embedding.Basic
+import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Group.Commute
+import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Opposites
+import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Definitions of group actions
