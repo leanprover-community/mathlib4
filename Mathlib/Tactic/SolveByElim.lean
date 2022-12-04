@@ -238,16 +238,20 @@ TODO: there were further optional arguments in mathlib3:
 -/
 syntax (name := solveByElim) "solve_by_elim" "*"? (config)? (&" only")? (simpArgs)? : tactic
 
+def solveByElimImpl (cfg : Config := {}) (only : Bool := false) (terms : List (TSyntax `term))
+    (goals : List MVarId) : MetaM (List MVarId) := do
+  let ⟨lemmas, ctx⟩ ← mkAssumptionSet only terms
+  solveByElimCore cfg lemmas ctx goals
+
 elab_rules : tactic |
     `(tactic| solve_by_elim $[*%$s]? $[$cfg]? $[only%$o]? $[[$[$t:term],*]]?) => do
   let es := (t.getD #[]).toList
-  let ⟨lemmas, ctx⟩ ← mkAssumptionSet o.isSome es
   let goals ← if s.isSome then
     getGoals
   else
     pure [← getMainGoal]
   let cfg ← elabConfig (mkOptionalNode cfg)
-  let [] ← solveByElimCore cfg lemmas ctx goals |
+  let [] ← solveByElimImpl cfg o.isSome es goals |
     throwError "solve_by_elim unexpectedly returned subgoals"
   pure ()
 

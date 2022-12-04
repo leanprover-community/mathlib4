@@ -49,7 +49,8 @@ and local hypotheses.
 -/
 def nontrivialityByAssumption (g : MVarId) : MetaM Unit := do
   g.inferInstance <|> do
-    SolveByElim.solveByElimImpl false [← `(nontrivial_of_ne), ← `(nontrivial_of_lt)] 6 g
+    SolveByElim.solveByElimImpl {maxDepth := depth}
+      false [← `(nontrivial_of_ne), ← `(nontrivial_of_lt)] [g]
 
 /-- Attempts to generate a `Nontrivial α` hypothesis.
 
