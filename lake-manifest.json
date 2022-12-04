@@ -1,4 +1,5 @@
-{"version": 3,
+{"version": 4,
+ "packagesDir": "./lake-packages",
  "packages":
  [{"git":
    {"url": "https://github.com/xubaiw/CMark.lean",
@@ -9,13 +10,13 @@
   {"git":
    {"url": "https://github.com/leanprover/lake",
     "subDir?": null,
-    "rev": "051cf403f12da80a44802810d9098f2bbed61d93",
+    "rev": "235383015cdcb0082777b0347b84dba01843c79c",
     "name": "lake",
     "inputRev?": "master"}},
   {"git":
    {"url": "https://github.com/leanprover/doc-gen4",
     "subDir?": null,
-    "rev": "5e96952a58616ce66a010d476166a8dd8a7d0a28",
+    "rev": "7009910876145a9a1220359f968ba7045dd05290",
     "name": "doc-gen4",
     "inputRev?": "main"}},
   {"git":
@@ -51,6 +52,6 @@
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "ea4deded2a85ed94bee3b445d46b24e0f17a060d",
+    "rev": "42bb39d34ec7dcb07580458efa4a7936bd5192b7",
     "name": "std",
     "inputRev?": "main"}}]}

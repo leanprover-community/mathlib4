@@ -1200,16 +1200,15 @@ protected theorem MonoidHom.map_pow [Monoid M] [Monoid N] (f : M →* N) (a : M)
 #align monoid_hom.map_pow MonoidHom.map_pow
 protected theorem AddMonoidHom.map_nsmul [AddMonoid M] [AddMonoid N] (f : M →+ N) (a : M) (n : ℕ) :
   f (n • a) = n • f a := map_smul f a n
+#align add_monoid_hom.map_nsmul AddMonoidHom.map_nsmul
 
--- Porting note: restore `to_additive`
--- @[to_additive]
+attribute [to_additive AddMonoidHom.map_nsmul] MonoidHom.map_pow
+
+@[to_additive]
 protected theorem MonoidHom.map_zpow' [DivInvMonoid M] [DivInvMonoid N] (f : M →* N)
   (hf : ∀ x, f x⁻¹ = (f x)⁻¹) (a : M) (n : ℤ) :
   f (a ^ n) = f a ^ n := map_zpow' f hf a n
 #align monoid_hom.map_zpow' MonoidHom.map_zpow'
-protected theorem AddMonoidHom.map_zsmul' [SubNegMonoid M] [SubNegMonoid N] (f : M →+ N)
-  (hf : ∀ x, f (-x) = -(f x)) (a : M) (n : ℤ) :
-  f (n • a) = n • f a := map_zsmul' f hf a n
 
 section End
 
