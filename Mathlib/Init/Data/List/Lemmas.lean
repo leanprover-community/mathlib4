@@ -35,7 +35,7 @@ theorem length_repeat (a : α) (n : ℕ) : length («repeat»  a n) = n := by
 
 /-- Length of the list on removing the `i`th element
 when `i` is less than the length of the original list. -/
-theorem length_remove_nth : ∀ (l : List α) (i : ℕ),
+theorem length_removeNth : ∀ (l : List α) (i : ℕ),
     i < length l → length (removeNth l i) = length l - 1
   | [], _, _ => rfl
   | _ :: xs, 0, _ => by
