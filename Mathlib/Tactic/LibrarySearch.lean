@@ -51,7 +51,10 @@ initialize librarySearchLemmas : DeclCache (DiscrTree Name true) ←
 
 /-- Shortcut for calling `solveByElimImpl`. -/
 def solveByElim (g : MVarId) (depth) := do
-  _ ← SolveByElim.solveByElim.processSyntax {maxDepth := depth} false [] [g]
+  _ ← SolveByElim.solveByElim.processSyntax
+    -- There is a ~7% time penalty for using `exfalso`,
+    --     and a ~40% time penalty for using `symm`.
+    {maxDepth := depth, exfalso := false, symm := false} false [] [g]
   pure ()
 
 /--
