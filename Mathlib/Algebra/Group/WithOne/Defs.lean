@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Johan Commelin
 -/
 import Mathlib.Order.WithBot
 import Mathlib.Algebra.Ring.Defs
-
 /-!
 # Adjoining a zero/one to semigroups and related algebraic structures
 
@@ -28,6 +27,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 def WithOne (α) :=
   Option α
 #align with_one WithOne
+#align with_zero WithZero
 
 namespace WithOne
 
@@ -100,6 +100,14 @@ def recOneCoe {C : WithOne α → Sort _} (h₁ : C 1) (h₂ : ∀ a : α, C a) 
   | Option.none => h₁
   | Option.some x => h₂ x
 #align with_one.rec_one_coe WithOne.recOneCoe
+#align with_zero.rec_zero_coe WithZero.recZeroCoe
+
+-- porting note: in Lean 3 the to-additivised declaration
+-- would automatically get this; right now in Lean 4...I don't
+-- know if it does or not, and I don't know how to check, so
+-- I'll add it manually just to be sure.
+attribute [elab_as_elim] WithZero.recZeroCoe
+
 
 /-- Deconstruct a `x : with_one α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
 @[to_additive unzero
@@ -107,37 +115,42 @@ def recOneCoe {C : WithOne α → Sort _} (h₁ : C 1) (h₂ : ∀ a : α, C a) 
 def unone {x : WithOne α} (hx : x ≠ 1) : α :=
   WithBot.unbot x hx
 #align with_one.unone WithOne.unone
+#align with_zero.unzero WithZero.unzero
 
 @[simp, to_additive unzero_coe]
 theorem unone_coe {x : α} (hx : (x : WithOne α) ≠ 1) : unone hx = x :=
   rfl
 #align with_one.unone_coe WithOne.unone_coe
+#align with_zero.unzero_coe WithZero.unzero_coe
 
 @[simp, to_additive coe_unzero]
 theorem coe_unone {x : WithOne α} (hx : x ≠ 1) : ↑(unone hx) = x :=
   WithBot.coe_unbot x hx
 #align with_one.coe_unone WithOne.coe_unone
+#align with_zero.coe_unzero WithZero.coe_unzero
 
--- porting note: in Lean 4 this is a syntactic tautology
--- @[to_additive]
--- theorem some_eq_coe {a : α} : (some a : WithOne α) = ↑a :=
---   rfl
--- #align with_one.some_eq_coe WithOne.some_eq_coe
+-- porting note: in Lean 4 the `some_eq_coe` lemmas present in the lean 3 version
+-- of this file are syntactic tautologies
+#noalign with_one.some_eq_coe
+#noalign with_zero.some_eq_coe
 
 @[simp, to_additive]
 theorem coe_ne_one {a : α} : (a : WithOne α) ≠ (1 : WithOne α) :=
   Option.some_ne_none a
 #align with_one.coe_ne_one WithOne.coe_ne_one
+#align with_zero.coe_ne_zero WithZero.coe_ne_zero
 
 @[simp, to_additive]
 theorem one_ne_coe {a : α} : (1 : WithOne α) ≠ a :=
   coe_ne_one.symm
 #align with_one.one_ne_coe WithOne.one_ne_coe
+#align with_zero.zero_ne_coe WithZero.zero_ne_coe
 
 @[to_additive]
 theorem ne_one_iff_exists {x : WithOne α} : x ≠ 1 ↔ ∃ a : α, ↑a = x :=
   Option.ne_none_iff_exists
 #align with_one.ne_one_iff_exists WithOne.ne_one_iff_exists
+#align with_zero.ne_zero_iff_exists WithZero.ne_zero_iff_exists
 
 -- porting note : waiting for `lift` tactic
 --@[to_additive]
@@ -148,21 +161,26 @@ theorem ne_one_iff_exists {x : WithOne α} : x ≠ 1 ↔ ∃ a : α, ↑a = x :=
 theorem coe_inj {a b : α} : (a : WithOne α) = b ↔ a = b :=
   Option.some_inj
 #align with_one.coe_inj WithOne.coe_inj
+#align with_zero.coe_inj WithZero.coe_inj
 
 -- port note: at the time of writing it seems that `@[norm_cast, to_additive]` doesn't
--- put the norm_cast tag on the to_additivised declaration. This will cause problems
--- with `norm_cast` failing on autoported proofs.
+-- put the norm_cast tag on the to_additivised declaration.
 attribute [norm_cast] WithZero.coe_inj
 
 @[elab_as_elim, to_additive]
 protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 → (∀ a : α, P a) → P x :=
   Option.casesOn
 #align with_one.cases_on WithOne.cases_on
+#align with_zero.cases_on WithZero.cases_on
+
+-- port note: I don't know if `elab_as_elim` is being added to the additivised declaration.
+attribute [elab_as_elim] WithZero.cases_on
 
 -- porting note: in Lean 3 there was the following comment:
 -- the `show` statements in the proofs are important, because otherwise the generated lemmas
 -- `with_one.mul_one_class._proof_{1,2}` have an ill-typed statement after `with_one` is made
--- irreducible.
+-- irreducible. Maybe one day when mathlib is ported to Lean 4 we can experiment
+-- to see if these `show` comments can be removed.
 @[to_additive]
 instance [Mul α] : MulOneClass (WithOne α) where
   mul := (· * ·)
@@ -174,10 +192,6 @@ instance [Mul α] : MulOneClass (WithOne α) where
 instance [Semigroup α] : Monoid (WithOne α) :=
   { instMulOneClassWithOne with mul_assoc := (Option.liftOrGet_isAssociative _).1 }
 
--- example [Semigroup α] :
---     @Monoid.toMulOneClass _ (@instMonoidWithOne α _) = @instMulOneClassWithOne α _ :=
---   rfl
-
 @[to_additive]
 instance [CommSemigroup α] : CommMonoid (WithOne α) :=
   { instMonoidWithOne with mul_comm := (Option.liftOrGet_isCommutative _).1 }
@@ -186,18 +200,20 @@ instance [CommSemigroup α] : CommMonoid (WithOne α) :=
 theorem coe_mul [Mul α] (a b : α) : ((a * b : α) : WithOne α) = a * b :=
   rfl
 #align with_one.coe_mul WithOne.coe_mul
+#align with_zero.coe_add WithZero.coe_add
 
 -- porting note: in Mathlib3 `[norm_cast, to_additive]` would put the `norm_cast` attribute
--- on the additivised declaration. At the time of writing I think this isn't true in Mathlib4
+-- on the additivised declaration. At the time of writing this isn't true in Mathlib4
 attribute [norm_cast] WithZero.coe_add
 
 @[simp, norm_cast, to_additive]
 theorem coe_inv [Inv α] (a : α) : ((a⁻¹ : α) : WithOne α) = (a : WithOne α)⁻¹ :=
   rfl
 #align with_one.coe_inv WithOne.coe_inv
+#align with_zero.coe_neg WithZero.coe_neg
 
 -- porting note: in Mathlib3 `[norm_cast, to_additive]` would put the `norm_cast` attribute
--- on the additivised declaration. At the time of writing I think this isn't true in Mathlib4
+-- on the additivised declaration. At the time of writing this isn't true in Mathlib4
 attribute [norm_cast] WithZero.coe_neg
 
 end WithOne
@@ -370,12 +386,12 @@ instance [DivisionMonoid α] : DivisionMonoid (WithZero α) :=
       | none, some b => rfl
       | some a, none => rfl
       | some a, some b => congr_arg some <| mul_inv_rev _ _,
-    inv_eq_of_mul := fun a b =>
+    inv_eq_of_mul := fun a b ↦
       match a, b with
-      | none, none => fun _ => rfl
-      | none, some b => λ _ =>  by contradiction
-      | some a, none => λ _ => by contradiction
-      | some a, some b => fun h =>
+      | none, none => fun _ ↦ rfl
+      | none, some b => fun _ ↦ by contradiction
+      | some a, none => fun _ ↦ by contradiction
+      | some a, some b => fun h ↦
         congr_arg some <| inv_eq_of_mul_eq_one_right <| Option.some_injective _ h }
 
 instance [DivisionCommMonoid α] : DivisionCommMonoid (WithZero α) :=
@@ -385,6 +401,8 @@ section Group
 
 variable [Group α]
 
+-- porting note: the lean 3 proof of this used the `lift` tactic, which was not
+-- present in mathlib4 at the time of porting; we instead do a case split.
 /-- if `G` is a group then `with_zero G` is a group with zero. -/
 instance : GroupWithZero (WithZero α) :=
   { instMonoidWithZeroWithZero, instDivInvMonoidWithZero, instNontrivialWithZero with
