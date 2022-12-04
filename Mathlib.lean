@@ -58,6 +58,7 @@ import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.Default
 import Mathlib.CategoryTheory.Functor.Functorial
 import Mathlib.CategoryTheory.Iso
+import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Thin
 import Mathlib.Combinatorics.Quiver.Basic
