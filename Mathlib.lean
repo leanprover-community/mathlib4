@@ -131,6 +131,7 @@ import Mathlib.Data.Rat.Order
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.Stream.Defs
+import Mathlib.Data.Stream.Init
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
