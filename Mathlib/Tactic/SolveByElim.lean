@@ -7,6 +7,7 @@ import Lean.Meta.Tactic.Apply
 import Lean.Elab.Tactic.Basic
 import Mathlib.Tactic.Core
 import Mathlib.Lean.LocalContext
+import Mathlib.Tactic.Relation.Symm
 
 /-!
 A work-in-progress replacement for Lean3's `solve_by_elim` tactic.
@@ -22,14 +23,56 @@ def Lean.Meta.getLocalHyps : MetaM (Array Expr) := do
     if !d.isImplementationDetail then hs := hs.push d.toExpr
   return hs
 
-initialize registerTraceClass `Meta.Tactic.solveByElim
-
-namespace Mathlib.Tactic.SolveByElim
-
 /-- Visualize an `Except` using a checkmark or a cross. -/
 def exceptEmoji : Except ε α → String
   | .error _ => crossEmoji
   | .ok _ => checkEmoji
+
+namespace Lean.MVarId
+
+structure ApplyFirstConfig where
+  symm : Bool := true
+  exfalso : Bool := true
+
+/--
+`applyFirst lemmas cont goal` will try to apply one of the `lemmas` to the goal `goal`,
+and then call `cont` on the resulting `List MVarId` of subgoals.
+
+It returns the result from `cont` for the first such lemma for which
+both the `apply` and the call to `cont` succeed.
+
+`applyFirst (cfg := { symm := true })` first tries the lemmas,
+but if all fail it calls `symm` on the goal and tries the lemmas again.
+
+Similarly `applyFirst (cfg := { exfalso := true })` will retry after calling `exfalso`.
+
+``applyFirst (trace := `name)`` will construct trace nodes for ``name` indicating which
+calls to `apply` succeeded or failed.
+-/
+def applyFirst (cfg : ApplyFirstConfig := {}) (trace : Name := .anonymous) (lemmas : List Expr)
+    (cont : List MVarId → MetaM α) (g : MVarId) : MetaM α := do
+  let s ← saveState
+  try
+    run g
+  catch _ => try
+    let .true := cfg.symm | failure
+    restoreState s
+    withTraceNode trace (return m!"{exceptEmoji ·} trying `symm`") do
+      run (← g.symm)
+  catch _ =>
+    let .true := cfg.exfalso | failure
+    restoreState s
+    withTraceNode trace (return m!"{exceptEmoji ·} trying `exfalso`") do
+      run (← g.exfalso)
+  where
+  run (g : MVarId) := lemmas.firstM fun e =>
+    withTraceNode trace (return m!"{exceptEmoji ·} tried to apply: {e}") do cont (← g.apply e)
+
+end Lean.MVarId
+
+initialize registerTraceClass `Meta.Tactic.solveByElim
+
+namespace Mathlib.Tactic.SolveByElim
 
 /-- Elaborate the context and the list of lemmas -/
 def elabContextLemmas (g : MVarId) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)) :
@@ -38,9 +81,13 @@ def elabContextLemmas (g : MVarId) (lemmas : List (TermElabM Expr)) (ctx : TermE
 
 /-- Configuration structure to control the behaviour of `solve_by_elim`,
 by modifying intermediate goals, returning goals as subgoals, and discharging subgoals. -/
-structure Config where
+structure Config extends Lean.MVarId.ApplyFirstConfig where
   /-- Maximum recursion depth. -/
   maxDepth : Nat := 12
+  /-- If `failAtDepth`, then `solve_by_elim` will fail (and backtrack) upon reaching the max depth.
+  Otherwise, upon reaching the max depth, all remaining goals will be returned.
+  (defaults to `true`) -/
+  failAtDepth : Bool := true
   /-- An arbitrary procedure which can be used to modify the list of goals
     before each attempt to apply a lemma.
     Called as `proc orig goals`, where `orig` are the original goals for `solve_by_elim`,
@@ -48,7 +95,7 @@ structure Config where
     Returning `some l` will replace the active goals with `l` and recurse.
     Returning `none` will proceed to applying lemmas.
     Failure will cause backtracking.
-    (defaults to none) -/
+    (defaults to `none`) -/
   proc : List MVarId → List MVarId → MetaM (Option (List MVarId)) := fun _ _ => pure none
   /-- If `suspend g`, then we do not attempt to apply any further lemmas,
      but return `g` as a new subgoal. (defaults to `false`) -/
@@ -101,7 +148,9 @@ def solveByElimCore (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermE
     (n : Nat := cfg.maxDepth) (goals : List MVarId := orig) (acc : List MVarId := []) :
     MetaM (List MVarId) := do
   match n with
-  | 0 => throwError "solve_by_elim exceeded the recursion limit"
+  | 0 => do
+    let .false := cfg.failAtDepth | throwError "solve_by_elim exceeded the recursion limit"
+    return goals ++ acc
   | n + 1 => do
   match ← cfg.proc orig goals with
   | some goals' => solveByElimCore cfg lemmas ctx orig n goals' acc
@@ -129,10 +178,8 @@ def solveByElimCore (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermE
       try
         -- We attempt to find an expression which can be applied,
         -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
-        es.firstM fun e => withTraceNode `Meta.Tactic.solveByElim
-            (return m!"{exceptEmoji ·} tried to apply: {e}") do
-          let gs := (← g.apply e) ++ gs
-          solveByElimCore cfg lemmas ctx orig n gs acc
+        g.applyFirst cfg.toApplyFirstConfig `Meta.Tactic.solveByElim es fun res =>
+          solveByElimCore cfg lemmas ctx orig n (res ++ gs) acc
       catch _ =>
         -- No lemmas could be applied:
         match (← cfg.discharge g) with
@@ -220,24 +267,13 @@ makes other goals impossible.
 Optional arguments passed via a configuration argument as `solve_by_elim (config := { ... })`
 - `maxDepth`: number of attempts at discharging generated sub-goals
 
-TODO: there were further optional arguments in mathlib3:
-<!--
-- `discharger`: a subsidiary tactic to try at each step when no lemmas apply
-  (e.g. `cc` may be helpful).
-- `preApply`: a subsidiary tactic to run at each step before applying lemmas (e.g. `intros`).
-- `accept`: a subsidiary tactic `List Expr → Tactic` that at each step,
-  before any lemmas are applied, is passed the original proof terms
-  as reported by `getGoals` when `solve_by_elim` started
-  (but which may by now have been partially solved by previous `apply` steps).
-  If the `accept` tactic fails,
-  `solve_by_elim` will abort searching the current branch and backtrack.
-  This may be used to filter results, either at every step of the search,
-  or filtering complete results
-  (by testing for the absence of metavariables, and then the filtering condition).
--->
+See also the doc-comment for `Mathlib.Tactic.SolveByElim.Config` for the options
+`proc`, `suspend`, and `discharge` which allow further customization of `solve_by_elim`.
 -/
 syntax (name := solveByElim) "solve_by_elim" "*"? (config)? (&" only")? (simpArgs)? : tactic
 
+/-- Wrapper for `solveByElimCore` that processes a list of ``TSyntax `term``
+that specify the lemmas to use. -/
 def solveByElimImpl (cfg : Config := {}) (only : Bool := false) (terms : List (TSyntax `term))
     (goals : List MVarId) : MetaM (List MVarId) := do
   let ⟨lemmas, ctx⟩ ← mkAssumptionSet only terms

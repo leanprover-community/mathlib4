@@ -13,8 +13,9 @@ This implements the `symm` tactic, which can apply symmetry theorems to either t
 hypothesis.
 -/
 
-namespace Mathlib.Tactic
 open Lean Meta
+
+namespace Mathlib.Tactic
 
 /-- Environment extensions for symm lemmas -/
 initialize symmExt :
@@ -40,6 +41,46 @@ initialize registerBuiltinAttribute {
     symmExt.add (decl, key) kind
 }
 
+end Mathlib.Tactic
+
+namespace Lean.MVarId
+open Mathlib.Tactic
+
+/--
+Internal implementation of `Lean.MVarId.symm` and of the user-facing tactic.
+
+`tgt` should be of the form `a ~ b`, and is used to index the symm lemmas.
+
+`k lem args body goal` should transform `goal` into a new goal,
+given a candidate `symm` lemma `lem`, which will have type `∀ args, body`.
+Depending on whether we are working on a hypothesis or a goal,
+`k` will internally use either `replace` or `assign`.
+-/
+def symmAux (tgt : Expr) (k : Expr → Array Expr → Expr → MVarId → MetaM MVarId) (g : MVarId) :
+    MetaM MVarId := do
+  let .app (.app rel _) _ := tgt
+    | throwError "symmetry lemmas only apply to binary relations, not{indentExpr tgt}"
+  for lem in ← (symmExt.getState (← getEnv)).getMatch rel do
+    try
+      let lem ← mkConstWithFreshMVarLevels lem
+      let (args, _, body) ← withReducible <| forallMetaTelescopeReducing (← inferType lem)
+      let g' ← k lem args body g
+      g'.setTag (← g.getTag)
+      return g'
+    catch _ => pure ()
+  throwError "no applicable symmetry lemma found for{indentExpr tgt}"
+
+/-- Apply a symmetry lemma (i.e. marked with `@[symm]`) to a metavariable. -/
+def symm (g : MVarId) : MetaM MVarId := do
+  g.symmAux (← g.getType) fun lem args body g => do
+    let .true ← isDefEq (← g.getType) body | failure
+    g.assign (mkAppN lem args)
+    return args.back.mvarId!
+
+end Lean.MVarId
+
+namespace Mathlib.Tactic
+
 open Lean.Elab.Tactic in
 /--
 * `symm` applies to a goal whose target has the form `t ~ u` where `~` is a symmetric relation,
@@ -48,28 +89,9 @@ open Lean.Elab.Tactic in
 * `symm at h` will rewrite a hypothesis `h : t ~ u` to `h : u ~ t`.
 -/
 elab "symm" loc:((Parser.Tactic.location)?) : tactic =>
-  let onRel (tgt : Expr) (k : MVarId → Expr → MetaM MVarId) : TacticM Unit := do
-    let .app (.app rel _) _ := tgt
-      | throwError "symmetry lemmas only apply to binary relations, not{indentExpr tgt}"
-    let s ← saveState
-    for lem in ← (symmExt.getState (← getEnv)).getMatch rel do
-      try
-        liftMetaTactic1 fun g ↦ do
-          let g' ← k g (← mkConstWithFreshMVarLevels lem)
-          g'.setTag (← g.getTag)
-          pure g'
-        return
-      catch _ => s.restore
-    throwError "no applicable symmetry lemma found for{indentExpr tgt}"
-  let atHyp h := do
-    onRel (← h.getType) fun g e ↦ do
-      let (xs, _, targetTy) ← withReducible <| forallMetaTelescopeReducing (← inferType e)
-      let .true ← isDefEq xs.back (.fvar h) | failure
-      pure (← g.replace h (← instantiateMVars targetTy) (mkAppN e xs)).mvarId
-  let atTarget := withMainContext do
-    onRel (← getMainTarget) fun g e ↦ do
-      let (xs, _, targetTy) ← withReducible <| forallMetaTelescopeReducing (← inferType e)
-      let .true ← isDefEq (← g.getType) targetTy | failure
-      g.assign (mkAppN e xs)
-      pure xs.back.mvarId!
+  let atHyp h := liftMetaTactic1 fun g => do
+    g.symmAux (← h.getType) fun lem args body g => do
+      let .true ← isDefEq args.back (.fvar h) | failure
+      pure (← g.replace h (← instantiateMVars body) (mkAppN lem args)).mvarId
+  let atTarget := liftMetaTactic1 fun g => g.symm
   withLocation (expandOptLocation loc) atHyp atTarget fun _ ↦ throwError "symm made no progress"

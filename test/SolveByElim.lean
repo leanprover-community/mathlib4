@@ -3,11 +3,12 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Tactic.SolveByElim
-import Mathlib.Tactic.Constructor
 import Mathlib.Init.Data.Nat.Basic
-import Mathlib.Tactic.PermuteGoals
+import Mathlib.Init.Logic
 import Std.Tactic.RCases
+import Mathlib.Tactic.Constructor
+import Mathlib.Tactic.PermuteGoals
+import Mathlib.Tactic.SolveByElim
 
 example (h : Nat) : Nat := by solve_by_elim
 example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim
@@ -58,10 +59,14 @@ example (P₁ P₂ : α → Prop) (f : ∀ (a: α), P₁ a → P₂ a → β)
     (a' : α) (ha'₁ : P₁ a') (ha'₂ : P₂ a') : β := by
   solve_by_elim
 
--- TODO this works in mathlib3 but not here yet,
--- because we don't use symmetry.
--- example {α : Type} {a b : α → Prop} (h₀ : b = a) (y : α) : a y = b y :=
--- by solve_by_elim
+example {α : Type} {a b : α → Prop} (h₀ : b = a) (y : α) : a y = b y :=
+by
+  fail_if_success solve_by_elim (config := {symm := false})
+  solve_by_elim
+
+example (P : True → False) : 3 = 7 :=  by
+  fail_if_success solve_by_elim (config := {exfalso := false})
+  solve_by_elim
 
 -- Verifying that `solve_by_elim` acts only on the main goal.
 example (n : ℕ) : ℕ × ℕ := by
