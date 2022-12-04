@@ -46,12 +46,12 @@ def Multiplicative (α : Type _) := α
 
 namespace Additive
 
-/-- Reinterpret `x : α` as an element of `additive α`. -/
+/-- Reinterpret `x : α` as an element of `Additive α`. -/
 def ofMul : α ≃ Additive α :=
   ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
 #align additive.of_mul Additive.ofMul
 
-/-- Reinterpret `x : additive α` as an element of `α`. -/
+/-- Reinterpret `x : Additive α` as an element of `α`. -/
 def toMul : Additive α ≃ α := ofMul.symm
 #align additive.to_mul Additive.toMul
 
@@ -330,17 +330,17 @@ instance Additive.subNegMonoid [DivInvMonoid α] : SubNegMonoid (Additive α) :=
   { Additive.neg, Additive.sub, Additive.addMonoid with
     sub_eq_add_neg := @div_eq_mul_inv α _
     zsmul := @DivInvMonoid.zpow α _
-    zsmul_zero := @DivInvMonoid.zpow_zero α _
-    zsmul_succ := @DivInvMonoid.zpow_succ α _
-    zsmul_neg := @DivInvMonoid.zpow_neg α _ }
+    zsmul_zero' := @DivInvMonoid.zpow_zero' α _
+    zsmul_succ' := @DivInvMonoid.zpow_succ' α _
+    zsmul_neg' := @DivInvMonoid.zpow_neg' α _ }
 
 instance Multiplicative.divInvMonoid [SubNegMonoid α] : DivInvMonoid (Multiplicative α) :=
   { Multiplicative.inv, Multiplicative.div, Multiplicative.monoid with
     div_eq_mul_inv := @sub_eq_add_neg α _
     zpow := @SubNegMonoid.zsmul α _
-    zpow_zero := @SubNegMonoid.zsmul_zero α _
-    zpow_succ := @SubNegMonoid.zsmul_succ α _
-    zpow_neg := @SubNegMonoid.zsmul_neg α _ }
+    zpow_zero' := @SubNegMonoid.zsmul_zero' α _
+    zpow_succ' := @SubNegMonoid.zsmul_succ' α _
+    zpow_neg' := @SubNegMonoid.zsmul_neg' α _ }
 
 instance Additive.subtractionMonoid [DivisionMonoid α] : SubtractionMonoid (Additive α) :=
   { Additive.subNegMonoid, Additive.involutiveNeg with
@@ -372,70 +372,87 @@ instance [CommGroup α] : AddCommGroup (Additive α) :=
 instance [AddCommGroup α] : CommGroup (Multiplicative α) :=
   { Multiplicative.group, Multiplicative.commMonoid with }
 
-/-- Reinterpret `α →+ β` as `multiplicative α →* multiplicative β`. -/
+/-- Reinterpret `α →+ β` as `Multiplicative α →* Multiplicative β`. -/
 @[simps]
 def AddMonoidHom.toMultiplicative [AddZeroClass α] [AddZeroClass β] :
     (α →+ β) ≃ (Multiplicative α →* Multiplicative β) where
-  toFun f := ⟨fun a => ofAdd (f (toAdd a)), f.2, f.3⟩
-  invFun f := ⟨fun a => toAdd (f (ofAdd a)), f.2, f.3⟩
-  left_inv x := by
-    ext
-    rfl
-  right_inv x := by
-    ext
-    rfl
+  toFun f := {
+    toFun := fun a => toMul (f (ofMul a))
+    map_mul' := f.map_add
+    map_one' := f.map_zero
+  }
+  invFun f := {
+    toFun := fun a => ofMul (f (toMul a))
+    map_add' := f.map_mul
+    map_zero' := f.map_one
+    -- fun a => toAdd (f (ofAdd a)), f.2, f.3⟩
+  }
+  left_inv _ := rfl
+  right_inv _ := rfl
 #align add_monoid_hom.to_multiplicative AddMonoidHom.toMultiplicative
 
-/-- Reinterpret `α →* β` as `additive α →+ additive β`. -/
+/-- Reinterpret `α →* β` as `Additive α →+ Additive β`. -/
 @[simps]
 def MonoidHom.toAdditive [MulOneClass α] [MulOneClass β] :
     (α →* β) ≃ (Additive α →+ Additive β) where
-  toFun f := ⟨fun a => ofMul (f (toMul a)), f.2, f.3⟩
-  invFun f := ⟨fun a => toMul (f (ofMul a)), f.2, f.3⟩
-  left_inv x := by
-    ext
-    rfl
-  right_inv x := by
-    ext
-    rfl
+  toFun f := {
+    toFun := fun a => toAdd (f (ofAdd a))
+    map_add' := f.map_mul
+    map_zero' := f.map_one
+  }
+  invFun f := {
+    toFun := fun a => ofAdd (f (toAdd a))
+    map_mul' := f.map_add
+    map_one' := f.map_zero
+  }
+  left_inv _ := rfl
+  right_inv _ := rfl
 #align monoid_hom.to_additive MonoidHom.toAdditive
 
-/-- Reinterpret `additive α →+ β` as `α →* multiplicative β`. -/
+/-- Reinterpret `Additive α →+ β` as `α →* Multiplicative β`. -/
 @[simps]
 def AddMonoidHom.toMultiplicative' [MulOneClass α] [AddZeroClass β] :
     (Additive α →+ β) ≃ (α →* Multiplicative β) where
-  toFun f := ⟨fun a => ofAdd (f (ofMul a)), f.2, f.3⟩
-  invFun f := ⟨fun a => toAdd (f (toMul a)), f.2, f.3⟩
-  left_inv x := by
-    ext
-    rfl
-  right_inv x := by
-    ext
-    rfl
+  toFun f := {
+    toFun := fun a => toMul (f (toAdd a))
+    map_mul' := f.map_add
+    map_one' := f.map_zero
+  }
+  invFun f := {
+    toFun := fun a => ofMul (f (ofAdd a))
+    map_add' := f.map_mul
+    map_zero' := f.map_one
+  }
+  left_inv _ := rfl
+  right_inv _ := rfl
 #align add_monoid_hom.to_multiplicative' AddMonoidHom.toMultiplicative'
 
-/-- Reinterpret `α →* multiplicative β` as `additive α →+ β`. -/
+/-- Reinterpret `α →* Multiplicative β` as `Additive α →+ β`. -/
 @[simps]
 def MonoidHom.toAdditive' [MulOneClass α] [AddZeroClass β] :
     (α →* Multiplicative β) ≃ (Additive α →+ β) :=
   AddMonoidHom.toMultiplicative'.symm
 #align monoid_hom.to_additive' MonoidHom.toAdditive'
 
-/-- Reinterpret `α →+ additive β` as `multiplicative α →* β`. -/
+/-- Reinterpret `α →+ Additive β` as `Multiplicative α →* β`. -/
 @[simps]
 def AddMonoidHom.toMultiplicative'' [AddZeroClass α] [MulOneClass β] :
     (α →+ Additive β) ≃ (Multiplicative α →* β) where
-  toFun f := ⟨fun a => toMul (f (toAdd a)), f.2, f.3⟩
-  invFun f := ⟨fun a => ofMul (f (ofAdd a)), f.2, f.3⟩
-  left_inv x := by
-    ext
-    rfl
-  right_inv x := by
-    ext
-    rfl
+  toFun f := {
+    toFun := fun a => ofAdd (f (ofMul a))
+    map_mul' := f.map_add
+    map_one' := f.map_zero
+  }
+  invFun f := {
+    toFun := fun a => toAdd (f (toMul a))
+    map_add' := f.map_mul
+    map_zero' := f.map_one
+  }
+  left_inv _ := rfl
+  right_inv _ := rfl
 #align add_monoid_hom.to_multiplicative'' AddMonoidHom.toMultiplicative''
 
-/-- Reinterpret `multiplicative α →* β` as `α →+ additive β`. -/
+/-- Reinterpret `Multiplicative α →* β` as `α →+ Additive β`. -/
 @[simps]
 def MonoidHom.toAdditive'' [AddZeroClass α] [MulOneClass β] :
     (Multiplicative α →* β) ≃ (α →+ Additive β) :=
@@ -443,9 +460,9 @@ def MonoidHom.toAdditive'' [AddZeroClass α] [MulOneClass β] :
 #align monoid_hom.to_additive'' MonoidHom.toAdditive''
 
 /-- If `α` has some multiplicative structure and coerces to a function,
-then `additive α` should also coerce to the same function.
+then `Additive α` should also coerce to the same function.
 
-This allows `additive` to be used on bundled function types with a multiplicative structure, which
+This allows `Additive` to be used on bundled function types with a multiplicative structure, which
 is often used for composition, without affecting the behavior of the function itself.
 -/
 instance Additive.coeToFun {α : Type _} {β : α → Sort _} [CoeFun α β] :
@@ -454,9 +471,9 @@ instance Additive.coeToFun {α : Type _} {β : α → Sort _} [CoeFun α β] :
 #align additive.has_coe_to_fun Additive.coeToFun
 
 /-- If `α` has some additive structure and coerces to a function,
-then `multiplicative α` should also coerce to the same function.
+then `Multiplicative α` should also coerce to the same function.
 
-This allows `multiplicative` to be used on bundled function types with an additive structure, which
+This allows `Multiplicative` to be used on bundled function types with an additive structure, which
 is often used for composition, without affecting the behavior of the function itself.
 -/
 instance Multiplicative.coeToFun {α : Type _} {β : α → Sort _} [CoeFun α β] :
