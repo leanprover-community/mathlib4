@@ -35,7 +35,7 @@ def boundary (a : α) : α :=
   a ⊓ ￢a
 #align coheyting.boundary Coheyting.boundary
 
--- mathport name: «expr∂ »
+/-- The boundary of an element of a co-Heyting algebra. -/
 scoped[Heyting] prefix:120 "∂ " => Coheyting.boundary
 -- Porting note: Should the notation be automatically included in the current scope?
 open Heyting
