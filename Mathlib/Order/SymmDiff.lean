@@ -67,10 +67,10 @@ def bihimp [HasInf α] [HImp α] (a b : α) : α :=
 #align bihimp bihimp
 
 -- mathport name: «expr ∆ »
-infixl:100
-  " ∆ " =>/- This notation might conflict with the Laplacian once we have it. Feel free to put it in locale
+/- This notation might conflict with the Laplacian once we have it. Feel free to put it in locale
   `order` or `symm_diff` if that happens. -/
-  symmDiff
+infixl:100
+  " ∆ " =>  symmDiff
 
 -- mathport name: «expr ⇔ »
 infixl:100 " ⇔ " => bihimp
@@ -574,7 +574,8 @@ section BooleanAlgebra
 
 variable [BooleanAlgebra α] (a b c d : α)
 
-/- `CogeneralizedBooleanAlgebra` isn't actually a typeclass, but the lemmas in here are dual to the `GeneralizedBooleanAlgebra` ones -/
+/- `CogeneralizedBooleanAlgebra` isn't actually a typeclass, but the lemmas in here are dual to
+the `GeneralizedBooleanAlgebra` ones -/
 section CogeneralizedBooleanAlgebra
 
 @[simp]
