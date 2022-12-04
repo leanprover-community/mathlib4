@@ -80,9 +80,9 @@ If it is omitted a "free" universe will be used.
 namespace Std.Tactic.Ext
 open Lean Elab Tactic
 
-/-- A wrapper for `ext` that will fail is it does not make progress. -/
+/-- A wrapper for `ext` that will fail if it does not make progress. -/
 -- After https://github.com/leanprover/std4/pull/33
--- we can just `evalTactic (← (tactic| ext))`
+-- we can just `` evalTactic (← `(tactic| ext))``
 -- (But it would be good to have a name for that, too, so we can pass it to aesop.)
 def extCore' : TacticM Unit := do
   let gs ← Std.Tactic.Ext.extCore (← getMainGoal) [] 1000000 true
@@ -111,6 +111,8 @@ infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 
 declare_aesop_rule_sets [CategoryTheory]
 
+-- See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/hygiene.20question.3F/near/313556764
+set_option hygiene false in
 /-- A thin wrapper for `aesop`, which adds the `CategoryTheory` rule set. -/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause*: tactic =>
   `(tactic| aesop $c* (rule_sets [CategoryTheory]))
