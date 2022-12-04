@@ -56,13 +56,13 @@ open Function (Injective Surjective)
 
 
 /-- Typeclass for faithful actions. -/
-class HasFaithfulVadd (G : Type _) (P : Type _) [HasVadd G P] : Prop where
+class HasFaithfulVadd (G : Type _) (P : Type _) [VAdd G P] : Prop where
   eq_of_vadd_eq_vadd : ∀ {g₁ g₂ : G}, (∀ p : P, g₁ +ᵥ p = g₂ +ᵥ p) → g₁ = g₂
 #align has_faithful_vadd HasFaithfulVadd
 
 /-- Typeclass for faithful actions. -/
 @[to_additive]
-class HasFaithfulSmul (M : Type _) (α : Type _) [HasSmul M α] : Prop where
+class HasFaithfulSmul (M : Type _) (α : Type _) [SMul M α] : Prop where
   eq_of_smul_eq_smul : ∀ {m₁ m₂ : M}, (∀ a : α, m₁ • a = m₂ • a) → m₁ = m₂
 #align has_faithful_smul HasFaithfulSmul
 
@@ -71,17 +71,17 @@ export HasFaithfulSmul (eq_of_smul_eq_smul)
 export HasFaithfulVadd (eq_of_vadd_eq_vadd)
 
 @[to_additive]
-theorem smul_left_injective' [HasSmul M α] [HasFaithfulSmul M α] :
-    Function.Injective ((· • ·) : M → α → α) := fun m₁ m₂ h =>
+theorem smul_left_injective' [SMul M α] [HasFaithfulSmul M α] :
+    Function.Injective ((· • ·) : M → α → α) := fun _ _ h =>
   HasFaithfulSmul.eq_of_smul_eq_smul (congr_fun h)
 #align smul_left_injective' smul_left_injective'
 
 -- see Note [lower instance priority]
 /-- See also `monoid.to_mul_action` and `mul_zero_class.to_smul_with_zero`. -/
 @[to_additive "See also `add_monoid.to_add_action`"]
-instance (priority := 910) Mul.toHasSmul (α : Type _) [Mul α] : HasSmul α α :=
+instance (priority := 910) Mul.toSMul (α : Type _) [Mul α] : SMul α α :=
   ⟨(· * ·)⟩
-#align has_mul.to_has_smul Mul.toHasSmul
+#align has_mul.to_has_smul Mul.toSMul
 
 @[simp, to_additive]
 theorem smul_eq_mul (α : Type _) [Mul α] {a a' : α} : a • a' = a * a' :=
@@ -89,16 +89,16 @@ theorem smul_eq_mul (α : Type _) [Mul α] {a a' : α} : a • a' = a * a' :=
 #align smul_eq_mul smul_eq_mul
 
 /-- Type class for additive monoid actions. -/
-@[ext, protect_proj]
-class AddAction (G : Type _) (P : Type _) [AddMonoid G] extends HasVadd G P where
-  zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p
+@[ext]
+class AddAction (G : Type _) (P : Type _) [AddMonoid G] extends VAdd G P where
+  protected zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p
   add_vadd : ∀ (g₁ g₂ : G) (p : P), g₁ + g₂ +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)
 #align add_action AddAction
 
 /-- Typeclass for multiplicative actions by monoids. This generalizes group actions. -/
-@[ext, protect_proj, to_additive]
-class MulAction (α : Type _) (β : Type _) [Monoid α] extends HasSmul α β where
-  one_smul : ∀ b : β, (1 : α) • b = b
+@[ext, to_additive]
+class MulAction (α : Type _) (β : Type _) [Monoid α] extends SMul α β where
+  protected one_smul : ∀ b : β, (1 : α) • b = b
   mul_smul : ∀ (x y : α) (b : β), (x * y) • b = x • y • b
 #align mul_action MulAction
 
@@ -117,20 +117,20 @@ property. We do not provide typeclasses `*_action.is_transitive`; users should a
 
 /-- `M` acts pretransitively on `α` if for any `x y` there is `g` such that `g +ᵥ x = y`.
   A transitive action should furthermore have `α` nonempty. -/
-class AddAction.IsPretransitive (M α : Type _) [HasVadd M α] : Prop where
+class AddAction.IsPretransitive (M α : Type _) [VAdd M α] : Prop where
   exists_vadd_eq : ∀ x y : α, ∃ g : M, g +ᵥ x = y
 #align add_action.is_pretransitive AddAction.IsPretransitive
 
 /-- `M` acts pretransitively on `α` if for any `x y` there is `g` such that `g • x = y`.
   A transitive action should furthermore have `α` nonempty. -/
 @[to_additive]
-class MulAction.IsPretransitive (M α : Type _) [HasSmul M α] : Prop where
+class MulAction.IsPretransitive (M α : Type _) [SMul M α] : Prop where
   exists_smul_eq : ∀ x y : α, ∃ g : M, g • x = y
 #align mul_action.is_pretransitive MulAction.IsPretransitive
 
 namespace MulAction
 
-variable (M) {α} [HasSmul M α] [IsPretransitive M α]
+variable (M) [SMul M α] [IsPretransitive M α]
 
 @[to_additive]
 theorem exists_smul_eq (x y : α) : ∃ m : M, m • x = y :=
@@ -156,13 +156,13 @@ end MulAction
 
 
 /-- A typeclass mixin saying that two additive actions on the same space commute. -/
-class VaddCommClass (M N α : Type _) [HasVadd M α] [HasVadd N α] : Prop where
+class VaddCommClass (M N α : Type _) [VAdd M α] [VAdd N α] : Prop where
   vadd_comm : ∀ (m : M) (n : N) (a : α), m +ᵥ (n +ᵥ a) = n +ᵥ (m +ᵥ a)
 #align vadd_comm_class VaddCommClass
 
 /-- A typeclass mixin saying that two multiplicative actions on the same space commute. -/
 @[to_additive]
-class SmulCommClass (M N α : Type _) [HasSmul M α] [HasSmul N α] : Prop where
+class SmulCommClass (M N α : Type _) [SMul M α] [SMul N α] : Prop where
   smul_comm : ∀ (m : M) (n : N) (a : α), m • n • a = n • m • a
 #align smul_comm_class SmulCommClass
 
@@ -195,7 +195,7 @@ An example of where this is used is `linear_map.prod_equiv`.
 /-- Commutativity of actions is a symmetric relation. This lemma can't be an instance because this
 would cause a loop in the instance search graph. -/
 @[to_additive]
-theorem SmulCommClass.symm (M N α : Type _) [HasSmul M α] [HasSmul N α] [SmulCommClass M N α] :
+theorem SmulCommClass.symm (M N α : Type _) [SMul M α] [SMul N α] [SmulCommClass M N α] :
     SmulCommClass N M α :=
   ⟨fun a' a b => (smul_comm a a' b).symm⟩
 #align smul_comm_class.symm SmulCommClass.symm
@@ -211,20 +211,20 @@ instance smul_comm_class_self (M α : Type _) [CommMonoid M] [MulAction M α] : 
 
 /-- An instance of `vadd_assoc_class M N α` states that the additive action of `M` on `α` is
 determined by the additive actions of `M` on `N` and `N` on `α`. -/
-class VaddAssocClass (M N α : Type _) [HasVadd M N] [HasVadd N α] [HasVadd M α] : Prop where
+class VAddAssocClass (M N α : Type _) [VAdd M N] [VAdd N α] [VAdd M α] : Prop where
   vadd_assoc : ∀ (x : M) (y : N) (z : α), x +ᵥ y +ᵥ z = x +ᵥ (y +ᵥ z)
-#align vadd_assoc_class VaddAssocClass
+#align vadd_assoc_class VAddAssocClass
 
 /-- An instance of `is_scalar_tower M N α` states that the multiplicative
 action of `M` on `α` is determined by the multiplicative actions of `M` on `N`
 and `N` on `α`. -/
-@[to_additive]
-class IsScalarTower (M N α : Type _) [HasSmul M N] [HasSmul N α] [HasSmul M α] : Prop where
+@[to_additive VAddAssocClass] -- TODO auto-translating
+class IsScalarTower (M N α : Type _) [SMul M N] [SMul N α] [SMul M α] : Prop where
   smul_assoc : ∀ (x : M) (y : N) (z : α), (x • y) • z = x • y • z
 #align is_scalar_tower IsScalarTower
 
 @[simp, to_additive]
-theorem smul_assoc {M N} [HasSmul M N] [HasSmul N α] [HasSmul M α] [IsScalarTower M N α] (x : M)
+theorem smul_assoc {M N} [SMul M N] [SMul N α] [SMul M α] [IsScalarTower M N α] (x : M)
     (y : N) (z : α) : (x • y) • z = x • y • z :=
   IsScalarTower.smul_assoc x y z
 #align smul_assoc smul_assoc
@@ -237,65 +237,65 @@ instance Semigroup.is_scalar_tower [Semigroup α] : IsScalarTower α α α :=
 /-- A typeclass indicating that the right (aka `add_opposite`) and left actions by `M` on `α` are
 equal, that is that `M` acts centrally on `α`. This can be thought of as a version of commutativity
 for `+ᵥ`. -/
-class IsCentralVadd (M α : Type _) [HasVadd M α] [HasVadd Mᵃᵒᵖ α] : Prop where
+class IsCentralVAdd (M α : Type _) [VAdd M α] [VAdd Mᵃᵒᵖ α] : Prop where
   op_vadd_eq_vadd : ∀ (m : M) (a : α), AddOpposite.op m +ᵥ a = m +ᵥ a
-#align is_central_vadd IsCentralVadd
+#align is_central_vadd IsCentralVAdd
 
 /-- A typeclass indicating that the right (aka `mul_opposite`) and left actions by `M` on `α` are
 equal, that is that `M` acts centrally on `α`. This can be thought of as a version of commutativity
 for `•`. -/
-@[to_additive]
-class IsCentralScalar (M α : Type _) [HasSmul M α] [HasSmul Mᵐᵒᵖ α] : Prop where
+@[to_additive IsCentralVAdd] -- TODO auto-translating
+class IsCentralScalar (M α : Type _) [SMul M α] [SMul Mᵐᵒᵖ α] : Prop where
   op_smul_eq_smul : ∀ (m : M) (a : α), MulOpposite.op m • a = m • a
 #align is_central_scalar IsCentralScalar
 
 @[to_additive]
-theorem IsCentralScalar.unop_smul_eq_smul {M α : Type _} [HasSmul M α] [HasSmul Mᵐᵒᵖ α]
+theorem IsCentralScalar.unop_smul_eq_smul {M α : Type _} [SMul M α] [SMul Mᵐᵒᵖ α]
     [IsCentralScalar M α] (m : Mᵐᵒᵖ) (a : α) : MulOpposite.unop m • a = m • a :=
   MulOpposite.rec (fun m => (IsCentralScalar.op_smul_eq_smul _ _).symm) m
 #align is_central_scalar.unop_smul_eq_smul IsCentralScalar.unop_smul_eq_smul
 
-export IsCentralVadd (op_vadd_eq_vadd unop_vadd_eq_vadd)
+export IsCentralVAdd (op_vadd_eq_vadd unop_vadd_eq_vadd)
 
 export IsCentralScalar (op_smul_eq_smul unop_smul_eq_smul)
 
 -- these instances are very low priority, as there is usually a faster way to find these instances
 @[to_additive]
-instance (priority := 50) SmulCommClass.op_left [HasSmul M α] [HasSmul Mᵐᵒᵖ α] [IsCentralScalar M α]
-    [HasSmul N α] [SmulCommClass M N α] : SmulCommClass Mᵐᵒᵖ N α :=
+instance (priority := 50) SmulCommClass.op_left [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M α]
+    [SMul N α] [SmulCommClass M N α] : SmulCommClass Mᵐᵒᵖ N α :=
   ⟨fun m n a => by rw [← unop_smul_eq_smul m (n • a), ← unop_smul_eq_smul m a, smul_comm]⟩
 #align smul_comm_class.op_left SmulCommClass.op_left
 
 @[to_additive]
-instance (priority := 50) SmulCommClass.op_right [HasSmul M α] [HasSmul N α] [HasSmul Nᵐᵒᵖ α]
+instance (priority := 50) SmulCommClass.op_right [SMul M α] [SMul N α] [SMul Nᵐᵒᵖ α]
     [IsCentralScalar N α] [SmulCommClass M N α] : SmulCommClass M Nᵐᵒᵖ α :=
   ⟨fun m n a => by rw [← unop_smul_eq_smul n (m • a), ← unop_smul_eq_smul n a, smul_comm]⟩
 #align smul_comm_class.op_right SmulCommClass.op_right
 
 @[to_additive]
-instance (priority := 50) IsScalarTower.op_left [HasSmul M α] [HasSmul Mᵐᵒᵖ α] [IsCentralScalar M α]
-    [HasSmul M N] [HasSmul Mᵐᵒᵖ N] [IsCentralScalar M N] [HasSmul N α] [IsScalarTower M N α] :
+instance (priority := 50) IsScalarTower.op_left [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M α]
+    [SMul M N] [SMul Mᵐᵒᵖ N] [IsCentralScalar M N] [SMul N α] [IsScalarTower M N α] :
     IsScalarTower Mᵐᵒᵖ N α :=
   ⟨fun m n a => by rw [← unop_smul_eq_smul m (n • a), ← unop_smul_eq_smul m n, smul_assoc]⟩
 #align is_scalar_tower.op_left IsScalarTower.op_left
 
 @[to_additive]
-instance (priority := 50) IsScalarTower.op_right [HasSmul M α] [HasSmul M N] [HasSmul N α]
-    [HasSmul Nᵐᵒᵖ α] [IsCentralScalar N α] [IsScalarTower M N α] : IsScalarTower M Nᵐᵒᵖ α :=
+instance (priority := 50) IsScalarTower.op_right [SMul M α] [SMul M N] [SMul N α]
+    [SMul Nᵐᵒᵖ α] [IsCentralScalar N α] [IsScalarTower M N α] : IsScalarTower M Nᵐᵒᵖ α :=
   ⟨fun m n a => by
     rw [← unop_smul_eq_smul n a, ← unop_smul_eq_smul (m • n) a, MulOpposite.unop_smul, smul_assoc]⟩
 #align is_scalar_tower.op_right IsScalarTower.op_right
 
-namespace HasSmul
+namespace SMul
 
-variable [HasSmul M α]
+variable [SMul M α]
 
 /-- Auxiliary definition for `has_smul.comp`, `mul_action.comp_hom`,
 `distrib_mul_action.comp_hom`, `module.comp_hom`, etc. -/
 @[simp, to_additive " Auxiliary definition for `has_vadd.comp`, `add_action.comp_hom`, etc. "]
-def Comp.smul (g : N → M) (n : N) (a : α) : α :=
+def comp.smul (g : N → M) (n : N) (a : α) : α :=
   g n • a
-#align has_smul.comp.smul HasSmul.Comp.smul
+#align has_smul.comp.smul SMul.comp.smul
 
 variable (α)
 
@@ -306,8 +306,8 @@ See note [reducible non-instances]. Since this is reducible, we make sure to go 
 @[reducible,
   to_additive
       " An additive action of `M` on `α` and a function `N → M` induces\n  an additive action of `N` on `α` "]
-def comp (g : N → M) : HasSmul N α where smul := HasSmul.Comp.smul g
-#align has_smul.comp HasSmul.comp
+def comp (g : N → M) : SMul N α where smul := SMul.comp.smul g
+#align has_smul.comp SMul.comp
 
 variable {α}
 
@@ -320,62 +320,61 @@ are still metavariables.
 -/
 @[to_additive
       "Given a tower of additive actions `M → α → β`, if we use\n`has_smul.comp` to pull back both of `M`'s actions by a map `g : N → M`, then we obtain a new tower\nof scalar actions `N → α → β`.\n\nThis cannot be an instance because it can cause infinite loops whenever the `has_smul` arguments\nare still metavariables."]
-theorem comp.is_scalar_tower [HasSmul M β] [HasSmul α β] [IsScalarTower M α β] (g : N → M) : by
+theorem comp.is_scalar_tower [SMul M β] [SMul α β] [IsScalarTower M α β] (g : N → M) : by
     haveI := comp α g <;> haveI := comp β g <;> exact IsScalarTower N α β :=
   { smul_assoc := fun n => @smul_assoc _ _ _ _ _ _ _ (g n) }
-#align has_smul.comp.is_scalar_tower HasSmul.comp.is_scalar_tower
+#align has_smul.comp.is_scalar_tower SMul.comp.is_scalar_tower
 
 /-- This cannot be an instance because it can cause infinite loops whenever the `has_smul` arguments
 are still metavariables.
 -/
 @[to_additive
       "This cannot be an instance because it can cause infinite loops whenever\nthe `has_vadd` arguments are still metavariables."]
-theorem comp.smul_comm_class [HasSmul β α] [SmulCommClass M β α] (g : N → M) :
+theorem comp.smul_comm_class [SMul β α] [SmulCommClass M β α] (g : N → M) :
     haveI := comp α g
     SmulCommClass N β α :=
   { smul_comm := fun n => @smul_comm _ _ _ _ _ _ (g n) }
-#align has_smul.comp.smul_comm_class HasSmul.comp.smul_comm_class
+#align has_smul.comp.smul_comm_class SMul.comp.smul_comm_class
 
 /-- This cannot be an instance because it can cause infinite loops whenever the `has_smul` arguments
 are still metavariables.
 -/
 @[to_additive
       "This cannot be an instance because it can cause infinite loops whenever\nthe `has_vadd` arguments are still metavariables."]
-theorem comp.smul_comm_class' [HasSmul β α] [SmulCommClass β M α] (g : N → M) :
+theorem comp.smul_comm_class' [SMul β α] [SmulCommClass β M α] (g : N → M) :
     haveI := comp α g
     SmulCommClass β N α :=
   { smul_comm := fun _ n => @smul_comm _ _ _ _ _ _ _ (g n) }
-#align has_smul.comp.smul_comm_class' HasSmul.comp.smul_comm_class'
+#align has_smul.comp.smul_comm_class' SMul.comp.smul_comm_class'
 
-end HasSmul
+end SMul
 
 section
 
 /-- Note that the `smul_comm_class α β β` typeclass argument is usually satisfied by `algebra α β`.
 -/
-@[to_additive, nolint to_additive_doc]
-theorem mul_smul_comm [Mul β] [HasSmul α β] [SmulCommClass α β β] (s : α) (x y : β) :
+@[to_additive] -- Porting note: nolint to_additive_doc
+theorem mul_smul_comm [Mul β] [SMul α β] [SmulCommClass α β β] (s : α) (x y : β) :
     x * s • y = s • (x * y) :=
   (smul_comm s x y).symm
 #align mul_smul_comm mul_smul_comm
 
 /-- Note that the `is_scalar_tower α β β` typeclass argument is usually satisfied by `algebra α β`.
 -/
-@[to_additive, nolint to_additive_doc]
-theorem smul_mul_assoc [Mul β] [HasSmul α β] [IsScalarTower α β β] (r : α) (x y : β) :
+@[to_additive] -- Porting note: nolint to_additive_doc
+theorem smul_mul_assoc [Mul β] [SMul α β] [IsScalarTower α β β] (r : α) (x y : β) :
     r • x * y = r • (x * y) :=
   smul_assoc r x y
 #align smul_mul_assoc smul_mul_assoc
 
 @[to_additive]
-theorem smul_smul_smul_comm [HasSmul α β] [HasSmul α γ] [HasSmul β δ] [HasSmul α δ] [HasSmul γ δ]
+theorem smul_smul_smul_comm [SMul α β] [SMul α γ] [SMul β δ] [SMul α δ] [SMul γ δ]
     [IsScalarTower α β δ] [IsScalarTower α γ δ] [SmulCommClass β γ δ] (a : α) (b : β) (c : γ)
     (d : δ) : (a • b) • c • d = (a • c) • b • d := by
   rw [smul_assoc, smul_assoc, smul_comm b]
-  infer_instance
 #align smul_smul_smul_comm smul_smul_smul_comm
 
-variable [HasSmul M α]
+variable [SMul M α]
 
 @[to_additive]
 theorem Commute.smul_right [Mul α] [SmulCommClass M α α] [IsScalarTower M α α] {a b : α}
@@ -393,7 +392,7 @@ end
 
 section ite
 
-variable [HasSmul M α] (p : Prop) [Decidable p]
+variable [SMul M α] (p : Prop) [Decidable p]
 
 @[to_additive]
 theorem ite_smul (a₁ a₂ : M) (b : α) : ite p a₁ a₂ • b = ite p (a₁ • b) (a₂ • b) := by
@@ -440,9 +439,9 @@ variable {M}
 /-- Pullback a multiplicative action along an injective map respecting `•`.
 See note [reducible non-instances]. -/
 @[reducible, to_additive "Pullback an additive action along an injective map respecting `+ᵥ`."]
-protected def Function.Injective.mulAction [HasSmul M β] (f : β → α) (hf : Injective f)
+protected def Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
-    MulAction M β where 
+    MulAction M β where
   smul := (· • ·)
   one_smul x := hf <| (smul _ _).trans <| one_smul _ (f x)
   mul_smul c₁ c₂ x := hf <| by simp only [smul, mul_smul]
@@ -451,14 +450,14 @@ protected def Function.Injective.mulAction [HasSmul M β] (f : β → α) (hf : 
 /-- Pushforward a multiplicative action along a surjective map respecting `•`.
 See note [reducible non-instances]. -/
 @[reducible, to_additive "Pushforward an additive action along a surjective map respecting `+ᵥ`."]
-protected def Function.Surjective.mulAction [HasSmul M β] (f : α → β) (hf : Surjective f)
+protected def Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
-    MulAction M β where 
+    MulAction M β where
   smul := (· • ·)
-  one_smul y := by 
+  one_smul y := by
     rcases hf y with ⟨x, rfl⟩
     rw [← smul, one_smul]
-  mul_smul c₁ c₂ y := by 
+  mul_smul c₁ c₂ y := by
     rcases hf y with ⟨x, rfl⟩
     simp only [← smul, mul_smul]
 #align function.surjective.mul_action Function.Surjective.mulAction
@@ -471,12 +470,12 @@ See also `function.surjective.distrib_mul_action_left` and `function.surjective.
   to_additive
       "Push forward the action of `R` on `M` along a compatible\nsurjective map `f : R →+ S`."]
 def Function.Surjective.mulActionLeft {R S M : Type _} [Monoid R] [MulAction R M] [Monoid S]
-    [HasSmul S M] (f : R →* S) (hf : Function.Surjective f)
+    [SMul S M] (f : R →* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) :
-    MulAction S M where 
+    MulAction S M where
   smul := (· • ·)
   one_smul b := by rw [← f.map_one, hsmul, one_smul]
-  mul_smul := hf.Forall₂.mpr fun a b x => by simp only [← f.map_mul, hsmul, mul_smul]
+  mul_smul := hf.forall₂.mpr fun a b x => by simp only [← f.map_mul, hsmul, mul_smul]
 #align function.surjective.mul_action_left Function.Surjective.mulActionLeft
 
 section
@@ -489,7 +488,7 @@ variable (M)
 This is promoted to a module by `semiring.to_module`. -/
 @[to_additive]
 instance (priority := 910) Monoid.toMulAction :
-    MulAction M M where 
+    MulAction M M where
   smul := (· * ·)
   one_smul := one_mul
   mul_smul := mul_assoc
@@ -509,7 +508,7 @@ variable {M}
 
 /-- Note that the `is_scalar_tower M α α` and `smul_comm_class M α α` typeclass arguments are
 usually satisfied by `algebra M α`. -/
-@[to_additive, nolint to_additive_doc]
+@[to_additive] -- Porting note: nolint to_additive_doc
 theorem smul_mul_smul [Mul α] (r s : M) (x y : α) [IsScalarTower M α α] [SmulCommClass M α α] :
     r • x * s • y = (r * s) • (x * y) := by
   rw [smul_mul_assoc, mul_smul_comm, ← smul_assoc, smul_eq_mul]
@@ -545,8 +544,8 @@ a multiplicative action of `N` on `α`.
 See note [reducible non-instances]. -/
 @[reducible, to_additive]
 def compHom [Monoid N] (g : N →* M) :
-    MulAction N α where 
-  smul := HasSmul.Comp.smul g
+    MulAction N α where
+  smul := SMul.comp.smul g
   one_smul := by simp [g.map_one, MulAction.one_smul]
   mul_smul := by simp [g.map_mul, MulAction.mul_smul]
 #align mul_action.comp_hom MulAction.compHom
@@ -564,29 +563,29 @@ end
 section CompatibleScalar
 
 @[simp, to_additive]
-theorem smul_one_smul {M} (N) [Monoid N] [HasSmul M N] [MulAction N α] [HasSmul M α]
+theorem smul_one_smul {M} (N) [Monoid N] [SMul M N] [MulAction N α] [SMul M α]
     [IsScalarTower M N α] (x : M) (y : α) : (x • (1 : N)) • y = x • y := by
   rw [smul_assoc, one_smul]
 #align smul_one_smul smul_one_smul
 
 @[simp, to_additive]
-theorem smul_one_mul {M N} [MulOneClass N] [HasSmul M N] [IsScalarTower M N N] (x : M) (y : N) :
-    x • 1 * y = x • y := by rw [smul_mul_assoc, one_mul]
+theorem smul_one_mul {M N} [MulOneClass N] [SMul M N] [IsScalarTower M N N] (x : M) (y : N) :
+    x • (1 : N) * y = x • y := by rw [smul_mul_assoc, one_mul]
 #align smul_one_mul smul_one_mul
 
 @[simp, to_additive]
-theorem mul_smul_one {M N} [MulOneClass N] [HasSmul M N] [SmulCommClass M N N] (x : M) (y : N) :
-    y * x • 1 = x • y := by rw [← smul_eq_mul, ← smul_comm, smul_eq_mul, mul_one]
+theorem mul_smul_one {M N} [MulOneClass N] [SMul M N] [SmulCommClass M N N] (x : M) (y : N) :
+    y * x • (1 : N) = x • y := by rw [← smul_eq_mul, ← smul_comm, smul_eq_mul, mul_one]
 #align mul_smul_one mul_smul_one
 
 @[to_additive]
-theorem IsScalarTower.of_smul_one_mul {M N} [Monoid N] [HasSmul M N]
+theorem IsScalarTower.of_smul_one_mul {M N} [Monoid N] [SMul M N]
     (h : ∀ (x : M) (y : N), x • (1 : N) * y = x • y) : IsScalarTower M N N :=
   ⟨fun x y z => by rw [← h, smul_eq_mul, mul_assoc, h, smul_eq_mul]⟩
 #align is_scalar_tower.of_smul_one_mul IsScalarTower.of_smul_one_mul
 
 @[to_additive]
-theorem SmulCommClass.of_mul_smul_one {M N} [Monoid N] [HasSmul M N]
+theorem SmulCommClass.of_mul_smul_one {M N} [Monoid N] [SMul M N]
     (H : ∀ (x : M) (y : N), y * x • (1 : N) = x • y) : SmulCommClass M N N :=
   ⟨fun x y z => by rw [← H x z, smul_eq_mul, ← H, smul_eq_mul, mul_assoc]⟩
 #align smul_comm_class.of_mul_smul_one SmulCommClass.of_mul_smul_one
@@ -597,8 +596,8 @@ theorem SmulCommClass.of_mul_smul_one {M N} [Monoid N] [HasSmul M N]
       "If the additive action of `M` on `N` is compatible with addition on `N`, then\n`λ x, x +ᵥ 0` is an additive monoid homomorphism from `M` to `N`.",
   simps]
 def smulOneHom {M N} [Monoid M] [Monoid N] [MulAction M N] [IsScalarTower M N N] :
-    M →* N where 
-  toFun x := x • 1
+    M →* N where
+  toFun x := x • (1 : N)
   map_one' := one_smul _ _
   map_mul' x y := by rw [smul_one_mul, smul_smul]
 #align smul_one_hom smulOneHom
@@ -606,7 +605,7 @@ def smulOneHom {M N} [Monoid M] [Monoid N] [MulAction M N] [IsScalarTower M N N]
 end CompatibleScalar
 
 /-- Typeclass for scalar multiplication that preserves `0` on the right. -/
-class SmulZeroClass (M A : Type _) [Zero A] extends HasSmul M A where
+class SmulZeroClass (M A : Type _) [Zero A] extends SMul M A where
   smul_zero : ∀ a : M, a • (0 : A) = 0
 #align smul_zero_class SmulZeroClass
 
@@ -622,9 +621,9 @@ theorem smul_zero (a : M) : a • (0 : A) = 0 :=
 /-- Pullback a zero-preserving scalar multiplication along an injective zero-preserving map.
 See note [reducible non-instances]. -/
 @[reducible]
-protected def Function.Injective.smulZeroClass [Zero B] [HasSmul M B] (f : ZeroHom B A)
+protected def Function.Injective.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom B A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
-    SmulZeroClass M B where 
+    SmulZeroClass M B where
   smul := (· • ·)
   smul_zero c := hf <| by simp only [smul, map_zero, smul_zero]
 #align function.injective.smul_zero_class Function.Injective.smulZeroClass
@@ -632,9 +631,9 @@ protected def Function.Injective.smulZeroClass [Zero B] [HasSmul M B] (f : ZeroH
 /-- Pushforward a zero-preserving scalar multiplication along a zero-preserving map.
 See note [reducible non-instances]. -/
 @[reducible]
-protected def ZeroHom.smulZeroClass [Zero B] [HasSmul M B] (f : ZeroHom A B)
+protected def ZeroHom.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom A B)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
-    SmulZeroClass M B where 
+    SmulZeroClass M B where
   smul := (· • ·)
   smul_zero c := by simp only [← map_zero f, ← smul, smul_zero]
 #align zero_hom.smul_zero_class ZeroHom.smulZeroClass
@@ -645,9 +644,9 @@ See also `function.surjective.distrib_mul_action_left`.
 -/
 @[reducible]
 def Function.Surjective.smulZeroClassLeft {R S M : Type _} [Zero M] [SmulZeroClass R M]
-    [HasSmul S M] (f : R → S) (hf : Function.Surjective f)
+    [SMul S M] (f : R → S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) :
-    SmulZeroClass S M where 
+    SmulZeroClass S M where
   smul := (· • ·)
   smul_zero := hf.forall.mpr fun c => by rw [hsmul, smul_zero]
 #align function.surjective.smul_zero_class_left Function.Surjective.smulZeroClassLeft
@@ -658,15 +657,15 @@ variable (A)
 See note [reducible non-instances]. -/
 @[reducible]
 def SmulZeroClass.compFun (f : N → M) :
-    SmulZeroClass N A where 
-  smul := HasSmul.Comp.smul f
+    SmulZeroClass N A where
+  smul := SMul.comp.smul f
   smul_zero x := smul_zero (f x)
 #align smul_zero_class.comp_fun SmulZeroClass.compFun
 
 /-- Each element of the scalars defines a zero-preserving map. -/
 @[simps]
 def SmulZeroClass.toZeroHom (x : M) :
-    ZeroHom A A where 
+    ZeroHom A A where
   toFun := (· • ·) x
   map_zero' := smul_zero x
 #align smul_zero_class.to_zero_hom SmulZeroClass.toZeroHom
@@ -694,9 +693,10 @@ theorem smul_add (a : M) (b₁ b₂ : A) : a • (b₁ + b₂) = a • b₁ + a 
 homomorphism.
 See note [reducible non-instances]. -/
 @[reducible]
-protected def Function.Injective.distribSmul [AddZeroClass B] [HasSmul M B] (f : B →+ A)
+protected def Function.Injective.distribSmul [AddZeroClass B] [SMul M B] (f : B →+ A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribSmul M B :=
-  { hf.SmulZeroClass f.toZeroHom smul with smul := (· • ·),
+  { hf.smulZeroClass f.toZeroHom smul with
+    smul := (· • ·),
     smul_add := fun c x y => hf <| by simp only [smul, map_add, smul_add] }
 #align function.injective.distrib_smul Function.Injective.distribSmul
 
@@ -704,10 +704,11 @@ protected def Function.Injective.distribSmul [AddZeroClass B] [HasSmul M B] (f :
 homomorphism.
 See note [reducible non-instances]. -/
 @[reducible]
-protected def Function.Surjective.distribSmul [AddZeroClass B] [HasSmul M B] (f : A →+ B)
+protected def Function.Surjective.distribSmul [AddZeroClass B] [SMul M B] (f : A →+ B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribSmul M B :=
-  { f.toZeroHom.SmulZeroClass smul with smul := (· • ·),
-    smul_add := fun c x y => by 
+  { f.toZeroHom.smulZeroClass smul with
+    smul := (· • ·),
+    smul_add := fun c x y => by
       rcases hf x with ⟨x, rfl⟩
       rcases hf y with ⟨y, rfl⟩
       simp only [smul_add, ← smul, ← map_add] }
@@ -719,9 +720,10 @@ See also `function.surjective.distrib_mul_action_left`.
 -/
 @[reducible]
 def Function.Surjective.distribSmulLeft {R S M : Type _} [AddZeroClass M] [DistribSmul R M]
-    [HasSmul S M] (f : R → S) (hf : Function.Surjective f)
+    [SMul S M] (f : R → S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : DistribSmul S M :=
-  { hf.smulZeroClassLeft f hsmul with smul := (· • ·),
+  { hf.smulZeroClassLeft f hsmul with
+    smul := (· • ·),
     smul_add := hf.forall.mpr fun c x y => by simp only [hsmul, smul_add] }
 #align function.surjective.distrib_smul_left Function.Surjective.distribSmulLeft
 
@@ -731,7 +733,8 @@ variable (A)
 See note [reducible non-instances]. -/
 @[reducible]
 def DistribSmul.compFun (f : N → M) : DistribSmul N A :=
-  { SmulZeroClass.compFun A f with smul := HasSmul.Comp.smul f,
+  { SmulZeroClass.compFun A f with
+    smul := SMul.comp.smul f,
     smul_add := fun x => smul_add (f x) }
 #align distrib_smul.comp_fun DistribSmul.compFun
 
@@ -765,26 +768,26 @@ and the two paths from `distrib_mul_action` to `has_smul` are indeed definitiona
 
 
 example :
-    (DistribMulAction.toMulAction.toHasSmul : HasSmul M A) =
-      DistribMulAction.toDistribSmul.toHasSmul :=
+    (DistribMulAction.toMulAction.toSMul : SMul M A) =
+      DistribMulAction.toDistribSmul.toSMul :=
   rfl
 
 /-- Pullback a distributive multiplicative action along an injective additive monoid
 homomorphism.
 See note [reducible non-instances]. -/
 @[reducible]
-protected def Function.Injective.distribMulAction [AddMonoid B] [HasSmul M B] (f : B →+ A)
+protected def Function.Injective.distribMulAction [AddMonoid B] [SMul M B] (f : B →+ A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribMulAction M B :=
-  { hf.DistribSmul f smul, hf.MulAction f smul with smul := (· • ·) }
+  { hf.distribSmul f smul, hf.mulAction f smul with smul := (· • ·) }
 #align function.injective.distrib_mul_action Function.Injective.distribMulAction
 
 /-- Pushforward a distributive multiplicative action along a surjective additive monoid
 homomorphism.
 See note [reducible non-instances]. -/
 @[reducible]
-protected def Function.Surjective.distribMulAction [AddMonoid B] [HasSmul M B] (f : A →+ B)
+protected def Function.Surjective.distribMulAction [AddMonoid B] [SMul M B] (f : A →+ B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribMulAction M B :=
-  { hf.DistribSmul f smul, hf.MulAction f smul with smul := (· • ·) }
+  { hf.distribSmul f smul, hf.mulAction f smul with smul := (· • ·) }
 #align function.surjective.distrib_mul_action Function.Surjective.distribMulAction
 
 /-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →* S`.
@@ -793,7 +796,7 @@ See also `function.surjective.mul_action_left` and `function.surjective.module_l
 -/
 @[reducible]
 def Function.Surjective.distribMulActionLeft {R S M : Type _} [Monoid R] [AddMonoid M]
-    [DistribMulAction R M] [Monoid S] [HasSmul S M] (f : R →* S) (hf : Function.Surjective f)
+    [DistribMulAction R M] [Monoid S] [SMul S M] (f : R →* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : DistribMulAction S M :=
   { hf.distribSmulLeft f hsmul, hf.mulActionLeft f hsmul with smul := (· • ·) }
 #align function.surjective.distrib_mul_action_left Function.Surjective.distribMulActionLeft
@@ -804,7 +807,7 @@ variable (A)
 See note [reducible non-instances]. -/
 @[reducible]
 def DistribMulAction.compHom [Monoid N] (f : N →* M) : DistribMulAction N A :=
-  { DistribSmul.compFun A f, MulAction.compHom A f with smul := HasSmul.Comp.smul f }
+  { DistribSmul.compFun A f, MulAction.compHom A f with smul := SMul.comp.smul f }
 #align distrib_mul_action.comp_hom DistribMulAction.compHom
 
 /-- Each element of the monoid defines a additive monoid homomorphism. -/
@@ -818,8 +821,7 @@ variable (M)
 /-- Each element of the monoid defines an additive monoid homomorphism. -/
 @[simps]
 def DistribMulAction.toAddMonoidEnd :
-    M →* AddMonoid.EndCat
-        A where 
+    M →* AddMonoid.End A where
   toFun := DistribMulAction.toAddMonoidHom A
   map_one' := AddMonoidHom.ext <| one_smul M
   map_mul' x y := AddMonoidHom.ext <| mul_smul x y
@@ -885,9 +887,10 @@ theorem smul_mul' (a : M) (b₁ b₂ : A) : a • (b₁ * b₂) = a • b₁ * a
 homomorphism.
 See note [reducible non-instances]. -/
 @[reducible]
-protected def Function.Injective.mulDistribMulAction [Monoid B] [HasSmul M B] (f : B →* A)
+protected def Function.Injective.mulDistribMulAction [Monoid B] [SMul M B] (f : B →* A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M B :=
-  { hf.MulAction f smul with smul := (· • ·),
+  { hf.mulAction f smul with
+    smul := (· • ·),
     smul_mul := fun c x y => hf <| by simp only [smul, f.map_mul, smul_mul'],
     smul_one := fun c => hf <| by simp only [smul, f.map_one, smul_one] }
 #align function.injective.mul_distrib_mul_action Function.Injective.mulDistribMulAction
@@ -896,10 +899,11 @@ protected def Function.Injective.mulDistribMulAction [Monoid B] [HasSmul M B] (f
 homomorphism.
 See note [reducible non-instances]. -/
 @[reducible]
-protected def Function.Surjective.mulDistribMulAction [Monoid B] [HasSmul M B] (f : A →* B)
+protected def Function.Surjective.mulDistribMulAction [Monoid B] [SMul M B] (f : A →* B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M B :=
-  { hf.MulAction f smul with smul := (· • ·),
-    smul_mul := fun c x y => by 
+  { hf.mulAction f smul with
+    smul := (· • ·),
+    smul_mul := fun c x y => by
       rcases hf x with ⟨x, rfl⟩
       rcases hf y with ⟨y, rfl⟩
       simp only [smul_mul', ← smul, ← f.map_mul],
@@ -912,13 +916,15 @@ variable (A)
 See note [reducible non-instances]. -/
 @[reducible]
 def MulDistribMulAction.compHom [Monoid N] (f : N →* M) : MulDistribMulAction N A :=
-  { MulAction.compHom A f with smul := HasSmul.Comp.smul f, smul_one := fun x => smul_one (f x),
+  { MulAction.compHom A f with
+    smul := SMul.comp.smul f,
+    smul_one := fun x => smul_one (f x),
     smul_mul := fun x => smul_mul' (f x) }
 #align mul_distrib_mul_action.comp_hom MulDistribMulAction.compHom
 
 /-- Scalar multiplication by `r` as a `monoid_hom`. -/
 def MulDistribMulAction.toMonoidHom (r : M) :
-    A →* A where 
+    A →* A where
   toFun := (· • ·) r
   map_one' := smul_one r
   map_mul' := smul_mul' r
@@ -937,7 +943,7 @@ variable (M A)
 /-- Each element of the monoid defines a monoid homomorphism. -/
 @[simps]
 def MulDistribMulAction.toMonoidEnd :
-    M →* Monoid.EndCat A where 
+    M →* Monoid.End A where
   toFun := MulDistribMulAction.toMonoidHom A
   map_one' := MonoidHom.ext <| one_smul M
   map_mul' x y := MonoidHom.ext <| mul_smul x y
@@ -965,18 +971,18 @@ variable (α)
 /-- The monoid of endomorphisms.
 
 Note that this is generalized by `category_theory.End` to categories other than `Type u`. -/
-protected def Function.EndCat :=
+protected def Function.End :=
   α → α
-#align function.End Function.EndCat
+#align function.End Function.End
 
-instance : Monoid (Function.EndCat α) where 
+instance : Monoid (Function.End α) where
   one := id
   mul := (· ∘ ·)
   mul_assoc f g h := rfl
   mul_one f := rfl
   one_mul f := rfl
 
-instance : Inhabited (Function.EndCat α) :=
+instance : Inhabited (Function.End α) :=
   ⟨1⟩
 
 variable {α}
@@ -994,52 +1000,52 @@ This is generalized to bundled endomorphisms by:
 * `ring_hom.apply_mul_semiring_action`
 * `alg_equiv.apply_mul_semiring_action`
 -/
-instance Function.EndCat.applyMulAction :
-    MulAction (Function.EndCat α) α where 
+instance Function.End.applyMulAction :
+    MulAction (Function.End α) α where
   smul := (· <| ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
-#align function.End.apply_mul_action Function.EndCat.applyMulAction
+#align function.End.apply_mul_action Function.End.applyMulAction
 
 @[simp]
-theorem Function.EndCat.smul_def (f : Function.EndCat α) (a : α) : f • a = f a :=
+theorem Function.End.smul_def (f : Function.End α) (a : α) : f • a = f a :=
   rfl
-#align function.End.smul_def Function.EndCat.smul_def
+#align function.End.smul_def Function.End.smul_def
 
 /-- `function.End.apply_mul_action` is faithful. -/
-instance Function.EndCat.apply_has_faithful_smul : HasFaithfulSmul (Function.EndCat α) α :=
-  ⟨fun x y => funext⟩
-#align function.End.apply_has_faithful_smul Function.EndCat.apply_has_faithful_smul
+instance Function.End.apply_has_faithful_smul : HasFaithfulSmul (Function.End α) α :=
+  ⟨fun {_ _} => funext⟩
+#align function.End.apply_has_faithful_smul Function.End.apply_has_faithful_smul
 
 /-- The tautological action by `add_monoid.End α` on `α`.
 
 This generalizes `function.End.apply_mul_action`. -/
-instance AddMonoid.EndCat.applyDistribMulAction [AddMonoid α] :
-    DistribMulAction (AddMonoid.EndCat α)
-      α where 
+instance AddMonoid.End.applyDistribMulAction [AddMonoid α] :
+    DistribMulAction (AddMonoid.End α)
+      α where
   smul := (· <| ·)
   smul_zero := AddMonoidHom.map_zero
   smul_add := AddMonoidHom.map_add
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
-#align add_monoid.End.apply_distrib_mul_action AddMonoid.EndCat.applyDistribMulAction
+#align add_monoid.End.apply_distrib_mul_action AddMonoid.End.applyDistribMulAction
 
 @[simp]
-theorem AddMonoid.EndCat.smul_def [AddMonoid α] (f : AddMonoid.EndCat α) (a : α) : f • a = f a :=
+theorem AddMonoid.End.smul_def [AddMonoid α] (f : AddMonoid.End α) (a : α) : f • a = f a :=
   rfl
-#align add_monoid.End.smul_def AddMonoid.EndCat.smul_def
+#align add_monoid.End.smul_def AddMonoid.End.smul_def
 
 /-- `add_monoid.End.apply_distrib_mul_action` is faithful. -/
-instance AddMonoid.EndCat.apply_has_faithful_smul [AddMonoid α] :
-    HasFaithfulSmul (AddMonoid.EndCat α) α :=
-  ⟨AddMonoidHom.ext⟩
-#align add_monoid.End.apply_has_faithful_smul AddMonoid.EndCat.apply_has_faithful_smul
+instance AddMonoid.End.apply_has_faithful_smul [AddMonoid α] :
+    HasFaithfulSmul (AddMonoid.End α) α :=
+  ⟨fun {_ _ h} => AddMonoidHom.ext h⟩
+#align add_monoid.End.apply_has_faithful_smul AddMonoid.End.apply_has_faithful_smul
 
 /-- The monoid hom representing a monoid action.
 
 When `M` is a group, see `mul_action.to_perm_hom`. -/
 def MulAction.toEndHom [Monoid M] [MulAction M α] :
-    M →* Function.EndCat α where 
+    M →* Function.End α where
   toFun := (· • ·)
   map_one' := funext (one_smul M)
   map_mul' x y := funext (mul_smul x y)
@@ -1049,14 +1055,13 @@ def MulAction.toEndHom [Monoid M] [MulAction M α] :
 
 See note [reducible non-instances]. -/
 @[reducible]
-def MulAction.ofEndHom [Monoid M] (f : M →* Function.EndCat α) : MulAction M α :=
+def MulAction.ofEndHom [Monoid M] (f : M →* Function.End α) : MulAction M α :=
   MulAction.compHom α f
 #align mul_action.of_End_hom MulAction.ofEndHom
 
 /-- The tautological additive action by `additive (function.End α)` on `α`. -/
 instance AddAction.functionEnd :
-    AddAction (Additive (Function.EndCat α))
-      α where 
+    AddAction (Additive (Function.End α)) α where
   vadd := (· <| ·)
   zero_vadd _ := rfl
   add_vadd _ _ _ := rfl
@@ -1066,7 +1071,7 @@ instance AddAction.functionEnd :
 
 When `M` is a group, see `add_action.to_perm_hom`. -/
 def AddAction.toEndHom [AddMonoid M] [AddAction M α] :
-    M →+ Additive (Function.EndCat α) where 
+    M →+ Additive (Function.End α) where
   toFun := (· +ᵥ ·)
   map_zero' := funext (zero_vadd M)
   map_add' x y := funext (add_vadd x y)
@@ -1076,7 +1081,7 @@ def AddAction.toEndHom [AddMonoid M] [AddAction M α] :
 
 See note [reducible non-instances]. -/
 @[reducible]
-def AddAction.ofEndHom [AddMonoid M] (f : M →+ Additive (Function.EndCat α)) : AddAction M α :=
+def AddAction.ofEndHom [AddMonoid M] (f : M →+ Additive (Function.End α)) : AddAction M α :=
   AddAction.compHom α f
 #align add_action.of_End_hom AddAction.ofEndHom
 
@@ -1087,43 +1092,43 @@ section
 
 open Additive Multiplicative
 
-instance Additive.hasVadd [HasSmul α β] : HasVadd (Additive α) β :=
+instance Additive.vAdd [SMul α β] : VAdd (Additive α) β :=
   ⟨fun a => (· • ·) (toMul a)⟩
-#align additive.has_vadd Additive.hasVadd
+#align additive.has_vadd Additive.vAdd
 
-instance Multiplicative.hasSmul [HasVadd α β] : HasSmul (Multiplicative α) β :=
+instance Multiplicative.sMul [VAdd α β] : SMul (Multiplicative α) β :=
   ⟨fun a => (· +ᵥ ·) (toAdd a)⟩
-#align multiplicative.has_smul Multiplicative.hasSmul
+#align multiplicative.has_smul Multiplicative.sMul
 
 @[simp]
-theorem to_mul_smul [HasSmul α β] (a) (b : β) : (toMul a : α) • b = a +ᵥ b :=
+theorem to_mul_smul [SMul α β] (a) (b : β) : (toMul a : α) • b = a +ᵥ b :=
   rfl
 #align to_mul_smul to_mul_smul
 
 @[simp]
-theorem of_mul_vadd [HasSmul α β] (a : α) (b : β) : ofMul a +ᵥ b = a • b :=
+theorem of_mul_vadd [SMul α β] (a : α) (b : β) : ofMul a +ᵥ b = a • b :=
   rfl
 #align of_mul_vadd of_mul_vadd
 
 @[simp]
-theorem to_add_vadd [HasVadd α β] (a) (b : β) : (toAdd a : α) +ᵥ b = a • b :=
+theorem to_add_vadd [VAdd α β] (a) (b : β) : (toAdd a : α) +ᵥ b = a • b :=
   rfl
 #align to_add_vadd to_add_vadd
 
 @[simp]
-theorem of_add_smul [HasVadd α β] (a : α) (b : β) : ofAdd a • b = a +ᵥ b :=
+theorem of_add_smul [VAdd α β] (a : α) (b : β) : ofAdd a • b = a +ᵥ b :=
   rfl
 #align of_add_smul of_add_smul
 
 instance Additive.addAction [Monoid α] [MulAction α β] :
-    AddAction (Additive α) β where 
+    AddAction (Additive α) β where
   zero_vadd := MulAction.one_smul
   add_vadd := MulAction.mul_smul
 #align additive.add_action Additive.addAction
 
 instance Multiplicative.mulAction [AddMonoid α] [AddAction α β] :
     MulAction (Multiplicative α)
-      β where 
+      β where
   one_smul := AddAction.zero_vadd
   mul_smul := AddAction.add_vadd
 #align multiplicative.mul_action Multiplicative.mulAction
@@ -1138,15 +1143,14 @@ instance Multiplicative.add_action_is_pretransitive [AddMonoid α] [AddAction α
   ⟨@AddAction.exists_vadd_eq α _ _ _⟩
 #align multiplicative.add_action_is_pretransitive Multiplicative.add_action_is_pretransitive
 
-instance Additive.vadd_comm_class [HasSmul α γ] [HasSmul β γ] [SmulCommClass α β γ] :
+instance Additive.vadd_comm_class [SMul α γ] [SMul β γ] [SmulCommClass α β γ] :
     VaddCommClass (Additive α) (Additive β) γ :=
   ⟨@smul_comm α β _ _ _ _⟩
 #align additive.vadd_comm_class Additive.vadd_comm_class
 
-instance Multiplicative.smul_comm_class [HasVadd α γ] [HasVadd β γ] [VaddCommClass α β γ] :
+instance Multiplicative.smul_comm_class [VAdd α γ] [VAdd β γ] [VaddCommClass α β γ] :
     SmulCommClass (Multiplicative α) (Multiplicative β) γ :=
   ⟨@vadd_comm α β _ _ _ _⟩
 #align multiplicative.smul_comm_class Multiplicative.smul_comm_class
 
 end
-
