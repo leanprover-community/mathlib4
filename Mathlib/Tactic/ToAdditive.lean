@@ -9,6 +9,7 @@ import Mathlib.Data.KVMap
 import Mathlib.Lean.Expr.ReplaceRec
 import Std.Lean.NameMapAttribute
 import Std.Data.Option.Basic
+import Std.Tactic.NormCast.Ext
 
 /-!
 # The `@[to_additive]` attribute.
@@ -22,7 +23,7 @@ open Lean
 open Lean.Meta
 open Lean.Elab
 open Lean.Elab.Command
-open Std
+open Std Tactic.NormCast
 
 /-- The  `to_additive_ignore_args` attribute. -/
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" num* : attr
@@ -512,17 +513,8 @@ partial def transformDeclAux
   if isProtected (← getEnv) src then
     setEnv $ addProtected (← getEnv) tgt
 
-def isSimpLemma (name : Name) : CoreM Bool := do
-  let some ext ← getSimpExtension? `simp | return false
-  let thms ← ext.getTheorems
-  return thms.isLemma (.decl name)
-
-#exit
-
 /-- Copy the simp attribute in a `to_additive` -/
-def copySimpAttribute (src tgt : Name) : CoreM Unit := do
-  -- [todo] other simp theorems
-  let some ext ← getSimpExtension? `simp | return
+def copySimpAttribute (src tgt : Name) (ext : SimpExtension := simpExtension) : CoreM Unit := do
   let thms ← ext.getTheorems
   if !thms.isLemma (.decl src) || thms.isLemma (.decl tgt) then
     return
@@ -546,7 +538,13 @@ def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
 
 /-- [todo] add more attributes. -/
 def copyAttributes (src tgt : Name) : CoreM Unit := do
+  -- Copy the standard `simp` attribute
   copySimpAttribute src tgt
+  -- Copy the `norm_cast` attributes
+  copySimpAttribute src tgt pushCastExt
+  copySimpAttribute src tgt normCastExt.up
+  copySimpAttribute src tgt normCastExt.down
+  copySimpAttribute src tgt normCastExt.squash
   copyInstanceAttribute src tgt
 
 /--
