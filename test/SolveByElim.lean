@@ -4,6 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Tactic.SolveByElim
+import Mathlib.Tactic.Constructor
+import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Tactic.PermuteGoals
+import Std.Tactic.RCases
 
 example (h : Nat) : Nat := by solve_by_elim
 example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim
@@ -58,6 +62,46 @@ example (P₁ P₂ : α → Prop) (f : ∀ (a: α), P₁ a → P₂ a → β)
 -- because we don't use symmetry.
 -- example {α : Type} {a b : α → Prop} (h₀ : b = a) (y : α) : a y = b y :=
 -- by solve_by_elim
+
+-- Verifying that `solve_by_elim` acts only on the main goal.
+example (n : ℕ) : ℕ × ℕ := by
+  constructor
+  solve_by_elim
+  solve_by_elim
+
+-- Verifying that `solve_by_elim*` acts on all remaining goals.
+example (n : ℕ) : ℕ × ℕ := by
+  constructor
+  solve_by_elim*
+
+-- Verifying that `solve_by_elim*` backtracks when given multiple goals.
+example (n m : ℕ) (f : ℕ → ℕ → Prop) (h : f n m) : ∃ p : ℕ × ℕ, f p.1 p.2 := by
+  fconstructor
+  fconstructor
+  solve_by_elim*
+
+-- test that metavariables created for implicit arguments don't get stuck
+example (P : ℕ → Type) (f : {n : ℕ} → P n) : P 2 × P 3 := by
+  fconstructor
+  solve_by_elim* only [f]
+
+example : 6 = 6 ∧ [7] = [7] := by
+  fconstructor
+  solve_by_elim* only [@rfl _]
+
+-- Test that `solve_by_elim*`, which works on multiple goals,
+-- successfully uses the relevant local hypotheses for each goal.
+example (f g : ℕ → Prop) : (∃ k : ℕ, f k) ∨ (∃ k : ℕ, g k) ↔ ∃ k : ℕ, f k ∨ g k := by
+  dsimp at *
+  fconstructor
+  rintro (⟨n, fn⟩ | ⟨n, gn⟩)
+  pick_goal 3
+  rintro ⟨n, hf | hg⟩
+  solve_by_elim* (config := {maxDepth := 13}) [Or.inl, Or.inr, Exists.intro]
+
+-- This worked in mathlib3. Why is it failing here?
+-- example (P Q R : Prop) : P ∧ Q → P ∧ Q := by
+--   solve_by_elim [And.imp, id]
 
 section apply_assumption
 
