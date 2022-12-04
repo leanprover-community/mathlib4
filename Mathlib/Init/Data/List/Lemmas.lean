@@ -74,7 +74,7 @@ def mapAccumr (f : α → σ → σ × β) : List α → σ → σ × List β
 
 /-- Length of the list obtained by `mapAccumr`. -/
 @[simp]
-theorem length_map_accumr : ∀ (f : α → σ → σ × β) (x : List α) (s : σ),
+theorem length_mapAccumr : ∀ (f : α → σ → σ × β) (x : List α) (s : σ),
     length (mapAccumr f x s).2 = length x
   | f, _ :: x, s => congrArg succ (length_map_accumr f x s)
   | _, [], _ => rfl
