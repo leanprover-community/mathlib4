@@ -57,6 +57,7 @@ example : True := by
 example (P₁ P₂ : α → Prop) (f : ∀ (a: α), P₁ a → P₂ a → β)
     (a : α) (_ha₁ : P₁ a)
     (a' : α) (ha'₁ : P₁ a') (ha'₂ : P₂ a') : β := by
+  fail_if_success solve_by_elim (config := .noBackTracking)
   solve_by_elim
 
 example {α : Type} {a b : α → Prop} (h₀ : b = a) (y : α) : a y = b y :=
@@ -104,6 +105,11 @@ example (f g : ℕ → Prop) : (∃ k : ℕ, f k) ∨ (∃ k : ℕ, g k) ↔ ∃
   rintro ⟨n, hf | hg⟩
   solve_by_elim* (config := {maxDepth := 13}) [Or.inl, Or.inr, Exists.intro]
 
+-- Test that `Config.intros` causes `solve_by_elim` to call `intro` on intermediate goals.
+example (P : Prop) : P → P := by
+  fail_if_success solve_by_elim
+  solve_by_elim (config := .intros)
+
 -- This worked in mathlib3. Why is it failing here?
 -- example (P Q R : Prop) : P ∧ Q → P ∧ Q := by
 --   solve_by_elim [And.imp, id]
@@ -116,5 +122,15 @@ example {a b : Type} (h₀ : a → b) (h₁ : a) : b := by
 
 example {α : Type} {p : α → Prop} (h₀ : ∀ x, p x) (y : α) : p y := by
   apply_assumption
+
+-- Check that `apply_assumption` uses `symm`.
+example (a b : α) (h : b = a) : a = b := by
+  fail_if_success apply_assumption (config := {symm := false})
+  apply_assumption
+
+-- Check that `apply_assumption` uses `exfalso`.
+example {P Q : Prop} (p : P) (q : Q) (h : P → ¬ Q) : ℕ := by
+  fail_if_success apply_assumption (config := {exfalso := false})
+  apply_assumption <;> assumption
 
 end apply_assumption

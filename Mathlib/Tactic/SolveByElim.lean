@@ -87,7 +87,7 @@ structure Config extends Lean.MVarId.ApplyFirstConfig where
   /-- If `failAtDepth`, then `solve_by_elim` will fail (and backtrack) upon reaching the max depth.
   Otherwise, upon reaching the max depth, all remaining goals will be returned.
   (defaults to `true`) -/
-  failAtDepth : Bool := true
+  failAtMaxDepth : Bool := true
   /-- An arbitrary procedure which can be used to modify the list of goals
     before each attempt to apply a lemma.
     Called as `proc orig goals`, where `orig` are the original goals for `solve_by_elim`,
@@ -149,7 +149,7 @@ def solveByElimCore (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermE
     MetaM (List MVarId) := do
   match n with
   | 0 => do
-    let .false := cfg.failAtDepth | throwError "solve_by_elim exceeded the recursion limit"
+    let .false := cfg.failAtMaxDepth | throwError "solve_by_elim exceeded the recursion limit"
     return goals ++ acc
   | n + 1 => do
   match ← cfg.proc orig goals with
@@ -310,10 +310,19 @@ Optional arguments:
   this tactic fails, the corresponding assumption will be rejected and
   the next one will be attempted.
 -/
-syntax (name := applyAssumption) "apply_assumption" : tactic
+syntax (name := applyAssumption) "apply_assumption" (config)? (&" only")? (simpArgs)? : tactic
 
-elab_rules : tactic | `(tactic| apply_assumption) => do
-  let ctx := (← getLocalHyps).toList
-  let lemmas := [← `(rfl), ← `(trivial), ← `(congrArg)].map (λ s => Elab.Term.elabTerm s.raw none)
-  (← elabContextLemmas (← getMainGoal) lemmas (pure ctx)).firstM
-    fun e => (liftMetaTactic (Lean.MVarId.apply · e))
+-- elab_rules : tactic | `(tactic| apply_assumption) => do
+--   let ctx := (← getLocalHyps).toList
+--   let lemmas := [← `(rfl), ← `(trivial), ← `(congrArg)].map (λ s => Elab.Term.elabTerm s.raw none)
+--   (← elabContextLemmas (← getMainGoal) lemmas (pure ctx)).firstM
+--     fun e => (liftMetaTactic (Lean.MVarId.apply · e))
+
+elab_rules : tactic |
+    `(tactic| apply_assumption $[$cfg]? $[only%$o]? $[[$[$t:term],*]]?) => do
+  let es := (t.getD #[]).toList
+  let cfg ← elabConfig (mkOptionalNode cfg)
+  let cfg := { cfg with
+    maxDepth := 1
+    failAtMaxDepth := false }
+  replaceMainGoal (← solveByElimImpl cfg o.isSome es [← getMainGoal])
