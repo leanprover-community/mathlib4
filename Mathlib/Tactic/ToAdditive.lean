@@ -512,6 +512,13 @@ partial def transformDeclAux
   if isProtected (← getEnv) src then
     setEnv $ addProtected (← getEnv) tgt
 
+def isSimpLemma (name : Name) : CoreM Bool := do
+  let some ext ← getSimpExtension? `simp | return false
+  let thms ← ext.getTheorems
+  return thms.isLemma (.decl name)
+
+#exit
+
 /-- Copy the simp attribute in a `to_additive` -/
 def copySimpAttribute (src tgt : Name) : CoreM Unit := do
   -- [todo] other simp theorems
