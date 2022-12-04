@@ -8,6 +8,7 @@ import Lean.Elab.Tactic.Basic
 import Mathlib.Tactic.Core
 import Mathlib.Lean.LocalContext
 import Mathlib.Tactic.Relation.Symm
+import Mathlib.Control.Basic
 import Mathlib.Data.Sum.Basic
 
 /-!
@@ -21,6 +22,11 @@ open Lean Meta Elab Tactic
 def exceptEmoji : Except ε α → String
   | .error _ => crossEmoji
   | .ok _ => checkEmoji
+
+/-- If a `Expr` has form `.fvar n`, then returns `some n`, otherwise `none`. -/
+def Lean.Expr.fvarId? : Expr → Option FVarId
+  | .fvar n => n
+  | _ => none
 
 namespace Lean.MVarId
 
@@ -211,13 +217,25 @@ def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM
 
 open Lean.Parser.Tactic
 
+/-- Separate a list of terms into those that elaborate to local hypotheses
+and those that do not. -/
+def partitionLocalHyps (l : List Term) : MetaM (List Term × List Term) := do
+  l.partitionM fun t => Elab.Term.TermElabM.run' do
+    pure (← Elab.Term.elabTerm t.raw none).isFVar
+  -- let s ← l.mapM fun t => Elab.Term.TermElabM.run' do
+  --     let e ← Elab.Term.elabTerm t.raw none
+  --     match e.fvarId? with
+  --     | some h => pure <| Sum.inl h
+  --     | none => pure <| Sum.inr t
+  -- pure <| s.partitionMap id -- TODO I guess we need `List.partitionMapM`.
+
 /--
 `mkAssumptionSet` builds a collection of lemmas for use in
 the backtracking search in `solve_by_elim`.
 
 * By default, it includes all local hypotheses, along with `rfl`, `trivial`, `congrFun` and
   `congrArg`.
-* The flag `noDflt` removes these.
+* The flag `noDefaults` removes these.
 * The argument `hs` is the list of arguments inside the square braces
   and can be used to add lemmas or expressions from the set. (TODO support removal.)
 
@@ -252,13 +270,33 @@ that have been explicitly removed via `only` or `[-h]`.)
 -/
 -- These `TermElabM`s must be run inside a suitable `g.withContext`,
 -- usually using `elabContextLemmas`.
-def mkAssumptionSet (noDflt _star : Bool) (add _remove : List (TSyntax `term)) :
+def mkAssumptionSet (noDefaults star : Bool) (add remove : List Term) :
     MetaM (List (TermElabM Expr) × TermElabM (List Expr)) := do
-  let hs := if noDflt then add else [← `(rfl), ← `(trivial), ← `(congrFun), ← `(congrArg)] ++ add
-  let hs := hs.map (λ s => Elab.Term.elabTerm s.raw none)
-  let locals : TermElabM (List Expr) := if noDflt then pure [] else do
-    pure (← getLocalHyps).toList
-  return (hs, locals)
+  if star && !noDefaults then
+    throwError "It does make sense to use `*` without `only`."
+
+  let (addLocal, addExpr) ← partitionLocalHyps add
+  let (removeLocal, removeExpr) ← partitionLocalHyps remove
+
+  if !removeExpr.isEmpty then
+    throwError "It doesn't make sense to remove expressions which are not local hypotheses."
+  let defaults : List Term := [← `(rfl), ← `(trivial), ← `(congrFun), ← `(congrArg)]
+  let hyps := (if noDefaults then addExpr else defaults ++ addExpr).map elab'
+
+  if !removeLocal.isEmpty && noDefaults && !star then
+    throwError "It doesn't make sense to remove local hypotheses when using `only` without `*`."
+  -- TODO Consider extracting `FVarId`s to avoid re-elaborating here.
+  let locals : TermElabM (List Expr) := if noDefaults && !star then
+    (addLocal.removeAll removeLocal).mapM elab'
+  else do
+    if !addLocal.isEmpty then
+      throwError "It doesn't make sense to add local hypotheses unless you use `only` without `*`."
+    pure <| (← getLocalHyps).toList.removeAll (← removeLocal.mapM elab')
+
+  return (hyps, locals)
+  where
+  /-- Run `elabTerm`. -/
+  elab' (t : Term) : TermElabM Expr := Elab.Term.elabTerm t.raw none
 
 -- def mkAssumptionSet (noDflt : Bool) (hs : List (TSyntax `term)) :
 --     MetaM (List (TermElabM Expr) × TermElabM (List Expr)) := do
@@ -295,7 +333,7 @@ def parseArgs (s : Option (TSyntax ``args)) :
     | _ => #[]
   | none => #[]
   let args : Array (Option (TSyntax `term ⊕ TSyntax `term)) := args.map fun t => match t with
-    | `(arg| star) => none
+    | `(arg| $_:star) => none
     | `(arg| - $t:term) => some (Sum.inr t)
     | `(arg| $t:term) => some (Sum.inl t)
     | _ => panic! "Unreachable parse of solve_by_elim arguments."
@@ -343,6 +381,7 @@ def solveByElim.processSyntax
     (cfg : Config := {}) (only star : Bool := false) (add remove : List (TSyntax `term))
     (goals : List MVarId) : MetaM (List MVarId) := do
   let ⟨lemmas, ctx⟩ ← mkAssumptionSet only star add remove
+  trace[Meta.Tactic.solveByElim] "parsed assumptions"
   solveByElim cfg lemmas ctx goals
 
 elab_rules : tactic |

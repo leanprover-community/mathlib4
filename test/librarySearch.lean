@@ -94,6 +94,9 @@ example (L _M : List (List ℕ)) : List ℕ := by library_search using L
 
 example (P _Q : List ℕ) (h : ℕ) : List ℕ := by library_search using h, P
 
+example (l : List α) (f : α → β ⊕ γ) : List β × List γ := by
+  library_search using f -- partitionMap f l
+
 -- These tests for `using` require moving the required subexpressions check deeper into solveByElim
 
 -- example (n m : ℕ) : ℕ := by library_search using n, m

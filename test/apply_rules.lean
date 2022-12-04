@@ -25,15 +25,20 @@ example {P Q : Prop} (p : P) (f : P → Q) : Q := by
   apply_rules only [f]
   exact p
 
+-- Check that `apply_rules [-p]` works.
+example {P Q : Prop} (p : P) (f : P → Q) : Q := by
+  apply_rules [-p]
+  exact p
+
 -- Test that metavariables created for implicit arguments don't get stuck
 -- This required extra work in Lean 3, but doesn't seem to be a problem in Lean 4.
 example (P : Nat → Type) (f : {n : Nat} → P n → P (n + 1)) (g : P 0) : P 2 :=
-by apply_rules [f, g]
+by apply_rules only [f, g]
 
 -- Check that `apply_rules` solves goals that come after goals that it can't solve
 example (Q : Type) (f : Nat → Q) : Int × Q :=
 by
-  apply_rules [Prod.mk, f]
+  apply_rules only [Prod.mk, f]
   guard_target = Int
   exact 0
   guard_target = Nat

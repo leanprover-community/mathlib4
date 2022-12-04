@@ -25,8 +25,14 @@ example {α β γ : Type} (_f : α → β) (g : β → γ) (b : β) : γ := by s
 example {α : Nat → Type} (f : (n : Nat) → α n → α (n+1)) (a : α 0) : α 5 := by solve_by_elim []
 
 example {α β : Type} (f : α → β) (a : α) : β := by
+  fail_if_success solve_by_elim [-f]
+  fail_if_success solve_by_elim [-a]
   fail_if_success solve_by_elim only [f]
   solve_by_elim
+
+example {α β γ : Type} (f : α → β) (g : β → γ) (b : β) : γ := by
+  fail_if_success solve_by_elim [-g]
+  solve_by_elim [-f]
 
 example (h : Nat) : Nat := by solve_by_elim only [h]
 example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim only [f, a]
@@ -35,6 +41,15 @@ example {α β γ : Type} (f : α → β) (g : β → γ) (a : α) : γ := by so
 example {α β γ : Type} (_f : α → β) (g : β → γ) (b : β) : γ := by solve_by_elim only [g, b]
 example {α : Nat → Type} (f : (n : Nat) → α n → α (n+1)) (a : α 0) : α 5 := by
   solve_by_elim only [f, a]
+
+example (h₁ h₂ : False) : True := by
+  -- 'It doesn't make sense to remove local hypotheses when using `only` without `*`.'
+  fail_if_success solve_by_elim only [-h₁]
+  -- 'It does make sense to use `*` without `only`.'
+  fail_if_success solve_by_elim [*, -h₁]
+  -- 'It doesn't make sense to remove expressions which are not local hypotheses.'
+  fail_if_success solve_by_elim only [*, -h₃]
+  solve_by_elim only [*, -h₁]
 
 -- Verify that already assigned metavariables are skipped.
 example (P₁ P₂ : α → Prop) (f : ∀ (a : α), P₁ a → P₂ a → β)
