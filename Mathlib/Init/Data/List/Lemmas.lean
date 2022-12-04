@@ -40,20 +40,10 @@ theorem length_removeNth : ∀ (l : List α) (i : ℕ),
   | [], _, _ => rfl
   | _ :: xs, 0, _ => by
      simp [removeNth]
-  | x :: xs, i + 1, h => by
+  | _ :: xs, i + 1, h => by
     have : i < length xs := lt_of_succ_lt_succ h
-    dsimp [removeNth]
-    rw [length_remove_nth xs i]
-    show length xs - 1 + 1 = length xs + 1 - 1
-    rw [Nat.add_sub_cancel (length xs) 1]
-    have bd : 1 ≤  length xs := by
-      have bd' : i + 1 ≤ length xs := by assumption
-      have bd'' : 1 ≤ i + 1 := by
-        apply Nat.succ_le_succ
-        apply Nat.zero_le
-      exact Nat.le_trans bd'' bd'
-    exact Nat.sub_add_cancel bd
-    assumption
+    simp [removeNth, length_remove_nth xs i this, Nat.sub_one,
+      Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (Nat.zero_le _) this)]
 
 #align list.length_remove_nth List.length_remove_nth
 
