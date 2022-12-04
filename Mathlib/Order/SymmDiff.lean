@@ -69,10 +69,11 @@ def bihimp [HasInf α] [HImp α] (a b : α) : α :=
 -- mathport name: «expr ∆ »
 /- This notation might conflict with the Laplacian once we have it. Feel free to put it in locale
   `order` or `symm_diff` if that happens. -/
-infixl:100
-  " ∆ " =>  symmDiff
+/-- Notation for symmDiff -/
+infixl:100 " ∆ " =>  symmDiff
 
 -- mathport name: «expr ⇔ »
+/-- Notation for bihimp -/
 infixl:100 " ⇔ " => bihimp
 
 theorem symm_diff_def [HasSup α] [SDiff α] (a b : α) : a ∆ b = a \ b ⊔ b \ a :=
