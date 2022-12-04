@@ -385,7 +385,6 @@ def AddMonoidHom.toMultiplicative [AddZeroClass α] [AddZeroClass β] :
     toFun := fun a => ofMul (f (toMul a))
     map_add' := f.map_mul
     map_zero' := f.map_one
-    -- fun a => toAdd (f (ofAdd a)), f.2, f.3⟩
   }
   left_inv _ := rfl
   right_inv _ := rfl
