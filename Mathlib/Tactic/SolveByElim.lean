@@ -277,7 +277,7 @@ performing at most `maxDepth` (currently hard-coded to 12) recursive steps.
 
 `solve_by_elim` discharges the current goal or fails.
 
-`solve_by_elim` performs back-tracking if subgoals can not be solved.
+`solve_by_elim` performs backtracking if subgoals can not be solved.
 
 By default, the assumptions passed to `apply` are the local context, `rfl`, `trivial`,
 `congrFun` and `congrArg`.
@@ -294,14 +294,16 @@ The assumptions can be modified with similar syntax as for `simp`:
 makes other goals impossible.
 
 Optional arguments passed via a configuration argument as `solve_by_elim (config := { ... })`
-- `maxDepth`: number of attempts at discharging generated sub-goals
+- `maxDepth`: number of attempts at discharging generated subgoals
+- `symm`: allow `solve_by_elim` to call `symm` on subgoals (defaults to `true`)
+- `exfalso`: allow calling `exfalso` (defaults to `true`)
 
 See also the doc-comment for `Mathlib.Tactic.SolveByElim.Config` for the options
 `proc`, `suspend`, and `discharge` which allow further customization of `solve_by_elim`.
 -/
 syntax (name := solveByElimSyntax) "solve_by_elim" "*"? (config)? (&" only")? (simpArgs)? : tactic
 
-/-- Wrapper for `solveByElimCore` that processes a list of ``TSyntax `term``
+/-- Wrapper for `solveByElim` that processes a list of ``TSyntax `term``
 that specify the lemmas to use. -/
 def solveByElim.processSyntax
     (cfg : Config := {}) (only : Bool := false) (terms : List (TSyntax `term))
@@ -325,9 +327,13 @@ elab_rules : tactic |
 `apply_assumption` looks for an assumption of the form `... → ∀ _, ... → head`
 where `head` matches the current goal.
 
-If this fails, `apply_assumption` will call `symm` and try again.
+You can specify additional rules to apply using `apply_assumption [...]`.
+By default `apply_assumption` will also try `rfl`, `trivial`, `congrFun`, and `congrArg`.
+If you don't want these, or don't want to use all hypotheses, use `apply_assumption only [...]`.
 
-If this also fails, `apply_assumption` will call `exfalso` and try again,
+If `apply_assumption` fails it will call `symm` and try again.
+
+If this also fails, it will call `exfalso` and try again,
 so that if there is an assumption of the form `P → ¬ Q`, the new tactic state
 will have two goals, `P` and `Q`.
 
@@ -350,14 +356,20 @@ elab_rules : tactic |
 applying the list of lemmas `[l₁, l₂, ...]` or by applying a local hypothesis.
 If `apply` generates new goals, `apply_rules` iteratively tries to solve those goals.
 
+`apply_rules` will also use `rfl`, `trivial`, `congrFun` and `congrArg`.
+These can be disabled, as can local hypotheses, by using `apply_rules only [...]`.
+
 (TODO: not yet supported in mathlib4)
 You may include attributes amongst the lemmas:
 `apply_rules` will include all lemmas marked with these attributes.
 
-You can pass a further configuration via the syntax `apply_rules (config := {...}) lemmas`.
+You can pass a further configuration via the syntax `apply_rules (config := {...})`.
 The options supported are the same as for `solve_by_elim` (and include all the options for `apply`).
 
-You can bound the iteration depth using the syntax `apply_rules (config := {maxDepth:=n}) lemmas`.
+`apply_rules` will try calling `symm` and `exfalso` as needed.
+This can be disabled with `apply_rules (config := {symm := false, exfalso := false})`.
+
+You can bound the iteration depth using the syntax `apply_rules (config := {maxDepth := n})`.
 The default bound is 12.
 
 Unlike `solve_by_elim`, `apply_rules` does not perform backtracking, and greedily applies
