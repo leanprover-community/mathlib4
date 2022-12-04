@@ -100,9 +100,9 @@ section GeneralizedCoheytingAlgebra
 variable [GeneralizedCoheytingAlgebra α] (a b c d : α)
 
 @[simp]
-theorem to_dual_symm_diff : toDual (a ∆ b) = toDual a ⇔ toDual b :=
+theorem toDual_symmDiff : toDual (a ∆ b) = toDual a ⇔ toDual b :=
   rfl
-#align to_dual_symm_diff to_dual_symm_diff
+#align to_dual_symm_diff toDual_symmDiff
 
 @[simp]
 theorem of_dual_bihimp (a b : αᵒᵈ) : ofDual (a ⇔ b) = ofDual a ∆ ofDual b :=
