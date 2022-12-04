@@ -107,14 +107,11 @@ theorem boundary_le_boundary_sup_sup_boundary_inf_left : ∂ a ≤ ∂ (a ⊔ b)
   -- different terms
   simp only [boundary, sup_inf_left, sup_inf_right, sup_right_idem, le_inf_iff, sup_assoc,
     @sup_comm _ _ _ a]
-  -- Porting note: Not sure how to chain the `refine inf_le_of_right_le ?_` tactic after
-  -- `try exact le_sup_of_le_left inf_le_left`
-  refine ⟨⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩, ?_, ?_⟩ <;> try exact le_sup_of_le_left inf_le_left
-  · refine inf_le_of_right_le ?_
-    rw [hnot_le_iff_codisjoint_right, codisjoint_left_comm]
+  refine ⟨⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩, ?_, ?_⟩ <;> try { exact le_sup_of_le_left inf_le_left } <;>
+    refine inf_le_of_right_le ?_
+  · rw [hnot_le_iff_codisjoint_right, codisjoint_left_comm]
     exact codisjoint_hnot_left
-  · refine inf_le_of_right_le ?_
-    refine le_sup_of_le_right ?_
+  · refine le_sup_of_le_right ?_
     rw [hnot_le_iff_codisjoint_right]
     exact codisjoint_hnot_right.mono_right (hnot_anti inf_le_left)
 #align
