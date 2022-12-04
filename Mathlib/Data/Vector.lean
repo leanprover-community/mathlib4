@@ -207,9 +207,9 @@ protected theorem eq_nil (v : Vector α 0) : v = nil :=
 /-- Vector of length from a list `v`
 with witness that `v` has length `n` maps to `v` under `toList`.  -/
 @[simp]
-theorem to_list_mk (v : List α) (P : List.length v = n) : toList (Subtype.mk v P) = v :=
+theorem toList_mk (v : List α) (P : List.length v = n) : toList (Subtype.mk v P) = v :=
   rfl
-#align vector.to_list_mk Vector.to_list_mk
+#align vector.to_list_mk Vector.toList_mk
 
 /-- A nil vector maps to a nil list. -/
 @[simp]
