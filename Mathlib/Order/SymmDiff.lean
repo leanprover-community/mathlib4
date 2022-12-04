@@ -235,7 +235,7 @@ theorem of_dual_symm_diff (a b : αᵒᵈ) : ofDual (a ∆ b) = ofDual a ⇔ ofD
 theorem bihimp_comm : a ⇔ b = b ⇔ a := by simp only [(· ⇔ ·), inf_comm]
 #align bihimp_comm bihimp_comm
 
-instance bihimp_is_comm : IsCommutative α (· ⇔ ·) :=
+instance bihimp_isCommutative : IsCommutative α (· ⇔ ·) :=
   ⟨bihimp_comm⟩
 #align bihimp_is_comm bihimp_is_comm
 
