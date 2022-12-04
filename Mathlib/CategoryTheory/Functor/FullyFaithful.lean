@@ -49,20 +49,23 @@ class Full (F : C ⥤ D) where
 attribute [simp] Full.witness
 
 
-/- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4: #[`map_injective'] [] -/
+/- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4:
+#[`map_injective'] [] -/
 /-- A functor `F : C ⥤ D` is faithful if for each `X Y : C`, `F.map` is injective.
 
 See <https://stacks.math.columbia.edu/tag/001C>.
 -/
 class Faithful (F : C ⥤ D) : Prop where
-  map_injective : ∀ {X Y : C}, Function.Injective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) := by aesop_cat
+  map_injective : ∀ {X Y : C}, Function.Injective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) := by
+    aesop_cat
 #align category_theory.faithful CategoryTheory.Faithful
 
 namespace Functor
 
 variable {X Y : C}
 
-theorem map_injective (F : C ⥤ D) [Faithful F] : Function.Injective <| (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
+theorem map_injective (F : C ⥤ D) [Faithful F] :
+    Function.Injective <| (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
   Faithful.map_injective
 #align category_theory.functor.map_injective CategoryTheory.Functor.map_injective
 
@@ -81,7 +84,8 @@ theorem image_preimage (F : C ⥤ D) [Full F] {X Y : C} (f : F.obj X ⟶ F.obj Y
     F.map (preimage F f) = f := by unfold preimage; aesop_cat
 #align category_theory.functor.image_preimage CategoryTheory.Functor.image_preimage
 
-theorem map_surjective (F : C ⥤ D) [Full F] : Function.Surjective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
+theorem map_surjective (F : C ⥤ D) [Full F] :
+    Function.Surjective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
   fun f => ⟨F.preimage f, F.image_preimage f⟩
 #align category_theory.functor.map_surjective CategoryTheory.Functor.map_surjective
 
@@ -229,7 +233,8 @@ def NatTrans.equivOfCompFullyFaithful :
     simp
   right_inv := by aesop_cat
 #align
-  category_theory.nat_trans.equiv_of_comp_fully_faithful CategoryTheory.NatTrans.equivOfCompFullyFaithful
+  category_theory.nat_trans.equiv_of_comp_fully_faithful
+  CategoryTheory.NatTrans.equivOfCompFullyFaithful
 
 /-- Horizontal composition with a fully faithful functor induces a bijection on
 natural isomorphisms. -/
@@ -242,7 +247,8 @@ def NatIso.equivOfCompFullyFaithful :
   left_inv := by aesop_cat
   right_inv := by aesop_cat
 #align
-  category_theory.nat_iso.equiv_of_comp_fully_faithful CategoryTheory.NatIso.equivOfCompFullyFaithful
+  category_theory.nat_iso.equiv_of_comp_fully_faithful
+  CategoryTheory.NatIso.equivOfCompFullyFaithful
 
 end
 
@@ -386,7 +392,8 @@ theorem fullyFaithfulCancelRight_hom_app {F G : C ⥤ D} {H : D ⥤ E} [Full H] 
     (fullyFaithfulCancelRight H comp_iso).hom.app X = H.preimage (comp_iso.hom.app X) :=
   rfl
 #align
-  category_theory.fully_faithful_cancel_right_hom_app CategoryTheory.fullyFaithfulCancelRight_hom_app
+  category_theory.fully_faithful_cancel_right_hom_app
+  CategoryTheory.fullyFaithfulCancelRight_hom_app
 
 @[simp]
 theorem fullyFaithfulCancelRight_inv_app {F G : C ⥤ D} {H : D ⥤ E} [Full H] [Faithful H]
@@ -394,6 +401,7 @@ theorem fullyFaithfulCancelRight_inv_app {F G : C ⥤ D} {H : D ⥤ E} [Full H] 
     (fullyFaithfulCancelRight H comp_iso).inv.app X = H.preimage (comp_iso.inv.app X) :=
   rfl
 #align
-  category_theory.fully_faithful_cancel_right_inv_app CategoryTheory.fullyFaithfulCancelRight_inv_app
+  category_theory.fully_faithful_cancel_right_inv_app
+  CategoryTheory.fullyFaithfulCancelRight_inv_app
 
 end CategoryTheory
