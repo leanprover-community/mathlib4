@@ -63,6 +63,7 @@ import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Thin
 import Mathlib.Combinatorics.Quiver.Basic
+import Mathlib.Combinatorics.Quiver.ConnectedComponent
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Subquiver
 import Mathlib.Control.Applicative
@@ -112,6 +113,7 @@ import Mathlib.Data.List.Range
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Units
