@@ -105,9 +105,9 @@ theorem toDual_symmDiff : toDual (a ∆ b) = toDual a ⇔ toDual b :=
 #align to_dual_symm_diff toDual_symmDiff
 
 @[simp]
-theorem of_dual_bihimp (a b : αᵒᵈ) : ofDual (a ⇔ b) = ofDual a ∆ ofDual b :=
+theorem ofDual_bihimp (a b : αᵒᵈ) : ofDual (a ⇔ b) = ofDual a ∆ ofDual b :=
   rfl
-#align of_dual_bihimp of_dual_bihimp
+#align of_dual_bihimp ofDual_bihimp
 
 theorem symm_diff_comm : a ∆ b = b ∆ a := by simp only [symmDiff, sup_comm]
 #align symm_diff_comm symm_diff_comm
