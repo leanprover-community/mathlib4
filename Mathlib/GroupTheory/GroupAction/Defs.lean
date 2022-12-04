@@ -324,8 +324,9 @@ are still metavariables.
 @[to_additive
       "Given a tower of additive actions `M → α → β`, if we use\n`has_smul.comp` to pull back both of `M`'s actions by a map `g : N → M`, then we obtain a new tower\nof scalar actions `N → α → β`.\n\nThis cannot be an instance because it can cause infinite loops whenever the `has_smul` arguments\nare still metavariables."]
 theorem comp.is_scalar_tower [SMul M β] [SMul α β] [IsScalarTower M α β] (g : N → M) : by
-    haveI := comp α g <;> haveI := comp β g <;> exact IsScalarTower N α β :=
-  { smul_assoc := fun n => @smul_assoc _ _ _ _ _ _ _ (g n) }
+    haveI := comp α g; haveI := comp β g; exact IsScalarTower N α β :=
+  { comp α g, comp β g with
+    smul_assoc := fun n => smul_assoc (g n) }
 #align has_smul.comp.is_scalar_tower SMul.comp.is_scalar_tower
 
 /-- This cannot be an instance because it can cause infinite loops whenever the `has_smul` arguments
@@ -336,7 +337,8 @@ are still metavariables.
 theorem comp.smul_comm_class [SMul β α] [SmulCommClass M β α] (g : N → M) :
     haveI := comp α g
     SmulCommClass N β α :=
-  { smul_comm := fun n => @smul_comm _ _ _ _ _ _ (g n) }
+  { comp α g with
+    smul_comm := fun n => smul_comm (g n) }
 #align has_smul.comp.smul_comm_class SMul.comp.smul_comm_class
 
 /-- This cannot be an instance because it can cause infinite loops whenever the `has_smul` arguments
@@ -347,7 +349,8 @@ are still metavariables.
 theorem comp.smul_comm_class' [SMul β α] [SmulCommClass β M α] (g : N → M) :
     haveI := comp α g
     SmulCommClass β N α :=
-  { smul_comm := fun _ n => @smul_comm _ _ _ _ _ _ _ (g n) }
+  { comp α g with
+    smul_comm := fun _ n => smul_comm _ (g n) }
 #align has_smul.comp.smul_comm_class' SMul.comp.smul_comm_class'
 
 end SMul
