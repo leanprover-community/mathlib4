@@ -105,8 +105,8 @@ theorem CancelCommMonoid.ext {M : Type _} ⦃m₁ m₂ : CancelCommMonoid M⦄ (
 #align cancel_comm_monoid.ext CancelCommMonoid.ext
 
 @[ext, to_additive]
-theorem DivInvMonoid.ext {M : Type _} : ∀ ⦃m₁ m₂ : DivInvMonoid M⦄, m₁.mul = m₂.mul →
-    m₁.inv = m₂.inv → m₁ = m₂ := by
+theorem DivInvMonoid.ext {M : Type _} ⦃m₁ m₂ : DivInvMonoid M⦄ (h_mul : m₁.mul = m₂.mul)
+  (h_inv : m₁.inv = m₂.inv) : m₁ = m₂ := by
   /- have h₁ : (@DivInvMonoid.toMonoid _ m₁).one = (@DivInvMonoid.toMonoid _ m₂).one :=
     congr_arg (@Monoid.one M) (Monoid.ext h_mul)
   let f : @MonoidHom M M (by letI := m₁ <;> infer_instance) (by letI := m₂ <;> infer_instance) :=
@@ -119,26 +119,28 @@ theorem DivInvMonoid.ext {M : Type _} : ∀ ⦃m₁ m₂ : DivInvMonoid M⦄, m�
   have hdiv : m₁.div = m₂.div := by
     ext (a b)
     exact @map_div' M M _ m₁ m₂ _ f (congr_fun h_inv) a b -/
-  rintro
-    @⟨toMonoid₁, ⟨inv₁⟩, ⟨div₁⟩, div_eq_mul_inv₁, zpow₁, zpow_zero₁, zpow_succ₁, zpow_neg₁⟩
-    @⟨toMonoid₂, ⟨inv₂⟩, ⟨div₂⟩, div_eq_mul_inv₂, zpow₂, zpow_zero₂, zpow_succ₂, zpow_neg₂⟩
-    h_mul h_inv
-  have : toMonoid₁ = toMonoid₂ := Monoid.ext h_mul
-  have : toMonoid₁.one = toMonoid₂.one := by rw [this]
-  have : inv₁ = inv₂ := by exact h_inv
-  have : div₁ = div₂ := by
+  have := Monoid.ext h_mul
+  have : m₁.one = m₂.one := by rw [this]
+  have : m₁.div = m₂.div := by
     ext (a b)
-    --rw [div_eq_mul_inv₁, div_eq_mul_inv₂] -- fails
+    --rw [m₁.div_eq_mul_inv, m₂.div_eq_mul_inv] -- fails
     sorry
-  have : zpow₁ = zpow₂ := by
+  have h_zpow : m₁.zpow = m₁.zpow := by
     ext (m x)
-    sorry
+    induction' m with n n
+    · --rw [@zpow_ofNat _ m₁]
+      sorry
+    · sorry
+  rcases m₁ with @⟨_, ⟨inv₁⟩, ⟨div₁⟩, _, zpow₁⟩
+  rcases m₂ with @⟨_, ⟨inv₂⟩, ⟨div₂⟩, _, zpow₂⟩
   congr
+  · show zpow₁ = zpow₂
+    sorry
   --exacts[h_mul, h₁, hpow, h_inv, hdiv, hzpow]
 #align div_inv_monoid.ext DivInvMonoid.ext
 
 @[ext, to_additive]
-theorem Group.ext {G : Type _} : ∀ ⦃g₁ g₂ : Group G⦄, g₁.mul = g₂.mul → g₁ = g₂ := by
+theorem Group.ext {G : Type _} ⦃g₁ g₂ : Group G⦄ (h_mul : g₁.mul = g₂.mul) : g₁ = g₂ := by
   /-let f :=
     @MonoidHom.mk' G G (by letI := g₁ <;> infer_instance) g₂ id fun a b =>
       congr_fun (congr_fun h_mul a) b
@@ -146,10 +148,19 @@ theorem Group.ext {G : Type _} : ∀ ⦃g₁ g₂ : Group G⦄, g₁.mul = g₂.
     Group.to_div_inv_monoid_injective
       (DivInvMonoid.ext h_mul
         (funext <| @MonoidHom.map_inv G G g₁ (@Group.toDivisionMonoid _ g₂) f))-/
-  rintro @⟨toDivInvMonoid₁, mul_left_inv₁⟩ @⟨toDivInvMonoid₂, mul_left_inv₂⟩ h_mul
-  have : toDivInvMonoid₁.inv = toDivInvMonoid₂.inv := by
-    sorry
-  have : toDivInvMonoid₁ = toDivInvMonoid₂ := DivInvMonoid.ext h_mul this
+  --rintro @⟨toDivInvMonoid₁, mul_left_inv₁⟩ @⟨toDivInvMonoid₂, mul_left_inv₂⟩ h_mul
+  --have : toDivInvMonoid₁.inv = toDivInvMonoid₂.inv := by
+  --  sorry
+  --have : toDivInvMonoid₁ = toDivInvMonoid₂ := DivInvMonoid.ext h_mul this
+  have : g₁.inv = g₂.inv := by
+    ext g
+    rw [@inv_eq_iff_mul_eq_one _ g₁]
+    show g₁.mul g (g₂.inv g) = 1 -- lean is using hMul and not mul
+    rw [h_mul]
+    rw [@mul_inv_eq_one _ g₂]
+  have := DivInvMonoid.ext h_mul this
+  cases g₁
+  cases g₂
   congr
 #align group.ext Group.ext
 
