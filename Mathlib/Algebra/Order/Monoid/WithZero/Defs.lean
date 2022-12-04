@@ -3,8 +3,8 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathbin.Algebra.Group.WithOne.Defs
-import Mathbin.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Algebra.Group.WithOne.Defs
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
 # Adjoining a zero element to an ordered monoid.
@@ -18,9 +18,9 @@ universe u
 variable {α : Type u}
 
 /-- Typeclass for expressing that the `0` of a type is less or equal to its `1`. -/
-class ZeroLeOneClass (α : Type _) [Zero α] [One α] [LE α] where
+class ZeroLEOneClass (α : Type _) [Zero α] [One α] [LE α] where
   zero_le_one : (0 : α) ≤ 1
-#align zero_le_one_class ZeroLeOneClass
+#align zero_le_one_class ZeroLEOneClass
 
 /-- A linearly ordered commutative monoid with a zero element. -/
 class LinearOrderedCommMonoidWithZero (α : Type _) extends LinearOrderedCommMonoid α,
@@ -29,44 +29,46 @@ class LinearOrderedCommMonoidWithZero (α : Type _) extends LinearOrderedCommMon
 #align linear_ordered_comm_monoid_with_zero LinearOrderedCommMonoidWithZero
 
 instance (priority := 100) LinearOrderedCommMonoidWithZero.toZeroLeOneClass
-    [LinearOrderedCommMonoidWithZero α] : ZeroLeOneClass α :=
+    [LinearOrderedCommMonoidWithZero α] : ZeroLEOneClass α :=
   { ‹LinearOrderedCommMonoidWithZero α› with }
 #align
-  linear_ordered_comm_monoid_with_zero.to_zero_le_one_class LinearOrderedCommMonoidWithZero.toZeroLeOneClass
+  linear_ordered_comm_monoid_with_zero.to_zero_le_one_class
+  LinearOrderedCommMonoidWithZero.toZeroLeOneClass
 
 instance (priority := 100) CanonicallyOrderedAddMonoid.toZeroLeOneClass
-    [CanonicallyOrderedAddMonoid α] [One α] : ZeroLeOneClass α :=
+    [CanonicallyOrderedAddMonoid α] [One α] : ZeroLEOneClass α :=
   ⟨zero_le 1⟩
 #align
-  canonically_ordered_add_monoid.to_zero_le_one_class CanonicallyOrderedAddMonoid.toZeroLeOneClass
+  canonically_ordered_add_monoid.to_zero_le_one_class
+  CanonicallyOrderedAddMonoid.toZeroLeOneClass
 
 /-- `zero_le_one` with the type argument implicit. -/
 @[simp]
-theorem zero_le_one [Zero α] [One α] [LE α] [ZeroLeOneClass α] : (0 : α) ≤ 1 :=
-  ZeroLeOneClass.zero_le_one
+theorem zero_le_one [Zero α] [One α] [LE α] [ZeroLEOneClass α] : (0 : α) ≤ 1 :=
+  ZeroLEOneClass.zero_le_one
 #align zero_le_one zero_le_one
 
 /-- `zero_le_one` with the type argument explicit. -/
-theorem zero_le_one' (α) [Zero α] [One α] [LE α] [ZeroLeOneClass α] : (0 : α) ≤ 1 :=
+theorem zero_le_one' (α) [Zero α] [One α] [LE α] [ZeroLEOneClass α] : (0 : α) ≤ 1 :=
   zero_le_one
 #align zero_le_one' zero_le_one'
 
-theorem zero_le_two [Preorder α] [One α] [AddZeroClass α] [ZeroLeOneClass α]
+theorem zero_le_two [Preorder α] [One α] [AddZeroClass α] [ZeroLEOneClass α]
     [CovariantClass α α (· + ·) (· ≤ ·)] : (0 : α) ≤ 2 :=
   add_nonneg zero_le_one zero_le_one
 #align zero_le_two zero_le_two
 
-theorem zero_le_three [Preorder α] [One α] [AddZeroClass α] [ZeroLeOneClass α]
+theorem zero_le_three [Preorder α] [One α] [AddZeroClass α] [ZeroLEOneClass α]
     [CovariantClass α α (· + ·) (· ≤ ·)] : (0 : α) ≤ 3 :=
   add_nonneg zero_le_two zero_le_one
 #align zero_le_three zero_le_three
 
-theorem zero_le_four [Preorder α] [One α] [AddZeroClass α] [ZeroLeOneClass α]
+theorem zero_le_four [Preorder α] [One α] [AddZeroClass α] [ZeroLEOneClass α]
     [CovariantClass α α (· + ·) (· ≤ ·)] : (0 : α) ≤ 4 :=
   add_nonneg zero_le_two zero_le_two
 #align zero_le_four zero_le_four
 
-theorem one_le_two [LE α] [One α] [AddZeroClass α] [ZeroLeOneClass α]
+theorem one_le_two [LE α] [One α] [AddZeroClass α] [ZeroLEOneClass α]
     [CovariantClass α α (· + ·) (· ≤ ·)] : (1 : α) ≤ 2 :=
   calc
     1 = 1 + 0 := (add_zero 1).symm
@@ -74,7 +76,7 @@ theorem one_le_two [LE α] [One α] [AddZeroClass α] [ZeroLeOneClass α]
 
 #align one_le_two one_le_two
 
-theorem one_le_two' [LE α] [One α] [AddZeroClass α] [ZeroLeOneClass α]
+theorem one_le_two' [LE α] [One α] [AddZeroClass α] [ZeroLEOneClass α]
     [CovariantClass α α (swap (· + ·)) (· ≤ ·)] : (1 : α) ≤ 2 :=
   calc
     1 = 0 + 1 := (zero_add 1).symm
@@ -84,16 +86,17 @@ theorem one_le_two' [LE α] [One α] [AddZeroClass α] [ZeroLeOneClass α]
 
 namespace WithZero
 
-attribute [local semireducible] WithZero
+-- Porting note: this seems unnecessary now, can this be deleted?
+-- attribute [local semireducible] WithZero
 
 instance [Preorder α] : Preorder (WithZero α) :=
-  WithBot.preorder
+  WithBot.instPreorderWithBot
 
 instance [PartialOrder α] : PartialOrder (WithZero α) :=
-  WithBot.partialOrder
+  WithBot.instPartialOrderWithBot
 
 instance [Preorder α] : OrderBot (WithZero α) :=
-  WithBot.orderBot
+  WithBot.instOrderBotWithBotInstLEWithBot
 
 theorem zero_le [Preorder α] (a : WithZero α) : 0 ≤ a :=
   bot_le
@@ -118,36 +121,46 @@ theorem coe_le_coe [Preorder α] {a b : α} : (a : WithZero α) ≤ b ↔ a ≤ 
 #align with_zero.coe_le_coe WithZero.coe_le_coe
 
 instance [Lattice α] : Lattice (WithZero α) :=
-  WithBot.lattice
+  WithBot.instLatticeWithBot
 
 instance [LinearOrder α] : LinearOrder (WithZero α) :=
-  WithBot.linearOrder
+  WithBot.instLinearOrderWithBot
 
-instance covariant_class_mul_le {α : Type u} [Mul α] [Preorder α]
+instance covariant_class_mul_le [Mul α] [Preorder α]
     [CovariantClass α α (· * ·) (· ≤ ·)] :
     CovariantClass (WithZero α) (WithZero α) (· * ·) (· ≤ ·) := by
   refine' ⟨fun a b c hbc => _⟩
   induction a using WithZero.recZeroCoe; · exact zero_le _
   induction b using WithZero.recZeroCoe; · exact zero_le _
   rcases WithBot.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
-  rw [← coe_mul, ← coe_mul, coe_le_coe]
-  exact mul_le_mul_left' hbc' a
+  refine' le_trans _ (le_of_eq <| coe_mul)
+  -- rw [← coe_mul, ← coe_mul, coe_le_coe]
+  -- Porting note: rewriting `coe_mul` here doesn't work because of some difference between
+  -- `coe` and `WithBot.some`, even though they're definitionally equal as shown by the `refine'`
+  rw [← coe_mul, coe_le_coe]
+  exact mul_le_mul_left' hbc' _
 #align with_zero.covariant_class_mul_le WithZero.covariant_class_mul_le
 
 @[simp]
 theorem le_max_iff [LinearOrder α] {a b c : α} : (a : WithZero α) ≤ max b c ↔ a ≤ max b c := by
   simp only [WithZero.coe_le_coe, le_max_iff]
+  rfl
 #align with_zero.le_max_iff WithZero.le_max_iff
 
+-- Porting note: `_root_` was needed here, but not in the previous lemma
 @[simp]
 theorem min_le_iff [LinearOrder α] {a b c : α} : min (a : WithZero α) b ≤ c ↔ min a b ≤ c := by
-  simp only [WithZero.coe_le_coe, min_le_iff]
+  simp only [WithZero.coe_le_coe, _root_.min_le_iff]
+  rfl
 #align with_zero.min_le_iff WithZero.min_le_iff
 
 instance [OrderedCommMonoid α] : OrderedCommMonoid (WithZero α) :=
-  { WithZero.commMonoidWithZero, WithZero.partialOrder with
+  { CommMonoidWithZero.toCommMonoid, WithZero.instPartialOrderWithZero with
     mul_le_mul_left := fun _ _ => mul_le_mul_left' }
 
+-- FIXME: `WithOne.coe_mul` and `WithZero.coe_mul` have inconsistent use of implicit parameters
+
+-- Porting note: same issue as `covariant_class_mul_le`
 protected theorem covariant_class_add_le [AddZeroClass α] [Preorder α]
     [CovariantClass α α (· + ·) (· ≤ ·)] (h : ∀ a : α, 0 ≤ a) :
     CovariantClass (WithZero α) (WithZero α) (· + ·) (· ≤ ·) := by
@@ -158,12 +171,12 @@ protected theorem covariant_class_add_le [AddZeroClass α] [Preorder α]
   · rw [add_zero]
     induction c using WithZero.recZeroCoe
     · rw [add_zero]
-      exact le_rfl
     · rw [← coe_add, coe_le_coe]
       exact le_add_of_nonneg_right (h _)
   · rcases WithBot.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
-    rw [← coe_add, ← coe_add, coe_le_coe]
-    exact add_le_add_left hbc' a
+    refine' le_trans _ (le_of_eq <| coe_add _ _)
+    rw [← coe_add, coe_le_coe]
+    exact add_le_add_left hbc' _
 #align with_zero.covariant_class_add_le WithZero.covariant_class_add_le
 
 /-
@@ -179,7 +192,7 @@ See note [reducible non-instances].
 @[reducible]
 protected def orderedAddCommMonoid [OrderedAddCommMonoid α] (zero_le : ∀ a : α, 0 ≤ a) :
     OrderedAddCommMonoid (WithZero α) :=
-  { WithZero.partialOrder, WithZero.addCommMonoid with
+  { WithZero.instPartialOrderWithZero, instAddCommMonoidWithZero with
     add_le_add_left := @add_le_add_left _ _ _ (WithZero.covariant_class_add_le zero_le).. }
 #align with_zero.ordered_add_comm_monoid WithZero.orderedAddCommMonoid
 
@@ -187,9 +200,9 @@ end WithZero
 
 section CanonicallyOrderedMonoid
 
-instance WithZero.has_exists_add_of_le {α} [Add α] [Preorder α] [HasExistsAddOfLe α] :
-    HasExistsAddOfLe (WithZero α) :=
-  ⟨fun a b => by
+instance WithZero.has_exists_add_of_le [Add α] [Preorder α] [ExistsAddOfLE α] :
+    ExistsAddOfLE (WithZero α) :=
+  ⟨fun {a b} => by
     apply WithZero.cases_on a
     · exact fun _ => ⟨b, (zero_add b).symm⟩
     apply WithZero.cases_on b
@@ -201,9 +214,11 @@ instance WithZero.has_exists_add_of_le {α} [Add α] [Preorder α] [HasExistsAdd
 
 -- This instance looks absurd: a monoid already has a zero
 /-- Adding a new zero to a canonically ordered additive monoid produces another one. -/
-instance WithZero.canonicallyOrderedAddMonoid {α : Type u} [CanonicallyOrderedAddMonoid α] :
+instance WithZero.canonicallyOrderedAddMonoid [CanonicallyOrderedAddMonoid α] :
     CanonicallyOrderedAddMonoid (WithZero α) :=
-  { WithZero.orderBot, WithZero.orderedAddCommMonoid zero_le, WithZero.has_exists_add_of_le with
+  { WithZero.instOrderBotWithZeroToLEInstPreorderWithZero,
+    WithZero.orderedAddCommMonoid _root_.zero_le,
+    WithZero.has_exists_add_of_le with
     le_self_add := fun a b => by
       apply WithZero.cases_on a
       · exact bot_le
@@ -218,8 +233,7 @@ section CanonicallyLinearOrderedMonoid
 
 instance WithZero.canonicallyLinearOrderedAddMonoid (α : Type _)
     [CanonicallyLinearOrderedAddMonoid α] : CanonicallyLinearOrderedAddMonoid (WithZero α) :=
-  { WithZero.canonicallyOrderedAddMonoid, WithZero.linearOrder with }
+  { WithZero.canonicallyOrderedAddMonoid, WithZero.instLinearOrderWithZero with }
 #align with_zero.canonically_linear_ordered_add_monoid WithZero.canonicallyLinearOrderedAddMonoid
 
 end CanonicallyLinearOrderedMonoid
-
