@@ -460,7 +460,7 @@ theorem symm_diff_symm_diff_left :
   calc
     a ∆ b ∆ c = a ∆ b \ c ⊔ c \ a ∆ b := symm_diff_def _ _
     _ = a \ (b ⊔ c) ⊔ b \ (a ⊔ c) ⊔ (c \ (a ⊔ b) ⊔ c ⊓ a ⊓ b) := by
-      rw [sdiff_symm_diff', @sup_comm _ _ (c ⊓ a ⊓ b), symm_diff_sdiff]
+        { rw [sdiff_symm_diff', @sup_comm _ _ (c ⊓ a ⊓ b), symm_diff_sdiff] }
     _ = a \ (b ⊔ c) ⊔ b \ (a ⊔ c) ⊔ c \ (a ⊔ b) ⊔ a ⊓ b ⊓ c := by ac_rfl
 #align symm_diff_symm_diff_left symm_diff_symm_diff_left
 
@@ -469,7 +469,7 @@ theorem symm_diff_symm_diff_right :
   calc
     a ∆ (b ∆ c) = a \ b ∆ c ⊔ b ∆ c \ a := symm_diff_def _ _
     _ = a \ (b ⊔ c) ⊔ a ⊓ b ⊓ c ⊔ (b \ (c ⊔ a) ⊔ c \ (b ⊔ a)) := by
-      rw [sdiff_symm_diff', @sup_comm _ _ (a ⊓ b ⊓ c), symm_diff_sdiff]
+        { rw [sdiff_symm_diff', @sup_comm _ _ (a ⊓ b ⊓ c), symm_diff_sdiff] }
     _ = a \ (b ⊔ c) ⊔ b \ (a ⊔ c) ⊔ c \ (a ⊔ b) ⊔ a ⊓ b ⊓ c := by ac_rfl
 #align symm_diff_symm_diff_right symm_diff_symm_diff_right
 
@@ -777,14 +777,14 @@ theorem symm_diff_symm_diff_right' :
     a ∆ (b ∆ c) = a ⊓ b ⊓ c ⊔ a ⊓ bᶜ ⊓ cᶜ ⊔ aᶜ ⊓ b ⊓ cᶜ ⊔ aᶜ ⊓ bᶜ ⊓ c :=
   calc
     a ∆ (b ∆ c) = a ⊓ (b ⊓ c ⊔ bᶜ ⊓ cᶜ) ⊔ (b ⊓ cᶜ ⊔ c ⊓ bᶜ) ⊓ aᶜ := by
-      rw [symm_diff_eq, compl_symm_diff, bihimp_eq', symm_diff_eq]
+        { rw [symm_diff_eq, compl_symm_diff, bihimp_eq', symm_diff_eq] }
     _ = a ⊓ b ⊓ c ⊔ a ⊓ bᶜ ⊓ cᶜ ⊔ b ⊓ cᶜ ⊓ aᶜ ⊔ c ⊓ bᶜ ⊓ aᶜ := by
-      rw [inf_sup_left, inf_sup_right, ← sup_assoc, ← inf_assoc, ← inf_assoc]
-    _ = a ⊓ b ⊓ c ⊔ a ⊓ bᶜ ⊓ cᶜ ⊔ aᶜ ⊓ b ⊓ cᶜ ⊔ aᶜ ⊓ bᶜ ⊓ c := by
+        { rw [inf_sup_left, inf_sup_right, ← sup_assoc, ← inf_assoc, ← inf_assoc] }
+    _ = a ⊓ b ⊓ c ⊔ a ⊓ bᶜ ⊓ cᶜ ⊔ aᶜ ⊓ b ⊓ cᶜ ⊔ aᶜ ⊓ bᶜ ⊓ c := (by
       congr 1
       · congr 1
         rw [inf_comm, inf_assoc]
-      · apply inf_left_right_swap
+      · apply inf_left_right_swap)
 #align symm_diff_symm_diff_right' symm_diff_symm_diff_right'
 
 variable {a b c}
