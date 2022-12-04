@@ -154,8 +154,8 @@ lemma IsLeftCancelMulZero.toNoZeroDivisors [Ring α] [IsLeftCancelMulZero α] :
       exact hx }
     { right
       rw [← sub_zero (x * y), ← mul_zero x, ← mul_sub] at h
-      convert (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero) hx h
-      rw [sub_zero] } }
+      have := (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero) hx h
+      rwa [sub_zero] at this } }
 #align is_left_cancel_mul_zero.to_no_zero_divisors IsLeftCancelMulZero.toNoZeroDivisors
 
 lemma IsRightCancelMulZero.toNoZeroDivisors [Ring α] [IsRightCancelMulZero α] :
@@ -166,8 +166,8 @@ lemma IsRightCancelMulZero.toNoZeroDivisors [Ring α] [IsRightCancelMulZero α] 
       exact hy }
     { left
       rw [← sub_zero (x * y), ← zero_mul y, ← sub_mul] at h
-      convert (IsRightCancelMulZero.mul_right_cancel_of_ne_zero) hy h
-      rw [sub_zero] } }
+      have := (IsRightCancelMulZero.mul_right_cancel_of_ne_zero) hy h
+      rwa [sub_zero] at this } }
 #align is_right_cancel_mul_zero.to_no_zero_divisors IsRightCancelMulZero.toNoZeroDivisors
 
 instance (priority := 100) NoZeroDivisors.toIsCancelMulZero [Ring α] [NoZeroDivisors α] :
