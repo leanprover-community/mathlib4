@@ -1,4 +1,4 @@
-import Mathlib.Tactic.ApplyRules
+import Mathlib.Tactic.SolveByElim
 import Std.Data.Nat.Lemmas
 
 open Nat
@@ -16,9 +16,14 @@ by apply_rules [add_le_add, Nat.mul_le_mul_of_nonneg_right]
 example {a b c d e : Nat} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 0 ≤ e) :
   a + c * e + a + c + 0 ≤ b + d * e + b + d + e :=
 by
-  apply_rules [add_le_add, Nat.mul_le_mul_of_nonneg_right] 9
+  apply_rules (config := {maxDepth := 9}) [add_le_add, Nat.mul_le_mul_of_nonneg_right]
   guard_target = 0 ≤ e
   assumption
+
+-- Check that `apply_rules only` works.
+example {P Q : Prop} (p : P) (f : P → Q) : Q := by
+  apply_rules only [f]
+  exact p
 
 -- Test that metavariables created for implicit arguments don't get stuck
 -- This required extra work in Lean 3, but doesn't seem to be a problem in Lean 4.

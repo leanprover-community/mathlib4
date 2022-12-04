@@ -51,7 +51,7 @@ initialize librarySearchLemmas : DeclCache (DiscrTree Name true) ←
 
 /-- Shortcut for calling `solveByElimImpl`. -/
 def solveByElim (g : MVarId) (depth) := do
-  _ ← SolveByElim.solveByElimImpl {maxDepth := depth} false [] [g]
+  _ ← SolveByElim.solveByElim.processSyntax {maxDepth := depth} false [] [g]
   pure ()
 
 /--

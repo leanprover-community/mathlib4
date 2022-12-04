@@ -30,8 +30,11 @@ def exceptEmoji : Except ε α → String
 
 namespace Lean.MVarId
 
-structure ApplyFirstConfig where
+/-- Additional configuration options for `Lean.MVarId.applyFirst`. -/
+structure ApplyFirstConfig extends ApplyConfig where
+  /-- Retry all lemmas after calling `symm`. -/
   symm : Bool := true
+  /-- Retry all lemmas after calling `exfalso`. -/
   exfalso : Bool := true
 
 /--
@@ -59,14 +62,18 @@ def applyFirst (cfg : ApplyFirstConfig := {}) (trace : Name := .anonymous) (lemm
     restoreState s
     withTraceNode trace (return m!"{exceptEmoji ·} trying `symm`") do
       run (← g.symm)
-  catch _ =>
+  catch _ => try
     let .true := cfg.exfalso | failure
     restoreState s
     withTraceNode trace (return m!"{exceptEmoji ·} trying `exfalso`") do
       run (← g.exfalso)
+  catch _ =>
+    restoreState s
+    failure
   where
   run (g : MVarId) := lemmas.firstM fun e =>
-    withTraceNode trace (return m!"{exceptEmoji ·} tried to apply: {e}") do cont (← g.apply e)
+    withTraceNode trace (return m!"{exceptEmoji ·} tried to apply: {e}") do
+      cont (← g.apply e cfg.toApplyConfig)
 
 end Lean.MVarId
 
@@ -143,25 +150,46 @@ def intros (cfg : Config := {}) : Config :=
 
 end Config
 
-def solveByElimCore (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
-    (orig : List MVarId)
-    (n : Nat := cfg.maxDepth) (goals : List MVarId := orig) (acc : List MVarId := []) :
+/--
+Solve a collection of goals by repeatedly applying lemmas, backtracking as necessary.
+
+Arguments:
+* `cfg : Config` additional configuration options (options for `apply` and custom flow control)
+* `lemmas : List (TermElabM Expr)` lemmas to apply.
+  These are thunks in `TermElabM` to avoid stuck metavariables.
+* `ctx : TermElabM (List Expr)` monadic function returning the local hypotheses to use.
+* `init : List MVarId` the inital list of goals for `solveByElim`
+  (we keep these as `cfg.proc` is allowed to inspect them as they are incrementally unified).
+* `n : Nat` maximum number of steps remaining.
+* `goals : List MVarId` the current list of unsolved goals.
+* `acc : List MVarId` a list of "suspended" goals, which will be returned as subgoals.
+
+Returns a list of suspended goals, if it succeeded on all other subgoals.
+By default `cfg.suspend` is `false,` `cfg.discharge` fails, and `cfg.failAtMaxDepth` is `true`,
+and so the returned list is always empty.
+Custom wrappers (e.g. `apply_assumption` and `apply_rules`) may modify this behaviour.
+-/
+def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
+    (init : List MVarId)
+    (n : Nat := cfg.maxDepth) (goals : List MVarId := init) (acc : List MVarId := []) :
     MetaM (List MVarId) := do
   match n with
   | 0 => do
+    -- We're out of fuel.
     let .false := cfg.failAtMaxDepth | throwError "solve_by_elim exceeded the recursion limit"
-    return goals ++ acc
+    return acc.reverse ++ goals
   | n + 1 => do
-  match ← cfg.proc orig goals with
-  | some goals' => solveByElimCore cfg lemmas ctx orig n goals' acc
+  -- First, run `cfg.proc`, to see if it wants to modify the goals.
+  match ← cfg.proc init goals with
+  | some goals' => solveByElim cfg lemmas ctx init n goals' acc
   | none =>
   match goals with
   -- If there are no active goals, return the accumulated goals:
-  | [] => return acc
+  | [] => return acc.reverse
   | g :: gs =>
   -- Discard any goals which have already been assigned.
   if ← g.isAssigned then
-    solveByElimCore cfg lemmas ctx orig (n+1) gs acc
+    solveByElim cfg lemmas ctx init (n+1) gs acc
   else
   withTraceNode `Meta.Tactic.solveByElim
     -- Note: the `addMessageContextFull` is so that we show the goal using the mvar context before
@@ -172,24 +200,24 @@ def solveByElimCore (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermE
       if (← cfg.suspend g) then
         withTraceNode `Meta.Tactic.solveByElim
           (fun _ => return m!"⏸️ suspending search and returning as subgoal") do
-        solveByElimCore cfg lemmas ctx orig (n+1) gs (g :: acc)
+        solveByElim cfg lemmas ctx init (n+1) gs (g :: acc)
       else
       let es ← elabContextLemmas g lemmas ctx
       try
         -- We attempt to find an expression which can be applied,
         -- and for which all resulting sub-goals can be discharged using `solveByElim n`.
         g.applyFirst cfg.toApplyFirstConfig `Meta.Tactic.solveByElim es fun res =>
-          solveByElimCore cfg lemmas ctx orig n (res ++ gs) acc
+          solveByElim cfg lemmas ctx init n (res ++ gs) acc
       catch _ =>
         -- No lemmas could be applied:
         match (← cfg.discharge g) with
         | none => (withTraceNode `Meta.Tactic.solveByElim
             (fun _ => return m!"⏭️ deemed acceptable, returning as subgoal") do
-          solveByElimCore cfg lemmas ctx orig (n+1) gs (g :: acc))
+          solveByElim cfg lemmas ctx init (n+1) gs (g :: acc))
         | some l => (withTraceNode `Meta.Tactic.solveByElim
             (fun _ => return m!"⏬ discharger generated new subgoals") do
-          solveByElimCore cfg lemmas ctx orig n (l ++ gs) acc)
-termination_by solveByElimCore lemmas ctx orig n goals acc => (n, goals)
+          solveByElim cfg lemmas ctx init n (l ++ gs) acc)
+termination_by solveByElim lemmas ctx init n goals acc => (n, goals)
 
 open Lean.Parser.Tactic
 
@@ -205,14 +233,6 @@ the backtracking search in `solve_by_elim`.
 
 `mkAssumptionSet` returns not a `List expr`, but a `List (TermElabM Expr) × TermElabM (List Expr)`.
 There are two separate problems that need to be solved.
-
-### Relevant local hypotheses
-
-`solve_by_elim*` (not implemented yet here) works with multiple goals,
-and we need to use separate sets of local hypotheses for each goal.
-The second component of the returned value provides these local hypotheses.
-(Essentially using `local_context`, along with some filtering to remove hypotheses
-that have been explicitly removed via `only` or `[-h]`.)
 
 ### Stuck metavariables
 
@@ -230,6 +250,15 @@ This would make it impossible to apply the lemma
 a second time with different values of the metavariables.
 
 See https://github.com/leanprover-community/mathlib/issues/2269
+
+### Relevant local hypotheses
+
+`solve_by_elim*` works with multiple goals,
+and we need to use separate sets of local hypotheses for each goal.
+The second component of the returned value provides these local hypotheses.
+(Essentially using `local_context`, along with some filtering to remove hypotheses
+that have been explicitly removed via `only` or `[-h]`.)
+
 -/
 -- Make sure that these `TermElabM`s are run inside a suitable `g.withContext`,
 -- usually using `elabContextLemmas`.
@@ -244,7 +273,7 @@ def mkAssumptionSet (noDflt : Bool) (hs : List (TSyntax `term)) :
 /--
 `solve_by_elim` calls `apply` on the main goal to find an assumption whose head matches
 and then repeatedly calls `apply` on the generated subgoals until no subgoals remain,
-performing at most `max_depth` (currently hard-coded to 6) recursive steps.
+performing at most `maxDepth` (currently hard-coded to 12) recursive steps.
 
 `solve_by_elim` discharges the current goal or fails.
 
@@ -254,11 +283,11 @@ By default, the assumptions passed to `apply` are the local context, `rfl`, `tri
 `congrFun` and `congrArg`.
 
 The assumptions can be modified with similar syntax as for `simp`:
-* `solve_by_elim [h₁, h₂, ..., hᵣ, attr₁, ... attrᵣ]` also applies the named lemmas, as well as
-  all lemmas tagged with the specified attributes.
+* `solve_by_elim [h₁, h₂, ..., hᵣ, attr₁, ... attrᵣ]` also applies the named lemmas,
+  (not implemented yet:) as well as all lemmas tagged with the specified attributes.
 * `solve_by_elim only [h₁, h₂, ..., hᵣ]` does not include the local context,
   `rfl`, `trivial`, `congrFun`, or `congrArg` unless they are explicitly included.
-* (not implemented yet) `solve_by_elim [-id_1, ... -id_n]` uses the default assumptions,
+* (not implemented yet:) `solve_by_elim [-id_1, ... -id_n]` uses the default assumptions,
    removing the specified ones.
 
 `solve_by_elim*` tries to solve all goals together, using backtracking if a solution for one goal
@@ -270,14 +299,15 @@ Optional arguments passed via a configuration argument as `solve_by_elim (config
 See also the doc-comment for `Mathlib.Tactic.SolveByElim.Config` for the options
 `proc`, `suspend`, and `discharge` which allow further customization of `solve_by_elim`.
 -/
-syntax (name := solveByElim) "solve_by_elim" "*"? (config)? (&" only")? (simpArgs)? : tactic
+syntax (name := solveByElimSyntax) "solve_by_elim" "*"? (config)? (&" only")? (simpArgs)? : tactic
 
 /-- Wrapper for `solveByElimCore` that processes a list of ``TSyntax `term``
 that specify the lemmas to use. -/
-def solveByElimImpl (cfg : Config := {}) (only : Bool := false) (terms : List (TSyntax `term))
+def solveByElim.processSyntax
+    (cfg : Config := {}) (only : Bool := false) (terms : List (TSyntax `term))
     (goals : List MVarId) : MetaM (List MVarId) := do
   let ⟨lemmas, ctx⟩ ← mkAssumptionSet only terms
-  solveByElimCore cfg lemmas ctx goals
+  solveByElim cfg lemmas ctx goals
 
 elab_rules : tactic |
     `(tactic| solve_by_elim $[*%$s]? $[$cfg]? $[only%$o]? $[[$[$t:term],*]]?) => do
@@ -287,7 +317,7 @@ elab_rules : tactic |
   else
     pure [← getMainGoal]
   let cfg ← elabConfig (mkOptionalNode cfg)
-  let [] ← solveByElimImpl cfg o.isSome es goals |
+  let [] ← solveByElim.processSyntax cfg o.isSome es goals |
     throwError "solve_by_elim unexpectedly returned subgoals"
   pure ()
 
@@ -295,28 +325,16 @@ elab_rules : tactic |
 `apply_assumption` looks for an assumption of the form `... → ∀ _, ... → head`
 where `head` matches the current goal.
 
-[todo] not yet implemented:
-If this fails, `apply_assumption` will call `symmetry` and try again.
+If this fails, `apply_assumption` will call `symm` and try again.
 
-[todo] not yet implemented:
 If this also fails, `apply_assumption` will call `exfalso` and try again,
 so that if there is an assumption of the form `P → ¬ Q`, the new tactic state
 will have two goals, `P` and `Q`.
 
-[todo] not yet implemented:
-Optional arguments:
-- `lemmas`: a list of expressions to apply, instead of the local constants
-- `tac`: a tactic to run on each subgoal after applying an assumption; if
-  this tactic fails, the corresponding assumption will be rejected and
-  the next one will be attempted.
+You can pass a further configuration via the syntax `apply_rules (config := {...}) lemmas`.
+The options supported are the same as for `solve_by_elim` (and include all the options for `apply`).
 -/
-syntax (name := applyAssumption) "apply_assumption" (config)? (&" only")? (simpArgs)? : tactic
-
--- elab_rules : tactic | `(tactic| apply_assumption) => do
---   let ctx := (← getLocalHyps).toList
---   let lemmas := [← `(rfl), ← `(trivial), ← `(congrArg)].map (λ s => Elab.Term.elabTerm s.raw none)
---   (← elabContextLemmas (← getMainGoal) lemmas (pure ctx)).firstM
---     fun e => (liftMetaTactic (Lean.MVarId.apply · e))
+syntax (name := applyAssumptionSyntax) "apply_assumption" (config)? (&" only")? (simpArgs)? : tactic
 
 elab_rules : tactic |
     `(tactic| apply_assumption $[$cfg]? $[only%$o]? $[[$[$t:term],*]]?) => do
@@ -325,4 +343,34 @@ elab_rules : tactic |
   let cfg := { cfg with
     maxDepth := 1
     failAtMaxDepth := false }
-  replaceMainGoal (← solveByElimImpl cfg o.isSome es [← getMainGoal])
+  replaceMainGoal (← solveByElim.processSyntax cfg o.isSome es [← getMainGoal])
+
+/--
+`apply_rules [l₁, l₂, ...]` tries to solve the main goal by iteratively
+applying the list of lemmas `[l₁, l₂, ...]` or by applying a local hypothesis.
+If `apply` generates new goals, `apply_rules` iteratively tries to solve those goals.
+
+(TODO: not yet supported in mathlib4)
+You may include attributes amongst the lemmas:
+`apply_rules` will include all lemmas marked with these attributes.
+
+You can pass a further configuration via the syntax `apply_rules (config := {...}) lemmas`.
+The options supported are the same as for `solve_by_elim` (and include all the options for `apply`).
+
+You can bound the iteration depth using the syntax `apply_rules (config := {maxDepth:=n}) lemmas`.
+The default bound is 12.
+
+Unlike `solve_by_elim`, `apply_rules` does not perform backtracking, and greedily applies
+a lemma from the list until it gets stuck.
+
+TODO: copy the other tests/examples from Lean 3
+-/
+syntax (name := applyRulesSyntax) "apply_rules" (config)? (&" only")? (simpArgs)? : tactic
+
+elab_rules : tactic |
+    `(tactic| apply_rules $[$cfg]? $[only%$o]? $[[$[$t:term],*]]?)  => do
+  let es := (t.getD #[]).toList
+  let cfg ← elabConfig (mkOptionalNode cfg)
+  let cfg := { cfg.noBackTracking with
+    failAtMaxDepth := false }
+  liftMetaTactic fun g => solveByElim.processSyntax cfg o.isSome es [g]
