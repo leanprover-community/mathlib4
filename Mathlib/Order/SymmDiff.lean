@@ -17,14 +17,14 @@ This file defines the symmetric difference and bi-implication operators in (co-)
 Some examples are
 * The symmetric difference of two sets is the set of elements that are in either but not both.
 * The symmetric difference on propositions is `xor`.
-* The symmetric difference on `bool` is `bxor`.
+* The symmetric difference on `Bool` is `bxor`.
 * The equivalence of propositions. Two propositions are equivalent if they imply each other.
 * The symmetric difference translates to addition when considering a Boolean algebra as a Boolean
   ring.
 
 ## Main declarations
 
-* `symm_diff`: The symmetric difference operator, defined as `(a \ b) ⊔ (b \ a)`
+* `symmDiff`: The symmetric difference operator, defined as `(a \ b) ⊔ (b \ a)`
 * `bihimp`: The bi-implication operator, defined as `(b ⇨ a) ⊓ (a ⇨ b)`
 
 In generalized Boolean algebras, the symmetric difference operator is:
@@ -34,7 +34,7 @@ In generalized Boolean algebras, the symmetric difference operator is:
 
 ## Notations
 
-* `a ∆ b`: `symm_diff a b`
+* `a ∆ b`: `symmDiff a b`
 * `a ⇔ b`: `bihimp a b`
 
 ## References
@@ -574,8 +574,7 @@ section BooleanAlgebra
 
 variable [BooleanAlgebra α] (a b c d : α)
 
-/- `cogeneralized_boolean_algebra` isn't actually a typeclass, but the lemmas in here are dual to
-the `generalized_boolean_algebra` ones -/
+/- `CogeneralizedBooleanAlgebra` isn't actually a typeclass, but the lemmas in here are dual to the `GeneralizedBooleanAlgebra` ones -/
 section CogeneralizedBooleanAlgebra
 
 @[simp]
