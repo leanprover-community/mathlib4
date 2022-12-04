@@ -7,10 +7,10 @@ import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 import Mathlib.Algebra.GroupWithZero.Basic
 
 /-!
-# An instance orphaned from `algebra.order.monoid.with_zero.defs`
+# An instance orphaned from `Algebra.Order.Monoid.WithZero.Defs`
 
 We put this here to minimise imports: if you can move it back into
-`algebra.order.monoid.with_zero.defs` without increasing imports, please do.
+`Algebra.Order.Monoid.WithZero.Defs` without increasing imports, please do.
 -/
 
 
@@ -22,7 +22,7 @@ variable {α : Type u}
 
 namespace WithZero
 
-instance contravariant_class_mul_lt [Mul α] [PartialOrder α]
+instance contravariantClass_mul_lt [Mul α] [PartialOrder α]
     [ContravariantClass α α (· * ·) (· < ·)] :
     ContravariantClass (WithZero α) (WithZero α) (· * ·) (· < ·) := by
   refine' ⟨fun a b c h => _⟩
@@ -31,6 +31,6 @@ instance contravariant_class_mul_lt [Mul α] [PartialOrder α]
   induction c using WithZero.recZeroCoe; · exfalso; exact right_ne_zero_of_mul this rfl
   induction b using WithZero.recZeroCoe
   exacts [zero_lt_coe _, coe_lt_coe.mpr (lt_of_mul_lt_mul_left' <| coe_lt_coe.mp h)]
-#align with_zero.contravariant_class_mul_lt WithZero.contravariant_class_mul_lt
+#align with_zero.contravariant_class_mul_lt WithZero.contravariantClass_mul_lt
 
 end WithZero
