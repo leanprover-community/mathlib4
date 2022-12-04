@@ -100,7 +100,7 @@ def mapAccumr₂ (f : α → β → σ → σ × φ) : List α → List β → �
 
 /-- Length of a list obtained using `mapAccumr₂`. -/
 @[simp]
-theorem length_map_accumr₂ :
+theorem length_mapAccumr₂ :
     ∀ (f : α → β → σ → σ × φ) (x y c), length (mapAccumr₂ f x y c).2 = min (length x) (length y)
   | f, _ :: x, _ :: y, c =>
     calc
