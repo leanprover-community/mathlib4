@@ -131,7 +131,7 @@ applied to the instantiations of the original goals, fails or returns `false`.
 def testPartialSolutions (cfg : Config := {}) (test : List Expr → MetaM Bool) : Config :=
 { cfg with
   proc := fun orig goals => do
-    let .true ← test (← orig.mapM fun m => instantiateMVars (.mvar m)) | failure
+    let .true ← test (← orig.mapM fun m => m.withContext do instantiateMVars (.mvar m)) | failure
     cfg.proc orig goals }
 
 /--

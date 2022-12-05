@@ -90,6 +90,8 @@ axiom F (a b : ℕ) : f a ≤ f b ↔ a ≤ b
 
 -- TODO theorem nonzero_gt_one (n : ℕ) : ¬ n = 0 → n ≥ 1 := by library_search   -- `exact nat.pos_of_ne_zero`
 
+-- set_option trace.Meta.Tactic.solveByElim true
+set_option trace.Tactic.librarySearch true
 example (L _M : List (List ℕ)) : List ℕ := by library_search using L
 
 example (P _Q : List ℕ) (h : ℕ) : List ℕ := by library_search using h, P
