@@ -82,6 +82,8 @@ structure OrderHom (α β : Type _) [Preorder α] [Preorder β] where
 /-- Notation for an `OrderHom`. -/
 infixr:25 " →o " => OrderHom
 
+attribute [coe] OrderHom.toFun
+
 /-- An order embedding is an embedding `f : α ↪ β` such that `a ≤ b ↔ (f a) ≤ (f b)`.
 This definition is an abbreviation of `rel_embedding (≤) (≤)`. -/
 abbrev OrderEmbedding (α β : Type _) [LE α] [LE β] :=
@@ -177,15 +179,15 @@ theorem map_lt_map_iff (f : F) {a b : α} : (f : α → β) a < (f : α → β) 
 #align map_lt_map_iff map_lt_map_iff
 
 @[simp]
-theorem map_inv_lt_iff (f : F) {a : α} {b : β} : EquivLike.inv f b < a ↔ b < f a := by
-  convert (map_lt_map_iff _).symm
-  exact (EquivLike.right_inv _ _).symm
+theorem map_inv_lt_iff (f : F) {a : α} {b : β} : EquivLike.inv f b < a ↔ b < (f : α → β) a := by
+  rw [← map_lt_map_iff f]
+  simp only [EquivLike.apply_inv_apply, iff_self]
 #align map_inv_lt_iff map_inv_lt_iff
 
 @[simp]
-theorem lt_map_inv_iff (f : F) {a : α} {b : β} : a < EquivLike.inv f b ↔ f a < b := by
-  convert (map_lt_map_iff _).symm
-  exact (EquivLike.right_inv _ _).symm
+theorem lt_map_inv_iff (f : F) {a : α} {b : β} : a < EquivLike.inv f b ↔ (f : α → _) a < b := by
+  rw [← map_lt_map_iff f]
+  simp only [EquivLike.apply_inv_apply, iff_self]
 #align lt_map_inv_iff lt_map_inv_iff
 
 end OrderIsoClass
@@ -233,12 +235,6 @@ theorem ext (f g : α →o β) (h : (f : α → β) = g) : f = g :=
   FunLike.coe_injective h
 #align order_hom.ext OrderHom.ext
 
-theorem coe_eq (f : α →o β) : coe f = f := by ext <;> rfl
-#align order_hom.coe_eq OrderHom.coe_eq
-
-/-- One can lift an unbundled monotone function to a bundled one. -/
-instance : CanLift (α → β) (α →o β) coeFn Monotone where prf f h := ⟨⟨f, h⟩, rfl⟩
-
 /-- Copy of an `order_hom` with a new `to_fun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : α →o β) (f' : α → β) (h : f' = f) : α →o β :=
@@ -246,7 +242,7 @@ protected def copy (f : α →o β) (f' : α → β) (h : f' = f) : α →o β :
 #align order_hom.copy OrderHom.copy
 
 @[simp]
-theorem coe_copy (f : α →o β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
+theorem coe_copy (f : α →o β) (f' : α → β) (h : f' = f) : (f.copy f' h) = f' :=
   rfl
 #align order_hom.coe_copy OrderHom.coe_copy
 
@@ -265,10 +261,10 @@ instance : Inhabited (α →o α) :=
 
 /-- The preorder structure of `α →o β` is pointwise inequality: `f ≤ g ↔ ∀ a, f a ≤ g a`. -/
 instance : Preorder (α →o β) :=
-  @Preorder.lift (α →o β) (α → β) _ coeFn
+  @Preorder.lift (α →o β) (α → β) _ toFun
 
 instance {β : Type _} [PartialOrder β] : PartialOrder (α →o β) :=
-  @PartialOrder.lift (α →o β) (α → β) _ coeFn ext
+  @PartialOrder.lift (α →o β) (α → β) _ toFun ext
 
 theorem le_def {f g : α →o β} : f ≤ g ↔ ∀ x, f x ≤ g x :=
   Iff.rfl
@@ -306,7 +302,7 @@ def curry :
   right_inv f := by
     ext (x y)
     rfl
-  map_rel_iff' f g := by simp [le_def]
+  map_rel_iff' := by simp [le_def]
 #align order_hom.curry OrderHom.curry
 
 @[simp]
@@ -333,7 +329,7 @@ theorem comp_mono ⦃g₁ g₂ : β →o γ⦄ (hg : g₁ ≤ g₂) ⦃f₁ f₂
 /-- The composition of two bundled monotone functions, a fully bundled version. -/
 @[simps (config := { fullyApplied := false })]
 def compₘ : (β →o γ) →o (α →o β) →o α →o γ :=
-  curry ⟨fun f : (β →o γ) × (α →o β) => f.1.comp f.2, fun f₁ f₂ h => comp_mono h.1 h.2⟩
+  curry ⟨fun f : (β →o γ) × (α →o β) => f.1.comp f.2, fun _ _ h => comp_mono h.1 h.2⟩
 #align order_hom.compₘ OrderHom.compₘ
 
 @[simp]
@@ -353,7 +349,7 @@ theorem id_comp (f : α →o β) : comp id f = f := by
 def const (α : Type _) [Preorder α] {β : Type _} [Preorder β] :
     β →o α →o β where
   toFun b := ⟨Function.const α b, fun _ _ _ => le_rfl⟩
-  monotone' b₁ b₂ h x := h
+  monotone' _ _  h _ := h
 #align order_hom.const OrderHom.const
 
 @[simp]
@@ -371,16 +367,16 @@ theorem comp_const (γ : Type _) [Preorder γ] (f : α →o β) (c : α) :
 `order_hom`. -/
 @[simps]
 protected def prod (f : α →o β) (g : α →o γ) : α →o β × γ :=
-  ⟨fun x => (f x, g x), fun x y h => ⟨f.mono h, g.mono h⟩⟩
+  ⟨fun x => (f x, g x), fun _ _ h => ⟨f.mono h, g.mono h⟩⟩
 #align order_hom.prod OrderHom.prod
 
-@[mono]
+--@[mono]
 theorem prod_mono {f₁ f₂ : α →o β} (hf : f₁ ≤ f₂) {g₁ g₂ : α →o γ} (hg : g₁ ≤ g₂) :
-    f₁.Prod g₁ ≤ f₂.Prod g₂ := fun x => Prod.le_def.2 ⟨hf _, hg _⟩
+    f₁.prod g₁ ≤ f₂.prod g₂ := fun _ => Prod.le_def.2 ⟨hf _, hg _⟩
 #align order_hom.prod_mono OrderHom.prod_mono
 
 theorem comp_prod_comp_same (f₁ f₂ : β →o γ) (g : α →o β) :
-    (f₁.comp g).Prod (f₂.comp g) = (f₁.Prod f₂).comp g :=
+    (f₁.comp g).prod (f₂.comp g) = (f₁.prod f₂).comp g :=
   rfl
 #align order_hom.comp_prod_comp_same OrderHom.comp_prod_comp_same
 
@@ -388,7 +384,7 @@ theorem comp_prod_comp_same (f₁ f₂ : β →o γ) (g : α →o β) :
 `order_hom`. This is a fully bundled version. -/
 @[simps]
 def prodₘ : (α →o β) →o (α →o γ) →o α →o β × γ :=
-  curry ⟨fun f : (α →o β) × (α →o γ) => f.1.Prod f.2, fun f₁ f₂ h => prod_mono h.1 h.2⟩
+  curry ⟨fun f : (α →o β) × (α →o γ) => f.1.prod f.2, fun _ _ h => prod_mono h.1 h.2⟩
 #align order_hom.prodₘ OrderHom.prodₘ
 
 /-- Diagonal embedding of `α` into `α × α` as a `order_hom`. -/
@@ -406,7 +402,7 @@ def onDiag (f : α →o α →o β) : α →o β :=
 /-- `prod.fst` as a `order_hom`. -/
 @[simps]
 def fst : α × β →o α :=
-  ⟨Prod.fst, fun x y h => h.1⟩
+  ⟨Prod.fst, fun _ _ h => h.1⟩
 #align order_hom.fst OrderHom.fst
 
 /-- `prod.snd` as a `order_hom`. -/
@@ -441,13 +437,13 @@ def prodIso :
   invFun f := f.1.prod f.2
   left_inv f := by ext <;> rfl
   right_inv f := by ext <;> rfl
-  map_rel_iff' f g := forall_and.symm
+  map_rel_iff' := forall_and.symm
 #align order_hom.prod_iso OrderHom.prodIso
 
 /-- `prod.map` of two `order_hom`s as a `order_hom`. -/
 @[simps]
 def prodMap (f : α →o β) (g : γ →o δ) : α × γ →o β × δ :=
-  ⟨Prod.map f g, fun x y h => ⟨f.mono h.1, g.mono h.2⟩⟩
+  ⟨Prod.map f g, fun _ _ h => ⟨f.mono h.1, g.mono h.2⟩⟩
 #align order_hom.prod_map OrderHom.prodMap
 
 variable {ι : Type _} {π : ι → Type _} [∀ i, Preorder (π i)]
@@ -463,7 +459,7 @@ is monotone. -/
 @[simps (config := { fullyApplied := false })]
 def coeFnHom : (α →o β) →o α → β where
   toFun f := f
-  monotone' x y h := h
+  monotone' _ _ h := h
 #align order_hom.coe_fn_hom OrderHom.coeFnHom
 
 /-- Function application `λ f, f a` (for fixed `a`) is a monotone function from the
@@ -494,7 +490,7 @@ def piIso :
   right_inv f := by
     ext (x i)
     rfl
-  map_rel_iff' f g := forall_swap
+  map_rel_iff' := forall_swap
 #align order_hom.pi_iso OrderHom.piIso
 
 /-- `subtype.val` as a bundled monotone function.  -/
@@ -520,7 +516,8 @@ protected def dual :
     (α →o β) ≃
       (αᵒᵈ →o
         βᵒᵈ) where
-  toFun f := ⟨OrderDual.toDual ∘ f ∘ OrderDual.ofDual, f.mono.dual⟩
+  toFun f := ⟨(OrderDual.toDual : β → βᵒᵈ) ∘ (f : α → β) ∘
+    (OrderDual.ofDual : αᵒᵈ → α), f.mono.dual⟩
   invFun f := ⟨OrderDual.ofDual ∘ f ∘ OrderDual.toDual, f.mono.dual⟩
   left_inv f := ext _ _ rfl
   right_inv f := ext _ _ rfl
