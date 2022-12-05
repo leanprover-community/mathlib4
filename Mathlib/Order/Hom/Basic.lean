@@ -138,10 +138,10 @@ namespace OrderHomClass
 
 variable [Preorder α] [Preorder β] [OrderHomClass F α β]
 
-protected theorem monotone (f : F) : Monotone (f : α → β) := fun _ _ => map_rel f
+protected theorem monotone (f : F) : Monotone f := fun _ _ => map_rel f
 #align order_hom_class.monotone OrderHomClass.monotone
 
-protected theorem mono (f : F) : Monotone (f : α → β) := fun _ _ => map_rel f
+protected theorem mono (f : F) : Monotone f := fun _ _ => map_rel f
 #align order_hom_class.mono OrderHomClass.mono
 
 instance : CoeTC F (α →o β) :=
@@ -178,13 +178,13 @@ theorem map_lt_map_iff (f : F) {a b : α} : f a < f b ↔ a < b :=
 #align map_lt_map_iff map_lt_map_iff
 
 @[simp]
-theorem map_inv_lt_iff (f : F) {a : α} {b : β} : EquivLike.inv f b < a ↔ b < (f : α → β) a := by
+theorem map_inv_lt_iff (f : F) {a : α} {b : β} : EquivLike.inv f b < a ↔ b < f a := by
   rw [← map_lt_map_iff f]
   simp only [EquivLike.apply_inv_apply, iff_self]
 #align map_inv_lt_iff map_inv_lt_iff
 
 @[simp]
-theorem lt_map_inv_iff (f : F) {a : α} {b : β} : a < EquivLike.inv f b ↔ (f : α → _) a < b := by
+theorem lt_map_inv_iff (f : F) {a : α} {b : β} : a < EquivLike.inv f b ↔ f a < b := by
   rw [← map_lt_map_iff f]
   simp only [EquivLike.apply_inv_apply, iff_self]
 #align lt_map_inv_iff lt_map_inv_iff
