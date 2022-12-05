@@ -552,8 +552,9 @@ See note [reducible non-instances]. -/
 def compHom [Monoid N] (g : N →* M) :
     MulAction N α where
   smul := SMul.comp.smul g
-  one_smul := by simp [g.map_one, MulAction.one_smul]
-  mul_smul := by simp [g.map_mul, MulAction.mul_smul]
+  one_smul b := show g 1 • b = b by rw [g.map_one, one_smul]
+  mul_smul c₁ c₂ b := show g (c₁ * c₂) • b = g c₁ • g c₂ • b by
+    rw [g.map_mul, mul_smul]
 #align mul_action.comp_hom MulAction.compHom
 
 /-- An additive action of `M` on `α` and an additive monoid homomorphism `N → M` induce
@@ -641,7 +642,7 @@ protected def ZeroHom.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom A B)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     SmulZeroClass M B where
   smul := (· • ·)
-  smul_zero c := by simp only [← map_zero f, ← smul, smul_zero]
+  smul_zero c := by rw [← map_zero f, ← smul, smul_zero]
 #align zero_hom.smul_zero_class ZeroHom.smulZeroClass
 
 /-- Push forward the multiplication of `R` on `M` along a compatible surjective map `f : R → S`.
@@ -913,7 +914,7 @@ protected def Function.Surjective.mulDistribMulAction [Monoid B] [SMul M B] (f :
       rcases hf x with ⟨x, rfl⟩
       rcases hf y with ⟨y, rfl⟩
       simp only [smul_mul', ← smul, ← f.map_mul],
-    smul_one := fun c => by simp only [← f.map_one, ← smul, smul_one] }
+    smul_one := fun c => by rw [← f.map_one, ← smul, smul_one] }
 #align function.surjective.mul_distrib_mul_action Function.Surjective.mulDistribMulAction
 
 variable (A)
@@ -1129,14 +1130,14 @@ theorem of_add_smul [VAdd α β] (a : α) (b : β) : ofAdd a • b = a +ᵥ b :=
 instance Additive.addAction [Monoid α] [MulAction α β] :
     AddAction (Additive α) β where
   zero_vadd := MulAction.one_smul
-  add_vadd := MulAction.mul_smul
+  add_vadd := @MulAction.mul_smul α _ _ _
 #align additive.add_action Additive.addAction
 
 instance Multiplicative.mulAction [AddMonoid α] [AddAction α β] :
     MulAction (Multiplicative α)
       β where
   one_smul := AddAction.zero_vadd
-  mul_smul := AddAction.add_vadd
+  mul_smul := @AddAction.add_vadd α _ _ _
 #align multiplicative.mul_action Multiplicative.mulAction
 
 instance Additive.add_action_is_pretransitive [Monoid α] [MulAction α β]
