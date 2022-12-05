@@ -104,13 +104,16 @@ theorem CancelCommMonoid.ext {M : Type _} ⦃m₁ m₂ : CancelCommMonoid M⦄ (
   CancelCommMonoid.toCommMonoid_injective <| CommMonoid.ext h_mul
 #align cancel_comm_monoid.ext CancelCommMonoid.ext
 
+-- set_option pp.all true
+
 @[ext, to_additive]
 theorem DivInvMonoid.ext {M : Type _} ⦃m₁ m₂ : DivInvMonoid M⦄ (h_mul : m₁.mul = m₂.mul)
   (h_inv : m₁.inv = m₂.inv) : m₁ = m₂ := by
-  /- have h₁ : (@DivInvMonoid.toMonoid _ m₁).one = (@DivInvMonoid.toMonoid _ m₂).one :=
-    congr_arg (@Monoid.one M) (Monoid.ext h_mul)
-  let f : @MonoidHom M M (by letI := m₁ <;> infer_instance) (by letI := m₂ <;> infer_instance) :=
-    { toFun := id, map_one' := h₁, map_mul' := fun x y => congr_fun (congr_fun h_mul x) y }
+  have := Monoid.ext h_mul
+  have h₁ : m₁.one = m₂.one := by rw [this]
+  let f : @MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass :=
+    @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
+      (fun x y => congr_fun (congr_fun h_mul x) y)
   have hpow : (@DivInvMonoid.toMonoid _ m₁).npow = (@DivInvMonoid.toMonoid _ m₂).npow :=
     congr_arg (@Monoid.npow M) (Monoid.ext h_mul)
   have hzpow : m₁.zpow = m₂.zpow := by
@@ -118,25 +121,12 @@ theorem DivInvMonoid.ext {M : Type _} ⦃m₁ m₂ : DivInvMonoid M⦄ (h_mul : 
     exact @MonoidHom.map_zpow' M M m₁ m₂ f (congr_fun h_inv) x m
   have hdiv : m₁.div = m₂.div := by
     ext (a b)
-    exact @map_div' M M _ m₁ m₂ _ f (congr_fun h_inv) a b -/
-  have := Monoid.ext h_mul
-  have : m₁.one = m₂.one := by rw [this]
-  have : m₁.div = m₂.div := by
-    ext (a b)
-    --rw [m₁.div_eq_mul_inv, m₂.div_eq_mul_inv] -- fails
-    sorry
-  have h_zpow : m₁.zpow = m₁.zpow := by
-    ext (m x)
-    induction' m with n n
-    · --rw [@zpow_ofNat _ m₁]
-      sorry
-    · sorry
+    exact @map_div' M M
+      (@MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass) m₁ m₂
+      (@MonoidHom.monoidHomClass M M m₁.toMulOneClass m₂.toMulOneClass) f (congr_fun h_inv) a b
   rcases m₁ with @⟨_, ⟨inv₁⟩, ⟨div₁⟩, _, zpow₁⟩
   rcases m₂ with @⟨_, ⟨inv₂⟩, ⟨div₂⟩, _, zpow₂⟩
   congr
-  · show zpow₁ = zpow₂
-    sorry
-  --exacts[h_mul, h₁, hpow, h_inv, hdiv, hzpow]
 #align div_inv_monoid.ext DivInvMonoid.ext
 
 @[ext, to_additive]
