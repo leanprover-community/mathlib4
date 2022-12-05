@@ -6,7 +6,6 @@ Authors: Moritz Doll, Robert Y. Lewis
 
 import Mathlib.Tactic.Zify
 import Std.Tactic.GuardExpr
-import Mathlib.Tactic.LibrarySearch
 
 example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   zify
@@ -17,7 +16,7 @@ example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
 
 -- TODO: These are verbatim copies of the tests from mathlib3. It would be nice to add more.
 
-set_option pp.coercions false
+-- set_option pp.coercions false
 example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) (h2 : (c : ℤ) < a + 3 * b) : a + 3*b > c := by
   zify at h ⊢
   push_cast at h
