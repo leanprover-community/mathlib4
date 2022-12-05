@@ -50,14 +50,14 @@ initialize librarySearchLemmas : DeclCache (DiscrTree Name true) ←
       pure $ lemmas.insertCore keys name
 
 /-- Shortcut for calling `solveByElim`. -/
-def solveByElim (g : MVarId) (required : List Expr) (depth) := do
+def solveByElim (goals : List MVarId) (required : List Expr) (depth) := do
   -- I only found a marginal decrease in performance for using the `symm` and `exfalso`
   -- options for `solveByElim`.
   -- (measured via `lake build && time lake env lean test/librarySearch.lean`).
   -- We could nevertheless disable them for only a slight decrease in power.
   let cfg : SolveByElim.Config := { maxDepth := depth, exfalso := true, symm := true }
   let cfg := if !required.isEmpty then cfg.requireUsingAll required else cfg
-  _ ← SolveByElim.solveByElim.processSyntax cfg false false [] [] [g]
+  _ ← SolveByElim.solveByElim.processSyntax cfg false false [] [] goals
   pure ()
 
 /--
@@ -87,7 +87,7 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name s) (required : List E
   let state0 ← get
 
   try
-    solveByElim goal required solveByElimDepth
+    solveByElim [goal] required solveByElimDepth
   catch _ =>
     set state0
 
@@ -98,9 +98,8 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name s) (required : List E
         let newGoals ← goal.apply (← mkConstWithFreshMVarLevels lem)
         (try
           for newGoal in newGoals do
-            newGoal.withContext do
-              trace[Tactic.librarySearch] "proving {← addMessageContextFull (mkMVar newGoal)}"
-              solveByElim newGoal required solveByElimDepth
+            trace[Tactic.librarySearch] "proving {← addMessageContextFull (mkMVar newGoal)}"
+          solveByElim newGoals required solveByElimDepth
           pure $ some $ Sum.inr ()
         catch _ =>
           let res := some $ Sum.inl (← getMCtx, newGoals)

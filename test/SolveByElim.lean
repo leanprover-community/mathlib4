@@ -9,6 +9,9 @@ import Std.Tactic.RCases
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.SolveByElim
+import Qq
+
+open Qq
 
 example (h : Nat) : Nat := by solve_by_elim
 example {α β : Type} (f : α → β) (a : α) : β := by solve_by_elim
@@ -83,6 +86,10 @@ by
 example (P : True → False) : 3 = 7 :=  by
   fail_if_success solve_by_elim (config := {exfalso := false})
   solve_by_elim
+
+example (P : ℕ → Prop) (f : {n m : ℕ} → P n → P m → R) (_h0 : P 0) (h1 : P 1) (h2 : P 2) : R := by
+  fail_if_success solve_by_elim (config := .requireUsingAll {} [q(0), q(1), q(2)])
+  solve_by_elim (config := .requireUsingAll {} [q(1), q(2)])
 
 -- Verifying that `solve_by_elim` acts only on the main goal.
 example (n : ℕ) : ℕ × ℕ := by

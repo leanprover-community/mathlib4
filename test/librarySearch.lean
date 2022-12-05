@@ -90,8 +90,6 @@ axiom F (a b : ℕ) : f a ≤ f b ↔ a ≤ b
 
 -- TODO theorem nonzero_gt_one (n : ℕ) : ¬ n = 0 → n ≥ 1 := by library_search   -- `exact nat.pos_of_ne_zero`
 
--- set_option trace.Meta.Tactic.solveByElim true
-set_option trace.Tactic.librarySearch true
 example (L _M : List (List ℕ)) : List ℕ := by library_search using L
 
 example (P _Q : List ℕ) (h : ℕ) : List ℕ := by library_search using h, P
@@ -99,18 +97,16 @@ example (P _Q : List ℕ) (h : ℕ) : List ℕ := by library_search using h, P
 example (l : List α) (f : α → β ⊕ γ) : List β × List γ := by
   library_search using f -- partitionMap f l
 
--- These tests for `using` require moving the required subexpressions check deeper into solveByElim
+example (n m : ℕ) : ℕ := by library_search using n, m -- exact rightAdd n m
 
-example (n m : ℕ) : ℕ := by library_search using n, m
+example (P Q : List ℕ) (_h : ℕ) : List ℕ :=
+by library_search using P, Q -- exact P ∩ Q
 
--- example (P Q : List ℕ) (h : ℕ) : List ℕ :=
--- by library_search using h, Q
+example (n : ℕ) (r : ℚ) : ℚ :=
+by library_search using n, r -- exact nsmulRec n r
 
--- example (P Q : List ℕ) (h : ℕ) : List ℕ :=
--- by library_search using P, Q
-
--- -- Make sure `library_search` finds nothing when we list too many hypotheses after `using`.
--- example (P Q R S T : List ℕ) : List ℕ := by
---   fail_if_success
---     library_search using P, Q, R, S, T
---   exact []
+-- Make sure `library_search` finds nothing when we list too many hypotheses after `using`.
+example (P Q R S T : List ℕ) : List ℕ := by
+  fail_if_success
+    library_search using P, Q, R, S, T
+  exact []

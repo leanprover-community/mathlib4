@@ -140,6 +140,7 @@ applied to the instantiations of the original goals, fails or returns `false`.
 -/
 def testSolutions (cfg : Config := {}) (test : List Expr → MetaM Bool) : Config :=
   cfg.testPartialSolutions fun sols => do
+    trace[Meta.Tactic.solveByElim] sols
     if sols.any Expr.hasMVar then
       pure true
     else
