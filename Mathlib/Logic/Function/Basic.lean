@@ -67,7 +67,9 @@ theorem ne_iff {β : α → Sort _} {f₁ f₂ : ∀ a, β a} : f₁ ≠ f₂ �
   funext_iff.not.trans not_forall
 
 protected theorem Bijective.injective {f : α → β} (hf : Bijective f) : Injective f := hf.1
+#align function.bijective.injective Function.Bijective.injective
 protected theorem Bijective.surjective {f : α → β} (hf : Bijective f) : Surjective f := hf.2
+#align function.bijective.surjective Function.Bijective.surjective
 
 theorem Injective.eq_iff (I : Injective f) {a b : α} : f a = f b ↔ a = b :=
   ⟨@I _ _, congr_arg f⟩
