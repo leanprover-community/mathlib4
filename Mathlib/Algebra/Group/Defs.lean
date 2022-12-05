@@ -632,15 +632,15 @@ end CancelMonoid
 
 /-- The fundamental power operation in a group. `zpowRec n a = a*a*...*a` n times, for integer `n`.
 Use instead `a ^ n`,  which has better definitional behavior. -/
-def zpowRec {M : Type _} [One M] [Mul M] [Inv M] : ℤ → M → M
-  | Int.ofNat n, a => npowRec n a
-  | Int.negSucc n, a => (npowRec n.succ a)⁻¹
+def zpowRec [One G] [Mul G] [Inv G] (npow : ℕ → G → G := npowRec) : ℤ → G → G
+  | Int.ofNat n, a => npow n a
+  | Int.negSucc n, a => (npow n.succ a)⁻¹
 
 /-- The fundamental scalar multiplication in an additive group. `zpowRec n a = a+a+...+a` n
 times, for integer `n`. Use instead `n • a`, which has better definitional behavior. -/
-def zsmulRec {M : Type _} [Zero M] [Add M] [Neg M] : ℤ → M → M
-  | Int.ofNat n, a => nsmulRec n a
-  | Int.negSucc n, a => -nsmulRec n.succ a
+def zsmulRec [Zero G] [Add G] [Neg G] (nsmul : ℕ → G → G := nsmulRec) : ℤ → G → G
+  | Int.ofNat n, a => nsmul n a
+  | Int.negSucc n, a => -nsmul n.succ a
 
 attribute [to_additive] zpowRec
 
@@ -719,7 +719,7 @@ class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
   /-- `a / b := a * b⁻¹` -/
   div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ := by intros; rfl
   /-- The power operation: `a ^ n = a * ··· * a`; `a ^ (-n) = a⁻¹ * ··· a⁻¹` (`n` times) -/
-  zpow : ℤ → G → G := zpowRec
+  zpow : ℤ → G → G := zpowRec npow
   /-- `a ^ 0 = 1` -/
   zpow_zero' : ∀ a : G, zpow 0 a = 1 := by intros; rfl
   /-- `a ^ (n + 1) = a * a ^ n` -/
@@ -748,7 +748,7 @@ explanations on this.
 class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
   sub a b := a + -b
   sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
-  zsmul : ℤ → G → G := zsmulRec
+  zsmul : ℤ → G → G := zsmulRec nsmul
   zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
   zsmul_succ' (n : ℕ) (a : G) : zsmul (Int.ofNat n.succ) a = a + zsmul (Int.ofNat n) a := by
     intros; rfl
