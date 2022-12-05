@@ -48,7 +48,7 @@ instance [DecidableEq α] : SDiff (List α) :=
 /-- "inhabited" `get` function: returns `default` instead of `none` in the case
   that the index is out of bounds. -/
 def getI [Inhabited α] (l : List α) (n : Nat) : α :=
-  getD  l n default
+  getD l n default
 #align list.inth List.getI
 
 #align list.modify_nth_tail List.modifyNthTail
