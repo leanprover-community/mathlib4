@@ -99,7 +99,7 @@ example (l : List α) (f : α → β ⊕ γ) : List β × List γ := by
 
 -- These tests for `using` require moving the required subexpressions check deeper into solveByElim
 
--- example (n m : ℕ) : ℕ := by library_search using n, m
+example (n m : ℕ) : ℕ := by library_search using n, m
 
 -- example (P Q : List ℕ) (h : ℕ) : List ℕ :=
 -- by library_search using h, Q

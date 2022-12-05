@@ -35,6 +35,8 @@ both the `apply` and the call to `cont` succeed.
 ``applyFirst (trace := `name)`` will construct trace nodes for ``name` indicating which
 calls to `apply` succeeded or failed.
 -/
+-- Because the operation of this function via a continuation is fairly specific to `solve_by_elim`,
+-- we keep it here rather than moving it into `Mathlib/Lean/`.
 def applyFirst (cfg : ApplyConfig := {}) (trace : Name := .anonymous) (lemmas : List Expr)
     (cont : List MVarId → MetaM α) (g : MVarId) : MetaM α :=
   lemmas.firstM fun e =>
@@ -46,11 +48,6 @@ end Lean.MVarId
 initialize registerTraceClass `Meta.Tactic.solveByElim
 
 namespace Mathlib.Tactic.SolveByElim
-
-/-- Elaborate the context and the list of lemmas -/
-def elabContextLemmas (g : MVarId) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)) :
-    MetaM (List Expr) :=
-  g.withContext (Elab.Term.TermElabM.run' do pure ((← lemmas.mapM id) ++ (← ctx)))
 
 /--
 Configuration structure to control the behaviour of `solve_by_elim`:
@@ -74,22 +71,22 @@ structure Config extends ApplyConfig where
   This is only used when operating on a single goal. -/
   exfalso : Bool := true
   /-- An arbitrary procedure which can be used to modify the list of goals
-    before each attempt to apply a lemma.
-    Called as `proc goals curr`, where `goals` are the original goals for `solve_by_elim`,
-    and `curr` are the current goals.
-    Returning `some l` will replace the active goals with `l` and recurse
-    (consuming one step of maximum depth).
-    Returning `none` will proceed to applying lemmas without changing goals.
-    Failure will cause backtracking.
-    (defaults to `none`) -/
+  before each attempt to apply a lemma.
+  Called as `proc goals curr`, where `goals` are the original goals for `solve_by_elim`,
+  and `curr` are the current goals.
+  Returning `some l` will replace the active goals with `l` and recurse
+  (consuming one step of maximum depth).
+  Returning `none` will proceed to applying lemmas without changing goals.
+  Failure will cause backtracking.
+  (defaults to `none`) -/
   proc : List MVarId → List MVarId → MetaM (Option (List MVarId)) := fun _ _ => pure none
   /-- If `suspend g`, then we do not attempt to apply any further lemmas,
-     but return `g` as a new subgoal. (defaults to `false`) -/
+  but return `g` as a new subgoal. (defaults to `false`) -/
   suspend : MVarId → MetaM Bool := fun _ => pure false
   /-- `discharge g` is called on goals for which no lemmas apply.
-    If `none` we return `g` as a new subgoal.
-    If `some l`, we replace `g` by `l` in the list of active goals, and recurse.
-    If failure, we backtrack. (defaults to failure) -/
+  If `none` we return `g` as a new subgoal.
+  If `some l`, we replace `g` by `l` in the list of active goals, and recurse.
+  If failure, we backtrack. (defaults to failure) -/
   discharge : MVarId → MetaM (Option (List MVarId)) := fun _ => failure
 
 /--
@@ -127,7 +124,46 @@ def mainGoalProc (cfg : Config := {}) (proc : MVarId → MetaM (List MVarId)) : 
 def intros (cfg : Config := {}) : Config :=
   mainGoalProc cfg fun g => do pure [(← g.intro1P).2]
 
+/--
+Create or modify a `Config` which rejects branches for which `test`,
+applied to the instantiations of the original goals, fails or returns `false`.
+-/
+def testPartialSolutions (cfg : Config := {}) (test : List Expr → MetaM Bool) : Config :=
+{ cfg with
+  proc := fun orig goals => do
+    let .true ← test (← orig.mapM fun m => instantiateMVars (.mvar m)) | failure
+    cfg.proc orig goals }
+
+/--
+Create or modify a `Config` which rejects complete solutions for which `test`,
+applied to the instantiations of the original goals, fails or returns `false`.
+-/
+def testSolutions (cfg : Config := {}) (test : List Expr → MetaM Bool) : Config :=
+  cfg.testPartialSolutions fun sols => do
+    if sols.any Expr.hasMVar then
+      pure true
+    else
+      test sols
+
+/--
+Create or modify a `Config` which only accept solutions
+for which every expression in `use` appears as a subexpression.
+-/
+def requireUsingAll (cfg : Config := {}) (use : List Expr) : Config :=
+  cfg.testSolutions fun sols => do
+    trace[Meta.Tactic.solveByElim] sols
+    trace[Meta.Tactic.solveByElim] m!"{use.map fun e => sols.map fun s => e.occurs s}"
+    pure <| use.all fun e => sols.any fun s => e.occurs s
+
 end Config
+
+/--
+Elaborate a list of lemmas and local context.
+See `mkAssumptionSet` for an explanation of why this is needed.
+-/
+def elabContextLemmas (g : MVarId) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)) :
+    MetaM (List Expr) :=
+  g.withContext (Elab.Term.TermElabM.run' do pure ((← lemmas.mapM id) ++ (← ctx)))
 
 /--
 Solve a collection of goals by repeatedly applying lemmas, backtracking as necessary.
@@ -176,14 +212,16 @@ def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM
     if cfg.failAtMaxDepth then
       throwError "solve_by_elim exceeded the recursion limit"
     else
-      return acc.reverse ++ curr
+      -- Before returning the goals, we run `cfg.proc` one last time.
+      let curr := acc.reverse ++ curr
+      return (← cfg.proc goals curr).getD curr
   | n + 1 => do
   -- First, run `cfg.proc`, to see if it wants to modify the goals.
   match ← cfg.proc goals curr with
   | some curr' => run n curr' acc
   | none =>
   match curr with
-  -- If there are no active goals, return the accumulated goals:
+  -- If there are no active goals, return the accumulated goals.
   | [] => return acc.reverse
   | g :: gs =>
   -- Discard any goals which have already been assigned.

@@ -50,13 +50,14 @@ initialize librarySearchLemmas : DeclCache (DiscrTree Name true) ←
       pure $ lemmas.insertCore keys name
 
 /-- Shortcut for calling `solveByElim`. -/
-def solveByElim (g : MVarId) (depth) := do
-  _ ← SolveByElim.solveByElim.processSyntax
-    -- I only found a marginal decrease in performance for using the `symm` and `exfalso`
-    -- options for `solveByElim`.
-    -- (measured via `lake build && time lake env lean test/librarySearch.lean`).
-    -- We could nevertheless disable them for only a slight decrease in power.
-    {maxDepth := depth, exfalso := true, symm := true} false false [] [] [g]
+def solveByElim (g : MVarId) (required : List Expr) (depth) := do
+  -- I only found a marginal decrease in performance for using the `symm` and `exfalso`
+  -- options for `solveByElim`.
+  -- (measured via `lake build && time lake env lean test/librarySearch.lean`).
+  -- We could nevertheless disable them for only a slight decrease in power.
+  let cfg : SolveByElim.Config := { maxDepth := depth, exfalso := true, symm := true }
+  let cfg := if !required.isEmpty then cfg.requireUsingAll required else cfg
+  _ ← SolveByElim.solveByElim.processSyntax cfg false false [] [] [g]
   pure ()
 
 /--
@@ -86,11 +87,7 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name s) (required : List E
   let state0 ← get
 
   try
-    solveByElim goal solveByElimDepth
-    if (← checkRequired) then
-      return none
-    else
-      set state0
+    solveByElim goal required solveByElimDepth
   catch _ =>
     set state0
 
@@ -103,17 +100,12 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name s) (required : List E
           for newGoal in newGoals do
             newGoal.withContext do
               trace[Tactic.librarySearch] "proving {← addMessageContextFull (mkMVar newGoal)}"
-              solveByElim newGoal solveByElimDepth
-          if (← checkRequired) then
-            pure $ some $ Sum.inr ()
-          else
-            set state0
-            pure none
+              solveByElim newGoal required solveByElimDepth
+          pure $ some $ Sum.inr ()
         catch _ =>
           let res := some $ Sum.inl (← getMCtx, newGoals)
-          let check ← checkRequired
           set state0
-          return if check then res else none)
+          return res)
     catch _ =>
       set state0
       pure none
@@ -123,12 +115,12 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name s) (required : List E
     | some (Sum.inl suggestion) => suggestions := suggestions.push suggestion
 
   pure $ some suggestions
-    where
-  /-- Verify that the instantiated goal contains each `Expr` in `required` as a sub-expression.
-  (Make sure to not reset the state before calling.) -/
-  -- TODO We need to move this check into `solveByElim`, to get proper backtracking.
-  -- As of 2022-12-05, the new `solveByElim` design should allow this.
-  checkRequired : MetaM Bool := return required.all (·.occurs (← instantiateMVars (.mvar goal)))
+  --   where
+  -- /-- Verify that the instantiated goal contains each `Expr` in `required` as a sub-expression.
+  -- (Make sure to not reset the state before calling.) -/
+  -- -- TODO We need to move this check into `solveByElim`, to get proper backtracking.
+  -- -- As of 2022-12-05, the new `solveByElim` design should allow this.
+  -- checkRequired : MetaM Bool := return required.all (·.occurs (← instantiateMVars (.mvar goal)))
 
 def lines (ls : List MessageData) :=
   MessageData.joinSep ls (MessageData.ofFormat Format.line)
