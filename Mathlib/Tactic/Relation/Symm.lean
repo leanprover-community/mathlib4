@@ -56,8 +56,10 @@ Internal implementation of `Lean.Expr.symm`, `Lean.MVarId.symm`, and the user-fa
 given a candidate `symm` lemma `lem`, which will have type `∀ args, body`.
 
 In `Lean.Expr.symm` this result will be a new `Expr`,
-and in `Lean.MVarId.symm` this result will be a new goal.
+and in `Lean.MVarId.symm` and `Lean.MVarId.symmAt` this result will be a new goal.
 -/
+-- This function is rather opaque, but the design with a generic continuation `k`
+-- is necessary in order to factor out all the common requirements below.
 def symmAux (tgt : Expr) (k : Expr → Array Expr → Expr → MetaM α) : MetaM α := do
   let .app (.app rel _) _ := tgt
     | throwError "symmetry lemmas only apply to binary relations, not{indentExpr tgt}"

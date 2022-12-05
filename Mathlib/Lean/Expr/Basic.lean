@@ -159,6 +159,11 @@ def natLit! : Expr → Nat
   | lit (Literal.natVal v) => v
   | _                      => panic! "nat literal expected"
 
+/-- If an `Expr` has form `.fvar n`, then returns `some n`, otherwise `none`. -/
+def fvarId? : Expr → Option FVarId
+  | .fvar n => n
+  | _ => none
+
 open Meta
 
 /-- Check that an expression contains no metavariables (after instantiation). -/

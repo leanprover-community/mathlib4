@@ -42,6 +42,12 @@ namespace Sum
 
 deriving instance DecidableEq for Sum
 
+instance beq [BEq α] [BEq β] : BEq (α ⊕ β) where
+  beq x y := match x, y with
+  | .inl x, .inl y => x == y
+  | .inr x, .inr y => x == y
+  | _, _ => false
+
 @[simp]
 theorem «forall» {p : Sum α β → Prop} : (∀ x, p x) ↔ (∀ a, p (inl a)) ∧ ∀ b, p (inr b) :=
   ⟨fun h ↦ ⟨fun _ ↦ h _, fun _ ↦ h _⟩, fun ⟨h₁, h₂⟩ ↦ Sum.rec h₁ h₂⟩

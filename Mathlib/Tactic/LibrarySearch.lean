@@ -52,17 +52,17 @@ initialize librarySearchLemmas : DeclCache (DiscrTree Name true) ←
 /-- Shortcut for calling `solveByElim`. -/
 def solveByElim (g : MVarId) (depth) := do
   _ ← SolveByElim.solveByElim.processSyntax
-    -- There is a ~7% time penalty for using `exfalso`,
-    --     and a ~40% time penalty for using `symm`
+    -- I only found a marginal decrease in performance for using the `symm` and `exfalso`
+    -- options for `solveByElim`.
     -- (measured via `lake build && time lake env lean test/librarySearch.lean`).
-    -- For now both are disabled.
-    {maxDepth := depth, exfalso := false, symm := false} false false [] [] [g]
+    -- We could nevertheless disable them for only a slight decrease in power.
+    {maxDepth := depth, exfalso := true, symm := true} false false [] [] [g]
   pure ()
 
 /--
 Try to solve the goal either by:
 * calling `solveByElim`
-* or applying a library lemma then calling  `solveByElim` on the resulting goals.
+* or applying a library lemma then calling `solveByElim` on the resulting goals.
 
 If it successfully closes the goal, returns `none`.
 Otherwise, it returns `some a`, where `a : Array (MetavarContext × List MVarId)`,

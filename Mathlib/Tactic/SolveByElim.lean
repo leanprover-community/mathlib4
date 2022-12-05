@@ -23,11 +23,6 @@ def exceptEmoji : Except ε α → String
   | .error _ => crossEmoji
   | .ok _ => checkEmoji
 
-/-- If a `Expr` has form `.fvar n`, then returns `some n`, otherwise `none`. -/
-def Lean.Expr.fvarId? : Expr → Option FVarId
-  | .fvar n => n
-  | _ => none
-
 namespace Lean.MVarId
 
 /--
@@ -57,8 +52,15 @@ def elabContextLemmas (g : MVarId) (lemmas : List (TermElabM Expr)) (ctx : TermE
     MetaM (List Expr) :=
   g.withContext (Elab.Term.TermElabM.run' do pure ((← lemmas.mapM id) ++ (← ctx)))
 
-/-- Configuration structure to control the behaviour of `solve_by_elim`,
-by modifying intermediate goals, returning goals as subgoals, and discharging subgoals. -/
+/--
+Configuration structure to control the behaviour of `solve_by_elim`:
+*  control the maximum depth and behaviour (fail or return subgoals) at the maximum depth
+*  whether to use `symm` on hypotheses and `exfalso` on the goal as needed,
+* and hooks allowing
+  * modifying intermediate goals,
+  * returning goals as subgoals, and
+  * discharging subgoals.
+-/
 structure Config extends ApplyConfig where
   /-- Maximum recursion depth. -/
   maxDepth : Nat := 12
@@ -91,7 +93,7 @@ structure Config extends ApplyConfig where
   discharge : MVarId → MetaM (Option (List MVarId)) := fun _ => failure
 
 /--
-Allow elaboration of `hConfig` arguments to tactics.
+Allow elaboration of `Config` arguments to tactics.
 -/
 declare_config_elab elabConfig Config
 
@@ -131,7 +133,8 @@ end Config
 Solve a collection of goals by repeatedly applying lemmas, backtracking as necessary.
 
 Arguments:
-* `cfg : Config` additional configuration options (options for `apply` and custom flow control)
+* `cfg : Config` additional configuration options
+  (options for `apply`, maximum depth, and custom flow control)
 * `lemmas : List (TermElabM Expr)` lemmas to apply.
   These are thunks in `TermElabM` to avoid stuck metavariables.
 * `ctx : TermElabM (List Expr)` monadic function returning the local hypotheses to use.
@@ -215,13 +218,26 @@ def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM
           run n (l ++ gs) acc)
   termination_by run n curr acc => (n, curr)
 
+/--
+A `MetaM` analogue of the `apply_rules` user tactic.
+
+Since `apply_rules` does not backtrack, we don't need to worry about stuck metavariables
+and can pass the lemmas as a `List Expr`.
+
+By default it uses all local hypotheses, but you can disable this with `only := true`.
+If you need to remove particular local hypotheses, call `solveByElim` directly.
+-/
+def _root_.Lean.MVarId.applyRules (cfg : Config) (lemmas : List Expr) (only : Bool := false)
+    (g : MVarId) : MetaM (List MVarId) := do
+  let lemmas := lemmas.map pure
+  let ctx : TermElabM (List Expr) := if only then pure [] else do pure (←getLocalHyps).toList
+  solveByElim { cfg.noBackTracking with failAtMaxDepth := false } lemmas ctx [g]
+
 open Lean.Parser.Tactic
 
 /-- Separate a list of terms into those that elaborate to local hypotheses
 and those that do not. -/
 def partitionLocalHyps (l : List Term) : MetaM (List FVarId × List Term) := do
-  -- l.partitionM fun t => Elab.Term.TermElabM.run' do
-  --   pure (← Elab.Term.elabTerm t.raw none).isFVar
   let s ← l.mapM fun t => Elab.Term.TermElabM.run' do
       let e ← Elab.Term.elabTerm t.raw none
       match e.fvarId? with
@@ -316,12 +332,6 @@ syntax args := " [" SolveByElim.arg,* "] "
 
 open Syntax
 
-instance Sum.beq [BEq α] [BEq β] : BEq (α ⊕ β) where
-  beq x y := match x, y with
-  | .inl x, .inl y => x == y
-  | .inr x, .inr y => x == y
-  | _, _ => false
-
 /--
 Parse the lemma argument of a call to `solve_by_elim`.
 The first component should be true if `*` appears at least once.
@@ -329,13 +339,13 @@ The second component should contain each term `t`in the arguments.
 The third component should contain `t` for each `-t` in the arguments.
 -/
 def parseArgs (s : Option (TSyntax ``args)) :
-    Bool × List (TSyntax `term) × List (TSyntax `term) :=
+    Bool × List Term × List Term :=
   let args : Array (TSyntax ``arg) := match s with
   | some s => match s with
     | `(args| [$args,*]) => args.getElems
     | _ => #[]
   | none => #[]
-  let args : Array (Option (TSyntax `term ⊕ TSyntax `term)) := args.map fun t => match t with
+  let args : Array (Option (Term ⊕ Term)) := args.map fun t => match t with
     | `(arg| $_:star) => none
     | `(arg| - $t:term) => some (Sum.inr t)
     | `(arg| $t:term) => some (Sum.inl t)
@@ -382,13 +392,13 @@ Both `apply_assumption` and `apply_rules` are implemented via these hooks.
 -/
 syntax (name := solveByElimSyntax) "solve_by_elim" "*"? (config)? (&" only")? (args)? : tactic
 
-/-- Wrapper for `solveByElim` that processes a list of ``TSyntax `term``
+/-- Wrapper for `solveByElim` that processes a list of `Term`s
 that specify the lemmas to use. -/
-def solveByElim.processSyntax
-    (cfg : Config := {}) (only star : Bool := false) (add remove : List (TSyntax `term))
+def solveByElim.processSyntax (cfg : Config := {}) (only star : Bool) (add remove : List Term)
     (goals : List MVarId) : MetaM (List MVarId) := do
+  if !remove.isEmpty && goals.length > 1 then
+    throwError "Removing local hypotheses is not supported when operating on multiple goals."
   let ⟨lemmas, ctx⟩ ← mkAssumptionSet only star add remove
-  trace[Meta.Tactic.solveByElim] "parsed assumptions"
   solveByElim cfg lemmas ctx goals
 
 elab_rules : tactic |
@@ -457,6 +467,7 @@ a lemma from the list until it gets stuck.
 -/
 syntax (name := applyRulesSyntax) "apply_rules" (config)? (&" only")? (args)? : tactic
 
+-- See also `Lean.MVarId.applyRules` for a `MetaM` level analogue of this tactic.
 elab_rules : tactic |
     `(tactic| apply_rules $[$cfg]? $[only%$o]? $[$t:args]?)  => do
   let (star, add, remove) := parseArgs t
