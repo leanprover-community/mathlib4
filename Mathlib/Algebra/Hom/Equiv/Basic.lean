@@ -152,12 +152,6 @@ instance [Mul α] [Mul β] [MulEquivClass F α β] : CoeTC F (α ≃* β) :=
 
 namespace MulEquiv
 
-@[coe, to_additive]
-def coeFun [Mul M] [Mul N] (f : M ≃* N) : M → N := f.toFun
-
-@[to_additive]
-instance [Mul M] [Mul N] : CoeFun (M ≃* N) fun _ => M → N := ⟨coeFun⟩
-
 @[to_additive]
 instance [Mul M] [Mul N] : MulEquivClass (M ≃* N) M N where
   coe f := f.toFun
@@ -536,13 +530,12 @@ def monoidHomCongr {M N P Q} [MulOneClass M] [MulOneClass N] [CommMonoid P] [Com
   left_inv h := by
     ext x
     simp
-    rw [symm_apply_apply]
-  right_inv k := by sorry
+  right_inv k := by
     ext
     simp
-  map_mul' h k := by sorry
+  map_mul' h k := by
     ext
-    simp
+    exact MulEquiv.map_mul _ _ _ -- Porting note: simp doesn't work here
 #align mul_equiv.monoid_hom_congr MulEquiv.monoidHomCongr
 
 /-- A family of multiplicative equivalences `Π j, (Ms j ≃* Ns j)` generates a
@@ -556,26 +549,28 @@ This is the `mul_equiv` version of `equiv.Pi_congr_right`, and the dependent ver
   simps apply]
 def piCongrRight {η : Type _} {Ms Ns : η → Type _} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)] (es : ∀ j, Ms j ≃* Ns j) :
     (∀ j, Ms j) ≃* ∀ j, Ns j :=
-  { Equiv.piCongrRight fun j => (es j).toEquiv with toFun := fun x j => es j (x j),
-    invFun := fun x j => (es j).symm (x j), map_mul' := fun x y => funext fun j => (es j).map_mul (x j) (y j) }
+  { Equiv.piCongrRight fun j => (es j).toEquiv with
+    toFun := fun x j => es j (x j),
+    invFun := fun x j => (es j).symm (x j),
+    map_mul' := fun x y => funext fun j => (es j).map_mul (x j) (y j) }
 #align mul_equiv.Pi_congr_right MulEquiv.piCongrRight
 
 @[simp]
-theorem Pi_congr_right_refl {η : Type _} {Ms : η → Type _} [∀ j, Mul (Ms j)] :
+theorem piCongrRight_refl {η : Type _} {Ms : η → Type _} [∀ j, Mul (Ms j)] :
     (piCongrRight fun j => MulEquiv.refl (Ms j)) = MulEquiv.refl _ :=
   rfl
-#align mul_equiv.Pi_congr_right_refl MulEquiv.Pi_congr_right_refl
+#align mul_equiv.Pi_congr_right_refl MulEquiv.piCongrRight_refl
 
 @[simp]
 theorem Pi_congr_right_symm {η : Type _} {Ms Ns : η → Type _} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)]
-    (es : ∀ j, Ms j ≃* Ns j) : (piCongrRight es).symm = Pi_congr_right fun i => (es i).symm :=
+    (es : ∀ j, Ms j ≃* Ns j) : (piCongrRight es).symm = piCongrRight fun i => (es i).symm :=
   rfl
 #align mul_equiv.Pi_congr_right_symm MulEquiv.Pi_congr_right_symm
 
 @[simp]
 theorem Pi_congr_right_trans {η : Type _} {Ms Ns Ps : η → Type _} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)] [∀ j, Mul (Ps j)]
     (es : ∀ j, Ms j ≃* Ns j) (fs : ∀ j, Ns j ≃* Ps j) :
-    (piCongrRight es).trans (piCongrRight fs) = Pi_congr_right fun i => (es i).trans (fs i) :=
+    (piCongrRight es).trans (piCongrRight fs) = piCongrRight fun i => (es i).trans (fs i) :=
   rfl
 #align mul_equiv.Pi_congr_right_trans MulEquiv.Pi_congr_right_trans
 
@@ -585,24 +580,24 @@ index. -/
       "A family indexed by a nonempty subsingleton type is\nequivalent to the element at the single index.",
   simps]
 def piSubsingleton {ι : Type _} (M : ι → Type _) [∀ j, Mul (M j)] [Subsingleton ι] (i : ι) : (∀ j, M j) ≃* M i :=
-  { Equiv.piSubsingleton M i with map_mul' := fun f1 f2 => Pi.mul_apply _ _ _ }
+  { Equiv.piSubsingleton M i with map_mul' := fun _ _ => Pi.mul_apply _ _ _ }
 #align mul_equiv.Pi_subsingleton MulEquiv.piSubsingleton
 
 /-!
 # Groups
 -/
 
-
+-- Porting note: typeclass timeout
 /-- A multiplicative equivalence of groups preserves inversion. -/
 @[to_additive "An additive equivalence of additive groups preserves negation."]
-protected theorem map_inv [Group G] [DivisionMonoid H] (h : G ≃* H) (x : G) : h x⁻¹ = (h x)⁻¹ :=
-  map_inv h x
+protected theorem map_inv [Group G] [DivisionMonoid H] (h : G ≃* H) (x : G) : h x⁻¹ = (h x)⁻¹ := sorry
+  -- _root_.map_inv h x
 #align mul_equiv.map_inv MulEquiv.map_inv
 
 /-- A multiplicative equivalence of groups preserves division. -/
 @[to_additive "An additive equivalence of additive groups preserves subtractions."]
-protected theorem map_div [Group G] [DivisionMonoid H] (h : G ≃* H) (x y : G) : h (x / y) = h x / h y :=
-  map_div h x y
+protected theorem map_div [Group G] [DivisionMonoid H] (h : G ≃* H) (x y : G) : h (x / y) = h x / h y := sorry
+  -- _root_.map_div h x y
 #align mul_equiv.map_div MulEquiv.map_div
 
 end MulEquiv
@@ -644,7 +639,7 @@ section HasInvolutiveNeg
 
 variable (G) [HasInvolutiveInv G]
 
-/-- Inversion on a `group` or `group_with_zero` is a permutation of the underlying type. -/
+/-- Inversion on a `Group` or `GroupWithZero` is a permutation of the underlying type. -/
 @[to_additive "Negation on an `add_group` is a permutation of the underlying type.",
   simps (config := { fullyApplied := false }) apply]
 protected def inv : Perm G :=
