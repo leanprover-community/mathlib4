@@ -57,12 +57,14 @@ open Function (Injective Surjective)
 
 /-- Typeclass for faithful actions. -/
 class HasFaithfulVadd (G : Type _) (P : Type _) [VAdd G P] : Prop where
+  /-- Two elements `g₁` and `g₂` are equal whenever they act in the same way on all points. -/
   eq_of_vadd_eq_vadd : ∀ {g₁ g₂ : G}, (∀ p : P, g₁ +ᵥ p = g₂ +ᵥ p) → g₁ = g₂
 #align has_faithful_vadd HasFaithfulVadd
 
 /-- Typeclass for faithful actions. -/
 @[to_additive]
 class HasFaithfulSmul (M : Type _) (α : Type _) [SMul M α] : Prop where
+  /-- Two elements `m₁` and `m₂` are equal whenever they act in the same way on all points. -/
   eq_of_smul_eq_smul : ∀ {m₁ m₂ : M}, (∀ a : α, m₁ • a = m₂ • a) → m₁ = m₂
 #align has_faithful_smul HasFaithfulSmul
 
@@ -91,14 +93,18 @@ theorem smul_eq_mul (α : Type _) [Mul α] {a a' : α} : a • a' = a * a' :=
 /-- Type class for additive monoid actions. -/
 @[ext]
 class AddAction (G : Type _) (P : Type _) [AddMonoid G] extends VAdd G P where
+  /-- Zero is a neutral element for `+ᵥ` -/
   protected zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p
+  /-- Associativity of `+` and `+ᵥ` -/
   add_vadd : ∀ (g₁ g₂ : G) (p : P), g₁ + g₂ +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)
 #align add_action AddAction
 
 /-- Typeclass for multiplicative actions by monoids. This generalizes group actions. -/
 @[ext, to_additive]
 class MulAction (α : Type _) (β : Type _) [Monoid α] extends SMul α β where
+  /-- One is the neutral element for `•` -/
   protected one_smul : ∀ b : β, (1 : α) • b = b
+  /-- Associativity of `•` and `*` -/
   mul_smul : ∀ (x y : α) (b : β), (x * y) • b = x • y • b
 #align mul_action MulAction
 
@@ -118,6 +124,7 @@ property. We do not provide typeclasses `*Action.IsTransitive`; users should ass
 /-- `M` acts pretransitively on `α` if for any `x y` there is `g` such that `g +ᵥ x = y`.
   A transitive action should furthermore have `α` nonempty. -/
 class AddAction.IsPretransitive (M α : Type _) [VAdd M α] : Prop where
+  /-- There is `g` such that `g +ᵥ x = y`. -/
   exists_vadd_eq : ∀ x y : α, ∃ g : M, g +ᵥ x = y
 #align add_action.is_pretransitive AddAction.IsPretransitive
 
@@ -125,6 +132,7 @@ class AddAction.IsPretransitive (M α : Type _) [VAdd M α] : Prop where
   A transitive action should furthermore have `α` nonempty. -/
 @[to_additive]
 class MulAction.IsPretransitive (M α : Type _) [SMul M α] : Prop where
+  /-- There is `g` such that `g • x = y`. -/
   exists_smul_eq : ∀ x y : α, ∃ g : M, g • x = y
 #align mul_action.is_pretransitive MulAction.IsPretransitive
 
@@ -157,12 +165,14 @@ end MulAction
 
 /-- A typeclass mixin saying that two additive actions on the same space commute. -/
 class VAddCommClass (M N α : Type _) [VAdd M α] [VAdd N α] : Prop where
+  /-- `+ᵥ` is left commutative -/
   vadd_comm : ∀ (m : M) (n : N) (a : α), m +ᵥ (n +ᵥ a) = n +ᵥ (m +ᵥ a)
 #align vadd_comm_class VAddCommClass
 
 /-- A typeclass mixin saying that two multiplicative actions on the same space commute. -/
 @[to_additive]
 class SMulCommClass (M N α : Type _) [SMul M α] [SMul N α] : Prop where
+  /-- `•` is left commutative -/
   smul_comm : ∀ (m : M) (n : N) (a : α), m • n • a = n • m • a
 #align smul_comm_class SMulCommClass
 
@@ -212,6 +222,7 @@ instance smulCommClass_self (M α : Type _) [CommMonoid M] [MulAction M α] : SM
 /-- An instance of `VAddAssocClass M N α` states that the additive action of `M` on `α` is
 determined by the additive actions of `M` on `N` and `N` on `α`. -/
 class VAddAssocClass (M N α : Type _) [VAdd M N] [VAdd N α] [VAdd M α] : Prop where
+  /-- Associativity of `+ᵥ` -/
   vadd_assoc : ∀ (x : M) (y : N) (z : α), x +ᵥ y +ᵥ z = x +ᵥ (y +ᵥ z)
 #align vadd_assoc_class VAddAssocClass
 
@@ -220,6 +231,7 @@ action of `M` on `α` is determined by the multiplicative actions of `M` on `N`
 and `N` on `α`. -/
 @[to_additive VAddAssocClass] -- TODO auto-translating
 class IsScalarTower (M N α : Type _) [SMul M N] [SMul N α] [SMul M α] : Prop where
+  /-- Associativity of `•` -/
   smul_assoc : ∀ (x : M) (y : N) (z : α), (x • y) • z = x • y • z
 #align is_scalar_tower IsScalarTower
 
@@ -238,6 +250,7 @@ instance Semigroup.isScalarTower [Semigroup α] : IsScalarTower α α α :=
 equal, that is that `M` acts centrally on `α`. This can be thought of as a version of commutativity
 for `+ᵥ`. -/
 class IsCentralVAdd (M α : Type _) [VAdd M α] [VAdd Mᵃᵒᵖ α] : Prop where
+  /-- The right and left actions of `M` on `α` are equal. -/
   op_vadd_eq_vadd : ∀ (m : M) (a : α), AddOpposite.op m +ᵥ a = m +ᵥ a
 #align is_central_vadd IsCentralVAdd
 
@@ -246,6 +259,7 @@ equal, that is that `M` acts centrally on `α`. This can be thought of as a vers
 for `•`. -/
 @[to_additive IsCentralVAdd] -- TODO auto-translating
 class IsCentralScalar (M α : Type _) [SMul M α] [SMul Mᵐᵒᵖ α] : Prop where
+  /-- The right and left actions of `M` on `α` are equal. -/
   op_smul_eq_smul : ∀ (m : M) (a : α), MulOpposite.op m • a = m • a
 #align is_central_scalar IsCentralScalar
 
@@ -577,7 +591,7 @@ end
 
 section CompatibleScalar
 
-@[simp, to_additive]
+@[to_additive]
 theorem smul_one_smul {M} (N) [Monoid N] [SMul M N] [MulAction N α] [SMul M α]
     [IsScalarTower M N α] (x : M) (y : α) : (x • (1 : N)) • y = x • y := by
   rw [smul_assoc, one_smul]
@@ -622,6 +636,7 @@ end CompatibleScalar
 
 /-- Typeclass for scalar multiplication that preserves `0` on the right. -/
 class SmulZeroClass (M A : Type _) [Zero A] extends SMul M A where
+  /-- Multiplying `0` by a scalar gives `0` -/
   smul_zero : ∀ a : M, a • (0 : A) = 0
 #align smul_zero_class SmulZeroClass
 
@@ -695,6 +710,7 @@ This is exactly `distrib_mul_action` without the `mul_action` part.
 -/
 @[ext]
 class DistribSmul (M A : Type _) [AddZeroClass A] extends SmulZeroClass M A where
+  /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
 #align distrib_smul DistribSmul
 
@@ -766,7 +782,9 @@ end DistribSmul
 /-- Typeclass for multiplicative actions on additive structures. This generalizes group modules. -/
 @[ext]
 class DistribMulAction (M A : Type _) [Monoid M] [AddMonoid A] extends MulAction M A where
+  /-- Multiplying `0` by a scalar gives `0` -/
   smul_zero : ∀ a : M, a • (0 : A) = 0
+  /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
 #align distrib_mul_action DistribMulAction
 
@@ -886,7 +904,9 @@ conjugation actions. -/
 @[ext]
 class MulDistribMulAction (M : Type _) (A : Type _) [Monoid M] [Monoid A] extends
   MulAction M A where
+  /-- Distributivity of `•` across `*` -/
   smul_mul : ∀ (r : M) (x y : A), r • (x * y) = r • x * r • y
+  /-- Multiplying `1` by a scalar gives `1` -/
   smul_one : ∀ r : M, r • (1 : A) = 1
 #align mul_distrib_mul_action MulDistribMulAction
 
