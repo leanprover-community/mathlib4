@@ -68,7 +68,7 @@ def prod [Mul α] [One α] : List α → α :=
   foldl (· * ·) 1
 #align list.prod List.prod
 
--- TODO: tag with `to_additive`, but this can't be done yet because of import
+Later this will be tagged with `to_additive`, but this can't be done yet because of imports.
 -- dependencies.
 /-- Sum of a list.
 
