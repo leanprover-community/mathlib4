@@ -69,17 +69,17 @@ structure Config extends ApplyConfig where
   (defaults to `true`) -/
   failAtMaxDepth : Bool := true
   /-- Also use symmetric versions (via `@[symm]`) of local hypotheses. -/
-  -- At least for now, this does not operate on lemmas provided explicitly.
   symm : Bool := true
-  /-- Try proving the goal via `exfalso` if `solve_by_elim` otherwise fails. -/
-  -- This is only tried when operating on a single goal.
+  /-- Try proving the goal via `exfalso` if `solve_by_elim` otherwise fails.
+  This is only used when operating on a single goal. -/
   exfalso : Bool := true
   /-- An arbitrary procedure which can be used to modify the list of goals
     before each attempt to apply a lemma.
-    Called as `proc orig goals`, where `orig` are the original goals for `solve_by_elim`,
-    and `goals` are the current goals.
-    Returning `some l` will replace the active goals with `l` and recurse.
-    Returning `none` will proceed to applying lemmas.
+    Called as `proc goals curr`, where `goals` are the original goals for `solve_by_elim`,
+    and `curr` are the current goals.
+    Returning `some l` will replace the active goals with `l` and recurse
+    (consuming one step of maximum depth).
+    Returning `none` will proceed to applying lemmas without changing goals.
     Failure will cause backtracking.
     (defaults to `none`) -/
   proc : List MVarId → List MVarId → MetaM (Option (List MVarId)) := fun _ _ => pure none
@@ -138,7 +138,7 @@ Arguments:
 * `lemmas : List (TermElabM Expr)` lemmas to apply.
   These are thunks in `TermElabM` to avoid stuck metavariables.
 * `ctx : TermElabM (List Expr)` monadic function returning the local hypotheses to use.
-* `goals : List MVarId` the inital list of goals for `solveByElim`
+* `goals : List MVarId` the initial list of goals for `solveByElim`
 
 Returns a list of suspended goals, if it succeeded on all other subgoals.
 By default `cfg.suspend` is `false,` `cfg.discharge` fails, and `cfg.failAtMaxDepth` is `true`,
