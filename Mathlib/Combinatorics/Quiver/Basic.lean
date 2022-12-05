@@ -97,14 +97,12 @@ def comp {U : Type _} [Quiver U] {V : Type _} [Quiver V] {W : Type _} [Quiver W]
 
 @[simp]
 theorem comp_id {U V : Type _} [Quiver U] [Quiver V] (F : Prefunctor U V) :
-    F.comp (id _) = F := by
-  cases F; rfl
+    F.comp (id _) = F := rfl
 #align prefunctor.comp_id Prefunctor.comp_id
 
 @[simp]
 theorem id_comp {U V : Type _} [Quiver U] [Quiver V] (F : Prefunctor U V) :
-    (id _).comp F = F := by
-  cases F; rfl
+    (id _).comp F = F := rfl
 #align prefunctor.id_comp Prefunctor.id_comp
 
 @[simp]
