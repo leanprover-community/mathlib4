@@ -110,20 +110,19 @@ theorem CancelCommMonoid.ext {M : Type _} ⦃m₁ m₂ : CancelCommMonoid M⦄ (
 theorem DivInvMonoid.ext {M : Type _} ⦃m₁ m₂ : DivInvMonoid M⦄ (h_mul : m₁.mul = m₂.mul)
   (h_inv : m₁.inv = m₂.inv) : m₁ = m₂ := by
   have := Monoid.ext h_mul
-  have h₁ : m₁.one = m₂.one := by rw [this]
+  have h₁ : m₁.one = m₂.one := congr_arg (·.one) this
   let f : @MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
-  have hpow : (@DivInvMonoid.toMonoid _ m₁).npow = (@DivInvMonoid.toMonoid _ m₂).npow :=
-    congr_arg (@Monoid.npow M) (Monoid.ext h_mul)
+  have hpow : m₁.npow = m₂.npow := congr_arg (·.npow) (Monoid.ext h_mul)
   have hzpow : m₁.zpow = m₂.zpow := by
     ext (m x)
     exact @MonoidHom.map_zpow' M M m₁ m₂ f (congr_fun h_inv) x m
   have hdiv : m₁.div = m₂.div := by
     ext (a b)
-    exact @map_div' M M
-      (@MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass) m₁ m₂
-      (@MonoidHom.monoidHomClass M M m₁.toMulOneClass m₂.toMulOneClass) f (congr_fun h_inv) a b
+    exact @map_div' _ _
+      (@MonoidHom _ _ (_) _) (_) _
+      (@MonoidHom.monoidHomClass _ _ (_) _) f (congr_fun h_inv) a b
   rcases m₁ with @⟨_, ⟨inv₁⟩, ⟨div₁⟩, _, zpow₁⟩
   rcases m₂ with @⟨_, ⟨inv₂⟩, ⟨div₂⟩, _, zpow₂⟩
   congr
