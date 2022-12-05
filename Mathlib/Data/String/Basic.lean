@@ -25,17 +25,19 @@ def ltb : Iterator → Iterator → Bool
       else s₁.curr < s₂.curr
 #align string.ltb String.ltb
 
-instance hasLt' : LT String :=
+instance lt' : LT String :=
   ⟨fun s₁ s₂ => ltb s₁.mkIterator s₂.mkIterator⟩
-#align string.has_lt' String.hasLt'
+#align string.has_lt' String.lt'
 
+-- TODO Why does this not succeed? It's the correct instance, but it doesn't seem to go into `LT.lt`
 instance decidable_lt : @DecidableRel String (· < ·) := inferInstance
 #align string.decidable_lt String.decidable_lt
 
 -- short-circuit type class inference
+-- TODO This proof probably has to be completely redone
 @[simp]
-theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList
-  | ⟨i₁⟩, ⟨i₂⟩ => by
+theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList := sorry
+/-  | ⟨i₁⟩, ⟨i₂⟩ => by
     suffices ∀ {p₁ p₂ s₁ s₂}, ltb ⟨s₁, p₁⟩ ⟨s₂, p₂⟩ ↔ s₁ < s₂ by
       sorry
     intros p₁ p₂ s₁ s₂
@@ -52,12 +54,12 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
         refine' ⟨List.Lex.rel, fun e => _⟩
         cases e
         · cases h rfl
-        assumption
+        assumption-/
 #align string.lt_iff_to_list_lt String.lt_iff_toList_lt
 
-instance hasLe : LE String :=
+instance le : LE String :=
   ⟨fun s₁ s₂ => ¬s₂ < s₁⟩
-#align string.has_le String.hasLe
+#align string.has_le String.le
 
 instance decidableLe : @DecidableRel String (· ≤ ·) := inferInstance
 #align string.decidable_le String.decidableLe
@@ -95,7 +97,7 @@ theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s
   | ⟨s⟩, h => by
     cases s
     · simp only [toList] at h
-    · simp [toList]
+    · simp only [toList, List.cons.injEq]
       constructor
       · rfl
       · sorry
@@ -114,7 +116,8 @@ theorem popn_empty {n : ℕ} : "".popn n = "" := by
   · rcases hs : "" with ⟨_ | ⟨hd, tl⟩⟩
     · rw [hs] at hn
       conv_rhs => rw [← hn]
-      simp only [popn, mkIterator, Iterator.nextn, Iterator.next]
+      simp only [popn, mkIterator, Iterator.nextn, Iterator.next, String.next, String.get,
+        Iterator.remainingToString, extract, String.Pos.byteIdx]
     · simpa only [← toList_inj] using hs
 #align string.popn_empty String.popn_empty
 
