@@ -16,8 +16,8 @@ This file defines the symmetric difference and bi-implication operators in (co-)
 
 Some examples are
 * The symmetric difference of two sets is the set of elements that are in either but not both.
-* The symmetric difference on propositions is `xor`.
-* The symmetric difference on `Bool` is `bxor`.
+* The symmetric difference on propositions is `Xor'`.
+* The symmetric difference on `Bool` is `Bool.xor`.
 * The equivalence of propositions. Two propositions are equivalent if they imply each other.
 * The symmetric difference translates to addition when considering a Boolean algebra as a Boolean
   ring.
@@ -82,9 +82,9 @@ theorem bihimp_def [HasInf α] [HImp α] (a b : α) : a ⇔ b = (b ⇨ a) ⊓ (a
   rfl
 #align bihimp_def bihimp_def
 
-theorem symmDiff_eq_xor (p q : Prop) : p ∆ q = Xor' p q :=
+theorem symmDiff_eq_Xor' (p q : Prop) : p ∆ q = Xor' p q :=
   rfl
-#align symm_diff_eq_xor symmDiff_eq_xor
+#align symm_diff_eq_xor symmDiff_eq_Xor'
 
 @[simp]
 theorem bihimp_iff_iff {p q : Prop} : p ⇔ q ↔ (p ↔ q) :=
@@ -92,8 +92,8 @@ theorem bihimp_iff_iff {p q : Prop} : p ⇔ q ↔ (p ↔ q) :=
 #align bihimp_iff_iff bihimp_iff_iff
 
 @[simp]
-theorem Bool.symmDiff_eq_bxor : ∀ p q : Bool, p ∆ q = xor p q := by decide
-#align bool.symm_diff_eq_bxor Bool.symmDiff_eq_bxor
+theorem Bool.symmDiff_eq_xor : ∀ p q : Bool, p ∆ q = xor p q := by decide
+#align bool.symm_diff_eq_bxor Bool.symmDiff_eq_xor
 
 section GeneralizedCoheytingAlgebra
 
