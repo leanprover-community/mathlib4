@@ -123,11 +123,11 @@ export OrderIsoClass (map_le_map_iff)
 
 attribute [simp] map_le_map_iff
 
-instance [LE α] [LE β] [OrderIsoClass F α β] : CoeTC F (α ≃o β) :=
+instance {_ : LE α} {_ : LE β} [OrderIsoClass F α β] : CoeTC F (α ≃o β) :=
   ⟨fun f => ⟨f, map_le_map_iff f⟩⟩
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toOrderHomClass [LE α] [LE β] [OrderIsoClass F α β] :
+instance (priority := 100) OrderIsoClass.toOrderHomClass {_ : LE α} {_ : LE β} [OrderIsoClass F α β] :
     OrderHomClass F α β :=
   -- Porting note: Shouldn't need to mention `OrderIsoClass.toEquivLike` explicitly
   { @EquivLike.toEmbeddingLike F α β (OrderIsoClass.toEquivLike) with
@@ -173,8 +173,7 @@ end LE
 
 variable [Preorder α] [Preorder β] [OrderIsoClass F α β]
 
--- Porting note: needed to add explicit coercions
-theorem map_lt_map_iff (f : F) {a b : α} : (f : α → β) a < (f : α → β) b ↔ a < b :=
+theorem map_lt_map_iff (f : F) {a b : α} : f a < f b ↔ a < b :=
   lt_iff_lt_of_le_iff_le' (map_le_map_iff f) (map_le_map_iff f)
 #align map_lt_map_iff map_lt_map_iff
 
