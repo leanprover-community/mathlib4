@@ -25,16 +25,17 @@ monoid, group, extensionality
 universe u
 
 @[ext, to_additive]
-theorem Monoid.ext {M : Type u} : ∀ ⦃m₁ m₂ : Monoid M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
-  rintro
-    @⟨@⟨⟨mul₁⟩⟩, ⟨one₁⟩, _, mul_one₁, npow₁, npow_zero₁, npow_succ₁⟩
-    @⟨@⟨⟨mul₂⟩⟩, ⟨one₂⟩, one_mul₂, _, npow₂, npow_zero₂, npow_succ₂⟩ ⟨rfl⟩
-  have : one₁ = one₂ := (one_mul₂ one₁).symm.trans (mul_one₁ one₂)
-  have : npow₁ = npow₂ := by
+theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄ (h_mul : m₁.mul = m₂.mul) : m₁ = m₂ := by
+  have : m₁.toMulOneClass = m₂.toMulOneClass := MulOneClass.ext h_mul
+  have h₁ : m₁.one = m₂.one := congr_arg (·.one) (this)
+  let f : @MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass :=
+    @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
+      (fun x y => congr_fun (congr_fun h_mul x) y)
+  have : m₁.npow = m₂.npow := by
     ext (n x)
-    induction' n with n IH
-    · rw [npow_zero₁, npow_zero₂, this]
-    · rw [npow_succ₁, npow_succ₂, IH]
+    exact @MonoidHom.map_pow M M m₁ m₂ f x n
+  rcases m₁ with @⟨@⟨⟨_⟩⟩, ⟨_⟩⟩
+  rcases m₂ with @⟨@⟨⟨_⟩⟩, ⟨_⟩⟩
   congr
 #align monoid.ext Monoid.ext
 
@@ -109,48 +110,35 @@ theorem CancelCommMonoid.ext {M : Type _} ⦃m₁ m₂ : CancelCommMonoid M⦄ (
 @[ext, to_additive]
 theorem DivInvMonoid.ext {M : Type _} ⦃m₁ m₂ : DivInvMonoid M⦄ (h_mul : m₁.mul = m₂.mul)
   (h_inv : m₁.inv = m₂.inv) : m₁ = m₂ := by
-  have := Monoid.ext h_mul
-  have h₁ : m₁.one = m₂.one := congr_arg (·.one) this
+  have h_mon := Monoid.ext h_mul
+  have h₁ : m₁.one = m₂.one := congr_arg (·.one) h_mon
   let f : @MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
-  have hpow : m₁.npow = m₂.npow := congr_arg (·.npow) (Monoid.ext h_mul)
-  have hzpow : m₁.zpow = m₂.zpow := by
+  have : m₁.npow = m₂.npow := congr_arg (·.npow) h_mon
+  have : m₁.zpow = m₂.zpow := by
     ext (m x)
     exact @MonoidHom.map_zpow' M M m₁ m₂ f (congr_fun h_inv) x m
-  have hdiv : m₁.div = m₂.div := by
+  have : m₁.div = m₂.div := by
     ext (a b)
     exact @map_div' _ _
       (@MonoidHom _ _ (_) _) (_) _
       (@MonoidHom.monoidHomClass _ _ (_) _) f (congr_fun h_inv) a b
-  rcases m₁ with @⟨_, ⟨inv₁⟩, ⟨div₁⟩, _, zpow₁⟩
-  rcases m₂ with @⟨_, ⟨inv₂⟩, ⟨div₂⟩, _, zpow₂⟩
+  rcases m₁ with @⟨_, ⟨_⟩, ⟨_⟩⟩
+  rcases m₂ with @⟨_, ⟨_⟩, ⟨_⟩⟩
   congr
 #align div_inv_monoid.ext DivInvMonoid.ext
 
 @[ext, to_additive]
 theorem Group.ext {G : Type _} ⦃g₁ g₂ : Group G⦄ (h_mul : g₁.mul = g₂.mul) : g₁ = g₂ := by
-  /-let f :=
-    @MonoidHom.mk' G G (by letI := g₁ <;> infer_instance) g₂ id fun a b =>
-      congr_fun (congr_fun h_mul a) b
+  have h₁ : g₁.one = g₂.one := congr_arg (·.one) (Monoid.ext h_mul)
+  let f : @MonoidHom G G g₁.toMulOneClass g₂.toMulOneClass :=
+    @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
+      (fun x y => congr_fun (congr_fun h_mul x) y)
   exact
-    Group.to_div_inv_monoid_injective
+    Group.toDivInvMonoid_injective
       (DivInvMonoid.ext h_mul
-        (funext <| @MonoidHom.map_inv G G g₁ (@Group.toDivisionMonoid _ g₂) f))-/
-  --rintro @⟨toDivInvMonoid₁, mul_left_inv₁⟩ @⟨toDivInvMonoid₂, mul_left_inv₂⟩ h_mul
-  --have : toDivInvMonoid₁.inv = toDivInvMonoid₂.inv := by
-  --  sorry
-  --have : toDivInvMonoid₁ = toDivInvMonoid₂ := DivInvMonoid.ext h_mul this
-  have : g₁.inv = g₂.inv := by
-    ext g
-    rw [@inv_eq_iff_mul_eq_one _ g₁]
-    show g₁.mul g (g₂.inv g) = 1 -- lean is using hMul and not mul
-    rw [h_mul]
-    rw [@mul_inv_eq_one _ g₂]
-  have := DivInvMonoid.ext h_mul this
-  cases g₁
-  cases g₂
-  congr
+        (funext <| @MonoidHom.map_inv G G g₁ g₂.toDivisionMonoid f))
 #align group.ext Group.ext
 
 @[ext, to_additive]
