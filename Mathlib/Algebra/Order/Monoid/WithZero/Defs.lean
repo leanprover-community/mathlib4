@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Tactic.NormNum
 
 /-!
 # Adjoining a zero element to an ordered monoid.
@@ -53,34 +54,41 @@ theorem zero_le_one' (α) [Zero α] [One α] [LE α] [ZeroLEOneClass α] : (0 : 
   zero_le_one
 #align zero_le_one' zero_le_one'
 
--- FIXME: We need some kind of `LawfulOfNat` instance.
-theorem zero_le_two [Preorder α] [One α] [OfNat α 2] [AddZeroClass α] [ZeroLEOneClass α]
+-- Porting note: In the following lemmas, we now assume that we have an `AddMonoidWithOne`
+-- instance for `α`. Note that mathlib3#17820 may move these lemmas into another file.
+-- We also now import `norm_num` to normalise things like `2 + 2 = 4`.
+
+theorem zero_le_two [Preorder α] [AddMonoidWithOne α] [ZeroLEOneClass α]
     [CovariantClass α α (· + ·) (· ≤ ·)] : (0 : α) ≤ 2 :=
-  add_nonneg zero_le_one zero_le_one
+  le_of_le_of_eq (add_nonneg zero_le_one zero_le_one) one_add_one_eq_two
 #align zero_le_two zero_le_two
 
-theorem zero_le_three [Preorder α] [One α] [OfNat α 3] [AddZeroClass α] [ZeroLEOneClass α]
-    [CovariantClass α α (· + ·) (· ≤ ·)] : (0 : α) ≤ 3 :=
-  add_nonneg zero_le_two zero_le_one
+theorem zero_le_three [Preorder α] [AddMonoidWithOne α] [ZeroLEOneClass α]
+    [CovariantClass α α (· + ·) (· ≤ ·)] : (0 : α) ≤ 3 := by
+  refine le_of_le_of_eq (add_nonneg zero_le_two zero_le_one) ?_
+  norm_num
 #align zero_le_three zero_le_three
 
-theorem zero_le_four [Preorder α] [One α] [OfNat α 4] [AddZeroClass α] [ZeroLEOneClass α]
-    [CovariantClass α α (· + ·) (· ≤ ·)] : (0 : α) ≤ 4 :=
-  add_nonneg zero_le_two zero_le_two
+theorem zero_le_four [Preorder α] [AddMonoidWithOne α] [ZeroLEOneClass α]
+    [CovariantClass α α (· + ·) (· ≤ ·)] : (0 : α) ≤ 4 := by
+  refine le_of_le_of_eq (add_nonneg zero_le_two zero_le_two) ?_
+  norm_num
 #align zero_le_four zero_le_four
 
-theorem one_le_two [LE α] [One α] [OfNat α 2] [AddZeroClass α] [ZeroLEOneClass α]
+theorem one_le_two [Preorder α] [AddMonoidWithOne α] [ZeroLEOneClass α]
     [CovariantClass α α (· + ·) (· ≤ ·)] : (1 : α) ≤ 2 :=
   calc
     1 = 1 + 0 := (add_zero 1).symm
     _ ≤ 1 + 1 := add_le_add_left zero_le_one _
+    _ = 2 := by norm_num
 #align one_le_two one_le_two
 
-theorem one_le_two' [LE α] [One α] [OfNat α 2] [AddZeroClass α] [ZeroLEOneClass α]
+theorem one_le_two' [LE α] [AddMonoidWithOne α] [ZeroLEOneClass α]
     [CovariantClass α α (swap (· + ·)) (· ≤ ·)] : (1 : α) ≤ 2 :=
   calc
     1 = 0 + 1 := (zero_add 1).symm
     _ ≤ 1 + 1 := add_le_add_right zero_le_one _
+    _ = 2 := by norm_num
 #align one_le_two' one_le_two'
 
 namespace WithZero
@@ -125,11 +133,11 @@ instance [LinearOrder α] : LinearOrder (WithZero α) :=
 instance covariantClass_mul_le [Mul α] [Preorder α]
     [CovariantClass α α (· * ·) (· ≤ ·)] :
     CovariantClass (WithZero α) (WithZero α) (· * ·) (· ≤ ·) := by
-  refine' ⟨fun a b c hbc => _⟩
+  refine ⟨fun a b c hbc => ?_⟩
   induction a using WithZero.recZeroCoe; · exact zero_le _
   induction b using WithZero.recZeroCoe; · exact zero_le _
   rcases WithBot.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
-  refine' le_trans _ (le_of_eq <| coe_mul)
+  refine le_trans ?_ (le_of_eq <| coe_mul)
   -- rw [← coe_mul, ← coe_mul, coe_le_coe]
   -- Porting note: rewriting `coe_mul` here doesn't work because of some difference between
   -- `coe` and `WithBot.some`, even though they're definitionally equal as shown by the `refine'`
@@ -160,7 +168,7 @@ instance [OrderedCommMonoid α] : OrderedCommMonoid (WithZero α) :=
 protected theorem covariantClass_add_le [AddZeroClass α] [Preorder α]
     [CovariantClass α α (· + ·) (· ≤ ·)] (h : ∀ a : α, 0 ≤ a) :
     CovariantClass (WithZero α) (WithZero α) (· + ·) (· ≤ ·) := by
-  refine' ⟨fun a b c hbc => _⟩
+  refine ⟨fun a b c hbc => ?_⟩
   induction a using WithZero.recZeroCoe
   · rwa [zero_add, zero_add]
   induction b using WithZero.recZeroCoe
@@ -170,7 +178,7 @@ protected theorem covariantClass_add_le [AddZeroClass α] [Preorder α]
     · rw [← coe_add, coe_le_coe]
       exact le_add_of_nonneg_right (h _)
   · rcases WithBot.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
-    refine' le_trans _ (le_of_eq <| coe_add _ _)
+    refine le_trans ?_ (le_of_eq <| coe_add _ _)
     rw [← coe_add, coe_le_coe]
     exact add_le_add_left hbc' _
 #align with_zero.covariant_class_add_le WithZero.covariantClass_add_le

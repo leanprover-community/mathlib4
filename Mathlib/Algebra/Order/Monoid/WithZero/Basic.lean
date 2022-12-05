@@ -25,7 +25,7 @@ namespace WithZero
 instance contravariantClass_mul_lt [Mul α] [PartialOrder α]
     [ContravariantClass α α (· * ·) (· < ·)] :
     ContravariantClass (WithZero α) (WithZero α) (· * ·) (· < ·) := by
-  refine' ⟨fun a b c h => _⟩
+  refine ⟨fun a b c h => ?_⟩
   have := ((zero_le _).trans_lt h).ne'
   induction a using WithZero.recZeroCoe; · exfalso; exact left_ne_zero_of_mul this rfl
   induction c using WithZero.recZeroCoe; · exfalso; exact right_ne_zero_of_mul this rfl
