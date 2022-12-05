@@ -438,7 +438,7 @@ partial def getCompositeOfProjectionsAux (str : Name) (proj : String) (x : Expr)
   let env ← getEnv
   let projs := (getStructureInfo? env str).get!
   let projInfo := projs.fieldNames.toList.mapIdx fun n p ↦
-    return (← ("_" ++ p.getString!).isPrefixOf? proj, n, p)
+    return (← ("_" ++ p.getString!).getRest proj, n, p)
   let some (projRest, index, projName) := (projInfo.filterMap id).getLast?
     | throwError "Failed to find constructor {proj.drop 1} in structure {str}."
   let strDecl := (env.find? str).get!
@@ -986,7 +986,7 @@ partial def simpsAddProjections (nm : Name) (type lhs rhs : Expr)
   let nms ← projInfo.concatMapM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ ↦ do
     let newType ← inferType newRhs
     let newTodo := todo.filterMap
-      fun (x, stx) ↦ (("_" ++ proj.getString).isPrefixOf? x).map (·, stx)
+      fun (x, stx) ↦ (("_" ++ proj.getString).getRest x).map (·, stx)
     -- we only continue with this field if it is default or mentioned in todo
     if !(isDefault && todo.isEmpty) && newTodo.isEmpty then return #[]
     let newLhs := projExpr.instantiateLambdasOrApps #[lhsAp]
