@@ -9,7 +9,7 @@ import Mathlib.Data.Char
 /-!
 # Strings
 
-Supplementary theorems about the `string` type.
+Supplementary theorems about the `String` type.
 -/
 
 
@@ -29,8 +29,8 @@ instance hasLt' : LT String :=
   ⟨fun s₁ s₂ => ltb s₁.mkIterator s₂.mkIterator⟩
 #align string.has_lt' String.hasLt'
 
-instance decidableLt : @DecidableRel String (· < ·) := by infer_instance
-#align string.decidable_lt String.decidableLt
+instance decidable_lt : @DecidableRel String (· < ·) := inferInstance
+#align string.decidable_lt String.decidable_lt
 
 -- short-circuit type class inference
 @[simp]
@@ -68,35 +68,42 @@ theorem le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList �
   (not_congr lt_iff_toList_lt).trans not_lt
 #align string.le_iff_to_list_le String.le_iff_toList_le
 
-theorem to_list_inj : ∀ {s₁ s₂}, toList s₁ = toList s₂ ↔ s₁ = s₂
+theorem toList_inj : ∀ {s₁ s₂}, toList s₁ = toList s₂ ↔ s₁ = s₂
   | ⟨_⟩, _ => ⟨congr_arg _, congr_arg _⟩
-#align string.to_list_inj String.to_list_inj
+#align string.to_list_inj String.toList_inj
 
-theorem nil_as_string_eq_empty : [].asString = "" :=
+theorem nil_asString_eq_empty : [].asString = "" :=
   rfl
-#align string.nil_as_string_eq_empty String.nil_as_string_eq_empty
+#align string.nil_as_string_eq_empty String.nil_asString_eq_empty
 
 @[simp]
-theorem to_list_empty : "".toList = [] :=
+theorem toList_empty : "".toList = [] :=
   rfl
-#align string.to_list_empty String.to_list_empty
+#align string.to_list_empty String.toList_empty
 
-theorem as_string_inv_to_list (s : String) : s.toList.asString = s := by
+theorem asString_inv_toList (s : String) : s.toList.asString = s := by
   cases s
   rfl
-#align string.as_string_inv_to_list String.as_string_inv_to_list
+#align string.as_string_inv_to_list String.asString_inv_toList
 
 @[simp]
-theorem to_list_singleton (c : Char) : (String.singleton c).toList = [c] :=
+theorem toList_singleton (c : Char) : (String.singleton c).toList = [c] :=
   rfl
-#align string.to_list_singleton String.to_list_singleton
+#align string.to_list_singleton String.toList_singleton
 
-theorem to_list_nonempty : ∀ {s : String}, s ≠ String.empty → s.toList = s.head :: (s.popn 1).toList
-  | ⟨s⟩, h => by cases s <;> [cases h rfl, rfl]
-#align string.to_list_nonempty String.to_list_nonempty
+theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.popn 1).toList
+  | ⟨s⟩, h => by
+    cases s
+    · simp only [toList] at h
+    · simp [toList]
+      constructor
+      · rfl
+      · sorry
+
+#align string.to_list_nonempty String.toList_nonempty
 
 @[simp]
-theorem head_empty : "".data.head = default :=
+theorem head_empty : "".data.head! = default :=
   rfl
 #align string.head_empty String.head_empty
 
@@ -107,8 +114,8 @@ theorem popn_empty {n : ℕ} : "".popn n = "" := by
   · rcases hs : "" with ⟨_ | ⟨hd, tl⟩⟩
     · rw [hs] at hn
       conv_rhs => rw [← hn]
-      simp only [popn, mk_iterator, iterator.nextn, iterator.next]
-    · simpa only [← to_list_inj] using hs
+      simp only [popn, mkIterator, Iterator.nextn, Iterator.next]
+    · simpa only [← toList_inj] using hs
 #align string.popn_empty String.popn_empty
 
 instance : LinearOrder String where
@@ -134,7 +141,7 @@ end String
 open String
 
 theorem List.to_list_inv_as_string (l : List Char) : l.asString.toList = l := by
-  cases hl : l.as_string
+  cases hl : l.asString
   exact StringImp.mk.inj hl.symm
 #align list.to_list_inv_as_string List.to_list_inv_as_string
 
@@ -145,15 +152,15 @@ theorem List.length_as_string (l : List Char) : l.asString.length = l.length :=
 
 @[simp]
 theorem List.as_string_inj {l l' : List Char} : l.asString = l'.asString ↔ l = l' :=
-  ⟨fun h => by rw [← List.to_list_inv_as_string l, ← List.to_list_inv_as_string l', to_list_inj, h],
+  ⟨fun h => by rw [← List.to_list_inv_as_string l, ← List.to_list_inv_as_string l', toList_inj, h],
     fun h => h ▸ rfl⟩
 #align list.as_string_inj List.as_string_inj
 
 @[simp]
 theorem String.length_to_list (s : String) : s.toList.length = s.length := by
-  rw [← String.as_string_inv_to_list s, List.to_list_inv_as_string, List.length_as_string]
+  rw [← String.asString_inv_toList s, List.to_list_inv_as_string, List.length_as_string]
 #align string.length_to_list String.length_to_list
 
 theorem List.as_string_eq {l : List Char} {s : String} : l.asString = s ↔ l = s.toList := by
-  rw [← as_string_inv_to_list s, List.as_string_inj, as_string_inv_to_list s]
+  rw [← asString_inv_toList s, List.as_string_inj, asString_inv_toList s]
 #align list.as_string_eq List.as_string_eq
