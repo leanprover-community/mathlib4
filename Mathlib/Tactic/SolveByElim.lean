@@ -219,25 +219,32 @@ open Lean.Parser.Tactic
 
 /-- Separate a list of terms into those that elaborate to local hypotheses
 and those that do not. -/
-def partitionLocalHyps (l : List Term) : MetaM (List Term × List Term) := do
-  l.partitionM fun t => Elab.Term.TermElabM.run' do
-    pure (← Elab.Term.elabTerm t.raw none).isFVar
-  -- let s ← l.mapM fun t => Elab.Term.TermElabM.run' do
-  --     let e ← Elab.Term.elabTerm t.raw none
-  --     match e.fvarId? with
-  --     | some h => pure <| Sum.inl h
-  --     | none => pure <| Sum.inr t
-  -- pure <| s.partitionMap id -- TODO I guess we need `List.partitionMapM`.
+def partitionLocalHyps (l : List Term) : MetaM (List FVarId × List Term) := do
+  -- l.partitionM fun t => Elab.Term.TermElabM.run' do
+  --   pure (← Elab.Term.elabTerm t.raw none).isFVar
+  let s ← l.mapM fun t => Elab.Term.TermElabM.run' do
+      let e ← Elab.Term.elabTerm t.raw none
+      match e.fvarId? with
+      | some h => pure <| Sum.inl h
+      | none => pure <| Sum.inr t
+  pure <| s.partitionMap id -- TODO I guess we need `List.partitionMapM`.
 
 /--
 `mkAssumptionSet` builds a collection of lemmas for use in
 the backtracking search in `solve_by_elim`.
 
-* By default, it includes all local hypotheses, along with `rfl`, `trivial`, `congrFun` and
-  `congrArg`.
+* By default, it includes all local hypotheses, along with `rfl`, `trivial`, `congrFun`
+  and `congrArg`.
 * The flag `noDefaults` removes these.
-* The argument `hs` is the list of arguments inside the square braces
-  and can be used to add lemmas or expressions from the set. (TODO support removal.)
+* The flag `star` includes all local hypotheses, but not `rfl`, `trivial`, `congrFun`,
+  or `congrArg`. (It doesn't make sense to use `star` without `noDefaults`.)
+* The argument `add` is the list of terms inside the square brackets that did not have `-`
+  and can be used to add expressions or local hypotheses
+* The argument `remove` is the list of terms inside the square brackets that had a `-`,
+  and can be used to remove local hypotheses.
+  (It doesn't make sense to remove expressions which are not local hypotheses,
+  to remove local hypotheses unless `!noDefaults || star`,
+  and it does not make sense to use `star` unless you remove at least one local hypothesis.)
 
 `mkAssumptionSet` returns not a `List expr`, but a `List (TermElabM Expr) × TermElabM (List Expr)`.
 There are two separate problems that need to be solved.
@@ -286,29 +293,25 @@ def mkAssumptionSet (noDefaults star : Bool) (add remove : List Term) :
   if !removeLocal.isEmpty && noDefaults && !star then
     throwError "It doesn't make sense to remove local hypotheses when using `only` without `*`."
   -- TODO Consider extracting `FVarId`s to avoid re-elaborating here.
-  let locals : TermElabM (List Expr) := if noDefaults && !star then
-    (addLocal.removeAll removeLocal).mapM elab'
+  let locals : TermElabM (List Expr) := if noDefaults && !star then do
+    pure <| (addLocal.removeAll removeLocal).map .fvar
   else do
     if !addLocal.isEmpty then
       throwError "It doesn't make sense to add local hypotheses unless you use `only` without `*`."
-    pure <| (← getLocalHyps).toList.removeAll (← removeLocal.mapM elab')
+    pure <| (← getLocalHyps).toList.removeAll (removeLocal.map .fvar)
 
   return (hyps, locals)
   where
   /-- Run `elabTerm`. -/
   elab' (t : Term) : TermElabM Expr := Elab.Term.elabTerm t.raw none
 
--- def mkAssumptionSet (noDflt : Bool) (hs : List (TSyntax `term)) :
---     MetaM (List (TermElabM Expr) × TermElabM (List Expr)) := do
---   let hs := if noDflt then hs else [← `(rfl), ← `(trivial), ← `(congrFun), ← `(congrArg)] ++ hs
---   let hs := hs.map (λ s => Elab.Term.elabTerm s.raw none)
---   let locals : TermElabM (List Expr) := if noDflt then pure [] else do
---     pure (← getLocalHyps).toList
---   return (hs, locals)
-
+/-- Syntax for omitting a local hypothesis in `solve_by_elim`. -/
 syntax erase := "-" term:max
+/-- Syntax for including all local hypotheses in `solve_by_elim`. -/
 syntax star := "*"
+/-- Syntax for adding or removing a term, or `*`, in `solve_by_elim`. -/
 syntax arg := star <|> erase <|> term
+/-- Syntax for adding and removing terms in `solve_by_elim`. -/
 syntax args := " [" SolveByElim.arg,* "] "
 
 open Syntax
@@ -355,23 +358,27 @@ By default, the assumptions passed to `apply` are the local context, `rfl`, `tri
 `congrFun` and `congrArg`.
 
 The assumptions can be modified with similar syntax as for `simp`:
-* `solve_by_elim [h₁, h₂, ..., hᵣ, attr₁, ... attrᵣ]` also applies the named lemmas,
-  (not implemented yet:) as well as all lemmas tagged with the specified attributes.
+* `solve_by_elim [h₁, h₂, ..., hᵣ]` also applies the given expressions.
 * `solve_by_elim only [h₁, h₂, ..., hᵣ]` does not include the local context,
   `rfl`, `trivial`, `congrFun`, or `congrArg` unless they are explicitly included.
-* (not implemented yet:) `solve_by_elim [-id_1, ... -id_n]` uses the default assumptions,
-   removing the specified ones.
+* `solve_by_elim [-h₁, ... -hₙ]` removes the given local hypotheses.
+
+(In mathlib3 we could also pass attributes, and all declarations with that attribute were included.
+This has not been implemented here.)
 
 `solve_by_elim*` tries to solve all goals together, using backtracking if a solution for one goal
 makes other goals impossible.
+(Adding or removing local hypotheses may not be well-behaved when starting with multiple goals.)
 
 Optional arguments passed via a configuration argument as `solve_by_elim (config := { ... })`
 - `maxDepth`: number of attempts at discharging generated subgoals
-- `symm`: allow `solve_by_elim` to call `symm` on subgoals (defaults to `true`)
-- `exfalso`: allow calling `exfalso` (defaults to `true`)
+- `symm`: adds all hypotheses derived by `symm` (defaults to `true`).
+- `exfalso`: allow calling `exfalso` and trying again if `solve_by_elim` fails
+  (defaults to `true`).
 
 See also the doc-comment for `Mathlib.Tactic.SolveByElim.Config` for the options
 `proc`, `suspend`, and `discharge` which allow further customization of `solve_by_elim`.
+Both `apply_assumption` and `apply_rules` are implemented via these hooks.
 -/
 syntax (name := solveByElimSyntax) "solve_by_elim" "*"? (config)? (&" only")? (args)? : tactic
 
@@ -403,11 +410,12 @@ where `head` matches the current goal.
 You can specify additional rules to apply using `apply_assumption [...]`.
 By default `apply_assumption` will also try `rfl`, `trivial`, `congrFun`, and `congrArg`.
 If you don't want these, or don't want to use all hypotheses, use `apply_assumption only [...]`.
+You can use `apply_assumption [-h]` to omit a local hypothesis.
 
-If `apply_assumption` fails it will call `symm` and try again.
+`apply_assumption` will use consequences of local hypotheses obtained via `symm`.
 
-If this also fails, it will call `exfalso` and try again,
-so that if there is an assumption of the form `P → ¬ Q`, the new tactic state
+If `apply_assumption` fails, it will call `exfalso` and try again.
+Thus if there is an assumption of the form `P → ¬ Q`, the new tactic state
 will have two goals, `P` and `Q`.
 
 You can pass a further configuration via the syntax `apply_rules (config := {...}) lemmas`.
@@ -428,27 +436,24 @@ elab_rules : tactic |
 `apply_rules [l₁, l₂, ...]` tries to solve the main goal by iteratively
 applying the list of lemmas `[l₁, l₂, ...]` or by applying a local hypothesis.
 If `apply` generates new goals, `apply_rules` iteratively tries to solve those goals.
+You can use `apply_rules [-h]` to omit a local hypothesis.
 
 `apply_rules` will also use `rfl`, `trivial`, `congrFun` and `congrArg`.
 These can be disabled, as can local hypotheses, by using `apply_rules only [...]`.
 
-(TODO: not yet supported in mathlib4)
-You may include attributes amongst the lemmas:
-`apply_rules` will include all lemmas marked with these attributes.
+(In mathlib3 you could include attributes amongst the lemmas,
+and all lemmas marked with these attributes were included. This is not yet implemented in mathlib4.)
 
 You can pass a further configuration via the syntax `apply_rules (config := {...})`.
 The options supported are the same as for `solve_by_elim` (and include all the options for `apply`).
 
-`apply_rules` will try calling `symm` and `exfalso` as needed.
+`apply_rules` will try calling `symm` on hypotheses and `exfalso` on the goal as needed.
 This can be disabled with `apply_rules (config := {symm := false, exfalso := false})`.
 
 You can bound the iteration depth using the syntax `apply_rules (config := {maxDepth := n})`.
-The default bound is 12.
 
 Unlike `solve_by_elim`, `apply_rules` does not perform backtracking, and greedily applies
 a lemma from the list until it gets stuck.
-
-TODO: copy the other tests/examples from Lean 3
 -/
 syntax (name := applyRulesSyntax) "apply_rules" (config)? (&" only")? (args)? : tactic
 
