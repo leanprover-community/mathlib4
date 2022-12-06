@@ -213,39 +213,39 @@ theorem gcd_zero_left (a : R) : gcd 0 a = a := by
 At each step we are computing a triple `(r, s, t)`, where `r` is the next value of the GCD
 algorithm, to compute the greatest common divisor of the input (say `x` and `y`), and `s` and `t`
 are the coefficients in front of `x` and `y` to obtain `r` (i.e. `r = s * x + t * y`).
-The function `xgcd_aux` takes in two triples, and from these recursively computes the next triple:
+The function `xgcdAux` takes in two triples, and from these recursively computes the next triple:
 ```
-xgcd_aux (r, s, t) (r', s', t') = xgcd_aux (r' % r, s' - (r' / r) * s, t' - (r' / r) * t) (r, s, t)
+xgcdAux (r, s, t) (r', s', t') = xgcdAux (r' % r, s' - (r' / r) * s, t' - (r' / r) * t) (r, s, t)
 ```
 -/
-def xgcd_aux : R → R → R → R → R → R → R × R × R
+def xgcdAux : R → R → R → R → R → R → R × R × R
   | r => fun s t r' s' t' =>
     if hr : r = 0 then (r', s', t')
     else
       have : r' % r ≺ r := mod_lt _ hr
       let q := r' / r
-      xgcd_aux (r' % r) (s' - q * s) (t' - q * t) r s t
+      xgcdAux (r' % r) (s' - q * s) (t' - q * t) r s t
   termination_by' ⟨_, r_wellFounded⟩
-#align euclidean_domain.xgcd_aux EuclideanDomain.xgcd_aux
+#align euclidean_domain.xgcd_aux EuclideanDomain.xgcdAux
 
 @[simp]
-theorem xgcd_zero_left {s t r' s' t' : R} : xgcd_aux 0 s t r' s' t' = (r', s', t') := by
-  unfold xgcd_aux
+theorem xgcd_zero_left {s t r' s' t' : R} : xgcdAux 0 s t r' s' t' = (r', s', t') := by
+  unfold xgcdAux
   exact if_pos rfl
 #align euclidean_domain.xgcd_zero_left EuclideanDomain.xgcd_zero_left
 
-theorem xgcd_aux_rec {r s t r' s' t' : R} (h : r ≠ 0) :
-    xgcd_aux r s t r' s' t' = xgcd_aux (r' % r) (s' - r' / r * s) (t' - r' / r * t) r s t := by
+theorem xgcdAux_rec {r s t r' s' t' : R} (h : r ≠ 0) :
+    xgcdAux r s t r' s' t' = xgcdAux (r' % r) (s' - r' / r * s) (t' - r' / r * t) r s t := by
   conv =>
     lhs
-    rw [xgcd_aux]
+    rw [xgcdAux]
   exact if_neg h
-#align euclidean_domain.xgcd_aux_rec EuclideanDomain.xgcd_aux_rec
+#align euclidean_domain.xgcd_aux_rec EuclideanDomain.xgcdAux_rec
 
 /-- Use the extended GCD algorithm to generate the `a` and `b` values
   satisfying `gcd x y = x * a + y * b`. -/
 def xgcd (x y : R) : R × R :=
-  (xgcd_aux x 1 0 y 0 1).2
+  (xgcdAux x 1 0 y 0 1).2
 #align euclidean_domain.xgcd EuclideanDomain.xgcd
 
 /-- The extended GCD `a` value in the equation `gcd x y = x * a + y * b`. -/
