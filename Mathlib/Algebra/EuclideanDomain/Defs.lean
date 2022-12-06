@@ -3,10 +3,10 @@ Copyright (c) 2018 Louis Carlin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
 -/
-import Mathbin.Logic.Nontrivial
-import Mathbin.Algebra.Divisibility.Basic
-import Mathbin.Algebra.Group.Basic
-import Mathbin.Algebra.Ring.Defs
+import Mathlib.Logic.Nontrivial
+import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Euclidean domains
@@ -19,8 +19,8 @@ don't satisfy the classical notion were provided independently by Hiblot and Nag
 
 ## Main definitions
 
-* `euclidean_domain`: Defines Euclidean domain with functions `quotient` and `remainder`. Instances
-  of `has_div` and `has_mod` are provided, so that one can write `a = b * (a / b) + a % b`.
+* `EuclideanDomain`: Defines Euclidean domain with functions `quotient` and `remainder`. Instances
+  of `Div` and `Mod` are provided, so that one can write `a = b * (a / b) + a % b`.
 * `gcd`: defines the greatest common divisors of two elements of a Euclidean domain.
 * `xgcd`: given two elements `a b : R`, `xgcd a b` defines the pair `(x, y)` such that
   `x * a + y * b = gcd a b`.
@@ -29,10 +29,10 @@ don't satisfy the classical notion were provided independently by Hiblot and Nag
 
 ## Main statements
 
-See `algebra.euclidean_domain.basic` for most of the theorems about Eucliean domains,
+See `Algebra.EuclideanDomain.Basic` for most of the theorems about Eucliean domains,
 including Bézout's lemma.
 
-See `algebra.euclidean_domain.instances` for that facts that `ℤ` is a Euclidean domain,
+See `Algebra.EuclideanDomain.Instances` for that facts that `ℤ` is a Euclidean domain,
 as is any field.
 
 ## Notation
@@ -43,7 +43,7 @@ the degree of `q`.
 
 ## Implementation details
 
-Instead of working with a valuation, `euclidean_domain` is implemented with the existence of a well
+Instead of working with a valuation, `EuclideanDomain` is implemented with the existence of a well
 founded relation `r` on the integral domain `R`, which in the example of `ℤ` would correspond to
 setting `i ≺ j` for integers `i` and `j` if the absolute value of `i` is smaller than the absolute
 value of `j`.
@@ -64,31 +64,36 @@ Euclidean domain, transfinite Euclidean domain, Bézout's lemma
 
 universe u
 
-/-- A `euclidean_domain` is an non-trivial commutative ring with a division and a remainder,
+/-- A `EuclideanDomain` is an non-trivial commutative ring with a division and a remainder,
   satisfying `b * (a / b) + a % b = a`.
-  The definition of a euclidean domain usually includes a valuation function `R → ℕ`.
+  The definition of a Euclidean domain usually includes a valuation function `R → ℕ`.
   This definition is slightly generalised to include a well founded relation
   `r` with the property that `r (a % b) b`, instead of a valuation.  -/
-@[protect_proj without mul_left_not_lt r_well_founded]
 class EuclideanDomain (R : Type u) extends CommRing R, Nontrivial R where
-  Quotient : R → R → R
-  quotient_zero : ∀ a, Quotient a 0 = 0
-  remainder : R → R → R
-  quotient_mul_add_remainder_eq : ∀ a b, b * Quotient a b + remainder a b = a
-  R : R → R → Prop
+  protected quotient : R → R → R
+  protected quotient_zero : ∀ a, quotient a 0 = 0
+  protected remainder : R → R → R
+  protected quotient_mul_add_remainder_eq : ∀ a b, b * quotient a b + remainder a b = a
+  protected r : R → R → Prop
   r_well_founded : WellFounded r
-  remainder_lt : ∀ (a) {b}, b ≠ 0 → r (remainder a b) b
+  protected remainder_lt : ∀ (a) {b}, b ≠ 0 → r (remainder a b) b
   mul_left_not_lt : ∀ (a) {b}, b ≠ 0 → ¬r (a * b) a
 #align euclidean_domain EuclideanDomain
+#align euclidean_domain.quotient EuclideanDomain.quotient
+#align euclidean_domain.quotient_zero EuclideanDomain.quotient_zero
+#align euclidean_domain.remainder EuclideanDomain.remainder
+#align euclidean_domain.quotient_mul_add_remainder_eq EuclideanDomain.quotient_mul_add_remainder_eq
+#align euclidean_domain.r EuclideanDomain.r
+#align euclidean_domain.r_well_founded EuclideanDomain.r_well_founded
+#align euclidean_domain.remainder_lt EuclideanDomain.remainder_lt
+#align euclidean_domain.mul_left_not_lt EuclideanDomain.mul_left_not_lt
 
 namespace EuclideanDomain
 
-variable {R : Type u}
-
-variable [EuclideanDomain R]
+variable {R : Type u} [EuclideanDomain R]
 
 -- mathport name: «expr ≺ »
-local infixl:50 " ≺ " => EuclideanDomain.R
+local infixl:50 " ≺ " => EuclideanDomain.r
 
 -- see Note [lower instance priority]
 instance (priority := 70) : Div R :=
@@ -120,7 +125,6 @@ theorem mod_eq_sub_mul_div {R : Type _} [EuclideanDomain R] (a b : R) : a % b = 
   calc
     a % b = b * (a / b) + a % b - b * (a / b) := (add_sub_cancel' _ _).symm
     _ = a - b * (a / b) := by rw [div_add_mod]
-
 #align euclidean_domain.mod_eq_sub_mul_div EuclideanDomain.mod_eq_sub_mul_div
 
 theorem mod_lt : ∀ (a) {b : R}, b ≠ 0 → a % b ≺ b :=
@@ -142,13 +146,7 @@ theorem lt_one (a : R) : a ≺ (1 : R) → a = 0 :=
 #align euclidean_domain.lt_one EuclideanDomain.lt_one
 
 theorem val_dvd_le : ∀ a b : R, b ∣ a → a ≠ 0 → ¬a ≺ b
-  | _, b, ⟨d, rfl⟩, ha =>
-    mul_left_not_lt b
-      (mt
-        (by
-          rintro rfl
-          exact mul_zero _)
-        ha)
+  | _, b, ⟨d, rfl⟩, ha => mul_left_not_lt b (mt (by rintro rfl; exact mul_zero _) ha)
 #align euclidean_domain.val_dvd_le EuclideanDomain.val_dvd_le
 
 @[simp]
@@ -161,15 +159,18 @@ section
 open Classical
 
 @[elab_as_elim]
-theorem Gcd.induction {P : R → R → Prop} :
+theorem gcd.induction {P : R → R → Prop} :
     ∀ a b : R, (∀ x, P 0 x) → (∀ a b, a ≠ 0 → P (b % a) a → P a b) → P a b
   | a => fun b H0 H1 =>
-    if a0 : a = 0 then a0.symm ▸ H0 _
+    if a0 : a = 0 then by
+      -- Porting note: required for hygiene, the equation compiler introduces a dummy variable `x`
+      change P a b
+      exact a0.symm ▸ H0 b
     else
-      have h := mod_lt b a0
-      H1 _ _ a0 (gcd.induction (b % a) a H0 H1)termination_by'
-  ⟨_, r_well_founded⟩
-#align euclidean_domain.gcd.induction EuclideanDomain.Gcd.induction
+      have _ := mod_lt b a0
+      H1 _ _ a0 (gcd.induction (b % a) a H0 H1)
+  termination_by' ⟨_, r_well_founded⟩
+#align euclidean_domain.gcd.induction EuclideanDomain.gcd.induction
 
 end
 
@@ -183,9 +184,9 @@ def gcd : R → R → R
   | a => fun b =>
     if a0 : a = 0 then b
     else
-      have h := mod_lt b a0
-      gcd (b % a) a termination_by'
-  ⟨_, r_well_founded⟩
+      have _ := mod_lt b a0
+      gcd (b % a) a
+  termination_by' ⟨_, r_well_founded⟩
 #align euclidean_domain.gcd EuclideanDomain.gcd
 
 @[simp]
@@ -203,24 +204,24 @@ The function `xgcd_aux` takes in two triples, and from these recursively compute
 xgcd_aux (r, s, t) (r', s', t') = xgcd_aux (r' % r, s' - (r' / r) * s, t' - (r' / r) * t) (r, s, t)
 ```
 -/
-def xgcdAux : R → R → R → R → R → R → R × R × R
+def xgcd_aux : R → R → R → R → R → R → R × R × R
   | r => fun s t r' s' t' =>
     if hr : r = 0 then (r', s', t')
     else
       have : r' % r ≺ r := mod_lt _ hr
       let q := r' / r
-      xgcd_aux (r' % r) (s' - q * s) (t' - q * t) r s t termination_by'
-  ⟨_, r_well_founded⟩
-#align euclidean_domain.xgcd_aux EuclideanDomain.xgcdAux
+      xgcd_aux (r' % r) (s' - q * s) (t' - q * t) r s t
+  termination_by' ⟨_, r_well_founded⟩
+#align euclidean_domain.xgcd_aux EuclideanDomain.xgcd_aux
 
 @[simp]
-theorem xgcd_zero_left {s t r' s' t' : R} : xgcdAux 0 s t r' s' t' = (r', s', t') := by
+theorem xgcd_zero_left {s t r' s' t' : R} : xgcd_aux 0 s t r' s' t' = (r', s', t') := by
   unfold xgcd_aux
   exact if_pos rfl
 #align euclidean_domain.xgcd_zero_left EuclideanDomain.xgcd_zero_left
 
 theorem xgcd_aux_rec {r s t r' s' t' : R} (h : r ≠ 0) :
-    xgcdAux r s t r' s' t' = xgcdAux (r' % r) (s' - r' / r * s) (t' - r' / r * t) r s t := by
+    xgcd_aux r s t r' s' t' = xgcd_aux (r' % r) (s' - r' / r * s) (t' - r' / r * t) r s t := by
   conv =>
     lhs
     rw [xgcd_aux]
@@ -230,32 +231,32 @@ theorem xgcd_aux_rec {r s t r' s' t' : R} (h : r ≠ 0) :
 /-- Use the extended GCD algorithm to generate the `a` and `b` values
   satisfying `gcd x y = x * a + y * b`. -/
 def xgcd (x y : R) : R × R :=
-  (xgcdAux x 1 0 y 0 1).2
+  (xgcd_aux x 1 0 y 0 1).2
 #align euclidean_domain.xgcd EuclideanDomain.xgcd
 
 /-- The extended GCD `a` value in the equation `gcd x y = x * a + y * b`. -/
-def gcdA (x y : R) : R :=
+def gcd_a (x y : R) : R :=
   (xgcd x y).1
-#align euclidean_domain.gcd_a EuclideanDomain.gcdA
+#align euclidean_domain.gcd_a EuclideanDomain.gcd_a
 
 /-- The extended GCD `b` value in the equation `gcd x y = x * a + y * b`. -/
-def gcdB (x y : R) : R :=
+def gcd_b (x y : R) : R :=
   (xgcd x y).2
-#align euclidean_domain.gcd_b EuclideanDomain.gcdB
+#align euclidean_domain.gcd_b EuclideanDomain.gcd_b
 
 @[simp]
-theorem gcd_a_zero_left {s : R} : gcdA 0 s = 0 := by
+theorem gcd_a_zero_left {s : R} : gcd_a 0 s = 0 := by
   unfold gcd_a
   rw [xgcd, xgcd_zero_left]
 #align euclidean_domain.gcd_a_zero_left EuclideanDomain.gcd_a_zero_left
 
 @[simp]
-theorem gcd_b_zero_left {s : R} : gcdB 0 s = 1 := by
+theorem gcd_b_zero_left {s : R} : gcd_b 0 s = 1 := by
   unfold gcd_b
   rw [xgcd, xgcd_zero_left]
 #align euclidean_domain.gcd_b_zero_left EuclideanDomain.gcd_b_zero_left
 
-theorem xgcd_val (x y : R) : xgcd x y = (gcdA x y, gcdB x y) :=
+theorem xgcd_val (x y : R) : xgcd x y = (gcd_a x y, gcd_b x y) :=
   Prod.mk.eta.symm
 #align euclidean_domain.xgcd_val EuclideanDomain.xgcd_val
 
@@ -274,4 +275,4 @@ def lcm (x y : R) : R :=
 end Lcm
 
 end EuclideanDomain
-
+#lint
