@@ -11,6 +11,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.OrderSynonym
 import Mathlib.Algebra.Group.Semiconj
+import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupPower.Identities
@@ -213,6 +214,7 @@ import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.RelIso.Group
+import Mathlib.Order.SymmDiff
 import Mathlib.Order.Synonym
 import Mathlib.Order.WithBot
 import Mathlib.Tactic.Abel

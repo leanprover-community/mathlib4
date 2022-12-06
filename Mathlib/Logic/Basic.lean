@@ -18,8 +18,8 @@ This file is one of the earliest imports in mathlib.
 
 ## Implementation notes
 
-Theorems that require decidability hypotheses are in the namespace "decidable".
-Classical versions are in the namespace "classical".
+Theorems that require decidability hypotheses are in the namespace `Decidable`.
+Classical versions are in the namespace `Classical`.
 -/
 
 open Function
