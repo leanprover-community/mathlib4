@@ -33,10 +33,9 @@ initialize registerBuiltinAttribute {
     let (xs, _, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
     let fail := throwError
       "@[symm] attribute only applies to lemmas proving x ∼ y → y ∼ x, got {declTy}"
-    let some finalHyp := xs.back? | fail
-    let .app (.app rel lhs) rhs := targetTy | fail
-    let flip := .app (.app rel rhs) lhs
-    let .true ← withNewMCtxDepth <| isDefEqGuarded flip (← inferType finalHyp) | fail
+    let some _ := xs.back? | fail
+    let targetTy ← reduce targetTy
+    let .app (.app rel _) _ := targetTy | fail
     let key ← withReducible <| DiscrTree.mkPath rel
     symmExt.add (decl, key) kind
 }

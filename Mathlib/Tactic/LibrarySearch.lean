@@ -114,12 +114,6 @@ def librarySearch (goal : MVarId) (lemmas : DiscrTree Name s) (required : List E
     | some (Sum.inl suggestion) => suggestions := suggestions.push suggestion
 
   pure $ some suggestions
-  --   where
-  -- /-- Verify that the instantiated goal contains each `Expr` in `required` as a sub-expression.
-  -- (Make sure to not reset the state before calling.) -/
-  -- -- TODO We need to move this check into `solveByElim`, to get proper backtracking.
-  -- -- As of 2022-12-05, the new `solveByElim` design should allow this.
-  -- checkRequired : MetaM Bool := return required.all (·.occurs (← instantiateMVars (.mvar goal)))
 
 def lines (ls : List MessageData) :=
   MessageData.joinSep ls (MessageData.ofFormat Format.line)

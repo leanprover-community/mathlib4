@@ -1,6 +1,7 @@
 import Mathlib.Tactic.Relation.Symm
 import Std.Tactic.ShowTerm
-
+import Mathlib.Algebra.Hom.Group
+import Mathlib.Logic.Equiv.Basic
 -- testing that the attribute is recognized
 @[symm] def eq_symm {α : Type} (a b : α) : a = b → b = a := Eq.symm
 
@@ -17,3 +18,22 @@ example (a b : Nat) : sameParity a b → sameParity b a := by intros; symm; assu
 example (a b c : Nat) (ab : a = b) (bc : b = c): c = a := by
   symm_saturate
   apply Eq.trans <;> assumption
+
+def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M) (h₁ : Function.LeftInverse g f)
+    (h₂ : Function.RightInverse g f) : N →ₙ* M where
+  toFun := g
+  map_mul' x y :=
+    calc
+      g (x * y) = g (f (g x) * f (g y)) := by rw [h₂ x, h₂ y]
+      _ = g (f (g x * g y)) := by rw [f.map_mul]
+      _ = g x * g y := h₁ _
+
+structure MulEquiv (M N : Type u) [Mul M] [Mul N] extends M ≃ N, M →ₙ* N
+
+#check @MulEquiv
+
+infixl:25 " ≃* " => MulEquiv
+
+@[symm]
+def foo_symm {M N : Type _} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
+  { h.toEquiv.symm with map_mul' := (h.toMulHom.inverse h.toEquiv.symm h.left_inv h.right_inv).map_mul }
