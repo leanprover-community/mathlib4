@@ -137,11 +137,11 @@ section CanonicallyOrderedMonoid
 instance WithZero.instExistsAddOfLE [Add α] [Preorder α] [ExistsAddOfLE α] :
     ExistsAddOfLE (WithZero α) :=
   ⟨fun {a b} => by
-    apply WithZero.cases_on a
+    induction a using WithZero.cases_on
     · exact fun _ => ⟨b, (zero_add b).symm⟩
-    apply WithZero.cases_on b
-    · exact fun b' h => (WithBot.not_coe_le_bot _ h).elim
-    rintro a' b' h
+    induction b using WithZero.cases_on
+    · exact fun h => (WithBot.not_coe_le_bot _ h).elim
+    intro h
     obtain ⟨c, rfl⟩ := exists_add_of_le (WithZero.coe_le_coe.1 h)
     exact ⟨c, rfl⟩⟩
 #align with_zero.has_exists_add_of_le WithZero.instExistsAddOfLE
@@ -154,11 +154,11 @@ instance WithZero.canonicallyOrderedAddMonoid [CanonicallyOrderedAddMonoid α] :
     WithZero.orderedAddCommMonoid _root_.zero_le,
     WithZero.instExistsAddOfLE with
     le_self_add := fun a b => by
-      apply WithZero.cases_on a
+      induction a using WithZero.cases_on
       · exact bot_le
-      apply WithZero.cases_on b
-      · exact fun b' => le_rfl
-      · exact fun a' b' => WithZero.coe_le_coe.2 le_self_add }
+      induction b using WithZero.cases_on
+      · exact le_rfl
+      · exact WithZero.coe_le_coe.2 le_self_add }
 #align with_zero.canonically_ordered_add_monoid WithZero.canonicallyOrderedAddMonoid
 
 end CanonicallyOrderedMonoid
