@@ -289,4 +289,3 @@ def lcm (x y : R) : R :=
 end Lcm
 
 end EuclideanDomain
-#lint
