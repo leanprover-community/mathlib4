@@ -118,8 +118,7 @@ protected theorem ext (x x' : WriterT ω m α) (h : x.run = x'.run) : x = x' := 
 #align writer_t.ext WriterTₓ.ext
 
 @[inline]
-protected def pure [One ω] (a : α) : WriterT ω m α := 
-  ⟨pure (a, 1)⟩
+protected def pure [One ω] (a : α) : WriterT ω m α := WriterT.mk $ pure (a, 1)
 #align writer_t.pure WriterTₓ.pure
 
 @[inline]
