@@ -43,35 +43,35 @@ class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
 attribute [to_additive] OrderedCommGroup
 
 @[to_additive]
-instance OrderedCommGroup.to_covariant_class_left_le (α : Type u) [OrderedCommGroup α] :
+instance OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGroup α] :
     CovariantClass α α (· * ·)
       (· ≤ ·) where elim a b c bc := OrderedCommGroup.mul_le_mul_left b c bc a
-#align ordered_comm_group.to_covariant_class_left_le OrderedCommGroup.to_covariant_class_left_le
+#align ordered_comm_group.to_covariant_class_left_le OrderedCommGroup.to_covariantClass_left_le
 
 example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· + ·)) (· < ·) :=
   AddRightCancelSemigroup.covariant_swap_add_lt_of_covariant_swap_add_le α
 
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
-instance OrderedCommGroup.to_contravariant_class_left_le (α : Type u) [OrderedCommGroup α] :
+instance OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCommGroup α] :
     ContravariantClass α α (· * ·)
       (· ≤ ·) where elim a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
 #align
-  ordered_comm_group.to_contravariant_class_left_le OrderedCommGroup.to_contravariant_class_left_le
+  ordered_comm_group.to_contravariant_class_left_le OrderedCommGroup.to_contravariantClass_left_le
 
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
-instance OrderedCommGroup.to_contravariant_class_right_le (α : Type u) [OrderedCommGroup α] :
+instance OrderedCommGroup.to_contravariantClass_right_le (α : Type u) [OrderedCommGroup α] :
     ContravariantClass α α (swap (· * ·))
       (· ≤ ·) where elim a b c bc := by simpa using mul_le_mul_right' bc a⁻¹
 #align
-  ordered_comm_group.to_contravariant_class_right_le OrderedCommGroup.to_contravariant_class_right_le
+  ordered_comm_group.to_contravariant_class_right_le OrderedCommGroup.to_contravariantClass_right_le
 
 section Group
 
 variable [Group α]
 
-section TypeclassesLeftLe
+section TypeclassesLeftLE
 
 variable [LE α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b c d : α}
 
@@ -121,9 +121,9 @@ theorem inv_mul_le_one_iff : a⁻¹ * b ≤ 1 ↔ b ≤ a :=
   _root_.trans inv_mul_le_iff_le_mul <| by rw [mul_one]
 #align inv_mul_le_one_iff inv_mul_le_one_iff
 
-end TypeclassesLeftLe
+end TypeclassesLeftLE
 
-section TypeclassesLeftLt
+section TypeclassesLeftLT
 
 variable [LT α] [CovariantClass α α (· * ·) (· < ·)] {a b c : α}
 
@@ -170,9 +170,9 @@ theorem inv_mul_lt_one_iff : a⁻¹ * b < 1 ↔ b < a :=
   _root_.trans inv_mul_lt_iff_lt_mul <| by rw [mul_one]
 #align inv_mul_lt_one_iff inv_mul_lt_one_iff
 
-end TypeclassesLeftLt
+end TypeclassesLeftLT
 
-section TypeclassesRightLe
+section TypeclassesRightLE
 
 variable [LE α] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
 
@@ -225,9 +225,9 @@ theorem mul_inv_le_one_iff : b * a⁻¹ ≤ 1 ↔ b ≤ a :=
   _root_.trans mul_inv_le_iff_le_mul <| by rw [one_mul]
 #align mul_inv_le_one_iff mul_inv_le_one_iff
 
-end TypeclassesRightLe
+end TypeclassesRightLE
 
-section TypeclassesRightLt
+section TypeclassesRightLT
 
 variable [LT α] [CovariantClass α α (swap (· * ·)) (· < ·)] {a b c : α}
 
@@ -278,9 +278,9 @@ theorem mul_inv_lt_one_iff : b * a⁻¹ < 1 ↔ b < a :=
   _root_.trans mul_inv_lt_iff_lt_mul <| by rw [one_mul]
 #align mul_inv_lt_one_iff mul_inv_lt_one_iff
 
-end TypeclassesRightLt
+end TypeclassesRightLT
 
-section TypeclassesLeftRightLe
+section TypeclassesLeftRightLE
 
 variable [LE α] [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
   {a b c d : α}
@@ -309,9 +309,9 @@ theorem le_div_self_iff (a : α) {b : α} : a ≤ a / b ↔ b ≤ 1 := by simp [
 
 alias sub_le_self_iff ↔ _ sub_le_self
 
-end TypeclassesLeftRightLe
+end TypeclassesLeftRightLE
 
-section TypeclassesLeftRightLt
+section TypeclassesLeftRightLT
 
 variable [LT α] [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (swap (· * ·)) (· < ·)]
   {a b c d : α}
@@ -350,13 +350,13 @@ theorem div_lt_self_iff (a : α) {b : α} : a / b < a ↔ 1 < b := by simp [div_
 
 alias sub_lt_self_iff ↔ _ sub_lt_self
 
-end TypeclassesLeftRightLt
+end TypeclassesLeftRightLT
 
-section PreOrder
+section Preorder
 
 variable [Preorder α]
 
-section LeftLe
+section LeftLE
 
 variable [CovariantClass α α (· * ·) (· ≤ ·)] {a : α}
 
@@ -372,9 +372,9 @@ theorem Left.self_le_inv (h : a ≤ 1) : a ≤ a⁻¹ :=
   le_trans h (Left.one_le_inv_iff.mpr h)
 #align left.self_le_inv Left.self_le_inv
 
-end LeftLe
+end LeftLE
 
-section LeftLt
+section LeftLT
 
 variable [CovariantClass α α (· * ·) (· < ·)] {a : α}
 
@@ -390,9 +390,9 @@ theorem Left.self_lt_inv (h : a < 1) : a < a⁻¹ :=
   lt_trans h (Left.one_lt_inv_iff.mpr h)
 #align left.self_lt_inv Left.self_lt_inv
 
-end LeftLt
+end LeftLT
 
-section RightLe
+section RightLE
 
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a : α}
 
@@ -406,9 +406,9 @@ theorem Right.self_le_inv (h : a ≤ 1) : a ≤ a⁻¹ :=
   le_trans h (Right.one_le_inv_iff.mpr h)
 #align right.self_le_inv Right.self_le_inv
 
-end RightLe
+end RightLE
 
-section RightLt
+section RightLT
 
 variable [CovariantClass α α (swap (· * ·)) (· < ·)] {a : α}
 
@@ -422,9 +422,9 @@ theorem Right.self_lt_inv (h : a < 1) : a < a⁻¹ :=
   lt_trans h (Right.one_lt_inv_iff.mpr h)
 #align right.self_lt_inv Right.self_lt_inv
 
-end RightLt
+end RightLT
 
-end PreOrder
+end Preorder
 
 end Group
 
@@ -718,12 +718,6 @@ theorem div_lt_div_right' (h : a < b) (c : α) : a / c < b / c :=
   (div_lt_div_iff_right c).2 h
 #align div_lt_div_right' div_lt_div_right'
 
-/- warning: one_lt_div' -> one_lt_div' is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} [_inst_1 : Group.{u} α] [_inst_2 : LT.{u} α] [_inst_3 : CovariantClass.{u, u} α α (Function.swap.{succ u, succ u, succ u} α α (fun (ᾰ : α) (ᾰ : α) => α) (HMul.hMul.{u, u, u} α α α (instHMul.{u} α (MulOneClass.toHasMul.{u} α (Monoid.toMulOneClass.{u} α (DivInvMonoid.toMonoid.{u} α (Group.toDivInvMonoid.{u} α _inst_1))))))) (LT.lt.{u} α _inst_2)] {a : α} {b : α}, Iff (LT.lt.{u} α _inst_2 (OfNat.ofNat.{u} α 1 (OfNat.mk.{u} α 1 (One.one.{u} α (MulOneClass.toHasOne.{u} α (Monoid.toMulOneClass.{u} α (DivInvMonoid.toMonoid.{u} α (Group.toDivInvMonoid.{u} α _inst_1))))))) (HDiv.hDiv.{u, u, u} α α α (instHDiv.{u} α (DivInvMonoid.toHasDiv.{u} α (Group.toDivInvMonoid.{u} α _inst_1))) a b)) (LT.lt.{u} α _inst_2 b a)
-but is expected to have type
-  forall {α : Type.{u_1}} [inst._@.Mathlib.Algebra.Order.Group._hyg.391 : Group.{u_1} α] [inst._@.Mathlib.Algebra.Order.Group._hyg.394 : LT.{u_1} α] [inst._@.Mathlib.Algebra.Order.Group._hyg.397 : CovariantClass.{u_1, u_1} α α (Function.swap.{succ u_1, succ u_1, succ u_1} α α (fun (a._@.Mathlib.Algebra.CovariantAndContravariant._hyg.110 : α) (a._@.Mathlib.Algebra.CovariantAndContravariant._hyg.108 : α) => α) (fun (x._@.Mathlib.Algebra.Order.Group._hyg.407 : α) (x._@.Mathlib.Algebra.Order.Group._hyg.409 : α) => HMul.hMul.{u_1, u_1, u_1} α α α (instHMul.{u_1} α (MulOneClass.toMul.{u_1} α (Monoid.toMulOneClass.{u_1} α (DivInvMonoid.toMonoid.{u_1} α (Group.toDivInvMonoid.{u_1} α inst._@.Mathlib.Algebra.Order.Group._hyg.391))))) x._@.Mathlib.Algebra.Order.Group._hyg.407 x._@.Mathlib.Algebra.Order.Group._hyg.409)) (fun (x._@.Mathlib.Algebra.Order.Group._hyg.422 : α) (x._@.Mathlib.Algebra.Order.Group._hyg.424 : α) => LT.lt.{u_1} α inst._@.Mathlib.Algebra.Order.Group._hyg.394 x._@.Mathlib.Algebra.Order.Group._hyg.422 x._@.Mathlib.Algebra.Order.Group._hyg.424)] {a : α} {b : α}, Iff (LT.lt.{u_1} α inst._@.Mathlib.Algebra.Order.Group._hyg.394 (OfNat.ofNat.{u_1} α 1 (One.toOfNat1.{u_1} α (InvOneClass.toOne.{u_1} α (DivInvOneMonoid.toInvOneClass.{u_1} α (DivisionMonoid.toDivInvOneMonoid.{u_1} α (Group.toDivisionMonoid.{u_1} α inst._@.Mathlib.Algebra.Order.Group._hyg.391)))))) (HDiv.hDiv.{u_1, u_1, u_1} α α α (instHDiv.{u_1} α (DivInvMonoid.toDiv.{u_1} α (Group.toDivInvMonoid.{u_1} α inst._@.Mathlib.Algebra.Order.Group._hyg.391))) a b)) (LT.lt.{u_1} α inst._@.Mathlib.Algebra.Order.Group._hyg.394 b a)
-Case conversion may be inaccurate. Consider using '#align one_lt_div' one_lt_div'ₓ'. -/
 @[simp, to_additive sub_pos]
 theorem one_lt_div' : 1 < a / b ↔ b < a := by
   rw [← mul_lt_mul_iff_right b, one_mul, div_eq_mul_inv, inv_mul_cancel_right]
@@ -960,24 +954,20 @@ end LinearOrderedCommGroup
 
 namespace AddCommGroup
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:61:18: unsupported non-interactive tactic order_laws_tac -/
-/-- A collection of elements in an `add_comm_group` designated as "non-negative".
-This is useful for constructing an `ordered_add_commm_group`
-by choosing a positive cone in an exisiting `add_comm_group`. -/
+/-- A collection of elements in an `AddCommGroup` designated as "non-negative".
+This is useful for constructing an `OrderedAddCommGroup`
+by choosing a positive cone in an exisiting `AddCommGroup`. -/
 -- Porting note: @[nolint has_nonempty_instance]
 structure PositiveCone (α : Type _) [AddCommGroup α] where
   nonneg : α → Prop
   pos : α → Prop := fun a => nonneg a ∧ ¬nonneg (-a)
-  pos_iff : ∀ a, pos a ↔ nonneg a ∧ ¬nonneg (-a) := by
-    sorry
-    --run_tac
-    --  order_laws_tac
+  pos_iff : ∀ a, pos a ↔ nonneg a ∧ ¬nonneg (-a) := by intros; rfl
   zero_nonneg : nonneg 0
   add_nonneg : ∀ {a b}, nonneg a → nonneg b → nonneg (a + b)
   nonneg_antisymm : ∀ {a}, nonneg a → nonneg (-a) → a = 0
 #align add_comm_group.positive_cone AddCommGroup.PositiveCone
 
-/-- A positive cone in an `add_comm_group` induces a linear order if
+/-- A positive cone in an `AddCommGroup` induces a linear order if
 for every `a`, either `a` or `-a` is non-negative. -/
 -- Porting note: @[nolint has_nonempty_instance]
 structure TotalPositiveCone (α : Type _) [AddCommGroup α] extends PositiveCone α where
@@ -994,19 +984,18 @@ namespace OrderedAddCommGroup
 
 open AddCommGroup
 
-/-- Construct an `ordered_add_comm_group` by
-designating a positive cone in an existing `add_comm_group`. -/
+/-- Construct an `OrderedAddCommGroup` by
+designating a positive cone in an existing `AddCommGroup`. -/
 def mkOfPositiveCone {α : Type _} [AddCommGroup α] (C : PositiveCone α) : OrderedAddCommGroup α :=
   { ‹AddCommGroup α› with
     le := fun a b => C.nonneg (b - a),
     lt := fun a b => C.pos (b - a),
-    lt_iff_le_not_le := fun a b => by simp <;> rw [C.pos_iff] <;> simp,
+    lt_iff_le_not_le := fun a b => by simp [C.pos_iff],
     le_refl := fun a => by simp [C.zero_nonneg],
-    le_trans := fun a b c nab nbc => by
-      simp [-sub_eq_add_neg] <;> rw [← sub_add_sub_cancel] <;> exact C.add_nonneg nbc nab,
+    le_trans := fun a b c nab nbc => by simpa [← sub_add_sub_cancel] using C.add_nonneg nbc nab,
     le_antisymm := fun a b nab nba =>
-      eq_of_sub_eq_zero <| C.nonneg_antisymm nba (by rw [neg_sub] <;> exact nab),
-    add_le_add_left := fun a b nab c => by simpa [(· ≤ ·), Preorder.Le] using nab }
+      eq_of_sub_eq_zero <| C.nonneg_antisymm nba (by rwa [neg_sub]),
+    add_le_add_left := fun a b nab c => by simpa using nab }
 #align ordered_add_comm_group.mk_of_positive_cone OrderedAddCommGroup.mkOfPositiveCone
 
 end OrderedAddCommGroup
@@ -1015,12 +1004,13 @@ namespace LinearOrderedAddCommGroup
 
 open AddCommGroup
 
-/-- Construct a `linear_ordered_add_comm_group` by
-designating a positive cone in an existing `add_comm_group`
+/-- Construct a `LinearOrderedAddCommGroup` by
+designating a positive cone in an existing `AddCommGroup`
 such that for every `a`, either `a` or `-a` is non-negative. -/
 def mkOfPositiveCone {α : Type _} [AddCommGroup α] (C : TotalPositiveCone α) :
     LinearOrderedAddCommGroup α :=
   { OrderedAddCommGroup.mkOfPositiveCone C.toPositiveCone with
+    -- Porting note: was `C.nonneg_total (b - a)`
     le_total := fun a b => by simpa [neg_sub] using C.nonneg_total (b - a)
     decidable_le := fun a b => C.nonnegDecidable _ }
 #align linear_ordered_add_comm_group.mk_of_positive_cone LinearOrderedAddCommGroup.mkOfPositiveCone
