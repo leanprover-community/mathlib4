@@ -76,7 +76,7 @@ instance [h : CancelMonoid α] : CancelMonoid αᵒᵈ := h
 instance [h : CancelCommMonoid α] : CancelCommMonoid αᵒᵈ := h
 
 @[to_additive]
-instance [h : HasInvolutiveInv α] : HasInvolutiveInv αᵒᵈ := h
+instance [h : InvolutiveInv α] : InvolutiveInv αᵒᵈ := h
 
 @[to_additive]
 instance [h : DivInvMonoid α] : DivInvMonoid αᵒᵈ := h
@@ -200,7 +200,7 @@ instance [h : CancelMonoid α] : CancelMonoid (Lex α) := h
 instance [h : CancelCommMonoid α] : CancelCommMonoid (Lex α) := h
 
 @[to_additive]
-instance [h : HasInvolutiveInv α] : HasInvolutiveInv (Lex α) := h
+instance [h : InvolutiveInv α] : InvolutiveInv (Lex α) := h
 
 @[to_additive]
 instance [h : DivInvMonoid α] : DivInvMonoid (Lex α) := h
