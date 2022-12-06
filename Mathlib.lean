@@ -107,6 +107,7 @@ import Mathlib.Data.LazyList
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Card
 import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Lex
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Pairwise
@@ -205,6 +206,7 @@ import Mathlib.Order.Compare
 import Mathlib.Order.Disjoint
 import Mathlib.Order.GameAdd
 import Mathlib.Order.Heyting.Basic
+import Mathlib.Order.Heyting.Boundary
 import Mathlib.Order.Hom.Basic
 import Mathlib.Order.Iterate
 import Mathlib.Order.Lattice
