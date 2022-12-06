@@ -54,6 +54,7 @@ import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Ring.Divisibility
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.OrderSynonym
 import Mathlib.Algebra.Ring.Regular
