@@ -64,7 +64,7 @@ instance [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] : IsCentralScalar M (Option
     exacts[rfl, congr_arg some (op_smul_eq_smul _ _)]⟩
 
 @[to_additive]
-instance [HasFaithfulSMul M α] : HasFaithfulSMul M (Option α) :=
+instance [FaithfulSMul M α] : FaithfulSMul M (Option α) :=
   ⟨fun h => eq_of_smul_eq_smul fun b : α => by injection h (some b)⟩
 
 end SMul
