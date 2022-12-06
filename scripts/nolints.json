@@ -114,7 +114,7 @@
  ["docBlame", "Group.mul_left_inv"],
  ["docBlame", "InvolutiveInv.inv_inv"],
  ["docBlame", "InvolutiveNeg.neg_neg"],
- ["docBlame", "HasVsub.vsub"],
+ ["docBlame", "VSub.vsub"],
  ["docBlame", "IO.runRandWith"],
  ["docBlame", "Int.decNonneg"],
  ["docBlame", "InvOneClass.inv_one"],
