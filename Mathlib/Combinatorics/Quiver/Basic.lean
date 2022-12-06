@@ -96,6 +96,16 @@ def comp {U : Type _} [Quiver U] {V : Type _} [Quiver V] {W : Type _} [Quiver W]
 #align prefunctor.comp Prefunctor.comp
 
 @[simp]
+theorem comp_id {U V : Type _} [Quiver U] [Quiver V] (F : Prefunctor U V) :
+    F.comp (id _) = F := rfl
+#align prefunctor.comp_id Prefunctor.comp_id
+
+@[simp]
+theorem id_comp {U V : Type _} [Quiver U] [Quiver V] (F : Prefunctor U V) :
+    (id _).comp F = F := rfl
+#align prefunctor.id_comp Prefunctor.id_comp
+
+@[simp]
 theorem comp_assoc {U V W Z : Type _} [Quiver U] [Quiver V] [Quiver W] [Quiver Z]
     (F : Prefunctor U V) (G : Prefunctor V W) (H : Prefunctor W Z) :
     (F.comp G).comp H = F.comp (G.comp H) :=

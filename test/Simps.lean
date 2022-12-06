@@ -504,7 +504,7 @@ class Semigroup (G : Type u) extends Mul G where
 
 @[simps] instance {α β} [Semigroup α] [Semigroup β] : Semigroup (α × β) :=
 { mul := λ x y => (x.1 * y.1, x.2 * y.2)
-  mul_assoc := λ _ _ _ => Prod.ext' (Semigroup.mul_assoc ..) (Semigroup.mul_assoc ..) }
+  mul_assoc := λ _ _ _ => Prod.ext (Semigroup.mul_assoc ..) (Semigroup.mul_assoc ..) }
 
 -- todo: heterogenous notation_class
 -- example {α β} [Semigroup α] [Semigroup β] (x y : α × β) : x * y = (x.1 * y.1, x.2 * y.2) := by simp
@@ -526,7 +526,7 @@ instance (G : BSemigroup) : Mul G := ⟨G.op⟩
 protected def prod (G H : BSemigroup) : BSemigroup :=
 { G := G × H
   op := λ x y => (x.1 * y.1, x.2 * y.2)
-  op_assoc := λ _ _ _ => Prod.ext' (BSemigroup.op_assoc ..) (BSemigroup.op_assoc ..) }
+  op_assoc := λ _ _ _ => Prod.ext (BSemigroup.op_assoc ..) (BSemigroup.op_assoc ..) }
 
 end BSemigroup
 
