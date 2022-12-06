@@ -940,6 +940,16 @@ theorem mul_eq_one_iff' [CovariantClass α α (· * ·) (· ≤ ·)]
     -- `fun ⟨ha', hb'⟩ => by rw [ha', hb', mul_one]`,
     -- had its `to_additive`-ization fail due to some bug
 
+@[to_additive] lemma mul_le_mul_iff_of_ge [CovariantClass α α (· * ·) (· ≤ ·)]
+  [CovariantClass α α (swap (· * ·)) (· ≤ ·)] [CovariantClass α α (· * ·) (· < ·)]
+  [CovariantClass α α (swap (· * ·)) (· < ·)] {a₁ a₂ b₁ b₂ : α} (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
+  a₂ * b₂ ≤ a₁ * b₁ ↔ a₁ = a₂ ∧ b₁ = b₂ := by
+  refine' ⟨fun h ↦ _, by rintro ⟨rfl, rfl⟩; rfl⟩
+  simp only [eq_iff_le_not_lt, ha, hb, true_and]
+  refine' ⟨fun ha ↦ h.not_lt _, fun hb ↦ h.not_lt _⟩
+  { exact mul_lt_mul_of_lt_of_le ha hb }
+  { exact mul_lt_mul_of_le_of_lt ha hb }
+
 section Left
 
 variable [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α}
@@ -1346,113 +1356,113 @@ theorem cmp_mul_right' {α : Type _} [Mul α] [LinearOrder α]
 
 end Mono
 
-/-- An element `a : α` is `MulLeCancellable` if `x ↦ a * x` is order-reflecting.
+/-- An element `a : α` is `MulLECancellable` if `x ↦ a * x` is order-reflecting.
 We will make a separate version of many lemmas that require `[ContravariantClass α α (*) (≤)]` with
-`mul_le_cancellable` assumptions instead. These lemmas can then be instantiated to specific types,
-like `ennreal`, where we can replace the assumption `add_le_cancellable x` by `x ≠ ∞`.
+`MulLECancellable` assumptions instead. These lemmas can then be instantiated to specific types,
+like `ENNReal`, where we can replace the assumption `AddLECancellable x` by `x ≠ ∞`.
 -/
 @[to_additive
-"An element `a : α` is `AddLeCancellable` if `x ↦ a + x` is order-reflecting.
+"An element `a : α` is `AddLECancellable` if `x ↦ a + x` is order-reflecting.
 We will make a separate version of many lemmas that require `[ContravariantClass α α (+) (≤)]` with
-`mul_le_cancellable` assumptions instead. These lemmas can then be instantiated to specific types,
-like `ennreal`, where we can replace the assumption `add_le_cancellable x` by `x ≠ ∞`. "]
-def MulLeCancellable [Mul α] [LE α] (a : α) : Prop :=
+`AddLECancellable` assumptions instead. These lemmas can then be instantiated to specific types,
+like `ENNReal`, where we can replace the assumption `AddLECancellable x` by `x ≠ ∞`. "]
+def MulLECancellable [Mul α] [LE α] (a : α) : Prop :=
   ∀ ⦃b c⦄, a * b ≤ a * c → b ≤ c
-#align mul_le_cancellable MulLeCancellable
-#align add_le_cancellable AddLeCancellable
+#align mul_le_cancellable MulLECancellable
+#align add_le_cancellable AddLECancellable
 
 @[to_additive]
-theorem Contravariant.MulLeCancellable [Mul α] [LE α] [ContravariantClass α α (· * ·) (· ≤ ·)]
+theorem Contravariant.MulLECancellable [Mul α] [LE α] [ContravariantClass α α (· * ·) (· ≤ ·)]
     {a : α} :
-    MulLeCancellable a :=
+    MulLECancellable a :=
   fun _ _ => le_of_mul_le_mul_left'
-#align contravariant.mul_le_cancellable Contravariant.MulLeCancellable
-#align contravariant.add_le_cancellable Contravariant.AddLeCancellable
+#align contravariant.mul_le_cancellable Contravariant.MulLECancellable
+#align contravariant.add_le_cancellable Contravariant.AddLECancellable
 
 @[to_additive]
-theorem mul_le_cancellable_one [Monoid α] [LE α] : MulLeCancellable (1 : α) := fun a b => by
+theorem mulLECancellable_one [Monoid α] [LE α] : MulLECancellable (1 : α) := fun a b => by
   simpa only [one_mul] using id
-#align mul_le_cancellable_one mul_le_cancellable_one
-#align add_le_cancellable_zero add_le_cancellable_zero
+#align mul_le_cancellable_one mulLECancellable_one
+#align add_le_cancellable_zero addLECancellable_zero
 
-namespace MulLeCancellable
+namespace MulLECancellable
 
 @[to_additive]
-protected theorem Injective [Mul α] [PartialOrder α] {a : α} (ha : MulLeCancellable a) :
+protected theorem Injective [Mul α] [PartialOrder α] {a : α} (ha : MulLECancellable a) :
     Injective ((· * ·) a) :=
   fun _ _ h => le_antisymm (ha h.le) (ha h.ge)
-#align mul_le_cancellable.injective MulLeCancellable.Injective
-#align add_le_cancellable.injective AddLeCancellable.Injective
+#align mul_le_cancellable.injective MulLECancellable.Injective
+#align add_le_cancellable.injective AddLECancellable.Injective
 
 @[to_additive]
-protected theorem inj [Mul α] [PartialOrder α] {a b c : α} (ha : MulLeCancellable a) :
+protected theorem inj [Mul α] [PartialOrder α] {a b c : α} (ha : MulLECancellable a) :
     a * b = a * c ↔ b = c :=
   ha.Injective.eq_iff
-#align mul_le_cancellable.inj MulLeCancellable.inj
-#align add_le_cancellable.inj AddLeCancellable.inj
+#align mul_le_cancellable.inj MulLECancellable.inj
+#align add_le_cancellable.inj AddLECancellable.inj
 
 @[to_additive]
 protected theorem injective_left [CommSemigroup α] [PartialOrder α] {a : α}
-    (ha : MulLeCancellable a) :
+    (ha : MulLECancellable a) :
     Injective (· * a) := fun b c h => ha.Injective <| by dsimp; rwa [mul_comm a, mul_comm a]
-#align mul_le_cancellable.injective_left MulLeCancellable.injective_left
-#align add_le_cancellable.injective_left AddLeCancellable.injective_left
+#align mul_le_cancellable.injective_left MulLECancellable.injective_left
+#align add_le_cancellable.injective_left AddLECancellable.injective_left
 
 @[to_additive]
 protected theorem inj_left [CommSemigroup α] [PartialOrder α] {a b c : α}
-    (hc : MulLeCancellable c) :
+    (hc : MulLECancellable c) :
     a * c = b * c ↔ a = b :=
   hc.injective_left.eq_iff
-#align mul_le_cancellable.inj_left MulLeCancellable.inj_left
-#align add_le_cancellable.inj_left AddLeCancellable.inj_left
+#align mul_le_cancellable.inj_left MulLECancellable.inj_left
+#align add_le_cancellable.inj_left AddLECancellable.inj_left
 
 variable [LE α]
 
 @[to_additive]
 protected theorem mul_le_mul_iff_left [Mul α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α}
-    (ha : MulLeCancellable a) : a * b ≤ a * c ↔ b ≤ c :=
+    (ha : MulLECancellable a) : a * b ≤ a * c ↔ b ≤ c :=
   ⟨fun h => ha h, fun h => mul_le_mul_left' h a⟩
-#align mul_le_cancellable.mul_le_mul_iff_left MulLeCancellable.mul_le_mul_iff_left
-#align add_le_cancellable.add_le_add_iff_left AddLeCancellable.add_le_add_iff_left
+#align mul_le_cancellable.mul_le_mul_iff_left MulLECancellable.mul_le_mul_iff_left
+#align add_le_cancellable.add_le_add_iff_left AddLECancellable.add_le_add_iff_left
 
 @[to_additive]
 protected theorem mul_le_mul_iff_right [CommSemigroup α] [CovariantClass α α (· * ·) (· ≤ ·)]
-    {a b c : α} (ha : MulLeCancellable a) :
+    {a b c : α} (ha : MulLECancellable a) :
     b * a ≤ c * a ↔ b ≤ c := by rw [mul_comm b, mul_comm c, ha.mul_le_mul_iff_left]
-#align mul_le_cancellable.mul_le_mul_iff_right MulLeCancellable.mul_le_mul_iff_right
-#align add_le_cancellable.add_le_add_iff_right AddLeCancellable.add_le_add_iff_right
+#align mul_le_cancellable.mul_le_mul_iff_right MulLECancellable.mul_le_mul_iff_right
+#align add_le_cancellable.add_le_add_iff_right AddLECancellable.add_le_add_iff_right
 
 @[to_additive]
 protected theorem le_mul_iff_one_le_right [MulOneClass α] [CovariantClass α α (· * ·) (· ≤ ·)]
-    {a b : α} (ha : MulLeCancellable a) :
+    {a b : α} (ha : MulLECancellable a) :
     a ≤ a * b ↔ 1 ≤ b :=
   Iff.trans (by rw [mul_one]) ha.mul_le_mul_iff_left
-#align mul_le_cancellable.le_mul_iff_one_le_right MulLeCancellable.le_mul_iff_one_le_right
-#align add_le_cancellable.le_add_iff_nonneg_right AddLeCancellable.le_add_iff_nonneg_right
+#align mul_le_cancellable.le_mul_iff_one_le_right MulLECancellable.le_mul_iff_one_le_right
+#align add_le_cancellable.le_add_iff_nonneg_right AddLECancellable.le_add_iff_nonneg_right
 
 @[to_additive]
 protected theorem mul_le_iff_le_one_right [MulOneClass α] [CovariantClass α α (· * ·) (· ≤ ·)]
-    {a b : α} (ha : MulLeCancellable a) :
+    {a b : α} (ha : MulLECancellable a) :
     a * b ≤ a ↔ b ≤ 1 :=
   Iff.trans (by rw [mul_one]) ha.mul_le_mul_iff_left
-#align mul_le_cancellable.mul_le_iff_le_one_right MulLeCancellable.mul_le_iff_le_one_right
-#align add_le_cancellable.add_le_iff_nonpos_right AddLeCancellable.add_le_iff_nonpos_right
+#align mul_le_cancellable.mul_le_iff_le_one_right MulLECancellable.mul_le_iff_le_one_right
+#align add_le_cancellable.add_le_iff_nonpos_right AddLECancellable.add_le_iff_nonpos_right
 
 @[to_additive]
 protected theorem le_mul_iff_one_le_left [CommMonoid α] [CovariantClass α α (· * ·) (· ≤ ·)]
-    {a b : α} (ha : MulLeCancellable a) :
+    {a b : α} (ha : MulLECancellable a) :
     a ≤ b * a ↔ 1 ≤ b := by rw [mul_comm, ha.le_mul_iff_one_le_right]
-#align mul_le_cancellable.le_mul_iff_one_le_left MulLeCancellable.le_mul_iff_one_le_left
-#align add_le_cancellable.le_add_iff_nonneg_left AddLeCancellable.le_add_iff_nonneg_left
+#align mul_le_cancellable.le_mul_iff_one_le_left MulLECancellable.le_mul_iff_one_le_left
+#align add_le_cancellable.le_add_iff_nonneg_left AddLECancellable.le_add_iff_nonneg_left
 
 @[to_additive]
 protected theorem mul_le_iff_le_one_left [CommMonoid α] [CovariantClass α α (· * ·) (· ≤ ·)]
-    {a b : α} (ha : MulLeCancellable a) :
+    {a b : α} (ha : MulLECancellable a) :
     b * a ≤ a ↔ b ≤ 1 := by rw [mul_comm, ha.mul_le_iff_le_one_right]
-#align mul_le_cancellable.mul_le_iff_le_one_left MulLeCancellable.mul_le_iff_le_one_left
-#align add_le_cancellable.add_le_iff_nonpos_left AddLeCancellable.add_le_iff_nonpos_left
+#align mul_le_cancellable.mul_le_iff_le_one_left MulLECancellable.mul_le_iff_le_one_left
+#align add_le_cancellable.add_le_iff_nonpos_left AddLECancellable.add_le_iff_nonpos_left
 
-end MulLeCancellable
+end MulLECancellable
 
 section Bit
 set_option linter.deprecated false

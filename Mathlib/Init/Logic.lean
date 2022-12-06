@@ -132,6 +132,8 @@ alias not_not_not ↔ not_of_not_not_not _
 
 #align and_iff_left and_iff_leftₓ -- reorder implicits
 
+variable (p)
+
 -- FIXME: remove _iff and add _eq for the lean 4 core versions
 theorem and_true_iff : p ∧ True ↔ p := iff_of_eq (and_true _)
 #align and_true and_true_iff
@@ -292,6 +294,16 @@ end Decidable
 #align decidable_of_decidable_of_iff decidable_of_decidable_of_iff
 #align decidable_of_decidable_of_eq decidable_of_decidable_of_eq
 #align or.by_cases Or.by_cases
+
+alias instDecidableOr ← Or.decidable
+alias instDecidableAnd ← And.decidable
+alias instDecidableNot ← Not.decidable
+alias instDecidableIff ← Iff.decidable
+
+#align or.decidable Or.decidable
+#align and.decidable And.decidable
+#align not.decidable Not.decidable
+#align iff.decidable Iff.decidable
 
 instance [Decidable p] [Decidable q] : Decidable (Xor' p q) := inferInstanceAs (Decidable (Or ..))
 

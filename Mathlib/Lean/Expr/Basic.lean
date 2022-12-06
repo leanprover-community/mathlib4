@@ -6,6 +6,8 @@ Floris van Doorn, E.W.Ayers, Arthur Paulino
 -/
 import Lean
 import Mathlib.Util.MapsTo
+import Std.Lean.Expr
+import Std.Data.List.Basic
 
 /-!
 # Additional operations on Expr and related types
@@ -43,45 +45,82 @@ def mapPrefix (f : Name → Option Name) (n : Name) : Name := Id.run do
   | str n' s => mkStr (mapPrefix f n') s
   | num n' i => mkNum (mapPrefix f n') i
 
+/-- Build a name from components. For example ``from_components [`foo, `bar]`` becomes
+  ``` `foo.bar```.
+  It is the inverse of `Name.components` on list of names that have single components. -/
+def fromComponents : List Name → Name := go .anonymous where
+  /-- Auxiliary for `Name.fromComponents` -/
+  go : Name → List Name → Name
+  | n, []        => n
+  | n, s :: rest => go (s.updatePrefix n) rest
+
+/-- Update the last component of a name. -/
+def updateLast (f : String → String) : Name → Name
+| .str n s => .str n (f s)
+| n        => n
+
+/-- Get the last field of a name as a string.
+Doesn't raise an error when the last component is a numeric field. -/
+def getString : Name → String
+| .str _ s => s
+| .num _ n => toString n
+| .anonymous => ""
+
+/-- `nm.splitAt n` splits a name `nm` in two parts, such that the *second* part has depth `n`, i.e.
+  `(nm.splitAt n).2.getNumParts = n` (assuming `nm.getNumParts ≥ n`).
+  Example: ``splitAt `foo.bar.baz.back.bat 1 = (`foo.bar.baz.back, `bat)``. -/
+def splitAt (nm : Name) (n : Nat) : Name × Name :=
+  let (nm2, nm1) := (nm.componentsRev.splitAt n)
+  (.fromComponents <| nm1.reverse, .fromComponents <| nm2.reverse)
+
 end Name
 
 
 namespace ConstantInfo
 
+/-- Checks whether this `ConstantInfo` is a definition, -/
 def isDef : ConstantInfo → Bool
   | defnInfo _ => true
   | _          => false
 
+/-- Checks whether this `ConstantInfo` is a theorem, -/
 def isThm : ConstantInfo → Bool
   | thmInfo _ => true
   | _          => false
 
-def updateName : ConstantInfo → Name → ConstantInfo
-  | defnInfo   info, n => defnInfo   {info with name := n}
-  | axiomInfo  info, n => axiomInfo  {info with name := n}
-  | thmInfo    info, n => thmInfo    {info with name := n}
-  | opaqueInfo info, n => opaqueInfo {info with name := n}
-  | quotInfo   info, n => quotInfo   {info with name := n}
-  | inductInfo info, n => inductInfo {info with name := n}
-  | ctorInfo   info, n => ctorInfo   {info with name := n}
-  | recInfo    info, n => recInfo    {info with name := n}
+/-- Update `ConstantVal` (the data common to all constructors of `ConstantInfo`)
+in a `ConstantInfo`. -/
+def updateConstantVal : ConstantInfo → ConstantVal → ConstantInfo
+  | defnInfo   info, v => defnInfo   {info with toConstantVal := v}
+  | axiomInfo  info, v => axiomInfo  {info with toConstantVal := v}
+  | thmInfo    info, v => thmInfo    {info with toConstantVal := v}
+  | opaqueInfo info, v => opaqueInfo {info with toConstantVal := v}
+  | quotInfo   info, v => quotInfo   {info with toConstantVal := v}
+  | inductInfo info, v => inductInfo {info with toConstantVal := v}
+  | ctorInfo   info, v => ctorInfo   {info with toConstantVal := v}
+  | recInfo    info, v => recInfo    {info with toConstantVal := v}
 
-def updateType : ConstantInfo → Expr → ConstantInfo
-  | defnInfo   info, y => defnInfo   {info with type := y}
-  | axiomInfo  info, y => axiomInfo  {info with type := y}
-  | thmInfo    info, y => thmInfo    {info with type := y}
-  | opaqueInfo info, y => opaqueInfo {info with type := y}
-  | quotInfo   info, y => quotInfo   {info with type := y}
-  | inductInfo info, y => inductInfo {info with type := y}
-  | ctorInfo   info, y => ctorInfo   {info with type := y}
-  | recInfo    info, y => recInfo    {info with type := y}
+/-- Update the name of a `ConstantInfo`. -/
+def updateName (c : ConstantInfo) (name : Name) : ConstantInfo :=
+  c.updateConstantVal {c.toConstantVal with name}
 
+/-- Update the type of a `ConstantInfo`. -/
+def updateType (c : ConstantInfo) (type : Expr) : ConstantInfo :=
+  c.updateConstantVal {c.toConstantVal with type}
+
+/-- Update the level parameters of a `ConstantInfo`. -/
+def updateLevelParams (c : ConstantInfo) (levelParams : List Name) :
+  ConstantInfo :=
+  c.updateConstantVal {c.toConstantVal with levelParams}
+
+/-- Update the value of a `ConstantInfo`, if it has one. -/
 def updateValue : ConstantInfo → Expr → ConstantInfo
   | defnInfo   info, v => defnInfo   {info with value := v}
   | thmInfo    info, v => thmInfo    {info with value := v}
   | opaqueInfo info, v => opaqueInfo {info with value := v}
   | d, _ => d
 
+/-- Turn a `ConstantInfo` into a declaration. -/
 def toDeclaration! : ConstantInfo → Declaration
   | defnInfo   info => Declaration.defnDecl info
   | thmInfo    info => Declaration.thmDecl     info
@@ -93,6 +132,12 @@ def toDeclaration! : ConstantInfo → Declaration
   | recInfo    _ => panic! "toDeclaration for recInfo not implemented"
 
 end ConstantInfo
+
+open Meta
+
+/-- Same as `mkConst`, but with fresh level metavariables. -/
+def mkConst' (constName : Name) : MetaM Expr := do
+  return mkConst constName (← (← getConstInfo constName).levelParams.mapM fun _ => mkFreshLevelMVar)
 
 namespace Expr
 
@@ -115,9 +160,53 @@ def natLit! : Expr → Nat
   | lit (Literal.natVal v) => v
   | _                      => panic! "nat literal expected"
 
-/-- Returns a `NameSet` of all constants in an expression starting with a certain prefix. -/
-def listNamesWithPrefix (pre : Name) (e : Expr) : NameSet :=
-  e.foldConsts ∅ fun n l ↦ if n.getPrefix == pre then l.insert n else l
+open Meta
+
+/-- Check that an expression contains no metavariables (after instantiation). -/
+-- There is a `TacticM` level version of this, but it's useful to have in `MetaM`.
+def ensureHasNoMVars (e : Expr) : MetaM Unit := do
+  let e ← instantiateMVars e
+  if e.hasExprMVar then
+    throwError "tactic failed, resulting expression contains metavariables{indentExpr e}"
+
+/-- Construct the term of type `α` for a given natural number
+(doing typeclass search for the `OfNat` instance required). -/
+def ofNat (α : Expr) (n : Nat) : MetaM Expr := do
+  mkAppOptM ``OfNat.ofNat #[α, mkRawNatLit n, none]
+
+/-- Construct the term of type `α` for a given integer
+(doing typeclass search for the `OfNat` and `Neg` instances required). -/
+def ofInt (α : Expr) : Int → MetaM Expr
+| Int.ofNat n => Expr.ofNat α n
+| Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n+1)]
+
+/--
+  Return `some n` if `e` is one of the following
+  - A nat literal (numeral)
+  - `Nat.zero`
+  - `Nat.succ x` where `isNumeral x`
+  - `OfNat.ofNat _ x _` where `isNumeral x` -/
+partial def numeral? (e : Expr) : Option Nat :=
+  if let some n := e.natLit? then n
+  else
+    let f := e.getAppFn
+    if !f.isConst then none
+    else
+      let fName := f.constName!
+      if fName == ``Nat.succ && e.getAppNumArgs == 1 then (numeral? e.appArg!).map Nat.succ
+      else if fName == ``OfNat.ofNat && e.getAppNumArgs == 3 then numeral? (e.getArg! 1)
+      else if fName == ``Nat.zero && e.getAppNumArgs == 0 then some 0
+      else none
+
+/-- Test if an expression is either `Nat.zero`, or `OfNat.ofNat 0`. -/
+def zero? (e : Expr) : Bool :=
+  match e.numeral? with
+  | some 0 => true
+  | _ => false
+
+/-- Returns a `NameSet` of all constants in an expression starting with a prefix in `pre`. -/
+def listNamesWithPrefixes (pre : NameSet) (e : Expr) : NameSet :=
+  e.foldConsts ∅ fun n l ↦ if pre.contains n.getPrefix then l.insert n else l
 
 def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M Expr
   | app f a => mkApp f <$> modifier a
@@ -175,14 +264,6 @@ open Lean.Elab.Term
 def addLocalVarInfoForBinderIdent (fvar : Expr) : TSyntax ``binderIdent → TermElabM Unit
 | `(binderIdent| $n:ident) => Elab.Term.addLocalVarInfo n fvar
 | tk => Elab.Term.addLocalVarInfo (Unhygienic.run `(_%$tk)) fvar
-
-/-- Converts an `Expr` into a `Syntax`, by creating a fresh metavariable
-assigned to the expr and  returning a named metavariable syntax `?a`. -/
-def toSyntax (e : Expr) : TermElabM Syntax.Term := withFreshMacroScope do
-  let stx ← `(?a)
-  let mvar ← elabTermEnsuringType stx (← Meta.inferType e)
-  mvar.mvarId!.assign e
-  pure stx
 
 end Expr
 

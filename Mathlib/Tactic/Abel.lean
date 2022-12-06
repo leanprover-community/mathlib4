@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum
-import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Data.Int.Basic
 
 /-!
 # The `abel` tactic
@@ -17,17 +17,6 @@ namespace Mathlib.Tactic.Abel
 open Lean Elab Meta Tactic Qq
 -- FIXME: remove this when the sorries are gone
 set_option warningAsError false
-
-/-- Construct the term of type `α` for a given natural number
-(doing typeclass search for the `OfNat` instance required). -/
-def _root_.Lean.Expr.ofNat (α : Expr) (n : ℕ) : MetaM Expr := do
-  mkAppOptM ``OfNat.ofNat #[α, mkRawNatLit n, none]
-
-/-- Construct the term of type `α` for a given integer
-(doing typeclass search for the `OfNat` and `Neg` instances required). -/
-def _root_.Lean.Expr.ofInt (α : Expr) : ℤ → MetaM Expr
-| Int.ofNat n => Expr.ofNat α n
-| Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n+1)]
 
 initialize registerTraceClass `abel
 initialize registerTraceClass `abel.detail
