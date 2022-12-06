@@ -135,7 +135,7 @@ theorem ext : Function.Injective (fun (u : αˣ) => (u : α))
 
 #align add_units.ext AddUnits.ext
 
-@[to_additive, norm_cast]
+@[norm_cast, to_additive]
 theorem eq_iff {a b : αˣ} : (a : α) = b ↔ a = b :=
   ext.eq_iff
 #align units.eq_iff Units.eq_iff
@@ -216,19 +216,19 @@ attribute [instance] AddUnits.instReprAddUnits
 
 variable (a b c : αˣ) {u : αˣ}
 
-@[simp, to_additive, norm_cast]
+@[simp, norm_cast, to_additive]
 theorem val_mul : (↑(a * b) : α) = a * b :=
   rfl
 #align units.coe_mul Units.val_mul
 #align add_units.coe_add AddUnits.val_add
 
-@[simp, to_additive, norm_cast]
+@[simp, norm_cast, to_additive]
 theorem val_one : ((1 : αˣ) : α) = 1 :=
   rfl
 #align units.coe_one Units.val_one
 #align add_units.coe_zero AddUnits.val_zero
 
-@[simp, to_additive, norm_cast]
+@[simp, norm_cast, to_additive]
 theorem val_eq_one {a : αˣ} : (a : α) = 1 ↔ a = 1 := by rw [← Units.val_one, eq_iff]
 #align units.coe_eq_one Units.val_eq_one
 #align add_units.coe_eq_zero AddUnits.val_eq_zero
