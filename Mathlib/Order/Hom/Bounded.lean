@@ -35,20 +35,20 @@ variable {F α β γ δ : Type _}
 /-- The type of `⊤`-preserving functions from `α` to `β`. -/
 structure TopHom (α β : Type _) [Top α] [Top β] where
   toFun : α → β
-  map_top' : to_fun ⊤ = ⊤
+  map_top' : toFun ⊤ = ⊤
 #align top_hom TopHom
 
 /-- The type of `⊥`-preserving functions from `α` to `β`. -/
 structure BotHom (α β : Type _) [Bot α] [Bot β] where
   toFun : α → β
-  map_bot' : to_fun ⊥ = ⊥
+  map_bot' : toFun ⊥ = ⊥
 #align bot_hom BotHom
 
 /-- The type of bounded order homomorphisms from `α` to `β`. -/
 structure BoundedOrderHom (α β : Type _) [Preorder α] [Preorder β] [BoundedOrder α]
   [BoundedOrder β] extends OrderHom α β where
-  map_top' : to_fun ⊤ = ⊤
-  map_bot' : to_fun ⊥ = ⊥
+  map_top' : toFun ⊤ = ⊤
+  map_bot' : toFun ⊥ = ⊥
 #align bounded_order_hom BoundedOrderHom
 
 section
