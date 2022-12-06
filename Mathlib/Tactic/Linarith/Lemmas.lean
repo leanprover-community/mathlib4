@@ -59,6 +59,19 @@ theorem mul_eq {α} [OrderedSemiring α] {a b : α} (ha : a = 0) (_ : 0 < b) : b
 lemma eq_of_not_lt_of_not_gt {α} [LinearOrder α] (a b : α) (h1 : ¬ a < b) (h2 : ¬ b < a) : a = b :=
 le_antisymm (le_of_not_gt h2) (le_of_not_gt h1)
 
+-- used in the `nlinarith` normalization steps. The `_` argument is for uniformity.
+@[nolint unusedArguments]
+lemma mul_zero_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (_ : R a 0) (h : b = 0) :
+  a * b = 0 :=
+by simp [h]
+
+-- used in the `nlinarith` normalization steps. The `_` argument is for uniformity.
+@[nolint unusedArguments]
+lemma zero_mul_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (h : a = 0) (_ : R b 0) :
+  a * b = 0 :=
+by simp [h]
+
+
 end Linarith
 
 section
@@ -72,14 +85,16 @@ theorem lt_zero_of_zero_gt [Zero α] [LT α] {a : α} (h : 0 > a) : a < 0 := h
 
 theorem le_zero_of_zero_ge [Zero α] [LE α] {a : α} (h : 0 ≥ a) : a ≤ 0 := h
 
-@[nolint unusedArguments]
-theorem sub_nonpos_of_le [AddGroup α] [LE α] [CovariantClass α α (swap (· + ·)) (· ≤ ·)] {a b : α} :
-    a ≤ b → a - b ≤ 0 := sorry
+theorem sq_nonneg [LinearOrderedRing R] (a : R) : 0 ≤ a ^ 2 := sorry
+
+theorem mul_self_nonneg [LinearOrderedRing R] (a : R) : 0 ≤ a * a := sorry
 
 @[nolint unusedArguments]
-theorem sub_neg_of_lt [AddGroup α] [LT α] [CovariantClass α α (swap (· + ·)) (· < ·)] {a b : α} :
-    a < b → a - b < 0 := sorry
+theorem mul_pos_of_neg_of_neg [StrictOrderedRing R] {a b : R} (ha : a < 0) (hb : b < 0) :
+    0 < a * b :=
+  sorry
 
-theorem neg_nonpos_of_nonneg [OrderedAddCommGroup α] {a : α} : 0 ≤ a → -a ≤ 0 := sorry
-
-theorem neg_neg_of_pos [OrderedAddCommGroup α] {a : α} : 0 < a → -a < 0 := sorry
+@[nolint unusedArguments]
+theorem mul_nonneg_of_nonpos_of_nonpos [OrderedRing R] {a b : R} (ha : a ≤ 0) (hb : b ≤ 0) :
+    0 ≤ a * b :=
+  sorry

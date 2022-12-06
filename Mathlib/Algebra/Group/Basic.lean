@@ -138,9 +138,9 @@ theorem self_eq_mul_left : b = a * b ↔ a = 1 :=
 
 end RightCancelMonoid
 
-section HasInvolutiveInv
+section InvolutiveInv
 
-variable [HasInvolutiveInv G] {a b : G}
+variable [InvolutiveInv G] {a b : G}
 
 @[simp, to_additive]
 theorem inv_involutive : Function.Involutive (Inv.inv : G → G) :=
@@ -187,7 +187,7 @@ theorem rightInverse_inv : LeftInverse (fun a : G ↦ a⁻¹) fun a ↦ a⁻¹ :
 #align right_inverse_inv rightInverse_inv
 #align right_inverse_neg rightInverse_neg
 
-end HasInvolutiveInv
+end InvolutiveInv
 
 section DivInvMonoid
 
