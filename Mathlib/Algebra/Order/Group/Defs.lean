@@ -516,7 +516,8 @@ attribute [to_additive] le_inv_mul_of_mul_le
 
 alias inv_mul_le_iff_le_mul ↔ _ inv_mul_le_of_le_mul
 
-attribute [to_additive] inv_mul_le_iff_le_mul
+-- Porting note: was `inv_mul_le_iff_le_mul`
+attribute [to_additive] inv_mul_le_of_le_mul
 
 alias lt_inv_mul_iff_mul_lt ↔ mul_lt_of_lt_inv_mul _
 
@@ -916,7 +917,7 @@ variable [LinearOrderedCommGroup α] {a b c : α}
 
 @[to_additive LinearOrderedAddCommGroup.add_lt_add_left]
 theorem LinearOrderedCommGroup.mul_lt_mul_left' (a b : α) (h : a < b) (c : α) : c * a < c * b :=
-  mul_lt_mul_left' h c
+  _root_.mul_lt_mul_left' h c
 #align linear_ordered_comm_group.mul_lt_mul_left' LinearOrderedCommGroup.mul_lt_mul_left'
 
 @[to_additive eq_zero_of_neg_eq]
@@ -984,8 +985,8 @@ structure TotalPositiveCone (α : Type _) [AddCommGroup α] extends PositiveCone
   nonneg_total : ∀ a : α, nonneg a ∨ nonneg (-a)
 #align add_comm_group.total_positive_cone AddCommGroup.TotalPositiveCone
 
-/-- Forget that a `total_positive_cone` is total. -/
-add_decl_doc total_positive_cone.to_positive_cone
+/-- Forget that a `TotalPositiveCone` is total. -/
+add_decl_doc TotalPositiveCone.toPositiveCone
 
 end AddCommGroup
 
@@ -1020,7 +1021,7 @@ such that for every `a`, either `a` or `-a` is non-negative. -/
 def mkOfPositiveCone {α : Type _} [AddCommGroup α] (C : TotalPositiveCone α) :
     LinearOrderedAddCommGroup α :=
   { OrderedAddCommGroup.mkOfPositiveCone C.toPositiveCone with
-    le_total := fun a b => C.nonneg_total (b - a)
+    le_total := fun a b => by simpa [neg_sub] using C.nonneg_total (b - a)
     decidable_le := fun a b => C.nonnegDecidable _ }
 #align linear_ordered_add_comm_group.mk_of_positive_cone LinearOrderedAddCommGroup.mkOfPositiveCone
 
