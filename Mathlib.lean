@@ -217,6 +217,7 @@ import Mathlib.Order.GameAdd
 import Mathlib.Order.Heyting.Basic
 import Mathlib.Order.Heyting.Boundary
 import Mathlib.Order.Hom.Basic
+import Mathlib.Order.Hom.Bounded
 import Mathlib.Order.Iterate
 import Mathlib.Order.Lattice
 import Mathlib.Order.Max
