@@ -188,16 +188,13 @@ theorem coe_toEquiv {f : M ≃* N} : (f : M ≃ N) = f.toFun := rfl
 #align mul_equiv.coe_to_equiv MulEquiv.coe_toEquiv
 #align add_equiv.coe_to_equiv AddEquiv.coe_toEquiv
 
--- Porting note: restore `to_additive`
-@[simp]
+@[simp, to_additive]
 theorem coe_toMulHom {f : M ≃* N} : f.toMulHom = f.toFun := rfl
 #align mul_equiv.coe_to_mul_hom MulEquiv.coe_toMulHom
-@[simp]
-theorem _root_.AddEquiv.coe_toAddHom [Add M] [Add N] {f : M ≃+ N} : f.toAddHom = f.toFun := rfl
-#align add_equiv.coe_to_add_hom AddEquiv.coe_toAddHom
 
-set_option trace.Meta.synthInstance true
-
+set_option synthInstance.maxHeartbeats 800 in
+set_option trace.Meta.synthInstance true in
+-- Porting note: type class problem timeout
 /-- A multiplicative isomorphism preserves multiplication. -/
 @[to_additive "An additive isomorphism preserves addition."]
 protected theorem map_mul (f : M ≃* N) : ∀ x y, f (x * y) = f x * f y :=
@@ -498,44 +495,47 @@ instance {M N} [Unique M] [Unique N] [Mul M] [Mul N] : Unique (M ≃* N) where
 /-!
 ## Monoids
 -/
+
+set_option synthInstance.maxHeartbeats 800 in
+set_option trace.Meta.synthInstance true in
 -- Porting note: type class problem timeout
 /-- A multiplicative isomorphism of monoids sends `1` to `1` (and is hence a monoid isomorphism). -/
 @[to_additive
   "An additive isomorphism of additive monoids sends `0` to `0`
   (and is hence an additive monoid isomorphism)."]
-protected theorem map_one {M N} [MulOneClass M] [MulOneClass N] (h : M ≃* N) : h 1 = 1 := sorry
-  -- _root_.map_one h
+protected theorem map_one {M N} [MulOneClass M] [MulOneClass N] (h : M ≃* N) : h 1 = 1 :=
+  _root_.map_one h
 #align mul_equiv.map_one MulEquiv.map_one
 #align add_equiv.map_zero AddEquiv.map_zero
 
 @[to_additive]
 protected theorem map_eq_one_iff {M N} [MulOneClass M] [MulOneClass N] (h : M ≃* N) {x : M} :
-  h x = 1 ↔ x = 1 := sorry
-  -- MulEquivClass.map_eq_one_iff h
+  h x = 1 ↔ x = 1 :=
+  MulEquivClass.map_eq_one_iff h
 #align mul_equiv.map_eq_one_iff MulEquiv.map_eq_one_iff
 #align add_equiv.map_eq_zero_iff AddEquiv.map_eq_zero_iff
 
 @[to_additive]
 theorem map_ne_one_iff {M N} [MulOneClass M] [MulOneClass N] (h : M ≃* N) {x : M} :
-  h x ≠ 1 ↔ x ≠ 1 := sorry
-  -- MulEquivClass.map_ne_one_iff h
+  h x ≠ 1 ↔ x ≠ 1 :=
+  MulEquivClass.map_ne_one_iff h
 #align mul_equiv.map_ne_one_iff MulEquiv.map_ne_one_iff
 #align add_equiv.map_ne_zero_iff AddEquiv.map_ne_zero_iff
 
--- /-- A bijective `Semigroup` homomorphism is an isomorphism -/
--- @[to_additive "A bijective `AddSemigroup` homomorphism is an isomorphism", simps apply]
--- noncomputable def ofBijective {M N F} [Mul M] [Mul N] [MulHomClass F M N]
--- (f : F) (hf : Function.Bijective f) :
---     M ≃* N :=
---   { Equiv.ofBijective f hf with map_mul' := map_mul f }
--- #align mul_equiv.of_bijective MulEquiv.ofBijective
--- #align add_equiv.of_bijective AddEquiv.ofBijective
+/-- A bijective `Semigroup` homomorphism is an isomorphism -/
+@[to_additive "A bijective `AddSemigroup` homomorphism is an isomorphism", simps apply]
+noncomputable def ofBijective {M N F} [Mul M] [Mul N] [MulHomClass F M N]
+(f : F) (hf : Function.Bijective f) :
+    M ≃* N :=
+  { Equiv.ofBijective f hf with map_mul' := map_mul f }
+#align mul_equiv.of_bijective MulEquiv.ofBijective
+#align add_equiv.of_bijective AddEquiv.ofBijective
 
--- @[simp]
--- theorem ofBijective_apply_symm_apply {M N} [MulOneClass M] [MulOneClass N] {n : N} (f : M →* N)
---     (hf : Function.Bijective f) : f ((Equiv.ofBijective f hf).symm n) = n :=
---   (MulEquiv.ofBijective f hf).apply_symm_apply n
--- #align mul_equiv.of_bijective_apply_symm_apply MulEquiv.of_bijective_apply_symm_apply
+@[simp]
+theorem ofBijective_apply_symm_apply {M N} [MulOneClass M] [MulOneClass N] {n : N} (f : M →* N)
+    (hf : Function.Bijective f) : f ((Equiv.ofBijective f hf).symm n) = n :=
+  (MulEquiv.ofBijective f hf).apply_symm_apply n
+#align mul_equiv.of_bijective_apply_symm_apply MulEquiv.of_bijective_apply_symm_apply
 
 /-- Extract the forward direction of a multiplicative equivalence
 as a multiplication-preserving function.
@@ -655,16 +655,16 @@ def piSubsingleton {ι : Type _} (M : ι → Type _) [∀ j, Mul (M j)] [Subsing
 /-- A multiplicative equivalence of groups preserves inversion. -/
 @[to_additive "An additive equivalence of additive groups preserves negation."]
 protected theorem map_inv [Group G] [DivisionMonoid H] (h : G ≃* H) (x : G) :
-  h x⁻¹ = (h x)⁻¹ := sorry
-  -- _root_.map_inv h x
+  h x⁻¹ = (h x)⁻¹ :=
+  _root_.map_inv h x
 #align mul_equiv.map_inv MulEquiv.map_inv
 #align add_equiv.map_neg AddEquiv.map_neg
 
 /-- A multiplicative equivalence of groups preserves division. -/
 @[to_additive "An additive equivalence of additive groups preserves subtractions."]
 protected theorem map_div [Group G] [DivisionMonoid H] (h : G ≃* H) (x y : G) :
-  h (x / y) = h x / h y := sorry
-  -- _root_.map_div h x y
+  h (x / y) = h x / h y :=
+  _root_.map_div h x y
 #align mul_equiv.map_div MulEquiv.map_div
 #align add_equiv.map_sub AddEquiv.map_sub
 
