@@ -276,14 +276,14 @@ def OrderIso.dualAntisymmetrization :
 
 @[simp]
 theorem OrderIso.dualAntisymmetrization_apply (a : α) :
-    OrderIso.dualAntisymmetrization α (toDual <| toAntisymmetrization _ a) =
+    OrderIso.dualAntisymmetrization _ (toDual <| toAntisymmetrization _ a) =
       toAntisymmetrization _ (toDual a) :=
   rfl
 #align order_iso.dual_antisymmetrization_apply OrderIso.dualAntisymmetrization_apply
 
 @[simp]
 theorem OrderIso.dual_antisymmetrization_symm_apply (a : α) :
-    (OrderIso.dualAntisymmetrization α).symm (toAntisymmetrization _ <| toDual a) =
+    (OrderIso.dualAntisymmetrization _).symm (toAntisymmetrization _ <| toDual a) =
       toDual (toAntisymmetrization _ a) :=
   rfl
 #align order_iso.dual_antisymmetrization_symm_apply OrderIso.dual_antisymmetrization_symm_apply

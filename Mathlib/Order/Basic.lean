@@ -523,14 +523,12 @@ instance (α : Type _) [h : Subsingleton α] : Subsingleton αᵒᵈ :=
   h
 
 instance (α : Type _) [LE α] : LE αᵒᵈ :=
-  ⟨fun x y : α ↦ y ≤ x⟩
+  ⟨fun a b => @LE.le α _ b a⟩
 
 instance (α : Type _) [LT α] : LT αᵒᵈ :=
-  ⟨fun x y : α ↦ y < x⟩
+  ⟨fun a b => @LT.lt α _ b a⟩
 
 instance (α : Type _) [Preorder α] : Preorder αᵒᵈ where
-  __ := inferInstanceAs (LE αᵒᵈ)
-  __ := inferInstanceAs (LT αᵒᵈ)
   le_refl := fun _ ↦ le_refl _
   le_trans := fun _ _ _ hab hbc ↦ hbc.trans hab
   lt_iff_le_not_le := fun _ _ ↦ lt_iff_le_not_le
