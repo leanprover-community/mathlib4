@@ -10,11 +10,11 @@ import Mathlib.Algebra.Ring.Defs
 
 This file contains different results about adjoining an element to an algebraic structure which then
 behaves like a zero or a one. An example is adjoining a one to a semigroup to obtain a monoid. That
-this provides an example of an adjunction is proved in `algebra.category.Mon.adjunctions`.
+this provides an example of an adjunction is proved in `Algebra.Category.MonCat.Adjunctions`.
 
 Another result says that adjoining to a group an element `zero` gives a `group_with_zero`. For more
 information about these structures (which are not that standard in informal mathematics, see
-`algebra.group_with_zero.basic`)
+`Algebra.GroupWithZero.Basic`)
 -/
 
 
@@ -61,7 +61,7 @@ instance [Inv α] : Inv (WithOne α) :=
   ⟨fun a => Option.map Inv.inv a⟩
 
 @[to_additive]
-instance [HasInvolutiveInv α] : HasInvolutiveInv (WithOne α) :=
+instance [InvolutiveInv α] : InvolutiveInv (WithOne α) :=
   { instInvWithOne with
     inv_inv := fun a =>
       (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id] }
@@ -325,7 +325,7 @@ theorem inv_zero [Inv α] : (0 : WithZero α)⁻¹ = 0 :=
   rfl
 #align with_zero.inv_zero WithZero.inv_zero
 
-instance [HasInvolutiveInv α] : HasInvolutiveInv (WithZero α) :=
+instance [InvolutiveInv α] : InvolutiveInv (WithZero α) :=
   { instInvWithZero with
     inv_inv := fun a =>
       (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id] }
