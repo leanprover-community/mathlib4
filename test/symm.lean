@@ -32,10 +32,5 @@ structure MulEquiv (M N : Type u) [Mul M] [Mul N] extends M ≃ N, M →ₙ* N
 infixl:25 " ≃* " => MulEquiv
 
 @[symm]
--- with the "flip check" this is not recognized as a symm lemma:
--- the flipped final hypothesis
--- MulEquiv.{u_1} ?_uniq.10884 ?_uniq.10883 ?_uniq.10885 ?_uniq.10886
--- is not definitionally equal to the final hypothesis
--- MulEquiv.{u_1} ?_uniq.10883 ?_uniq.10884 ?_uniq.10885 ?_uniq.10886
 def foo_symm {M N : Type _} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
   { h.toEquiv.symm with map_mul' := (h.toMulHom.inverse h.toEquiv.symm h.left_inv h.right_inv).map_mul }

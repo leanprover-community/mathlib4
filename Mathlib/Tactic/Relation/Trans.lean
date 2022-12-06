@@ -29,17 +29,14 @@ initialize registerBuiltinAttribute {
   descr := "transitive relation"
   add := fun decl _ kind ↦ MetaM.run' do
     let declTy := (← getConstInfo decl).type
-    let (_, _, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
+    let (xs, _, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
     let fail := throwError
       "@[trans] attribute only applies to lemmas proving x ∼ y → y ∼ z → x ∼ z, got {declTy}"
     let .app (.app rel _) _ := targetTy | fail
-    -- let some yzHyp := xs.back? | fail
-    -- let some xyHyp := xs.pop.back? | fail
-    -- let .app (.app rel₂ y₂) z₁ ← inferType yzHyp | fail
-    -- let .app (.app rel₁ x₁) y₁ ← inferType xyHyp | fail
-    -- let .true ← withNewMCtxDepth <|
-    --   isDefEq x₁ x₂ <&&> isDefEq y₁ y₂ <&&> isDefEq z₁ z₂ <&&>
-    --   isDefEq rel rel₁ <&&> isDefEq rel rel₂ | fail
+    let some yzHyp := xs.back? | fail
+    let some xyHyp := xs.pop.back? | fail
+    let .app (.app _ _) _ ← inferType yzHyp | fail
+    let .app (.app _ _) _ ← inferType xyHyp | fail
     let key ← withReducible <| DiscrTree.mkPath rel
     transExt.add (decl, key) kind
 }
