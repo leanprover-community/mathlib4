@@ -127,10 +127,9 @@ instance {_ : LE α} {_ : LE β} [OrderIsoClass F α β] : CoeTC F (α ≃o β) 
   ⟨fun f => ⟨f, map_le_map_iff f⟩⟩
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toOrderHomClass {_ : LE α} {_ : LE β} [OrderIsoClass F α β] :
-    OrderHomClass F α β :=
-  -- Porting note: Shouldn't need to mention `OrderIsoClass.toEquivLike` explicitly
-  { @EquivLike.toEmbeddingLike F α β (OrderIsoClass.toEquivLike) with
+instance (priority := 100) OrderIsoClass.toOrderHomClass {_ : LE α} {_ : LE β}
+    [OrderIsoClass F α β] : OrderHomClass F α β :=
+  { EquivLike.toEmbeddingLike with
     map_rel := fun f _ _ => (map_le_map_iff f).2 }
 #align order_iso_class.to_order_hom_class OrderIsoClass.toOrderHomClass
 
