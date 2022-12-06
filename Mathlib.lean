@@ -20,6 +20,7 @@ import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.GroupWithZero.Units.Basic
@@ -32,13 +33,18 @@ import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.Group
+import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Hom.Basic
+import Mathlib.Algebra.Order.Monoid.Basic
+import Mathlib.Algebra.Order.Monoid.Cancel.Basic
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Algebra.Order.Monoid.MinMax
 import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Algebra.Order.Monoid.WithZero.Basic
+import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 import Mathlib.Algebra.Order.Ring
 import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.Order.Sub.Canonical
@@ -49,6 +55,7 @@ import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Ring.Divisibility
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.OrderSynonym
 import Mathlib.Algebra.Ring.Regular
@@ -138,6 +145,7 @@ import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
+import Mathlib.Data.Sigma.Order
 import Mathlib.Data.Stream.Defs
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
