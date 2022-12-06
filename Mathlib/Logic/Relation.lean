@@ -17,7 +17,7 @@ This file defines the reflexive, transitive, and reflexive transitive closures o
 It also proves some basic results on definitions such as `EqvGen`.
 
 Note that this is about unbundled relations, that is terms of types of the form `α → β → Prop`. For
-the bundled version, see `rel`.
+the bundled version, see `Rel`.
 
 ## Definitions
 

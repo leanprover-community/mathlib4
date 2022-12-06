@@ -318,7 +318,7 @@ Some common uses:
   ```
   In the first case, you can get both lemmas using `@[simps, simps coe asFn]` and in the second
   case you can get both lemmas using `@[simps asFn, simps apply]`.
-* If your new homomorphism-like structure extends another structure (like `relEmbedding`),
+* If your new homomorphism-like structure extends another structure (like `RelEmbedding`),
   then you have to specify explicitly that you want to use a coercion
   as a custom projection. For example
   ```
