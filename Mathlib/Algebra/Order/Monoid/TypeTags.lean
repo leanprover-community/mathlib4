@@ -3,102 +3,109 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathbin.Algebra.Group.TypeTags
-import Mathbin.Algebra.Order.Monoid.Cancel.Defs
-import Mathbin.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Order.Monoid.Cancel.Defs
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-! # Ordered monoid structures on `multiplicative α` and `additive α`. -/
 
 
 universe u
 
-variable {α : Type u}
-
 instance : ∀ [LE α], LE (Multiplicative α) :=
-  id
+  fun {inst} => inst
 
 instance : ∀ [LE α], LE (Additive α) :=
-  id
+  fun {inst} => inst
 
 instance : ∀ [LT α], LT (Multiplicative α) :=
-  id
+  fun {inst} => inst
 
 instance : ∀ [LT α], LT (Additive α) :=
-  id
+  fun {inst} => inst
 
-instance : ∀ [Preorder α], Preorder (Multiplicative α) :=
-  id
+instance Multiplicative.preorder : ∀ [Preorder α], Preorder (Multiplicative α) :=
+  fun {inst} => inst
 
-instance : ∀ [Preorder α], Preorder (Additive α) :=
-  id
+instance Additive.preorder : ∀ [Preorder α], Preorder (Additive α) :=
+  fun {inst} => inst
 
-instance : ∀ [PartialOrder α], PartialOrder (Multiplicative α) :=
-  id
+instance Multiplicative.partialOrder : ∀ [PartialOrder α], PartialOrder (Multiplicative α) :=
+  fun {inst} => inst
 
-instance : ∀ [PartialOrder α], PartialOrder (Additive α) :=
-  id
+instance Additive.partialOrder : ∀ [PartialOrder α], PartialOrder (Additive α) :=
+  fun {inst} => inst
 
-instance : ∀ [LinearOrder α], LinearOrder (Multiplicative α) :=
-  id
+instance Multiplicative.linearOrder : ∀ [LinearOrder α], LinearOrder (Multiplicative α) :=
+  fun {inst} => inst
 
-instance : ∀ [LinearOrder α], LinearOrder (Additive α) :=
-  id
+instance Additive.linearOrder : ∀ [LinearOrder α], LinearOrder (Additive α) :=
+  fun {inst} => inst
 
-instance [LE α] : ∀ [OrderBot α], OrderBot (Multiplicative α) :=
-  id
+instance Multiplicative.orderBot [LE α] : ∀ [OrderBot α], OrderBot (Multiplicative α) :=
+  fun {inst} => inst
 
-instance [LE α] : ∀ [OrderBot α], OrderBot (Additive α) :=
-  id
+instance Additive.orderBot [LE α] : ∀ [OrderBot α], OrderBot (Additive α) :=
+  fun {inst} => inst
 
-instance [LE α] : ∀ [OrderTop α], OrderTop (Multiplicative α) :=
-  id
+instance Multiplicative.orderTop [LE α] : ∀ [OrderTop α], OrderTop (Multiplicative α) :=
+  fun {inst} => inst
 
-instance [LE α] : ∀ [OrderTop α], OrderTop (Additive α) :=
-  id
+instance Additive.orderTop [LE α] : ∀ [OrderTop α], OrderTop (Additive α) :=
+  fun {inst} => inst
 
-instance [LE α] : ∀ [BoundedOrder α], BoundedOrder (Multiplicative α) :=
-  id
+instance Multiplicative.boundedOrder [LE α] : ∀ [BoundedOrder α], BoundedOrder (Multiplicative α) :=
+  fun {inst} => inst
 
-instance [LE α] : ∀ [BoundedOrder α], BoundedOrder (Additive α) :=
-  id
+instance Additive.boundedOrder [LE α] : ∀ [BoundedOrder α], BoundedOrder (Additive α) :=
+  fun {inst} => inst
 
-instance [OrderedAddCommMonoid α] : OrderedCommMonoid (Multiplicative α) :=
+instance Multiplicative.orderedCommMonoid [OrderedAddCommMonoid α] :
+    OrderedCommMonoid (Multiplicative α) :=
   { Multiplicative.partialOrder, Multiplicative.commMonoid with
     mul_le_mul_left := @OrderedAddCommMonoid.add_le_add_left α _ }
 
-instance [OrderedCommMonoid α] : OrderedAddCommMonoid (Additive α) :=
+instance Additive.orderedAddCommMonoid [OrderedCommMonoid α] :
+    OrderedAddCommMonoid (Additive α) :=
   { Additive.partialOrder, Additive.addCommMonoid with
     add_le_add_left := @OrderedCommMonoid.mul_le_mul_left α _ }
 
-instance [OrderedCancelAddCommMonoid α] : OrderedCancelCommMonoid (Multiplicative α) :=
+instance Multiplicative.orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :
+    OrderedCancelCommMonoid (Multiplicative α) :=
   { Multiplicative.orderedCommMonoid with
     le_of_mul_le_mul_left := @OrderedCancelAddCommMonoid.le_of_add_le_add_left α _ }
 
-instance [OrderedCancelCommMonoid α] : OrderedCancelAddCommMonoid (Additive α) :=
+instance Additive.orderedCancelAddCommMonoid [OrderedCancelCommMonoid α] :
+    OrderedCancelAddCommMonoid (Additive α) :=
   { Additive.orderedAddCommMonoid with
     le_of_add_le_add_left := @OrderedCancelCommMonoid.le_of_mul_le_mul_left α _ }
 
-instance [LinearOrderedAddCommMonoid α] : LinearOrderedCommMonoid (Multiplicative α) :=
+instance Multiplicative.linearOrderedCommMonoid [LinearOrderedAddCommMonoid α] :
+    LinearOrderedCommMonoid (Multiplicative α) :=
   { Multiplicative.linearOrder, Multiplicative.orderedCommMonoid with }
 
-instance [LinearOrderedCommMonoid α] : LinearOrderedAddCommMonoid (Additive α) :=
+instance Additive.linearOrderedAddCommMonoid [LinearOrderedCommMonoid α] :
+    LinearOrderedAddCommMonoid (Additive α) :=
   { Additive.linearOrder, Additive.orderedAddCommMonoid with }
 
-instance [Add α] [LE α] [HasExistsAddOfLe α] : HasExistsMulOfLe (Multiplicative α) :=
+instance Multiplicative.existsMulOfLe [Add α] [LE α] [ExistsAddOfLE α] :
+    ExistsMulOfLE (Multiplicative α) :=
   ⟨@exists_add_of_le α _ _ _⟩
 
-instance [Mul α] [LE α] [HasExistsMulOfLe α] : HasExistsAddOfLe (Additive α) :=
+instance Additive.existsAddOfLe [Mul α] [LE α] [ExistsMulOfLE α] : ExistsAddOfLE (Additive α) :=
   ⟨@exists_mul_of_le α _ _ _⟩
 
-instance [CanonicallyOrderedAddMonoid α] : CanonicallyOrderedMonoid (Multiplicative α) :=
+instance Multiplicative.canonicallyOrderedMonoid [CanonicallyOrderedAddMonoid α] :
+    CanonicallyOrderedMonoid (Multiplicative α) :=
   { Multiplicative.orderedCommMonoid, Multiplicative.orderBot,
-    Multiplicative.has_exists_mul_of_le with le_self_mul := @le_self_add α _ }
+    Multiplicative.existsMulOfLe with le_self_mul := @le_self_add α _ }
 
-instance [CanonicallyOrderedMonoid α] : CanonicallyOrderedAddMonoid (Additive α) :=
-  { Additive.orderedAddCommMonoid, Additive.orderBot, Additive.has_exists_add_of_le with
+instance Additive.canonicallyOrderedAddMonoid [CanonicallyOrderedMonoid α] :
+    CanonicallyOrderedAddMonoid (Additive α) :=
+  { Additive.orderedAddCommMonoid, Additive.orderBot, Additive.existsAddOfLe with
     le_self_add := @le_self_mul α _ }
 
-instance [CanonicallyLinearOrderedAddMonoid α] :
+instance Multiplicative.canonicallyLinearOrderedMonoid [CanonicallyLinearOrderedAddMonoid α] :
     CanonicallyLinearOrderedMonoid (Multiplicative α) :=
   { Multiplicative.canonicallyOrderedMonoid, Multiplicative.linearOrder with }
 
@@ -110,24 +117,24 @@ namespace Additive
 variable [Preorder α]
 
 @[simp]
-theorem of_mul_le {a b : α} : ofMul a ≤ ofMul b ↔ a ≤ b :=
+theorem ofMul_le {a b : α} : ofMul a ≤ ofMul b ↔ a ≤ b :=
   Iff.rfl
-#align additive.of_mul_le Additive.of_mul_le
+#align additive.of_mul_le Additive.ofMul_le
 
 @[simp]
-theorem of_mul_lt {a b : α} : ofMul a < ofMul b ↔ a < b :=
+theorem ofMul_lt {a b : α} : ofMul a < ofMul b ↔ a < b :=
   Iff.rfl
-#align additive.of_mul_lt Additive.of_mul_lt
+#align additive.of_mul_lt Additive.ofMul_lt
 
 @[simp]
-theorem to_mul_le {a b : Additive α} : toMul a ≤ toMul b ↔ a ≤ b :=
+theorem toMul_le {a b : Additive α} : toMul a ≤ toMul b ↔ a ≤ b :=
   Iff.rfl
-#align additive.to_mul_le Additive.to_mul_le
+#align additive.to_mul_le Additive.toMul_le
 
 @[simp]
-theorem to_mul_lt {a b : Additive α} : toMul a < toMul b ↔ a < b :=
+theorem toMul_lt {a b : Additive α} : toMul a < toMul b ↔ a < b :=
   Iff.rfl
-#align additive.to_mul_lt Additive.to_mul_lt
+#align additive.to_mul_lt Additive.toMul_lt
 
 end Additive
 
@@ -136,24 +143,23 @@ namespace Multiplicative
 variable [Preorder α]
 
 @[simp]
-theorem of_add_le {a b : α} : ofAdd a ≤ ofAdd b ↔ a ≤ b :=
+theorem ofAdd_le {a b : α} : ofAdd a ≤ ofAdd b ↔ a ≤ b :=
   Iff.rfl
-#align multiplicative.of_add_le Multiplicative.of_add_le
+#align multiplicative.of_add_le Multiplicative.ofAdd_le
 
 @[simp]
-theorem of_add_lt {a b : α} : ofAdd a < ofAdd b ↔ a < b :=
+theorem ofAdd_lt {a b : α} : ofAdd a < ofAdd b ↔ a < b :=
   Iff.rfl
-#align multiplicative.of_add_lt Multiplicative.of_add_lt
+#align multiplicative.of_add_lt Multiplicative.ofAdd_lt
 
 @[simp]
-theorem to_add_le {a b : Multiplicative α} : toAdd a ≤ toAdd b ↔ a ≤ b :=
+theorem toAdd_le {a b : Multiplicative α} : toAdd a ≤ toAdd b ↔ a ≤ b :=
   Iff.rfl
-#align multiplicative.to_add_le Multiplicative.to_add_le
+#align multiplicative.to_add_le Multiplicative.toAdd_le
 
 @[simp]
-theorem to_add_lt {a b : Multiplicative α} : toAdd a < toAdd b ↔ a < b :=
+theorem toAdd_lt {a b : Multiplicative α} : toAdd a < toAdd b ↔ a < b :=
   Iff.rfl
-#align multiplicative.to_add_lt Multiplicative.to_add_lt
+#align multiplicative.to_add_lt Multiplicative.toAdd_lt
 
 end Multiplicative
-

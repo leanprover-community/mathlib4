@@ -3,9 +3,9 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathbin.Order.Hom.Basic
-import Mathbin.Order.MinMax
-import Mathbin.Algebra.Group.Units
+import Mathlib.Order.Hom.Basic
+import Mathlib.Order.MinMax
+import Mathlib.Algebra.Group.Units
 
 /-!
 # Units in ordered monoids
@@ -56,4 +56,3 @@ theorem min_coe [Monoid α] [LinearOrder α] {a b : αˣ} : (↑(min a b) : α) 
 #align units.min_coe Units.min_coe
 
 end Units
-
