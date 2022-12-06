@@ -627,14 +627,14 @@ protected theorem acc (a : α) : Acc (· < ·) (f a) → Acc (· < ·) a :=
   f.ltEmbedding.acc a
 #align order_embedding.acc OrderEmbedding.acc
 
-protected theorem well_founded :
+protected theorem wellFounded :
     WellFounded ((· < ·) : β → β → Prop) → WellFounded ((· < ·) : α → α → Prop) :=
   f.ltEmbedding.wellFounded
-#align order_embedding.well_founded OrderEmbedding.well_founded
+#align order_embedding.well_founded OrderEmbedding.wellFounded
 
-protected theorem is_well_order [IsWellOrder β (· < ·)] : IsWellOrder α (· < ·) :=
+protected theorem isWellOrder [IsWellOrder β (· < ·)] : IsWellOrder α (· < ·) :=
   f.ltEmbedding.isWellOrder
-#align order_embedding.is_well_order OrderEmbedding.is_well_order
+#align order_embedding.is_well_order OrderEmbedding.isWellOrder
 
 /-- An order embedding is also an order embedding between dual orders. -/
 protected def dual : αᵒᵈ ↪o βᵒᵈ :=
@@ -664,10 +664,10 @@ def ofMapLeIff {α β} [PartialOrder α] [Preorder β] (f : α → β) (hf : ∀
 #align order_embedding.of_map_le_iff OrderEmbedding.ofMapLeIff
 
 @[simp]
-theorem coe_of_map_le_iff {α β} [PartialOrder α] [Preorder β] {f : α → β} (h) :
+theorem coe_ofMapLeIff {α β} [PartialOrder α] [Preorder β] {f : α → β} (h) :
     ⇑ofMapLeIff f h = f :=
   rfl
-#align order_embedding.coe_of_map_le_iff OrderEmbedding.coe_of_map_le_iff
+#align order_embedding.coe_of_map_le_iff OrderEmbedding.coe_ofMapLeIff
 
 /-- A strictly monotone map from a linear order is an order embedding. -/
 def ofStrictMono {α β} [LinearOrder α] [Preorder β] (f : α → β) (h : StrictMono f) : α ↪o β :=
@@ -740,9 +740,9 @@ instance : OrderIsoClass (α ≃o β) α β where
   map_le_map_iff f _ _ := f.map_rel_iff'
 
 @[simp]
-theorem to_fun_eq_coe {f : α ≃o β} : f.toFun = f :=
+theorem toFun_eq_coe {f : α ≃o β} : f.toFun = f :=
   rfl
-#align order_iso.to_fun_eq_coe OrderIso.to_fun_eq_coe
+#align order_iso.to_fun_eq_coe OrderIso.toFun_eq_coe
 
 -- See note [partially-applied ext lemmas]
 @[ext]
@@ -756,9 +756,9 @@ def toOrderEmbedding (e : α ≃o β) : α ↪o β :=
 #align order_iso.to_order_embedding OrderIso.toOrderEmbedding
 
 @[simp]
-theorem coe_to_order_embedding (e : α ≃o β) : ⇑e.toOrderEmbedding = e :=
+theorem coe_toOrderEmbedding (e : α ≃o β) : ⇑e.toOrderEmbedding = e :=
   rfl
-#align order_iso.coe_to_order_embedding OrderIso.coe_to_order_embedding
+#align order_iso.coe_to_order_embedding OrderIso.coe_toOrderEmbedding
 
 protected theorem bijective (e : α ≃o β) : Function.Bijective e :=
   e.toEquiv.bijective
@@ -794,9 +794,9 @@ theorem refl_apply (x : α) : refl α x = x :=
 #align order_iso.refl_apply OrderIso.refl_apply
 
 @[simp]
-theorem refl_to_equiv : (refl α).toEquiv = Equiv.refl α :=
+theorem refl_toEquiv : (refl α).toEquiv = Equiv.refl α :=
   rfl
-#align order_iso.refl_to_equiv OrderIso.refl_to_equiv
+#align order_iso.refl_to_equiv OrderIso.refl_toEquiv
 
 /-- Inverse of an order isomorphism. -/
 def symm (e : α ≃o β) : β ≃o α := RelIso.symm e
@@ -836,9 +836,9 @@ theorem symm_injective : Function.Injective (symm : α ≃o β → β ≃o α) :
 #align order_iso.symm_injective OrderIso.symm_injective
 
 @[simp]
-theorem to_equiv_symm (e : α ≃o β) : e.toEquiv.symm = e.symm.toEquiv :=
+theorem toEquiv_symm (e : α ≃o β) : e.toEquiv.symm = e.symm.toEquiv :=
   rfl
-#align order_iso.to_equiv_symm OrderIso.to_equiv_symm
+#align order_iso.to_equiv_symm OrderIso.toEquiv_symm
 
 /-- Composition of two order isomorphisms is an order isomorphism. -/
 -- Porting note: https://github.com/leanprover-community/mathlib4/pull/857
@@ -886,14 +886,14 @@ def prodComm : α × β ≃o β × α where
 #align order_iso.prod_comm OrderIso.prodComm
 
 @[simp]
-theorem coe_prod_comm : ⇑(prodComm : α × β ≃o β × α) = Prod.swap :=
+theorem coe_prodComm : ⇑(prodComm : α × β ≃o β × α) = Prod.swap :=
   rfl
-#align order_iso.coe_prod_comm OrderIso.coe_prod_comm
+#align order_iso.coe_prod_comm OrderIso.coe_prodComm
 
 @[simp]
-theorem prod_comm_symm : (prodComm : α × β ≃o β × α).symm = prodComm :=
+theorem prodComm_symm : (prodComm : α × β ≃o β × α).symm = prodComm :=
   rfl
-#align order_iso.prod_comm_symm OrderIso.prod_comm_symm
+#align order_iso.prod_comm_symm OrderIso.prodComm_symm
 
 variable (α)
 
@@ -903,26 +903,26 @@ def dualDual : α ≃o αᵒᵈᵒᵈ :=
 #align order_iso.dual_dual OrderIso.dualDual
 
 @[simp]
-theorem coe_dual_dual : ⇑dualDual α = toDual ∘ toDual :=
+theorem coe_dualDual : ⇑dualDual α = toDual ∘ toDual :=
   rfl
-#align order_iso.coe_dual_dual OrderIso.coe_dual_dual
+#align order_iso.coe_dual_dual OrderIso.coe_dualDual
 
 @[simp]
-theorem coe_dual_dual_symm : ⇑(dualDual α).symm = ofDual ∘ ofDual :=
+theorem coe_dualDual_symm : ⇑(dualDual α).symm = ofDual ∘ ofDual :=
   rfl
-#align order_iso.coe_dual_dual_symm OrderIso.coe_dual_dual_symm
+#align order_iso.coe_dual_dual_symm OrderIso.coe_dualDual_symm
 
 variable {α}
 
 @[simp]
-theorem dual_dual_apply (a : α) : dualDual α a = toDual (toDual a) :=
+theorem dualDual_apply (a : α) : dualDual α a = toDual (toDual a) :=
   rfl
-#align order_iso.dual_dual_apply OrderIso.dual_dual_apply
+#align order_iso.dual_dual_apply OrderIso.dualDual_apply
 
 @[simp]
-theorem dual_dual_symm_apply (a : αᵒᵈᵒᵈ) : (dualDual α).symm a = ofDual (ofDual a) :=
+theorem dualDual_symm_apply (a : αᵒᵈᵒᵈ) : (dualDual α).symm a = ofDual (ofDual a) :=
   rfl
-#align order_iso.dual_dual_symm_apply OrderIso.dual_dual_symm_apply
+#align order_iso.dual_dual_symm_apply OrderIso.dualDual_symm_apply
 
 end LE
 
@@ -1055,10 +1055,10 @@ def funUnique (α β : Type _) [Unique α] [Preorder β] :
 #align order_iso.fun_unique OrderIso.funUnique
 
 @[simp]
-theorem fun_unique_symm_apply {α β : Type _} [Unique α] [Preorder β] :
+theorem funUnique_symm_apply {α β : Type _} [Unique α] [Preorder β] :
     ((funUnique α β).symm : β → α → β) = Function.const α :=
   rfl
-#align order_iso.fun_unique_symm_apply OrderIso.fun_unique_symm_apply
+#align order_iso.fun_unique_symm_apply OrderIso.funUnique_symm_apply
 
 end OrderIso
 
@@ -1154,32 +1154,32 @@ theorem OrderIso.map_sup [SemilatticeSup α] [SemilatticeSup β] (f : α ≃o β
 #align order_iso.map_sup OrderIso.map_sup
 
 /-- Note that this goal could also be stated `(Disjoint on f) a b` -/
-theorem Disjoint.map_order_iso [SemilatticeInf α] [OrderBot α] [SemilatticeInf β] [OrderBot β]
+theorem Disjoint.map_orderIso [SemilatticeInf α] [OrderBot α] [SemilatticeInf β] [OrderBot β]
     {a b : α} (f : α ≃o β) (ha : Disjoint a b) : Disjoint (f a) (f b) := by
   rw [disjoint_iff_inf_le, ← f.map_inf, ← f.map_bot]
   exact f.monotone ha.le_bot
-#align disjoint.map_order_iso Disjoint.map_order_iso
+#align disjoint.map_order_iso Disjoint.map_orderIso
 
 /-- Note that this goal could also be stated `(Codisjoint on f) a b` -/
-theorem Codisjoint.map_order_iso [SemilatticeSup α] [OrderTop α] [SemilatticeSup β] [OrderTop β]
+theorem Codisjoint.map_orderIso [SemilatticeSup α] [OrderTop α] [SemilatticeSup β] [OrderTop β]
     {a b : α} (f : α ≃o β) (ha : Codisjoint a b) : Codisjoint (f a) (f b) := by
   rw [codisjoint_iff_le_sup, ← f.map_sup, ← f.map_top]
   exact f.monotone ha.top_le
-#align codisjoint.map_order_iso Codisjoint.map_order_iso
+#align codisjoint.map_order_iso Codisjoint.map_orderIso
 
 @[simp]
-theorem disjoint_map_order_iso_iff [SemilatticeInf α] [OrderBot α] [SemilatticeInf β] [OrderBot β]
+theorem disjoint_map_orderIso_iff [SemilatticeInf α] [OrderBot α] [SemilatticeInf β] [OrderBot β]
     {a b : α} (f : α ≃o β) : Disjoint (f a) (f b) ↔ Disjoint a b :=
-  ⟨fun h => f.symm_apply_apply a ▸ f.symm_apply_apply b ▸ h.map_order_iso f.symm, fun h =>
-    h.map_order_iso f⟩
-#align disjoint_map_order_iso_iff disjoint_map_order_iso_iff
+  ⟨fun h => f.symm_apply_apply a ▸ f.symm_apply_apply b ▸ h.map_orderIso f.symm,
+   fun h => h.map_orderIso f⟩
+#align disjoint_map_order_iso_iff disjoint_map_orderIso_iff
 
 @[simp]
-theorem codisjoint_map_order_iso_iff [SemilatticeSup α] [OrderTop α] [SemilatticeSup β] [OrderTop β]
+theorem codisjoint_map_orderIso_iff [SemilatticeSup α] [OrderTop α] [SemilatticeSup β] [OrderTop β]
     {a b : α} (f : α ≃o β) : Codisjoint (f a) (f b) ↔ Codisjoint a b :=
-  ⟨fun h => f.symm_apply_apply a ▸ f.symm_apply_apply b ▸ h.map_order_iso f.symm, fun h =>
-    h.map_order_iso f⟩
-#align codisjoint_map_order_iso_iff codisjoint_map_order_iso_iff
+  ⟨fun h => f.symm_apply_apply a ▸ f.symm_apply_apply b ▸ h.map_orderIso f.symm,
+   fun h => h.map_orderIso f⟩
+#align codisjoint_map_order_iso_iff codisjoint_map_orderIso_iff
 
 namespace WithBot
 
@@ -1249,10 +1249,10 @@ theorem toDualBotEquiv_symm_top [LE α] : WithTop.toDualBotEquiv.symm (⊤ : (Wi
   rfl
 #align with_top.to_dual_bot_equiv_symm_top WithTop.toDualBotEquiv_symm_top
 
-theorem coe_to_dualBotEquiv_eq [LE α] :
+theorem coe_toDualBotEquiv [LE α] :
     (WithTop.toDualBotEquiv : WithTop αᵒᵈ → (WithBot α)ᵒᵈ) = toDual ∘ WithTop.ofDual :=
   funext fun _ => rfl
-#align with_top.coe_to_dual_bot_equiv_eq WithTop.coe_to_dualBotEquiv_eq
+#align with_top.coe_to_dual_bot_equiv_eq WithTop.coe_toDualBotEquiv
 
 end WithTop
 
@@ -1312,27 +1312,24 @@ section BoundedOrder
 variable [Lattice α] [Lattice β] [BoundedOrder α] [BoundedOrder β] (f : α ≃o β)
 
 theorem OrderIso.isCompl {x y : α} (h : IsCompl x y) : IsCompl (f x) (f y) :=
-  ⟨h.1.map_order_iso _, h.2.map_order_iso _⟩
+  ⟨h.1.map_orderIso _, h.2.map_orderIso _⟩
 #align order_iso.is_compl OrderIso.isCompl
 
 theorem OrderIso.isCompl_iff {x y : α} : IsCompl x y ↔ IsCompl (f x) (f y) :=
   ⟨f.isCompl, fun h => f.symm_apply_apply x ▸ f.symm_apply_apply y ▸ f.symm.isCompl h⟩
 #align order_iso.is_compl_iff OrderIso.isCompl_iff
 
-theorem OrderIso.complemented_lattice [ComplementedLattice α] : ComplementedLattice β :=
+theorem OrderIso.complementedLattice [ComplementedLattice α] : ComplementedLattice β :=
   ⟨fun x => by
     obtain ⟨y, hy⟩ := exists_isCompl (f.symm x)
     rw [← f.symm_apply_apply y] at hy
-    refine' ⟨f y, f.symm.isCompl_iff.2 hy⟩⟩
-#align order_iso.complemented_lattice OrderIso.complemented_lattice
+    exact ⟨f y, f.symm.isCompl_iff.2 hy⟩⟩
+#align order_iso.complemented_lattice OrderIso.complementedLattice
 
-theorem OrderIso.complemented_lattice_iff : ComplementedLattice α ↔ ComplementedLattice β :=
-  ⟨by
-    intro
-    exact f.complemented_lattice, by
-    intro
-    exact f.symm.complemented_lattice⟩
-#align order_iso.complemented_lattice_iff OrderIso.complemented_lattice_iff
+theorem OrderIso.complementedLattice_iff : ComplementedLattice α ↔ ComplementedLattice β :=
+  ⟨by intro; exact f.complementedLattice,
+   by intro; exact f.symm.complementedLattice⟩
+#align order_iso.complemented_lattice_iff OrderIso.complementedLattice_iff
 
 end BoundedOrder
 
