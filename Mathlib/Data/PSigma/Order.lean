@@ -169,14 +169,15 @@ instance noMaxOrder_of_nonempty [Preorder ι] [∀ i, Preorder (α i)] [NoMaxOrd
     exact ⟨⟨j, b⟩, left _ _ h⟩⟩
 #align psigma.lex.no_max_order_of_nonempty PSigma.Lex.noMaxOrder_of_nonempty
 
-instance noMinOrder_of_nonempty [Preorder ι] [∀ i, Preorder (α i)] [NoMaxOrder ι]
-    [∀ i, Nonempty (α i)] : NoMaxOrder (Σₗ' i, α i) :=
+-- porting note: this statement was incorrect in mathlib3, hence the `#noalign`.
+instance noMinOrder_of_nonempty [Preorder ι] [∀ i, Preorder (α i)] [NoMinOrder ι]
+    [∀ i, Nonempty (α i)] : NoMinOrder (Σₗ' i, α i) :=
   ⟨by
     rintro ⟨i, a⟩
-    obtain ⟨j, h⟩ := exists_gt i
+    obtain ⟨j, h⟩ := exists_lt i
     obtain ⟨b⟩ : Nonempty (α j) := inferInstance
     exact ⟨⟨j, b⟩, left _ _ h⟩⟩
-#align psigma.lex.no_min_order_of_nonempty PSigma.Lex.noMinOrder_of_nonempty
+#noalign psigma.lex.no_min_order_of_nonempty
 
 instance noMaxOrder [Preorder ι] [∀ i, Preorder (α i)] [∀ i, NoMaxOrder (α i)] :
     NoMaxOrder (Σₗ' i, α i) :=

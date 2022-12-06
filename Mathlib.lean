@@ -145,6 +145,7 @@ import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
+import Mathlib.Data.Sigma.Order
 import Mathlib.Data.Stream.Defs
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
