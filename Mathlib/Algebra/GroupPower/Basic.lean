@@ -354,7 +354,8 @@ theorem div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
 /-- The `n`-th power map (for an integer `n`) on a commutative group, considered as a group
 homomorphism. -/
 @[to_additive
-      "Multiplication by an integer `n` on a commutative additive group, considered as an\nadditive group homomorphism.",
+      "Multiplication by an integer `n` on a commutative additive group, considered as an
+       additive group homomorphism.",
   simps]
 def zpowGroupHom (n : ℤ) : α →* α where
   toFun := (· ^ n)
