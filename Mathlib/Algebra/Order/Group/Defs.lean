@@ -300,11 +300,15 @@ theorem mul_inv_le_inv_mul_iff : a * b⁻¹ ≤ d⁻¹ * c ↔ d * a ≤ c * b :
 #align mul_inv_le_inv_mul_iff mul_inv_le_inv_mul_iff
 
 @[simp, to_additive]
-theorem div_le_self_iff (a : α) {b : α} : a / b ≤ a ↔ 1 ≤ b := by simp [div_eq_mul_inv]
+theorem div_le_self_iff (a : α) {b : α} : a / b ≤ a ↔ 1 ≤ b := by
+  -- Porting note: was `simp [div_eq_mul_inv]`
+  simp only [div_eq_mul_inv, mul_le_iff_le_one_right', Left.inv_le_one_iff, iff_self]
 #align div_le_self_iff div_le_self_iff
 
 @[simp, to_additive]
-theorem le_div_self_iff (a : α) {b : α} : a ≤ a / b ↔ b ≤ 1 := by simp [div_eq_mul_inv]
+theorem le_div_self_iff (a : α) {b : α} : a ≤ a / b ↔ b ≤ 1 := by
+  -- Porting note: was `simp [div_eq_mul_inv]`
+  simp only [div_eq_mul_inv, le_mul_iff_one_le_right', Left.one_le_inv_iff, iff_self]
 #align le_div_self_iff le_div_self_iff
 
 alias sub_le_self_iff ↔ _ sub_le_self
@@ -345,7 +349,9 @@ theorem mul_inv_lt_inv_mul_iff : a * b⁻¹ < d⁻¹ * c ↔ d * a < c * b := by
 #align mul_inv_lt_inv_mul_iff mul_inv_lt_inv_mul_iff
 
 @[simp, to_additive]
-theorem div_lt_self_iff (a : α) {b : α} : a / b < a ↔ 1 < b := by simp [div_eq_mul_inv]
+theorem div_lt_self_iff (a : α) {b : α} : a / b < a ↔ 1 < b := by
+  -- Porting note: was `simp [div_eq_mul_inv]`
+  simp only [div_eq_mul_inv, mul_lt_iff_lt_one_left', Left.inv_lt_one_iff, iff_self]
 #align div_lt_self_iff div_lt_self_iff
 
 alias sub_lt_self_iff ↔ _ sub_lt_self
@@ -1025,12 +1031,14 @@ variable [OrderedCommGroup α] {a b : α}
 
 @[to_additive neg_le_neg]
 theorem inv_le_inv' : a ≤ b → b⁻¹ ≤ a⁻¹ :=
-  inv_le_inv_iff.mpr
+  -- Porting note: explicit type annotation was not needed before.
+  (@inv_le_inv_iff α ..).mpr
 #align inv_le_inv' inv_le_inv'
 
 @[to_additive neg_lt_neg]
 theorem inv_lt_inv' : a < b → b⁻¹ < a⁻¹ :=
-  inv_lt_inv_iff.mpr
+  -- Porting note: explicit type annotation was not needed before.
+  (@inv_lt_inv_iff α ..).mpr
 #align inv_lt_inv' inv_lt_inv'
 
 --  The additive version is also a `linarith` lemma.
