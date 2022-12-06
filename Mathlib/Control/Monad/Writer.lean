@@ -117,23 +117,6 @@ protected theorem ext (x x' : WriterT ω m α) (h : x.run = x'.run) : x = x' := 
   simp [WriterT.run] at h; assumption
 #align writer_t.ext WriterTₓ.ext
 
-@[inline]
-protected def pure [One ω] (a : α) : WriterT ω m α := WriterT.mk $ pure (a, 1)
-#align writer_t.pure WriterTₓ.pure
-
-@[inline]
-protected def bind [Mul ω] (x : WriterT ω m α) (f : α → WriterT ω m β) : WriterT ω m β :=
-  ⟨do
-    let x ← x.run
-    let x' ← (f x.1).run
-    pure (x'.1, x.2 * x'.2)⟩
-#align writer_t.bind WriterTₓ.bind
-
-instance [One ω] [Mul ω] :
-    Monad (WriterT ω m) where
-  pure α := WriterT.pure
-  bind α β := WriterT.bind
-
 instance [Monoid ω] [LawfulMonad m] :
     LawfulMonad
       (WriterT ω
