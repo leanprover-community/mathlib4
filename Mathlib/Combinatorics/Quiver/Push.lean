@@ -20,6 +20,7 @@ universe v v₁ v₂ u u₁ u₂
 variable {V : Type _} [Quiver V] {W : Type _} (σ : V → W)
 
 /-- The `quiver` instance obtained by pushing arrows of `V` along the map `σ : V → W` -/
+@[nolint unusedArguments]
 def Push (_ : V → W) :=
   W
 #align push Push
