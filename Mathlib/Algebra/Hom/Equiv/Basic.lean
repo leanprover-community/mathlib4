@@ -59,7 +59,9 @@ structure AddEquiv (A B : Type _) [Add A] [Add B] extends A ≃ B, AddHom A B
 
 /-- `AddEquivClass F A B` states that `F` is a type of addition-preserving morphisms.
 You should extend this class when you extend `AddEquiv`. -/
-class AddEquivClass (F A B : Type _) [Add A] [Add B] extends EquivLike F A B where
+class AddEquivClass (F : Type _) (A B : outParam (Type _)) [Add A] [Add B]
+    extends EquivLike F A B where
+  /-- Preserves addition. -/
   map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
 #align add_equiv_class AddEquivClass
 
@@ -72,7 +74,9 @@ add_decl_doc AddEquiv.toAddHom
 /-- `MulEquiv α β` is the type of an equiv `α ≃ β` which preserves multiplication. -/
 @[to_additive]
 structure MulEquiv (M N : Type _) [Mul M] [Mul N] extends M ≃ N, M →ₙ* N
-attribute [to_additive AddEquiv.toAddHom] MulEquiv.toMulHom -- Porting note: needed despite note
+-- Porting note: remove when `to_additive` can do this
+-- https://github.com/leanprover-community/mathlib4/issues/660
+attribute [to_additive] MulEquiv.toMulHom
 #align mul_equiv MulEquiv
 
 /-- The `Equiv` underlying a `MulEquiv`. -/
@@ -81,20 +85,14 @@ add_decl_doc MulEquiv.toEquiv
 /-- The `MulHom` underlying a `MulEquiv`. -/
 add_decl_doc MulEquiv.toMulHom
 
--- Porting note: `outParam` inserted in `Mul A`, `Mul B`
 /-- `MulEquivClass F A B` states that `F` is a type of multiplication-preserving morphisms.
 You should extend this class when you extend `MulEquiv`. -/
 @[to_additive]
-class MulEquivClass (F A B : Type _) [outParam <| Mul A] [outParam <| Mul B] extends
+class MulEquivClass (F : Type _) (A B : outParam (Type _)) [Mul A] [Mul B] extends
   EquivLike F A B where
+  /-- Preserves multiplication. -/
   map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
 #align mul_equiv_class MulEquivClass
-
-#print MulEquivClass.toEquivLike
-
-#lint
-
-#exit
 
 /-- Notation for a `MulEquiv`. -/
 infixl:25 " ≃* " => MulEquiv
@@ -108,12 +106,13 @@ variable (F)
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) [Mul M] [Mul N] [h : MulEquivClass F M N] : MulHomClass F M N :=
+instance (priority := 100) (F : Type _) {M N : Type _}
+    {_ : Mul M} {_ : Mul N} [h : MulEquivClass F M N] : MulHomClass F M N :=
   { h with coe := h.coe, coe_injective' := FunLike.coe_injective' }
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] :
+instance (priority := 100) {_ : MulOneClass M} {_ : MulOneClass N} [MulEquivClass F M N] :
   MonoidHomClass F M N :=
   { MulEquivClass.instMulHomClass F with
     coe := fun _ => _,
@@ -128,7 +127,7 @@ instance (priority := 100) [MulOneClass M] [MulOneClass N] [MulEquivClass F M N]
 
 -- See note [lower instance priority]
 instance (priority := 100) toMonoidWithZeroHomClass
-  {α β : Type _} [MulZeroOneClass α] [MulZeroOneClass β] [MulEquivClass F α β] :
+  {α β : Type _} {_ : MulZeroOneClass α} {_ : MulZeroOneClass β} [MulEquivClass F α β] :
   MonoidWithZeroHomClass F α β :=
   { MulEquivClass.instMonoidHomClass _ with
     map_zero := fun e =>
@@ -198,9 +197,6 @@ theorem coe_toEquiv {f : M ≃* N} : (f : M ≃ N) = f.toFun := rfl
 theorem coe_toMulHom {f : M ≃* N} : f.toMulHom = f.toFun := rfl
 #align mul_equiv.coe_to_mul_hom MulEquiv.coe_toMulHom
 
-set_option synthInstance.maxHeartbeats 800 in
-set_option trace.Meta.synthInstance true in
--- Porting note: type class problem timeout
 /-- A multiplicative isomorphism preserves multiplication. -/
 @[to_additive "An additive isomorphism preserves addition."]
 protected theorem map_mul (f : M ≃* N) : ∀ x y, f (x * y) = f x * f y :=
@@ -295,12 +291,13 @@ theorem symm_bijective : Function.Bijective (symm : M ≃* N → N ≃* M) :=
 #align mul_equiv.symm_bijective MulEquiv.symm_bijective
 #align add_equiv.symm_bijective AddEquiv.symm_bijective
 
--- Porting note: this now only refers to `Equiv`, not to the underlying functions of the `Equiv`.
+-- Porting note: this doesn't really align with mathlib3's `symm_mk`,
+-- because the signature of `MulEquiv.mk` has changed.
 @[simp, to_additive]
 theorem symm_mk (f : M ≃ N) (h) :
   (MulEquiv.mk f h).symm = ⟨f.symm, (MulEquiv.mk f h).symm.map_mul'⟩ := rfl
-#align mul_equiv.symm_mk MulEquiv.symm_mk
-#align add_equiv.symm_mk AddEquiv.symm_mk
+#align mul_equiv.symm_mk MulEquiv.symm_mkₓ
+#align add_equiv.symm_mk AddEquiv.symm_mkₓ
 
 @[simp, to_additive]
 theorem refl_symm : (refl M).symm = refl M := rfl
@@ -502,9 +499,6 @@ instance {M N} [Unique M] [Unique N] [Mul M] [Mul N] : Unique (M ≃* N) where
 ## Monoids
 -/
 
-set_option synthInstance.maxHeartbeats 800 in
-set_option trace.Meta.synthInstance true in
--- Porting note: type class problem timeout
 /-- A multiplicative isomorphism of monoids sends `1` to `1` (and is hence a monoid isomorphism). -/
 @[to_additive
   "An additive isomorphism of additive monoids sends `0` to `0`
@@ -541,7 +535,7 @@ noncomputable def ofBijective {M N F} [Mul M] [Mul N] [MulHomClass F M N]
 theorem ofBijective_apply_symm_apply {M N} [MulOneClass M] [MulOneClass N] {n : N} (f : M →* N)
     (hf : Function.Bijective f) : f ((Equiv.ofBijective f hf).symm n) = n :=
   (MulEquiv.ofBijective f hf).apply_symm_apply n
-#align mul_equiv.of_bijective_apply_symm_apply MulEquiv.of_bijective_apply_symm_apply
+#align mul_equiv.of_bijective_apply_symm_apply MulEquiv.ofBijective_apply_symm_apply
 
 /-- Extract the forward direction of a multiplicative equivalence
 as a multiplication-preserving function.
@@ -559,10 +553,11 @@ theorem coe_to_monoidHom {M N} [MulOneClass M] [MulOneClass N] (e : M ≃* N) :
 #align mul_equiv.coe_to_monoid_hom MulEquiv.coe_to_monoidHom
 #align add_equiv.coe_to_add_monoid_hom AddEquiv.coe_to_addMonoidHom
 
+set_option linter.deprecated false in
 @[to_additive]
 theorem to_monoidHom_injective {M N} [MulOneClass M] [MulOneClass N] :
   Function.Injective (toMonoidHom : M ≃* N → M →* N) :=
-  fun _ _ h => MulEquiv.ext (MonoidHom.ext_iff.1 h) -- FunLike.ext_iff timeout here
+  fun _ _ h => MulEquiv.ext (MonoidHom.ext_iff.1 h)
 #align mul_equiv.to_monoid_hom_injective MulEquiv.to_monoidHom_injective
 #align add_equiv.to_add_monoid_hom_injective AddEquiv.to_addMonoidHom_injective
 
@@ -578,7 +573,7 @@ def arrowCongr {M N P Q : Type _} [Mul P] [Mul Q] (f : M ≃ N) (g : P ≃* Q) :
   invFun k m := g.symm (k (f m))
   left_inv h := by ext; simp
   right_inv k := by ext; simp
-  map_mul' h k := by ext; exact MulEquiv.map_mul _ _ _ -- Porting note: simp doesn't work here
+  map_mul' h k := by ext; simp
 #align mul_equiv.arrow_congr MulEquiv.arrowCongr
 #align add_equiv.arrow_congr AddEquiv.arrowCongr
 
@@ -596,7 +591,7 @@ def monoidHomCongr {M N P Q} [MulOneClass M] [MulOneClass N] [CommMonoid P] [Com
   invFun k := g.symm.toMonoidHom.comp (k.comp f.toMonoidHom)
   left_inv h := by ext; simp
   right_inv k := by ext; simp
-  map_mul' h k := by ext; exact MulEquiv.map_mul _ _ _ -- Porting note: simp doesn't work here
+  map_mul' h k := by ext; simp
 #align mul_equiv.monoid_hom_congr MulEquiv.monoidHomCongr
 #align add_equiv.add_monoid_hom_congr AddEquiv.addMonoidHomCongr
 
@@ -657,7 +652,6 @@ def piSubsingleton {ι : Type _} (M : ι → Type _) [∀ j, Mul (M j)] [Subsing
 # Groups
 -/
 
--- Porting note: typeclass timeout
 /-- A multiplicative equivalence of groups preserves inversion. -/
 @[to_additive "An additive equivalence of additive groups preserves negation."]
 protected theorem map_inv [Group G] [DivisionMonoid H] (h : G ≃* H) (x : G) :
@@ -690,8 +684,8 @@ def MulHom.toMulEquiv [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M) (h₁ 
   (h₂ : f.comp g = MulHom.id _) : M ≃* N where
   toFun := f
   invFun := g
-  left_inv := MulHom.congr_fun h₁
-  right_inv := MulHom.congr_fun h₂
+  left_inv := FunLike.congr_fun h₁
+  right_inv := FunLike.congr_fun h₂
   map_mul' := f.map_mul
 #align mul_hom.to_mul_equiv MulHom.toMulEquiv
 #align add_hom.to_add_equiv AddHom.toAddEquiv
@@ -709,8 +703,8 @@ def MonoidHom.toMulEquiv [MulOneClass M] [MulOneClass N] (f : M →* N) (g : N �
   (h₁ : g.comp f = MonoidHom.id _) (h₂ : f.comp g = MonoidHom.id _) : M ≃* N where
   toFun := f
   invFun := g
-  left_inv := MonoidHom.congr_fun h₁
-  right_inv := MonoidHom.congr_fun h₂
+  left_inv := FunLike.congr_fun h₁
+  right_inv := FunLike.congr_fun h₂
   map_mul' := f.map_mul
 #align monoid_hom.to_mul_equiv MonoidHom.toMulEquiv
 #align add_monoid_hom.to_add_mul_equiv AddMonoidHom.toAddEquiv

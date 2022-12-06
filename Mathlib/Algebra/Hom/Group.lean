@@ -412,7 +412,7 @@ theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
 #align map_div map_div
 #align map_sub map_sub
 
-@[simp, to_additive]
+@[simp, to_additive (reorder := 8)]
 theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
   ∀ n : ℕ, f (a ^ n) = f a ^ n
   | 0 => by rw [pow_zero, pow_zero, map_one]
@@ -420,7 +420,7 @@ theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
 #align map_pow map_pow
 #align map_smul map_smul
 
-attribute [to_additive_reorder 8] map_pow
+-- attribute [to_additive_reorder 8] map_pow
 
 -- Porting note: restore `to_additive`
 -- @[to_additive]
@@ -1194,15 +1194,11 @@ theorem MonoidWithZeroHom.id_comp [MulZeroOneClass M] [MulZeroOneClass N] (f : M
 #align monoid_with_zero_hom.id_comp MonoidWithZeroHom.id_comp
 
 -- Porting note: restore `to_additive`
--- @[to_additive AddMonoidHom.map_nsmul]
+@[to_additive AddMonoidHom.map_nsmul]
 protected theorem MonoidHom.map_pow [Monoid M] [Monoid N] (f : M →* N) (a : M) (n : ℕ) :
   f (a ^ n) = f a ^ n := map_pow f a n
 #align monoid_hom.map_pow MonoidHom.map_pow
-protected theorem AddMonoidHom.map_nsmul [AddMonoid M] [AddMonoid N] (f : M →+ N) (a : M) (n : ℕ) :
-  f (n • a) = n • f a := map_smul f a n
 #align add_monoid_hom.map_nsmul AddMonoidHom.map_nsmul
-
-attribute [to_additive AddMonoidHom.map_nsmul] MonoidHom.map_pow
 
 @[to_additive]
 protected theorem MonoidHom.map_zpow' [DivInvMonoid M] [DivInvMonoid N] (f : M →* N)
