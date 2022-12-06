@@ -12,47 +12,46 @@ import Mathlib.Algebra.Group.Units
 -/
 
 
-variable {α : Type _}
-
 namespace Units
 
 @[to_additive]
 instance [Monoid α] [Preorder α] : Preorder αˣ :=
-  Preorder.lift (coe : αˣ → α)
+  Preorder.lift val
 
 @[simp, norm_cast, to_additive]
-theorem coe_le_coe [Monoid α] [Preorder α] {a b : αˣ} : (a : α) ≤ b ↔ a ≤ b :=
+theorem val_le_val [Monoid α] [Preorder α] {a b : αˣ} : (a : α) ≤ b ↔ a ≤ b :=
   Iff.rfl
-#align units.coe_le_coe Units.coe_le_coe
+#align units.coe_le_coe Units.val_le_val
 
 @[simp, norm_cast, to_additive]
-theorem coe_lt_coe [Monoid α] [Preorder α] {a b : αˣ} : (a : α) < b ↔ a < b :=
+theorem val_lt_val [Monoid α] [Preorder α] {a b : αˣ} : (a : α) < b ↔ a < b :=
   Iff.rfl
-#align units.coe_lt_coe Units.coe_lt_coe
+#align units.coe_lt_coe Units.val_lt_val
 
 @[to_additive]
 instance [Monoid α] [PartialOrder α] : PartialOrder αˣ :=
-  PartialOrder.lift coe Units.ext
+  PartialOrder.lift val Units.ext
 
 @[to_additive]
 instance [Monoid α] [LinearOrder α] : LinearOrder αˣ :=
-  LinearOrder.lift' coe Units.ext
+  LinearOrder.lift' val Units.ext
 
-/-- `coe : αˣ → α` as an order embedding. -/
-@[to_additive "`coe : add_units α → α` as an order embedding.",
+/-- `val : αˣ → α` as an order embedding. -/
+@[to_additive "`val : add_units α → α` as an order embedding.",
   simps (config := { fullyApplied := false })]
-def orderEmbeddingCoe [Monoid α] [LinearOrder α] : αˣ ↪o α :=
-  ⟨⟨coe, ext⟩, fun _ _ => Iff.rfl⟩
-#align units.order_embedding_coe Units.orderEmbeddingCoe
+def orderEmbedding_val [Monoid α] [LinearOrder α] : αˣ ↪o α :=
+  ⟨⟨val, ext⟩, Iff.rfl⟩
+#align units.order_embedding_coe Units.orderEmbedding_val
+#align add_units.order_embedding_coe AddUnits.orderEmbedding_val
 
 @[simp, norm_cast, to_additive]
-theorem max_coe [Monoid α] [LinearOrder α] {a b : αˣ} : (↑(max a b) : α) = max a b :=
-  Monotone.map_max orderEmbeddingCoe.Monotone
-#align units.max_coe Units.max_coe
+theorem max_val [Monoid α] [LinearOrder α] {a b : αˣ} : (max a b).val = max a.val b.val :=
+  Monotone.map_max orderEmbedding_val.monotone
+#align units.max_coe Units.max_val
 
 @[simp, norm_cast, to_additive]
-theorem min_coe [Monoid α] [LinearOrder α] {a b : αˣ} : (↑(min a b) : α) = min a b :=
-  Monotone.map_min orderEmbeddingCoe.Monotone
-#align units.min_coe Units.min_coe
+theorem min_val [Monoid α] [LinearOrder α] {a b : αˣ} : (min a b).val = min a.val b.val :=
+  Monotone.map_min orderEmbedding_val.monotone
+#align units.min_coe Units.min_val
 
 end Units

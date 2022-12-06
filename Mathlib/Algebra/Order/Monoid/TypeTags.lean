@@ -10,8 +10,6 @@ import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 /-! # Ordered monoid structures on `multiplicative α` and `additive α`. -/
 
 
-universe u
-
 instance : ∀ [LE α], LE (Multiplicative α) :=
   fun {inst} => inst
 
