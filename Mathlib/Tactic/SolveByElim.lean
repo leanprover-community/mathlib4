@@ -89,10 +89,19 @@ structure Config extends ApplyConfig where
   If failure, we backtrack. (defaults to failure) -/
   discharge : MVarId → MetaM (Option (List MVarId)) := fun _ => failure
 
+/-- The default `maxDepth` for `apply_rules` is higher. -/
+structure ApplyRulesConfig extends Config where
+  maxDepth := 12
+
 /--
 Allow elaboration of `Config` arguments to tactics.
 -/
 declare_config_elab elabConfig Config
+
+/--
+Allow elaboration of `ApplyRulesConfig` arguments to tactics.
+-/
+declare_config_elab elabApplyRulesConfig ApplyRulesConfig
 
 namespace Config
 
@@ -510,7 +519,7 @@ syntax (name := applyRulesSyntax) "apply_rules" (config)? (&" only")? (args)? : 
 elab_rules : tactic |
     `(tactic| apply_rules $[$cfg]? $[only%$o]? $[$t:args]?)  => do
   let (star, add, remove) := parseArgs t
-  let cfg ← elabConfig (mkOptionalNode cfg)
+  let cfg ← elabApplyRulesConfig (mkOptionalNode cfg)
   let cfg := { cfg.noBackTracking with
     failAtMaxDepth := false }
   liftMetaTactic fun g => solveByElim.processSyntax cfg o.isSome star add remove [g]
