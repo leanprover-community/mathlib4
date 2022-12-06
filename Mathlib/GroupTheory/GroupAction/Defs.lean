@@ -65,7 +65,7 @@ class HasFaithfulVAdd (G : Type _) (P : Type _) [VAdd G P] : Prop where
 @[to_additive]
 class HasFaithfulSMul (M : Type _) (α : Type _) [SMul M α] : Prop where
   /-- Two elements `m₁` and `m₂` are equal whenever they act in the same way on all points. -/
-eq_of_smul_eq_smul : ∀ {m₁ m₂ : M}, (∀ a : α, m₁ • a = m₂ • a) → m₁ = m₂
+  eq_of_smul_eq_smul : ∀ {m₁ m₂ : M}, (∀ a : α, m₁ • a = m₂ • a) → m₁ = m₂
 #align has_faithful_smul HasFaithfulSMul
 
 export HasFaithfulSMul (eq_of_smul_eq_smul)
