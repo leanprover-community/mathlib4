@@ -210,7 +210,8 @@ theorem le_mul_inv_iff_mul_le : c ≤ a * b⁻¹ ↔ c * b ≤ a :=
   (mul_le_mul_iff_right b).symm.trans <| by rw [inv_mul_cancel_right]
 #align le_mul_inv_iff_mul_le le_mul_inv_iff_mul_le
 
-@[simp, to_additive]
+-- Porting note: `simp` can prove this
+@[to_additive]
 theorem mul_inv_le_one_iff_le : a * b⁻¹ ≤ 1 ↔ a ≤ b :=
   mul_inv_le_iff_le_mul.trans <| by rw [one_mul]
 #align mul_inv_le_one_iff_le mul_inv_le_one_iff_le
@@ -263,7 +264,8 @@ theorem lt_mul_inv_iff_mul_lt : c < a * b⁻¹ ↔ c * b < a :=
   (mul_lt_mul_iff_right b).symm.trans <| by rw [inv_mul_cancel_right]
 #align lt_mul_inv_iff_mul_lt lt_mul_inv_iff_mul_lt
 
-@[simp, to_additive]
+-- Porting note: `simp` can prove this
+@[to_additive]
 theorem inv_mul_lt_one_iff_lt : a * b⁻¹ < 1 ↔ a < b := by
   rw [← mul_lt_mul_iff_right b, inv_mul_cancel_right, one_mul]
 #align inv_mul_lt_one_iff_lt inv_mul_lt_one_iff_lt
@@ -446,7 +448,8 @@ variable [LE α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b c d : α}
 theorem inv_mul_le_iff_le_mul' : c⁻¹ * a ≤ b ↔ a ≤ b * c := by rw [inv_mul_le_iff_le_mul, mul_comm]
 #align inv_mul_le_iff_le_mul' inv_mul_le_iff_le_mul'
 
-@[simp, to_additive]
+-- Porting note: `simp` simplifies LHS to `a ≤ c * b`
+@[to_additive]
 theorem mul_inv_le_iff_le_mul' : a * b⁻¹ ≤ c ↔ a ≤ b * c := by
   rw [← inv_mul_le_iff_le_mul, mul_comm]
 #align mul_inv_le_iff_le_mul' mul_inv_le_iff_le_mul'
@@ -466,7 +469,8 @@ variable [LT α] [CovariantClass α α (· * ·) (· < ·)] {a b c d : α}
 theorem inv_mul_lt_iff_lt_mul' : c⁻¹ * a < b ↔ a < b * c := by rw [inv_mul_lt_iff_lt_mul, mul_comm]
 #align inv_mul_lt_iff_lt_mul' inv_mul_lt_iff_lt_mul'
 
-@[simp, to_additive]
+-- Porting note: `simp` simplifies LHS to `a < c * b`
+@[to_additive]
 theorem mul_inv_lt_iff_le_mul' : a * b⁻¹ < c ↔ a < b * c := by
   rw [← inv_mul_lt_iff_lt_mul, mul_comm]
 #align mul_inv_lt_iff_le_mul' mul_inv_lt_iff_le_mul'
@@ -874,7 +878,7 @@ theorem div_le_inv_mul_iff [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
 #align div_le_inv_mul_iff div_le_inv_mul_iff
 
 --  What is the point of this lemma?  See comment about `div_le_inv_mul_iff` above.
-@[simp, to_additive]
+@[to_additive, simp]
 theorem div_le_div_flip {α : Type _} [CommGroup α] [LinearOrder α]
     [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} : a / b ≤ b / a ↔ a ≤ b := by
   rw [div_eq_mul_inv b, mul_comm]
