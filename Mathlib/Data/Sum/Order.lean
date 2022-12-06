@@ -8,8 +8,8 @@ import Mathlib.Order.Hom.Basic
 /-!
 # Orders on a sum type
 
-This file defines the disjoint sum and the linear (aka lexicographic) sum of two orders and provides
-relation instances for `Sum.LiftRel` and `Sum.Lex`.
+This file defines the disjoint sum and the linear (aka lexicographic) sum of two orders and
+provides relation instances for `Sum.LiftRel` and `Sum.Lex`.
 
 We declare the disjoint sum of orders as the default set of instances. The linear order goes on a
 type synonym.
@@ -691,8 +691,10 @@ def sumLexDualAntidistrib (α β : Type _) [LE α] [LE β] : (α ⊕ₗ β)ᵒ�
           toLex (inr <| toDual a) ≤ toLex (inr <| toDual b) ↔
             toDual (toLex <| inl a) ≤ toDual (toLex <| inl b)
         simp [toDual_le_toDual, Lex.inl_le_inl_iff, Lex.inr_le_inr_iff]
-      · exact iff_of_false (@Lex.not_inr_le_inl (OrderDual β) (OrderDual α) _ _ _ _) Lex.not_inr_le_inl
-      · exact iff_of_true (@Lex.inl_le_inr (OrderDual β) (OrderDual α) _ _ _ _) (Lex.inl_le_inr _ _)
+      · exact iff_of_false (@Lex.not_inr_le_inl (OrderDual β) (OrderDual α) _ _ _ _)
+          Lex.not_inr_le_inl
+      · exact iff_of_true (@Lex.inl_le_inr (OrderDual β) (OrderDual α) _ _ _ _)
+          (Lex.inl_le_inr _ _)
       · change
           toLex (inl <| toDual a) ≤ toLex (inl <| toDual b) ↔
             toDual (toLex <| inr a) ≤ toDual (toLex <| inr b)
