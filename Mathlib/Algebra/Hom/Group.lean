@@ -420,21 +420,12 @@ theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
 #align map_pow map_pow
 #align map_smul map_smul
 
--- attribute [to_additive_reorder 8] map_pow
-
--- Porting note: restore `to_additive`
--- @[to_additive]
+@[to_additive]
 theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
   (f : F) (hf : ∀ x : G, f x⁻¹ = (f x)⁻¹) (a : G) : ∀ n : ℤ, f (a ^ n) = f a ^ n
   | (n : ℕ) => by rw [zpow_ofNat, map_pow, zpow_ofNat]
   | Int.negSucc n => by rw [zpow_negSucc, hf, map_pow, ← zpow_negSucc, ← zpow_negSucc]
 #align map_zpow' map_zpow'
-theorem map_zsmul' [SubNegMonoid G] [SubNegMonoid H] [AddMonoidHomClass F G H]
-  (f : F) (hf : ∀ x : G, f (-x) = -(f x)) (a : G) : ∀ n : ℤ, f (n • a) = n • f a
-  | (n : ℕ) => by rw [ofNat_zsmul, map_smul, ofNat_zsmul]
-  | Int.negSucc n => by rw [negSucc_zsmul, hf, map_smul, ← negSucc_zsmul, ← negSucc_zsmul]
-#align map_zsmul' map_zsmul'
-attribute [to_additive] map_zpow'
 
 /-- Group homomorphisms preserve integer power. -/
 @[simp, to_additive "Additive group homomorphisms preserve integer scaling." (reorder := 8)]
@@ -1193,7 +1184,6 @@ theorem MonoidWithZeroHom.id_comp [MulZeroOneClass M] [MulZeroOneClass N] (f : M
   (MonoidWithZeroHom.id N).comp f = f := MonoidWithZeroHom.ext fun _ => rfl
 #align monoid_with_zero_hom.id_comp MonoidWithZeroHom.id_comp
 
--- Porting note: restore `to_additive`
 @[to_additive AddMonoidHom.map_nsmul]
 protected theorem MonoidHom.map_pow [Monoid M] [Monoid N] (f : M →* N) (a : M) (n : ℕ) :
   f (a ^ n) = f a ^ n := map_pow f a n

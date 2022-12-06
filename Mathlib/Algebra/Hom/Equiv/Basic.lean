@@ -178,20 +178,15 @@ instance [Mul M] [Mul N] : MulEquivClass (M ≃* N) M N where
 
 variable [Mul M] [Mul N] [Mul P] [Mul Q]
 
-@[simp, to_additive]
-theorem toEquiv_eq_coe (f : M ≃* N) : f.toEquiv = f := rfl
-#align mul_equiv.to_equiv_eq_coe MulEquiv.toEquiv_eq_coe
-#align add_equiv.to_equiv_eq_coe AddEquiv.toEquiv_eq_coe
-
-@[simp, to_additive]
-theorem toFun_eq_coe {f : M ≃* N} : f.toFun = f := rfl
-#align mul_equiv.to_fun_eq_coe MulEquiv.toFun_eq_coe
-#align add_equiv.to_fun_eq_coe AddEquiv.toFun_eq_coe
-
-@[simp, to_additive]
-theorem coe_toEquiv {f : M ≃* N} : (f : M ≃ N) = f.toFun := rfl
-#align mul_equiv.coe_to_equiv MulEquiv.coe_toEquiv
-#align add_equiv.coe_to_equiv AddEquiv.coe_toEquiv
+-- Porting note: `toEquiv_eq_coe` no longer needed in Lean4
+#noalign mul_equiv.to_equiv_eq_coe
+#noalign add_equiv.to_equiv_eq_coe
+-- Porting note: `toFun_eq_coe` no longer needed in Lean4
+#noalign mul_equiv.to_fun_eq_coe
+#noalign add_equiv.to_fun_eq_coe
+-- Porting note: `coe_toEquiv` no longer needed in Lean4
+#noalign mul_equiv.coe_to_equiv
+#noalign add_equiv.coe_to_equiv
 
 @[simp, to_additive]
 theorem coe_toMulHom {f : M ≃* N} : f.toMulHom = f.toFun := rfl
@@ -247,7 +242,7 @@ def symm {M N : Type _} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
 #align add_equiv.symm AddEquiv.symm
 
 @[simp, to_additive AddEquiv.invFun_eq_symm]
-theorem invFun_eq_symm {f : M ≃* N} : f.invFun = f.symm := rfl
+theorem invFun_eq_symm {f : M ≃* N} : EquivLike.inv f = f.symm := rfl
 #align mul_equiv.inv_fun_eq_symm MulEquiv.invFun_eq_symm
 #align add_equiv.inv_fun_eq_symm AddEquiv.invFun_eq_symm
 
@@ -269,15 +264,12 @@ theorem toEquiv_symm (f : M ≃* N) : f.symm.toEquiv = f.toEquiv.symm := rfl
 #align mul_equiv.to_equiv_symm MulEquiv.toEquiv_symm
 #align add_equiv.to_equiv_symm AddEquiv.toEquiv_symm
 
-@[simp, to_additive]
-theorem coe_mk (f : M → N) (g h₁ h₂ h₃) : MulEquiv.mk ⟨f, g, h₁, h₂⟩ h₃ = f := rfl
-#align mul_equiv.coe_mk MulEquiv.coe_mk
-#align add_equiv.coe_mk AddEquiv.coe_mk
-
-@[simp, to_additive]
-theorem toEquiv_mk (f : M ≃ N) (h) : (MulEquiv.mk f h).toEquiv = f := rfl
-#align mul_equiv.to_equiv_mk MulEquiv.toEquiv_mk
-#align add_equiv.to_equiv_mk AddEquiv.toEquiv_mk
+-- Porting note: `coe_mk` no longer needed in Lean4
+#noalign mul_equiv.coe_mk
+#noalign add_equiv.coe_mk
+-- Porting note: `toEquiv_mk` no longer needed in Lean4
+#noalign mul_equiv.to_equiv_mk
+#noalign add_equiv.to_equiv_mk
 
 @[simp, to_additive]
 theorem symm_symm : ∀ f : M ≃* N, f.symm.symm = f
@@ -366,7 +358,8 @@ theorem symm_trans_apply (e₁ : M ≃* N) (e₂ : N ≃* P) (p : P) :
 #align mul_equiv.symm_trans_apply MulEquiv.symm_trans_apply
 #align add_equiv.symm_trans_apply AddEquiv.symm_trans_apply
 
-@[simp, to_additive]
+-- Porting note: `simp` can prove this
+@[to_additive]
 theorem apply_eq_iff_eq (e : M ≃* N) {x y : M} : e x = e y ↔ x = y :=
   e.injective.eq_iff
 #align mul_equiv.apply_eq_iff_eq MulEquiv.apply_eq_iff_eq
@@ -430,12 +423,14 @@ theorem self_trans_symm (e : M ≃* N) : e.trans e.symm = refl M :=
 #align mul_equiv.self_trans_symm MulEquiv.self_trans_symm
 #align add_equiv.self_trans_symm AddEquiv.self_trans_symm
 
-@[to_additive, simp]
+-- Porting note: `simp` can prove this
+@[to_additive]
 theorem coe_monoidHom_refl {M} [MulOneClass M] : (refl M : M →* M) = MonoidHom.id M := rfl
 #align mul_equiv.coe_monoid_hom_refl MulEquiv.coe_monoidHom_refl
 #align add_equiv.coe_add_monoid_hom_refl AddEquiv.coe_addMonoidHom_refl
 
-@[to_additive, simp]
+-- Porting note: `simp` can prove this
+@[to_additive]
 theorem coe_monoidHom_trans {M N P} [MulOneClass M] [MulOneClass N] [MulOneClass P]
   (e₁ : M ≃* N) (e₂ : N ≃* P) :
   (e₁.trans e₂ : M →* P) = (e₂ : N →* P).comp ↑e₁ := rfl
