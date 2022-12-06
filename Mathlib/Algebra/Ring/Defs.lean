@@ -238,7 +238,7 @@ section HasDistribNeg
 
 This is useful for dealing with submonoids of a ring that contain `-1` without having to duplicate
 lemmas. -/
-class HasDistribNeg (α : Type _) [Mul α] extends HasInvolutiveNeg α where
+class HasDistribNeg (α : Type _) [Mul α] extends InvolutiveNeg α where
   /-- Negation is left distributive over multiplication -/
   neg_mul : ∀ x y : α, -x * y = -(x * y)
   /-- Negation is right distributive over multiplication -/
@@ -296,7 +296,7 @@ section MulZeroClass
 variable [MulZeroClass α] [HasDistribNeg α]
 
 instance (priority := 100) MulZeroClass.negZeroClass : NegZeroClass α where
-  __ := inferInstanceAs (Zero α); __ := inferInstanceAs (HasInvolutiveNeg α)
+  __ := inferInstanceAs (Zero α); __ := inferInstanceAs (InvolutiveNeg α)
   neg_zero := by rw [← zero_mul (0 : α), ← neg_mul, mul_zero, mul_zero]
 #align mul_zero_class.neg_zero_class MulZeroClass.negZeroClass
 
