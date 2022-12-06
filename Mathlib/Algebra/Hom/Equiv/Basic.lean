@@ -90,6 +90,12 @@ class MulEquivClass (F A B : Type _) [outParam <| Mul A] [outParam <| Mul B] ext
   map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
 #align mul_equiv_class MulEquivClass
 
+#print MulEquivClass.toEquivLike
+
+#lint
+
+#exit
+
 /-- Notation for a `MulEquiv`. -/
 infixl:25 " ≃* " => MulEquiv
 
