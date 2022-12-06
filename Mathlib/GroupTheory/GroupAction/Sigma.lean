@@ -60,13 +60,13 @@ instance [∀ i, SMul Mᵐᵒᵖ (α i)] [∀ i, IsCentralScalar M (α i)] : IsC
 
 /-- This is not an instance because `i` becomes a metavariable. -/
 @[to_additive "This is not an instance because `i` becomes a metavariable."]
-protected theorem hasFaithfulSmul' [HasFaithfulSMul M (α i)] : HasFaithfulSMul M (Σi, α i) :=
+protected theorem FaithfulSMul' [FaithfulSMul M (α i)] : FaithfulSMul M (Σi, α i) :=
   ⟨fun h => eq_of_smul_eq_smul fun a : α i => heq_iff_eq.1 (ext_iff.1 <| h <| mk i a).2⟩
-#align sigma.has_faithful_smul' Sigma.hasFaithfulSmul'
+#align sigma.has_faithful_smul' Sigma.FaithfulSMul'
 
 @[to_additive]
-instance [Nonempty ι] [∀ i, HasFaithfulSMul M (α i)] : HasFaithfulSMul M (Σi, α i) :=
-  (Nonempty.elim ‹_›) fun i => Sigma.hasFaithfulSmul' i
+instance [Nonempty ι] [∀ i, FaithfulSMul M (α i)] : FaithfulSMul M (Σi, α i) :=
+  (Nonempty.elim ‹_›) fun i => Sigma.FaithfulSMul' i
 
 end SMul
 
