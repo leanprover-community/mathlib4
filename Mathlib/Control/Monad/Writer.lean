@@ -53,6 +53,11 @@ instance [MonadWriter ω M] : MonadWriter ω (StateT σ M) where
 
 namespace WriterT
 
+protected def mk {ω : Type u} (cmd :  M (α × ω)) : WriterT ω M α:= cmd
+protected def run {ω : Type u} (cmd : WriterT ω M α) : M (α × ω) := cmd
+protected def runThe (ω : Type u) (cmd : WriterT ω M α) : M (α × ω) := cmd
+
+
 section
 
 variable {ω : Type u}
@@ -69,22 +74,6 @@ open Function
 protected theorem ext (x x' : WriterT ω m α) (h : x.run = x'.run) : x = x' := by
   simp [WriterT.run] at h; assumption
 #align writer_t.ext WriterTₓ.ext
-
-@[inline]
-protected def tell (w : ω) : WriterT ω m PUnit :=
-  WriterT ω pure Unit
---  ⟨pure (PUnit.unit, w)⟩
-#align writer_t.tell WriterTₓ.tell
-
-@[inline]
-protected def listen : WriterT ω m α → WriterT ω m (α × ω)
-  | ⟨cmd⟩ => ⟨(fun x : α × ω => ((x.1, x.2), x.2)) <$> cmd⟩
-#align writer_t.listen WriterTₓ.listen
-
-@[inline]
-protected def pass : WriterT ω m (α × (ω → ω)) → WriterT ω m α
-  | ⟨cmd⟩ => ⟨uncurry (uncurry fun x (f : ω → ω) w => (x, f w)) <$> cmd⟩
-#align writer_t.pass WriterTₓ.pass
 
 @[inline]
 protected def pure [One ω] (a : α) : WriterT ω m α :=

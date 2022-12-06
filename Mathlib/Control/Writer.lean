@@ -44,13 +44,13 @@ instance [MonadWriter ω M] : MonadWriter ω (StateT σ M) where
   tell w := (tell w : M _)
   listen x s := (fun ((a,w), s) ↦ ((a,s), w)) <$> listen (x s)
   pass x s := pass <| (fun ((a, f), s) ↦ ((a, s), f)) <$> (x s)
--- END
 
 namespace WriterT
 
 protected def mk {ω : Type u} (cmd :  M (α × ω)) : WriterT ω M α:= cmd
 protected def run {ω : Type u} (cmd : WriterT ω M α) : M (α × ω) := cmd
 protected def runThe (ω : Type u) (cmd : WriterT ω M α) : M (α × ω) := cmd
+-- END
 
 variable {ω : Type u} {α β : Type u}
 
