@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 -/
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Tactic.Convert
 
 /-!
 # Lemmas about divisibility in rings
@@ -23,18 +24,19 @@ theorem dvd_add [LeftDistribClass α] {a b c : α} (h₁ : a ∣ b) (h₂ : a �
 
 end DistribSemigroup
 
-@[simp]
-theorem two_dvd_bit0 [Semiring α] {a : α} : 2 ∣ bit0 a :=
-  ⟨a, bit0_eq_two_mul _⟩
-#align two_dvd_bit0 two_dvd_bit0
+-- TODO : Delete this?
+-- @[simp]
+-- theorem two_dvd_bit0 [Semiring α] {a : α} : 2 ∣ bit0 a :=
+--   ⟨a, bit0_eq_two_mul _⟩
+-- #align two_dvd_bit0 two_dvd_bit0
 
 section NonUnitalCommSemiring
 
 variable [NonUnitalCommSemiring α] [NonUnitalCommSemiring β] {a b c : α}
 
-theorem Dvd.Dvd.linear_comb {d x y : α} (hdx : d ∣ x) (hdy : d ∣ y) (a b : α) : d ∣ a * x + b * y :=
+theorem Dvd.dvd.linear_comb {d x y : α} (hdx : d ∣ x) (hdy : d ∣ y) (a b : α) : d ∣ a * x + b * y :=
   dvd_add (hdx.mul_left a) (hdy.mul_left b)
-#align has_dvd.dvd.linear_comb Dvd.Dvd.linear_comb
+#align has_dvd.dvd.linear_comb Dvd.dvd.linear_comb
 
 end NonUnitalCommSemiring
 
@@ -88,11 +90,11 @@ theorem dvd_sub (h₁ : a ∣ b) (h₂ : a ∣ c) : a ∣ b - c := by
 #align dvd_sub dvd_sub
 
 theorem dvd_add_iff_left (h : a ∣ c) : a ∣ b ↔ a ∣ b + c :=
-  ⟨fun h₂ => dvd_add h₂ h, fun H => by have t := dvd_sub H h <;> rwa [add_sub_cancel] at t⟩
+  ⟨fun h₂ => dvd_add h₂ h, fun H => by have t := dvd_sub H h ; rwa [add_sub_cancel] at t⟩
 #align dvd_add_iff_left dvd_add_iff_left
 
 theorem dvd_add_iff_right (h : a ∣ b) : a ∣ c ↔ a ∣ b + c := by
-  rw [add_comm] <;> exact dvd_add_iff_left h
+  rw [add_comm] ; exact dvd_add_iff_left h
 #align dvd_add_iff_right dvd_add_iff_right
 
 /-- If an element a divides another element c in a commutative ring, a divides the sum of another
@@ -123,9 +125,10 @@ section Ring
 
 variable [Ring α] {a b c : α}
 
-theorem two_dvd_bit1 : 2 ∣ bit1 a ↔ (2 : α) ∣ 1 :=
-  (dvd_add_iff_right (@two_dvd_bit0 _ _ a)).symm
-#align two_dvd_bit1 two_dvd_bit1
+-- TODO : Delete this?
+-- theorem two_dvd_bit1 : 2 ∣ bit1 a ↔ (2 : α) ∣ 1 :=
+--   (dvd_add_iff_right (@two_dvd_bit0 _ _ a)).symm
+-- #align two_dvd_bit1 two_dvd_bit1
 
 /-- An element a divides the sum a + b if and only if a divides b.-/
 @[simp]
