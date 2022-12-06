@@ -26,23 +26,19 @@ universe u
 
 variable {α : Type u}
 
-#print OrderedAddCommGroup /-
 /-- An ordered additive commutative group is an additive commutative group
 with a partial order in which addition is strictly monotone. -/
-@[protect_proj]
 class OrderedAddCommGroup (α : Type u) extends AddCommGroup α, PartialOrder α where
-  add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
+  /-- Addition is monotone in a ordered additive commutative group. -/
+  protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 #align ordered_add_comm_group OrderedAddCommGroup
--/
 
-#print OrderedCommGroup /-
 /-- An ordered commutative group is an commutative group
 with a partial order in which multiplication is strictly monotone. -/
-@[protect_proj]
 class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
-  mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
+  /-- Multiplication is monotone in a ordered commutative group. -/
+  protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
 #align ordered_comm_group OrderedCommGroup
--/
 
 attribute [to_additive] OrderedCommGroup
 
@@ -80,14 +76,14 @@ section TypeclassesLeftLe
 variable [LE α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b c d : α}
 
 /-- Uses `left` co(ntra)variant. -/
-@[simp, to_additive Left.neg_nonpos_iff "Uses `left` co(ntra)variant."]
+@[simp, to_additive "Uses `left` co(ntra)variant."]
 theorem Left.inv_le_one_iff : a⁻¹ ≤ 1 ↔ 1 ≤ a := by
   rw [← mul_le_mul_iff_left a]
   simp
 #align left.inv_le_one_iff Left.inv_le_one_iff
 
 /-- Uses `left` co(ntra)variant. -/
-@[simp, to_additive Left.nonneg_neg_iff "Uses `left` co(ntra)variant."]
+@[simp, to_additive "Uses `left` co(ntra)variant."]
 theorem Left.one_le_inv_iff : 1 ≤ a⁻¹ ↔ a ≤ 1 := by
   rw [← mul_le_mul_iff_left a]
   simp
@@ -121,7 +117,8 @@ theorem le_inv_mul_iff_le : 1 ≤ b⁻¹ * a ↔ b ≤ a := by
 
 @[to_additive]
 theorem inv_mul_le_one_iff : a⁻¹ * b ≤ 1 ↔ b ≤ a :=
-  trans inv_mul_le_iff_le_mul <| by rw [mul_one]
+  -- Porting note: why is the `_root_` needed?
+  _root_.trans inv_mul_le_iff_le_mul <| by rw [mul_one]
 #align inv_mul_le_one_iff inv_mul_le_one_iff
 
 end TypeclassesLeftLe
@@ -130,12 +127,6 @@ section TypeclassesLeftLt
 
 variable [LT α] [CovariantClass α α (· * ·) (· < ·)] {a b c : α}
 
-/- warning: left.one_lt_inv_iff -> Left.one_lt_inv_iff is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} [_inst_1 : Group.{u} α] [_inst_2 : LT.{u} α] [_inst_3 : CovariantClass.{u, u} α α (HMul.hMul.{u, u, u} α α α (instHMul.{u} α (MulOneClass.toHasMul.{u} α (Monoid.toMulOneClass.{u} α (DivInvMonoid.toMonoid.{u} α (Group.toDivInvMonoid.{u} α _inst_1)))))) (LT.lt.{u} α _inst_2)] {a : α}, Iff (LT.lt.{u} α _inst_2 (OfNat.ofNat.{u} α 1 (OfNat.mk.{u} α 1 (One.one.{u} α (MulOneClass.toHasOne.{u} α (Monoid.toMulOneClass.{u} α (DivInvMonoid.toMonoid.{u} α (Group.toDivInvMonoid.{u} α _inst_1))))))) (Inv.inv.{u} α (DivInvMonoid.toHasInv.{u} α (Group.toDivInvMonoid.{u} α _inst_1)) a)) (LT.lt.{u} α _inst_2 a (OfNat.ofNat.{u} α 1 (OfNat.mk.{u} α 1 (One.one.{u} α (MulOneClass.toHasOne.{u} α (Monoid.toMulOneClass.{u} α (DivInvMonoid.toMonoid.{u} α (Group.toDivInvMonoid.{u} α _inst_1))))))))
-but is expected to have type
-  forall {α : Type.{u_1}} [inst._@.Mathlib.Algebra.Order.Group._hyg.237 : Group.{u_1} α] [inst._@.Mathlib.Algebra.Order.Group._hyg.240 : LT.{u_1} α] [inst._@.Mathlib.Algebra.Order.Group._hyg.243 : CovariantClass.{u_1, u_1} α α (fun (x._@.Mathlib.Algebra.Order.Group._hyg.250 : α) (x._@.Mathlib.Algebra.Order.Group._hyg.252 : α) => HMul.hMul.{u_1, u_1, u_1} α α α (instHMul.{u_1} α (MulOneClass.toMul.{u_1} α (Monoid.toMulOneClass.{u_1} α (DivInvMonoid.toMonoid.{u_1} α (Group.toDivInvMonoid.{u_1} α inst._@.Mathlib.Algebra.Order.Group._hyg.237))))) x._@.Mathlib.Algebra.Order.Group._hyg.250 x._@.Mathlib.Algebra.Order.Group._hyg.252) (fun (x._@.Mathlib.Algebra.Order.Group._hyg.265 : α) (x._@.Mathlib.Algebra.Order.Group._hyg.267 : α) => LT.lt.{u_1} α inst._@.Mathlib.Algebra.Order.Group._hyg.240 x._@.Mathlib.Algebra.Order.Group._hyg.265 x._@.Mathlib.Algebra.Order.Group._hyg.267)] {a : α}, Iff (LT.lt.{u_1} α inst._@.Mathlib.Algebra.Order.Group._hyg.240 (OfNat.ofNat.{u_1} α 1 (One.toOfNat1.{u_1} α (InvOneClass.toOne.{u_1} α (DivInvOneMonoid.toInvOneClass.{u_1} α (DivisionMonoid.toDivInvOneMonoid.{u_1} α (Group.toDivisionMonoid.{u_1} α inst._@.Mathlib.Algebra.Order.Group._hyg.237)))))) (Inv.inv.{u_1} α (InvOneClass.toInv.{u_1} α (DivInvOneMonoid.toInvOneClass.{u_1} α (DivisionMonoid.toDivInvOneMonoid.{u_1} α (Group.toDivisionMonoid.{u_1} α inst._@.Mathlib.Algebra.Order.Group._hyg.237)))) a)) (LT.lt.{u_1} α inst._@.Mathlib.Algebra.Order.Group._hyg.240 a (OfNat.ofNat.{u_1} α 1 (One.toOfNat1.{u_1} α (InvOneClass.toOne.{u_1} α (DivInvOneMonoid.toInvOneClass.{u_1} α (DivisionMonoid.toDivInvOneMonoid.{u_1} α (Group.toDivisionMonoid.{u_1} α inst._@.Mathlib.Algebra.Order.Group._hyg.237)))))))
-Case conversion may be inaccurate. Consider using '#align left.one_lt_inv_iff Left.one_lt_inv_iffₓ'. -/
 /-- Uses `left` co(ntra)variant. -/
 @[simp, to_additive Left.neg_pos_iff "Uses `left` co(ntra)variant."]
 theorem Left.one_lt_inv_iff : 1 < a⁻¹ ↔ a < 1 := by
@@ -143,7 +134,7 @@ theorem Left.one_lt_inv_iff : 1 < a⁻¹ ↔ a < 1 := by
 #align left.one_lt_inv_iff Left.one_lt_inv_iff
 
 /-- Uses `left` co(ntra)variant. -/
-@[simp, to_additive Left.neg_neg_iff "Uses `left` co(ntra)variant."]
+@[simp, to_additive "Uses `left` co(ntra)variant."]
 theorem Left.inv_lt_one_iff : a⁻¹ < 1 ↔ 1 < a := by
   rw [← mul_lt_mul_iff_left a, mul_inv_self, mul_one]
 #align left.inv_lt_one_iff Left.inv_lt_one_iff
@@ -176,7 +167,7 @@ theorem lt_inv_mul_iff_lt : 1 < b⁻¹ * a ↔ b < a := by
 
 @[to_additive]
 theorem inv_mul_lt_one_iff : a⁻¹ * b < 1 ↔ b < a :=
-  trans inv_mul_lt_iff_lt_mul <| by rw [mul_one]
+  _root_.trans inv_mul_lt_iff_lt_mul <| by rw [mul_one]
 #align inv_mul_lt_one_iff inv_mul_lt_one_iff
 
 end TypeclassesLeftLt
@@ -186,14 +177,14 @@ section TypeclassesRightLe
 variable [LE α] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
 
 /-- Uses `right` co(ntra)variant. -/
-@[simp, to_additive Right.neg_nonpos_iff "Uses `right` co(ntra)variant."]
+@[simp, to_additive "Uses `right` co(ntra)variant."]
 theorem Right.inv_le_one_iff : a⁻¹ ≤ 1 ↔ 1 ≤ a := by
   rw [← mul_le_mul_iff_right a]
   simp
 #align right.inv_le_one_iff Right.inv_le_one_iff
 
 /-- Uses `right` co(ntra)variant. -/
-@[simp, to_additive Right.nonneg_neg_iff "Uses `right` co(ntra)variant."]
+@[simp, to_additive "Uses `right` co(ntra)variant."]
 theorem Right.one_le_inv_iff : 1 ≤ a⁻¹ ↔ a ≤ 1 := by
   rw [← mul_le_mul_iff_right a]
   simp
@@ -231,7 +222,7 @@ theorem le_mul_inv_iff_le : 1 ≤ a * b⁻¹ ↔ b ≤ a := by
 
 @[to_additive]
 theorem mul_inv_le_one_iff : b * a⁻¹ ≤ 1 ↔ b ≤ a :=
-  trans mul_inv_le_iff_le_mul <| by rw [one_mul]
+  _root_.trans mul_inv_le_iff_le_mul <| by rw [one_mul]
 #align mul_inv_le_one_iff mul_inv_le_one_iff
 
 end TypeclassesRightLe
@@ -241,7 +232,7 @@ section TypeclassesRightLt
 variable [LT α] [CovariantClass α α (swap (· * ·)) (· < ·)] {a b c : α}
 
 /-- Uses `right` co(ntra)variant. -/
-@[simp, to_additive Right.neg_neg_iff "Uses `right` co(ntra)variant."]
+@[simp, to_additive "Uses `right` co(ntra)variant."]
 theorem Right.inv_lt_one_iff : a⁻¹ < 1 ↔ 1 < a := by
   rw [← mul_lt_mul_iff_right a, inv_mul_self, one_mul]
 #align right.inv_lt_one_iff Right.inv_lt_one_iff
@@ -284,7 +275,7 @@ theorem lt_mul_inv_iff_lt : 1 < a * b⁻¹ ↔ b < a := by
 
 @[to_additive]
 theorem mul_inv_lt_one_iff : b * a⁻¹ < 1 ↔ b < a :=
-  trans mul_inv_lt_iff_lt_mul <| by rw [one_mul]
+  _root_.trans mul_inv_lt_iff_lt_mul <| by rw [one_mul]
 #align mul_inv_lt_one_iff mul_inv_lt_one_iff
 
 end TypeclassesRightLt
@@ -563,15 +554,13 @@ attribute [to_additive OrderedAddCommGroup.add_lt_add_left] OrderedCommGroup.mul
 
 alias le_of_mul_le_mul_left' ← OrderedCommGroup.le_of_mul_le_mul_left
 
-attribute [to_additive OrderedAddCommGroup.le_of_add_le_add_left]
-  OrderedCommGroup.le_of_mul_le_mul_left
+attribute [to_additive] OrderedCommGroup.le_of_mul_le_mul_left
 
 alias lt_of_mul_lt_mul_left' ← OrderedCommGroup.lt_of_mul_lt_mul_left
 
-attribute [to_additive OrderedAddCommGroup.lt_of_add_lt_add_left]
-  OrderedCommGroup.lt_of_mul_lt_mul_left
+attribute [to_additive] OrderedCommGroup.lt_of_mul_lt_mul_left
 
---  Most of the lemmas that are primed in this section appear in ordered_field. 
+--  Most of the lemmas that are primed in this section appear in ordered_field.
 --  I (DT) did not try to minimise the assumptions.
 section Group
 
@@ -622,7 +611,7 @@ theorem div_le_iff_le_mul : a / c ≤ b ↔ a ≤ b * c := by
 -- see Note [lower instance priority]
 instance (priority := 100) AddGroup.toHasOrderedSub {α : Type _} [AddGroup α] [LE α]
     [CovariantClass α α (swap (· + ·)) (· ≤ ·)] : OrderedSub α :=
-  ⟨fun a b c => sub_le_iff_le_add⟩
+  ⟨fun _ _ _ => sub_le_iff_le_add⟩
 #align add_group.to_has_ordered_sub AddGroup.toHasOrderedSub
 
 end Right
@@ -708,7 +697,7 @@ end Preorder
 
 end CommGroup
 
---  Most of the lemmas that are primed in this section appear in ordered_field. 
+--  Most of the lemmas that are primed in this section appear in ordered_field.
 --  I (DT) did not try to minimise the assumptions.
 section Group
 
@@ -869,14 +858,14 @@ theorem le_of_forall_one_lt_lt_mul (h : ∀ ε : α, 1 < ε → a < b * ε) : a 
 
 @[to_additive]
 theorem le_iff_forall_one_lt_lt_mul : a ≤ b ↔ ∀ ε, 1 < ε → a < b * ε :=
-  ⟨fun h ε => lt_mul_of_le_of_one_lt h, le_of_forall_one_lt_lt_mul⟩
+  ⟨fun h _ => lt_mul_of_le_of_one_lt h, le_of_forall_one_lt_lt_mul⟩
 #align le_iff_forall_one_lt_lt_mul le_iff_forall_one_lt_lt_mul
 
 /-  I (DT) introduced this lemma to prove (the additive version `sub_le_sub_flip` of)
 `div_le_div_flip` below.  Now I wonder what is the point of either of these lemmas... -/
 @[to_additive]
 theorem div_le_inv_mul_iff [CovariantClass α α (swap (· * ·)) (· ≤ ·)] : a / b ≤ a⁻¹ * b ↔ a ≤ b :=
-  by 
+  by
   rw [div_eq_mul_inv, mul_inv_le_inv_mul_iff]
   exact
     ⟨fun h => not_lt.mp fun k => not_lt.mpr h (mul_lt_mul_of_lt_of_lt k k), fun h =>
@@ -900,28 +889,24 @@ end LinearOrder
 -/
 
 
-#print LinearOrderedAddCommGroup /-
 /-- A linearly ordered additive commutative group is an
 additive commutative group with a linear order in which
 addition is monotone. -/
-@[protect_proj]
 class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, LinearOrder α
 #align linear_ordered_add_comm_group LinearOrderedAddCommGroup
--/
 
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined.` -/
-@[protect_proj]
 class LinearOrderedAddCommGroupWithTop (α : Type _) extends LinearOrderedAddCommMonoidWithTop α,
   SubNegMonoid α, Nontrivial α where
-  neg_top : -(⊤ : α) = ⊤
-  add_neg_cancel : ∀ a : α, a ≠ ⊤ → a + -a = 0
+  protected neg_top : -(⊤ : α) = ⊤
+  protected add_neg_cancel : ∀ a : α, a ≠ ⊤ → a + -a = 0
 #align linear_ordered_add_comm_group_with_top LinearOrderedAddCommGroupWithTop
 
 /-- A linearly ordered commutative group is a
 commutative group with a linear order in which
 multiplication is monotone. -/
-@[protect_proj, to_additive]
+@[to_additive]
 class LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α, LinearOrder α
 #align linear_ordered_comm_group LinearOrderedCommGroup
 
@@ -949,7 +934,7 @@ theorem eq_one_of_inv_eq' (h : a⁻¹ = a) : a = 1 :=
 @[to_additive exists_zero_lt]
 theorem exists_one_lt' [Nontrivial α] : ∃ a : α, 1 < a := by
   obtain ⟨y, hy⟩ := Decidable.exists_ne (1 : α)
-  cases hy.lt_or_lt
+  obtain h|h := hy.lt_or_lt
   · exact ⟨y⁻¹, one_lt_inv'.mpr h⟩
   · exact ⟨y, h⟩
 #align exists_one_lt' exists_one_lt'
@@ -957,7 +942,7 @@ theorem exists_one_lt' [Nontrivial α] : ∃ a : α, 1 < a := by
 -- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 100) LinearOrderedCommGroup.to_no_max_order [Nontrivial α] : NoMaxOrder α :=
-  ⟨by 
+  ⟨by
     obtain ⟨y, hy⟩ : ∃ a : α, 1 < a := exists_one_lt'
     exact fun a => ⟨a * y, lt_mul_of_one_lt_right' a hy⟩⟩
 #align linear_ordered_comm_group.to_no_max_order LinearOrderedCommGroup.to_no_max_order
@@ -965,7 +950,7 @@ instance (priority := 100) LinearOrderedCommGroup.to_no_max_order [Nontrivial α
 -- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 100) LinearOrderedCommGroup.to_no_min_order [Nontrivial α] : NoMinOrder α :=
-  ⟨by 
+  ⟨by
     obtain ⟨y, hy⟩ : ∃ a : α, 1 < a := exists_one_lt'
     exact fun a => ⟨a / y, (div_lt_self_iff a).mpr hy⟩⟩
 #align linear_ordered_comm_group.to_no_min_order LinearOrderedCommGroup.to_no_min_order
@@ -978,13 +963,14 @@ namespace AddCommGroup
 /-- A collection of elements in an `add_comm_group` designated as "non-negative".
 This is useful for constructing an `ordered_add_commm_group`
 by choosing a positive cone in an exisiting `add_comm_group`. -/
-@[nolint has_nonempty_instance]
+-- Porting note: @[nolint has_nonempty_instance]
 structure PositiveCone (α : Type _) [AddCommGroup α] where
-  Nonneg : α → Prop
-  Pos : α → Prop := fun a => nonneg a ∧ ¬nonneg (-a)
-  pos_iff : ∀ a, Pos a ↔ nonneg a ∧ ¬nonneg (-a) := by
-    run_tac
-      order_laws_tac
+  nonneg : α → Prop
+  pos : α → Prop := fun a => nonneg a ∧ ¬nonneg (-a)
+  pos_iff : ∀ a, pos a ↔ nonneg a ∧ ¬nonneg (-a) := by
+    sorry
+    --run_tac
+    --  order_laws_tac
   zero_nonneg : nonneg 0
   add_nonneg : ∀ {a b}, nonneg a → nonneg b → nonneg (a + b)
   nonneg_antisymm : ∀ {a}, nonneg a → nonneg (-a) → a = 0
@@ -992,7 +978,7 @@ structure PositiveCone (α : Type _) [AddCommGroup α] where
 
 /-- A positive cone in an `add_comm_group` induces a linear order if
 for every `a`, either `a` or `-a` is non-negative. -/
-@[nolint has_nonempty_instance]
+-- Porting note: @[nolint has_nonempty_instance]
 structure TotalPositiveCone (α : Type _) [AddCommGroup α] extends PositiveCone α where
   nonnegDecidable : DecidablePred nonneg
   nonneg_total : ∀ a : α, nonneg a ∨ nonneg (-a)
@@ -1010,7 +996,9 @@ open AddCommGroup
 /-- Construct an `ordered_add_comm_group` by
 designating a positive cone in an existing `add_comm_group`. -/
 def mkOfPositiveCone {α : Type _} [AddCommGroup α] (C : PositiveCone α) : OrderedAddCommGroup α :=
-  { ‹AddCommGroup α› with le := fun a b => C.Nonneg (b - a), lt := fun a b => C.Pos (b - a),
+  { ‹AddCommGroup α› with
+    le := fun a b => C.nonneg (b - a),
+    lt := fun a b => C.pos (b - a),
     lt_iff_le_not_le := fun a b => by simp <;> rw [C.pos_iff] <;> simp,
     le_refl := fun a => by simp [C.zero_nonneg],
     le_trans := fun a b c nab nbc => by
@@ -1032,12 +1020,8 @@ such that for every `a`, either `a` or `-a` is non-negative. -/
 def mkOfPositiveCone {α : Type _} [AddCommGroup α] (C : TotalPositiveCone α) :
     LinearOrderedAddCommGroup α :=
   { OrderedAddCommGroup.mkOfPositiveCone C.toPositiveCone with
-    le_total := fun a b => by 
-      convert C.nonneg_total (b - a)
-      change C.nonneg _ = _
-      congr
-      simp,
-    decidableLe := fun a b => C.nonnegDecidable _ }
+    le_total := fun a b => C.nonneg_total (b - a)
+    decidable_le := fun a b => C.nonnegDecidable _ }
 #align linear_ordered_add_comm_group.mk_of_positive_cone LinearOrderedAddCommGroup.mkOfPositiveCone
 
 end LinearOrderedAddCommGroup
@@ -1083,23 +1067,23 @@ variable {β : Type _} [Group α] [Preorder α] [CovariantClass α α (· * ·) 
   [CovariantClass α α (swap (· * ·)) (· ≤ ·)] [Preorder β] {f : β → α} {s : Set β}
 
 @[to_additive]
-theorem Monotone.inv (hf : Monotone f) : Antitone fun x => (f x)⁻¹ := fun x y hxy =>
+theorem Monotone.inv (hf : Monotone f) : Antitone fun x => (f x)⁻¹ := fun _ _ hxy =>
   inv_le_inv_iff.2 (hf hxy)
 #align monotone.inv Monotone.inv
 
 @[to_additive]
-theorem Antitone.inv (hf : Antitone f) : Monotone fun x => (f x)⁻¹ := fun x y hxy =>
+theorem Antitone.inv (hf : Antitone f) : Monotone fun x => (f x)⁻¹ := fun _ _ hxy =>
   inv_le_inv_iff.2 (hf hxy)
 #align antitone.inv Antitone.inv
 
 @[to_additive]
 theorem MonotoneOn.inv (hf : MonotoneOn f s) : AntitoneOn (fun x => (f x)⁻¹) s :=
-  fun x hx y hy hxy => inv_le_inv_iff.2 (hf hx hy hxy)
+  fun _ hx _ hy hxy => inv_le_inv_iff.2 (hf hx hy hxy)
 #align monotone_on.inv MonotoneOn.inv
 
 @[to_additive]
 theorem AntitoneOn.inv (hf : AntitoneOn f s) : MonotoneOn (fun x => (f x)⁻¹) s :=
-  fun x hx y hy hxy => inv_le_inv_iff.2 (hf hx hy hxy)
+  fun _ hx _ hy hxy => inv_le_inv_iff.2 (hf hx hy hxy)
 #align antitone_on.inv AntitoneOn.inv
 
 end
@@ -1110,24 +1094,23 @@ variable {β : Type _} [Group α] [Preorder α] [CovariantClass α α (· * ·) 
   [CovariantClass α α (swap (· * ·)) (· < ·)] [Preorder β] {f : β → α} {s : Set β}
 
 @[to_additive]
-theorem StrictMono.inv (hf : StrictMono f) : StrictAnti fun x => (f x)⁻¹ := fun x y hxy =>
+theorem StrictMono.inv (hf : StrictMono f) : StrictAnti fun x => (f x)⁻¹ := fun _ _ hxy =>
   inv_lt_inv_iff.2 (hf hxy)
 #align strict_mono.inv StrictMono.inv
 
 @[to_additive]
-theorem StrictAnti.inv (hf : StrictAnti f) : StrictMono fun x => (f x)⁻¹ := fun x y hxy =>
+theorem StrictAnti.inv (hf : StrictAnti f) : StrictMono fun x => (f x)⁻¹ := fun _ _ hxy =>
   inv_lt_inv_iff.2 (hf hxy)
 #align strict_anti.inv StrictAnti.inv
 
 @[to_additive]
 theorem StrictMonoOn.inv (hf : StrictMonoOn f s) : StrictAntiOn (fun x => (f x)⁻¹) s :=
-  fun x hx y hy hxy => inv_lt_inv_iff.2 (hf hx hy hxy)
+  fun _ hx _ hy hxy => inv_lt_inv_iff.2 (hf hx hy hxy)
 #align strict_mono_on.inv StrictMonoOn.inv
 
 @[to_additive]
 theorem StrictAntiOn.inv (hf : StrictAntiOn f s) : StrictMonoOn (fun x => (f x)⁻¹) s :=
-  fun x hx y hy hxy => inv_lt_inv_iff.2 (hf hx hy hxy)
+  fun _ hx _ hy hxy => inv_lt_inv_iff.2 (hf hx hy hxy)
 #align strict_anti_on.inv StrictAntiOn.inv
 
 end
-
