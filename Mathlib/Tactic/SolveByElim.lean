@@ -60,7 +60,7 @@ Configuration structure to control the behaviour of `solve_by_elim`:
 -/
 structure Config extends ApplyConfig where
   /-- Maximum recursion depth. -/
-  maxDepth : Nat := 12
+  maxDepth : Nat := 6
   /-- If `failAtDepth`, then `solve_by_elim` will fail (and backtrack) upon reaching the max depth.
   Otherwise, upon reaching the max depth, all remaining goals will be returned.
   (defaults to `true`) -/
