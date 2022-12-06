@@ -56,10 +56,10 @@ open Function (Injective Surjective)
 
 
 /-- Typeclass for faithful actions. -/
-class HasFaithfulVAdd (G : Type _) (P : Type _) [VAdd G P] : Prop where
+class FaithfulVAdd (G : Type _) (P : Type _) [VAdd G P] : Prop where
   /-- Two elements `g₁` and `g₂` are equal whenever they act in the same way on all points. -/
   eq_of_vadd_eq_vadd : ∀ {g₁ g₂ : G}, (∀ p : P, g₁ +ᵥ p = g₂ +ᵥ p) → g₁ = g₂
-#align has_faithful_vadd HasFaithfulVAdd
+#align has_faithful_vadd FaithfulVAdd
 
 /-- Typeclass for faithful actions. -/
 @[to_additive]
@@ -70,7 +70,7 @@ class FaithfulSMul (M : Type _) (α : Type _) [SMul M α] : Prop where
 
 export FaithfulSMul (eq_of_smul_eq_smul)
 
-export HasFaithfulVAdd (eq_of_vadd_eq_vadd)
+export FaithfulVAdd (eq_of_vadd_eq_vadd)
 
 @[to_additive]
 theorem smul_left_injective' [SMul M α] [FaithfulSMul M α] :
