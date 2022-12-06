@@ -20,4 +20,9 @@ then reassembles the string by intercalating the separator token `c` over the ma
 def mapTokens (c : Char) (f : String → String) : String → String :=
 intercalate (singleton c) ∘ List.map f ∘ (·.split (· = c))
 
+/-- `isPrefixOf? pre s` returns `some post` if `s = pre ++ post`.
+  If `pre` is not a prefix of `s`, it returns `none`. -/
+def isPrefixOf? (pre s : String) : Option String :=
+  if startsWith s pre then some <| s.drop pre.length else none
+
 end String

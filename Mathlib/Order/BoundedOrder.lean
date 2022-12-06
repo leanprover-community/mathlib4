@@ -233,9 +233,8 @@ theorem OrderTop.ext {α} [PartialOrder α] {A B : OrderTop α} : A = B := by
   rcases A with ⟨ha⟩
   rcases B with ⟨hb⟩
   congr
-  · ext
-    exact le_antisymm (hb _) (ha _)
-  · apply proof_irrel_heq
+  ext
+  exact le_antisymm (hb _) (ha _)
 #align order_top.ext OrderTop.ext
 
 /-- An order is an `OrderBot` if it has a least element.
@@ -278,17 +277,17 @@ namespace OrderDual
 
 variable (α)
 
-instance [Bot α] : Top αᵒᵈ :=
+instance top [Bot α] : Top αᵒᵈ :=
   ⟨(⊥ : α)⟩
 
-instance [Top α] : Bot αᵒᵈ :=
+instance bot [Top α] : Bot αᵒᵈ :=
   ⟨(⊤ : α)⟩
 
-instance [LE α] [OrderBot α] : OrderTop αᵒᵈ where
+instance orderTop [LE α] [OrderBot α] : OrderTop αᵒᵈ where
   __ := inferInstanceAs (Top αᵒᵈ)
   le_top := @bot_le α _ _
 
-instance [LE α] [OrderTop α] : OrderBot αᵒᵈ where
+instance orderBot [LE α] [OrderTop α] : OrderBot αᵒᵈ where
   __ := inferInstanceAs (Bot αᵒᵈ)
   bot_le := @le_top α _ _
 
@@ -443,9 +442,8 @@ theorem OrderBot.ext {α} [PartialOrder α] {A B : OrderBot α} : A = B := by
   rcases A with ⟨ha⟩
   rcases B with ⟨hb⟩
   congr
-  · ext
-    exact le_antisymm (ha _) (hb _)
-  · apply proof_irrel_heq
+  ext
+  exact le_antisymm (ha _) (hb _)
 #align order_bot.ext OrderBot.ext
 
 section SemilatticeSupTop
@@ -529,7 +527,7 @@ end SemilatticeInfBot
 class BoundedOrder (α : Type u) [LE α] extends OrderTop α, OrderBot α
 #align bounded_order BoundedOrder
 
-instance (α : Type u) [LE α] [BoundedOrder α] : BoundedOrder αᵒᵈ where
+instance OrderDual.boundedOrder (α : Type u) [LE α] [BoundedOrder α] : BoundedOrder αᵒᵈ where
   __ := inferInstanceAs (OrderTop αᵒᵈ)
   __ := inferInstanceAs (OrderBot αᵒᵈ)
 
@@ -651,13 +649,13 @@ theorem top_def [∀ i, Top (α' i)] : (⊤ : ∀ i, α' i) = fun _ => ⊤ :=
   rfl
 #align pi.top_def Pi.top_def
 
-instance [∀ i, LE (α' i)] [∀ i, OrderTop (α' i)] : OrderTop (∀ i, α' i) :=
+instance orderTop [∀ i, LE (α' i)] [∀ i, OrderTop (α' i)] : OrderTop (∀ i, α' i) :=
   { inferInstanceAs (Top (∀ i, α' i)) with le_top := fun _ _ => le_top }
 
-instance [∀ i, LE (α' i)] [∀ i, OrderBot (α' i)] : OrderBot (∀ i, α' i) :=
+instance orderBot [∀ i, LE (α' i)] [∀ i, OrderBot (α' i)] : OrderBot (∀ i, α' i) :=
   { inferInstanceAs (Bot (∀ i, α' i)) with bot_le := fun _ _ => bot_le }
 
-instance [∀ i, LE (α' i)] [∀ i, BoundedOrder (α' i)] : BoundedOrder (∀ i, α' i) where
+instance boundedOrder [∀ i, LE (α' i)] [∀ i, BoundedOrder (α' i)] : BoundedOrder (∀ i, α' i) where
   __ := inferInstanceAs (OrderTop (∀ i, α' i))
   __ := inferInstanceAs (OrderBot (∀ i, α' i))
 
@@ -807,21 +805,21 @@ namespace Prod
 
 variable (α β)
 
-instance [Top α] [Top β] : Top (α × β) :=
+instance top [Top α] [Top β] : Top (α × β) :=
   ⟨⟨⊤, ⊤⟩⟩
 
-instance [Bot α] [Bot β] : Bot (α × β) :=
+instance bot [Bot α] [Bot β] : Bot (α × β) :=
   ⟨⟨⊥, ⊥⟩⟩
 
-instance [LE α] [LE β] [OrderTop α] [OrderTop β] : OrderTop (α × β) where
+instance orderTop [LE α] [LE β] [OrderTop α] [OrderTop β] : OrderTop (α × β) where
   __ := inferInstanceAs (Top (α × β))
   le_top _ := ⟨le_top, le_top⟩
 
-instance [LE α] [LE β] [OrderBot α] [OrderBot β] : OrderBot (α × β) where
+instance orderBot [LE α] [LE β] [OrderBot α] [OrderBot β] : OrderBot (α × β) where
   __ := inferInstanceAs (Bot (α × β))
   bot_le _ := ⟨bot_le, bot_le⟩
 
-instance [LE α] [LE β] [BoundedOrder α] [BoundedOrder β] : BoundedOrder (α × β) where
+instance boundedOrder [LE α] [LE β] [BoundedOrder α] [BoundedOrder β] : BoundedOrder (α × β) where
   __ := inferInstanceAs (OrderTop (α × β))
   __ := inferInstanceAs (OrderBot (α × β))
 
@@ -910,7 +908,7 @@ section Bool
 
 open Bool
 
-instance : BoundedOrder Bool where
+instance Bool.boundedOrder : BoundedOrder Bool where
   top := true
   le_top _ := le_true
   bot := false

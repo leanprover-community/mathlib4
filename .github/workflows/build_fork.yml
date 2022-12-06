@@ -23,6 +23,10 @@ jobs:
     name: Lint style (fork)
     runs-on: ubuntu-latest
     steps:
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+
       - uses: actions/checkout@v2
 
       - name: install Python
@@ -40,6 +44,10 @@ jobs:
     name: Check all files imported (fork)
     runs-on: ubuntu-latest
     steps:
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+
       - uses: actions/checkout@v2
 
       - name: update Mathlib.lean
@@ -54,6 +62,10 @@ jobs:
     name: Build (fork)
     runs-on: ubuntu-latest
     steps:
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+
       - name: install elan
         run: |
           set -o pipefail
@@ -73,7 +85,7 @@ jobs:
         run: lake build
 
       - name: test mathlib
-        run: make test
+        run: make -j 8 test
 
       - name: lint mathlib
         run: make lint

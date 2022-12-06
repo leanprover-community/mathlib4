@@ -43,6 +43,7 @@ import Mathlib.Tactic.ModCases
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.PushNeg
@@ -151,7 +152,7 @@ syntax notation3Item := strLit <|> bindersItem <|> identOptScoped <|> foldAction
 `notation3` declares notation using Lean 3-style syntax.
 Only to be used for mathport.
 -/
-macro ak:Term.attrKind "notation3"
+macro doc:(docComment)? ak:Term.attrKind "notation3"
     prec:(precedence)? name:(namedName)? prio:(namedPrio)?
     lits:(notation3Item)+ " => " val:term : command => do
   let mut boundNames : Lean.HashMap Name Syntax := {}
@@ -196,7 +197,7 @@ macro ak:Term.attrKind "notation3"
   let val ← val.replaceM fun
     | Syntax.ident _ _ id .. => pure $ boundNames.find? id
     | _ => pure none
-  `($ak:attrKind macro $[$prec]? $[$name]? $[$prio]? $[$macroArgs]* : term => do
+  `($[$doc:docComment]? $ak:attrKind macro $[$prec]? $[$name]? $[$prio]? $[$macroArgs]* : term => do
     `($val:term))
 
 end Parser.Command
@@ -246,8 +247,6 @@ namespace Tactic
 /- S -/ syntax (name := revertAfter) "revert_after " ident : tactic
 /- S -/ syntax (name := revertTargetDeps) "revert_target_deps" : tactic
 /- E -/ syntax (name := clearValue) "clear_value" (ppSpace colGt ident)* : tactic
-
-/- M -/ syntax (name := applyAssumption) "apply_assumption" : tactic
 
 /- S -/ syntax (name := hint) "hint" : tactic
 
@@ -360,7 +359,6 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
   tactic
 /- B -/ syntax (name := equivRwType) "equiv_rw_type" (config)? term : tactic
 
-/- N -/ syntax (name := nthRw) "nth_rw " num rwRuleSeq (ppSpace location)? : tactic
 /- E -/ syntax (name := nthRwLHS) "nth_rw_lhs " num rwRuleSeq (ppSpace location)? : tactic
 /- E -/ syntax (name := nthRwRHS) "nth_rw_rhs " num rwRuleSeq (ppSpace location)? : tactic
 
@@ -452,9 +450,9 @@ namespace Attr
 
 /- M -/ syntax (name := mono) "mono" (ppSpace Tactic.mono.side)? : attr
 
-/- M -/ syntax (name := reassoc) "reassoc" (ppSpace ident)? : attr
-
 /- M -/ syntax (name := elementwise) "elementwise" (ppSpace ident)? : attr
+
+/- N -/ syntax (name := pp_nodot) "pp_nodot" : attr
 
 end Attr
 

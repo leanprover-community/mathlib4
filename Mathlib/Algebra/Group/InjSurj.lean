@@ -183,12 +183,12 @@ protected def cancelCommMonoid [CancelCommMonoid M₂] (f : M₁ → M₂) (hf :
 which has an involutive inversion. See note [reducible non-instances] -/
 @[reducible, to_additive "A type has an involutive negation if it admits a surjective map that
 preserves `-` to a type which has an involutive negation."]
-protected def hasInvolutiveInv {M₁ : Type _} [Inv M₁] [HasInvolutiveInv M₂] (f : M₁ → M₂)
-    (hf : Injective f) (inv : ∀ x, f x⁻¹ = (f x)⁻¹) : HasInvolutiveInv M₁ where
+protected def involutiveInv {M₁ : Type _} [Inv M₁] [InvolutiveInv M₂] (f : M₁ → M₂)
+    (hf : Injective f) (inv : ∀ x, f x⁻¹ = (f x)⁻¹) : InvolutiveInv M₁ where
   inv := Inv.inv
   inv_inv x := hf <| by rw [inv, inv, inv_inv]
-#align function.injective.has_involutive_inv Function.Injective.hasInvolutiveInv
-#align function.injective.has_involutive_neg Function.Injective.hasInvolutiveNeg
+#align function.injective.has_involutive_inv Function.Injective.involutiveInv
+#align function.injective.has_involutive_neg Function.Injective.involutiveNeg
 
 variable [Inv M₁] [Div M₁] [Pow M₁ ℤ]
 
@@ -221,7 +221,7 @@ protected def divisionMonoid [DivisionMonoid M₂] (f : M₁ → M₂) (hf : Inj
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivisionMonoid M₁ :=
-  { hf.divInvMonoid f one mul inv div npow zpow, hf.hasInvolutiveInv f inv with
+  { hf.divInvMonoid f one mul inv div npow zpow, hf.involutiveInv f inv with
     mul_inv_rev := fun x y => hf <| by erw [inv, mul, mul_inv_rev, mul, inv, inv],
     inv_eq_of_mul := fun x y h => hf <| by
       erw [inv, inv_eq_of_mul_eq_one_right (by erw [← mul, h, one])] }
@@ -377,12 +377,12 @@ protected def commMonoid [CommMonoid M₁] (f : M₁ → M₂) (hf : Surjective 
 which has an involutive inversion. See note [reducible non-instances] -/
 @[reducible, to_additive "A type has an involutive negation if it admits a surjective map that
 preserves `-` to a type which has an involutive negation."]
-protected def hasInvolutiveInv {M₂ : Type _} [Inv M₂] [HasInvolutiveInv M₁] (f : M₁ → M₂)
-    (hf : Surjective f) (inv : ∀ x, f x⁻¹ = (f x)⁻¹) : HasInvolutiveInv M₂ where
+protected def involutiveInv {M₂ : Type _} [Inv M₂] [InvolutiveInv M₁] (f : M₁ → M₂)
+    (hf : Surjective f) (inv : ∀ x, f x⁻¹ = (f x)⁻¹) : InvolutiveInv M₂ where
   inv := Inv.inv
   inv_inv := hf.forall.2 fun x => by erw [← inv, ← inv, inv_inv]
-#align function.surjective.has_involutive_inv Function.Surjective.hasInvolutiveInv
-#align function.surjective.has_involutive_neg Function.Surjective.hasInvolutiveNeg
+#align function.surjective.has_involutive_inv Function.Surjective.involutiveInv
+#align function.surjective.has_involutive_neg Function.Surjective.involutiveNeg
 
 variable [Inv M₂] [Div M₂] [Pow M₂ ℤ]
 

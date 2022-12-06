@@ -21,4 +21,8 @@ def eraseCore : List (Name × DataValue) → Name → List (Name × DataValue)
 def erase : KVMap → Name → KVMap
   | ⟨m⟩, k => ⟨eraseCore m k⟩
 
+/-- update a Boolean entry based on its current value. -/
+def updateBool (m : KVMap) (k : Name) (f : Bool → Bool) : KVMap :=
+  m.insert k <| DataValue.ofBool <| f <| m.getBool k
+
 end Lean.KVMap

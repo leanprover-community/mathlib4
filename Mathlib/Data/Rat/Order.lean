@@ -31,7 +31,7 @@ instance : LinearOrderedCommRing Rat where
   add_le_add_left := sorry
   zero_le_one := sorry
   le_total := sorry
-  decidable_le := sorry
+  decidable_le := inferInstance
   exists_pair_ne := sorry
   mul_comm := sorry
   min_def := sorry

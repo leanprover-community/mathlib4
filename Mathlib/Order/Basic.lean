@@ -219,11 +219,18 @@ namespace LE.le
 protected theorem ge [LE α] {x y : α} (h : x ≤ y) : y ≥ x :=
   h
 
-theorem lt_iff_ne [PartialOrder α] {x y : α} (h : x ≤ y) : x < y ↔ x ≠ y :=
-  ⟨fun h ↦ h.ne, h.lt_of_ne⟩
+section partial_order
+variable [PartialOrder α] {a b : α}
 
-theorem le_iff_eq [PartialOrder α] {x y : α} (h : x ≤ y) : y ≤ x ↔ y = x :=
-  ⟨fun h' ↦ h'.antisymm h, Eq.le⟩
+lemma lt_iff_ne (h : a ≤ b) : a < b ↔ a ≠ b := ⟨fun h ↦ h.ne, h.lt_of_ne⟩
+lemma gt_iff_ne (h : a ≤ b) : a < b ↔ b ≠ a := ⟨fun h ↦ h.ne.symm, h.lt_of_ne'⟩
+lemma not_lt_iff_eq (h : a ≤ b) : ¬ a < b ↔ a = b := h.lt_iff_ne.not_left
+lemma not_gt_iff_eq (h : a ≤ b) : ¬ a < b ↔ b = a := h.gt_iff_ne.not_left
+
+lemma le_iff_eq (h : a ≤ b) : b ≤ a ↔ b = a := ⟨fun h' ↦ h'.antisymm h, Eq.le⟩
+lemma ge_iff_eq (h : a ≤ b) : b ≤ a ↔ a = b := ⟨h.antisymm, Eq.ge⟩
+
+end partial_order
 
 theorem lt_or_le [LinearOrder α] {a b : α} (h : a ≤ b) (c : α) : a < c ∨ c ≤ b :=
   ((lt_or_ge a c).imp id) fun hc ↦ le_trans hc h
@@ -631,7 +638,7 @@ instance {ι : Type u} {α : ι → Type v} [∀ i, PartialOrder (α i)] :
   __ := inferInstanceAs (Preorder (∀ i, α i))
   le_antisymm := fun _ _ h1 h2 ↦ funext fun b ↦ (h1 b).antisymm (h2 b)
 
-instance {ι : Type u} {α : ι → Type v} [∀ i, SDiff (α i)] : SDiff (∀ i, α i) :=
+instance Pi.sdiff {ι : Type u} {α : ι → Type v} [∀ i, SDiff (α i)] : SDiff (∀ i, α i) :=
   ⟨fun x y i ↦ x i \ y i⟩
 
 theorem Pi.sdiff_def {ι : Type u} {α : ι → Type v} [∀ i, SDiff (α i)] (x y : ∀ i, α i) :
@@ -648,7 +655,7 @@ variable [Preorder α] [Nonempty β] {a b : α}
 
 @[simp] lemma const_le_const : const β a ≤ const β b ↔ a ≤ b := by simp [Pi.le_def]
 @[simp] lemma const_lt_const : const β a < const β b ↔ a < b := by
-  simpa [Pi.lt_def] using le_of_lt (α := _)
+  simpa [Pi.lt_def] using le_of_lt (α := α)
 
 end Function
 
@@ -886,7 +893,7 @@ end Preorder
     available via the type synonym `α ×ₗ β = α × β`.) -/
 instance (α : Type u) (β : Type v) [PartialOrder α] [PartialOrder β] : PartialOrder (α × β) where
   __ := inferInstanceAs (Preorder (α × β))
-  le_antisymm := fun _ _ ⟨hac, hbd⟩ ⟨hca, hdb⟩ ↦ Prod.ext' (hac.antisymm hca) (hbd.antisymm hdb)
+  le_antisymm := fun _ _ ⟨hac, hbd⟩ ⟨hca, hdb⟩ ↦ Prod.ext (hac.antisymm hca) (hbd.antisymm hdb)
 
 end Prod
 

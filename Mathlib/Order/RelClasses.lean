@@ -520,13 +520,10 @@ theorem right_iff_left_not_left_of (r s : α → α → Prop) [IsNonstrictStrict
     s a b ↔ r a b ∧ ¬r b a :=
   right_iff_left_not_left
 
--- Porting note: no `dangerous_instance` linter
 -- The free parameter `r` is strictly speaking not uniquely determined by `s`, but in practice it
 -- always has a unique instance, so this is not dangerous.
--- see Note [lower instance priority]
--- @[nolint dangerous_instance]
-instance (priority := 100) {r : α → α → Prop} {s : α → α → Prop}
-    [IsNonstrictStrictOrder α r s] : IsIrrefl α s :=
+@[nolint dangerousInstance]
+instance {s : α → α → Prop} [IsNonstrictStrictOrder α r s] : IsIrrefl α s :=
   ⟨fun _ h => ((right_iff_left_not_left_of r s).1 h).2 ((right_iff_left_not_left_of r s).1 h).1⟩
 
 /-! #### `⊆` and `⊂` -/
@@ -792,7 +789,7 @@ theorem transitive_ge [Preorder α] : Transitive (@GE.ge α _) :=
 theorem transitive_gt [Preorder α] : Transitive (@GT.gt α _) :=
   transitive_of_trans _
 
-instance OrderDual.is_total_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal αᵒᵈ (· ≤ ·) :=
+instance OrderDual.isTotal_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal αᵒᵈ (· ≤ ·) :=
   @IsTotal.swap α _ h
 
 instance : WellFoundedLt ℕ :=

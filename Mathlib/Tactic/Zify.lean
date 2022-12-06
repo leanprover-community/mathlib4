@@ -6,7 +6,7 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.Zify.Attr
-import Mathlib.Algebra.Ring.Basic
+import Mathlib.Data.Int.Basic
 
 /-!
 # `zify` tactic
@@ -77,10 +77,10 @@ variable and returns a tuple of a proof and the corresponding simplified proposi
 def applySimpResultToProp' (proof : Expr) (prop : Expr) (r : Simp.Result) : MetaM (Expr × Expr) :=
   do
   match r.proof? with
-  | some eqProof => return ((← mkEqMP eqProof proof), r.expr)
+  | some eqProof => return (← mkExpectedTypeHint (← mkEqMP eqProof proof) r.expr, r.expr)
   | none =>
     if r.expr != prop then
-      return ((← mkExpectedTypeHint proof r.expr), r.expr)
+      return (← mkExpectedTypeHint proof r.expr, r.expr)
     else
       return (proof, r.expr)
 

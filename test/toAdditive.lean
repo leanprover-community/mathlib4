@@ -28,10 +28,8 @@ class my_has_scalar (M : Type u) (α : Type v) :=
 (smul : M → α → α)
 
 instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
-
-attribute [to_additive_reorder 1] my_has_pow
-attribute [to_additive_reorder 1 4] my_has_pow.pow
-attribute [to_additive my_has_scalar] my_has_pow
+attribute [to_additive my_has_scalar (reorder := 1)] my_has_pow
+attribute [to_additive (reorder := 1 4)] my_has_pow.pow
 
 @[to_additive bar1]
 def foo1 {α : Type u} [my_has_pow α ℕ] (x : α) (n : ℕ) : α := @my_has_pow.pow α ℕ _ x n
@@ -43,7 +41,6 @@ infix:80 " ^ " => my_has_pow.pow
 
 instance dummy_pow : my_has_pow ℕ $ PLift ℤ := ⟨fun _ _ => 5⟩
 
-set_option pp.universes true
 @[to_additive bar2]
 def foo2 {α} [my_has_pow α ℕ] (x : α) (n : ℕ) (m : PLift ℤ) : α := x ^ (n ^ m)
 
@@ -96,6 +93,22 @@ def foo11 (n : ℕ) (m : ℤ) := n * m * 2 + 1 * 0 + 37 * 1 + 2
 
 theorem bar11_works : bar11 = foo11 := by rfl
 
+@[to_additive bar12]
+def foo12 (_ : Nat) (_ : Int) : Fin 37 := ⟨2, by decide⟩
+
+@[to_additive bar13 (reorder := 1 4)]
+lemma foo13 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : x ^ y = x ^ y := rfl
+
+@[to_additive bar14 (reorder := 1 4)]
+def foo14 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : α := (x ^ y) ^ y
+
+@[to_additive bar15 (reorder := 1 4)]
+lemma foo15 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = (x ^ y) ^ y := rfl
+
+@[to_additive bar16 (reorder := 1 4)]
+lemma foo16 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = (x ^ y) ^ y := foo15 x y
+
+
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do
   let c ← getConstInfo `Test.foo6
@@ -103,6 +116,9 @@ run_cmd do
   let t ← Elab.Command.liftCoreM <| Lean.Meta.MetaM.run' <| ToAdditive.expand c.type
   let decl := c |>.updateName `Test.barr6 |>.updateType t |>.updateValue e |>.toDeclaration!
   Elab.Command.liftCoreM <| addAndCompile decl
+  -- test that we cannot transport a declaration to itself
+  successIfFail <| Elab.Command.liftCoreM <|
+    ToAdditive.addToAdditiveAttr `bar11_works { ref := ← getRef }
 
 /-! Test the namespace bug (#8733). This code should *not* generate a lemma
   `add_some_def.in_namespace`. -/
@@ -113,9 +129,8 @@ if some_def.in_namespace then x * x else x
 
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
-run_cmd do
-  Elab.Command.liftCoreM <| successIfFail (ToAdditive.transformDecl (← getRef)
-    `Test.some_def `Test.add_some_def)
+run_cmd Elab.Command.liftCoreM <| successIfFail <|
+    ToAdditive.transformDecl { ref := ← getRef} `Test.some_def `Test.add_some_def
 
 
 attribute [to_additive some_other_name] some_def.in_namespace
@@ -160,7 +175,7 @@ def pi_nat_has_one {I : Type} : One ((x : I) → Nat)  := pi.has_one
 
 example : @pi_nat_has_one = @pi_nat_has_zero := rfl
 
-section noncomputablee
+section test_noncomputable
 
 @[to_additive Bar.bar]
 noncomputable def Foo.foo (h : ∃ _ : α, True) : α := Classical.choose h
@@ -171,9 +186,9 @@ def Foo.foo' : ℕ := 2
 theorem Bar.bar'_works : Bar.bar' = 2 := by decide
 
 run_cmd (do
-  if !isNoncomputable (← getEnv) `Bar.bar then throwError "bar shouldn't be computable"
-  if isNoncomputable (← getEnv) `Bar.bar' then throwError "bar' should be computable")
-end noncomputablee
+  if !isNoncomputable (← getEnv) `Test.Bar.bar then throwError "bar shouldn't be computable"
+  if isNoncomputable (← getEnv) `Test.Bar.bar' then throwError "bar' should be computable")
+end test_noncomputable
 
 section instances
 
@@ -254,6 +269,9 @@ run_cmd
   checkGuessName "LTHMulHPowLEHDiv" "LTHAddHSMulLEHSub"
   checkGuessName "OneLEHMul" "NonnegHAdd"
   checkGuessName "OneLTHPow" "PosHSMul"
+  checkGuessName "instCoeTCOneHom" "instCoeTCZeroHom"
+  checkGuessName "instCoeTOneHom" "instCoeTZeroHom"
+  checkGuessName "instCoeOneHom" "instCoeZeroHom"
 
 end guessName
 

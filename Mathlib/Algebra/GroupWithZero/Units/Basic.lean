@@ -214,9 +214,7 @@ theorem inv_mul' (u : G₀ˣ) : (u⁻¹ : G₀) * u = 1 :=
 
 @[simp]
 theorem mk0_inj {a b : G₀} (ha : a ≠ 0) (hb : b ≠ 0) : Units.mk0 a ha = Units.mk0 b hb ↔ a = b :=
-  ⟨fun h => by injection h; assumption, fun h => Units.ext h⟩
-  -- `assumption` was necessary, apparently `injection` doesn't run it?
-  -- See https://github.com/leanprover/lean4/issues/1886
+  ⟨fun h => by injection h, fun h => Units.ext h⟩
 #align units.mk0_inj Units.mk0_inj
 
 /-- In a group with zero, an existential over a unit can be rewritten in terms of `Units.mk0`. -/

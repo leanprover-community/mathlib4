@@ -329,7 +329,7 @@ theorem SemilatticeSup.ext {α} {A B : SemilatticeSup α}
   cases A
   cases B
   cases PartialOrder.ext H
-  congr <;> apply proof_irrel_heq
+  congr
 #align semilattice_sup.ext SemilatticeSup.ext
 
 theorem ite_le_sup (s s' : α) (P : Prop) [Decidable P] : ite P s s' ≤ s ⊔ s' :=
@@ -567,7 +567,7 @@ theorem SemilatticeInf.ext {α} {A B : SemilatticeInf α}
   cases A
   cases B
   cases PartialOrder.ext H
-  congr <;> apply proof_irrel_heq
+  congr
 #align semilattice_inf.ext SemilatticeInf.ext
 
 theorem SemilatticeInf.dual_dual (α : Type _) [H : SemilatticeInf α] :
@@ -604,7 +604,7 @@ def SemilatticeInf.mk' {α : Type _} [HasInf α] (inf_comm : ∀ a b : α, a ⊓
 class Lattice (α : Type u) extends SemilatticeSup α, SemilatticeInf α
 #align lattice Lattice
 
-instance (α) [Lattice α] : Lattice αᵒᵈ :=
+instance OrderDual.lattice (α) [Lattice α] : Lattice αᵒᵈ :=
   { OrderDual.semilatticeSup α, OrderDual.semilatticeInf α with }
 
 /-- The partial orders from `SemilatticeSup_mk'` and `SemilatticeInf_mk'` agree
@@ -794,14 +794,14 @@ theorem eq_of_inf_eq_sup_eq {α : Type u} [DistribLattice α] {a b c : α} (h₁
 #align eq_of_inf_eq_sup_eq eq_of_inf_eq_sup_eq
 
 end DistribLattice
-
+#print OrderDual.distribLattice
 -- See note [reducible non-instances]
 /-- Prove distributivity of an existing lattice from the dual distributive law. -/
 @[reducible]
 def DistribLattice.ofInfSupLe [Lattice α] (inf_sup_le : ∀ a b c : α, a ⊓ (b ⊔ c) ≤ a ⊓ b ⊔ a ⊓ c) :
-  DistribLattice α where
-  __ := inferInstanceAs (Lattice αᵒᵈ)
-  __ := @OrderDual.distribLattice αᵒᵈ {inferInstanceAs (Lattice αᵒᵈ) with le_sup_inf := inf_sup_le}
+    DistribLattice α :=
+  { le_sup_inf := (@OrderDual.distribLattice αᵒᵈ {inferInstanceAs (Lattice αᵒᵈ) with
+      le_sup_inf := inf_sup_le}).le_sup_inf, }
 #align distrib_lattice.of_inf_sup_le DistribLattice.ofInfSupLe
 
 /-!
@@ -810,7 +810,7 @@ def DistribLattice.ofInfSupLe [Lattice α] (inf_sup_le : ∀ a b c : α, a ⊓ (
 
 
 -- see Note [lower instance priority]
-instance (priority := 100) {α : Type u} [o : LinearOrder α] : Lattice α :=
+instance (priority := 100) LinearOrder.toLattice {α : Type u} [o : LinearOrder α] : Lattice α :=
   { o with
     sup := max,
     le_sup_left := le_max_left, le_sup_right := le_max_right, sup_le := fun _ _ _ => max_le,
@@ -1019,21 +1019,21 @@ theorem inf_def [∀ i, HasInf (α' i)] (f g : ∀ i, α' i) : f ⊓ g = fun i =
   rfl
 #align pi.inf_def Pi.inf_def
 
-instance [∀ i, SemilatticeSup (α' i)] : SemilatticeSup (∀ i, α' i) where
+instance semilatticeSup [∀ i, SemilatticeSup (α' i)] : SemilatticeSup (∀ i, α' i) where
   le_sup_left _ _ _ := le_sup_left
   le_sup_right _ _ _ := le_sup_right
   sup_le _ _ _ ac bc i := sup_le (ac i) (bc i)
 
-instance [∀ i, SemilatticeInf (α' i)] : SemilatticeInf (∀ i, α' i) where
+instance semilatticeInf [∀ i, SemilatticeInf (α' i)] : SemilatticeInf (∀ i, α' i) where
   inf_le_left _ _ _ := inf_le_left
   inf_le_right _ _ _ := inf_le_right
   le_inf _ _ _ ac bc i := le_inf (ac i) (bc i)
 
-instance [∀ i, Lattice (α' i)] : Lattice (∀ i, α' i) where
+instance lattice [∀ i, Lattice (α' i)] : Lattice (∀ i, α' i) where
   __ := inferInstanceAs (SemilatticeSup (∀ i, α' i))
   __ := inferInstanceAs (SemilatticeInf (∀ i, α' i))
 
-instance [∀ i, DistribLattice (α' i)] : DistribLattice (∀ i, α' i) where
+instance distribLattice [∀ i, DistribLattice (α' i)] : DistribLattice (∀ i, α' i) where
   le_sup_inf _ _ _ _ := le_sup_inf
 
 end Pi
@@ -1279,25 +1279,25 @@ theorem inf_def [HasInf α] [HasInf β] (p q : α × β) : p ⊓ q = (p.fst ⊓ 
   rfl
 #align prod.inf_def Prod.inf_def
 
-instance [SemilatticeSup α] [SemilatticeSup β] : SemilatticeSup (α × β) where
+instance semilatticeSup [SemilatticeSup α] [SemilatticeSup β] : SemilatticeSup (α × β) where
   __ := inferInstanceAs (PartialOrder (α × β))
   __ := inferInstanceAs (HasSup (α × β))
   sup_le _ _ _ h₁ h₂ := ⟨sup_le h₁.1 h₂.1, sup_le h₁.2 h₂.2⟩
   le_sup_left _ _ := ⟨le_sup_left, le_sup_left⟩
   le_sup_right _ _ := ⟨le_sup_right, le_sup_right⟩
 
-instance [SemilatticeInf α] [SemilatticeInf β] : SemilatticeInf (α × β) where
+instance semilatticeInf [SemilatticeInf α] [SemilatticeInf β] : SemilatticeInf (α × β) where
   __ := inferInstanceAs (PartialOrder (α × β))
   __ := inferInstanceAs (HasInf (α × β))
   le_inf _ _ _ h₁ h₂ := ⟨le_inf h₁.1 h₂.1, le_inf h₁.2 h₂.2⟩
   inf_le_left _ _ := ⟨inf_le_left, inf_le_left⟩
   inf_le_right _ _ := ⟨inf_le_right, inf_le_right⟩
 
-instance [Lattice α] [Lattice β] : Lattice (α × β) where
+instance lattice [Lattice α] [Lattice β] : Lattice (α × β) where
   __ := inferInstanceAs (SemilatticeSup (α × β))
   __ := inferInstanceAs (SemilatticeInf (α × β))
 
-instance [DistribLattice α] [DistribLattice β] : DistribLattice (α × β) where
+instance distribLattice [DistribLattice α] [DistribLattice β] : DistribLattice (α × β) where
   __ := inferInstanceAs (Lattice (α × β))
   le_sup_inf _ _ _ := ⟨le_sup_inf, le_sup_inf⟩
 

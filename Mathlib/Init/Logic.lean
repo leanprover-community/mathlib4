@@ -295,6 +295,16 @@ end Decidable
 #align decidable_of_decidable_of_eq decidable_of_decidable_of_eq
 #align or.by_cases Or.by_cases
 
+alias instDecidableOr ← Or.decidable
+alias instDecidableAnd ← And.decidable
+alias instDecidableNot ← Not.decidable
+alias instDecidableIff ← Iff.decidable
+
+#align or.decidable Or.decidable
+#align and.decidable And.decidable
+#align not.decidable Not.decidable
+#align iff.decidable Iff.decidable
+
 instance [Decidable p] [Decidable q] : Decidable (Xor' p q) := inferInstanceAs (Decidable (Or ..))
 
 def IsDecEq {α : Sort u} (p : α → α → Bool) : Prop := ∀ ⦃x y : α⦄, p x y = true → x = y

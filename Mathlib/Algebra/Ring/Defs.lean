@@ -238,7 +238,7 @@ section HasDistribNeg
 
 This is useful for dealing with submonoids of a ring that contain `-1` without having to duplicate
 lemmas. -/
-class HasDistribNeg (α : Type _) [Mul α] extends HasInvolutiveNeg α where
+class HasDistribNeg (α : Type _) [Mul α] extends InvolutiveNeg α where
   /-- Negation is left distributive over multiplication -/
   neg_mul : ∀ x y : α, -x * y = -(x * y)
   /-- Negation is right distributive over multiplication -/
@@ -296,7 +296,7 @@ section MulZeroClass
 variable [MulZeroClass α] [HasDistribNeg α]
 
 instance (priority := 100) MulZeroClass.negZeroClass : NegZeroClass α where
-  __ := inferInstanceAs (Zero α); __ := inferInstanceAs (HasInvolutiveNeg α)
+  __ := inferInstanceAs (Zero α); __ := inferInstanceAs (InvolutiveNeg α)
   neg_zero := by rw [← zero_mul (0 : α), ← neg_mul, mul_zero, mul_zero]
 #align mul_zero_class.neg_zero_class MulZeroClass.negZeroClass
 
@@ -446,10 +446,12 @@ instance (priority := 100) CommRing.toNonUnitalCommRing [s : CommRing α] : NonU
   { s with }
 #align comm_ring.to_non_unital_comm_ring CommRing.toNonUnitalCommRing
 
-/-- A domain is a nontrivial ring with no zero divisors, i.e. satisfying
-  the condition `a * b = 0 ↔ a = 0 ∨ b = 0`.
+/-- A domain is a nontrivial ring such multiplication by a non zero element is cancellative,
+  on both sides. In other words, a nontrivial ring `R` satisfying
+  `∀ {a b c : R}, a ≠ 0 → a * b = a * c → b = c` and
+  `∀ {a b c : R}, b ≠ 0 → a * b = c * b → a = c`.
 
   This is implemented as a mixin for `Ring α`.
   To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
-class IsDomain (α : Type u) [Ring α] extends NoZeroDivisors α, Nontrivial α : Prop
+class IsDomain (α : Type u) [Ring α] extends IsCancelMulZero α, Nontrivial α : Prop
 #align is_domain IsDomain

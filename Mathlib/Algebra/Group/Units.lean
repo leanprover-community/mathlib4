@@ -135,7 +135,7 @@ theorem ext : Function.Injective (fun (u : αˣ) => (u : α))
 
 #align add_units.ext AddUnits.ext
 
-@[to_additive, norm_cast]
+@[norm_cast, to_additive]
 theorem eq_iff {a b : αˣ} : (a : α) = b ↔ a = b :=
   ext.eq_iff
 #align units.eq_iff Units.eq_iff
@@ -216,19 +216,19 @@ attribute [instance] AddUnits.instReprAddUnits
 
 variable (a b c : αˣ) {u : αˣ}
 
-@[simp, to_additive, norm_cast]
+@[simp, norm_cast, to_additive]
 theorem val_mul : (↑(a * b) : α) = a * b :=
   rfl
 #align units.coe_mul Units.val_mul
 #align add_units.coe_add AddUnits.val_add
 
-@[simp, to_additive, norm_cast]
+@[simp, norm_cast, to_additive]
 theorem val_one : ((1 : αˣ) : α) = 1 :=
   rfl
 #align units.coe_one Units.val_one
 #align add_units.coe_zero AddUnits.val_zero
 
-@[simp, to_additive, norm_cast]
+@[simp, norm_cast, to_additive]
 theorem val_eq_one {a : αˣ} : (a : α) = 1 ↔ a = 1 := by rw [← Units.val_one, eq_iff]
 #align units.coe_eq_one Units.val_eq_one
 #align add_units.coe_eq_zero AddUnits.val_eq_zero
@@ -518,13 +518,12 @@ attribute [nontriviality] isAddUnit_of_subsingleton
 
 -- Porting note: removing the `CanLift` instance
 
--- Porting note: `[to_additive]` places the instance in the `Units` namespace by default
 /-- A subsingleton `Monoid` has a unique unit. -/
-@[to_additive AddUnits.instUniqueAddUnits "A subsingleton `AddMonoid` has a unique additive unit."]
+@[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]
 instance [Monoid M] [Subsingleton M] : Unique Mˣ where
   default := 1
   uniq a := Units.val_eq_one.mp <| Subsingleton.elim (a : M) 1
-attribute [instance] AddUnits.instUniqueAddUnits
+
 
 @[simp, to_additive]
 protected theorem Units.isUnit [Monoid M] (u : Mˣ) : IsUnit (u : M) :=
@@ -615,6 +614,8 @@ namespace IsUnit
 theorem mul_iff [CommMonoid M] {x y : M} : IsUnit (x * y) ↔ IsUnit x ∧ IsUnit y :=
   ⟨fun h => ⟨isUnit_of_mul_isUnit_left h, isUnit_of_mul_isUnit_right h⟩,
    fun h => IsUnit.mul h.1 h.2⟩
+#align is_unit.mul_iff IsUnit.mul_iff
+#align is_add_unit.add_iff IsAddUnit.add_iff
 
 section Monoid
 
@@ -634,7 +635,7 @@ protected noncomputable def _root_.IsAddUnit.addUnit [AddMonoid N] {a : N} (h : 
     AddUnits N :=
   (Classical.choose h).copy a (Classical.choose_spec h).symm _ rfl
 #align is_add_unit.add_unit IsAddUnit.addUnit
-attribute [to_additive IsAddUnit.addUnit] IsUnit.unit
+attribute [to_additive] IsUnit.unit
 
 @[simp, to_additive]
 theorem unit_of_val_units {a : Mˣ} (h : IsUnit (a : M)) : h.unit = a :=

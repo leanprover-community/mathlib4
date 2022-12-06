@@ -23,20 +23,16 @@ This file contains:
   induction on numbers less than `b`.
 -/
 
-set_option warningAsError false
-
 namespace Int
 
 instance : LinearOrderedCommRing ℤ where
-  mul_comm := sorry
-  add_le_add_left := sorry
-  zero_le_one := sorry
-  mul_lt_mul_of_pos_left := sorry
-  mul_lt_mul_of_pos_right := sorry
-  le_total := sorry
-  decidable_le := sorry
-  min_def := sorry
-  max_def := sorry
+  mul_comm := Int.mul_comm
+  add_le_add_left _ _ := Int.add_le_add_left
+  zero_le_one := le_of_lt Int.zero_lt_one
+  mul_lt_mul_of_pos_left _ _ _ := Int.mul_lt_mul_of_pos_left
+  mul_lt_mul_of_pos_right _ _ _ := Int.mul_lt_mul_of_pos_right
+  le_total := Int.le_total
+  min_def := Int.min_def
 
 /-- Inductively define a function on `ℤ` by defining it at `b`, for the `succ` of a number greater
 than `b`, and the `pred` of a number less than `b`. -/

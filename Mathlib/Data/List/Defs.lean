@@ -48,7 +48,7 @@ instance [DecidableEq α] : SDiff (List α) :=
 /-- "inhabited" `get` function: returns `default` instead of `none` in the case
   that the index is out of bounds. -/
 def getI [Inhabited α] (l : List α) (n : Nat) : α :=
-  getD  l n default
+  getD l n default
 #align list.inth List.getI
 
 #align list.modify_nth_tail List.modifyNthTail
@@ -63,16 +63,16 @@ def getI [Inhabited α] (l : List α) (n : Nat) : α :=
 
 /-- Product of a list.
 
-     prod [a, b, c] = ((1 * a) * b) * c -/
+     `prod [a, b, c] = ((1 * a) * b) * c` -/
 def prod [Mul α] [One α] : List α → α :=
   foldl (· * ·) 1
 #align list.prod List.prod
 
--- TODO: tag with `to_additive`, but this can't be done yet because of import
+-- Later this will be tagged with `to_additive`, but this can't be done yet because of imports.
 -- dependencies.
 /-- Sum of a list.
 
-     sum [a, b, c] = ((0 + a) + b) + c -/
+     `sum [a, b, c] = ((0 + a) + b) + c` -/
 def sum [Add α] [Zero α] : List α → α :=
   foldl (· + ·) 0
 #align list.sum List.sum
@@ -238,7 +238,7 @@ def All₂ (p : α → Prop) : List α → Prop
 
 section Permutations
 
-/-- An auxiliary function for defining `permutations`. `permutations_aux2 t ts r ys f` is equal to
+/-- An auxiliary function for defining `permutations`. `permutationsAux2 t ts r ys f` is equal to
 `(ys ++ ts, (insert_left ys t ts).map f ++ r)`, where `insert_left ys t ts` (not explicitly
 defined) is the list of lists of the form `insert_nth n t (ys ++ ts)` for `0 ≤ n < length ys`.
 
@@ -254,7 +254,7 @@ def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List �
     (y :: us, f (t :: y :: us) :: zs)
 #align list.permutations_aux2 List.permutationsAux2
 
--- porting comment removed `[elab_as_elim]` per Mario C
+-- porting note: removed `[elab_as_elim]` per Mario C
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Status.20of.20data.2Elist.2Edefs.3F/near/313571979
 /-- A recursor for pairs of lists. To have `C l₁ l₂` for all `l₁`, `l₂`, it suffices to have it for
 `l₂ = []` and to be able to pour the elements of `l₁` into `l₂`. -/
@@ -267,7 +267,7 @@ def permutationsAux.rec {C : List α → List α → Sort v} (H0 : ∀ is, C [] 
   decreasing_by simp_wf; simp [Nat.succ_add]; decreasing_tactic
 #align list.permutations_aux.rec List.permutationsAux.rec
 
-/-- An auxiliary function for defining `permutations`. `permutations_aux ts is` is the set of all
+/-- An auxiliary function for defining `permutations`. `permutationsAux ts is` is the set of all
 permutations of `is ++ ts` that do not fix `ts`. -/
 def permutationsAux : List α → List α → List (List α) :=
   permutationsAux.rec (fun _ => []) fun t ts is IH1 IH2 =>
@@ -283,16 +283,16 @@ def permutations (l : List α) : List (List α) :=
   l :: permutationsAux l []
 #align list.permutations List.permutations
 
-/-- `permutations'_aux t ts` inserts `t` into every position in `ts`, including the last.
-This function is intended for use in specifications, so it is simpler than `permutations_aux2`,
+/-- `permutations'Aux t ts` inserts `t` into every position in `ts`, including the last.
+This function is intended for use in specifications, so it is simpler than `permutationsAux2`,
 which plays roughly the same role in `permutations`.
 
-Note that `(permutations_aux2 t [] [] ts id).2` is similar to this function, but skips the last
+Note that `(permutationsAux2 t [] [] ts id).2` is similar to this function, but skips the last
 position:
 
-    permutations'_aux 10 [1, 2, 3] =
+    permutations'Aux 10 [1, 2, 3] =
       [[10, 1, 2, 3], [1, 10, 2, 3], [1, 2, 10, 3], [1, 2, 3, 10]]
-    (permutations_aux2 10 [] [] [1, 2, 3] id).2 =
+    (permutationsAux2 10 [] [] [1, 2, 3] id).2 =
       [[10, 1, 2, 3], [1, 10, 2, 3], [1, 2, 10, 3]] -/
 @[simp]
 def permutations'Aux (t : α) : List α → List (List α)
@@ -452,7 +452,7 @@ def mapDiagM' {m} [Monad m] {α} (f : α → α → m Unit) : List α → m Unit
 /-- Map each element of a `List` to an action, evaluate these actions in order,
     and collect the results.
 -/
-protected def traverse {F : Type u → Type v}[Applicative F] {α β : Type _} (f : α → F β)
+protected def traverse {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β)
     : List α → F (List β)
   | [] => pure []
   | x :: xs => List.cons <$> f x <*> List.traverse f xs

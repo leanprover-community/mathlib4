@@ -54,6 +54,27 @@ def existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
 
 end Lean.MVarId
 
+namespace Lean.Meta
+
+/--
+Given a monadic function `F` that takes a type and a term of that type and produces a new term,
+lifts this to the monadic function that opens a `∀` telescope, applies `F` to the body,
+and then builds the lambda telescope term for the new term.
+-/
+def mapForallTelescope' (F : Expr → Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
+  forallTelescope (← Meta.inferType forallTerm) fun xs ty => do
+    Meta.mkLambdaFVars xs (← F ty (mkAppN forallTerm xs))
+
+/--
+Given a monadic function `F` that takes a term and produces a new term,
+lifts this to the monadic function that opens a `∀` telescope, applies `F` to the body,
+and then builds the lambda telescope term for the new term.
+-/
+def mapForallTelescope (F : Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
+  mapForallTelescope' (fun _ e => F e) forallTerm
+
+end Lean.Meta
+
 namespace Lean.Elab.Tactic
 
 /-- Analogue of `liftMetaTactic` for tactics that do not return any goals. -/
