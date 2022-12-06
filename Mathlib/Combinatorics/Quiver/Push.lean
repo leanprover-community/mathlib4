@@ -76,12 +76,15 @@ theorem lift_comp : (of σ ⋙q lift σ φ τ h) = φ := by
     simp only [Prefunctor.comp_obj]
     apply Eq.symm
     exact h X
-  · rintro _ _ f
+  · rintro X Y f
     simp only [Prefunctor.comp_map]
     apply eq_of_heq
     iterate 2 apply (cast_heq _ _).trans
     apply HEq.symm
-    iterate 2 apply (eqRec_heq' _ _).trans
+    apply (eqRec_heq' _ _).trans
+    have : ∀ p : Prefunctor.obj φ X = Prefunctor.obj (of σ ⋙q lift σ φ τ h) X,
+      HEq (p ▸ Prefunctor.map φ f) (Prefunctor.map φ f) := by
+
     apply eqRec_heq' _ (Prefunctor.map φ f)
     rfl
 #align push.lift_comp Push.lift_comp
