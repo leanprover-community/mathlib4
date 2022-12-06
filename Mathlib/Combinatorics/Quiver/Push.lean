@@ -66,10 +66,6 @@ theorem lift_obj : (lift σ φ τ h).obj = τ :=
   rfl
 #align push.lift_obj Push.lift_obj
 
-theorem eqRec_heq' {α : Sort u} {φ : α → Sort v} {a a' : α} : (h : a = a') → (p : φ a)
-  → HEq (Eq.rec (motive := fun x _ => φ x) p h) p
-  | rfl, p => HEq.refl p
-
 theorem lift_comp : (of σ ⋙q lift σ φ τ h) = φ := by
   fapply Prefunctor.ext
   · rintro X
@@ -81,12 +77,12 @@ theorem lift_comp : (of σ ⋙q lift σ φ τ h) = φ := by
     apply eq_of_heq
     iterate 2 apply (cast_heq _ _).trans
     apply HEq.symm
-    apply (eqRec_heq' _ _).trans
-    have : ∀ p : Prefunctor.obj φ X = Prefunctor.obj (of σ ⋙q lift σ φ τ h) X,
-      HEq (p ▸ Prefunctor.map φ f) (Prefunctor.map φ f) := by
-
-    apply eqRec_heq' _ (Prefunctor.map φ f)
-    rfl
+    apply (eqRec_heq _ _).trans
+    have : ∀ {α γ} {β : α → γ → Sort _} {a a'} (p : a = a') g (b : β a g), HEq (p ▸ b) b := by
+      intros
+      subst_vars
+      rfl
+    apply this
 #align push.lift_comp Push.lift_comp
 
 theorem lift_unique (Φ : Push σ ⥤q W') (Φ₀ : Φ.obj = τ) (Φcomp : (of σ ⋙q Φ) = φ) :
