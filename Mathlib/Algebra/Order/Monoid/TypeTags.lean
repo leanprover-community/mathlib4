@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
-/-! # Ordered monoid structures on `multiplicative α` and `additive α`. -/
+/-! # Ordered monoid structures on `Multiplicative α` and `Additive α`. -/
 
 
 instance : ∀ [LE α], LE (Multiplicative α) :=

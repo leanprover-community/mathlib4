@@ -39,19 +39,19 @@ instance [Monoid α] [LinearOrder α] : LinearOrder αˣ :=
 /-- `val : αˣ → α` as an order embedding. -/
 @[to_additive "`val : add_units α → α` as an order embedding.",
   simps (config := { fullyApplied := false })]
-def orderEmbedding_val [Monoid α] [LinearOrder α] : αˣ ↪o α :=
+def orderEmbeddingVal [Monoid α] [LinearOrder α] : αˣ ↪o α :=
   ⟨⟨val, ext⟩, Iff.rfl⟩
-#align units.order_embedding_coe Units.orderEmbedding_val
-#align add_units.order_embedding_coe AddUnits.orderEmbedding_val
+#align units.order_embedding_coe Units.orderEmbeddingVal
+#align add_units.order_embedding_coe AddUnits.orderEmbeddingVal
 
 @[simp, norm_cast, to_additive]
 theorem max_val [Monoid α] [LinearOrder α] {a b : αˣ} : (max a b).val = max a.val b.val :=
-  Monotone.map_max orderEmbedding_val.monotone
+  Monotone.map_max orderEmbeddingVal.monotone
 #align units.max_coe Units.max_val
 
 @[simp, norm_cast, to_additive]
 theorem min_val [Monoid α] [LinearOrder α] {a b : αˣ} : (min a b).val = min a.val b.val :=
-  Monotone.map_min orderEmbedding_val.monotone
+  Monotone.map_min orderEmbeddingVal.monotone
 #align units.min_coe Units.min_val
 
 end Units
