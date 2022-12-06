@@ -379,7 +379,7 @@ instance [DivInvOneMonoid α] : DivInvOneMonoid (WithZero α) :=
   { instDivInvMonoidWithZero, instInvOneClassWithZero with }
 
 instance [DivisionMonoid α] : DivisionMonoid (WithZero α) :=
-  { instDivInvMonoidWithZero, instHasInvolutiveInvWithZero with
+  { instDivInvMonoidWithZero, instInvolutiveInvWithZero with
     mul_inv_rev := fun a b =>
       match a, b with
       | none, none => rfl
