@@ -412,7 +412,9 @@ theorem of_mul_zpow [DivInvMonoid G] (x : G) (n : ℤ) :
 theorem SemiconjBy.zpow_right [Group G] {a x y : G} (h : SemiconjBy a x y) :
     ∀ m : ℤ, SemiconjBy a (x ^ m) (y ^ m)
   | (n : ℕ)    => by simp [zpow_ofNat, h.pow_right n]
-  | .negSucc n => by simp [(h.pow_right n.succ).inv_right]
+  | .negSucc n => by
+    simp only [zpow_negSucc, inv_right_iff]
+    apply pow_right h
 #align semiconj_by.zpow_right SemiconjBy.zpow_right
 
 namespace Commute
