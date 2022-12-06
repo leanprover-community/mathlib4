@@ -93,6 +93,7 @@ theorem pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, mul_one]
 @[to_additive two_nsmul ""]
 theorem pow_two (a : M) : a ^ 2 = a * a := by rw [pow_succ, pow_one]
 #align pow_two pow_two
+#align two_nsmul two_nsmul
 
 alias pow_two ← sq
 
@@ -108,15 +109,20 @@ theorem pow_add (a : M) (m n : ℕ) : a ^ (m + n) = a ^ m * a ^ n := by
   · rw [Nat.add_zero, pow_zero, mul_one]
   · rw [pow_succ', ← mul_assoc, ← ih, ← pow_succ', Nat.add_assoc]
 
-@[to_additive mul_nsmul']
+@[to_additive mul_nsmul]
 theorem pow_mul (a : M) (m n : ℕ) : a ^ (m * n) = (a ^ m) ^ n := by
   induction' n with n ih
   · rw [Nat.mul_zero, pow_zero, pow_zero]
   · rw [Nat.mul_succ, pow_add, pow_succ', ih]
+-- Porting note: we are taking the opportunity to swap the names `mul_nsmul` and `mul_nsmul'`
+-- using #align, so that in mathlib4 they will match the multiplicative ones.
+#align pow_mul pow_mul
+#align mul_nsmul' mul_nsmul
 
-@[to_additive mul_nsmul]
+@[to_additive mul_nsmul']
 theorem pow_mul' (a : M) (m n : ℕ) : a ^ (m * n) = (a ^ n) ^ m := by rw [Nat.mul_comm, pow_mul]
 #align pow_mul' pow_mul'
+#align mul_nsmul mul_nsmul'
 
 @[to_additive]
 theorem Commute.mul_pow {a b : M} (h : Commute a b) (n : ℕ) : (a * b) ^ n = a ^ n * b ^ n := by
@@ -124,11 +130,13 @@ theorem Commute.mul_pow {a b : M} (h : Commute a b) (n : ℕ) : (a * b) ^ n = a 
   · rw [pow_zero, pow_zero, pow_zero, one_mul]
   · simp only [pow_succ, ih, ← mul_assoc, (h.pow_left n).right_comm]
 #align commute.mul_pow Commute.mul_pow
+#align add_commute.add_smul AddCommute.add_smul
 
 @[to_additive]
 theorem pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n :=
   Commute.pow_self a n
 #align pow_mul_comm' pow_mul_comm'
+#align smul_add_comm' smul_add_comm'
 
 theorem pow_boole (P : Prop) [Decidable P] (a : M) :
     (a ^ if P then 1 else 0) = if P then a else 1 := by simp
@@ -138,6 +146,7 @@ theorem pow_boole (P : Prop) [Decidable P] (a : M) :
 theorem pow_right_comm (a : M) (m n : ℕ) : (a ^ m) ^ n = (a ^ n) ^ m := by
   rw [← pow_mul, Nat.mul_comm, pow_mul]
 #align pow_right_comm pow_right_comm
+#align nsmul_left_comm nsmul_left_comm
 
 @[to_additive nsmul_add_sub_nsmul]
 theorem pow_mul_pow_sub (a : M) {m n : ℕ} (h : m ≤ n) : a ^ m * a ^ (n - m) = a ^ n := by
