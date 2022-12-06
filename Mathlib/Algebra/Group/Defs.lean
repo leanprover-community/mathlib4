@@ -644,24 +644,28 @@ def zsmulRec {M : Type _} [Zero M] [Add M] [Neg M] : ℤ → M → M
 
 attribute [to_additive] zpowRec
 
-section HasInvolutiveInv
+section InvolutiveInv
 
 /-- Auxiliary typeclass for types with an involutive `Neg`. -/
-class HasInvolutiveNeg (A : Type _) extends Neg A where
+class InvolutiveNeg (A : Type _) extends Neg A where
   neg_neg : ∀ x : A, - -x = x
+
+#align has_involutive_neg InvolutiveNeg
 
 /-- Auxiliary typeclass for types with an involutive `Inv`. -/
 @[to_additive]
-class HasInvolutiveInv (G : Type _) extends Inv G where
+class InvolutiveInv (G : Type _) extends Inv G where
   inv_inv : ∀ x : G, x⁻¹⁻¹ = x
 
-variable [HasInvolutiveInv G]
+#align has_involutive_inv InvolutiveInv
+
+variable [InvolutiveInv G]
 
 @[simp, to_additive]
 theorem inv_inv (a : G) : a⁻¹⁻¹ = a :=
-  HasInvolutiveInv.inv_inv _
+  InvolutiveInv.inv_inv _
 
-end HasInvolutiveInv
+end InvolutiveInv
 
 /-!
 ### Design note on `DivInvMonoid`/`SubNegMonoid` and `DivisionMonoid`/`SubtractionMonoid`
@@ -838,7 +842,7 @@ end InvOneClass
 
 /-- A `SubtractionMonoid` is a `SubNegMonoid` with involutive negation and such that
 `-(a + b) = -b + -a` and `a + b = 0 → -a = b`. -/
-class SubtractionMonoid (G : Type u) extends SubNegMonoid G, HasInvolutiveNeg G where
+class SubtractionMonoid (G : Type u) extends SubNegMonoid G, InvolutiveNeg G where
   neg_add_rev (a b : G) : -(a + b) = -b + -a
   /- Despite the asymmetry of `neg_eq_of_add`, the symmetric version is true thanks to the
   involutivity of negation. -/
@@ -849,13 +853,13 @@ class SubtractionMonoid (G : Type u) extends SubNegMonoid G, HasInvolutiveNeg G 
 
 This is the immediate common ancestor of `Group` and `GroupWithZero`. -/
 @[to_additive SubtractionMonoid]
-class DivisionMonoid (G : Type u) extends DivInvMonoid G, HasInvolutiveInv G where
+class DivisionMonoid (G : Type u) extends DivInvMonoid G, InvolutiveInv G where
   mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹
   /- Despite the asymmetry of `inv_eq_of_mul`, the symmetric version is true thanks to the
   involutivity of inversion. -/
   inv_eq_of_mul (a b : G) : a * b = 1 → a⁻¹ = b
 
-attribute [to_additive] DivisionMonoid.toHasInvolutiveInv
+attribute [to_additive] DivisionMonoid.toInvolutiveInv
 
 section DivisionMonoid
 

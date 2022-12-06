@@ -655,7 +655,7 @@ variable [Preorder α] [Nonempty β] {a b : α}
 
 @[simp] lemma const_le_const : const β a ≤ const β b ↔ a ≤ b := by simp [Pi.le_def]
 @[simp] lemma const_lt_const : const β a < const β b ↔ a < b := by
-  simpa [Pi.lt_def] using le_of_lt (α := _)
+  simpa [Pi.lt_def] using le_of_lt (α := α)
 
 end Function
 
@@ -893,7 +893,7 @@ end Preorder
     available via the type synonym `α ×ₗ β = α × β`.) -/
 instance (α : Type u) (β : Type v) [PartialOrder α] [PartialOrder β] : PartialOrder (α × β) where
   __ := inferInstanceAs (Preorder (α × β))
-  le_antisymm := fun _ _ ⟨hac, hbd⟩ ⟨hca, hdb⟩ ↦ Prod.ext' (hac.antisymm hca) (hbd.antisymm hdb)
+  le_antisymm := fun _ _ ⟨hac, hbd⟩ ⟨hca, hdb⟩ ↦ Prod.ext (hac.antisymm hca) (hbd.antisymm hdb)
 
 end Prod
 
