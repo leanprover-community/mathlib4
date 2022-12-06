@@ -663,7 +663,7 @@ def ofMapLeIff {α β} [PartialOrder α] [Preorder β] (f : α → β) (hf : ∀
 
 @[simp]
 theorem coe_of_map_le_iff {α β} [PartialOrder α] [Preorder β] {f : α → β} (h) :
-    (⇑ofMapLeIff f h) = f :=
+    ⇑ofMapLeIff f h = f :=
   rfl
 #align order_embedding.coe_of_map_le_iff OrderEmbedding.coe_of_map_le_iff
 
@@ -674,7 +674,7 @@ def ofStrictMono {α β} [LinearOrder α] [Preorder β] (f : α → β) (h : Str
 
 @[simp]
 theorem coe_ofStrictMono {α β} [LinearOrder α] [Preorder β] {f : α → β} (h : StrictMono f) :
-    (⇑ofStrictMono f h) = f :=
+    ⇑ofStrictMono f h = f :=
   rfl
 #align order_embedding.coe_of_strict_mono OrderEmbedding.coe_ofStrictMono
 
@@ -753,11 +753,8 @@ def toOrderEmbedding (e : α ≃o β) : α ↪o β :=
   e.toRelEmbedding
 #align order_iso.to_order_embedding OrderIso.toOrderEmbedding
 
--- Porting note: ⇑ is parsing incorrectly, so we add extra parentheses.
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/parsing.20.E2.87.91/near/314154217
--- This occurs many times below, not noted separately each time.
 @[simp]
-theorem coe_to_order_embedding (e : α ≃o β) : (⇑e.toOrderEmbedding) = e :=
+theorem coe_to_order_embedding (e : α ≃o β) : ⇑e.toOrderEmbedding = e :=
   rfl
 #align order_iso.coe_to_order_embedding OrderIso.coe_to_order_embedding
 
@@ -783,10 +780,8 @@ def refl (α : Type _) [LE α] : α ≃o α :=
   RelIso.refl (· ≤ ·)
 #align order_iso.refl OrderIso.refl
 
--- Porting note: ⇑ is parsing incorrectly, so we add extra parentheses.
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/parsing.20.E2.87.91/near/314154217
 @[simp]
-theorem coe_refl : (⇑refl α) = id :=
+theorem coe_refl : ⇑refl α = id :=
   rfl
 #align order_iso.coe_refl OrderIso.coe_refl
 
@@ -850,7 +845,7 @@ def trans (e : α ≃o β) (e' : β ≃o γ) : α ≃o γ :=
 #align order_iso.trans OrderIso.trans
 
 @[simp]
-theorem coe_trans (e : α ≃o β) (e' : β ≃o γ) : (⇑e.trans e') = e' ∘ e :=
+theorem coe_trans (e : α ≃o β) (e' : β ≃o γ) : ⇑e.trans e' = e' ∘ e :=
   rfl
 #align order_iso.coe_trans OrderIso.coe_trans
 
@@ -888,7 +883,7 @@ def prodComm : α × β ≃o β × α where
 #align order_iso.prod_comm OrderIso.prodComm
 
 @[simp]
-theorem coe_prod_comm : (⇑(prodComm : α × β ≃o β × α)) = Prod.swap :=
+theorem coe_prod_comm : ⇑(prodComm : α × β ≃o β × α) = Prod.swap :=
   rfl
 #align order_iso.coe_prod_comm OrderIso.coe_prod_comm
 
@@ -905,12 +900,12 @@ def dualDual : α ≃o αᵒᵈᵒᵈ :=
 #align order_iso.dual_dual OrderIso.dualDual
 
 @[simp]
-theorem coe_dual_dual : (⇑dualDual α) = toDual ∘ toDual :=
+theorem coe_dual_dual : ⇑dualDual α = toDual ∘ toDual :=
   rfl
 #align order_iso.coe_dual_dual OrderIso.coe_dual_dual
 
 @[simp]
-theorem coe_dual_dual_symm : (⇑(dualDual α).symm) = ofDual ∘ ofDual :=
+theorem coe_dual_dual_symm : ⇑(dualDual α).symm = ofDual ∘ ofDual :=
   rfl
 #align order_iso.coe_dual_dual_symm OrderIso.coe_dual_dual_symm
 
@@ -1076,7 +1071,7 @@ def toOrderIso (e : α ≃ β) (h₁ : Monotone e) (h₂ : Monotone e.symm) : α
 
 @[simp]
 theorem coe_toOrderIso (e : α ≃ β) (h₁ : Monotone e) (h₂ : Monotone e.symm) :
-    (⇑e.toOrderIso h₁ h₂) = e :=
+    ⇑e.toOrderIso h₁ h₂ = e :=
   rfl
 #align equiv.coe_to_order_iso Equiv.coe_toOrderIso
 
