@@ -211,10 +211,10 @@ instance CommSemigroup.to_isCommutative : IsCommutative G (· * ·) :=
 
 /-- Any `CommSemigroup G` that satisfies `IsRightCancelMul G` also satisfies
 `IsLeftCancelMul G`. -/
-@[to_additive AddCommSemigroup.IsRightCancelAdd.to_IsLeftCancelAdd "Any
+@[to_additive AddCommSemigroup.IsRightCancelAdd.toIsLeftCancelAdd "Any
 `AddCommSemigroup G` that satisfies `IsRightCancelAdd G` also satisfies
 `IsLeftCancelAdd G`."]
-lemma CommSemigroup.IsRightCancelMul.to_IsLeftCancelMul (G : Type u) [CommSemigroup G]
+lemma CommSemigroup.IsRightCancelMul.toIsLeftCancelMul (G : Type u) [CommSemigroup G]
     [IsRightCancelMul G] : IsLeftCancelMul G :=
   { mul_left_cancel := fun a b c h => by
       rw [mul_comm a b, mul_comm a c] at h
@@ -222,10 +222,10 @@ lemma CommSemigroup.IsRightCancelMul.to_IsLeftCancelMul (G : Type u) [CommSemigr
 
 /-- Any `CommSemigroup G` that satisfies `IsLeftCancelMul G` also satisfies
 `IsRightCancelMul G`. -/
-@[to_additive AddCommSemigroup.IsLeftCancelAdd.to_IsRightCancelAdd "Any
+@[to_additive AddCommSemigroup.IsLeftCancelAdd.toIsRightCancelAdd "Any
 `AddCommSemigroup G` that satisfies `IsLeftCancelAdd G` also satisfies
 `IsRightCancelAdd G`."]
-lemma CommSemigroup.IsLeftCancelMul.to_IsRightCancelMul (G : Type u) [CommSemigroup G]
+lemma CommSemigroup.IsLeftCancelMul.toIsRightCancelMul (G : Type u) [CommSemigroup G]
     [IsLeftCancelMul G] : IsRightCancelMul G :=
   { mul_right_cancel := fun a b c h => by
       rw [mul_comm a b, mul_comm c b] at h
@@ -233,10 +233,10 @@ lemma CommSemigroup.IsLeftCancelMul.to_IsRightCancelMul (G : Type u) [CommSemigr
 
 /-- Any `CommSemigroup G` that satisfies `IsLeftCancelMul G` also satisfies
 `IsCancelMul G`. -/
-@[to_additive AddCommSemigroup.IsLeftCancelAdd.to_IsCancelAdd "Any
+@[to_additive AddCommSemigroup.IsLeftCancelAdd.toIsCancelAdd "Any
 `AddCommSemigroup G` that satisfies `IsLeftCancelAdd G` also satisfies
 `IsCancelAdd G`."]
-lemma CommSemigroup.IsLeftCancelMul.to_IsCancelMul (G : Type u) [CommSemigroup G]
+lemma CommSemigroup.IsLeftCancelMul.toIsCancelMul (G : Type u) [CommSemigroup G]
   [IsLeftCancelMul G] : IsCancelMul G :=
   { mul_right_cancel := fun a b c h => by
       rw [mul_comm a b, mul_comm c b] at h
@@ -244,10 +244,10 @@ lemma CommSemigroup.IsLeftCancelMul.to_IsCancelMul (G : Type u) [CommSemigroup G
 
 /-- Any `CommSemigroup G` that satisfies `IsRightCancelMul G` also satisfies
 `IsCancelMul G`. -/
-@[to_additive AddCommSemigroup.IsRightCancelAdd.to_IsCancelAdd "Any
+@[to_additive AddCommSemigroup.IsRightCancelAdd.toIsCancelAdd "Any
 `AddCommSemigroup G` that satisfies `IsRightCancelAdd G` also satisfies
 `IsCancelAdd G`."]
-lemma CommSemigroup.IsRightCancelMul.to_IsCancelMul (G : Type u) [CommSemigroup G]
+lemma CommSemigroup.IsRightCancelMul.toIsCancelMul (G : Type u) [CommSemigroup G]
     [IsRightCancelMul G] : IsCancelMul G :=
   { mul_left_cancel := fun a b c h => by
       rw [mul_comm a b, mul_comm a c] at h
@@ -292,9 +292,9 @@ theorem mul_ne_mul_right (a : G) {b c : G} : a * b ≠ a * c ↔ b ≠ c :=
   (mul_right_injective a).ne_iff
 
 /-- Any `LeftCancelSemigroup` satisfies `IsLeftCancelMul`. -/
-@[to_additive AddLeftCancelSemigroup.to_IsLeftCancelAdd "Any `AddLeftCancelSemigroup` satisfies
+@[to_additive AddLeftCancelSemigroup.toIsLeftCancelAdd "Any `AddLeftCancelSemigroup` satisfies
 `IsLeftCancelAdd`."]
-instance (priority := 100) LeftCancelSemigroup.to_IsLeftCancelMul (G : Type u)
+instance (priority := 100) LeftCancelSemigroup.toIsLeftCancelMul (G : Type u)
     [LeftCancelSemigroup G] : IsLeftCancelMul G :=
   { mul_left_cancel := LeftCancelSemigroup.mul_left_cancel }
 
@@ -337,9 +337,9 @@ theorem mul_ne_mul_left (a : G) {b c : G} : b * a ≠ c * a ↔ b ≠ c :=
   (mul_left_injective a).ne_iff
 
 /-- Any `RightCancelSemigroup` satisfies `IsRightCancelMul`. -/
-@[to_additive AddRightCancelSemigroup.to_IsRightCancelAdd "Any `AddRightCancelSemigroup` satisfies
+@[to_additive AddRightCancelSemigroup.toIsRightCancelAdd "Any `AddRightCancelSemigroup` satisfies
 `IsRightCancelAdd`."]
-instance (priority := 100) RightCancelSemigroup.to_IsRightCancelMul (G : Type u)
+instance (priority := 100) RightCancelSemigroup.toIsRightCancelMul (G : Type u)
     [RightCancelSemigroup G] : IsRightCancelMul G :=
   { mul_right_cancel := RightCancelSemigroup.mul_right_cancel }
 
@@ -617,13 +617,13 @@ instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelC
   { mul_right_cancel := fun a b c h ↦ mul_left_cancel <| by rw [mul_comm, h, mul_comm] }
 
 /-- Any `CancelMonoid G` satisfies `IsCancelMul G`. -/
-instance (priority := 100) CancelMonoid.to_IsCancelMul (M : Type u) [CancelMonoid M] :
+instance (priority := 100) CancelMonoid.toIsCancelMul (M : Type u) [CancelMonoid M] :
     IsCancelMul M :=
   { mul_left_cancel := LeftCancelSemigroup.mul_left_cancel
     mul_right_cancel := RightCancelSemigroup.mul_right_cancel }
 
 /-- Any `AddCancelMonoid G` satisfies `IsCancelAdd G`. -/
-instance (priority := 100) AddCancelMonoid.to_IsCancelAdd (M : Type u) [AddCancelMonoid M] :
+instance (priority := 100) AddCancelMonoid.toIsCancelAdd (M : Type u) [AddCancelMonoid M] :
     IsCancelAdd M :=
   { add_left_cancel := AddLeftCancelSemigroup.add_left_cancel
     add_right_cancel := AddRightCancelSemigroup.add_right_cancel }
