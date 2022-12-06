@@ -33,6 +33,7 @@ instance [Monoid M] [SMul M α] : SMul Mˣ α where smul m a := (m : M) • a
 theorem smul_def [Monoid M] [SMul M α] (m : Mˣ) (a : α) : m • a = (m : M) • a :=
   rfl
 #align units.smul_def Units.smul_def
+#align add_units.vadd_def AddUnits.vadd_def
 
 @[simp]
 theorem smul_is_unit [Monoid M] [SMul M α] {m : M} (hm : IsUnit m) (a : α) :
