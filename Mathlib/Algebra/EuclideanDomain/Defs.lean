@@ -86,7 +86,7 @@ class EuclideanDomain (R : Type u) extends CommRing R, Nontrivial R where
   protected r : R → R → Prop
   /-- The relation `r` must be well-founded.
     This ensures that the GCD algorithm always terminates. -/
-  r_well_founded : WellFounded r
+  r_wellFounded : WellFounded r
   /-- The relation `r` satisfies `r (a % b) b`. -/
   protected remainder_lt : ∀ (a) {b}, b ≠ 0 → r (remainder a b) b
   /-- An additional constraint on `r`. -/
@@ -97,7 +97,7 @@ class EuclideanDomain (R : Type u) extends CommRing R, Nontrivial R where
 #align euclidean_domain.remainder EuclideanDomain.remainder
 #align euclidean_domain.quotient_mul_add_remainder_eq EuclideanDomain.quotient_mul_add_remainder_eq
 #align euclidean_domain.r EuclideanDomain.r
-#align euclidean_domain.r_well_founded EuclideanDomain.r_well_founded
+#align euclidean_domain.r_well_founded EuclideanDomain.r_wellFounded
 #align euclidean_domain.remainder_lt EuclideanDomain.remainder_lt
 #align euclidean_domain.mul_left_not_lt EuclideanDomain.mul_left_not_lt
 
@@ -173,7 +173,7 @@ section
 open Classical
 
 @[elab_as_elim]
-theorem gcd.induction {P : R → R → Prop} :
+theorem GCD.induction {P : R → R → Prop} :
     ∀ a b : R, (∀ x, P 0 x) → (∀ a b, a ≠ 0 → P (b % a) a → P a b) → P a b
   | a => fun b H0 H1 =>
     if a0 : a = 0 then by
@@ -182,13 +182,13 @@ theorem gcd.induction {P : R → R → Prop} :
       exact a0.symm ▸ H0 b
     else
       have _ := mod_lt b a0
-      H1 _ _ a0 (gcd.induction (b % a) a H0 H1)
-  termination_by' ⟨_, r_well_founded⟩
-#align euclidean_domain.gcd.induction EuclideanDomain.gcd.induction
+      H1 _ _ a0 (GCD.induction (b % a) a H0 H1)
+  termination_by' ⟨_, r_wellFounded⟩
+#align euclidean_domain.gcd.induction EuclideanDomain.GCD.induction
 
 end
 
-section Gcd
+section GCD
 
 variable [DecidableEq R]
 
@@ -200,7 +200,7 @@ def gcd : R → R → R
     else
       have _ := mod_lt b a0
       gcd (b % a) a
-  termination_by' ⟨_, r_well_founded⟩
+  termination_by' ⟨_, r_wellFounded⟩
 #align euclidean_domain.gcd EuclideanDomain.gcd
 
 @[simp]
@@ -225,7 +225,7 @@ def xgcd_aux : R → R → R → R → R → R → R × R × R
       have : r' % r ≺ r := mod_lt _ hr
       let q := r' / r
       xgcd_aux (r' % r) (s' - q * s) (t' - q * t) r s t
-  termination_by' ⟨_, r_well_founded⟩
+  termination_by' ⟨_, r_wellFounded⟩
 #align euclidean_domain.xgcd_aux EuclideanDomain.xgcd_aux
 
 @[simp]
@@ -249,34 +249,34 @@ def xgcd (x y : R) : R × R :=
 #align euclidean_domain.xgcd EuclideanDomain.xgcd
 
 /-- The extended GCD `a` value in the equation `gcd x y = x * a + y * b`. -/
-def gcd_a (x y : R) : R :=
+def gcdA (x y : R) : R :=
   (xgcd x y).1
-#align euclidean_domain.gcd_a EuclideanDomain.gcd_a
+#align euclidean_domain.gcd_a EuclideanDomain.gcdA
 
 /-- The extended GCD `b` value in the equation `gcd x y = x * a + y * b`. -/
-def gcd_b (x y : R) : R :=
+def gcdB (x y : R) : R :=
   (xgcd x y).2
-#align euclidean_domain.gcd_b EuclideanDomain.gcd_b
+#align euclidean_domain.gcd_b EuclideanDomain.gcdB
 
 @[simp]
-theorem gcd_a_zero_left {s : R} : gcd_a 0 s = 0 := by
-  unfold gcd_a
+theorem gcdA_zero_left {s : R} : gcdA 0 s = 0 := by
+  unfold gcdA
   rw [xgcd, xgcd_zero_left]
-#align euclidean_domain.gcd_a_zero_left EuclideanDomain.gcd_a_zero_left
+#align euclidean_domain.gcd_a_zero_left EuclideanDomain.gcdA_zero_left
 
 @[simp]
-theorem gcd_b_zero_left {s : R} : gcd_b 0 s = 1 := by
-  unfold gcd_b
+theorem gcdB_zero_left {s : R} : gcdB 0 s = 1 := by
+  unfold gcdB
   rw [xgcd, xgcd_zero_left]
-#align euclidean_domain.gcd_b_zero_left EuclideanDomain.gcd_b_zero_left
+#align euclidean_domain.gcd_b_zero_left EuclideanDomain.gcdB_zero_left
 
-theorem xgcd_val (x y : R) : xgcd x y = (gcd_a x y, gcd_b x y) :=
+theorem xgcd_val (x y : R) : xgcd x y = (gcdA x y, gcdB x y) :=
   Prod.mk.eta.symm
 #align euclidean_domain.xgcd_val EuclideanDomain.xgcd_val
 
-end Gcd
+end GCD
 
-section Lcm
+section LCM
 
 variable [DecidableEq R]
 
@@ -286,6 +286,6 @@ def lcm (x y : R) : R :=
   x * y / gcd x y
 #align euclidean_domain.lcm EuclideanDomain.lcm
 
-end Lcm
+end LCM
 
 end EuclideanDomain
