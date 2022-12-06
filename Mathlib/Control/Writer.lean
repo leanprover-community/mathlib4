@@ -18,6 +18,8 @@ computation progresses.
 
 -/
 
+-- DEFS copied to `Control.Monad.Writer`
+-- TODO: delete
 def WriterT (ω : Type u) (M : Type u → Type v) (α : Type u) : Type v :=
   M (α × ω)
 
@@ -42,6 +44,7 @@ instance [MonadWriter ω M] : MonadWriter ω (StateT σ M) where
   tell w := (tell w : M _)
   listen x s := (fun ((a,w), s) ↦ ((a,s), w)) <$> listen (x s)
   pass x s := pass <| (fun ((a, f), s) ↦ ((a, s), f)) <$> (x s)
+-- END
 
 namespace WriterT
 
