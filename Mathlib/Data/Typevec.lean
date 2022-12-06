@@ -10,6 +10,7 @@ import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.SolveByElim
 
+set_option autoImplicit false
 /-!
 
 # Tuples of types, and their categorical structure.
@@ -170,13 +171,10 @@ def nilFun {α : Typevec 0} {β : Typevec 0} : α ⟹ β := fun i => by apply Fi
 
 theorem eq_of_drop_last_eq {α β : Typevec (n + 1)} {f g : α ⟹ β} (h₀ : dropFun f = dropFun g)
     (h₁ : lastFun f = lastFun g) : f = g := by
-  -- FIXME: congr_fun h₀ <;> ext1 ⟨⟩ <;> apply_assumption
-  replace h₀ := congr_fun h₀;
-  refine funext ?_
-  rintro x
-  cases x
-  exact h₁
-  exact h₀ _
+  -- porting note: FIXME: congr_fun h₀ <;> ext1 ⟨⟩ <;> apply_assumption
+  replace h₀ := congr_fun h₀
+  refine funext (fun x => ?_)
+  cases x <;> apply_assumption
 #align typevec.eq_of_drop_last_eq Typevec.eq_of_drop_last_eq
 
 @[simp]
@@ -272,8 +270,8 @@ theorem append_fun_comp' {α₀ α₁ α₂ : Typevec n} {β₀ β₁ β₂ : Ty
   eq_of_drop_last_eq rfl rfl
 #align typevec.append_fun_comp' Typevec.append_fun_comp'
 
-theorem nil_fun_comp {α₀ : Typevec 0} (f₀ : α₀ ⟹ Fin2.elim0) : nil_fun ⊚ f₀ = f₀ :=
-  funext fun x => Fin2.elim0 x
+theorem nil_fun_comp {α₀ : Typevec 0} (f₀ : α₀ ⟹ Fin2.elim0) : nilFun ⊚ f₀ = f₀ :=
+  funext fun x => by apply Fin2.elim0 x -- porting note: `by apply` is necessary?
 #align typevec.nil_fun_comp Typevec.nil_fun_comp
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -305,18 +303,21 @@ theorem append_fun_aux {α α' : Typevec n} {β β' : Type _} (f : (α ::: β) �
 #align typevec.append_fun_aux Typevec.append_fun_aux
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem append_fun_id_id {α : Typevec n} {β : Type _} : (@Typevec.id n α ::: @id β) = Typevec.id :=
+theorem append_fun_id_id {α : Typevec n} {β : Type _} :
+    (@Typevec.id n α ::: @_root_.id β) = Typevec.id :=
   eq_of_drop_last_eq rfl rfl
 #align typevec.append_fun_id_id Typevec.append_fun_id_id
 
 instance subsingleton0 : Subsingleton (Typevec 0) :=
-  ⟨fun a b => funext fun a => Fin2.elim0 a⟩
+  ⟨fun a b => funext fun a => by apply Fin2.elim0 a⟩ -- porting note: `by apply` necessary?
 #align typevec.subsingleton0 Typevec.subsingleton0
 
+/- porting note: just omitting this `simp` attribute declaration for now
 run_cmd
   do
     mk_simp_attr `typevec
     tactic.add_doc_string `simp_attr.typevec "simp set for the manipulation of typevec and arrow expressions"
+-/
 
 -- mathport name: «expr♯ »
 local prefix:0 "♯" => cast (by try simp <;> congr 1 <;> try simp)
