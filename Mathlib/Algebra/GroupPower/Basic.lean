@@ -130,7 +130,6 @@ theorem pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n :=
   Commute.pow_self a n
 #align pow_mul_comm' pow_mul_comm'
 
-@[simp]
 theorem pow_boole (P : Prop) [Decidable P] (a : M) :
     (a ^ if P then 1 else 0) = if P then a else 1 := by simp
 #align pow_boole pow_boole
@@ -439,17 +438,17 @@ theorem zpow_zpow (h : Commute a b) (m n : ℤ) : Commute (a ^ m) (b ^ n) :=
 
 variable (a) (m n : ℤ)
 
-@[simp, to_additive]
+@[to_additive]
 theorem self_zpow : Commute a (a ^ n) :=
   (Commute.refl a).zpow_right n
 #align commute.self_zpow Commute.self_zpow
 
-@[simp, to_additive]
+@[to_additive]
 theorem zpow_self : Commute (a ^ n) a :=
   (Commute.refl a).zpow_left n
 #align commute.zpow_self Commute.zpow_self
 
-@[simp, to_additive]
+@[to_additive]
 theorem zpow_zpow_self : Commute (a ^ m) (a ^ n) :=
   (Commute.refl a).zpow_zpow m n
 #align commute.zpow_zpow_self Commute.zpow_zpow_self
