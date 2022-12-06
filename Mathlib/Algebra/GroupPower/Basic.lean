@@ -229,16 +229,11 @@ theorem mul_pow (a b : M) (n : ℕ) : (a * b) ^ n = a ^ n * b ^ n :=
   (Commute.all a b).mul_pow n
 #align mul_pow mul_pow
 
-end CommMonoid
-
--- NEW NEW NEW
-#exit
-
-
 /-- The `n`th power map on a commutative monoid for a natural `n`, considered as a morphism of
 monoids. -/
 @[to_additive
-      "Multiplication by a natural `n` on a commutative additive\nmonoid, considered as a morphism of additive monoids.",
+      "Multiplication by a natural `n` on a commutative additive
+       monoid, considered as a morphism of additive monoids.",
   simps]
 def powMonoidHom (n : ℕ) : M →* M where
   toFun := (· ^ n)
@@ -246,8 +241,6 @@ def powMonoidHom (n : ℕ) : M →* M where
   map_mul' a b := mul_pow a b n
 #align pow_monoid_hom powMonoidHom
 
--- the below line causes the linter to complain :-/
--- attribute [simps] pow_monoid_hom nsmul_add_monoid_hom
 end CommMonoid
 
 section DivInvMonoid
@@ -259,23 +252,23 @@ open Int
 @[simp, to_additive one_zsmul]
 theorem zpow_one (a : G) : a ^ (1 : ℤ) = a := by
   convert pow_one a using 1
-  exact zpow_coe_nat a 1
+  exact zpow_ofNat a 1
 #align zpow_one zpow_one
 
 @[to_additive two_zsmul]
 theorem zpow_two (a : G) : a ^ (2 : ℤ) = a * a := by
   convert pow_two a using 1
-  exact zpow_coe_nat a 2
+  exact zpow_ofNat a 2
 #align zpow_two zpow_two
 
 @[to_additive neg_one_zsmul]
 theorem zpow_neg_one (x : G) : x ^ (-1 : ℤ) = x⁻¹ :=
-  (zpow_neg_succ_of_nat x 0).trans <| congr_arg Inv.inv (pow_one x)
+  (zpow_negSucc x 0).trans <| congr_arg Inv.inv (pow_one x)
 #align zpow_neg_one zpow_neg_one
 
 @[to_additive]
 theorem zpow_neg_coe_of_pos (a : G) : ∀ {n : ℕ}, 0 < n → a ^ (-(n : ℤ)) = (a ^ n)⁻¹
-  | n + 1, _ => zpow_neg_succ_of_nat _ _
+  | _ + 1, _ => zpow_negSucc _ _
 #align zpow_neg_coe_of_pos zpow_neg_coe_of_pos
 
 end DivInvMonoid
@@ -287,14 +280,14 @@ variable [DivisionMonoid α] {a b : α}
 @[simp, to_additive]
 theorem inv_pow (a : α) : ∀ n : ℕ, a⁻¹ ^ n = (a ^ n)⁻¹
   | 0 => by rw [pow_zero, pow_zero, inv_one]
-  | n + 1 => by rw [pow_succ', pow_succ, inv_pow, mul_inv_rev]
+  | n + 1 => by rw [pow_succ', pow_succ, inv_pow _ n, mul_inv_rev]
 #align inv_pow inv_pow
 
 -- the attributes are intentionally out of order. `smul_zero` proves `zsmul_zero`.
 @[to_additive zsmul_zero, simp]
 theorem one_zpow : ∀ n : ℤ, (1 : α) ^ n = 1
-  | (n : ℕ) => by rw [zpow_coe_nat, one_pow]
-  | -[n+1] => by rw [zpow_neg_succ_of_nat, one_pow, inv_one]
+  | (n : ℕ)       => by rw [zpow_ofNat, one_pow]
+  | .negSucc n => by rw [zpow_negSucc, one_pow, inv_one]
 #align one_zpow one_zpow
 
 @[simp, to_additive neg_zsmul]
@@ -303,20 +296,20 @@ theorem zpow_neg (a : α) : ∀ n : ℤ, a ^ (-n) = (a ^ n)⁻¹
   | 0 => by
     change a ^ (0 : ℤ) = (a ^ (0 : ℤ))⁻¹
     simp
-  | -[n+1] => by
-    rw [zpow_neg_succ_of_nat, inv_inv, ← zpow_coe_nat]
+  | Int.negSucc n => by
+    rw [zpow_negSucc, inv_inv, ← zpow_ofNat]
     rfl
 #align zpow_neg zpow_neg
 
 @[to_additive neg_one_zsmul_add]
 theorem mul_zpow_neg_one (a b : α) : (a * b) ^ (-1 : ℤ) = b ^ (-1 : ℤ) * a ^ (-1 : ℤ) := by
-  simp_rw [zpow_neg_one, mul_inv_rev]
+  simp only [zpow_neg, zpow_one, mul_inv_rev]
 #align mul_zpow_neg_one mul_zpow_neg_one
 
 @[to_additive zsmul_neg]
 theorem inv_zpow (a : α) : ∀ n : ℤ, a⁻¹ ^ n = (a ^ n)⁻¹
-  | (n : ℕ) => by rw [zpow_coe_nat, zpow_coe_nat, inv_pow]
-  | -[n+1] => by rw [zpow_neg_succ_of_nat, zpow_neg_succ_of_nat, inv_pow]
+  | (n : ℕ)    => by rw [zpow_ofNat, zpow_ofNat, inv_pow]
+  | .negSucc n => by rw [zpow_negSucc, zpow_negSucc, inv_pow]
 #align inv_zpow inv_zpow
 
 @[simp, to_additive zsmul_neg']
@@ -324,17 +317,17 @@ theorem inv_zpow' (a : α) (n : ℤ) : a⁻¹ ^ n = a ^ (-n) := by rw [inv_zpow,
 #align inv_zpow' inv_zpow'
 
 @[to_additive nsmul_zero_sub]
-theorem one_div_pow (a : α) (n : ℕ) : (1 / a) ^ n = 1 / a ^ n := by simp_rw [one_div, inv_pow]
+theorem one_div_pow (a : α) (n : ℕ) : (1 / a) ^ n = 1 / a ^ n := by simp only [one_div, inv_pow]
 #align one_div_pow one_div_pow
 
 @[to_additive zsmul_zero_sub]
-theorem one_div_zpow (a : α) (n : ℤ) : (1 / a) ^ n = 1 / a ^ n := by simp_rw [one_div, inv_zpow]
+theorem one_div_zpow (a : α) (n : ℤ) : (1 / a) ^ n = 1 / a ^ n := by simp only [one_div, inv_zpow]
 #align one_div_zpow one_div_zpow
 
 @[to_additive AddCommute.zsmul_add]
 protected theorem Commute.mul_zpow (h : Commute a b) : ∀ i : ℤ, (a * b) ^ i = a ^ i * b ^ i
-  | (n : ℕ) => by simp [h.mul_pow n]
-  | -[n+1] => by simp [h.mul_pow, (h.pow_pow _ _).Eq, mul_inv_rev]
+  | (n : ℕ)    => by simp [zpow_ofNat, h.mul_pow n]
+  | .negSucc n => by simp [h.mul_pow, (h.pow_pow _ _).eq, mul_inv_rev]
 #align commute.mul_zpow Commute.mul_zpow
 
 end DivisionMonoid
@@ -418,8 +411,8 @@ theorem of_mul_zpow [DivInvMonoid G] (x : G) (n : ℤ) :
 @[simp, to_additive]
 theorem SemiconjBy.zpow_right [Group G] {a x y : G} (h : SemiconjBy a x y) :
     ∀ m : ℤ, SemiconjBy a (x ^ m) (y ^ m)
-  | (n : ℕ) => by simp [zpow_coe_nat, h.pow_right n]
-  | -[n+1] => by simp [(h.pow_right n.succ).inv_right]
+  | (n : ℕ)    => by simp [zpow_ofNat, h.pow_right n]
+  | .negSucc n => by simp [(h.pow_right n.succ).inv_right]
 #align semiconj_by.zpow_right SemiconjBy.zpow_right
 
 namespace Commute
@@ -428,7 +421,7 @@ variable [Group G] {a b : G}
 
 @[simp, to_additive]
 theorem zpow_right (h : Commute a b) (m : ℤ) : Commute a (b ^ m) :=
-  h.zpow_right m
+  SemiconjBy.zpow_right h m
 #align commute.zpow_right Commute.zpow_right
 
 @[simp, to_additive]
