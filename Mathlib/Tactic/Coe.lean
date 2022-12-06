@@ -63,7 +63,7 @@ elab "(" "⇑" ")" : term <= expectedType =>
       throwError "cannot coerce to function{indentExpr x}"
 
 /-- `↥ t` coerces `t` to a type. -/
-elab "↥" t:term : term => do
+elab "↥" t:term:80 : term => do
   let x ← elabTerm t none
   if let some ty ← coerceToSort? x then
     return ty
