@@ -14,7 +14,7 @@ This file provides basic results about orderings and comparison in linear orders
 
 ## Definitions
 
-* `CmpLE`: An `ordering` from `≤`.
+* `CmpLE`: An `Ordering` from `≤`.
 * `Ordering.Compares`: Turns an `Ordering` into `<` and `=` propositions.
 * `linearOrderOfCompares`: Constructs a `LinearOrder` instance from the fact that any two
   elements that are not one strictly less than the other either way are equal.

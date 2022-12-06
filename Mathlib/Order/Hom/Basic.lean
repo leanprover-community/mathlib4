@@ -38,30 +38,30 @@ because the more bundled version usually does not work with dot notation.
 * `OrderHom.compₘ`: composition of bundled monotone maps as a bundled monotone map;
 * `OrderHom.const`: constant function as a bundled monotone map;
 * `OrderHom.prod`: combine `α →o β` and `α →o γ` into `α →o β × γ`;
-* `OrderHom.prodₘ`: a more bundled version of `order_hom.prod`;
-* `OrderHom.prod_iso`: order isomorphism between `α →o β × γ` and `(α →o β) × (α →o γ)`;
+* `OrderHom.prodₘ`: a more bundled version of `OrderHom.prod`;
+* `OrderHom.prodIso`: order isomorphism between `α →o β × γ` and `(α →o β) × (α →o γ)`;
 * `OrderHom.diag`: diagonal embedding of `α` into `α × α` as a bundled monotone map;
-* `OrderHom.on_diag`: restrict a monotone map `α →o α →o β` to the diagonal;
+* `OrderHom.onDiag`: restrict a monotone map `α →o α →o β` to the diagonal;
 * `OrderHom.fst`: projection `prod.fst : α × β → α` as a bundled monotone map;
 * `OrderHom.snd`: projection `prod.snd : α × β → β` as a bundled monotone map;
-* `OrderHom.prod_map`: `prod.map f g` as a bundled monotone map;
-* `Pi.eval_orderHom`: evaluation of a function at a point `function.eval i` as a bundled
+* `OrderHom.prodMap`: `prod.map f g` as a bundled monotone map;
+* `Pi.evalOrderHom`: evaluation of a function at a point `function.eval i` as a bundled
   monotone map;
-* `OrderHom.coe_fn_hom`: coercion to function as a bundled monotone map;
-* `OrderHom.apply`: application of a `order_hom` at a point as a bundled monotone map;
+* `OrderHom.coeFnHom`: coercion to function as a bundled monotone map;
+* `OrderHom.apply`: application of a `OrderHom` at a point as a bundled monotone map;
 * `OrderHom.pi`: combine a family of monotone maps `f i : α →o π i` into a monotone map
   `α →o Π i, π i`;
-* `OrderHom.pi_iso`: order isomorphism between `α →o Π i, π i` and `Π i, α →o π i`;
-* `OrderHom.subty[e.val`: embedding `subtype.val : subtype p → α` as a bundled monotone map;
+* `OrderHom.piIso`: order isomorphism between `α →o Π i, π i` and `Π i, α →o π i`;
+* `OrderHom.subtype.val`: embedding `subtype.val : subtype p → α` as a bundled monotone map;
 * `OrderHom.dual`: reinterpret a monotone map `α →o β` as a monotone map `αᵒᵈ →o βᵒᵈ`;
-* `OrderHom.dual_iso`: order isomorphism between `α →o β` and `(αᵒᵈ →o βᵒᵈ)ᵒᵈ`;
+* `OrderHom.dualIso`: order isomorphism between `α →o β` and `(αᵒᵈ →o βᵒᵈ)ᵒᵈ`;
 * `OrderHom.compl`: order isomorphism `α ≃o αᵒᵈ` given by taking complements in a
   boolean algebra;
 
 We also define two functions to convert other bundled maps to `α →o β`:
 
-* `OrderEmbedding.to_orderHom`: convert `α ↪o β` to `α →o β`;
-* `RelHom.toOrderHom`: convert a `rel_hom` between strict orders to a `order_hom`.
+* `OrderEmbedding.toOrderHom`: convert `α ↪o β` to `α →o β`;
+* `RelHom.toOrderHom`: convert a `RelHom` between strict orders to an `OrderHom`.
 
 ## Tags
 
@@ -85,7 +85,7 @@ infixr:25 " →o " => OrderHom
 attribute [coe] OrderHom.toFun
 
 /-- An order embedding is an embedding `f : α ↪ β` such that `a ≤ b ↔ (f a) ≤ (f b)`.
-This definition is an abbreviation of `rel_embedding (≤) (≤)`. -/
+This definition is an abbreviation of `RelEmbedding (≤) (≤)`. -/
 abbrev OrderEmbedding (α β : Type _) [LE α] [LE β] :=
   @RelEmbedding α β (· ≤ ·) (· ≤ ·)
 #align order_embedding OrderEmbedding
@@ -94,7 +94,7 @@ abbrev OrderEmbedding (α β : Type _) [LE α] [LE β] :=
 infixl:25 " ↪o " => OrderEmbedding
 
 /-- An order isomorphism is an equivalence such that `a ≤ b ↔ (f a) ≤ (f b)`.
-This definition is an abbreviation of `rel_iso (≤) (≤)`. -/
+This definition is an abbreviation of `RelIso (≤) (≤)`. -/
 abbrev OrderIso (α β : Type _) [LE α] [LE β] :=
   @RelIso α β (· ≤ ·) (· ≤ ·)
 #align order_iso OrderIso
@@ -234,7 +234,7 @@ theorem ext (f g : α →o β) (h : (f : α → β) = g) : f = g :=
   FunLike.coe_injective h
 #align order_hom.ext OrderHom.ext
 
-/-- Copy of an `OrderHom` with a new `to_fun` equal to the old one. Useful to fix definitional
+/-- Copy of an `OrderHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : α →o β) (f' : α → β) (h : f' = f) : α →o β :=
   ⟨f', h.symm.subst f.monotone'⟩
@@ -382,13 +382,13 @@ theorem comp_prod_comp_same (f₁ f₂ : β →o γ) (g : α →o β) :
 #align order_hom.comp_prod_comp_same OrderHom.comp_prod_comp_same
 
 /-- Given two bundled monotone maps `f`, `g`, `f.prod g` is the map `x ↦ (f x, g x)` bundled as a
-`order_hom`. This is a fully bundled version. -/
+`OrderHom`. This is a fully bundled version. -/
 @[simps]
 def prodₘ : (α →o β) →o (α →o γ) →o α →o β × γ :=
   curry ⟨fun f : (α →o β) × (α →o γ) => f.1.prod f.2, fun _ _ h => prod_mono h.1 h.2⟩
 #align order_hom.prodₘ OrderHom.prodₘ
 
-/-- Diagonal embedding of `α` into `α × α` as a `order_hom`. -/
+/-- Diagonal embedding of `α` into `α × α` as a `OrderHom`. -/
 @[simps]
 def diag : α →o α × α :=
   id.prod id
@@ -400,13 +400,13 @@ def onDiag (f : α →o α →o β) : α →o β :=
   (curry.symm f).comp diag
 #align order_hom.on_diag OrderHom.onDiag
 
-/-- `prod.fst` as a `order_hom`. -/
+/-- `Prod.fst` as a `OrderHom`. -/
 @[simps]
 def fst : α × β →o α :=
   ⟨Prod.fst, fun _ _ h => h.1⟩
 #align order_hom.fst OrderHom.fst
 
-/-- `prod.snd` as a `order_hom`. -/
+/-- `Prod.snd` as a `OrderHom`. -/
 @[simps]
 def snd : α × β →o β :=
   ⟨Prod.snd, fun _ _ h => h.2⟩
@@ -441,7 +441,7 @@ def prodIso :
   map_rel_iff' := forall_and.symm
 #align order_hom.prod_iso OrderHom.prodIso
 
-/-- `prod.map` of two `order_hom`s as a `order_hom`. -/
+/-- `Prod.map` of two `OrderHom`s as a `OrderHom`. -/
 @[simps]
 def prodMap (f : α →o β) (g : γ →o δ) : α × γ →o β × δ :=
   ⟨Prod.map f g, fun _ _ h => ⟨f.mono h.1, g.mono h.2⟩⟩
@@ -449,7 +449,7 @@ def prodMap (f : α →o β) (g : γ →o δ) : α × γ →o β × δ :=
 
 variable {ι : Type _} {π : ι → Type _} [∀ i, Preorder (π i)]
 
-/-- Evaluation of an unbundled function at a point (`function.eval`) as a `order_hom`. -/
+/-- Evaluation of an unbundled function at a point (`Function.eval`) as a `OrderHom`. -/
 @[simps (config := { fullyApplied := false })]
 def _root_.Pi.evalOrderHom (i : ι) : (∀ j, π j) →o π i :=
   ⟨Function.eval i, Function.monotone_eval i⟩
@@ -463,8 +463,8 @@ def coeFnHom : (α →o β) →o α → β where
   monotone' _ _ h := h
 #align order_hom.coe_fn_hom OrderHom.coeFnHom
 
-/-- Function application `λ f, f a` (for fixed `a`) is a monotone function from the
-monotone function space `α →o β` to `β`. See also `pi.eval_order_hom`.  -/
+/-- Function application `fun f => f a` (for fixed `a`) is a monotone function from the
+monotone function space `α →o β` to `β`. See also `Pi.evalOrderHom`.  -/
 @[simps (config := { fullyApplied := false })]
 def apply (x : α) : (α →o β) →o β :=
   (Pi.evalOrderHom x).comp coeFnHom
@@ -494,7 +494,7 @@ def piIso :
   map_rel_iff' := forall_swap
 #align order_hom.pi_iso OrderHom.piIso
 
-/-- `subtype.val` as a bundled monotone function.  -/
+/-- `Subtype.val` as a bundled monotone function.  -/
 @[simps (config := { fullyApplied := false })]
 def Subtype.val (p : α → Prop) : Subtype p →o α :=
   ⟨_root_.Subtype.val, fun _ _ h => h⟩
@@ -546,20 +546,20 @@ theorem symm_dual_comp (g : βᵒᵈ →o γᵒᵈ) (f : αᵒᵈ →o βᵒᵈ)
   rfl
 #align order_hom.symm_dual_comp OrderHom.symm_dual_comp
 
-/-- `order_hom.dual` as an order isomorphism. -/
+/-- `OrderHom.dual` as an order isomorphism. -/
 def dualIso (α β : Type _) [Preorder α] [Preorder β] :
     (α →o β) ≃o (αᵒᵈ →o βᵒᵈ)ᵒᵈ where
   toEquiv := OrderHom.dual.trans OrderDual.toDual
   map_rel_iff' := Iff.rfl
 #align order_hom.dual_iso OrderHom.dualIso
 
-/-- Lift an order homomorphism `f : α →o β` to an order homomorphism `with_bot α →o with_bot β`. -/
+/-- Lift an order homomorphism `f : α →o β` to an order homomorphism `WithBot α →o WithBot β`. -/
 @[simps (config := { fullyApplied := false })]
 protected def withBotMap (f : α →o β) : WithBot α →o WithBot β :=
   ⟨WithBot.map f, f.mono.withBot_map⟩
 #align order_hom.with_bot_map OrderHom.withBotMap
 
-/-- Lift an order homomorphism `f : α →o β` to an order homomorphism `with_top α →o with_top β`. -/
+/-- Lift an order homomorphism `f : α →o β` to an order homomorphism `WithTop α →o WithTop β`. -/
 @[simps (config := { fullyApplied := false })]
 protected def withTopMap (f : α →o β) : WithTop α →o WithTop β :=
   ⟨WithTop.map f, f.mono.withTop_map⟩
@@ -582,7 +582,8 @@ theorem RelEmbedding.order_embedding_of_lt_embedding_apply [PartialOrder α] [Pa
     RelEmbedding.orderEmbeddingOfLtEmbedding f x = f x :=
   rfl
 #align
-  rel_embedding.order_embedding_of_lt_embedding_apply RelEmbedding.order_embedding_of_lt_embedding_apply
+  rel_embedding.order_embedding_of_lt_embedding_apply
+  RelEmbedding.order_embedding_of_lt_embedding_apply
 
 namespace OrderEmbedding
 
@@ -638,7 +639,7 @@ protected def dual : αᵒᵈ ↪o βᵒᵈ :=
   ⟨f.toEmbedding, f.map_rel_iff⟩
 #align order_embedding.dual OrderEmbedding.dual
 
-/-- A version of `withBot.map` for order embeddings. -/
+/-- A version of `WithBot.map` for order embeddings. -/
 @[simps (config := { fullyApplied := false })]
 protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β :=
   { f.toEmbedding.optionMap with
@@ -646,7 +647,7 @@ protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β :=
     map_rel_iff' := @fun a b => WithBot.map_le_iff f f.map_rel_iff a b }
 #align order_embedding.with_bot_map OrderEmbedding.withBotMap
 
-/-- A version of `withTop.map` for order embeddings. -/
+/-- A version of `WithTop.map` for order embeddings. -/
 @[simps (config := { fullyApplied := false })]
 protected def withTopMap (f : α ↪o β) : WithTop α ↪o WithTop β :=
   { f.dual.withBotMap.dual with toFun := WithTop.map f }
@@ -677,13 +678,13 @@ theorem coe_ofStrictMono {α β} [LinearOrder α] [Preorder β] {f : α → β} 
   rfl
 #align order_embedding.coe_of_strict_mono OrderEmbedding.coe_ofStrictMono
 
-/-- Embedding of a subtype into the ambient type as an `order_embedding`. -/
+/-- Embedding of a subtype into the ambient type as an `OrderEmbedding`. -/
 @[simps (config := { fullyApplied := false })]
 def subtype (p : α → Prop) : Subtype p ↪o α :=
   ⟨Function.Embedding.subtype p, Iff.rfl⟩
 #align order_embedding.subtype OrderEmbedding.subtype
 
-/-- Convert an `order_embedding` to a `order_hom`. -/
+/-- Convert an `OrderEmbedding` to a `OrderHom`. -/
 @[simps (config := { fullyApplied := false })]
 def toOrderHom {X Y : Type _} [Preorder X] [Preorder Y] (f : X ↪o Y) :
     X →o Y where
@@ -711,11 +712,11 @@ def toOrderHom : α →o β where
 
 end RelHom
 
-theorem RelEmbedding.to_order_hom_injective
+theorem RelEmbedding.toOrderHom_injective
     (f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) :
     Function.Injective (f : ((· < ·) : α → α → Prop) →r ((· < ·) : β → β → Prop)).toOrderHom :=
   fun _ _ h => f.injective h
-#align rel_embedding.to_order_hom_injective RelEmbedding.to_order_hom_injective
+#align rel_embedding.to_order_hom_injective RelEmbedding.toOrderHom_injective
 
 end RelHom
 
@@ -880,7 +881,7 @@ theorem symm_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) : (e₁.trans e₂).s
   rfl
 #align order_iso.symm_trans OrderIso.symm_trans
 
-/-- `prod.swap` as an `order_iso`. -/
+/-- `Prod.swap` as an `OrderIso`. -/
 def prodComm : α × β ≃o β × α where
   toEquiv := Equiv.prodComm α β
   map_rel_iff' := Prod.swap_le_swap
@@ -1185,75 +1186,75 @@ theorem codisjoint_map_order_iso_iff [SemilatticeSup α] [OrderTop α] [Semilatt
 namespace WithBot
 
 /-- Taking the dual then adding `⊥` is the same as adding `⊤` then taking the dual.
-This is the order iso form of `with_bot.of_dual`, as proven by `coe_to_dual_top_equiv_eq`.
+This is the order iso form of `WithBot.ofDual`, as proven by `coe_toDualTopEquiv_eq`.
 -/
 protected def toDualTopEquiv [LE α] : WithBot αᵒᵈ ≃o (WithTop α)ᵒᵈ :=
   OrderIso.refl _
 #align with_bot.to_dual_top_equiv WithBot.toDualTopEquiv
 
 @[simp]
-theorem to_dual_top_equiv_coe [LE α] (a : α) :
+theorem toDualTopEquiv_coe [LE α] (a : α) :
     WithBot.toDualTopEquiv ↑(toDual a) = toDual (a : WithTop α) :=
   rfl
-#align with_bot.to_dual_top_equiv_coe WithBot.to_dual_top_equiv_coe
+#align with_bot.to_dual_top_equiv_coe WithBot.toDualTopEquiv_coe
 
 @[simp]
-theorem to_dual_top_equiv_symm_coe [LE α] (a : α) :
+theorem toDualTopEquiv_symm_coe [LE α] (a : α) :
     WithBot.toDualTopEquiv.symm (toDual (a : WithTop α)) = ↑(toDual a) :=
   rfl
-#align with_bot.to_dual_top_equiv_symm_coe WithBot.to_dual_top_equiv_symm_coe
+#align with_bot.to_dual_top_equiv_symm_coe WithBot.toDualTopEquiv_symm_coe
 
 @[simp]
-theorem to_dual_top_equiv_bot [LE α] : WithBot.toDualTopEquiv (⊥ : WithBot αᵒᵈ) = ⊥ :=
+theorem toDualTopEquiv_bot [LE α] : WithBot.toDualTopEquiv (⊥ : WithBot αᵒᵈ) = ⊥ :=
   rfl
-#align with_bot.to_dual_top_equiv_bot WithBot.to_dual_top_equiv_bot
+#align with_bot.to_dual_top_equiv_bot WithBot.toDualTopEquiv_bot
 
 @[simp]
-theorem to_dual_top_equiv_symm_bot [LE α] : WithBot.toDualTopEquiv.symm (⊥ : (WithTop α)ᵒᵈ) = ⊥ :=
+theorem toDualTopEquiv_symm_bot [LE α] : WithBot.toDualTopEquiv.symm (⊥ : (WithTop α)ᵒᵈ) = ⊥ :=
   rfl
-#align with_bot.to_dual_top_equiv_symm_bot WithBot.to_dual_top_equiv_symm_bot
+#align with_bot.to_dual_top_equiv_symm_bot WithBot.toDualTopEquiv_symm_bot
 
-theorem coe_to_dual_top_equiv_eq [LE α] :
+theorem coe_toDualTopEquiv_eq [LE α] :
     (WithBot.toDualTopEquiv : WithBot αᵒᵈ → (WithTop α)ᵒᵈ) = toDual ∘ WithBot.ofDual :=
   funext fun _ => rfl
-#align with_bot.coe_to_dual_top_equiv_eq WithBot.coe_to_dual_top_equiv_eq
+#align with_bot.coe_to_dual_top_equiv_eq WithBot.coe_toDualTopEquiv_eq
 
 end WithBot
 
 namespace WithTop
 
 /-- Taking the dual then adding `⊤` is the same as adding `⊥` then taking the dual.
-This is the order iso form of `with_top.of_dual`, as proven by `coe_to_dual_bot_equiv_eq`. -/
+This is the order iso form of `WithTop.ofDual`, as proven by `coe_to_dualBotEquiv_eq`. -/
 protected def toDualBotEquiv [LE α] : WithTop αᵒᵈ ≃o (WithBot α)ᵒᵈ :=
   OrderIso.refl _
 #align with_top.to_dual_bot_equiv WithTop.toDualBotEquiv
 
 @[simp]
-theorem to_dual_bot_equiv_coe [LE α] (a : α) :
+theorem toDualBotEquiv_coe [LE α] (a : α) :
     WithTop.toDualBotEquiv ↑(toDual a) = toDual (a : WithBot α) :=
   rfl
-#align with_top.to_dual_bot_equiv_coe WithTop.to_dual_bot_equiv_coe
+#align with_top.to_dual_bot_equiv_coe WithTop.toDualBotEquiv_coe
 
 @[simp]
-theorem to_dual_bot_equiv_symm_coe [LE α] (a : α) :
+theorem toDualBotEquiv_symm_coe [LE α] (a : α) :
     WithTop.toDualBotEquiv.symm (toDual (a : WithBot α)) = ↑(toDual a) :=
   rfl
-#align with_top.to_dual_bot_equiv_symm_coe WithTop.to_dual_bot_equiv_symm_coe
+#align with_top.to_dual_bot_equiv_symm_coe WithTop.toDualBotEquiv_symm_coe
 
 @[simp]
-theorem to_dual_bot_equiv_top [LE α] : WithTop.toDualBotEquiv (⊤ : WithTop αᵒᵈ) = ⊤ :=
+theorem toDualBotEquiv_top [LE α] : WithTop.toDualBotEquiv (⊤ : WithTop αᵒᵈ) = ⊤ :=
   rfl
-#align with_top.to_dual_bot_equiv_top WithTop.to_dual_bot_equiv_top
+#align with_top.to_dual_bot_equiv_top WithTop.toDualBotEquiv_top
 
 @[simp]
-theorem to_dual_bot_equiv_symm_top [LE α] : WithTop.toDualBotEquiv.symm (⊤ : (WithBot α)ᵒᵈ) = ⊤ :=
+theorem toDualBotEquiv_symm_top [LE α] : WithTop.toDualBotEquiv.symm (⊤ : (WithBot α)ᵒᵈ) = ⊤ :=
   rfl
-#align with_top.to_dual_bot_equiv_symm_top WithTop.to_dual_bot_equiv_symm_top
+#align with_top.to_dual_bot_equiv_symm_top WithTop.toDualBotEquiv_symm_top
 
-theorem coe_to_dual_bot_equiv_eq [LE α] :
+theorem coe_to_dualBotEquiv_eq [LE α] :
     (WithTop.toDualBotEquiv : WithTop αᵒᵈ → (WithBot α)ᵒᵈ) = toDual ∘ WithTop.ofDual :=
   funext fun _ => rfl
-#align with_top.coe_to_dual_bot_equiv_eq WithTop.coe_to_dual_bot_equiv_eq
+#align with_top.coe_to_dual_bot_equiv_eq WithTop.coe_to_dualBotEquiv_eq
 
 end WithTop
 
@@ -1316,15 +1317,15 @@ theorem OrderIso.isCompl {x y : α} (h : IsCompl x y) : IsCompl (f x) (f y) :=
   ⟨h.1.map_order_iso _, h.2.map_order_iso _⟩
 #align order_iso.is_compl OrderIso.isCompl
 
-theorem OrderIso.is_compl_iff {x y : α} : IsCompl x y ↔ IsCompl (f x) (f y) :=
+theorem OrderIso.isCompl_iff {x y : α} : IsCompl x y ↔ IsCompl (f x) (f y) :=
   ⟨f.isCompl, fun h => f.symm_apply_apply x ▸ f.symm_apply_apply y ▸ f.symm.isCompl h⟩
-#align order_iso.is_compl_iff OrderIso.is_compl_iff
+#align order_iso.is_compl_iff OrderIso.isCompl_iff
 
 theorem OrderIso.complemented_lattice [ComplementedLattice α] : ComplementedLattice β :=
   ⟨fun x => by
     obtain ⟨y, hy⟩ := exists_isCompl (f.symm x)
     rw [← f.symm_apply_apply y] at hy
-    refine' ⟨f y, f.symm.is_compl_iff.2 hy⟩⟩
+    refine' ⟨f y, f.symm.isCompl_iff.2 hy⟩⟩
 #align order_iso.complemented_lattice OrderIso.complemented_lattice
 
 theorem OrderIso.complemented_lattice_iff : ComplementedLattice α ↔ ComplementedLattice β :=
