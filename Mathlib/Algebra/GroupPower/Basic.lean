@@ -389,24 +389,24 @@ theorem pow_dvd_pow [Monoid R] (a : R) {m n : ℕ} (h : m ≤ n) : a ^ m ∣ a ^
   ⟨a ^ (n - m), by rw [← pow_add, Nat.add_comm, Nat.sub_add_cancel h]⟩
 #align pow_dvd_pow pow_dvd_pow
 
-theorem of_add_nsmul [AddMonoid A] (x : A) (n : ℕ) :
+theorem ofAdd_nsmul [AddMonoid A] (x : A) (n : ℕ) :
     Multiplicative.ofAdd (n • x) = Multiplicative.ofAdd x ^ n :=
   rfl
-#align of_add_nsmul of_add_nsmul
+#align of_add_nsmul ofAdd_nsmul
 
-theorem of_add_zsmul [SubNegMonoid A] (x : A) (n : ℤ) :
+theorem ofAdd_zsmul [SubNegMonoid A] (x : A) (n : ℤ) :
     Multiplicative.ofAdd (n • x) = Multiplicative.ofAdd x ^ n :=
   rfl
-#align of_add_zsmul of_add_zsmul
+#align of_add_zsmul ofAdd_zsmul
 
-theorem of_mul_pow [Monoid A] (x : A) (n : ℕ) : Additive.ofMul (x ^ n) = n • Additive.ofMul x :=
+theorem ofMul_pow [Monoid A] (x : A) (n : ℕ) : Additive.ofMul (x ^ n) = n • Additive.ofMul x :=
   rfl
-#align of_mul_pow of_mul_pow
+#align of_mul_pow ofMul_pow
 
-theorem of_mul_zpow [DivInvMonoid G] (x : G) (n : ℤ) :
+theorem ofMul_zpow [DivInvMonoid G] (x : G) (n : ℤ) :
     Additive.ofMul (x ^ n) = n • Additive.ofMul x :=
   rfl
-#align of_mul_zpow of_mul_zpow
+#align of_mul_zpow ofMul_zpow
 
 @[simp, to_additive]
 theorem SemiconjBy.zpow_right [Group G] {a x y : G} (h : SemiconjBy a x y) :
