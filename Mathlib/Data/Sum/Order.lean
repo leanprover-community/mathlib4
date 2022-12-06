@@ -293,7 +293,6 @@ end Disjoint
 namespace Lex
 
 
--- mathport name: «expr ⊕ₗ »
 /-- The linear sum of two orders -/
 notation:30 α " ⊕ₗ " β:29 => _root_.Lex (Sum α β)
 
@@ -311,26 +310,26 @@ abbrev _root_.Sum.inrₗ (x : β) : α ⊕ₗ β :=
 #align sum.inrₗ Sum.inrₗ
 
 /-- The linear/lexicographical `≤` on a sum. -/
-instance hasLe [LE α] [LE β] : LE (α ⊕ₗ β) :=
+protected instance LE [LE α] [LE β] : LE (α ⊕ₗ β) :=
   ⟨Lex (· ≤ ·) (· ≤ ·)⟩
-#align sum.lex.has_le Sum.Lex.hasLe
+#align sum.lex.has_le Sum.Lex.LE
 
 /-- The linear/lexicographical `<` on a sum. -/
-instance hasLt [LT α] [LT β] : LT (α ⊕ₗ β) :=
+protected instance LT [LT α] [LT β] : LT (α ⊕ₗ β) :=
   ⟨Lex (· < ·) (· < ·)⟩
-#align sum.lex.has_lt Sum.Lex.hasLt
+#align sum.lex.has_lt Sum.Lex.LT
 
 @[simp]
-theorem to_lex_le_to_lex [LE α] [LE β] {a b : Sum α β} :
+theorem toLex_le_toLex [LE α] [LE β] {a b : Sum α β} :
     toLex a ≤ toLex b ↔ Lex (· ≤ ·) (· ≤ ·) a b :=
   Iff.rfl
-#align sum.lex.to_lex_le_to_lex Sum.Lex.to_lex_le_to_lex
+#align sum.lex.to_lex_le_to_lex Sum.Lex.toLex_le_toLex
 
 @[simp]
-theorem to_lex_lt_to_lex [LT α] [LT β] {a b : Sum α β} :
+theorem toLex_lt_toLex [LT α] [LT β] {a b : Sum α β} :
     toLex a < toLex b ↔ Lex (· < ·) (· < ·) a b :=
   Iff.rfl
-#align sum.lex.to_lex_lt_to_lex Sum.Lex.to_lex_lt_to_lex
+#align sum.lex.to_lex_lt_to_lex Sum.Lex.toLex_lt_toLex
 
 theorem le_def [LE α] [LE β] {a b : α ⊕ₗ β} : a ≤ b ↔ Lex (· ≤ ·) (· ≤ ·) (ofLex a) (ofLex b) :=
   Iff.rfl
@@ -377,7 +376,7 @@ section Preorder
 variable [Preorder α] [Preorder β]
 
 instance preorder : Preorder (α ⊕ₗ β) :=
-  { Lex.hasLe, Lex.hasLt with
+  { Lex.LE, Lex.LT with
     le_refl := refl_of (Lex (· ≤ ·) (· ≤ ·)),
     le_trans := fun _ _ _ => trans_of (Lex (· ≤ ·) (· ≤ ·)),
     lt_iff_le_not_le := fun a b => by
@@ -395,8 +394,8 @@ instance preorder : Preorder (α ⊕ₗ β) :=
 theorem toLex_mono : Monotone (@toLex (Sum α β)) := fun _ _ h => h.lex
 #align sum.lex.to_lex_mono Sum.Lex.toLex_mono
 
-theorem toLex_strict_mono : StrictMono (@toLex (Sum α β)) := fun _ _ h => h.lex
-#align sum.lex.to_lex_strict_mono Sum.Lex.toLex_strict_mono
+theorem toLex_strictMono : StrictMono (@toLex (Sum α β)) := fun _ _ h => h.lex
+#align sum.lex.to_lex_strict_mono Sum.Lex.toLex_strictMono
 
 theorem inl_mono : Monotone (toLex ∘ inl : α → α ⊕ₗ β) :=
   toLex_mono.comp Sum.inl_mono
@@ -407,11 +406,11 @@ theorem inr_mono : Monotone (toLex ∘ inr : β → α ⊕ₗ β) :=
 #align sum.lex.inr_mono Sum.Lex.inr_mono
 
 theorem inl_strictMono : StrictMono (toLex ∘ inl : α → α ⊕ₗ β) :=
-  toLex_strict_mono.comp Sum.inl_strictMono
+  toLex_strictMono.comp Sum.inl_strictMono
 #align sum.lex.inl_strict_mono Sum.Lex.inl_strictMono
 
 theorem inr_strictMono : StrictMono (toLex ∘ inr : β → α ⊕ₗ β) :=
-  toLex_strict_mono.comp Sum.inr_strictMono
+  toLex_strictMono.comp Sum.inr_strictMono
 #align sum.lex.inr_strict_mono Sum.Lex.inr_strictMono
 
 end Preorder
@@ -556,7 +555,7 @@ theorem sumComm_symm (α β : Type _) [LE α] [LE β] :
   rfl
 #align order_iso.sum_comm_symm OrderIso.sumComm_symm
 
-/-- `equiv.sum_assoc` promoted to an order isomorphism. -/
+/-- `Equiv.sumAssoc` promoted to an order isomorphism. -/
 def sumAssoc (α β γ : Type _) [LE α] [LE β] [LE γ] : Sum (Sum α β) γ ≃o Sum α (Sum β γ) :=
   { Equiv.sumAssoc α β γ with
     map_rel_iff' := @fun a b => by
@@ -627,7 +626,7 @@ theorem sumDualDistrib_symm_inr : (sumDualDistrib α β).symm (inr (toDual b)) =
   rfl
 #align order_iso.sum_dual_distrib_symm_inr OrderIso.sumDualDistrib_symm_inr
 
-/-- `equiv.sum_assoc` promoted to an order isomorphism. -/
+/-- `Equiv.SumAssoc` promoted to an order isomorphism. -/
 def sumLexAssoc (α β γ : Type _) [LE α] [LE β] [LE γ] : (α ⊕ₗ β) ⊕ₗ γ ≃o α ⊕ₗ β ⊕ₗ γ :=
   { Equiv.sumAssoc α β γ with
     map_rel_iff' := @fun a b =>
@@ -682,7 +681,7 @@ theorem sumLexAssoc_symm_apply_inr_inr : (sumLexAssoc α β γ).symm (inr (inr c
   rfl
 #align order_iso.sum_lex_assoc_symm_apply_inr_inr OrderIso.sumLexAssoc_symm_apply_inr_inr
 
-/-- `order_dual` is antidistributive over `⊕ₗ` up to an order isomorphism. -/
+/-- `OrderDual` is antidistributive over `⊕ₗ` up to an order isomorphism. -/
 def sumLexDualAntidistrib (α β : Type _) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ ≃o βᵒᵈ ⊕ₗ αᵒᵈ :=
   { Equiv.sumComm α β with
     map_rel_iff' := @fun a b => by
@@ -731,7 +730,7 @@ variable [LE α]
 
 namespace WithBot
 
-/-- `with_bot α` is order-isomorphic to `punit ⊕ₗ α`, by sending `⊥` to `punit.star` and `↑a` to
+/-- `WithBot α` is order-isomorphic to `PUnit ⊕ₗ α`, by sending `⊥` to `unit` and `↑a` to
 `a`. -/
 def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
   ⟨(Equiv.optionEquivSumPUnit α).trans <| (Equiv.sumComm _ _).trans toLex, @fun a b => by
@@ -765,7 +764,7 @@ end WithBot
 
 namespace WithTop
 
-/-- `with_top α` is order-isomorphic to `α ⊕ₗ punit`, by sending `⊤` to `punit.star` and `↑a` to
+/-- `WithTop α` is order-isomorphic to `α ⊕ₗ PUnit`, by sending `⊤` to `unit` and `↑a` to
 `a`. -/
 def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
   ⟨(Equiv.optionEquivSumPUnit α).trans toLex, @fun a b => by
