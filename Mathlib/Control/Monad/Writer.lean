@@ -117,6 +117,8 @@ protected theorem ext (x x' : WriterT ω m α) (h : x.run = x'.run) : x = x' := 
   simp [WriterT.run] at h; assumption
 #align writer_t.ext WriterTₓ.ext
 
+instance [One ω] [Mul ω] : Monad (WriterT ω m) := WriterT.monad 1 Mul.mul
+--
 instance [Monoid ω] [LawfulMonad m] :
     LawfulMonad
       (WriterT ω
