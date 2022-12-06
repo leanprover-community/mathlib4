@@ -298,4 +298,16 @@ theorem of_mem_supp {α : Type u} {x : F α} {p : α → Prop} (h : Liftp p x) :
   fun _ hy => hy h
 #align functor.of_mem_supp Functor.of_mem_supp
 
+/-- If `f` is a functor, if `fb : f β` and `a : α`, then `mapConstRev fb a` is the result of
+  applying `f.map` to the constant function `β → α` sending everything to `a`, and then
+  evaluating at `fb`. In other words it's `const a <$> fb`. -/
+@[reducible] def mapConstRev {f : Type u → Type v} [Functor f] {α β : Type u} :
+    f β → α → f α :=
+  fun a b => Functor.mapConst b a
+#align functor.map_const_rev Functor.mapConstRev
+/-- If `f` is a functor, if `fb : f β` and `a : α`, then `mapConstRev fb a` is the result of
+  applying `f.map` to the constant function `β → α` sending everything to `a`, and then
+  evaluating at `fb`. In other words it's `const a <$> fb`. -/
+infix:100 " $> " => Functor.mapConstRev
+
 end Functor
