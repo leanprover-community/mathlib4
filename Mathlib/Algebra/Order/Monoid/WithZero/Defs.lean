@@ -5,91 +5,21 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Tactic.NormNum
 
 /-!
 # Adjoining a zero element to an ordered monoid.
 -/
 
 
-open Function
-
 universe u
 
 variable {α : Type u}
-
-/-- Typeclass for expressing that the `0` of a type is less or equal to its `1`. -/
-class ZeroLEOneClass (α : Type _) [Zero α] [One α] [LE α] where
-  zero_le_one : (0 : α) ≤ 1
-#align zero_le_one_class ZeroLEOneClass
 
 /-- A linearly ordered commutative monoid with a zero element. -/
 class LinearOrderedCommMonoidWithZero (α : Type _) extends LinearOrderedCommMonoid α,
   CommMonoidWithZero α where
   zero_le_one : (0 : α) ≤ 1
 #align linear_ordered_comm_monoid_with_zero LinearOrderedCommMonoidWithZero
-
-instance (priority := 100) LinearOrderedCommMonoidWithZero.toZeroLEOneClass
-    [LinearOrderedCommMonoidWithZero α] : ZeroLEOneClass α :=
-  { ‹LinearOrderedCommMonoidWithZero α› with }
-#align
-  linear_ordered_comm_monoid_with_zero.to_zero_le_one_class
-  LinearOrderedCommMonoidWithZero.toZeroLEOneClass
-
-instance (priority := 100) CanonicallyOrderedAddMonoid.toZeroLEOneClass
-    [CanonicallyOrderedAddMonoid α] [One α] : ZeroLEOneClass α :=
-  ⟨zero_le 1⟩
-#align
-  canonically_ordered_add_monoid.to_zero_le_one_class
-  CanonicallyOrderedAddMonoid.toZeroLEOneClass
-
-/-- `zero_le_one` with the type argument implicit. -/
-@[simp]
-theorem zero_le_one [Zero α] [One α] [LE α] [ZeroLEOneClass α] : (0 : α) ≤ 1 :=
-  ZeroLEOneClass.zero_le_one
-#align zero_le_one zero_le_one
-
-/-- `zero_le_one` with the type argument explicit. -/
-theorem zero_le_one' (α) [Zero α] [One α] [LE α] [ZeroLEOneClass α] : (0 : α) ≤ 1 :=
-  zero_le_one
-#align zero_le_one' zero_le_one'
-
--- Porting note: In the following lemmas, we now assume that we have an `AddMonoidWithOne`
--- instance for `α`. Note that mathlib3#17820 may move these lemmas into another file.
--- We also now import `norm_num` to normalise things like `2 + 2 = 4`.
-
-theorem zero_le_two [Preorder α] [AddMonoidWithOne α] [ZeroLEOneClass α]
-    [CovariantClass α α (· + ·) (· ≤ ·)] : (0 : α) ≤ 2 :=
-  le_of_le_of_eq (add_nonneg zero_le_one zero_le_one) one_add_one_eq_two
-#align zero_le_two zero_le_two
-
-theorem zero_le_three [Preorder α] [AddMonoidWithOne α] [ZeroLEOneClass α]
-    [CovariantClass α α (· + ·) (· ≤ ·)] : (0 : α) ≤ 3 := by
-  refine le_of_le_of_eq (add_nonneg zero_le_two zero_le_one) ?_
-  norm_num
-#align zero_le_three zero_le_three
-
-theorem zero_le_four [Preorder α] [AddMonoidWithOne α] [ZeroLEOneClass α]
-    [CovariantClass α α (· + ·) (· ≤ ·)] : (0 : α) ≤ 4 := by
-  refine le_of_le_of_eq (add_nonneg zero_le_two zero_le_two) ?_
-  norm_num
-#align zero_le_four zero_le_four
-
-theorem one_le_two [Preorder α] [AddMonoidWithOne α] [ZeroLEOneClass α]
-    [CovariantClass α α (· + ·) (· ≤ ·)] : (1 : α) ≤ 2 :=
-  calc
-    1 = 1 + 0 := (add_zero 1).symm
-    _ ≤ 1 + 1 := add_le_add_left zero_le_one _
-    _ = 2 := by norm_num
-#align one_le_two one_le_two
-
-theorem one_le_two' [LE α] [AddMonoidWithOne α] [ZeroLEOneClass α]
-    [CovariantClass α α (swap (· + ·)) (· ≤ ·)] : (1 : α) ≤ 2 :=
-  calc
-    1 = 0 + 1 := (zero_add 1).symm
-    _ ≤ 1 + 1 := add_le_add_right zero_le_one _
-    _ = 2 := by norm_num
-#align one_le_two' one_le_two'
 
 namespace WithZero
 
