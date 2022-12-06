@@ -70,14 +70,14 @@ instance [SMul Mᵐᵒᵖ α] [SMul Mᵐᵒᵖ β] [IsCentralScalar M α] [IsCen
     exacts[congr_arg inl (op_smul_eq_smul _ _), congr_arg inr (op_smul_eq_smul _ _)]⟩
 
 @[to_additive]
-instance hasFaithfulSMulLeft [HasFaithfulSMul M α] : HasFaithfulSMul M (Sum α β) :=
+instance FaithfulSMulLeft [FaithfulSMul M α] : FaithfulSMul M (Sum α β) :=
   ⟨fun h => eq_of_smul_eq_smul fun a : α => by injection h (inl a)⟩
-#align sum.has_faithful_smul_left Sum.hasFaithfulSMulLeft
+#align sum.has_faithful_smul_left Sum.FaithfulSMulLeft
 
 @[to_additive]
-instance hasFaithfulSMulRight [HasFaithfulSMul M β] : HasFaithfulSMul M (Sum α β) :=
+instance FaithfulSMulRight [FaithfulSMul M β] : FaithfulSMul M (Sum α β) :=
   ⟨fun h => eq_of_smul_eq_smul fun b : β => by injection h (inr b)⟩
-#align sum.has_faithful_smul_right Sum.hasFaithfulSMulRight
+#align sum.has_faithful_smul_right Sum.FaithfulSMulRight
 
 end SMul
 
