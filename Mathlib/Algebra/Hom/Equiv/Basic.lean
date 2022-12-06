@@ -90,10 +90,10 @@ class MulEquivClass (F A B : Type _) [outParam <| Mul A] [outParam <| Mul B] ext
   map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
 #align mul_equiv_class MulEquivClass
 
--- mathport name: «expr ≃* »
+/-- Notation for a `MulEquiv`. -/
 infixl:25 " ≃* " => MulEquiv
 
--- mathport name: «expr ≃+ »
+/-- Notation for an `AddEquiv`. -/
 infixl:25 " ≃+ " => AddEquiv
 
 namespace MulEquivClass
@@ -196,10 +196,12 @@ theorem coe_toMulHom {f : M ≃* N} : f.toMulHom = f.toFun := rfl
 theorem _root_.AddEquiv.coe_toAddHom [Add M] [Add N] {f : M ≃+ N} : f.toAddHom = f.toFun := rfl
 #align add_equiv.coe_to_add_hom AddEquiv.coe_toAddHom
 
+set_option trace.Meta.synthInstance true
+
 /-- A multiplicative isomorphism preserves multiplication. -/
 @[to_additive "An additive isomorphism preserves addition."]
-protected theorem map_mul (f : M ≃* N) : ∀ x y, f (x * y) = f x * f y := sorry
-  -- _root_.map_mul f
+protected theorem map_mul (f : M ≃* N) : ∀ x y, f (x * y) = f x * f y :=
+  _root_.map_mul f
 #align mul_equiv.map_mul MulEquiv.map_mul
 #align add_equiv.map_add AddEquiv.map_add
 
@@ -238,7 +240,8 @@ def refl (M : Type _) [Mul M] : M ≃* M :=
 instance : Inhabited (M ≃* M) := ⟨refl M⟩
 
 /-- The inverse of an isomorphism is an isomorphism. -/
-@[symm, to_additive "The inverse of an isomorphism is an isomorphism."]
+-- Porting note: removed `@[trans]`, until https://github.com/leanprover-community/mathlib4/pull/857
+@[to_additive "The inverse of an isomorphism is an isomorphism."]
 def symm {M N : Type _} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
   ⟨h.toEquiv.symm, (h.toMulHom.inverse h.toEquiv.symm h.left_inv h.right_inv).map_mul⟩
 #align mul_equiv.symm MulEquiv.symm
@@ -302,7 +305,8 @@ theorem refl_symm : (refl M).symm = refl M := rfl
 #align add_equiv.refl_symm AddEquiv.refl_symm
 
 /-- Transitivity of multiplication-preserving isomorphisms -/
-@[trans, to_additive "Transitivity of addition-preserving isomorphisms"]
+-- Porting note: removed `@[trans]`, until https://github.com/leanprover-community/mathlib4/pull/857
+@[to_additive "Transitivity of addition-preserving isomorphisms"]
 def trans (h1 : M ≃* N) (h2 : N ≃* P) : M ≃* P :=
   { h1.toEquiv.trans h2.toEquiv with
     map_mul' := fun x y => show h2 (h1 (x * y)) = h2 (h1 x) * h2 (h1 y) by
@@ -633,7 +637,7 @@ theorem piCongrRight_trans {η : Type _} {Ms Ns Ps : η → Type _} [∀ j, Mul 
 
 /-- A family indexed by a nonempty subsingleton type is equivalent to the element at the single
 index. -/
-@[to_additive AddEquiv.piSubsingleton
+@[to_additive
   "A family indexed by a nonempty subsingleton type is
   equivalent to the element at the single index.",
   simps]
@@ -707,9 +711,9 @@ def MonoidHom.toMulEquiv [MulOneClass M] [MulOneClass N] (f : M →* N) (g : N �
 
 namespace Equiv
 
-section HasInvolutiveInv
+section InvolutiveInv
 
-variable (G) [HasInvolutiveInv G]
+variable (G) [InvolutiveInv G]
 
 /-- Inversion on a `Group` or `GroupWithZero` is a permutation of the underlying type. -/
 @[to_additive "Negation on an `AddGroup` is a permutation of the underlying type.",
@@ -726,6 +730,6 @@ theorem inv_symm : (Equiv.inv G).symm = Equiv.inv G := rfl
 #align equiv.inv_symm Equiv.inv_symm
 #align equiv.neg_symm Equiv.neg_symm
 
-end HasInvolutiveInv
+end InvolutiveInv
 
 end Equiv
