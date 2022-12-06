@@ -25,11 +25,11 @@ theorem dvd_add [LeftDistribClass α] {a b c : α} (h₁ : a ∣ b) (h₂ : a �
 
 end DistribSemigroup
 
--- TODO : Delete this?
--- @[simp]
--- theorem two_dvd_bit0 [Semiring α] {a : α} : 2 ∣ bit0 a :=
---   ⟨a, bit0_eq_two_mul _⟩
--- #align two_dvd_bit0 two_dvd_bit0
+set_option linter.deprecated false in
+@[simp]
+theorem two_dvd_bit0 [Semiring α] {a : α} : 2 ∣ bit0 a :=
+  ⟨a, bit0_eq_two_mul _⟩
+#align two_dvd_bit0 two_dvd_bit0
 
 section NonUnitalCommSemiring
 
@@ -126,10 +126,10 @@ section Ring
 
 variable [Ring α] {a b c : α}
 
--- TODO : Delete this?
--- theorem two_dvd_bit1 : 2 ∣ bit1 a ↔ (2 : α) ∣ 1 :=
---   (dvd_add_iff_right (@two_dvd_bit0 _ _ a)).symm
--- #align two_dvd_bit1 two_dvd_bit1
+set_option linter.deprecated false in
+theorem two_dvd_bit1 : 2 ∣ bit1 a ↔ (2 : α) ∣ 1 :=
+  (dvd_add_iff_right (@two_dvd_bit0 _ _ a)).symm
+#align two_dvd_bit1 two_dvd_bit1
 
 /-- An element a divides the sum a + b if and only if a divides b.-/
 @[simp]
