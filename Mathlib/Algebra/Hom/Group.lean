@@ -137,7 +137,7 @@ structure AddHom (M : Type _) (N : Type _) [Add M] [Add N] where
 /-- `AddHomClass F M N` states that `F` is a type of addition-preserving homomorphisms.
 You should declare an instance of this typeclass when you extend `AddHom`.
 -/
-class AddHomClass (F : Type _) (M N : outParam (Type _)) [outParam (Add M)] [outParam (Add N)]
+class AddHomClass (F : Type _) (M N : outParam (Type _)) [Add M] [Add N]
   extends FunLike F M fun _ => N where
   /-- The proposition that the function preserves addition -/
   map_add : ∀ (f : F) (x y : M), f (x + y) = f x + f y
@@ -172,8 +172,8 @@ homomorphisms.
 
 You should also extend this typeclass when you extend `AddMonoidHom`.
 -/
-class AddMonoidHomClass (F : Type _) (M N : outParam (Type _)) [outParam (AddZeroClass M)]
-  [outParam (AddZeroClass N)] extends AddHomClass F M N, ZeroHomClass F M N
+class AddMonoidHomClass (F : Type _) (M N : outParam (Type _)) [AddZeroClass M] [AddZeroClass N]
+  extends AddHomClass F M N, ZeroHomClass F M N
 #align add_monoid_hom_class AddMonoidHomClass
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
@@ -202,7 +202,7 @@ structure OneHom (M : Type _) (N : Type _) [One M] [One N] where
 You should extend this typeclass when you extend `OneHom`.
 -/
 @[to_additive]
-class OneHomClass (F : Type _) (M N : outParam (Type _)) [outParam (One M)] [outParam (One N)]
+class OneHomClass (F : Type _) (M N : outParam (Type _)) [One M] [One N]
   extends FunLike F M fun _ => N where
   /-- The proposition that the function preserves 1 -/
   map_one : ∀ f : F, f 1 = 1
@@ -473,8 +473,8 @@ infixr:25 " →*₀ " => MonoidWithZeroHom
 
 You should also extend this typeclass when you extend `MonoidWithZeroHom`.
 -/
-class MonoidWithZeroHomClass (F : Type _) (M N : outParam (Type _)) [outParam (MulZeroOneClass M)]
-  [outParam (MulZeroOneClass N)] extends MonoidHomClass F M N, ZeroHomClass F M N
+class MonoidWithZeroHomClass (F : Type _) (M N : outParam (Type _)) [MulZeroOneClass M]
+  [MulZeroOneClass N] extends MonoidHomClass F M N, ZeroHomClass F M N
 #align monoid_with_zero_hom_class MonoidWithZeroHomClass
 
 instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M →*₀ N) M N where
