@@ -75,7 +75,9 @@ variable {F α β γ δ : Type _}
 
 /-- Bundled monotone (aka, increasing) function -/
 structure OrderHom (α β : Type _) [Preorder α] [Preorder β] where
+  /-- The underlying funcrion of an `OrderHom`. -/
   toFun : α → β
+  /-- The underlying function of an `OrderHom` is monotone. -/
   monotone' : Monotone toFun
 #align order_hom OrderHom
 
@@ -114,6 +116,7 @@ abbrev OrderHomClass (F : Type _) (α β : outParam (Type _)) [LE α] [LE β] :=
 You should extend this class when you extend `OrderIso`. -/
 class OrderIsoClass (F : Type _) (α β : outParam (Type _)) [LE α] [LE β] extends
   EquivLike F α β where
+  /-- An order isomorphism respects `≤`. -/
   map_le_map_iff (f : F) {a b : α} : f a ≤ f b ↔ a ≤ b
 #align order_iso_class OrderIsoClass
 
@@ -217,12 +220,10 @@ instance : OrderHomClass (α →o β) α β where
     congr
   map_rel f _ _ h := f.monotone h
 
-@[simp]
-theorem to_fun_eq_coe {f : α →o β} : f.toFun = f :=
-  rfl
-#align order_hom.to_fun_eq_coe OrderHom.to_fun_eq_coe
+-- Porting note: dropped `to_fun_eq_coe` as it is a tautology now.
+#noalign order_hom.to_fun_eq_coe
 
-@[simp]
+-- Porting note: no longer good as a simp lemma, as after `whnfR` the LHS is just `f` anyway.
 theorem coe_fun_mk {f : α → β} (hf : Monotone f) : (mk f hf : α → β) = f :=
   rfl
 #align order_hom.coe_fun_mk OrderHom.coe_fun_mk
@@ -603,12 +604,14 @@ theorem le_iff_le {a b} : f a ≤ f b ↔ a ≤ b :=
   f.map_rel_iff
 #align order_embedding.le_iff_le OrderEmbedding.le_iff_le
 
-@[simp]
+-- Porting note: `simp` can prove this.
+-- @[simp]
 theorem lt_iff_lt {a b} : f a < f b ↔ a < b :=
   f.ltEmbedding.map_rel_iff
 #align order_embedding.lt_iff_lt OrderEmbedding.lt_iff_lt
 
-@[simp]
+-- Porting note: `simp` can prove this.
+-- @[simp]
 theorem eq_iff_eq {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 #align order_embedding.eq_iff_eq OrderEmbedding.eq_iff_eq
@@ -769,7 +772,8 @@ protected theorem surjective (e : α ≃o β) : Function.Surjective e :=
   e.toEquiv.surjective
 #align order_iso.surjective OrderIso.surjective
 
-@[simp]
+-- Porting note: simp can prove this
+-- @[simp]
 theorem apply_eq_iff_eq (e : α ≃o β) {x y : α} : e x = e y ↔ x = y :=
   e.toEquiv.apply_eq_iff_eq
 #align order_iso.apply_eq_iff_eq OrderIso.apply_eq_iff_eq
