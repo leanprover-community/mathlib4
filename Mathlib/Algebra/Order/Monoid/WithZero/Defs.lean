@@ -18,6 +18,7 @@ variable {α : Type u}
 /-- A linearly ordered commutative monoid with a zero element. -/
 class LinearOrderedCommMonoidWithZero (α : Type _) extends LinearOrderedCommMonoid α,
   CommMonoidWithZero α where
+  /-- `0 ≤ 1` in any linearly ordered commutative monoid. -/
   zero_le_one : (0 : α) ≤ 1
 #align linear_ordered_comm_monoid_with_zero LinearOrderedCommMonoidWithZero
 
@@ -75,18 +76,9 @@ instance covariantClass_mul_le [Mul α] [Preorder α]
   exact mul_le_mul_left' hbc' _
 #align with_zero.covariant_class_mul_le WithZero.covariantClass_mul_le
 
-@[simp]
-theorem le_max_iff [LinearOrder α] {a b c : α} : (a : WithZero α) ≤ max b c ↔ a ≤ max b c := by
-  simp only [WithZero.coe_le_coe, le_max_iff]
-  rfl
-#align with_zero.le_max_iff WithZero.le_max_iff
-
--- Porting note: `_root_` was needed here, but not in the previous lemma
-@[simp]
-theorem min_le_iff [LinearOrder α] {a b c : α} : min (a : WithZero α) b ≤ c ↔ min a b ≤ c := by
-  simp only [WithZero.coe_le_coe, _root_.min_le_iff]
-  rfl
-#align with_zero.min_le_iff WithZero.min_le_iff
+-- Porting note: `simp` can prove these mathlib3 lemmas, so they are omitted.
+#noalign with_zero.le_max_iff
+#noalign with_zero.min_le_iff
 
 instance [OrderedCommMonoid α] : OrderedCommMonoid (WithZero α) :=
   { CommMonoidWithZero.toCommMonoid, WithZero.instPartialOrderWithZero with
