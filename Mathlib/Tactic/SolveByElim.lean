@@ -40,7 +40,7 @@ calls to `apply` succeeded or failed.
 def applyFirst (cfg : ApplyConfig := {}) (trace : Name := .anonymous) (lemmas : List Expr)
     (cont : List MVarId → MetaM α) (g : MVarId) : MetaM α :=
   lemmas.firstM fun e =>
-    withTraceNode trace (return m!"{exceptEmoji ·} tried to apply: {e}") do
+    withTraceNode trace (return m!"{exceptEmoji ·} trying to apply: {e}") do
       cont (← g.apply e cfg)
 
 end Lean.MVarId
@@ -397,7 +397,7 @@ def parseArgs (s : Option (TSyntax ``args)) :
 /--
 `solve_by_elim` calls `apply` on the main goal to find an assumption whose head matches
 and then repeatedly calls `apply` on the generated subgoals until no subgoals remain,
-performing at most `maxDepth` (currently hard-coded to 12) recursive steps.
+performing at most `maxDepth` (defaults to 6) recursive steps.
 
 `solve_by_elim` discharges the current goal or fails.
 
