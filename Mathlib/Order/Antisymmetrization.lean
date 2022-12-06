@@ -3,8 +3,8 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathbin.Order.Hom.Basic
-import Mathbin.Logic.Relation
+import Mathlib.Order.Hom.Basic
+import Mathlib.Logic.Relation
 
 /-!
 # Turning a preorder into a partial order
@@ -12,16 +12,18 @@ import Mathbin.Logic.Relation
 This file allows to make a preorder into a partial order by quotienting out the elements `a`, `b`
 such that `a ≤ b` and `b ≤ a`.
 
-`antisymmetrization` is a functor from `Preorder` to `PartialOrder`. See `Preorder_to_PartialOrder`.
+`Antisymmetrization` is a functor from `Preorder` to `PartialOrder`. See `Preorder_to_PartialOrder`.
 
 ## Main declarations
 
-* `antisymm_rel`: The antisymmetrization relation. `antisymm_rel r a b` means that `a` and `b` are
+* `AntisymmRel`: The antisymmetrization relation. `AntisymmRel r a b` means that `a` and `b` are
   related both ways by `r`.
-* `antisymmetrization α r`: The quotient of `α` by `antisymm_rel r`. Even when `r` is just a
-  preorder, `antisymmetrization α` is a partial order.
+* `Antisymmetrization α r`: The quotient of `α` by `AntisymmRel r`. Even when `r` is just a
+  preorder, `Antisymmetrization α` is a partial order.
 -/
 
+/- Porting Notes: There are many changes from `toAntisymmetrization (. ≤ .)` to
+`@toAntisymmetrization α (· ≤ ·) _` -/
 
 open Function OrderDual
 
@@ -36,14 +38,14 @@ def AntisymmRel (a b : α) : Prop :=
   r a b ∧ r b a
 #align antisymm_rel AntisymmRel
 
-theorem antisymm_rel_swap : AntisymmRel (swap r) = AntisymmRel r :=
+theorem antisymmRel_swap : AntisymmRel (swap r) = AntisymmRel r :=
   funext fun _ => funext fun _ => propext and_comm
-#align antisymm_rel_swap antisymm_rel_swap
+#align antisymm_rel_swap antisymmRel_swap
 
 @[refl]
-theorem antisymm_rel_refl [IsRefl α r] (a : α) : AntisymmRel r a a :=
+theorem antisymmRel_refl [IsRefl α r] (a : α) : AntisymmRel r a a :=
   ⟨refl _, refl _⟩
-#align antisymm_rel_refl antisymm_rel_refl
+#align antisymm_rel_refl antisymmRel_refl
 
 variable {r}
 
@@ -55,11 +57,11 @@ theorem AntisymmRel.symm {a b : α} : AntisymmRel r a b → AntisymmRel r b a :=
 @[trans]
 theorem AntisymmRel.trans [IsTrans α r] {a b c : α} (hab : AntisymmRel r a b)
     (hbc : AntisymmRel r b c) : AntisymmRel r a c :=
-  ⟨trans hab.1 hbc.1, trans hbc.2 hab.2⟩
+  ⟨_root_.trans hab.1 hbc.1, _root_.trans hbc.2 hab.2⟩
 #align antisymm_rel.trans AntisymmRel.trans
 
 instance AntisymmRel.decidableRel [DecidableRel r] : DecidableRel (AntisymmRel r) := fun _ _ =>
-  And.decidable
+  instDecidableAnd
 #align antisymm_rel.decidable_rel AntisymmRel.decidableRel
 
 @[simp]
@@ -78,7 +80,7 @@ variable (α) (r : α → α → Prop) [IsPreorder α r]
 /-- The antisymmetrization relation as an equivalence relation. -/
 @[simps]
 def AntisymmRel.setoid : Setoid α :=
-  ⟨AntisymmRel r, antisymm_rel_refl _, fun _ _ => AntisymmRel.symm, fun _ _ _ => AntisymmRel.trans⟩
+  ⟨AntisymmRel r, antisymmRel_refl _, AntisymmRel.symm, AntisymmRel.trans⟩
 #align antisymm_rel.setoid AntisymmRel.setoid
 
 /-- The partial order derived from a preorder by making pairwise comparable elements equal. This is
@@ -91,7 +93,7 @@ variable {α}
 
 /-- Turn an element into its antisymmetrization. -/
 def toAntisymmetrization : α → Antisymmetrization α r :=
-  Quotient.mk'
+  Quotient.mk _
 #align to_antisymmetrization toAntisymmetrization
 
 /-- Get a representative from the antisymmetrization. -/
@@ -100,7 +102,7 @@ noncomputable def ofAntisymmetrization : Antisymmetrization α r → α :=
 #align of_antisymmetrization ofAntisymmetrization
 
 instance [Inhabited α] : Inhabited (Antisymmetrization α r) :=
-  Quotient.inhabited _
+  by unfold Antisymmetrization; infer_instance
 
 @[elab_as_elim]
 protected theorem Antisymmetrization.ind {p : Antisymmetrization α r → Prop} :
@@ -124,7 +126,7 @@ end IsPreorder
 
 section Preorder
 
-variable {α} [Preorder α] [Preorder β] {a b : α}
+variable [Preorder α] [Preorder β] {a b : α}
 
 theorem AntisymmRel.image {a b : α} (h : AntisymmRel (· ≤ ·) a b) {f : α → β} (hf : Monotone f) :
     AntisymmRel (· ≤ ·) (f a) (f b) :=
@@ -134,18 +136,18 @@ theorem AntisymmRel.image {a b : α} (h : AntisymmRel (· ≤ ·) a b) {f : α �
 instance :
     PartialOrder
       (Antisymmetrization α
-        (· ≤
-          ·)) where
+        (· ≤ ·)) where
   le a b :=
-    (Quotient.liftOn₂' a b (· ≤ ·)) fun (a₁ a₂ b₁ b₂ : α) h₁ h₂ =>
+    (Quotient.liftOn₂' a b (· ≤ ·)) fun (_ _ _ _ : α) h₁ h₂ =>
       propext ⟨fun h => h₁.2.trans <| h.trans h₂.1, fun h => h₁.1.trans <| h.trans h₂.2⟩
   lt a b :=
-    (Quotient.liftOn₂' a b (· < ·)) fun (a₁ a₂ b₁ b₂ : α) h₁ h₂ =>
-      propext ⟨fun h => h₁.2.trans_lt <| h.trans_le h₂.1, fun h => h₁.1.trans_lt <| h.trans_le h₂.2⟩
+    (Quotient.liftOn₂' a b (· < ·)) fun (_ _ _ _ : α) h₁ h₂ =>
+      propext ⟨fun h => h₁.2.trans_lt <| h.trans_le h₂.1, fun h =>
+                h₁.1.trans_lt <| h.trans_le h₂.2⟩
   le_refl a := Quotient.inductionOn' a <| le_refl
-  le_trans a b c := (Quotient.inductionOn₃' a b c) fun a b c => le_trans
-  lt_iff_le_not_le a b := (Quotient.inductionOn₂' a b) fun a b => lt_iff_le_not_le
-  le_antisymm a b := (Quotient.inductionOn₂' a b) fun a b hab hba => Quotient.sound' ⟨hab, hba⟩
+  le_trans a b c := Quotient.inductionOn₃' a b c fun _ _ _ => le_trans
+  lt_iff_le_not_le a b := Quotient.inductionOn₂' a b fun _ _ => lt_iff_le_not_le
+  le_antisymm a b := Quotient.inductionOn₂' a b fun _ _ hab hba => Quotient.sound' ⟨hab, hba⟩
 
 theorem antisymmetrization_fibration :
     Relation.Fibration (· < ·) (· < ·) (@toAntisymmetrization α (· ≤ ·) _) := by
@@ -153,7 +155,8 @@ theorem antisymmetrization_fibration :
   exact ⟨b, h, rfl⟩
 #align antisymmetrization_fibration antisymmetrization_fibration
 
-theorem acc_antisymmetrization_iff : Acc (· < ·) (toAntisymmetrization (· ≤ ·) a) ↔ Acc (· < ·) a :=
+theorem acc_antisymmetrization_iff : Acc (· < ·)
+    (@toAntisymmetrization α (· ≤ ·) _ a) ↔ Acc (· < ·) a :=
   ⟨fun h =>
     haveI := InvImage.accessible _ h
     this,
@@ -173,56 +176,53 @@ instance [WellFoundedLt α] : WellFoundedLt (Antisymmetrization α (· ≤ ·)) 
 
 instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] [IsTotal α (· ≤ ·)] :
     LinearOrder (Antisymmetrization α (· ≤ ·)) :=
-  { Antisymmetrization.partialOrder with
+  { instPartialOrderAntisymmetrizationLeToLEInstIsPreorderLeToLE with
     le_total := fun a b => Quotient.inductionOn₂' a b <| total_of (· ≤ ·),
-    DecidableEq := @Quotient.decidableEq _ (AntisymmRel.setoid _ (· ≤ ·)) AntisymmRel.decidableRel,
-    decidableLe := fun _ _ => Quotient.liftOn₂'.decidable _ _ _ _,
-    decidableLt := fun _ _ => Quotient.liftOn₂'.decidable _ _ _ _ }
+    decidable_le := fun _ _ => show Decidable (Quotient.liftOn₂' _ _ _ _) from inferInstance,
+    decidable_lt := fun _ _ => show Decidable (Quotient.liftOn₂' _ _ _ _) from inferInstance }
 
 @[simp]
-theorem to_antisymmetrization_le_to_antisymmetrization_iff :
-    toAntisymmetrization (· ≤ ·) a ≤ toAntisymmetrization (· ≤ ·) b ↔ a ≤ b :=
+theorem toAntisymmetrization_le_toAntisymmetrization_iff :
+    @toAntisymmetrization α (· ≤ ·) _ a ≤ @toAntisymmetrization α (· ≤ ·) _ b ↔ a ≤ b :=
   Iff.rfl
 #align
-  to_antisymmetrization_le_to_antisymmetrization_iff to_antisymmetrization_le_to_antisymmetrization_iff
+  to_antisymmetrization_le_to_antisymmetrization_iff
+  toAntisymmetrization_le_toAntisymmetrization_iff
 
 @[simp]
-theorem to_antisymmetrization_lt_to_antisymmetrization_iff :
-    toAntisymmetrization (· ≤ ·) a < toAntisymmetrization (· ≤ ·) b ↔ a < b :=
+theorem toAntisymmetrization_lt_toAntisymmetrization_iff :
+    @toAntisymmetrization α (· ≤ ·) _ a < @toAntisymmetrization α (· ≤ ·) _ b ↔ a < b :=
   Iff.rfl
 #align
-  to_antisymmetrization_lt_to_antisymmetrization_iff to_antisymmetrization_lt_to_antisymmetrization_iff
+  to_antisymmetrization_lt_to_antisymmetrization_iff
+  toAntisymmetrization_lt_toAntisymmetrization_iff
 
 @[simp]
-theorem of_antisymmetrization_le_of_antisymmetrization_iff {a b : Antisymmetrization α (· ≤ ·)} :
+theorem ofAntisymmetrization_le_ofAntisymmetrization_iff {a b : Antisymmetrization α (· ≤ ·)} :
     ofAntisymmetrization (· ≤ ·) a ≤ ofAntisymmetrization (· ≤ ·) b ↔ a ≤ b := by
-  convert to_antisymmetrization_le_to_antisymmetrization_iff.symm <;>
-    exact (to_antisymmetrization_of_antisymmetrization _ _).symm
+  rw [← toAntisymmetrization_le_toAntisymmetrization_iff]
+  simp
 #align
-  of_antisymmetrization_le_of_antisymmetrization_iff of_antisymmetrization_le_of_antisymmetrization_iff
+  of_antisymmetrization_le_of_antisymmetrization_iff
+  ofAntisymmetrization_le_ofAntisymmetrization_iff
 
 @[simp]
-theorem of_antisymmetrization_lt_of_antisymmetrization_iff {a b : Antisymmetrization α (· ≤ ·)} :
+theorem ofAntisymmetrization_lt_ofAntisymmetrization_iff {a b : Antisymmetrization α (· ≤ ·)} :
     ofAntisymmetrization (· ≤ ·) a < ofAntisymmetrization (· ≤ ·) b ↔ a < b := by
-  convert to_antisymmetrization_lt_to_antisymmetrization_iff.symm <;>
-    exact (to_antisymmetrization_of_antisymmetrization _ _).symm
+  rw [← toAntisymmetrization_lt_toAntisymmetrization_iff]
+  simp
 #align
-  of_antisymmetrization_lt_of_antisymmetrization_iff of_antisymmetrization_lt_of_antisymmetrization_iff
+  of_antisymmetrization_lt_of_antisymmetrization_iff
+  ofAntisymmetrization_lt_ofAntisymmetrization_iff
 
-@[mono]
-theorem to_antisymmetrization_mono : Monotone (@toAntisymmetrization α (· ≤ ·) _) := fun a b => id
-#align to_antisymmetrization_mono to_antisymmetrization_mono
-
-/-- `to_antisymmetrization` as an order homomorphism. -/
-@[simps]
-def OrderHom.toAntisymmetrization : α →o Antisymmetrization α (· ≤ ·) :=
-  ⟨toAntisymmetrization (· ≤ ·), fun a b => id⟩
-#align order_hom.to_antisymmetrization OrderHom.toAntisymmetrization
+-- Porting note: `mono` tactic not implemented yet.
+-- @[mono]
+theorem toAntisymmetrization_mono : Monotone (@toAntisymmetrization α (· ≤ ·) _) := fun _ _ => id
+#align to_antisymmetrization_mono toAntisymmetrization_mono
 
 private theorem lift_fun_antisymm_rel (f : α →o β) :
-    ((AntisymmRel.setoid α (· ≤ ·)).R ⇒ (AntisymmRel.setoid β (· ≤ ·)).R) f f := fun a b h =>
+    ((AntisymmRel.setoid α (· ≤ ·)).r ⇒ (AntisymmRel.setoid β (· ≤ ·)).r) f f := fun _ _ h =>
   ⟨f.mono h.1, f.mono h.2⟩
-#align lift_fun_antisymm_rel lift_fun_antisymm_rel
 
 /-- Turns an order homomorphism from `α` to `β` into one from `antisymmetrization α` to
 `antisymmetrization β`. `antisymmetrization` is actually a functor. See `Preorder_to_PartialOrder`.
@@ -234,32 +234,32 @@ protected def OrderHom.antisymmetrization (f : α →o β) :
 
 @[simp]
 theorem OrderHom.coe_antisymmetrization (f : α →o β) :
-    ⇑f.Antisymmetrization = Quotient.map' f (lift_fun_antisymm_rel f) :=
+    f.antisymmetrization = Quotient.map' f (lift_fun_antisymm_rel f) :=
   rfl
 #align order_hom.coe_antisymmetrization OrderHom.coe_antisymmetrization
 
-@[simp]
+/- Porting notes: Removed @[simp] attribute -/
 theorem OrderHom.antisymmetrization_apply (f : α →o β) (a : Antisymmetrization α (· ≤ ·)) :
-    f.Antisymmetrization a = Quotient.map' f (lift_fun_antisymm_rel f) a :=
+    f.antisymmetrization a = Quotient.map' f (lift_fun_antisymm_rel f) a :=
   rfl
 #align order_hom.antisymmetrization_apply OrderHom.antisymmetrization_apply
 
 @[simp]
 theorem OrderHom.antisymmetrization_apply_mk (f : α →o β) (a : α) :
-    f.Antisymmetrization (toAntisymmetrization _ a) = toAntisymmetrization _ (f a) :=
-  Quotient.map'_mk' f (lift_fun_antisymm_rel f) _
+    f.antisymmetrization (toAntisymmetrization _ a) = toAntisymmetrization _ (f a) :=
+  @Quotient.map_mk _ _ (_root_.id _) (_root_.id _) f (lift_fun_antisymm_rel f) _
 #align order_hom.antisymmetrization_apply_mk OrderHom.antisymmetrization_apply_mk
 
 variable (α)
 
-/-- `of_antisymmetrization` as an order embedding. -/
+/-- `ofAntisymmetrization` as an order embedding. -/
 @[simps]
 noncomputable def OrderEmbedding.ofAntisymmetrization :
     Antisymmetrization α (· ≤ ·) ↪o
       α where
-  toFun := ofAntisymmetrization _
+  toFun := _root_.ofAntisymmetrization (. ≤ .)
   inj' _ _ := Quotient.out_inj.1
-  map_rel_iff' a b := of_antisymmetrization_le_of_antisymmetrization_iff
+  map_rel_iff' := ofAntisymmetrization_le_ofAntisymmetrization_iff
 #align order_embedding.of_antisymmetrization OrderEmbedding.ofAntisymmetrization
 
 /-- `antisymmetrization` and `order_dual` commute. -/
@@ -269,21 +269,21 @@ def OrderIso.dualAntisymmetrization :
         (· ≤ ·) where
   toFun := (Quotient.map' id) fun _ _ => And.symm
   invFun := (Quotient.map' id) fun _ _ => And.symm
-  left_inv a := (Quotient.inductionOn' a) fun a => by simp_rw [Quotient.map'_mk', id]
-  right_inv a := (Quotient.inductionOn' a) fun a => by simp_rw [Quotient.map'_mk', id]
-  map_rel_iff' a b := (Quotient.inductionOn₂' a b) fun a b => Iff.rfl
+  left_inv a := Quotient.inductionOn' a fun a => by simp_rw [Quotient.map'_mk'', id]
+  right_inv a := Quotient.inductionOn' a fun a => by simp_rw [Quotient.map'_mk'', id]
+  map_rel_iff' := @fun a b => Quotient.inductionOn₂' a b fun a b => Iff.rfl
 #align order_iso.dual_antisymmetrization OrderIso.dualAntisymmetrization
 
 @[simp]
-theorem OrderIso.dual_antisymmetrization_apply (a : α) :
-    OrderIso.dualAntisymmetrization _ (to_dual <| toAntisymmetrization _ a) =
+theorem OrderIso.dualAntisymmetrization_apply (a : α) :
+    OrderIso.dualAntisymmetrization α (toDual <| toAntisymmetrization _ a) =
       toAntisymmetrization _ (toDual a) :=
   rfl
-#align order_iso.dual_antisymmetrization_apply OrderIso.dual_antisymmetrization_apply
+#align order_iso.dual_antisymmetrization_apply OrderIso.dualAntisymmetrization_apply
 
 @[simp]
 theorem OrderIso.dual_antisymmetrization_symm_apply (a : α) :
-    (OrderIso.dualAntisymmetrization _).symm (toAntisymmetrization _ <| toDual a) =
+    (OrderIso.dualAntisymmetrization α).symm (toAntisymmetrization _ <| toDual a) =
       toDual (toAntisymmetrization _ a) :=
   rfl
 #align order_iso.dual_antisymmetrization_symm_apply OrderIso.dual_antisymmetrization_symm_apply
