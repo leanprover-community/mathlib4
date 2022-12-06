@@ -106,6 +106,7 @@ namespace EuclideanDomain
 variable {R : Type u} [EuclideanDomain R]
 
 -- mathport name: «expr ≺ »
+/-- Abbreviated notation for the well-founded relation `r` in a Euclidean domain. -/
 local infixl:50 " ≺ " => EuclideanDomain.r
 
 -- see Note [lower instance priority]
