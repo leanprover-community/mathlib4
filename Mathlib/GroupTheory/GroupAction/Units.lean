@@ -46,8 +46,8 @@ theorem _root_.IsUnit.inv_smul [Monoid α] {a : α} (h : IsUnit a) : h.unit⁻¹
 #align is_unit.inv_smul IsUnit.inv_smul
 
 @[to_additive]
-instance [Monoid M] [SMul M α] [HasFaithfulSMul M α] :
-    HasFaithfulSMul Mˣ α where eq_of_smul_eq_smul h := Units.ext <| eq_of_smul_eq_smul h
+instance [Monoid M] [SMul M α] [FaithfulSMul M α] : FaithfulSMul Mˣ α where
+  eq_of_smul_eq_smul h := Units.ext <| eq_of_smul_eq_smul h
 
 @[to_additive]
 instance [Monoid M] [MulAction M α] :
