@@ -5,6 +5,7 @@ Authors: Kenny Lau, Ken Lee, Chris Hughes
 -/
 import Mathlib.Tactic.Ring
 import Mathlib.GroupTheory.GroupAction.Units
+import Mathlib.Algebra.Ring.Divisibility
 
 /-!
 # Coprime elements of a ring
@@ -105,7 +106,7 @@ theorem IsCoprime.mul_left (H1 : IsCoprime x z) (H2 : IsCoprime y z) : IsCoprime
 #align is_coprime.mul_left IsCoprime.mul_left
 
 theorem IsCoprime.mul_right (H1 : IsCoprime x y) (H2 : IsCoprime x z) : IsCoprime x (y * z) := by
-  rw [is_coprime_comm] at H1 H2⊢
+  rw [isCoprime_comm] at H1 H2⊢
   exact H1.mul_left H2
 #align is_coprime.mul_right IsCoprime.mul_right
 
@@ -130,7 +131,7 @@ theorem IsCoprime.of_mul_left_right (H : IsCoprime (x * y) z) : IsCoprime y z :=
 #align is_coprime.of_mul_left_right IsCoprime.of_mul_left_right
 
 theorem IsCoprime.of_mul_right_left (H : IsCoprime x (y * z)) : IsCoprime x y := by
-  rw [is_coprime_comm] at H⊢
+  rw [isCoprime_comm] at H⊢
   exact H.of_mul_left_left
 #align is_coprime.of_mul_right_left IsCoprime.of_mul_right_left
 
@@ -144,7 +145,7 @@ theorem IsCoprime.mul_left_iff : IsCoprime (x * y) z ↔ IsCoprime x z ∧ IsCop
 #align is_coprime.mul_left_iff IsCoprime.mul_left_iff
 
 theorem IsCoprime.mul_right_iff : IsCoprime x (y * z) ↔ IsCoprime x y ∧ IsCoprime x z := by
-  rw [is_coprime_comm, IsCoprime.mul_left_iff, is_coprime_comm, @is_coprime_comm _ _ z]
+  rw [isCoprime_comm, IsCoprime.mul_left_iff, isCoprime_comm, @isCoprime_comm _ _ z]
 #align is_coprime.mul_right_iff IsCoprime.mul_right_iff
 
 theorem IsCoprime.of_coprime_of_dvd_left (h : IsCoprime y z) (hdvd : x ∣ y) : IsCoprime x z := by
@@ -158,7 +159,7 @@ theorem IsCoprime.of_coprime_of_dvd_right (h : IsCoprime z y) (hdvd : x ∣ y) :
 
 theorem IsCoprime.is_unit_of_dvd (H : IsCoprime x y) (d : x ∣ y) : IsUnit x :=
   let ⟨k, hk⟩ := d
-  is_coprime_self.1 <| IsCoprime.of_mul_right_left <| show IsCoprime x (x * k) from hk ▸ H
+  isCoprime_self.1 <| IsCoprime.of_mul_right_left <| show IsCoprime x (x * k) from hk ▸ H
 #align is_coprime.is_unit_of_dvd IsCoprime.is_unit_of_dvd
 
 theorem IsCoprime.is_unit_of_dvd' {a b x : R} (h : IsCoprime a b) (ha : x ∣ a) (hb : x ∣ b) :
@@ -171,8 +172,6 @@ theorem IsCoprime.map (H : IsCoprime x y) {S : Type v} [CommSemiring S] (f : R �
   let ⟨a, b, h⟩ := H
   ⟨f a, f b, by rw [← f.map_mul, ← f.map_mul, ← f.map_add, h, f.map_one]⟩
 #align is_coprime.map IsCoprime.map
-
-variable {x y z}
 
 theorem IsCoprime.of_add_mul_left_left (h : IsCoprime (x + y * z) y) : IsCoprime x y :=
   let ⟨a, b, H⟩ := h
@@ -187,7 +186,7 @@ theorem IsCoprime.of_add_mul_right_left (h : IsCoprime (x + z * y) y) : IsCoprim
 #align is_coprime.of_add_mul_right_left IsCoprime.of_add_mul_right_left
 
 theorem IsCoprime.of_add_mul_left_right (h : IsCoprime x (y + x * z)) : IsCoprime x y := by
-  rw [is_coprime_comm] at h⊢
+  rw [isCoprime_comm] at h⊢
   exact h.of_add_mul_left_left
 #align is_coprime.of_add_mul_left_right IsCoprime.of_add_mul_left_right
 
@@ -242,31 +241,31 @@ section CommSemiringUnit
 
 variable {R : Type _} [CommSemiring R] {x : R} (hu : IsUnit x) (y z : R)
 
-theorem is_coprime_mul_unit_left_left : IsCoprime (x * y) z ↔ IsCoprime y z :=
+theorem isCoprime_mul_unit_left_left : IsCoprime (x * y) z ↔ IsCoprime y z :=
   let ⟨u, hu⟩ := hu
-  hu ▸ is_coprime_group_smul_left u y z
-#align is_coprime_mul_unit_left_left is_coprime_mul_unit_left_left
+  hu ▸ isCoprime_group_smul_left u y z
+#align is_coprime_mul_unit_left_left isCoprime_mul_unit_left_left
 
-theorem is_coprime_mul_unit_left_right : IsCoprime y (x * z) ↔ IsCoprime y z :=
+theorem isCoprime_mul_unit_left_right : IsCoprime y (x * z) ↔ IsCoprime y z :=
   let ⟨u, hu⟩ := hu
-  hu ▸ is_coprime_group_smul_right u y z
-#align is_coprime_mul_unit_left_right is_coprime_mul_unit_left_right
+  hu ▸ isCoprime_group_smul_right u y z
+#align is_coprime_mul_unit_left_right isCoprime_mul_unit_left_right
 
-theorem is_coprime_mul_unit_left : IsCoprime (x * y) (x * z) ↔ IsCoprime y z :=
-  (is_coprime_mul_unit_left_left hu y (x * z)).trans (is_coprime_mul_unit_left_right hu y z)
-#align is_coprime_mul_unit_left is_coprime_mul_unit_left
+theorem isCoprime_mul_unit_left : IsCoprime (x * y) (x * z) ↔ IsCoprime y z :=
+  (isCoprime_mul_unit_left_left hu y (x * z)).trans (isCoprime_mul_unit_left_right hu y z)
+#align is_coprime_mul_unit_left isCoprime_mul_unit_left
 
-theorem is_coprime_mul_unit_right_left : IsCoprime (y * x) z ↔ IsCoprime y z :=
-  mul_comm x y ▸ is_coprime_mul_unit_left_left hu y z
-#align is_coprime_mul_unit_right_left is_coprime_mul_unit_right_left
+theorem isCoprime_mul_unit_right_left : IsCoprime (y * x) z ↔ IsCoprime y z :=
+  mul_comm x y ▸ isCoprime_mul_unit_left_left hu y z
+#align is_coprime_mul_unit_right_left isCoprime_mul_unit_right_left
 
-theorem is_coprime_mul_unit_right_right : IsCoprime y (z * x) ↔ IsCoprime y z :=
-  mul_comm x z ▸ is_coprime_mul_unit_left_right hu y z
-#align is_coprime_mul_unit_right_right is_coprime_mul_unit_right_right
+theorem isCoprime_mul_unit_right_right : IsCoprime y (z * x) ↔ IsCoprime y z :=
+  mul_comm x z ▸ isCoprime_mul_unit_left_right hu y z
+#align is_coprime_mul_unit_right_right isCoprime_mul_unit_right_right
 
-theorem is_coprime_mul_unit_right : IsCoprime (y * x) (z * x) ↔ IsCoprime y z :=
-  (is_coprime_mul_unit_right_left hu y (z * x)).trans (is_coprime_mul_unit_right_right hu y z)
-#align is_coprime_mul_unit_right is_coprime_mul_unit_right
+theorem isCoprime_mul_unit_right : IsCoprime (y * x) (z * x) ↔ IsCoprime y z :=
+  (isCoprime_mul_unit_right_left hu y (z * x)).trans (isCoprime_mul_unit_right_right hu y z)
+#align is_coprime_mul_unit_right isCoprime_mul_unit_right
 
 end CommSemiringUnit
 
@@ -286,12 +285,12 @@ theorem add_mul_right_left {x y : R} (h : IsCoprime x y) (z : R) : IsCoprime (x 
 #align is_coprime.add_mul_right_left IsCoprime.add_mul_right_left
 
 theorem add_mul_left_right {x y : R} (h : IsCoprime x y) (z : R) : IsCoprime x (y + x * z) := by
-  rw [is_coprime_comm]
+  rw [isCoprime_comm]
   exact h.symm.add_mul_left_left z
 #align is_coprime.add_mul_left_right IsCoprime.add_mul_left_right
 
 theorem add_mul_right_right {x y : R} (h : IsCoprime x y) (z : R) : IsCoprime x (y + z * x) := by
-  rw [is_coprime_comm]
+  rw [isCoprime_comm]
   exact h.symm.add_mul_right_left z
 #align is_coprime.add_mul_right_right IsCoprime.add_mul_right_right
 
