@@ -9,6 +9,7 @@ import Std.Tactic.Lint.Basic
 import Mathlib.Algebra.Order.Ring
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Init.Data.Int.Order
+import Mathlib.Algebra.Order.ZeroLEOne
 
 /-!
 # Lemmas for `linarith`.
@@ -79,23 +80,13 @@ open Function
 -- These lemmas can be removed when their originals are ported.
 
 @[nolint unusedArguments]
-theorem zero_lt_one [OrderedSemiring α] [Nontrivial α] : (0 : α) < 1 := sorry
+theorem zero_lt_one'' [OrderedSemiring α] [Nontrivial α] : (0 : α) < 1 :=
+  -- should be just `zero_lt_one`, but the typeclasses don't work out yet.
+  sorry
 
 theorem lt_zero_of_zero_gt [Zero α] [LT α] {a : α} (h : 0 > a) : a < 0 := h
 
 theorem le_zero_of_zero_ge [Zero α] [LE α] {a : α} (h : 0 ≥ a) : a ≤ 0 := h
-
-@[nolint unusedArguments]
-theorem sub_nonpos_of_le [AddGroup α] [LE α] [CovariantClass α α (swap (· + ·)) (· ≤ ·)] {a b : α} :
-    a ≤ b → a - b ≤ 0 := sorry
-
-@[nolint unusedArguments]
-theorem sub_neg_of_lt [AddGroup α] [LT α] [CovariantClass α α (swap (· + ·)) (· < ·)] {a b : α} :
-    a < b → a - b < 0 := sorry
-
-theorem neg_nonpos_of_nonneg [OrderedAddCommGroup α] {a : α} : 0 ≤ a → -a ≤ 0 := sorry
-
-theorem neg_neg_of_pos [OrderedAddCommGroup α] {a : α} : 0 < a → -a < 0 := sorry
 
 theorem sq_nonneg [LinearOrderedRing R] (a : R) : 0 ≤ a ^ 2 := sorry
 
