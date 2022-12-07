@@ -11,11 +11,11 @@ import Mathlib.GroupTheory.GroupAction.Units
 
 ## Main definitions
 
-* `is_coprime x y`: that `x` and `y` are coprime, defined to be the existence of `a` and `b` such
+* `isCoprime x y`: that `x` and `y` are coprime, defined to be the existence of `a` and `b` such
 that `a * x + b * y = 1`. Note that elements with no common divisors are not necessarily coprime,
 e.g., the multivariate polynomials `x₁` and `x₂` are not coprime.
 
-See also `ring_theory.coprime.lemmas` for further development of coprime elements.
+See also `RingTheory.Coprime.Lemmas` for further development of coprime elements.
 -/
 
 
@@ -42,28 +42,28 @@ theorem IsCoprime.symm (H : IsCoprime x y) : IsCoprime y x :=
   ⟨b, a, by rw [add_comm, H]⟩
 #align is_coprime.symm IsCoprime.symm
 
-theorem is_coprime_comm : IsCoprime x y ↔ IsCoprime y x :=
+theorem isCoprime_comm : IsCoprime x y ↔ IsCoprime y x :=
   ⟨IsCoprime.symm, IsCoprime.symm⟩
-#align is_coprime_comm is_coprime_comm
+#align is_coprime_comm isCoprime_comm
 
-theorem is_coprime_self : IsCoprime x x ↔ IsUnit x :=
+theorem isCoprime_self : IsCoprime x x ↔ IsUnit x :=
   ⟨fun ⟨a, b, h⟩ => isUnit_of_mul_eq_one x (a + b) <| by rwa [mul_comm, add_mul], fun h =>
     let ⟨b, hb⟩ := isUnit_iff_exists_inv'.1 h
     ⟨b, 0, by rwa [zero_mul, add_zero]⟩⟩
-#align is_coprime_self is_coprime_self
+#align is_coprime_self isCoprime_self
 
-theorem is_coprime_zero_left : IsCoprime 0 x ↔ IsUnit x :=
+theorem isCoprime_zero_left : IsCoprime 0 x ↔ IsUnit x :=
   ⟨fun ⟨a, b, H⟩ => isUnit_of_mul_eq_one x b <| by rwa [mul_zero, zero_add, mul_comm] at H, fun H =>
     let ⟨b, hb⟩ := isUnit_iff_exists_inv'.1 H
     ⟨1, b, by rwa [one_mul, zero_add]⟩⟩
-#align is_coprime_zero_left is_coprime_zero_left
+#align is_coprime_zero_left isCoprime_zero_left
 
-theorem is_coprime_zero_right : IsCoprime x 0 ↔ IsUnit x :=
-  is_coprime_comm.trans is_coprime_zero_left
-#align is_coprime_zero_right is_coprime_zero_right
+theorem isCoprime_zero_right : IsCoprime x 0 ↔ IsUnit x :=
+  isCoprime_comm.trans isCoprime_zero_left
+#align is_coprime_zero_right isCoprime_zero_right
 
 theorem not_coprime_zero_zero [Nontrivial R] : ¬IsCoprime (0 : R) 0 :=
-  mt is_coprime_zero_right.mp not_isUnit_zero
+  mt isCoprime_zero_right.mp not_isUnit_zero
 #align not_coprime_zero_zero not_coprime_zero_zero
 
 /-- If a 2-vector `p` satisfies `is_coprime (p 0) (p 1)`, then `p ≠ 0`. -/
@@ -72,13 +72,13 @@ theorem IsCoprime.ne_zero [Nontrivial R] {p : Fin 2 → R} (h : IsCoprime (p 0) 
   exact not_coprime_zero_zero h
 #align is_coprime.ne_zero IsCoprime.ne_zero
 
-theorem is_coprime_one_left : IsCoprime 1 x :=
+theorem isCoprime_one_left : IsCoprime 1 x :=
   ⟨1, 0, by rw [one_mul, zero_mul, add_zero]⟩
-#align is_coprime_one_left is_coprime_one_left
+#align is_coprime_one_left isCoprime_one_left
 
-theorem is_coprime_one_right : IsCoprime x 1 :=
+theorem isCoprime_one_right : IsCoprime x 1 :=
   ⟨0, 1, by rw [one_mul, zero_mul, zero_add]⟩
-#align is_coprime_one_right is_coprime_one_right
+#align is_coprime_one_right isCoprime_one_right
 
 theorem IsCoprime.dvd_of_dvd_mul_right (H1 : IsCoprime x z) (H2 : x ∣ y * z) : x ∣ y := by
   let ⟨a, b, H⟩ := H1
@@ -220,20 +220,20 @@ end CommSemiring
 
 section ScalarTower
 
-variable {R G : Type _} [CommSemiring R] [Group G] [MulAction G R] [SmulCommClass G R R]
+variable {R G : Type _} [CommSemiring R] [Group G] [MulAction G R] [SMulCommClass G R R]
   [IsScalarTower G R R] (x : G) (y z : R)
 
-theorem is_coprime_group_smul_left : IsCoprime (x • y) z ↔ IsCoprime y z :=
+theorem isCoprime_group_smul_left : IsCoprime (x • y) z ↔ IsCoprime y z :=
   ⟨fun ⟨a, b, h⟩ => ⟨x • a, b, by rwa [smul_mul_assoc, ← mul_smul_comm]⟩, fun ⟨a, b, h⟩ =>
     ⟨x⁻¹ • a, b, by rwa [smul_mul_smul, inv_mul_self, one_smul]⟩⟩
-#align is_coprime_group_smul_left is_coprime_group_smul_left
+#align is_coprime_group_smul_left isCoprime_group_smul_left
 
-theorem is_coprime_group_smul_right : IsCoprime y (x • z) ↔ IsCoprime y z :=
-  is_coprime_comm.trans <| (is_coprime_group_smul_left x z y).trans is_coprime_comm
-#align is_coprime_group_smul_right is_coprime_group_smul_right
+theorem isCoprime_group_smul_right : IsCoprime y (x • z) ↔ IsCoprime y z :=
+  isCoprime_comm.trans <| (isCoprime_group_smul_left x z y).trans isCoprime_comm
+#align is_coprime_group_smul_right isCoprime_group_smul_right
 
 theorem is_coprime_group_smul : IsCoprime (x • y) (x • z) ↔ IsCoprime y z :=
-  (is_coprime_group_smul_left x y (x • z)).trans (is_coprime_group_smul_right x y z)
+  (isCoprime_group_smul_left x y (x • z)).trans (isCoprime_group_smul_right x y z)
 #align is_coprime_group_smul is_coprime_group_smul
 
 end ScalarTower
