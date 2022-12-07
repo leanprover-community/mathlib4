@@ -26,9 +26,9 @@ protected def mulLeft₀ (a : G) (ha : a ≠ 0) : Perm G :=
   (Units.mk0 a ha).mulLeft
 #align equiv.mul_left₀ Equiv.mulLeft₀
 
-theorem mul_left_bijective₀ (a : G) (ha : a ≠ 0) : Function.Bijective ((· * ·) a : G → G) :=
+theorem mulLeft_bijective₀ (a : G) (ha : a ≠ 0) : Function.Bijective ((· * ·) a : G → G) :=
   (Equiv.mulLeft₀ a ha).bijective
-#align equiv.mul_left_bijective₀ Equiv.mul_left_bijective₀
+#align equiv.mul_left_bijective₀ Equiv.mulLeft_bijective₀
 
 /-- Right multiplication by a nonzero element in a `GroupWithZero` is a permutation of the
 underlying type. -/
@@ -37,9 +37,9 @@ protected def mulRight₀ (a : G) (ha : a ≠ 0) : Perm G :=
   (Units.mk0 a ha).mulRight
 #align equiv.mul_right₀ Equiv.mulRight₀
 
-theorem mul_right_bijective₀ (a : G) (ha : a ≠ 0) : Function.Bijective ((· * a) : G → G) :=
+theorem mulRight_bijective₀ (a : G) (ha : a ≠ 0) : Function.Bijective ((· * a) : G → G) :=
   (Equiv.mulRight₀ a ha).bijective
-#align equiv.mul_right_bijective₀ Equiv.mul_right_bijective₀
+#align equiv.mul_right_bijective₀ Equiv.mulRight_bijective₀
 
 end GroupWithZero
 
