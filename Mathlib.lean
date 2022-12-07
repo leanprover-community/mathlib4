@@ -85,6 +85,7 @@ import Mathlib.Control.Functor
 import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Random
 import Mathlib.Control.SimpSet
+import Mathlib.Control.Traversable.Basic
 import Mathlib.Control.ULift
 import Mathlib.Control.Writer
 import Mathlib.Data.Array.Basic
