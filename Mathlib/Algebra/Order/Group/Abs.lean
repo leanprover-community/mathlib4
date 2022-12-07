@@ -86,8 +86,7 @@ theorem eq_or_eq_neg_of_abs_eq {a b : α} (h : |a| = b) : a = b ∨ a = -b := by
 
 theorem abs_eq_abs {a b : α} : |a| = |b| ↔ a = b ∨ a = -b := by
   refine' ⟨fun h => _, fun h => _⟩
-  ·
-    obtain rfl | rfl := eq_or_eq_neg_of_abs_eq h <;>
+  · obtain rfl | rfl := eq_or_eq_neg_of_abs_eq h <;>
       simpa only [neg_eq_iff_neg_eq, neg_inj, or_comm, @eq_comm _ (-b)] using abs_choice b
   · cases' h with h h <;>
     simp [h, abs_neg]
@@ -145,14 +144,12 @@ theorem abs_pos_of_neg (h : a < 0) : 0 < |a| :=
 
 theorem neg_abs_le_self (a : α) : -|a| ≤ a := by
   cases' le_total 0 a with h h
-  ·
-    calc
+  · calc
       -|a| = -a := congr_arg Neg.neg (abs_of_nonneg h)
       _ ≤ 0 := neg_nonpos.mpr h
       _ ≤ a := h
 
-  ·
-    calc
+  · calc
       -|a| = - -a := congr_arg Neg.neg (abs_of_nonpos h)
       _ ≤ a := (neg_neg a).le
 
@@ -262,7 +259,7 @@ theorem apply_abs_le_mul_of_one_le {β : Type _} [MulOneClass β] [Preorder β]
   apply_abs_le_mul_of_one_le' (h _) (h _)
 #align apply_abs_le_mul_of_one_le apply_abs_le_mul_of_one_le
 
-/-- The **triangle inequality** in `linear_ordered_add_comm_group`s.
+/-- The **triangle inequality** in `LinearOrderedAddCommGroup`s.
 -/
 theorem abs_add (a b : α) : |a + b| ≤ |a| + |b| :=
   abs_le.2
