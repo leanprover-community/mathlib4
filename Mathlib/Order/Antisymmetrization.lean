@@ -84,7 +84,7 @@ def AntisymmRel.setoid : Setoid α :=
 #align antisymm_rel.setoid AntisymmRel.setoid
 
 /-- The partial order derived from a preorder by making pairwise comparable elements equal. This is
-the quotient by `λ a b, a ≤ b ∧ b ≤ a`. -/
+the quotient by `fun a b => a ≤ b ∧ b ≤ a`. -/
 def Antisymmetrization : Type _ :=
   Quotient <| AntisymmRel.setoid α r
 #align antisymmetrization Antisymmetrization
@@ -238,7 +238,8 @@ theorem OrderHom.coe_antisymmetrization (f : α →o β) :
   rfl
 #align order_hom.coe_antisymmetrization OrderHom.coe_antisymmetrization
 
-/- Porting notes: Removed @[simp] attribute -/
+/- Porting notes: Removed @[simp] attribute. With this `simp` lemma the LHS of
+`OrderHom.antisymmetrization_apply_mk` is not in normal-form -/
 theorem OrderHom.antisymmetrization_apply (f : α →o β) (a : Antisymmetrization α (· ≤ ·)) :
     f.antisymmetrization a = Quotient.map' f (lift_fun_antisymm_rel f) a :=
   rfl
@@ -262,7 +263,7 @@ noncomputable def OrderEmbedding.ofAntisymmetrization :
   map_rel_iff' := ofAntisymmetrization_le_ofAntisymmetrization_iff
 #align order_embedding.of_antisymmetrization OrderEmbedding.ofAntisymmetrization
 
-/-- `antisymmetrization` and `order_dual` commute. -/
+/-- `Antisymmetrization` and `orderDual` commute. -/
 def OrderIso.dualAntisymmetrization :
     (Antisymmetrization α (· ≤ ·))ᵒᵈ ≃o
       Antisymmetrization αᵒᵈ
