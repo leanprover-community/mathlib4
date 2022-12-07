@@ -16,6 +16,7 @@ open Function
 
 /-- Typeclass for expressing that the `0` of a type is less or equal to its `1`. -/
 class ZeroLEOneClass (α : Type _) [Zero α] [One α] [LE α] where
+  /-- Zero is less than or equal to one. -/
   zero_le_one : (0 : α) ≤ 1
 
 /-- `zero_le_one` with the type argument implicit. -/
