@@ -177,6 +177,7 @@ theorem GCD.induction {P : R → R → Prop} :
   | a => fun b H0 H1 =>
     if a0 : a = 0 then by
       -- Porting note: required for hygiene, the equation compiler introduces a dummy variable `x`
+      -- See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/unnecessarily.20tombstoned.20argument/near/314573315
       change P a b
       exact a0.symm ▸ H0 b
     else
