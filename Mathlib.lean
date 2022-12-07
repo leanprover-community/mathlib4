@@ -27,6 +27,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.HierarchyDesign
 import Mathlib.Algebra.Hom.Commute
 import Mathlib.Algebra.Hom.Embedding
+import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
@@ -36,6 +37,7 @@ import Mathlib.Algebra.Order.Group
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Monoid.Basic
+import Mathlib.Algebra.Order.Monoid.Cancel.Basic
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.Defs
@@ -144,6 +146,7 @@ import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
+import Mathlib.Data.Sigma.Order
 import Mathlib.Data.Stream.Defs
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
@@ -154,6 +157,7 @@ import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
