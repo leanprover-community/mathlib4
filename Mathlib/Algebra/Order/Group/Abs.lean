@@ -230,10 +230,10 @@ variable [LinearOrderedAddCommGroup α] {a b c d : α}
 -- but in the rewrites below it is going looking for it without having fixed `α`.
 example : CovariantClass α α (swap fun x x_1 ↦ x + x_1) fun x x_1 ↦ x ≤ x_1 := inferInstance
 
-theorem abs_le : |a| ≤ b ↔ -b ≤ a ∧ a ≤ b := by rw [abs_le', and_comm, neg_le]
+theorem abs_le : |a| ≤ b ↔ -b ≤ a ∧ a ≤ b := by rw [abs_le', and_comm, @neg_le α]
 #align abs_le abs_le
 
-theorem le_abs' : a ≤ |b| ↔ b ≤ -a ∨ a ≤ b := by rw [le_abs, or_comm, le_neg]
+theorem le_abs' : a ≤ |b| ↔ b ≤ -a ∨ a ≤ b := by rw [le_abs, or_comm, @le_neg α]
 #align le_abs' le_abs'
 
 theorem neg_le_of_abs_le (h : |a| ≤ b) : -b ≤ a :=
@@ -264,7 +264,7 @@ theorem apply_abs_le_mul_of_one_le {β : Type _} [MulOneClass β] [Preorder β]
 theorem abs_add (a b : α) : |a + b| ≤ |a| + |b| :=
   abs_le.2
     ⟨(neg_add (|a|) (|b|)).symm ▸
-        add_le_add (neg_le.2 <| neg_le_abs_self _) (neg_le.2 <| neg_le_abs_self _),
+        add_le_add ((@neg_le α ..).2 <| neg_le_abs_self _) ((@neg_le α ..).2 <| neg_le_abs_self _),
       add_le_add (le_abs_self _) (le_abs_self _)⟩
 #align abs_add abs_add
 
@@ -281,7 +281,7 @@ theorem abs_sub_le_iff : |a - b| ≤ c ↔ a - b ≤ c ∧ b - a ≤ c := by
 #align abs_sub_le_iff abs_sub_le_iff
 
 theorem abs_sub_lt_iff : |a - b| < c ↔ a - b < c ∧ b - a < c := by
-  rw [abs_lt, neg_lt_sub_iff_lt_add', sub_lt_iff_lt_add', and_comm', sub_lt_iff_lt_add']
+  rw [@abs_lt α, neg_lt_sub_iff_lt_add', sub_lt_iff_lt_add', and_comm, sub_lt_iff_lt_add']
 #align abs_sub_lt_iff abs_sub_lt_iff
 
 theorem sub_le_of_abs_sub_le_left (h : |a - b| ≤ c) : b - c ≤ a :=
@@ -301,7 +301,7 @@ theorem sub_lt_of_abs_sub_lt_right (h : |a - b| < c) : a - c < b :=
 #align sub_lt_of_abs_sub_lt_right sub_lt_of_abs_sub_lt_right
 
 theorem abs_sub_abs_le_abs_sub (a b : α) : |a| - |b| ≤ |a - b| :=
-  sub_le_iff_le_add.2 <|
+  (@sub_le_iff_le_add α ..).2 <|
     calc
       |a| = |a - b + b| := by rw [sub_add_cancel]
       _ ≤ |a - b| + |b| := abs_add _ _
@@ -321,7 +321,7 @@ theorem abs_eq (hb : 0 ≤ b) : |a| = b ↔ a = b ∨ a = -b := by
 theorem abs_le_max_abs_abs (hab : a ≤ b) (hbc : b ≤ c) : |b| ≤ max (|a|) (|c|) :=
   abs_le'.2
     ⟨by simp [hbc.trans (le_abs_self c)], by
-      simp [(neg_le_neg_iff.mpr hab).trans (neg_le_abs_self a)]⟩
+      simp [((@neg_le_neg_iff α ..).mpr hab).trans (neg_le_abs_self a)]⟩
 #align abs_le_max_abs_abs abs_le_max_abs_abs
 
 theorem min_abs_abs_le_abs_max : min (|a|) (|b|) ≤ |max a b| :=
