@@ -27,6 +27,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.HierarchyDesign
 import Mathlib.Algebra.Hom.Commute
 import Mathlib.Algebra.Hom.Embedding
+import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
@@ -156,6 +157,7 @@ import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
