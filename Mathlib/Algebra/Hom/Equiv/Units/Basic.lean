@@ -229,4 +229,3 @@ theorem MulEquiv.inv_symm (G : Type _) [DivisionCommMonoid G] :
     (MulEquiv.inv G).symm = MulEquiv.inv G :=
   rfl
 #align mul_equiv.inv_symm MulEquiv.inv_symm
-#align add_equiv.neg_symm AddEquiv.neg_symm
