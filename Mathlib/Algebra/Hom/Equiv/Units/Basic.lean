@@ -11,15 +11,13 @@ import Mathlib.Algebra.Hom.Units
 # Multiplicative and additive equivalence acting on units.
 -/
 
-
 variable {F α β A B M N P Q G H : Type _}
 
 /-- A group is isomorphic to its group of units. -/
 @[to_additive "An additive group is isomorphic to its group of additive units"]
-def toUnits [Group G] :
-    G ≃* Gˣ where
+def toUnits [Group G] : G ≃* Gˣ where
   toFun x := ⟨x, x⁻¹, mul_inv_self _, inv_mul_self _⟩
-  invFun := fun x => x
+  invFun x := x
   left_inv _ := rfl
   right_inv _ := Units.ext rfl
   map_mul' _ _ := Units.ext rfl
@@ -46,14 +44,14 @@ def mapEquiv (h : M ≃* N) : Mˣ ≃* Nˣ :=
 #align units.map_equiv Units.mapEquiv
 
 @[simp]
-theorem map_equiv_symm (h : M ≃* N) : (mapEquiv h).symm = mapEquiv h.symm :=
+theorem mapEquiv_symm (h : M ≃* N) : (mapEquiv h).symm = mapEquiv h.symm :=
   rfl
-#align units.map_equiv_symm Units.map_equiv_symm
+#align units.map_equiv_symm Units.mapEquiv_symm
 
 @[simp]
-theorem coe_map_equiv (h : M ≃* N) (x : Mˣ) : (mapEquiv h x : N) = h x :=
+theorem coe_mapEquiv (h : M ≃* N) (x : Mˣ) : (mapEquiv h x : N) = h x :=
   rfl
-#align units.coe_map_equiv Units.coe_map_equiv
+#align units.coe_map_equiv Units.coe_mapEquiv
 
 /-- Left multiplication by a unit of a monoid is a permutation of the underlying type. -/
 @[to_additive "Left addition of an additive unit is a permutation of the underlying type.",
@@ -67,16 +65,16 @@ def mulLeft (u : Mˣ) : Equiv.Perm M where
 #align add_units.add_left AddUnits.addLeft
 
 @[simp, to_additive]
-theorem mul_left_symm (u : Mˣ) : u.mulLeft.symm = u⁻¹.mulLeft :=
+theorem mulLeft_symm (u : Mˣ) : u.mulLeft.symm = u⁻¹.mulLeft :=
   Equiv.ext fun _ => rfl
-#align units.mul_left_symm Units.mul_left_symm
-#align add_units.add_left_symm AddUnits.add_left_symm
+#align units.mul_left_symm Units.mulLeft_symm
+#align add_units.add_left_symm AddUnits.addLeft_symm
 
 @[to_additive]
-theorem mul_left_bijective (a : Mˣ) : Function.Bijective ((a * ·) : M → M) :=
+theorem mulLeft_bijective (a : Mˣ) : Function.Bijective ((a * ·) : M → M) :=
   (mulLeft a).bijective
-#align units.mul_left_bijective Units.mul_left_bijective
-#align add_units.add_left_bijective AddUnits.add_left_bijective
+#align units.mul_left_bijective Units.mulLeft_bijective
+#align add_units.add_left_bijective AddUnits.addLeft_bijective
 
 /-- Right multiplication by a unit of a monoid is a permutation of the underlying type. -/
 @[to_additive "Right addition of an additive unit is a permutation of the underlying type.",
@@ -90,16 +88,16 @@ def mulRight (u : Mˣ) : Equiv.Perm M where
 #align add_units.add_right AddUnits.addRight
 
 @[simp, to_additive]
-theorem mul_right_symm (u : Mˣ) : u.mulRight.symm = u⁻¹.mulRight :=
+theorem mulRight_symm (u : Mˣ) : u.mulRight.symm = u⁻¹.mulRight :=
   Equiv.ext fun _ => rfl
-#align units.mul_right_symm Units.mul_right_symm
-#align add_units.add_right_symm AddUnits.add_right_symm
+#align units.mul_right_symm Units.mulRight_symm
+#align add_units.add_right_symm AddUnits.addRight_symm
 
 @[to_additive]
-theorem mul_right_bijective (a : Mˣ) : Function.Bijective ((· * a) : M → M) :=
+theorem mulRight_bijective (a : Mˣ) : Function.Bijective ((· * a) : M → M) :=
   (mulRight a).bijective
-#align units.mul_right_bijective Units.mul_right_bijective
-#align add_units.add_right_bijective AddUnits.add_right_bijective
+#align units.mul_right_bijective Units.mulRight_bijective
+#align add_units.add_right_bijective AddUnits.addRight_bijective
 
 end Units
 
@@ -117,32 +115,32 @@ protected def mulLeft (a : G) : Perm G :=
 #align equiv.add_left Equiv.addLeft
 
 @[simp, to_additive]
-theorem coe_mul_left (a : G) : ⇑(Equiv.mulLeft a) = (· * ·) a :=
+theorem coe_mulLeft (a : G) : ⇑(Equiv.mulLeft a) = (· * ·) a :=
   rfl
-#align equiv.coe_mul_left Equiv.coe_mul_left
-#align equiv.coe_add_left Equiv.coe_add_left
+#align equiv.coe_mul_left Equiv.coe_mulLeft
+#align equiv.coe_add_left Equiv.coe_addLeft
 
 -- Porting note: we don't put `@[simp]` on the additive version;
 -- mysteriously simp can already prove that one (although not the multiplicative one)!
 /-- Extra simp lemma that `dsimp` can use. `simp` will never use this. -/
 @[to_additive "Extra simp lemma that `dsimp` can use. `simp` will never use this.",
   simp, nolint simpNF]
-theorem mul_left_symm_apply (a : G) : ((Equiv.mulLeft a).symm : G → G) = (a⁻¹ * ·) :=
+theorem mulLeft_symm_apply (a : G) : ((Equiv.mulLeft a).symm : G → G) = (a⁻¹ * ·) :=
   rfl
-#align equiv.mul_left_symm_apply Equiv.mul_left_symm_apply
-#align equiv.add_left_symm_apply Equiv.add_left_symm_apply
+#align equiv.mul_left_symm_apply Equiv.mulLeft_symm_apply
+#align equiv.add_left_symm_apply Equiv.addLeft_symm_apply
 
 @[simp, to_additive]
-theorem mul_left_symm (a : G) : (Equiv.mulLeft a).symm = Equiv.mulLeft a⁻¹ :=
+theorem mulLeft_symm (a : G) : (Equiv.mulLeft a).symm = Equiv.mulLeft a⁻¹ :=
   ext fun _ => rfl
-#align equiv.mul_left_symm Equiv.mul_left_symm
-#align equiv.add_left_symm Equiv.add_left_symm
+#align equiv.mul_left_symm Equiv.mulLeft_symm
+#align equiv.add_left_symm Equiv.addLeft_symm
 
 @[to_additive]
-theorem _root_.Group.mul_left_bijective (a : G) : Function.Bijective (a * ·) :=
+theorem _root_.Group.mulLeft_bijective (a : G) : Function.Bijective (a * ·) :=
   (Equiv.mulLeft a).bijective
-#align group.mul_left_bijective Group.mul_left_bijective
-#align add_group.add_left_bijective AddGroup.add_left_bijective
+#align group.mul_left_bijective Group.mulLeft_bijective
+#align add_group.add_left_bijective AddGroup.addLeft_bijective
 
 /-- Right multiplication in a `Group` is a permutation of the underlying type. -/
 @[to_additive "Right addition in an `AddGroup` is a permutation of the underlying type."]
@@ -152,30 +150,30 @@ protected def mulRight (a : G) : Perm G :=
 #align equiv.add_right Equiv.addRight
 
 @[simp, to_additive]
-theorem coe_mul_right (a : G) : ⇑(Equiv.mulRight a) = fun x => x * a :=
+theorem coe_mulRight (a : G) : ⇑(Equiv.mulRight a) = fun x => x * a :=
   rfl
-#align equiv.coe_mul_right Equiv.coe_mul_right
-#align equiv.coe_add_right Equiv.coe_add_right
+#align equiv.coe_mul_right Equiv.coe_mulRight
+#align equiv.coe_add_right Equiv.coe_addRight
 
 @[simp, to_additive]
-theorem mul_right_symm (a : G) : (Equiv.mulRight a).symm = Equiv.mulRight a⁻¹ :=
+theorem mulRight_symm (a : G) : (Equiv.mulRight a).symm = Equiv.mulRight a⁻¹ :=
   ext fun _ => rfl
-#align equiv.mul_right_symm Equiv.mul_right_symm
-#align equiv.add_right_symm Equiv.add_right_symm
+#align equiv.mul_right_symm Equiv.mulRight_symm
+#align equiv.add_right_symm Equiv.addRight_symm
 
 /-- Extra simp lemma that `dsimp` can use. `simp` will never use this. -/
 @[to_additive "Extra simp lemma that `dsimp` can use. `simp` will never use this.",
   simp, nolint simpNF]
-theorem mul_right_symm_apply (a : G) : ((Equiv.mulRight a).symm : G → G) = fun x => x * a⁻¹ :=
+theorem mulRight_symm_apply (a : G) : ((Equiv.mulRight a).symm : G → G) = fun x => x * a⁻¹ :=
   rfl
-#align equiv.mul_right_symm_apply Equiv.mul_right_symm_apply
-#align equiv.add_right_symm_apply Equiv.add_right_symm_apply
+#align equiv.mul_right_symm_apply Equiv.mulRight_symm_apply
+#align equiv.add_right_symm_apply Equiv.addRight_symm_apply
 
 @[to_additive]
-theorem _root_.Group.mul_right_bijective (a : G) : Function.Bijective (· * a) :=
+theorem _root_.Group.mulRight_bijective (a : G) : Function.Bijective (· * a) :=
   (Equiv.mulRight a).bijective
-#align group.mul_right_bijective Group.mul_right_bijective
-#align add_group.add_right_bijective AddGroup.add_right_bijective
+#align group.mul_right_bijective Group.mulRight_bijective
+#align add_group.add_right_bijective AddGroup.addRight_bijective
 
 /-- A version of `Equiv.mulLeft a b⁻¹` that is defeq to `a / b`. -/
 @[to_additive " A version of `equiv.add_left a (-b)` that is defeq to `a - b`. ", simps]
@@ -188,11 +186,11 @@ protected def divLeft (a : G) : G ≃ G where
 #align equiv.sub_left Equiv.subLeft
 
 @[to_additive]
-theorem div_left_eq_inv_trans_mul_left (a : G) :
+theorem divLeft_eq_inv_trans_mulLeft (a : G) :
     Equiv.divLeft a = (Equiv.inv G).trans (Equiv.mulLeft a) :=
   ext fun _ => div_eq_mul_inv _ _
-#align equiv.div_left_eq_inv_trans_mul_left Equiv.div_left_eq_inv_trans_mul_left
-#align equiv.sub_left_eq_neg_trans_add_left Equiv.sub_left_eq_neg_trans_add_left
+#align equiv.div_left_eq_inv_trans_mul_left Equiv.divLeft_eq_inv_trans_mulLeft
+#align equiv.sub_left_eq_neg_trans_add_left Equiv.subLeft_eq_neg_trans_addLeft
 
 /-- A version of `Equiv.mulRight a⁻¹ b` that is defeq to `b / a`. -/
 @[to_additive " A version of `equiv.add_right (-a) b` that is defeq to `b - a`. ", simps]
@@ -206,10 +204,10 @@ protected def divRight (a : G) : G ≃
 #align equiv.sub_right Equiv.subRight
 
 @[to_additive]
-theorem div_right_eq_mul_right_inv (a : G) : Equiv.divRight a = Equiv.mulRight a⁻¹ :=
+theorem divRight_eq_mulRight_inv (a : G) : Equiv.divRight a = Equiv.mulRight a⁻¹ :=
   ext fun _ => div_eq_mul_inv _ _
-#align equiv.div_right_eq_mul_right_inv Equiv.div_right_eq_mul_right_inv
-#align equiv.sub_right_eq_add_right_neg Equiv.sub_right_eq_add_right_neg
+#align equiv.div_right_eq_mul_right_inv Equiv.divRight_eq_mulRight_inv
+#align equiv.sub_right_eq_add_right_neg Equiv.subRight_eq_addRight_neg
 
 end Group
 

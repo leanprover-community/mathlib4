@@ -9,6 +9,7 @@ import Std.Tactic.Lint.Basic
 import Mathlib.Algebra.Order.Ring
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Init.Data.Int.Order
+import Mathlib.Algebra.Order.ZeroLEOne
 
 /-!
 # Lemmas for `linarith`.
@@ -79,7 +80,9 @@ open Function
 -- These lemmas can be removed when their originals are ported.
 
 @[nolint unusedArguments]
-theorem zero_lt_one [OrderedSemiring α] [Nontrivial α] : (0 : α) < 1 := sorry
+theorem zero_lt_one'' [OrderedSemiring α] [Nontrivial α] : (0 : α) < 1 :=
+  -- should be just `zero_lt_one`, but the typeclasses don't work out yet.
+  sorry
 
 theorem lt_zero_of_zero_gt [Zero α] [LT α] {a : α} (h : 0 > a) : a < 0 := h
 

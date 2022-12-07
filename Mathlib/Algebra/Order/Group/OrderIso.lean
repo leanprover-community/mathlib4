@@ -12,7 +12,6 @@ import Mathlib.Algebra.Hom.Equiv.Units.Basic
 
 -/
 
-
 open Function
 
 universe u
@@ -23,7 +22,7 @@ section Group
 
 variable [Group α]
 
-section TypeclassesLeftRightLe
+section TypeclassesLeftRightLE
 
 variable [LE α] [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
   {a b c d : α}
@@ -34,10 +33,9 @@ variable (α)
 
 /-- `x ↦ x⁻¹` as an order-reversing equivalence. -/
 @[to_additive "`x ↦ -x` as an order-reversing equivalence.", simps]
-def OrderIso.inv :
-    α ≃o αᵒᵈ where
+def OrderIso.inv : α ≃o αᵒᵈ where
   toEquiv := (Equiv.inv α).trans OrderDual.toDual
-  map_rel_iff' := @fun _ _ => @inv_le_inv_iff α _ _ _ _ _ _
+  map_rel_iff' {_ _} := @inv_le_inv_iff α _ _ _ _ _ _
 #align order_iso.inv OrderIso.inv
 #align order_iso.neg OrderIso.neg
 
@@ -59,7 +57,7 @@ theorem le_inv' : a ≤ b⁻¹ ↔ b ≤ a⁻¹ :=
 #align le_inv' le_inv'
 #align le_neg le_neg
 
-end TypeclassesLeftRightLe
+end TypeclassesLeftRightLE
 
 end Group
 
@@ -78,19 +76,18 @@ variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c d : α}
 /-- `Equiv.mulRight` as an `OrderIso`. See also `OrderEmbedding.mulRight`. -/
 @[to_additive "`Equiv.addRight` as an `OrderIso`. See also `OrderEmbedding.addRight`.",
   simps (config := { simpRhs := true }) toEquiv apply]
-def OrderIso.mulRight (a : α) :
-    α ≃o α where
-  map_rel_iff' := @fun _ _ => mul_le_mul_iff_right a
+def OrderIso.mulRight (a : α) : α ≃o α where
+  map_rel_iff' {_ _} := mul_le_mul_iff_right a
   toEquiv := Equiv.mulRight a
 #align order_iso.mul_right OrderIso.mulRight
 #align order_iso.add_right OrderIso.addRight
 
 @[simp, to_additive]
-theorem OrderIso.mul_right_symm (a : α) : (OrderIso.mulRight a).symm = OrderIso.mulRight a⁻¹ := by
+theorem OrderIso.mulRight_symm (a : α) : (OrderIso.mulRight a).symm = OrderIso.mulRight a⁻¹ := by
   ext x
   rfl
-#align order_iso.mul_right_symm OrderIso.mul_right_symm
-#align order_iso.add_right_symm OrderIso.add_right_symm
+#align order_iso.mul_right_symm OrderIso.mulRight_symm
+#align order_iso.add_right_symm OrderIso.addRight_symm
 
 end Right
 
@@ -101,19 +98,18 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)]
 /-- `Equiv.mulLeft` as an `OrderIso`. See also `OrderEmbedding.mulLeft`. -/
 @[to_additive "`Equiv.addLeft` as an `OrderIso`. See also `OrderEmbedding.addLeft`.",
   simps (config := { simpRhs := true }) toEquiv apply]
-def OrderIso.mulLeft (a : α) :
-    α ≃o α where
-  map_rel_iff' := @fun _ _ => mul_le_mul_iff_left a
+def OrderIso.mulLeft (a : α) : α ≃o α where
+  map_rel_iff' {_ _} := mul_le_mul_iff_left a
   toEquiv := Equiv.mulLeft a
 #align order_iso.mul_left OrderIso.mulLeft
 #align order_iso.add_left OrderIso.addLeft
 
 @[simp, to_additive]
-theorem OrderIso.mul_left_symm (a : α) : (OrderIso.mulLeft a).symm = OrderIso.mulLeft a⁻¹ := by
+theorem OrderIso.mulLeft_symm (a : α) : (OrderIso.mulLeft a).symm = OrderIso.mulLeft a⁻¹ := by
   ext x
   rfl
-#align order_iso.mul_left_symm OrderIso.mul_left_symm
-#align order_iso.add_left_symm OrderIso.add_left_symm
+#align order_iso.mul_left_symm OrderIso.mulLeft_symm
+#align order_iso.add_left_symm OrderIso.addLeft_symm
 
 end Left
 
