@@ -24,13 +24,12 @@ The disadvantage is that a type such as `nnreal` is not of that form,
 whereas it is a very common target for valuations.
 The solutions is to use a typeclass, and that is exactly what we do in this file.
 
-Note that to avoid issues with import cycles, `linear_ordered_comm_monoid_with_zero` is defined
+Note that to avoid issues with import cycles, `LinearOrderedCommMonoidWithZero` is defined
 in another file. However, the lemmas about it are stated here.
 -/
 
 
 /-- A linearly ordered commutative group with a zero element. -/
-@[protect_proj]
 class LinearOrderedCommGroupWithZero (α : Type _) extends LinearOrderedCommMonoidWithZero α,
   CommGroupWithZero α
 #align linear_ordered_comm_group_with_zero LinearOrderedCommGroupWithZero
@@ -52,11 +51,12 @@ instance [LinearOrderedAddCommGroupWithTop α] :
     mul_inv_cancel := LinearOrderedAddCommGroupWithTop.add_neg_cancel }
 
 instance [LinearOrderedCommMonoid α] : LinearOrderedCommMonoidWithZero (WithZero α) :=
-  { WithZero.linearOrder, WithZero.commMonoidWithZero with
-    mul_le_mul_left := fun x y => mul_le_mul_left', zero_le_one := WithZero.zero_le _ }
+  { WithZero.instLinearOrderWithZero, WithZero.instCommMonoidWithZeroWithZero with
+    mul_le_mul_left := fun _ _ ↦ mul_le_mul_left', zero_le_one := WithZero.zero_le _ }
+#align with_zero.linear_ordered_comm_monoid_with_zero instLinearOrderedCommMonoidWithZeroWithZero
 
 instance [LinearOrderedCommGroup α] : LinearOrderedCommGroupWithZero (WithZero α) :=
-  { WithZero.linearOrderedCommMonoidWithZero, WithZero.commGroupWithZero with }
+  { instLinearOrderedCommMonoidWithZeroWithZero, WithZero.instCommGroupWithZeroWithZero with }
 
 section LinearOrderedCommMonoid
 
@@ -65,7 +65,7 @@ variable [LinearOrderedCommMonoidWithZero α]
 /-
 The following facts are true more generally in a (linearly) ordered commutative monoid.
 -/
-/-- Pullback a `linear_ordered_comm_monoid_with_zero` under an injective map.
+/-- Pullback a `LinearOrderedCommMonoidWithZero` under an injective map.
 See note [reducible non-instances]. -/
 @[reducible]
 def Function.Injective.linearOrderedCommMonoidWithZero {β : Type _} [Zero β] [One β] [Mul β]
@@ -73,12 +73,12 @@ def Function.Injective.linearOrderedCommMonoidWithZero {β : Type _} [Zero β] [
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrderedCommMonoidWithZero β :=
-  { LinearOrder.lift f hf hsup hinf, hf.OrderedCommMonoid f one mul npow,
-    hf.CommMonoidWithZero f zero one mul npow with
+  { LinearOrder.lift f hf hsup hinf, hf.orderedCommMonoid f one mul npow,
+    hf.commMonoidWithZero f zero one mul npow with
     zero_le_one :=
       show f 0 ≤ f 1 by simp only [zero, one, LinearOrderedCommMonoidWithZero.zero_le_one] }
-#align
-  function.injective.linear_ordered_comm_monoid_with_zero Function.Injective.linearOrderedCommMonoidWithZero
+#align function.injective.linear_ordered_comm_monoid_with_zero
+  Function.Injective.linearOrderedCommMonoidWithZero
 
 @[simp]
 theorem zero_le' : 0 ≤ a := by simpa only [mul_zero, mul_one] using mul_le_mul_left' zero_le_one a
@@ -91,19 +91,21 @@ theorem not_lt_zero' : ¬a < 0 :=
 
 @[simp]
 theorem le_zero_iff : a ≤ 0 ↔ a = 0 :=
-  ⟨fun h => le_antisymm h zero_le', fun h => h ▸ le_rfl⟩
+  ⟨fun h ↦ le_antisymm h zero_le', fun h ↦ h ▸ le_rfl⟩
 #align le_zero_iff le_zero_iff
 
 theorem zero_lt_iff : 0 < a ↔ a ≠ 0 :=
-  ⟨ne_of_gt, fun h => lt_of_le_of_ne zero_le' h.symm⟩
+  ⟨ne_of_gt, fun h ↦ lt_of_le_of_ne zero_le' h.symm⟩
 #align zero_lt_iff zero_lt_iff
 
-theorem ne_zero_of_lt (h : b < a) : a ≠ 0 := fun h1 => not_lt_zero' <| show b < 0 from h1 ▸ h
+theorem ne_zero_of_lt (h : b < a) : a ≠ 0 := fun h1 ↦ not_lt_zero' <| show b < 0 from h1 ▸ h
 #align ne_zero_of_lt ne_zero_of_lt
 
 instance : LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) :=
   { Additive.orderedAddCommMonoid, Additive.linearOrder with top := (0 : α),
-    top_add' := fun a => (zero_mul a : (0 : α) * a = 0), le_top := fun _ => zero_le' }
+    top_add' := fun a ↦ (zero_mul a : (0 : α) * a = 0), le_top := fun _ ↦ zero_le' }
+#align additive.linear_ordered_add_comm_monoid_with_top
+  instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual
 
 end LinearOrderedCommMonoid
 
@@ -143,11 +145,11 @@ theorem one_le_inv₀ (ha : a ≠ 0) : 1 ≤ a⁻¹ ↔ a ≤ 1 :=
 #align one_le_inv₀ one_le_inv₀
 
 theorem le_mul_inv_iff₀ (hc : c ≠ 0) : a ≤ b * c⁻¹ ↔ a * c ≤ b :=
-  ⟨fun h => inv_inv c ▸ mul_inv_le_of_le_mul h, le_mul_inv_of_mul_le hc⟩
+  ⟨fun h ↦ inv_inv c ▸ mul_inv_le_of_le_mul h, le_mul_inv_of_mul_le hc⟩
 #align le_mul_inv_iff₀ le_mul_inv_iff₀
 
 theorem mul_inv_le_iff₀ (hc : c ≠ 0) : a * c⁻¹ ≤ b ↔ a ≤ b * c :=
-  ⟨fun h => inv_inv c ▸ le_mul_inv_of_mul_le (inv_ne_zero hc) h, mul_inv_le_of_le_mul⟩
+  ⟨fun h ↦ inv_inv c ▸ le_mul_inv_of_mul_le (inv_ne_zero hc) h, mul_inv_le_of_le_mul⟩
 #align mul_inv_le_iff₀ mul_inv_le_iff₀
 
 theorem div_le_div₀ (a b c d : α) (hb : b ≠ 0) (hd : d ≠ 0) : a * b⁻¹ ≤ c * d⁻¹ ↔ a * d ≤ c * b :=
@@ -163,7 +165,7 @@ theorem div_le_div₀ (a b c d : α) (hb : b ≠ 0) (hd : d ≠ 0) : a * b⁻¹ 
 
 @[simp]
 theorem Units.zero_lt (u : αˣ) : (0 : α) < u :=
-  zero_lt_iff.2 <| u.NeZero
+  zero_lt_iff.2 <| u.ne_zero
 #align units.zero_lt Units.zero_lt
 
 theorem mul_lt_mul_of_lt_of_le₀ (hab : a ≤ b) (hb : b ≠ 0) (hcd : c < d) : a * c < b * d :=
@@ -215,7 +217,7 @@ theorem lt_of_mul_lt_mul_of_le₀ (h : a * b < c * d) (hc : 0 < c) (hh : c ≤ a
 #align lt_of_mul_lt_mul_of_le₀ lt_of_mul_lt_mul_of_le₀
 
 theorem mul_le_mul_right₀ (hc : c ≠ 0) : a * c ≤ b * c ↔ a ≤ b :=
-  ⟨le_of_le_mul_right hc, fun hab => mul_le_mul_right' hab _⟩
+  ⟨le_of_le_mul_right hc, fun hab ↦ mul_le_mul_right' hab _⟩
 #align mul_le_mul_right₀ mul_le_mul_right₀
 
 theorem mul_le_mul_left₀ (ha : a ≠ 0) : a * b ≤ a * c ↔ b ≤ c := by
@@ -239,34 +241,35 @@ theorem div_le_iff₀ (hc : c ≠ 0) : a / c ≤ b ↔ a ≤ b * c := by
   rw [div_eq_mul_inv, mul_inv_le_iff₀ hc]
 #align div_le_iff₀ div_le_iff₀
 
-/-- `equiv.mul_left₀` as an order_iso on a `linear_ordered_comm_group_with_zero.`.
+/-- `Equiv.mulLeft₀` as an order_iso on a `LinearOrderedCommGroupWithZero.`.
 
-Note that `order_iso.mul_left₀` refers to the `linear_ordered_field` version. -/
+Note that `OrderIso.mulLeft₀` refers to the `LinearOrderedField` version. -/
 @[simps (config := { simpRhs := true }) apply toEquiv]
 def OrderIso.mulLeft₀' {a : α} (ha : a ≠ 0) : α ≃o α :=
-  { Equiv.mulLeft₀ a ha with map_rel_iff' := fun x y => mul_le_mul_left₀ ha }
+  { Equiv.mulLeft₀ a ha with map_rel_iff' := mul_le_mul_left₀ ha }
 #align order_iso.mul_left₀' OrderIso.mulLeft₀'
 
-theorem OrderIso.mul_left₀'_symm {a : α} (ha : a ≠ 0) :
+theorem OrderIso.mulLeft₀'_symm {a : α} (ha : a ≠ 0) :
     (OrderIso.mulLeft₀' ha).symm = OrderIso.mulLeft₀' (inv_ne_zero ha) := by
   ext
   rfl
-#align order_iso.mul_left₀'_symm OrderIso.mul_left₀'_symm
+#align order_iso.mul_left₀'_symm OrderIso.mulLeft₀'_symm
 
-/-- `equiv.mul_right₀` as an order_iso on a `linear_ordered_comm_group_with_zero.`.
+/-- `Equiv.mulRight₀` as an order_iso on a `LinearOrderedCommGroupWithZero.`.
 
-Note that `order_iso.mul_right₀` refers to the `linear_ordered_field` version. -/
+Note that `OrderIso.mulRight₀` refers to the `LinearOrderedField` version. -/
 @[simps (config := { simpRhs := true }) apply toEquiv]
 def OrderIso.mulRight₀' {a : α} (ha : a ≠ 0) : α ≃o α :=
-  { Equiv.mulRight₀ a ha with map_rel_iff' := fun _ _ => mul_le_mul_right₀ ha }
+  { Equiv.mulRight₀ a ha with map_rel_iff' := mul_le_mul_right₀ ha }
 #align order_iso.mul_right₀' OrderIso.mulRight₀'
 
-theorem OrderIso.mul_right₀'_symm {a : α} (ha : a ≠ 0) :
+theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
     (OrderIso.mulRight₀' ha).symm = OrderIso.mulRight₀' (inv_ne_zero ha) := by
   ext
   rfl
-#align order_iso.mul_right₀'_symm OrderIso.mul_right₀'_symm
+#align order_iso.mul_right₀'_symm OrderIso.mulRight₀'_symm
 
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
-  { Additive.subNegMonoid, Additive.linearOrderedAddCommMonoidWithTop, Additive.nontrivial with
-    neg_top := inv_zero, add_neg_cancel := fun a ha => mul_inv_cancel ha }
+  { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
+    instNontrivialAdditive with
+    neg_top := inv_zero, add_neg_cancel := fun a ha ↦ mul_inv_cancel ha }
