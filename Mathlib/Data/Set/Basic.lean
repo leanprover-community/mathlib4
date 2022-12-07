@@ -2053,9 +2053,18 @@ theorem powerset_univ : 𝒫(univ : Set α) = univ :=
 
 /-! ### Sets defined as an if-then-else -/
 
+--Porting note: New theorem to prove `mem_dite` lemmas.
+-- `simp [h]` where `h : p` does not simplify `∀ (h : p), x ∈ s h` any more.
+theorem mem_dite (p : Prop) [Decidable p] (s : p → Set α) (t : ¬ p → Set α) (x : α) :
+    (x ∈ if h : p then s h else t h) ↔ (∀ h : p, x ∈ s h) ∧ ∀ h : ¬p, x ∈ t h := by
+  split_ifs with hp
+  . exact ⟨fun hx => ⟨fun _ => hx, fun hnp => (hnp hp).elim⟩, fun hx => hx.1 hp⟩
+  . exact ⟨fun hx => ⟨fun h => (hp h).elim, fun _ => hx⟩, fun hx => hx.2 hp⟩
 
+--Porting note: Old proof was `split_ifs; simp [h]`
 theorem mem_dite_univ_right (p : Prop) [Decidable p] (t : p → Set α) (x : α) :
-    (x ∈ if h : p then t h else univ) ↔ ∀ h : p, x ∈ t h := by split_ifs <;> simp [h]
+    (x ∈ if h : p then t h else univ) ↔ ∀ h : p, x ∈ t h := by
+  simp [mem_dite]
 #align set.mem_dite_univ_right Set.mem_dite_univ_right
 
 @[simp]
@@ -2065,7 +2074,8 @@ theorem mem_ite_univ_right (p : Prop) [Decidable p] (t : Set α) (x : α) :
 #align set.mem_ite_univ_right Set.mem_ite_univ_right
 
 theorem mem_dite_univ_left (p : Prop) [Decidable p] (t : ¬p → Set α) (x : α) :
-    (x ∈ if h : p then univ else t h) ↔ ∀ h : ¬p, x ∈ t h := by split_ifs <;> simp [h]
+    (x ∈ if h : p then univ else t h) ↔ ∀ h : ¬p, x ∈ t h := by
+  simp [mem_dite]
 #align set.mem_dite_univ_left Set.mem_dite_univ_left
 
 @[simp]
@@ -2075,21 +2085,27 @@ theorem mem_ite_univ_left (p : Prop) [Decidable p] (t : Set α) (x : α) :
 #align set.mem_ite_univ_left Set.mem_ite_univ_left
 
 theorem mem_dite_empty_right (p : Prop) [Decidable p] (t : p → Set α) (x : α) :
-    (x ∈ if h : p then t h else ∅) ↔ ∃ h : p, x ∈ t h := by split_ifs <;> simp [h]
+    (x ∈ if h : p then t h else ∅) ↔ ∃ h : p, x ∈ t h := by
+  simp only [mem_dite, mem_empty_iff_false, imp_false, not_not]
+  exact ⟨fun h => ⟨h.2, h.1 h.2⟩, fun ⟨h₁, h₂⟩ => ⟨fun _ => h₂, h₁⟩⟩
 #align set.mem_dite_empty_right Set.mem_dite_empty_right
 
 @[simp]
 theorem mem_ite_empty_right (p : Prop) [Decidable p] (t : Set α) (x : α) :
-    x ∈ ite p t ∅ ↔ p ∧ x ∈ t := by split_ifs <;> simp [h]
+    x ∈ ite p t ∅ ↔ p ∧ x ∈ t :=
+  (mem_dite_empty_right p (fun _ => t) x).trans (by simp)
 #align set.mem_ite_empty_right Set.mem_ite_empty_right
 
 theorem mem_dite_empty_left (p : Prop) [Decidable p] (t : ¬p → Set α) (x : α) :
-    (x ∈ if h : p then ∅ else t h) ↔ ∃ h : ¬p, x ∈ t h := by split_ifs <;> simp [h]
+    (x ∈ if h : p then ∅ else t h) ↔ ∃ h : ¬p, x ∈ t h := by
+  simp only [mem_dite, mem_empty_iff_false, imp_false]
+  exact ⟨fun h => ⟨h.1, h.2 h.1⟩, fun ⟨h₁, h₂⟩ => ⟨fun h => h₁ h, fun _ => h₂⟩⟩
 #align set.mem_dite_empty_left Set.mem_dite_empty_left
 
 @[simp]
 theorem mem_ite_empty_left (p : Prop) [Decidable p] (t : Set α) (x : α) :
-    x ∈ ite p ∅ t ↔ ¬p ∧ x ∈ t := by split_ifs <;> simp [h]
+    x ∈ ite p ∅ t ↔ ¬p ∧ x ∈ t :=
+  (mem_dite_empty_left p (fun _ => t) x).trans (by simp)
 #align set.mem_ite_empty_left Set.mem_ite_empty_left
 
 /-! ### If-then-else for sets -/
