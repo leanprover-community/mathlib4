@@ -29,6 +29,7 @@ import Mathlib.Algebra.HierarchyDesign
 import Mathlib.Algebra.Hom.Commute
 import Mathlib.Algebra.Hom.Embedding
 import Mathlib.Algebra.Hom.Equiv.Basic
+import Mathlib.Algebra.Hom.Equiv.Units.Basic
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
@@ -36,6 +37,7 @@ import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Instances
+import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.Cancel.Basic
