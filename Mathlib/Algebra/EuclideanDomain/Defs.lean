@@ -32,7 +32,7 @@ don't satisfy the classical notion were provided independently by Hiblot and Nag
 See `Algebra.EuclideanDomain.Basic` for most of the theorems about Eucliean domains,
 including Bézout's lemma.
 
-See `Algebra.EuclideanDomain.Instances` for that facts that `ℤ` is a Euclidean domain,
+See `Algebra.EuclideanDomain.Instances` for the facts that `ℤ` is a Euclidean domain,
 as is any field.
 
 ## Notation
@@ -105,7 +105,6 @@ namespace EuclideanDomain
 
 variable {R : Type u} [EuclideanDomain R]
 
--- mathport name: «expr ≺ »
 /-- Abbreviated notation for the well-founded relation `r` in a Euclidean domain. -/
 local infixl:50 " ≺ " => EuclideanDomain.r
 
