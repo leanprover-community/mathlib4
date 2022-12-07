@@ -548,6 +548,7 @@ instance (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
   max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
   decidable_le := (inferInstance : DecidableRel (λ a b : α => b ≤ a))
   decidable_lt := (inferInstance : DecidableRel (λ a b : α => b < a))
+#align order_dual.linear_order OrderDual.instLinearOrderOrderDual
 
 instance : ∀ [Inhabited α], Inhabited αᵒᵈ := λ [x: Inhabited α] => x
 
