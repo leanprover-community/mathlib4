@@ -523,14 +523,12 @@ instance (α : Type _) [h : Subsingleton α] : Subsingleton αᵒᵈ :=
   h
 
 instance (α : Type _) [LE α] : LE αᵒᵈ :=
-  ⟨fun x y : α ↦ y ≤ x⟩
+  ⟨fun a b => @LE.le α _ b a⟩
 
 instance (α : Type _) [LT α] : LT αᵒᵈ :=
-  ⟨fun x y : α ↦ y < x⟩
+  ⟨fun a b => @LT.lt α _ b a⟩
 
 instance (α : Type _) [Preorder α] : Preorder αᵒᵈ where
-  __ := inferInstanceAs (LE αᵒᵈ)
-  __ := inferInstanceAs (LT αᵒᵈ)
   le_refl := fun _ ↦ le_refl _
   le_trans := fun _ _ _ hab hbc ↦ hbc.trans hab
   lt_iff_le_not_le := fun _ _ ↦ lt_iff_le_not_le
@@ -548,6 +546,7 @@ instance (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
   max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
   decidable_le := (inferInstance : DecidableRel (λ a b : α => b ≤ a))
   decidable_lt := (inferInstance : DecidableRel (λ a b : α => b < a))
+#align order_dual.linear_order OrderDual.instLinearOrderOrderDual
 
 instance : ∀ [Inhabited α], Inhabited αᵒᵈ := λ [x: Inhabited α] => x
 
