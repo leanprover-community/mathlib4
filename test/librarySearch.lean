@@ -104,9 +104,3 @@ by library_search using P, Q -- exact P ∩ Q
 
 example (n : ℕ) (r : ℚ) : ℚ :=
 by library_search using n, r -- exact nsmulRec n r
-
--- Make sure `library_search` finds nothing when we list too many hypotheses after `using`.
-example (P Q R S T : List ℕ) : List ℕ := by
-  fail_if_success
-    library_search using P, Q, R, S, T
-  exact []
