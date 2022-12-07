@@ -157,12 +157,15 @@ import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
+import Mathlib.Data.Sum.Order
 import Mathlib.Data.UInt
 import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.GroupTheory.GroupAction.Option
 import Mathlib.GroupTheory.GroupAction.Sigma
+import Mathlib.GroupTheory.GroupAction.Sum
 import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
