@@ -1207,9 +1207,11 @@ theorem forall_insert_of_forall {P : α → Prop} {a : α} {s : Set α} (H : ∀
   h.elim (fun e => e.symm ▸ ha) (H _)
 #align set.forall_insert_of_forall Set.forall_insert_of_forall
 
+/- Porting note: ∃ x ∈ insert a s, P x is parsed as ∃ x, x ∈ insert a s ∧ P x,
+ where in Lean3 it was parsed as `∃ x, ∃ (h : x ∈ insert a s), P x` -/
 theorem bex_insert_iff {P : α → Prop} {a : α} {s : Set α} :
-    (∃ x ∈ insert a s, P x) ↔ P a ∨ ∃ x ∈ s, P x :=
-  bex_or_left.trans <| or_congr_left bex_eq_left
+    (∃ x ∈ insert a s, P x) ↔ (P a ∨ ∃ x ∈ s, P x) := by
+  simp [mem_insert_iff, or_and_right, exists_and_left, exists_or]
 #align set.bex_insert_iff Set.bex_insert_iff
 
 theorem ball_insert_iff {P : α → Prop} {a : α} {s : Set α} :
@@ -1219,9 +1221,14 @@ theorem ball_insert_iff {P : α → Prop} {a : α} {s : Set α} :
 
 /-! ### Lemmas about singletons -/
 
+/- porting note: instance was in core in Lean3 -/
+instance : IsLawfulSingleton α (Set α) :=
+  ⟨fun x => Set.ext <| fun a => by
+    simp only [mem_empty_iff_false, mem_insert_iff, or_false]
+    exact Iff.rfl⟩
 
 theorem singleton_def (a : α) : ({a} : Set α) = insert a ∅ :=
-  (insert_emptyc_eq _).symm
+  (insert_emptyc_eq a).symm
 #align set.singleton_def Set.singleton_def
 
 @[simp]
@@ -1473,7 +1480,7 @@ theorem Nonempty.subset_singleton_iff (h : s.Nonempty) : s ⊆ {a} ↔ s = {a} :
 theorem ssubset_singleton_iff {s : Set α} {x : α} : s ⊂ {x} ↔ s = ∅ := by
   rw [ssubset_iff_subset_ne, subset_singleton_iff_eq, or_and_right, and_not_self_iff, or_false_iff,
     and_iff_left_iff_imp]
-  exact fun h => ne_of_eq_of_ne h (singleton_ne_empty _).symm
+  exact fun h => h ▸ (singleton_ne_empty _).symm
 #align set.ssubset_singleton_iff Set.ssubset_singleton_iff
 
 theorem eq_empty_of_ssubset_singleton {s : Set α} {x : α} (hs : s ⊂ {x}) : s = ∅ :=
@@ -2023,15 +2030,15 @@ theorem powerset_inter (s t : Set α) : 𝒫(s ∩ t) = 𝒫 s ∩ 𝒫 t :=
 
 @[simp]
 theorem powerset_mono : 𝒫 s ⊆ 𝒫 t ↔ s ⊆ t :=
-  ⟨fun h => h (Subset.refl s), fun h u hu => Subset.trans hu h⟩
+  ⟨fun h => @h _ (fun h => h), fun h _ hu _ ha => h (hu ha)⟩
 #align set.powerset_mono Set.powerset_mono
 
-theorem monotone_powerset : Monotone (powerset : Set α → Set (Set α)) := fun s t => powerset_mono.2
+theorem monotone_powerset : Monotone (powerset : Set α → Set (Set α)) := fun _ _ => powerset_mono.2
 #align set.monotone_powerset Set.monotone_powerset
 
 @[simp]
 theorem powerset_nonempty : (𝒫 s).Nonempty :=
-  ⟨∅, empty_subset s⟩
+  ⟨∅, fun h => empty_subset s h⟩
 #align set.powerset_nonempty Set.powerset_nonempty
 
 @[simp]
