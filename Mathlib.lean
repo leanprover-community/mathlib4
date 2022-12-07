@@ -164,6 +164,7 @@ import Mathlib.Data.UnionFind
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.Option
+import Mathlib.GroupTheory.GroupAction.Sum
 import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
