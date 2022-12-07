@@ -30,6 +30,7 @@ import Mathlib.Algebra.Hom.Commute
 import Mathlib.Algebra.Hom.Embedding
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Equiv.Units.Basic
+import Mathlib.Algebra.Hom.Equiv.Units.GroupWithZero
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
