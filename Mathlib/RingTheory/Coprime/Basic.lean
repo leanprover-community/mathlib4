@@ -12,7 +12,7 @@ import Mathlib.Algebra.Ring.Divisibility
 
 ## Main definitions
 
-* `isCoprime x y`: that `x` and `y` are coprime, defined to be the existence of `a` and `b` such
+* `IsCoprime x y`: that `x` and `y` are coprime, defined to be the existence of `a` and `b` such
 that `a * x + b * y = 1`. Note that elements with no common divisors are not necessarily coprime,
 e.g., the multivariate polynomials `x₁` and `x₂` are not coprime.
 
