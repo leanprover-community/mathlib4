@@ -1,0 +1,120 @@
+/-
+Copyright (c) 2016 Jeremy Avigad. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
+Ported by: Scott Morrison
+-/
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Hom.Equiv.Units.Basic
+
+/-!
+# Inverse and multiplication as order isomorphisms in ordered groups
+
+-/
+
+
+open Function
+
+universe u
+
+variable {α : Type u}
+
+section Group
+
+variable [Group α]
+
+section TypeclassesLeftRightLe
+
+variable [LE α] [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+  {a b c d : α}
+
+section
+
+variable (α)
+
+/-- `x ↦ x⁻¹` as an order-reversing equivalence. -/
+@[to_additive "`x ↦ -x` as an order-reversing equivalence.", simps]
+def OrderIso.inv :
+    α ≃o αᵒᵈ where
+  toEquiv := (Equiv.inv α).trans OrderDual.toDual
+  map_rel_iff' := @fun _ _ => @inv_le_inv_iff α _ _ _ _ _ _
+#align order_iso.inv OrderIso.inv
+#align order_iso.neg OrderIso.neg
+
+end
+
+@[to_additive neg_le]
+theorem inv_le' : a⁻¹ ≤ b ↔ b⁻¹ ≤ a :=
+  (OrderIso.inv α).symm_apply_le
+#align inv_le' inv_le'
+#align neg_le neg_le
+
+alias inv_le' ↔ inv_le_of_inv_le' _
+
+attribute [to_additive neg_le_of_neg_le] inv_le_of_inv_le'
+
+@[to_additive le_neg]
+theorem le_inv' : a ≤ b⁻¹ ↔ b ≤ a⁻¹ :=
+  (OrderIso.inv α).le_symm_apply
+#align le_inv' le_inv'
+#align le_neg le_neg
+
+end TypeclassesLeftRightLe
+
+end Group
+
+alias le_inv' ↔ le_inv_of_le_inv _
+
+attribute [to_additive] le_inv_of_le_inv
+
+section Group
+
+variable [Group α] [LE α]
+
+section Right
+
+variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c d : α}
+
+/-- `Equiv.mulRight` as an `OrderIso`. See also `OrderEmbedding.mulRight`. -/
+@[to_additive "`Equiv.addRight` as an `OrderIso`. See also `OrderEmbedding.addRight`.",
+  simps (config := { simpRhs := true }) toEquiv apply]
+def OrderIso.mulRight (a : α) :
+    α ≃o α where
+  map_rel_iff' := @fun _ _ => mul_le_mul_iff_right a
+  toEquiv := Equiv.mulRight a
+#align order_iso.mul_right OrderIso.mulRight
+#align order_iso.add_right OrderIso.addRight
+
+@[simp, to_additive]
+theorem OrderIso.mul_right_symm (a : α) : (OrderIso.mulRight a).symm = OrderIso.mulRight a⁻¹ := by
+  ext x
+  rfl
+#align order_iso.mul_right_symm OrderIso.mul_right_symm
+#align order_iso.add_right_symm OrderIso.add_right_symm
+
+end Right
+
+section Left
+
+variable [CovariantClass α α (· * ·) (· ≤ ·)]
+
+/-- `Equiv.mulLeft` as an `OrderIso`. See also `OrderEmbedding.mulLeft`. -/
+@[to_additive "`Equiv.addLeft` as an `OrderIso`. See also `OrderEmbedding.addLeft`.",
+  simps (config := { simpRhs := true }) toEquiv apply]
+def OrderIso.mulLeft (a : α) :
+    α ≃o α where
+  map_rel_iff' := @fun _ _ => mul_le_mul_iff_left a
+  toEquiv := Equiv.mulLeft a
+#align order_iso.mul_left OrderIso.mulLeft
+#align order_iso.add_left OrderIso.addLeft
+
+@[simp, to_additive]
+theorem OrderIso.mul_left_symm (a : α) : (OrderIso.mulLeft a).symm = OrderIso.mulLeft a⁻¹ := by
+  ext x
+  rfl
+#align order_iso.mul_left_symm OrderIso.mul_left_symm
+#align order_iso.add_left_symm OrderIso.add_left_symm
+
+end Left
+
+end Group
