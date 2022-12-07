@@ -45,6 +45,8 @@ import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Algebra.Order.Monoid.MinMax
 import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Algebra.Order.Monoid.TypeTags
+import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Monoid.WithZero.Basic
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 import Mathlib.Algebra.Order.Ring
