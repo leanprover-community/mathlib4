@@ -232,14 +232,15 @@ theorem Subtype.mem {α : Type _} {s : Set α} (p : s) : (p : α) ∈ s :=
 
 /-- Duplicate of `eq.subset'`, which currently has elaboration problems. -/
 theorem Eq.subset {α} {s t : Set α} : s = t → s ⊆ t :=
-  Eq.subset'
+  fun h₁ _ h₂ => by rw [← h₁] ; exact h₂
 #align eq.subset Eq.subset
 
 namespace Set
 
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {a b : α} {s t u : Set α}
 
-instance : Inhabited (Set α) :=
+-- Porting note: remove `noncomputable` later
+noncomputable instance : Inhabited (Set α) :=
   ⟨∅⟩
 
 attribute [ext] Set.ext
@@ -256,8 +257,8 @@ theorem mem_of_mem_of_subset {x : α} {s t : Set α} (hx : x ∈ s) (h : s ⊆ t
 #align set.mem_of_mem_of_subset Set.mem_of_mem_of_subset
 
 -- Porting note: was `by tauto`
-theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) ↔ ∀ (b), ∀ a ∈ s, p a b := by
-  tauto
+theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) ↔ ∀ (b), ∀ a ∈ s, p a b :=
+  ⟨fun h b a ha => h a ha b, fun h a ha b => h b a ha⟩
 #align set.forall_in_swap Set.forall_in_swap
 
 /-! ### Lemmas about `mem` and `set_of` -/
@@ -316,22 +317,22 @@ theorem set_of_or {p q : α → Prop} : { a | p a ∨ q a } = { a | p a } ∪ { 
 
 
 instance : IsRefl (Set α) (· ⊆ ·) :=
-  LE.le.is_refl
+  show IsRefl (Set α) (. ≤ .) by infer_instance
 
 instance : IsTrans (Set α) (· ⊆ ·) :=
-  LE.le.is_trans
+  show IsTrans (Set α) (. ≤ .) by infer_instance
 
 instance : IsAntisymm (Set α) (· ⊆ ·) :=
-  LE.le.is_antisymm
+  show IsAntisymm (Set α) (. ≤ .) by infer_instance
 
 instance : IsIrrefl (Set α) (· ⊂ ·) :=
-  LT.lt.is_irrefl
+  show IsIrrefl (Set α) (. < .) by infer_instance
 
 instance : IsTrans (Set α) (· ⊂ ·) :=
-  LT.lt.is_trans
+  show IsTrans (Set α) (. < .) by infer_instance
 
 instance : IsAsymm (Set α) (· ⊂ ·) :=
-  LT.lt.is_asymm
+  show IsAsymm (Set α) (. < .) by infer_instance
 
 instance : IsNonstrictStrictOrder (Set α) (· ⊆ ·) (· ⊂ ·) :=
   ⟨fun _ _ => Iff.rfl⟩
