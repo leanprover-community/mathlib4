@@ -72,10 +72,7 @@ end SMul
 
 @[to_additive]
 instance {m : Monoid M} [∀ i, MulAction M (α i)] :
-    MulAction M
-      (Σi,
-        α
-          i) where
+    MulAction M (Σi, α i) where
   mul_smul a b x := by
     cases x
     rw [smul_mk, smul_mk, smul_mk, mul_smul]
