@@ -89,6 +89,8 @@ instance [h : DivisionCommMonoid α] : DivisionCommMonoid αᵒᵈ := h
 
 @[to_additive]
 instance [h : Group α] : Group αᵒᵈ := h
+#align order_dual.group instGroupOrderDual
+#align order_dual.add_group instAddGroupOrderDual
 
 @[to_additive]
 instance [h : CommGroup α] : CommGroup αᵒᵈ := h

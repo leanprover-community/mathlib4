@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
 
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Algebra.Order.Group
+import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Logic.Nontrivial
 
 /-!
