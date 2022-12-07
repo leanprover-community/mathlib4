@@ -55,8 +55,8 @@ instance [Monoid M] [MulAction M α] :
   one_smul := (one_smul M : _)
   mul_smul m n := mul_smul (m : M) n
 
-instance [Monoid M] [Zero α] [SmulZeroClass M α] :
-    SmulZeroClass Mˣ α where
+instance [Monoid M] [Zero α] [SMulZeroClass M α] :
+    SMulZeroClass Mˣ α where
   smul := (· • ·)
   smul_zero m := smul_zero (m : M)
 
