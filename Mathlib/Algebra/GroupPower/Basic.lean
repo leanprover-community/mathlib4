@@ -17,12 +17,12 @@ which in turn depends on other parts of algebra.
 This module contains lemmas about `a ^ n` and `n • a`, where `n : ℕ` or `n : ℤ`.
 Further lemmas can be found in `algebra.group_power.lemmas`.
 
-The analogous results for groups with zero can be found in `algebra.group_with_zero.power`.
+The analogous results for groups with zero can be found in `Algebra.GroupWithZero.Power`.
 
 ## Notation
 
-- `a ^ n` is used as notation for `has_pow.pow a n`; in this file `n : ℕ` or `n : ℤ`.
-- `n • a` is used as notation for `has_smul.smul n a`; in this file `n : ℕ` or `n : ℤ`.
+- `a ^ n` is used as notation for `Pow.pow a n`; in this file `n : ℕ` or `n : ℤ`.
+- `n • a` is used as notation for `SMul.smul n a`; in this file `n : ℕ` or `n : ℤ`.
 
 ## Implementation details
 
@@ -37,7 +37,7 @@ variable {α : Type _} {M : Type u} {N : Type v} {G : Type w} {H : Type x} {A : 
 /-!
 ### Commutativity
 
-First we prove some facts about `semiconj_by` and `commute`. They do not require any theory about
+First we prove some facts about `SemiconjBy` and `Commute`. They do not require any theory about
 `pow` and/or `nsmul` and will be useful later in this file.
 -/
 
