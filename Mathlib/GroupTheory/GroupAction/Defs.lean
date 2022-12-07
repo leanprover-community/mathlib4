@@ -56,26 +56,26 @@ open Function (Injective Surjective)
 
 
 /-- Typeclass for faithful actions. -/
-class HasFaithfulVAdd (G : Type _) (P : Type _) [VAdd G P] : Prop where
+class FaithfulVAdd (G : Type _) (P : Type _) [VAdd G P] : Prop where
   /-- Two elements `g₁` and `g₂` are equal whenever they act in the same way on all points. -/
   eq_of_vadd_eq_vadd : ∀ {g₁ g₂ : G}, (∀ p : P, g₁ +ᵥ p = g₂ +ᵥ p) → g₁ = g₂
-#align has_faithful_vadd HasFaithfulVAdd
+#align has_faithful_vadd FaithfulVAdd
 
 /-- Typeclass for faithful actions. -/
 @[to_additive]
-class HasFaithfulSMul (M : Type _) (α : Type _) [SMul M α] : Prop where
+class FaithfulSMul (M : Type _) (α : Type _) [SMul M α] : Prop where
   /-- Two elements `m₁` and `m₂` are equal whenever they act in the same way on all points. -/
   eq_of_smul_eq_smul : ∀ {m₁ m₂ : M}, (∀ a : α, m₁ • a = m₂ • a) → m₁ = m₂
-#align has_faithful_smul HasFaithfulSMul
+#align has_faithful_smul FaithfulSMul
 
-export HasFaithfulSMul (eq_of_smul_eq_smul)
+export FaithfulSMul (eq_of_smul_eq_smul)
 
-export HasFaithfulVAdd (eq_of_vadd_eq_vadd)
+export FaithfulVAdd (eq_of_vadd_eq_vadd)
 
 @[to_additive]
-theorem smul_left_injective' [SMul M α] [HasFaithfulSMul M α] :
+theorem smul_left_injective' [SMul M α] [FaithfulSMul M α] :
     Function.Injective ((· • ·) : M → α → α) := fun _ _ h =>
-  HasFaithfulSMul.eq_of_smul_eq_smul (congr_fun h)
+  FaithfulSMul.eq_of_smul_eq_smul (congr_fun h)
 #align smul_left_injective' smul_left_injective'
 
 -- see Note [lower instance priority]
@@ -1048,9 +1048,9 @@ theorem Function.End.smul_def (f : Function.End α) (a : α) : f • a = f a :=
 #align function.End.smul_def Function.End.smul_def
 
 /-- `Function.End.applyMulAction` is faithful. -/
-instance Function.End.apply_HasFaithfulSMul : HasFaithfulSMul (Function.End α) α :=
+instance Function.End.apply_FaithfulSMul : FaithfulSMul (Function.End α) α :=
   ⟨fun {_ _} => funext⟩
-#align function.End.apply_has_faithful_smul Function.End.apply_HasFaithfulSMul
+#align function.End.apply_has_faithful_smul Function.End.apply_FaithfulSMul
 
 /-- The tautological action by `AddMonoid.End α` on `α`.
 
@@ -1070,10 +1070,10 @@ theorem AddMonoid.End.smul_def [AddMonoid α] (f : AddMonoid.End α) (a : α) : 
 #align add_monoid.End.smul_def AddMonoid.End.smul_def
 
 /-- `AddMonoid.End.applyDistribMulAction` is faithful. -/
-instance AddMonoid.End.applyHasFaithfulSMul [AddMonoid α] :
-    HasFaithfulSMul (AddMonoid.End α) α :=
+instance AddMonoid.End.applyFaithfulSMul [AddMonoid α] :
+    FaithfulSMul (AddMonoid.End α) α :=
   ⟨fun {_ _ h} => AddMonoidHom.ext h⟩
-#align add_monoid.End.apply_has_faithful_smul AddMonoid.End.applyHasFaithfulSMul
+#align add_monoid.End.apply_has_faithful_smul AddMonoid.End.applyFaithfulSMul
 
 /-- The monoid hom representing a monoid action.
 
