@@ -135,9 +135,11 @@ end get
 
 theorem inl.inj_iff {a b} : (inl a : Sum α β) = inl b ↔ a = b :=
   ⟨inl.inj, congr_arg _⟩
+#align sum.inl.inj_iff Sum.inl.inj_iff
 
 theorem inr.inj_iff {a b} : (inr a : Sum α β) = inr b ↔ a = b :=
   ⟨inr.inj, congr_arg _⟩
+#align sum.inr.inj_iff Sum.inr.inj_iff
 
 theorem inl_ne_inr {a : α} {b : β} : inl a ≠ inr b :=
   fun.
@@ -403,6 +405,9 @@ inductive Lex (r : α → α → Prop) (s : β → β → Prop) : Sum α β → 
   | protected inl {a₁ a₂} (h : r a₁ a₂) : Lex r s (inl a₁) (inl a₂)
   | protected inr {b₁ b₂} (h : s b₁ b₂) : Lex r s (inr b₁) (inr b₂)
   | sep (a b) : Lex r s (inl a) (inr b)
+#align sum.lex.inl Sum.Lex.inl
+#align sum.lex.inr Sum.Lex.inr
+#align sum.lex.sep Sum.Lex.sep
 
 attribute [simp] Lex.sep
 
