@@ -6,10 +6,10 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Monoid.TypeTags
 
-/-! # Ordered group structures on `multiplicative α` and `additive α`. -/
+/-! # Ordered group structures on `Multiplicative α` and `Additive α`. -/
 
 
-variable {α : Type _} --[LinearOrderedAddCommGroup α]
+variable {α : Type _}
 
 instance Multiplicative.orderedCommGroup [OrderedAddCommGroup α] :
     OrderedCommGroup (Multiplicative α) :=
