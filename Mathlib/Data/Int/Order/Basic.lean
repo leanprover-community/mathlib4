@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Basic
-import Mathlib.Algebra.Order.Ring
-
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Tactic.LibrarySearch
 /-!
 # Order instances on the integers
 
@@ -29,8 +29,7 @@ instance : LinearOrderedCommRing ℤ where
   mul_comm := Int.mul_comm
   add_le_add_left _ _ := Int.add_le_add_left
   zero_le_one := le_of_lt Int.zero_lt_one
-  mul_lt_mul_of_pos_left _ _ _ := Int.mul_lt_mul_of_pos_left
-  mul_lt_mul_of_pos_right _ _ _ := Int.mul_lt_mul_of_pos_right
+  mul_pos _ _ := Int.mul_pos
   le_total := Int.le_total
   min_def := Int.min_def
 

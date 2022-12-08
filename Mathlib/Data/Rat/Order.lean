@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Data.Rat.Defs
-import Mathlib.Algebra.Order.Ring
+import Mathlib.Algebra.Order.Ring.Defs
 
 /-!
 # Stub port for `linarith`.
@@ -36,5 +36,4 @@ instance : LinearOrderedCommRing Rat where
   mul_comm := sorry
   min_def := sorry
   max_def := sorry
-  mul_lt_mul_of_pos_left := sorry
-  mul_lt_mul_of_pos_right := sorry
+  mul_pos := sorry
