@@ -313,7 +313,6 @@ instance monoidWithZero [Monoid α] : MonoidWithZero (WithZero α) :=
 
 instance commMonoidWithZero [CommMonoid α] : CommMonoidWithZero (WithZero α) :=
   { WithZero.monoidWithZero, WithZero.commSemigroup with }
-#align with_zero.comm_monoid_with_zero WithZero.commMonoidWithZero
 
 /-- Given an inverse operation on `α` there is an inverse operation
   on `with_zero α` sending `0` to `0`-/
@@ -424,7 +423,6 @@ end Group
 
 instance commGroupWithZero [CommGroup α] : CommGroupWithZero (WithZero α) :=
   { WithZero.groupWithZero, WithZero.commMonoidWithZero with }
-#align with_zero.comm_group_with_zero WithZero.commGroupWithZero
 
 instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero α) :=
   { WithZero.addMonoid, WithZero.one with

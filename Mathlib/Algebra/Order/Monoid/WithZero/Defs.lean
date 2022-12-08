@@ -60,7 +60,6 @@ instance lattice [Lattice α] : Lattice (WithZero α) :=
 
 instance linearOrder [LinearOrder α] : LinearOrder (WithZero α) :=
   WithBot.linearOrder
-#align with_zero.linear_order WithZero.linearOrder
 
 instance covariantClass_mul_le [Mul α] [Preorder α]
     [CovariantClass α α (· * ·) (· ≤ ·)] :
