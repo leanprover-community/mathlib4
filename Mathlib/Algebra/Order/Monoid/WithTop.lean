@@ -9,6 +9,7 @@ import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.WithZero.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
+-- Porting note: in Mathlib3 ZeroLEOne has been imported in an earlier file.
 
 /-! # Adjoining top/bottom elements to ordered monoids. -/
 
@@ -87,23 +88,24 @@ theorem coe_add : ((x + y : α) : WithTop α) = x + y :=
   rfl
 #align with_top.coe_add WithTop.coe_add
 
-/-! Porting note: `bit0` and `bit1` are deprecated. Section can be removed without replacement. -/
-section deprecated
-set_option linter.deprecated false
+-- Porting note: Linter says these are syntactic tautologies.
+-- /-! Porting note: `bit0` and `bit1` are deprecated. Section can be removed without replacement. -/
+-- section deprecated
+-- set_option linter.deprecated false
 
---@[norm_cast]
-@[deprecated]
-theorem coe_bit0 : ((bit0 x : α) : WithTop α) = bit0 x :=
-  rfl
-#align with_top.coe_bit0 WithTop.coe_bit0
+-- --@[norm_cast]
+-- @[deprecated]
+-- theorem coe_bit0 : ((bit0 x : α) : WithTop α) = bit0 x :=
+--   rfl
+-- #align with_top.coe_bit0 WithTop.coe_bit0
 
--- @[norm_cast]
-@[deprecated]
-theorem coe_bit1 [One α] {a : α} : ((bit1 a : α) : WithTop α) = bit1 a :=
-  rfl
-#align with_top.coe_bit1 WithTop.coe_bit1
+-- -- @[norm_cast]
+-- @[deprecated]
+-- theorem coe_bit1 [One α] {a : α} : ((bit1 a : α) : WithTop α) = bit1 a :=
+--   rfl
+-- #align with_top.coe_bit1 WithTop.coe_bit1
 
-end deprecated
+-- end deprecated
 
 @[simp]
 theorem top_add (a : WithTop α) : ⊤ + a = ⊤ :=
@@ -136,12 +138,14 @@ theorem add_eq_coe :
   by simp only [some_eq_coe, ← coe_add, coe_eq_coe, exists_and_left, exists_eq_left, iff_self]
 #align with_top.add_eq_coe WithTop.add_eq_coe
 
-@[simp]
+-- Porting note: simp can already prove this.
+-- @[simp]
 theorem add_coe_eq_top_iff {x : WithTop α} {y : α} : x + y = ⊤ ↔ x = ⊤ := by
   induction x using WithTop.recTopCoe <;> simp [← coe_add]
 #align with_top.add_coe_eq_top_iff WithTop.add_coe_eq_top_iff
 
-@[simp]
+-- Porting note: simp can already prove this.
+-- @[simp]
 theorem coe_add_eq_top_iff {y : WithTop α} : ↑x + y = ⊤ ↔ y = ⊤ := by
   induction y using WithTop.recTopCoe <;> simp [← coe_add]
 #align with_top.coe_add_eq_top_iff WithTop.coe_add_eq_top_iff
@@ -294,8 +298,7 @@ instance addSemigroup [AddSemigroup α] : AddSemigroup (WithTop α) :=
           refine' WithTop.recTopCoe _ _
           · simp only [coe_add, add_top]
           · intro
-            simp only [← WithTop.coe_add, add_assoc]
-  }
+            simp only [← WithTop.coe_add, add_assoc] }
 -- Porting notes: mathlib3 proof was:
 --   repeat { refine with_top.rec_top_coe _ _; try { intro }};
 --   simp [←with_top.coe_add, add_assoc]
@@ -308,8 +311,7 @@ instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithTop α) 
       · refine' WithTop.recTopCoe _ _
         · rw [add_top, top_add]
         · intro
-          simp only [← WithTop.coe_add, add_comm]
-  }
+          simp only [← WithTop.coe_add, add_comm] }
 -- Porting notes: mathlib3 proof was:
 --   repeat { refine with_top.rec_top_coe _ _; try { intro }};
 --   simp [←with_top.coe_add, add_comm]
@@ -338,10 +340,10 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithTop α) 
   { WithTop.one, WithTop.addMonoid with
     natCast := fun n => ↑(n : α),
     natCast_zero := by
-      simp only -- Porting note: This just applies the function, why is this needed?
+      simp only -- Porting note: Had to add this...?
       rw [Nat.cast_zero, WithTop.coe_zero],
     natCast_succ := fun n => by
-      simp only -- Porting note: This just applies the function, why is this needed?
+      simp only -- Porting note: Had to add this...?
       rw [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one]
   }
 
@@ -399,16 +401,16 @@ theorem top_ne_nat [AddMonoidWithOne α] (n : ℕ) : (⊤ : WithTop α) ≠ n :=
   top_ne_coe
 #align with_top.top_ne_nat WithTop.top_ne_nat
 
-/-- Coercion from `α` to `with_top α` as an `add_monoid_hom`. -/
-def coeAddHom [AddMonoid α] : α →+ WithTop α :=
+/-- Coercion from `α` to `WithTop α` as an `AddMonoidHom`. -/
+def addHom [AddMonoid α] : α →+ WithTop α :=
   -- Porting note: why does the old proof not work?
   -- ⟨WithTop.some, rfl, fun _ _ => rfl⟩
   { toFun := WithTop.some,
     map_zero' := rfl,
     map_add' := fun _ _ => rfl }
-#align with_top.coe_add_hom WithTop.coeAddHom
+#align with_top.coe_add_hom WithTop.addHom
 
--- Porting note: It seems like that kind of lemmas is not needed anymore.
+-- Porting note: It seems like that kind of coe-lemmas is not needed anymore.
 -- @[simp]
 -- theorem coe_coe_add_hom [AddMonoid α] : (coeAddHom : α →+ WithTop α).toFun = WithTop.some :=
 --   rfl
@@ -419,7 +421,9 @@ theorem zero_lt_top [OrderedAddCommMonoid α] : (0 : WithTop α) < ⊤ :=
   coe_lt_top 0
 #align with_top.zero_lt_top WithTop.zero_lt_top
 
-@[simp, norm_cast]
+-- Porting note: simp can already prove this.
+-- @[simp]
+@[norm_cast]
 theorem zero_lt_coe [OrderedAddCommMonoid α] (a : α) : (0 : WithTop α) < a ↔ 0 < a :=
   coe_lt_coe
 #align with_top.zero_lt_coe WithTop.zero_lt_coe
@@ -576,17 +580,19 @@ theorem add_eq_coe : a + b = x ↔ ∃ a' b' : α, ↑a' = a ∧ ↑b' = b ∧ a
   WithTop.add_eq_coe
 #align with_bot.add_eq_coe WithBot.add_eq_coe
 
-@[simp]
+-- Porting note: simp can already prove this.
+-- @[simp]
 theorem add_coe_eq_bot_iff : a + y = ⊥ ↔ a = ⊥ :=
   WithTop.add_coe_eq_top_iff
 #align with_bot.add_coe_eq_bot_iff WithBot.add_coe_eq_bot_iff
 
-@[simp]
+-- Porting note: simp can already prove this.
+-- @[simp]
 theorem coe_add_eq_bot_iff : ↑x + b = ⊥ ↔ b = ⊥ :=
   WithTop.coe_add_eq_top_iff
 #align with_bot.coe_add_eq_bot_iff WithBot.coe_add_eq_bot_iff
 
---  There is no `with_bot.map_mul_of_mul_hom`, since `with_bot` does not have a multiplication.
+-- There is no `WithBot.map_mul_of_mulHom`, since `WithBot` does not have a multiplication.
 @[simp]
 protected theorem map_add {F} [Add β] [AddHomClass F α β] (f : F) (a b : WithBot α) :
     (a + b).map f = a.map f + b.map f :=
