@@ -94,7 +94,7 @@ protected theorem mul_ne_zero (n0 : n ≠ 0) (m0 : m ≠ 0) : n * m ≠ 0
 -- Porting note: already in Std
 #align nat.mul_eq_zero Nat.mul_eq_zero
 
-@[simp]
+--Porting note: removing `simp` attribute
 protected theorem zero_eq_mul : 0 = m * n ↔ m = 0 ∨ n = 0 := by rw [eq_comm, Nat.mul_eq_zero]
 #align nat.zero_eq_mul Nat.zero_eq_mul
 
@@ -586,7 +586,7 @@ section Find
 
 variable {p q : ℕ → Prop} [DecidablePred p] [DecidablePred q]
 
-@[simp]
+--Porting note: removing `simp` attribute as `simp` can prove it
 theorem find_pos (h : ∃ n : ℕ, p n) : 0 < Nat.find h ↔ ¬p 0 := by
   rw [pos_iff_ne_zero, Ne, Nat.find_eq_zero]
 #align nat.find_pos Nat.find_pos
