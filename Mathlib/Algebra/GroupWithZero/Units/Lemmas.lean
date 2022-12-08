@@ -92,7 +92,7 @@ theorem eq_div_iff (hb : b ≠ 0) : c = a / b ↔ c * b = a :=
 #align eq_div_iff eq_div_iff
 
 theorem div_eq_iff_mul_eq (hb : b ≠ 0) : a / b = c ↔ c * b = a :=
-  hb.IsUnit.div_eq_iff.trans eq_comm
+  (IsUnit.div_eq_iff hb.isUnit).trans eq_comm
 #align div_eq_iff_mul_eq div_eq_iff_mul_eq
 
 theorem eq_div_iff_mul_eq (hc : c ≠ 0) : a = b / c ↔ a * c = b :=
@@ -120,7 +120,7 @@ theorem mul_div_mul_right (a b : G₀) (hc : c ≠ 0) : a * c / (b * c) = a / b 
 #align mul_div_mul_right mul_div_mul_right
 
 theorem mul_mul_div (a : G₀) (hb : b ≠ 0) : a = a * b * (1 / b) :=
-  (hb.IsUnit.mul_mul_div _).symm
+  (IsUnit.mul_mul_div hb.isUnit _).symm
 #align mul_mul_div mul_mul_div
 
 theorem div_div_div_cancel_right (a : G₀) (hc : c ≠ 0) : a / c / (b / c) = a / b := by
@@ -203,7 +203,7 @@ variable [GroupWithZero G₀] [Nontrivial M₀] [MonoidWithZero M₀'] [MonoidWi
 include M₀
 
 theorem map_ne_zero : f a ≠ 0 ↔ a ≠ 0 :=
-  ⟨fun hfa ha => hfa <| ha.symm ▸ map_zero f, fun ha => ((IsUnit.mk0 a ha).map f).NeZero⟩
+  ⟨fun hfa ha => hfa <| ha.symm ▸ map_zero f, fun ha => ((IsUnit.mk0 a ha).map f).ne_zero⟩
 #align map_ne_zero map_ne_zero
 
 @[simp]
