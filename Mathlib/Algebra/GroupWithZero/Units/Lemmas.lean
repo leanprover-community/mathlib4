@@ -40,55 +40,55 @@ theorem inv_mul_eq_iff_eq_mul₀ (ha : a ≠ 0) : a⁻¹ * b = c ↔ b = a * c :
 #align inv_mul_eq_iff_eq_mul₀ inv_mul_eq_iff_eq_mul₀
 
 theorem mul_inv_eq_iff_eq_mul₀ (hb : b ≠ 0) : a * b⁻¹ = c ↔ a = c * b :=
-  hb.IsUnit.mul_inv_eq_iff_eq_mul
+  IsUnit.mul_inv_eq_iff_eq_mul hb.isUnit
 #align mul_inv_eq_iff_eq_mul₀ mul_inv_eq_iff_eq_mul₀
 
 theorem mul_inv_eq_one₀ (hb : b ≠ 0) : a * b⁻¹ = 1 ↔ a = b :=
-  hb.IsUnit.mul_inv_eq_one
+  IsUnit.mul_inv_eq_one hb.isUnit
 #align mul_inv_eq_one₀ mul_inv_eq_one₀
 
 theorem inv_mul_eq_one₀ (ha : a ≠ 0) : a⁻¹ * b = 1 ↔ a = b :=
-  ha.IsUnit.inv_mul_eq_one
+  IsUnit.inv_mul_eq_one ha.isUnit
 #align inv_mul_eq_one₀ inv_mul_eq_one₀
 
 theorem mul_eq_one_iff_eq_inv₀ (hb : b ≠ 0) : a * b = 1 ↔ a = b⁻¹ :=
-  hb.IsUnit.mul_eq_one_iff_eq_inv
+  IsUnit.mul_eq_one_iff_eq_inv hb.isUnit
 #align mul_eq_one_iff_eq_inv₀ mul_eq_one_iff_eq_inv₀
 
 theorem mul_eq_one_iff_inv_eq₀ (ha : a ≠ 0) : a * b = 1 ↔ a⁻¹ = b :=
-  ha.IsUnit.mul_eq_one_iff_inv_eq
+  IsUnit.mul_eq_one_iff_inv_eq ha.isUnit
 #align mul_eq_one_iff_inv_eq₀ mul_eq_one_iff_inv_eq₀
 
 @[simp]
 theorem div_mul_cancel (a : G₀) (h : b ≠ 0) : a / b * b = a :=
-  h.IsUnit.div_mul_cancel _
+  IsUnit.div_mul_cancel h.isUnit _
 #align div_mul_cancel div_mul_cancel
 
 @[simp]
 theorem mul_div_cancel (a : G₀) (h : b ≠ 0) : a * b / b = a :=
-  h.IsUnit.mul_div_cancel _
+  IsUnit.mul_div_cancel h.isUnit _
 #align mul_div_cancel mul_div_cancel
 
 theorem mul_one_div_cancel (h : a ≠ 0) : a * (1 / a) = 1 :=
-  h.IsUnit.mul_one_div_cancel
+  IsUnit.mul_one_div_cancel h.isUnit
 #align mul_one_div_cancel mul_one_div_cancel
 
 theorem one_div_mul_cancel (h : a ≠ 0) : 1 / a * a = 1 :=
-  h.IsUnit.one_div_mul_cancel
+  IsUnit.one_div_mul_cancel h.isUnit
 #align one_div_mul_cancel one_div_mul_cancel
 
 theorem div_left_inj' (hc : c ≠ 0) : a / c = b / c ↔ a = b :=
-  hc.IsUnit.div_left_inj
+  IsUnit.div_left_inj hc.isUnit
 #align div_left_inj' div_left_inj'
 
 @[field_simps]
 theorem div_eq_iff (hb : b ≠ 0) : a / b = c ↔ a = c * b :=
-  hb.IsUnit.div_eq_iff
+  IsUnit.div_eq_iff hb.isUnit
 #align div_eq_iff div_eq_iff
 
 @[field_simps]
 theorem eq_div_iff (hb : b ≠ 0) : c = a / b ↔ c * b = a :=
-  hb.IsUnit.eq_div_iff
+  IsUnit.eq_div_iff hb.isUnit
 #align eq_div_iff eq_div_iff
 
 theorem div_eq_iff_mul_eq (hb : b ≠ 0) : a / b = c ↔ c * b = a :=
@@ -96,27 +96,27 @@ theorem div_eq_iff_mul_eq (hb : b ≠ 0) : a / b = c ↔ c * b = a :=
 #align div_eq_iff_mul_eq div_eq_iff_mul_eq
 
 theorem eq_div_iff_mul_eq (hc : c ≠ 0) : a = b / c ↔ a * c = b :=
-  hc.IsUnit.eq_div_iff
+  IsUnit.eq_div_iff hc.isUnit
 #align eq_div_iff_mul_eq eq_div_iff_mul_eq
 
 theorem div_eq_of_eq_mul (hb : b ≠ 0) : a = c * b → a / b = c :=
-  hb.IsUnit.div_eq_of_eq_mul
+  IsUnit.div_eq_of_eq_mul hb.isUnit
 #align div_eq_of_eq_mul div_eq_of_eq_mul
 
 theorem eq_div_of_mul_eq (hc : c ≠ 0) : a * c = b → a = b / c :=
-  hc.IsUnit.eq_div_of_mul_eq
+  IsUnit.eq_div_of_mul_eq hc.isUnit
 #align eq_div_of_mul_eq eq_div_of_mul_eq
 
 theorem div_eq_one_iff_eq (hb : b ≠ 0) : a / b = 1 ↔ a = b :=
-  hb.IsUnit.div_eq_one_iff_eq
+  IsUnit.div_eq_one_iff_eq hb.isUnit
 #align div_eq_one_iff_eq div_eq_one_iff_eq
 
 theorem div_mul_left (hb : b ≠ 0) : b / (a * b) = 1 / a :=
-  hb.IsUnit.div_mul_left
+  IsUnit.div_mul_left hb.isUnit
 #align div_mul_left div_mul_left
 
 theorem mul_div_mul_right (a b : G₀) (hc : c ≠ 0) : a * c / (b * c) = a / b :=
-  hc.IsUnit.mul_div_mul_right _ _
+  IsUnit.mul_div_mul_right hc.isUnit _ _
 #align mul_div_mul_right mul_div_mul_right
 
 theorem mul_mul_div (a : G₀) (hb : b ≠ 0) : a = a * b * (1 / b) :=
@@ -152,7 +152,7 @@ section CommGroupWithZero
 variable [CommGroupWithZero G₀] {a b c d : G₀}
 
 theorem div_mul_right (b : G₀) (ha : a ≠ 0) : a / (a * b) = 1 / b :=
-  ha.IsUnit.div_mul_right _
+  IsUnit.div_mul_right ha.isUnit _
 #align div_mul_right div_mul_right
 
 theorem mul_div_cancel_left_of_imp {a b : G₀} (h : a = 0 → b = 0) : a * b / a = b := by
@@ -160,7 +160,7 @@ theorem mul_div_cancel_left_of_imp {a b : G₀} (h : a = 0 → b = 0) : a * b / 
 #align mul_div_cancel_left_of_imp mul_div_cancel_left_of_imp
 
 theorem mul_div_cancel_left (b : G₀) (ha : a ≠ 0) : a * b / a = b :=
-  ha.IsUnit.mul_div_cancel_left _
+  IsUnit.mul_div_cancel_left ha.isUnit _
 #align mul_div_cancel_left mul_div_cancel_left
 
 theorem mul_div_cancel_of_imp' {a b : G₀} (h : b = 0 → a = 0) : b * (a / b) = a := by
@@ -168,11 +168,11 @@ theorem mul_div_cancel_of_imp' {a b : G₀} (h : b = 0 → a = 0) : b * (a / b) 
 #align mul_div_cancel_of_imp' mul_div_cancel_of_imp'
 
 theorem mul_div_cancel' (a : G₀) (hb : b ≠ 0) : b * (a / b) = a :=
-  hb.IsUnit.mul_div_cancel' _
+  IsUnit.mul_div_cancel' hb.isUnit _
 #align mul_div_cancel' mul_div_cancel'
 
 theorem mul_div_mul_left (a b : G₀) (hc : c ≠ 0) : c * a / (c * b) = a / b :=
-  hc.IsUnit.mul_div_mul_left _ _
+  IsUnit.mul_div_mul_left hc.isUnit _ _
 #align mul_div_mul_left mul_div_mul_left
 
 theorem mul_eq_mul_of_div_eq_div (a : G₀) {b : G₀} (c : G₀) {d : G₀} (hb : b ≠ 0) (hd : d ≠ 0)
