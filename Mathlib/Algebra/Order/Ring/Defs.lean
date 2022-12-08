@@ -753,9 +753,13 @@ theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg (hab : 0 ≤ a * b
     0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
   refine' Decidable.or_iff_not_and_not.2 _
   simp only [not_and, not_le]; intro ab nab; apply not_lt_of_le hab _
-  rcases lt_trichotomy 0 a with (ha | rfl | ha)
-  exacts[mul_neg_of_pos_of_neg ha (ab ha.le), ((ab le_rfl).asymm (nab le_rfl)).elim,
-    mul_neg_of_neg_of_pos ha (nab ha.le)]
+  -- Porting note: for the middle case, we used to have `rfl`, but it is now rejected.
+  -- https://github.com/leanprover/std4/issues/62
+  rcases lt_trichotomy 0 a with (ha | ha | ha)
+  · exact mul_neg_of_pos_of_neg ha (ab ha.le)
+  · subst ha
+    exact ((ab le_rfl).asymm (nab le_rfl)).elim
+  · exact mul_neg_of_neg_of_pos ha (nab ha.le)
 #align
   nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg
 
@@ -785,22 +789,25 @@ theorem nonpos_of_mul_nonpos_right (h : a * b ≤ 0) (ha : 0 < a) : b ≤ 0 :=
 
 @[simp]
 theorem zero_le_mul_left (h : 0 < c) : 0 ≤ c * b ↔ 0 ≤ b := by
-  convert mul_le_mul_left h
-  simp
+  -- Porting note: this used to be by:
+  -- convert mul_le_mul_left h
+  -- simp
+  -- but the `convert` no longer works.
+  simpa using (mul_le_mul_left h : c * 0 ≤ c * b ↔ 0 ≤ b)
 #align zero_le_mul_left zero_le_mul_left
 
 @[simp]
 theorem zero_le_mul_right (h : 0 < c) : 0 ≤ b * c ↔ 0 ≤ b := by
-  convert mul_le_mul_right h
-  simp
+  simpa using (mul_le_mul_right h : 0 * c ≤ b * c ↔ 0 ≤ b)
 #align zero_le_mul_right zero_le_mul_right
 
+-- Porting note: we used to not need the type annotation on `(0 : α)` at the start of the `calc`.
 theorem add_le_mul_of_left_le_right (a2 : 2 ≤ a) (ab : a ≤ b) : a + b ≤ a * b :=
   have : 0 < b :=
     calc
-      0 < 2 := zero_lt_two
-      _ ≤ a := a2
-      _ ≤ b := ab
+      (0 : α) < 2 := zero_lt_two
+            _ ≤ a := a2
+            _ ≤ b := ab
 
   calc
     a + b ≤ b + b := add_le_add_right ab b
@@ -809,12 +816,13 @@ theorem add_le_mul_of_left_le_right (a2 : 2 ≤ a) (ab : a ≤ b) : a + b ≤ a 
 
 #align add_le_mul_of_left_le_right add_le_mul_of_left_le_right
 
+-- Porting note: we used to not need the type annotation on `(0 : α)` at the start of the `calc`.
 theorem add_le_mul_of_right_le_left (b2 : 2 ≤ b) (ba : b ≤ a) : a + b ≤ a * b :=
   have : 0 < a :=
     calc
-      0 < 2 := zero_lt_two
-      _ ≤ b := b2
-      _ ≤ a := ba
+      (0 : α) < 2 := zero_lt_two
+            _ ≤ b := b2
+            _ ≤ a := ba
 
   calc
     a + b ≤ a + a := add_le_add_left ba a
