@@ -2276,7 +2276,8 @@ theorem exists_eq_singleton_iff_nonempty_subsingleton :
     exact ⟨singleton_nonempty a, subsingleton_singleton⟩
   · exact h.2.eq_empty_or_singleton.resolve_left h.1.ne_empty
 #align
-  set.exists_eq_singleton_iff_nonempty_subsingleton Set.exists_eq_singleton_iff_nonempty_subsingleton
+  set.exists_eq_singleton_iff_nonempty_subsingleton
+  Set.exists_eq_singleton_iff_nonempty_subsingleton
 
 /-- `s`, coerced to a type, is a subsingleton type if and only if `s` is a subsingleton set. -/
 @[simp, norm_cast]
@@ -2326,7 +2327,8 @@ protected theorem Nontrivial.choose_snd_mem (hs : s.Nontrivial) : hs.choose.snd 
   hs.choose_spec.choose_spec.choose_spec.choose
 #align set.nontrivial.some_snd_mem Set.Nontrivial.choose_snd_mem
 
-protected theorem Nontrivial.choose_fst_ne_choose_snd (hs : s.Nontrivial) : hs.choose.fst ≠ hs.choose.snd :=
+protected theorem Nontrivial.choose_fst_ne_choose_snd (hs : s.Nontrivial) :
+    hs.choose.fst ≠ hs.choose.snd :=
   hs.choose_spec.choose_spec.choose_spec.choose_spec
 #align set.nontrivial.some_fst_ne_some_snd Set.Nontrivial.choose_fst_ne_choose_snd
 
@@ -2375,8 +2377,8 @@ theorem nontrivial_of_lt [Preorder α] {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy 
   ⟨x, hx, y, hy, ne_of_lt hxy⟩
 #align set.nontrivial_of_lt Set.nontrivial_of_lt
 
-theorem nontrivial_of_exists_lt [Preorder α] (H : ∃ (x : α) (_ : x ∈ s) (y : α) (_ : y ∈ s), x < y) :
-    s.Nontrivial :=
+theorem nontrivial_of_exists_lt [Preorder α]
+    (H : ∃ (x : α) (_ : x ∈ s) (y : α) (_ : y ∈ s), x < y) : s.Nontrivial :=
   let ⟨_, hx, _, hy, hxy⟩ := H
   nontrivial_of_lt hx hy hxy
 #align set.nontrivial_of_exists_lt Set.nontrivial_of_exists_lt
