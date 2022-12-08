@@ -6,7 +6,6 @@ Authors: Christopher Hoskin
 import Mathlib.Order.Basic
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.NthRewrite.Default
 
 /-!
 # Idempotents
@@ -14,11 +13,11 @@ import Mathlib.Tactic.NthRewrite.Default
 This file defines idempotents for an arbitary multiplication and proves some basic results,
 including:
 
-* `is_idempotent_elem.mul_of_commute`: In a semigroup, the product of two commuting idempotents is
+* `IsIdempotentElem.mul_of_commute`: In a semigroup, the product of two commuting idempotents is
   an idempotent;
-* `is_idempotent_elem.one_sub_iff`: In a (non-associative) ring, `p` is an idempotent if and only if
+* `IsIdempotentElem.one_sub_iff`: In a (non-associative) ring, `p` is an idempotent if and only if
   `1-p` is an idempotent.
-* `is_idempotent_elem.pow_succ_eq`: In a monoid `p ^ (n+1) = p` for `p` an idempotent and `n` a
+* `IsIdempotentElem.pow_succ_eq`: In a monoid `p ^ (n+1) = p` for `p` an idempotent and `n` a
   natural number.
 
 ## Tags
@@ -40,9 +39,9 @@ def IsIdempotentElem (p : M) : Prop :=
 
 namespace IsIdempotentElem
 
-theorem of_is_idempotent [IsIdempotent M (· * ·)] (a : M) : IsIdempotentElem a :=
+theorem of_isIdempotent [IsIdempotent M (· * ·)] (a : M) : IsIdempotentElem a :=
   IsIdempotent.idempotent a
-#align is_idempotent_elem.of_is_idempotent IsIdempotentElem.of_is_idempotent
+#align is_idempotent_elem.of_is_idempotent IsIdempotentElem.of_isIdempotent
 
 theorem eq {p : M} (h : IsIdempotentElem p) : p * p = p :=
   h
@@ -71,9 +70,9 @@ theorem one_sub_iff {p : R} : IsIdempotentElem (1 - p) ↔ IsIdempotentElem p :=
 #align is_idempotent_elem.one_sub_iff IsIdempotentElem.one_sub_iff
 
 theorem pow {p : N} (n : ℕ) (h : IsIdempotentElem p) : IsIdempotentElem (p ^ n) :=
-  Nat.recOn n ((pow_zero p).symm ▸ one) fun n ih =>
+  Nat.recOn n ((pow_zero p).symm ▸ one) fun n _ =>
     show p ^ n.succ * p ^ n.succ = p ^ n.succ by
-      nth_rw 3 [← h.eq]
+      conv_rhs => rw [← h.eq] --Porting note: was `nth_rw 3 [← h.eq]`
       rw [← sq, ← sq, ← pow_mul, ← pow_mul']
 #align is_idempotent_elem.pow IsIdempotentElem.pow
 
@@ -83,7 +82,7 @@ theorem pow_succ_eq {p : N} (n : ℕ) (h : IsIdempotentElem p) : p ^ (n + 1) = p
 
 @[simp]
 theorem iff_eq_one {p : G} : IsIdempotentElem p ↔ p = 1 :=
-  Iff.intro (fun h => mul_left_cancel ((mul_one p).symm ▸ h.Eq : p * p = p * 1)) fun h =>
+  Iff.intro (fun h => mul_left_cancel ((mul_one p).symm ▸ h.eq : p * p = p * 1)) fun h =>
     h.symm ▸ one
 #align is_idempotent_elem.iff_eq_one IsIdempotentElem.iff_eq_one
 
@@ -115,7 +114,7 @@ theorem coe_one : ↑(1 : { p : M₁ // IsIdempotentElem p }) = (1 : M₁) :=
 #align is_idempotent_elem.coe_one IsIdempotentElem.coe_one
 
 instance : HasCompl { p : R // IsIdempotentElem p } :=
-  ⟨fun p => ⟨1 - p, p.Prop.one_sub⟩⟩
+  ⟨fun p => ⟨1 - p, p.prop.one_sub⟩⟩
 
 @[simp]
 theorem coe_compl (p : { p : R // IsIdempotentElem p }) : ↑(pᶜ) = (1 : R) - ↑p :=
