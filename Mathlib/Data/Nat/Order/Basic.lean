@@ -330,14 +330,14 @@ theorem le_mul_of_pos_left (h : 0 < n) : m ≤ n * m := by
   conv =>
     lhs
     rw [← one_mul m]
-  exact mul_le_mul_of_nonneg_right h.nat_succ_le (by decide)
+  exact mul_le_mul_of_nonneg_right h.nat_succ_le (zero_le _)
 #align nat.le_mul_of_pos_left Nat.le_mul_of_pos_left
 
 theorem le_mul_of_pos_right (h : 0 < n) : m ≤ m * n := by
   conv =>
     lhs
     rw [← mul_one m]
-  exact mul_le_mul_of_nonneg_left h.nat_succ_le (by decide)
+  exact mul_le_mul_of_nonneg_left h.nat_succ_le (zero_le _)
 #align nat.le_mul_of_pos_right Nat.le_mul_of_pos_right
 
 theorem mul_self_inj : m * m = n * n ↔ m = n :=
@@ -370,15 +370,19 @@ proved above, and some of the results in later sections depend on the definition
 @[elab_as_elim]
 theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)) (hb : ∀ b, P 0 (b + 1))
     (hd : ∀ a b, a < b → P (a + 1) b → P a (b + 1) → P (a + 1) (b + 1)) : ∀ a b, a < b → P a b
-  | 0, b + 1, h => hb _
+  | 0, b + 1, _ => hb _
   | a + 1, b + 1, h => by
     apply hd _ _ ((add_lt_add_iff_right _).1 h)
-    · have : a + 1 = b ∨ a + 1 < b := by rwa [← le_iff_eq_or_lt, ← Nat.lt_succ_iff]
-      rcases this with (rfl | _)
+    · have this : a + 1 = b ∨ a + 1 < b := by rwa [← le_iff_eq_or_lt, ← Nat.lt_succ_iff]
+      have wf : (a + 1) + b < (a + 1) + (b + 1) := by simp
+      rcases this with (rfl | h)
       · exact ha _
-      apply diag_induction (a + 1) b this
-    apply diag_induction a (b + 1)
-    apply lt_of_le_of_lt (Nat.le_succ _) h termination_by' ⟨_, measure_wf fun p => p.1 + p.2.1⟩
+      apply diag_induction P ha hb hd (a + 1) b h
+    have _ : a + (b + 1) < (a + 1) + (b + 1) := by simp
+    apply diag_induction P ha hb hd a (b + 1)
+    apply lt_of_le_of_lt (Nat.le_succ _) h
+  termination_by _ a b c => a + b
+  decreasing_by { assumption }
 #align nat.diag_induction Nat.diag_induction
 
 /-- A subset of `ℕ` containing `k : ℕ` and closed under `nat.succ` contains every `n ≥ k`. -/
