@@ -202,7 +202,7 @@ theorem set_coe_cast :
   | _, _, rfl, _, _ => rfl
 #align set_coe_cast set_coe_cast
 
-theorem SetCoe.ext {s : Set α} {a b : s} : (↑a : α) = ↑b → a = b :=
+theorem SetCoe.ext {s : Set α} {a b : s} : (a : α) = b → a = b :=
   Subtype.eq
 #align set_coe.ext SetCoe.ext
 
@@ -1158,7 +1158,7 @@ theorem insert_comm (a b : α) (s : Set α) : insert a (insert b s) = insert b (
   ext fun _ => or_left_comm
 #align set.insert_comm Set.insert_comm
 
-@[simp]
+--Porting note: removing `simp` attribute because `simp` can prove it
 theorem insert_idem (a : α) (s : Set α) : insert a (insert a s) = insert a s :=
   insert_eq_of_mem <| mem_insert _ _
 #align set.insert_idem Set.insert_idem
@@ -1244,7 +1244,7 @@ theorem set_of_eq_eq_singleton' {a : α} : { x | a = x } = {a} :=
 #align set.set_of_eq_eq_singleton' Set.set_of_eq_eq_singleton'
 
 -- TODO: again, annotation needed
-@[simp]
+--Porting note: removed `simp` attribute
 theorem mem_singleton (a : α) : a ∈ ({a} : Set α) :=
   @rfl _ _
 #align set.mem_singleton Set.mem_singleton
@@ -1280,7 +1280,7 @@ theorem singleton_ne_empty (a : α) : ({a} : Set α) ≠ ∅ :=
   (singleton_nonempty _).ne_empty
 #align set.singleton_ne_empty Set.singleton_ne_empty
 
-@[simp]
+--Porting note: removed `simp` attribute because `simp` can prove it
 theorem empty_ssubset_singleton : (∅ : Set α) ⊂ {a} :=
   (singleton_nonempty _).empty_ssubset
 #align set.empty_ssubset_singleton Set.empty_ssubset_singleton
@@ -1350,7 +1350,7 @@ theorem default_coe_singleton (x : α) : (default : ({x} : Set α)) = ⟨x, rfl�
 /-! ### Lemmas about pairs -/
 
 
-@[simp]
+--Porting note: removed `simp` attribute because `simp` can prove it
 theorem pair_eq_singleton (a : α) : ({a, a} : Set α) = {a} :=
   union_self _
 #align set.pair_eq_singleton Set.pair_eq_singleton
@@ -1412,22 +1412,22 @@ theorem sep_eq_empty_iff_mem_false : { x ∈ s | p x } = ∅ ↔ ∀ x ∈ s, ¬
   simp_rw [ext_iff, mem_sep_iff, mem_empty_iff_false, iff_false_iff, not_and]; rfl
 #align set.sep_eq_empty_iff_mem_false Set.sep_eq_empty_iff_mem_false
 
-@[simp]
+--Porting note: removed `simp` attribute because `simp` can prove it
 theorem sep_true : { x ∈ s | True } = s :=
   inter_univ s
 #align set.sep_true Set.sep_true
 
-@[simp]
+--Porting note: removed `simp` attribute because `simp` can prove it
 theorem sep_false : { x ∈ s | False } = ∅ :=
   inter_empty s
 #align set.sep_false Set.sep_false
 
-@[simp]
+--Porting note: removed `simp` attribute because `simp` can prove it
 theorem sep_empty (p : α → Prop) : { x ∈ (∅ : Set α) | p x } = ∅ :=
   empty_inter p
 #align set.sep_empty Set.sep_empty
 
-@[simp]
+--Porting note: removed `simp` attribute because `simp` can prove it
 theorem sep_univ : { x ∈ (univ : Set α) | p x } = { x | p x } :=
   univ_inter p
 #align set.sep_univ Set.sep_univ
@@ -1940,7 +1940,7 @@ theorem insert_diff_singleton {a : α} {s : Set α} : insert a (s \ {a}) = inser
   simp [insert_eq, union_diff_self, -union_singleton, -singleton_union]
 #align set.insert_diff_singleton Set.insert_diff_singleton
 
-@[simp]
+--Porting note: removed `simp` attribute because `simp` can prove it
 theorem diff_self {s : Set α} : s \ s = ∅ :=
   sdiff_self
 #align set.diff_self Set.diff_self
