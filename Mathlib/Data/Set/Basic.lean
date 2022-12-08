@@ -143,7 +143,7 @@ alias lt_iff_ssubset ↔ _root_.has_lt.lt.ssubset _root_.has_ssubset.ssubset.lt
 -- Porting note: I've introduced this abbreviation, with the `@[coe]` attribute,
 -- so that `norm_cast` has something to index on.
 /-- Given the set `s`, `type_of_Set s` is the `Type` of element of `s`. -/
-@[coe] abbrev type_of_Set (s : Set α) : Type u := { x // x ∈ s }
+@[coe] def type_of_Set (s : Set α) : Type u := { x // x ∈ s }
 
 /-- Coercion from a set to the corresponding subtype. -/
 instance {α : Type u} : CoeSort (Set α) (Type u) :=
@@ -166,6 +166,8 @@ section SetCoe
 
 variable {α : Type u}
 
+instance (s : Set α) : CoeTC s α := ⟨fun x => x.1⟩
+
 theorem Set.coe_eq_subtype (s : Set α) : ↥s = { x // x ∈ s } :=
   rfl
 #align set.coe_eq_subtype Set.coe_eq_subtype
@@ -187,12 +189,12 @@ theorem SetCoe.exists {s : Set α} {p : s → Prop} :
 #align set_coe.exists SetCoe.exists
 
 theorem SetCoe.exists' {s : Set α} {p : ∀ x, x ∈ s → Prop} :
-    (∃ (x : _)(h : x ∈ s), p x h) ↔ ∃ x : s, p x x.2 :=
+    (∃ (x : _)(h : x ∈ s), p x h) ↔ ∃ x : s, p x.1 x.2 :=
   (@SetCoe.exists _ _ fun x => p x.1 x.2).symm
 #align set_coe.exists' SetCoe.exists'
 
 theorem SetCoe.forall' {s : Set α} {p : ∀ x, x ∈ s → Prop} :
-    (∀ (x) (h : x ∈ s), p x h) ↔ ∀ x : s, p x x.2 :=
+    (∀ (x) (h : x ∈ s), p x h) ↔ ∀ x : s, p x.1 x.2 :=
   (@SetCoe.forall _ _ fun x => p x.1 x.2).symm
 #align set_coe.forall' SetCoe.forall'
 
@@ -528,24 +530,24 @@ theorem univ_nonempty : ∀ [Nonempty α], (univ : Set α).Nonempty
   | ⟨x⟩ => ⟨x, trivial⟩
 #align set.univ_nonempty Set.univ_nonempty
 
-theorem Nonempty.to_subtype : s.Nonempty → Nonempty s :=
+theorem Nonempty.to_subtype : s.Nonempty → Nonempty (↥s) :=
   nonempty_subtype.2
 #align set.nonempty.to_subtype Set.Nonempty.to_subtype
 
 theorem Nonempty.to_type : s.Nonempty → Nonempty α := fun ⟨x, _⟩ => ⟨x⟩
 #align set.nonempty.to_type Set.Nonempty.to_type
 
-instance [Nonempty α] : Nonempty (Set.univ : Set α) :=
+instance [Nonempty α] : Nonempty (↥(Set.univ : Set α)) :=
   Set.univ_nonempty.to_subtype
 
-theorem nonempty_of_nonempty_subtype [Nonempty s] : s.Nonempty :=
+theorem nonempty_of_nonempty_subtype [Nonempty (↥s)] : s.Nonempty :=
   nonempty_subtype.mp ‹_›
 #align set.nonempty_of_nonempty_subtype Set.nonempty_of_nonempty_subtype
 
 /-! ### Lemmas about the empty set -/
 
 
-theorem empty_def : (∅ : Set α) = { _x | False } :=
+theorem empty_def : (↥(∅ : Set α)) = { _x : α | False } :=
   rfl
 #align set.empty_def Set.empty_def
 
@@ -624,7 +626,7 @@ theorem ball_empty_iff {p : α → Prop} : (∀ x ∈ (∅ : Set α), p x) ↔ T
   iff_true_intro fun _ => False.elim
 #align set.ball_empty_iff Set.ball_empty_iff
 
-instance (α : Type u) : IsEmpty.{u + 1} (∅ : Set α) :=
+instance (α : Type u) : IsEmpty.{u + 1} (↥(∅ : Set α)) :=
   ⟨fun x => x.2⟩
 
 @[simp]
@@ -2471,7 +2473,7 @@ theorem nontrivial_of_nontrivial (hs : s.Nontrivial) : Nontrivial α :=
 theorem nontrivial_coe_sort {s : Set α} : Nontrivial s ↔ s.Nontrivial := by
   simp_rw [← nontrivial_univ_iff, Set.Nontrivial, mem_univ, exists_true_left, SetCoe.exists,
     Subtype.mk_eq_mk]
-  simp only [ne_eq, Subtype.mk.injEq, exists_prop, iff_self]
+  sorry
 #align set.nontrivial_coe_sort Set.nontrivial_coe_sort
 
 alias nontrivial_coe_sort ↔ _ Nontrivial.coe_sort
