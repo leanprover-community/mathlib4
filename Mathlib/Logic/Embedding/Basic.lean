@@ -186,14 +186,18 @@ def setValue {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = 
     [∀ a', Decidable (f a' = b)] : α ↪ β :=
   ⟨fun a' => if a' = a then b else if f a' = b then f a else f a', by
     intro x y (h : ite _ _ _ = ite _ _ _)
-    -- This used to be almost automatic with `split_ifs` and `cc`
-    -- The split_ifs regression is noted in https://github.com/leanprover-community/mathlib4/issues/760
-    -- split_ifs  at h <;> try subst b <;> try simp only [f.injective.eq_iff] at * <;> cc⟩
-    simp only [ite_eq_iff, eq_ite_iff, and_true, f.injective.eq_iff] at h
-    rcases h with (⟨rfl, rfl | ⟨_, ⟨hx, rfl⟩ | ⟨h₁, rfl⟩⟩⟩ | ⟨hya, ⟨rfl, ⟨rfl, hyx⟩ |
-      ⟨hxa, hxy | ⟨_, rfl⟩⟩⟩ | ⟨hyb, ⟨rfl, rfl⟩ | ⟨_, ⟨rfl, rfl⟩ | ⟨_, rfl⟩⟩⟩⟩)
-    exacts [rfl, f.injective hx, (h₁ rfl).elim, f.injective hyx.symm, f.injective hxy,
-      (hxa rfl).elim, (hyb rfl).elim, (hya rfl).elim, rfl]⟩
+    -- TODO: once we have `cc` we can avoid all the manual cases below by doing
+    -- split_ifs at h <;> try subst b <;> try simp only [f.injective.eq_iff] at * <;> cc
+    split_ifs at h with h₁ h₂ _ _ h₅ h₆ <;>
+        try subst b <;>
+        try simp only [f.injective.eq_iff] at *
+    · rw[h₁,h₂]
+    · rw[h₁,h]
+    · rw[h₅,←h]
+    · exact h₆.symm
+    · exfalso; exact h₅ h.symm
+    · exfalso; exact h₁ h
+    · exact f.injective.eq_iff.mp h ⟩
 #align function.embedding.set_value Function.Embedding.setValue
 
 theorem setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
