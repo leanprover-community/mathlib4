@@ -33,7 +33,7 @@ local infixl:50 " ≺ " => EuclideanDomain.R
 theorem mul_div_cancel_left {a : R} (b) (a0 : a ≠ 0) : a * b / a = b :=
   Eq.symm <|
     eq_of_sub_eq_zero <|
-      Classical.by_contradiction fun h => by
+      by_contradiction fun h => by
         have := mul_left_not_lt a h
         rw [mul_sub, sub_eq_iff_eq_add'.2 (div_add_mod (a * b) a).symm] at this
         exact this (mod_lt _ a0)
@@ -52,7 +52,8 @@ theorem mod_eq_zero {a b : R} : a % b = 0 ↔ b ∣ a :=
     rw [e, ← add_left_cancel_iff, div_add_mod, add_zero]
     haveI := Classical.dec
     by_cases b0 : b = 0
-    · simp only [b0, zero_mul]
+     --Porting note: `simp` doesn't prove `True` here for some reason
+    · simp only [b0, zero_mul] ; trivial
     · rw [mul_div_cancel_left _ b0]⟩
 #align euclidean_domain.mod_eq_zero EuclideanDomain.mod_eq_zero
 
@@ -77,7 +78,7 @@ theorem zero_mod (b : R) : 0 % b = 0 :=
 
 @[simp]
 theorem zero_div {a : R} : 0 / a = 0 :=
-  Classical.by_cases (fun a0 : a = 0 => a0.symm ▸ div_zero 0) fun a0 => by
+  by_cases (fun a0 : a = 0 => a0.symm ▸ div_zero 0) fun a0 => by
     simpa only [zero_mul] using mul_div_cancel 0 a0
 #align euclidean_domain.zero_div EuclideanDomain.zero_div
 
@@ -95,7 +96,6 @@ theorem eq_div_of_mul_eq_right {a b c : R} (ha : a ≠ 0) (h : a * b = c) : b = 
 #align euclidean_domain.eq_div_of_mul_eq_right EuclideanDomain.eq_div_of_mul_eq_right
 
 theorem mul_div_assoc (x : R) {y z : R} (h : z ∣ y) : x * y / z = x * (y / z) := by
-  classical
     by_cases hz : z = 0
     · subst hz
       rw [div_zero, div_zero, mul_zero]
