@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.ZeroLeOne
+import Mathlib.Algebra.Order.ZeroLEOne
 
 /-!
 # Adjoining a zero element to an ordered monoid.
