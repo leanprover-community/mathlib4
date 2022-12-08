@@ -265,7 +265,7 @@ theorem lt_pred_iff : n < pred m ↔ succ n < m :=
 theorem lt_of_lt_pred (h : m < n - 1) : m < n :=
   lt_of_succ_lt (lt_pred_iff.1 h)
 #align nat.lt_of_lt_pred Nat.lt_of_lt_pred
-
+#print Nat.add_sub_assoc
 theorem le_or_le_of_add_eq_add_pred (h : k + l = m + n - 1) : m ≤ k ∨ n ≤ l := by
   cases' le_or_lt m k with h' h' <;> [left, right]
   · exact h'
@@ -274,7 +274,7 @@ theorem le_or_le_of_add_eq_add_pred (h : k + l = m + n - 1) : m ≤ k ∨ n ≤ 
     cases' n.eq_zero_or_pos with hn hn
     · rw [hn]
       exact zero_le l
-    rw [m.add_sub_assoc hn, add_lt_add_iff_left] at h'
+    rw [n.add_sub_assoc (Nat.succ_le_of_lt hn), add_lt_add_iff_left] at h'
     exact Nat.le_of_pred_lt h'
 #align nat.le_or_le_of_add_eq_add_pred Nat.le_or_le_of_add_eq_add_pred
 
@@ -294,9 +294,9 @@ theorem mul_eq_one_iff : ∀ {m n : ℕ}, m * n = 1 ↔ m = 1 ∧ n = 1
   | 0, n + 2 => by simp
   | m + 1, n + 1 =>
     ⟨fun h => by
-      simp only [add_mul, mul_add, mul_add, one_mul, mul_one, (add_assoc _ _ _).symm, Nat.succ_inj',
-          add_eq_zero_iff] at h <;>
-        simp [h.1.2, h.2],
+      simp only [succ_mul, mul_succ, add_succ, one_mul, mul_one, (add_assoc _ _ _).symm,
+          ← succ_eq_add_one, add_eq_zero_iff, (show 1 = succ 0 from rfl), succ_inj'] at h
+      simp [h],
       fun h => by simp only [h, mul_one]⟩
 #align nat.mul_eq_one_iff Nat.mul_eq_one_iff
 
