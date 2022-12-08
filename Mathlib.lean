@@ -37,6 +37,7 @@ import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
+import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.OrderIso
@@ -55,6 +56,7 @@ import Mathlib.Algebra.Order.Monoid.TypeTags
 import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Monoid.WithZero.Basic
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
+import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.Order.Sub.Canonical
