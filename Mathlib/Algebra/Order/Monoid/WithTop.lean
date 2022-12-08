@@ -12,8 +12,6 @@ import Mathlib.Algebra.Order.ZeroLEOne
 
 /-! # Adjoining top/bottom elements to ordered monoids. -/
 
-set_option autoImplicit false
-
 universe u v
 
 variable {α : Type u} {β : Type v}
@@ -131,13 +129,11 @@ theorem add_lt_top [PartialOrder α] {a b : WithTop α} : a + b < ⊤ ↔ a < �
 #align with_top.add_lt_top WithTop.add_lt_top
 
 theorem add_eq_coe :
-    ∀ {a b : WithTop α} {c : α}, a + b = c ↔ ∃ a' b' : α, ↑a' = a ∧ ↑b' = b ∧ a' + b' = c := by
-  intro a b c
-  match a, b, c with
-  | none, b, c => simp [none_eq_top]
-  | Option.some a, none, c => simp [none_eq_top]
+    ∀ {a b : WithTop α} {c : α}, a + b = c ↔ ∃ a' b' : α, ↑a' = a ∧ ↑b' = b ∧ a' + b' = c
+  | none, b, c => by simp [none_eq_top]
+  | Option.some a, none, c => by simp [none_eq_top]
   | Option.some a, Option.some b, c =>
-  simp only [some_eq_coe, ← coe_add, coe_eq_coe, exists_and_left, exists_eq_left, iff_self]
+  by simp only [some_eq_coe, ← coe_add, coe_eq_coe, exists_and_left, exists_eq_left, iff_self]
 #align with_top.add_eq_coe WithTop.add_eq_coe
 
 @[simp]
@@ -254,7 +250,7 @@ protected theorem add_lt_add_of_lt_of_le [Preorder α] [CovariantClass α α (·
   (WithTop.add_lt_add_right hc hab).trans_le <| add_le_add_left hcd _
 #align with_top.add_lt_add_of_lt_of_le WithTop.add_lt_add_of_lt_of_le
 
---  There is no `with_top.map_mul_of_mul_hom`, since `with_top` does not have a multiplication.
+--  There is no `WithTop.map_mul_of_mulHom`, since `WithTop` does not have a multiplication.
 @[simp]
 protected theorem map_add {F} [Add β] [AddHomClass F α β] (f : F) (a b : WithTop α) :
     (a + b).map f = a.map f + b.map f := by
