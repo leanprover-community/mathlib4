@@ -134,9 +134,8 @@ protected def refl (α : Sort _) : α ↪ α :=
   ⟨id, injective_id⟩
 #align function.embedding.refl Function.Embedding.refl
 
--- porting note: in Lean 3 this was tagged `@[trans]`
 /-- Composition of `f : α ↪ β` and `g : β ↪ γ`. -/
-@[simps (config := { simpRhs := true })]
+@[trans, simps (config := { simpRhs := true })]
 protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
   ⟨g ∘ f, g.injective.comp f.injective⟩
 #align function.embedding.trans Function.Embedding.trans
