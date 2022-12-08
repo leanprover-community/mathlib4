@@ -37,8 +37,8 @@ instance addSemigroup : AddSemigroup { x : M // 0 < x } :=
   Subtype.coe_injective.addSemigroup _ coe_add
 #align subtype.add_semigroup Positive.addSemigroup
 
-instance addCommSemigroup {M : Type _} [AddCommMonoid M] [Preorder M] [CovariantClass M M (· + ·) (· < ·)] :
-    AddCommSemigroup { x : M // 0 < x } :=
+instance addCommSemigroup {M : Type _} [AddCommMonoid M] [Preorder M]
+    [CovariantClass M M (· + ·) (· < ·)] : AddCommSemigroup { x : M // 0 < x } :=
   Subtype.coe_injective.addCommSemigroup _ coe_add
 #align subtype.add_comm_semigroup Positive.addCommSemigroup
 
