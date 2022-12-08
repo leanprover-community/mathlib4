@@ -9,7 +9,7 @@ import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
-# Further lemmas about units in a `monoid_with_zero` or a `group_with_zero`.
+# Further lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
 
 -/
 
@@ -238,7 +238,7 @@ theorem map_div₀ : f (a / b) = f a / f b :=
 
 end GroupWithZero
 
-/-- We define the inverse as a `monoid_with_zero_hom` by extending the inverse map by zero
+/-- We define the inverse as a `MonoidWithZeroHom` by extending the inverse map by zero
 on non-units. -/
 noncomputable def MonoidWithZero.inverse {M : Type _} [CommMonoidWithZero M] :
     M →*₀ M where
