@@ -237,3 +237,14 @@ theorem one_add_one_eq_two [AddMonoidWithOne α] : 1 + 1 = (2 : α) := by
   rw [←Nat.cast_one, ←Nat.cast_add]
   apply congrArg
   decide
+
+theorem two_add_one_eq_three [AddMonoidWithOne α] : 2 + 1 = (3 : α) := by
+  rw [←one_add_one_eq_two, ←Nat.cast_one, ←Nat.cast_add, ←Nat.cast_add]
+  apply congrArg
+  decide
+
+theorem three_add_one_eq_four [AddMonoidWithOne α] : 3 + 1 = (4 : α) := by
+  rw [←two_add_one_eq_three, ←one_add_one_eq_two, ←Nat.cast_one,
+    ←Nat.cast_add, ←Nat.cast_add, ←Nat.cast_add]
+  apply congrArg
+  decide
