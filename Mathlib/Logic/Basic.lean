@@ -181,6 +181,11 @@ theorem eq_or_ne (x y : α) : x = y ∨ x ≠ y := em <| x = y
 theorem ne_or_eq (x y : α) : x ≠ y ∨ x = y := em' <| x = y
 
 theorem by_contradiction : (¬p → False) → p := Decidable.by_contradiction
+#align classical.by_contradiction by_contradiction
+
+theorem by_cases (hpq : p → q) (hnpq : ¬p → q) : q :=
+if hp : p then hpq hp else hnpq hp
+#align classical.by_cases by_cases
 
 alias by_contradiction ← by_contra
 
