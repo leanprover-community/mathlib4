@@ -120,7 +120,7 @@ theorem mul_div_mul_right (a b : G₀) (hc : c ≠ 0) : a * c / (b * c) = a / b 
 #align mul_div_mul_right mul_div_mul_right
 
 theorem mul_mul_div (a : G₀) (hb : b ≠ 0) : a = a * b * (1 / b) :=
-  (IsUnit.mul_mul_div hb.isUnit _).symm
+  (IsUnit.mul_mul_div _ hb.isUnit).symm
 #align mul_mul_div mul_mul_div
 
 theorem div_div_div_cancel_right (a : G₀) (hc : c ≠ 0) : a / c / (b / c) = a / b := by
