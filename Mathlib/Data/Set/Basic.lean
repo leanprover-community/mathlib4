@@ -2470,6 +2470,7 @@ theorem nontrivial_of_nontrivial (hs : s.Nontrivial) : Nontrivial α :=
 theorem nontrivial_coe_sort {s : Set α} : Nontrivial s ↔ s.Nontrivial := by
   simp_rw [← nontrivial_univ_iff, Set.Nontrivial, mem_univ, exists_true_left, SetCoe.exists,
     Subtype.mk_eq_mk]
+  simp only [ne_eq, Subtype.mk.injEq, exists_prop, iff_self]
 #align set.nontrivial_coe_sort Set.nontrivial_coe_sort
 
 alias nontrivial_coe_sort ↔ _ Nontrivial.coe_sort
