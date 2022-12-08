@@ -187,17 +187,17 @@ def setValue {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = 
   ⟨fun a' => if a' = a then b else if f a' = b then f a else f a', by
     intro x y (h : ite _ _ _ = ite _ _ _)
     -- TODO: once we have `cc` we can avoid all the manual cases below by doing
-    -- split_ifs at h <;> try subst b <;> try simp only [f.injective.eq_iff] at * <;> cc
+    -- split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> cc
     split_ifs at h with h₁ h₂ _ _ h₅ h₆ <;>
-        try subst b <;>
-        try simp only [f.injective.eq_iff] at *
+        (try subst b) <;>
+        (try simp only [f.injective.eq_iff] at *)
     · rw[h₁,h₂]
     · rw[h₁,h]
     · rw[h₅,←h]
     · exact h₆.symm
     · exfalso; exact h₅ h.symm
     · exfalso; exact h₁ h
-    · exact f.injective.eq_iff.mp h ⟩
+    · exact h ⟩
 #align function.embedding.set_value Function.Embedding.setValue
 
 theorem setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
