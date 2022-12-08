@@ -84,7 +84,7 @@ theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
 theorem one_lt_iff_ne_zero_and_ne_one : ∀ {n : ℕ}, 1 < n ↔ n ≠ 0 ∧ n ≠ 1
   | 0 => by decide
   | 1 => by decide
-  | n + 2 => by decide
+  | n + 2 => by simp
 #align nat.one_lt_iff_ne_zero_and_ne_one Nat.one_lt_iff_ne_zero_and_ne_one
 
 protected theorem mul_ne_zero (n0 : n ≠ 0) (m0 : m ≠ 0) : n * m ≠ 0
@@ -205,13 +205,16 @@ theorem add_eq_one_iff : m + n = 1 ↔ m = 0 ∧ n = 1 ∨ m = 1 ∧ n = 0 := by
 
 theorem add_eq_two_iff : m + n = 2 ↔ m = 0 ∧ n = 2 ∨ m = 1 ∧ n = 1 ∨ m = 2 ∧ n = 0 := by
   cases n <;>
-  simp [(succ_ne_zero 1).symm, succ_eq_add_one, ← add_assoc, succ_inj', add_eq_one_iff]
+  simp [(succ_ne_zero 1).symm, (show 2 = Nat.succ 1 from rfl),
+    succ_eq_add_one, ← add_assoc, succ_inj', add_eq_one_iff]
+
 #align nat.add_eq_two_iff Nat.add_eq_two_iff
 
 theorem add_eq_three_iff :
     m + n = 3 ↔ m = 0 ∧ n = 3 ∨ m = 1 ∧ n = 2 ∨ m = 2 ∧ n = 1 ∨ m = 3 ∧ n = 0 := by
   cases n <;>
-  simp [(succ_ne_zero 1).symm, succ_eq_add_one, ← add_assoc, succ_inj', add_eq_two_iff]
+  simp [(succ_ne_zero 1).symm, succ_eq_add_one, (show 3 = Nat.succ 2 from rfl),
+    ← add_assoc, succ_inj', add_eq_two_iff]
 #align nat.add_eq_three_iff Nat.add_eq_three_iff
 
 theorem le_add_one_iff : m ≤ n + 1 ↔ m ≤ n ∨ m = n + 1 :=
