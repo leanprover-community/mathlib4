@@ -612,22 +612,22 @@ section FindGreatest
 
 variable {P Q : ℕ → Prop} [DecidablePred P]
 
-theorem find_greatest_eq_iff :
+theorem findGreatest_eq_iff :
     Nat.findGreatest P k = m ↔ m ≤ k ∧ (m ≠ 0 → P m) ∧ ∀ ⦃n⦄, m < n → n ≤ k → ¬P n := by
   induction' k with k ihk generalizing m
   · rw [eq_comm, Iff.comm]
-    simp only [nonpos_iff_eq_zero, Ne.def, and_iff_left_iff_imp, find_greatest_zero]
+    simp only [zero_eq, nonpos_iff_eq_zero, ne_eq, findGreatest_zero, and_iff_left_iff_imp]
     rintro rfl
-    exact ⟨fun h => (h rfl).elim, fun n hlt heq => (hlt.Ne HEq.symm).elim⟩
+    exact ⟨fun h => (h rfl).elim, fun n hlt heq => (hlt.ne heq.symm).elim⟩
   · by_cases hk : P (k + 1)
-    · rw [find_greatest_eq hk]
+    · rw [findGreatest_eq hk]
       constructor
       · rintro rfl
         exact ⟨le_rfl, fun _ => hk, fun n hlt hle => (hlt.not_le hle).elim⟩
       · rintro ⟨hle, h0, hm⟩
         rcases Decidable.eq_or_lt_of_le hle with (rfl | hlt)
         exacts[rfl, (hm hlt le_rfl hk).elim]
-    · rw [find_greatest_of_not hk, ihk]
+    · rw [findGreatest_of_not hk, ihk]
       constructor
       · rintro ⟨hle, hP, hm⟩
         refine' ⟨hle.trans k.le_succ, hP, fun n hlt hle => _⟩
@@ -637,60 +637,60 @@ theorem find_greatest_eq_iff :
         refine' ⟨lt_succ_iff.1 (hle.lt_of_ne _), hP, fun n hlt hle => hm hlt (hle.trans k.le_succ)⟩
         rintro rfl
         exact hk (hP k.succ_ne_zero)
-#align nat.find_greatest_eq_iff Nat.find_greatest_eq_iff
+#align nat.find_greatest_eq_iff Nat.findGreatest_eq_iff
 
-theorem find_greatest_eq_zero_iff : Nat.findGreatest P k = 0 ↔ ∀ ⦃n⦄, 0 < n → n ≤ k → ¬P n := by
-  simp [find_greatest_eq_iff]
-#align nat.find_greatest_eq_zero_iff Nat.find_greatest_eq_zero_iff
+theorem findGreatest_eq_zero_iff : Nat.findGreatest P k = 0 ↔ ∀ ⦃n⦄, 0 < n → n ≤ k → ¬P n := by
+  simp [findGreatest_eq_iff]
+#align nat.find_greatest_eq_zero_iff Nat.findGreatest_eq_zero_iff
 
-theorem find_greatest_spec (hmb : m ≤ n) (hm : P m) : P (Nat.findGreatest P n) := by
+theorem findGreatest_spec (hmb : m ≤ n) (hm : P m) : P (Nat.findGreatest P n) := by
   by_cases h : Nat.findGreatest P n = 0
   · cases m
     · rwa [h]
-    exact ((find_greatest_eq_zero_iff.1 h) m.zero_lt_succ hmb hm).elim
-  · exact (find_greatest_eq_iff.1 rfl).2.1 h
-#align nat.find_greatest_spec Nat.find_greatest_spec
+    exact ((findGreatest_eq_zero_iff.1 h) (zero_lt_succ _) hmb hm).elim
+  · exact (findGreatest_eq_iff.1 rfl).2.1 h
+#align nat.find_greatest_spec Nat.findGreatest_spec
 
-theorem find_greatest_le (n : ℕ) : Nat.findGreatest P n ≤ n :=
-  (find_greatest_eq_iff.1 rfl).1
-#align nat.find_greatest_le Nat.find_greatest_le
+theorem findGreatest_le (n : ℕ) : Nat.findGreatest P n ≤ n :=
+  (findGreatest_eq_iff.1 rfl).1
+#align nat.find_greatest_le Nat.findGreatest_le
 
-theorem le_find_greatest (hmb : m ≤ n) (hm : P m) : m ≤ Nat.findGreatest P n :=
-  le_of_not_lt fun hlt => (find_greatest_eq_iff.1 rfl).2.2 hlt hmb hm
-#align nat.le_find_greatest Nat.le_find_greatest
+theorem le_findGreatest (hmb : m ≤ n) (hm : P m) : m ≤ Nat.findGreatest P n :=
+  le_of_not_lt fun hlt => (findGreatest_eq_iff.1 rfl).2.2 hlt hmb hm
+#align nat.le_find_greatest Nat.le_findGreatest
 
-theorem find_greatest_mono_right (P : ℕ → Prop) [DecidablePred P] : Monotone (Nat.findGreatest P) :=
+theorem findGreatest_mono_right (P : ℕ → Prop) [DecidablePred P] : Monotone (Nat.findGreatest P) :=
   by
   refine' monotone_nat_of_le_succ fun n => _
-  rw [find_greatest_succ]
+  rw [findGreatest_succ]
   split_ifs
-  · exact (find_greatest_le n).trans (le_succ _)
+  · exact (findGreatest_le n).trans (le_succ _)
   · rfl
-#align nat.find_greatest_mono_right Nat.find_greatest_mono_right
+#align nat.find_greatest_mono_right Nat.findGreatest_mono_right
 
-theorem find_greatest_mono_left [DecidablePred Q] (hPQ : P ≤ Q) :
+theorem findGreatest_mono_left [DecidablePred Q] (hPQ : P ≤ Q) :
     Nat.findGreatest P ≤ Nat.findGreatest Q := by
   intro n
   induction' n with n hn
   · rfl
   by_cases P (n + 1)
-  · rw [find_greatest_eq h, find_greatest_eq (hPQ _ h)]
-  · rw [find_greatest_of_not h]
-    exact hn.trans (Nat.find_greatest_mono_right _ <| le_succ _)
-#align nat.find_greatest_mono_left Nat.find_greatest_mono_left
+  · rw [findGreatest_eq h, findGreatest_eq (hPQ _ h)]
+  · rw [findGreatest_of_not h]
+    exact hn.trans (Nat.findGreatest_mono_right _ <| le_succ _)
+#align nat.find_greatest_mono_left Nat.findGreatest_mono_left
 
-theorem find_greatest_mono [DecidablePred Q] (hPQ : P ≤ Q) (hmn : m ≤ n) :
+theorem findGreatest_mono [DecidablePred Q] (hPQ : P ≤ Q) (hmn : m ≤ n) :
     Nat.findGreatest P m ≤ Nat.findGreatest Q n :=
-  (Nat.find_greatest_mono_right _ hmn).trans <| find_greatest_mono_left hPQ _
-#align nat.find_greatest_mono Nat.find_greatest_mono
+  (Nat.findGreatest_mono_right _ hmn).trans <| findGreatest_mono_left hPQ _
+#align nat.find_greatest_mono Nat.findGreatest_mono
 
-theorem find_greatest_is_greatest (hk : Nat.findGreatest P n < k) (hkb : k ≤ n) : ¬P k :=
-  (find_greatest_eq_iff.1 rfl).2.2 hk hkb
-#align nat.find_greatest_is_greatest Nat.find_greatest_is_greatest
+theorem findGreatest_is_greatest (hk : Nat.findGreatest P n < k) (hkb : k ≤ n) : ¬P k :=
+  (findGreatest_eq_iff.1 rfl).2.2 hk hkb
+#align nat.find_greatest_is_greatest Nat.findGreatest_is_greatest
 
-theorem find_greatest_of_ne_zero (h : Nat.findGreatest P n = m) (h0 : m ≠ 0) : P m :=
-  (find_greatest_eq_iff.1 h).2.1 h0
-#align nat.find_greatest_of_ne_zero Nat.find_greatest_of_ne_zero
+theorem findGreatest_of_ne_zero (h : Nat.findGreatest P n = m) (h0 : m ≠ 0) : P m :=
+  (findGreatest_eq_iff.1 h).2.1 h0
+#align nat.find_greatest_of_ne_zero Nat.findGreatest_of_ne_zero
 
 end FindGreatest
 
