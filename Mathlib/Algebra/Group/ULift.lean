@@ -14,9 +14,6 @@ This file defines instances for group, monoid, semigroup and related structures 
 
 (Recall `ULift α` is just a "copy" of a type `α` in a higher universe.)
 
-We use `tactic.pi_instance_derive_field`, even though it wasn't intended for this purpose,
-which seems to work fine.
-
 We also provide `ULift.mul_equiv : ULift R ≃* R` (and its additive analogue).
 -/
 
