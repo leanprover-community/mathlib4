@@ -401,12 +401,12 @@ theorem set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S
 
 
 protected theorem div_le_of_le_mul' (h : m ≤ k * n) : m / k ≤ n :=
-  (Nat.eq_zero_or_pos k).elim (fun k0 => by rw [k0, Nat.div_zero] <;> apply zero_le) fun k0 =>
-    (mul_le_mul_left k0).1 <|
-      calc
+  (Nat.eq_zero_or_pos k).elim (fun k0 => by rw [k0, Nat.div_zero] ; apply zero_le) fun k0 =>
+    le_of_mul_le_mul_left
+      (calc
         k * (m / k) ≤ m % k + k * (m / k) := Nat.le_add_left _ _
         _ = m := mod_add_div _ _
-        _ ≤ k * n := h
+        _ ≤ k * n := h) k0
 
 #align nat.div_le_of_le_mul' Nat.div_le_of_le_mul'
 
