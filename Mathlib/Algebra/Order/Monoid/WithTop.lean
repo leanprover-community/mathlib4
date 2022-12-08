@@ -89,7 +89,7 @@ theorem coe_add : ((x + y : α) : WithTop α) = x + y :=
 #align with_top.coe_add WithTop.coe_add
 
 -- Porting note: Linter says these are syntactic tautologies.
--- /-! Porting note: `bit0` and `bit1` are deprecated. Section can be removed without replacement. -/
+-- Porting note: `bit0` and `bit1` are deprecated. Section can be removed without replacement.
 -- section deprecated
 -- set_option linter.deprecated false
 
