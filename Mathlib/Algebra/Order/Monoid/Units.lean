@@ -31,6 +31,8 @@ theorem val_lt_val [Monoid α] [Preorder α] {a b : αˣ} : (a : α) < b ↔ a <
 @[to_additive]
 instance [Monoid α] [PartialOrder α] : PartialOrder αˣ :=
   PartialOrder.lift val Units.ext
+#align units.partial_order Units.instPartialOrderUnits
+#align add_units.partial_order AddUnits.instPartialOrderAddUnits
 
 @[to_additive]
 instance [Monoid α] [LinearOrder α] : LinearOrder αˣ :=

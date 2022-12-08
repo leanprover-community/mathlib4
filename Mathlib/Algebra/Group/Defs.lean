@@ -504,8 +504,11 @@ need right away.
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
+  /-- Multiplication by a natural number. -/
   nsmul : ℕ → M → M := nsmulRec
+  /-- Multiplication by `(0 : ℕ)` gives `0`. -/
   nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
+  /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
   nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = x + nsmul n x := by intros; rfl
 
 #align add_monoid.nsmul_zero' AddMonoid.nsmul_zero
@@ -514,8 +517,11 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
 class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
+  /-- Raising to the power of a natural number. -/
   npow : ℕ → M → M := npowRec
+  /-- Raising to the power `(0 : ℕ)` gives `1`. -/
   npow_zero : ∀ x, npow 0 x = 1 := by intros; rfl
+  /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
   npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = x * npow n x := by intros; rfl
 
 #align monoid.npow_zero' Monoid.npow_zero

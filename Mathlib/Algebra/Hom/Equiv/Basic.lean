@@ -234,8 +234,7 @@ def refl (M : Type _) [Mul M] : M ≃* M :=
 instance : Inhabited (M ≃* M) := ⟨refl M⟩
 
 /-- The inverse of an isomorphism is an isomorphism. -/
--- Porting note: removed `@[trans]`, until https://github.com/leanprover-community/mathlib4/pull/857
-@[to_additive "The inverse of an isomorphism is an isomorphism."]
+@[symm, to_additive "The inverse of an isomorphism is an isomorphism."]
 def symm {M N : Type _} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
   ⟨h.toEquiv.symm, (h.toMulHom.inverse h.toEquiv.symm h.left_inv h.right_inv).map_mul⟩
 #align mul_equiv.symm MulEquiv.symm
@@ -297,8 +296,7 @@ theorem refl_symm : (refl M).symm = refl M := rfl
 #align add_equiv.refl_symm AddEquiv.refl_symm
 
 /-- Transitivity of multiplication-preserving isomorphisms -/
--- Porting note: removed `@[trans]`, until https://github.com/leanprover-community/mathlib4/pull/857
-@[to_additive "Transitivity of addition-preserving isomorphisms"]
+@[trans, to_additive "Transitivity of addition-preserving isomorphisms"]
 def trans (h1 : M ≃* N) (h2 : N ≃* P) : M ≃* P :=
   { h1.toEquiv.trans h2.toEquiv with
     map_mul' := fun x y => show h2 (h1 (x * y)) = h2 (h1 x) * h2 (h1 y) by
