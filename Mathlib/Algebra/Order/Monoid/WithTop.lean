@@ -25,9 +25,9 @@ section One
 variable [One α]
 
 @[to_additive]
-instance instOne : One (WithTop α) :=
+instance one : One (WithTop α) :=
   ⟨(1 : α)⟩
-#align with_top.has_one WithTop.instOne
+#align with_top.has_one WithTop.one
 
 @[simp, norm_cast, to_additive]
 theorem coe_one : ((1 : α) : WithTop α) = 1 :=
@@ -69,7 +69,7 @@ theorem one_ne_top : (1 : WithTop α) ≠ ⊤ :=
   fun.
 #align with_top.one_ne_top WithTop.one_ne_top
 
-instance instZeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) :=
+instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) :=
   ⟨some_le_some.2 zero_le_one⟩
 
 end One
@@ -78,9 +78,9 @@ section Add
 
 variable [Add α] {a b c d : WithTop α} {x y : α}
 
-instance instAdd : Add (WithTop α) :=
+instance add : Add (WithTop α) :=
   ⟨fun o₁ o₂ => o₁.bind fun a => o₂.map <| (· + ·) a⟩
-#align with_top.has_add WithTop.instAdd
+#align with_top.has_add WithTop.add
 
 @[norm_cast]
 theorem coe_add : ((x + y : α) : WithTop α) = x + y :=
@@ -264,8 +264,8 @@ protected theorem map_add {F} [Add β] [AddHomClass F α β] (f : F) (a b : With
 
 end Add
 
-instance instAddSemigroup [AddSemigroup α] : AddSemigroup (WithTop α) :=
-  { WithTop.instAdd with
+instance addSemigroup [AddSemigroup α] : AddSemigroup (WithTop α) :=
+  { WithTop.add with
     add_assoc := by
       refine' WithTop.recTopCoe _ _ <;> try intro
       · simp only [top_add, forall_const]
@@ -281,8 +281,8 @@ instance instAddSemigroup [AddSemigroup α] : AddSemigroup (WithTop α) :=
 --   repeat { refine with_top.rec_top_coe _ _; try { intro }};
 --   simp [←with_top.coe_add, add_assoc]
 
-instance instAddCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithTop α) :=
-  { WithTop.instAddSemigroup with
+instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithTop α) :=
+  { WithTop.addSemigroup with
     add_comm := by
       refine' WithTop.recTopCoe _ _ <;> try intro
       · rw [top_add, add_top]
@@ -296,8 +296,8 @@ instance instAddCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithTop 
 --   simp [←with_top.coe_add, add_comm]
 
 
-instance instAddZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
-  { WithTop.instZero, WithTop.instAdd with
+instance addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
+  { WithTop.zero, WithTop.add with
     zero_add := by
       refine' WithTop.recTopCoe _ _
       · simp
@@ -309,25 +309,25 @@ instance instAddZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
       · intro
         rw [← WithTop.coe_zero, ← WithTop.coe_add, add_zero] }
 
-instance instAddMonoid [AddMonoid α] : AddMonoid (WithTop α) :=
-  { WithTop.instAddSemigroup, WithTop.instAddZeroClass with }
+instance addMonoid [AddMonoid α] : AddMonoid (WithTop α) :=
+  { WithTop.addSemigroup, WithTop.addZeroClass with }
 
-instance instAddCommMonoid [AddCommMonoid α] : AddCommMonoid (WithTop α) :=
-  { WithTop.instAddMonoid, WithTop.instAddCommSemigroup with }
+instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithTop α) :=
+  { WithTop.addMonoid, WithTop.addCommSemigroup with }
 
-instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithTop α) :=
-  { WithTop.instOne, WithTop.instAddMonoid with
+instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithTop α) :=
+  { WithTop.one, WithTop.addMonoid with
     -- Porting notes: TODO That seems wrong to just comment these out. Fix me!
     --natCast := fun n => ↑(n : α),
     --nat_cast_zero := by rw [Nat.cast_zero, WithTop.coe_zero],
     --nat_cast_succ := fun n => by rw [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one]
   }
 
-instance instAddCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithTop α) :=
-  { WithTop.instAddMonoidWithOne, WithTop.instAddCommMonoid with }
+instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithTop α) :=
+  { WithTop.addMonoidWithOne, WithTop.addCommMonoid with }
 
-instance instOrderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithTop α) :=
-  { WithTop.instPartialOrderWithTop, WithTop.instAddCommMonoid with
+instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithTop α) :=
+  { WithTop.partialOrder, WithTop.addCommMonoid with
     add_le_add_left := by
       rintro a b h (_ | c); · simp [none_eq_top]
       rcases b with (_ | b); · simp [none_eq_top]
@@ -336,10 +336,10 @@ instance instOrderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMono
       exact add_le_add_left h c }
 
 instance [LinearOrderedAddCommMonoid α] : LinearOrderedAddCommMonoidWithTop (WithTop α) :=
-  { WithTop.instOrderTop, WithTop.instLinearOrder, WithTop.instOrderedAddCommMonoid with
+  { WithTop.orderTop, WithTop.linearOrder, WithTop.orderedAddCommMonoid with
     top_add' := WithTop.top_add }
 
-instance instExistsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithTop α) :=
+instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithTop α) :=
   ⟨fun {a} {b} =>
     match a, b with
     | ⊤, ⊤ => by simp
@@ -349,9 +349,9 @@ instance instExistsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (
       exact ⟨c, rfl⟩
     | ⊤, (b : α) => fun h => (not_top_le_coe _ h).elim⟩
 
-instance instCanonicallyOrderedAddMonoid [CanonicallyOrderedAddMonoid α] :
+instance canonicallyOrderedAddMonoid [CanonicallyOrderedAddMonoid α] :
     CanonicallyOrderedAddMonoid (WithTop α) :=
-  { WithTop.instOrderBot, WithTop.instOrderedAddCommMonoid, WithTop.instExistsAddOfLE with
+  { WithTop.orderBot, WithTop.orderedAddCommMonoid, WithTop.existsAddOfLE with
     le_self_add := fun a b =>
       match a, b with
       | ⊤, ⊤ => le_rfl
@@ -360,7 +360,7 @@ instance instCanonicallyOrderedAddMonoid [CanonicallyOrderedAddMonoid α] :
       | ⊤, (b : α) => le_rfl }
 
 instance [CanonicallyLinearOrderedAddMonoid α] : CanonicallyLinearOrderedAddMonoid (WithTop α) :=
-  { WithTop.instCanonicallyOrderedAddMonoid, WithTop.instLinearOrder with }
+  { WithTop.canonicallyOrderedAddMonoid, WithTop.linearOrder with }
 
 @[simp, norm_cast]
 theorem coe_nat [AddMonoidWithOne α] (n : ℕ) : ((n : α) : WithTop α) = n :=
@@ -426,34 +426,34 @@ end WithTop
 namespace WithBot
 
 @[to_additive]
-instance [One α] : One (WithBot α) :=
-  WithTop.instOne
+instance one [One α] : One (WithBot α) :=
+  WithTop.one
 
-instance [Add α] : Add (WithBot α) :=
-  WithTop.instAdd
+instance add [Add α] : Add (WithBot α) :=
+  WithTop.add
 
-instance [AddSemigroup α] : AddSemigroup (WithBot α) :=
-  WithTop.instAddSemigroup
+instance AddSemigroup [AddSemigroup α] : AddSemigroup (WithBot α) :=
+  WithTop.addSemigroup
 
-instance [AddCommSemigroup α] : AddCommSemigroup (WithBot α) :=
-  WithTop.instAddCommSemigroup
+instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithBot α) :=
+  WithTop.addCommSemigroup
 
-instance [AddZeroClass α] : AddZeroClass (WithBot α) :=
-  WithTop.instAddZeroClass
+instance addZeroClass [AddZeroClass α] : AddZeroClass (WithBot α) :=
+  WithTop.addZeroClass
 
-instance [AddMonoid α] : AddMonoid (WithBot α) :=
-  WithTop.instAddMonoid
+instance addMonoid [AddMonoid α] : AddMonoid (WithBot α) :=
+  WithTop.addMonoid
 
-instance [AddCommMonoid α] : AddCommMonoid (WithBot α) :=
-  WithTop.instAddCommMonoid
+instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithBot α) :=
+  WithTop.addCommMonoid
 
-instance [AddMonoidWithOne α] : AddMonoidWithOne (WithBot α) :=
-  WithTop.instAddMonoidWithOne
+instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithBot α) :=
+  WithTop.addMonoidWithOne
 
-instance [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithBot α) :=
-  WithTop.instAddCommMonoidWithOne
+instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithBot α) :=
+  WithTop.addCommMonoidWithOne
 
-instance [Zero α] [One α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithBot α) :=
+instance zeroLEOneClass [Zero α] [One α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithBot α) :=
   ⟨some_le_some.2 zero_le_one⟩
 
 -- `by norm_cast` proves this lemma, so I did not tag it with `norm_cast`
@@ -666,12 +666,12 @@ protected theorem add_lt_add_of_lt_of_le [CovariantClass α α (· + ·) (· ≤
 
 end Add
 
-instance instOrderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithBot α) :=
-  { WithBot.instPartialOrderWithBot, WithBot.instAddCommMonoidWithBot with
+instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithBot α) :=
+  { WithBot.partialOrder, WithBot.addCommMonoid with
     add_le_add_left := fun _ _ h c => add_le_add_left h c }
 
-instance instLinearOrderedAddCommMonoid [LinearOrderedAddCommMonoid α] :
+instance linearOrderedAddCommMonoid [LinearOrderedAddCommMonoid α] :
     LinearOrderedAddCommMonoid (WithBot α) :=
-  { WithBot.instLinearOrder, WithBot.instOrderedAddCommMonoid with }
+  { WithBot.linearOrder, WithBot.orderedAddCommMonoid with }
 
 end WithBot
