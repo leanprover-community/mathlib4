@@ -214,17 +214,12 @@ theorem zero_smul {α} [AddCommMonoid α] (c) : smul c (0 : α) = 0 := by
   simp [smul, nsmul_zero]
 
 theorem zero_smulg {α} [AddCommGroup α] (c) : smulg c (0 : α) = 0 := by
-  -- TODO waiting for port of Algebra.GroupPower.Basic for `zsmul_zero`
-  -- simp [smulg, zsmul_zero]
-  sorry
+  simp [smulg, zsmul_zero]
 
-@[nolint unusedArguments] -- TODO remove when the proof is filled in.
 theorem term_smul {α} [AddCommMonoid α] (c n x a n' a')
   (h₁ : c * n = n') (h₂ : smul c a = a') :
   smul c (@term α _ n x a) = term n' x a' := by
-  -- TODO waiting for port of Algebra.GroupPower.Basic for `nsmul_add` and `mul_nsmul`
-  -- simp [h₂.symm, h₁.symm, term, smul, nsmul_add, mul_nsmul]
-  sorry
+  simp [h₂.symm, h₁.symm, term, smul, nsmul_add, mul_nsmul']
 
 @[nolint unusedArguments] -- TODO remove when the proof is filled in.
 theorem term_smulg {α} [AddCommGroup α] (c n x a n' a')
