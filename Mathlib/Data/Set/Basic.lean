@@ -7,7 +7,6 @@ import Mathlib.Order.SymmDiff
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.SolveByElim
-
 /-!
 # Basic properties of sets
 
@@ -19,7 +18,7 @@ This file provides some basic definitions related to sets and functions not pres
 library, as well as extra lemmas for functions in the core library (empty set, univ, union,
 intersection, insert, singleton, set-theoretic difference, complement, and powerset).
 
-Note that a set is a term, not a type. There is a coercion from `Set α` to `Type*` sending
+Note that a set is a term, not a type. There is a coercion from `Set α` to `Type _` sending
 `s` to the corresponding subtype `↥s`.
 
 See also the file `SetTheory/ZFC.lean`, which contains an encoding of ZFC set theory in Lean.
@@ -39,22 +38,13 @@ Definitions in the file:
 * `Nonempty s : Prop` : the predicate `s ≠ ∅`. Note that this is the preferred way to express the
   fact that `s` has an element (see the Implementation Notes).
 
-* `preimage f t : set α` : the preimage f⁻¹(t) (written `f ⁻¹' t` in Lean) of a subset of β.
-
 * `Subsingleton s : Prop` : the predicate saying that `s` has at most one element.
 
 * `Nontrivial s : Prop` : the predicate saying that `s` has at least two distinct elements.
 
-* `range f : set β` : the image of `univ` under `f`.
-  Also works for `{p : Prop} (f : p → α)` (unlike `image`)
-
 * `inclusion s₁ s₂ : ↥s₁ → ↥s₂` : the map `↥s₁ → ↥s₂` induced by an inclusion `s₁ ⊆ s₂`.
 
 ## Notation
-
-* `f ⁻¹' t` for `preimage f t`
-
-* `f !! s` for `image f s`
 
 * `sᶜ` for the complement of `s`
 
@@ -63,21 +53,13 @@ Definitions in the file:
 * `s.Nonempty` is to be preferred to `s ≠ ∅` or `∃ x, x ∈ s`. It has the advantage that
 the `s.Nonempty` dot notation can be used.
 
-* For `s : Set α`, do not use `Subtype s`. Instead use `↥s` or `(s : Type*)` or `s`.
+* For `s : set α`, do not use `subtype s`. Instead use `↥s` or `(s : Type*)` or `s`.
 
 ## Tags
 
-set, sets, subset, subsets, image, preimage, pre-image, range, union, intersection, insert,
-singleton, complement, powerset
+set, sets, subset, subsets, union, intersection, insert, singleton, complement, powerset
 
 -/
-
-
--- Porting note: I have temporarily replaced the `''` notation with `!!`
--- See https://github.com/leanprover/lean4/issues/1922
-
--- Porting note: This is based on a future version of mathlib,
--- at https://github.com/leanprover-community/mathlib/pull/17836
 
 /-! ### Set coercion to a type -/
 
