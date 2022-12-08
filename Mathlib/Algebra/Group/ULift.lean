@@ -214,6 +214,6 @@ instance nontrivial [Nontrivial α] : Nontrivial (ULift α) :=
   Equiv.ulift.symm.injective.nontrivial
 #align ulift.nontrivial ULift.nontrivial
 
--- TODO we don't do `ordered_cancel_comm_monoid` or `ordered_comm_group`
--- We'd need to add instances for `ulift` in `order.basic`.
+-- TODO we don't do `OrderedCancelCommMonoid` or `OrderedCommGroup`
+-- We'd need to add instances for `ULift` in `Order.Basic`.
 end ULift
