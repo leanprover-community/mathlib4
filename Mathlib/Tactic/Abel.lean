@@ -405,10 +405,6 @@ theorem term_eq [AddCommMonoid α] (n : ℕ) (x a : α) : term n x a = n • x +
 /-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative group. -/
 theorem termg_eq [AddCommGroup α] (n : ℤ) (x a : α) : termg n x a = n • x + a := rfl
 
--- TODO: prove these in the respective theory files
-theorem one_zsmul [SubNegMonoid α] (a : α) : (1 : ℤ) • a = a := sorry
-theorem zsmul_zero [SubtractionMonoid α] (n : ℤ) : n • (0 : α) = 0 := sorry
-
 /-- True if this represents an atomic expression. -/
 def NormalExpr.isAtom : NormalExpr → Bool
   | .nterm _ (_, 1) _ (.zero _) => true
