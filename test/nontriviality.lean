@@ -1,5 +1,5 @@
 import Mathlib.Tactic.Nontriviality
-import Mathlib.Algebra.Order.Ring
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Nat.Basic
 -- import Mathlib.Data.Set.Basic
 
@@ -20,10 +20,6 @@ example {R : Type} [CommRing R] {r s : R} : r * s = s * r := by
   apply mul_comm
 
 /-! ### Test deducing `nontriviality` by instance search -/
-
-instance [OrderedRing R] : OrderedSemiring R := by refine' { ‹OrderedRing R› with .. } <;> sorry
-theorem zero_le_one {R : Type} [OrderedSemiring R] : 0 ≤ (1 : R) := sorry
-theorem zero_le_two {R : Type} [OrderedSemiring R] : 0 ≤ (2 : R) := sorry
 
 example {R : Type} [OrderedRing R] : 0 ≤ (1 : R) := by
   nontriviality R

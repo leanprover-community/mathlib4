@@ -24,14 +24,14 @@ class LinearOrderedCommMonoidWithZero (α : Type _) extends LinearOrderedCommMon
 
 namespace WithZero
 
-instance [Preorder α] : Preorder (WithZero α) :=
-  WithBot.instPreorderWithBot
+instance preorder [Preorder α] : Preorder (WithZero α) :=
+  WithBot.preorder
 
-instance [PartialOrder α] : PartialOrder (WithZero α) :=
-  WithBot.instPartialOrderWithBot
+instance partialOrder [PartialOrder α] : PartialOrder (WithZero α) :=
+  WithBot.partialOrder
 
-instance [Preorder α] : OrderBot (WithZero α) :=
-  WithBot.instOrderBotWithBotInstLEWithBot
+instance orderBot [Preorder α] : OrderBot (WithZero α) :=
+  WithBot.orderBot
 
 theorem zero_le [Preorder α] (a : WithZero α) : 0 ≤ a :=
   bot_le
@@ -55,12 +55,12 @@ theorem coe_le_coe [Preorder α] {a b : α} : (a : WithZero α) ≤ b ↔ a ≤ 
   WithBot.coe_le_coe
 #align with_zero.coe_le_coe WithZero.coe_le_coe
 
-instance [Lattice α] : Lattice (WithZero α) :=
-  WithBot.instLatticeWithBot
+instance lattice [Lattice α] : Lattice (WithZero α) :=
+  WithBot.lattice
 
-instance [LinearOrder α] : LinearOrder (WithZero α) :=
-  WithBot.instLinearOrderWithBot
-#align with_zero.linear_order WithZero.instLinearOrderWithZero
+instance linearOrder [LinearOrder α] : LinearOrder (WithZero α) :=
+  WithBot.linearOrder
+#align with_zero.linear_order WithZero.linearOrder
 
 instance covariantClass_mul_le [Mul α] [Preorder α]
     [CovariantClass α α (· * ·) (· ≤ ·)] :
@@ -81,8 +81,8 @@ instance covariantClass_mul_le [Mul α] [Preorder α]
 #noalign with_zero.le_max_iff
 #noalign with_zero.min_le_iff
 
-instance [OrderedCommMonoid α] : OrderedCommMonoid (WithZero α) :=
-  { CommMonoidWithZero.toCommMonoid, WithZero.instPartialOrderWithZero with
+instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid (WithZero α) :=
+  { WithZero.commMonoidWithZero.toCommMonoid, WithZero.partialOrder with
     mul_le_mul_left := fun _ _ => mul_le_mul_left' }
 
 -- FIXME: `WithOne.coe_mul` and `WithZero.coe_mul` have inconsistent use of implicit parameters
@@ -119,15 +119,13 @@ See note [reducible non-instances].
 @[reducible]
 protected def orderedAddCommMonoid [OrderedAddCommMonoid α] (zero_le : ∀ a : α, 0 ≤ a) :
     OrderedAddCommMonoid (WithZero α) :=
-  { WithZero.instPartialOrderWithZero, instAddCommMonoidWithZero with
+  { WithZero.partialOrder, WithZero.addCommMonoid with
     add_le_add_left := @add_le_add_left _ _ _ (WithZero.covariantClass_add_le zero_le).. }
 #align with_zero.ordered_add_comm_monoid WithZero.orderedAddCommMonoid
 
-end WithZero
-
 section CanonicallyOrderedMonoid
 
-instance WithZero.instExistsAddOfLE [Add α] [Preorder α] [ExistsAddOfLE α] :
+instance existsAddOfLE [Add α] [Preorder α] [ExistsAddOfLE α] :
     ExistsAddOfLE (WithZero α) :=
   ⟨fun {a b} => by
     induction a using WithZero.cases_on
@@ -137,15 +135,15 @@ instance WithZero.instExistsAddOfLE [Add α] [Preorder α] [ExistsAddOfLE α] :
     intro h
     obtain ⟨c, rfl⟩ := exists_add_of_le (WithZero.coe_le_coe.1 h)
     exact ⟨c, rfl⟩⟩
-#align with_zero.has_exists_add_of_le WithZero.instExistsAddOfLE
+#align with_zero.has_exists_add_of_le WithZero.existsAddOfLE
 
 -- This instance looks absurd: a monoid already has a zero
 /-- Adding a new zero to a canonically ordered additive monoid produces another one. -/
-instance WithZero.canonicallyOrderedAddMonoid [CanonicallyOrderedAddMonoid α] :
+instance canonicallyOrderedAddMonoid [CanonicallyOrderedAddMonoid α] :
     CanonicallyOrderedAddMonoid (WithZero α) :=
-  { WithZero.instOrderBotWithZeroToLEInstPreorderWithZero,
+  { WithZero.orderBot,
     WithZero.orderedAddCommMonoid _root_.zero_le,
-    WithZero.instExistsAddOfLE with
+    WithZero.existsAddOfLE with
     le_self_add := fun a b => by
       induction a using WithZero.cases_on
       · exact bot_le
@@ -158,9 +156,11 @@ end CanonicallyOrderedMonoid
 
 section CanonicallyLinearOrderedMonoid
 
-instance WithZero.canonicallyLinearOrderedAddMonoid (α : Type _)
+instance canonicallyLinearOrderedAddMonoid (α : Type _)
     [CanonicallyLinearOrderedAddMonoid α] : CanonicallyLinearOrderedAddMonoid (WithZero α) :=
-  { WithZero.canonicallyOrderedAddMonoid, WithZero.instLinearOrderWithZero with }
+  { WithZero.canonicallyOrderedAddMonoid, WithZero.linearOrder with }
 #align with_zero.canonically_linear_ordered_add_monoid WithZero.canonicallyLinearOrderedAddMonoid
 
 end CanonicallyLinearOrderedMonoid
+
+end WithZero

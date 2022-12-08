@@ -53,12 +53,12 @@ instance [LinearOrderedAddCommGroupWithTop α] :
     mul_inv_cancel := LinearOrderedAddCommGroupWithTop.add_neg_cancel }
 
 instance [LinearOrderedCommMonoid α] : LinearOrderedCommMonoidWithZero (WithZero α) :=
-  { WithZero.instLinearOrderWithZero, WithZero.instCommMonoidWithZeroWithZero with
+  { WithZero.linearOrder, WithZero.commMonoidWithZero with
     mul_le_mul_left := fun _ _ ↦ mul_le_mul_left', zero_le_one := WithZero.zero_le _ }
 #align with_zero.linear_ordered_comm_monoid_with_zero instLinearOrderedCommMonoidWithZeroWithZero
 
 instance [LinearOrderedCommGroup α] : LinearOrderedCommGroupWithZero (WithZero α) :=
-  { instLinearOrderedCommMonoidWithZeroWithZero, WithZero.instCommGroupWithZeroWithZero with }
+  { instLinearOrderedCommMonoidWithZeroWithZero, WithZero.commGroupWithZero with }
 
 section LinearOrderedCommMonoid
 
