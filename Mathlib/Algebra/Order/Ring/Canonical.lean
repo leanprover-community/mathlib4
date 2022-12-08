@@ -88,7 +88,8 @@ variable [CanonicallyOrderedCommSemiring α] {a b : α}
 instance (priority := 100) to_no_zero_divisors : NoZeroDivisors α :=
   ⟨CanonicallyOrderedCommSemiring.eq_zero_or_eq_zero_of_mul_eq_zero _ _⟩
 #align
-  canonically_ordered_comm_semiring.to_no_zero_divisors CanonicallyOrderedCommSemiring.to_no_zero_divisors
+  canonically_ordered_comm_semiring.to_no_zero_divisors
+  CanonicallyOrderedCommSemiring.to_no_zero_divisors
 
 -- see Note [lower instance priority]
 instance (priority := 100) to_covariant_mul_le : CovariantClass α α (· * ·) (· ≤ ·) := by
@@ -97,7 +98,8 @@ instance (priority := 100) to_covariant_mul_le : CovariantClass α α (· * ·) 
   rw [mul_add]
   apply self_le_add_right
 #align
-  canonically_ordered_comm_semiring.to_covariant_mul_le CanonicallyOrderedCommSemiring.to_covariant_mul_le
+  canonically_ordered_comm_semiring.to_covariant_mul_le
+  CanonicallyOrderedCommSemiring.to_covariant_mul_le
 
 -- see Note [lower instance priority]
 instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=
@@ -106,7 +108,8 @@ instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=
     mul_le_mul_of_nonneg_left := fun a b c h _ => mul_le_mul_left' h _,
     mul_le_mul_of_nonneg_right := fun a b c h _ => mul_le_mul_right' h _ }
 #align
-  canonically_ordered_comm_semiring.to_ordered_comm_semiring CanonicallyOrderedCommSemiring.toOrderedCommSemiring
+  canonically_ordered_comm_semiring.to_ordered_comm_semiring
+  CanonicallyOrderedCommSemiring.toOrderedCommSemiring
 
 @[simp]
 theorem mul_pos : 0 < a * b ↔ 0 < a ∧ 0 < b := by
