@@ -504,7 +504,7 @@ theorem not_dvd_of_pos_of_lt (h1 : 0 < n) (h2 : n < m) : ¬m ∣ n := by
 /-- If `m` and `n` are equal mod `k`, `m - n` is zero mod `k`. -/
 theorem sub_mod_eq_zero_of_mod_eq (h : m % k = n % k) : (m - n) % k = 0 := by
   rw [← Nat.mod_add_div m k, ← Nat.mod_add_div n k, ← h, tsub_add_eq_tsub_tsub,
-    add_tsub_cancel_left, ← mul_tsub, Nat.mul_mod_right]
+    add_tsub_cancel_left, ← mul_tsub k, Nat.mul_mod_right]
 #align nat.sub_mod_eq_zero_of_mod_eq Nat.sub_mod_eq_zero_of_mod_eq
 
 @[simp]
@@ -518,12 +518,13 @@ theorem dvd_sub_mod (k : ℕ) : n ∣ k - k % n :=
 
 theorem add_mod_eq_ite :
     (m + n) % k = if k ≤ m % k + n % k then m % k + n % k - k else m % k + n % k := by
-  cases k; · simp
+  cases k; simp [mod_zero]
   rw [Nat.add_mod]
   split_ifs with h
   · rw [Nat.mod_eq_sub_mod h, Nat.mod_eq_of_lt]
     exact
-      (tsub_lt_iff_right h).mpr (Nat.add_lt_add (m.mod_lt k.zero_lt_succ) (n.mod_lt k.zero_lt_succ))
+      (tsub_lt_iff_right h).mpr (Nat.add_lt_add (m.mod_lt (zero_lt_succ _))
+        (n.mod_lt (zero_lt_succ _)))
   · exact Nat.mod_eq_of_lt (lt_of_not_ge h)
 #align nat.add_mod_eq_ite Nat.add_mod_eq_ite
 
@@ -539,25 +540,28 @@ theorem div_mul_div_comm (hmn : n ∣ m) (hkl : l ∣ k) : m / n * (k / l) = m *
       cases' exi1 with x hx
       cases' exi2 with y hy
       rw [hx, hy, Nat.mul_div_cancel_left, Nat.mul_div_cancel_left]
-      symm
+      apply Eq.symm
       apply Nat.div_eq_of_eq_mul_left
       apply mul_pos
       repeat' assumption
-      cc
+      -- Porting note: this line was `cc` in Lean3
+      simp only [mul_comm, mul_left_comm, mul_assoc]
+
 #align nat.div_mul_div_comm Nat.div_mul_div_comm
 
 theorem div_eq_self : m / n = m ↔ m = 0 ∨ n = 1 := by
   constructor
   · intro
-    cases n
-    · simp_all
-    · cases n
-      · right
-        rfl
-      · left
-        have : m / (n + 2) ≤ m / 2 := div_le_div_left (by simp) (by decide)
-        refine' eq_zero_of_le_half _
-        simp_all
+    match n with
+    | 0 => simp_all
+    | 1 =>
+      right
+      rfl
+    | n+2 =>
+      left
+      have : m / (n + 2) ≤ m / 2 := div_le_div_left (by simp) (by decide)
+      refine' eq_zero_of_le_half _
+      simp_all
   · rintro (rfl | rfl) <;> simp
 #align nat.div_eq_self Nat.div_eq_self
 
