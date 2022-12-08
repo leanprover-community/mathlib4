@@ -49,7 +49,8 @@ instance [LinearOrderedAddCommMonoidWithTop α] :
 instance [LinearOrderedAddCommGroupWithTop α] :
     LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) :=
   { Multiplicative.divInvMonoid, instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual,
-    instNontrivialMultiplicative with inv_zero := LinearOrderedAddCommGroupWithTop.neg_top,
+    instNontrivialMultiplicative with
+    inv_zero := LinearOrderedAddCommGroupWithTop.neg_top,
     mul_inv_cancel := LinearOrderedAddCommGroupWithTop.add_neg_cancel }
 
 instance [LinearOrderedCommMonoid α] : LinearOrderedCommMonoidWithZero (WithZero α) :=
@@ -157,7 +158,7 @@ theorem mul_inv_le_iff₀ (hc : c ≠ 0) : a * c⁻¹ ≤ b ↔ a ≤ b * c :=
 theorem div_le_div₀ (a b c d : α) (hb : b ≠ 0) (hd : d ≠ 0) : a * b⁻¹ ≤ c * d⁻¹ ↔ a * d ≤ c * b :=
   if ha : a = 0 then by simp [ha]
   else
-    if hc : c = 0 then by simp [inv_ne_zero hb, hc, hd]
+    if hc : c = 0 then by simp [inv_ne_zero hb, hc, hd, -inv_eq_zero]
     else
       show
         Units.mk0 a ha * (Units.mk0 b hb)⁻¹ ≤ Units.mk0 c hc * (Units.mk0 d hd)⁻¹ ↔
@@ -232,7 +233,8 @@ theorem div_le_div_right₀ (hc : c ≠ 0) : a / c ≤ b / c ↔ a ≤ b := by
 #align div_le_div_right₀ div_le_div_right₀
 
 theorem div_le_div_left₀ (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) : a / b ≤ a / c ↔ c ≤ b := by
-  simp only [div_eq_mul_inv, mul_le_mul_left₀ ha, inv_le_inv₀ hb hc]
+  simp only [div_eq_mul_inv, mul_le_mul_left₀ ha, inv_le_inv₀ hb hc];
+  rfl
 #align div_le_div_left₀ div_le_div_left₀
 
 theorem le_div_iff₀ (hc : c ≠ 0) : a ≤ b / c ↔ a * c ≤ b := by
