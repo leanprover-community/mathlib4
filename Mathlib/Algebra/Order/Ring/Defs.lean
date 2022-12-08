@@ -127,8 +127,13 @@ theorem add_one_le_two_mul [LE α] [Semiring α] [CovariantClass α α (· + ·)
 /-- An `ordered_semiring` is a semiring with a partial order such that addition is monotone and
 multiplication by a nonnegative number is monotone. -/
 class OrderedSemiring (α : Type u) extends Semiring α, OrderedAddCommMonoid α where
+  /-- `0 ≤ 1` in any ordered semiring. -/
   protected zero_le_one : (0 : α) ≤ 1
+  /-- In an ordered semiring, we can multiply an inequality `a ≤ b` on the left
+  by a non-negative element `0 ≤ c` to obtain `c * a ≤ c * b`. -/
   protected mul_le_mul_of_nonneg_left : ∀ a b c : α, a ≤ b → 0 ≤ c → c * a ≤ c * b
+  /-- In an ordered semiring, we can multiply an inequality `a ≤ b` on the right
+  by a non-negative element `0 ≤ c` to obtain `a * c ≤ b * c`. -/
   protected mul_le_mul_of_nonneg_right : ∀ a b c : α, a ≤ b → 0 ≤ c → a * c ≤ b * c
 #align ordered_semiring OrderedSemiring
 
@@ -140,7 +145,9 @@ class OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring
 /-- An `ordered_ring` is a ring with a partial order such that addition is monotone and
 multiplication by a nonnegative number is monotone. -/
 class OrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
+  /-- `0 ≤ 1` in any ordered ring. -/
   protected zero_le_one : 0 ≤ (1 : α)
+  /-- The product of non-negative elements is non-negative. -/
   protected mul_nonneg : ∀ a b : α, 0 ≤ a → 0 ≤ b → 0 ≤ a * b
 #align ordered_ring OrderedRing
 
@@ -153,8 +160,11 @@ class OrderedCommRing (α : Type u) extends OrderedRing α, CommRing α
 strictly monotone and multiplication by a positive number is strictly monotone. -/
 class StrictOrderedSemiring (α : Type u) extends Semiring α, OrderedCancelAddCommMonoid α,
     Nontrivial α where
+  /-- In a strict ordered semiring, `0 ≤ 1`. -/
   protected zero_le_one : (0 : α) ≤ 1
+  /-- Left multiplication by a positive element is strictly monotone. -/
   protected mul_lt_mul_of_pos_left : ∀ a b c : α, a < b → 0 < c → c * a < c * b
+  /-- Right multiplication by a positive element is strictly monotone. -/
   protected mul_lt_mul_of_pos_right : ∀ a b c : α, a < b → 0 < c → a * c < b * c
 #align strict_ordered_semiring StrictOrderedSemiring
 
@@ -166,7 +176,9 @@ class StrictOrderedCommSemiring (α : Type u) extends StrictOrderedSemiring α, 
 /-- A `strict_ordered_ring` is a ring with a partial order such that addition is strictly monotone
 and multiplication by a positive number is strictly monotone. -/
 class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, Nontrivial α where
+  /-- In a strict ordered ring, `0 ≤ 1`. -/
   protected zero_le_one : 0 ≤ (1 : α)
+  /-- The product of two positive elements is positive. -/
   protected mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b
 #align strict_ordered_ring StrictOrderedRing
 
