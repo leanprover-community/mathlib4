@@ -118,10 +118,11 @@ instance monoid [Monoid α] : Monoid (ULift α) :=
   Equiv.ulift.injective.monoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 #align ulift.monoid ULift.monoid
 
-instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (ULift α) where
-  one := ULift.one, ULift.addMonoid with natCast := fun n => ⟨n⟩,
-    nat_cast_zero := congr_arg ULift.up Nat.cast_zero,
-    nat_cast_succ := fun n => congr_arg ULift.up (Nat.cast_succ _) }
+instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (ULift α) :=
+  { ULift.one, ULift.addMonoid with
+      natCast := fun n => ⟨n⟩
+      natCast_zero := congr_arg ULift.up Nat.cast_zero,
+      natCast_succ := fun n => congr_arg ULift.up (Nat.cast_succ _) }
 #align ulift.add_monoid_with_one ULift.addMonoidWithOne
 
 @[simp]
