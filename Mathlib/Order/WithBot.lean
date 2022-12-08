@@ -1044,11 +1044,12 @@ instance preorder [Preorder α] : Preorder (WithTop α) where
     simp_rw [← toDual_le_toDual_iff]
     exact Function.swap le_trans
 
-instance [PartialOrder α] : PartialOrder (WithTop α) :=
+instance partialOrder [PartialOrder α] : PartialOrder (WithTop α) :=
   { WithTop.preorder with
     le_antisymm := fun _ _ => by
       simp_rw [← toDual_le_toDual_iff]
       exact Function.swap le_antisymm }
+#align with_top.partial_order WithTop.partialOrder
 
 theorem coe_strictMono [Preorder α] : StrictMono (fun a : α => (a : WithTop α)) :=
   fun _ _ => some_lt_some.2
