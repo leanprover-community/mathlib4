@@ -14,11 +14,11 @@ import Mathlib.Algebra.Order.Group.Instances
 
 variable {α β : Type _}
 
-/-- Pullback an `ordered_comm_group` under an injective map.
+/-- Pullback an `OrderedCommGroup` under an injective map.
 See note [reducible non-instances]. -/
 @[reducible,
   to_additive
-      "Pullback an `ordered_add_comm_group` under an injective map."]
+      "Pullback an `OrderedAddCommGroup` under an injective map."]
 def Function.Injective.orderedCommGroup [OrderedCommGroup α] {β : Type _} [One β] [Mul β] [Inv β]
     [Div β] [Pow β ℕ] [Pow β ℤ] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
@@ -28,11 +28,11 @@ def Function.Injective.orderedCommGroup [OrderedCommGroup α] {β : Type _} [One
     hf.commGroup f one mul inv div npow zpow with }
 #align function.injective.ordered_comm_group Function.Injective.orderedCommGroup
 
-/-- Pullback a `linear_ordered_comm_group` under an injective map.
+/-- Pullback a `LinearOrderedCommGroup` under an injective map.
 See note [reducible non-instances]. -/
 @[reducible,
   to_additive
-      "Pullback a `linear_ordered_add_comm_group` under an injective map."]
+      "Pullback a `LinearOrderedAddCommGroup` under an injective map."]
 def Function.Injective.linearOrderedCommGroup [LinearOrderedCommGroup α] {β : Type _} [One β]
     [Mul β] [Inv β] [Div β] [Pow β ℕ] [Pow β ℤ] [HasSup β] [HasInf β] (f : β → α)
     (hf : Function.Injective f) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
