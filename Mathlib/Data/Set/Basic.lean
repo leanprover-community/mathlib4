@@ -250,8 +250,7 @@ theorem ext_iff {s t : Set α} : s = t ↔ ∀ x, x ∈ s ↔ x ∈ t :=
   ⟨fun h x => by rw [h], ext⟩
 #align set.ext_iff Set.ext_iff
 
--- Porting note: restore after https://github.com/leanprover-community/mathlib4/pull/857 is merged.
--- @[trans]
+@[trans]
 theorem mem_of_mem_of_subset {x : α} {s t : Set α} (hx : x ∈ s) (h : s ⊆ t) : x ∈ t :=
   h hx
 #align set.mem_of_mem_of_subset Set.mem_of_mem_of_subset
@@ -358,8 +357,7 @@ theorem Subset.rfl {s : Set α} : s ⊆ s :=
 theorem Subset.trans {a b c : Set α} (ab : a ⊆ b) (bc : b ⊆ c) : a ⊆ c := fun _ h => bc <| ab h
 #align set.subset.trans Set.Subset.trans
 
--- Porting note: restore after https://github.com/leanprover-community/mathlib4/pull/857 is merged.
--- @[trans]
+@[trans]
 theorem mem_of_eq_of_mem {x y : α} {s : Set α} (hx : x = y) (h : y ∈ s) : x ∈ s :=
   hx.symm ▸ h
 #align set.mem_of_eq_of_mem Set.mem_of_eq_of_mem
@@ -2055,6 +2053,7 @@ theorem powerset_univ : 𝒫(univ : Set α) = univ :=
 
 --Porting note: New theorem to prove `mem_dite` lemmas.
 -- `simp [h]` where `h : p` does not simplify `∀ (h : p), x ∈ s h` any more.
+-- https://github.com/leanprover/lean4/issues/1926
 theorem mem_dite (p : Prop) [Decidable p] (s : p → Set α) (t : ¬ p → Set α) (x : α) :
     (x ∈ if h : p then s h else t h) ↔ (∀ h : p, x ∈ s h) ∧ ∀ h : ¬p, x ∈ t h := by
   split_ifs with hp
