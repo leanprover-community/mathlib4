@@ -565,12 +565,12 @@ theorem div_eq_self : m / n = m ↔ m = 0 ∨ n = 1 := by
   · rintro (rfl | rfl) <;> simp
 #align nat.div_eq_self Nat.div_eq_self
 
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:132:4: warning: unsupported: rw with cfg: { occs := occurrences.pos[occurrences.pos] «expr[ ,]»([2]) } -/
 theorem div_eq_sub_mod_div : m / n = (m - m % n) / n := by
   by_cases n0 : n = 0
   · rw [n0, Nat.div_zero, Nat.div_zero]
-  · rw [← mod_add_div m n]
-    rw [add_tsub_cancel_left, mul_div_right _ (Nat.pos_of_ne_zero n0)]
+  · have : m - m % n = n * (m / n) := by
+      rw [tsub_eq_iff_eq_add_of_le (Nat.mod_le _ _), add_comm, mod_add_div]
+    rw [this, mul_div_right _ (Nat.pos_of_ne_zero n0)]
 #align nat.div_eq_sub_mod_div Nat.div_eq_sub_mod_div
 
 /-- `m` is not divisible by `n` if it is between `n * k` and `n * (k + 1)` for some `k`. -/
