@@ -122,7 +122,7 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (ULift α) :=
   { ULift.one, ULift.addMonoid with
       natCast := fun n => ⟨n⟩
       natCast_zero := congr_arg ULift.up Nat.cast_zero,
-      natCast_succ := fun n => congr_arg ULift.up (Nat.cast_succ _) }
+      natCast_succ := fun _ => congr_arg ULift.up (Nat.cast_succ _) }
 #align ulift.add_monoid_with_one ULift.addMonoidWithOne
 
 @[simp]
