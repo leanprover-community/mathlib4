@@ -205,41 +205,41 @@ instance commGroupWithZero [CommGroupWithZero α] : CommGroupWithZero (ULift α)
     (fun _ _ => rfl) fun _ _ => rfl
 #align ulift.comm_group_with_zero ULift.commGroupWithZero
 
-@[to_additive AddLeftCancelSemigroup]
+@[to_additive]
 instance leftCancelSemigroup [LeftCancelSemigroup α] : LeftCancelSemigroup (ULift α) :=
   Equiv.ulift.injective.leftCancelSemigroup _ fun _ _ => rfl
 #align ulift.left_cancel_semigroup ULift.leftCancelSemigroup
-#align ulift.add_left_cancel_semigroup ULift.AddLeftCancelSemigroup
+#align ulift.add_left_cancel_semigroup ULift.addLeftCancelSemigroup
 
-@[to_additive AddRightCancelSemigroup]
+@[to_additive]
 instance rightCancelSemigroup [RightCancelSemigroup α] : RightCancelSemigroup (ULift α) :=
   Equiv.ulift.injective.rightCancelSemigroup _ fun _ _ => rfl
 #align ulift.right_cancel_semigroup ULift.rightCancelSemigroup
-#align ulift.add_right_cancel_semigroup ULift.AddRightCancelSemigroup
+#align ulift.add_right_cancel_semigroup ULift.addRightCancelSemigroup
 
-@[to_additive AddLeftCancelMonoid]
+@[to_additive]
 instance leftCancelMonoid [LeftCancelMonoid α] : LeftCancelMonoid (ULift α) :=
   Equiv.ulift.injective.leftCancelMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 #align ulift.left_cancel_monoid ULift.leftCancelMonoid
-#align ulift.add_left_cancel_monoid ULift.AddLeftCancelMonoid
+#align ulift.add_left_cancel_monoid ULift.addLeftCancelMonoid
 
-@[to_additive AddRightCancelMonoid]
+@[to_additive]
 instance rightCancelMonoid [RightCancelMonoid α] : RightCancelMonoid (ULift α) :=
   Equiv.ulift.injective.rightCancelMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 #align ulift.right_cancel_monoid ULift.rightCancelMonoid
-#align ulift.add_right_cancel_monoid ULift.AddRightCancelMonoid
+#align ulift.add_right_cancel_monoid ULift.addRightCancelMonoid
 
-@[to_additive AddCancelMonoid]
+@[to_additive]
 instance cancelMonoid [CancelMonoid α] : CancelMonoid (ULift α) :=
   Equiv.ulift.injective.cancelMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 #align ulift.cancel_monoid ULift.cancelMonoid
-#align ulift.add_cancel_monoid ULift.AddCancelMonoid
+#align ulift.add_cancel_monoid ULift.addCancelMonoid
 
-@[to_additive AddCancelMonoid]
+@[to_additive]
 instance cancelCommMonoid [CancelCommMonoid α] : CancelCommMonoid (ULift α) :=
   Equiv.ulift.injective.cancelCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 #align ulift.cancel_comm_monoid ULift.cancelCommMonoid
-#align ulift.add_cancel_comm_monoid ULift.AddCancelMonoid
+#align ulift.add_cancel_comm_monoid ULift.addCancelMonoid
 
 instance nontrivial [Nontrivial α] : Nontrivial (ULift α) :=
   Equiv.ulift.symm.injective.nontrivial
