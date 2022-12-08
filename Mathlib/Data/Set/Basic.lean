@@ -158,9 +158,13 @@ alias le_iff_subset ↔ _root_.has_le.le.subset _root_.has_subset.subset.le
 
 alias lt_iff_ssubset ↔ _root_.has_lt.lt.ssubset _root_.has_ssubset.ssubset.lt
 
+-- Porting note: I've introduced this abbreviation, with the `@[coe]` attribute,
+-- so that `norm_cast` has something to index on.
+@[coe] abbrev type_of_Set (s : Set α) : Type u := { x // x ∈ s }
+
 /-- Coercion from a set to the corresponding subtype. -/
 instance {α : Type u} : CoeSort (Set α) (Type u) :=
-  ⟨fun s => { x // x ∈ s }⟩
+  ⟨type_of_Set⟩
 
 -- Porting note: the `lift` tactic has not been ported.
 -- instance PiSetCoe.canLift (ι : Type u) (α : ∀ i : ι, Type v) [ne : ∀ i, Nonempty (α i)]
@@ -2219,20 +2223,20 @@ protected def Subsingleton (s : Set α) : Prop :=
   ∀ ⦃x⦄ (_ : x ∈ s) ⦃y⦄ (_ : y ∈ s), x = y
 #align set.subsingleton Set.Subsingleton
 
-theorem Subsingleton.anti (ht : t.Subsingleton) (hst : s ⊆ t) : s.Subsingleton := fun x hx y hy =>
+theorem Subsingleton.anti (ht : t.Subsingleton) (hst : s ⊆ t) : s.Subsingleton := fun _ hx _ hy =>
   ht (hst hx) (hst hy)
 #align set.subsingleton.anti Set.Subsingleton.anti
 
 theorem Subsingleton.eq_singleton_of_mem (hs : s.Subsingleton) {x : α} (hx : x ∈ s) : s = {x} :=
-  ext fun y => ⟨fun hy => hs hx hy ▸ mem_singleton _, fun hy => (eq_of_mem_singleton hy).symm ▸ hx⟩
+  ext fun _ => ⟨fun hy => hs hx hy ▸ mem_singleton _, fun hy => (eq_of_mem_singleton hy).symm ▸ hx⟩
 #align set.subsingleton.eq_singleton_of_mem Set.Subsingleton.eq_singleton_of_mem
 
 @[simp]
-theorem subsingleton_empty : (∅ : Set α).Subsingleton := fun x => False.elim
+theorem subsingleton_empty : (∅ : Set α).Subsingleton := fun _ => False.elim
 #align set.subsingleton_empty Set.subsingleton_empty
 
 @[simp]
-theorem subsingleton_singleton {a} : ({a} : Set α).Subsingleton := fun x hx y hy =>
+theorem subsingleton_singleton {a} : ({a} : Set α).Subsingleton := fun _ hx _ hy =>
   (eq_of_mem_singleton hx).symm ▸ (eq_of_mem_singleton hy).symm ▸ rfl
 #align set.subsingleton_singleton Set.subsingleton_singleton
 
@@ -2240,7 +2244,7 @@ theorem subsingleton_of_subset_singleton (h : s ⊆ {a}) : s.Subsingleton :=
   subsingleton_singleton.anti h
 #align set.subsingleton_of_subset_singleton Set.subsingleton_of_subset_singleton
 
-theorem subsingleton_of_forall_eq (a : α) (h : ∀ b ∈ s, b = a) : s.Subsingleton := fun b hb c hc =>
+theorem subsingleton_of_forall_eq (a : α) (h : ∀ b ∈ s, b = a) : s.Subsingleton := fun _ hb _ hc =>
   (h _ hb).trans (h _ hc).symm
 #align set.subsingleton_of_forall_eq Set.subsingleton_of_forall_eq
 
@@ -2255,10 +2259,10 @@ theorem Subsingleton.eq_empty_or_singleton (hs : s.Subsingleton) : s = ∅ ∨ �
 theorem Subsingleton.induction_on {p : Set α → Prop} (hs : s.Subsingleton) (he : p ∅)
     (h₁ : ∀ x, p {x}) : p s := by
   rcases hs.eq_empty_or_singleton with (rfl | ⟨x, rfl⟩)
-  exacts[he, h₁ _]
+  exacts [he, h₁ _]
 #align set.subsingleton.induction_on Set.Subsingleton.induction_on
 
-theorem subsingleton_univ [Subsingleton α] : (univ : Set α).Subsingleton := fun x hx y hy =>
+theorem subsingleton_univ [Subsingleton α] : (univ : Set α).Subsingleton := fun x _ y _ =>
   Subsingleton.elim x y
 #align set.subsingleton_univ Set.subsingleton_univ
 
@@ -2276,11 +2280,11 @@ theorem subsingleton_of_subsingleton [Subsingleton α] {s : Set α} : Set.Subsin
 #align set.subsingleton_of_subsingleton Set.subsingleton_of_subsingleton
 
 theorem subsingleton_is_top (α : Type _) [PartialOrder α] : Set.Subsingleton { x : α | IsTop x } :=
-  fun x hx y hy => hx.isMax.eq_of_le (hy x)
+  fun x hx _ hy => hx.isMax.eq_of_le (hy x)
 #align set.subsingleton_is_top Set.subsingleton_is_top
 
 theorem subsingleton_is_bot (α : Type _) [PartialOrder α] : Set.Subsingleton { x : α | IsBot x } :=
-  fun x hx y hy => hx.isMin.eq_of_ge (hy x)
+  fun x hx _ hy => hx.isMin.eq_of_ge (hy x)
 #align set.subsingleton_is_bot Set.subsingleton_is_bot
 
 theorem exists_eq_singleton_iff_nonempty_subsingleton :
@@ -2314,34 +2318,35 @@ instance subsingleton_coe_of_subsingleton [Subsingleton α] {s : Set α} : Subsi
 
 /-! ### Nontrivial -/
 
-
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (x y «expr ∈ » s) -/
 /-- A set `s` is `nontrivial` if it has at least two distinct elements. -/
 protected def Nontrivial (s : Set α) : Prop :=
-  ∃ (x y : _)(_ : x ∈ s)(_ : y ∈ s), x ≠ y
+  ∃ (x : α) (_ : x ∈ s) (y : α) (_ : y ∈ s), x ≠ y
 #align set.nontrivial Set.Nontrivial
 
 theorem nontrivial_of_mem_mem_ne {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy : x ≠ y) : s.Nontrivial :=
   ⟨x, hx, y, hy, hxy⟩
 #align set.nontrivial_of_mem_mem_ne Set.nontrivial_of_mem_mem_ne
 
+-- Porting note:
+-- following the pattern for `Exists`, we have renamed `choose` to `some`.
+
 /-- Extract witnesses from s.nontrivial. This function might be used instead of case analysis on the
 argument. Note that it makes a proof depend on the classical.choice axiom. -/
-protected noncomputable def Nontrivial.some (hs : s.Nontrivial) : α × α :=
-  (hs.some, hs.some_spec.some_spec.some)
-#align set.nontrivial.some Set.Nontrivial.some
+protected noncomputable def Nontrivial.choose (hs : s.Nontrivial) : α × α :=
+  (Exists.choose hs, hs.choose_spec.choose_spec.choose)
+#align set.nontrivial.some Set.Nontrivial.choose
 
-protected theorem Nontrivial.some_fst_mem (hs : s.Nontrivial) : hs.some.fst ∈ s :=
-  hs.some_spec.some
-#align set.nontrivial.some_fst_mem Set.Nontrivial.some_fst_mem
+protected theorem Nontrivial.choose_fst_mem (hs : s.Nontrivial) : hs.choose.fst ∈ s :=
+  hs.choose_spec.choose
+#align set.nontrivial.some_fst_mem Set.Nontrivial.choose_fst_mem
 
-protected theorem Nontrivial.some_snd_mem (hs : s.Nontrivial) : hs.some.snd ∈ s :=
-  hs.some_spec.some_spec.some_spec.some
-#align set.nontrivial.some_snd_mem Set.Nontrivial.some_snd_mem
+protected theorem Nontrivial.choose_snd_mem (hs : s.Nontrivial) : hs.choose.snd ∈ s :=
+  hs.choose_spec.choose_spec.choose_spec.choose
+#align set.nontrivial.some_snd_mem Set.Nontrivial.choose_snd_mem
 
-protected theorem Nontrivial.some_fst_ne_some_snd (hs : s.Nontrivial) : hs.some.fst ≠ hs.some.snd :=
-  hs.some_spec.some_spec.some_spec.some_spec
-#align set.nontrivial.some_fst_ne_some_snd Set.Nontrivial.some_fst_ne_some_snd
+protected theorem Nontrivial.choose_fst_ne_choose_snd (hs : s.Nontrivial) : hs.choose.fst ≠ hs.choose.snd :=
+  hs.choose_spec.choose_spec.choose_spec.choose_spec
+#align set.nontrivial.some_fst_ne_some_snd Set.Nontrivial.choose_fst_ne_choose_snd
 
 theorem Nontrivial.mono (hs : s.Nontrivial) (hst : s ⊆ t) : t.Nontrivial :=
   let ⟨x, hx, y, hy, hxy⟩ := hs
@@ -2356,7 +2361,7 @@ theorem nontrivial_of_pair_subset {x y} (hxy : x ≠ y) (h : {x, y} ⊆ s) : s.N
   (nontrivial_pair hxy).mono h
 #align set.nontrivial_of_pair_subset Set.nontrivial_of_pair_subset
 
-theorem Nontrivial.pair_subset (hs : s.Nontrivial) : ∃ (x y : _) (hab : x ≠ y), {x, y} ⊆ s :=
+theorem Nontrivial.pair_subset (hs : s.Nontrivial) : ∃ (x y : _) (_ : x ≠ y), {x, y} ⊆ s :=
   let ⟨x, hx, y, hy, hxy⟩ := hs
   ⟨x, y, hxy, insert_subset.2 ⟨hx, singleton_subset_iff.2 hy⟩⟩
 #align set.nontrivial.pair_subset Set.Nontrivial.pair_subset
@@ -2388,23 +2393,20 @@ theorem nontrivial_of_lt [Preorder α] {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy 
   ⟨x, hx, y, hy, ne_of_lt hxy⟩
 #align set.nontrivial_of_lt Set.nontrivial_of_lt
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (x y «expr ∈ » s) -/
-theorem nontrivial_of_exists_lt [Preorder α] (H : ∃ (x y : _)(_ : x ∈ s)(_ : y ∈ s), x < y) :
+theorem nontrivial_of_exists_lt [Preorder α] (H : ∃ (x : α) (_ : x ∈ s) (y : α) (_ : y ∈ s), x < y) :
     s.Nontrivial :=
-  let ⟨x, hx, y, hy, hxy⟩ := H
+  let ⟨_, hx, _, hy, hxy⟩ := H
   nontrivial_of_lt hx hy hxy
 #align set.nontrivial_of_exists_lt Set.nontrivial_of_exists_lt
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (x y «expr ∈ » s) -/
 theorem Nontrivial.exists_lt [LinearOrder α] (hs : s.Nontrivial) :
-    ∃ (x y : _)(_ : x ∈ s)(_ : y ∈ s), x < y :=
+    ∃ (x : α) (_ : x ∈ s) (y : α) (_ : y ∈ s), x < y :=
   let ⟨x, hx, y, hy, hxy⟩ := hs
   Or.elim (lt_or_gt_of_ne hxy) (fun H => ⟨x, hx, y, hy, H⟩) fun H => ⟨y, hy, x, hx, H⟩
 #align set.nontrivial.exists_lt Set.Nontrivial.exists_lt
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (x y «expr ∈ » s) -/
 theorem nontrivial_iff_exists_lt [LinearOrder α] :
-    s.Nontrivial ↔ ∃ (x y : _)(_ : x ∈ s)(_ : y ∈ s), x < y :=
+    s.Nontrivial ↔ ∃ (x : α) (_ : x ∈ s) (y : α) (_ : y ∈ s), x < y :=
   ⟨Nontrivial.exists_lt, nontrivial_of_exists_lt⟩
 #align set.nontrivial_iff_exists_lt Set.nontrivial_iff_exists_lt
 
@@ -2497,7 +2499,11 @@ alias not_nontrivial_iff ↔ _ Subsingleton.not_nontrivial
 alias not_subsingleton_iff ↔ _ Nontrivial.not_subsingleton
 
 theorem univ_eq_true_false : univ = ({True, False} : Set Prop) :=
-  Eq.symm <| eq_univ_of_forall <| Classical.cases (by simp) (by simp)
+  Eq.symm <| eq_univ_of_forall <| fun x => by classical
+    if h : x then
+      simp [h]
+    else
+      simp [h]
 #align set.univ_eq_true_false Set.univ_eq_true_false
 
 section Preorder
@@ -2567,31 +2573,31 @@ section LinearOrder
 
 variable [LinearOrder α] [LinearOrder β] {f : α → β}
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (a b c «expr ∈ » s) -/
 /-- A function between linear orders which is neither monotone nor antitone makes a dent upright or
 downright. -/
 theorem not_monotone_on_not_antitone_on_iff_exists_le_le :
     ¬MonotoneOn f s ∧ ¬AntitoneOn f s ↔
-      ∃ (a b c : _)(_ : a ∈ s)(_ : b ∈ s)(_ : c ∈ s),
+      ∃ (a : α) (_ : a ∈ s) (b : α) (_ : b ∈ s) (c : α) (_ : c ∈ s),
         a ≤ b ∧ b ≤ c ∧ (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) :=
   by
-  simp [monotone_on_iff_monotone, antitone_on_iff_antitone, and_assoc', exists_and_left,
+  simp [monotone_on_iff_monotone, antitone_on_iff_antitone, and_assoc, exists_and_left,
     not_monotone_not_antitone_iff_exists_le_le, @and_left_comm (_ ∈ s)]
 #align
-  set.not_monotone_on_not_antitone_on_iff_exists_le_le Set.not_monotone_on_not_antitone_on_iff_exists_le_le
+  set.not_monotone_on_not_antitone_on_iff_exists_le_le
+  Set.not_monotone_on_not_antitone_on_iff_exists_le_le
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (a b c «expr ∈ » s) -/
 /-- A function between linear orders which is neither monotone nor antitone makes a dent upright or
 downright. -/
 theorem not_monotone_on_not_antitone_on_iff_exists_lt_lt :
     ¬MonotoneOn f s ∧ ¬AntitoneOn f s ↔
-      ∃ (a b c : _)(_ : a ∈ s)(_ : b ∈ s)(_ : c ∈ s),
+      ∃ (a : α) (_ : a ∈ s) (b : α) (_ : b ∈ s) (c : α) (_ : c ∈ s),
         a < b ∧ b < c ∧ (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) :=
   by
-  simp [monotone_on_iff_monotone, antitone_on_iff_antitone, and_assoc', exists_and_left,
+  simp [monotone_on_iff_monotone, antitone_on_iff_antitone, and_assoc, exists_and_left,
     not_monotone_not_antitone_iff_exists_lt_lt, @and_left_comm (_ ∈ s)]
 #align
-  set.not_monotone_on_not_antitone_on_iff_exists_lt_lt Set.not_monotone_on_not_antitone_on_iff_exists_lt_lt
+  set.not_monotone_on_not_antitone_on_iff_exists_lt_lt
+  Set.not_monotone_on_not_antitone_on_iff_exists_lt_lt
 
 end LinearOrder
 
@@ -2730,56 +2736,5 @@ instance decidableUniv : DecidablePred (· ∈ (Set.univ : Set α)) := fun _ =>
 instance decidableSetOf (p : α → Prop) [Decidable (p a)] : Decidable (a ∈ { a | p a }) := by
   assumption
 #align set.decidable_set_of Set.decidableSetOf
-
-end Set
-
-/-! ### Indicator function valued in bool -/
-
-
-open Bool
-
-namespace Set
-
-variable {α : Type _} (s : Set α)
-
-/-- `bool_indicator` maps `x` to `tt` if `x ∈ s`, else to `ff` -/
-noncomputable def boolIndicator (x : α) :=
-  @ite _ (x ∈ s) (Classical.propDecidable _) true false
-#align set.bool_indicator Set.boolIndicator
-
-theorem mem_iff_bool_indicator (x : α) : x ∈ s ↔ s.boolIndicator x = tt := by
-  unfold bool_indicator
-  split_ifs <;> tauto
-#align set.mem_iff_bool_indicator Set.mem_iff_bool_indicator
-
-theorem not_mem_iff_bool_indicator (x : α) : x ∉ s ↔ s.boolIndicator x = ff := by
-  unfold bool_indicator
-  split_ifs <;> tauto
-#align set.not_mem_iff_bool_indicator Set.not_mem_iff_bool_indicator
-
-theorem preimage_bool_indicator_tt : s.boolIndicator ⁻¹' {true} = s :=
-  ext fun x => (s.mem_iff_bool_indicator x).symm
-#align set.preimage_bool_indicator_tt Set.preimage_bool_indicator_tt
-
-theorem preimage_bool_indicator_ff : s.boolIndicator ⁻¹' {false} = sᶜ :=
-  ext fun x => (s.not_mem_iff_bool_indicator x).symm
-#align set.preimage_bool_indicator_ff Set.preimage_bool_indicator_ff
-
-open Classical
-
-theorem preimage_bool_indicator_eq_union (t : Set Bool) :
-    s.boolIndicator ⁻¹' t = (if tt ∈ t then s else ∅) ∪ if ff ∈ t then sᶜ else ∅ := by
-  ext x
-  dsimp [bool_indicator]
-  split_ifs <;> tauto
-#align set.preimage_bool_indicator_eq_union Set.preimage_bool_indicator_eq_union
-
-theorem preimage_bool_indicator (t : Set Bool) :
-    s.boolIndicator ⁻¹' t = univ ∨
-      s.boolIndicator ⁻¹' t = s ∨ s.boolIndicator ⁻¹' t = sᶜ ∨ s.boolIndicator ⁻¹' t = ∅ :=
-  by
-  simp only [preimage_bool_indicator_eq_union]
-  split_ifs <;> simp [s.union_compl_self]
-#align set.preimage_bool_indicator Set.preimage_bool_indicator
 
 end Set
