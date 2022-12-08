@@ -43,11 +43,13 @@ instance [LinearOrderedAddCommMonoidWithTop α] :
   { Multiplicative.orderedCommMonoid, Multiplicative.linearOrder with
     zero := Multiplicative.ofAdd (⊤ : α), zero_mul := top_add, mul_zero := add_top,
     zero_le_one := (le_top : (0 : α) ≤ ⊤) }
+#align multiplicative.linear_ordered_comm_monoid_with_zero
+  instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
 
 instance [LinearOrderedAddCommGroupWithTop α] :
     LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) :=
-  { Multiplicative.divInvMonoid, Multiplicative.linearOrderedCommMonoidWithZero,
-    Multiplicative.nontrivial with inv_zero := LinearOrderedAddCommGroupWithTop.neg_top,
+  { Multiplicative.divInvMonoid, instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual,
+    instNontrivialMultiplicative with inv_zero := LinearOrderedAddCommGroupWithTop.neg_top,
     mul_inv_cancel := LinearOrderedAddCommGroupWithTop.add_neg_cancel }
 
 instance [LinearOrderedCommMonoid α] : LinearOrderedCommMonoidWithZero (WithZero α) :=

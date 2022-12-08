@@ -137,6 +137,7 @@ instance [Nontrivial α] : Nontrivial (Additive α) :=
 
 instance [Nontrivial α] : Nontrivial (Multiplicative α) :=
   ofAdd.injective.nontrivial
+#align multiplicative.nontrivial instNontrivialMultiplicative
 
 instance Additive.add [Mul α] : Add (Additive α) where
   add x y := ofMul (toMul x * toMul y)
