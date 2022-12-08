@@ -62,9 +62,9 @@ def lift :
   invFun F := F.toMulHom.comp coeMulHom
   left_inv f := MulHom.ext fun x => rfl
   right_inv F := MonoidHom.ext fun x => WithOne.cases_on x F.map_one.symm (fun x => rfl)
+-- porting note: the above proofs were broken because they were parenthesized wrong by mathport?
 #align with_one.lift WithOne.lift
 #align with_zero.lift WithZero.lift
--- porting note: the above proofs were broken because they were parenthesized wrong by mathport?
 
 variable (f : α →ₙ* β)
 
@@ -74,7 +74,8 @@ theorem lift_coe (x : α) : lift f x = f x :=
 #align with_one.lift_coe WithOne.lift_coe
 #align with_zero.lift_coe WithZero.lift_coe
 
-@[simp, to_additive]
+-- porting note: removed `simp` attribute to appease `simpNF` linter.
+@[to_additive]
 theorem lift_one : lift f 1 = 1 :=
   rfl
 #align with_one.lift_one WithOne.lift_one
@@ -132,6 +133,7 @@ def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :
   { map e.toMulHom with
     toFun := map e.toMulHom, invFun := map e.symm.toMulHom,
     left_inv := fun x => (map_map _ _ _).trans <| by
+      -- porting note: in mathlib3 this worked as: `induction x using WithOne.cases_on <;> simp`
       induction x using WithOne.cases_on
       · simp
       · simp only [map_coe, MulHom.coe_mk, map_comp, MonoidHom.coe_comp, Function.comp_apply,
@@ -140,6 +142,7 @@ def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :
       -- porting note: I think because of the way coercions are handled, this doesn't get changed
       -- by `simp` into something where `Equiv.symm_apply_apply` automatically applies.
     right_inv := fun x => (map_map _ _ _).trans <| by
+      -- porting note: in mathlib3 this worked as: `induction x using WithOne.cases_on <;> simp`
       induction x using WithOne.cases_on
       · simp
       · simp only [map_coe, MulHom.coe_mk, MulEquiv.toEquiv_symm, map_comp, MonoidHom.coe_comp,
@@ -149,7 +152,7 @@ def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :
 #align add_equiv.with_zero_congr AddEquiv.withZeroCongr
 
 -- porting note: for this declaration and the two below I added the `to_additive` attribute because
--- it seemed to be mising from mathlib3, hence the lack of additive `#align`s.
+-- it seemed to be missing from mathlib3, hence the lack of additive `#align`s.
 @[simp, to_additive]
 theorem _root_.MulEquiv.withOneCongr_refl : (MulEquiv.refl α).withOneCongr = MulEquiv.refl _ :=
   MulEquiv.to_monoidHom_injective map_id
