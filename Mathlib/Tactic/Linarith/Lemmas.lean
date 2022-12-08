@@ -6,7 +6,7 @@ Ported by: Scott Morrison
 -/
 import Std.Tactic.Simpa
 import Std.Tactic.Lint.Basic
-import Mathlib.Algebra.Order.Ring
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Algebra.Order.ZeroLEOne
@@ -89,15 +89,3 @@ theorem lt_zero_of_zero_gt [Zero α] [LT α] {a : α} (h : 0 > a) : a < 0 := h
 theorem le_zero_of_zero_ge [Zero α] [LE α] {a : α} (h : 0 ≥ a) : a ≤ 0 := h
 
 theorem sq_nonneg [LinearOrderedRing R] (a : R) : 0 ≤ a ^ 2 := sorry
-
-theorem mul_self_nonneg [LinearOrderedRing R] (a : R) : 0 ≤ a * a := sorry
-
-@[nolint unusedArguments]
-theorem mul_pos_of_neg_of_neg [StrictOrderedRing R] {a b : R} (ha : a < 0) (hb : b < 0) :
-    0 < a * b :=
-  sorry
-
-@[nolint unusedArguments]
-theorem mul_nonneg_of_nonpos_of_nonpos [OrderedRing R] {a b : R} (ha : a ≤ 0) (hb : b ≤ 0) :
-    0 ≤ a * b :=
-  sorry

@@ -106,6 +106,8 @@ immediate predecessors and what conditions are added to each of them.
 
 -/
 
+-- FIXME remove before merge
+set_option warningAsError false
 
 open Function
 
