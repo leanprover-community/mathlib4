@@ -406,7 +406,7 @@ theorem coe_inf [SemilatticeInf α] (a b : α) : ((a ⊓ b : α) : WithBot α) =
 instance lattice [Lattice α] : Lattice (WithBot α) :=
   { WithBot.semilatticeSup, WithBot.semilatticeInf with }
 
-instance instDistribLattice [DistribLattice α] : DistribLattice (WithBot α) :=
+instance distribLattice [DistribLattice α] : DistribLattice (WithBot α) :=
   { WithBot.lattice with
     le_sup_inf := fun o₁ o₂ o₃ =>
       match o₁, o₂, o₃ with
@@ -1101,7 +1101,7 @@ theorem map_le_iff [Preorder α] [Preorder β] (f : α → β) (a b : WithTop α
 #align with_top.map_le_iff WithTop.map_le_iff
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) :=
-  { instPartialOrderWithTop with
+  { WithTop.partialOrder with
     inf := Option.liftOrGet (· ⊓ ·),
     inf_le_left := fun o₁ o₂ a ha => by cases ha ; cases o₂ <;> simp [Option.liftOrGet],
     inf_le_right := fun o₁ o₂ a ha => by cases ha ; cases o₁ <;> simp [Option.liftOrGet],
@@ -1121,7 +1121,7 @@ theorem coe_inf [SemilatticeInf α] (a b : α) : ((a ⊓ b : α) : WithTop α) =
 #align with_top.coe_inf WithTop.coe_inf
 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithTop α) :=
-  { instPartialOrderWithTop with
+  { WithTop.partialOrder with
     sup := fun o₁ o₂ => o₁.bind fun a => o₂.map fun b => a ⊔ b,
     le_sup_left := fun o₁ o₂ a ha => by
       simp [map] at ha
