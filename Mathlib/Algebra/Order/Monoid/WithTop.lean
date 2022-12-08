@@ -183,39 +183,58 @@ instance contravariantClass_swap_add_lt [LT α] [ContravariantClass α α (swap 
 
 protected theorem le_of_add_le_add_left [LE α] [ContravariantClass α α (· + ·) (· ≤ ·)] (ha : a ≠ ⊤)
     (h : a + b ≤ a + c) : b ≤ c := by
-  lift a to α using ha
-  induction c using WithTop.recTopCoe; · exact le_top
-  induction b using WithTop.recTopCoe; · exact (not_top_le_coe _ h).elim
-  simp only [← coe_add, coe_le_coe] at h ⊢
-  exact le_of_add_le_add_left h
+  -- Porting notes : `lift` not implemented yet.
+  -- (This would replace the first two lines)
+  -- -- lift a to α using ha
+  induction a using WithTop.recTopCoe
+  · contradiction
+  · induction c using WithTop.recTopCoe
+    · exact le_top
+    · induction b using WithTop.recTopCoe
+      · exact (not_top_le_coe _ h).elim
+      · simp only [← coe_add, coe_le_coe] at h ⊢
+        exact le_of_add_le_add_left h
+
 #align with_top.le_of_add_le_add_left WithTop.le_of_add_le_add_left
 
 protected theorem le_of_add_le_add_right [LE α] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (ha : a ≠ ⊤) (h : b + a ≤ c + a) : b ≤ c := by
-  lift a to α using ha
-  cases c
-  · exact le_top
-  cases b
-  · exact (not_top_le_coe _ h).elim
-  · exact coe_le_coe.2 (le_of_add_le_add_right <| coe_le_coe.1 h)
+  -- Porting notes : `lift` not implemented yet.
+  -- First two lines could be replaced with:
+  -- lift a to α using ha
+  induction a using WithTop.recTopCoe
+  · contradiction
+  · cases c
+    · exact le_top
+    · cases b
+      · exact (not_top_le_coe _ h).elim
+      · exact coe_le_coe.2 (le_of_add_le_add_right <| coe_le_coe.1 h)
 #align with_top.le_of_add_le_add_right WithTop.le_of_add_le_add_right
 
 protected theorem add_lt_add_left [LT α] [CovariantClass α α (· + ·) (· < ·)] (ha : a ≠ ⊤)
     (h : b < c) : a + b < a + c := by
-  lift a to α using ha
-  rcases lt_iff_exists_coe.1 h with ⟨b, rfl, h'⟩
-  cases c
-  · exact coe_lt_top _
-  · exact coe_lt_coe.2 (add_lt_add_left (coe_lt_coe.1 h) _)
+  -- Porting notes : `lift` not implemented yet.
+  -- First two lines could be replaced with:
+  -- lift a to α using ha
+  induction a using WithTop.recTopCoe
+  · contradiction
+  · rcases lt_iff_exists_coe.1 h with ⟨b, rfl, h'⟩
+    cases c
+    · exact coe_lt_top _
+    · exact coe_lt_coe.2 (add_lt_add_left (coe_lt_coe.1 h) _)
 #align with_top.add_lt_add_left WithTop.add_lt_add_left
 
 protected theorem add_lt_add_right [LT α] [CovariantClass α α (swap (· + ·)) (· < ·)] (ha : a ≠ ⊤)
     (h : b < c) : b + a < c + a := by
-  lift a to α using ha
-  rcases lt_iff_exists_coe.1 h with ⟨b, rfl, h'⟩
-  cases c
-  · exact coe_lt_top _
-  · exact coe_lt_coe.2 (add_lt_add_right (coe_lt_coe.1 h) _)
+  -- Porting notes : `lift` not implemented yet.
+  -- First two lines could be replaced with:
+  -- lift a to α using ha
+  induction a using WithTop.recTopCoe
+  · contradiction
+  · rcases lt_iff_exists_coe.1 h with ⟨b, rfl, h'⟩
+    cases c
+    · exact coe_lt_top _
+    · exact coe_lt_coe.2 (add_lt_add_right (coe_lt_coe.1 h) _)
 #align with_top.add_lt_add_right WithTop.add_lt_add_right
 
 protected theorem add_le_add_iff_left [LE α] [CovariantClass α α (· + ·) (· ≤ ·)]
@@ -317,10 +336,13 @@ instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithTop α) :=
 
 instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithTop α) :=
   { WithTop.one, WithTop.addMonoid with
-    -- Porting notes: TODO That seems wrong to just comment these out. Fix me!
-    --natCast := fun n => ↑(n : α),
-    --nat_cast_zero := by rw [Nat.cast_zero, WithTop.coe_zero],
-    --nat_cast_succ := fun n => by rw [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one]
+    natCast := fun n => ↑(n : α),
+    natCast_zero := by
+      simp only -- Porting note: This just applies the function, why is this needed?
+      rw [Nat.cast_zero, WithTop.coe_zero],
+    natCast_succ := fun n => by
+      simp only -- Porting note: This just applies the function, why is this needed?
+      rw [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one]
   }
 
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithTop α) :=
@@ -379,13 +401,18 @@ theorem top_ne_nat [AddMonoidWithOne α] (n : ℕ) : (⊤ : WithTop α) ≠ n :=
 
 /-- Coercion from `α` to `with_top α` as an `add_monoid_hom`. -/
 def coeAddHom [AddMonoid α] : α →+ WithTop α :=
-  ⟨coe, rfl, fun _ _ => rfl⟩
+  -- Porting note: why does the old proof not work?
+  -- ⟨WithTop.some, rfl, fun _ _ => rfl⟩
+  { toFun := WithTop.some,
+    map_zero' := rfl,
+    map_add' := fun _ _ => rfl }
 #align with_top.coe_add_hom WithTop.coeAddHom
 
-@[simp]
-theorem coe_coe_add_hom [AddMonoid α] : ⇑(coeAddHom : α →+ WithTop α) = coe :=
-  rfl
-#align with_top.coe_coe_add_hom WithTop.coe_coe_add_hom
+-- Porting note: It seems like that kind of lemmas is not needed anymore.
+-- @[simp]
+-- theorem coe_coe_add_hom [AddMonoid α] : (coeAddHom : α →+ WithTop α).toFun = WithTop.some :=
+--   rfl
+-- #align with_top.coe_coe_add_hom WithTop.coe_coe_add_hom
 
 @[simp]
 theorem zero_lt_top [OrderedAddCommMonoid α] : (0 : WithTop α) < ⊤ :=
@@ -398,7 +425,7 @@ theorem zero_lt_coe [OrderedAddCommMonoid α] (a : α) : (0 : WithTop α) < a �
 #align with_top.zero_lt_coe WithTop.zero_lt_coe
 
 /-- A version of `WithTop.map` for `OneHom`s. -/
-@[to_additive WithTop.ZeroHom.withTopMap "A version of `WithTop.map` for `ZeroHom`s",
+@[to_additive "A version of `WithTop.map` for `ZeroHom`s",
   simps (config := { fullyApplied := false })]
 protected def _root_.OneHom.withTopMap {M N : Type _} [One M] [One N] (f : OneHom M N) :
     OneHom (WithTop M) (WithTop N) where
