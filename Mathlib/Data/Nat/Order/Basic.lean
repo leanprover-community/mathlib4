@@ -265,7 +265,7 @@ theorem lt_pred_iff : n < pred m ↔ succ n < m :=
 theorem lt_of_lt_pred (h : m < n - 1) : m < n :=
   lt_of_succ_lt (lt_pred_iff.1 h)
 #align nat.lt_of_lt_pred Nat.lt_of_lt_pred
-#print Nat.add_sub_assoc
+
 theorem le_or_le_of_add_eq_add_pred (h : k + l = m + n - 1) : m ≤ k ∨ n ≤ l := by
   cases' le_or_lt m k with h' h' <;> [left, right]
   · exact h'
@@ -388,7 +388,7 @@ theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)
 /-- A subset of `ℕ` containing `k : ℕ` and closed under `nat.succ` contains every `n ≥ k`. -/
 theorem set_induction_bounded {S : Set ℕ} (hk : k ∈ S) (h_ind : ∀ k : ℕ, k ∈ S → k + 1 ∈ S)
     (hnk : k ≤ n) : n ∈ S :=
-  @leRecOn (fun n => n ∈ S) k n hnk h_ind hk
+  @leRecOn (fun n => n ∈ S) k n hnk @h_ind hk
 #align nat.set_induction_bounded Nat.set_induction_bounded
 
 /-- A subset of `ℕ` containing zero and closed under `nat.succ` contains all of `ℕ`. -/
@@ -439,10 +439,11 @@ theorem div_mul_div_le_div (m n k : ℕ) : m / k * n / m ≤ n / k :=
   else
     calc
       m / k * n / m ≤ n * m / k / m :=
-        Nat.div_le_div_right (by rw [mul_comm] <;> exact mul_div_le_mul_div_assoc _ _ _)
+        Nat.div_le_div_right (by rw [mul_comm] ; exact mul_div_le_mul_div_assoc _ _ _)
       _ = n / k := by
-        rw [Nat.div_div_eq_div_mul, mul_comm n, mul_comm k,
-          Nat.mul_div_mul _ _ (Nat.pos_of_ne_zero hm0)]
+        { rw [Nat.div_div_eq_div_mul, mul_comm n, mul_comm k,
+            Nat.mul_div_mul _ _ (Nat.pos_of_ne_zero hm0)] }
+
 
 #align nat.div_mul_div_le_div Nat.div_mul_div_le_div
 
@@ -479,9 +480,11 @@ protected theorem div_div_self (h : n ∣ m) (hm : m ≠ 0) : m / (m / n) = n :=
   rw [mul_div_right _ (Nat.pos_of_ne_zero hm.1), mul_div_left _ (Nat.pos_of_ne_zero hm.2)]
 #align nat.div_div_self Nat.div_div_self
 
+--Porting note: later `simp [mod_zero]` can be changed to `simp` once `mod_zero` is given
+--a `simp` attribute.
 theorem mod_mul_right_div_self (m n k : ℕ) : m % (n * k) / n = m / n % k := by
-  rcases Nat.eq_zero_or_pos n with (rfl | hn); · simp
-  rcases Nat.eq_zero_or_pos k with (rfl | hk); · simp
+  rcases Nat.eq_zero_or_pos n with (rfl | hn); simp [mod_zero]
+  rcases Nat.eq_zero_or_pos k with (rfl | hk); simp [mod_zero]
   conv_rhs => rw [← mod_add_div m (n * k)]
   rw [mul_assoc, add_mul_div_left _ _ hn, add_mul_mod_self_left,
     mod_eq_of_lt (Nat.div_lt_of_lt_mul (mod_lt _ (mul_pos hn hk)))]
