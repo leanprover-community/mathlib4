@@ -5,6 +5,9 @@ Authors: Daniel Selsam, Mario Carneiro
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Logic
+import Mathlib.Tactic.Relation.Rfl
+import Mathlib.Tactic.Relation.Symm
+import Mathlib.Tactic.Relation.Trans
 
 /-!
 # Realignments from lean 3 `init`
@@ -166,9 +169,9 @@ set_option align.precheck false in #align nat.to_digits Nat.toDigits'
 
 /-! ## `init.data.setoid` -/
 
--- attribute [refl] Setoid.refl
--- attribute [symm] Setoid.symm
--- attribute [trans] Setoid.trans
+attribute [refl] Setoid.refl
+attribute [symm] Setoid.symm
+attribute [trans] Setoid.trans
 
 /-! ## `init.data.sigma.basic` -/
 
