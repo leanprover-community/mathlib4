@@ -537,21 +537,22 @@ theorem coe_add (a b : α) : ((a + b : α) : WithBot α) = a + b :=
   rfl
 #align with_bot.coe_add WithBot.coe_add
 
-/-! Porting note: `bit0` and `bit1` are deprecated. Section can be removed without replacement. -/
-section deprecated
-set_option linter.deprecated false
+-- Porting note: Linter says these are syntactical tautologies now.
+-- Porting note: `bit0` and `bit1` are deprecated. Section can be removed without replacement.
+-- section deprecated
+-- set_option linter.deprecated false
 
-@[deprecated]
-theorem coe_bit0 : ((bit0 x : α) : WithBot α) = bit0 x :=
-  rfl
-#align with_bot.coe_bit0 WithBot.coe_bit0
+-- @[deprecated]
+-- theorem coe_bit0 : ((bit0 x : α) : WithBot α) = bit0 x :=
+--   rfl
+-- #align with_bot.coe_bit0 WithBot.coe_bit0
 
-@[deprecated]
-theorem coe_bit1 [One α] {a : α} : ((bit1 a : α) : WithBot α) = bit1 a :=
-  rfl
-#align with_bot.coe_bit1 WithBot.coe_bit1
+-- @[deprecated]
+-- theorem coe_bit1 [One α] {a : α} : ((bit1 a : α) : WithBot α) = bit1 a :=
+--   rfl
+-- #align with_bot.coe_bit1 WithBot.coe_bit1
 
-end deprecated
+-- end deprecated
 
 @[simp]
 theorem bot_add (a : WithBot α) : ⊥ + a = ⊥ :=
