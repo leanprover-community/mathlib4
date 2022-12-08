@@ -3,6 +3,7 @@ import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Divisibility.Units
+import Mathlib.Algebra.EuclideanDomain.Defs
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
@@ -13,6 +14,7 @@ import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.OrderSynonym
 import Mathlib.Algebra.Group.Semiconj
 import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Group.ULift
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.GroupPower.Basic
@@ -30,11 +32,13 @@ import Mathlib.Algebra.Hom.Commute
 import Mathlib.Algebra.Hom.Embedding
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Equiv.Units.Basic
+import Mathlib.Algebra.Hom.Equiv.Units.GroupWithZero
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
+import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.OrderIso
@@ -54,7 +58,9 @@ import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Monoid.WithZero.Basic
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
-import Mathlib.Algebra.Order.Ring
+import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.Order.Sub.Canonical
 import Mathlib.Algebra.Order.Sub.Defs
@@ -170,6 +176,7 @@ import Mathlib.Data.UnionFind
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.Option
+import Mathlib.GroupTheory.GroupAction.Sigma
 import Mathlib.GroupTheory.GroupAction.Sum
 import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Init.Algebra.Classes

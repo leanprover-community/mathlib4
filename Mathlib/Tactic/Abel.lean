@@ -249,9 +249,7 @@ theorem term_atom {α} [AddCommMonoid α] (x : α) : x = term 1 x 0 := by
   simp [term]
 
 theorem term_atomg {α} [AddCommGroup α] (x : α) : x = termg 1 x 0 := by
-  -- TODO waiting for port of Algebra.GroupPower.Basic for `one_zsmul`
   simp [termg]
-  sorry
 
 /-- Interpret an expression as an atom for `abel`'s normal form. -/
 def evalAtom (c : Context) (e : Expr) : MetaM (NormalExpr × Expr) := do
