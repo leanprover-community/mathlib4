@@ -14,6 +14,7 @@ import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.OrderSynonym
 import Mathlib.Algebra.Group.Semiconj
 import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Group.ULift
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.GroupPower.Basic
