@@ -214,15 +214,15 @@ instance (priority := 100) OrderedSemiring.zeroLEOneClass : ZeroLEOneClass α :=
 
 -- see Note [lower instance priority]
 instance (priority := 200) OrderedSemiring.to_pos_mul_mono : PosMulMono α :=
-  ⟨fun x a b h => OrderedSemiring.mul_le_mul_of_nonneg_left _ _ _ h x.2⟩
+  ⟨fun x _ _ h => OrderedSemiring.mul_le_mul_of_nonneg_left _ _ _ h x.2⟩
 #align ordered_semiring.to_pos_mul_mono OrderedSemiring.to_pos_mul_mono
 
 -- see Note [lower instance priority]
 instance (priority := 200) OrderedSemiring.to_mul_pos_mono : MulPosMono α :=
-  ⟨fun x a b h => OrderedSemiring.mul_le_mul_of_nonneg_right _ _ _ h x.2⟩
+  ⟨fun x _ _ h => OrderedSemiring.mul_le_mul_of_nonneg_right _ _ _ h x.2⟩
 #align ordered_semiring.to_mul_pos_mono OrderedSemiring.to_mul_pos_mono
 
-theorem bit1_mono : Monotone (bit1 : α → α) := fun a b h => add_le_add_right (bit0_mono h) _
+theorem bit1_mono : Monotone (bit1 : α → α) := fun _ _ h => add_le_add_right (bit0_mono h) _
 #align bit1_mono bit1_mono
 
 /- warning: pow_nonneg -> pow_nonneg is a dubious translation:
@@ -258,11 +258,11 @@ section Monotone
 
 variable [Preorder β] {f g : β → α}
 
-theorem monotone_mul_left_of_nonneg (ha : 0 ≤ a) : Monotone fun x => a * x := fun b c h =>
+theorem monotone_mul_left_of_nonneg (ha : 0 ≤ a) : Monotone fun x => a * x := fun _ _ h =>
   mul_le_mul_of_nonneg_left h ha
 #align monotone_mul_left_of_nonneg monotone_mul_left_of_nonneg
 
-theorem monotone_mul_right_of_nonneg (ha : 0 ≤ a) : Monotone fun x => x * a := fun b c h =>
+theorem monotone_mul_right_of_nonneg (ha : 0 ≤ a) : Monotone fun x => x * a := fun _ _ h =>
   mul_le_mul_of_nonneg_right h ha
 #align monotone_mul_right_of_nonneg monotone_mul_right_of_nonneg
 
@@ -283,7 +283,7 @@ theorem Antitone.const_mul (hf : Antitone f) (ha : 0 ≤ a) : Antitone fun x => 
 #align antitone.const_mul Antitone.const_mul
 
 theorem Monotone.mul (hf : Monotone f) (hg : Monotone g) (hf₀ : ∀ x, 0 ≤ f x) (hg₀ : ∀ x, 0 ≤ g x) :
-    Monotone (f * g) := fun b c h => mul_le_mul (hf h) (hg h) (hg₀ _) (hf₀ _)
+    Monotone (f * g) := fun _ _ h => mul_le_mul (hf h) (hg h) (hg₀ _) (hf₀ _)
 #align monotone.mul Monotone.mul
 
 end Monotone
@@ -380,11 +380,11 @@ section Monotone
 
 variable [Preorder β] {f g : β → α}
 
-theorem antitone_mul_left {a : α} (ha : a ≤ 0) : Antitone ((· * ·) a) := fun b c b_le_c =>
+theorem antitone_mul_left {a : α} (ha : a ≤ 0) : Antitone ((· * ·) a) := fun _ _ b_le_c =>
   mul_le_mul_of_nonpos_left b_le_c ha
 #align antitone_mul_left antitone_mul_left
 
-theorem antitone_mul_right {a : α} (ha : a ≤ 0) : Antitone fun x => x * a := fun b c b_le_c =>
+theorem antitone_mul_right {a : α} (ha : a ≤ 0) : Antitone fun x => x * a := fun _ _ b_le_c =>
   mul_le_mul_of_nonpos_right b_le_c ha
 #align antitone_mul_right antitone_mul_right
 
@@ -405,17 +405,17 @@ theorem Antitone.mul_const_of_nonpos (hf : Antitone f) (ha : a ≤ 0) : Monotone
 #align antitone.mul_const_of_nonpos Antitone.mul_const_of_nonpos
 
 theorem Antitone.mul_monotone (hf : Antitone f) (hg : Monotone g) (hf₀ : ∀ x, f x ≤ 0)
-    (hg₀ : ∀ x, 0 ≤ g x) : Antitone (f * g) := fun b c h =>
+    (hg₀ : ∀ x, 0 ≤ g x) : Antitone (f * g) := fun _ _ h =>
   mul_le_mul_of_nonpos_of_nonneg (hf h) (hg h) (hf₀ _) (hg₀ _)
 #align antitone.mul_monotone Antitone.mul_monotone
 
 theorem Monotone.mul_antitone (hf : Monotone f) (hg : Antitone g) (hf₀ : ∀ x, 0 ≤ f x)
-    (hg₀ : ∀ x, g x ≤ 0) : Antitone (f * g) := fun b c h =>
+    (hg₀ : ∀ x, g x ≤ 0) : Antitone (f * g) := fun _ _ h =>
   mul_le_mul_of_nonneg_of_nonpos (hf h) (hg h) (hf₀ _) (hg₀ _)
 #align monotone.mul_antitone Monotone.mul_antitone
 
 theorem Antitone.mul (hf : Antitone f) (hg : Antitone g) (hf₀ : ∀ x, f x ≤ 0) (hg₀ : ∀ x, g x ≤ 0) :
-    Monotone (f * g) := fun b c h => mul_le_mul_of_nonpos_of_nonpos (hf h) (hg h) (hf₀ _) (hg₀ _)
+    Monotone (f * g) := fun _ _ h => mul_le_mul_of_nonpos_of_nonpos (hf h) (hg h) (hf₀ _) (hg₀ _)
 #align antitone.mul Antitone.mul
 
 end Monotone
@@ -445,12 +445,12 @@ variable [StrictOrderedSemiring α] {a b c d : α}
 
 -- see Note [lower instance priority]
 instance (priority := 200) StrictOrderedSemiring.to_pos_mul_strict_mono : PosMulStrictMono α :=
-  ⟨fun x a b h => StrictOrderedSemiring.mul_lt_mul_of_pos_left _ _ _ h x.prop⟩
+  ⟨fun x _ _ h => StrictOrderedSemiring.mul_lt_mul_of_pos_left _ _ _ h x.prop⟩
 #align strict_ordered_semiring.to_pos_mul_strict_mono StrictOrderedSemiring.to_pos_mul_strict_mono
 
 -- see Note [lower instance priority]
 instance (priority := 200) StrictOrderedSemiring.to_mul_pos_strict_mono : MulPosStrictMono α :=
-  ⟨fun x a b h => StrictOrderedSemiring.mul_lt_mul_of_pos_right _ _ _ h x.prop⟩
+  ⟨fun x _ _ h => StrictOrderedSemiring.mul_lt_mul_of_pos_right _ _ _ h x.prop⟩
 #align strict_ordered_semiring.to_mul_pos_strict_mono StrictOrderedSemiring.to_mul_pos_strict_mono
 
 -- See note [reducible non-instances]
@@ -518,7 +518,7 @@ theorem mul_self_lt_mul_self (h1 : 0 ≤ a) (h2 : a < b) : a * a < b * b :=
 -- and the import for `set.Ici` is not otherwise needed until later,
 -- we choose not to use it here.
 theorem strict_mono_on_mul_self : StrictMonoOn (fun x : α => x * x) { x | 0 ≤ x } :=
-  fun x hx y hy hxy => mul_self_lt_mul_self hx hxy
+  fun _ hx _ _ hxy => mul_self_lt_mul_self hx hxy
 #align strict_mono_on_mul_self strict_mono_on_mul_self
 
 -- See Note [decidable namespace]
@@ -550,11 +550,11 @@ section Monotone
 
 variable [Preorder β] {f g : β → α}
 
-theorem strict_mono_mul_left_of_pos (ha : 0 < a) : StrictMono fun x => a * x := fun b c b_lt_c =>
+theorem strict_mono_mul_left_of_pos (ha : 0 < a) : StrictMono fun x => a * x := fun _ _ b_lt_c =>
   mul_lt_mul_of_pos_left b_lt_c ha
 #align strict_mono_mul_left_of_pos strict_mono_mul_left_of_pos
 
-theorem strict_mono_mul_right_of_pos (ha : 0 < a) : StrictMono fun x => x * a := fun b c b_lt_c =>
+theorem strict_mono_mul_right_of_pos (ha : 0 < a) : StrictMono fun x => x * a := fun _ _ b_lt_c =>
   mul_lt_mul_of_pos_right b_lt_c ha
 #align strict_mono_mul_right_of_pos strict_mono_mul_right_of_pos
 
@@ -575,17 +575,17 @@ theorem StrictAnti.const_mul (hf : StrictAnti f) (ha : 0 < a) : StrictAnti fun x
 #align strict_anti.const_mul StrictAnti.const_mul
 
 theorem StrictMono.mul_monotone (hf : StrictMono f) (hg : Monotone g) (hf₀ : ∀ x, 0 ≤ f x)
-    (hg₀ : ∀ x, 0 < g x) : StrictMono (f * g) := fun b c h =>
+    (hg₀ : ∀ x, 0 < g x) : StrictMono (f * g) := fun _ _ h =>
   mul_lt_mul (hf h) (hg h.le) (hg₀ _) (hf₀ _)
 #align strict_mono.mul_monotone StrictMono.mul_monotone
 
 theorem Monotone.mul_strict_mono (hf : Monotone f) (hg : StrictMono g) (hf₀ : ∀ x, 0 < f x)
-    (hg₀ : ∀ x, 0 ≤ g x) : StrictMono (f * g) := fun b c h =>
+    (hg₀ : ∀ x, 0 ≤ g x) : StrictMono (f * g) := fun _ _ h =>
   mul_lt_mul' (hf h.le) (hg h) (hg₀ _) (hf₀ _)
 #align monotone.mul_strict_mono Monotone.mul_strict_mono
 
 theorem StrictMono.mul (hf : StrictMono f) (hg : StrictMono g) (hf₀ : ∀ x, 0 ≤ f x)
-    (hg₀ : ∀ x, 0 ≤ g x) : StrictMono (f * g) := fun b c h =>
+    (hg₀ : ∀ x, 0 ≤ g x) : StrictMono (f * g) := fun _ _ h =>
   mul_lt_mul'' (hf h) (hg h) (hf₀ _) (hg₀ _)
 #align strict_mono.mul StrictMono.mul
 
@@ -677,11 +677,11 @@ section Monotone
 
 variable [Preorder β] {f g : β → α}
 
-theorem strict_anti_mul_left {a : α} (ha : a < 0) : StrictAnti ((· * ·) a) := fun b c b_lt_c =>
+theorem strict_anti_mul_left {a : α} (ha : a < 0) : StrictAnti ((· * ·) a) := fun _ _ b_lt_c =>
   mul_lt_mul_of_neg_left b_lt_c ha
 #align strict_anti_mul_left strict_anti_mul_left
 
-theorem strict_anti_mul_right {a : α} (ha : a < 0) : StrictAnti fun x => x * a := fun b c b_lt_c =>
+theorem strict_anti_mul_right {a : α} (ha : a < 0) : StrictAnti fun x => x * a := fun _ _ b_lt_c =>
   mul_lt_mul_of_neg_right b_lt_c ha
 #align strict_anti_mul_right strict_anti_mul_right
 
@@ -741,12 +741,12 @@ variable [LinearOrderedSemiring α] {a b c d : α}
 
 -- see Note [lower instance priority]
 instance (priority := 200) LinearOrderedSemiring.to_pos_mul_reflect_lt : PosMulReflectLT α :=
-  ⟨fun a b c => (monotone_mul_left_of_nonneg a.2).reflect_lt⟩
+  ⟨fun a _ _ => (monotone_mul_left_of_nonneg a.2).reflect_lt⟩
 #align linear_ordered_semiring.to_pos_mul_reflect_lt LinearOrderedSemiring.to_pos_mul_reflect_lt
 
 -- see Note [lower instance priority]
 instance (priority := 200) LinearOrderedSemiring.to_mul_pos_reflect_lt : MulPosReflectLT α :=
-  ⟨fun a b c => (monotone_mul_right_of_nonneg a.2).reflect_lt⟩
+  ⟨fun a _ _ => (monotone_mul_right_of_nonneg a.2).reflect_lt⟩
 #align linear_ordered_semiring.to_mul_pos_reflect_lt LinearOrderedSemiring.to_mul_pos_reflect_lt
 
 attribute [local instance] LinearOrderedSemiring.decidable_le LinearOrderedSemiring.decidable_lt
