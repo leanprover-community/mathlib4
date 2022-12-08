@@ -106,9 +106,6 @@ immediate predecessors and what conditions are added to each of them.
 
 -/
 
--- FIXME remove before merge
-set_option warningAsError false
-
 open Function
 
 universe u
@@ -222,6 +219,7 @@ instance (priority := 200) OrderedSemiring.to_mul_pos_mono : MulPosMono α :=
   ⟨fun x _ _ h => OrderedSemiring.mul_le_mul_of_nonneg_right _ _ _ h x.2⟩
 #align ordered_semiring.to_mul_pos_mono OrderedSemiring.to_mul_pos_mono
 
+set_option linter.deprecated false in
 theorem bit1_mono : Monotone (bit1 : α → α) := fun _ _ h => add_le_add_right (bit0_mono h) _
 #align bit1_mono bit1_mono
 
@@ -288,6 +286,9 @@ theorem Monotone.mul (hf : Monotone f) (hg : Monotone g) (hf₀ : ∀ x, 0 ≤ f
 
 end Monotone
 
+section
+set_option linter.deprecated false
+
 theorem bit1_pos [Nontrivial α] (h : 0 ≤ a) : 0 < bit1 a :=
   zero_lt_one.trans_le <| bit1_zero.symm.trans_le <| bit1_mono h
 #align bit1_pos bit1_pos
@@ -296,6 +297,8 @@ theorem bit1_pos' (h : 0 < a) : 0 < bit1 a := by
   nontriviality
   exact bit1_pos h.le
 #align bit1_pos' bit1_pos'
+
+end
 
 theorem mul_le_one (ha : a ≤ 1) (hb' : 0 ≤ b) (hb : b ≤ 1) : a * b ≤ 1 :=
   one_mul (1 : α) ▸ mul_le_mul ha hb hb' zero_le_one
@@ -842,6 +845,7 @@ theorem add_le_mul' (a2 : 2 ≤ a) (b2 : 2 ≤ b) : a + b ≤ b * a :=
   (le_of_eq (add_comm _ _)).trans (add_le_mul b2 a2)
 #align add_le_mul' add_le_mul'
 
+set_option linter.deprecated false in
 section
 
 @[simp]
