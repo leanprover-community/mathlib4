@@ -2279,13 +2279,13 @@ theorem subsingleton_of_subsingleton [Subsingleton α] {s : Set α} : Set.Subsin
   subsingleton_univ.anti (subset_univ s)
 #align set.subsingleton_of_subsingleton Set.subsingleton_of_subsingleton
 
-theorem subsingleton_is_top (α : Type _) [PartialOrder α] : Set.Subsingleton { x : α | IsTop x } :=
+theorem subsingleton_isTop (α : Type _) [PartialOrder α] : Set.Subsingleton { x : α | IsTop x } :=
   fun x hx _ hy => hx.isMax.eq_of_le (hy x)
-#align set.subsingleton_is_top Set.subsingleton_is_top
+#align set.subsingleton_is_top Set.subsingleton_isTop
 
-theorem subsingleton_is_bot (α : Type _) [PartialOrder α] : Set.Subsingleton { x : α | IsBot x } :=
+theorem subsingleton_isBot (α : Type _) [PartialOrder α] : Set.Subsingleton { x : α | IsBot x } :=
   fun x hx _ hy => hx.isMin.eq_of_ge (hy x)
-#align set.subsingleton_is_bot Set.subsingleton_is_bot
+#align set.subsingleton_is_bot Set.subsingleton_isBot
 
 theorem exists_eq_singleton_iff_nonempty_subsingleton :
     (∃ a : α, s = {a}) ↔ s.Nonempty ∧ s.Subsingleton := by
@@ -2513,21 +2513,21 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {f : α → β}
 
-theorem monotone_on_iff_monotone : MonotoneOn f s ↔ Monotone fun a : s => f a := by
+theorem monotoneOn_iff_monotone : MonotoneOn f s ↔ Monotone fun a : s => f a := by
   simp [Monotone, MonotoneOn]
-#align set.monotone_on_iff_monotone Set.monotone_on_iff_monotone
+#align set.monotone_on_iff_monotone Set.monotoneOn_iff_monotone
 
-theorem antitone_on_iff_antitone : AntitoneOn f s ↔ Antitone fun a : s => f a := by
+theorem antitoneOn_iff_antitone : AntitoneOn f s ↔ Antitone fun a : s => f a := by
   simp [Antitone, AntitoneOn]
-#align set.antitone_on_iff_antitone Set.antitone_on_iff_antitone
+#align set.antitone_on_iff_antitone Set.antitoneOn_iff_antitone
 
-theorem strict_mono_on_iff_strict_mono : StrictMonoOn f s ↔ StrictMono fun a : s => f a := by
+theorem strictMonoOn_iff_strictMono : StrictMonoOn f s ↔ StrictMono fun a : s => f a := by
   simp [StrictMono, StrictMonoOn]
-#align set.strict_mono_on_iff_strict_mono Set.strict_mono_on_iff_strict_mono
+#align set.strict_mono_on_iff_strict_mono Set.strictMonoOn_iff_strictMono
 
-theorem strict_anti_on_iff_strict_anti : StrictAntiOn f s ↔ StrictAnti fun a : s => f a := by
+theorem strictAntiOn_iff_strictAnti : StrictAntiOn f s ↔ StrictAnti fun a : s => f a := by
   simp [StrictAnti, StrictAntiOn]
-#align set.strict_anti_on_iff_strict_anti Set.strict_anti_on_iff_strict_anti
+#align set.strict_anti_on_iff_strict_anti Set.strictAntiOn_iff_strictAnti
 
 variable (f)
 
