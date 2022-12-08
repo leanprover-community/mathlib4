@@ -226,9 +226,10 @@ variable [GroupWithZero G₀] [GroupWithZero G₀'] [MonoidWithZeroHomClass F G�
 /-- A monoid homomorphism between groups with zeros sending `0` to `0` sends `a⁻¹` to `(f a)⁻¹`. -/
 @[simp]
 theorem map_inv₀ : f a⁻¹ = (f a)⁻¹ := by
-  by_cases h : a = 0; · simp [h]
-  apply eq_inv_of_mul_eq_one_left
-  rw [← map_mul, inv_mul_cancel h, map_one]
+  by_cases h : a = 0
+  · simp [h, map_zero f]
+  · apply eq_inv_of_mul_eq_one_left
+    rw [← map_mul, inv_mul_cancel h, map_one]
 #align map_inv₀ map_inv₀
 
 @[simp]
