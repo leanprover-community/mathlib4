@@ -9,7 +9,6 @@ import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.WithZero.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
--- Porting note: in Mathlib3 ZeroLEOne has been imported in an earlier file.
 
 /-! # Adjoining top/bottom elements to ordered monoids. -/
 
