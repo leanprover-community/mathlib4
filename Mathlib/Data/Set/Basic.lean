@@ -142,6 +142,7 @@ alias lt_iff_ssubset ↔ _root_.has_lt.lt.ssubset _root_.has_ssubset.ssubset.lt
 
 -- Porting note: I've introduced this abbreviation, with the `@[coe]` attribute,
 -- so that `norm_cast` has something to index on.
+/-- Given the set `s`, `type_of_Set s` is the `Type` of element of `s`. -/
 @[coe] abbrev type_of_Set (s : Set α) : Type u := { x // x ∈ s }
 
 /-- Coercion from a set to the corresponding subtype. -/
@@ -174,12 +175,12 @@ theorem Set.coe_set_of (p : α → Prop) : ↥{ x | p x } = { x // p x } :=
   rfl
 #align set.coe_set_of Set.coe_set_of
 
-@[simp]
+-- Porting: removed `simp` because `simp` can prove it
 theorem SetCoe.forall {s : Set α} {p : s → Prop} : (∀ x : s, p x) ↔ ∀ (x) (h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.forall
 #align set_coe.forall SetCoe.forall
 
-@[simp]
+-- Porting: removed `simp` because `simp` can prove it
 theorem SetCoe.exists {s : Set α} {p : s → Prop} :
     (∃ x : s, p x) ↔ ∃ (x : _)(h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.exists
@@ -418,7 +419,7 @@ theorem not_mem_empty (x : α) : ¬x ∈ (∅ : Set α) :=
   id
 #align set.not_mem_empty Set.not_mem_empty
 
-@[simp]
+-- Porting: removed `simp` because `simp` can prove it
 theorem not_not_mem : ¬a ∉ s ↔ a ∈ s :=
   not_not
 #align set.not_not_mem Set.not_not_mem
@@ -2740,3 +2741,4 @@ instance decidableSetOf (p : α → Prop) [Decidable (p a)] : Decidable (a ∈ {
 #align set.decidable_set_of Set.decidableSetOf
 
 end Set
+#lint
