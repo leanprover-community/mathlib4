@@ -200,7 +200,6 @@ section MonoidWithZero
 variable [GroupWithZero G₀] [Nontrivial M₀] [MonoidWithZero M₀'] [MonoidWithZeroHomClass F G₀ M₀]
   [MonoidWithZeroHomClass F' G₀ M₀'] (f : F) {a : G₀}
 
-include M₀
 
 theorem map_ne_zero : f a ≠ 0 ↔ a ≠ 0 :=
   ⟨fun hfa ha => hfa <| ha.symm ▸ map_zero f, fun ha => ((IsUnit.mk0 a ha).map f).ne_zero⟩
@@ -211,9 +210,6 @@ theorem map_eq_zero : f a = 0 ↔ a = 0 :=
   not_iff_not.1 (map_ne_zero f)
 #align map_eq_zero map_eq_zero
 
-omit M₀
-
-include M₀'
 
 theorem eq_on_inv₀ (f g : F') (h : f a = g a) : f a⁻¹ = g a⁻¹ := by
   rcases eq_or_ne a 0 with (rfl | ha)
@@ -226,8 +222,6 @@ end MonoidWithZero
 section GroupWithZero
 
 variable [GroupWithZero G₀] [GroupWithZero G₀'] [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (a b : G₀)
-
-include G₀'
 
 /-- A monoid homomorphism between groups with zeros sending `0` to `0` sends `a⁻¹` to `(f a)⁻¹`. -/
 @[simp]
