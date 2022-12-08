@@ -123,7 +123,6 @@ private partial def splitIfsCore
     tac_and_then (reduceIfsAt loc) (splitIfsCore loc hNames (cond::done) <|> pure ())
   else do
     let hName ← getNextName hNames
-    dbg_trace "hName = {hName}"
     tac_and_then (splitIf1 cond hName loc) ((splitIfsCore loc hNames (cond::done)) <|> pure ())
 
 /-- Splits all if-then-else-expressions into multiple goals.
