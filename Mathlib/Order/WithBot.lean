@@ -294,6 +294,7 @@ instance partialOrder [PartialOrder α] : PartialOrder (WithBot α) :=
         rcases h₂ b rfl with ⟨_, ⟨⟩, h₂'⟩
         rw [le_antisymm h₁' h₂']
          }
+#align with_bot.partial_order WithBot.partialOrder
 
 theorem coe_strictMono [Preorder α] : StrictMono (fun (a : α) => (a : WithBot α)) :=
   fun _ _ => coe_lt_coe.2
@@ -442,6 +443,7 @@ instance isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithBot α) (· 
 
 instance linearOrder [LinearOrder α] : LinearOrder (WithBot α) :=
   Lattice.toLinearOrder _
+#align with_bot.linear_order WithBot.linearOrder
 
 -- this is not marked simp because the corresponding with_top lemmas are used
 @[norm_cast]
@@ -790,8 +792,9 @@ instance orderTop : OrderTop (WithTop α) :=
 instance orderBot [OrderBot α] : OrderBot (WithTop α) where
   bot := some ⊥
   bot_le o a ha := by cases ha ; exact ⟨_, rfl, bot_le⟩
+#align with_top.order_bot WithTop.orderBot
 
-instance oundedOrder [OrderBot α] : BoundedOrder (WithTop α) :=
+instance boundedOrder [OrderBot α] : BoundedOrder (WithTop α) :=
   { WithTop.orderTop, WithTop.orderBot with }
 
 theorem not_top_le_coe (a : α) : ¬(⊤ : WithTop α) ≤ ↑a :=
@@ -1168,6 +1171,7 @@ instance isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithTop α) (· 
 
 instance linearOrder [LinearOrder α] : LinearOrder (WithTop α) :=
   Lattice.toLinearOrder _
+#align with_top.linear_order WithTop.linearOrder
 
 @[simp, norm_cast]
 theorem coe_min [LinearOrder α] (x y : α) : (↑(min x y) : WithTop α) = min (x : WithTop α) y :=
