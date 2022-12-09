@@ -2468,12 +2468,36 @@ theorem nontrivial_of_nontrivial (hs : s.Nontrivial) : Nontrivial α :=
   ⟨⟨x, y, hxy⟩⟩
 #align set.nontrivial_of_nontrivial Set.nontrivial_of_nontrivial
 
+-- Porting note: simp_rw broken here
 /-- `s`, coerced to a type, is a nontrivial type if and only if `s` is a nontrivial set. -/
 @[simp, norm_cast]
 theorem nontrivial_coe_sort {s : Set α} : Nontrivial s ↔ s.Nontrivial := by
-  simp_rw [← nontrivial_univ_iff, Set.Nontrivial, mem_univ, exists_true_left, SetCoe.exists,
-    Subtype.mk_eq_mk]
-  sorry
+  -- simp_rw [← nontrivial_univ_iff, Set.Nontrivial, mem_univ, exists_true_left, SetCoe.exists,
+  --   Subtype.mk_eq_mk]
+  rw [← nontrivial_univ_iff, Set.Nontrivial, Set.Nontrivial]
+  apply Iff.intro
+  { intro h
+    rcases h with ⟨x, _, y, _, hxy⟩
+    use x
+    use Subtype.prop x
+    use y
+    use Subtype.prop y
+    intro h
+    exact hxy (Subtype.coe_injective h) }
+  { intro h
+    rcases h with ⟨x, hx, y, hy, hxy⟩
+    rw [SetCoe.exists]
+    use x
+    use hx
+    use mem_univ _
+    rw [SetCoe.exists]
+    use y
+    use hy
+    use mem_univ _
+    intro h
+    rw [Subtype.mk_eq_mk] at h
+    exact hxy h }
+
 #align set.nontrivial_coe_sort Set.nontrivial_coe_sort
 
 alias nontrivial_coe_sort ↔ _ Nontrivial.coe_sort
