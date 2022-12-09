@@ -481,7 +481,9 @@ def AddMonoidHom.mulOp {M N} [AddZeroClass M] [AddZeroClass N] :
     { toFun := MulOpposite.unop ∘ f ∘ MulOpposite.op, map_zero' := congrArg MulOpposite.unop f.map_zero,
       map_add' := fun x y => congrArg MulOpposite.unop (f.map_add (MulOpposite.op x) (MulOpposite.op y)) }
   left_inv f := by
-    ext
+    apply AddMonoidHom.ext
+    intro
+    simp [MulOpposite.op, MulOpposite.unop]
     rfl
   right_inv f := by
     ext
@@ -538,6 +540,7 @@ def MulEquiv.op {α β} [Mul α] [Mul β] :
   right_inv f := by
     ext
     simp
+    rfl
 #align mul_equiv.op MulEquiv.op
 
 /-- The 'unopposite' of an iso `αᵐᵒᵖ ≃* βᵐᵒᵖ`. Inverse to `mul_equiv.op`. -/
