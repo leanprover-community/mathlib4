@@ -42,8 +42,10 @@ instance [LinearOrderedAddCommMonoidWithTop α] :
     LinearOrderedCommMonoidWithZero (Multiplicative αᵒᵈ) :=
   { Multiplicative.orderedCommMonoid, Multiplicative.linearOrder with
     zero := Multiplicative.ofAdd (⊤ : α)
-    zero_mul := @top_add α _
-    mul_zero := @add_top α _
+    zero_mul := @top_add _ (_)
+    -- Porting note:  Here and elsewhere in the file, just `zero_mul` worked in Lean 3.  See
+    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Type.20synonyms
+    mul_zero := @add_top _ (_)
     zero_le_one := (le_top : (0 : α) ≤ ⊤) }
 #align multiplicative.linear_ordered_comm_monoid_with_zero
   instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
@@ -52,8 +54,8 @@ instance [LinearOrderedAddCommGroupWithTop α] :
     LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) :=
   { Multiplicative.divInvMonoid, instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual,
     instNontrivialMultiplicative with
-    inv_zero := @LinearOrderedAddCommGroupWithTop.neg_top α _
-    mul_inv_cancel := @LinearOrderedAddCommGroupWithTop.add_neg_cancel α _ }
+    inv_zero := @LinearOrderedAddCommGroupWithTop.neg_top _ (_)
+    mul_inv_cancel := @LinearOrderedAddCommGroupWithTop.add_neg_cancel _ (_) }
 
 instance [LinearOrderedCommMonoid α] : LinearOrderedCommMonoidWithZero (WithZero α) :=
   { WithZero.linearOrder, WithZero.commMonoidWithZero with
@@ -286,5 +288,5 @@ theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     instNontrivialAdditive with
-    neg_top := @inv_zero α _
+    neg_top := @inv_zero _ (_)
     add_neg_cancel := @mul_inv_cancel α _ }
