@@ -21,7 +21,9 @@ namespace Ring
 /-- A positive cone in a ring consists of a positive cone in underlying `AddCommGroup`,
 which contains `1` and such that the positive elements are closed under multiplication. -/
 structure PositiveCone (α : Type _) [Ring α] extends AddCommGroup.PositiveCone α where
+  /-- In a positive cone, `1` is `nonneg` -/
   one_nonneg : nonneg 1
+  /-- In a positive cone, if `a` and `b` are `pos` then so is `a * b` -/
   mul_pos : ∀ a b, pos a → pos b → pos (a * b)
 #align ring.positive_cone Ring.PositiveCone
 
