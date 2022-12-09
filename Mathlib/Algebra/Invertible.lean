@@ -206,15 +206,15 @@ theorem invOf_neg [Monoid α] [HasDistribNeg α] (a : α) [Invertible a] [Invert
 #align inv_of_neg invOf_neg
 
 @[simp]
-theorem one_sub_inv_of_two [Ring α] [Invertible (2 : α)] : 1 - (⅟ 2 : α) = ⅟ 2 :=
+theorem one_sub_invOf_two [Ring α] [Invertible (2 : α)] : 1 - (⅟ 2 : α) = ⅟ 2 :=
   (isUnit_of_invertible (2 : α)).mul_right_inj.1 <| by
     rw [mul_sub, mul_invOf_self, mul_one]
-#align one_sub_inv_of_two one_sub_inv_of_two
+#align one_sub_inv_of_two one_sub_invOf_two
 
 @[simp]
-theorem inv_of_two_add_inv_of_two [NonAssocSemiring α] [Invertible (2 : α)] :
-    (⅟ 2 : α) + (⅟ 2 : α) = 1 := by rw [← @two_mul α, mul_inv_of_self]
-#align inv_of_two_add_inv_of_two inv_of_two_add_inv_of_two
+theorem invOf_two_add_invOf_two [NonAssocSemiring α] [Invertible (2 : α)] :
+    (⅟ 2 : α) + (⅟ 2 : α) = 1 := by rw [← @two_mul α, mul_invOf_self]
+#align inv_of_two_add_inv_of_two invOf_two_add_invOf_two
 
 /-- `a` is the inverse of `⅟a`. -/
 instance invertibleInvOf [One α] [Mul α] {a : α} [Invertible a] : Invertible (⅟ a) :=
