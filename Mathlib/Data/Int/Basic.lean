@@ -62,7 +62,7 @@ instance : CommRing ℤ where
 lemma cast_Nat_cast [AddGroupWithOne R] : (Int.cast (Nat.cast n) : R) = Nat.cast n :=
   Int.cast_ofNat _
 
-@[simp, norm_cast]
+@[norm_cast]
 lemma cast_eq_cast_iff_Nat (m n : ℕ) : (m : ℤ) = (n : ℤ) ↔ m = n := ofNat_inj
 
 @[simp, norm_cast]

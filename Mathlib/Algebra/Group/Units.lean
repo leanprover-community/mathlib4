@@ -200,6 +200,8 @@ instance {α} [CommMonoid α] : CommGroup αˣ :=
   { (inferInstance : Group αˣ) with
     mul_comm := fun _ _ => ext <| mul_comm _ _ }
 attribute [instance] AddUnits.instAddCommGroupAddUnitsToAddMonoid
+#align units.comm_group Units.instCommGroupUnitsToMonoid
+#align add_units.add_comm_group AddUnits.instAddCommGroupAddUnitsToAddMonoid
 
 /-- Units of a monoid are inhabited because `1` is a unit. -/
 @[to_additive "Additive units of an additive monoid are inhabited because `0` is an additive unit."]

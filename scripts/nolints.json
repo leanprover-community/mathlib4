@@ -114,7 +114,7 @@
  ["docBlame", "Group.mul_left_inv"],
  ["docBlame", "InvolutiveInv.inv_inv"],
  ["docBlame", "InvolutiveNeg.neg_neg"],
- ["docBlame", "HasVsub.vsub"],
+ ["docBlame", "VSub.vsub"],
  ["docBlame", "IO.runRandWith"],
  ["docBlame", "Int.decNonneg"],
  ["docBlame", "InvOneClass.inv_one"],
@@ -584,4 +584,6 @@
  ["unusedArguments", "Decidable.not_or_iff_and_not"],
  ["unusedArguments", "Mathlib.Meta.Positivity.nonneg_of_isNat"],
  ["unusedArguments", "Mathlib.Meta.Positivity.nz_of_isNegNat"],
- ["unusedArguments", "Mathlib.Meta.Positivity.pos_of_isNat"]]
+ ["unusedArguments", "Mathlib.Meta.Positivity.pos_of_isNat"],
+ ["unusedHavesSuffices", "EuclideanDomain.xgcdAux_rec"],
+ ["unusedHavesSuffices", "EuclideanDomain.xgcd_zero_left"]]
