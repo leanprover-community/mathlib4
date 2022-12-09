@@ -20,7 +20,7 @@ section
 variable [Sub α] [Zero α]
 
 /-- If `α` has subtraction and `0`, we can extend the subtraction to `with_top α`. -/
-protected def sub : ∀ a b : WithTop α, WithTop α
+protected def sub : ∀ _ _ : WithTop α, WithTop α
   | _, ⊤ => 0
   | ⊤, (x : α) => ⊤
   | (x : α), (y : α) => (x - y : α)
