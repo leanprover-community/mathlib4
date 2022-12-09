@@ -1,4 +1,5 @@
 import Mathlib.Mathport.Notation
+import Mathlib.Init.Algebra.Order
 
 namespace Test
 
