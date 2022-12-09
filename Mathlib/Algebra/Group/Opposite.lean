@@ -186,7 +186,7 @@ theorem semiconj_by_unop [Mul α] {a x y : αᵐᵒᵖ} :
 theorem _root_.SemiconjBy.op [Mul α] {a x y : α} (h : SemiconjBy a x y) :
     SemiconjBy (op a) (op y) (op x) :=
   semiconj_by_op.2 h
-#align mul_opposite.semiconj_by.op SemiconjBy.op
+#align semiconj_by.op SemiconjBy.op
 
 @[to_additive]
 theorem _root_.SemiconjBy.unop [Mul α] {a x y : αᵐᵒᵖ} (h : SemiconjBy a x y) :
