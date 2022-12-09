@@ -241,5 +241,4 @@ def MulEquiv.inv (G : Type _) [DivisionCommMonoid G] : G ≃* G :=
 theorem MulEquiv.inv_symm (G : Type _) [DivisionCommMonoid G] :
     (MulEquiv.inv G).symm = MulEquiv.inv G :=
   rfl
-
 #align mul_equiv.inv_symm MulEquiv.inv_symm
