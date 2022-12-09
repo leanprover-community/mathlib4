@@ -368,10 +368,10 @@ instance Additive.addGroup [Group α] : AddGroup (Additive α) :=
 instance Multiplicative.group [AddGroup α] : Group (Multiplicative α) :=
   { Multiplicative.divInvMonoid with mul_left_inv := @add_left_neg α _ }
 
-instance [CommGroup α] : AddCommGroup (Additive α) :=
+instance Additive.addCommGroup [CommGroup α] : AddCommGroup (Additive α) :=
   { Additive.addGroup, Additive.addCommMonoid with }
 
-instance [AddCommGroup α] : CommGroup (Multiplicative α) :=
+instance Multiplicative.commGroup [AddCommGroup α] : CommGroup (Multiplicative α) :=
   { Multiplicative.group, Multiplicative.commMonoid with }
 
 /-- Reinterpret `α →+ β` as `Multiplicative α →* Multiplicative β`. -/
