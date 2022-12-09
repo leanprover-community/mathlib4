@@ -28,6 +28,7 @@ variable {R : Type u}
 variable [EuclideanDomain R]
 
 -- mathport name: «expr ≺ »
+/-- The well founded relation in a Euclidean Domain satisfying `a % b ≺ b` for `b ≠ 0`  -/
 local infixl:50 " ≺ " => EuclideanDomain.R
 
 theorem mul_div_cancel_left {a : R} (b) (a0 : a ≠ 0) : a * b / a = b :=
