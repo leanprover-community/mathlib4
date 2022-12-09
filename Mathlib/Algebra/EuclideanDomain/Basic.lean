@@ -229,12 +229,12 @@ theorem gcd_eq_gcd_ab (a b : R) : (gcd a b : R) = a * gcdA a b + b * gcdB a b :=
 -- see Note [lower instance priority]
 instance (priority := 70) (R : Type _) [e : EuclideanDomain R] : NoZeroDivisors R :=
   haveI := Classical.decEq R
-  { eq_zero_or_eq_zero_of_mul_eq_zero := fun a b h =>
+  { eq_zero_or_eq_zero_of_mul_eq_zero := @fun a b h =>
       or_iff_not_and_not.2 fun h0 => h0.1 <| by rw [← mul_div_cancel a h0.2, h, zero_div] }
 
 -- see Note [lower instance priority]
 instance (priority := 70) (R : Type _) [e : EuclideanDomain R] : IsDomain R :=
-  { e, NoZeroDivisors.to_is_domain R with }
+  { e, NoZeroDivisors.toIsDomain R with }
 
 end Gcd
 
@@ -243,7 +243,7 @@ section Lcm
 variable [DecidableEq R]
 
 theorem dvd_lcm_left (x y : R) : x ∣ lcm x y :=
-  Classical.by_cases
+  by_cases
     (fun hxy : gcd x y = 0 => by
       rw [lcm, hxy, div_zero]
       exact dvd_zero _)
@@ -253,7 +253,7 @@ theorem dvd_lcm_left (x y : R) : x ∣ lcm x y :=
 #align euclidean_domain.dvd_lcm_left EuclideanDomain.dvd_lcm_left
 
 theorem dvd_lcm_right (x y : R) : y ∣ lcm x y :=
-  Classical.by_cases
+  by_cases
     (fun hxy : gcd x y = 0 => by
       rw [lcm, hxy, div_zero]
       exact dvd_zero _)
@@ -304,7 +304,7 @@ theorem lcm_eq_zero_iff {x y : R} : lcm x y = 0 ↔ x = 0 ∨ y = 0 := by
   constructor
   · intro hxy
     rw [lcm, mul_div_assoc _ (gcd_dvd_right _ _), mul_eq_zero] at hxy
-    apply or_of_or_of_imp_right hxy
+    apply Or.imp_right _ hxy
     intro hy
     by_cases hgxy : gcd x y = 0
     · rw [EuclideanDomain.gcd_eq_zero_iff] at hgxy
