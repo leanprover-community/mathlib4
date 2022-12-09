@@ -133,21 +133,9 @@ def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :
   { map e.toMulHom with
     toFun := map e.toMulHom, invFun := map e.symm.toMulHom,
     left_inv := fun x => (map_map _ _ _).trans <| by
-      -- porting note: in mathlib3 this worked as: `induction x using WithOne.cases_on <;> simp`
-      induction x using WithOne.cases_on
-      · simp
-      · simp only [map_coe, MulHom.coe_mk, map_comp, MonoidHom.coe_comp, Function.comp_apply,
-          MulEquiv.toEquiv_symm, coe_inj]
-        apply Equiv.symm_apply_apply,
-      -- porting note: I think because of the way coercions are handled, this doesn't get changed
-      -- by `simp` into something where `Equiv.symm_apply_apply` automatically applies.
+      induction x using WithOne.cases_on <;> simp
     right_inv := fun x => (map_map _ _ _).trans <| by
-      -- porting note: in mathlib3 this worked as: `induction x using WithOne.cases_on <;> simp`
-      induction x using WithOne.cases_on
-      · simp
-      · simp only [map_coe, MulHom.coe_mk, MulEquiv.toEquiv_symm, map_comp, MonoidHom.coe_comp,
-          Function.comp_apply, coe_inj]
-        apply Equiv.apply_symm_apply }
+      induction x using WithOne.cases_on <;> simp }
 #align mul_equiv.with_one_congr MulEquiv.withOneCongr
 #align add_equiv.with_zero_congr AddEquiv.withZeroCongr
 
