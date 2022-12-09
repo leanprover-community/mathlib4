@@ -44,9 +44,7 @@ example (a b : ℕ) (ha : a > 0) (_hb : 0 < b) : 0 < a + b := by library_search
 example (a b : ℕ) (h : a ∣ b) (w : b > 0) : a ≤ b :=
 by library_search -- says: `exact Nat.le_of_dvd w h`
 
--- TODO
 example (a b : ℕ) (h : a ∣ b) (w : b > 0) : b ≥ a := by library_search -- says: `exact Nat.le_of_dvd w h`
-
 
 -- TODO: A lemma with head symbol `¬` can be used to prove `¬ p` or `⊥`
 example (a : ℕ) : ¬ (a < 0) := by library_search -- says `exact not_lt_bot`

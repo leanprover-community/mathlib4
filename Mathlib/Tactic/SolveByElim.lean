@@ -194,11 +194,16 @@ Custom wrappers (e.g. `apply_assumption` and `apply_rules`) may modify this beha
 def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
     (goals : List MVarId) : MetaM (List MVarId) := do
   -- We handle `cfg.symm` by saturating hypotheses of all goals using `symm`.
+  -- Implementation note:
+  -- (We used to apply `symm` all throughout the `solve_by_elim` stage.)
+  -- I initially reproduced the mathlib3 approach, but it had bad performance so switched to this.
   let goals ← if cfg.symm then
     goals.mapM fun g => g.symmSaturate
   else
     pure goals
 
+  -- Implementation note: as with `cfg.symm`, this is different from the mathlib3 approach,
+  -- for (not as bad) performance reasons.
   match cfg.exfalso, goals with
     | true, [g] => try
         run cfg.maxDepth [g] []

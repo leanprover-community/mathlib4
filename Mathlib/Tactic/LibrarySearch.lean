@@ -51,10 +51,9 @@ initialize librarySearchLemmas : DeclCache (DiscrTree Name true) ←
 
 /-- Shortcut for calling `solveByElim`. -/
 def solveByElim (goals : List MVarId) (required : List Expr) (depth) := do
-  -- I only found a marginal decrease in performance for using the `symm` and `exfalso`
+  -- There is only a marginal decrease in performance for using the `symm` and `exfalso`
   -- options for `solveByElim`.
   -- (measured via `lake build && time lake env lean test/librarySearch.lean`).
-  -- We could nevertheless disable them for only a slight decrease in power.
   let cfg : SolveByElim.Config := { maxDepth := depth, exfalso := true, symm := true }
   let cfg := if !required.isEmpty then cfg.requireUsingAll required else cfg
   _ ← SolveByElim.solveByElim.processSyntax cfg false false [] [] goals
