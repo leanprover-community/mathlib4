@@ -20,76 +20,13 @@ This file contains:
   induction on numbers less than `b`.
 -/
 
--- /-
--- Copyright (c) 2016 Jeremy Avigad. All rights reserved.
--- Released under Apache 2.0 license as described in the file LICENSE.
--- Authors: Jeremy Avigad
--- -/
--- import Mathlib.Data.Int.Basic
--- import Mathlib.Algebra.Order.Ring.Defs
--- import Mathlib.Tactic.LibrarySearch
--- /-!
--- # Order instances on the integers
-
--- This file contains:
--- * instances on `ℤ`. The stronger one is `int.linear_ordered_comm_ring`.
--- * basic lemmas about integers that involve order properties.
-
--- ## Recursors
-
--- * `int.rec`: Sign disjunction. Something is true/defined on `ℤ` if it's true/defined for nonnegative
---   and for negative values. (Defined in core Lean 3)
--- * `int.induction_on`: Simple growing induction on positive numbers, plus simple decreasing induction
---   on negative numbers. Note that this recursor is currently only `Prop`-valued.
--- * `int.induction_on'`: Simple growing induction for numbers greater than `b`, plus simple decreasing
---   induction on numbers less than `b`.
--- -/
-
--- namespace Int
-
--- instance : LinearOrderedCommRing ℤ where
---   mul_comm := Int.mul_comm
---   add_le_add_left _ _ := Int.add_le_add_left
---   zero_le_one := le_of_lt Int.zero_lt_one
---   mul_pos _ _ := Int.mul_pos
---   le_total := Int.le_total
---   min_def := Int.min_def
-
--- /-- Inductively define a function on `ℤ` by defining it at `b`, for the `succ` of a number greater
--- than `b`, and the `pred` of a number less than `b`. -/
--- @[elab_as_elim] protected def inductionOn' {C : ℤ → Sort _}
---     (z : ℤ) (b : ℤ) (H0 : C b) (Hs : ∀ k, b ≤ k → C k → C (k + 1))
---     (Hp : ∀ k ≤ b, C k → C (k - 1)) : C z := by
---   rw [← sub_add_cancel (G := ℤ) z b, add_comm]
---   exact match z - b with
---   | .ofNat n => pos n
---   | .negSucc n => neg n
--- where
---   /-- The positive case of `Int.inductionOn'`. -/
---   pos : ∀ n : ℕ, C (b + n)
---   | 0 => _root_.cast (by erw [add_zero]) H0
---   | n+1 => _root_.cast (by rw [add_assoc]; rfl) <|
---     Hs _ (Int.le_add_of_nonneg_right (ofNat_nonneg _)) (pos n)
-
---   /-- The negative case of `Int.inductionOn'`. -/
---   neg : ∀ n : ℕ, C (b + -[n+1])
---   | 0 => Hp _ (Int.le_refl _) H0
---   | n+1 => by
---     refine _root_.cast (by rw [add_sub_assoc]; rfl) (Hp _ (Int.le_of_lt ?_) (neg n))
---     conv => rhs; apply (add_zero b).symm
---     rw [Int.add_lt_add_iff_left]; apply negSucc_lt_zero
-/-
-Copyright (c) 2016 Jeremy Avigad. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad
--/
-
 open Nat
 
 namespace Int
 
 instance : LinearOrderedCommRing ℤ :=
-  { Int.commRing, Int.linearOrder, Int.nontrivial with add_le_add_left := @Int.add_le_add_left,
+  { instCommRingInt, instLinearOrderInt, instNontrivialInt with
+    add_le_add_left := @Int.add_le_add_left,
     mul_pos := @Int.mul_pos, zero_le_one := le_of_lt Int.zero_lt_one }
 
 /-! ### Extra instances to short-circuit type class resolution
@@ -113,7 +50,7 @@ theorem abs_eq_nat_abs : ∀ a : ℤ, |a| = natAbs a
   | -[n+1] => abs_of_nonpos <| le_of_lt <| negSucc_lt_zero _
 #align int.abs_eq_nat_abs Int.abs_eq_nat_abs
 
-theorem nat_abs_abs (a : ℤ) : natAbs (|a|) = natAbs a := by rw [abs_eq_nat_abs] <;> rfl
+theorem nat_abs_abs (a : ℤ) : natAbs (|a|) = natAbs a := by rw [abs_eq_nat_abs] ; rfl
 #align int.nat_abs_abs Int.nat_abs_abs
 
 theorem sign_mul_abs (a : ℤ) : sign a * |a| = a := by rw [abs_eq_nat_abs, sign_mul_nat_abs]
@@ -127,7 +64,7 @@ theorem coe_nat_ne_zero {n : ℕ} : (n : ℤ) ≠ 0 ↔ n ≠ 0 := by simp
 #align int.coe_nat_ne_zero Int.coe_nat_ne_zero
 
 theorem coe_nat_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n :=
-  ⟨fun h => Nat.pos_of_ne_zero (coe_nat_ne_zero.1 h), fun h => (ne_of_lt (coe_nat_lt.2 h)).symm⟩
+  ⟨fun h => Nat.pos_of_ne_zero (coe_nat_ne_zero.1 h), fun h => (_root_.ne_of_lt (coe_nat_lt.2 h)).symm⟩
 #align int.coe_nat_ne_zero_iff_pos Int.coe_nat_ne_zero_iff_pos
 
 theorem coe_nat_abs (n : ℕ) : |(n : ℤ)| = n :=
@@ -181,29 +118,29 @@ theorem one_le_abs {z : ℤ} (h₀ : z ≠ 0) : 1 ≤ |z| :=
   add_one_le_iff.mpr (abs_pos.mpr h₀)
 #align int.one_le_abs Int.one_le_abs
 
-#print Int.inductionOn' /-
 /-- Inductively define a function on `ℤ` by defining it at `b`, for the `succ` of a number greater
 than `b`, and the `pred` of a number less than `b`. -/
-@[elab_as_elim]
-protected def inductionOn' {C : ℤ → Sort _} (z : ℤ) (b : ℤ) (H0 : C b)
-    (Hs : ∀ k, b ≤ k → C k → C (k + 1)) (Hp : ∀ k ≤ b, C k → C (k - 1)) : C z :=
-  by
-  -- Note that we use `convert` here where possible as we are constructing data, and this reduces
-  -- the number of times `eq.mpr` appears in the term.
-  rw [← sub_add_cancel z b]
-  induction' z - b with n n
-  · induction' n with n ih
-    · convert H0 using 1
-      rw [of_nat_zero, zero_add]
-    convert Hs _ (le_add_of_nonneg_left (of_nat_nonneg _)) ih using 1
-    rw [of_nat_succ, add_assoc, add_comm 1 b, ← add_assoc]
-  · induction' n with n ih
-    · convert Hp _ le_rfl H0 using 1
-      rw [neg_succ_of_nat_eq, ← of_nat_eq_coe, of_nat_zero, zero_add, neg_add_eq_sub]
-    · convert Hp _ (le_of_lt (add_lt_of_neg_of_le (neg_succ_lt_zero _) le_rfl)) ih using 1
-      rw [neg_succ_of_nat_coe', Nat.succ_eq_add_one, ← neg_succ_of_nat_coe, sub_add_eq_add_sub]
-#align int.induction_on' Int.inductionOn'
--/
+@[elab_as_elim] protected def inductionOn' {C : ℤ → Sort _}
+    (z : ℤ) (b : ℤ) (H0 : C b) (Hs : ∀ k, b ≤ k → C k → C (k + 1))
+    (Hp : ∀ k ≤ b, C k → C (k - 1)) : C z := by
+  rw [← sub_add_cancel (G := ℤ) z b, add_comm]
+  exact match z - b with
+  | .ofNat n => pos n
+  | .negSucc n => neg n
+where
+  /-- The positive case of `Int.inductionOn'`. -/
+  pos : ∀ n : ℕ, C (b + n)
+  | 0 => _root_.cast (by erw [add_zero]) H0
+  | n+1 => _root_.cast (by rw [add_assoc]; rfl) <|
+    Hs _ (Int.le_add_of_nonneg_right (ofNat_nonneg _)) (pos n)
+
+  /-- The negative case of `Int.inductionOn'`. -/
+  neg : ∀ n : ℕ, C (b + -[n+1])
+  | 0 => Hp _ (Int.le_refl _) H0
+  | n+1 => by
+    refine _root_.cast (by rw [add_sub_assoc]; rfl) (Hp _ (Int.le_of_lt ?_) (neg n))
+    conv => rhs; apply (add_zero b).symm
+    rw [Int.add_lt_add_iff_left]; apply negSucc_lt_zero
 
 /-- See `int.induction_on'` for an induction in both directions. -/
 protected theorem le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)
