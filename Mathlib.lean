@@ -64,6 +64,7 @@ import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Monoid.WithZero.Basic
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 import Mathlib.Algebra.Order.Positive.Ring
+import MAthlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Algebra.Order.Ring.Defs
