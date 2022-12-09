@@ -45,15 +45,15 @@ end Int
 
 namespace Int
 
-theorem abs_eq_nat_abs : ∀ a : ℤ, |a| = natAbs a
+theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
   | (n : ℕ) => abs_of_nonneg <| ofNat_zero_le _
-  | -[n+1] => abs_of_nonpos <| le_of_lt <| negSucc_lt_zero _
-#align int.abs_eq_nat_abs Int.abs_eq_nat_abs
+  | -[_+1] => abs_of_nonpos <| le_of_lt <| negSucc_lt_zero _
+#align int.abs_eq_nat_abs Int.abs_eq_natAbs
 
-theorem nat_abs_abs (a : ℤ) : natAbs (|a|) = natAbs a := by rw [abs_eq_nat_abs] ; rfl
+theorem nat_abs_abs (a : ℤ) : natAbs (|a|) = natAbs a := by rw [abs_eq_natAbs] ; rfl
 #align int.nat_abs_abs Int.nat_abs_abs
 
-theorem sign_mul_abs (a : ℤ) : sign a * |a| = a := by rw [abs_eq_nat_abs, sign_mul_nat_abs]
+theorem sign_mul_abs (a : ℤ) : sign a * |a| = a := by rw [abs_eq_natAbs, sign_mul_natAbs a]
 #align int.sign_mul_abs Int.sign_mul_abs
 
 theorem coe_nat_eq_zero {n : ℕ} : (n : ℤ) = 0 ↔ n = 0 :=
