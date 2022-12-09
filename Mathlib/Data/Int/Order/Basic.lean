@@ -5,7 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Tactic.LibrarySearch
+
 /-!
 # Order instances on the integers
 
