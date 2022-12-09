@@ -68,7 +68,7 @@ theorem abs_cases (a : α) : |a| = a ∧ 0 ≤ a ∨ |a| = -a ∧ a < 0 := by
   · left
     exact ⟨abs_eq_self.mpr h, h⟩
   · right
-    push_neg  at h
+    push_neg at h
     exact ⟨abs_eq_neg_self.mpr (le_of_lt h), h⟩
 #align abs_cases abs_cases
 
