@@ -33,7 +33,7 @@ If multiplication is associative, `Invertible` is a subsingleton anyway.
 The `simp` normal form tries to normalize `⅟a` to `a ⁻¹`. Otherwise, it pushes
 `⅟` inside the expression as much as possible.
 
-Since `Invertible a` is not a `Prop` (but it is a `Iubsingleton`), we have to be careful about
+Since `Invertible a` is not a `Prop` (but it is a `Subsingleton`), we have to be careful about
 coherence issues: we should avoid having multiple non-defeq instances for `Invertible a` in the
 same context.  This file plays it safe and uses `def` rather than `instance` for most definitions,
 users can choose which instances to use at the point of use.
@@ -45,7 +45,7 @@ variables {α : Type _} [monoid α]
 def something_that_needs_inverses (x : α) [Invertible x] := sorry
 
 section
-local attribute [instance] invertible_one
+local attribute [instance] invertibleOne
 def something_one := something_that_needs_inverses 1
 end
 ```
@@ -68,7 +68,6 @@ class Invertible [Mul α] [One α] (a : α) : Type u where
   mul_inv_of_self : a * invOf = 1
 #align invertible Invertible
 
--- mathport name: «expr⅟»
 notation:1034
   "⅟" =>-- This notation has the same precedence as `has_inv.inv`.
   Invertible.invOf
@@ -162,7 +161,7 @@ theorem IsUnit.nonempty_invertible [Monoid α] {a : α} (h : IsUnit a) : Nonempt
   ⟨x.invertible.copy _ hx.symm⟩
 #align is_unit.nonempty_invertible IsUnit.nonempty_invertible
 
-/-- Convert `is_unit` to `invertible` using `classical.choice`.
+/-- Convert `IsUnit` to `Invertible` using `Classical.choice`.
 
 Prefer `casesI h.nonempty_invertible` over `letI := h.invertible` if you want to avoid choice. -/
 noncomputable def IsUnit.invertible [Monoid α] {a : α} (h : IsUnit a) : Invertible a :=
