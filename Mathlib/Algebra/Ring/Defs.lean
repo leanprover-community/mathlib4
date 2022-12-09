@@ -135,7 +135,7 @@ theorem mul_one_add [LeftDistribClass α] (a b : α) : a * (1 + b) = a + a * b :
 
 end DistribMulOneClass
 
-section Semiring
+section NonAssocSemiring
 
 variable [NonAssocSemiring α]
 
