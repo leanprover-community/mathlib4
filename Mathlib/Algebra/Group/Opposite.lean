@@ -338,8 +338,8 @@ def MonoidHom.toOpposite {M N : Type _} [MulOneClass M] [MulOneClass N] (f : M �
     (hf : ∀ x y, Commute (f x) (f y)) :
     M →* Nᵐᵒᵖ where
   toFun := MulOpposite.op ∘ f
-  map_one' := congr_arg op f.map_one
-  map_mul' x y := by simp [(hf x y).Eq]
+  map_one' := congrArg op f.map_one
+  map_mul' x y := by simp [(hf x y).eq]
 #align monoid_hom.to_opposite MonoidHom.toOpposite
 
 /-- A monoid homomorphism `f : M →* N` such that `f x` commutes with `f y` for all `x, y` defines
@@ -390,9 +390,9 @@ def MulHom.op {M N} [Mul M] [Mul N] :
       (Mᵐᵒᵖ →ₙ*
         Nᵐᵒᵖ) where
   toFun f :=
-    { toFun := op ∘ f ∘ unop, map_mul' := fun x y => unop_injective (f.map_mul y.unop x.unop) }
+    { toFun := MulOpposite.op ∘ f ∘ unop, map_mul' := fun x y => unop_injective (f.map_mul y.unop x.unop) }
   invFun f :=
-    { toFun := unop ∘ f ∘ op, map_mul' := fun x y => congr_arg unop (f.map_mul (op y) (op x)) }
+    { toFun := unop ∘ f ∘ MulOpposite.op, map_mul' := fun x y => congrArg unop (f.map_mul (MulOpposite.op y) (MulOpposite.op x)) }
   left_inv f := by
     ext
     rfl
@@ -418,9 +418,9 @@ def AddHom.mulOp {M N} [Add M] [Add N] :
       AddHom Mᵐᵒᵖ
         Nᵐᵒᵖ where
   toFun f :=
-    { toFun := op ∘ f ∘ unop, map_add' := fun x y => unop_injective (f.map_add x.unop y.unop) }
+    { toFun := MulOpposite.op ∘ f ∘ MulOpposite.unop, map_add' := fun x y => unop_injective (f.map_add x.unop y.unop) }
   invFun f :=
-    { toFun := unop ∘ f ∘ op, map_add' := fun x y => congr_arg unop (f.map_add (op x) (op y)) }
+    { toFun := MulOpposite.unop ∘ f ∘ MulOpposite.op, map_add' := fun x y => congrArg MulOpposite.unop (f.map_add (MulOpposite.op x) (MulOpposite.op y)) }
   left_inv f := by
     ext
     rfl
@@ -446,11 +446,11 @@ def MonoidHom.op {M N} [MulOneClass M] [MulOneClass N] :
       (Mᵐᵒᵖ →*
         Nᵐᵒᵖ) where
   toFun f :=
-    { toFun := op ∘ f ∘ unop, map_one' := congr_arg op f.map_one,
+    { toFun := MulOpposite.op ∘ f ∘ unop, map_one' := congrArg MulOpposite.op f.map_one,
       map_mul' := fun x y => unop_injective (f.map_mul y.unop x.unop) }
   invFun f :=
-    { toFun := unop ∘ f ∘ op, map_one' := congr_arg unop f.map_one,
-      map_mul' := fun x y => congr_arg unop (f.map_mul (op y) (op x)) }
+    { toFun := unop ∘ f ∘ MulOpposite.op, map_one' := congrArg unop f.map_one,
+      map_mul' := fun x y => congrArg unop (f.map_mul (MulOpposite.op y) (MulOpposite.op x)) }
   left_inv f := by
     ext
     rfl
@@ -475,11 +475,11 @@ def AddMonoidHom.mulOp {M N} [AddZeroClass M] [AddZeroClass N] :
       (Mᵐᵒᵖ →+
         Nᵐᵒᵖ) where
   toFun f :=
-    { toFun := op ∘ f ∘ unop, map_zero' := unop_injective f.map_zero,
+    { toFun := MulOpposite.op ∘ f ∘ MulOpposite.unop, map_zero' := unop_injective f.map_zero,
       map_add' := fun x y => unop_injective (f.map_add x.unop y.unop) }
   invFun f :=
-    { toFun := unop ∘ f ∘ op, map_zero' := congr_arg unop f.map_zero,
-      map_add' := fun x y => congr_arg unop (f.map_add (op x) (op y)) }
+    { toFun := MulOpposite.unop ∘ f ∘ MulOpposite.op, map_zero' := congrArg MulOpposite.unop f.map_zero,
+      map_add' := fun x y => congrArg MulOpposite.unop (f.map_add (MulOpposite.op x) (MulOpposite.op y)) }
   left_inv f := by
     ext
     rfl
@@ -524,14 +524,14 @@ def MulEquiv.op {α β} [Mul α] [Mul β] :
       (αᵐᵒᵖ ≃*
         βᵐᵒᵖ) where
   toFun f :=
-    { toFun := op ∘ f ∘ unop, invFun := op ∘ f.symm ∘ unop,
+    { toFun := MulOpposite.op ∘ f ∘ unop, invFun := MulOpposite.op ∘ f.symm ∘ unop,
       left_inv := fun x => unop_injective (f.symm_apply_apply x.unop),
       right_inv := fun x => unop_injective (f.apply_symm_apply x.unop),
       map_mul' := fun x y => unop_injective (f.map_mul y.unop x.unop) }
   invFun f :=
-    { toFun := unop ∘ f ∘ op, invFun := unop ∘ f.symm ∘ op, left_inv := fun x => by simp,
+    { toFun := unop ∘ f ∘ MulOpposite.op, invFun := unop ∘ f.symm ∘ MulOpposite.op, left_inv := fun x => by simp,
       right_inv := fun x => by simp,
-      map_mul' := fun x y => congr_arg unop (f.map_mul (op y) (op x)) }
+      map_mul' := fun x y => congr_arg unop (f.map_mul (MulOpposite.op y) (MulOpposite.op x)) }
   left_inv f := by
     ext
     rfl
