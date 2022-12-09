@@ -533,7 +533,8 @@ noncomputable def ofBijective {M N F} [Mul M] [Mul N] [MulHomClass F M N]
   rfl
 #align mul_equiv.of_bijective_apply MulEquiv.ofBijective_apply
 
--- porting note: `@[simps apply]` should be making this lemma.
+-- porting note: `@[to_additive, simps apply]` should be making this lemma but it
+-- doesn't get generated.
 @[simp] theorem _root_.AddEquiv.ofBijective_apply {M N F} [Add M] [Add N] [AddHomClass F M N]
     (f : F) (hf : Function.Bijective f) (a : M) : (AddEquiv.ofBijective f hf).toEquiv a = f a :=
   rfl
