@@ -228,12 +228,12 @@ def MulEquiv.inv (G : Type _) [DivisionCommMonoid G] : G ≃* G :=
 -- porting note: this lemma and the next are added manually because `simps` was
 -- not quite generating the right thing
 @[simp] theorem MulEquiv.inv_apply (G : Type _) [DivisionCommMonoid G] (a : G) :
-    Equiv.toFun (MulEquiv.inv G).toEquiv a = a⁻¹ :=
+    (MulEquiv.inv G).toEquiv a = a⁻¹ :=
   rfl
 #align mul_equiv.inv_apply MulEquiv.inv_apply
 
 @[simp] theorem AddEquiv.neg_apply (G : Type _) [SubtractionCommMonoid G] (a : G) :
-    Equiv.toFun (AddEquiv.neg G).toEquiv a = -a :=
+    (AddEquiv.neg G).toEquiv a = -a :=
   rfl
 #align add_equiv.neg_apply AddEquiv.neg_apply
 
