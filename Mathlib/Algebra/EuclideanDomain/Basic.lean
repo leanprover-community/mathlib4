@@ -206,7 +206,7 @@ theorem xgcdAux_val (x y : R) : xgcdAux x 1 0 y 0 1 = (gcd x y, xgcd x y) := by
 private def P (a b : R) : R × R × R → Prop
   | (r, s, t) => (r : R) = a * s + b * t
 
-theorem xgcdAuxP (a b : R) {r r' : R} :
+theorem xgcdAux_P (a b : R) {r r' : R} :
     ∀ {s t s' t'}, P a b (r, s, t) → P a b (r', s', t') → P a b (xgcdAux r s t r' s' t') :=
   --Porting TODO: This is very ugly. Is there a nicer way?
   have : ∀ (s t s' t'), P a b (r, s, t) → P a b (r', s', t') → P a b (xgcdAux r s t r' s' t') :=
@@ -220,12 +220,12 @@ theorem xgcdAuxP (a b : R) {r r' : R} :
       rw [mul_sub, mul_sub, add_sub, sub_add_eq_add_sub, ← p', sub_sub, mul_comm _ s, ← mul_assoc,
         mul_comm _ t, ← mul_assoc, ← add_mul, ← p, mod_eq_sub_mul_div]
   this _ _ _ _
-#align euclidean_domain.xgcd_aux_P EuclideanDomain.xgcdAuxP
+#align euclidean_domain.xgcd_aux_P EuclideanDomain.xgcdAux_P
 
 /-- An explicit version of **Bézout's lemma** for Euclidean domains. -/
 theorem gcd_eq_gcd_ab (a b : R) : (gcd a b : R) = a * gcdA a b + b * gcdB a b := by
   have :=
-    @xgcdAuxP _ _ _ a b a b 1 0 0 1 (by dsimp [P]; rw [mul_one, mul_zero, add_zero])
+    @xgcdAux_P _ _ _ a b a b 1 0 0 1 (by dsimp [P]; rw [mul_one, mul_zero, add_zero])
       (by dsimp [P]; rw [mul_one, mul_zero, zero_add])
   rwa [xgcdAux_val, xgcd_val] at this
 #align euclidean_domain.gcd_eq_gcd_ab EuclideanDomain.gcd_eq_gcd_ab
