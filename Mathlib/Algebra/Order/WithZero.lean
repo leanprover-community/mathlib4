@@ -105,8 +105,10 @@ theorem ne_zero_of_lt (h : b < a) : a ≠ 0 := fun h1 ↦ not_lt_zero' <| show b
 #align ne_zero_of_lt ne_zero_of_lt
 
 instance : LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) :=
-  { Additive.orderedAddCommMonoid, Additive.linearOrder with top := (0 : α),
-    top_add' := fun a ↦ (zero_mul a : (0 : α) * a = 0), le_top := fun _ ↦ zero_le' }
+  { Additive.orderedAddCommMonoid, Additive.linearOrder with
+    top := (0 : α)
+    top_add' := fun a ↦ (zero_mul a : (0 : α) * a = 0)
+    le_top := fun _ ↦ zero_le' }
 #align additive.linear_ordered_add_comm_monoid_with_top
   instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual
 
@@ -158,7 +160,10 @@ theorem mul_inv_le_iff₀ (hc : c ≠ 0) : a * c⁻¹ ≤ b ↔ a ≤ b * c :=
 theorem div_le_div₀ (a b c d : α) (hb : b ≠ 0) (hd : d ≠ 0) : a * b⁻¹ ≤ c * d⁻¹ ↔ a * d ≤ c * b :=
   if ha : a = 0 then by simp [ha]
   else
-    if hc : c = 0 then by simp [inv_ne_zero hb, hc, hd, -inv_eq_zero]
+    if hc : c = 0 then by simp [hb, hc, hd]
+    -- Porting note: the Lean 3 proof was `simp [inv_ne_zero hb, hc, hd]`.  This is a non-confluent
+    -- simp and we should expect that these sometimes break between Lean 3 and Lean 4.
+    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Difference.20in.20simp.20lemma.20priorities.3F
     else
       show
         Units.mk0 a ha * (Units.mk0 b hb)⁻¹ ≤ Units.mk0 c hc * (Units.mk0 d hd)⁻¹ ↔
@@ -233,8 +238,11 @@ theorem div_le_div_right₀ (hc : c ≠ 0) : a / c ≤ b / c ↔ a ≤ b := by
 #align div_le_div_right₀ div_le_div_right₀
 
 theorem div_le_div_left₀ (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) : a / b ≤ a / c ↔ c ≤ b := by
-  simp only [div_eq_mul_inv, mul_le_mul_left₀ ha, inv_le_inv₀ hb hc];
-  rfl
+  simp only [div_eq_mul_inv, mul_le_mul_left₀ ha, inv_le_inv₀ hb hc, iff_self]
+-- Porting note: the simplifier in Lean 3 functioned in such a way that, effectively, `iff_self` was
+-- silently added to a `simp only`.  It had to be manually added here.
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60simp.60.20.28or.20.60refl.60.3F.29.20difference.20Lean.203.2F4
+-- would be resolved by https://github.com/leanprover/lean4/issues/1933
 #align div_le_div_left₀ div_le_div_left₀
 
 theorem le_div_iff₀ (hc : c ≠ 0) : a ≤ b / c ↔ a * c ≤ b := by
