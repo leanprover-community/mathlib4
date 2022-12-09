@@ -1,5 +1,5 @@
 import Mathlib.Mathport.Notation
-import Mathlib.Init.Algebra.Order
+import Mathlib.Init.Data.Nat.Lemmas
 
 namespace Test
 
