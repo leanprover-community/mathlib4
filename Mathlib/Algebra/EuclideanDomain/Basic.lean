@@ -134,20 +134,20 @@ variable [DecidableEq R]
 @[simp]
 theorem gcd_zero_right (a : R) : gcd a 0 = a := by
   rw [gcd]
-  split_ifs <;> simp only [h, zero_mod, gcd_zero_left]
+  split_ifs with h <;> simp only [h, zero_mod, gcd_zero_left]
 #align euclidean_domain.gcd_zero_right EuclideanDomain.gcd_zero_right
 
 theorem gcd_val (a b : R) : gcd a b = gcd (b % a) a := by
   rw [gcd]
-  split_ifs <;> [simp only [h, mod_zero, gcd_zero_right], rfl]
+  split_ifs with h <;> [simp only [h, mod_zero, gcd_zero_right], rfl]
 #align euclidean_domain.gcd_val EuclideanDomain.gcd_val
 
 theorem gcd_dvd (a b : R) : gcd a b ∣ a ∧ gcd a b ∣ b :=
-  Gcd.induction a b
+  GCD.induction a b
     (fun b => by
       rw [gcd_zero_left]
       exact ⟨dvd_zero _, dvd_rfl⟩)
-    fun a b aneq ⟨IH₁, IH₂⟩ => by
+    fun a b _ ⟨IH₁, IH₂⟩ => by
     rw [gcd_val]
     exact ⟨IH₂, (dvd_mod_iff IH₂).1 IH₁⟩
 #align euclidean_domain.gcd_dvd EuclideanDomain.gcd_dvd
@@ -167,7 +167,7 @@ protected theorem gcd_eq_zero_iff {a b : R} : gcd a b = 0 ↔ a = 0 ∧ b = 0 :=
 #align euclidean_domain.gcd_eq_zero_iff EuclideanDomain.gcd_eq_zero_iff
 
 theorem dvd_gcd {a b c : R} : c ∣ a → c ∣ b → c ∣ gcd a b :=
-  Gcd.induction a b (fun _ _ H => by simpa only [gcd_zero_left] using H) fun a b a0 IH ca cb => by
+  GCD.induction a b (fun _ _ H => by simpa only [gcd_zero_left] using H) fun a b _ IH ca cb => by
     rw [gcd_val]
     exact IH ((dvd_mod_iff ca).2 cb) ca
 #align euclidean_domain.dvd_gcd EuclideanDomain.dvd_gcd
@@ -189,27 +189,26 @@ theorem gcd_self (a : R) : gcd a a = a :=
 #align euclidean_domain.gcd_self EuclideanDomain.gcd_self
 
 @[simp]
-theorem xgcd_aux_fst (x y : R) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x y :=
-  Gcd.induction x y
+theorem xgcdAux_fst (x y : R) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x y :=
+  GCD.induction x y
     (by
       intros
       rw [xgcd_zero_left, gcd_zero_left])
     fun x y h IH s t s' t' => by
-    simp only [xgcd_aux_rec h, if_neg h, IH]
+    simp only [xgcdAux_rec h, if_neg h, IH]
     rw [← gcd_val]
-#align euclidean_domain.xgcd_aux_fst EuclideanDomain.xgcd_aux_fst
+#align euclidean_domain.xgcd_aux_fst EuclideanDomain.xgcdAux_fst
 
-theorem xgcd_aux_val (x y : R) : xgcdAux x 1 0 y 0 1 = (gcd x y, xgcd x y) := by
-  rw [xgcd, ← xgcd_aux_fst x y 1 0 0 1, Prod.mk.eta]
-#align euclidean_domain.xgcd_aux_val EuclideanDomain.xgcd_aux_val
+theorem xgcdAux_val (x y : R) : xgcdAux x 1 0 y 0 1 = (gcd x y, xgcd x y) := by
+  rw [xgcd, ← xgcdAux_fst x y 1 0 0 1, Prod.mk.eta]
+#align euclidean_domain.xgcd_aux_val EuclideanDomain.xgcdAux_val
 
 private def P (a b : R) : R × R × R → Prop
   | (r, s, t) => (r : R) = a * s + b * t
-#align euclidean_domain.P euclidean_domain.P
 
 theorem xgcdAuxP (a b : R) {r r' : R} :
     ∀ {s t s' t'}, P a b (r, s, t) → P a b (r', s', t') → P a b (xgcdAux r s t r' s' t') :=
-  (Gcd.induction r r'
+  (GCD.induction r r'
       (by
         intros
         simpa only [xgcd_zero_left] ))
@@ -222,9 +221,9 @@ theorem xgcdAuxP (a b : R) {r r' : R} :
 /-- An explicit version of **Bézout's lemma** for Euclidean domains. -/
 theorem gcd_eq_gcd_ab (a b : R) : (gcd a b : R) = a * gcdA a b + b * gcdB a b := by
   have :=
-    @xgcd_aux_P _ _ _ a b a b 1 0 0 1 (by rw [P, mul_one, mul_zero, add_zero])
+    @xgcdAuxP _ _ _ a b a b 1 0 0 1 (by rw [P, mul_one, mul_zero, add_zero])
       (by rw [P, mul_one, mul_zero, zero_add])
-  rwa [xgcd_aux_val, xgcd_val] at this
+  rwa [xgcdAux_val, xgcd_val] at this
 #align euclidean_domain.gcd_eq_gcd_ab EuclideanDomain.gcd_eq_gcd_ab
 
 -- see Note [lower instance priority]
