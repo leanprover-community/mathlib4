@@ -125,9 +125,10 @@ example (P : Prop) : P → P := by
   fail_if_success solve_by_elim
   solve_by_elim (config := .intros)
 
--- This worked in mathlib3. Why is it failing here?
--- example (P Q R : Prop) : P ∧ Q → P ∧ Q := by
---   solve_by_elim [And.imp, id]
+-- This worked in mathlib3 without the `@`, but now goes into a loop.
+-- If someone wants to diagnose this, please do!
+example (P Q : Prop) : P ∧ Q → P ∧ Q := by
+  solve_by_elim [And.imp, @id]
 
 section apply_assumption
 
