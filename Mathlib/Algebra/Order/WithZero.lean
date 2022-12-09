@@ -111,7 +111,7 @@ theorem ne_zero_of_lt (h : b < a) : a ≠ 0 := fun h1 ↦ not_lt_zero' <| show b
 instance : LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) :=
   { Additive.orderedAddCommMonoid, Additive.linearOrder with
     top := (0 : α)
-    top_add' := @zero_mul α _
+    top_add' := fun a ↦ zero_mul (Additive.toMul a)
     le_top := fun _ ↦ zero_le' }
 #align additive.linear_ordered_add_comm_monoid_with_top
   instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual
@@ -289,4 +289,4 @@ instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     instNontrivialAdditive with
     neg_top := @inv_zero _ (_)
-    add_neg_cancel := @mul_inv_cancel α _ }
+    add_neg_cancel := fun a ha ↦ mul_inv_cancel (id ha : Additive.toMul a ≠ 0) }
