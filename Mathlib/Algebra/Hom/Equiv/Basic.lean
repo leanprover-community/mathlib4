@@ -787,8 +787,8 @@ def MonoidHom.toMulEquiv [MulOneClass M] [MulOneClass N] (f : M →* N) (g : N �
   rfl
 #align monoid_hom.to_mul_equiv_apply MonoidHom.toMulEquiv_apply
 
-@[simp] theorem MonoidHom.toMulEquiv_symmApply [MulOneClass M] [MulOneClass N] (f : M →* N) (g : N →* M)
-    (h₁ : g.comp f = MonoidHom.id _) (h₂ : f.comp g = MonoidHom.id _) :
+@[simp] theorem MonoidHom.toMulEquiv_symmApply [MulOneClass M] [MulOneClass N] (f : M →* N)
+    (g : N →* M) (h₁ : g.comp f = MonoidHom.id _) (h₂ : f.comp g = MonoidHom.id _) :
     (MulEquiv.symm (MonoidHom.toMulEquiv f g h₁ h₂) : N → M) = g :=
   rfl
 #align monoid_hom.to_mul_equiv_symm_apply MonoidHom.toMulEquiv_symmApply
