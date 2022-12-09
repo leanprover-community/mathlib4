@@ -43,10 +43,10 @@ it preserves addition. -/
 theorem OrderIso.map_tsub {M N : Type _} [Preorder M] [Add M] [Sub M] [OrderedSub M]
     [PartialOrder N] [Add N] [Sub N] [OrderedSub N] (e : M ≃o N)
     (h_add : ∀ a b, e (a + b) = e a + e b) (a b : M) : e (a - b) = e a - e b := by
-  set e_add : M ≃+ N := { e with map_add' := h_add }
-  refine' le_antisymm _ (e_add.to_add_hom.le_map_tsub e.monotone a b)
+  let e_add : M ≃+ N := { e with map_add' := h_add }
+  refine' le_antisymm _ (e_add.toAddHom.le_map_tsub e.monotone a b)
   suffices e (e.symm (e a) - e.symm (e b)) ≤ e (e.symm (e a - e b)) by simpa
-  exact e.monotone (e_add.symm.to_add_hom.le_map_tsub e.symm.monotone _ _)
+  exact e.monotone (e_add.symm.toAddHom.le_map_tsub e.symm.monotone _ _)
 #align order_iso.map_tsub OrderIso.map_tsub
 
 /-! ### Preorder -/
