@@ -2514,20 +2514,25 @@ theorem univ_eq_true_false : univ = ({True, False} : Set Prop) :=
 section Preorder
 
 variable [Preorder α] [Preorder β] {f : α → β}
-
-theorem monotoneOn_iff_monotone : MonotoneOn f s ↔ Monotone fun a : s => f a := by
+-- #check Subtype.instPreorderSubtype
+-- #synth Preorder s
+theorem monotoneOn_iff_monotone : MonotoneOn f s ↔
+  (@Monotone _ _ (Subtype.instPreorderSubtype _) _ fun a : s => f a) := by
   simp [Monotone, MonotoneOn]
 #align set.monotone_on_iff_monotone Set.monotoneOn_iff_monotone
 
-theorem antitoneOn_iff_antitone : AntitoneOn f s ↔ Antitone fun a : s => f a := by
+theorem antitoneOn_iff_antitone : AntitoneOn f s ↔
+  @Antitone _ _ (Subtype.instPreorderSubtype _) _ fun a : s => f a := by
   simp [Antitone, AntitoneOn]
 #align set.antitone_on_iff_antitone Set.antitoneOn_iff_antitone
 
-theorem strictMonoOn_iff_strictMono : StrictMonoOn f s ↔ StrictMono fun a : s => f a := by
+theorem strictMonoOn_iff_strictMono : StrictMonoOn f s ↔
+  @StrictMono _ _ (Subtype.instPreorderSubtype _) _ fun a : s => f a := by
   simp [StrictMono, StrictMonoOn]
 #align set.strict_mono_on_iff_strict_mono Set.strictMonoOn_iff_strictMono
 
-theorem strictAntiOn_iff_strictAnti : StrictAntiOn f s ↔ StrictAnti fun a : s => f a := by
+theorem strictAntiOn_iff_strictAnti : StrictAntiOn f s ↔
+  @StrictAnti _ _ (Subtype.instPreorderSubtype _) _ fun a : s => f a := by
   simp [StrictAnti, StrictAntiOn]
 #align set.strict_anti_on_iff_strict_anti Set.strictAntiOn_iff_strictAnti
 
