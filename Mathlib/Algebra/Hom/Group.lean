@@ -1241,7 +1241,7 @@ protected def End := A →+ A
 
 namespace End
 
-instance : Monoid (AddMonoid.End A) where
+instance monoid : Monoid (AddMonoid.End A) where
   mul := AddMonoidHom.comp
   one := AddMonoidHom.id A
   mul_assoc _ _ _ := AddMonoidHom.comp_assoc _ _ _
