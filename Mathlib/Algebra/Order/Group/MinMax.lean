@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.Monoid.MinMax
 
 section
 
-variable {α : Type _} [Group α] [LinearOrder α] [CovariantClass α α (· * ·) (· ≤ ·)]
+variable {α : Type _} [Group α] [LinearOrder α] [CovariantClass α α (. * .) (. ≤ .)]
 
 @[simp, to_additive]
 theorem max_one_div_max_inv_one_eq_self (a : α) : max a 1 / max a⁻¹ 1 = a := by
@@ -30,12 +30,16 @@ variable {α : Type _} [LinearOrderedCommGroup α] {a b c : α}
 
 @[to_additive min_neg_neg]
 theorem min_inv_inv' (a b : α) : min a⁻¹ b⁻¹ = (max a b)⁻¹ :=
-  Eq.symm <| (@Monotone.map_max α αᵒᵈ _ _ Inv.inv a b) fun a b => inv_le_inv_iff.mpr
+  Eq.symm <| (@Monotone.map_max α αᵒᵈ _ _ Inv.inv a b) fun _ _ =>
+  -- Porting note: Explicit `α` necessary to infer `CovariantClass` instance
+    (@inv_le_inv_iff α _ _ _).mpr
 #align min_inv_inv' min_inv_inv'
 
 @[to_additive max_neg_neg]
 theorem max_inv_inv' (a b : α) : max a⁻¹ b⁻¹ = (min a b)⁻¹ :=
-  Eq.symm <| (@Monotone.map_min α αᵒᵈ _ _ Inv.inv a b) fun a b => inv_le_inv_iff.mpr
+  Eq.symm <| (@Monotone.map_min α αᵒᵈ _ _ Inv.inv a b) fun _ _ =>
+  -- Porting note: Explicit `α` necessary to infer `CovariantClass` instance
+    (@inv_le_inv_iff α _ _ _).mpr
 #align max_inv_inv' max_inv_inv'
 
 @[to_additive min_sub_sub_right]
@@ -89,7 +93,8 @@ theorem abs_min_sub_min_le_max (a b c d : α) : |min a b - min c d| ≤ max (|a 
 #align abs_min_sub_min_le_max abs_min_sub_min_le_max
 
 theorem abs_max_sub_max_le_abs (a b c : α) : |max a c - max b c| ≤ |a - b| := by
-  simpa only [sub_self, abs_zero, max_eq_left (abs_nonneg _)] using abs_max_sub_max_le_max a c b c
+  simpa only [sub_self, abs_zero, max_eq_left (abs_nonneg (a - b))]
+    using abs_max_sub_max_le_max a c b c
 #align abs_max_sub_max_le_abs abs_max_sub_max_le_abs
 
 end LinearOrderedAddCommGroup
