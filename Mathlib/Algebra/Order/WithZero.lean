@@ -41,7 +41,9 @@ variable {a b c d x y z : α}
 instance [LinearOrderedAddCommMonoidWithTop α] :
     LinearOrderedCommMonoidWithZero (Multiplicative αᵒᵈ) :=
   { Multiplicative.orderedCommMonoid, Multiplicative.linearOrder with
-    zero := Multiplicative.ofAdd (⊤ : α), zero_mul := top_add, mul_zero := add_top,
+    zero := Multiplicative.ofAdd (⊤ : α)
+    zero_mul := @top_add α _
+    mul_zero := @add_top α _
     zero_le_one := (le_top : (0 : α) ≤ ⊤) }
 #align multiplicative.linear_ordered_comm_monoid_with_zero
   instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
@@ -50,8 +52,8 @@ instance [LinearOrderedAddCommGroupWithTop α] :
     LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) :=
   { Multiplicative.divInvMonoid, instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual,
     instNontrivialMultiplicative with
-    inv_zero := LinearOrderedAddCommGroupWithTop.neg_top,
-    mul_inv_cancel := LinearOrderedAddCommGroupWithTop.add_neg_cancel }
+    inv_zero := @LinearOrderedAddCommGroupWithTop.neg_top α _
+    mul_inv_cancel := @LinearOrderedAddCommGroupWithTop.add_neg_cancel α _ }
 
 instance [LinearOrderedCommMonoid α] : LinearOrderedCommMonoidWithZero (WithZero α) :=
   { WithZero.linearOrder, WithZero.commMonoidWithZero with
@@ -107,7 +109,7 @@ theorem ne_zero_of_lt (h : b < a) : a ≠ 0 := fun h1 ↦ not_lt_zero' <| show b
 instance : LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) :=
   { Additive.orderedAddCommMonoid, Additive.linearOrder with
     top := (0 : α)
-    top_add' := fun a ↦ (zero_mul a : (0 : α) * a = 0)
+    top_add' := @zero_mul α _
     le_top := fun _ ↦ zero_le' }
 #align additive.linear_ordered_add_comm_monoid_with_top
   instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual
@@ -284,4 +286,5 @@ theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     instNontrivialAdditive with
-    neg_top := inv_zero, add_neg_cancel := fun a ha ↦ mul_inv_cancel ha }
+    neg_top := @inv_zero α _
+    add_neg_cancel := @mul_inv_cancel α _ }
