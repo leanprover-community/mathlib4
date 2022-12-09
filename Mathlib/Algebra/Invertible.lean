@@ -61,9 +61,9 @@ universe u
 
 variable {α : Type u}
 
-/-- `invertible a` gives a two-sided multiplicative inverse of `a`. -/
+/-- `Invertible a` gives a two-sided multiplicative inverse of `a`. -/
 class Invertible [Mul α] [One α] (a : α) : Type u where
-  /-- The inverse of an `Invertbile` element -/
+  /-- The inverse of an `Invertible` element -/
   invOf : α
   /-- `invOf a` is a left inverse of `a` -/
   inv_of_mul_self : invOf * a = 1
