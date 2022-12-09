@@ -592,6 +592,8 @@ for multiplicative maps from a monoid to a commutative monoid.
 @[to_additive
   "An additive analogue of `Equiv.arrowCongr`,
   for additive maps from an additive monoid to a commutative additive monoid."]
+-- porting note: @[simps apply] removed because it was making a lemma which
+-- wasn't in simp normal form.
 def monoidHomCongr {M N P Q} [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoid Q]
   (f : M ≃* N) (g : P ≃* Q) :
   (M →* P) ≃* (N →* Q) where
