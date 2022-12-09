@@ -63,12 +63,15 @@ variable {α : Type u}
 
 /-- `invertible a` gives a two-sided multiplicative inverse of `a`. -/
 class Invertible [Mul α] [One α] (a : α) : Type u where
+  /-- The inverse of an `Invertbile` element -/
   invOf : α
+  /-- `invOf a` is a left inverse of `a` -/
   inv_of_mul_self : invOf * a = 1
+  /-- `invOf a` is a right inverse of `a` -/
   mul_inv_of_self : a * invOf = 1
 #align invertible Invertible
 
--- mathport name: «expr⅟»
+/-- The inverse of an `Invertbile` element -/
 notation:1034
   "⅟" =>-- This notation has the same precedence as `has_inv.inv`.
   Invertible.invOf
@@ -337,7 +340,7 @@ def invertibleDiv (a b : α) [Invertible a] [Invertible b] : Invertible (a / b) 
   ⟨b / a, by simp [← mul_div_assoc], by simp [← mul_div_assoc]⟩
 #align invertible_div invertibleDiv
 
-@[simp]
+-- Porting note: removed `simp` attibute as `simp` can prove it
 theorem inv_of_div (a b : α) [Invertible a] [Invertible b] [Invertible (a / b)] :
     ⅟ (a / b) = b / a :=
   invOf_eq_right_inv (by simp [← mul_div_assoc])
