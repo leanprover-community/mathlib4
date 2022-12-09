@@ -6,12 +6,12 @@ Authors: Mario Carneiro
 import Mathlib.Lean.Expr
 import Mathlib.Util.Syntax
 
--- To fix upstream:
--- * bracketedExplicitBinders doesn't support optional types
-
 /-!
 # The notation3 macro, simulating Lean 3's notation.
 -/
+
+-- To fix upstream:
+-- * bracketedExplicitBinders doesn't support optional types
 
 namespace Lean
 
