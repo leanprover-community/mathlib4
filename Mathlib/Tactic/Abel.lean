@@ -214,17 +214,12 @@ theorem zero_smul {α} [AddCommMonoid α] (c) : smul c (0 : α) = 0 := by
   simp [smul, nsmul_zero]
 
 theorem zero_smulg {α} [AddCommGroup α] (c) : smulg c (0 : α) = 0 := by
-  -- TODO waiting for port of Algebra.GroupPower.Basic for `zsmul_zero`
-  -- simp [smulg, zsmul_zero]
-  sorry
+  simp [smulg, zsmul_zero]
 
-@[nolint unusedArguments] -- TODO remove when the proof is filled in.
 theorem term_smul {α} [AddCommMonoid α] (c n x a n' a')
   (h₁ : c * n = n') (h₂ : smul c a = a') :
   smul c (@term α _ n x a) = term n' x a' := by
-  -- TODO waiting for port of Algebra.GroupPower.Basic for `nsmul_add` and `mul_nsmul`
-  -- simp [h₂.symm, h₁.symm, term, smul, nsmul_add, mul_nsmul]
-  sorry
+  simp [h₂.symm, h₁.symm, term, smul, nsmul_add, mul_nsmul']
 
 @[nolint unusedArguments] -- TODO remove when the proof is filled in.
 theorem term_smulg {α} [AddCommGroup α] (c n x a n' a')
@@ -404,10 +399,6 @@ elab_rules : tactic | `(tactic| abel1 $[!%$tk]?) => do
 theorem term_eq [AddCommMonoid α] (n : ℕ) (x a : α) : term n x a = n • x + a := rfl
 /-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative group. -/
 theorem termg_eq [AddCommGroup α] (n : ℤ) (x a : α) : termg n x a = n • x + a := rfl
-
--- TODO: prove these in the respective theory files
-theorem one_zsmul [SubNegMonoid α] (a : α) : (1 : ℤ) • a = a := sorry
-theorem zsmul_zero [SubtractionMonoid α] (n : ℤ) : n • (0 : α) = 0 := sorry
 
 /-- True if this represents an atomic expression. -/
 def NormalExpr.isAtom : NormalExpr → Bool
