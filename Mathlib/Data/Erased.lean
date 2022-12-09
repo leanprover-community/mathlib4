@@ -8,16 +8,16 @@ import Mathlib.Logic.Equiv.Defs
 /-!
 # A type for VM-erased data
 
-This file defines a type `erased α` which is classically isomorphic to `α`,
-but erased in the VM. That is, at runtime every value of `erased α` is
+This file defines a type `Erased α` which is classically isomorphic to `α`,
+but erased in the VM. That is, at runtime every value of `Erased α` is
 represented as `0`, just like types and proofs.
 -/
 
 
 universe u
 
-/-- `erased α` is the same as `α`, except that the elements
-  of `erased α` are erased in the VM in the same way as types
+/-- `Erased α` is the same as `α`, except that the elements
+  of `Erased α` are erased in the VM in the same way as types
   and proofs. This can be used to track data without storing it
   literally. -/
 def Erased (α : Sort u) : Sort max 1 u :=
@@ -34,12 +34,12 @@ def mk {α} (a : α) : Erased α :=
 
 /-- Extracts the erased value, noncomputably. -/
 noncomputable def out {α} : Erased α → α
-  | ⟨s, h⟩ => Classical.choose h
+  | ⟨_, h⟩ => Classical.choose h
 #align erased.out Erased.out
 
 /-- Extracts the erased value, if it is a type.
 
-Note: `(mk a).out_type` is not definitionally equal to `a`.
+Note: `(mk a).OutType` is not definitionally equal to `a`.
 -/
 @[reducible]
 def OutType (a : Erased (Sort u)) : Sort u :=
@@ -53,14 +53,14 @@ theorem out_proof {p : Prop} (a : Erased p) : p :=
 
 @[simp]
 theorem out_mk {α} (a : α) : (mk a).out = a := by
-  let h; show Classical.choose h = a
+  let h := (mk a).2; show Classical.choose h = a
   have := Classical.choose_spec h
   exact cast (congr_fun this a).symm rfl
 #align erased.out_mk Erased.out_mk
 
 @[simp]
 theorem mk_out {α} : ∀ a : Erased α, mk (out a) = a
-  | ⟨s, h⟩ => by simp [mk] <;> congr <;> exact Classical.choose_spec h
+  | ⟨s, h⟩ => by simp [mk] ; congr ; exact Classical.choose_spec h
 #align erased.mk_out Erased.mk_out
 
 @[ext]
@@ -73,13 +73,12 @@ noncomputable def equiv (α) : Erased α ≃ α :=
 #align erased.equiv Erased.equiv
 
 instance (α : Type u) : Repr (Erased α) :=
-  ⟨fun _ => "erased"⟩
+  ⟨fun _ _ => "Erased"⟩
 
 instance (α : Type u) : ToString (Erased α) :=
-  ⟨fun _ => "erased"⟩
+  ⟨fun _ => "Erased"⟩
 
-unsafe instance (α : Type u) : has_to_format (Erased α) :=
-  ⟨fun _ => ("erased" : format)⟩
+-- Porting note: Deleted `has_to_format`
 
 /-- Computably produce an erased value from a proof of nonemptiness. -/
 def choice {α} (h : Nonempty α) : Erased α :=
@@ -94,18 +93,17 @@ theorem nonempty_iff {α} : Nonempty (Erased α) ↔ Nonempty α :=
 instance {α} [h : Nonempty α] : Inhabited (Erased α) :=
   ⟨choice h⟩
 
-/-- `(>>=)` operation on `erased`.
+/-- `(>>=)` operation on `Erased`.
 
 This is a separate definition because `α` and `β` can live in different
-universes (the universe is fixed in `monad`).
+universes (the universe is fixed in `Monad`).
 -/
 def bind {α β} (a : Erased α) (f : α → Erased β) : Erased β :=
   ⟨fun b => (f a.out).1 b, (f a.out).2⟩
 #align erased.bind Erased.bind
 
 @[simp]
-theorem bind_eq_out {α β} (a f) : @bind α β a f = f a.out := by
-  delta bind bind._proof_1 <;> cases f a.out <;> rfl
+theorem bind_eq_out {α β} (a f) : @bind α β a f = f a.out := rfl
 #align erased.bind_eq_out Erased.bind_eq_out
 
 /-- Collapses two levels of erasure.
@@ -119,10 +117,10 @@ theorem join_eq_out {α} (a) : @join α a = a.out :=
   bind_eq_out _ _
 #align erased.join_eq_out Erased.join_eq_out
 
-/-- `(<$>)` operation on `erased`.
+/-- `(<$>)` operation on `Erased`.
 
 This is a separate definition because `α` and `β` can live in different
-universes (the universe is fixed in `functor`).
+universes (the universe is fixed in `Functor`).
 -/
 def map {α β} (f : α → β) (a : Erased α) : Erased β :=
   bind a (mk ∘ f)
@@ -132,10 +130,11 @@ def map {α β} (f : α → β) (a : Erased α) : Erased β :=
 theorem map_out {α β} {f : α → β} (a : Erased α) : (a.map f).out = f a.out := by simp [map]
 #align erased.map_out Erased.map_out
 
-instance : Monad Erased where
+protected instance Monad : Monad Erased where
   pure := @mk
   bind := @bind
   map := @map
+#align erased.monad Erased.Monad
 
 @[simp]
 theorem pure_def {α} : (pure : α → Erased α) = @mk _ :=
@@ -152,6 +151,17 @@ theorem map_def {α β} : ((· <$> ·) : (α → β) → Erased α → Erased β
   rfl
 #align erased.map_def Erased.map_def
 
-instance : LawfulMonad Erased := by refine' { .. } <;> intros <;> ext <;> simp
+--Porting note: Old proof `by refine' { .. } <;> intros <;> ext <;> simp`
+protected instance LawfulMonad : LawfulMonad Erased :=
+  { Erased.Monad with
+    id_map := by intros ; ext ; simp
+    map_const := by intros ; ext ; simp [Functor.mapConst]
+    pure_bind := by intros ; ext ; simp
+    bind_assoc := by intros ; ext ; simp
+    bind_pure_comp := by intros ; ext ; simp
+    bind_map := by intros ; ext ; simp [Seq.seq]
+    seqLeft_eq := by intros ; ext ; simp [Seq.seq, Functor.mapConst, SeqLeft.seqLeft]
+    seqRight_eq := by intros ; ext ; simp [Seq.seq, Functor.mapConst, SeqRight.seqRight]
+    pure_seq := by intros ; ext ; simp [Seq.seq, Functor.mapConst, SeqRight.seqRight] }
 
 end Erased
