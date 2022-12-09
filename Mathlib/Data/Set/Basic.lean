@@ -2514,8 +2514,7 @@ theorem univ_eq_true_false : univ = ({True, False} : Set Prop) :=
 section Preorder
 
 variable [Preorder α] [Preorder β] {f : α → β}
--- #check Subtype.instPreorderSubtype
--- #synth Preorder s
+
 theorem monotoneOn_iff_monotone : MonotoneOn f s ↔
   (@Monotone _ _ (Subtype.instPreorderSubtype _) _ fun a : s => f a) := by
   simp [Monotone, MonotoneOn]
