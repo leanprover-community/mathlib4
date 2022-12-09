@@ -207,20 +207,17 @@ theorem xgcdAux_val (x y : R) : xgcdAux x 1 0 y 0 1 = (gcd x y, xgcd x y) := by
 private def P (a b : R) : R × R × R → Prop
   | (r, s, t) => (r : R) = a * s + b * t
 
-theorem xgcdAux_P (a b : R) {r r' : R} :
-    ∀ {s t s' t'}, P a b (r, s, t) → P a b (r', s', t') → P a b (xgcdAux r s t r' s' t') :=
-  --Porting TODO: This is very ugly. Is there a nicer way?
-  have : ∀ (s t s' t'), P a b (r, s, t) → P a b (r', s', t') → P a b (xgcdAux r s t r' s' t') :=
-    GCD.induction r r'
-        (by
-          intros
-          simpa only [xgcd_zero_left] )
-      fun x y h IH s t s' t' p p' => by
-      rw [xgcdAux_rec h]; refine' IH _ _ _ _ _ p; unfold P at p p'⊢
-      dsimp
-      rw [mul_sub, mul_sub, add_sub, sub_add_eq_add_sub, ← p', sub_sub, mul_comm _ s, ← mul_assoc,
-        mul_comm _ t, ← mul_assoc, ← add_mul, ← p, mod_eq_sub_mul_div]
-  this _ _ _ _
+theorem xgcdAux_P (a b : R) {r r' : R} {s t s' t'} (p : P a b (r, s, t))
+    (p' : P a b (r', s', t')) : P a b (xgcdAux r s t r' s' t') := by
+  induction r, r' using GCD.induction generalizing s t s' t' with
+  | H0 n => simpa only [xgcd_zero_left]
+  | H1 _ _ h IH =>
+    rw [xgcdAux_rec h]
+    refine' IH _ p
+    unfold P at p p'⊢
+    dsimp
+    rw [mul_sub, mul_sub, add_sub, sub_add_eq_add_sub, ← p', sub_sub, mul_comm _ s, ← mul_assoc,
+      mul_comm _ t, ← mul_assoc, ← add_mul, ← p, mod_eq_sub_mul_div]
 #align euclidean_domain.xgcd_aux_P EuclideanDomain.xgcdAux_P
 
 /-- An explicit version of **Bézout's lemma** for Euclidean domains. -/
