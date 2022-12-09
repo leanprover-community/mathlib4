@@ -213,7 +213,7 @@ theorem one_sub_invOf_two [Ring α] [Invertible (2 : α)] : 1 - (⅟ 2 : α) = �
 
 @[simp]
 theorem invOf_two_add_invOf_two [NonAssocSemiring α] [Invertible (2 : α)] :
-    (⅟ 2 : α) + (⅟ 2 : α) = 1 := by rw [← @two_mul α, mul_invOf_self]
+    (⅟ 2 : α) + (⅟ 2 : α) = 1 := by rw [← two_mul, mul_invOf_self]
 #align inv_of_two_add_inv_of_two invOf_two_add_invOf_two
 
 /-- `a` is the inverse of `⅟a`. -/

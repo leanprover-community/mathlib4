@@ -137,7 +137,7 @@ end DistribMulOneClass
 
 section Semiring
 
-variable [Semiring α]
+variable [NonAssocSemiring α]
 
 -- Porting note: was [has_add α] [mul_one_class α] [right_distrib_class α]
 theorem two_mul (n : α) : 2 * n = n + n :=
