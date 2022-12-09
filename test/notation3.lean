@@ -1,4 +1,4 @@
-import Mathlib.Mathport.Syntax
+import Mathlib.Mathport.Notation
 
 namespace Test
 
