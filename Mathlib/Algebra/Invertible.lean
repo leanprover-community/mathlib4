@@ -341,10 +341,10 @@ def invertibleDiv (a b : α) [Invertible a] [Invertible b] : Invertible (a / b) 
 #align invertible_div invertibleDiv
 
 -- Porting note: removed `simp` attibute as `simp` can prove it
-theorem inv_of_div (a b : α) [Invertible a] [Invertible b] [Invertible (a / b)] :
+theorem invOf_div (a b : α) [Invertible a] [Invertible b] [Invertible (a / b)] :
     ⅟ (a / b) = b / a :=
   invOf_eq_right_inv (by simp [← mul_div_assoc])
-#align inv_of_div inv_of_div
+#align inv_of_div invOf_div
 
 /-- `a` is the inverse of `a⁻¹` -/
 def invertibleInv {a : α} [Invertible a] : Invertible a⁻¹ :=
