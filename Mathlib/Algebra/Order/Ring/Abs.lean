@@ -35,9 +35,12 @@ theorem abs_mul (a b : α) : |a * b| = |a| * |b| := by
       mul_neg, neg_neg, *]
 #align abs_mul abs_mul
 
-/-- `abs` as a `monoid_with_zero_hom`. -/
+/-- `abs` as a `MonoidWithZeroHom`. -/
 def absHom : α →*₀ α :=
-  ⟨abs, abs_zero, abs_one, abs_mul⟩
+  { toFun := abs
+    map_zero' := abs_zero
+    map_one' := abs_one
+    map_mul' :=  abs_mul }
 #align abs_hom absHom
 
 @[simp]
@@ -103,7 +106,7 @@ variable [LinearOrderedCommRing α] {a b c d : α}
 theorem abs_sub_sq (a b : α) : |a - b| * |a - b| = a * a + b * b - (1 + 1) * a * b := by
   rw [abs_mul_abs_self]
   simp only [mul_add, add_comm, add_left_comm, mul_comm, sub_eq_add_neg, mul_one, mul_neg,
-    neg_add_rev, neg_neg]
+    neg_add_rev, neg_neg, add_assoc]
 #align abs_sub_sq abs_sub_sq
 
 end LinearOrderedCommRing
@@ -114,7 +117,7 @@ variable [Ring α] [LinearOrder α] {a b : α}
 
 @[simp]
 theorem abs_dvd (a b : α) : |a| ∣ b ↔ a ∣ b := by
-  cases' abs_choice a with h h <;> simp only [h, neg_dvd]
+  cases' abs_choice a with h h <;> simp only [h, neg_dvd, iff_self]
 #align abs_dvd abs_dvd
 
 theorem abs_dvd_self (a : α) : |a| ∣ a :=
@@ -123,7 +126,7 @@ theorem abs_dvd_self (a : α) : |a| ∣ a :=
 
 @[simp]
 theorem dvd_abs (a b : α) : a ∣ |b| ↔ a ∣ b := by
-  cases' abs_choice b with h h <;> simp only [h, dvd_neg]
+  cases' abs_choice b with h h <;> simp only [h, dvd_neg, iff_self]
 #align dvd_abs dvd_abs
 
 theorem self_dvd_abs (a : α) : a ∣ |a| :=
