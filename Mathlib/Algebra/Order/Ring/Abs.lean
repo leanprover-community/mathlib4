@@ -64,7 +64,7 @@ theorem abs_eq_neg_self : |a| = -a ↔ a ≤ 0 := by simp [abs_eq_max_neg]
     or `abs a = -a` and `a < 0`.
     Use cases on this lemma to automate linarith in inequalities -/
 theorem abs_cases (a : α) : |a| = a ∧ 0 ≤ a ∨ |a| = -a ∧ a < 0 := by
-  by_cases 0 ≤ a
+  by_cases h : 0 ≤ a
   · left
     exact ⟨abs_eq_self.mpr h, h⟩
   · right
