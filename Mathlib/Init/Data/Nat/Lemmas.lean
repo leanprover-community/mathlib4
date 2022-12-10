@@ -11,9 +11,18 @@ universe u
 
 namespace Nat
 
+/- multiplication -/
+
+theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
+| 0,        m => fun _ => Or.inl rfl
+| (succ n), m => by
+    rw [succ_mul]
+    intro h
+    exact Or.inr (Nat.eq_zero_of_add_eq_zero_left h)
+
 /- properties of inequality -/
 
-instance : LinearOrder ℕ where
+instance linearOrder : LinearOrder ℕ where
   le := Nat.le
   le_refl := @Nat.le_refl
   le_trans := @Nat.le_trans
