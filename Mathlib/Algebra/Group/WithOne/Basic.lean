@@ -147,7 +147,8 @@ def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :
   (a : WithOne α) : (MulEquiv.withOneCongr e).toEquiv a = (map (MulEquiv.toMulHom e)) a := rfl
 #align mul_equiv.with_one_congr_apply MulEquiv.withOneCongr_apply
 
--- porting note: `@[to_additive, simps apply]` was not generating this lemma at the time of writing this note. 
+-- porting note: `@[to_additive, simps apply]` was not generating this lemma at the
+-- time of writing this note. 
 @[simp] theorem _root_.AddEquiv.withZeroCongr_apply {α β : Type _} [Add α] [Add β] (e : α ≃+ β)
   (a : WithZero α) :
     (AddEquiv.withZeroCongr e).toEquiv a = (WithZero.map (AddEquiv.toAddHom e)) a := rfl
