@@ -120,7 +120,7 @@ You should also extend this typeclass when you extend `order_monoid_hom`. -/
 @[to_additive]
 class OrderMonoidHomClass (F : Type _) (α β : outParam <| Type _) [Preorder α] [Preorder β]
   [MulOneClass α] [MulOneClass β] extends MonoidHomClass F α β where
-  Monotone (f : F) : Monotone f
+  monotone (f : F) : Monotone f
 #align order_monoid_hom_class OrderMonoidHomClass
 
 end
@@ -129,14 +129,14 @@ end
 @[to_additive]
 instance (priority := 100) OrderMonoidHomClass.toOrderHomClass [OrderMonoidHomClass F α β] :
     OrderHomClass F α β :=
-  { ‹OrderMonoidHomClass F α β› with map_rel := OrderMonoidHomClass.Monotone }
+  { ‹OrderMonoidHomClass F α β› with map_rel := OrderMonoidHomClass.monotone }
 #align order_monoid_hom_class.to_order_hom_class OrderMonoidHomClass.toOrderHomClass
 
 @[to_additive]
 instance [OrderMonoidHomClass F α β] : CoeTC F (α →*o β) :=
   ⟨fun f =>
     { toFun := f, map_one' := map_one f, map_mul' := map_mul f,
-      monotone' := OrderMonoidHomClass.Monotone _ }⟩
+      monotone' := OrderMonoidHomClass.monotone _ }⟩
 
 end Monoid
 
@@ -169,30 +169,26 @@ ordered monoid with zero homomorphisms.
 You should also extend this typeclass when you extend `order_monoid_with_zero_hom`. -/
 class OrderMonoidWithZeroHomClass (F : Type _) (α β : outParam <| Type _) [Preorder α] [Preorder β]
   [MulZeroOneClass α] [MulZeroOneClass β] extends MonoidWithZeroHomClass F α β where
-  Monotone (f : F) : Monotone f
+  monotone (f : F) : Monotone f
 #align order_monoid_with_zero_hom_class OrderMonoidWithZeroHomClass
 
 end
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderMonoidWithZeroHomClass.toOrderMonoidHomClass
+    {_ : Preorder α} {_ : Preorder β} {_ : MulZeroOneClass α} {_ : MulZeroOneClass β}
     [OrderMonoidWithZeroHomClass F α β] : OrderMonoidHomClass F α β :=
   { ‹OrderMonoidWithZeroHomClass F α β› with }
-#align
-  order_monoid_with_zero_hom_class.to_order_monoid_hom_class OrderMonoidWithZeroHomClass.toOrderMonoidHomClass
+#align order_monoid_with_zero_hom_class.to_order_monoid_hom_class
+  OrderMonoidWithZeroHomClass.toOrderMonoidHomClass
 
 instance [OrderMonoidWithZeroHomClass F α β] : CoeTC F (α →*₀o β) :=
   ⟨fun f =>
     { toFun := f,
-      map_one' := by
-        haveI : MonoidWithZeroHomClass F α β := inferInstance
-        haveI : MonoidHomClass F α β := MonoidWithZeroHomClass.toMonoidHomClass
-        haveI : OneHomClass F α β := MonoidHomClass.toOneHomClass
-        convert map_one f
-        dsimp
+      map_one' := map_one f,
       map_zero' := map_zero f,
       map_mul' := map_mul f,
-      monotone' := OrderMonoidWithZeroHomClass.monotone _ }⟩
+      monotone' := OrderMonoidWithZeroHomClass.Monotone _ }⟩
 
 end MonoidWithZero
 
