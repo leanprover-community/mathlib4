@@ -60,14 +60,7 @@ def StrictOrderedRing.mkOfPositiveCone (C : PositiveCone α) : StrictOrderedRing
       simp,
     mul_pos := fun x y xp yp => by
       change C.pos (x * y - 0)
-      convert
-        C.mul_pos x y
-          (by
-            convert xp
-            simp)
-          (by
-            convert yp
-            simp)
+      convert C.mul_pos x y (by convert xp; simp) (by convert yp; simp)
       simp }
 #align strict_ordered_ring.mk_of_positive_cone StrictOrderedRing.mkOfPositiveCone
 
