@@ -444,6 +444,8 @@ theorem ext {f g : MulEquiv M N} (h : ∀ x, f x = g x) : f = g :=
 #align mul_equiv.ext MulEquiv.ext
 #align add_equiv.ext AddEquiv.ext
 
+attribute [ext] AddEquiv.ext
+
 @[to_additive]
 theorem ext_iff {f g : MulEquiv M N} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
