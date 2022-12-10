@@ -188,7 +188,7 @@ instance [OrderMonoidWithZeroHomClass F α β] : CoeTC F (α →*₀o β) :=
       map_one' := map_one f,
       map_zero' := map_zero f,
       map_mul' := map_mul f,
-      monotone' := OrderMonoidWithZeroHomClass.Monotone _ }⟩
+      monotone' := OrderMonoidWithZeroHomClass.monotone _ }⟩
 
 end MonoidWithZero
 
