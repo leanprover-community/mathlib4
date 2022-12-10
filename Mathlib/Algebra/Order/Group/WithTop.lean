@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.Monoid.WithTop
 # Adjoining a top element to a `linear_ordered_add_comm_group_with_top`.
 -/
 
+namespace WithTop
 
 variable {α : Type _}
 
@@ -17,19 +18,22 @@ section LinearOrderedAddCommGroup
 
 variable [LinearOrderedAddCommGroup α] {a b c d : α}
 
-instance WithTop.linearOrderedAddCommGroupWithTop : LinearOrderedAddCommGroupWithTop (WithTop α) :=
-  { WithTop.linearOrderedAddCommMonoidWithTop, Option.nontrivial with
-    neg := Option.map fun a : α => -a, neg_top := @Option.map_none _ _ fun a : α => -a,
-    add_neg_cancel := by 
-      rintro (a | a) ha
-      · exact (ha rfl).elim
-      · exact with_top.coe_add.symm.trans (WithTop.coe_eq_coe.2 (add_neg_self a)) }
+instance linearOrderedAddCommGroupWithTop : LinearOrderedAddCommGroupWithTop (WithTop α) where
+  __ := WithTop.linearOrderedAddCommMonoidWithTop
+  __ := Option.nontrivial
+  neg := Option.map fun a : α => -a
+  neg_top := Option.map_none
+  add_neg_cancel := by
+    rintro (a | a) ha
+    · exact (ha rfl).elim
+    · exact WithTop.coe_add.symm.trans (WithTop.coe_eq_coe.2 (add_neg_self a))
 #align with_top.linear_ordered_add_comm_group_with_top WithTop.linearOrderedAddCommGroupWithTop
 
 @[simp, norm_cast]
-theorem WithTop.coe_neg (a : α) : ((-a : α) : WithTop α) = -a :=
+theorem coe_neg (a : α) : ((-a : α) : WithTop α) = -a :=
   rfl
 #align with_top.coe_neg WithTop.coe_neg
 
 end LinearOrderedAddCommGroup
 
+end WithTop
