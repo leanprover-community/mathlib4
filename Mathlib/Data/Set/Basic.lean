@@ -1440,7 +1440,7 @@ theorem sep_union : { x | (x ∈ s ∨ x ∈ t) ∧ p x } = { x ∈ s | p x } �
 #align set.sep_union Set.sep_union
 
 @[simp]
-theorem sep_inter : { x ∈ s ∩ t | p x } = { x ∈ s | p x } ∩ { x ∈ t | p x } :=
+theorem sep_inter : { x | (x ∈ s ∧ x ∈ t) ∧ p x } = { x ∈ s | p x } ∩ { x ∈ t | p x } :=
   inter_inter_distrib_right s t p
 #align set.sep_inter Set.sep_inter
 
