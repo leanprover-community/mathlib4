@@ -981,7 +981,9 @@ structure PositiveCone (α : Type _) [AddCommGroup α] where
 for every `a`, either `a` or `-a` is non-negative. -/
 -- Porting note: @[nolint has_nonempty_instance]
 structure TotalPositiveCone (α : Type _) [AddCommGroup α] extends PositiveCone α where
+  /-- For any `a` the proposition `nonneg a` is decidable -/
   nonnegDecidable : DecidablePred nonneg
+  /-- Either `a` or `-a` is `nonneg` -/
   nonneg_total : ∀ a : α, nonneg a ∨ nonneg (-a)
 #align add_comm_group.total_positive_cone AddCommGroup.TotalPositiveCone
 
