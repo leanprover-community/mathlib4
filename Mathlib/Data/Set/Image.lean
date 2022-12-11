@@ -847,8 +847,8 @@ theorem range_eval {ι : Type _} {α : ι → Sort _} [∀ i, Nonempty (α i)] (
 theorem is_compl_range_inl_range_inr : IsCompl (range <| @Sum.inl α β) (range Sum.inr) :=
   IsCompl.of_le
     (by
-      rintro y ⟨⟨x₁, rfl⟩, ⟨x₂, _⟩⟩
-      cc)
+      rintro y ⟨⟨x₁, rfl⟩, ⟨x₂, h⟩⟩
+      exact Sum.noConfusion h)
     (by rintro (x | y) - <;> [left, right] <;> exact mem_range_self _)
 #align set.is_compl_range_inl_range_inr Set.is_compl_range_inl_range_inr
 
@@ -913,7 +913,8 @@ theorem image_preimage_inl_union_image_preimage_inr (s : Set (Sum α β)) :
 
 @[simp]
 theorem range_quot_mk (r : α → α → Prop) : range (Quot.mk r) = univ :=
-  (surjective_quot_mk r).range_eq
+  Function.Surjective.range_eq (surjective_quot_mk r)
+  -- Porting note: should be `(surjective_quot_mk r).range_eq` if dot notation works
 #align set.range_quot_mk Set.range_quot_mk
 
 @[simp]
@@ -922,8 +923,9 @@ theorem range_quot_lift {r : ι → ι → Prop} (hf : ∀ x y, r x y → f x = 
   ext fun y => (surjective_quot_mk _).exists
 #align set.range_quot_lift Set.range_quot_lift
 
+-- Porting note: the `Setoid α` instance is not being filled in
 @[simp]
-theorem range_quotient_mk [Setoid α] : (range fun x : α => ⟦x⟧) = univ :=
+theorem range_quotient_mk [sa : Setoid α] : (range (α := Quotient sa) fun x : α => ⟦x⟧) = univ :=
   range_quot_mk _
 #align set.range_quotient_mk Set.range_quotient_mk
 
@@ -944,13 +946,14 @@ theorem range_quotient_lift_on' {s : Setoid ι} (hf) :
   range_quot_lift _
 #align set.range_quotient_lift_on' Set.range_quotient_lift_on'
 
-instance canLift (c) (p) [CanLift α β c p] :
-    CanLift (Set α) (Set β) ((· ~~ ·) c) fun s =>
-      ∀ x ∈ s,
-        p
-          x where prf s hs :=
-    subset_range_iff_exists_image_eq.mp fun x hx => CanLift.prf _ (hs x hx)
-#align set.can_lift Set.canLift
+-- Porting note: waiting for `lift` tactic
+-- instance canLift (c) (p) [CanLift α β c p] :
+--     CanLift (Set α) (Set β) ((· ~~ ·) c) fun s =>
+--       ∀ x ∈ s,
+--         p
+--           x where prf s hs :=
+--     subset_range_iff_exists_image_eq.mp fun x hx => CanLift.prf _ (hs x hx)
+-- #align set.can_lift Set.canLift
 
 theorem range_const_subset {c : α} : (range fun x : ι => c) ⊆ {c} :=
   range_subset_iff.2 fun x => rfl
@@ -964,7 +967,7 @@ theorem range_const : ∀ [Nonempty ι] {c : α}, (range fun x : ι => c) = {c}
 #align set.range_const Set.range_const
 
 theorem range_subtype_map {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ x, p x → q (f x)) :
-    range (Subtype.map f h) = coe ⁻¹' (f ~~ { x | p x }) := by
+    range (Subtype.map f h) = Subtype.val ⁻¹' (f ~~ { x | p x }) := by
   ext ⟨x, hx⟩
   simp_rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.map, Subtype.coe_mk,
     mem_set_of, exists_prop]
