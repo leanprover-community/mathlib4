@@ -487,13 +487,14 @@ theorem image_preimage_eq {f : α → β} (s : Set β) (h : Surjective f) : f ~~
 #align set.image_preimage_eq Set.image_preimage_eq
 
 theorem preimage_eq_preimage {f : β → α} (hf : Surjective f) : f ⁻¹' s = f ⁻¹' t ↔ s = t :=
-  Iff.intro (fun eq => by rw [← image_preimage_eq s hf, ← image_preimage_eq t hf, Eq]) fun eq =>
-    Eq ▸ rfl
+  Iff.intro
+    fun eq => by rw [← image_preimage_eq s hf, ← image_preimage_eq t hf, eq]
+    fun eq => eq ▸ rfl
 #align set.preimage_eq_preimage Set.preimage_eq_preimage
 
 theorem image_inter_preimage (f : α → β) (s : Set α) (t : Set β) :
     f ~~ (s ∩ f ⁻¹' t) = f ~~ s ∩ t := by
-  apply subset.antisymm
+  apply Subset.antisymm
   ·
     calc
       f ~~ (s ∩ f ⁻¹' t) ⊆ f ~~ s ∩ f ~~ (f ⁻¹' t) := image_inter_subset _ _ _
@@ -545,8 +546,8 @@ theorem preimage_subset_iff {A : Set α} {B : Set β} {f : α → β} :
 
 theorem image_eq_image {f : α → β} (hf : Injective f) : f ~~ s = f ~~ t ↔ s = t :=
   Iff.symm <|
-    (Iff.intro fun eq => Eq ▸ rfl) fun eq => by
-      rw [← preimage_image_eq s hf, ← preimage_image_eq t hf, Eq]
+    (Iff.intro fun eq => eq ▸ rfl) fun eq => by
+      rw [← preimage_image_eq s hf, ← preimage_image_eq t hf, eq]
 #align set.image_eq_image Set.image_eq_image
 
 theorem image_subset_image_iff {f : α → β} (hf : Injective f) : f ~~ s ⊆ f ~~ t ↔ s ⊆ t := by
@@ -556,12 +557,12 @@ theorem image_subset_image_iff {f : α → β} (hf : Injective f) : f ~~ s ⊆ f
 #align set.image_subset_image_iff Set.image_subset_image_iff
 
 theorem prod_quotient_preimage_eq_image [s : Setoid α] (g : Quotient s → β) {h : α → β}
-    (Hh : h = g ∘ Quotient.mk~~) (r : Set (β × β)) :
+    (Hh : h = g ∘ Quotient.mk'') (r : Set (β × β)) :
     { x : Quotient s × Quotient s | (g x.1, g x.2) ∈ r } =
       (fun a : α × α => (⟦a.1⟧, ⟦a.2⟧)) ~~ ((fun a : α × α => (h a.1, h a.2)) ⁻¹' r) :=
   Hh.symm ▸
     Set.ext fun ⟨a₁, a₂⟩ =>
-      ⟨Quotient.induction_on₂ a₁ a₂ fun a₁ a₂ h => ⟨(a₁, a₂), h, rfl⟩, fun ⟨⟨b₁, b₂⟩, h₁, h₂⟩ =>
+      ⟨Quot.induction_on₂ a₁ a₂ fun a₁ a₂ h => ⟨(a₁, a₂), h, rfl⟩, fun ⟨⟨b₁, b₂⟩, h₁, h₂⟩ =>
         show (g a₁, g a₂) ∈ r from
           have h₃ : ⟦b₁⟧ = a₁ ∧ ⟦b₂⟧ = a₂ := Prod.ext_iff.1 h₂
           h₃.1 ▸ h₃.2 ▸ h₁⟩
@@ -569,8 +570,8 @@ theorem prod_quotient_preimage_eq_image [s : Setoid α] (g : Quotient s → β) 
 
 theorem exists_image_iff (f : α → β) (x : Set α) (P : β → Prop) :
     (∃ a : f ~~ x, P a) ↔ ∃ a : x, P (f a) :=
-  ⟨fun ⟨a, h⟩ => ⟨⟨_, a.Prop.some_spec.1⟩, a.Prop.some_spec.2.symm ▸ h⟩, fun ⟨a, h⟩ =>
-    ⟨⟨_, _, a.Prop, rfl⟩, h⟩⟩
+  ⟨fun ⟨a, h⟩ => ⟨⟨_, a.prop.choose_spec.1⟩, a.prop.choose_spec.2.symm ▸ h⟩, fun ⟨a, h⟩ =>
+    ⟨⟨_, _, a.prop, rfl⟩, h⟩⟩
 #align set.exists_image_iff Set.exists_image_iff
 
 /-- Restriction of `f` to `s` factors through `s.image_factorization f : s → f ~~ s`. -/
@@ -654,7 +655,8 @@ theorem range_iff_surjective : range f = univ ↔ Surjective f :=
   eq_univ_iff_forall
 #align set.range_iff_surjective Set.range_iff_surjective
 
-alias range_iff_surjective ↔ _ _root_.function.surjective.range_eq
+-- Porting note: Lean4 unfolds `Surjective` here, ruining dot notation
+alias range_iff_surjective ↔ _ _root_.Function.Surjective.range_eq
 
 @[simp]
 theorem image_univ {f : α → β} : f ~~ univ = range f := by
@@ -670,7 +672,7 @@ theorem mem_range_of_mem_image (f : α → β) (s) {x : β} (h : x ∈ f ~~ s) :
   image_subset_range f s h
 #align set.mem_range_of_mem_image Set.mem_range_of_mem_image
 
-theorem Nat.mem_range_succ (i : ℕ) : i ∈ range Nat.succ ↔ 0 < i :=
+theorem _root_.Nat.mem_range_succ (i : ℕ) : i ∈ range Nat.succ ↔ 0 < i :=
   ⟨by
     rintro ⟨n, rfl⟩
     exact Nat.succ_pos n, fun h => ⟨_, Nat.succ_pred_eq_of_pos h⟩⟩
@@ -746,7 +748,7 @@ theorem insert_image_compl_eq_range (f : α → β) (x : α) : insert (f x) (f ~
 theorem image_preimage_eq_inter_range {f : α → β} {t : Set β} : f ~~ (f ⁻¹' t) = t ∩ range f :=
   ext fun x =>
     ⟨fun ⟨x, hx, HEq⟩ => HEq ▸ ⟨hx, mem_range_self _⟩, fun ⟨hx, ⟨y, h_eq⟩⟩ =>
-      h_eq ▸ mem_image_of_mem f <| show y ∈ f ⁻¹' t by simp [preimage, h_eq, hx]⟩
+      h_eq ▸ mem_image_of_mem f <| show y ∈ f ⁻¹' t by rw [preimage, mem_set_of, h_eq]; exact hx⟩
 #align set.image_preimage_eq_inter_range Set.image_preimage_eq_inter_range
 
 theorem image_preimage_eq_of_subset {f : α → β} {s : Set β} (hs : s ⊆ range f) :
@@ -773,8 +775,7 @@ theorem exists_subset_range_and_iff {f : α → β} {p : Set β → Prop} :
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (s «expr ⊆ » range[set.range] f) -/
 theorem exists_subset_range_iff {f : α → β} {p : Set β → Prop} :
-    (∃ (s : _)(_ : s ⊆ range f), p s) ↔ ∃ s, p (f ~~ s) := by
-  simp only [exists_prop, exists_subset_range_and_iff]
+    (∃ (s : _) (_ : s ⊆ range f), p s) ↔ ∃ s, p (f ~~ s) := by simp
 #align set.exists_subset_range_iff Set.exists_subset_range_iff
 
 theorem range_image (f : α → β) : range (image f) = 𝒫 range f :=
@@ -794,7 +795,7 @@ theorem preimage_eq_preimage' {s t : Set α} {f : β → α} (hs : s ⊆ range f
     f ⁻¹' s = f ⁻¹' t ↔ s = t := by
   constructor
   · intro h
-    apply subset.antisymm
+    apply Subset.antisymm
     rw [← preimage_subset_preimage_iff hs, h]
     rw [← preimage_subset_preimage_iff ht, h]
   rintro rfl; rfl
@@ -825,19 +826,22 @@ theorem range_id' : (range fun x : α => x) = univ :=
 #align set.range_id' Set.range_id'
 
 @[simp]
-theorem Prod.range_fst [Nonempty β] : range (Prod.fst : α × β → α) = univ :=
-  Prod.fst_surjective.range_eq
+theorem _root_.Prod.range_fst [Nonempty β] : range (Prod.fst : α × β → α) = univ :=
+  Function.Surjective.range_eq Prod.fst_surjective
+  -- Porting note: should be `Prod.fst_surjective.range_eq` if dot notation works
 #align prod.range_fst Prod.range_fst
 
 @[simp]
-theorem Prod.range_snd [Nonempty α] : range (Prod.snd : α × β → β) = univ :=
-  Prod.snd_surjective.range_eq
+theorem _root_.Prod.range_snd [Nonempty α] : range (Prod.snd : α × β → β) = univ :=
+  Function.Surjective.range_eq Prod.snd_surjective
+  -- Porting note: should be `Prod.snd_surjective.range_eq` if dot notation works
 #align prod.range_snd Prod.range_snd
 
 @[simp]
 theorem range_eval {ι : Type _} {α : ι → Sort _} [∀ i, Nonempty (α i)] (i : ι) :
     range (eval i : (∀ i, α i) → α i) = univ :=
-  (surjective_eval i).range_eq
+  Function.Surjective.range_eq (surjective_eval i)
+  -- Porting note: should be `(surjective_eval i).range_eq` if dot notation works
 #align set.range_eval Set.range_eval
 
 theorem is_compl_range_inl_range_inr : IsCompl (range <| @Sum.inl α β) (range Sum.inr) :=
