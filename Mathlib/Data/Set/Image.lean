@@ -1409,7 +1409,7 @@ theorem preimage_coe_nonempty {s t : Set α} : ((Subtype.val : s → α) ⁻¹' 
 #align subtype.preimage_coe_nonempty Subtype.preimage_coe_nonempty
 
 theorem preimage_coe_eq_empty {s t : Set α} : (Subtype.val : s → α) ⁻¹' t = ∅ ↔ s ∩ t = ∅ := by
-  simp only [← not_nonempty_iff_eq_empty, preimage_coe_nonempty]
+  simp [← not_nonempty_iff_eq_empty, preimage_coe_nonempty]
 #align subtype.preimage_coe_eq_empty Subtype.preimage_coe_eq_empty
 
 @[simp]
@@ -1417,8 +1417,9 @@ theorem preimage_coe_compl (s : Set α) : (Subtype.val : s → α) ⁻¹' sᶜ =
   preimage_coe_eq_empty.2 (inter_compl_self s)
 #align subtype.preimage_coe_compl Subtype.preimage_coe_compl
 
+-- Porting note: why can't `HasCompl` be inferred if we write `sᶜ`?
 @[simp]
-theorem preimage_coe_compl' (s : Set α) : (Subtype.val : sᶜ → α) ⁻¹' s = ∅ :=
+theorem preimage_coe_compl' (s : Set α) : (Subtype.val : @HasCompl.compl (Set α) BooleanAlgebra.toHasCompl s → α) ⁻¹' s = ∅ :=
   preimage_coe_eq_empty.2 (compl_inter_self s)
 #align subtype.preimage_coe_compl' Subtype.preimage_coe_compl'
 
@@ -1435,24 +1436,24 @@ theorem injective_iff {α β} {f : Option α → β} :
     Injective f ↔ Injective (f ∘ some) ∧ f none ∉ range (f ∘ some) := by
   simp only [mem_range, not_exists, (· ∘ ·)]
   refine'
-    ⟨fun hf => ⟨hf.comp (Option.some_injective _), fun x => hf.Ne <| Option.some_ne_none _⟩, _⟩
+    ⟨fun hf => ⟨hf.comp (Option.some_injective _), fun x => hf.ne <| Option.some_ne_none _⟩, _⟩
   rintro ⟨h_some, h_none⟩ (_ | a) (_ | b) hab
   exacts[rfl, (h_none _ hab.symm).elim, (h_none _ hab).elim, congr_arg some (h_some hab)]
 #align option.injective_iff Option.injective_iff
 
 theorem range_eq {α β} (f : Option α → β) : range f = insert (f none) (range (f ∘ some)) :=
-  Set.ext fun y => Option.exists.trans <| eq_comm.Or Iff.rfl
+  Set.ext fun y => Option.exists.trans <| eq_comm.or Iff.rfl
 #align option.range_eq Option.range_eq
 
 end Option
 
 theorem WithBot.range_eq {α β} (f : WithBot α → β) :
-    range f = insert (f ⊥) (range (f ∘ coe : α → β)) :=
+    range f = insert (f ⊥) (range (f ∘ WithBot.some : α → β)) :=
   Option.range_eq f
 #align with_bot.range_eq WithBot.range_eq
 
 theorem WithTop.range_eq {α β} (f : WithTop α → β) :
-    range f = insert (f ⊤) (range (f ∘ coe : α → β)) :=
+    range f = insert (f ⊤) (range (f ∘ WithBot.some : α → β)) :=
   Option.range_eq f
 #align with_top.range_eq WithTop.range_eq
 
@@ -1469,7 +1470,7 @@ variable {α : Type u} {β : Type v} {f : α → β}
 
 @[simp]
 theorem preimage_injective : Injective (preimage f) ↔ Surjective f := by
-  refine' ⟨fun h y => _, surjective.preimage_injective⟩
+  refine' ⟨fun h y => _, Surjective.preimage_injective⟩
   obtain ⟨x, hx⟩ : (f ⁻¹' {y}).Nonempty := by
     rw [h.nonempty_apply_iff preimage_empty]
     apply singleton_nonempty
@@ -1478,14 +1479,14 @@ theorem preimage_injective : Injective (preimage f) ↔ Surjective f := by
 
 @[simp]
 theorem preimage_surjective : Surjective (preimage f) ↔ Injective f := by
-  refine' ⟨fun h x x' hx => _, injective.preimage_surjective⟩
+  refine' ⟨fun h x x' hx => _, Injective.preimage_surjective⟩
   cases' h {x} with s hs; have := mem_singleton x
   rwa [← hs, mem_preimage, hx, ← mem_preimage, hs, mem_singleton_iff, eq_comm] at this
 #align set.preimage_surjective Set.preimage_surjective
 
 @[simp]
 theorem image_surjective : Surjective (image f) ↔ Surjective f := by
-  refine' ⟨fun h y => _, surjective.image_surjective⟩
+  refine' ⟨fun h y => _, Surjective.image_surjective⟩
   cases' h {y} with s hs
   have := mem_singleton y; rw [← hs] at this; rcases this with ⟨x, h1x, h2x⟩
   exact ⟨x, h2x⟩
@@ -1493,7 +1494,7 @@ theorem image_surjective : Surjective (image f) ↔ Surjective f := by
 
 @[simp]
 theorem image_injective : Injective (image f) ↔ Injective f := by
-  refine' ⟨fun h x x' hx => _, injective.image_injective⟩
+  refine' ⟨fun h x x' hx => _, Injective.image_injective⟩
   rw [← singleton_eq_singleton_iff]; apply h
   rw [image_singleton, image_singleton, hx]
 #align set.image_injective Set.image_injective
