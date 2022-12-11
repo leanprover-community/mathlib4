@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2016 Jeremy Avigad. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jeremy Avigad
+-/
+
 import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Ring.Divisibility
 import Mathlib.Algebra.Order.Group.Abs
@@ -83,17 +89,8 @@ theorem pred_self_lt (a : ℤ) : pred a < a :=
   sub_lt_self _ zero_lt_one
 #align int.pred_self_lt Int.pred_self_lt
 
-#print Int.lt_add_one_iff /-
-theorem lt_add_one_iff {a b : ℤ} : a < b + 1 ↔ a ≤ b :=
-  add_le_add_iff_right _
 #align int.lt_add_one_iff Int.lt_add_one_iff
--/
-
-#print Int.le_add_one /-
-theorem le_add_one {a b : ℤ} (h : a ≤ b) : a ≤ b + 1 :=
-  le_of_lt (Int.lt_add_one_iff.mpr h)
 #align int.le_add_one Int.le_add_one
--/
 
 theorem sub_one_lt_iff {a b : ℤ} : a - 1 < b ↔ a ≤ b :=
   sub_lt_iff_lt_add.trans lt_add_one_iff
@@ -201,7 +198,7 @@ protected theorem div_nonpos {a b : ℤ} (Ha : 0 ≤ a) (Hb : b ≤ 0) : a / b �
 #align int.div_nonpos Int.div_nonpos
 
 theorem div_eq_zero_of_lt_abs {a b : ℤ} (H1 : 0 ≤ a) (H2 : a < |b|) : a / b = 0 :=
-  match b, |b|, abs_eq_nat_abs b, H2 with
+  match b, |b|, abs_eq_natAbs b, H2 with
   | (n : ℕ), _, rfl, H2 => div_eq_zero_of_lt H1 H2
   | -[n+1], _, rfl, H2 => neg_injective <| by rw [← Int.div_neg] <;> exact div_eq_zero_of_lt H1 H2
 #align int.div_eq_zero_of_lt_abs Int.div_eq_zero_of_lt_abs
@@ -282,7 +279,6 @@ protected theorem add_div_of_dvd_right {a b c : ℤ} (H : c ∣ b) : (a + b) / c
   · simp [h1]
   cases' H with k hk
   rw [hk]
-  change c ≠ 0 at h1
   rw [mul_comm c k, Int.add_mul_div_right _ _ h1, ← zero_add (k * c), Int.add_mul_div_right _ _ h1,
     Int.zero_div, zero_add]
 #align int.add_div_of_dvd_right Int.add_div_of_dvd_right
