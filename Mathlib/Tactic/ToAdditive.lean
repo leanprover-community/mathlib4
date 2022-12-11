@@ -552,9 +552,9 @@ def hackyAddAttribute (attrName declName : Name) (kind : AttributeKind := .globa
 /-- Copy an attribute that stores enough information to test whether a declaration is in it
   in a hacky way. -/
 def hackyCopyAttr [Inhabited β] (attr : SimpleScopedEnvExtension α β) (f : β → Name → Bool)
-  (src tgt : Name) : CoreM Unit := do
+  (attrName src tgt : Name) : CoreM Unit := do
   if f (attr.getState (← getEnv)) src then
-    hackyAddAttribute `ext tgt
+    hackyAddAttribute attrName tgt
 
 /-- [todo] add more attributes. -/
 def copyAttributes (src tgt : Name) : CoreM Unit := do
@@ -567,11 +567,11 @@ def copyAttributes (src tgt : Name) : CoreM Unit := do
   copySimpAttribute src tgt normCastExt.squash
   -- copy `instance`
   copyInstanceAttribute src tgt
-  hackyCopyAttr Std.Tactic.Ext.extExtension (·.elements.contains ·) src tgt -- copy `@[ext]`
-  hackyCopyAttr Mathlib.Tactic.reflExt (·.elements.contains ·) src tgt -- copy `@[refl]`
-  hackyCopyAttr Mathlib.Tactic.symmExt (·.elements.contains ·) src tgt -- copy `@[symm]`
-  hackyCopyAttr Mathlib.Tactic.transExt (·.elements.contains ·) src tgt -- copy `@[trans]`
-  hackyCopyAttr Std.Tactic.Coe.coeExt (·.contains ·) src tgt -- copy `@[coe]`
+  hackyCopyAttr Std.Tactic.Ext.extExtension (·.elements.contains ·) `ext src tgt -- copy `@[ext]`
+  hackyCopyAttr Mathlib.Tactic.reflExt (·.elements.contains ·) `refl src tgt -- copy `@[refl]`
+  hackyCopyAttr Mathlib.Tactic.symmExt (·.elements.contains ·) `symm src tgt -- copy `@[symm]`
+  hackyCopyAttr Mathlib.Tactic.transExt (·.elements.contains ·) `trans src tgt -- copy `@[trans]`
+  hackyCopyAttr Std.Tactic.Coe.coeExt (·.contains ·) `coe src tgt -- copy `@[coe]`
 
 /--
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
