@@ -9,12 +9,11 @@ import Mathlib.Data.KVMap
 import Mathlib.Lean.Expr.ReplaceRec
 import Std.Lean.NameMapAttribute
 import Std.Data.Option.Basic
--- extra imports we need just to copy attributes
-import Std.Tactic.NormCast.Ext
-import Std.Tactic.Ext.Attr
-import Mathlib.Tactic.Relation.Rfl
-import Mathlib.Tactic.Relation.Symm
-import Mathlib.Tactic.Relation.Trans
+import Std.Tactic.NormCast.Ext -- just to copy the attribute
+import Std.Tactic.Ext.Attr -- just to copy the attribute
+import Mathlib.Tactic.Relation.Rfl -- just to copy the attribute
+import Mathlib.Tactic.Relation.Symm -- just to copy the attribute
+import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
 
 /-!
 # The `@[to_additive]` attribute.
