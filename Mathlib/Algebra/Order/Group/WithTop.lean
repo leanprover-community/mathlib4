@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Monoid.WithTop
 
 /-!
-# Adjoining a top element to a `linear_ordered_add_comm_group_with_top`.
+# Adjoining a top element to a `LinearOrderedAddCommGroupWithTop`.
 -/
 
 namespace WithTop
