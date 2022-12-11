@@ -582,15 +582,15 @@ theorem eq_empty_of_subset_empty {s : Set α} : s ⊆ ∅ → s = ∅ :=
   subset_empty_iff.1
 #align set.eq_empty_of_subset_empty Set.eq_empty_of_subset_empty
 
-theorem eq_empty_of_is_empty [IsEmpty α] (s : Set α) : s = ∅ :=
+theorem eq_empty_of_isEmpty [IsEmpty α] (s : Set α) : s = ∅ :=
   eq_empty_of_subset_empty fun x _ => isEmptyElim x
-#align set.eq_empty_of_is_empty Set.eq_empty_of_is_empty
+#align set.eq_empty_of_is_empty Set.eq_empty_of_isEmpty
 
 /-- There is exactly one set of a type that is empty. -/
 instance uniqueEmpty [IsEmpty α] :
     Unique (Set α) where
   default := ∅
-  uniq := eq_empty_of_is_empty
+  uniq := eq_empty_of_isEmpty
 #align set.unique_empty Set.uniqueEmpty
 
 /-- See also `Set.nonempty_iff_ne_empty`. -/
@@ -610,9 +610,9 @@ theorem not_nonempty_empty : ¬(∅ : Set α).Nonempty := fun ⟨_, hx⟩ => hx
 #align set.not_nonempty_empty Set.not_nonempty_empty
 
 @[simp]
-theorem is_empty_coe_sort {s : Set α} : IsEmpty (↥s) ↔ s = ∅ :=
+theorem isEmpty_coe_sort {s : Set α} : IsEmpty (↥s) ↔ s = ∅ :=
   not_iff_not.1 <| by simpa using nonempty_iff_ne_empty
-#align set.is_empty_coe_sort Set.is_empty_coe_sort
+#align set.is_empty_coe_sort Set.isEmpty_coe_sort
 
 theorem eq_empty_or_nonempty (s : Set α) : s = ∅ ∨ s.Nonempty :=
   or_iff_not_imp_left.2 nonempty_iff_ne_empty.2
@@ -769,13 +769,13 @@ theorem union_assoc (a b c : Set α) : a ∪ b ∪ c = a ∪ (b ∪ c) :=
   ext fun _ => or_assoc
 #align set.union_assoc Set.union_assoc
 
-instance union_is_assoc : IsAssociative (Set α) (· ∪ ·) :=
+instance union_isAssoc : IsAssociative (Set α) (· ∪ ·) :=
   ⟨union_assoc⟩
-#align set.union_is_assoc Set.union_is_assoc
+#align set.union_is_assoc Set.union_isAssoc
 
-instance union_is_comm : IsCommutative (Set α) (· ∪ ·) :=
+instance union_isComm : IsCommutative (Set α) (· ∪ ·) :=
   ⟨union_comm⟩
-#align set.union_is_comm Set.union_is_comm
+#align set.union_is_comm Set.union_isComm
 
 theorem union_left_comm (s₁ s₂ s₃ : Set α) : s₁ ∪ (s₂ ∪ s₃) = s₂ ∪ (s₁ ∪ s₃) :=
   ext fun _ => or_left_comm
@@ -919,13 +919,13 @@ theorem inter_assoc (a b c : Set α) : a ∩ b ∩ c = a ∩ (b ∩ c) :=
   ext fun _ => and_assoc
 #align set.inter_assoc Set.inter_assoc
 
-instance inter_is_assoc : IsAssociative (Set α) (· ∩ ·) :=
+instance inter_isAssoc : IsAssociative (Set α) (· ∩ ·) :=
   ⟨inter_assoc⟩
-#align set.inter_is_assoc Set.inter_is_assoc
+#align set.inter_is_assoc Set.inter_isAssoc
 
-instance inter_is_comm : IsCommutative (Set α) (· ∩ ·) :=
+instance inter_isComm : IsCommutative (Set α) (· ∩ ·) :=
   ⟨inter_comm⟩
-#align set.inter_is_comm Set.inter_is_comm
+#align set.inter_is_comm Set.inter_isComm
 
 theorem inter_left_comm (s₁ s₂ s₃ : Set α) : s₁ ∩ (s₂ ∩ s₃) = s₂ ∩ (s₁ ∩ s₃) :=
   ext fun _ => and_left_comm
@@ -2476,27 +2476,10 @@ theorem nontrivial_coe_sort {s : Set α} : Nontrivial s ↔ s.Nontrivial := by
   --   Subtype.mk_eq_mk]
   rw [← nontrivial_univ_iff, Set.Nontrivial, Set.Nontrivial]
   apply Iff.intro
-  { intro h
-    rcases h with ⟨x, _, y, _, hxy⟩
-    use x
-    use Subtype.prop x
-    use y
-    use Subtype.prop y
-    intro h
-    exact hxy (Subtype.coe_injective h) }
-  { intro h
-    rcases h with ⟨x, hx, y, hy, hxy⟩
-    rw [SetCoe.exists]
-    use x
-    use hx
-    use mem_univ _
-    rw [SetCoe.exists]
-    use y
-    use hy
-    use mem_univ _
-    intro h
-    rw [Subtype.mk_eq_mk] at h
-    exact hxy h }
+  · rintro ⟨x, _, y, _, hxy⟩
+    exact ⟨x, Subtype.prop x, y, Subtype.prop y, fun h => hxy (Subtype.coe_injective h)⟩
+  · rintro ⟨x, hx, y, hy, hxy⟩
+    exact ⟨⟨x, hx⟩, mem_univ _, ⟨y, hy⟩, mem_univ _, Subtype.mk_eq_mk.not.mpr hxy⟩
 
 #align set.nontrivial_coe_sort Set.nontrivial_coe_sort
 
@@ -2528,11 +2511,9 @@ alias not_nontrivial_iff ↔ _ Subsingleton.not_nontrivial
 alias not_subsingleton_iff ↔ _ Nontrivial.not_subsingleton
 
 theorem univ_eq_true_false : univ = ({True, False} : Set Prop) :=
-  Eq.symm <| eq_univ_of_forall <| fun x => by classical
-    if h : x then
-      simp [h]
-    else
-      simp [h]
+  Eq.symm <| eq_univ_of_forall <| fun x => by
+    rw [mem_insert_iff, mem_singleton_iff]
+    exact Classical.propComplete x
 #align set.univ_eq_true_false Set.univ_eq_true_false
 
 section Preorder
