@@ -173,9 +173,9 @@ theorem Set.coe_eq_subtype (s : Set α) : ↥s = { x // x ∈ s } :=
 #align set.coe_eq_subtype Set.coe_eq_subtype
 
 @[simp]
-theorem Set.coe_set_of (p : α → Prop) : ↥{ x | p x } = { x // p x } :=
+theorem Set.coe_setOf (p : α → Prop) : ↥{ x | p x } = { x // p x } :=
   rfl
-#align set.coe_set_of Set.coe_set_of
+#align set.coe_set_of Set.coe_setOf
 
 -- Porting: removed `simp` because `simp` can prove it
 theorem SetCoe.forall {s : Set α} {p : s → Prop} : (∀ x : s, p x) ↔ ∀ (x) (h : x ∈ s), p ⟨x, h⟩ :=
@@ -249,12 +249,12 @@ theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) 
   ⟨fun h b a ha => h a ha b, fun h a ha b => h b a ha⟩
 #align set.forall_in_swap Set.forall_in_swap
 
-/-! ### Lemmas about `mem` and `set_of` -/
+/-! ### Lemmas about `mem` and `setOf` -/
 
 
-theorem mem_set_of {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a :=
+theorem mem_setOf {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a :=
   Iff.rfl
-#align set.mem_set_of Set.mem_set_of
+#align set.mem_set_of Set.mem_setOf
 
 /-- If `h : a ∈ {x | p x}` then `h.out : p x`. These are definitionally equal, but this can
 nevertheless be useful for various reasons, e.g. to apply further projection notation or in an
@@ -263,43 +263,43 @@ theorem _root_.Membership.Mem.out {p : α → Prop} {a : α} (h : a ∈ { x | p 
   h
 #align has_mem.mem.out Membership.Mem.out
 
-theorem nmem_set_of_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a :=
+theorem nmem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a :=
   Iff.rfl
-#align set.nmem_set_of_iff Set.nmem_set_of_iff
+#align set.nmem_set_of_iff Set.nmem_setOf_iff
 
 @[simp]
-theorem set_of_mem_eq {s : Set α} : { x | x ∈ s } = s :=
+theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s :=
   rfl
-#align set.set_of_mem_eq Set.set_of_mem_eq
+#align set.set_of_mem_eq Set.setOf_mem_eq
 
-theorem set_of_set {s : Set α} : setOf s = s :=
+theorem setOf_set {s : Set α} : setOf s = s :=
   rfl
-#align set.set_of_set Set.set_of_set
+#align set.set_of_set Set.setOf_set
 
-theorem set_of_app_iff {p : α → Prop} {x : α} : { x | p x } x ↔ p x :=
+theorem setOf_app_iff {p : α → Prop} {x : α} : { x | p x } x ↔ p x :=
   Iff.rfl
-#align set.set_of_app_iff Set.set_of_app_iff
+#align set.set_of_app_iff Set.setOf_app_iff
 
 theorem mem_def {a : α} {s : Set α} : a ∈ s ↔ s a :=
   Iff.rfl
 #align set.mem_def Set.mem_def
 
-theorem set_of_bijective : Bijective (setOf : (α → Prop) → Set α) :=
+theorem setOf_bijective : Bijective (setOf : (α → Prop) → Set α) :=
   bijective_id
-#align set.set_of_bijective Set.set_of_bijective
+#align set.set_of_bijective Set.setOf_bijective
 
 @[simp]
-theorem set_of_subset_set_of {p q : α → Prop} : { a | p a } ⊆ { a | q a } ↔ ∀ a, p a → q a :=
+theorem setOf_subset_setOf {p q : α → Prop} : { a | p a } ⊆ { a | q a } ↔ ∀ a, p a → q a :=
   Iff.rfl
-#align set.set_of_subset_set_of Set.set_of_subset_set_of
+#align set.set_of_subset_set_of Set.setOf_subset_setOf
 
-theorem set_of_and {p q : α → Prop} : { a | p a ∧ q a } = { a | p a } ∩ { a | q a } :=
+theorem setOf_and {p q : α → Prop} : { a | p a ∧ q a } = { a | p a } ∩ { a | q a } :=
   rfl
-#align set.set_of_and Set.set_of_and
+#align set.set_of_and Set.setOf_and
 
-theorem set_of_or {p q : α → Prop} : { a | p a ∨ q a } = { a | p a } ∪ { a | q a } :=
+theorem setOf_or {p q : α → Prop} : { a | p a ∨ q a } = { a | p a } ∪ { a | q a } :=
   rfl
-#align set.set_of_or Set.set_of_or
+#align set.set_of_or Set.setOf_or
 
 /-! ### Subset and strict subset relations -/
 
@@ -557,9 +557,9 @@ theorem mem_empty_iff_false (x : α) : x ∈ (∅ : Set α) ↔ False :=
 #align set.mem_empty_iff_false Set.mem_empty_iff_false
 
 @[simp]
-theorem set_of_false : { _a : α | False } = ∅ :=
+theorem setOf_false : { _a : α | False } = ∅ :=
   rfl
-#align set.set_of_false Set.set_of_false
+#align set.set_of_false Set.setOf_false
 
 @[simp]
 theorem empty_subset (s : Set α) : ∅ ⊆ s :=
@@ -647,9 +647,9 @@ Mathematically it is the same as `α` but it has a different type.
 
 
 @[simp]
-theorem set_of_true : { _x : α | True } = univ :=
+theorem setOf_true : { _x : α | True } = univ :=
   rfl
-#align set.set_of_true Set.set_of_true
+#align set.set_of_true Set.setOf_true
 
 @[simp]
 theorem mem_univ (x : α) : x ∈ @univ α :=
@@ -1236,14 +1236,14 @@ theorem mem_singleton_iff {a b : α} : a ∈ ({b} : Set α) ↔ a = b :=
 #align set.mem_singleton_iff Set.mem_singleton_iff
 
 @[simp]
-theorem set_of_eq_eq_singleton {a : α} : { n | n = a } = {a} :=
+theorem setOf_eq_eq_singleton {a : α} : { n | n = a } = {a} :=
   rfl
-#align set.set_of_eq_eq_singleton Set.set_of_eq_eq_singleton
+#align set.set_of_eq_eq_singleton Set.setOf_eq_eq_singleton
 
 @[simp]
-theorem set_of_eq_eq_singleton' {a : α} : { x | a = x } = {a} :=
+theorem setOf_eq_eq_singleton' {a : α} : { x | a = x } = {a} :=
   ext fun _ => eq_comm
-#align set.set_of_eq_eq_singleton' Set.set_of_eq_eq_singleton'
+#align set.set_of_eq_eq_singleton' Set.setOf_eq_eq_singleton'
 
 -- TODO: again, annotation needed
 --Porting note: removed `simp` attribute
@@ -1455,9 +1455,9 @@ theorem sep_or : { x ∈ s | p x ∨ q x } = { x ∈ s | p x } ∪ { x ∈ s | q
 #align set.sep_or Set.sep_or
 
 @[simp]
-theorem sep_set_of : { x ∈ { y | p y } | q x } = { x | p x ∧ q x } :=
+theorem sep_setOf : { x ∈ { y | p y } | q x } = { x | p x ∧ q x } :=
   rfl
-#align set.sep_set_of Set.sep_set_of
+#align set.sep_set_of Set.sep_setOf
 
 end Sep
 
@@ -1519,9 +1519,9 @@ theorem mem_compl {s : Set α} {x : α} (h : x ∉ s) : x ∈ sᶜ :=
   h
 #align set.mem_compl Set.mem_compl
 
-theorem compl_set_of {α} (p : α → Prop) : { a | p a }ᶜ = { a | ¬p a } :=
+theorem compl_setOf {α} (p : α → Prop) : { a | p a }ᶜ = { a | ¬p a } :=
   rfl
-#align set.compl_set_of Set.compl_set_of
+#align set.compl_set_of Set.compl_setOf
 
 theorem not_mem_of_mem_compl {s : Set α} {x : α} (h : x ∈ sᶜ) : x ∉ s :=
   h
