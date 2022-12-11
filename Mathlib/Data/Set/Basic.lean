@@ -1435,7 +1435,7 @@ theorem sep_univ : { x ∈ (univ : Set α) | p x } = { x | p x } :=
 #align set.sep_univ Set.sep_univ
 
 @[simp]
-theorem sep_union : { x ∈ s ∪ t | p x } = { x ∈ s | p x } ∪ { x ∈ t | p x } :=
+theorem sep_union : { x | (x ∈ s ∨ x ∈ t) ∧ p x } = { x ∈ s | p x } ∪ { x ∈ t | p x } :=
   union_inter_distrib_right
 #align set.sep_union Set.sep_union
 
