@@ -365,7 +365,7 @@ def applyReplacementFun : Expr → MetaM Expr :=
           return some <| g.app x
       return e.updateApp! (← r g) (← r x)
     | .proj n₀ idx e => do
-      let n₁ := n₀.mapPrefix <| findTranslation? <|← getEnv
+      let n₁ := n₀.mapPrefix <| findTranslation? <| ← getEnv
       if n₀ != n₁ then
         trace[to_additive_detail] "applyReplacementFun: in projection {e}.{idx} of type {n₀}, {""
           }replace type with {n₁}"
