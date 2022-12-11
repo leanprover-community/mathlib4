@@ -87,7 +87,7 @@ theorem traverse_map (f : β → F γ) (g : α → β) (x : t α) :
 
 theorem pure_traverse (x : t α) : traverse pure x = (pure x : F (t α)) := by
   have : traverse pure x = pure (traverse id.mk x) :=
-      (naturality (pure_transformation F) id.mk x).symm <;>
+      (naturality (PureTransformation F) id.mk x).symm <;>
     rwa [id_traverse] at this
 #align traversable.pure_traverse Traversable.pure_traverse
 
