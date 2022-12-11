@@ -535,8 +535,8 @@ def copySimpAttribute (src tgt : Name) (ext : SimpExtension := simpExtension) : 
 [todo] it seems not to work when the `to_additive` is added as an attribute later. -/
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if (← isInstance src) then
-    let prio := (← getInstancePriority? src).elim 100 id
-    let attr_kind := (← getInstanceAttrKind? src).elim AttributeKind.global id
+    let prio := (← getInstancePriority? src).getD 100
+    let attr_kind := (← getInstanceAttrKind? src).getD .global
     trace[to_additive_detail] "Making {tgt} an instance with priority {prio}."
     addInstance tgt attr_kind prio |>.run'
 
@@ -556,7 +556,7 @@ def hackyCopyAttr [Inhabited β] (attr : SimpleScopedEnvExtension α β) (f : β
   if f (attr.getState (← getEnv)) src then
     hackyAddAttribute attrName tgt
 
-/-- [todo] add more attributes. -/
+/-- Copy attributes to the additive name. -/
 def copyAttributes (src tgt : Name) : CoreM Unit := do
   -- Copy the standard `simp` attribute
   copySimpAttribute src tgt
