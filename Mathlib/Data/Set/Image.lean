@@ -64,7 +64,7 @@ theorem mem_preimage {s : Set β} {a : α} : a ∈ f ⁻¹' s ↔ f a ∈ s :=
 
 theorem preimage_congr {f g : α → β} {s : Set β} (h : ∀ x : α, f x = g x) : f ⁻¹' s = g ⁻¹' s := by
   congr with x
-  apply_assumption
+  simp [h]
 #align set.preimage_congr Set.preimage_congr
 
 theorem preimage_mono {s t : Set β} (h : s ⊆ t) : f ⁻¹' s ⊆ f ⁻¹' t := fun x hx => h hx
@@ -173,7 +173,7 @@ theorem nonempty_of_nonempty_preimage {s : Set β} {f : α → β} (hf : (f ⁻�
 #align set.nonempty_of_nonempty_preimage Set.nonempty_of_nonempty_preimage
 
 theorem preimage_subtype_coe_eq_compl {α : Type _} {s u v : Set α} (hsuv : s ⊆ u ∪ v)
-    (H : s ∩ (u ∩ v) = ∅) : (coe : s → α) ⁻¹' u = (coe ⁻¹' v)ᶜ := by
+    (H : s ∩ (u ∩ v) = ∅) : (Subtype.val (p := s)) ⁻¹' u = ((Subtype.val (p := s)) ⁻¹' v)ᶜ := by
   ext ⟨x, x_in_s⟩
   constructor
   · intro x_in_u x_in_v
