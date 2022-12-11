@@ -11,16 +11,16 @@ import Mathlib.Data.Set.Basic
 
 ## Main definitions
 
-* `preimage f t : set α` : the preimage f⁻¹(t) (written `f ⁻¹' t` in Lean) of a subset of β.
+* `preimage f t : Set α` : the preimage f⁻¹(t) (written `f ⁻¹' t` in Lean) of a subset of β.
 
-* `range f : set β` : the image of `univ` under `f`.
+* `range f : Set β` : the image of `univ` under `f`.
   Also works for `{p : Prop} (f : p → α)` (unlike `image`)
 
 ## Notation
 
-* `f ⁻¹' t` for `set.preimage f t`
+* `f ⁻¹' t` for `Set.preimage f t`
 
-* `f ~~ s` for `set.image f s`
+* `f '' s` for `Set.image f s`
 
 ## Tags
 
@@ -40,7 +40,7 @@ variable {α β γ : Type _} {ι : Sort _}
 /-! ### Inverse image -/
 
 
-/-- The preimage of `s : set β` by `f : α → β`, written `f ⁻¹' s`,
+/-- The preimage of `s : Set β` by `f : α → β`, written `f ⁻¹' s`,
   is the set of `x : α` such that `f x ∈ s`. -/
 def preimage {α : Type u} {β : Type v} (f : α → β) (s : Set β) : Set α :=
   { x | f x ∈ s }
@@ -193,7 +193,7 @@ section Image
 variable {f : α → β} {s t : Set α}
 
 -- Porting note: `Set.image` is already defined in `Init.Set`
--- /-- The image of `s : set α` by `f : α → β`, written `f ~~ s`,
+-- /-- The image of `s : Set α` by `f : α → β`, written `f '' s`,
 --   is the set of `y : β` such that `f x = y` for some `x ∈ s`. -/
 -- def image (f : α → β) (s : Set α) : Set β :=
 --   { y | ∃ x, x ∈ s ∧ f x = y }
@@ -579,15 +579,15 @@ theorem exists_image_iff (f : α → β) (x : Set α) (P : β → Prop) :
     ⟨⟨_, _, a.prop, rfl⟩, h⟩⟩
 #align set.exists_image_iff Set.exists_image_iff
 
-/-- Restriction of `f` to `s` factors through `s.image_factorization f : s → f ~~ s`. -/
+/-- Restriction of `f` to `s` factors through `s.imageFactorization f : s → f ~~ s`. -/
 def imageFactorization (f : α → β) (s : Set α) : s → f ~~ s := fun p =>
   ⟨f p.1, mem_image_of_mem f p.2⟩
 #align set.image_factorization Set.imageFactorization
 
-theorem image_factorization_eq {f : α → β} {s : Set α} :
+theorem imageFactorization_eq {f : α → β} {s : Set α} :
     Subtype.val ∘ imageFactorization f s = f ∘ Subtype.val :=
   funext fun _ => rfl
-#align set.image_factorization_eq Set.image_factorization_eq
+#align set.image_factorization_eq Set.imageFactorization_eq
 
 theorem surjective_onto_image {f : α → β} {s : Set α} : Surjective (imageFactorization f s) :=
   fun ⟨_, ⟨a, ha, rfl⟩⟩ => ⟨⟨a, ha⟩, rfl⟩
@@ -616,7 +616,7 @@ variable {f : ι → α} {s t : Set α}
 
 /-- Range of a function.
 
-This function is more flexible than `f ~~ univ`, as the image requires that the domain is in Type
+This function is more flexible than `f '' univ`, as the image requires that the domain is in Type
 and not an arbitrary Sort. -/
 def range (f : ι → α) : Set α :=
   { x | ∃ y, f y = x }
@@ -848,32 +848,32 @@ theorem range_eval {ι : Type _} {α : ι → Sort _} [∀ i, Nonempty (α i)] (
   -- Porting note: should be `(surjective_eval i).range_eq` if dot notation works
 #align set.range_eval Set.range_eval
 
-theorem is_compl_range_inl_range_inr : IsCompl (range <| @Sum.inl α β) (range Sum.inr) :=
+theorem isCompl_range_inl_range_inr : IsCompl (range <| @Sum.inl α β) (range Sum.inr) :=
   IsCompl.of_le
     (by
       rintro y ⟨⟨x₁, rfl⟩, ⟨x₂, h⟩⟩
       exact Sum.noConfusion h)
     (by rintro (x | y) - <;> [left, right] <;> exact mem_range_self _)
-#align set.is_compl_range_inl_range_inr Set.is_compl_range_inl_range_inr
+#align set.is_compl_range_inl_range_inr Set.isCompl_range_inl_range_inr
 
 @[simp]
 theorem range_inl_union_range_inr : range (Sum.inl : α → Sum α β) ∪ range Sum.inr = univ :=
-  is_compl_range_inl_range_inr.sup_eq_top
+  isCompl_range_inl_range_inr.sup_eq_top
 #align set.range_inl_union_range_inr Set.range_inl_union_range_inr
 
 @[simp]
 theorem range_inl_inter_range_inr : range (Sum.inl : α → Sum α β) ∩ range Sum.inr = ∅ :=
-  is_compl_range_inl_range_inr.inf_eq_bot
+  isCompl_range_inl_range_inr.inf_eq_bot
 #align set.range_inl_inter_range_inr Set.range_inl_inter_range_inr
 
 @[simp]
 theorem range_inr_union_range_inl : range (Sum.inr : β → Sum α β) ∪ range Sum.inl = univ :=
-  is_compl_range_inl_range_inr.symm.sup_eq_top
+  isCompl_range_inl_range_inr.symm.sup_eq_top
 #align set.range_inr_union_range_inl Set.range_inr_union_range_inl
 
 @[simp]
 theorem range_inr_inter_range_inl : range (Sum.inr : β → Sum α β) ∩ range Sum.inl = ∅ :=
-  is_compl_range_inl_range_inr.symm.inf_eq_bot
+  isCompl_range_inl_range_inr.symm.inf_eq_bot
 #align set.range_inr_inter_range_inl Set.range_inr_inter_range_inl
 
 @[simp]
@@ -900,12 +900,12 @@ theorem preimage_inr_range_inl : Sum.inr ⁻¹' range (Sum.inl : α → Sum α �
 
 @[simp]
 theorem compl_range_inl : range (Sum.inl : α → Sum α β)ᶜ = range (Sum.inr : β → Sum α β) :=
-  IsCompl.compl_eq is_compl_range_inl_range_inr
+  IsCompl.compl_eq isCompl_range_inl_range_inr
 #align set.compl_range_inl Set.compl_range_inl
 
 @[simp]
 theorem compl_range_inr : range (Sum.inr : β → Sum α β)ᶜ = range (Sum.inl : α → Sum α β) :=
-  IsCompl.compl_eq is_compl_range_inl_range_inr.symm
+  IsCompl.compl_eq isCompl_range_inl_range_inr.symm
 #align set.compl_range_inr Set.compl_range_inr
 
 theorem image_preimage_inl_union_image_preimage_inr (s : Set (Sum α β)) :
@@ -1111,64 +1111,64 @@ noncomputable def rangeSplitting (f : α → β) : range f → α := fun x => x.
 #align set.range_splitting Set.rangeSplitting
 
 -- This can not be a `@[simp]` lemma because the head of the left hand side is a variable.
-theorem apply_range_splitting (f : α → β) (x : range f) : f (rangeSplitting f x) = x :=
+theorem apply_rangeSplitting (f : α → β) (x : range f) : f (rangeSplitting f x) = x :=
   x.2.choose_spec
-#align set.apply_range_splitting Set.apply_range_splitting
+#align set.apply_range_splitting Set.apply_rangeSplitting
 
 @[simp]
-theorem comp_range_splitting (f : α → β) : f ∘ rangeSplitting f = Subtype.val := by
+theorem comp_rangeSplitting (f : α → β) : f ∘ rangeSplitting f = Subtype.val := by
   ext
   simp only [Function.comp_apply]
-  apply apply_range_splitting
-#align set.comp_range_splitting Set.comp_range_splitting
+  apply apply_rangeSplitting
+#align set.comp_range_splitting Set.comp_rangeSplitting
 
 -- When `f` is injective, see also `equiv.of_injective`.
-theorem left_inverse_range_splitting (f : α → β) :
+theorem leftInverse_rangeSplitting (f : α → β) :
     LeftInverse (rangeFactorization f) (rangeSplitting f) := fun x => by
   apply Subtype.ext -- Porting note: why doesn't `ext` find this lemma?
   simp only [range_factorization_coe]
-  apply apply_range_splitting
-#align set.left_inverse_range_splitting Set.left_inverse_range_splitting
+  apply apply_rangeSplitting
+#align set.left_inverse_range_splitting Set.leftInverse_rangeSplitting
 
-theorem range_splitting_injective (f : α → β) : Injective (rangeSplitting f) :=
-  (left_inverse_range_splitting f).injective
-#align set.range_splitting_injective Set.range_splitting_injective
+theorem rangeSplitting_injective (f : α → β) : Injective (rangeSplitting f) :=
+  (leftInverse_rangeSplitting f).injective
+#align set.range_splitting_injective Set.rangeSplitting_injective
 
-theorem right_inverse_range_splitting {f : α → β} (h : Injective f) :
+theorem rightInverse_rangeSplitting {f : α → β} (h : Injective f) :
     RightInverse (rangeFactorization f) (rangeSplitting f) :=
-  (left_inverse_range_splitting f).rightInverse_of_injective fun _ _ hxy =>
+  (leftInverse_rangeSplitting f).rightInverse_of_injective fun _ _ hxy =>
     h <| Subtype.ext_iff.1 hxy
-#align set.right_inverse_range_splitting Set.right_inverse_range_splitting
+#align set.right_inverse_range_splitting Set.rightInverse_rangeSplitting
 
-theorem preimage_range_splitting {f : α → β} (hf : Injective f) :
+theorem preimage_rangeSplitting {f : α → β} (hf : Injective f) :
     preimage (rangeSplitting f) = image (rangeFactorization f) :=
-  (image_eq_preimage_of_inverse (right_inverse_range_splitting hf)
-      (left_inverse_range_splitting f)).symm
-#align set.preimage_range_splitting Set.preimage_range_splitting
+  (image_eq_preimage_of_inverse (rightInverse_rangeSplitting hf)
+      (leftInverse_rangeSplitting f)).symm
+#align set.preimage_range_splitting Set.preimage_rangeSplitting
 
-theorem is_compl_range_some_none (α : Type _) : IsCompl (range (some : α → Option α)) {none} :=
+theorem isCompl_range_some_none (α : Type _) : IsCompl (range (some : α → Option α)) {none} :=
   IsCompl.of_le (fun _ ⟨⟨_, ha⟩, (hn : _ = none)⟩ => Option.some_ne_none _ (ha.trans hn))
     fun x _ => Option.casesOn x (Or.inr rfl) fun _ => Or.inl <| mem_range_self _
-#align set.is_compl_range_some_none Set.is_compl_range_some_none
+#align set.is_compl_range_some_none Set.isCompl_range_some_none
 
 @[simp]
 theorem compl_range_some (α : Type _) : range (some : α → Option α)ᶜ = {none} :=
-  (is_compl_range_some_none α).compl_eq
+  (isCompl_range_some_none α).compl_eq
 #align set.compl_range_some Set.compl_range_some
 
 @[simp]
 theorem range_some_inter_none (α : Type _) : range (some : α → Option α) ∩ {none} = ∅ :=
-  (is_compl_range_some_none α).inf_eq_bot
+  (isCompl_range_some_none α).inf_eq_bot
 #align set.range_some_inter_none Set.range_some_inter_none
 
 -- @[simp] `simp` can prove this
 theorem range_some_union_none (α : Type _) : range (some : α → Option α) ∪ {none} = univ :=
-  (is_compl_range_some_none α).sup_eq_top
+  (isCompl_range_some_none α).sup_eq_top
 #align set.range_some_union_none Set.range_some_union_none
 
 @[simp]
 theorem insert_none_range_some (α : Type _) : insert none (range (some : α → Option α)) = univ :=
-  (is_compl_range_some_none α).symm.sup_eq_top
+  (isCompl_range_some_none α).symm.sup_eq_top
 #align set.insert_none_range_some Set.insert_none_range_some
 
 end Range
