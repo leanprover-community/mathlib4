@@ -46,7 +46,7 @@ def preimage {α : Type u} {β : Type v} (f : α → β) (s : Set β) : Set α :
   { x | f x ∈ s }
 #align set.preimage Set.preimage
 
--- mathport name: «expr ⁻¹' »
+/-- `f ⁻¹' t` denotes the preimage of `t : Set β` under the function `f : α → β`. -/
 infixl:80 " ⁻¹' " => preimage
 
 section Preimage
@@ -192,13 +192,14 @@ section Image
 
 variable {f : α → β} {s t : Set α}
 
-/-- The image of `s : set α` by `f : α → β`, written `f ~~ s`,
-  is the set of `y : β` such that `f x = y` for some `x ∈ s`. -/
-def image2 (f : α → β) (s : Set α) : Set β :=
-  { y | ∃ x, x ∈ s ∧ f x = y }
-#align set.image Set.image2
+-- Porting note: `Set.image` is already defined in `Init.Set`
+-- /-- The image of `s : set α` by `f : α → β`, written `f ~~ s`,
+--   is the set of `y : β` such that `f x = y` for some `x ∈ s`. -/
+-- def image (f : α → β) (s : Set α) : Set β :=
+--   { y | ∃ x, x ∈ s ∧ f x = y }
+-- #align set.image Set.image
 
--- mathport name: «expr ~~ »
+/-- `f '' s` denotes the image of `s : Set α` under the function `f : α → β`. -/
 infixl:80 " ~~ " => image
 
 theorem mem_image_iff_bex {f : α → β} {s : Set α} {y : β} :
@@ -353,13 +354,15 @@ theorem image_eq_empty {α β} {f : α → β} {s : Set α} : f ~~ s = ∅ ↔ s
 #align set.image_eq_empty Set.image_eq_empty
 
 -- Porting note: `compl` is already defined in `Init.Set`
-theorem preimage_compl_eq_image_compl [BooleanAlgebra α] (S : Set α) : HasCompl.compl ⁻¹' S = HasCompl.compl ~~ S :=
+theorem preimage_compl_eq_image_compl [BooleanAlgebra α] (S : Set α) :
+  HasCompl.compl ⁻¹' S = HasCompl.compl ~~ S :=
   Set.ext fun x =>
     ⟨fun h => ⟨xᶜ, h, compl_compl x⟩, fun h =>
       Exists.elim h fun _ hy => (compl_eq_comm.mp hy.2).symm.subst hy.1⟩
 #align set.preimage_compl_eq_image_compl Set.preimage_compl_eq_image_compl
 
-theorem mem_compl_image [BooleanAlgebra α] (t : α) (S : Set α) : t ∈ HasCompl.compl ~~ S ↔ tᶜ ∈ S := by
+theorem mem_compl_image [BooleanAlgebra α] (t : α) (S : Set α) :
+  t ∈ HasCompl.compl ~~ S ↔ tᶜ ∈ S := by
   simp [← preimage_compl_eq_image_compl]
 #align set.mem_compl_image Set.mem_compl_image
 
@@ -373,7 +376,8 @@ theorem image_id' (s : Set α) : (fun x => x) ~~ s = s := by
 theorem image_id (s : Set α) : id ~~ s = s := by simp
 #align set.image_id Set.image_id
 
-theorem compl_compl_image [BooleanAlgebra α] (S : Set α) : HasCompl.compl ~~ (HasCompl.compl ~~ S) = S := by
+theorem compl_compl_image [BooleanAlgebra α] (S : Set α) :
+  HasCompl.compl ~~ (HasCompl.compl ~~ S) = S := by
   rw [← image_comp, compl_comp_compl, image_id]
 #align set.compl_compl_image Set.compl_compl_image
 
@@ -623,7 +627,7 @@ theorem mem_range {x : α} : x ∈ range f ↔ ∃ y, f y = x :=
   Iff.rfl
 #align set.mem_range Set.mem_range
 
-@[simp]
+-- @[simp] `simp` can prove this
 theorem mem_range_self (i : ι) : f i ∈ range f :=
   ⟨i, rfl⟩
 #align set.mem_range_self Set.mem_range_self
@@ -774,7 +778,6 @@ theorem exists_subset_range_and_iff {f : α → β} {p : Set β → Prop} :
     ⟨f ~~ s, image_subset_range _ _, hs⟩⟩
 #align set.exists_subset_range_and_iff Set.exists_subset_range_and_iff
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:628:2: warning: expanding binder collection (s «expr ⊆ » range[set.range] f) -/
 theorem exists_subset_range_iff {f : α → β} {p : Set β → Prop} :
     (∃ (s : _) (_ : s ⊆ range f), p s) ↔ ∃ s, p (f ~~ s) := by simp
 #align set.exists_subset_range_iff Set.exists_subset_range_iff
@@ -802,12 +805,12 @@ theorem preimage_eq_preimage' {s t : Set α} {f : β → α} (hs : s ⊆ range f
   rintro rfl; rfl
 #align set.preimage_eq_preimage' Set.preimage_eq_preimage'
 
-@[simp]
+-- @[simp] `simp` can prove this
 theorem preimage_inter_range {f : α → β} {s : Set β} : f ⁻¹' (s ∩ range f) = f ⁻¹' s :=
   Set.ext fun x => and_iff_left ⟨x, rfl⟩
 #align set.preimage_inter_range Set.preimage_inter_range
 
-@[simp]
+-- @[simp] `simp` can prove this
 theorem preimage_range_inter {f : α → β} {s : Set β} : f ⁻¹' (range f ∩ s) = f ⁻¹' s := by
   rw [inter_comm, preimage_inter_range]
 #align set.preimage_range_inter Set.preimage_range_inter
@@ -1034,7 +1037,8 @@ theorem image_eq_range (f : α → β) (s : Set α) : f ~~ s = range fun x : s =
   exact ⟨x, h1, h2⟩
 #align set.image_eq_range Set.image_eq_range
 
-theorem _root_.Sum.range_eq (f : Sum α β → γ) : range f = range (f ∘ Sum.inl) ∪ range (f ∘ Sum.inr) :=
+theorem _root_.Sum.range_eq (f : Sum α β → γ) :
+  range f = range (f ∘ Sum.inl) ∪ range (f ∘ Sum.inr) :=
   ext fun _ => Sum.exists
 #align sum.range_eq Sum.range_eq
 
@@ -1157,7 +1161,7 @@ theorem range_some_inter_none (α : Type _) : range (some : α → Option α) �
   (is_compl_range_some_none α).inf_eq_bot
 #align set.range_some_inter_none Set.range_some_inter_none
 
-@[simp]
+-- @[simp] `simp` can prove this
 theorem range_some_union_none (α : Type _) : range (some : α → Option α) ∪ {none} = univ :=
   (is_compl_range_some_none α).sup_eq_top
 #align set.range_some_union_none Set.range_some_union_none
@@ -1369,7 +1373,8 @@ theorem range_val_subtype {p : α → Prop} : range (Subtype.val : Subtype p →
   range_coe
 #align subtype.range_val_subtype Subtype.range_val_subtype
 
-theorem coe_image_subset (s : Set α) (t : Set s) : Subtype.val ~~ t ⊆ s := fun x ⟨y, _, yvaleq⟩ => by
+theorem coe_image_subset (s : Set α) (t : Set s) : Subtype.val ~~ t ⊆ s :=
+  fun x ⟨y, _, yvaleq⟩ => by
   rw [← yvaleq]; exact y.property
 #align subtype.coe_image_subset Subtype.coe_image_subset
 
@@ -1391,8 +1396,9 @@ theorem preimage_coe_eq_preimage_coe_iff {s t u : Set α} :
   rw [← image_preimage_coe, ← image_preimage_coe, coe_injective.image_injective.eq_iff]
 #align subtype.preimage_coe_eq_preimage_coe_iff Subtype.preimage_coe_eq_preimage_coe_iff
 
-@[simp]
-theorem preimage_coe_inter_self (s t : Set α) : (Subtype.val : s → α) ⁻¹' (t ∩ s) = Subtype.val ⁻¹' t := by
+-- @[simp] `simp` can prove this
+theorem preimage_coe_inter_self (s t : Set α) :
+  (Subtype.val : s → α) ⁻¹' (t ∩ s) = Subtype.val ⁻¹' t := by
   rw [preimage_coe_eq_preimage_coe_iff, inter_assoc, inter_self]
 #align subtype.preimage_coe_inter_self Subtype.preimage_coe_inter_self
 
@@ -1412,7 +1418,8 @@ theorem exists_set_subtype {t : Set α} (p : Set α → Prop) :
   rw [image_preimage_eq_of_subset]; exact hs₂; rw [range_coe]; exact hs₁
 #align subtype.exists_set_subtype Subtype.exists_set_subtype
 
-theorem preimage_coe_nonempty {s t : Set α} : ((Subtype.val : s → α) ⁻¹' t).Nonempty ↔ (s ∩ t).Nonempty :=
+theorem preimage_coe_nonempty {s t : Set α} :
+  ((Subtype.val : s → α) ⁻¹' t).Nonempty ↔ (s ∩ t).Nonempty :=
   by rw [inter_comm, ← image_preimage_coe, nonempty_image_iff]
 #align subtype.preimage_coe_nonempty Subtype.preimage_coe_nonempty
 
@@ -1420,14 +1427,15 @@ theorem preimage_coe_eq_empty {s t : Set α} : (Subtype.val : s → α) ⁻¹' t
   simp [← not_nonempty_iff_eq_empty, preimage_coe_nonempty]
 #align subtype.preimage_coe_eq_empty Subtype.preimage_coe_eq_empty
 
-@[simp]
+-- @[simp] `simp` can prove this
 theorem preimage_coe_compl (s : Set α) : (Subtype.val : s → α) ⁻¹' sᶜ = ∅ :=
   preimage_coe_eq_empty.2 (inter_compl_self s)
 #align subtype.preimage_coe_compl Subtype.preimage_coe_compl
 
 -- Porting note: why can't `HasCompl` be inferred if we write `sᶜ`?
 @[simp]
-theorem preimage_coe_compl' (s : Set α) : (Subtype.val : @HasCompl.compl (Set α) BooleanAlgebra.toHasCompl s → α) ⁻¹' s = ∅ :=
+theorem preimage_coe_compl' (s : Set α) :
+  (Subtype.val : @HasCompl.compl (Set α) BooleanAlgebra.toHasCompl s → α) ⁻¹' s = ∅ :=
   preimage_coe_eq_empty.2 (compl_inter_self s)
 #align subtype.preimage_coe_compl' Subtype.preimage_coe_compl'
 
