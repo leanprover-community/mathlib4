@@ -146,12 +146,12 @@ alias lt_iff_ssubset ↔ _root_.has_lt.lt.ssubset _root_.has_ssubset.ssubset.lt
 -- If you're interested in making it a `def`, as it probably should be,
 -- you'll then need to create additional instances (and possibly prove lemmas about them).
 -- The first error should appear below at `monotoneOn_iff_monotone`.
-/-- Given the set `s`, `type_of_Set s` is the `Type` of element of `s`. -/
-@[coe] abbrev typeOfSet (s : Set α) : Type u := { x // x ∈ s }
+/-- Given the set `s`, `Elem s` is the `Type` of element of `s`. -/
+@[coe] abbrev Elem (s : Set α) : Type u := { x // x ∈ s }
 
 /-- Coercion from a set to the corresponding subtype. -/
 instance {α : Type u} : CoeSort (Set α) (Type u) :=
-  ⟨typeOfSet⟩
+  ⟨Elem⟩
 
 -- Porting note: the `lift` tactic has not been ported.
 -- instance PiSetCoe.canLift (ι : Type u) (α : ∀ i : ι, Type v) [ne : ∀ i, Nonempty (α i)]
@@ -2525,7 +2525,7 @@ section Preorder
 variable [Preorder α] [Preorder β] {f : α → β}
 
 -- Porting note:
--- If we decide we want `typeOfSet` to be a `def` rather than an `abbrev`, we will need:
+-- If we decide we want `Elem` to be a `def` rather than an `abbrev`, we will need:
 --   instance : Preorder (↑s) := Subtype.instPreorderSubtype _
 -- here, along with appropriate lemmas.
 
