@@ -192,13 +192,13 @@ theorem exists_le_le [LE α] [IsDirected α (· ≥ ·)] (a b : α) : ∃ c, c �
   directed_of (· ≥ ·) a b
 #align exists_le_le exists_le_le
 
-instance OrderDual.is_directed_ge [LE α] [IsDirected α (· ≤ ·)] : IsDirected αᵒᵈ (· ≥ ·) := by
+instance OrderDual.isDirected_ge [LE α] [IsDirected α (· ≤ ·)] : IsDirected αᵒᵈ (· ≥ ·) := by
   assumption
-#align order_dual.is_directed_ge OrderDual.is_directed_ge
+#align order_dual.is_directed_ge OrderDual.isDirected_ge
 
-instance OrderDual.is_directed_le [LE α] [IsDirected α (· ≥ ·)] : IsDirected αᵒᵈ (· ≤ ·) := by
+instance OrderDual.isDirected_le [LE α] [IsDirected α (· ≥ ·)] : IsDirected αᵒᵈ (· ≤ ·) := by
   assumption
-#align order_dual.is_directed_le OrderDual.is_directed_le
+#align order_dual.is_directed_le OrderDual.isDirected_le
 
 section Preorder
 
@@ -213,27 +213,27 @@ protected theorem IsMax.isTop [IsDirected α (· ≤ ·)] (h : IsMax a) : IsTop 
   h.toDual.isBot
 #align is_max.is_top IsMax.isTop
 
-theorem is_top_or_exists_gt [IsDirected α (· ≤ ·)] (a : α) : IsTop a ∨ ∃ b, a < b :=
+theorem isTop_or_exists_gt [IsDirected α (· ≤ ·)] (a : α) : IsTop a ∨ ∃ b, a < b :=
   (em (IsMax a)).imp IsMax.isTop not_isMax_iff.mp
-#align is_top_or_exists_gt is_top_or_exists_gt
+#align is_top_or_exists_gt isTop_or_exists_gt
 
-theorem is_bot_or_exists_lt [IsDirected α (· ≥ ·)] (a : α) : IsBot a ∨ ∃ b, b < a :=
-  @is_top_or_exists_gt αᵒᵈ _ _ a
-#align is_bot_or_exists_lt is_bot_or_exists_lt
+theorem isBot_or_exists_lt [IsDirected α (· ≥ ·)] (a : α) : IsBot a ∨ ∃ b, b < a :=
+  @isTop_or_exists_gt αᵒᵈ _ _ a
+#align is_bot_or_exists_lt isBot_or_exists_lt
 
-theorem is_bot_iff_is_min [IsDirected α (· ≥ ·)] : IsBot a ↔ IsMin a :=
+theorem isBot_iff_is_min [IsDirected α (· ≥ ·)] : IsBot a ↔ IsMin a :=
   ⟨IsBot.isMin, IsMin.isBot⟩
-#align is_bot_iff_is_min is_bot_iff_is_min
+#align is_bot_iff_is_min isBot_iff_is_min
 
-theorem is_top_iff_is_max [IsDirected α (· ≤ ·)] : IsTop a ↔ IsMax a :=
+theorem isTop_iff_is_max [IsDirected α (· ≤ ·)] : IsTop a ↔ IsMax a :=
   ⟨IsTop.isMax, IsMax.isTop⟩
-#align is_top_iff_is_max is_top_iff_is_max
+#align is_top_iff_is_max isTop_iff_is_max
 
 variable (β) [PartialOrder β]
 
 theorem exists_lt_of_directed_ge [IsDirected β (· ≥ ·)] [Nontrivial β] : ∃ a b : β, a < b := by
   rcases exists_pair_ne β with ⟨a, b, hne⟩
-  rcases is_bot_or_exists_lt a with (ha | ⟨c, hc⟩)
+  rcases isBot_or_exists_lt a with (ha | ⟨c, hc⟩)
   exacts[⟨a, b, (ha b).lt_of_ne hne⟩, ⟨_, _, hc⟩]
 #align exists_lt_of_directed_ge exists_lt_of_directed_ge
 
@@ -245,23 +245,23 @@ theorem exists_lt_of_directed_le [IsDirected β (· ≤ ·)] [Nontrivial β] : �
 end Preorder
 
 -- see Note [lower instance priority]
-instance (priority := 100) SemilatticeSup.to_is_directed_le [SemilatticeSup α] :
+instance (priority := 100) SemilatticeSup.to_isDirected_le [SemilatticeSup α] :
     IsDirected α (· ≤ ·) :=
   ⟨fun a b => ⟨a ⊔ b, le_sup_left, le_sup_right⟩⟩
-#align semilattice_sup.to_is_directed_le SemilatticeSup.to_is_directed_le
+#align semilattice_sup.to_is_directed_le SemilatticeSup.to_isDirected_le
 
 -- see Note [lower instance priority]
-instance (priority := 100) SemilatticeInf.to_is_directed_ge [SemilatticeInf α] :
+instance (priority := 100) SemilatticeInf.to_isDirected_ge [SemilatticeInf α] :
     IsDirected α (· ≥ ·) :=
   ⟨fun a b => ⟨a ⊓ b, inf_le_left, inf_le_right⟩⟩
-#align semilattice_inf.to_is_directed_ge SemilatticeInf.to_is_directed_ge
+#align semilattice_inf.to_is_directed_ge SemilatticeInf.to_isDirected_ge
 
 -- see Note [lower instance priority]
-instance (priority := 100) OrderTop.to_is_directed_le [LE α] [OrderTop α] : IsDirected α (· ≤ ·) :=
+instance (priority := 100) OrderTop.to_isDirected_le [LE α] [OrderTop α] : IsDirected α (· ≤ ·) :=
   ⟨fun _ _ => ⟨⊤, le_top _, le_top _⟩⟩
-#align order_top.to_is_directed_le OrderTop.to_is_directed_le
+#align order_top.to_is_directed_le OrderTop.to_isDirected_le
 
 -- see Note [lower instance priority]
-instance (priority := 100) OrderBot.to_is_directed_ge [LE α] [OrderBot α] : IsDirected α (· ≥ ·) :=
+instance (priority := 100) OrderBot.to_isDirected_ge [LE α] [OrderBot α] : IsDirected α (· ≥ ·) :=
   ⟨fun _ _ => ⟨⊥, bot_le _, bot_le _⟩⟩
-#align order_bot.to_is_directed_ge OrderBot.to_is_directed_ge
+#align order_bot.to_is_directed_ge OrderBot.to_isDirected_ge
