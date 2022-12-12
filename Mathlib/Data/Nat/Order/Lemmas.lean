@@ -66,8 +66,8 @@ theorem div_eq_iff_eq_of_dvd_dvd {n x y : ℕ} (hn : n ≠ 0) (hx : x ∣ n) (hy
 #align nat.div_eq_iff_eq_of_dvd_dvd Nat.div_eq_iff_eq_of_dvd_dvd
 
 protected theorem div_eq_zero_iff {a b : ℕ} (hb : 0 < b) : a / b = 0 ↔ a < b :=
-  ⟨fun h => by rw [← mod_add_div a b, h, mul_zero, add_zero] <;> exact mod_lt _ hb, fun h => by
-    rw [← mul_right_inj' hb.ne', ← @add_left_cancel_iff _ _ (a % b), mod_add_div, mod_eq_of_lt h,
+  ⟨fun h => by rw [← mod_add_div a b, h, mul_zero, add_zero]; exact mod_lt _ hb, fun h => by
+    rw [← mul_right_inj' hb.ne', ← @add_left_cancel_iff _ _ _ (a % b), mod_add_div, mod_eq_of_lt h,
       mul_zero, add_zero]⟩
 #align nat.div_eq_zero_iff Nat.div_eq_zero_iff
 
@@ -109,11 +109,13 @@ theorem dvd_sub' {k m n : ℕ} (h₁ : k ∣ m) (h₂ : k ∣ n) : k ∣ m - n :
     exact dvd_zero k
 #align nat.dvd_sub' Nat.dvd_sub'
 
+lemma div_def (x y : Nat) : x / y = if 0 < y ∧ y ≤ x then (x - y) / y + 1 else 0 := by library_search
+
 theorem succ_div : ∀ a b : ℕ, (a + 1) / b = a / b + if b ∣ a + 1 then 1 else 0
   | a, 0 => by simp
   | 0, 1 => by simp
   | 0, b + 2 => by
-    have hb2 : b + 2 > 1 := by decide
+    have hb2 : b + 2 > 1 := by simp
     simp [ne_of_gt hb2, div_eq_of_lt hb2]
   | a + 1, b + 1 => by
     rw [Nat.div_def]; conv_rhs => rw [Nat.div_def]
@@ -174,16 +176,16 @@ theorem dvd_div_iff {a b c : ℕ} (hbc : c ∣ b) : a ∣ b / c ↔ c * a ∣ b 
 #align nat.dvd_div_iff Nat.dvd_div_iff
 
 @[simp]
-theorem div_div_div_eq_div : ∀ {a b c : ℕ} (dvd : b ∣ a) (dvd2 : a ∣ c), c / (a / b) / b = c / a
-  | 0, _ => by simp
-  | a + 1, 0 => fun _ dvd _ => by simpa using dvd
-  | a + 1, c + 1 =>
+theorem div_div_div_eq_div {a b c : ℕ} (dvd : b ∣ a) (dvd2 : a ∣ c) : c / (a / b) / b = c / a :=
+  match a, b, c with
+  | 0, _, _ => by simp
+  | a + 1, 0, _ => by simp at dvd
+  | a + 1, c + 1, _ => by
     have a_split : a + 1 ≠ 0 := succ_ne_zero a
     have c_split : c + 1 ≠ 0 := succ_ne_zero c
-    fun b dvd dvd2 => by
     rcases dvd2 with ⟨k, rfl⟩
     rcases dvd with ⟨k2, pr⟩
-    have k2_nonzero : k2 ≠ 0 := fun k2_zero => by simpa [k2_zero] using pr
+    have k2_nonzero : k2 ≠ 0 := fun k2_zero => by simp [k2_zero] at pr
     rw [Nat.mul_div_cancel_left k (Nat.pos_of_ne_zero a_split), pr,
       Nat.mul_div_cancel_left k2 (Nat.pos_of_ne_zero c_split), Nat.mul_comm ((c + 1) * k2) k, ←
       Nat.mul_assoc k (c + 1) k2, Nat.mul_div_cancel _ (Nat.pos_of_ne_zero k2_nonzero),
@@ -194,14 +196,14 @@ theorem div_div_div_eq_div : ∀ {a b c : ℕ} (dvd : b ∣ a) (dvd2 : a ∣ c),
 the small number is zero. -/
 theorem eq_zero_of_dvd_of_lt {a b : ℕ} (w : a ∣ b) (h : b < a) : b = 0 :=
   Nat.eq_zero_of_dvd_of_div_eq_zero w
-    ((Nat.div_eq_zero_iff (lt_of_le_of_lt (zero_le b) h)).elimRight h)
+    ((Nat.div_eq_zero_iff (lt_of_le_of_lt (zero_le b) h)).mpr h)
 #align nat.eq_zero_of_dvd_of_lt Nat.eq_zero_of_dvd_of_lt
 
 @[simp]
 theorem mod_div_self (m n : ℕ) : m % n / n = 0 := by
   cases n
   · exact (m % 0).div_zero
-  · exact Nat.div_eq_zero (m.mod_lt n.succ_pos)
+  · case succ n => exact Nat.div_eq_zero (m.mod_lt n.succ_pos)
 #align nat.mod_div_self Nat.mod_div_self
 
 /-- `n` is not divisible by `a` iff it is between `a * k` and `a * (k + 1)` for some `k`. -/
