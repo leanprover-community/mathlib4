@@ -264,6 +264,7 @@ import Mathlib.Order.BooleanAlgebra
 import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Compare
 import Mathlib.Order.Disjoint
+import Mathlib.Order.Directed
 import Mathlib.Order.GameAdd
 import Mathlib.Order.Heyting.Basic
 import Mathlib.Order.Heyting.Boundary
