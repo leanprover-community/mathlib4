@@ -283,6 +283,7 @@ import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.RelIso.Group
 import Mathlib.Order.SymmDiff
 import Mathlib.Order.Synonym
+import Mathlib.Order.WellFounded
 import Mathlib.Order.WithBot
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
