@@ -1027,4 +1027,5 @@ initialize simpsAttr : ParametricAttribute (Array Name) ←
       let ids := ids.map fun x => (x.getId.eraseMacroScopes.getString, x.raw)
       simpsTac stx nm cfg ids.toList trc.isSome
     | _ => throwUnsupportedSyntax
+    applicationTime := .afterCompilation
   }

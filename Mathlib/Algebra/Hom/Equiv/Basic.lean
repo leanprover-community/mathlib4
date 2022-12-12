@@ -247,6 +247,11 @@ theorem invFun_eq_symm {f : M ≃* N} : EquivLike.inv f = f.symm := rfl
 
 -- we don't hyperlink the note in the additive version, since that breaks syntax highlighting
 -- in the whole file.
+
+-- Porting note: in mathlib3 we didn't need the `Simps.apply` hint.
+/-- See Note [custom simps projection] -/
+@[to_additive "See Note custom simps projection"]
+def Simps.apply (e : M ≃* N) : M → N := e
 /-- See Note [custom simps projection] -/
 @[to_additive "See Note custom simps projection"]
 def Simps.symmApply (e : M ≃* N) : N → M :=
@@ -443,6 +448,10 @@ theorem ext {f g : MulEquiv M N} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
 #align mul_equiv.ext MulEquiv.ext
 #align add_equiv.ext AddEquiv.ext
+
+-- Porting note: can be removed after https://github.com/leanprover-community/mathlib4/pull/954
+-- is merged.
+attribute [ext] AddEquiv.ext
 
 @[to_additive]
 theorem ext_iff {f g : MulEquiv M N} : f = g ↔ ∀ x, f x = g x :=

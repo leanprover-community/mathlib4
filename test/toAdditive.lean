@@ -272,6 +272,8 @@ run_cmd
   checkGuessName "instCoeTCOneHom" "instCoeTCZeroHom"
   checkGuessName "instCoeTOneHom" "instCoeTZeroHom"
   checkGuessName "instCoeOneHom" "instCoeZeroHom"
+  checkGuessName "invFun_eq_symm" "invFun_eq_symm"
+  checkGuessName "MulEquiv.symmInvFun" "AddEquiv.symmInvFun"
 
 end guessName
 
