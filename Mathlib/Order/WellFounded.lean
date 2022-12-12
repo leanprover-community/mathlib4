@@ -32,12 +32,12 @@ protected theorem isAsymm {α : Sort _} {r : α → α → Prop} (h : WellFounde
 instance {α : Sort _} [WellFoundedRelation α] : IsAsymm α WellFoundedRelation.rel :=
   WellFoundedRelation.wf.isAsymm
 
-protected theorem is_irrefl {α : Sort _} {r : α → α → Prop} (h : WellFounded r) : IsIrrefl α r :=
+protected theorem isIrrefl {α : Sort _} {r : α → α → Prop} (h : WellFounded r) : IsIrrefl α r :=
   @IsAsymm.is_irrefl α r h.isAsymm
-#align well_founded.is_irrefl WellFounded.is_irrefl
+#align well_founded.is_irrefl WellFounded.isIrrefl
 
 instance {α : Sort _} [WellFoundedRelation α] : IsIrrefl α WellFoundedRelation.rel :=
-  IsAsymm.is_irrefl
+  IsAsymm.isIrrefl
 
 /-- If `r` is a well-founded relation, then any nonempty set has a minimal element
 with respect to `r`. -/
