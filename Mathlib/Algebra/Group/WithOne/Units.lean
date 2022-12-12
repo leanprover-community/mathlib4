@@ -19,12 +19,11 @@ namespace WithZero
 
 /-- Any group is isomorphic to the units of itself adjoined with `0`. -/
 def unitsWithZeroEquiv {α : Type _} [Group α] : (WithZero α)ˣ ≃* α where
-  toFun a := unzero a.NeZero
+  toFun a := unzero a.ne_zero
   invFun a := Units.mk0 a coe_ne_zero
-  left_inv _ := Units.ext <| by simpa only [coe_unzero]
+  left_inv _ := Units.ext <| by simp only [coe_unzero, Units.mk0_val]
   right_inv _ := rfl
-  map_mul' _ _ := coe_inj.mp <| by simpa only [coe_unzero, coe_mul]
+  map_mul' _ _ := coe_inj.mp <| by simp only [Units.val_mul, coe_unzero, coe_mul]
 #align with_zero.units_with_zero_equiv WithZero.unitsWithZeroEquiv
 
 end WithZero
-
