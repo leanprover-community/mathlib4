@@ -496,11 +496,11 @@ theorem eq_repeat_of_mem {a : α} : ∀ {l : List α}, (∀ b ∈ l, b = a) → 
 #align list.eq_repeat_of_mem List.eq_repeat_of_mem
 
 theorem eq_repeat' {a : α} {l : List α} : l = repeat' a l.length ↔ ∀ b ∈ l, b = a :=
-  ⟨fun h => h.symm ▸ fun b => eq_of_mem_repeat, eq_repeat_of_mem⟩
+  ⟨fun h => h.symm ▸ fun _ => eq_of_mem_repeat, eq_repeat_of_mem⟩
 #align list.eq_repeat' List.eq_repeat'
 
 theorem eq_repeat {a : α} {n} {l : List α} : l = repeat' a n ↔ length l = n ∧ ∀ b ∈ l, b = a :=
-  ⟨fun h => h.symm ▸ ⟨length_repeat _ _, fun b => eq_of_mem_repeat⟩, fun ⟨e, al⟩ =>
+  ⟨fun h => h.symm ▸ ⟨length_repeat _ _, fun _ => eq_of_mem_repeat⟩, fun ⟨e, al⟩ =>
     e ▸ eq_repeat_of_mem al⟩
 #align list.eq_repeat List.eq_repeat
 
@@ -536,7 +536,7 @@ theorem join_repeat_nil (n : ℕ) : join (repeat' [] n) = @nil α := by
 #align list.join_repeat_nil List.join_repeat_nil
 
 theorem repeat_left_injective {n : ℕ} (hn : n ≠ 0) : Function.Injective fun a : α => repeat' a n :=
-  fun a b h => (eq_repeat.1 h).2 _ <| mem_repeat.2 ⟨hn, rfl⟩
+  fun _ _ h => (eq_repeat.1 h).2 _ <| mem_repeat.2 ⟨hn, rfl⟩
 #align list.repeat_left_injective List.repeat_left_injective
 
 theorem repeat_left_inj {a b : α} {n : ℕ} (hn : n ≠ 0) : repeat' a n = repeat' b n ↔ a = b :=
@@ -617,16 +617,11 @@ theorem concat_cons (a b : α) (l : List α) : concat (a :: l) b = a :: concat l
   rfl
 #align list.concat_cons List.concat_cons
 
-/- warning: list.concat_eq_append -> List.concat_eq_append is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} (a : α) (l : List.{u} α), Eq.{succ u} (List.{u} α) (List.concat.{u} α l a) (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) l (List.cons.{u} α a (List.nil.{u} α)))
-but is expected to have type
-  forall {α : Type.{u}} (as : List.{u} α) (a : α), Eq.{succ u} (List.{u} α) (List.concat.{u} α as a) (HAppend.hAppend.{u, u, u} (List.{u} α) (List.{u} α) (List.{u} α) (instHAppend.{u} (List.{u} α) (List.instAppendList.{u} α)) as (List.cons.{u} α a (List.nil.{u} α)))
-Case conversion may be inaccurate. Consider using '#align list.concat_eq_append List.concat_eq_appendₓ'. -/
+--Porting TODO: Fix statement of `concat_eq_append` to match Lean3
 @[simp]
-theorem concat_eq_append (a : α) (l : List α) : concat l a = l ++ [a] := by
-  induction l <;> simp only [*, concat] <;> constructor <;> rfl
-#align list.concat_eq_append List.concat_eq_append
+theorem concat_eq_append' (a : α) (l : List α) : concat l a = l ++ [a] := by
+  induction l <;> simp only [*, concat] <;> constructor
+#align list.concat_eq_append List.concat_eq_append'
 
 theorem init_eq_of_concat_eq {a : α} {l₁ l₂ : List α} : concat l₁ a = concat l₂ a → l₁ = l₂ := by
   intro h
@@ -646,43 +641,28 @@ theorem concat_ne_nil (a : α) (l : List α) : concat l a ≠ [] := by simp
 theorem concat_append (a : α) (l₁ l₂ : List α) : concat l₁ a ++ l₂ = l₁ ++ a :: l₂ := by simp
 #align list.concat_append List.concat_append
 
-/- warning: list.length_concat -> List.length_concat is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} (a : α) (l : List.{u} α), Eq.{1} Nat (List.length.{u} α (List.concat.{u} α l a)) (Nat.succ (List.length.{u} α l))
-but is expected to have type
-  forall {α : Type.{u}} (as : List.{u} α) (a : α), Eq.{1} Nat (List.length.{u} α (List.concat.{u} α as a)) (HAdd.hAdd.{0, 0, 0} Nat Nat Nat (instHAdd.{0} Nat instAddNat) (List.length.{u} α as) (OfNat.ofNat.{0} Nat 1 (instOfNatNat 1)))
-Case conversion may be inaccurate. Consider using '#align list.length_concat List.length_concatₓ'. -/
-theorem length_concat (a : α) (l : List α) : length (concat l a) = succ (length l) := by
+--Porting TODO: Fix statement of `length_concat` to match Lean3
+theorem length_concat' (a : α) (l : List α) : length (concat l a) = succ (length l) := by
   simp only [concat_eq_append, length_append, length]
-#align list.length_concat List.length_concat
+#align list.length_concat List.length_concat'
 
 theorem append_concat (a : α) (l₁ l₂ : List α) : l₁ ++ concat l₂ a = concat (l₁ ++ l₂) a := by simp
 #align list.append_concat List.append_concat
 
 /-! ### reverse -/
 
-
-#print List.reverse_nil /-
-@[simp]
-theorem reverse_nil : reverse (@nil α) = [] :=
-  rfl
 #align list.reverse_nil List.reverse_nil
--/
 
-attribute [local simp] reverse_core
+#align list.reverse_core List.reverseAux
 
-#print List.reverse_cons /-
-@[simp]
-theorem reverse_cons (a : α) (l : List α) : reverse (a :: l) = reverse l ++ [a] :=
-  have aux : ∀ l₁ l₂, reverseCore l₁ l₂ ++ [a] = reverseCore l₁ (l₂ ++ [a]) := by
-    intro l₁ <;> induction l₁ <;> intros <;> [rfl, simp only [*, reverse_core, cons_append]]
-  (aux l nil).symm
+attribute [local simp] reverseAux
+
 #align list.reverse_cons List.reverse_cons
--/
 
-theorem reverse_core_eq (l₁ l₂ : List α) : reverseCore l₁ l₂ = reverse l₁ ++ l₂ := by
+
+theorem reverse_core_eq (l₁ l₂ : List α) : reverseAux l₁ l₂ = reverse l₁ ++ l₂ := by
   induction l₁ generalizing l₂ <;> [rfl,
-      simp only [*, reverse_core, reverse_cons, append_assoc]] <;>
+      simp only [*, reverseAux, reverse_cons, append_assoc]];
     rfl
 #align list.reverse_core_eq List.reverse_core_eq
 
@@ -695,26 +675,13 @@ theorem reverse_singleton (a : α) : reverse [a] = [a] :=
   rfl
 #align list.reverse_singleton List.reverse_singleton
 
-#print List.reverse_append /-
-@[simp]
-theorem reverse_append (s t : List α) : reverse (s ++ t) = reverse t ++ reverse s := by
-  induction s <;> [rw [nil_append, reverse_nil, append_nil],
-    simp only [*, cons_append, reverse_cons, append_assoc]]
+attribute [simp] List.reverse_append
 #align list.reverse_append List.reverse_append
--/
 
-#print List.reverse_concat /-
-theorem reverse_concat (l : List α) (a : α) : reverse (concat l a) = a :: reverse l := by
-  rw [concat_eq_append, reverse_append, reverse_singleton, singleton_append]
 #align list.reverse_concat List.reverse_concat
--/
 
-#print List.reverse_reverse /-
-@[simp]
-theorem reverse_reverse (l : List α) : reverse (reverse l) = l := by
-  induction l <;> [rfl, simp only [*, reverse_cons, reverse_append]] <;> rfl
+attribute [simp] List.reverse_reverse
 #align list.reverse_reverse List.reverse_reverse
--/
 
 @[simp]
 theorem reverse_involutive : Involutive (@reverse α) :=
@@ -723,15 +690,15 @@ theorem reverse_involutive : Involutive (@reverse α) :=
 
 @[simp]
 theorem reverse_injective : Injective (@reverse α) :=
-  reverse_involutive.Injective
+  reverse_involutive.injective
 #align list.reverse_injective List.reverse_injective
 
 theorem reverse_surjective : Surjective (@reverse α) :=
-  reverse_involutive.Surjective
+  reverse_involutive.surjective
 #align list.reverse_surjective List.reverse_surjective
 
 theorem reverse_bijective : Bijective (@reverse α) :=
-  reverse_involutive.Bijective
+  reverse_involutive.bijective
 #align list.reverse_bijective List.reverse_bijective
 
 @[simp]
@@ -752,34 +719,26 @@ theorem concat_eq_reverse_cons (a : α) (l : List α) : concat l a = reverse (a 
   simp only [concat_eq_append, reverse_cons, reverse_reverse]
 #align list.concat_eq_reverse_cons List.concat_eq_reverse_cons
 
-#print List.length_reverse /-
-@[simp]
-theorem length_reverse (l : List α) : length (reverse l) = length l := by
-  induction l <;> [rfl, simp only [*, reverse_cons, length_append, length]]
+attribute [simp] List.length_reverse
 #align list.length_reverse List.length_reverse
--/
+
 
 @[simp]
 theorem map_reverse (f : α → β) (l : List α) : map f (reverse l) = reverse (map f l) := by
   induction l <;> [rfl, simp only [*, map, reverse_cons, map_append]]
 #align list.map_reverse List.map_reverse
 
-theorem map_reverse_core (f : α → β) (l₁ l₂ : List α) :
-    map f (reverseCore l₁ l₂) = reverseCore (map f l₁) (map f l₂) := by
+theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
+    map f (reverseAux l₁ l₂) = reverseAux (map f l₁) (map f l₂) := by
   simp only [reverse_core_eq, map_append, map_reverse]
-#align list.map_reverse_core List.map_reverse_core
+#align list.map_reverse_core List.map_reverseAux
 
-#print List.mem_reverse /-
-@[simp]
-theorem mem_reverse {a : α} {l : List α} : a ∈ reverse l ↔ a ∈ l := by
-  induction l <;> [rfl,
-    simp only [*, reverse_cons, mem_append, mem_singleton, mem_cons_iff, not_mem_nil, false_or_iff,
-      or_false_iff, or_comm']]
+attribute [simp] List.mem_reverse
 #align list.mem_reverse List.mem_reverse
--/
+
 
 @[simp]
-theorem reverse_repeat (a : α) (n) : reverse (repeat a n) = repeat a n :=
+theorem reverse_repeat (a : α) (n) : reverse (repeat' a n) = repeat' a n :=
   eq_repeat.2
     ⟨by simp only [length_reverse, length_repeat], fun b h => eq_of_mem_repeat (mem_reverse.1 h)⟩
 #align list.reverse_repeat List.reverse_repeat
