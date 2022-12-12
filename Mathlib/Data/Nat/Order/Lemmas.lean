@@ -11,9 +11,10 @@ import Mathlib.Algebra.GroupWithZero.Divisibility
 /-!
 # Further lemmas about the natural numbers
 
-The distinction between this file and `data.nat.order.basic` is not particularly clear.
-They are separated by now to minimize the porting requirements for tactics during the transition to
-mathlib4. After `data.rat.order` has been ported, please feel free to reorganize these two files.
+The distinction between this file and `Mathlib.Data.Nat.Order.Basic` is not particularly clear.
+They are separated for now to minimize the porting requirements for tactics during the transition to
+mathlib4. After `Mathlib.Data.Rat.Order` has been ported,
+please feel free to reorganize these two files.
 -/
 
 
@@ -26,9 +27,7 @@ namespace Nat
 /-! ### Sets -/
 
 
-instance Subtype.orderBot (s : Set ℕ) [DecidablePred (· ∈ s)] [h : Nonempty s] :
-    OrderBot
-      s where
+instance Subtype.orderBot (s : Set ℕ) [DecidablePred (· ∈ s)] [h : Nonempty s] : OrderBot s where
   bot := ⟨Nat.find (nonempty_subtype.1 h), Nat.find_spec (nonempty_subtype.1 h)⟩
   bot_le x := Nat.find_min' _ x.2
 #align nat.subtype.order_bot Nat.Subtype.orderBot
