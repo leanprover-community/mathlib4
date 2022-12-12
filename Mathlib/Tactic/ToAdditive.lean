@@ -718,6 +718,8 @@ def fixAbbreviation : List String → List String
 | "Smul"  :: s                      => "SMul" :: fixAbbreviation s
 | "HSmul" :: s                      => "HSMul" :: fixAbbreviation s
 | "hSmul" :: s                      => "hSMul" :: fixAbbreviation s
+| "neg" :: "Fun" :: s               => "invFun" :: fixAbbreviation s
+| "Neg" :: "Fun" :: s               => "InvFun" :: fixAbbreviation s
 | x :: s                            => x :: fixAbbreviation s
 | []                                => []
 
