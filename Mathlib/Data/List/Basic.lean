@@ -560,13 +560,19 @@ theorem repeat_right_inj {a : α} {n m : ℕ} : repeat' a n = repeat' a m ↔ n 
 
 /-! ### pure -/
 
+--Porting Note: From Lean3 core
+/-- `ret a` is `[a]` -/
+def ret (a : α) : List α := [a]
+
+--Porting Note: From Lean3 core
+instance : Monad List := { pure := @ret, bind := @List.bind, map := @List.map }
 
 @[simp]
-theorem mem_pure {α} (x y : α) : x ∈ (pure y : List α) ↔ x = y := by simp! [pure, List.ret]
+theorem mem_pure {α} (x y : α) : x ∈ (pure y : List α) ↔ x = y :=
+  show x ∈ [y] ↔ x = y by simp
 #align list.mem_pure List.mem_pure
 
 /-! ### bind -/
-
 
 @[simp]
 theorem bind_eq_bind {α β} (f : α → List β) (l : List α) : l >>= f = l.bind f :=
@@ -584,9 +590,10 @@ theorem bind_singleton (f : α → List β) (x : α) : [x].bind f = f x :=
   append_nil (f x)
 #align list.bind_singleton List.bind_singleton
 
+--Porting TODO: follows from IsLawfulMonad which is not ported yet
 @[simp]
 theorem bind_singleton' (l : List α) : (l.bind fun x => [x]) = l :=
-  bind_pure l
+  by induction l <;> simp [*]
 #align list.bind_singleton' List.bind_singleton'
 
 theorem map_eq_bind {α β} (f : α → β) (l : List α) : map f l = l.bind fun x => [f x] := by
@@ -609,7 +616,7 @@ theorem concat_nil (a : α) : concat [] a = [a] :=
 theorem concat_cons (a b : α) (l : List α) : concat (a :: l) b = a :: concat l b :=
   rfl
 #align list.concat_cons List.concat_cons
-#exit
+
 /- warning: list.concat_eq_append -> List.concat_eq_append is a dubious translation:
 lean 3 declaration is
   forall {α : Type.{u}} (a : α) (l : List.{u} α), Eq.{succ u} (List.{u} α) (List.concat.{u} α l a) (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) l (List.cons.{u} α a (List.nil.{u} α)))
@@ -1023,7 +1030,7 @@ theorem head_append [Inhabited α] (t : List α) {s : List α} (h : s ≠ []) : 
   contradiction
   rfl
 #align list.head_append List.head_append
-
+#exit
 theorem head'_append {s t : List α} {x : α} (h : x ∈ s.head') : x ∈ (s ++ t).head' := by
   cases s
   contradiction
