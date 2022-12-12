@@ -15,10 +15,10 @@ directed iff each pair of elements has a shared upper bound.
 
 ## Main declarations
 
-* `directed r f`: Predicate stating that the indexed family `f` is `r`-directed.
-* `directed_on r s`: Predicate stating that the set `s` is `r`-directed.
-* `is_directed α r`: Prop-valued mixin stating that `α` is `r`-directed. Follows the style of the
-  unbundled relation classes such as `is_total`.
+* `Directed r f`: Predicate stating that the indexed family `f` is `r`-directed.
+* `DirectedOn r s`: Predicate stating that the set `s` is `r`-directed.
+* `IsDirected α r`: Prop-valued mixin stating that `α` is `r`-directed. Follows the style of the
+  unbundled relation classes such as `IsTotal`.
 -/
 
 
@@ -45,18 +45,20 @@ def DirectedOn (s : Set α) :=
 
 variable {r r'}
 
-theorem directed_on_iff_directed {s} : @DirectedOn α r s ↔ Directed r (coe : s → α) := by
-  simp [Directed, DirectedOn] <;> refine' ball_congr fun x hx => by simp <;> rfl
-#align directed_on_iff_directed directed_on_iff_directed
+theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype.val : s → α) := by
+  simp [Directed, DirectedOn] ; refine' ball_congr fun x _ => by simp [And.comm, and_assoc]
+#align directed_on_iff_directed directedOn_iff_directed
 
-alias directed_on_iff_directed ↔ DirectedOn.directed_coe _
+alias directedOn_iff_directed ↔ DirectedOn.directed_val _
 
-theorem directed_on_image {s} {f : β → α} : DirectedOn r (f '' s) ↔ DirectedOn (f ⁻¹'o r) s := by
-  simp only [DirectedOn, Set.ball_image_iff, Set.bex_image_iff, Order.Preimage]
+theorem directed_on_image {s : Set β} {f : β → α} :
+    DirectedOn r (f ~~ s) ↔ DirectedOn (f ⁻¹'o r) s := by
+  simp only [DirectedOn, Set.mem_image, exists_exists_and_eq_and, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂, Order.Preimage, iff_self]
 #align directed_on_image directed_on_image
 
 theorem DirectedOn.mono' {s : Set α} (hs : DirectedOn r s)
-    (h : ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b → r' a b) : DirectedOn r' s := fun x hx y hy =>
+    (h : ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b → r' a b) : DirectedOn r' s := fun _ hx _ hy =>
   let ⟨z, hz, hxz, hyz⟩ := hs _ hx _ hy
   ⟨z, hz, h hx hz hxz, h hy hz hyz⟩
 #align directed_on.mono' DirectedOn.mono'
@@ -143,8 +145,9 @@ theorem directed_on_of_inf_mem [SemilatticeInf α] {S : Set α}
 /-- `is_directed α r` states that for any elements `a`, `b` there exists an element `c` such that
 `r a c` and `r b c`. -/
 class IsDirected (α : Type _) (r : α → α → Prop) : Prop where
-  Directed (a b : α) : ∃ c, r a c ∧ r b c
+  directed (a b : α) : ∃ c, r a c ∧ r b c
 #align is_directed IsDirected
+#align is_directed.directed IsDirected.directed
 
 theorem directed_of (r : α → α → Prop) [IsDirected α r] (a b : α) : ∃ c, r a c ∧ r b c :=
   IsDirected.directed _ _
@@ -157,22 +160,22 @@ theorem directed_id_iff : Directed r id ↔ IsDirected α r :=
   ⟨fun h => ⟨h⟩, @directed_id _ _⟩
 #align directed_id_iff directed_id_iff
 
-theorem directed_on_univ [IsDirected α r] : DirectedOn r Set.univ := fun a _ b _ =>
+theorem directedOn_univ [IsDirected α r] : DirectedOn r Set.univ := fun a _ b _ =>
   let ⟨c, hc⟩ := directed_of r a b
   ⟨c, trivial, hc⟩
-#align directed_on_univ directed_on_univ
+#align directed_on_univ directedOn_univ
 
-theorem directed_on_univ_iff : DirectedOn r Set.univ ↔ IsDirected α r :=
+theorem directedOn_univ_iff : DirectedOn r Set.univ ↔ IsDirected α r :=
   ⟨fun h =>
     ⟨fun a b =>
       let ⟨c, _, hc⟩ := h a trivial b trivial
       ⟨c, hc⟩⟩,
-    @directed_on_univ _ _⟩
-#align directed_on_univ_iff directed_on_univ_iff
+    @directedOn_univ _ _⟩
+#align directed_on_univ_iff directedOn_univ_iff
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsTotal.to_is_directed [IsTotal α r] : IsDirected α r :=
-  ⟨fun a b => Or.cases_on (total_of r a b) (fun h => ⟨b, h, refl _⟩) fun h => ⟨a, refl _, h⟩⟩
+  ⟨fun a b => Or.casesOn (total_of r a b) (fun h => ⟨b, h, refl _⟩) fun h => ⟨a, refl _, h⟩⟩
 #align is_total.to_is_directed IsTotal.to_is_directed
 
 theorem is_directed_mono [IsDirected α r] (h : ∀ ⦃a b⦄, r a b → s a b) : IsDirected α s :=
@@ -201,17 +204,17 @@ section Preorder
 
 variable [Preorder α] {a : α}
 
-protected theorem IsMin.is_bot [IsDirected α (· ≥ ·)] (h : IsMin a) : IsBot a := fun b =>
-  let ⟨c, hca, hcb⟩ := exists_le_le a b
+protected theorem IsMin.isBot [IsDirected α (· ≥ ·)] (h : IsMin a) : IsBot a := fun b =>
+  let ⟨_, hca, hcb⟩ := exists_le_le a b
   (h hca).trans hcb
-#align is_min.is_bot IsMin.is_bot
+#align is_min.is_bot IsMin.isBot
 
-protected theorem IsMax.is_top [IsDirected α (· ≤ ·)] (h : IsMax a) : IsTop a :=
-  h.toDual.IsBot
-#align is_max.is_top IsMax.is_top
+protected theorem IsMax.isTop [IsDirected α (· ≤ ·)] (h : IsMax a) : IsTop a :=
+  h.toDual.isBot
+#align is_max.is_top IsMax.isTop
 
 theorem is_top_or_exists_gt [IsDirected α (· ≤ ·)] (a : α) : IsTop a ∨ ∃ b, a < b :=
-  (em (IsMax a)).imp IsMax.is_top not_is_max_iff.mp
+  (em (IsMax a)).imp IsMax.isTop not_isMax_iff.mp
 #align is_top_or_exists_gt is_top_or_exists_gt
 
 theorem is_bot_or_exists_lt [IsDirected α (· ≥ ·)] (a : α) : IsBot a ∨ ∃ b, b < a :=
@@ -219,11 +222,11 @@ theorem is_bot_or_exists_lt [IsDirected α (· ≥ ·)] (a : α) : IsBot a ∨ �
 #align is_bot_or_exists_lt is_bot_or_exists_lt
 
 theorem is_bot_iff_is_min [IsDirected α (· ≥ ·)] : IsBot a ↔ IsMin a :=
-  ⟨IsBot.is_min, IsMin.is_bot⟩
+  ⟨IsBot.isMin, IsMin.isBot⟩
 #align is_bot_iff_is_min is_bot_iff_is_min
 
 theorem is_top_iff_is_max [IsDirected α (· ≤ ·)] : IsTop a ↔ IsMax a :=
-  ⟨IsTop.is_max, IsMax.is_top⟩
+  ⟨IsTop.isMax, IsMax.isTop⟩
 #align is_top_iff_is_max is_top_iff_is_max
 
 variable (β) [PartialOrder β]
@@ -255,10 +258,10 @@ instance (priority := 100) SemilatticeInf.to_is_directed_ge [SemilatticeInf α] 
 
 -- see Note [lower instance priority]
 instance (priority := 100) OrderTop.to_is_directed_le [LE α] [OrderTop α] : IsDirected α (· ≤ ·) :=
-  ⟨fun a b => ⟨⊤, le_top, le_top⟩⟩
+  ⟨fun _ _ => ⟨⊤, le_top _, le_top _⟩⟩
 #align order_top.to_is_directed_le OrderTop.to_is_directed_le
 
 -- see Note [lower instance priority]
 instance (priority := 100) OrderBot.to_is_directed_ge [LE α] [OrderBot α] : IsDirected α (· ≥ ·) :=
-  ⟨fun a b => ⟨⊥, bot_le, bot_le⟩⟩
+  ⟨fun _ _ => ⟨⊥, bot_le _, bot_le _⟩⟩
 #align order_bot.to_is_directed_ge OrderBot.to_is_directed_ge

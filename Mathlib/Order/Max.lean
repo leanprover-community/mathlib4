@@ -195,21 +195,21 @@ theorem isMin_ofDual_iff {a : αᵒᵈ} : IsMin (ofDual a) ↔ IsMax a :=
 theorem isMax_ofDual_iff {a : αᵒᵈ} : IsMax (ofDual a) ↔ IsMin a :=
   Iff.rfl
 
-alias isBot_toDual_iff ↔ _ IsTop.to_dual
+alias isBot_toDual_iff ↔ _ IsTop.toDual
 
-alias isTop_toDual_iff ↔ _ IsBot.to_dual
+alias isTop_toDual_iff ↔ _ IsBot.toDual
 
-alias isMin_toDual_iff ↔ _ IsMax.to_dual
+alias isMin_toDual_iff ↔ _ IsMax.toDual
 
-alias isMax_toDual_iff ↔ _ IsMin.to_dual
+alias isMax_toDual_iff ↔ _ IsMin.toDual
 
-alias isBot_ofDual_iff ↔ _ IsTop.of_dual
+alias isBot_ofDual_iff ↔ _ IsTop.ofDual
 
-alias isTop_ofDual_iff ↔ _ IsBot.of_dual
+alias isTop_ofDual_iff ↔ _ IsBot.ofDual
 
-alias isMin_ofDual_iff ↔ _ IsMax.of_dual
+alias isMin_ofDual_iff ↔ _ IsMax.ofDual
 
-alias isMax_ofDual_iff ↔ _ IsMin.of_dual
+alias isMax_ofDual_iff ↔ _ IsMin.ofDual
 
 end LE
 
