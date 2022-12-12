@@ -455,20 +455,6 @@ fun _ _ ↦ append_right_cancel
 
 #align list.append_left_inj List.append_left_inj
 
-/- warning: list.map_eq_append_split -> List.map_eq_append_split is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} {f : α -> β} {l : List.{u} α} {s₁ : List.{v} β} {s₂ : List.{v} β}, (Eq.{succ v} (List.{v} β) (List.map.{u, v} α β f l) (Append.append.{v} (List.{v} β) (List.hasAppend.{v} β) s₁ s₂)) -> (Exists.{succ u} (List.{u} α) (fun (l₁ : List.{u} α) => Exists.{succ u} (List.{u} α) (fun (l₂ : List.{u} α) => And (Eq.{succ u} (List.{u} α) l (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) l₁ l₂)) (And (Eq.{succ v} (List.{v} β) (List.map.{u, v} α β f l₁) s₁) (Eq.{succ v} (List.{v} β) (List.map.{u, v} α β f l₂) s₂)))))
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {f : α -> β} {l : List.{u_1} α} {s₁ : List.{u_2} β} {s₂ : List.{u_2} β}, (Eq.{succ u_2} (List.{u_2} β) (List.map.{u_1, u_2} α β f l) (HAppend.hAppend.{u_2, u_2, u_2} (List.{u_2} β) (List.{u_2} β) (List.{u_2} β) (instHAppend.{u_2} (List.{u_2} β) (List.instAppendList.{u_2} β)) s₁ s₂)) -> (Exists.{succ u_1} (List.{u_1} α) (fun (l₁ : List.{u_1} α) => Exists.{succ u_1} (List.{u_1} α) (fun (l₂ : List.{u_1} α) => And (Eq.{succ u_1} (List.{u_1} α) l (HAppend.hAppend.{u_1, u_1, u_1} (List.{u_1} α) (List.{u_1} α) (List.{u_1} α) (instHAppend.{u_1} (List.{u_1} α) (List.instAppendList.{u_1} α)) l₁ l₂)) (And (Eq.{succ u_2} (List.{u_2} β) (List.map.{u_1, u_2} α β f l₁) s₁) (Eq.{succ u_2} (List.{u_2} β) (List.map.{u_1, u_2} α β f l₂) s₂)))))
-Case conversion may be inaccurate. Consider using '#align list.map_eq_append_split List.map_eq_append_splitₓ'. -/
-theorem map_eq_append_split {f : α → β} {l : List α} {s₁ s₂ : List β} (h : map f l = s₁ ++ s₂) :
-    ∃ l₁ l₂, l = l₁ ++ l₂ ∧ map f l₁ = s₁ ∧ map f l₂ = s₂ := by
-  have := h; rw [← take_append_drop (length s₁) l] at this⊢
-  rw [map_append] at this
-  refine' ⟨_, _, rfl, append_inj this _⟩
-  rw [length_map, length_take, min_eq_left]
-  rw [← length_map f l, h, length_append]
-  apply Nat.le_add_right
 #align list.map_eq_append_split List.map_eq_append_split
 
 /-! ### repeat -/
