@@ -638,9 +638,11 @@ protected theorem map_dvd (f : α →+* β) {a b : α} : a ∣ b → f a ∣ f b
 
 end Semiring
 
+variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}
+
 /-- The identity ring homomorphism from a semiring to itself. -/
 def id (α : Type _) [NonAssocSemiring α] : α →+* α := by
-  refine' { toFun := id.. } <;> intros <;> rfl
+  refine' { toFun := _root_.id.. } <;> intros <;> rfl
 #align ring_hom.id RingHom.id
 
 instance : Inhabited (α →+* α) :=
@@ -669,7 +671,7 @@ def comp (g : β →+* γ) (f : α →+* β) : α →+* γ :=
 #align ring_hom.comp RingHom.comp
 
 /-- Composition of semiring homomorphisms is associative. -/
-theorem comp_assoc {δ} {rδ : NonAssocSemiring δ} (f : α →+* β) (g : β →+* γ) (h : γ →+* δ) :
+theorem comp_assoc {δ} {_ : NonAssocSemiring δ} (f : α →+* β) (g : β →+* γ) (h : γ →+* δ) :
     (h.comp g).comp f = h.comp (g.comp f) :=
   rfl
 #align ring_hom.comp_assoc RingHom.comp_assoc
@@ -686,12 +688,12 @@ theorem comp_apply (hnp : β →+* γ) (hmn : α →+* β) (x : α) :
 
 @[simp]
 theorem comp_id (f : α →+* β) : f.comp (id α) = f :=
-  ext fun x => rfl
+  ext fun _ => rfl
 #align ring_hom.comp_id RingHom.comp_id
 
 @[simp]
 theorem id_comp (f : α →+* β) : (id β).comp f = f :=
-  ext fun x => rfl
+  ext fun _ => rfl
 #align ring_hom.id_comp RingHom.id_comp
 
 instance : Monoid (α →+* α) where
@@ -731,14 +733,14 @@ theorem cancel_left {g : β →+* γ} {f₁ f₂ : α →+* β} (hg : Injective 
 
 end RingHom
 
-/-- Pullback `is_domain` instance along an injective function. -/
-protected theorem Function.Injective.is_domain [Ring α] [IsDomain α] [Ring β] (f : β →+* α)
+/-- Pullback `IsDomain` instance along an injective function. -/
+protected theorem Function.Injective.isDomain [Ring α] [IsDomain α] [Ring β] (f : β →+* α)
     (hf : Injective f) : IsDomain β := by
   haveI := pullback_nonzero f f.map_zero f.map_one
-  haveI := IsRightCancelMulZero.to_no_zero_divisors α
-  haveI := hf.no_zero_divisors f f.map_zero f.map_mul
-  exact NoZeroDivisors.to_is_domain β
-#align function.injective.is_domain Function.Injective.is_domain
+  haveI := IsRightCancelMulZero.toNoZeroDivisors α
+  haveI := hf.noZeroDivisors f f.map_zero f.map_mul
+  exact NoZeroDivisors.toIsDomain β
+#align function.injective.is_domain Function.Injective.isDomain
 
 namespace AddMonoidHom
 
@@ -749,15 +751,16 @@ integral domain that commutes with self multiplication, assumes that two is nonz
 to `1`. -/
 def mkRingHomOfMulSelfOfTwoNeZero (h : ∀ x, f (x * x) = f x * f x) (h_two : (2 : α) ≠ 0)
     (h_one : f 1 = 1) : β →+* α :=
-  { f with map_one' := h_one,
+  { f with
+    map_one' := h_one,
     map_mul' := fun x y => by
       have hxy := h (x + y)
       rw [mul_add, add_mul, add_mul, f.map_add, f.map_add, f.map_add, f.map_add, h x, h y, add_mul,
-        mul_add, mul_add, ← sub_eq_zero, add_comm, ← sub_sub, ← sub_sub, ← sub_sub, mul_comm y x,
-        mul_comm (f y) (f x)] at hxy
+        mul_add, mul_add, ← sub_eq_zero, add_comm (f x * f x + f (y * x)), ← sub_sub, ← sub_sub,
+        ← sub_sub, mul_comm y x, mul_comm (f y) (f x)] at hxy
       simp only [add_assoc, add_sub_assoc, add_sub_cancel'_right] at hxy
-      rw [sub_sub, ← two_mul, ← add_sub_assoc, ← two_mul, ← mul_sub, mul_eq_zero, sub_eq_zero,
-        or_iff_not_imp_left] at hxy
+      rw [sub_sub, ← two_mul, ← add_sub_assoc, ← two_mul, ← mul_sub, mul_eq_zero (M₀ := α),
+        sub_eq_zero, or_iff_not_imp_left] at hxy
       exact hxy h_two }
 #align
   add_monoid_hom.mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.mkRingHomOfMulSelfOfTwoNeZero
@@ -773,7 +776,8 @@ theorem coe_fn_mk_ring_hom_of_mul_self_of_two_ne_zero (h h_two h_one) :
 @[simp]
 theorem coe_add_monoid_hom_mk_ring_hom_of_mul_self_of_two_ne_zero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β →+ α) = f := by
-  ext
+  apply AddMonoidHom.ext -- Porting note: why isn't `ext` picking up this lemma?
+  intro
   rfl
 #align
   add_monoid_hom.coe_add_monoid_hom_mk_ring_hom_of_mul_self_of_two_ne_zero
