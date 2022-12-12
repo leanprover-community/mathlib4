@@ -83,10 +83,12 @@ protected theorem dvd_one {n : ℕ} : n ∣ 1 ↔ n = 1 :=
   ⟨eq_one_of_dvd_one, fun e => e.symm ▸ dvd_rfl⟩
 #align nat.dvd_one Nat.dvd_one
 
+set_option linter.deprecated false in
 @[simp]
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ bit1 n := by
   rw [bit1, Nat.dvd_add_right two_dvd_bit0, Nat.dvd_one]
-  cc
+  -- Porting note: was `cc`
+  decide
 #align nat.not_two_dvd_bit1 Nat.not_two_dvd_bit1
 
 /-- A natural number `m` divides the sum `m + n` if and only if `m` divides `n`.-/
@@ -109,7 +111,8 @@ theorem dvd_sub' {k m n : ℕ} (h₁ : k ∣ m) (h₂ : k ∣ n) : k ∣ m - n :
     exact dvd_zero k
 #align nat.dvd_sub' Nat.dvd_sub'
 
-lemma div_def (x y : Nat) : x / y = if 0 < y ∧ y ≤ x then (x - y) / y + 1 else 0 := by library_search
+-- TODO: where should this align live?
+#align nat.div_def Nat.div_eq
 
 theorem succ_div : ∀ a b : ℕ, (a + 1) / b = a / b + if b ∣ a + 1 then 1 else 0
   | a, 0 => by simp
@@ -118,7 +121,7 @@ theorem succ_div : ∀ a b : ℕ, (a + 1) / b = a / b + if b ∣ a + 1 then 1 el
     have hb2 : b + 2 > 1 := by simp
     simp [ne_of_gt hb2, div_eq_of_lt hb2]
   | a + 1, b + 1 => by
-    rw [Nat.div_def]; conv_rhs => rw [Nat.div_def]
+    rw [Nat.div_eq]; conv_rhs => rw [Nat.div_eq]
     by_cases hb_eq_a : b = a + 1
     · simp [hb_eq_a, le_refl]
     by_cases hb_le_a1 : b ≤ a + 1
