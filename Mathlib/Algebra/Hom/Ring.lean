@@ -491,11 +491,9 @@ theorem copy_eq (f : α →+* β) (f' : α → β) (h : f' = f) : f.copy f' h = 
 
 end coe
 
-variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}
-
 section
 
-variable (f : α →+* β) {x y : α}
+variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} (f : α →+* β) {x y : α}
 
 theorem congr_fun {f g : α →+* β} (h : f = g) (x : α) : f x = g x :=
   FunLike.congr_fun h x
