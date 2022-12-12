@@ -167,166 +167,93 @@ attribute [simp] List.mem_join
 attribute [simp] List.mem_bind
 #align list.mem_bind List.mem_bind
 
-/- warning: list.exists_of_mem_bind -> List.exists_of_mem_bind is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} {b : β} {l : List.{u} α} {f : α -> (List.{v} β)}, (Membership.Mem.{v, v} β (List.{v} β) (List.hasMem.{v} β) b (List.bind.{u, v} α β l f)) -> (Exists.{succ u} α (fun (a : α) => Exists.{0} (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l) (fun (H : Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l) => Membership.Mem.{v, v} β (List.{v} β) (List.hasMem.{v} β) b (f a))))
-but is expected to have type
-  forall {β : Type.{u_1}} {α : Type.{u_2}} {b : β} {l : List.{u_2} α} {f : α -> (List.{u_1} β)}, (Membership.mem.{u_1, u_1} β (List.{u_1} β) (List.instMembershipList.{u_1} β) b (List.bind.{u_2, u_1} α β l f)) -> (Exists.{succ u_2} α (fun (a : α) => And (Membership.mem.{u_2, u_2} α (List.{u_2} α) (List.instMembershipList.{u_2} α) a l) (Membership.mem.{u_1, u_1} β (List.{u_1} β) (List.instMembershipList.{u_1} β) b (f a))))
-Case conversion may be inaccurate. Consider using '#align list.exists_of_mem_bind List.exists_of_mem_bindₓ'. -/
-theorem exists_of_mem_bind {b : β} {l : List α} {f : α → List β} :
-    b ∈ List.bind l f → ∃ a ∈ l, b ∈ f a :=
-  mem_bind.1
+--Porting note: bExists in Lean3, And in Lean4
 #align list.exists_of_mem_bind List.exists_of_mem_bind
 
-/- warning: list.mem_bind_of_mem -> List.mem_bind_of_mem is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} {b : β} {l : List.{u} α} {f : α -> (List.{v} β)} {a : α}, (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l) -> (Membership.Mem.{v, v} β (List.{v} β) (List.hasMem.{v} β) b (f a)) -> (Membership.Mem.{v, v} β (List.{v} β) (List.hasMem.{v} β) b (List.bind.{u, v} α β l f))
-but is expected to have type
-  forall {β : Type.{u_1}} {α : Type.{u_2}} {b : β} {l : List.{u_2} α} {f : α -> (List.{u_1} β)} {a : α}, (Membership.mem.{u_2, u_2} α (List.{u_2} α) (List.instMembershipList.{u_2} α) a l) -> (Membership.mem.{u_1, u_1} β (List.{u_1} β) (List.instMembershipList.{u_1} β) b (f a)) -> (Membership.mem.{u_1, u_1} β (List.{u_1} β) (List.instMembershipList.{u_1} β) b (List.bind.{u_2, u_1} α β l f))
-Case conversion may be inaccurate. Consider using '#align list.mem_bind_of_mem List.mem_bind_of_memₓ'. -/
-theorem mem_bind_of_mem {b : β} {l : List α} {f : α → List β} {a} (al : a ∈ l) (h : b ∈ f a) :
-    b ∈ List.bind l f :=
-  mem_bind.2 ⟨a, al, h⟩
+--Porting note: Implicit arguments in a different order in Lean3 and Lean4
 #align list.mem_bind_of_mem List.mem_bind_of_mem
 
-/- warning: list.bind_map -> List.bind_map is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} {γ : Type.{w}} {g : α -> (List.{v} β)} {f : β -> γ} (l : List.{u} α), Eq.{succ w} (List.{w} γ) (List.map.{v, w} β γ f (List.bind.{u, v} α β l g)) (List.bind.{u, w} α γ l (fun (a : α) => List.map.{v, w} β γ f (g a)))
-but is expected to have type
-  forall {β : Type.{u_1}} {γ : Type.{u_2}} {α : Type.{u_3}} (f : β -> γ) (g : α -> (List.{u_1} β)) (l : List.{u_3} α), Eq.{succ u_2} (List.{u_2} γ) (List.map.{u_1, u_2} β γ f (List.bind.{u_3, u_1} α β l g)) (List.bind.{u_3, u_2} α γ l (fun (a : α) => List.map.{u_1, u_2} β γ f (g a)))
-Case conversion may be inaccurate. Consider using '#align list.bind_map List.bind_mapₓ'. -/
-theorem bind_map {g : α → List β} {f : β → γ} :
-    ∀ l : List α, List.map f (l.bind g) = l.bind fun a => (g a).map f
-  | [] => rfl
-  | a :: l => by simp only [cons_bind, map_append, bind_map l]
+--Porting note : Implicit arguments in a different order in Lean3 and Lean4
 #align list.bind_map List.bind_map
 
 theorem map_bind (g : β → List γ) (f : α → β) :
     ∀ l : List α, (List.map f l).bind g = l.bind fun a => g (f a)
   | [] => rfl
-  | a :: l => by simp only [cons_bind, map_cons, map_bind l]
+  | a :: l => by simp only [cons_bind, map_cons, map_bind _ _ l]
 #align list.map_bind List.map_bind
 
 /-! ### length -/
 
-
-#print List.length_eq_zero /-
-theorem length_eq_zero {l : List α} : length l = 0 ↔ l = [] :=
-  ⟨eq_nil_of_length_eq_zero, fun h => h.symm ▸ rfl⟩
 #align list.length_eq_zero List.length_eq_zero
--/
 
-#print List.length_singleton /-
-@[simp]
-theorem length_singleton (a : α) : length [a] = 1 :=
-  rfl
+attribute [simp] List.length_singleton
 #align list.length_singleton List.length_singleton
--/
 
-#print List.length_pos_of_mem /-
-theorem length_pos_of_mem {a : α} : ∀ {l : List α}, a ∈ l → 0 < length l
-  | b :: l, _ => zero_lt_succ _
 #align list.length_pos_of_mem List.length_pos_of_mem
--/
 
-#print List.exists_mem_of_length_pos /-
-theorem exists_mem_of_length_pos : ∀ {l : List α}, 0 < length l → ∃ a, a ∈ l
-  | b :: l, _ => ⟨b, mem_cons_self _ _⟩
 #align list.exists_mem_of_length_pos List.exists_mem_of_length_pos
--/
 
-#print List.length_pos_iff_exists_mem /-
-theorem length_pos_iff_exists_mem {l : List α} : 0 < length l ↔ ∃ a, a ∈ l :=
-  ⟨exists_mem_of_length_pos, fun ⟨a, h⟩ => length_pos_of_mem h⟩
 #align list.length_pos_iff_exists_mem List.length_pos_iff_exists_mem
--/
 
-#print List.ne_nil_of_length_pos /-
-theorem ne_nil_of_length_pos {l : List α} : 0 < length l → l ≠ [] := fun h1 h2 =>
-  lt_irrefl 0 ((length_eq_zero.2 h2).subst h1)
+alias length_pos ↔ ne_nil_of_length_pos length_pos_of_ne_nil
 #align list.ne_nil_of_length_pos List.ne_nil_of_length_pos
--/
 
-#print List.length_pos_of_ne_nil /-
-theorem length_pos_of_ne_nil {l : List α} : l ≠ [] → 0 < length l := fun h =>
-  pos_iff_ne_zero.2 fun h0 => h <| length_eq_zero.1 h0
 #align list.length_pos_of_ne_nil List.length_pos_of_ne_nil
--/
 
 theorem length_pos_iff_ne_nil {l : List α} : 0 < length l ↔ l ≠ [] :=
   ⟨ne_nil_of_length_pos, length_pos_of_ne_nil⟩
 #align list.length_pos_iff_ne_nil List.length_pos_iff_ne_nil
 
-#print List.exists_mem_of_ne_nil /-
-theorem exists_mem_of_ne_nil (l : List α) (h : l ≠ []) : ∃ x, x ∈ l :=
-  exists_mem_of_length_pos (length_pos_of_ne_nil h)
 #align list.exists_mem_of_ne_nil List.exists_mem_of_ne_nil
--/
 
-#print List.length_eq_one /-
-theorem length_eq_one {l : List α} : length l = 1 ↔ ∃ a, l = [a] :=
-  ⟨match l with
-    | [a], _ => ⟨a, rfl⟩,
-    fun ⟨a, e⟩ => e.symm ▸ rfl⟩
 #align list.length_eq_one List.length_eq_one
--/
 
-#print List.exists_of_length_succ /-
-theorem exists_of_length_succ {n} : ∀ l : List α, l.length = n + 1 → ∃ h t, l = h :: t
-  | [], H => absurd H.symm <| succ_ne_zero n
-  | h :: t, H => ⟨h, t, rfl⟩
+theorem exists_of_length_succ {n} :
+  ∀ l : List α, l.length = n + 1 → ∃ h t, l = h :: t
+| [], H => absurd H.symm $ Nat.succ_ne_zero n
+| h :: t, _ => ⟨h, t, rfl⟩
 #align list.exists_of_length_succ List.exists_of_length_succ
--/
 
-#print List.length_injective_iff /-
 @[simp]
-theorem length_injective_iff : Injective (List.length : List α → ℕ) ↔ Subsingleton α := by
+lemma length_injective_iff : Injective (List.length : List α → ℕ) ↔ Subsingleton α := by
   constructor
-  · intro h
-    refine' ⟨fun x y => _⟩
-    suffices [x] = [y] by simpa using this
-    apply h
-    rfl
-  · intro hα l1 l2 hl
+  · intro h; refine ⟨λ x y => ?_⟩; (suffices [x] = [y] by simpa using this); apply h; rfl
+  · intros hα l1 l2 hl
     induction l1 generalizing l2 <;> cases l2
-    · rfl
-    · cases hl
-    · cases hl
-    congr
-    exact Subsingleton.elim _ _
-    apply l1_ih
-    simpa using hl
+    case nil.nil => rfl
+    case nil.cons => cases hl
+    case cons.nil => cases hl
+    case cons.cons ih _ _ => congr
+                             · exact Subsingleton.elim _ _
+                             · apply ih; simpa using hl
 #align list.length_injective_iff List.length_injective_iff
--/
 
-#print List.length_injective /-
-@[simp]
-theorem length_injective [Subsingleton α] : Injective (length : List α → ℕ) :=
-  length_injective_iff.mpr <| by infer_instance
+@[simp default+1]
+lemma length_injective [Subsingleton α] : Injective (length : List α → ℕ) :=
+length_injective_iff.mpr inferInstance
 #align list.length_injective List.length_injective
--/
 
 theorem length_eq_two {l : List α} : l.length = 2 ↔ ∃ a b, l = [a, b] :=
-  ⟨match l with
-    | [a, b], _ => ⟨a, b, rfl⟩,
-    fun ⟨a, b, e⟩ => e.symm ▸ rfl⟩
+  Iff.intro
+    (fun _ => match l with
+      | [a, b] => ⟨a, b, rfl⟩)
+    (fun ⟨_, _, e⟩ => e.symm ▸ rfl)
 #align list.length_eq_two List.length_eq_two
 
 theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c] :=
-  ⟨match l with
-    | [a, b, c], _ => ⟨a, b, c, rfl⟩,
-    fun ⟨a, b, c, e⟩ => e.symm ▸ rfl⟩
+  Iff.intro
+    (fun _ => match l with
+      | [a, b, c] => ⟨a, b, c, rfl⟩)
+    (fun ⟨_, _, _, e⟩ => e.symm ▸ rfl)
 #align list.length_eq_three List.length_eq_three
 
-alias length_le_of_sublist ← sublist.length_le
+--Portin TODO: fix this
+--alias length_le_of_sublist ← sublist.length_le
 
 /-! ### set-theoretic notation of lists -/
 
-
-#print List.empty_eq /-
-theorem empty_eq : (∅ : List α) = [] := by rfl
 #align list.empty_eq List.empty_eq
--/
+
 
 theorem singleton_eq (x : α) : ({x} : List α) = [x] :=
   rfl
@@ -5637,29 +5564,7 @@ end List
 
 -- /-! ### length -/
 
--- alias length_pos ↔ ne_nil_of_length_pos length_pos_of_ne_nil
 
--- lemma exists_of_length_succ {n} :
---   ∀ l : List α, l.length = n + 1 → ∃ h t, l = h :: t
--- | [], H => absurd H.symm $ Nat.succ_ne_zero n
--- | h :: t, _ => ⟨h, t, rfl⟩
-
--- @[simp]
--- lemma length_injective_iff : Injective (List.length : List α → ℕ) ↔ Subsingleton α := by
---   constructor
---   · intro h; refine ⟨λ x y => ?_⟩; (suffices [x] = [y] by simpa using this); apply h; rfl
---   · intros hα l1 l2 hl
---     induction l1 generalizing l2 <;> cases l2
---     case nil.nil => rfl
---     case nil.cons => cases hl
---     case cons.nil => cases hl
---     case cons.cons ih _ _ => congr
---                              · exact Subsingleton.elim _ _
---                              · apply ih; simpa using hl
-
--- @[simp default+1]
--- lemma length_injective [Subsingleton α] : Injective (length : List α → ℕ) :=
--- length_injective_iff.mpr inferInstance
 
 -- /-! ### set-theoretic notation of Lists -/
 
