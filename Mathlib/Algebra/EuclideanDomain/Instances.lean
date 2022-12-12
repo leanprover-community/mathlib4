@@ -9,6 +9,13 @@ import Mathlib.Init.Data.Int.Order
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Nat.Basic
 
+/-!
+# Instances for Euclidean domains
+* `int.euclidean_domain`: shows that `ℤ` is a Euclidean domain.
+* `field.to_euclidean_domain`: shows that any field is a Euclidean domain.
+-/
+
+
 theorem Int.ofNat_mod_negSucc (m n : Nat) :
   (ofNat m % (Int.negSucc n) : Int) = ofNat (m % n.succ) := rfl
 theorem Int.negSucc_mod_ofNat (m n : Nat) :
