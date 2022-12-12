@@ -170,7 +170,7 @@ theorem image2_congr' (h : ∀ a b, f a b = f' a b) : image2 f s t = image2 f' s
 #align set.image2_congr' Set.image2_congr'
 
 /-- The image of a ternary function `f : α → β → γ → δ` as a function
-  `set α → set β → set γ → set δ`. Mathematically this should be thought of as the image of the
+  `Set α → Set β → Set γ → set δ`. Mathematically this should be thought of as the image of the
   corresponding function `α × β × γ → δ`.
 -/
 def image3 (g : α → β → γ → δ) (s : Set α) (t : Set β) (u : Set γ) : Set δ :=
@@ -291,28 +291,28 @@ theorem image_image2_distrib {g : γ → δ} {f' : α' → β' → δ} {g₁ : �
   simp_rw [image_image2, image2_image_left, image2_image_right, h_distrib]
 #align set.image_image2_distrib Set.image_image2_distrib
 
-/-- Symmetric statement to `set.image2_image_left_comm`. -/
+/-- Symmetric statement to `Set.image2_image_left_comm`. -/
 theorem image_image2_distrib_left {g : γ → δ} {f' : α' → β → δ} {g' : α → α'}
     (h_distrib : ∀ a b, g (f a b) = f' (g' a) b) :
     (image2 f s t).image g = image2 f' (s.image g') t :=
   (image_image2_distrib h_distrib).trans <| by rw [image_id']
 #align set.image_image2_distrib_left Set.image_image2_distrib_left
 
-/-- Symmetric statement to `set.image_image2_right_comm`. -/
+/-- Symmetric statement to `Set.image_image2_right_comm`. -/
 theorem image_image2_distrib_right {g : γ → δ} {f' : α → β' → δ} {g' : β → β'}
     (h_distrib : ∀ a b, g (f a b) = f' a (g' b)) :
     (image2 f s t).image g = image2 f' s (t.image g') :=
   (image_image2_distrib h_distrib).trans <| by rw [image_id']
 #align set.image_image2_distrib_right Set.image_image2_distrib_right
 
-/-- Symmetric statement to `set.image_image2_distrib_left`. -/
+/-- Symmetric statement to `Set.image_image2_distrib_left`. -/
 theorem image2_image_left_comm {f : α' → β → γ} {g : α → α'} {f' : α → β → δ} {g' : δ → γ}
     (h_left_comm : ∀ a b, f (g a) b = g' (f' a b)) :
     image2 f (s.image g) t = (image2 f' s t).image g' :=
   (image_image2_distrib_left fun a b => (h_left_comm a b).symm).symm
 #align set.image2_image_left_comm Set.image2_image_left_comm
 
-/-- Symmetric statement to `set.image_image2_distrib_right`. -/
+/-- Symmetric statement to `Set.image_image2_distrib_right`. -/
 theorem image_image2_right_comm {f : α → β' → γ} {g : β → β'} {f' : α → β → δ} {g' : δ → γ}
     (h_right_comm : ∀ a b, f a (g b) = g' (f' a b)) :
     image2 f s (t.image g) = (image2 f' s t).image g' :=
@@ -344,28 +344,28 @@ theorem image_image2_antidistrib {g : γ → δ} {f' : β' → α' → δ} {g₁
   exact image_image2_distrib fun _ _ => h_antidistrib _ _
 #align set.image_image2_antidistrib Set.image_image2_antidistrib
 
-/-- Symmetric statement to `set.image2_image_left_anticomm`. -/
+/-- Symmetric statement to `Set.image2_image_left_anticomm`. -/
 theorem image_image2_antidistrib_left {g : γ → δ} {f' : β' → α → δ} {g' : β → β'}
     (h_antidistrib : ∀ a b, g (f a b) = f' (g' b) a) :
     (image2 f s t).image g = image2 f' (t.image g') s :=
   (image_image2_antidistrib h_antidistrib).trans <| by rw [image_id']
 #align set.image_image2_antidistrib_left Set.image_image2_antidistrib_left
 
-/-- Symmetric statement to `set.image_image2_right_anticomm`. -/
+/-- Symmetric statement to `Set.image_image2_right_anticomm`. -/
 theorem image_image2_antidistrib_right {g : γ → δ} {f' : β → α' → δ} {g' : α → α'}
     (h_antidistrib : ∀ a b, g (f a b) = f' b (g' a)) :
     (image2 f s t).image g = image2 f' t (s.image g') :=
   (image_image2_antidistrib h_antidistrib).trans <| by rw [image_id']
 #align set.image_image2_antidistrib_right Set.image_image2_antidistrib_right
 
-/-- Symmetric statement to `set.image_image2_antidistrib_left`. -/
+/-- Symmetric statement to `Set.image_image2_antidistrib_left`. -/
 theorem image2_image_left_anticomm {f : α' → β → γ} {g : α → α'} {f' : β → α → δ} {g' : δ → γ}
     (h_left_anticomm : ∀ a b, f (g a) b = g' (f' b a)) :
     image2 f (s.image g) t = (image2 f' t s).image g' :=
   (image_image2_antidistrib_left fun a b => (h_left_anticomm b a).symm).symm
 #align set.image2_image_left_anticomm Set.image2_image_left_anticomm
 
-/-- Symmetric statement to `set.image_image2_antidistrib_right`. -/
+/-- Symmetric statement to `Set.image_image2_antidistrib_right`. -/
 theorem image_image2_right_anticomm {f : α → β' → γ} {g : β → β'} {f' : β → α → δ} {g' : δ → γ}
     (h_right_anticomm : ∀ a b, f a (g b) = g' (f' b a)) :
     image2 f s (t.image g) = (image2 f' t s).image g' :=
@@ -373,3 +373,4 @@ theorem image_image2_right_anticomm {f : α → β' → γ} {g : β → β'} {f'
 #align set.image_image2_right_anticomm Set.image_image2_right_anticomm
 
 end Set
+#lint
