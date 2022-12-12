@@ -1332,6 +1332,12 @@ end Function
 
 namespace Subtype
 
+-- Porting note:
+-- Note that we can either write `fun x : s => (x : α)` or `Subtype.val : s → α`,
+-- and that these are syntactically the same.
+-- In mathlib3 we referred to this just as `coe`.
+-- We may want to change the spelling of some statements later.
+
 open Set
 
 variable {α : Type _}
