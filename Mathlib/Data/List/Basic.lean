@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
 import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Init.Core
 
 /-!
 # Basic properties of lists
@@ -247,13 +248,30 @@ theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c
     (fun ⟨_, _, _, e⟩ => e.symm ▸ rfl)
 #align list.length_eq_three List.length_eq_three
 
---Portin TODO: fix this
---alias length_le_of_sublist ← sublist.length_le
+--Portin note: from Lean3 core
+theorem length_le_of_sublist : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → length l₁ ≤ length l₂
+| _, _, Sublist.slnil           => le_refl 0
+| _, _, Sublist.cons _ s => le_succ_of_le (length_le_of_sublist s)
+| _, _, Sublist.cons₂ _ s => succ_le_succ (length_le_of_sublist s)
+#align list.length_le_of_sublist List.length_le_of_sublist
+
+alias length_le_of_sublist ← sublist.length_le
 
 /-! ### set-theoretic notation of lists -/
 
 #align list.empty_eq List.empty_eq
 
+--Porting Note: instance from Lean3 core
+instance : Singleton α (List α) := ⟨fun x => [x]⟩
+#align list.has_singleton List.instSingletonList
+
+--Porting Note: instance from Lean3 core
+instance [DecidableEq α] : Insert α (List α) := ⟨List.insert⟩
+
+--Porting Note: instance from Lean3 core
+instance [DecidableEq α]: IsLawfulSingleton α (List α) :=
+  { insert_emptyc_eq := fun x =>
+      show (if x ∈ ([] : List α) then [] else [x]) = [x] from if_neg (not_mem_nil _) }
 
 theorem singleton_eq (x : α) : ({x} : List α) = [x] :=
   rfl
@@ -274,82 +292,41 @@ theorem doubleton_eq [DecidableEq α] {x y : α} (h : x ≠ y) : ({x, y} : List 
 
 /-! ### bounded quantifiers over lists -/
 
-
-#print List.forall_mem_nil /-
-theorem forall_mem_nil (p : α → Prop) : ∀ x ∈ @nil α, p x :=
-  fun.
 #align list.forall_mem_nil List.forall_mem_nil
--/
 
-#print List.forall_mem_cons /-
-theorem forall_mem_cons :
-    ∀ {p : α → Prop} {a : α} {l : List α}, (∀ x ∈ a :: l, p x) ↔ p a ∧ ∀ x ∈ l, p x :=
-  ball_cons
 #align list.forall_mem_cons List.forall_mem_cons
--/
 
-#print List.forall_mem_of_forall_mem_cons /-
-theorem forall_mem_of_forall_mem_cons {p : α → Prop} {a : α} {l : List α} (h : ∀ x ∈ a :: l, p x) :
-    ∀ x ∈ l, p x :=
-  (forall_mem_cons.1 h).2
+theorem forall_mem_of_forall_mem_cons {p : α → Prop} {a : α} {l : List α}
+    (h : ∀ x, x ∈ a :: l → p x) :
+  ∀ x, x ∈ l → p x :=
+(forall_mem_cons.1 h).2
 #align list.forall_mem_of_forall_mem_cons List.forall_mem_of_forall_mem_cons
--/
 
-#print List.forall_mem_singleton /-
-theorem forall_mem_singleton {p : α → Prop} {a : α} : (∀ x ∈ [a], p x) ↔ p a := by
-  simp only [mem_singleton, forall_eq]
 #align list.forall_mem_singleton List.forall_mem_singleton
--/
 
-#print List.forall_mem_append /-
-theorem forall_mem_append {p : α → Prop} {l₁ l₂ : List α} :
-    (∀ x ∈ l₁ ++ l₂, p x) ↔ (∀ x ∈ l₁, p x) ∧ ∀ x ∈ l₂, p x := by
-  simp only [mem_append, or_imp, forall_and]
 #align list.forall_mem_append List.forall_mem_append
--/
 
-/- warning: list.not_exists_mem_nil -> List.not_exists_mem_nil is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} (p : α -> Prop), Not (Exists.{succ u} α (fun (x : α) => Exists.{0} (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) x (List.nil.{u} α)) (fun (H : Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) x (List.nil.{u} α)) => p x)))
-but is expected to have type
-  forall {α : Type.{u_1}} (p : α -> Prop), Not (Exists.{succ u_1} α (fun (x : α) => And (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) x (List.nil.{u_1} α)) (p x)))
-Case conversion may be inaccurate. Consider using '#align list.not_exists_mem_nil List.not_exists_mem_nilₓ'. -/
 theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
   fun.
 #align list.not_exists_mem_nil List.not_exists_mem_nil
 
-/- warning: list.exists_mem_cons_of -> List.exists_mem_cons_of is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {p : α -> Prop} {a : α} (l : List.{u} α), (p a) -> (Exists.{succ u} α (fun (x : α) => Exists.{0} (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) x (List.cons.{u} α a l)) (fun (H : Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) x (List.cons.{u} α a l)) => p x)))
-but is expected to have type
-  forall {α : Type.{u_1}} {p : α -> Prop} {a : α} (l : List.{u_1} α), (p a) -> (Exists.{succ u_1} α (fun (x : α) => And (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) x (List.cons.{u_1} α a l)) (p x)))
-Case conversion may be inaccurate. Consider using '#align list.exists_mem_cons_of List.exists_mem_cons_ofₓ'. -/
+-- Porting note: bExists in Lean3 and And in Lean4
 theorem exists_mem_cons_of {p : α → Prop} {a : α} (l : List α) (h : p a) : ∃ x ∈ a :: l, p x :=
-  BEx.intro a (mem_cons_self _ _) h
+  ⟨a, (mem_cons_self _ _), h⟩
 #align list.exists_mem_cons_of List.exists_mem_cons_of
 
-/- warning: list.exists_mem_cons_of_exists -> List.exists_mem_cons_of_exists is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {p : α -> Prop} {a : α} {l : List.{u} α}, (Exists.{succ u} α (fun (x : α) => Exists.{0} (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) x l) (fun (H : Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) x l) => p x))) -> (Exists.{succ u} α (fun (x : α) => Exists.{0} (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) x (List.cons.{u} α a l)) (fun (H : Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) x (List.cons.{u} α a l)) => p x)))
-but is expected to have type
-  forall {α : Type.{u_1}} {p : α -> Prop} {a : α} {l : List.{u_1} α}, (Exists.{succ u_1} α (fun (x : α) => And (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) x l) (p x))) -> (Exists.{succ u_1} α (fun (x : α) => And (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) x (List.cons.{u_1} α a l)) (p x)))
-Case conversion may be inaccurate. Consider using '#align list.exists_mem_cons_of_exists List.exists_mem_cons_of_existsₓ'. -/
-theorem exists_mem_cons_of_exists {p : α → Prop} {a : α} {l : List α} (h : ∃ x ∈ l, p x) :
+-- Porting note: bExists in Lean3 and And in Lean4
+theorem exists_mem_cons_of_exists {p : α → Prop} {a : α} {l : List α} : (∃ x ∈ l, p x) →
     ∃ x ∈ a :: l, p x :=
-  BEx.elim h fun x xl px => BEx.intro x (mem_cons_of_mem _ xl) px
+  fun ⟨x, xl, px⟩ => ⟨x, mem_cons_of_mem _ xl, px⟩
 #align list.exists_mem_cons_of_exists List.exists_mem_cons_of_exists
 
-/- warning: list.or_exists_of_exists_mem_cons -> List.or_exists_of_exists_mem_cons is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {p : α -> Prop} {a : α} {l : List.{u} α}, (Exists.{succ u} α (fun (x : α) => Exists.{0} (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) x (List.cons.{u} α a l)) (fun (H : Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) x (List.cons.{u} α a l)) => p x))) -> (Or (p a) (Exists.{succ u} α (fun (x : α) => Exists.{0} (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) x l) (fun (H : Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) x l) => p x))))
-but is expected to have type
-  forall {α : Type.{u_1}} {p : α -> Prop} {a : α} {l : List.{u_1} α}, (Exists.{succ u_1} α (fun (x : α) => And (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) x (List.cons.{u_1} α a l)) (p x))) -> (Or (p a) (Exists.{succ u_1} α (fun (a : α) => And (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a l) (p a))))
-Case conversion may be inaccurate. Consider using '#align list.or_exists_of_exists_mem_cons List.or_exists_of_exists_mem_consₓ'. -/
-theorem or_exists_of_exists_mem_cons {p : α → Prop} {a : α} {l : List α} (h : ∃ x ∈ a :: l, p x) :
+-- Porting note: bExists in Lean3 and And in Lean4
+theorem or_exists_of_exists_mem_cons {p : α → Prop} {a : α} {l : List α} : (∃ x ∈ a :: l, p x) →
     p a ∨ ∃ x ∈ l, p x :=
-  BEx.elim h fun x xal px =>
-    Or.elim (eq_or_mem_of_mem_cons xal) (fun this : x = a => by rw [← this]; left; exact px)
-      fun this : x ∈ l => Or.inr (BEx.intro x this px)
+  fun ⟨x, xal, px⟩ =>
+    Or.elim (eq_or_mem_of_mem_cons xal) (fun h : x = a => by rw [← h]; left; exact px)
+      fun h : x ∈ l => Or.inr ⟨x, h, px⟩
 #align list.or_exists_of_exists_mem_cons List.or_exists_of_exists_mem_cons
 
 theorem exists_mem_cons_iff (p : α → Prop) (a : α) (l : List α) :
@@ -360,48 +337,26 @@ theorem exists_mem_cons_iff (p : α → Prop) (a : α) (l : List α) :
 
 /-! ### list subset -/
 
-
-#print List.subset_def /-
-theorem subset_def {l₁ l₂ : List α} : l₁ ⊆ l₂ ↔ ∀ ⦃a : α⦄, a ∈ l₁ → a ∈ l₂ :=
-  Iff.rfl
 #align list.subset_def List.subset_def
--/
 
-#print List.subset_append_of_subset_left /-
-theorem subset_append_of_subset_left (l l₁ l₂ : List α) : l ⊆ l₁ → l ⊆ l₁ ++ l₂ := fun s =>
-  Subset.trans s <| subset_append_left _ _
 #align list.subset_append_of_subset_left List.subset_append_of_subset_left
--/
 
-/- warning: list.subset_append_of_subset_right -> List.subset_append_of_subset_right is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} (l : List.{u} α) (l₁ : List.{u} α) (l₂ : List.{u} α), (HasSubset.Subset.{u} (List.{u} α) (List.hasSubset.{u} α) l l₂) -> (HasSubset.Subset.{u} (List.{u} α) (List.hasSubset.{u} α) l (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) l₁ l₂))
-but is expected to have type
-  forall {α : Type.{u_1}} {l : List.{u_1} α} {l₂ : List.{u_1} α} (l₁ : List.{u_1} α), (HasSubset.Subset.{u_1} (List.{u_1} α) (List.instHasSubsetList.{u_1} α) l l₂) -> (HasSubset.Subset.{u_1} (List.{u_1} α) (List.instHasSubsetList.{u_1} α) l (HAppend.hAppend.{u_1, u_1, u_1} (List.{u_1} α) (List.{u_1} α) (List.{u_1} α) (instHAppend.{u_1} (List.{u_1} α) (List.instAppendList.{u_1} α)) l₁ l₂))
-Case conversion may be inaccurate. Consider using '#align list.subset_append_of_subset_right List.subset_append_of_subset_rightₓ'. -/
-theorem subset_append_of_subset_right (l l₁ l₂ : List α) : l ⊆ l₂ → l ⊆ l₁ ++ l₂ := fun s =>
+-- Porting TODO: Get rid of ' in name and match Lean3 and Lean4 statements
+theorem subset_append_of_subset_right' (l l₁ l₂ : List α) : l ⊆ l₂ → l ⊆ l₁ ++ l₂ := fun s =>
   Subset.trans s <| subset_append_right _ _
-#align list.subset_append_of_subset_right List.subset_append_of_subset_right
+#align list.subset_append_of_subset_right List.subset_append_of_subset_right'
 
-#print List.cons_subset /-
-@[simp]
-theorem cons_subset {a : α} {l m : List α} : a :: l ⊆ m ↔ a ∈ m ∧ l ⊆ m := by
-  simp only [subset_def, mem_cons_iff, or_imp, forall_and, forall_eq]
 #align list.cons_subset List.cons_subset
--/
 
-#print List.cons_subset_of_subset_of_mem /-
-theorem cons_subset_of_subset_of_mem {a : α} {l m : List α} (ainm : a ∈ m) (lsubm : l ⊆ m) :
-    a :: l ⊆ m :=
-  cons_subset.2 ⟨ainm, lsubm⟩
+theorem cons_subset_of_subset_of_mem {a : α} {l m : List α}
+  (ainm : a ∈ m) (lsubm : l ⊆ m) : a::l ⊆ m :=
+cons_subset.2 ⟨ainm, lsubm⟩
 #align list.cons_subset_of_subset_of_mem List.cons_subset_of_subset_of_mem
--/
 
-#print List.append_subset_of_subset_of_subset /-
 theorem append_subset_of_subset_of_subset {l₁ l₂ l : List α} (l₁subl : l₁ ⊆ l) (l₂subl : l₂ ⊆ l) :
-    l₁ ++ l₂ ⊆ l := fun a h => (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
+  l₁ ++ l₂ ⊆ l :=
+fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
 #align list.append_subset_of_subset_of_subset List.append_subset_of_subset_of_subset
--/
 
 @[simp]
 theorem append_subset_iff {l₁ l₂ l : List α} : l₁ ++ l₂ ⊆ l ↔ l₁ ⊆ l ∧ l₂ ⊆ l := by
@@ -413,18 +368,10 @@ theorem append_subset_iff {l₁ l₂ l : List α} : l₁ ++ l₂ ⊆ l ↔ l₁ 
     apply append_subset_of_subset_of_subset h1 h2
 #align list.append_subset_iff List.append_subset_iff
 
-#print List.eq_nil_of_subset_nil /-
-theorem eq_nil_of_subset_nil : ∀ {l : List α}, l ⊆ [] → l = []
-  | [], s => rfl
-  | a :: l, s => False.elim <| s <| mem_cons_self a l
+alias subset_nil ↔ eq_nil_of_subset_nil _
 #align list.eq_nil_of_subset_nil List.eq_nil_of_subset_nil
--/
 
-#print List.eq_nil_iff_forall_not_mem /-
-theorem eq_nil_iff_forall_not_mem {l : List α} : l = [] ↔ ∀ a, a ∉ l :=
-  show l = [] ↔ l ⊆ [] from ⟨fun e => e ▸ Subset.refl _, eq_nil_of_subset_nil⟩
 #align list.eq_nil_iff_forall_not_mem List.eq_nil_iff_forall_not_mem
--/
 
 /- warning: list.map_subset -> List.map_subset is a dubious translation:
 lean 3 declaration is
@@ -5524,90 +5471,18 @@ end List
 -- -/
 
 
-
--- /-! ### mem -/
-
--- alias mem_cons ↔ eq_or_mem_of_mem_cons _
-
--- theorem not_mem_append {a : α} {s t : List α} (h₁ : a ∉ s) (h₂ : a ∉ t) : a ∉ s ++ t :=
--- mt mem_append.1 $ not_or.mpr ⟨h₁, h₂⟩
-
--- theorem mem_of_ne_of_mem {a y : α} {l : List α} (h₁ : a ≠ y) (h₂ : a ∈ y :: l) : a ∈ l :=
--- Or.elim (eq_or_mem_of_mem_cons h₂) (fun e ↦ absurd e h₁) (fun r ↦ r)
-
--- theorem ne_of_not_mem_cons {a b : α} {l : List α} : (a ∉ b::l) → a ≠ b :=
--- fun nin aeqb ↦ absurd (aeqb ▸ Mem.head ..) nin
-
--- theorem not_mem_of_not_mem_cons {a b : α} {l : List α} : (a ∉ b::l) → a ∉ l :=
--- fun nin nainl ↦ absurd (Mem.tail _ nainl) nin
-
--- theorem not_mem_cons_of_ne_of_not_mem {a y : α} {l : List α} : a ≠ y → (a ∉ l) → (a ∉ y::l) :=
--- fun p1 p2 ↦ fun Pain ↦ absurd (eq_or_mem_of_mem_cons Pain) (not_or.mpr ⟨p1, p2⟩)
-
--- theorem ne_and_not_mem_of_not_mem_cons {a y : α} {l : List α} : (a ∉ y::l) → a ≠ y ∧ a ∉ l :=
--- fun p ↦ And.intro (ne_of_not_mem_cons p) (not_mem_of_not_mem_cons p)
-
--- theorem mem_map_of_injective {f : α → β} (H : Injective f) {a : α} {l : List α} :
---     f a ∈ map f l ↔ a ∈ l :=
---   ⟨fun m ↦ let ⟨_, m', e⟩ := exists_of_mem_map m; H e ▸ m',
---    mem_map_of_mem _⟩
-
--- theorem mem_split {a : α} {l : List α} (h : a ∈ l) : ∃ s t : List α, l = s ++ a :: t := by
---   induction l with
---   | nil => cases h
---   | cons b l ih =>
---     cases h with
---     | head => exact ⟨[], l, rfl⟩
---     | tail _ h =>
---       rcases ih h with ⟨s, t, rfl⟩
---       exact ⟨b :: s, t, rfl⟩
-
--- /-! ### length -/
-
-
-
 -- /-! ### set-theoretic notation of Lists -/
 
--- --lemma singleton_eq (x : α) : ({x} : List α) = [x] := rfl
--- --lemma insert_neg [DecidableEq α] {x : α} {l : List α} (h : x ∉ l) :
--- --  has_insert.insert x l = x :: l :=
--- --if_neg h
--- --lemma insert_pos [DecidableEq α] {x : α} {l : List α} (h : x ∈ l) :
--- --  has_insert.insert x l = l :=
--- --if_pos h
--- -- lemma doubleton_eq [DecidableEq α] {x y : α} (h : x ≠ y) : ({x, y} : List α) = [x, y] := by
--- --   rw [insert_neg, singleton_eq]; rwa [singleton_eq, mem_singleton]
-
 -- /-! ### bounded quantifiers over Lists -/
-
--- theorem forall_mem_of_forall_mem_cons {p : α → Prop} {a : α} {l : List α}
---     (h : ∀ x, x ∈ a :: l → p x) :
---   ∀ x, x ∈ l → p x :=
--- (forall_mem_cons.1 h).2
-
--- theorem not_exists_mem_nil (p : α → Prop) : ¬ ∃ x ∈ @nil α, p x := exists_mem_nil _
 
 -- alias exists_mem_cons ↔ or_exists_of_exists_mem_cons _
 
 -- theorem exists_mem_cons_of {p : α → Prop} {a : α} (l : List α) (h : p a) :
 --   ∃ x ∈ a :: l, p x :=
 -- exists_mem_cons.2 (.inl h)
-
--- theorem exists_mem_cons_of_exists {p : α → Prop} {a : α} {l : List α}
---     (h : ∃ x ∈ l, p x) : ∃ x ∈ a :: l, p x :=
 -- exists_mem_cons.2 (.inr h)
 
 -- /-! ### List subset -/
-
--- theorem cons_subset_of_subset_of_mem {a : α} {l m : List α}
---   (ainm : a ∈ m) (lsubm : l ⊆ m) : a::l ⊆ m :=
--- cons_subset.2 ⟨ainm, lsubm⟩
-
--- theorem append_subset_of_subset_of_subset {l₁ l₂ l : List α} (l₁subl : l₁ ⊆ l) (l₂subl : l₂ ⊆ l) :
---   l₁ ++ l₂ ⊆ l :=
--- fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
-
--- alias subset_nil ↔ eq_nil_of_subset_nil _
 
 -- -- theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : injective f) :
 -- --   map f l₁ ⊆ map f l₂ ↔ l₁ ⊆ l₂ :=
