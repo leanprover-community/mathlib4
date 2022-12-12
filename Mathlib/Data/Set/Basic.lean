@@ -142,12 +142,16 @@ alias lt_iff_ssubset ↔ _root_.has_lt.lt.ssubset _root_.has_ssubset.ssubset.lt
 
 -- Porting note: I've introduced this abbreviation, with the `@[coe]` attribute,
 -- so that `norm_cast` has something to index on.
-/-- Given the set `s`, `type_of_Set s` is the `Type` of element of `s`. -/
-@[coe] def type_of_Set (s : Set α) : Type u := { x // x ∈ s }
+-- It is currently an abbreviation so that instance coming from `Subtype` are available.
+-- If you're interested in making it a `def`, as it probably should be,
+-- you'll then need to create additional instances (and possibly prove lemmas about them).
+-- The first error should appear below at `monotoneOn_iff_monotone`.
+/-- Given the set `s`, `Elem s` is the `Type` of element of `s`. -/
+@[coe, reducible] def Elem (s : Set α) : Type u := { x // x ∈ s }
 
 /-- Coercion from a set to the corresponding subtype. -/
 instance {α : Type u} : CoeSort (Set α) (Type u) :=
-  ⟨type_of_Set⟩
+  ⟨Elem⟩
 
 -- Porting note: the `lift` tactic has not been ported.
 -- instance PiSetCoe.canLift (ι : Type u) (α : ∀ i : ι, Type v) [ne : ∀ i, Nonempty (α i)]
@@ -173,9 +177,9 @@ theorem Set.coe_eq_subtype (s : Set α) : ↥s = { x // x ∈ s } :=
 #align set.coe_eq_subtype Set.coe_eq_subtype
 
 @[simp]
-theorem Set.coe_set_of (p : α → Prop) : ↥{ x | p x } = { x // p x } :=
+theorem Set.coe_setOf (p : α → Prop) : ↥{ x | p x } = { x // p x } :=
   rfl
-#align set.coe_set_of Set.coe_set_of
+#align set.coe_set_of Set.coe_setOf
 
 -- Porting: removed `simp` because `simp` can prove it
 theorem SetCoe.forall {s : Set α} {p : s → Prop} : (∀ x : s, p x) ↔ ∀ (x) (h : x ∈ s), p ⟨x, h⟩ :=
@@ -249,12 +253,12 @@ theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) 
   ⟨fun h b a ha => h a ha b, fun h a ha b => h b a ha⟩
 #align set.forall_in_swap Set.forall_in_swap
 
-/-! ### Lemmas about `mem` and `set_of` -/
+/-! ### Lemmas about `mem` and `setOf` -/
 
 
-theorem mem_set_of {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a :=
+theorem mem_setOf {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a :=
   Iff.rfl
-#align set.mem_set_of Set.mem_set_of
+#align set.mem_set_of Set.mem_setOf
 
 /-- If `h : a ∈ {x | p x}` then `h.out : p x`. These are definitionally equal, but this can
 nevertheless be useful for various reasons, e.g. to apply further projection notation or in an
@@ -263,43 +267,43 @@ theorem _root_.Membership.Mem.out {p : α → Prop} {a : α} (h : a ∈ { x | p 
   h
 #align has_mem.mem.out Membership.Mem.out
 
-theorem nmem_set_of_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a :=
+theorem nmem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a :=
   Iff.rfl
-#align set.nmem_set_of_iff Set.nmem_set_of_iff
+#align set.nmem_set_of_iff Set.nmem_setOf_iff
 
 @[simp]
-theorem set_of_mem_eq {s : Set α} : { x | x ∈ s } = s :=
+theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s :=
   rfl
-#align set.set_of_mem_eq Set.set_of_mem_eq
+#align set.set_of_mem_eq Set.setOf_mem_eq
 
-theorem set_of_set {s : Set α} : setOf s = s :=
+theorem setOf_set {s : Set α} : setOf s = s :=
   rfl
-#align set.set_of_set Set.set_of_set
+#align set.set_of_set Set.setOf_set
 
-theorem set_of_app_iff {p : α → Prop} {x : α} : { x | p x } x ↔ p x :=
+theorem setOf_app_iff {p : α → Prop} {x : α} : { x | p x } x ↔ p x :=
   Iff.rfl
-#align set.set_of_app_iff Set.set_of_app_iff
+#align set.set_of_app_iff Set.setOf_app_iff
 
 theorem mem_def {a : α} {s : Set α} : a ∈ s ↔ s a :=
   Iff.rfl
 #align set.mem_def Set.mem_def
 
-theorem set_of_bijective : Bijective (setOf : (α → Prop) → Set α) :=
+theorem setOf_bijective : Bijective (setOf : (α → Prop) → Set α) :=
   bijective_id
-#align set.set_of_bijective Set.set_of_bijective
+#align set.set_of_bijective Set.setOf_bijective
 
 @[simp]
-theorem set_of_subset_set_of {p q : α → Prop} : { a | p a } ⊆ { a | q a } ↔ ∀ a, p a → q a :=
+theorem setOf_subset_setOf {p q : α → Prop} : { a | p a } ⊆ { a | q a } ↔ ∀ a, p a → q a :=
   Iff.rfl
-#align set.set_of_subset_set_of Set.set_of_subset_set_of
+#align set.set_of_subset_set_of Set.setOf_subset_setOf
 
-theorem set_of_and {p q : α → Prop} : { a | p a ∧ q a } = { a | p a } ∩ { a | q a } :=
+theorem setOf_and {p q : α → Prop} : { a | p a ∧ q a } = { a | p a } ∩ { a | q a } :=
   rfl
-#align set.set_of_and Set.set_of_and
+#align set.set_of_and Set.setOf_and
 
-theorem set_of_or {p q : α → Prop} : { a | p a ∨ q a } = { a | p a } ∪ { a | q a } :=
+theorem setOf_or {p q : α → Prop} : { a | p a ∨ q a } = { a | p a } ∪ { a | q a } :=
   rfl
-#align set.set_of_or Set.set_of_or
+#align set.set_of_or Set.setOf_or
 
 /-! ### Subset and strict subset relations -/
 
@@ -557,9 +561,9 @@ theorem mem_empty_iff_false (x : α) : x ∈ (∅ : Set α) ↔ False :=
 #align set.mem_empty_iff_false Set.mem_empty_iff_false
 
 @[simp]
-theorem set_of_false : { _a : α | False } = ∅ :=
+theorem setOf_false : { _a : α | False } = ∅ :=
   rfl
-#align set.set_of_false Set.set_of_false
+#align set.set_of_false Set.setOf_false
 
 @[simp]
 theorem empty_subset (s : Set α) : ∅ ⊆ s :=
@@ -582,15 +586,15 @@ theorem eq_empty_of_subset_empty {s : Set α} : s ⊆ ∅ → s = ∅ :=
   subset_empty_iff.1
 #align set.eq_empty_of_subset_empty Set.eq_empty_of_subset_empty
 
-theorem eq_empty_of_is_empty [IsEmpty α] (s : Set α) : s = ∅ :=
+theorem eq_empty_of_isEmpty [IsEmpty α] (s : Set α) : s = ∅ :=
   eq_empty_of_subset_empty fun x _ => isEmptyElim x
-#align set.eq_empty_of_is_empty Set.eq_empty_of_is_empty
+#align set.eq_empty_of_is_empty Set.eq_empty_of_isEmpty
 
 /-- There is exactly one set of a type that is empty. -/
 instance uniqueEmpty [IsEmpty α] :
     Unique (Set α) where
   default := ∅
-  uniq := eq_empty_of_is_empty
+  uniq := eq_empty_of_isEmpty
 #align set.unique_empty Set.uniqueEmpty
 
 /-- See also `Set.nonempty_iff_ne_empty`. -/
@@ -610,9 +614,9 @@ theorem not_nonempty_empty : ¬(∅ : Set α).Nonempty := fun ⟨_, hx⟩ => hx
 #align set.not_nonempty_empty Set.not_nonempty_empty
 
 @[simp]
-theorem is_empty_coe_sort {s : Set α} : IsEmpty (↥s) ↔ s = ∅ :=
+theorem isEmpty_coe_sort {s : Set α} : IsEmpty (↥s) ↔ s = ∅ :=
   not_iff_not.1 <| by simpa using nonempty_iff_ne_empty
-#align set.is_empty_coe_sort Set.is_empty_coe_sort
+#align set.is_empty_coe_sort Set.isEmpty_coe_sort
 
 theorem eq_empty_or_nonempty (s : Set α) : s = ∅ ∨ s.Nonempty :=
   or_iff_not_imp_left.2 nonempty_iff_ne_empty.2
@@ -647,9 +651,9 @@ Mathematically it is the same as `α` but it has a different type.
 
 
 @[simp]
-theorem set_of_true : { _x : α | True } = univ :=
+theorem setOf_true : { _x : α | True } = univ :=
   rfl
-#align set.set_of_true Set.set_of_true
+#align set.set_of_true Set.setOf_true
 
 @[simp]
 theorem mem_univ (x : α) : x ∈ @univ α :=
@@ -769,13 +773,13 @@ theorem union_assoc (a b c : Set α) : a ∪ b ∪ c = a ∪ (b ∪ c) :=
   ext fun _ => or_assoc
 #align set.union_assoc Set.union_assoc
 
-instance union_is_assoc : IsAssociative (Set α) (· ∪ ·) :=
+instance union_isAssoc : IsAssociative (Set α) (· ∪ ·) :=
   ⟨union_assoc⟩
-#align set.union_is_assoc Set.union_is_assoc
+#align set.union_is_assoc Set.union_isAssoc
 
-instance union_is_comm : IsCommutative (Set α) (· ∪ ·) :=
+instance union_isComm : IsCommutative (Set α) (· ∪ ·) :=
   ⟨union_comm⟩
-#align set.union_is_comm Set.union_is_comm
+#align set.union_is_comm Set.union_isComm
 
 theorem union_left_comm (s₁ s₂ s₃ : Set α) : s₁ ∪ (s₂ ∪ s₃) = s₂ ∪ (s₁ ∪ s₃) :=
   ext fun _ => or_left_comm
@@ -919,13 +923,13 @@ theorem inter_assoc (a b c : Set α) : a ∩ b ∩ c = a ∩ (b ∩ c) :=
   ext fun _ => and_assoc
 #align set.inter_assoc Set.inter_assoc
 
-instance inter_is_assoc : IsAssociative (Set α) (· ∩ ·) :=
+instance inter_isAssoc : IsAssociative (Set α) (· ∩ ·) :=
   ⟨inter_assoc⟩
-#align set.inter_is_assoc Set.inter_is_assoc
+#align set.inter_is_assoc Set.inter_isAssoc
 
-instance inter_is_comm : IsCommutative (Set α) (· ∩ ·) :=
+instance inter_isComm : IsCommutative (Set α) (· ∩ ·) :=
   ⟨inter_comm⟩
-#align set.inter_is_comm Set.inter_is_comm
+#align set.inter_is_comm Set.inter_isComm
 
 theorem inter_left_comm (s₁ s₂ s₃ : Set α) : s₁ ∩ (s₂ ∩ s₃) = s₂ ∩ (s₁ ∩ s₃) :=
   ext fun _ => and_left_comm
@@ -1236,14 +1240,14 @@ theorem mem_singleton_iff {a b : α} : a ∈ ({b} : Set α) ↔ a = b :=
 #align set.mem_singleton_iff Set.mem_singleton_iff
 
 @[simp]
-theorem set_of_eq_eq_singleton {a : α} : { n | n = a } = {a} :=
+theorem setOf_eq_eq_singleton {a : α} : { n | n = a } = {a} :=
   rfl
-#align set.set_of_eq_eq_singleton Set.set_of_eq_eq_singleton
+#align set.set_of_eq_eq_singleton Set.setOf_eq_eq_singleton
 
 @[simp]
-theorem set_of_eq_eq_singleton' {a : α} : { x | a = x } = {a} :=
+theorem setOf_eq_eq_singleton' {a : α} : { x | a = x } = {a} :=
   ext fun _ => eq_comm
-#align set.set_of_eq_eq_singleton' Set.set_of_eq_eq_singleton'
+#align set.set_of_eq_eq_singleton' Set.setOf_eq_eq_singleton'
 
 -- TODO: again, annotation needed
 --Porting note: removed `simp` attribute
@@ -1455,9 +1459,9 @@ theorem sep_or : { x ∈ s | p x ∨ q x } = { x ∈ s | p x } ∪ { x ∈ s | q
 #align set.sep_or Set.sep_or
 
 @[simp]
-theorem sep_set_of : { x ∈ { y | p y } | q x } = { x | p x ∧ q x } :=
+theorem sep_setOf : { x ∈ { y | p y } | q x } = { x | p x ∧ q x } :=
   rfl
-#align set.sep_set_of Set.sep_set_of
+#align set.sep_set_of Set.sep_setOf
 
 end Sep
 
@@ -1519,9 +1523,9 @@ theorem mem_compl {s : Set α} {x : α} (h : x ∉ s) : x ∈ sᶜ :=
   h
 #align set.mem_compl Set.mem_compl
 
-theorem compl_set_of {α} (p : α → Prop) : { a | p a }ᶜ = { a | ¬p a } :=
+theorem compl_setOf {α} (p : α → Prop) : { a | p a }ᶜ = { a | ¬p a } :=
   rfl
-#align set.compl_set_of Set.compl_set_of
+#align set.compl_set_of Set.compl_setOf
 
 theorem not_mem_of_mem_compl {s : Set α} {x : α} (h : x ∈ sᶜ) : x ∉ s :=
   h
@@ -2469,6 +2473,7 @@ theorem nontrivial_of_nontrivial (hs : s.Nontrivial) : Nontrivial α :=
 #align set.nontrivial_of_nontrivial Set.nontrivial_of_nontrivial
 
 -- Porting note: simp_rw broken here
+-- Perhaps review after https://github.com/leanprover/lean4/issues/1937?
 /-- `s`, coerced to a type, is a nontrivial type if and only if `s` is a nontrivial set. -/
 @[simp, norm_cast]
 theorem nontrivial_coe_sort {s : Set α} : Nontrivial s ↔ s.Nontrivial := by
@@ -2476,27 +2481,10 @@ theorem nontrivial_coe_sort {s : Set α} : Nontrivial s ↔ s.Nontrivial := by
   --   Subtype.mk_eq_mk]
   rw [← nontrivial_univ_iff, Set.Nontrivial, Set.Nontrivial]
   apply Iff.intro
-  { intro h
-    rcases h with ⟨x, _, y, _, hxy⟩
-    use x
-    use Subtype.prop x
-    use y
-    use Subtype.prop y
-    intro h
-    exact hxy (Subtype.coe_injective h) }
-  { intro h
-    rcases h with ⟨x, hx, y, hy, hxy⟩
-    rw [SetCoe.exists]
-    use x
-    use hx
-    use mem_univ _
-    rw [SetCoe.exists]
-    use y
-    use hy
-    use mem_univ _
-    intro h
-    rw [Subtype.mk_eq_mk] at h
-    exact hxy h }
+  · rintro ⟨x, _, y, _, hxy⟩
+    exact ⟨x, Subtype.prop x, y, Subtype.prop y, fun h => hxy (Subtype.coe_injective h)⟩
+  · rintro ⟨x, hx, y, hy, hxy⟩
+    exact ⟨⟨x, hx⟩, mem_univ _, ⟨y, hy⟩, mem_univ _, Subtype.mk_eq_mk.not.mpr hxy⟩
 
 #align set.nontrivial_coe_sort Set.nontrivial_coe_sort
 
@@ -2528,34 +2516,37 @@ alias not_nontrivial_iff ↔ _ Subsingleton.not_nontrivial
 alias not_subsingleton_iff ↔ _ Nontrivial.not_subsingleton
 
 theorem univ_eq_true_false : univ = ({True, False} : Set Prop) :=
-  Eq.symm <| eq_univ_of_forall <| fun x => by classical
-    if h : x then
-      simp [h]
-    else
-      simp [h]
+  Eq.symm <| eq_univ_of_forall <| fun x => by
+    rw [mem_insert_iff, mem_singleton_iff]
+    exact Classical.propComplete x
 #align set.univ_eq_true_false Set.univ_eq_true_false
 
 section Preorder
 
 variable [Preorder α] [Preorder β] {f : α → β}
 
+-- Porting note:
+-- If we decide we want `Elem` to semireducible rather than reducible, we will need:
+--   instance : Preorder (↑s) := Subtype.instPreorderSubtype _
+-- here, along with appropriate lemmas.
+
 theorem monotoneOn_iff_monotone : MonotoneOn f s ↔
-  (@Monotone _ _ (Subtype.instPreorderSubtype _) _ fun a : s => f a) := by
+    Monotone fun a : s => f a := by
   simp [Monotone, MonotoneOn]
 #align set.monotone_on_iff_monotone Set.monotoneOn_iff_monotone
 
 theorem antitoneOn_iff_antitone : AntitoneOn f s ↔
-  @Antitone _ _ (Subtype.instPreorderSubtype _) _ fun a : s => f a := by
+    Antitone fun a : s => f a := by
   simp [Antitone, AntitoneOn]
 #align set.antitone_on_iff_antitone Set.antitoneOn_iff_antitone
 
 theorem strictMonoOn_iff_strictMono : StrictMonoOn f s ↔
-  @StrictMono _ _ (Subtype.instPreorderSubtype _) _ fun a : s => f a := by
+    StrictMono fun a : s => f a := by
   simp [StrictMono, StrictMonoOn]
 #align set.strict_mono_on_iff_strict_mono Set.strictMonoOn_iff_strictMono
 
 theorem strictAntiOn_iff_strictAnti : StrictAntiOn f s ↔
-  @StrictAnti _ _ (Subtype.instPreorderSubtype _) _ fun a : s => f a := by
+    StrictAnti fun a : s => f a := by
   simp [StrictAnti, StrictAntiOn]
 #align set.strict_anti_on_iff_strict_anti Set.strictAntiOn_iff_strictAnti
 
