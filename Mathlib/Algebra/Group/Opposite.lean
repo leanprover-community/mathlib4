@@ -137,7 +137,6 @@ instance [CancelCommMonoid α] : CancelCommMonoid αᵐᵒᵖ :=
 @[to_additive AddOpposite.subNegMonoid]
 instance [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ :=
   { instMonoidMulOpposite α, instInvMulOpposite α with
-    div := fun x y => x * y⁻¹
     zpow := fun n x => op <| x.unop ^ n,
     zpow_zero' := fun x => unop_injective <| DivInvMonoid.zpow_zero' x.unop,
     zpow_succ' := fun n x =>
