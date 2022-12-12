@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2016 Jeremy Avigad. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jeremy Avigad
+-/
+
 import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Ring.Divisibility
 import Mathlib.Algebra.Order.Group.Abs
@@ -53,7 +59,8 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
 theorem nat_abs_abs (a : ℤ) : natAbs (|a|) = natAbs a := by rw [abs_eq_natAbs] ; rfl
 #align int.nat_abs_abs Int.nat_abs_abs
 
-theorem sign_mul_abs (a : ℤ) : sign a * |a| = a := by rw [abs_eq_natAbs, sign_mul_natAbs a]
+theorem sign_mul_abs (a : ℤ) : sign a * |a| = a := by
+  rw [abs_eq_natAbs, ←ofNat_eq_cast, sign_mul_natAbs a]
 #align int.sign_mul_abs Int.sign_mul_abs
 
 theorem coe_nat_eq_zero {n : ℕ} : (n : ℤ) = 0 ↔ n = 0 :=
@@ -82,17 +89,8 @@ theorem pred_self_lt (a : ℤ) : pred a < a :=
   sub_lt_self _ zero_lt_one
 #align int.pred_self_lt Int.pred_self_lt
 
-#print Int.lt_add_one_iff /-
-theorem lt_add_one_iff {a b : ℤ} : a < b + 1 ↔ a ≤ b :=
-  add_le_add_iff_right _
 #align int.lt_add_one_iff Int.lt_add_one_iff
--/
-
-#print Int.le_add_one /-
-theorem le_add_one {a b : ℤ} (h : a ≤ b) : a ≤ b + 1 :=
-  le_of_lt (Int.lt_add_one_iff.mpr h)
 #align int.le_add_one Int.le_add_one
--/
 
 theorem sub_one_lt_iff {a b : ℤ} : a - 1 < b ↔ a ≤ b :=
   sub_lt_iff_lt_add.trans lt_add_one_iff
@@ -104,9 +102,11 @@ theorem le_sub_one_iff {a b : ℤ} : a ≤ b - 1 ↔ a < b :=
 
 @[simp]
 theorem abs_lt_one_iff {a : ℤ} : |a| < 1 ↔ a = 0 :=
-  ⟨fun a0 =>
+  ⟨fun a0 => by
     let ⟨hn, hp⟩ := abs_lt.mp a0
-    (le_of_lt_add_one hp).antisymm hn,
+    rw [←zero_add 1, lt_add_one_iff] at hp
+    -- Defeq abuse: `hn : -1 < a` but should be `hn : 0 λ a`.
+    exact hp.antisymm hn,
     fun a0 => (abs_eq_zero.mpr a0).le.trans_lt zero_lt_one⟩
 #align int.abs_lt_one_iff Int.abs_lt_one_iff
 
@@ -145,12 +145,12 @@ where
 /-- See `int.induction_on'` for an induction in both directions. -/
 protected theorem le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)
     (h1 : ∀ n : ℤ, m ≤ n → P n → P (n + 1)) (n : ℤ) : m ≤ n → P n := by
-  apply Int.inductionOn' n m
+  refine Int.inductionOn' n m ?_ ?_ ?_
   · intro
     exact h0
   · intro k hle hi _
     exact h1 k hle (hi hle)
-  · intro _ hle _ hle'
+  · intro k hle _ hle'
     exfalso
     exact lt_irrefl k (le_sub_one_iff.mp (hle.trans hle'))
 #align int.le_induction Int.le_induction
@@ -158,10 +158,10 @@ protected theorem le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)
 /-- See `int.induction_on'` for an induction in both directions. -/
 protected theorem le_induction_down {P : ℤ → Prop} {m : ℤ} (h0 : P m)
     (h1 : ∀ n : ℤ, n ≤ m → P n → P (n - 1)) (n : ℤ) : n ≤ m → P n := by
-  apply Int.inductionOn' n m
+  refine Int.inductionOn' n m ?_ ?_ ?_
   · intro
     exact h0
-  · intro _ hle _ hle'
+  · intro k hle _ hle'
     exfalso
     exact lt_irrefl k (add_one_le_iff.mp (hle'.trans hle))
   · intro k hle hi _
@@ -173,14 +173,14 @@ protected theorem le_induction_down {P : ℤ → Prop} {m : ℤ} (h0 : P m)
 
 variable {a b : ℤ} {n : ℕ}
 
-attribute [simp] nat_abs nat_abs_of_nat nat_abs_zero nat_abs_one
+attribute [simp] natAbs natAbs_ofNat natAbs_zero natAbs_one
 
 @[simp]
 theorem nat_abs_dvd_iff_dvd {a b : ℤ} : a.natAbs ∣ b.natAbs ↔ a ∣ b := by
-  refine' ⟨_, fun ⟨k, hk⟩ => ⟨k.natAbs, hk.symm ▸ nat_abs_mul a k⟩⟩
+  refine' ⟨_, fun ⟨k, hk⟩ => ⟨k.natAbs, hk.symm ▸ natAbs_mul a k⟩⟩
   rintro ⟨k, hk⟩
-  rw [← nat_abs_of_nat k, ← nat_abs_mul, nat_abs_eq_nat_abs_iff, neg_mul_eq_mul_neg] at hk
-  cases hk <;> exact ⟨_, hk⟩
+  rw [← natAbs_ofNat k, ← natAbs_mul, natAbs_eq_natAbs_iff, neg_mul_eq_mul_neg] at hk
+  obtain hk|hk := hk <;> exact ⟨_, hk⟩
 #align int.nat_abs_dvd_iff_dvd Int.nat_abs_dvd_iff_dvd
 
 /-! ### `/`  -/
@@ -198,7 +198,7 @@ protected theorem div_nonpos {a b : ℤ} (Ha : 0 ≤ a) (Hb : b ≤ 0) : a / b �
 #align int.div_nonpos Int.div_nonpos
 
 theorem div_eq_zero_of_lt_abs {a b : ℤ} (H1 : 0 ≤ a) (H2 : a < |b|) : a / b = 0 :=
-  match b, |b|, abs_eq_nat_abs b, H2 with
+  match b, |b|, abs_eq_natAbs b, H2 with
   | (n : ℕ), _, rfl, H2 => div_eq_zero_of_lt H1 H2
   | -[n+1], _, rfl, H2 => neg_injective <| by rw [← Int.div_neg] <;> exact div_eq_zero_of_lt H1 H2
 #align int.div_eq_zero_of_lt_abs Int.div_eq_zero_of_lt_abs
@@ -279,7 +279,6 @@ protected theorem add_div_of_dvd_right {a b c : ℤ} (H : c ∣ b) : (a + b) / c
   · simp [h1]
   cases' H with k hk
   rw [hk]
-  change c ≠ 0 at h1
   rw [mul_comm c k, Int.add_mul_div_right _ _ h1, ← zero_add (k * c), Int.add_mul_div_right _ _ h1,
     Int.zero_div, zero_add]
 #align int.add_div_of_dvd_right Int.add_div_of_dvd_right
