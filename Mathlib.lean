@@ -175,6 +175,7 @@ import Mathlib.Data.Quot
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order
+import Mathlib.Data.Set.Basic
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.Sigma.Order
