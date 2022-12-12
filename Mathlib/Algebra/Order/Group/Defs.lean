@@ -48,7 +48,7 @@ instance OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGr
       (· ≤ ·) where elim a b c bc := OrderedCommGroup.mul_le_mul_left b c bc a
 #align ordered_comm_group.to_covariant_class_left_le OrderedCommGroup.to_covariantClass_left_le
 
--- see Note [lower instance priority]
+-- See note [lower instance priority]
 @[to_additive OrderedAddCommGroup.to_OrderedCancelAddCommMonoid]
 instance (priority := 100) OrderedCommGroup.to_OrderedCancelCommMonoid [OrderedCommGroup α] :
     OrderedCancelCommMonoid α :=
