@@ -805,11 +805,13 @@ theorem preimage_eq_preimage' {s t : Set α} {f : β → α} (hs : s ⊆ range f
   rintro rfl; rfl
 #align set.preimage_eq_preimage' Set.preimage_eq_preimage'
 
+-- Porting note:
 -- @[simp] `simp` can prove this
 theorem preimage_inter_range {f : α → β} {s : Set β} : f ⁻¹' (s ∩ range f) = f ⁻¹' s :=
   Set.ext fun x => and_iff_left ⟨x, rfl⟩
 #align set.preimage_inter_range Set.preimage_inter_range
 
+-- Porting note:
 -- @[simp] `simp` can prove this
 theorem preimage_range_inter {f : α → β} {s : Set β} : f ⁻¹' (range f ∩ s) = f ⁻¹' s := by
   rw [inter_comm, preimage_inter_range]
@@ -1161,6 +1163,7 @@ theorem range_some_inter_none (α : Type _) : range (some : α → Option α) �
   (isCompl_range_some_none α).inf_eq_bot
 #align set.range_some_inter_none Set.range_some_inter_none
 
+-- Porting note:
 -- @[simp] `simp` can prove this
 theorem range_some_union_none (α : Type _) : range (some : α → Option α) ∪ {none} = univ :=
   (isCompl_range_some_none α).sup_eq_top
@@ -1396,6 +1399,7 @@ theorem preimage_coe_eq_preimage_coe_iff {s t u : Set α} :
   rw [← image_preimage_coe, ← image_preimage_coe, coe_injective.image_injective.eq_iff]
 #align subtype.preimage_coe_eq_preimage_coe_iff Subtype.preimage_coe_eq_preimage_coe_iff
 
+-- Porting note:
 -- @[simp] `simp` can prove this
 theorem preimage_coe_inter_self (s t : Set α) :
   (Subtype.val : s → α) ⁻¹' (t ∩ s) = Subtype.val ⁻¹' t := by
@@ -1427,15 +1431,15 @@ theorem preimage_coe_eq_empty {s t : Set α} : (Subtype.val : s → α) ⁻¹' t
   simp [← not_nonempty_iff_eq_empty, preimage_coe_nonempty]
 #align subtype.preimage_coe_eq_empty Subtype.preimage_coe_eq_empty
 
+-- Porting note:
 -- @[simp] `simp` can prove this
 theorem preimage_coe_compl (s : Set α) : (Subtype.val : s → α) ⁻¹' sᶜ = ∅ :=
   preimage_coe_eq_empty.2 (inter_compl_self s)
 #align subtype.preimage_coe_compl Subtype.preimage_coe_compl
 
--- Porting note: why can't `HasCompl` be inferred if we write `sᶜ`?
 @[simp]
 theorem preimage_coe_compl' (s : Set α) :
-  (Subtype.val : @HasCompl.compl (Set α) BooleanAlgebra.toHasCompl s → α) ⁻¹' s = ∅ :=
+  (Subtype.val : (sᶜ : Set α) → α) ⁻¹' s = ∅ :=
   preimage_coe_eq_empty.2 (compl_inter_self s)
 #align subtype.preimage_coe_compl' Subtype.preimage_coe_compl'
 
@@ -1477,7 +1481,7 @@ namespace Set
 
 open Function
 
-/-! ### Injectivity and sur<jectivity lemmas for image and preimage -/
+/-! ### Injectivity and surjectivity lemmas for image and preimage -/
 
 
 section ImagePreimage
