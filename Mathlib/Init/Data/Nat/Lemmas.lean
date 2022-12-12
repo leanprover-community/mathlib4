@@ -55,11 +55,15 @@ Nat.strong_induction_on a $ λ n =>
 
 /- mod -/
 
--- TODO mod_core_congr, mod_def
+-- TODO mod_core_congr
+
+#align nat.mod_def Nat.mod_eq
 
 /- div & mod -/
 
--- TODO div_core_congr, div_def
+-- TODO div_core_congr
+
+#align nat.div_def Nat.div_eq
 
 /- div -/
 

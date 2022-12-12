@@ -118,7 +118,8 @@ theorem succ_div : ∀ a b : ℕ, (a + 1) / b = a / b + if b ∣ a + 1 then 1 el
     have hb2 : b + 2 > 1 := by simp
     simp [ne_of_gt hb2, div_eq_of_lt hb2]
   | a + 1, b + 1 => by
-    rw [Nat.div_eq]; conv_rhs => rw [Nat.div_eq]
+    rw [Nat.div_eq]
+    conv_rhs => rw [Nat.div_eq]
     by_cases hb_eq_a : b = a + 1
     · simp [hb_eq_a, le_refl]
     by_cases hb_le_a1 : b ≤ a + 1
