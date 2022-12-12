@@ -142,12 +142,16 @@ alias lt_iff_ssubset ↔ _root_.has_lt.lt.ssubset _root_.has_ssubset.ssubset.lt
 
 -- Porting note: I've introduced this abbreviation, with the `@[coe]` attribute,
 -- so that `norm_cast` has something to index on.
+-- It is currently an abbreviation so that instance coming from `Subtype` are available.
+-- If you're interested in making it a `def`, as it probably should be,
+-- you'll then need to create additional instances (and possibly prove lemmas about them).
+-- The first error should appear below at `monotoneOn_iff_monotone`.
 /-- Given the set `s`, `type_of_Set s` is the `Type` of element of `s`. -/
-@[coe] def type_of_Set (s : Set α) : Type u := { x // x ∈ s }
+@[coe] abbrev typeOfSet (s : Set α) : Type u := { x // x ∈ s }
 
 /-- Coercion from a set to the corresponding subtype. -/
 instance {α : Type u} : CoeSort (Set α) (Type u) :=
-  ⟨type_of_Set⟩
+  ⟨typeOfSet⟩
 
 -- Porting note: the `lift` tactic has not been ported.
 -- instance PiSetCoe.canLift (ι : Type u) (α : ∀ i : ι, Type v) [ne : ∀ i, Nonempty (α i)]
@@ -2520,23 +2524,28 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {f : α → β}
 
+-- Porting note:
+-- If we decide we want `typeOfSet` to be a `def` rather than an `abbrev`, we will need:
+--   instance : Preorder (↑s) := Subtype.instPreorderSubtype _
+-- here, along with appropriate lemmas.
+
 theorem monotoneOn_iff_monotone : MonotoneOn f s ↔
-  (@Monotone _ _ (Subtype.instPreorderSubtype _) _ fun a : s => f a) := by
+    Monotone fun a : s => f a := by
   simp [Monotone, MonotoneOn]
 #align set.monotone_on_iff_monotone Set.monotoneOn_iff_monotone
 
 theorem antitoneOn_iff_antitone : AntitoneOn f s ↔
-  @Antitone _ _ (Subtype.instPreorderSubtype _) _ fun a : s => f a := by
+    Antitone fun a : s => f a := by
   simp [Antitone, AntitoneOn]
 #align set.antitone_on_iff_antitone Set.antitoneOn_iff_antitone
 
 theorem strictMonoOn_iff_strictMono : StrictMonoOn f s ↔
-  @StrictMono _ _ (Subtype.instPreorderSubtype _) _ fun a : s => f a := by
+    StrictMono fun a : s => f a := by
   simp [StrictMono, StrictMonoOn]
 #align set.strict_mono_on_iff_strict_mono Set.strictMonoOn_iff_strictMono
 
 theorem strictAntiOn_iff_strictAnti : StrictAntiOn f s ↔
-  @StrictAnti _ _ (Subtype.instPreorderSubtype _) _ fun a : s => f a := by
+    StrictAnti fun a : s => f a := by
   simp [StrictAnti, StrictAntiOn]
 #align set.strict_anti_on_iff_strict_anti Set.strictAntiOn_iff_strictAnti
 
