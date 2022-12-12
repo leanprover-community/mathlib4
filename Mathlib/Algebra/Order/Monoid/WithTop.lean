@@ -358,7 +358,8 @@ instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (
       simp only [some_eq_coe, ← coe_add, coe_le_coe] at h⊢
       exact add_le_add_left h c }
 
-instance [LinearOrderedAddCommMonoid α] : LinearOrderedAddCommMonoidWithTop (WithTop α) :=
+instance linearOrderedAddCommMonoidWithTop [LinearOrderedAddCommMonoid α] :
+    LinearOrderedAddCommMonoidWithTop (WithTop α) :=
   { WithTop.orderTop, WithTop.linearOrder, WithTop.orderedAddCommMonoid with
     top_add' := WithTop.top_add }
 
