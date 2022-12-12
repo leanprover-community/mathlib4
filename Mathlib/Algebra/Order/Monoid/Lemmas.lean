@@ -6,6 +6,8 @@ Yuyang Zhao
 -/
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Init.Data.Ordering.Basic
+import Mathlib.Order.MinMax
+import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Use
 
@@ -249,6 +251,14 @@ theorem mul_right_cancel'' [ContravariantClass α α (swap (· * ·)) (· ≤ ·
 
 end PartialOrder
 
+section LinearOrder
+variable [LinearOrder α] {a b c d : α} [CovariantClass α α (· * ·) (· < ·)]
+  [CovariantClass α α (swap (· * ·)) (· < ·)]
+
+@[to_additive] lemma min_le_max_of_mul_le_mul (h : a * b ≤ c * d) : min a b ≤ max c d :=
+by simp_rw [min_le_iff, le_max_iff]; contrapose! h; exact mul_lt_mul_of_lt_of_lt h.1.1 h.2.2
+
+end LinearOrder
 end Mul
 
 -- using one
