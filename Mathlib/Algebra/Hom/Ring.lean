@@ -464,8 +464,10 @@ theorem coe_monoid_hom_mk (f : α → β) (h₁ h₂ h₃ h₄) :
   rfl
 #align ring_hom.coe_monoid_hom_mk RingHom.coe_monoid_hom_mk
 
--- Porting note: can be proven with `by dsimp only`
-#noalign ring_hom.coe_add_monoid_hom
+@[simp, norm_cast]
+theorem coe_add_monoid_hom (f : α →+* β) : (f : α →+ β) = f :=
+  rfl
+#align ring_hom.coe_add_monoid_hom RingHom.coe_add_monoid_hom
 
 @[simp]
 theorem to_add_monoid_hom_eq_coe (f : α →+* β) : f.toAddMonoidHom = f :=
@@ -527,12 +529,18 @@ theorem mk_coe (f : α →+* β) (h₁ h₂ h₃ h₄) : RingHom.mk ⟨⟨f, h�
   ext fun _ => rfl
 #align ring_hom.mk_coe RingHom.mk_coe
 
-theorem coe_add_monoid_hom_injective : Injective (coe : (α →+* β) → α →+ β) := fun f g h =>
-  ext <| AddMonoidHom.congr_fun h
+theorem coe_add_monoid_hom_injective : Injective (fun f : α →+* β => (f : α →+ β)) := fun _ _ h =>
+  by
+    rw [AddMonoidHom.mk.injEq, ZeroHom.mk.injEq, FunLike.coe_fn_eq] at h
+    exact h
+  -- Porting note: deprecated `ext <| fun x => --AddMonoidHom.congr_fun h`
 #align ring_hom.coe_add_monoid_hom_injective RingHom.coe_add_monoid_hom_injective
 
-theorem coe_monoid_hom_injective : Injective (coe : (α →+* β) → α →* β) := fun f g h =>
-  ext <| MonoidHom.congr_fun h
+theorem coe_monoid_hom_injective : Injective (fun f : α →+* β => (f : α →* β)) := fun _ _ h =>
+  by
+    rw [MonoidHom.mk.injEq, OneHom.mk.injEq, FunLike.coe_fn_eq] at h
+    exact h
+  -- Porting note: deprecated `ext <| MonoidHom.congr_fun h`
 #align ring_hom.coe_monoid_hom_injective RingHom.coe_monoid_hom_injective
 
 /-- Ring homomorphisms map zero to zero. -/
@@ -555,24 +563,24 @@ protected theorem map_mul (f : α →+* β) : ∀ a b, f (a * b) = f a * f b :=
   map_mul f
 #align ring_hom.map_mul RingHom.map_mul
 
-/-- Ring homomorphisms preserve `bit0`. -/
-protected theorem map_bit0 (f : α →+* β) : ∀ a, f (bit0 a) = bit0 (f a) :=
-  map_bit0 f
-#align ring_hom.map_bit0 RingHom.map_bit0
-
-/-- Ring homomorphisms preserve `bit1`. -/
-protected theorem map_bit1 (f : α →+* β) : ∀ a, f (bit1 a) = bit1 (f a) :=
-  map_bit1 f
-#align ring_hom.map_bit1 RingHom.map_bit1
-
 @[simp]
 theorem map_ite_zero_one {F : Type _} [RingHomClass F α β] (f : F) (p : Prop) [Decidable p] :
-    f (ite p 0 1) = ite p 0 1 := by split_ifs <;> simp [h]
+    f (ite p 0 1) = ite p 0 1 := by
+    split_ifs with h
+    { simp only [h, ite_true]
+      rw [map_zero] }
+    { simp only [h, ite_false]
+      rw [map_one] } -- Porting note: `simp` is unable to apply `map_zero` or `map_one`!?
 #align ring_hom.map_ite_zero_one RingHom.map_ite_zero_one
 
 @[simp]
 theorem map_ite_one_zero {F : Type _} [RingHomClass F α β] (f : F) (p : Prop) [Decidable p] :
-    f (ite p 1 0) = ite p 1 0 := by split_ifs <;> simp [h]
+    f (ite p 1 0) = ite p 1 0 := by
+    split_ifs with h
+    { simp only [h, ite_true]
+      rw [map_one] }
+    { simp only [h, ite_false]
+      rw [map_zero] } -- Porting note: `simp` is unable to apply `map_zero` or `map_one`!?
 #align ring_hom.map_ite_one_zero RingHom.map_ite_one_zero
 
 /-- `f : α →+* β` has a trivial codomain iff `f 1 = 0`. -/
