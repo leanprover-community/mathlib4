@@ -28,7 +28,7 @@ universe u v w
 
 variable {α : Type u} {β : Type v} {ι : Sort w} (r r' s : α → α → Prop)
 
--- mathport name: «expr ≼ »
+/-- Local notation for a relation -/
 local infixl:50 " ≼ " => r
 
 /-- A family of elements of α is directed (with respect to a relation `≼` on α)
@@ -100,10 +100,10 @@ theorem Antitone.directed_ge [SemilatticeSup α] [Preorder β] {f : α → β} (
 #align antitone.directed_ge Antitone.directed_ge
 
 /-- A set stable by supremum is `≤`-directed. -/
-theorem directed_on_of_sup_mem [SemilatticeSup α] {S : Set α}
+theorem directedOn_of_sup_mem [SemilatticeSup α] {S : Set α}
     (H : ∀ ⦃i j⦄, i ∈ S → j ∈ S → i ⊔ j ∈ S) : DirectedOn (· ≤ ·) S := fun a ha b hb =>
   ⟨a ⊔ b, H ha hb, le_sup_left, le_sup_right⟩
-#align directed_on_of_sup_mem directed_on_of_sup_mem
+#align directed_on_of_sup_mem directedOn_of_sup_mem
 
 theorem Directed.extend_bot [Preorder α] [OrderBot α] {e : ι → β} {f : ι → α}
     (hf : Directed (· ≤ ·) f) (he : Function.Injective e) :
@@ -145,6 +145,7 @@ theorem directed_on_of_inf_mem [SemilatticeInf α] {S : Set α}
 /-- `is_directed α r` states that for any elements `a`, `b` there exists an element `c` such that
 `r a c` and `r b c`. -/
 class IsDirected (α : Type _) (r : α → α → Prop) : Prop where
+  /-- For every pair of elements `a` and `b` there is a `c` such that `r a c` and `r b c` -/
   directed (a b : α) : ∃ c, r a c ∧ r b c
 #align is_directed IsDirected
 #align is_directed.directed IsDirected.directed
