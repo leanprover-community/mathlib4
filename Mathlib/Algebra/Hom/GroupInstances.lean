@@ -57,7 +57,7 @@ instance commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M →* G) :=
       intros
       ext
       apply div_eq_mul_inv,
-    mul_left_inv := by intros <;> ext <;> apply mul_left_inv,
+    mul_left_inv := by intros; ext; apply mul_left_inv,
     zpow := fun n f =>
       { toFun := fun x => f x ^ n,
         map_one' := by simp,
@@ -119,9 +119,9 @@ is commutative.
 namespace MonoidHom
 
 @[to_additive]
-theorem ext_iff₂ {mM : MulOneClass M} {mN : MulOneClass N} {mP : CommMonoid P} {f g : M →* N →* P} :
+theorem ext_iff₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} {f g : M →* N →* P} :
     f = g ↔ ∀ x y, f x y = g x y :=
-  MonoidHom.ext_iff.trans <| forall_congr' fun _ => MonoidHom.ext_iff
+  FunLike.ext_iff.trans <| forall_congr' fun _ => FunLike.ext_iff
 #align monoid_hom.ext_iff₂ MonoidHom.ext_iff₂
 
 /-- `flip` arguments of `f : M →* N →* P` -/
