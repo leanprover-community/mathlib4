@@ -3,8 +3,8 @@ Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathbin.Tactic.ByContra
-import Mathbin.Data.Set.Image
+import Mathlib.Tactic.ByContra
+import Mathlib.Data.Set.Image
 
 /-!
 # Well-founded relations
@@ -13,9 +13,9 @@ A relation is well-founded if it can be used for induction: for each `x`, `(∀ 
 implies `P x`. Well-founded relations can be used for induction and recursion, including
 construction of fixed points in the space of dependent functions `Π x : α , β x`.
 
-The predicate `well_founded` is defined in the core library. In this file we prove some extra lemmas
-and provide a few new definitions: `well_founded.min`, `well_founded.sup`, and `well_founded.succ`,
-and an induction principle `well_founded.induction_bot`.
+The predicate `WellFounded` is defined in the core library. In this file we prove some extra lemmas
+and provide a few new definitions: `WellFounded.min`, `WellFounded.sup`, and `WellFounded.succ`,
+and an induction principle `WellFounded.induction_bot`.
 -/
 
 
@@ -23,26 +23,28 @@ variable {α : Type _}
 
 namespace WellFounded
 
-protected theorem is_asymm {α : Sort _} {r : α → α → Prop} (h : WellFounded r) : IsAsymm α r :=
-  ⟨h.asymmetric⟩
-#align well_founded.is_asymm WellFounded.is_asymm
+#align well_founded_relation.r WellFoundedRelation.rel
 
-instance {α : Sort _} [WellFoundedRelation α] : IsAsymm α WellFoundedRelation.R :=
-  WellFoundedRelation.wf.IsAsymm
+protected theorem isAsymm {α : Sort _} {r : α → α → Prop} (h : WellFounded r) : IsAsymm α r :=
+  ⟨h.asymmetric⟩
+#align well_founded.is_asymm WellFounded.isAsymm
+
+instance {α : Sort _} [WellFoundedRelation α] : IsAsymm α WellFoundedRelation.rel :=
+  WellFoundedRelation.wf.isAsymm
 
 protected theorem is_irrefl {α : Sort _} {r : α → α → Prop} (h : WellFounded r) : IsIrrefl α r :=
-  @IsAsymm.is_irrefl α r h.IsAsymm
+  @IsAsymm.is_irrefl α r h.isAsymm
 #align well_founded.is_irrefl WellFounded.is_irrefl
 
-instance {α : Sort _} [WellFoundedRelation α] : IsIrrefl α WellFoundedRelation.R :=
+instance {α : Sort _} [WellFoundedRelation α] : IsIrrefl α WellFoundedRelation.rel :=
   IsAsymm.is_irrefl
 
 /-- If `r` is a well-founded relation, then any nonempty set has a minimal element
 with respect to `r`. -/
 theorem has_min {α} {r : α → α → Prop} (H : WellFounded r) (s : Set α) :
     s.Nonempty → ∃ a ∈ s, ∀ x ∈ s, ¬r x a
-  | ⟨a, ha⟩ =>
-    ((Acc.recOn (H.apply a)) fun x _ IH =>
+  | ⟨a, ha⟩ => show ∃ b ∈ s, ∀ x ∈ s, ¬r x b from
+    Acc.recOn (H.apply a) (fun x _ IH =>
         not_imp_not.1 fun hne hx => hne <| ⟨x, hx, fun y hy hyx => hne <| IH y hyx hy⟩)
       ha
 #align well_founded.has_min WellFounded.has_min
@@ -50,8 +52,8 @@ theorem has_min {α} {r : α → α → Prop} (H : WellFounded r) (s : Set α) :
 /-- A minimal element of a nonempty set in a well-founded order.
 
 If you're working with a nonempty linear order, consider defining a
-`conditionally_complete_linear_order_bot` instance via
-`well_founded.conditionally_complete_linear_order_with_bot` and using `Inf` instead. -/
+`ConditionallyCompleteLinearOrderBot` instance via
+`WellFounded.conditionallyCompleteLinearOrderWithBot` and using `Inf` instead. -/
 noncomputable def min {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s.Nonempty) : α :=
   Classical.choose (H.has_min s h)
 #align well_founded.min WellFounded.min
@@ -68,38 +70,37 @@ theorem not_lt_min {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h 
   h' _ hx
 #align well_founded.not_lt_min WellFounded.not_lt_min
 
-theorem well_founded_iff_has_min {r : α → α → Prop} :
+theorem wellFounded_iff_has_min {r : α → α → Prop} :
     WellFounded r ↔ ∀ s : Set α, s.Nonempty → ∃ m ∈ s, ∀ x ∈ s, ¬r x m := by
-  refine' ⟨fun h => h.has_min, fun h => ⟨fun x => _⟩⟩
+  refine' ⟨fun h => h.has_min, @fun h => ⟨@fun x => _⟩⟩
   by_contra hx
-  obtain ⟨m, hm, hm'⟩ := h _ ⟨x, hx⟩
+  obtain ⟨m, hm, hm'⟩ := h {x | ¬Acc r x} ⟨x, hx⟩
   refine' hm ⟨_, fun y hy => _⟩
   by_contra hy'
   exact hm' y hy' hy
-#align well_founded.well_founded_iff_has_min WellFounded.well_founded_iff_has_min
+#align well_founded.well_founded_iff_has_min WellFounded.wellFounded_iff_has_min
 
-theorem eq_iff_not_lt_of_le {α} [PartialOrder α] {x y : α} : x ≤ y → y = x ↔ ¬x < y := by
+theorem eq_iff_not_lt_of_le {α} [PartialOrder α] {x y : α} : (x ≤ y → y = x) ↔ ¬x < y := by
   constructor
   · intro xle nge
-    cases le_not_le_of_lt nge
-    rw [xle left] at nge
+    rw [xle (le_not_le_of_lt nge).1] at nge
     exact lt_irrefl x nge
-  · intro ngt xle
+  . intro ngt xle
     contrapose! ngt
     exact lt_of_le_of_ne xle (Ne.symm ngt)
 #align well_founded.eq_iff_not_lt_of_le WellFounded.eq_iff_not_lt_of_le
 
-theorem well_founded_iff_has_max' [PartialOrder α] :
+theorem wellFounded_iff_has_max' [PartialOrder α] :
     WellFounded ((· > ·) : α → α → Prop) ↔
       ∀ p : Set α, p.Nonempty → ∃ m ∈ p, ∀ x ∈ p, m ≤ x → x = m :=
-  by simp only [eq_iff_not_lt_of_le, well_founded_iff_has_min]
-#align well_founded.well_founded_iff_has_max' WellFounded.well_founded_iff_has_max'
+  by simp [eq_iff_not_lt_of_le, wellFounded_iff_has_min]
+#align well_founded.well_founded_iff_has_max' WellFounded.wellFounded_iff_has_max'
 
-theorem well_founded_iff_has_min' [PartialOrder α] :
+theorem wellFounded_iff_has_min' [PartialOrder α] :
     WellFounded (LT.lt : α → α → Prop) ↔
       ∀ p : Set α, p.Nonempty → ∃ m ∈ p, ∀ x ∈ p, x ≤ m → x = m :=
-  @well_founded_iff_has_max' αᵒᵈ _
-#align well_founded.well_founded_iff_has_min' WellFounded.well_founded_iff_has_min'
+  @wellFounded_iff_has_max' αᵒᵈ _
+#align well_founded.well_founded_iff_has_min' WellFounded.wellFounded_iff_has_min'
 
 open Set
 
@@ -159,7 +160,7 @@ theorem min_le {x : β} {s : Set β} (hx : x ∈ s) (hne : s.Nonempty := ⟨x, h
   not_lt.1 <| h.not_lt_min _ _ hx
 #align well_founded.min_le WellFounded.min_le
 
-private theorem eq_strict_mono_iff_eq_range_aux {f g : β → γ} (hf : StrictMono f)
+private theorem eq_strictMono_iff_eq_range_aux {f g : β → γ} (hf : StrictMono f)
     (hg : StrictMono g) (hfg : Set.range f = Set.range g) {b : β} (H : ∀ a < b, f a = g a) :
     f b ≤ g b := by
   obtain ⟨c, hc⟩ : g b ∈ Set.range f := by
@@ -171,26 +172,23 @@ private theorem eq_strict_mono_iff_eq_range_aux {f g : β → γ} (hf : StrictMo
     exact hcb.false.elim
   · rw [← hc]
     exact hf.monotone hbc
-#align well_founded.eq_strict_mono_iff_eq_range_aux well_founded.eq_strict_mono_iff_eq_range_aux
 
-include h
-
-theorem eq_strict_mono_iff_eq_range {f g : β → γ} (hf : StrictMono f) (hg : StrictMono g) :
+theorem eq_strictMono_iff_eq_range {f g : β → γ} (hf : StrictMono f) (hg : StrictMono g) :
     Set.range f = Set.range g ↔ f = g :=
   ⟨fun hfg => by
     funext a
     apply h.induction a
     exact fun b H =>
-      le_antisymm (eq_strict_mono_iff_eq_range_aux hf hg hfg H)
-        (eq_strict_mono_iff_eq_range_aux hg hf hfg.symm fun a hab => (H a hab).symm),
+      le_antisymm (eq_strictMono_iff_eq_range_aux hf hg hfg H)
+        (eq_strictMono_iff_eq_range_aux hg hf hfg.symm fun a hab => (H a hab).symm),
     congr_arg _⟩
-#align well_founded.eq_strict_mono_iff_eq_range WellFounded.eq_strict_mono_iff_eq_range
+#align well_founded.eq_strict_mono_iff_eq_range WellFounded.eq_strictMono_iff_eq_range
 
-theorem self_le_of_strict_mono {f : β → β} (hf : StrictMono f) : ∀ n, n ≤ f n := by
+theorem self_le_of_strictMono {f : β → β} (hf : StrictMono f) : ∀ n, n ≤ f n := by
   by_contra' h₁
   have h₂ := h.min_mem _ h₁
   exact h.not_lt_min _ h₁ (hf h₂) h₂
-#align well_founded.self_le_of_strict_mono WellFounded.self_le_of_strict_mono
+#align well_founded.self_le_of_strict_mono WellFounded.self_le_of_strictMono
 
 end LinearOrder
 
@@ -205,7 +203,7 @@ section LT
 variable [LT β] (h : WellFounded ((· < ·) : β → β → Prop))
 
 /-- Given a function `f : α → β` where `β` carries a well-founded `<`, this is an element of `α`
-whose image under `f` is minimal in the sense of `function.not_lt_argmin`. -/
+whose image under `f` is minimal in the sense of `Function.not_lt_argmin`. -/
 noncomputable def argmin [Nonempty α] : α :=
   WellFounded.min (InvImage.wf f h) Set.univ Set.univ_nonempty
 #align function.argmin Function.argmin
@@ -216,21 +214,21 @@ theorem not_lt_argmin [Nonempty α] (a : α) : ¬f a < f (argmin f h) :=
 
 /-- Given a function `f : α → β` where `β` carries a well-founded `<`, and a non-empty subset `s`
 of `α`, this is an element of `s` whose image under `f` is minimal in the sense of
-`function.not_lt_argmin_on`. -/
+`Function.not_lt_argminOn`. -/
 noncomputable def argminOn (s : Set α) (hs : s.Nonempty) : α :=
   WellFounded.min (InvImage.wf f h) s hs
 #align function.argmin_on Function.argminOn
 
 @[simp]
-theorem argmin_on_mem (s : Set α) (hs : s.Nonempty) : argminOn f h s hs ∈ s :=
+theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f h s hs ∈ s :=
   WellFounded.min_mem _ _ _
-#align function.argmin_on_mem Function.argmin_on_mem
+#align function.argmin_on_mem Function.argminOn_mem
 
-@[simp]
-theorem not_lt_argmin_on (s : Set α) {a : α} (ha : a ∈ s)
+--Porting note: @[simp] removed as it will never apply
+theorem not_lt_argminOn (s : Set α) {a : α} (ha : a ∈ s)
     (hs : s.Nonempty := Set.nonempty_of_mem ha) : ¬f a < f (argminOn f h s hs) :=
   WellFounded.not_lt_min (InvImage.wf f h) s hs ha
-#align function.not_lt_argmin_on Function.not_lt_argmin_on
+#align function.not_lt_argmin_on Function.not_lt_argminOn
 
 end LT
 
@@ -238,16 +236,16 @@ section LinearOrder
 
 variable [LinearOrder β] (h : WellFounded ((· < ·) : β → β → Prop))
 
-@[simp]
+--Porting note: @[simp] removed as it will never apply
 theorem argmin_le (a : α) [Nonempty α] : f (argmin f h) ≤ f a :=
   not_lt.mp <| not_lt_argmin f h a
 #align function.argmin_le Function.argmin_le
 
-@[simp]
-theorem argmin_on_le (s : Set α) {a : α} (ha : a ∈ s) (hs : s.Nonempty := Set.nonempty_of_mem ha) :
+--Porting note: @[simp] removed as it will never apply
+theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) (hs : s.Nonempty := Set.nonempty_of_mem ha) :
     f (argminOn f h s hs) ≤ f a :=
-  not_lt.mp <| not_lt_argmin_on f h s ha hs
-#align function.argmin_on_le Function.argmin_on_le
+  not_lt.mp <| not_lt_argminOn f h s ha hs
+#align function.argmin_on_le Function.argminOn_le
 
 end LinearOrder
 
@@ -262,10 +260,10 @@ let `bot : α`. This induction principle shows that `C (f bot)` holds, given tha
   satisfying `r c b` and `C (f c)`. -/
 theorem Acc.induction_bot' {α β} {r : α → α → Prop} {a bot : α} (ha : Acc r a) {C : β → Prop}
     {f : α → β} (ih : ∀ b, f b ≠ f bot → C (f b) → ∃ c, r c b ∧ C (f c)) : C (f a) → C (f bot) :=
-  (@Acc.recOn _ _ (fun x => C (f x) → C (f bot)) _ ha) fun x ac ih' hC =>
-    (eq_or_ne (f x) (f bot)).elim (fun h => h ▸ hC) fun h =>
+  (@Acc.recOn _ _ (fun x _ => C (f x) → C (f bot)) _ ha) fun x _ ih' hC =>
+    (eq_or_ne (f x) (f bot)).elim (fun h => h ▸ hC) (fun h =>
       let ⟨y, hy₁, hy₂⟩ := ih x h hC
-      ih' y hy₁ hy₂
+      ih' y hy₁ hy₂)
 #align acc.induction_bot' Acc.induction_bot'
 
 /-- Let `r` be a relation on `α`, let `C : α → Prop` and let `bot : α`.
