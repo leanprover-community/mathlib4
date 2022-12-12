@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Data.Set.Image
 
 /-!
-### Recursion on the natural numbers and `set.range`
+### Recursion on the natural numbers and `Set.range`
 -/
 
 
