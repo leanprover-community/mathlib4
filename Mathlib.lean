@@ -168,6 +168,7 @@ import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Nat.PSub
+import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Num.Basic
 import Mathlib.Data.Opposite
