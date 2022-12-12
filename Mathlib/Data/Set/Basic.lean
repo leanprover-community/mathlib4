@@ -442,7 +442,8 @@ protected def Nonempty (s : Set α) : Prop :=
 
 -- Porting note: we seem to need parentheses at `(↥s)`,
 -- even if we increase the right precedence of `↥` in `Mathlib.Tactic.Coe`.
-@[simp]
+-- Porting note: removed `simp` as it is competing with `nonempty_subtype`.
+-- @[simp]
 theorem nonempty_coe_sort {s : Set α} : Nonempty (↥s) ↔ s.Nonempty :=
   nonempty_subtype
 #align set.nonempty_coe_sort Set.nonempty_coe_sort
@@ -613,7 +614,8 @@ alias nonempty_iff_ne_empty ↔ Nonempty.ne_empty _
 theorem not_nonempty_empty : ¬(∅ : Set α).Nonempty := fun ⟨_, hx⟩ => hx
 #align set.not_nonempty_empty Set.not_nonempty_empty
 
-@[simp]
+-- Porting note: removing `@[simp]` as it is competing with `isEmpty_subtype`.
+-- @[simp]
 theorem isEmpty_coe_sort {s : Set α} : IsEmpty (↥s) ↔ s = ∅ :=
   not_iff_not.1 <| by simpa using nonempty_iff_ne_empty
 #align set.is_empty_coe_sort Set.isEmpty_coe_sort
