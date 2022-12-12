@@ -8,21 +8,19 @@ import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Nat.Order.Lemmas
 
 /-!
-# Definitions and properties of `nat.gcd`, `nat.lcm`, and `nat.coprime`
+# Definitions and properties of `Nat.gcd`, `Nat.lcm`, and `Nat.coprime`
 
-Generalizations of these are provided in a later file as `gcd_monoid.gcd` and
-`gcd_monoid.lcm`.
+Generalizations of these are provided in a later file as `GCDMonoid.gcd` and
+`GCDMonoid.lcm`.
 
-Note that the global `is_coprime` is not a straightforward generalization of `nat.coprime`, see
-`nat.is_coprime_iff_coprime` for the connection between the two.
+Note that the global `IsCoprime` is not a straightforward generalization of `Nat.coprime`, see
+`Nat.is_coprime_iff_coprime` for the connection between the two.
 
 -/
-
 
 namespace Nat
 
 /-! ### `gcd` -/
-
 
 theorem gcd_greatest {a b d : ℕ} (hda : d ∣ a) (hdb : d ∣ b) (hd : ∀ e : ℕ, e ∣ a → e ∣ b → e ∣ d) :
     d = a.gcd b :=
@@ -90,8 +88,6 @@ theorem gcd_self_add_right (m n : ℕ) : gcd m (m + n) = gcd m n := by
 
 /-! ### `lcm` -/
 
-
-
 theorem lcm_dvd_mul (m n : ℕ) : lcm m n ∣ m * n :=
   lcm_dvd (dvd_mul_right _ _) (dvd_mul_left _ _)
 #align nat.lcm_dvd_mul Nat.lcm_dvd_mul
@@ -100,22 +96,17 @@ theorem lcm_dvd_iff {m n k : ℕ} : lcm m n ∣ k ↔ m ∣ k ∧ n ∣ k :=
   ⟨fun h => ⟨(dvd_lcm_left _ _).trans h, (dvd_lcm_right _ _).trans h⟩, and_imp.2 lcm_dvd⟩
 #align nat.lcm_dvd_iff Nat.lcm_dvd_iff
 
-#check Nat.coprime
-
 /-!
 ### `coprime`
 
-See also `nat.coprime_of_dvd` and `nat.coprime_of_dvd'` to prove `nat.coprime m n`.
+See also `Nat.coprime_of_dvd` and `Nat.coprime_of_dvd'` to prove `Nat.coprime m n`.
 -/
 
-
 instance (m n : ℕ) : Decidable (coprime m n) := by unfold coprime ;infer_instance
-
 
 theorem coprime.lcm_eq_mul {m n : ℕ} (h : coprime m n) : lcm m n = m * n := by
   rw [← one_mul (lcm m n), ← h.gcd_eq_one, gcd_mul_lcm]
 #align nat.coprime.lcm_eq_mul Nat.coprime.lcm_eq_mul
-
 
 theorem coprime.symmetric : Symmetric coprime := fun _ _ => coprime.symm
 #align nat.coprime.symmetric Nat.coprime.symmetric
@@ -127,8 +118,6 @@ theorem coprime.dvd_mul_right {m n k : ℕ} (H : coprime k n) : k ∣ m * n ↔ 
 theorem coprime.dvd_mul_left {m n k : ℕ} (H : coprime k m) : k ∣ m * n ↔ k ∣ n :=
   ⟨H.dvd_of_dvd_mul_left, fun h => dvd_mul_of_dvd_right h m⟩
 #align nat.coprime.dvd_mul_left Nat.coprime.dvd_mul_left
-
-
 
 @[simp]
 theorem coprime_add_self_right {m n : ℕ} : coprime m (n + m) ↔ coprime m n := by
@@ -204,18 +193,14 @@ theorem coprime_pow_right_iff {n : ℕ} (hn : 0 < n) (a b : ℕ) :
   rw [Nat.coprime_comm, coprime_pow_left_iff hn, Nat.coprime_comm]
 #align nat.coprime_pow_right_iff Nat.coprime_pow_right_iff
 
-
 theorem not_coprime_zero_zero : ¬coprime 0 0 := by simp
 #align nat.not_coprime_zero_zero Nat.not_coprime_zero_zero
 
--- @[simp]
 theorem coprime_one_left_iff (n : ℕ) : coprime 1 n ↔ True := by simp [coprime]
 #align nat.coprime_one_left_iff Nat.coprime_one_left_iff
 
--- @[simp]
 theorem coprime_one_right_iff (n : ℕ) : coprime n 1 ↔ True := by simp [coprime]
 #align nat.coprime_one_right_iff Nat.coprime_one_right_iff
-
 
 theorem gcd_mul_of_coprime_of_dvd {a b c : ℕ} (hac : coprime a c) (b_dvd_c : b ∣ c) :
     gcd (a * b) c = b := by
@@ -235,7 +220,7 @@ theorem coprime.eq_of_mul_eq_zero {m n : ℕ} (h : m.coprime n) (hmn : m * n = 0
 /-- Represent a divisor of `m * n` as a product of a divisor of `m` and a divisor of `n`.
 
 See `exists_dvd_and_dvd_of_dvd_mul` for the more general but less constructive version for other
-`gcd_monoid`s. -/
+`GCDMonoid`s. -/
 def prodDvdAndDvdOfDvdProd {m n k : ℕ} (H : k ∣ m * n) :
     { d : { m' // m' ∣ m } × { n' // n' ∣ n } // k = d.1 * d.2 } := by
   cases h0 : gcd k m
@@ -273,9 +258,6 @@ theorem pow_dvd_pow_iff {a b n : ℕ} (n0 : 0 < n) : a ^ n ∣ b ^ n ↔ a ∣ b
   rw [pow_one, (co.pow n n).eq_one_of_dvd h] at this
   simp [eq_one_of_dvd_one this]
 #align nat.pow_dvd_pow_iff Nat.pow_dvd_pow_iff
-
-
-#check Nat.dvd_mul_right
 
 /-- If `k:ℕ` divides coprime `a` and `b` then `k = 1` -/
 theorem eq_one_of_dvd_coprimes {a b k : ℕ} (h_ab_coprime : coprime a b) (hka : k ∣ a)
