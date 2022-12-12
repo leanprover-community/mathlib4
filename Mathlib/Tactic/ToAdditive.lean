@@ -221,7 +221,7 @@ def findTranslation? (env : Environment) : Name → Option Name :=
 
 /-- Add a (multiplicative → additive) name translation to the translations map. -/
 def insertTranslation (src tgt : Name) : CoreM Unit := do
-  if let some tgt' := findTranslation? (←getEnv) src then
+  if let some tgt' := findTranslation? (← getEnv) src then
     throwError "The translation {src} ↦ {tgt'} already exists"
   modifyEnv (ToAdditive.translations.addEntry · (src, tgt))
   trace[to_additive] "Added translation {src} ↦ {tgt}"
@@ -285,7 +285,7 @@ We ignore all arguments specified by the `ignore` `NameMap`.
 If `replaceAll` is `true` the test always returns `true`.
 -/
 def additiveTest (e : Expr) : M Bool := do
-  if (←replaceAll) then
+  if ← replaceAll then
     return true
   else
     additiveTestAux false e
@@ -320,11 +320,11 @@ def applyReplacementFun : Expr → MetaM Expr :=
     match e with
     | .lit (.natVal 1) => pure <| mkRawNatLit 0
     | .const n₀ ls => do
-      let n₁ := n₀.mapPrefix (findTranslation? <|← getEnv)
+      let n₁ := n₀.mapPrefix <| findTranslation? <| ← getEnv
       if n₀ != n₁ then
         trace[to_additive_detail] "applyReplacementFun: {n₀} → {n₁}"
       let ls : List Level := if ← shouldReorder n₀ 1 then ls.swapFirstTwo else ls
-      return some $ Lean.mkConst n₁ ls
+      return some <| Lean.mkConst n₁ ls
     | .app g x => do
       let gf := g.getAppFn
       if let some nm := gf.constName? then
@@ -364,6 +364,12 @@ def applyReplacementFun : Expr → MetaM Expr :=
           trace[to_additive_detail] "applyReplacementFun: Do not change numeral {g.app x}"
           return some <| g.app x
       return e.updateApp! (← r g) (← r x)
+    | .proj n₀ idx e => do
+      let n₁ := n₀.mapPrefix <| findTranslation? <| ← getEnv
+      if n₀ != n₁ then
+        trace[to_additive_detail] "applyReplacementFun: in projection {e}.{idx} of type {n₀}, {""
+          }replace type with {n₁}"
+      return some <| .proj n₁ idx <| ← r e
     | _ => return none
 
 /-- Eta expands `e` at most `n` times.-/
@@ -374,7 +380,7 @@ def etaExpandN (n : Nat) (e : Expr): MetaM Expr := do
 `reorder`. They are expanded until they are applied to one more argument than the maximum in
 `reorder.find n`. -/
 def expand (e : Expr) : MetaM Expr := do
-  let e₂ ←e.replaceRecMeta $ fun r e ↦ do
+  let e₂ ← e.replaceRecMeta $ fun r e ↦ do
     let e0 := e.getAppFn
     let es := e.getAppArgs
     let some e0n := e0.constName? | return none
@@ -792,7 +798,7 @@ def addToAdditiveAttr (src : Name) (cfg : Config) : AttrM Unit :=
     trace[to_additive] "@[to_additive] will reorder the arguments of {tgt}."
     reorderAttr.add src cfg.reorder
     -- we allow using this attribute if it's only to add the reorder configuration
-    if findTranslation? (←getEnv) src |>.isSome then
+    if findTranslation? (← getEnv) src |>.isSome then
       return
   insertTranslation src tgt
   let firstMultArg ← MetaM.run' <| firstMultiplicativeArg src
