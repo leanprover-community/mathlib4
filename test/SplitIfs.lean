@@ -25,9 +25,9 @@ example (x : Nat) (p : Prop) [Decidable p] :
   · rfl
 
 example (p : Prop) [Decidable p] : if if ¬p then p else True then p else ¬p := by
-  split_ifs with h1 h2
-  · assumption
-  · assumption
+  split_ifs with h
+  · exact h
+  · exact h
 
 example (p q : Prop) [Decidable p] [Decidable q] :
     if if if p then ¬p else q then p else q then q else ¬p ∨ ¬q := by

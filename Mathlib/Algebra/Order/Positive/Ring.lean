@@ -134,7 +134,7 @@ section mul_comm
 
 instance orderedCommMonoid [StrictOrderedCommSemiring R] [Nontrivial R] :
     OrderedCommMonoid { x : R // 0 < x } :=
-  { Subtype.instPartialOrderSubtype _,
+  { Subtype.partialOrder _,
     Subtype.coe_injective.commMonoid (Subtype.val) val_one val_mul val_pow with
     mul_le_mul_left := fun _ _ hxy c =>
       Subtype.coe_le_coe.1 <| mul_le_mul_of_nonneg_left hxy c.2.le }
@@ -144,7 +144,7 @@ instance orderedCommMonoid [StrictOrderedCommSemiring R] [Nontrivial R] :
 ordered cancellative commutative monoid. -/
 instance linearOrderedCancelCommMonoid [LinearOrderedCommSemiring R] :
     LinearOrderedCancelCommMonoid { x : R // 0 < x } :=
-  { Subtype.instLinearOrderSubtype _, Positive.orderedCommMonoid with
+  { Subtype.linearOrder _, Positive.orderedCommMonoid with
     le_of_mul_le_mul_left := fun a _ _ h => Subtype.coe_le_coe.1 <| (mul_le_mul_left a.2).1 h }
 #align subtype.linear_ordered_cancel_comm_monoid Positive.linearOrderedCancelCommMonoid
 
