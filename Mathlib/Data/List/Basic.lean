@@ -77,25 +77,11 @@ theorem Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α] {a b : α} {l : List
   . exact ((List.mem_cons.1 h).elim Or.inl (fun h => Or.inr ⟨hab, h⟩))
 #align list.decidable.list.eq_or_ne_mem_of_mem List.Decidable.List.eq_or_ne_mem_of_mem
 
+alias mem_cons ↔ eq_or_mem_of_mem_cons _
+
 theorem not_mem_append {a : α} {s t : List α} (h₁ : a ∉ s) (h₂ : a ∉ t) : a ∉ s ++ t :=
 mt mem_append.1 $ not_or.mpr ⟨h₁, h₂⟩
 #align list.not_mem_append List.not_mem_append
-
--- theorem mem_of_ne_of_mem {a y : α} {l : List α} (h₁ : a ≠ y) (h₂ : a ∈ y :: l) : a ∈ l :=
--- Or.elim (eq_or_mem_of_mem_cons h₂) (fun e ↦ absurd e h₁) (fun r ↦ r)
-
--- theorem ne_of_not_mem_cons {a b : α} {l : List α} : (a ∉ b::l) → a ≠ b :=
--- fun nin aeqb ↦ absurd (aeqb ▸ Mem.head ..) nin
-
--- theorem not_mem_of_not_mem_cons {a b : α} {l : List α} : (a ∉ b::l) → a ∉ l :=
--- fun nin nainl ↦ absurd (Mem.tail _ nainl) nin
-
--- theorem not_mem_cons_of_ne_of_not_mem {a y : α} {l : List α} : a ≠ y → (a ∉ l) → (a ∉ y::l) :=
--- fun p1 p2 ↦ fun Pain ↦ absurd (eq_or_mem_of_mem_cons Pain) (not_or.mpr ⟨p1, p2⟩)
-
--- theorem ne_and_not_mem_of_not_mem_cons {a y : α} {l : List α} : (a ∉ y::l) → a ≠ y ∧ a ∉ l :=
--- fun p ↦ And.intro (ne_of_not_mem_cons p) (not_mem_of_not_mem_cons p)
-
 
 #align list.ne_nil_of_mem List.ne_nil_of_mem
 
@@ -110,164 +96,75 @@ theorem mem_split {a : α} {l : List α} (h : a ∈ l) : ∃ s t : List α, l = 
       exact ⟨b :: s, t, rfl⟩
 #align list.mem_split List.mem_split
 
-#print List.mem_of_ne_of_mem /-
 theorem mem_of_ne_of_mem {a y : α} {l : List α} (h₁ : a ≠ y) (h₂ : a ∈ y :: l) : a ∈ l :=
-  Or.elim (eq_or_mem_of_mem_cons h₂) (fun e => absurd e h₁) fun r => r
+Or.elim (eq_or_mem_of_mem_cons h₂) (fun e ↦ absurd e h₁) (fun r ↦ r)
 #align list.mem_of_ne_of_mem List.mem_of_ne_of_mem
--/
 
-#print List.ne_of_not_mem_cons /-
-theorem ne_of_not_mem_cons {a b : α} {l : List α} : a ∉ b :: l → a ≠ b := fun nin aeqb =>
-  absurd (Or.inl aeqb) nin
+theorem ne_of_not_mem_cons {a b : α} {l : List α} : (a ∉ b::l) → a ≠ b :=
+fun nin aeqb ↦ absurd (aeqb ▸ Mem.head ..) nin
 #align list.ne_of_not_mem_cons List.ne_of_not_mem_cons
--/
 
-#print List.not_mem_of_not_mem_cons /-
-theorem not_mem_of_not_mem_cons {a b : α} {l : List α} : a ∉ b :: l → a ∉ l := fun nin nainl =>
-  absurd (Or.inr nainl) nin
+theorem not_mem_of_not_mem_cons {a b : α} {l : List α} : (a ∉ b::l) → a ∉ l :=
+fun nin nainl ↦ absurd (Mem.tail _ nainl) nin
 #align list.not_mem_of_not_mem_cons List.not_mem_of_not_mem_cons
--/
 
-#print List.not_mem_cons_of_ne_of_not_mem /-
-theorem not_mem_cons_of_ne_of_not_mem {a y : α} {l : List α} : a ≠ y → a ∉ l → a ∉ y :: l :=
-  fun p1 p2 => Not.intro fun Pain => absurd (eq_or_mem_of_mem_cons Pain) (not_or_of_not p1 p2)
+theorem not_mem_cons_of_ne_of_not_mem {a y : α} {l : List α} : a ≠ y → (a ∉ l) → (a ∉ y::l) :=
+fun p1 p2 ↦ fun Pain ↦ absurd (eq_or_mem_of_mem_cons Pain) (not_or.mpr ⟨p1, p2⟩)
 #align list.not_mem_cons_of_ne_of_not_mem List.not_mem_cons_of_ne_of_not_mem
--/
 
-#print List.ne_and_not_mem_of_not_mem_cons /-
-theorem ne_and_not_mem_of_not_mem_cons {a y : α} {l : List α} : a ∉ y :: l → a ≠ y ∧ a ∉ l :=
-  fun p => And.intro (ne_of_not_mem_cons p) (not_mem_of_not_mem_cons p)
+theorem ne_and_not_mem_of_not_mem_cons {a y : α} {l : List α} : (a ∉ y::l) → a ≠ y ∧ a ∉ l :=
+fun p ↦ And.intro (ne_of_not_mem_cons p) (not_mem_of_not_mem_cons p)
 #align list.ne_and_not_mem_of_not_mem_cons List.ne_and_not_mem_of_not_mem_cons
--/
 
-/- warning: list.mem_map -> List.mem_map is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} {f : α -> β} {b : β} {l : List.{u} α}, Iff (Membership.Mem.{v, v} β (List.{v} β) (List.hasMem.{v} β) b (List.map.{u, v} α β f l)) (Exists.{succ u} α (fun (a : α) => And (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l) (Eq.{succ v} β (f a) b)))
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {b : β} {f : α -> β} {l : List.{u_1} α}, Iff (Membership.mem.{u_2, u_2} β (List.{u_2} β) (List.instMembershipList.{u_2} β) b (List.map.{u_1, u_2} α β f l)) (Exists.{succ u_1} α (fun (a : α) => And (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a l) (Eq.{succ u_2} β b (f a))))
-Case conversion may be inaccurate. Consider using '#align list.mem_map List.mem_mapₓ'. -/
+-- Porting TODO: fix `List.mem_map` in Std to this statement.
 @[simp]
-theorem mem_map {f : α → β} {b : β} {l : List α} : b ∈ map f l ↔ ∃ a, a ∈ l ∧ f a = b :=
-  by
-  -- This proof uses no axioms, that's why it's longer that `induction`; simp [...]
-  induction' l with a l ihl
-  · constructor
-    · rintro ⟨_⟩
-    · rintro ⟨a, ⟨_⟩, _⟩
-  · refine' (or_congr eq_comm ihl).trans _
-    constructor
-    · rintro (h | ⟨c, hcl, h⟩)
-      exacts[⟨a, Or.inl rfl, h⟩, ⟨c, Or.inr hcl, h⟩]
-    · rintro ⟨c, hc | hc, h⟩
-      exacts[Or.inl <| (congr_arg f hc.symm).trans h, Or.inr ⟨c, hc, h⟩]
-#align list.mem_map List.mem_map
+theorem mem_map' {f : α → β} {b : β} {l : List α} : b ∈ map f l ↔ ∃ a, a ∈ l ∧ f a = b :=
+  by simp only [List.mem_map, eq_comm, iff_self]
+#align list.mem_map List.mem_map'
 
-alias mem_map ↔ exists_of_mem_map _
+-- Porting TODO: This line breaks everything
+--alias mem_map' ↔ exists_of_mem_map
 
-/- warning: list.mem_map_of_mem -> List.mem_map_of_mem is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} (f : α -> β) {a : α} {l : List.{u} α}, (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l) -> (Membership.Mem.{v, v} β (List.{v} β) (List.hasMem.{v} β) (f a) (List.map.{u, v} α β f l))
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {a : α} {l : List.{u_1} α} (f : α -> β), (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a l) -> (Membership.mem.{u_2, u_2} β (List.{u_2} β) (List.instMembershipList.{u_2} β) (f a) (List.map.{u_1, u_2} α β f l))
-Case conversion may be inaccurate. Consider using '#align list.mem_map_of_mem List.mem_map_of_memₓ'. -/
-theorem mem_map_of_mem (f : α → β) {a : α} {l : List α} (h : a ∈ l) : f a ∈ map f l :=
-  mem_map.2 ⟨a, h, rfl⟩
+-- Porting note: implicit arguments in different order in Lean3 and Lean4
 #align list.mem_map_of_mem List.mem_map_of_mem
 
-/- warning: list.mem_map_of_injective -> List.mem_map_of_injective is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} {f : α -> β}, (Function.Injective.{succ u, succ v} α β f) -> (forall {a : α} {l : List.{u} α}, Iff (Membership.Mem.{v, v} β (List.{v} β) (List.hasMem.{v} β) (f a) (List.map.{u, v} α β f l)) (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l))
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {f : α -> β}, (Function.Injective.{succ u_1, succ u_2} α β f) -> (forall {a : α} {l : List.{u_1} α}, Iff (Membership.mem.{u_2, u_2} β (List.{u_2} β) (List.instMembershipList.{u_2} β) (f a) (List.map.{u_1, u_2} α β f l)) (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a l))
-Case conversion may be inaccurate. Consider using '#align list.mem_map_of_injective List.mem_map_of_injectiveₓ'. -/
 theorem mem_map_of_injective {f : α → β} (H : Injective f) {a : α} {l : List α} :
     f a ∈ map f l ↔ a ∈ l :=
   ⟨fun m =>
-    let ⟨a', m', e⟩ := exists_of_mem_map m
+    let ⟨_, m', e⟩ := exists_of_mem_map m
     H e ▸ m',
     mem_map_of_mem _⟩
 #align list.mem_map_of_injective List.mem_map_of_injective
 
 @[simp]
-theorem Function.Involutive.exists_mem_and_apply_eq_iff {f : α → α} (hf : Function.Involutive f)
-    (x : α) (l : List α) : (∃ y : α, y ∈ l ∧ f y = x) ↔ f x ∈ l :=
+theorem _root_.Function.Involutive.exists_mem_and_apply_eq_iff {f : α → α}
+   (hf : Function.Involutive f) (x : α) (l : List α) : (∃ y : α, y ∈ l ∧ f y = x) ↔ f x ∈ l :=
   ⟨by
     rintro ⟨y, h, rfl⟩
     rwa [hf y], fun h => ⟨f x, h, hf _⟩⟩
 #align
-  function.involutive.exists_mem_and_apply_eq_iff Function.Involutive.exists_mem_and_apply_eq_iff
+  function.involutive.exists_mem_and_apply_eq_iff
+  Function.Involutive.exists_mem_and_apply_eq_iff
 
 theorem mem_map_of_involutive {f : α → α} (hf : Involutive f) {a : α} {l : List α} :
-    a ∈ map f l ↔ f a ∈ l := by rw [mem_map, hf.exists_mem_and_apply_eq_iff]
+    a ∈ map f l ↔ f a ∈ l := by rw [mem_map', hf.exists_mem_and_apply_eq_iff]
 #align list.mem_map_of_involutive List.mem_map_of_involutive
 
-/- warning: list.forall_mem_map_iff -> List.forall_mem_map_iff is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} {f : α -> β} {l : List.{u} α} {P : β -> Prop}, Iff (forall (i : β), (Membership.Mem.{v, v} β (List.{v} β) (List.hasMem.{v} β) i (List.map.{u, v} α β f l)) -> (P i)) (forall (j : α), (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) j l) -> (P (f j)))
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {f : α -> β} {l : List.{u_1} α} {P : β -> Prop}, Iff (forall (i : β), (Membership.mem.{u_2, u_2} β (List.{u_2} β) (List.instMembershipList.{u_2} β) i (List.map.{u_1, u_2} α β f l)) -> (P i)) (forall (j : α), (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) j l) -> (P (f j)))
-Case conversion may be inaccurate. Consider using '#align list.forall_mem_map_iff List.forall_mem_map_iffₓ'. -/
-theorem forall_mem_map_iff {f : α → β} {l : List α} {P : β → Prop} :
-    (∀ i ∈ l.map f, P i) ↔ ∀ j ∈ l, P (f j) := by
-  constructor
-  · intro H j hj
-    exact H (f j) (mem_map_of_mem f hj)
-  · intro H i hi
-    rcases mem_map.1 hi with ⟨j, hj, ji⟩
-    rw [← ji]
-    exact H j hj
 #align list.forall_mem_map_iff List.forall_mem_map_iff
 
-/- warning: list.map_eq_nil -> List.map_eq_nil is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} {f : α -> β} {l : List.{u} α}, Iff (Eq.{succ v} (List.{v} β) (List.map.{u, v} α β f l) (List.nil.{v} β)) (Eq.{succ u} (List.{u} α) l (List.nil.{u} α))
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {f : α -> β} {l : List.{u_1} α}, Iff (Eq.{succ u_2} (List.{u_2} β) (List.map.{u_1, u_2} α β f l) (List.nil.{u_2} β)) (Eq.{succ u_1} (List.{u_1} α) l (List.nil.{u_1} α))
-Case conversion may be inaccurate. Consider using '#align list.map_eq_nil List.map_eq_nilₓ'. -/
-@[simp]
-theorem map_eq_nil {f : α → β} {l : List α} : List.map f l = [] ↔ l = [] :=
-  ⟨by cases l <;> simp only [forall_prop_of_true, map, forall_prop_of_false, not_false_iff],
-    fun h => h.symm ▸ rfl⟩
+attribute [simp] List.map_eq_nil
 #align list.map_eq_nil List.map_eq_nil
 
-#print List.mem_join /-
-@[simp]
-theorem mem_join {a : α} : ∀ {L : List (List α)}, a ∈ join L ↔ ∃ l, l ∈ L ∧ a ∈ l
-  | [] => ⟨False.elim, fun ⟨_, h, _⟩ => False.elim h⟩
-  | c :: L => by
-    simp only [join, mem_append, @mem_join L, mem_cons_iff, or_and_right, exists_or, exists_eq_left]
+attribute [simp] List.mem_join
 #align list.mem_join List.mem_join
--/
 
-#print List.exists_of_mem_join /-
-theorem exists_of_mem_join {a : α} {L : List (List α)} : a ∈ join L → ∃ l, l ∈ L ∧ a ∈ l :=
-  mem_join.1
 #align list.exists_of_mem_join List.exists_of_mem_join
--/
 
-/- warning: list.mem_join_of_mem -> List.mem_join_of_mem is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {a : α} {L : List.{u} (List.{u} α)} {l : List.{u} α}, (Membership.Mem.{u, u} (List.{u} α) (List.{u} (List.{u} α)) (List.hasMem.{u} (List.{u} α)) l L) -> (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l) -> (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a (List.join.{u} α L))
-but is expected to have type
-  forall {α._@.Std.Data.List.Lemmas._hyg.3256 : Type.{u_1}} {l : List.{u_1} α._@.Std.Data.List.Lemmas._hyg.3256} {L : List.{u_1} (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.3256)} {a : α._@.Std.Data.List.Lemmas._hyg.3256}, (Membership.mem.{u_1, u_1} (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.3256) (List.{u_1} (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.3256)) (List.instMembershipList.{u_1} (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.3256)) l L) -> (Membership.mem.{u_1, u_1} α._@.Std.Data.List.Lemmas._hyg.3256 (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.3256) (List.instMembershipList.{u_1} α._@.Std.Data.List.Lemmas._hyg.3256) a l) -> (Membership.mem.{u_1, u_1} α._@.Std.Data.List.Lemmas._hyg.3256 (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.3256) (List.instMembershipList.{u_1} α._@.Std.Data.List.Lemmas._hyg.3256) a (List.join.{u_1} α._@.Std.Data.List.Lemmas._hyg.3256 L))
-Case conversion may be inaccurate. Consider using '#align list.mem_join_of_mem List.mem_join_of_memₓ'. -/
-theorem mem_join_of_mem {a : α} {L : List (List α)} {l} (lL : l ∈ L) (al : a ∈ l) : a ∈ join L :=
-  mem_join.2 ⟨l, lL, al⟩
+--Porting note: Implicit arguments in a different order in Lean3 and Lean4
 #align list.mem_join_of_mem List.mem_join_of_mem
 
-/- warning: list.mem_bind -> List.mem_bind is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} {b : β} {l : List.{u} α} {f : α -> (List.{v} β)}, Iff (Membership.Mem.{v, v} β (List.{v} β) (List.hasMem.{v} β) b (List.bind.{u, v} α β l f)) (Exists.{succ u} α (fun (a : α) => Exists.{0} (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l) (fun (H : Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l) => Membership.Mem.{v, v} β (List.{v} β) (List.hasMem.{v} β) b (f a))))
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {f : α -> (List.{u_2} β)} {b : β} {l : List.{u_1} α}, Iff (Membership.mem.{u_2, u_2} β (List.{u_2} β) (List.instMembershipList.{u_2} β) b (List.bind.{u_1, u_2} α β l f)) (Exists.{succ u_1} α (fun (a : α) => And (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a l) (Membership.mem.{u_2, u_2} β (List.{u_2} β) (List.instMembershipList.{u_2} β) b (f a))))
-Case conversion may be inaccurate. Consider using '#align list.mem_bind List.mem_bindₓ'. -/
-@[simp]
-theorem mem_bind {b : β} {l : List α} {f : α → List β} : b ∈ List.bind l f ↔ ∃ a ∈ l, b ∈ f a :=
-  Iff.trans mem_join
-    ⟨fun ⟨l', h1, h2⟩ =>
-      let ⟨a, al, fa⟩ := exists_of_mem_map h1
-      ⟨a, al, fa.symm ▸ h2⟩,
-      fun ⟨a, al, bfa⟩ => ⟨f a, mem_map_of_mem _ al, bfa⟩⟩
+--Porting note: Implicit arguments in a different order in Lean3 and Lean4
+attribute [simp] List.mem_bind
 #align list.mem_bind List.mem_bind
 
 /- warning: list.exists_of_mem_bind -> List.exists_of_mem_bind is a dubious translation:
