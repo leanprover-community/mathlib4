@@ -407,7 +407,8 @@ variable [Mul M] [Mul N] [CommSemigroup P] (f : M →ₙ* P) (g : N →ₙ* P)
 /-- Coproduct of two `mul_hom`s with the same codomain:
 `f.coprod g (p : M × N) = f p.1 * g p.2`. -/
 @[to_additive
-      "Coproduct of two `add_hom`s with the same codomain:\n`f.coprod g (p : M × N) = f p.1 + g p.2`."]
+      "Coproduct of two `add_hom`s with the same codomain:
+      `f.coprod g (p : M × N) = f p.1 + g p.2`."]
 def coprod : M × N →ₙ* P :=
   f.comp (fst M N) * g.comp (snd M N)
 #align mul_hom.coprod MulHom.coprod
@@ -433,7 +434,8 @@ variable (M N) [MulOneClass M] [MulOneClass N]
 
 /-- Given monoids `M`, `N`, the natural projection homomorphism from `M × N` to `M`.-/
 @[to_additive
-      "Given additive monoids `A`, `B`, the natural projection homomorphism\nfrom `A × B` to `A`"]
+      "Given additive monoids `A`, `B`, the natural projection homomorphism
+      from `A × B` to `A`"]
 def fst : M × N →* M :=
   { toFun := Prod.fst,
     map_one' := rfl,
@@ -442,7 +444,8 @@ def fst : M × N →* M :=
 
 /-- Given monoids `M`, `N`, the natural projection homomorphism from `M × N` to `N`.-/
 @[to_additive
-      "Given additive monoids `A`, `B`, the natural projection homomorphism\nfrom `A × B` to `B`"]
+      "Given additive monoids `A`, `B`, the natural projection homomorphism
+      from `A × B` to `B`"]
 def snd : M × N →* N :=
   { toFun := Prod.snd,
     map_one' := rfl,
@@ -451,7 +454,8 @@ def snd : M × N →* N :=
 
 /-- Given monoids `M`, `N`, the natural inclusion homomorphism from `M` to `M × N`. -/
 @[to_additive
-      "Given additive monoids `A`, `B`, the natural inclusion homomorphism\nfrom `A` to `A × B`."]
+      "Given additive monoids `A`, `B`, the natural inclusion homomorphism
+      from `A` to `A × B`."]
 def inl : M →* M × N :=
   { toFun := fun x => (x, 1),
     map_one' := rfl,
@@ -460,7 +464,8 @@ def inl : M →* M × N :=
 
 /-- Given monoids `M`, `N`, the natural inclusion homomorphism from `N` to `M × N`. -/
 @[to_additive
-      "Given additive monoids `A`, `B`, the natural inclusion homomorphism\nfrom `B` to `A × B`."]
+      "Given additive monoids `A`, `B`, the natural inclusion homomorphism
+      from `B` to `A × B`."]
 def inr : N →* M × N :=
   { toFun := fun y => (1, y),
     map_one' := rfl,
@@ -516,7 +521,8 @@ variable [MulOneClass P]
 /-- Combine two `monoid_hom`s `f : M →* N`, `g : M →* P` into `f.prod g : M →* N × P`
 given by `(f.prod g) x = (f x, g x)`. -/
 @[to_additive Prod
-      "Combine two `add_monoid_hom`s `f : M →+ N`, `g : M →+ P` into\n`f.prod g : M →+ N × P` given by `(f.prod g) x = (f x, g x)`"]
+      "Combine two `add_monoid_hom`s `f : M →+ N`, `g : M →+ P` into
+      `f.prod g : M →+ N × P` given by `(f.prod g) x = (f x, g x)`"]
 protected def prod (f : M →* N) (g : M →* P) :
     M →* N × P where
   toFun := Pi.prod f g
@@ -587,7 +593,8 @@ variable [CommMonoid P] (f : M →* P) (g : N →* P)
 /-- Coproduct of two `monoid_hom`s with the same codomain:
 `f.coprod g (p : M × N) = f p.1 * g p.2`. -/
 @[to_additive
-      "Coproduct of two `add_monoid_hom`s with the same codomain:\n`f.coprod g (p : M × N) = f p.1 + g p.2`."]
+      "Coproduct of two `add_monoid_hom`s with the same codomain:
+      `f.coprod g (p : M × N) = f p.1 + g p.2`."]
 def coprod : M × N →* P :=
   f.comp (fst M N) * g.comp (snd M N)
 #align monoid_hom.coprod MonoidHom.coprod
@@ -637,7 +644,8 @@ variable [MulOneClass M] [MulOneClass N]
 /-- The equivalence between `M × N` and `N × M` given by swapping the components
 is multiplicative. -/
 @[to_additive prod_comm
-      "The equivalence between `M × N` and `N × M` given by swapping the\ncomponents is additive."]
+      "The equivalence between `M × N` and `N × M` given by swapping the
+      components is additive."]
 def prodComm : M × N ≃* N × M :=
   { Equiv.prodComm M N with map_mul' := fun ⟨_, _⟩ ⟨_, _⟩ => rfl }
 #align mul_equiv.prod_comm MulEquiv.prodComm
@@ -682,7 +690,8 @@ variable [Monoid M] [Monoid N]
 /-- The monoid equivalence between units of a product of two monoids, and the product of the
     units of each monoid. -/
 @[to_additive prod_add_units
-      "The additive monoid equivalence between additive units of a product\nof two additive monoids, and the product of the additive units of each additive monoid."]
+      "The additive monoid equivalence between additive units of a product
+      of two additive monoids, and the product of the additive units of each additive monoid."]
 def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
   toFun := (Units.map (MonoidHom.fst M N)).prod (Units.map (MonoidHom.snd M N))
   invFun u := ⟨(u.1, u.2), (↑u.1⁻¹, ↑u.2⁻¹), by simp, by simp⟩
@@ -703,7 +712,8 @@ open MulOpposite
 /-- Canonical homomorphism of monoids from `αˣ` into `α × αᵐᵒᵖ`.
 Used mainly to define the natural topology of `αˣ`. -/
 @[to_additive
-      "Canonical homomorphism of additive monoids from `add_units α` into `α × αᵃᵒᵖ`.\nUsed mainly to define the natural topology of `add_units α`.",
+      "Canonical homomorphism of additive monoids from `add_units α` into `α × αᵃᵒᵖ`.
+      Used mainly to define the natural topology of `add_units α`.",
   simps]
 def embedProduct (α : Type _) [Monoid α] :
     αˣ →* α × αᵐᵒᵖ where
