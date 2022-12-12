@@ -3,10 +3,10 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathbin.Data.Nat.Order.Basic
-import Mathbin.Data.Set.Basic
-import Mathbin.Algebra.Ring.Divisibility
-import Mathbin.Algebra.GroupWithZero.Divisibility
+import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Data.Set.Basic
+import Mathlib.Algebra.Ring.Divisibility
+import Mathlib.Algebra.GroupWithZero.Divisibility
 
 /-!
 # Further lemmas about the natural numbers
@@ -43,7 +43,7 @@ theorem Subtype.coe_bot {s : Set ℕ} [DecidablePred (· ∈ s)] [h : Nonempty s
 #align nat.subtype.coe_bot Nat.Subtype.coe_bot
 
 theorem set_eq_univ {S : Set ℕ} : S = Set.univ ↔ 0 ∈ S ∧ ∀ k : ℕ, k ∈ S → k + 1 ∈ S :=
-  ⟨by rintro rfl <;> simp, fun ⟨h0, hs⟩ => Set.eq_univ_of_forall (set_induction h0 hs)⟩
+  ⟨by rintro rfl; simp, fun ⟨h0, hs⟩ => Set.eq_univ_of_forall (set_induction h0 hs)⟩
 #align nat.set_eq_univ Nat.set_eq_univ
 
 /-! ### `div` -/
@@ -156,7 +156,7 @@ theorem dvd_iff_le_div_mul (n d : ℕ) : d ∣ n ↔ n ≤ n / d * d :=
 #align nat.dvd_iff_le_div_mul Nat.dvd_iff_le_div_mul
 
 theorem dvd_iff_dvd_dvd (n d : ℕ) : d ∣ n ↔ ∀ k : ℕ, k ∣ d → k ∣ n :=
-  ⟨fun h k hkd => dvd_trans hkd h, fun h => h _ dvd_rfl⟩
+  ⟨fun h _ hkd => dvd_trans hkd h, fun h => h _ dvd_rfl⟩
 #align nat.dvd_iff_dvd_dvd Nat.dvd_iff_dvd_dvd
 
 theorem dvd_div_of_mul_dvd {a b c : ℕ} (h : a * b ∣ c) : b ∣ c / a :=
@@ -225,7 +225,7 @@ theorem dvd_left_iff_eq {m n : ℕ} : (∀ a : ℕ, a ∣ m ↔ a ∣ n) ↔ m =
 #align nat.dvd_left_iff_eq Nat.dvd_left_iff_eq
 
 /-- `dvd` is injective in the left argument -/
-theorem dvd_left_injective : Function.Injective ((· ∣ ·) : ℕ → ℕ → Prop) := fun m n h =>
+theorem dvd_left_injective : Function.Injective ((· ∣ ·) : ℕ → ℕ → Prop) := fun _ _ h =>
   dvd_right_iff_eq.mp fun a => iff_of_eq (congr_fun h a)
 #align nat.dvd_left_injective Nat.dvd_left_injective
 
