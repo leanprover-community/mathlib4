@@ -733,40 +733,62 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
   simp only [reverse_core_eq, map_append, map_reverse]
 #align list.map_reverse_core List.map_reverseAux
 
-attribute [simp] List.mem_reverse
-#align list.mem_reverse List.mem_reverse
-
+--Porting TODO: Fix statement of `mem_reverse` to match Lean3
+@[simp] theorem mem_reverse' {a : α} {l : List α} : a ∈ reverse l ↔ a ∈ l :=
+  List.mem_reverse _ _
+#align list.mem_reverse List.mem_reverse'
 
 @[simp]
 theorem reverse_repeat (a : α) (n) : reverse (repeat' a n) = repeat' a n :=
   eq_repeat.2
-    ⟨by simp only [length_reverse, length_repeat], fun b h => eq_of_mem_repeat (mem_reverse.1 h)⟩
+    ⟨by simp only [length_reverse, length_repeat], fun b h => eq_of_mem_repeat (mem_reverse'.1 h)⟩
 #align list.reverse_repeat List.reverse_repeat
 
 /-! ### empty -/
 
+--Porting note: Definition from Lean3 core
+/-- Boolean checking if a list is empty or not -/
+def empty : List α → Bool
+| [] => true
+| (_::_) => false
 
 attribute [simp] List.empty
 
-theorem empty_iff_eq_nil {l : List α} : l.Empty ↔ l = [] :=
+theorem empty_iff_eq_nil {l : List α} : l.empty ↔ l = [] :=
   List.casesOn l (by simp) (by simp)
 #align list.empty_iff_eq_nil List.empty_iff_eq_nil
 
 /-! ### init -/
 
+--Porting note: Definition from Lean3 core
+/-- Remove the last element from a list -/
+def init : List α → List α
+| []     => []
+| [_]    => []
+| (a::l) => a::init l
 
 @[simp]
-theorem length_init : ∀ l : List α, length (init l) = length l - 1
+theorem length_init : ∀ l : List α, length (l.init) = length l - 1
   | [] => rfl
-  | [a] => rfl
-  | a :: b :: l => by
-    rw [init]
-    simp only [add_left_inj, length, succ_add_sub_one]
-    exact length_init (b :: l)
+  | [_] => rfl
+  | a::b::l => by
+    rw [init, length_cons, length_cons, length_init (b::l), succ_sub_one, length_cons,
+      succ_sub_one]
+    simp
 #align list.length_init List.length_init
+
+--Porting note: `rw [init]` in Lean4 generates a goal `(b::l) ≠ []` so we use this lemma instead
+def init_cons_cons (a b : α) (l : List α) : init (a::b::l) = a::init (b::l) := rfl
 
 /-! ### last -/
 
+--Porting note: Definition from Lean3 core
+/-- The last element of a nonempty list -/
+@[simp] def last : (l : List α) → l ≠ [] → α
+| [],      h => absurd rfl h
+| [a],     _ => a
+| _::b::l, _ => last (b::l) (fun h => List.noConfusion h)
+#align list.last List.last
 
 @[simp]
 theorem last_cons {a : α} {l : List α} :
@@ -811,27 +833,27 @@ theorem init_append_last : ∀ {l : List α} (h : l ≠ []), init l ++ [last l h
   | [], h => absurd rfl h
   | [a], h => rfl
   | a :: b :: l, h => by
-    rw [init, cons_append, last_cons (cons_ne_nil _ _)]
+    rw [init_cons_cons, cons_append, last_cons (cons_ne_nil _ _)]
     congr
     exact init_append_last (cons_ne_nil b l)
 #align list.init_append_last List.init_append_last
 
 theorem last_congr {l₁ l₂ : List α} (h₁ : l₁ ≠ []) (h₂ : l₂ ≠ []) (h₃ : l₁ = l₂) :
-    last l₁ h₁ = last l₂ h₂ := by subst l₁
+    last l₁ h₁ = last l₂ h₂ := by subst l₁; rfl
 #align list.last_congr List.last_congr
 
 theorem last_mem : ∀ {l : List α} (h : l ≠ []), last l h ∈ l
   | [], h => absurd rfl h
-  | [a], h => Or.inl rfl
+  | [a], _ => by simp only [last, mem_singleton]
   | a :: b :: l, h =>
-    Or.inr <| by
-      rw [last_cons_cons]
-      exact last_mem (cons_ne_nil b l)
+    List.mem_cons.2 <| Or.inr <| by
+        rw [last_cons_cons]
+        exact last_mem (cons_ne_nil b l)
 #align list.last_mem List.last_mem
 
 theorem last_repeat_succ (a m : ℕ) :
-    (repeat a m.succ).last
-        (ne_nil_of_length_eq_succ (show (repeat a m.succ).length = m.succ by rw [length_repeat])) =
+    (repeat' a m.succ).last
+        (ne_nil_of_length_eq_succ (show (repeat' a m.succ).length = m.succ by rw [length_repeat])) =
       a :=
   by
   induction' m with k IH
@@ -841,6 +863,10 @@ theorem last_repeat_succ (a m : ℕ) :
 
 /-! ### last' -/
 
+--Porting note: This theorem has mvoed because I changed to use this theorem
+@[simp] theorem last'_cons_cons (a b : α) (l : List α) :
+    last' (a :: b :: l) = last' (b :: l) := rfl
+#align list.last'_cons_cons List.last'_cons_cons
 
 @[simp]
 theorem last'_is_none : ∀ {l : List α}, (last' l).isNone ↔ l = []
@@ -857,32 +883,31 @@ theorem last'_is_some : ∀ {l : List α}, l.last'.isSome ↔ l ≠ []
 #align list.last'_is_some List.last'_is_some
 
 theorem mem_last'_eq_last : ∀ {l : List α} {x : α}, x ∈ l.last' → ∃ h, x = last l h
-  | [], x, hx => False.elim <| by simpa using hx
+  | [], x, hx => False.elim <| by simp at hx
   | [a], x, hx =>
     have : a = x := by simpa using hx
     this ▸ ⟨cons_ne_nil a [], rfl⟩
   | a :: b :: l, x, hx => by
-    rw [last'] at hx
-    rcases mem_last'_eq_last hx with ⟨h₁, h₂⟩
+    rw [last'_cons_cons] at hx
+    rcases mem_last'_eq_last hx with ⟨_, h₂⟩
     use cons_ne_nil _ _
-    rwa [last_cons]
 #align list.mem_last'_eq_last List.mem_last'_eq_last
 
 theorem last'_eq_last_of_ne_nil : ∀ {l : List α} (h : l ≠ []), l.last' = some (l.last h)
   | [], h => (h rfl).elim
   | [a], _ => by
     unfold last
-    unfold last'
-  | a :: b :: l, _ => @last'_eq_last_of_ne_nil (b :: l) (cons_ne_nil _ _)
+    unfold last'; rfl
+  | _ :: b :: l, _ => @last'_eq_last_of_ne_nil (b :: l) (cons_ne_nil _ _)
 #align list.last'_eq_last_of_ne_nil List.last'_eq_last_of_ne_nil
 
-theorem mem_last'_cons {x y : α} : ∀ {l : List α} (h : x ∈ l.last'), x ∈ (y :: l).last'
+theorem mem_last'_cons {x y : α} : ∀ {l : List α} (_ : x ∈ l.last'), x ∈ (y :: l).last'
   | [], _ => by contradiction
-  | a :: l, h => h
+  | _ :: _, h => h
 #align list.mem_last'_cons List.mem_last'_cons
 
 theorem mem_of_mem_last' {l : List α} {a : α} (ha : a ∈ l.last') : a ∈ l :=
-  let ⟨h₁, h₂⟩ := mem_last'_eq_last ha
+  let ⟨_, h₂⟩ := mem_last'_eq_last ha
   h₂.symm ▸ last_mem _
 #align list.mem_of_mem_last' List.mem_of_mem_last'
 
@@ -890,16 +915,24 @@ theorem init_append_last' : ∀ {l : List α}, ∀ a ∈ l.last', init l ++ [a] 
   | [], a, ha => (Option.not_mem_none a ha).elim
   | [a], _, rfl => rfl
   | a :: b :: l, c, hc => by
-    rw [last'] at hc
-    rw [init, cons_append, init_append_last' _ hc]
+    rw [last'_cons_cons] at hc
+    rw [init_cons_cons, cons_append, init_append_last' _ hc]
 #align list.init_append_last' List.init_append_last'
+
+--Porting note: Definition from Lean3 core
+/-- Return the last element of a list, or `default` if the list is empty -/
+def ilast [Inhabited α] : List α → α
+| []        => default
+| [a]       => a
+| [_, b]    => b
+| (_::_::l) => ilast l
 
 theorem ilast_eq_last' [Inhabited α] : ∀ l : List α, l.ilast = l.last'.iget
   | [] => by simp [ilast, Inhabited.default]
   | [a] => rfl
   | [a, b] => rfl
   | [a, b, c] => rfl
-  | a :: b :: c :: l => by simp [ilast, ilast_eq_last' (c :: l)]
+  | _ :: _ :: c :: l => by simp [ilast, ilast_eq_last' (c :: l)]
 #align list.ilast_eq_last' List.ilast_eq_last'
 
 @[simp]
@@ -907,16 +940,12 @@ theorem last'_append_cons :
     ∀ (l₁ : List α) (a : α) (l₂ : List α), last' (l₁ ++ a :: l₂) = last' (a :: l₂)
   | [], a, l₂ => rfl
   | [b], a, l₂ => rfl
-  | b :: c :: l₁, a, l₂ => by rw [cons_append, cons_append, last', ← cons_append, last'_append_cons]
+  | b :: c :: l₁, a, l₂ => by rw [cons_append, cons_append, last'_cons_cons,
+    ← cons_append, last'_append_cons (c :: l₁)]
 #align list.last'_append_cons List.last'_append_cons
 
-@[simp]
-theorem last'_cons_cons (x y : α) (l : List α) : last' (x :: y :: l) = last' (y :: l) :=
-  rfl
-#align list.last'_cons_cons List.last'_cons_cons
-
 theorem last'_append_of_ne_nil (l₁ : List α) :
-    ∀ {l₂ : List α} (hl₂ : l₂ ≠ []), last' (l₁ ++ l₂) = last' l₂
+    ∀ {l₂ : List α} (_ : l₂ ≠ []), last' (l₁ ++ l₂) = last' l₂
   | [], hl₂ => by contradiction
   | b :: l₂, _ => last'_append_cons l₁ b l₂
 #align list.last'_append_of_ne_nil List.last'_append_of_ne_nil
@@ -930,14 +959,15 @@ theorem last'_append {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.last') : x �
 
 /-! ### head(') and tail -/
 
+#align list.head List.head!
 
-theorem head_eq_head' [Inhabited α] (l : List α) : head l = (head' l).iget := by cases l <;> rfl
-#align list.head_eq_head' List.head_eq_head'
+theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).iget := by cases l <;> rfl
+#align list.head_eq_head' List.head!_eq_head?
 
-theorem surjective_head [Inhabited α] : Surjective (@head α _) := fun x => ⟨[x], rfl⟩
+theorem surjective_head [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
 #align list.surjective_head List.surjective_head
 
-theorem surjective_head' : Surjective (@head' α) :=
+theorem surjective_head' : Surjective (@head? α) :=
   Option.forall.2 ⟨⟨[], rfl⟩, fun x => ⟨[x], rfl⟩⟩
 #align list.surjective_head' List.surjective_head'
 
@@ -946,61 +976,47 @@ theorem surjective_tail : Surjective (@tail α)
   | a :: l => ⟨a :: a :: l, rfl⟩
 #align list.surjective_tail List.surjective_tail
 
-theorem eq_cons_of_mem_head' {x : α} : ∀ {l : List α}, x ∈ l.head' → l = x :: tail l
+theorem eq_cons_of_mem_head' {x : α} : ∀ {l : List α}, x ∈ l.head? → l = x :: tail l
   | [], h => (Option.not_mem_none _ h).elim
   | a :: l, h => by
-    simp only [head', Option.mem_def] at h
+    simp only [head?, Option.mem_def, Option.some_inj] at h
     exact h ▸ rfl
 #align list.eq_cons_of_mem_head' List.eq_cons_of_mem_head'
 
-theorem mem_of_mem_head' {x : α} {l : List α} (h : x ∈ l.head') : x ∈ l :=
+theorem mem_of_mem_head' {x : α} {l : List α} (h : x ∈ l.head?) : x ∈ l :=
   (eq_cons_of_mem_head' h).symm ▸ mem_cons_self _ _
 #align list.mem_of_mem_head' List.mem_of_mem_head'
 
-/- warning: list.head_cons -> List.head_cons is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} [_inst_1 : Inhabited.{succ u} α] (a : α) (l : List.{u} α), Eq.{succ u} α (List.headₓ.{u} α _inst_1 (List.cons.{u} α a l)) a
-but is expected to have type
-  forall {α : Type.{u_1}} {a : α} {l : List.{u_1} α} {h : Ne.{succ u_1} (List.{u_1} α) (List.cons.{u_1} α a l) (List.nil.{u_1} α)}, Eq.{succ u_1} α (List.head.{u_1} α (List.cons.{u_1} α a l) h) a
-Case conversion may be inaccurate. Consider using '#align list.head_cons List.head_consₓ'. -/
 @[simp]
-theorem head_cons [Inhabited α] (a : α) (l : List α) : head (a :: l) = a :=
+theorem head!_cons [Inhabited α] (a : α) (l : List α) : head! (a :: l) = a :=
   rfl
-#align list.head_cons List.head_cons
+#align list.head_cons List.head!_cons
 
-#print List.tail_nil /-
-@[simp]
-theorem tail_nil : tail (@nil α) = [] :=
-  rfl
 #align list.tail_nil List.tail_nil
--/
 
-#print List.tail_cons /-
-@[simp]
-theorem tail_cons (a : α) (l : List α) : tail (a :: l) = l :=
-  rfl
 #align list.tail_cons List.tail_cons
--/
+
 
 @[simp]
-theorem head_append [Inhabited α] (t : List α) {s : List α} (h : s ≠ []) : head (s ++ t) = head s :=
+theorem head!_append [Inhabited α] (t : List α) {s : List α} (h : s ≠ []) :
+    head! (s ++ t) = head! s :=
   by
   induction s
   contradiction
   rfl
-#align list.head_append List.head_append
-#exit
-theorem head'_append {s t : List α} {x : α} (h : x ∈ s.head') : x ∈ (s ++ t).head' := by
+#align list.head_append List.head!_append
+
+theorem head?_append {s t : List α} {x : α} (h : x ∈ s.head?) : x ∈ (s ++ t).head? := by
   cases s
   contradiction
   exact h
-#align list.head'_append List.head'_append
+#align list.head'_append List.head?_append
 
-theorem head'_append_of_ne_nil :
-    ∀ (l₁ : List α) {l₂ : List α} (hl₁ : l₁ ≠ []), head' (l₁ ++ l₂) = head' l₁
+theorem head?_append_of_ne_nil :
+    ∀ (l₁ : List α) {l₂ : List α} (_ : l₁ ≠ []), head? (l₁ ++ l₂) = head? l₁
   | [], _, hl₁ => by contradiction
   | x :: l₁, _, _ => rfl
-#align list.head'_append_of_ne_nil List.head'_append_of_ne_nil
+#align list.head'_append_of_ne_nil List.head?_append_of_ne_nil
 
 theorem tail_append_singleton_of_ne_nil {a : α} {l : List α} (h : l ≠ nil) :
     tail (l ++ [a]) = tail l ++ [a] := by
@@ -1009,30 +1025,30 @@ theorem tail_append_singleton_of_ne_nil {a : α} {l : List α} (h : l ≠ nil) :
   rw [tail, cons_append, tail]
 #align list.tail_append_singleton_of_ne_nil List.tail_append_singleton_of_ne_nil
 
-theorem cons_head'_tail : ∀ {l : List α} {a : α} (h : a ∈ head' l), a :: tail l = l
+theorem cons_head?_tail : ∀ {l : List α} {a : α} (h : a ∈ head? l), a :: tail l = l
   | [], a, h => by contradiction
   | b :: l, a, h => by
     simp at h
     simp [h]
-#align list.cons_head'_tail List.cons_head'_tail
+#align list.cons_head'_tail List.cons_head?_tail
 
-theorem head_mem_head' [Inhabited α] : ∀ {l : List α} (h : l ≠ []), head l ∈ head' l
+theorem head!_mem_head? [Inhabited α] : ∀ {l : List α} (_ : l ≠ []), head! l ∈ head? l
   | [], h => by contradiction
-  | a :: l, h => rfl
-#align list.head_mem_head' List.head_mem_head'
+  | a :: l, _ => rfl
+#align list.head_mem_head' List.head!_mem_head?
 
-theorem cons_head_tail [Inhabited α] {l : List α} (h : l ≠ []) : head l :: tail l = l :=
-  cons_head'_tail (head_mem_head' h)
-#align list.cons_head_tail List.cons_head_tail
+theorem cons_head!_tail [Inhabited α] {l : List α} (h : l ≠ []) : head! l :: tail l = l :=
+  cons_head?_tail (head!_mem_head? h)
+#align list.cons_head_tail List.cons_head!_tail
 
-theorem head_mem_self [Inhabited α] {l : List α} (h : l ≠ nil) : l.head ∈ l := by
-  have h' := mem_cons_self l.head l.tail
-  rwa [cons_head_tail h] at h'
-#align list.head_mem_self List.head_mem_self
+theorem head!_mem_self [Inhabited α] {l : List α} (h : l ≠ nil) : l.head! ∈ l := by
+  have h' := mem_cons_self l.head! l.tail
+  rwa [cons_head!_tail h] at h'
+#align list.head_mem_self List.head!_mem_self
 
 @[simp]
-theorem head'_map (f : α → β) (l) : head' (map f l) = (head' l).map f := by cases l <;> rfl
-#align list.head'_map List.head'_map
+theorem head?_map (f : α → β) (l) : head? (map f l) = (head? l).map f := by cases l <;> rfl
+#align list.head'_map List.head?_map
 
 theorem tail_append_of_ne_nil (l l' : List α) (h : l ≠ []) : (l ++ l').tail = l.tail ++ l' := by
   cases l
