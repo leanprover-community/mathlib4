@@ -375,11 +375,6 @@ class RingHomClass (F : Type _) (α β : outParam (Type _)) [NonAssocSemiring α
 
 variable [NonAssocSemiring α] [NonAssocSemiring β] [RingHomClass F α β]
 
-/-- Ring homomorphisms preserve `bit1`. -/
-@[simp]
-theorem map_bit1 (f : F) (a : α) : (f (bit1 a) : β) = bit1 (f a) := by simp [bit1]
-#align map_bit1 map_bit1
-
 instance : CoeTC F (α →+* β) :=
   ⟨fun f =>
     { toFun := f, map_zero' := map_zero f, map_one' := map_one f, map_mul' := map_mul f,
@@ -403,12 +398,17 @@ See note [implicit instance arguments].
 variable {rα : NonAssocSemiring α} {rβ : NonAssocSemiring β}
 
 instance : RingHomClass (α →+* β) α β where
-  coe := RingHom.toFun
-  coe_injective' f g h := by cases f <;> cases g <;> congr
+  coe f := f.toFun
+  coe_injective' f g h := by
+    cases f
+    cases g
+    congr
+    apply FunLike.coe_injective'
+    exact h
   map_add := RingHom.map_add'
   map_zero := RingHom.map_zero'
-  map_mul := RingHom.map_mul'
-  map_one := RingHom.map_one'
+  map_mul f := f.map_mul'
+  map_one f := f.map_one'
 
 -- Porting note:
 -- These helper instances are unhelpful in Lean 4, so omitting:
@@ -418,15 +418,17 @@ instance : RingHomClass (α →+* β) α β where
 -- instance : CoeFun (α →+* β) fun _ => α → β :=
 --   ⟨RingHom.toFun⟩
 
-initialize_simps_projections RingHom (toFun → apply)
+initialize_simps_projections RingHom
+  (toMonoidHom_toOneHom_toFun → apply, -toMonoidHom_toOneHom, -toMonoidHom)
 
+-- Porting note: is this lemma still needed in Lean4?
 @[simp]
 theorem to_fun_eq_coe (f : α →+* β) : f.toFun = f :=
   rfl
 #align ring_hom.to_fun_eq_coe RingHom.to_fun_eq_coe
 
 @[simp]
-theorem coe_mk (f : α → β) (h₁ h₂ h₃ h₄) : ⇑(⟨f, h₁, h₂, h₃, h₄⟩ : α →+* β) = f :=
+theorem coe_mk (f : α → β) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : α →+* β) = f :=
   rfl
 #align ring_hom.coe_mk RingHom.coe_mk
 
@@ -435,12 +437,14 @@ theorem coe_coe {F : Type _} [RingHomClass F α β] (f : F) : ((f : α →+* β)
   rfl
 #align ring_hom.coe_coe RingHom.coe_coe
 
-instance hasCoeMonoidHom : Coe (α →+* β) (α →* β) :=
+attribute [coe] RingHom.toMonoidHom
+
+instance coeToMonoidHom : Coe (α →+* β) (α →* β) :=
   ⟨RingHom.toMonoidHom⟩
-#align ring_hom.has_coe_monoid_hom RingHom.hasCoeMonoidHom
+#align ring_hom.has_coe_monoid_hom RingHom.coeToMonoidHom
 
 @[simp, norm_cast]
-theorem coe_monoid_hom (f : α →+* β) : ⇑(f : α →* β) = f :=
+theorem coe_monoid_hom (f : α →+* β) : (f : α →* β) = f :=
   rfl
 #align ring_hom.coe_monoid_hom RingHom.coe_monoid_hom
 
@@ -456,14 +460,12 @@ theorem to_monoid_with_zero_hom_eq_coe (f : α →+* β) : (f.toMonoidWithZeroHo
 
 @[simp]
 theorem coe_monoid_hom_mk (f : α → β) (h₁ h₂ h₃ h₄) :
-    ((⟨f, h₁, h₂, h₃, h₄⟩ : α →+* β) : α →* β) = ⟨f, h₁, h₂⟩ :=
+    ((⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : α →+* β) : α →* β) = ⟨⟨f, h₁⟩, h₂⟩ :=
   rfl
 #align ring_hom.coe_monoid_hom_mk RingHom.coe_monoid_hom_mk
 
-@[simp, norm_cast]
-theorem coe_add_monoid_hom (f : α →+* β) : ⇑(f : α →+ β) = f :=
-  rfl
-#align ring_hom.coe_add_monoid_hom RingHom.coe_add_monoid_hom
+-- Porting note: can be proven with `by dsimp only`
+#noalign ring_hom.coe_add_monoid_hom
 
 @[simp]
 theorem to_add_monoid_hom_eq_coe (f : α →+* β) : f.toAddMonoidHom = f :=
@@ -472,7 +474,7 @@ theorem to_add_monoid_hom_eq_coe (f : α →+* β) : f.toAddMonoidHom = f :=
 
 @[simp]
 theorem coe_add_monoid_hom_mk (f : α → β) (h₁ h₂ h₃ h₄) :
-    ((⟨f, h₁, h₂, h₃, h₄⟩ : α →+* β) : α →+ β) = ⟨f, h₃, h₄⟩ :=
+    ((⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩ : α →+* β) : α →+ β) = ⟨⟨f, h₃⟩, h₄⟩ :=
   rfl
 #align ring_hom.coe_add_monoid_hom_mk RingHom.coe_add_monoid_hom_mk
 
@@ -493,13 +495,11 @@ theorem copy_eq (f : α →+* β) (f' : α → β) (h : f' = f) : f.copy f' h = 
 
 end coe
 
-variable [rα : NonAssocSemiring α] [rβ : NonAssocSemiring β]
+variable {rα : NonAssocSemiring α} {rβ : NonAssocSemiring β}
 
 section
 
-include rα rβ
-
-variable (f : α →+* β) {x y : α} {rα rβ}
+variable (f : α →+* β) {x y : α}
 
 theorem congr_fun {f g : α →+* β} (h : f = g) (x : α) : f x = g x :=
   FunLike.congr_fun h x
@@ -523,7 +523,7 @@ theorem ext_iff {f g : α →+* β} : f = g ↔ ∀ x, f x = g x :=
 #align ring_hom.ext_iff RingHom.ext_iff
 
 @[simp]
-theorem mk_coe (f : α →+* β) (h₁ h₂ h₃ h₄) : RingHom.mk f h₁ h₂ h₃ h₄ = f :=
+theorem mk_coe (f : α →+* β) (h₁ h₂ h₃ h₄) : RingHom.mk ⟨⟨f, h₁⟩, h₂⟩ h₃ h₄ = f :=
   ext fun _ => rfl
 #align ring_hom.mk_coe RingHom.mk_coe
 
