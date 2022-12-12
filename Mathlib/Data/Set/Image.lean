@@ -20,7 +20,7 @@ import Mathlib.Data.Set.Basic
 
 * `f ⁻¹' t` for `Set.preimage f t`
 
-* `f '' s` for `Set.image f s`
+* `f ~~ s` for `Set.image f s`
 
 ## Tags
 
@@ -193,13 +193,12 @@ section Image
 variable {f : α → β} {s t : Set α}
 
 -- Porting note: `Set.image` is already defined in `Init.Set`
--- /-- The image of `s : Set α` by `f : α → β`, written `f '' s`,
---   is the set of `y : β` such that `f x = y` for some `x ∈ s`. -/
--- def image (f : α → β) (s : Set α) : Set β :=
---   { y | ∃ x, x ∈ s ∧ f x = y }
--- #align set.image Set.image
+#align set.image Set.image
 
-/-- `f '' s` denotes the image of `s : Set α` under the function `f : α → β`. -/
+-- Porting note:
+-- We previously used `''` to denote the image of a set.
+-- We can switch back after https://github.com/leanprover/lean4/pull/1931
+/-- `f ~~ s` denotes the image of `s : Set α` under the function `f : α → β`. -/
 infixl:80 " ~~ " => image
 
 theorem mem_image_iff_bex {f : α → β} {s : Set α} {y : β} :
@@ -616,7 +615,7 @@ variable {f : ι → α} {s t : Set α}
 
 /-- Range of a function.
 
-This function is more flexible than `f '' univ`, as the image requires that the domain is in Type
+This function is more flexible than `f ~~ univ`, as the image requires that the domain is in Type
 and not an arbitrary Sort. -/
 def range (f : ι → α) : Set α :=
   { x | ∃ y, f y = x }
@@ -627,6 +626,7 @@ theorem mem_range {x : α} : x ∈ range f ↔ ∃ y, f y = x :=
   Iff.rfl
 #align set.mem_range Set.mem_range
 
+-- Porting note
 -- @[simp] `simp` can prove this
 theorem mem_range_self (i : ι) : f i ∈ range f :=
   ⟨i, rfl⟩
@@ -753,7 +753,7 @@ theorem insert_image_compl_eq_range (f : α → β) (x : α) : insert (f x) (f ~
 theorem image_preimage_eq_inter_range {f : α → β} {t : Set β} : f ~~ (f ⁻¹' t) = t ∩ range f :=
   ext fun x =>
     ⟨fun ⟨x, hx, HEq⟩ => HEq ▸ ⟨hx, mem_range_self _⟩, fun ⟨hx, ⟨y, h_eq⟩⟩ =>
-      h_eq ▸ mem_image_of_mem f <| show y ∈ f ⁻¹' t by rw [preimage, mem_set_of, h_eq]; exact hx⟩
+      h_eq ▸ mem_image_of_mem f <| show y ∈ f ⁻¹' t by rw [preimage, mem_setOf, h_eq]; exact hx⟩
 #align set.image_preimage_eq_inter_range Set.image_preimage_eq_inter_range
 
 theorem image_preimage_eq_of_subset {f : α → β} {s : Set β} (hs : s ⊆ range f) :
@@ -1097,9 +1097,9 @@ theorem range_inclusion (h : s ⊆ t) : range (inclusion h) = { x : t | (x : α)
   { rw [mem_range]
     rintro ⟨a, ha⟩
     rw [inclusion, Subtype.mk.injEq] at ha
-    rw [mem_set_of, Subtype.coe_mk, ← ha]
+    rw [mem_setOf, Subtype.coe_mk, ← ha]
     exact Subtype.coe_prop _ }
-  { rw [mem_set_of, Subtype.coe_mk, mem_range]
+  { rw [mem_setOf, Subtype.coe_mk, mem_range]
     intro hx'
     use ⟨x, hx'⟩ }
   -- simp_rw [inclusion, mem_range, Subtype.mk_eq_mk]
