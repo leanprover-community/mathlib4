@@ -111,9 +111,6 @@ theorem dvd_sub' {k m n : ℕ} (h₁ : k ∣ m) (h₂ : k ∣ n) : k ∣ m - n :
     exact dvd_zero k
 #align nat.dvd_sub' Nat.dvd_sub'
 
--- TODO: where should this align live?
-#align nat.div_def Nat.div_eq
-
 theorem succ_div : ∀ a b : ℕ, (a + 1) / b = a / b + if b ∣ a + 1 then 1 else 0
   | a, 0 => by simp
   | 0, 1 => by simp
