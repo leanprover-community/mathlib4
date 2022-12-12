@@ -21,15 +21,16 @@ universe u v w x
 
 variable {ι : Type _} {α : Type u} {β : Type v} {γ : Type w} {δ : Type x} {l₁ l₂ : List α}
 
-attribute [inline] List.head
+-- Porting note: Delete this attribute
+--attribute [inline] List.head
 
 /-- There is only one list of an empty type -/
 instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) :=
-  { List.inhabited α with
+  { instInhabitedList with
     uniq := fun l =>
       match l with
       | [] => rfl
-      | a :: l => isEmptyElim a }
+      | a :: _ => isEmptyElim a }
 #align list.unique_of_is_empty List.uniqueOfIsEmpty
 
 instance : IsLeftId (List α) Append.append [] :=
@@ -41,204 +42,73 @@ instance : IsRightId (List α) Append.append [] :=
 instance : IsAssociative (List α) Append.append :=
   ⟨append_assoc⟩
 
-#print List.cons_ne_nil /-
-theorem cons_ne_nil (a : α) (l : List α) : a :: l ≠ [] :=
-  fun.
-#align list.cons_ne_nil List.cons_ne_nil
--/
-
-#print List.cons_ne_self /-
-theorem cons_ne_self (a : α) (l : List α) : a :: l ≠ l :=
-  mt (congr_arg length) (Nat.succ_ne_self _)
-#align list.cons_ne_self List.cons_ne_self
--/
-
-/- warning: list.head_eq_of_cons_eq -> List.head_eq_of_cons_eq is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {h₁ : α} {h₂ : α} {t₁ : List.{u} α} {t₂ : List.{u} α}, (Eq.{succ u} (List.{u} α) (List.cons.{u} α h₁ t₁) (List.cons.{u} α h₂ t₂)) -> (Eq.{succ u} α h₁ h₂)
-but is expected to have type
-  forall {α._@.Std.Data.List.Lemmas._hyg.123 : Type.{u_1}} {h₁ : α._@.Std.Data.List.Lemmas._hyg.123} {t₁ : List.{u_1} α._@.Std.Data.List.Lemmas._hyg.123} {h₂ : α._@.Std.Data.List.Lemmas._hyg.123} {t₂ : List.{u_1} α._@.Std.Data.List.Lemmas._hyg.123}, (Eq.{succ u_1} (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.123) (List.cons.{u_1} α._@.Std.Data.List.Lemmas._hyg.123 h₁ t₁) (List.cons.{u_1} α._@.Std.Data.List.Lemmas._hyg.123 h₂ t₂)) -> (Eq.{succ u_1} α._@.Std.Data.List.Lemmas._hyg.123 h₁ h₂)
-Case conversion may be inaccurate. Consider using '#align list.head_eq_of_cons_eq List.head_eq_of_cons_eqₓ'. -/
-theorem head_eq_of_cons_eq {h₁ h₂ : α} {t₁ t₂ : List α} : h₁ :: t₁ = h₂ :: t₂ → h₁ = h₂ :=
-  fun Peq => List.noConfusion Peq fun Pheq Pteq => Pheq
+--Porting note : Order of implicit arguments is different in Lean 3 and Lean 4
 #align list.head_eq_of_cons_eq List.head_eq_of_cons_eq
 
-/- warning: list.tail_eq_of_cons_eq -> List.tail_eq_of_cons_eq is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {h₁ : α} {h₂ : α} {t₁ : List.{u} α} {t₂ : List.{u} α}, (Eq.{succ u} (List.{u} α) (List.cons.{u} α h₁ t₁) (List.cons.{u} α h₂ t₂)) -> (Eq.{succ u} (List.{u} α) t₁ t₂)
-but is expected to have type
-  forall {α._@.Std.Data.List.Lemmas._hyg.196 : Type.{u_1}} {h₁ : α._@.Std.Data.List.Lemmas._hyg.196} {t₁ : List.{u_1} α._@.Std.Data.List.Lemmas._hyg.196} {h₂ : α._@.Std.Data.List.Lemmas._hyg.196} {t₂ : List.{u_1} α._@.Std.Data.List.Lemmas._hyg.196}, (Eq.{succ u_1} (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.196) (List.cons.{u_1} α._@.Std.Data.List.Lemmas._hyg.196 h₁ t₁) (List.cons.{u_1} α._@.Std.Data.List.Lemmas._hyg.196 h₂ t₂)) -> (Eq.{succ u_1} (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.196) t₁ t₂)
-Case conversion may be inaccurate. Consider using '#align list.tail_eq_of_cons_eq List.tail_eq_of_cons_eqₓ'. -/
-theorem tail_eq_of_cons_eq {h₁ h₂ : α} {t₁ t₂ : List α} : h₁ :: t₁ = h₂ :: t₂ → t₁ = t₂ :=
-  fun Peq => List.noConfusion Peq fun Pheq Pteq => Pteq
+--Porting note : Order of implicit arguments is different in Lean 3 and Lean 4
 #align list.tail_eq_of_cons_eq List.tail_eq_of_cons_eq
 
-#print List.cons_injective /-
-@[simp]
-theorem cons_injective {a : α} : Injective (cons a) := fun l₁ l₂ => fun Pe => tail_eq_of_cons_eq Pe
+@[simp] theorem cons_injective {a : α} : Injective (cons a) :=
+λ _ _ Pe => tail_eq_of_cons_eq Pe
 #align list.cons_injective List.cons_injective
--/
-
-#print List.cons_inj /-
-theorem cons_inj (a : α) {l l' : List α} : a :: l = a :: l' ↔ l = l' :=
-  cons_injective.eq_iff
-#align list.cons_inj List.cons_inj
--/
 
 theorem cons_eq_cons {a b : α} {l l' : List α} : a :: l = b :: l' ↔ a = b ∧ l = l' :=
   ⟨List.cons.inj, fun h => h.1 ▸ h.2 ▸ rfl⟩
 #align list.cons_eq_cons List.cons_eq_cons
 
-theorem singleton_injective : Injective fun a : α => [a] := fun a b h => (cons_eq_cons.1 h).1
+theorem singleton_injective : Injective fun a : α => [a] := fun _ _ h => (cons_eq_cons.1 h).1
 #align list.singleton_injective List.singleton_injective
 
 theorem singleton_inj {a b : α} : [a] = [b] ↔ a = b :=
   singleton_injective.eq_iff
 #align list.singleton_inj List.singleton_inj
 
-#print List.exists_cons_of_ne_nil /-
-theorem exists_cons_of_ne_nil {l : List α} (h : l ≠ nil) : ∃ b L, l = b :: L := by
-  induction' l with c l'
-  contradiction
-  use c, l'
-#align list.exists_cons_of_ne_nil List.exists_cons_of_ne_nil
--/
-
 theorem set_of_mem_cons (l : List α) (a : α) : { x | x ∈ a :: l } = insert a { x | x ∈ l } :=
-  rfl
+-- Porting note: abuse of def-eq due no import of `Set.mem_insert`
+  Set.ext <| fun x => show x ∈ a :: l ↔ x = a ∨ x ∈ l by simp only [mem_cons, iff_self]
 #align list.set_of_mem_cons List.set_of_mem_cons
 
 /-! ### mem -/
 
-
-#print List.mem_singleton_self /-
-theorem mem_singleton_self (a : α) : a ∈ [a] :=
-  mem_cons_self _ _
-#align list.mem_singleton_self List.mem_singleton_self
--/
-
-#print List.eq_of_mem_singleton /-
-theorem eq_of_mem_singleton {a b : α} : a ∈ [b] → a = b := fun this : a ∈ [b] =>
-  Or.elim (eq_or_mem_of_mem_cons this) (fun this : a = b => this) fun this : a ∈ [] =>
-    absurd this (not_mem_nil a)
-#align list.eq_of_mem_singleton List.eq_of_mem_singleton
--/
-
-#print List.mem_singleton /-
-@[simp]
-theorem mem_singleton {a b : α} : a ∈ [b] ↔ a = b :=
-  ⟨eq_of_mem_singleton, Or.inl⟩
-#align list.mem_singleton List.mem_singleton
--/
-
-#print List.mem_of_mem_cons_of_mem /-
-theorem mem_of_mem_cons_of_mem {a b : α} {l : List α} : a ∈ b :: l → b ∈ l → a ∈ l :=
-  fun ainbl binl =>
-  Or.elim (eq_or_mem_of_mem_cons ainbl) (fun this : a = b => by subst a; exact binl)
-    fun this : a ∈ l => this
-#align list.mem_of_mem_cons_of_mem List.mem_of_mem_cons_of_mem
--/
-
 theorem Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α] {a b : α} {l : List α} (h : a ∈ b :: l) :
-    a = b ∨ a ≠ b ∧ a ∈ l :=
-  (Decidable.byCases Or.inl) fun this : a ≠ b => (h.elim Or.inl) fun h => Or.inr ⟨this, h⟩
-#align decidable.list.eq_or_ne_mem_of_mem Decidable.List.eq_or_ne_mem_of_mem
+    a = b ∨ a ≠ b ∧ a ∈ l := by
+  by_cases hab : a = b
+  · exact Or.inl hab
+  . exact ((List.mem_cons.1 h).elim Or.inl (fun h => Or.inr ⟨hab, h⟩))
+#align list.decidable.list.eq_or_ne_mem_of_mem List.Decidable.List.eq_or_ne_mem_of_mem
 
-#print List.eq_or_ne_mem_of_mem /-
-/- failed to parenthesize: parenthesize: uncaught backtrack exception
-[PrettyPrinter.parenthesize.input] (Command.declaration
-     (Command.declModifiers [] [] [] [] [] [])
-     (Command.theorem
-      "theorem"
-      (Command.declId `eq_or_ne_mem_of_mem [])
-      (Command.declSig
-       [(Term.implicitBinder "{" [`a `b] [":" `α] "}")
-        (Term.implicitBinder "{" [`l] [":" (Term.app `List [`α])] "}")]
-       (Term.typeSpec
-        ":"
-        (Term.arrow
-         («term_∈_» `a "∈" («term_::_» `b "::" `l))
-         "→"
-         («term_∨_»
-          («term_=_» `a "=" `b)
-          "∨"
-          («term_∧_» («term_≠_» `a "≠" `b) "∧" («term_∈_» `a "∈" `l))))))
-      (Command.declValSimple
-       ":="
-       (Term.byTactic
-        "by"
-        (Tactic.tacticSeq
-         (Tactic.tacticSeq1Indented
-          [(Tactic.«tactic_<;>_»
-            (Mathlib.Tactic.tacticClassical_ (Tactic.skip "skip"))
-            "<;>"
-            (Tactic.exact "exact" `Decidable.List.eq_or_ne_mem_of_mem))])))
-       [])
-      []
-      []))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.abbrev'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.def'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Term.byTactic
-       "by"
-       (Tactic.tacticSeq
-        (Tactic.tacticSeq1Indented
-         [(Tactic.«tactic_<;>_»
-           (Mathlib.Tactic.tacticClassical_ (Tactic.skip "skip"))
-           "<;>"
-           (Tactic.exact "exact" `Decidable.List.eq_or_ne_mem_of_mem))])))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Tactic.tacticSeq1Indented', expected 'Lean.Parser.Tactic.tacticSeqBracketed'
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.«tactic_<;>_»
-       (Mathlib.Tactic.tacticClassical_ (Tactic.skip "skip"))
-       "<;>"
-       (Tactic.exact "exact" `Decidable.List.eq_or_ne_mem_of_mem))
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      (Tactic.exact "exact" `Decidable.List.eq_or_ne_mem_of_mem)
-[PrettyPrinter.parenthesize] parenthesizing (cont := (none, [anonymous]))
-      `Decidable.List.eq_or_ne_mem_of_mem
-[PrettyPrinter.parenthesize] ...precedences are 0 >? 1024, (none,
-     [anonymous]) <=? (none, [anonymous])
-[PrettyPrinter.parenthesize] ...precedences are 2 >? 1022
-[PrettyPrinter.parenthesize] parenthesizing (cont := (some 1, tactic))
-      (Mathlib.Tactic.tacticClassical_ (Tactic.skip "skip"))
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Tactic.skip', expected 'Lean.Parser.Tactic.tacticSeq'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.declValSimple', expected 'Lean.Parser.Command.declValEqns'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.declValSimple', expected 'Lean.Parser.Command.whereStructInst'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.opaque'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.instance'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.axiom'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.example'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.inductive'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.classInductive'
-[PrettyPrinter.parenthesize.backtrack] unexpected node kind 'Lean.Parser.Command.theorem', expected 'Lean.Parser.Command.structure'-/-- failed to format: format: uncaught backtrack exception
-theorem
-  eq_or_ne_mem_of_mem
-  { a b : α } { l : List α } : a ∈ b :: l → a = b ∨ a ≠ b ∧ a ∈ l
-  := by skip <;> exact Decidable.List.eq_or_ne_mem_of_mem
-#align list.eq_or_ne_mem_of_mem List.eq_or_ne_mem_of_mem
--/
-
-#print List.not_mem_append /-
 theorem not_mem_append {a : α} {s t : List α} (h₁ : a ∉ s) (h₂ : a ∉ t) : a ∉ s ++ t :=
-  mt mem_append.1 <| not_or.2 ⟨h₁, h₂⟩
+mt mem_append.1 $ not_or.mpr ⟨h₁, h₂⟩
 #align list.not_mem_append List.not_mem_append
--/
 
-#print List.ne_nil_of_mem /-
-theorem ne_nil_of_mem {a : α} {l : List α} (h : a ∈ l) : l ≠ [] := by
-  intro e <;> rw [e] at h <;> cases h
+-- theorem mem_of_ne_of_mem {a y : α} {l : List α} (h₁ : a ≠ y) (h₂ : a ∈ y :: l) : a ∈ l :=
+-- Or.elim (eq_or_mem_of_mem_cons h₂) (fun e ↦ absurd e h₁) (fun r ↦ r)
+
+-- theorem ne_of_not_mem_cons {a b : α} {l : List α} : (a ∉ b::l) → a ≠ b :=
+-- fun nin aeqb ↦ absurd (aeqb ▸ Mem.head ..) nin
+
+-- theorem not_mem_of_not_mem_cons {a b : α} {l : List α} : (a ∉ b::l) → a ∉ l :=
+-- fun nin nainl ↦ absurd (Mem.tail _ nainl) nin
+
+-- theorem not_mem_cons_of_ne_of_not_mem {a y : α} {l : List α} : a ≠ y → (a ∉ l) → (a ∉ y::l) :=
+-- fun p1 p2 ↦ fun Pain ↦ absurd (eq_or_mem_of_mem_cons Pain) (not_or.mpr ⟨p1, p2⟩)
+
+-- theorem ne_and_not_mem_of_not_mem_cons {a y : α} {l : List α} : (a ∉ y::l) → a ≠ y ∧ a ∉ l :=
+-- fun p ↦ And.intro (ne_of_not_mem_cons p) (not_mem_of_not_mem_cons p)
+
+
 #align list.ne_nil_of_mem List.ne_nil_of_mem
--/
 
-#print List.mem_split /-
 theorem mem_split {a : α} {l : List α} (h : a ∈ l) : ∃ s t : List α, l = s ++ a :: t := by
-  induction' l with b l ih; · cases h; rcases h with (rfl | h)
-  · exact ⟨[], l, rfl⟩
-  · rcases ih h with ⟨s, t, rfl⟩
-    exact ⟨b :: s, t, rfl⟩
+  induction l with
+  | nil => cases h
+  | cons b l ih =>
+    cases h with
+    | head => exact ⟨[], l, rfl⟩
+    | tail _ h =>
+      rcases ih h with ⟨s, t, rfl⟩
+      exact ⟨b :: s, t, rfl⟩
 #align list.mem_split List.mem_split
--/
 
 #print List.mem_of_ne_of_mem /-
 theorem mem_of_ne_of_mem {a y : α} {l : List α} (h₁ : a ≠ y) (h₂ : a ∈ y :: l) : a ∈ l :=
@@ -5829,17 +5699,7 @@ end List
 -- # Basic properties of Lists
 -- -/
 
--- -- instance : is_left_id (List α) has_append.append [] :=
--- -- ⟨ nil_append ⟩
 
--- -- instance : is_right_id (List α) has_append.append [] :=
--- -- ⟨ append_nil ⟩
-
--- -- instance : is_associative (List α) has_append.append :=
--- -- ⟨ append_assoc ⟩
-
--- @[simp] theorem cons_injective {a : α} : Injective (cons a) :=
--- λ _ _ Pe => tail_eq_of_cons_eq Pe
 
 -- /-! ### mem -/
 
