@@ -459,47 +459,61 @@ fun _ _ ↦ append_right_cancel
 
 /-! ### repeat -/
 
+--Porting TODO: Move to appropriate file
+--Porting note: Renamed to `repeat'` because `repeat` is a keyword or something in Lean4.
+-- TODO: think of better name
+/-- `repeat' a n` returns a `List` of length `n` containing only `a`  -/
+@[simp] def repeat' (a : α) : ℕ → List α
+| 0 => []
+| (succ n) => a :: repeat' a n
+#align list.repeat List.repeat'
+
+--Porting note: From Lean3 Core
+@[simp] lemma length_repeat (a : α) (n : ℕ) : length (repeat' a n) = n :=
+by induction n <;> simp [*]
+#align list.length_repeat List.length_repeat
 
 @[simp]
-theorem repeat_succ (a : α) (n) : repeat a (n + 1) = a :: repeat a n :=
+theorem repeat_succ (a : α) (n) : repeat' a (n + 1) = a :: repeat' a n :=
   rfl
 #align list.repeat_succ List.repeat_succ
 
-theorem mem_repeat {a b : α} : ∀ {n}, b ∈ repeat a n ↔ n ≠ 0 ∧ b = a
+theorem mem_repeat {a b : α} : ∀ {n}, b ∈ repeat' a n ↔ n ≠ 0 ∧ b = a
   | 0 => by simp
   | n + 1 => by simp [mem_repeat]
 #align list.mem_repeat List.mem_repeat
 
-theorem eq_of_mem_repeat {a b : α} {n} (h : b ∈ repeat a n) : b = a :=
+theorem eq_of_mem_repeat {a b : α} {n} (h : b ∈ repeat' a n) : b = a :=
   (mem_repeat.1 h).2
 #align list.eq_of_mem_repeat List.eq_of_mem_repeat
 
-theorem eq_repeat_of_mem {a : α} : ∀ {l : List α}, (∀ b ∈ l, b = a) → l = repeat a l.length
-  | [], H => rfl
+theorem eq_repeat_of_mem {a : α} : ∀ {l : List α}, (∀ b ∈ l, b = a) → l = repeat' a l.length
+  | [], _ => rfl
   | b :: l, H => by
-    cases' forall_mem_cons.1 H with H₁ H₂ <;> unfold length repeat <;> congr <;> [exact H₁,
-      exact eq_repeat_of_mem H₂]
+    rw [length_cons, repeat']
+    cases' forall_mem_cons.1 H with H₁ H₂
+    conv_lhs => rw [H₁, eq_repeat_of_mem H₂]
 #align list.eq_repeat_of_mem List.eq_repeat_of_mem
 
-theorem eq_repeat' {a : α} {l : List α} : l = repeat a l.length ↔ ∀ b ∈ l, b = a :=
+theorem eq_repeat' {a : α} {l : List α} : l = repeat' a l.length ↔ ∀ b ∈ l, b = a :=
   ⟨fun h => h.symm ▸ fun b => eq_of_mem_repeat, eq_repeat_of_mem⟩
 #align list.eq_repeat' List.eq_repeat'
 
-theorem eq_repeat {a : α} {n} {l : List α} : l = repeat a n ↔ length l = n ∧ ∀ b ∈ l, b = a :=
+theorem eq_repeat {a : α} {n} {l : List α} : l = repeat' a n ↔ length l = n ∧ ∀ b ∈ l, b = a :=
   ⟨fun h => h.symm ▸ ⟨length_repeat _ _, fun b => eq_of_mem_repeat⟩, fun ⟨e, al⟩ =>
     e ▸ eq_repeat_of_mem al⟩
 #align list.eq_repeat List.eq_repeat
 
-theorem repeat_add (a : α) (m n) : repeat a (m + n) = repeat a m ++ repeat a n := by
-  induction m <;> simp only [*, zero_add, succ_add, repeat] <;> constructor <;> rfl
+theorem repeat_add (a : α) (m n) : repeat' a (m + n) = repeat' a m ++ repeat' a n := by
+  induction m <;> simp [*, zero_add, succ_add, repeat']
 #align list.repeat_add List.repeat_add
 
-theorem repeat_subset_singleton (a : α) (n) : repeat a n ⊆ [a] := fun b h =>
+theorem repeat_subset_singleton (a : α) (n) : repeat' a n ⊆ [a] := fun _ h =>
   mem_singleton.2 (eq_of_mem_repeat h)
 #align list.repeat_subset_singleton List.repeat_subset_singleton
 
-theorem subset_singleton_iff {a : α} : ∀ L : List α, L ⊆ [a] ↔ ∃ n, L = repeat a n
-  | [] => ⟨fun h => ⟨0, by simp⟩, by simp⟩
+theorem subset_singleton_iff {a : α} : ∀ L : List α, L ⊆ [a] ↔ ∃ n, L = repeat' a n
+  | [] => ⟨fun _ => ⟨0, by simp⟩, by simp⟩
   | h :: L => by
     refine' ⟨fun h => _, fun ⟨k, hk⟩ => by simp [hk, repeat_subset_singleton]⟩
     rw [cons_subset] at h
@@ -508,39 +522,39 @@ theorem subset_singleton_iff {a : α} : ∀ L : List α, L ⊆ [a] ↔ ∃ n, L 
 #align list.subset_singleton_iff List.subset_singleton_iff
 
 @[simp]
-theorem map_repeat (f : α → β) (a : α) (n) : map f (repeat a n) = repeat (f a) n := by
-  induction n <;> [rfl, simp only [*, repeat, map]] <;> constructor <;> rfl
+theorem map_repeat (f : α → β) (a : α) (n) : map f (repeat' a n) = repeat' (f a) n := by
+  induction n <;> [rfl, simp only [*, repeat', map]]
 #align list.map_repeat List.map_repeat
 
 @[simp]
-theorem tail_repeat (a : α) (n) : tail (repeat a n) = repeat a n.pred := by cases n <;> rfl
+theorem tail_repeat (a : α) (n) : tail (repeat' a n) = repeat' a n.pred := by cases n <;> rfl
 #align list.tail_repeat List.tail_repeat
 
 @[simp]
-theorem join_repeat_nil (n : ℕ) : join (repeat [] n) = @nil α := by
-  induction n <;> [rfl, simp only [*, repeat, join, append_nil]]
+theorem join_repeat_nil (n : ℕ) : join (repeat' [] n) = @nil α := by
+  induction n <;> [rfl, simp only [*, repeat', join, append_nil]]
 #align list.join_repeat_nil List.join_repeat_nil
 
-theorem repeat_left_injective {n : ℕ} (hn : n ≠ 0) : Function.Injective fun a : α => repeat a n :=
+theorem repeat_left_injective {n : ℕ} (hn : n ≠ 0) : Function.Injective fun a : α => repeat' a n :=
   fun a b h => (eq_repeat.1 h).2 _ <| mem_repeat.2 ⟨hn, rfl⟩
 #align list.repeat_left_injective List.repeat_left_injective
 
-theorem repeat_left_inj {a b : α} {n : ℕ} (hn : n ≠ 0) : repeat a n = repeat b n ↔ a = b :=
+theorem repeat_left_inj {a b : α} {n : ℕ} (hn : n ≠ 0) : repeat' a n = repeat' b n ↔ a = b :=
   (repeat_left_injective hn).eq_iff
 #align list.repeat_left_inj List.repeat_left_inj
 
 @[simp]
-theorem repeat_left_inj' {a b : α} : ∀ {n}, repeat a n = repeat b n ↔ n = 0 ∨ a = b
+theorem repeat_left_inj' {a b : α} : ∀ {n}, repeat' a n = repeat' b n ↔ n = 0 ∨ a = b
   | 0 => by simp
-  | n + 1 => (repeat_left_inj n.succ_ne_zero).trans <| by simp only [n.succ_ne_zero, false_or_iff]
+  | n + 1 => (repeat_left_inj n.succ_ne_zero).trans <| by simp [n.succ_ne_zero, false_or_iff]
 #align list.repeat_left_inj' List.repeat_left_inj'
 
-theorem repeat_right_injective (a : α) : Function.Injective (repeat a) :=
+theorem repeat_right_injective (a : α) : Function.Injective (repeat' a) :=
   Function.LeftInverse.injective (length_repeat a)
 #align list.repeat_right_injective List.repeat_right_injective
 
 @[simp]
-theorem repeat_right_inj {a : α} {n m : ℕ} : repeat a n = repeat a m ↔ n = m :=
+theorem repeat_right_inj {a : α} {n m : ℕ} : repeat' a n = repeat' a m ↔ n = m :=
   (repeat_right_injective a).eq_iff
 #align list.repeat_right_inj List.repeat_right_inj
 
