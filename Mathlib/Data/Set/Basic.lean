@@ -255,6 +255,8 @@ theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) 
 
 /-! ### Lemmas about `mem` and `setOf` -/
 
+@[simp] theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
+#align set.mem_set_of_eq Set.mem_setOf_eq
 
 theorem mem_setOf {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a :=
   Iff.rfl
