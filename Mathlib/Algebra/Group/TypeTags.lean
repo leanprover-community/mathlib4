@@ -171,21 +171,41 @@ instance Additive.addCommSemigroup [CommSemigroup α] : AddCommSemigroup (Additi
 instance Multiplicative.commSemigroup [AddCommSemigroup α] : CommSemigroup (Multiplicative α) :=
   { Multiplicative.semigroup with mul_comm := @add_comm α _ }
 
+instance Additive.isLeftCancelAdd [Mul α] [IsLeftCancelMul α] : IsLeftCancelAdd (Additive α) :=
+  ⟨@mul_left_cancel α _ _⟩
+
+instance Multiplicative.isLeftCancelMul [Add α] [IsLeftCancelAdd α] :
+    IsLeftCancelMul (Multiplicative α) :=
+  ⟨@add_left_cancel α _ _⟩
+
+instance Additive.isRightCancelAdd [Mul α] [IsRightCancelMul α] : IsRightCancelAdd (Additive α) :=
+  ⟨@mul_right_cancel α _ _⟩
+
+instance Multiplicative.isRightCancelMul [Add α] [IsRightCancelAdd α] :
+    IsRightCancelMul (Multiplicative α) :=
+  ⟨@add_right_cancel α _ _⟩
+
+instance Additive.isCancelAdd [Mul α] [IsCancelMul α] : IsCancelAdd (Additive α) :=
+  ⟨⟩
+
+instance Multiplicative.isCancelMul [Add α] [IsCancelAdd α] : IsCancelMul (Multiplicative α) :=
+  ⟨⟩
+
 instance Additive.addLeftCancelSemigroup [LeftCancelSemigroup α] :
     AddLeftCancelSemigroup (Additive α) :=
-  { Additive.addSemigroup with add_left_cancel := @mul_left_cancel α _ }
+  { Additive.addSemigroup, Additive.isLeftCancelAdd with }
 
 instance Multiplicative.leftCancelSemigroup [AddLeftCancelSemigroup α] :
     LeftCancelSemigroup (Multiplicative α) :=
-  { Multiplicative.semigroup with mul_left_cancel := @add_left_cancel α _ }
+  { Multiplicative.semigroup, Multiplicative.isLeftCancelMul with }
 
 instance Additive.addRightCancelSemigroup [RightCancelSemigroup α] :
     AddRightCancelSemigroup (Additive α) :=
-  { Additive.addSemigroup with add_right_cancel := @mul_right_cancel α _ }
+  { Additive.addSemigroup, Additive.isRightCancelAdd with }
 
 instance Multiplicative.rightCancelSemigroup [AddRightCancelSemigroup α] :
     RightCancelSemigroup (Multiplicative α) :=
-  { Multiplicative.semigroup with mul_right_cancel := @add_right_cancel α _ }
+  { Multiplicative.semigroup, Multiplicative.isRightCancelMul with }
 
 instance [One α] : Zero (Additive α) :=
   ⟨Additive.ofMul 1⟩
@@ -368,10 +388,10 @@ instance Additive.addGroup [Group α] : AddGroup (Additive α) :=
 instance Multiplicative.group [AddGroup α] : Group (Multiplicative α) :=
   { Multiplicative.divInvMonoid with mul_left_inv := @add_left_neg α _ }
 
-instance [CommGroup α] : AddCommGroup (Additive α) :=
+instance Additive.addCommGroup [CommGroup α] : AddCommGroup (Additive α) :=
   { Additive.addGroup, Additive.addCommMonoid with }
 
-instance [AddCommGroup α] : CommGroup (Multiplicative α) :=
+instance Multiplicative.commGroup [AddCommGroup α] : CommGroup (Multiplicative α) :=
   { Multiplicative.group, Multiplicative.commMonoid with }
 
 /-- Reinterpret `α →+ β` as `Multiplicative α →* Multiplicative β`. -/
