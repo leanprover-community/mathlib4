@@ -114,10 +114,12 @@ instance : NonUnitalRingHomClass (α →ₙ+* β) α
   map_zero := NonUnitalRingHom.map_zero'
   map_mul f := f.map_mul'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
-directly. -/
-instance : CoeFun (α →ₙ+* β) fun _ => α → β :=
-  ⟨fun f => f.toFun⟩
+-- Porting note:
+-- These helper instances are unhelpful in Lean 4, so omitting:
+-- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+-- directly. -/
+-- instance : CoeFun (α →ₙ+* β) fun _ => α → β :=
+--   ⟨fun f => f.toFun⟩
 
 -- Porting note: removed due to new `coe` in Lean4
 #noalign non_unital_ring_hom.to_fun_eq_coe
@@ -163,11 +165,10 @@ theorem copy_eq (f : α →ₙ+* β) (f' : α → β) (h : f' = f) : f.copy f' h
 
 end coe
 
-variable [rα : NonUnitalNonAssocSemiring α] [rβ : NonUnitalNonAssocSemiring β]
-
 section
 
-variable (f : α →ₙ+* β) {x y : α} {rα rβ}
+variable {rα : NonUnitalNonAssocSemiring α} {rβ : NonUnitalNonAssocSemiring β}
+variable (f : α →ₙ+* β) {x y : α}
 
 @[ext]
 theorem ext ⦃f g : α →ₙ+* β⦄ : (∀ x, f x = g x) → f = g :=
@@ -179,31 +180,32 @@ theorem ext_iff {f g : α →ₙ+* β} : f = g ↔ ∀ x, f x = g x :=
 #align non_unital_ring_hom.ext_iff NonUnitalRingHom.ext_iff
 
 @[simp]
-theorem mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk f h₁ h₂ h₃ = f :=
+theorem mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk (MulHom.mk f h₁) h₂ h₃ = f :=
   ext fun _ => rfl
 #align non_unital_ring_hom.mk_coe NonUnitalRingHom.mk_coe
 
-theorem coe_add_monoid_hom_injective : Injective (coe : (α →ₙ+* β) → α →+ β) := fun f g h =>
-  ext <| AddMonoidHom.congr_fun h
+theorem coe_add_monoid_hom_injective : Injective fun f : α →ₙ+* β => (f : α →+ β) :=
+  fun _ _ h => ext <| AddMonoidHom.congr_fun h
 #align
   non_unital_ring_hom.coe_add_monoid_hom_injective NonUnitalRingHom.coe_add_monoid_hom_injective
 
-theorem coe_mul_hom_injective : Injective (coe : (α →ₙ+* β) → α →ₙ* β) := fun f g h =>
+set_option linter.deprecated false in
+theorem coe_mul_hom_injective : Injective fun f : α →ₙ+* β => (f : α →ₙ* β) := fun _ _ h =>
   ext <| MulHom.congr_fun h
 #align non_unital_ring_hom.coe_mul_hom_injective NonUnitalRingHom.coe_mul_hom_injective
 
 end
+
+variable [rα : NonUnitalNonAssocSemiring α] [rβ : NonUnitalNonAssocSemiring β]
 
 /-- The identity non-unital ring homomorphism from a non-unital semiring to itself. -/
 protected def id (α : Type _) [NonUnitalNonAssocSemiring α] : α →ₙ+* α := by
   refine' { toFun := id.. } <;> intros <;> rfl
 #align non_unital_ring_hom.id NonUnitalRingHom.id
 
-include rα rβ
-
 instance : Zero (α →ₙ+* β) :=
-  ⟨{ toFun := 0, map_mul' := fun x y => (mul_zero (0 : β)).symm, map_zero' := rfl,
-      map_add' := fun x y => (add_zero (0 : β)).symm }⟩
+  ⟨{ toFun := 0, map_mul' := fun _ _ => (mul_zero (0 : β)).symm, map_zero' := rfl,
+      map_add' := fun _ _ => (add_zero (0 : β)).symm }⟩
 
 instance : Inhabited (α →ₙ+* β) :=
   ⟨0⟩
@@ -217,8 +219,6 @@ theorem coe_zero : ⇑(0 : α →ₙ+* β) = 0 :=
 theorem zero_apply (x : α) : (0 : α →ₙ+* β) x = 0 :=
   rfl
 #align non_unital_ring_hom.zero_apply NonUnitalRingHom.zero_apply
-
-omit rβ
 
 @[simp]
 theorem id_apply (x : α) : NonUnitalRingHom.id α x = x :=
@@ -237,15 +237,13 @@ theorem coe_mul_hom_id : (NonUnitalRingHom.id α : α →ₙ* α) = MulHom.id α
 
 variable {rγ : NonUnitalNonAssocSemiring γ}
 
-include rβ rγ
-
 /-- Composition of non-unital ring homomorphisms is a non-unital ring homomorphism. -/
 def comp (g : β →ₙ+* γ) (f : α →ₙ+* β) : α →ₙ+* γ :=
   { g.toMulHom.comp f.toMulHom, g.toAddMonoidHom.comp f.toAddMonoidHom with }
 #align non_unital_ring_hom.comp NonUnitalRingHom.comp
 
 /-- Composition of non-unital ring homomorphisms is associative. -/
-theorem comp_assoc {δ} {rδ : NonUnitalNonAssocSemiring δ} (f : α →ₙ+* β) (g : β →ₙ+* γ)
+theorem comp_assoc {δ} {_ : NonUnitalNonAssocSemiring δ} (f : α →ₙ+* β) (g : β →ₙ+* γ)
     (h : γ →ₙ+* δ) : (h.comp g).comp f = h.comp (g.comp f) :=
   rfl
 #align non_unital_ring_hom.comp_assoc NonUnitalRingHom.comp_assoc
@@ -284,19 +282,15 @@ theorem zero_comp (f : α →ₙ+* β) : (0 : β →ₙ+* γ).comp f = 0 := by
   rfl
 #align non_unital_ring_hom.zero_comp NonUnitalRingHom.zero_comp
 
-omit rγ
-
 @[simp]
 theorem comp_id (f : α →ₙ+* β) : f.comp (NonUnitalRingHom.id α) = f :=
-  ext fun x => rfl
+  ext fun _ => rfl
 #align non_unital_ring_hom.comp_id NonUnitalRingHom.comp_id
 
 @[simp]
 theorem id_comp (f : α →ₙ+* β) : (NonUnitalRingHom.id β).comp f = f :=
-  ext fun x => rfl
+  ext fun _ => rfl
 #align non_unital_ring_hom.id_comp NonUnitalRingHom.id_comp
-
-omit rβ
 
 instance : MonoidWithZero
       (α →ₙ+* α) where
@@ -327,8 +321,6 @@ theorem coe_mul (f g : α →ₙ+* α) : ⇑(f * g) = f ∘ g :=
   rfl
 #align non_unital_ring_hom.coe_mul NonUnitalRingHom.coe_mul
 
-include rβ rγ
-
 theorem cancel_right {g₁ g₂ : β →ₙ+* γ} {f : α →ₙ+* β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 (ext_iff.1 h), fun h => h ▸ rfl⟩
@@ -338,8 +330,6 @@ theorem cancel_left {g : β →ₙ+* γ} {f₁ f₂ : α →ₙ+* β} (hg : Inje
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h => h ▸ rfl⟩
 #align non_unital_ring_hom.cancel_left NonUnitalRingHom.cancel_left
-
-omit rα rβ rγ
 
 end NonUnitalRingHom
 
@@ -410,13 +400,9 @@ Throughout this section, some `semiring` arguments are specified with `{}` inste
 See note [implicit instance arguments].
 -/
 
-
 variable {rα : NonAssocSemiring α} {rβ : NonAssocSemiring β}
 
-include rα rβ
-
-instance : RingHomClass (α →+* β) α
-      β where
+instance : RingHomClass (α →+* β) α β where
   coe := RingHom.toFun
   coe_injective' f g h := by cases f <;> cases g <;> congr
   map_add := RingHom.map_add'
@@ -424,11 +410,13 @@ instance : RingHomClass (α →+* β) α
   map_mul := RingHom.map_mul'
   map_one := RingHom.map_one'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
-directly.
--/
-instance : CoeFun (α →+* β) fun _ => α → β :=
-  ⟨RingHom.toFun⟩
+-- Porting note:
+-- These helper instances are unhelpful in Lean 4, so omitting:
+-- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+-- directly.
+-- -/
+-- instance : CoeFun (α →+* β) fun _ => α → β :=
+--   ⟨RingHom.toFun⟩
 
 initialize_simps_projections RingHom (toFun → apply)
 
