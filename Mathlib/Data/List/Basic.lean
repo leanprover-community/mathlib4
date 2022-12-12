@@ -373,14 +373,6 @@ alias subset_nil ↔ eq_nil_of_subset_nil _
 
 #align list.eq_nil_iff_forall_not_mem List.eq_nil_iff_forall_not_mem
 
-/- warning: list.map_subset -> List.map_subset is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} {l₁ : List.{u} α} {l₂ : List.{u} α} (f : α -> β), (HasSubset.Subset.{u} (List.{u} α) (List.hasSubset.{u} α) l₁ l₂) -> (HasSubset.Subset.{v} (List.{v} β) (List.hasSubset.{v} β) (List.map.{u, v} α β f l₁) (List.map.{u, v} α β f l₂))
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {l₁ : List.{u_1} α} {l₂ : List.{u_1} α} (f : α -> β), (HasSubset.Subset.{u_1} (List.{u_1} α) (List.instHasSubsetList.{u_1} α) l₁ l₂) -> (HasSubset.Subset.{u_2} (List.{u_2} β) (List.instHasSubsetList.{u_2} β) (List.map.{u_1, u_2} α β f l₁) (List.map.{u_1, u_2} α β f l₂))
-Case conversion may be inaccurate. Consider using '#align list.map_subset List.map_subsetₓ'. -/
-theorem map_subset {l₁ l₂ : List α} (f : α → β) (H : l₁ ⊆ l₂) : map f l₁ ⊆ map f l₂ := fun x => by
-  simp only [mem_map, not_and, exists_imp, and_imp] <;> exact fun a h e => ⟨a, H h, e⟩
 #align list.map_subset List.map_subset
 
 theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
@@ -397,31 +389,13 @@ theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L�
   rfl
 #align list.append_eq_has_append List.append_eq_has_append
 
-#print List.singleton_append /-
-@[simp]
-theorem singleton_append {x : α} {l : List α} : [x] ++ l = x :: l :=
-  rfl
 #align list.singleton_append List.singleton_append
--/
 
-#print List.append_ne_nil_of_ne_nil_left /-
-theorem append_ne_nil_of_ne_nil_left (s t : List α) : s ≠ [] → s ++ t ≠ [] := by
-  induction s <;> intros <;> contradiction
 #align list.append_ne_nil_of_ne_nil_left List.append_ne_nil_of_ne_nil_left
--/
 
-#print List.append_ne_nil_of_ne_nil_right /-
-theorem append_ne_nil_of_ne_nil_right (s t : List α) : t ≠ [] → s ++ t ≠ [] := by
-  induction s <;> intros <;> contradiction
 #align list.append_ne_nil_of_ne_nil_right List.append_ne_nil_of_ne_nil_right
--/
 
-#print List.append_eq_nil /-
-@[simp]
-theorem append_eq_nil {p q : List α} : p ++ q = [] ↔ p = [] ∧ q = [] := by
-  cases p <;> simp only [nil_append, cons_append, eq_self_iff_true, true_and_iff, false_and_iff]
 #align list.append_eq_nil List.append_eq_nil
--/
 
 @[simp]
 theorem nil_eq_append_iff {a b : List α} : [] = a ++ b ↔ a = [] ∧ b = [] := by
@@ -431,8 +405,8 @@ theorem nil_eq_append_iff {a b : List α} : [] = a ++ b ↔ a = [] ∧ b = [] :=
 theorem append_eq_cons_iff {a b c : List α} {x : α} :
     a ++ b = x :: c ↔ a = [] ∧ b = x :: c ∨ ∃ a', a = x :: a' ∧ c = a' ++ b := by
   cases a <;>
-    simp only [and_assoc', @eq_comm _ c, nil_append, cons_append, eq_self_iff_true, true_and_iff,
-      false_and_iff, exists_false, false_or_iff, or_false_iff, exists_and_left, exists_eq_left']
+    simp only [nil_append, true_and, @eq_comm _ c, false_and, exists_false, or_false, iff_self,
+      cons_append, cons.injEq, false_and, and_assoc, exists_and_left, exists_eq_left', false_or]
 #align list.append_eq_cons_iff List.append_eq_cons_iff
 
 theorem cons_eq_append_iff {a b c : List α} {x : α} :
@@ -440,144 +414,46 @@ theorem cons_eq_append_iff {a b c : List α} {x : α} :
   rw [eq_comm, append_eq_cons_iff]
 #align list.cons_eq_append_iff List.cons_eq_append_iff
 
-#print List.append_eq_append_iff /-
-theorem append_eq_append_iff {a b c d : List α} :
-    a ++ b = c ++ d ↔ (∃ a', c = a ++ a' ∧ b = a' ++ d) ∨ ∃ c', a = c ++ c' ∧ d = c' ++ b := by
-  induction a generalizing c
-  case nil =>
-    rw [nil_append]; constructor
-    · rintro rfl
-      left
-      exact ⟨_, rfl, rfl⟩
-    · rintro (⟨a', rfl, rfl⟩ | ⟨a', H, rfl⟩)
-      · rfl
-      · rw [← append_assoc, ← H]
-        rfl
-  case cons a as ih =>
-    cases c
-    · simp only [cons_append, nil_append, false_and_iff, exists_false, false_or_iff,
-        exists_eq_left']
-      exact eq_comm
-    · simp only [cons_append, @eq_comm _ a, ih, and_assoc', and_or_left, exists_and_left]
 #align list.append_eq_append_iff List.append_eq_append_iff
--/
 
-#print List.take_append_drop /-
-@[simp]
-theorem take_append_drop : ∀ (n : ℕ) (l : List α), take n l ++ drop n l = l
-  | 0, a => rfl
-  | succ n, [] => rfl
-  | succ n, x :: xs => congr_arg (cons x) <| take_append_drop n xs
 #align list.take_append_drop List.take_append_drop
--/
 
-#print List.append_inj /-
--- TODO(Leo): cleanup proof after arith dec proc
-theorem append_inj :
-    ∀ {s₁ s₂ t₁ t₂ : List α}, s₁ ++ t₁ = s₂ ++ t₂ → length s₁ = length s₂ → s₁ = s₂ ∧ t₁ = t₂
-  | [], [], t₁, t₂, h, hl => ⟨rfl, h⟩
-  | a :: s₁, [], t₁, t₂, h, hl => List.noConfusion <| eq_nil_of_length_eq_zero hl
-  | [], b :: s₂, t₁, t₂, h, hl => List.noConfusion <| eq_nil_of_length_eq_zero hl.symm
-  | a :: s₁, b :: s₂, t₁, t₂, h, hl =>
-    (List.noConfusion h) fun ab hap => by
-      let ⟨e1, e2⟩ := @append_inj s₁ s₂ t₁ t₂ hap (succ.inj hl)
-      rw [ab, e1, e2] <;> exact ⟨rfl, rfl⟩
 #align list.append_inj List.append_inj
--/
 
-/- warning: list.append_inj_right -> List.append_inj_right is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {s₁ : List.{u} α} {s₂ : List.{u} α} {t₁ : List.{u} α} {t₂ : List.{u} α}, (Eq.{succ u} (List.{u} α) (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) s₁ t₁) (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) s₂ t₂)) -> (Eq.{1} Nat (List.length.{u} α s₁) (List.length.{u} α s₂)) -> (Eq.{succ u} (List.{u} α) t₁ t₂)
-but is expected to have type
-  forall {α._@.Std.Data.List.Init.Lemmas._hyg.1583 : Type.{u_1}} {s₁ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1583} {t₁ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1583} {s₂ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1583} {t₂ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1583}, (Eq.{succ u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1583) (HAppend.hAppend.{u_1, u_1, u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1583) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1583) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1583) (instHAppend.{u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1583) (List.instAppendList.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1583)) s₁ t₁) (HAppend.hAppend.{u_1, u_1, u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1583) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1583) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1583) (instHAppend.{u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1583) (List.instAppendList.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1583)) s₂ t₂)) -> (Eq.{1} Nat (List.length.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1583 s₁) (List.length.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1583 s₂)) -> (Eq.{succ u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1583) t₁ t₂)
-Case conversion may be inaccurate. Consider using '#align list.append_inj_right List.append_inj_rightₓ'. -/
-theorem append_inj_right {s₁ s₂ t₁ t₂ : List α} (h : s₁ ++ t₁ = s₂ ++ t₂)
-    (hl : length s₁ = length s₂) : t₁ = t₂ :=
-  (append_inj h hl).right
+--Porting note: Implicit arguments in a different order
 #align list.append_inj_right List.append_inj_right
 
-/- warning: list.append_inj_left -> List.append_inj_left is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {s₁ : List.{u} α} {s₂ : List.{u} α} {t₁ : List.{u} α} {t₂ : List.{u} α}, (Eq.{succ u} (List.{u} α) (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) s₁ t₁) (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) s₂ t₂)) -> (Eq.{1} Nat (List.length.{u} α s₁) (List.length.{u} α s₂)) -> (Eq.{succ u} (List.{u} α) s₁ s₂)
-but is expected to have type
-  forall {α._@.Std.Data.List.Init.Lemmas._hyg.1640 : Type.{u_1}} {s₁ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1640} {t₁ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1640} {s₂ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1640} {t₂ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1640}, (Eq.{succ u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1640) (HAppend.hAppend.{u_1, u_1, u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1640) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1640) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1640) (instHAppend.{u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1640) (List.instAppendList.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1640)) s₁ t₁) (HAppend.hAppend.{u_1, u_1, u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1640) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1640) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1640) (instHAppend.{u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1640) (List.instAppendList.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1640)) s₂ t₂)) -> (Eq.{1} Nat (List.length.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1640 s₁) (List.length.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1640 s₂)) -> (Eq.{succ u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1640) s₁ s₂)
-Case conversion may be inaccurate. Consider using '#align list.append_inj_left List.append_inj_leftₓ'. -/
-theorem append_inj_left {s₁ s₂ t₁ t₂ : List α} (h : s₁ ++ t₁ = s₂ ++ t₂)
-    (hl : length s₁ = length s₂) : s₁ = s₂ :=
-  (append_inj h hl).left
+--Porting note: Implicit arguments in a different order
 #align list.append_inj_left List.append_inj_left
 
-/- warning: list.append_inj' -> List.append_inj' is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {s₁ : List.{u} α} {s₂ : List.{u} α} {t₁ : List.{u} α} {t₂ : List.{u} α}, (Eq.{succ u} (List.{u} α) (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) s₁ t₁) (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) s₂ t₂)) -> (Eq.{1} Nat (List.length.{u} α t₁) (List.length.{u} α t₂)) -> (And (Eq.{succ u} (List.{u} α) s₁ s₂) (Eq.{succ u} (List.{u} α) t₁ t₂))
-but is expected to have type
-  forall {α._@.Std.Data.List.Init.Lemmas._hyg.1705 : Type.{u_1}} {s₁ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1705} {t₁ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1705} {s₂ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1705} {t₂ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1705}, (Eq.{succ u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1705) (HAppend.hAppend.{u_1, u_1, u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1705) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1705) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1705) (instHAppend.{u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1705) (List.instAppendList.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1705)) s₁ t₁) (HAppend.hAppend.{u_1, u_1, u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1705) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1705) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1705) (instHAppend.{u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1705) (List.instAppendList.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1705)) s₂ t₂)) -> (Eq.{1} Nat (List.length.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1705 t₁) (List.length.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1705 t₂)) -> (And (Eq.{succ u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1705) s₁ s₂) (Eq.{succ u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1705) t₁ t₂))
-Case conversion may be inaccurate. Consider using '#align list.append_inj' List.append_inj'ₓ'. -/
-theorem append_inj' {s₁ s₂ t₁ t₂ : List α} (h : s₁ ++ t₁ = s₂ ++ t₂) (hl : length t₁ = length t₂) :
-    s₁ = s₂ ∧ t₁ = t₂ :=
-  append_inj h <|
-    @Nat.add_right_cancel _ (length t₁) _ <| by
-      let hap := congr_arg length h
-      simp only [length_append] at hap <;> rwa [← hl] at hap
+--Porting note: Implicit arguments in a different order
 #align list.append_inj' List.append_inj'
 
-/- warning: list.append_inj_right' -> List.append_inj_right' is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {s₁ : List.{u} α} {s₂ : List.{u} α} {t₁ : List.{u} α} {t₂ : List.{u} α}, (Eq.{succ u} (List.{u} α) (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) s₁ t₁) (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) s₂ t₂)) -> (Eq.{1} Nat (List.length.{u} α t₁) (List.length.{u} α t₂)) -> (Eq.{succ u} (List.{u} α) t₁ t₂)
-but is expected to have type
-  forall {α._@.Std.Data.List.Init.Lemmas._hyg.1792 : Type.{u_1}} {s₁ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1792} {t₁ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1792} {s₂ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1792} {t₂ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1792}, (Eq.{succ u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1792) (HAppend.hAppend.{u_1, u_1, u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1792) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1792) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1792) (instHAppend.{u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1792) (List.instAppendList.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1792)) s₁ t₁) (HAppend.hAppend.{u_1, u_1, u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1792) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1792) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1792) (instHAppend.{u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1792) (List.instAppendList.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1792)) s₂ t₂)) -> (Eq.{1} Nat (List.length.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1792 t₁) (List.length.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1792 t₂)) -> (Eq.{succ u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1792) t₁ t₂)
-Case conversion may be inaccurate. Consider using '#align list.append_inj_right' List.append_inj_right'ₓ'. -/
-theorem append_inj_right' {s₁ s₂ t₁ t₂ : List α} (h : s₁ ++ t₁ = s₂ ++ t₂)
-    (hl : length t₁ = length t₂) : t₁ = t₂ :=
-  (append_inj' h hl).right
+--Porting note: Implicit arguments in a different order
 #align list.append_inj_right' List.append_inj_right'
 
-/- warning: list.append_inj_left' -> List.append_inj_left' is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {s₁ : List.{u} α} {s₂ : List.{u} α} {t₁ : List.{u} α} {t₂ : List.{u} α}, (Eq.{succ u} (List.{u} α) (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) s₁ t₁) (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) s₂ t₂)) -> (Eq.{1} Nat (List.length.{u} α t₁) (List.length.{u} α t₂)) -> (Eq.{succ u} (List.{u} α) s₁ s₂)
-but is expected to have type
-  forall {α._@.Std.Data.List.Init.Lemmas._hyg.1849 : Type.{u_1}} {s₁ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1849} {t₁ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1849} {s₂ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1849} {t₂ : List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1849}, (Eq.{succ u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1849) (HAppend.hAppend.{u_1, u_1, u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1849) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1849) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1849) (instHAppend.{u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1849) (List.instAppendList.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1849)) s₁ t₁) (HAppend.hAppend.{u_1, u_1, u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1849) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1849) (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1849) (instHAppend.{u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1849) (List.instAppendList.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1849)) s₂ t₂)) -> (Eq.{1} Nat (List.length.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1849 t₁) (List.length.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1849 t₂)) -> (Eq.{succ u_1} (List.{u_1} α._@.Std.Data.List.Init.Lemmas._hyg.1849) s₁ s₂)
-Case conversion may be inaccurate. Consider using '#align list.append_inj_left' List.append_inj_left'ₓ'. -/
-theorem append_inj_left' {s₁ s₂ t₁ t₂ : List α} (h : s₁ ++ t₁ = s₂ ++ t₂)
-    (hl : length t₁ = length t₂) : s₁ = s₂ :=
-  (append_inj' h hl).left
+--Porting note: Implicit arguments in a different order
 #align list.append_inj_left' List.append_inj_left'
 
-#print List.append_left_cancel /-
 theorem append_left_cancel {s t₁ t₂ : List α} (h : s ++ t₁ = s ++ t₂) : t₁ = t₂ :=
-  append_inj_right h rfl
+  (append_right_inj _).1 h
 #align list.append_left_cancel List.append_left_cancel
--/
 
-#print List.append_right_cancel /-
 theorem append_right_cancel {s₁ s₂ t : List α} (h : s₁ ++ t = s₂ ++ t) : s₁ = s₂ :=
-  append_inj_left' h rfl
+  (append_left_inj _).1 h
 #align list.append_right_cancel List.append_right_cancel
--/
 
-#print List.append_right_injective /-
-theorem append_right_injective (s : List α) : Function.Injective fun t => s ++ t := fun t₁ t₂ =>
-  append_left_cancel
+theorem append_right_injective (s : List α) : Injective fun t ↦ s ++ t :=
+fun _ _ ↦ append_left_cancel
 #align list.append_right_injective List.append_right_injective
--/
 
-#print List.append_right_inj /-
-theorem append_right_inj {t₁ t₂ : List α} (s) : s ++ t₁ = s ++ t₂ ↔ t₁ = t₂ :=
-  (append_right_injective s).eq_iff
 #align list.append_right_inj List.append_right_inj
--/
 
-#print List.append_left_injective /-
-theorem append_left_injective (t : List α) : Function.Injective fun s => s ++ t := fun s₁ s₂ =>
-  append_right_cancel
+theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
+fun _ _ ↦ append_right_cancel
 #align list.append_left_injective List.append_left_injective
--/
 
-#print List.append_left_inj /-
-theorem append_left_inj {s₁ s₂ : List α} (t) : s₁ ++ t = s₂ ++ t ↔ s₁ = s₂ :=
-  (append_left_injective t).eq_iff
 #align list.append_left_inj List.append_left_inj
--/
 
 /- warning: list.map_eq_append_split -> List.map_eq_append_split is a dubious translation:
 lean 3 declaration is
@@ -733,7 +609,7 @@ theorem concat_nil (a : α) : concat [] a = [a] :=
 theorem concat_cons (a b : α) (l : List α) : concat (a :: l) b = a :: concat l b :=
   rfl
 #align list.concat_cons List.concat_cons
-
+#exit
 /- warning: list.concat_eq_append -> List.concat_eq_append is a dubious translation:
 lean 3 declaration is
   forall {α : Type.{u}} (a : α) (l : List.{u} α), Eq.{succ u} (List.{u} α) (List.concat.{u} α l a) (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) l (List.cons.{u} α a (List.nil.{u} α)))
@@ -5514,17 +5390,8 @@ end List
 -- -- | n+1, [] => rfl
 -- -- | n+1, x :: xs => by simp only [split_at, split_at_eq_take_drop n xs, take, drop]
 
--- theorem append_left_cancel {s t₁ t₂ : List α} (h : s ++ t₁ = s ++ t₂) : t₁ = t₂ :=
---   (append_right_inj _).1 h
 
--- theorem append_right_cancel {s₁ s₂ t : List α} (h : s₁ ++ t = s₂ ++ t) : s₁ = s₂ :=
---   (append_left_inj _).1 h
 
--- theorem append_right_injective (s : List α) : Injective fun t ↦ s ++ t :=
--- fun _ _ ↦ append_left_cancel
-
--- theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
--- fun _ _ ↦ append_right_cancel
 
 -- /-! ### nth element -/
 
@@ -5538,7 +5405,7 @@ end List
 --     match i, j with
 --     | 0, 0 => rfl
 --     | i+1, j+1 => simp; cases h₁ with
---       | cons ha h₁ => exact ih (Nat.lt_of_succ_lt_succ h₀) h₁ h₂
+--       | cons ha h₁ => exact ih (Nat.lt_of_sugitc_lt_succ h₀) h₁ h₂
 --     | i+1, 0 => ?_ | 0, j+1 => ?_
 --     all_goals
 --       simp at h₂
