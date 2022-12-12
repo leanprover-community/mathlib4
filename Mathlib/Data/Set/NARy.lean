@@ -9,15 +9,15 @@ import Mathlib.Data.Set.Image
 /-!
 # N-ary images of sets
 
-This file defines `finset.image₂`, the binary image of finsets. This is the finset version of
+This file defines `Set.image2`, the binary image of finsets. This is the finset version of
 `set.image2`. This is mostly useful to define pointwise operations.
 
 ## Notes
 
-This file is very similar to the n-ary section of `data.set.basic`, to `order.filter.n_ary` and to
-`data.option.n_ary`. Please keep them in sync.
+This file is very similar to the n-ary section of `Data.Set.Basic`, to `Order.Filter.NAry` and to
+`Data.Option.NAry`. Please keep them in sync.
 
-We do not define `finset.image₃` as its only purpose would be to prove properties of `finset.image₂`
+We do not define `Set.image3` as its only purpose would be to prove properties of `Set.image2`
 and `set.image2` already fulfills this task.
 -/
 
@@ -30,7 +30,7 @@ variable {α α' β β' γ γ' δ δ' ε ε' : Type _} {f f' : α → β → γ}
 
 variable {s s' : Set α} {t t' : Set β} {u u' : Set γ} {a a' : α} {b b' : β} {c c' : γ} {d d' : δ}
 
-/-- The image of a binary function `f : α → β → γ` as a function `set α → set β → set γ`.
+/-- The image of a binary function `f : α → β → γ` as a function `Set α → Set β → Set γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`.-/
 def image2 (f : α → β → γ) (s : Set α) (t : Set β) : Set γ :=
   { c | ∃ a b, a ∈ s ∧ b ∈ t ∧ f a b = c }
@@ -66,17 +66,17 @@ theorem image2_subset_right (hs : s ⊆ s') : image2 f s t ⊆ image2 f s' t :=
   image2_subset hs Subset.rfl
 #align set.image2_subset_right Set.image2_subset_right
 
-theorem image_subset_image2_left (hb : b ∈ t) : (fun a => f a b) '' s ⊆ image2 f s t :=
-  ball_image_of_ball fun a ha => mem_image2_of_mem ha hb
+theorem image_subset_image2_left (hb : b ∈ t) : (fun a => f a b) ~~ s ⊆ image2 f s t :=
+  ball_image_of_ball fun _ ha => mem_image2_of_mem ha hb
 #align set.image_subset_image2_left Set.image_subset_image2_left
 
-theorem image_subset_image2_right (ha : a ∈ s) : f a '' t ⊆ image2 f s t :=
-  ball_image_of_ball fun b => mem_image2_of_mem ha
+theorem image_subset_image2_right (ha : a ∈ s) : f a ~~ t ⊆ image2 f s t :=
+  ball_image_of_ball fun _ => mem_image2_of_mem ha
 #align set.image_subset_image2_right Set.image_subset_image2_right
 
 theorem forall_image2_iff {p : γ → Prop} :
     (∀ z ∈ image2 f s t, p z) ↔ ∀ x ∈ s, ∀ y ∈ t, p (f x y) :=
-  ⟨fun h x hx y hy => h _ ⟨x, y, hx, hy, rfl⟩, fun h z ⟨x, y, hx, hy, hz⟩ => hz ▸ h x hx y hy⟩
+  ⟨fun h x hx y hy => h _ ⟨x, y, hx, hy, rfl⟩, fun h _ ⟨x, y, hx, hy, hz⟩ => hz ▸ h x hx y hy⟩
 #align set.forall_image2_iff Set.forall_image2_iff
 
 @[simp]
@@ -113,7 +113,7 @@ theorem image2_empty_right : image2 f s ∅ = ∅ :=
 #align set.image2_empty_right Set.image2_empty_right
 
 theorem Nonempty.image2 : s.Nonempty → t.Nonempty → (image2 f s t).Nonempty :=
-  fun ⟨a, ha⟩ ⟨b, hb⟩ => ⟨_, mem_image2_of_mem ha hb⟩
+  fun ⟨_, ha⟩ ⟨_, hb⟩ => ⟨_, mem_image2_of_mem ha hb⟩
 #align set.nonempty.image2 Set.Nonempty.image2
 
 @[simp]
@@ -121,17 +121,18 @@ theorem image2_nonempty_iff : (image2 f s t).Nonempty ↔ s.Nonempty ∧ t.Nonem
   ⟨fun ⟨_, a, b, ha, hb, _⟩ => ⟨⟨a, ha⟩, b, hb⟩, fun h => h.1.image2 h.2⟩
 #align set.image2_nonempty_iff Set.image2_nonempty_iff
 
-theorem Nonempty.of_image2_left (h : (image2 f s t).Nonempty) : s.Nonempty :=
+theorem Nonempty.of_image2_left (h : (Set.image2 f s t).Nonempty) : s.Nonempty :=
   (image2_nonempty_iff.1 h).1
 #align set.nonempty.of_image2_left Set.Nonempty.of_image2_left
 
-theorem Nonempty.of_image2_right (h : (image2 f s t).Nonempty) : t.Nonempty :=
+theorem Nonempty.of_image2_right (h : (Set.image2 f s t).Nonempty) : t.Nonempty :=
   (image2_nonempty_iff.1 h).2
 #align set.nonempty.of_image2_right Set.Nonempty.of_image2_right
 
 @[simp]
 theorem image2_eq_empty_iff : image2 f s t = ∅ ↔ s = ∅ ∨ t = ∅ := by
-  simp_rw [← not_nonempty_iff_eq_empty, image2_nonempty_iff, not_and_or]
+  rw [← not_nonempty_iff_eq_empty, image2_nonempty_iff, not_and_or]
+  simp [not_nonempty_iff_eq_empty]
 #align set.image2_eq_empty_iff Set.image2_eq_empty_iff
 
 theorem image2_inter_subset_left : image2 f (s ∩ s') t ⊆ image2 f s t ∩ image2 f s' t := by
@@ -145,12 +146,12 @@ theorem image2_inter_subset_right : image2 f s (t ∩ t') ⊆ image2 f s t ∩ i
 #align set.image2_inter_subset_right Set.image2_inter_subset_right
 
 @[simp]
-theorem image2_singleton_left : image2 f {a} t = f a '' t :=
+theorem image2_singleton_left : image2 f {a} t = f a ~~ t :=
   ext fun x => by simp
 #align set.image2_singleton_left Set.image2_singleton_left
 
 @[simp]
-theorem image2_singleton_right : image2 f s {b} = (fun a => f a b) '' s :=
+theorem image2_singleton_right : image2 f s {b} = (fun a => f a b) ~~ s :=
   ext fun x => by simp
 #align set.image2_singleton_right Set.image2_singleton_right
 
@@ -182,8 +183,8 @@ theorem mem_image3 : d ∈ image3 g s t u ↔ ∃ a b c, a ∈ s ∧ b ∈ t ∧
 #align set.mem_image3 Set.mem_image3
 
 theorem image3_mono (hs : s ⊆ s') (ht : t ⊆ t') (hu : u ⊆ u') :
-    image3 g s t u ⊆ image3 g s' t' u' := fun x =>
-  Exists₃Cat.imp fun a b c ⟨ha, hb, hc, hx⟩ => ⟨hs ha, ht hb, hu hc, hx⟩
+    image3 g s t u ⊆ image3 g s' t' u' := fun _ =>
+  Exists₃.imp fun _ _ _ ⟨ha, hb, hc, hx⟩ => ⟨hs ha, ht hb, hu hc, hx⟩
 #align set.image3_mono Set.image3_mono
 
 @[congr]
@@ -218,7 +219,7 @@ theorem image2_image2_right (f : α → δ → ε) (g : β → γ → δ) :
 #align set.image2_image2_right Set.image2_image2_right
 
 theorem image_image2 (f : α → β → γ) (g : γ → δ) :
-    g '' image2 f s t = image2 (fun a b => g (f a b)) s t := by
+    g ~~ image2 f s t = image2 (fun a b => g (f a b)) s t := by
   ext; constructor
   · rintro ⟨_, ⟨a, b, ha, hb, rfl⟩, rfl⟩
     refine' ⟨a, b, ha, hb, rfl⟩
@@ -227,7 +228,7 @@ theorem image_image2 (f : α → β → γ) (g : γ → δ) :
 #align set.image_image2 Set.image_image2
 
 theorem image2_image_left (f : γ → β → δ) (g : α → γ) :
-    image2 f (g '' s) t = image2 (fun a b => f (g a) b) s t := by
+    image2 f (g ~~ s) t = image2 (fun a b => f (g a) b) s t := by
   ext; constructor
   · rintro ⟨_, b, ⟨a, ha, rfl⟩, hb, rfl⟩
     refine' ⟨a, b, ha, hb, rfl⟩
@@ -236,7 +237,7 @@ theorem image2_image_left (f : γ → β → δ) (g : α → γ) :
 #align set.image2_image_left Set.image2_image_left
 
 theorem image2_image_right (f : α → γ → δ) (g : β → γ) :
-    image2 f s (g '' t) = image2 (fun a b => f a (g b)) s t := by
+    image2 f s (g ~~ t) = image2 (fun a b => f a (g b)) s t := by
   ext; constructor
   · rintro ⟨a, _, ha, ⟨b, hb, rfl⟩, rfl⟩
     refine' ⟨a, b, ha, hb, rfl⟩
@@ -251,12 +252,12 @@ theorem image2_swap (f : α → β → γ) (s : Set α) (t : Set β) :
 #align set.image2_swap Set.image2_swap
 
 @[simp]
-theorem image2_left (h : t.Nonempty) : image2 (fun x y => x) s t = s := by
+theorem image2_left (h : t.Nonempty) : image2 (fun x _ => x) s t = s := by
   simp [nonempty_def.mp h, ext_iff]
 #align set.image2_left Set.image2_left
 
 @[simp]
-theorem image2_right (h : s.Nonempty) : image2 (fun x y => y) s t = t := by
+theorem image2_right (h : s.Nonempty) : image2 (fun _ y => y) s t = t := by
   simp [nonempty_def.mp h, ext_iff]
 #align set.image2_right Set.image2_right
 
