@@ -70,10 +70,12 @@ you should parametrize over `(F : Type*) [OrderAddMonoidHomClass F α β] (f : F
 When you extend this structure, make sure to extend `OrderAddMonoidHomClass`. -/
 structure OrderAddMonoidHom (α β : Type _) [Preorder α] [Preorder β] [AddZeroClass α]
   [AddZeroClass β] extends α →+ β where
+  /-- An `OrderAddMonoidHom` is a monotone function. -/
   monotone' : Monotone toFun
 #align order_add_monoid_hom OrderAddMonoidHom
 
 -- mathport name: «expr →+o »
+/-- Infix notation for `OrderAddMonoidHom`. -/
 infixr:25 " →+o " => OrderAddMonoidHom
 
 section
@@ -83,7 +85,8 @@ section
 You should also extend this typeclass when you extend `OrderAddMonoidHom`. -/
 class OrderAddMonoidHomClass (F : Type _) (α β : outParam <| Type _) [Preorder α] [Preorder β]
   [AddZeroClass α] [AddZeroClass β] extends AddMonoidHomClass F α β where
-  Monotone (f : F) : Monotone f
+  /-- An `OrderAddMonoidHom` is a monotone function. -/
+  monotone (f : F) : Monotone f
 #align order_add_monoid_hom_class OrderAddMonoidHomClass
 
 end
@@ -104,10 +107,12 @@ When you extend this structure, make sure to extend `OrderMonoidHomClass`. -/
 @[to_additive]
 structure OrderMonoidHom (α β : Type _) [Preorder α] [Preorder β] [MulOneClass α]
   [MulOneClass β] extends α →* β where
+  /-- An `OrderMonoidHom` is a monotone function. -/
   monotone' : Monotone toFun
 #align order_monoid_hom OrderMonoidHom
 
 -- mathport name: «expr →*o »
+/-- Infix notation for `OrderMonoidHom`. -/
 infixr:25 " →*o " => OrderMonoidHom
 
 section
@@ -118,6 +123,7 @@ You should also extend this typeclass when you extend `OrderMonoidHom`. -/
 @[to_additive]
 class OrderMonoidHomClass (F : Type _) (α β : outParam <| Type _) [Preorder α] [Preorder β]
   [MulOneClass α] [MulOneClass β] extends MonoidHomClass F α β where
+  /-- An `OrderMonoidHom` is a monotone function. -/
   monotone (f : F) : Monotone f
 #align order_monoid_hom_class OrderMonoidHomClass
 
@@ -156,10 +162,12 @@ you should parametrize over `(F : Type*) [OrderMonoidWithZeroHomClass F α β] (
 When you extend this structure, make sure to extend `OrderMonoidWithZeroHomClass`. -/
 structure OrderMonoidWithZeroHom (α β : Type _) [Preorder α] [Preorder β] [MulZeroOneClass α]
   [MulZeroOneClass β] extends α →*₀ β where
+  /-- An `OrderMonoidWithZeroHom` is a monotone function. -/
   monotone' : Monotone toFun
 #align order_monoid_with_zero_hom OrderMonoidWithZeroHom
 
 -- mathport name: «expr →*₀o »
+/-- Infix notation for `OrderMonoidWithZeroHom`. -/
 infixr:25 " →*₀o " => OrderMonoidWithZeroHom
 
 section
@@ -170,6 +178,7 @@ ordered monoid with zero homomorphisms.
 You should also extend this typeclass when you extend `OrderMonoidWithZeroHom`. -/
 class OrderMonoidWithZeroHomClass (F : Type _) (α β : outParam <| Type _) [Preorder α] [Preorder β]
   [MulZeroOneClass α] [MulZeroOneClass β] extends MonoidWithZeroHomClass F α β where
+  /-- An `OrderMonoidWithZeroHom` is a monotone function. -/
   monotone (f : F) : Monotone f
 #align order_monoid_with_zero_hom_class OrderMonoidWithZeroHomClass
 
@@ -385,13 +394,13 @@ theorem comp_apply (f : β →*o γ) (g : α →*o β) (a : α) : (f.comp g) a =
   rfl
 #align order_monoid_hom.comp_apply OrderMonoidHom.comp_apply
 
-@[simp, to_additive]
+@[to_additive]
 theorem coe_comp_monoidHom (f : β →*o γ) (g : α →*o β) :
     (f.comp g : α →* γ) = (f : β →* γ).comp g :=
   rfl
 #align order_monoid_hom.coe_comp_monoid_hom OrderMonoidHom.coe_comp_monoidHom
 
-@[simp, to_additive]
+@[to_additive]
 theorem coe_comp_orderHom (f : β →*o γ) (g : α →*o β) :
     (f.comp g : α →o γ) = (f : β →o γ).comp g :=
   rfl
@@ -507,8 +516,8 @@ variable {hα : OrderedCommGroup α} {hβ : OrderedCommGroup β}
 
 /-- Makes an ordered group homomorphism from a proof that the map preserves multiplication. -/
 @[to_additive
-      "Makes an ordered additive group homomorphism from a proof that the map preserves\naddition.",
-  simps (config := { fullyApplied := false })]
+      "Makes an ordered additive group homomorphism from a proof that the map preserves
+      addition."]
 def mk' (f : α → β) (hf : Monotone f) (map_mul : ∀ a b : α, f (a * b) = f a * f b) : α →*o β :=
   { MonoidHom.mk' f map_mul with monotone' := hf }
 #align order_monoid_hom.mk' OrderMonoidHom.mk'
@@ -638,7 +647,6 @@ theorem comp_apply (f : β →*₀o γ) (g : α →*₀o β) (a : α) : (f.comp 
   rfl
 #align order_monoid_with_zero_hom.comp_apply OrderMonoidWithZeroHom.comp_apply
 
-@[simp]
 theorem coe_comp_monoidWithZeroHom (f : β →*₀o γ) (g : α →*₀o β) :
     (f.comp g : α →*₀ γ) = (f : β →*₀ γ).comp g :=
   rfl
@@ -646,7 +654,6 @@ theorem coe_comp_monoidWithZeroHom (f : β →*₀o γ) (g : α →*₀o β) :
   order_monoid_with_zero_hom.coe_comp_monoid_with_zero_hom
   OrderMonoidWithZeroHom.coe_comp_monoidWithZeroHom
 
-@[simp]
 theorem coe_comp_orderMonoidHom (f : β →*₀o γ) (g : α →*₀o β) :
     (f.comp g : α →*o γ) = (f : β →*o γ).comp g :=
   rfl
@@ -662,12 +669,12 @@ theorem comp_assoc (f : γ →*₀o δ) (g : β →*₀o γ) (h : α →*₀o β
 
 @[simp]
 theorem comp_id (f : α →*₀o β) : f.comp (OrderMonoidWithZeroHom.id α) = f :=
-  ext fun a => rfl
+  ext fun _ => rfl
 #align order_monoid_with_zero_hom.comp_id OrderMonoidWithZeroHom.comp_id
 
 @[simp]
 theorem id_comp (f : α →*₀o β) : (OrderMonoidWithZeroHom.id β).comp f = f :=
-  ext fun a => rfl
+  ext fun _ => rfl
 #align order_monoid_with_zero_hom.id_comp OrderMonoidWithZeroHom.id_comp
 
 theorem cancel_right {g₁ g₂ : β →*₀o γ} {f : α →*₀o β} (hf : Function.Surjective f) :
