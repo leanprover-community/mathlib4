@@ -54,7 +54,7 @@ variable {F α β γ : Type _}
 homomorphisms too.
 
 When possible, instead of parametrizing results over `(f : α →ₙ+* β)`,
-you should parametrize over `(F : Type*) [NonUnitalRingHomClass F α β] (f : F)`.
+you should parametrize over `(F : Type _) [NonUnitalRingHomClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `NonUnitalRingHomClass`. -/
 structure NonUnitalRingHom (α β : Type _) [NonUnitalNonAssocSemiring α]
