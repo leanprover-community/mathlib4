@@ -449,6 +449,10 @@ theorem ext {f g : MulEquiv M N} (h : ∀ x, f x = g x) : f = g :=
 #align mul_equiv.ext MulEquiv.ext
 #align add_equiv.ext AddEquiv.ext
 
+-- Porting note: can be removed after https://github.com/leanprover-community/mathlib4/pull/954
+-- is merged.
+attribute [ext] AddEquiv.ext
+
 @[to_additive]
 theorem ext_iff {f g : MulEquiv M N} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff

@@ -7,7 +7,7 @@ import Mathlib.Tactic.Convert
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Order.Monotone
+import Mathlib.Order.Monotone.Basic
 import Mathlib.Logic.Nontrivial
 
 /-!
