@@ -48,6 +48,7 @@ import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Order.Field.Canonical.Defs
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.DenselyOrdered
