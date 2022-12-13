@@ -183,7 +183,8 @@ instance (priority := 100) NoZeroDivisors.toIsCancelMulZero [Ring α] [NoZeroDiv
 lemma NoZeroDivisors.toIsDomain [Ring α] [h : Nontrivial α] [NoZeroDivisors α] :
   IsDomain α :=
 { NoZeroDivisors.toIsCancelMulZero α, h with .. }
-#align no_zero_divisors.to_is_domain.to_no_zero_divisors NoZeroDivisors.toIsDomain
+
+#align no_zero_divisors.to_is_domain NoZeroDivisors.toIsDomain
 
 instance (priority := 100) IsDomain.toNoZeroDivisors [Ring α] [IsDomain α] :
     NoZeroDivisors α :=

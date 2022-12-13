@@ -124,6 +124,11 @@ instance : NonUnitalRingHomClass (α →ₙ+* β) α
 #noalign non_unital_ring_hom.coe_mk
 #noalign non_unital_ring_hom.coe_coe
 
+def simps.toFun {α β : Type _} [NonUnitalNonAssocSemiring α]
+  [NonUnitalNonAssocSemiring β] (f : α →ₙ+* β) : α → β := f
+
+initialize_simps_projections NonUnitalRingHom (toMulHom_toFun → toFun)
+
 @[simp]
 theorem coe_to_mulHom (f : α →ₙ+* β) : ⇑f.toMulHom = f :=
   rfl
