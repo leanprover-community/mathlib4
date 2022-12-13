@@ -17,35 +17,35 @@ variable {ι ι' : Type _} {α β : ι → Type _} {s s₁ s₂ : Set ι} {t t�
   {u : Set (Σ i, α i)} {x : Σ i, α i} {i j : ι} {a : α i}
 
 @[simp]
-theorem range_sigma_mk (i : ι) : range (Sigma.mk i : α i → Sigma α) = Sigma.fst ⁻¹' {i} := by
+theorem range_sigmaMk (i : ι) : range (Sigma.mk i : α i → Sigma α) = Sigma.fst ⁻¹' {i} := by
   apply Subset.antisymm
   · rintro _ ⟨b, rfl⟩
     simp
   · rintro ⟨x, y⟩ (rfl | _)
     exact mem_range_self y
-#align set.range_sigma_mk Set.range_sigma_mk
+#align set.range_sigmaMk Set.range_sigmaMk
 
-theorem preimage_image_sigma_mk_of_ne (h : i ≠ j) (s : Set (α j)) :
+theorem preimage_image_sigmaMk_of_ne (h : i ≠ j) (s : Set (α j)) :
     Sigma.mk i ⁻¹' (Sigma.mk j ~~ s) = ∅ := by
   ext x
   simp [h.symm]
-#align set.preimage_image_sigma_mk_of_ne Set.preimage_image_sigma_mk_of_ne
+#align set.preimage_image_sigmaMk_of_ne Set.preimage_image_sigmaMk_of_ne
 
-theorem image_sigma_mk_preimage_sigma_map_subset {β : ι' → Type _} (f : ι → ι')
+theorem image_sigmaMk_preimage_sigmaMap_subset {β : ι' → Type _} (f : ι → ι')
     (g : ∀ i, α i → β (f i)) (i : ι) (s : Set (β (f i))) :
     Sigma.mk i ~~ (g i ⁻¹' s) ⊆ Sigma.map f g ⁻¹' (Sigma.mk (f i) ~~ s) :=
   image_subset_iff.2 fun x hx ↦ ⟨g i x, hx, rfl⟩
-#align set.image_sigma_mk_preimage_sigma_map_subset Set.image_sigma_mk_preimage_sigma_map_subset
+#align set.image_sigmaMk_preimage_sigmaMap_subset Set.image_sigmaMk_preimage_sigmaMap_subset
 
-theorem image_sigma_mk_preimage_sigma_map {β : ι' → Type _} {f : ι → ι'} (hf : Function.Injective f)
+theorem image_sigmaMk_preimage_sigmaMap {β : ι' → Type _} {f : ι → ι'} (hf : Function.Injective f)
     (g : ∀ i, α i → β (f i)) (i : ι) (s : Set (β (f i))) :
     Sigma.mk i ~~ (g i ⁻¹' s) = Sigma.map f g ⁻¹' (Sigma.mk (f i) ~~ s) := by
-  refine' (image_sigma_mk_preimage_sigma_map_subset f g i s).antisymm _
+  refine' (image_sigmaMk_preimage_sigmaMap_subset f g i s).antisymm _
   rintro ⟨j, x⟩ ⟨y, hys, hxy⟩
   simp only [hf.eq_iff, Sigma.map, Sigma.ext_iff] at hxy
   rcases hxy with ⟨rfl, hxy⟩; rw [heq_iff_eq] at hxy; subst y
   exact ⟨x, hys, rfl⟩
-#align set.image_sigma_mk_preimage_sigma_map Set.image_sigma_mk_preimage_sigma_map
+#align set.image_sigmaMk_preimage_sigmaMap Set.image_sigmaMk_preimage_sigmaMap
 
 /-- Indexed sum of sets. `s.sigma t` is the set of dependent pairs `⟨i, a⟩` such that `i ∈ s` and
 `a ∈ t i`.-/
@@ -167,11 +167,11 @@ theorem sigma_preimage_right {g : ∀ i, β i → α i} :
   rfl
 #align set.sigma_preimage_right Set.sigma_preimage_right
 
-theorem preimage_sigma_map_sigma {α' : ι' → Type _} (f : ι → ι') (g : ∀ i, α i → α' (f i))
+theorem preimage_sigmaMap_sigma {α' : ι' → Type _} (f : ι → ι') (g : ∀ i, α i → α' (f i))
     (s : Set ι') (t : ∀ i, Set (α' i)) :
     Sigma.map f g ⁻¹' s.Sigma t = (f ⁻¹' s).Sigma fun i ↦ g i ⁻¹' t (f i) :=
   rfl
-#align set.preimage_sigma_map_sigma Set.preimage_sigma_map_sigma
+#align set.preimage_sigmaMap_sigma Set.preimage_sigmaMap_sigma
 
 @[simp]
 theorem mk_preimage_sigma (hi : i ∈ s) : Sigma.mk i ⁻¹' s.Sigma t = t i :=
@@ -220,14 +220,14 @@ theorem sigma_eq_empty_iff : s.Sigma t = ∅ ↔ ∀ i ∈ s, t i = ∅ :=
       simp only [not_nonempty_iff_eq_empty, not_and, not_exists] ; rfl
 #align set.sigma_eq_empty_iff Set.sigma_eq_empty_iff
 
-theorem image_sigma_mk_subset_sigma_left {a : ∀ i, α i} (ha : ∀ i, a i ∈ t i) :
+theorem image_sigmaMk_subset_sigma_left {a : ∀ i, α i} (ha : ∀ i, a i ∈ t i) :
     (fun i ↦ Sigma.mk i (a i)) ~~ s ⊆ s.Sigma t :=
   image_subset_iff.2 fun _ hi ↦ ⟨hi, ha _⟩
-#align set.image_sigma_mk_subset_sigma_left Set.image_sigma_mk_subset_sigma_left
+#align set.image_sigmaMk_subset_sigma_left Set.image_sigmaMk_subset_sigma_left
 
-theorem image_sigma_mk_subset_sigma_right (hi : i ∈ s) : Sigma.mk i ~~ t i ⊆ s.Sigma t :=
+theorem image_sigmaMk_subset_sigma_right (hi : i ∈ s) : Sigma.mk i ~~ t i ⊆ s.Sigma t :=
   image_subset_iff.2 fun _ ↦ And.intro hi
-#align set.image_sigma_mk_subset_sigma_right Set.image_sigma_mk_subset_sigma_right
+#align set.image_sigmaMk_subset_sigma_right Set.image_sigmaMk_subset_sigma_right
 
 theorem sigma_subset_preimage_fst (s : Set ι) (t : ∀ i, Set (α i)) : s.Sigma t ⊆ Sigma.fst ⁻¹' s :=
   fun _ ↦ And.left
