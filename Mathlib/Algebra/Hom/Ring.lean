@@ -60,7 +60,7 @@ structure NonUnitalRingHom (α β : Type _) [NonUnitalNonAssocSemiring α]
   [NonUnitalNonAssocSemiring β] extends α →ₙ* β, α →+ β
 #align non_unital_ring_hom NonUnitalRingHom
 
--- mathport name: «expr →ₙ+* »
+/-- `α →ₙ+* β` denotes the type of non-unital ring homomorphisms from `α` to `β`. -/
 infixr:25 " →ₙ+* " => NonUnitalRingHom
 
 /-- Reinterpret a non-unital ring homomorphism `f : α →ₙ+* β` as a semigroup
@@ -135,9 +135,9 @@ theorem coe_mulHom_mk (f : α → β) (h₁ h₂ h₃) :
 #align non_unital_ring_hom.coe_mul_hom_mk NonUnitalRingHom.coe_mulHom_mk
 
 @[simp]
-theorem coe_to_addMonoidHom (f : α →ₙ+* β) : ⇑f.toAddMonoidHom = f :=
+theorem coe_toAddMonoidHom (f : α →ₙ+* β) : ↑(f.toMulHom) = ↑f :=
   rfl
-#align non_unital_ring_hom.coe_to_add_monoid_hom NonUnitalRingHom.coe_to_addMonoidHom
+#align non_unital_ring_hom.coe_to_add_monoid_hom NonUnitalRingHom.coe_toAddMonoidHom
 
 @[simp]
 theorem coe_addMonoidHom_mk (f : α → β) (h₁ h₂ h₃) :
@@ -254,6 +254,7 @@ theorem coe_comp (g : β →ₙ+* γ) (f : α →ₙ+* β) : ⇑(g.comp f) = g �
 theorem comp_apply (g : β →ₙ+* γ) (f : α →ₙ+* β) (x : α) : g.comp f x = g (f x) :=
   rfl
 #align non_unital_ring_hom.comp_apply NonUnitalRingHom.comp_apply
+variable (g : β →ₙ+* γ) (f : α →ₙ+* β)
 
 @[simp]
 theorem coe_comp_addMonoidHom (g : β →ₙ+* γ) (f : α →ₙ+* β) :
@@ -289,8 +290,7 @@ theorem id_comp (f : α →ₙ+* β) : (NonUnitalRingHom.id β).comp f = f :=
   ext fun _ => rfl
 #align non_unital_ring_hom.id_comp NonUnitalRingHom.id_comp
 
-instance : MonoidWithZero
-      (α →ₙ+* α) where
+instance : MonoidWithZero (α →ₙ+* α) where
   one := NonUnitalRingHom.id α
   mul := comp
   mul_one := comp_id
@@ -338,7 +338,7 @@ structure RingHom (α : Type _) (β : Type _) [NonAssocSemiring α] [NonAssocSem
   α →* β, α →+ β, α →ₙ+* β, α →*₀ β
 #align ring_hom RingHom
 
--- mathport name: «expr →+* »
+/-- `α →+* β` denotes the type of ring homomorphisms from `α` to `β`. -/
 infixr:25 " →+* " => RingHom
 
 /-- Reinterpret a ring homomorphism `f : α →+* β` as a monoid with zero homomorphism `α →*₀ β`.
@@ -766,21 +766,22 @@ def mkRingHomOfMulSelfOfTwoNeZero (h : ∀ x, f (x * x) = f x * f x) (h_two : (2
   add_monoid_hom.mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.mkRingHomOfMulSelfOfTwoNeZero
 
 @[simp]
-theorem coe_fn_mk_ring_hom_of_mul_self_of_two_ne_zero (h h_two h_one) :
+theorem coe_fn_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β → α) = f :=
   rfl
 #align
   add_monoid_hom.coe_fn_mk_ring_hom_of_mul_self_of_two_ne_zero
-  AddMonoidHom.coe_fn_mk_ring_hom_of_mul_self_of_two_ne_zero
+  AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero
 
-@[simp]
-theorem coe_add_monoid_hom_mk_ring_hom_of_mul_self_of_two_ne_zero (h h_two h_one) :
+-- Porting note: `simp` can prove this
+-- @[simp]
+theorem coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β →+ α) = f := by
   apply AddMonoidHom.ext -- Porting note: why isn't `ext` picking up this lemma?
   intro
   rfl
 #align
   add_monoid_hom.coe_add_monoid_hom_mk_ring_hom_of_mul_self_of_two_ne_zero
-  AddMonoidHom.coe_add_monoid_hom_mk_ring_hom_of_mul_self_of_two_ne_zero
+  AddMonoidHom.coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero
 
 end AddMonoidHom
