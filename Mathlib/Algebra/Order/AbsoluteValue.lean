@@ -288,10 +288,10 @@ variable {S : Type _} [OrderedSemiring S]
 variable {R : Type _} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
 
 /-- A bundled absolute value is an absolute value. -/
-instance AbsoluteValue.is_absolute_value (abv : AbsoluteValue R S) :
+instance _root_.AbsoluteValue.is_absolute_value (abv : AbsoluteValue R S) :
     IsAbsoluteValue abv where
   abv_nonneg := abv.nonneg
-  abv_eq_zero _ := abv.eq_zero
+  abv_eq_zero := abv.eq_zero
   abv_add := abv.add_le
   abv_mul := abv.map_mul
 #align absolute_value.is_absolute_value AbsoluteValue.is_absolute_value
@@ -300,10 +300,10 @@ instance AbsoluteValue.is_absolute_value (abv : AbsoluteValue R S) :
 @[simps]
 def toAbsoluteValue : AbsoluteValue R S where
   toFun := abv
-  add_le' := abv_add abv
-  eq_zero' _ := abv_eq_zero abv
-  nonneg' := abv_nonneg abv
-  map_mul' := abv_mul abv
+  add_le' := abv_add
+  eq_zero' _ := abv_eq_zero
+  nonneg' := abv_nonneg
+  map_mul' := abv_mul
 #align is_absolute_value.to_absolute_value IsAbsoluteValue.toAbsoluteValue
 
 theorem abv_zero : abv 0 = 0 :=
@@ -421,7 +421,7 @@ theorem abv_one' : abv 1 = 1 :=
 
 /-- An absolute value as a monoid with zero homomorphism, assuming the target is a semifield. -/
 def abvHom' : R →*₀ S :=
-  ⟨abv, abv_zero abv, abv_one' abv, abv_mul abv⟩
+  ⟨⟨abv, abv_zero abv⟩, abv_one' abv, abv_mul⟩
 #align is_absolute_value.abv_hom' IsAbsoluteValue.abvHom'
 
 end Semiring
