@@ -412,17 +412,20 @@ variable [Mul M] [Mul N] [CommSemigroup P] (f : M →ₙ* P) (g : N →ₙ* P)
 def coprod : M × N →ₙ* P :=
   f.comp (fst M N) * g.comp (snd M N)
 #align mul_hom.coprod MulHom.coprod
+#align add_hom.coprod AddHom.coprod
 
 @[simp, to_additive]
 theorem coprod_apply (p : M × N) : f.coprod g p = f p.1 * g p.2 :=
   rfl
 #align mul_hom.coprod_apply MulHom.coprod_apply
+#align add_hom.coprod_apply AddHom.coprod_apply
 
 @[to_additive]
 theorem comp_coprod {Q : Type _} [CommSemigroup Q] (h : P →ₙ* Q) (f : M →ₙ* P) (g : N →ₙ* P) :
     h.comp (f.coprod g) = (h.comp f).coprod (h.comp g) :=
   ext fun x => by simp
 #align mul_hom.comp_coprod MulHom.comp_coprod
+#align add_hom_comp_coprod AddHom.comp_coprod
 
 end Coprod
 
@@ -441,6 +444,7 @@ def fst : M × N →* M :=
     map_one' := rfl,
     map_mul' := fun _ _ => rfl }
 #align monoid_hom.fst MonoidHom.fst
+#align add_monoid_hom.fst AddMonoidHom.fst
 
 /-- Given monoids `M`, `N`, the natural projection homomorphism from `M × N` to `N`.-/
 @[to_additive
@@ -451,6 +455,7 @@ def snd : M × N →* N :=
     map_one' := rfl,
     map_mul' := fun _ _ => rfl }
 #align monoid_hom.snd MonoidHom.snd
+#align add_monoid_hom.snd AddMonoidHom.snd
 
 /-- Given monoids `M`, `N`, the natural inclusion homomorphism from `M` to `M × N`. -/
 @[to_additive
@@ -461,6 +466,7 @@ def inl : M →* M × N :=
     map_one' := rfl,
     map_mul' := fun _ _ => Prod.ext rfl (one_mul 1).symm }
 #align monoid_hom.inl MonoidHom.inl
+#align add_monoid_hom.inl AddMonoidHom.inl
 
 /-- Given monoids `M`, `N`, the natural inclusion homomorphism from `N` to `M × N`. -/
 @[to_additive
@@ -471,6 +477,7 @@ def inr : N →* M × N :=
     map_one' := rfl,
     map_mul' := fun _ _ => Prod.ext (one_mul 1).symm rfl }
 #align monoid_hom.inr MonoidHom.inr
+#align add_monoid_hom.inr AddMonoidHom.inr
 
 variable {M N}
 
@@ -478,41 +485,49 @@ variable {M N}
 theorem coe_fst : ⇑(fst M N) = Prod.fst :=
   rfl
 #align monoid_hom.coe_fst MonoidHom.coe_fst
+#align add_monoid_hom.coe_fst AddMonoidHom.coe_fst
 
 @[simp, to_additive]
 theorem coe_snd : ⇑(snd M N) = Prod.snd :=
   rfl
 #align monoid_hom.coe_snd MonoidHom.coe_snd
+#align add_monoid_hom.coe_snd AddMonoidHom.coe_snd
 
 @[simp, to_additive]
 theorem inl_apply (x) : inl M N x = (x, 1) :=
   rfl
 #align monoid_hom.inl_apply MonoidHom.inl_apply
+#align add_monoid_hom.inl_apply AddMonoidHom.inl_apply
 
 @[simp, to_additive]
 theorem inr_apply (y) : inr M N y = (1, y) :=
   rfl
 #align monoid_hom.inr_apply MonoidHom.inr_apply
+#align add_monoid_hom.inr_apply AddMonoidHom.inr_apply
 
 @[simp, to_additive]
 theorem fst_comp_inl : (fst M N).comp (inl M N) = id M :=
   rfl
 #align monoid_hom.fst_comp_inl MonoidHom.fst_comp_inl
+#align add_monoid_hom.fst_comp_inl AddMonoidHom.fst_comp_inl
 
 @[simp, to_additive]
 theorem snd_comp_inl : (snd M N).comp (inl M N) = 1 :=
   rfl
 #align monoid_hom.snd_comp_inl MonoidHom.snd_comp_inl
+#align add_monoid_hom.snd_comp_inl AddMonoidHom.snd_comp_inl
 
 @[simp, to_additive]
 theorem fst_comp_inr : (fst M N).comp (inr M N) = 1 :=
   rfl
 #align monoid_hom.fst_comp_inr MonoidHom.fst_comp_inr
+#align add_monoid_hom.fst_comp_inr AddMonoidHom.fst_comp_inr
 
 @[simp, to_additive]
 theorem snd_comp_inr : (snd M N).comp (inr M N) = id N :=
   rfl
 #align monoid_hom.snd_comp_inr MonoidHom.snd_comp_inr
+#align add_monoid_hom.snd_comp_inr AddMonoidHom.snd_comp_inr
 
 section Prod
 
@@ -520,7 +535,7 @@ variable [MulOneClass P]
 
 /-- Combine two `monoid_hom`s `f : M →* N`, `g : M →* P` into `f.prod g : M →* N × P`
 given by `(f.prod g) x = (f x, g x)`. -/
-@[to_additive Prod
+@[to_additive prod
       "Combine two `add_monoid_hom`s `f : M →+ N`, `g : M →+ P` into
       `f.prod g : M →+ N × P` given by `(f.prod g) x = (f x, g x)`"]
 protected def prod (f : M →* N) (g : M →* P) :
@@ -529,31 +544,37 @@ protected def prod (f : M →* N) (g : M →* P) :
   map_one' := Prod.ext f.map_one g.map_one
   map_mul' x y := Prod.ext (f.map_mul x y) (g.map_mul x y)
 #align monoid_hom.prod MonoidHom.prod
+#align add_monoid_hom.prod AddMonoidHom.prod
 
 @[to_additive coe_prod]
 theorem coe_prod (f : M →* N) (g : M →* P) : ⇑(f.prod g) = Pi.prod f g :=
   rfl
 #align monoid_hom.coe_prod MonoidHom.coe_prod
+#align add_monoid_hom.coe_prod AddMonoidHom.coe_prod
 
 @[simp, to_additive prod_apply]
 theorem prod_apply (f : M →* N) (g : M →* P) (x) : f.prod g x = (f x, g x) :=
   rfl
 #align monoid_hom.prod_apply MonoidHom.prod_apply
+#align add_monoid_hom.prod_apply AddMonoidHom.prod_apply
 
 @[simp, to_additive fst_comp_prod]
 theorem fst_comp_prod (f : M →* N) (g : M →* P) : (fst N P).comp (f.prod g) = f :=
   ext fun _ => rfl
 #align monoid_hom.fst_comp_prod MonoidHom.fst_comp_prod
+#align add_monoid_hom.fst_comp_prod AddMonoidHom.fst_comp_prod
 
 @[simp, to_additive snd_comp_prod]
 theorem snd_comp_prod (f : M →* N) (g : M →* P) : (snd N P).comp (f.prod g) = g :=
   ext fun _ => rfl
 #align monoid_hom.snd_comp_prod MonoidHom.snd_comp_prod
+#align add_monoid_hom.snd_comp_prod AddMonoidHom.snd_comp_prod
 
 @[simp, to_additive prod_unique]
 theorem prod_unique (f : M →* N × P) : ((fst N P).comp f).prod ((snd N P).comp f) = f :=
   ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply, Prod.mk.eta]
 #align monoid_hom.prod_unique MonoidHom.prod_unique
+#align add_monoid_hom.prod_unique AddMonoidHom.prod_unique
 
 end Prod
 
@@ -563,26 +584,30 @@ variable {M' : Type _} {N' : Type _} [MulOneClass M'] [MulOneClass N'] [MulOneCl
   (g : N →* N')
 
 /-- `prod.map` as a `monoid_hom`. -/
-@[to_additive Prod_map "`prod.map` as an `add_monoid_hom`"]
+@[to_additive prodMap "`prod.map` as an `add_monoid_hom`"]
 def prodMap : M × N →* M' × N' :=
   (f.comp (fst M N)).prod (g.comp (snd M N))
 #align monoid_hom.prod_map MonoidHom.prodMap
+#align add_monoid_hom.prod_map AddMonoidHom.prodMap
 
-@[to_additive prod_map_def]
-theorem prod_map_def : prodMap f g = (f.comp (fst M N)).prod (g.comp (snd M N)) :=
+@[to_additive prodMap_def]
+theorem prodMap_def : prodMap f g = (f.comp (fst M N)).prod (g.comp (snd M N)) :=
   rfl
-#align monoid_hom.prod_map_def MonoidHom.prod_map_def
+#align monoid_hom.prod_map_def MonoidHom.prodMap_def
+#align add_monoid_hom.prod_map_def AddMonoidHom.prodMap_def
 
-@[simp, to_additive coe_prod_map]
-theorem coe_prod_map : ⇑(prodMap f g) = Prod.map f g :=
+@[simp, to_additive coe_prodMap]
+theorem coe_prodMap : ⇑(prodMap f g) = Prod.map f g :=
   rfl
-#align monoid_hom.coe_prod_map MonoidHom.coe_prod_map
+#align monoid_hom.coe_prod_map MonoidHom.coe_prodMap
+#align add_monoid_hom.coe_prod_map AddMonoidHom.coe_prodMap
 
-@[to_additive prod_comp_prod_map]
-theorem prod_comp_prod_map (f : P →* M) (g : P →* N) (f' : M →* M') (g' : N →* N') :
+@[to_additive prod_comp_prodMap]
+theorem prod_comp_prodMap (f : P →* M) (g : P →* N) (f' : M →* M') (g' : N →* N') :
     (f'.prodMap g').comp (f.prod g) = (f'.comp f).prod (g'.comp g) :=
   rfl
-#align monoid_hom.prod_comp_prod_map MonoidHom.prod_comp_prod_map
+#align monoid_hom.prod_comp_prod_map MonoidHom.prod_comp_prodMap
+#align add_monoid_hom.prod_comp_prod_map AddMonoidHom.prod_comp_prodMap
 
 end Prod_map
 
@@ -598,38 +623,45 @@ variable [CommMonoid P] (f : M →* P) (g : N →* P)
 def coprod : M × N →* P :=
   f.comp (fst M N) * g.comp (snd M N)
 #align monoid_hom.coprod MonoidHom.coprod
+#align add_monoid_hom.coprod AddMonoidHom.coprod
 
 @[simp, to_additive]
 theorem coprod_apply (p : M × N) : f.coprod g p = f p.1 * g p.2 :=
   rfl
 #align monoid_hom.coprod_apply MonoidHom.coprod_apply
+#align add_monoid_hom.coprod_apply AddMonoidHom.coprod_apply
 
 @[simp, to_additive]
 theorem coprod_comp_inl : (f.coprod g).comp (inl M N) = f :=
   ext fun x => by simp [coprod_apply]
 #align monoid_hom.coprod_comp_inl MonoidHom.coprod_comp_inl
+#align add_monoid_hom.coprod_comp_inl AddMonoidHom.coprod_comp_inl
 
 @[simp, to_additive]
 theorem coprod_comp_inr : (f.coprod g).comp (inr M N) = g :=
   ext fun x => by simp [coprod_apply]
 #align monoid_hom.coprod_comp_inr MonoidHom.coprod_comp_inr
+#align add_monoid_hom.coprod_comp_inr AddMonoidHom.coprod_comp_inr
 
 @[simp, to_additive]
 theorem coprod_unique (f : M × N →* P) : (f.comp (inl M N)).coprod (f.comp (inr M N)) = f :=
   ext fun x => by simp [coprod_apply, inl_apply, inr_apply, ← map_mul]
 #align monoid_hom.coprod_unique MonoidHom.coprod_unique
+#align add_monoid_hom.coprod_unique AddMonoidHom.coprod_unique
 
 @[simp, to_additive]
 theorem coprod_inl_inr {M N : Type _} [CommMonoid M] [CommMonoid N] :
     (inl M N).coprod (inr M N) = id (M × N) :=
   coprod_unique (id <| M × N)
 #align monoid_hom.coprod_inl_inr MonoidHom.coprod_inl_inr
+#align add_monoid_hom.coprod_inl_inr AddMonoidHom.coprod_inl_inr
 
 @[to_additive]
 theorem comp_coprod {Q : Type _} [CommMonoid Q] (h : P →* Q) (f : M →* P) (g : N →* P) :
     h.comp (f.coprod g) = (h.comp f).coprod (h.comp g) :=
   ext fun x => by simp
 #align monoid_hom.comp_coprod MonoidHom.comp_coprod
+#align add_monoid_hom.comp_coprod AddMonoidHom.comp_coprod
 
 end Coprod
 
@@ -643,43 +675,49 @@ variable [MulOneClass M] [MulOneClass N]
 
 /-- The equivalence between `M × N` and `N × M` given by swapping the components
 is multiplicative. -/
-@[to_additive prod_comm
+@[to_additive prodComm
       "The equivalence between `M × N` and `N × M` given by swapping the
       components is additive."]
 def prodComm : M × N ≃* N × M :=
   { Equiv.prodComm M N with map_mul' := fun ⟨_, _⟩ ⟨_, _⟩ => rfl }
 #align mul_equiv.prod_comm MulEquiv.prodComm
+#align add_equiv.prod_comm AddEquiv.prodComm
 
-@[simp, to_additive coe_prod_comm]
-theorem coe_prod_comm : ⇑(prodComm : M × N ≃* N × M) = Prod.swap :=
+@[simp, to_additive coe_prodComm]
+theorem coe_prodComm : ⇑(prodComm : M × N ≃* N × M) = Prod.swap :=
   rfl
-#align mul_equiv.coe_prod_comm MulEquiv.coe_prod_comm
+#align mul_equiv.coe_prod_comm MulEquiv.coe_prodComm
+#align add_equiv.coe_prod_comm AddEquiv.coe_prodComm
 
-@[simp, to_additive coe_prod_comm_symm]
-theorem coe_prod_comm_symm : ⇑(prodComm : M × N ≃* N × M).symm = Prod.swap :=
+@[simp, to_additive coe_prodComm_symm]
+theorem coe_prodComm_symm : ⇑(prodComm : M × N ≃* N × M).symm = Prod.swap :=
   rfl
-#align mul_equiv.coe_prod_comm_symm MulEquiv.coe_prod_comm_symm
+#align mul_equiv.coe_prod_comm_symm MulEquiv.coe_prodComm_symm
+#align add_equiv.coe_prod_comm_symm AddEquiv.coe_prodComm_symm
 
 variable {M' N' : Type _} [MulOneClass M'] [MulOneClass N']
 
 /-- Product of multiplicative isomorphisms; the maps come from `equiv.prod_congr`.-/
-@[to_additive prod_congr "Product of additive isomorphisms; the maps come from `equiv.prod_congr`."]
+@[to_additive prodCongr "Product of additive isomorphisms; the maps come from `equiv.prod_congr`."]
 def prodCongr (f : M ≃* M') (g : N ≃* N') : M × N ≃* M' × N' :=
   { f.toEquiv.prodCongr g.toEquiv with
     map_mul' := fun _ _ => Prod.ext (f.map_mul _ _) (g.map_mul _ _) }
 #align mul_equiv.prod_congr MulEquiv.prodCongr
+#align add_equiv.prod_congr AddEquiv.prodCongr
 
 /-- Multiplying by the trivial monoid doesn't change the structure.-/
-@[to_additive unique_prod "Multiplying by the trivial monoid doesn't change the structure."]
+@[to_additive uniqueProd "Multiplying by the trivial monoid doesn't change the structure."]
 def uniqueProd [Unique N] : N × M ≃* M :=
   { Equiv.uniqueProd M N with map_mul' := fun _ _ => rfl }
 #align mul_equiv.unique_prod MulEquiv.uniqueProd
+#align add_equiv.unique_prod AddEquiv.uniqueProd
 
 /-- Multiplying by the trivial monoid doesn't change the structure.-/
-@[to_additive prod_unique "Multiplying by the trivial monoid doesn't change the structure."]
+@[to_additive prodUnique "Multiplying by the trivial monoid doesn't change the structure."]
 def prodUnique [Unique N] : M × N ≃* M :=
   { Equiv.prodUnique M N with map_mul' := fun _ _ => rfl }
 #align mul_equiv.prod_unique MulEquiv.prodUnique
+#align add_equiv.prod_unique AddEquiv.prodUnique
 
 end
 
@@ -689,7 +727,7 @@ variable [Monoid M] [Monoid N]
 
 /-- The monoid equivalence between units of a product of two monoids, and the product of the
     units of each monoid. -/
-@[to_additive prod_add_units
+@[to_additive prodAddUnits
       "The additive monoid equivalence between additive units of a product
       of two additive monoids, and the product of the additive units of each additive monoid."]
 def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
@@ -700,6 +738,7 @@ def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
   right_inv := fun ⟨u₁, u₂⟩ => sorry --by simp only [Units.map]
   map_mul' := MonoidHom.map_mul _
 #align mul_equiv.prod_units MulEquiv.prodUnits
+#align add_equiv.prod_add_units AddEquiv.prodAddUnits
 
 end
 
@@ -722,11 +761,13 @@ def embedProduct (α : Type _) [Monoid α] :
     simp only [inv_one, eq_self_iff_true, Units.val_one, op_one, Prod.mk_eq_one, and_self_iff]
   map_mul' x y := by simp only [mul_inv_rev, op_mul, Units.val_mul, Prod.mk_mul_mk]
 #align units.embed_product Units.embedProduct
+#align add_units.embed_product AddUnits.embedProduct
 
 @[to_additive]
-theorem embed_product_injective (α : Type _) [Monoid α] : Function.Injective (embedProduct α) :=
+theorem embedProduct_injective (α : Type _) [Monoid α] : Function.Injective (embedProduct α) :=
   fun _ _ h => Units.ext <| (congr_arg Prod.fst h : _)
-#align units.embed_product_injective Units.embed_product_injective
+#align units.embed_product_injective Units.embedProduct_injective
+#align add_units.embed_product_injective AddUnits.embedProduct_injective
 
 end Units
 
@@ -744,12 +785,14 @@ def mulMulHom [CommSemigroup α] :
   toFun a := a.1 * a.2
   map_mul' _ _ := mul_mul_mul_comm _ _ _ _
 #align mul_mul_hom mulMulHom
+#align add_add_hom addAddHom
 
 /-- Multiplication as a monoid homomorphism. -/
 @[to_additive "Addition as an additive monoid homomorphism.", simps]
 def mulMonoidHom [CommMonoid α] : α × α →* α :=
   { mulMulHom with map_one' := mul_one _ }
 #align mul_monoid_hom mulMonoidHom
+#align add_add_monoid_hom addAddMonoidHom
 
 /-- Multiplication as a multiplicative homomorphism with zero. -/
 @[simps]
@@ -765,6 +808,7 @@ def divMonoidHom [DivisionCommMonoid α] :
   map_one' := div_one _
   map_mul' _ _ := mul_div_mul_comm _ _ _ _
 #align div_monoid_hom divMonoidHom
+#align sub_add_monoid_hom subAddMonoidHom
 
 /-- Division as a multiplicative homomorphism with zero. -/
 @[simps]
