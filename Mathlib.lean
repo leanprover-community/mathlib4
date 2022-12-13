@@ -192,6 +192,7 @@ import Mathlib.Data.Rat.Order
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.NAry
+import Mathlib.Data.Set.Sigma
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.Sigma.Order
