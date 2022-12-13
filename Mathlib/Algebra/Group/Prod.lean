@@ -580,8 +580,8 @@ end Prod
 
 section Prod_map
 
-variable {M' : Type _} {N' : Type _} [MulOneClass M'] [MulOneClass N'] [MulOneClass P] (f : M →* M')
-  (g : N →* N')
+variable {M' : Type _} {N' : Type _} [MulOneClass M'] [MulOneClass N'] [MulOneClass P]
+  (f : M →* M') (g : N →* N')
 
 /-- `prod.map` as a `MonoidHom`. -/
 @[to_additive prodMap "`prod.map` as an `AddHonoidHom`"]
