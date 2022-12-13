@@ -13,7 +13,7 @@ subgoals in which `e ≡ 0 [ZMOD n]`, ..., `e ≡ n-1 [ZMOD n]` are assumed.
 
 section MoveMe
 /-- `a ≡ b [ZMOD n]` says that `a` and `b` are congruent mod `n : ℤ`. -/
-def Int.modeq (n a b : ℤ) := a % n = b % n
+def Int.modeq (n a b : ℤ) := a.emod n = b.emod n
 
 @[inherit_doc] notation:50 a " ≡ " b " [ZMOD " n "]" => Int.modeq n a b
 end MoveMe
@@ -23,7 +23,7 @@ open Lean Meta Elab Tactic Term Qq Int
 
 /--
 `OnModCases n a lb p` represents a partial proof by cases that
-there exists `0 ≤ z < n` such that `a ≡ z (mod n)`.
+there exists `0 ≤ z < n`t such that `a ≡ z (mod n)`.
 It asserts that if `∃ z, lb ≤ z < n ∧ a ≡ z (mod n)` holds, then `p`
 (where `p` is the current goal).
 -/
@@ -36,12 +36,12 @@ The actual mathematical content of the proof is here.
 -/
 @[inline] def onModCases_start (p : Sort _) (a : ℤ) (n : ℕ) (hn : Nat.ble 1 n = true)
     (H : OnModCases n a (nat_lit 0) p) : p :=
-  H (a % (ofNat n)).toNat <| by
+  H (a.emod (ofNat n)).toNat <| by
     have := ofNat_pos.2 <| Nat.le_of_ble_eq_true hn
     have nonneg := emod_nonneg a <| Int.ne_of_gt this
     refine ⟨Nat.zero_le _, ?_, ?_⟩
-    · simp only [ofNat_eq_coe]; rw [Int.toNat_lt nonneg]; exact Int.emod_lt_of_pos _ this
-    · simp only [ofNat_eq_coe]; rw [Int.modeq, Int.toNat_of_nonneg nonneg, emod_emod]
+    · rw [Int.toNat_lt nonneg]; exact Int.emod_lt_of_pos _ this
+    · rw [Int.modeq, Int.toNat_of_nonneg nonneg, emod_emod]
 
 /--
 The end point is that once we have reduced to `∃ z, n ≤ z < n ∧ a ≡ z (mod n)`
