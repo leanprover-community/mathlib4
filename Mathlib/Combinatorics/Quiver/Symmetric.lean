@@ -79,6 +79,7 @@ variable {U V W}
 
 /-- A prefunctor preserving reversal of arrows -/
 class _root_.Prefunctor.MapReverse [HasReverse U] [HasReverse V] (φ : U ⥤q V) where
+  /-- The image of a reverse is the reverse of the image. -/
   map_reverse' : ∀ {u v : U} (e : u ⟶ v), φ.map (reverse e) = reverse (φ.map e)
 #align prefunctor.map_reverse Prefunctor.MapReverse
 
