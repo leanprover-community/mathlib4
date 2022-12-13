@@ -13,8 +13,8 @@ import Mathlib.Data.Nat.Order.Basic
 
 /-!
 # Instances for Euclidean domains
-* `int.euclidean_domain`: shows that `ℤ` is a Euclidean domain.
-* `field.to_euclidean_domain`: shows that any field is a Euclidean domain.
+* `Int.euclideanDomain`: shows that `ℤ` is a Euclidean domain.
+* `Field.toEuclideanDomain`: shows that any field is a Euclidean domain.
 -/
 
 
