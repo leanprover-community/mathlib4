@@ -45,10 +45,10 @@ theorem range_rec {α : Type _} (x : α) (f : ℕ → α → α) :
     rw [ihn]
 #align nat.range_rec Nat.range_rec
 
-theorem range_cases_on {α : Type _} (x : α) (f : ℕ → α) :
+theorem range_casesOn {α : Type _} (x : α) (f : ℕ → α) :
     (Set.range fun n => Nat.casesOn n x f : Set α) = {x} ∪ Set.range f :=
   (range_of_succ _).symm
-#align nat.range_cases_on Nat.range_cases_on
+#align nat.range_cases_on Nat.range_casesOn
 
 end Set
 
