@@ -56,8 +56,8 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
   | -[_+1] => abs_of_nonpos <| le_of_lt <| negSucc_lt_zero _
 #align int.abs_eq_nat_abs Int.abs_eq_natAbs
 
-theorem nat_abs_abs (a : ℤ) : natAbs (|a|) = natAbs a := by rw [abs_eq_natAbs] ; rfl
-#align int.nat_abs_abs Int.nat_abs_abs
+theorem natAbs_abs (a : ℤ) : natAbs (|a|) = natAbs a := by rw [abs_eq_natAbs] ; rfl
+#align int.nat_abs_abs Int.natAbs_abs
 
 theorem sign_mul_abs (a : ℤ) : sign a * |a| = a := by
   rw [abs_eq_natAbs, sign_mul_natAbs a]
@@ -75,9 +75,9 @@ theorem coe_nat_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n :=
    fun h => (_root_.ne_of_lt (coe_nat_lt.2 h)).symm⟩
 #align int.coe_nat_ne_zero_iff_pos Int.coe_nat_ne_zero_iff_pos
 
-theorem coe_nat_abs (n : ℕ) : |(n : ℤ)| = n :=
+theorem coe_natAbs (n : ℕ) : |(n : ℤ)| = n :=
   abs_of_nonneg (coe_nat_nonneg n)
-#align int.coe_nat_abs Int.coe_nat_abs
+#align int.coe_nat_abs Int.coe_natAbs
 
 /-! ### succ and pred -/
 
@@ -177,12 +177,12 @@ variable {a b : ℤ} {n : ℕ}
 attribute [simp] natAbs natAbs_ofNat natAbs_zero natAbs_one
 
 @[simp]
-theorem nat_abs_dvd_iff_dvd {a b : ℤ} : a.natAbs ∣ b.natAbs ↔ a ∣ b := by
+theorem natAbs_dvd_iff_dvd {a b : ℤ} : a.natAbs ∣ b.natAbs ↔ a ∣ b := by
   refine' ⟨_, fun ⟨k, hk⟩ => ⟨k.natAbs, hk.symm ▸ natAbs_mul a k⟩⟩
   rintro ⟨k, hk⟩
   rw [← natAbs_ofNat k, ← natAbs_mul, natAbs_eq_natAbs_iff, neg_mul_eq_mul_neg] at hk
   obtain hk|hk := hk <;> exact ⟨_, hk⟩
-#align int.nat_abs_dvd_iff_dvd Int.nat_abs_dvd_iff_dvd
+#align int.nat_abs_dvd_iff_dvd Int.natAbs_dvd_iff_dvd
 
 /-! ### `/`  -/
 
@@ -458,7 +458,7 @@ theorem ediv_pos_of_pos_of_dvd {a b : ℤ} (H1 : 0 < a) (H2 : 0 ≤ b) (H3 : b �
 #align int.div_pos_of_pos_of_dvd Int.ediv_pos_of_pos_of_dvd
 
 theorem natAbs_eq_of_dvd_dvd {s t : ℤ} (hst : s ∣ t) (hts : t ∣ s) : natAbs s = natAbs t :=
-  Nat.dvd_antisymm (nat_abs_dvd_iff_dvd.mpr hst) (nat_abs_dvd_iff_dvd.mpr hts)
+  Nat.dvd_antisymm (natAbs_dvd_iff_dvd.mpr hst) (natAbs_dvd_iff_dvd.mpr hts)
 #align int.nat_abs_eq_of_dvd_dvd Int.natAbs_eq_of_dvd_dvd
 
 theorem ediv_eq_ediv_of_mul_eq_mul {a b c d : ℤ} (H2 : d ∣ c) (H3 : b ≠ 0) (H4 : d ≠ 0)
