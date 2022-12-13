@@ -165,7 +165,6 @@ structure OrderMonoidWithZeroHom (α β : Type _) [Preorder α] [Preorder β] [M
   monotone' : Monotone toFun
 #align order_monoid_with_zero_hom OrderMonoidWithZeroHom
 
--- mathport name: «expr →*₀o »
 /-- Infix notation for `OrderMonoidWithZeroHom`. -/
 infixr:25 " →*₀o " => OrderMonoidWithZeroHom
 
