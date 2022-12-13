@@ -742,11 +742,17 @@ variable {s t}
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem off_diag_union (h : Disjoint s t) :
     (s ∪ t).offDiag = s.offDiag ∪ t.offDiag ∪ s ×ˢ t ∪ t ×ˢ s := by
-  rw [off_diag_eq_sep_prod, union_prod, prod_union, prod_union, union_comm _ (t ×ˢ t), union_assoc,
-    union_left_comm (s ×ˢ t), ← union_assoc, sep_union, sep_union, ← off_diag_eq_sep_prod, ←
-    off_diag_eq_sep_prod, sep_eq_self_iff_mem_true.2, ← union_assoc]
-  simp only [mem_union, mem_prod, Ne.def, Prod.forall]
-  rintro i j (⟨hi, hj⟩ | ⟨hi, hj⟩) rfl <;> exact h.le_bot ⟨‹_›, ‹_›⟩
+  ext x
+  simp only [mem_off_diag, mem_union, ne_eq, mem_prod]
+  constructor
+  · rintro ⟨h0|h0, h1|h1, h2⟩ <;> simp [h0, h1, h2]
+  · rintro (((⟨h0, h1, h2⟩|⟨h0, h1, h2⟩)|⟨h0, h1⟩)|⟨h0, h1⟩) <;> simp [*]
+    · rintro h3
+      rw [h3] at h0
+      exact (Set.disjoint_left.mp h h0 h1)
+    · rintro h3
+      rw [h3] at h0
+      exact (Set.disjoint_right.mp h h0 h1).elim
 #align set.off_diag_union Set.off_diag_union
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
