@@ -3,14 +3,14 @@ Copyright (c) 2022 Antoine Labelle, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle, Rémi Bottinelli
 -/
-import Mathbin.Combinatorics.Quiver.Basic
-import Mathbin.Combinatorics.Quiver.Path
+import Mathlib.Combinatorics.Quiver.Basic
+import Mathlib.Combinatorics.Quiver.Path
 
 /-!
 
 # Rewriting arrows and paths along vertex equalities
 
-This files defines `hom.cast` and `path.cast` (and associated lemmas) in order to allow
+This files defines `Hom.cast` and `Path.cast` (and associated lemmas) in order to allow
 rewriting arrows and paths along equalities of their endpoints.
 
 -/
@@ -29,11 +29,11 @@ namespace Quiver
 
 /-- Change the endpoints of an arrow using equalities. -/
 def Hom.cast {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u ⟶ v) : u' ⟶ v' :=
-  Eq.ndrec (Eq.ndrec e hv) hu
+  Eq.ndrec (motive := λ x => x ⟶ v') (Eq.ndrec e hv) hu
 #align quiver.hom.cast Quiver.Hom.cast
 
 theorem Hom.cast_eq_cast {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u ⟶ v) :
-    e.cast hu hv = cast (by rw [hu, hv]) e := by
+    e.cast hu hv = _root_.cast (by {rw [hu, hv]}) e := by
   subst_vars
   rfl
 #align quiver.hom.cast_eq_cast Quiver.Hom.cast_eq_cast
@@ -59,13 +59,13 @@ theorem Hom.cast_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u ⟶ v) :
 
 theorem Hom.cast_eq_iff_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u ⟶ v) (e' : u' ⟶ v') :
     e.cast hu hv = e' ↔ HEq e e' := by
-  rw [hom.cast_eq_cast]
-  exact cast_eq_iff_heq
+  rw [Hom.cast_eq_cast]
+  exact _root_.cast_eq_iff_heq
 #align quiver.hom.cast_eq_iff_heq Quiver.Hom.cast_eq_iff_heq
 
 theorem Hom.eq_cast_iff_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u ⟶ v) (e' : u' ⟶ v') :
     e' = e.cast hu hv ↔ HEq e' e := by
-  rw [eq_comm, hom.cast_eq_iff_heq]
+  rw [eq_comm, Hom.cast_eq_iff_heq]
   exact ⟨HEq.symm, HEq.symm⟩
 #align quiver.hom.eq_cast_iff_heq Quiver.Hom.eq_cast_iff_heq
 
@@ -78,12 +78,13 @@ open Path
 
 /-- Change the endpoints of a path using equalities. -/
 def Path.cast {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Path u v) : Path u' v' :=
-  Eq.ndrec (Eq.ndrec p hv) hu
+  Eq.ndrec (motive := λ x => Path x v') (Eq.ndrec p hv) hu
 #align quiver.path.cast Quiver.Path.cast
 
 theorem Path.cast_eq_cast {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Path u v) :
-    p.cast hu hv = cast (by rw [hu, hv]) p :=
-  Eq.drec (Eq.drec (Eq.refl (Path.cast (Eq.refl u) (Eq.refl v) p)) hu) hv
+    p.cast hu hv = _root_.cast (by rw [hu, hv]) p := by
+  subst_vars
+  rfl
 #align quiver.path.cast_eq_cast Quiver.Path.cast_eq_cast
 
 @[simp]
@@ -100,21 +101,21 @@ theorem Path.cast_cast {u v u' v' u'' v'' : U} (p : Path u v) (hu : u = u') (hv 
 #align quiver.path.cast_cast Quiver.Path.cast_cast
 
 @[simp]
-theorem Path.cast_nil {u u' : U} (hu : u = u') : (Path.nil : Path u u).cast hu hu = path.nil := by
+theorem Path.cast_nil {u u' : U} (hu : u = u') : (Path.nil : Path u u).cast hu hu = Path.nil := by
   subst_vars
   rfl
 #align quiver.path.cast_nil Quiver.Path.cast_nil
 
 theorem Path.cast_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Path u v) :
     HEq (p.cast hu hv) p := by
-  rw [path.cast_eq_cast]
-  exact cast_heq _ _
+  rw [Path.cast_eq_cast]
+  exact _root_.cast_heq _ _
 #align quiver.path.cast_heq Quiver.Path.cast_heq
 
 theorem Path.cast_eq_iff_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Path u v)
     (p' : Path u' v') : p.cast hu hv = p' ↔ HEq p p' := by
-  rw [path.cast_eq_cast]
-  exact cast_eq_iff_heq
+  rw [Path.cast_eq_cast]
+  exact _root_.cast_eq_iff_heq
 #align quiver.path.cast_eq_iff_heq Quiver.Path.cast_eq_iff_heq
 
 theorem Path.eq_cast_iff_heq {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Path u v)
@@ -131,19 +132,20 @@ theorem Path.cast_cons {u v w u' w' : U} (p : Path u v) (e : v ⟶ w) (hu : u = 
 
 theorem cast_eq_of_cons_eq_cons {u v v' w : U} {p : Path u v} {p' : Path u v'} {e : v ⟶ w}
     {e' : v' ⟶ w} (h : p.cons e = p'.cons e') : p.cast rfl (obj_eq_of_cons_eq_cons h) = p' := by
-  rw [path.cast_eq_iff_heq]
+  rw [Path.cast_eq_iff_heq]
   exact heq_of_cons_eq_cons h
 #align quiver.cast_eq_of_cons_eq_cons Quiver.cast_eq_of_cons_eq_cons
 
 theorem hom_cast_eq_of_cons_eq_cons {u v v' w : U} {p : Path u v} {p' : Path u v'} {e : v ⟶ w}
     {e' : v' ⟶ w} (h : p.cons e = p'.cons e') : e.cast (obj_eq_of_cons_eq_cons h) rfl = e' := by
-  rw [hom.cast_eq_iff_heq]
+  rw [Hom.cast_eq_iff_heq]
   exact hom_heq_of_cons_eq_cons h
 #align quiver.hom_cast_eq_of_cons_eq_cons Quiver.hom_cast_eq_of_cons_eq_cons
 
 theorem eq_nil_of_length_zero {u v : U} (p : Path u v) (hzero : p.length = 0) :
-    p.cast (eq_of_length_zero p hzero) rfl = path.nil := by
-  cases p <;> simpa only [Nat.succ_ne_zero, length_cons] using hzero
+    p.cast (eq_of_length_zero p hzero) rfl = Path.nil := by
+  cases p <;> simp only [Nat.succ_ne_zero, length_cons] at hzero
+  rfl
 #align quiver.eq_nil_of_length_zero Quiver.eq_nil_of_length_zero
 
 end Quiver
