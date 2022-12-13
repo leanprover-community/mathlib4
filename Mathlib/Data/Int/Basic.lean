@@ -59,7 +59,6 @@ instance : CommRing ℤ where
 
 @[simp] lemma ofNat_eq_cast : Int.ofNat n = n := rfl
 
-@[simp, norm_cast]
 lemma cast_Nat_cast [AddGroupWithOne R] : (Int.cast (Nat.cast n) : R) = Nat.cast n :=
   Int.cast_ofNat _
 
@@ -105,18 +104,15 @@ instance : Distrib ℤ          := by infer_instance
 #align int.neg_succ_mul_coe_nat Int.negSucc_mul_ofNat
 #align int.neg_succ_mul_neg_succ Int.negSucc_mul_negSucc
 
-@[simp, norm_cast] theorem coe_nat_le {m n : ℕ} : (↑m : ℤ) ≤ ↑n ↔ m ≤ n := ofNat_le
-#align int.coe_nat_le Int.coe_nat_le
-
-@[simp, norm_cast] theorem coe_nat_lt {n m : ℕ} : (↑n : ℤ) < ↑m ↔ n < m := ofNat_lt
-#align int.coe_nat_lt Int.coe_nat_lt
+#align int.coe_nat_le Int.ofNat_le
+#align int.coe_nat_lt Int.ofNat_lt
 
 theorem coe_nat_inj' {m n : ℕ} : (↑m : ℤ) = ↑n ↔ m = n := Int.ofNat_inj
 
 theorem coe_nat_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.ofNat_lt.2
 #align int.coe_nat_strict_mono Int.coe_nat_strictMono
 
-theorem coe_nat_nonneg (n : ℕ) : 0 ≤ (n : ℤ) := coe_nat_le.2 (Nat.zero_le _)
+theorem coe_nat_nonneg (n : ℕ) : 0 ≤ (n : ℤ) := ofNat_le.2 (Nat.zero_le _)
 
 #align int.neg_of_nat_ne_zero Int.negSucc_ne_zero
 #align int.zero_ne_neg_of_nat Int.zero_ne_negSucc
