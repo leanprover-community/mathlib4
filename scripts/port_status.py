@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 
+import datetime
 import os
 import re
 import yaml
 import networkx as nx
 import subprocess
+import github
 from pathlib import Path
+
+GITHUB_TOKEN_FILE = 'x'
 
 mathlib3_root = 'port-repos/mathlib/src'
 mathlib4_root = 'Mathlib/'
@@ -27,6 +31,16 @@ comment_git_re = r'\`(' + r'|'.join([
 def mk_label(path: Path) -> str:
     rel = path.relative_to(Path(mathlib3_root))
     return str(rel.with_suffix('')).replace(os.sep, '.')
+
+def condense(s):
+    if s.startswith('Mathlib/'):
+        s = s[len('Mathlib/'):]
+    if s.endswith('.lean'):
+        s = s[:-5]
+    s = s.lower()
+    s = s.replace('/', '.')
+    s = s.replace('_', '')
+    return s
 
 # TODO: Make sure port-repos/ repos exist & are up-to-date.
 
@@ -81,7 +95,7 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
 
     assert commit is not None
     data[module] = {
-        'mathlib4_file': path4.relative_to(mathlib4_root),
+        'mathlib4_file': 'Mathlib/' + str(path4.relative_to(mathlib4_root)),
         'mathlib3_hash': commit
     }
 
@@ -106,12 +120,38 @@ for node in graph.nodes:
         if all(imported in data for imported in graph.predecessors(node)) and not node in data:
             parentsDone[node] = (len(nx.descendants(graph, node)), "")
 
+prs = {}
+fetch_args = ['git', 'fetch', 'origin']
+nums = []
+mathlib4repo = github.Github(open(GITHUB_TOKEN_FILE).read().strip()).get_repo("leanprover-community/mathlib4")
+for pr in mathlib4repo.get_pulls(state='open'):
+    if pr.created_at < datetime.datetime(2022, 12, 1, 0, 0, 0):
+        continue
+    num = pr.number
+    nums.append(num)
+    prs[num] = pr
+    fetch_args.append(f'pull/{num}/head:port-status-pull/{num}')
+
+os.system("git branch -D $(git branch --list 'port-status-pull/*')")
+subprocess.run(fetch_args)
+
+prs_of_condensed = {}
+for num in nums:
+    p = subprocess.run(
+        ['git', 'diff', '--name-only', '--diff-filter=A',
+         f'origin/master...port-status-pull/{num}'],
+        capture_output=True)
+    for l in p.stdout.decode().splitlines():
+        prs_of_condensed.setdefault(condense(l), []).append(num)
+
+def pr_to_str(pr):
+    labels = ' '.join(f'[{l.name}]' for l in pr.labels)
+    return f'[#{pr.number}]({pr.html_url}) (by {pr.user.login}, {labels}, last activity {pr.updated_at})'
+
 print('# The following files have all dependencies ported already, and should be ready to port:')
 print('# Earlier items in the list are required in more places in mathlib.')
 allDone = dict(sorted(allDone.items(), key=lambda item: -item[1][0]))
 for k, v in allDone.items():
-    if v[1] == "":
-        print(k)
-    else:
-        print(k + "    -- " + v[1])
+    print(f' * `{k}` ',
+          ' '.join(pr_to_str(prs[num]) for num in prs_of_condensed.get(condense(k), [])))
 
