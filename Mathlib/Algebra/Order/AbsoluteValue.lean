@@ -266,10 +266,9 @@ end LinearOrderedCommRing
 
 end AbsoluteValue
 
-/- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4: #[`abv_nonneg] [] -/
-/- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4: #[`abv_eq_zero] [] -/
-/- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4: #[`abv_add] [] -/
-/- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4: #[`abv_mul] [] -/
+-- Porting note: Removed [] in fields, see
+-- leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Infer.20kinds.20are.20unsupported
+
 /-- A function `f` is an absolute value if it is nonnegative, zero only at 0, additive, and
 multiplicative.
 See also the type `AbsoluteValue` which represents a bundled version of absolute values.
