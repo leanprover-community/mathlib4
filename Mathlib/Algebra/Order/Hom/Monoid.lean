@@ -111,7 +111,6 @@ structure OrderMonoidHom (α β : Type _) [Preorder α] [Preorder β] [MulOneCla
   monotone' : Monotone toFun
 #align order_monoid_hom OrderMonoidHom
 
--- mathport name: «expr →*o »
 /-- Infix notation for `OrderMonoidHom`. -/
 infixr:25 " →*o " => OrderMonoidHom
 
