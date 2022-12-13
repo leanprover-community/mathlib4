@@ -321,7 +321,7 @@ section LinearOrderedRing
 variable {S : Type _} [LinearOrderedRing S]
 
 instance abs_is_absolute_value : IsAbsoluteValue (abs : S → S) :=
-  AbsoluteValue.abs.IsAbsoluteValue
+  AbsoluteValue.abs.is_absolute_value
 #align is_absolute_value.abs_is_absolute_value IsAbsoluteValue.abs_is_absolute_value
 
 end LinearOrderedRing
@@ -357,7 +357,7 @@ section Ring
 variable {R : Type _} [Ring R] (abv : R → S) [IsAbsoluteValue abv]
 
 theorem abv_sub_le (a b c : R) : abv (a - c) ≤ abv (a - b) + abv (b - c) := by
-  simpa [sub_eq_add_neg, add_assoc] using abv_add abv (a - b) (b - c)
+  simpa [sub_eq_add_neg, add_assoc] using abv_add (a - b) (b - c)
 #align is_absolute_value.abv_sub_le IsAbsoluteValue.abv_sub_le
 
 theorem sub_abv_le_abv_sub (a b : R) : abv a - abv b ≤ abv (a - b) :=
