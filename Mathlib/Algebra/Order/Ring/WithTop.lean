@@ -12,6 +12,17 @@ The main results of this section are `with_top.canonically_ordered_comm_semiring
 `with_bot.comm_monoid_with_zero`.
 -/
 
+section foo
+
+variable [DecidableEq α]
+
+-- Todo (porting): Move this
+instance : DecidableEq (WithTop α) := instDecidableEqOption
+instance : DecidableEq (WithBot α) := instDecidableEqOption
+
+end foo
+
+set_option autoImplicit false
 
 variable {α : Type _}
 
@@ -20,7 +31,7 @@ namespace WithTop
 instance [Nonempty α] : Nontrivial (WithTop α) :=
   Option.nontrivial
 
-variable [DecidableEq (WithTop α)] -- Porting note this should be [DecidableEq α]
+variable [DecidableEq α]
 
 section Mul
 
@@ -98,7 +109,9 @@ end MulZeroClass
 
 /-- `nontrivial α` is needed here as otherwise we have `1 * ⊤ = ⊤` but also `0 * ⊤ = 0`. -/
 instance [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithTop α) :=
-  { WithTop.mulZeroClass with mul := (· * ·), one := 1, zero := 0,
+  { WithTop.instMulZeroClassWithTop with
+    mul := (· * ·)
+    one := 1, zero := 0
     one_mul := fun a =>
       match a with
       | ⊤ => mul_top (mt coe_eq_coe.1 one_ne_zero)
@@ -113,7 +126,8 @@ instance [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithTop α) :=
 protected def MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClass R] [DecidableEq R]
     [Nontrivial R] [MulZeroOneClass S] [DecidableEq S] [Nontrivial S] (f : R →*₀ S)
     (hf : Function.Injective f) : WithTop R →*₀ WithTop S :=
-  { f.toZeroHom.with_top_map, f.toMonoidHom.toOneHom.with_top_map with toFun := WithTop.map f,
+  { f.toZeroHom.with_top_map, f.toMonoidHom.toOneHom.with_top_map with
+    toFun := WithTop.map f
     map_mul' := fun x y => by
       have : ∀ z, map f z = 0 ↔ z = 0 := fun z =>
         (Option.map_injective hf).eq_iff' f.to_zero_hom.with_top_map.map_zero
@@ -129,13 +143,15 @@ protected def MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClass R] [D
       simp [← coe_mul] }
 #align monoid_with_zero_hom.with_top_map MonoidWithZeroHom.withTopMap
 
-instance [MulZeroClass α] [NoZeroDivisors α] : NoZeroDivisors (WithTop α) :=
+instance instNoZeroDivisorsWithTop [MulZeroClass α] [NoZeroDivisors α] : NoZeroDivisors (WithTop α) :=
   ⟨fun a b => by
     cases a <;> cases b <;> dsimp [mul_def] <;> split_ifs <;>
       simp_all [none_eq_top, some_eq_coe, mul_eq_zero]⟩
 
 instance [SemigroupWithZero α] [NoZeroDivisors α] : SemigroupWithZero (WithTop α) :=
-  { WithTop.mulZeroClass with mul := (· * ·), zero := 0,
+  { WithTop.instMulZeroClassWithTop with
+    mul := (· * ·)
+    zero := 0
     mul_assoc := fun a b c => by
       rcases eq_or_ne a 0 with (rfl | ha); · simp only [zero_mul]
       rcases eq_or_ne b 0 with (rfl | hb); · simp only [zero_mul, mul_zero]
@@ -146,7 +162,7 @@ instance [SemigroupWithZero α] [NoZeroDivisors α] : SemigroupWithZero (WithTop
       simp only [← coe_mul, mul_assoc] }
 
 instance [MonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] : MonoidWithZero (WithTop α) :=
-  { WithTop.mulZeroOneClass, WithTop.semigroupWithZero with }
+  { WithTop.instMulZeroOneClassWithTop, WithTop.instSemigroupWithZeroWithTop with }
 
 instance [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
     CommMonoidWithZero (WithTop α) :=
@@ -175,7 +191,7 @@ instance [Nontrivial α] : CommSemiring (WithTop α) :=
       rfl }
 
 instance [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
-  { WithTop.commSemiring, WithTop.canonicallyOrderedAddMonoid, WithTop.no_zero_divisors with }
+  { WithTop.instCommSemiringWithTop, WithTop.canonicallyOrderedAddMonoid, WithTop.instNoZeroDivisorsWithTop with }
 
 /-- A version of `with_top.map` for `ring_hom`s. -/
 @[simps (config := { fullyApplied := false })]
@@ -200,10 +216,10 @@ section Mul
 variable [Zero α] [Mul α]
 
 instance : MulZeroClass (WithBot α) :=
-  WithTop.mulZeroClass
+  WithTop.instMulZeroClassWithTop
 
 theorem mul_def {a b : WithBot α} :
-    a * b = if a = 0 ∨ b = 0 then 0 else a.bind fun a => b.bind fun b => ↑(a * b) :=
+    a * b = if a = 0 ∨ b = 0 then (0 : WithBot α) else a.bind fun a => b.bind fun b => ↑(a * b) :=
   rfl
 #align with_bot.mul_def WithBot.mul_def
 
@@ -255,23 +271,23 @@ end MulZeroClass
 
 /-- `nontrivial α` is needed here as otherwise we have `1 * ⊥ = ⊥` but also `= 0 * ⊥ = 0`. -/
 instance [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithBot α) :=
-  WithTop.mulZeroOneClass
+  WithTop.instMulZeroOneClassWithTop
 
 instance [MulZeroClass α] [NoZeroDivisors α] : NoZeroDivisors (WithBot α) :=
-  WithTop.no_zero_divisors
+  WithTop.instNoZeroDivisorsWithTop
 
 instance [SemigroupWithZero α] [NoZeroDivisors α] : SemigroupWithZero (WithBot α) :=
-  WithTop.semigroupWithZero
+  WithTop.instSemigroupWithZeroWithTop
 
 instance [MonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] : MonoidWithZero (WithBot α) :=
-  WithTop.monoidWithZero
+  WithTop.instMonoidWithZeroWithTop
 
 instance [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
     CommMonoidWithZero (WithBot α) :=
-  WithTop.commMonoidWithZero
+  WithTop.instCommMonoidWithZeroWithTop
 
 instance [CanonicallyOrderedCommSemiring α] [Nontrivial α] : CommSemiring (WithBot α) :=
-  WithTop.commSemiring
+  WithTop.instCommSemiringWithTop
 
 instance [CanonicallyOrderedCommSemiring α] [Nontrivial α] : PosMulMono (WithBot α) :=
   posMulMono_iff_covariant_pos.2
