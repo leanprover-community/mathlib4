@@ -21,7 +21,6 @@ Further lemmas about ordered semirings and rings can be found in `Algebra.GroupP
 
 -/
 
-
 variable {R S M : Type _}
 
 section MonoidWithZero
@@ -71,12 +70,6 @@ theorem ne_zero_pow {a : M} {n : ℕ} (hn : n ≠ 0) : a ^ n ≠ 0 → a ≠ 0 :
   exact zero_pow' n hn
 #align ne_zero_pow ne_zero_pow
 
-/- warning: pow_ne_zero -> pow_ne_zero is a dubious translation:
-lean 3 declaration is
-  forall {M : Type.{u_3}} [_inst_1 : MonoidWithZero.{u_3} M] [_inst_2 : NoZeroDivisors.{u_3} M (MulZeroClass.toHasMul.{u_3} M (MulZeroOneClass.toMulZeroClass.{u_3} M (MonoidWithZero.toMulZeroOneClass.{u_3} M _inst_1))) (MulZeroClass.toHasZero.{u_3} M (MulZeroOneClass.toMulZeroClass.{u_3} M (MonoidWithZero.toMulZeroOneClass.{u_3} M _inst_1)))] {a : M} (n : Nat), (Ne.{succ u_3} M a (OfNat.ofNat.{u_3} M 0 (OfNat.mk.{u_3} M 0 (Zero.zero.{u_3} M (MulZeroClass.toHasZero.{u_3} M (MulZeroOneClass.toMulZeroClass.{u_3} M (MonoidWithZero.toMulZeroOneClass.{u_3} M _inst_1))))))) -> (Ne.{succ u_3} M (HPow.hPow.{u_3, 0, u_3} M Nat M (instHPow.{u_3, 0} M Nat (Monoid.hasPow.{u_3} M (MonoidWithZero.toMonoid.{u_3} M _inst_1))) a n) (OfNat.ofNat.{u_3} M 0 (OfNat.mk.{u_3} M 0 (Zero.zero.{u_3} M (MulZeroClass.toHasZero.{u_3} M (MulZeroOneClass.toMulZeroClass.{u_3} M (MonoidWithZero.toMulZeroOneClass.{u_3} M _inst_1)))))))
-but is expected to have type
-  forall {M : Type.{u_1}} [inst._@.Mathlib.Tactic.Positivity.Basic._hyg.759 : MonoidWithZero.{u_1} M] [inst._@.Mathlib.Tactic.Positivity.Basic._hyg.762 : NoZeroDivisors.{u_1} M (MulZeroClass.toMul.{u_1} M (MulZeroOneClass.toMulZeroClass.{u_1} M (MonoidWithZero.toMulZeroOneClass.{u_1} M inst._@.Mathlib.Tactic.Positivity.Basic._hyg.759))) (MonoidWithZero.toZero.{u_1} M inst._@.Mathlib.Tactic.Positivity.Basic._hyg.759)] {a : M} (n : Nat), (Ne.{succ u_1} M a (OfNat.ofNat.{u_1} M 0 (Zero.toOfNat0.{u_1} M (MonoidWithZero.toZero.{u_1} M inst._@.Mathlib.Tactic.Positivity.Basic._hyg.759)))) -> (Ne.{succ u_1} M (HPow.hPow.{u_1, 0, u_1} M Nat M (instHPow.{u_1, 0} M Nat (Monoid.Pow.{u_1} M (MonoidWithZero.toMonoid.{u_1} M inst._@.Mathlib.Tactic.Positivity.Basic._hyg.759))) a n) (OfNat.ofNat.{u_1} M 0 (Zero.toOfNat0.{u_1} M (MonoidWithZero.toZero.{u_1} M inst._@.Mathlib.Tactic.Positivity.Basic._hyg.759))))
-Case conversion may be inaccurate. Consider using '#align pow_ne_zero pow_ne_zeroₓ'. -/
 @[field_simps]
 theorem pow_ne_zero [NoZeroDivisors M] {a : M} (n : ℕ) (h : a ≠ 0) : a ^ n ≠ 0 :=
   mt pow_eq_zero h
@@ -188,7 +181,9 @@ variable {R}
 theorem neg_pow (a : R) (n : ℕ) : (-a) ^ n = (-1) ^ n * a ^ n :=
   neg_one_mul a ▸ (Commute.neg_one_left a).mul_pow n
 
-/-@[simp]
+/- Porting note: bit0 and bit1 are deprecated
+
+@[simp]
 theorem neg_pow_bit0 (a : R) (n : ℕ) : (-a) ^ bit0 n = a ^ bit0 n := by
   rw [pow_bit0', neg_mul_neg, pow_bit0']
 #align neg_pow_bit0 neg_pow_bit0
@@ -196,11 +191,12 @@ theorem neg_pow_bit0 (a : R) (n : ℕ) : (-a) ^ bit0 n = a ^ bit0 n := by
 @[simp]
 theorem neg_pow_bit1 (a : R) (n : ℕ) : (-a) ^ bit1 n = -a ^ bit1 n := by
   simp only [bit1, pow_succ, neg_pow_bit0, neg_mul_eq_neg_mul]
-#align neg_pow_bit1 neg_pow_bit1-/
+#align neg_pow_bit1 neg_pow_bit1
+
+-/
 
 @[simp]
 theorem neg_sq (a : R) : (-a) ^ 2 = a ^ 2 := by simp [sq]
-
 
 -- Porting note: removed the simp attribute to please the simpNF linter
 theorem neg_one_sq : (-1 : R) ^ 2 = 1 := by simp [neg_sq, one_pow]
@@ -269,7 +265,7 @@ theorem sq_eq_sq_iff_eq_or_eq_neg : a ^ 2 = b ^ 2 ↔ a = b ∨ a = -b :=
 theorem eq_or_eq_neg_of_sq_eq_sq (a b : R) : a ^ 2 = b ^ 2 → a = b ∨ a = -b :=
   sq_eq_sq_iff_eq_or_eq_neg.1
 
--- Copies of the above comm_ring lemmas for `units R`.
+-- Copies of the above CommRing lemmas for `Units R`.
 namespace Units
 
 protected theorem sq_eq_sq_iff_eq_or_eq_neg {a b : Rˣ} : a ^ 2 = b ^ 2 ↔ a = b ∨ a = -b := by
