@@ -22,7 +22,8 @@ instance [OrderedCommMonoid α] [OrderedCommMonoid β] : OrderedCommMonoid (α �
 instance [OrderedCancelCommMonoid M] [OrderedCancelCommMonoid N] :
     OrderedCancelCommMonoid (M × N) :=
   { (inferInstance : OrderedCommMonoid (M × N)) with
-    le_of_mul_le_mul_left := fun _ _ _ h ↦ ⟨le_of_mul_le_mul_left' h.1, le_of_mul_le_mul_left' h.2⟩ }
+    le_of_mul_le_mul_left :=
+      fun _ _ _ h ↦ ⟨le_of_mul_le_mul_left' h.1, le_of_mul_le_mul_left' h.2⟩ }
 
 @[to_additive]
 instance [LE α] [LE β] [Mul α] [Mul β] [ExistsMulOfLE α] [ExistsMulOfLE β] :
