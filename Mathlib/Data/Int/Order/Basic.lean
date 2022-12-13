@@ -306,8 +306,12 @@ theorem emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 :=
   match n % 2, h, h₁ with
   | (0 : ℕ), _ ,_ => Or.inl rfl
   | (1 : ℕ), _ ,_ => Or.inr rfl
-  | (k + 2 : ℕ), h, _ => absurd h (by decide)
-  | -[a+1], _, h₁ => absurd h₁ (by decide)
+  -- Porting note: this used to be `=> absurd h (by decide)`
+  | (k + 2 : ℕ), h₁, _ => False.elim (h₁.not_le (by
+    rw [Nat.cast_add]
+    exact (le_add_iff_nonneg_left 2).2 (NonNeg.mk k)))
+  -- Porting note: this used to be `=> absurd h₁ (by decide)`
+  | -[a+1], _, h₁ => by cases h₁
 #align int.mod_two_eq_zero_or_one Int.emod_two_eq_zero_or_one
 
 /-! ### dvd -/
