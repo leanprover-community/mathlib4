@@ -14,6 +14,7 @@ import Std.Tactic.Ext.Attr -- just to copy the attribute
 import Mathlib.Tactic.Relation.Rfl -- just to copy the attribute
 import Mathlib.Tactic.Relation.Symm -- just to copy the attribute
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
+import Mathlib.Tactic.RunCmd -- not necessary, but useful for debugging
 
 /-!
 # The `@[to_additive]` attribute.
@@ -548,7 +549,9 @@ def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
 
 /-- A hack to add an attribute to a declaration.
   We use the `missing` for the syntax, so this only works for certain attributes.
-  It seems to work for `refl`, `symm`, `trans`, `ext` and `coe`. -/
+  It seems to work for `refl`, `symm`, `trans`, `ext` and `coe`.
+  This does not work for most attributes where the syntax has optional arguments.
+  TODO: have a proper implementation once we have the infrastructure for this. -/
 def hackyAddAttribute (attrName declName : Name) (kind : AttributeKind := .global) :
   CoreM Unit := do
   let .ok attr := getAttributeImpl (← getEnv) attrName
@@ -556,7 +559,8 @@ def hackyAddAttribute (attrName declName : Name) (kind : AttributeKind := .globa
   attr.add declName .missing kind
 
 /-- Copy an attribute that stores enough information to test whether a declaration is in it
-  in a hacky way. -/
+  in a hacky way.
+  TODO: have a proper implementation once we have the infrastructure for this. -/
 def hackyCopyAttr [Inhabited β] (attr : SimpleScopedEnvExtension α β) (f : β → Name → Bool)
   (attrName src tgt : Name) : CoreM Unit := do
   if f (attr.getState (← getEnv)) src then
