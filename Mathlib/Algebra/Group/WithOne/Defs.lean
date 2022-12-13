@@ -90,10 +90,6 @@ instance nontrivial [Nonempty α] : Nontrivial (WithOne α) :=
 def coe : α → WithOne α :=
   Option.some
 
--- porting note : `@[coe, to_additive]` doesn't tag the to-additivised declaration
--- with coe, in contrast to Lean 3, so we have to do it manually.
-attribute [coe] WithZero.coe
-
 @[to_additive]
 instance coeTC : CoeTC α (WithOne α) :=
   ⟨coe⟩
