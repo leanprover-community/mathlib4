@@ -243,7 +243,8 @@ instance isTotal_right {r : α → α → Prop} {s : β → β → Prop} [IsTric
     · exact Or.inr (.left _ _ hji) ⟩
 #align prod.is_total_right Prod.isTotal_right
 
-instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] : IsTrichotomous (α × β) (Prod.Lex r s) :=
+instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
+  IsTrichotomous (α × β) (Prod.Lex r s) :=
 ⟨fun ⟨i, a⟩ ⟨j, b⟩ ↦ by
   obtain hij | rfl | hji := trichotomous_of r i j
   { exact Or.inl (Lex.left _ _ hij) }
