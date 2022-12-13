@@ -181,7 +181,8 @@ variable {R}
 theorem neg_pow (a : R) (n : ℕ) : (-a) ^ n = (-1) ^ n * a ^ n :=
   neg_one_mul a ▸ (Commute.neg_one_left a).mul_pow n
 
-/- Porting note: bit0 and bit1 are deprecated
+section
+set_option linter.deprecated false
 
 @[simp]
 theorem neg_pow_bit0 (a : R) (n : ℕ) : (-a) ^ bit0 n = a ^ bit0 n := by
@@ -193,7 +194,7 @@ theorem neg_pow_bit1 (a : R) (n : ℕ) : (-a) ^ bit1 n = -a ^ bit1 n := by
   simp only [bit1, pow_succ, neg_pow_bit0, neg_mul_eq_neg_mul]
 #align neg_pow_bit1 neg_pow_bit1
 
--/
+end
 
 @[simp]
 theorem neg_sq (a : R) : (-a) ^ 2 = a ^ 2 := by simp [sq]
