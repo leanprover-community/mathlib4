@@ -33,7 +33,7 @@ instance {α : Sort _} [WellFoundedRelation α] : IsAsymm α WellFoundedRelation
   WellFoundedRelation.wf.isAsymm
 
 protected theorem isIrrefl {α : Sort _} {r : α → α → Prop} (h : WellFounded r) : IsIrrefl α r :=
-  @IsAsymm.is_irrefl α r h.isAsymm
+  @IsAsymm.isIrrefl α r h.isAsymm
 #align well_founded.is_irrefl WellFounded.isIrrefl
 
 instance {α : Sort _} [WellFoundedRelation α] : IsIrrefl α WellFoundedRelation.rel :=
