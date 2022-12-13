@@ -747,6 +747,9 @@ namespace AddMonoidHom
 
 variable [CommRing α] [IsDomain α] [CommRing β] (f : β →+ α)
 
+-- Porting note: there's some disagreement over the naming scheme here.
+-- This could perhaps be `mkRingHom_of_mul_self_of_two_ne_zero`.
+-- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/naming.20conventions/near/315558410
 /-- Make a ring homomorphism from an additive group homomorphism from a commutative ring to an
 integral domain that commutes with self multiplication, assumes that two is nonzero and `1` is sent
 to `1`. -/
