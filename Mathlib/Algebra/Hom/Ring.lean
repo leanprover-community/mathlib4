@@ -259,13 +259,13 @@ variable (g : β →ₙ+* γ) (f : α →ₙ+* β)
 
 @[simp]
 theorem coe_comp_addMonoidHom (g : β →ₙ+* γ) (f : α →ₙ+* β) :
-    (g.comp f : α →+ γ) = (g : β →+ γ).comp f :=
+    AddMonoidHom.mk ⟨g ∘ f, (g.comp f).map_zero'⟩ (g.comp f).map_add' = (g : β →+ γ).comp f :=
   rfl
 #align non_unital_ring_hom.coe_comp_add_monoid_hom NonUnitalRingHom.coe_comp_addMonoidHom
 
 @[simp]
 theorem coe_comp_mulHom (g : β →ₙ+* γ) (f : α →ₙ+* β) :
-    (g.comp f : α →ₙ* γ) = (g : β →ₙ* γ).comp f :=
+    MulHom.mk (g ∘ f) (g.comp f).map_mul' = (g : β →ₙ* γ).comp f :=
   rfl
 #align non_unital_ring_hom.coe_comp_mul_hom NonUnitalRingHom.coe_comp_mulHom
 
