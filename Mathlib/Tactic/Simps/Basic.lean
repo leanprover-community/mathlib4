@@ -419,18 +419,19 @@ abbrev ProjectionRule :=
 -- todo: use `MessageData` properly in the definition
 def projectionsInfo (l : List ProjectionData) (pref : String) (str : Name) : MessageData :=
   let ⟨defaults, nondefaults⟩ := l.partition (·.isDefault)
-  let toPrint : List Format :=
+  let toPrint : List MessageData :=
     defaults.map fun s ↦
       let prefixStr := if s.isPrefix then "(prefix) " else ""
-      f!"Projection {prefixStr}{s.name}: {s.expr}"
-  let print2 :=
+      m!"Projection {prefixStr}{s.name}: {s.expr}"
+  let print2 : MessageData :=
     String.join <| (nondefaults.map fun nm : ProjectionData ↦ toString nm.1).intersperse ", "
   let toPrint :=
-    toPrint.map toString ++
+    toPrint ++
       if nondefaults.isEmpty then [] else
-      ["No lemmas are generated for the projections: " ++ print2 ++ "."]
-  let toPrint := String.join <| toPrint.intersperse "\n        > "
-  f! "[simps] > {pref} {str}:\n        > {toPrint}"
+      [("No lemmas are generated for the projections: " : MessageData) ++ print2 ++ "."]
+  let toPrint := toPrint.intersperse ("\n        > " : MessageData) |>.foldl (fun r s => r ++ s)
+    ("" : MessageData)
+  m! "[simps] > {pref} {str}:\n        > {toPrint}"
 
 /-- Auxiliary function of `getCompositeOfProjections`. -/
 partial def getCompositeOfProjectionsAux (str : Name) (proj : String) (x : Expr)
