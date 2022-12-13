@@ -104,6 +104,7 @@ theorem snd_one [One M] [One N] : (1 : M × N).2 = 1 :=
 theorem one_eq_mk [One M] [One N] : (1 : M × N) = (1, 1) :=
   rfl
 #align prod.one_eq_mk Prod.one_eq_mk
+#align prod.zero_eq_mk Prod.zero_eq_mk
 
 @[simp, to_additive]
 theorem mk_eq_one [One M] [One N] {x : M} {y : N} : (x, y) = 1 ↔ x = 1 ∧ y = 1 :=
@@ -231,7 +232,7 @@ instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=
 
 @[to_additive SubtractionCommMonoid]
 instance [DivisionCommMonoid G] [DivisionCommMonoid H] : DivisionCommMonoid (G × H) :=
-  { mul_comm := fun (g₁ , h₁) (g₂, h₂) => by rw [mk_mul_mk, mul_comm g₁, mul_comm h₁]; rfl }
+  { mul_comm := fun ⟨g₁ , h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mul_comm g₁, mul_comm h₁]; rfl }
 
 @[to_additive]
 instance [Group G] [Group H] : Group (G × H) :=
@@ -283,7 +284,7 @@ instance [CommMonoidWithZero M] [CommMonoidWithZero N] : CommMonoidWithZero (M �
 
 @[to_additive]
 instance [CommGroup G] [CommGroup H] : CommGroup (G × H) :=
-  { mul_comm := fun (g₁, h₁) (g₂, h₂) => by rw [mk_mul_mk, mk_mul_mk, mul_comm g₁, mul_comm h₁] }
+  { mul_comm := fun ⟨g₁, h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm g₁, mul_comm h₁] }
 
 end Prod
 
