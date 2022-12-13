@@ -3,8 +3,8 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathbin.Data.Set.Basic
-import Mathbin.Tactic.Monotonicity.Basic
+import Mathlib.Data.Set.Basic
+--import Mathlib.Tactic.Monotonicity.Basic
 
 /-!
 # Typeclass for types with a set-like extensionality property
@@ -81,26 +81,25 @@ Note: if `set_like.coe` is a projection, implementers should create a simp lemma
 ```
 to normalize terms.
 -/
-@[protect_proj]
 class SetLike (A : Type _) (B : outParam <| Type _) where
-  coe : A → Set B
-  coe_injective' : Function.Injective coe
+  /-- The coercion from a term of a `SetLike` to its corresponding `Set`. -/
+  protected coe : A → Set B
+  /-- The coercion from a term of a `SetLike` to its corresponding `Set` is injective. -/
+  protected coe_injective' : Function.Injective coe
 #align set_like SetLike
 
+attribute [coe] SetLike.coe
 namespace SetLike
 
 variable {A : Type _} {B : Type _} [i : SetLike A B]
 
-include i
-
-instance : CoeTC A (Set B) :=
-  ⟨SetLike.coe⟩
+instance : CoeTC A (Set B) where coe := SetLike.coe
 
 instance (priority := 100) : Membership B A :=
   ⟨fun x p => x ∈ (p : Set B)⟩
 
 -- `dangerous_instance` does not know that `B` is used only as an `out_param`
-@[nolint dangerous_instance]
+@[nolint dangerousInstance]
 instance (priority := 100) : CoeSort A (Type _) :=
   ⟨fun p => { x : B // x ∈ p }⟩
 
@@ -113,15 +112,16 @@ theorem coe_sort_coe : ((p : Set B) : Type _) = p :=
 
 variable {p q}
 
-protected theorem exists {q : p → Prop} : (∃ x, q x) ↔ ∃ x ∈ p, q ⟨x, ‹_›⟩ :=
+-- porting note: `∃ x ∈ p, q ⟨x, ‹_›⟩` didn't work.
+protected theorem «exists» {q : p → Prop} : (∃ x, q x) ↔ ∃ (x : B) (h : x ∈ p), q ⟨x, ‹_›⟩ :=
   SetCoe.exists
 #align set_like.exists SetLike.exists
 
-protected theorem forall {q : p → Prop} : (∀ x, q x) ↔ ∀ x ∈ p, q ⟨x, ‹_›⟩ :=
+protected theorem «forall» {q : p → Prop} : (∀ x, q x) ↔ ∀ (x : B) (h : x ∈ p), q ⟨x, ‹_›⟩ :=
   SetCoe.forall
 #align set_like.forall SetLike.forall
 
-theorem coe_injective : Function.Injective (coe : A → Set B) := fun x y h =>
+theorem coe_injective : Function.Injective (SetLike.coe : A → Set B) := fun _ _ h =>
   SetLike.coe_injective' h
 #align set_like.coe_injective SetLike.coe_injective
 
@@ -173,9 +173,10 @@ protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x :=
 #align set_like.eta SetLike.eta
 
 -- `dangerous_instance` does not know that `B` is used only as an `out_param`
-@[nolint dangerous_instance]
+@[nolint dangerousInstance]
 instance (priority := 100) : PartialOrder A :=
-  { PartialOrder.lift (coe : A → Set B) coe_injective with le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K }
+  { PartialOrder.lift (SetLike.coe : A → Set B) coe_injective with
+    le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K }
 
 theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T :=
   Iff.rfl
@@ -186,8 +187,8 @@ theorem coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T :=
   Iff.rfl
 #align set_like.coe_subset_coe SetLike.coe_subset_coe
 
-@[mono]
-theorem coe_mono : Monotone (coe : A → Set B) := fun a b => coe_subset_coe.mpr
+-- porting note: TODO: add back @[mono]
+theorem coe_mono : Monotone (SetLike.coe : A → Set B) := fun _ _ => coe_subset_coe.mpr
 #align set_like.coe_mono SetLike.coe_mono
 
 @[simp, norm_cast]
@@ -195,8 +196,8 @@ theorem coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T :=
   Iff.rfl
 #align set_like.coe_ssubset_coe SetLike.coe_ssubset_coe
 
-@[mono]
-theorem coe_strict_mono : StrictMono (coe : A → Set B) := fun a b => coe_ssubset_coe.mpr
+-- porting note: TODO: add back @[mono]
+theorem coe_strict_mono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
 #align set_like.coe_strict_mono SetLike.coe_strict_mono
 
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q :=
@@ -212,4 +213,3 @@ theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
 #align set_like.lt_iff_le_and_exists SetLike.lt_iff_le_and_exists
 
 end SetLike
-
