@@ -307,6 +307,7 @@ theorem emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 :=
   | (0 : ℕ), _ ,_ => Or.inl rfl
   | (1 : ℕ), _ ,_ => Or.inr rfl
   -- Porting note: this used to be `=> absurd h (by decide)`
+  -- see https://github.com/leanprover-community/mathlib4/issues/994
   | (k + 2 : ℕ), h₁, _ => False.elim (h₁.not_le (by
     rw [Nat.cast_add]
     exact (le_add_iff_nonneg_left 2).2 (NonNeg.mk k)))
