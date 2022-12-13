@@ -3,13 +3,13 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathbin.Algebra.CharZero.Defs
-import Mathbin.Algebra.GroupWithZero.Commute
-import Mathbin.Algebra.Hom.Ring
-import Mathbin.Algebra.Order.Group.Abs
-import Mathbin.Algebra.Ring.Commute
-import Mathbin.Data.Nat.Order.Basic
-import Mathbin.Algebra.Group.Opposite
+import Mathlib.Algebra.CharZero.Defs
+import Mathlib.Algebra.GroupWithZero.Commute
+import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Ring.Commute
+import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Cast of natural numbers (additional theorems)
@@ -31,34 +31,25 @@ namespace Nat
 /-- `coe : ℕ → α` as an `add_monoid_hom`. -/
 def castAddMonoidHom (α : Type _) [AddMonoidWithOne α] :
     ℕ →+ α where
-  toFun := coe
+  toFun := Nat.cast
   map_add' := cast_add
   map_zero' := cast_zero
-#align nat.cast_add_monoid_hom Nat.castAddMonoidHom
 
 @[simp]
-theorem coe_cast_add_monoid_hom [AddMonoidWithOne α] : (castAddMonoidHom α : ℕ → α) = coe :=
+theorem coe_castAddMonoidHom [AddMonoidWithOne α] : (castAddMonoidHom α : ℕ → α) = Nat.cast :=
   rfl
-#align nat.coe_cast_add_monoid_hom Nat.coe_cast_add_monoid_hom
+#align nat.coe_cast_add_monoid_hom Nat.coe_castAddMonoidHom
 
-/- warning: nat.cast_mul -> Nat.cast_mul is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u_1}} [_inst_1 : NonAssocSemiring.{u_1} α] (m : Nat) (n : Nat), Eq.{succ u_1} α ((fun (a : Type) (b : Type.{u_1}) [self : HasLiftT.{1, succ u_1} a b] => self.0) Nat α (HasLiftT.mk.{1, succ u_1} Nat α (CoeTCₓ.coe.{1, succ u_1} Nat α (Nat.castCoe.{u_1} α (AddMonoidWithOne.toNatCast.{u_1} α (AddCommMonoidWithOne.toAddMonoidWithOne.{u_1} α (NonAssocSemiring.toAddCommMonoidWithOne.{u_1} α _inst_1)))))) (HMul.hMul.{0, 0, 0} Nat Nat Nat (instHMul.{0} Nat Nat.hasMul) m n)) (HMul.hMul.{u_1, u_1, u_1} α α α (instHMul.{u_1} α (Distrib.toHasMul.{u_1} α (NonUnitalNonAssocSemiring.toDistrib.{u_1} α (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} α _inst_1)))) ((fun (a : Type) (b : Type.{u_1}) [self : HasLiftT.{1, succ u_1} a b] => self.0) Nat α (HasLiftT.mk.{1, succ u_1} Nat α (CoeTCₓ.coe.{1, succ u_1} Nat α (Nat.castCoe.{u_1} α (AddMonoidWithOne.toNatCast.{u_1} α (AddCommMonoidWithOne.toAddMonoidWithOne.{u_1} α (NonAssocSemiring.toAddCommMonoidWithOne.{u_1} α _inst_1)))))) m) ((fun (a : Type) (b : Type.{u_1}) [self : HasLiftT.{1, succ u_1} a b] => self.0) Nat α (HasLiftT.mk.{1, succ u_1} Nat α (CoeTCₓ.coe.{1, succ u_1} Nat α (Nat.castCoe.{u_1} α (AddMonoidWithOne.toNatCast.{u_1} α (AddCommMonoidWithOne.toAddMonoidWithOne.{u_1} α (NonAssocSemiring.toAddCommMonoidWithOne.{u_1} α _inst_1)))))) n))
-but is expected to have type
-  forall {R : Type.{u_1}} [inst._@.Mathlib.Algebra.Ring.Basic._hyg.13 : Semiring.{u_1} R] {m : Nat} {n : Nat}, Eq.{succ u_1} R (Nat.cast.{u_1} R (Semiring.toNatCast.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.13) (HMul.hMul.{0, 0, 0} Nat Nat Nat (instHMul.{0} Nat instMulNat) m n)) (HMul.hMul.{u_1, u_1, u_1} R R R (instHMul.{u_1} R (NonUnitalNonAssocSemiring.toMul.{u_1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} R (Semiring.toNonAssocSemiring.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.13)))) (Nat.cast.{u_1} R (Semiring.toNatCast.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.13) m) (Nat.cast.{u_1} R (Semiring.toNatCast.{u_1} R inst._@.Mathlib.Algebra.Ring.Basic._hyg.13) n))
-Case conversion may be inaccurate. Consider using '#align nat.cast_mul Nat.cast_mulₓ'. -/
 @[simp, norm_cast]
 theorem cast_mul [NonAssocSemiring α] (m n : ℕ) : ((m * n : ℕ) : α) = m * n := by
   induction n <;> simp [mul_succ, mul_add, *]
-#align nat.cast_mul Nat.cast_mul
 
 /-- `coe : ℕ → α` as a `ring_hom` -/
 def castRingHom (α : Type _) [NonAssocSemiring α] : ℕ →+* α :=
-  { castAddMonoidHom α with toFun := coe, map_one' := cast_one, map_mul' := cast_mul }
-#align nat.cast_ring_hom Nat.castRingHom
+  { castAddMonoidHom α with toFun := Nat.cast, map_one' := cast_one, map_mul' := cast_mul }
 
 @[simp]
-theorem coe_cast_ring_hom [NonAssocSemiring α] : (castRingHom α : ℕ → α) = coe :=
+theorem coe_cast_ring_hom [NonAssocSemiring α] : (castRingHom α : ℕ → α) = Nat.cast :=
   rfl
 #align nat.coe_cast_ring_hom Nat.coe_cast_ring_hom
 
