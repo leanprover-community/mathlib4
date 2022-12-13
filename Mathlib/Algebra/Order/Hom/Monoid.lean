@@ -284,12 +284,14 @@ instance : OrderMonoidHomClass (α →*o β) α
   map_one f := f.map_one'
   monotone f := f.monotone'
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.instCoeFunForAll`
-directly. -/
-@[to_additive "Helper instance for when there's too many metavariables to apply
-`FunLike.instCoeFunForAll` directly."]
-instance : CoeFun (α →*o β) fun _ => α → β :=
-  FunLike.instCoeFunForAll
+-- Porting note:
+-- These helper instances are unhelpful in Lean 4, so omitting:
+-- /-- Helper instance for when there's too many metavariables to apply `FunLike.instCoeFunForAll`
+-- directly. -/
+-- @[to_additive "Helper instance for when there's too many metavariables to apply
+-- `FunLike.instCoeFunForAll` directly."]
+-- instance : CoeFun (α →*o β) fun _ => α → β :=
+--   FunLike.instCoeFunForAll
 
 -- Other lemmas should be accessed through the `FunLike` API
 @[ext, to_additive]
