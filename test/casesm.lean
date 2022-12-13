@@ -82,7 +82,7 @@ section AuxDecl
 variable {p q r : Prop}
 variable (h : p ∧ q ∨ p ∧ r)
 
--- Make sure that we don't try to work on auxilliary declarations.
+-- Make sure that we don't try to work on auxiliary declarations.
 -- In this case, there will be an auxiliary recursive declaration for
 -- `foo` itself that `casesm (_ ∧ _)` could potentially match.
 theorem foo : p ∧ p :=
