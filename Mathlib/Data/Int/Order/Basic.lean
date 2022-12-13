@@ -72,7 +72,7 @@ theorem coe_nat_ne_zero {n : ℕ} : (n : ℤ) ≠ 0 ↔ n ≠ 0 := by simp
 
 theorem coe_nat_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n :=
   ⟨fun h => Nat.pos_of_ne_zero (coe_nat_ne_zero.1 h),
-   fun h => (_root_.ne_of_lt (coe_nat_lt.2 h)).symm⟩
+   fun h => (_root_.ne_of_lt (ofNat_lt.2 h)).symm⟩
 #align int.coe_nat_ne_zero_iff_pos Int.coe_nat_ne_zero_iff_pos
 
 theorem coe_natAbs (n : ℕ) : |(n : ℤ)| = n :=
@@ -287,11 +287,11 @@ theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
   suffices ∀ (a : ℤ) (n : ℕ), |a / n| ≤ |a| from fun a b =>
     match b, eq_nat_or_neg b with
     | _, ⟨n, Or.inl rfl⟩ => this _ _
-    | _, ⟨n, Or.inr rfl⟩ => by rw [Int.ediv_neg, abs_neg] <;> apply this
+    | _, ⟨n, Or.inr rfl⟩ => by rw [Int.ediv_neg, abs_neg]; apply this
   fun a n => by
-  rw [abs_eq_natAbs, abs_eq_natAbs] <;>
+  rw [abs_eq_natAbs, abs_eq_natAbs];
     exact
-      coe_nat_le_coe_nat_of_le
+      ofNat_le_ofNat_of_le
         (match a, n with
         | (m : ℕ), n => Nat.div_le_self _ _
         | -[m+1], 0 => Nat.zero_le _
@@ -490,12 +490,12 @@ theorem lt_to_nat {n : ℕ} {a : ℤ} : n < toNat a ↔ (n : ℤ) < a :=
 
 @[simp]
 theorem coe_nat_nonpos_iff {n : ℕ} : (n : ℤ) ≤ 0 ↔ n = 0 :=
-  ⟨fun h => le_antisymm (Int.coe_nat_le.mp (h.trans Int.ofNat_zero.le)) n.zero_le, fun h =>
+  ⟨fun h => le_antisymm (Int.ofNat_le.mp (h.trans Int.ofNat_zero.le)) n.zero_le, fun h =>
     (coe_nat_eq_zero.mpr h).le⟩
 #align int.coe_nat_nonpos_iff Int.coe_nat_nonpos_iff
 
 theorem to_nat_le_to_nat {a b : ℤ} (h : a ≤ b) : toNat a ≤ toNat b := by
-  rw [to_nat_le] <;> exact le_trans h (le_to_nat b)
+  rw [to_nat_le]; exact le_trans h (self_le_toNat b)
 #align int.to_nat_le_to_nat Int.to_nat_le_to_nat
 
 theorem to_nat_lt_to_nat {a b : ℤ} (hb : 0 < b) : toNat a < toNat b ↔ a < b :=
