@@ -20,7 +20,7 @@ namespace WithTop
 instance [Nonempty α] : Nontrivial (WithTop α) :=
   Option.nontrivial
 
-variable [DecidableEq α]
+variable [DecidableEq (WithTop α)] -- Porting note this should be [DecidableEq α]
 
 section Mul
 
@@ -29,11 +29,11 @@ variable [Zero α] [Mul α]
 instance : MulZeroClass (WithTop α) where
   zero := 0
   mul m n := if m = 0 ∨ n = 0 then 0 else m.bind fun a => n.bind fun b => ↑(a * b)
-  zero_mul a := if_pos <| Or.inl rfl
-  mul_zero a := if_pos <| Or.inr rfl
+  zero_mul _ := if_pos <| Or.inl rfl
+  mul_zero _ := if_pos <| Or.inr rfl
 
 theorem mul_def {a b : WithTop α} :
-    a * b = if a = 0 ∨ b = 0 then 0 else a.bind fun a => b.bind fun b => ↑(a * b) :=
+    a * b = if a = 0 ∨ b = 0 then (0 : WithTop α) else a.bind fun a => b.bind fun b => ↑(a * b) :=
   rfl
 #align with_top.mul_def WithTop.mul_def
 
