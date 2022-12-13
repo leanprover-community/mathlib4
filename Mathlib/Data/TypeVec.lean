@@ -10,7 +10,6 @@ import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.SolveByElim
 
-set_option autoImplicit false
 /-!
 
 # Tuples of types, and their categorical structure.
@@ -34,7 +33,7 @@ Since e.g. `append1 α.drop α.last` is propositionally equal to `α` but not de
 to it, we need support functions and lemmas to mediate between constructions.
 -/
 
-
+set_option autoImplicit false
 universe u v w
 
 /-- n-tuples of types, as a category -/
@@ -439,9 +438,11 @@ scoped[MVFunctor] infixl:45 " ⊗ " => TypeVec.prod
 
 /- warning: typevec.const -> TypeVec.const is a dubious translation:
 lean 3 declaration is
-  forall {β : Type.{u_1}}, β -> (forall {n : Nat} (α : TypeVec.{u_2} n), TypeVec.Arrow.{u_2 u_1} n α (TypeVec.repeat.{u_1} n β))
+  forall {β : Type.{u_1}}, β -> (forall {n : Nat} (α : TypeVec.{u_2} n),
+      TypeVec.Arrow.{u_2 u_1} n α (TypeVec.repeat.{u_1} n β))
 but is expected to have type
-  forall {β : Type.{_aux_param_1}}, β -> (forall {n : Nat} (α : TypeVec.{_aux_param_0} n), TypeVec.Arrow.{_aux_param_0 _aux_param_1} n α (TypeVec.repeat.{_aux_param_1} n β))
+  forall {β : Type.{_aux_param_1}}, β -> (forall {n : Nat} (α : TypeVec.{_aux_param_0} n),
+      TypeVec.Arrow.{_aux_param_0 _aux_param_1} n α (TypeVec.repeat.{_aux_param_1} n β))
 Case conversion may be inaccurate. Consider using '#align typevec.const TypeVec.constₓ'. -/
 /-- `const x α` is an arrow that ignores its source and constructs a `TypeVec` that
 contains nothing but `x` -/
