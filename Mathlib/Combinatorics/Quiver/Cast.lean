@@ -20,6 +20,7 @@ universe v v₁ v₂ u u₁ u₂
 
 variable {U : Type _} [Quiver.{u + 1} U]
 
+
 namespace Quiver
 
 /-!

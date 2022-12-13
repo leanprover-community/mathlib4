@@ -112,11 +112,11 @@ import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Thin
 import Mathlib.Combinatorics.Quiver.Basic
+import Mathlib.Combinatorics.Quiver.Cast
 import Mathlib.Combinatorics.Quiver.ConnectedComponent
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Push
 import Mathlib.Combinatorics.Quiver.Subquiver
-import Mathlib.Combinatorics.Quiver.Cast
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.EquivFunctor
