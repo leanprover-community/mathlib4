@@ -304,10 +304,10 @@ theorem emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 :=
   have h : n % 2 < 2 := abs_of_nonneg (show 0 ≤ (2 : ℤ) by decide) ▸ Int.emod_lt _ (by decide)
   have h₁ : 0 ≤ n % 2 := Int.emod_nonneg _ (by decide)
   match n % 2, h, h₁ with
-  | (0 : ℕ) => fun _ _ => Or.inl rfl
-  | (1 : ℕ) => fun _ _ => Or.inr rfl
-  | (k + 2 : ℕ) => fun h _ => absurd h (by decide)
-  | -[a+1] => fun _ h₁ => absurd h₁ (by decide)
+  | (0 : ℕ), _ ,_ => Or.inl rfl
+  | (1 : ℕ), _ ,_ => Or.inr rfl
+  | (k + 2 : ℕ), h, _ => absurd h (by decide)
+  | -[a+1], _, h₁ => absurd h₁ (by decide)
 #align int.mod_two_eq_zero_or_one Int.emod_two_eq_zero_or_one
 
 /-! ### dvd -/
@@ -498,8 +498,8 @@ theorem to_nat_le_to_nat {a b : ℤ} (h : a ≤ b) : toNat a ≤ toNat b := by
 #align int.to_nat_le_to_nat Int.to_nat_le_to_nat
 
 theorem to_nat_lt_to_nat {a b : ℤ} (hb : 0 < b) : toNat a < toNat b ↔ a < b :=
-  ⟨fun h => by cases a; exact lt_to_nat.1 h; exact lt_trans (neg_succ_of_nat_lt_zero a) hb, fun h =>
-    by rw [lt_to_nat]; cases a; exact h; exact hb⟩
+  ⟨fun h => by cases a; exact lt_to_nat.1 h; exact lt_trans (neg_of_sign_eq_neg_one rfl) hb,
+   fun h => by rw [lt_to_nat]; cases a; exact h; exact hb⟩
 #align int.to_nat_lt_to_nat Int.to_nat_lt_to_nat
 
 theorem lt_of_to_nat_lt {a b : ℤ} (h : toNat a < toNat b) : a < b :=
