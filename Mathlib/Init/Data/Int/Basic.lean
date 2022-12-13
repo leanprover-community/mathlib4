@@ -38,8 +38,6 @@ namespace Int
 theorem neg_negSucc (n : ℕ) : - -[n+1] = ofNat (succ n) := rfl
 #align int.neg_neg_of_nat_succ Int.neg_negSucc
 
-@[deprecated, nolint synTaut]
-theorem ofNat_eq_coe (n : ℕ) : ofNat n = ↑n := rfl
 #align int.of_nat_eq_coe Int.ofNat_eq_coe
 
 #align int.neg_succ_of_nat_coe Int.negSucc_coe
