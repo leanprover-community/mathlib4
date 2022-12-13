@@ -8,9 +8,9 @@ import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.Clear!
 import Mathlib.Logic.Nontrivial
 import Mathlib.Algebra.CovariantAndContravariant
-import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Algebra.Order.Ring
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.Lemmas
 import Qq.Match
 
@@ -24,12 +24,6 @@ section Nonsense
 open Function
 -- TODO: these classes are mostly nonsense stubs which should be replaced by the real things
 -- when the theory files are ready
-
-instance [OrderedSemiring α] : PosMulMono α :=
-  ⟨fun ⟨_, ha⟩ _ _ h => OrderedSemiring.mul_le_mul_of_nonneg_left _ _ _ h ha⟩
-
-instance [StrictOrderedSemiring α] : PosMulStrictMono α :=
-  ⟨fun ⟨_, ha⟩ _ _ h => StrictOrderedSemiring.mul_lt_mul_of_pos_left _ _ _ h ha⟩
 
 theorem mul_nonneg_of_pos_of_nonneg [OrderedSemiring α] {a b : α}
     (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b :=
@@ -66,28 +60,6 @@ instance [StrictOrderedSemiring α] : OrderedMonoidWithZero α :=
 
 instance [StrictOrderedSemiring α] : MulPosStrictMono α :=
   ⟨fun ⟨_, ha⟩ _ _ h => StrictOrderedSemiring.mul_lt_mul_of_pos_right _ _ _ h ha⟩
-
-theorem pow_pos [StrictOrderedSemiring α] {a : α} (H : 0 < a) (n : ℕ) : 0 < a ^ n := by
-  have : Nontrivial α := ⟨_, _, H.ne⟩
-  induction' n with n IH
-  · exact pow_zero_pos _
-  · rw [pow_succ, ←zero_mul (a ^ n)]
-    exact mul_lt_mul_of_pos_right H IH
-
-theorem pow_nonneg [OrderedSemiring α] {a : α} (H : 0 ≤ a) (n : ℕ) : 0 ≤ a ^ n := by
-  induction' n with n IH
-  · simpa using OrderedSemiring.zero_le_one (α := α)
-  · rw [pow_succ]
-    exact mul_nonneg H IH
-
-theorem pow_ne_zero [MonoidWithZero M] [NoZeroDivisors M] {a : M} (n : ℕ) (h : a ≠ 0) :
-    a ^ n ≠ 0 := by
-  refine mt (fun H => ?_) h
-  induction' n with n IH
-  · rw [pow_zero] at H
-    rw [←mul_one a, H, mul_zero]
-  · rw [pow_succ, mul_eq_zero] at H
-    exact H.casesOn id IH
 
 lemma mul_ne_zero_of_ne_zero_of_pos [Zero α] [Mul α] [PartialOrder α] [NoZeroDivisors α]
     {a b : α} (ha : a ≠ 0) (hb : 0 < b) : a * b ≠ 0 :=

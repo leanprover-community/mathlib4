@@ -18,6 +18,7 @@ open Function
 class ZeroLEOneClass (α : Type _) [Zero α] [One α] [LE α] where
   /-- Zero is less than or equal to one. -/
   zero_le_one : (0 : α) ≤ 1
+#align zero_le_one_class ZeroLEOneClass
 
 /-- `zero_le_one` with the type argument implicit. -/
 @[simp] lemma zero_le_one [Zero α] [One α] [LE α] [ZeroLEOneClass α] : (0 : α) ≤ 1 :=

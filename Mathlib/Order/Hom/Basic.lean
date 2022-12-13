@@ -841,8 +841,7 @@ theorem toEquiv_symm (e : α ≃o β) : e.toEquiv.symm = e.symm.toEquiv :=
 #align order_iso.to_equiv_symm OrderIso.toEquiv_symm
 
 /-- Composition of two order isomorphisms is an order isomorphism. -/
--- Porting note: https://github.com/leanprover-community/mathlib4/pull/857
--- @[trans]
+@[trans]
 def trans (e : α ≃o β) (e' : β ≃o γ) : α ≃o γ :=
   RelIso.trans e e'
 #align order_iso.trans OrderIso.trans
