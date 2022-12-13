@@ -10,8 +10,8 @@ import Mathlib.Algebra.Hom.Units
 /-!
 # Monoid, group etc structures on `M × N`
 
-In this file we define one-binop (`monoid`, `group` etc) structures on `M × N`. We also prove
-trivial `simp` lemmas, and define the following operations on `monoid_hom`s:
+In this file we define one-binop (`Monoid`, `Group` etc) structures on `M × N`. We also prove
+trivial `simp` lemmas, and define the following operations on `MonoidHom`s:
 
 * `fst M N : M × N →* M`, `snd M N : M × N →* N`: projections `prod.fst` and `prod.snd`
   as `monoid_hom`s;
@@ -19,14 +19,14 @@ trivial `simp` lemmas, and define the following operations on `monoid_hom`s:
   into the product;
 * `f.prod g : `M →* N × P`: sends `x` to `(f x, g x)`;
 * `f.coprod g : M × N →* P`: sends `(x, y)` to `f x * g y`;
-* `f.prod_map g : M × N → M' × N'`: `prod.map f g` as a `monoid_hom`,
+* `f.prodMap g : M × N → M' × N'`: `prod.map f g` as a `MonoidHom`,
   sends `(x, y)` to `(f x, g y)`.
 
 ## Main declarations
 
-* `mul_mul_hom`/`mul_monoid_hom`/`mul_monoid_with_zero_hom`: Multiplication bundled as a
+* `mulMulHom`/`mulMonoidHom`/`mulMonoidWithZeroHom`: Multiplication bundled as a
   multiplicative/monoid/monoid with zero homomorphism.
-* `div_monoid_hom`/`div_monoid_with_zero_hom`: Division bundled as a monoid/monoid with zero
+* `divMonoidHom`/`divMonoidWithZeroHom`: Division bundled as a monoid/monoid with zero
   homomorphism.
 -/
 
@@ -323,11 +323,11 @@ theorem coe_snd : ⇑(snd M N) = Prod.snd :=
 #align mul_hom.coe_snd MulHom.coe_snd
 #align add_hom.coe_snd AddHom.coe_snd
 
-/-- Combine two `monoid_hom`s `f : M →ₙ* N`, `g : M →ₙ* P` into
+/-- Combine two `MonoidHom`s `f : M →ₙ* N`, `g : M →ₙ* P` into
 `f.prod g : M →ₙ* (N × P)` given by `(f.prod g) x = (f x, g x)`. -/
 @[to_additive prod
-      "Combine two `add_monoid_hom`s `f : add_hom M N`, `g : add_hom M P` into
-      `f.prod g : add_hom M (N × P)` given by `(f.prod g) x = (f x, g x)`"]
+      "Combine two `AddMonoidHom`s `f : AddHom M N`, `g : AddHom M P` into
+      `f.prod g : AddHom M (N × P)` given by `(f.prod g) x = (f x, g x)`"]
 protected def prod (f : M →ₙ* N) (g : M →ₙ* P) :
     M →ₙ* N × P where
   toFun := Pi.prod f g
@@ -372,8 +372,8 @@ section Prod_map
 variable {M' : Type _} {N' : Type _} [Mul M] [Mul N] [Mul M'] [Mul N'] [Mul P] (f : M →ₙ* M')
   (g : N →ₙ* N')
 
-/-- `Prod.map` as a `monoid_hom`. -/
-@[to_additive prodMap "`prod.map` as an `add_monoid_hom`"]
+/-- `Prod.map` as a `MonoidHom`. -/
+@[to_additive prodMap "`prod.map` as an `AddMonoidHom`"]
 def prodMap : M × N →ₙ* M' × N' :=
   (f.comp (fst M N)).prod (g.comp (snd M N))
 #align mul_hom.prod_map MulHom.prodMap
@@ -404,10 +404,10 @@ section Coprod
 
 variable [Mul M] [Mul N] [CommSemigroup P] (f : M →ₙ* P) (g : N →ₙ* P)
 
-/-- Coproduct of two `mul_hom`s with the same codomain:
+/-- Coproduct of two `MulHom`s with the same codomain:
 `f.coprod g (p : M × N) = f p.1 * g p.2`. -/
 @[to_additive
-      "Coproduct of two `add_hom`s with the same codomain:
+      "Coproduct of two `AddHom`s with the same codomain:
       `f.coprod g (p : M × N) = f p.1 + g p.2`."]
 def coprod : M × N →ₙ* P :=
   f.comp (fst M N) * g.comp (snd M N)
@@ -533,10 +533,10 @@ section Prod
 
 variable [MulOneClass P]
 
-/-- Combine two `monoid_hom`s `f : M →* N`, `g : M →* P` into `f.prod g : M →* N × P`
+/-- Combine two `MonoidHom`s `f : M →* N`, `g : M →* P` into `f.prod g : M →* N × P`
 given by `(f.prod g) x = (f x, g x)`. -/
 @[to_additive prod
-      "Combine two `add_monoid_hom`s `f : M →+ N`, `g : M →+ P` into
+      "Combine two `AddMonoidHom`s `f : M →+ N`, `g : M →+ P` into
       `f.prod g : M →+ N × P` given by `(f.prod g) x = (f x, g x)`"]
 protected def prod (f : M →* N) (g : M →* P) :
     M →* N × P where
@@ -583,8 +583,8 @@ section Prod_map
 variable {M' : Type _} {N' : Type _} [MulOneClass M'] [MulOneClass N'] [MulOneClass P] (f : M →* M')
   (g : N →* N')
 
-/-- `prod.map` as a `monoid_hom`. -/
-@[to_additive prodMap "`prod.map` as an `add_monoid_hom`"]
+/-- `prod.map` as a `MonoidHom`. -/
+@[to_additive prodMap "`prod.map` as an `AddHonoidHom`"]
 def prodMap : M × N →* M' × N' :=
   (f.comp (fst M N)).prod (g.comp (snd M N))
 #align monoid_hom.prod_map MonoidHom.prodMap
@@ -615,10 +615,10 @@ section Coprod
 
 variable [CommMonoid P] (f : M →* P) (g : N →* P)
 
-/-- Coproduct of two `monoid_hom`s with the same codomain:
+/-- Coproduct of two `MonoidHom`s with the same codomain:
 `f.coprod g (p : M × N) = f p.1 * g p.2`. -/
 @[to_additive
-      "Coproduct of two `add_monoid_hom`s with the same codomain:
+      "Coproduct of two `AddMonoidHom`s with the same codomain:
       `f.coprod g (p : M × N) = f p.1 + g p.2`."]
 def coprod : M × N →* P :=
   f.comp (fst M N) * g.comp (snd M N)
@@ -697,8 +697,8 @@ theorem coe_prodComm_symm : ⇑(prodComm : M × N ≃* N × M).symm = Prod.swap 
 
 variable {M' N' : Type _} [MulOneClass M'] [MulOneClass N']
 
-/-- Product of multiplicative isomorphisms; the maps come from `equiv.prod_congr`.-/
-@[to_additive prodCongr "Product of additive isomorphisms; the maps come from `equiv.prod_congr`."]
+/-- Product of multiplicative isomorphisms; the maps come from `equiv.prodCongr`.-/
+@[to_additive prodCongr "Product of additive isomorphisms; the maps come from `equiv.prodCongr`."]
 def prodCongr (f : M ≃* M') (g : N ≃* N') : M × N ≃* M' × N' :=
   { f.toEquiv.prodCongr g.toEquiv with
     map_mul' := fun _ _ => Prod.ext (f.map_mul _ _) (g.map_mul _ _) }
@@ -755,8 +755,8 @@ open MulOpposite
 /-- Canonical homomorphism of monoids from `αˣ` into `α × αᵐᵒᵖ`.
 Used mainly to define the natural topology of `αˣ`. -/
 @[to_additive
-      "Canonical homomorphism of additive monoids from `add_units α` into `α × αᵃᵒᵖ`.
-      Used mainly to define the natural topology of `add_units α`.",
+      "Canonical homomorphism of additive monoids from `AddUnits α` into `α × αᵃᵒᵖ`.
+      Used mainly to define the natural topology of `AddUnits α`.",
   simps]
 def embedProduct (α : Type _) [Monoid α] :
     αˣ →* α × αᵐᵒᵖ where
