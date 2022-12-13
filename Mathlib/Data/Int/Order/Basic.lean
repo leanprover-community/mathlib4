@@ -370,12 +370,12 @@ theorem exists_lt_and_lt_iff_not_dvd (m : ℤ) {n : ℤ} (hn : 0 < n) :
     rw [lt_add_one_iff, ← not_lt] at h2k
     exact h2k h1k
   · intro h
-    rw [dvd_iff_mod_eq_zero, ← Ne.def] at h
-    have := (mod_nonneg m hn.ne.symm).lt_of_ne h.symm
-    simp (config := { singlePass := true }) only [← mod_add_div m n]
+    rw [dvd_iff_emod_eq_zero, ← Ne.def] at h
+    have := (emod_nonneg m hn.ne.symm).lt_of_ne h.symm
+    simp (config := { singlePass := true }) only [← emod_add_ediv m n]
     refine' ⟨m / n, lt_add_of_pos_left _ this, _⟩
     rw [add_comm _ (1 : ℤ), left_distrib, mul_one]
-    exact add_lt_add_right (mod_lt_of_pos _ hn) _
+    exact add_lt_add_right (emod_lt_of_pos _ hn) _
 #align int.exists_lt_and_lt_iff_not_dvd Int.exists_lt_and_lt_iff_not_dvd
 
 attribute [local simp] Int.ediv_zero
@@ -479,8 +479,7 @@ theorem ediv_dvd_of_dvd {s t : ℤ} (hst : s ∣ t) : t / s ∣ t := by
 
 @[simp]
 theorem to_nat_le {a : ℤ} {n : ℕ} : toNat a ≤ n ↔ a ≤ n := by
-  rw [(coe_nat_le_coe_nat_iff _ _).symm, to_nat_eq_max, max_le_iff] <;>
-    exact and_iff_left (coe_zero_le _)
+  rw [ofNat_le.symm, toNat_eq_max, max_le_iff]; exact and_iff_left (ofNat_zero_le _)
 #align int.to_nat_le Int.to_nat_le
 
 @[simp]
@@ -522,8 +521,8 @@ theorem to_nat_eq_zero : ∀ {n : ℤ}, n.toNat = 0 ↔ n ≤ 0
   | -[n+1] =>
     show (-((n : ℤ) + 1)).toNat = 0 ↔ (-(n + 1) : ℤ) ≤ 0 from
       calc
-        _ ↔ True := ⟨fun _ => trivial, fun h => to_nat_neg_nat _⟩
-        _ ↔ _ := ⟨fun h => neg_nonpos_of_nonneg (ofNat_zero_le _), fun _ => trivial⟩
+        _ ↔ True := ⟨fun _ => trivial, fun _ => toNat_neg_nat _⟩
+        _ ↔ _ := ⟨fun _ => neg_nonpos_of_nonneg (ofNat_zero_le _), fun _ => trivial⟩
 
 #align int.to_nat_eq_zero Int.to_nat_eq_zero
 
