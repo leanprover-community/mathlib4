@@ -436,14 +436,7 @@ def prod : ∀ {n}, TypeVec.{u} n → TypeVec.{u} n → TypeVec n
 -- mathport name: typevec.prod
 scoped[MVFunctor] infixl:45 " ⊗ " => TypeVec.prod
 
-/- warning: typevec.const -> TypeVec.const is a dubious translation:
-lean 3 declaration is
-  forall {β : Type.{u_1}}, β -> (forall {n : Nat} (α : TypeVec.{u_2} n),
-      TypeVec.Arrow.{u_2 u_1} n α (TypeVec.repeat.{u_1} n β))
-but is expected to have type
-  forall {β : Type.{_aux_param_1}}, β -> (forall {n : Nat} (α : TypeVec.{_aux_param_0} n),
-      TypeVec.Arrow.{_aux_param_0 _aux_param_1} n α (TypeVec.repeat.{_aux_param_1} n β))
-Case conversion may be inaccurate. Consider using '#align typevec.const TypeVec.constₓ'. -/
+/- porting note: the order of universes in `const` is reversed w.r.t. mathlib3 -/
 /-- `const x α` is an arrow that ignores its source and constructs a `TypeVec` that
 contains nothing but `x` -/
 protected def const {β} (x : β) : ∀ {n} (α : TypeVec n), α ⟹ «repeat» _ β
