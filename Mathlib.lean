@@ -41,6 +41,7 @@ import Mathlib.Algebra.Hom.Equiv.Units.Basic
 import Mathlib.Algebra.Hom.Equiv.Units.GroupWithZero
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Hom.GroupInstances
+import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Invertible
@@ -129,6 +130,7 @@ import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.BinaryHeap
 import Mathlib.Data.Bool.Basic
+import Mathlib.Data.Bool.Set
 import Mathlib.Data.Bracket
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
@@ -166,9 +168,11 @@ import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Defs
+import Mathlib.Data.Nat.Gcd.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Nat.PSub
+import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Num.Basic
 import Mathlib.Data.Opposite
@@ -187,6 +191,7 @@ import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.NAry
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.Sigma.Order
@@ -199,6 +204,7 @@ import Mathlib.Data.Sum.Order
 import Mathlib.Data.UInt
 import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
+import Mathlib.Data.Vector
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.Option
@@ -218,6 +224,8 @@ import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Order
+import Mathlib.Init.Data.List.Basic
+import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Ordering.Basic
@@ -264,6 +272,7 @@ import Mathlib.Order.Basic
 import Mathlib.Order.BooleanAlgebra
 import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Compare
+import Mathlib.Order.Directed
 import Mathlib.Order.Disjoint
 import Mathlib.Order.GameAdd
 import Mathlib.Order.Heyting.Basic
@@ -273,7 +282,7 @@ import Mathlib.Order.Iterate
 import Mathlib.Order.Lattice
 import Mathlib.Order.Max
 import Mathlib.Order.MinMax
-import Mathlib.Order.Monotone
+import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic
