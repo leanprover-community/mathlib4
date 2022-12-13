@@ -181,9 +181,9 @@ theorem div_sub' (a b c : K) (hc : c ≠ 0) : a / c - b = (a - c * b) / c := by
   simpa using div_sub_div a b hc one_ne_zero
 
 -- see Note [lower instance priority]
-instance (priority := 100) Field.Is_domain : IsDomain K :=
+instance (priority := 100) Field.IsDomain : IsDomain K :=
   { DivisionRing.IsDomain with }
-#align field.is_domain Field.is_domain
+#align field.is_domain Field.IsDomain
 
 end Field
 
@@ -200,7 +200,7 @@ section NoncomputableDefs
 
 variable {R : Type _} [Nontrivial R]
 
-/-- Constructs a `DivisionSemiring` structure on a `Ring` consisting only of units and 0. -/
+/-- Constructs a `DivisionRing` structure on a `Ring` consisting only of units and 0. -/
 noncomputable def divisionRingOfIsUnitOrEqZero [hR : Ring R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
     DivisionRing R :=
   { groupWithZeroOfIsUnitOrEqZero h, hR with }
