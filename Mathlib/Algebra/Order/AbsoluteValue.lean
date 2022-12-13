@@ -13,19 +13,20 @@ import Mathlib.Algebra.Ring.Regular
 /-!
 # Absolute values
 
-This file defines a bundled type of absolute values `absolute_value R S`.
+This file defines a bundled type of absolute values `AbsoluteValue R S`.
 
 ## Main definitions
 
- * `absolute_value R S` is the type of absolute values on `R` mapping to `S`.
- * `absolute_value.abs` is the "standard" absolute value on `S`, mapping negative `x` to `-x`.
- * `absolute_value.to_monoid_with_zero_hom`: absolute values mapping to a
+ * `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`.
+ * `AbsoluteValue.abs` is the "standard" absolute value on `S`, mapping negative `x` to `-x`.
+ * `AbsoluteValue.to_monoid_with_zero_hom`: absolute values mapping to a
    linear ordered field preserve `0`, `*` and `1`
- * `is_absolute_value`: a type class stating that `f : β → α` satisfies the axioms of an abs val
+ * `IsAbsoluteValue`: a type class stating that `f : β → α` satisfies the axioms of an absolute
+   value
 -/
 
 
-/-- `absolute_value R S` is the type of absolute values on `R` mapping to `S`:
+/-- `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`:
 the maps that preserve `*`, are nonnegative, positive definite and satisfy the triangle equality. -/
 structure AbsoluteValue (R S : Type _) [Semiring R] [OrderedSemiring S] extends R →ₙ* S where
   nonneg' : ∀ x, 0 ≤ toFun x
@@ -35,6 +36,7 @@ structure AbsoluteValue (R S : Type _) [Semiring R] [OrderedSemiring S] extends 
 
 namespace AbsoluteValue
 
+-- Porting note: Removing nolints.
 -- attribute [nolint doc_blame] AbsoluteValue.toMulHom
 
 -- initialize_simps_projections AbsoluteValue (to_mul_hom_to_fun → apply)
@@ -86,7 +88,7 @@ theorem ext ⦃f g : AbsoluteValue R S⦄ : (∀ x, f x = g x) → f = g :=
 --   FunLike.hasCoeToFun
 
 @[simp]
-theorem coe_to_mul_hom : ⇑abv.toMulHom = abv :=
+theorem coe_to_mul_hom : abv.toMulHom = abv :=
   rfl
 #align absolute_value.coe_to_mul_hom AbsoluteValue.coe_to_mul_hom
 
@@ -159,8 +161,8 @@ section Semiring
 
 section IsDomain
 
--- all of these are true for `no_zero_divisors S`; but it doesn't work smoothly with the
--- `is_domain`/`cancel_monoid_with_zero` API
+-- all of these are true for `NoZeroDivisors S`; but it doesn't work smoothly with the
+-- `IsDomain`/`CancelMonoidWithZero` API
 variable {R S : Type _} [Semiring R] [OrderedRing S] (abv : AbsoluteValue R S)
 
 variable [IsDomain S] [Nontrivial R]
@@ -237,7 +239,7 @@ section LinearOrderedRing
 
 variable {R S : Type _} [Semiring R] [LinearOrderedRing S] (abv : AbsoluteValue R S)
 
-/-- `absolute_value.abs` is `abs` as a bundled `absolute_value`. -/
+/-- `AbsoluteValue.abs` is `abs` as a bundled `AbsoluteValue`. -/
 @[simps]
 protected def abs : AbsoluteValue S S where
   toFun := abs
@@ -270,7 +272,7 @@ end AbsoluteValue
 /- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4: #[`abv_mul] [] -/
 /-- A function `f` is an absolute value if it is nonnegative, zero only at 0, additive, and
 multiplicative.
-See also the type `absolute_value` which represents a bundled version of absolute values.
+See also the type `AbsoluteValue` which represents a bundled version of absolute values.
 -/
 class IsAbsoluteValue {S} [OrderedSemiring S] {R} [Semiring R] (f : R → S) : Prop where
   abv_nonneg : ∀ x, 0 ≤ f x
@@ -288,15 +290,15 @@ variable {S : Type _} [OrderedSemiring S]
 variable {R : Type _} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
 
 /-- A bundled absolute value is an absolute value. -/
-instance _root_.AbsoluteValue.is_absolute_value (abv : AbsoluteValue R S) :
+instance _root_.AbsoluteValue.isAbsoluteValue (abv : AbsoluteValue R S) :
     IsAbsoluteValue abv where
   abv_nonneg := abv.nonneg
   abv_eq_zero := abv.eq_zero
   abv_add := abv.add_le
   abv_mul := abv.map_mul
-#align absolute_value.is_absolute_value AbsoluteValue.is_absolute_value
+#align absolute_value.is_absolute_value AbsoluteValue.isAbsoluteValue
 
-/-- Convert an unbundled `is_absolute_value` to a bundled `absolute_value`. -/
+/-- Convert an unbundled `IsAbsoluteValue` to a bundled `AbsoluteValue`. -/
 @[simps]
 def toAbsoluteValue : AbsoluteValue R S where
   toFun := abv
@@ -321,7 +323,7 @@ section LinearOrderedRing
 variable {S : Type _} [LinearOrderedRing S]
 
 instance abs_is_absolute_value : IsAbsoluteValue (abs : S → S) :=
-  AbsoluteValue.abs.is_absolute_value
+  AbsoluteValue.abs.isAbsoluteValue
 #align is_absolute_value.abs_is_absolute_value IsAbsoluteValue.abs_is_absolute_value
 
 end LinearOrderedRing
