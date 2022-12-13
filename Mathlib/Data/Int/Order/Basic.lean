@@ -174,15 +174,9 @@ protected theorem le_induction_down {P : ℤ → Prop} {m : ℤ} (h0 : P m)
 
 variable {a b : ℤ} {n : ℕ}
 
-attribute [simp] natAbs natAbs_ofNat natAbs_zero natAbs_one
+attribute [simp] natAbs_ofNat natAbs_zero natAbs_one
 
-@[simp]
-theorem natAbs_dvd_iff_dvd {a b : ℤ} : a.natAbs ∣ b.natAbs ↔ a ∣ b := by
-  refine' ⟨_, fun ⟨k, hk⟩ => ⟨k.natAbs, hk.symm ▸ natAbs_mul a k⟩⟩
-  rintro ⟨k, hk⟩
-  rw [← natAbs_ofNat k, ← natAbs_mul, natAbs_eq_natAbs_iff, neg_mul_eq_mul_neg] at hk
-  obtain hk|hk := hk <;> exact ⟨_, hk⟩
-#align int.nat_abs_dvd_iff_dvd Int.natAbs_dvd_iff_dvd
+#align int.nat_abs_dvd_iff_dvd Int.natAbs_dvd_natAbs
 
 /-! ### `/`  -/
 
@@ -463,7 +457,7 @@ theorem ediv_pos_of_pos_of_dvd {a b : ℤ} (H1 : 0 < a) (H2 : 0 ≤ b) (H3 : b �
 #align int.div_pos_of_pos_of_dvd Int.ediv_pos_of_pos_of_dvd
 
 theorem natAbs_eq_of_dvd_dvd {s t : ℤ} (hst : s ∣ t) (hts : t ∣ s) : natAbs s = natAbs t :=
-  Nat.dvd_antisymm (natAbs_dvd_iff_dvd.mpr hst) (natAbs_dvd_iff_dvd.mpr hts)
+  Nat.dvd_antisymm (natAbs_dvd_natAbs.mpr hst) (natAbs_dvd_natAbs.mpr hts)
 #align int.nat_abs_eq_of_dvd_dvd Int.natAbs_eq_of_dvd_dvd
 
 theorem ediv_eq_ediv_of_mul_eq_mul {a b c d : ℤ} (H2 : d ∣ c) (H3 : b ≠ 0) (H4 : d ≠ 0)
