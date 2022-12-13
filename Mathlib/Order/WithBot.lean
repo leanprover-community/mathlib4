@@ -1293,9 +1293,9 @@ theorem lt_iff_exists_coe_btwn [Preorder α] [DenselyOrdered α] [NoMaxOrder α]
 #align with_top.lt_iff_exists_coe_btwn WithTop.lt_iff_exists_coe_btwn
 
 instance noBotOrder [LE α] [NoBotOrder α] [Nonempty α] : NoBotOrder (WithTop α) :=
-  @instNoBotOrderOrderDualInstLEOrderDual (WithBot αᵒᵈ) _ _
+  @OrderDual.noBotOrder (WithBot αᵒᵈ) _ _
 
 instance noMinOrder [LT α] [NoMinOrder α] [Nonempty α] : NoMinOrder (WithTop α) :=
-  @instNoMinOrderOrderDualInstLTOrderDual (WithBot αᵒᵈ) _ _
+  @OrderDual.noMinOrder (WithBot αᵒᵈ) _ _
 
 end WithTop
