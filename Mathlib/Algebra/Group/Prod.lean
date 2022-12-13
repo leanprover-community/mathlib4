@@ -733,9 +733,13 @@ variable [Monoid M] [Monoid N]
 def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
   toFun := (Units.map (MonoidHom.fst M N)).prod (Units.map (MonoidHom.snd M N))
   invFun u := ⟨(u.1, u.2), (↑u.1⁻¹, ↑u.2⁻¹), by simp, by simp⟩
-  left_inv u := by simp only [MonoidHom.prod_apply, Units.coe_map, MonoidHom.coe_fst, MonoidHom.coe_snd, Prod.mk.eta,
-    Units.coe_map_inv, Units.mk_val]
-  right_inv := fun ⟨u₁, u₂⟩ => sorry --by simp only [Units.map]
+  left_inv u := by
+    simp only [MonoidHom.prod_apply, Units.coe_map, MonoidHom.coe_fst, MonoidHom.coe_snd,
+      Prod.mk.eta, Units.coe_map_inv, Units.mk_val]
+  right_inv := fun ⟨u₁, u₂⟩ => by
+    simp only [Units.map, MonoidHom.coe_fst, Units.inv_eq_val_inv,
+      MonoidHom.coe_snd, MonoidHom.prod_apply, Prod.mk.injEq]
+    exact ⟨rfl, rfl⟩
   map_mul' := MonoidHom.map_mul _
 #align mul_equiv.prod_units MulEquiv.prodUnits
 #align add_equiv.prod_add_units AddEquiv.prodAddUnits
