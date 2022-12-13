@@ -40,8 +40,8 @@ The actual mathematical content of the proof is here.
     have := ofNat_pos.2 <| Nat.le_of_ble_eq_true hn
     have nonneg := emod_nonneg a <| Int.ne_of_gt this
     refine ⟨Nat.zero_le _, ?_, ?_⟩
-    · rw [Int.toNat_lt nonneg]; exact Int.emod_lt_of_pos _ this
-    · rw [Int.modeq, Int.toNat_of_nonneg nonneg, emod_emod]
+    · simp only [ofNat_eq_coe]; rw [Int.toNat_lt nonneg]; exact Int.emod_lt_of_pos _ this
+    · simp only [ofNat_eq_coe]; rw [Int.modeq, Int.toNat_of_nonneg nonneg, emod_emod]
 
 /--
 The end point is that once we have reduced to `∃ z, n ≤ z < n ∧ a ≡ z (mod n)`

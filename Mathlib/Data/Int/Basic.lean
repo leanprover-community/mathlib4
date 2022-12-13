@@ -45,6 +45,7 @@ instance : CommRing ℤ where
   nsmul_zero := Int.zero_mul
   nsmul_succ n x := by
     show ofNat (Nat.succ n) * x = x + ofNat n * x
+    simp only [ofNat_eq_coe]
     rw [Int.ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
   natCast := (·)
