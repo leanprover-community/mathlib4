@@ -117,28 +117,33 @@ private def P : ℕ × ℤ × ℤ → Prop
   | (r, s, t) => (r : ℤ) = x * s + y * t
 
 theorem xgcd_aux_P {r r'} :
-    ∀ {s t s' t'}, P x y (r, s, t) → P x y (r', s', t') → P x y (xgcdAux r s t r' s' t') :=
-  (gcd.induction r r' (by simp)) fun a b h IH s t s' t' p p' => by
-    rw [xgcd_aux_rec h]; refine' IH _ p; dsimp [P] at *
-    rw [Int.mod_def]; generalize (b / a : ℤ) = k
-    rw [p, p']
-    simp [mul_add, mul_comm, mul_left_comm, add_comm, add_left_comm, sub_eq_neg_add, mul_assoc]
+    ∀ {s t s' t'}, P x y (r, s, t) → P x y (r', s', t') → P x y (xgcdAux r s t r' s' t') := by
+    induction r, r' using gcd.induction with
+    | H0 => simp
+    | H1 a b h IH =>
+      intro s t s' t' p p'
+      rw [xgcd_aux_rec h]; refine' IH _ p; dsimp [P] at *
+      rw [Int.emod_eq_mod, Int.mod_def]; generalize (b / a : ℤ) = k
+      rw [p, p']
+      simp [mul_add, mul_comm, mul_left_comm, add_comm, add_left_comm, sub_eq_neg_add, mul_assoc]
+      sorry
+      exact Int.ofNat_zero_le b
+      exact Int.ofNat_zero_le a
 #align nat.xgcd_aux_P Nat.xgcd_aux_P
 
 /-- **Bézout's lemma**: given `x y : ℕ`, `gcd x y = x * a + y * b`, where `a = gcd_a x y` and
 `b = gcd_b x y` are computed by the extended Euclidean algorithm.
 -/
 theorem gcd_eq_gcd_ab : (gcd x y : ℤ) = x * gcdA x y + y * gcdB x y := by
-  have := @xgcd_aux_P x y x y 1 0 0 1 (by simp [P]) (by simp [P]) <;>
-    rwa [xgcd_aux_val, xgcd_val] at this
+  have := @xgcd_aux_P x y x y 1 0 0 1 (by simp [P]) (by simp [P])
+  rwa [xgcd_aux_val, xgcd_val] at this
 #align nat.gcd_eq_gcd_ab Nat.gcd_eq_gcd_ab
 
 end
 
 theorem exists_mul_mod_eq_gcd {k n : ℕ} (hk : gcd n k < k) : ∃ m, n * m % k = gcd n k := by
-  have hk' := int.coe_nat_ne_zero.mpr (ne_of_gt (lt_of_le_of_lt (zero_le (gcd n k)) hk))
-  have key := congr_arg (fun m => Int.natMod m k) (gcd_eq_gcd_ab n k)
-  simp_rw [Int.natMod] at key
+  have hk' := Int.ofNat_ne_zero.2 (ne_of_gt (lt_of_le_of_lt (zero_le (gcd n k)) hk))
+  have key := congr_arg (fun (m : ℤ) => (m % k).toNat) (gcd_eq_gcd_ab n k)
   rw [Int.add_mul_mod_self_left, ← Int.coe_nat_mod, Int.toNat_coe_nat, mod_eq_of_lt hk] at key
   refine' ⟨(n.gcd_a k % k).toNat, Eq.trans (Int.ofNat.inj _) key.symm⟩
   rw [Int.coe_nat_mod, Int.ofNat_mul, Int.toNat_of_nonneg (Int.mod_nonneg _ hk'),
