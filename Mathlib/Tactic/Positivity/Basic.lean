@@ -8,7 +8,7 @@ import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.Clear!
 import Mathlib.Logic.Nontrivial
 import Mathlib.Algebra.CovariantAndContravariant
-import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.Lemmas
@@ -60,15 +60,6 @@ instance [StrictOrderedSemiring α] : OrderedMonoidWithZero α :=
 
 instance [StrictOrderedSemiring α] : MulPosStrictMono α :=
   ⟨fun ⟨_, ha⟩ _ _ h => StrictOrderedSemiring.mul_lt_mul_of_pos_right _ _ _ h ha⟩
-
-theorem pow_ne_zero [MonoidWithZero M] [NoZeroDivisors M] {a : M} (n : ℕ) (h : a ≠ 0) :
-    a ^ n ≠ 0 := by
-  refine mt (fun H => ?_) h
-  induction' n with n IH
-  · rw [pow_zero] at H
-    rw [←mul_one a, H, mul_zero]
-  · rw [pow_succ, mul_eq_zero] at H
-    exact H.casesOn id IH
 
 lemma mul_ne_zero_of_ne_zero_of_pos [Zero α] [Mul α] [PartialOrder α] [NoZeroDivisors α]
     {a b : α} (ha : a ≠ 0) (hb : 0 < b) : a * b ≠ 0 :=
