@@ -15,20 +15,23 @@ import Mathlib.Algebra.Group.Opposite
 # Cast of natural numbers (additional theorems)
 
 This file proves additional properties about the *canonical* homomorphism from
-the natural numbers into an additive monoid with a one (`nat.cast`).
+the natural numbers into an additive monoid with a one (`Nat.cast`).
 
 ## Main declarations
 
-* `castAddMonoidHom`: `cast` bundled as an `add_monoid_hom`.
-* `castRingHom`: `cast` bundled as a `ring_hom`.
+* `castAddMonoidHom`: `cast` bundled as an `AddMonoidHom`.
+* `castRingHom`: `cast` bundled as a `RingHom`.
 -/
 
-set_option autoImplicit false -- **TODO** delete this later
+-- Porting note: There are many occasions below where we need `simp [map_zero f]`
+-- where `simp [map_zero]` should suffice. (Similarly for `map_one`.)
+-- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simp.20regression.20with.20MonoidHomClass
+
 variable {α β : Type _}
 
 namespace Nat
 
-/-- `Nat.cast : ℕ → α` as an `add_monoid_hom`. -/
+/-- `Nat.cast : ℕ → α` as an `AddMonoidHom`. -/
 def castAddMonoidHom (α : Type _) [AddMonoidWithOne α] :
     ℕ →+ α where
   toFun := Nat.cast
@@ -44,7 +47,7 @@ theorem coe_castAddMonoidHom [AddMonoidWithOne α] : (castAddMonoidHom α : ℕ 
 theorem cast_mul [NonAssocSemiring α] (m n : ℕ) : ((m * n : ℕ) : α) = m * n := by
   induction n <;> simp [mul_succ, mul_add, *]
 
-/-- `Nat.cast : ℕ → α` as a `ring_hom` -/
+/-- `Nat.cast : ℕ → α` as a `RingHom` -/
 def castRingHom (α : Type _) [NonAssocSemiring α] : ℕ →+* α :=
   { castAddMonoidHom α with toFun := Nat.cast, map_one' := cast_one, map_mul' := cast_mul }
 
@@ -96,7 +99,7 @@ theorem StrictMono_cast : StrictMono (Nat.cast : ℕ → α) :=
   mono_cast.strictMono_of_injective cast_injective
 #align nat.strict_mono_cast Nat.StrictMono_cast
 
-/-- `Nat.cast : ℕ → α` as an `order_embedding` -/
+/-- `Nat.cast : ℕ → α` as an `OrderEmbedding` -/
 @[simps (config := { fullyApplied := false })]
 def castOrderEmbedding : ℕ ↪o α :=
   OrderEmbedding.ofStrictMono Nat.cast Nat.StrictMono_cast
@@ -126,7 +129,7 @@ theorem cast_le_one : (n : α) ≤ 1 ↔ n ≤ 1 := by rw [← cast_one, cast_le
 
 end OrderedSemiring
 
-/-- A version of `nat.cast_sub` that works for `ℝ≥0` and `ℚ≥0`. Note that this proof doesn't work
+/-- A version of `Nat.cast_sub` that works for `ℝ≥0` and `ℚ≥0`. Note that this proof doesn't work
 for `ℕ∞` and `ℝ≥0∞`, so we use type-specific lemmas for these types. -/
 @[simp, norm_cast]
 theorem cast_tsub [CanonicallyOrderedCommSemiring α] [Sub α] [OrderedSub α]
@@ -174,7 +177,7 @@ theorem AddMonoidHom.ext_nat [AddMonoid A] {f g : ℕ →+ A} : f 1 = g 1 → f 
 
 variable [AddMonoidWithOne A]
 
--- these versions are primed so that the `ring_hom_class` versions aren't
+-- these versions are primed so that the `RingHomClass` versions aren't
 theorem eq_natCast' [AddMonoidHomClass F ℕ A] (f : F) (h1 : f 1 = 1) : ∀ n : ℕ, f n = n
   | 0 => by simp [map_zero f]
   | n + 1 => by rw [map_add, h1, eq_natCast' f h1 n, Nat.cast_add_one]
@@ -191,7 +194,7 @@ section MonoidWithZeroHomClass
 
 variable {A F : Type _} [MulZeroOneClass A]
 
-/-- If two `monoid_with_zero_hom`s agree on the positive naturals they are equal. -/
+/-- If two `MonoidWithZeroHom`s agree on the positive naturals they are equal. -/
 theorem ext_nat'' [MonoidWithZeroHomClass F ℕ A] (f g : F) (h_pos : ∀ {n : ℕ}, 0 < n → f n = g n) :
     f = g := by
   apply FunLike.ext
@@ -232,9 +235,10 @@ end RingHomClass
 
 namespace RingHom
 
-/-- This is primed to match `eq_int_cast'`. -/
+/-- This is primed to match `eq_intCast'`. -/
 theorem eq_natCast' {R} [NonAssocSemiring R] (f : ℕ →+* R) : f = Nat.castRingHom R :=
   RingHom.ext <| eq_natCast f
+#align ring_hom.eq_nat_cast' RingHom.eq_natCast'
 
 end RingHom
 
@@ -247,9 +251,8 @@ theorem Nat.castRingHom_nat : Nat.castRingHom ℕ = RingHom.id ℕ :=
   rfl
 
 /-- We don't use `RingHomClass` here, since that might cause type-class slowdown for
-`subsingleton`-/
-instance Nat.uniqueRingHom {R : Type _} [NonAssocSemiring R] :
-    Unique (ℕ →+* R) where
+`Subsingleton`-/
+instance Nat.uniqueRingHom {R : Type _} [NonAssocSemiring R] : Unique (ℕ →+* R) where
   default := Nat.castRingHom R
   uniq := RingHom.eq_natCast'
 
@@ -273,7 +276,7 @@ variable {π : α → Type _} [∀ a, NatCast (π a)]
 
 /- Porting note: manually wrote this instance.
 Was `by refine_struct { .. } <;> pi_instance_derive_field` -/
-instance : NatCast (∀ a, π a) := { natCast := fun n _ ↦ n }
+instance natCast : NatCast (∀ a, π a) := { natCast := fun n _ ↦ n }
 
 theorem nat_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
   rfl
@@ -292,10 +295,19 @@ namespace Pi
 
 variable {π : α → Type _} [∀ a, AddMonoidWithOne (π a)]
 
-/- Porting note: was `by refine_struct { .. } <;> pi_instance_derive_field`.
-I think this should be moved to `Algebra.Group.Pi`, so that we can extend the `AddMonoid` instance.
+/-
+Porting note: was `by refine_struct { .. } <;> pi_instance_derive_field`.
+@fpvandoorn suggests this should be moved to `Algebra.Group.Pi`,
+so that we can extend the `AddMonoid` instance.
+
+See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/not.20porting.20pi_instance
 -/
--- instance : AddMonoidWithOne (∀ a, π a) := { (inferInstance : AddMonoid (∀ a, π a)) with }
+instance : AddMonoidWithOne (∀ a, π a) :=
+{ add_zero := fun f => funext fun a => by simp,
+  zero_add := fun f => funext fun a => by simp,
+  add_assoc := fun f g h => funext fun a => by simp [add_assoc],
+  natCast_zero := funext fun a => by simp [natCast],
+  natCast_succ := fun n => funext fun a => by simp [natCast] }
 
 end Pi
 
