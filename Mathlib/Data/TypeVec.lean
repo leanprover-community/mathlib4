@@ -434,7 +434,7 @@ def prod : ∀ {n}, TypeVec.{u} n → TypeVec.{u} n → TypeVec n
 #align typevec.prod TypeVec.prod
 
 -- mathport name: typevec.prod
-scoped[MVFunctor] infixl:45 " ⊗ " => TypeVec.prod
+@[inherit_doc] scoped[MVFunctor] infixl:45 " ⊗ " => TypeVec.prod
 
 /- porting note: the order of universes in `const` is reversed w.r.t. mathlib3 -/
 /-- `const x α` is an arrow that ignores its source and constructs a `TypeVec` that
@@ -590,7 +590,7 @@ protected def prod.map : ∀ {n} {α α' β β' : TypeVec.{u} n}, α ⟹ β → 
 
 
 -- mathport name: typevec.prod.map
-scoped[MVFunctor] infixl:45 " ⊗' " => TypeVec.prod.map
+@[inherit_doc] scoped[MVFunctor] infixl:45 " ⊗' " => TypeVec.prod.map
 
 theorem fst_prod_mk {α α' β β' : TypeVec n} (f : α ⟹ β) (g : α' ⟹ β') :
     TypeVec.prod.fst ⊚ (f ⊗' g) = f ⊚ TypeVec.prod.fst :=
