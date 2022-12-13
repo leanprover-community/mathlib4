@@ -19,16 +19,16 @@ the natural numbers into an additive monoid with a one (`nat.cast`).
 
 ## Main declarations
 
-* `cast_add_monoid_hom`: `cast` bundled as an `add_monoid_hom`.
-* `cast_ring_hom`: `cast` bundled as a `ring_hom`.
+* `castAddMonoidHom`: `cast` bundled as an `add_monoid_hom`.
+* `castRingHom`: `cast` bundled as a `ring_hom`.
 -/
 
-
+set_option autoImplicit false -- **TODO** delete this later
 variable {α β : Type _}
 
 namespace Nat
 
-/-- `coe : ℕ → α` as an `add_monoid_hom`. -/
+/-- `Nat.cast : ℕ → α` as an `add_monoid_hom`. -/
 def castAddMonoidHom (α : Type _) [AddMonoidWithOne α] :
     ℕ →+ α where
   toFun := Nat.cast
@@ -44,29 +44,22 @@ theorem coe_castAddMonoidHom [AddMonoidWithOne α] : (castAddMonoidHom α : ℕ 
 theorem cast_mul [NonAssocSemiring α] (m n : ℕ) : ((m * n : ℕ) : α) = m * n := by
   induction n <;> simp [mul_succ, mul_add, *]
 
-/-- `coe : ℕ → α` as a `ring_hom` -/
+/-- `Nat.cast : ℕ → α` as a `ring_hom` -/
 def castRingHom (α : Type _) [NonAssocSemiring α] : ℕ →+* α :=
   { castAddMonoidHom α with toFun := Nat.cast, map_one' := cast_one, map_mul' := cast_mul }
 
 @[simp]
-theorem coe_cast_ring_hom [NonAssocSemiring α] : (castRingHom α : ℕ → α) = Nat.cast :=
+theorem coe_castRingHom [NonAssocSemiring α] : (castRingHom α : ℕ → α) = Nat.cast :=
   rfl
-#align nat.coe_cast_ring_hom Nat.coe_cast_ring_hom
+#align nat.coe_coe_cast_ring_hom Nat.coe_castRingHom
 
-/- warning: nat.cast_commute -> Nat.cast_commute is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u_1}} [_inst_1 : NonAssocSemiring.{u_1} α] (n : Nat) (x : α), Commute.{u_1} α (Distrib.toHasMul.{u_1} α (NonUnitalNonAssocSemiring.toDistrib.{u_1} α (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} α _inst_1))) ((fun (a : Type) (b : Type.{u_1}) [self : HasLiftT.{1, succ u_1} a b] => self.0) Nat α (HasLiftT.mk.{1, succ u_1} Nat α (CoeTCₓ.coe.{1, succ u_1} Nat α (Nat.castCoe.{u_1} α (AddMonoidWithOne.toNatCast.{u_1} α (AddCommMonoidWithOne.toAddMonoidWithOne.{u_1} α (NonAssocSemiring.toAddCommMonoidWithOne.{u_1} α _inst_1)))))) n) x
-but is expected to have type
-  forall {α : Type.{u_1}} [inst._@.Mathlib.Algebra.Ring.Basic._hyg.129 : Semiring.{u_1} α] (n : Nat) (x : α), Commute.{u_1} α (NonUnitalNonAssocSemiring.toMul.{u_1} α (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u_1} α (Semiring.toNonAssocSemiring.{u_1} α inst._@.Mathlib.Algebra.Ring.Basic._hyg.129))) (Nat.cast.{u_1} α (Semiring.toNatCast.{u_1} α inst._@.Mathlib.Algebra.Ring.Basic._hyg.129) n) x
-Case conversion may be inaccurate. Consider using '#align nat.cast_commute Nat.cast_commuteₓ'. -/
-theorem cast_commute [NonAssocSemiring α] (n : ℕ) (x : α) : Commute (↑n) x :=
-  (Nat.recOn n (by rw [cast_zero] <;> exact Commute.zero_left x)) fun n ihn => by
-    rw [cast_succ] <;> exact ihn.add_left (Commute.one_left x)
-#align nat.cast_commute Nat.cast_commute
+theorem cast_commute [NonAssocSemiring α] (n : ℕ) (x : α) : Commute (n : α) x := by
+  induction n with
+  | zero => rw [Nat.cast_zero]; exact Commute.zero_left x
+  | succ n ihn => rw [Nat.cast_succ]; exact ihn.add_left (Commute.one_left x)
 
 theorem cast_comm [NonAssocSemiring α] (n : ℕ) (x : α) : (n : α) * x = x * n :=
-  (cast_commute n x).Eq
-#align nat.cast_comm Nat.cast_comm
+  (cast_commute n x).eq
 
 theorem commute_cast [NonAssocSemiring α] (x : α) (n : ℕ) : Commute x n :=
   (n.cast_commute x).symm
@@ -76,10 +69,11 @@ section OrderedSemiring
 
 variable [OrderedSemiring α]
 
-@[mono]
-theorem mono_cast : Monotone (coe : ℕ → α) :=
+-- porting note: missing mono attribute
+-- @[mono]
+theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
   monotone_nat_of_le_succ fun n => by
-    rw [Nat.cast_succ] <;> exact le_add_of_nonneg_right zero_le_one
+    rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
 #align nat.mono_cast Nat.mono_cast
 
 @[simp]
@@ -103,24 +97,26 @@ end Nontrivial
 
 variable [CharZero α] {m n : ℕ}
 
-theorem strict_mono_cast : StrictMono (coe : ℕ → α) :=
-  mono_cast.strict_mono_of_injective cast_injective
-#align nat.strict_mono_cast Nat.strict_mono_cast
+theorem StrictMono_cast : StrictMono (Nat.cast : ℕ → α) :=
+  mono_cast.strictMono_of_injective cast_injective
+#align nat.strict_mono_cast Nat.StrictMono_cast
 
-/-- `coe : ℕ → α` as an `order_embedding` -/
+/-- `Nat.cast : ℕ → α` as an `order_embedding` -/
 @[simps (config := { fullyApplied := false })]
 def castOrderEmbedding : ℕ ↪o α :=
-  OrderEmbedding.ofStrictMono coe Nat.strict_mono_cast
+  OrderEmbedding.ofStrictMono Nat.cast Nat.StrictMono_cast
 #align nat.cast_order_embedding Nat.castOrderEmbedding
 
 @[simp, norm_cast]
 theorem cast_le : (m : α) ≤ n ↔ m ≤ n :=
-  strict_mono_cast.le_iff_le
+  StrictMono_cast.le_iff_le
 #align nat.cast_le Nat.cast_le
 
-@[simp, norm_cast, mono]
+-- porting note: missing mono attribute
+-- @[simp, norm_cast, mono]
+@[simp, norm_cast]
 theorem cast_lt : (m : α) < n ↔ m < n :=
-  strict_mono_cast.lt_iff_lt
+  StrictMono_cast.lt_iff_lt
 #align nat.cast_lt Nat.cast_lt
 
 @[simp, norm_cast]
@@ -155,12 +151,12 @@ theorem cast_tsub [CanonicallyOrderedCommSemiring α] [Sub α] [OrderedSub α]
 #align nat.cast_tsub Nat.cast_tsub
 
 @[simp, norm_cast]
-theorem cast_min [LinearOrderedSemiring α] {a b : ℕ} : (↑(min a b) : α) = min a b :=
+theorem cast_min [LinearOrderedSemiring α] {a b : ℕ} : ((min a b : ℕ) : α) = min a b :=
   (@mono_cast α _).map_min
 #align nat.cast_min Nat.cast_min
 
 @[simp, norm_cast]
-theorem cast_max [LinearOrderedSemiring α] {a b : ℕ} : (↑(max a b) : α) = max a b :=
+theorem cast_max [LinearOrderedSemiring α] {a b : ℕ} : ((max a b : ℕ) : α) = max a b :=
   (@mono_cast α _).map_max
 #align nat.cast_max Nat.cast_max
 
@@ -282,9 +278,9 @@ theorem Nat.cast_id (n : ℕ) : ↑n = n :=
 #align nat.cast_id Nat.cast_id
 
 @[simp]
-theorem Nat.cast_ring_hom_nat : Nat.castRingHom ℕ = RingHom.id ℕ :=
+theorem Nat.castRingHom_nat : Nat.castRingHom ℕ = RingHom.id ℕ :=
   rfl
-#align nat.cast_ring_hom_nat Nat.cast_ring_hom_nat
+#align nat.castRingHom_nat Nat.castRingHom_nat
 
 -- I don't think `ring_hom_class` is good here, because of the `subsingleton` TC slowness
 instance Nat.uniqueRingHom {R : Type _} [NonAssocSemiring R] :
