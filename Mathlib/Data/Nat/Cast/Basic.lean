@@ -293,7 +293,7 @@ namespace Pi
 variable {π : α → Type _} [∀ a, AddMonoidWithOne (π a)]
 
 /- Porting note: was `by refine_struct { .. } <;> pi_instance_derive_field`.
-If we don't use `pi_instance_derive_field`, we should
+I think this should be moved to `Algebra.Group.Pi`, so that we can extend the `AddMonoid` instance.
 -/
 -- instance : AddMonoidWithOne (∀ a, π a) := { (inferInstance : AddMonoid (∀ a, π a)) with }
 
