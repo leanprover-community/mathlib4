@@ -3,8 +3,8 @@ Copyright (c) 2018 Guy Leroy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
-import Mathbin.Data.Nat.Gcd.Basic
-import Mathbin.Tactic.NormNum
+import Mathlib.Data.Nat.Gcd.Basic
+import Mathlib.Tactic.NormNum
 
 /-!
 # Extended GCD and divisibility over ℤ
@@ -32,21 +32,21 @@ namespace Nat
 
 /-- Helper function for the extended GCD algorithm (`nat.xgcd`). -/
 def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ
-  | 0, s, t, r', s', t' => (r', s', t')
-  | r@(succ _), s, t, r', s', t' =>
-    have : r' % r < r := mod_lt _ <| succ_pos _
-    let q := r' / r
-    xgcd_aux (r' % r) (s' - q * s) (t' - q * t) r s t
+  | 0, _, _, r', s', t' => (r', s', t')
+  | succ k, s, t, r', s', t' =>
+    have : r' % succ k < succ k := mod_lt _ <| (succ_pos _).gt
+    let q := r' / succ k
+    xgcdAux (r' % succ k) (s' - q * s) (t' - q * t) (succ k) s t
 #align nat.xgcd_aux Nat.xgcdAux
 
 @[simp]
-theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := by simp [xgcd_aux]
+theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := by simp [xgcdAux]
 #align nat.xgcd_zero_left Nat.xgcd_zero_left
 
 theorem xgcd_aux_rec {r s t r' s' t'} (h : 0 < r) :
     xgcdAux r s t r' s' t' = xgcdAux (r' % r) (s' - r' / r * s) (t' - r' / r * t) r s t := by
   cases r <;> [exact absurd h (lt_irrefl _),
-    · simp only [xgcd_aux]
+    · simp only [xgcdAux]
       rfl]
 #align nat.xgcd_aux_rec Nat.xgcd_aux_rec
 
@@ -68,56 +68,56 @@ def gcdB (x y : ℕ) : ℤ :=
 
 @[simp]
 theorem gcd_a_zero_left {s : ℕ} : gcdA 0 s = 0 := by
-  unfold gcd_a
+  unfold gcdA
   rw [xgcd, xgcd_zero_left]
 #align nat.gcd_a_zero_left Nat.gcd_a_zero_left
 
 @[simp]
 theorem gcd_b_zero_left {s : ℕ} : gcdB 0 s = 1 := by
-  unfold gcd_b
+  unfold gcdB
   rw [xgcd, xgcd_zero_left]
 #align nat.gcd_b_zero_left Nat.gcd_b_zero_left
 
 @[simp]
 theorem gcd_a_zero_right {s : ℕ} (h : s ≠ 0) : gcdA s 0 = 1 := by
-  unfold gcd_a xgcd
+  unfold gcdA xgcd
   induction s
   · exact absurd rfl h
-  · simp [xgcd_aux]
+  · simp [xgcdAux]
 #align nat.gcd_a_zero_right Nat.gcd_a_zero_right
 
 @[simp]
 theorem gcd_b_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by
-  unfold gcd_b xgcd
+  unfold gcdB xgcd
   induction s
   · exact absurd rfl h
-  · simp [xgcd_aux]
+  · simp [xgcdAux]
 #align nat.gcd_b_zero_right Nat.gcd_b_zero_right
 
 @[simp]
 theorem xgcd_aux_fst (x y) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x y :=
   gcd.induction x y (by simp) fun x y h IH s t s' t' => by
-    simp [xgcd_aux_rec, h, IH] <;> rw [← gcd_rec]
+    simp [xgcd_aux_rec, h, IH]
+    rw [← gcd_rec]
 #align nat.xgcd_aux_fst Nat.xgcd_aux_fst
 
 theorem xgcd_aux_val (x y) : xgcdAux x 1 0 y 0 1 = (gcd x y, xgcd x y) := by
-  rw [xgcd, ← xgcd_aux_fst x y 1 0 0 1] <;> cases xgcd_aux x 1 0 y 0 1 <;> rfl
+  rw [xgcd, ← xgcd_aux_fst x y 1 0 0 1]
 #align nat.xgcd_aux_val Nat.xgcd_aux_val
 
 theorem xgcd_val (x y) : xgcd x y = (gcdA x y, gcdB x y) := by
-  unfold gcd_a gcd_b <;> cases xgcd x y <;> rfl
+  unfold gcdA gcdB; cases xgcd x y; rfl
 #align nat.xgcd_val Nat.xgcd_val
 
 section
 
-parameter (x y : ℕ)
+variable (x y : ℕ)
 
 private def P : ℕ × ℤ × ℤ → Prop
   | (r, s, t) => (r : ℤ) = x * s + y * t
-#align nat.P nat.P
 
 theorem xgcd_aux_P {r r'} :
-    ∀ {s t s' t'}, P (r, s, t) → P (r', s', t') → P (xgcdAux r s t r' s' t') :=
+    ∀ {s t s' t'}, P x y (r, s, t) → P x y (r', s', t') → P x y (xgcdAux r s t r' s' t') :=
   (gcd.induction r r' (by simp)) fun a b h IH s t s' t' p p' => by
     rw [xgcd_aux_rec h]; refine' IH _ p; dsimp [P] at *
     rw [Int.mod_def]; generalize (b / a : ℤ) = k
