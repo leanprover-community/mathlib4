@@ -91,9 +91,9 @@ theorem ext ⦃f g : AbsoluteValue R S⦄ : (∀ x, f x = g x) → f = g :=
 --   FunLike.hasCoeToFun
 
 @[simp]
-theorem coe_to_mul_hom : abv.toMulHom = abv :=
+theorem coe_toMulHom : abv.toMulHom = abv :=
   rfl
-#align absolute_value.coe_to_mul_hom AbsoluteValue.coe_to_mul_hom
+#align absolute_value.coe_to_mul_hom AbsoluteValue.coe_toMulHom
 
 protected theorem nonneg (x : R) : 0 ≤ abv x :=
   abv.nonneg' x
@@ -186,9 +186,9 @@ def toMonoidWithZeroHom : R →*₀ S :=
 #align absolute_value.to_monoid_with_zero_hom AbsoluteValue.toMonoidWithZeroHom
 
 @[simp]
-theorem coe_to_monoid_with_zero_hom : ⇑abv.toMonoidWithZeroHom = abv :=
+theorem coe_toMonoidWithZeroHom : ⇑abv.toMonoidWithZeroHom = abv :=
   rfl
-#align absolute_value.coe_to_monoid_with_zero_hom AbsoluteValue.coe_to_monoid_with_zero_hom
+#align absolute_value.coe_to_monoid_with_zero_hom AbsoluteValue.coe_toMonoidWithZeroHom
 
 /-- Absolute values from a nontrivial `R` to a linear ordered ring preserve `*` and `1`. -/
 def toMonoidHom : R →* S :=
@@ -331,9 +331,9 @@ section LinearOrderedRing
 
 variable {S : Type _} [LinearOrderedRing S]
 
-instance abs_is_absolute_value : IsAbsoluteValue (abs : S → S) :=
+instance abs_isAbsoluteValue : IsAbsoluteValue (abs : S → S) :=
   AbsoluteValue.abs.isAbsoluteValue
-#align is_absolute_value.abs_is_absolute_value IsAbsoluteValue.abs_is_absolute_value
+#align is_absolute_value.abs_is_absolute_value IsAbsoluteValue.abs_isAbsoluteValue
 
 end LinearOrderedRing
 
