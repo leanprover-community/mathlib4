@@ -197,6 +197,7 @@ import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
