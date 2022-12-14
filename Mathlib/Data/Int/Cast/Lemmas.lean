@@ -97,11 +97,14 @@ theorem commute_cast [NonAssocRing α] (x : α) (m : ℤ) : Commute x m :=
   (m.cast_commute x).symm
 #align int.commute_cast Int.commute_cast
 
-theorem cast_mono [OrderedRing α] : Monotone (coe : ℤ → α) := by
+theorem cast_mono [OrderedRing α] : Monotone (fun x : ℤ => (x : α)) := by
   intro m n h
   rw [← sub_nonneg] at h
-  lift n - m to ℕ using h with k
-  rw [← sub_nonneg, ← cast_sub, ← h_1, cast_coe_nat]
+  -- Porting note: next two lines were previously:
+  -- lift n - m to ℕ using h with k
+  let k : ℕ := (n - m).toNat
+  have h' : ↑k = n - m := toNat_of_nonneg h
+  rw [← sub_nonneg, ← cast_sub, ← h', cast_ofNat]
   exact k.cast_nonneg
 #align int.cast_mono Int.cast_mono
 
@@ -178,11 +181,11 @@ variable {α} (n)
 
 theorem nneg_mul_add_sq_of_abs_le_one {x : α} (hx : |x| ≤ 1) : (0 : α) ≤ n * x + n * n := by
   have hnx : 0 < n → 0 ≤ x + n := fun hn => by
-    convert add_le_add (neg_le_of_abs_le hx) (cast_one_le_of_pos hn)
-    rw [add_left_neg]
+    have := _root_.add_le_add (neg_le_of_abs_le hx) (cast_one_le_of_pos hn)
+    rwa [add_left_neg] at this
   have hnx' : n < 0 → x + n ≤ 0 := fun hn => by
-    convert add_le_add (le_of_abs_le hx) (cast_le_neg_one_of_neg hn)
-    rw [add_right_neg]
+    have := _root_.add_le_add (le_of_abs_le hx) (cast_le_neg_one_of_neg hn)
+    rwa [add_right_neg] at this
   rw [← mul_add, mul_nonneg_iff]
   rcases lt_trichotomy n 0 with (h | rfl | h)
   · exact Or.inr ⟨by exact_mod_cast h.le, hnx' h⟩
@@ -193,7 +196,7 @@ theorem nneg_mul_add_sq_of_abs_le_one {x : α} (hx : |x| ≤ 1) : (0 : α) ≤ n
 theorem cast_natAbs : (n.natAbs : α) = |n| := by
   cases n
   · simp
-  · simp only [Int.natAbs, Int.cast_negSucc, abs_neg, ← Nat.cast_succ, Nat.abs_cast]
+  · rw [abs_eq_natAbs, natAbs_negSucc, cast_succ, cast_ofNat, cast_succ]
 #align int.cast_nat_abs Int.cast_natAbs
 
 end LinearOrderedRing
@@ -217,8 +220,10 @@ if `f 1 = g 1`. -/
 @[ext]
 theorem ext_int [AddMonoid A] {f g : ℤ →+ A} (h1 : f 1 = g 1) : f = g :=
   have : f.comp (Int.ofNatHom : ℕ →+ ℤ) = g.comp (Int.ofNatHom : ℕ →+ ℤ) := ext_nat' _ _ h1
-  have : ∀ n : ℕ, f n = g n := ext_iff.1 this
-  ext fun n => (Int.casesOn n this) fun n => eq_on_neg _ _ (this <| n + 1)
+  have this' : ∀ n : ℕ, f n = g n := ext_iff.1 this
+  ext fun n => match n with
+  | (n : ℕ) => this' n
+  | .negSucc n => eq_on_neg _ _ (this' <| n + 1)
 #align add_monoid_hom.ext_int AddMonoidHom.ext_int
 
 variable [AddGroupWithOne A]
