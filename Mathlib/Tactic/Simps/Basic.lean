@@ -367,9 +367,10 @@ structure ProjectionData where
   isPrefix : Bool
   deriving Inhabited
 
-instance : ToFormat ProjectionData where format
+instance : ToMessageData ProjectionData where toMessageData
   | ⟨a, b, c, d, e⟩ => .group <| .nest 1 <|
-    "⟨" ++ .joinSep [format a, format b, format c, format d, format e] ("," ++ .line) ++ "⟩"
+    "⟨" ++ .joinSep [toMessageData a, toMessageData b, toMessageData c, toMessageData d,
+      toMessageData e] ("," ++ Format.line) ++ "⟩"
 
 /--
 The `simpsStructure` environment extension specifies the preferred projections of the given
@@ -388,8 +389,12 @@ initialize simpsStructure : NameMapExtension (List Name × Array ProjectionData)
 structure ParsedProjectionData where
   /-- name for this projection used in the structure definition -/
   origName : Name
+  /-- syntax for the original name -/
+  origRef : Option Syntax
   /-- name for this projection used in the generated `simp` lemmas -/
   newName : Name
+  /-- syntax for the new name -/
+  newRef : Option Syntax
   /-- will simp lemmas be generated for with (without specifically naming this?) -/
   isDefault : Bool
   /-- is the projection name a prefix? -/
@@ -405,15 +410,28 @@ structure ParsedProjectionData where
 def ParsedProjectionData.toProjectionData (p : ParsedProjectionData) : ProjectionData :=
   { p with name := p.newName, expr := p.expr?.getD default, projNrs := p.projNrs.toList }
 
-instance : ToFormat ParsedProjectionData where format
-  | ⟨x₁, x₂, x₃, x₄, x₅, x₆, x₇⟩ => .group <| .nest 1 <|
-    "⟨" ++ .joinSep [format x₁, format x₂, format x₃, format x₄, format x₅, format x₆, format x₇]
-      ("," ++ .line) ++ "⟩"
+instance : ToMessageData ParsedProjectionData where toMessageData
+  | ⟨x₁, x₂, x₃, x₄, x₅, x₆, x₇, x₈, x₉⟩ => .group <| .nest 1 <|
+    "⟨" ++ .joinSep [toMessageData x₁, toMessageData x₂, toMessageData x₃, toMessageData x₄,
+      toMessageData x₅, toMessageData x₆, toMessageData x₇, toMessageData x₈, toMessageData x₉]
+    ("," ++ Format.line) ++ "⟩"
 
 /-- The type of rules that specify how metadata for projections in changes.
   See `initialize_simps_projections`. -/
-abbrev ProjectionRule :=
-  (Name × Name ⊕ Name) × Bool
+structure ProjectionRule where
+  /-- A projection rule is either a renaming rule `before→after` or a hiding rule `-hideMe`.
+    Each name comes with the syntax used to write the rule,
+    which is used to declare hover information. -/
+  rule : (Name × Syntax) × (Name × Syntax) ⊕ (Name × Syntax)
+  /-- Either rule can optionally be followed by `as_prefix` to write the projection as prefix.
+  This is uncommon for hiding rules, but not completely useless, since if a user manually wants
+  to generate such a projection, it will be written using a prefix. -/
+  asPrefix : Bool
+
+instance : ToMessageData ProjectionRule where toMessageData
+  | ⟨x₁, x₂⟩ => .group <| .nest 1 <|
+    "⟨" ++ .joinSep [toMessageData x₁, toMessageData x₂] ("," ++ Format.line) ++ "⟩"
+
 
 /-- Returns the projection information of a structure. -/
 -- todo: use `MessageData` properly in the definition
@@ -485,13 +503,13 @@ def simpsApplyProjectionRules (str : Name) (rules : Array ProjectionRule) :
     fun nm ↦ ⟨nm, nm, true, false, none, #[], false⟩
   let projs : Array ParsedProjectionData := rules.foldl (init := projs) fun projs rule ↦
     match rule with
-    | (.inl (oldName, newName), isPrefix) =>
-      if (projs.map (·.newName)).contains oldName then
-        projs.map fun proj ↦ if proj.newName == oldName then
+    | ⟨.inl (oldName, newName), isPrefix⟩ =>
+      if (projs.map (·.newName)).contains oldName.1 then
+        projs.map fun proj ↦ if proj.newName == oldName.1 then
           { proj with newName := newName, isPrefix := isPrefix } else
           proj else
         projs.push ⟨oldName, newName, true, isPrefix, none, #[], false⟩
-    | (.inr nm, isPrefix) =>
+    | ⟨.inr nm, isPrefix⟩ =>
       if (projs.map (·.newName)).contains nm then
         projs.map fun proj ↦ if proj.newName = nm then
           { proj with isDefault := false, isPrefix := isPrefix } else
@@ -684,8 +702,10 @@ composite of multiple projections).
 /-- Parse a rule for `initialize_simps_projections`. It is either `<name>→<name>` or `-<name>`,
   possibly following by `as_prefix`.-/
 def elabSimpsRule : Syntax → CommandElabM ProjectionRule
-| `(simpsRule| $id1 → $id2 $[as_prefix%$tk]?) => pure (.inl (id1.getId, id2.getId), tk.isSome)
-| `(simpsRule| - $id $[as_prefix%$tk]?) => pure (.inr id.getId, tk.isSome)
+| `(simpsRule| $id1 → $id2 $[as_prefix%$tk]?) =>
+  pure ⟨.inl ((id1.getId, id1.raw), (id2.getId, id2.raw)), tk.isSome⟩
+| `(simpsRule| - $id $[as_prefix%$tk]?) =>
+  pure ⟨.inr (id.getId, id.raw), tk.isSome⟩
 | _                    => Elab.throwUnsupportedSyntax
 
 /-- Function elaborating `initialize_simps_projections`. -/
