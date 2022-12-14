@@ -17,7 +17,7 @@ type.
 * `Set.prod`: Binary product of sets. For `s : Set α`, `t : Set β`, we have
   `s.prod t : Set (α × β)`.
 * `Set.diagonal`: Diagonal of a type. `Set.diagonal α = {(x, x) | x : α}`.
-* `Set.off_diag`: Off-diagonal. `s ×ˢ s` without the diagonal.
+* `Set.offDiag`: Off-diagonal. `s ×ˢ s` without the diagonal.
 * `Set.pi`: Arbitrary product of sets.
 -/
 
@@ -562,9 +562,9 @@ theorem offDiag_eq_empty : s.offDiag = ∅ ↔ s.Subsingleton := by
   rw [← not_nonempty_iff_eq_empty, ← not_nontrivial_iff, offDiag_nonempty.not]
 #align set.off_diag_eq_empty Set.offDiag_eq_empty
 
-alias offDiag_nonempty ↔ _ nontrivial.offDiag_nonempty
+alias offDiag_nonempty ↔ _ Nontrivial.offDiag_nonempty
 
-alias offDiag_nonempty ↔ _ subsingleton.offDiag_eq_empty
+alias offDiag_nonempty ↔ _ Subsingleton.offDiag_eq_empty
 
 variable (s t)
 
@@ -601,6 +601,7 @@ theorem disjoint_diagonal_off_diag : Disjoint (diagonal α) s.offDiag :=
 theorem offDiag_inter : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
   ext fun x => by
     simp only [mem_offDiag, mem_inter_iff]
+    -- Porting note: was `tauto`
     constructor
     · rintro ⟨⟨h0, h1⟩, ⟨h2, h3⟩, h4⟩
       refine ⟨⟨h0, h2, h4⟩, ⟨h1, h3, h4⟩⟩
@@ -761,8 +762,7 @@ theorem pi_if {p : ι → Prop} [h : DecidablePred p] (s : Set ι) (t₁ t₂ : 
   by
   ext f
   refine' ⟨fun h => _, _⟩
-  ·
-    constructor <;>
+  · constructor <;>
       · rintro i ⟨his, hpi⟩
         simpa [*] using h i
   · rintro ⟨ht₁, ht₂⟩ i his
@@ -817,9 +817,9 @@ theorem eval_image_univ_pi_subset : eval i '' pi univ t ⊆ t i :=
 
 theorem subset_eval_image_pi (ht : (s.pi t).Nonempty) (i : ι) : t i ⊆ eval i '' s.pi t := by
   classical
-    obtain ⟨f, hf⟩ := ht
-    refine' fun y hy => ⟨update f i y, fun j hj => _, update_same _ _ _⟩
-    obtain rfl | hji := eq_or_ne j i <;> simp [*, hf _ hj]
+  obtain ⟨f, hf⟩ := ht
+  refine' fun y hy => ⟨update f i y, fun j hj => _, update_same _ _ _⟩
+  obtain rfl | hji := eq_or_ne j i <;> simp [*, hf _ hj]
 #align set.subset_eval_image_pi Set.subset_eval_image_pi
 
 theorem eval_image_pi (hs : i ∈ s) (ht : (s.pi t).Nonempty) : eval i '' s.pi t = t i :=
