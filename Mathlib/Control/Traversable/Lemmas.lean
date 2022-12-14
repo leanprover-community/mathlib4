@@ -68,26 +68,27 @@ theorem pure_transformation_apply {α} (x : id α) : PureTransformation F x = pu
 
 variable {F G} (x : t β)
 
-theorem map_eq_traverse_id {f: β → γ}: map f = traverse (id.mk ∘ f) :=
+-- Porting note: need to specify `m/F/G := Id` because `id` no longer has a `Monad` instance
+theorem map_eq_traverse_id : map (f := t) f = traverse (m := Id) (id.mk ∘ f) :=
   funext fun y => (traverse_eq_map_id f y).symm
 #align traversable.map_eq_traverse_id Traversable.map_eq_traverse_id
 
 theorem map_traverse (x : t α) : map f <$> traverse g x = traverse (map f ∘ g) x := by
   rw [map_eq_traverse_id f]
-  refine' (comp_traverse (id.mk ∘ f) g x).symm.trans _
-  congr ; apply comp.applicative_comp_id
+  refine' (comp_traverse (F := Id) (id.mk ∘ f) g x).symm.trans _
+  congr ; apply Comp.applicative_comp_id
 #align traversable.map_traverse Traversable.map_traverse
 
 theorem traverse_map (f : β → F γ) (g : α → β) (x : t α) :
     traverse f (g <$> x) = traverse (f ∘ g) x := by
   rw [@map_eq_traverse_id t _ _ _ _ g]
-  refine' (comp_traverse f (id.mk ∘ g) x).symm.trans _
-  congr ; apply comp.applicative_id_comp
+  refine' (comp_traverse (G := Id) f (id.mk ∘ g) x).symm.trans _
+  congr ; apply Comp.applicative_id_comp
 #align traversable.traverse_map Traversable.traverse_map
 
 theorem pure_traverse (x : t α) : traverse pure x = (pure x : F (t α)) := by
-  have : traverse pure x = pure (traverse id.mk x) :=
-      (naturality (PureTransformation F) id.mk x).symm <;>
+  have : traverse pure x = pure (traverse (m := Id) id.mk x) :=
+      (naturality (PureTransformation F) id.mk x).symm;
     rwa [id_traverse] at this
 #align traversable.pure_traverse Traversable.pure_traverse
 

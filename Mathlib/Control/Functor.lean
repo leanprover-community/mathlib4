@@ -61,7 +61,7 @@ theorem Functor.ext {F} :
 
 end Functor
 
-/-- Introduce the `id` functor. Incidentally, this is `Pure` for
+/-- Introduce the `id` functor. Incidentally, this is `pure` for
 `id` as a `Monad` and as an `Applicative` functor. -/
 def id.mk {α : Sort u} : α → id α :=
   id
