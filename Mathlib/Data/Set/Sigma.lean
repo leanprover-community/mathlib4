@@ -8,7 +8,7 @@ import Mathlib.Data.Set.Image
 /-!
 # Sets in sigma types
 
-This file defines `set.sigma`, the indexed sum of sets.
+This file defines `Set.sigma`, the indexed sum of sets.
 -/
 
 namespace Set
