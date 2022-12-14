@@ -45,14 +45,14 @@ theorem coe_nat_dvd_right {n : ℕ} {z : ℤ} : z ∣ (↑n : ℤ) ↔ z.natAbs 
 
 #align int.eq_one_of_mul_eq_one_left Int.eq_one_of_mul_eq_one_left
 
-theorem of_nat_dvd_of_dvd_nat_abs {a : ℕ} : ∀ {z : ℤ} (_ : a ∣ z.natAbs), ↑a ∣ z
+theorem ofNat_dvd_of_dvd_natAbs {a : ℕ} : ∀ {z : ℤ} (_ : a ∣ z.natAbs), ↑a ∣ z
   | Int.ofNat _, haz => Int.coe_nat_dvd.2 haz
   | -[k+1], haz => by
     change ↑a ∣ -(k + 1 : ℤ)
     apply dvd_neg_of_dvd
     apply Int.coe_nat_dvd.2
     exact haz
-#align int.of_nat_dvd_of_dvd_nat_abs Int.of_nat_dvd_of_dvd_nat_abs
+#align int.of_nat_dvd_of_dvd_nat_abs Int.ofNat_dvd_of_dvd_natAbs
 
 theorem dvd_natAbs_of_ofNat_dvd {a : ℕ} : ∀ {z : ℤ} (_ : ↑a ∣ z), a ∣ z.natAbs
   | Int.ofNat _, haz => Int.coe_nat_dvd.1 (Int.dvd_natAbs.2 haz)
