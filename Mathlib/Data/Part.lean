@@ -8,36 +8,36 @@ import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Partial values of a type
-This file defines `part α`, the partial values of a type.
-`o : part α` carries a proposition `o.dom`, its domain, along with a function `get : o.dom → α`, its
+This file defines `Part α`, the partial values of a type.
+`o : Part α` carries a proposition `o.dom`, its domain, along with a function `get : o.dom → α`, its
 value. The rule is then that every partial value has a value but, to access it, you need to provide
 a proof of the domain.
-`part α` behaves the same as `option α` except that `o : option α` is decidably `none` or `some a`
-for some `a : α`, while the domain of `o : part α` doesn't have to be decidable. That means you can
+`Part α` behaves the same as `Option α` except that `o : Option α` is decidably `none` or `some a`
+for some `a : α`, while the domain of `o : Part α` doesn't have to be decidable. That means you can
 translate back and forth between a partial value with a decidable domain and an option, and
-`option α` and `part α` are classically equivalent. In general, `part α` is bigger than `option α`.
-In current mathlib, `part ℕ`, aka `part_enat`, is used to move decidability of the order to
+`Option α` and `Part α` are classically equivalent. In general, `Part α` is bigger than `Option α`.
+In current mathlib, `Part ℕ`, aka `part_enat`, is used to move decidability of the order to
 decidability of `part_enat.find` (which is the smallest natural satisfying a predicate, or `∞` if
 there's none).
 ## Main declarations
-`option`-like declarations:
-* `part.none`: The partial value whose domain is `false`.
-* `part.some a`: The partial value whose domain is `true` and whose value is `a`.
-* `part.of_option`: Converts an `option α` to a `part α` by sending `none` to `none` and `some a` to
+`Option`-like declarations:
+* `Part.none`: The partial value whose domain is `False`.
+* `Part.some a`: The partial value whose domain is `True` and whose value is `a`.
+* `Part.ofOption`: Converts an `Option α` to a `Part α` by sending `none` to `none` and `some a` to
   `some a`.
-* `part.to_option`: Converts a `part α` with a decidable domain to an `option α`.
-* `part.equiv_option`: Classical equivalence between `part α` and `option α`.
+* `Part.toOption`: Converts a `Part α` with a decidable domain to an `Option α`.
+* `Part.equivOption`: Classical equivalence between `Part α` and `Option α`.
 Monadic structure:
-* `part.bind`: `o.bind f` has value `(f (o.get _)).get _` (`f o` morally) and is defined when `o`
+* `Part.bind`: `o.bind f` has value `(f (o.get _)).get _` (`f o` morally) and is defined when `o`
   and `f (o.get _)` are defined.
-* `part.map`: Maps the value and keeps the same domain.
+* `Part.map`: Maps the value and keeps the same domain.
 Other:
-* `part.restrict`: `part.restrict p o` replaces the domain of `o : part α` by `p : Prop` so long as
+* `Part.restrict`: `Part.restrict p o` replaces the domain of `o : Part α` by `p : Prop` so long as
   `p → o.dom`.
-* `part.assert`: `assert p f` appends `p` to the domains of the values of a partial function.
-* `part.unwrap`: Gets the value of a partial value regardless of its domain. Unsound.
+* `Part.assert`: `assert p f` appends `p` to the domains of the values of a partial function.
+* `Part.unwrap`: Gets the value of a partial value regardless of its domain. Unsound.
 ## Notation
-For `a : α`, `o : part α`, `a ∈ o` means that `o` is defined and equal to `a`. Formally, it means
+For `a : α`, `o : Part α`, `a ∈ o` means that `o` is defined and equal to `a`. Formally, it means
 `o.dom` and `o.get _ = a`.
 -/
 
@@ -45,8 +45,8 @@ set_option autoImplicit false
 
 open Function
 
-/-- `part α` is the type of "partial values" of type `α`. It
-  is similar to `option α` except the domain condition can be an
+/-- `Part α` is the type of "partial values" of type `α`. It
+  is similar to `Option α` except the domain condition can be an
   arbitrary proposition, not necessarily decidable. -/
 structure Part.{u} (α : Type u) : Type u where
   Dom : Prop
@@ -57,22 +57,22 @@ namespace Part
 
 variable {α : Type _} {β : Type _} {γ : Type _}
 
-/-- Convert a `part α` with a decidable domain to an option -/
+/-- Convert a `Part α` with a decidable domain to an option -/
 def toOption (o : Part α) [Decidable o.Dom] : Option α :=
   if h : Dom o then some (o.get h) else none
 #align part.to_option Part.toOption
 
-/-- `part` extensionality -/
-theorem ext' : ∀ {o p : Part α} (H1 : o.Dom ↔ p.Dom) (H2 : ∀ h₁ h₂, o.get h₁ = p.get h₂), o = p
+/-- `Part` extensionality -/
+theorem ext' : ∀ {o p : Part α} (_ : o.Dom ↔ p.Dom) (_ : ∀ h₁ h₂, o.get h₁ = p.get h₂), o = p
   | ⟨od, o⟩, ⟨pd, p⟩, H1, H2 => by
     have t : od = pd := propext H1
-    cases t <;> rw [show o = p from funext fun p => H2 p p]
+    cases t; rw [show o = p from funext fun p => H2 p p]
 #align part.ext' Part.ext'
 
-/-- `part` eta expansion -/
+/-- `Part` eta expansion -/
 @[simp]
 theorem eta : ∀ o : Part α, (⟨o.Dom, fun h => o.get h⟩ : Part α) = o
-  | ⟨h, f⟩ => rfl
+  | ⟨_, _⟩ => rfl
 #align part.eta Part.eta
 
 /-- `a ∈ o` means that `o` is defined and equal to `a` -/
@@ -88,7 +88,7 @@ theorem mem_eq (a : α) (o : Part α) : (a ∈ o) = ∃ h, o.get h = a :=
 #align part.mem_eq Part.mem_eq
 
 theorem dom_iff_mem : ∀ {o : Part α}, o.Dom ↔ ∃ y, y ∈ o
-  | ⟨p, f⟩ => ⟨fun h => ⟨f h, h, rfl⟩, fun ⟨_, h, rfl⟩ => h⟩
+  | ⟨_, f⟩ => ⟨fun h => ⟨f h, h, rfl⟩, fun ⟨_, h, rfl⟩ => h⟩
 #align part.dom_iff_mem Part.dom_iff_mem
 
 theorem get_mem {o : Part α} (h) : get o h ∈ o :=
@@ -100,16 +100,16 @@ theorem mem_mk_iff {p : Prop} {o : p → α} {a : α} : a ∈ Part.mk p o ↔ �
   Iff.rfl
 #align part.mem_mk_iff Part.mem_mk_iff
 
-/-- `part` extensionality -/
+/-- `Part` extensionality -/
 @[ext]
 theorem ext {o p : Part α} (H : ∀ a, a ∈ o ↔ a ∈ p) : o = p :=
-  (ext' ⟨fun h => ((H _).1 ⟨h, rfl⟩).fst, fun h => ((H _).2 ⟨h, rfl⟩).fst⟩) fun a b =>
+  (ext' ⟨fun h => ((H _).1 ⟨h, rfl⟩).fst, fun h => ((H _).2 ⟨h, rfl⟩).fst⟩) fun _ _ =>
     ((H _).2 ⟨_, rfl⟩).snd
 #align part.ext Part.ext
 
-/-- The `none` value in `part` has a `false` domain and an empty function. -/
+/-- The `none` value in `Part` has a `False` domain and an empty function. -/
 def none : Part α :=
-  ⟨False, False.ndrec _⟩
+  ⟨False, False.rec⟩
 #align part.none Part.none
 
 instance : Inhabited (Part α) :=
@@ -131,10 +131,10 @@ theorem some_dom (a : α) : (some a).Dom :=
 #align part.some_dom Part.some_dom
 
 theorem mem_unique : ∀ {a b : α} {o : Part α}, a ∈ o → b ∈ o → a = b
-  | _, _, ⟨p, f⟩, ⟨h₁, rfl⟩, ⟨h₂, rfl⟩ => rfl
+  | _, _, ⟨_, _⟩, ⟨_, rfl⟩, ⟨_, rfl⟩ => rfl
 #align part.mem_unique Part.mem_unique
 
-theorem Mem.left_unique : Relator.LeftUnique ((· ∈ ·) : α → Part α → Prop) := fun a o b =>
+theorem Mem.left_unique : Relator.LeftUnique ((· ∈ ·) : α → Part α → Prop) := fun _ _ _ =>
   mem_unique
 #align part.mem.left_unique Part.Mem.left_unique
 
@@ -142,7 +142,7 @@ theorem get_eq_of_mem {o : Part α} {a} (h : a ∈ o) (h') : get o h' = a :=
   mem_unique ⟨_, rfl⟩ h
 #align part.get_eq_of_mem Part.get_eq_of_mem
 
-protected theorem subsingleton (o : Part α) : Set.Subsingleton { a | a ∈ o } := fun a ha b hb =>
+protected theorem subsingleton (o : Part α) : Set.Subsingleton { a | a ∈ o } := fun _ ha _ hb =>
   mem_unique ha hb
 #align part.subsingleton Part.subsingleton
 
@@ -157,7 +157,7 @@ theorem mem_some (a : α) : a ∈ some a :=
 
 @[simp]
 theorem mem_some_iff {a b} : b ∈ (some a : Part α) ↔ b = a :=
-  ⟨fun ⟨h, e⟩ => e.symm, fun e => ⟨trivial, e.symm⟩⟩
+  ⟨fun ⟨_, e⟩ => e.symm, fun e => ⟨trivial, e.symm⟩⟩
 #align part.mem_some_iff Part.mem_some_iff
 
 theorem eq_some_iff {a : α} {o : Part α} : o = some a ↔ a ∈ o :=
@@ -169,7 +169,7 @@ theorem eq_none_iff {o : Part α} : o = none ↔ ∀ a, a ∉ o :=
 #align part.eq_none_iff Part.eq_none_iff
 
 theorem eq_none_iff' {o : Part α} : o = none ↔ ¬o.Dom :=
-  ⟨fun e => e.symm ▸ id, fun h => eq_none_iff.2 fun a h' => h h'.fst⟩
+  ⟨fun e => e.symm ▸ id, fun h => eq_none_iff.2 fun _ h' => h h'.fst⟩
 #align part.eq_none_iff' Part.eq_none_iff'
 
 @[simp]
@@ -180,9 +180,7 @@ theorem not_none_dom : ¬(none : Part α).Dom :=
 @[simp]
 theorem some_ne_none (x : α) : some x ≠ none := by
   intro h
-  change none.dom
-  rw [← h]
-  trivial
+  exact true_ne_false (congr_arg Dom h)
 #align part.some_ne_none Part.some_ne_none
 
 @[simp]
@@ -202,7 +200,7 @@ theorem eq_none_or_eq_some (o : Part α) : o = none ∨ ∃ x, o = some x :=
   or_iff_not_imp_left.2 ne_none_iff.1
 #align part.eq_none_or_eq_some Part.eq_none_or_eq_some
 
-theorem some_injective : Injective (@Part.some α) := fun a b h =>
+theorem some_injective : Injective (@Part.some α) := fun _ _ h =>
   congr_fun (eq_of_heq (Part.mk.inj h).2) trivial
 #align part.some_injective Part.some_injective
 
@@ -223,11 +221,10 @@ theorem get_eq_iff_eq_some {a : Part α} {ha : a.Dom} {b : α} : a.get ha = b �
 theorem get_eq_get_of_eq (a : Part α) (ha : a.Dom) {b : Part α} (h : a = b) :
     a.get ha = b.get (h ▸ ha) := by
   congr
-  exact h
 #align part.get_eq_get_of_eq Part.get_eq_get_of_eq
 
 theorem get_eq_iff_mem {o : Part α} {a : α} (h : o.Dom) : o.get h = a ↔ a ∈ o :=
-  ⟨fun H => ⟨h, H⟩, fun ⟨h', H⟩ => H⟩
+  ⟨fun H => ⟨h, H⟩, fun ⟨_, H⟩ => H⟩
 #align part.get_eq_iff_mem Part.get_eq_iff_mem
 
 theorem eq_get_iff_mem {o : Part α} {a : α} (h : o.Dom) : a = o.get h ↔ a ∈ o :=
@@ -245,11 +242,11 @@ theorem some_to_option (a : α) [Decidable (some a).Dom] : (some a).toOption = O
 #align part.some_to_option Part.some_to_option
 
 instance noneDecidable : Decidable (@none α).Dom :=
-  Decidable.false
+  instDecidableFalse
 #align part.none_decidable Part.noneDecidable
 
 instance someDecidable (a : α) : Decidable (some a).Dom :=
-  Decidable.true
+  instDecidableTrue
 #align part.some_decidable Part.someDecidable
 
 /-- Retrieves the value of `a : part α` if it exists, and return the provided default value
@@ -258,51 +255,51 @@ def getOrElse (a : Part α) [Decidable a.Dom] (d : α) :=
   if ha : a.Dom then a.get ha else d
 #align part.get_or_else Part.getOrElse
 
-theorem get_or_else_of_dom (a : Part α) (h : a.Dom) [Decidable a.Dom] (d : α) :
+theorem getOrElse_of_dom (a : Part α) (h : a.Dom) [Decidable a.Dom] (d : α) :
     getOrElse a d = a.get h :=
   dif_pos h
-#align part.get_or_else_of_dom Part.get_or_else_of_dom
+#align part.get_or_else_of_dom Part.getOrElse_of_dom
 
-theorem get_or_else_of_not_dom (a : Part α) (h : ¬a.Dom) [Decidable a.Dom] (d : α) :
+theorem getOrElse_of_not_dom (a : Part α) (h : ¬a.Dom) [Decidable a.Dom] (d : α) :
     getOrElse a d = d :=
   dif_neg h
-#align part.get_or_else_of_not_dom Part.get_or_else_of_not_dom
+#align part.get_or_else_of_not_dom Part.getOrElse_of_not_dom
 
 @[simp]
-theorem get_or_else_none (d : α) [Decidable (none : Part α).Dom] : getOrElse none d = d :=
-  none.get_or_else_of_not_dom not_none_dom d
-#align part.get_or_else_none Part.get_or_else_none
+theorem getOrElse_none (d : α) [Decidable (none : Part α).Dom] : getOrElse none d = d :=
+  none.getOrElse_of_not_dom not_none_dom d
+#align part.get_or_else_none Part.getOrElse_none
 
 @[simp]
-theorem get_or_else_some (a : α) (d : α) [Decidable (some a).Dom] : getOrElse (some a) d = a :=
-  (some a).get_or_else_of_dom (some_dom a) d
-#align part.get_or_else_some Part.get_or_else_some
+theorem getOrElse_some (a : α) (d : α) [Decidable (some a).Dom] : getOrElse (some a) d = a :=
+  (some a).getOrElse_of_dom (some_dom a) d
+#align part.get_or_else_some Part.getOrElse_some
 
 @[simp]
-theorem mem_to_option {o : Part α} [Decidable o.Dom] {a : α} : a ∈ toOption o ↔ a ∈ o := by
-  unfold to_option
-  by_cases h : o.dom <;> simp [h]
+theorem mem_toOption {o : Part α} [Decidable o.Dom] {a : α} : a ∈ toOption o ↔ a ∈ o := by
+  unfold toOption
+  by_cases h : o.Dom <;> simp [h]
   · exact ⟨fun h => ⟨_, h⟩, fun ⟨_, h⟩ => h⟩
   · exact mt Exists.fst h
-#align part.mem_to_option Part.mem_to_option
+#align part.mem_to_option Part.mem_toOption
 
-protected theorem Dom.to_option {o : Part α} [Decidable o.Dom] (h : o.Dom) : o.toOption = o.get h :=
+protected theorem Dom.toOption {o : Part α} [Decidable o.Dom] (h : o.Dom) : o.toOption = o.get h :=
   dif_pos h
-#align part.dom.to_option Part.Dom.to_option
+#align part.dom.to_option Part.Dom.toOption
 
-theorem to_option_eq_none_iff {a : Part α} [Decidable a.Dom] : a.toOption = Option.none ↔ ¬a.Dom :=
-  Ne.dite_eq_right_iff fun h => Option.some_ne_none _
-#align part.to_option_eq_none_iff Part.to_option_eq_none_iff
+theorem toOption_eq_none_iff {a : Part α} [Decidable a.Dom] : a.toOption = Option.none ↔ ¬a.Dom :=
+  Ne.dite_eq_right_iff fun _ => Option.some_ne_none _
+#align part.to_option_eq_none_iff Part.toOption_eq_none_iff
 
 @[simp]
-theorem elim_to_option {α β : Type _} (a : Part α) [Decidable a.Dom] (b : β) (f : α → β) :
+theorem elim_toOption {α β : Type _} (a : Part α) [Decidable a.Dom] (b : β) (f : α → β) :
     a.toOption.elim b f = if h : a.Dom then f (a.get h) else b := by
-  split_ifs
-  · rw [h.to_option]
+  split_ifs with h
+  · rw [h.toOption]
     rfl
-  · rw [Part.to_option_eq_none_iff.2 h]
+  · rw [Part.toOption_eq_none_iff.2 h]
     rfl
-#align part.elim_to_option Part.elim_to_option
+#align part.elim_to_option Part.elim_toOption
 
 /-- Converts an `option α` into a `part α`. -/
 def ofOption : Option α → Part α
@@ -311,27 +308,30 @@ def ofOption : Option α → Part α
 #align part.of_option Part.ofOption
 
 @[simp]
-theorem mem_of_option {a : α} : ∀ {o : Option α}, a ∈ ofOption o ↔ a ∈ o
+theorem mem_ofOption {a : α} : ∀ {o : Option α}, a ∈ ofOption o ↔ a ∈ o
   | Option.none => ⟨fun h => h.fst.elim, fun h => Option.noConfusion h⟩
-  | Option.some b => ⟨fun h => congr_arg Option.some h.snd, fun h => ⟨trivial, Option.some.inj h⟩⟩
-#align part.mem_of_option Part.mem_of_option
+  | Option.some _ => ⟨fun h => congr_arg Option.some h.snd, fun h => ⟨trivial, Option.some.inj h⟩⟩
+#align part.mem_of_option Part.mem_ofOption
 
 @[simp]
-theorem of_option_dom {α} : ∀ o : Option α, (ofOption o).Dom ↔ o.isSome
-  | Option.none => by simp [of_option, none]
-  | Option.some a => by simp [of_option]
-#align part.of_option_dom Part.of_option_dom
+theorem ofOption_dom {α} : ∀ o : Option α, (ofOption o).Dom ↔ o.isSome
+  | Option.none => by simp [ofOption, none]
+  | Option.some a => by simp [ofOption]
+#align part.of_option_dom Part.ofOption_dom
 
-theorem of_option_eq_get {α} (o : Option α) : ofOption o = ⟨_, @Option.get _ o⟩ :=
-  (Part.ext' (of_option_dom o)) fun h₁ h₂ => by cases o <;> [cases h₁, rfl]
-#align part.of_option_eq_get Part.of_option_eq_get
+theorem ofOption_eq_get {α} (o : Option α) : ofOption o = ⟨_, @Option.get _ o⟩ :=
+  Part.ext' (ofOption_dom o) fun h₁ h₂ => by
+    cases o
+    . simp at h₂
+    . rfl
+#align part.of_option_eq_get Part.ofOption_eq_get
 
 instance : Coe (Option α) (Part α) :=
   ⟨ofOption⟩
 
 @[simp]
 theorem mem_coe {a : α} {o : Option α} : a ∈ (o : Part α) ↔ a ∈ o :=
-  mem_of_option
+  mem_ofOption
 #align part.mem_coe Part.mem_coe
 
 @[simp]
@@ -357,19 +357,19 @@ instance ofOptionDecidable : ∀ o : Option α, Decidable (ofOption o).Dom
 #align part.of_option_decidable Part.ofOptionDecidable
 
 @[simp]
-theorem to_of_option (o : Option α) : toOption (ofOption o) = o := by cases o <;> rfl
-#align part.to_of_option Part.to_of_option
+theorem to_ofOption (o : Option α) : toOption (ofOption o) = o := by cases o <;> rfl
+#align part.to_of_option Part.to_ofOption
 
 @[simp]
-theorem of_to_option (o : Part α) [Decidable o.Dom] : ofOption (toOption o) = o :=
-  ext fun a => mem_of_option.trans mem_to_option
-#align part.of_to_option Part.of_to_option
+theorem of_toOption (o : Part α) [Decidable o.Dom] : ofOption (toOption o) = o :=
+  ext fun _ => mem_ofOption.trans mem_toOption
+#align part.of_to_option Part.of_toOption
 
-/-- `part α` is (classically) equivalent to `option α`. -/
+/-- `Part α` is (classically) equivalent to `Option α`. -/
 noncomputable def equivOption : Part α ≃ Option α :=
   haveI := Classical.dec
-  ⟨fun o => to_option o, of_option, fun o => of_to_option o, fun o =>
-    Eq.trans (by dsimp <;> congr ) (to_of_option o)⟩
+  ⟨fun o => toOption o, ofOption, fun o => of_toOption o, fun o =>
+    Eq.trans (by dsimp; congr ) (to_ofOption o)⟩
 #align part.equiv_option Part.equivOption
 
 /-- We give `part α` the order where everything is greater than `none`. -/
