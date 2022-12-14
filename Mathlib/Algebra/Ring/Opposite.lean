@@ -261,5 +261,3 @@ def RingHom.op {α β} [NonAssocSemiring α] [NonAssocSemiring β] :
 def RingHom.unop {α β} [NonAssocSemiring α] [NonAssocSemiring β] : (αᵐᵒᵖ →+* βᵐᵒᵖ) ≃ (α →+* β) :=
   RingHom.op.symm
 #align ring_hom.unop RingHom.unop
-
-#lint

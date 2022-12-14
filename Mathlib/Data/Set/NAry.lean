@@ -66,11 +66,11 @@ theorem image2_subset_right (hs : s ⊆ s') : image2 f s t ⊆ image2 f s' t :=
   image2_subset hs Subset.rfl
 #align set.image2_subset_right Set.image2_subset_right
 
-theorem image_subset_image2_left (hb : b ∈ t) : (fun a => f a b) ~~ s ⊆ image2 f s t :=
+theorem image_subset_image2_left (hb : b ∈ t) : (fun a => f a b) '' s ⊆ image2 f s t :=
   ball_image_of_ball fun _ ha => mem_image2_of_mem ha hb
 #align set.image_subset_image2_left Set.image_subset_image2_left
 
-theorem image_subset_image2_right (ha : a ∈ s) : f a ~~ t ⊆ image2 f s t :=
+theorem image_subset_image2_right (ha : a ∈ s) : f a '' t ⊆ image2 f s t :=
   ball_image_of_ball fun _ => mem_image2_of_mem ha
 #align set.image_subset_image2_right Set.image_subset_image2_right
 
@@ -146,12 +146,12 @@ theorem image2_inter_subset_right : image2 f s (t ∩ t') ⊆ image2 f s t ∩ i
 #align set.image2_inter_subset_right Set.image2_inter_subset_right
 
 @[simp]
-theorem image2_singleton_left : image2 f {a} t = f a ~~ t :=
+theorem image2_singleton_left : image2 f {a} t = f a '' t :=
   ext fun x => by simp
 #align set.image2_singleton_left Set.image2_singleton_left
 
 @[simp]
-theorem image2_singleton_right : image2 f s {b} = (fun a => f a b) ~~ s :=
+theorem image2_singleton_right : image2 f s {b} = (fun a => f a b) '' s :=
   ext fun x => by simp
 #align set.image2_singleton_right Set.image2_singleton_right
 
@@ -219,7 +219,7 @@ theorem image2_image2_right (f : α → δ → ε) (g : β → γ → δ) :
 #align set.image2_image2_right Set.image2_image2_right
 
 theorem image_image2 (f : α → β → γ) (g : γ → δ) :
-    g ~~ image2 f s t = image2 (fun a b => g (f a b)) s t := by
+    g '' image2 f s t = image2 (fun a b => g (f a b)) s t := by
   ext; constructor
   · rintro ⟨_, ⟨a, b, ha, hb, rfl⟩, rfl⟩
     refine' ⟨a, b, ha, hb, rfl⟩
@@ -228,7 +228,7 @@ theorem image_image2 (f : α → β → γ) (g : γ → δ) :
 #align set.image_image2 Set.image_image2
 
 theorem image2_image_left (f : γ → β → δ) (g : α → γ) :
-    image2 f (g ~~ s) t = image2 (fun a b => f (g a) b) s t := by
+    image2 f (g '' s) t = image2 (fun a b => f (g a) b) s t := by
   ext; constructor
   · rintro ⟨_, b, ⟨a, ha, rfl⟩, hb, rfl⟩
     refine' ⟨a, b, ha, hb, rfl⟩
@@ -237,7 +237,7 @@ theorem image2_image_left (f : γ → β → δ) (g : α → γ) :
 #align set.image2_image_left Set.image2_image_left
 
 theorem image2_image_right (f : α → γ → δ) (g : β → γ) :
-    image2 f s (g ~~ t) = image2 (fun a b => f a (g b)) s t := by
+    image2 f s (g '' t) = image2 (fun a b => f a (g b)) s t := by
   ext; constructor
   · rintro ⟨a, _, ha, ⟨b, hb, rfl⟩, rfl⟩
     refine' ⟨a, b, ha, hb, rfl⟩

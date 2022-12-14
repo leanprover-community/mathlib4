@@ -50,10 +50,7 @@ variable [Mul α] [MulOneClass β]
 
 /-- Lift a semigroup homomorphism `f` to a bundled monoid homorphism. -/
 @[to_additive "Lift an add semigroup homomorphism `f` to a bundled add monoid homorphism."]
-def lift :
-    (α →ₙ* β) ≃
-      (WithOne α →*
-        β) where
+def lift : (α →ₙ* β) ≃ (WithOne α →* β) where
   toFun f :=
     { toFun := fun x => Option.casesOn x 1 f, map_one' := rfl,
       map_mul' := fun x y => WithOne.cases_on x (by rw [one_mul]; exact (one_mul _).symm)
@@ -155,7 +152,7 @@ def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :
 -- it seemed to be missing from mathlib3, hence the lack of additive `#align`s.
 @[simp, to_additive]
 theorem _root_.MulEquiv.withOneCongr_refl : (MulEquiv.refl α).withOneCongr = MulEquiv.refl _ :=
-  MulEquiv.to_monoidHom_injective map_id
+  MulEquiv.toMonoidHom_injective map_id
 #align mul_equiv.with_one_congr_refl MulEquiv.withOneCongr_refl
 
 @[simp, to_additive]
@@ -167,7 +164,7 @@ theorem _root_.MulEquiv.withOneCongr_symm (e : α ≃* β) :
 @[simp, to_additive]
 theorem _root_.MulEquiv.withOneCongr_trans (e₁ : α ≃* β) (e₂ : β ≃* γ) :
     e₁.withOneCongr.trans e₂.withOneCongr = (e₁.trans e₂).withOneCongr :=
-  MulEquiv.to_monoidHom_injective (map_comp _ _).symm
+  MulEquiv.toMonoidHom_injective (map_comp _ _).symm
 #align mul_equiv.with_one_congr_trans MulEquiv.withOneCongr_trans
 
 end Map
