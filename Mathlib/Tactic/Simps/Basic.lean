@@ -387,14 +387,10 @@ initialize simpsStructure : NameMapExtension (List Name × Array ProjectionData)
 /-- Temporary projection data parsed from `initialize_simps_projections` before the Expression
   matching this projection has been found. Only used internally in `simpsGetRawProjections`. -/
 structure ParsedProjectionData where
-  /-- name for this projection used in the structure definition -/
-  origName : Name
-  /-- syntax for the original name -/
-  origRef : Option Syntax
-  /-- name for this projection used in the generated `simp` lemmas -/
-  newName : Name
-  /-- syntax for the new name -/
-  newRef : Option Syntax
+  /-- name and syntax for this projection used in the structure definition -/
+  origName : Name × Syntax
+  /-- name and syntax for this projection used in the generated `simp` lemmas -/
+  newName : Name × Syntax
   /-- will simp lemmas be generated for with (without specifically naming this?) -/
   isDefault : Bool
   /-- is the projection name a prefix? -/
@@ -408,13 +404,19 @@ structure ParsedProjectionData where
 
 /-- Turn `ParsedProjectionData` into `ProjectionData`. -/
 def ParsedProjectionData.toProjectionData (p : ParsedProjectionData) : ProjectionData :=
-  { p with name := p.newName, expr := p.expr?.getD default, projNrs := p.projNrs.toList }
+  { p with name := p.newName.1, expr := p.expr?.getD default, projNrs := p.projNrs.toList }
 
 instance : ToMessageData ParsedProjectionData where toMessageData
-  | ⟨x₁, x₂, x₃, x₄, x₅, x₆, x₇, x₈, x₉⟩ => .group <| .nest 1 <|
+  | ⟨x₁, x₂, x₃, x₄, x₅, x₆, x₇⟩ => .group <| .nest 1 <|
     "⟨" ++ .joinSep [toMessageData x₁, toMessageData x₂, toMessageData x₃, toMessageData x₄,
-      toMessageData x₅, toMessageData x₆, toMessageData x₇, toMessageData x₈, toMessageData x₉]
+      toMessageData x₅, toMessageData x₆, toMessageData x₇]
     ("," ++ Format.line) ++ "⟩"
+
+-- instance : ToMessageData ParsedProjectionData where toMessageData
+--   | ⟨x₁, x₂, x₃, x₄, x₅, x₆, x₇, x₈, x₉⟩ => .group <| .nest 1 <|
+--     "⟨" ++ .joinSep [toMessageData x₁, toMessageData x₂, toMessageData x₃, toMessageData x₄,
+--       toMessageData x₅, toMessageData x₆, toMessageData x₇, toMessageData x₈, toMessageData x₉]
+--     ("," ++ Format.line) ++ "⟩"
 
 /-- The type of rules that specify how metadata for projections in changes.
   See `initialize_simps_projections`. -/
@@ -500,23 +502,27 @@ def simpsApplyProjectionRules (str : Name) (rules : Array ProjectionRule) :
   let some projs := getStructureInfo? env str
     | throwError "Declaration {str} is not a structure."
   let projs : Array ParsedProjectionData := projs.fieldNames.map
-    fun nm ↦ ⟨nm, nm, true, false, none, #[], false⟩
+    fun nm ↦ ⟨(nm, .missing), (nm, .missing), true, false, none, #[], false⟩
   let projs : Array ParsedProjectionData := rules.foldl (init := projs) fun projs rule ↦
     match rule with
     | ⟨.inl (oldName, newName), isPrefix⟩ =>
-      if (projs.map (·.newName)).contains oldName.1 then
-        projs.map fun proj ↦ if proj.newName == oldName.1 then
-          { proj with newName := newName, isPrefix := isPrefix } else
+      if (projs.map (·.newName.1)).contains oldName.1 then
+        projs.map fun proj ↦ if proj.newName.1 == oldName.1 then
+          { proj with
+            newName := newName, isPrefix := isPrefix,
+            origName.2 := if proj.origName.2.isMissing then oldName.2 else proj.origName.2 } else
           proj else
         projs.push ⟨oldName, newName, true, isPrefix, none, #[], false⟩
     | ⟨.inr nm, isPrefix⟩ =>
-      if (projs.map (·.newName)).contains nm then
-        projs.map fun proj ↦ if proj.newName = nm then
-          { proj with isDefault := false, isPrefix := isPrefix } else
+      if (projs.map (·.newName.1)).contains nm.1 then
+        projs.map fun proj ↦ if proj.newName.1 = nm.1 then
+          { proj with
+            isDefault := false, isPrefix := isPrefix,
+            origName.2 := if proj.origName.2.isMissing then nm.2 else proj.origName.2 } else
           proj else
         projs.push ⟨nm, nm, false, isPrefix, none, #[], false⟩
   trace[simps.debug] "Projection info after applying the rules: {projs}."
-  unless (projs.map (·.newName)).toList.Nodup do throwError
+  unless (projs.map (·.newName.1)).toList.Nodup do throwError
     "Invalid projection names. Two projections have the same name.\n{""
     }This is likely because a custom composition of projections was given the same name as an {""
     }existing projection. Solution: rename the existing projection (before naming the {""
@@ -528,8 +534,8 @@ Find custom projections declared by the user. -/
 def simpsFindCustomProjection (str : Name) (proj : ParsedProjectionData)
   (rawUnivs : List Level) : CoreM ParsedProjectionData := do
   let env ← getEnv
-  let (rawExpr, nrs) ← MetaM.run' (getCompositeOfProjections str proj.origName.getString!)
-  match env.find? (str ++ `Simps ++ proj.newName) with
+  let (rawExpr, nrs) ← MetaM.run' (getCompositeOfProjections str proj.origName.1.getString!)
+  match env.find? (str ++ `Simps ++ proj.newName.1) with
   | some d@(.defnInfo _) =>
     let customProj := d.instantiateValueLevelParams! rawUnivs
     trace[simps.verbose] "[simps] > found custom projection for {proj.newName}:\n        > {
@@ -545,7 +551,7 @@ def simpsFindCustomProjection (str : Name) (proj : ParsedProjectionData)
         "Invalid custom projection:\n  {customProj}\n{""
         }Expression is not definitionally equal to {rawExpr}" else throwError
         "Invalid custom projection:\n  {customProj}\n{""
-        }Expression has different type than {str ++ proj.origName}. Given type:\n{""
+        }Expression has different type than {str ++ proj.origName.1}. Given type:\n{""
         }  {customProjType}\nExpected type:\n  {rawExprType}\n{""
         }Note: make sure order of implicit arguments is exactly the same."
   | _ => pure {proj with expr? := some rawExpr, projNrs := nrs}
@@ -574,7 +580,7 @@ def simpsResolveNotationClass (projs : Array ParsedProjectionData)
         pure <| body.getAppFn.constName?
       trace[simps.debug] "info: ({relevantProj}, {rawExprLambda})"
       pure (relevantProj, rawExprLambda)
-  let some pos := projs.findIdx? fun x ↦ some x.origName == relevantProj | do
+  let some pos := projs.findIdx? fun x ↦ some x.origName.1 == relevantProj | do
     trace[simps.verbose] "[simps] > Warning: The structure has an instance for {className}, {""
         }but it is not definitionally equal to any projection."
     failure -- will be caught by `simpsFindAutomaticProjections`
@@ -677,7 +683,7 @@ def simpsGetRawProjections (str : Name) (traceIfExists : Bool := false)
     | false => pure proj
   trace[simps.verbose] projectionsInfo projs.toList "generated projections for" str
   simpsStructure.add str (rawLevels, projs)
-  trace[simps.debug] "Generated raw projection data:\n{(rawLevels, projs)}"
+  trace[simps.debug] "Generated raw projection data:\n({rawLevels}, {projs})}"
   pure (rawLevels, projs)
 
 library_note "custom simps projection"/--
