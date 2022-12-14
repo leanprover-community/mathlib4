@@ -108,6 +108,7 @@ instance : Distrib ℤ          := by infer_instance
 #align int.coe_nat_lt Int.ofNat_lt
 
 theorem coe_nat_inj' {m n : ℕ} : (↑m : ℤ) = ↑n ↔ m = n := Int.ofNat_inj
+#align int.coe_nat_inj' Int.coe_nat_inj'
 
 theorem coe_nat_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.ofNat_lt.2
 #align int.coe_nat_strict_mono Int.coe_nat_strictMono
