@@ -3,9 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-
-import Mathlib.Tactic.SplitIfs
 import Mathlib.Logic.Basic
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.SplitIfs
 
 /-!
 # More basic logic properties
@@ -55,3 +55,12 @@ theorem ite_ite_distrib_left : ite p a (ite q b c) = ite q (ite p a b) (ite p a 
 
 theorem ite_ite_distrib_right : ite p (ite q a b) c = ite q (ite p a c) (ite p b c) :=
   dite_dite_distrib_right
+
+set_option autoImplicit false
+
+lemma Prop.forall {f : Prop → Prop} : (∀ p, f p) ↔ f True ∧ f False :=
+⟨fun h ↦ ⟨h _, h _⟩, by rintro ⟨h₁, h₀⟩ p; by_cases hp : p <;> simp only [hp] <;> assumption⟩
+
+lemma Prop.exists {f : Prop → Prop} : (∃ p, f p) ↔ f True ∨ f False :=
+⟨fun ⟨p, h⟩ ↦ by refine' (em p).imp _ _ <;> intro H <;> convert h <;> simp [H],
+  by rintro (h | h) <;> exact ⟨_, h⟩⟩
