@@ -618,7 +618,8 @@ theorem leftInverse_inv_mul_mul_right (c : G) :
 theorem exists_npow_eq_one_of_zpow_eq_one {n : ℤ} (hn : n ≠ 0) {x : G} (h : x ^ n = 1) :
     ∃ n : ℕ, 0 < n ∧ x ^ n = 1 := by
   cases' n with n n
-  · rw [zpow_ofNat] at h
+  · simp only [Int.ofNat_eq_coe] at h
+    rw [zpow_ofNat] at h
     refine' ⟨n, Nat.pos_of_ne_zero fun n0 ↦ hn ?_, h⟩
     rw [n0]
     rfl
