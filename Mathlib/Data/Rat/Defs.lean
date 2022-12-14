@@ -463,7 +463,6 @@ protected theorem inv_mul_cancel (h : a ≠ 0) : a⁻¹ * a = 1 :=
   Eq.trans (Rat.mul_comm _ _) (Rat.mul_inv_cancel _ h)
 #align rat.inv_mul_cancel Rat.inv_mul_cancel
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:61:18: unsupported non-interactive tactic tactic.mk_dec_eq_instance -/
 instance : DecidableEq ℚ := by
   run_tac
     tactic.mk_dec_eq_instance
@@ -666,11 +665,13 @@ theorem mkInt_mul_mkInt_cancel {x : ℤ} (hx : x ≠ 0) (n d : ℤ) : n /. x * (
   rw [mul_def hx hd, mul_comm x, div_mkInt_div_cancel_left hx]
 #align rat.mk_mul_mk_cancel Rat.mkInt_mul_mkInt_cancel
 
-theorem mkInt_div_mkInt_cancel_left {x : ℤ} (hx : x ≠ 0) (n d : ℤ) : n /. x / (d /. x) = n /. d := by
+theorem mkInt_div_mkInt_cancel_left {x : ℤ} (hx : x ≠ 0) (n d : ℤ) :
+    n /. x / (d /. x) = n /. d := by
   rw [div_eq_mul_inv, inv_def, mkInt_mul_mkInt_cancel hx]
 #align rat.mk_div_mk_cancel_left Rat.mkInt_div_mkInt_cancel_left
 
-theorem mkInt_div_mkInt_cancel_right {x : ℤ} (hx : x ≠ 0) (n d : ℤ) : x /. n / (x /. d) = d /. n := by
+theorem mkInt_div_mkInt_cancel_right {x : ℤ} (hx : x ≠ 0) (n d : ℤ) :
+    x /. n / (x /. d) = d /. n := by
   rw [div_eq_mul_inv, inv_def, mul_comm, mkInt_mul_mkInt_cancel hx]
 #align rat.mk_div_mk_cancel_right Rat.mkInt_div_mkInt_cancel_right
 
