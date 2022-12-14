@@ -3,9 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathbin.Data.Int.Cast.Lemmas
-import Mathbin.Algebra.Field.Defs
-import Mathbin.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!
 # Cast of integers into fields
@@ -14,7 +14,7 @@ This file concerns the canonical homomorphism `ℤ → F`, where `F` is a field.
 
 ## Main results
 
- * `int.cast_div`: if `n` divides `m`, then `↑(m / n) = ↑m / ↑n`
+ * `Int.cast_div`: if `n` divides `m`, then `↑(m / n) = ↑m / ↑n`
 -/
 
 
@@ -39,8 +39,8 @@ theorem cast_div [Field α] {m n : ℤ} (n_dvd : n ∣ m) (n_nonzero : (n : α) 
   rcases n_dvd with ⟨k, rfl⟩
   have : n ≠ 0 := by
     rintro rfl
-    simpa using n_nonzero
-  rw [Int.mul_div_cancel_left _ this, Int.cast_mul, mul_div_cancel_left _ n_nonzero]
+    simp at n_nonzero
+  rw [Int.mul_ediv_cancel_left _ this, Int.cast_mul, mul_div_cancel_left _ n_nonzero]
 #align int.cast_div Int.cast_div
 
 end Int
