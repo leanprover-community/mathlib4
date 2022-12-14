@@ -46,6 +46,7 @@ open Function
 embedding whose range is an initial segment. That is, whenever `b < f a` in `β` then `b` is in the
 range of `f`. -/
 structure InitialSeg {α β : Type _} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
+  /-- The order embedding is an initial segment -/
   init : ∀ a b, s b (toRelEmbedding a) → ∃ a', toRelEmbedding a' = b
 #align initial_seg InitialSeg
 
@@ -64,15 +65,16 @@ instance : Coe (r ≼i s) (r ↪r s) :=
 instance : CoeFun (r ≼i s) fun _ => α → β :=
   ⟨fun f x => (f : r ↪r s) x⟩
 
-@[simp]
-theorem coe_fn_mk (f : r ↪r s) (o) : (@InitialSeg.mk _ _ r s f o : α → β) = f :=
-  rfl
-#align initial_seg.coe_fn_mk InitialSeg.coe_fn_mk
+-- Porting note: Deleted these two lemmas
+-- @[simp]
+-- theorem coe_fn_mk (f : r ↪r s) (o) : (@InitialSeg.mk _ _ r s f o : α → β) = f :=
+--   rfl
+-- #align initial_seg.coe_fn_mk InitialSeg.coe_fn_mk
 
-@[simp]
-theorem coe_fn_to_rel_embedding (f : r ≼i s) : (f.toRelEmbedding : α → β) = f :=
-  rfl
-#align initial_seg.coe_fn_to_rel_embedding InitialSeg.coe_fn_to_rel_embedding
+-- @[simp]
+-- theorem coe_fn_to_rel_embedding (f : r ≼i s) : (f.toRelEmbedding : α → β) = f :=
+--   rfl
+-- #align initial_seg.coe_fn_to_rel_embedding InitialSeg.coe_fn_to_rel_embedding
 
 @[simp]
 theorem coe_coe_fn (f : r ≼i s) : ((f : r ↪r s) : α → β) = f :=
@@ -215,9 +217,9 @@ def leAdd (r : α → α → Prop) (s : β → β → Prop) : r ≼i Sum.Lex r s
 #align initial_seg.le_add InitialSeg.leAdd
 
 @[simp]
-theorem le_add_apply (r : α → α → Prop) (s : β → β → Prop) (a) : leAdd r s a = Sum.inl a :=
+theorem leAdd_apply (r : α → α → Prop) (s : β → β → Prop) (a) : leAdd r s a = Sum.inl a :=
   rfl
-#align initial_seg.le_add_apply InitialSeg.le_add_apply
+#align initial_seg.le_add_apply InitialSeg.leAdd_apply
 
 end InitialSeg
 
@@ -226,7 +228,7 @@ end InitialSeg
 
 Order embeddings whose range is a principal segment of `s` (i.e., an interval of the form
 `(-∞, top)` for some element `top` of `β`). The type of these embeddings from `r` to `s` is called
-`principal_seg r s`, and denoted by `r ≺i s`. Principal segments are in particular initial
+`PrincipalSeg r s`, and denoted by `r ≺i s`. Principal segments are in particular initial
 segments.
 -/
 
@@ -235,7 +237,9 @@ segments.
 embedding whose range is an open interval `(-∞, top)` for some element `top` of `β`. Such order
 embeddings are called principal segments -/
 structure PrincipalSeg {α β : Type _} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
+  /-- The supremum of the principal segment -/
   top : β
+  /-- The image of the order embedding is the set of elements `b` such that `s b top` -/
   down' : ∀ b, s b top ↔ ∃ a, toRelEmbedding a = b
 #align principal_seg PrincipalSeg
 
@@ -534,3 +538,4 @@ theorem collapse_apply [IsWellOrder β s] (f : r ↪r s) (a) : collapse f a = (c
 #align rel_embedding.collapse_apply RelEmbedding.collapse_apply
 
 end RelEmbedding
+#lint
