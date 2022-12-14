@@ -5,6 +5,10 @@ Authors: Floris van Doorn
 -/
 import Lean.Message
 
+/-!
+# Additional operations on MessageData and related types
+-/
+
 open Lean Std Format MessageData
 instance [ToMessageData α] [ToMessageData β] : ToMessageData (α × β) :=
   ⟨fun x => paren <| toMessageData x.1 ++ ofFormat "," ++ Format.line ++ toMessageData x.2 ⟩
