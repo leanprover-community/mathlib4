@@ -7,7 +7,7 @@ import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Nat.Cast.Prod
 
 /-!
-# The product of two `add_group_with_one`s.
+# The product of two `AddGroupWithOne`s.
 -/
 
 
@@ -16,10 +16,10 @@ namespace Prod
 variable {α β : Type _} [AddGroupWithOne α] [AddGroupWithOne β]
 
 instance : AddGroupWithOne (α × β) :=
-  { Prod.addMonoidWithOne, Prod.addGroup with
+  { Prod.instAddMonoidWithOneProd, Prod.instAddGroupSum with
     intCast := fun n => (n, n)
-    int_cast_of_nat := fun _ => by simp <;> rfl
-    int_cast_neg_succ_of_nat := fun _ => by simp <;> rfl }
+    intCast_ofNat := fun _ => by simp; rfl
+    intCast_negSucc := fun _ => by simp; rfl }
 
 @[simp]
 theorem fst_int_cast (n : ℤ) : (n : α × β).fst = n :=
