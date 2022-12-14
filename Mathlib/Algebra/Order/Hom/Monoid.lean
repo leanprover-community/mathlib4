@@ -74,7 +74,6 @@ structure OrderAddMonoidHom (α β : Type _) [Preorder α] [Preorder β] [AddZer
   monotone' : Monotone toFun
 #align order_add_monoid_hom OrderAddMonoidHom
 
--- mathport name: «expr →+o »
 /-- Infix notation for `OrderAddMonoidHom`. -/
 infixr:25 " →+o " => OrderAddMonoidHom
 
