@@ -553,7 +553,7 @@ theorem Icc_subset_Ioc_iff (h₁ : a₁ ≤ b₁) : icc a₁ b₁ ⊆ ioc a₂ b
 #align set.Icc_subset_Ioc_iff Set.Icc_subset_Ioc_iff
 
 theorem Icc_subset_Iio_iff (h₁ : a₁ ≤ b₁) : icc a₁ b₁ ⊆ iio b₂ ↔ b₁ < b₂ :=
-  ⟨fun h => h ⟨h₁, le_rfl⟩, fun h _ (_), hx'⟩ => hx'.trans_lt h⟩
+  ⟨fun h => h ⟨h₁, le_rfl⟩, fun h _ ⟨_, hx'⟩ => hx'.trans_lt h⟩
 #align set.Icc_subset_Iio_iff Set.Icc_subset_Iio_iff
 
 theorem Icc_subset_Ioi_iff (h₁ : a₁ ≤ b₁) : icc a₁ b₁ ⊆ ioi a₂ ↔ a₂ < a₁ :=
