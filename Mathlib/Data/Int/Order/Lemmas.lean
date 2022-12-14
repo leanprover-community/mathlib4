@@ -2,10 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
+Ported by: Matej Penciak
 -/
-import Mathbin.Data.Int.Order.Basic
-import Mathbin.Algebra.GroupWithZero.Divisibility
-import Mathbin.Algebra.Order.Ring.Abs
+import Mathlib.Data.Int.Order.Basic
+import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.Order.Ring.Abs
 
 /-!
 # Further lemmas about the integers
@@ -25,30 +26,30 @@ namespace Int
 variable {a b : ℤ} {n : ℕ}
 
 theorem nat_abs_eq_iff_mul_self_eq {a b : ℤ} : a.natAbs = b.natAbs ↔ a * a = b * b := by
-  rw [← abs_eq_iff_mul_self_eq, abs_eq_nat_abs, abs_eq_nat_abs]
-  exact int.coe_nat_inj'.symm
+  rw [← abs_eq_iff_mul_self_eq, abs_eq_natAbs, abs_eq_natAbs]
+  exact Int.coe_nat_inj'.symm
 #align int.nat_abs_eq_iff_mul_self_eq Int.nat_abs_eq_iff_mul_self_eq
 
 theorem eq_nat_abs_iff_mul_eq_zero : a.natAbs = n ↔ (a - n) * (a + n) = 0 := by
-  rw [nat_abs_eq_iff, mul_eq_zero, sub_eq_zero, add_eq_zero_iff_eq_neg]
+  rw [natAbs_eq_iff, _root_.mul_eq_zero, sub_eq_zero, add_eq_zero_iff_eq_neg]
 #align int.eq_nat_abs_iff_mul_eq_zero Int.eq_nat_abs_iff_mul_eq_zero
 
 theorem nat_abs_lt_iff_mul_self_lt {a b : ℤ} : a.natAbs < b.natAbs ↔ a * a < b * b := by
-  rw [← abs_lt_iff_mul_self_lt, abs_eq_nat_abs, abs_eq_nat_abs]
-  exact int.coe_nat_lt.symm
+  rw [← abs_lt_iff_mul_self_lt, abs_eq_natAbs, abs_eq_natAbs]
+  exact Int.ofNat_lt.symm
 #align int.nat_abs_lt_iff_mul_self_lt Int.nat_abs_lt_iff_mul_self_lt
 
 theorem nat_abs_le_iff_mul_self_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a * a ≤ b * b := by
-  rw [← abs_le_iff_mul_self_le, abs_eq_nat_abs, abs_eq_nat_abs]
-  exact int.coe_nat_le.symm
+  rw [← abs_le_iff_mul_self_le, abs_eq_natAbs, abs_eq_natAbs]
+  exact Int.ofNat_le.symm
 #align int.nat_abs_le_iff_mul_self_le Int.nat_abs_le_iff_mul_self_le
 
 theorem dvd_div_of_mul_dvd {a b c : ℤ} (h : a * b ∣ c) : b ∣ c / a := by
   rcases eq_or_ne a 0 with (rfl | ha)
-  · simp only [Int.div_zero, dvd_zero]
+  · simp only [Int.ediv_zero, dvd_zero]
   rcases h with ⟨d, rfl⟩
   refine' ⟨d, _⟩
-  rw [mul_assoc, Int.mul_div_cancel_left _ ha]
+  rw [mul_assoc, Int.mul_ediv_cancel_left _ ha]
 #align int.dvd_div_of_mul_dvd Int.dvd_div_of_mul_dvd
 
 /-! ### units -/
