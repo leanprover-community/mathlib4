@@ -83,7 +83,6 @@ theorem image_restrict (f : α → β) (s t : Set α) :
   rw [restrict_eq, image_comp, image_preimage_eq_inter_range, Subtype.range_coe]
 #align set.image_restrict Set.image_restrict
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:631:2: warning: expanding binder collection (a «expr ∉ » s) -/
 @[simp]
 theorem restrict_dite {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
     (g : ∀ (a) (_ : a ∉ s), β) :
@@ -92,7 +91,6 @@ theorem restrict_dite {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s
 -- porting note: had to type ascript `a : s.Elem` in the statement
 #align set.restrict_dite Set.restrict_dite
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:631:2: warning: expanding binder collection (a «expr ∉ » s) -/
 @[simp]
 theorem restrict_dite_compl {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
     (g : ∀ (a) (_ : a ∉ s), β) :
@@ -264,7 +262,8 @@ theorem _root_.AntitoneOn.congr (h₁ : AntitoneOn f₁ s) (h : s.EqOn f₁ f₂
   h₁.dual_right.congr h
 #align antitone_on.congr AntitoneOn.congr
 
-theorem _root_.StrictMonoOn.congr (h₁ : StrictMonoOn f₁ s) (h : s.EqOn f₁ f₂) : StrictMonoOn f₂ s := by
+theorem _root_.StrictMonoOn.congr (h₁ : StrictMonoOn f₁ s) (h : s.EqOn f₁ f₂) :
+    StrictMonoOn f₂ s := by
   intro a ha b hb hab
   rw [← h ha, ← h hb]
   exact h₁ ha hb hab
@@ -299,12 +298,12 @@ section Mono
 
 variable [Preorder α] [Preorder β]
 
-theorem _root_.MonotoneOn.mono (h : MonotoneOn f s) (h' : s₂ ⊆ s) : MonotoneOn f s₂ := fun _ hx _ hy =>
-  h (h' hx) (h' hy)
+theorem _root_.MonotoneOn.mono (h : MonotoneOn f s) (h' : s₂ ⊆ s) : MonotoneOn f s₂ :=
+  fun _ hx _ hy => h (h' hx) (h' hy)
 #align monotone_on.mono MonotoneOn.mono
 
-theorem _root_.AntitoneOn.mono (h : AntitoneOn f s) (h' : s₂ ⊆ s) : AntitoneOn f s₂ := fun _ hx _ hy =>
-  h (h' hx) (h' hy)
+theorem _root_.AntitoneOn.mono (h : AntitoneOn f s) (h' : s₂ ⊆ s) : AntitoneOn f s₂ :=
+  fun _ hx _ hy => h (h' hx) (h' hy)
 #align antitone_on.mono AntitoneOn.mono
 
 theorem _root_.StrictMonoOn.mono (h : StrictMonoOn f s) (h' : s₂ ⊆ s) : StrictMonoOn f s₂ :=
@@ -320,15 +319,18 @@ protected theorem _root_.MonotoneOn.monotone (h : MonotoneOn f s) :
   fun x y hle => h x.coe_prop y.coe_prop hle
 #align monotone_on.monotone MonotoneOn.monotone
 
-protected theorem _root_.AntitoneOn.monotone (h : AntitoneOn f s) : Antitone (f ∘ Subtype.val : s → β) :=
+protected theorem _root_.AntitoneOn.monotone (h : AntitoneOn f s) :
+    Antitone (f ∘ Subtype.val : s → β) :=
   fun x y hle => h x.coe_prop y.coe_prop hle
 #align antitone_on.monotone AntitoneOn.monotone
 
-protected theorem _root_.StrictMonoOn.strictMono (h : StrictMonoOn f s) : StrictMono (f ∘ Subtype.val : s → β) :=
+protected theorem _root_.StrictMonoOn.strictMono (h : StrictMonoOn f s) :
+    StrictMono (f ∘ Subtype.val : s → β) :=
   fun x y hlt => h x.coe_prop y.coe_prop hlt
 #align strict_mono_on.strict_mono StrictMonoOn.strictMono
 
-protected theorem _root_.StrictAntiOn.strictAnti (h : StrictAntiOn f s) : StrictAnti (f ∘ Subtype.val : s → β) :=
+protected theorem _root_.StrictAntiOn.strictAnti (h : StrictAntiOn f s) :
+    StrictAnti (f ∘ Subtype.val : s → β) :=
   fun x y hlt => h x.coe_prop y.coe_prop hlt
 #align strict_anti_on.strict_anti StrictAntiOn.strictAnti
 
@@ -367,7 +369,8 @@ theorem MapsTo.restrict_eq_cod_restrict (h : MapsTo f s t) :
   rfl
 #align set.maps_to.restrict_eq_cod_restrict Set.MapsTo.restrict_eq_cod_restrict
 
-theorem MapsTo.coe_restrict (h : Set.MapsTo f s t) : Subtype.val ∘ h.restrict f s t = s.restrict f :=
+theorem MapsTo.coe_restrict (h : Set.MapsTo f s t) :
+    Subtype.val ∘ h.restrict f s t = s.restrict f :=
   rfl
 #align set.maps_to.coe_restrict Set.MapsTo.coe_restrict
 
@@ -1143,7 +1146,6 @@ theorem SurjOn.bijOn_subset [Nonempty α] (h : SurjOn f s t) : BijOn f (invFunOn
   rwa [h.rightInvOn_invFunOn hy]
 #align set.surj_on.bij_on_subset Set.SurjOn.bijOn_subset
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:631:2: warning: expanding binder collection (s' «expr ⊆ » s) -/
 theorem surjOn_iff_exists_bijOn_subset : SurjOn f s t ↔ ∃ (s' : _)(_ : s' ⊆ s), BijOn f s' t := by
   constructor
   · rcases eq_empty_or_nonempty t with (rfl | ht)
@@ -1264,20 +1266,17 @@ theorem piecewise_eqOn_compl (f g : α → β) : EqOn (s.piecewise f g) g (sᶜ)
   piecewise_eq_of_not_mem _ _ _
 #align set.piecewise_eq_on_compl Set.piecewise_eqOn_compl
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:631:2: warning: expanding binder collection (i «expr ∉ » s) -/
 theorem piecewise_le {δ : α → Type _} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
     {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g i) (h₂ : ∀ (i) (_ : i ∉ s), f₂ i ≤ g i) :
     s.piecewise f₁ f₂ ≤ g := fun i => if h : i ∈ s then by simp [*] else by simp [*]
 #align set.piecewise_le Set.piecewise_le
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:631:2: warning: expanding binder collection (i «expr ∉ » s) -/
 theorem le_piecewise {δ : α → Type _} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
     {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, g i ≤ f₁ i) (h₂ : ∀ (i) (_ : i ∉ s), g i ≤ f₂ i) :
     g ≤ s.piecewise f₁ f₂ :=
   @piecewise_le α (fun i => (δ i)ᵒᵈ) _ s _ _ _ _ h₁ h₂
 #align set.le_piecewise Set.le_piecewise
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:631:2: warning: expanding binder collection (i «expr ∉ » s) -/
 theorem piecewise_le_piecewise {δ : α → Type _} [∀ i, Preorder (δ i)] {s : Set α}
     [∀ j, Decidable (j ∈ s)] {f₁ f₂ g₁ g₂ : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g₁ i)
     (h₂ : ∀ (i) (_ : i ∉ s), f₂ i ≤ g₂ i) : s.piecewise f₁ f₂ ≤ s.piecewise g₁ g₂ := by
@@ -1365,7 +1364,7 @@ theorem range_piecewise (f g : α → β) : range (s.piecewise f g) = f '' s ∪
   · rintro (⟨x, hx, rfl⟩ | ⟨x, hx, rfl⟩) <;> use x <;> simp_all
 #align set.range_piecewise Set.range_piecewise
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:631:2: warning: expanding binder collection (y «expr ∉ » s) -/
+
 theorem injective_piecewise_iff {f g : α → β} :
     Injective (s.piecewise f g) ↔
       InjOn f s ∧ InjOn g (sᶜ) ∧ ∀ x ∈ s, ∀ (y) (_ : y ∉ s), f x ≠ g y :=
