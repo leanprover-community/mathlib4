@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 -/
 import Std.Tactic.Simpa
-import Lean.Expr
 import Mathlib.Lean.Expr
 
 open Lean.Elab.Tactic

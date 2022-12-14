@@ -584,4 +584,6 @@
  ["unusedArguments", "Decidable.not_or_iff_and_not"],
  ["unusedArguments", "Mathlib.Meta.Positivity.nonneg_of_isNat"],
  ["unusedArguments", "Mathlib.Meta.Positivity.nz_of_isNegNat"],
- ["unusedArguments", "Mathlib.Meta.Positivity.pos_of_isNat"]]
+ ["unusedArguments", "Mathlib.Meta.Positivity.pos_of_isNat"],
+ ["unusedHavesSuffices", "EuclideanDomain.xgcdAux_rec"],
+ ["unusedHavesSuffices", "EuclideanDomain.xgcd_zero_left"]]

@@ -773,10 +773,10 @@ def LinearOrder.lift' {α β} [LinearOrder β] (f : α → β) (inj : Injective 
 
 namespace Subtype
 
-instance [LE α] {p : α → Prop} : LE (Subtype p) :=
+instance le [LE α] {p : α → Prop} : LE (Subtype p) :=
   ⟨fun x y ↦ (x : α) ≤ y⟩
 
-instance [LT α] {p : α → Prop} : LT (Subtype p) :=
+instance lt [LT α] {p : α → Prop} : LT (Subtype p) :=
   ⟨fun x y ↦ (x : α) < y⟩
 
 @[simp]
@@ -799,24 +799,24 @@ theorem coe_le_coe [LE α] {p : α → Prop} {x y : Subtype p} : (x : α) ≤ y 
 theorem coe_lt_coe [LT α] {p : α → Prop} {x y : Subtype p} : (x : α) < y ↔ x < y :=
   Iff.rfl
 
-instance [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
+instance preorder [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
   Preorder.lift (fun (a : Subtype p) ↦ (a : α))
 
-instance [PartialOrder α] (p : α → Prop) : PartialOrder (Subtype p) :=
+instance partialOrder [PartialOrder α] (p : α → Prop) : PartialOrder (Subtype p) :=
   PartialOrder.lift (fun (a : Subtype p) ↦ (a : α)) Subtype.coe_injective
 
-instance [Preorder α] [h : @DecidableRel α (· ≤ ·)] {p : α → Prop} :
+instance decidableLE [Preorder α] [h : @DecidableRel α (· ≤ ·)] {p : α → Prop} :
     @DecidableRel (Subtype p) (· ≤ ·) :=
   fun a b ↦ h a b
 
-instance [Preorder α] [h : @DecidableRel α (· < ·)] {p : α → Prop} :
+instance decidableLT [Preorder α] [h : @DecidableRel α (· < ·)] {p : α → Prop} :
     @DecidableRel (Subtype p) (· < ·) :=
   fun a b ↦ h a b
 
 /-- A subtype of a linear order is a linear order. We explicitly give the proofs of decidable
 equality and decidable order in order to ensure the decidability instances are all definitionally
 equal. -/
-instance [LinearOrder α] (p : α → Prop) : LinearOrder (Subtype p) :=
+instance linearOrder [LinearOrder α] (p : α → Prop) : LinearOrder (Subtype p) :=
   @LinearOrder.lift (Subtype p) _ _ ⟨fun x y ↦ ⟨max x y, max_rec' _ x.2 y.2⟩⟩
     ⟨fun x y ↦ ⟨min x y, min_rec' _ x.2 y.2⟩⟩ (fun (a : Subtype p) ↦ (a : α))
     Subtype.coe_injective (fun _ _ ↦ rfl) fun _ _ ↦ rfl
