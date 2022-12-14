@@ -106,6 +106,9 @@ instance : RelHomClass (r →r s) r s where
     congr
   map_rel := map_rel'
 
+/-- See Note [custom simps projection] -/
+def RelHom.Simps.apply (f : r →r s) : α → β := f
+
 initialize_simps_projections RelHom (toFun → apply)
 
 protected theorem map_rel (f : r →r s) {a b} : r a b → s (f a) (f b) :=
@@ -244,6 +247,8 @@ because it is a composition of multiple projections. -/
 def Simps.apply (h : r ↪r s) : α → β :=
   h
 #align rel_embedding.simps.apply RelEmbedding.Simps.apply
+
+initialize_simps_projections RelEmbedding (toEmbedding_toFun → apply, -toEmbedding)
 
 theorem injective (f : r ↪r s) : Injective f :=
   f.inj'
