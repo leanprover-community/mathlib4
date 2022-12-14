@@ -286,11 +286,7 @@ theorem apply_mono {f g : α →o β} {x y : α} (h₁ : f ≤ g) (h₂ : x ≤ 
 #align order_hom.apply_mono OrderHom.apply_mono
 
 /-- Curry/uncurry as an order isomorphism between `α × β →o γ` and `α →o β →o γ`. -/
-def curry :
-    (α × β →o γ) ≃o
-      (α →o
-        β →o
-          γ) where
+def curry : (α × β →o γ) ≃o (α →o β →o γ) where
   toFun f :=
     ⟨fun x => ⟨Function.curry f x, fun y₁ y₂ h => f.mono ⟨le_rfl, h⟩⟩, fun x₁ x₂ h y =>
       f.mono ⟨h, le_rfl⟩⟩
@@ -347,8 +343,7 @@ theorem id_comp (f : α →o β) : comp id f = f := by
 
 /-- Constant function bundled as a `OrderHom`. -/
 @[simps (config := { fullyApplied := false })]
-def const (α : Type _) [Preorder α] {β : Type _} [Preorder β] :
-    β →o α →o β where
+def const (α : Type _) [Preorder α] {β : Type _} [Preorder β] : β →o α →o β where
   toFun b := ⟨Function.const α b, fun _ _ _ => le_rfl⟩
   monotone' _ _  h _ := h
 #align order_hom.const OrderHom.const
@@ -431,9 +426,7 @@ theorem snd_comp_prod (f : α →o β) (g : α →o γ) : snd.comp (f.prod g) = 
 /-- Order isomorphism between the space of monotone maps to `β × γ` and the product of the spaces
 of monotone maps to `β` and `γ`. -/
 @[simps]
-def prodIso :
-    (α →o β × γ) ≃o
-      (α →o β) × (α →o γ) where
+def prodIso : (α →o β × γ) ≃o (α →o β) × (α →o γ) where
   toFun f := (fst.comp f, snd.comp f)
   invFun f := f.1.prod f.2
   left_inv f := by ext <;> rfl
@@ -480,9 +473,7 @@ def pi (f : ∀ i, α →o π i) : α →o ∀ i, π i :=
 /-- Order isomorphism between bundled monotone maps `α →o Π i, π i` and families of bundled monotone
 maps `Π i, α →o π i`. -/
 @[simps]
-def piIso :
-    (α →o ∀ i, π i) ≃o
-      ∀ i, α →o π i where
+def piIso : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   toFun f i := (Pi.evalOrderHom i).comp f
   invFun := pi
   left_inv f := by
@@ -501,15 +492,14 @@ def Subtype.val (p : α → Prop) : Subtype p →o α :=
 #align order_hom.subtype.val OrderHom.Subtype.val
 
 /-- There is a unique monotone map from a subsingleton to itself. -/
-instance unique [Subsingleton α] :
-    Unique (α →o α) where
+instance unique [Subsingleton α] : Unique (α →o α) where
   default := OrderHom.id
   uniq _ := ext _ _ (Subsingleton.elim _ _)
 #align order_hom.unique OrderHom.unique
 
-theorem order_hom_eq_id [Subsingleton α] (g : α →o α) : g = OrderHom.id :=
+theorem orderHom_eq_id [Subsingleton α] (g : α →o α) : g = OrderHom.id :=
   Subsingleton.elim _ _
-#align order_hom.order_hom_eq_id OrderHom.order_hom_eq_id
+#align order_hom.order_hom_eq_id OrderHom.orderHom_eq_id
 
 /-- Reinterpret a bundled monotone function as a monotone function between dual orders. -/
 @[simps]
@@ -547,8 +537,7 @@ theorem symm_dual_comp (g : βᵒᵈ →o γᵒᵈ) (f : αᵒᵈ →o βᵒᵈ)
 #align order_hom.symm_dual_comp OrderHom.symm_dual_comp
 
 /-- `OrderHom.dual` as an order isomorphism. -/
-def dualIso (α β : Type _) [Preorder α] [Preorder β] :
-    (α →o β) ≃o (αᵒᵈ →o βᵒᵈ)ᵒᵈ where
+def dualIso (α β : Type _) [Preorder α] [Preorder β] : (α →o β) ≃o (αᵒᵈ →o βᵒᵈ)ᵒᵈ where
   toEquiv := OrderHom.dual.trans OrderDual.toDual
   map_rel_iff' := Iff.rfl
 #align order_hom.dual_iso OrderHom.dualIso
@@ -577,13 +566,13 @@ def RelEmbedding.orderEmbeddingOfLtEmbedding [PartialOrder α] [PartialOrder β]
 #align rel_embedding.order_embedding_of_lt_embedding RelEmbedding.orderEmbeddingOfLtEmbedding
 
 @[simp]
-theorem RelEmbedding.order_embedding_of_lt_embedding_apply [PartialOrder α] [PartialOrder β]
+theorem RelEmbedding.orderEmbeddingOfLtEmbedding_apply [PartialOrder α] [PartialOrder β]
     {f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)} {x : α} :
     RelEmbedding.orderEmbeddingOfLtEmbedding f x = f x :=
   rfl
 #align
   rel_embedding.order_embedding_of_lt_embedding_apply
-  RelEmbedding.order_embedding_of_lt_embedding_apply
+  RelEmbedding.orderEmbeddingOfLtEmbedding_apply
 
 namespace OrderEmbedding
 
@@ -595,9 +584,9 @@ def ltEmbedding : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β �
 #align order_embedding.lt_embedding OrderEmbedding.ltEmbedding
 
 @[simp]
-theorem lt_embedding_apply (x : α) : f.ltEmbedding x = f x :=
+theorem ltEmbedding_apply (x : α) : f.ltEmbedding x = f x :=
   rfl
-#align order_embedding.lt_embedding_apply OrderEmbedding.lt_embedding_apply
+#align order_embedding.lt_embedding_apply OrderEmbedding.ltEmbedding_apply
 
 @[simp]
 theorem le_iff_le {a b} : f a ≤ f b ↔ a ≤ b :=
@@ -688,8 +677,7 @@ def subtype (p : α → Prop) : Subtype p ↪o α :=
 
 /-- Convert an `OrderEmbedding` to a `OrderHom`. -/
 @[simps (config := { fullyApplied := false })]
-def toOrderHom {X Y : Type _} [Preorder X] [Preorder Y] (f : X ↪o Y) :
-    X →o Y where
+def toOrderHom {X Y : Type _} [Preorder X] [Preorder Y] (f : X ↪o Y) : X →o Y where
   toFun := f
   monotone' := f.monotone
 #align order_embedding.to_order_hom OrderEmbedding.toOrderHom
@@ -1047,8 +1035,7 @@ def ofHomInv {F G : Type _} [OrderHomClass F α β] [OrderHomClass G β α] (f :
 
 /-- Order isomorphism between `α → β` and `β`, where `α` has a unique element. -/
 @[simps toEquiv apply]
-def funUnique (α β : Type _) [Unique α] [Preorder β] :
-    (α → β) ≃o β where
+def funUnique (α β : Type _) [Unique α] [Preorder β] : (α → β) ≃o β where
   toEquiv := Equiv.funUnique α β
   map_rel_iff' := by simp [Pi.le_def, Unique.forall_iff]
 #align order_iso.fun_unique OrderIso.funUnique
