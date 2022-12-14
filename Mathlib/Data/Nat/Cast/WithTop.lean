@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Data.Nat.Basic
 
 /-!
-# Lemma about the coercion `ℕ → with_bot ℕ`.
+# Lemma about the coercion `ℕ → WithBot ℕ`.
 
 An orphaned lemma about casting from `ℕ` to `WithBot ℕ`,
 exiled here to minimize imports to `data.rat.order` for porting purposes.
