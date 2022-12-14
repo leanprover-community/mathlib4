@@ -201,6 +201,7 @@ import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
+import Mathlib.Data.Set.Prod
 import Mathlib.Data.Set.Sigma
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
