@@ -56,8 +56,6 @@ theorem ite_ite_distrib_left : ite p a (ite q b c) = ite q (ite p a b) (ite p a 
 theorem ite_ite_distrib_right : ite p (ite q a b) c = ite q (ite p a c) (ite p b c) :=
   dite_dite_distrib_right
 
-set_option autoImplicit false
-
 lemma Prop.forall {f : Prop → Prop} : (∀ p, f p) ↔ f True ∧ f False :=
 ⟨fun h ↦ ⟨h _, h _⟩, by rintro ⟨h₁, h₀⟩ p; by_cases hp : p <;> simp only [hp] <;> assumption⟩
 
