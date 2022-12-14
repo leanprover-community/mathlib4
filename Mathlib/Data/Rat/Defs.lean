@@ -502,6 +502,18 @@ protected theorem mul_assoc : a * b * c = a * (b * c) :=
         simp [h₁, h₂, h₃, mul_ne_zero, mul_comm, mul_assoc, mul_left_comm]
 #align rat.mul_assoc Rat.mul_assoc
 
+-- Porting note: added during porting; not sure how we managed without this in mathlib3.
+protected theorem zero_mul (a : ℚ) : 0 * a = 0 :=
+  numDenCasesOn' a fun n d h => by
+    rw [← mkInt_zero_one, mul_def (by decide) (by simp [h])]
+    simp [h]
+
+-- Porting note: added during porting; not sure how we managed without this in mathlib3.
+protected theorem mul_zero (a : ℚ) : a * 0 = 0 :=
+  numDenCasesOn' a fun n d h => by
+    rw [← mkInt_zero_one, mul_def (by simp [h]) (by decide)]
+    simp [h]
+
 protected theorem add_mul : (a + b) * c = a * c + b * c :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
     numDenCasesOn' b fun n₂ d₂ h₂ =>
@@ -543,6 +555,7 @@ The `Rat.field` instance and any field-specific lemmas can be found in `Mathlib.
 -/
 
 
+
 instance commRing : CommRing ℚ where
   zero := 0
   add := (· + ·)
@@ -558,8 +571,8 @@ instance commRing : CommRing ℚ where
   one_mul := Rat.one_mul
   mul_comm := Rat.mul_comm
   mul_assoc := Rat.mul_assoc
-  zero_mul := sorry
-  mul_zero := sorry
+  zero_mul := Rat.zero_mul
+  mul_zero := Rat.mul_zero
   left_distrib := Rat.mul_add
   right_distrib := Rat.add_mul
   sub_eq_add_neg := sorry -- Note we hope this to be definitional and it isn't :-(
