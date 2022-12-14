@@ -5,6 +5,7 @@ import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Divisibility.Units
 import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.EuclideanDomain.Defs
+import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
@@ -48,6 +49,7 @@ import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
+import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Field.Canonical.Defs
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Group.Abs
@@ -62,6 +64,7 @@ import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.Group.WithTop
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.Cancel.Basic
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
@@ -160,6 +163,7 @@ import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Int.Units
 import Mathlib.Data.KVMap
 import Mathlib.Data.LazyList
@@ -301,6 +305,7 @@ import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.RelIso.Group
+import Mathlib.Order.RelIso.Set
 import Mathlib.Order.SymmDiff
 import Mathlib.Order.Synonym
 import Mathlib.Order.WellFounded
