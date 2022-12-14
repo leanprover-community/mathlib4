@@ -92,14 +92,11 @@ namespace SetLike
 
 variable {A : Type _} {B : Type _} [i : SetLike A B]
 
--- porting note: is this the right `Coe` class? Or should it be `CoeHead` or `CoeTail`
 instance : CoeTC A (Set B) where coe := SetLike.coe
 
 instance (priority := 100) : Membership B A :=
   ⟨fun x p => x ∈ (p : Set B)⟩
 
--- `dangerousInstance` does not know that `B` is used only as an `out_param`
-@[nolint dangerousInstance]
 instance (priority := 100) : CoeSort A (Type _) :=
   ⟨fun p => { x : B // x ∈ p }⟩
 
@@ -112,12 +109,10 @@ theorem coe_sort_coe : ((p : Set B) : Type _) = p :=
 
 variable {p q}
 
--- porting note: `∃ x ∈ p, q ⟨x, ‹_›⟩` didn't work.
 protected theorem «exists» {q : p → Prop} : (∃ x, q x) ↔ ∃ (x : B) (h : x ∈ p), q ⟨x, ‹_›⟩ :=
   SetCoe.exists
 #align set_like.exists SetLike.exists
 
--- porting note: `∀ x ∈ p, q ⟨x, ‹_›⟩` didn't work.
 protected theorem «forall» {q : p → Prop} : (∀ x, q x) ↔ ∀ (x : B) (h : x ∈ p), q ⟨x, ‹_›⟩ :=
   SetCoe.forall
 #align set_like.forall SetLike.forall
@@ -170,8 +165,6 @@ theorem coe_mem (x : p) : (x : B) ∈ p :=
 protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl
 #align set_like.eta SetLike.eta
 
--- `dangerousInstance` does not know that `B` is used only as an `out_param`
-@[nolint dangerousInstance]
 instance (priority := 100) : PartialOrder A :=
   { PartialOrder.lift (SetLike.coe : A → Set B) coe_injective with
     le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K }
