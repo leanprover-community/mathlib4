@@ -444,5 +444,3 @@ theorem to_lex_int_cast [IntCast α] (n : ℤ) : toLex (n : α) = n :=
 theorem of_lex_int_cast [IntCast α] (n : ℤ) : (ofLex n : α) = n :=
   rfl
 #align of_lex_int_cast of_lex_int_cast
-
-#lint
