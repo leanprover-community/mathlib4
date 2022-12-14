@@ -413,12 +413,6 @@ instance : ToMessageData ParsedProjectionData where toMessageData
       toMessageData x₅, toMessageData x₆, toMessageData x₇]
     ("," ++ Format.line) ++ "⟩"
 
--- instance : ToMessageData ParsedProjectionData where toMessageData
---   | ⟨x₁, x₂, x₃, x₄, x₅, x₆, x₇, x₈, x₉⟩ => .group <| .nest 1 <|
---     "⟨" ++ .joinSep [toMessageData x₁, toMessageData x₂, toMessageData x₃, toMessageData x₄,
---       toMessageData x₅, toMessageData x₆, toMessageData x₇, toMessageData x₈, toMessageData x₉]
---     ("," ++ Format.line) ++ "⟩"
-
 /-- The type of rules that specify how metadata for projections in changes.
   See `initialize_simps_projections`. -/
 structure ProjectionRule where
