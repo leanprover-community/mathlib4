@@ -276,6 +276,7 @@ import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Embedding.Set
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Logic.Equiv.Embedding
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Logic.Equiv.MfldSimpsAttr
 import Mathlib.Logic.Equiv.Option
