@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Int.Cast.Field
 
 /-!
-# Injectivity of `int.cast` into characteristic zero rings and fields.
+# Injectivity of `Int.Cast` into characteristic zero rings and fields.
 
 -/
 
@@ -21,9 +21,9 @@ namespace Int
 theorem cast_eq_zero [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) = 0 ↔ n = 0 :=
   ⟨fun h => by
     cases n
-    · rw [Int.cast_of_nat] at h
-      exact congr_arg coe (Nat.cast_eq_zero.1 h)
-    · rw [cast_neg_succ_of_nat, neg_eq_zero, Nat.cast_eq_zero] at h
+    · erw [Int.cast_ofNat] at h
+      exact congr_arg _ (Nat.cast_eq_zero.1 h)
+    · rw [cast_negSucc, neg_eq_zero, Nat.cast_eq_zero] at h
       contradiction,
     fun h => by rw [h, cast_zero]⟩
 #align int.cast_eq_zero Int.cast_eq_zero
@@ -33,8 +33,8 @@ theorem cast_inj [AddGroupWithOne α] [CharZero α] {m n : ℤ} : (m : α) = n �
   rw [← sub_eq_zero, ← cast_sub, cast_eq_zero, sub_eq_zero]
 #align int.cast_inj Int.cast_inj
 
-theorem cast_injective [AddGroupWithOne α] [CharZero α] : Function.Injective (coe : ℤ → α)
-  | m, n => cast_inj.1
+theorem cast_injective [AddGroupWithOne α] [CharZero α] : Function.Injective (Int.cast : ℤ → α)
+  | _, _ => cast_inj.1
 #align int.cast_injective Int.cast_injective
 
 theorem cast_ne_zero [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) ≠ 0 ↔ n ≠ 0 :=
@@ -42,12 +42,12 @@ theorem cast_ne_zero [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) ≠
 #align int.cast_ne_zero Int.cast_ne_zero
 
 @[simp, norm_cast]
-theorem cast_div_char_zero {k : Type _} [Field k] [CharZero k] {m n : ℤ} (n_dvd : n ∣ m) :
+theorem cast_div_charZero {k : Type _} [Field k] [CharZero k] {m n : ℤ} (n_dvd : n ∣ m) :
     ((m / n : ℤ) : k) = m / n := by
   rcases eq_or_ne n 0 with (rfl | hn)
-  · simp [Int.div_zero]
+  · simp [Int.ediv_zero]
   · exact cast_div n_dvd (cast_ne_zero.mpr hn)
-#align int.cast_div_char_zero Int.cast_div_char_zero
+#align int.cast_div_char_zero Int.cast_div_charZero
 
 end Int
 
