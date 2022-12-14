@@ -65,14 +65,14 @@ theorem isCoprime_zero_right : IsCoprime x 0 ↔ IsUnit x :=
   isCoprime_comm.trans isCoprime_zero_left
 #align is_coprime_zero_right isCoprime_zero_right
 
-theorem not_coprime_zero_zero [Nontrivial R] : ¬IsCoprime (0 : R) 0 :=
+theorem not_isCoprime_zero_zero [Nontrivial R] : ¬IsCoprime (0 : R) 0 :=
   mt isCoprime_zero_right.mp not_isUnit_zero
-#align not_coprime_zero_zero not_coprime_zero_zero
+#align not_coprime_zero_zero not_isCoprime_zero_zero
 
 /-- If a 2-vector `p` satisfies `is_coprime (p 0) (p 1)`, then `p ≠ 0`. -/
 theorem IsCoprime.ne_zero [Nontrivial R] {p : Fin 2 → R} (h : IsCoprime (p 0) (p 1)) : p ≠ 0 := by
   rintro rfl
-  exact not_coprime_zero_zero h
+  exact not_isCoprime_zero_zero h
 #align is_coprime.ne_zero IsCoprime.ne_zero
 
 theorem isCoprime_one_left : IsCoprime 1 x :=
@@ -150,14 +150,14 @@ theorem IsCoprime.mul_right_iff : IsCoprime x (y * z) ↔ IsCoprime x y ∧ IsCo
   rw [isCoprime_comm, IsCoprime.mul_left_iff, isCoprime_comm, @isCoprime_comm _ _ z]
 #align is_coprime.mul_right_iff IsCoprime.mul_right_iff
 
-theorem IsCoprime.of_coprime_of_dvd_left (h : IsCoprime y z) (hdvd : x ∣ y) : IsCoprime x z := by
+theorem IsCoprime.of_isCoprime_of_dvd_left (h : IsCoprime y z) (hdvd : x ∣ y) : IsCoprime x z := by
   obtain ⟨d, rfl⟩ := hdvd
   exact IsCoprime.of_mul_left_left h
-#align is_coprime.of_coprime_of_dvd_left IsCoprime.of_coprime_of_dvd_left
+#align is_coprime.of_coprime_of_dvd_left IsCoprime.of_isCoprime_of_dvd_left
 
-theorem IsCoprime.of_coprime_of_dvd_right (h : IsCoprime z y) (hdvd : x ∣ y) : IsCoprime z x :=
-  (h.symm.of_coprime_of_dvd_left hdvd).symm
-#align is_coprime.of_coprime_of_dvd_right IsCoprime.of_coprime_of_dvd_right
+theorem IsCoprime.of_isCoprime_of_dvd_right (h : IsCoprime z y) (hdvd : x ∣ y) : IsCoprime z x :=
+  (h.symm.of_isCoprime_of_dvd_left hdvd).symm
+#align is_coprime.of_coprime_of_dvd_right IsCoprime.of_isCoprime_of_dvd_right
 
 theorem IsCoprime.is_unit_of_dvd (H : IsCoprime x y) (d : x ∣ y) : IsUnit x :=
   let ⟨k, hk⟩ := d
@@ -166,7 +166,7 @@ theorem IsCoprime.is_unit_of_dvd (H : IsCoprime x y) (d : x ∣ y) : IsUnit x :=
 
 theorem IsCoprime.is_unit_of_dvd' {a b x : R} (h : IsCoprime a b) (ha : x ∣ a) (hb : x ∣ b) :
     IsUnit x :=
-  (h.of_coprime_of_dvd_left ha).is_unit_of_dvd hb
+  (h.of_isCoprime_of_dvd_left ha).is_unit_of_dvd hb
 #align is_coprime.is_unit_of_dvd' IsCoprime.is_unit_of_dvd'
 
 theorem IsCoprime.map (H : IsCoprime x y) {S : Type v} [CommSemiring S] (f : R →+* S) :
@@ -233,9 +233,9 @@ theorem isCoprime_group_smul_right : IsCoprime y (x • z) ↔ IsCoprime y z :=
   isCoprime_comm.trans <| (isCoprime_group_smul_left x z y).trans isCoprime_comm
 #align is_coprime_group_smul_right isCoprime_group_smul_right
 
-theorem is_coprime_group_smul : IsCoprime (x • y) (x • z) ↔ IsCoprime y z :=
+theorem isCoprime_group_smul : IsCoprime (x • y) (x • z) ↔ IsCoprime y z :=
   (isCoprime_group_smul_left x y (x • z)).trans (isCoprime_group_smul_right x y z)
-#align is_coprime_group_smul is_coprime_group_smul
+#align is_coprime_group_smul isCoprime_group_smul
 
 end ScalarTower
 
@@ -385,7 +385,7 @@ theorem sq_add_sq_ne_zero {R : Type _} [LinearOrderedCommRing R] {a b : R} (h : 
     (by rw [pow_two]; exact mul_self_nonneg _)).mp h'
   obtain rfl := pow_eq_zero ha
   obtain rfl := pow_eq_zero hb
-  exact not_coprime_zero_zero h
+  exact not_isCoprime_zero_zero h
 #align is_coprime.sq_add_sq_ne_zero IsCoprime.sq_add_sq_ne_zero
 
 end IsCoprime
