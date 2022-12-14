@@ -158,6 +158,7 @@ import Mathlib.Data.Int.Cast
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Int.Units
 import Mathlib.Data.KVMap
 import Mathlib.Data.LazyList
