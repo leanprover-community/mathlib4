@@ -182,7 +182,7 @@ protected theorem inj (f : α ≃. β) {a₁ a₂ : α} {b : β} (h₁ : b ∈ f
 #align pequiv.inj PEquiv.inj
 
 /-- If the domain of a `PEquiv` is `α` except a point, its forward direction is injective. -/
-theorem injective_of_forall_ne_is_some (f : α ≃. β) (a₂ : α)
+theorem injective_of_forall_ne_isSome (f : α ≃. β) (a₂ : α)
     (h : ∀ a₁ : α, a₁ ≠ a₂ → isSome (f a₁)) : Injective f :=
   HasLeftInverse.injective
     ⟨fun b => Option.recOn b a₂ fun b' => Option.recOn (f.symm b') a₂ id, fun x => by
@@ -475,7 +475,7 @@ namespace Equiv
 
 variable {α : Type _} {β : Type _} {γ : Type _}
 
-/-- Turns an `equiv` into a `PEquiv` of the whole type. -/
+/-- Turns an `Equiv` into a `PEquiv` of the whole type. -/
 def toPEquiv (f : α ≃ β) : α ≃. β where
   toFun := some ∘ f
   invFun := some ∘ f.symm
