@@ -114,6 +114,11 @@ private theorem gcd_abs_dvd_left {a b} : (Nat.gcd (Int.natAbs a) b : ℤ) ∣ a 
   Int.dvd_natAbs.1 <| Int.coe_nat_dvd.2 <| Nat.gcd_dvd_left (Int.natAbs a) b
 -- Porting note: no #align here as the declaration is private.
 
+lemma bar (b : ℕ) (hb : ¬b = 0) (a : ℤ)
+  (h : ∀ (h : ¬b = 0), mkPNat a ⟨b, b.pos_of_ne_zero hb⟩ = 0)  : False := by
+  simp only [hb] at h
+  sorry
+
 @[simp]
 theorem mkInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
   refine'
@@ -122,13 +127,19 @@ theorem mkInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
       simp⟩
   have : ∀ {a b}, mkPNat a b = 0 → a = 0 := by
     rintro a ⟨b, h⟩ e
+    simp [mkPNat, normalize] at e
     injection e with e
     apply Int.eq_mul_of_div_eq_right gcd_abs_dvd_left e
-  cases' b with b <;> simp only [mk, mkNat, Int.ofNat_eq_coe, dite_eq_left_iff] at h
-  · simp only [mt (congr_arg Int.ofNat) b0, not_false_iff, forall_true_left] at h
-    exact this h
+  cases' b with b <;> simp only [mkInt, mkNat, Int.ofNat_eq_coe, dite_eq_left_iff] at h
+  · have hb := mt (congr_arg Int.ofNat) b0
+    simp only [hb] at h -- This did *nothing* whereas it works in bar above
+    simp only [not_false_iff, forall_true_left] at h
+    apply this
+    apply h
+    exact mt (congr_arg Int.ofNat) b0
   · apply neg_injective
-    simp [this h]
+    exact this h
+
 #align rat.mk_eq_zero Rat.mkInt_eq_zero
 
 theorem mkInt_ne_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b ≠ 0 ↔ a ≠ 0 :=
