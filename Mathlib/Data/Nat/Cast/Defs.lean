@@ -29,18 +29,9 @@ protected def Nat.unaryCast {R : Type u} [One R] [Zero R] [Add R] : ℕ → R
   | n + 1 => Nat.unaryCast n + 1
 #align nat.unary_cast Nat.unaryCast
 
-/-- Type class for the canonical homomorphism `ℕ → R`. -/
-class NatCast (R : Type u) where
-  /-- The canonical map `ℕ → R`. -/
-  protected natCast : ℕ → R
 #align has_nat_cast NatCast
 #align has_nat_cast.nat_cast NatCast.natCast
 
-/-- Canonical homomorphism from `ℕ` to a additive monoid `R` with a `1`.
-This is just the bare function in order to aid in creating instances of `AddMonoidWithOne`. -/
-@[coe]
-protected def Nat.cast {R : Type u} [NatCast R] : ℕ → R :=
-  NatCast.natCast
 #align nat.cast Nat.cast
 
 -- see note [coercion into rings]

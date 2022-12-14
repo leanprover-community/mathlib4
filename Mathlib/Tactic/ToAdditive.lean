@@ -9,7 +9,12 @@ import Mathlib.Data.KVMap
 import Mathlib.Lean.Expr.ReplaceRec
 import Std.Lean.NameMapAttribute
 import Std.Data.Option.Basic
-import Std.Tactic.NormCast.Ext
+import Std.Tactic.NormCast.Ext -- just to copy the attribute
+import Std.Tactic.Ext.Attr -- just to copy the attribute
+import Mathlib.Tactic.Relation.Rfl -- just to copy the attribute
+import Mathlib.Tactic.Relation.Symm -- just to copy the attribute
+import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
+import Mathlib.Tactic.RunCmd -- not necessary, but useful for debugging
 
 /-!
 # The `@[to_additive]` attribute.
@@ -221,7 +226,7 @@ def findTranslation? (env : Environment) : Name → Option Name :=
 
 /-- Add a (multiplicative → additive) name translation to the translations map. -/
 def insertTranslation (src tgt : Name) : CoreM Unit := do
-  if let some tgt' := findTranslation? (←getEnv) src then
+  if let some tgt' := findTranslation? (← getEnv) src then
     throwError "The translation {src} ↦ {tgt'} already exists"
   modifyEnv (ToAdditive.translations.addEntry · (src, tgt))
   trace[to_additive] "Added translation {src} ↦ {tgt}"
@@ -285,7 +290,7 @@ We ignore all arguments specified by the `ignore` `NameMap`.
 If `replaceAll` is `true` the test always returns `true`.
 -/
 def additiveTest (e : Expr) : M Bool := do
-  if (←replaceAll) then
+  if ← replaceAll then
     return true
   else
     additiveTestAux false e
@@ -320,11 +325,11 @@ def applyReplacementFun : Expr → MetaM Expr :=
     match e with
     | .lit (.natVal 1) => pure <| mkRawNatLit 0
     | .const n₀ ls => do
-      let n₁ := n₀.mapPrefix (findTranslation? <|← getEnv)
+      let n₁ := n₀.mapPrefix <| findTranslation? <| ← getEnv
       if n₀ != n₁ then
         trace[to_additive_detail] "applyReplacementFun: {n₀} → {n₁}"
       let ls : List Level := if ← shouldReorder n₀ 1 then ls.swapFirstTwo else ls
-      return some $ Lean.mkConst n₁ ls
+      return some <| Lean.mkConst n₁ ls
     | .app g x => do
       let gf := g.getAppFn
       if let some nm := gf.constName? then
@@ -364,6 +369,12 @@ def applyReplacementFun : Expr → MetaM Expr :=
           trace[to_additive_detail] "applyReplacementFun: Do not change numeral {g.app x}"
           return some <| g.app x
       return e.updateApp! (← r g) (← r x)
+    | .proj n₀ idx e => do
+      let n₁ := n₀.mapPrefix <| findTranslation? <| ← getEnv
+      if n₀ != n₁ then
+        trace[to_additive_detail] "applyReplacementFun: in projection {e}.{idx} of type {n₀}, {""
+          }replace type with {n₁}"
+      return some <| .proj n₁ idx <| ← r e
     | _ => return none
 
 /-- Eta expands `e` at most `n` times.-/
@@ -374,7 +385,7 @@ def etaExpandN (n : Nat) (e : Expr): MetaM Expr := do
 `reorder`. They are expanded until they are applied to one more argument than the maximum in
 `reorder.find n`. -/
 def expand (e : Expr) : MetaM Expr := do
-  let e₂ ←e.replaceRecMeta $ fun r e ↦ do
+  let e₂ ← e.replaceRecMeta $ fun r e ↦ do
     let e0 := e.getAppFn
     let es := e.getAppArgs
     let some e0n := e0.constName? | return none
@@ -531,12 +542,31 @@ def copySimpAttribute (src tgt : Name) (ext : SimpExtension := simpExtension) : 
 [todo] it seems not to work when the `to_additive` is added as an attribute later. -/
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if (← isInstance src) then
-    let prio := (← getInstancePriority? src).elim 100 id
-    let attr_kind := (← getInstanceAttrKind? src).elim AttributeKind.global id
+    let prio := (← getInstancePriority? src).getD 100
+    let attr_kind := (← getInstanceAttrKind? src).getD .global
     trace[to_additive_detail] "Making {tgt} an instance with priority {prio}."
     addInstance tgt attr_kind prio |>.run'
 
-/-- [todo] add more attributes. -/
+/-- A hack to add an attribute to a declaration.
+  We use the `missing` for the syntax, so this only works for certain attributes.
+  It seems to work for `refl`, `symm`, `trans`, `ext` and `coe`.
+  This does not work for most attributes where the syntax has optional arguments.
+  TODO: have a proper implementation once we have the infrastructure for this. -/
+def hackyAddAttribute (attrName declName : Name) (kind : AttributeKind := .global) :
+  CoreM Unit := do
+  let .ok attr := getAttributeImpl (← getEnv) attrName
+    | throwError "unknown attribute {attrName}"
+  attr.add declName .missing kind
+
+/-- Copy an attribute that stores enough information to test whether a declaration is in it
+  in a hacky way.
+  TODO: have a proper implementation once we have the infrastructure for this. -/
+def hackyCopyAttr [Inhabited β] (attr : SimpleScopedEnvExtension α β) (f : β → Name → Bool)
+  (attrName src tgt : Name) : CoreM Unit := do
+  if f (attr.getState (← getEnv)) src then
+    hackyAddAttribute attrName tgt
+
+/-- Copy attributes to the additive name. -/
 def copyAttributes (src tgt : Name) : CoreM Unit := do
   -- Copy the standard `simp` attribute
   copySimpAttribute src tgt
@@ -545,7 +575,13 @@ def copyAttributes (src tgt : Name) : CoreM Unit := do
   copySimpAttribute src tgt normCastExt.up
   copySimpAttribute src tgt normCastExt.down
   copySimpAttribute src tgt normCastExt.squash
+  -- copy `instance`
   copyInstanceAttribute src tgt
+  hackyCopyAttr Std.Tactic.Ext.extExtension (·.elements.contains ·) `ext src tgt -- copy `@[ext]`
+  hackyCopyAttr Mathlib.Tactic.reflExt (·.elements.contains ·) `refl src tgt -- copy `@[refl]`
+  hackyCopyAttr Mathlib.Tactic.symmExt (·.elements.contains ·) `symm src tgt -- copy `@[symm]`
+  hackyCopyAttr Mathlib.Tactic.transExt (·.elements.contains ·) `trans src tgt -- copy `@[trans]`
+  hackyCopyAttr Std.Tactic.Coe.coeExt (·.contains ·) `coe src tgt -- copy `@[coe]`
 
 /--
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
@@ -712,6 +748,8 @@ def fixAbbreviation : List String → List String
 | "Smul"  :: s                      => "SMul" :: fixAbbreviation s
 | "HSmul" :: s                      => "HSMul" :: fixAbbreviation s
 | "hSmul" :: s                      => "hSMul" :: fixAbbreviation s
+| "neg" :: "Fun" :: s               => "invFun" :: fixAbbreviation s
+| "Neg" :: "Fun" :: s               => "InvFun" :: fixAbbreviation s
 | x :: s                            => x :: fixAbbreviation s
 | []                                => []
 
@@ -792,7 +830,7 @@ def addToAdditiveAttr (src : Name) (cfg : Config) : AttrM Unit :=
     trace[to_additive] "@[to_additive] will reorder the arguments of {tgt}."
     reorderAttr.add src cfg.reorder
     -- we allow using this attribute if it's only to add the reorder configuration
-    if findTranslation? (←getEnv) src |>.isSome then
+    if findTranslation? (← getEnv) src |>.isSome then
       return
   insertTranslation src tgt
   let firstMultArg ← MetaM.run' <| firstMultiplicativeArg src

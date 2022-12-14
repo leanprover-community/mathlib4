@@ -34,13 +34,14 @@ It may be possible to move some of these results here, by tweaking their proofs.
 
 universe u v
 
+namespace Nat
+
 /-! ### instances -/
 
-
-instance : Nontrivial ℕ :=
+instance nontrivial : Nontrivial ℕ :=
   ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
-instance : CommSemiring ℕ where
+instance commSemiring : CommSemiring ℕ where
   add := Nat.add
   add_assoc := Nat.add_assoc
   zero := Nat.zero
@@ -70,44 +71,44 @@ instance : CommSemiring ℕ where
 /-! Extra instances to short-circuit type class resolution and ensure computability -/
 
 
-instance : AddCommMonoid ℕ :=
+instance addCommMonoid : AddCommMonoid ℕ :=
   inferInstance
 
-instance : AddMonoid ℕ :=
+instance addMonoid : AddMonoid ℕ :=
   inferInstance
 
-instance : Monoid ℕ :=
+instance monoid : Monoid ℕ :=
   inferInstance
 
-instance : CommMonoid ℕ :=
+instance commMonoid : CommMonoid ℕ :=
   inferInstance
 
-instance : CommSemigroup ℕ :=
+instance commSemigroup : CommSemigroup ℕ :=
   inferInstance
 
-instance : Semigroup ℕ :=
+instance semigroup : Semigroup ℕ :=
   inferInstance
 
-instance : AddCommSemigroup ℕ :=
+instance addCommSemigroup : AddCommSemigroup ℕ :=
   inferInstance
 
-instance : AddSemigroup ℕ :=
+instance addSemigroup : AddSemigroup ℕ :=
   inferInstance
 
-instance : Distrib ℕ :=
+instance distrib : Distrib ℕ :=
   inferInstance
 
-instance : Semiring ℕ :=
+instance semiring : Semiring ℕ :=
   inferInstance
 
-protected theorem Nat.nsmul_eq_mul (m n : ℕ) : m • n = m * n :=
+protected theorem nsmul_eq_mul (m n : ℕ) : m • n = m * n :=
   rfl
 #align nat.nsmul_eq_mul Nat.nsmul_eq_mul
 
 -- Moved to core
 #align nat.eq_of_mul_eq_mul_right Nat.eq_of_mul_eq_mul_right
 
-instance Nat.cancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ :=
+instance cancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ :=
   { (inferInstance : CommMonoidWithZero ℕ) with
     mul_left_cancel_of_ne_zero :=
       fun {_ _ _} h1 h2 => Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h1) h2,
@@ -121,8 +122,6 @@ attribute [simp]
   -- Nat.bit1_ne_bit0
 
 variable {m n k : ℕ}
-
-namespace Nat
 
 /-!
 ### Recursion and `forall`/`exists`
