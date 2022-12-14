@@ -112,9 +112,9 @@ theorem ofDual_bihimp (a b : αᵒᵈ) : ofDual (a ⇔ b) = ofDual a ∆ ofDual 
 theorem symmDiff_comm : a ∆ b = b ∆ a := by simp only [symmDiff, sup_comm]
 #align symm_diff_comm symmDiff_comm
 
-instance symmDiff_is_comm : IsCommutative α (· ∆ ·) :=
+instance symmDiff_isCommutative : IsCommutative α (· ∆ ·) :=
   ⟨symmDiff_comm⟩
-#align symm_diff_is_comm symmDiff_is_comm
+#align symm_diff_is_comm symmDiff_isCommutative
 
 @[simp]
 theorem symmDiff_self : a ∆ a = ⊥ := by rw [symmDiff, sup_idem, sdiff_self]
