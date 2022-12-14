@@ -14,12 +14,12 @@ open Lean Meta Parser Elab Tactic
 /-- Renames a bound variable in a hypothesis. -/
 def renameBVarHyp (mvarId : MVarId) (fvarId : FVarId) (old new : Name) :
     MetaM Unit :=
-  modifyLocalDecl mvarId fvarId fun ldecl ↦
+  modifyLocalDecl mvarId fvarId fun ldecl =>
     ldecl.setType $ ldecl.type.renameBVar old new
 
 /-- Renames a bound variable in the target. -/
 def renameBVarTarget (mvarId : MVarId) (old new : Name) : MetaM Unit :=
-  modifyTarget mvarId fun e ↦ e.renameBVar old new
+  modifyTarget mvarId fun e => e.renameBVar old new
 
 /--
 * `rename_bvar old new` renames all bound variables named `old` to `new` in the target.
@@ -41,6 +41,6 @@ elab "rename_bvar " old:ident " → " new:ident loc?:(ppSpace location)? : tacti
   | none => renameBVarTarget mvarId old.getId new.getId
   | some loc =>
     withLocation (expandLocation loc)
-      (fun fvarId ↦ renameBVarHyp mvarId fvarId old.getId new.getId)
+      (fun fvarId => renameBVarHyp mvarId fvarId old.getId new.getId)
       (renameBVarTarget mvarId old.getId new.getId)
-      fun _ ↦ throwError "unexpected location syntax"
+      fun _ => throwError "unexpected location syntax"

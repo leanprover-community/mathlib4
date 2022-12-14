@@ -30,7 +30,7 @@ theorem NeZero.ne' {R} [Zero R] (n : R) [h : NeZero n] : 0 ≠ n :=
   h.out.symm
 
 theorem neZero_iff {R : Type _} [Zero R] {n : R} : NeZero n ↔ n ≠ 0 :=
-  ⟨fun h ↦ h.out, NeZero.mk⟩
+  ⟨fun h => h.out, NeZero.mk⟩
 #align ne_zero_iff neZero_iff
 
 theorem not_neZero {R : Type _} [Zero R] {n : R} : ¬NeZero n ↔ n = 0 := by simp [neZero_iff]

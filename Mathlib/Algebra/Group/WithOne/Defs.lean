@@ -386,12 +386,12 @@ instance divisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) :=
       | none, some b => rfl
       | some a, none => rfl
       | some a, some b => congr_arg some <| mul_inv_rev _ _,
-    inv_eq_of_mul := fun a b ↦
+    inv_eq_of_mul := fun a b =>
       match a, b with
-      | none, none => fun _ ↦ rfl
-      | none, some b => fun _ ↦ by contradiction
-      | some a, none => fun _ ↦ by contradiction
-      | some a, some b => fun h ↦
+      | none, none => fun _ => rfl
+      | none, some b => fun _ => by contradiction
+      | some a, none => fun _ => by contradiction
+      | some a, some b => fun h =>
         congr_arg some <| inv_eq_of_mul_eq_one_right <| Option.some_injective _ h }
 
 instance divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (WithZero α) :=
@@ -407,7 +407,7 @@ variable [Group α]
 instance groupWithZero : GroupWithZero (WithZero α) :=
   { WithZero.monoidWithZero, WithZero.divInvMonoid, WithZero.nontrivial with
     inv_zero := inv_zero,
-    mul_inv_cancel := fun a _ ↦
+    mul_inv_cancel := fun a _ =>
     match a with
     | Option.none => by contradiction
     | (x : α) => by

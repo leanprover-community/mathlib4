@@ -88,7 +88,7 @@ variable [PartialOrder α] {a b : α}
 theorem ge_antisymm : a ≤ b → b ≤ a → b = a :=
   flip le_antisymm
 
-theorem lt_of_le_of_ne' : a ≤ b → b ≠ a → a < b := fun h₁ h₂ ↦ lt_of_le_of_ne h₁ h₂.symm
+theorem lt_of_le_of_ne' : a ≤ b → b ≠ a → a < b := fun h₁ h₂ => lt_of_le_of_ne h₁ h₂.symm
 
 theorem Ne.lt_of_le : a ≠ b → a ≤ b → a < b :=
   flip lt_of_le_of_ne
@@ -207,7 +207,7 @@ almost exclusively in mathlib. -/
 protected theorem ge (h : x = y) : y ≤ x :=
   h.symm.le
 
-theorem not_lt (h : x = y) : ¬x < y := fun h' ↦ h'.ne h
+theorem not_lt (h : x = y) : ¬x < y := fun h' => h'.ne h
 
 theorem not_gt (h : x = y) : ¬y < x :=
   h.symm.not_lt
@@ -222,24 +222,24 @@ protected theorem ge [LE α] {x y : α} (h : x ≤ y) : y ≥ x :=
 section partial_order
 variable [PartialOrder α] {a b : α}
 
-lemma lt_iff_ne (h : a ≤ b) : a < b ↔ a ≠ b := ⟨fun h ↦ h.ne, h.lt_of_ne⟩
-lemma gt_iff_ne (h : a ≤ b) : a < b ↔ b ≠ a := ⟨fun h ↦ h.ne.symm, h.lt_of_ne'⟩
+lemma lt_iff_ne (h : a ≤ b) : a < b ↔ a ≠ b := ⟨fun h => h.ne, h.lt_of_ne⟩
+lemma gt_iff_ne (h : a ≤ b) : a < b ↔ b ≠ a := ⟨fun h => h.ne.symm, h.lt_of_ne'⟩
 lemma not_lt_iff_eq (h : a ≤ b) : ¬ a < b ↔ a = b := h.lt_iff_ne.not_left
 lemma not_gt_iff_eq (h : a ≤ b) : ¬ a < b ↔ b = a := h.gt_iff_ne.not_left
 
-lemma le_iff_eq (h : a ≤ b) : b ≤ a ↔ b = a := ⟨fun h' ↦ h'.antisymm h, Eq.le⟩
+lemma le_iff_eq (h : a ≤ b) : b ≤ a ↔ b = a := ⟨fun h' => h'.antisymm h, Eq.le⟩
 lemma ge_iff_eq (h : a ≤ b) : b ≤ a ↔ a = b := ⟨h.antisymm, Eq.ge⟩
 
 end partial_order
 
 theorem lt_or_le [LinearOrder α] {a b : α} (h : a ≤ b) (c : α) : a < c ∨ c ≤ b :=
-  ((lt_or_ge a c).imp id) fun hc ↦ le_trans hc h
+  ((lt_or_ge a c).imp id) fun hc => le_trans hc h
 
 theorem le_or_lt [LinearOrder α] {a b : α} (h : a ≤ b) (c : α) : a ≤ c ∨ c < b :=
-  ((le_or_gt a c).imp id) fun hc ↦ lt_of_lt_of_le hc h
+  ((le_or_gt a c).imp id) fun hc => lt_of_lt_of_le hc h
 
 theorem le_or_le [LinearOrder α] {a b : α} (h : a ≤ b) (c : α) : a ≤ c ∨ c ≤ b :=
-  (h.le_or_lt c).elim Or.inl fun h ↦ Or.inr <| le_of_lt h
+  (h.le_or_lt c).elim Or.inl fun h => Or.inr <| le_of_lt h
 
 end LE.le
 
@@ -255,7 +255,7 @@ theorem ne' [Preorder α] {x y : α} (h : x < y) : y ≠ x :=
   h.ne.symm
 
 theorem lt_or_lt [LinearOrder α] {x y : α} (h : x < y) (z : α) : x < z ∨ z < y :=
-  (lt_or_ge z y).elim Or.inr fun hz ↦ Or.inl <| h.trans_le hz
+  (lt_or_ge z y).elim Or.inr fun hz => Or.inl <| h.trans_le hz
 
 end LT.lt
 
@@ -279,11 +279,11 @@ theorem not_le_of_lt [Preorder α] {a b : α} (h : a < b) : ¬b ≤ a :=
 
 alias not_le_of_lt ← LT.lt.not_le
 
-theorem not_lt_of_le [Preorder α] {a b : α} (h : a ≤ b) : ¬b < a := fun hba ↦ hba.not_le h
+theorem not_lt_of_le [Preorder α] {a b : α} (h : a ≤ b) : ¬b < a := fun hba => hba.not_le h
 
 alias not_lt_of_le ← LE.le.not_lt
 
-theorem ne_of_not_le [Preorder α] {a b : α} (h : ¬a ≤ b) : a ≠ b := fun hab ↦ h (le_of_eq hab)
+theorem ne_of_not_le [Preorder α] {a b : α} (h : ¬a ≤ b) : a ≠ b := fun hab => h (le_of_eq hab)
 
 -- See Note [decidable namespace]
 protected theorem Decidable.le_iff_eq_or_lt [PartialOrder α] [@DecidableRel α (· ≤ ·)] {a b : α} :
@@ -294,13 +294,13 @@ theorem le_iff_eq_or_lt [PartialOrder α] {a b : α} : a ≤ b ↔ a = b ∨ a <
   le_iff_lt_or_eq.trans or_comm
 
 theorem lt_iff_le_and_ne [PartialOrder α] {a b : α} : a < b ↔ a ≤ b ∧ a ≠ b :=
-  ⟨fun h ↦ ⟨le_of_lt h, ne_of_lt h⟩, fun ⟨h1, h2⟩ ↦ h1.lt_of_ne h2⟩
+  ⟨fun h => ⟨le_of_lt h, ne_of_lt h⟩, fun ⟨h1, h2⟩ => h1.lt_of_ne h2⟩
 
 -- See Note [decidable namespace]
 protected theorem Decidable.eq_iff_le_not_lt [PartialOrder α] [@DecidableRel α (· ≤ ·)] {a b : α} :
     a = b ↔ a ≤ b ∧ ¬a < b :=
-  ⟨fun h ↦ ⟨h.le, h ▸ lt_irrefl _⟩, fun ⟨h₁, h₂⟩ ↦
-    h₁.antisymm <| Decidable.by_contradiction fun h₃ ↦ h₂ (h₁.lt_of_not_le h₃)⟩
+  ⟨fun h => ⟨h.le, h ▸ lt_irrefl _⟩, fun ⟨h₁, h₂⟩ =>
+    h₁.antisymm <| Decidable.by_contradiction fun h₃ => h₂ (h₁.lt_of_not_le h₃)⟩
 
 theorem eq_iff_le_not_lt [PartialOrder α] {a b : α} : a = b ↔ a ≤ b ∧ ¬a < b :=
   haveI := Classical.dec
@@ -332,14 +332,14 @@ alias eq_of_le_of_not_lt ← LE.le.eq_of_not_lt
 alias eq_of_ge_of_not_gt ← LE.le.eq_of_not_gt
 
 theorem Ne.le_iff_lt [PartialOrder α] {a b : α} (h : a ≠ b) : a ≤ b ↔ a < b :=
-  ⟨fun h' ↦ lt_of_le_of_ne h' h, fun h ↦ h.le⟩
+  ⟨fun h' => lt_of_le_of_ne h' h, fun h => h.le⟩
 
 theorem Ne.not_le_or_not_le [PartialOrder α] {a b : α} (h : a ≠ b) : ¬a ≤ b ∨ ¬b ≤ a :=
   not_and_or.1 <| le_antisymm_iff.not.1 h
 
 protected theorem Decidable.ne_iff_lt_iff_le [PartialOrder α] [DecidableEq α] {a b : α} :
     (a ≠ b ↔ a < b) ↔ a ≤ b :=
-  ⟨fun h ↦ Decidable.byCases le_of_eq (le_of_lt ∘ h.mp), fun h ↦ ⟨lt_of_le_of_ne h, ne_of_lt⟩⟩
+  ⟨fun h => Decidable.byCases le_of_eq (le_of_lt ∘ h.mp), fun h => ⟨lt_of_le_of_ne h, ne_of_lt⟩⟩
 
 @[simp]
 theorem ne_iff_lt_iff_le [PartialOrder α] {a b : α} : (a ≠ b ↔ a < b) ↔ a ≤ b :=
@@ -370,7 +370,7 @@ theorem exists_ge_of_linear [LinearOrder α] (a b : α) : ∃ c, a ≤ c ∧ b �
 
 theorem lt_imp_lt_of_le_imp_le {β} [LinearOrder α] [Preorder β] {a b : α} {c d : β}
     (H : a ≤ b → c ≤ d) (h : d < c) : b < a :=
-  lt_of_not_le fun h' ↦ (H h').not_lt h
+  lt_of_not_le fun h' => (H h').not_lt h
 
 theorem le_imp_le_iff_lt_imp_lt {β} [LinearOrder α] [LinearOrder β] {a b : α} {c d : β} :
     a ≤ b → c ≤ d ↔ d < c → b < a :=
@@ -386,7 +386,7 @@ theorem lt_iff_lt_of_le_iff_le {β} [LinearOrder α] [LinearOrder β] {a b : α}
 
 theorem le_iff_le_iff_lt_iff_lt {β} [LinearOrder α] [LinearOrder β] {a b : α} {c d : β} :
     (a ≤ b ↔ c ≤ d) ↔ (b < a ↔ d < c) :=
-  ⟨lt_iff_lt_of_le_iff_le, fun H ↦ not_lt.symm.trans <| (not_congr H).trans <| not_lt⟩
+  ⟨lt_iff_lt_of_le_iff_le, fun H => not_lt.symm.trans <| (not_congr H).trans <| not_lt⟩
 
 theorem eq_of_forall_le_iff [PartialOrder α] {a b : α} (H : ∀ c, c ≤ a ↔ c ≤ b) : a = b :=
   ((H _).1 le_rfl).antisymm ((H _).2 le_rfl)
@@ -398,39 +398,39 @@ theorem le_of_forall_le' [Preorder α] {a b : α} (H : ∀ c, a ≤ c → b ≤ 
   H _ le_rfl
 
 theorem le_of_forall_lt [LinearOrder α] {a b : α} (H : ∀ c, c < a → c < b) : a ≤ b :=
-  le_of_not_lt fun h ↦ lt_irrefl _ (H _ h)
+  le_of_not_lt fun h => lt_irrefl _ (H _ h)
 
 theorem forall_lt_iff_le [LinearOrder α] {a b : α} : (∀ ⦃c⦄, c < a → c < b) ↔ a ≤ b :=
-  ⟨le_of_forall_lt, fun h _ hca ↦ lt_of_lt_of_le hca h⟩
+  ⟨le_of_forall_lt, fun h _ hca => lt_of_lt_of_le hca h⟩
 
 theorem le_of_forall_lt' [LinearOrder α] {a b : α} (H : ∀ c, a < c → b < c) : b ≤ a :=
-  le_of_not_lt fun h ↦ lt_irrefl _ (H _ h)
+  le_of_not_lt fun h => lt_irrefl _ (H _ h)
 
 theorem forall_lt_iff_le' [LinearOrder α] {a b : α} : (∀ ⦃c⦄, a < c → b < c) ↔ b ≤ a :=
-  ⟨le_of_forall_lt', fun h _ hac ↦ lt_of_le_of_lt h hac⟩
+  ⟨le_of_forall_lt', fun h _ hac => lt_of_le_of_lt h hac⟩
 
 theorem eq_of_forall_ge_iff [PartialOrder α] {a b : α} (H : ∀ c, a ≤ c ↔ b ≤ c) : a = b :=
   ((H _).2 le_rfl).antisymm ((H _).1 le_rfl)
 
 theorem eq_of_forall_lt_iff [LinearOrder α] {a b : α} (h : ∀ c, c < a ↔ c < b) : a = b :=
-  (le_of_forall_lt fun _ ↦ (h _).1).antisymm <| le_of_forall_lt fun _ ↦ (h _).2
+  (le_of_forall_lt fun _ => (h _).1).antisymm <| le_of_forall_lt fun _ => (h _).2
 
 theorem eq_of_forall_gt_iff [LinearOrder α] {a b : α} (h : ∀ c, a < c ↔ b < c) : a = b :=
-  (le_of_forall_lt' fun _ ↦ (h _).2).antisymm <| le_of_forall_lt' fun _ ↦ (h _).1
+  (le_of_forall_lt' fun _ => (h _).2).antisymm <| le_of_forall_lt' fun _ => (h _).1
 
 /-- A symmetric relation implies two values are equal, when it implies they're less-equal.  -/
 theorem rel_imp_eq_of_rel_imp_le [PartialOrder β] (r : α → α → Prop) [IsSymm α r] {f : α → β}
-    (h : ∀ a b, r a b → f a ≤ f b) {a b : α} : r a b → f a = f b := fun hab ↦
+    (h : ∀ a b, r a b → f a ≤ f b) {a b : α} : r a b → f a = f b := fun hab =>
   le_antisymm (h a b hab) (h b a <| symm hab)
 
 /-- monotonicity of `≤` with respect to `→` -/
 theorem le_implies_le_of_le_of_le {a b c d : α} [Preorder α] (hca : c ≤ a) (hbd : b ≤ d) :
     a ≤ b → c ≤ d :=
-  fun hab ↦ (hca.trans hab).trans hbd
+  fun hab => (hca.trans hab).trans hbd
 
 @[ext]
 theorem Preorder.toLE_injective {α : Type _} : Function.Injective (@Preorder.toLE α) :=
-  fun A B h ↦ match A, B with
+  fun A B h => match A, B with
   | { lt := A_lt, lt_iff_le_not_le := A_iff, .. },
     { lt := B_lt, lt_iff_le_not_le := B_iff, .. } => by
     cases h
@@ -445,7 +445,7 @@ theorem Preorder.toLE_injective {α : Type _} : Function.Injective (@Preorder.to
 @[ext]
 theorem PartialOrder.toPreorder_injective {α : Type _} :
     Function.Injective (@PartialOrder.toPreorder α) :=
-  fun A B h ↦ by
+  fun A B h => by
   cases A
   cases B
   cases h
@@ -455,7 +455,7 @@ theorem PartialOrder.toPreorder_injective {α : Type _} :
 @[ext]
 theorem LinearOrder.toPartialOrder_injective {α : Type _} :
     Function.Injective (@LinearOrder.toPartialOrder α) :=
-  fun A B h ↦ match A, B with
+  fun A B h => match A, B with
   | { le := A_le, lt := A_lt, decidable_le := A_decidable_le,
       min := A_min, max := A_max, min_def := A_min_def, max_def := A_max_def, .. },
     { le := B_le, lt := B_lt, decidable_le := B_decidable_le,
@@ -501,7 +501,7 @@ infixl:80 " ⁻¹'o " => Order.Preimage
 /-- The preimage of a decidable order is decidable. -/
 instance Order.Preimage.decidable {α β} (f : α → β) (s : β → β → Prop) [H : DecidableRel s] :
     DecidableRel (f ⁻¹'o s) :=
-  fun _ _ ↦ H _ _
+  fun _ _ => H _ _
 
 /-! ### Order dual -/
 
@@ -529,21 +529,21 @@ instance (α : Type _) [LT α] : LT αᵒᵈ :=
   ⟨fun a b => @LT.lt α _ b a⟩
 
 instance (α : Type _) [Preorder α] : Preorder αᵒᵈ where
-  le_refl := fun _ ↦ le_refl _
-  le_trans := fun _ _ _ hab hbc ↦ hbc.trans hab
-  lt_iff_le_not_le := fun _ _ ↦ lt_iff_le_not_le
+  le_refl := fun _ => le_refl _
+  le_trans := fun _ _ _ hab hbc => hbc.trans hab
+  lt_iff_le_not_le := fun _ _ => lt_iff_le_not_le
 
 instance (α : Type _) [PartialOrder α] : PartialOrder αᵒᵈ where
   __ := inferInstanceAs (Preorder αᵒᵈ)
-  le_antisymm := fun a b hab hba ↦ @le_antisymm α _ a b hba hab
+  le_antisymm := fun a b hab hba => @le_antisymm α _ a b hba hab
 
 instance (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
   le_total     := λ a b : α => le_total b a
-  max := fun a b ↦ (min a b : α)
-  min := fun a b ↦ (max a b : α)
-  min_def := fun a b ↦ show (max .. : α) = _ by rw [max_comm, max_def]; rfl
-  max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
+  max := fun a b => (min a b : α)
+  min := fun a b => (max a b : α)
+  min_def := fun a b => show (max .. : α) = _ by rw [max_comm, max_def]; rfl
+  max_def := fun a b => show (min .. : α) = _ by rw [min_comm, min_def]; rfl
   decidable_le := (inferInstance : DecidableRel (λ a b : α => b ≤ a))
   decidable_lt := (inferInstance : DecidableRel (λ a b : α => b < a))
 #align order_dual.linear_order OrderDual.instLinearOrderOrderDual
@@ -552,14 +552,14 @@ instance : ∀ [Inhabited α], Inhabited αᵒᵈ := λ [x: Inhabited α] => x
 
 
 theorem Preorder.dual_dual (α : Type _) [H : Preorder α] : instPreorderOrderDual αᵒᵈ = H :=
-  Preorder.ext fun _ _ ↦ Iff.rfl
+  Preorder.ext fun _ _ => Iff.rfl
 
 theorem partialOrder.dual_dual (α : Type _) [H : PartialOrder α] :
     instPartialOrderOrderDual αᵒᵈ = H :=
-  PartialOrder.ext fun _ _ ↦ Iff.rfl
+  PartialOrder.ext fun _ _ => Iff.rfl
 
 theorem linearOrder.dual_dual (α : Type _) [H : LinearOrder α] : instLinearOrderOrderDual αᵒᵈ = H :=
-  LinearOrder.ext fun _ _ ↦ Iff.rfl
+  LinearOrder.ext fun _ _ => Iff.rfl
 
 end OrderDual
 
@@ -581,10 +581,10 @@ instance : HasCompl Prop :=
   ⟨Not⟩
 
 instance {ι : Type u} {α : ι → Type v} [∀ i, HasCompl (α i)] : HasCompl (∀ i, α i) :=
-  ⟨fun x i ↦ x iᶜ⟩
+  ⟨fun x i => x iᶜ⟩
 
 theorem Pi.compl_def {ι : Type u} {α : ι → Type v} [∀ i, HasCompl (α i)] (x : ∀ i, α i) :
-    xᶜ = fun i ↦ x iᶜ :=
+    xᶜ = fun i => x iᶜ :=
   rfl
 
 @[simp]
@@ -596,7 +596,7 @@ instance (r) [IsIrrefl α r] : IsRefl α (rᶜ) :=
   ⟨@irrefl α r _⟩
 
 instance (r) [IsRefl α r] : IsIrrefl α (rᶜ) :=
-  ⟨fun a ↦ not_not_intro (refl a)⟩
+  ⟨fun a => not_not_intro (refl a)⟩
 
 /-! ### Order instances on the function space -/
 
@@ -610,8 +610,8 @@ theorem Pi.le_def {ι : Type u} {α : ι → Type v} [∀ i, LE (α i)] {x y : �
 
 instance {ι : Type u} {α : ι → Type v} [∀ i, Preorder (α i)] : Preorder (∀ i, α i) where
   __ := inferInstanceAs (LE (∀ i, α i))
-  le_refl := fun a i ↦ le_refl (a i)
-  le_trans := fun a b c h₁ h₂ i ↦ le_trans (h₁ i) (h₂ i)
+  le_refl := fun a i => le_refl (a i)
+  le_trans := fun a b c h₁ h₂ i => le_trans (h₁ i) (h₂ i)
 
 theorem Pi.lt_def {ι : Type u} {α : ι → Type v} [∀ i, Preorder (α i)] {x y : ∀ i, α i} :
     x < y ↔ x ≤ y ∧ ∃ i, x i < y i := by
@@ -620,12 +620,12 @@ theorem Pi.lt_def {ι : Type u} {α : ι → Type v} [∀ i, Preorder (α i)] {x
 theorem le_update_iff {ι : Type u} {α : ι → Type v} [∀ i, Preorder (α i)] [DecidableEq ι]
     {x y : ∀ i, α i} {i : ι} {a : α i} :
     x ≤ Function.update y i a ↔ x i ≤ a ∧ ∀ (j) (_ : j ≠ i), x j ≤ y j :=
-  Function.forall_update_iff _ fun j z ↦ x j ≤ z
+  Function.forall_update_iff _ fun j z => x j ≤ z
 
 theorem update_le_iff {ι : Type u} {α : ι → Type v} [∀ i, Preorder (α i)] [DecidableEq ι]
     {x y : ∀ i, α i} {i : ι} {a : α i} :
     Function.update x i a ≤ y ↔ a ≤ y i ∧ ∀ (j) (_ : j ≠ i), x j ≤ y j :=
-  Function.forall_update_iff _ fun j z ↦ z ≤ y j
+  Function.forall_update_iff _ fun j z => z ≤ y j
 
 theorem update_le_update_iff {ι : Type u} {α : ι → Type v} [∀ i, Preorder (α i)] [DecidableEq ι]
     {x y : ∀ i, α i} {i : ι} {a b : α i} :
@@ -635,13 +635,13 @@ theorem update_le_update_iff {ι : Type u} {α : ι → Type v} [∀ i, Preorder
 instance {ι : Type u} {α : ι → Type v} [∀ i, PartialOrder (α i)] :
     PartialOrder (∀ i, α i) where
   __ := inferInstanceAs (Preorder (∀ i, α i))
-  le_antisymm := fun _ _ h1 h2 ↦ funext fun b ↦ (h1 b).antisymm (h2 b)
+  le_antisymm := fun _ _ h1 h2 => funext fun b => (h1 b).antisymm (h2 b)
 
 instance Pi.sdiff {ι : Type u} {α : ι → Type v} [∀ i, SDiff (α i)] : SDiff (∀ i, α i) :=
-  ⟨fun x y i ↦ x i \ y i⟩
+  ⟨fun x y i => x i \ y i⟩
 
 theorem Pi.sdiff_def {ι : Type u} {α : ι → Type v} [∀ i, SDiff (α i)] (x y : ∀ i, α i) :
-    x \ y = fun i ↦ x i \ y i :=
+    x \ y = fun i => x i \ y i :=
   rfl
 
 @[simp]
@@ -666,17 +666,17 @@ section MinMaxRec
 variable [LinearOrder α] {p : α → Prop} {x y : α}
 
 theorem min_rec (hx : x ≤ y → p x) (hy : y ≤ x → p y) : p (min x y) :=
-  (le_total x y).rec (fun h ↦ (min_eq_left h).symm.subst (hx h))
-    fun h ↦ (min_eq_right h).symm.subst (hy h)
+  (le_total x y).rec (fun h => (min_eq_left h).symm.subst (hx h))
+    fun h => (min_eq_right h).symm.subst (hy h)
 
 theorem max_rec (hx : y ≤ x → p x) (hy : x ≤ y → p y) : p (max x y) :=
   @min_rec αᵒᵈ _ _ _ _ hx hy
 
 theorem min_rec' (p : α → Prop) (hx : p x) (hy : p y) : p (min x y) :=
-  min_rec (fun _ ↦ hx) fun _ ↦ hy
+  min_rec (fun _ => hx) fun _ => hy
 
 theorem max_rec' (p : α → Prop) (hx : p x) (hy : p y) : p (max x y) :=
-  max_rec (fun _ ↦ hx) fun _ ↦ hy
+  max_rec (fun _ => hx) fun _ => hy
 
 theorem min_def' (x y : α) : min x y = if x < y then x else y := by
   rw [min_comm, min_def, ← ite_not]
@@ -726,7 +726,7 @@ def Preorder.lift {α β} [Preorder β] (f : α → β) : Preorder α where
 function `f : α → β`. See note [reducible non-instances]. -/
 @[reducible]
 def PartialOrder.lift {α β} [PartialOrder β] (f : α → β) (inj : Injective f) : PartialOrder α :=
-  { Preorder.lift f with le_antisymm := fun _ _ h₁ h₂ ↦ inj (h₁.antisymm h₂) }
+  { Preorder.lift f with le_antisymm := fun _ _ h₁ h₂ => inj (h₁.antisymm h₂) }
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version takes `[HasSup α]` and `[HasInf α]` as arguments, then uses
@@ -737,10 +737,10 @@ def LinearOrder.lift {α β} [LinearOrder β] [HasSup α] [HasInf α] (f : α �
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrder α :=
   { PartialOrder.lift f inj with
-      le_total := fun x y ↦ le_total (f x) (f y)
-      decidable_le := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
-      decidable_lt := fun x y ↦ (inferInstance : Decidable (f x < f y))
-      decidable_eq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff,
+      le_total := fun x y => le_total (f x) (f y)
+      decidable_le := fun x y => (inferInstance : Decidable (f x ≤ f y))
+      decidable_lt := fun x y => (inferInstance : Decidable (f x < f y))
+      decidable_eq := fun x y => decidable_of_iff (f x = f y) inj.eq_iff,
       min := (· ⊓ ·), max := (· ⊔ ·),
       min_def := by
         intros x y
@@ -774,10 +774,10 @@ def LinearOrder.lift' {α β} [LinearOrder β] (f : α → β) (inj : Injective 
 namespace Subtype
 
 instance le [LE α] {p : α → Prop} : LE (Subtype p) :=
-  ⟨fun x y ↦ (x : α) ≤ y⟩
+  ⟨fun x y => (x : α) ≤ y⟩
 
 instance lt [LT α] {p : α → Prop} : LT (Subtype p) :=
-  ⟨fun x y ↦ (x : α) < y⟩
+  ⟨fun x y => (x : α) < y⟩
 
 @[simp]
 theorem mk_le_mk [LE α] {p : α → Prop} {x y : α} {hx : p x} {hy : p y} :
@@ -800,26 +800,26 @@ theorem coe_lt_coe [LT α] {p : α → Prop} {x y : Subtype p} : (x : α) < y �
   Iff.rfl
 
 instance preorder [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
-  Preorder.lift (fun (a : Subtype p) ↦ (a : α))
+  Preorder.lift (fun (a : Subtype p) => (a : α))
 
 instance partialOrder [PartialOrder α] (p : α → Prop) : PartialOrder (Subtype p) :=
-  PartialOrder.lift (fun (a : Subtype p) ↦ (a : α)) Subtype.coe_injective
+  PartialOrder.lift (fun (a : Subtype p) => (a : α)) Subtype.coe_injective
 
 instance decidableLE [Preorder α] [h : @DecidableRel α (· ≤ ·)] {p : α → Prop} :
     @DecidableRel (Subtype p) (· ≤ ·) :=
-  fun a b ↦ h a b
+  fun a b => h a b
 
 instance decidableLT [Preorder α] [h : @DecidableRel α (· < ·)] {p : α → Prop} :
     @DecidableRel (Subtype p) (· < ·) :=
-  fun a b ↦ h a b
+  fun a b => h a b
 
 /-- A subtype of a linear order is a linear order. We explicitly give the proofs of decidable
 equality and decidable order in order to ensure the decidability instances are all definitionally
 equal. -/
 instance linearOrder [LinearOrder α] (p : α → Prop) : LinearOrder (Subtype p) :=
-  @LinearOrder.lift (Subtype p) _ _ ⟨fun x y ↦ ⟨max x y, max_rec' _ x.2 y.2⟩⟩
-    ⟨fun x y ↦ ⟨min x y, min_rec' _ x.2 y.2⟩⟩ (fun (a : Subtype p) ↦ (a : α))
-    Subtype.coe_injective (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+  @LinearOrder.lift (Subtype p) _ _ ⟨fun x y => ⟨max x y, max_rec' _ x.2 y.2⟩⟩
+    ⟨fun x y => ⟨min x y, min_rec' _ x.2 y.2⟩⟩ (fun (a : Subtype p) => (a : α))
+    Subtype.coe_injective (fun _ _ => rfl) fun _ _ => rfl
 
 end Subtype
 
@@ -834,7 +834,7 @@ type synonym `α ×ₗ β = α × β`.
 namespace Prod
 
 instance (α : Type u) (β : Type v) [LE α] [LE β] : LE (α × β) :=
-  ⟨fun p q ↦ p.1 ≤ q.1 ∧ p.2 ≤ q.2⟩
+  ⟨fun p q => p.1 ≤ q.1 ∧ p.2 ≤ q.2⟩
 
 theorem le_def [LE α] [LE β] {x y : α × β} : x ≤ y ↔ x.1 ≤ y.1 ∧ x.2 ≤ y.2 :=
   Iff.rfl
@@ -853,8 +853,8 @@ variable [Preorder α] [Preorder β] {a a₁ a₂ : α} {b b₁ b₂ : β} {x y 
 
 instance (α : Type u) (β : Type v) [Preorder α] [Preorder β] : Preorder (α × β) where
   __ := inferInstanceAs (LE (α × β))
-  le_refl := fun ⟨a, b⟩ ↦ ⟨le_refl a, le_refl b⟩
-  le_trans := fun ⟨a, b⟩ ⟨c, d⟩ ⟨e, f⟩ ⟨hac, hbd⟩ ⟨hce, hdf⟩ ↦ ⟨le_trans hac hce, le_trans hbd hdf⟩
+  le_refl := fun ⟨a, b⟩ => ⟨le_refl a, le_refl b⟩
+  le_trans := fun ⟨a, b⟩ ⟨c, d⟩ ⟨e, f⟩ ⟨hac, hbd⟩ ⟨hce, hdf⟩ => ⟨le_trans hac hce, le_trans hbd hdf⟩
 
 @[simp]
 theorem swap_lt_swap : x.swap < y.swap ↔ x < y :=
@@ -873,13 +873,13 @@ theorem mk_lt_mk_iff_right : (a, b₁) < (a, b₂) ↔ b₁ < b₂ :=
   lt_iff_lt_of_le_iff_le' mk_le_mk_iff_right mk_le_mk_iff_right
 
 theorem lt_iff : x < y ↔ x.1 < y.1 ∧ x.2 ≤ y.2 ∨ x.1 ≤ y.1 ∧ x.2 < y.2 := by
-  refine' ⟨fun h ↦ _, _⟩
+  refine' ⟨fun h => _, _⟩
   · by_cases h₁:y.1 ≤ x.1
-    · refine Or.inr ⟨h.1.1, LE.le.lt_of_not_le h.1.2 fun h₂ ↦ h.2 ⟨h₁, h₂⟩⟩
+    · refine Or.inr ⟨h.1.1, LE.le.lt_of_not_le h.1.2 fun h₂ => h.2 ⟨h₁, h₂⟩⟩
     · exact Or.inl ⟨LE.le.lt_of_not_le h.1.1 h₁, h.1.2⟩
   · rintro (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩)
-    · exact ⟨⟨h₁.le, h₂⟩, fun h ↦ h₁.not_le h.1⟩
-    · exact ⟨⟨h₁, h₂.le⟩, fun h ↦ h₂.not_le h.2⟩
+    · exact ⟨⟨h₁.le, h₂⟩, fun h => h₁.not_le h.1⟩
+    · exact ⟨⟨h₁, h₂.le⟩, fun h => h₂.not_le h.2⟩
 
 @[simp]
 theorem mk_lt_mk : (a₁, b₁) < (a₂, b₂) ↔ a₁ < a₂ ∧ b₁ ≤ b₂ ∨ a₁ ≤ a₂ ∧ b₁ < b₂ :=
@@ -892,7 +892,7 @@ end Preorder
     available via the type synonym `α ×ₗ β = α × β`.) -/
 instance (α : Type u) (β : Type v) [PartialOrder α] [PartialOrder β] : PartialOrder (α × β) where
   __ := inferInstanceAs (Preorder (α × β))
-  le_antisymm := fun _ _ ⟨hac, hbd⟩ ⟨hca, hdb⟩ ↦ Prod.ext (hac.antisymm hca) (hbd.antisymm hdb)
+  le_antisymm := fun _ _ ⟨hac, hbd⟩ ⟨hca, hdb⟩ => Prod.ext (hac.antisymm hca) (hbd.antisymm hdb)
 
 end Prod
 
@@ -908,11 +908,11 @@ theorem exists_between [LT α] [DenselyOrdered α] : ∀ {a₁ a₂ : α}, a₁ 
   DenselyOrdered.dense _ _
 
 instance (α : Type u) [LT α] [h : DenselyOrdered α] : DenselyOrdered αᵒᵈ :=
-  ⟨fun _ _ ha ↦ (@exists_between α _ h _ _ ha).imp fun _ ↦ And.symm⟩
+  ⟨fun _ _ ha => (@exists_between α _ h _ _ ha).imp fun _ => And.symm⟩
 
 theorem le_of_forall_le_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α}
     (h : ∀ a, a₂ < a → a₁ ≤ a) : a₁ ≤ a₂ :=
-  le_of_not_gt fun ha ↦
+  le_of_not_gt fun ha =>
     let ⟨a, ha₁, ha₂⟩ := exists_between ha
     lt_irrefl a <| lt_of_lt_of_le ‹a < a₁› (h _ ‹a₂ < a›)
 
@@ -922,7 +922,7 @@ theorem eq_of_le_of_forall_le_of_dense [LinearOrder α] [DenselyOrdered α] {a�
 
 theorem le_of_forall_ge_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α}
     (h : ∀ a₃ < a₁, a₃ ≤ a₂) : a₁ ≤ a₂ :=
-  le_of_not_gt fun ha ↦
+  le_of_not_gt fun ha =>
     let ⟨a, ha₁, ha₂⟩ := exists_between ha
     lt_irrefl a <| lt_of_le_of_lt (h _ ‹a < a₁›) ‹a₂ < a›
 
@@ -932,9 +932,9 @@ theorem eq_of_le_of_forall_ge_of_dense [LinearOrder α] [DenselyOrdered α] {a�
 
 theorem dense_or_discrete [LinearOrder α] (a₁ a₂ : α) :
     (∃ a, a₁ < a ∧ a < a₂) ∨ (∀ a, a₁ < a → a₂ ≤ a) ∧ ∀ a < a₂, a ≤ a₁ :=
-  or_iff_not_imp_left.2 fun h ↦
-    ⟨fun a ha₁ ↦ le_of_not_gt fun ha₂ ↦ h ⟨a, ha₁, ha₂⟩,
-     fun a ha₂ ↦ le_of_not_gt fun ha₁ ↦ h ⟨a, ha₁, ha₂⟩⟩
+  or_iff_not_imp_left.2 fun h =>
+    ⟨fun a ha₁ => le_of_not_gt fun ha₂ => h ⟨a, ha₁, ha₂⟩,
+     fun a ha₂ => le_of_not_gt fun ha₁ => h ⟨a, ha₁, ha₂⟩⟩
 
 namespace PUnit
 
@@ -942,13 +942,13 @@ variable (a b : PUnit.{u + 1})
 
 -- Porting note: no `refine_struct` at time of port
 instance : LinearOrder PUnit where
-  le  := fun _ _ ↦ True
-  lt  := fun _ _ ↦ False
-  max := fun _ _ ↦ unit
-  min := fun _ _ ↦ unit
+  le  := fun _ _ => True
+  lt  := fun _ _ => False
+  max := fun _ _ => unit
+  min := fun _ _ => unit
   decidable_eq := inferInstance
-  decidable_le := fun _ _ ↦ Decidable.isTrue trivial
-  decidable_lt := fun _ _ ↦ Decidable.isFalse id
+  decidable_le := fun _ _ => Decidable.isTrue trivial
+  decidable_lt := fun _ _ => Decidable.isFalse id
   le_refl     := by intros; trivial
   le_trans    := by intros; trivial
   le_total    := by intros; exact Or.inl trivial
@@ -970,7 +970,7 @@ theorem not_lt : ¬a < b := by
 
 
 instance : DenselyOrdered PUnit :=
-  ⟨fun _ _ h ↦ (not_lt _ _ h).elim⟩
+  ⟨fun _ _ h => (not_lt _ _ h).elim⟩
 
 end PUnit
 
@@ -978,10 +978,10 @@ section «Prop»
 
 /-- Propositions form a complete boolean algebra, where the `≤` relation is given by implication. -/
 instance : LE Prop :=
-  ⟨fun p q ↦ p → q⟩
+  ⟨fun p q => p → q⟩
 
 @[simp]
-theorem le_Prop_eq : ((· ≤ ·) : Prop → Prop → Prop) = (fun p q ↦ p → q) :=
+theorem le_Prop_eq : ((· ≤ ·) : Prop → Prop → Prop) = (fun p q => p → q) :=
   rfl
 
 theorem subrelation_iff_le {r s : α → α → Prop} : Subrelation r s ↔ r ≤ s :=
@@ -989,9 +989,9 @@ theorem subrelation_iff_le {r s : α → α → Prop} : Subrelation r s ↔ r �
 
 instance : PartialOrder Prop where
   __ := inferInstanceAs (LE Prop)
-  le_refl := fun _ ↦ id
-  le_trans := fun a b c f g ↦ g ∘ f
-  le_antisymm := fun a b Hab Hba ↦ propext ⟨Hab, Hba⟩
+  le_refl := fun _ => id
+  le_trans := fun a b c f g => g ∘ f
+  le_antisymm := fun a b Hab Hba => propext ⟨Hab, Hba⟩
 
 end «Prop»
 

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam, Daniel Selsam, Mario Carneiro
 -/
 import Lean.Elab.Command
-import Mathlib.Util.MapsTo
 
 open Lean Meta Elab Command
 
@@ -31,7 +30,7 @@ where
 def find (msg : String)
   (ϕ : ConstantInfo → MetaM Bool) (opts : FindOptions := {}) : TermElabM String := do
   let cinfos ← findCore ϕ opts
-  let cinfos := cinfos.qsort fun p q ↦ p.name.lt q.name
+  let cinfos := cinfos.qsort fun p q => p.name.lt q.name
   let mut msg := msg
   for cinfo in cinfos do
     msg := msg ++ s!"{cinfo.name} : {← Meta.ppExpr cinfo.type}\n"
@@ -51,10 +50,10 @@ the namespace `foo`.
 | `(#print prefix%$tk $name:ident) => do
   let nameId := name.getId
   liftTermElabM do
-    let mut msg ← find "" fun cinfo ↦ pure $ nameId.isPrefixOf cinfo.name
+    let mut msg ← find "" fun cinfo => pure $ nameId.isPrefixOf cinfo.name
     if msg.isEmpty then
       if let [name] ← resolveGlobalConst name then
-        msg ← find msg fun cinfo ↦ pure $ name.isPrefixOf cinfo.name
+        msg ← find msg fun cinfo => pure $ name.isPrefixOf cinfo.name
     if !msg.isEmpty then
       logInfoAt tk msg
 | _ => throwUnsupportedSyntax

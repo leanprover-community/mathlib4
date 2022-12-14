@@ -146,7 +146,7 @@ namespace EquivLike
 
 variable {E F α β γ : Sort _} [iE : EquivLike E α β] [iF : EquivLike F β γ]
 
-theorem inv_injective : Function.Injective (EquivLike.inv : E → β → α) := fun e g h ↦
+theorem inv_injective : Function.Injective (EquivLike.inv : E → β → α) := fun e g h =>
   coe_injective' e g ((right_inv e).eq_rightInverse (h.symm ▸ left_inv g)) h
 
 instance (priority := 100) toEmbeddingLike : EmbeddingLike E α β where
@@ -212,6 +212,6 @@ theorem comp_bijective (f : α → β) (e : F) : Function.Bijective (e ∘ f) �
 
 /-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search.-/
 lemma subsingleton_dom [Subsingleton β] : Subsingleton F :=
-⟨fun f g ↦ FunLike.ext f g $ fun _ ↦ (right_inv f).injective $ Subsingleton.elim _ _⟩
+⟨fun f g => FunLike.ext f g $ fun _ => (right_inv f).injective $ Subsingleton.elim _ _⟩
 
 end EquivLike

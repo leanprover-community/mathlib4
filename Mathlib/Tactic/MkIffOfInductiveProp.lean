@@ -56,7 +56,7 @@ partial def compactRelation :
         let (bs, as_ps', subst) := compactRelation bs as_ps
         (b::bs, as_ps', subst)
     | (ps₁, (a, _) :: ps₂) => -- found one that matches b. Remove it.
-      let i := fun e ↦ e.replaceFVar b a
+      let i := fun e => e.replaceFVar b a
       let (bs, as_ps', subst) := compactRelation (bs.map i) ((ps₁ ++ ps₂).map (λ⟨a, p⟩ => (a, i p)))
       (none :: bs, as_ps', i ∘ subst)
 
@@ -124,10 +124,10 @@ while proving the iff theorem, and a proposition representing the constructor.
 def constrToProp (univs : List Level) (params : List Expr) (idxs : List Expr) (c : Name) :
   MetaM (Shape × Expr)  :=
 do let type := (← getConstInfo c).instantiateTypeLevelParams univs
-   let type' ← Meta.forallBoundedTelescope type (params.length) fun fvars ty ↦ do
+   let type' ← Meta.forallBoundedTelescope type (params.length) fun fvars ty => do
      pure $ ty.replaceFVars fvars params.toArray
 
-   Meta.forallTelescope type' fun fvars ty ↦ do
+   Meta.forallTelescope type' fun fvars ty => do
      let idxs_inst := ty.getAppArgs.toList.drop params.length
      let (bs, eqs, subst) := compactRelation fvars.toList (idxs.zip idxs_inst)
      let eqs ← eqs.mapM (λ⟨idx, inst⟩ => do
@@ -180,7 +180,7 @@ def toCases (mvar : MVarId) (shape : List Shape) : MetaM Unit :=
 do
   let ⟨h, mvar'⟩ ← mvar.intro1
   let subgoals ← mvar'.cases h
-  let _ ← (shape.zip subgoals.toList).enum.mapM fun ⟨p, ⟨⟨shape, t⟩, subgoal⟩⟩ ↦ do
+  let _ ← (shape.zip subgoals.toList).enum.mapM fun ⟨p, ⟨⟨shape, t⟩, subgoal⟩⟩ => do
     let vars := subgoal.fields
     let si := (shape.zip vars.toList).filterMap (λ ⟨c,v⟩ => if c then some v else none)
     let mvar'' ← select p (subgoals.size - 1) subgoal.mvarId
@@ -294,7 +294,7 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM
   /- we use these names for our universe parameters, maybe we should construct a copy of them
   using `uniq_name` -/
 
-  let (thmTy,shape) ← Meta.forallTelescope type fun fvars ty ↦ do
+  let (thmTy,shape) ← Meta.forallTelescope type fun fvars ty => do
     if !ty.isProp then throwError "mk_iff only applies to prop-valued declarations"
     let lhs := mkAppN (mkConst ind univs) fvars
     let fvars' := fvars.toList

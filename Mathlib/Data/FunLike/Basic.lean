@@ -139,7 +139,7 @@ namespace FunLike
 
 variable {F α β} [i : FunLike F α β]
 
-instance (priority := 100) : CoeFun F fun _ ↦ ∀ a : α, β a where coe := FunLike.coe
+instance (priority := 100) : CoeFun F fun _ => ∀ a : α, β a where coe := FunLike.coe
 
 #eval Lean.Elab.Command.liftTermElabM do
   Std.Tactic.Coe.registerCoercion ``FunLike.coe
@@ -148,12 +148,12 @@ instance (priority := 100) : CoeFun F fun _ ↦ ∀ a : α, β a where coe := Fu
 -- @[simp] -- porting note: this loops in lean 4
 theorem coe_eq_coe_fn : (FunLike.coe (F := F)) = (fun f => ↑f) := rfl
 
-theorem coe_injective : Function.Injective (fun f : F ↦ (f : ∀ a : α, β a)) :=
+theorem coe_injective : Function.Injective (fun f : F => (f : ∀ a : α, β a)) :=
   FunLike.coe_injective'
 
 @[simp]
 theorem coe_fn_eq {f g : F} : (f : ∀ a : α, β a) = (g : ∀ a : α, β a) ↔ f = g :=
-  ⟨fun h ↦ FunLike.coe_injective' h, fun h ↦ by cases h; rfl⟩
+  ⟨fun h => FunLike.coe_injective' h, fun h => by cases h; rfl⟩
 
 theorem ext' {f g : F} (h : (f : ∀ a : α, β a) = (g : ∀ a : α, β a)) : f = g :=
   FunLike.coe_injective' h
@@ -178,7 +178,7 @@ theorem exists_ne {f g : F} (h : f ≠ g) : ∃ x, f x ≠ g x :=
 
 /-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search.-/
 lemma subsingleton_cod [∀ a, Subsingleton (β a)] : Subsingleton F :=
-⟨fun _ _ ↦ coe_injective $ Subsingleton.elim _ _⟩
+⟨fun _ _ => coe_injective $ Subsingleton.elim _ _⟩
 
 end FunLike
 
@@ -188,7 +188,7 @@ section NonDependent
 
 /-! ### `FunLike F α (λ _, β)` where `β` does not depend on `a : α` -/
 
-variable {F α β : Sort _} [i : FunLike F α fun _ ↦ β]
+variable {F α β : Sort _} [i : FunLike F α fun _ => β]
 
 namespace FunLike
 

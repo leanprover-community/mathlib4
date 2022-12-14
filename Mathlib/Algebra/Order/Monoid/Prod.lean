@@ -16,14 +16,14 @@ variable {α β M N : Type _}
 
 @[to_additive]
 instance [OrderedCommMonoid α] [OrderedCommMonoid β] : OrderedCommMonoid (α × β) :=
-  { mul_le_mul_left := fun _ _ h _ ↦ ⟨mul_le_mul_left' h.1 _, mul_le_mul_left' h.2 _⟩ }
+  { mul_le_mul_left := fun _ _ h _ => ⟨mul_le_mul_left' h.1 _, mul_le_mul_left' h.2 _⟩ }
 
 @[to_additive]
 instance [OrderedCancelCommMonoid M] [OrderedCancelCommMonoid N] :
     OrderedCancelCommMonoid (M × N) :=
   { (inferInstance : OrderedCommMonoid (M × N)) with
     le_of_mul_le_mul_left :=
-      fun _ _ _ h ↦ ⟨le_of_mul_le_mul_left' h.1, le_of_mul_le_mul_left' h.2⟩ }
+      fun _ _ _ h => ⟨le_of_mul_le_mul_left' h.1, le_of_mul_le_mul_left' h.2⟩ }
 
 @[to_additive]
 instance [LE α] [LE β] [Mul α] [Mul β] [ExistsMulOfLE α] [ExistsMulOfLE β] :
@@ -38,6 +38,6 @@ instance [CanonicallyOrderedMonoid α] [CanonicallyOrderedMonoid β] :
     CanonicallyOrderedMonoid (α × β) :=
   { (inferInstance : OrderedCommMonoid _), (inferInstance : OrderBot _),
     (inferInstance : ExistsMulOfLE _) with
-      le_self_mul := fun _ _ ↦ ⟨le_self_mul, le_self_mul⟩ }
+      le_self_mul := fun _ _ => ⟨le_self_mul, le_self_mul⟩ }
 
 end Prod

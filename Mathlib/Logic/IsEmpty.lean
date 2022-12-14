@@ -32,14 +32,14 @@ instance : IsEmpty False :=
   ⟨id⟩
 
 instance : IsEmpty (Fin 0) :=
-  ⟨fun n ↦ Nat.not_lt_zero n.1 n.2⟩
+  ⟨fun n => Nat.not_lt_zero n.1 n.2⟩
 
 protected theorem Function.isEmpty [IsEmpty β] (f : α → β) : IsEmpty α :=
-  ⟨fun x ↦ IsEmpty.false (f x)⟩
+  ⟨fun x => IsEmpty.false (f x)⟩
 #align function.is_empty Function.isEmpty
 
 instance {p : α → Sort _} [h : Nonempty α] [∀ x, IsEmpty (p x)] : IsEmpty (∀ x, p x) :=
-  h.elim fun x ↦ Function.isEmpty <| Function.eval x
+  h.elim fun x => Function.isEmpty <| Function.eval x
 
 instance PProd.isEmpty_left [IsEmpty α] : IsEmpty (PProd α β) :=
   Function.isEmpty PProd.fst
@@ -54,23 +54,23 @@ instance Prod.isEmpty_right {α β} [IsEmpty β] : IsEmpty (α × β) :=
   Function.isEmpty Prod.snd
 
 instance [IsEmpty α] [IsEmpty β] : IsEmpty (PSum α β) :=
-  ⟨fun x ↦ PSum.rec IsEmpty.false IsEmpty.false x⟩
+  ⟨fun x => PSum.rec IsEmpty.false IsEmpty.false x⟩
 
 instance {α β} [IsEmpty α] [IsEmpty β] : IsEmpty (Sum α β) :=
-  ⟨fun x ↦ Sum.rec IsEmpty.false IsEmpty.false x⟩
+  ⟨fun x => Sum.rec IsEmpty.false IsEmpty.false x⟩
 
 /-- subtypes of an empty type are empty -/
 instance [IsEmpty α] (p : α → Prop) : IsEmpty (Subtype p) :=
-  ⟨fun x ↦ IsEmpty.false x.1⟩
+  ⟨fun x => IsEmpty.false x.1⟩
 
 /-- subtypes by an all-false predicate are false. -/
 theorem Subtype.isEmpty_of_false {p : α → Prop} (hp : ∀ a, ¬p a) : IsEmpty (Subtype p) :=
-  ⟨fun x ↦ hp _ x.2⟩
+  ⟨fun x => hp _ x.2⟩
 #align subtype.is_empty_of_false Subtype.isEmpty_of_false
 
 /-- subtypes by false are false. -/
 instance Subtype.isEmpty_false : IsEmpty { _a : α // False } :=
-  Subtype.isEmpty_of_false fun _ ↦ id
+  Subtype.isEmpty_of_false fun _ => id
 
 instance Sigma.isEmpty_left {α} [IsEmpty α] {E : α → Type _} : IsEmpty (Sigma E) :=
   Function.isEmpty Sigma.fst
@@ -111,7 +111,7 @@ theorem forall_iff {p : α → Prop} : (∀ a, p a) ↔ True :=
 
 @[simp]
 theorem exists_iff {p : α → Prop} : (∃ a, p a) ↔ False :=
-  iff_false_intro fun ⟨x, _⟩ ↦ IsEmpty.false x
+  iff_false_intro fun ⟨x, _⟩ => IsEmpty.false x
 
 -- see Note [lower instance priority]
 instance (priority := 100) : Subsingleton α :=
@@ -121,7 +121,7 @@ end IsEmpty
 
 @[simp]
 theorem not_nonempty_iff : ¬Nonempty α ↔ IsEmpty α :=
-  ⟨fun h ↦ ⟨fun x ↦ h ⟨x⟩⟩, fun h1 h2 ↦ h2.elim h1.elim⟩
+  ⟨fun h => ⟨fun x => h ⟨x⟩⟩, fun h1 h2 => h2.elim h1.elim⟩
 
 @[simp]
 theorem not_isEmpty_iff : ¬IsEmpty α ↔ Nonempty α :=
@@ -202,5 +202,5 @@ variable {α}
 
 theorem Function.extend_of_isEmpty [IsEmpty α] (f : α → β) (g : α → γ) (h : β → γ) :
     Function.extend f g h = h :=
-  funext fun _ ↦ (Function.extend_apply' _ _ _) fun ⟨a, _⟩ ↦ isEmptyElim a
+  funext fun _ => (Function.extend_apply' _ _ _) fun ⟨a, _⟩ => isEmptyElim a
 #align function.extend_of_empty Function.extend_of_isEmpty

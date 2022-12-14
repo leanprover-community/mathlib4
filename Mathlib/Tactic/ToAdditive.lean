@@ -92,7 +92,7 @@ Id.run do
   if (s.get i₁).isUpper then
     if let some strs := endCapitalNames.find? (s.extract 0 i₁) then
       if let some (pref, newS) := strs.findSome?
-        fun x ↦ x.isPrefixOf? (s.extract i₁ s.endPos) |>.map (x, ·) then
+        fun x => x.isPrefixOf? (s.extract i₁ s.endPos) |>.map (x, ·) then
         return splitCase newS 0 <| (s.extract 0 i₁ ++ pref)::r
     if !(s.get i₀).isUpper then
       return splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
@@ -114,7 +114,7 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
     name  := `to_additive_ignore_args
     descr :=
       "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized."
-    add   := fun _ stx ↦ do
+    add   := fun _ stx => do
         let ids ← match stx with
           | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
           | _ => throwUnsupportedSyntax
@@ -227,9 +227,9 @@ def findTranslation? (env : Environment) : Name → Option Name :=
 /-- Add a (multiplicative → additive) name translation to the translations map. -/
 def insertTranslation (src tgt : Name) : CoreM Unit := do
   if let some tgt' := findTranslation? (← getEnv) src then
-    throwError "The translation {src} ↦ {tgt'} already exists"
+    throwError "The translation {src} => {tgt'} already exists"
   modifyEnv (ToAdditive.translations.addEntry · (src, tgt))
-  trace[to_additive] "Added translation {src} ↦ {tgt}"
+  trace[to_additive] "Added translation {src} => {tgt}"
 
 /-- Get whether or not the replace-all flag is set. If this is true, then the
 additiveTest heuristic is not used and all instances of multiplication are replaced.
@@ -320,7 +320,7 @@ It will also reorder arguments of certain functions, using `shouldReorder`:
 e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorderAttr.find? env g = some [1]`.
 -/
 def applyReplacementFun : Expr → MetaM Expr :=
-  Lean.Expr.replaceRecMeta fun r e ↦ do
+  Lean.Expr.replaceRecMeta fun r e => do
     trace[to_additive_detail] "applyReplacementFun: replace at {e}"
     match e with
     | .lit (.natVal 1) => pure <| mkRawNatLit 0
@@ -379,13 +379,13 @@ def applyReplacementFun : Expr → MetaM Expr :=
 
 /-- Eta expands `e` at most `n` times.-/
 def etaExpandN (n : Nat) (e : Expr): MetaM Expr := do
-  forallBoundedTelescope (← inferType e) (some n) fun xs _ ↦ mkLambdaFVars xs (mkAppN e xs)
+  forallBoundedTelescope (← inferType e) (some n) fun xs _ => mkLambdaFVars xs (mkAppN e xs)
 
 /-- `e.expand` eta-expands all expressions that have as head a constant `n` in
 `reorder`. They are expanded until they are applied to one more argument than the maximum in
 `reorder.find n`. -/
 def expand (e : Expr) : MetaM Expr := do
-  let e₂ ← e.replaceRecMeta $ fun r e ↦ do
+  let e₂ ← e.replaceRecMeta $ fun r e => do
     let e0 := e.getAppFn
     let es := e.getAppArgs
     let some e0n := e0.constName? | return none
@@ -463,7 +463,7 @@ using the transforms dictionary.
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
 partial def transformDeclAux
-  (cfg : Config) (pre tgt_pre : Name) : Name → CoreM Unit := fun src ↦ do
+  (cfg : Config) (pre tgt_pre : Name) : Name → CoreM Unit := fun src => do
   -- if this declaration is not `pre` or an internal declaration, we do nothing.
   if not (src == pre || isInternal' src) then
     if (findTranslation? (← getEnv) src).isSome then
@@ -473,7 +473,7 @@ partial def transformDeclAux
       }Workaround: move {src} to a different namespace."
   let env ← getEnv
   -- we find the additive name of `src`
-  let tgt := src.mapPrefix (fun n ↦ if n == pre then some tgt_pre else
+  let tgt := src.mapPrefix (fun n => if n == pre then some tgt_pre else
     if n == mkPrivateName env pre then some <| mkPrivateName env tgt_pre else
     if n == env.mainModule ++ `_auxLemma then env.mainModule ++ `_auxAddLemma else none)
   if tgt == src then
@@ -613,19 +613,19 @@ Returns 1 if there are no types with a multiplicative class as arguments.
 E.g. `Prod.Group` returns 1, and `Pi.One` returns 2.
 -/
 def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
-  forallTelescopeReducing (← getConstInfo nm).type fun xs _ ↦ do
+  forallTelescopeReducing (← getConstInfo nm).type fun xs _ => do
     -- xs are the arguments to the constant
     let xs := xs.toList
-    let l ← xs.mapM fun x ↦ do
+    let l ← xs.mapM fun x => do
       -- x is an argument and i is the index
       -- write `x : (y₀ : α₀) → ... → (yₙ : αₙ) → tgt_fn tgt_args₀ ... tgt_argsₘ`
-      forallTelescopeReducing (← inferType x) fun _ys tgt ↦ do
+      forallTelescopeReducing (← inferType x) fun _ys tgt => do
         let (_tgt_fn, tgt_args) := tgt.getAppFnArgs
         if let some c := tgt.getAppFn.constName? then
           if findTranslation? (← getEnv) c |>.isNone then
             return []
-        return tgt_args.toList.filterMap fun tgt_arg ↦
-          xs.findIdx? fun x ↦ Expr.containsFVar tgt_arg x.fvarId!
+        return tgt_args.toList.filterMap fun tgt_arg =>
+          xs.findIdx? fun x => Expr.containsFVar tgt_arg x.fvarId!
     trace[to_additive_detail] "firstMultiplicativeArg: {l}"
     match l.join with
     | [] => return 0
@@ -791,19 +791,19 @@ private def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name)) 
   let srcFields ← f src
   let tgtFields ← f tgt
   if srcFields.size != tgtFields.size then
-    throwError "Failed to map fields of {src}, {tgt} with {srcFields} ↦ {tgtFields}"
+    throwError "Failed to map fields of {src}, {tgt} with {srcFields} => {tgtFields}"
   for (srcField, tgtField) in srcFields.zip tgtFields do
     if srcField != tgtField then
       insertTranslation (src ++ srcField) (tgt ++ tgtField)
     else
-      trace[to_additive] "Translation {src ++ srcField} ↦ {tgt ++ tgtField} is automatic."
+      trace[to_additive] "Translation {src ++ srcField} => {tgt ++ tgtField} is automatic."
 
 /-- Add the structure fields of `src` to the translations dictionary
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
 def proceedFields (src tgt : Name) : CoreM Unit := do
   let env : Environment ← getEnv
   let aux := proceedFieldsAux src tgt
-  aux fun n ↦ pure <| if isStructure env n then getStructureFields env n else #[]
+  aux fun n => pure <| if isStructure env n then getStructureFields env n else #[]
   -- We don't have to run toAdditive on the constructor of a structure, since the use of
   -- `Name.mapPrefix` will do that automatically.
 
@@ -838,7 +838,7 @@ def addToAdditiveAttr (src : Name) (cfg : Config) : AttrM Unit :=
     trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
     relevantArgAttr.add src firstMultArg
   if alreadyExists then
-    -- since `tgt` already exists, we just need to add translations `src.x ↦ tgt.x'`
+    -- since `tgt` already exists, we just need to add translations `src.x => tgt.x'`
     -- for any subfields.
     proceedFields src tgt
   else
@@ -1054,7 +1054,7 @@ that the new name differs from the original one.
 initialize registerBuiltinAttribute {
     name := `to_additive
     descr := "Transport multiplicative to additive"
-    add := fun src stx kind ↦ do
+    add := fun src stx kind => do
       if (kind != AttributeKind.global) then
         throwError "`to_additive` can't be used as a local attribute"
       let cfg ← elabToAdditive stx

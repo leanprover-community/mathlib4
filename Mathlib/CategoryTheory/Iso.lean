@@ -266,7 +266,7 @@ theorem inv_hom_id (f : X ⟶ Y) [I : IsIso f] : inv f ≫ f = 𝟙 Y :=
 -- #print hom_inv_id_assoc
 --   theorem CategoryTheory.IsIso.hom_inv_id_assoc {X Y : C} (f : X ⟶ Y) [I : IsIso f]
 --     {Z : C} (h : X ⟶ Z),
---     f ≫ Classical.choose (_ : Exists fun inv ↦ f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y) ≫ h = h := ...
+--     f ≫ Classical.choose (_ : Exists fun inv => f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y) ≫ h = h := ...
 
 @[simp]
 theorem hom_inv_id_assoc (f : X ⟶ Y) [I : IsIso f] {Z} (g : X ⟶ Z) : f ≫ inv f ≫ g = g := by

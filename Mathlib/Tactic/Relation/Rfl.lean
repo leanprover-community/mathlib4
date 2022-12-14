@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
 import Lean
-import Mathlib.Util.MapsTo
 
 /-!
 # `rfl` tactic extension for reflexive relations
@@ -21,14 +20,14 @@ open Lean Meta
 initialize reflExt :
     SimpleScopedEnvExtension (Name × Array (DiscrTree.Key true)) (DiscrTree Name true) ←
   registerSimpleScopedEnvExtension {
-    addEntry := fun dt (n, ks) ↦ dt.insertCore ks n
+    addEntry := fun dt (n, ks) => dt.insertCore ks n
     initial := {}
   }
 
 initialize registerBuiltinAttribute {
   name := `refl
   descr := "reflexivity relation"
-  add := fun decl _ kind ↦ MetaM.run' do
+  add := fun decl _ kind => MetaM.run' do
     let declTy := (← getConstInfo decl).type
     let (_, _, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
     let fail := throwError

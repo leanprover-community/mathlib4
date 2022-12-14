@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, David Renshaw
 -/
 import Lean
-import Mathlib.Util.MapsTo
 
 /-!
 # The `alias` command
@@ -130,7 +129,7 @@ def Target.toString : Target → String
   of the implication directions (determined by `mp`).
 -/
 def mkIffMpApp (mp : Bool) (prf : Expr) : MetaM Expr := do
-  Meta.forallTelescope (← Meta.inferType prf) fun xs ty ↦ do
+  Meta.forallTelescope (← Meta.inferType prf) fun xs ty => do
     let some (lhs, rhs) := ty.iff?
       | throwError "Target theorem must have the form `∀ x y z, a ↔ b`"
     Meta.mkLambdaFVars xs <|

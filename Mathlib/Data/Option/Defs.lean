@@ -56,7 +56,7 @@ protected def elim' (b : β) (f : α → β) : Option α → β
 #align option.elim Option.elim'
 
 theorem is_none_iff_eq_none {o : Option α} : o.isNone = true ↔ o = none :=
-  ⟨Option.eq_none_of_isNone, fun e ↦ e.symm ▸ rfl⟩
+  ⟨Option.eq_none_of_isNone, fun e => e.symm ▸ rfl⟩
 
 theorem mem_some_iff {α : Type _} {a b : α} : a ∈ some b ↔ b = a := by simp
 
@@ -72,13 +72,13 @@ instance decidableForallMem {p : α → Prop} [DecidablePred p] :
     ∀ o : Option α, Decidable (∀ a ∈ o, p a)
   | none => isTrue (by simp [false_imp_iff])
   | some a =>
-      if h : p a then isTrue fun o e ↦ some_inj.1 e ▸ h
-      else isFalse <| mt (fun H ↦ H _ rfl) h
+      if h : p a then isTrue fun o e => some_inj.1 e ▸ h
+      else isFalse <| mt (fun H => H _ rfl) h
 
 instance decidableExistsMem {p : α → Prop} [DecidablePred p] :
     ∀ o : Option α, Decidable (∃ a ∈ o, p a)
-  | none => isFalse fun ⟨a, ⟨h, _⟩⟩ ↦ by cases h
-  | some a => if h : p a then isTrue <| ⟨_, rfl, h⟩ else isFalse fun ⟨_, ⟨rfl, hn⟩⟩ ↦ h hn
+  | none => isFalse fun ⟨a, ⟨h, _⟩⟩ => by cases h
+  | some a => if h : p a then isTrue <| ⟨_, rfl, h⟩ else isFalse fun ⟨_, ⟨rfl, hn⟩⟩ => h hn
 
 /-- Inhabited `get` function. Returns `a` if the input is `some a`, otherwise returns `default`. -/
 @[reducible]
@@ -97,21 +97,21 @@ theorem mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
 
 instance liftOrGet_isCommutative (f : α → α → α) [IsCommutative α f] :
     IsCommutative (Option α) (liftOrGet f) :=
-  ⟨fun a b ↦ by cases a <;> cases b <;> simp [liftOrGet, IsCommutative.comm]⟩
+  ⟨fun a b => by cases a <;> cases b <;> simp [liftOrGet, IsCommutative.comm]⟩
 
 instance liftOrGet_isAssociative (f : α → α → α) [IsAssociative α f] :
     IsAssociative (Option α) (liftOrGet f) :=
-  ⟨fun a b c ↦ by cases a <;> cases b <;> cases c <;> simp [liftOrGet, IsAssociative.assoc]⟩
+  ⟨fun a b c => by cases a <;> cases b <;> cases c <;> simp [liftOrGet, IsAssociative.assoc]⟩
 
 instance liftOrGet_isIdempotent (f : α → α → α) [IsIdempotent α f] :
     IsIdempotent (Option α) (liftOrGet f) :=
-  ⟨fun a ↦ by cases a <;> simp [liftOrGet, IsIdempotent.idempotent]⟩
+  ⟨fun a => by cases a <;> simp [liftOrGet, IsIdempotent.idempotent]⟩
 
 instance liftOrGet_isLeftId (f : α → α → α) : IsLeftId (Option α) (liftOrGet f) none :=
-  ⟨fun a ↦ by cases a <;> simp [liftOrGet]⟩
+  ⟨fun a => by cases a <;> simp [liftOrGet]⟩
 
 instance liftOrGet_isRightId (f : α → α → α) : IsRightId (Option α) (liftOrGet f) none :=
-  ⟨fun a ↦ by cases a <;> simp [liftOrGet]⟩
+  ⟨fun a => by cases a <;> simp [liftOrGet]⟩
 
 #align option.lift_or_get_comm Option.liftOrGet_isCommutative
 #align option.lift_or_get_assoc Option.liftOrGet_isAssociative

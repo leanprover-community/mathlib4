@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Init.Data.Nat.Basic
-import Mathlib.Util.MapsTo
 
 /-!
 # Theorems about equality in `Fin`.
@@ -18,8 +17,8 @@ theorem eq_of_veq : ∀ {i j : Fin n}, i.val = j.val → i = j
 theorem veq_of_eq : ∀ {i j : Fin n}, i = j → i.val = j.val
   | ⟨_, _⟩, _, rfl => rfl
 
-theorem ne_of_vne {i j : Fin n} (h : i.val ≠ j.val) : i ≠ j := fun h' ↦ absurd (veq_of_eq h') h
+theorem ne_of_vne {i j : Fin n} (h : i.val ≠ j.val) : i ≠ j := fun h' => absurd (veq_of_eq h') h
 
-theorem vne_of_ne {i j : Fin n} (h : i ≠ j) : i.val ≠ j.val := fun h' ↦ absurd (eq_of_veq h') h
+theorem vne_of_ne {i j : Fin n} (h : i ≠ j) : i.val ≠ j.val := fun h' => absurd (eq_of_veq h') h
 
 end Fin

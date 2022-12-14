@@ -26,7 +26,7 @@ If you wish to recursively replace things in the implementation of `f?`, you can
 The function is also memoised, which means that if the
 same expression (by reference) is encountered the cached replacement is used. -/
 def replaceRec (f? : (Expr → Expr) → Expr → Option Expr) : Expr → Expr :=
-  memoFix fun r e ↦
+  memoFix fun r e =>
     match f? r e with
     | some x => x
     | none   => traverseChildren (M := Id) r e
@@ -64,7 +64,7 @@ partial def replaceRecMeta [Monad M] [MonadLiftT MetaM M] [MonadControlT MetaM M
   -/
 def replaceRecTraversal (traversal : Expr → Option (Array Expr × (Array Expr → Expr))) :
     Expr → Expr :=
-  replaceRec fun r e ↦
+  replaceRec fun r e =>
     match traversal e with
     | none => none
     | some (get, set) => some <| set <| .map r <| get

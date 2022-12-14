@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 import Lean
 import Std
 import Mathlib.Tactic.Cases
-import Mathlib.Util.MapsTo
 
 namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
@@ -87,7 +86,7 @@ h₂ : b = c
 ```
 -/
 syntax (name := introv) "introv " (colGt binderIdent)* : tactic
-@[tactic introv] partial def evalIntrov : Tactic := fun stx ↦ do
+@[tactic introv] partial def evalIntrov : Tactic := fun stx => do
   match stx with
   | `(tactic| introv)                     => introsDep
   | `(tactic| introv $h:ident $hs:binderIdent*) =>
@@ -105,7 +104,7 @@ where
         introsDep
     | _ => pure ()
   intro1PStep : TacticM Unit :=
-    liftMetaTactic fun goal ↦ do
+    liftMetaTactic fun goal => do
       let (_, goal) ← goal.intro1P
       pure [goal]
 

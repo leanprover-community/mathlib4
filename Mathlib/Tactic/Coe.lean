@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
 import Lean
-import Mathlib.Util.MapsTo
 
 open Lean Elab Term Meta
 
@@ -31,7 +30,7 @@ def elabPartiallyAppliedCoe (sym : String) (expectedType : Expr)
     tryPostpone
     throwError "({sym}) must have a non-dependent function type, not{indentExpr expectedType}"
   if a.hasExprMVar then tryPostpone
-  let f ← withLocalDeclD `x a fun x ↦ do
+  let f ← withLocalDeclD `x a fun x => do
     mkLambdaFVars #[x] (← mkCoe b x)
   return f.etaExpanded?.getD f
 

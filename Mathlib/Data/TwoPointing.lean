@@ -71,7 +71,7 @@ instance [Nontrivial α] : Nonempty (TwoPointing α) :=
 
 @[simp]
 theorem nonempty_two_pointing_iff : Nonempty (TwoPointing α) ↔ Nontrivial α :=
-  ⟨fun ⟨p⟩ ↦ p.to_nontrivial, fun _ => inferInstance⟩
+  ⟨fun ⟨p⟩ => p.to_nontrivial, fun _ => inferInstance⟩
 #align two_pointing.nonempty_two_pointing_iff TwoPointing.nonempty_two_pointing_iff
 
 section Pi

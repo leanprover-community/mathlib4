@@ -164,7 +164,7 @@ def removeNth (i : Fin n) : Vector α n → Vector α (n - 1)
 /-- Vector of length `n` from a function on `Fin n`. -/
 def ofFn : ∀ {n}, (Fin n → α) → Vector α n
   | 0, _ => nil
-  | _ + 1, f => cons (f 0) (ofFn fun i ↦ f i.succ)
+  | _ + 1, f => cons (f 0) (ofFn fun i => f i.succ)
 #align vector.of_fn Vector.ofFn
 
 section Accum

@@ -228,7 +228,7 @@ variable [LinearOrderedAddCommGroup α] {a b c d : α}
 -- Porting note:
 -- Lean can perfectly well find this instance,
 -- but in the rewrites below it is going looking for it without having fixed `α`.
-example : CovariantClass α α (swap fun x y ↦ x + y) fun x y ↦ x ≤ y := inferInstance
+example : CovariantClass α α (swap fun x y => x + y) fun x y => x ≤ y := inferInstance
 
 theorem abs_le : |a| ≤ b ↔ -b ≤ a ∧ a ≤ b := by rw [abs_le', and_comm, @neg_le α]
 #align abs_le abs_le

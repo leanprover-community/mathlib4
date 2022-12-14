@@ -37,15 +37,15 @@ instance wideSubquiverHasCoeToSort {V} [Quiver V] :
 
 /-- A wide subquiver viewed as a quiver on its own. -/
 instance WideSubquiver.quiver {V} [Quiver V] (H : WideSubquiver V) : Quiver H :=
-  ⟨fun a b ↦ { f // f ∈ H a b }⟩
+  ⟨fun a b => { f // f ∈ H a b }⟩
 
 namespace Quiver
 
 instance {V} [Quiver V] : Bot (WideSubquiver V) :=
-  ⟨fun _ _ ↦ ∅⟩
+  ⟨fun _ _ => ∅⟩
 
 instance {V} [Quiver V] : Top (WideSubquiver V) :=
-  ⟨fun _ _ ↦ Set.univ⟩
+  ⟨fun _ _ => Set.univ⟩
 
 noncomputable instance {V} [Quiver V] : Inhabited (WideSubquiver V) :=
   ⟨⊤⟩
@@ -76,6 +76,6 @@ def Labelling (V : Type u) [Quiver V] (L : Sort _) :=
   ∀ ⦃a b : V⦄, (a ⟶ b) → L
 
 instance {V : Type u} [Quiver V] (L) [Inhabited L] : Inhabited (Labelling V L) :=
-  ⟨fun _ _ _ ↦ default⟩
+  ⟨fun _ _ _ => default⟩
 
 end Quiver

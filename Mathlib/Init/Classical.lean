@@ -23,7 +23,7 @@ alias propComplete ← prop_complete -- TODO: fix in core
 
 @[elab_as_elim] theorem cases_true_false (p : Prop → Prop)
     (h1 : p True) (h2 : p False) (a : Prop) : p a :=
-  Or.elim (prop_complete a) (fun ht : a = True ↦ ht.symm ▸ h1) fun hf : a = False ↦ hf.symm ▸ h2
+  Or.elim (prop_complete a) (fun ht : a = True => ht.symm ▸ h1) fun hf : a = False => hf.symm ▸ h2
 
 theorem cases_on (a : Prop) {p : Prop → Prop} (h1 : p True) (h2 : p False) : p a :=
   @cases_true_false p h1 h2 a

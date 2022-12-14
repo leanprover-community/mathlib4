@@ -13,14 +13,14 @@ import Mathlib.Mathport.Rename
 -- so is omitted.
 -- theorem forall_congr_eq {a : Sort u} {p q : a → Prop} (h : ∀ x, p x = q x) :
 --   (∀ x, p x) = ∀ x, q x :=
--- (forall_congr fun a ↦ (h a))
+-- (forall_congr fun a => (h a))
 #align forall_congr_eq forall_congr
 
 theorem imp_congr_eq {a b c d : Prop} (h₁ : a = c) (h₂ : b = d) : (a → b) = (c → d) :=
   propext (imp_congr h₁.to_iff h₂.to_iff)
 
 theorem imp_congr_ctx_eq {a b c d : Prop} (h₁ : a = c) (h₂ : c → b = d) : (a → b) = (c → d) :=
-  propext (imp_congr_ctx h₁.to_iff fun hc ↦ (h₂ hc).to_iff)
+  propext (imp_congr_ctx h₁.to_iff fun hc => (h₂ hc).to_iff)
 
 theorem eq_true_intro {a : Prop} (h : a) : a = True :=
   propext (iff_true_intro h)
@@ -32,7 +32,7 @@ theorem Iff.to_eq {a b : Prop} (h : a ↔ b) : a = b :=
   propext h
 
 theorem iff_eq_eq {a b : Prop} : (a ↔ b) = (a = b) :=
-  propext (Iff.intro (fun h ↦ Iff.to_eq h) fun h ↦ h.to_iff)
+  propext (Iff.intro (fun h => Iff.to_eq h) fun h => h.to_iff)
 
 -- Porting note:
 -- `eq_false` and `eq_true` in Lean 3 are not used in mathlib3,

@@ -26,11 +26,11 @@ namespace Prod
 
 @[simp]
 theorem «forall» {p : α × β → Prop} : (∀ x, p x) ↔ ∀ a b, p (a, b) :=
-  ⟨fun h a b ↦ h (a, b), fun h ⟨a, b⟩ ↦ h a b⟩
+  ⟨fun h a b => h (a, b), fun h ⟨a, b⟩ => h a b⟩
 
 @[simp]
 theorem «exists» {p : α × β → Prop} : (∃ x, p x) ↔ ∃ a b, p (a, b) :=
-  ⟨fun ⟨⟨a, b⟩, h⟩ ↦ ⟨a, b, h⟩, fun ⟨a, b, h⟩ ↦ ⟨⟨a, b⟩, h⟩⟩
+  ⟨fun ⟨⟨a, b⟩, h⟩ => ⟨a, b, h⟩, fun ⟨a, b, h⟩ => ⟨⟨a, b⟩, h⟩⟩
 
 theorem forall' {p : α → β → Prop} : (∀ x : α × β, p x.1 x.2) ↔ ∀ a b, p a b :=
   Prod.forall
@@ -87,7 +87,7 @@ theorem mk.inj_left {α β : Type _} (a : α) : Function.Injective (Prod.mk a : 
   simpa only [true_and, Prod.mk.inj_iff, eq_self_iff_true] using h
 
 theorem mk.inj_right {α β : Type _} (b : β) :
-    Function.Injective (fun a ↦ Prod.mk a b : α → α × β) := by
+    Function.Injective (fun a => Prod.mk a b : α → α × β) := by
   intro b₁ b₂ h
   simpa only [and_true, eq_self_iff_true, mk.inj_iff] using h
 
@@ -102,29 +102,29 @@ theorem ext {α β} {p q : α × β} (h₁ : p.1 = q.1) (h₂ : p.2 = q.2) : p =
   ext_iff.2 ⟨h₁, h₂⟩
 #align prod.ext Prod.ext
 
-theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × β ↦ (f p.1, g p.2) :=
-  funext fun p ↦ ext (map_fst f g p) (map_snd f g p)
+theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × β => (f p.1, g p.2) :=
+  funext fun p => ext (map_fst f g p) (map_snd f g p)
 
-theorem id_prod : (fun p : α × β ↦ (p.1, p.2)) = id :=
+theorem id_prod : (fun p : α × β => (p.1, p.2)) = id :=
   rfl
 
 theorem map_id : Prod.map (@id α) (@id β) = id :=
   id_prod
 
 theorem fst_surjective [h : Nonempty β] : Function.Surjective (@fst α β) :=
-  fun x ↦ h.elim fun y ↦ ⟨⟨x, y⟩, rfl⟩
+  fun x => h.elim fun y => ⟨⟨x, y⟩, rfl⟩
 
 theorem snd_surjective [h : Nonempty α] : Function.Surjective (@snd α β) :=
-  fun y ↦ h.elim fun x ↦ ⟨⟨x, y⟩, rfl⟩
+  fun y => h.elim fun x => ⟨⟨x, y⟩, rfl⟩
 
 theorem fst_injective [Subsingleton β] : Function.Injective (@fst α β) :=
-  fun _ _ h ↦ ext h (Subsingleton.elim _ _)
+  fun _ _ h => ext h (Subsingleton.elim _ _)
 
 theorem snd_injective [Subsingleton α] : Function.Injective (@snd α β) :=
-  fun _ _ h ↦ ext (Subsingleton.elim _ _) h
+  fun _ _ h => ext (Subsingleton.elim _ _) h
 
 /-- Swap the factors of a product. `swap (a, b) = (b, a)` -/
-def swap : α × β → β × α := fun p ↦ (p.2, p.1)
+def swap : α × β → β × α := fun p => (p.2, p.1)
 
 @[simp]
 theorem swap_swap : ∀ x : α × β, swap (swap x) = x
@@ -182,7 +182,7 @@ variable {r : α → α → Prop} {s : β → β → Prop} {x y : α × β}
 
 theorem lex_def (r : α → α → Prop) (s : β → β → Prop) {p q : α × β} :
     Prod.Lex r s p q ↔ r p.1 q.1 ∨ p.1 = q.1 ∧ s p.2 q.2 :=
-  ⟨fun h ↦ by cases h <;> simp [*], fun h ↦
+  ⟨fun h => by cases h <;> simp [*], fun h =>
     match p, q, h with
     | (a, b), (c, d), Or.inl h => Lex.left _ _ h
     | (a, b), (c, d), Or.inr ⟨e, h⟩ => by subst e; exact Lex.right _ h⟩
@@ -192,7 +192,7 @@ lemma lex_iff : Prod.Lex r s x y ↔ r x.1 y.1 ∨ x.1 = y.1 ∧ s x.2 y.2 := le
 instance Lex.decidable [DecidableEq α]
     (r : α → α → Prop) (s : β → β → Prop) [DecidableRel r] [DecidableRel s] :
     DecidableRel (Prod.Lex r s) :=
-  fun _ _ ↦ decidable_of_decidable_of_iff (lex_def r s).symm
+  fun _ _ => decidable_of_decidable_of_iff (lex_def r s).symm
 
 @[refl]
 theorem Lex.refl_left (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] : ∀ x, Prod.Lex r s x x
@@ -221,11 +221,11 @@ theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α 
 
 instance {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
   IsTrans (α × β) (Prod.Lex r s) :=
-  ⟨fun _ _ _ ↦ Lex.trans⟩
+  ⟨fun _ _ _ => Lex.trans⟩
 
 instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] [IsAntisymm β s] :
     IsAntisymm (α × β) (Prod.Lex r s) :=
-  ⟨fun x₁ x₂ h₁₂ h₂₁ ↦
+  ⟨fun x₁ x₂ h₁₂ h₂₁ =>
     match x₁, x₂, h₁₂, h₂₁ with
     | (a, _), (_, _), .left  _ _ hr₁, .left  _ _ hr₂ => (irrefl a (trans hr₁ hr₂)).elim
     | (_, _), (_, _), .left  _ _ hr₁, .right _ _     => (irrefl _ hr₁).elim
@@ -234,12 +234,12 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] 
 
 instance isTotal_left {r : α → α → Prop} {s : β → β → Prop} [IsTotal α r] :
     IsTotal (α × β) (Prod.Lex r s) :=
-  ⟨fun ⟨a₁, _⟩ ⟨a₂, _⟩ ↦ (IsTotal.total a₁ a₂).imp (Lex.left _ _) (Lex.left _ _)⟩
+  ⟨fun ⟨a₁, _⟩ ⟨a₂, _⟩ => (IsTotal.total a₁ a₂).imp (Lex.left _ _) (Lex.left _ _)⟩
 #align prod.is_total_left Prod.isTotal_left
 
 instance isTotal_right {r : α → α → Prop} {s : β → β → Prop} [IsTrichotomous α r] [IsTotal β s] :
     IsTotal (α × β) (Prod.Lex r s) :=
-  ⟨fun ⟨i, a⟩ ⟨j, b⟩ ↦ by
+  ⟨fun ⟨i, a⟩ ⟨j, b⟩ => by
     obtain hij | rfl | hji := trichotomous_of r i j
     · exact Or.inl (.left _ _ hij)
     · exact (total_of s a b).imp (.right _) (.right _)
@@ -248,7 +248,7 @@ instance isTotal_right {r : α → α → Prop} {s : β → β → Prop} [IsTric
 
 instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
   IsTrichotomous (α × β) (Prod.Lex r s) :=
-⟨fun ⟨i, a⟩ ⟨j, b⟩ ↦ by
+⟨fun ⟨i, a⟩ ⟨j, b⟩ => by
   obtain hij | rfl | hji := trichotomous_of r i j
   { exact Or.inl (Lex.left _ _ hij) }
   { exact (trichotomous_of (s) a b).imp3 (Lex.right _) (congr_arg _) (Lex.right _) }
@@ -263,11 +263,11 @@ namespace Function
 variable {f : α → γ} {g : β → δ} {f₁ : α → β} {g₁ : γ → δ} {f₂ : β → α} {g₂ : δ → γ}
 
 theorem Injective.Prod_map (hf : Injective f) (hg : Injective g) : Injective (map f g) :=
-  fun _ _ h ↦ ext (hf (ext_iff.1 h).1) (hg <| (ext_iff.1 h).2)
+  fun _ _ h => ext (hf (ext_iff.1 h).1) (hg <| (ext_iff.1 h).2)
 #align function.injective.prod_map Function.Injective.Prod_map
 
 theorem Surjective.Prod_map (hf : Surjective f) (hg : Surjective g) : Surjective (map f g) :=
-  fun p ↦
+  fun p =>
   let ⟨x, hx⟩ := hf p.1
   let ⟨y, hy⟩ := hg p.2
   ⟨(x, y), Prod.ext hx hy⟩
@@ -279,7 +279,7 @@ theorem Bijective.Prod_map (hf : Bijective f) (hg : Bijective g) : Bijective (ma
 
 theorem LeftInverse.Prod_map (hf : LeftInverse f₁ f₂) (hg : LeftInverse g₁ g₂) :
     LeftInverse (map f₁ g₁) (map f₂ g₂) :=
-  fun a ↦ by rw [Prod.map_map, hf.comp_eq_id, hg.comp_eq_id, map_id, id]
+  fun a => by rw [Prod.map_map, hf.comp_eq_id, hg.comp_eq_id, map_id, id]
 #align function.left_inverse.prod_map Function.LeftInverse.Prod_map
 
 theorem RightInverse.Prod_map :

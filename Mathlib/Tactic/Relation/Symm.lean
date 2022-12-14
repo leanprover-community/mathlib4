@@ -20,14 +20,14 @@ open Lean Meta
 initialize symmExt :
     SimpleScopedEnvExtension (Name × Array (DiscrTree.Key true)) (DiscrTree Name true) ←
   registerSimpleScopedEnvExtension {
-    addEntry := fun dt (n, ks) ↦ dt.insertCore ks n
+    addEntry := fun dt (n, ks) => dt.insertCore ks n
     initial := {}
   }
 
 initialize registerBuiltinAttribute {
   name := `symm
   descr := "symmetric relation"
-  add := fun decl _ kind ↦ MetaM.run' do
+  add := fun decl _ kind => MetaM.run' do
     let declTy := (← getConstInfo decl).type
     let (xs, _, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
     let fail := throwError
@@ -53,7 +53,7 @@ elab "symm" loc:((Parser.Tactic.location)?) : tactic =>
     let s ← saveState
     for lem in ← (symmExt.getState (← getEnv)).getMatch rel do
       try
-        liftMetaTactic1 fun g ↦ do
+        liftMetaTactic1 fun g => do
           let g' ← k g (← mkConstWithFreshMVarLevels lem)
           g'.setTag (← g.getTag)
           pure g'
@@ -61,14 +61,14 @@ elab "symm" loc:((Parser.Tactic.location)?) : tactic =>
       catch _ => s.restore
     throwError "no applicable symmetry lemma found for{indentExpr tgt}"
   let atHyp h := do
-    onRel (← h.getType) fun g e ↦ do
+    onRel (← h.getType) fun g e => do
       let (xs, _, targetTy) ← withReducible <| forallMetaTelescopeReducing (← inferType e)
       let .true ← isDefEq xs.back (.fvar h) | failure
       pure (← g.replace h (← instantiateMVars targetTy) (mkAppN e xs)).mvarId
   let atTarget := withMainContext do
-    onRel (← getMainTarget) fun g e ↦ do
+    onRel (← getMainTarget) fun g e => do
       let (xs, _, targetTy) ← withReducible <| forallMetaTelescopeReducing (← inferType e)
       let .true ← isDefEq (← g.getType) targetTy | failure
       g.assign (mkAppN e xs)
       pure xs.back.mvarId!
-  withLocation (expandOptLocation loc) atHyp atTarget fun _ ↦ throwError "symm made no progress"
+  withLocation (expandOptLocation loc) atHyp atTarget fun _ => throwError "symm made no progress"

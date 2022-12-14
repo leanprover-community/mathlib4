@@ -14,20 +14,20 @@ namespace List
 def inj_on (f : α → β) (as : List α) := ∀ {x y}, x ∈ as → y ∈ as → f x = f y → x = y
 
 theorem inj_on_of_subset {f : α → β} {as bs : List α} (h : inj_on f bs) (hsub : as ⊆ bs) :
-  inj_on f as := fun xas yas heq ↦ h (hsub xas) (hsub yas) heq
+  inj_on f as := fun xas yas heq => h (hsub xas) (hsub yas) heq
 
 protected def equiv (as bs : List α) := ∀ x, x ∈ as ↔ x ∈ bs
 
 theorem equiv_iff_subset_and_subset {as bs : List α} : as.equiv bs ↔ as ⊆ bs ∧ bs ⊆ as :=
 Iff.intro
-  (fun h ↦ ⟨fun _ xas ↦ (h _).1 xas, fun _ xbs ↦ (h _).2 xbs⟩)
-  (fun ⟨h1, h2⟩ x ↦ ⟨@h1 x, @h2 x⟩)
+  (fun h => ⟨fun _ xas => (h _).1 xas, fun _ xbs => (h _).2 xbs⟩)
+  (fun ⟨h1, h2⟩ x => ⟨@h1 x, @h2 x⟩)
 
 theorem insert_equiv_cons [DecidableEq α] (a : α) (as : List α) : (as.insert a).equiv (a :: as) :=
-  fun x ↦ by simp
+  fun x => by simp
 
 theorem union_equiv_append [DecidableEq α] (as bs : List α) : (as.union bs).equiv (as ++ bs) :=
-  fun x ↦ by simp
+  fun x => by simp
 
 section decidable_eq
 variable [DecidableEq α] [DecidableEq β]
@@ -46,7 +46,7 @@ theorem mem_remove_iff {a b : α} {as : List α} : b ∈ remove a as ↔ b ∈ a
     cases Decidable.em (a = a') with
     | inl h =>
       simp only [if_pos h, ih]
-      exact ⟨fun ⟨h1, h2⟩ ↦ ⟨Or.inr h1, h2⟩, fun ⟨h1, h2⟩ ↦ ⟨Or.resolve_left h1 (h ▸ h2), h2⟩⟩
+      exact ⟨fun ⟨h1, h2⟩ => ⟨Or.inr h1, h2⟩, fun ⟨h1, h2⟩ => ⟨Or.resolve_left h1 (h ▸ h2), h2⟩⟩
     | inr h =>
       simp [if_neg h, ih]
       constructor
@@ -63,8 +63,8 @@ theorem mem_remove_iff {a b : α} {as : List α} : b ∈ remove a as ↔ b ∈ a
 theorem remove_eq_of_not_mem {a : α} : ∀ {as : List α}, (a ∉ as) → remove a as = as
   | [], _ => by simp [remove]
   | a' :: as, h => by
-    have h1 : a ≠ a' := fun h' ↦ h (by rw [h']; apply mem_cons_self)
-    have h2 : a ∉ as := fun h' ↦ h (mem_cons_of_mem _ h')
+    have h1 : a ≠ a' := fun h' => h (by rw [h']; apply mem_cons_self)
+    have h2 : a ∉ as := fun h' => h (mem_cons_of_mem _ h')
     simp [remove, h1, remove_eq_of_not_mem h2]
 
 theorem mem_of_mem_remove {a b : α} {as : List α} (h : b ∈ remove a as) : b ∈ as := by
@@ -116,7 +116,7 @@ theorem card_remove_of_mem {a : α} : ∀ {as : List α}, a ∈ as → card as =
           have : a' ∈ remove a as := by rw [mem_remove_iff]; exact ⟨h'', Ne.symm h'⟩
           simp [h'', this, card_remove_of_mem h₃]
         | inr h'' =>
-          have : a' ∉ remove a as := fun h ↦ h'' (mem_of_mem_remove h)
+          have : a' ∉ remove a as := fun h => h'' (mem_of_mem_remove h)
           simp [h'', this, card_remove_of_mem h₃]
 
 theorem card_subset_le : ∀ {as bs : List α}, as ⊆ bs → card as ≤ card bs
@@ -124,7 +124,7 @@ theorem card_subset_le : ∀ {as bs : List α}, as ⊆ bs → card as ≤ card b
   | (a :: as), bs, hsub => by
     cases Decidable.em (a ∈ as) with
     | inl h' =>
-      have hsub' : as ⊆ bs := fun _ xmem ↦ hsub (mem_cons_of_mem a xmem)
+      have hsub' : as ⊆ bs := fun _ xmem => hsub (mem_cons_of_mem a xmem)
       simp [h', card_subset_le hsub']
     | inr h' =>
       have : a ∈ bs := hsub (Mem.head ..)
@@ -133,7 +133,7 @@ theorem card_subset_le : ∀ {as bs : List α}, as ⊆ bs → card as ≤ card b
       apply card_subset_le
       intro x xmem
       rw [mem_remove_iff]
-      exact ⟨hsub (mem_cons_of_mem _ xmem), fun h ↦ h' (h ▸ xmem)⟩
+      exact ⟨hsub (mem_cons_of_mem _ xmem), fun h => h' (h ▸ xmem)⟩
 
 theorem card_map_le (f : α → β) (as : List α) : card (as.map f) ≤ card as := by
   induction as with
@@ -142,7 +142,7 @@ theorem card_map_le (f : α → β) (as : List α) : card (as.map f) ≤ card as
     cases Decidable.em (f a ∈ map f as) with
     | inl h => simp [h]; apply Nat.le_trans ih (card_le_card_cons ..)
     | inr h =>
-      have : a ∉ as := fun h'' ↦ h (mem_map_of_mem _ h'')
+      have : a ∉ as := fun h'' => h (mem_map_of_mem _ h'')
       simp [h, this]
       exact Nat.add_le_add_right ih _
 
@@ -162,7 +162,7 @@ theorem card_map_eq_of_inj_on {f : α → β} {as : List α} :
         simp  [h1, mem_map_of_mem f h1, ih h2]
     | inr h =>
       intro inj_on'
-      have h1 : a ∉ as := fun h'' ↦ h (mem_map_of_mem _ h'')
+      have h1 : a ∉ as := fun h'' => h (mem_map_of_mem _ h'')
       have h2 : inj_on f as := inj_on_of_subset inj_on' (subset_cons _ _)
       simp [h, h1, ih h2]
 
@@ -174,12 +174,12 @@ theorem card_append_disjoint : ∀ {as bs : List α},
     Disjoint as bs → card (as ++ bs) = card as + card bs
   | [], _, _ => by simp
   | a :: as, bs, disj => by
-    have disj' : Disjoint as bs := fun _ h1 h2 ↦ disj (mem_cons_of_mem a h1) h2
+    have disj' : Disjoint as bs := fun _ h1 h2 => disj (mem_cons_of_mem a h1) h2
     cases Decidable.em (a ∈ as) with
     | inl h =>
       simp [h, card_append_disjoint disj']
     | inr h =>
-      have h1 : a ∉ bs := fun h' ↦ disj (mem_cons_self a as) h'
+      have h1 : a ∉ bs := fun h' => disj (mem_cons_self a as) h'
       simp [h, h1, card_append_disjoint disj']
       rw [Nat.add_right_comm]
 

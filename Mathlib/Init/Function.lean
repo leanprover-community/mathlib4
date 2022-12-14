@@ -65,7 +65,7 @@ def Injective (f : α → β) : Prop := ∀ ⦃a₁ a₂⦄, f a₁ = f a₂ →
 
 theorem Injective.comp {g : β → φ} {f : α → β} (hg : Injective g) (hf : Injective f) :
   Injective (g ∘ f) :=
-fun _ _ h ↦ hf (hg h)
+fun _ _ h => hf (hg h)
 
 /-- A function `f : α → β` is called surjective if every `b : β` is equal to `f a`
 for some `a : α`. -/
@@ -123,7 +123,7 @@ theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α
 #align function.left_inverse_of_surjective_of_right_inverse
 Function.leftInverse_of_surjective_of_rightInverse
 
-theorem injective_id : Injective (@id α) := fun _ _ ↦ id
+theorem injective_id : Injective (@id α) := fun _ _ => id
 
 theorem surjective_id : Surjective (@id α) := λ a => ⟨a, rfl⟩
 

@@ -18,7 +18,7 @@ open Lean Elab.Tactic Parser.Tactic Lean.Meta
 /-- Simulates the `<;>` tactic combinator.
 -/
 private def tac_and_then : TacticM Unit → TacticM Unit → TacticM Unit :=
-fun tac1 tac2 ↦ focus do
+fun tac1 tac2 => focus do
   tac1
   allGoals tac2
 
@@ -34,13 +34,13 @@ private def getSplitCandidates (loc : Location) : TacticM (List (SplitPosition �
 match loc with
 | Location.wildcard => do
    let candidates ← (← getLCtx).getFVarIds.mapM
-     (fun fvarId ↦ do
+     (fun fvarId => do
        let typ ← instantiateMVars (← inferType (mkFVar fvarId))
        return (SplitPosition.hyp fvarId, typ))
    pure ((SplitPosition.target, ← getMainTarget) :: candidates.toList)
 | Location.targets hyps tgt => do
    let candidates ← (← hyps.mapM getFVarId).mapM
-     (fun fvarId ↦ do
+     (fun fvarId => do
        let typ ← instantiateMVars (← inferType (mkFVar fvarId))
        return (SplitPosition.hyp fvarId, typ))
    if tgt
@@ -80,7 +80,7 @@ core Lean 4. We opt not to use those library functions so that we can better mim
 the behavior of mathlib3's `split_ifs`.
 -/
 private def splitIf1 (cond: Expr) (hName : Name) (loc : Location) : TacticM Unit := do
-  let splitCases := liftMetaTactic fun mvarId ↦ do
+  let splitCases := liftMetaTactic fun mvarId => do
     let (s1, s2) ← mvarId.byCases cond hName
     pure [s1.mvarId, s2.mvarId]
   tac_and_then splitCases (reduceIfsAt loc)
@@ -110,7 +110,7 @@ Stops if it encounters a condition in the passed-in `List Expr`.
 private partial def splitIfsCore
     (loc : Location)
     (hNames : IO.Ref (List (TSyntax `Lean.binderIdent))) :
-    List Expr → TacticM Unit := fun done ↦ withMainContext do
+    List Expr → TacticM Unit := fun done => withMainContext do
   let some (_,cond) ← findIfCondAt loc
       | Meta.throwTacticEx `split_ifs (←getMainGoal) "no if-the-else conditions to split"
 

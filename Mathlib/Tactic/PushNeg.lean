@@ -116,7 +116,7 @@ distrib mode it produces `¬p ∨ ¬q`. To use distrib mode, use `set_option pus
 syntax (name := pushNegConv) "push_neg" : conv
 
 /-- Execute `push_neg` as a conv tactic. -/
-@[tactic pushNegConv] def elabPushNegConv : Tactic := fun _ ↦ withMainContext do
+@[tactic pushNegConv] def elabPushNegConv : Tactic := fun _ => withMainContext do
   Conv.applySimpResult (← pushNegCore (← instantiateMVars (← Conv.getLhs)))
 
 /--
@@ -171,4 +171,4 @@ elab "push_neg" loc:(ppSpace location)? : tactic =>
   withLocation loc
     pushNegLocalDecl
     pushNegTarget
-    (fun _ ↦ logInfo "push_neg couldn't find a negation to push")
+    (fun _ => logInfo "push_neg couldn't find a negation to push")

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
 import Lean
-import Mathlib.Util.MapsTo
 
 /-!
 # Irreducible definitions
@@ -45,7 +44,7 @@ local elab "eta_helper " t:term : term => do
   let some (_, lhs, rhs) := t.eq? | throwError "not an equation: {t}"
   synthesizeSyntheticMVars
   let rhs ← instantiateMVars rhs
-  lambdaLetTelescope rhs fun xs rhs ↦ do
+  lambdaLetTelescope rhs fun xs rhs => do
     let lhs := (mkAppN lhs xs).headBeta
     mkForallFVars xs <|← mkEq lhs rhs
 

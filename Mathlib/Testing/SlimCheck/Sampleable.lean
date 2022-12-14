@@ -166,9 +166,9 @@ instance Char.shrinkable : Shrinkable Char := {}
 instance Prod.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] : Shrinkable (Prod α β) where
   shrink := λ (fst,snd) =>
     let shrink1 := shrA.shrink fst |>.map
-      fun ⟨x, _⟩ ↦ ⟨(x, snd), by simp_wf; apply Prod.Lex.left; simp_all_arith⟩
+      fun ⟨x, _⟩ => ⟨(x, snd), by simp_wf; apply Prod.Lex.left; simp_all_arith⟩
     let shrink2 := shrB.shrink snd |>.map
-      fun ⟨x, _⟩ ↦ ⟨(fst, x), by simp_wf; apply Prod.Lex.right; simp_all_arith⟩
+      fun ⟨x, _⟩ => ⟨(fst, x), by simp_wf; apply Prod.Lex.right; simp_all_arith⟩
     shrink1 ++ shrink2
 
 end Shrinkers

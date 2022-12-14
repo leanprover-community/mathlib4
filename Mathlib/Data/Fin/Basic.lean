@@ -14,7 +14,7 @@ def Up (ub a i : ℕ) := i < a ∧ i < ub
 lemma Up.next {ub i} (h : i < ub) : Up ub (i+1) i := ⟨Nat.lt_succ_self _, h⟩
 
 lemma Up.WF (ub) : WellFounded (Up ub) :=
-  Subrelation.wf (h₂ := (measure (ub - .)).wf) fun ⟨ia, iu⟩ ↦ Nat.sub_lt_sub_left iu ia
+  Subrelation.wf (h₂ := (measure (ub - .)).wf) fun ⟨ia, iu⟩ => Nat.sub_lt_sub_left iu ia
 
 /-- A well-ordered relation for "upwards" induction on the natural numbers up to some bound `ub`. -/
 def upRel (ub : ℕ) : WellFoundedRelation Nat := ⟨Up ub, Up.WF ub⟩
@@ -25,7 +25,7 @@ instance : Subsingleton (Fin 0) where
   allEq := fun.
 
 instance : Subsingleton (Fin 1) where
-  allEq := fun ⟨0, _⟩ ⟨0, _⟩ ↦ rfl
+  allEq := fun ⟨0, _⟩ ⟨0, _⟩ => rfl
 
 /-- If you actually have an element of `Fin n`, then the `n` is always positive -/
 lemma Fin.size_positive : Fin n → 0 < n
@@ -41,7 +41,7 @@ lemma Fin.ext_iff {a b : Fin n} : a = b ↔ a.val = b.val :=
   ⟨congrArg _, ext⟩
 
 lemma Fin.size_positive' [Nonempty (Fin n)] : 0 < n :=
-  ‹Nonempty (Fin n)›.elim fun i ↦ Fin.size_positive i
+  ‹Nonempty (Fin n)›.elim fun i => Fin.size_positive i
 
 @[simp]
 protected theorem Fin.eta (a : Fin n) (h : (a : ℕ) < n) : (⟨(a : ℕ), h⟩ : Fin n) = a := by
@@ -212,14 +212,14 @@ instance : AddCommMonoid (Fin n) where
     simp only [Fin.add_def, Fin.zero_def, Nat.zero_add]
     exact Nat.mod_eq_of_lt a.isLt
 
-  nsmul := fun x a ↦ (Fin.ofNat' x a.size_positive) * a
-  nsmul_zero := fun _ ↦ by
+  nsmul := fun x a => (Fin.ofNat' x a.size_positive) * a
+  nsmul_zero := fun _ => by
     apply Fin.eq_of_val_eq
     simp [Fin.mul_def, Fin.ofNat', Fin.zero_def, Nat.zero_mul, Nat.zero_mod]
-  nsmul_succ := fun x a ↦ by
+  nsmul_succ := fun x a => by
     simp only [Fin.nsmuls_eq]
     simp [Fin.ofNat', Fin.add_def]
-    exact congrArg (fun x ↦ x % n) (Nat.add_comm (x * a.val) (a.val) ▸ Nat.succ_mul x a.val)
+    exact congrArg (fun x => x % n) (Nat.add_comm (x * a.val) (a.val) ▸ Nat.succ_mul x a.val)
 
 instance : AddMonoidWithOne (Fin n) where
   __ := inferInstanceAs (AddCommMonoid (Fin n))
@@ -305,8 +305,8 @@ instance : CommRing (Fin n) where
   __ := inferInstanceAs (AddGroupWithOne (Fin n))
   __ := inferInstanceAs (CommSemiring (Fin n))
 
-lemma Fin.gt_wf : WellFounded (fun a b : Fin n ↦ b < a) :=
-  Subrelation.wf (fun {_ i} h ↦ ⟨h, i.2⟩) (invImage (fun i ↦ i.1) (Nat.upRel n)).wf
+lemma Fin.gt_wf : WellFounded (fun a b : Fin n => b < a) :=
+  Subrelation.wf (fun {_ i} h => ⟨h, i.2⟩) (invImage (fun i => i.1) (Nat.upRel n)).wf
 
 /-- A well-ordered relation for "upwards" induction on `Fin n`. -/
 def Fin.upRel (n : ℕ) : WellFoundedRelation (Fin n) := ⟨_, gt_wf⟩

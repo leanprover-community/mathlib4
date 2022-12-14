@@ -162,7 +162,7 @@ class IsSymm (α : Type u) (r : α → α → Prop) : Prop where
 /-- The opposite of a symmetric relation is symmetric. -/
 instance is_symm_op_of_is_symm (α : Type u) (r : α → α → Prop) [IsSymm α r] :
     IsSymmOp α Prop r where
-  symm_op := fun a b ↦ propext <| Iff.intro (IsSymm.symm a b) (IsSymm.symm b a)
+  symm_op := fun a b => propext <| Iff.intro (IsSymm.symm a b) (IsSymm.symm b a)
 
 /-- `IsAsymm X r` means that the binary relation `r` on `X` is asymmetric, that is,
 `r a b → ¬ r b a`. -/
@@ -193,7 +193,7 @@ class IsTotalPreorder (α : Type u) (r : α → α → Prop) extends IsTrans α 
 instance is_total_preorder_is_preorder (α : Type u) (r : α → α → Prop) [s : IsTotalPreorder α r] :
     IsPreorder α r where
   trans := s.trans
-  refl := fun a ↦ Or.elim (@IsTotal.total _ r _ a a) id id
+  refl := fun a => Or.elim (@IsTotal.total _ r _ a a) id id
 
 /-- `IsPartialOrder X r` means that the binary relation `r` on `X` is a partial order, that is,
 `IsPreorder X r` and `IsAntisymm X r`. -/
@@ -275,7 +275,7 @@ theorem incomp_trans [IsIncompTrans α r] {a b c : α} :
 
 instance (priority := 90) is_asymm_of_is_trans_of_is_irrefl [IsTrans α r] [IsIrrefl α r] :
     IsAsymm α r :=
-  ⟨fun a _ h₁ h₂ ↦ absurd (trans h₁ h₂) (irrefl a)⟩
+  ⟨fun a _ h₁ h₂ => absurd (trans h₁ h₂) (irrefl a)⟩
 
 section ExplicitRelationVariants
 
@@ -340,14 +340,14 @@ end
 -- theorem erefl (a : α) : a ≈ a :=
 --   ⟨irrefl a, irrefl a⟩
 
--- theorem esymm {a b : α} : a ≈ b → b ≈ a := fun ⟨h₁, h₂⟩ ↦ ⟨h₂, h₁⟩
+-- theorem esymm {a b : α} : a ≈ b → b ≈ a := fun ⟨h₁, h₂⟩ => ⟨h₂, h₁⟩
 
 -- theorem etrans {a b c : α} : a ≈ b → b ≈ c → a ≈ c :=
 --   incomp_trans
 
--- theorem not_lt_of_equiv {a b : α} : a ≈ b → ¬a ≺ b := fun h ↦ h.1
+-- theorem not_lt_of_equiv {a b : α} : a ≈ b → ¬a ≺ b := fun h => h.1
 
--- theorem not_lt_of_equiv' {a b : α} : a ≈ b → ¬b ≺ a := fun h ↦ h.2
+-- theorem not_lt_of_equiv' {a b : α} : a ≈ b → ¬b ≺ a := fun h => h.2
 
 -- instance is_equiv : IsEquiv α equiv where
 --   refl := erefl
@@ -365,43 +365,43 @@ end
 theorem is_strict_weak_order_of_is_total_preorder {α : Type u} {le : α → α → Prop}
     {lt : α → α → Prop} [DecidableRel le] [IsTotalPreorder α le] (h : ∀ a b, lt a b ↔ ¬le b a) :
     IsStrictWeakOrder α lt :=
-  { trans := fun a b c hab hbc ↦
+  { trans := fun a b c hab hbc =>
       have nba : ¬le b a := Iff.mp (h _ _) hab
       have ncb : ¬le c b := Iff.mp (h _ _) hbc
       have hab : le a b := Or.resolve_left (total_of le b a) nba
-      have nca : ¬le c a := fun hca : le c a ↦
+      have nca : ¬le c a := fun hca : le c a =>
         have hcb : le c b := trans_of le hca hab
         absurd hcb ncb
       Iff.mpr (h _ _) nca,
-    irrefl := fun a hlt ↦ absurd (refl_of le a) (Iff.mp (h _ _) hlt),
-    incomp_trans := fun a b c ⟨nab, nba⟩ ⟨nbc, ncb⟩ ↦
+    irrefl := fun a hlt => absurd (refl_of le a) (Iff.mp (h _ _) hlt),
+    incomp_trans := fun a b c ⟨nab, nba⟩ ⟨nbc, ncb⟩ =>
       have hba : le b a := Decidable.of_not_not (Iff.mp (not_congr (h _ _)) nab)
       have hab : le a b := Decidable.of_not_not (Iff.mp (not_congr (h _ _)) nba)
       have hcb : le c b := Decidable.of_not_not (Iff.mp (not_congr (h _ _)) nbc)
       have hbc : le b c := Decidable.of_not_not (Iff.mp (not_congr (h _ _)) ncb)
       have hac : le a c := trans_of le hab hbc
       have hca : le c a := trans_of le hcb hba
-      And.intro (fun n ↦ absurd hca (Iff.mp (h _ _) n)) fun n ↦ absurd hac (Iff.mp (h _ _) n) }
+      And.intro (fun n => absurd hca (Iff.mp (h _ _) n)) fun n => absurd hac (Iff.mp (h _ _) n) }
 
 theorem lt_of_lt_of_incomp {α : Type u} {lt : α → α → Prop} [IsStrictWeakOrder α lt]
     [DecidableRel lt] : ∀ {a b c}, lt a b → ¬lt b c ∧ ¬lt c b → lt a c :=
-  @fun a b c hab ⟨nbc, ncb⟩ ↦
-  have nca : ¬lt c a := fun hca ↦ absurd (trans_of lt hca hab) ncb
-  Decidable.by_contradiction fun nac : ¬lt a c ↦
+  @fun a b c hab ⟨nbc, ncb⟩ =>
+  have nca : ¬lt c a := fun hca => absurd (trans_of lt hca hab) ncb
+  Decidable.by_contradiction fun nac : ¬lt a c =>
     have : ¬lt a b ∧ ¬lt b a := incomp_trans_of lt ⟨nac, nca⟩ ⟨ncb, nbc⟩
     absurd hab this.1
 
 theorem lt_of_incomp_of_lt {α : Type u} {lt : α → α → Prop} [IsStrictWeakOrder α lt]
     [DecidableRel lt] : ∀ {a b c}, ¬lt a b ∧ ¬lt b a → lt b c → lt a c :=
-  @fun a b c ⟨nab, nba⟩ hbc ↦
-  have nca : ¬lt c a := fun hca ↦ absurd (trans_of lt hbc hca) nba
-  Decidable.by_contradiction fun nac : ¬lt a c ↦
+  @fun a b c ⟨nab, nba⟩ hbc =>
+  have nca : ¬lt c a := fun hca => absurd (trans_of lt hbc hca) nba
+  Decidable.by_contradiction fun nac : ¬lt a c =>
     have : ¬lt b c ∧ ¬lt c b := incomp_trans_of lt ⟨nba, nab⟩ ⟨nac, nca⟩
     absurd hbc this.1
 
 theorem eq_of_incomp {α : Type u} {lt : α → α → Prop} [IsTrichotomous α lt] {a b} :
     ¬lt a b ∧ ¬lt b a → a = b :=
-  fun ⟨nab, nba⟩ ↦
+  fun ⟨nab, nba⟩ =>
   match trichotomous_of lt a b with
   | Or.inl hab => absurd hab nab
   | Or.inr (Or.inl hab) => hab
@@ -413,7 +413,7 @@ theorem eq_of_eqv_lt {α : Type u} {lt : α → α → Prop} [IsTrichotomous α 
 
 theorem incomp_iff_eq {α : Type u} {lt : α → α → Prop} [IsTrichotomous α lt] [IsIrrefl α lt] (a b) :
     ¬lt a b ∧ ¬lt b a ↔ a = b :=
-  Iff.intro eq_of_incomp fun hab ↦ by
+  Iff.intro eq_of_incomp fun hab => by
     rw [hab]
     exact ⟨irrefl_of lt b, irrefl_of lt b⟩
 
@@ -423,4 +423,4 @@ theorem eqv_lt_iff_eq {α : Type u} {lt : α → α → Prop} [IsTrichotomous α
 
 theorem not_lt_of_lt {α : Type u} {lt : α → α → Prop} [IsStrictOrder α lt] {a b} :
     lt a b → ¬lt b a :=
-  fun h₁ h₂ ↦ absurd (trans_of lt h₁ h₂) (irrefl_of lt _)
+  fun h₁ h₂ => absurd (trans_of lt h₁ h₂) (irrefl_of lt _)

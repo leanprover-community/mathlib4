@@ -24,7 +24,7 @@ import Mathlib.Tactic.Relation.Trans
 -- FIXME This should have `@[trans]`, but the `trans` attribute PR'd in #253 rejects it.
 -- Note that it is still rejected after #857.
 @[deprecated] theorem Implies.trans {p q r : Prop} (h₁ : p → q) (h₂ : q → r) :
-    p → r := fun hp ↦ h₂ (h₁ hp)
+    p → r := fun hp => h₂ (h₁ hp)
 
 /- Not -/
 
@@ -44,7 +44,7 @@ alias congrArg ← congr_arg
 @[deprecated] theorem trans_rel_right {α : Sort u} {a b c : α}
     (r : α → α → Prop) (h₁ : a = b) (h₂ : r b c) : r a c := h₁ ▸ h₂
 
-theorem not_of_eq_false {p : Prop} (h : p = False) : ¬p := fun hp ↦ h ▸ hp
+theorem not_of_eq_false {p : Prop} (h : p = False) : ¬p := fun hp => h ▸ hp
 
 theorem cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h₂ a := rfl
 
@@ -65,11 +65,11 @@ attribute [trans] HEq.trans
 attribute [trans] heq_of_eq_of_heq
 
 theorem heq_of_eq_rec_left {φ : α → Sort v} {a a' : α} {p₁ : φ a} {p₂ : φ a'} :
-    (e : a = a') → (h₂ : Eq.rec (motive := fun a _ ↦ φ a) p₁ e = p₂) → HEq p₁ p₂
+    (e : a = a') → (h₂ : Eq.rec (motive := fun a _ => φ a) p₁ e = p₂) → HEq p₁ p₂
   | rfl, rfl => HEq.rfl
 
 theorem heq_of_eq_rec_right {φ : α → Sort v} {a a' : α} {p₁ : φ a} {p₂ : φ a'} :
-    (e : a' = a) → (h₂ : p₁ = Eq.rec (motive := fun a _ ↦ φ a) p₂ e) → HEq p₁ p₂
+    (e : a' = a) → (h₂ : p₁ = Eq.rec (motive := fun a _ => φ a) p₂ e) → HEq p₁ p₂
   | rfl, rfl => HEq.rfl
 
 theorem of_heq_true {a : Prop} (h : HEq a True) : a := of_eq_true (eq_of_heq h)
@@ -110,7 +110,7 @@ attribute [symm] Iff.symm
 
 -- This is needed for `calc` to work with `iff`.
 instance : Trans Iff Iff Iff where
-  trans := fun p q ↦ p.trans q
+  trans := fun p q => p.trans q
 
 #align not_congr not_congr
 #align not_iff_not_of_iff not_congr
@@ -184,7 +184,7 @@ theorem or_false_iff : p ∨ False ↔ p := iff_of_eq (or_false _)
 theorem or_self_iff : p ∨ p ↔ p := iff_of_eq (or_self _)
 #align or_self or_self_iff
 
-theorem not_or_of_not : ¬a → ¬b → ¬(a ∨ b) := fun h1 h2 ↦ not_or.2 ⟨h1, h2⟩
+theorem not_or_of_not : ¬a → ¬b → ¬(a ∨ b) := fun h1 h2 => not_or.2 ⟨h1, h2⟩
 #align not_or not_or_of_not
 
 theorem iff_true_iff : (a ↔ True) ↔ a := iff_of_eq (iff_true _)
@@ -222,9 +222,9 @@ macro "∃! " xs:explicitBinders ", " b:term : term => expandExplicitBinders ``E
 /-- Pretty-printing for `ExistsUnique`, following the same pattern as pretty printing
     for `Exists`. -/
 @[app_unexpander ExistsUnique] def unexpandExistsUnique : Lean.PrettyPrinter.Unexpander
-  | `($(_) fun $x:ident ↦ ∃! $xs:binderIdent*, $b) => `(∃! $x:ident $xs:binderIdent*, $b)
-  | `($(_) fun $x:ident ↦ $b)                      => `(∃! $x:ident, $b)
-  | `($(_) fun ($x:ident : $t) ↦ $b)               => `(∃! ($x:ident : $t), $b)
+  | `($(_) fun $x:ident => ∃! $xs:binderIdent*, $b) => `(∃! $x:ident $xs:binderIdent*, $b)
+  | `($(_) fun $x:ident => $b)                      => `(∃! $x:ident, $b)
+  | `($(_) fun ($x:ident : $t) => $b)               => `(∃! ($x:ident : $t), $b)
   | _                                               => throw ()
 
 -- @[intro] -- TODO
@@ -259,7 +259,7 @@ theorem ExistsUnique.unique {α : Sort u} {p : α → Prop}
 
 -- @[congr]
 theorem exists_unique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃! a, p a) ↔ ∃! a, q a :=
-  exists_congr fun _ ↦ and_congr (h _) $ forall_congr' fun _ ↦ imp_congr_left (h _)
+  exists_congr fun _ => and_congr (h _) $ forall_congr' fun _ => imp_congr_left (h _)
 
 /- decidable -/
 
@@ -485,10 +485,10 @@ def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
 def EmptyRelation := λ _ _ : α => False
 
 theorem InvImage.trans (f : α → β) (h : Transitive r) : Transitive (InvImage r f) :=
-  fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) ↦ h h₁ h₂
+  fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) => h h₁ h₂
 
 theorem InvImage.irreflexive (f : α → β) (h : Irreflexive r) : Irreflexive (InvImage r f) :=
-  fun (a : α) (h₁ : InvImage r f a a) ↦ h (f a) h₁
+  fun (a : α) (h₁ : InvImage r f a a) => h (f a) h₁
 
 end Relation
 
@@ -520,13 +520,13 @@ def RightCommutative (h : β → α → β) := ∀ b a₁ a₂, h (h b a₁) a�
 def LeftCommutative  (h : α → β → β) := ∀ a₁ a₂ b, h a₁ (h a₂ b) = h a₂ (h a₁ b)
 
 theorem left_comm : Commutative f → Associative f → LeftCommutative f :=
-  fun hcomm hassoc a b c ↦ calc
+  fun hcomm hassoc a b c => calc
     a*(b*c) = (a*b)*c := Eq.symm (hassoc a b c)
           _ = (b*a)*c := hcomm a b ▸ rfl
           _ = b*(a*c) := hassoc b a c
 
 theorem right_comm : Commutative f → Associative f → RightCommutative f :=
-  fun hcomm hassoc a b c ↦ calc
+  fun hcomm hassoc a b c => calc
     (a*b)*c = a*(b*c) := hassoc a b c
           _ = a*(c*b) := hcomm b c ▸ rfl
           _ = (a*c)*b := Eq.symm (hassoc a c b)
@@ -538,7 +538,7 @@ namespace WellFounded
 variable {α : Sort u} {C : α → Sort v} {r : α → α → Prop}
 
 unsafe def fix'.impl (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x :=
-  F x fun y _ ↦ impl hwf F y
+  F x fun y _ => impl hwf F y
 
 @[implemented_by fix'.impl]
 def fix' (hwf : WellFounded r) (F : ∀ x, (∀ y, r y x → C y) → C x) (x : α) : C x := hwf.fix F x

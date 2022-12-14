@@ -45,8 +45,8 @@ instance [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] : DecidableE
     | _, b₁, _, b₂, isTrue (Eq.refl _) =>
       match b₁, b₂, h₂ _ b₁ b₂ with
       | _, _, isTrue (Eq.refl _) => isTrue rfl
-      | _, _, isFalse n => isFalse fun h ↦ Sigma.noConfusion h fun _ e₂ ↦ n <| eq_of_heq e₂
-    | _, _, _, _, isFalse n => isFalse fun h ↦ Sigma.noConfusion h fun e₁ _ ↦ n e₁
+      | _, _, isFalse n => isFalse fun h => Sigma.noConfusion h fun _ e₂ => n <| eq_of_heq e₂
+    | _, _, _, _, isFalse n => isFalse fun h => Sigma.noConfusion h fun e₁ _ => n e₁
 
 -- sometimes the built-in injectivity support does not work
 @[simp] -- @[nolint simpNF]
@@ -74,15 +74,15 @@ theorem subtype_ext {β : Type _} {p : α → β → Prop} :
 
 theorem subtype_ext_iff {β : Type _} {p : α → β → Prop} {x₀ x₁ : Σa, Subtype (p a)} :
     x₀ = x₁ ↔ x₀.fst = x₁.fst ∧ (x₀.snd : β) = x₁.snd :=
-  ⟨fun h ↦ h ▸ ⟨rfl, rfl⟩, fun ⟨h₁, h₂⟩ ↦ subtype_ext h₁ h₂⟩
+  ⟨fun h => h ▸ ⟨rfl, rfl⟩, fun ⟨h₁, h₂⟩ => subtype_ext h₁ h₂⟩
 
 @[simp]
 theorem «forall» {p : (Σa, β a) → Prop} : (∀ x, p x) ↔ ∀ a b, p ⟨a, b⟩ :=
-  ⟨fun h a b ↦ h ⟨a, b⟩, fun h ⟨a, b⟩ ↦ h a b⟩
+  ⟨fun h a b => h ⟨a, b⟩, fun h ⟨a, b⟩ => h a b⟩
 
 @[simp]
 theorem «exists» {p : (Σa, β a) → Prop} : (∃ x, p x) ↔ ∃ a b, p ⟨a, b⟩ :=
-  ⟨fun ⟨⟨a, b⟩, h⟩ ↦ ⟨a, b, h⟩, fun ⟨a, b, h⟩ ↦ ⟨⟨a, b⟩, h⟩⟩
+  ⟨fun ⟨⟨a, b⟩, h⟩ => ⟨a, b, h⟩, fun ⟨a, b, h⟩ => ⟨⟨a, b⟩, h⟩⟩
 
 /-- Map the left and right components of a sigma -/
 def map (f₁ : α₁ → α₂) (f₂ : ∀ a, β₁ a → β₂ (f₁ a)) (x : Sigma β₁) : Sigma β₂ :=
@@ -103,19 +103,19 @@ theorem Function.Injective.sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β�
 
 theorem Function.Injective.of_sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
     (h : Function.Injective (Sigma.map f₁ f₂)) (a : α₁) : Function.Injective (f₂ a) :=
-  fun x y hxy ↦
+  fun x y hxy =>
   sigma_mk_injective <| @h ⟨a, x⟩ ⟨a, y⟩ (Sigma.ext rfl (heq_of_eq hxy))
 
 theorem Function.Injective.sigma_map_iff {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
   (h₁ : Function.Injective f₁) :
     Function.Injective (Sigma.map f₁ f₂) ↔ ∀ a, Function.Injective (f₂ a) :=
-  ⟨fun h ↦ h.of_sigma_map, h₁.sigma_map⟩
+  ⟨fun h => h.of_sigma_map, h₁.sigma_map⟩
 
 theorem Function.Surjective.sigma_map {f₁ : α₁ → α₂} {f₂ : ∀ a, β₁ a → β₂ (f₁ a)}
   (h₁ : Function.Surjective f₁) (h₂ : ∀ a, Function.Surjective (f₂ a)) :
     Function.Surjective (Sigma.map f₁ f₂) := by
   simp only [Function.Surjective, Sigma.forall, h₁.forall]
-  exact fun i ↦ (h₂ _).forall.2 fun x ↦ ⟨⟨i, x⟩, rfl⟩
+  exact fun i => (h₂ _).forall.2 fun x => ⟨⟨i, x⟩, rfl⟩
 
 /-- Interpret a function on `Σ x : α, β x` as a dependent function with two arguments.
 
@@ -132,7 +132,7 @@ def Sigma.uncurry {γ : ∀ a, β a → Type _} (f : ∀ (x) (y : β x), γ x y)
 @[simp]
 theorem Sigma.uncurry_curry {γ : ∀ a, β a → Type _} (f : ∀ x : Sigma β, γ x.1 x.2) :
     Sigma.uncurry (Sigma.curry f) = f :=
-  funext fun ⟨_, _⟩ ↦ rfl
+  funext fun ⟨_, _⟩ => rfl
 
 @[simp]
 theorem Sigma.curry_uncurry {γ : ∀ a, β a → Type _} (f : ∀ (x) (y : β x), γ x y) :
@@ -188,8 +188,8 @@ instance decidableEq [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] 
     | _, b₁, _, b₂, isTrue (Eq.refl _) =>
       match b₁, b₂, h₂ _ b₁ b₂ with
       | _, _, isTrue (Eq.refl _) => isTrue rfl
-      | _, _, isFalse n => isFalse fun h ↦ PSigma.noConfusion h fun _ e₂ ↦ n <| eq_of_heq e₂
-    | _, _, _, _, isFalse n => isFalse fun h ↦ PSigma.noConfusion h fun e₁ _ ↦ n e₁
+      | _, _, isFalse n => isFalse fun h => PSigma.noConfusion h fun _ e₂ => n <| eq_of_heq e₂
+    | _, _, _, _, isFalse n => isFalse fun h => PSigma.noConfusion h fun e₁ _ => n e₁
 
 -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/porting.20data.2Esigma.2Ebasic/near/304855864
 -- for an explanation of why this is currently needed. It generates `PSigma.mk.inj`.
@@ -198,7 +198,7 @@ gen_injective_theorems% PSigma
 
 theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
     @PSigma.mk α β a₁ b₁ = @PSigma.mk α β a₂ b₂ ↔ a₁ = a₂ ∧ HEq b₁ b₂ :=
-  (Iff.intro PSigma.mk.inj) fun ⟨h₁, h₂⟩ ↦
+  (Iff.intro PSigma.mk.inj) fun ⟨h₁, h₂⟩ =>
     match a₁, a₂, b₁, b₂, h₁, h₂ with
     | _, _, _, _, Eq.refl _, HEq.refl _ => rfl
 
@@ -211,11 +211,11 @@ theorem ext_iff {x₀ x₁ : PSigma β} : x₀ = x₁ ↔ x₀.1 = x₁.1 ∧ HE
 
 @[simp]
 theorem «forall» {p : (Σ'a, β a) → Prop} : (∀ x, p x) ↔ ∀ a b, p ⟨a, b⟩ :=
-  ⟨fun h a b ↦ h ⟨a, b⟩, fun h ⟨a, b⟩ ↦ h a b⟩
+  ⟨fun h a b => h ⟨a, b⟩, fun h ⟨a, b⟩ => h a b⟩
 
 @[simp]
 theorem «exists» {p : (Σ'a, β a) → Prop} : (∃ x, p x) ↔ ∃ a b, p ⟨a, b⟩ :=
-  ⟨fun ⟨⟨a, b⟩, h⟩ ↦ ⟨a, b, h⟩, fun ⟨a, b, h⟩ ↦ ⟨⟨a, b⟩, h⟩⟩
+  ⟨fun ⟨⟨a, b⟩, h⟩ => ⟨a, b, h⟩, fun ⟨a, b, h⟩ => ⟨⟨a, b⟩, h⟩⟩
 
 /-- A specialized ext lemma for equality of psigma types over an indexed subtype. -/
 @[ext]
@@ -225,7 +225,7 @@ theorem subtype_ext {β : Sort _} {p : α → β → Prop} :
 
 theorem subtype_ext_iff {β : Sort _} {p : α → β → Prop} {x₀ x₁ : Σ'a, Subtype (p a)} :
     x₀ = x₁ ↔ x₀.fst = x₁.fst ∧ (x₀.snd : β) = x₁.snd :=
-  ⟨fun h ↦ h ▸ ⟨rfl, rfl⟩, fun ⟨h₁, h₂⟩ ↦ subtype_ext h₁ h₂⟩
+  ⟨fun h => h ▸ ⟨rfl, rfl⟩, fun ⟨h₁, h₂⟩ => subtype_ext h₁ h₂⟩
 
 variable {α₁ : Sort _} {α₂ : Sort _} {β₁ : α₁ → Sort _} {β₂ : α₂ → Sort _}
 

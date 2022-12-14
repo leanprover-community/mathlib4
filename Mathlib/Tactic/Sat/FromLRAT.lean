@@ -86,11 +86,11 @@ We use this to prove that all clauses in the formula are subsumed by it. -/
 structure Fmla.subsumes (f f' : Fmla) : Prop where
   prop : ∀ x, x ∈ f' → x ∈ f
 
-theorem Fmla.subsumes_self (f : Fmla) : f.subsumes f := ⟨fun _ h ↦ h⟩
+theorem Fmla.subsumes_self (f : Fmla) : f.subsumes f := ⟨fun _ h => h⟩
 theorem Fmla.subsumes_left (f f₁ f₂ : Fmla) (H : f.subsumes (f₁.and f₂)) : f.subsumes f₁ :=
-  ⟨fun _ h ↦ H.1 _ $ List.mem_append.2 $ Or.inl h⟩
+  ⟨fun _ h => H.1 _ $ List.mem_append.2 $ Or.inl h⟩
 theorem Fmla.subsumes_right (f f₁ f₂ : Fmla) (H : f.subsumes (f₁.and f₂)) : f.subsumes f₂ :=
-  ⟨fun _ h ↦ H.1 _ $ List.mem_append.2 $ Or.inr h⟩
+  ⟨fun _ h => H.1 _ $ List.mem_append.2 $ Or.inr h⟩
 
 /-- A valuation is an assignment of values to all the propositional variables. -/
 def Valuation := Nat → Prop
@@ -119,7 +119,7 @@ def Fmla.proof (f : Fmla) (c : Clause) : Prop :=
 
 /-- If `f` subsumes `c` (i.e. `c ∈ f`), then `f.proof c`. -/
 theorem Fmla.proof_of_subsumes (H : Fmla.subsumes f (Fmla.one c)) : f.proof c :=
-  fun _ h ↦ h.1 _ $ H.1 _ $ List.Mem.head ..
+  fun _ h => h.1 _ $ H.1 _ $ List.Mem.head ..
 
 /-- The core unit-propagation step.
 
@@ -154,14 +154,14 @@ def Valuation.mk : List Prop → Valuation
 theorem Valuation.mk_implies (as₁) : as = List.reverseAux as₁ ps →
   (Valuation.mk as).implies p ps as₁.length → p := by
   induction ps generalizing as₁ with
-  | nil => exact fun _ ↦ id
+  | nil => exact fun _ => id
   | cons a as ih =>
-    refine fun e H ↦ @ih (a::as₁) e (H ?_)
+    refine fun e H => @ih (a::as₁) e (H ?_)
     subst e; clear ih H
     suffices ∀ n n', n' = List.length as₁ + n →
       ∀ bs, mk (as₁.reverseAux bs) n' ↔ mk bs n from this 0 _ rfl (a::as)
     induction as₁ with simp
-    | cons b as₁ ih => exact fun n bs ↦ ih (n+1) _ (Nat.succ_add ..) _
+    | cons b as₁ ih => exact fun n bs => ih (n+1) _ (Nat.succ_add ..) _
 
 /-- Asserts that `¬⟦f⟧_v` implies `p`. -/
 structure Fmla.reify (v : Valuation) (f : Fmla) (p : Prop) : Prop where
@@ -177,10 +177,10 @@ theorem Fmla.refute (f : Fmla) (hf : f.proof [])
 /-- Negation turns AND into OR, so `¬⟦f₁ ∧ f₂⟧_v ≡ ¬⟦f₁⟧_v ∨ ¬⟦f₂⟧_v`. -/
 theorem Fmla.reify_or (h₁ : Fmla.reify v f₁ a) (h₂ : Fmla.reify v f₂ b) :
   Fmla.reify v (f₁.and f₂) (a ∨ b) := by
-  refine ⟨fun H ↦ by_contra fun hn ↦ H ⟨fun c h ↦ by_contra fun hn' ↦ ?_⟩⟩
+  refine ⟨fun H => by_contra fun hn => H ⟨fun c h => by_contra fun hn' => ?_⟩⟩
   rcases List.mem_append.1 h with h | h
-  · exact hn $ Or.inl $ h₁.1 fun Hc ↦ hn' $ Hc.1 _ h
-  · exact hn $ Or.inr $ h₂.1 fun Hc ↦ hn' $ Hc.1 _ h
+  · exact hn $ Or.inl $ h₁.1 fun Hc => hn' $ Hc.1 _ h
+  · exact hn $ Or.inr $ h₂.1 fun Hc => hn' $ Hc.1 _ h
 
 /-- Asserts that `¬⟦c⟧_v` implies `p`. -/
 structure Clause.reify (v : Valuation) (c : Clause) (p : Prop) : Prop where
@@ -188,7 +188,7 @@ structure Clause.reify (v : Valuation) (c : Clause) (p : Prop) : Prop where
 
 /-- Reification of a single clause formula. -/
 theorem Fmla.reify_one (h : Clause.reify v c a) : Fmla.reify v (Fmla.one c) a :=
-  ⟨fun H ↦ h.1 fun h ↦ H ⟨fun | _, List.Mem.head .. => h⟩⟩
+  ⟨fun H => h.1 fun h => H ⟨fun | _, List.Mem.head .. => h⟩⟩
 
 /-- Asserts that `¬⟦l⟧_v` implies `p`. -/
 structure Literal.reify (v : Valuation) (l : Literal) (p : Prop) : Prop where
@@ -197,14 +197,14 @@ structure Literal.reify (v : Valuation) (l : Literal) (p : Prop) : Prop where
 /-- Negation turns OR into AND, so `¬⟦l ∨ c⟧_v ≡ ¬⟦l⟧_v ∧ ¬⟦c⟧_v`. -/
 theorem Clause.reify_and (h₁ : Literal.reify v l a) (h₂ : Clause.reify v c b) :
   Clause.reify v (Clause.cons l c) (a ∧ b) :=
-  ⟨fun H ↦ ⟨h₁.1 (by_contra fun hn ↦ H hn.elim), h₂.1 fun h ↦ H fun _ ↦ h⟩⟩
+  ⟨fun H => ⟨h₁.1 (by_contra fun hn => H hn.elim), h₂.1 fun h => H fun _ => h⟩⟩
 
 /-- The reification of the empty clause is `True`: `¬⟦⊥⟧_v ≡ True`. -/
-theorem Clause.reify_zero : Clause.reify v Clause.nil True := ⟨fun _ ↦ trivial⟩
+theorem Clause.reify_zero : Clause.reify v Clause.nil True := ⟨fun _ => trivial⟩
 
 /-- The reification of a singleton clause `¬⟦l⟧_v ≡ ¬⟦l⟧_v`. -/
 theorem Clause.reify_one (h₁ : Literal.reify v l a) : Clause.reify v (Clause.nil.cons l) a :=
-  ⟨fun H ↦ ((Clause.reify_and h₁ Clause.reify_zero).1 H).1⟩
+  ⟨fun H => ((Clause.reify_and h₁ Clause.reify_zero).1 H).1⟩
 
 /-- The reification of a positive literal `¬⟦a⟧_v ≡ ¬a`. -/
 theorem Literal.reify_pos (h : v n ↔ a) : (Literal.pos n).reify v ¬a := ⟨mt h.2⟩
@@ -234,7 +234,7 @@ structure Clause where
 def buildClause (arr : Array Int) : Expr :=
   let nil  := mkConst ``Sat.Clause.nil
   let cons := mkConst ``Sat.Clause.cons
-  arr.foldr (fun i e ↦ mkApp2 cons (toExpr $ Sat.Literal.ofInt i) e) nil
+  arr.foldr (fun i e => mkApp2 cons (toExpr $ Sat.Literal.ofInt i) e) nil
 
 /-- Constructs the formula expression from the input CNF, as a balanced tree of `Fmla.and` nodes. -/
 partial def buildConj (arr : Array (Array Int)) (start stop : Nat) : Expr :=
@@ -288,7 +288,7 @@ structure LClause where
 
   1. Introduce local assumptions `have h1 : ctx.proof c1 := p1` for each clause `c1`
      referenced in the proof. We actually do all the introductions at once,
-     as in `(fun h1 h2 h3 ↦ ...) p1 p2 p3`, because we want `p_i` to not be under any binders
+     as in `(fun h1 h2 h3 => ...) p1 p2 p3`, because we want `p_i` to not be under any binders
      to avoid the cost of `instantiate` during typechecking and get the benefits of dag-like
      sharing in the `pi` (which are themselves previous proof steps which may be large terms).
      The hypotheses are in `gctx`, keyed on the clause ID.
@@ -303,7 +303,7 @@ structure LClause where
      * If `x` is the non-falsified clause, let `x'` denote the negated literal of `x`.
        Then `x'.negate` reduces to `x`, so `hnx : v.neg x'.negate |- hc v hv hnx hy : False`,
        so we construct the term
-         `by_cases (fun hnx : v.neg x'.negate ↦ hc v hv hnx hy) (fun hx : v.neg x ↦ ...)`
+         `by_cases (fun hnx : v.neg x'.negate => hc v hv hnx hy) (fun hx : v.neg x => ...)`
        and `hx` is added to the local context.
      * If all clauses are falsified, then we are done: `hc v hv hx hy : False`.
 -/
@@ -364,7 +364,7 @@ partial def buildProofStep (db : HashMap Nat Clause)
     let app := mkApp3 (mkConst ``Sat.Valuation.by_cases) (v d1) nlit <|
       mkLambda `h default (mkApp2 (mkConst ``Sat.Valuation.neg) (v d1) lit) pr
     let dom := mkApp2 (mkConst ``Sat.Valuation.neg) (v d1) nlit
-    f := fun e ↦ f <| mkApp app <| mkLambda `h default dom e
+    f := fun e => f <| mkApp app <| mkLambda `h default dom e
     lctx := lctx.insert (-u) depth
   return Except.error s!"no refutation: {ns}, {pf}, {lctx.toList}"
 
@@ -408,13 +408,13 @@ Most of the proof is under `2 * nvars + 1` quantifiers
 arithmetic by hand.
 
   1. First, we call `reifyFormula ctx'` which returns `a` and `pr : reify v ctx' a`
-  2. Then we build `fun (v : Valuation) (h1 : v 0 ↔ a1) ... (hn : v (n-1) ↔ an) ↦ pr`
+  2. Then we build `fun (v : Valuation) (h1 : v 0 ↔ a1) ... (hn : v (n-1) ↔ an) => pr`
   3. We have to lower expression `a` from step 1 out of the quantifiers by lowering all variable
      indices by `nvars+1`. This is okay because `v` and `h1..hn` do not appear in `a`.
   4. We construct the expression `ps`, which is `a1 .. an : Prop ⊢ [a1, ..., an] : List Prop`
-  5. `refute ctx (hf : ctx.proof []) (fun v h1 .. hn ↦ pr) : a` forces some definitional unfolding
-     since `fun h1 .. hn ↦ pr` should have type `implies v (reify v ctx a) [a1, ..., an] a`,
-     which involves unfolding `implies` n times as well as `ctx ↦ ctx'`.
+  5. `refute ctx (hf : ctx.proof []) (fun v h1 .. hn => pr) : a` forces some definitional unfolding
+     since `fun h1 .. hn => pr` should have type `implies v (reify v ctx a) [a1, ..., an] a`,
+     which involves unfolding `implies` n times as well as `ctx => ctx'`.
   6. Finally, we `intro a1 ... an` so that we have a proof of `∀ a1 ... an, a`.
 -/
 partial def buildReify (ctx ctx' proof : Expr) (nvars : Nat) : Expr × Expr := Id.run do

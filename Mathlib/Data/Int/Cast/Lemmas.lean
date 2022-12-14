@@ -341,7 +341,7 @@ namespace Pi
 variable {π : ι → Type _} [∀ i, IntCast (π i)]
 
 instance intCast : IntCast (∀ i, π i) :=
-  { intCast := fun n _ ↦ n }
+  { intCast := fun n _ => n }
 
 theorem int_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
   rfl

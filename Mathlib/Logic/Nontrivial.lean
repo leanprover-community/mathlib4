@@ -30,7 +30,7 @@ class Nontrivial (α : Type _) : Prop where
   exists_pair_ne : ∃ x y : α, x ≠ y
 
 theorem nontrivial_iff : Nontrivial α ↔ ∃ x y : α, x ≠ y :=
-  ⟨fun h ↦ h.exists_pair_ne, fun h ↦ ⟨h⟩⟩
+  ⟨fun h => h.exists_pair_ne, fun h => ⟨h⟩⟩
 
 theorem exists_pair_ne (α : Type _) [Nontrivial α] : ∃ x y : α, x ≠ y :=
   Nontrivial.exists_pair_ne
@@ -60,10 +60,10 @@ theorem exists_pair_lt (α : Type _) [Nontrivial α] [LinearOrder α] : ∃ x y 
   cases lt_or_gt_of_ne hxy <;> exact ⟨_, _, ‹_›⟩
 
 theorem nontrivial_iff_lt [LinearOrder α] : Nontrivial α ↔ ∃ x y : α, x < y :=
-  ⟨fun h ↦ @exists_pair_lt α h _, fun ⟨x, y, h⟩ ↦ nontrivial_of_lt x y h⟩
+  ⟨fun h => @exists_pair_lt α h _, fun ⟨x, y, h⟩ => nontrivial_of_lt x y h⟩
 
 theorem nontrivial_iff_exists_ne (x : α) : Nontrivial α ↔ ∃ y, y ≠ x :=
-  ⟨fun h ↦ @exists_ne α h x, fun ⟨_, hy⟩ ↦ nontrivial_of_ne _ _ hy⟩
+  ⟨fun h => @exists_ne α h x, fun ⟨_, hy⟩ => nontrivial_of_ne _ _ hy⟩
 
 theorem Subtype.nontrivial_iff_exists_ne (p : α → Prop) (x : Subtype p) :
     Nontrivial (Subtype p) ↔ ∃ (y : α) (_ : p y), y ≠ x := by
@@ -90,24 +90,24 @@ noncomputable def nontrivial_Psum_Unique (α : Type _) [Inhabited α] :
   else
     PSum.inr
       { default := default,
-        uniq := fun x : α ↦ by
+        uniq := fun x : α => by
           by_contra H
           exact h ⟨_, _, H⟩ }
 
 theorem subsingleton_iff : Subsingleton α ↔ ∀ x y : α, x = y :=
   ⟨by
     intro h
-    exact Subsingleton.elim, fun h ↦ ⟨h⟩⟩
+    exact Subsingleton.elim, fun h => ⟨h⟩⟩
 
 theorem not_nontrivial_iff_subsingleton : ¬Nontrivial α ↔ Subsingleton α := by
   simp only [nontrivial_iff, subsingleton_iff, not_exists, Ne.def, _root_.not_not, iff_self]
 
 theorem not_nontrivial (α) [Subsingleton α] : ¬Nontrivial α :=
-  fun ⟨⟨x, y, h⟩⟩ ↦ h <| Subsingleton.elim x y
+  fun ⟨⟨x, y, h⟩⟩ => h <| Subsingleton.elim x y
 
 theorem not_subsingleton (α) [h : Nontrivial α] : ¬Subsingleton α :=
   let ⟨⟨x, y, hxy⟩⟩ := h
-  fun ⟨h'⟩ ↦ hxy <| h' x y
+  fun ⟨h'⟩ => hxy <| h' x y
 
 /-- A type is either a subsingleton or nontrivial. -/
 theorem subsingleton_or_nontrivial (α : Type _) : Subsingleton α ∨ Nontrivial α := by
@@ -135,7 +135,7 @@ protected theorem Function.Surjective.nontrivial [Nontrivial β] {f : α → β}
   rcases hf x with ⟨x', hx'⟩
   rcases hf y with ⟨y', hy'⟩
   have : x' ≠ y' := by
-    refine fun H ↦ h ?_
+    refine fun H => h ?_
     rw [← hx', ← hy', H]
   exact ⟨⟨x', y', this⟩⟩
 
@@ -163,7 +163,7 @@ variable {I : Type _} {f : I → Type _}
 theorem nontrivial_at (i' : I) [inst : ∀ i, Nonempty (f i)] [Nontrivial (f i')] :
     Nontrivial (∀ i : I, f i) := by
   letI := Classical.decEq (∀ i : I, f i)
-  exact (Function.update_injective (fun i ↦ Classical.choice (inst i)) i').nontrivial
+  exact (Function.update_injective (fun i => Classical.choice (inst i)) i').nontrivial
 
 /-- As a convenience, provide an instance automatically if `(f default)` is nontrivial.
 
@@ -176,7 +176,7 @@ instance nontrivial [Inhabited I] [∀ i, Nonempty (f i)] [Nontrivial (f default
 end Pi
 
 instance Function.nontrivial [h : Nonempty α] [Nontrivial β] : Nontrivial (α → β) :=
-  h.elim fun a ↦ Pi.nontrivial_at a
+  h.elim fun a => Pi.nontrivial_at a
 
 protected theorem Subsingleton.le [Preorder α] [Subsingleton α] (x y : α) : x ≤ y :=
   le_of_eq (Subsingleton.elim x y)

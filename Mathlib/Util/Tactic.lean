@@ -43,7 +43,7 @@ def modifyMetavarDecl [MonadMCtx m] (mvarId : MVarId)
 a declared metvariable, nothing happens.
 -/
 def modifyTarget [MonadMCtx m] (mvarId : MVarId) (f : Expr → Expr) : m Unit :=
-  modifyMetavarDecl mvarId fun mdecl ↦
+  modifyMetavarDecl mvarId fun mdecl =>
     { mdecl with type := f mdecl.type }
 
 /--
@@ -56,7 +56,7 @@ If `mvarId` does not refer to a declared metavariable, nothing happens.
 -/
 def modifyLocalContext [MonadMCtx m] (mvarId : MVarId)
     (f : LocalContext → LocalContext) : m Unit :=
-  modifyMetavarDecl mvarId fun mdecl ↦
+  modifyMetavarDecl mvarId fun mdecl =>
     { mdecl with lctx := f mdecl.lctx }
 
 /--
@@ -71,4 +71,4 @@ exist in the local context of `mvarId`, nothing happens.
 -/
 def modifyLocalDecl [MonadMCtx m] (mvarId : MVarId) (fvarId : FVarId)
     (f : LocalDecl → LocalDecl) : m Unit :=
-  modifyLocalContext mvarId fun lctx ↦ lctx.modifyLocalDecl fvarId f
+  modifyLocalContext mvarId fun lctx => lctx.modifyLocalDecl fvarId f

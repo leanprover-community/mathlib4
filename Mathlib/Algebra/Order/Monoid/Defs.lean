@@ -43,7 +43,7 @@ section OrderedInstances
 @[to_additive]
 instance OrderedCommMonoid.to_CovariantClass_left (M : Type _) [OrderedCommMonoid M] :
     CovariantClass M M (· * ·) (· ≤ ·) where
-  elim := fun a _ _ bc ↦ OrderedCommMonoid.mul_le_mul_left _ _ bc a
+  elim := fun a _ _ bc => OrderedCommMonoid.mul_le_mul_left _ _ bc a
 #align ordered_comm_monoid.to_covariant_class_left OrderedCommMonoid.to_CovariantClass_left
 #align ordered_add_comm_monoid.to_covariant_class_left OrderedAddCommMonoid.to_CovariantClass_left
 

@@ -39,21 +39,21 @@ theorem prop (x : Subtype p) : p x :=
 
 @[simp]
 protected theorem «forall» {q : { a // p a } → Prop} : (∀ x, q x) ↔ ∀ a b, q ⟨a, b⟩ :=
-  ⟨fun h a b ↦ h ⟨a, b⟩, fun h ⟨a, b⟩ ↦ h a b⟩
+  ⟨fun h a b => h ⟨a, b⟩, fun h ⟨a, b⟩ => h a b⟩
 
 /-- An alternative version of `Subtype.forall`. This one is useful if Lean cannot figure out `q`
   when using `Subtype.forall` from right to left. -/
 protected theorem forall' {q : ∀ x, p x → Prop} : (∀ x h, q x h) ↔ ∀ x : { a // p a }, q x x.2 :=
-  (@Subtype.forall _ _ fun x ↦ q x.1 x.2).symm
+  (@Subtype.forall _ _ fun x => q x.1 x.2).symm
 
 @[simp]
 protected theorem «exists» {q : { a // p a } → Prop} : (∃ x, q x) ↔ ∃ a b, q ⟨a, b⟩ :=
-  ⟨fun ⟨⟨a, b⟩, h⟩ ↦ ⟨a, b, h⟩, fun ⟨a, b, h⟩ ↦ ⟨⟨a, b⟩, h⟩⟩
+  ⟨fun ⟨⟨a, b⟩, h⟩ => ⟨a, b, h⟩, fun ⟨a, b, h⟩ => ⟨⟨a, b⟩, h⟩⟩
 
 /-- An alternative version of `subtype.exists`. This one is useful if Lean cannot figure out `q`
   when using `subtype.exists` from right to left. -/
 protected theorem exists' {q : ∀ x, p x → Prop} : (∃ x h, q x h) ↔ ∃ x : { a // p a }, q x x.2 :=
-  (@Subtype.exists _ _ fun x ↦ q x.1 x.2).symm
+  (@Subtype.exists _ _ fun x => q x.1 x.2).symm
 
 @[ext]
 protected theorem ext : ∀ {a1 a2 : { x // p x }}, (a1 : α) = (a2 : α) → a1 = a2
@@ -97,9 +97,9 @@ theorem coe_eq_of_eq_mk {a : { a // p a }} {b : α} (h : ↑a = b) : a = ⟨b, h
   Subtype.ext h
 
 theorem coe_eq_iff {a : { a // p a }} {b : α} : ↑a = b ↔ ∃ h, a = ⟨b, h⟩ :=
-  ⟨fun h ↦ h ▸ ⟨a.2, (coe_eta _ _).symm⟩, fun ⟨_, ha⟩ ↦ ha.symm ▸ rfl⟩
+  ⟨fun h => h ▸ ⟨a.2, (coe_eta _ _).symm⟩, fun ⟨_, ha⟩ => ha.symm ▸ rfl⟩
 
-theorem coe_injective : Injective (fun (a : Subtype p) ↦ (a : α)) := fun _ _ ↦ Subtype.ext
+theorem coe_injective : Injective (fun (a : Subtype p) => (a : α)) := fun _ _ => Subtype.ext
 
 theorem val_injective : Injective (@val _ p) :=
   coe_injective
@@ -133,28 +133,28 @@ theorem restrict_apply {α} {β : α → Type _} (f : ∀ x, β x) (p : α → P
   rfl
 
 theorem restrict_def {α β} (f : α → β) (p : α → Prop) :
-  restrict p f = f ∘ (fun (a : Subtype p) ↦ a) := rfl
+  restrict p f = f ∘ (fun (a : Subtype p) => a) := rfl
 
 theorem restrict_injective {α β} {f : α → β} (p : α → Prop) (h : Injective f) :
     Injective (restrict p f) :=
   h.comp coe_injective
 
 theorem surjective_restrict {α} {β : α → Type _} [ne : ∀ a, Nonempty (β a)] (p : α → Prop) :
-    Surjective fun f : ∀ x, β x ↦ restrict p f := by
+    Surjective fun f : ∀ x, β x => restrict p f := by
   letI := Classical.decPred p
-  refine' fun f ↦ ⟨fun x ↦ if h : p x then f ⟨x, h⟩ else Nonempty.some (ne x), funext <| _⟩
+  refine' fun f => ⟨fun x => if h : p x then f ⟨x, h⟩ else Nonempty.some (ne x), funext <| _⟩
   rintro ⟨x, hx⟩
   exact dif_pos hx
 
 /-- Defining a map into a subtype, this can be seen as an "coinduction principle" of `Subtype`-/
 @[simps]
-def coind {α β} (f : α → β) {p : β → Prop} (h : ∀ a, p (f a)) : α → Subtype p := fun a ↦ ⟨f a, h a⟩
+def coind {α β} (f : α → β) {p : β → Prop} (h : ∀ a, p (f a)) : α → Subtype p := fun a => ⟨f a, h a⟩
 
 theorem coind_injective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Injective f) :
-    Injective (coind f h) := fun x y hxy ↦ hf <| by apply congr_arg Subtype.val hxy
+    Injective (coind f h) := fun x y hxy => hf <| by apply congr_arg Subtype.val hxy
 
 theorem coind_surjective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Surjective f) :
-    Surjective (coind f h) := fun x ↦
+    Surjective (coind f h) := fun x =>
   let ⟨a, ha⟩ := hf x
   ⟨a, coe_injective ha⟩
 
@@ -166,15 +166,15 @@ theorem coind_bijective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p 
 @[simps]
 def map {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ a, p a → q (f a)) :
     Subtype p → Subtype q :=
-  fun x ↦ ⟨f x, h x x.prop⟩
+  fun x => ⟨f x, h x x.prop⟩
 
 theorem map_comp {p : α → Prop} {q : β → Prop} {r : γ → Prop} {x : Subtype p}
     (f : α → β) (h : ∀ a, p a → q (f a)) (g : β → γ) (l : ∀ a, q a → r (g a)) :
-    map g l (map f h x) = map (g ∘ f) (fun a ha ↦ l (f a) <| h a ha) x :=
+    map g l (map f h x) = map (g ∘ f) (fun a ha => l (f a) <| h a ha) x :=
   rfl
 
 theorem map_id {p : α → Prop} {h : ∀ a, p a → p (id a)} : map (@id α) h = id :=
-  funext fun _ ↦ rfl
+  funext fun _ => rfl
 
 theorem map_injective {p : α → Prop} {q : β → Prop} {f : α → β} (h : ∀ a, p a → q (f a))
     (hf : Injective f) : Injective (map f h) :=
@@ -182,10 +182,10 @@ theorem map_injective {p : α → Prop} {q : β → Prop} {f : α → β} (h : �
 
 theorem map_involutive {p : α → Prop} {f : α → α} (h : ∀ a, p a → p (f a))
     (hf : Involutive f) : Involutive (map f h) :=
-  fun x ↦ Subtype.ext (hf x)
+  fun x => Subtype.ext (hf x)
 
 instance [HasEquiv α] (p : α → Prop) : HasEquiv (Subtype p) :=
-  ⟨fun s t ↦ (s : α) ≈ (t : α)⟩
+  ⟨fun s t => (s : α) ≈ (t : α)⟩
 
 theorem equiv_iff [HasEquiv α] {p : α → Prop} {s t : Subtype p} : s ≈ t ↔ (s : α) ≈ (t : α) :=
   Iff.rfl

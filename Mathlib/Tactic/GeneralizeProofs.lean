@@ -47,11 +47,11 @@ private def mkGen (e : Expr) : M Unit := do
   let t ← match s.nextIdx with
   | [] => mkFreshUserName `h
   | n :: rest =>
-    modify fun s ↦ { s with nextIdx := rest }
+    modify fun s => { s with nextIdx := rest }
     match n with
     | `(binderIdent| $s:ident) => pure s.getId
     | _ => mkFreshUserName `h
-  modify fun s ↦ { s with curIdx := s.curIdx.push ⟨e, t, none⟩ }
+  modify fun s => { s with curIdx := s.curIdx.push ⟨e, t, none⟩ }
 
 /-- Recursively generalize proofs occuring in e -/
 partial def visit (e : Expr) : M Expr := do
@@ -69,22 +69,22 @@ partial def visit (e : Expr) : M Expr := do
         let localDecl ← match localDecl.value? with
            | some value => let value ← visit value; pure <| localDecl.setValue value
            | none       => pure localDecl
-        lctx := lctx.modifyLocalDecl xFVarId fun _ ↦ localDecl
+        lctx := lctx.modifyLocalDecl xFVarId fun _ => localDecl
       withLCtx lctx localInstances k
-    checkCache (e : ExprStructEq) fun _ ↦ do
+    checkCache (e : ExprStructEq) fun _ => do
       if (← AbstractNestedProofs.isNonTrivialProof e) then
         mkGen e
         return e
       else match e with
-        | .lam ..      => lambdaLetTelescope e fun xs b ↦ visitBinders xs do
+        | .lam ..      => lambdaLetTelescope e fun xs b => visitBinders xs do
           mkLambdaFVars xs (← visit b) (usedLetOnly := false)
-        | .letE ..     => lambdaLetTelescope e fun xs b ↦ visitBinders xs do
+        | .letE ..     => lambdaLetTelescope e fun xs b => visitBinders xs do
           mkLambdaFVars xs (← visit b) (usedLetOnly := false)
-        | .forallE ..  => forallTelescope e fun xs b ↦ visitBinders xs do
+        | .forallE ..  => forallTelescope e fun xs b => visitBinders xs do
           mkForallFVars xs (← visit b)
         | .mdata _ b   => return e.updateMData! (← visit b)
         | .proj _ _ b  => return e.updateProj! (← visit b)
-        | .app ..      => e.withApp fun f args ↦ return mkAppN f (← args.mapM visit)
+        | .app ..      => e.withApp fun f args => return mkAppN f (← args.mapM visit)
         | _            => pure e
 
 /--

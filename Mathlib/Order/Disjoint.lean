@@ -40,7 +40,7 @@ def Disjoint (a b : α) : Prop :=
 #align disjoint Disjoint
 
 theorem Disjoint.comm : Disjoint a b ↔ Disjoint b a :=
-  forall_congr' fun _ ↦ forall_swap
+  forall_congr' fun _ => forall_swap
 #align disjoint.comm Disjoint.comm
 
 @[symm]
@@ -52,14 +52,14 @@ theorem symmetric_disjoint : Symmetric (Disjoint : α → α → Prop) :=
   Disjoint.symm
 
 @[simp]
-theorem disjoint_bot_left : Disjoint ⊥ a := fun _ hbot _ ↦ hbot
+theorem disjoint_bot_left : Disjoint ⊥ a := fun _ hbot _ => hbot
 
 @[simp]
-theorem disjoint_bot_right : Disjoint a ⊥ := fun _ _ hbot ↦ hbot
+theorem disjoint_bot_right : Disjoint a ⊥ := fun _ _ hbot => hbot
 #align disjoint_bot_right disjoint_bot_right
 
 theorem Disjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Disjoint b d → Disjoint a c :=
-  fun h _ ha hc ↦ h (ha.trans h₁) (hc.trans h₂)
+  fun h _ ha hc => h (ha.trans h₁) (hc.trans h₂)
 #align disjoint.mono Disjoint.mono
 
 theorem Disjoint.mono_left (h : a ≤ b) : Disjoint b c → Disjoint a c :=
@@ -72,14 +72,14 @@ theorem Disjoint.mono_right : b ≤ c → Disjoint a c → Disjoint a b :=
 
 @[simp]
 theorem disjoint_self : Disjoint a a ↔ a = ⊥ :=
-  ⟨fun hd ↦ bot_unique <| hd le_rfl le_rfl, fun h _ ha _ ↦ ha.trans_eq h⟩
+  ⟨fun hd => bot_unique <| hd le_rfl le_rfl, fun h _ ha _ => ha.trans_eq h⟩
 
 /- TODO: Rename `Disjoint.eq_bot` to `Disjoint.inf_eq` and `Disjoint.eq_bot_of_self` to
 `Disjoint.eq_bot` -/
 alias disjoint_self ↔ Disjoint.eq_bot_of_self _
 
 theorem Disjoint.ne (ha : a ≠ ⊥) (hab : Disjoint a b) : a ≠ b :=
-fun h ↦ ha <| disjoint_self.1 <| by rwa [← h] at hab
+fun h => ha <| disjoint_self.1 <| by rwa [← h] at hab
 #align disjoint.ne Disjoint.ne
 
 theorem Disjoint.eq_bot_of_le (hab : Disjoint a b) (h : a ≤ b) : a = ⊥ :=
@@ -98,11 +98,11 @@ variable [PartialOrder α] [BoundedOrder α] {a : α}
 
 @[simp]
 theorem disjoint_top : Disjoint a ⊤ ↔ a = ⊥ :=
-  ⟨fun h ↦ bot_unique <| h le_rfl le_top, fun h _ ha _ ↦ ha.trans_eq h⟩
+  ⟨fun h => bot_unique <| h le_rfl le_top, fun h _ ha _ => ha.trans_eq h⟩
 
 @[simp]
 theorem top_disjoint : Disjoint ⊤ a ↔ a = ⊥ :=
-  ⟨fun h ↦ bot_unique <| h le_top le_rfl, fun h _ _ ha ↦ ha.trans_eq h⟩
+  ⟨fun h => bot_unique <| h le_top le_rfl, fun h _ _ ha => ha.trans_eq h⟩
 
 end PartialBoundedOrder
 
@@ -111,7 +111,7 @@ section SemilatticeInfBot
 variable [SemilatticeInf α] [OrderBot α] {a b c d : α}
 
 theorem disjoint_iff_inf_le : Disjoint a b ↔ a ⊓ b ≤ ⊥ :=
-  ⟨fun hd ↦ hd inf_le_left inf_le_right, fun h _ ha hb ↦ (le_inf ha hb).trans h⟩
+  ⟨fun hd => hd inf_le_left inf_le_right, fun h _ ha hb => (le_inf ha hb).trans h⟩
 
 theorem disjoint_iff : Disjoint a b ↔ a ⊓ b = ⊥ :=
   disjoint_iff_inf_le.trans le_bot_iff
@@ -215,7 +215,7 @@ def Codisjoint (a b : α) : Prop :=
 #align codisjoint Codisjoint
 
 theorem Codisjoint.comm : Codisjoint a b ↔ Codisjoint b a :=
-  forall_congr' fun _ ↦ forall_swap
+  forall_congr' fun _ => forall_swap
 #align codisjoint.comm Codisjoint.comm
 
 @[symm]
@@ -227,13 +227,13 @@ theorem symmetric_codisjoint : Symmetric (Codisjoint : α → α → Prop) :=
   Codisjoint.symm
 
 @[simp]
-theorem codisjoint_top_left : Codisjoint ⊤ a := fun _ htop _ ↦ htop
+theorem codisjoint_top_left : Codisjoint ⊤ a := fun _ htop _ => htop
 
 @[simp]
-theorem codisjoint_top_right : Codisjoint a ⊤ := fun _ _ htop ↦ htop
+theorem codisjoint_top_right : Codisjoint a ⊤ := fun _ _ htop => htop
 
 theorem Codisjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Codisjoint a c → Codisjoint b d :=
-  fun h _ ha hc ↦ h (h₁.trans ha) (h₂.trans hc)
+  fun h _ ha hc => h (h₁.trans ha) (h₂.trans hc)
 #align codisjoint.mono Codisjoint.mono
 
 theorem Codisjoint.mono_left (h : a ≤ b) : Codisjoint a c → Codisjoint b c :=
@@ -246,14 +246,14 @@ theorem Codisjoint.mono_right : b ≤ c → Codisjoint a b → Codisjoint a c :=
 
 @[simp]
 theorem codisjoint_self : Codisjoint a a ↔ a = ⊤ :=
-  ⟨fun hd ↦ top_unique <| hd le_rfl le_rfl, fun h _ ha _ ↦ h.symm.trans_le ha⟩
+  ⟨fun hd => top_unique <| hd le_rfl le_rfl, fun h _ ha _ => h.symm.trans_le ha⟩
 
 /- TODO: Rename `Codisjoint.eq_top` to `Codisjoint.sup_eq` and `Codisjoint.eq_top_of_self` to
 `Codisjoint.eq_top` -/
 alias codisjoint_self ↔ Codisjoint.eq_top_of_self _
 
 theorem Codisjoint.ne (ha : a ≠ ⊤) (hab : Codisjoint a b) : a ≠ b :=
-  fun h ↦ ha <| codisjoint_self.1 <| by rwa [← h] at hab
+  fun h => ha <| codisjoint_self.1 <| by rwa [← h] at hab
 #align codisjoint.ne Codisjoint.ne
 
 theorem Codisjoint.eq_top_of_le (hab : Codisjoint a b) (h : b ≤ a) : a = ⊤ :=
@@ -272,11 +272,11 @@ variable [PartialOrder α] [BoundedOrder α] {a : α}
 
 @[simp]
 theorem codisjoint_bot : Codisjoint a ⊥ ↔ a = ⊤ :=
-  ⟨fun h ↦ top_unique <| h le_rfl bot_le, fun h _ ha _ ↦ h.symm.trans_le ha⟩
+  ⟨fun h => top_unique <| h le_rfl bot_le, fun h _ ha _ => h.symm.trans_le ha⟩
 
 @[simp]
 theorem bot_codisjoint : Codisjoint ⊥ a ↔ a = ⊤ :=
-  ⟨fun h ↦ top_unique <| h bot_le le_rfl, fun h _ _ ha ↦ h.symm.trans_le ha⟩
+  ⟨fun h => top_unique <| h bot_le le_rfl, fun h _ _ ha => h.symm.trans_le ha⟩
 
 end PartialBoundedOrder
 
@@ -434,7 +434,7 @@ structure IsCompl [PartialOrder α] [BoundedOrder α] (x y : α) : Prop where
 
 theorem isCompl_iff [PartialOrder α] [BoundedOrder α] {a b : α} :
     IsCompl a b ↔ Disjoint a b ∧ Codisjoint a b :=
-  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
+  ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
 #align is_compl_iff isCompl_iff
 
 namespace IsCompl
@@ -562,8 +562,8 @@ protected theorem disjoint_iff [OrderBot α] [OrderBot β] {x y : α × β} :
     Disjoint x y ↔ Disjoint x.1 y.1 ∧ Disjoint x.2 y.2 := by
   constructor
   · intro h
-    refine' ⟨fun a hx hy ↦ (@h (a, ⊥) ⟨hx, _⟩ ⟨hy, _⟩).1,
-      fun b hx hy ↦ (@h (⊥, b) ⟨_, hx⟩ ⟨_, hy⟩).2⟩
+    refine' ⟨fun a hx hy => (@h (a, ⊥) ⟨hx, _⟩ ⟨hy, _⟩).1,
+      fun b hx hy => (@h (⊥, b) ⟨_, hx⟩ ⟨_, hy⟩).2⟩
     all_goals exact bot_le
 
   · rintro ⟨ha, hb⟩ z hza hzb
@@ -638,7 +638,7 @@ namespace ComplementedLattice
 variable [Lattice α] [BoundedOrder α] [ComplementedLattice α]
 
 instance : ComplementedLattice αᵒᵈ :=
-  ⟨fun a ↦
+  ⟨fun a =>
     let ⟨b, hb⟩ := exists_isCompl (show α from a)
     ⟨b, hb.dual⟩⟩
 

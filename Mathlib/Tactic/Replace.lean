@@ -47,7 +47,7 @@ elab_rules : tactic
       let name : Name := match n? with
       | none   => `this
       | some n => n.getId
-      let hId? := (← getLCtx).findFromUserName? name |>.map fun d ↦ d.fvarId
+      let hId? := (← getLCtx).findFromUserName? name |>.map fun d => d.fvarId
       evalTactic $ ← `(tactic| have $[$n?]? $[: $t?]? := $v)
       match hId? with
       | some hId =>
@@ -94,7 +94,7 @@ elab_rules : tactic
     let name : Name := match n with
     | none   => `this
     | some n => n.getId
-    let hId? := (← getLCtx).findFromUserName? name |>.map fun d ↦ d.fvarId
+    let hId? := (← getLCtx).findFromUserName? name |>.map fun d => d.fvarId
     match hId? with
     | some hId =>
       try replaceMainGoal [goal1, ← goal2.clear hId]

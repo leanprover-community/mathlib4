@@ -59,7 +59,7 @@ instance [LinearOrderedAddCommGroupWithTop α] :
 
 instance [LinearOrderedCommMonoid α] : LinearOrderedCommMonoidWithZero (WithZero α) :=
   { WithZero.linearOrder, WithZero.commMonoidWithZero with
-    mul_le_mul_left := fun _ _ ↦ mul_le_mul_left', zero_le_one := WithZero.zero_le _ }
+    mul_le_mul_left := fun _ _ => mul_le_mul_left', zero_le_one := WithZero.zero_le _ }
 #align with_zero.linear_ordered_comm_monoid_with_zero instLinearOrderedCommMonoidWithZeroWithZero
 
 instance [LinearOrderedCommGroup α] : LinearOrderedCommGroupWithZero (WithZero α) :=
@@ -98,21 +98,21 @@ theorem not_lt_zero' : ¬a < 0 :=
 
 @[simp]
 theorem le_zero_iff : a ≤ 0 ↔ a = 0 :=
-  ⟨fun h ↦ le_antisymm h zero_le', fun h ↦ h ▸ le_rfl⟩
+  ⟨fun h => le_antisymm h zero_le', fun h => h ▸ le_rfl⟩
 #align le_zero_iff le_zero_iff
 
 theorem zero_lt_iff : 0 < a ↔ a ≠ 0 :=
-  ⟨ne_of_gt, fun h ↦ lt_of_le_of_ne zero_le' h.symm⟩
+  ⟨ne_of_gt, fun h => lt_of_le_of_ne zero_le' h.symm⟩
 #align zero_lt_iff zero_lt_iff
 
-theorem ne_zero_of_lt (h : b < a) : a ≠ 0 := fun h1 ↦ not_lt_zero' <| show b < 0 from h1 ▸ h
+theorem ne_zero_of_lt (h : b < a) : a ≠ 0 := fun h1 => not_lt_zero' <| show b < 0 from h1 ▸ h
 #align ne_zero_of_lt ne_zero_of_lt
 
 instance : LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) :=
   { Additive.orderedAddCommMonoid, Additive.linearOrder with
     top := (0 : α)
-    top_add' := fun a ↦ zero_mul (Additive.toMul a)
-    le_top := fun _ ↦ zero_le' }
+    top_add' := fun a => zero_mul (Additive.toMul a)
+    le_top := fun _ => zero_le' }
 #align additive.linear_ordered_add_comm_monoid_with_top
   instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual
 
@@ -154,11 +154,11 @@ theorem one_le_inv₀ (ha : a ≠ 0) : 1 ≤ a⁻¹ ↔ a ≤ 1 :=
 #align one_le_inv₀ one_le_inv₀
 
 theorem le_mul_inv_iff₀ (hc : c ≠ 0) : a ≤ b * c⁻¹ ↔ a * c ≤ b :=
-  ⟨fun h ↦ inv_inv c ▸ mul_inv_le_of_le_mul h, le_mul_inv_of_mul_le hc⟩
+  ⟨fun h => inv_inv c ▸ mul_inv_le_of_le_mul h, le_mul_inv_of_mul_le hc⟩
 #align le_mul_inv_iff₀ le_mul_inv_iff₀
 
 theorem mul_inv_le_iff₀ (hc : c ≠ 0) : a * c⁻¹ ≤ b ↔ a ≤ b * c :=
-  ⟨fun h ↦ inv_inv c ▸ le_mul_inv_of_mul_le (inv_ne_zero hc) h, mul_inv_le_of_le_mul⟩
+  ⟨fun h => inv_inv c ▸ le_mul_inv_of_mul_le (inv_ne_zero hc) h, mul_inv_le_of_le_mul⟩
 #align mul_inv_le_iff₀ mul_inv_le_iff₀
 
 theorem div_le_div₀ (a b c d : α) (hb : b ≠ 0) (hd : d ≠ 0) : a * b⁻¹ ≤ c * d⁻¹ ↔ a * d ≤ c * b :=
@@ -229,7 +229,7 @@ theorem lt_of_mul_lt_mul_of_le₀ (h : a * b < c * d) (hc : 0 < c) (hh : c ≤ a
 #align lt_of_mul_lt_mul_of_le₀ lt_of_mul_lt_mul_of_le₀
 
 theorem mul_le_mul_right₀ (hc : c ≠ 0) : a * c ≤ b * c ↔ a ≤ b :=
-  ⟨le_of_le_mul_right hc, fun hab ↦ mul_le_mul_right' hab _⟩
+  ⟨le_of_le_mul_right hc, fun hab => mul_le_mul_right' hab _⟩
 #align mul_le_mul_right₀ mul_le_mul_right₀
 
 theorem mul_le_mul_left₀ (ha : a ≠ 0) : a * b ≤ a * c ↔ b ≤ c := by
@@ -289,4 +289,4 @@ instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     instNontrivialAdditive with
     neg_top := @inv_zero _ (_)
-    add_neg_cancel := fun a ha ↦ mul_inv_cancel (id ha : Additive.toMul a ≠ 0) }
+    add_neg_cancel := fun a ha => mul_inv_cancel (id ha : Additive.toMul a ≠ 0) }

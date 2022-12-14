@@ -63,7 +63,7 @@ There are also shorthand commands for several common conv tactics:
 * `#push_neg e` is short for `#conv push_neg => e`
 -/
 elab tk:"#conv " conv:conv " => " e:term : command =>
-  Command.runTermElabM fun _ ↦ do
+  Command.runTermElabM fun _ => do
     let e ← Elab.Term.elabTermAndSynthesize e none
     let (rhs, g) ← Conv.mkConvGoalFor e
     _ ← Tactic.run g.mvarId! do

@@ -28,7 +28,7 @@ open Nat
 theorem mem_range' {m : ℕ} : ∀ {s n : ℕ}, m ∈ range' s n ↔ s ≤ m ∧ m < s + n
   | s, 0 => by simp
   | s, succ n =>
-    have : m = s → m < s + n + 1 := fun e ↦ e ▸ lt_succ_of_le (Nat.le_add_right _ _)
+    have : m = s → m < s + n + 1 := fun e => e ▸ lt_succ_of_le (Nat.le_add_right _ _)
     have l : m = s ∨ s + 1 ≤ m ↔ s ≤ m := by
       simpa only [eq_comm] using (@Decidable.le_iff_eq_or_lt _ _ _ s m).symm
     mem_cons.trans <| by
@@ -48,12 +48,12 @@ theorem mem_range {m n : ℕ} : m ∈ range n ↔ m < n := by
   simp only [range_eq_range', mem_range', Nat.zero_le, true_and, Nat.zero_add]
   rfl
 
-theorem chain_succ_range' : ∀ s n : ℕ, Chain (fun a b ↦ b = succ a) s (range' (s + 1) n)
+theorem chain_succ_range' : ∀ s n : ℕ, Chain (fun a b => b = succ a) s (range' (s + 1) n)
   | _, 0 => Chain.nil
   | s, n + 1 => (chain_succ_range' (s + 1) n).cons rfl
 
 theorem chain_lt_range' (s n : ℕ) : Chain (· < ·) s (range' (s + 1) n) :=
-  (chain_succ_range' s n).imp fun _ _ e ↦ e.symm ▸ lt_succ_self _
+  (chain_succ_range' s n).imp fun _ _ e => e.symm ▸ lt_succ_self _
 
 theorem pairwise_lt_range' : ∀ s n : ℕ, Pairwise (· < ·) (range' s n)
   | _, 0 => Pairwise.nil
@@ -66,7 +66,7 @@ theorem nodup_range (n : ℕ) : Nodup (range n) := by
   simp only [range_eq_range', nodup_range']
 
 /-- All elements of `fin n`, from `0` to `n-1`. The corresponding finset is `finset.univ`. -/
-def finRange (n : ℕ) : List (Fin n) := (range n).pmap Fin.mk fun _ ↦ mem_range.1
+def finRange (n : ℕ) : List (Fin n) := (range n).pmap Fin.mk fun _ => mem_range.1
 
 @[simp] theorem fin_range_zero : finRange 0 = [] := rfl
 
@@ -75,4 +75,4 @@ theorem mem_fin_range {n : ℕ} (a : Fin n) : a ∈ finRange n :=
   mem_pmap.2 ⟨a.1, mem_range.2 a.2, Fin.eta _ _⟩
 
 theorem nodup_fin_range (n : ℕ) : (finRange n).Nodup :=
-  (nodup_range _).pmap fun _ _ _ _ ↦ Fin.val_eq_of_eq
+  (nodup_range _).pmap fun _ _ _ _ => Fin.val_eq_of_eq

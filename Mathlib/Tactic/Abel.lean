@@ -41,11 +41,11 @@ structure Context where
   inst     : Expr
   /-- A simplification to apply to atomic expressions when they are encountered,
   before operating on them as atoms. -/
-  evalAtom : Expr → MetaM Simp.Result := fun e ↦ pure { expr := e }
+  evalAtom : Expr → MetaM Simp.Result := fun e => pure { expr := e }
 
 /-- Populate a `context` object for evaluating `e`, up to reducibility level `red`. -/
 def mkContext (red : TransparencyMode) (e : Expr)
-    (evalAtom : Expr → MetaM Simp.Result := fun e ↦ pure { expr := e }) : MetaM Context := do
+    (evalAtom : Expr → MetaM Simp.Result := fun e => pure { expr := e }) : MetaM Context := do
   let α ← inferType e
   let c ← synthInstance (← mkAppM ``AddCommMonoid #[α])
   let cg ← synthInstance? (← mkAppM ``AddCommGroup #[α])
@@ -439,7 +439,7 @@ partial def abelNFCore (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result := d
   | .term =>
     let thms := [``term_eq, ``termg_eq, ``add_zero, ``one_nsmul, ``one_zsmul, ``zsmul_zero]
     let ctx' := { ctx with simpTheorems := #[← thms.foldlM (·.addConst ·) {:_}] }
-    pure fun r' : Simp.Result ↦ do
+    pure fun r' : Simp.Result => do
       Simp.mkEqTrans r' (← Simp.main r'.expr ctx' (methods := Simp.DefaultMethods.methods)).1
   let rec
     /-- The recursive case of `abelNF`.
@@ -462,11 +462,11 @@ partial def abelNFCore (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result := d
           if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
           pure (.done r)
         catch _ => pure <| .visit { expr := e }
-      let post := (Simp.postDefault · fun _ ↦ none)
+      let post := (Simp.postDefault · fun _ => none)
       (·.1) <$> Simp.main parent ctx (methods := { pre, post }),
     /-- The `evalAtom` implementation passed to `eval` calls `go` if `cfg.recursive` is true,
     and does nothing otherwise. -/
-    evalAtom := if cfg.recursive then go false else fun e ↦ pure { expr := e }
+    evalAtom := if cfg.recursive then go false else fun e => pure { expr := e }
   go true e
 
 open Elab.Tactic Parser.Tactic
@@ -506,7 +506,7 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:(config ?) loc:(ppSpace location)? :
   if tk.isSome then cfg := { cfg with red := .default }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   withLocation loc (abelNFLocalDecl cfg) (abelNFTarget cfg)
-    fun _ ↦ throwError "abel_nf failed"
+    fun _ => throwError "abel_nf failed"
 
 @[inherit_doc abelNF] macro "abel_nf!" cfg:(config)? loc:(ppSpace location)? : tactic =>
   `(tactic| abel_nf ! $(cfg)? $(loc)?)
@@ -514,7 +514,7 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:(config ?) loc:(ppSpace location)? :
 @[inherit_doc abelNF] syntax (name := abelNFConv) "abel_nf" "!"? (config)? : conv
 
 /-- Elaborator for the `abel_nf` tactic. -/
-@[tactic abelNFConv] def elabAbelNFConv : Tactic := fun stx ↦ match stx with
+@[tactic abelNFConv] def elabAbelNFConv : Tactic := fun stx => match stx with
   | `(conv| abel_nf $[!%$tk]? $(_cfg)?) => withMainContext do
     let mut cfg ← elabAbelNFConfig stx[2]
     if tk.isSome then cfg := { cfg with red := .default }

@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lew
 Floris van Doorn, E.W.Ayers, Arthur Paulino
 -/
 import Lean
-import Mathlib.Util.MapsTo
 import Std.Lean.Expr
 import Std.Data.List.Basic
 
@@ -206,7 +205,7 @@ def zero? (e : Expr) : Bool :=
 
 /-- Returns a `NameSet` of all constants in an expression starting with a prefix in `pre`. -/
 def listNamesWithPrefixes (pre : NameSet) (e : Expr) : NameSet :=
-  e.foldConsts ∅ fun n l ↦ if pre.contains n.getPrefix then l.insert n else l
+  e.foldConsts ∅ fun n l => if pre.contains n.getPrefix then l.insert n else l
 
 def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M Expr
   | app f a => mkApp f <$> modifier a
@@ -239,7 +238,7 @@ def modifyArgM [Monad M] (modifier : Expr → M Expr) (e : Expr) (i : Nat) (n :=
     M Expr := do
   let some a := getArg? e i | return e
   let a ← modifier a
-  return modifyArg (fun _ ↦ a) e i n
+  return modifyArg (fun _ => a) e i n
 
 /-- Traverses an expression `e` and renames bound variables named `old` to `new`. -/
 def renameBVar (e : Expr) (old new : Name) : Expr :=

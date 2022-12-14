@@ -5,7 +5,6 @@ Authors: Gabriel Ebner
 -/
 
 import Lean
-import Mathlib.Util.MapsTo
 
 /-!
 # Defines the `sudo set_option` command.
@@ -34,8 +33,8 @@ but it also allows to set undeclared options.
 -/
 elab "sudo" "set_option" n:ident val:term : command => do
   let options ← setOption n val (← getOptions)
-  modify fun s ↦ { s with maxRecDepth := maxRecDepth.get options }
-  modifyScope fun scope ↦ { scope with opts := options }
+  modify fun s => { s with maxRecDepth := maxRecDepth.get options }
+  modifyScope fun scope => { scope with opts := options }
 
 open Elab.Term in
 /--
@@ -44,7 +43,7 @@ but it also allows to set undeclared options.
 -/
 elab "sudo" "set_option" n:ident val:term "in" body:term : term <= expectedType => do
   let options ← setOption n val (← getOptions)
-  withTheReader Core.Context (fun ctx ↦
+  withTheReader Core.Context (fun ctx =>
       { ctx with maxRecDepth := maxRecDepth.get options, options := options }) do
     elabTerm body expectedType
 

@@ -33,13 +33,13 @@ local macro "genIntDeclars" typeName:ident : command => do
         default := Fin.ofNat' 0 size_positive
 
       instance : AddSemigroup $typeName where
-        add_assoc := fun _ _ _ ↦ congrArg mk (AddSemigroup.add_assoc _ _ _)
+        add_assoc := fun _ _ _ => congrArg mk (AddSemigroup.add_assoc _ _ _)
 
       instance : AddCommSemigroup $typeName where
-        add_comm := fun _ _ ↦ congrArg mk (AddCommSemigroup.add_comm _ _)
+        add_comm := fun _ _ => congrArg mk (AddCommSemigroup.add_comm _ _)
 
       instance : Semigroup $typeName where
-        mul_assoc := fun _ _ _ ↦ congrArg mk (Semigroup.mul_assoc _ _ _)
+        mul_assoc := fun _ _ _ => congrArg mk (Semigroup.mul_assoc _ _ _)
 
       instance : Neg $typeName where
         neg a := mk (-a.val)
@@ -78,8 +78,8 @@ local macro "genIntDeclars" typeName:ident : command => do
         nsmul_succ n a := congrArg mk (AddMonoid.nsmul_succ n a.val)
         zero_mul := by simp [mul_def, zero_def]
         mul_zero := by simp [mul_def, zero_def]
-        npow_zero := fun _ ↦ rfl
-        npow_succ := fun _ _ ↦ rfl
+        npow_zero := fun _ => rfl
+        npow_succ := fun _ _ => rfl
         right_distrib a b c := by
           simp only [mul_def, add_def]
           apply eq_of_val_eq
@@ -95,14 +95,14 @@ local macro "genIntDeclars" typeName:ident : command => do
         __ := inferInstanceAs (Semigroup $typeName)
 
       instance : Ring $typeName where
-        sub_eq_add_neg := fun _ _ ↦ congrArg mk (sub_eq_add_neg _ _)
-        add_left_neg := fun a ↦ by apply eq_of_val_eq; simp [neg_def, add_def, zero_def]
+        sub_eq_add_neg := fun _ _ => congrArg mk (sub_eq_add_neg _ _)
+        add_left_neg := fun a => by apply eq_of_val_eq; simp [neg_def, add_def, zero_def]
         intCast n := ⟨n⟩
         intCast_ofNat _ := rfl
         intCast_negSucc _ := rfl
 
       instance : CommRing $typeName where
-        mul_comm := fun _ _ ↦ by
+        mul_comm := fun _ _ => by
           apply eq_of_val_eq
           simp [mul_def, zero_def]
           exact mul_comm _ _

@@ -52,7 +52,7 @@ instance OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGr
 @[to_additive OrderedAddCommGroup.to_OrderedCancelAddCommMonoid]
 instance (priority := 100) OrderedCommGroup.to_OrderedCancelCommMonoid [OrderedCommGroup α] :
     OrderedCancelCommMonoid α :=
-{ ‹OrderedCommGroup α› with le_of_mul_le_mul_left := fun a b c ↦ le_of_mul_le_mul_left' }
+{ ‹OrderedCommGroup α› with le_of_mul_le_mul_left := fun a b c => le_of_mul_le_mul_left' }
 #align ordered_comm_group.to_ordered_cancel_comm_monoid OrderedCommGroup.to_OrderedCancelCommMonoid
 #align ordered_add_comm_group.to_ordered_cancel_add_comm_monoid
   OrderedAddCommGroup.to_OrderedCancelAddCommMonoid

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Lean
-import Mathlib.Util.MapsTo
 
 /-!
 # `casesm`, `cases_type`, `constructorm` tactics
@@ -50,15 +49,15 @@ partial def casesMatching (g : MVarId) (matcher : Expr → MetaM Bool)
 
 /-- Elaborate a list of terms with holes into a list of patterns. -/
 def elabPatterns (pats : Array Term) : TermElabM (Array AbstractMVarsResult) :=
-  withTheReader Term.Context (fun ctx ↦ { ctx with ignoreTCFailures := true }) <|
+  withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) <|
   Term.withoutErrToSorry <|
-  pats.mapM fun p ↦ Term.withoutModifyingElabMetaStateWithInfo do
+  pats.mapM fun p => Term.withoutModifyingElabMetaStateWithInfo do
     withRef p <| abstractMVars (← Term.elabTerm p none)
 
 /-- Returns true if any of the patterns match the expression. -/
 def matchPatterns (pats : Array AbstractMVarsResult) (e : Expr) : MetaM Bool := do
   let e ← instantiateMVars e
-  pats.anyM fun p ↦ return (← Conv.matchPattern? p e) matches some (_, #[])
+  pats.anyM fun p => return (← Conv.matchPattern? p e) matches some (_, #[])
 
 /--
 * `casesm p` applies the `cases` tactic to a hypothesis `h : type`

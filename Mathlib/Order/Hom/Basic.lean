@@ -359,7 +359,7 @@ theorem comp_const (γ : Type _) [Preorder γ] (f : α →o β) (c : α) :
   rfl
 #align order_hom.comp_const OrderHom.comp_const
 
-/-- Given two bundled monotone maps `f`, `g`, `f.prod g` is the map `x ↦ (f x, g x)` bundled as a
+/-- Given two bundled monotone maps `f`, `g`, `f.prod g` is the map `x => (f x, g x)` bundled as a
 `OrderHom`. -/
 @[simps]
 protected def prod (f : α →o β) (g : α →o γ) : α →o β × γ :=
@@ -376,7 +376,7 @@ theorem comp_prod_comp_same (f₁ f₂ : β →o γ) (g : α →o β) :
   rfl
 #align order_hom.comp_prod_comp_same OrderHom.comp_prod_comp_same
 
-/-- Given two bundled monotone maps `f`, `g`, `f.prod g` is the map `x ↦ (f x, g x)` bundled as a
+/-- Given two bundled monotone maps `f`, `g`, `f.prod g` is the map `x => (f x, g x)` bundled as a
 `OrderHom`. This is a fully bundled version. -/
 @[simps]
 def prodₘ : (α →o β) →o (α →o γ) →o α →o β × γ :=

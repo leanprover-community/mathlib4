@@ -57,7 +57,7 @@ theorem exists_surjective_nat (α : Sort u) [Nonempty α] [Countable α] : ∃ f
   ⟨invFun f, invFun_surjective hf⟩
 
 theorem countable_iff_exists_surjective [Nonempty α] : Countable α ↔ ∃ f : ℕ → α, Surjective f :=
-  ⟨@exists_surjective_nat _ _, fun ⟨_, hf⟩ ↦ hf.countable⟩
+  ⟨@exists_surjective_nat _ _, fun ⟨_, hf⟩ => hf.countable⟩
 
 theorem Countable.of_equiv (α : Sort _) [Countable α] (e : α ≃ β) : Countable β :=
   e.symm.injective.countable

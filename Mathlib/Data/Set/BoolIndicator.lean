@@ -35,11 +35,11 @@ theorem not_mem_iff_boolIndicator (x : α) : x ∉ s ↔ s.boolIndicator x = fal
 #align set.not_mem_iff_boolIndicator Set.not_mem_iff_boolIndicator
 
 theorem preimage_boolIndicator_true : s.boolIndicator ⁻¹' {true} = s :=
-  ext fun x ↦ (s.mem_iff_boolIndicator x).symm
+  ext fun x => (s.mem_iff_boolIndicator x).symm
 #align set.preimage_boolIndicator_true Set.preimage_boolIndicator_true
 
 theorem preimage_boolIndicator_false : s.boolIndicator ⁻¹' {false} = sᶜ :=
-  ext fun x ↦ (s.not_mem_iff_boolIndicator x).symm
+  ext fun x => (s.not_mem_iff_boolIndicator x).symm
 #align set.preimage_boolIndicator_false Set.preimage_boolIndicator_false
 
 open Classical

@@ -293,16 +293,16 @@ abbrev Entry := Array (Array (DiscrTree.Key true)) × Name
 initialize normNumExt : PersistentEnvExtension Entry (Entry × NormNumExt)
     (List Entry × DiscrTree NormNumExt true) ←
   -- we only need this to deduplicate entries in the DiscrTree
-  have : BEq NormNumExt := ⟨fun _ _ ↦ false⟩
-  let insert kss v dt := kss.foldl (fun dt ks ↦ dt.insertCore ks v) dt
+  have : BEq NormNumExt := ⟨fun _ _ => false⟩
+  let insert kss v dt := kss.foldl (fun dt ks => dt.insertCore ks v) dt
   registerPersistentEnvExtension {
     mkInitial := pure ([], {})
-    addImportedFn := fun s ↦ do
-      let dt ← s.foldlM (init := {}) fun dt s ↦ s.foldlM (init := dt) fun dt (kss, n) ↦ do
+    addImportedFn := fun s => do
+      let dt ← s.foldlM (init := {}) fun dt s => s.foldlM (init := dt) fun dt (kss, n) => do
         pure (insert kss (← mkNormNumExt n) dt)
       pure ([], dt)
-    addEntryFn := fun (entries, s) ((kss, n), ext) ↦ ((kss, n) :: entries, insert kss ext s)
-    exportEntriesFn := fun s ↦ s.1.reverse.toArray
+    addEntryFn := fun (entries, s) ((kss, n), ext) => ((kss, n) :: entries, insert kss ext s)
+    exportEntriesFn := fun s => s.1.reverse.toArray
   }
 
 /-- Run each registered `norm_num` extension on an expression, returning a `NormNum.Result`. -/
@@ -387,7 +387,7 @@ initialize registerBuiltinAttribute {
   name := `norm_num
   descr := "adds a norm_num extension"
   applicationTime := .afterCompilation
-  add := fun declName stx kind ↦ match stx with
+  add := fun declName stx kind => match stx with
     | `(attr| norm_num $es,*) => do
       unless kind == AttributeKind.global do
         throwError "invalid attribute 'norm_num', must be global"
@@ -396,7 +396,7 @@ initialize registerBuiltinAttribute {
         throwError "invalid attribute 'norm_num', declaration is in an imported module"
       if (IR.getSorryDep env declName).isSome then return -- ignore in progress definitions
       let ext ← mkNormNumExt declName
-      let keys ← MetaM.run' <| es.getElems.mapM fun stx ↦ do
+      let keys ← MetaM.run' <| es.getElems.mapM fun stx => do
         let e ← TermElabM.run' <| withSaveInfoContext <| withAutoBoundImplicit <|
           withReader ({ · with ignoreTCFailures := true }) do
             let e ← elabTerm stx none
@@ -432,14 +432,14 @@ mutual
   /-- A `Methods` implementation which calls `norm_num`. -/
   partial def methods : Simp.Methods :=
     if useSimp then {
-      pre := fun e ↦ do
+      pre := fun e => do
         Simp.andThen (← Simp.preDefault e discharge) tryNormNum?
-      post := fun e ↦ do
+      post := fun e => do
         Simp.andThen (← Simp.postDefault e discharge) (tryNormNum? (post := true))
       discharge? := discharge
     } else {
-      pre := fun e ↦ Simp.andThen (.visit { expr := e }) tryNormNum?
-      post := fun e ↦ Simp.andThen (.visit { expr := e }) (tryNormNum? (post := true))
+      pre := fun e => Simp.andThen (.visit { expr := e }) tryNormNum?
+      post := fun e => Simp.andThen (.visit { expr := e }) (tryNormNum? (post := true))
       discharge? := discharge
     }
 
@@ -493,7 +493,7 @@ def normNumAt (g : MVarId) (ctx : Simp.Context) (fvarIdsToSimp : Array FVarId)
     let some gNew := res | return none
     g := gNew
   let (fvarIdsNew, gNew) ← g.assertHypotheses toAssert
-  let toClear := fvarIdsToSimp.filter fun fvarId ↦ !replaced.contains fvarId
+  let toClear := fvarIdsToSimp.filter fun fvarId => !replaced.contains fvarId
   let gNew ← gNew.tryClearMany toClear
   return some (fvarIdsNew, gNew)
 
@@ -557,14 +557,14 @@ open Lean Elab Tactic
 @[inherit_doc normNum1] syntax (name := normNum1Conv) "norm_num1" : conv
 
 /-- Elaborator for `norm_num1` conv tactic. -/
-@[tactic normNum1Conv] def elabNormNum1Conv : Tactic := fun _ ↦ withMainContext do
+@[tactic normNum1Conv] def elabNormNum1Conv : Tactic := fun _ => withMainContext do
   let ctx ← getSimpContext mkNullNode true
   Conv.applySimpResult (← deriveSimp ctx (← instantiateMVars (← Conv.getLhs)) (useSimp := false))
 
 @[inherit_doc normNum] syntax (name := normNumConv) "norm_num" &" only"? (simpArgs)? : conv
 
 /-- Elaborator for `norm_num` conv tactic. -/
-@[tactic normNumConv] def elabNormNumConv : Tactic := fun stx ↦ withMainContext do
+@[tactic normNumConv] def elabNormNumConv : Tactic := fun stx => withMainContext do
   let ctx ← getSimpContext stx[2] !stx[1].isNone
   Conv.applySimpResult (← deriveSimp ctx (← instantiateMVars (← Conv.getLhs)) (useSimp := true))
 

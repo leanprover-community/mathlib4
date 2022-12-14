@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Daniel Selsam, Gabriel Ebner
 -/
 
 import Lean
-import Mathlib.Util.MapsTo
 
 /-!
 # Defines `with_weak_namespace` command.
@@ -31,7 +30,7 @@ def resolveNamespace (ns : Name) : Name → Name
 def withWeakNamespace (ns : Name) (m : CommandElabM α) : CommandElabM α := do
   let old ← getCurrNamespace
   let ns := resolveNamespace old ns
-  modify fun s ↦ { s with env := s.env.registerNamespace ns }
+  modify fun s => { s with env := s.env.registerNamespace ns }
   modifyScope ({ · with currNamespace := ns })
   try m finally modifyScope ({ · with currNamespace := old })
 

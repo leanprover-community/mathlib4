@@ -110,7 +110,7 @@ instance : Distrib ℤ          := by infer_instance
 theorem coe_nat_inj' {m n : ℕ} : (↑m : ℤ) = ↑n ↔ m = n := Int.ofNat_inj
 #align int.coe_nat_inj' Int.coe_nat_inj'
 
-theorem coe_nat_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.ofNat_lt.2
+theorem coe_nat_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ => Int.ofNat_lt.2
 #align int.coe_nat_strict_mono Int.coe_nat_strictMono
 
 theorem coe_nat_nonneg (n : ℕ) : 0 ≤ (n : ℤ) := ofNat_le.2 (Nat.zero_le _)
@@ -292,7 +292,7 @@ theorem is_unit_eq_one_or {a : ℤ} : IsUnit a → a = 1 ∨ a = -1
 #align int.is_unit_eq_one_or Int.is_unit_eq_one_or
 
 theorem is_unit_iff {a : ℤ} : IsUnit a ↔ a = 1 ∨ a = -1 := by
-  refine' ⟨fun h ↦ is_unit_eq_one_or h, fun h ↦ _⟩
+  refine' ⟨fun h => is_unit_eq_one_or h, fun h => _⟩
   rcases h with (rfl | rfl)
   · exact is_unit_one
 
@@ -329,7 +329,7 @@ theorem of_nat_is_unit {n : ℕ} : IsUnit (n : ℤ) ↔ IsUnit n := by
 #align int.of_nat_is_unit Int.of_nat_is_unit
 
 theorem is_unit_mul_self {a : ℤ} (ha : IsUnit a) : a * a = 1 :=
-  (is_unit_eq_one_or ha).elim (fun h ↦ h.symm ▸ rfl) fun h ↦ h.symm ▸ rfl
+  (is_unit_eq_one_or ha).elim (fun h => h.symm ▸ rfl) fun h => h.symm ▸ rfl
 #align int.is_unit_mul_self Int.is_unit_mul_self
 
 theorem is_unit_add_is_unit_eq_is_unit_add_is_unit {a b c d : ℤ} (ha : IsUnit a) (hb : IsUnit b) (hc : IsUnit c)

@@ -125,6 +125,6 @@ elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
   let f ← elabTermForApply f
   let P ← P.mapM (elabTerm · none)
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
-    (atLocal := fun h ↦ liftMetaTactic <| applyFunHyp f P h)
+    (atLocal := fun h => liftMetaTactic <| applyFunHyp f P h)
     (atTarget := liftMetaTactic <| applyFunTarget f P)
-    (failed := fun _ ↦ throwError "apply_fun failed")
+    (failed := fun _ => throwError "apply_fun failed")

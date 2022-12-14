@@ -99,8 +99,8 @@ if h : a < b then h₁ h else h₂ (not_lt.1 h)
 
 protected def lt_by_cases {a b : ℕ} {C : Sort u} (h₁ : a < b → C) (h₂ : a = b → C)
   (h₃ : b < a → C) : C :=
-Nat.lt_ge_by_cases h₁ fun h₁ ↦
-  Nat.lt_ge_by_cases h₃ fun h ↦ h₂ (Nat.le_antisymm h h₁)
+Nat.lt_ge_by_cases h₁ fun h₁ =>
+  Nat.lt_ge_by_cases h₃ fun h => h₂ (Nat.le_antisymm h h₁)
 
 /- find -/
 
@@ -115,19 +115,19 @@ variable {p}
 
 private def wf_lbp : WellFounded (lbp p) := by
   refine ⟨let ⟨n, pn⟩ := H; ?_⟩
-  suffices ∀ m k, n ≤ k + m → Acc (lbp p) k from fun a ↦ this _ _ (Nat.le_add_left _ _)
+  suffices ∀ m k, n ≤ k + m → Acc (lbp p) k from fun a => this _ _ (Nat.le_add_left _ _)
   intro m
-  induction m with refine fun k kn ↦ ⟨_, fun | _, ⟨rfl, a⟩ => ?_⟩
+  induction m with refine fun k kn => ⟨_, fun | _, ⟨rfl, a⟩ => ?_⟩
   | zero => exact absurd pn (a _ kn)
   | succ m IH => exact IH _ (by rw [Nat.add_right_comm]; exact kn)
 
 protected def find_x : {n // p n ∧ ∀ m, m < n → ¬p m} :=
-(wf_lbp H).fix' (C := fun k ↦ (∀n, n < k → ¬p n) → {n // p n ∧ ∀ m, m < n → ¬p m})
-  (fun m IH al ↦ if pm : p m then ⟨m, pm, al⟩ else
-      have this : ∀ n, n ≤ m → ¬p n := fun n h ↦
-        (lt_or_eq_of_le h).elim (al n) fun e ↦ by rw [e]; exact pm
-      IH _ ⟨rfl, this⟩ fun n h ↦ this n $ Nat.le_of_succ_le_succ h)
-  0 fun n h ↦ absurd h (Nat.not_lt_zero _)
+(wf_lbp H).fix' (C := fun k => (∀n, n < k → ¬p n) → {n // p n ∧ ∀ m, m < n → ¬p m})
+  (fun m IH al => if pm : p m then ⟨m, pm, al⟩ else
+      have this : ∀ n, n ≤ m → ¬p n := fun n h =>
+        (lt_or_eq_of_le h).elim (al n) fun e => by rw [e]; exact pm
+      IH _ ⟨rfl, this⟩ fun n h => this n $ Nat.le_of_succ_le_succ h)
+  0 fun n h => absurd h (Nat.not_lt_zero _)
 
 /--
 If `p` is a (decidable) predicate on `ℕ` and `hp : ∃ (n : ℕ), p n` is a proof that
@@ -148,7 +148,7 @@ protected lemma find_spec : p (Nat.find H) := (Nat.find_x H).2.1
 protected lemma find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m := @(Nat.find_x H).2.2
 
 protected lemma find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
-not_lt.1 fun l ↦ Nat.find_min H l h
+not_lt.1 fun l => Nat.find_min H l h
 
 end find
 
@@ -161,11 +161,11 @@ lemma to_digits_core_lens_eq_aux (b f : Nat) :
   | zero => assumption
   | succ f ih =>
     by_cases hx : n / b = 0
-    case pos => simp only [hx, if_true, List.length, congrArg (fun l ↦ l + 1) hlen]
+    case pos => simp only [hx, if_true, List.length, congrArg (fun l => l + 1) hlen]
     case neg =>
       simp only [hx, if_false]
       specialize ih (n / b) (Nat.digitChar (n % b) :: l1) (Nat.digitChar (n % b) :: l2)
-      simp only [List.length, congrArg (fun l ↦ l + 1) hlen] at ih
+      simp only [List.length, congrArg (fun l => l + 1) hlen] at ih
       exact ih trivial
 
 lemma to_digits_core_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Char),

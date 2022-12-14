@@ -83,7 +83,7 @@ A tactic in the `RingNF.M` monad which will simplify expression `parent` to a no
   `RingNF.M.run` sets this to `false` in recursive mode.
 -/
 def rewrite (parent : Expr) (root := true) : M Simp.Result :=
-  fun nctx rctx s ↦ do
+  fun nctx rctx s => do
     let pre e :=
       try
         guard <| root || parent != e -- recursion guard
@@ -98,7 +98,7 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
         if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
         pure (.done r)
       catch _ => pure <| .visit { expr := e }
-    let post := (Simp.postDefault · fun _ ↦ none)
+    let post := (Simp.postDefault · fun _ => none)
     (·.1) <$> Simp.main parent nctx.ctx (methods := { pre, post })
 
 variable [CommSemiring R]
@@ -138,7 +138,7 @@ partial def M.run
     let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_1, ``int_rawCast_2
       ].foldlM (·.addConst · (post := false)) thms
     let ctx' := { ctx with simpTheorems := #[thms] }
-    pure fun r' : Simp.Result ↦ do
+    pure fun r' : Simp.Result => do
       Simp.mkEqTrans r' (← Simp.main r'.expr ctx' (methods := Simp.DefaultMethods.methods)).1
   let nctx := { ctx, simp }
   let rec
@@ -147,8 +147,8 @@ partial def M.run
     /-- The atom evaluator calls either `RingNF.rewrite` recursively,
     or nothing depending on `cfg.recursive`. -/
     evalAtom := if cfg.recursive
-      then fun e ↦ rewrite e false nctx rctx s
-      else fun e ↦ pure { expr := e }
+      then fun e => rewrite e false nctx rctx s
+      else fun e => pure { expr := e }
   x nctx rctx s
 
 /-- Overrides the default error message in `ring1` to use a prettified version of the goal. -/
@@ -194,7 +194,7 @@ elab (name := ringNF) "ring_nf" tk:"!"? cfg:(config ?) loc:(ppSpace location)? :
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   withLocation loc (ringNFLocalDecl s cfg) (ringNFTarget s cfg)
-    fun _ ↦ throwError "ring_nf failed"
+    fun _ => throwError "ring_nf failed"
 
 @[inherit_doc ringNF] macro "ring_nf!" cfg:(config)? loc:(ppSpace location)? : tactic =>
   `(tactic| ring_nf ! $(cfg)? $(loc)?)
@@ -212,12 +212,12 @@ elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:(config ?) : tactic => do
   let mut cfg ← elabConfig cfg
   if tk.isSome then cfg := { cfg with red := .default }
   let s ← IO.mkRef {}
-  liftMetaMAtMain fun g ↦ M.run s cfg <| proveEq g
+  liftMetaMAtMain fun g => M.run s cfg <| proveEq g
 
 @[inherit_doc ring1NF] macro "ring1_nf!" cfg:(config)? : tactic => `(tactic| ring1_nf ! $(cfg)?)
 
 /-- Elaborator for the `ring_nf` tactic. -/
-@[tactic ringNFConv] def elabRingNFConv : Tactic := fun stx ↦ match stx with
+@[tactic ringNFConv] def elabRingNFConv : Tactic := fun stx => match stx with
   | `(conv| ring_nf $[!%$tk]? $(_cfg)?) => withMainContext do
     let mut cfg ← elabConfig stx[2]
     if tk.isSome then cfg := { cfg with red := .default }

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ian Benway.
 -/
 import Lean
-import Mathlib.Util.MapsTo
 
 namespace Mathlib.Tactic
 open Lean Elab Elab.Tactic Meta
@@ -47,7 +46,7 @@ elab_rules : tactic
     | none =>
       let val ← elabTerm val none
       pure (← inferType val, val)
-    let fvar ← liftMetaTacticAux fun goal ↦ do
+    let fvar ← liftMetaTacticAux fun goal => do
       let (fvar, goal) ← (← goal.define a.getId ty val).intro1P
       pure (fvar, [goal])
     withMainContext do

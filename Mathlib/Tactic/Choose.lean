@@ -86,7 +86,7 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
   g.withContext do
     let h ← instantiateMVars h
     let t ← inferType h
-    forallTelescopeReducing t fun ctx t ↦ do
+    forallTelescopeReducing t fun ctx t => do
       (← withTransparency .all (whnf t)).withApp fun
       | .const ``Exists [u], #[α, p] => do
         let data ← mkFreshNameFrom data ((← p.getBinderName).getD `h)
@@ -117,9 +117,9 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
           (dataVal, specVal) ← mk_sometimes u α nonemp p ctx.toList (dataVal, specVal)
         dataVal ← mkLambdaFVars ctx' dataVal
         specVal ← mkLambdaFVars ctx specVal
-        let (fvar, g) ← withLocalDeclD .anonymous dataTy fun d ↦ do
+        let (fvar, g) ← withLocalDeclD .anonymous dataTy fun d => do
           let specTy ← mkForallFVars ctx (p.app (mkAppN d ctx')).headBeta
-          g.withContext <| withLocalDeclD data dataTy fun d' ↦ do
+          g.withContext <| withLocalDeclD data dataTy fun d' => do
             let mvarTy ← mkArrow (specTy.replaceFVar d d') (← g.getType)
             let newMVar ← mkFreshExprSyntheticOpaqueMVar mvarTy (← g.getTag)
             g.assign <| mkApp2 (← mkLambdaFVars #[d'] newMVar) dataVal specVal

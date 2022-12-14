@@ -107,9 +107,9 @@ theorem mul_left_injective₀ (hb : b ≠ 0) : Function.Injective fun a => a * b
 
 /-- A `CancelMonoidWithZero` satisfies `IsCancelMulZero`. -/
 instance (priority := 100) CancelMonoidWithZero.to_IsCancelMulZero : IsCancelMulZero M₀ :=
-{ mul_left_cancel_of_ne_zero := fun ha h ↦
+{ mul_left_cancel_of_ne_zero := fun ha h =>
     CancelMonoidWithZero.mul_left_cancel_of_ne_zero ha h
-  mul_right_cancel_of_ne_zero :=  fun hb h ↦
+  mul_right_cancel_of_ne_zero :=  fun hb h =>
     CancelMonoidWithZero.mul_right_cancel_of_ne_zero hb h, }
 
 end CancelMonoidWithZero
@@ -138,12 +138,12 @@ lemma IsRightCancelMulZero.to_IsLeftCancelMulZero [IsRightCancelMulZero M₀] :
 
 lemma IsLeftCancelMulZero.to_IsCancelMulZero [IsLeftCancelMulZero M₀] :
     IsCancelMulZero M₀ :=
-{ mul_right_cancel_of_ne_zero := fun ha h ↦
+{ mul_right_cancel_of_ne_zero := fun ha h =>
     IsLeftCancelMulZero.to_IsRightCancelMulZero.mul_right_cancel_of_ne_zero ha h }
 
 lemma IsRightCancelMulZero.to_IsCancelMulZero [IsRightCancelMulZero M₀] :
     IsCancelMulZero M₀ :=
-{ mul_left_cancel_of_ne_zero := fun ha h ↦
+{ mul_left_cancel_of_ne_zero := fun ha h =>
     IsRightCancelMulZero.to_IsLeftCancelMulZero.mul_left_cancel_of_ne_zero ha h }
 
 end CommMonoidWithZero

@@ -84,7 +84,7 @@ theorem perm_insertNth {x : α} : ∀ {l : List α} {n : Nat}, n ≤ l.length �
     (Perm.swap _ _ _)
 
 theorem Perm.mem_iff {a : α} {l₁ l₂ : List α} (h : l₁ ~ l₂) : a ∈ l₁ ↔ a ∈ l₂ :=
-  Iff.intro (fun m ↦ h.subset m) fun m ↦ h.symm.subset m
+  Iff.intro (fun m => h.subset m) fun m => h.symm.subset m
 
 /-- The way Lean 4 computes the motive with `elab_as_elim` has changed
 relative to the behaviour of `elab_as_eliminator` in Lean 3.
@@ -102,8 +102,8 @@ theorem perm_induction_on
     (trans : ∀ l₁ l₂ l₃, (h₁ : l₁ ~ l₂) → (h₂ : l₂ ~ l₃) → P l₁ l₂ h₁ → P l₂ l₃ h₂ →
       P l₁ l₃ (.trans h₁ h₂)) : P l₁ l₂ p :=
   have P_refl l : P l l (.refl l) :=
-    List.recOn l nil fun x xs ih ↦ cons x xs xs (Perm.refl xs) ih
-  Perm.recOn p nil cons (fun x y l ↦ swap x y l l (Perm.refl l) (P_refl l)) @trans
+    List.recOn l nil fun x xs ih => cons x xs xs (Perm.refl xs) ih
+  Perm.recOn p nil cons (fun x y l => swap x y l l (Perm.refl l) (P_refl l)) @trans
 
 theorem perm_inv_core {a : α} {l₁ l₂ r₁ r₂ : List α} :
     l₁ ++ a :: r₁ ~ l₂ ++ a :: r₂ → l₁ ++ r₁ ~ l₂ ++ r₂ := by
@@ -150,14 +150,14 @@ theorem Perm.nil_eq {l : List α} (p : [] ~ l) : [] = l := p.symm.eq_nil.symm
 theorem Perm.pairwise_iff {R : α → α → Prop} (S : Symmetric R) :
     ∀ {l₁ l₂ : List α}, l₁ ~ l₂ → (Pairwise R l₁ ↔ Pairwise R l₂) := by
   suffices ∀ {l₁ l₂}, l₁ ~ l₂ → Pairwise R l₁ → Pairwise R l₂ from
-    fun l₁ l₂ p ↦ ⟨this p, this p.symm⟩
+    fun l₁ l₂ p => ⟨this p, this p.symm⟩
   intros l₁ l₂ p d
   induction d generalizing l₂ with
   | nil => rw [← p.nil_eq]; constructor
   | @cons a h d _ ih =>
     obtain ⟨s₂, t₂, rfl⟩ := mem_split (p.subset (.head ..) : a ∈ l₂)
     have p' := (p.trans perm_middle).cons_inv
-    exact (pairwise_middle S).2 (pairwise_cons.2 ⟨fun b m ↦ d _ (p'.symm.subset m), ih p'⟩)
+    exact (pairwise_middle S).2 (pairwise_cons.2 ⟨fun b m => d _ (p'.symm.subset m), ih p'⟩)
 
 theorem Perm.nodup_iff {l₁ l₂ : List α} : l₁ ~ l₂ → (Nodup l₁ ↔ Nodup l₂) :=
   Perm.pairwise_iff <| @Ne.symm α

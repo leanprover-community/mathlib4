@@ -74,7 +74,7 @@ variable [OrderedSemiring α]
 -- porting note: missing mono attribute
 -- @[mono]
 theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
-  monotone_nat_of_le_succ fun n ↦ by
+  monotone_nat_of_le_succ fun n => by
     rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
 
 @[simp]
@@ -225,7 +225,7 @@ theorem ext_nat [RingHomClass F ℕ R] (f g : F) : f = g :=
 
 theorem NeZero.nat_of_injective {n : ℕ} [h : NeZero (n : R)] [RingHomClass F R S] {f : F}
     (hf : Function.Injective f) : NeZero (n : S) :=
-  ⟨fun h ↦ NeZero.natCast_ne n R <| hf <| by simpa only [map_natCast, map_zero f] ⟩
+  ⟨fun h => NeZero.natCast_ne n R <| hf <| by simpa only [map_natCast, map_zero f] ⟩
 
 theorem NeZero.nat_of_ne_zero {R S} [Semiring R] [Semiring S] {F} [RingHomClass F R S] (f : F)
     {n : ℕ} [hn : NeZero (n : S)] : NeZero (n : R) :=
@@ -276,13 +276,13 @@ variable {π : α → Type _} [∀ a, NatCast (π a)]
 
 /- Porting note: manually wrote this instance.
 Was `by refine_struct { .. } <;> pi_instance_derive_field` -/
-instance natCast : NatCast (∀ a, π a) := { natCast := fun n _ ↦ n }
+instance natCast : NatCast (∀ a, π a) := { natCast := fun n _ => n }
 
 theorem nat_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
   rfl
 
 @[simp]
-theorem coe_nat (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
+theorem coe_nat (n : ℕ) : (n : ∀ a, π a) = fun _ => ↑n :=
   rfl
 
 end Pi

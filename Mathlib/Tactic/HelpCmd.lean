@@ -174,7 +174,7 @@ name of the syntax (which you can also click to go to the definition), and the d
   associated to the listed syntaxes.
 -/
 elab "#help" &"cat" more:"+"? catStx:ident id:(ident <|> str)? : command => do
-  let id := id.map fun id ↦ match id.raw with
+  let id := id.map fun id => match id.raw with
     | .ident _ _ v _ => v.toString false
     | id => id.isStrLit?.get!
   let mut decls : Lean.RBMap _ _ compare := {}

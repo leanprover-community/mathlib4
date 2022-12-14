@@ -52,7 +52,7 @@ theorem iterate_succ_apply (n : ℕ) (x : α) : (f^[n.succ]) x = (f^[n]) (f x) :
 
 @[simp]
 theorem iterate_id (n : ℕ) : (id : α → α)^[n] = id :=
-  Nat.recOn n rfl fun n ihn ↦ by rw [iterate_succ, ihn, comp.left_id]
+  Nat.recOn n rfl fun n ihn => by rw [iterate_succ, ihn, comp.left_id]
 
 theorem iterate_add (m : ℕ) : ∀ n : ℕ, f^[m + n] = f^[m] ∘ f^[n]
   | 0 => rfl
@@ -64,7 +64,7 @@ theorem iterate_add_apply (m n : ℕ) (x : α) : (f^[m + n]) x = (f^[m]) ((f^[n]
 
 @[simp]
 theorem iterate_one : f^[1] = f :=
-  funext fun _ ↦ rfl
+  funext fun _ => rfl
 
 theorem iterate_mul (m : ℕ) : ∀ n, f^[m * n] = f^[m]^[n]
   | 0 => by simp only [Nat.mul_zero, iterate_zero]
@@ -73,13 +73,13 @@ theorem iterate_mul (m : ℕ) : ∀ n, f^[m * n] = f^[m]^[n]
 variable {f}
 
 theorem iterate_fixed {x} (h : f x = x) (n : ℕ) : (f^[n]) x = x :=
-  Nat.recOn n rfl fun n ihn ↦ by rw [iterate_succ_apply, h, ihn]
+  Nat.recOn n rfl fun n ihn => by rw [iterate_succ_apply, h, ihn]
 
 theorem Injective.iterate (Hinj : Injective f) (n : ℕ) : Injective (f^[n]) :=
-  Nat.recOn n injective_id fun _ ihn ↦ ihn.comp Hinj
+  Nat.recOn n injective_id fun _ ihn => ihn.comp Hinj
 
 theorem Surjective.iterate (Hsurj : Surjective f) (n : ℕ) : Surjective (f^[n]) :=
-  Nat.recOn n surjective_id fun _ ihn ↦ ihn.comp Hsurj
+  Nat.recOn n surjective_id fun _ ihn => ihn.comp Hsurj
 
 theorem Bijective.iterate (Hbij : Bijective f) (n : ℕ) : Bijective (f^[n]) :=
   ⟨Hbij.1.iterate n, Hbij.2.iterate n⟩
@@ -88,7 +88,7 @@ namespace Semiconj
 
 theorem iterate_right {f : α → β} {ga : α → α} {gb : β → β} (h : Semiconj f ga gb) (n : ℕ) :
     Semiconj f (ga^[n]) (gb^[n]) :=
-  Nat.recOn n id_right fun _ ihn ↦ ihn.comp_right h
+  Nat.recOn n id_right fun _ ihn => ihn.comp_right h
 
 theorem iterate_left {g : ℕ → α → α} (H : ∀ n, Semiconj f (g n) (g <| n + 1)) (n k : ℕ) :
     Semiconj (f^[n]) (g k) (g <| n + k) := by
@@ -117,7 +117,7 @@ theorem iterate_iterate (h : Commute f g) (m n : ℕ) : Commute (f^[m]) (g^[n]) 
 
 theorem iterate_eq_of_map_eq (h : Commute f g) (n : ℕ) {x} (hx : f x = g x) :
     (f^[n]) x = (g^[n]) x :=
-  Nat.recOn n rfl fun n ihn ↦ by
+  Nat.recOn n rfl fun n ihn => by
     simp only [iterate_succ_apply, hx, (h.iterate_left n).eq, ihn, ((refl g).iterate_right n).eq]
 
 theorem comp_iterate (h : Commute f g) (n : ℕ) : (f ∘ g)^[n] = f^[n] ∘ g^[n] := by
@@ -142,7 +142,7 @@ end Commute
 
 theorem Semiconj₂.iterate {f : α → α} {op : α → α → α} (hf : Semiconj₂ f op op) (n : ℕ) :
     Semiconj₂ (f^[n]) op op :=
-  Nat.recOn n (Semiconj₂.id_left op) fun _ ihn ↦ ihn.comp hf
+  Nat.recOn n (Semiconj₂.id_left op) fun _ ihn => ihn.comp hf
 
 variable (f)
 
@@ -164,7 +164,7 @@ noncomputable
 def Iterate.rec (p : α → Sort _) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) (n : ℕ) :
     p ((f^[n]) a) :=
   Nat.rec ha
-    (fun m ↦ by
+    (fun m => by
       rw [iterate_succ']
       exact h _)
     n
@@ -177,7 +177,7 @@ variable {f}
 
 theorem LeftInverse.iterate {g : α → α} (hg : LeftInverse g f) (n : ℕ) :
     LeftInverse (g^[n]) (f^[n]) :=
-  Nat.recOn n (fun _ ↦ rfl) fun n ihn ↦ by
+  Nat.recOn n (fun _ => rfl) fun n ihn => by
     rw [iterate_succ', iterate_succ]
     exact ihn.comp hg
 
@@ -188,8 +188,8 @@ theorem RightInverse.iterate {g : α → α} (hg : RightInverse g f) (n : ℕ) :
 theorem iterate_comm (f : α → α) (m n : ℕ) : f^[n]^[m] = f^[m]^[n] :=
   (iterate_mul _ _ _).symm.trans (Eq.trans (by rw [Nat.mul_comm]) (iterate_mul _ _ _))
 
-theorem iterate_commute (m n : ℕ) : Commute (fun f : α → α ↦ f^[m]) fun f ↦ f^[n] :=
-  fun f ↦ iterate_comm f m n
+theorem iterate_commute (m n : ℕ) : Commute (fun f : α → α => f^[m]) fun f => f^[n] :=
+  fun f => iterate_comm f m n
 
 end Function
 
@@ -198,14 +198,14 @@ namespace List
 open Function
 
 theorem foldl_const (f : α → α) (a : α) (l : List β) :
-    l.foldl (fun b _ ↦ f b) a = (f^[l.length]) a := by
+    l.foldl (fun b _ => f b) a = (f^[l.length]) a := by
   induction' l with b l H generalizing a
   · rfl
 
   · rw [length_cons, foldl, iterate_succ_apply, H]
 
 
-theorem foldr_const (f : β → β) (b : β) : ∀ l : List α, l.foldr (fun _ ↦ f) b = (f^[l.length]) b
+theorem foldr_const (f : β → β) (b : β) : ∀ l : List α, l.foldr (fun _ => f) b = (f^[l.length]) b
   | [] => rfl
   | a :: l => by rw [length_cons, foldr, foldr_const f b l, iterate_succ_apply']
 

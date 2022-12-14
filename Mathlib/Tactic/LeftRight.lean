@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Gadgil
 -/
 import Lean
-import Mathlib.Util.MapsTo
 
 namespace Mathlib.Tactic.LeftRight
 open Lean Meta Elab Tactic
@@ -13,8 +12,8 @@ def leftRightMeta (name : Name) (idx max : Nat) (goal : MVarId) : MetaM (List MV
     goal.checkNotAssigned name
     let target ←  goal.getType'
     matchConstInduct target.getAppFn
-      (fun _ ↦ throwTacticEx `constructor goal "target is not an inductive datatype")
-      fun ival us ↦ do
+      (fun _ => throwTacticEx `constructor goal "target is not an inductive datatype")
+      fun ival us => do
         unless ival.ctors.length == max do
           throwTacticEx `constructor goal
             s!"{name} target applies for inductive types with exactly two constructors"

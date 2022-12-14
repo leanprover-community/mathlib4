@@ -69,7 +69,7 @@ theorem mul_left (ha : SemiconjBy a y z) (hb : SemiconjBy b x y) : SemiconjBy (a
 is transitive. -/
 @[to_additive "The relation “there exists an element that semiconjugates `a` to `b`” on an additive
 semigroup is transitive."]
-protected theorem transitive : Transitive fun a b : S ↦ ∃ c, SemiconjBy c a b
+protected theorem transitive : Transitive fun a b : S => ∃ c, SemiconjBy c a b
   | _, _, _, ⟨x, hx⟩, ⟨y, hy⟩ => ⟨y * x, hy.mul_left hx⟩
 #align semiconj_by.transitive SemiconjBy.transitive
 #align add_semiconj_by.transitive SemiconjBy.transitive
@@ -97,7 +97,7 @@ theorem one_left (x : M) : SemiconjBy 1 x x :=
 generally, on `MulOneClass` type) is reflexive. -/
 @[to_additive "The relation “there exists an element that semiconjugates `a` to `b`” on an additive
 monoid (or, more generally, on a `add_zero_class` type) is reflexive."]
-protected theorem reflexive : Reflexive fun a b : M ↦ ∃ c, SemiconjBy c a b
+protected theorem reflexive : Reflexive fun a b : M => ∃ c, SemiconjBy c a b
   | a => ⟨1, one_left a⟩
 #align semiconj_by.reflexive SemiconjBy.reflexive
 #align add_semiconj_by.reflexive AddSemiconjBy.reflexive

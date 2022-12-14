@@ -49,6 +49,6 @@ namespace Finset
 
 /-! ### membership -/
 
-instance : Membership α (Finset α) := ⟨fun a s ↦ a ∈ s.1⟩
+instance : Membership α (Finset α) := ⟨fun a s => a ∈ s.1⟩
 
 theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 := Iff.rfl

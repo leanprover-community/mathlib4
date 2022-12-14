@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Lean
-import Mathlib.Util.MapsTo
 
 /-!
 A rudimentary export format, adapted from
@@ -70,7 +69,7 @@ namespace Export
 
 def alloc {α} [BEq α] [Hashable α] [OfState α] (a : α) : ExportM Nat := do
   let n := (OfState.get (α := α) (← get)).next
-  modify $ OfState.modify (α := α) fun s ↦ {map := s.map.insert a n, next := n+1}
+  modify $ OfState.modify (α := α) fun s => {map := s.map.insert a n, next := n+1}
   pure n
 
 def exportName (n : Name) : ExportM Nat := do
@@ -156,7 +155,7 @@ partial def exportDef (n : Name) : ExportM Unit := do
   | recInfo     val => ind val.all
 where
   insert (n : Name) : ExportM Unit :=
-    modify fun s ↦ { s with defs := s.defs.insert n }
+    modify fun s => { s with defs := s.defs.insert n }
   defn (ty : String) (n : Name) (t e : Expr) (ls : List Name) : ExportM Unit := do
     let mut s := s!"{ty} {← exportName n} {← exportExpr t} {← exportExpr e}"
     for l in ls do s := s ++ s!" {← exportName l}"

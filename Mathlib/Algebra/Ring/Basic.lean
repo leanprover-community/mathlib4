@@ -138,7 +138,7 @@ theorem succ_ne_self [NonAssocRing α] [Nontrivial α] (a : α) : a + 1 ≠ a :=
   one_ne_zero ((add_right_inj a).mp (by simp [h]))
 #align succ_ne_self succ_ne_self
 
-theorem pred_ne_self [NonAssocRing α] [Nontrivial α] (a : α) : a - 1 ≠ a := fun h ↦
+theorem pred_ne_self [NonAssocRing α] [Nontrivial α] (a : α) : a - 1 ≠ a := fun h =>
   one_ne_zero (neg_injective ((add_right_inj a).mp (by simp [←sub_eq_add_neg, h])))
 #align pred_ne_self pred_ne_self
 
@@ -148,7 +148,7 @@ variable (α)
 
 lemma IsLeftCancelMulZero.toNoZeroDivisors [Ring α] [IsLeftCancelMulZero α] :
     NoZeroDivisors α :=
-{ eq_zero_or_eq_zero_of_mul_eq_zero := @fun x y h ↦ by
+{ eq_zero_or_eq_zero_of_mul_eq_zero := @fun x y h => by
     by_cases hx : x = 0
     { left
       exact hx }
@@ -160,7 +160,7 @@ lemma IsLeftCancelMulZero.toNoZeroDivisors [Ring α] [IsLeftCancelMulZero α] :
 
 lemma IsRightCancelMulZero.toNoZeroDivisors [Ring α] [IsRightCancelMulZero α] :
     NoZeroDivisors α :=
-{ eq_zero_or_eq_zero_of_mul_eq_zero := @fun x y h ↦ by
+{ eq_zero_or_eq_zero_of_mul_eq_zero := @fun x y h => by
     by_cases hy : y = 0
     { right
       exact hy }
@@ -172,10 +172,10 @@ lemma IsRightCancelMulZero.toNoZeroDivisors [Ring α] [IsRightCancelMulZero α] 
 
 instance (priority := 100) NoZeroDivisors.toIsCancelMulZero [Ring α] [NoZeroDivisors α] :
     IsCancelMulZero α :=
-{ mul_left_cancel_of_ne_zero := fun ha h ↦ by
+{ mul_left_cancel_of_ne_zero := fun ha h => by
     rw [← sub_eq_zero, ← mul_sub] at h
     exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_left ha)
-  mul_right_cancel_of_ne_zero := fun hb h ↦ by
+  mul_right_cancel_of_ne_zero := fun hb h => by
     rw [← sub_eq_zero, ← sub_mul] at h
     exact sub_eq_zero.1 ((eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hb) }
 #align no_zero_divisors.to_is_cancel_mul_zero NoZeroDivisors.toIsCancelMulZero

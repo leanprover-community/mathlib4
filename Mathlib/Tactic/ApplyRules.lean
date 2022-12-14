@@ -6,7 +6,6 @@ Authors: Scott Morrison
 import Lean
 import Std.Util.TermUnsafe
 import Std.Lean.Meta.Basic
-import Mathlib.Util.MapsTo
 
 /-!
 # The `apply_rules` tactic
@@ -23,8 +22,8 @@ Implementation of the `apply_rules` tactic.
 -/
 def applyRules (cfg : ApplyConfig) (maxIters : Nat) (L : List Expr) :
   MVarId → MetaM (List MVarId) :=
-fun h ↦ repeat' (maxIters := maxIters)
-  (fun g ↦ (do g.assumption; pure []) <|> L.firstM (g.apply · cfg)) [h]
+fun h => repeat' (maxIters := maxIters)
+  (fun g => (do g.assumption; pure []) <|> L.firstM (g.apply · cfg)) [h]
 
 -- This should be moved higher in the import hierarchy when others need it.
 /-- An elaborator for translating a `Syntax` to an `ApplyConfig`. -/

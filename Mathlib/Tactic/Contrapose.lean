@@ -21,7 +21,7 @@ implication.
 -/
 namespace Mathlib.Tactic.Contrapose
 
-lemma mtr {p q : Prop} : (¬ q → ¬ p) → (p → q) := fun h hp ↦ by_contra (fun h' ↦ h h' hp)
+lemma mtr {p q : Prop} : (¬ q → ¬ p) → (p → q) := fun h hp => by_contra (fun h' => h h' hp)
 
 /--
 Transforms the goal into its contrapositive.

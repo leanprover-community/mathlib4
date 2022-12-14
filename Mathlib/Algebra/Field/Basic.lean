@@ -191,7 +191,7 @@ namespace RingHom
 
 protected theorem injective [DivisionRing α] [Semiring β] [Nontrivial β] (f : α →+* β) :
     Injective f :=
-  (injective_iff_map_eq_zero f).2 fun _ ↦ (map_eq_zero f).1
+  (injective_iff_map_eq_zero f).2 fun _ => (map_eq_zero f).1
 #align ring_hom.injective RingHom.injective
 
 end RingHom
@@ -247,12 +247,12 @@ protected def Function.Injective.divisionRing [DivisionRing K] {K'} [Zero K'] [O
   { hf.groupWithZero f zero one mul inv div npow zpow,
     hf.ring f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast with
     ratCast := HasRatCast.ratCast,
-    ratCast_mk := fun a b h1 h2 ↦
+    ratCast_mk := fun a b h1 h2 =>
       hf
         (by
           erw [rat_cast, mul, inv, int_cast, nat_cast]
           exact DivisionRing.ratCast_mk a b h1 h2),
-    qsmul := (· • ·), qsmul_eq_mul' := fun a x ↦ hf (by erw [qsmul, mul, Rat.smul_def, rat_cast]) }
+    qsmul := (· • ·), qsmul_eq_mul' := fun a x => hf (by erw [qsmul, mul, Rat.smul_def, rat_cast]) }
 #align function.injective.division_ring Function.Injective.divisionRing
 
 -- See note [reducible non-instances]
@@ -285,12 +285,12 @@ protected def Function.Injective.field [Field K] {K'} [Zero K'] [Mul K'] [Add K'
   { hf.commGroupWithZero f zero one mul inv div npow zpow,
     hf.commRing f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast with
     ratCast := HasRatCast.ratCast,
-    ratCast_mk := fun a b h1 h2 ↦
+    ratCast_mk := fun a b h1 h2 =>
       hf
         (by
           erw [rat_cast, mul, inv, int_cast, nat_cast]
           exact DivisionRing.ratCast_mk a b h1 h2),
-    qsmul := (· • ·), qsmul_eq_mul' := fun a x ↦ hf (by erw [qsmul, mul, Rat.smul_def, rat_cast]) }
+    qsmul := (· • ·), qsmul_eq_mul' := fun a x => hf (by erw [qsmul, mul, Rat.smul_def, rat_cast]) }
 #align function.injective.field Function.Injective.field
 
 /-! ### Order dual -/

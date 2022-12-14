@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Selsam
 -/
 import Lean
-import Mathlib.Util.MapsTo
 
 namespace Mathlib.Prelude.Rename
 
@@ -14,12 +13,12 @@ open Lean (HashMap)
 
 /-- This structure keeps track of alignments from lean 3 names to lean 4 names and vice versa. -/
 structure RenameMap where
-  /-- This maps `n3 ↦ (dubious, n4)` where `n3` is the lean 3 name and `n4` is the corresponding
+  /-- This maps `n3 => (dubious, n4)` where `n3` is the lean 3 name and `n4` is the corresponding
   lean 4 name. `dubious` is either empty, or a warning message to be displayed when `n3` is
   translated, which indicates that the translation from `n3` to `n4` is approximate and may cause
   downstream errors. -/
   toLean4 : NameMap (String × Name) := {}
-  /-- This maps `n4 ↦ (n3, clashes)` where `n4` is the lean 4 name and `n3::clashes` is the list of
+  /-- This maps `n4 => (n3, clashes)` where `n4` is the lean 4 name and `n3::clashes` is the list of
   all (non-`synthetic`) declarations that map to `n4`. (That is, we do not assume the mapping
   from lean 3 to lean 4 name is injective.) -/
   toLean3 : NameMap (Name × List Name) := {}
@@ -63,7 +62,7 @@ def getRenameMap (env : Environment) : RenameMap :=
   renameExtension.getState env
 
 def addNameAlignment (n3 : Name) (n4 : Name) (synthetic := false) (dubious := "") : CoreM Unit := do
-  modifyEnv fun env ↦ renameExtension.addEntry env { n3, n4, synthetic, dubious }
+  modifyEnv fun env => renameExtension.addEntry env { n3, n4, synthetic, dubious }
 
 /-- The `@[binport]` attribute should not be added manually, it is added automatically by mathport
 to definitions that it created based on a lean 3 definition (as opposed to pre-existing

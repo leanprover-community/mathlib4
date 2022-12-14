@@ -20,14 +20,14 @@ open Lean Meta Elab
 initialize transExt :
     SimpleScopedEnvExtension (Name × Array (DiscrTree.Key true)) (DiscrTree Name true) ←
   registerSimpleScopedEnvExtension {
-    addEntry := fun dt (n, ks) ↦ dt.insertCore ks n
+    addEntry := fun dt (n, ks) => dt.insertCore ks n
     initial := {}
   }
 
 initialize registerBuiltinAttribute {
   name := `trans
   descr := "transitive relation"
-  add := fun decl _ kind ↦ MetaM.run' do
+  add := fun decl _ kind => MetaM.run' do
     let declTy := (← getConstInfo decl).type
     let (xs, _, targetTy) ← withReducible <| forallMetaTelescopeReducing declTy
     let fail := throwError
@@ -61,9 +61,9 @@ elab "trans" t?:(ppSpace (colGt term))? : tactic => withMainContext do
   let s ← saveState
   for lem in (← (transExt.getState (← getEnv)).getUnify rel).push ``Trans.simple do
     try
-      liftMetaTactic fun g ↦ do
+      liftMetaTactic fun g => do
         let lemTy ← inferType (← mkConstWithLevelParams lem)
-        let arity ← withReducible <| forallTelescopeReducing lemTy fun es _ ↦ pure es.size
+        let arity ← withReducible <| forallTelescopeReducing lemTy fun es _ => pure es.size
         let y ← (t?.map (pure ·.1)).getD (mkFreshExprMVar ty)
         let g₁ ← mkFreshExprMVar (some <| .app (.app rel x) y) .synthetic
         let g₂ ← mkFreshExprMVar (some <| .app (.app rel y) z) .synthetic

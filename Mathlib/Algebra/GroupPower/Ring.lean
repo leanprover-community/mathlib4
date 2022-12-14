@@ -108,7 +108,7 @@ def powMonoidWithZeroHom : M →*₀ M :=
   { powMonoidHom n with map_zero' := zero_pow hn }
 
 @[simp]
-theorem coe_powMonoidWithZeroHom : (powMonoidWithZeroHom hn : M → M) = fun x ↦ (x^n : M) := rfl
+theorem coe_powMonoidWithZeroHom : (powMonoidWithZeroHom hn : M → M) = fun x => (x^n : M) := rfl
 #align coe_pow_monoid_with_zero_hom coe_powMonoidWithZeroHom
 
 @[simp]
@@ -173,8 +173,8 @@ variable (R)
 theorem neg_one_pow_eq_or : ∀ n : ℕ, (-1 : R) ^ n = 1 ∨ (-1 : R) ^ n = -1
   | 0 => Or.inl (pow_zero _)
   | n + 1 => (neg_one_pow_eq_or n).symm.imp
-    (fun h ↦ by rw [pow_succ, h, neg_one_mul, neg_neg])
-    (fun h ↦ by rw [pow_succ, h, mul_one])
+    (fun h => by rw [pow_succ, h, neg_one_mul, neg_neg])
+    (fun h => by rw [pow_succ, h, mul_one])
 
 variable {R}
 

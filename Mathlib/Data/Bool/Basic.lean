@@ -71,7 +71,7 @@ theorem decide_or (p q : Prop) [Decidable p] [Decidable q] : decide (p ∨ q) = 
 
 @[simp]
 theorem decide_eq {p q : Prop} [Decidable p] [Decidable q] : decide p = decide q ↔ (p ↔ q) :=
-  ⟨fun h ↦ (coe_decide p).symm.trans <| by simp [h], decide_congr⟩
+  ⟨fun h => (coe_decide p).symm.trans <| by simp [h], decide_congr⟩
 #align bool.to_bool_eq Bool.decide_eq
 
 theorem not_false' : ¬false := fun.
@@ -85,12 +85,12 @@ theorem dichotomy (b : Bool) : b = false ∨ b = true := by cases b <;> simp
 
 @[simp]
 theorem forall_bool {p : Bool → Prop} : (∀ b, p b) ↔ p false ∧ p true :=
-  ⟨fun h ↦ by simp [h], fun ⟨h₁, h₂⟩ b ↦ by cases b <;> assumption⟩
+  ⟨fun h => by simp [h], fun ⟨h₁, h₂⟩ b => by cases b <;> assumption⟩
 
 @[simp]
 theorem exists_bool {p : Bool → Prop} : (∃ b, p b) ↔ p false ∨ p true :=
-  ⟨fun ⟨b, h⟩ ↦ by cases b; exact Or.inl h; exact Or.inr h,
-  fun h ↦ match h with
+  ⟨fun ⟨b, h⟩ => by cases b; exact Or.inl h; exact Or.inr h,
+  fun h => match h with
   | .inl h => ⟨_, h⟩
   | .inr h => ⟨_, h⟩ ⟩
 
@@ -117,7 +117,7 @@ theorem cond_decide {α} (p : Prop) [Decidable p] (t e : α) :
 theorem cond_not {α} (b : Bool) (t e : α) : cond (!b) t e = cond b e t := by cases b <;> rfl
 #align bool.cond_bnot Bool.cond_not
 
-theorem not_ne_id : not ≠ id := fun h ↦ ff_ne_tt <| congrFun h true
+theorem not_ne_id : not ≠ id := fun h => ff_ne_tt <| congrFun h true
 #align bool.bnot_ne_id Bool.not_ne_id
 
 theorem coe_bool_iff : ∀ {a b : Bool}, (a ↔ b) ↔ a = b := by decide
@@ -298,7 +298,7 @@ theorem not_inj : ∀ {a b : Bool}, !a = !b → a = b := by decide
 -- There is a discussion on zulip about this at
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/LinearOrder.20in.20mathlib3.2F4/near/308228493
 instance linearOrder : LinearOrder Bool where
-  le := fun a b ↦ a = false ∨ b = true
+  le := fun a b => a = false ∨ b = true
   le_refl := by unfold LE.le; decide
   le_trans := by unfold LE.le; decide
   le_antisymm := by unfold LE.le Preorder.toLE; decide
@@ -377,7 +377,7 @@ theorem of_nat_to_nat (b : Bool) : ofNat (toNat b) = b := by
 
 @[simp]
 theorem injective_iff {α : Sort _} {f : Bool → α} : Function.Injective f ↔ f false ≠ f true :=
-  ⟨fun Hinj Heq ↦ ff_ne_tt (Hinj Heq), fun H x y hxy ↦ by
+  ⟨fun Hinj Heq => ff_ne_tt (Hinj Heq), fun H x y hxy => by
     cases x <;> cases y
     exacts[rfl, (H hxy).elim, (H hxy.symm).elim, rfl]⟩
 

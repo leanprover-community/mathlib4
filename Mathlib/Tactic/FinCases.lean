@@ -67,7 +67,7 @@ partial def finCasesAt (hyp : FVarId) : TacticM Unit := do
       let t ← mkAppM ``Membership.mem #[lDecl.toExpr, elems]
       let v ← mkAppOptM ``Fintype.complete #[lDecl.type, inst, lDecl.toExpr]
 
-      let hyp ← liftMetaTacticAux fun mvarId ↦ do
+      let hyp ← liftMetaTacticAux fun mvarId => do
         let (fvar, mvarId) ← (← mvarId.assert `this t v).intro1P
         pure (fvar, [mvarId])
 

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich, Mario Carneiro
 -/
 import Lean.Elab.Eval
-import Mathlib.Util.MapsTo
 import Std.Util.TermUnsafe
 
 /-!
@@ -41,7 +40,7 @@ elab (name := runTac) "run_tac" e:doSeq : tactic => do
 /--
 * The `by_elab doSeq` expression runs the `doSeq` as a `TermElabM Expr` to
   synthesize the expression.
-* `by_elab fun expectedType? ↦ do doSeq` receives the expected type (an `Option Expr`)
+* `by_elab fun expectedType? => do doSeq` receives the expected type (an `Option Expr`)
   as well.
 -/
 syntax (name := byElab) "by_elab" doSeq : term
@@ -50,7 +49,7 @@ syntax (name := byElab) "by_elab" doSeq : term
 @[term_elab byElab] def elabRunElab : TermElab := fun
 | `(by_elab $cmds:doSeq), expectedType? => do
   if let `(Lean.Parser.Term.doSeq| $e:term) := cmds then
-    if e matches `(Lean.Parser.Term.doSeq| fun $[$_args]* ↦ $_) then
+    if e matches `(Lean.Parser.Term.doSeq| fun $[$_args]* => $_) then
       let tac ← unsafe evalTerm
         (Option Expr → TermElabM Expr)
         (Lean.mkForall `x .default

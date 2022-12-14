@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Lean.Parser.Term
-import Mathlib.Util.MapsTo
 import Std.Classes.SetNotation
 import Mathlib.Mathport.Rename
 
@@ -49,7 +48,7 @@ instance : Membership α (Set α) :=
 ⟨Set.Mem⟩
 
 theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
-funext (fun x ↦ propext (h x))
+funext (fun x => propext (h x))
 
 protected def Subset (s₁ s₂ : Set α) :=
 ∀ {a}, a ∈ s₁ → a ∈ s₂
@@ -64,15 +63,15 @@ open Std.ExtendedBinder in
 syntax "{ " extBinder " | " term " }" : term
 
 macro_rules
-  | `({ $x:ident | $p }) => `(setOf fun $x:ident ↦ $p)
-  | `({ $x:ident : $t | $p }) => `(setOf fun $x:ident : $t ↦ $p)
+  | `({ $x:ident | $p }) => `(setOf fun $x:ident => $p)
+  | `({ $x:ident : $t | $p }) => `(setOf fun $x:ident : $t => $p)
   | `({ $x:ident $b:binderPred | $p }) =>
-    `(setOf fun $x:ident ↦ satisfiesBinderPred% $x $b ∧ $p)
+    `(setOf fun $x:ident => satisfiesBinderPred% $x $b ∧ $p)
 
 @[app_unexpander setOf]
 def setOf.unexpander : Lean.PrettyPrinter.Unexpander
-  | `($_ fun $x:ident ↦ $p) => `({ $x:ident | $p })
-  | `($_ fun $x:ident : $ty:term ↦ $p) => `({ $x:ident : $ty:term | $p })
+  | `($_ fun $x:ident => $p) => `({ $x:ident | $p })
+  | `($_ fun $x:ident : $ty:term => $p) => `({ $x:ident : $ty:term | $p })
   | _ => throw ()
 
 open Std.ExtendedBinder in
@@ -130,7 +129,7 @@ instance : Functor Set :=
 { map := @Set.image }
 
 instance : LawfulFunctor Set where
-  id_map _ := funext fun _ ↦ propext ⟨λ ⟨_, sb, rfl⟩ => sb, λ sb => ⟨_, sb, rfl⟩⟩
+  id_map _ := funext fun _ => propext ⟨λ ⟨_, sb, rfl⟩ => sb, λ sb => ⟨_, sb, rfl⟩⟩
   comp_map g h _ := funext $ λ c => propext
     ⟨λ ⟨a, ⟨h₁, h₂⟩⟩ => ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
      λ ⟨_, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
