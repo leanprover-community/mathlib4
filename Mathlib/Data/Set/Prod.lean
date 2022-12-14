@@ -453,11 +453,13 @@ section Mono
 
 variable [Preorder α] {f : α → Set β} {g : α → Set γ}
 
-theorem _root_.Monotone.set_prod (hf : Monotone f) (hg : Monotone g) : Monotone fun x => f x ×ˢ g x :=
+theorem _root_.Monotone.set_prod (hf : Monotone f) (hg : Monotone g) :
+    Monotone fun x => f x ×ˢ g x :=
   fun _ _ h => prod_mono (hf h) (hg h)
 #align monotone.set_prod Monotone.set_prod
 
-theorem _root_.Antitone.set_prod (hf : Antitone f) (hg : Antitone g) : Antitone fun x => f x ×ˢ g x :=
+theorem _root_.Antitone.set_prod (hf : Antitone f) (hg : Antitone g) :
+    Antitone fun x => f x ×ˢ g x :=
   fun _ _ h => prod_mono (hf h) (hg h)
 #align antitone.set_prod Antitone.set_prod
 
