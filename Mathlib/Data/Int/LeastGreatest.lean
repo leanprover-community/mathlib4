@@ -24,7 +24,7 @@ counterpart of this statement for the least element.
   bounded below and nonempty, then this set has the least element. This lemma uses classical logic
   to avoid assumption `[DecidablePred P]`. See `Int.leastOfBdd` for a constructive counterpart.
 
-* `Int.coe_least_of_bdd_eq`: `(Int.leastOfBdd b Hb Hinh : ℤ)` does not depend on `b`.
+* `Int.coe_leastOfBdd_eq`: `(Int.leastOfBdd b Hb Hinh : ℤ)` does not depend on `b`.
 
 * `Int.exists_greatest_of_bdd`, `Int.coe_greatest_of_bdd_eq`: versions of the above lemmas with all
   inequalities reversed.
@@ -66,13 +66,13 @@ def leastOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ) (Hb : ∀ z : ℤ,
     exact ⟨ lb , H ⟩
 #align int.exists_least_of_bdd Int.exists_least_of_bdd
 
-theorem coe_least_of_bdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ} (Hb : ∀ z : ℤ, P z → b ≤ z)
+theorem coe_leastOfBdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ} (Hb : ∀ z : ℤ, P z → b ≤ z)
     (Hb' : ∀ z : ℤ, P z → b' ≤ z) (Hinh : ∃ z : ℤ, P z) :
     (leastOfBdd b Hb Hinh : ℤ) = leastOfBdd b' Hb' Hinh := by
   rcases leastOfBdd b Hb Hinh with ⟨n, hn, h2n⟩
   rcases leastOfBdd b' Hb' Hinh with ⟨n', hn', h2n'⟩
   exact le_antisymm (h2n _ hn') (h2n' _ hn)
-#align int.coe_least_of_bdd_eq Int.coe_least_of_bdd_eq
+#align int.coe_least_of_bdd_eq Int.coe_leastOfBdd_eq
 
 /-- A computable version of `exists_greatest_of_bdd`: given a decidable predicate on the
 integers, with an explicit upper bound and a proof that it is somewhere true, return
@@ -101,12 +101,12 @@ def greatestOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ) (Hb : ∀ z : �
     exact ⟨ lb , H ⟩
 #align int.exists_greatest_of_bdd Int.exists_greatest_of_bdd
 
-theorem coe_greatest_of_bdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ}
+theorem coe_greatestOfBdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ}
     (Hb : ∀ z : ℤ, P z → z ≤ b) (Hb' : ∀ z : ℤ, P z → z ≤ b') (Hinh : ∃ z : ℤ, P z) :
     (greatestOfBdd b Hb Hinh : ℤ) = greatestOfBdd b' Hb' Hinh := by
   rcases greatestOfBdd b Hb Hinh with ⟨n, hn, h2n⟩
   rcases greatestOfBdd b' Hb' Hinh with ⟨n', hn', h2n'⟩
   exact le_antisymm (h2n' _ hn) (h2n _ hn')
-#align int.coe_greatest_of_bdd_eq Int.coe_greatest_of_bdd_eq
+#align int.coe_greatest_of_bdd_eq Int.coe_greatestOfBdd_eq
 
 end Int
