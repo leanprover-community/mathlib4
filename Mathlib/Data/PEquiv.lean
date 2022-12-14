@@ -193,12 +193,12 @@ theorem injective_of_forall_ne_isSome (f : α ≃. β) (a₂ : α)
         · dsimp only
           rw [(eq_some_iff f).2 hfx]
           rfl⟩
-#align pequiv.injective_of_forall_ne_is_some PEquiv.injective_of_forall_ne_is_some
+#align pequiv.injective_of_forall_ne_is_some PEquiv.injective_of_forall_ne_isSome
 
 /-- If the domain of a `pequiv` is all of `α`, its forward direction is injective. -/
 theorem injective_of_forall_is_some {f : α ≃. β} (h : ∀ a : α, isSome (f a)) : Injective f :=
   (Classical.em (Nonempty α)).elim
-    (fun hn => injective_of_forall_ne_is_some f (Classical.choice hn) fun a _ => h a) fun hn x =>
+    (fun hn => injective_of_forall_ne_isSome f (Classical.choice hn) fun a _ => h a) fun hn x =>
     (hn ⟨x⟩).elim
 #align pequiv.injective_of_forall_is_some PEquiv.injective_of_forall_is_some
 
@@ -330,7 +330,7 @@ section Single
 
 variable [DecidableEq α] [DecidableEq β] [DecidableEq γ]
 
-/-- Create a `pequiv` which sends `a` to `b` and `b` to `a`, but is otherwise `none`. -/
+/-- Create a `PEquiv` which sends `a` to `b` and `b` to `a`, but is otherwise `none`. -/
 def single (a : α) (b : β) :
     α ≃. β where
   toFun x := if x = a then some b else none
@@ -438,8 +438,7 @@ instance : OrderBot (α ≃. β) :=
   { instBotPEquiv with bot_le := fun _ _ _ h => (not_mem_none _ h).elim }
 
 instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
-  { -- `split_ifs; finish` closes this goal from here
-    instPartialOrderPEquiv with
+  { instPartialOrderPEquiv with
     inf := fun f g =>
       { toFun := fun a => if f a = g a then f a else none
         invFun := fun b => if f.symm b = g.symm b then f.symm b else none
