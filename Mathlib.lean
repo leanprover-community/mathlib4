@@ -157,9 +157,9 @@ import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.HashMap
 import Mathlib.Data.Int.Basic
-import Mathlib.Data.Int.Cast
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Int.Div
 import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Data.Int.LeastGreatest
