@@ -66,9 +66,9 @@ protected def relEmbedding (r : α → α → Prop) (p : Set α) : Subrel r p �
 #align subrel.rel_embedding Subrel.relEmbedding
 
 @[simp]
-theorem rel_embedding_apply (r : α → α → Prop) (p a) : Subrel.relEmbedding r p a = a.1 :=
+theorem relEmbedding_apply (r : α → α → Prop) (p a) : Subrel.relEmbedding r p a = a.1 :=
   rfl
-#align subrel.rel_embedding_apply Subrel.rel_embedding_apply
+#align subrel.rel_embedding_apply Subrel.relEmbedding_apply
 
 instance (r : α → α → Prop) [IsWellOrder α r] (p : Set α) : IsWellOrder p (Subrel r p) :=
   RelEmbedding.isWellOrder (Subrel.relEmbedding r p)
@@ -93,7 +93,7 @@ def RelEmbedding.codRestrict (p : Set β) (f : r ↪r s) (H : ∀ a, f a ∈ p) 
 #align rel_embedding.cod_restrict RelEmbedding.codRestrict
 
 @[simp]
-theorem RelEmbedding.cod_restrict_apply (p) (f : r ↪r s) (H a) :
+theorem RelEmbedding.codRestrict_apply (p) (f : r ↪r s) (H a) :
     RelEmbedding.codRestrict p f H a = ⟨f a, H a⟩ :=
   rfl
-#align rel_embedding.cod_restrict_apply RelEmbedding.cod_restrict_apply
+#align rel_embedding.cod_restrict_apply RelEmbedding.codRestrict_apply
