@@ -9,7 +9,12 @@ import Mathlib.Data.KVMap
 import Mathlib.Lean.Expr.ReplaceRec
 import Std.Lean.NameMapAttribute
 import Std.Data.Option.Basic
-import Std.Tactic.NormCast.Ext
+import Std.Tactic.NormCast.Ext -- just to copy the attribute
+import Std.Tactic.Ext.Attr -- just to copy the attribute
+import Mathlib.Tactic.Relation.Rfl -- just to copy the attribute
+import Mathlib.Tactic.Relation.Symm -- just to copy the attribute
+import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
+import Mathlib.Tactic.RunCmd -- not necessary, but useful for debugging
 
 /-!
 # The `@[to_additive]` attribute.
@@ -537,12 +542,31 @@ def copySimpAttribute (src tgt : Name) (ext : SimpExtension := simpExtension) : 
 [todo] it seems not to work when the `to_additive` is added as an attribute later. -/
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if (← isInstance src) then
-    let prio := (← getInstancePriority? src).elim 100 id
-    let attr_kind := (← getInstanceAttrKind? src).elim AttributeKind.global id
+    let prio := (← getInstancePriority? src).getD 100
+    let attr_kind := (← getInstanceAttrKind? src).getD .global
     trace[to_additive_detail] "Making {tgt} an instance with priority {prio}."
     addInstance tgt attr_kind prio |>.run'
 
-/-- [todo] add more attributes. -/
+/-- A hack to add an attribute to a declaration.
+  We use the `missing` for the syntax, so this only works for certain attributes.
+  It seems to work for `refl`, `symm`, `trans`, `ext` and `coe`.
+  This does not work for most attributes where the syntax has optional arguments.
+  TODO: have a proper implementation once we have the infrastructure for this. -/
+def hackyAddAttribute (attrName declName : Name) (kind : AttributeKind := .global) :
+  CoreM Unit := do
+  let .ok attr := getAttributeImpl (← getEnv) attrName
+    | throwError "unknown attribute {attrName}"
+  attr.add declName .missing kind
+
+/-- Copy an attribute that stores enough information to test whether a declaration is in it
+  in a hacky way.
+  TODO: have a proper implementation once we have the infrastructure for this. -/
+def hackyCopyAttr [Inhabited β] (attr : SimpleScopedEnvExtension α β) (f : β → Name → Bool)
+  (attrName src tgt : Name) : CoreM Unit := do
+  if f (attr.getState (← getEnv)) src then
+    hackyAddAttribute attrName tgt
+
+/-- Copy attributes to the additive name. -/
 def copyAttributes (src tgt : Name) : CoreM Unit := do
   -- Copy the standard `simp` attribute
   copySimpAttribute src tgt
@@ -551,7 +575,13 @@ def copyAttributes (src tgt : Name) : CoreM Unit := do
   copySimpAttribute src tgt normCastExt.up
   copySimpAttribute src tgt normCastExt.down
   copySimpAttribute src tgt normCastExt.squash
+  -- copy `instance`
   copyInstanceAttribute src tgt
+  hackyCopyAttr Std.Tactic.Ext.extExtension (·.elements.contains ·) `ext src tgt -- copy `@[ext]`
+  hackyCopyAttr Mathlib.Tactic.reflExt (·.elements.contains ·) `refl src tgt -- copy `@[refl]`
+  hackyCopyAttr Mathlib.Tactic.symmExt (·.elements.contains ·) `symm src tgt -- copy `@[symm]`
+  hackyCopyAttr Mathlib.Tactic.transExt (·.elements.contains ·) `trans src tgt -- copy `@[trans]`
+  hackyCopyAttr Std.Tactic.Coe.coeExt (·.contains ·) `coe src tgt -- copy `@[coe]`
 
 /--
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
@@ -731,7 +761,7 @@ This runs in several steps:
 3) Fix up abbreviations that are not word-by-word translations, like "addComm" or "Nonneg".
 -/
 def guessName : String → String :=
-  String.mapTokens ''' <|
+  String.mapTokens '\'' <|
   fun s =>
     String.join <|
     fixAbbreviation <|
