@@ -58,12 +58,12 @@ protected theorem wf : (∃ x, p x) → WellFounded (Upto.Gt p)
     rw [tsub_lt_tsub_iff_left_of_le (le_of_not_lt fun h' => ha _ h' h)]
 #align nat.upto.wf Nat.Upto.wf
 
-/-- Zero is always a member of `nat.upto p` because it has no predecessors. -/
+/-- Zero is always a member of `Nat.Upto p` because it has no predecessors. -/
 def zero : Nat.Upto p :=
   ⟨0, fun j h => False.elim (Nat.not_lt_zero _ h)⟩
 #align nat.upto.zero Nat.Upto.zero
 
-/-- The successor of `n` is in `nat.upto p` provided that `n` doesn't satisfy `p`. -/
+/-- The successor of `n` is in `Nat.Upto p` provided that `n` doesn't satisfy `p`. -/
 def succ (x : Nat.Upto p) (h : ¬p x.val) : Nat.Upto p :=
   ⟨x.val.succ, fun j h' => by
     rcases Nat.lt_succ_iff_lt_or_eq.1 h' with (h' | rfl) <;> [exact x.2 _ h', exact h]⟩
