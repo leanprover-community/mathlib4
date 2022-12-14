@@ -126,13 +126,15 @@ theorem restrict_piecewise_compl (f g : α → β) (s : Set α) [∀ x, Decidabl
 
 theorem restrict_extend_range (f : α → β) (g : α → γ) (g' : β → γ) :
     (range f).restrict (extend f g g') = fun x => g x.coe_prop.choose := by
-  sorry -- by convert restrict_dite _ _
+  classical
+  exact restrict_dite _ _
 #align set.restrict_extend_range Set.restrict_extend_range
 
 @[simp]
 theorem restrict_extend_compl_range (f : α → β) (g : α → γ) (g' : β → γ) :
-    range fᶜ.restrict (extend f g g') = g' ∘ Subtype.val := by sorry
-  --convert restrict_dite_compl _ _
+    range fᶜ.restrict (extend f g g') = g' ∘ Subtype.val := by
+  classical
+  exact restrict_dite_compl _ _
 #align set.restrict_extend_compl_range Set.restrict_extend_compl_range
 
 theorem range_extend_subset (f : α → β) (g : α → γ) (g' : β → γ) :
