@@ -430,15 +430,18 @@ protected theorem zero_add : 0 + a = a :=
 #align rat.zero_add Rat.zero_add
 
 protected theorem add_comm : a + b = b + a :=
-  numDenCasesOn' a fun n₁ d₁ h₁ => numDenCasesOn' b fun n₂ d₂ h₂ => by simp [h₁, h₂] ; sorry --cc
+  numDenCasesOn' a fun n₁ d₁ h₁ => numDenCasesOn' b fun n₂ d₂ h₂ => by
+    simp [h₁, h₂, add_comm, mul_comm]
 #align rat.add_comm Rat.add_comm
 
 protected theorem add_assoc : a + b + c = a + (b + c) :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
     numDenCasesOn' b fun n₂ d₂ h₂ =>
       numDenCasesOn' c fun n₃ d₃ h₃ => by
-        simp [h₁, h₂, h₃, mul_ne_zero, mul_add, mul_comm, mul_left_comm, add_left_comm, add_assoc]
-        sorry
+        simp [h₁, h₂, h₃]
+        rw [mul_assoc, add_mul, add_mul, mul_assoc, add_assoc]
+        congr 2
+        ac_rfl
 #align rat.add_assoc Rat.add_assoc
 
 protected theorem add_left_neg : -a + a = 0 :=
@@ -495,11 +498,10 @@ protected theorem mul_assoc : a * b * c = a * (b * c) :=
 protected theorem add_mul : (a + b) * c = a * c + b * c :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
     numDenCasesOn' b fun n₂ d₂ h₂ =>
-      numDenCasesOn' c fun n₃ d₃ h₃ => sorry/- by
-        simp [h₁, h₂, h₃, mul_ne_zero] <;>
-            refine' (div_mkInt_div_cancel_left (Int.coe_nat_ne_zero.2 h₃)).symm.trans _ <;>
-          simp [mul_add, mul_comm, mul_assoc, mul_left_comm]
-          sorry -/
+      numDenCasesOn' c fun n₃ d₃ h₃ => by
+        simp [h₁, h₂, h₃, mul_ne_zero]
+        rw [←  div_mkInt_div_cancel_left (Int.coe_nat_ne_zero.2 h₃), add_mul, add_mul]
+        ac_rfl
 #align rat.add_mul Rat.add_mul
 
 protected theorem mul_add : a * (b + c) = a * b + a * c := by
@@ -555,6 +557,7 @@ instance commRing : CommRing ℚ where
   mul_zero := sorry
   left_distrib := Rat.mul_add
   right_distrib := Rat.add_mul
+  sub_eq_add_neg := sorry -- Note we hope this to be definitional and it isn't :-(
   intCast := fun n => n
   /- Important: We do not set `nat_cast := λ n, ((n : ℤ) : ℚ)` (even though it's defeq) as that
     makes `int.cast_coe_nat` and `coe_coe` loop in `simp`. -/
