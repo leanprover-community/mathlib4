@@ -33,7 +33,6 @@ Since e.g. `append1 α.drop α.last` is propositionally equal to `α` but not de
 to it, we need support functions and lemmas to mediate between constructions.
 -/
 
-set_option autoImplicit false
 universe u v w
 
 /-- n-tuples of types, as a category -/
