@@ -33,7 +33,8 @@ def ofNatHom : ℕ →+* ℤ :=
   Nat.castRingHom ℤ
 #align int.of_nat_hom Int.ofNatHom
 
-@[simp]
+-- Porting note: no need to be `@[simp]`, as `Nat.cast_pos` handles this.
+-- @[simp]
 theorem coe_nat_pos {n : ℕ} : (0 : ℤ) < n ↔ 0 < n :=
   Nat.cast_pos
 #align int.coe_nat_pos Int.coe_nat_pos
@@ -443,3 +444,5 @@ theorem to_lex_int_cast [IntCast α] (n : ℤ) : toLex (n : α) = n :=
 theorem of_lex_int_cast [IntCast α] (n : ℤ) : (ofLex n : α) = n :=
   rfl
 #align of_lex_int_cast of_lex_int_cast
+
+#lint
