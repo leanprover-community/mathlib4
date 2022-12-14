@@ -242,7 +242,7 @@ theorem div_mkInt_div_cancel_left {a b c : ℤ} (c0 : c ≠ 0) : a * c /. (b * c
   · subst b0
     simp
   apply (mkInt_eq (mul_ne_zero b0 c0) b0).2
-  simp [mul_comm, mul_assoc]
+  rw [mul_comm, ←mul_assoc]
 #align rat.div_mk_div_cancel_left Rat.div_mkInt_div_cancel_left
 
 -- Porting note: this can move to Std4
@@ -326,7 +326,6 @@ theorem neg_def {a b : ℤ} : -(a /. b) = -a /. b := by
   by_cases b0 : b = 0;
   · subst b0
     simp
-    rfl
   generalize ha : a /. b = x; cases' x with n₁ d₁ h₁ c₁; rw [num_den'] at ha
   show Rat.mk _ _ _ _ = _; rw [num_den']
   have d0 := ne_of_gt (Int.ofNat_lt.2 h₁)
@@ -365,11 +364,9 @@ theorem inv_def {a b : ℤ} : (a /. b)⁻¹ = b /. a := by
   by_cases a0 : a = 0
   · subst a0
     simp
-    rfl
   by_cases b0 : b = 0
   · subst b0
     simp
-    rfl
   generalize ha : a /. b = x
   cases' x with n d h c
   rw [num_den'] at ha
@@ -647,11 +644,11 @@ theorem den_one : (1 : ℚ).den = 1 :=
 #align rat.denom_one Rat.den_one
 
 theorem mk_num_ne_zero_of_ne_zero {q : ℚ} {n d : ℤ} (hq : q ≠ 0) (hqnd : q = n /. d) : n ≠ 0 :=
-  fun this : n = 0 => hq <| by simpa [this] using hqnd
+  fun this => hq <| by simpa [this] using hqnd
 #align rat.mk_num_ne_zero_of_ne_zero Rat.mk_num_ne_zero_of_ne_zero
 
 theorem mk_denom_ne_zero_of_ne_zero {q : ℚ} {n d : ℤ} (hq : q ≠ 0) (hqnd : q = n /. d) : d ≠ 0 :=
-  fun this : d = 0 => hq <| by simpa [this] using hqnd
+  fun this => hq <| by simpa [this] using hqnd
 #align rat.mk_denom_ne_zero_of_ne_zero Rat.mk_denom_ne_zero_of_ne_zero
 
 theorem mkInt_ne_zero_of_ne_zero {n d : ℤ} (h : n ≠ 0) (hd : d ≠ 0) : n /. d ≠ 0 :=
