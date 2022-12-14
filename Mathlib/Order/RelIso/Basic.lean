@@ -107,7 +107,7 @@ instance : RelHomClass (r →r s) r s where
   map_rel := map_rel'
 
 /-- See Note [custom simps projection] -/
-def RelHom.Simps.apply (f : r →r s) : α → β := f
+def Simps.apply (f : r →r s) : α → β := f
 
 initialize_simps_projections RelHom (toFun → apply)
 

@@ -220,7 +220,7 @@ instance : OrderHomClass (α →o β) α β where
 
 /-- See Note [custom simps projection]. Note: all other FunLike classes use `apply` instead of `coe`
 for the projection names. Maybe we should change this. -/
-def OrderHom.Simps.coe (f : α →o β) : α → β := f
+def Simps.coe (f : α →o β) : α → β := f
 
 initialize_simps_projections OrderHom (toFun → coe)
 
