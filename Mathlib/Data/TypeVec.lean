@@ -53,8 +53,8 @@ def Arrow (α β : TypeVec n) :=
 #align typevec.arrow TypeVec.Arrow
 
 -- mathport name: typevec.arrow
-@[inherit_doc] scoped[MVFunctor] infixl:40 " ⟹ " => TypeVec.Arrow
-open MVFunctor
+@[inherit_doc] scoped[MvFunctor] infixl:40 " ⟹ " => TypeVec.Arrow
+open MvFunctor
 
 /-- Extensionality for arrows -/
 @[ext]
@@ -76,7 +76,7 @@ def comp {α β γ : TypeVec n} (g : β ⟹ γ) (f : α ⟹ β) : α ⟹ γ := f
 #align typevec.comp TypeVec.comp
 
 -- mathport name: typevec.comp
-@[inherit_doc] scoped[MVFunctor] infixr:80 " ⊚ " => TypeVec.comp
+@[inherit_doc] scoped[MvFunctor] infixr:80 " ⊚ " => TypeVec.comp
 
 -- type as \oo
 @[simp]
@@ -433,7 +433,7 @@ def prod : ∀ {n}, TypeVec.{u} n → TypeVec.{u} n → TypeVec n
 #align typevec.prod TypeVec.prod
 
 -- mathport name: typevec.prod
-@[inherit_doc] scoped[MVFunctor] infixl:45 " ⊗ " => TypeVec.prod
+@[inherit_doc] scoped[MvFunctor] infixl:45 " ⊗ " => TypeVec.prod
 
 /- porting note: the order of universes in `const` is reversed w.r.t. mathlib3 -/
 /-- `const x α` is an arrow that ignores its source and constructs a `TypeVec` that
@@ -525,7 +525,7 @@ theorem const_iff_true {α : TypeVec n} {i x p} : ofRepeat (TypeVec.const p α i
   case fs _ ih  => erw [TypeVec.const, @ih (drop α) x]
 #align typevec.const_iff_true TypeVec.const_iff_true
 
--- variables  {F : typevec.{u} n → Type*} [MVFunctor F]
+-- variables  {F : typevec.{u} n → Type*} [MvFunctor F]
 
 section
 variable {α β γ : TypeVec.{u} n}
@@ -589,7 +589,7 @@ protected def prod.map : ∀ {n} {α α' β β' : TypeVec.{u} n}, α ⟹ β → 
 
 
 -- mathport name: typevec.prod.map
-@[inherit_doc] scoped[MVFunctor] infixl:45 " ⊗' " => TypeVec.prod.map
+@[inherit_doc] scoped[MvFunctor] infixl:45 " ⊗' " => TypeVec.prod.map
 
 theorem fst_prod_mk {α α' β β' : TypeVec n} (f : α ⟹ β) (g : α' ⟹ β') :
     TypeVec.prod.fst ⊚ (f ⊗' g) = f ⊚ TypeVec.prod.fst :=
@@ -779,7 +779,7 @@ theorem dropFun_rel_last {α : TypeVec n} {β} (R : β → β → Prop) :
 
 attribute [simp] drop_append1'
 
-open MVFunctor
+open MvFunctor
 
 @[simp]
 theorem dropFun_prod {α α' β β' : TypeVec (n + 1)} (f : α ⟹ β) (f' : α' ⟹ β') :
