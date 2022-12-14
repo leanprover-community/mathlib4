@@ -39,6 +39,7 @@ def prod (s : Set α) (t : Set β) : Set (α × β) :=
 #align set.prod Set.prod
 
 -- This notation binds more strongly than (pre)images, unions and intersections.
+/-- The cartesian product `s ×ˢ t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
 infixr:82 " ×ˢ " => Set.prod
 
 theorem prod_eq (s : Set α) (t : Set β) : s ×ˢ t = Prod.fst ⁻¹' s ∩ Prod.snd ⁻¹' t :=
@@ -54,7 +55,7 @@ theorem mem_prod {p : α × β} : p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t :=
   Iff.rfl
 #align set.mem_prod Set.mem_prod
 
-@[simp]
+-- Porting note: Removing `simp` as `simp` can prove it
 theorem prod_mk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) :=
   rfl
 #align set.prod_mk_mem_set_prod_eq Set.prod_mk_mem_set_prod_eq
@@ -422,7 +423,7 @@ theorem prod_eq_iff_eq (ht : t.Nonempty) : s ×ˢ t = s₁ ×ˢ t ↔ s = s₁ :
   rfl
 #align set.prod_eq_iff_eq Set.prod_eq_iff_eq
 
-@[simp]
+-- Porting note: Removing `simp` - LHS does not simplify
 theorem image_prod (f : α → β → γ) : (fun x : α × β => f x.1 x.2) '' s ×ˢ t = image2 f s t :=
   Set.ext fun a =>
     ⟨by
@@ -437,7 +438,7 @@ theorem image2_mk_eq_prod : image2 Prod.mk s t = s ×ˢ t :=
   ext <| by simp
 #align set.image2_mk_eq_prod Set.image2_mk_eq_prod
 
-@[simp]
+-- Porting note: Removing `simp` - LHS does not simplify
 theorem image2_curry (f : α × β → γ) (s : Set α) (t : Set β) :
     image2 (fun a b => f (a, b)) s t = (s ×ˢ t).image f := by rw [← image2_mk_eq_prod, image_image2]
 #align set.image2_curry Set.image2_curry
@@ -652,7 +653,7 @@ theorem mem_pi {f : ∀ i, α i} : f ∈ s.pi t ↔ ∀ i ∈ s, f i ∈ t i :=
   Iff.rfl
 #align set.mem_pi Set.mem_pi
 
-@[simp]
+-- Porting note: Removing `simp` as `simp` can prove it
 theorem mem_univ_pi {f : ∀ i, α i} : f ∈ pi univ t ↔ ∀ i, f i ∈ t i := by simp
 #align set.mem_univ_pi Set.mem_univ_pi
 
@@ -718,7 +719,7 @@ theorem disjoint_univ_pi : Disjoint (pi univ t₁) (pi univ t₂) ↔ ∃ i, Dis
   simp only [disjoint_iff_inter_eq_empty, ← pi_inter_distrib, univ_pi_eq_empty_iff, iff_self]
 #align set.disjoint_univ_pi Set.disjoint_univ_pi
 
-@[simp]
+-- Porting note: Removing `simp` - LHS does not simplify
 theorem range_dcomp (f : ∀ i, α i → β i) :
     (range fun g : ∀ i, α i => fun i => f i (g i)) = pi univ fun i => range (f i) := by
   refine Subset.antisymm ?_ fun x hx => ?_
