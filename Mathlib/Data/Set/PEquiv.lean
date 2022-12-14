@@ -321,7 +321,8 @@ theorem bot_trans (f : β ≃. γ) : (⊥ : α ≃. β).trans f = ⊥ := by
   ext; dsimp [PEquiv.trans]; simp
 #align pequiv.bot_trans PEquiv.bot_trans
 
-theorem is_some_symm_get (f : α ≃. β) {a : α} (h : isSome (f a)) : isSome (f.symm (Option.get _ h)) :=
+theorem is_some_symm_get (f : α ≃. β) {a : α} (h : isSome (f a)) :
+    isSome (f.symm (Option.get _ h)) :=
   isSome_iff_exists.2 ⟨a, by rw [f.eq_some_iff, some_get]⟩
 #align pequiv.is_some_symm_get PEquiv.is_some_symm_get
 
