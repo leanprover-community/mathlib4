@@ -5,6 +5,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Control.Basic
 import Mathlib.Init.Set
+import Std.Tactic.Lint
 
 /-!
 # Functors

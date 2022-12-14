@@ -9,6 +9,7 @@ import Mathlib.Data.KVMap
 import Mathlib.Lean.Expr.ReplaceRec
 import Std.Lean.NameMapAttribute
 import Std.Data.Option.Basic
+import Std.Tactic.Lint
 import Std.Tactic.NormCast.Ext -- just to copy the attribute
 import Std.Tactic.Ext.Attr -- just to copy the attribute
 import Mathlib.Tactic.Relation.Rfl -- just to copy the attribute
