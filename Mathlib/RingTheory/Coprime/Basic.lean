@@ -7,7 +7,7 @@ import Mathlib.Tactic.Ring
 import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Algebra.Ring.Divisibility
 import Mathlib.Algebra.Hom.Ring
---import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.GroupPower.Ring
 
 /-!
 # Coprime elements of a ring
@@ -379,7 +379,10 @@ end CommRing
 theorem sq_add_sq_ne_zero {R : Type _} [LinearOrderedCommRing R] {a b : R} (h : IsCoprime a b) :
     a ^ 2 + b ^ 2 ≠ 0 := by
   intro h'
-  obtain ⟨ha, hb⟩ := (add_eq_zero_iff' (sq_nonneg a) (sq_nonneg b)).mp h'
+  obtain ⟨ha, hb⟩ := (add_eq_zero_iff'
+  --Porting TODO: replace with sq_nonneg when that file is ported
+    (by rw [pow_two]; exact mul_self_nonneg _)
+    (by rw [pow_two]; exact mul_self_nonneg _)).mp h'
   obtain rfl := pow_eq_zero ha
   obtain rfl := pow_eq_zero hb
   exact not_coprime_zero_zero h
