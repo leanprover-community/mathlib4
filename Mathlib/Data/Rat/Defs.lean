@@ -375,7 +375,8 @@ instance : Mul ℚ :=
 theorem mul_def {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) : a /. b * (c /. d) = a * c /. (b * d) := by
   apply lift_binop_eq Rat.mul <;> intros <;> try assumption
   · apply mk_pnat_eq
-  · apply mul_ne_zero d₁0 d₂0
+  · rename_i d₁0 d₂0
+    apply mul_ne_zero d₁0 d₂0
   sorry -- cc
 #align rat.mul_def Rat.mul_def
 
