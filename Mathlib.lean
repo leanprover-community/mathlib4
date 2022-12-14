@@ -218,6 +218,7 @@ import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Sigma
+import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.Sigma.Order
