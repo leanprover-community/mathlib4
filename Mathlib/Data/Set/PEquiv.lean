@@ -41,15 +41,20 @@ pequiv, partial equivalence
 universe u v w x
 
 /-- A `PEquiv` is a partial equivalence, a representation of a bijection between a subset
-  of `α` and a subset of `β`. See also `local_equiv` for a version that requires `to_fun` and
-`inv_fun` to be globally defined functions and has `source` and `target` sets as extra fields. -/
+  of `α` and a subset of `β`. See also `LocalEquiv` for a version that requires `toFun` and
+`invFun` to be globally defined functions and has `source` and `target` sets as extra fields. -/
 structure PEquiv (α : Type u) (β : Type v) where
+  /-- The underlying partial function of a `PEquiv` -/
   toFun : α → Option β
+  /-- The partial inverse of `toFun` -/
   invFun : β → Option α
+  /-- `invFun` is the partial inverse of `toFun`  -/
   inv : ∀ (a : α) (b : β), a ∈ invFun b ↔ b ∈ toFun a
 #align pequiv PEquiv
 
--- mathport name: «expr ≃. »
+/-- A `PEquiv` is a partial equivalence, a representation of a bijection between a subset
+  of `α` and a subset of `β`. See also `local_equiv` for a version that requires `to_fun` and
+`inv_fun` to be globally defined functions and has `source` and `target` sets as extra fields. -/
 infixr:25 " ≃. " => PEquiv
 
 namespace PEquiv
@@ -61,10 +66,9 @@ open Function Option
 instance : CoeFun (α ≃. β) fun _ => α → Option β :=
   ⟨toFun⟩
 
-@[simp]
 theorem coe_mk_apply (f₁ : α → Option β) (f₂ : β → Option α) (h) (x : α) :
     (PEquiv.mk f₁ f₂ h : α → Option β) x = f₁ x :=
-  rfl
+  by simp
 #align pequiv.coe_mk_apply PEquiv.coe_mk_apply
 
 @[ext]
@@ -238,7 +242,6 @@ theorem ofSet_eq_some_iff {s : Set α} {_ : DecidablePred (· ∈ s)} {a b : α}
   mem_ofSet_iff
 #align pequiv.of_set_eq_some_iff PEquiv.ofSet_eq_some_iff
 
-@[simp]
 theorem ofSet_eq_some_self_iff {s : Set α} {_ : DecidablePred (· ∈ s)} {a : α} :
     ofSet s a = some a ↔ a ∈ s :=
   mem_ofSet_self_iff
