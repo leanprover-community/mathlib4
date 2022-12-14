@@ -60,7 +60,7 @@ protected theorem wf : (∃ x, p x) → WellFounded (Upto.Gt p)
 
 /-- Zero is always a member of `Nat.Upto p` because it has no predecessors. -/
 def zero : Nat.Upto p :=
-  ⟨0, fun j h => False.elim (Nat.not_lt_zero _ h)⟩
+  ⟨0, fun _ h => False.elim (Nat.not_lt_zero _ h)⟩
 #align nat.upto.zero Nat.Upto.zero
 
 /-- The successor of `n` is in `Nat.Upto p` provided that `n` doesn't satisfy `p`. -/
