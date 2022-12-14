@@ -10,8 +10,7 @@ import Mathlib.Algebra.Invertible
 # Lemmas about `inv_of` in ordered (semi)rings.
 -/
 
-
-variable {α : Type _} [LinearOrderedSemiring α] {a : α}
+variable [LinearOrderedSemiring α] {a : α}
 
 @[simp]
 theorem invOf_pos [Invertible a] : 0 < ⅟ a ↔ 0 < a :=
@@ -20,7 +19,7 @@ theorem invOf_pos [Invertible a] : 0 < ⅟ a ↔ 0 < a :=
 #align inv_of_pos invOf_pos
 
 @[simp]
-theorem invOf_nonpos [Invertible a] : ⅟ a ≤ 0 ↔ a ≤ 0 := by simp only [← not_lt, invOf_pos]
+theorem invOf_nonpos [Invertible a] : ⅟ a ≤ 0 ↔ a ≤ 0 := by simp only [← not_lt, invOf_pos]; rfl
 #align inv_of_nonpos invOf_nonpos
 
 @[simp]
@@ -30,11 +29,10 @@ theorem invOf_nonneg [Invertible a] : 0 ≤ ⅟ a ↔ 0 ≤ a :=
 #align inv_of_nonneg invOf_nonneg
 
 @[simp]
-theorem invOf_lt_zero [Invertible a] : ⅟ a < 0 ↔ a < 0 := by simp only [← not_le, invOf_nonneg]
+theorem invOf_lt_zero [Invertible a] : ⅟ a < 0 ↔ a < 0 := by simp only [← not_le, invOf_nonneg]; rfl
 #align inv_of_lt_zero invOf_lt_zero
 
 @[simp]
 theorem invOf_le_one [Invertible a] (h : 1 ≤ a) : ⅟ a ≤ 1 :=
-  --haveI := @LinearOrder.decidableLe α _
   mul_invOf_self a ▸ le_mul_of_one_le_left (invOf_nonneg.2 <| zero_le_one.trans h) h
 #align inv_of_le_one invOf_le_one
