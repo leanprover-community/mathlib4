@@ -496,36 +496,36 @@ noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : ∀ a, { b // ¬
 theorem collapseF.lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
     ∀ {a'}, r a' a → s (collapseF f a').1 (collapseF f a).1 := @fun a => by
   revert a
-  show (collapseF f a).1 ∈ { b | ∀ (a') (h : r a' a), s (collapseF f a').1 b }
+  show (collapseF f a).1 ∈ { b | ∀ (a') (_ : r a' a), s (collapseF f a').1 b }
   unfold collapseF; rw [WellFounded.fix_eq]
+  dsimp only
   apply WellFounded.min_mem _ _
-
-
 #align rel_embedding.collapse_F.lt RelEmbedding.collapseF.lt
 
 theorem collapseF.not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
-    (h : ∀ (a') (h : r a' a), s (collapseF f a').1 b) : ¬s b (collapseF f a).1 := by
-  unfold collapse_F; rw [WellFounded.fix_eq]
+    (h : ∀ (a') (_ : r a' a), s (collapseF f a').1 b) : ¬s b (collapseF f a).1 := by
+  unfold collapseF; rw [WellFounded.fix_eq]
+  dsimp only
   exact
     WellFounded.not_lt_min _ _ _
-      (show b ∈ { b | ∀ (a') (h : r a' a), s (collapse_F f a').1 b } from h)
+      (show b ∈ { b | ∀ (a') (_ : r a' a), s (collapseF f a').1 b } from h)
 #align rel_embedding.collapse_F.not_lt RelEmbedding.collapseF.not_lt
 
 /-- Construct an initial segment from an order embedding into a well order, by collapsing it
 to fill the gaps. -/
 noncomputable def collapse [IsWellOrder β s] (f : r ↪r s) : r ≼i s :=
-  haveI := RelEmbedding.is_well_order f
-  ⟨RelEmbedding.ofMonotone (fun a => (collapse_F f a).1) fun a b => collapse_F.lt f, fun a b =>
-    Acc.recOn (is_well_founded.wf.apply b : Acc s b)
-      (fun b H IH a h => by
-        let S := { a | ¬s (collapse_F f a).1 b }
-        have : S.nonempty := ⟨_, asymm h⟩
+  haveI := RelEmbedding.isWellOrder f
+  ⟨RelEmbedding.ofMonotone (fun a => (collapseF f a).1) fun a b => collapseF.lt f, fun a b =>
+    Acc.recOn (IsWellFounded.wf.apply b : Acc s b)
+      (fun b _ _ a h => by
+        let S := { a | ¬s (collapseF f a).1 b }
+        have : S.Nonempty := ⟨_, asymm h⟩
         exists (IsWellFounded.wf : WellFounded r).min S this
         refine' ((@trichotomous _ s _ _ _).resolve_left _).resolve_right _
         · exact (IsWellFounded.wf : WellFounded r).min_mem S this
-        · refine' collapse_F.not_lt f _ fun a' h' => _
+        · refine' collapseF.not_lt f _ fun a' h' => _
           by_contra hn
-          exact is_well_founded.wf.not_lt_min S this hn h')
+          exact IsWellFounded.wf.not_lt_min S this hn h')
       a⟩
 #align rel_embedding.collapse RelEmbedding.collapse
 
