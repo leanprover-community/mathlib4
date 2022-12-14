@@ -179,12 +179,12 @@ theorem normalize_eq_normalize_iff
       have hs := congr_arg Int.sign h
       simp [Int.sign_eq_one_of_pos (Int.ofNat_lt.2 hb'),
         Int.sign_eq_one_of_pos (Int.ofNat_lt.2 hd')] at hs
-      -- Apparently contrary to the documentation, `conv in a => rw [← Int.sign_mul_natAbs a]`
+      -- Porting note:
+      -- `conv in a => rw [← Int.sign_mul_natAbs a]`
       -- rewrites all the `a`s, not just the first one.
-      conv =>
-        congr; congr; congr; rw [← Int.sign_mul_natAbs a]
-      conv =>
-        congr; congr; rfl; congr; rw [← Int.sign_mul_natAbs c]
+      -- Fixed in https://github.com/leanprover/lean4/pull/1956
+      conv => enter [1, 1, 1]; rw [← Int.sign_mul_natAbs a]
+      conv => enter [1, 2, 1]; rw [← Int.sign_mul_natAbs c]
       rw [Int.mul_div_assoc, Int.mul_div_assoc]
       exact ⟨congr (congr_arg (· * ·) hs) (congr_arg (fun x : ℕ => (x : ℤ)) h₁), h₂⟩
       all_goals exact Int.coe_nat_dvd.2 (Nat.gcd_dvd_left _ _)
