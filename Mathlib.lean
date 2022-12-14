@@ -194,6 +194,7 @@ import Mathlib.Data.Opposite
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Option.NAry
+import Mathlib.Data.PEquiv
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.PSigma.Order
 import Mathlib.Data.Pi.Algebra
