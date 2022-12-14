@@ -154,12 +154,12 @@ theorem prod_union : s ×ˢ (t₁ ∪ t₂) = s ×ˢ t₁ ∪ s ×ˢ t₂ := by
 
 theorem inter_prod : (s₁ ∩ s₂) ×ˢ t = s₁ ×ˢ t ∩ s₂ ×ˢ t := by
   ext ⟨x, y⟩
-  simp only [← and_and_right, mem_inter_iff, mem_prod]
+  simp only [← and_and_right, mem_inter_iff, mem_prod, iff_self]
 #align set.inter_prod Set.inter_prod
 
 theorem prod_inter : s ×ˢ (t₁ ∩ t₂) = s ×ˢ t₁ ∩ s ×ˢ t₂ := by
   ext ⟨x, y⟩
-  simp only [← and_and_left, mem_inter_iff, mem_prod]
+  simp only [← and_and_left, mem_inter_iff, mem_prod, iff_self]
 #align set.prod_inter Set.prod_inter
 
 theorem prod_inter_prod : s₁ ×ˢ t₁ ∩ s₂ ×ˢ t₂ = (s₁ ∩ s₂) ×ˢ (t₁ ∩ t₂) := by
@@ -179,8 +179,15 @@ theorem insert_prod : insert a s ×ˢ t = Prod.mk a '' t ∪ s ×ˢ t := by
 
 theorem prod_insert : s ×ˢ insert b t = (fun a => (a, b)) '' s ∪ s ×ˢ t := by
   ext ⟨x, y⟩
-  -- Times out:
-  -- simp (config := { contextual := true }) [image, iff_def, or_imp, Imp.swap]
+  -- Porting note: was `simp (config := { contextual := true }) [image, iff_def, or_imp, Imp.swap]`
+  simp [image, or_imp]
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · obtain ⟨hx, rfl|hy⟩ := h
+    · exact Or.inl ⟨x, hx, rfl, rfl⟩
+    · exact Or.inr ⟨hx, hy⟩
+  · obtain ⟨x, hx, rfl, rfl⟩|⟨hx, hy⟩ := h
+    · exact ⟨hx, Or.inl rfl⟩
+    · exact ⟨hx, Or.inr hy⟩
 #align set.prod_insert Set.prod_insert
 
 theorem prod_preimage_eq {f : γ → α} {g : δ → β} :
@@ -590,19 +597,29 @@ theorem disjoint_diagonal_off_diag : Disjoint (diagonal α) s.offDiag :=
 
 theorem offDiag_inter : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
   ext fun x => by
-    simp only [mem_off_diag, mem_inter_iff]
-    tauto
+    simp only [mem_offDiag, mem_inter_iff]
+    constructor
+    · rintro ⟨⟨h0, h1⟩, ⟨h2, h3⟩, h4⟩
+      refine ⟨⟨h0, h2, h4⟩, ⟨h1, h3, h4⟩⟩
+    · rintro ⟨⟨h0, h1, h2⟩, ⟨h3, h4, -⟩⟩
+      exact ⟨⟨h0, h3⟩, ⟨h1, h4⟩, h2⟩
 #align set.off_diag_inter Set.offDiag_inter
 
 variable {s t}
 
 theorem offDiag_union (h : Disjoint s t) :
     (s ∪ t).offDiag = s.offDiag ∪ t.offDiag ∪ s ×ˢ t ∪ t ×ˢ s := by
-  rw [offDiag_eq_sep_prod, union_prod, prod_union, prod_union, union_comm _ (t ×ˢ t), union_assoc,
-    union_left_comm (s ×ˢ t), ← union_assoc, sep_union, sep_union, ← offDiag_eq_sep_prod, ←
-    offDiag_eq_sep_prod, sep_eq_self_iff_mem_true.2, ← union_assoc]
-  simp only [mem_union, mem_prod, Ne.def, Prod.forall]
-  rintro i j (⟨hi, hj⟩ | ⟨hi, hj⟩) rfl <;> exact h.le_bot ⟨‹_›, ‹_›⟩
+  ext x
+  simp only [mem_offDiag, mem_union, ne_eq, mem_prod]
+  constructor
+  · rintro ⟨h0|h0, h1|h1, h2⟩ <;> simp [h0, h1, h2]
+  · rintro (((⟨h0, h1, h2⟩|⟨h0, h1, h2⟩)|⟨h0, h1⟩)|⟨h0, h1⟩) <;> simp [*]
+    · rintro h3
+      rw [h3] at h0
+      exact (Set.disjoint_left.mp h h0 h1)
+    · rintro h3
+      rw [h3] at h0
+      exact (Set.disjoint_right.mp h h0 h1).elim
 #align set.off_diag_union Set.offDiag_union
 
 theorem offDiag_insert (ha : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
