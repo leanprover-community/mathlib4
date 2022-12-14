@@ -31,7 +31,7 @@ def cons (a : α) (s : Stream' α) : Stream' α
   | n + 1 => s n
 #align stream.cons Stream'.cons
 
-notation h "::" t => cons h t
+scoped infixr:67 " :: " => cons
 
 /-- Head of a stream: `Stream'.head s = Stream'.nth s 0`. -/
 def head (s : Stream' α) : α := s 0
