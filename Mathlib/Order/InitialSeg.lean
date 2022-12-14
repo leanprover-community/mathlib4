@@ -65,17 +65,6 @@ instance : Coe (r ≼i s) (r ↪r s) :=
 instance : CoeFun (r ≼i s) fun _ => α → β :=
   ⟨fun f x => (f : r ↪r s) x⟩
 
--- Porting note: Deleted these two lemmas
--- @[simp]
--- theorem coe_fn_mk (f : r ↪r s) (o) : (@InitialSeg.mk _ _ r s f o : α → β) = f :=
---   rfl
--- #align initial_seg.coe_fn_mk InitialSeg.coe_fn_mk
-
--- @[simp]
--- theorem coe_fn_to_rel_embedding (f : r ≼i s) : (f.toRelEmbedding : α → β) = f :=
---   rfl
--- #align initial_seg.coe_fn_to_rel_embedding InitialSeg.coe_fn_to_rel_embedding
-
 @[simp]
 theorem coe_coe_fn (f : r ≼i s) : ((f : r ↪r s) : α → β) = f :=
   rfl
@@ -262,16 +251,6 @@ theorem coe_fn_mk (f : r ↪r s) (t o) : (@PrincipalSeg.mk _ _ r s f t o : α �
   rfl
 #align principal_seg.coe_fn_mk PrincipalSeg.coe_fn_mk
 
-@[simp]
-theorem coe_fn_to_rel_embedding (f : r ≺i s) : (f.toRelEmbedding : α → β) = f :=
-  rfl
-#align principal_seg.coe_fn_to_rel_embedding PrincipalSeg.coe_fn_to_rel_embedding
-
-@[simp]
-theorem coe_coe_fn (f : r ≺i s) : ((f : r ↪r s) : α → β) = f :=
-  rfl
-#align principal_seg.coe_coe_fn PrincipalSeg.coe_coe_fn
-
 theorem down (f : r ≺i s) : ∀ {b : β}, s b f.top ↔ ∃ a, f a = b :=
   f.down' _
 #align principal_seg.down PrincipalSeg.down
@@ -375,7 +354,7 @@ instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
       rw [@Subsingleton.elim _ _ (f : r ≼i s) g]
     have et : f.top = g.top := by
       refine' extensional_of_trichotomous_of_irrefl s fun x => _
-      simp only [PrincipalSeg.down, ef, coe_fn_to_rel_embedding, iff_self]
+      simp only [PrincipalSeg.down, ef, iff_self]
     cases f
     cases g
     have := RelEmbedding.coe_fn_injective ef; congr ⟩
@@ -538,4 +517,3 @@ theorem collapse_apply [IsWellOrder β s] (f : r ↪r s) (a) : collapse f a = (c
 #align rel_embedding.collapse_apply RelEmbedding.collapse_apply
 
 end RelEmbedding
-#lint
