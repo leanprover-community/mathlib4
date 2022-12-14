@@ -38,17 +38,22 @@ instance : IntCast ℚ :=
   ⟨ofInt⟩
 
 @[simp]
-theorem of_int_eq_cast (n : ℤ) : ofInt n = n :=
+theorem of_int_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
   rfl
 #align rat.of_int_eq_cast Rat.of_int_eq_cast
 
+-- Porting note:
+-- At this point the preferred cast is still `ofInt`,
+-- but it will later be `Int.cast`.
+-- For now we need to explicitly write `Int.cast` so the lemmas are in terms of the
+-- eventually preferred coercion.
 @[simp, norm_cast]
-theorem coe_int_num (n : ℤ) : (n : ℚ).num = n :=
+theorem coe_int_num (n : ℤ) : (Int.cast n : ℚ).num = n :=
   rfl
 #align rat.coe_int_num Rat.coe_int_num
 
 @[simp, norm_cast]
-theorem coe_int_den (n : ℤ) : (n : ℚ).den = 1 :=
+theorem coe_int_den (n : ℤ) : (Int.cast n : ℚ).den = 1 :=
   rfl
 #align rat.coe_int_denom Rat.coe_int_den
 
@@ -263,7 +268,9 @@ theorem num_den' {n d h c} : (⟨n, d, h, c⟩ : ℚ) = n /. d :=
   num_den.symm
 #align rat.num_denom' Rat.num_den'
 
-theorem coe_int_eq_mkInt (z : ℤ) : (z : ℚ) = z /. 1 :=
+-- Porting note: we explicitly write `Int.cast` here,
+-- as that will later be the preferred coercion (but at this point is not).
+theorem coe_int_eq_mkInt (z : ℤ) : Int.cast z = z /. 1 :=
   num_den'
 #align rat.coe_int_eq_mk Rat.coe_int_eq_mkInt
 
@@ -749,7 +756,8 @@ theorem coe_int_div_eq_mkInt {n d : ℤ} : (n : ℚ) / ↑d = n /. d := by
 
 @[simp]
 theorem num_div_den (r : ℚ) : (r.num / r.den : ℚ) = r := by
-  rw [← Int.cast_ofNat, ← mkInt_eq_div, num_den]
+  rw [← Int.cast_ofNat]
+  erw [← mkInt_eq_div, num_den]
 #align rat.num_div_denom Rat.num_div_den
 
 theorem coe_int_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : ↑q.num = q := by
