@@ -14,7 +14,7 @@ embeddings from smaller ones.
 
 
 open Function.Embedding
-#print Disjoint
+
 namespace Equiv
 
 /-- Embeddings from a sum type are equivalent to two separate embeddings with disjoint ranges. -/
