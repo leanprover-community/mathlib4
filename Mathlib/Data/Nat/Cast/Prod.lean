@@ -24,11 +24,11 @@ instance : AddMonoidWithOne (α × β) :=
     natCast_succ := fun _ => congr_arg₂ Prod.mk (Nat.cast_succ _) (Nat.cast_succ _) }
 
 @[simp]
-theorem fst_nat_cast (n : ℕ) : (n : α × β).fst = n := by induction n <;> simp [*]
-#align prod.fst_nat_cast Prod.fst_nat_cast
+theorem fst_natCast (n : ℕ) : (n : α × β).fst = n := by induction n <;> simp [*]
+#align prod.fst_nat_cast Prod.fst_natCast
 
 @[simp]
-theorem snd_nat_cast (n : ℕ) : (n : α × β).snd = n := by induction n <;> simp [*]
-#align prod.snd_nat_cast Prod.snd_nat_cast
+theorem snd_natCast (n : ℕ) : (n : α × β).snd = n := by induction n <;> simp [*]
+#align prod.snd_nat_cast Prod.snd_natCast
 
 end Prod
