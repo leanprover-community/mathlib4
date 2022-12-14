@@ -154,6 +154,7 @@ import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Cast
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Int.Units
 import Mathlib.Data.KVMap
