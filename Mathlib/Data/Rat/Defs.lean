@@ -292,8 +292,7 @@ def numDenCasesOn'.{u} {C : ℚ → Sort u} (a : ℚ) (H : ∀ (n : ℤ) (d : �
 
 #align rat.add Rat.add
 
-instance : Add ℚ :=
-  ⟨Rat.add⟩
+-- Porting note: there's already an instance for `Add ℚ` is in Std.
 
 theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → ℤ → ℤ) (f₂ : ℤ → ℤ → ℤ → ℤ → ℤ)
     (fv :
@@ -350,8 +349,7 @@ theorem add_def {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
 
 #align rat.neg Rat.neg
 
-instance : Neg ℚ :=
-  ⟨Rat.neg⟩
+-- Porting note: there's already an instance for `Neg ℚ` is in Std.
 
 @[simp]
 theorem neg_def {a b : ℤ} : -(a /. b) = -a /. b := by
@@ -375,8 +373,7 @@ theorem mkInt_neg_den (n d : ℤ) : n /. -d = -n /. d := by
 
 #align rat.mul Rat.mul
 
-instance : Mul ℚ :=
-  ⟨Rat.mul⟩
+-- Porting note: there's already an instance for `Mul ℚ` is in Std.
 
 @[simp]
 theorem mul_def {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) : a /. b * (c /. d) = a * c /. (b * d) := by
@@ -392,6 +389,8 @@ theorem mul_def {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) : a /. b * (c /. d
 instance : Inv ℚ :=
   ⟨Rat.inv⟩
 
+-- Porting note: there's already an instance for `Div ℚ` is in Std.
+-- Overriding it here may be a terrible idea, we need to investigate.
 instance : Div ℚ :=
   ⟨fun a b => a * b⁻¹⟩
 
@@ -454,6 +453,11 @@ protected theorem add_assoc : a + b + c = a + (b + c) :=
 protected theorem add_left_neg : -a + a = 0 :=
   numDenCasesOn' a fun n d h => by simp [h]
 #align rat.add_left_neg Rat.add_left_neg
+
+protected theorem sub_eq_add_neg : a - b = a + -b :=
+  numDenCasesOn' a fun n₁ d₁ h₁ =>
+    numDenCasesOn' b fun n₂ d₂ h₂ => by
+      sorry
 
 @[simp]
 theorem mkInt_zero_one : 0 /. 1 = 0 :=
@@ -554,8 +558,6 @@ Instead we'll instantiate `CommRing` and `CommGroupWithZero` at this point.
 The `Rat.field` instance and any field-specific lemmas can be found in `Mathlib.Data.Rat.Basic`.
 -/
 
-
-
 instance commRing : CommRing ℚ where
   zero := 0
   add := (· + ·)
@@ -575,7 +577,7 @@ instance commRing : CommRing ℚ where
   mul_zero := Rat.mul_zero
   left_distrib := Rat.mul_add
   right_distrib := Rat.add_mul
-  sub_eq_add_neg := sorry -- Note we hope this to be definitional and it isn't :-(
+  sub_eq_add_neg := Rat.sub_eq_add_neg
   intCast := fun n => n
   /- Important: We do not set `nat_cast := λ n, ((n : ℤ) : ℚ)` (even though it's defeq) as that
     makes `int.cast_coe_nat` and `coe_coe` loop in `simp`. -/
