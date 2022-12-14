@@ -50,7 +50,6 @@ structure InitialSeg {α β : Type _} (r : α → α → Prop) (s : β → β �
   init : ∀ a b, s b (toRelEmbedding a) → ∃ a', toRelEmbedding a' = b
 #align initial_seg InitialSeg
 
--- mathport name: initial_seg
 -- Porting notes: Deleted `scoped[InitialSeg]`
 /-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≼i s` is an order
 embedding whose range is an initial segment. That is, whenever `b < f a` in `β` then `b` is in the
