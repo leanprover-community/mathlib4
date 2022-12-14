@@ -135,13 +135,91 @@ theorem mkInt_ne_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b ≠ 0 ↔ a ≠ 0 :=
   (mkInt_eq_zero b0).not
 #align rat.mk_ne_zero Rat.mkInt_ne_zero
 
+-- Porting TODO: prove, name, and find homes
+lemma Nat.gcd_natAbs_dvd_left (a : Int) (b : Nat) : ↑(Nat.gcd (Int.natAbs a) b) ∣ a := sorry
+lemma foo (a b : Nat) : (Nat.gcd a b : Int) ∣ ↑b := sorry
+
+-- Porting note: this can move to Std4
+theorem normalize_eq_normalize_iff
+    (a : Int) (b : Nat) (hb : b ≠ 0) (c : Int) (d : Nat) (hd : d ≠ 0) :
+    normalize a b hb = normalize c d hd ↔ a * ↑d = c * ↑b := by
+  simp only [normalize, maybeNormalize_eq, mk.injEq]
+  constructor
+  · rintro ⟨h₁, h₂⟩
+    have h₂ := congrArg (fun x : Nat => (x : Int)) h₂
+    simp only [Int.ofNat_div] at h₂
+    have h₂ := congrArg (c * · * ↑(Nat.gcd (Int.natAbs a) b)) h₂
+    dsimp only at h₂
+    -- Porting TODO: golf the rest of this branch
+    rw [←Int.mul_div_assoc] at h₂
+    rw [Int.div_mul_cancel] at h₂
+    rw [←Int.mul_div_assoc] at h₂
+    rw [Int.mul_comm c ↑d] at h₂
+    rw [Int.mul_div_assoc] at h₂
+    rw [←h₁] at h₂
+    rw [Int.mul_assoc] at h₂
+    rw [Int.div_mul_cancel] at h₂
+    rw [Int.mul_comm ↑d] at h₂
+    exact h₂.symm
+    exact Nat.gcd_natAbs_dvd_left _ _
+    exact Nat.gcd_natAbs_dvd_left _ _
+    exact foo _ _
+    exact (foo _ _).trans (Int.dvd_mul_left _ _)
+    exact foo _ _
+  · intro h
+    have hb' : 0 < b := Nat.pos_of_ne_zero hb
+    have hd' : 0 < d := Nat.pos_of_ne_zero hd
+    suffices ∀ a c, a * d = c * b → a / a.gcd b = c / c.gcd d ∧ b / a.gcd b = d / c.gcd d by
+      cases' this a.natAbs c.natAbs (by simpa [Int.natAbs_mul] using congr_arg Int.natAbs h) with
+        h₁ h₂
+      have hs := congr_arg Int.sign h
+      simp [Int.sign_eq_one_of_pos (Int.ofNat_lt.2 hb'),
+        Int.sign_eq_one_of_pos (Int.ofNat_lt.2 hd')] at hs
+      -- Apparently contrary to the documentation, `conv in a => rw [← Int.sign_mul_natAbs a]`
+      -- rewrites all the `a`s, not just the first one.
+      conv =>
+        congr; congr; congr; rw [← Int.sign_mul_natAbs a]
+      conv =>
+        congr; congr; rfl; congr; rw [← Int.sign_mul_natAbs c]
+      rw [Int.mul_div_assoc, Int.mul_div_assoc]
+      exact ⟨congr (congr_arg (· * ·) hs) (congr_arg (fun x : ℕ => (x : ℤ)) h₁), h₂⟩
+      all_goals exact Int.coe_nat_dvd.2 (Nat.gcd_dvd_left _ _)
+    intro a c h
+    suffices bd : b / a.gcd b = d / c.gcd d
+    · refine' ⟨_, bd⟩
+      apply Nat.eq_of_mul_eq_mul_left hb'
+      rw [← Nat.mul_div_assoc _ (Nat.gcd_dvd_left _ _), mul_comm,
+        Nat.mul_div_assoc _ (Nat.gcd_dvd_right _ _), bd, ←
+        Nat.mul_div_assoc _ (Nat.gcd_dvd_right _ _), h, mul_comm,
+        Nat.mul_div_assoc _ (Nat.gcd_dvd_left _ _)]
+    suffices ∀ {a c : ℕ}, ∀ b > 0, ∀ d > 0, a * d = c * b → b / a.gcd b ≤ d / c.gcd d by
+      exact le_antisymm (this _ hb' _ hd' h) (this _ hd' _ hb' h.symm)
+    intro a c b hb d hd h
+    have gb0 := Nat.gcd_pos_of_pos_right a hb
+    have gd0 := Nat.gcd_pos_of_pos_right c hd
+    apply Nat.le_of_dvd
+    apply (Nat.le_div_iff_mul_le gd0).2
+    change 1 * _ ≤ _
+    rw [Nat.one_mul]
+    apply Nat.le_of_dvd hd (Nat.gcd_dvd_right _ _)
+    apply (Nat.coprime_div_gcd_div_gcd gb0).symm.dvd_of_dvd_mul_left
+    refine' ⟨c / c.gcd d, _⟩
+    rw [← Nat.mul_div_assoc _ (Nat.gcd_dvd_left _ _), ← Nat.mul_div_assoc _ (Nat.gcd_dvd_right _ _)]
+    apply congr_arg (· / c.gcd d)
+    rw [mul_comm, ← Nat.mul_div_assoc _ (Nat.gcd_dvd_left _ _), mul_comm, h,
+      Nat.mul_div_assoc _ (Nat.gcd_dvd_right _ _), mul_comm]
+
+
 theorem mkInt_eq : ∀ {a b c d : ℤ} (hb : b ≠ 0) (hd : d ≠ 0), a /. b = c /. d ↔ a * d = c * b := by
   suffices ∀ a b c d hb hd, mkPNat a ⟨b, hb⟩ = mkPNat c ⟨d, hd⟩ ↔ a * d = c * b by
-    intros ; cases' b with b b <;> simp [mk, mk_nat, Nat.succPNat]
-    simp [mt (congr_arg Int.ofNat) hb]
+    intros a b c d hb hd
+    cases' b with b b <;> simp [mkInt, mkNat, Nat.succPNat]
+    have hb' : b ≠ 0 := mt (congr_arg Int.ofNat) hb
+    simp [hb']
     all_goals
-      cases' d with d d <;> simp [mk, mk_nat, Nat.succPNat]
-      simp [mt (congr_arg Int.ofNat) hd]
+      cases' d with d d <;> simp [mk, mkNat, Nat.succPNat]
+      have hd' : d ≠ 0 := mt (congr_arg Int.ofNat) hd
+      simp [hd']
       all_goals rw [this]; try rfl
     · change a * ↑d.succ = -c * ↑b ↔ a * -d.succ = c * b
       constructor <;> intro h <;> apply neg_injective <;>
@@ -151,59 +229,11 @@ theorem mkInt_eq : ∀ {a b c d : ℤ} (hb : b ≠ 0) (hd : d ≠ 0), a /. b = c
       constructor <;> intro h <;> apply neg_injective <;> simpa [left_distrib, eq_comm] using h
     · change -a * d.succ = -c * b.succ ↔ a * -d.succ = c * -b.succ
       simp [left_distrib, sub_eq_add_neg]
+      -- Porting TODO: this was by `cc`
       sorry
-      -- cc
-  intros ; simp [mk_pnat]; constructor <;> intro h
-  · cases' h with ha hb
-    have ha := by
-      have dv := @gcd_abs_dvd_left
-      have := Int.eq_mul_of_div_eq_right dv ha
-      rw [← Int.mul_div_assoc _ dv] at this
-      exact Int.eq_mul_of_div_eq_left (dv.mul_left _) this.symm
-    have hb := by
-      have dv := fun {a b} => Nat.gcd_dvd_right (Int.natAbs a) b
-      have := Nat.eq_mul_of_div_eq_right dv hb
-      rw [← Nat.mul_div_assoc _ dv] at this
-      exact Nat.eq_mul_of_div_eq_left (dv.mul_left _) this.symm
-    have m0 : (a.nat_abs.gcd b * c.nat_abs.gcd d : ℤ) ≠ 0 := by
-      refine' Int.coe_nat_ne_zero.2 (ne_of_gt _)
-      apply mul_pos <;> apply Nat.gcd_pos_of_pos_right <;> assumption
-    apply mul_right_cancel₀ m0
-    simpa [mul_comm, mul_left_comm] using congr (congr_arg (· * ·) ha.symm) (congr_arg coe hb)
-  · suffices ∀ a c, a * d = c * b → a / a.gcd b = c / c.gcd d ∧ b / a.gcd b = d / c.gcd d by
-      cases' this a.nat_abs c.nat_abs (by simpa [Int.natAbs_mul] using congr_arg Int.natAbs h) with
-        h₁ h₂
-      have hs := congr_arg Int.sign h
-      simp [Int.sign_eq_one_of_pos (Int.coe_nat_lt.2 hb),
-        Int.sign_eq_one_of_pos (Int.coe_nat_lt.2 hd)] at hs
-      conv in a => rw [← Int.sign_mul_natAbs a]
-      conv in c => rw [← Int.sign_mul_natAbs c]
-      rw [Int.mul_div_assoc, Int.mul_div_assoc]
-      exact ⟨congr (congr_arg (· * ·) hs) (congr_arg coe h₁), h₂⟩
-      all_goals exact Int.coe_nat_dvd.2 (Nat.gcd_dvd_left _ _)
-    intro a c h
-    suffices bd : b / a.gcd b = d / c.gcd d
-    · refine' ⟨_, bd⟩
-      apply Nat.eq_of_mul_eq_mul_left hb
-      rw [← Nat.mul_div_assoc _ (Nat.gcd_dvd_left _ _), mul_comm,
-        Nat.mul_div_assoc _ (Nat.gcd_dvd_right _ _), bd, ←
-        Nat.mul_div_assoc _ (Nat.gcd_dvd_right _ _), h, mul_comm,
-        Nat.mul_div_assoc _ (Nat.gcd_dvd_left _ _)]
-    suffices ∀ {a c : ℕ}, ∀ b > 0, ∀ d > 0, a * d = c * b → b / a.gcd b ≤ d / c.gcd d by
-      exact le_antisymm (this _ hb _ hd h) (this _ hd _ hb h.symm)
-    intro a c b hb d hd h
-    have gb0 := Nat.gcd_pos_of_pos_right a hb
-    have gd0 := Nat.gcd_pos_of_pos_right c hd
-    apply Nat.le_of_dvd
-    apply (Nat.le_div_iff_mul_le gd0).2
-    simp
-    apply Nat.le_of_dvd hd (Nat.gcd_dvd_right _ _)
-    apply (Nat.coprime_div_gcd_div_gcd gb0).symm.dvd_of_dvd_mul_left
-    refine' ⟨c / c.gcd d, _⟩
-    rw [← Nat.mul_div_assoc _ (Nat.gcd_dvd_left _ _), ← Nat.mul_div_assoc _ (Nat.gcd_dvd_right _ _)]
-    apply congr_arg (· / c.gcd d)
-    rw [mul_comm, ← Nat.mul_div_assoc _ (Nat.gcd_dvd_left _ _), mul_comm, h,
-      Nat.mul_div_assoc _ (Nat.gcd_dvd_right _ _), mul_comm]
+  intros a b c d hb hd
+  simp [mkPNat]
+  apply normalize_eq_normalize_iff
 #align rat.mk_eq Rat.mkInt_eq
 
 @[simp]
@@ -215,9 +245,14 @@ theorem div_mkInt_div_cancel_left {a b c : ℤ} (c0 : c ≠ 0) : a * c /. (b * c
   simp [mul_comm, mul_assoc]
 #align rat.div_mk_div_cancel_left Rat.div_mkInt_div_cancel_left
 
+-- Porting note: this can move to Std4
+theorem normalize_eq_mk (n : Int) (d : Nat) (h : d ≠ 0) (c : Nat.gcd (Int.natAbs n) d = 1) :
+    normalize n d h = mk n d h c := by
+  simp [normalize, c, maybeNormalize]
+
 @[simp]
 theorem num_den : ∀ {a : ℚ}, a.num /. a.den = a
-  | ⟨n, d, h, (c : _ = 1)⟩ => show mkNat n d = _ by simp [mkNat, h, mkPNat, c]
+  | ⟨n, d, h, (c : _ = 1)⟩ => show mkNat n d = _ by simp [mkNat, h, mkPNat, c, normalize_eq_mk]
 #align rat.num_denom Rat.num_den
 
 theorem num_den' {n d h c} : (⟨n, d, h, c⟩ : ℚ) = n /. d :=
@@ -271,11 +306,11 @@ theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → 
 theorem add_def {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
     a /. b + c /. d = (a * d + c * b) /. (b * d) := by
   apply lift_binop_eq Rat.add <;> intros <;> try assumption
-  · apply mk_pnat_eq
+  · apply mkPNat_eq
   · apply mul_ne_zero d₁0 d₂0
   calc
-    (n₁ * d₂ + n₂ * d₁) * (b * d) = n₁ * b * d₂ * d + n₂ * d * (d₁ * b) := by
-      simp [mul_add, mul_comm, mul_left_comm]
+    (n₁ * d₂ + n₂ * d₁) * (b * d) = n₁ * b * d₂ * d + n₂ * d * (d₁ * b) :=
+        by simp [mul_add, mul_comm, mul_left_comm]
     _ = a * d₁ * d₂ * d + c * d₂ * (d₁ * b) := by rw [h₁, h₂]
     _ = (a * d + c * b) * (d₁ * d₂) := by simp [mul_add, mul_comm, mul_left_comm]
 
@@ -337,7 +372,7 @@ theorem inv_def {a b : ℤ} : (a /. b)⁻¹ = b /. a := by
     rfl
   generalize ha : a /. b = x
   cases' x with n d h c
-  rw [num_denom'] at ha
+  rw [num_den'] at ha
   refine' Eq.trans (_ : Rat.inv ⟨n, d, h, c⟩ = d /. n) _
   · cases' n with n <;> [cases' n with n, skip]
     · rfl
@@ -354,7 +389,8 @@ theorem inv_def {a b : ℤ} : (a /. b)⁻¹ = b /. a := by
   have d0 := ne_of_gt (Int.coe_nat_lt.2 h)
   have ha := (mk_eq b0 d0).1 ha
   apply (mk_eq n0 a0).2
-  cc
+  -- Porting TODO: this was by `cc`
+  sorry
 #align rat.inv_def Rat.inv_def
 
 variable (a b c : ℚ)
