@@ -10,7 +10,7 @@ import Mathlib.Algebra.Order.Ring.Abs
 
 /-!
 # Further lemmas about the integers
-The distinction between this file and `data.int.order.basic` is not particularly clear.
+The distinction between this file and `Data.Int.Order.Basic` is not particularly clear.
 They are separated by now to minimize the porting requirements for tactics during the transition to
 mathlib4. After `data.rat.order` has been ported, please feel free to reorganize these two files.
 -/
@@ -25,24 +25,22 @@ namespace Int
 
 variable {a b : ℤ} {n : ℕ}
 
-theorem nat_abs_eq_iff_mul_self_eq {a b : ℤ} : a.natAbs = b.natAbs ↔ a * a = b * b := by
+theorem natAbs_eq_iff_mul_self_eq {a b : ℤ} : a.natAbs = b.natAbs ↔ a * a = b * b := by
   rw [← abs_eq_iff_mul_self_eq, abs_eq_natAbs, abs_eq_natAbs]
   exact Int.coe_nat_inj'.symm
-#align int.nat_abs_eq_iff_mul_self_eq Int.nat_abs_eq_iff_mul_self_eq
+#align int.nat_abs_eq_iff_mul_self_eq Int.natAbs_eq_iff_mul_self_eq
 
-theorem eq_nat_abs_iff_mul_eq_zero : a.natAbs = n ↔ (a - n) * (a + n) = 0 := by
-  rw [natAbs_eq_iff, _root_.mul_eq_zero, sub_eq_zero, add_eq_zero_iff_eq_neg]
-#align int.eq_nat_abs_iff_mul_eq_zero Int.eq_nat_abs_iff_mul_eq_zero
+#align int.eq_nat_abs_iff_mul_eq_zero Int.eq_natAbs_iff_mul_eq_zero
 
-theorem nat_abs_lt_iff_mul_self_lt {a b : ℤ} : a.natAbs < b.natAbs ↔ a * a < b * b := by
+theorem natAbs_lt_iff_mul_self_lt {a b : ℤ} : a.natAbs < b.natAbs ↔ a * a < b * b := by
   rw [← abs_lt_iff_mul_self_lt, abs_eq_natAbs, abs_eq_natAbs]
   exact Int.ofNat_lt.symm
-#align int.nat_abs_lt_iff_mul_self_lt Int.nat_abs_lt_iff_mul_self_lt
+#align int.nat_abs_lt_iff_mul_self_lt Int.natAbs_lt_iff_mul_self_lt
 
-theorem nat_abs_le_iff_mul_self_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a * a ≤ b * b := by
+theorem natAbs_le_iff_mul_self_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a * a ≤ b * b := by
   rw [← abs_le_iff_mul_self_le, abs_eq_natAbs, abs_eq_natAbs]
   exact Int.ofNat_le.symm
-#align int.nat_abs_le_iff_mul_self_le Int.nat_abs_le_iff_mul_self_le
+#align int.nat_abs_le_iff_mul_self_le Int.natAbs_le_iff_mul_self_le
 
 theorem dvd_div_of_mul_dvd {a b c : ℤ} (h : a * b ∣ c) : b ∣ c / a := by
   rcases eq_or_ne a 0 with (rfl | ha)
