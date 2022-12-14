@@ -9,15 +9,15 @@ import Mathlib.Data.Nat.Basic
 /-!
 # Lemma about the coercion `ℕ → with_bot ℕ`.
 
-An orphaned lemma about casting from `ℕ` to `with_bot ℕ`,
+An orphaned lemma about casting from `ℕ` to `WithBot ℕ`,
 exiled here to minimize imports to `data.rat.order` for porting purposes.
 -/
 
 
-theorem Nat.cast_with_top (n : ℕ) : @coe ℕ (WithTop ℕ) (@coeToLift _ _ Nat.castCoe) n = n :=
+theorem Nat.cast_withTop (n : ℕ) :  Nat.cast n = WithTop.some n :=
   rfl
-#align nat.cast_with_top Nat.cast_with_top
+#align nat.cast_with_top Nat.cast_withTop
 
-theorem Nat.cast_with_bot (n : ℕ) : @coe ℕ (WithBot ℕ) (@coeToLift _ _ Nat.castCoe) n = n :=
+theorem Nat.cast_withBot (n : ℕ) : Nat.cast n = WithBot.some n :=
   rfl
-#align nat.cast_with_bot Nat.cast_with_bot
+#align nat.cast_with_bot Nat.cast_withBot
