@@ -162,7 +162,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 
 theorem isNat_mul {α} [Semiring α] : {a b : α} → {a' b' c : ℕ} →
     IsNat a a' → IsNat b b' → Nat.mul a' b' = c → IsNat (a * b) c
-  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨Nat.cast_mul.symm⟩
+  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(Nat.cast_mul ..).symm⟩
 
 theorem isInt_mul {α} [Ring α] : {a b : α} → {a' b' c : ℤ} →
     IsInt a a' → IsInt b b' → Int.mul a' b' = c → IsInt (a * b) c

@@ -105,7 +105,7 @@ end Zero
 namespace NeZero
 
 theorem of_map {R M} [Zero R] [Zero M] [ZeroHomClass F R M]
-  (f : F) {r : R} [NeZero (f r)] : NeZero r :=
+  (f : F) {r : R} [neZero : NeZero (f r)] : NeZero r :=
   ⟨fun h => ne (f r) <| by rw [h]; exact ZeroHomClass.map_zero f⟩
 #align ne_zero.of_map NeZero.of_map
 

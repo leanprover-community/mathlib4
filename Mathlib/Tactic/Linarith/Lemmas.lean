@@ -19,8 +19,6 @@ Those in the `Linarith` namespace should stay here.
 Those outside the `Linarith` namespace may be deleted as they are ported to mathlib4.
 -/
 
-set_option warningAsError false
-
 namespace Linarith
 
 theorem lt_irrefl {α : Type u} [Preorder α] {a : α} : ¬a < a := _root_.lt_irrefl a
@@ -40,12 +38,10 @@ theorem le_of_le_of_eq {α} [OrderedSemiring α] {a b : α} (ha : a ≤ 0) (hb :
 theorem lt_of_lt_of_eq {α} [OrderedSemiring α] {a b : α} (ha : a < 0) (hb : b = 0) : a + b < 0 := by
   simp [*]
 
-@[nolint unusedArguments]
 theorem mul_neg {α} [StrictOrderedRing α] {a b : α} (ha : a < 0) (hb : 0 < b) : b * a < 0 :=
   have : (-b)*a > 0 := mul_pos_of_neg_of_neg (neg_neg_of_pos hb) ha
   neg_of_neg_pos (by simpa)
 
-@[nolint unusedArguments]
 theorem mul_nonpos {α} [OrderedRing α] {a b : α} (ha : a ≤ 0) (hb : 0 < b) : b * a ≤ 0 :=
   have : (-b)*a ≥ 0 := mul_nonneg_of_nonpos_of_nonpos (le_of_lt (neg_neg_of_pos hb)) ha
   by simpa
@@ -81,4 +77,5 @@ theorem lt_zero_of_zero_gt [Zero α] [LT α] {a : α} (h : 0 > a) : a < 0 := h
 
 theorem le_zero_of_zero_ge [Zero α] [LE α] {a : α} (h : 0 ≥ a) : a ≤ 0 := h
 
+set_option warningAsError false in
 theorem sq_nonneg [LinearOrderedRing R] (a : R) : 0 ≤ a ^ 2 := sorry
