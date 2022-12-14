@@ -609,8 +609,9 @@ theorem bind_le {α} (x : Part α) (f : α → Part β) (y : Part β) :
     apply h _ h₀ _ h₁
 #align part.bind_le Part.bind_le
 
-instance : MonadFail Part :=
-  { Part.monad with fail := fun _ _ => none }
+--Porting note: No MonadFail in Lean4 yet
+-- instance : MonadFail Part :=
+--   { Part.monad with fail := fun _ _ => none }
 
 /-- `restrict p o h` replaces the domain of `o` with `p`, and is well defined when
   `p` implies `o` is defined. -/
@@ -629,7 +630,7 @@ theorem mem_restrict (p : Prop) (o : Part α) (h : p → o.Dom) (a : α) :
 
 /-- `unwrap o` gets the value at `o`, ignoring the condition. This function is unsound. -/
 unsafe def unwrap (o : Part α) : α :=
-  o.get undefined
+  o.get lcProof
 #align part.unwrap Part.unwrap
 
 theorem assert_defined {p : Prop} {f : p → Part α} : ∀ h : p, (f h).Dom → (assert p f).Dom :=
