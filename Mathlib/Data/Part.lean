@@ -548,10 +548,24 @@ instance : Monad Part where
 
 instance : LawfulMonad
       Part where
-  bind_pure_comp_eq_map := @bind_some_eq_map
-  id_map β f := by cases f <;> rfl
+  bind_pure_comp := @bind_some_eq_map
+  id_map f := by cases f; rfl
   pure_bind := @bind_some
   bind_assoc := @bind_assoc
+  map_const := by simp [Functor.mapConst, Functor.map]
+  --Porting TODO : In Lean3 these were automatic by a tactic
+  seqLeft_eq x y := ext'
+    (by simp [SeqLeft.seqLeft, Part.bind, assert, Seq.seq, const, (. <$> .), and_comm])
+    (fun _ _ => rfl)
+  seqRight_eq x y := ext'
+    (by simp [SeqRight.seqRight, Part.bind, assert, Seq.seq, const, (. <$> .), and_comm])
+    (fun _ _ => rfl)
+  pure_seq x y := ext'
+    (by simp [Seq.seq, Part.bind, assert, (. <$> .), pure])
+    (fun _ _ => rfl)
+  bind_map x y := ext'
+    (by simp [(. >>= .), Part.bind, assert, Seq.seq, get, (. <$> .)] )
+    (fun _ _ => rfl)
 
 theorem map_id' {f : α → α} (H : ∀ x : α, f x = x) (o) : map f o = o := by
   rw [show f = id from funext H]; exact id_map o
