@@ -1226,7 +1226,7 @@ theorem Iic_union_Ioi : iic a ∪ ioi a = univ :=
 
 @[simp]
 theorem Iio_union_Ioi : iio a ∪ ioi a = {a}ᶜ :=
-  ext fun x => lt_or_lt_iff_ne
+  ext fun _ => lt_or_lt_iff_ne
 #align set.Iio_union_Ioi Set.Iio_union_Ioi
 
 /-! #### A finite and an infinite interval -/
@@ -1254,7 +1254,7 @@ theorem Ioi_subset_Ioo_union_Ici : ioi a ⊆ ioo a b ∪ ici b := fun x hx =>
 
 @[simp]
 theorem Ioo_union_Ici_eq_Ioi (h : a < b) : ioo a b ∪ ici b = ioi a :=
-  Subset.antisymm (fun x hx => hx.elim And.left h.trans_le) Ioi_subset_Ioo_union_Ici
+  Subset.antisymm (fun _ hx => hx.elim And.left h.trans_le) Ioi_subset_Ioo_union_Ici
 #align set.Ioo_union_Ici_eq_Ioi Set.Ioo_union_Ici_eq_Ioi
 
 theorem Ici_subset_Ico_union_Ici : ici a ⊆ ico a b ∪ ici b := fun x hx =>
@@ -1263,7 +1263,7 @@ theorem Ici_subset_Ico_union_Ici : ici a ⊆ ico a b ∪ ici b := fun x hx =>
 
 @[simp]
 theorem Ico_union_Ici_eq_Ici (h : a ≤ b) : ico a b ∪ ici b = ici a :=
-  Subset.antisymm (fun x hx => hx.elim And.left h.trans) Ici_subset_Ico_union_Ici
+  Subset.antisymm (fun _ hx => hx.elim And.left h.trans) Ici_subset_Ico_union_Ici
 #align set.Ico_union_Ici_eq_Ici Set.Ico_union_Ici_eq_Ici
 
 theorem Ico_union_Ici' (h₁ : c ≤ b) : ico a b ∪ ici c = ici (min a c) := by
@@ -1287,7 +1287,7 @@ theorem Ioi_subset_Ioc_union_Ioi : ioi a ⊆ ioc a b ∪ ioi b := fun x hx =>
 
 @[simp]
 theorem Ioc_union_Ioi_eq_Ioi (h : a ≤ b) : ioc a b ∪ ioi b = ioi a :=
-  Subset.antisymm (fun x hx => hx.elim And.left h.trans_lt) Ioi_subset_Ioc_union_Ioi
+  Subset.antisymm (fun _ hx => hx.elim And.left h.trans_lt) Ioi_subset_Ioc_union_Ioi
 #align set.Ioc_union_Ioi_eq_Ioi Set.Ioc_union_Ioi_eq_Ioi
 
 theorem Ioc_union_Ioi' (h₁ : c ≤ b) : ioc a b ∪ ioi c = ioi (min a c) := by
@@ -1311,7 +1311,7 @@ theorem Ici_subset_Icc_union_Ioi : ici a ⊆ icc a b ∪ ioi b := fun x hx =>
 
 @[simp]
 theorem Icc_union_Ioi_eq_Ici (h : a ≤ b) : icc a b ∪ ioi b = ici a :=
-  Subset.antisymm (fun x hx => (hx.elim And.left) fun hx' => h.trans <| le_of_lt hx')
+  Subset.antisymm (fun _ hx => (hx.elim And.left) fun hx' => h.trans <| le_of_lt hx')
     Ici_subset_Icc_union_Ioi
 #align set.Icc_union_Ioi_eq_Ici Set.Icc_union_Ioi_eq_Ici
 
@@ -1321,7 +1321,7 @@ theorem Ioi_subset_Ioc_union_Ici : ioi a ⊆ ioc a b ∪ ici b :=
 
 @[simp]
 theorem Ioc_union_Ici_eq_Ioi (h : a < b) : ioc a b ∪ ici b = ioi a :=
-  Subset.antisymm (fun x hx => hx.elim And.left h.trans_le) Ioi_subset_Ioc_union_Ici
+  Subset.antisymm (fun _ hx => hx.elim And.left h.trans_le) Ioi_subset_Ioc_union_Ici
 #align set.Ioc_union_Ici_eq_Ioi Set.Ioc_union_Ici_eq_Ioi
 
 theorem Ici_subset_Icc_union_Ici : ici a ⊆ icc a b ∪ ici b :=
@@ -1330,7 +1330,7 @@ theorem Ici_subset_Icc_union_Ici : ici a ⊆ icc a b ∪ ici b :=
 
 @[simp]
 theorem Icc_union_Ici_eq_Ici (h : a ≤ b) : icc a b ∪ ici b = ici a :=
-  Subset.antisymm (fun x hx => hx.elim And.left h.trans) Ici_subset_Icc_union_Ici
+  Subset.antisymm (fun _ hx => hx.elim And.left h.trans) Ici_subset_Icc_union_Ici
 #align set.Icc_union_Ici_eq_Ici Set.Icc_union_Ici_eq_Ici
 
 theorem Icc_union_Ici' (h₁ : c ≤ b) : icc a b ∪ ici c = ici (min a c) := by
@@ -1360,7 +1360,7 @@ theorem Iic_subset_Iio_union_Icc : iic b ⊆ iio a ∪ icc a b := fun x hx =>
 
 @[simp]
 theorem Iio_union_Icc_eq_Iic (h : a ≤ b) : iio a ∪ icc a b = iic b :=
-  Subset.antisymm (fun x hx => hx.elim (fun hx => (le_of_lt hx).trans h) And.right)
+  Subset.antisymm (fun _ hx => hx.elim (fun hx => (le_of_lt hx).trans h) And.right)
     Iic_subset_Iio_union_Icc
 #align set.Iio_union_Icc_eq_Iic Set.Iio_union_Icc_eq_Iic
 
@@ -1370,7 +1370,7 @@ theorem Iio_subset_Iio_union_Ico : iio b ⊆ iio a ∪ ico a b := fun x hx =>
 
 @[simp]
 theorem Iio_union_Ico_eq_Iio (h : a ≤ b) : iio a ∪ ico a b = iio b :=
-  Subset.antisymm (fun x hx => hx.elim (fun hx' => lt_of_lt_of_le hx' h) And.right)
+  Subset.antisymm (fun _ hx => hx.elim (fun hx' => lt_of_lt_of_le hx' h) And.right)
     Iio_subset_Iio_union_Ico
 #align set.Iio_union_Ico_eq_Iio Set.Iio_union_Ico_eq_Iio
 
@@ -1395,7 +1395,7 @@ theorem Iic_subset_Iic_union_Ioc : iic b ⊆ iic a ∪ ioc a b := fun x hx =>
 
 @[simp]
 theorem Iic_union_Ioc_eq_Iic (h : a ≤ b) : iic a ∪ ioc a b = iic b :=
-  Subset.antisymm (fun x hx => hx.elim (fun hx' => le_trans hx' h) And.right)
+  Subset.antisymm (fun _ hx => hx.elim (fun hx' => le_trans hx' h) And.right)
     Iic_subset_Iic_union_Ioc
 #align set.Iic_union_Ioc_eq_Iic Set.Iic_union_Ioc_eq_Iic
 
@@ -1421,7 +1421,7 @@ theorem Iio_subset_Iic_union_Ioo : iio b ⊆ iic a ∪ ioo a b := fun x hx =>
 
 @[simp]
 theorem Iic_union_Ioo_eq_Iio (h : a < b) : iic a ∪ ioo a b = iio b :=
-  Subset.antisymm (fun x hx => hx.elim (fun hx' => lt_of_le_of_lt hx' h) And.right)
+  Subset.antisymm (fun _ hx => hx.elim (fun hx' => lt_of_le_of_lt hx' h) And.right)
     Iio_subset_Iic_union_Ioo
 #align set.Iic_union_Ioo_eq_Iio Set.Iic_union_Ioo_eq_Iio
 
@@ -1447,7 +1447,7 @@ theorem Iic_subset_Iic_union_Icc : iic b ⊆ iic a ∪ icc a b :=
 
 @[simp]
 theorem Iic_union_Icc_eq_Iic (h : a ≤ b) : iic a ∪ icc a b = iic b :=
-  Subset.antisymm (fun x hx => hx.elim (fun hx' => le_trans hx' h) And.right)
+  Subset.antisymm (fun _ hx => hx.elim (fun hx' => le_trans hx' h) And.right)
     Iic_subset_Iic_union_Icc
 #align set.Iic_union_Icc_eq_Iic Set.Iic_union_Icc_eq_Iic
 
@@ -1475,7 +1475,7 @@ theorem Iio_subset_Iic_union_Ico : iio b ⊆ iic a ∪ ico a b :=
 
 @[simp]
 theorem Iic_union_Ico_eq_Iio (h : a < b) : iic a ∪ ico a b = iio b :=
-  Subset.antisymm (fun x hx => hx.elim (fun hx' => lt_of_le_of_lt hx' h) And.right)
+  Subset.antisymm (fun _ hx => hx.elim (fun hx' => lt_of_le_of_lt hx' h) And.right)
     Iio_subset_Iic_union_Ico
 #align set.Iic_union_Ico_eq_Iio Set.Iic_union_Ico_eq_Iio
 
@@ -1489,7 +1489,7 @@ theorem Ioo_subset_Ioo_union_Ico : ioo a c ⊆ ioo a b ∪ ico b c := fun x hx =
 @[simp]
 theorem Ioo_union_Ico_eq_Ioo (h₁ : a < b) (h₂ : b ≤ c) : ioo a b ∪ ico b c = ioo a c :=
   Subset.antisymm
-    (fun x hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans_le h₂⟩) fun hx => ⟨h₁.trans_le hx.1, hx.2⟩)
+    (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans_le h₂⟩) fun hx => ⟨h₁.trans_le hx.1, hx.2⟩)
     Ioo_subset_Ioo_union_Ico
 #align set.Ioo_union_Ico_eq_Ioo Set.Ioo_union_Ico_eq_Ioo
 
@@ -1500,7 +1500,7 @@ theorem Ico_subset_Ico_union_Ico : ico a c ⊆ ico a b ∪ ico b c := fun x hx =
 @[simp]
 theorem Ico_union_Ico_eq_Ico (h₁ : a ≤ b) (h₂ : b ≤ c) : ico a b ∪ ico b c = ico a c :=
   Subset.antisymm
-    (fun x hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans_le h₂⟩) fun hx => ⟨h₁.trans hx.1, hx.2⟩)
+    (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans_le h₂⟩) fun hx => ⟨h₁.trans hx.1, hx.2⟩)
     Ico_subset_Ico_union_Ico
 #align set.Ico_union_Ico_eq_Ico Set.Ico_union_Ico_eq_Ico
 
@@ -1530,7 +1530,7 @@ theorem Icc_subset_Ico_union_Icc : icc a c ⊆ ico a b ∪ icc b c := fun x hx =
 @[simp]
 theorem Ico_union_Icc_eq_Icc (h₁ : a ≤ b) (h₂ : b ≤ c) : ico a b ∪ icc b c = icc a c :=
   Subset.antisymm
-    (fun x hx => hx.elim (fun hx => ⟨hx.1, hx.2.le.trans h₂⟩) fun hx => ⟨h₁.trans hx.1, hx.2⟩)
+    (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.le.trans h₂⟩) fun hx => ⟨h₁.trans hx.1, hx.2⟩)
     Icc_subset_Ico_union_Icc
 #align set.Ico_union_Icc_eq_Icc Set.Ico_union_Icc_eq_Icc
 
@@ -1541,7 +1541,7 @@ theorem Ioc_subset_Ioo_union_Icc : ioc a c ⊆ ioo a b ∪ icc b c := fun x hx =
 @[simp]
 theorem Ioo_union_Icc_eq_Ioc (h₁ : a < b) (h₂ : b ≤ c) : ioo a b ∪ icc b c = ioc a c :=
   Subset.antisymm
-    (fun x hx => hx.elim (fun hx => ⟨hx.1, hx.2.le.trans h₂⟩) fun hx => ⟨h₁.trans_le hx.1, hx.2⟩)
+    (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.le.trans h₂⟩) fun hx => ⟨h₁.trans_le hx.1, hx.2⟩)
     Ioc_subset_Ioo_union_Icc
 #align set.Ioo_union_Icc_eq_Ioc Set.Ioo_union_Icc_eq_Ioc
 
@@ -1555,7 +1555,7 @@ theorem Ioo_subset_Ioc_union_Ioo : ioo a c ⊆ ioc a b ∪ ioo b c := fun x hx =
 @[simp]
 theorem Ioc_union_Ioo_eq_Ioo (h₁ : a ≤ b) (h₂ : b < c) : ioc a b ∪ ioo b c = ioo a c :=
   Subset.antisymm
-    (fun x hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans_lt h₂⟩) fun hx => ⟨h₁.trans_lt hx.1, hx.2⟩)
+    (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans_lt h₂⟩) fun hx => ⟨h₁.trans_lt hx.1, hx.2⟩)
     Ioo_subset_Ioc_union_Ioo
 #align set.Ioc_union_Ioo_eq_Ioo Set.Ioc_union_Ioo_eq_Ioo
 
@@ -1566,7 +1566,7 @@ theorem Ico_subset_Icc_union_Ioo : ico a c ⊆ icc a b ∪ ioo b c := fun x hx =
 @[simp]
 theorem Icc_union_Ioo_eq_Ico (h₁ : a ≤ b) (h₂ : b < c) : icc a b ∪ ioo b c = ico a c :=
   Subset.antisymm
-    (fun x hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans_lt h₂⟩) fun hx => ⟨h₁.trans hx.1.le, hx.2⟩)
+    (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans_lt h₂⟩) fun hx => ⟨h₁.trans hx.1.le, hx.2⟩)
     Ico_subset_Icc_union_Ioo
 #align set.Icc_union_Ioo_eq_Ico Set.Icc_union_Ioo_eq_Ico
 
@@ -1577,7 +1577,7 @@ theorem Icc_subset_Icc_union_Ioc : icc a c ⊆ icc a b ∪ ioc b c := fun x hx =
 @[simp]
 theorem Icc_union_Ioc_eq_Icc (h₁ : a ≤ b) (h₂ : b ≤ c) : icc a b ∪ ioc b c = icc a c :=
   Subset.antisymm
-    (fun x hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans h₂⟩) fun hx => ⟨h₁.trans hx.1.le, hx.2⟩)
+    (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans h₂⟩) fun hx => ⟨h₁.trans hx.1.le, hx.2⟩)
     Icc_subset_Icc_union_Ioc
 #align set.Icc_union_Ioc_eq_Icc Set.Icc_union_Ioc_eq_Icc
 
@@ -1588,7 +1588,7 @@ theorem Ioc_subset_Ioc_union_Ioc : ioc a c ⊆ ioc a b ∪ ioc b c := fun x hx =
 @[simp]
 theorem Ioc_union_Ioc_eq_Ioc (h₁ : a ≤ b) (h₂ : b ≤ c) : ioc a b ∪ ioc b c = ioc a c :=
   Subset.antisymm
-    (fun x hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans h₂⟩) fun hx => ⟨h₁.trans_lt hx.1, hx.2⟩)
+    (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans h₂⟩) fun hx => ⟨h₁.trans_lt hx.1, hx.2⟩)
     Ioc_subset_Ioc_union_Ioc
 #align set.Ioc_union_Ioc_eq_Ioc Set.Ioc_union_Ioc_eq_Ioc
 
@@ -1621,7 +1621,7 @@ theorem Ioo_subset_Ioc_union_Ico : ioo a c ⊆ ioc a b ∪ ico b c :=
 @[simp]
 theorem Ioc_union_Ico_eq_Ioo (h₁ : a < b) (h₂ : b < c) : ioc a b ∪ ico b c = ioo a c :=
   Subset.antisymm
-    (fun x hx =>
+    (fun _ hx =>
       hx.elim (fun hx' => ⟨hx'.1, hx'.2.trans_lt h₂⟩) fun hx' => ⟨h₁.trans_le hx'.1, hx'.2⟩)
     Ioo_subset_Ioc_union_Ico
 #align set.Ioc_union_Ico_eq_Ioo Set.Ioc_union_Ico_eq_Ioo
@@ -1633,7 +1633,7 @@ theorem Ico_subset_Icc_union_Ico : ico a c ⊆ icc a b ∪ ico b c :=
 @[simp]
 theorem Icc_union_Ico_eq_Ico (h₁ : a ≤ b) (h₂ : b < c) : icc a b ∪ ico b c = ico a c :=
   Subset.antisymm
-    (fun x hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans_lt h₂⟩) fun hx => ⟨h₁.trans hx.1, hx.2⟩)
+    (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans_lt h₂⟩) fun hx => ⟨h₁.trans hx.1, hx.2⟩)
     Ico_subset_Icc_union_Ico
 #align set.Icc_union_Ico_eq_Ico Set.Icc_union_Ico_eq_Ico
 
@@ -1644,7 +1644,7 @@ theorem Icc_subset_Icc_union_Icc : icc a c ⊆ icc a b ∪ icc b c :=
 @[simp]
 theorem Icc_union_Icc_eq_Icc (h₁ : a ≤ b) (h₂ : b ≤ c) : icc a b ∪ icc b c = icc a c :=
   Subset.antisymm
-    (fun x hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans h₂⟩) fun hx => ⟨h₁.trans hx.1, hx.2⟩)
+    (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans h₂⟩) fun hx => ⟨h₁.trans hx.1, hx.2⟩)
     Icc_subset_Icc_union_Icc
 #align set.Icc_union_Icc_eq_Icc Set.Icc_union_Icc_eq_Icc
 
@@ -1679,7 +1679,7 @@ theorem Ioc_subset_Ioc_union_Icc : ioc a c ⊆ ioc a b ∪ icc b c :=
 @[simp]
 theorem Ioc_union_Icc_eq_Ioc (h₁ : a < b) (h₂ : b ≤ c) : ioc a b ∪ icc b c = ioc a c :=
   Subset.antisymm
-    (fun x hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans h₂⟩) fun hx => ⟨h₁.trans_le hx.1, hx.2⟩)
+    (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.trans h₂⟩) fun hx => ⟨h₁.trans_le hx.1, hx.2⟩)
     Ioc_subset_Ioc_union_Icc
 #align set.Ioc_union_Icc_eq_Ioc Set.Ioc_union_Icc_eq_Ioc
 
@@ -1748,7 +1748,7 @@ section Both
 variable [Lattice α] {a b c a₁ a₂ b₁ b₂ : α}
 
 theorem Icc_inter_Icc : icc a₁ b₁ ∩ icc a₂ b₂ = icc (a₁ ⊔ a₂) (b₁ ⊓ b₂) := by
-  simp only [Ici_inter_Iic.symm, Ici_inter_Ici.symm, Iic_inter_Iic.symm] <;> ac_rfl
+  simp only [Ici_inter_Iic.symm, Ici_inter_Ici.symm, Iic_inter_Iic.symm]; ac_rfl
 #align set.Icc_inter_Icc Set.Icc_inter_Icc
 
 @[simp]
@@ -1775,25 +1775,25 @@ theorem Iio_inter_Iio : iio a ∩ iio b = iio (a ⊓ b) :=
 #align set.Iio_inter_Iio Set.Iio_inter_Iio
 
 theorem Ico_inter_Ico : ico a₁ b₁ ∩ ico a₂ b₂ = ico (a₁ ⊔ a₂) (b₁ ⊓ b₂) := by
-  simp only [Ici_inter_Iio.symm, Ici_inter_Ici.symm, Iio_inter_Iio.symm] <;> ac_rfl
+  simp only [Ici_inter_Iio.symm, Ici_inter_Ici.symm, Iio_inter_Iio.symm]; ac_rfl
 #align set.Ico_inter_Ico Set.Ico_inter_Ico
 
 theorem Ioc_inter_Ioc : ioc a₁ b₁ ∩ ioc a₂ b₂ = ioc (a₁ ⊔ a₂) (b₁ ⊓ b₂) := by
-  simp only [Ioi_inter_Iic.symm, Ioi_inter_Ioi.symm, Iic_inter_Iic.symm] <;> ac_rfl
+  simp only [Ioi_inter_Iic.symm, Ioi_inter_Ioi.symm, Iic_inter_Iic.symm]; ac_rfl
 #align set.Ioc_inter_Ioc Set.Ioc_inter_Ioc
 
 theorem Ioo_inter_Ioo : ioo a₁ b₁ ∩ ioo a₂ b₂ = ioo (a₁ ⊔ a₂) (b₁ ⊓ b₂) := by
-  simp only [Ioi_inter_Iio.symm, Ioi_inter_Ioi.symm, Iio_inter_Iio.symm] <;> ac_rfl
+  simp only [Ioi_inter_Iio.symm, Ioi_inter_Ioi.symm, Iio_inter_Iio.symm]; ac_rfl
 #align set.Ioo_inter_Ioo Set.Ioo_inter_Ioo
 
 theorem Ioc_inter_Ioo_of_left_lt (h : b₁ < b₂) : ioc a₁ b₁ ∩ ioo a₂ b₂ = ioc (max a₁ a₂) b₁ :=
   ext fun x => by
-    simp [and_assoc', @and_left_comm (x ≤ _), and_iff_left_iff_imp.2 fun h' => lt_of_le_of_lt h' h]
+    simp [and_assoc, @and_left_comm (x ≤ _), and_iff_left_iff_imp.2 fun h' => lt_of_le_of_lt h' h]
 #align set.Ioc_inter_Ioo_of_left_lt Set.Ioc_inter_Ioo_of_left_lt
 
 theorem Ioc_inter_Ioo_of_right_le (h : b₂ ≤ b₁) : ioc a₁ b₁ ∩ ioo a₂ b₂ = ioo (max a₁ a₂) b₂ :=
   ext fun x => by
-    simp [and_assoc', @and_left_comm (x ≤ _),
+    simp [and_assoc, @and_left_comm (x ≤ _),
       and_iff_right_iff_imp.2 fun h' => (le_of_lt h').trans h]
 #align set.Ioc_inter_Ioo_of_right_le Set.Ioc_inter_Ioo_of_right_le
 
@@ -1894,7 +1894,7 @@ theorem Iic_prod_eq (a : α × β) : iic a = iic a.1 ×ˢ iic a.2 :=
 @[simp]
 theorem Icc_prod_Icc (a₁ a₂ : α) (b₁ b₂ : β) : icc a₁ a₂ ×ˢ icc b₁ b₂ = icc (a₁, b₁) (a₂, b₂) := by
   ext ⟨x, y⟩
-  simp [and_assoc, and_comm', and_left_comm]
+  simp [and_assoc, and_comm, and_left_comm]
 #align set.Icc_prod_Icc Set.Icc_prod_Icc
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
