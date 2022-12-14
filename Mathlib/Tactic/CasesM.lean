@@ -27,6 +27,7 @@ partial def casesMatching (g : MVarId) (matcher : Expr → MetaM Bool)
   go (g : MVarId) (acc : Array MVarId := #[]) : MetaM (Array MVarId) :=
     g.withContext do
       for ldecl in ← getLCtx do
+        if ldecl.isAuxDecl then continue
         if ← matcher ldecl.type then
           let mut acc := acc
           let subgoals ← if allowSplit then

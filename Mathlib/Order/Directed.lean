@@ -52,7 +52,7 @@ theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype
 alias directedOn_iff_directed ↔ DirectedOn.directed_val _
 
 theorem directed_on_image {s : Set β} {f : β → α} :
-    DirectedOn r (f ~~ s) ↔ DirectedOn (f ⁻¹'o r) s := by
+    DirectedOn r (f '' s) ↔ DirectedOn (f ⁻¹'o r) s := by
   simp only [DirectedOn, Set.mem_image, exists_exists_and_eq_and, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, Order.Preimage, iff_self]
 #align directed_on_image directed_on_image
