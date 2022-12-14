@@ -22,13 +22,13 @@ instance : AddGroupWithOne (α × β) :=
     intCast_negSucc := fun _ => by simp; rfl }
 
 @[simp]
-theorem fst_int_cast (n : ℤ) : (n : α × β).fst = n :=
+theorem fst_intCast (n : ℤ) : (n : α × β).fst = n :=
   rfl
-#align prod.fst_int_cast Prod.fst_int_cast
+#align prod.fst_int_cast Prod.fst_intCast
 
 @[simp]
-theorem snd_int_cast (n : ℤ) : (n : α × β).snd = n :=
+theorem snd_intCast (n : ℤ) : (n : α × β).snd = n :=
   rfl
-#align prod.snd_int_cast Prod.snd_int_cast
+#align prod.snd_int_cast Prod.snd_intCast
 
 end Prod
