@@ -38,10 +38,8 @@ Other:
 * `Part.unwrap`: Gets the value of a partial value regardless of its domain. Unsound.
 ## Notation
 For `a : α`, `o : Part α`, `a ∈ o` means that `o` is defined and equal to `a`. Formally, it means
-`o.dom` and `o.get _ = a`.
+`o.Dom` and `o.get _ = a`.
 -/
-
-set_option autoImplicit false
 
 open Function
 
@@ -49,7 +47,9 @@ open Function
   is similar to `Option α` except the domain condition can be an
   arbitrary proposition, not necessarily decidable. -/
 structure Part.{u} (α : Type u) : Type u where
+  /-- The domain of a partial value -/
   Dom : Prop
+  /-- Extract a value from a partial value given a proof of `Dom` -/
   get : Dom → α
 #align part Part
 
@@ -275,13 +275,19 @@ theorem getOrElse_some (a : α) (d : α) [Decidable (some a).Dom] : getOrElse (s
   (some a).getOrElse_of_dom (some_dom a) d
 #align part.get_or_else_some Part.getOrElse_some
 
-@[simp]
+--Porting note: removed `simp`
 theorem mem_toOption {o : Part α} [Decidable o.Dom] {a : α} : a ∈ toOption o ↔ a ∈ o := by
   unfold toOption
   by_cases h : o.Dom <;> simp [h]
   · exact ⟨fun h => ⟨_, h⟩, fun ⟨_, h⟩ => h⟩
   · exact mt Exists.fst h
 #align part.mem_to_option Part.mem_toOption
+
+--Porting note : New theorem, like `mem_toOption` but with LHS in `simp` normal form
+@[simp]
+theorem toOption_eq_some_iff {o : Part α} [Decidable o.Dom] {a : α} :
+    toOption o = Option.some a ↔ a ∈ o :=
+  by rw [← Option.mem_def, mem_toOption]
 
 protected theorem Dom.toOption {o : Part α} [Decidable o.Dom] (h : o.Dom) : o.toOption = o.get h :=
   dif_pos h
@@ -291,7 +297,8 @@ theorem toOption_eq_none_iff {a : Part α} [Decidable a.Dom] : a.toOption = Opti
   Ne.dite_eq_right_iff fun _ => Option.some_ne_none _
 #align part.to_option_eq_none_iff Part.toOption_eq_none_iff
 
-@[simp]
+/- Porting TODO: Removed `simp`. Maybe add `@[simp]` later if `@[simp]` is taken off definition of
+`Option.elim` -/
 theorem elim_toOption {α β : Type _} (a : Part α) [Decidable a.Dom] (b : β) (f : α → β) :
     a.toOption.elim b f = if h : a.Dom then f (a.get h) else b := by
   split_ifs with h
@@ -329,7 +336,6 @@ theorem ofOption_eq_get {α} (o : Option α) : ofOption o = ⟨_, @Option.get _ 
 instance : Coe (Option α) (Part α) :=
   ⟨ofOption⟩
 
-@[simp]
 theorem mem_coe {a : α} {o : Option α} : a ∈ (o : Part α) ↔ a ∈ o :=
   mem_ofOption
 #align part.mem_coe Part.mem_coe
