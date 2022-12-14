@@ -134,7 +134,7 @@ theorem one_div_mul_sub_mul_one_div_eq_one_div_add_one_div (ha : a ≠ 0) (hb : 
     mul_assoc, mul_one_div_cancel hb, mul_one]
 
 -- see Note [lower instance priority]
-instance (priority := 100) DivisionRing.isDomain : IsDomain K :=
+instance (priority := 100) DivisionRing.IsDomain : IsDomain K :=
   NoZeroDivisors.toIsDomain _
 #align division_ring.is_domain DivisionRing.IsDomain
 
