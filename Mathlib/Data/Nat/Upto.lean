@@ -6,17 +6,17 @@ Authors: Simon Hudon
 import Mathlib.Data.Nat.Order.Basic
 
 /-!
-# `nat.upto`
+# `Nat.Upto`
 
-`nat.upto p`, with `p` a predicate on `ℕ`, is a subtype of elements `n : ℕ` such that no value
+`Nat.Upto p`, with `p` a predicate on `ℕ`, is a subtype of elements `n : ℕ` such that no value
 (strictly) below `n` satisfies `p`.
 
 This type has the property that `>` is well-founded when `∃ i, p i`, which allows us to implement
 searches on `ℕ`, starting at `0` and with an unknown upper-bound.
 
-It is similar to the well founded relation constructed to define `nat.find` with
-the difference that, in `nat.upto p`, `p` does not need to be decidable. In fact,
-`nat.find` could be slightly altered to factor decidability out of its
+It is similar to the well founded relation constructed to define `Nat.find` with
+the difference that, in `Nat.Upto p`, `p` does not need to be decidable. In fact,
+`Nat.find` could be slightly altered to factor decidability out of its
 well founded relation and would then fulfill the same purpose as this file.
 -/
 
@@ -38,7 +38,7 @@ namespace Upto
 
 variable {p : ℕ → Prop}
 
-/-- Lift the "greater than" relation on natural numbers to `nat.upto`. -/
+/-- Lift the "greater than" relation on natural numbers to `Nat.Upto`. -/
 protected def Gt (p) (x y : Upto p) : Prop :=
   x.1 > y.1
 #align nat.upto.gt Nat.Upto.Gt
@@ -46,17 +46,16 @@ protected def Gt (p) (x y : Upto p) : Prop :=
 instance : LT (Upto p) :=
   ⟨fun x y => x.1 < y.1⟩
 
-/-- The "greater than" relation on `upto p` is well founded if (and only if) there exists a value
+/-- The "greater than" relation on `Upto p` is well founded if (and only if) there exists a value
 satisfying `p`. -/
 protected theorem wf : (∃ x, p x) → WellFounded (Upto.Gt p)
   | ⟨x, h⟩ => by
-    suffices upto.gt p = Measure fun y : Nat.Upto p => x - y.val by
+    suffices Upto.Gt p = Measure fun y : Nat.Upto p => x - y.val by
       rw [this]
-      apply measure_wf
+      exact (measure _).wf
     ext (⟨a, ha⟩⟨b, _⟩)
-    dsimp [Measure, InvImage, upto.gt]
-    rw [tsub_lt_tsub_iff_left_of_le]
-    exact le_of_not_lt fun h' => ha _ h' h
+    dsimp [Measure, InvImage, Upto.Gt]
+    rw [tsub_lt_tsub_iff_left_of_le (le_of_not_lt fun h' => ha _ h' h)]
 #align nat.upto.wf Nat.Upto.wf
 
 /-- Zero is always a member of `nat.upto p` because it has no predecessors. -/
