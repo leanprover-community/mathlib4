@@ -195,9 +195,6 @@ variable {f : α → β} {s t : Set α}
 -- Porting note: `Set.image` is already defined in `Init.Set`
 #align set.image Set.image
 
--- Porting note:
--- We previously used `''` to denote the image of a set.
--- We can switch back after https://github.com/leanprover/lean4/pull/1931
 /-- `f '' s` denotes the image of `s : Set α` under the function `f : α → β`. -/
 infixl:80 " '' " => image
 
