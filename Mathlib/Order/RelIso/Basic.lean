@@ -431,7 +431,7 @@ theorem ofMapRelIff_coe (f : α → β) [IsAntisymm α r] [IsRefl β s]
   to show it is a relation embedding. -/
 def ofMonotone [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H : ∀ a b, r a b → s (f a) (f b)) :
     r ↪r s := by
-  haveI := @IsAsymm.is_irrefl β s _
+  haveI := @IsAsymm.isIrrefl β s _
   refine' ⟨⟨f, fun a b e => _⟩, @fun a b => ⟨fun h => _, H _ _⟩⟩
   · refine' ((@trichotomous _ r _ a b).resolve_left _).resolve_right _ <;>
       exact fun h => @irrefl _ s _ _ (by simpa [e] using H _ _ h)
