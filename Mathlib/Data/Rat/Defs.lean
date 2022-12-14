@@ -411,19 +411,19 @@ theorem inv_def {a b : ℤ} : (a /. b)⁻¹ = b /. a := by
     · rfl
     · change Int.ofNat n.succ with (n + 1 : ℕ)
       unfold Rat.inv
-      rw [num_denom']
+      rw [num_den']
     · unfold Rat.inv
-      rw [num_denom']
+      rw [num_den']
       rfl
   have n0 : n ≠ 0 := by
     rintro rfl
-    rw [Rat.zero_mk, mkInt_eq_zero b0] at ha
+    rw [Rat.zero_mkInt, mkInt_eq_zero b0] at ha
     exact a0 ha
-  have d0 := ne_of_gt (Int.coe_nat_lt.2 h)
+  have d0 := ne_of_gt (Int.ofNat_lt.2 (Nat.pos_of_ne_zero h))
   have ha := (mkInt_eq b0 d0).1 ha
   apply (mkInt_eq n0 a0).2
   -- Porting TODO: this was by `cc`
-  sorry
+  rw [mul_comm, ha, mul_comm]
 #align rat.inv_def Rat.inv_def
 
 variable (a b c : ℚ)
