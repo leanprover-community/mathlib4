@@ -44,16 +44,16 @@ instance (R : Type _) [Monoid R] [Monoid α] [MulDistribMulAction R α] :
 @[to_additive]
 instance {M N} [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
     IsScalarTower M N αᵐᵒᵖ :=
-  ⟨fun x y z => unop_injective <| (smul_assoc _ _ _)⟩
+  ⟨fun _ _ _ => unop_injective <| @smul_assoc α M N _ _ _ _ _ _ _⟩
 
 @[to_additive]
 instance {M N} [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M N αᵐᵒᵖ :=
-  ⟨fun x y z => unop_injective <| smul_comm _ _ _⟩
+  ⟨fun _ _ _ => unop_injective <| @smul_comm M N α _ _ _ _ _ _⟩
 
 @[to_additive]
 instance (R : Type _) [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α] :
     IsCentralScalar R αᵐᵒᵖ :=
-  ⟨fun r m => unop_injective <| op_smul_eq_smul _ _⟩
+  ⟨fun _ _ => unop_injective <| @op_smul_eq_smul R α _ _ _ _ _⟩
 
 theorem op_smul_eq_op_smul_op {R : Type _} [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α]
     (r : R) (a : α) : op (r • a) = op r • op a :=
@@ -129,7 +129,7 @@ instance Monoid.toOppositeMulAction [Monoid α] :
 @[to_additive]
 instance IsScalarTower.opposite_mid {M N} [Mul N] [SMul M N] [SMulCommClass M N N] :
     IsScalarTower M Nᵐᵒᵖ N :=
-  ⟨fun x y z => mul_smul_comm _ _ _⟩
+  ⟨fun _ _ _ => @mul_smul_comm M N _  _  _ _ _ _⟩
 #align is_scalar_tower.opposite_mid IsScalarTower.opposite_mid
 
 @[to_additive]
@@ -137,7 +137,7 @@ instance SMulCommClass.opposite_mid {M N} [Mul N] [SMul M N] [IsScalarTower M N 
     SMulCommClass M Nᵐᵒᵖ N :=
   ⟨fun x y z => by
     induction y using MulOpposite.rec
-    simp [smul_mul_assoc]⟩
+    simp only [smul_mul_assoc, MulOpposite.smul_eq_mul_unop]⟩
 #align smul_comm_class.opposite_mid SMulCommClass.opposite_mid
 
 -- The above instance does not create an unwanted diamond, the two paths to
@@ -146,7 +146,7 @@ example [Monoid α] : Monoid.toMulAction αᵐᵒᵖ = MulOpposite.instMulAction
   rfl
 
 /-- `Monoid.toOppositeMulAction` is faithful on cancellative monoids. -/
-@[to_additive "`add_monoid.to_opposite_add_action` is faithful on cancellative monoids."]
+@[to_additive "`AddMonoid.toOppositeAddAction` is faithful on cancellative monoids."]
 instance LeftCancelMonoid.to_has_faithful_opposite_scalar [LeftCancelMonoid α] :
     FaithfulSMul αᵐᵒᵖ α :=
   ⟨fun h => unop_injective <| mul_left_cancel (h 1)⟩
@@ -160,3 +160,4 @@ instance CancelMonoidWithZero.to_has_faithful_opposite_scalar [CancelMonoidWithZ
 #align
   cancel_monoid_with_zero.to_has_faithful_opposite_scalar CancelMonoidWithZero.to_has_faithful_opposite_scalar
 
+#lint
