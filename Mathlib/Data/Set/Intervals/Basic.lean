@@ -1347,7 +1347,8 @@ theorem Icc_union_Ici (h : c ≤ max a b) : icc a b ∪ ici c = ici (min a c) :=
   · exact Icc_union_Ici' h
   · cases h
     · simp [*]
-    · have hca : c ≤ a := h.trans hab.le
+    · rename_i h
+      have hca : c ≤ a := h.trans hab.le
       simp [*]
 #align set.Icc_union_Ici Set.Icc_union_Ici
 
@@ -1464,7 +1465,8 @@ theorem Iic_union_Icc (h : min c d ≤ b) : iic b ∪ icc c d = iic (max b d) :=
   cases' le_or_lt c d with hcd hcd <;> simp [hcd] at h
   · exact Iic_union_Icc' h
   · cases h
-    · have hdb : d ≤ b := hcd.le.trans h
+    · rename_i h
+      have hdb : d ≤ b := hcd.le.trans h
       simp [*]
     · simp [*]
 #align set.Iic_union_Icc Set.Iic_union_Icc
@@ -1716,7 +1718,7 @@ variable [SemilatticeInf α]
 @[simp]
 theorem Iic_inter_Iic {a b : α} : iic a ∩ iic b = iic (a ⊓ b) := by
   ext x
-  simp [Iic]
+  simp [iic]
 #align set.Iic_inter_Iic Set.Iic_inter_Iic
 
 @[simp]
@@ -1733,7 +1735,7 @@ variable [SemilatticeSup α]
 @[simp]
 theorem Ici_inter_Ici {a b : α} : ici a ∩ ici b = ici (a ⊔ b) := by
   ext x
-  simp [Ici]
+  simp [ici]
 #align set.Ici_inter_Ici Set.Ici_inter_Ici
 
 @[simp]
