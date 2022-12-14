@@ -535,9 +535,7 @@ protected theorem inv_mul_cancel (h : a ≠ 0) : a⁻¹ * a = 1 :=
   Eq.trans (Rat.mul_comm _ _) (Rat.mul_inv_cancel _ h)
 #align rat.inv_mul_cancel Rat.inv_mul_cancel
 
-instance : DecidableEq ℚ := by
-  run_tac
-    tactic.mk_dec_eq_instance
+-- Porting note: we already have a `DecidableEq ℚ`.
 
 /-! At this point in the import hierarchy we have not defined the `Field` typeclass.
 Instead we'll instantiate `CommRing` and `CommGroupWithZero` at this point.
