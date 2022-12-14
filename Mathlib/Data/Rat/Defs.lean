@@ -371,6 +371,12 @@ theorem mkInt_neg_den (n d : ℤ) : n /. -d = -n /. d := by
   by_cases hd : d = 0 <;> simp [Rat.mkInt_eq, hd]
 #align rat.mk_neg_denom Rat.mkInt_neg_den
 
+-- Porting note: since `Sub ℚ` is defined in Std, we need to prove this here.
+@[simp]
+theorem sub_def {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
+    a /. b - c /. d = (a * d - c * b) /. (b * d) := by
+  sorry
+
 #align rat.mul Rat.mul
 
 -- Porting note: there's already an instance for `Mul ℚ` is in Std.
@@ -390,9 +396,6 @@ instance : Inv ℚ :=
   ⟨Rat.inv⟩
 
 -- Porting note: there's already an instance for `Div ℚ` is in Std.
--- Overriding it here may be a terrible idea, we need to investigate.
-instance : Div ℚ :=
-  ⟨fun a b => a * b⁻¹⟩
 
 @[simp]
 theorem inv_def {a b : ℤ} : (a /. b)⁻¹ = b /. a := by
@@ -421,7 +424,7 @@ theorem inv_def {a b : ℤ} : (a /. b)⁻¹ = b /. a := by
   have d0 := ne_of_gt (Int.ofNat_lt.2 (Nat.pos_of_ne_zero h))
   have ha := (mkInt_eq b0 d0).1 ha
   apply (mkInt_eq n0 a0).2
-  -- Porting TODO: this was by `cc`
+  -- Porting note: this was by `cc`
   rw [mul_comm, ha, mul_comm]
 #align rat.inv_def Rat.inv_def
 
@@ -457,7 +460,7 @@ protected theorem add_left_neg : -a + a = 0 :=
 protected theorem sub_eq_add_neg : a - b = a + -b :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
     numDenCasesOn' b fun n₂ d₂ h₂ => by
-      sorry
+      simp [h₁, h₂, _root_.sub_eq_add_neg]
 
 @[simp]
 theorem mkInt_zero_one : 0 /. 1 = 0 :=
