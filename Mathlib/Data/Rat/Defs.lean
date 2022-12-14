@@ -210,7 +210,7 @@ theorem normalize_eq_normalize_iff
       Nat.mul_div_assoc _ (Nat.gcd_dvd_right _ _), mul_comm]
 
 
-theorem mkInt_eq : ∀ {a b c d : ℤ} (hb : b ≠ 0) (hd : d ≠ 0), a /. b = c /. d ↔ a * d = c * b := by
+theorem mkInt_eq : ∀ {a b c d : ℤ} (_ : b ≠ 0) (_ : d ≠ 0), a /. b = c /. d ↔ a * d = c * b := by
   suffices ∀ a b c d hb hd, mkPNat a ⟨b, hb⟩ = mkPNat c ⟨d, hd⟩ ↔ a * d = c * b by
     intros a b c d hb hd
     cases' b with b b <;> simp [mkInt, mkNat, Nat.succPNat]
@@ -230,7 +230,7 @@ theorem mkInt_eq : ∀ {a b c d : ℤ} (hb : b ≠ 0) (hd : d ≠ 0), a /. b = c
     · change -a * d.succ = -c * b.succ ↔ a * -d.succ = c * -b.succ
       simp [left_distrib, sub_eq_add_neg]
       -- Porting TODO: this was by `cc`
-      sorry
+      simp [add_comm]
   intros a b c d hb hd
   simp [mkPNat]
   apply normalize_eq_normalize_iff
@@ -242,7 +242,7 @@ theorem div_mkInt_div_cancel_left {a b c : ℤ} (c0 : c ≠ 0) : a * c /. (b * c
   · subst b0
     simp
   apply (mkInt_eq (mul_ne_zero b0 c0) b0).2
-  rw [mul_comm, ←mul_assoc]
+  rw [mul_right_comm, ←mul_assoc]
 #align rat.div_mk_div_cancel_left Rat.div_mkInt_div_cancel_left
 
 -- Porting note: this can move to Std4
@@ -276,7 +276,7 @@ numbers of the form `n /. d` with `d ≠ 0`. -/
 @[elab_as_elim]
 def numDenCasesOn'.{u} {C : ℚ → Sort u} (a : ℚ) (H : ∀ (n : ℤ) (d : ℕ), d ≠ 0 → C (n /. d)) :
     C a :=
-  (numDenCasesOn a) fun n d h c => H n d h.ne'
+  numDenCasesOn a fun n d h _ => H n d h.ne'
 #align rat.num_denom_cases_on' Rat.numDenCasesOn'
 
 #align rat.add Rat.add
@@ -452,15 +452,15 @@ protected theorem one_mul : 1 * a = a :=
 #align rat.one_mul Rat.one_mul
 
 protected theorem mul_comm : a * b = b * a :=
-  (numDenCasesOn' a) fun n₁ d₁ h₁ =>
-    (numDenCasesOn' b) fun n₂ d₂ h₂ => by simp [h₁, h₂, mul_comm]
+  numDenCasesOn' a fun n₁ d₁ h₁ =>
+    numDenCasesOn' b fun n₂ d₂ h₂ => by simp [h₁, h₂, mul_comm]
 #align rat.mul_comm Rat.mul_comm
 
 protected theorem mul_assoc : a * b * c = a * (b * c) :=
-  (numDenCasesOn' a) fun n₁ d₁ h₁ =>
-    (numDenCasesOn' b) fun n₂ d₂ h₂ =>
-      (numDenCasesOn' c) fun n₃ d₃ h₃ => by
-        simp [h₁, h₂, h₃, mul_ne_zero, mul_comm, mul_left_comm]
+  numDenCasesOn' a fun n₁ d₁ h₁ =>
+    numDenCasesOn' b fun n₂ d₂ h₂ =>
+      numDenCasesOn' c fun n₃ d₃ h₃ => by
+        simp [h₁, h₂, h₃, mul_ne_zero, mul_comm, mul_assoc, mul_left_comm]
 #align rat.mul_assoc Rat.mul_assoc
 
 protected theorem add_mul : (a + b) * c = a * c + b * c :=
@@ -622,15 +622,15 @@ theorem den_zero : Rat.den 0 = 1 :=
 
 theorem zero_of_num_zero {q : ℚ} (hq : q.num = 0) : q = 0 := by
   have : q = q.num /. q.den := num_den.symm
-  simpa [hq]
+  simpa [hq] using this
 #align rat.zero_of_num_zero Rat.zero_of_num_zero
 
 theorem zero_iff_num_zero {q : ℚ} : q = 0 ↔ q.num = 0 :=
   ⟨fun _ => by simp [*], zero_of_num_zero⟩
 #align rat.zero_iff_num_zero Rat.zero_iff_num_zero
 
-theorem num_ne_zero_of_ne_zero {q : ℚ} (h : q ≠ 0) : q.num ≠ 0 := fun this : q.num = 0 =>
-  h <| zero_of_num_zero this
+theorem num_ne_zero_of_ne_zero {q : ℚ} (h : q ≠ 0) : q.num ≠ 0 := fun hq0 : q.num = 0 =>
+  h <| zero_of_num_zero hq0
 #align rat.num_ne_zero_of_ne_zero Rat.num_ne_zero_of_ne_zero
 
 @[simp]
