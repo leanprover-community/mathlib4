@@ -728,7 +728,6 @@ protected theorem add_mkInt (a b c : ℤ) : (a + b) /. c = a /. c + b /. c :=
 theorem mkInt_eq_div (n d : ℤ) : n /. d = (n : ℚ) / d := by
   by_cases d0 : d = 0
   · simp [d0, div_zero]
-    sorry
   simp [division_def, coe_int_eq_mkInt, mul_def one_ne_zero d0]
 #align rat.mk_eq_div Rat.mkInt_eq_div
 
