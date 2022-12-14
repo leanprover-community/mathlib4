@@ -6,6 +6,8 @@ Authors: Kenny Lau, Ken Lee, Chris Hughes
 import Mathlib.Tactic.Ring
 import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Algebra.Ring.Divisibility
+import Mathlib.Algebra.Hom.Ring
+--import Mathlib.Algebra.GroupPower.Order
 
 /-!
 # Coprime elements of a ring
