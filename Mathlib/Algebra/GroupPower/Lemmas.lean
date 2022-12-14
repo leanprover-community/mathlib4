@@ -12,7 +12,13 @@ import Mathlib.Algebra.GroupPower.Basic
 
 This file contains lemmas about `monoid.pow`, `group.pow`, `nsmul`, `zsmul`
 which require additional imports besides those available in `algebra.group_power.basic`.
+
+This is an ad-hoc port file.
 -/
+
+@[simp, norm_cast]
+lemma Nat.cast_pow [Semiring R] {m n : ℕ} : (m ^ n).cast = (m.cast ^ n : R) := by
+  induction n generalizing m <;> simp_all [Nat.pow_succ', _root_.pow_succ'', pow_zero]
 
 @[simp, norm_cast]
 theorem Int.cast_pow [Ring R] (n : ℤ) : ∀ m : ℕ, (↑(n ^ m) : R) = (n : R) ^ m

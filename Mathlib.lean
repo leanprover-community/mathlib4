@@ -25,6 +25,7 @@ import Mathlib.Algebra.Group.WithOne.Units
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Defs
@@ -47,6 +48,7 @@ import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
+import Mathlib.Algebra.Order.Field.Canonical.Defs
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Group.Defs
@@ -59,6 +61,7 @@ import Mathlib.Algebra.Order.Group.TypeTags
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.Group.WithTop
 import Mathlib.Algebra.Order.Hom.Basic
+import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.Cancel.Basic
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
@@ -68,6 +71,7 @@ import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Algebra.Order.Monoid.MinMax
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Monoid.TypeTags
 import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Monoid.WithTop
@@ -111,7 +115,9 @@ import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Thin
+import Mathlib.Combinatorics.Quiver.Arborescence
 import Mathlib.Combinatorics.Quiver.Basic
+import Mathlib.Combinatorics.Quiver.Cast
 import Mathlib.Combinatorics.Quiver.ConnectedComponent
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Push
@@ -124,6 +130,7 @@ import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Random
 import Mathlib.Control.SimpSet
 import Mathlib.Control.Traversable.Basic
+import Mathlib.Control.Traversable.Lemmas
 import Mathlib.Control.ULift
 import Mathlib.Control.Writer
 import Mathlib.Data.Array.Basic
@@ -193,6 +200,7 @@ import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Sigma
+import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.Sigma.Order
@@ -202,6 +210,7 @@ import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
 import Mathlib.Data.Sum.Order
+import Mathlib.Data.TwoPointing
 import Mathlib.Data.UInt
 import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
@@ -290,6 +299,7 @@ import Mathlib.Order.RelIso.Basic
 import Mathlib.Order.RelIso.Group
 import Mathlib.Order.SymmDiff
 import Mathlib.Order.Synonym
+import Mathlib.Order.WellFounded
 import Mathlib.Order.WithBot
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Alias
