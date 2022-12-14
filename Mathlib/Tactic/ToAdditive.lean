@@ -761,7 +761,7 @@ This runs in several steps:
 3) Fix up abbreviations that are not word-by-word translations, like "addComm" or "Nonneg".
 -/
 def guessName : String → String :=
-  String.mapTokens ''' <|
+  String.mapTokens '\'' <|
   fun s =>
     String.join <|
     fixAbbreviation <|
