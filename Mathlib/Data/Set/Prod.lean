@@ -594,9 +594,9 @@ theorem prod_sdiff_diagonal : s ×ˢ s \ diagonal α = s.offDiag :=
 #align set.prod_sdiff_diagonal Set.prod_sdiff_diagonal
 
 @[simp]
-theorem disjoint_diagonal_off_diag : Disjoint (diagonal α) s.offDiag :=
+theorem disjoint_diagonal_offDiag : Disjoint (diagonal α) s.offDiag :=
   disjoint_left.mpr fun _ hd ho => ho.2.2 hd
-#align set.disjoint_diagonal_off_diag Set.disjoint_diagonal_off_diag
+#align set.disjoint_diagonal_off_diag Set.disjoint_diagonal_offDiag
 
 theorem offDiag_inter : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
   ext fun x => by
