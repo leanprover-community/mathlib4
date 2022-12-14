@@ -12,7 +12,7 @@ import Mathlib.Data.Set.Basic
 In this file, we define partial equivalences `PEquiv`, which are a bijection between a subset of `α`
 and a subset of `β`. Notationally, a `PEquiv` is denoted by "`≃.`" (note that the full stop is part
 of the notation). The way we store these internally is with two functions `f : α → Option β` and
-the reverse function `g : β → Pption α`, with the condition that if `f a` is `some b`,
+the reverse function `g : β → Option α`, with the condition that if `f a` is `some b`,
 then `g b` is `some a`.
 
 ## Main results
