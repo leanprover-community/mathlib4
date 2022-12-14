@@ -26,12 +26,12 @@ variable {α : Type _}
 
 /-- Auxiliary lemma for norm_cast to move the cast `-↑n` upwards to `↑-↑n`.
 
-(The restriction to `field` is necessary, otherwise this would also apply in the case where
+(The restriction to `Field` is necessary, otherwise this would also apply in the case where
 `R = ℤ` and cause nontermination.)
 -/
 @[norm_cast]
-theorem cast_neg_nat_cast {R} [Field R] (n : ℕ) : ((-n : ℤ) : R) = -n := by simp
-#align int.cast_neg_nat_cast Int.cast_neg_nat_cast
+theorem cast_neg_natCast {R} [Field R] (n : ℕ) : ((-n : ℤ) : R) = -n := by simp
+#align int.cast_neg_nat_cast Int.cast_neg_natCast
 
 @[simp]
 theorem cast_div [Field α] {m n : ℤ} (n_dvd : n ∣ m) (n_nonzero : (n : α) ≠ 0) :
