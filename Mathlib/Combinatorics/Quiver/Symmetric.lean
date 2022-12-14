@@ -23,7 +23,7 @@ This file contains constructions related to symmetric quivers:
   of `Symmetrify`.
 -/
 
-universe v u
+universe v u w v'
 
 namespace Quiver
 
