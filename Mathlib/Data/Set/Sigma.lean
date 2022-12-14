@@ -26,20 +26,20 @@ theorem range_sigmaMk (i : ι) : range (Sigma.mk i : α i → Sigma α) = Sigma.
 #align set.range_sigmaMk Set.range_sigmaMk
 
 theorem preimage_image_sigmaMk_of_ne (h : i ≠ j) (s : Set (α j)) :
-    Sigma.mk i ⁻¹' (Sigma.mk j ~~ s) = ∅ := by
+    Sigma.mk i ⁻¹' (Sigma.mk j '' s) = ∅ := by
   ext x
   simp [h.symm]
 #align set.preimage_image_sigmaMk_of_ne Set.preimage_image_sigmaMk_of_ne
 
 theorem image_sigmaMk_preimage_sigmaMap_subset {β : ι' → Type _} (f : ι → ι')
     (g : ∀ i, α i → β (f i)) (i : ι) (s : Set (β (f i))) :
-    Sigma.mk i ~~ (g i ⁻¹' s) ⊆ Sigma.map f g ⁻¹' (Sigma.mk (f i) ~~ s) :=
+    Sigma.mk i '' (g i ⁻¹' s) ⊆ Sigma.map f g ⁻¹' (Sigma.mk (f i) '' s) :=
   image_subset_iff.2 fun x hx ↦ ⟨g i x, hx, rfl⟩
 #align set.image_sigmaMk_preimage_sigmaMap_subset Set.image_sigmaMk_preimage_sigmaMap_subset
 
 theorem image_sigmaMk_preimage_sigmaMap {β : ι' → Type _} {f : ι → ι'} (hf : Function.Injective f)
     (g : ∀ i, α i → β (f i)) (i : ι) (s : Set (β (f i))) :
-    Sigma.mk i ~~ (g i ⁻¹' s) = Sigma.map f g ⁻¹' (Sigma.mk (f i) ~~ s) := by
+    Sigma.mk i '' (g i ⁻¹' s) = Sigma.map f g ⁻¹' (Sigma.mk (f i) '' s) := by
   refine' (image_sigmaMk_preimage_sigmaMap_subset f g i s).antisymm _
   rintro ⟨j, x⟩ ⟨y, hys, hxy⟩
   simp only [hf.eq_iff, Sigma.map, Sigma.ext_iff] at hxy
@@ -104,7 +104,7 @@ theorem sigma_univ : s.Sigma (fun _ ↦ univ : ∀ i, Set (α i)) = Sigma.fst �
 #align set.sigma_univ Set.sigma_univ
 
 @[simp]
-theorem singleton_sigma : ({i} : Set ι).Sigma t = Sigma.mk i ~~ t i :=
+theorem singleton_sigma : ({i} : Set ι).Sigma t = Sigma.mk i '' t i :=
   ext fun x ↦ by
     constructor
     · obtain ⟨j, a⟩ := x
@@ -116,7 +116,7 @@ theorem singleton_sigma : ({i} : Set ι).Sigma t = Sigma.mk i ~~ t i :=
 
 @[simp]
 theorem sigma_singleton {a : ∀ i, α i} :
-    (s.Sigma fun i ↦ ({a i} : Set (α i))) = (fun i ↦ Sigma.mk i <| a i) ~~ s := by
+    (s.Sigma fun i ↦ ({a i} : Set (α i))) = (fun i ↦ Sigma.mk i <| a i) '' s := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 #align set.sigma_singleton Set.sigma_singleton
@@ -141,13 +141,13 @@ theorem sigma_inter_sigma : s₁.Sigma t₁ ∩ s₂.Sigma t₂ = (s₁ ∩ s₂
   simp [and_assoc, and_left_comm]
 #align set.sigma_inter_sigma Set.sigma_inter_sigma
 
-theorem insert_sigma : (insert i s).Sigma t = Sigma.mk i ~~ t i ∪ s.Sigma t := by
+theorem insert_sigma : (insert i s).Sigma t = Sigma.mk i '' t i ∪ s.Sigma t := by
   rw [insert_eq, union_sigma, singleton_sigma]
   exact a
 #align set.insert_sigma Set.insert_sigma
 
 theorem sigma_insert {a : ∀ i, α i} :
-    (s.Sigma fun i ↦ insert (a i) (t i)) = (fun i ↦ ⟨i, a i⟩) ~~ s ∪ s.Sigma t := by
+    (s.Sigma fun i ↦ insert (a i) (t i)) = (fun i ↦ ⟨i, a i⟩) '' s ∪ s.Sigma t := by
   simp_rw [insert_eq, sigma_union, sigma_singleton]
 #align set.sigma_insert Set.sigma_insert
 
@@ -221,11 +221,11 @@ theorem sigma_eq_empty_iff : s.Sigma t = ∅ ↔ ∀ i ∈ s, t i = ∅ :=
 #align set.sigma_eq_empty_iff Set.sigma_eq_empty_iff
 
 theorem image_sigmaMk_subset_sigma_left {a : ∀ i, α i} (ha : ∀ i, a i ∈ t i) :
-    (fun i ↦ Sigma.mk i (a i)) ~~ s ⊆ s.Sigma t :=
+    (fun i ↦ Sigma.mk i (a i)) '' s ⊆ s.Sigma t :=
   image_subset_iff.2 fun _ hi ↦ ⟨hi, ha _⟩
 #align set.image_sigmaMk_subset_sigma_left Set.image_sigmaMk_subset_sigma_left
 
-theorem image_sigmaMk_subset_sigma_right (hi : i ∈ s) : Sigma.mk i ~~ t i ⊆ s.Sigma t :=
+theorem image_sigmaMk_subset_sigma_right (hi : i ∈ s) : Sigma.mk i '' t i ⊆ s.Sigma t :=
   image_subset_iff.2 fun _ ↦ And.intro hi
 #align set.image_sigmaMk_subset_sigma_right Set.image_sigmaMk_subset_sigma_right
 
@@ -233,11 +233,11 @@ theorem sigma_subset_preimage_fst (s : Set ι) (t : ∀ i, Set (α i)) : s.Sigma
   fun _ ↦ And.left
 #align set.sigma_subset_preimage_fst Set.sigma_subset_preimage_fst
 
-theorem fst_image_sigma_subset (s : Set ι) (t : ∀ i, Set (α i)) : Sigma.fst ~~ s.Sigma t ⊆ s :=
+theorem fst_image_sigma_subset (s : Set ι) (t : ∀ i, Set (α i)) : Sigma.fst '' s.Sigma t ⊆ s :=
   image_subset_iff.2 fun _ ↦ And.left
 #align set.fst_image_sigma_subset Set.fst_image_sigma_subset
 
-theorem fst_image_sigma (s : Set ι) (ht : ∀ i, (t i).Nonempty) : Sigma.fst ~~ s.Sigma t = s :=
+theorem fst_image_sigma (s : Set ι) (ht : ∀ i, (t i).Nonempty) : Sigma.fst '' s.Sigma t = s :=
   (fst_image_sigma_subset _ _).antisymm fun i hi ↦
     let ⟨a, ha⟩ := ht i
     ⟨⟨i, a⟩, ⟨hi, ha⟩, rfl⟩
