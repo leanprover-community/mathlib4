@@ -23,6 +23,7 @@ namespace Set
 
 section Enumerate
 
+/- FIXME: The original used parameters -/
 variable {α : Type _} (sel : Set α → Option α)
 
 /-- Given a choice function `sel`, enumerates the elements of a set in the order
@@ -48,7 +49,6 @@ theorem enumerate_eq_none :
     · exact enumerate_eq_none_of_sel sel hs
     · cases m
       case zero =>
-        have : n + 1 = 0 := Nat.eq_zero_of_le_zero hm
         contradiction
       case succ m' =>
         simp [hs, enumerate] at h ⊢
@@ -71,6 +71,7 @@ theorem enumerate_mem (h_sel : ∀ s a, sel s = some a → a ∈ s) :
 
 theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, sel s = some a → a ∈ s)
     (h₁ : enumerate sel s n₁ = some a) (h₂ : enumerate sel s n₂ = some a) : n₁ = n₂ := by
+  /- FIXME: The `rcase, on_goal, all_goals` has been used instead of the not-yet-ported wlog -/
   rcases le_total n₁ n₂ with (hn|hn)
   on_goal 2 => swap_var n₁ ↔ n₂, h₁ ↔ h₂
   all_goals
@@ -87,6 +88,7 @@ theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, 
         simp_all [Set.mem_diff_singleton]
     case succ k ih =>
       cases h : sel s
+      /- FIXME: The original covered both goals with just `simp_all <;> tauto` -/
       case none =>
         simp_all only [add_comm, self_eq_add_left, Nat.add_succ, enumerate_eq_none_of_sel _ h]
       case some _ =>
