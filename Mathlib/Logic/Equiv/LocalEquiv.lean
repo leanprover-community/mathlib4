@@ -102,6 +102,8 @@ elab (name := mfldSetTac) "mfld_set_tac" : tactic => withMainContext do
 
 attribute [mfld_simps] and_true eq_self_iff_true Function.comp_apply
 
+end Tactic.MfldSetTac
+
 open Function Set
 
 variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
