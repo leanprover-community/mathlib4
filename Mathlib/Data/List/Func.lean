@@ -116,7 +116,7 @@ theorem length_set : ∀ {m : ℕ} {as : List α}, as {m ↦ a}.length = max as.
 
 #align list.func.length_set List.Func.length_set
 
--- porting note : @[simp] has been removed since `#lint` says this is 
+-- porting note : @[simp] has been removed since `#lint` says this is
 theorem get_nil {k : ℕ} : (get k [] : α) = default := by cases k <;> rfl
 #align list.func.get_nil List.Func.get_nil
 
@@ -172,7 +172,8 @@ theorem get_set_eq_of_ne {a : α} :
     contradiction
     cases as <;> simp only [set, get, get_nil]
   | as, k + 1, m, h1 => by
-    cases as <;> cases m -- porting note : I somewhat rearranged the case split
+    -- porting note : I somewhat rearranged the case split
+    cases as <;> cases m
     case nil =>
       simp only [set, get]
     case nil m =>
@@ -259,7 +260,7 @@ namespace Func
 @[simp]
 theorem get_neg [AddGroup α] {k : ℕ} {as : List α} : @get α ⟨0⟩ k (neg as) = -@get α ⟨0⟩ k as := by
   unfold neg
-  rw [@get_map' α α ⟨0⟩ ⟨0⟩] -- porting note: had to add a `⟨0⟩` here because couldn't synthesize instance
+  rw [@get_map' α α ⟨0⟩ ⟨0⟩] -- porting note: had to add a `⟨0⟩` b/c of instance troubles
   apply neg_zero
 #align list.func.get_neg List.Func.get_neg
 
@@ -316,8 +317,10 @@ namespace Func
 -- add
 @[simp]
 theorem get_add {α : Type u} [AddMonoid α] {k : ℕ} {xs ys : List α} :
+    -- porting note : `@` and `⟨0⟩`s added b/c of instance troubles
+    -- (similarly at other places below)
     @get α ⟨0⟩ k (add xs ys) = @get α ⟨0⟩ k xs + @get α ⟨0⟩ k ys := by
-  apply @get_pointwise _ _ _ ⟨0⟩ ⟨0⟩ ⟨0⟩ -- porting note : had to add `@` because couldn't synthesize instances
+  apply @get_pointwise _ _ _ ⟨0⟩ ⟨0⟩ ⟨0⟩
   apply zero_add
 #align list.func.get_add List.Func.get_add
 
@@ -333,7 +336,8 @@ theorem nil_add {α : Type u} [AddMonoid α] (as : List α) : add [] as = as := 
   apply Eq.trans _ (map_id as)
   congr with x
   exact zero_add x
-  -- porting note: instead of `zero_add`, it was the line below
+  -- porting note: instead of `zero_add`, it was the commented `rw` below
+  -- (similarly at other places below)
   --rw [zero_add, id]
 #align list.func.nil_add List.Func.nil_add
 
@@ -343,8 +347,6 @@ theorem add_nil {α : Type u} [AddMonoid α] (as : List α) : add as [] = as := 
   apply Eq.trans _ (map_id as)
   congr with x
   exact add_zero x
-  -- porting note: instead of `zero_add`, it was the line below
-  --rw [add_zero, id]
 #align list.func.add_nil List.Func.add_nil
 
 theorem map_add_map {α : Type u} [AddMonoid α] (f g : α → α) {as : List α} :
@@ -366,7 +368,7 @@ theorem map_add_map {α : Type u} [AddMonoid α] (f g : α → α) {as : List α
 @[simp]
 theorem get_sub {α : Type u} [AddGroup α] {k : ℕ} {xs ys : List α} :
     @get α ⟨0⟩ k (sub xs ys) = @get α ⟨0⟩ k xs - @get α ⟨0⟩ k ys := by
-  apply @get_pointwise _ _ _ ⟨0⟩ ⟨0⟩ ⟨0⟩ -- porting note : `@` added b/c of instance troubles
+  apply @get_pointwise _ _ _ ⟨0⟩ ⟨0⟩ ⟨0⟩
   apply sub_zero
 #align list.func.get_sub List.Func.get_sub
 
@@ -394,4 +396,3 @@ theorem sub_nil {α : Type} [AddGroup α] (as : List α) : sub as [] = as := by
 end Func
 
 end List
-#lint
