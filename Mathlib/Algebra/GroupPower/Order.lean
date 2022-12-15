@@ -100,7 +100,7 @@ theorem pow_lt_pow' [CovariantClass M M (· * ·) (· < ·)] {a : M} {n m : ℕ}
 #align pow_lt_pow' pow_lt_pow'
 
 @[to_additive nsmul_strict_mono_right]
-theorem pow_strict_mono_left [CovariantClass M M (· * ·) (· < ·)] {a : M} (ha : 1 < a) :
+theorem pow_strictMono_left [CovariantClass M M (· * ·) (· < ·)] {a : M} (ha : 1 < a) :
     StrictMono ((· ^ ·) a : ℕ → M) := fun _ _ => pow_lt_pow' ha
 #align pow_strict_mono_left pow_strict_mono_left
 
