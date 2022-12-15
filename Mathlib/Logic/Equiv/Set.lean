@@ -58,12 +58,12 @@ theorem _root_.Set.preimage_equiv_eq_image_symm {α β} (S : Set α) (f : β ≃
   (f.symm.image_eq_preimage S).symm
 #align set.preimage_equiv_eq_image_symm Set.preimage_equiv_eq_image_symm
 
-@[simp]
+/- Porting note: Removed `simp` attribute. LHS not in normal form -/
 protected theorem subset_image {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
     e.symm '' t ⊆ s ↔ t ⊆ e '' s := by rw [image_subset_iff, e.image_eq_preimage]
 #align equiv.subset_image Equiv.subset_image
 
-@[simp]
+/- Porting note: Removed `simp` attribute. LHS not in normal form  -/
 protected theorem subset_image' {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
     s ⊆ e.symm '' t ↔ e '' s ⊆ t :=
   calc
@@ -116,7 +116,7 @@ theorem preimage_subset {α β} (e : α ≃ β) (s t : Set β) : e ⁻¹' s ⊆ 
   e.surjective.preimage_subset_preimage_iff
 #align equiv.preimage_subset Equiv.preimage_subset
 
-@[simp]
+-- Porting note: Removed `simp` attribute. `simp` can prove it.
 theorem image_subset {α β} (e : α ≃ β) (s t : Set α) : e '' s ⊆ e '' t ↔ s ⊆ t :=
   image_subset_image_iff e.injective
 #align equiv.image_subset Equiv.image_subset
