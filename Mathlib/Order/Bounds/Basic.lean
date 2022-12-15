@@ -1604,7 +1604,7 @@ theorem IsLUB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x 
     hf.1 <| hx.2 <| Monotone.mem_upperBounds_image (fun _ _ => hf.2) hy⟩
 #align is_lub.of_image IsLUB.of_image
 
-theorem is_lub_pi {π : α → Type _} [∀ a, Preorder (π a)] {s : Set (∀ a, π a)} {f : ∀ a, π a} :
+theorem isLUB_pi {π : α → Type _} [∀ a, Preorder (π a)] {s : Set (∀ a, π a)} {f : ∀ a, π a} :
     IsLUB s f ↔ ∀ a, IsLUB (Function.eval a '' s) (f a) := by
   classical
     refine'
@@ -1614,14 +1614,14 @@ theorem is_lub_pi {π : α → Type _} [∀ a, Preorder (π a)] {s : Set (∀ a,
       refine' fun g hg => le_update_iff.2 ⟨hb <| mem_image_of_mem _ hg, fun i _ => H.1 hg i⟩
     · exact fun g hg a => (H a).1 (mem_image_of_mem _ hg)
     · exact fun g hg a => (H a).2 ((Function.monotone_eval a).mem_upperBounds_image hg)
-#align is_lub_pi is_lub_pi
+#align is_lub_pi isLUB_pi
 
-theorem is_glb_pi {π : α → Type _} [∀ a, Preorder (π a)] {s : Set (∀ a, π a)} {f : ∀ a, π a} :
+theorem isGLB_pi {π : α → Type _} [∀ a, Preorder (π a)] {s : Set (∀ a, π a)} {f : ∀ a, π a} :
     IsGLB s f ↔ ∀ a, IsGLB (Function.eval a '' s) (f a) :=
-  @is_lub_pi α (fun a => (π a)ᵒᵈ) _ s f
-#align is_glb_pi is_glb_pi
+  @isLUB_pi α (fun a => (π a)ᵒᵈ) _ s f
+#align is_glb_pi isGLB_pi
 
-theorem is_lub_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × β) :
+theorem isLUB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × β) :
     IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
   refine'
     ⟨fun H =>
@@ -1637,9 +1637,9 @@ theorem is_lub_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × 
     exact fun q hq =>
       ⟨H.1.2 <| monotone_fst.mem_upperBounds_image hq,
         H.2.2 <| monotone_snd.mem_upperBounds_image hq⟩
-#align is_lub_prod is_lub_prod
+#align is_lub_prod isLUB_prod
 
-theorem is_glb_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × β) :
+theorem isGLB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × β) :
     IsGLB s p ↔ IsGLB (Prod.fst '' s) p.1 ∧ IsGLB (Prod.snd '' s) p.2 :=
-  @is_lub_prod αᵒᵈ βᵒᵈ _ _ _ _
-#align is_glb_prod is_glb_prod
+  @isLUB_prod αᵒᵈ βᵒᵈ _ _ _ _
+#align is_glb_prod isGLB_prod
