@@ -372,7 +372,7 @@ theorem union_lower_bounds_subset_lower_bounds_inter :
 
 theorem isLeast_union_iff {a : α} {s t : Set α} :
     IsLeast (s ∪ t) a ↔ IsLeast s a ∧ a ∈ lowerBounds t ∨ a ∈ lowerBounds s ∧ IsLeast t a := by
-  simp [IsLeast, lower_bounds_union, or_and_right, and_comm' (a ∈ t), and_assoc']
+  simp [IsLeast, lower_bounds_union, or_and_right, and_comm' (a ∈ t), and_assoc]
 #align is_least_union_iff isLeast_union_iff
 
 theorem is_greatest_union_iff :
