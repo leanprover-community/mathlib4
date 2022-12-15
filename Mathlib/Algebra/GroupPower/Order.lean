@@ -518,9 +518,41 @@ theorem abs_neg_one_pow (n : ℕ) : |(-1 : R) ^ n| = 1 := by rw [← pow_abs, ab
 
 /- warning: pow_bit0_nonneg -> pow_bit0_nonneg is a dubious translation:
 lean 3 declaration is
-  forall {R : Type.{u_4}} [_inst_1 : LinearOrderedRing.{u_4} R] (a : R) (n : Nat), LE.le.{u_4} R (Preorder.toLE.{u_4} R (PartialOrder.toPreorder.{u_4} R (OrderedAddCommGroup.toPartialOrder.{u_4} R (StrictOrderedRing.toOrderedAddCommGroup.{u_4} R (LinearOrderedRing.toStrictOrderedRing.{u_4} R _inst_1))))) (OfNat.ofNat.{u_4} R 0 (OfNat.mk.{u_4} R 0 (Zero.zero.{u_4} R (MulZeroClass.toHasZero.{u_4} R (NonUnitalNonAssocSemiring.toMulZeroClass.{u_4} R (NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring.{u_4} R (NonAssocRing.toNonUnitalNonAssocRing.{u_4} R (Ring.toNonAssocRing.{u_4} R (StrictOrderedRing.toRing.{u_4} R (LinearOrderedRing.toStrictOrderedRing.{u_4} R _inst_1)))))))))) (HPow.hPow.{u_4, 0, u_4} R Nat R (instHPow.{u_4, 0} R Nat (Monoid.hasPow.{u_4} R (Ring.toMonoid.{u_4} R (StrictOrderedRing.toRing.{u_4} R (LinearOrderedRing.toStrictOrderedRing.{u_4} R _inst_1))))) a (bit0.{0} Nat Nat.hasAdd n))
+  forall {R : Type.{u_4}} [_inst_1 : LinearOrderedRing.{u_4} R] (a : R) (n : Nat), LE.le.{u_4} R
+  (Preorder.toLE.{u_4} R
+  (PartialOrder.toPreorder.{u_4} R (OrderedAddCommGroup.toPartialOrder.{u_4} R
+  (StrictOrderedRing.toOrderedAddCommGroup.{u_4} R
+  (LinearOrderedRing.toStrictOrderedRing.{u_4} R _inst_1))))) (OfNat.ofNat.{u_4} R 0
+  (OfNat.mk.{u_4} R 0 (Zero.zero.{u_4} R
+  (MulZeroClass.toHasZero.{u_4} R (NonUnitalNonAssocSemiring.toMulZeroClass.{u_4} R
+  (NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring.{u_4} R
+  (NonAssocRing.toNonUnitalNonAssocRing.{u_4} R (Ring.toNonAssocRing.{u_4} R
+  (StrictOrderedRing.toRing.{u_4} R (LinearOrderedRing.toStrictOrderedRing.{u_4} R _inst_1))))))))))
+   (HPow.hPow.{u_4, 0, u_4} R Nat R (instHPow.{u_4, 0} R Nat
+    (Monoid.hasPow.{u_4} R (Ring.toMonoid.{u_4} R (StrictOrderedRing.toRing.{u_4} R
+    (LinearOrderedRing.toStrictOrderedRing.{u_4} R _inst_1)))))
+    a (bit0.{0} Nat Nat.hasAdd n))
 but is expected to have type
-  forall {α : Type.{u_1}} [inst._@.Mathlib.Tactic.Positivity.Basic._hyg.204 : LinearOrderedRing.{u_1} α] (a : α) (n : Nat), LE.le.{u_1} α (Preorder.toLE.{u_1} α (PartialOrder.toPreorder.{u_1} α (StrictOrderedRing.toPartialOrder.{u_1} α (LinearOrderedRing.toStrictOrderedRing.{u_1} α inst._@.Mathlib.Tactic.Positivity.Basic._hyg.204)))) (OfNat.ofNat.{u_1} α 0 (Zero.toOfNat0.{u_1} α (MonoidWithZero.toZero.{u_1} α (Semiring.toMonoidWithZero.{u_1} α (StrictOrderedSemiring.toSemiring.{u_1} α (StrictOrderedRing.toStrictOrderedSemiring.{u_1} α (LinearOrderedRing.toStrictOrderedRing.{u_1} α inst._@.Mathlib.Tactic.Positivity.Basic._hyg.204))))))) (HPow.hPow.{u_1, 0, u_1} α Nat α (instHPow.{u_1, 0} α Nat (Monoid.Pow.{u_1} α (MonoidWithZero.toMonoid.{u_1} α (Semiring.toMonoidWithZero.{u_1} α (StrictOrderedSemiring.toSemiring.{u_1} α (StrictOrderedRing.toStrictOrderedSemiring.{u_1} α (LinearOrderedRing.toStrictOrderedRing.{u_1} α inst._@.Mathlib.Tactic.Positivity.Basic._hyg.204))))))) a (HMul.hMul.{0, 0, 0} Nat Nat Nat (instHMul.{0} Nat instMulNat) (OfNat.ofNat.{0} Nat 2 (instOfNatNat 2)) n))
+  forall {α : Type.{u_1}}
+   [inst._@.Mathlib.Tactic.Positivity.Basic._hyg.204 : LinearOrderedRing.{u_1} α]
+  (a : α) (n : Nat), LE.le.{u_1} α (Preorder.toLE.{u_1} α
+  (PartialOrder.toPreorder.{u_1} α (StrictOrderedRing.toPartialOrder.{u_1} α
+  (LinearOrderedRing.toStrictOrderedRing.{u_1}
+   α inst._@.Mathlib.Tactic.Positivity.Basic._hyg.204))))
+    (OfNat.ofNat.{u_1} α 0 (Zero.toOfNat0.{u_1} α
+    (MonoidWithZero.toZero.{u_1} α (Semiring.toMonoidWithZero.{u_1} α
+    (StrictOrderedSemiring.toSemiring.{u_1} α (StrictOrderedRing.toStrictOrderedSemiring.{u_1} α
+    (LinearOrderedRing.toStrictOrderedRing.{u_1} α
+    inst._@.Mathlib.Tactic.Positivity.Basic._hyg.204)))))))
+    (HPow.hPow.{u_1, 0, u_1} α Nat α (instHPow.{u_1, 0} α Nat (Monoid.Pow.{u_1} α
+    (MonoidWithZero.toMonoid.{u_1} α
+    (Semiring.toMonoidWithZero.{u_1} α (StrictOrderedSemiring.toSemiring.{u_1} α
+     (StrictOrderedRing.toStrictOrderedSemiring.{u_1} α
+     (LinearOrderedRing.toStrictOrderedRing.{u_1} α
+     inst._@.Mathlib.Tactic.Positivity.Basic._hyg.204))))))) a
+     (HMul.hMul.{0, 0, 0} Nat Nat Nat
+     (instHMul.{0} Nat instMulNat)
+      (OfNat.ofNat.{0} Nat 2 (instOfNatNat 2)) n))
 Case conversion may be inaccurate. Consider using '#align pow_bit0_nonneg pow_bit0_nonnegₓ'. -/
 -- Porting note: renamed to avoid collision with Mathlib.Tactic.Positivity.Basic
 theorem pow_bit0_nonneg' (a : R) (n : ℕ) : 0 ≤ a ^ bit0 n := by
