@@ -28,9 +28,7 @@ section LE
 variable [LE α] [LE β] [LE γ]
 
 theorem range_eq (e : α ≃o β) : Set.range e = Set.univ :=
-  Function.Surjective.range_eq (OrderIso.surjective e)
--- porting note: dot notation broken on `Function.Surjective.range_eq` because of `alias`.
--- this issue is fixed in mathlib4#1058
+  e.surjective.range_eq
 #align order_iso.range_eq OrderIso.range_eq
 
 @[simp]
@@ -116,7 +114,7 @@ protected noncomputable def orderIso :
 /-- A strictly monotone surjective function from a linear order is an order isomorphism. -/
 noncomputable def orderIsoOfSurjective : α ≃o β :=
   (h_mono.orderIso f).trans <|
-    (OrderIso.setCongr _ _ <| Function.Surjective.range_eq h_surj).trans OrderIso.Set.univ
+    (OrderIso.setCongr _ _ h_surj.range_eq).trans OrderIso.Set.univ
 #align strict_mono.order_iso_of_surjective StrictMono.orderIsoOfSurjective
 
 @[simp]
