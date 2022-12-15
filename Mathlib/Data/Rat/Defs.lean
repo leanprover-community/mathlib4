@@ -144,10 +144,6 @@ theorem mkInt_ne_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b ≠ 0 ↔ a ≠ 0 :=
   (mkInt_eq_zero b0).not
 #align rat.mk_ne_zero Rat.mkInt_ne_zero
 
--- Porting TODO: prove, name, and find homes
-lemma Nat.gcd_natAbs_dvd_left (a : Int) (b : Nat) : ↑(Nat.gcd (Int.natAbs a) b) ∣ a := sorry
-lemma foo (a b : Nat) : (Nat.gcd a b : Int) ∣ ↑b := sorry
-
 -- Porting note: this can move to Std4
 theorem normalize_eq_normalize_iff
     (a : Int) (b : Nat) (hb : b ≠ 0) (c : Int) (d : Nat) (hd : d ≠ 0) :
@@ -159,22 +155,13 @@ theorem normalize_eq_normalize_iff
     simp only [Int.ofNat_div] at h₂
     have h₂ := congrArg (c * · * ↑(Nat.gcd (Int.natAbs a) b)) h₂
     dsimp only at h₂
-    -- Porting TODO: golf the rest of this branch
-    rw [←Int.mul_div_assoc] at h₂
-    rw [Int.div_mul_cancel] at h₂
-    rw [←Int.mul_div_assoc] at h₂
-    rw [Int.mul_comm c ↑d] at h₂
-    rw [Int.mul_div_assoc] at h₂
-    rw [←h₁] at h₂
-    rw [Int.mul_assoc] at h₂
-    rw [Int.div_mul_cancel] at h₂
-    rw [Int.mul_comm ↑d] at h₂
+    rw [←Int.mul_div_assoc _ (Nat.coe_nat_dvd (Nat.gcd_dvd_right _ _)),
+      Int.div_mul_cancel ((Nat.coe_nat_dvd (Nat.gcd_dvd_right _ _)).trans (Int.dvd_mul_left _ _)),
+      ←Int.mul_div_assoc _ (Nat.coe_nat_dvd (Nat.gcd_dvd_right _ _)), Int.mul_comm c ↑d,
+      Int.mul_div_assoc _ (Int.ofNat_dvd_of_dvd_natAbs (Nat.gcd_dvd_left _ _)), ←h₁, Int.mul_assoc,
+      Int.div_mul_cancel (Int.ofNat_dvd_of_dvd_natAbs (Nat.gcd_dvd_left _ _)),
+      Int.mul_comm ↑d] at h₂
     exact h₂.symm
-    exact Nat.gcd_natAbs_dvd_left _ _
-    exact Nat.gcd_natAbs_dvd_left _ _
-    exact foo _ _
-    exact (foo _ _).trans (Int.dvd_mul_left _ _)
-    exact foo _ _
   · intro h
     have hb' : 0 < b := Nat.pos_of_ne_zero hb
     have hd' : 0 < d := Nat.pos_of_ne_zero hd
