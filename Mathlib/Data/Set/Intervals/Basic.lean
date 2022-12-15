@@ -1894,36 +1894,30 @@ section Prod
 
 variable [Preorder α] [Preorder β]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem Iic_prod_Iic (a : α) (b : β) : iic a ×ˢ iic b = iic (a, b) :=
   rfl
 #align set.Iic_prod_Iic Set.Iic_prod_Iic
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem Ici_prod_Ici (a : α) (b : β) : ici a ×ˢ ici b = ici (a, b) :=
   rfl
 #align set.Ici_prod_Ici Set.Ici_prod_Ici
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Ici_prod_eq (a : α × β) : ici a = ici a.1 ×ˢ ici a.2 :=
   rfl
 #align set.Ici_prod_eq Set.Ici_prod_eq
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Iic_prod_eq (a : α × β) : iic a = iic a.1 ×ˢ iic a.2 :=
   rfl
 #align set.Iic_prod_eq Set.Iic_prod_eq
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem Icc_prod_Icc (a₁ a₂ : α) (b₁ b₂ : β) : icc a₁ a₂ ×ˢ icc b₁ b₂ = icc (a₁, b₁) (a₂, b₂) := by
   ext ⟨x, y⟩
   simp [and_assoc, and_comm, and_left_comm]
 #align set.Icc_prod_Icc Set.Icc_prod_Icc
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Icc_prod_eq (a b : α × β) : icc a b = icc a.1 b.1 ×ˢ icc a.2 b.2 := by simp
 #align set.Icc_prod_eq Set.Icc_prod_eq
 
