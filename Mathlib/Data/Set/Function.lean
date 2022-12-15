@@ -1163,8 +1163,8 @@ theorem preimage_invFun_of_mem [n : Nonempty α] {f : α → β} (hf : Injective
     (h : Classical.choice n ∈ s) : invFun f ⁻¹' s = f '' s ∪ range fᶜ := by
   ext x
   rcases em (x ∈ range f) with (⟨a, rfl⟩ | hx)
-  · simp [leftInverse_invFun hf _, hf.mem_set_image]
-  · simp [mem_preimage, invFun_neg hx, h, hx]
+  · simp only [leftInverse_invFun hf _, hf.mem_set_image, mem_preimage, mem_union, mem_compl_iff, mem_range_self, not_true, or_false]
+  · simp only [mem_preimage, invFun_neg hx, h, hx, mem_union, mem_compl_iff, not_false_iff, or_true]
 #align set.preimage_inv_fun_of_mem Set.preimage_invFun_of_mem
 
 theorem preimage_invFun_of_not_mem [n : Nonempty α] {f : α → β} (hf : Injective f) {s : Set α}
