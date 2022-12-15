@@ -14,7 +14,7 @@ import Mathlib.Tactic.Linarith.Lemmas
 /-!
 # Lemmas about the interaction of power operations with order
 
-Note that some lemmas are in `algebra/group_power/lemmas.lean` as they import files which
+Note that some lemmas are in `Algebra/GroupPower/Lemmas.lean` as they import files which
 depend on this file.
 -/
 
