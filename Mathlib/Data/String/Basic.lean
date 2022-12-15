@@ -32,7 +32,7 @@ instance lt' : LT String :=
 
 instance decidable_lt : @DecidableRel String (· < ·) := by
   simp only [lt']
-  infer_instance -- short-circuit type class inference
+  infer_instance  -- short-circuit type class inference
 #align string.decidable_lt String.decidable_lt
 
 -- TODO This proof probably has to be completely redone
@@ -46,10 +46,9 @@ instance le : LE String :=
 
 instance decidableLe : @DecidableRel String (· ≤ ·) := by
   simp only [le]
-  infer_instance
+  infer_instance  -- short-circuit type class inference
 #align string.decidable_le String.decidableLe
 
--- short-circuit type class inference
 @[simp]
 theorem le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList ≤ s₂.toList :=
   (not_congr lt_iff_toList_lt).trans not_lt
