@@ -298,23 +298,23 @@ theorem IsGreatest.upperBounds_eq (h : IsGreatest s a) : upperBounds s = Ici a :
   h.isLUB.upperBounds_eq
 #align is_greatest.upper_bounds_eq IsGreatest.upperBounds_eq
 
-theorem is_lub_le_iff (h : IsLUB s a) : a ≤ b ↔ b ∈ upperBounds s := by
+theorem isLUB_le_iff (h : IsLUB s a) : a ≤ b ↔ b ∈ upperBounds s := by
   rw [h.upperBounds_eq]
   rfl
-#align is_lub_le_iff is_lub_le_iff
+#align is_lub_le_iff isLUB_le_iff
 
-theorem le_is_glb_iff (h : IsGLB s a) : b ≤ a ↔ b ∈ lowerBounds s := by
+theorem le_isGLB_iff (h : IsGLB s a) : b ≤ a ↔ b ∈ lowerBounds s := by
   rw [h.lowerBounds_eq]
   rfl
-#align le_is_glb_iff le_is_glb_iff
+#align le_is_glb_iff le_isGLB_iff
 
-theorem is_lub_iff_le_iff : IsLUB s a ↔ ∀ b, a ≤ b ↔ b ∈ upperBounds s :=
-  ⟨fun h _ => is_lub_le_iff h, fun H => ⟨(H _).1 le_rfl, fun b hb => (H b).2 hb⟩⟩
-#align is_lub_iff_le_iff is_lub_iff_le_iff
+theorem isLUB_iff_le_iff : IsLUB s a ↔ ∀ b, a ≤ b ↔ b ∈ upperBounds s :=
+  ⟨fun h _ => isLUB_le_iff h, fun H => ⟨(H _).1 le_rfl, fun b hb => (H b).2 hb⟩⟩
+#align is_lub_iff_le_iff isLUB_iff_le_iff
 
-theorem is_glb_iff_le_iff : IsGLB s a ↔ ∀ b, b ≤ a ↔ b ∈ lowerBounds s :=
-  @is_lub_iff_le_iff αᵒᵈ _ _ _
-#align is_glb_iff_le_iff is_glb_iff_le_iff
+theorem isGLB_iff_le_iff : IsGLB s a ↔ ∀ b, b ≤ a ↔ b ∈ lowerBounds s :=
+  @isLUB_iff_le_iff αᵒᵈ _ _ _
+#align is_glb_iff_le_iff isGLB_iff_le_iff
 
 /-- If `s` has a least upper bound, then it is bounded above. -/
 theorem IsLUB.bddAbove (h : IsLUB s a) : BddAbove s :=
@@ -507,28 +507,28 @@ theorem isGreatest_Iic : IsGreatest (Iic a) a :=
   ⟨right_mem_Iic, fun _ => id⟩
 #align is_greatest_Iic isGreatest_Iic
 
-theorem is_lub_Iic : IsLUB (Iic a) a :=
+theorem isLUB_Iic : IsLUB (Iic a) a :=
   isGreatest_Iic.isLUB
-#align is_lub_Iic is_lub_Iic
+#align is_lub_Iic isLUB_Iic
 
-theorem is_glb_Ici : IsGLB (Ici a) a :=
+theorem isGLB_Ici : IsGLB (Ici a) a :=
   isLeast_Ici.isGLB
-#align is_glb_Ici is_glb_Ici
+#align is_glb_Ici isGLB_Ici
 
 theorem upperBounds_Iic : upperBounds (Iic a) = Ici a :=
-  is_lub_Iic.upperBounds_eq
+  isLUB_Iic.upperBounds_eq
 #align upper_bounds_Iic upperBounds_Iic
 
 theorem lowerBounds_Ici : lowerBounds (Ici a) = Iic a :=
-  is_glb_Ici.lowerBounds_eq
+  isGLB_Ici.lowerBounds_eq
 #align lower_bounds_Ici lowerBounds_Ici
 
 theorem bddAbove_Iic : BddAbove (Iic a) :=
-  is_lub_Iic.bddAbove
+  isLUB_Iic.bddAbove
 #align bdd_above_Iic bddAbove_Iic
 
 theorem bddBelow_Ici : BddBelow (Ici a) :=
-  is_glb_Ici.bddBelow
+  isGLB_Ici.bddBelow
 #align bdd_below_Ici bddBelow_Ici
 
 theorem bddAbove_Iio : BddAbove (Iio a) :=
@@ -540,7 +540,7 @@ theorem bddBelow_Ioi : BddBelow (Ioi a) :=
 #align bdd_below_Ioi bddBelow_Ioi
 
 theorem lub_Iio_le (a : α) (hb : IsLUB (Iio a) b) : b ≤ a :=
-  (is_lub_le_iff hb).mpr fun _ hk => le_of_lt hk
+  (isLUB_le_iff hb).mpr fun _ hk => le_of_lt hk
 #align lub_Iio_le lub_Iio_le
 
 theorem le_glb_Ioi (a : α) (hb : IsGLB (Ioi a) b) : a ≤ b :=
@@ -582,20 +582,20 @@ theorem exists_glb_Ioi (i : γ) : ∃ j, IsGLB (Ioi i) j :=
 
 variable [DenselyOrdered γ]
 
-theorem is_lub_Iio {a : γ} : IsLUB (Iio a) a :=
+theorem isLUB_Iio {a : γ} : IsLUB (Iio a) a :=
   ⟨fun _ hx => le_of_lt hx, fun _ hy => le_of_forall_ge_of_dense hy⟩
-#align is_lub_Iio is_lub_Iio
+#align is_lub_Iio isLUB_Iio
 
-theorem is_glb_Ioi {a : γ} : IsGLB (Ioi a) a :=
-  @is_lub_Iio γᵒᵈ _ _ a
-#align is_glb_Ioi is_glb_Ioi
+theorem isGLB_Ioi {a : γ} : IsGLB (Ioi a) a :=
+  @isLUB_Iio γᵒᵈ _ _ a
+#align is_glb_Ioi isGLB_Ioi
 
 theorem upperBounds_Iio {a : γ} : upperBounds (Iio a) = Ici a :=
-  is_lub_Iio.upperBounds_eq
+  isLUB_Iio.upperBounds_eq
 #align upper_bounds_Iio upperBounds_Iio
 
 theorem lowerBounds_Ioi {a : γ} : lowerBounds (Ioi a) = Iic a :=
-  is_glb_Ioi.lowerBounds_eq
+  isGLB_Ioi.lowerBounds_eq
 #align lower_bounds_Ioi lowerBounds_Ioi
 
 end
@@ -613,30 +613,30 @@ theorem isLeast_singleton : IsLeast {a} a :=
   @isGreatest_singleton αᵒᵈ _ a
 #align is_least_singleton isLeast_singleton
 
-theorem is_lub_singleton : IsLUB {a} a :=
+theorem isLUB_singleton : IsLUB {a} a :=
   isGreatest_singleton.isLUB
-#align is_lub_singleton is_lub_singleton
+#align is_lub_singleton isLUB_singleton
 
-theorem is_glb_singleton : IsGLB {a} a :=
+theorem isGLB_singleton : IsGLB {a} a :=
   isLeast_singleton.isGLB
-#align is_glb_singleton is_glb_singleton
+#align is_glb_singleton isGLB_singleton
 
 theorem bddAbove_singleton : BddAbove ({a} : Set α) :=
-  is_lub_singleton.bddAbove
+  isLUB_singleton.bddAbove
 #align bdd_above_singleton bddAbove_singleton
 
 theorem bddBelow_singleton : BddBelow ({a} : Set α) :=
-  is_glb_singleton.bddBelow
+  isGLB_singleton.bddBelow
 #align bdd_below_singleton bddBelow_singleton
 
 @[simp]
 theorem upperBounds_singleton : upperBounds {a} = Ici a :=
-  is_lub_singleton.upperBounds_eq
+  isLUB_singleton.upperBounds_eq
 #align upper_bounds_singleton upperBounds_singleton
 
 @[simp]
 theorem lowerBounds_singleton : lowerBounds {a} = Iic a :=
-  is_glb_singleton.lowerBounds_eq
+  isGLB_singleton.lowerBounds_eq
 #align lower_bounds_singleton lowerBounds_singleton
 
 /-!
@@ -680,12 +680,12 @@ theorem isGreatest_Icc (h : a ≤ b) : IsGreatest (Icc a b) b :=
   ⟨right_mem_Icc.2 h, fun _ => And.right⟩
 #align is_greatest_Icc isGreatest_Icc
 
-theorem is_lub_Icc (h : a ≤ b) : IsLUB (Icc a b) b :=
+theorem isLUB_Icc (h : a ≤ b) : IsLUB (Icc a b) b :=
   (isGreatest_Icc h).isLUB
-#align is_lub_Icc is_lub_Icc
+#align is_lub_Icc isLUB_Icc
 
 theorem upperBounds_Icc (h : a ≤ b) : upperBounds (Icc a b) = Ici b :=
-  (is_lub_Icc h).upperBounds_eq
+  (isLUB_Icc h).upperBounds_eq
 #align upper_bounds_Icc upperBounds_Icc
 
 theorem isLeast_Icc (h : a ≤ b) : IsLeast (Icc a b) a :=
@@ -704,12 +704,12 @@ theorem isGreatest_Ioc (h : a < b) : IsGreatest (Ioc a b) b :=
   ⟨right_mem_Ioc.2 h, fun _ => And.right⟩
 #align is_greatest_Ioc isGreatest_Ioc
 
-theorem is_lub_Ioc (h : a < b) : IsLUB (Ioc a b) b :=
+theorem isLUB_Ioc (h : a < b) : IsLUB (Ioc a b) b :=
   (isGreatest_Ioc h).isLUB
-#align is_lub_Ioc is_lub_Ioc
+#align is_lub_Ioc isLUB_Ioc
 
 theorem upperBounds_Ioc (h : a < b) : upperBounds (Ioc a b) = Ici b :=
-  (is_lub_Ioc h).upperBounds_eq
+  (isLUB_Ioc h).upperBounds_eq
 #align upper_bounds_Ioc upperBounds_Ioc
 
 theorem isLeast_Ico (h : a < b) : IsLeast (Ico a b) a :=
@@ -756,20 +756,20 @@ section
 
 variable [SemilatticeInf γ] [DenselyOrdered γ]
 
-theorem is_lub_Ioo {a b : γ} (hab : a < b) : IsLUB (Ioo a b) b := by
+theorem isLUB_Ioo {a b : γ} (hab : a < b) : IsLUB (Ioo a b) b := by
   simpa only [dual_Ioo] using is_glb_Ioo hab.dual
-#align is_lub_Ioo is_lub_Ioo
+#align is_lub_Ioo isLUB_Ioo
 
 theorem upperBounds_Ioo {a b : γ} (hab : a < b) : upperBounds (Ioo a b) = Ici b :=
-  (is_lub_Ioo hab).upperBounds_eq
+  (isLUB_Ioo hab).upperBounds_eq
 #align upper_bounds_Ioo upperBounds_Ioo
 
-theorem is_lub_Ico {a b : γ} (hab : a < b) : IsLUB (Ico a b) b := by
+theorem isLUB_Ico {a b : γ} (hab : a < b) : IsLUB (Ico a b) b := by
   simpa only [dual_Ioc] using is_glb_Ioc hab.dual
-#align is_lub_Ico is_lub_Ico
+#align is_lub_Ico isLUB_Ico
 
 theorem upperBounds_Ico {a b : γ} (hab : a < b) : upperBounds (Ico a b) = Ici b :=
-  (is_lub_Ico hab).upperBounds_eq
+  (isLUB_Ico hab).upperBounds_eq
 #align upper_bounds_Ico upperBounds_Ico
 
 end
@@ -801,9 +801,9 @@ theorem OrderTop.upperBounds_univ [PartialOrder γ] [OrderTop γ] :
     upperBounds (univ : Set γ) = {⊤} := by rw [isGreatest_univ.upperBounds_eq, Ici_top]
 #align order_top.upper_bounds_univ OrderTop.upperBounds_univ
 
-theorem is_lub_univ [Preorder γ] [OrderTop γ] : IsLUB (univ : Set γ) ⊤ :=
+theorem isLUB_univ [Preorder γ] [OrderTop γ] : IsLUB (univ : Set γ) ⊤ :=
   isGreatest_univ.isLUB
-#align is_lub_univ is_lub_univ
+#align is_lub_univ isLUB_univ
 
 @[simp]
 theorem OrderBot.lowerBounds_univ [PartialOrder γ] [OrderBot γ] :
@@ -865,13 +865,13 @@ theorem bddBelow_empty [Nonempty α] : BddBelow (∅ : Set α) := by
   simp only [BddBelow, lowerBounds_empty, univ_nonempty]
 #align bdd_below_empty bddBelow_empty
 
-theorem is_glb_empty [Preorder γ] [OrderTop γ] : IsGLB ∅ (⊤ : γ) := by
+theorem isGLB_empty [Preorder γ] [OrderTop γ] : IsGLB ∅ (⊤ : γ) := by
   simp only [IsGLB, lowerBounds_empty, isGreatest_univ]
-#align is_glb_empty is_glb_empty
+#align is_glb_empty isGLB_empty
 
-theorem is_lub_empty [Preorder γ] [OrderBot γ] : IsLUB ∅ (⊥ : γ) :=
-  @is_glb_empty γᵒᵈ _ _
-#align is_lub_empty is_lub_empty
+theorem isLUB_empty [Preorder γ] [OrderBot γ] : IsLUB ∅ (⊥ : γ) :=
+  @isGLB_empty γᵒᵈ _ _
+#align is_lub_empty isLUB_empty
 
 theorem IsLUB.nonempty [NoMinOrder α] (hs : IsLUB s a) : s.Nonempty :=
   let ⟨a', ha'⟩ := exists_lt a
@@ -927,13 +927,13 @@ theorem BddBelow.insert [SemilatticeInf γ] (a : γ) {s : Set γ} (hs : BddBelow
 theorem IsLUB.insert [SemilatticeSup γ] (a) {b} {s : Set γ} (hs : IsLUB s b) :
     IsLUB (insert a s) (a ⊔ b) := by
   rw [insert_eq]
-  exact is_lub_singleton.union hs
+  exact isLUB_singleton.union hs
 #align is_lub.insert IsLUB.insert
 
 theorem IsGLB.insert [SemilatticeInf γ] (a) {b} {s : Set γ} (hs : IsGLB s b) :
     IsGLB (insert a s) (a ⊓ b) := by
   rw [insert_eq]
-  exact is_glb_singleton.union hs
+  exact isGLB_singleton.union hs
 #align is_glb.insert IsGLB.insert
 
 theorem IsGreatest.insert [LinearOrder γ] (a) {b} {s : Set γ} (hs : IsGreatest s b) :
@@ -978,11 +978,11 @@ protected theorem OrderBot.bddBelow [Preorder γ] [OrderBot γ] (s : Set γ) : B
 
 
 theorem isLUB_pair [SemilatticeSup γ] {a b : γ} : IsLUB {a, b} (a ⊔ b) :=
-  is_lub_singleton.insert _
+  isLUB_singleton.insert _
 #align is_lub_pair isLUB_pair
 
 theorem isGLB_pair [SemilatticeInf γ] {a b : γ} : IsGLB {a, b} (a ⊓ b) :=
-  is_glb_singleton.insert _
+  isGLB_singleton.insert _
 #align is_glb_pair isGLB_pair
 
 theorem isLeast_pair [LinearOrder γ] {a b : γ} : IsLeast {a, b} (min a b) :=
@@ -999,14 +999,14 @@ theorem isGreatest_pair [LinearOrder γ] {a b : γ} : IsGreatest {a, b} (max a b
 
 
 @[simp]
-theorem is_lub_lowerBounds : IsLUB (lowerBounds s) a ↔ IsGLB s a :=
+theorem isLUB_lowerBounds : IsLUB (lowerBounds s) a ↔ IsGLB s a :=
   ⟨fun H => ⟨fun _ hx => H.2 <| subset_upperBounds_lowerBounds s hx, H.1⟩, IsGreatest.isLUB⟩
-#align is_lub_lower_bounds is_lub_lowerBounds
+#align is_lub_lower_bounds isLUB_lowerBounds
 
 @[simp]
-theorem is_glb_upperBounds : IsGLB (upperBounds s) a ↔ IsLUB s a :=
-  @is_lub_lowerBounds αᵒᵈ _ _ _
-#align is_glb_upper_bounds is_glb_upperBounds
+theorem isGLB_upperBounds : IsGLB (upperBounds s) a ↔ IsLUB s a :=
+  @isLUB_lowerBounds αᵒᵈ _ _ _
+#align is_glb_upper_bounds isGLB_upperBounds
 
 end
 
@@ -1094,7 +1094,7 @@ section LinearOrder
 variable [LinearOrder α] {s : Set α} {a b : α}
 
 theorem lt_isLUB_iff (h : IsLUB s a) : b < a ↔ ∃ c ∈ s, b < c := by
-  simp_rw [← not_le, is_lub_le_iff h, mem_upperBounds, not_forall, not_le, exists_prop, iff_self]
+  simp_rw [← not_le, isLUB_le_iff h, mem_upperBounds, not_forall, not_le, exists_prop, iff_self]
 #align lt_is_lub_iff lt_isLUB_iff
 
 theorem isGLB_lt_iff (h : IsGLB s a) : a < b ↔ ∃ c ∈ s, c < b :=
@@ -1132,9 +1132,6 @@ namespace MonotoneOn
 
 variable [Preorder α] [Preorder β] {f : α → β} {s t : Set α} (Hf : MonotoneOn f t) {a : α}
   (Hst : s ⊆ t)
-
--- Porting note: include is deprecated
---include Hf
 
 theorem mem_upperBounds_image (Has : a ∈ upperBounds s) (Hat : a ∈ t) :
     f a ∈ upperBounds (f '' s) :=
@@ -1198,9 +1195,6 @@ namespace AntitoneOn
 variable [Preorder α] [Preorder β] {f : α → β} {s t : Set α} (Hf : AntitoneOn f t) {a : α}
   (Hst : s ⊆ t)
 
--- Porting note: include is deprecated
---include Hf
-
 theorem mem_upperBounds_image (Has : a ∈ lowerBounds s) : a ∈ t → f a ∈ upperBounds (f '' s) :=
   Hf.dual_right.mem_lowerBounds_image Hst Has
 #align antitone_on.mem_upper_bounds_image AntitoneOn.mem_upperBounds_image
@@ -1256,9 +1250,6 @@ end AntitoneOn
 namespace Monotone
 
 variable [Preorder α] [Preorder β] {f : α → β} (Hf : Monotone f) {a : α} {s : Set α}
-
--- Porting note: include is deprecated
---include Hf
 
 theorem mem_upperBounds_image (Ha : a ∈ upperBounds s) : f a ∈ upperBounds (f '' s) :=
   ball_image_of_ball fun _ H => Hf (Ha H)
@@ -1361,9 +1352,6 @@ section MonotoneMonotone
 
 variable (h₀ : ∀ b, Monotone (swap f b)) (h₁ : ∀ a, Monotone (f a))
 
--- Porting note: include is deprecated
---include h₀ h₁
-
 theorem mem_upperBounds_image2 (ha : a ∈ upperBounds s) (hb : b ∈ upperBounds t) :
     f a b ∈ upperBounds (image2 f s t) :=
   forall_image2_iff.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
@@ -1412,9 +1400,6 @@ end MonotoneMonotone
 section MonotoneAntitone
 
 variable (h₀ : ∀ b, Monotone (swap f b)) (h₁ : ∀ a, Antitone (f a))
-
--- Porting note: include is deprecated
---include h₀ h₁
 
 theorem mem_upperBounds_image2_of_mem_upperBounds_of_mem_lowerBounds (ha : a ∈ upperBounds s)
     (hb : b ∈ lowerBounds t) : f a b ∈ upperBounds (image2 f s t) :=
@@ -1476,9 +1461,6 @@ section AntitoneAntitone
 
 variable (h₀ : ∀ b, Antitone (swap f b)) (h₁ : ∀ a, Antitone (f a))
 
--- Porting note: include is deprecated
---include h₀ h₁
-
 theorem mem_upperBounds_image2_of_mem_lowerBounds (ha : a ∈ lowerBounds s)
     (hb : b ∈ lowerBounds t) : f a b ∈ upperBounds (image2 f s t) :=
   forall_image2_iff.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
@@ -1530,9 +1512,6 @@ end AntitoneAntitone
 section AntitoneMonotone
 
 variable (h₀ : ∀ b, Antitone (swap f b)) (h₁ : ∀ a, Monotone (f a))
-
--- Porting note: include is deprecated
---include h₀ h₁
 
 theorem mem_upperBounds_image2_of_mem_upperBounds_of_mem_upperBounds (ha : a ∈ lowerBounds s)
     (hb : b ∈ upperBounds t) : f a b ∈ upperBounds (image2 f s t) :=
