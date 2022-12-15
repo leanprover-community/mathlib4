@@ -12,6 +12,7 @@ import Mathlib.Data.Set.NAry
 
 /-!
 # Upper / lower bounds
+
 In this file we define:
 * `upper_bounds`, `lower_bounds` : the set of upper bounds (resp., lower bounds) of a set;
 * `bdd_above s`, `bdd_below s` : the set `s` is bounded above (resp., below), i.e., the set of upper
@@ -1128,9 +1129,6 @@ namespace MonotoneOn
 variable [Preorder α] [Preorder β] {f : α → β} {s t : Set α} (Hf : MonotoneOn f t) {a : α}
   (Hst : s ⊆ t)
 
--- Porting note: include is deprecated
---include Hf
-
 theorem mem_upper_bounds_image (Has : a ∈ upperBounds s) (Hat : a ∈ t) :
     f a ∈ upperBounds (f '' s) :=
   ball_image_of_ball fun _ H => Hf (Hst H) Hat (Has H)
@@ -1191,9 +1189,6 @@ namespace AntitoneOn
 variable [Preorder α] [Preorder β] {f : α → β} {s t : Set α} (Hf : AntitoneOn f t) {a : α}
   (Hst : s ⊆ t)
 
--- Porting note: include is deprecated
---include Hf
-
 theorem mem_upper_bounds_image (Has : a ∈ lowerBounds s) : a ∈ t → f a ∈ upperBounds (f '' s) :=
   Hf.dual_right.mem_lower_bounds_image Hst Has
 #align antitone_on.mem_upper_bounds_image AntitoneOn.mem_upper_bounds_image
@@ -1247,9 +1242,6 @@ end AntitoneOn
 namespace Monotone
 
 variable [Preorder α] [Preorder β] {f : α → β} (Hf : Monotone f) {a : α} {s : Set α}
-
--- Porting note: include is deprecated
---include Hf
 
 theorem mem_upper_bounds_image (Ha : a ∈ upperBounds s) : f a ∈ upperBounds (f '' s) :=
   ball_image_of_ball fun _ H => Hf (Ha H)
@@ -1348,9 +1340,6 @@ section MonotoneMonotone
 
 variable (h₀ : ∀ b, Monotone (swap f b)) (h₁ : ∀ a, Monotone (f a))
 
--- Porting note: include is deprecated
---include h₀ h₁
-
 theorem mem_upper_bounds_image2 (ha : a ∈ upperBounds s) (hb : b ∈ upperBounds t) :
     f a b ∈ upperBounds (image2 f s t) :=
   forall_image2_iff.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
@@ -1399,9 +1388,6 @@ end MonotoneMonotone
 section MonotoneAntitone
 
 variable (h₀ : ∀ b, Monotone (swap f b)) (h₁ : ∀ a, Antitone (f a))
-
--- Porting note: include is deprecated
---include h₀ h₁
 
 theorem mem_upper_bounds_image2_of_mem_upper_bounds_of_mem_lower_bounds (ha : a ∈ upperBounds s)
     (hb : b ∈ lowerBounds t) : f a b ∈ upperBounds (image2 f s t) :=
@@ -1459,9 +1445,6 @@ section AntitoneAntitone
 
 variable (h₀ : ∀ b, Antitone (swap f b)) (h₁ : ∀ a, Antitone (f a))
 
--- Porting note: include is deprecated
---include h₀ h₁
-
 theorem mem_upper_bounds_image2_of_mem_lower_bounds (ha : a ∈ lowerBounds s)
     (hb : b ∈ lowerBounds t) : f a b ∈ upperBounds (image2 f s t) :=
   forall_image2_iff.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
@@ -1511,9 +1494,6 @@ end AntitoneAntitone
 section AntitoneMonotone
 
 variable (h₀ : ∀ b, Antitone (swap f b)) (h₁ : ∀ a, Monotone (f a))
-
--- Porting note: include is deprecated
---include h₀ h₁
 
 theorem mem_upper_bounds_image2_of_mem_upper_bounds_of_mem_upper_bounds (ha : a ∈ lowerBounds s)
     (hb : b ∈ upperBounds t) : f a b ∈ upperBounds (image2 f s t) :=
