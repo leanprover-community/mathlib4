@@ -11,7 +11,6 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Logic.Equiv.Set
-import Mathlib.Tactic.AssertExists
 
 /-!
 # (Semi)ring equivs
@@ -46,7 +45,7 @@ variable {F α β R S S' : Type _}
 
 /-- An equivalence between two (non-unital non-associative semi)rings that preserves the
 algebraic structure. -/
-structure RingEquiv (R S : Type _) [Mul R] [Add R] [Mul S] [Add S] extends R ≃ S, R ≃* S, R ≃+ S
+structure RingEquiv (R S : Type _) [Mul R] [Mul S] [Add R] [Add S] extends R ≃ S, R ≃* S, R ≃+ S
 #align ring_equiv RingEquiv
 
 -- mathport name: «expr ≃+* »
@@ -71,26 +70,26 @@ class RingEquivClass (F : Type _) (R S : outParam (Type _)) [Mul R] [Add R] [Mul
 namespace RingEquivClass
 
 -- See note [lower instance priority]
-instance (priority := 100) toAddEquivClass (F R S : Type _) [Mul R] [Add R] [Mul S] [Add S]
-    [h : RingEquivClass F R S] : AddEquivClass F R S :=
-  { h with coe := coeFn }
+instance (priority := 100) toAddEquivClass {_ : Mul R} {_ : Add R}
+    {_ : Mul S} {_ : Add S} [h : RingEquivClass F R S] : AddEquivClass F R S :=
+  { h with coe := h.coe }
 #align ring_equiv_class.to_add_equiv_class RingEquivClass.toAddEquivClass
 
 -- See note [lower instance priority]
-instance (priority := 100) toRingHomClass (F R S : Type _) [NonAssocSemiring R] [NonAssocSemiring S]
+instance (priority := 100) toRingHomClass {_ : NonAssocSemiring R} {_ : NonAssocSemiring S}
     [h : RingEquivClass F R S] : RingHomClass F R S :=
   { h with
-    coe := coeFn
+    coe := h.coe
     coe_injective' := FunLike.coe_injective
     map_zero := map_zero
     map_one := map_one }
 #align ring_equiv_class.to_ring_hom_class RingEquivClass.toRingHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) toNonUnitalRingHomClass (F R S : Type _) [NonUnitalNonAssocSemiring R]
-    [NonUnitalNonAssocSemiring S] [h : RingEquivClass F R S] : NonUnitalRingHomClass F R S :=
+instance (priority := 100) toNonUnitalRingHomClass {_ : NonUnitalNonAssocSemiring R}
+    {_ : NonUnitalNonAssocSemiring S} [h : RingEquivClass F R S] : NonUnitalRingHomClass F R S :=
   { h with
-    coe := coeFn
+    coe := h.coe
     coe_injective' := FunLike.coe_injective
     map_zero := map_zero }
 #align ring_equiv_class.to_non_unital_ring_hom_class RingEquivClass.toNonUnitalRingHomClass
@@ -113,34 +112,24 @@ section Basic
 variable [Mul R] [Add R] [Mul S] [Add S] [Mul S'] [Add S']
 
 instance : RingEquivClass (R ≃+* S) R S where
-  coe := toFun
-  inv := invFun
+  coe f := f.toFun
+  inv f := f.invFun
   coe_injective' e f h₁ h₂ := by
     cases e
     cases f
     congr
+    apply Equiv.coe_fn_injective h₁
   map_add := map_add'
   map_mul := map_mul'
-  left_inv := RingEquiv.left_inv
-  right_inv := RingEquiv.right_inv
+  left_inv f := f.left_inv
+  right_inv f := f.right_inv
 
-instance : CoeFun (R ≃+* S) fun _ => R → S :=
-  ⟨RingEquiv.toFun⟩
-
-@[simp]
-theorem to_equiv_eq_coe (f : R ≃+* S) : f.toEquiv = f :=
-  rfl
-#align ring_equiv.to_equiv_eq_coe RingEquiv.to_equiv_eq_coe
-
-@[simp]
-theorem to_fun_eq_coe (f : R ≃+* S) : f.toFun = f :=
-  rfl
-#align ring_equiv.to_fun_eq_coe RingEquiv.to_fun_eq_coe
-
-@[simp]
-theorem coe_to_equiv (f : R ≃+* S) : ⇑(f : R ≃ S) = f :=
-  rfl
-#align ring_equiv.coe_to_equiv RingEquiv.coe_to_equiv
+-- Porting note: `toEquiv_eq_coe` no longer needed in Lean4
+#noalign ring_equiv.to_equiv_eq_coe
+-- Porting note: `toFun_eq_coe` no longer needed in Lean4
+#noalign ring_equiv.to_fun_eq_coe
+-- Porting note: `coe_toEquiv` no longer needed in Lean4
+#noalign ring_equiv.coe_to_equiv
 
 /-- A ring isomorphism preserves multiplication. -/
 protected theorem map_mul (e : R ≃+* S) (x y : R) : e (x * y) = e x * e y :=
@@ -159,13 +148,13 @@ theorem ext {f g : R ≃+* S} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
 #align ring_equiv.ext RingEquiv.ext
 
-@[simp]
-theorem coe_mk (e e' h₁ h₂ h₃ h₄) : ⇑(⟨e, e', h₁, h₂, h₃, h₄⟩ : R ≃+* S) = e :=
-  rfl
-#align ring_equiv.coe_mk RingEquiv.coe_mk
+-- Porting note: `coe_mk` no longer needed in Lean4
+#noalign ring_equiv.coe_mk
+-- Porting note: `toEquiv_mk` no longer needed in Lean4
+#noalign ring_equiv.to_equiv_mk
 
 @[simp]
-theorem mk_coe (e : R ≃+* S) (e' h₁ h₂ h₃ h₄) : (⟨e, e', h₁, h₂, h₃, h₄⟩ : R ≃+* S) = e :=
+theorem mk_coe (e : R ≃+* S) (e' h₁ h₂ h₃ h₄) : (⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩ : R ≃+* S) = e :=
   ext fun _ => rfl
 #align ring_equiv.mk_coe RingEquiv.mk_coe
 
@@ -191,12 +180,12 @@ theorem to_mul_equiv_eq_coe (f : R ≃+* S) : f.toMulEquiv = ↑f :=
   rfl
 #align ring_equiv.to_mul_equiv_eq_coe RingEquiv.to_mul_equiv_eq_coe
 
-@[simp, norm_cast]
+@[simp] -- What to do with `norm_cast` ?
 theorem coe_to_mul_equiv (f : R ≃+* S) : ⇑(f : R ≃* S) = f :=
   rfl
 #align ring_equiv.coe_to_mul_equiv RingEquiv.coe_to_mul_equiv
 
-@[simp, norm_cast]
+@[simp] -- What to do with `norm_cast` ?
 theorem coe_to_add_equiv (f : R ≃+* S) : ⇑(f : R ≃+ S) = f :=
   rfl
 #align ring_equiv.coe_to_add_equiv RingEquiv.coe_to_add_equiv
@@ -209,13 +198,13 @@ def ringEquivOfUnique {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N
 instance {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] :
     Unique (M ≃+* N) where
   default := ringEquivOfUnique
-  uniq _ := ext fun x => Subsingleton.elim _ _
+  uniq _ := ext fun _ => Subsingleton.elim _ _
 
 variable (R)
 
 /-- The identity map is a ring isomorphism. -/
 @[refl]
-protected def refl : R ≃+* R :=
+def refl : R ≃+* R :=
   { MulEquiv.refl R, AddEquiv.refl R with }
 #align ring_equiv.refl RingEquiv.refl
 
@@ -250,7 +239,8 @@ def Simps.symmApply (e : R ≃+* S) : S → R :=
   e.symm
 #align ring_equiv.simps.symm_apply RingEquiv.Simps.symmApply
 
-initialize_simps_projections RingEquiv (toFun → apply, invFun → symmApply)
+--TODO
+--initialize_simps_projections RingEquiv (toFun → apply, invFun → symmApply)
 
 @[simp]
 theorem inv_fun_eq_symm (f : R ≃+* S) : f.invFun = f.symm :=
@@ -259,7 +249,7 @@ theorem inv_fun_eq_symm (f : R ≃+* S) : f.invFun = f.symm :=
 
 @[simp]
 theorem symm_symm (e : R ≃+* S) : e.symm.symm = e :=
-  ext fun x => rfl
+  ext fun _ => rfl
 #align ring_equiv.symm_symm RingEquiv.symm_symm
 
 @[simp]
@@ -273,14 +263,14 @@ theorem symm_bijective : Function.Bijective (RingEquiv.symm : R ≃+* S → S �
 
 @[simp]
 theorem mk_coe' (e : R ≃+* S) (f h₁ h₂ h₃ h₄) :
-    (RingEquiv.mk f (⇑e) h₁ h₂ h₃ h₄ : S ≃+* R) = e.symm :=
-  symm_bijective.Injective <| ext fun x => rfl
+    (⟨⟨f, ⇑e, h₁, h₂⟩, h₃, h₄⟩ : S ≃+* R) = e.symm :=
+  symm_bijective.injective <| ext fun _ => rfl
 #align ring_equiv.mk_coe' RingEquiv.mk_coe'
 
 @[simp]
 theorem symm_mk (f : R → S) (g h₁ h₂ h₃ h₄) :
-    (mk f g h₁ h₂ h₃ h₄).symm =
-      { (mk f g h₁ h₂ h₃ h₄).symm with
+    (mk ⟨f, g, h₁, h₂⟩ h₃ h₄).symm =
+      { (mk ⟨f, g, h₁, h₂⟩ h₃ h₄).symm with
         toFun := g
         invFun := f } :=
   rfl
@@ -358,10 +348,8 @@ open MulOpposite
 /-- A ring iso `α ≃+* β` can equivalently be viewed as a ring iso `αᵐᵒᵖ ≃+* βᵐᵒᵖ`. -/
 @[simps]
 protected def op {α β} [Add α] [Mul α] [Add β] [Mul β] :
-    α ≃+* β ≃
-      (αᵐᵒᵖ ≃+*
-        βᵐᵒᵖ) where
-  toFun f := { f.toAddEquiv.mulOp, f.toMulEquiv.op with }
+    α ≃+* β ≃ (αᵐᵒᵖ ≃+* βᵐᵒᵖ) where
+  toFun f := { AddEquiv.mulOp f.toAddEquiv, MulEquiv.op f.toMulEquiv with }
   invFun f := { AddEquiv.mulOp.symm f.toAddEquiv, MulEquiv.op.symm f.toMulEquiv with }
   left_inv f := by
     ext
@@ -384,7 +372,7 @@ variable (R) [NonUnitalCommSemiring R]
 /-- A non-unital commutative ring is isomorphic to its opposite. -/
 def toOpposite : R ≃+* Rᵐᵒᵖ :=
   { MulOpposite.opEquiv with
-    map_add' := fun x y => rfl
+    map_add' := fun _ _ => rfl
     map_mul' := fun x y => mul_comm (op y) (op x) }
 #align ring_equiv.to_opposite RingEquiv.toOpposite
 
@@ -446,7 +434,7 @@ ring isomorphisms between `Π j, R j` and `Π j, S j`.
 This is the `ring_equiv` version of `equiv.Pi_congr_right`, and the dependent version of
 `ring_equiv.arrow_congr`.
 -/
-@[simps apply]
+-- TODO @[simps apply]
 def piCongrRight {ι : Type _} {R S : ι → Type _} [∀ i, NonUnitalNonAssocSemiring (R i)]
     [∀ i, NonUnitalNonAssocSemiring (S i)] (e : ∀ i, R i ≃+* S i) : (∀ i, R i) ≃+* ∀ i, S i :=
   { @MulEquiv.piCongrRight ι R S _ _ fun i => (e i).toMulEquiv,
@@ -464,7 +452,7 @@ theorem Pi_congr_right_refl {ι : Type _} {R : ι → Type _} [∀ i, NonUnitalN
 @[simp]
 theorem Pi_congr_right_symm {ι : Type _} {R S : ι → Type _} [∀ i, NonUnitalNonAssocSemiring (R i)]
     [∀ i, NonUnitalNonAssocSemiring (S i)] (e : ∀ i, R i ≃+* S i) :
-    (piCongrRight e).symm = Pi_congr_right fun i => (e i).symm :=
+    (piCongrRight e).symm = piCongrRight fun i => (e i).symm :=
   rfl
 #align ring_equiv.Pi_congr_right_symm RingEquiv.Pi_congr_right_symm
 
@@ -472,7 +460,7 @@ theorem Pi_congr_right_symm {ι : Type _} {R S : ι → Type _} [∀ i, NonUnita
 theorem Pi_congr_right_trans {ι : Type _} {R S T : ι → Type _}
     [∀ i, NonUnitalNonAssocSemiring (R i)] [∀ i, NonUnitalNonAssocSemiring (S i)]
     [∀ i, NonUnitalNonAssocSemiring (T i)] (e : ∀ i, R i ≃+* S i) (f : ∀ i, S i ≃+* T i) :
-    (piCongrRight e).trans (piCongrRight f) = Pi_congr_right fun i => (e i).trans (f i) :=
+    (piCongrRight e).trans (piCongrRight f) = piCongrRight fun i => (e i).trans (f i) :=
   rfl
 #align ring_equiv.Pi_congr_right_trans RingEquiv.Pi_congr_right_trans
 
@@ -584,7 +572,7 @@ def toNonUnitalRingHom (e : R ≃+* S) : R →ₙ+* S :=
 #align ring_equiv.to_non_unital_ring_hom RingEquiv.toNonUnitalRingHom
 
 theorem to_non_unital_ring_hom_injective :
-    Function.Injective (toNonUnitalRingHom : R ≃+* S → R →ₙ+* S) := fun f g h =>
+    Function.Injective (toNonUnitalRingHom : R ≃+* S → R →ₙ+* S) := fun _ _ h =>
   RingEquiv.ext (NonUnitalRingHom.ext_iff.1 h)
 #align ring_equiv.to_non_unital_ring_hom_injective RingEquiv.to_non_unital_ring_hom_injective
 
@@ -598,14 +586,14 @@ theorem to_non_unital_ring_hom_eq_coe (f : R ≃+* S) : f.toNonUnitalRingHom = �
   rfl
 #align ring_equiv.to_non_unital_ring_hom_eq_coe RingEquiv.to_non_unital_ring_hom_eq_coe
 
-@[simp, norm_cast]
+@[simp] -- TODO `norm_cast`
 theorem coe_to_non_unital_ring_hom (f : R ≃+* S) : ⇑(f : R →ₙ+* S) = f :=
   rfl
 #align ring_equiv.coe_to_non_unital_ring_hom RingEquiv.coe_to_non_unital_ring_hom
 
 theorem coe_non_unital_ring_hom_inj_iff {R S : Type _} [NonUnitalNonAssocSemiring R]
     [NonUnitalNonAssocSemiring S] (f g : R ≃+* S) : f = g ↔ (f : R →ₙ+* S) = g :=
-  ⟨congr_arg _, fun h => ext <| NonUnitalRingHom.ext_iff.mp h⟩
+  ⟨fun h => by rw [h], fun h => ext <| NonUnitalRingHom.ext_iff.mp h⟩
 #align ring_equiv.coe_non_unital_ring_hom_inj_iff RingEquiv.coe_non_unital_ring_hom_inj_iff
 
 @[simp]
@@ -673,14 +661,14 @@ theorem to_ring_hom_eq_coe (f : R ≃+* S) : f.toRingHom = ↑f :=
   rfl
 #align ring_equiv.to_ring_hom_eq_coe RingEquiv.to_ring_hom_eq_coe
 
-@[simp, norm_cast]
+@[simp] -- TODO `norm_cast`
 theorem coe_to_ring_hom (f : R ≃+* S) : ⇑(f : R →+* S) = f :=
   rfl
 #align ring_equiv.coe_to_ring_hom RingEquiv.coe_to_ring_hom
 
 theorem coe_ring_hom_inj_iff {R S : Type _} [NonAssocSemiring R] [NonAssocSemiring S]
     (f g : R ≃+* S) : f = g ↔ (f : R →+* S) = g :=
-  ⟨congr_arg _, fun h => ext <| RingHom.ext_iff.mp h⟩
+  ⟨fun h => by rw [h], fun h => ext <| RingHom.ext_iff.mp h⟩
 #align ring_equiv.coe_ring_hom_inj_iff RingEquiv.coe_ring_hom_inj_iff
 
 /-- The two paths coercion can take to a `non_unital_ring_hom` are equivalent -/
@@ -839,19 +827,19 @@ variable [Add R] [Add S] [Mul R] [Mul S]
 
 @[simp]
 theorem self_trans_symm (e : R ≃+* S) : e.trans e.symm = RingEquiv.refl R :=
-  ext e.3
+  ext e.left_inv
 #align ring_equiv.self_trans_symm RingEquiv.self_trans_symm
 
 @[simp]
 theorem symm_trans_self (e : R ≃+* S) : e.symm.trans e = RingEquiv.refl S :=
-  ext e.4
+  ext e.right_inv
 #align ring_equiv.symm_trans_self RingEquiv.symm_trans_self
 
 /-- If two rings are isomorphic, and the second doesn't have zero divisors,
 then so does the first. -/
 protected theorem no_zero_divisors {A : Type _} (B : Type _) [Ring A] [Ring B] [NoZeroDivisors B]
     (e : A ≃+* B) : NoZeroDivisors A :=
-  { eq_zero_or_eq_zero_of_mul_eq_zero := fun x y hxy => by
+  { eq_zero_or_eq_zero_of_mul_eq_zero := fun {x y} hxy => by
       have : e x * e y = 0 := by rw [← e.map_mul, hxy, e.map_zero]
       simpa using eq_zero_or_eq_zero_of_mul_eq_zero this }
 #align ring_equiv.no_zero_divisors RingEquiv.no_zero_divisors
@@ -867,4 +855,5 @@ protected theorem is_domain {A : Type _} (B : Type _) [Ring A] [Ring B] [IsDomai
 end RingEquiv
 
 -- Guard against import creep
-assert_not_exists fintype
+-- TODO
+-- assert_not_exists fintype
