@@ -977,13 +977,13 @@ protected theorem OrderBot.bddBelow [Preorder γ] [OrderBot γ] (s : Set γ) : B
 -/
 
 
-theorem is_lub_pair [SemilatticeSup γ] {a b : γ} : IsLUB {a, b} (a ⊔ b) :=
+theorem isLUB_pair [SemilatticeSup γ] {a b : γ} : IsLUB {a, b} (a ⊔ b) :=
   is_lub_singleton.insert _
-#align is_lub_pair is_lub_pair
+#align is_lub_pair isLUB_pair
 
-theorem is_glb_pair [SemilatticeInf γ] {a b : γ} : IsGLB {a, b} (a ⊓ b) :=
+theorem isGLB_pair [SemilatticeInf γ] {a b : γ} : IsGLB {a, b} (a ⊓ b) :=
   is_glb_singleton.insert _
-#align is_glb_pair is_glb_pair
+#align is_glb_pair isGLB_pair
 
 theorem isLeast_pair [LinearOrder γ] {a b : γ} : IsLeast {a, b} (min a b) :=
   isLeast_singleton.insert _
@@ -1024,26 +1024,26 @@ theorem lowerBounds_le_upperBounds (ha : a ∈ lowerBounds s) (hb : b ∈ upperB
   | ⟨_, hc⟩ => le_trans (ha hc) (hb hc)
 #align lower_bounds_le_upper_bounds lowerBounds_le_upperBounds
 
-theorem is_glb_le_is_lub (ha : IsGLB s a) (hb : IsLUB s b) (hs : s.Nonempty) : a ≤ b :=
+theorem isGLB_le_isLUB (ha : IsGLB s a) (hb : IsLUB s b) (hs : s.Nonempty) : a ≤ b :=
   lowerBounds_le_upperBounds ha.1 hb.1 hs
-#align is_glb_le_is_lub is_glb_le_is_lub
+#align is_glb_le_is_lub isGLB_le_isLUB
 
-theorem is_lub_lt_iff (ha : IsLUB s a) : a < b ↔ ∃ c ∈ upperBounds s, c < b :=
+theorem isLUB_lt_iff (ha : IsLUB s a) : a < b ↔ ∃ c ∈ upperBounds s, c < b :=
   ⟨fun hb => ⟨a, ha.1, hb⟩, fun ⟨_, hcs, hcb⟩ => lt_of_le_of_lt (ha.2 hcs) hcb⟩
-#align is_lub_lt_iff is_lub_lt_iff
+#align is_lub_lt_iff isLUB_lt_iff
 
-theorem lt_is_glb_iff (ha : IsGLB s a) : b < a ↔ ∃ c ∈ lowerBounds s, b < c :=
-  is_lub_lt_iff ha.dual
-#align lt_is_glb_iff lt_is_glb_iff
+theorem lt_isGLB_iff (ha : IsGLB s a) : b < a ↔ ∃ c ∈ lowerBounds s, b < c :=
+  isLUB_lt_iff ha.dual
+#align lt_is_glb_iff lt_isGLB_iff
 
-theorem le_of_is_lub_le_is_glb {x y} (ha : IsGLB s a) (hb : IsLUB s b) (hab : b ≤ a) (hx : x ∈ s)
+theorem le_of_isLUB_le_isGLB {x y} (ha : IsGLB s a) (hb : IsLUB s b) (hab : b ≤ a) (hx : x ∈ s)
     (hy : y ∈ s) : x ≤ y :=
   calc
     x ≤ b := hb.1 hx
     _ ≤ a := hab
     _ ≤ y := ha.1 hy
 
-#align le_of_is_lub_le_is_glb le_of_is_lub_le_is_glb
+#align le_of_is_lub_le_is_glb le_of_isLUB_le_isGLB
 
 end Preorder
 
@@ -1075,17 +1075,17 @@ theorem IsGLB.unique (Ha : IsGLB s a) (Hb : IsGLB s b) : a = b :=
   IsGreatest.unique Ha Hb
 #align is_glb.unique IsGLB.unique
 
-theorem Set.subsingleton_of_is_lub_le_is_glb (Ha : IsGLB s a) (Hb : IsLUB s b) (hab : b ≤ a) :
+theorem Set.subsingleton_of_isLUB_le_isGLB (Ha : IsGLB s a) (Hb : IsLUB s b) (hab : b ≤ a) :
     s.Subsingleton := fun _ hx _ hy =>
-  le_antisymm (le_of_is_lub_le_is_glb Ha Hb hab hx hy) (le_of_is_lub_le_is_glb Ha Hb hab hy hx)
-#align set.subsingleton_of_is_lub_le_is_glb Set.subsingleton_of_is_lub_le_is_glb
+  le_antisymm (le_of_isLUB_le_isGLB Ha Hb hab hx hy) (le_of_isLUB_le_isGLB Ha Hb hab hy hx)
+#align set.subsingleton_of_is_lub_le_is_glb Set.subsingleton_of_isLUB_le_isGLB
 
-theorem is_glb_lt_is_lub_of_ne (Ha : IsGLB s a) (Hb : IsLUB s b) {x y} (Hx : x ∈ s) (Hy : y ∈ s)
+theorem isGLB_lt_isLUB_of_ne (Ha : IsGLB s a) (Hb : IsLUB s b) {x y} (Hx : x ∈ s) (Hy : y ∈ s)
     (Hxy : x ≠ y) : a < b :=
   lt_iff_le_not_le.2
     ⟨lowerBounds_le_upperBounds Ha.1 Hb.1 ⟨x, Hx⟩, fun hab =>
-      Hxy <| Set.subsingleton_of_is_lub_le_is_glb Ha Hb hab Hx Hy⟩
-#align is_glb_lt_is_lub_of_ne is_glb_lt_is_lub_of_ne
+      Hxy <| Set.subsingleton_of_isLUB_le_isGLB Ha Hb hab Hx Hy⟩
+#align is_glb_lt_is_lub_of_ne isGLB_lt_isLUB_of_ne
 
 end PartialOrder
 
@@ -1093,16 +1093,16 @@ section LinearOrder
 
 variable [LinearOrder α] {s : Set α} {a b : α}
 
-theorem lt_is_lub_iff (h : IsLUB s a) : b < a ↔ ∃ c ∈ s, b < c := by
+theorem lt_isLUB_iff (h : IsLUB s a) : b < a ↔ ∃ c ∈ s, b < c := by
   simp_rw [← not_le, is_lub_le_iff h, mem_upperBounds, not_forall, not_le, exists_prop, iff_self]
-#align lt_is_lub_iff lt_is_lub_iff
+#align lt_is_lub_iff lt_isLUB_iff
 
-theorem is_glb_lt_iff (h : IsGLB s a) : a < b ↔ ∃ c ∈ s, c < b :=
-  lt_is_lub_iff h.dual
-#align is_glb_lt_iff is_glb_lt_iff
+theorem isGLB_lt_iff (h : IsGLB s a) : a < b ↔ ∃ c ∈ s, c < b :=
+  lt_isLUB_iff h.dual
+#align is_glb_lt_iff isGLB_lt_iff
 
 theorem IsLUB.exists_between (h : IsLUB s a) (hb : b < a) : ∃ c ∈ s, b < c ∧ c ≤ a :=
-  let ⟨c, hcs, hbc⟩ := (lt_is_lub_iff h).1 hb
+  let ⟨c, hcs, hbc⟩ := (lt_isLUB_iff h).1 hb
   ⟨c, hcs, hbc, h.1 hcs⟩
 #align is_lub.exists_between IsLUB.exists_between
 
@@ -1112,7 +1112,7 @@ theorem IsLUB.exists_between' (h : IsLUB s a) (h' : a ∉ s) (hb : b < a) : ∃ 
 #align is_lub.exists_between' IsLUB.exists_between'
 
 theorem IsGLB.exists_between (h : IsGLB s a) (hb : a < b) : ∃ c ∈ s, a ≤ c ∧ c < b :=
-  let ⟨c, hcs, hbc⟩ := (is_glb_lt_iff h).1 hb
+  let ⟨c, hcs, hbc⟩ := (isGLB_lt_iff h).1 hb
   ⟨c, hcs, h.1 hcs, hbc⟩
 #align is_glb.exists_between IsGLB.exists_between
 
