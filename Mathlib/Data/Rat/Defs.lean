@@ -377,10 +377,12 @@ theorem mkInt_neg_den (n d : ℤ) : n /. -d = -n /. d := by
 #align rat.mk_neg_denom Rat.mkInt_neg_den
 
 -- Porting note: since `Sub ℚ` is defined in Std, we need to prove this here.
+-- Presumably we will copy the proof from `add_def`.
 @[simp]
 theorem sub_def {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
     a /. b - c /. d = (a * d - c * b) /. (b * d) := by
   sorry
+#align rat.sub_def Rat.sub_def
 
 #align rat.mul Rat.mul
 
@@ -656,10 +658,6 @@ theorem eq_iff_mul_eq_mul {p q : ℚ} : p = q ↔ p.num * q.den = q.num * p.den 
     · rw [← Nat.cast_zero, Ne, Int.ofNat_inj]
       apply den_ne_zero
 #align rat.eq_iff_mul_eq_mul Rat.eq_iff_mul_eq_mul
-
-theorem sub_def {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
-    a /. b - c /. d = (a * d - c * b) /. (b * d) := by simp [b0, d0, sub_eq_add_neg]
-#align rat.sub_def Rat.sub_def
 
 @[simp]
 theorem den_neg_eq_den (q : ℚ) : (-q).den = q.den :=
