@@ -2,6 +2,7 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
+Ported by: Winston Yin, Arien Malec
 
 ! This file was ported from Lean 3 source module data.set.intervals.basic
 ! leanprover-community/mathlib commit 198161d833f2c01498c39c266b0b3dbe2c7a8c07
