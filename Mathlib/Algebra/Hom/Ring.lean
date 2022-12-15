@@ -124,6 +124,12 @@ instance : NonUnitalRingHomClass (α →ₙ+* β) α
 #noalign non_unital_ring_hom.coe_mk
 #noalign non_unital_ring_hom.coe_coe
 
+/-- See Note [custom simps projection] -/
+def Simps.apply {α β : Type _} [NonUnitalNonAssocSemiring α]
+  [NonUnitalNonAssocSemiring β] (f : α →ₙ+* β) : α → β := f
+
+initialize_simps_projections NonUnitalRingHom (toMulHom_toFun → apply, -toMulHom)
+
 @[simp]
 theorem coe_to_mulHom (f : α →ₙ+* β) : ⇑f.toMulHom = f :=
   rfl
@@ -417,8 +423,10 @@ instance : RingHomClass (α →+* β) α β where
 -- instance : CoeFun (α →+* β) fun _ => α → β :=
 --   ⟨RingHom.toFun⟩
 
-initialize_simps_projections RingHom
-  (toMonoidHom_toOneHom_toFun → apply, -toMonoidHom_toOneHom, -toMonoidHom)
+/-- See Note [custom simps projection] -/
+def Simps.apply {α β : Type _} [NonAssocSemiring α] [NonAssocSemiring β] (f : α →+* β) : α → β := f
+
+initialize_simps_projections RingHom (toMonoidHom_toOneHom_toFun → apply, -toMonoidHom)
 
 -- Porting note: is this lemma still needed in Lean4?
 @[simp]

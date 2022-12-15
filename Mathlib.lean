@@ -166,6 +166,7 @@ import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.Int.Cast.Field
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Int.Cast.Prod
+import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Int.Div
 import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Data.Int.LeastGreatest
@@ -274,6 +275,7 @@ import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr.Traverse
 import Mathlib.Lean.LocalContext
+import Mathlib.Lean.Message
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Simp
 import Mathlib.Logic.Basic
@@ -311,6 +313,7 @@ import Mathlib.Order.GameAdd
 import Mathlib.Order.Heyting.Basic
 import Mathlib.Order.Heyting.Boundary
 import Mathlib.Order.Hom.Basic
+import Mathlib.Order.InitialSeg
 import Mathlib.Order.Iterate
 import Mathlib.Order.Lattice
 import Mathlib.Order.Max
