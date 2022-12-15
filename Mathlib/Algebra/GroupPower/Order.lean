@@ -8,8 +8,6 @@ import Mathlib.Algebra.Order.WithZero
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Nat.Basic
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Linarith.Lemmas
 
 /-!
 # Lemmas about the interaction of power operations with order
@@ -18,8 +16,6 @@ Note that some lemmas are in `Algebra/GroupPower/Lemmas.lean` as they import fil
 depend on this file.
 -/
 
-
-set_option linter.deprecated false
 
 open Function
 
@@ -37,7 +33,7 @@ section Left
 
 variable [CovariantClass M M (· * ·) (· ≤ ·)] {x : M}
 
--- `mono` attribute
+-- Porting note: removed `mono` attribute, not implemented yet.
 @[to_additive nsmul_le_nsmul_of_le_right]
 theorem pow_le_pow_of_le_left' [CovariantClass M M (swap (· * ·)) (· ≤ ·)] {a b : M} (hab : a ≤ b) :
     ∀ i : ℕ, a ^ i ≤ b ^ i
@@ -47,6 +43,7 @@ theorem pow_le_pow_of_le_left' [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
     exact mul_le_mul' hab (pow_le_pow_of_le_left' hab k)
 #align pow_le_pow_of_le_left' pow_le_pow_of_le_left'
 
+-- Porting note: removed `mono` attribute, not implemented yet.
 -- attribute [mono] nsmul_le_nsmul_of_le_right
 
 @[to_additive nsmul_nonneg]
@@ -337,7 +334,7 @@ theorem le_self_pow (ha : 1 ≤ a) (h : m ≠ 0) : a ≤ a ^ m :=
   (pow_one a).symm.trans_le (pow_le_pow ha <| pos_iff_ne_zero.mpr h)
 #align le_self_pow le_self_pow
 
--- @[mono]
+-- Porting note: removed @[mono], not implemented yet.
 theorem pow_le_pow_of_le_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ i : ℕ, a ^ i ≤ b ^ i := by
   intro i
   induction i with
@@ -392,13 +389,13 @@ theorem pow_le_pow_iff (h : 1 < a) : a ^ n ≤ a ^ m ↔ n ≤ m :=
   (strictMono_pow h).le_iff_le
 #align pow_le_pow_iff pow_le_pow_iff
 
-theorem strict_anti_pow (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti fun n : ℕ => a ^ n :=
+theorem strictAnti_pow (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti fun n : ℕ => a ^ n :=
   strictAnti_nat_of_succ_lt fun n => by
     simpa only [pow_succ, one_mul] using mul_lt_mul h₁ le_rfl (pow_pos h₀ n) zero_le_one
-#align strict_anti_pow strict_anti_pow
+#align strict_anti_pow strictAnti_pow
 
 theorem pow_lt_pow_iff_of_lt_one (h₀ : 0 < a) (h₁ : a < 1) : a ^ m < a ^ n ↔ n < m :=
-  (strict_anti_pow h₀ h₁).lt_iff_lt
+  (strictAnti_pow h₀ h₁).lt_iff_lt
 #align pow_lt_pow_iff_of_lt_one pow_lt_pow_iff_of_lt_one
 
 theorem pow_lt_pow_of_lt_one (h : 0 < a) (ha : a < 1) {i j : ℕ} (hij : i < j) : a ^ j < a ^ i :=
@@ -420,6 +417,7 @@ theorem sq_pos_of_pos (ha : 0 < a) : 0 < a ^ 2 := by
 end StrictOrderedSemiring
 
 section StrictOrderedRing
+set_option linter.deprecated false
 
 variable [StrictOrderedRing R] {a : R}
 
@@ -516,54 +514,22 @@ theorem pow_abs (a : R) (n : ℕ) : |a| ^ n = |a ^ n| :=
 theorem abs_neg_one_pow (n : ℕ) : |(-1 : R) ^ n| = 1 := by rw [← pow_abs, abs_neg, abs_one, one_pow]
 #align abs_neg_one_pow abs_neg_one_pow
 
-/- warning: pow_bit0_nonneg -> pow_bit0_nonneg is a dubious translation:
-lean 3 declaration is
-  forall {R : Type.{u_4}} [_inst_1 : LinearOrderedRing.{u_4} R] (a : R) (n : Nat), LE.le.{u_4} R
-  (Preorder.toLE.{u_4} R
-  (PartialOrder.toPreorder.{u_4} R (OrderedAddCommGroup.toPartialOrder.{u_4} R
-  (StrictOrderedRing.toOrderedAddCommGroup.{u_4} R
-  (LinearOrderedRing.toStrictOrderedRing.{u_4} R _inst_1))))) (OfNat.ofNat.{u_4} R 0
-  (OfNat.mk.{u_4} R 0 (Zero.zero.{u_4} R
-  (MulZeroClass.toHasZero.{u_4} R (NonUnitalNonAssocSemiring.toMulZeroClass.{u_4} R
-  (NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring.{u_4} R
-  (NonAssocRing.toNonUnitalNonAssocRing.{u_4} R (Ring.toNonAssocRing.{u_4} R
-  (StrictOrderedRing.toRing.{u_4} R (LinearOrderedRing.toStrictOrderedRing.{u_4} R _inst_1))))))))))
-   (HPow.hPow.{u_4, 0, u_4} R Nat R (instHPow.{u_4, 0} R Nat
-    (Monoid.hasPow.{u_4} R (Ring.toMonoid.{u_4} R (StrictOrderedRing.toRing.{u_4} R
-    (LinearOrderedRing.toStrictOrderedRing.{u_4} R _inst_1)))))
-    a (bit0.{0} Nat Nat.hasAdd n))
-but is expected to have type
-  forall {α : Type.{u_1}}
-   [inst._@.Mathlib.Tactic.Positivity.Basic._hyg.204 : LinearOrderedRing.{u_1} α]
-  (a : α) (n : Nat), LE.le.{u_1} α (Preorder.toLE.{u_1} α
-  (PartialOrder.toPreorder.{u_1} α (StrictOrderedRing.toPartialOrder.{u_1} α
-  (LinearOrderedRing.toStrictOrderedRing.{u_1}
-   α inst._@.Mathlib.Tactic.Positivity.Basic._hyg.204))))
-    (OfNat.ofNat.{u_1} α 0 (Zero.toOfNat0.{u_1} α
-    (MonoidWithZero.toZero.{u_1} α (Semiring.toMonoidWithZero.{u_1} α
-    (StrictOrderedSemiring.toSemiring.{u_1} α (StrictOrderedRing.toStrictOrderedSemiring.{u_1} α
-    (LinearOrderedRing.toStrictOrderedRing.{u_1} α
-    inst._@.Mathlib.Tactic.Positivity.Basic._hyg.204)))))))
-    (HPow.hPow.{u_1, 0, u_1} α Nat α (instHPow.{u_1, 0} α Nat (Monoid.Pow.{u_1} α
-    (MonoidWithZero.toMonoid.{u_1} α
-    (Semiring.toMonoidWithZero.{u_1} α (StrictOrderedSemiring.toSemiring.{u_1} α
-     (StrictOrderedRing.toStrictOrderedSemiring.{u_1} α
-     (LinearOrderedRing.toStrictOrderedRing.{u_1} α
-     inst._@.Mathlib.Tactic.Positivity.Basic._hyg.204))))))) a
-     (HMul.hMul.{0, 0, 0} Nat Nat Nat
-     (instHMul.{0} Nat instMulNat)
-      (OfNat.ofNat.{0} Nat 2 (instOfNatNat 2)) n))
-Case conversion may be inaccurate. Consider using '#align pow_bit0_nonneg pow_bit0_nonnegₓ'. -/
--- Porting note: renamed to avoid collision with Mathlib.Tactic.Positivity.Basic
-theorem pow_bit0_nonneg' (a : R) (n : ℕ) : 0 ≤ a ^ bit0 n := by
+section
+set_option linter.deprecated false
+
+theorem pow_bit0_nonneg (a : R) (n : ℕ) : 0 ≤ a ^ bit0 n := by
   rw [pow_bit0]
   exact mul_self_nonneg _
 #align pow_bit0_nonneg pow_bit0_nonneg
 
+theorem sq_nonneg (a : R) : 0 ≤ a ^ 2 :=
+  pow_bit0_nonneg a 1
+#align sq_nonneg sq_nonneg
+
 alias sq_nonneg ← pow_two_nonneg
 
 theorem pow_bit0_pos {a : R} (h : a ≠ 0) (n : ℕ) : 0 < a ^ bit0 n :=
-  (pow_bit0_nonneg' a n).lt_of_ne (pow_ne_zero _ h).symm
+  (pow_bit0_nonneg a n).lt_of_ne (pow_ne_zero _ h).symm
 #align pow_bit0_pos pow_bit0_pos
 
 theorem sq_pos_of_ne_zero (a : R) (h : a ≠ 0) : 0 < a ^ 2 :=
@@ -578,6 +544,8 @@ theorem pow_bit0_pos_iff (a : R) {n : ℕ} (hn : n ≠ 0) : 0 < a ^ bit0 n ↔ a
   rw [zero_pow (Nat.zero_lt_bit0 hn)] at h
   exact lt_irrefl _ h
 #align pow_bit0_pos_iff pow_bit0_pos_iff
+
+end
 
 theorem sq_pos_iff (a : R) : 0 < a ^ 2 ↔ a ≠ 0 :=
   pow_bit0_pos_iff a one_ne_zero
