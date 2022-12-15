@@ -27,9 +27,18 @@ from `α` to `αᵃᵒᵖ`.
 * `αᵐᵒᵖ = MulOpposite α`
 * `αᵃᵒᵖ = AddOpposite α`
 
+## Implementation notes
+
+In mathlib3 `αᵐᵒᵖ` was just a type synonym for `α`, marked irreducible after the API
+was developed. In mathlib4 we use a structure with one field, because it is not possible
+to change the reducibility of a declaration after its definition, and because Lean 4 has
+definitional eta reduction for structures (Lean 3 does not).
+
 ## Tags
 
 multiplicative opposite, additive opposite
+
+##
 -/
 
 
@@ -39,11 +48,24 @@ open Function
 
 /-- Multiplicative opposite of a type. This type inherits all additive structures on `α` and
 reverses left and right in multiplication.-/
-@[to_additive
-      "Additive opposite of a type. This type inherits all multiplicative structures on
-      `α` and reverses left and right in addition."]
-def MulOpposite (α : Type u) : Type u :=
-  α
+structure MulOpposite (α : Type u) : Type u where
+  /-- The element of `MulOpposite α` that represents `x : α`. -/ op ::
+  /-- The element of `α` represented by `x : αᵐᵒᵖ`. -/ unop : α
+#align mul_opposite.op MulOpposite.op
+
+-- porting note: the attribute `pp_nodot` does not exist yet; `op` and `unop` were
+-- both tagged with it in mathlib3
+
+/-- Additive opposite of a type. This type inherits all multiplicative structures on
+      `α` and reverses left and right in addition. -/
+structure AddOpposite (α : Type u) : Type u where
+  /-- The element of `αᵃᵒᵖ` that represents `x : α`. -/ op ::
+  /-- The element of `α` represented by `x : αᵃᵒᵖ`. -/ unop : α
+
+-- porting note: the attribute `pp_nodot` does not exist yet; `op` and `unop` were
+-- both tagged with it in mathlib3
+
+attribute [to_additive] MulOpposite
 
 /-- Multiplicative opposite of a type. -/
 postfix:max "ᵐᵒᵖ" => MulOpposite
@@ -52,20 +74,6 @@ postfix:max "ᵐᵒᵖ" => MulOpposite
 postfix:max "ᵃᵒᵖ" => AddOpposite
 
 namespace MulOpposite
-
-/-- The element of `MulOpposite α` that represents `x : α`. -/
--- porting note: the attribute `pp_nodot` does not exist yet
---@[pp_nodot,
-@[to_additive "The element of `αᵃᵒᵖ` that represents `x : α`."]
-def op : α → αᵐᵒᵖ :=
-  id
-#align mul_opposite.op MulOpposite.op
-
-/-- The element of `α` represented by `x : αᵐᵒᵖ`. -/
---@[pp_nodot,
-@[to_additive "The element of `α` represented by `x : αᵃᵒᵖ`."]
-def unop : αᵐᵒᵖ → α :=
-  id
 
 @[simp, to_additive]
 theorem unop_op (x : α) : unop (op x) = x :=
@@ -85,8 +93,8 @@ theorem unop_comp_op : (unop : αᵐᵒᵖ → α) ∘ op = id :=
 
 /-- A recursor for `MulOpposite`. Use as `induction x using MulOpposite.rec`. -/
 @[simp, to_additive "A recursor for `AddOpposite`. Use as `induction x using AddOpposite.rec`."]
-protected def rec {F : ∀ _ : αᵐᵒᵖ, Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
-#align mul_opposite.rec MulOpposite.rec
+protected def rec' {F : ∀ _ : αᵐᵒᵖ, Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
+#align mul_opposite.rec MulOpposite.rec'
 
 /-- The canonical bijection between `α` and `αᵐᵒᵖ`. -/
 @[to_additive "The canonical bijection between `α` and `αᵃᵒᵖ`.",--]
@@ -344,7 +352,7 @@ theorem op_div [Div α] (a b : α) : op (a / b) = op a / op b :=
 #align add_opposite.op_div AddOpposite.op_div
 
 @[simp]
-theorem unop_div [Div α] (a b : α) : unop (a / b) = unop a / unop b :=
+theorem unop_div [Div α] (a b : αᵃᵒᵖ) : unop (a / b) = unop a / unop b :=
   rfl
 #align add_opposite.unop_div AddOpposite.unop_div
 
