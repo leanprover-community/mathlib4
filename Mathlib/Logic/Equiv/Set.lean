@@ -44,17 +44,20 @@ protected theorem image_eq_preimage {α β} (e : α ≃ β) (s : Set α) : e '' 
   Set.ext fun _ => mem_image_iff_of_inverse e.left_inv e.right_inv
 #align equiv.image_eq_preimage Equiv.image_eq_preimage
 
-theorem _root_.Set.mem_image_equiv {α β} {S : Set α} {f : α ≃ β} {x : β} : x ∈ f '' S ↔ f.symm x ∈ S :=
+theorem _root_.Set.mem_image_equiv {α β} {S : Set α} {f : α ≃ β} {x : β} :
+    x ∈ f '' S ↔ f.symm x ∈ S :=
   Set.ext_iff.mp (f.image_eq_preimage S) x
 #align set.mem_image_equiv Set.mem_image_equiv
 
 /-- Alias for `Equiv.image_eq_preimage` -/
-theorem _root_.Set.image_equiv_eq_preimage_symm {α β} (S : Set α) (f : α ≃ β) : f '' S = f.symm ⁻¹' S :=
+theorem _root_.Set.image_equiv_eq_preimage_symm {α β} (S : Set α) (f : α ≃ β) :
+    f '' S = f.symm ⁻¹' S :=
   f.image_eq_preimage S
 #align set.image_equiv_eq_preimage_symm Set.image_equiv_eq_preimage_symm
 
 /-- Alias for `Equiv.image_eq_preimage` -/
-theorem _root_.Set.preimage_equiv_eq_image_symm {α β} (S : Set α) (f : β ≃ α) : f ⁻¹' S = f.symm '' S :=
+theorem _root_.Set.preimage_equiv_eq_image_symm {α β} (S : Set α) (f : β ≃ α) :
+    f ⁻¹' S = f.symm '' S :=
   (f.symm.image_eq_preimage S).symm
 #align set.preimage_equiv_eq_image_symm Set.preimage_equiv_eq_image_symm
 
