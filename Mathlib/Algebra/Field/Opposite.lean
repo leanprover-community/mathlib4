@@ -8,36 +8,43 @@ Authors: Kenny Lau
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Field.Defs
-import Mathbin.Algebra.Ring.Opposite
+import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Ring.Opposite
 
 /-!
 # Field structure on the multiplicative/additive opposite
 -/
 
+namespace MulOpposite
 
 variable (α : Type _)
 
 instance [DivisionSemiring α] : DivisionSemiring αᵐᵒᵖ :=
-  { MulOpposite.groupWithZero α, MulOpposite.semiring α with }
+  { instGroupWithZeroMulOpposite α, instSemiringMulOpposite α with }
 
 instance [DivisionRing α] : DivisionRing αᵐᵒᵖ :=
-  { MulOpposite.groupWithZero α, MulOpposite.ring α with }
+  { instGroupWithZeroMulOpposite α, instRingMulOpposite α with }
 
 instance [Semifield α] : Semifield αᵐᵒᵖ :=
-  { MulOpposite.divisionSemiring α, MulOpposite.commSemiring α with }
+  { instDivisionSemiringMulOpposite α, MulOpposite.instCommSemiringMulOpposite α with }
 
 instance [Field α] : Field αᵐᵒᵖ :=
-  { MulOpposite.divisionRing α, MulOpposite.commRing α with }
+  { instDivisionRingMulOpposite α, instCommRingMulOpposite α with }
+
+end MulOpposite
+
+namespace AddOpposite
 
 instance [DivisionSemiring α] : DivisionSemiring αᵃᵒᵖ :=
-  { AddOpposite.groupWithZero α, AddOpposite.semiring α with }
+  { instGroupWithZeroAddOpposite α, instSemiringAddOpposite α with }
 
 instance [DivisionRing α] : DivisionRing αᵃᵒᵖ :=
-  { AddOpposite.groupWithZero α, AddOpposite.ring α with }
+  { instGroupWithZeroAddOpposite α, instRingAddOpposite α with }
 
 instance [Semifield α] : Semifield αᵃᵒᵖ :=
-  { AddOpposite.divisionSemiring α, AddOpposite.commSemiring α with }
+  { instDivisionSemiringAddOpposite, instCommSemiringAddOpposite α with }
 
 instance [Field α] : Field αᵃᵒᵖ :=
-  { AddOpposite.divisionRing α, AddOpposite.commRing α with }
+  { instDivisionRingAddOpposite, instCommRingAddOpposite α with }
+
+end AddOpposite
