@@ -145,10 +145,13 @@ theorem eq_get_of_mem {a : α} : ∀ {as : List α}, a ∈ as → ∃ n : Nat, a
       rcases eq_get_of_mem h with ⟨n, h⟩
       exact ⟨n + 1, h⟩
 #noalign list.func.eq_get_of_mem
+-- porting note : the signature has been changed to correct what was presumably a bug,
+-- hence the #noalign
 
 theorem mem_get_of_le : ∀ {n : ℕ} {as : List α}, n < as.length → get n as ∈ as
   | _, [], h1 => by cases h1
--- Porting note: needed to add to `rw [mem_cons] here` in the two cases below and in other lemmas
+  -- porting note : needed to add to `rw [mem_cons] here` in the two cases below
+  -- and in other lemmas (presumably because previously lean could see through the def of `mem` ?)
   | 0, a :: as, _ => by rw [mem_cons]; exact Or.inl rfl
   | n + 1, a :: as, h1 => by
     rw [mem_cons]; apply Or.inr; unfold get
