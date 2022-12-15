@@ -108,6 +108,7 @@ import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.Divisibility
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Algebra.Ring.InjSurj
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.Ring.OrderSynonym
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
@@ -218,9 +219,11 @@ import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator
+import Mathlib.Data.Set.Enumerate
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Data.Set.Intervals.Monoid
 import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Prod
@@ -322,6 +325,7 @@ import Mathlib.Order.Lattice
 import Mathlib.Order.Max
 import Mathlib.Order.MinMax
 import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.Monovary
 import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic
