@@ -334,9 +334,8 @@ theorem bounded_le_inter_lt [LinearOrder α] (a : α) :
 
 theorem unbounded_le_inter_lt [LinearOrder α] (a : α) :
     Unbounded (· ≤ ·) (s ∩ { b | a < b }) ↔ Unbounded (· ≤ ·) s := by
-  convert unbounded_le_inter_not_le a
-  ext
-  exact lt_iff_not_le
+  rw [← not_bounded_iff, ← not_bounded_iff, not_iff_not]
+  exact bounded_le_inter_lt a
 #align set.unbounded_le_inter_lt Set.unbounded_le_inter_lt
 
 theorem bounded_le_inter_le [LinearOrder α] (a : α) :
