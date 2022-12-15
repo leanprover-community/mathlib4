@@ -7,6 +7,9 @@ import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Linarith.Lemmas
 
 /-!
 # Lemmas about the interaction of power operations with order
@@ -15,6 +18,8 @@ Note that some lemmas are in `algebra/group_power/lemmas.lean` as they import fi
 depend on this file.
 -/
 
+
+set_option linter.deprecated false
 
 open Function
 
@@ -345,9 +350,9 @@ theorem pow_le_pow_of_le_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ i :
     apply le_trans ha hab
 #align pow_le_pow_of_le_left pow_le_pow_of_le_left
 
-theorem one_lt_pow (ha : 1 < a) : ∀ {n : ℕ} (hn : n ≠ 0), 1 < a ^ n
+theorem one_lt_pow (ha : 1 < a) : ∀ {n : ℕ} (_ : n ≠ 0), 1 < a ^ n
   | 0, h => (h rfl).elim
-  | n + 1, h => by
+  | n + 1, _ => by
     rw [pow_succ]
     exact one_lt_mul_of_lt_of_le ha (one_le_pow_of_one_le ha.le _)
 #align one_lt_pow one_lt_pow
@@ -517,19 +522,16 @@ lean 3 declaration is
 but is expected to have type
   forall {α : Type.{u_1}} [inst._@.Mathlib.Tactic.Positivity.Basic._hyg.204 : LinearOrderedRing.{u_1} α] (a : α) (n : Nat), LE.le.{u_1} α (Preorder.toLE.{u_1} α (PartialOrder.toPreorder.{u_1} α (StrictOrderedRing.toPartialOrder.{u_1} α (LinearOrderedRing.toStrictOrderedRing.{u_1} α inst._@.Mathlib.Tactic.Positivity.Basic._hyg.204)))) (OfNat.ofNat.{u_1} α 0 (Zero.toOfNat0.{u_1} α (MonoidWithZero.toZero.{u_1} α (Semiring.toMonoidWithZero.{u_1} α (StrictOrderedSemiring.toSemiring.{u_1} α (StrictOrderedRing.toStrictOrderedSemiring.{u_1} α (LinearOrderedRing.toStrictOrderedRing.{u_1} α inst._@.Mathlib.Tactic.Positivity.Basic._hyg.204))))))) (HPow.hPow.{u_1, 0, u_1} α Nat α (instHPow.{u_1, 0} α Nat (Monoid.Pow.{u_1} α (MonoidWithZero.toMonoid.{u_1} α (Semiring.toMonoidWithZero.{u_1} α (StrictOrderedSemiring.toSemiring.{u_1} α (StrictOrderedRing.toStrictOrderedSemiring.{u_1} α (LinearOrderedRing.toStrictOrderedRing.{u_1} α inst._@.Mathlib.Tactic.Positivity.Basic._hyg.204))))))) a (HMul.hMul.{0, 0, 0} Nat Nat Nat (instHMul.{0} Nat instMulNat) (OfNat.ofNat.{0} Nat 2 (instOfNatNat 2)) n))
 Case conversion may be inaccurate. Consider using '#align pow_bit0_nonneg pow_bit0_nonnegₓ'. -/
-theorem pow_bit0_nonneg (a : R) (n : ℕ) : 0 ≤ a ^ bit0 n := by
+-- Porting note: renamed to avoid collision with Mathlib.Tactic.Positivity.Basic
+theorem pow_bit0_nonneg' (a : R) (n : ℕ) : 0 ≤ a ^ bit0 n := by
   rw [pow_bit0]
   exact mul_self_nonneg _
 #align pow_bit0_nonneg pow_bit0_nonneg
 
-theorem sq_nonneg (a : R) : 0 ≤ a ^ 2 :=
-  pow_bit0_nonneg a 1
-#align sq_nonneg sq_nonneg
-
 alias sq_nonneg ← pow_two_nonneg
 
 theorem pow_bit0_pos {a : R} (h : a ≠ 0) (n : ℕ) : 0 < a ^ bit0 n :=
-  (pow_bit0_nonneg a n).lt_of_ne (pow_ne_zero _ h).symm
+  (pow_bit0_nonneg' a n).lt_of_ne (pow_ne_zero _ h).symm
 #align pow_bit0_pos pow_bit0_pos
 
 theorem sq_pos_of_ne_zero (a : R) (h : a ≠ 0) : 0 < a ^ 2 :=
