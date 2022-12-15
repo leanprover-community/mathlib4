@@ -2519,6 +2519,15 @@ alias not_nontrivial_iff ↔ _ Subsingleton.not_nontrivial
 
 alias not_subsingleton_iff ↔ _ Nontrivial.not_subsingleton
 
+protected lemma subsingleton_or_nontrivial (s : Set α) : s.Subsingleton ∨ s.Nontrivial :=
+by simp [or_iff_not_imp_right]
+
+lemma eq_singleton_or_nontrivial (ha : a ∈ s) : s = {a} ∨ s.Nontrivial :=
+by rw [←subsingleton_iff_singleton ha]; exact s.subsingleton_or_nontrivial
+
+lemma nonempty.exists_eq_singleton_or_nontrivial : s.Nonempty → (∃ a, s = {a}) ∨ s.Nontrivial :=
+fun ⟨a, ha⟩ ↦ (eq_singleton_or_nontrivial ha).imp_left $ Exists.intro a
+
 theorem univ_eq_true_false : univ = ({True, False} : Set Prop) :=
   Eq.symm <| eq_univ_of_forall <| fun x => by
     rw [mem_insert_iff, mem_singleton_iff]
