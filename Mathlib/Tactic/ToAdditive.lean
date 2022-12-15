@@ -39,7 +39,7 @@ syntax (name := to_additive_reorder) "to_additive_reorder" num* : attr
 /-- The  `to_additive_fixed_numeral` attribute. -/
 syntax (name := to_additive_fixed_numeral) "to_additive_fixed_numeral" "?"? : attr
 /-- Remaining arguments of `to_additive`. -/
-syntax to_additiveRest := (ppSpace ident)? (ppSpace str)? ("(" &"reorder" ":=" num+ ")")?
+syntax to_additiveRest := ("(" &"reorder" ":=" num+ ")")? (ppSpace ident)? (ppSpace str)?
 /-- The `to_additive` attribute. -/
 syntax (name := to_additive) "to_additive" "!"? "?"? to_additiveRest : attr
 
@@ -464,18 +464,19 @@ using the transforms dictionary.
 declaration. -/
 partial def transformDeclAux
   (cfg : Config) (pre tgt_pre : Name) : Name → CoreM Unit := fun src ↦ do
+  let env ← getEnv
+  -- if this declaration is not `pre` or an internal declaration, we do nothing.
+  if (findTranslation? env src).isSome then
+      return
   -- if this declaration is not `pre` or an internal declaration, we do nothing.
   if not (src == pre || isInternal' src) then
-    if (findTranslation? (← getEnv) src).isSome then
-      return
     throwError "The declaration {pre} depends on the declaration {src} which is in the namespace {
       pre}, but does not have the `@[to_additive]` attribute. This is not supported.\n{""
       }Workaround: move {src} to a different namespace."
-  let env ← getEnv
   -- we find the additive name of `src`
   let tgt := src.mapPrefix (fun n ↦ if n == pre then some tgt_pre else
     if n == mkPrivateName env pre then some <| mkPrivateName env tgt_pre else
-    if n == env.mainModule ++ `_auxLemma then env.mainModule ++ `_auxAddLemma else none)
+    if n.getString == "_auxLemma" then n.getPrefix ++ `_auxAddLemma else none)
   if tgt == src then
     throwError "@[to_additive] doesn't know how to translate {src}, since the additive version has {
       ""}the same name. This is a bug in @[to_additive]."
@@ -510,7 +511,7 @@ partial def transformDeclAux
       of `to_additive.attr`, section `Troubleshooting`.
       Failed to add declaration\n{tgt}:\n{msg}"
     | _ => panic! "unreachable"
-  if isNoncomputable env src then
+  if isNoncomputable (← getEnv) src then
     addDecl trgDecl.toDeclaration!
     setEnv $ addNoncomputable (← getEnv) tgt
   else
@@ -584,12 +585,9 @@ def copyAttributes (src tgt : Name) : CoreM Unit := do
   hackyCopyAttr Std.Tactic.Coe.coeExt (·.contains ·) `coe src tgt -- copy `@[coe]`
 
 /--
-Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
-the body using the `translations` dictionary.
-This is used to implement `@[to_additive]`.
+Copies equation lemmas and attributes from `src` to `tgt`
 -/
-def transformDecl (cfg : Config) (src tgt : Name) : CoreM Unit := do
-  transformDeclAux cfg src tgt src
+def copyMetaData (src tgt : Name) : CoreM Unit := do
   /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
   definitions. If we don't do that, the equation lemma for `src` might be generated later
   when doing a `rw`, but it won't be generated for `tgt`. -/
@@ -606,6 +604,15 @@ def transformDecl (cfg : Config) (src tgt : Name) : CoreM Unit := do
   | none, none => pure ()
   | _, _ => throwError "Exactly one of {src} and {tgt} has equation lemmas, the other one hasn't"
   copyAttributes src tgt
+
+/--
+Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
+the body using the `translations` dictionary.
+This is used to implement `@[to_additive]`.
+-/
+def transformDecl (cfg : Config) (src tgt : Name) : CoreM Unit := do
+  transformDeclAux cfg src tgt src
+  copyMetaData src tgt
 
 /--
 Find the first argument of `nm` that has a multiplicative type-class on it.
@@ -808,8 +815,8 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
   -- `Name.mapPrefix` will do that automatically.
 
 private def elabToAdditive : Syntax → CoreM Config
-  | `(attr| to_additive%$tk $[!%$replaceAll]? $[?%$trace]? $[$tgt]? $[$doc]?
-      $[(reorder := $[$reorder:num]*)]?) =>
+  | `(attr| to_additive%$tk $[!%$replaceAll]? $[?%$trace]? $[(reorder := $[$reorder:num]*)]?
+      $[$tgt]? $[$doc]?) =>
     return { replaceAll := replaceAll.isSome
              trace := trace.isSome
              tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
@@ -840,6 +847,7 @@ def addToAdditiveAttr (src : Name) (cfg : Config) : AttrM Unit :=
   if alreadyExists then
     -- since `tgt` already exists, we just need to add translations `src.x ↦ tgt.x'`
     -- for any subfields.
+    copyMetaData src tgt
     proceedFields src tgt
   else
     -- tgt doesn't exist, so let's make it
