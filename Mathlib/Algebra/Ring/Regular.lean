@@ -68,16 +68,18 @@ def NoZeroDivisors.toCancelCommMonoidWithZero [CommRing α] [NoZeroDivisors α] 
 section IsDomain
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsDomain.toCancelMonoidWithZero [Ring α] [IsDomain α] :
+instance (priority := 100) IsDomain.toCancelMonoidWithZero [Semiring α] [IsDomain α] :
     CancelMonoidWithZero α :=
-  NoZeroDivisors.toCancelMonoidWithZero
+  { mul_left_cancel_of_ne_zero := IsLeftCancelMulZero.mul_left_cancel_of_ne_zero
+    mul_right_cancel_of_ne_zero := IsRightCancelMulZero.mul_right_cancel_of_ne_zero }
 #align is_domain.to_cancel_monoid_with_zero IsDomain.toCancelMonoidWithZero
 
-variable [CommRing α] [IsDomain α]
+variable [CommSemiring α] [IsDomain α]
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsDomain.toCancelCommMonoidWithZero : CancelCommMonoidWithZero α :=
-  NoZeroDivisors.toCancelCommMonoidWithZero
+  { mul_left_cancel_of_ne_zero := IsLeftCancelMulZero.mul_left_cancel_of_ne_zero
+    mul_right_cancel_of_ne_zero := IsRightCancelMulZero.mul_right_cancel_of_ne_zero }
 #align is_domain.to_cancel_comm_monoid_with_zero IsDomain.toCancelCommMonoidWithZero
 
 end IsDomain

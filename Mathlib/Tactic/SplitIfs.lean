@@ -50,7 +50,7 @@ match loc with
 /-- Finds an if condition to split. If successful, returns the position and the condition.
 -/
 private def findIfCondAt (loc : Location) : TacticM (Option (SplitPosition × Expr)) := do
-  for (pos, e) in  (← getSplitCandidates loc) do
+  for (pos, e) in (← getSplitCandidates loc) do
     if let some cond := SplitIf.findIfToSplit? e
     then return some (pos, cond)
   return none
@@ -88,10 +88,13 @@ private def splitIf1 (cond: Expr) (hName : Name) (loc : Location) : TacticM Unit
 /-- Pops off the front of the list of names, or generates a fresh name if the
 list is empty.
 -/
-private def getNextName (hNames: IO.Ref (List Name)) : MetaM Name := do
+private def getNextName (hNames: IO.Ref (List (TSyntax `Lean.binderIdent))) : MetaM Name := do
   match ←hNames.get with
   | [] => mkFreshUserName `h
-  | n::ns => do hNames.set ns; pure n
+  | n::ns => do hNames.set ns
+                if let `(binderIdent| $x:ident) := n
+                then pure x.getId
+                else pure `_
 
 /-- Returns `true` if the condition or its negation already appears as a hypothesis.
 -/
@@ -104,8 +107,10 @@ private def valueKnown (cond : Expr) : TacticM Bool := do
 /-- Main loop of split_ifs. Pulls names for new hypotheses from `hNames`.
 Stops if it encounters a condition in the passed-in `List Expr`.
 -/
-private partial def splitIfsCore (loc : Location) (hNames : IO.Ref (List Name)) :
-  List Expr → TacticM Unit := fun done ↦ withMainContext do
+private partial def splitIfsCore
+    (loc : Location)
+    (hNames : IO.Ref (List (TSyntax `Lean.binderIdent))) :
+    List Expr → TacticM Unit := fun done ↦ withMainContext do
   let some (_,cond) ← findIfCondAt loc
       | Meta.throwTacticEx `split_ifs (←getMainGoal) "no if-the-else conditions to split"
 
@@ -138,9 +143,9 @@ elab_rules : tactic
   | some loc => expandLocation loc
   let names := match withArg with
   | none => []
-  | some args => args.map (λ s => if let `(binderIdent| $x:ident) := s
-                                  then x.getId
-                                  else `_) |>.toList
+  | some args => args.toList
   withMainContext do
     let names ← IO.mkRef names
     splitIfsCore loc names []
+    for name in ← names.get do
+      logWarningAt name m!"unused name: {name}"
