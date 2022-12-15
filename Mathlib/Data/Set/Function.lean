@@ -36,11 +36,7 @@ import Mathlib.Logic.Function.Conjugate
   and the codomain to `t`.
 -/
 
-set_option autoImplicit false
-
-universe u v w x y
-
-variable {α : Type u} {β : Type v} {π : α → Type v} {γ : Type w} {ι : Sort x}
+variable {α β γ ι : Type _} {π : α → Type _}
 
 open Function
 
