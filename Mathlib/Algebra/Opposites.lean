@@ -351,6 +351,8 @@ theorem op_div [Div α] (a b : α) : op (a / b) = op a / op b :=
   rfl
 #align add_opposite.op_div AddOpposite.op_div
 
+-- porting note: this lemma looked wrong to me -- is it wrong in mathlib3?
+-- The types of a and b were α not αᵃᵒᵖ.
 @[simp]
 theorem unop_div [Div α] (a b : αᵃᵒᵖ) : unop (a / b) = unop a / unop b :=
   rfl
