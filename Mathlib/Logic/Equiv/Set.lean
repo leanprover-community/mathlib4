@@ -20,7 +20,7 @@ Some notable definitions are:
 
 * `Equiv.ofInjective`: an injective function is (noncomputably) equivalent to its range.
 * `Equiv.setSongr`: two equal sets are equivalent as types.
-* `Equiv.set.union`: a disjoint union of sets is equivalent to their `Sum`.
+* `Equiv.Set.union`: a disjoint union of sets is equivalent to their `Sum`.
 
 This file is separate from `Equiv/Basic` such that we do not require the full lattice structure
 on sets before defining what an equivalence is.
