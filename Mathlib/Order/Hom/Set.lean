@@ -8,9 +8,9 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Hom.Basic
-import Mathbin.Logic.Equiv.Set
-import Mathbin.Data.Set.Image
+import Mathlib.Order.Hom.Basic
+import Mathlib.Logic.Equiv.Set
+import Mathlib.Data.Set.Image
 
 /-!
 # Order homomorphisms and sets
@@ -28,7 +28,9 @@ section LE
 variable [LE α] [LE β] [LE γ]
 
 theorem range_eq (e : α ≃o β) : Set.range e = Set.univ :=
-  e.Surjective.range_eq
+  Function.Surjective.range_eq (OrderIso.surjective e)
+-- porting note: dot notation broken on `Function.Surjective.range_eq` because of `alias`.
+-- this issue is fixed in mathlib4#1058
 #align order_iso.range_eq OrderIso.range_eq
 
 @[simp]
@@ -73,16 +75,16 @@ variable [Preorder α] [Preorder β] [Preorder γ]
 
 /-- Order isomorphism between two equal sets. -/
 def setCongr (s t : Set α) (h : s = t) :
-    s ≃o t where 
+    s ≃o t where
   toEquiv := Equiv.setCongr h
-  map_rel_iff' x y := Iff.rfl
+  map_rel_iff' := Iff.rfl
 #align order_iso.set_congr OrderIso.setCongr
 
 /-- Order isomorphism between `univ : set α` and `α`. -/
 def Set.univ : (Set.univ : Set α) ≃o
-      α where 
+      α where
   toEquiv := Equiv.Set.univ α
-  map_rel_iff' x y := Iff.rfl
+  map_rel_iff' := Iff.rfl
 #align order_iso.set.univ OrderIso.Set.univ
 
 end OrderIso
@@ -91,14 +93,14 @@ end OrderIso
 between `s` and its image. -/
 protected noncomputable def StrictMonoOn.orderIso {α β} [LinearOrder α] [Preorder β] (f : α → β)
     (s : Set α) (hf : StrictMonoOn f s) :
-    s ≃o f '' s where 
-  toEquiv := hf.InjOn.bij_on_image.Equiv _
-  map_rel_iff' x y := hf.le_iff_le x.2 y.2
+    s ≃o f '' s where
+  toEquiv := hf.injOn.bijOn_image.equiv _
+  map_rel_iff' := hf.le_iff_le (Subtype.property _) (Subtype.property _)
 #align strict_mono_on.order_iso StrictMonoOn.orderIso
 
 namespace StrictMono
 
-variable {α β} [LinearOrder α] [Preorder β]
+variable [LinearOrder α] [Preorder β]
 
 variable (f : α → β) (h_mono : StrictMono f) (h_surj : Function.Surjective f)
 
@@ -106,33 +108,34 @@ variable (f : α → β) (h_mono : StrictMono f) (h_surj : Function.Surjective f
 its range. -/
 @[simps apply]
 protected noncomputable def orderIso :
-    α ≃o Set.range f where 
-  toEquiv := Equiv.ofInjective f h_mono.Injective
-  map_rel_iff' a b := h_mono.le_iff_le
+    α ≃o Set.range f where
+  toEquiv := Equiv.ofInjective f h_mono.injective
+  map_rel_iff' := h_mono.le_iff_le
 #align strict_mono.order_iso StrictMono.orderIso
 
 /-- A strictly monotone surjective function from a linear order is an order isomorphism. -/
 noncomputable def orderIsoOfSurjective : α ≃o β :=
-  (h_mono.OrderIso f).trans <| (OrderIso.setCongr _ _ h_surj.range_eq).trans OrderIso.Set.univ
+  (h_mono.orderIso f).trans <|
+    (OrderIso.setCongr _ _ <| Function.Surjective.range_eq h_surj).trans OrderIso.Set.univ
 #align strict_mono.order_iso_of_surjective StrictMono.orderIsoOfSurjective
 
 @[simp]
-theorem coe_order_iso_of_surjective : (orderIsoOfSurjective f h_mono h_surj : α → β) = f :=
+theorem coe_orderIsoOfSurjective : (orderIsoOfSurjective f h_mono h_surj : α → β) = f :=
   rfl
-#align strict_mono.coe_order_iso_of_surjective StrictMono.coe_order_iso_of_surjective
+#align strict_mono.coe_order_iso_of_surjective StrictMono.coe_orderIsoOfSurjective
 
 @[simp]
-theorem order_iso_of_surjective_symm_apply_self (a : α) :
+theorem orderIsoOfSurjective_symm_apply_self (a : α) :
     (orderIsoOfSurjective f h_mono h_surj).symm (f a) = a :=
   (orderIsoOfSurjective f h_mono h_surj).symm_apply_apply _
-#align
-  strict_mono.order_iso_of_surjective_symm_apply_self StrictMono.order_iso_of_surjective_symm_apply_self
+#align strict_mono.order_iso_of_surjective_symm_apply_self
+  StrictMono.orderIsoOfSurjective_symm_apply_self
 
-theorem order_iso_of_surjective_self_symm_apply (b : β) :
+theorem orderIsoOfSurjective_self_symm_apply (b : β) :
     f ((orderIsoOfSurjective f h_mono h_surj).symm b) = b :=
   (orderIsoOfSurjective f h_mono h_surj).apply_symm_apply _
-#align
-  strict_mono.order_iso_of_surjective_self_symm_apply StrictMono.order_iso_of_surjective_self_symm_apply
+#align strict_mono.order_iso_of_surjective_self_symm_apply
+  StrictMono.orderIsoOfSurjective_self_symm_apply
 
 end StrictMono
 
@@ -142,21 +145,20 @@ variable (α) [BooleanAlgebra α]
 
 /-- Taking complements as an order isomorphism to the order dual. -/
 @[simps]
-def OrderIso.compl : α ≃o αᵒᵈ where 
-  toFun := OrderDual.toDual ∘ compl
-  invFun := compl ∘ OrderDual.ofDual
+def OrderIso.compl : α ≃o αᵒᵈ where
+  toFun := OrderDual.toDual ∘ HasCompl.compl
+  invFun := HasCompl.compl ∘ OrderDual.ofDual
   left_inv := compl_compl
-  right_inv := compl_compl
-  map_rel_iff' x y := compl_le_compl_iff_le
+  right_inv := compl_compl (α := αᵒᵈ)
+  map_rel_iff' := compl_le_compl_iff_le
 #align order_iso.compl OrderIso.compl
 
-theorem compl_strict_anti : StrictAnti (compl : α → α) :=
-  (OrderIso.compl α).StrictMono
-#align compl_strict_anti compl_strict_anti
+theorem compl_strictAnti : StrictAnti (compl : α → α) :=
+  (OrderIso.compl α).strictMono
+#align compl_strict_anti compl_strictAnti
 
 theorem compl_antitone : Antitone (compl : α → α) :=
-  (OrderIso.compl α).Monotone
+  (OrderIso.compl α).monotone
 #align compl_antitone compl_antitone
 
 end BooleanAlgebra
-
