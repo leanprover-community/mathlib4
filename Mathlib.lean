@@ -183,6 +183,7 @@ import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Nat.Cast.Prod
+import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.Gcd.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Order.Lemmas
@@ -207,6 +208,7 @@ import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator
+import Mathlib.Data.Set.Enumerate
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
