@@ -256,11 +256,11 @@ theorem IsGreatest.mono (ha : IsGreatest s a) (hb : IsGreatest t b) (hst : s ⊆
 #align is_greatest.mono IsGreatest.mono
 
 theorem IsLUB.mono (ha : IsLUB s a) (hb : IsLUB t b) (hst : s ⊆ t) : a ≤ b :=
-  hb.mono ha <| upper_bounds_mono_set hst
+  IsLeast.mono hb ha <| upper_bounds_mono_set hst
 #align is_lub.mono IsLUB.mono
 
 theorem IsGLB.mono (ha : IsGLB s a) (hb : IsGLB t b) (hst : s ⊆ t) : b ≤ a :=
-  hb.mono ha <| lower_bounds_mono_set hst
+  IsGreatest.mono hb ha <| lower_bounds_mono_set hst
 #align is_glb.mono IsGLB.mono
 
 theorem subset_lower_bounds_upper_bounds (s : Set α) : s ⊆ lowerBounds (upperBounds s) :=
@@ -383,7 +383,7 @@ theorem union_lower_bounds_subset_lower_bounds_inter :
 
 theorem isLeast_union_iff {a : α} {s t : Set α} :
     IsLeast (s ∪ t) a ↔ IsLeast s a ∧ a ∈ lowerBounds t ∨ a ∈ lowerBounds s ∧ IsLeast t a := by
-  simp [IsLeast, lower_bounds_union, or_and_right, and_comm' (a ∈ t), and_assoc]
+  simp [IsLeast, lower_bounds_union, or_and_right, and_comm (a := a ∈ t), and_assoc]
 #align is_least_union_iff isLeast_union_iff
 
 theorem is_greatest_union_iff :
