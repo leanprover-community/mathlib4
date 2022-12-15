@@ -77,16 +77,15 @@ theorem toList_singleton (c : Char) : (String.singleton c).toList = [c] :=
   rfl
 #align string.to_list_singleton String.toList_singleton
 
--- TODO define `String.head` and its properties
-/-theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.popn 1).toList
+theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.popn 1).toList
   | ⟨s⟩, h => by
     cases s
     · simp only [toList] at h
     · simp only [toList, List.cons.injEq]
       constructor
       · rfl
-      · sorry
-#align string.to_list_nonempty String.toList_nonempty-/
+      · rfl
+#align string.to_list_nonempty String.toList_nonempty
 
 @[simp]
 theorem head_empty : "".data.head! = default :=
@@ -94,17 +93,10 @@ theorem head_empty : "".data.head! = default :=
 #align string.head_empty String.head_empty
 
 -- TODO define `String.popn` and its properties
-/-@[simp]
+@[simp]
 theorem popn_empty {n : ℕ} : "".popn n = "" := by
-  induction' n with n hn
-  · rfl
-  · rcases hs : "" with ⟨_ | ⟨hd, tl⟩⟩
-    · rw [hs] at hn
-      conv_rhs => rw [← hn]
-      simp only [popn, mkIterator, Iterator.nextn, Iterator.next, String.next, String.get,
-        Iterator.remainingToString, extract, String.Pos.byteIdx]
-    · simpa only [← toList_inj] using hs
-#align string.popn_empty String.popn_empty-/
+  simp [popn]
+#align string.popn_empty String.popn_empty
 
 instance : LinearOrder String where
   lt := (· < ·)

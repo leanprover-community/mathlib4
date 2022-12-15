@@ -25,4 +25,12 @@ intercalate (singleton c) ∘ List.map f ∘ (·.split (· = c))
 def isPrefixOf? (pre s : String) : Option String :=
   if startsWith s pre then some <| s.drop pre.length else none
 
+/-- Removes the first `n` elements from the string `s` -/
+def popn (s : String) (n : Nat) : String :=
+  ⟨s.toList.drop n⟩
+
+/-- Produce the head character from the string `s`, if `s` is not empty, otherwise 'A'. -/
+def head (s : String) : Char :=
+  s.toList.headD 'A'
+
 end String
