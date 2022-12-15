@@ -767,7 +767,7 @@ theorem mkInt_div_mkInt_cancel_right {x : ℤ} (hx : x ≠ 0) (n d : ℤ) :
   rw [div_eq_mul_inv, inv_def, mul_comm, mkInt_mul_mkInt_cancel hx]
 #align rat.mk_div_mk_cancel_right Rat.mkInt_div_mkInt_cancel_right
 
-theorem coe_int_div_eq_mkInt {n d : ℤ} : (n : ℚ) / ↑d = n /. d := by
+theorem coe_int_div_eq_mkInt {n d : ℤ} : (Int.cast n : ℚ) / (Int.cast d) = n /. d := by
   repeat' rw [coe_int_eq_mkInt]
   exact mkInt_div_mkInt_cancel_left one_ne_zero n d
 #align rat.coe_int_div_eq_mk Rat.coe_int_div_eq_mkInt
@@ -778,7 +778,7 @@ theorem num_div_den (r : ℚ) : (r.num / r.den : ℚ) = r := by
   erw [← mkInt_eq_div, num_den]
 #align rat.num_div_denom Rat.num_div_den
 
-theorem coe_int_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : ↑q.num = q := by
+theorem coe_int_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : (Int.cast q.num : ℚ) = q := by
   conv_rhs => rw [← @num_den q, hq]
   rw [coe_int_eq_mkInt]
   rfl
