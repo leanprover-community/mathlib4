@@ -8,7 +8,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.GroupPower.Order
+import Mathlib.Algebra.GroupPower.Order
 
 /-! # `nat.pow`
 
@@ -37,7 +37,7 @@ theorem pow_le_pow_of_le_right {x : ℕ} (H : 0 < x) {i j : ℕ} (h : i ≤ j) :
 -/
 
 theorem pow_lt_pow_of_lt_left {x y : ℕ} (H : x < y) {i} (h : 0 < i) : x ^ i < y ^ i :=
-  pow_lt_pow_of_lt_left H (zero_le _) h
+  _root_.pow_lt_pow_of_lt_left H (zero_le _) h
 #align nat.pow_lt_pow_of_lt_left Nat.pow_lt_pow_of_lt_left
 
 theorem pow_lt_pow_of_lt_right {x : ℕ} (H : 1 < x) {i j : ℕ} (h : i < j) : x ^ i < x ^ j :=
@@ -52,7 +52,7 @@ theorem lt_pow_self {p : ℕ} (h : 1 < p) : ∀ n : ℕ, n < p ^ n
   | 0 => by simp [zero_lt_one]
   | n + 1 =>
     calc
-      n + 1 < p ^ n + 1 := Nat.add_lt_add_right (lt_pow_self _) _
+      n + 1 < p ^ n + 1 := Nat.add_lt_add_right (lt_pow_self h _) _
       _ ≤ p ^ (n + 1) := pow_lt_pow_succ h _
 
 #align nat.lt_pow_self Nat.lt_pow_self
@@ -85,15 +85,16 @@ theorem one_lt_pow' (n m : ℕ) : 1 < (m + 2) ^ (n + 1) :=
 
 @[simp]
 theorem one_lt_pow_iff {k n : ℕ} (h : 0 ≠ k) : 1 < n ^ k ↔ 1 < n := by
-  cases n
+  rcases n with (rfl | n)
   · cases k <;> simp [zero_pow_eq]
-  cases n
-  · rw [one_pow]
+  rcases n with (rfl | n)
+  · rw [← Nat.one_eq_succ_zero, one_pow]
   refine' ⟨fun _ => one_lt_succ_succ n, fun _ => _⟩
   induction' k with k hk
   · exact absurd rfl h
-  cases k
-  · simp
+  rcases k with (rfl | k)
+  · simp [← Nat.one_eq_succ_zero]
+  rw [pow_succ']
   exact one_lt_mul (one_lt_succ_succ _).le (hk (succ_ne_zero k).symm)
 #align nat.one_lt_pow_iff Nat.one_lt_pow_iff
 
@@ -126,8 +127,8 @@ theorem pow_left_strict_mono {m : ℕ} (k : 1 ≤ m) : StrictMono fun x : ℕ =>
 #align nat.pow_left_strict_mono Nat.pow_left_strict_mono
 
 theorem mul_lt_mul_pow_succ {n a q : ℕ} (a0 : 0 < a) (q1 : 1 < q) : n * q < a * q ^ (n + 1) := by
-  rw [pow_succ', ← mul_assoc, mul_lt_mul_right (zero_lt_one.trans q1)]
-  exact lt_mul_of_one_le_of_lt (nat.succ_le_iff.mpr a0) (Nat.lt_pow_self q1 n)
+  rw [pow_succ, ← mul_assoc, mul_lt_mul_right (zero_lt_one.trans q1)]
+  exact lt_mul_of_one_le_of_lt (Nat.succ_le_iff.mpr a0) (Nat.lt_pow_self q1 n)
 #align nat.mul_lt_mul_pow_succ Nat.mul_lt_mul_pow_succ
 
 end Nat
@@ -170,41 +171,40 @@ theorem mod_pow_succ {b : ℕ} (w m : ℕ) : m % b ^ succ w = b * (m / b % b ^ w
   by_cases b_h : b = 0
   · simp [b_h, pow_succ]
   have b_pos := Nat.pos_of_ne_zero b_h
-  apply Nat.strong_induction_on m
-  clear m
-  intro p IH
-  cases' lt_or_ge p (b ^ succ w) with h₁ h₁
-  -- base case: p < b^succ w
-  · have h₂ : p / b < b ^ w := by
-      rw [div_lt_iff_lt_mul b_pos]
-      simpa [pow_succ'] using h₁
-    rw [mod_eq_of_lt h₁, mod_eq_of_lt h₂]
-    simp [div_add_mod]
-  -- step: p ≥ b^succ w
-  · -- Generate condition for induction hypothesis
-    have h₂ : p - b ^ succ w < p := tsub_lt_self ((pow_pos b_pos _).trans_le h₁) (pow_pos b_pos _)
-    -- Apply induction
-    rw [mod_eq_sub_mod h₁, IH _ h₂]
+  induction m using Nat.strong_induction_on with
+    | h p IH =>
+      cases' lt_or_ge p (b ^ succ w) with h₁ h₁
+      -- base case: p < b^succ w
+      · have h₂ : p / b < b ^ w := by
+          rw [div_lt_iff_lt_mul b_pos]
+          simpa [pow_succ] using h₁
+        rw [mod_eq_of_lt h₁, mod_eq_of_lt h₂]
+        simp [div_add_mod]
+    -- step: p ≥ b^succ w
+      · -- Generate condition for induction hypothesis
+      have h₂ : p - b ^ succ w < p := tsub_lt_self ((pow_pos b_pos _).trans_le h₁) (pow_pos b_pos _)
+      -- Apply induction
+      rw [mod_eq_sub_mod h₁, IH _ h₂]
     -- Normalize goal and h1
-    simp only [pow_succ]
-    simp only [GE.ge, pow_succ] at h₁
-    -- Pull subtraction outside mod and div
-    rw [sub_mul_mod _ _ _ h₁, sub_mul_div _ _ _ h₁]
-    -- Cancel subtraction inside mod b^w
-    have p_b_ge : b ^ w ≤ p / b := by
-      rw [le_div_iff_mul_le b_pos, mul_comm]
-      exact h₁
-    rw [Eq.symm (mod_eq_sub_mod p_b_ge)]
+      simp only [pow_succ']
+      simp only [GE.ge, pow_succ'] at h₁
+      -- Pull subtraction outside mod and div
+      rw [sub_mul_mod h₁, sub_mul_div _ _ _ h₁]
+      -- Cancel subtraction inside mod b^w
+      have p_b_ge : b ^ w ≤ p / b := by
+        rw [le_div_iff_mul_le b_pos, mul_comm]
+        exact h₁
+      rw [Eq.symm (mod_eq_sub_mod p_b_ge)]
 #align nat.mod_pow_succ Nat.mod_pow_succ
 
-theorem pow_dvd_pow_iff_pow_le_pow {k l : ℕ} : ∀ {x : ℕ} (w : 0 < x), x ^ k ∣ x ^ l ↔ x ^ k ≤ x ^ l
+theorem pow_dvd_pow_iff_pow_le_pow {k l : ℕ} : ∀ {x : ℕ} (_ : 0 < x), x ^ k ∣ x ^ l ↔ x ^ k ≤ x ^ l
   | x + 1, w => by
     constructor
     · intro a
       exact le_of_dvd (pow_pos (succ_pos x) l) a
     · intro a
       cases' x with x
-      · simp only [one_pow]
+      · simp
       · have le := (pow_le_iff_le_right (Nat.le_add_left _ _)).mp a
         use (x + 2) ^ (l - k)
         rw [← pow_add, add_comm k, tsub_add_cancel_of_le le]
@@ -219,10 +219,10 @@ theorem pow_dvd_pow_iff_le_right' {b k l : ℕ} : (b + 2) ^ k ∣ (b + 2) ^ l �
   pow_dvd_pow_iff_le_right (Nat.lt_of_sub_eq_succ rfl)
 #align nat.pow_dvd_pow_iff_le_right' Nat.pow_dvd_pow_iff_le_right'
 
-theorem not_pos_pow_dvd : ∀ {p k : ℕ} (hp : 1 < p) (hk : 1 < k), ¬p ^ k ∣ p
+theorem not_pos_pow_dvd : ∀ {p k : ℕ} (_ : 1 < p) (_ : 1 < k), ¬p ^ k ∣ p
   | succ p, succ k, hp, hk, h =>
-    have : succ p * succ p ^ k ∣ succ p * 1 := by simpa [pow_succ] using h
-    have : succ p ^ k ∣ 1 := dvd_of_mul_dvd_mul_left (succ_pos _) this
+    have : succ p * succ p ^ k ∣ succ p * 1 := by simpa [pow_succ'] using h
+    have : succ p ^ k ∣ 1 := Nat.dvd_of_mul_dvd_mul_left (succ_pos _) this
     have he : succ p ^ k = 1 := eq_one_of_dvd_one this
     have : k < succ p ^ k := lt_pow_self hp k
     have : k < 1 := by rwa [he] at this
@@ -236,7 +236,7 @@ theorem pow_dvd_of_le_of_pow_dvd {p m n k : ℕ} (hmn : m ≤ n) (hdiv : p ^ n �
 #align nat.pow_dvd_of_le_of_pow_dvd Nat.pow_dvd_of_le_of_pow_dvd
 
 theorem dvd_of_pow_dvd {p k m : ℕ} (hk : 1 ≤ k) (hpk : p ^ k ∣ m) : p ∣ m := by
-  rw [← pow_one p] <;> exact pow_dvd_of_le_of_pow_dvd hk hpk
+  rw [← pow_one p]; exact pow_dvd_of_le_of_pow_dvd hk hpk
 #align nat.dvd_of_pow_dvd Nat.dvd_of_pow_dvd
 
 theorem pow_div {x m n : ℕ} (h : n ≤ m) (hx : 0 < x) : x ^ m / x ^ n = x ^ (m - n) := by
