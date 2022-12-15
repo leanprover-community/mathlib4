@@ -22,6 +22,13 @@ scalar multiplication as a homomorphism from `α × β` to `β`.
 * `group_theory.group_action.pi`
 * `group_theory.group_action.sigma`
 * `group_theory.group_action.sum`
+
+# Porting notes
+The `to_additive` attribute can be used to generate both the `smul` and `vadd` lemmas
+from the corresponding `pow` lemmas, as explained on zulip here:
+https://leanprover.zulipchat.com/#narrow/near/316087838
+
+This was not done as part of the port in order to stay as close as possible to the mathlib3 code.
 -/
 
 
