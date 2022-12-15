@@ -11,11 +11,8 @@ import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Hom.Set
 
 /-!
-# Order isomorhpisms and bounds.
+# Order isomorphisms and bounds.
 -/
-
-
-variable {α β : Type _}
 
 open Set
 
@@ -23,52 +20,53 @@ namespace OrderIso
 
 variable [Preorder α] [Preorder β] (f : α ≃o β)
 
-theorem upper_bounds_image {s : Set α} : upperBounds (f '' s) = f '' upperBounds s :=
+theorem upperBounds_image {s : Set α} : upperBounds (f '' s) = f '' upperBounds s :=
   Subset.antisymm
     (fun x hx =>
-      ⟨f.symm x, fun y hy => f.le_symm_apply.2 (hx <| mem_image_of_mem _ hy), f.apply_symm_apply x⟩)
-    f.Monotone.image_upper_bounds_subset_upper_bounds_image
-#align order_iso.upper_bounds_image OrderIso.upper_bounds_image
+      ⟨f.symm x, fun _ hy => f.le_symm_apply.2 (hx <| mem_image_of_mem _ hy), f.apply_symm_apply x⟩)
+    f.monotone.image_upperBounds_subset_upperBounds_image
+#align order_iso.upper_bounds_image OrderIso.upperBounds_image
 
-theorem lower_bounds_image {s : Set α} : lowerBounds (f '' s) = f '' lowerBounds s :=
-  @upper_bounds_image αᵒᵈ βᵒᵈ _ _ f.dual _
-#align order_iso.lower_bounds_image OrderIso.lower_bounds_image
+theorem lowerBounds_image {s : Set α} : lowerBounds (f '' s) = f '' lowerBounds s :=
+  @upperBounds_image αᵒᵈ βᵒᵈ _ _ f.dual _
+#align order_iso.lower_bounds_image OrderIso.lowerBounds_image
+
+-- Porting note: by simps were `fun _ _ => f.le_iff_le` and `fun _ _ => f.symm.le_iff_le`
+@[simp]
+theorem isLUB_image {s : Set α} {x : β} : IsLUB (f '' s) x ↔ IsLUB s (f.symm x) :=
+  ⟨fun h => IsLUB.of_image (by simp) ((f.apply_symm_apply x).symm ▸ h), fun h =>
+    (IsLUB.of_image (by simp)) <| (f.symm_image_image s).symm ▸ h⟩
+#align order_iso.is_lub_image OrderIso.isLUB_image
+
+theorem isLUB_image' {s : Set α} {x : α} : IsLUB (f '' s) (f x) ↔ IsLUB s x := by
+  rw [isLUB_image, f.symm_apply_apply]
+#align order_iso.is_lub_image' OrderIso.isLUB_image'
 
 @[simp]
-theorem is_lub_image {s : Set α} {x : β} : IsLub (f '' s) x ↔ IsLub s (f.symm x) :=
-  ⟨fun h => IsLub.of_image (fun _ _ => f.le_iff_le) ((f.apply_symm_apply x).symm ▸ h), fun h =>
-    (IsLub.of_image fun _ _ => f.symm.le_iff_le) <| (f.symm_image_image s).symm ▸ h⟩
-#align order_iso.is_lub_image OrderIso.is_lub_image
+theorem isGLB_image {s : Set α} {x : β} : IsGLB (f '' s) x ↔ IsGLB s (f.symm x) :=
+  f.dual.isLUB_image
+#align order_iso.is_glb_image OrderIso.isGLB_image
 
-theorem is_lub_image' {s : Set α} {x : α} : IsLub (f '' s) (f x) ↔ IsLub s x := by
-  rw [is_lub_image, f.symm_apply_apply]
-#align order_iso.is_lub_image' OrderIso.is_lub_image'
-
-@[simp]
-theorem is_glb_image {s : Set α} {x : β} : IsGlb (f '' s) x ↔ IsGlb s (f.symm x) :=
-  f.dual.is_lub_image
-#align order_iso.is_glb_image OrderIso.is_glb_image
-
-theorem is_glb_image' {s : Set α} {x : α} : IsGlb (f '' s) (f x) ↔ IsGlb s x :=
-  f.dual.is_lub_image'
-#align order_iso.is_glb_image' OrderIso.is_glb_image'
+theorem isGLB_image' {s : Set α} {x : α} : IsGLB (f '' s) (f x) ↔ IsGLB s x :=
+  f.dual.isLUB_image'
+#align order_iso.is_glb_image' OrderIso.isGLB_image'
 
 @[simp]
-theorem is_lub_preimage {s : Set β} {x : α} : IsLub (f ⁻¹' s) x ↔ IsLub s (f x) := by
-  rw [← f.symm_symm, ← image_eq_preimage, is_lub_image]
-#align order_iso.is_lub_preimage OrderIso.is_lub_preimage
+theorem isLUB_preimage {s : Set β} {x : α} : IsLUB (f ⁻¹' s) x ↔ IsLUB s (f x) := by
+  rw [← f.symm_symm, ← image_eq_preimage, isLUB_image]
+#align order_iso.is_lub_preimage OrderIso.isLUB_preimage
 
-theorem is_lub_preimage' {s : Set β} {x : β} : IsLub (f ⁻¹' s) (f.symm x) ↔ IsLub s x := by
-  rw [is_lub_preimage, f.apply_symm_apply]
-#align order_iso.is_lub_preimage' OrderIso.is_lub_preimage'
+theorem isLUB_preimage' {s : Set β} {x : β} : IsLUB (f ⁻¹' s) (f.symm x) ↔ IsLUB s x := by
+  rw [isLUB_preimage, f.apply_symm_apply]
+#align order_iso.is_lub_preimage' OrderIso.isLUB_preimage'
 
 @[simp]
-theorem is_glb_preimage {s : Set β} {x : α} : IsGlb (f ⁻¹' s) x ↔ IsGlb s (f x) :=
-  f.dual.is_lub_preimage
-#align order_iso.is_glb_preimage OrderIso.is_glb_preimage
+theorem isGLB_preimage {s : Set β} {x : α} : IsGLB (f ⁻¹' s) x ↔ IsGLB s (f x) :=
+  f.dual.isLUB_preimage
+#align order_iso.is_glb_preimage OrderIso.isGLB_preimage
 
-theorem is_glb_preimage' {s : Set β} {x : β} : IsGlb (f ⁻¹' s) (f.symm x) ↔ IsGlb s x :=
-  f.dual.is_lub_preimage'
-#align order_iso.is_glb_preimage' OrderIso.is_glb_preimage'
+theorem isGLB_preimage' {s : Set β} {x : β} : IsGLB (f ⁻¹' s) (f.symm x) ↔ IsGLB s x :=
+  f.dual.isLUB_preimage'
+#align order_iso.is_glb_preimage' OrderIso.isGLB_preimage'
 
 end OrderIso
