@@ -8,17 +8,17 @@ Authors: Yury G. Kudryashov, Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Function
-import Mathbin.Data.Set.Intervals.Basic
+import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Intervals.Basic
 
 /-!
 # Projection of a line onto a closed interval
 
 Given a linearly ordered type `α`, in this file we define
 
-* `set.proj_Icc (a b : α) (h : a ≤ b)` to be the map `α → [a, b]` sending `(-∞, a]` to `a`, `[b, ∞)`
+* `Set.projIcc (a b : α) (h : a ≤ b)` to be the map `α → [a, b]` sending `(-∞, a]` to `a`, `[b, ∞)`
   to `b`, and each point `x ∈ [a, b]` to itself;
-* `set.Icc_extend {a b : α} (h : a ≤ b) (f : Icc a b → β)` to be the extension of `f` to `α` defined
+* `Set.IccExtend {a b : α} (h : a ≤ b) (f : Icc a b → β)` to be the extension of `f` to `α` defined
   as `f ∘ proj_Icc a b h`.
 
 We also prove some trivial properties of these maps.
@@ -32,124 +32,124 @@ open Function
 namespace Set
 
 /-- Projection of `α` to the closed interval `[a, b]`. -/
-def projIcc (a b : α) (h : a ≤ b) (x : α) : icc a b :=
+def projIcc (a b : α) (h : a ≤ b) (x : α) : Icc a b :=
   ⟨max a (min b x), le_max_left _ _, max_le h (min_le_left _ _)⟩
 #align set.proj_Icc Set.projIcc
 
 variable {a b : α} (h : a ≤ b) {x : α}
 
-theorem proj_Icc_of_le_left (hx : x ≤ a) : projIcc a b h x = ⟨a, left_mem_Icc.2 h⟩ := by
-  simp [proj_Icc, hx, hx.trans h]
-#align set.proj_Icc_of_le_left Set.proj_Icc_of_le_left
+theorem projIcc_of_le_left (hx : x ≤ a) : projIcc a b h x = ⟨a, left_mem_Icc.2 h⟩ := by
+  simp [projIcc, hx, hx.trans h]
+#align set.proj_Icc_of_le_left Set.projIcc_of_le_left
 
 @[simp]
-theorem proj_Icc_left : projIcc a b h a = ⟨a, left_mem_Icc.2 h⟩ :=
-  proj_Icc_of_le_left h le_rfl
-#align set.proj_Icc_left Set.proj_Icc_left
+theorem projIcc_left : projIcc a b h a = ⟨a, left_mem_Icc.2 h⟩ :=
+  projIcc_of_le_left h le_rfl
+#align set.proj_Icc_left Set.projIcc_left
 
 theorem proj_Icc_of_right_le (hx : b ≤ x) : projIcc a b h x = ⟨b, right_mem_Icc.2 h⟩ := by
-  simp [proj_Icc, hx, h]
+  simp [projIcc, hx, h]
 #align set.proj_Icc_of_right_le Set.proj_Icc_of_right_le
 
 @[simp]
-theorem proj_Icc_right : projIcc a b h b = ⟨b, right_mem_Icc.2 h⟩ :=
+theorem projIcc_right : projIcc a b h b = ⟨b, right_mem_Icc.2 h⟩ :=
   proj_Icc_of_right_le h le_rfl
-#align set.proj_Icc_right Set.proj_Icc_right
+#align set.proj_Icc_right Set.projIcc_right
 
-theorem proj_Icc_eq_left (h : a < b) : projIcc a b h.le x = ⟨a, left_mem_Icc.mpr h.le⟩ ↔ x ≤ a := by
-  refine' ⟨fun h' => _, proj_Icc_of_le_left _⟩
-  simp_rw [Subtype.ext_iff_val, proj_Icc, max_eq_left_iff, min_le_iff, h.not_le, false_or_iff] at h'
+theorem projIcc_eq_left (h : a < b) : projIcc a b h.le x = ⟨a, left_mem_Icc.mpr h.le⟩ ↔ x ≤ a := by
+  refine' ⟨fun h' => _, projIcc_of_le_left _⟩
+  simp_rw [Subtype.ext_iff_val, projIcc, max_eq_left_iff, min_le_iff, h.not_le, false_or_iff] at h'
   exact h'
-#align set.proj_Icc_eq_left Set.proj_Icc_eq_left
+#align set.proj_Icc_eq_left Set.projIcc_eq_left
 
-theorem proj_Icc_eq_right (h : a < b) : projIcc a b h.le x = ⟨b, right_mem_Icc.mpr h.le⟩ ↔ b ≤ x :=
+theorem projIcc_eq_right (h : a < b) : projIcc a b h.le x = ⟨b, right_mem_Icc.mpr h.le⟩ ↔ b ≤ x :=
   by
   refine' ⟨fun h' => _, proj_Icc_of_right_le _⟩
-  simp_rw [Subtype.ext_iff_val, proj_Icc] at h'
+  simp_rw [Subtype.ext_iff_val, projIcc] at h'
   have := ((max_choice _ _).resolve_left (by simp [h.ne', h'])).symm.trans h'
   exact min_eq_left_iff.mp this
-#align set.proj_Icc_eq_right Set.proj_Icc_eq_right
+#align set.proj_Icc_eq_right Set.projIcc_eq_right
 
-theorem proj_Icc_of_mem (hx : x ∈ icc a b) : projIcc a b h x = ⟨x, hx⟩ := by
-  simp [proj_Icc, hx.1, hx.2]
-#align set.proj_Icc_of_mem Set.proj_Icc_of_mem
+theorem projIcc_of_mem (hx : x ∈ Icc a b) : projIcc a b h x = ⟨x, hx⟩ := by
+  simp [projIcc, hx.1, hx.2]
+#align set.proj_Icc_of_mem Set.projIcc_of_mem
 
 @[simp]
-theorem proj_Icc_coe (x : icc a b) : projIcc a b h x = x := by
+theorem projIcc_val (x : Icc a b) : projIcc a b h x = x := by
   cases x
-  apply proj_Icc_of_mem
-#align set.proj_Icc_coe Set.proj_Icc_coe
+  apply projIcc_of_mem
+#align set.proj_Icc_coe Set.projIcc_val
 
-theorem proj_Icc_surj_on : SurjOn (projIcc a b h) (icc a b) univ := fun x _ =>
-  ⟨x, x.2, proj_Icc_coe h x⟩
-#align set.proj_Icc_surj_on Set.proj_Icc_surj_on
+theorem projIcc_surjOn : SurjOn (projIcc a b h) (Icc a b) univ := fun x _ =>
+  ⟨x, x.2, projIcc_val h x⟩
+#align set.proj_Icc_surj_on Set.projIcc_surjOn
 
-theorem proj_Icc_surjective : Surjective (projIcc a b h) := fun x => ⟨x, proj_Icc_coe h x⟩
-#align set.proj_Icc_surjective Set.proj_Icc_surjective
+theorem projIcc_surjective : Surjective (projIcc a b h) := fun x => ⟨x, projIcc_val h x⟩
+#align set.proj_Icc_surjective Set.projIcc_surjective
 
 @[simp]
-theorem range_proj_Icc : range (projIcc a b h) = univ :=
-  (proj_Icc_surjective h).range_eq
-#align set.range_proj_Icc Set.range_proj_Icc
+theorem range_projIcc : range (projIcc a b h) = univ :=
+  Function.Surjective.range_eq (projIcc_surjective h)
+#align set.range_proj_Icc Set.range_projIcc
 
-theorem monotone_proj_Icc : Monotone (projIcc a b h) := fun x y hxy =>
+theorem monotone_projIcc : Monotone (projIcc a b h) := fun _ _ hxy =>
   max_le_max le_rfl <| min_le_min le_rfl hxy
-#align set.monotone_proj_Icc Set.monotone_proj_Icc
+#align set.monotone_proj_Icc Set.monotone_projIcc
 
-theorem strict_mono_on_proj_Icc : StrictMonoOn (projIcc a b h) (icc a b) := fun x hx y hy hxy => by
-  simpa only [proj_Icc_of_mem, hx, hy]
-#align set.strict_mono_on_proj_Icc Set.strict_mono_on_proj_Icc
+theorem strictMonoOn_projIcc : StrictMonoOn (projIcc a b h) (Icc a b) := fun x hx y hy hxy => by
+  simpa only [projIcc_of_mem, hx, hy]
+#align set.strict_mono_on_proj_Icc Set.strictMonoOn_projIcc
 
 /-- Extend a function `[a, b] → β` to a map `α → β`. -/
-def iccExtend {a b : α} (h : a ≤ b) (f : icc a b → β) : α → β :=
+def IccExtend {a b : α} (h : a ≤ b) (f : Icc a b → β) : α → β :=
   f ∘ projIcc a b h
-#align set.Icc_extend Set.iccExtend
+#align set.Icc_extend Set.IccExtend
 
 @[simp]
-theorem Icc_extend_range (f : icc a b → β) : range (iccExtend h f) = range f := by
-  simp only [Icc_extend, range_comp f, range_proj_Icc, range_id']
-#align set.Icc_extend_range Set.Icc_extend_range
+theorem IccExtend_range (f : Icc a b → β) : range (IccExtend h f) = range f := by
+  simp only [IccExtend, range_comp f, range_projIcc, image_univ]
+#align set.Icc_extend_range Set.IccExtend_range
 
-theorem Icc_extend_of_le_left (f : icc a b → β) (hx : x ≤ a) :
-    iccExtend h f x = f ⟨a, left_mem_Icc.2 h⟩ :=
-  congr_arg f <| proj_Icc_of_le_left h hx
-#align set.Icc_extend_of_le_left Set.Icc_extend_of_le_left
+theorem IccExtend_of_le_left (f : Icc a b → β) (hx : x ≤ a) :
+    IccExtend h f x = f ⟨a, left_mem_Icc.2 h⟩ :=
+  congr_arg f <| projIcc_of_le_left h hx
+#align set.Icc_extend_of_le_left Set.IccExtend_of_le_left
 
 @[simp]
-theorem Icc_extend_left (f : icc a b → β) : iccExtend h f a = f ⟨a, left_mem_Icc.2 h⟩ :=
-  Icc_extend_of_le_left h f le_rfl
-#align set.Icc_extend_left Set.Icc_extend_left
+theorem IccExtend_left (f : Icc a b → β) : IccExtend h f a = f ⟨a, left_mem_Icc.2 h⟩ :=
+  IccExtend_of_le_left h f le_rfl
+#align set.Icc_extend_left Set.IccExtend_left
 
-theorem Icc_extend_of_right_le (f : icc a b → β) (hx : b ≤ x) :
-    iccExtend h f x = f ⟨b, right_mem_Icc.2 h⟩ :=
+theorem IccExtend_of_right_le (f : Icc a b → β) (hx : b ≤ x) :
+    IccExtend h f x = f ⟨b, right_mem_Icc.2 h⟩ :=
   congr_arg f <| proj_Icc_of_right_le h hx
-#align set.Icc_extend_of_right_le Set.Icc_extend_of_right_le
+#align set.Icc_extend_of_right_le Set.IccExtend_of_right_le
 
 @[simp]
-theorem Icc_extend_right (f : icc a b → β) : iccExtend h f b = f ⟨b, right_mem_Icc.2 h⟩ :=
-  Icc_extend_of_right_le h f le_rfl
-#align set.Icc_extend_right Set.Icc_extend_right
+theorem IccExtend_right (f : Icc a b → β) : IccExtend h f b = f ⟨b, right_mem_Icc.2 h⟩ :=
+  IccExtend_of_right_le h f le_rfl
+#align set.Icc_extend_right Set.IccExtend_right
 
-theorem Icc_extend_of_mem (f : icc a b → β) (hx : x ∈ icc a b) : iccExtend h f x = f ⟨x, hx⟩ :=
-  congr_arg f <| proj_Icc_of_mem h hx
-#align set.Icc_extend_of_mem Set.Icc_extend_of_mem
+theorem IccExtend_of_mem (f : Icc a b → β) (hx : x ∈ Icc a b) : IccExtend h f x = f ⟨x, hx⟩ :=
+  congr_arg f <| projIcc_of_mem h hx
+#align set.Icc_extend_of_mem Set.IccExtend_of_mem
 
 @[simp]
-theorem Icc_extend_coe (f : icc a b → β) (x : icc a b) : iccExtend h f x = f x :=
-  congr_arg f <| proj_Icc_coe h x
+theorem Icc_extend_coe (f : Icc a b → β) (x : Icc a b) : IccExtend h f x = f x :=
+  congr_arg f <| projIcc_val h x
 #align set.Icc_extend_coe Set.Icc_extend_coe
 
 end Set
 
 open Set
 
-variable [Preorder β] {a b : α} (h : a ≤ b) {f : icc a b → β}
+variable [Preorder β] {a b : α} (h : a ≤ b) {f : Icc a b → β}
 
-theorem Monotone.Icc_extend (hf : Monotone f) : Monotone (iccExtend h f) :=
-  hf.comp <| monotone_proj_Icc h
-#align monotone.Icc_extend Monotone.Icc_extend
+theorem Monotone.IccExtend (hf : Monotone f) : Monotone (IccExtend h f) :=
+  hf.comp <| monotone_projIcc h
+#align monotone.Icc_extend Monotone.IccExtend
 
-theorem StrictMono.strict_mono_on_Icc_extend (hf : StrictMono f) :
-    StrictMonoOn (iccExtend h f) (icc a b) :=
-  hf.comp_strict_mono_on (strict_mono_on_proj_Icc h)
-#align strict_mono.strict_mono_on_Icc_extend StrictMono.strict_mono_on_Icc_extend
+theorem StrictMono.strictMonoOn_IccExtend (hf : StrictMono f) :
+    StrictMonoOn (IccExtend h f) (Icc a b) :=
+  hf.comp_strictMonoOn (strictMonoOn_projIcc h)
+#align strict_mono.strict_mono_on_Icc_extend StrictMono.strictMonoOn_IccExtend
