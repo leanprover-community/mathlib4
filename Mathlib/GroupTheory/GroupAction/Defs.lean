@@ -265,11 +265,8 @@ class IsCentralScalar (M α : Type _) [SMul M α] [SMul Mᵐᵒᵖ α] : Prop wh
 
 @[to_additive]
 theorem IsCentralScalar.unop_smul_eq_smul {M α : Type _} [SMul M α] [SMul Mᵐᵒᵖ α]
-    [IsCentralScalar M α] (m : Mᵐᵒᵖ) (a : α) : MulOpposite.unop m • a = m • a := by
-  -- Porting note: was one liner
-  apply MulOpposite.rec _ m
-  intro m
-  apply (IsCentralScalar.op_smul_eq_smul _ _).symm
+    [IsCentralScalar M α] (m : Mᵐᵒᵖ) (a : α) : MulOpposite.unop m • a = m • a :=
+  MulOpposite.rec (fun _ => (IsCentralScalar.op_smul_eq_smul _ _).symm) m
 #align is_central_scalar.unop_smul_eq_smul IsCentralScalar.unop_smul_eq_smul
 
 export IsCentralVAdd (op_vadd_eq_vadd unop_vadd_eq_vadd)
