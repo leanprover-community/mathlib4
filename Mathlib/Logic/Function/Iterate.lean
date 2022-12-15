@@ -173,7 +173,7 @@ theorem Iterate.rec_zero (p : α → Sort _) {f : α → α} (h : ∀ a, p a →
     Iterate.rec p h ha 0 = ha :=
   rfl
 
-variable {f}
+variable {f} {m n : ℕ} {a : α}
 
 theorem LeftInverse.iterate {g : α → α} (hg : LeftInverse g f) (n : ℕ) :
     LeftInverse (g^[n]) (f^[n]) :=
@@ -190,6 +190,14 @@ theorem iterate_comm (f : α → α) (m n : ℕ) : f^[n]^[m] = f^[m]^[n] :=
 
 theorem iterate_commute (m n : ℕ) : Commute (fun f : α → α ↦ f^[m]) fun f ↦ f^[n] :=
   fun f ↦ iterate_comm f m n
+
+lemma iterate_cancel_of_ge (hf : Injective f) (hnm : n ≤ m) (ha : f^[m] a = f^[n] a) :
+  f^[m - n] a = a :=
+hf.iterate n $ by rwa [←iterate_add_apply, nat.add_sub_of_le hnm]
+
+lemma iterate_cancel_of_le (hf : Injective f) (hmn : m ≤ n) (ha : f^[m] a = f^[n] a) :
+  a = f^[n - m] a :=
+(iterate_cancel_of_ge hf hmn ha.symm).symm
 
 end Function
 
