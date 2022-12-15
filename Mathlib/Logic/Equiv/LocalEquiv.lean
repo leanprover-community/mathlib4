@@ -1,45 +1,4 @@
 /-
-Copyright (c) 2022 Frédéric Dupuis. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Author: Frédéric Dupuis, Heather Macbeth
--/
-
-import Mathlib.Init.Logic
-import Mathlib.Init.Set
-import Mathlib.Logic.Equiv.MfldSimpsAttr
-import Mathlib.Tactic.Core
-
-open Lean Meta Elab Tactic
-
-/-! Implementation of the `mfld_set_tac` tactic for working with the domains of partially-defined
-functions (`LocalEquiv`, `LocalHomeomorph`, etc).
-
-This is in a separate file from `Mathlib.Logic.Equiv.MfldSimpsAttr` because attributes need a new
-file to become functional.
--/
-
-namespace Tactic.MfldSetTac
-
-/-- A very basic tactic to show that sets showing up in manifolds coincide or are included
-in one another. -/
-elab (name := mfldSetTac) "mfld_set_tac" : tactic => withMainContext do
-  let g ← getMainGoal
-  let goalTy := (← instantiateMVars (← g.getDecl).type).getAppFnArgs
-  match goalTy with
-  | (``Eq, #[_ty, _e₁, _e₂]) =>
-    evalTactic (← `(tactic| (
-      apply Set.ext; intro my_y
-      constructor <;>
-        · intro h_my_y
-          try (simp only [*, mfld_simps] at h_my_y; simp only [*, mfld_simps]))))
-  | (``Subset, #[_ty, _inst, _e₁, _e₂]) =>
-    evalTactic (← `(tactic| (
-      intro my_y h_my_y
-      try (simp only [*, mfld_simps] at h_my_y; simp only [*, mfld_simps]))))
-  | _ => throwError "goal should be an equality or an inclusion"
-
-attribute [mfld_simps] and_true eq_self_iff_true Function.comp_apply
-/-
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
@@ -49,14 +8,14 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Set.Function
-import Mathbin.Logic.Equiv.Defs
+import Mathlib.Data.Set.Function
+import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Local equivalences
 
 This files defines equivalences between subsets of given types.
-An element `e` of `local_equiv α β` is made of two maps `e.to_fun` and `e.inv_fun` respectively
+An element `e` of `LocalEquiv α β` is made of two maps `e.toFun` and `e.invFun` respectively
 from α to β and from  β to α (just like equivs), which are inverse to each other on the subsets
 `e.source` and `e.target` of respectively α and β.
 
@@ -66,23 +25,23 @@ The main functionality is `e.trans f`, which composes the two local equivalences
 the source and target to the maximal set where the composition makes sense.
 
 As for equivs, we register a coercion to functions and use it in our simp normal form: we write
-`e x` and `e.symm y` instead of `e.to_fun x` and `e.inv_fun y`.
+`e x` and `e.symm y` instead of `e.toFun x` and `e.invFun y`.
 
 ## Main definitions
 
-`equiv.to_local_equiv`: associating a local equiv to an equiv, with source = target = univ
-`local_equiv.symm`    : the inverse of a local equiv
-`local_equiv.trans`   : the composition of two local equivs
-`local_equiv.refl`    : the identity local equiv
-`local_equiv.of_set`  : the identity on a set `s`
-`eq_on_source`        : equivalence relation describing the "right" notion of equality for local
+`Equiv.toLocalEquiv`: associating a local equiv to an equiv, with source = target = univ
+`LocalEquiv.symm`    : the inverse of a local equiv
+`LocalEquiv.trans`   : the composition of two local equivs
+`LocalEquiv.refl`    : the identity local equiv
+`LocalEquiv.ofSet`  : the identity on a set `s`
+`EqOnSource`        : equivalence relation describing the "right" notion of equality for local
                         equivs (see below in implementation notes)
 
 ## Implementation notes
 
 There are at least three possible implementations of local equivalences:
 * equivs on subtypes
-* pairs of functions taking values in `option α` and `option β`, equal to none where the local
+* pairs of functions taking values in `Option α` and `Option β`, equal to none where the local
 equivalence is not defined
 * pairs of functions defined everywhere, keeping the source and target as additional data
 
@@ -92,21 +51,21 @@ restriction of domains. Checking that one always belongs to the right subtype ma
 tedious, and leads quickly to DTT hell (as the subtype `u ∩ v` is not the "same" as `v ∩ u`, for
 instance).
 * With option-valued functions, the composition is very neat (it is just the usual composition, and
-the domain is restricted automatically). These are implemented in `pequiv.lean`. For manifolds,
+the domain is restricted automatically). These are implemented in `PEquiv.lean`. For manifolds,
 where one wants to discuss thoroughly the smoothness of the maps, this creates however a lot of
 overhead as one would need to extend all classes of smoothness to option-valued maps.
 * The local_equiv version as explained above is easier to use for manifolds. The drawback is that
-there is extra useless data (the values of `to_fun` and `inv_fun` outside of `source` and `target`).
+there is extra useless data (the values of `toFun` and `invFun` outside of `source` and `target`).
 In particular, the equality notion between local equivs is not "the right one", i.e., coinciding
 source and target and equality there. Moreover, there are no local equivs in this sense between
 an empty type and a nonempty type. Since empty types are not that useful, and since one almost never
 needs to talk about equal local equivs, this is not an issue in practice.
-Still, we introduce an equivalence relation `eq_on_source` that captures this right notion of
+Still, we introduce an equivalence relation `EqOnSource` that captures this right notion of
 equality, and show that many properties are invariant under this equivalence relation.
 
 ### Local coding conventions
 
-If a lemma deals with the intersection of a set with either source or target of a `local_equiv`,
+If a lemma deals with the intersection of a set with either source or target of a `LocalEquiv`,
 then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or `t ∩ e.target`.
 
 -/
@@ -154,10 +113,10 @@ structure LocalEquiv (α : Type _) (β : Type _) where
   invFun : β → α
   source : Set α
   target : Set β
-  map_source' : ∀ ⦃x⦄, x ∈ source → to_fun x ∈ target
-  map_target' : ∀ ⦃x⦄, x ∈ target → inv_fun x ∈ source
-  left_inv' : ∀ ⦃x⦄, x ∈ source → inv_fun (to_fun x) = x
-  right_inv' : ∀ ⦃x⦄, x ∈ target → to_fun (inv_fun x) = x
+  map_source' : ∀ ⦃x⦄, x ∈ source → toFun x ∈ target
+  map_target' : ∀ ⦃x⦄, x ∈ target → invFun x ∈ source
+  left_inv' : ∀ ⦃x⦄, x ∈ source → invFun (toFun x) = x
+  right_inv' : ∀ ⦃x⦄, x ∈ target → toFun (invFun x) = x
 #align local_equiv LocalEquiv
 
 namespace LocalEquiv
