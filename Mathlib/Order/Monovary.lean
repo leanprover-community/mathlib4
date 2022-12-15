@@ -75,9 +75,9 @@ theorem monovaryOn_univ : MonovaryOn f g univ ↔ Monovary f g :=
 #align monovary_on_univ monovaryOn_univ
 
 @[simp]
-theorem antivary_on_univ : AntivaryOn f g univ ↔ Antivary f g :=
+theorem antivaryOn_univ : AntivaryOn f g univ ↔ Antivary f g :=
   ⟨fun h _ _ => h trivial trivial, fun h _ _ _ _ hij => h hij⟩
-#align antivary_on_univ antivary_on_univ
+#align antivary_on_univ antivaryOn_univ
 
 protected theorem MonovaryOn.subset (hst : s ⊆ t) (h : MonovaryOn f g t) : MonovaryOn f g s :=
   fun _ hi _ hj => h (hst hi) (hst hj)
