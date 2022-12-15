@@ -316,12 +316,14 @@ theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → 
 theorem add_def' (a b : ℚ) : a + b = (a.num * b.den + b.num * a.den) /. (a.den * b.den) := by
   change Rat.add a b = _
   dsimp [Rat.add]
-  split_ifs
+  split_ifs with h h
   · rw [←Nat.cast_mul]
     simp only [mkInt, mkNat]
     have w : a.den * b.den ≠ 0 := mul_ne_zero a.den_nz b.den_nz
     simp only [w, dite_false, mkPNat, ←normalize_eq_mk, mul_comm]
-  sorry
+  · simp only [maybeNormalize]
+    -- This looks bad, I think we took a wrong turn here!
+    sorry
 
 @[simp]
 theorem add_def {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
