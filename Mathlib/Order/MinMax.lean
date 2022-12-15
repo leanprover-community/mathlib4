@@ -292,6 +292,12 @@ theorem max_associative : Associative (max : α → α → α) :=
   max_assoc
 #align max_associative max_associative
 
+instance : IsCommutative α max where
+  comm := max_comm
+
+instance : IsAssociative α max where
+  assoc := max_assoc
+
 theorem max_left_commutative : LeftCommutative (max : α → α → α) :=
   max_left_comm
 #align max_left_commutative max_left_commutative
@@ -303,6 +309,12 @@ theorem min_commutative : Commutative (min : α → α → α) :=
 theorem min_associative : Associative (min : α → α → α) :=
   min_assoc
 #align min_associative min_associative
+
+instance : IsCommutative α min where
+  comm := min_comm
+
+instance : IsAssociative α min where
+  assoc := min_assoc
 
 theorem min_left_commutative : LeftCommutative (min : α → α → α) :=
   min_left_comm
