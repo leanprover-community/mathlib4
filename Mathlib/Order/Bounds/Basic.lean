@@ -187,19 +187,19 @@ def IsGreatest.orderTop (h : IsGreatest s a) :
 
 
 theorem upper_bounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : upperBounds t ⊆ upperBounds s :=
-  fun b hb x h => hb <| hst h
+  fun _ hb _ h => hb <| hst h
 #align upper_bounds_mono_set upper_bounds_mono_set
 
 theorem lower_bounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : lowerBounds t ⊆ lowerBounds s :=
-  fun b hb x h => hb <| hst h
+  fun _ hb _ h => hb <| hst h
 #align lower_bounds_mono_set lower_bounds_mono_set
 
 theorem upper_bounds_mono_mem ⦃a b⦄ (hab : a ≤ b) : a ∈ upperBounds s → b ∈ upperBounds s :=
-  fun ha x h => le_trans (ha h) hab
+  fun ha _ h => le_trans (ha h) hab
 #align upper_bounds_mono_mem upper_bounds_mono_mem
 
 theorem lower_bounds_mono_mem ⦃a b⦄ (hab : a ≤ b) : b ∈ lowerBounds s → a ∈ lowerBounds s :=
-  fun hb x h => le_trans hab (hb h)
+  fun hb _ h => le_trans hab (hb h)
 #align lower_bounds_mono_mem lower_bounds_mono_mem
 
 theorem upper_bounds_mono ⦃s t : Set α⦄ (hst : s ⊆ t) ⦃a b⦄ (hab : a ≤ b) :
@@ -214,12 +214,12 @@ theorem lower_bounds_mono ⦃s t : Set α⦄ (hst : s ⊆ t) ⦃a b⦄ (hab : a 
 
 /-- If `s ⊆ t` and `t` is bounded above, then so is `s`. -/
 theorem BddAbove.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddAbove t → BddAbove s :=
-  nonempty.mono <| upper_bounds_mono_set h
+  Nonempty.mono <| upper_bounds_mono_set h
 #align bdd_above.mono BddAbove.mono
 
 /-- If `s ⊆ t` and `t` is bounded below, then so is `s`. -/
 theorem BddBelow.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddBelow t → BddBelow s :=
-  nonempty.mono <| lower_bounds_mono_set h
+  Nonempty.mono <| lower_bounds_mono_set h
 #align bdd_below.mono BddBelow.mono
 
 /-- If `a` is a least upper bound for sets `s` and `p`, then it is a least upper bound for any
@@ -253,11 +253,11 @@ theorem IsGlb.mono (ha : IsGlb s a) (hb : IsGlb t b) (hst : s ⊆ t) : b ≤ a :
 #align is_glb.mono IsGlb.mono
 
 theorem subset_lower_bounds_upper_bounds (s : Set α) : s ⊆ lowerBounds (upperBounds s) :=
-  fun x hx y hy => hy hx
+  fun _ hx _ hy => hy hx
 #align subset_lower_bounds_upper_bounds subset_lower_bounds_upper_bounds
 
 theorem subset_upper_bounds_lower_bounds (s : Set α) : s ⊆ upperBounds (lowerBounds s) :=
-  fun x hx y hy => hy hx
+  fun _ hx _ hy => hy hx
 #align subset_upper_bounds_lower_bounds subset_upper_bounds_lower_bounds
 
 theorem Set.Nonempty.bdd_above_lower_bounds (hs : s.Nonempty) : BddAbove (lowerBounds s) :=
@@ -274,26 +274,26 @@ theorem Set.Nonempty.bdd_below_upper_bounds (hs : s.Nonempty) : BddBelow (upperB
 
 
 theorem IsLeast.is_glb (h : IsLeast s a) : IsGlb s a :=
-  ⟨h.2, fun b hb => hb h.1⟩
+  ⟨h.2, fun _ hb => hb h.1⟩
 #align is_least.is_glb IsLeast.is_glb
 
 theorem IsGreatest.is_lub (h : IsGreatest s a) : IsLub s a :=
-  ⟨h.2, fun b hb => hb h.1⟩
+  ⟨h.2, fun _ hb => hb h.1⟩
 #align is_greatest.is_lub IsGreatest.is_lub
 
-theorem IsLub.upper_bounds_eq (h : IsLub s a) : upperBounds s = ici a :=
-  Set.ext fun b => ⟨fun hb => h.2 hb, fun hb => upper_bounds_mono_mem hb h.1⟩
+theorem IsLub.upper_bounds_eq (h : IsLub s a) : upperBounds s = Ici a :=
+  Set.ext fun _ => ⟨fun hb => h.2 hb, fun hb => upper_bounds_mono_mem hb h.1⟩
 #align is_lub.upper_bounds_eq IsLub.upper_bounds_eq
 
-theorem IsGlb.lower_bounds_eq (h : IsGlb s a) : lowerBounds s = iic a :=
+theorem IsGlb.lower_bounds_eq (h : IsGlb s a) : lowerBounds s = Iic a :=
   h.dual.upper_bounds_eq
 #align is_glb.lower_bounds_eq IsGlb.lower_bounds_eq
 
-theorem IsLeast.lower_bounds_eq (h : IsLeast s a) : lowerBounds s = iic a :=
+theorem IsLeast.lower_bounds_eq (h : IsLeast s a) : lowerBounds s = Iic a :=
   h.IsGlb.lower_bounds_eq
 #align is_least.lower_bounds_eq IsLeast.lower_bounds_eq
 
-theorem IsGreatest.upper_bounds_eq (h : IsGreatest s a) : upperBounds s = ici a :=
+theorem IsGreatest.upper_bounds_eq (h : IsGreatest s a) : upperBounds s = Ici a :=
   h.IsLub.upper_bounds_eq
 #align is_greatest.upper_bounds_eq IsGreatest.upper_bounds_eq
 
@@ -308,7 +308,7 @@ theorem le_is_glb_iff (h : IsGlb s a) : b ≤ a ↔ b ∈ lowerBounds s := by
 #align le_is_glb_iff le_is_glb_iff
 
 theorem is_lub_iff_le_iff : IsLub s a ↔ ∀ b, a ≤ b ↔ b ∈ upperBounds s :=
-  ⟨fun h b => is_lub_le_iff h, fun H => ⟨(H _).1 le_rfl, fun b hb => (H b).2 hb⟩⟩
+  ⟨fun h _ => is_lub_le_iff h, fun H => ⟨(H _).1 le_rfl, fun b hb => (H b).2 hb⟩⟩
 #align is_lub_iff_le_iff is_lub_iff_le_iff
 
 theorem is_glb_iff_le_iff : IsGlb s a ↔ ∀ b, b ≤ a ↔ b ∈ lowerBounds s :=
@@ -350,8 +350,8 @@ theorem IsGreatest.nonempty (h : IsGreatest s a) : s.Nonempty :=
 
 @[simp]
 theorem upper_bounds_union : upperBounds (s ∪ t) = upperBounds s ∩ upperBounds t :=
-  Subset.antisymm (fun b hb => ⟨fun x hx => hb (Or.inl hx), fun x hx => hb (Or.inr hx)⟩)
-    fun b hb x hx => hx.elim (fun hs => hb.1 hs) fun ht => hb.2 ht
+  Subset.antisymm (fun _ hb => ⟨fun _ hx => hb (Or.inl hx), fun _ hx => hb (Or.inr hx)⟩)
+    fun _ hb _ hx => hx.elim (fun hs => hb.1 hs) fun ht => hb.2 ht
 #align upper_bounds_union upper_bounds_union
 
 @[simp]
@@ -432,10 +432,10 @@ theorem bdd_below_union [SemilatticeInf γ] {s t : Set γ} :
 then `a ⊔ b` is the least upper bound of `s ∪ t`. -/
 theorem IsLub.union [SemilatticeSup γ] {a b : γ} {s t : Set γ} (hs : IsLub s a) (ht : IsLub t b) :
     IsLub (s ∪ t) (a ⊔ b) :=
-  ⟨fun c h =>
+  ⟨fun _ h =>
     h.casesOn (fun h => le_sup_of_le_left <| hs.left h) fun h => le_sup_of_le_right <| ht.left h,
-    fun c hc =>
-    sup_le (hs.right fun d hd => hc <| Or.inl hd) (ht.right fun d hd => hc <| Or.inr hd)⟩
+    fun _ hc =>
+    sup_le (hs.right fun _ hd => hc <| Or.inl hd) (ht.right fun _ hd => hc <| Or.inr hd)⟩
 #align is_lub.union IsLub.union
 
 /-- If `a` is the greatest lower bound of `s` and `b` is the greatest lower bound of `t`,
@@ -460,21 +460,21 @@ theorem IsGreatest.union [LinearOrder γ] {a b : γ} {s t : Set γ} (ha : IsGrea
 #align is_greatest.union IsGreatest.union
 
 theorem IsLub.inter_Ici_of_mem [LinearOrder γ] {s : Set γ} {a b : γ} (ha : IsLub s a) (hb : b ∈ s) :
-    IsLub (s ∩ ici b) a :=
-  ⟨fun x hx => ha.1 hx.1, fun c hc =>
+    IsLub (s ∩ Ici b) a :=
+  ⟨fun _ hx => ha.1 hx.1, fun c hc =>
     have hbc : b ≤ c := hc ⟨hb, le_rfl⟩
     ha.2 fun x hx => ((le_total x b).elim fun hxb => hxb.trans hbc) fun hbx => hc ⟨hx, hbx⟩⟩
 #align is_lub.inter_Ici_of_mem IsLub.inter_Ici_of_mem
 
 theorem IsGlb.inter_Iic_of_mem [LinearOrder γ] {s : Set γ} {a b : γ} (ha : IsGlb s a) (hb : b ∈ s) :
-    IsGlb (s ∩ iic b) a :=
+    IsGlb (s ∩ Iic b) a :=
   ha.dual.inter_Ici_of_mem hb
 #align is_glb.inter_Iic_of_mem IsGlb.inter_Iic_of_mem
 
 theorem bdd_above_iff_exists_ge [SemilatticeSup γ] {s : Set γ} (x₀ : γ) :
     BddAbove s ↔ ∃ x, x₀ ≤ x ∧ ∀ y ∈ s, y ≤ x := by
   rw [bdd_above_def, exists_ge_and_iff_exists]
-  exact Monotone.ball fun x hx => monotone_le
+  exact Monotone.ball fun x _ => monotone_le
 #align bdd_above_iff_exists_ge bdd_above_iff_exists_ge
 
 theorem bdd_below_iff_exists_le [SemilatticeInf γ] {s : Set γ} (x₀ : γ) :
@@ -498,64 +498,64 @@ theorem BddBelow.exists_le [SemilatticeInf γ] {s : Set γ} (hs : BddBelow s) (x
 -/
 
 
-theorem is_least_Ici : IsLeast (ici a) a :=
-  ⟨left_mem_Ici, fun x => id⟩
+theorem is_least_Ici : IsLeast (Ici a) a :=
+  ⟨left_mem_Ici, fun _ => id⟩
 #align is_least_Ici is_least_Ici
 
-theorem is_greatest_Iic : IsGreatest (iic a) a :=
-  ⟨right_mem_Iic, fun x => id⟩
+theorem is_greatest_Iic : IsGreatest (Iic a) a :=
+  ⟨right_mem_Iic, fun _ => id⟩
 #align is_greatest_Iic is_greatest_Iic
 
-theorem is_lub_Iic : IsLub (iic a) a :=
+theorem is_lub_Iic : IsLub (Iic a) a :=
   is_greatest_Iic.IsLub
 #align is_lub_Iic is_lub_Iic
 
-theorem is_glb_Ici : IsGlb (ici a) a :=
+theorem is_glb_Ici : IsGlb (Ici a) a :=
   is_least_Ici.IsGlb
 #align is_glb_Ici is_glb_Ici
 
-theorem upper_bounds_Iic : upperBounds (iic a) = ici a :=
+theorem upper_bounds_Iic : upperBounds (Iic a) = Ici a :=
   is_lub_Iic.upper_bounds_eq
 #align upper_bounds_Iic upper_bounds_Iic
 
-theorem lower_bounds_Ici : lowerBounds (ici a) = iic a :=
+theorem lower_bounds_Ici : lowerBounds (Ici a) = Iic a :=
   is_glb_Ici.lower_bounds_eq
 #align lower_bounds_Ici lower_bounds_Ici
 
-theorem bdd_above_Iic : BddAbove (iic a) :=
+theorem bdd_above_Iic : BddAbove (Iic a) :=
   is_lub_Iic.BddAbove
 #align bdd_above_Iic bdd_above_Iic
 
-theorem bdd_below_Ici : BddBelow (ici a) :=
+theorem bdd_below_Ici : BddBelow (Ici a) :=
   is_glb_Ici.BddBelow
 #align bdd_below_Ici bdd_below_Ici
 
-theorem bdd_above_Iio : BddAbove (iio a) :=
-  ⟨a, fun x hx => le_of_lt hx⟩
+theorem bdd_above_Iio : BddAbove (Iio a) :=
+  ⟨a, fun _ hx => le_of_lt hx⟩
 #align bdd_above_Iio bdd_above_Iio
 
-theorem bdd_below_Ioi : BddBelow (ioi a) :=
-  ⟨a, fun x hx => le_of_lt hx⟩
+theorem bdd_below_Ioi : BddBelow (Ioi a) :=
+  ⟨a, fun _ hx => le_of_lt hx⟩
 #align bdd_below_Ioi bdd_below_Ioi
 
-theorem lub_Iio_le (a : α) (hb : IsLub (Set.iio a) b) : b ≤ a :=
-  (is_lub_le_iff hb).mpr fun k hk => le_of_lt hk
+theorem lub_Iio_le (a : α) (hb : IsLub (Iio a) b) : b ≤ a :=
+  (is_lub_le_iff hb).mpr fun _ hk => le_of_lt hk
 #align lub_Iio_le lub_Iio_le
 
-theorem le_glb_Ioi (a : α) (hb : IsGlb (Set.ioi a) b) : a ≤ b :=
+theorem le_glb_Ioi (a : α) (hb : IsGlb (Ioi a) b) : a ≤ b :=
   @lub_Iio_le αᵒᵈ _ _ a hb
 #align le_glb_Ioi le_glb_Ioi
 
-theorem lub_Iio_eq_self_or_Iio_eq_Iic [PartialOrder γ] {j : γ} (i : γ) (hj : IsLub (Set.iio i) j) :
-    j = i ∨ Set.iio i = Set.iic j := by
+theorem lub_Iio_eq_self_or_Iio_eq_Iic [PartialOrder γ] {j : γ} (i : γ) (hj : IsLub (Iio i) j) :
+    j = i ∨ Iio i = Iic j := by
   cases' eq_or_lt_of_le (lub_Iio_le i hj) with hj_eq_i hj_lt_i
   · exact Or.inl hj_eq_i
   · right
     exact Set.ext fun k => ⟨fun hk_lt => hj.1 hk_lt, fun hk_le_j => lt_of_le_of_lt hk_le_j hj_lt_i⟩
 #align lub_Iio_eq_self_or_Iio_eq_Iic lub_Iio_eq_self_or_Iio_eq_Iic
 
-theorem glb_Ioi_eq_self_or_Ioi_eq_Ici [PartialOrder γ] {j : γ} (i : γ) (hj : IsGlb (Set.ioi i) j) :
-    j = i ∨ Set.ioi i = Set.ici j :=
+theorem glb_Ioi_eq_self_or_Ioi_eq_Ici [PartialOrder γ] {j : γ} (i : γ) (hj : IsGlb (Ioi i) j) :
+    j = i ∨ Ioi i = Ici j :=
   @lub_Iio_eq_self_or_Iio_eq_Iic γᵒᵈ _ j i hj
 #align glb_Ioi_eq_self_or_Ioi_eq_Ici glb_Ioi_eq_self_or_Ioi_eq_Ici
 
@@ -563,19 +563,19 @@ section
 
 variable [LinearOrder γ]
 
-theorem exists_lub_Iio (i : γ) : ∃ j, IsLub (Set.iio i) j := by
-  by_cases h_exists_lt : ∃ j, j ∈ upperBounds (Set.iio i) ∧ j < i
+theorem exists_lub_Iio (i : γ) : ∃ j, IsLub (Iio i) j := by
+  by_cases h_exists_lt : ∃ j, j ∈ upperBounds (Iio i) ∧ j < i
   · obtain ⟨j, hj_ub, hj_lt_i⟩ := h_exists_lt
     exact ⟨j, hj_ub, fun k hk_ub => hk_ub hj_lt_i⟩
   · refine' ⟨i, fun j hj => le_of_lt hj, _⟩
     rw [mem_lower_bounds]
-    by_contra
+    by_contra h
     refine' h_exists_lt _
-    push_neg  at h
+    push_neg at h
     exact h
 #align exists_lub_Iio exists_lub_Iio
 
-theorem exists_glb_Ioi (i : γ) : ∃ j, IsGlb (Set.ioi i) j :=
+theorem exists_glb_Ioi (i : γ) : ∃ j, IsGlb (Ioi i) j :=
   @exists_lub_Iio γᵒᵈ _ i
 #align exists_glb_Ioi exists_glb_Ioi
 
