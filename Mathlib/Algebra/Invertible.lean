@@ -6,7 +6,6 @@ Authors: Anne Baanen
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.NormNum
 /-!
 # Invertible elements
 
@@ -211,7 +210,7 @@ theorem invOf_neg [Monoid α] [HasDistribNeg α] (a : α) [Invertible a] [Invert
 @[simp]
 theorem one_sub_invOf_two [Ring α] [Invertible (2 : α)] : 1 - (⅟ 2 : α) = ⅟ 2 :=
   (isUnit_of_invertible (2 : α)).mul_right_inj.1 <| by
-    rw [mul_sub, mul_invOf_self, mul_one] ; norm_num
+    rw [mul_sub, mul_invOf_self, mul_one, ← one_add_one_eq_two, add_sub_cancel]
 #align one_sub_inv_of_two one_sub_invOf_two
 
 @[simp]
