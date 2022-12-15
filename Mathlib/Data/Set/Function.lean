@@ -82,15 +82,14 @@ theorem image_restrict (f : α → β) (s t : Set α) :
 @[simp]
 theorem restrict_dite {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
     (g : ∀ (a) (_ : a ∉ s), β) :
-    (s.restrict fun a => if h : a ∈ s then f a h else g a h) = (fun (a : s.Elem) => f a a.2) :=
+    (s.restrict fun a => if h : a ∈ s then f a h else g a h) = (fun a : s => f a a.2) :=
   funext fun a => dif_pos a.2
--- porting note: had to type ascript `a : s.Elem` in the statement
 #align set.restrict_dite Set.restrict_dite
 
 @[simp]
 theorem restrict_dite_compl {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
     (g : ∀ (a) (_ : a ∉ s), β) :
-    (sᶜ.restrict fun a => if h : a ∈ s then f a h else g a h) = (fun (a : sᶜ.Elem) => g a a.2) :=
+    (sᶜ.restrict fun a => if h : a ∈ s then f a h else g a h) = (fun a : (sᶜ : Set α) => g a a.2) :=
   funext fun a => dif_neg a.2
 #align set.restrict_dite_compl Set.restrict_dite_compl
 
@@ -147,31 +146,30 @@ theorem range_extend {f : α → β} (hf : Injective f) (g : α → γ) (g' : β
   exacts[⟨f x, hf.extend_apply _ _ _⟩, ⟨y, extend_apply' _ _ _ hy⟩]
 #align set.range_extend Set.range_extend
 
-/-- Restrict codomain of a function `f` to a set `s`. Same as `subtype.coind` but this version
-has codomain `↥s` instead of `subtype s`. -/
+/-- Restrict codomain of a function `f` to a set `s`. Same as `Subtype.coind` but this version
+has codomain `↥s` instead of `Subtype s`. -/
 def codRestrict (f : ι → α) (s : Set α) (h : ∀ x, f x ∈ s) : ι → s := fun x => ⟨f x, h x⟩
 #align set.cod_restrict Set.codRestrict
 
 @[simp]
-theorem val_cod_restrict_apply (f : ι → α) (s : Set α) (h : ∀ x, f x ∈ s) (x : ι) :
+theorem val_codRestrict_apply (f : ι → α) (s : Set α) (h : ∀ x, f x ∈ s) (x : ι) :
     (codRestrict f s h x : α) = f x :=
   rfl
-#align set.coe_cod_restrict_apply Set.val_cod_restrict_apply
--- porting note: is this the right name?
+#align set.coe_cod_restrict_apply Set.val_codRestrict_apply
 
 @[simp]
-theorem restrict_comp_cod_restrict {f : ι → α} {g : α → β} {b : Set α} (h : ∀ x, f x ∈ b) :
+theorem restrict_comp_codRestrict {f : ι → α} {g : α → β} {b : Set α} (h : ∀ x, f x ∈ b) :
     b.restrict g ∘ b.codRestrict f h = g ∘ f :=
   rfl
-#align set.restrict_comp_cod_restrict Set.restrict_comp_cod_restrict
+#align set.restrict_comp_cod_restrict Set.restrict_comp_codRestrict
 
 @[simp]
-theorem injective_cod_restrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s) :
+theorem injective_codRestrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s) :
     Injective (codRestrict f s h) ↔ Injective f := by
-  simp only [Injective, Subtype.ext_iff, val_cod_restrict_apply, iff_self]
-#align set.injective_cod_restrict Set.injective_cod_restrict
+  simp only [Injective, Subtype.ext_iff, val_codRestrict_apply, iff_self]
+#align set.injective_cod_restrict Set.injective_codRestrict
 
-alias injective_cod_restrict ↔ _ _root_.function.injective.cod_restrict
+alias injective_codRestrict ↔ _ _root_.function.injective.codRestrict
 
 variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂ f₃ : α → β} {g g₁ g₂ : β → γ}
   {f' f₁' f₂' : β → α} {g' : γ → β}
@@ -337,13 +335,13 @@ end Mono
 /-! ### maps to -/
 
 
-/-- `maps_to f a b` means that the image of `a` is contained in `b`. -/
+/-- `MapsTo f a b` means that the image of `a` is contained in `b`. -/
 def MapsTo (f : α → β) (s : Set α) (t : Set β) : Prop :=
   ∀ ⦃x⦄, x ∈ s → f x ∈ t
 #align set.maps_to Set.MapsTo
 
-/-- Given a map `f` sending `s : set α` into `t : set β`, restrict domain of `f` to `s`
-and the codomain to `t`. Same as `subtype.map`. -/
+/-- Given a map `f` sending `s : Set α` into `t : Set β`, restrict domain of `f` to `s`
+and the codomain to `t`. Same as `Subtype.map`. -/
 def MapsTo.restrict (f : α → β) (s : Set α) (t : Set β) (h : MapsTo f s t) : s → t :=
   Subtype.map f h
 #align set.maps_to.restrict Set.MapsTo.restrict
@@ -352,20 +350,19 @@ def MapsTo.restrict (f : α → β) (s : Set α) (t : Set β) (h : MapsTo f s t)
 theorem MapsTo.val_restrict_apply (h : MapsTo f s t) (x : s) : (h.restrict f s t x : β) = f x :=
   rfl
 #align set.maps_to.coe_restrict_apply Set.MapsTo.val_restrict_apply
--- porting note: is this the right name?
 
-/-- Restricting the domain and then the codomain is the same as `maps_to.restrict`. -/
+/-- Restricting the domain and then the codomain is the same as `MapsTo.restrict`. -/
 @[simp]
-theorem cod_restrict_restrict (h : ∀ x : s, f x ∈ t) :
+theorem codRestrict_restrict (h : ∀ x : s, f x ∈ t) :
     codRestrict (s.restrict f) t h = MapsTo.restrict f s t fun x hx => h ⟨x, hx⟩ :=
   rfl
-#align set.cod_restrict_restrict Set.cod_restrict_restrict
+#align set.cod_restrict_restrict Set.codRestrict_restrict
 
-/-- Reverse of `set.cod_restrict_restrict`. -/
-theorem MapsTo.restrict_eq_cod_restrict (h : MapsTo f s t) :
+/-- Reverse of `Set.codRestrict_restrict`. -/
+theorem MapsTo.restrict_eq_codRestrict (h : MapsTo f s t) :
     h.restrict f s t = codRestrict (s.restrict f) t fun x => h x.2 :=
   rfl
-#align set.maps_to.restrict_eq_cod_restrict Set.MapsTo.restrict_eq_cod_restrict
+#align set.maps_to.restrict_eq_cod_restrict Set.MapsTo.restrict_eq_codRestrict
 
 theorem MapsTo.coe_restrict (h : Set.MapsTo f s t) :
     Subtype.val ∘ h.restrict f s t = s.restrict f :=
@@ -631,7 +628,7 @@ theorem injOn_iff_injective : InjOn f s ↔ Injective (s.restrict f) :=
 alias Set.injOn_iff_injective ↔ InjOn.injective _
 
 theorem MapsTo.restrict_inj (h : MapsTo f s t) : Injective (h.restrict f s t) ↔ InjOn f s := by
-  rw [h.restrict_eq_cod_restrict, injective_cod_restrict, injOn_iff_injective]
+  rw [h.restrict_eq_codRestrict, injective_codRestrict, injOn_iff_injective]
 #align set.maps_to.restrict_inj Set.MapsTo.restrict_inj
 
 theorem exists_injOn_iff_injective [Nonempty β] :
@@ -762,12 +759,12 @@ theorem surjOn_iff_surjective : SurjOn f s univ ↔ Surjective (s.restrict f) :=
     ⟨a, as, e⟩⟩
 #align set.surj_on_iff_surjective Set.surjOn_iff_surjective
 
-theorem SurjOn.image_eq_of_maps_to (h₁ : SurjOn f s t) (h₂ : MapsTo f s t) : f '' s = t :=
+theorem SurjOn.image_eq_of_mapsTo (h₁ : SurjOn f s t) (h₂ : MapsTo f s t) : f '' s = t :=
   eq_of_subset_of_subset h₂.image_subset h₁
-#align set.surj_on.image_eq_of_maps_to Set.SurjOn.image_eq_of_maps_to
+#align set.surj_on.image_eq_of_maps_to Set.SurjOn.image_eq_of_mapsTo
 
 theorem image_eq_iff_surjOn_mapsTo : f '' s = t ↔ s.SurjOn f t ∧ s.MapsTo f t := by
-  refine' ⟨_, fun h => h.1.image_eq_of_maps_to h.2⟩
+  refine' ⟨_, fun h => h.1.image_eq_of_mapsTo h.2⟩
   rintro rfl
   exact ⟨s.surjOn_image f, s.mapsTo_image f⟩
 #align set.image_eq_iff_surj_on_maps_to Set.image_eq_iff_surjOn_mapsTo
@@ -865,7 +862,7 @@ theorem EqOn.bijOn_iff (H : EqOn f₁ f₂ s) : BijOn f₁ s t ↔ BijOn f₂ s 
 #align set.eq_on.bij_on_iff Set.EqOn.bijOn_iff
 
 theorem BijOn.image_eq (h : BijOn f s t) : f '' s = t :=
-  h.surjOn.image_eq_of_maps_to h.mapsTo
+  h.surjOn.image_eq_of_mapsTo h.mapsTo
 #align set.bij_on.image_eq Set.BijOn.image_eq
 
 theorem BijOn.comp (hg : BijOn g t p) (hf : BijOn f s t) : BijOn (g ∘ f) s p :=
@@ -1061,7 +1058,7 @@ theorem InvOn.bijOn (h : InvOn f' f s t) (hf : MapsTo f s t) (hf' : MapsTo f' t 
 
 end Set
 
-/-! ### `inv_fun_on` is a left/right inverse -/
+/-! ### `invFunOn` is a left/right inverse -/
 
 
 namespace Function
@@ -1071,7 +1068,7 @@ variable [Nonempty α] {s : Set α} {f : α → β} {a : α} {b : β}
 attribute [local instance] Classical.propDecidable
 
 /-- Construct the inverse for a function `f` on domain `s`. This function is a right inverse of `f`
-on `f '' s`. For a computable version, see `function.injective.inv_of_mem_range`. -/
+on `f '' s`. For a computable version, see `Function.Injective.inv_of_mem_range`. -/
 noncomputable def invFunOn (f : α → β) (s : Set α) (b : β) : α :=
   if h : ∃ a, a ∈ s ∧ f a = b then Classical.choose h else Classical.choice ‹Nonempty α›
 #align function.inv_fun_on Function.invFunOn
@@ -1186,14 +1183,14 @@ protected theorem restrict (h : Monotone f) (s : Set α) : Monotone (s.restrict 
   h hxy
 #align monotone.restrict Monotone.restrict
 
-protected theorem cod_restrict (h : Monotone f) {s : Set β} (hs : ∀ x, f x ∈ s) :
+protected theorem codRestrict (h : Monotone f) {s : Set β} (hs : ∀ x, f x ∈ s) :
     Monotone (s.codRestrict f hs) :=
   h
-#align monotone.cod_restrict Monotone.cod_restrict
+#align monotone.cod_restrict Monotone.codRestrict
 
-protected theorem range_factorization (h : Monotone f) : Monotone (Set.rangeFactorization f) :=
+protected theorem rangeFactorization (h : Monotone f) : Monotone (Set.rangeFactorization f) :=
   h
-#align monotone.range_factorization Monotone.range_factorization
+#align monotone.range_factorization Monotone.rangeFactorization
 
 end Monotone
 
@@ -1434,10 +1431,10 @@ theorem strictMono_restrict [Preorder α] [Preorder β] {f : α → β} {s : Set
 
 alias strictMono_restrict ↔ _root_.strictMono.of_restrict _root_.strictMonoOn.restrict
 
-theorem StrictMono.cod_restrict [Preorder α] [Preorder β] {f : α → β} (hf : StrictMono f)
+theorem StrictMono.codRestrict [Preorder α] [Preorder β] {f : α → β} (hf : StrictMono f)
     {s : Set β} (hs : ∀ x, f x ∈ s) : StrictMono (Set.codRestrict f s hs) :=
   hf
-#align strict_mono.cod_restrict StrictMono.cod_restrict
+#align strict_mono.cod_restrict StrictMono.codRestrict
 
 namespace Function
 
