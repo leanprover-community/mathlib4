@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Lex
 import Mathlib.Data.Char
+import Std.Tactic.RCases
 
 /-!
 # Strings
@@ -29,39 +30,23 @@ instance lt' : LT String :=
   ⟨fun s₁ s₂ => ltb s₁.mkIterator s₂.mkIterator⟩
 #align string.has_lt' String.lt'
 
--- TODO Why does this not succeed? It's the correct instance, but it doesn't seem to go into `LT.lt`
-instance decidable_lt : @DecidableRel String (· < ·) := inferInstance
+instance decidable_lt : @DecidableRel String (· < ·) := by
+  simp only [lt']
+  infer_instance -- short-circuit type class inference
 #align string.decidable_lt String.decidable_lt
 
--- short-circuit type class inference
 -- TODO This proof probably has to be completely redone
 @[simp]
-theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList := sorry
-/-  | ⟨i₁⟩, ⟨i₂⟩ => by
-    suffices ∀ {p₁ p₂ s₁ s₂}, ltb ⟨s₁, p₁⟩ ⟨s₂, p₂⟩ ↔ s₁ < s₂ by
-      sorry
-    intros p₁ p₂ s₁ s₂
-    induction' s₁ with a s₁ IH generalizing p₁ p₂ s₂ <;> cases' s₂ with b s₂ <;> rw [ltb] <;>
-      simp [Iterator.hasNext]
-    · rfl
-    · exact iff_of_true rfl List.Lex.nil
-    · exact iff_of_false Bool.ff_ne_tt (not_lt_of_lt List.Lex.nil)
-    · dsimp [iterator.has_next, iterator.curr, iterator.next]
-      split_ifs
-      · subst b
-        exact IH.trans list.lex.cons_iff.symm
-      · simp
-        refine' ⟨List.Lex.rel, fun e => _⟩
-        cases e
-        · cases h rfl
-        assumption-/
-#align string.lt_iff_to_list_lt String.lt_iff_toList_lt
+theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList :=
+  sorry
 
 instance le : LE String :=
   ⟨fun s₁ s₂ => ¬s₂ < s₁⟩
 #align string.has_le String.le
 
-instance decidableLe : @DecidableRel String (· ≤ ·) := inferInstance
+instance decidableLe : @DecidableRel String (· ≤ ·) := by
+  simp only [le]
+  infer_instance
 #align string.decidable_le String.decidableLe
 
 -- short-circuit type class inference
@@ -93,7 +78,8 @@ theorem toList_singleton (c : Char) : (String.singleton c).toList = [c] :=
   rfl
 #align string.to_list_singleton String.toList_singleton
 
-theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.popn 1).toList
+-- TODO define `String.head` and its properties
+/-theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.popn 1).toList
   | ⟨s⟩, h => by
     cases s
     · simp only [toList] at h
@@ -101,15 +87,15 @@ theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s
       constructor
       · rfl
       · sorry
-
-#align string.to_list_nonempty String.toList_nonempty
+#align string.to_list_nonempty String.toList_nonempty-/
 
 @[simp]
 theorem head_empty : "".data.head! = default :=
   rfl
 #align string.head_empty String.head_empty
 
-@[simp]
+-- TODO define `String.popn` and its properties
+/-@[simp]
 theorem popn_empty {n : ℕ} : "".popn n = "" := by
   induction' n with n hn
   · rfl
@@ -119,34 +105,37 @@ theorem popn_empty {n : ℕ} : "".popn n = "" := by
       simp only [popn, mkIterator, Iterator.nextn, Iterator.next, String.next, String.get,
         Iterator.remainingToString, extract, String.Pos.byteIdx]
     · simpa only [← toList_inj] using hs
-#align string.popn_empty String.popn_empty
+#align string.popn_empty String.popn_empty-/
 
 instance : LinearOrder String where
   lt := (· < ·)
   le := (· ≤ ·)
-  decidableLt := by infer_instance
-  decidableLe := String.decidableLe
-  DecidableEq := by infer_instance
-  le_refl a := le_iff_to_list_le.2 le_rfl
+  decidable_lt := by infer_instance
+  decidable_le := String.decidableLe
+  decidable_eq := by infer_instance
+  le_refl a := le_iff_toList_le.2 le_rfl
   le_trans a b c := by
-    simp only [le_iff_to_list_le]
+    simp only [le_iff_toList_le]
     exact fun h₁ h₂ => h₁.trans h₂
   le_total a b := by
-    simp only [le_iff_to_list_le]
+    simp only [le_iff_toList_le]
     exact le_total _ _
   le_antisymm a b := by
-    simp only [le_iff_to_list_le, ← to_list_inj]
+    simp only [le_iff_toList_le, ← toList_inj]
     apply le_antisymm
-  lt_iff_le_not_le a b := by simp only [le_iff_to_list_le, lt_iff_to_list_lt, lt_iff_le_not_le]
+  lt_iff_le_not_le a b := by
+    simp only [le_iff_toList_le, lt_iff_toList_lt, lt_iff_le_not_le]
+    rfl
 
 end String
 
 open String
 
-theorem List.to_list_inv_as_string (l : List Char) : l.asString.toList = l := by
+theorem List.to_list_inv_asString (l : List Char) : l.asString.toList = l := by
   cases hl : l.asString
-  exact StringImp.mk.inj hl.symm
-#align list.to_list_inv_as_string List.to_list_inv_as_string
+  symm
+  injection hl
+#align list.to_list_inv_as_string List.to_list_inv_asString
 
 @[simp]
 theorem List.length_as_string (l : List Char) : l.asString.length = l.length :=
@@ -154,16 +143,16 @@ theorem List.length_as_string (l : List Char) : l.asString.length = l.length :=
 #align list.length_as_string List.length_as_string
 
 @[simp]
-theorem List.as_string_inj {l l' : List Char} : l.asString = l'.asString ↔ l = l' :=
-  ⟨fun h => by rw [← List.to_list_inv_as_string l, ← List.to_list_inv_as_string l', toList_inj, h],
+theorem List.asString_inj {l l' : List Char} : l.asString = l'.asString ↔ l = l' :=
+  ⟨fun h => by rw [← List.to_list_inv_asString l, ← List.to_list_inv_asString l', toList_inj, h],
     fun h => h ▸ rfl⟩
-#align list.as_string_inj List.as_string_inj
+#align list.as_string_inj List.asString_inj
 
 @[simp]
-theorem String.length_to_list (s : String) : s.toList.length = s.length := by
-  rw [← String.asString_inv_toList s, List.to_list_inv_as_string, List.length_as_string]
-#align string.length_to_list String.length_to_list
+theorem String.length_toList (s : String) : s.toList.length = s.length := by
+  rw [← String.asString_inv_toList s, List.to_list_inv_asString, List.length_as_string]
+#align string.length_to_list String.length_toList
 
-theorem List.as_string_eq {l : List Char} {s : String} : l.asString = s ↔ l = s.toList := by
-  rw [← asString_inv_toList s, List.as_string_inj, asString_inv_toList s]
-#align list.as_string_eq List.as_string_eq
+theorem List.asString_eq {l : List Char} {s : String} : l.asString = s ↔ l = s.toList := by
+  rw [← asString_inv_toList s, List.asString_inj, asString_inv_toList s]
+#align list.as_string_eq List.asString_eq
