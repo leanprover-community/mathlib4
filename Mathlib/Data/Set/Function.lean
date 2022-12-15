@@ -45,8 +45,8 @@ namespace Set
 /-! ### Restrict -/
 
 
-/-- Restrict domain of a function `f` to a set `s`. Same as `subtype.restrict` but this version
-takes an argument `↥s` instead of `subtype s`. -/
+/-- Restrict domain of a function `f` to a set `s`. Same as `Subtype.restrict` but this version
+takes an argument `↥s` instead of `Subtype s`. -/
 def restrict (s : Set α) (f : ∀ a : α, π a) : ∀ a : s, π a := fun x => f x
 #align set.restrict Set.restrict
 
