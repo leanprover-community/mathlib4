@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum.Core
-import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Data.Int.Cast.Lemmas
 import Qq.Match
 
 /-!

@@ -8,11 +8,11 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Invertible
-import Mathbin.Algebra.GroupPower.Ring
-import Mathbin.Algebra.Order.Monoid.WithTop
-import Mathbin.Data.Nat.Pow
-import Mathbin.Data.Int.Cast.Lemmas
+import Mathlib.Algebra.Invertible
+import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.Algebra.Order.Monoid.WithTop
+import Mathlib.Data.Nat.Pow
+import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # Lemmas about power operations on monoids and groups
