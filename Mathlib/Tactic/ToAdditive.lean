@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 Ported by: E.W.Ayers
 -/
-import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Data.String.Defs
 import Mathlib.Data.KVMap
 import Mathlib.Lean.Expr.ReplaceRec
@@ -232,6 +231,12 @@ def insertTranslation (src tgt : Name) : CoreM Unit := do
   modifyEnv (ToAdditive.translations.addEntry · (src, tgt))
   trace[to_additive] "Added translation {src} ↦ {tgt}"
 
+/-- Get whether or not the replace-all flag is set. If this is true, then the
+additiveTest heuristic is not used and all instances of multiplication are replaced.
+You can enable this with `@[to_additive!]`-/
+def replaceAll [Functor M] [MonadOptions M] : M Bool :=
+  (·.getBool `to_additive.replaceAll) <$> getOptions
+
 /-- `Config` is the type of the arguments that can be provided to `to_additive`. -/
 structure Config : Type where
   /-- Replace all multiplicative declarations, do not use the heuristic. -/
@@ -258,22 +263,21 @@ variable [Monad M] [MonadOptions M] [MonadEnv M]
 
 /-- Auxilliary function for `additiveTest`. The bool argument *only* matters when applied
 to exactly a constant. -/
-private def additiveTestAux (findTranslation? : Name → Option Name)
-  (ignore : Name → Option (List ℕ)) : Bool → Expr → Bool
-  | b, .const n _         => b || (findTranslation? n).isSome
-  | _, .app e a           => Id.run do
-      if additiveTestAux findTranslation? true e then
+private def additiveTestAux : Bool → Expr → M Bool
+  | b, .const n _ => return b || (findTranslation? (← getEnv) n).isSome
+  | _, .app e a => do
+      if ← additiveTestAux true e then
         return true
       if let some n := e.getAppFn.constName? then
-        if let some l := ignore n then
+        if let some l ← ignore n then
           if e.getAppNumArgs + 1 ∈ l then
             return true
       additiveTestAux false a
-  | _, .lam _ _ t _       => additiveTestAux false t
-  | _, .forallE _ _ t _   => additiveTestAux false t
+  | _, .lam _ _ t _ => additiveTestAux false t
+  | _, .forallE _ _ t _ => additiveTestAux false t
   | _, .letE _ _ e body _ =>
     additiveTestAux false e <&&> additiveTestAux false body
-  | _, _                  => true
+  | _, _                => return true
 
 /--
 `additiveTest e` tests whether the expression `e` contains no constant
@@ -285,8 +289,8 @@ e.g. `Nat` or `ℝ × α`.
 We ignore all arguments specified by the `ignore` `NameMap`.
 If `replaceAll` is `true` the test always returns `true`.
 -/
-def additiveTest (replaceAll : Bool) (e : Expr) : M Bool := do
-  if replaceAll then
+def additiveTest (e : Expr) : M Bool := do
+  if ← replaceAll then
     return true
   else
     additiveTestAux false e
@@ -315,24 +319,23 @@ is tested, instead of the first argument.
 It will also reorder arguments of certain functions, using `shouldReorder`:
 e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorderAttr.find? env g = some [1]`.
 -/
-def applyReplacementFun (findTranslation? : Name → Option Name)
-  (shouldReorder : Name → ℕ → Bool) (additiveTest : Expr → Bool) : Expr → Expr :=
-  Lean.Expr.replaceRec fun r e ↦ Id.run <| do
-    -- trace[to_additive_detail] "applyReplacementFun: replace at {e}"
+def applyReplacementFun : Expr → MetaM Expr :=
+  fun e => Lean.Meta.transform (input := e) (post := _) fun e ↦ do
+    trace[to_additive_detail] "applyReplacementFun: replace at {e}"
     match e with
     | .lit (.natVal 1) => pure <| mkRawNatLit 0
     | .const n₀ ls => do
-      let n₁ := n₀.mapPrefix findTranslation?
-      -- if n₀ != n₁ then
-        -- trace[to_additive_detail] "applyReplacementFun: {n₀} → {n₁}"
-      let ls : List Level := if shouldReorder n₀ 1 then ls.swapFirstTwo else ls
+      let n₁ := n₀.mapPrefix <| findTranslation? <| ← getEnv
+      if n₀ != n₁ then
+        trace[to_additive_detail] "applyReplacementFun: {n₀} → {n₁}"
+      let ls : List Level := if ← shouldReorder n₀ 1 then ls.swapFirstTwo else ls
       return some <| Lean.mkConst n₁ ls
     | .app g x => do
       let gf := g.getAppFn
       if let some nm := gf.constName? then
         let gArgs := g.getAppArgs
         -- e = `(nm y₁ .. yₙ x)
-        -- trace[to_additive_detail] "applyReplacementFun: app {nm} {gArgs} {x}"
+        trace[to_additive_detail] "applyReplacementFun: app {nm} {gArgs} {x}"
         /- Test if arguments should be reordered. -/
         if h : gArgs.size > 0 then
           let c1 ← shouldReorder nm gArgs.size
@@ -436,12 +439,10 @@ def updateDecl
   let mut decl := srcDecl.updateName tgt
   if 1 ∈ reorder then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
-  let transform : Expr → Expr :=
-    applyReplacementFun (findTranslation? <| ← getEnv)
-  decl := decl.updateType <| transform <| ← (reorderForall · reorder) <|
+  decl := decl.updateType <| ← applyReplacementFun <| ← (reorderForall · reorder) <|
     ← expand decl.type
   if let some v := decl.value? then
-    decl := decl.updateValue <| transform <| ← (reorderLambda · reorder) <| ← expand v
+    decl := decl.updateValue <| ← applyReplacementFun <| ← (reorderLambda · reorder) <| ← expand v
   return decl
 
 /-- Lean 4 makes declarations which are not internal
