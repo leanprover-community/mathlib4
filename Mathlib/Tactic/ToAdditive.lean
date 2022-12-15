@@ -292,7 +292,14 @@ is tested, instead of the first argument.
 It will also reorder arguments of certain functions, using `reorderFn`:
 e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorderFn g = some [1]`.
 -/
-def applyReplacementFun (replaceAll : Bool) (findTranslation? : Name → Option Name)
+def applyReplacementFun (e : Expr) : MetaM Expr := do
+  let env ← getEnv
+  let reorderFn : Name → List ℕ := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
+  let isRelevant : Name → ℕ → Bool := fun nm i ↦ i == (relevantArgAttr.find? env nm).getD 0
+  return aux ((← getOptions).getBool `to_additive.replaceAll)
+      (findTranslation? <| ← getEnv) reorderFn (ignoreArgsAttr.find? env)
+      (fixedNumeralAttr.find? env) isRelevant e
+where aux (replaceAll : Bool) (findTranslation? : Name → Option Name)
   (reorderFn : Name → List ℕ) (ignore : Name → Option (List ℕ))
   (fixedNumeral : Name → Option Bool) (isRelevant : Name → ℕ → Bool) : Expr → Expr :=
   Lean.Expr.replaceRec fun r e ↦ Id.run do
@@ -359,7 +366,9 @@ def etaExpandN (n : Nat) (e : Expr): MetaM Expr := do
 /-- `e.expand` eta-expands all expressions that have as head a constant `n` in
 `reorder`. They are expanded until they are applied to one more argument than the maximum in
 `reorder.find n`. -/
-def expand (reorderFn : Name → List ℕ) (e : Expr) : MetaM Expr := do
+def expand (e : Expr) : MetaM Expr := do
+  let env ← getEnv
+  let reorderFn : Name → List ℕ := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
   let e₂ ← Lean.Meta.transform (input := e) (post := fun e => return .done e) <| fun e ↦ do
     let e0 := e.getAppFn
     let es := e.getAppArgs
@@ -369,13 +378,16 @@ def expand (reorderFn : Name → List ℕ) (e : Expr) : MetaM Expr := do
       -- no need to expand if nothing needs reordering
       return .continue
     let needed_n := reorder.foldr Nat.max 0 + 1
-    if needed_n ≤ es.size then
+    -- the second disjunct is a temporary fix to avoid infinite loops.
+    -- We may need to use `replaceRec` or something similar to not change the head of an application
+    if needed_n ≤ es.size || es.size == 0 then
       return .continue
     else
       -- in this case, we need to reorder arguments that are not yet
       -- applied, so first η-expand the function.
       let e' ← etaExpandN (needed_n - es.size) e
-      return .visit e'
+      trace[to_additive_detail] "expanded {e} to {e'}"
+      return .continue e'
   if e != e₂ then
     trace[to_additive_detail] "expand:\nBefore: {e}\nAfter:  {e₂}"
   return e₂
@@ -414,17 +426,9 @@ def updateDecl
   let mut decl := srcDecl.updateName tgt
   if 1 ∈ reorder then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
-  let env ← getEnv
-  let reorderFn : Name → List ℕ := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
-  let isRelevant : Name → ℕ → Bool := fun nm i ↦ i == (relevantArgAttr.find? env nm).getD 0
-  let transform : Expr → Expr :=
-    applyReplacementFun ((← getOptions).getBool `to_additive.replaceAll)
-      (findTranslation? <| ← getEnv) reorderFn (ignoreArgsAttr.find? env)
-      (fixedNumeralAttr.find? env) isRelevant
-  let etaExpand := expand reorderFn
-  decl := decl.updateType <| transform <| ← reorderForall (← etaExpand decl.type) reorder
+  decl := decl.updateType <| ← applyReplacementFun <| ← reorderForall (← expand decl.type) reorder
   if let some v := decl.value? then
-    decl := decl.updateValue <| transform <| ← reorderLambda (← etaExpand v) reorder
+    decl := decl.updateValue <| ← applyReplacementFun <| ← reorderLambda (← expand v) reorder
   return decl
 
 /-- Lean 4 makes declarations which are not internal
