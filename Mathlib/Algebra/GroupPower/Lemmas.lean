@@ -9,6 +9,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Invertible
+import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Data.Nat.Pow
@@ -33,18 +34,16 @@ variable {α : Type _} {M : Type u} {N : Type v} {G : Type w} {H : Type x} {A : 
 ### (Additive) monoid
 -/
 
-
 section Monoid
 
 @[simp]
 theorem nsmul_one [AddMonoidWithOne A] : ∀ n : ℕ, n • (1 : A) = n := by
-  refine' eq_nat_cast' (⟨_, _, _⟩ : ℕ →+ A) _
-  · show 0 • (1 : A) = 0
-    simp [zero_nsmul]
-  · show ∀ x y : ℕ, (x + y) • (1 : A) = x • 1 + y • 1
-    simp [add_nsmul]
-  · show 1 • (1 : A) = 1
-    simp
+  let f : ℕ →+ A :=
+  { toFun := fun n ↦ n • (1 : A),
+    map_zero' := by simp [zero_nsmul],
+    map_add' := by simp [add_nsmul] }
+  refine' eq_natCast' f _
+  simp
 #align nsmul_one nsmul_one
 
 variable [Monoid M] [Monoid N] [AddMonoid A] [AddMonoid B]
@@ -52,8 +51,8 @@ variable [Monoid M] [Monoid N] [AddMonoid A] [AddMonoid B]
 instance invertiblePow (m : M) [Invertible m] (n : ℕ) :
     Invertible (m ^ n) where
   invOf := ⅟ m ^ n
-  inv_of_mul_self := by rw [← (commute_invOf m).symm.mul_pow, invOf_mul_self, one_pow]
-  mul_inv_of_self := by rw [← (commute_invOf m).mul_pow, mul_invOf_self, one_pow]
+  invOf_mul_self := by rw [← (commute_invOf m).symm.mul_pow, invOf_mul_self, one_pow]
+  mul_invOf_self := by rw [← (commute_invOf m).mul_pow, mul_invOf_self, one_pow]
 #align invertible_pow invertiblePow
 
 theorem inv_of_pow (m : M) [Invertible m] (n : ℕ) [Invertible (m ^ n)] : ⅟ (m ^ n) = ⅟ m ^ n :=
@@ -62,7 +61,7 @@ theorem inv_of_pow (m : M) [Invertible m] (n : ℕ) [Invertible (m ^ n)] : ⅟ (
 
 @[to_additive]
 theorem IsUnit.pow {m : M} (n : ℕ) : IsUnit m → IsUnit (m ^ n) := fun ⟨u, hu⟩ =>
-  ⟨u ^ n, hu ▸ u.coe_pow _⟩
+  ⟨u ^ n, hu ▸ u.val_pow_eq_pow_val _⟩
 #align is_unit.pow IsUnit.pow
 
 /-- If a natural power of `x` is a unit, then `x` is a unit. -/
