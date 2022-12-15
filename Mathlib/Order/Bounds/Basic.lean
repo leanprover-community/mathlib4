@@ -793,8 +793,18 @@ theorem bdd_above_iff_subset_Iic : BddAbove s ↔ ∃ a, s ⊆ Iic a :=
 #align bdd_above_iff_subset_Iic bdd_above_iff_subset_Iic
 
 theorem bdd_below_bdd_above_iff_subset_Icc : BddBelow s ∧ BddAbove s ↔ ∃ a b, s ⊆ Icc a b := by
-  simp only [Ici_inter_Iic.symm, subset_inter_iff, bdd_below_iff_subset_Ici,
-    bdd_above_iff_subset_Iic, exists_and_left, exists_and_right]
+  -- Porting note: can't rw under `∃`
+  -- simp only [Ici_inter_Iic.symm, subset_inter_iff, bdd_below_iff_subset_Ici,
+  --   bdd_above_iff_subset_Iic, exists_and_left, exists_and_right]
+  rw [bdd_below_iff_subset_Ici, bdd_above_iff_subset_Iic]
+  constructor
+  · rintro ⟨⟨x, hx⟩, ⟨y, hy⟩⟩
+    refine' ⟨x, y, _⟩
+    rw [Ici_inter_Iic.symm, subset_inter_iff]
+    exact ⟨hx, hy⟩
+  · rintro ⟨x, ⟨y, hxy⟩⟩
+    rw [Ici_inter_Iic.symm, subset_inter_iff] at hxy
+    exact ⟨⟨x, hxy.1⟩, ⟨y, hxy.2⟩⟩
 #align bdd_below_bdd_above_iff_subset_Icc bdd_below_bdd_above_iff_subset_Icc
 
 /-!
@@ -886,7 +896,7 @@ theorem is_lub_empty [Preorder γ] [OrderBot γ] : IsLUB ∅ (⊥ : γ) :=
 theorem IsLUB.nonempty [NoMinOrder α] (hs : IsLUB s a) : s.Nonempty :=
   let ⟨a', ha'⟩ := exists_lt a
   nonempty_iff_ne_empty.2 fun h =>
-    not_le_of_lt ha' <| hs.right <| by simp only [h, upper_bounds_empty]
+    not_le_of_lt ha' <| hs.right <| by rw [h, upper_bounds_empty]; exact mem_univ _
 #align is_lub.nonempty IsLUB.nonempty
 
 theorem IsGLB.nonempty [NoMaxOrder α] (hs : IsGLB s a) : s.Nonempty :=
@@ -910,7 +920,9 @@ theorem nonempty_of_not_bdd_below [Nonempty α] (h : ¬BddBelow s) : s.Nonempty 
 @[simp]
 theorem bdd_above_insert [SemilatticeSup γ] (a : γ) {s : Set γ} :
     BddAbove (insert a s) ↔ BddAbove s := by
-  simp only [insert_eq, bdd_above_union, bdd_above_singleton, true_and_iff]
+  simp_rw [insert_eq, bdd_above_union, bdd_above_singleton, true_and, iff_self]
+  -- Porting note: can't `simp` a proposition to `true` given its proof
+  -- simp only [insert_eq, bdd_above_union, bdd_above_singleton, true_and_iff]
 #align bdd_above_insert bdd_above_insert
 
 theorem BddAbove.insert [SemilatticeSup γ] (a : γ) {s : Set γ} (hs : BddAbove s) :
@@ -922,7 +934,9 @@ theorem BddAbove.insert [SemilatticeSup γ] (a : γ) {s : Set γ} (hs : BddAbove
 @[simp]
 theorem bdd_below_insert [SemilatticeInf γ] (a : γ) {s : Set γ} :
     BddBelow (insert a s) ↔ BddBelow s := by
-  simp only [insert_eq, bdd_below_union, bdd_below_singleton, true_and_iff]
+  simp_rw [insert_eq, bdd_below_union, bdd_below_singleton, true_and, iff_self]
+  -- Porting note: can't `simp` a proposition to `true` given its proof
+  -- simp only [insert_eq, bdd_below_union, bdd_below_singleton, true_and_iff]
 #align bdd_below_insert bdd_below_insert
 
 theorem BddBelow.insert [SemilatticeInf γ] (a : γ) {s : Set γ} (hs : BddBelow s) :
@@ -1074,11 +1088,11 @@ theorem IsGreatest.is_greatest_iff_eq (Ha : IsGreatest s a) : IsGreatest s b ↔
 #align is_greatest.is_greatest_iff_eq IsGreatest.is_greatest_iff_eq
 
 theorem IsLUB.unique (Ha : IsLUB s a) (Hb : IsLUB s b) : a = b :=
-  Ha.unique Hb
+  IsLeast.unique Ha Hb
 #align is_lub.unique IsLUB.unique
 
 theorem IsGLB.unique (Ha : IsGLB s a) (Hb : IsGLB s b) : a = b :=
-  Ha.unique Hb
+  IsGreatest.unique Ha Hb
 #align is_glb.unique IsGLB.unique
 
 theorem Set.subsingleton_of_is_lub_le_is_glb (Ha : IsGLB s a) (Hb : IsLUB s b) (hab : b ≤ a) :
@@ -1100,7 +1114,7 @@ section LinearOrder
 variable [LinearOrder α] {s : Set α} {a b : α}
 
 theorem lt_is_lub_iff (h : IsLUB s a) : b < a ↔ ∃ c ∈ s, b < c := by
-  simp only [← not_le, is_lub_le_iff h, mem_upper_bounds, not_forall]
+  simp_rw [← not_le, is_lub_le_iff h, mem_upper_bounds, not_forall, not_le, exists_prop, iff_self]
 #align lt_is_lub_iff lt_is_lub_iff
 
 theorem is_glb_lt_iff (h : IsGLB s a) : a < b ↔ ∃ c ∈ s, c < b :=
