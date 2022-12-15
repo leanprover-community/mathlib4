@@ -12,6 +12,7 @@ import Mathlib.Data.Set.NAry
 
 /-!
 # Upper / lower bounds
+
 In this file we define:
 * `upperBounds`, `lowerBounds` : the set of upper bounds (resp., lower bounds) of a set;
 * `BddAbove s`, `BddBelow s` : the set `s` is bounded above (resp., below), i.e., the set of upper
