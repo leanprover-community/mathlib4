@@ -180,38 +180,46 @@ instance decidableMemIci [Decidable (a ≤ x)] : Decidable (x ∈ ici a) := by a
 instance decidableMemIoi [Decidable (a < x)] : Decidable (x ∈ ioi a) := by assumption
 #align set.decidable_mem_Ioi Set.decidableMemIoi
 
-@[simp]
+-- Porting note: `simp` can prove this
+-- @[simp]
 theorem left_mem_Ioo : a ∈ ioo a b ↔ False := by simp [lt_irrefl]
 #align set.left_mem_Ioo Set.left_mem_Ioo
 
-@[simp]
+-- Porting note: `simp` can prove this
+-- @[simp]
 theorem left_mem_Ico : a ∈ ico a b ↔ a < b := by simp [le_refl]
 #align set.left_mem_Ico Set.left_mem_Ico
 
-@[simp]
+-- Porting note: `simp` can prove this
+-- @[simp]
 theorem left_mem_Icc : a ∈ icc a b ↔ a ≤ b := by simp [le_refl]
 #align set.left_mem_Icc Set.left_mem_Icc
 
-@[simp]
+-- Porting note: `simp` can prove this
+-- @[simp]
 theorem left_mem_Ioc : a ∈ ioc a b ↔ False := by simp [lt_irrefl]
 #align set.left_mem_Ioc Set.left_mem_Ioc
 
 theorem left_mem_Ici : a ∈ ici a := by simp
 #align set.left_mem_Ici Set.left_mem_Ici
 
-@[simp]
+-- Porting note: `simp` can prove this
+-- @[simp]
 theorem right_mem_Ioo : b ∈ ioo a b ↔ False := by simp [lt_irrefl]
 #align set.right_mem_Ioo Set.right_mem_Ioo
 
-@[simp]
+-- Porting note: `simp` can prove this
+-- @[simp]
 theorem right_mem_Ico : b ∈ ico a b ↔ False := by simp [lt_irrefl]
 #align set.right_mem_Ico Set.right_mem_Ico
 
-@[simp]
+-- Porting note: `simp` can prove this
+-- @[simp]
 theorem right_mem_Icc : b ∈ icc a b ↔ a ≤ b := by simp [le_refl]
 #align set.right_mem_Icc Set.right_mem_Icc
 
-@[simp]
+-- Porting note: `simp` can prove this
+-- @[simp]
 theorem right_mem_Ioc : b ∈ ioc a b ↔ a < b := by simp [le_refl]
 #align set.right_mem_Ioc Set.right_mem_Ioc
 
@@ -391,17 +399,20 @@ theorem Ioo_eq_empty_of_le (h : b ≤ a) : ioo a b = ∅ :=
   Ioo_eq_empty h.not_lt
 #align set.Ioo_eq_empty_of_le Set.Ioo_eq_empty_of_le
 
-@[simp]
+-- Porting note: `simp` can prove this
+-- @[simp]
 theorem Ico_self (a : α) : ico a a = ∅ :=
   Ico_eq_empty <| lt_irrefl _
 #align set.Ico_self Set.Ico_self
 
-@[simp]
+-- Porting note: `simp` can prove this
+-- @[simp]
 theorem Ioc_self (a : α) : ioc a a = ∅ :=
   Ioc_eq_empty <| lt_irrefl _
 #align set.Ioc_self Set.Ioc_self
 
-@[simp]
+-- Porting note: `simp` can prove this
+-- @[simp]
 theorem Ioo_self (a : α) : ioo a a = ∅ :=
   Ioo_eq_empty <| lt_irrefl _
 #align set.Ioo_self Set.Ioo_self
@@ -798,12 +809,14 @@ theorem Iic_diff_Iio_same : iic a \ iio a = {a} := by
   rw [← Iic_diff_right, diff_diff_cancel_left (singleton_subset_iff.2 right_mem_Iic)]
 #align set.Iic_diff_Iio_same Set.Iic_diff_Iio_same
 
-@[simp]
+-- Porting note: `simp` can prove this
+-- @[simp]
 theorem Ioi_union_left : ioi a ∪ {a} = ici a :=
   ext fun x => by simp [eq_comm, le_iff_eq_or_lt]
 #align set.Ioi_union_left Set.Ioi_union_left
 
-@[simp]
+-- Porting note: `simp` can prove this
+-- @[simp]
 theorem Iio_union_right : iio a ∪ {a} = iic a :=
   ext fun _ => le_iff_lt_or_eq.symm
 #align set.Iio_union_right Set.Iio_union_right
@@ -1026,12 +1039,14 @@ theorem not_mem_Iio : c ∉ iio b ↔ b ≤ c :=
   not_lt
 #align set.not_mem_Iio Set.not_mem_Iio
 
-@[simp]
+-- Porting note: `simp` can prove this
+-- @[simp]
 theorem not_mem_Ioi_self : a ∉ ioi a :=
   lt_irrefl _
 #align set.not_mem_Ioi_self Set.not_mem_Ioi_self
 
-@[simp]
+-- Porting note: `simp` can prove this
+-- @[simp]
 theorem not_mem_Iio_self : b ∉ iio b :=
   lt_irrefl _
 #align set.not_mem_Iio_self Set.not_mem_Iio_self
@@ -1858,8 +1873,11 @@ theorem Ioc_union_Ioc_symm : ioc a b ∪ ioc b a = ioc (min a b) (max a b) := by
 @[simp]
 theorem Ioc_union_Ioc_union_Ioc_cycle :
     ioc a b ∪ ioc b c ∪ ioc c a = ioc (min a (min b c)) (max a (max b c)) := by
-  rw [Ioc_union_Ioc, Ioc_union_Ioc]
-  all_goals sorry -- Porting note: restore `ac_rfl`
+  rw [Ioc_union_Ioc, Ioc_union_Ioc] <;>
+  simp [min_le_of_left_le, min_le_of_right_le, le_max_of_le_left, le_max_of_le_right, le_refl,
+    min_assoc, max_comm]
+  -- Porting note: old code
+  -- ac_rfl
   -- all_goals
   --   solve_by_elim (config := { max_depth := 5 }) [min_le_of_left_le, min_le_of_right_le,
   --     le_max_of_le_left, le_max_of_le_right, le_refl]
