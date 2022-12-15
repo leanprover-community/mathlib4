@@ -1602,7 +1602,8 @@ theorem IsGLB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x 
 
 theorem IsLUB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x y}, f x ≤ f y ↔ x ≤ y)
     {s : Set α} {x : α} (hx : IsLUB (f '' s) (f x)) : IsLUB s x :=
-  @IsGLB.of_image αᵒᵈ βᵒᵈ _ _ f (fun x y => hf) _ _ hx
+  ⟨fun _ hy => hf.1 <| hx.1 <| mem_image_of_mem _ hy, fun _ hy =>
+    hf.1 <| hx.2 <| Monotone.mem_upper_bounds_image (fun _ _ => hf.2) hy⟩
 #align is_lub.of_image IsLUB.of_image
 
 theorem is_lub_pi {π : α → Type _} [∀ a, Preorder (π a)] {s : Set (∀ a, π a)} {f : ∀ a, π a} :
@@ -1611,9 +1612,8 @@ theorem is_lub_pi {π : α → Type _} [∀ a, Preorder (π a)] {s : Set (∀ a,
     refine'
       ⟨fun H a => ⟨(Function.monotone_eval a).mem_upper_bounds_image H.1, fun b hb => _⟩, fun H =>
         ⟨_, _⟩⟩
-    · suffices : Function.update f a b ∈ upperBounds s
-      exact Function.update_same a b f ▸ H.2 this a
-      refine' fun g hg => le_update_iff.2 ⟨hb <| mem_image_of_mem _ hg, fun i hi => H.1 hg i⟩
+    · suffices h : Function.update f a b ∈ upperBounds s from Function.update_same a b f ▸ H.2 h a
+      refine' fun g hg => le_update_iff.2 ⟨hb <| mem_image_of_mem _ hg, fun i _ => H.1 hg i⟩
     · exact fun g hg a => (H a).1 (mem_image_of_mem _ hg)
     · exact fun g hg a => (H a).2 ((Function.monotone_eval a).mem_upper_bounds_image hg)
 #align is_lub_pi is_lub_pi
@@ -1630,11 +1630,9 @@ theorem is_lub_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × 
       ⟨⟨monotone_fst.mem_upper_bounds_image H.1, fun a ha => _⟩,
         ⟨monotone_snd.mem_upper_bounds_image H.1, fun a ha => _⟩⟩,
       fun H => ⟨_, _⟩⟩
-  · suffices : (a, p.2) ∈ upperBounds s
-    exact (H.2 this).1
+  · suffices h : (a, p.2) ∈ upperBounds s from (H.2 h).1
     exact fun q hq => ⟨ha <| mem_image_of_mem _ hq, (H.1 hq).2⟩
-  · suffices : (p.1, a) ∈ upperBounds s
-    exact (H.2 this).2
+  · suffices h : (p.1, a) ∈ upperBounds s from (H.2 h).2
     exact fun q hq => ⟨(H.1 hq).1, ha <| mem_image_of_mem _ hq⟩
   · exact fun q hq => ⟨H.1.1 <| mem_image_of_mem _ hq, H.2.1 <| mem_image_of_mem _ hq⟩
   ·
