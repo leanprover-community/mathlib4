@@ -37,8 +37,6 @@ definitional eta reduction for structures (Lean 3 does not).
 ## Tags
 
 multiplicative opposite, additive opposite
-
-##
 -/
 
 
@@ -91,7 +89,7 @@ theorem op_comp_unop : (op : α → αᵐᵒᵖ) ∘ unop = id :=
 theorem unop_comp_op : (unop : αᵐᵒᵖ → α) ∘ op = id :=
   rfl
 
-/-- A recursor for `MulOpposite`. Use as `induction x using MulOpposite.rec`. -/
+/-- A recursor for `MulOpposite`. Use as `induction x using MulOpposite.rec'`. -/
 @[simp, to_additive "A recursor for `AddOpposite`. Use as `induction x using AddOpposite.rec`."]
 protected def rec' {F : ∀ _ : αᵐᵒᵖ, Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
 #align mul_opposite.rec MulOpposite.rec'
