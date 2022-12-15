@@ -10,6 +10,7 @@ Authors: Zhouhang Zhou
 -/
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Tactic.ScopedNS
 
 /-!
 # Intervals without endpoints ordering
@@ -54,14 +55,14 @@ variable [Lattice α] {a a₁ a₂ b b₁ b₂ c x : α}
 Note that we define it more generally in a lattice as `set.Icc (a ⊓ b) (a ⊔ b)`. In a product type,
 `interval` corresponds to the bounding box of the two elements. -/
 def interval (a b : α) : Set α :=
-  icc (a ⊓ b) (a ⊔ b)
+  Icc (a ⊓ b) (a ⊔ b)
 #align set.interval Set.interval
 
 -- mathport name: set.interval
 scoped[Interval] notation "[" a ", " b "]" => Set.interval a b
 
 @[simp]
-theorem dual_interval (a b : α) : [toDual a, toDual b] = of_dual ⁻¹' [a, b] :=
+theorem dual_interval (a b : α) : [toDual a, toDual b] = ofDual ⁻¹' [a, b] :=
   dual_Icc
 #align set.dual_interval Set.dual_interval
 
