@@ -19,7 +19,7 @@ In this file we provide lemmas linking equivalences to sets.
 Some notable definitions are:
 
 * `Equiv.ofInjective`: an injective function is (noncomputably) equivalent to its range.
-* `Equiv.setSongr`: two equal sets are equivalent as types.
+* `Equiv.setCongr`: two equal sets are equivalent as types.
 * `Equiv.Set.union`: a disjoint union of sets is equivalent to their `Sum`.
 
 This file is separate from `Equiv/Basic` such that we do not require the full lattice structure
@@ -137,10 +137,6 @@ theorem eq_preimage_iff_image_eq {α β} (e : α ≃ β) (s t) : s = e ⁻¹' t 
   Set.eq_preimage_iff_image_eq e.bijective
 #align equiv.eq_preimage_iff_image_eq Equiv.eq_preimage_iff_image_eq
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem prod_assoc_preimage {α β γ} {s : Set α} {t : Set β} {u : Set γ} :
     Equiv.prodAssoc α β γ ⁻¹' s ×ˢ t ×ˢ u = (s ×ˢ t) ×ˢ u := by
@@ -148,10 +144,6 @@ theorem prod_assoc_preimage {α β γ} {s : Set α} {t : Set β} {u : Set γ} :
   simp [and_assoc]
 #align equiv.prod_assoc_preimage Equiv.prod_assoc_preimage
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[simp]
 theorem prod_assoc_symm_preimage {α β γ} {s : Set α} {t : Set β} {u : Set γ} :
     (Equiv.prodAssoc α β γ).symm ⁻¹' (s ×ˢ t) ×ˢ u = s ×ˢ t ×ˢ u := by
@@ -159,10 +151,6 @@ theorem prod_assoc_symm_preimage {α β γ} {s : Set α} {t : Set β} {u : Set �
   simp [and_assoc]
 #align equiv.prod_assoc_symm_preimage Equiv.prod_assoc_symm_preimage
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 -- `@[simp]` doesn't like these lemmas, as it uses `set.image_congr'` to turn `equiv.prod_assoc`
 -- into a lambda expression and then unfold it.
 theorem prod_assoc_image {α β γ} {s : Set α} {t : Set β} {u : Set γ} :
@@ -170,10 +158,6 @@ theorem prod_assoc_image {α β γ} {s : Set α} {t : Set β} {u : Set γ} :
   simpa only [Equiv.image_eq_preimage] using prod_assoc_symm_preimage
 #align equiv.prod_assoc_image Equiv.prod_assoc_image
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem prod_assoc_symm_image {α β γ} {s : Set α} {t : Set β} {u : Set γ} :
     (Equiv.prodAssoc α β γ).symm '' s ×ˢ t ×ˢ u = (s ×ˢ t) ×ˢ u := by
   simpa only [Equiv.image_eq_preimage] using prod_assoc_preimage
@@ -326,7 +310,7 @@ theorem insert_apply_right {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a :
   (Equiv.Set.insert H).apply_eq_iff_eq_symm_apply.2 rfl
 #align equiv.set.insert_apply_right Equiv.Set.insert_apply_right
 
-/-- If `s : set α` is a set with decidable membership, then `s ⊕ sᶜ` is equivalent to `α`. -/
+/-- If `s : Set α` is a set with decidable membership, then `s ⊕ sᶜ` is equivalent to `α`. -/
 protected def sumCompl {α} (s : Set α) [DecidablePred (· ∈ s)] : Sum s (sᶜ : Set α) ≃ α :=
   calc
     Sum s (sᶜ : Set α) ≃ ↥(s ∪ sᶜ) := (Equiv.Set.union (by simp [Set.ext_iff])).symm
@@ -476,13 +460,12 @@ protected def compl {α : Type u} {β : Type v} {s : Set α} {t : Set β} [Decid
         Set.sumCompl_symm_apply_compl]
 #align equiv.set.compl Equiv.Set.compl
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The set product of two sets is equivalent to the type product of their coercions to types. -/
 protected def prod {α β} (s : Set α) (t : Set β) : ↥(s ×ˢ t) ≃ s × t :=
   @subtypeProdEquivProd α β s t
 #align equiv.set.prod Equiv.Set.prod
 
-/-- The set `set.pi set.univ s` is equivalent to `Π a, s a`. -/
+/-- The set `Set.pi Set.univ s` is equivalent to `Π a, s a`. -/
 @[simps]
 protected def univPi {α : Type _} {β : α → Type _} (s : ∀ a, Set (β a)) :
     pi univ s ≃
@@ -540,7 +523,7 @@ protected def sep {α : Type u} (s : Set α) (t : α → Prop) :
   (Equiv.subtypeSubtypeEquivSubtypeInter s t).symm
 #align equiv.set.sep Equiv.Set.sep
 
-/-- The set `𝒫 S := {x | x ⊆ S}` is equivalent to the type `set S`. -/
+/-- The set `𝒫 S := {x | x ⊆ S}` is equivalent to the type `Set S`. -/
 protected def powerset {α} (S : Set α) :
     𝒫 S ≃ Set S where
   toFun := fun x : 𝒫 S => Subtype.val ⁻¹' (x : Set α)
@@ -648,7 +631,6 @@ protected theorem set_forall_iff {α β} (e : α ≃ β) {p : Set α → Prop} :
   e.injective.preimage_surjective.forall
 #align equiv.set_forall_iff Equiv.set_forall_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type _} {β : α → Type _} (p : α → Prop)
     [DecidablePred p] (s : ∀ i, Set (β i)) :
     (piEquivPiSubtypeProd p β).symm ⁻¹' pi univ s =
