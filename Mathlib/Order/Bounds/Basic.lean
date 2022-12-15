@@ -783,18 +783,8 @@ theorem bddAbove_iff_subset_Iic : BddAbove s ↔ ∃ a, s ⊆ Iic a :=
 #align bdd_above_iff_subset_Iic bddAbove_iff_subset_Iic
 
 theorem bddBelow_bddAbove_iff_subset_Icc : BddBelow s ∧ BddAbove s ↔ ∃ a b, s ⊆ Icc a b := by
-  -- Porting note: can't rw under `∃`
-  -- simp only [Ici_inter_Iic.symm, subset_inter_iff, bddBelow_iff_subset_Ici,
-  --   bddAbove_iff_subset_Iic, exists_and_left, exists_and_right]
-  rw [bddBelow_iff_subset_Ici, bddAbove_iff_subset_Iic]
-  constructor
-  · rintro ⟨⟨x, hx⟩, ⟨y, hy⟩⟩
-    refine' ⟨x, y, _⟩
-    rw [Ici_inter_Iic.symm, subset_inter_iff]
-    exact ⟨hx, hy⟩
-  · rintro ⟨x, ⟨y, hxy⟩⟩
-    rw [Ici_inter_Iic.symm, subset_inter_iff] at hxy
-    exact ⟨⟨x, hxy.1⟩, ⟨y, hxy.2⟩⟩
+  simp [Ici_inter_Iic.symm, subset_inter_iff, bddBelow_iff_subset_Ici,
+    bddAbove_iff_subset_Iic, exists_and_left, exists_and_right, iff_self]
 #align bdd_below_bdd_above_iff_subset_Icc bddBelow_bddAbove_iff_subset_Icc
 
 /-!
