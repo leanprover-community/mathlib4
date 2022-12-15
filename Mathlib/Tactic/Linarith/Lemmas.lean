@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Algebra.GroupPower.Order
 
 /-!
 # Lemmas for `linarith`.
@@ -76,6 +77,3 @@ open Function
 theorem lt_zero_of_zero_gt [Zero α] [LT α] {a : α} (h : 0 > a) : a < 0 := h
 
 theorem le_zero_of_zero_ge [Zero α] [LE α] {a : α} (h : 0 ≥ a) : a ≤ 0 := h
-
-set_option warningAsError false in
-theorem sq_nonneg [LinearOrderedRing R] (a : R) : 0 ≤ a ^ 2 := sorry
