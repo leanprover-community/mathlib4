@@ -6,6 +6,7 @@ Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 import Mathlib.Data.Nat.Gcd.Basic
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Int.Dvd.Basic
+import Mathlib.Order.Bounds.Basic
 import Mathlib.Tactic.NormNum
 
 /-!
@@ -365,8 +366,8 @@ theorem ne_zero_of_gcd {x y : ℤ} (hc : gcd x y ≠ 0) : x ≠ 0 ∨ y ≠ 0 :=
 
 theorem exists_gcd_one {m n : ℤ} (H : 0 < gcd m n) :
     ∃ m' n' : ℤ, gcd m' n' = 1 ∧ m = m' * gcd m n ∧ n = n' * gcd m n :=
-  ⟨_, _, gcd_div_gcd_div_gcd H, (Int.div_mul_cancel (gcd_dvd_left m n)).symm,
-    (Int.div_mul_cancel (gcd_dvd_right m n)).symm⟩
+  ⟨_, _, gcd_div_gcd_div_gcd H, (Int.ediv_mul_cancel (gcd_dvd_left m n)).symm,
+    (Int.ediv_mul_cancel (gcd_dvd_right m n)).symm⟩
 #align int.exists_gcd_one Int.exists_gcd_one
 
 theorem exists_gcd_one' {m n : ℤ} (H : 0 < gcd m n) :
@@ -427,8 +428,8 @@ theorem gcd_least_linear {a b : ℤ} (ha : a ≠ 0) :
     IsLeast { n : ℕ | 0 < n ∧ ∃ x y : ℤ, ↑n = a * x + b * y } (a.gcd b) := by
   simp_rw [← gcd_dvd_iff]
   constructor
-  · simpa [and_true_iff, dvd_refl, Set.mem_set_of_eq] using gcd_pos_of_non_zero_left b ha
-  · simp only [lowerBounds, and_imp, Set.mem_set_of_eq]
+  · simpa [and_true_iff, dvd_refl, Set.mem_setOf_eq] using gcd_pos_of_non_zero_left b ha
+  · simp only [lowerBounds, and_imp, Set.mem_setOf_eq]
     exact fun n hn_pos hn => Nat.le_of_dvd hn_pos hn
 #align int.gcd_least_linear Int.gcd_least_linear
 
