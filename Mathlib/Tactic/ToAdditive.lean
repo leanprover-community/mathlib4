@@ -465,11 +465,13 @@ declaration. -/
 partial def transformDeclAux
   (cfg : Config) (pre tgt_pre : Name) : Name → CoreM Unit := fun src ↦ do
   let env ← getEnv
-  -- if this declaration is not `pre` or an internal declaration, we do nothing.
-  if (findTranslation? env src).isSome then
+  trace[to_additive_detail] "visiting {src}"
+  -- if we have already translated this declaration, we do nothing.
+  if (findTranslation? env src).isSome && src != pre then
       return
-  -- if this declaration is not `pre` or an internal declaration, we do nothing.
-  if not (src == pre || isInternal' src) then
+  -- if this declaration is not `pre` and not an internal declaration, we return an error,
+  -- since we should have already translated this declaration.
+  if src != pre && !isInternal' src then
     throwError "The declaration {pre} depends on the declaration {src} which is in the namespace {
       pre}, but does not have the `@[to_additive]` attribute. This is not supported.\n{""
       }Workaround: move {src} to a different namespace."
@@ -511,7 +513,7 @@ partial def transformDeclAux
       of `to_additive.attr`, section `Troubleshooting`.
       Failed to add declaration\n{tgt}:\n{msg}"
     | _ => panic! "unreachable"
-  if isNoncomputable (← getEnv) src then
+  if isNoncomputable env src then
     addDecl trgDecl.toDeclaration!
     setEnv $ addNoncomputable (← getEnv) tgt
   else
@@ -839,14 +841,15 @@ def addToAdditiveAttr (src : Name) (cfg : Config) : AttrM Unit :=
     -- we allow using this attribute if it's only to add the reorder configuration
     if findTranslation? (← getEnv) src |>.isSome then
       return
-  insertTranslation src tgt
   let firstMultArg ← MetaM.run' <| firstMultiplicativeArg src
   if firstMultArg != 0 then
     trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
     relevantArgAttr.add src firstMultArg
+  insertTranslation src tgt
   if alreadyExists then
-    -- since `tgt` already exists, we just need to add translations `src.x ↦ tgt.x'`
-    -- for any subfields.
+    -- since `tgt` already exists, we just need to copy metadata and
+    -- add translations `src.x ↦ tgt.x'` for any subfields.
+    trace[to_additive_detail] "declaration {tgt} already exists."
     copyMetaData src tgt
     proceedFields src tgt
   else
