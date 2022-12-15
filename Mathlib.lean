@@ -196,6 +196,7 @@ import Mathlib.Data.Nat.Gcd.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Nat.PSub
+import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Nat.Upto
