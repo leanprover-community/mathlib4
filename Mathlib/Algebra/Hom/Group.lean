@@ -105,7 +105,7 @@ end Zero
 namespace NeZero
 
 theorem of_map {R M} [Zero R] [Zero M] [ZeroHomClass F R M]
-  (f : F) {r : R} [NeZero (f r)] : NeZero r :=
+  (f : F) {r : R} [neZero : NeZero (f r)] : NeZero r :=
   ⟨fun h => ne (f r) <| by rw [h]; exact ZeroHomClass.map_zero f⟩
 #align ne_zero.of_map NeZero.of_map
 
@@ -216,6 +216,10 @@ instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
 #align one_hom.one_hom_class OneHom.oneHomClass
 #align zero_hom.zero_hom_class ZeroHom.zeroHomClass
 
+/-- See Note [custom simps projection] -/
+@[to_additive "See Note custom simps projection"]
+def OneHom.Simps.apply (f : OneHom M N) : M → N := f
+
 @[simp, to_additive]
 theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
   OneHomClass.map_one f
@@ -295,6 +299,10 @@ instance MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
 #align mul_hom.mul_hom_class MulHom.mulHomClass
 #align add_hom.add_hom_class AddHom.addHomClass
 
+/-- See Note [custom simps projection] -/
+@[to_additive "See Note custom simps projection"]
+def MulHom.Simps.apply (f : M →ₙ* N) : M → N := f
+
 @[simp, to_additive]
 theorem map_mul [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
   MulHomClass.map_mul f x y
@@ -353,12 +361,16 @@ instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
     cases f
     cases g
     congr
-    apply OneHom.oneHomClass.coe_injective'
+    apply FunLike.coe_injective'
     exact h
   map_mul := MonoidHom.map_mul'
   map_one f := f.toOneHom.map_one'
 #align monoid_hom.monoid_hom_class MonoidHom.monoidHomClass
 #align add_monoid_hom.add_monoid_hom_class AddMonoidHom.addMonoidHomClass
+
+/-- See Note [custom simps projection] -/
+@[to_additive "See Note custom simps projection"]
+def MonoidHom.Simps.apply (f : M →* N) : M → N := f
 
 -- Porting note: we need to add an extra `to_additive`.
 -- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
@@ -474,12 +486,15 @@ instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M �
     cases f
     cases g
     congr
-    apply ZeroHom.zeroHomClass.coe_injective'
+    apply FunLike.coe_injective'
     exact h
   map_mul := MonoidWithZeroHom.map_mul'
   map_one := MonoidWithZeroHom.map_one'
   map_zero f := f.map_zero'
 #align monoid_with_zero_hom.monoid_with_zero_hom_class MonoidWithZeroHom.monoidWithZeroHomClass
+
+/-- See Note [custom simps projection] -/
+def MonoidWithZeroHom.Simps.apply (f : M →*₀ N) : M → N := f
 
 /-- Any type that is a `MonoidWithZeroHomClass` can be cast into a `MonoidWithZeroHom`. -/
 instance [MonoidWithZeroHomClass F M N] : CoeTC F (M →*₀ N) :=
