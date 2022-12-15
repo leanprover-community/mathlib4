@@ -20,7 +20,7 @@ Some notable definitions are:
 
 * `Equiv.ofInjective`: an injective function is (noncomputably) equivalent to its range.
 * `Equiv.setSongr`: two equal sets are equivalent as types.
-* `Equiv.set.union`: a disjoint union of sets is equivalent to their `sum`.
+* `Equiv.set.union`: a disjoint union of sets is equivalent to their `Sum`.
 
 This file is separate from `Equiv/Basic` such that we do not require the full lattice structure
 on sets before defining what an equivalence is.
@@ -48,12 +48,12 @@ theorem _root_.Set.mem_image_equiv {α β} {S : Set α} {f : α ≃ β} {x : β}
   Set.ext_iff.mp (f.image_eq_preimage S) x
 #align set.mem_image_equiv Set.mem_image_equiv
 
-/-- Alias for `equiv.image_eq_preimage` -/
+/-- Alias for `Equiv.image_eq_preimage` -/
 theorem _root_.Set.image_equiv_eq_preimage_symm {α β} (S : Set α) (f : α ≃ β) : f '' S = f.symm ⁻¹' S :=
   f.image_eq_preimage S
 #align set.image_equiv_eq_preimage_symm Set.image_equiv_eq_preimage_symm
 
-/-- Alias for `equiv.image_eq_preimage` -/
+/-- Alias for `Equiv.image_eq_preimage` -/
 theorem _root_.Set.preimage_equiv_eq_image_symm {α β} (S : Set α) (f : β ≃ α) : f ⁻¹' S = f.symm '' S :=
   (f.symm.image_eq_preimage S).symm
 #align set.preimage_equiv_eq_image_symm Set.preimage_equiv_eq_image_symm
@@ -216,12 +216,12 @@ protected def univ (α) : @univ α ≃ α :=
   ⟨Subtype.val, fun a => ⟨a, trivial⟩, fun ⟨_, _⟩ => rfl, fun _ => rfl⟩
 #align equiv.set.univ Equiv.Set.univ
 
-/-- An empty set is equivalent to the `empty` type. -/
+/-- An empty set is equivalent to the `Empty` type. -/
 protected def empty (α) : (∅ : Set α) ≃ Empty :=
   equivEmpty _
 #align equiv.set.empty Equiv.Set.empty
 
-/-- An empty set is equivalent to a `pempty` type. -/
+/-- An empty set is equivalent to a `PEmpty` type. -/
 protected def pempty (α) : (∅ : Set α) ≃ PEmpty :=
   equivPEmpty _
 #align equiv.set.pempty Equiv.Set.pempty
@@ -273,7 +273,7 @@ theorem union_symm_apply_right {α} {s t : Set α} [DecidablePred fun x => x ∈
   rfl
 #align equiv.set.union_symm_apply_right Equiv.Set.union_symm_apply_right
 
-/-- A singleton set is equivalent to a `punit` type. -/
+/-- A singleton set is equivalent to a `PUnit` type. -/
 protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
   ⟨fun _ => PUnit.unit, fun _ => ⟨a, mem_singleton _⟩, fun ⟨x, h⟩ => by
     simp at h
@@ -284,7 +284,7 @@ protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
 --Porting note: Removed attribute @[simps apply symmApply]
 /-- Equal sets are equivalent.
 
-TODO: this is the same as `equiv.set_congr`! -/
+TODO: this is the same as `equiv.setCongr`! -/
 protected def ofEq {α : Type u} {s t : Set α} (h : s = t) : s ≃ t :=
   Equiv.setCongr h
 #align equiv.set.of_eq Equiv.Set.ofEq
@@ -370,7 +370,7 @@ theorem sumCompl_symm_apply_compl {α : Type _} {s : Set α} [DecidablePred (· 
   cases' x with x hx; exact Set.sumCompl_symm_apply_of_not_mem hx
 #align equiv.set.sum_compl_symm_apply_compl Equiv.Set.sumCompl_symm_apply_compl
 
-/-- `sum_diff_subset s t` is the natural equivalence between
+/-- `sumDiffSubset s t` is the natural equivalence between
 `s ⊕ (t \ s)` and `t`, where `s` and `t` are two sets. -/
 protected def sumDiffSubset {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)] :
     Sum s (t \ s : Set α) ≃ t :=
@@ -551,8 +551,7 @@ then its image under `rangeSplitting f` is in bijection (via `f`) with `s`.
 -/
 @[simps]
 noncomputable def rangeSplittingImageEquiv {α β : Type _} (f : α → β) (s : Set (range f)) :
-    rangeSplitting f '' s ≃
-      s where
+    rangeSplitting f '' s ≃ s where
   toFun x :=
     ⟨⟨f x, by simp⟩, by
       rcases x with ⟨x, ⟨y, ⟨m, rfl⟩⟩⟩
@@ -569,9 +568,9 @@ end Set
 /-- If `f : α → β` has a left-inverse when `α` is nonempty, then `α` is computably equivalent to the
 range of `f`.
 
-While awkward, the `nonempty α` hypothesis on `f_inv` and `hf` allows this to be used when `α` is
-empty too. This hypothesis is absent on analogous definitions on stronger `equiv`s like
-`linear_equiv.of_left_inverse` and `ring_equiv.of_left_inverse` as their typeclass assumptions
+While awkward, the `Nonempty α` hypothesis on `f_inv` and `hf` allows this to be used when `α` is
+empty too. This hypothesis is absent on analogous definitions on stronger `Equiv`s like
+`LinearEquiv.ofLeftInverse` and `RingEquiv.ofLeftInverse` as their typeclass assumptions
 are already sufficient to ensure non-emptiness. -/
 @[simps]
 def ofLeftInverse {α β : Sort _} (f : α → β) (f_inv : Nonempty α → β → α)
@@ -587,7 +586,7 @@ def ofLeftInverse {α β : Sort _} (f : α → β) (f_inv : Nonempty α → β �
 /-- If `f : α → β` has a left-inverse, then `α` is computably equivalent to the range of `f`.
 
 Note that if `α` is empty, no such `f_inv` exists and so this definition can't be used, unlike
-the stronger but less convenient `of_left_inverse`. -/
+the stronger but less convenient `ofLeftInverse`. -/
 abbrev ofLeftInverse' {α β : Sort _} (f : α → β) (f_inv : β → α) (hf : LeftInverse f_inv f) :
     α ≃ range f :=
   ofLeftInverse f (fun _ => f_inv) fun _ => hf
@@ -599,48 +598,47 @@ noncomputable def ofInjective {α β} (f : α → β) (hf : Injective f) : α �
   Equiv.ofLeftInverse f (fun _ => Function.invFun f) fun _ => Function.leftInverse_invFun hf
 #align equiv.of_injective Equiv.ofInjective
 
-theorem apply_of_injective_symm {α β} {f : α → β} (hf : Injective f) (b : range f) :
+theorem apply_ofInjective_symm {α β} {f : α → β} (hf : Injective f) (b : range f) :
     f ((ofInjective f hf).symm b) = b :=
   Subtype.ext_iff.1 <| (ofInjective f hf).apply_symm_apply b
-#align equiv.apply_of_injective_symm Equiv.apply_of_injective_symm
+#align equiv.apply_of_injective_symm Equiv.apply_ofInjective_symm
 
 @[simp]
-theorem of_injective_symm_apply {α β} {f : α → β} (hf : Injective f) (a : α) :
+theorem ofInjective_symm_apply {α β} {f : α → β} (hf : Injective f) (a : α) :
     (ofInjective f hf).symm ⟨f a, ⟨a, rfl⟩⟩ = a := by
   apply (ofInjective f hf).injective
-  simp [apply_of_injective_symm hf]
-#align equiv.of_injective_symm_apply Equiv.of_injective_symm_apply
+  simp [apply_ofInjective_symm hf]
+#align equiv.of_injective_symm_apply Equiv.ofInjective_symm_apply
 
-theorem coe_of_injective_symm {α β} {f : α → β} (hf : Injective f) :
+theorem coe_ofInjective_symm {α β} {f : α → β} (hf : Injective f) :
     ((ofInjective f hf).symm : range f → α) = rangeSplitting f := by
   ext ⟨y, x, rfl⟩
   apply hf
   simp [apply_rangeSplitting f]
-#align equiv.coe_of_injective_symm Equiv.coe_of_injective_symm
+#align equiv.coe_of_injective_symm Equiv.coe_ofInjective_symm
 
 @[simp]
-theorem self_comp_of_injective_symm {α β} {f : α → β} (hf : Injective f) :
+theorem self_comp_ofInjective_symm {α β} {f : α → β} (hf : Injective f) :
     f ∘ (ofInjective f hf).symm = Subtype.val :=
-  funext fun x => apply_of_injective_symm hf x
-#align equiv.self_comp_of_injective_symm Equiv.self_comp_of_injective_symm
+  funext fun x => apply_ofInjective_symm hf x
+#align equiv.self_comp_of_injective_symm Equiv.self_comp_ofInjective_symm
 
-theorem of_left_inverse_eq_of_injective {α β : Type _} (f : α → β) (f_inv : Nonempty α → β → α)
+theorem ofLeftInverse_eq_ofInjective {α β : Type _} (f : α → β) (f_inv : Nonempty α → β → α)
     (hf : ∀ h : Nonempty α, LeftInverse (f_inv h) f) :
     ofLeftInverse f f_inv hf =
       ofInjective f
         ((em (Nonempty α)).elim (fun h => (hf h).injective) fun h _ _ _ => by
           haveI : Subsingleton α := subsingleton_of_not_nonempty h
-          simp) :=
-  by
+          simp) := by
   ext
   simp
-#align equiv.of_left_inverse_eq_of_injective Equiv.of_left_inverse_eq_of_injective
+#align equiv.of_left_inverse_eq_of_injective Equiv.ofLeftInverse_eq_ofInjective
 
-theorem of_left_inverse'_eq_of_injective {α β : Type _} (f : α → β) (f_inv : β → α)
+theorem ofLeftInverse'_eq_ofInjective {α β : Type _} (f : α → β) (f_inv : β → α)
     (hf : LeftInverse f_inv f) : ofLeftInverse' f f_inv hf = ofInjective f hf.injective := by
   ext
   simp
-#align equiv.of_left_inverse'_eq_of_injective Equiv.of_left_inverse'_eq_of_injective
+#align equiv.of_left_inverse'_eq_of_injective Equiv.ofLeftInverse'_eq_ofInjective
 
 protected theorem set_forall_iff {α β} (e : α ≃ β) {p : Set α → Prop} :
     (∀ a, p a) ↔ ∀ a, p (e ⁻¹' a) :=
@@ -648,7 +646,7 @@ protected theorem set_forall_iff {α β} (e : α ≃ β) {p : Set α → Prop} :
 #align equiv.set_forall_iff Equiv.set_forall_iff
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem preimage_pi_equiv_pi_subtype_prod_symm_pi {α : Type _} {β : α → Type _} (p : α → Prop)
+theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type _} {β : α → Type _} (p : α → Prop)
     [DecidablePred p] (s : ∀ i, Set (β i)) :
     (piEquivPiSubtypeProd p β).symm ⁻¹' pi univ s =
       (pi univ fun i : { i // p i } => s i) ×ˢ pi univ fun i : { i // ¬p i } => s i := by
@@ -656,29 +654,32 @@ theorem preimage_pi_equiv_pi_subtype_prod_symm_pi {α : Type _} {β : α → Typ
   simp only [mem_preimage, mem_univ_pi, prod_mk_mem_set_prod_eq, Subtype.forall, ← forall_and]
   refine' forall_congr' fun i => _
   dsimp only [Subtype.coe_mk]
-  by_cases hi : p i <;> simp [hi]
+  -- Porting note: Two lines below were `by_cases hi <;> simp [hi]`
+  by_cases hi : p i
+  . simp [forall_prop_of_true hi, forall_prop_of_false (not_not.2 hi), hi]
+  . simp [forall_prop_of_false hi, hi, forall_prop_of_true hi]
 #align
-  equiv.preimage_pi_equiv_pi_subtype_prod_symm_pi Equiv.preimage_pi_equiv_pi_subtype_prod_symm_pi
+  equiv.preimage_pi_equiv_pi_subtype_prod_symm_pi Equiv.preimage_piEquivPiSubtypeProd_symm_pi
 
--- See also `equiv.sigma_fiber_equiv`.
-/-- `sigma_fiber_equiv f` for `f : α → β` is the natural equivalence between
+-- See also `Equiv.sigmaFiberEquiv`.
+/-- `sigmaPreimageEquiv f` for `f : α → β` is the natural equivalence between
 the type of all preimages of points under `f` and the total space `α`. -/
 @[simps]
 def sigmaPreimageEquiv {α β} (f : α → β) : (Σb, f ⁻¹' {b}) ≃ α :=
   sigmaFiberEquiv f
 #align equiv.sigma_preimage_equiv Equiv.sigmaPreimageEquiv
 
--- See also `equiv.of_fiber_equiv`.
+-- See also `Equiv.ofFiberEquiv`.
 /-- A family of equivalences between preimages of points gives an equivalence between domains. -/
 @[simps]
 def ofPreimageEquiv {α β γ} {f : α → γ} {g : β → γ} (e : ∀ c, f ⁻¹' {c} ≃ g ⁻¹' {c}) : α ≃ β :=
   Equiv.ofFiberEquiv e
 #align equiv.of_preimage_equiv Equiv.ofPreimageEquiv
 
-theorem of_preimage_equiv_map {α β γ} {f : α → γ} {g : β → γ} (e : ∀ c, f ⁻¹' {c} ≃ g ⁻¹' {c})
+theorem ofPreimageEquiv_map {α β γ} {f : α → γ} {g : β → γ} (e : ∀ c, f ⁻¹' {c} ≃ g ⁻¹' {c})
     (a : α) : g (ofPreimageEquiv e a) = f a :=
   Equiv.ofFiberEquiv_map e a
-#align equiv.of_preimage_equiv_map Equiv.of_preimage_equiv_map
+#align equiv.of_preimage_equiv_map Equiv.ofPreimageEquiv_map
 
 end Equiv
 
