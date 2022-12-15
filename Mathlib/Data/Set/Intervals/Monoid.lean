@@ -15,10 +15,11 @@ import Mathlib.Algebra.Group.Basic
 
 /-!
 # Images of intervals under `(+ d)`
+
 The lemmas in this file state that addition maps intervals bijectively. The typeclass
-`has_exists_add_of_le` is defined specifically to make them work when combined with
-`ordered_cancel_add_comm_monoid`; the lemmas below therefore apply to all
-`ordered_add_comm_group`, but also to `ℕ` and `ℝ≥0`, which are not groups.
+`ExistsAddOfLE` is defined specifically to make them work when combined with
+`OrderedCancelAddCommMonoid`; the lemmas below therefore apply to all
+`OrderedAddCommGroup`, but also to `ℕ` and `ℝ≥0`, which are not groups.
 -/
 
 
@@ -28,7 +29,7 @@ variable {M : Type _} [OrderedCancelAddCommMonoid M] [ExistsAddOfLE M] (a b c d 
 
 theorem Ici_add_bij : BijOn (· + d) (Ici a) (Ici (a + d)) := by
   refine'
-    ⟨fun x h => add_le_add_right (mem_Ici.mp h) _, (add_left_injective d).InjOn _, fun _ h => _⟩
+    ⟨fun x h => add_le_add_right (mem_Ici.mp h) _, (add_left_injective d).injOn _, fun _ h => _⟩
   obtain ⟨c, rfl⟩ := exists_add_of_le (mem_Ici.mp h)
   rw [mem_Ici, add_right_comm, add_le_add_iff_right] at h
   exact ⟨a + c, h, by rw [add_right_comm]⟩
@@ -46,28 +47,28 @@ theorem Ioi_add_bij : BijOn (· + d) (Ioi a) (Ioi (a + d)) := by
 theorem Icc_add_bij : BijOn (· + d) (Icc a b) (Icc (a + d) (b + d)) := by
   rw [← Ici_inter_Iic, ← Ici_inter_Iic]
   exact
-    (Ici_add_bij a d).inter_maps_to (fun x hx => add_le_add_right hx _) fun x hx =>
+    (Ici_add_bij a d).inter_mapsTo (fun x hx => add_le_add_right hx _) fun x hx =>
       le_of_add_le_add_right hx.2
 #align set.Icc_add_bij Set.Icc_add_bij
 
 theorem Ioo_add_bij : BijOn (· + d) (Ioo a b) (Ioo (a + d) (b + d)) := by
   rw [← Ioi_inter_Iio, ← Ioi_inter_Iio]
   exact
-    (Ioi_add_bij a d).inter_maps_to (fun x hx => add_lt_add_right hx _) fun x hx =>
+    (Ioi_add_bij a d).inter_mapsTo (fun x hx => add_lt_add_right hx _) fun x hx =>
       lt_of_add_lt_add_right hx.2
 #align set.Ioo_add_bij Set.Ioo_add_bij
 
 theorem Ioc_add_bij : BijOn (· + d) (Ioc a b) (Ioc (a + d) (b + d)) := by
   rw [← Ioi_inter_Iic, ← Ioi_inter_Iic]
   exact
-    (Ioi_add_bij a d).inter_maps_to (fun x hx => add_le_add_right hx _) fun x hx =>
+    (Ioi_add_bij a d).inter_mapsTo (fun x hx => add_le_add_right hx _) fun x hx =>
       le_of_add_le_add_right hx.2
 #align set.Ioc_add_bij Set.Ioc_add_bij
 
 theorem Ico_add_bij : BijOn (· + d) (Ico a b) (Ico (a + d) (b + d)) := by
   rw [← Ici_inter_Iio, ← Ici_inter_Iio]
   exact
-    (Ici_add_bij a d).inter_maps_to (fun x hx => add_lt_add_right hx _) fun x hx =>
+    (Ici_add_bij a d).inter_mapsTo (fun x hx => add_lt_add_right hx _) fun x hx =>
       lt_of_add_lt_add_right hx.2
 #align set.Ico_add_bij Set.Ico_add_bij
 
