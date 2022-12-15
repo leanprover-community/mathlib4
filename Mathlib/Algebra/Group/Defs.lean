@@ -535,6 +535,7 @@ attribute [to_additive] Monoid.Pow
 section
 
 variable {M : Type _} [Monoid M]
+
 @[simp, to_additive]
 theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
   rfl
