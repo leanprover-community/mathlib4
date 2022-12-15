@@ -1221,7 +1221,7 @@ theorem piecewise_univ [∀ i : α, Decidable (i ∈ (Set.univ : Set α))] : pie
   simp [piecewise]
 #align set.piecewise_univ Set.piecewise_univ
 
-@[simp]
+--@[simp] -- Porting note: simpNF linter complains
 theorem piecewise_insert_self {j : α} [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g j = f j := by simp [piecewise]
 #align set.piecewise_insert_self Set.piecewise_insert_self
