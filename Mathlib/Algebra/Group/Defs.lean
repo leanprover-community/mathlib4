@@ -113,6 +113,7 @@ register_simp_attr field_simps
 section Mul
 
 variable [Mul G]
+
 /-- `leftMul g` denotes left multiplication by `g` -/
 @[to_additive "`left_add g` denotes left addition by `g`"]
 def leftMul : G → G → G := fun g : G ↦ fun x : G ↦ g * x
