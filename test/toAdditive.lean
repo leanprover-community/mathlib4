@@ -232,8 +232,9 @@ def Ones : ℕ → Q(Nat)
 | (n+1) => q($(Ones n) + $(Ones n))
 
 -- this test just exists to see if this finishes in finite time. It should take <100ms.
+-- #time
 run_cmd do
-  let e : Expr := Ones 500
+  let e : Expr := Ones 400
   let _ ← Elab.Command.liftCoreM <| MetaM.run' <| ToAdditive.applyReplacementFun e
 
 
