@@ -132,17 +132,7 @@ theorem not_bddBelow_iff' : ¬BddBelow s ↔ ∀ x, ∃ y ∈ s, ¬x ≤ y :=
 than `x`. A version for preorders is called `not_bddAbove_iff'`. -/
 theorem not_bddAbove_iff {α : Type _} [LinearOrder α] {s : Set α} :
     ¬BddAbove s ↔ ∀ x, ∃ y ∈ s, x < y := by
-      rw [not_bddAbove_iff'] -- Porting note: `rw [not_le]` doesn't rw under `∃`
-      constructor
-      · intros h x
-        let ⟨y, hy1, hy2⟩ := h x
-        rw [not_le] at hy2
-        exact ⟨y, hy1, hy2⟩
-      · intros h x
-        let ⟨y, hy1, hy2⟩ := h x
-        refine' ⟨y, hy1, _⟩
-        rw [not_le]
-        exact hy2
+  simp only [not_bddAbove_iff', not_le, iff_self]
 #align not_bdd_above_iff not_bddAbove_iff
 
 /-- A set `s` is not bounded below if and only if for each `x` there exists `y ∈ s` that is less
@@ -756,9 +746,9 @@ theorem is_glb_Ioc {a b : γ} (hab : a < b) : IsGLB (Ioc a b) a :=
   (is_glb_Ioo hab).of_subset_of_superset (is_glb_Icc hab.le) Ioo_subset_Ioc_self Ioc_subset_Icc_self
 #align is_glb_Ioc is_glb_Ioc
 
-theorem lower_bound_Ioc {a b : γ} (hab : a < b) : lowerBounds (Ioc a b) = Iic a :=
+theorem lowerBounds_Ioc {a b : γ} (hab : a < b) : lowerBounds (Ioc a b) = Iic a :=
   (is_glb_Ioc hab).lowerBounds_eq
-#align lower_bound_Ioc lower_bound_Ioc
+#align lower_bound_Ioc lowerBounds_Ioc
 
 end
 
