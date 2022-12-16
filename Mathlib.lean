@@ -174,6 +174,7 @@ import Mathlib.Data.Int.Cast.Prod
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Int.Div
 import Mathlib.Data.Int.Dvd.Basic
+import Mathlib.Data.Int.Dvd.Pow
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Int.Order.Lemmas
