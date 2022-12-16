@@ -330,23 +330,35 @@ where /-- Implementation of `applyReplacementFun`. -/
             let ga := r g.appArg!
             let e₂ := mkApp2 gf x ga
             -- trace[to_additive_detail]
-            --   "applyReplacementFun: {x} contains a fixed type, so {nm} is not changed"
-            let x ← r x
-            let args ← gArgs.mapM r
-            return some $ mkApp (mkAppN gf args) x
-          /- Do not replace numerals in specific types. -/
-          let firstArg := if h : gArgs.size > 0 then gArgs[0] else x
-          if !shouldTranslateNumeral replaceAll findTranslation? ignore fixedNumeral nm firstArg then
-            -- trace[to_additive_detail] "applyReplacementFun: Do not change numeral {g.app x}"
-            return some <| g.app x
-        return e.updateApp! (← r g) (← r x)
-      | .proj n₀ idx e => do
-        let n₁ := n₀.mapPrefix findTranslation?
-        -- if n₀ != n₁ then
-        --   trace[to_additive_detail] "applyReplacementFun: in projection {e}.{idx} of type {n₀}, {""
-        --     }replace type with {n₁}"
-        return some <| .proj n₁ idx <| ← r e
-      | _ => return none
+            --   "applyReplacementFun: reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter:  {e₂}"
+            return some e₂
+        /- Test if the head should not be replaced. -/
+        let c1 := isRelevant nm gArgs.size
+        let c2 := gf.isConst
+        let c3 := additiveTest replaceAll findTranslation? ignore x
+        -- if c1 && c2 && c3 then
+        --   trace[to_additive_detail]
+        --     "applyReplacementFun: {x} doesn't contain a fixed type, so we will change {nm}"
+        if c1 && c2 && not c3 then
+          -- the test failed, so don't update the function body.
+          -- trace[to_additive_detail]
+          --   "applyReplacementFun: {x} contains a fixed type, so {nm} is not changed"
+          let x ← r x
+          let args ← gArgs.mapM r
+          return some $ mkApp (mkAppN gf args) x
+        /- Do not replace numerals in specific types. -/
+        let firstArg := if h : gArgs.size > 0 then gArgs[0] else x
+        if !shouldTranslateNumeral replaceAll findTranslation? ignore fixedNumeral nm firstArg then
+          -- trace[to_additive_detail] "applyReplacementFun: Do not change numeral {g.app x}"
+          return some <| g.app x
+      return e.updateApp! (← r g) (← r x)
+    | .proj n₀ idx e => do
+      let n₁ := n₀.mapPrefix findTranslation?
+      -- if n₀ != n₁ then
+      --   trace[to_additive_detail] "applyReplacementFun: in projection {e}.{idx} of type {n₀}, {""
+      --     }replace type with {n₁}"
+      return some <| .proj n₁ idx <| ← r e
+    | _ => return none
 
 /-- Eta expands `e` at most `n` times.-/
 def etaExpandN (n : Nat) (e : Expr): MetaM Expr := do
