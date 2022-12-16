@@ -319,13 +319,14 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [Faithful G] (obj : C →
   { obj, map := @map,
     map_id := by
       intros X
-      refine G.map_injective <| eq_of_heq <| HEq.trans h_map ?_
+      -- Porting note: The mathlib3 proof uses the `trans` tactic, which didn't work.
+      refine G.map_injective <| eq_of_heq <| h_map.trans ?_
       simp only [Functor.map_id]
       convert HEq.refl (𝟙 (F.obj X))
       all_goals { apply h_obj }
     map_comp := by
       intros X Y Z f g
-      refine G.map_injective <| eq_of_heq <| HEq.trans h_map ?_
+      refine G.map_injective <| eq_of_heq <| h_map.trans ?_
       simp only [Functor.map_comp]
       convert HEq.refl (F.map f ≫ F.map g)
       all_goals { try { apply h_obj } <;> apply h_map } }
