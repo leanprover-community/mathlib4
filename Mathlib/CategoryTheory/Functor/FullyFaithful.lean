@@ -326,13 +326,13 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [Faithful G] (obj : C →
       -- rw [F.map_id, G.map_id, h_obj X],
       refine @trans _ Eq _ (G.map (map (𝟙 X))) ?_ (𝟙 (G.obj (obj X))) ?_ ?_
       · rw [h_obj]
-        exact F.map (𝟙 X)
+        exact (F.map (𝟙 X))
       · apply eq_of_heq
         apply HEq.symm
-        simp [cast_eq_iff_heq, eq_mpr_eq_cast] -- TODO: This seems wrong, but it helped simplify...
-        rw [← F.map_id]
+        -- Porting note: TODO: This seems wrong... Figure out how to get around these cast issues
+        simp only [cast_eq_iff_heq, eq_mpr_eq_cast, heq_eq_eq]
         exact h_map.symm
-      · simp only [cast_eq_iff_heq, eq_mpr_eq_cast] -- TODO: Same here...
+      · simp only [cast_eq_iff_heq, eq_mpr_eq_cast, heq_eq_eq]
         rw [F.map_id, h_obj X],
     map_comp := by
       intro X Y Z f g
@@ -346,11 +346,10 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [Faithful G] (obj : C →
         exact (F.map (f ≫ g))
       · apply eq_of_heq
         apply HEq.symm
-        simp [cast_eq_iff_heq, eq_mpr_eq_cast] -- TODO: A magical incantation
-        rw [← F.map_comp]
+        simp only [cast_eq_iff_heq, eq_mpr_eq_cast, cast_cast, heq_eq_eq]
         exact h_map.symm
       · apply eq_of_heq
-        simp [cast_eq_iff_heq, eq_mpr_eq_cast] -- TODO: All hail its powerful glory!
+        simp only [Functor.map_comp, eq_mpr_eq_cast, cast_eq_iff_heq, cast_cast, heq_eq_eq]
         congr 1 <;> (try exact (h_obj _).symm) <;> exact h_map.symm }
 #align category_theory.faithful.div CategoryTheory.Faithful.div
 
