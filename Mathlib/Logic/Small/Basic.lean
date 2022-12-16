@@ -15,23 +15,23 @@ import Mathlib.Logic.Equiv.Set
 
 A type is `w`-small if there exists an equivalence to some `S : Type w`.
 
-We provide a noncomputable model `shrink α : Type w`, and `equiv_shrink α : α ≃ shrink α`.
+We provide a noncomputable model `Shrink α : Type w`, and `equivShrink α : α ≃ Shrink α`.
 
 A subsingleton type is `w`-small for any `w`.
 
-If `α ≃ β`, then `small.{w} α ↔ small.{w} β`.
+If `α ≃ β`, then `Small.{w} α ↔ Small.{w} β`.
 -/
 
 
 universe u w v
 
-/-- A type is `small.{w}` if there exists an equivalence to some `S : Type w`.
+/-- A type is `Small.{w}` if there exists an equivalence to some `S : Type w`.
 -/
 class Small (α : Type v) : Prop where
   equiv_small : ∃ S : Type w, Nonempty (α ≃ S)
 #align small Small
 
-/-- Constructor for `small α` from an explicit witness type and equivalence.
+/-- Constructor for `Small α` from an explicit witness type and equivalence.
 -/
 theorem Small.mk' {α : Type v} {S : Type w} (e : α ≃ S) : Small.{w} α :=
   ⟨⟨S, ⟨e⟩⟩⟩
@@ -39,7 +39,6 @@ theorem Small.mk' {α : Type v} {S : Type w} (e : α ≃ S) : Small.{w} α :=
 
 /-- An arbitrarily chosen model in `Type w` for a `w`-small type.
 -/
-@[nolint has_nonempty_instance]
 def Shrink (α : Type v) [Small.{w} α] : Type w :=
   Classical.choose (@Small.equiv_small α _)
 #align shrink Shrink
@@ -50,18 +49,19 @@ noncomputable def equivShrink (α : Type v) [Small.{w} α] : α ≃ Shrink α :=
   Nonempty.some (Classical.choose_spec (@Small.equiv_small α _))
 #align equiv_shrink equivShrink
 
-instance (priority := 100) small_self (α : Type v) : Small.{v} α :=
+--Porting note: Priority changed to 101
+instance (priority := 101) small_self (α : Type v) : Small.{v} α :=
   Small.mk' <| Equiv.refl α
 #align small_self small_self
 
 theorem small_map {α : Type _} {β : Type _} [hβ : Small.{w} β] (e : α ≃ β) : Small.{w} α :=
-  let ⟨γ, ⟨f⟩⟩ := hβ.equiv_small
+  let ⟨_, ⟨f⟩⟩ := hβ.equiv_small
   Small.mk' (e.trans f)
 #align small_map small_map
 
 theorem small_lift (α : Type u) [hα : Small.{v} α] : Small.{max v w} α :=
-  let ⟨⟨γ, ⟨f⟩⟩⟩ := hα
-  Small.mk' <| f.trans Equiv.ulift.symm
+  let ⟨⟨_, ⟨f⟩⟩⟩ := hα
+  Small.mk' <| f.trans (Equiv.ulift.{w}).symm
 #align small_lift small_lift
 
 instance (priority := 100) small_max (α : Type v) : Small.{max w v} α :=
@@ -99,15 +99,14 @@ theorem small_of_surjective {α : Type v} {β : Type w} [Small.{u} α] {f : α �
 #align small_of_surjective small_of_surjective
 
 theorem small_subset {α : Type v} {s t : Set α} (hts : t ⊆ s) [Small.{u} s] : Small.{u} t :=
-  let f : t → s := fun x => ⟨x, hts x.Prop⟩
-  @small_of_injective _ _ _ f fun x y hxy => Subtype.ext (Subtype.mk.inj hxy)
+  let f : t → s := fun x => ⟨x, hts x.prop⟩
+  @small_of_injective _ _ _ f fun _ _ hxy => Subtype.ext (Subtype.mk.inj hxy)
 #align small_subset small_subset
 
 instance (priority := 100) small_subsingleton (α : Type v) [Subsingleton α] : Small.{w} α := by
   rcases isEmpty_or_nonempty α with ⟨⟩ <;> skip
   · apply small_map (Equiv.equivPEmpty α)
   · apply small_map Equiv.punitOfNonemptyOfSubsingleton
-    assumption'
 #align small_subsingleton small_subsingleton
 
 /-!
@@ -152,8 +151,10 @@ instance small_image {α : Type v} {β : Type w} (f : α → β) (S : Set α) [S
 
 theorem not_small_type : ¬Small.{u} (Type max u v)
   | ⟨⟨S, ⟨e⟩⟩⟩ =>
-    @Function.cantor_injective (Σα, e.symm α) (fun a => ⟨_, cast (e.3 _).symm a⟩) fun a b e =>
-      (cast_inj _).1 <| eq_of_heq (Sigma.mk.inj e).2
+    @Function.cantor_injective (Σα, e.symm α) (fun a => ⟨_, cast (e.3 _).symm a⟩) fun a b e => by
+      dsimp at e
+      injection e with h₁ h₂
+      simpa using h₂
 #align not_small_type not_small_type
 
 end
