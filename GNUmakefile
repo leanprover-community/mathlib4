@@ -10,7 +10,7 @@ build:
 test: $(addsuffix .run, $(TESTS))
 
 test/%.run: build
-	lake --dir . env lean test/$*
+	lake env lean test/$*
 
 lint: build
 	./build/bin/runLinter
