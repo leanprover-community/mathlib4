@@ -54,39 +54,45 @@ namespace Pi
 
 @[to_additive]
 instance semigroup [∀ i, Semigroup <| f i] : Semigroup (∀ i : I, f i) :=
-  { mul := (· * ·) --by intros f g i; rename_i inst; exact (inst i).mul (f i) (g i)
-    mul_assoc := by rename_i inst; intros a b c; ext i; dsimp; exact (inst i).mul_assoc _ _ _ }
+  { mul := (· * ·)
+    --pi_instance
+    mul_assoc := by rename_i inst; intros; ext i; exact (inst i).mul_assoc _ _ _ }
 #align pi.semigroup Pi.semigroup
 
 instance semigroupWithZero [∀ i, SemigroupWithZero <| f i] : SemigroupWithZero (∀ i : I, f i) :=
   { semigroup with
     zero := (0 : ∀ i, f i)
     --pi_instance
-    zero_mul := by rename_i inst _; intro; ext i; dsimp; exact (inst i).zero_mul _
-    mul_zero := by rename_i inst _; intro; ext i; dsimp; exact (inst i).mul_zero _
-    }
+    zero_mul := by rename_i inst _; intro; ext i; exact (inst i).zero_mul _
+    mul_zero := by rename_i inst _; intro; ext i; exact (inst i).mul_zero _ }
 #align pi.semigroup_with_zero Pi.semigroupWithZero
 
 @[to_additive]
-instance commSemigroup [∀ i, CommSemigroup <| f i] : CommSemigroup (∀ i : I, f i) := by
-  refine_struct { mul := (· * ·).. } <;> pi_instance_derive_field
+instance commSemigroup [∀ i, CommSemigroup <| f i] : CommSemigroup (∀ i : I, f i) :=
+  { semigroup with
+    --pi_instance
+    mul_comm := by rename_i inst _; intros; ext i; exact (inst i).mul_comm _ _
+  }
 #align pi.comm_semigroup Pi.commSemigroup
 
 @[to_additive]
-instance mulOneClass [∀ i, MulOneClass <| f i] : MulOneClass (∀ i : I, f i) := by
-  refine_struct
-      { one := (1 : ∀ i, f i)
-        mul := (· * ·).. } <;>
-    pi_instance_derive_field
+instance mulOneClass [∀ i, MulOneClass <| f i] : MulOneClass (∀ i : I, f i) :=
+  { one := (1 : ∀ i, f i)
+    mul := (· * ·)
+    --pi_instance
+    one_mul := by rename_i inst; intros; ext i; exact (inst i).one_mul _
+    mul_one := by rename_i inst; intros; ext i; exact (inst i).mul_one _
+  }
 #align pi.mul_one_class Pi.mulOneClass
 
 @[to_additive]
-instance monoid [∀ i, Monoid <| f i] : Monoid (∀ i : I, f i) := by
-  refine_struct
-      { one := (1 : ∀ i, f i)
-        mul := (· * ·)
-        npow := fun n x i => x i ^ n } <;>
-    pi_instance_derive_field
+instance monoid [∀ i, Monoid <| f i] : Monoid (∀ i : I, f i) :=
+  { semigroup, mulOneClass with
+    npow := fun n x i => x i ^ n
+    --pi_instance
+    npow_zero := by rename_i inst _ _; intros; ext i; exact (inst i).npow_zero _
+    npow_succ := by rename_i inst _ _; intros; ext i; exact (inst i).npow_succ _ _
+  }
 #align pi.monoid Pi.monoid
 
 @[to_additive]
