@@ -152,14 +152,17 @@ theorem map_ne_one_iff {M N} [MulOneClass M] [MulOneClass N] [MulEquivClass F M 
 
 end MulEquivClass
 
+@[to_additive, coe]
+def MulEquivClass.toMulEquiv [Mul α] [Mul β] [MulEquivClass F α β] (f : F) : α ≃* β where
+  toFun := f
+  invFun := EquivLike.inv f
+  left_inv := EquivLike.left_inv f
+  right_inv := EquivLike.right_inv f
+  map_mul' := MulEquivClass.map_mul f
+
 @[to_additive]
 instance [Mul α] [Mul β] [MulEquivClass F α β] : CoeTC F (α ≃* β) :=
-  ⟨fun f =>
-    { toFun := f,
-      invFun := EquivLike.inv f,
-      left_inv := EquivLike.left_inv f,
-      right_inv := EquivLike.right_inv f,
-      map_mul' := MulEquivClass.map_mul f }⟩
+  ⟨MulEquivClass.toMulEquiv⟩
 
 namespace MulEquiv
 

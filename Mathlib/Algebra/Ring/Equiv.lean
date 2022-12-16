@@ -171,24 +171,27 @@ protected theorem ext_iff {f g : R ≃+* S} : f = g ↔ ∀ x, f x = g x :=
 #align ring_equiv.ext_iff RingEquiv.ext_iff
 
 @[simp]
-theorem to_add_equiv_eq_coe (f : R ≃+* S) : f.toAddEquiv = ↑f :=
+theorem toAddEquiv_eq_coe (f : R ≃+* S) : f.toAddEquiv = ↑f :=
   rfl
-#align ring_equiv.to_add_equiv_eq_coe RingEquiv.to_add_equiv_eq_coe
+#align ring_equiv.to_add_equiv_eq_coe RingEquiv.toAddEquiv_eq_coe
 
 @[simp]
-theorem to_mul_equiv_eq_coe (f : R ≃+* S) : f.toMulEquiv = ↑f :=
+theorem toMulEquiv_eq_coe (f : R ≃+* S) : f.toMulEquiv = ↑f :=
   rfl
-#align ring_equiv.to_mul_equiv_eq_coe RingEquiv.to_mul_equiv_eq_coe
+#align ring_equiv.to_mul_equiv_eq_coe RingEquiv.toMulEquiv_eq_coe
 
-@[simp] -- What to do with `norm_cast` ?
-theorem coe_to_mul_equiv (f : R ≃+* S) : ⇑(f : R ≃* S) = f :=
+theorem test (f : R ≃+* S) : (f : R ≃* S) = f.toMulEquiv :=
   rfl
-#align ring_equiv.coe_to_mul_equiv RingEquiv.coe_to_mul_equiv
 
-@[simp] -- What to do with `norm_cast` ?
-theorem coe_to_add_equiv (f : R ≃+* S) : ⇑(f : R ≃+ S) = f :=
+@[simp, norm_cast]
+theorem coe_toMulEquiv (f : R ≃+* S) : ⇑(f : R ≃* S) = f :=
   rfl
-#align ring_equiv.coe_to_add_equiv RingEquiv.coe_to_add_equiv
+#align ring_equiv.coe_to_mul_equiv RingEquiv.coe_toMulEquiv
+
+@[simp, norm_cast]
+theorem coe_toAddEquiv (f : R ≃+* S) : ⇑(f : R ≃+ S) = f :=
+  rfl
+#align ring_equiv.coe_to_add_equiv RingEquiv.coe_toAddEquiv
 
 /-- The `ring_equiv` between two semirings with a unique element. -/
 def ringEquivOfUnique {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] : M ≃+* N :=
@@ -649,7 +652,7 @@ def toRingHom (e : R ≃+* S) : R →+* S :=
   { e.toMulEquiv.toMonoidHom, e.toAddEquiv.toAddMonoidHom with }
 #align ring_equiv.to_ring_hom RingEquiv.toRingHom
 
-theorem to_ring_hom_injective : Function.Injective (toRingHom : R ≃+* S → R →+* S) := fun f g h =>
+theorem to_ring_hom_injective : Function.Injective (toRingHom : R ≃+* S → R →+* S) := fun _ _ h =>
   RingEquiv.ext (RingHom.ext_iff.1 h)
 #align ring_equiv.to_ring_hom_injective RingEquiv.to_ring_hom_injective
 
