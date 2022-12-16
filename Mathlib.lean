@@ -269,6 +269,7 @@ import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Init.Data.Prod
 import Mathlib.Init.Data.Quot
