@@ -299,67 +299,66 @@ def applyReplacementFun (e : Expr) : MetaM Expr := do
   return aux ((← getOptions).getBool `to_additive.replaceAll)
       (findTranslation? <| ← getEnv) reorderFn (ignoreArgsAttr.find? env)
       (fixedNumeralAttr.find? env) isRelevant e
-where
-  /-- Implementation of `applyReplacementFun`. -/
+where /-- Implementation of `applyReplacementFun`. -/
   aux (replaceAll : Bool) (findTranslation? : Name → Option Name)
     (reorderFn : Name → List ℕ) (ignore : Name → Option (List ℕ))
     (fixedNumeral : Name → Option Bool) (isRelevant : Name → ℕ → Bool) : Expr → Expr :=
-    Lean.Expr.replaceRec fun r e ↦ Id.run do
-      -- trace[to_additive_detail] "applyReplacementFun: replace at {e}"
-      match e with
-      | .lit (.natVal 1) => pure <| mkRawNatLit 0
-      | .const n₀ ls => do
-        let n₁ := n₀.mapPrefix findTranslation?
-        -- if n₀ != n₁ then
-        --   trace[to_additive_detail] "applyReplacementFun: {n₀} → {n₁}"
-        let ls : List Level := if 1 ∈ reorderFn n₀ then ls.swapFirstTwo else ls
-        return some <| Lean.mkConst n₁ ls
-      | .app g x => do
-        let gf := g.getAppFn
-        if let some nm := gf.constName? then
-          let gArgs := g.getAppArgs
-          -- e = `(nm y₁ .. yₙ x)
-          -- trace[to_additive_detail] "applyReplacementFun: app {nm} {gArgs} {x}"
-          /- Test if arguments should be reordered. -/
-          if h : gArgs.size > 0 then
-            let c1 : Bool := gArgs.size ∈ reorderFn nm
-            let c2 := additiveTest replaceAll findTranslation? ignore gArgs[0]
-            if c1 && c2 then
-              -- interchange `x` and the last argument of `g`
-              let x := r x
-              let gf := r g.appFn!
-              let ga := r g.appArg!
-              let e₂ := mkApp2 gf x ga
-              -- trace[to_additive_detail]
-              --   "applyReplacementFun: reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter:  {e₂}"
-              return some e₂
-          /- Test if the head should not be replaced. -/
-          let c1 := isRelevant nm gArgs.size
-          let c2 := gf.isConst
-          let c3 := additiveTest replaceAll findTranslation? ignore x
-          -- if c1 && c2 && c3 then
-          --   trace[to_additive_detail]
-          --     "applyReplacementFun: {x} doesn't contain a fixed type, so we will change {nm}"
-          if c1 && c2 && not c3 then
-            -- the test failed, so don't update the function body.
+  Lean.Expr.replaceRec fun r e ↦ Id.run do
+    -- trace[to_additive_detail] "applyReplacementFun: replace at {e}"
+    match e with
+    | .lit (.natVal 1) => pure <| mkRawNatLit 0
+    | .const n₀ ls => do
+      let n₁ := n₀.mapPrefix findTranslation?
+      -- if n₀ != n₁ then
+      --   trace[to_additive_detail] "applyReplacementFun: {n₀} → {n₁}"
+      let ls : List Level := if 1 ∈ reorderFn n₀ then ls.swapFirstTwo else ls
+      return some <| Lean.mkConst n₁ ls
+    | .app g x => do
+      let gf := g.getAppFn
+      if let some nm := gf.constName? then
+        let gArgs := g.getAppArgs
+        -- e = `(nm y₁ .. yₙ x)
+        -- trace[to_additive_detail] "applyReplacementFun: app {nm} {gArgs} {x}"
+        /- Test if arguments should be reordered. -/
+        if h : gArgs.size > 0 then
+          let c1 : Bool := gArgs.size ∈ reorderFn nm
+          let c2 := additiveTest replaceAll findTranslation? ignore gArgs[0]
+          if c1 && c2 then
+            -- interchange `x` and the last argument of `g`
+            let x := r x
+            let gf := r g.appFn!
+            let ga := r g.appArg!
+            let e₂ := mkApp2 gf x ga
             -- trace[to_additive_detail]
-            --   "applyReplacementFun: {x} contains a fixed type, so {nm} is not changed"
-            let x ← r x
-            let args ← gArgs.mapM r
-            return some $ mkApp (mkAppN gf args) x
-          /- Do not replace numerals in specific types. -/
-          let firstArg := if h : gArgs.size > 0 then gArgs[0] else x
-          if !shouldTranslateNumeral replaceAll findTranslation? ignore fixedNumeral nm firstArg then
-            -- trace[to_additive_detail] "applyReplacementFun: Do not change numeral {g.app x}"
-            return some <| g.app x
-        return e.updateApp! (← r g) (← r x)
-      | .proj n₀ idx e => do
-        let n₁ := n₀.mapPrefix findTranslation?
-        -- if n₀ != n₁ then
-        --   trace[to_additive_detail] "applyReplacementFun: in projection {e}.{idx} of type {n₀}, {""
-        --     }replace type with {n₁}"
-        return some <| .proj n₁ idx <| ← r e
-      | _ => return none
+            --   "applyReplacementFun: reordering {nm}: {x} ↔ {ga}\nBefore: {e}\nAfter:  {e₂}"
+            return some e₂
+        /- Test if the head should not be replaced. -/
+        let c1 := isRelevant nm gArgs.size
+        let c2 := gf.isConst
+        let c3 := additiveTest replaceAll findTranslation? ignore x
+        -- if c1 && c2 && c3 then
+        --   trace[to_additive_detail]
+        --     "applyReplacementFun: {x} doesn't contain a fixed type, so we will change {nm}"
+        if c1 && c2 && not c3 then
+          -- the test failed, so don't update the function body.
+          -- trace[to_additive_detail]
+          --   "applyReplacementFun: {x} contains a fixed type, so {nm} is not changed"
+          let x ← r x
+          let args ← gArgs.mapM r
+          return some $ mkApp (mkAppN gf args) x
+        /- Do not replace numerals in specific types. -/
+        let firstArg := if h : gArgs.size > 0 then gArgs[0] else x
+        if !shouldTranslateNumeral replaceAll findTranslation? ignore fixedNumeral nm firstArg then
+          -- trace[to_additive_detail] "applyReplacementFun: Do not change numeral {g.app x}"
+          return some <| g.app x
+      return e.updateApp! (← r g) (← r x)
+    | .proj n₀ idx e => do
+      let n₁ := n₀.mapPrefix findTranslation?
+      -- if n₀ != n₁ then
+      --   trace[to_additive_detail] "applyReplacementFun: in projection {e}.{idx} of type {n₀}, {""
+      --     }replace type with {n₁}"
+      return some <| .proj n₁ idx <| ← r e
+    | _ => return none
 
 /-- Eta expands `e` at most `n` times.-/
 def etaExpandN (n : Nat) (e : Expr): MetaM Expr := do
