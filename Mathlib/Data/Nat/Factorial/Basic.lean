@@ -287,7 +287,7 @@ theorem pow_lt_ascFactorial' (n k : ℕ) : (n + 1) ^ (k + 2) < n.ascFactorial (k
 
 theorem pow_lt_ascFactorial (n : ℕ) : ∀ {k : ℕ}, 2 ≤ k → (n + 1) ^ k < n.ascFactorial k
   | 0 => by rintro ⟨⟩
-  | 1 => by rintro (_ | ⟨⟨⟩⟩)
+  | 1 => by intro; contradiction
   | k + 2 => fun _ => pow_lt_ascFactorial' n k
 #align nat.pow_lt_ascFactorial Nat.pow_lt_ascFactorial
 
@@ -302,7 +302,7 @@ theorem ascFactorial_le_pow_add (n : ℕ) : ∀ k : ℕ, n.ascFactorial k ≤ (n
 
 theorem ascFactorial_lt_pow_add (n : ℕ) : ∀ {k : ℕ}, 2 ≤ k → n.ascFactorial k < (n + k) ^ k
   | 0 => by rintro ⟨⟩
-  | 1 => by rintro (_ | ⟨⟨⟩⟩)
+  | 1 => by intro; contradiction
   | k + 2 => fun _ => by
     rw [ascFactorial_succ, pow_succ]
     refine'
