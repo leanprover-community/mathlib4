@@ -5,8 +5,9 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Tactic.Convert
 import Mathlib.Init.Data.Int.Order
+import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Order.Monotone
+import Mathlib.Order.Monotone.Basic
 import Mathlib.Logic.Nontrivial
 
 /-!
@@ -22,6 +23,59 @@ open Nat
 namespace Int
 
 instance : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
+
+instance : CommRing ℤ where
+  zero_mul := Int.zero_mul
+  mul_zero := Int.mul_zero
+  mul_comm := Int.mul_comm
+  left_distrib := Int.mul_add
+  right_distrib := Int.add_mul
+  mul_one := Int.mul_one
+  one_mul := Int.one_mul
+  npow n x := x ^ n
+  npow_zero _ := rfl
+  npow_succ _ _ := by rw [Int.mul_comm]; rfl
+  mul_assoc := Int.mul_assoc
+  add_comm := Int.add_comm
+  add_assoc := Int.add_assoc
+  add_zero := Int.add_zero
+  zero_add := Int.zero_add
+  add_left_neg := Int.add_left_neg
+  nsmul := (·*·)
+  nsmul_zero := Int.zero_mul
+  nsmul_succ n x := by
+    show ofNat (Nat.succ n) * x = x + ofNat n * x
+    simp only [ofNat_eq_coe]
+    rw [Int.ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
+  sub_eq_add_neg _ _ := Int.sub_eq_add_neg
+  natCast := (·)
+  natCast_zero := rfl
+  natCast_succ _ := rfl
+  intCast := (·)
+  intCast_ofNat _ := rfl
+  intCast_negSucc _ := rfl
+
+@[simp, norm_cast] lemma cast_id : Int.cast n = n := rfl
+
+@[simp] lemma ofNat_eq_cast : Int.ofNat n = n := rfl
+
+lemma cast_Nat_cast [AddGroupWithOne R] : (Int.cast (Nat.cast n) : R) = Nat.cast n :=
+  Int.cast_ofNat _
+
+@[norm_cast]
+lemma cast_eq_cast_iff_Nat (m n : ℕ) : (m : ℤ) = (n : ℤ) ↔ m = n := ofNat_inj
+
+@[simp, norm_cast]
+lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
+
+@[norm_cast]
+protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
+
+-- TODO restore @[to_additive coe_nat_zsmul]
+@[norm_cast]
+theorem _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n := zpow_ofNat ..
+theorem _root_.coe_nat_zsmul [SubNegMonoid G] (a : G) (n : ℕ) : (n : ℤ) • a = n • a := ofNat_zsmul ..
+attribute [to_additive _root_.coe_nat_zsmul] _root_.zpow_coe_nat
 
 /-! ### Extra instances to short-circuit type class resolution
 
@@ -50,18 +104,16 @@ instance : Distrib ℤ          := by infer_instance
 #align int.neg_succ_mul_coe_nat Int.negSucc_mul_ofNat
 #align int.neg_succ_mul_neg_succ Int.negSucc_mul_negSucc
 
-@[simp, norm_cast] theorem coe_nat_le {m n : ℕ} : (↑m : ℤ) ≤ ↑n ↔ m ≤ n := ofNat_le
-#align int.coe_nat_le Int.coe_nat_le
-
-@[simp, norm_cast] theorem coe_nat_lt {n m : ℕ} : (↑n : ℤ) < ↑m ↔ n < m := ofNat_lt
-#align int.coe_nat_lt Int.coe_nat_lt
+#align int.coe_nat_le Int.ofNat_le
+#align int.coe_nat_lt Int.ofNat_lt
 
 theorem coe_nat_inj' {m n : ℕ} : (↑m : ℤ) = ↑n ↔ m = n := Int.ofNat_inj
+#align int.coe_nat_inj' Int.coe_nat_inj'
 
 theorem coe_nat_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.ofNat_lt.2
 #align int.coe_nat_strict_mono Int.coe_nat_strictMono
 
-theorem coe_nat_nonneg (n : ℕ) : 0 ≤ (n : ℤ) := coe_nat_le.2 (Nat.zero_le _)
+theorem coe_nat_nonneg (n : ℕ) : 0 ≤ (n : ℤ) := ofNat_le.2 (Nat.zero_le _)
 
 #align int.neg_of_nat_ne_zero Int.negSucc_ne_zero
 #align int.zero_ne_neg_of_nat Int.zero_ne_negSucc

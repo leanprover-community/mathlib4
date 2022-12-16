@@ -107,7 +107,7 @@ instance [IsSymm ι r] [∀ i, IsSymm (α i) (s i)] : IsSymm _ (Lex r s) :=
     · exact Lex.right _ _ (symm hab)
       ⟩
 
-attribute [local instance] IsAsymm.is_irrefl
+attribute [local instance] IsAsymm.isIrrefl
 
 instance [IsAsymm ι r] [∀ i, IsAntisymm (α i) (s i)] : IsAntisymm _ (Lex r s) :=
   ⟨by

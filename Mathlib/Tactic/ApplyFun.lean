@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Keeley Hoek, Patrick Massot, Scott Morrison
 -/
 import Mathlib.Lean.Expr.Basic
-import Mathlib.Order.Monotone
+import Mathlib.Order.Monotone.Basic
 
 /-!
 # The `apply_fun` tactic.
@@ -103,7 +103,7 @@ Apply a function to an equality or inequality in either a local hypothesis or th
   `apply_fun` will automatically attempt to discharge this subsidiary goal using local hypotheses,
   or if `f` is actually an `equiv`,
   or an explicit solution can be provided with `apply_fun f using P`, where `P : Injective f`.
-* If the goal is `a ≤ b` (or similarly for `a < b`), and `f` is actually an `order_iso`,
+* If the goal is `a ≤ b` (or similarly for `a < b`), and `f` is actually an `OrderIso`,
   `apply_fun f` will replace the goal with `f a ≤ f b`.
   If `f` is anything else (e.g. just a function, or an `equiv`), `apply_fun` will fail.
 

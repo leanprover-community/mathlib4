@@ -504,7 +504,7 @@ class Semigroup (G : Type u) extends Mul G where
 
 @[simps] instance {α β} [Semigroup α] [Semigroup β] : Semigroup (α × β) :=
 { mul := λ x y => (x.1 * y.1, x.2 * y.2)
-  mul_assoc := λ _ _ _ => Prod.ext' (Semigroup.mul_assoc ..) (Semigroup.mul_assoc ..) }
+  mul_assoc := λ _ _ _ => Prod.ext (Semigroup.mul_assoc ..) (Semigroup.mul_assoc ..) }
 
 -- todo: heterogenous notation_class
 -- example {α β} [Semigroup α] [Semigroup β] (x y : α × β) : x * y = (x.1 * y.1, x.2 * y.2) := by simp
@@ -526,7 +526,7 @@ instance (G : BSemigroup) : Mul G := ⟨G.op⟩
 protected def prod (G H : BSemigroup) : BSemigroup :=
 { G := G × H
   op := λ x y => (x.1 * y.1, x.2 * y.2)
-  op_assoc := λ _ _ _ => Prod.ext' (BSemigroup.op_assoc ..) (BSemigroup.op_assoc ..) }
+  op_assoc := λ _ _ _ => Prod.ext (BSemigroup.op_assoc ..) (BSemigroup.op_assoc ..) }
 
 end BSemigroup
 
@@ -889,10 +889,8 @@ example (x : Bool) {z} (h : id x = z) : myRingHom x = z := by
 
 -- set_option trace.simps.debug true
 
-@[to_additive instAddProd] -- todo: want to write simps here
+@[to_additive instAddProd, simps]
 instance {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨λ p q => ⟨p.1 * q.1, p.2 * q.2⟩⟩
-
-attribute [simps] instMulProd
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
@@ -909,9 +907,8 @@ run_cmd liftTermElabM <| do
 
 /- The names of the generated simp lemmas for the additive version are not great if the definition
   had a custom additive name -/
-@[to_additive my_add_instance] -- todo: want to write simps here
+@[to_additive my_add_instance, simps]
 instance my_instance {M N} [One M] [One N] : One (M × N) := ⟨(1, 1)⟩
-attribute [simps] my_instance
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
@@ -976,10 +973,8 @@ structure MyType :=
 --   rfl
 
 -- test that `to_additive` works with a custom name
-@[to_additive some_test2] -- todo: want to write simps here
+@[to_additive some_test2, simps]
 def some_test1 (M : Type _) [CommMonoid M] : Subtype (λ _ : M => True) := ⟨1, trivial⟩
-
-attribute [simps] some_test1
 
 run_cmd liftTermElabM <| do
   let env ← getEnv

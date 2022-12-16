@@ -8,6 +8,7 @@ import Mathlib.Order.Compare
 import Mathlib.Order.Max
 import Mathlib.Order.RelClasses
 import Mathlib.Tactic.Choose
+import Mathlib.Tactic.SimpRw
 
 /-!
 # Monotonicity
@@ -335,11 +336,11 @@ protected theorem Monotone.monotoneOn (hf : Monotone f) (s : Set α) : MonotoneO
 protected theorem Antitone.antitoneOn (hf : Antitone f) (s : Set α) : AntitoneOn f s :=
   fun _ _ _ _ ↦ hf.imp
 
-theorem monotoneOn_univ : MonotoneOn f Set.univ ↔ Monotone f :=
+@[simp] theorem monotoneOn_univ : MonotoneOn f Set.univ ↔ Monotone f :=
   ⟨fun h _ _ ↦ h trivial trivial, fun h ↦ h.monotoneOn _⟩
 #align monotone_on_univ monotoneOn_univ
 
-theorem antitoneOn_univ : AntitoneOn f Set.univ ↔ Antitone f :=
+@[simp] theorem antitoneOn_univ : AntitoneOn f Set.univ ↔ Antitone f :=
   ⟨fun h _ _ ↦ h trivial trivial, fun h ↦ h.antitoneOn _⟩
 #align antitone_on_univ antitoneOn_univ
 
@@ -351,11 +352,11 @@ protected theorem StrictAnti.strictAntiOn (hf : StrictAnti f) (s : Set α) : Str
   fun _ _ _ _ ↦ hf.imp
 #align strict_anti.strict_anti_on StrictAnti.strictAntiOn
 
-theorem strictMonoOn_univ : StrictMonoOn f Set.univ ↔ StrictMono f :=
+@[simp] theorem strictMonoOn_univ : StrictMonoOn f Set.univ ↔ StrictMono f :=
   ⟨fun h _ _ ↦ h trivial trivial, fun h ↦ h.strictMonoOn _⟩
 #align strict_mono_on_univ strictMonoOn_univ
 
-theorem strictAntiOn_univ : StrictAntiOn f Set.univ ↔ StrictAnti f :=
+@[simp] theorem strictAntiOn_univ : StrictAntiOn f Set.univ ↔ StrictAnti f :=
   ⟨fun h _ _ ↦ h trivial trivial, fun h ↦ h.strictAntiOn _⟩
 #align strict_anti_on_univ strictAntiOn_univ
 
@@ -792,6 +793,48 @@ theorem Antitone.strictAnti_iff_injective (hf : Antitone f) : StrictAnti f ↔ I
 #align antitone.strict_anti_iff_injective Antitone.strictAnti_iff_injective
 
 end PartialOrder
+
+variable [LinearOrder β] {f : α → β} {s : Set α} {x y : α}
+
+/-- A function between linear orders which is neither monotone nor antitone makes a dent upright or
+downright. -/
+lemma not_monotone_not_antitone_iff_exists_le_le :
+  ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a ≤ b ∧ b ≤ c ∧
+    (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
+  simp_rw [Monotone, Antitone, not_forall, not_le]
+  refine' Iff.symm ⟨_, _⟩
+  { rintro ⟨a, b, c, hab, hbc, ⟨hfab, hfcb⟩ | ⟨hfba, hfbc⟩⟩
+    exacts [⟨⟨_, _, hbc, hfcb⟩, _, _, hab, hfab⟩, ⟨⟨_, _, hab, hfba⟩, _, _, hbc, hfbc⟩] }
+  rintro ⟨⟨a, b, hab, hfba⟩, c, d, hcd, hfcd⟩
+  obtain hda | had := le_total d a
+  { obtain hfad | hfda := le_total (f a) (f d)
+    { exact ⟨c, d, b, hcd, hda.trans hab, Or.inl ⟨hfcd, hfba.trans_le hfad⟩⟩ }
+    { exact ⟨c, a, b, hcd.trans hda, hab, Or.inl ⟨hfcd.trans_le hfda, hfba⟩⟩ } }
+  obtain hac | hca := le_total a c
+  { obtain hfdb | hfbd := le_or_lt (f d) (f b)
+    { exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfcd.trans $ hfdb.trans_lt hfba, hfcd⟩⟩ }
+    obtain hfca | hfac := lt_or_le (f c) (f a)
+    { exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfca, hfcd⟩⟩ }
+    obtain hbd | hdb := le_total b d
+    { exact ⟨a, b, d, hab, hbd, Or.inr ⟨hfba, hfbd⟩⟩ }
+    { exact ⟨a, d, b, had, hdb, Or.inl ⟨hfac.trans_lt hfcd, hfbd⟩⟩ } }
+  { obtain hfdb | hfbd := le_or_lt (f d) (f b)
+    { exact ⟨c, a, b, hca, hab, Or.inl ⟨hfcd.trans $ hfdb.trans_lt hfba, hfba⟩⟩ }
+    obtain hfca | hfac := lt_or_le (f c) (f a)
+    { exact ⟨c, a, b, hca, hab, Or.inl ⟨hfca, hfba⟩⟩ }
+    obtain hbd | hdb := le_total b d
+    { exact ⟨a, b, d, hab, hbd, Or.inr ⟨hfba, hfbd⟩⟩ }
+    { exact ⟨a, d, b, had, hdb, Or.inl ⟨hfac.trans_lt hfcd, hfbd⟩⟩ } }
+
+/-- A function between linear orders which is neither monotone nor antitone makes a dent upright or
+downright. -/
+lemma not_monotone_not_antitone_iff_exists_lt_lt :
+  ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a < b ∧ b < c ∧
+    (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
+  simp_rw [not_monotone_not_antitone_iff_exists_le_le, ←and_assoc]
+  refine' exists₃_congr (fun a b c ↦ and_congr_left $
+    fun h ↦ (Ne.le_iff_lt _).and $ Ne.le_iff_lt _) <;>
+  (rintro rfl; simp at h)
 
 /-!
 ### Strictly monotone functions and `cmp`

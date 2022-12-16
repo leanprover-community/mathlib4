@@ -7,6 +7,7 @@ import Mathlib.Mathport.Rename
 import Std.Data.List.Basic
 import Std.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.List.Basic
 /-!

@@ -1,4 +1,5 @@
-import Mathlib.Mathport.Syntax
+import Mathlib.Mathport.Notation
+import Mathlib.Init.Data.Nat.Lemmas
 
 namespace Test
 

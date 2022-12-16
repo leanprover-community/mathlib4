@@ -501,10 +501,10 @@ and a Heyting implication `⇨` satisfying `x \ y = x ⊓ yᶜ` and `x ⇨ y = y
 
 This is a generalization of (classical) logic of propositions, or the powerset lattice.
 
-Since `bounded_order`, `order_bot`, and `order_top` are mixins that require `has_le`
+Since `BoundedOrder`, `OrderBot`, and `OrderTop` are mixins that require `LE`
 to be present at define-time, the `extends` mechanism does not work with them.
-Instead, we extend using the underlying `has_bot` and `has_top` data typeclasses, and replicate the
-order axioms of those classes here. A "forgetful" instance back to `bounded_order` is provided.
+Instead, we extend using the underlying `Bot` and `Top` data typeclasses, and replicate the
+order axioms of those classes here. A "forgetful" instance back to `BoundedOrder` is provided.
 -/
 class BooleanAlgebra (α : Type u) extends
     DistribLattice α, HasCompl α, SDiff α, HImp α, Top α, Bot α where

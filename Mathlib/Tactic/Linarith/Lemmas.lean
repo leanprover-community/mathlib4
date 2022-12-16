@@ -6,9 +6,11 @@ Ported by: Scott Morrison
 -/
 import Std.Tactic.Simpa
 import Std.Tactic.Lint.Basic
-import Mathlib.Algebra.Order.Ring
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Init.Data.Int.Order
+import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Algebra.GroupPower.Order
 
 /-!
 # Lemmas for `linarith`.
@@ -17,8 +19,6 @@ Those in the `Linarith` namespace should stay here.
 
 Those outside the `Linarith` namespace may be deleted as they are ported to mathlib4.
 -/
-
-set_option warningAsError false
 
 namespace Linarith
 
@@ -39,17 +39,13 @@ theorem le_of_le_of_eq {α} [OrderedSemiring α] {a b : α} (ha : a ≤ 0) (hb :
 theorem lt_of_lt_of_eq {α} [OrderedSemiring α] {a b : α} (ha : a < 0) (hb : b = 0) : a + b < 0 := by
   simp [*]
 
-@[nolint unusedArguments]
 theorem mul_neg {α} [StrictOrderedRing α] {a b : α} (ha : a < 0) (hb : 0 < b) : b * a < 0 :=
-sorry
--- have : (-b)*a > 0 := mul_pos_of_neg_of_neg (neg_neg_of_pos hb) ha
--- neg_of_neg_pos (by simpa)
+  have : (-b)*a > 0 := mul_pos_of_neg_of_neg (neg_neg_of_pos hb) ha
+  neg_of_neg_pos (by simpa)
 
-@[nolint unusedArguments]
 theorem mul_nonpos {α} [OrderedRing α] {a b : α} (ha : a ≤ 0) (hb : 0 < b) : b * a ≤ 0 :=
-sorry
--- have : (-b)*a ≥ 0 := mul_nonneg_of_nonpos_of_nonpos (le_of_lt (neg_neg_of_pos hb)) ha
--- by simpa
+  have : (-b)*a ≥ 0 := mul_nonneg_of_nonpos_of_nonpos (le_of_lt (neg_neg_of_pos hb)) ha
+  by simpa
 
 -- used alongside `mul_neg` and `mul_nonpos`, so has the same argument pattern for uniformity
 @[nolint unusedArguments]
@@ -78,35 +74,6 @@ section
 open Function
 -- These lemmas can be removed when their originals are ported.
 
-@[nolint unusedArguments]
-theorem zero_lt_one [OrderedSemiring α] [Nontrivial α] : (0 : α) < 1 := sorry
-
 theorem lt_zero_of_zero_gt [Zero α] [LT α] {a : α} (h : 0 > a) : a < 0 := h
 
 theorem le_zero_of_zero_ge [Zero α] [LE α] {a : α} (h : 0 ≥ a) : a ≤ 0 := h
-
-@[nolint unusedArguments]
-theorem sub_nonpos_of_le [AddGroup α] [LE α] [CovariantClass α α (swap (· + ·)) (· ≤ ·)] {a b : α} :
-    a ≤ b → a - b ≤ 0 := sorry
-
-@[nolint unusedArguments]
-theorem sub_neg_of_lt [AddGroup α] [LT α] [CovariantClass α α (swap (· + ·)) (· < ·)] {a b : α} :
-    a < b → a - b < 0 := sorry
-
-theorem neg_nonpos_of_nonneg [OrderedAddCommGroup α] {a : α} : 0 ≤ a → -a ≤ 0 := sorry
-
-theorem neg_neg_of_pos [OrderedAddCommGroup α] {a : α} : 0 < a → -a < 0 := sorry
-
-theorem sq_nonneg [LinearOrderedRing R] (a : R) : 0 ≤ a ^ 2 := sorry
-
-theorem mul_self_nonneg [LinearOrderedRing R] (a : R) : 0 ≤ a * a := sorry
-
-@[nolint unusedArguments]
-theorem mul_pos_of_neg_of_neg [StrictOrderedRing R] {a b : R} (ha : a < 0) (hb : b < 0) :
-    0 < a * b :=
-  sorry
-
-@[nolint unusedArguments]
-theorem mul_nonneg_of_nonpos_of_nonpos [OrderedRing R] {a b : R} (ha : a ≤ 0) (hb : b ≤ 0) :
-    0 ≤ a * b :=
-  sorry

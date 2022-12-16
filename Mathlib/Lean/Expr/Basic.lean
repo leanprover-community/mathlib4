@@ -6,6 +6,7 @@ Floris van Doorn, E.W.Ayers, Arthur Paulino
 -/
 import Lean
 import Mathlib.Util.MapsTo
+import Std.Lean.Expr
 import Std.Data.List.Basic
 
 /-!
@@ -263,14 +264,6 @@ open Lean.Elab.Term
 def addLocalVarInfoForBinderIdent (fvar : Expr) : TSyntax ``binderIdent → TermElabM Unit
 | `(binderIdent| $n:ident) => Elab.Term.addLocalVarInfo n fvar
 | tk => Elab.Term.addLocalVarInfo (Unhygienic.run `(_%$tk)) fvar
-
-/-- Converts an `Expr` into a `Syntax`, by creating a fresh metavariable
-assigned to the expr and  returning a named metavariable syntax `?a`. -/
-def toSyntax (e : Expr) : TermElabM Syntax.Term := withFreshMacroScope do
-  let stx ← `(?a)
-  let mvar ← elabTermEnsuringType stx (← Meta.inferType e)
-  mvar.mvarId!.assign e
-  pure stx
 
 end Expr
 

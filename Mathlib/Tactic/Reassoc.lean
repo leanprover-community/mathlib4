@@ -45,6 +45,7 @@ def reassoc (e : Expr) : MetaM Expr := do
 initialize registerBuiltinAttribute {
   name := `reassoc
   descr := ""
+  applicationTime := .afterCompilation
   add := fun src ref _ => MetaM.run' do
     let tgt := match src with
       | Name.str n s => Name.mkStr n $ s ++ "_assoc"
@@ -54,7 +55,11 @@ initialize registerBuiltinAttribute {
       selectionRange := ← getDeclarationRange ref
     }
     let info ← getConstInfo src
-    let newValue ← reassoc info.value!
+    -- We use `info.type` to give an expected type hint for `info.value!`
+    -- before passing to `reassoc`,
+    -- so that `reassoc` simplifies the declared type,
+    -- rather than reading the proof and inferring a type from that.
+    let newValue ← reassoc (← mkExpectedTypeHint info.value! info.type)
     let newType ← inferType newValue
     match info with
     | ConstantInfo.thmInfo info =>

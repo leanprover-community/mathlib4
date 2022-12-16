@@ -1,4 +1,5 @@
-{"version": 3,
+{"version": 4,
+ "packagesDir": "./lake-packages",
  "packages":
  [{"git":
    {"url": "https://github.com/xubaiw/CMark.lean",
@@ -9,13 +10,13 @@
   {"git":
    {"url": "https://github.com/leanprover/lake",
     "subDir?": null,
-    "rev": "051cf403f12da80a44802810d9098f2bbed61d93",
+    "rev": "235383015cdcb0082777b0347b84dba01843c79c",
     "name": "lake",
     "inputRev?": "master"}},
   {"git":
    {"url": "https://github.com/leanprover/doc-gen4",
     "subDir?": null,
-    "rev": "5e96952a58616ce66a010d476166a8dd8a7d0a28",
+    "rev": "f221bbdcffe6a17bb310f0e9ee10767812b03e13",
     "name": "doc-gen4",
     "inputRev?": "main"}},
   {"git":
@@ -33,7 +34,7 @@
   {"git":
    {"url": "https://github.com/JLimperg/aesop",
     "subDir?": null,
-    "rev": "70c59fcfc63de90786d59222c32468dab87964c5",
+    "rev": "ebea1013bc12e73193c5b6148271c1360addd298",
     "name": "aesop",
     "inputRev?": "master"}},
   {"git":
@@ -51,6 +52,6 @@
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "ea4deded2a85ed94bee3b445d46b24e0f17a060d",
+    "rev": "bf3acbb326513731ebb856717731cc1cd6a91d61",
     "name": "std",
     "inputRev?": "main"}}]}

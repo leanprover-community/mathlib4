@@ -14,6 +14,7 @@ import Mathlib.Data.List.Basic
 /-!
 # Streams a.k.a. infinite lists a.k.a. infinite sequences
 
+Porting note:
 This file used to be in the core library. It was moved to `mathlib` and renamed to `init` to avoid
 name clashes.  -/
 
@@ -416,7 +417,7 @@ theorem unfolds_head_eq : ∀ s : Stream' α, unfolds head tail s = s := fun s =
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem interleave_eq (s₁ s₂ : Stream' α) : s₁ ⋈ s₂ = head s₁::head s₂::tail s₁ ⋈ tail s₂ := by
-  unfold interleave corecOn; rw [corec_eq]; dsimp; rw [corec_eq]
+  unfold interleave corecOn; rw [corec_eq]; dsimp; rw [corec_eq]; rfl
 #align stream.interleave_eq Stream'.interleave_eq
 
 theorem tail_interleave (s₁ s₂ : Stream' α) : tail (s₁ ⋈ s₂) = s₂ ⋈ tail s₁ := by

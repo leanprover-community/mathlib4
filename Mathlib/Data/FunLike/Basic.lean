@@ -139,9 +139,6 @@ namespace FunLike
 
 variable {F α β} [i : FunLike F α β]
 
--- Give this a priority between `coe_fn_trans` and the default priority
--- `α` and `β` are out_params, so this instance should not be dangerous
--- Porting note: @[nolint dangerous_instance]
 instance (priority := 100) : CoeFun F fun _ ↦ ∀ a : α, β a where coe := FunLike.coe
 
 #eval Lean.Elab.Command.liftTermElabM do

@@ -4,16 +4,25 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Std.Data.Nat.Lemmas
-import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Init.Algebra.Functions
 
 universe u
 
 namespace Nat
 
+/- multiplication -/
+
+theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
+| 0,        m => fun _ => Or.inl rfl
+| (succ n), m => by
+    rw [succ_mul]
+    intro h
+    exact Or.inr (Nat.eq_zero_of_add_eq_zero_left h)
+
 /- properties of inequality -/
 
-instance : LinearOrder ℕ where
+instance linearOrder : LinearOrder ℕ where
   le := Nat.le
   le_refl := @Nat.le_refl
   le_trans := @Nat.le_trans
@@ -46,11 +55,15 @@ Nat.strong_induction_on a $ λ n =>
 
 /- mod -/
 
--- TODO mod_core_congr, mod_def
+-- TODO mod_core_congr
+
+#align nat.mod_def Nat.mod_eq
 
 /- div & mod -/
 
--- TODO div_core_congr, div_def
+-- TODO div_core_congr
+
+#align nat.div_def Nat.div_eq
 
 /- div -/
 

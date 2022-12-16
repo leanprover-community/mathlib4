@@ -92,13 +92,13 @@ theorem IsTotalPreorder.swap (r) [IsTotalPreorder α r] : IsTotalPreorder α (sw
 theorem IsLinearOrder.swap (r) [IsLinearOrder α r] : IsLinearOrder α (swap r) :=
   { @IsPartialOrder.swap α r _, @IsTotal.swap α r _ with }
 
-protected theorem IsAsymm.is_antisymm (r) [IsAsymm α r] : IsAntisymm α r :=
+protected theorem IsAsymm.isAntisymm (r) [IsAsymm α r] : IsAntisymm α r :=
   ⟨fun _ _ h₁ h₂ => (_root_.asymm h₁ h₂).elim⟩
 
-protected theorem IsAsymm.is_irrefl [IsAsymm α r] : IsIrrefl α r :=
+protected theorem IsAsymm.isIrrefl [IsAsymm α r] : IsIrrefl α r :=
   ⟨fun _ h => _root_.asymm h h⟩
 
-protected theorem IsTotal.is_trichotomous (r) [IsTotal α r] : IsTrichotomous α r :=
+protected theorem IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α r :=
   ⟨fun a b => or_left_comm.1 (Or.inr <| total_of r a b)⟩
 
 -- see Note [lower instance priority]
@@ -216,7 +216,7 @@ theorem IsOrderConnected.neg_trans {r : α → α → Prop} [IsOrderConnected α
 
 theorem isStrictWeakOrder_of_isOrderConnected [IsAsymm α r] [IsOrderConnected α r] :
     IsStrictWeakOrder α r :=
-  { @IsAsymm.is_irrefl α r _ with
+  { @IsAsymm.isIrrefl α r _ with
     trans := fun _ _ c h₁ h₂ => (IsOrderConnected.conn _ c _ h₁).resolve_right (asymm h₂),
     incomp_trans := fun _ _ _ ⟨h₁, h₂⟩ ⟨h₃, h₄⟩ =>
       ⟨IsOrderConnected.neg_trans h₁ h₃, IsOrderConnected.neg_trans h₄ h₂⟩ }
@@ -292,7 +292,7 @@ instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsAsy
 
 -- see Note [lower instance priority]
 instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsIrrefl α r :=
-  IsAsymm.is_irrefl
+  IsAsymm.isIrrefl
 
 /-- A class for a well founded relation `<`. -/
 @[reducible]
@@ -520,13 +520,10 @@ theorem right_iff_left_not_left_of (r s : α → α → Prop) [IsNonstrictStrict
     s a b ↔ r a b ∧ ¬r b a :=
   right_iff_left_not_left
 
--- Porting note: no `dangerous_instance` linter
 -- The free parameter `r` is strictly speaking not uniquely determined by `s`, but in practice it
 -- always has a unique instance, so this is not dangerous.
--- see Note [lower instance priority]
--- @[nolint dangerous_instance]
-instance (priority := 100) {r : α → α → Prop} {s : α → α → Prop}
-    [IsNonstrictStrictOrder α r s] : IsIrrefl α s :=
+@[nolint dangerousInstance]
+instance {s : α → α → Prop} [IsNonstrictStrictOrder α r s] : IsIrrefl α s :=
   ⟨fun _ h => ((right_iff_left_not_left_of r s).1 h).2 ((right_iff_left_not_left_of r s).1 h).1⟩
 
 /-! #### `⊆` and `⊂` -/
@@ -723,10 +720,10 @@ instance [Preorder α] : IsAsymm α (· > ·) :=
   IsAsymm.swap _
 
 instance [Preorder α] : IsAntisymm α (· < ·) :=
-  IsAsymm.is_antisymm _
+  IsAsymm.isAntisymm _
 
 instance [Preorder α] : IsAntisymm α (· > ·) :=
-  IsAsymm.is_antisymm _
+  IsAsymm.isAntisymm _
 
 instance [Preorder α] : IsStrictOrder α (· < ·) where
 
@@ -767,10 +764,10 @@ instance [LinearOrder α] : IsTrichotomous α (· > ·) :=
   IsTrichotomous.swap _
 
 instance [LinearOrder α] : IsTrichotomous α (· ≤ ·) :=
-  IsTotal.is_trichotomous _
+  IsTotal.isTrichotomous _
 
 instance [LinearOrder α] : IsTrichotomous α (· ≥ ·) :=
-  IsTotal.is_trichotomous _
+  IsTotal.isTrichotomous _
 
 instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
 
