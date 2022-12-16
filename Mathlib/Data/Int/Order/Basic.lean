@@ -57,6 +57,7 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
 #align int.abs_eq_nat_abs Int.abs_eq_natAbs
 
 @[simp, norm_cast] lemma coe_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm
+#align int.coe_nat_abs Int.coe_natAbs
 
 theorem natAbs_abs (a : ℤ) : natAbs (|a|) = natAbs a := by rw [abs_eq_natAbs] ; rfl
 #align int.nat_abs_abs Int.natAbs_abs
@@ -78,7 +79,7 @@ theorem coe_nat_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n :=
 #align int.coe_nat_ne_zero_iff_pos Int.coe_nat_ne_zero_iff_pos
 
 @[simp, norm_cast] lemma abs_coe_nat (n : ℕ) : |(n : ℤ)| = n := abs_of_nonneg (coe_nat_nonneg n)
-#align int.coe_nat_abs Int.abs_coe_nat
+#align int.abs_coe_nat Int.abs_coe_nat
 
 /-! ### succ and pred -/
 
