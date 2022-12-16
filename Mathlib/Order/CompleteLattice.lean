@@ -280,7 +280,7 @@ instance (priority := 100) CompleteLattice.toBoundedOrder [h : CompleteLattice �
 /-- Create a `CompleteLattice` from a `PartialOrder` and `InfSet`
 that returns the greatest lower bound of a set. Usually this constructor provides
 poor definitional equalities.  If other fields are known explicitly, they should be
-provided; for example, if `inf` is known explicitly, construct the `complete_lattice`
+provided; for example, if `inf` is known explicitly, construct the `CompleteLattice`
 instance as
 ```
 instance : CompleteLattice my_T :=
@@ -289,7 +289,7 @@ instance : CompleteLattice my_T :=
   inf_le_right := ...,
   inf_le_left := ...
   -- don't care to fix sup, Sup, bot, top
-  ..complete_lattice_of_Inf my_T _ }
+  ..completeLatticeOfInf my_T _ }
 ```
 -/
 def completeLatticeOfInf (α : Type _) [H1 : PartialOrder α] [H2 : InfSet α]
@@ -316,61 +316,61 @@ def completeLatticeOfInf (α : Type _) [H1 : PartialOrder α] [H2 : InfSet α]
     supₛ_le := fun s a ha => (isGLB_infₛ (upperBounds s)).1 ha }
 #align complete_lattice_of_Inf completeLatticeOfInf
 
-/-- Any `complete_semilattice_Inf` is in fact a `complete_lattice`.
+/-- Any `CompleteSemilatticeInf` is in fact a `CompleteLattice`.
 
 Note that this construction has bad definitional properties:
-see the doc-string on `complete_lattice_of_Inf`.
+see the doc-string on `completeLatticeOfInf`.
 -/
 def completeLatticeOfCompleteSemilatticeInf (α : Type _) [CompleteSemilatticeInf α] :
     CompleteLattice α :=
-  completeLatticeOfInf α fun s => is_glb_Inf s
+  completeLatticeOfInf α fun s => isGLB_infₛ s
 #align complete_lattice_of_complete_semilattice_Inf completeLatticeOfCompleteSemilatticeInf
 
-/-- Create a `complete_lattice` from a `partial_order` and `Sup` function
+/-- Create a `CompleteLattice` from a `PartialOrder` and `SupSet`
 that returns the least upper bound of a set. Usually this constructor provides
 poor definitional equalities.  If other fields are known explicitly, they should be
-provided; for example, if `inf` is known explicitly, construct the `complete_lattice`
+provided; for example, if `inf` is known explicitly, construct the `CompleteLattice`
 instance as
 ```
-instance : complete_lattice my_T :=
+instance : CompleteLattice my_T :=
 { inf := better_inf,
   le_inf := ...,
   inf_le_right := ...,
   inf_le_left := ...
   -- don't care to fix sup, Inf, bot, top
-  ..complete_lattice_of_Sup my_T _ }
+  ..completeLatticeOfSup my_T _ }
 ```
 -/
 def completeLatticeOfSup (α : Type _) [H1 : PartialOrder α] [H2 : SupSet α]
-    (is_lub_Sup : ∀ s : Set α, IsLUB s (sup s)) : CompleteLattice α :=
+    (isLUB_supₛ : ∀ s : Set α, IsLUB s (supₛ s)) : CompleteLattice α :=
   { H1, H2 with
-    top := sup univ
-    le_top := fun x => (is_lub_Sup univ).1 trivial
-    bot := sup ∅
-    bot_le := fun x => (is_lub_Sup ∅).2 <| by simp
-    sup := fun a b => sup {a, b}
-    sup_le := fun a b c hac hbc => (is_lub_Sup _).2 (by simp [*])
-    le_sup_left := fun a b => (is_lub_Sup _).1 <| mem_insert _ _
-    le_sup_right := fun a b => (is_lub_Sup _).1 <| mem_insert_of_mem _ <| mem_singleton _
-    inf := fun a b => sup { x | x ≤ a ∧ x ≤ b }
-    le_inf := fun a b c hab hac => (is_lub_Sup _).1 <| by simp [*]
-    inf_le_left := fun a b => (is_lub_Sup _).2 fun x => And.left
-    inf_le_right := fun a b => (is_lub_Sup _).2 fun x => And.right
-    inf := fun s => sup (lowerBounds s)
-    Sup_le := fun s a ha => (is_lub_Sup s).2 ha
-    le_Sup := fun s a ha => (is_lub_Sup s).1 ha
-    Inf_le := fun s a ha => (is_lub_Sup (lowerBounds s)).2 fun b hb => hb ha
-    le_Inf := fun s a ha => (is_lub_Sup (lowerBounds s)).1 ha }
+    top := supₛ univ
+    le_top := fun x => (isLUB_supₛ univ).1 trivial
+    bot := supₛ ∅
+    bot_le := fun x => (isLUB_supₛ ∅).2 <| by simp
+    sup := fun a b => supₛ {a, b}
+    sup_le := fun a b c hac hbc => (isLUB_supₛ _).2 (by simp [*])
+    le_sup_left := fun a b => (isLUB_supₛ _).1 <| mem_insert _ _
+    le_sup_right := fun a b => (isLUB_supₛ _).1 <| mem_insert_of_mem _ <| mem_singleton _
+    inf := fun a b => supₛ { x | x ≤ a ∧ x ≤ b }
+    le_inf := fun a b c hab hac => (isLUB_supₛ _).1 <| by simp [*]
+    inf_le_left := fun a b => (isLUB_supₛ _).2 fun x => And.left
+    inf_le_right := fun a b => (isLUB_supₛ _).2 fun x => And.right
+    infₛ := fun s => supₛ (lowerBounds s)
+    supₛ_le := fun s a ha => (isLUB_supₛ s).2 ha
+    le_supₛ := fun s a ha => (isLUB_supₛ s).1 ha
+    Inf_le := fun s a ha => (isLUB_supₛ (lowerBounds s)).2 fun b hb => hb ha
+    le_Inf := fun s a ha => (isLUB_supₛ (lowerBounds s)).1 ha }
 #align complete_lattice_of_Sup completeLatticeOfSup
 
-/-- Any `complete_semilattice_Sup` is in fact a `complete_lattice`.
+/-- Any `CompleteSemilatticeSup` is in fact a `CompleteLattice`.
 
 Note that this construction has bad definitional properties:
-see the doc-string on `complete_lattice_of_Sup`.
+see the doc-string on `completeLatticeOfSup`.
 -/
 def completeLatticeOfCompleteSemilatticeSup (α : Type _) [CompleteSemilatticeSup α] :
     CompleteLattice α :=
-  completeLatticeOfSup α fun s => is_lub_Sup s
+  completeLatticeOfSup α fun s => isLUB_supₛ s
 #align complete_lattice_of_complete_semilattice_Sup completeLatticeOfCompleteSemilatticeSup
 
 /- ./././Mathport/Syntax/Translate/Command.lean:407:11: unsupported: advanced extends in structure -/
