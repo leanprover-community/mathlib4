@@ -156,17 +156,18 @@ theorem bdd_below_bdd_above_iff_subset_interval (s : Set α) :
 
 end Lattice
 
-open Interval
+-- Porting note: fix scoped notation
+-- open Interval
 
 section DistribLattice
 
 variable [DistribLattice α] {a a₁ a₂ b b₁ b₂ c x : α}
 
-theorem eq_of_mem_interval_of_mem_interval (ha : a ∈ [b, c]) (hb : b ∈ [a, c]) : a = b :=
+theorem eq_of_mem_interval_of_mem_interval (ha : a ∈ [[b, c]]) (hb : b ∈ [[a, c]]) : a = b :=
   eq_of_inf_eq_sup_eq (inf_congr_right ha.1 hb.1) <| sup_congr_right ha.2 hb.2
 #align set.eq_of_mem_interval_of_mem_interval Set.eq_of_mem_interval_of_mem_interval
 
-theorem eq_of_mem_interval_of_mem_interval' : b ∈ [a, c] → c ∈ [[a, b]] → b = c := by
+theorem eq_of_mem_interval_of_mem_interval' : b ∈ [[a, c]] → c ∈ [[a, b]] → b = c := by
   simpa only [interval_swap a] using eq_of_mem_interval_of_mem_interval
 #align set.eq_of_mem_interval_of_mem_interval' Set.eq_of_mem_interval_of_mem_interval'
 
@@ -200,7 +201,7 @@ theorem interval_of_not_ge (h : ¬b ≤ a) : [[a, b]] = Icc a b :=
 theorem interval_eq_union : [[a, b]] = Icc a b ∪ Icc b a := by rw [Icc_union_Icc', max_comm] <;> rfl
 #align set.interval_eq_union Set.interval_eq_union
 
-theorem mem_interval : a ∈ [b, c] ↔ b ≤ a ∧ a ≤ c ∨ c ≤ a ∧ a ≤ b := by simp [interval_eq_union]
+theorem mem_interval : a ∈ [[b, c]] ↔ b ≤ a ∧ a ≤ c ∨ c ≤ a ∧ a ≤ b := by simp [interval_eq_union]
 #align set.mem_interval Set.mem_interval
 
 theorem not_mem_interval_of_lt (ha : c < a) (hb : c < b) : c ∉ [[a, b]] :=
@@ -212,7 +213,7 @@ theorem not_mem_interval_of_gt (ha : a < c) (hb : b < c) : c ∉ [[a, b]] :=
 #align set.not_mem_interval_of_gt Set.not_mem_interval_of_gt
 
 theorem interval_subset_interval_iff_le :
-    [a₁, b₁] ⊆ [a₂, b₂] ↔ min a₂ b₂ ≤ min a₁ b₁ ∧ max a₁ b₁ ≤ max a₂ b₂ :=
+    [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ min a₂ b₂ ≤ min a₁ b₁ ∧ max a₁ b₁ ≤ max a₂ b₂ :=
   interval_subset_interval_iff_le'
 #align set.interval_subset_interval_iff_le Set.interval_subset_interval_iff_le
 
@@ -222,7 +223,7 @@ theorem interval_subset_interval_union_interval : [a, c] ⊆ [[a, b]] ∪ [b, c]
 #align set.interval_subset_interval_union_interval Set.interval_subset_interval_union_interval
 
 theorem monotone_or_antitone_iff_interval :
-    Monotone f ∨ Antitone f ↔ ∀ a b c, c ∈ [[a, b]] → f c ∈ [f a, f b] := by
+    Monotone f ∨ Antitone f ↔ ∀ a b c, c ∈ [[a, b]] → f c ∈ [[f a, f b]] := by
   constructor
   · rintro (hf | hf) a b c <;> simp_rw [← Icc_min_max, ← hf.map_min, ← hf.map_max]
     exacts[fun hc => ⟨hf hc.1, hf hc.2⟩, fun hc => ⟨hf hc.2, hf hc.1⟩]
@@ -233,32 +234,46 @@ theorem monotone_or_antitone_iff_interval :
   · exact ⟨a, c, b, Icc_subset_interval ⟨hab, hbc⟩, fun h => h.1.not_lt <| lt_min hfba hfbc⟩
 #align set.monotone_or_antitone_iff_interval Set.monotone_or_antitone_iff_interval
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (a b c «expr ∈ » s) -/
-theorem monotone_on_or_antitone_on_iff_interval :
+theorem monotoneOn_or_antitoneOn_iff_interval :
     MonotoneOn f s ∨ AntitoneOn f s ↔
-      ∀ (a b c) (_ : a ∈ s) (_ : b ∈ s) (_ : c ∈ s), c ∈ [[a, b]] → f c ∈ [f a, f b] :=
+      ∀ (a b c) (_ : a ∈ s) (_ : b ∈ s) (_ : c ∈ s), c ∈ [[a, b]] → f c ∈ [[f a, f b]] :=
   by
-  simp [monotone_on_iff_monotone, antitone_on_iff_antitone, monotone_or_antitone_iff_interval,
-    mem_interval]
-#align set.monotone_on_or_antitone_on_iff_interval Set.monotone_on_or_antitone_on_iff_interval
+  rw [monotoneOn_iff_monotone, antitoneOn_iff_antitone, monotone_or_antitone_iff_interval]
+  constructor
+  · intros h a' b' c' ha hb hc hc'
+    have := h ⟨a', ha⟩ ⟨b', hb⟩ ⟨c', hc⟩
+    rw [Subtype.coe_mk, Subtype.coe_mk, Subtype.coe_mk] at this
+    apply this
+    rwa [mem_interval, Subtype.mk_le_mk, Subtype.mk_le_mk, Subtype.mk_le_mk, Subtype.mk_le_mk,
+      ← mem_interval]
+  · intros h a' b' c' hc
+    have := h a' b' c' a'.2 b'.2 c'.2
+    apply this
+    rwa [mem_interval, Subtype.mk_le_mk, Subtype.mk_le_mk, Subtype.mk_le_mk, Subtype.mk_le_mk,
+      ← mem_interval] at hc
+  -- Porting note: `simp` can't `rw` under `∀`
+  -- simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, monotone_or_antitone_iff_interval,
+    -- mem_interval]
+#align set.monotone_on_or_antitone_on_iff_interval Set.monotoneOn_or_antitoneOn_iff_interval
 
+-- Porting note: what should the naming scheme be here?
 /-- The open-closed interval with unordered bounds. -/
-def intervalOc : α → α → Set α := fun a b => ioc (min a b) (max a b)
-#align set.interval_oc Set.intervalOc
+def interval_oc : α → α → Set α := fun a b => Ioc (min a b) (max a b)
+#align set.interval_oc Set.interval_oc
 
--- mathport name: exprΙ
+-- Porting note: removed `scoped[Interval]` temporarily before fix
 -- Below is a capital iota
-scoped[Interval] notation "Ι" => Set.intervalOc
+notation "Ι" => Set.interval_oc
 
 @[simp]
-theorem interval_oc_of_le (h : a ≤ b) : Ι a b = ioc a b := by simp [interval_oc, h]
+theorem interval_oc_of_le (h : a ≤ b) : Ι a b = Ioc a b := by simp [interval_oc, h]
 #align set.interval_oc_of_le Set.interval_oc_of_le
 
 @[simp]
-theorem interval_oc_of_lt (h : b < a) : Ι a b = ioc b a := by simp [interval_oc, le_of_lt h]
+theorem interval_oc_of_lt (h : b < a) : Ι a b = Ioc b a := by simp [interval_oc, le_of_lt h]
 #align set.interval_oc_of_lt Set.interval_oc_of_lt
 
-theorem interval_oc_eq_union : Ι a b = ioc a b ∪ ioc b a := by
+theorem interval_oc_eq_union : Ι a b = Ioc a b ∪ Ioc b a := by
   cases le_total a b <;> simp [interval_oc, *]
 #align set.interval_oc_eq_union Set.interval_oc_eq_union
 
