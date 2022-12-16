@@ -18,23 +18,22 @@ This file defines the factorial, along with the ascending and descending variant
 
 ## Main declarations
 
-* `nat.factorial`: The factorial.
-* `nat.ascFactorial`: The ascending factorial. Note that it runs from `n + 1` to `n + k`
+* `nNat.factorial`: The factorial.
+* `at.ascFactorial`: The ascending factorial. Note that it runs from `n + 1` to `n + k`
   and *not* from `n` to `n + k - 1`. We might want to change that in the future.
-* `nat.descFactorial`: The descending factorial. It runs from `n - k` to `n`.
+* `Nat.descFactorial`: The descending factorial. It runs from `n - k` to `n`.
 -/
 
 
 namespace Nat
 
-/-- `nat.factorial n` is the factorial of `n`. -/
+/-- `Nat.factorial n` is the factorial of `n`. -/
 @[simp]
 def factorial : ℕ → ℕ
   | 0 => 1
   | succ n => succ n * factorial n
 #align nat.factorial Nat.factorial
 
--- mathport name: nat.factorial
 /-- factorial notation `n!` -/
 scoped notation:10000 n "!" => Nat.factorial n
 
@@ -224,7 +223,7 @@ end Factorial
 
 section AscFactorial
 
-/-- `n.ascFactorial k = (n + k)! / n!` (as seen in `nat.ascFactorial_eq_div`), but implemented
+/-- `n.ascFactorial k = (n + k)! / n!` (as seen in `Nat.ascFactorial_eq_div`), but implemented
 recursively to allow for "quick" computation when using `norm_num`. This is closely related to
 `pochhammer`, but much less general. -/
 def ascFactorial (n : ℕ) : ℕ → ℕ
@@ -258,7 +257,7 @@ theorem succ_ascFactorial (n : ℕ) :
       succ_add, ← add_assoc]; rfl
 #align nat.succ_ascFactorial Nat.succ_ascFactorial
 
-/-- `n.ascFactorial k = (n + k)! / n!` but without ℕ-division. See `nat.ascFactorial_eq_div` for
+/-- `n.ascFactorial k = (n + k)! / n!` but without ℕ-division. See `Nat.ascFactorial_eq_div` for
 the version with ℕ-division. -/
 -- Porting note: Explicit arguments are required to show that the recursion terminates
 -- Porting note: Interconversion between `succ` and `· + 1` has to be done manually
@@ -269,7 +268,7 @@ theorem factorial_mul_ascFactorial (n : ℕ) : ∀ k, n ! * n.ascFactorial k = (
       ← add_assoc, ← Nat.succ_eq_add_one (n + k), factorial]
 #align nat.factorial_mul_ascFactorial Nat.factorial_mul_ascFactorial
 
-/-- Avoid in favor of `nat.factorial_mul_ascFactorial` if you can. ℕ-division isn't worth it. -/
+/-- Avoid in favor of `Nat.factorial_mul_ascFactorial` if you can. ℕ-division isn't worth it. -/
 theorem ascFactorial_eq_div (n k : ℕ) : n.ascFactorial k = (n + k)! / n ! := by
   apply mul_left_cancel₀ n.factorial_ne_zero
   rw [factorial_mul_ascFactorial]
@@ -335,7 +334,7 @@ end AscFactorial
 
 section DescFactorial
 
-/-- `n.descFactorial k = n! / (n - k)!` (as seen in `nat.descFactorial_eq_div`), but
+/-- `n.descFactorial k = n! / (n - k)!` (as seen in `Nat.descFactorial_eq_div`), but
 implemented recursively to allow for "quick" computation when using `norm_num`. This is closely
 related to `pochhammer`, but much less general. -/
 def descFactorial (n : ℕ) : ℕ → ℕ
@@ -414,7 +413,7 @@ theorem add_descFactorial_eq_ascFactorial (n : ℕ) :
         succ_descFactorial_succ, ascFactorial_succ, add_descFactorial_eq_ascFactorial _ k]
 #align nat.add_descFactorial_eq_ascFactorial Nat.add_descFactorial_eq_ascFactorial
 
-/-- `n.descFactorial k = n! / (n - k)!` but without ℕ-division. See `nat.descFactorial_eq_div`
+/-- `n.descFactorial k = n! / (n - k)!` but without ℕ-division. See `Nat.descFactorial_eq_div`
 for the version using ℕ-division. -/
 theorem factorial_mul_descFactorial : ∀ {n k : ℕ}, k ≤ n → (n - k)! * n.descFactorial k = n !
   | n, 0 => fun _ => by rw [descFactorial_zero, mul_one, tsub_zero]
@@ -426,7 +425,7 @@ theorem factorial_mul_descFactorial : ∀ {n k : ℕ}, k ≤ n → (n - k)! * n.
       factorial_mul_descFactorial (Nat.succ_le_succ_iff.1 h), factorial_succ]
 #align nat.factorial_mul_descFactorial Nat.factorial_mul_descFactorial
 
-/-- Avoid in favor of `nat.factorial_mul_descFactorial` if you can. ℕ-division isn't worth it. -/
+/-- Avoid in favor of `Nat.factorial_mul_descFactorial` if you can. ℕ-division isn't worth it. -/
 theorem descFactorial_eq_div {n k : ℕ} (h : k ≤ n) : n.descFactorial k = n ! / (n - k)! := by
   apply mul_left_cancel₀ (factorial_ne_zero (n - k))
   rw [factorial_mul_descFactorial h]
