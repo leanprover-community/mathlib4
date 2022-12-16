@@ -35,6 +35,7 @@ def factorial : ℕ → ℕ
 #align nat.factorial Nat.factorial
 
 -- mathport name: nat.factorial
+/-- factorial notation `n!` -/
 scoped notation:10000 n "!" => Nat.factorial n
 
 section Factorial
@@ -51,12 +52,13 @@ theorem factorial_succ (n : ℕ) : n.succ ! = (n + 1) * n ! :=
   rfl
 #align nat.factorial_succ Nat.factorial_succ
 
-@[simp]
+
+-- Porting note: can be proved by simp, @[simp] removed
 theorem factorial_one : 1! = 1 :=
   rfl
 #align nat.factorial_one Nat.factorial_one
 
-@[simp]
+-- Porting note: can be proved by simp, @[simp] removed
 theorem factorial_two : 2! = 2 :=
   rfl
 #align nat.factorial_two Nat.factorial_two
@@ -169,7 +171,8 @@ theorem add_factorial_succ_lt_factorial_add_succ {i : ℕ} (n : ℕ) (hi : 2 ≤
             ⟨(i + n).factorial_pos, fun g =>
               Nat.not_succ_le_self 1 ((hi.trans this).trans (factorial_eq_one.mp g.symm))⟩)))
       (factorial_le
-        ((le_of_eq (add_comm n 1)).trans ((add_le_add_iff_right n).mpr ((by decide : 1 ≤ 2).trans hi))))
+        ((le_of_eq (add_comm n 1)).trans
+        ((add_le_add_iff_right n).mpr ((by decide : 1 ≤ 2).trans hi))))
 #align nat.add_factorial_succ_lt_factorial_add_succ Nat.add_factorial_succ_lt_factorial_add_succ
 
 theorem add_factorial_lt_factorial_add {i n : ℕ} (hi : 2 ≤ i) (hn : 1 ≤ n) : i + n ! < (i + n)! :=
@@ -304,7 +307,8 @@ theorem pow_lt_ascFactorial (n : ℕ) : ∀ {k : ℕ}, 2 ≤ k → (n + 1) ^ k <
 theorem ascFactorial_le_pow_add (n : ℕ) : ∀ k : ℕ, n.ascFactorial k ≤ (n + k) ^ k
   | 0 => by rw [ascFactorial_zero, pow_zero]
   | k + 1 => by
-    rw [ascFactorial_succ, pow_succ, ← add_assoc, ← Nat.succ_eq_add_one (n + k), mul_comm _ (succ (n + k))]
+    rw [ascFactorial_succ, pow_succ, ← add_assoc,
+    ← Nat.succ_eq_add_one (n + k), mul_comm _ (succ (n + k))]
     exact
       Nat.mul_le_mul_of_nonneg_left
         ((ascFactorial_le_pow_add _ k).trans (Nat.pow_le_pow_of_le_left (le_succ _) _))
@@ -353,12 +357,24 @@ theorem zero_descFactorial_succ (k : ℕ) : (0 : ℕ).descFactorial k.succ = 0 :
   rw [descFactorial_succ, zero_tsub, zero_mul]
 #align nat.zero_descFactorial_succ Nat.zero_descFactorial_succ
 
-@[simp]
+/- Porting note: simp removed because this can be proved by
+simp only [Nat.descFactorial_succ, nonpos_iff_eq_zero, tsub_zero, Nat.descFactorial_zero, mul_one]
+-/
+-- @[simp]
 theorem descFactorial_one (n : ℕ) : n.descFactorial 1 = n := by
   rw [descFactorial_succ, descFactorial_zero, mul_one, tsub_zero]
 #align nat.descFactorial_one Nat.descFactorial_one
 
-@[simp]
+/- Porting note: simp removed because the lhs simplifies,
+according to the linter:
+Left-hand side simplifies from
+  Nat.descFactorial (n + 1) (k + 1)
+to
+  (n + 1 - k) * Nat.descFactorial (n + 1) k
+using
+  simp only [Nat.descFactorial_succ]
+-/
+-- @[simp]
 theorem succ_descFactorial_succ (n : ℕ) :
     ∀ k : ℕ, (n + 1).descFactorial (k + 1) = (n + 1) * n.descFactorial k
   | 0 => by rw [descFactorial_zero, descFactorial_one, mul_one]
