@@ -23,7 +23,7 @@ which require additional imports besides those available in `algebra.group_power
 -/
 
 
-open Function Int Nat
+open Function Int
 
 universe u v w x y z u₁ u₂
 
@@ -74,7 +74,7 @@ def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : M�
 
 @[simp, to_additive]
 theorem is_unit_pow_iff {a : M} {n : ℕ} (hn : n ≠ 0) : IsUnit (a ^ n) ↔ IsUnit a :=
-  ⟨fun ⟨u, hu⟩ => (u.ofPow a hn hu.symm).IsUnit, fun h => h.pow n⟩
+  ⟨fun ⟨u, hu⟩ => (u.ofPow a hn hu.symm).isUnit, fun h => h.pow n⟩
 #align is_unit_pow_iff is_unit_pow_iff
 
 @[to_additive]
@@ -91,17 +91,17 @@ def Units.ofPowEqOne (x : M) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Mˣ :=
 @[simp, to_additive]
 theorem Units.pow_of_pow_eq_one {x : M} {n : ℕ} (hx : x ^ n = 1) (hn : n ≠ 0) :
     Units.ofPowEqOne x n hx hn ^ n = 1 :=
-  Units.ext <| by rwa [Units.val_pow_eq_pow_val, Units.coe_of_pow_eq_one, Units.val_one]
+  Units.ext <| by simp [hx]
 #align units.pow_of_pow_eq_one Units.pow_of_pow_eq_one
 
 @[to_additive]
 theorem is_unit_of_pow_eq_one {x : M} {n : ℕ} (hx : x ^ n = 1) (hn : n ≠ 0) : IsUnit x :=
-  (Units.ofPowEqOne x n hx hn).IsUnit
+  (Units.ofPowEqOne x n hx hn).isUnit
 #align is_unit_of_pow_eq_one is_unit_of_pow_eq_one
 
 /-- If `x ^ n = 1` then `x` has an inverse, `x^(n - 1)`. -/
 def invertibleOfPowEqOne (x : M) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Invertible x :=
-  (Units.ofPowEqOne x n hx hn).Invertible
+  (Units.ofPowEqOne x n hx hn).invertible
 #align invertible_of_pow_eq_one invertibleOfPowEqOne
 
 theorem smul_pow [MulAction M N] [IsScalarTower M N N] [SMulCommClass M N N] (k : M) (x : N)
@@ -137,14 +137,12 @@ theorem zpow_mul (a : α) : ∀ m n : ℤ, a ^ (m * n) = (a ^ m) ^ n
     rw [zpow_ofNat, zpow_ofNat, ← pow_mul, ← zpow_ofNat]
     rfl
   | (m : ℕ), -[n+1] => by
-    rw [zpow_ofNat, zpow_negSucc, ← pow_mul, coe_nat_mul_neg_succ, zpow_neg, inv_inj, ← zpow_ofNat]
-    rfl
+    rw [zpow_ofNat, zpow_negSucc, ← pow_mul, ofNat_mul_negSucc, zpow_neg, inv_inj, ← zpow_ofNat]
   | -[m+1], (n : ℕ) => by
-    rw [zpow_ofNat, zpow_negSucc, ← inv_pow, ← pow_mul, neg_succ_mul_coe_nat, zpow_neg, inv_pow,
+    rw [zpow_ofNat, zpow_negSucc, ← inv_pow, ← pow_mul, negSucc_mul_ofNat, zpow_neg, inv_pow,
       inv_inj, ← zpow_ofNat]
-    rfl
   | -[m+1], -[n+1] => by
-    rw [zpow_negSucc, zpow_negSucc, neg_succ_mul_neg_succ, inv_pow, inv_inv, ← pow_mul, ←
+    rw [zpow_negSucc, zpow_negSucc, negSucc_mul_negSucc, inv_pow, inv_inv, ← pow_mul, ←
       zpow_ofNat]
     rfl
 #align zpow_mul zpow_mul
@@ -153,12 +151,16 @@ theorem zpow_mul (a : α) : ∀ m n : ℤ, a ^ (m * n) = (a ^ m) ^ n
 theorem zpow_mul' (a : α) (m n : ℤ) : a ^ (m * n) = (a ^ n) ^ m := by rw [mul_comm, zpow_mul]
 #align zpow_mul' zpow_mul'
 
+section bit0
+
+set_option linter.deprecated false
+
 @[to_additive bit0_zsmul]
 theorem zpow_bit0 (a : α) : ∀ n : ℤ, a ^ bit0 n = a ^ n * a ^ n
   | (n : ℕ) => by simp only [zpow_ofNat, ← Int.ofNat_bit0, pow_bit0]
   | -[n+1] => by
     simp [← mul_inv_rev, ← pow_bit0]
-    rw [neg_succ_of_nat_eq, bit0_neg, zpow_neg]
+    rw [negSucc_eq, bit0_neg, zpow_neg]
     norm_cast
 #align zpow_bit0 zpow_bit0
 
@@ -171,6 +173,8 @@ theorem zpow_bit0' (a : α) (n : ℤ) : a ^ bit0 n = (a * a) ^ n :=
 theorem zpow_bit0_neg [HasDistribNeg α] (x : α) (n : ℤ) : (-x) ^ bit0 n = x ^ bit0 n := by
   rw [zpow_bit0', zpow_bit0', neg_mul_neg]
 #align zpow_bit0_neg zpow_bit0_neg
+
+end bit0
 
 end DivisionMonoid
 
@@ -216,7 +220,7 @@ theorem mul_self_zpow (b : G) (m : ℤ) : b * b ^ m = b ^ (m + 1) := by
 theorem mul_zpow_self (b : G) (m : ℤ) : b ^ m * b = b ^ (m + 1) := by
   conv_lhs =>
     congr
-    skip
+    · skip
     rw [← zpow_one b]
   rw [← zpow_add, add_comm]
 #align mul_zpow_self mul_zpow_self
@@ -235,20 +239,25 @@ theorem zpow_mul_comm (a : G) (i j : ℤ) : a ^ i * a ^ j = a ^ j * a ^ i :=
   (Commute.refl _).zpow_zpow _ _
 #align zpow_mul_comm zpow_mul_comm
 
+section bit1
+
+set_option linter.deprecated false
+
 @[to_additive bit1_zsmul]
 theorem zpow_bit1 (a : G) (n : ℤ) : a ^ bit1 n = a ^ n * a ^ n * a := by
   rw [bit1, zpow_add, zpow_bit0, zpow_one]
 #align zpow_bit1 zpow_bit1
+
+end bit1
 
 end Group
 
 /-!
 ### `zpow`/`zsmul` and an order
 
-Those lemmas are placed here (rather than in `algebra.group_power.order` with their friends) because
-they require facts from `data.int.basic`.
+Those lemmas are placed here (rather than in `Algebra.GroupPower.Order` with their friends) because
+they require facts from `Data.Int.Basic`.
 -/
-
 
 section OrderedAddCommGroup
 
@@ -256,9 +265,10 @@ variable [OrderedCommGroup α] {m n : ℤ} {a b : α}
 
 @[to_additive zsmul_pos]
 theorem one_lt_zpow' (ha : 1 < a) {k : ℤ} (hk : (0 : ℤ) < k) : 1 < a ^ k := by
-  lift k to ℕ using Int.le_of_lt hk
-  rw [zpow_ofNat]
-  exact one_lt_pow' ha (coe_nat_pos.mp hk).ne'
+  obtain ⟨n, hn⟩ := Int.eq_ofNat_of_zero_le hk.le
+  rw [hn, zpow_ofNat]
+  refine' one_lt_pow' ha (coe_nat_pos.mp _).ne'
+  rwa [← hn]
 #align one_lt_zpow' one_lt_zpow'
 
 @[to_additive zsmul_strict_mono_left]
@@ -266,9 +276,7 @@ theorem zpow_strict_mono_right (ha : 1 < a) : StrictMono fun n : ℤ => a ^ n :=
   calc
     a ^ m = a ^ m * 1 := (mul_one _).symm
     _ < a ^ m * a ^ (n - m) := mul_lt_mul_left' (one_lt_zpow' ha <| sub_pos_of_lt h) _
-    _ = a ^ n := by
-      rw [← zpow_add]
-      simp
+    _ = a ^ n := by rw [← zpow_add]; simp
 
 #align zpow_strict_mono_right zpow_strict_mono_right
 
@@ -277,9 +285,7 @@ theorem zpow_mono_right (ha : 1 ≤ a) : Monotone fun n : ℤ => a ^ n := fun m 
   calc
     a ^ m = a ^ m * 1 := (mul_one _).symm
     _ ≤ a ^ m * a ^ (n - m) := mul_le_mul_left' (one_le_zpow ha <| sub_nonneg_of_le h) _
-    _ = a ^ n := by
-      rw [← zpow_add]
-      simp
+    _ = a ^ n := by rw [← zpow_add]; simp
 
 #align zpow_mono_right zpow_mono_right
 
@@ -345,13 +351,12 @@ theorem zpow_lt_zpow_iff' (hn : 0 < n) {a b : α} : a ^ n < b ^ n ↔ a < b :=
   (zpow_strict_mono_left α hn).lt_iff_lt
 #align zpow_lt_zpow_iff' zpow_lt_zpow_iff'
 
-@[nolint to_additive_doc,
-  to_additive zsmul_right_injective
+@[to_additive zsmul_right_injective
       "See also `smul_right_injective`. TODO: provide a `no_zero_smul_divisors` instance. We can't do that\nhere because importing that definition would create import cycles."]
 theorem zpow_left_injective (hn : n ≠ 0) : Function.Injective ((· ^ n) : α → α) := by
-  cases hn.symm.lt_or_lt
-  · exact (zpow_strict_mono_left α h).Injective
-  · refine' fun a b (hab : a ^ n = b ^ n) => (zpow_strict_mono_left α (neg_pos.mpr h)).Injective _
+  rcases hn.symm.lt_or_lt with (h | h)
+  · exact (zpow_strict_mono_left α h).injective
+  · refine' fun a b (hab : a ^ n = b ^ n) => (zpow_strict_mono_left α (neg_pos.mpr h)).injective _
     rw [zpow_neg, zpow_neg, hab]
 #align zpow_left_injective zpow_left_injective
 
@@ -384,10 +389,10 @@ theorem abs_nsmul (n : ℕ) (a : α) : |n • a| = n • |a| := by
 
 theorem abs_zsmul (n : ℤ) (a : α) : |n • a| = |n| • |a| := by
   obtain n0 | n0 := le_total 0 n
-  · lift n to ℕ using n0
-    simp only [abs_nsmul, coe_nat_abs, coe_nat_zsmul]
-  · lift -n to ℕ using neg_nonneg.2 n0 with m h
-    rw [← abs_neg (n • a), ← neg_zsmul, ← abs_neg n, ← h, coe_nat_zsmul, coe_nat_abs, coe_nat_zsmul]
+  · obtain ⟨n, rfl⟩ := Int.eq_ofNat_of_zero_le n0
+    simp only [abs_nsmul, coe_nat_zsmul, Nat.abs_cast]
+  · obtain ⟨m, h⟩ := Int.eq_ofNat_of_zero_le (neg_nonneg.2 n0)
+    rw [← abs_neg, ← neg_zsmul, ← abs_neg n, h, coe_nat_zsmul, Nat.abs_cast, coe_nat_zsmul]
     exact abs_nsmul m _
 #align abs_zsmul abs_zsmul
 
@@ -418,7 +423,7 @@ end LinearOrderedAddCommGroup
 
 @[simp]
 theorem WithBot.coe_nsmul [AddMonoid A] (a : A) (n : ℕ) : ((n • a : A) : WithBot A) = n • a :=
-  AddMonoidHom.map_nsmul ⟨(coe : A → WithBot A), WithBot.coe_zero, WithBot.coe_add⟩ a n
+  by simp
 #align with_bot.coe_nsmul WithBot.coe_nsmul
 
 /- warning: nsmul_eq_mul' -> nsmul_eq_mul' is a dubious translation:
@@ -440,26 +445,26 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align nsmul_eq_mul nsmul_eq_mulₓ'. -/
 @[simp]
 theorem nsmul_eq_mul [NonAssocSemiring R] (n : ℕ) (a : R) : n • a = n * a := by
-  rw [nsmul_eq_mul', (n.cast_commute a).Eq]
+  rw [nsmul_eq_mul', (n.cast_commute a).eq]
 #align nsmul_eq_mul nsmul_eq_mul
 
 /-- Note that `add_comm_monoid.nat_smul_comm_class` requires stronger assumptions on `R`. -/
 instance NonUnitalNonAssocSemiring.nat_smul_comm_class [NonUnitalNonAssocSemiring R] :
     SMulCommClass ℕ R R :=
-  ⟨fun n x y =>
-    match n with
-    | 0 => by simp_rw [zero_nsmul, smul_eq_mul, mul_zero]
-    | n + 1 => by simp_rw [succ_nsmul, smul_eq_mul, mul_add, ← smul_eq_mul, _match n]⟩
+  ⟨fun n x y => by
+    induction' n with n ih
+    · simp [zero_nsmul]
+    · simp_rw [succ_nsmul, smul_eq_mul, mul_add, ← smul_eq_mul, ih]⟩
 #align
   non_unital_non_assoc_semiring.nat_smul_comm_class NonUnitalNonAssocSemiring.nat_smul_comm_class
 
 /-- Note that `add_comm_monoid.nat_is_scalar_tower` requires stronger assumptions on `R`. -/
 instance NonUnitalNonAssocSemiring.nat_is_scalar_tower [NonUnitalNonAssocSemiring R] :
     IsScalarTower ℕ R R :=
-  ⟨fun n x y =>
-    match n with
-    | 0 => by simp_rw [zero_nsmul, smul_eq_mul, zero_mul]
-    | n + 1 => by simp_rw [succ_nsmul, ← _match n, smul_eq_mul, add_mul]⟩
+  ⟨fun n x y => by
+    induction' n with n ih
+    · simp [zero_nsmul]
+    · simp_rw [succ_nsmul, ← ih, smul_eq_mul, add_mul]⟩
 #align
   non_unital_non_assoc_semiring.nat_is_scalar_tower NonUnitalNonAssocSemiring.nat_is_scalar_tower
 
@@ -482,6 +487,10 @@ theorem Int.nat_abs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n 
   induction' k with k ih <;> [rfl, rw [pow_succ', Int.natAbs_mul, pow_succ', ih]]
 #align int.nat_abs_pow Int.nat_abs_pow
 
+section bit0_bit1
+
+set_option linter.deprecated false
+
 -- The next four lemmas allow us to replace multiplication by a numeral with a `zsmul` expression.
 -- They are used by the `noncomm_ring` tactic, to normalise expressions before passing to `abel`.
 theorem bit0_mul [NonUnitalNonAssocRing R] {n r : R} : bit0 n * r = (2 : ℤ) • (n * r) := by
@@ -503,6 +512,8 @@ theorem mul_bit1 [NonAssocRing R] {n r : R} : r * bit1 n = (2 : ℤ) • (r * n)
   dsimp [bit1]
   rw [mul_add, mul_bit0, mul_one]
 #align mul_bit1 mul_bit1
+
+end bit0_bit1
 
 @[simp]
 theorem zsmul_eq_mul [Ring R] (a : R) : ∀ n : ℤ, n • a = n * a
