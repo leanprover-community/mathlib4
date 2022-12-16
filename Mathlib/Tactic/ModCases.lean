@@ -23,7 +23,7 @@ open Lean Meta Elab Tactic Term Qq Int
 
 /--
 `OnModCases n a lb p` represents a partial proof by cases that
-there exists `0 ≤ z < n`t such that `a ≡ z (mod n)`.
+there exists `0 ≤ z < n` such that `a ≡ z (mod n)`.
 It asserts that if `∃ z, lb ≤ z < n ∧ a ≡ z (mod n)` holds, then `p`
 (where `p` is the current goal).
 -/
