@@ -314,6 +314,7 @@ import Mathlib.Order.Basic
 import Mathlib.Order.BooleanAlgebra
 import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.Compare
 import Mathlib.Order.Directed
 import Mathlib.Order.Disjoint
