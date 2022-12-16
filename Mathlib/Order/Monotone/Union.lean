@@ -8,7 +8,7 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Bounds.Basic
+import Mathlib.Order.Bounds.Basic
 
 /-!
 # Monotonicity on intervals
@@ -31,24 +31,24 @@ protected theorem StrictMonoOn.union {s t : Set α} {c : α} (h₁ : StrictMonoO
   have A : ∀ x, x ∈ s ∪ t → x ≤ c → x ∈ s := by
     intro x hx hxc
     cases hx
-    · exact hx
+    · assumption
     rcases eq_or_lt_of_le hxc with (rfl | h'x)
     · exact hs.1
-    exact (lt_irrefl _ (h'x.trans_le (ht.2 hx))).elim
+    exact (lt_irrefl _ (h'x.trans_le (ht.2 (by assumption)))).elim
   have B : ∀ x, x ∈ s ∪ t → c ≤ x → x ∈ t := by
     intro x hx hxc
-    cases hx
-    swap
-    · exact hx
-    rcases eq_or_lt_of_le hxc with (rfl | h'x)
-    · exact ht.1
-    exact (lt_irrefl _ (h'x.trans_le (hs.2 hx))).elim
+    match hx with
+    | Or.inr hx => exact hx
+    | Or.inl hx =>
+      rcases eq_or_lt_of_le hxc with (rfl | h'x)
+      · exact ht.1
+      exact (lt_irrefl _ (h'x.trans_le (hs.2 hx))).elim
   intro x hx y hy hxy
   rcases lt_or_le x c with (hxc | hcx)
   · have xs : x ∈ s := A _ hx hxc.le
     rcases lt_or_le y c with (hyc | hcy)
     · exact h₁ xs (A _ hy hyc.le) hxy
-    · exact (h₁ xs hs.1 hxc).trans_le (h₂.monotone_on ht.1 (B _ hy hcy) hcy)
+    · exact (h₁ xs hs.1 hxc).trans_le (h₂.monotoneOn ht.1 (B _ hy hcy) hcy)
   · have xt : x ∈ t := B _ hx hcx
     have yt : y ∈ t := B _ hy (hcx.trans hxy.le)
     exact h₂ xt yt hxy
@@ -56,10 +56,10 @@ protected theorem StrictMonoOn.union {s t : Set α} {c : α} (h₁ : StrictMonoO
 
 /-- If `f` is strictly monotone both on `(-∞, a]` and `[a, ∞)`, then it is strictly monotone on the
 whole line. -/
-protected theorem StrictMonoOn.Iic_union_Ici (h₁ : StrictMonoOn f (iic a))
-    (h₂ : StrictMonoOn f (ici a)) : StrictMono f := by
+protected theorem StrictMonoOn.Iic_union_Ici (h₁ : StrictMonoOn f (Iic a))
+    (h₂ : StrictMonoOn f (Ici a)) : StrictMono f := by
   rw [← strictMonoOn_univ, ← @Iic_union_Ici _ _ a]
-  exact StrictMonoOn.union h₁ h₂ is_greatest_Iic is_least_Ici
+  exact StrictMonoOn.union h₁ h₂ isGreatest_Iic isLeast_Ici
 #align strict_mono_on.Iic_union_Ici StrictMonoOn.Iic_union_Ici
 
 /-- If `f` is strictly antitone both on `s` and `t`, with `s` to the left of `t` and the center
@@ -71,8 +71,8 @@ protected theorem StrictAntiOn.union {s t : Set α} {c : α} (h₁ : StrictAntiO
 
 /-- If `f` is strictly antitone both on `(-∞, a]` and `[a, ∞)`, then it is strictly antitone on the
 whole line. -/
-protected theorem StrictAntiOn.Iic_union_Ici (h₁ : StrictAntiOn f (iic a))
-    (h₂ : StrictAntiOn f (ici a)) : StrictAnti f :=
+protected theorem StrictAntiOn.Iic_union_Ici (h₁ : StrictAntiOn f (Iic a))
+    (h₂ : StrictAntiOn f (Ici a)) : StrictAnti f :=
   (h₁.dual_right.Iic_union_Ici h₂.dual_right).dual_right
 #align strict_anti_on.Iic_union_Ici StrictAntiOn.Iic_union_Ici
 
@@ -83,18 +83,18 @@ protected theorem MonotoneOn.union_right {s t : Set α} {c : α} (h₁ : Monoton
   have A : ∀ x, x ∈ s ∪ t → x ≤ c → x ∈ s := by
     intro x hx hxc
     cases hx
-    · exact hx
+    · assumption
     rcases eq_or_lt_of_le hxc with (rfl | h'x)
     · exact hs.1
-    exact (lt_irrefl _ (h'x.trans_le (ht.2 hx))).elim
+    exact (lt_irrefl _ (h'x.trans_le (ht.2 (by assumption)))).elim
   have B : ∀ x, x ∈ s ∪ t → c ≤ x → x ∈ t := by
     intro x hx hxc
-    cases hx
-    swap
-    · exact hx
-    rcases eq_or_lt_of_le hxc with (rfl | h'x)
-    · exact ht.1
-    exact (lt_irrefl _ (h'x.trans_le (hs.2 hx))).elim
+    match hx with
+    | Or.inr hx => exact hx
+    | Or.inl hx =>
+      rcases eq_or_lt_of_le hxc with (rfl | h'x)
+      · exact ht.1
+      exact (lt_irrefl _ (h'x.trans_le (hs.2 hx))).elim
   intro x hx y hy hxy
   rcases lt_or_le x c with (hxc | hcx)
   · have xs : x ∈ s := A _ hx hxc.le
@@ -107,10 +107,10 @@ protected theorem MonotoneOn.union_right {s t : Set α} {c : α} (h₁ : Monoton
 #align monotone_on.union_right MonotoneOn.union_right
 
 /-- If `f` is monotone both on `(-∞, a]` and `[a, ∞)`, then it is monotone on the whole line. -/
-protected theorem MonotoneOn.Iic_union_Ici (h₁ : MonotoneOn f (iic a)) (h₂ : MonotoneOn f (ici a)) :
+protected theorem MonotoneOn.Iic_union_Ici (h₁ : MonotoneOn f (Iic a)) (h₂ : MonotoneOn f (Ici a)) :
     Monotone f := by
   rw [← monotoneOn_univ, ← @Iic_union_Ici _ _ a]
-  exact MonotoneOn.union_right h₁ h₂ is_greatest_Iic is_least_Ici
+  exact MonotoneOn.union_right h₁ h₂ isGreatest_Iic isLeast_Ici
 #align monotone_on.Iic_union_Ici MonotoneOn.Iic_union_Ici
 
 /-- If `f` is antitone both on `s` and `t`, with `s` to the left of `t` and the center
@@ -121,7 +121,7 @@ protected theorem AntitoneOn.union_right {s t : Set α} {c : α} (h₁ : Antiton
 #align antitone_on.union_right AntitoneOn.union_right
 
 /-- If `f` is antitone both on `(-∞, a]` and `[a, ∞)`, then it is antitone on the whole line. -/
-protected theorem AntitoneOn.Iic_union_Ici (h₁ : AntitoneOn f (iic a)) (h₂ : AntitoneOn f (ici a)) :
+protected theorem AntitoneOn.Iic_union_Ici (h₁ : AntitoneOn f (Iic a)) (h₂ : AntitoneOn f (Ici a)) :
     Antitone f :=
   (h₁.dual_right.Iic_union_Ici h₂.dual_right).dual_right
 #align antitone_on.Iic_union_Ici AntitoneOn.Iic_union_Ici
