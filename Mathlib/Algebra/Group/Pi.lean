@@ -8,11 +8,10 @@ Authors: Simon Hudon, Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Logic.Pairwise
-import Mathbin.Algebra.Hom.GroupInstances
-import Mathbin.Data.Pi.Algebra
-import Mathbin.Data.Set.Function
-import Mathbin.Tactic.PiInstances
+import Mathlib.Logic.Pairwise
+import Mathlib.Algebra.Hom.GroupInstances
+import Mathlib.Data.Pi.Algebra
+import Mathlib.Data.Set.Function
 
 /-!
 # Pi instances for groups and monoids
@@ -20,6 +19,18 @@ import Mathbin.Tactic.PiInstances
 This file defines instances for group, monoid, semigroup and related structures on Pi types.
 -/
 
+/-
+  Porting notes:
+
+  See this Zulip discussion: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/not.20porting.20pi_instance]
+
+  * This file now includes the pi instance for `AddMonoidWithOne`
+  * This file relied on the `pi_instance` tactic, which was not available at the time of porting.
+    The comment `--pi_instance` is inserted before all fields which were previously derived by
+    `pi_instance`.
+  * This file previously *over*used `pi_instance`. Now previously-defined instances are used as
+    sources via `with` as much as possible.
+-/
 
 universe u v w
 
@@ -42,15 +53,18 @@ theorem Set.preimage_one {α β : Type _} [One β] (s : Set β) [Decidable ((1 :
 namespace Pi
 
 @[to_additive]
-instance semigroup [∀ i, Semigroup <| f i] : Semigroup (∀ i : I, f i) := by
-  refine_struct { mul := (· * ·).. } <;> pi_instance_derive_field
+instance semigroup [∀ i, Semigroup <| f i] : Semigroup (∀ i : I, f i) :=
+  { mul := (· * ·) --by intros f g i; rename_i inst; exact (inst i).mul (f i) (g i)
+    mul_assoc := by rename_i inst; intros a b c; ext i; dsimp; exact (inst i).mul_assoc _ _ _ }
 #align pi.semigroup Pi.semigroup
 
-instance semigroupWithZero [∀ i, SemigroupWithZero <| f i] : SemigroupWithZero (∀ i : I, f i) := by
-  refine_struct
-      { zero := (0 : ∀ i, f i)
-        mul := (· * ·).. } <;>
-    pi_instance_derive_field
+instance semigroupWithZero [∀ i, SemigroupWithZero <| f i] : SemigroupWithZero (∀ i : I, f i) :=
+  { semigroup with
+    zero := (0 : ∀ i, f i)
+    --pi_instance
+    zero_mul := by rename_i inst _; intro; ext i; dsimp; exact (inst i).zero_mul _
+    mul_zero := by rename_i inst _; intro; ext i; dsimp; exact (inst i).mul_zero _
+    }
 #align pi.semigroup_with_zero Pi.semigroupWithZero
 
 @[to_additive]
@@ -240,7 +254,7 @@ given by `pi.mul_hom f x b = f b x`. -/
       "A family of add_hom `f a : γ → β a` defines a add_hom `pi.add_hom\nf : γ → Π a, β a` given by `pi.add_hom f x b = f b x`.",
   simps]
 def Pi.mulHom {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i) :
-    γ →ₙ* ∀ i, f i where 
+    γ →ₙ* ∀ i, f i where
   toFun x i := g i x
   map_mul' x y := funext fun i => (g i).map_mul x y
 #align pi.mul_hom Pi.mulHom
@@ -280,7 +294,7 @@ This is `function.eval i` as a `mul_hom`. -/
       "Evaluation of functions into an indexed collection of additive semigroups at a\npoint is an additive semigroup homomorphism.\nThis is `function.eval i` as an `add_hom`.",
   simps]
 def Pi.evalMulHom (i : I) : (∀ i, f i) →ₙ*
-      f i where 
+      f i where
   toFun g := g i
   map_mul' x y := Pi.mul_apply _ _ i
 #align pi.eval_mul_hom Pi.evalMulHom
@@ -288,7 +302,7 @@ def Pi.evalMulHom (i : I) : (∀ i, f i) →ₙ*
 /-- `function.const` as a `mul_hom`. -/
 @[to_additive "`function.const` as an `add_hom`.", simps]
 def Pi.constMulHom (α β : Type _) [Mul β] :
-    β →ₙ* α → β where 
+    β →ₙ* α → β where
   toFun := Function.const α
   map_mul' _ _ := rfl
 #align pi.const_mul_hom Pi.constMulHom
@@ -299,7 +313,7 @@ See also `mul_hom.eval`. -/
       "Coercion of an `add_hom` into a function is itself a `add_hom`.\nSee also `add_hom.eval`. ",
   simps]
 def MulHom.coeFn (α β : Type _) [Mul α] [CommSemigroup β] :
-    (α →ₙ* β) →ₙ* α → β where 
+    (α →ₙ* β) →ₙ* α → β where
   toFun g := g
   map_mul' x y := rfl
 #align mul_hom.coe_fn MulHom.coeFn
@@ -310,7 +324,7 @@ homomorphism `f` between `α` and `β`. -/
       "Additive semigroup homomorphism between the function spaces `I → α` and `I → β`,\ninduced by an additive semigroup homomorphism `f` between `α` and `β`",
   simps]
 protected def MulHom.compLeft {α β : Type _} [Mul α] [Mul β] (f : α →ₙ* β) (I : Type _) :
-    (I → α) →ₙ* I → β where 
+    (I → α) →ₙ* I → β where
   toFun h := f ∘ h
   map_mul' _ _ := by ext <;> simp
 #align mul_hom.comp_left MulHom.compLeft
@@ -328,7 +342,7 @@ This is `function.eval i` as a `monoid_hom`. -/
       "Evaluation of functions into an indexed collection of additive monoids at a\npoint is an additive monoid homomorphism.\nThis is `function.eval i` as an `add_monoid_hom`.",
   simps]
 def Pi.evalMonoidHom (i : I) :
-    (∀ i, f i) →* f i where 
+    (∀ i, f i) →* f i where
   toFun g := g i
   map_one' := Pi.one_apply i
   map_mul' x y := Pi.mul_apply _ _ i
@@ -337,7 +351,7 @@ def Pi.evalMonoidHom (i : I) :
 /-- `function.const` as a `monoid_hom`. -/
 @[to_additive "`function.const` as an `add_monoid_hom`.", simps]
 def Pi.constMonoidHom (α β : Type _) [MulOneClass β] :
-    β →* α → β where 
+    β →* α → β where
   toFun := Function.const α
   map_one' := rfl
   map_mul' _ _ := rfl
@@ -350,7 +364,7 @@ See also `monoid_hom.eval`. -/
       "Coercion of an `add_monoid_hom` into a function is itself a `add_monoid_hom`.\n\nSee also `add_monoid_hom.eval`. ",
   simps]
 def MonoidHom.coeFn (α β : Type _) [MulOneClass α] [CommMonoid β] :
-    (α →* β) →* α → β where 
+    (α →* β) →* α → β where
   toFun g := g
   map_one' := rfl
   map_mul' x y := rfl
@@ -362,7 +376,7 @@ homomorphism `f` between `α` and `β`. -/
       "Additive monoid homomorphism between the function spaces `I → α` and `I → β`,\ninduced by an additive monoid homomorphism `f` between `α` and `β`",
   simps]
 protected def MonoidHom.compLeft {α β : Type _} [MulOneClass α] [MulOneClass β] (f : α →* β)
-    (I : Type _) : (I → α) →* I → β where 
+    (I : Type _) : (I → α) →* I → β where
   toFun h := f ∘ h
   map_one' := by ext <;> simp
   map_mul' _ _ := by ext <;> simp
@@ -385,7 +399,7 @@ This is the `one_hom` version of `pi.mul_single`. -/
 @[to_additive ZeroHom.single
       "The zero-preserving homomorphism including a single value\ninto a dependent family of values, as functions supported at a point.\n\nThis is the `zero_hom` version of `pi.single`."]
 def OneHom.single [∀ i, One <| f i] (i : I) :
-    OneHom (f i) (∀ i, f i) where 
+    OneHom (f i) (∀ i, f i) where
   toFun := mulSingle i
   map_one' := mulSingle_one i
 #align one_hom.single OneHom.single
@@ -418,7 +432,7 @@ into a dependent family of `mul_zero_class`es, as functions supported at a point
 This is the `mul_hom` version of `pi.single`. -/
 @[simps]
 def MulHom.single [∀ i, MulZeroClass <| f i] (i : I) :
-    f i →ₙ* ∀ i, f i where 
+    f i →ₙ* ∀ i, f i where
   toFun := single i
   map_mul' := Pi.single_op₂ (fun _ => (· * ·)) (fun _ => zero_mul _) _
 #align mul_hom.single MulHom.single
@@ -488,7 +502,7 @@ theorem Pi.mul_single_mul_mul_single_eq_mul_single_mul_mul_single {M : Type _} [
     {k l m n : I} {u v : M} (hu : u ≠ 1) (hv : v ≠ 1) :
     mulSingle k u * mulSingle l v = mulSingle m u * mulSingle n v ↔
       k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n :=
-  by 
+  by
   refine' ⟨fun h => _, _⟩
   · have hk := congr_fun h k
     have hl := congr_fun h l
@@ -589,11 +603,10 @@ variable {η : Type v} (R : Type w) (s : ι → η)
 /-- `function.extend s f 1` as a bundled hom. -/
 @[to_additive Function.ExtendByZero.hom "`function.extend s f 0` as a bundled hom.", simps]
 noncomputable def Function.ExtendByOne.hom [MulOneClass R] :
-    (ι → R) →* η → R where 
+    (ι → R) →* η → R where
   toFun f := Function.extend s f 1
   map_one' := Function.extend_one s
   map_mul' f g := by simpa using Function.extend_mul s f g 1 1
 #align function.extend_by_one.hom Function.ExtendByOne.hom
 
 end Extend
-
