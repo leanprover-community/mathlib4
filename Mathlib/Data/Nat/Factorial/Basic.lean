@@ -288,7 +288,7 @@ theorem pow_succ_le_ascFactorial (n : ℕ) : ∀ k : ℕ, (n + 1) ^ k ≤ n.ascF
 #align nat.pow_succ_le_ascFactorial Nat.pow_succ_le_ascFactorial
 
 theorem pow_lt_ascFactorial' (n k : ℕ) : (n + 1) ^ (k + 2) < n.ascFactorial (k + 2) := by
-  rw [pow_succ]
+  rw [pow_succ, ascFactorial, mul_comm]
   exact
     Nat.mul_lt_mul (Nat.add_lt_add_right (Nat.lt_add_of_pos_right succ_pos') 1)
       (pow_succ_le_ascFactorial n _) (pow_pos succ_pos' _)
