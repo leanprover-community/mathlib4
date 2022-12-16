@@ -442,11 +442,14 @@ theorem pow_sub_lt_descFactorial {n : ℕ} :
     exact pow_sub_lt_descFactorial' h
 #align nat.pow_sub_lt_descFactorial Nat.pow_sub_lt_descFactorial
 
-theorem descFactorial_le_pow (n : ℕ) : ∀ k : ℕ, n.descFactorial k ≤ n ^ k
-  | 0 => by rw [descFactorial_zero, pow_zero]
-  | k + 1 => by
-    rw [descFactorial_succ, pow_succ]
-    exact Nat.mul_le_mul (Nat.sub_le _ _) (descFactorial_le_pow k)
+theorem descFactorial_le_pow (n : ℕ) : ∀ k : ℕ,
+  n.descFactorial k ≤ n ^ k := by
+  intro k
+  induction k with
+  | zero =>  rw [descFactorial_zero, pow_zero]
+  | succ k ih =>
+    rw [descFactorial_succ, pow_succ, mul_comm (n ^ k) n]
+    exact Nat.mul_le_mul (Nat.sub_le _ _) ih
 #align nat.descFactorial_le_pow Nat.descFactorial_le_pow
 
 theorem descFactorial_lt_pow {n : ℕ} (hn : 1 ≤ n) : ∀ {k : ℕ}, 2 ≤ k → n.descFactorial k < n ^ k
