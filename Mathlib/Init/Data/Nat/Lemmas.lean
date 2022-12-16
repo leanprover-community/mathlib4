@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Std.Data.Nat.Lemmas
-import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Init.Algebra.Functions
 
 universe u

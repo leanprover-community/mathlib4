@@ -7,6 +7,7 @@ import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.EuclideanDomain.Defs
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute
@@ -26,6 +27,7 @@ import Mathlib.Algebra.Group.WithOne.Units
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.GroupWithZero.Commute
@@ -197,6 +199,7 @@ import Mathlib.Data.Nat.Gcd.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Nat.PSub
+import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Nat.Upto
@@ -208,6 +211,7 @@ import Mathlib.Data.Option.NAry
 import Mathlib.Data.PEquiv
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.PSigma.Order
+import Mathlib.Data.Part
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.Lex
@@ -223,6 +227,7 @@ import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Intervals.Monoid
+import Mathlib.Data.Set.Intervals.ProjIcc
 import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Prod
@@ -265,6 +270,7 @@ import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Init.Data.Prod
 import Mathlib.Init.Data.Quot
@@ -292,6 +298,7 @@ import Mathlib.Logic.Equiv.Embedding
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Logic.Equiv.MfldSimpsAttr
 import Mathlib.Logic.Equiv.Option
+import Mathlib.Logic.Equiv.Set
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Logic.Function.Iterate
@@ -310,7 +317,10 @@ import Mathlib.Mathport.Syntax
 import Mathlib.Order.Antisymmetrization
 import Mathlib.Order.Basic
 import Mathlib.Order.BooleanAlgebra
+import Mathlib.Order.Bounded
 import Mathlib.Order.BoundedOrder
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.Compare
 import Mathlib.Order.Directed
 import Mathlib.Order.Disjoint
@@ -318,6 +328,7 @@ import Mathlib.Order.GameAdd
 import Mathlib.Order.Heyting.Basic
 import Mathlib.Order.Heyting.Boundary
 import Mathlib.Order.Hom.Basic
+import Mathlib.Order.Hom.Set
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.Iterate
 import Mathlib.Order.Lattice

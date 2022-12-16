@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 
-import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Lean.Message
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.Simps.NotationClass
