@@ -318,39 +318,17 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [Faithful G] (obj : C →
     (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq (G.map (map f)) (F.map f)) : C ⥤ D :=
   { obj, map := @map,
     map_id := by
-      intro X
-      apply G.map_injective
-      rw [G.map_id]
-      -- Porting note: `trans` doesn't work here, so we had to do this by hand:
-      -- trans F.map (𝟙 X); exact h_map
-      -- rw [F.map_id, G.map_id, h_obj X],
-      refine @trans _ Eq _ (G.map (map (𝟙 X))) ?_ (𝟙 (G.obj (obj X))) ?_ ?_
-      · rw [h_obj]
-        exact (F.map (𝟙 X))
-      · apply eq_of_heq
-        apply HEq.symm
-        -- Porting note: TODO: This seems wrong... Figure out how to get around these cast issues
-        simp only [cast_eq_iff_heq, eq_mpr_eq_cast, heq_eq_eq]
-        exact h_map.symm
-      · simp only [cast_eq_iff_heq, eq_mpr_eq_cast, heq_eq_eq]
-        rw [F.map_id, h_obj X],
+      intros X
+      refine G.map_injective <| eq_of_heq <| HEq.trans h_map ?_
+      simp only [Functor.map_id]
+      convert HEq.refl (𝟙 (F.obj X))
+      all_goals { apply h_obj }
     map_comp := by
-      intro X Y Z f g
-      apply G.map_injective
-      rw [G.map_comp]
-      -- Porting note: `trans` also didn't work here
-      -- trans F.map (f ≫ g); exact h_map
-      -- rw [F.map_comp, G.map_comp]
-      refine @trans _ Eq _ (G.map (map (f ≫ g))) ?_ (G.map (map f) ≫ G.map (map g)) ?_ ?_
-      · rw [h_obj X, h_obj Z]
-        exact (F.map (f ≫ g))
-      · apply eq_of_heq
-        apply HEq.symm
-        simp only [cast_eq_iff_heq, eq_mpr_eq_cast, cast_cast, heq_eq_eq]
-        exact h_map.symm
-      · apply eq_of_heq
-        simp only [Functor.map_comp, eq_mpr_eq_cast, cast_eq_iff_heq, cast_cast, heq_eq_eq]
-        congr 1 <;> (try exact (h_obj _).symm) <;> exact h_map.symm }
+      intros X Y Z f g
+      refine G.map_injective <| eq_of_heq <| HEq.trans h_map ?_
+      simp only [Functor.map_comp]
+      convert HEq.refl (F.map f ≫ F.map g)
+      all_goals { try { apply h_obj } <;> apply h_map } }
 #align category_theory.faithful.div CategoryTheory.Faithful.div
 
 -- This follows immediately from `Functor.hext` (`Functor.hext h_obj @h_map`),
