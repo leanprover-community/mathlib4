@@ -51,6 +51,7 @@ import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Canonical.Basic
 import Mathlib.Algebra.Order.Field.Canonical.Defs
 import Mathlib.Algebra.Order.Field.Defs
