@@ -83,7 +83,7 @@ theorem factorial_dvd_factorial {m n} (h : m ≤ n) : m ! ∣ n ! := by
 #align nat.factorial_dvd_factorial Nat.factorial_dvd_factorial
 
 theorem dvd_factorial : ∀ {m n}, 0 < m → m ≤ n → m ∣ n !
-  | succ m, n, _, h => dvd_of_mul_right_dvd (factorial_dvd_factorial h)
+  | succ _, _, _, h => dvd_of_mul_right_dvd (factorial_dvd_factorial h)
 #align nat.dvd_factorial Nat.dvd_factorial
 
 -- Porting note: `mono` not yet implemented @[mono]
@@ -102,7 +102,7 @@ theorem factorial_mul_pow_le_factorial : ∀ {m n : ℕ}, m ! * m.succ ^ n ≤ (
         (Nat.zero_le _) (Nat.zero_le _)
 #align nat.factorial_mul_pow_le_factorial Nat.factorial_mul_pow_le_factorial
 
-theorem monotone_factorial : Monotone factorial := fun n m => factorial_le
+theorem monotone_factorial : Monotone factorial := fun _ _ => factorial_le
 #align nat.monotone_factorial Nat.monotone_factorial
 
 theorem factorial_lt (hn : 0 < n) : n ! < m ! ↔ n < m := by
