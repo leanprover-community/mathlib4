@@ -342,6 +342,7 @@ import Mathlib.Order.LatticeIntervals
 import Mathlib.Order.Max
 import Mathlib.Order.MinMax
 import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.Monotone.Union
 import Mathlib.Order.Monovary
 import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
