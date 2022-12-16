@@ -265,7 +265,8 @@ theorem ascFactorial_eq_div (n k : ℕ) : n.ascFactorial k = (n + k)! / n ! := b
 
 theorem ascFactorial_of_sub {n k : ℕ} (h : k < n) :
     (n - k) * (n - k).ascFactorial k = (n - (k + 1)).ascFactorial (k + 1) := by
-  set t := n - k.succ with ht
+  let t := n - k.succ
+  let ht : t = n - k.succ := rfl
   suffices h' : n - k = t.succ; · rw [← ht, h', succ_ascFactorial, ascFactorial_succ]
   rw [ht, succ_eq_add_one, ← tsub_tsub_assoc (succ_le_of_lt h) (succ_pos _), succ_sub_one]
 #align nat.ascFactorial_of_sub Nat.ascFactorial_of_sub
@@ -435,7 +436,7 @@ theorem pow_sub_lt_descFactorial' {n : ℕ} :
 theorem pow_sub_lt_descFactorial {n : ℕ} :
     ∀ {k : ℕ}, 2 ≤ k → k ≤ n → (n + 1 - k) ^ k < n.descFactorial k
   | 0 => by rintro ⟨⟩
-  | 1 => by rintro (_ | ⟨⟨⟩⟩)
+  | 1 => by intro; contradiction
   | k + 2 => fun _ h => by
     rw [succ_sub_succ]
     exact pow_sub_lt_descFactorial' h
@@ -450,7 +451,7 @@ theorem descFactorial_le_pow (n : ℕ) : ∀ k : ℕ, n.descFactorial k ≤ n ^ 
 
 theorem descFactorial_lt_pow {n : ℕ} (hn : 1 ≤ n) : ∀ {k : ℕ}, 2 ≤ k → n.descFactorial k < n ^ k
   | 0 => by rintro ⟨⟩
-  | 1 => by rintro (_ | ⟨⟨⟩⟩)
+  | 1 => by intro; contradiction
   | k + 2 => fun _ => by
     rw [descFactorial_succ, pow_succ', mul_comm]
     exact
