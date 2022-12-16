@@ -320,11 +320,11 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [Faithful G] (obj : C →
     map_id := by
       intro X
       apply G.map_injective
-      simp only [Functor.map_id]
+      rw [G.map_id]
       -- Porting note: `trans` doesn't work here, so we had to do this by hand:
       -- trans F.map (𝟙 X); exact h_map
       -- rw [F.map_id, G.map_id, h_obj X],
-      refine @_root_.trans _ Eq _ (G.map (map (𝟙 X))) ?_ (𝟙 (G.obj (obj X))) ?_ ?_
+      refine @trans _ Eq _ (G.map (map (𝟙 X))) ?_ (𝟙 (G.obj (obj X))) ?_ ?_
       · rw [h_obj]
         exact F.map (𝟙 X)
       · apply eq_of_heq
@@ -337,11 +337,11 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [Faithful G] (obj : C →
     map_comp := by
       intro X Y Z f g
       apply G.map_injective
-      simp only [Functor.map_comp]
+      rw [G.map_comp]
       -- Porting note: `trans` also didn't work here
       -- trans F.map (f ≫ g); exact h_map
       -- rw [F.map_comp, G.map_comp]
-      refine @_root_.trans _ Eq _ (G.map (map (f ≫ g))) ?_ (G.map (map f) ≫ G.map (map g)) ?_ ?_
+      refine @trans _ Eq _ (G.map (map (f ≫ g))) ?_ (G.map (map f) ≫ G.map (map g)) ?_ ?_
       · rw [h_obj X, h_obj Z]
         exact (F.map (f ≫ g))
       · apply eq_of_heq
@@ -367,8 +367,7 @@ theorem Faithful.div_comp (F : C ⥤ E) [Faithful F] (G : D ⥤ E) [Faithful G] 
   cases' F with F_pre _ _ ; cases' G with G_pre _ _
   cases' F_pre with F_obj _ ; cases' G_pre with G_obj _
   unfold Faithful.div Functor.comp
-  -- Porting note: unable to find the lean4 analogue to `unfold_projs`, used `simp only []` instead
-  simp only [] at h_obj
+  -- Porting note: unable to find the lean4 analogue to `unfold_projs`, works without it
   have : F_obj = G_obj ∘ obj := (funext h_obj).symm
   subst this
   congr
