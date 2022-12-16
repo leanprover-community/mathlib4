@@ -42,7 +42,9 @@ specifying a particular preimage of each `f : F.obj X ⟶ F.obj Y`.
 See <https://stacks.math.columbia.edu/tag/001C>.
 -/
 class Full (F : C ⥤ D) where
+  /-- The data of a preimage for every `f : F.obj X ⟶ F.obj Y`. -/
   preimage : ∀ {X Y : C} (_ : F.obj X ⟶ F.obj Y), X ⟶ Y
+  /-- The property that `Full.preimage f` of maps to `f` via `F.map`. -/
   witness : ∀ {X Y : C} (f : F.obj X ⟶ F.obj Y), F.map (preimage f) = f := by aesop_cat
 #align category_theory.full CategoryTheory.Full
 
@@ -56,6 +58,7 @@ attribute [simp] Full.witness
 See <https://stacks.math.columbia.edu/tag/001C>.
 -/
 class Faithful (F : C ⥤ D) : Prop where
+  /-- `F.map` is injective for each `X Y : C`. -/
   map_injective : ∀ {X Y : C}, Function.Injective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) := by
     aesop_cat
 #align category_theory.faithful CategoryTheory.Faithful
