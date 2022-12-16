@@ -65,7 +65,7 @@ instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid ℕ
 instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℕ :=
   { Nat.nontrivial, Nat.orderBot, (inferInstance : OrderedAddCommMonoid ℕ),
     (inferInstance : LinearOrderedSemiring ℕ), (inferInstance : CommSemiring ℕ) with
-    exists_add_of_le := @fun _ _ h => (Nat.le.dest h).imp fun _ => Eq.symm,
+    exists_add_of_le := fun {_ _} h => (Nat.le.dest h).imp fun _ => Eq.symm,
     le_self_add := Nat.le_add_right,
     eq_zero_or_eq_zero_of_mul_eq_zero := fun _ _ => Nat.eq_zero_of_mul_eq_zero }
 
@@ -76,9 +76,8 @@ variable {m n k l : ℕ}
 
 /-! ### Equalities and inequalities involving zero and one -/
 
-
 theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
-  (show 1 ≤ n ↔ 0 < n from Iff.rfl).trans pos_iff_ne_zero
+  Nat.add_one_le_iff.trans pos_iff_ne_zero
 #align nat.one_le_iff_ne_zero Nat.one_le_iff_ne_zero
 
 theorem one_lt_iff_ne_zero_and_ne_one : ∀ {n : ℕ}, 1 < n ↔ n ≠ 0 ∧ n ≠ 1
@@ -346,7 +345,7 @@ theorem mul_self_inj : m * m = n * n ↔ m = n :=
 #align nat.mul_self_inj Nat.mul_self_inj
 
 theorem le_add_pred_of_pos (n : ℕ) {i : ℕ} (hi : i ≠ 0) : n ≤ i + (n - 1) := by
-  refine' le_trans _ add_tsub_le_assoc
+  refine le_trans ?_ add_tsub_le_assoc
   simp [add_comm, Nat.add_sub_assoc, one_le_iff_ne_zero.2 hi]
 #align nat.le_add_pred_of_pos Nat.le_add_pred_of_pos
 
@@ -560,7 +559,7 @@ theorem div_eq_self : m / n = m ↔ m = 0 ∨ n = 1 := by
     | n+2 =>
       left
       have : m / (n + 2) ≤ m / 2 := div_le_div_left (by simp) (by decide)
-      refine' eq_zero_of_le_half _
+      refine eq_zero_of_le_half ?_
       simp_all
   · rintro (rfl | rfl) <;> simp
 #align nat.div_eq_self Nat.div_eq_self
@@ -593,12 +592,12 @@ theorem find_pos (h : ∃ n : ℕ, p n) : 0 < Nat.find h ↔ ¬p 0 := by
 
 theorem find_add {hₘ : ∃ m, p (m + n)} {hₙ : ∃ n, p n} (hn : n ≤ Nat.find hₙ) :
     Nat.find hₘ + n = Nat.find hₙ := by
-  refine' ((le_find_iff _ _).2 fun m hm hpm => hm.not_le _).antisymm _
+  refine ((le_find_iff _ _).2 fun m hm hpm => hm.not_le ?_).antisymm ?_
   · have hnm : n ≤ m := hn.trans (find_le hpm)
-    refine' add_le_of_le_tsub_right_of_le hnm (find_le _)
+    refine add_le_of_le_tsub_right_of_le hnm (find_le ?_)
     rwa [tsub_add_cancel_of_le hnm]
   · rw [← tsub_le_iff_right]
-    refine' (le_find_iff _ _).2 fun m hm hpm => hm.not_le _
+    refine (le_find_iff _ _).2 fun m hm hpm => hm.not_le ?_
     rw [tsub_le_iff_right]
     exact find_le hpm
 #align nat.find_add Nat.find_add
@@ -630,11 +629,11 @@ theorem findGreatest_eq_iff :
     · rw [findGreatest_of_not hk, ihk]
       constructor
       · rintro ⟨hle, hP, hm⟩
-        refine' ⟨hle.trans k.le_succ, hP, fun n hlt hle => _⟩
+        refine ⟨hle.trans k.le_succ, hP, fun n hlt hle => ?_⟩
         rcases Decidable.eq_or_lt_of_le hle with (rfl | hlt')
         exacts[hk, hm hlt <| lt_succ_iff.1 hlt']
       · rintro ⟨hle, hP, hm⟩
-        refine' ⟨lt_succ_iff.1 (hle.lt_of_ne _), hP, fun n hlt hle => hm hlt (hle.trans k.le_succ)⟩
+        refine ⟨lt_succ_iff.1 (hle.lt_of_ne ?_), hP, fun n hlt hle => hm hlt (hle.trans k.le_succ)⟩
         rintro rfl
         exact hk (hP k.succ_ne_zero)
 #align nat.find_greatest_eq_iff Nat.findGreatest_eq_iff
@@ -661,7 +660,7 @@ theorem le_findGreatest (hmb : m ≤ n) (hm : P m) : m ≤ Nat.findGreatest P n 
 
 theorem findGreatest_mono_right (P : ℕ → Prop) [DecidablePred P] : Monotone (Nat.findGreatest P) :=
   by
-  refine' monotone_nat_of_le_succ fun n => _
+  refine monotone_nat_of_le_succ fun n => ?_
   rw [findGreatest_succ]
   split_ifs
   · exact (findGreatest_le n).trans (le_succ _)
@@ -673,7 +672,7 @@ theorem findGreatest_mono_left [DecidablePred Q] (hPQ : P ≤ Q) :
   intro n
   induction' n with n hn
   · rfl
-  by_cases P (n + 1)
+  by_cases h : P (n + 1)
   · rw [findGreatest_eq h, findGreatest_eq (hPQ _ h)]
   · rw [findGreatest_of_not h]
     exact hn.trans (Nat.findGreatest_mono_right _ <| le_succ _)
