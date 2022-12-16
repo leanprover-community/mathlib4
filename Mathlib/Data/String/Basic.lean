@@ -17,13 +17,13 @@ Supplementary theorems about the `String` type.
 namespace String
 
 /-- `<` on string iterators. This coincides with `<` on strings as lists. -/
-def ltb : Iterator → Iterator → Bool
-  | s₁, s₂ => by
-    cases s₂.hasNext; · exact false
-    cases h₁ : s₁.hasNext; · exact true
-    exact
+def ltb (s₁ s₂ : Iterator) : Bool :=
+  if s₂.hasNext then
+    if s₁.hasNext then
       if s₁.curr = s₂.curr then ltb s₁.next s₂.next
       else s₁.curr < s₂.curr
+    else true
+  else false
 #align string.ltb String.ltb
 
 instance lt' : LT String :=
@@ -37,8 +37,21 @@ instance decidable_lt : @DecidableRel String (· < ·) := by
 
 -- TODO This proof probably has to be completely redone
 @[simp]
-theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList :=
-  sorry
+theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList := by
+  rintro ⟨s₁⟩ ⟨s₂⟩
+  induction s₁ generalizing s₂ <;> simp only [lt']
+  case nil =>
+    unfold ltb
+    simp
+    cases s₂
+    case nil => simp
+    case cons hd tl =>
+      simp [LT.lt, toList, List.Lex.nil, mkIterator]
+      sorry
+  case cons hd tl ih =>
+    simp [toList]
+    unfold ltb
+    split_ifs <;> simp <;> sorry
 
 instance le : LE String :=
   ⟨fun s₁ s₂ => ¬s₂ < s₁⟩
@@ -92,7 +105,6 @@ theorem head_empty : "".data.head! = default :=
   rfl
 #align string.head_empty String.head_empty
 
--- TODO define `String.popn` and its properties
 @[simp]
 theorem popn_empty {n : ℕ} : "".popn n = "" := by
   simp [popn]
