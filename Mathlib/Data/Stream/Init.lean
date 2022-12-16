@@ -416,8 +416,10 @@ theorem unfolds_head_eq : ∀ s : Stream' α, unfolds head tail s = s := fun s =
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem interleave_eq (s₁ s₂ : Stream' α) : s₁ ⋈ s₂ = head s₁::head s₂::tail s₁ ⋈ tail s₂ := by
-  unfold interleave corecOn; rw [corec_eq]; dsimp; rw [corec_eq]; rfl
+theorem interleave_eq (s₁ s₂ : Stream' α) : s₁ ⋈ s₂ = head s₁::head s₂::(tail s₁ ⋈ tail s₂) := by
+  let t := tail s₁ ⋈ tail s₂
+  show s₁ ⋈ s₂ = head s₁::head s₂::t
+  unfold interleave; unfold corecOn; rw [corec_eq]; dsimp; rw [corec_eq]; rfl
 #align stream.interleave_eq Stream'.interleave_eq
 
 theorem tail_interleave (s₁ s₂ : Stream' α) : tail (s₁ ⋈ s₂) = s₂ ⋈ tail s₁ := by
