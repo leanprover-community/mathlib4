@@ -45,6 +45,7 @@ import Mathlib.Algebra.Hom.Equiv.TypeTags
 import Mathlib.Algebra.Hom.Equiv.Units.Basic
 import Mathlib.Algebra.Hom.Equiv.Units.GroupWithZero
 import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.GroupInstances
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
@@ -227,6 +228,7 @@ import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Intervals.Monoid
 import Mathlib.Data.Set.Intervals.ProjIcc
+import Mathlib.Data.Set.Intervals.SurjOn
 import Mathlib.Data.Set.Intervals.WithBotTop
 import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
@@ -270,6 +272,7 @@ import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Init.Data.Prod
 import Mathlib.Init.Data.Quot
