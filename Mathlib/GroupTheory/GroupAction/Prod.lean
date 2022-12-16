@@ -15,13 +15,13 @@ import Mathlib.GroupTheory.GroupAction.Defs
 This file defines instances for binary product of additive and multiplicative actions and provides
 scalar multiplication as a homomorphism from `α × β` to `β`.
 ## Main declarations
-* `smul_mul_hom`/`smul_monoid_hom`: Scalar multiplication bundled as a multiplicative/monoid
+* `smulMulHom `/`smulMonoidHom `: Scalar multiplication bundled as a multiplicative/monoid
   homomorphism.
 ## See also
-* `group_theory.group_action.option`
-* `group_theory.group_action.pi`
-* `group_theory.group_action.sigma`
-* `group_theory.group_action.sum`
+* `Mathlib.GroupTheory.GroupAction.option`
+* `Mathlib.GroupTheory.GroupAction.Pi`
+* `Mathlib.GroupTheory.GroupAction.Sigma`
+* `Mathlib.GroupTheory.GroupAction.Sum`
 
 # Porting notes
 The `to_additive` attribute can be used to generate both the `smul` and `vadd` lemmas
