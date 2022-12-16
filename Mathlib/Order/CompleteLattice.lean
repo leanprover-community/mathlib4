@@ -25,9 +25,9 @@ import Init.NotationExtra
 * `Sup` and `Inf` are the supremum and the infimum of a set;
 * `supᵢ (f : ι → α)` and `infᵢ (f : ι → α)` are indexed supremum and infimum of a function,
   defined as `Sup` and `Inf` of the range of this function;
-* `class complete_lattice`: a bounded lattice such that `Sup s` is always the least upper boundary
+* `class CompleteLattice`: a bounded lattice such that `Sup s` is always the least upper boundary
   of `s` and `Inf s` is always the greatest lower boundary of `s`;
-* `class complete_linear_order`: a linear ordered complete lattice.
+* `class CompleteLinearOrder`: a linear ordered complete lattice.
 
 ## Naming conventions
 
@@ -130,8 +130,8 @@ instance (α) [InfSet α] : SupSet αᵒᵈ :=
 instance (α) [SupSet α] : InfSet αᵒᵈ :=
   ⟨(supₛ : Set α → α)⟩
 
-/-- Note that we rarely use `complete_semilattice_Sup`
-(in fact, any such object is always a `complete_lattice`, so it's usually best to start there).
+/-- Note that we rarely use `CompleteSemilatticeSup`
+(in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
 
 Nevertheless it is sometimes a useful intermediate step in constructions.
 -/
@@ -153,12 +153,12 @@ theorem supₛ_le : (∀ b ∈ s, b ≤ a) → supₛ s ≤ a :=
   CompleteSemilatticeSup.supₛ_le s a
 #align Sup_le supₛ_le
 
-theorem is_lub_supₛ (s : Set α) : IsLUB s (supₛ s) :=
+theorem isLUB_supₛ (s : Set α) : IsLUB s (supₛ s) :=
   ⟨fun _ ↦ le_supₛ, fun _ ↦ supₛ_le⟩
-#align is_lub_Sup is_lub_supₛ
+#align is_lub_Sup isLUB_supₛ
 
 theorem IsLUB.supₛ_eq (h : IsLUB s a) : supₛ s = a :=
-  (is_lub_supₛ s).unique h
+  (isLUB_supₛ s).unique h
 #align is_lub.Sup_eq IsLUB.supₛ_eq
 
 theorem le_supₛ_of_le (hb : b ∈ s) (h : a ≤ b) : a ≤ supₛ s :=
@@ -166,12 +166,12 @@ theorem le_supₛ_of_le (hb : b ∈ s) (h : a ≤ b) : a ≤ supₛ s :=
 #align le_Sup_of_le le_supₛ_of_le
 
 theorem supₛ_le_supₛ (h : s ⊆ t) : supₛ s ≤ supₛ t :=
-  (is_lub_supₛ s).mono (is_lub_supₛ t) h
+  (isLUB_supₛ s).mono (isLUB_supₛ t) h
 #align Sup_le_Sup supₛ_le_supₛ
 
 @[simp]
 theorem supₛ_le_iff : supₛ s ≤ a ↔ ∀ b ∈ s, b ≤ a :=
-  is_lub_le_iff (is_lub_supₛ s)
+  isLUB_le_iff (isLUB_supₛ s)
 #align Sup_le_iff supₛ_le_iff
 
 theorem le_supₛ_iff : a ≤ supₛ s ↔ ∀ b ∈ upperBounds s, a ≤ b :=
@@ -191,85 +191,84 @@ theorem supₛ_le_supₛ_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, x �
 
 -- We will generalize this to conditionally complete lattices in `csupₛ_singleton`.
 theorem supₛ_singleton {a : α} : supₛ {a} = a :=
-  is_lub_singleton.supₛ_eq
+  isLUB_singleton.supₛ_eq
 #align Sup_singleton supₛ_singleton
 
 end
 
-/-- Note that we rarely use `complete_semilattice_Inf`
-(in fact, any such object is always a `complete_lattice`, so it's usually best to start there).
+/-- Note that we rarely use `CompleteSemilatticeInf`
+(in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
 
 Nevertheless it is sometimes a useful intermediate step in constructions.
 -/
 class CompleteSemilatticeInf (α : Type _) extends PartialOrder α, InfSet α where
-  Inf_le : ∀ s, ∀ a ∈ s, Inf s ≤ a
-  le_Inf : ∀ s a, (∀ b ∈ s, a ≤ b) → a ≤ Inf s
+  Inf_le : ∀ s, ∀ a ∈ s, infₛ s ≤ a
+  le_Inf : ∀ s a, (∀ b ∈ s, a ≤ b) → a ≤ infₛ s
 #align complete_semilattice_Inf CompleteSemilatticeInf
 
 section
 
 variable [CompleteSemilatticeInf α] {s t : Set α} {a b : α}
 
-@[ematch]
-theorem Inf_le : a ∈ s → inf s ≤ a :=
+-- @[ematch]  Porting note: attribute removed
+theorem infₛ_le : a ∈ s → infₛ s ≤ a :=
   CompleteSemilatticeInf.Inf_le s a
-#align Inf_le Inf_le
+#align Inf_le infₛ_le
 
-theorem le_Inf : (∀ b ∈ s, a ≤ b) → a ≤ inf s :=
+theorem le_infₛ : (∀ b ∈ s, a ≤ b) → a ≤ infₛ s :=
   CompleteSemilatticeInf.le_Inf s a
-#align le_Inf le_Inf
+#align le_Inf le_infₛ
 
-theorem is_glb_Inf (s : Set α) : IsGlb s (inf s) :=
-  ⟨fun a => Inf_le, fun a => le_Inf⟩
-#align is_glb_Inf is_glb_Inf
+theorem isGLB_infₛ (s : Set α) : IsGLB s (infₛ s) :=
+  ⟨fun _ => infₛ_le, fun _ => le_infₛ⟩
+#align is_glb_Inf isGLB_infₛ
 
-theorem IsGlb.Inf_eq (h : IsGlb s a) : inf s = a :=
-  (is_glb_Inf s).unique h
-#align is_glb.Inf_eq IsGlb.Inf_eq
+theorem IsGLB.infₛ_eq (h : IsGLB s a) : infₛ s = a :=
+  (isGLB_infₛ s).unique h
+#align is_glb.Inf_eq IsGLB.infₛ_eq
 
-theorem Inf_le_of_le (hb : b ∈ s) (h : b ≤ a) : inf s ≤ a :=
-  le_trans (Inf_le hb) h
-#align Inf_le_of_le Inf_le_of_le
+theorem infₛ_le_of_le (hb : b ∈ s) (h : b ≤ a) : infₛ s ≤ a :=
+  le_trans (infₛ_le hb) h
+#align Inf_le_of_le infₛ_le_of_le
 
-theorem Inf_le_Inf (h : s ⊆ t) : inf t ≤ inf s :=
-  (is_glb_Inf s).mono (is_glb_Inf t) h
-#align Inf_le_Inf Inf_le_Inf
+theorem infₛ_le_infₛ (h : s ⊆ t) : infₛ t ≤ infₛ s :=
+  (isGLB_infₛ s).mono (isGLB_infₛ t) h
+#align Inf_le_Inf infₛ_le_infₛ
 
 @[simp]
-theorem le_Inf_iff : a ≤ inf s ↔ ∀ b ∈ s, a ≤ b :=
-  le_is_glb_iff (is_glb_Inf s)
-#align le_Inf_iff le_Inf_iff
+theorem le_infₛ_iff : a ≤ infₛ s ↔ ∀ b ∈ s, a ≤ b :=
+  le_isGLB_iff (isGLB_infₛ s)
+#align le_Inf_iff le_infₛ_iff
 
-theorem Inf_le_iff : inf s ≤ a ↔ ∀ b ∈ lowerBounds s, b ≤ a :=
-  ⟨fun h b hb => le_trans (le_Inf hb) h, fun hb => hb _ fun x => Inf_le⟩
-#align Inf_le_iff Inf_le_iff
+theorem infₛ_le_iff : infₛ s ≤ a ↔ ∀ b ∈ lowerBounds s, b ≤ a :=
+  ⟨fun h _ hb => le_trans (le_infₛ hb) h, fun hb => hb _ fun _ => infₛ_le⟩
+#align Inf_le_iff infₛ_le_iff
 
 theorem infᵢ_le_iff {s : ι → α} : infᵢ s ≤ a ↔ ∀ b, (∀ i, b ≤ s i) → b ≤ a := by
-  simp [infᵢ, Inf_le_iff, lowerBounds]
+  simp [infᵢ, infₛ_le_iff, lowerBounds]
 #align infᵢ_le_iff infᵢ_le_iff
 
-theorem Inf_le_Inf_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) : inf t ≤ inf s :=
+theorem infₛ_le_infₛ_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) : infₛ t ≤ infₛ s :=
   le_of_forall_le
     (by
-      simp only [le_Inf_iff]
+      simp only [le_infₛ_iff]
       introv h₀ h₁
       rcases h _ h₁ with ⟨y, hy, hy'⟩
       solve_by_elim [le_trans _ hy'] )
-#align Inf_le_Inf_of_forall_exists_le Inf_le_Inf_of_forall_exists_le
+#align Inf_le_Inf_of_forall_exists_le infₛ_le_infₛ_of_forall_exists_le
 
 -- We will generalize this to conditionally complete lattices in `cInf_singleton`.
-theorem Inf_singleton {a : α} : inf {a} = a :=
-  is_glb_singleton.Inf_eq
-#align Inf_singleton Inf_singleton
+theorem infₛ_singleton {a : α} : infₛ {a} = a :=
+  isGLB_singleton.infₛ_eq
+#align Inf_singleton infₛ_singleton
 
 end
 
-/-- A complete lattice is a bounded lattice which has supᵢema and infᵢma for every subset. -/
-@[protect_proj]
+/-- A complete lattice is a bounded lattice which has suprema and infima for every subset. -/
 class CompleteLattice (α : Type _) extends Lattice α, CompleteSemilatticeSup α,
   CompleteSemilatticeInf α, Top α, Bot α where
-  le_top : ∀ x : α, x ≤ ⊤
-  bot_le : ∀ x : α, ⊥ ≤ x
+  protected le_top : ∀ x : α, x ≤ ⊤
+  protected bot_le : ∀ x : α, ⊥ ≤ x
 #align complete_lattice CompleteLattice
 
 -- see Note [lower instance priority]
@@ -278,13 +277,13 @@ instance (priority := 100) CompleteLattice.toBoundedOrder [h : CompleteLattice �
   { h with }
 #align complete_lattice.to_bounded_order CompleteLattice.toBoundedOrder
 
-/-- Create a `complete_lattice` from a `partial_order` and `Inf` function
+/-- Create a `CompleteLattice` from a `PartialOrder` and `InfSet`
 that returns the greatest lower bound of a set. Usually this constructor provides
 poor definitional equalities.  If other fields are known explicitly, they should be
 provided; for example, if `inf` is known explicitly, construct the `complete_lattice`
 instance as
 ```
-instance : complete_lattice my_T :=
+instance : CompleteLattice my_T :=
 { inf := better_inf,
   le_inf := ...,
   inf_le_right := ...,
@@ -294,27 +293,27 @@ instance : complete_lattice my_T :=
 ```
 -/
 def completeLatticeOfInf (α : Type _) [H1 : PartialOrder α] [H2 : InfSet α]
-    (is_glb_Inf : ∀ s : Set α, IsGlb s (inf s)) : CompleteLattice α :=
+    (isGLB_infₛ : ∀ s : Set α, IsGLB s (infₛ s)) : CompleteLattice α :=
   { H1, H2 with
-    bot := inf univ
-    bot_le := fun x => (is_glb_Inf univ).1 trivial
-    top := inf ∅
-    le_top := fun a => (is_glb_Inf ∅).2 <| by simp
-    sup := fun a b => inf { x | a ≤ x ∧ b ≤ x }
-    inf := fun a b => inf {a, b}
+    bot := infₛ univ
+    bot_le := fun x => (isGLB_infₛ univ).1 trivial
+    top := infₛ ∅
+    le_top := fun a => (isGLB_infₛ ∅).2 <| by simp
+    sup := fun a b => infₛ { x : α | a ≤ x ∧ b ≤ x }
+    inf := fun a b => infₛ {a, b}
     le_inf := fun a b c hab hac => by
-      apply (is_glb_Inf _).2
+      apply (isGLB_infₛ _).2
       simp [*]
-    inf_le_right := fun a b => (is_glb_Inf _).1 <| mem_insert_of_mem _ <| mem_singleton _
-    inf_le_left := fun a b => (is_glb_Inf _).1 <| mem_insert _ _
-    sup_le := fun a b c hac hbc => (is_glb_Inf _).1 <| by simp [*]
-    le_sup_left := fun a b => (is_glb_Inf _).2 fun x => And.left
-    le_sup_right := fun a b => (is_glb_Inf _).2 fun x => And.right
-    le_Inf := fun s a ha => (is_glb_Inf s).2 ha
-    Inf_le := fun s a ha => (is_glb_Inf s).1 ha
-    sup := fun s => inf (upperBounds s)
-    le_Sup := fun s a ha => (is_glb_Inf (upperBounds s)).2 fun b hb => hb ha
-    Sup_le := fun s a ha => (is_glb_Inf (upperBounds s)).1 ha }
+    inf_le_right := fun a b => (isGLB_infₛ _).1 <| mem_insert_of_mem _ <| mem_singleton _
+    inf_le_left := fun a b => (isGLB_infₛ _).1 <| mem_insert _ _
+    sup_le := fun a b c hac hbc => (isGLB_infₛ _).1 <| by simp [*]
+    le_sup_left := fun a b => (isGLB_infₛ _).2 fun x => And.left
+    le_sup_right := fun a b => (isGLB_infₛ _).2 fun x => And.right
+    le_Inf := fun s a ha => (isGLB_infₛ s).2 ha
+    Inf_le := fun s a ha => (isGLB_infₛ s).1 ha
+    supₛ := fun s => infₛ (upperBounds s)
+    le_supₛ := fun s a ha => (isGLB_infₛ (upperBounds s)).2 fun b hb => hb ha
+    supₛ_le := fun s a ha => (isGLB_infₛ (upperBounds s)).1 ha }
 #align complete_lattice_of_Inf completeLatticeOfInf
 
 /-- Any `complete_semilattice_Inf` is in fact a `complete_lattice`.
