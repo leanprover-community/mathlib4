@@ -702,7 +702,7 @@ end LinearOrderedRing
 namespace Int
 
 @[simp]
-theorem nat_abs_sq (x : ℤ) : (x.natAbs ^ 2 : ℤ) = x ^ 2 := by rw [sq, Int.natAbs_mul_self', sq]
+theorem nat_abs_sq (x : ℤ) : ((x.natAbs ^ 2 : ℕ) : ℤ) = x ^ 2 := by rw [sq, Int.natAbs_mul_self, sq]
 #align int.nat_abs_sq Int.nat_abs_sq
 
 alias nat_abs_sq ← nat_abs_pow_two
@@ -723,7 +723,7 @@ alias le_self_sq ← le_self_pow_two
 
 theorem pow_right_injective {x : ℤ} (h : 1 < x.natAbs) : Function.Injective ((· ^ ·) x : ℕ → ℤ) :=
   by
-  suffices Function.Injective (nat_abs ∘ ((· ^ ·) x : ℕ → ℤ)) by
+  suffices Function.Injective (natAbs ∘ ((· ^ ·) x : ℕ → ℤ)) by
     exact Function.Injective.of_comp this
   convert Nat.pow_right_injective h
   ext n
@@ -738,10 +738,9 @@ variable (M G A)
 of `multiplicative.of_add 1`. -/
 def powersHom [Monoid M] :
     M ≃
-      (Multiplicative ℕ →*
-        M) where
+      (Multiplicative ℕ →* M) where
   toFun x :=
-    ⟨fun n => x ^ n.toAdd, by
+    ⟨fun n : ℕ  => x ^ n.toAdd, by
       convert pow_zero x
       exact toAdd_one, fun m n => pow_add x m n⟩
   invFun f := f (Multiplicative.ofAdd 1)
@@ -758,7 +757,8 @@ def zpowersHom [Group G] :
   toFun x := ⟨fun n => x ^ n.toAdd, zpow_zero x, fun m n => zpow_add x m n⟩
   invFun f := f (Multiplicative.ofAdd 1)
   left_inv := zpow_one
-  right_inv f := MonoidHom.ext fun n => by simp [← f.map_zpow, ← ofAdd_zsmul]
+  right_inv f := MonoidHom.ext fun n => by
+    simp [← f.map_zpow, ← ofAdd_zsmul]
 #align zpowers_hom zpowersHom
 
 /-- Additive homomorphisms from `ℕ` are defined by the image of `1`. -/
