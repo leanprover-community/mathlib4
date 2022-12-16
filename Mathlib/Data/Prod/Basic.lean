@@ -7,7 +7,6 @@ import Mathlib.Init.Core
 import Mathlib.Init.Data.Prod
 import Mathlib.Init.Function
 import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Relation.Rfl
 
 /-!
 # Extra facts about `prod`
@@ -90,6 +89,9 @@ theorem mk.inj_right {α β : Type _} (b : β) :
     Function.Injective (fun a ↦ Prod.mk a b : α → α × β) := by
   intro b₁ b₂ h
   simpa only [and_true, eq_self_iff_true, mk.inj_iff] using h
+
+lemma mk_inj_left : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk.inj_left _).eq_iff
+lemma mk_inj_right : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).eq_iff
 
 theorem ext_iff {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 := by
   rw [← @mk.eta _ _ p, ← @mk.eta _ _ q, mk.inj_iff]
@@ -175,12 +177,16 @@ theorem fst_eq_iff : ∀ {p : α × β} {x : α}, p.1 = x ↔ p = (x, p.2)
 theorem snd_eq_iff : ∀ {p : α × β} {x : β}, p.2 = x ↔ p = (p.1, x)
   | ⟨a, b⟩, x => by simp
 
+variable {r : α → α → Prop} {s : β → β → Prop} {x y : α × β}
+
 theorem lex_def (r : α → α → Prop) (s : β → β → Prop) {p q : α × β} :
     Prod.Lex r s p q ↔ r p.1 q.1 ∨ p.1 = q.1 ∧ s p.2 q.2 :=
   ⟨fun h ↦ by cases h <;> simp [*], fun h ↦
     match p, q, h with
     | (a, b), (c, d), Or.inl h => Lex.left _ _ h
     | (a, b), (c, d), Or.inr ⟨e, h⟩ => by subst e; exact Lex.right _ h⟩
+
+lemma lex_iff : Prod.Lex r s x y ↔ r x.1 y.1 ∨ x.1 = y.1 ∧ s x.2 y.2 := lex_def _ _
 
 instance Lex.decidable [DecidableEq α]
     (r : α → α → Prop) (s : β → β → Prop) [DecidableRel r] [DecidableRel s] :
@@ -200,6 +206,9 @@ theorem Lex.refl_right (r : α → α → Prop) (s : β → β → Prop) [IsRefl
 
 instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl β s] : IsRefl (α × β) (Prod.Lex r s) :=
   ⟨Lex.refl_right _ _⟩
+
+instance is_irrefl [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (α × β) (Prod.Lex r s) :=
+⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
 
 @[trans]
 theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
@@ -235,6 +244,14 @@ instance isTotal_right {r : α → α → Prop} {s : β → β → Prop} [IsTric
     · exact (total_of s a b).imp (.right _) (.right _)
     · exact Or.inr (.left _ _ hji) ⟩
 #align prod.is_total_right Prod.isTotal_right
+
+instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
+  IsTrichotomous (α × β) (Prod.Lex r s) :=
+⟨fun ⟨i, a⟩ ⟨j, b⟩ ↦ by
+  obtain hij | rfl | hji := trichotomous_of r i j
+  { exact Or.inl (Lex.left _ _ hij) }
+  { exact (trichotomous_of (s) a b).imp3 (Lex.right _) (congr_arg _) (Lex.right _) }
+  { exact Or.inr (Or.inr $ Lex.left _ _ hji) }⟩
 
 end Prod
 

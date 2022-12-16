@@ -61,8 +61,8 @@ theorem Functor.ext {F} :
 
 end Functor
 
-/-- Introduce the `id` functor. Incidentally, this is `Pure` for
-`id` as a `Monad` and as an `Applicative` functor. -/
+/-- Introduce `id` as a quasi-functor. (Note that where a lawful `Monad` or
+`Applicative` or `Functor` is needed, `Id` is the correct definition). -/
 def id.mk {α : Sort u} : α → id α :=
   id
 #align id.mk id.mk

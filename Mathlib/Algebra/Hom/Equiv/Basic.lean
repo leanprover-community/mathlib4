@@ -234,8 +234,7 @@ def refl (M : Type _) [Mul M] : M ≃* M :=
 instance : Inhabited (M ≃* M) := ⟨refl M⟩
 
 /-- The inverse of an isomorphism is an isomorphism. -/
--- Porting note: removed `@[trans]`, until https://github.com/leanprover-community/mathlib4/pull/857
-@[to_additive "The inverse of an isomorphism is an isomorphism."]
+@[symm, to_additive "The inverse of an isomorphism is an isomorphism."]
 def symm {M N : Type _} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
   ⟨h.toEquiv.symm, (h.toMulHom.inverse h.toEquiv.symm h.left_inv h.right_inv).map_mul⟩
 #align mul_equiv.symm MulEquiv.symm
@@ -248,6 +247,11 @@ theorem invFun_eq_symm {f : M ≃* N} : EquivLike.inv f = f.symm := rfl
 
 -- we don't hyperlink the note in the additive version, since that breaks syntax highlighting
 -- in the whole file.
+
+-- Porting note: in mathlib3 we didn't need the `Simps.apply` hint.
+/-- See Note [custom simps projection] -/
+@[to_additive "See Note custom simps projection"]
+def Simps.apply (e : M ≃* N) : M → N := e
 /-- See Note [custom simps projection] -/
 @[to_additive "See Note custom simps projection"]
 def Simps.symmApply (e : M ≃* N) : N → M :=
@@ -297,8 +301,7 @@ theorem refl_symm : (refl M).symm = refl M := rfl
 #align add_equiv.refl_symm AddEquiv.refl_symm
 
 /-- Transitivity of multiplication-preserving isomorphisms -/
--- Porting note: removed `@[trans]`, until https://github.com/leanprover-community/mathlib4/pull/857
-@[to_additive "Transitivity of addition-preserving isomorphisms"]
+@[trans, to_additive "Transitivity of addition-preserving isomorphisms"]
 def trans (h1 : M ≃* N) (h2 : N ≃* P) : M ≃* P :=
   { h1.toEquiv.trans h2.toEquiv with
     map_mul' := fun x y => show h2 (h1 (x * y)) = h2 (h1 x) * h2 (h1 y) by
@@ -446,6 +449,10 @@ theorem ext {f g : MulEquiv M N} (h : ∀ x, f x = g x) : f = g :=
 #align mul_equiv.ext MulEquiv.ext
 #align add_equiv.ext AddEquiv.ext
 
+-- Porting note: can be removed after https://github.com/leanprover-community/mathlib4/pull/954
+-- is merged.
+attribute [ext] AddEquiv.ext
+
 @[to_additive]
 theorem ext_iff {f g : MulEquiv M N} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
@@ -543,18 +550,18 @@ def toMonoidHom {M N} [MulOneClass M] [MulOneClass N] (h : M ≃* N) : M →* N 
 #align add_equiv.to_add_monoid_hom AddEquiv.toAddMonoidHom
 
 @[simp, to_additive]
-theorem coe_to_monoidHom {M N} [MulOneClass M] [MulOneClass N] (e : M ≃* N) :
+theorem coe_toMonoidHom {M N} [MulOneClass M] [MulOneClass N] (e : M ≃* N) :
   ↑e.toMonoidHom = ↑e := rfl
-#align mul_equiv.coe_to_monoid_hom MulEquiv.coe_to_monoidHom
-#align add_equiv.coe_to_add_monoid_hom AddEquiv.coe_to_addMonoidHom
+#align mul_equiv.coe_to_monoid_hom MulEquiv.coe_toMonoidHom
+#align add_equiv.coe_to_add_monoid_hom AddEquiv.coe_toAddMonoidHom
 
 set_option linter.deprecated false in
 @[to_additive]
-theorem to_monoidHom_injective {M N} [MulOneClass M] [MulOneClass N] :
+theorem toMonoidHom_injective {M N} [MulOneClass M] [MulOneClass N] :
   Function.Injective (toMonoidHom : M ≃* N → M →* N) :=
   fun _ _ h => MulEquiv.ext (MonoidHom.ext_iff.1 h)
-#align mul_equiv.to_monoid_hom_injective MulEquiv.to_monoidHom_injective
-#align add_equiv.to_add_monoid_hom_injective AddEquiv.to_addMonoidHom_injective
+#align mul_equiv.to_monoid_hom_injective MulEquiv.toMonoidHom_injective
+#align add_equiv.to_add_monoid_hom_injective AddEquiv.toAddMonoidHom_injective
 
 /-- A multiplicative analogue of `Equiv.arrowCongr`,
 where the equivalence between the targets is multiplicative.

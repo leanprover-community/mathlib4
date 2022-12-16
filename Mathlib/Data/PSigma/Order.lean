@@ -5,7 +5,7 @@ Authors: Scott Morrison, Minchao Wu
 -/
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Order.BoundedOrder
-import Mathlib.Mathport.Syntax
+import Mathlib.Mathport.Notation
 import Init.NotationExtra
 
 /-!
@@ -33,7 +33,6 @@ variable {ι : Type _} {α : ι → Type _}
 
 namespace PSigma
 
--- mathport name: «exprΣₗ' , »
 /-- The notation `Σₗ' i, α i` refers to a sigma type which is locall equipped with the
 lexicographic order.-/
 notation3 "Σₗ' "(...)", "r:(scoped p => _root_.Lex (PSigma p)) => r
