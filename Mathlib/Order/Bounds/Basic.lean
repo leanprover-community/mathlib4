@@ -816,9 +816,9 @@ theorem isLeast_univ [Preorder γ] [OrderBot γ] : IsLeast (univ : Set γ) ⊥ :
   @isGreatest_univ γᵒᵈ _ _
 #align is_least_univ isLeast_univ
 
-theorem is_glb_univ [Preorder γ] [OrderBot γ] : IsGLB (univ : Set γ) ⊥ :=
+theorem isGLB_univ [Preorder γ] [OrderBot γ] : IsGLB (univ : Set γ) ⊥ :=
   isLeast_univ.isGLB
-#align is_glb_univ is_glb_univ
+#align is_glb_univ isGLB_univ
 
 @[simp]
 theorem NoMaxOrder.upperBounds_univ [NoMaxOrder α] : upperBounds (univ : Set α) = ∅ :=
