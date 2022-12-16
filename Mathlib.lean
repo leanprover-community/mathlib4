@@ -312,6 +312,7 @@ import Mathlib.Mathport.Syntax
 import Mathlib.Order.Antisymmetrization
 import Mathlib.Order.Basic
 import Mathlib.Order.BooleanAlgebra
+import Mathlib.Order.Bounded
 import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Compare
