@@ -228,8 +228,8 @@ def NatTrans.equivOfCompFullyFaithful :
   toFun α := α ◫ 𝟙 H
   invFun := natTransOfCompFullyFaithful H
   -- Porting note: aesop_cat doesn't find this proof without the `intros x`.
-  left_inv := by intros x ; aesop_cat
-  right_inv := by intros x ; aesop_cat
+  left_inv := fun _ => by aesop_cat
+  right_inv := fun _ => by aesop_cat
 #align
   category_theory.nat_trans.equiv_of_comp_fully_faithful
   CategoryTheory.NatTrans.equivOfCompFullyFaithful
@@ -242,8 +242,8 @@ def NatIso.equivOfCompFullyFaithful :
         G ⋙ H) where
   toFun e := NatIso.hcomp e (Iso.refl H)
   invFun := natIsoOfCompFullyFaithful H
-  left_inv := by intros x ; aesop_cat
-  right_inv := by intros x ; aesop_cat
+  left_inv := fun _ => by aesop_cat
+  right_inv := fun _ => by aesop_cat
 #align
   category_theory.nat_iso.equiv_of_comp_fully_faithful
   CategoryTheory.NatIso.equivOfCompFullyFaithful
@@ -260,7 +260,7 @@ instance Full.id : Full (𝟭 C) where preimage f := f
 #align category_theory.full.id CategoryTheory.Full.id
 
 -- Porting note: Not sure what mathlib4 tactic should solve this
-instance Faithful.id : Faithful (𝟭 C) := { map_injective := fun {X Y} h => by simp }
+instance Faithful.id : Faithful (𝟭 C) := { map_injective := fun {X Y} h => by aesop_cat }
 #align category_theory.faithful.id CategoryTheory.Faithful.id
 
 variable {D : Type u₂} [Category.{v₂} D] {E : Type u₃} [Category.{v₃} E]
@@ -321,7 +321,7 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [Faithful G] (obj : C →
       intro X
       apply G.map_injective
       simp only [Functor.map_id]
-      -- Porting note: `trans` doesn't work with HEq, so I had to do all this by hand:
+      -- Porting note: `trans` doesn't work here, so we had to do this by hand:
       -- trans F.map (𝟙 X); exact h_map
       -- rw [F.map_id, G.map_id, h_obj X],
       refine @_root_.trans _ Eq _ (G.map (map (𝟙 X))) ?_ (𝟙 (G.obj (obj X))) ?_ ?_
@@ -362,18 +362,16 @@ theorem Faithful.div_comp (F : C ⥤ E) [Faithful F] (G : D ⥤ E) [Faithful G] 
     (h_obj : ∀ X, G.obj (obj X) = F.obj X) (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
     (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq (G.map (map f)) (F.map f)) :
     Faithful.div F G obj @h_obj @map @h_map ⋙ G = F := by
-  cases' F with F_func a b ; cases' G with G_func c d
-  cases' F_func with F_obj e ; cases' G_func with G_obj g
+  -- Porting note: Have to unfold the structure twice because the first one recovers only the
+  -- prefunctor `F_pre`
+  cases' F with F_pre _ _ ; cases' G with G_pre _ _
+  cases' F_pre with F_obj _ ; cases' G_pre with G_obj _
   unfold Faithful.div Functor.comp
-  -- Porting note: unable to find the lean4 analogue to `unfold_projs`
-  -- Porting note: There's some really bad tactic parsing errors going on in this
-  -- TODO : Post in a thread about this
+  -- Porting note: unable to find the lean4 analogue to `unfold_projs`, used `simp only []` instead
   simp only [] at h_obj
   have : F_obj = G_obj ∘ obj := (funext h_obj).symm
   subst this
   congr
-  -- Porting note: `funext` now requires an argument, unlike in Lean 3, don't actually use it
-  -- funext _
   simp only [Function.comp_apply, heq_eq_eq] at h_map
   ext
   exact h_map
