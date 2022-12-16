@@ -373,11 +373,26 @@ def completeLatticeOfCompleteSemilatticeSup (α : Type _) [CompleteSemilatticeSu
   completeLatticeOfSup α fun s => isLUB_supₛ s
 #align complete_lattice_of_complete_semilattice_Sup completeLatticeOfCompleteSemilatticeSup
 
-/- ./././Mathport/Syntax/Translate/Command.lean:407:11: unsupported: advanced extends in structure -/
+-- Porting note: as we cannot rename fields while extending,
+-- `CompleteLinearOrder` does not directly extend `LinearOrder`.
+-- Instead we add the fields by hand, and write a manual instance.
+
 /-- A complete linear order is a linear order whose lattice structure is complete. -/
-class CompleteLinearOrder (α : Type _) extends CompleteLattice α, LinearOrder α
--- renaming max → sup min → inf
+class CompleteLinearOrder (α : Type _) extends CompleteLattice α where
+  /-- A linear order is total. -/
+  le_total (a b : α) : a ≤ b ∨ b ≤ a
+  /-- In a linearly ordered type, we assume the order relations are all decidable. -/
+  decidable_le : DecidableRel (. ≤ . : α → α → Prop)
+  /-- In a linearly ordered type, we assume the order relations are all decidable. -/
+  decidable_eq : DecidableEq α := @decidableEq_of_decidableLE _ _ decidable_le
+  /-- In a linearly ordered type, we assume the order relations are all decidable. -/
+  decidable_lt : DecidableRel (. < . : α → α → Prop) :=
+    @decidableLT_of_decidableLE _ _ decidable_le
+
 #align complete_linear_order CompleteLinearOrder
+
+instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α :=
+  { i with }
 
 namespace OrderDual
 
