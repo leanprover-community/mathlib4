@@ -30,7 +30,7 @@ class my_has_scalar (M : Type u) (α : Type v) :=
 (smul : M → α → α)
 
 instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
-attribute [to_additive my_has_scalar (reorder := 1)] my_has_pow
+attribute [to_additive (reorder := 1) my_has_scalar] my_has_pow
 attribute [to_additive (reorder := 1 4)] my_has_pow.pow
 
 @[to_additive bar1]
@@ -99,16 +99,16 @@ theorem bar11_works : bar11 = foo11 := by rfl
 @[to_additive bar12]
 def foo12 (_ : Nat) (_ : Int) : Fin 37 := ⟨2, by decide⟩
 
-@[to_additive bar13 (reorder := 1 4)]
+@[to_additive (reorder := 1 4) bar13]
 lemma foo13 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : x ^ y = x ^ y := rfl
 
-@[to_additive bar14 (reorder := 1 4)]
+@[to_additive (reorder := 1 4) bar14]
 def foo14 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : α := (x ^ y) ^ y
 
-@[to_additive bar15 (reorder := 1 4)]
+@[to_additive (reorder := 1 4) bar15]
 lemma foo15 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = (x ^ y) ^ y := rfl
 
-@[to_additive bar16 (reorder := 1 4)]
+@[to_additive (reorder := 1 4) bar16]
 lemma foo16 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = (x ^ y) ^ y := foo15 x y
 
 

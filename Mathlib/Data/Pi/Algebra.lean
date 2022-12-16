@@ -106,7 +106,7 @@ theorem pow_def [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) : x ^ b = fun i 
   rfl
 
 -- `to_additive` generates bad output if we take `Pow α β`.
-@[simp, to_additive smul_const (reorder := 5)]
+@[simp, to_additive (reorder := 5) smul_const]
 theorem const_pow [Pow β α] (b : β) (a : α) : const I b ^ a = const I (b ^ a) :=
   rfl
 
