@@ -44,8 +44,6 @@ instance MonoidHom.commMonoid [MulOneClass M] [CommMonoid N] :
     ext x
     simp [pow_succ]
 
-set_option maxHeartbeats 2000000
-
 /-- If `G` is a commutative group, then `M →* G` is a commutative group too. -/
 @[to_additive AddMonoidHom.addCommGroup
       "If `G` is an additive commutative group, then `M →+ G` is an additive commutative
