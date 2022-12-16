@@ -314,6 +314,7 @@ theorem ascFactorial_lt_pow_add (n : ℕ) : ∀ {k : ℕ}, 2 ≤ k → n.ascFact
   | 1 => by intro; contradiction
   | k + 2 => fun _ => by
     rw [ascFactorial_succ, pow_succ]
+    rw [add_assoc n (k + 1) 1, mul_comm <| (n + (k + 2)) ^ (k + 1)]
     refine'
       Nat.mul_lt_mul' le_rfl
         ((ascFactorial_le_pow_add n _).trans_lt
