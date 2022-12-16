@@ -20,21 +20,12 @@ namespace Nat
 
 /-! ### `pow` -/
 
+-- Porting note: the next two lemmas have moved into `Std`.
 
-#print Nat.pow_le_pow_of_le_left /-
--- This is redundant with `pow_le_pow_of_le_left'`,
--- We leave a version in the `nat` namespace as well.
--- (The global `pow_le_pow_of_le_left` needs an extra hypothesis `0 ≤ x`.)
-protected theorem pow_le_pow_of_le_left {x y : ℕ} (H : x ≤ y) : ∀ i : ℕ, x ^ i ≤ y ^ i :=
-  pow_le_pow_of_le_left' H
+-- The global `pow_le_pow_of_le_left` needs an extra hypothesis `0 ≤ x`.
 #align nat.pow_le_pow_of_le_left Nat.pow_le_pow_of_le_left
--/
-
-#print Nat.pow_le_pow_of_le_right /-
-theorem pow_le_pow_of_le_right {x : ℕ} (H : 0 < x) {i j : ℕ} (h : i ≤ j) : x ^ i ≤ x ^ j :=
-  pow_le_pow' H h
 #align nat.pow_le_pow_of_le_right Nat.pow_le_pow_of_le_right
--/
+
 
 theorem pow_lt_pow_of_lt_left {x y : ℕ} (H : x < y) {i} (h : 0 < i) : x ^ i < y ^ i :=
   _root_.pow_lt_pow_of_lt_left H (zero_le _) h
@@ -174,18 +165,18 @@ theorem mod_pow_succ {b : ℕ} (w m : ℕ) : m % b ^ succ w = b * (m / b % b ^ w
   induction m using Nat.strong_induction_on with
     | h p IH =>
       cases' lt_or_ge p (b ^ succ w) with h₁ h₁
-      -- base case: p < b^succ w
-      · have h₂ : p / b < b ^ w := by
+      · -- base case: p < b^succ w
+        have h₂ : p / b < b ^ w := by
           rw [div_lt_iff_lt_mul b_pos]
           simpa [pow_succ] using h₁
         rw [mod_eq_of_lt h₁, mod_eq_of_lt h₂]
         simp [div_add_mod]
-    -- step: p ≥ b^succ w
-      · -- Generate condition for induction hypothesis
+      · -- step: p ≥ b^succ w
+      -- Generate condition for induction hypothesis
       have h₂ : p - b ^ succ w < p := tsub_lt_self ((pow_pos b_pos _).trans_le h₁) (pow_pos b_pos _)
       -- Apply induction
       rw [mod_eq_sub_mod h₁, IH _ h₂]
-    -- Normalize goal and h1
+      -- Normalize goal and h1
       simp only [pow_succ']
       simp only [GE.ge, pow_succ'] at h₁
       -- Pull subtraction outside mod and div
