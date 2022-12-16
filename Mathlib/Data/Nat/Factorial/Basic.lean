@@ -462,7 +462,7 @@ theorem descFactorial_lt_pow {n : ℕ} (hn : 1 ≤ n) : ∀ {k : ℕ}, 2 ≤ k �
   | 0 => by rintro ⟨⟩
   | 1 => by intro; contradiction
   | k + 2 => fun _ => by
-    rw [descFactorial_succ, pow_succ', mul_comm]
+    rw [descFactorial_succ, pow_succ', mul_comm, mul_comm n]
     exact
       Nat.mul_lt_mul' (descFactorial_le_pow _ _) (tsub_lt_self hn k.zero_lt_succ) (pow_pos hn _)
 #align nat.descFactorial_lt_pow Nat.descFactorial_lt_pow
