@@ -356,7 +356,7 @@ def multichoose : ℕ → ℕ → ℕ
   | 0, _ + 1 => 0
   | n + 1, k + 1 =>
     multichoose n (k + 1) + multichoose (n + 1) k
-termination_by multichoose a b => (a, b)
+  termination_by multichoose a b => (a, b)
 #align nat.multichoose Nat.multichoose
 
 @[simp]
