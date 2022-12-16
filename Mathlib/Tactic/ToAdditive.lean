@@ -299,7 +299,9 @@ def applyReplacementFun (e : Expr) : MetaM Expr := do
   return aux ((← getOptions).getBool `to_additive.replaceAll)
       (findTranslation? <| ← getEnv) reorderFn (ignoreArgsAttr.find? env)
       (fixedNumeralAttr.find? env) isRelevant e
-where aux (replaceAll : Bool) (findTranslation? : Name → Option Name)
+where
+/-- Implementation of `applyReplacementFun`. -/
+aux (replaceAll : Bool) (findTranslation? : Name → Option Name)
   (reorderFn : Name → List ℕ) (ignore : Name → Option (List ℕ))
   (fixedNumeral : Name → Option Bool) (isRelevant : Name → ℕ → Bool) : Expr → Expr :=
   Lean.Expr.replaceRec fun r e ↦ Id.run do
