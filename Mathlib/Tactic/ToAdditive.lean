@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 Ported by: E.W.Ayers
 -/
-import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Data.String.Defs
 import Mathlib.Data.KVMap
 import Mathlib.Lean.Expr.ReplaceRec

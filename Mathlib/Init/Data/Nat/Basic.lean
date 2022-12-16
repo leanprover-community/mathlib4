@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura
 -/
 import Mathlib.Init.ZeroOne
-notation "ℕ" => Nat
+import Mathlib.Init.Data.Nat.Notation
 
 namespace Nat
 

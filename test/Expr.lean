@@ -1,6 +1,6 @@
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Tactic.RunCmd
-import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Notation
 
 open Lean Meta Elab Command
 

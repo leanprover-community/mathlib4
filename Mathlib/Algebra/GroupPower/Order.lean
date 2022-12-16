@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.WithZero
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Basic
 
 /-!
 # Lemmas about the interaction of power operations with order
