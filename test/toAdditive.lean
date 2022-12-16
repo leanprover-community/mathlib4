@@ -3,7 +3,7 @@ import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 import Mathlib.Util.Time
-import Qq
+import Qq.MetaM
 open Qq Lean Meta Elab Command
 
 -- work in a namespace so that it doesn't matter if names clash
