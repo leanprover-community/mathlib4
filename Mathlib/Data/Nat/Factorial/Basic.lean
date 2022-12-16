@@ -119,10 +119,14 @@ theorem one_lt_factorial : 1 < n ! ↔ 1 < n :=
   factorial_lt one_pos
 #align nat.one_lt_factorial Nat.one_lt_factorial
 
+-- Porting note: `(_ | _)` notation for introduction with cases does not appear to be supported
 theorem factorial_eq_one : n ! = 1 ↔ n ≤ 1 := by
-  refine' ⟨fun h => _, by rintro (_ | _ | _) <;> rfl⟩
-  rw [← not_lt, ← one_lt_factorial, h]
-  apply lt_irrefl
+  apply Iff.intro <;> intro
+  · rw [← not_lt, ← one_lt_factorial, ‹n ! = 1›]
+    apply lt_irrefl
+  · cases ‹n ≤ 1›
+    · rfl
+    · cases ‹n ≤ 0›; rfl
 #align nat.factorial_eq_one Nat.factorial_eq_one
 
 theorem factorial_inj (hn : 1 < n !) : n ! = m ! ↔ n = m := by
@@ -141,6 +145,7 @@ theorem self_le_factorial : ∀ n : ℕ, n ≤ n !
   | k + 1 => le_mul_of_one_le_right k.zero_lt_succ.le (Nat.one_le_of_lt <| Nat.factorial_pos _)
 #align nat.self_le_factorial Nat.self_le_factorial
 
+-- Porting note: `zero_lt_two` does not work since `ZeroLEOneClass` fails to be synthesised. `0 < 2` is proved `by decide` instead
 theorem lt_factorial_self {n : ℕ} (hi : 3 ≤ n) : n < n ! := by
   have : 0 < n := (by decide : 0 < 2).trans (succ_le_iff.mp hi)
   have : 1 < pred n := le_pred_of_lt (succ_le_iff.mp hi)
@@ -152,7 +157,7 @@ theorem lt_factorial_self {n : ℕ} (hi : 3 ≤ n) : n < n ! := by
 
 theorem add_factorial_succ_lt_factorial_add_succ {i : ℕ} (n : ℕ) (hi : 2 ≤ i) :
     i + (n + 1)! < (i + n + 1)! := by
-  rw [factorial_succ (i + _), add_mul, one_mul]
+  rw [← Nat.succ_eq_add_one (i + _), factorial_succ (i + _), add_mul, one_mul]
   have : i ≤ i + n := le.intro rfl
   exact
     add_lt_add_of_lt_of_le
@@ -210,7 +215,7 @@ recursively to allow for "quick" computation when using `norm_num`. This is clos
 `pochhammer`, but much less general. -/
 def ascFactorial (n : ℕ) : ℕ → ℕ
   | 0 => 1
-  | k + 1 => (n + k + 1) * ascFactorial k
+  | k + 1 => (n + k + 1) * ascFactorial n k
 #align nat.ascFactorial Nat.ascFactorial
 
 @[simp]
