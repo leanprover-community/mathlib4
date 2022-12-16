@@ -351,7 +351,7 @@ theorem succ_descFactorial_succ (n : ℕ) :
     ∀ k : ℕ, (n + 1).descFactorial (k + 1) = (n + 1) * n.descFactorial k
   | 0 => by rw [descFactorial_zero, descFactorial_one, mul_one]
   | succ k => by
-    rw [descFactorial_succ, succ_descFactorial_succ, descFactorial_succ, succ_sub_succ,
+    rw [descFactorial_succ, succ_descFactorial_succ _ k, descFactorial_succ, succ_sub_succ,
       mul_left_comm]
 #align nat.succ_descFactorial_succ Nat.succ_descFactorial_succ
 
