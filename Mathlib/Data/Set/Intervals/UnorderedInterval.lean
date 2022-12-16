@@ -218,8 +218,12 @@ theorem interval_subset_interval_iff_le :
 #align set.interval_subset_interval_iff_le Set.interval_subset_interval_iff_le
 
 /-- A sort of triangle inequality. -/
-theorem interval_subset_interval_union_interval : [a, c] ⊆ [[a, b]] ∪ [b, c] := fun x => by
-  simp only [mem_interval, mem_union] <;> cases le_total a c <;> cases le_total x b <;> tauto
+theorem interval_subset_interval_union_interval : [[a, c]] ⊆ [[a, b]] ∪ [[b, c]] := fun x => by
+  simp only [mem_interval, mem_union]
+  cases' le_total a c with h1 h1 <;>
+  cases' le_total x b with h2 h2 <;>
+  -- Porting note: restore `tauto`
+  aesop
 #align set.interval_subset_interval_union_interval Set.interval_subset_interval_union_interval
 
 theorem monotone_or_antitone_iff_interval :
@@ -278,12 +282,13 @@ theorem interval_oc_eq_union : Ι a b = Ioc a b ∪ Ioc b a := by
 #align set.interval_oc_eq_union Set.interval_oc_eq_union
 
 theorem mem_interval_oc : a ∈ Ι b c ↔ b < a ∧ a ≤ c ∨ c < a ∧ a ≤ b := by
-  simp only [interval_oc_eq_union, mem_union, mem_Ioc]
+  rw [interval_oc_eq_union, mem_union, mem_Ioc, mem_Ioc]
 #align set.mem_interval_oc Set.mem_interval_oc
 
 theorem not_mem_interval_oc : a ∉ Ι b c ↔ a ≤ b ∧ a ≤ c ∨ c < a ∧ b < a := by
-  simp only [interval_oc_eq_union, mem_union, mem_Ioc, not_lt, ← not_le]
-  tauto
+  -- simp only [interval_oc_eq_union, mem_union, mem_Ioc, not_lt, ← not_le]
+  -- tauto
+  sorry
 #align set.not_mem_interval_oc Set.not_mem_interval_oc
 
 @[simp]
@@ -295,12 +300,13 @@ theorem right_mem_interval_oc : b ∈ Ι a b ↔ a < b := by simp [mem_interval_
 #align set.right_mem_interval_oc Set.right_mem_interval_oc
 
 theorem forall_interval_oc_iff {P : α → Prop} :
-    (∀ x ∈ Ι a b, P x) ↔ (∀ x ∈ ioc a b, P x) ∧ ∀ x ∈ ioc b a, P x := by
-  simp only [interval_oc_eq_union, mem_union, or_imp, forall_and]
+    (∀ x ∈ Ι a b, P x) ↔ (∀ x ∈ Ioc a b, P x) ∧ ∀ x ∈ Ioc b a, P x := by
+  -- simp only [interval_oc_eq_union, mem_union, or_imp, forall_and]
+  sorry
 #align set.forall_interval_oc_iff Set.forall_interval_oc_iff
 
 theorem interval_oc_subset_interval_oc_of_interval_subset_interval {a b c d : α}
-    (h : [[a, b]] ⊆ [c, d]) : Ι a b ⊆ Ι c d :=
+    (h : [[a, b]] ⊆ [[c, d]]) : Ι a b ⊆ Ι c d :=
   Ioc_subset_Ioc (interval_subset_interval_iff_le.1 h).1 (interval_subset_interval_iff_le.1 h).2
 #align
   set.interval_oc_subset_interval_oc_of_interval_subset_interval Set.interval_oc_subset_interval_oc_of_interval_subset_interval
@@ -309,11 +315,11 @@ theorem interval_oc_swap (a b : α) : Ι a b = Ι b a := by
   simp only [interval_oc, min_comm a b, max_comm a b]
 #align set.interval_oc_swap Set.interval_oc_swap
 
-theorem Ioc_subset_interval_oc : ioc a b ⊆ Ι a b :=
+theorem Ioc_subset_interval_oc : Ioc a b ⊆ Ι a b :=
   Ioc_subset_Ioc (min_le_left _ _) (le_max_right _ _)
 #align set.Ioc_subset_interval_oc Set.Ioc_subset_interval_oc
 
-theorem Ioc_subset_interval_oc' : ioc a b ⊆ Ι b a :=
+theorem Ioc_subset_interval_oc' : Ioc a b ⊆ Ι b a :=
   Ioc_subset_Ioc (min_le_right _ _) (le_max_left _ _)
 #align set.Ioc_subset_interval_oc' Set.Ioc_subset_interval_oc'
 
