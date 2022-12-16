@@ -142,10 +142,12 @@ theorem self_le_factorial : ∀ n : ℕ, n ≤ n !
 #align nat.self_le_factorial Nat.self_le_factorial
 
 theorem lt_factorial_self {n : ℕ} (hi : 3 ≤ n) : n < n ! := by
-  rw [← succ_pred_eq_of_pos ((zero_lt_two.trans (lt.base 2)).trans_le hi), factorial_succ]
+  have : 0 < n := (by decide : 0 < 2).trans (succ_le_iff.mp hi)
+  have : 1 < pred n := le_pred_of_lt (succ_le_iff.mp hi)
+  rw [← succ_pred_eq_of_pos ‹0 < n›, factorial_succ]
   exact
     lt_mul_of_one_lt_right (pred n).succ_pos
-      ((one_lt_two.trans_le (le_pred_of_lt (succ_le_iff.mp hi))).trans_le (self_le_factorial _))
+      ((‹1 < pred n›).trans_le (self_le_factorial _))
 #align nat.lt_factorial_self Nat.lt_factorial_self
 
 theorem add_factorial_succ_lt_factorial_add_succ {i : ℕ} (n : ℕ) (hi : 2 ≤ i) :
