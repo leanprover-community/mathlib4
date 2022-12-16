@@ -153,14 +153,14 @@ instance commMonoidWithZero {α : Type _} [OrderedCommSemiring α] :
 
 instance cancelMonoidWithZero {α : Type _} [OrderedRing α] [NoZeroDivisors α] :
     CancelMonoidWithZero (Icc (0 : α) 1) :=
-  @Function.Injective.cancelMonoidWithZero α _ NoZeroDivisors.toCancelMonoidWithZero _ _ _ _ coe
-    Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
+  @Function.Injective.cancelMonoidWithZero α _ NoZeroDivisors.toCancelMonoidWithZero _ _ _ _
+    (fun v => v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
 #align set.Icc.cancel_monoid_with_zero Set.Icc.cancelMonoidWithZero
 
 instance cancelCommMonoidWithZero {α : Type _} [OrderedCommRing α] [NoZeroDivisors α] :
     CancelCommMonoidWithZero (Icc (0 : α) 1) :=
   @Function.Injective.cancelCommMonoidWithZero α _ NoZeroDivisors.toCancelCommMonoidWithZero _ _ _ _
-    coe Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
+    (fun v => v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
 #align set.Icc.cancel_comm_monoid_with_zero Set.Icc.cancelCommMonoidWithZero
 
 variable {β : Type _} [OrderedRing β]
@@ -371,11 +371,11 @@ theorem coe_mul (x y : Ioo (0 : α) 1) : ↑(x * y) = (x * y : α) :=
 #align set.Ioo.coe_mul Set.Ioo.coe_mul
 
 instance semigroup : Semigroup (Ioo (0 : α) 1) :=
-  Subtype.coe_injective.Semigroup _ coe_mul
+  Subtype.coe_injective.semigroup _ coe_mul
 #align set.Ioo.semigroup Set.Ioo.semigroup
 
 instance commSemigroup {α : Type _} [StrictOrderedCommSemiring α] : CommSemigroup (Ioo (0 : α) 1) :=
-  Subtype.coe_injective.CommSemigroup _ coe_mul
+  Subtype.coe_injective.commSemigroup _ coe_mul
 #align set.Ioo.comm_semigroup Set.Ioo.commSemigroup
 
 variable {β : Type _} [OrderedRing β]
