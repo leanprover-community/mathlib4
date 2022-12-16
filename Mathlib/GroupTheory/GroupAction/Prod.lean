@@ -18,7 +18,7 @@ scalar multiplication as a homomorphism from `α × β` to `β`.
 * `smulMulHom `/`smulMonoidHom `: Scalar multiplication bundled as a multiplicative/monoid
   homomorphism.
 ## See also
-* `Mathlib.GroupTheory.GroupAction.option`
+* `Mathlib.GroupTheory.GroupAction.Option`
 * `Mathlib.GroupTheory.GroupAction.Pi`
 * `Mathlib.GroupTheory.GroupAction.Sigma`
 * `Mathlib.GroupTheory.GroupAction.Sum`
