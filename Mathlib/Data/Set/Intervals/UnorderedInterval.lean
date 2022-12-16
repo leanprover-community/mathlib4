@@ -33,7 +33,7 @@ subcube containing both `a` and `b`.
 
 ## Notation
 
-We use the localized notation `[a, b]` for `interval a b`. One can open the locale `interval` to
+We use the localized notation `[[a, b]]` for `interval a b`. One can open the locale `interval` to
 make the notation available.
 
 -/
@@ -58,100 +58,100 @@ def interval (a b : α) : Set α :=
   Icc (a ⊓ b) (a ⊔ b)
 #align set.interval Set.interval
 
--- mathport name: set.interval
-scoped[Interval] notation "[" a ", " b "]" => Set.interval a b
+-- Porting note: temporarily remove `scoped[Interval]` and use `[[]]` instead of `[]` before fix
+notation "[[" a ", " b "]]" => Set.interval a b
 
 @[simp]
-theorem dual_interval (a b : α) : [toDual a, toDual b] = ofDual ⁻¹' [a, b] :=
+theorem dual_interval (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] :=
   dual_Icc
 #align set.dual_interval Set.dual_interval
 
 @[simp]
-theorem interval_of_le (h : a ≤ b) : [a, b] = icc a b := by
+theorem interval_of_le (h : a ≤ b) : [[a, b]] = Icc a b := by
   rw [interval, inf_eq_left.2 h, sup_eq_right.2 h]
 #align set.interval_of_le Set.interval_of_le
 
 @[simp]
-theorem interval_of_ge (h : b ≤ a) : [a, b] = icc b a := by
+theorem interval_of_ge (h : b ≤ a) : [[a, b]] = Icc b a := by
   rw [interval, inf_eq_right.2 h, sup_eq_left.2 h]
 #align set.interval_of_ge Set.interval_of_ge
 
-theorem interval_swap (a b : α) : [a, b] = [b, a] := by simp_rw [interval, inf_comm, sup_comm]
+theorem interval_swap (a b : α) : [[a, b]] = [[b, a]] := by simp_rw [interval, inf_comm, sup_comm]
 #align set.interval_swap Set.interval_swap
 
-theorem interval_of_lt (h : a < b) : [a, b] = icc a b :=
+theorem interval_of_lt (h : a < b) : [[a, b]] = Icc a b :=
   interval_of_le (le_of_lt h)
 #align set.interval_of_lt Set.interval_of_lt
 
-theorem interval_of_gt (h : b < a) : [a, b] = icc b a :=
+theorem interval_of_gt (h : b < a) : [[a, b]] = Icc b a :=
   interval_of_ge (le_of_lt h)
 #align set.interval_of_gt Set.interval_of_gt
 
 @[simp]
-theorem interval_self : [a, a] = {a} := by simp [interval]
+theorem interval_self : [[a, a]] = {a} := by simp [interval]
 #align set.interval_self Set.interval_self
 
 @[simp]
-theorem nonempty_interval : [a, b].Nonempty :=
+theorem nonempty_interval : [[a, b]].Nonempty :=
   nonempty_Icc.2 inf_le_sup
 #align set.nonempty_interval Set.nonempty_interval
 
-theorem Icc_subset_interval : icc a b ⊆ [a, b] :=
+theorem Icc_subset_interval : Icc a b ⊆ [[a, b]] :=
   Icc_subset_Icc inf_le_left le_sup_right
 #align set.Icc_subset_interval Set.Icc_subset_interval
 
-theorem Icc_subset_interval' : icc b a ⊆ [a, b] :=
+theorem Icc_subset_interval' : Icc b a ⊆ [[a, b]] :=
   Icc_subset_Icc inf_le_right le_sup_left
 #align set.Icc_subset_interval' Set.Icc_subset_interval'
 
 @[simp]
-theorem left_mem_interval : a ∈ [a, b] :=
+theorem left_mem_interval : a ∈ [[a, b]] :=
   ⟨inf_le_left, le_sup_left⟩
 #align set.left_mem_interval Set.left_mem_interval
 
 @[simp]
-theorem right_mem_interval : b ∈ [a, b] :=
+theorem right_mem_interval : b ∈ [[a, b]] :=
   ⟨inf_le_right, le_sup_right⟩
 #align set.right_mem_interval Set.right_mem_interval
 
-theorem mem_interval_of_le (ha : a ≤ x) (hb : x ≤ b) : x ∈ [a, b] :=
+theorem mem_interval_of_le (ha : a ≤ x) (hb : x ≤ b) : x ∈ [[a, b]] :=
   Icc_subset_interval ⟨ha, hb⟩
 #align set.mem_interval_of_le Set.mem_interval_of_le
 
-theorem mem_interval_of_ge (hb : b ≤ x) (ha : x ≤ a) : x ∈ [a, b] :=
+theorem mem_interval_of_ge (hb : b ≤ x) (ha : x ≤ a) : x ∈ [[a, b]] :=
   Icc_subset_interval' ⟨hb, ha⟩
 #align set.mem_interval_of_ge Set.mem_interval_of_ge
 
-theorem interval_subset_interval (h₁ : a₁ ∈ [a₂, b₂]) (h₂ : b₁ ∈ [a₂, b₂]) : [a₁, b₁] ⊆ [a₂, b₂] :=
+theorem interval_subset_interval (h₁ : a₁ ∈ [[a₂, b₂]]) (h₂ : b₁ ∈ [[a₂, b₂]]) : [[a₁, b₁]] ⊆ [[a₂, b₂]] :=
   Icc_subset_Icc (le_inf h₁.1 h₂.1) (sup_le h₁.2 h₂.2)
 #align set.interval_subset_interval Set.interval_subset_interval
 
-theorem interval_subset_Icc (ha : a₁ ∈ icc a₂ b₂) (hb : b₁ ∈ icc a₂ b₂) : [a₁, b₁] ⊆ icc a₂ b₂ :=
+theorem interval_subset_Icc (ha : a₁ ∈ Icc a₂ b₂) (hb : b₁ ∈ Icc a₂ b₂) : [[a₁, b₁]] ⊆ Icc a₂ b₂ :=
   Icc_subset_Icc (le_inf ha.1 hb.1) (sup_le ha.2 hb.2)
 #align set.interval_subset_Icc Set.interval_subset_Icc
 
-theorem interval_subset_interval_iff_mem : [a₁, b₁] ⊆ [a₂, b₂] ↔ a₁ ∈ [a₂, b₂] ∧ b₁ ∈ [a₂, b₂] :=
+theorem interval_subset_interval_iff_mem : [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ a₁ ∈ [[a₂, b₂]] ∧ b₁ ∈ [[a₂, b₂]] :=
   Iff.intro (fun h => ⟨h left_mem_interval, h right_mem_interval⟩) fun h =>
     interval_subset_interval h.1 h.2
 #align set.interval_subset_interval_iff_mem Set.interval_subset_interval_iff_mem
 
 theorem interval_subset_interval_iff_le' :
-    [a₁, b₁] ⊆ [a₂, b₂] ↔ a₂ ⊓ b₂ ≤ a₁ ⊓ b₁ ∧ a₁ ⊔ b₁ ≤ a₂ ⊔ b₂ :=
+    [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ a₂ ⊓ b₂ ≤ a₁ ⊓ b₁ ∧ a₁ ⊔ b₁ ≤ a₂ ⊔ b₂ :=
   Icc_subset_Icc_iff inf_le_sup
 #align set.interval_subset_interval_iff_le' Set.interval_subset_interval_iff_le'
 
-theorem interval_subset_interval_right (h : x ∈ [a, b]) : [x, b] ⊆ [a, b] :=
+theorem interval_subset_interval_right (h : x ∈ [[a, b]]) : [[x, b]] ⊆ [[a, b]] :=
   interval_subset_interval h right_mem_interval
 #align set.interval_subset_interval_right Set.interval_subset_interval_right
 
-theorem interval_subset_interval_left (h : x ∈ [a, b]) : [a, x] ⊆ [a, b] :=
+theorem interval_subset_interval_left (h : x ∈ [[a, b]]) : [[a, x]] ⊆ [[a, b]] :=
   interval_subset_interval left_mem_interval h
 #align set.interval_subset_interval_left Set.interval_subset_interval_left
 
 theorem bdd_below_bdd_above_iff_subset_interval (s : Set α) :
-    BddBelow s ∧ BddAbove s ↔ ∃ a b, s ⊆ [a, b] :=
-  bdd_below_bdd_above_iff_subset_Icc.trans
-    ⟨fun ⟨a, b, h⟩ => ⟨a, b, fun x hx => Icc_subset_interval (h hx)⟩, fun ⟨a, b, h⟩ => ⟨_, _, h⟩⟩
+    BddBelow s ∧ BddAbove s ↔ ∃ a b, s ⊆ [[a, b]] :=
+  bddBelow_bddAbove_iff_subset_Icc.trans
+    ⟨fun ⟨a, b, h⟩ => ⟨a, b, fun _ hx => Icc_subset_interval (h hx)⟩, fun ⟨_, _, h⟩ => ⟨_, _, h⟩⟩
 #align set.bdd_below_bdd_above_iff_subset_interval Set.bdd_below_bdd_above_iff_subset_interval
 
 end Lattice
@@ -166,7 +166,7 @@ theorem eq_of_mem_interval_of_mem_interval (ha : a ∈ [b, c]) (hb : b ∈ [a, c
   eq_of_inf_eq_sup_eq (inf_congr_right ha.1 hb.1) <| sup_congr_right ha.2 hb.2
 #align set.eq_of_mem_interval_of_mem_interval Set.eq_of_mem_interval_of_mem_interval
 
-theorem eq_of_mem_interval_of_mem_interval' : b ∈ [a, c] → c ∈ [a, b] → b = c := by
+theorem eq_of_mem_interval_of_mem_interval' : b ∈ [a, c] → c ∈ [[a, b]] → b = c := by
   simpa only [interval_swap a] using eq_of_mem_interval_of_mem_interval
 #align set.eq_of_mem_interval_of_mem_interval' Set.eq_of_mem_interval_of_mem_interval'
 
@@ -185,29 +185,29 @@ section LinearOrder
 
 variable [LinearOrder α] [LinearOrder β] {f : α → β} {s : Set α} {a a₁ a₂ b b₁ b₂ c x : α}
 
-theorem Icc_min_max : icc (min a b) (max a b) = [a, b] :=
+theorem Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
   rfl
 #align set.Icc_min_max Set.Icc_min_max
 
-theorem interval_of_not_le (h : ¬a ≤ b) : [a, b] = icc b a :=
+theorem interval_of_not_le (h : ¬a ≤ b) : [[a, b]] = Icc b a :=
   interval_of_gt <| lt_of_not_ge h
 #align set.interval_of_not_le Set.interval_of_not_le
 
-theorem interval_of_not_ge (h : ¬b ≤ a) : [a, b] = icc a b :=
+theorem interval_of_not_ge (h : ¬b ≤ a) : [[a, b]] = Icc a b :=
   interval_of_lt <| lt_of_not_ge h
 #align set.interval_of_not_ge Set.interval_of_not_ge
 
-theorem interval_eq_union : [a, b] = icc a b ∪ icc b a := by rw [Icc_union_Icc', max_comm] <;> rfl
+theorem interval_eq_union : [[a, b]] = Icc a b ∪ Icc b a := by rw [Icc_union_Icc', max_comm] <;> rfl
 #align set.interval_eq_union Set.interval_eq_union
 
 theorem mem_interval : a ∈ [b, c] ↔ b ≤ a ∧ a ≤ c ∨ c ≤ a ∧ a ≤ b := by simp [interval_eq_union]
 #align set.mem_interval Set.mem_interval
 
-theorem not_mem_interval_of_lt (ha : c < a) (hb : c < b) : c ∉ [a, b] :=
+theorem not_mem_interval_of_lt (ha : c < a) (hb : c < b) : c ∉ [[a, b]] :=
   not_mem_Icc_of_lt <| lt_min_iff.mpr ⟨ha, hb⟩
 #align set.not_mem_interval_of_lt Set.not_mem_interval_of_lt
 
-theorem not_mem_interval_of_gt (ha : a < c) (hb : b < c) : c ∉ [a, b] :=
+theorem not_mem_interval_of_gt (ha : a < c) (hb : b < c) : c ∉ [[a, b]] :=
   not_mem_Icc_of_gt <| max_lt_iff.mpr ⟨ha, hb⟩
 #align set.not_mem_interval_of_gt Set.not_mem_interval_of_gt
 
@@ -217,12 +217,12 @@ theorem interval_subset_interval_iff_le :
 #align set.interval_subset_interval_iff_le Set.interval_subset_interval_iff_le
 
 /-- A sort of triangle inequality. -/
-theorem interval_subset_interval_union_interval : [a, c] ⊆ [a, b] ∪ [b, c] := fun x => by
+theorem interval_subset_interval_union_interval : [a, c] ⊆ [[a, b]] ∪ [b, c] := fun x => by
   simp only [mem_interval, mem_union] <;> cases le_total a c <;> cases le_total x b <;> tauto
 #align set.interval_subset_interval_union_interval Set.interval_subset_interval_union_interval
 
 theorem monotone_or_antitone_iff_interval :
-    Monotone f ∨ Antitone f ↔ ∀ a b c, c ∈ [a, b] → f c ∈ [f a, f b] := by
+    Monotone f ∨ Antitone f ↔ ∀ a b c, c ∈ [[a, b]] → f c ∈ [f a, f b] := by
   constructor
   · rintro (hf | hf) a b c <;> simp_rw [← Icc_min_max, ← hf.map_min, ← hf.map_max]
     exacts[fun hc => ⟨hf hc.1, hf hc.2⟩, fun hc => ⟨hf hc.2, hf hc.1⟩]
@@ -236,7 +236,7 @@ theorem monotone_or_antitone_iff_interval :
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection (a b c «expr ∈ » s) -/
 theorem monotone_on_or_antitone_on_iff_interval :
     MonotoneOn f s ∨ AntitoneOn f s ↔
-      ∀ (a b c) (_ : a ∈ s) (_ : b ∈ s) (_ : c ∈ s), c ∈ [a, b] → f c ∈ [f a, f b] :=
+      ∀ (a b c) (_ : a ∈ s) (_ : b ∈ s) (_ : c ∈ s), c ∈ [[a, b]] → f c ∈ [f a, f b] :=
   by
   simp [monotone_on_iff_monotone, antitone_on_iff_antitone, monotone_or_antitone_iff_interval,
     mem_interval]
@@ -285,7 +285,7 @@ theorem forall_interval_oc_iff {P : α → Prop} :
 #align set.forall_interval_oc_iff Set.forall_interval_oc_iff
 
 theorem interval_oc_subset_interval_oc_of_interval_subset_interval {a b c d : α}
-    (h : [a, b] ⊆ [c, d]) : Ι a b ⊆ Ι c d :=
+    (h : [[a, b]] ⊆ [c, d]) : Ι a b ⊆ Ι c d :=
   Ioc_subset_Ioc (interval_subset_interval_iff_le.1 h).1 (interval_subset_interval_iff_le.1 h).2
 #align
   set.interval_oc_subset_interval_oc_of_interval_subset_interval Set.interval_oc_subset_interval_oc_of_interval_subset_interval
