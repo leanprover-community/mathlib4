@@ -355,11 +355,8 @@ def multichoose : ℕ → ℕ → ℕ
   | _, 0 => 1
   | 0, _ + 1 => 0
   | n + 1, k + 1 =>
-    have : n + (k + 1) < (n + 1) + (k + 1) := add_lt_add_right (Nat.lt_succ_self _) _
-    have : (n + 1) + k < (n + 1) + (k + 1) := add_lt_add_left (Nat.lt_succ_self _) _
     multichoose n (k + 1) + multichoose (n + 1) k
-termination_by multichoose a b => a + b
-decreasing_by { assumption }
+termination_by multichoose a b => (a, b)
 #align nat.multichoose Nat.multichoose
 
 @[simp]
@@ -370,8 +367,6 @@ theorem multichoose_zero_right (n : ℕ) : multichoose n 0 = 1 := by cases n <;>
 theorem multichoose_zero_succ (k : ℕ) : multichoose 0 (k + 1) = 0 := by simp [multichoose]
 #align nat.multichoose_zero_succ Nat.multichoose_zero_succ
 
--- Porting note: Linter bug, something to do with proofs of termination in `multichoose`
-@[nolint unusedHavesSuffices]
 theorem multichoose_succ_succ (n k : ℕ) :
     multichoose (n + 1) (k + 1) = multichoose n (k + 1) + multichoose (n + 1) k := by
   simp [multichoose]
@@ -383,8 +378,7 @@ theorem multichoose_one (k : ℕ) : multichoose 1 k = 1 := by
   simp [multichoose_succ_succ 0 k, IH]
 #align nat.multichoose_one Nat.multichoose_one
 
--- Porting note: Linter bug, something to do with proofs of termination in `multichoose`
-@[simp, nolint unusedHavesSuffices]
+@[simp]
 theorem multichoose_two (k : ℕ) : multichoose 2 k = k + 1 := by
   induction' k with k IH; · simp
   rw [multichoose, IH]
