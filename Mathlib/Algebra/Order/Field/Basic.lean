@@ -28,13 +28,13 @@ variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
 /-- `equiv.mul_left₀` as an order_iso. -/
 @[simps (config := { simpRhs := true })]
 def OrderIso.mulLeft₀ (a : α) (ha : 0 < a) : α ≃o α :=
-  { Equiv.mulLeft₀ a ha.ne' with map_rel_iff' := fun _ _ => mul_le_mul_left ha }
+  { Equiv.mulLeft₀ a ha.ne' with map_rel_iff' := @fun _ _ => mul_le_mul_left ha }
 #align order_iso.mul_left₀ OrderIso.mulLeft₀
 
 /-- `equiv.mul_right₀` as an order_iso. -/
 @[simps (config := { simpRhs := true })]
 def OrderIso.mulRight₀ (a : α) (ha : 0 < a) : α ≃o α :=
-  { Equiv.mulRight₀ a ha.ne' with map_rel_iff' := fun _ _ => mul_le_mul_right ha }
+  { Equiv.mulRight₀ a ha.ne' with map_rel_iff' := @fun _ _ => mul_le_mul_right ha }
 #align order_iso.mul_right₀ OrderIso.mulRight₀
 
 /-!
@@ -51,17 +51,18 @@ theorem inv_pos : 0 < a⁻¹ ↔ 0 < a :=
 alias inv_pos ↔ _ inv_pos_of_pos
 
 @[simp]
-theorem inv_nonneg : 0 ≤ a⁻¹ ↔ 0 ≤ a := by simp only [le_iff_eq_or_lt, inv_pos, zero_eq_inv]
+theorem inv_nonneg : 0 ≤ a⁻¹ ↔ 0 ≤ a := by
+  simp only [le_iff_eq_or_lt, inv_pos, zero_eq_inv, iff_self]
 #align inv_nonneg inv_nonneg
 
 alias inv_nonneg ↔ _ inv_nonneg_of_nonneg
 
 @[simp]
-theorem inv_lt_zero : a⁻¹ < 0 ↔ a < 0 := by simp only [← not_le, inv_nonneg]
+theorem inv_lt_zero : a⁻¹ < 0 ↔ a < 0 := by simp only [← not_le, inv_nonneg, iff_self]
 #align inv_lt_zero inv_lt_zero
 
 @[simp]
-theorem inv_nonpos : a⁻¹ ≤ 0 ↔ a ≤ 0 := by simp only [← not_lt, inv_pos]
+theorem inv_nonpos : a⁻¹ ≤ 0 ↔ a ≤ 0 := by simp only [← not_lt, inv_pos, iff_self]
 #align inv_nonpos inv_nonpos
 
 theorem one_div_pos : 0 < 1 / a ↔ 0 < a :=
@@ -285,14 +286,16 @@ theorem inv_lt_one (ha : 1 < a) : a⁻¹ < 1 := by
   rwa [inv_lt (zero_lt_one.trans ha) zero_lt_one, inv_one]
 #align inv_lt_one inv_lt_one
 
-theorem one_lt_inv (h₁ : 0 < a) (h₂ : a < 1) : 1 < a⁻¹ := by rwa [lt_inv zero_lt_one h₁, inv_one]
+theorem one_lt_inv (h₁ : 0 < a) (h₂ : a < 1) : 1 < a⁻¹ := by
+  rwa [lt_inv (@zero_lt_one α _ _ _ _ _) h₁, inv_one]
 #align one_lt_inv one_lt_inv
 
 theorem inv_le_one (ha : 1 ≤ a) : a⁻¹ ≤ 1 := by
   rwa [inv_le (zero_lt_one.trans_le ha) zero_lt_one, inv_one]
 #align inv_le_one inv_le_one
 
-theorem one_le_inv (h₁ : 0 < a) (h₂ : a ≤ 1) : 1 ≤ a⁻¹ := by rwa [le_inv zero_lt_one h₁, inv_one]
+theorem one_le_inv (h₁ : 0 < a) (h₂ : a ≤ 1) : 1 ≤ a⁻¹ := by
+  rwa [le_inv (@zero_lt_one α _ _ _ _ _) h₁, inv_one]
 #align one_le_inv one_le_inv
 
 theorem inv_lt_one_iff_of_pos (h₀ : 0 < a) : a⁻¹ < 1 ↔ 1 < a :=
@@ -302,7 +305,7 @@ theorem inv_lt_one_iff_of_pos (h₀ : 0 < a) : a⁻¹ < 1 ↔ 1 < a :=
 theorem inv_lt_one_iff : a⁻¹ < 1 ↔ a ≤ 0 ∨ 1 < a := by
   cases' le_or_lt a 0 with ha ha
   · simp [ha, (inv_nonpos.2 ha).trans_lt zero_lt_one]
-  · simp only [ha.not_le, false_or_iff, inv_lt_one_iff_of_pos ha]
+  · simp only [ha.not_le, false_or_iff, inv_lt_one_iff_of_pos ha, iff_self]
 #align inv_lt_one_iff inv_lt_one_iff
 
 theorem one_lt_inv_iff : 1 < a⁻¹ ↔ 0 < a ∧ a < 1 :=
@@ -312,7 +315,8 @@ theorem one_lt_inv_iff : 1 < a⁻¹ ↔ 0 < a ∧ a < 1 :=
 theorem inv_le_one_iff : a⁻¹ ≤ 1 ↔ a ≤ 0 ∨ 1 ≤ a := by
   rcases em (a = 1) with (rfl | ha)
   · simp [le_rfl]
-  · simp only [Ne.le_iff_lt (Ne.symm ha), Ne.le_iff_lt (mt inv_eq_one.1 ha), inv_lt_one_iff]
+  · simp only [Ne.le_iff_lt (Ne.symm ha), Ne.le_iff_lt (mt inv_eq_one.1 ha), inv_lt_one_iff,
+      iff_self]
 #align inv_le_one_iff inv_le_one_iff
 
 theorem one_le_inv_iff : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 :=
@@ -324,7 +328,7 @@ theorem one_le_inv_iff : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 :=
 -/
 
 
-@[mono]
+--@[mono] -- Porting note: restore mono attribute
 theorem div_le_div_of_le (hc : 0 ≤ c) (h : a ≤ b) : a / c ≤ b / c := by
   rw [div_eq_mul_one_div a c, div_eq_mul_one_div b c]
   exact mul_le_mul_of_nonneg_right h (one_div_nonneg.2 hc)
@@ -354,7 +358,7 @@ theorem div_lt_div_right (hc : 0 < c) : a / c < b / c ↔ a < b :=
 #align div_lt_div_right div_lt_div_right
 
 theorem div_lt_div_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b < a / c ↔ c < b := by
-  simp only [div_eq_mul_inv, mul_lt_mul_left ha, inv_lt_inv hb hc]
+  simp only [div_eq_mul_inv, mul_lt_mul_left ha, inv_lt_inv hb hc, iff_self]
 #align div_lt_div_left div_lt_div_left
 
 theorem div_le_div_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b ≤ a / c ↔ c ≤ b :=
@@ -462,11 +466,11 @@ theorem one_div_lt_one_div (ha : 0 < a) (hb : 0 < b) : 1 / a < 1 / b ↔ b < a :
 #align one_div_lt_one_div one_div_lt_one_div
 
 theorem one_lt_one_div (h1 : 0 < a) (h2 : a < 1) : 1 < 1 / a := by
-  rwa [lt_one_div zero_lt_one h1, one_div_one]
+  rwa [lt_one_div (@zero_lt_one α _ _ _ _ _) h1, one_div_one]
 #align one_lt_one_div one_lt_one_div
 
 theorem one_le_one_div (h1 : 0 < a) (h2 : a ≤ 1) : 1 ≤ 1 / a := by
-  rwa [le_one_div zero_lt_one h1, one_div_one]
+  rwa [le_one_div (@zero_lt_one α _ _ _ _ _) h1, one_div_one]
 #align one_le_one_div one_le_one_div
 
 /-!
@@ -592,7 +596,7 @@ theorem one_div_pow_le_one_div_pow_of_le (a1 : 1 ≤ a) {m n : ℕ} (mn : m ≤ 
 
 theorem one_div_pow_lt_one_div_pow_of_lt (a1 : 1 < a) {m n : ℕ} (mn : m < n) :
     1 / a ^ n < 1 / a ^ m := by
-  refine' (one_div_lt_one_div _ _).mpr (pow_lt_pow a1 mn) <;> exact pow_pos (trans zero_lt_one a1) _
+  refine' (one_div_lt_one_div _ _).mpr (pow_lt_pow a1 mn) <;> exact pow_pos (zero_lt_one.trans a1) _
 #align one_div_pow_lt_one_div_pow_of_lt one_div_pow_lt_one_div_pow_of_lt
 
 theorem one_div_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => 1 / a ^ n := fun _ _ =>
