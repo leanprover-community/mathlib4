@@ -11,6 +11,7 @@ import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # Lemmas about linear ordered (semi)fields
@@ -105,18 +106,18 @@ theorem zpow_nonneg (ha : 0 ≤ a) : ∀ n : ℤ, 0 ≤ a ^ n
   | (n : ℕ) => by
     rw [zpow_ofNat]
     exact pow_nonneg ha _
-  | -[n+1] => by
-    rw [zpow_negSucc]
-    exact inv_nonneg.2 (pow_nonneg ha _)
+  | -(n + 1 : ℕ) => by
+    rw [zpow_neg, inv_nonneg, zpow_ofNat]
+    exact pow_nonneg ha _
 #align zpow_nonneg zpow_nonneg
 
 theorem zpow_pos_of_pos (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
   | (n : ℕ) => by
     rw [zpow_ofNat]
     exact pow_pos ha _
-  | -[n+1] => by
-    rw [zpow_negSucc]
-    exact inv_pos.2 (pow_pos ha _)
+  | -(n + 1 : ℕ) => by
+    rw [zpow_neg, inv_pos, zpow_ofNat]
+    exact pow_pos ha _
 #align zpow_pos_of_pos zpow_pos_of_pos
 
 /-!
@@ -653,7 +654,7 @@ variable [LinearOrderedField α] {a b c d : α} {n : ℤ}
 
 
 theorem div_pos_iff : 0 < a / b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 := by
-  simp [division_def, mul_pos_iff]
+  simp only [division_def, mul_pos_iff, inv_pos, inv_lt_zero, iff_self]
 #align div_pos_iff div_pos_iff
 
 theorem div_neg_iff : a / b < 0 ↔ 0 < a ∧ b < 0 ∨ a < 0 ∧ 0 < b := by
@@ -897,11 +898,9 @@ theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 :=
   refine' (inv_le_inv_of_le (inv_pos.2 <| zero_lt_two' α) _).trans_eq (inv_inv (2 : α))
   -- move `1 / a` to the left and `1 - 1 / 2 = 1 / 2` to the right to obtain `1 / a ≤ ⅟ 2`
   refine' (le_sub_iff_add_le.2 (_ : _ + 2⁻¹ = _).le).trans ((sub_le_sub_iff_left 1).2 _)
-  ·
-    -- show 2⁻¹ + 2⁻¹ = 1
+  · -- show 2⁻¹ + 2⁻¹ = 1
     exact (two_mul _).symm.trans (mul_inv_cancel two_ne_zero)
-  ·
-    -- take inverses on both sides and use the assumption `2 ≤ a`.
+  · -- take inverses on both sides and use the assumption `2 ≤ a`.
     exact (one_div a).le.trans (inv_le_inv_of_le zero_lt_two a2)
 #align sub_one_div_inv_le_two sub_one_div_inv_le_two
 
