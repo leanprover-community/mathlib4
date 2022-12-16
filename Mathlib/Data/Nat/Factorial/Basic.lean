@@ -187,14 +187,15 @@ theorem add_factorial_succ_le_factorial_add_succ (i : ℕ) (n : ℕ) : i + (n + 
     apply Nat.le_of_lt
     apply add_factorial_succ_lt_factorial_add_succ
     assumption
-  · cases ‹i < 2›
-    · rw [← add_assoc, ← Nat.succ_eq_add_one (1 + n), factorial_succ (1 + n),
+  · match i with
+    | 0 => simp
+    | 1 =>
+      rw [← add_assoc, ← Nat.succ_eq_add_one (1 + n), factorial_succ (1 + n),
         add_mul, one_mul, add_comm 1 n, add_le_add_iff_right]
       apply one_le_mul
       · apply Nat.le_add_left
       · apply factorial_pos
-    -- Cases not applied correctly - should be `i = 0`
-    · sorry -- rw [le_zero_iff.mp (nat.succ_le_succ_iff.mp i0), zero_add, zero_add]
+    | succ (succ n) => contradiction
 #align nat.add_factorial_succ_le_factorial_add_succ Nat.add_factorial_succ_le_factorial_add_succ
 
 theorem add_factorial_le_factorial_add (i : ℕ) {n : ℕ} (n1 : 1 ≤ n) : i + n ! ≤ (i + n)! := by
