@@ -15,11 +15,11 @@ import Mathlib.Algebra.Order.Monoid.OrderDual
 variable {α : Type _}
 
 @[to_additive]
-instance [OrderedCommGroup α] : OrderedCommGroup αᵒᵈ :=
-  { OrderDual.instOrderedCommMonoidOrderDual, instGroupOrderDual with }
-#align order_dual.ordered_comm_group instOrderedCommGroupOrderDual
-#align order_dual.ordered_add_comm_group instOrderedAddCommGroupOrderDual
+instance OrderDual.orderedCommGroup [OrderedCommGroup α] : OrderedCommGroup αᵒᵈ :=
+  { OrderDual.orderedCommMonoid, instGroupOrderDual with }
+#align order_dual.ordered_comm_group OrderDual.orderedCommGroup
+#align order_dual.ordered_add_comm_group OrderDual.orderedAddCommGroup
 
 @[to_additive]
-instance [LinearOrderedCommGroup α] : LinearOrderedCommGroup αᵒᵈ :=
-  { instOrderedCommGroupOrderDual, OrderDual.instLinearOrderOrderDual α with }
+instance OrderDual.linearOrderedCommGroup [LinearOrderedCommGroup α] : LinearOrderedCommGroup αᵒᵈ :=
+  { OrderDual.orderedCommGroup, OrderDual.linearOrder α with }

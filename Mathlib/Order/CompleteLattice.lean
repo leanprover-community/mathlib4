@@ -124,10 +124,10 @@ def infᵢ.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident : $ty:term ↦ $p) => `(⨅ $x:ident : $ty:term, $p)
   | _ => throw ()
 
-instance (α) [InfSet α] : SupSet αᵒᵈ :=
+instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
   ⟨(infₛ : Set α → α)⟩
 
-instance (α) [SupSet α] : InfSet αᵒᵈ :=
+instance OrderDual.infSet (α) [SupSet α] : InfSet αᵒᵈ :=
   ⟨(supₛ : Set α → α)⟩
 
 /-- Note that we rarely use `CompleteSemilatticeSup`
@@ -202,8 +202,8 @@ end
 Nevertheless it is sometimes a useful intermediate step in constructions.
 -/
 class CompleteSemilatticeInf (α : Type _) extends PartialOrder α, InfSet α where
-  Inf_le : ∀ s, ∀ a ∈ s, infₛ s ≤ a
-  le_Inf : ∀ s a, (∀ b ∈ s, a ≤ b) → a ≤ infₛ s
+  infₛ_le : ∀ s, ∀ a ∈ s, infₛ s ≤ a
+  le_infₛ : ∀ s a, (∀ b ∈ s, a ≤ b) → a ≤ infₛ s
 #align complete_semilattice_Inf CompleteSemilatticeInf
 
 section
@@ -212,11 +212,11 @@ variable [CompleteSemilatticeInf α] {s t : Set α} {a b : α}
 
 -- @[ematch]  Porting note: attribute removed
 theorem infₛ_le : a ∈ s → infₛ s ≤ a :=
-  CompleteSemilatticeInf.Inf_le s a
+  CompleteSemilatticeInf.infₛ_le s a
 #align Inf_le infₛ_le
 
 theorem le_infₛ : (∀ b ∈ s, a ≤ b) → a ≤ infₛ s :=
-  CompleteSemilatticeInf.le_Inf s a
+  CompleteSemilatticeInf.le_infₛ s a
 #align le_Inf le_infₛ
 
 theorem isGLB_infₛ (s : Set α) : IsGLB s (infₛ s) :=
@@ -309,8 +309,8 @@ def completeLatticeOfInf (α : Type _) [H1 : PartialOrder α] [H2 : InfSet α]
     sup_le := fun a b c hac hbc => (isGLB_infₛ _).1 <| by simp [*]
     le_sup_left := fun a b => (isGLB_infₛ _).2 fun x => And.left
     le_sup_right := fun a b => (isGLB_infₛ _).2 fun x => And.right
-    le_Inf := fun s a ha => (isGLB_infₛ s).2 ha
-    Inf_le := fun s a ha => (isGLB_infₛ s).1 ha
+    le_infₛ := fun s a ha => (isGLB_infₛ s).2 ha
+    infₛ_le := fun s a ha => (isGLB_infₛ s).1 ha
     supₛ := fun s => infₛ (upperBounds s)
     le_supₛ := fun s a ha => (isGLB_infₛ (upperBounds s)).2 fun b hb => hb ha
     supₛ_le := fun s a ha => (isGLB_infₛ (upperBounds s)).1 ha }
@@ -359,8 +359,8 @@ def completeLatticeOfSup (α : Type _) [H1 : PartialOrder α] [H2 : SupSet α]
     infₛ := fun s => supₛ (lowerBounds s)
     supₛ_le := fun s a ha => (isLUB_supₛ s).2 ha
     le_supₛ := fun s a ha => (isLUB_supₛ s).1 ha
-    Inf_le := fun s a ha => (isLUB_supₛ (lowerBounds s)).2 fun b hb => hb ha
-    le_Inf := fun s a ha => (isLUB_supₛ (lowerBounds s)).1 ha }
+    infₛ_le := fun s a ha => (isLUB_supₛ (lowerBounds s)).2 fun b hb => hb ha
+    le_infₛ := fun s a ha => (isLUB_supₛ (lowerBounds s)).1 ha }
 #align complete_lattice_of_Sup completeLatticeOfSup
 
 /-- Any `CompleteSemilatticeSup` is in fact a `CompleteLattice`.
@@ -375,23 +375,23 @@ def completeLatticeOfCompleteSemilatticeSup (α : Type _) [CompleteSemilatticeSu
 
 /- ./././Mathport/Syntax/Translate/Command.lean:407:11: unsupported: advanced extends in structure -/
 /-- A complete linear order is a linear order whose lattice structure is complete. -/
-class CompleteLinearOrder (α : Type _) extends CompleteLattice α,
-  "./././Mathport/Syntax/Translate/Command.lean:407:11: unsupported: advanced extends in structure"
+class CompleteLinearOrder (α : Type _) extends CompleteLattice α, LinearOrder α
+-- renaming max → sup min → inf
 #align complete_linear_order CompleteLinearOrder
 
 namespace OrderDual
 
 variable (α)
 
-instance [CompleteLattice α] : CompleteLattice αᵒᵈ :=
-  { OrderDual.lattice α, OrderDual.SupSet α, OrderDual.InfSet α, OrderDual.boundedOrder α with
-    le_Sup := @CompleteLattice.Inf_le α _
-    Sup_le := @CompleteLattice.le_Inf α _
-    Inf_le := @CompleteLattice.le_Sup α _
-    le_Inf := @CompleteLattice.Sup_le α _ }
+instance completeLattice [CompleteLattice α] : CompleteLattice αᵒᵈ :=
+  { OrderDual.lattice α, OrderDual.supSet α, OrderDual.infSet α, OrderDual.boundedOrder α with
+    le_supₛ := @CompleteLattice.infₛ_le α _
+    supₛ_le := @CompleteLattice.le_infₛ α _
+    infₛ_le := @CompleteLattice.le_supₛ α _
+    le_infₛ := @CompleteLattice.supₛ_le α _ }
 
 instance [CompleteLinearOrder α] : CompleteLinearOrder αᵒᵈ :=
-  { OrderDual.completeLattice α, OrderDual.instLinearOrderOrderDual α with }
+  { OrderDual.completeLattice α, OrderDual.linearOrder α with }
 
 end OrderDual
 
