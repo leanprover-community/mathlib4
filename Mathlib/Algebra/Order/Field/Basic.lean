@@ -369,7 +369,7 @@ theorem div_le_div_iff (b0 : 0 < b) (d0 : 0 < d) : a / b ≤ c / d ↔ a * d ≤
   rw [le_div_iff d0, div_mul_eq_mul_div, div_le_iff b0]
 #align div_le_div_iff div_le_div_iff
 
-@[mono]
+-- @[mono] -- Porting note: restore mono attribute
 theorem div_le_div (hc : 0 ≤ c) (hac : a ≤ c) (hd : 0 < d) (hbd : d ≤ b) : a / b ≤ c / d := by
   rw [div_le_div_iff (hd.trans_le hbd) hd]
   exact mul_le_mul hac hbd hd.le hc
@@ -549,7 +549,7 @@ theorem exists_pos_mul_lt {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ 
 
 theorem Monotone.div_const {β : Type _} [Preorder β] {f : β → α} (hf : Monotone f) {c : α}
     (hc : 0 ≤ c) : Monotone fun x => f x / c := by
-  haveI := @LinearOrder.decidableLe α _
+  haveI := @LinearOrder.decidable_le α _
   simpa only [div_eq_mul_inv] using (monotone_mul_right_of_nonneg (inv_nonneg.2 hc)).comp hf
 #align monotone.div_const Monotone.div_const
 
@@ -573,15 +573,15 @@ instance (priority := 100) LinearOrderedField.to_densely_ordered :
 #align linear_ordered_field.to_densely_ordered LinearOrderedField.to_densely_ordered
 
 theorem min_div_div_right {c : α} (hc : 0 ≤ c) (a b : α) : min (a / c) (b / c) = min a b / c :=
-  Eq.symm <| Monotone.map_min fun x y => div_le_div_of_le hc
+  Eq.symm <| Monotone.map_min fun _ _ => div_le_div_of_le hc
 #align min_div_div_right min_div_div_right
 
 theorem max_div_div_right {c : α} (hc : 0 ≤ c) (a b : α) : max (a / c) (b / c) = max a b / c :=
-  Eq.symm <| Monotone.map_max fun x y => div_le_div_of_le hc
+  Eq.symm <| Monotone.map_max fun _ _ => div_le_div_of_le hc
 #align max_div_div_right max_div_div_right
 
-theorem one_div_strict_anti_on : StrictAntiOn (fun x : α => 1 / x) (Set.ioi 0) :=
-  fun x x1 y y1 xy => (one_div_lt_one_div (Set.mem_Ioi.mp y1) (Set.mem_Ioi.mp x1)).mpr xy
+theorem one_div_strict_anti_on : StrictAntiOn (fun x : α => 1 / x) (Set.Ioi 0) :=
+  fun _ x1 _ y1 xy => (one_div_lt_one_div (Set.mem_Ioi.mp y1) (Set.mem_Ioi.mp x1)).mpr xy
 #align one_div_strict_anti_on one_div_strict_anti_on
 
 theorem one_div_pow_le_one_div_pow_of_le (a1 : 1 ≤ a) {m n : ℕ} (mn : m ≤ n) :
@@ -595,15 +595,15 @@ theorem one_div_pow_lt_one_div_pow_of_lt (a1 : 1 < a) {m n : ℕ} (mn : m < n) :
   refine' (one_div_lt_one_div _ _).mpr (pow_lt_pow a1 mn) <;> exact pow_pos (trans zero_lt_one a1) _
 #align one_div_pow_lt_one_div_pow_of_lt one_div_pow_lt_one_div_pow_of_lt
 
-theorem one_div_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => 1 / a ^ n := fun m n =>
+theorem one_div_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => 1 / a ^ n := fun _ _ =>
   one_div_pow_le_one_div_pow_of_le a1
 #align one_div_pow_anti one_div_pow_anti
 
-theorem one_div_pow_strict_anti (a1 : 1 < a) : StrictAnti fun n : ℕ => 1 / a ^ n := fun m n =>
+theorem one_div_pow_strict_anti (a1 : 1 < a) : StrictAnti fun n : ℕ => 1 / a ^ n := fun _ _ =>
   one_div_pow_lt_one_div_pow_of_lt a1
 #align one_div_pow_strict_anti one_div_pow_strict_anti
 
-theorem inv_strict_anti_on : StrictAntiOn (fun x : α => x⁻¹) (Set.ioi 0) := fun x hx y hy xy =>
+theorem inv_strict_anti_on : StrictAntiOn (fun x : α => x⁻¹) (Set.Ioi 0) := fun _ hx _ hy xy =>
   (inv_lt_inv hy hx).2 xy
 #align inv_strict_anti_on inv_strict_anti_on
 
@@ -615,29 +615,29 @@ theorem inv_pow_lt_inv_pow_of_lt (a1 : 1 < a) {m n : ℕ} (mn : m < n) : (a ^ n)
   convert one_div_pow_lt_one_div_pow_of_lt a1 mn <;> simp
 #align inv_pow_lt_inv_pow_of_lt inv_pow_lt_inv_pow_of_lt
 
-theorem inv_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => (a ^ n)⁻¹ := fun m n =>
+theorem inv_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => (a ^ n)⁻¹ := fun _ _ =>
   inv_pow_le_inv_pow_of_le a1
 #align inv_pow_anti inv_pow_anti
 
-theorem inv_pow_strict_anti (a1 : 1 < a) : StrictAnti fun n : ℕ => (a ^ n)⁻¹ := fun m n =>
+theorem inv_pow_strict_anti (a1 : 1 < a) : StrictAnti fun n : ℕ => (a ^ n)⁻¹ := fun _ _ =>
   inv_pow_lt_inv_pow_of_lt a1
 #align inv_pow_strict_anti inv_pow_strict_anti
 
 /-! ### Results about `is_lub` and `is_glb` -/
 
 
-theorem IsGlb.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsGlb s b) :
-    IsGlb ((fun b => a * b) '' s) (a * b) := by
+theorem IsGLB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
+    IsGLB ((fun b => a * b) '' s) (a * b) := by
   rcases lt_or_eq_of_le ha with (ha | rfl)
-  · exact (OrderIso.mulLeft₀ _ ha).is_glb_image'.2 hs
+  · exact (OrderIso.mulLeft₀ _ ha).isGLB_image'.2 hs
   · simp_rw [zero_mul]
     rw [hs.nonempty.image_const]
-    exact is_glb_singleton
-#align is_glb.mul_left IsGlb.mul_left
+    exact isGLB_singleton
+#align is_glb.mul_left IsGLB.mul_left
 
-theorem IsGlb.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsGlb s b) :
-    IsGlb ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
-#align is_glb.mul_right IsGlb.mul_right
+theorem IsGLB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
+    IsGLB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
+#align is_glb.mul_right IsGLB.mul_right
 
 end LinearOrderedSemifield
 
@@ -905,19 +905,19 @@ theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 :=
 
 
 -- TODO: Generalize to `linear_ordered_semifield`
-theorem IsLub.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLub s b) :
-    IsLub ((fun b => a * b) '' s) (a * b) := by
+theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
+    IsLUB ((fun b => a * b) '' s) (a * b) := by
   rcases lt_or_eq_of_le ha with (ha | rfl)
-  · exact (OrderIso.mulLeft₀ _ ha).is_lub_image'.2 hs
+  · exact (OrderIso.mulLeft₀ _ ha).isLUB_image'.2 hs
   · simp_rw [zero_mul]
     rw [hs.nonempty.image_const]
-    exact is_lub_singleton
-#align is_lub.mul_left IsLub.mul_left
+    exact isLUB_singleton
+#align is_lub.mul_left IsLUB.mul_left
 
 -- TODO: Generalize to `linear_ordered_semifield`
-theorem IsLub.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsLub s b) :
-    IsLub ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
-#align is_lub.mul_right IsLub.mul_right
+theorem IsLUB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
+    IsLUB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
+#align is_lub.mul_right IsLUB.mul_right
 
 /-! ### Miscellaneous lemmmas -/
 
@@ -956,11 +956,11 @@ theorem mul_self_inj_of_nonneg (a0 : 0 ≤ a) (b0 : 0 ≤ b) : a * a = b * b ↔
 #align mul_self_inj_of_nonneg mul_self_inj_of_nonneg
 
 theorem min_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : min (a / c) (b / c) = max a b / c :=
-  Eq.symm <| Antitone.map_max fun x y => div_le_div_of_nonpos_of_le hc
+  Eq.symm <| Antitone.map_max fun _ _ => div_le_div_of_nonpos_of_le hc
 #align min_div_div_right_of_nonpos min_div_div_right_of_nonpos
 
 theorem max_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : max (a / c) (b / c) = min a b / c :=
-  Eq.symm <| Antitone.map_min fun x y => div_le_div_of_nonpos_of_le hc
+  Eq.symm <| Antitone.map_min fun _ _ => div_le_div_of_nonpos_of_le hc
 #align max_div_div_right_of_nonpos max_div_div_right_of_nonpos
 
 theorem abs_inv (a : α) : |a⁻¹| = (|a|)⁻¹ :=
