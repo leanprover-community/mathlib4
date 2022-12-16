@@ -94,10 +94,11 @@ theorem factorial_le {m n} (h : m ≤ n) : m ! ≤ n ! :=
 theorem factorial_mul_pow_le_factorial : ∀ {m n : ℕ}, m ! * m.succ ^ n ≤ (m + n)!
   | m, 0 => by simp
   | m, n + 1 => by
-    rw [← add_assoc, Nat.factorial_succ, mul_comm (Nat.succ _), pow_succ', ← mul_assoc] <;>
-      exact
-        mul_le_mul factorial_mul_pow_le_factorial (Nat.succ_le_succ (Nat.le_add_right _ _))
-          (Nat.zero_le _) (Nat.zero_le _)
+    rw [← add_assoc, ← Nat.succ_eq_add_one (m + n), Nat.factorial_succ, pow_succ',
+        mul_comm (_ + 1), mul_comm (succ m), ← mul_assoc]
+    exact
+      mul_le_mul factorial_mul_pow_le_factorial (Nat.succ_le_succ (Nat.le_add_right _ _))
+        (Nat.zero_le _) (Nat.zero_le _)
 #align nat.factorial_mul_pow_le_factorial Nat.factorial_mul_pow_le_factorial
 
 theorem monotone_factorial : Monotone factorial := fun n m => factorial_le
