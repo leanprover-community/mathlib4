@@ -8,8 +8,8 @@ Authors: Jeremy Avigad
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Int.Dvd.Basic
-import Mathbin.Data.Nat.Pow
+import Mathlib.Data.Int.Dvd.Basic
+import Mathlib.Data.Nat.Pow
 
 /-!
 # Basic lemmas about the divisibility relation in `ℤ` involving powers.
@@ -29,22 +29,23 @@ theorem sign_pow_bit1 (k : ℕ) : ∀ n : ℤ, n.sign ^ bit1 k = n.sign
 
 theorem pow_dvd_of_le_of_pow_dvd {p m n : ℕ} {k : ℤ} (hmn : m ≤ n) (hdiv : ↑(p ^ n) ∣ k) :
     ↑(p ^ m) ∣ k := by
-  induction k
-  · apply Int.coe_nat_dvd.2
-    apply pow_dvd_of_le_of_pow_dvd hmn
+  induction k with
+  | ofNat k =>
+    apply Int.coe_nat_dvd.2
+    apply Nat.pow_dvd_of_le_of_pow_dvd hmn
     apply Int.coe_nat_dvd.1 hdiv
-  change -[k+1] with -(↑(k + 1) : ℤ)
-  apply dvd_neg_of_dvd
-  apply Int.coe_nat_dvd.2
-  apply pow_dvd_of_le_of_pow_dvd hmn
-  apply Int.coe_nat_dvd.1
-  apply dvd_of_dvd_neg
-  exact hdiv
+  | negSucc k =>
+    show ↑(p ^ m) ∣ -(↑(k + 1) : ℤ)
+    apply dvd_neg_of_dvd
+    apply Int.coe_nat_dvd.2
+    apply Nat.pow_dvd_of_le_of_pow_dvd hmn
+    apply Int.coe_nat_dvd.1
+    apply dvd_of_dvd_neg
+    exact hdiv
 #align int.pow_dvd_of_le_of_pow_dvd Int.pow_dvd_of_le_of_pow_dvd
 
 theorem dvd_of_pow_dvd {p k : ℕ} {m : ℤ} (hk : 1 ≤ k) (hpk : ↑(p ^ k) ∣ m) : ↑p ∣ m := by
-  rw [← pow_one p] <;> exact pow_dvd_of_le_of_pow_dvd hk hpk
+  rw [← pow_one p] ; exact pow_dvd_of_le_of_pow_dvd hk hpk
 #align int.dvd_of_pow_dvd Int.dvd_of_pow_dvd
 
 end Int
-
