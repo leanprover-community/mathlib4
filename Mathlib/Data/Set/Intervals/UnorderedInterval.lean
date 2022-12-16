@@ -301,8 +301,7 @@ theorem right_mem_interval_oc : b ∈ Ι a b ↔ a < b := by simp [mem_interval_
 
 theorem forall_interval_oc_iff {P : α → Prop} :
     (∀ x ∈ Ι a b, P x) ↔ (∀ x ∈ Ioc a b, P x) ∧ ∀ x ∈ Ioc b a, P x := by
-  -- simp only [interval_oc_eq_union, mem_union, or_imp, forall_and]
-  sorry
+  simp only [interval_oc_eq_union, mem_union, or_imp, forall_and, iff_self]
 #align set.forall_interval_oc_iff Set.forall_interval_oc_iff
 
 theorem interval_oc_subset_interval_oc_of_interval_subset_interval {a b c d : α}
@@ -324,7 +323,7 @@ theorem Ioc_subset_interval_oc' : Ioc a b ⊆ Ι b a :=
 #align set.Ioc_subset_interval_oc' Set.Ioc_subset_interval_oc'
 
 theorem eq_of_mem_interval_oc_of_mem_interval_oc : a ∈ Ι b c → b ∈ Ι a c → a = b := by
-  simp_rw [mem_interval_oc] <;> rintro (⟨_, _⟩ | ⟨_, _⟩) (⟨_, _⟩ | ⟨_, _⟩) <;> apply le_antisymm <;>
+  simp_rw [mem_interval_oc]; rintro (⟨_, _⟩ | ⟨_, _⟩) (⟨_, _⟩ | ⟨_, _⟩) <;> apply le_antisymm <;>
     first |assumption|exact le_of_lt ‹_›|exact le_trans ‹_› (le_of_lt ‹_›)
 #align set.eq_of_mem_interval_oc_of_mem_interval_oc Set.eq_of_mem_interval_oc_of_mem_interval_oc
 
@@ -344,7 +343,7 @@ theorem interval_oc_injective_right (a : α) : Injective fun b => Ι b a := by
   rintro b c h
   rw [ext_iff] at h
   obtain ha | ha := le_or_lt b a
-  · have hb := (h b).Not
+  · have hb := (h b).not
     simp only [ha, left_mem_interval_oc, not_lt, true_iff_iff, not_mem_interval_oc, ← not_le,
       and_true_iff, not_true, false_and_iff, not_false_iff, true_iff_iff, or_false_iff] at hb
     refine' hb.eq_of_not_lt fun hc => _
