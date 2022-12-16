@@ -78,7 +78,7 @@ variable (h : x = y)
 variable (h'' : (p ∧ q ↔ q ∨ r) ↔ (r ∧ p ↔ r ∨ q))
 
 -- Currently this hits a "failed to show termination error"
--- because it erroneosly used a recursive hypothesis.
+-- because it erroneously used a recursive hypothesis.
 -- See https://github.com/leanprover-community/mathlib4/issues/1061.
 --example (h' : ¬ y = x) : p ∧ q := by tauto
 
