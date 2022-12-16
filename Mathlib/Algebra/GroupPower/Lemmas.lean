@@ -468,19 +468,17 @@ instance NonUnitalNonAssocSemiring.nat_is_scalar_tower [NonUnitalNonAssocSemirin
 #align
   non_unital_non_assoc_semiring.nat_is_scalar_tower NonUnitalNonAssocSemiring.nat_is_scalar_tower
 
-#print Nat.cast_pow /-
 @[simp, norm_cast]
-theorem Nat.cast_pow [Semiring R] (n m : ℕ) : (↑(n ^ m) : R) = ↑n ^ m := by
+theorem Nat.cast_pow [Semiring R] (n m : ℕ) : (↑(n ^ m) : R) = (↑n : R) ^ m := by
   induction' m with m ih
-  · rw [pow_zero, pow_zero]
-    exact Nat.cast_one
-  · rw [pow_succ', pow_succ', Nat.cast_mul, ih]
+  · simp
+  · rw [_root_.pow_succ', _root_.pow_succ', Nat.cast_mul, ih]
 #align nat.cast_pow Nat.cast_pow
--/
 
-@[simp, norm_cast]
+-- Porting note: `norm_cast` attribute removed.
+@[simp]
 theorem Int.coe_nat_pow (n m : ℕ) : ((n ^ m : ℕ) : ℤ) = n ^ m := by
-  induction' m with m ih <;> [exact Int.ofNat_one, rw [pow_succ', pow_succ', Int.ofNat_mul, ih]]
+  induction' m with m _ <;> simp
 #align int.coe_nat_pow Int.coe_nat_pow
 
 theorem Int.nat_abs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
@@ -495,12 +493,12 @@ set_option linter.deprecated false
 -- They are used by the `noncomm_ring` tactic, to normalise expressions before passing to `abel`.
 theorem bit0_mul [NonUnitalNonAssocRing R] {n r : R} : bit0 n * r = (2 : ℤ) • (n * r) := by
   dsimp [bit0]
-  rw [add_mul, add_zsmul, one_zsmul]
+  rw [add_mul, ← one_add_one_eq_two, add_zsmul, one_zsmul]
 #align bit0_mul bit0_mul
 
 theorem mul_bit0 [NonUnitalNonAssocRing R] {n r : R} : r * bit0 n = (2 : ℤ) • (r * n) := by
   dsimp [bit0]
-  rw [mul_add, add_zsmul, one_zsmul]
+  rw [mul_add, ← one_add_one_eq_two, add_zsmul, one_zsmul]
 #align mul_bit0 mul_bit0
 
 theorem bit1_mul [NonAssocRing R] {n r : R} : bit1 n * r = (2 : ℤ) • (n * r) + r := by
@@ -522,7 +520,7 @@ theorem zsmul_eq_mul [Ring R] (a : R) : ∀ n : ℤ, n • a = n * a
 #align zsmul_eq_mul zsmul_eq_mul
 
 theorem zsmul_eq_mul' [Ring R] (a : R) (n : ℤ) : n • a = a * n := by
-  rw [zsmul_eq_mul, (n.cast_commute a).Eq]
+  rw [zsmul_eq_mul, (n.cast_commute a).eq]
 #align zsmul_eq_mul' zsmul_eq_mul'
 
 /-- Note that `add_comm_group.int_smul_comm_class` requires stronger assumptions on `R`. -/
@@ -531,7 +529,7 @@ instance NonUnitalNonAssocRing.int_smul_comm_class [NonUnitalNonAssocRing R] :
   ⟨fun n x y =>
     match n with
     | (n : ℕ) => by simp_rw [coe_nat_zsmul, smul_comm]
-    | -[n+1] => by simp_rw [zsmul_neg_succ_of_nat, smul_eq_mul, mul_neg, mul_smul_comm]⟩
+    | -[n+1] => by simp_rw [negSucc_zsmul, smul_eq_mul, mul_neg, mul_smul_comm]⟩
 #align non_unital_non_assoc_ring.int_smul_comm_class NonUnitalNonAssocRing.int_smul_comm_class
 
 /-- Note that `add_comm_group.int_is_scalar_tower` requires stronger assumptions on `R`. -/
@@ -540,13 +538,13 @@ instance NonUnitalNonAssocRing.int_is_scalar_tower [NonUnitalNonAssocRing R] :
   ⟨fun n x y =>
     match n with
     | (n : ℕ) => by simp_rw [coe_nat_zsmul, smul_assoc]
-    | -[n+1] => by simp_rw [zsmul_neg_succ_of_nat, smul_eq_mul, neg_mul, smul_mul_assoc]⟩
+    | -[n+1] => by simp_rw [negSucc_zsmul, smul_eq_mul, neg_mul, smul_mul_assoc]⟩
 #align non_unital_non_assoc_ring.int_is_scalar_tower NonUnitalNonAssocRing.int_is_scalar_tower
 
 theorem zsmul_int_int (a b : ℤ) : a • b = a * b := by simp
 #align zsmul_int_int zsmul_int_int
 
-theorem zsmul_int_one (n : ℤ) : n • 1 = n := by simp
+theorem zsmul_int_one (n : ℤ) : n • (1 : ℤ) = n := by simp
 #align zsmul_int_one zsmul_int_one
 
 /- warning: int.cast_pow -> Int.cast_pow is a dubious translation:
@@ -556,14 +554,14 @@ but is expected to have type
   forall {R : Type.{u1}} [_inst_1 : Ring.{u1} R] (n : Int) (m : Nat), Eq.{succ u1} R (Int.cast.{u1} R (Ring.toIntCast.{u1} R _inst_1) (HPow.hPow.{0, 0, 0} Int Nat Int Int.instHPowIntNat n m)) (HPow.hPow.{u1, 0, u1} R Nat R (instHPow.{u1, 0} R Nat (Monoid.Pow.{u1} R (MonoidWithZero.toMonoid.{u1} R (Semiring.toMonoidWithZero.{u1} R (Ring.toSemiring.{u1} R _inst_1))))) (Int.cast.{u1} R (Ring.toIntCast.{u1} R _inst_1) n) m)
 Case conversion may be inaccurate. Consider using '#align int.cast_pow Int.cast_powₓ'. -/
 @[simp, norm_cast]
-theorem Int.cast_pow [Ring R] (n : ℤ) (m : ℕ) : (↑(n ^ m) : R) = ↑n ^ m := by
+theorem Int.cast_pow [Ring R] (n : ℤ) (m : ℕ) : (↑(n ^ m) : R) = (↑n : R) ^ m := by
   induction' m with m ih
   · rw [pow_zero, pow_zero, Int.cast_one]
   · rw [pow_succ, pow_succ, Int.cast_mul, ih]
 #align int.cast_pow Int.cast_pow
 
 theorem neg_one_pow_eq_pow_mod_two [Ring R] {n : ℕ} : (-1 : R) ^ n = (-1) ^ (n % 2) := by
-  rw [← Nat.mod_add_div n 2, pow_add, pow_mul] <;> simp [sq]
+  rw [← Nat.mod_add_div n 2, pow_add, pow_mul]; simp [sq]
 #align neg_one_pow_eq_pow_mod_two neg_one_pow_eq_pow_mod_two
 
 section StrictOrderedSemiring
@@ -582,25 +580,29 @@ theorem one_add_mul_le_pow' (Hsq : 0 ≤ a * a) (Hsq' : 0 ≤ (1 + a) * (1 + a))
     calc
       1 + (↑(n + 2) : R) * a ≤ 1 + ↑(n + 2) * a + (n * (a * a * (2 + a)) + a * a) :=
         (le_add_iff_nonneg_right _).2 this
-      _ = (1 + a) * (1 + a) * (1 + n * a) := by
-        simp [add_mul, mul_add, bit0, mul_assoc, (n.cast_commute (_ : R)).left_comm]
-        ac_rfl
-      _ ≤ (1 + a) * (1 + a) * (1 + a) ^ n := mul_le_mul_of_nonneg_left (one_add_mul_le_pow' n) Hsq'
+      _ = (1 + a) * (1 + a) * (1 + n * a) := by {
+          simp only [Nat.cast_add, add_mul, mul_add, one_mul, mul_one, ← one_add_one_eq_two,
+            Nat.cast_one, add_assoc, add_right_inj]
+          simp only [← add_assoc, add_comm _ (↑n * a)]
+          simp only [add_assoc, add_right_inj, (n.cast_commute (_ : R)).left_comm]
+          ac_rfl }
+      _ ≤ (1 + a) * (1 + a) * (1 + a) ^ n :=
+        mul_le_mul_of_nonneg_left (one_add_mul_le_pow' Hsq Hsq' H _) Hsq'
       _ = (1 + a) ^ (n + 2) := by simp only [pow_succ, mul_assoc]
 
 #align one_add_mul_le_pow' one_add_mul_le_pow'
 
-private theorem pow_le_pow_of_le_one_aux (h : 0 ≤ a) (ha : a ≤ 1) (i : ℕ) :
+theorem pow_le_pow_of_le_one_aux (h : 0 ≤ a) (ha : a ≤ 1) (i : ℕ) :
     ∀ k : ℕ, a ^ (i + k) ≤ a ^ i
   | 0 => by simp
   | k + 1 => by
     rw [← add_assoc, ← one_mul (a ^ i), pow_succ]
-    exact mul_le_mul ha (pow_le_pow_of_le_one_aux _) (pow_nonneg h _) zero_le_one
+    exact mul_le_mul ha (pow_le_pow_of_le_one_aux h ha _ _) (pow_nonneg h _) zero_le_one
 #align pow_le_pow_of_le_one_aux pow_le_pow_of_le_one_aux
 
 theorem pow_le_pow_of_le_one (h : 0 ≤ a) (ha : a ≤ 1) {i j : ℕ} (hij : i ≤ j) : a ^ j ≤ a ^ i := by
   let ⟨k, hk⟩ := Nat.exists_eq_add_of_le hij
-  rw [hk] <;> exact pow_le_pow_of_le_one_aux h ha _ _
+  rw [hk]; exact pow_le_pow_of_le_one_aux h ha _ _
 #align pow_le_pow_of_le_one pow_le_pow_of_le_one
 
 theorem pow_le_of_le_one (h₀ : 0 ≤ a) (h₁ : a ≤ 1) {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ a :=
@@ -636,6 +638,10 @@ theorem abs_pow (a : R) (n : ℕ) : |a ^ n| = |a| ^ n :=
   (pow_abs a n).symm
 #align abs_pow abs_pow
 
+section bit1
+
+set_option linter.deprecated false
+
 @[simp]
 theorem pow_bit1_neg_iff : a ^ bit1 n < 0 ↔ a < 0 :=
   ⟨fun h => not_le.1 fun h' => not_le.2 h <| pow_nonneg h' _, fun ha => pow_bit1_neg ha n⟩
@@ -648,7 +654,18 @@ theorem pow_bit1_nonneg_iff : 0 ≤ a ^ bit1 n ↔ 0 ≤ a :=
 
 @[simp]
 theorem pow_bit1_nonpos_iff : a ^ bit1 n ≤ 0 ↔ a ≤ 0 := by
-  simp only [le_iff_lt_or_eq, pow_bit1_neg_iff, pow_eq_zero_iff (bit1_pos (zero_le n))]
+  simp only [le_iff_lt_or_eq, pow_bit1_neg_iff]
+  refine' ⟨_, _⟩
+  · rintro (hpos | hz)
+    · left
+      exact hpos
+    · right
+      exact (pow_eq_zero_iff'.1 hz).1
+  · rintro (hneg | hz)
+    · left
+      exact hneg
+    · right
+      simp [hz, bit1]
 #align pow_bit1_nonpos_iff pow_bit1_nonpos_iff
 
 @[simp]
@@ -666,6 +683,10 @@ theorem strict_mono_pow_bit1 (n : ℕ) : StrictMono fun a : R => a ^ bit1 n := b
   · exact pow_lt_pow_of_lt_left hab ha (bit1_pos (zero_le n))
 #align strict_mono_pow_bit1 strict_mono_pow_bit1
 
+end bit1
+
+#exit
+
 /-- Bernoulli's inequality for `n : ℕ`, `-2 ≤ a`. -/
 theorem one_add_mul_le_pow (H : -2 ≤ a) (n : ℕ) : 1 + (n : R) * a ≤ (1 + a) ^ n :=
   one_add_mul_le_pow' (mul_self_nonneg _) (mul_self_nonneg _) (neg_le_iff_add_nonneg'.1 H) _
@@ -673,7 +694,8 @@ theorem one_add_mul_le_pow (H : -2 ≤ a) (n : ℕ) : 1 + (n : R) * a ≤ (1 + a
 
 /-- Bernoulli's inequality reformulated to estimate `a^n`. -/
 theorem one_add_mul_sub_le_pow (H : -1 ≤ a) (n : ℕ) : 1 + (n : R) * (a - 1) ≤ a ^ n := by
-  have : -2 ≤ a - 1 := by rwa [bit0, neg_add, ← sub_eq_add_neg, sub_le_sub_iff_right]
+  have : -2 ≤ a - 1 := by
+    rwa [← one_add_one_eq_two, neg_add, ← sub_eq_add_neg, sub_le_sub_iff_right]
   simpa only [add_sub_cancel'_right] using one_add_mul_le_pow this n
 #align one_add_mul_sub_le_pow one_add_mul_sub_le_pow
 
