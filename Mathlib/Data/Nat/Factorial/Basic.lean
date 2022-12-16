@@ -433,13 +433,12 @@ theorem pow_sub_lt_descFactorial' {n : ℕ} :
       Nat.mul_lt_mul_of_pos_left (tsub_lt_self (lt_of_lt_of_le zero_lt_two h) zero_lt_one)
         (tsub_pos_of_lt h)
   | k + 1 => fun h => by
-    rw [descFactorial_succ, pow_succ]
-    refine'
-      Nat.mul_lt_mul_of_pos_left
-        ((Nat.pow_le_pow_of_le_left (tsub_le_tsub_right (le_succ n) _) _).trans_lt _)
-        (tsub_pos_of_lt h)
-    rw [succ_sub_succ]
-    exact pow_sub_lt_descFactorial' ((le_succ _).trans h)
+    rw [descFactorial_succ, pow_succ, mul_comm]
+    apply Nat.mul_lt_mul_of_pos_left
+    · refine' ((Nat.pow_le_pow_of_le_left (tsub_le_tsub_right (le_succ n) _) _).trans_lt _)
+      rw [succ_sub_succ]
+      exact pow_sub_lt_descFactorial' ((le_succ _).trans h)
+    · apply tsub_pos_of_lt h
 #align nat.pow_sub_lt_descFactorial' Nat.pow_sub_lt_descFactorial'
 
 theorem pow_sub_lt_descFactorial {n : ℕ} :
