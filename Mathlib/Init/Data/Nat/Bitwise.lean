@@ -8,20 +8,30 @@ Author: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-prelude
-import Leanbin.Init.Data.Nat.Lemmas
-import Leanbin.Init.Meta.WellFoundedTactics
+import Mathlib.Init.Data.Nat.Lemmas
+import Init.WFTactics
 
+-- Imported for Boolean `xor`
+import Mathlib.Data.Bool.Basic
+
+-- Imported for `bit0` and `bit1`
+import Mathlib.Init.ZeroOne
 universe u
+
+-- The following line helps override the default behaviour, wherein
+-- lean equates xor with Nat.xor
+-- bxor points to Mathlib.Data.Bool.Basic.xor
+--- Author : Shreyas Srinivas
+abbrev bxor := xor
 
 namespace Nat
 
 def boddDiv2 : ℕ → Bool × ℕ
   | 0 => (false, 0)
   | succ n =>
-    match bodd_div2 n with
-    | (ff, m) => (true, m)
-    | (tt, m) => (false, succ m)
+    match boddDiv2 n with
+    | (false, m) => (true, m)
+    | (true, m) => (false, succ m)
 #align nat.bodd_div2 Nat.boddDiv2
 
 def div2 (n : ℕ) : ℕ :=
@@ -33,25 +43,25 @@ def bodd (n : ℕ) : Bool :=
 #align nat.bodd Nat.bodd
 
 @[simp]
-theorem bodd_zero : bodd 0 = ff :=
+theorem bodd_zero : bodd 0 = false :=
   rfl
 #align nat.bodd_zero Nat.bodd_zero
 
-theorem bodd_one : bodd 1 = tt :=
+theorem bodd_one : bodd 1 = true :=
   rfl
 #align nat.bodd_one Nat.bodd_one
 
-theorem bodd_two : bodd 2 = ff :=
+theorem bodd_two : bodd 2 = false :=
   rfl
 #align nat.bodd_two Nat.bodd_two
 
 @[simp]
 theorem bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
-  unfold bodd bodd_div2 <;> cases bodd_div2 n <;> cases fst <;> rfl
+  unfold bodd <;> unfold boddDiv2 <;> cases boddDiv2 n <;> cases fst <;> rfl
 #align nat.bodd_succ Nat.bodd_succ
 
 @[simp]
-theorem bodd_add (m n : ℕ) : bodd (m + n) = xor (bodd m) (bodd n) := by
+theorem bodd_add (m n : ℕ) : bodd (m + n) = bxor (bodd m) (bodd n) := by
   induction' n with n IH
   · simp
     cases bodd m <;> rfl
@@ -71,8 +81,8 @@ theorem bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
 theorem mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
   have := congr_arg bodd (mod_add_div n 2)
   simp [not] at this
-  rw [show ∀ b, (ff && b) = ff by intros <;> cases b <;> rfl,
-    show ∀ b, xor b ff = b by intros <;> cases b <;> rfl] at this
+  rw [show ∀ b, (false && b) = false by intros <;> cases b <;> rfl,
+    show ∀ b, bxor b ff = b by intros <;> cases b <;> rfl] at this
   rw [← this]
   cases' mod_two_eq_zero_or_one n with h h <;> rw [h] <;> rfl
 #align nat.mod_two_of_bodd Nat.mod_two_of_bodd
@@ -92,7 +102,7 @@ theorem div2_two : div2 2 = 1 :=
 
 @[simp]
 theorem div2_succ (n : ℕ) : div2 (succ n) = cond (bodd n) (succ (div2 n)) (div2 n) := by
-  unfold bodd div2 bodd_div2 <;> cases bodd_div2 n <;> cases fst <;> rfl
+  unfold bodd div2 boddDiv2 <;> cases boddDiv2 n <;> cases fst <;> rfl
 #align nat.div2_succ Nat.div2_succ
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
@@ -221,7 +231,7 @@ def ldiff : ℕ → ℕ → ℕ :=
 #align nat.ldiff Nat.ldiff
 
 def lxor : ℕ → ℕ → ℕ :=
-  bitwise xor
+  bitwise bxor
 #align nat.lxor Nat.lxor
 
 @[simp]
@@ -381,7 +391,7 @@ theorem ldiff_bit : ∀ a m b n, ldiff (bit a m) (bit b n) = bit (a && not b) (l
 #align nat.ldiff_bit Nat.ldiff_bit
 
 @[simp]
-theorem lxor_bit : ∀ a m b n, lxor (bit a m) (bit b n) = bit (xor a b) (lxor m n) :=
+theorem lxor_bit : ∀ a m b n, lxor (bit a m) (bit b n) = bit (bxor a b) (lxor m n) :=
   bitwise_bit rfl
 #align nat.lxor_bit Nat.lxor_bit
 
@@ -412,7 +422,7 @@ theorem test_bit_ldiff : ∀ m n k, testBit (ldiff m n) k = (testBit m k && not 
 #align nat.test_bit_ldiff Nat.test_bit_ldiff
 
 @[simp]
-theorem test_bit_lxor : ∀ m n k, testBit (lxor m n) k = xor (testBit m k) (testBit n k) :=
+theorem test_bit_lxor : ∀ m n k, testBit (lxor m n) k = bxor (testBit m k) (testBit n k) :=
   test_bit_bitwise rfl
 #align nat.test_bit_lxor Nat.test_bit_lxor
 
