@@ -17,7 +17,7 @@ for some `a : α`, while the domain of `o : Part α` doesn't have to be decidabl
 translate back and forth between a partial value with a decidable domain and an option, and
 `Option α` and `Part α` are classically equivalent. In general, `Part α` is bigger than `Option α`.
 In current mathlib, `Part ℕ`, aka `part_enat`, is used to move decidability of the order to
-decidability of `part_enat.find` (which is the smallest natural satisfying a predicate, or `∞` if
+decidability of `PartENat.find` (which is the smallest natural satisfying a predicate, or `∞` if
 there's none).
 ## Main declarations
 `Option`-like declarations:
@@ -655,7 +655,7 @@ theorem bind_dom {f : Part α} {g : α → Part β} : (f.bind g).Dom ↔ ∃ h :
 
 section Instances
 
--- We define several instances for constants and operations on `part α` inherited from `α`.
+-- We define several instances for constants and operations on `Part α` inherited from `α`.
 @[to_additive]
 instance [One α] : One (Part α) where one := pure 1
 
