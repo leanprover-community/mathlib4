@@ -2,6 +2,7 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
+Ported by: Rémy Degenne
 
 ! This file was ported from Lean 3 source module data.nat.log
 ! leanprover-community/mathlib commit 11bb0c9152e5d14278fb0ac5e0be6d50e2c8fa05
@@ -18,8 +19,8 @@ This file defines two `ℕ`-valued analogs of the logarithm of `n` with base `b`
 * `log b n`: Lower logarithm, or floor **log**. Greatest `k` such that `b^k ≤ n`.
 * `clog b n`: Upper logarithm, or **c**eil **log**. Least `k` such that `n ≤ b^k`.
 
-These are interesting because, for `1 < b`, `nat.log b` and `nat.clog b` are respectively right and
-left adjoints of `nat.pow b`. See `pow_le_iff_le_log` and `le_pow_iff_clog_le`.
+These are interesting because, for `1 < b`, `Nat.log b` and `Nat.clog b` are respectively right and
+left adjoints of `Nat.pow b`. See `pow_le_iff_le_log` and `le_pow_iff_clog_le`.
 -/
 
 
@@ -30,7 +31,7 @@ namespace Nat
 
 /-- `log b n`, is the logarithm of natural number `n` in base `b`. It returns the largest `k : ℕ`
 such that `b^k ≤ n`, so if `b^k = n`, it returns exactly `k`. -/
---@[pp_nodot] TODO: what do I do with this?
+--@[pp_nodot] TODO porting note: unknown attribute
 def log (b : ℕ) : ℕ → ℕ
   | n =>
     if h : b ≤ n ∧ 1 < b then
@@ -88,8 +89,8 @@ theorem log_one_right (b : ℕ) : log b 1 = 0 :=
   log_eq_zero_iff.2 (lt_or_le _ _)
 #align nat.log_one_right Nat.log_one_right
 
-/-- `pow b` and `log b` (almost) form a Galois connection. See also `nat.pow_le_of_le_log` and
-`nat.le_log_of_pow_le` for individual implications under weaker assumptions. -/
+/-- `pow b` and `log b` (almost) form a Galois connection. See also `Nat.pow_le_of_le_log` and
+`Nat.le_log_of_pow_le` for individual implications under weaker assumptions. -/
 theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) : b ^ x ≤ y ↔ x ≤ log b y :=
   by
   induction' y using Nat.strong_induction_on with y ih generalizing x
@@ -146,8 +147,8 @@ theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
     rcases hbn with (hb | rfl)
     · simpa only [log_of_left_le_one hb, hm.symm, false_iff_iff, not_and, not_lt] using
         le_trans (pow_le_pow_of_le_one' hb m.le_succ)
-    · simpa only [log_zero_right, hm.symm, false_iff_iff, not_and, not_lt, le_zero_iff,
-        pow_succ] using mul_eq_zero_of_right _
+    · simpa only [log_zero_right, hm.symm, nonpos_iff_eq_zero, false_iff, not_and, not_lt,
+        add_pos_iff, or_true, pow_eq_zero_iff] using pow_eq_zero
 #align nat.log_eq_iff Nat.log_eq_iff
 
 theorem log_eq_of_pow_le_of_lt_pow {b m n : ℕ} (h₁ : b ^ m ≤ n) (h₂ : n < b ^ (m + 1)) :
@@ -190,7 +191,7 @@ theorem log_monotone {b : ℕ} : Monotone (log b) := by
   · exact le_log_of_pow_le hb (pow_log_le_add_one _ _)
 #align nat.log_monotone Nat.log_monotone
 
---@[mono]
+--@[mono] -- porting note: unknown attribute
 theorem log_mono_right {b n m : ℕ} (h : n ≤ m) : log b n ≤ log b m :=
   log_monotone h
 #align nat.log_mono_right Nat.log_mono_right
