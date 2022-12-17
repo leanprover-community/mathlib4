@@ -424,10 +424,11 @@ theorem abs_add_eq_add_abs_iff (a b : α) : |a + b| = |a| + |b| ↔ 0 ≤ a ∧ 
 
 end LinearOrderedAddCommGroup
 
-@[simp]
-theorem WithBot.coe_nsmul [AddMonoid A] (a : A) (n : ℕ) : ((n • a : A) : WithBot A) = n • a :=
-  by simp
-#align with_bot.coe_nsmul WithBot.coe_nsmul
+-- Porting note: commented out as linter reports LHS= RHS syntactically
+-- @[simp]
+-- theorem WithBot.coe_nsmul [AddMonoid A] (a : A) (n : ℕ) : ((n • a : A) : WithBot A) = n • a :=
+--   by simp
+-- #align with_bot.coe_nsmul WithBot.coe_nsmul
 
 /- warning: nsmul_eq_mul' -> nsmul_eq_mul' is a dubious translation:
 lean 3 declaration is
@@ -520,10 +521,15 @@ theorem Nat.cast_pow [Semiring R] (n m : ℕ) : (↑(n ^ m) : R) = (↑n : R) ^ 
 #align nat.cast_pow Nat.cast_pow
 
 -- Porting note: `norm_cast` attribute removed.
-@[simp]
-theorem Int.coe_nat_pow (n m : ℕ) : ((n ^ m : ℕ) : ℤ) = n ^ m := by
-  induction' m with m _ <;> simp
-#align int.coe_nat_pow Int.coe_nat_pow
+/- Porting note `simp` attribute removed as suggested by linter:
+simp can prove this:
+  by simp only [Nat.cast_pow]
+-/
+-- Porting note: commented out as linter reports LHS= RHS syntactically
+-- -- @[simp]
+-- theorem Int.coe_nat_pow (n m : ℕ) : ((n ^ m : ℕ) : ℤ) = n ^ m := by
+--   induction' m with m _ <;> simp
+-- #align int.coe_nat_pow Int.coe_nat_pow
 
 theorem Int.nat_abs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
   induction' k with k ih <;> [rfl, rw [pow_succ', Int.natAbs_mul, pow_succ', ih]]
@@ -761,7 +767,21 @@ end LinearOrderedRing
 
 namespace Int
 
-@[simp]
+#check Nat.cast_pow
+
+/- Porting note: removed `@[simp]` because of linter error:
+
+Left-hand side simplifies from
+  ↑(Int.natAbs x ^ 2)
+to
+  ↑(Int.natAbs x) ^ 2
+using
+  simp only [Nat.cast_pow]
+Try to change the left-hand side to the simplified term!
+
+- Porting note: because of `HMul` more type annotations are needed than in the Lean 3 version.
+-/
+-- @[simp]
 theorem nat_abs_sq (x : ℤ) : ((x.natAbs ^ 2 : ℕ) : ℤ) = x ^ 2 := by rw [sq, Int.natAbs_mul_self, sq]
 #align int.nat_abs_sq Int.nat_abs_sq
 
@@ -1139,17 +1159,29 @@ theorem cast_nat_mul_cast_nat_mul (h : _root_.Commute a b)
   SemiconjBy.cast_nat_mul_cast_nat_mul h m n
 #align commute.cast_nat_mul_cast_nat_mul Commute.cast_nat_mul_cast_nat_mul
 
-@[simp]
+/- Porting note: `simp` attribute removed as linter reports:
+simp can prove this:
+  by simp only [Commute.refl, Commute.cast_nat_mul_right]
+-/
+-- @[simp]
 theorem self_cast_nat_mul (n : ℕ) : _root_.Commute a (n * a : R) :=
   (Commute.refl a).cast_nat_mul_right n
 #align commute.self_cast_nat_mul Commute.self_cast_nat_mul
 
-@[simp]
+/- Porting note: `simp` attribute removed as linter reports:
+simp can prove this:
+  by simp only [Commute.refl, Commute.cast_nat_mul_left]
+-/
+-- @[simp]
 theorem cast_nat_mul_self (n : ℕ) : _root_.Commute ((n : R) * a) a :=
   (Commute.refl a).cast_nat_mul_left n
 #align commute.cast_nat_mul_self Commute.cast_nat_mul_self
 
-@[simp]
+/- Porting note: `simp` attribute removed as linter reports:
+simp can prove this:
+  by simp only [Commute.refl, Commute.cast_nat_mul_left, Commute.cast_nat_mul_right]
+-/
+-- @[simp]
 theorem self_cast_nat_mul_cast_nat_mul (m n : ℕ) : _root_.Commute (m * a : R) (n * a : R) :=
   (Commute.refl a).cast_nat_mul_cast_nat_mul m n
 #align commute.self_cast_nat_mul_cast_nat_mul Commute.self_cast_nat_mul_cast_nat_mul
@@ -1202,12 +1234,20 @@ theorem cast_int_right : _root_.Commute a m := by
   exact (one_right a).cast_int_mul_right m
 #align commute.cast_int_right Commute.cast_int_right
 
-@[simp]
+/- Porting note: `simp` attribute removed as linter reports:
+simp can prove this:
+  by simp only [Commute.cast_int_right, Commute.refl, Commute.mul_right]
+-/
+-- @[simp]
 theorem self_cast_int_mul : _root_.Commute a (n * a : R) :=
   (Commute.refl a).cast_int_mul_right n
 #align commute.self_cast_int_mul Commute.self_cast_int_mul
 
-@[simp]
+/- Porting note: `simp` attribute removed as linter reports:
+simp can prove this:
+  by simp only [Commute.cast_int_left, Commute.refl, Commute.mul_left]
+-/
+-- @[simp]
 theorem cast_int_mul_self : _root_.Commute ((n : R) * a) a :=
   (Commute.refl a).cast_int_mul_left n
 #align commute.cast_int_mul_self Commute.cast_int_mul_self
