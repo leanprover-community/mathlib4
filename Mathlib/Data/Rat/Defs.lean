@@ -402,8 +402,10 @@ theorem mul_def {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) : a /. b * (c /. d
     apply mul_ne_zero d₁0 d₂0
   · assumption
   · assumption
-  · intros n₁ d₁ n₂ d₂
-    sorry -- cc
+  · intros n₁ d₁ n₂ d₂ h₁ h₂
+    -- Porting note: used to be by `cc`
+    rw [mul_right_comm, ←mul_assoc, ←h₁, mul_assoc, mul_assoc, mul_comm d n₂, ←h₂,
+      mul_left_comm d₁ c d₂, mul_assoc]
 #align rat.mul_def Rat.mul_def
 
 #align rat.inv Rat.inv
