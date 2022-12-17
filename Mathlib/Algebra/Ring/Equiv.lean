@@ -440,7 +440,7 @@ ring isomorphisms between `Π j, R j` and `Π j, S j`.
 This is the `RingEquiv` version of `Equiv.piCongrRight`, and the dependent version of
 `RingEquiv.arrowCongr`.
 -/
--- TODO @[simps apply]
+@[simps apply]
 def piCongrRight {ι : Type _} {R S : ι → Type _} [∀ i, NonUnitalNonAssocSemiring (R i)]
     [∀ i, NonUnitalNonAssocSemiring (S i)] (e : ∀ i, R i ≃+* S i) : (∀ i, R i) ≃+* ∀ i, S i :=
   { @MulEquiv.piCongrRight ι R S _ _ fun i => (e i).toMulEquiv,
@@ -592,7 +592,7 @@ theorem toNonUnitalRingHom_eq_coe (f : R ≃+* S) : f.toNonUnitalRingHom = ↑f 
   rfl
 #align ring_equiv.to_non_unital_ring_hom_eq_coe RingEquiv.toNonUnitalRingHom_eq_coe
 
--- porting note: this isn't a valid `norm_cast` lemma anymore
+-- Porting note: this isn't a valid `norm_cast` lemma anymore
 @[simp]
 theorem coe_toNonUnitalRingHom (f : R ≃+* S) : ⇑(f : R →ₙ+* S) = f :=
   rfl
@@ -614,14 +614,16 @@ theorem toNonUnitalRingHom_apply_symm_toNonUnitalRingHom_apply (e : R ≃+* S) :
     ∀ y : S, e.toNonUnitalRingHom (e.symm.toNonUnitalRingHom y) = y :=
   e.toEquiv.apply_symm_apply
 #align
-  ring_equiv.to_non_unital_ring_hom_apply_symm_to_non_unital_ring_hom_apply RingEquiv.toNonUnitalRingHom_apply_symm_toNonUnitalRingHom_apply
+  ring_equiv.to_non_unital_ring_hom_apply_symm_to_non_unital_ring_hom_apply
+  RingEquiv.toNonUnitalRingHom_apply_symm_toNonUnitalRingHom_apply
 
 @[simp]
 theorem symm_toNonUnitalRingHom_apply_toNonUnitalRingHom_apply (e : R ≃+* S) :
     ∀ x : R, e.symm.toNonUnitalRingHom (e.toNonUnitalRingHom x) = x :=
   Equiv.symm_apply_apply e.toEquiv
 #align
-  ring_equiv.symm_to_non_unital_ring_hom_apply_to_non_unital_ring_hom_apply RingEquiv.symm_toNonUnitalRingHom_apply_toNonUnitalRingHom_apply
+  ring_equiv.symm_to_non_unital_ring_hom_apply_to_non_unital_ring_hom_apply
+  RingEquiv.symm_toNonUnitalRingHom_apply_toNonUnitalRingHom_apply
 
 @[simp]
 theorem toNonUnitalRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
@@ -635,7 +637,8 @@ theorem toNonUnitalRingHomm_comp_symm_toNonUnitalRingHom (e : R ≃+* S) :
   ext
   simp
 #align
-  ring_equiv.to_non_unital_ring_hom_comp_symm_to_non_unital_ring_hom RingEquiv.toNonUnitalRingHomm_comp_symm_toNonUnitalRingHom
+  ring_equiv.to_non_unital_ring_hom_comp_symm_to_non_unital_ring_hom
+  RingEquiv.toNonUnitalRingHomm_comp_symm_toNonUnitalRingHom
 
 @[simp]
 theorem symm_toNonUnitalRingHom_comp_toNonUnitalRingHom (e : R ≃+* S) :
@@ -643,7 +646,8 @@ theorem symm_toNonUnitalRingHom_comp_toNonUnitalRingHom (e : R ≃+* S) :
   ext
   simp
 #align
-  ring_equiv.symm_to_non_unital_ring_hom_comp_to_non_unital_ring_hom RingEquiv.symm_toNonUnitalRingHom_comp_toNonUnitalRingHom
+  ring_equiv.symm_to_non_unital_ring_hom_comp_to_non_unital_ring_hom
+  RingEquiv.symm_toNonUnitalRingHom_comp_toNonUnitalRingHom
 
 end NonUnitalSemiringHom
 
@@ -668,24 +672,23 @@ theorem toEingHom_eq_coe (f : R ≃+* S) : f.toRingHom = ↑f :=
   rfl
 #align ring_equiv.to_ring_hom_eq_coe RingEquiv.toEingHom_eq_coe
 
-#lint
-
-@[simp] -- TODO `norm_cast`
-theorem coe_to_ring_hom (f : R ≃+* S) : ⇑(f : R →+* S) = f :=
+-- Porting note: this isn't a valid `norm_cast` lemma anymore
+@[simp]
+theorem coe_toRingHom (f : R ≃+* S) : ⇑(f : R →+* S) = f :=
   rfl
-#align ring_equiv.coe_to_ring_hom RingEquiv.coe_to_ring_hom
+#align ring_equiv.coe_to_ring_hom RingEquiv.coe_toRingHom
 
-theorem coe_ring_hom_inj_iff {R S : Type _} [NonAssocSemiring R] [NonAssocSemiring S]
+theorem coe_ringHom_inj_iff {R S : Type _} [NonAssocSemiring R] [NonAssocSemiring S]
     (f g : R ≃+* S) : f = g ↔ (f : R →+* S) = g :=
   ⟨fun h => by rw [h], fun h => ext <| RingHom.ext_iff.mp h⟩
-#align ring_equiv.coe_ring_hom_inj_iff RingEquiv.coe_ring_hom_inj_iff
+#align ring_equiv.coe_ring_hom_inj_iff RingEquiv.coe_ringHom_inj_iff
 
 /-- The two paths coercion can take to a `non_unital_ring_hom` are equivalent -/
 @[simp, norm_cast]
-theorem to_non_unital_ring_hom_commutes (f : R ≃+* S) :
+theorem toNonUnitalRingHom_commutes (f : R ≃+* S) :
     ((f : R →+* S) : R →ₙ+* S) = (f : R →ₙ+* S) :=
   rfl
-#align ring_equiv.to_non_unital_ring_hom_commutes RingEquiv.to_non_unital_ring_hom_commutes
+#align ring_equiv.to_non_unital_ring_hom_commutes RingEquiv.toNonUnitalRingHom_commutes
 
 /-- Reinterpret a ring equivalence as a monoid homomorphism. -/
 abbrev toMonoidHom (e : R ≃+* S) : R →* S :=
@@ -698,70 +701,70 @@ abbrev toAddMonoidHom (e : R ≃+* S) : R →+ S :=
 #align ring_equiv.to_add_monoid_hom RingEquiv.toAddMonoidHom
 
 /-- The two paths coercion can take to an `add_monoid_hom` are equivalent -/
-theorem to_add_monoid_hom_commutes (f : R ≃+* S) :
+theorem toAddMonoidMom_commutes (f : R ≃+* S) :
     (f : R →+* S).toAddMonoidHom = (f : R ≃+ S).toAddMonoidHom :=
   rfl
-#align ring_equiv.to_add_monoid_hom_commutes RingEquiv.to_add_monoid_hom_commutes
+#align ring_equiv.to_add_monoid_hom_commutes RingEquiv.toAddMonoidMom_commutes
 
 /-- The two paths coercion can take to an `monoid_hom` are equivalent -/
-theorem to_monoid_hom_commutes (f : R ≃+* S) :
+theorem toMonoidHom_commutes (f : R ≃+* S) :
     (f : R →+* S).toMonoidHom = (f : R ≃* S).toMonoidHom :=
   rfl
-#align ring_equiv.to_monoid_hom_commutes RingEquiv.to_monoid_hom_commutes
+#align ring_equiv.to_monoid_hom_commutes RingEquiv.toMonoidHom_commutes
 
 /-- The two paths coercion can take to an `equiv` are equivalent -/
-theorem to_equiv_commutes (f : R ≃+* S) : (f : R ≃+ S).toEquiv = (f : R ≃* S).toEquiv :=
+theorem toEquiv_commutes (f : R ≃+* S) : (f : R ≃+ S).toEquiv = (f : R ≃* S).toEquiv :=
   rfl
-#align ring_equiv.to_equiv_commutes RingEquiv.to_equiv_commutes
+#align ring_equiv.to_equiv_commutes RingEquiv.toEquiv_commutes
 
 @[simp]
-theorem to_ring_hom_refl : (RingEquiv.refl R).toRingHom = RingHom.id R :=
+theorem toRingHom_refl : (RingEquiv.refl R).toRingHom = RingHom.id R :=
   rfl
-#align ring_equiv.to_ring_hom_refl RingEquiv.to_ring_hom_refl
+#align ring_equiv.to_ring_hom_refl RingEquiv.toRingHom_refl
 
 @[simp]
-theorem to_monoid_hom_refl : (RingEquiv.refl R).toMonoidHom = MonoidHom.id R :=
+theorem toMonoidHom_refl : (RingEquiv.refl R).toMonoidHom = MonoidHom.id R :=
   rfl
-#align ring_equiv.to_monoid_hom_refl RingEquiv.to_monoid_hom_refl
+#align ring_equiv.to_monoid_hom_refl RingEquiv.toMonoidHom_refl
 
 @[simp]
-theorem to_add_monoid_hom_refl : (RingEquiv.refl R).toAddMonoidHom = AddMonoidHom.id R :=
+theorem toAddMonoidHom_refl : (RingEquiv.refl R).toAddMonoidHom = AddMonoidHom.id R :=
   rfl
-#align ring_equiv.to_add_monoid_hom_refl RingEquiv.to_add_monoid_hom_refl
+#align ring_equiv.to_add_monoid_hom_refl RingEquiv.toAddMonoidHom_refl
 
 @[simp]
-theorem to_ring_hom_apply_symm_to_ring_hom_apply (e : R ≃+* S) :
+theorem toRingHom_apply_symm_toRingHom_apply (e : R ≃+* S) :
     ∀ y : S, e.toRingHom (e.symm.toRingHom y) = y :=
   e.toEquiv.apply_symm_apply
 #align
-  ring_equiv.to_ring_hom_apply_symm_to_ring_hom_apply RingEquiv.to_ring_hom_apply_symm_to_ring_hom_apply
+  ring_equiv.to_ring_hom_apply_symm_to_ring_hom_apply RingEquiv.toRingHom_apply_symm_toRingHom_apply
 
 @[simp]
-theorem symm_to_ring_hom_apply_to_ring_hom_apply (e : R ≃+* S) :
+theorem symm_toRingHom_apply_toRingHom_apply (e : R ≃+* S) :
     ∀ x : R, e.symm.toRingHom (e.toRingHom x) = x :=
   Equiv.symm_apply_apply e.toEquiv
 #align
-  ring_equiv.symm_to_ring_hom_apply_to_ring_hom_apply RingEquiv.symm_to_ring_hom_apply_to_ring_hom_apply
+  ring_equiv.symm_to_ring_hom_apply_to_ring_hom_apply RingEquiv.symm_toRingHom_apply_toRingHom_apply
 
 @[simp]
-theorem to_ring_hom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+theorem toRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂).toRingHom = e₂.toRingHom.comp e₁.toRingHom :=
   rfl
-#align ring_equiv.to_ring_hom_trans RingEquiv.to_ring_hom_trans
+#align ring_equiv.to_ring_hom_trans RingEquiv.toRingHom_trans
 
 @[simp]
-theorem to_ring_hom_comp_symm_to_ring_hom (e : R ≃+* S) :
+theorem toRingHom_comp_symm_toRingHom (e : R ≃+* S) :
     e.toRingHom.comp e.symm.toRingHom = RingHom.id _ := by
   ext
   simp
-#align ring_equiv.to_ring_hom_comp_symm_to_ring_hom RingEquiv.to_ring_hom_comp_symm_to_ring_hom
+#align ring_equiv.to_ring_hom_comp_symm_to_ring_hom RingEquiv.toRingHom_comp_symm_toRingHom
 
 @[simp]
-theorem symm_to_ring_hom_comp_to_ring_hom (e : R ≃+* S) :
+theorem symm_toRingHom_comp_toRingHom (e : R ≃+* S) :
     e.symm.toRingHom.comp e.toRingHom = RingHom.id _ := by
   ext
   simp
-#align ring_equiv.symm_to_ring_hom_comp_to_ring_hom RingEquiv.symm_to_ring_hom_comp_to_ring_hom
+#align ring_equiv.symm_to_ring_hom_comp_to_ring_hom RingEquiv.symm_toRingHom_comp_toRingHom
 
 /-- Construct an equivalence of rings from homomorphisms in both directions, which are inverses.
 -/
@@ -846,20 +849,20 @@ theorem symm_trans_self (e : R ≃+* S) : e.symm.trans e = RingEquiv.refl S :=
 
 /-- If two rings are isomorphic, and the second doesn't have zero divisors,
 then so does the first. -/
-protected theorem no_zero_divisors {A : Type _} (B : Type _) [Ring A] [Ring B] [NoZeroDivisors B]
+protected theorem noZeroDivisors {A : Type _} (B : Type _) [Ring A] [Ring B] [NoZeroDivisors B]
     (e : A ≃+* B) : NoZeroDivisors A :=
   { eq_zero_or_eq_zero_of_mul_eq_zero := fun {x y} hxy => by
       have : e x * e y = 0 := by rw [← e.map_mul, hxy, e.map_zero]
       simpa using eq_zero_or_eq_zero_of_mul_eq_zero this }
-#align ring_equiv.no_zero_divisors RingEquiv.no_zero_divisors
+#align ring_equiv.no_zero_divisors RingEquiv.noZeroDivisors
 
 /-- If two rings are isomorphic, and the second is a domain, then so is the first. -/
-protected theorem is_domain {A : Type _} (B : Type _) [Ring A] [Ring B] [IsDomain B] (e : A ≃+* B) :
+protected theorem isDomain {A : Type _} (B : Type _) [Ring A] [Ring B] [IsDomain B] (e : A ≃+* B) :
     IsDomain A := by
   haveI : Nontrivial A := ⟨⟨e.symm 0, e.symm 1, e.symm.injective.ne zero_ne_one⟩⟩
-  haveI := e.no_zero_divisors B
+  haveI := e.noZeroDivisors B
   exact NoZeroDivisors.toIsDomain _
-#align ring_equiv.is_domain RingEquiv.is_domain
+#align ring_equiv.is_domain RingEquiv.isDomain
 
 end RingEquiv
 
