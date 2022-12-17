@@ -1084,10 +1084,7 @@ theorem cast_le_comp_cast_le {k m n} (km : k ≤ m) (mn : m ≤ n) :
 #align fin.cast_le_comp_cast_le Fin.cast_le_comp_cast_le
 
 /-- `cast eq i` embeds `i` into a equal `fin` type, see also `equiv.fin_congr`. -/
-def cast (eq : n = m) :
-    Fin n ≃o
-      Fin
-        m where
+def cast (eq : n = m) : Fin n ≃o Fin m where
   toEquiv := ⟨castLe Eq.le, castLe Eq.symm.le, fun a => eq_of_veq rfl, fun a => eq_of_veq rfl⟩
   map_rel_iff' a b := Iff.rfl
 #align fin.cast Fin.cast
@@ -1155,7 +1152,7 @@ theorem cast_eq_cast (h : n = m) : (cast h : Fin n → Fin m) = cast (h ▸ rfl)
 
 /-- `cast_add m i` embeds `i : fin n` in `fin (n+m)`. See also `fin.nat_add` and `fin.add_nat`. -/
 def castAdd (m) : Fin n ↪o Fin (n + m) :=
-  cast_le <| Nat.le_add_right n m
+  castLe <| Nat.le_add_right n m
 #align fin.cast_add Fin.castAdd
 
 @[simp]
@@ -1164,13 +1161,17 @@ theorem coe_cast_add (m : ℕ) (i : Fin n) : (castAdd m i : ℕ) = i :=
 #align fin.coe_cast_add Fin.coe_cast_add
 
 @[simp]
-theorem cast_add_zero : (castAdd 0 : Fin n → Fin (n + 0)) = cast rfl :=
+theorem cast_add_zero : (castAdd 0 : Fin n → Fin (n + 0)) = cast rfl := by
+  ext
+  simp only [Nat.add_zero, cast_refl, OrderIso.refl_apply]
   rfl
 #align fin.cast_add_zero Fin.cast_add_zero
 
 theorem cast_add_lt {m : ℕ} (n : ℕ) (i : Fin m) : (castAdd n i : ℕ) < m := by
   simp
 #align fin.cast_add_lt Fin.cast_add_lt
+
+set_option autoImplicit false
 
 @[simp]
 theorem cast_add_mk (m : ℕ) (i : ℕ) (h : i < n) : castAdd m ⟨i, h⟩ = ⟨i, lt_add_right i n m h⟩ :=
@@ -1228,13 +1229,13 @@ theorem succ_cast_eq {n' : ℕ} (i : Fin n) (h : n = n') :
   ext <| by simp
 #align fin.succ_cast_eq Fin.succ_cast_eq
 
-/-- `cast_succ i` embeds `i : fin n` in `fin (n+1)`. -/
+/-- `castSucc i` embeds `i : fin n` in `fin (n+1)`. -/
 def castSucc : Fin n ↪o Fin (n + 1) :=
   castAdd 1
 #align fin.cast_succ Fin.castSucc
 
 @[simp]
-theorem coe_cast_succ (i : Fin n) : (i.cast_succ : ℕ) = i :=
+theorem coe_cast_succ (i : Fin n) : (Fin.castSucc i : ℕ) = i :=
   rfl
 #align fin.coe_cast_succ Fin.coe_cast_succ
 
