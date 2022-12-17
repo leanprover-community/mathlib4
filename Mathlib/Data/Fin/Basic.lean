@@ -413,8 +413,9 @@ theorem val_zero' (n) : (0 : Fin (n + 1)).val = 0 :=
 #align fin.val_zero' Fin.val_zero'
 
 @[simp]
-theorem mk_zero : (⟨0, Nat.succ_pos'⟩ : Fin (n + 1)) = (0 : Fin _) :=
-  sorry -- was `rfl`
+theorem mk_zero : (⟨0, Nat.succ_pos'⟩ : Fin (n + 1)) = (0 : Fin _) := by
+  ext
+  simp only [val_zero] -- was `rfl`
 #align fin.mk_zero Fin.mk_zero
 
 @[simp]
