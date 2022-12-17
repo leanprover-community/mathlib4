@@ -1336,24 +1336,22 @@ theorem infᵢ_true {s : True → α} : infᵢ s = s trivial :=
   infᵢ_pos trivial
 #align infi_true infᵢ_true
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i h) -/
 @[simp]
 theorem supᵢ_exists {p : ι → Prop} {f : Exists p → α} : (⨆ x, f x) = ⨆ (i) (h), f ⟨i, h⟩ :=
-  le_antisymm (supᵢ_le fun ⟨i, h⟩ => le_supᵢ₂ i h) (supᵢ₂_le fun i h => le_supᵢ _ _)
+  le_antisymm (supᵢ_le fun ⟨i, h⟩ => @le_supᵢ₂ _ _ _ _ (fun _ _ => _) i h)
+    (supᵢ₂_le fun _ _ => le_supᵢ _ _)
 #align supr_exists supᵢ_exists
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i h) -/
 @[simp]
 theorem infᵢ_exists {p : ι → Prop} {f : Exists p → α} : (⨅ x, f x) = ⨅ (i) (h), f ⟨i, h⟩ :=
   @supᵢ_exists αᵒᵈ _ _ _ _
 #align infi_exists infᵢ_exists
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (h₁ h₂) -/
 theorem supᵢ_and {p q : Prop} {s : p ∧ q → α} : supᵢ s = ⨆ (h₁) (h₂), s ⟨h₁, h₂⟩ :=
-  le_antisymm (supᵢ_le fun ⟨i, h⟩ => le_supᵢ₂ i h) (supᵢ₂_le fun i h => le_supᵢ _ _)
+  le_antisymm (supᵢ_le fun ⟨i, h⟩ => @le_supᵢ₂ _ _ _ _ (fun _ _ => _) i h)
+    (supᵢ₂_le fun _ _ => le_supᵢ _ _)
 #align supr_and supᵢ_and
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (h₁ h₂) -/
 theorem infᵢ_and {p q : Prop} {s : p ∧ q → α} : infᵢ s = ⨅ (h₁) (h₂), s ⟨h₁, h₂⟩ :=
   @supᵢ_and αᵒᵈ _ _ _ _
 #align infi_and infᵢ_and
@@ -1375,8 +1373,8 @@ theorem supᵢ_or {p q : Prop} {s : p ∨ q → α} :
   le_antisymm
     (supᵢ_le fun i =>
       match i with
-      | Or.inl i => le_sup_of_le_left <| le_supᵢ _ i
-      | Or.inr j => le_sup_of_le_right <| le_supᵢ _ j)
+      | Or.inl _ => le_sup_of_le_left <| le_supᵢ (fun _ => s _) _
+      | Or.inr _ => le_sup_of_le_right <| le_supᵢ (fun _ => s _) _)
     (sup_le (supᵢ_comp_le _ _) (supᵢ_comp_le _ _))
 #align supr_or supᵢ_or
 
@@ -1464,7 +1462,7 @@ theorem infᵢ_split :
 #align infi_split infᵢ_split
 
 theorem supᵢ_split_single (f : β → α) (i₀ : β) : (⨆ i, f i) = f i₀ ⊔ ⨆ (i) (h : i ≠ i₀), f i := by
-  convert supᵢ_split _ _
+  convert supᵢ_split f (fun i => i = i₀)
   simp
 #align supr_split_single supᵢ_split_single
 
