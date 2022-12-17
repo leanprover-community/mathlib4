@@ -669,6 +669,7 @@ theorem supᵢ_plift_down (f : ι → α) : (⨆ i, f (PLift.down i)) = ⨆ i, f
 
 theorem supᵢ_range' (g : β → α) (f : ι → β) : (⨆ b : range f, g b) = ⨆ i, g (f i) := by
   rw [supᵢ, supᵢ, ← image_eq_range, ← range_comp]
+  rfl
 #align supr_range' supᵢ_range'
 
 theorem supₛ_image' {s : Set β} {f : β → α} : supₛ (f '' s) = ⨆ a : s, f a := by
@@ -894,7 +895,7 @@ theorem infᵢ_const_mono (h : ι' → ι) : (⨅ i : ι, a) ≤ ⨅ j : ι', a 
 #align infi_const_mono infᵢ_const_mono
 
 theorem supᵢ_infᵢ_le_infᵢ_supᵢ (f : ι → ι' → α) : (⨆ i, ⨅ j, f i j) ≤ ⨅ j, ⨆ i, f i j :=
-  supᵢ_le fun i => infᵢ_mono fun j => le_supᵢ _ i
+  supᵢ_le fun i => infᵢ_mono fun j => le_supᵢ (fun i => f i j) i
 #align supr_infi_le_infi_supr supᵢ_infᵢ_le_infᵢ_supᵢ
 
 theorem bsupᵢ_mono {p q : ι → Prop} (hpq : ∀ i, p i → q i) :
@@ -917,16 +918,16 @@ theorem le_infᵢ_iff : a ≤ infᵢ f ↔ ∀ i, a ≤ f i :=
   (le_isGLB_iff isGLB_infᵢ).trans forall_range_iff
 #align le_infi_iff le_infᵢ_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem supᵢ₂_le_iff {f : ∀ i, κ i → α} : (⨆ (i) (j), f i j) ≤ a ↔ ∀ i j, f i j ≤ a := by
   simp_rw [supᵢ_le_iff]
+  rfl
 #align supr₂_le_iff supᵢ₂_le_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem le_infᵢ₂_iff {f : ∀ i, κ i → α} : (a ≤ ⨅ (i) (j), f i j) ↔ ∀ i j, a ≤ f i j := by
   simp_rw [le_infᵢ_iff]
+  rfl
 #align le_infi₂_iff le_infᵢ₂_iff
 
 theorem supᵢ_lt_iff : supᵢ f < a ↔ ∃ b, b < a ∧ ∀ i, f i ≤ b :=
@@ -1156,8 +1157,8 @@ theorem infᵢ_eq_if {p : Prop} [Decidable p] (a : α) : (⨅ h : p, a) = if p t
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (j i) -/
 theorem supᵢ_comm {f : ι → ι' → α} : (⨆ (i) (j), f i j) = ⨆ (j) (i), f i j :=
-  le_antisymm (supᵢ_le fun i => supᵢ_mono fun j => le_supᵢ _ i)
-    (supᵢ_le fun j => supᵢ_mono fun i => le_supᵢ _ _)
+  le_antisymm (supᵢ_le fun i => supᵢ_mono fun j => le_supᵢ (fun i => f i j) i)
+    (supᵢ_le fun _ => supᵢ_mono fun _ => le_supᵢ _ _)
 #align supr_comm supᵢ_comm
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -1561,11 +1562,13 @@ theorem inf_eq_infᵢ (x y : α) : x ⊓ y = ⨅ b : Bool, cond b x y :=
 #align inf_eq_infi inf_eq_infᵢ
 
 theorem isGLB_binfᵢ {s : Set β} {f : β → α} : IsGLB (f '' s) (⨅ x ∈ s, f x) := by
-  simpa only [range_comp, Subtype.range_coe, infᵢ_subtype'] using @isGLB_infᵢ α s _ (f ∘ coe)
+  simpa only [range_comp, Subtype.range_coe, infᵢ_subtype'] using
+    @isGLB_infᵢ α s _ (f ∘ fun x => (x : β))
 #align isGLB_binfi isGLB_binfᵢ
 
 theorem isLUB_bsupᵢ {s : Set β} {f : β → α} : IsLUB (f '' s) (⨆ x ∈ s, f x) := by
-  simpa only [range_comp, Subtype.range_coe, supᵢ_subtype'] using @isLUB_supᵢ α s _ (f ∘ coe)
+  simpa only [range_comp, Subtype.range_coe, supᵢ_subtype'] using
+    @isLUB_supᵢ α s _ (f ∘ fun x => (x : β))
 #align isLUB_bsupr isLUB_bsupᵢ
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -1764,7 +1767,7 @@ theorem infₛ_Prop_eq {s : Set Prop} : infₛ s = ∀ p ∈ s, p :=
 
 @[simp]
 theorem supᵢ_Prop_eq {p : ι → Prop} : (⨆ i, p i) = ∃ i, p i :=
-  le_antisymm (fun ⟨q, ⟨i, (Eq : p i = q)⟩, hq⟩ => ⟨i, Eq.symm ▸ hq⟩) fun ⟨i, hi⟩ =>
+  le_antisymm (fun ⟨_, ⟨i, (eq : p i = _)⟩, hq⟩ => ⟨i, eq.symm ▸ hq⟩) fun ⟨i, hi⟩ =>
     ⟨p i, ⟨i, rfl⟩, hi⟩
 #align supr_Prop_eq supᵢ_Prop_eq
 
