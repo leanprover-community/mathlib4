@@ -419,24 +419,24 @@ section
 variable [CompleteLattice α] {s t : Set α} {a b : α}
 
 @[simp]
-theorem to_dual_Sup (s : Set α) : toDual (supₛ s) = infₛ (ofDual ⁻¹' s) :=
+theorem to_dual_supₛ (s : Set α) : toDual (supₛ s) = infₛ (ofDual ⁻¹' s) :=
   rfl
-#align to_dual_Sup to_dual_Sup
+#align to_dual_Sup to_dual_supₛ
 
 @[simp]
-theorem to_dual_Inf (s : Set α) : toDual (infₛ s) = supₛ (ofDual ⁻¹' s) :=
+theorem to_dual_infₛ (s : Set α) : toDual (infₛ s) = supₛ (ofDual ⁻¹' s) :=
   rfl
-#align to_dual_Inf to_dual_Inf
+#align to_dual_Inf to_dual_infₛ
 
 @[simp]
-theorem of_dual_Sup (s : Set αᵒᵈ) : ofDual (supₛ s) = infₛ (toDual ⁻¹' s) :=
+theorem of_dual_supₛ (s : Set αᵒᵈ) : ofDual (supₛ s) = infₛ (toDual ⁻¹' s) :=
   rfl
-#align of_dual_Sup of_dual_Sup
+#align of_dual_Sup of_dual_supₛ
 
 @[simp]
-theorem of_dual_Inf (s : Set αᵒᵈ) : ofDual (infₛ s) = supₛ (toDual ⁻¹' s) :=
+theorem of_dual_infₛ (s : Set αᵒᵈ) : ofDual (infₛ s) = supₛ (toDual ⁻¹' s) :=
   rfl
-#align of_dual_Inf of_dual_Inf
+#align of_dual_Inf of_dual_infₛ
 
 @[simp]
 theorem to_dual_supᵢ (f : ι → α) : toDual (⨆ i, f i) = ⨅ i, toDual (f i) :=
