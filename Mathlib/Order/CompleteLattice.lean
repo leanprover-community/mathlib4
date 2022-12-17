@@ -1805,10 +1805,10 @@ instance Pi.completeLattice {α : Type _} {β : α → Type _} [∀ i, CompleteL
     le_infₛ := fun _ _ hf i => le_infᵢ fun g => hf g g.2 i }
 #align pi.complete_lattice Pi.completeLattice
 
-theorem Sup_apply {α : Type _} {β : α → Type _} [∀ i, SupSet (β i)] {s : Set (∀ a, β a)} {a : α} :
+theorem supₛ_apply {α : Type _} {β : α → Type _} [∀ i, SupSet (β i)] {s : Set (∀ a, β a)} {a : α} :
     (supₛ s) a = ⨆ f : s, (f : ∀ a, β a) a :=
   rfl
-#align Sup_apply Sup_apply
+#align Sup_apply supₛ_apply
 
 theorem infₛ_apply {α : Type _} {β : α → Type _} [∀ i, InfSet (β i)] {s : Set (∀ a, β a)} {a : α} :
     infₛ s a = ⨅ f : s, (f : ∀ a, β a) a :=
@@ -1818,7 +1818,7 @@ theorem infₛ_apply {α : Type _} {β : α → Type _} [∀ i, InfSet (β i)] {
 @[simp]
 theorem supᵢ_apply {α : Type _} {β : α → Type _} {ι : Sort _} [∀ i, SupSet (β i)] {f : ι → ∀ a, β a}
     {a : α} : (⨆ i, f i) a = ⨆ i, f i a := by
-  rw [supᵢ, Sup_apply, supᵢ, supᵢ, ← image_eq_range (fun f : ∀ i, β i => f a) (range f), ←
+  rw [supᵢ, supₛ_apply, supᵢ, supᵢ, ← image_eq_range (fun f : ∀ i, β i => f a) (range f), ←
     range_comp] ; rfl
 #align supr_apply supᵢ_apply
 
@@ -1830,31 +1830,26 @@ theorem infᵢ_apply {α : Type _} {β : α → Type _} {ι : Sort _} [∀ i, In
 
 theorem unary_relation_Sup_iff {α : Type _} (s : Set (α → Prop)) {a : α} :
     supₛ s a ↔ ∃ r : α → Prop, r ∈ s ∧ r a := by
-  -- Porting note TODO: times out?
-  -- unfold supₛ
-  -- simp [← eq_iff_iff]
-  sorry
+  rw [supₛ_apply]
+  simp [← eq_iff_iff]
 #align unary_relation_Sup_iff unary_relation_Sup_iff
 
 theorem unary_relation_infₛ_iff {α : Type _} (s : Set (α → Prop)) {a : α} :
     infₛ s a ↔ ∀ r : α → Prop, r ∈ s → r a := by
-  /- unfold infₛ
-  simp [← eq_iff_iff] -/
-  sorry
+  rw [infₛ_apply]
+  simp [← eq_iff_iff]
 #align unary_relation_Inf_iff unary_relation_infₛ_iff
 
 theorem binary_relation_Sup_iff {α β : Type _} (s : Set (α → β → Prop)) {a : α} {b : β} :
     supₛ s a b ↔ ∃ r : α → β → Prop, r ∈ s ∧ r a b := by
-  /- unfold Sup
-  simp [← eq_iff_iff] -/
-  sorry
+  rw [supₛ_apply]
+  simp [← eq_iff_iff]
 #align binary_relation_Sup_iff binary_relation_Sup_iff
 
 theorem binary_relation_infₛ_iff {α β : Type _} (s : Set (α → β → Prop)) {a : α} {b : β} :
     infₛ s a b ↔ ∀ r : α → β → Prop, r ∈ s → r a b := by
-  /- unfold infₛ
-  simp [← eq_iff_iff] -/
-  sorry
+  rw [infₛ_apply]
+  simp [← eq_iff_iff]
 #align binary_relation_Inf_iff binary_relation_infₛ_iff
 
 section CompleteLattice
