@@ -333,9 +333,11 @@ theorem eq_of_mem_interval_oc_of_mem_interval_oc' : b ∈ Ι a c → c ∈ Ι a 
 
 theorem eq_of_not_mem_interval_oc_of_not_mem_interval_oc (ha : a ≤ c) (hb : b ≤ c) :
     a ∉ Ι b c → b ∉ Ι a c → a = b := by
-  simp_rw [not_mem_interval_oc] <;> rintro (⟨_, _⟩ | ⟨_, _⟩) (⟨_, _⟩ | ⟨_, _⟩) <;>
+  simp_rw [not_mem_interval_oc]
+  rintro (⟨_, _⟩ | ⟨_, _⟩) (⟨_, _⟩ | ⟨_, _⟩) <;>
       apply le_antisymm <;>
-    first |assumption|exact le_of_lt ‹_›|cases not_le_of_lt ‹_› ‹_›
+    first |assumption|exact le_of_lt ‹_›|
+    exact absurd hb (not_le_of_lt ‹c < b›)|exact absurd ha (not_le_of_lt ‹c < a›)
 #align
   set.eq_of_not_mem_interval_oc_of_not_mem_interval_oc Set.eq_of_not_mem_interval_oc_of_not_mem_interval_oc
 
@@ -347,7 +349,7 @@ theorem interval_oc_injective_right (a : α) : Injective fun b => Ι b a := by
     simp only [ha, left_mem_interval_oc, not_lt, true_iff_iff, not_mem_interval_oc, ← not_le,
       and_true_iff, not_true, false_and_iff, not_false_iff, true_iff_iff, or_false_iff] at hb
     refine' hb.eq_of_not_lt fun hc => _
-    simpa [ha, and_iff_right hc, ← @not_le _ _ _ a, -not_le] using h c
+    simpa [ha, and_iff_right hc, ← @not_le _ _ _ a, iff_not_self, -not_le] using h c
   · refine'
       eq_of_mem_interval_oc_of_mem_interval_oc ((h _).1 <| left_mem_interval_oc.2 ha)
         ((h _).2 <| left_mem_interval_oc.2 <| ha.trans_le _)
