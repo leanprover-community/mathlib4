@@ -59,6 +59,7 @@ def interval (a b : α) : Set α :=
 #align set.interval Set.interval
 
 -- Porting note: temporarily remove `scoped[Interval]` and use `[[]]` instead of `[]` before fix
+/-- `[[a, b]]` denotes the set of elements lying between `a` and `b`, inclusive. -/
 notation "[[" a ", " b "]]" => Set.interval a b
 
 @[simp]
@@ -87,7 +88,8 @@ theorem interval_of_gt (h : b < a) : [[a, b]] = Icc b a :=
   interval_of_ge (le_of_lt h)
 #align set.interval_of_gt Set.interval_of_gt
 
-@[simp]
+-- Porting note: `simp` can prove this
+-- @[simp]
 theorem interval_self : [[a, a]] = {a} := by simp [interval]
 #align set.interval_self Set.interval_self
 
@@ -267,6 +269,8 @@ def interval_oc : α → α → Set α := fun a b => Ioc (min a b) (max a b)
 
 -- Porting note: removed `scoped[Interval]` temporarily before fix
 -- Below is a capital iota
+/-- `Ι a b` denotes the open-closed interval with unordered bounds. Here, `Ι` is a capital iota,
+distinguished from a capital `i`. -/
 notation "Ι" => Set.interval_oc
 
 @[simp]
