@@ -1033,7 +1033,7 @@ theorem nthLe_tail (l : List α) (i) (h : i < l.tail.length)
     l.tail.nthLe i h = l.nthLe (i + 1) h' := by
   cases l
   · cases h
-  · simpa
+  · rfl
 #align list.nth_le_tail List.nthLe_tail
 
 theorem nthLe_cons_aux {l : List α} {a : α} {n} (hn : n ≠ 0) (h : n < (a :: l).length) :
