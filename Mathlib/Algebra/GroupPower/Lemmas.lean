@@ -901,22 +901,48 @@ variable (M G A)
 
 /-- If `M` is commutative, `powers_hom` is a multiplicative equivalence. -/
 def powersMulHom [CommMonoid M] : M ≃* (Multiplicative ℕ →* M) :=
-  { powersHom M with map_mul' := fun a b => MonoidHom.ext <| by simp [mul_pow] }
+  { powersHom M with map_mul' := fun a b => MonoidHom.ext (
+    by
+      intro n
+      let n' : ℕ  := Multiplicative.toAdd n
+      show (a*b) ^ n' = a ^ n' * b ^ n'
+      simp [mul_pow]
+    ) }
 #align powers_mul_hom powersMulHom
 
 /-- If `M` is commutative, `zpowers_hom` is a multiplicative equivalence. -/
 def zpowersMulHom [CommGroup G] : G ≃* (Multiplicative ℤ →* G) :=
-  { zpowersHom G with map_mul' := fun a b => MonoidHom.ext <| by simp [mul_zpow] }
+  { zpowersHom G with map_mul' := fun a b => MonoidHom.ext (
+    by
+      intro n
+      let n' : ℤ   := Multiplicative.toAdd n
+      show (a*b) ^ n' = a ^ n' * b ^ n'
+      simp [mul_zpow]
+    )
+  -- <| by simp [mul_zpow]
+  }
 #align zpowers_mul_hom zpowersMulHom
 
 /-- If `M` is commutative, `multiples_hom` is an additive equivalence. -/
 def multiplesAddHom [AddCommMonoid A] : A ≃+ (ℕ →+ A) :=
-  { multiplesHom A with map_add' := fun a b => AddMonoidHom.ext <| by simp [nsmul_add] }
+  { multiplesHom A with map_add' := fun a b => AddMonoidHom.ext (
+    by
+    intro n
+    show n •  (a+b) = n • a + n • b
+    simp [nsmul_add]
+  ) }
 #align multiples_add_hom multiplesAddHom
 
 /-- If `M` is commutative, `zmultiples_hom` is an additive equivalence. -/
 def zmultiplesAddHom [AddCommGroup A] : A ≃+ (ℤ →+ A) :=
-  { zmultiplesHom A with map_add' := fun a b => AddMonoidHom.ext <| by simp [zsmul_add] }
+  { zmultiplesHom A with map_add' := fun a b => AddMonoidHom.ext (
+    by
+      intro n
+      show n •  (a+b) = n • a + n • b
+      simp [zsmul_add]
+  )
+  -- <| by simp [zsmul_add]
+  }
 #align zmultiples_add_hom zmultiplesAddHom
 
 variable {M G A}
