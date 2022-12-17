@@ -48,7 +48,8 @@ algebraic structure. -/
 structure RingEquiv (R S : Type _) [Mul R] [Mul S] [Add R] [Add S] extends R ≃ S, R ≃* S, R ≃+ S
 #align ring_equiv RingEquiv
 
--- mathport name: «expr ≃+* »
+-- mathport name: «expr ≃+* »*
+/-- Notation for `RingEquiv`. -/
 infixl:25 " ≃+* " => RingEquiv
 
 /-- The "plain" equivalence of types underlying an equivalence of (semi)rings. -/
@@ -865,6 +866,8 @@ protected theorem isDomain {A : Type _} (B : Type _) [Ring A] [Ring B] [IsDomain
 #align ring_equiv.is_domain RingEquiv.isDomain
 
 end RingEquiv
+
+#lint
 
 -- Guard against import creep
 -- TODO
