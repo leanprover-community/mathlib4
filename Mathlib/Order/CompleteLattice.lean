@@ -26,7 +26,7 @@ import Mathlib.Tactic.LibrarySearch
 
 * `supₛ` and `infₛ` are the supᵢemum and the infimum of a set;
 * `supᵢ (f : ι → α)` and `infᵢ (f : ι → α)` are indexed supᵢemum and infimum of a function,
-  defined as `Sup` and `infₛ` of the range of this function;
+  defined as `supₛ` and `infₛ` of the range of this function;
 * `class CompleteLattice`: a bounded lattice such that `supₛ s` is always the least upper boundary
   of `s` and `infₛ s` is always the greatest lower boundary of `s`;
 * `class CompleteLinearOrder`: a linear ordered complete lattice.
@@ -90,13 +90,13 @@ def infᵢ [InfSet α] {ι} (s : ι → α) : α :=
   infₛ (range s)
 #align infᵢ infᵢ
 
-instance (priority := 50) has_Inf_to_nonempty (α) [InfSet α] : Nonempty α :=
+instance (priority := 50) infSet_to_nonempty (α) [InfSet α] : Nonempty α :=
   ⟨infₛ ∅⟩
-#align has_Inf_to_nonempty has_Inf_to_nonempty
+#align has_Inf_to_nonempty infSet_to_nonempty
 
-instance (priority := 50) has_Sup_to_nonempty (α) [SupSet α] : Nonempty α :=
+instance (priority := 50) supSet_to_nonempty (α) [SupSet α] : Nonempty α :=
   ⟨supₛ ∅⟩
-#align has_Sup_to_nonempty has_Sup_to_nonempty
+#align has_Sup_to_nonempty supSet_to_nonempty
 
 /-
 Porting note: the code below could replace the `notation3` command
@@ -290,7 +290,7 @@ instance : CompleteLattice my_T :=
   le_inf := ...,
   inf_le_right := ...,
   inf_le_left := ...
-  -- don't care to fix sup, Sup, bot, top
+  -- don't care to fix sup, supₛ, bot, top
   ..completeLatticeOfInf my_T _ }
 ```
 -/
@@ -339,7 +339,7 @@ instance : CompleteLattice my_T :=
   le_inf := ...,
   inf_le_right := ...,
   inf_le_left := ...
-  -- don't care to fix sup, Inf, bot, top
+  -- don't care to fix sup, infₛ, bot, top
   ..completeLatticeOfSup my_T _ }
 ```
 -/
@@ -1828,11 +1828,11 @@ theorem infᵢ_apply {α : Type _} {β : α → Type _} {ι : Sort _} [∀ i, In
   @supᵢ_apply α (fun i => (β i)ᵒᵈ) _ _ _ _
 #align infi_apply infᵢ_apply
 
-theorem unary_relation_Sup_iff {α : Type _} (s : Set (α → Prop)) {a : α} :
+theorem unary_relation_supₛ_iff {α : Type _} (s : Set (α → Prop)) {a : α} :
     supₛ s a ↔ ∃ r : α → Prop, r ∈ s ∧ r a := by
   rw [supₛ_apply]
   simp [← eq_iff_iff]
-#align unary_relation_Sup_iff unary_relation_Sup_iff
+#align unary_relation_Sup_iff unary_relation_supₛ_iff
 
 theorem unary_relation_infₛ_iff {α : Type _} (s : Set (α → Prop)) {a : α} :
     infₛ s a ↔ ∀ r : α → Prop, r ∈ s → r a := by
@@ -1840,11 +1840,11 @@ theorem unary_relation_infₛ_iff {α : Type _} (s : Set (α → Prop)) {a : α}
   simp [← eq_iff_iff]
 #align unary_relation_Inf_iff unary_relation_infₛ_iff
 
-theorem binary_relation_Sup_iff {α β : Type _} (s : Set (α → β → Prop)) {a : α} {b : β} :
+theorem binary_relation_supₛ_iff {α β : Type _} (s : Set (α → β → Prop)) {a : α} {b : β} :
     supₛ s a b ↔ ∃ r : α → β → Prop, r ∈ s ∧ r a b := by
   rw [supₛ_apply]
   simp [← eq_iff_iff]
-#align binary_relation_Sup_iff binary_relation_Sup_iff
+#align binary_relation_Sup_iff binary_relation_supₛ_iff
 
 theorem binary_relation_infₛ_iff {α β : Type _} (s : Set (α → β → Prop)) {a : α} {b : β} :
     infₛ s a b ↔ ∀ r : α → β → Prop, r ∈ s → r a b := by
@@ -1856,9 +1856,9 @@ section CompleteLattice
 
 variable [Preorder α] [CompleteLattice β]
 
-theorem monotone_Sup_of_monotone {s : Set (α → β)} (m_s : ∀ f ∈ s, Monotone f) :
+theorem monotone_supₛ_of_monotone {s : Set (α → β)} (m_s : ∀ f ∈ s, Monotone f) :
     Monotone (supₛ s) := fun _ _ h => supᵢ_mono fun f => m_s f f.2 h
-#align monotone_Sup_of_monotone monotone_Sup_of_monotone
+#align monotone_Sup_of_monotone monotone_supₛ_of_monotone
 
 theorem monotone_infₛ_of_monotone {s : Set (α → β)} (m_s : ∀ f ∈ s, Monotone f) :
     Monotone (infₛ s) := fun _ _ h => infᵢ_mono fun f => m_s f f.2 h
@@ -1939,12 +1939,12 @@ end CompleteLattice
 protected def Function.Injective.completeLattice [HasSup α] [HasInf α] [SupSet α] [InfSet α] [Top α]
     [Bot α] [CompleteLattice β] (f : α → β) (hf : Function.Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
-    (map_Sup : ∀ s, f (supₛ s) = ⨆ a ∈ s, f a) (map_infₛ : ∀ s, f (infₛ s) = ⨅ a ∈ s, f a)
+    (map_supₛ : ∀ s, f (supₛ s) = ⨆ a ∈ s, f a) (map_infₛ : ∀ s, f (infₛ s) = ⨅ a ∈ s, f a)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : CompleteLattice α :=
   { -- we cannot use bounded_order.lift here as the `LE` instance doesn't exist yet
     hf.lattice f map_sup map_inf with
-    le_supₛ := fun _ a h => (le_supᵢ₂ a h).trans (map_Sup _).ge
-    supₛ_le := fun _ _ h => (map_Sup _).trans_le <| supᵢ₂_le h
+    le_supₛ := fun _ a h => (le_supᵢ₂ a h).trans (map_supₛ _).ge
+    supₛ_le := fun _ _ h => (map_supₛ _).trans_le <| supᵢ₂_le h
     infₛ_le := fun _ a h => (map_infₛ _).trans_le <| infᵢ₂_le a h
     le_infₛ := fun _ _ h => (le_infᵢ₂ h).trans (map_infₛ _).ge
     top := ⊤
