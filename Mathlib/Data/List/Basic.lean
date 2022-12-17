@@ -2169,10 +2169,14 @@ theorem take_repeat (a : α) : ∀ n m : ℕ, take n (List.repeat a m) = List.re
 theorem map_take {α β : Type _} (f : α → β) :
     ∀ (L : List α) (i : ℕ), (L.take i).map f = (L.map f).take i
   | [], i => by simp
-  | L, 0 => by simp
+  | _, 0 => by simp
   | h :: t, n + 1 => by
     dsimp
-    rw [map_take]
+    have : length t < length (h :: t) := by simp [length_cons]
+    have ih := map_take f t n
+    rw [ih]
+termination_by _ _ _  l _ => l.length
+decreasing_by assumption
 #align list.map_take List.map_take
 
 /-- Taking the first `n` elements in `l₁ ++ l₂` is the same as appending the first `n` elements
