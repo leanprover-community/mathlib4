@@ -3,6 +3,7 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
+import Mathlib.Init.Data.List.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Init.Core
 
@@ -459,60 +460,51 @@ fun _ _ ↦ append_right_cancel
 
 /-! ### repeat -/
 
---Porting TODO: Move to appropriate file
---Porting note: Renamed to `repeat'` because `repeat` is a keyword or something in Lean4.
--- TODO: think of better name
-/-- `repeat' a n` returns a `List` of length `n` containing only `a`  -/
-@[simp] def repeat' (a : α) : ℕ → List α
-| 0 => []
-| (succ n) => a :: repeat' a n
-#align list.repeat List.repeat'
-
 --Porting note: From Lean3 Core
-@[simp] lemma length_repeat (a : α) (n : ℕ) : length (repeat' a n) = n :=
+@[simp] lemma length_repeat (a : α) (n : ℕ) : length (List.repeat a n) = n :=
 by induction n <;> simp [*]
 #align list.length_repeat List.length_repeat
 
 @[simp]
-theorem repeat_succ (a : α) (n) : repeat' a (n + 1) = a :: repeat' a n :=
+theorem repeat_succ (a : α) (n) : List.repeat a (n + 1) = a :: List.repeat a n :=
   rfl
 #align list.repeat_succ List.repeat_succ
 
-theorem mem_repeat {a b : α} : ∀ {n}, b ∈ repeat' a n ↔ n ≠ 0 ∧ b = a
+theorem mem_repeat {a b : α} : ∀ {n}, b ∈ List.repeat a n ↔ n ≠ 0 ∧ b = a
   | 0 => by simp
   | n + 1 => by simp [mem_repeat]
 #align list.mem_repeat List.mem_repeat
 
-theorem eq_of_mem_repeat {a b : α} {n} (h : b ∈ repeat' a n) : b = a :=
+theorem eq_of_mem_repeat {a b : α} {n} (h : b ∈ List.repeat a n) : b = a :=
   (mem_repeat.1 h).2
 #align list.eq_of_mem_repeat List.eq_of_mem_repeat
 
-theorem eq_repeat_of_mem {a : α} : ∀ {l : List α}, (∀ b ∈ l, b = a) → l = repeat' a l.length
+theorem eq_repeat_of_mem {a : α} : ∀ {l : List α}, (∀ b ∈ l, b = a) → l = List.repeat a l.length
   | [], _ => rfl
   | b :: l, H => by
-    rw [length_cons, repeat']
+    rw [length_cons, List.repeat]
     cases' forall_mem_cons.1 H with H₁ H₂
     conv_lhs => rw [H₁, eq_repeat_of_mem H₂]
 #align list.eq_repeat_of_mem List.eq_repeat_of_mem
 
-theorem eq_repeat' {a : α} {l : List α} : l = repeat' a l.length ↔ ∀ b ∈ l, b = a :=
+theorem eq_repeat' {a : α} {l : List α} : l = List.repeat a l.length ↔ ∀ b ∈ l, b = a :=
   ⟨fun h => h.symm ▸ fun _ => eq_of_mem_repeat, eq_repeat_of_mem⟩
 #align list.eq_repeat' List.eq_repeat'
 
-theorem eq_repeat {a : α} {n} {l : List α} : l = repeat' a n ↔ length l = n ∧ ∀ b ∈ l, b = a :=
+theorem eq_repeat {a : α} {n} {l : List α} : l = List.repeat a n ↔ length l = n ∧ ∀ b ∈ l, b = a :=
   ⟨fun h => h.symm ▸ ⟨length_repeat _ _, fun _ => eq_of_mem_repeat⟩, fun ⟨e, al⟩ =>
     e ▸ eq_repeat_of_mem al⟩
 #align list.eq_repeat List.eq_repeat
 
-theorem repeat_add (a : α) (m n) : repeat' a (m + n) = repeat' a m ++ repeat' a n := by
-  induction m <;> simp [*, zero_add, succ_add, repeat']
+theorem repeat_add (a : α) (m n) : List.repeat a (m + n) = List.repeat a m ++ List.repeat a n := by
+  induction m <;> simp [*, zero_add, succ_add, List.repeat]
 #align list.repeat_add List.repeat_add
 
-theorem repeat_subset_singleton (a : α) (n) : repeat' a n ⊆ [a] := fun _ h =>
+theorem repeat_subset_singleton (a : α) (n) : List.repeat a n ⊆ [a] := fun _ h =>
   mem_singleton.2 (eq_of_mem_repeat h)
 #align list.repeat_subset_singleton List.repeat_subset_singleton
 
-theorem subset_singleton_iff {a : α} : ∀ L : List α, L ⊆ [a] ↔ ∃ n, L = repeat' a n
+theorem subset_singleton_iff {a : α} : ∀ L : List α, L ⊆ [a] ↔ ∃ n, L = List.repeat a n
   | [] => ⟨fun _ => ⟨0, by simp⟩, by simp⟩
   | h :: L => by
     refine' ⟨fun h => _, fun ⟨k, hk⟩ => by simp [hk, repeat_subset_singleton]⟩
@@ -522,50 +514,46 @@ theorem subset_singleton_iff {a : α} : ∀ L : List α, L ⊆ [a] ↔ ∃ n, L 
 #align list.subset_singleton_iff List.subset_singleton_iff
 
 @[simp]
-theorem map_repeat (f : α → β) (a : α) (n) : map f (repeat' a n) = repeat' (f a) n := by
-  induction n <;> [rfl, simp only [*, repeat', map]]
+theorem map_repeat (f : α → β) (a : α) (n) : map f (List.repeat a n) = List.repeat (f a) n := by
+  induction n <;> [rfl, simp only [*, List.repeat, map]]
 #align list.map_repeat List.map_repeat
 
 @[simp]
-theorem tail_repeat (a : α) (n) : tail (repeat' a n) = repeat' a n.pred := by cases n <;> rfl
+theorem tail_repeat (a : α) (n) : tail (List.repeat a n) = List.repeat a n.pred := by cases n <;> rfl
 #align list.tail_repeat List.tail_repeat
 
 @[simp]
-theorem join_repeat_nil (n : ℕ) : join (repeat' [] n) = @nil α := by
-  induction n <;> [rfl, simp only [*, repeat', join, append_nil]]
+theorem join_repeat_nil (n : ℕ) : join (List.repeat [] n) = @nil α := by
+  induction n <;> [rfl, simp only [*, List.repeat, join, append_nil]]
 #align list.join_repeat_nil List.join_repeat_nil
 
-theorem repeat_left_injective {n : ℕ} (hn : n ≠ 0) : Function.Injective fun a : α => repeat' a n :=
+theorem repeat_left_injective {n : ℕ} (hn : n ≠ 0) : Function.Injective fun a : α => List.repeat a n :=
   fun _ _ h => (eq_repeat.1 h).2 _ <| mem_repeat.2 ⟨hn, rfl⟩
 #align list.repeat_left_injective List.repeat_left_injective
 
-theorem repeat_left_inj {a b : α} {n : ℕ} (hn : n ≠ 0) : repeat' a n = repeat' b n ↔ a = b :=
+theorem repeat_left_inj {a b : α} {n : ℕ} (hn : n ≠ 0) : List.repeat a n = List.repeat b n ↔ a = b :=
   (repeat_left_injective hn).eq_iff
 #align list.repeat_left_inj List.repeat_left_inj
 
 @[simp]
-theorem repeat_left_inj' {a b : α} : ∀ {n}, repeat' a n = repeat' b n ↔ n = 0 ∨ a = b
+theorem repeat_left_inj' {a b : α} : ∀ {n}, List.repeat a n = List.repeat b n ↔ n = 0 ∨ a = b
   | 0 => by simp
   | n + 1 => (repeat_left_inj n.succ_ne_zero).trans <| by simp [n.succ_ne_zero, false_or_iff]
 #align list.repeat_left_inj' List.repeat_left_inj'
 
-theorem repeat_right_injective (a : α) : Function.Injective (repeat' a) :=
+theorem repeat_right_injective (a : α) : Function.Injective (List.repeat a) :=
   Function.LeftInverse.injective (length_repeat a)
 #align list.repeat_right_injective List.repeat_right_injective
 
 @[simp]
-theorem repeat_right_inj {a : α} {n m : ℕ} : repeat' a n = repeat' a m ↔ n = m :=
+theorem repeat_right_inj {a : α} {n m : ℕ} : List.repeat a n = List.repeat a m ↔ n = m :=
   (repeat_right_injective a).eq_iff
 #align list.repeat_right_inj List.repeat_right_inj
 
 /-! ### pure -/
 
---Porting Note: From Lean3 core
-/-- `ret a` is `[a]` -/
-def ret (a : α) : List α := [a]
-
---Porting Note: From Lean3 core
-instance : Monad List := { pure := @ret, bind := @List.bind, map := @List.map }
+--Porting Note: TODO this is from Lean3 core, so doesn't belong here
+instance : Monad List := { pure := @List.ret, bind := @List.bind, map := @List.map }
 
 @[simp]
 theorem mem_pure {α} (x y : α) : x ∈ (pure y : List α) ↔ x = y :=
@@ -739,14 +727,14 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
 #align list.mem_reverse List.mem_reverse'
 
 @[simp]
-theorem reverse_repeat (a : α) (n) : reverse (repeat' a n) = repeat' a n :=
+theorem reverse_repeat (a : α) (n) : reverse (List.repeat a n) = List.repeat a n :=
   eq_repeat.2
     ⟨by simp only [length_reverse, length_repeat], fun b h => eq_of_mem_repeat (mem_reverse'.1 h)⟩
 #align list.reverse_repeat List.reverse_repeat
 
 /-! ### empty -/
 
---Porting note: Definition from Lean3 core
+--Porting note: Definition from Lean3 core, so should be moved
 /-- Boolean checking if a list is empty or not -/
 def empty : List α → Bool
 | [] => true
@@ -759,13 +747,6 @@ theorem empty_iff_eq_nil {l : List α} : l.empty ↔ l = [] :=
 #align list.empty_iff_eq_nil List.empty_iff_eq_nil
 
 /-! ### init -/
-
---Porting note: Definition from Lean3 core
-/-- Remove the last element from a list -/
-def init : List α → List α
-| []     => []
-| [_]    => []
-| (a::l) => a::init l
 
 @[simp]
 theorem length_init : ∀ l : List α, length (l.init) = length l - 1
@@ -781,14 +762,6 @@ theorem length_init : ∀ l : List α, length (l.init) = length l - 1
 def init_cons_cons (a b : α) (l : List α) : init (a::b::l) = a::init (b::l) := rfl
 
 /-! ### last -/
-
---Porting note: Definition from Lean3 core
-/-- The last element of a nonempty list -/
-@[simp] def last : (l : List α) → l ≠ [] → α
-| [],      h => absurd rfl h
-| [a],     _ => a
-| _::b::l, _ => last (b::l) (fun h => List.noConfusion h)
-#align list.last List.last
 
 @[simp]
 theorem last_cons {a : α} {l : List α} :
@@ -852,8 +825,8 @@ theorem last_mem : ∀ {l : List α} (h : l ≠ []), last l h ∈ l
 #align list.last_mem List.last_mem
 
 theorem last_repeat_succ (a m : ℕ) :
-    (repeat' a m.succ).last
-        (ne_nil_of_length_eq_succ (show (repeat' a m.succ).length = m.succ by rw [length_repeat])) =
+    (List.repeat a m.succ).last
+        (ne_nil_of_length_eq_succ (show (List.repeat a m.succ).length = m.succ by rw [length_repeat])) =
       a :=
   by
   induction' m with k IH
@@ -863,7 +836,7 @@ theorem last_repeat_succ (a m : ℕ) :
 
 /-! ### last' -/
 
---Porting note: This theorem has mvoed because I changed to use this theorem
+--Porting note: This theorem has moved because I changed to use this theorem
 @[simp] theorem last'_cons_cons (a b : α) (l : List α) :
     last' (a :: b :: l) = last' (b :: l) := rfl
 #align list.last'_cons_cons List.last'_cons_cons
@@ -918,14 +891,6 @@ theorem init_append_last' : ∀ {l : List α}, ∀ a ∈ l.last', init l ++ [a] 
     rw [last'_cons_cons] at hc
     rw [init_cons_cons, cons_append, init_append_last' _ hc]
 #align list.init_append_last' List.init_append_last'
-
---Porting note: Definition from Lean3 core
-/-- Return the last element of a list, or `default` if the list is empty -/
-def ilast [Inhabited α] : List α → α
-| []        => default
-| [a]       => a
-| [_, b]    => b
-| (_::_::l) => ilast l
 
 theorem ilast_eq_last' [Inhabited α] : ∀ l : List α, l.ilast = l.last'.iget
   | [] => by simp [ilast, Inhabited.default]
@@ -1056,34 +1021,35 @@ theorem tail_append_of_ne_nil (l l' : List α) (h : l ≠ []) : (l ++ l').tail =
   · simp
 #align list.tail_append_of_ne_nil List.tail_append_of_ne_nil
 
+-- Porting note: there was a default argument for `h'` `by simpa [← lt_tsub_iff_right] using h`.
 @[simp]
-theorem nth_le_tail (l : List α) (i) (h : i < l.tail.length)
-    (h' : i + 1 < l.length := by simpa [← lt_tsub_iff_right] using h) :
+theorem nthLe_tail (l : List α) (i) (h : i < l.tail.length)
+    (h' : i + 1 < l.length) :
     l.tail.nthLe i h = l.nthLe (i + 1) h' := by
   cases l
   · cases h
   · simpa
-#align list.nth_le_tail List.nth_le_tail
+#align list.nth_le_tail List.nthLe_tail
 
-theorem nth_le_cons_aux {l : List α} {a : α} {n} (hn : n ≠ 0) (h : n < (a :: l).length) :
+theorem nthLe_cons_aux {l : List α} {a : α} {n} (hn : n ≠ 0) (h : n < (a :: l).length) :
     n - 1 < l.length := by
   contrapose! h
   rw [length_cons]
   convert succ_le_succ h
   exact (Nat.succ_pred_eq_of_pos hn.bot_lt).symm
-#align list.nth_le_cons_aux List.nth_le_cons_aux
+#align list.nth_le_cons_aux List.nthLe_cons_aux
 
-theorem nth_le_cons {l : List α} {a : α} {n} (hl) :
-    (a :: l).nthLe n hl = if hn : n = 0 then a else l.nthLe (n - 1) (nth_le_cons_aux hn hl) := by
-  split_ifs
-  · simp [nth_le, h]
+theorem nthLe_cons {l : List α} {a : α} {n} (hl) :
+    (a :: l).nthLe n hl = if hn : n = 0 then a else l.nthLe (n - 1) (nthLe_cons_aux hn hl) := by
+  split_ifs with h
+  · simp [nthLe, h]
   cases l
   · rw [length_singleton, lt_succ_iff, nonpos_iff_eq_zero] at hl
     contradiction
   cases n
   · contradiction
   rfl
-#align list.nth_le_cons List.nth_le_cons
+#align list.nth_le_cons List.nthLe_cons
 
 @[simp]
 theorem modify_head_modify_head (l : List α) (f g : α → α) :
@@ -1128,7 +1094,8 @@ def bidirectionalRec {C : List α → Sort _} (H0 : C []) (H1 : ∀ a : α, C [a
       simp
     rw [← init_append_last (cons_ne_nil b l)]
     have : C l' := bidirectional_rec l'
-    exact Hn a l' b' ‹C l'›termination_by' ⟨_, measure_wf List.length⟩
+    exact Hn a l' b' ‹C l'›
+termination_by' ⟨_, measure_wf List.length⟩
 #align list.bidirectional_rec List.bidirectionalRec
 
 /-- Like `bidirectional_rec`, but with the list parameter placed first. -/
@@ -1140,190 +1107,69 @@ def bidirectionalRecOn {C : List α → Sort _} (l : List α) (H0 : C []) (H1 : 
 
 /-! ### sublists -/
 
-
-#print List.nil_sublist /-
-@[simp]
-theorem nil_sublist : ∀ l : List α, [] <+ l
-  | [] => Sublist.slnil
-  | a :: l => Sublist.cons _ _ a (nil_sublist l)
 #align list.nil_sublist List.nil_sublist
--/
 
-#print List.Sublist.refl /-
-@[refl, simp]
-theorem Sublist.refl : ∀ l : List α, l <+ l
-  | [] => Sublist.slnil
-  | a :: l => Sublist.cons₂ _ _ a (sublist.refl l)
 #align list.sublist.refl List.Sublist.refl
--/
 
-#print List.Sublist.trans /-
-@[trans]
-theorem Sublist.trans {l₁ l₂ l₃ : List α} (h₁ : l₁ <+ l₂) (h₂ : l₂ <+ l₃) : l₁ <+ l₃ :=
-  Sublist.rec_on h₂ (fun _ s => s) (fun l₂ l₃ a h₂ IH l₁ h₁ => Sublist.cons _ _ _ (IH l₁ h₁))
-    (fun l₂ l₃ a h₂ IH l₁ h₁ =>
-      @Sublist.cases_on _ (fun l₁ l₂' => l₂' = a :: l₂ → l₁ <+ a :: l₃) _ _ h₁
-        (fun _ => nil_sublist _)
-        (fun l₁ l₂' a' h₁' e =>
-          match a', l₂', e, h₁' with
-          | _, _, rfl, h₁ => Sublist.cons _ _ _ (IH _ h₁))
-        (fun l₁ l₂' a' h₁' e =>
-          match a', l₂', e, h₁' with
-          | _, _, rfl, h₁ => Sublist.cons₂ _ _ _ (IH _ h₁))
-        rfl)
-    l₁ h₁
 #align list.sublist.trans List.Sublist.trans
--/
 
-#print List.sublist_cons /-
-@[simp]
-theorem sublist_cons (a : α) (l : List α) : l <+ a :: l :=
-  Sublist.cons _ _ _ (Sublist.refl l)
 #align list.sublist_cons List.sublist_cons
--/
 
-#print List.sublist_of_cons_sublist /-
-theorem sublist_of_cons_sublist {a : α} {l₁ l₂ : List α} : a :: l₁ <+ l₂ → l₁ <+ l₂ :=
-  Sublist.trans (sublist_cons a l₁)
 #align list.sublist_of_cons_sublist List.sublist_of_cons_sublist
--/
 
 theorem Sublist.cons_cons {l₁ l₂ : List α} (a : α) (s : l₁ <+ l₂) : a :: l₁ <+ a :: l₂ :=
-  Sublist.cons₂ _ _ _ s
+  Sublist.cons₂ _ s
 #align list.sublist.cons_cons List.Sublist.cons_cons
 
-#print List.sublist_append_left /-
-@[simp]
-theorem sublist_append_left : ∀ l₁ l₂ : List α, l₁ <+ l₁ ++ l₂
-  | [], l₂ => nil_sublist _
-  | a :: l₁, l₂ => (sublist_append_left l₁ l₂).cons_cons _
 #align list.sublist_append_left List.sublist_append_left
--/
 
-#print List.sublist_append_right /-
-@[simp]
-theorem sublist_append_right : ∀ l₁ l₂ : List α, l₂ <+ l₁ ++ l₂
-  | [], l₂ => Sublist.refl _
-  | a :: l₁, l₂ => Sublist.cons _ _ _ (sublist_append_right l₁ l₂)
 #align list.sublist_append_right List.sublist_append_right
--/
 
 theorem sublist_cons_of_sublist (a : α) {l₁ l₂ : List α} : l₁ <+ l₂ → l₁ <+ a :: l₂ :=
-  Sublist.cons _ _ _
+  Sublist.cons _
 #align list.sublist_cons_of_sublist List.sublist_cons_of_sublist
 
-#print List.sublist_append_of_sublist_left /-
-theorem sublist_append_of_sublist_left {l l₁ l₂ : List α} (s : l <+ l₁) : l <+ l₁ ++ l₂ :=
-  s.trans <| sublist_append_left _ _
 #align list.sublist_append_of_sublist_left List.sublist_append_of_sublist_left
--/
 
-/- warning: list.sublist_append_of_sublist_right -> List.sublist_append_of_sublist_right is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {l : List.{u} α} {l₁ : List.{u} α} {l₂ : List.{u} α}, (List.Sublist.{u} α l l₂) -> (List.Sublist.{u} α l (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) l₁ l₂))
-but is expected to have type
-  forall {α._@.Std.Data.List.Lemmas._hyg.5646 : Type.{u_1}} {l : List.{u_1} α._@.Std.Data.List.Lemmas._hyg.5646} {l₂ : List.{u_1} α._@.Std.Data.List.Lemmas._hyg.5646} {l₁ : List.{u_1} α._@.Std.Data.List.Lemmas._hyg.5646}, (List.Sublist.{u_1} α._@.Std.Data.List.Lemmas._hyg.5646 l l₂) -> (List.Sublist.{u_1} α._@.Std.Data.List.Lemmas._hyg.5646 l (HAppend.hAppend.{u_1, u_1, u_1} (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.5646) (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.5646) (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.5646) (instHAppend.{u_1} (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.5646) (List.instAppendList.{u_1} α._@.Std.Data.List.Lemmas._hyg.5646)) l₁ l₂))
-Case conversion may be inaccurate. Consider using '#align list.sublist_append_of_sublist_right List.sublist_append_of_sublist_rightₓ'. -/
-theorem sublist_append_of_sublist_right {l l₁ l₂ : List α} (s : l <+ l₂) : l <+ l₁ ++ l₂ :=
-  s.trans <| sublist_append_right _ _
 #align list.sublist_append_of_sublist_right List.sublist_append_of_sublist_right
 
 theorem sublist_of_cons_sublist_cons {l₁ l₂ : List α} : ∀ {a : α}, a :: l₁ <+ a :: l₂ → l₁ <+ l₂
-  | _, sublist.cons _ _ a s => sublist_of_cons_sublist s
-  | _, sublist.cons2 _ _ a s => s
+  | _, Sublist.cons a s => sublist_of_cons_sublist s
+  | _, Sublist.cons₂ a s => s
 #align list.sublist_of_cons_sublist_cons List.sublist_of_cons_sublist_cons
 
 theorem cons_sublist_cons_iff {l₁ l₂ : List α} {a : α} : a :: l₁ <+ a :: l₂ ↔ l₁ <+ l₂ :=
   ⟨sublist_of_cons_sublist_cons, Sublist.cons_cons _⟩
 #align list.cons_sublist_cons_iff List.cons_sublist_cons_iff
 
-#print List.append_sublist_append_left /-
-@[simp]
-theorem append_sublist_append_left {l₁ l₂ : List α} : ∀ l, l ++ l₁ <+ l ++ l₂ ↔ l₁ <+ l₂
-  | [] => Iff.rfl
-  | a :: l => cons_sublist_cons_iff.trans (append_sublist_append_left l)
 #align list.append_sublist_append_left List.append_sublist_append_left
--/
 
-#print List.Sublist.append_right /-
-theorem Sublist.append_right {l₁ l₂ : List α} (h : l₁ <+ l₂) (l) : l₁ ++ l <+ l₂ ++ l := by
-  induction' h with _ _ a _ ih _ _ a _ ih
-  · rfl
-  · apply sublist_cons_of_sublist a ih
-  · apply ih.cons_cons a
 #align list.sublist.append_right List.Sublist.append_right
--/
 
-/- warning: list.sublist_or_mem_of_sublist -> List.sublist_or_mem_of_sublist is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {l : List.{u} α} {l₁ : List.{u} α} {l₂ : List.{u} α} {a : α}, (List.Sublist.{u} α l (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) l₁ (List.cons.{u} α a l₂))) -> (Or (List.Sublist.{u} α l (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) l₁ l₂)) (Membership.Mem.{u, u} α (List.{u} α) (List.hasMem.{u} α) a l))
-but is expected to have type
-  forall {α._@.Std.Data.List.Lemmas._hyg.6140 : Type.{u_1}} {l : List.{u_1} α._@.Std.Data.List.Lemmas._hyg.6140} {l₁ : List.{u_1} α._@.Std.Data.List.Lemmas._hyg.6140} {a : α._@.Std.Data.List.Lemmas._hyg.6140} {l₂ : List.{u_1} α._@.Std.Data.List.Lemmas._hyg.6140}, (List.Sublist.{u_1} α._@.Std.Data.List.Lemmas._hyg.6140 l (HAppend.hAppend.{u_1, u_1, u_1} (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.6140) (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.6140) (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.6140) (instHAppend.{u_1} (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.6140) (List.instAppendList.{u_1} α._@.Std.Data.List.Lemmas._hyg.6140)) l₁ (List.cons.{u_1} α._@.Std.Data.List.Lemmas._hyg.6140 a l₂))) -> (Or (List.Sublist.{u_1} α._@.Std.Data.List.Lemmas._hyg.6140 l (HAppend.hAppend.{u_1, u_1, u_1} (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.6140) (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.6140) (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.6140) (instHAppend.{u_1} (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.6140) (List.instAppendList.{u_1} α._@.Std.Data.List.Lemmas._hyg.6140)) l₁ l₂)) (Membership.mem.{u_1, u_1} α._@.Std.Data.List.Lemmas._hyg.6140 (List.{u_1} α._@.Std.Data.List.Lemmas._hyg.6140) (List.instMembershipList.{u_1} α._@.Std.Data.List.Lemmas._hyg.6140) a l))
-Case conversion may be inaccurate. Consider using '#align list.sublist_or_mem_of_sublist List.sublist_or_mem_of_sublistₓ'. -/
-theorem sublist_or_mem_of_sublist {l l₁ l₂ : List α} {a : α} (h : l <+ l₁ ++ a :: l₂) :
-    l <+ l₁ ++ l₂ ∨ a ∈ l := by
-  induction' l₁ with b l₁ IH generalizing l
-  · cases h
-    · left
-      exact ‹l <+ l₂›
-    · right
-      apply mem_cons_self
-  · cases' h with _ _ _ h _ _ _ h
-    · exact Or.imp_left (sublist_cons_of_sublist _) (IH h)
-    · exact (IH h).imp (sublist.cons_cons _) (mem_cons_of_mem _)
 #align list.sublist_or_mem_of_sublist List.sublist_or_mem_of_sublist
 
-#print List.Sublist.reverse /-
-theorem Sublist.reverse {l₁ l₂ : List α} (h : l₁ <+ l₂) : l₁.reverse <+ l₂.reverse := by
-  induction' h with _ _ _ _ ih _ _ a _ ih; · rfl
-  · rw [reverse_cons]
-    exact sublist_append_of_sublist_left ih
-  · rw [reverse_cons, reverse_cons]
-    exact ih.append_right [a]
 #align list.sublist.reverse List.Sublist.reverse
--/
 
 @[simp]
 theorem reverse_sublist_iff {l₁ l₂ : List α} : l₁.reverse <+ l₂.reverse ↔ l₁ <+ l₂ :=
   ⟨fun h => l₁.reverse_reverse ▸ l₂.reverse_reverse ▸ h.reverse, Sublist.reverse⟩
 #align list.reverse_sublist_iff List.reverse_sublist_iff
 
-#print List.append_sublist_append_right /-
-@[simp]
-theorem append_sublist_append_right {l₁ l₂ : List α} (l) : l₁ ++ l <+ l₂ ++ l ↔ l₁ <+ l₂ :=
-  ⟨fun h => by
-    simpa only [reverse_append, append_sublist_append_left, reverse_sublist_iff] using h.reverse,
-    fun h => h.append_right l⟩
 #align list.append_sublist_append_right List.append_sublist_append_right
--/
 
-#print List.Sublist.append /-
-theorem Sublist.append {l₁ l₂ r₁ r₂ : List α} (hl : l₁ <+ l₂) (hr : r₁ <+ r₂) :
-    l₁ ++ r₁ <+ l₂ ++ r₂ :=
-  (hl.append_right _).trans ((append_sublist_append_left _).2 hr)
 #align list.sublist.append List.Sublist.append
--/
 
-#print List.Sublist.subset /-
-theorem Sublist.subset : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → l₁ ⊆ l₂
-  | _, _, sublist.slnil, b, h => h
-  | _, _, sublist.cons l₁ l₂ a s, b, h => mem_cons_of_mem _ (sublist.subset s h)
-  | _, _, sublist.cons2 l₁ l₂ a s, b, h =>
-    match eq_or_mem_of_mem_cons h with
-    | Or.inl h => h ▸ mem_cons_self _ _
-    | Or.inr h => mem_cons_of_mem _ (sublist.subset s h)
 #align list.sublist.subset List.Sublist.subset
--/
 
 @[simp]
 theorem singleton_sublist {a : α} {l} : [a] <+ l ↔ a ∈ l :=
-  ⟨fun h => h.Subset (mem_singleton_self _), fun h =>
-    let ⟨s, t, e⟩ := mem_split h
+  ⟨fun h => h.subset (mem_singleton_self _), fun h =>
+    let ⟨_, _, e⟩ := mem_split h
     e.symm ▸ ((nil_sublist _).cons_cons _).trans (sublist_append_right _ _)⟩
 #align list.singleton_sublist List.singleton_sublist
 
 theorem eq_nil_of_sublist_nil {l : List α} (s : l <+ []) : l = [] :=
-  eq_nil_of_subset_nil <| s.Subset
+  eq_nil_of_subset_nil <| s.subset
 #align list.eq_nil_of_sublist_nil List.eq_nil_of_sublist_nil
 
 @[simp]
@@ -1332,27 +1178,27 @@ theorem sublist_nil_iff_eq_nil {l : List α} : l <+ [] ↔ l = [] :=
 #align list.sublist_nil_iff_eq_nil List.sublist_nil_iff_eq_nil
 
 @[simp]
-theorem repeat_sublist_repeat (a : α) {m n} : repeat a m <+ repeat a n ↔ m ≤ n :=
+theorem repeat_sublist_repeat (a : α) {m n} : List.repeat a m <+ List.repeat a n ↔ m ≤ n :=
   ⟨fun h => by simpa only [length_repeat] using h.length_le, fun h => by
-    induction h <;> [rfl, simp only [*, repeat_succ, sublist.cons]]⟩
+    induction h <;> [rfl, simp only [*, repeat_succ, Sublist.cons]]⟩
 #align list.repeat_sublist_repeat List.repeat_sublist_repeat
 
 theorem sublist_repeat_iff {l : List α} {a : α} {n : ℕ} :
-    l <+ repeat a n ↔ ∃ k ≤ n, l = repeat a k :=
+    l <+ List.repeat a n ↔ ∃ k ≤ n, l = List.repeat a k :=
   ⟨fun h =>
     ⟨l.length, h.length_le.trans (length_repeat _ _).le,
-      eq_repeat.mpr ⟨rfl, fun b hb => List.eq_of_mem_repeat (h.Subset hb)⟩⟩,
+      eq_repeat.mpr ⟨rfl, fun b hb => List.eq_of_mem_repeat (h.subset hb)⟩⟩,
     by
     rintro ⟨k, h, rfl⟩
     exact (repeat_sublist_repeat _).mpr h⟩
 #align list.sublist_repeat_iff List.sublist_repeat_iff
 
 theorem Sublist.eq_of_length : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → length l₁ = length l₂ → l₁ = l₂
-  | _, _, sublist.slnil, h => rfl
-  | _, _, sublist.cons l₁ l₂ a s, h => by
-    cases s.length_le.not_lt (by rw [h] <;> apply lt_succ_self)
-  | _, _, sublist.cons2 l₁ l₂ a s, h => by
-    rw [length, length] at h <;> injection h with h <;> rw [s.eq_of_length h]
+  | _, _, Sublist.slnil, _ => rfl
+  | _, _, Sublist.cons a s, h => by
+    cases s.length_le.not_lt (by rw [h]; apply lt_succ_self)
+  | _, _, Sublist.cons₂ a s, h => by
+    rw [length, length] at h; injection h with h; rw [s.eq_of_length h]
 #align list.sublist.eq_of_length List.Sublist.eq_of_length
 
 theorem Sublist.eq_of_length_le (s : l₁ <+ l₂) (h : length l₂ ≤ length l₁) : l₁ = l₂ :=
@@ -1364,8 +1210,8 @@ theorem Sublist.antisymm (s₁ : l₁ <+ l₂) (s₂ : l₂ <+ l₁) : l₁ = l�
 #align list.sublist.antisymm List.Sublist.antisymm
 
 instance decidableSublist [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <+ l₂)
-  | [], l₂ => is_true <| nil_sublist _
-  | a :: l₁, [] => is_false fun h => List.noConfusion <| eq_nil_of_sublist_nil h
+  | [], l₂ => isTrue <| nil_sublist _
+  | a :: l₁, [] => isFalse fun h => List.noConfusion <| eq_nil_of_sublist_nil h
   | a :: l₁, b :: l₂ =>
     if h : a = b then
       decidable_of_decidable_of_iff (decidable_sublist l₁ l₂) <| by
@@ -1434,7 +1280,7 @@ theorem index_of_le_length {a : α} {l : List α} : indexOf a l ≤ length l := 
 #align list.index_of_le_length List.index_of_le_length
 
 theorem index_of_lt_length {a} {l : List α} : indexOf a l < length l ↔ a ∈ l :=
-  ⟨fun h => Decidable.by_contradiction fun al => ne_of_lt h <| index_of_eq_length.2 al, fun al =>
+  ⟨fun h => Decidable.by_contradiction fun al => Nat.ne_of_lt h <| index_of_eq_length.2 al, fun al =>
     (lt_of_le_of_ne index_of_le_length) fun h => index_of_eq_length.1 h al⟩
 #align list.index_of_lt_length List.index_of_lt_length
 
@@ -1485,8 +1331,8 @@ theorem nth_length (l : List α) : l.nth l.length = none :=
 
 theorem nth_eq_some {l : List α} {n a} : nth l n = some a ↔ ∃ h, nthLe l n h = a :=
   ⟨fun e =>
-    have h : n < length l := lt_of_not_ge fun hn => by rw [nth_len_le hn] at e <;> contradiction
-    ⟨h, by rw [nth_le_nth h] at e <;> injection e with e <;> apply nth_le_mem⟩,
+    have h : n < length l := lt_of_not_ge fun hn => by rw [nth_len_le hn] at e; contradiction
+    ⟨h, by rw [nth_le_nth h] at e; injection e with e <;> apply nth_le_mem⟩,
     fun ⟨h, e⟩ => e ▸ nth_le_nth _⟩
 #align list.nth_eq_some List.nth_eq_some
 
