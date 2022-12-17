@@ -867,8 +867,5 @@ protected theorem isDomain {A : Type _} (B : Type _) [Ring A] [Ring B] [IsDomain
 
 end RingEquiv
 
-#lint
-
--- Guard against import creep
--- TODO
+-- TODO: guard against import creep
 -- assert_not_exists fintype
