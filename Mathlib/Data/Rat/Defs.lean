@@ -101,6 +101,9 @@ theorem mkInt_zero (n) : n /. 0 = 0 :=
 #align rat.mk_zero Rat.mkInt_zero
 
 @[simp]
+theorem zero_mk (d) (h : d ≠ 0) (w) : mk 0 d h w = 0 := by congr
+
+@[simp]
 theorem zero_mkPNat (n) : mkPNat 0 n = 0 := by
   cases' n with n npos
   simp only [mkPNat, Int.natAbs_zero, Nat.div_self npos, Nat.gcd_zero_left, Int.zero_div,
@@ -404,10 +407,11 @@ theorem inv_def {a b : ℤ} : (a /. b)⁻¹ = b /. a := by
   rw [num_den'] at ha
   refine' Eq.trans (_ : Rat.inv ⟨n, d, h, c⟩ = d /. n) _
   · cases' n with n <;> [cases' n with n, skip]
-    · rfl
-    · change Int.ofNat n.succ with (n + 1 : ℕ)
-      unfold Rat.inv
-      rw [num_den']
+    · simp
+    · unfold Rat.inv
+      simp only [Int.ofNat_eq_coe, Nat.cast_succ, Int.succ_ofNat_pos, dite_true]
+      erw [dif_neg, num_den', Int.natAbs_cast]; rfl
+      exact of_decide_eq_true rfl
     · unfold Rat.inv
       rw [num_den']
       rfl
