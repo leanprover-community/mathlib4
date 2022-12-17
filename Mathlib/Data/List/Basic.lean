@@ -4145,7 +4145,7 @@ Case conversion may be inaccurate. Consider using '#align list.length_erase_of_m
 
 @[simp]
 theorem length_erase_add_one {a : α} {l : List α} (h : a ∈ l) : (l.erase a).length + 1 = l.length :=
-  by rw [erase_eq_eraseP, length_erasep_add_one h rfl]
+  by rw [erase_eq_eraseP, length_eraseP_add_one h rfl]
 #align list.length_erase_add_one List.length_erase_add_one
 
 /- warning: list.erase_append_left -> List.erase_append_left is a dubious translation:
@@ -4191,7 +4191,7 @@ theorem erase_subset (a : α) (l : List α) : l.erase a ⊆ l :=
 #align list.erase_subset List.erase_subset
 
 theorem Sublist.erase (a : α) {l₁ l₂ : List α} (h : l₁ <+ l₂) : l₁.erase a <+ l₂.erase a := by
-  simp [erase_eq_erasep] <;> exact sublist.erasep h
+  simp [erase_eq_eraseP] ; exact Sublist.eraseP h
 #align list.sublist.erase List.Sublist.erase
 
 /- warning: list.mem_of_mem_erase -> List.mem_of_mem_erase is a dubious translation:
@@ -4241,7 +4241,7 @@ theorem erase_comm (a b : α) (l : List α) : (l.erase a).erase b = (l.erase b).
 theorem map_erase [DecidableEq β] {f : α → β} (finj : Injective f) {a : α} (l : List α) :
     map f (l.erase a) = (map f l).erase (f a) := by
   have this : Eq a = Eq (f a) ∘ f := by ext b; simp [finj.eq_iff]
-  simp [erase_eq_erasep, erase_eq_erasep, erasep_map, this]
+  simp [erase_eq_eraseP, erase_eq_eraseP, eraseP_map, this]
 #align list.map_erase List.map_erase
 
 theorem map_foldl_erase [DecidableEq β] {f : α → β} (finj : Injective f) {l₁ l₂ : List α} :
