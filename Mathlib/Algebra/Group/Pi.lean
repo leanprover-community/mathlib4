@@ -59,6 +59,7 @@ instance semigroup [∀ i, Semigroup <| f i] : Semigroup (∀ i : I, f i) :=
     mul_assoc := by rename_i inst; intros; ext i; exact (inst i).mul_assoc _ _ _ }
 #align pi.semigroup Pi.semigroup
 
+--!!rewrite to use MulZeroClass?
 instance semigroupWithZero [∀ i, SemigroupWithZero <| f i] : SemigroupWithZero (∀ i : I, f i) :=
   { semigroup with
     zero := (0 : ∀ i, f i)
@@ -127,7 +128,7 @@ instance divisionMonoid [∀ i, DivisionMonoid <| f i] : DivisionMonoid (∀ i, 
     mul_inv_rev := by rename_i inst _ _; intros; ext i; exact (inst i).mul_inv_rev _ _
     inv_eq_of_mul := by
       rename_i inst _ _; intros; ext i; apply (inst i).inv_eq_of_mul _ _ _;
-      rename_i ab1; exact congr_fun ab1 i
+      rename_i h; exact congr_fun h i
   }
 
 @[to_additive Pi.subtractionCommMonoid]
@@ -136,102 +137,77 @@ instance [∀ i, DivisionCommMonoid <| f i] : DivisionCommMonoid (∀ i, f i) :=
 
 @[to_additive]
 instance group [∀ i, Group <| f i] : Group (∀ i : I, f i) :=
-{ divInvMonoid with
-  --pi_instance
-  mul_left_inv := by rename_i inst _; intros; ext i; exact (inst i).mul_left_inv _
-  }
+  { divInvMonoid with
+    --pi_instance
+    mul_left_inv := by rename_i inst _; intros; ext i; exact (inst i).mul_left_inv _
+    }
 #align pi.group Pi.group
 
 @[to_additive]
 instance commGroup [∀ i, CommGroup <| f i] : CommGroup (∀ i : I, f i) :=
-{ one := (1 : ∀ i, f i)
-  mul := (· * ·)
-  inv := Inv.inv
-  div := Div.div
-  npow := Monoid.npow
-  zpow := DivInvMonoid.zpow }
+  { group, commMonoid with }
 #align pi.comm_group Pi.commGroup
 
 @[to_additive AddLeftCancelSemigroup]
 instance leftCancelSemigroup [∀ i, LeftCancelSemigroup <| f i] :
-    LeftCancelSemigroup (∀ i : I, f i) := by
-  refine_struct { mul := (· * ·) } <;> pi_instance_derive_field
+    LeftCancelSemigroup (∀ i : I, f i) :=
+  { semigroup with
+    --pi_instance
+    mul_left_cancel := by
+      rename_i inst _; intros; ext i; apply (inst i).mul_left_cancel _ _ _;
+      rename_i h; exact congr_fun h i
+  }
 #align pi.left_cancel_semigroup Pi.leftCancelSemigroup
 
 @[to_additive AddRightCancelSemigroup]
 instance rightCancelSemigroup [∀ i, RightCancelSemigroup <| f i] :
-    RightCancelSemigroup (∀ i : I, f i) := by
-  refine_struct { mul := (· * ·) } <;> pi_instance_derive_field
+    RightCancelSemigroup (∀ i : I, f i) :=
+  { semigroup with
+    mul_right_cancel := by
+      rename_i inst _; intros; ext i; apply (inst i).mul_right_cancel _ _ _;
+      rename_i h; exact congr_fun h i
+  }
 #align pi.right_cancel_semigroup Pi.rightCancelSemigroup
 
 @[to_additive AddLeftCancelMonoid]
-instance leftCancelMonoid [∀ i, LeftCancelMonoid <| f i] : LeftCancelMonoid (∀ i : I, f i) := by
-  refine_struct
-      { one := (1 : ∀ i, f i)
-        mul := (· * ·)
-        npow := Monoid.npow } <;>
-    pi_instance_derive_field
+instance leftCancelMonoid [∀ i, LeftCancelMonoid <| f i] : LeftCancelMonoid (∀ i : I, f i) :=
+  { leftCancelSemigroup, monoid with }
 #align pi.left_cancel_monoid Pi.leftCancelMonoid
 
 @[to_additive AddRightCancelMonoid]
-instance rightCancelMonoid [∀ i, RightCancelMonoid <| f i] : RightCancelMonoid (∀ i : I, f i) := by
-  refine_struct
-      { one := (1 : ∀ i, f i)
-        mul := (· * ·)
-        npow := Monoid.npow.. } <;>
-    pi_instance_derive_field
+instance rightCancelMonoid [∀ i, RightCancelMonoid <| f i] : RightCancelMonoid (∀ i : I, f i) :=
+  { rightCancelSemigroup, monoid with }
 #align pi.right_cancel_monoid Pi.rightCancelMonoid
 
 @[to_additive AddCancelMonoid]
-instance cancelMonoid [∀ i, CancelMonoid <| f i] : CancelMonoid (∀ i : I, f i) := by
-  refine_struct
-      { one := (1 : ∀ i, f i)
-        mul := (· * ·)
-        npow := Monoid.npow } <;>
-    pi_instance_derive_field
+instance cancelMonoid [∀ i, CancelMonoid <| f i] : CancelMonoid (∀ i : I, f i) :=
+  { leftCancelMonoid, rightCancelMonoid with } --!!trim?
 #align pi.cancel_monoid Pi.cancelMonoid
 
 @[to_additive AddCancelCommMonoid]
-instance cancelCommMonoid [∀ i, CancelCommMonoid <| f i] : CancelCommMonoid (∀ i : I, f i) := by
-  refine_struct
-      { one := (1 : ∀ i, f i)
-        mul := (· * ·)
-        npow := Monoid.npow } <;>
-    pi_instance_derive_field
+instance cancelCommMonoid [∀ i, CancelCommMonoid <| f i] : CancelCommMonoid (∀ i : I, f i) :=
+  { leftCancelMonoid, commMonoid with } --!!trim?
 #align pi.cancel_comm_monoid Pi.cancelCommMonoid
 
-instance mulZeroClass [∀ i, MulZeroClass <| f i] : MulZeroClass (∀ i : I, f i) := by
-  refine_struct
-      { zero := (0 : ∀ i, f i)
-        mul := (· * ·).. } <;>
-    pi_instance_derive_field
+instance mulZeroClass [∀ i, MulZeroClass <| f i] : MulZeroClass (∀ i : I, f i) :=
+  { zero := (0 : ∀ i, f i)
+    mul := (· * ·)
+    --pi_instance
+    zero_mul := by rename_i inst; intro; ext i; exact (inst i).zero_mul _
+    mul_zero := by rename_i inst; intro; ext i; exact (inst i).mul_zero _
+}
 #align pi.mul_zero_class Pi.mulZeroClass
 
-instance mulZeroOneClass [∀ i, MulZeroOneClass <| f i] : MulZeroOneClass (∀ i : I, f i) := by
-  refine_struct
-      { zero := (0 : ∀ i, f i)
-        one := (1 : ∀ i, f i)
-        mul := (· * ·).. } <;>
-    pi_instance_derive_field
+instance mulZeroOneClass [∀ i, MulZeroOneClass <| f i] : MulZeroOneClass (∀ i : I, f i) :=
+  { mulZeroClass, mulOneClass with }
 #align pi.mul_zero_one_class Pi.mulZeroOneClass
 
-instance monoidWithZero [∀ i, MonoidWithZero <| f i] : MonoidWithZero (∀ i : I, f i) := by
-  refine_struct
-      { zero := (0 : ∀ i, f i)
-        one := (1 : ∀ i, f i)
-        mul := (· * ·)
-        npow := Monoid.npow } <;>
-    pi_instance_derive_field
+instance monoidWithZero [∀ i, MonoidWithZero <| f i] : MonoidWithZero (∀ i : I, f i) :=
+  { monoid, mulZeroClass with } --!!trim?
 #align pi.monoid_with_zero Pi.monoidWithZero
 
 instance commMonoidWithZero [∀ i, CommMonoidWithZero <| f i] : CommMonoidWithZero (∀ i : I, f i) :=
-  by
-  refine_struct
-      { zero := (0 : ∀ i, f i)
-        one := (1 : ∀ i, f i)
-        mul := (· * ·)
-        npow := Monoid.npow } <;>
-    pi_instance_derive_field
+  { monoidWithZero, commMonoid with } --!!trim?
 #align pi.comm_monoid_with_zero Pi.commMonoidWithZero
 
 end Pi
