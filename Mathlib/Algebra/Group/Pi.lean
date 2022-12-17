@@ -265,7 +265,7 @@ theorem Pi.monoid_hom_injective {γ : Type w} [Nonempty I] [∀ i, MulOneClass (
   Pi.mul_hom_injective (fun i => (g i).toMulHom) hg
 #align pi.monoid_hom_injective Pi.monoid_hom_injective
 
-variable (f) [∀ i, Mul (f i)]
+variable (f) [(i : I) → Mul (f i)]
 
 /-- Evaluation of functions into an indexed collection of semigroups at a point is a semigroup
 homomorphism.
@@ -312,7 +312,7 @@ end MulHom
 
 section MonoidHom
 
-variable (f) [∀ i, MulOneClass (f i)]
+variable (f) [(i : I) → MulOneClass (f i)]
 
 /-- Evaluation of functions into an indexed collection of monoids at a point is a monoid
 homomorphism.
