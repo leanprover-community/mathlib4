@@ -1405,9 +1405,9 @@ theorem nth_injective {α : Type u} {xs : List α} {i j : ℕ} (h₀ : i < xs.le
 
 @[simp]
 theorem nth_map (f : α → β) : ∀ l n, nth (map f l) n = (nth l n).map f
-  | [], n => rfl
-  | a :: l, 0 => rfl
-  | a :: l, n + 1 => nth_map l n
+  | [], _ => rfl
+  | _ :: _, 0 => rfl
+  | _ :: l, n + 1 => nth_map f l n
 #align list.nth_map List.nth_map
 
 theorem nth_le_map (f : α → β) {l n} (H1 H2) : nthLe (map f l) n H1 = f (nthLe l n H2) :=
