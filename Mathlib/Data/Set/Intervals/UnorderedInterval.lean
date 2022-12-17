@@ -286,9 +286,25 @@ theorem mem_interval_oc : a ∈ Ι b c ↔ b < a ∧ a ≤ c ∨ c < a ∧ a ≤
 #align set.mem_interval_oc Set.mem_interval_oc
 
 theorem not_mem_interval_oc : a ∉ Ι b c ↔ a ≤ b ∧ a ≤ c ∨ c < a ∧ b < a := by
+  -- Porting note: restore `tauto` once it's ported
   -- simp only [interval_oc_eq_union, mem_union, mem_Ioc, not_lt, ← not_le]
   -- tauto
-  sorry
+  rw [interval_oc_eq_union, mem_union, mem_Ioc, mem_Ioc]
+  push_neg
+  constructor
+  · rintro ⟨h1, h2⟩
+    by_cases b < a
+    case pos _ =>
+      apply Or.intro_right
+      exact ⟨h1 h, h⟩
+    case neg _ =>
+      rw [not_lt] at h
+      rw [← not_imp_not, not_lt, not_lt] at h2
+      apply Or.intro_left
+      exact ⟨h, h2 h⟩
+  · intro h
+    rw [← iff_def, iff_iff_and_or_not_and_not, and_comm]
+    rwa [← not_lt, ← not_lt, or_comm] at h
 #align set.not_mem_interval_oc Set.not_mem_interval_oc
 
 @[simp]
