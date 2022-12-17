@@ -413,8 +413,9 @@ theorem inv_def {a b : ℤ} : (a /. b)⁻¹ = b /. a := by
       erw [dif_neg, num_den', Int.natAbs_cast]; rfl
       exact of_decide_eq_true rfl
     · unfold Rat.inv
-      rw [num_den']
-      rfl
+      simp only [Int.natAbs_negSucc, Int.negSucc_not_pos, dite_false]
+      rw [dif_pos (Int.negSucc_lt_zero _), num_den', ←neg_def, Int.negSucc_coe, mkInt_neg_den,
+        ←neg_def]
   have n0 : n ≠ 0 := by
     rintro rfl
     rw [Rat.zero_mkInt, mkInt_eq_zero b0] at ha
