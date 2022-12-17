@@ -61,14 +61,6 @@ instance semigroup [∀ i, Semigroup <| f i] : Semigroup (∀ i : I, f i) :=
 #align pi.semigroup Pi.semigroup
 #align pi.add_semigroup Pi.addSemigroup
 
-instance semigroupWithZero [∀ i, SemigroupWithZero <| f i] : SemigroupWithZero (∀ i : I, f i) :=
-  { semigroup with
-    zero := (0 : ∀ i, f i)
-    --pi_instance
-    zero_mul := by rename_i inst _; intro; ext i; exact (inst i).zero_mul _
-    mul_zero := by rename_i inst _; intro; ext i; exact (inst i).mul_zero _ }
-#align pi.semigroup_with_zero Pi.semigroupWithZero
-
 @[to_additive]
 instance commSemigroup [∀ i, CommSemigroup <| f i] : CommSemigroup (∀ i : I, f i) :=
   { semigroup with
@@ -99,6 +91,9 @@ instance monoid [∀ i, Monoid <| f i] : Monoid (∀ i : I, f i) :=
   }
 #align pi.monoid Pi.monoid
 #align pi.add_monoid Pi.addMonoid
+
+instance addMonoidWithOne [∀ i, AddMonoidWithOne <| f i] : AddMonoidWithOne (∀ i : I, f i) :=
+  { addMonoid with }
 
 @[to_additive]
 instance commMonoid [∀ i, CommMonoid <| f i] : CommMonoid (∀ i : I, f i) :=
@@ -148,6 +143,9 @@ instance group [∀ i, Group <| f i] : Group (∀ i : I, f i) :=
     }
 #align pi.group Pi.group
 #align pi.add_group Pi.addGroup
+
+instance addGroupWithOne [∀ i, AddGroupWithOne <| f i] : AddGroupWithOne (∀ i : I, f i) :=
+  { addGroup with }
 
 @[to_additive]
 instance commGroup [∀ i, CommGroup <| f i] : CommGroup (∀ i : I, f i) :=
@@ -224,11 +222,9 @@ instance commMonoidWithZero [∀ i, CommMonoidWithZero <| f i] : CommMonoidWithZ
   { monoidWithZero, commMonoid with }
 #align pi.comm_monoid_with_zero Pi.commMonoidWithZero
 
-instance addMonoidWithOne [∀ i, AddMonoidWithOne <| f i] : AddMonoidWithOne (∀ i : I, f i) :=
-  { addMonoid with }
-
-instance addGroupWithOne [∀ i, AddGroupWithOne <| f i] : AddGroupWithOne (∀ i : I, f i) :=
-  { addGroup with }
+instance semigroupWithZero [∀ i, SemigroupWithZero <| f i] : SemigroupWithZero (∀ i : I, f i) :=
+  { semigroup, mulZeroClass with }
+#align pi.semigroup_with_zero Pi.semigroupWithZero
 
 end Pi
 
