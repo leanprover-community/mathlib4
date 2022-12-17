@@ -693,12 +693,12 @@ theorem isLeast_Icc (h : a ≤ b) : IsLeast (Icc a b) a :=
   ⟨left_mem_Icc.2 h, fun _ => And.left⟩
 #align is_least_Icc isLeast_Icc
 
-theorem is_glb_Icc (h : a ≤ b) : IsGLB (Icc a b) a :=
+theorem isGLB_Icc (h : a ≤ b) : IsGLB (Icc a b) a :=
   (isLeast_Icc h).isGLB
-#align is_glb_Icc is_glb_Icc
+#align is_glb_Icc isGLB_Icc
 
 theorem lowerBounds_Icc (h : a ≤ b) : lowerBounds (Icc a b) = Iic a :=
-  (is_glb_Icc h).lowerBounds_eq
+  (isGLB_Icc h).lowerBounds_eq
 #align lower_bounds_Icc lowerBounds_Icc
 
 theorem isGreatest_Ioc (h : a < b) : IsGreatest (Ioc a b) b :=
@@ -717,19 +717,19 @@ theorem isLeast_Ico (h : a < b) : IsLeast (Ico a b) a :=
   ⟨left_mem_Ico.2 h, fun _ => And.left⟩
 #align is_least_Ico isLeast_Ico
 
-theorem is_glb_Ico (h : a < b) : IsGLB (Ico a b) a :=
+theorem isGLB_Ico (h : a < b) : IsGLB (Ico a b) a :=
   (isLeast_Ico h).isGLB
-#align is_glb_Ico is_glb_Ico
+#align is_glb_Ico isGLB_Ico
 
 theorem lowerBounds_Ico (h : a < b) : lowerBounds (Ico a b) = Iic a :=
-  (is_glb_Ico h).lowerBounds_eq
+  (isGLB_Ico h).lowerBounds_eq
 #align lower_bounds_Ico lowerBounds_Ico
 
 section
 
 variable [SemilatticeSup γ] [DenselyOrdered γ]
 
-theorem is_glb_Ioo {a b : γ} (h : a < b) : IsGLB (Ioo a b) a :=
+theorem isGLB_Ioo {a b : γ} (h : a < b) : IsGLB (Ioo a b) a :=
   ⟨fun x hx => hx.1.le, fun x hx => by
     cases' eq_or_lt_of_le (le_sup_right : a ≤ x ⊔ a) with h₁ h₂
     · exact h₁.symm ▸ le_sup_left
@@ -737,18 +737,18 @@ theorem is_glb_Ioo {a b : γ} (h : a < b) : IsGLB (Ioo a b) a :=
     apply (not_lt_of_le (sup_le (hx ⟨lty, ylt.trans_le (sup_le _ h.le)⟩) lty.le) ylt).elim
     obtain ⟨u, au, ub⟩ := exists_between h
     apply (hx ⟨au, ub⟩).trans ub.le⟩
-#align is_glb_Ioo is_glb_Ioo
+#align is_glb_Ioo isGLB_Ioo
 
 theorem lowerBounds_Ioo {a b : γ} (hab : a < b) : lowerBounds (Ioo a b) = Iic a :=
-  (is_glb_Ioo hab).lowerBounds_eq
+  (isGLB_Ioo hab).lowerBounds_eq
 #align lower_bounds_Ioo lowerBounds_Ioo
 
-theorem is_glb_Ioc {a b : γ} (hab : a < b) : IsGLB (Ioc a b) a :=
-  (is_glb_Ioo hab).of_subset_of_superset (is_glb_Icc hab.le) Ioo_subset_Ioc_self Ioc_subset_Icc_self
-#align is_glb_Ioc is_glb_Ioc
+theorem isGLB_Ioc {a b : γ} (hab : a < b) : IsGLB (Ioc a b) a :=
+  (isGLB_Ioo hab).of_subset_of_superset (isGLB_Icc hab.le) Ioo_subset_Ioc_self Ioc_subset_Icc_self
+#align is_glb_Ioc isGLB_Ioc
 
 theorem lowerBounds_Ioc {a b : γ} (hab : a < b) : lowerBounds (Ioc a b) = Iic a :=
-  (is_glb_Ioc hab).lowerBounds_eq
+  (isGLB_Ioc hab).lowerBounds_eq
 #align lower_bound_Ioc lowerBounds_Ioc
 
 end
@@ -758,7 +758,7 @@ section
 variable [SemilatticeInf γ] [DenselyOrdered γ]
 
 theorem isLUB_Ioo {a b : γ} (hab : a < b) : IsLUB (Ioo a b) b := by
-  simpa only [dual_Ioo] using is_glb_Ioo hab.dual
+  simpa only [dual_Ioo] using isGLB_Ioo hab.dual
 #align is_lub_Ioo isLUB_Ioo
 
 theorem upperBounds_Ioo {a b : γ} (hab : a < b) : upperBounds (Ioo a b) = Ici b :=
@@ -766,7 +766,7 @@ theorem upperBounds_Ioo {a b : γ} (hab : a < b) : upperBounds (Ioo a b) = Ici b
 #align upper_bounds_Ioo upperBounds_Ioo
 
 theorem isLUB_Ico {a b : γ} (hab : a < b) : IsLUB (Ico a b) b := by
-  simpa only [dual_Ioc] using is_glb_Ioc hab.dual
+  simpa only [dual_Ioc] using isGLB_Ioc hab.dual
 #align is_lub_Ico isLUB_Ico
 
 theorem upperBounds_Ico {a b : γ} (hab : a < b) : upperBounds (Ico a b) = Ici b :=
@@ -816,9 +816,9 @@ theorem isLeast_univ [Preorder γ] [OrderBot γ] : IsLeast (univ : Set γ) ⊥ :
   @isGreatest_univ γᵒᵈ _ _
 #align is_least_univ isLeast_univ
 
-theorem is_glb_univ [Preorder γ] [OrderBot γ] : IsGLB (univ : Set γ) ⊥ :=
+theorem isGLB_univ [Preorder γ] [OrderBot γ] : IsGLB (univ : Set γ) ⊥ :=
   isLeast_univ.isGLB
-#align is_glb_univ is_glb_univ
+#align is_glb_univ isGLB_univ
 
 @[simp]
 theorem NoMaxOrder.upperBounds_univ [NoMaxOrder α] : upperBounds (univ : Set α) = ∅ :=
