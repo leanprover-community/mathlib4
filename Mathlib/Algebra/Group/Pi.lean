@@ -413,7 +413,7 @@ This is the `OneHom` version of `Pi.mulSingle`. -/
       "The zero-preserving homomorphism including a single value into a dependent family of values,
       as functions supported at a point.
 
-      This is the `ZeroHom` version of `Pi.Single`."]
+      This is the `ZeroHom` version of `Pi.single`."]
 def OneHom.single [∀ i, One <| f i] (i : I) :
     OneHom (f i) (∀ i, f i) where
   toFun := mulSingle i
@@ -436,7 +436,7 @@ This is the `MonoidHom` version of `Pi.mulSingle`. -/
       "The additive monoid homomorphism including a single additive monoid into a dependent family
       of additive monoids, as functions supported at a point.
 
-      This is the `AddMonoidHom` version of `Pi.Single`."]
+      This is the `AddMonoidHom` version of `Pi.single`."]
 def MonoidHom.single [∀ i, MulOneClass <| f i] (i : I) : f i →* ∀ i, f i :=
   { OneHom.single f i with map_mul' := mulSingle_op₂ (fun _ => (· * ·)) (fun _ => one_mul _) _ }
 #align monoid_hom.single MonoidHom.single
@@ -452,11 +452,11 @@ theorem MonoidHom.single_apply [∀ i, MulOneClass <| f i] (i : I) (x : f i) :
 /-- The multiplicative homomorphism including a single `MulZeroClass`
 into a dependent family of `MulZeroClass`es, as functions supported at a point.
 
-This is the `MulHom` version of `Pi.Single`. -/
+This is the `MulHom` version of `Pi.single`. -/
 @[simps]
 def MulHom.single [∀ i, MulZeroClass <| f i] (i : I) :
     f i →ₙ* ∀ i, f i where
-  toFun := Single i
+  toFun := Pi.single i
   map_mul' := Pi.single_op₂ (fun _ => (· * ·)) (fun _ => zero_mul _) _
 #align mul_hom.single MulHom.single
 
@@ -484,7 +484,7 @@ theorem Pi.single_div [∀ i, Group <| f i] (i : I) (x y : f i) :
 #align pi.single_sub Pi.single_sub
 
 theorem Pi.single_mul [∀ i, MulZeroClass <| f i] (i : I) (x y : f i) :
-    Single i (x * y) = Single i x * Single i y :=
+    single i (x * y) = single i x * single i y :=
   (MulHom.single f i).map_mul x y
 #align pi.single_mul Pi.single_mul
 
