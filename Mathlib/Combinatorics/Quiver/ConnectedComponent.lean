@@ -66,3 +66,4 @@ def wideSubquiverSymmetrify (H : WideSubquiver (Symmetrify V)) : WideSubquiver V
   fun _ _ ↦ { e | H _ _ (Sum.inl e) ∨ H _ _ (Sum.inr e) }
 
 end Quiver
+
