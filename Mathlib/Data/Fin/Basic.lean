@@ -419,8 +419,9 @@ theorem mk_zero : (⟨0, Nat.succ_pos'⟩ : Fin (n + 1)) = (0 : Fin _) := by
 #align fin.mk_zero Fin.mk_zero
 
 @[simp]
-theorem zero_le (a : Fin (n + 1)) : 0 ≤ a :=
-  sorry -- was `zero_le a.val`
+theorem zero_le (a : Fin (n + 1)) : 0 ≤ a := by
+  change (0 : Fin (n+1)).val ≤ a.val
+  simp only [val_zero, _root_.zero_le] -- was `zero_le a.val`
 #align fin.zero_le Fin.zero_le
 
 theorem zero_lt_one : (0 : Fin (n + 2)) < 1 :=
@@ -428,8 +429,9 @@ theorem zero_lt_one : (0 : Fin (n + 2)) < 1 :=
 #align fin.zero_lt_one Fin.zero_lt_one
 
 @[simp]
-theorem not_lt_zero (a : Fin n.succ) : ¬a < 0 :=
-  sorry -- was `fun.`
+theorem not_lt_zero (a : Fin n.succ) : ¬a < 0 := by
+  change ¬(a.val < (0 : Fin n.succ).val)
+  simp only [val_zero, not_lt_zero', not_false_iff] -- was `fun.`
 #align fin.not_lt_zero Fin.not_lt_zero
 
 theorem pos_iff_ne_zero (a : Fin (n + 1)) : 0 < a ↔ a ≠ 0 := by
