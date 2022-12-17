@@ -470,7 +470,7 @@ theorem Pi.update_eq_div_mul_single [∀ i, Group <| f i] (g : ∀ i : I, f i) (
   · simp [Function.update_noteq h.symm, h]
 #align pi.update_eq_div_mul_single Pi.update_eq_div_mul_single
 
-@[to_additive Pi.single_add_single_eq_single_add_single]
+@[to_additive]
 theorem Pi.mul_single_mul_mul_single_eq_mul_single_mul_mul_single {M : Type _} [cm : CommMonoid M]
     {k l m n : I} {u v : M} (hu : u ≠ 1) (hv : v ≠ 1) :
     (mulSingle k u : (a : I) → M) * mulSingle l v = mulSingle m u * mulSingle n v ↔ --!!correct?
