@@ -329,7 +329,7 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [Faithful G] (obj : C →
       refine G.map_injective <| eq_of_heq <| h_map.trans ?_
       simp only [Functor.map_comp]
       convert HEq.refl (F.map f ≫ F.map g)
-      all_goals { try { apply h_obj } <;> apply h_map } }
+      all_goals { first | apply h_obj | apply h_map } }
 #align category_theory.faithful.div CategoryTheory.Faithful.div
 
 -- This follows immediately from `Functor.hext` (`Functor.hext h_obj @h_map`),
