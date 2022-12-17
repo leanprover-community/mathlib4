@@ -3923,7 +3923,7 @@ section Erasep
 
 variable {p : α → Prop} [DecidablePred p]
 
--- @[simp]
+attribute [simp] List.eraseP_nil
 -- theorem eraseP_nil : [].erasep p = [] :=
 --   rfl
 #align list.erasep_nil List.eraseP_nil
@@ -3932,12 +3932,12 @@ variable {p : α → Prop} [DecidablePred p]
 --   rfl
 #align list.erasep_cons List.eraseP_cons
 
--- @[simp]
+attribute [simp] List.eraseP_cons_of_pos
 -- theorem eraseP_cons_of_pos {a : α} {l : List α} (h : p a) : (a :: l).erasep p = l := by
 --   simp [erasep_cons, h]
 #align list.erasep_cons_of_pos List.eraseP_cons_of_pos
 
--- @[simp]
+attribute [simp] List.eraseP_cons_of_neg
 -- theorem eraseP_cons_of_neg {a : α} {l : List α} (h : ¬p a) : (a :: l).erasep p = a :: l.erasep p :=
 --   by simp [erasep_cons, h]
 #align list.erasep_cons_of_neg List.eraseP_cons_of_neg
@@ -3968,7 +3968,7 @@ variable {p : α → Prop} [DecidablePred p]
 --     exact Or.inl (erasep_of_forall_not h)
 #align list.exists_or_eq_self_of_erasep List.exists_or_eq_self_of_eraseP
 
--- @[simp]
+attribute [simp]List.length_eraseP_of_mem
 -- theorem length_eraseP_of_mem {l : List α} {a} (al : a ∈ l) (pa : p a) :
 --     length (l.eraseP p) = pred (length l) := by
 --   rcases exists_of_erasep al pa with ⟨_, l₁, l₂, _, _, e₁, e₂⟩ <;> rw [e₂] <;>
@@ -4024,7 +4024,7 @@ theorem length_eraseP_add_one {l : List α} {a} (al : a ∈ l) (pa : p a) :
   -- @erasep_subset _ _ _ _ _
 #align list.mem_of_mem_erasep List.mem_of_mem_eraseP
 
--- @[simp]
+attribute [simp] List.mem_eraseP_of_neg
 -- theorem mem_eraseP_of_neg {a : α} {l : List α} (pa : ¬p a) : a ∈ l.erasep p ↔ a ∈ l :=
 --   ⟨mem_of_mem_erasep, fun al => by
 --     rcases exists_or_eq_self_of_erasep p l with (h | ⟨c, l₁, l₂, h₁, h₂, h₃, h₄⟩)
@@ -4082,7 +4082,7 @@ lean 3 declaration is
 but is expected to have type
   forall {α : Type.{u_1}} [inst._@.Std.Data.List.Lemmas._hyg.20555 : DecidableEq.{succ u_1} α] (a : α) (l : List.{u_1} α), Eq.{succ u_1} (List.{u_1} α) (List.erase.{u_1} α (instBEq.{u_1} α (fun (a : α) (b : α) => inst._@.Std.Data.List.Lemmas._hyg.20555 a b)) (List.cons.{u_1} α a l) a) l
 Case conversion may be inaccurate. Consider using '#align list.erase_cons_head List.erase_cons_headₓ'. -/
--- @[simp]
+attribute [simp] List.erase_cons_head
 -- theorem erase_cons_head (a : α) (l : List α) : (a :: l).erase a = l := by
 --   simp only [erase_cons, if_pos rfl]
 #align list.erase_cons_head List.erase_cons_head
@@ -4093,7 +4093,7 @@ lean 3 declaration is
 but is expected to have type
   forall {α : Type.{u_1}} [inst._@.Std.Data.List.Lemmas._hyg.20582 : DecidableEq.{succ u_1} α] {a : α} {b : α} (l : List.{u_1} α), (Ne.{succ u_1} α b a) -> (Eq.{succ u_1} (List.{u_1} α) (List.erase.{u_1} α (instBEq.{u_1} α (fun (a : α) (b : α) => inst._@.Std.Data.List.Lemmas._hyg.20582 a b)) (List.cons.{u_1} α b l) a) (List.cons.{u_1} α b (List.erase.{u_1} α (instBEq.{u_1} α (fun (a : α) (b : α) => inst._@.Std.Data.List.Lemmas._hyg.20582 a b)) l a)))
 Case conversion may be inaccurate. Consider using '#align list.erase_cons_tail List.erase_cons_tailₓ'. -/
--- @[simp]
+attribute [simp] List.erase_cons_tail
 -- theorem erase_cons_tail {a b : α} (l : List α) (h : b ≠ a) : (b :: l).erase a = b :: l.erase a := by
 --   simp only [erase_cons, if_neg h] <;> constructor <;> rfl
 #align list.erase_cons_tail List.erase_cons_tail
@@ -4113,7 +4113,7 @@ but is expected to have type
   forall {α : Type.{u_1}} [inst._@.Std.Data.List.Lemmas._hyg.20735 : DecidableEq.{succ u_1} α] {a : α} {l : List.{u_1} α}, (Not (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a l)) -> (Eq.{succ u_1} (List.{u_1} α) (List.erase.{u_1} α (instBEq.{u_1} α (fun (a : α) (b : α) => inst._@.Std.Data.List.Lemmas._hyg.20735 a b)) l a) l)
 Case conversion may be inaccurate. Consider using '#align list.erase_of_not_mem List.erase_of_not_memₓ'. -/
 -- in Std
--- @[simp]
+attribute [simp] List.erase_of_not_mem
 -- theorem erase_of_not_mem {a : α} {l : List α} (h : a ∉ l) : l.erase a = l := by
 --   rw [erase_eq_erasep, erasep_of_forall_not] <;> rintro b h' rfl <;> exact h h'
 #align list.erase_of_not_mem List.erase_of_not_mem
@@ -4138,7 +4138,7 @@ but is expected to have type
   forall {α : Type.{u_1}} [inst._@.Std.Data.List.Lemmas._hyg.21072 : DecidableEq.{succ u_1} α] {a : α} {l : List.{u_1} α}, (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a l) -> (Eq.{1} Nat (List.length.{u_1} α (List.erase.{u_1} α (instBEq.{u_1} α (fun (a : α) (b : α) => inst._@.Std.Data.List.Lemmas._hyg.21072 a b)) l a)) (Nat.pred (List.length.{u_1} α l)))
 Case conversion may be inaccurate. Consider using '#align list.length_erase_of_mem List.length_erase_of_memₓ'. -/
 -- in Std
--- @[simp]
+attribute [simp] List.length_erase_of_mem
 -- theorem length_erase_of_mem {a : α} {l : List α} (h : a ∈ l) :
 --     length (l.erase a) = pred (length l) := by
 --   rw [erase_eq_erasep] <;> exact length_erasep_of_mem h rfl
@@ -4211,7 +4211,7 @@ lean 3 declaration is
 but is expected to have type
   forall {α : Type.{u_1}} [inst._@.Std.Data.List.Lemmas._hyg.21404 : DecidableEq.{succ u_1} α] {a : α} {b : α} {l : List.{u_1} α}, (Ne.{succ u_1} α a b) -> (Iff (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a (List.erase.{u_1} α (instBEq.{u_1} α (fun (a : α) (b : α) => inst._@.Std.Data.List.Lemmas._hyg.21404 a b)) l b)) (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a l))
 Case conversion may be inaccurate. Consider using '#align list.mem_erase_of_ne List.mem_erase_of_neₓ'. -/
--- @[simp]
+attribute [simp] List.mem_erase_of_ne
 -- theorem mem_erase_of_ne {a b : α} {l : List α} (ab : a ≠ b) : a ∈ l.erase b ↔ a ∈ l := by
 --   rw [erase_eq_erasep] <;> exact mem_erasep_of_neg ab.symm
 #align list.mem_erase_of_ne List.mem_erase_of_ne
