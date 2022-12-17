@@ -739,10 +739,15 @@ of `multiplicative.of_add 1`. -/
 def powersHom [Monoid M] :
     M ≃
       (Multiplicative ℕ →* M) where
-  toFun x :=
-    ⟨fun n : ℕ  => x ^ n.toAdd, by
-      convert pow_zero x
-      exact toAdd_one, fun m n => pow_add x m n⟩
+  toFun : M → Multiplicative ℕ →* M :=
+  fun x =>
+    { toFun := fun n : ℕ  =>
+        let n' := Multiplicative.toAdd n
+        x ^ n'
+      map_one' := by
+        convert pow_zero x
+      map_mul' :=  fun m n => pow_add x m n
+        }
   invFun f := f (Multiplicative.ofAdd 1)
   left_inv := pow_one
   right_inv f := MonoidHom.ext fun n => by simp [← f.map_pow, ← ofAdd_nsmul]
@@ -754,7 +759,14 @@ def zpowersHom [Group G] :
     G ≃
       (Multiplicative ℤ →*
         G) where
-  toFun x := ⟨fun n => x ^ n.toAdd, zpow_zero x, fun m n => zpow_add x m n⟩
+  toFun: G → Multiplicative ℤ →* G :=
+  fun x => {
+    toFun := fun n : ℤ  =>
+      let n' := Multiplicative.toAdd n
+      x ^ n'
+    map_one' := zpow_zero x
+    map_mul' := fun m n => zpow_add x m n
+    }
   invFun f := f (Multiplicative.ofAdd 1)
   left_inv := zpow_one
   right_inv f := MonoidHom.ext fun n => by
@@ -766,7 +778,13 @@ def multiplesHom [AddMonoid A] :
     A ≃
       (ℕ →+
         A) where
-  toFun x := ⟨fun n => n • x, zero_nsmul x, fun m n => add_nsmul _ _ _⟩
+  toFun : A → ℕ →+ A :=
+  fun x =>
+    {
+    toFun := fun n => n • x
+    map_zero' := zero_nsmul x
+    map_add' := fun _ _ => add_nsmul _ _ _
+  }
   invFun f := f 1
   left_inv := one_nsmul
   right_inv f := AddMonoidHom.ext_nat <| one_nsmul (f 1)
@@ -777,7 +795,11 @@ def zmultiplesHom [AddGroup A] :
     A ≃
       (ℤ →+
         A) where
-  toFun x := ⟨fun n => n • x, zero_zsmul x, fun m n => add_zsmul _ _ _⟩
+  toFun x := {
+    toFun := fun n => n • x
+    map_zero' := zero_zsmul x
+    map_add' := fun _ _ => add_zsmul _ _ _
+  }
   invFun f := f 1
   left_inv := one_zsmul
   right_inv f := AddMonoidHom.ext_int <| one_zsmul (f 1)
@@ -791,7 +813,7 @@ variable {M G A}
 
 @[simp]
 theorem powers_hom_apply [Monoid M] (x : M) (n : Multiplicative ℕ) :
-    powersHom M x n = x ^ n.toAdd :=
+    powersHom M x n = x ^ (Multiplicative.toAdd n):=
   rfl
 #align powers_hom_apply powers_hom_apply
 
@@ -803,7 +825,7 @@ theorem powers_hom_symm_apply [Monoid M] (f : Multiplicative ℕ →* M) :
 
 @[simp]
 theorem zpowers_hom_apply [Group G] (x : G) (n : Multiplicative ℤ) :
-    zpowersHom G x n = x ^ n.toAdd :=
+    zpowersHom G x n = x ^ (Multiplicative.toAdd n) :=
   rfl
 #align zpowers_hom_apply zpowers_hom_apply
 
@@ -843,7 +865,7 @@ attribute [to_additive zmultiples_hom_symm_apply] zpowers_hom_symm_apply
 
 -- TODO use to_additive in the rest of this file
 theorem MonoidHom.apply_mnat [Monoid M] (f : Multiplicative ℕ →* M) (n : Multiplicative ℕ) :
-    f n = f (Multiplicative.ofAdd 1) ^ n.toAdd := by
+    f n = f (Multiplicative.ofAdd 1) ^ (Multiplicative.toAdd n) := by
   rw [← powers_hom_symm_apply, ← powers_hom_apply, Equiv.apply_symm_apply]
 #align monoid_hom.apply_mnat MonoidHom.apply_mnat
 
@@ -854,7 +876,7 @@ theorem MonoidHom.ext_mnat [Monoid M] ⦃f g : Multiplicative ℕ →* M⦄
 #align monoid_hom.ext_mnat MonoidHom.ext_mnat
 
 theorem MonoidHom.apply_mint [Group M] (f : Multiplicative ℤ →* M) (n : Multiplicative ℤ) :
-    f n = f (Multiplicative.ofAdd 1) ^ n.toAdd := by
+    f n = f (Multiplicative.ofAdd 1) ^ (Multiplicative.toAdd n) := by
   rw [← zpowers_hom_symm_apply, ← zpowers_hom_apply, Equiv.apply_symm_apply]
 #align monoid_hom.apply_mint MonoidHom.apply_mint
 
@@ -901,7 +923,7 @@ variable {M G A}
 
 @[simp]
 theorem powers_mul_hom_apply [CommMonoid M] (x : M) (n : Multiplicative ℕ) :
-    powersMulHom M x n = x ^ n.toAdd :=
+    powersMulHom M x n = x ^ (Multiplicative.toAdd n) :=
   rfl
 #align powers_mul_hom_apply powers_mul_hom_apply
 
@@ -913,7 +935,7 @@ theorem powers_mul_hom_symm_apply [CommMonoid M] (f : Multiplicative ℕ →* M)
 
 @[simp]
 theorem zpowers_mul_hom_apply [CommGroup G] (x : G) (n : Multiplicative ℤ) :
-    zpowersMulHom G x n = x ^ n.toAdd :=
+    zpowersMulHom G x n = x ^ (Multiplicative.toAdd n) :=
   rfl
 #align zpowers_mul_hom_apply zpowers_mul_hom_apply
 
