@@ -223,10 +223,10 @@ end MulHom
 
 section MulHom
 
-/-- A family of mul_hom `f a : γ →ₙ* β a` defines a mul_hom `pi.mul_hom f : γ →ₙ* Π a, β a`
-given by `pi.mul_hom f x b = f b x`. -/
+/-- A family of mul_hom `f a : γ →ₙ* β a` defines a mul_hom `Pi.mul_hom f : γ →ₙ* Π a, β a`
+given by `Pi.mul_hom f x b = f b x`. -/
 @[to_additive
-      "A family of add_hom `f a : γ → β a` defines a add_hom `pi.add_hom\nf : γ → Π a, β a` given by `pi.add_hom f x b = f b x`.",
+      "A family of add_hom `f a : γ → β a` defines a add_hom `Pi.add_hom\nf : γ → Π a, β a` given by `Pi.add_hom f x b = f b x`.",
   simps]
 def Pi.mulHom {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i) : γ →ₙ* ∀ i, f i where
   toFun x i := g i x
@@ -241,9 +241,9 @@ theorem Pi.mul_hom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul 
 #align pi.mul_hom_injective Pi.mul_hom_injective
 
 /-- A family of monoid homomorphisms `f a : γ →* β a` defines a monoid homomorphism
-`pi.monoid_mul_hom f : γ →* Π a, β a` given by `pi.monoid_mul_hom f x b = f b x`. -/
+`Pi.monoid_mul_hom f : γ →* Π a, β a` given by `Pi.monoid_mul_hom f x b = f b x`. -/
 @[to_additive
-      "A family of additive monoid homomorphisms `f a : γ →+ β a` defines a monoid\nhomomorphism `pi.add_monoid_hom f : γ →+ Π a, β a` given by `pi.add_monoid_hom f x b\n= f b x`.",
+      "A family of additive monoid homomorphisms `f a : γ →+ β a` defines a monoid\nhomomorphism `Pi.add_monoid_hom f : γ →+ Π a, β a` given by `Pi.add_monoid_hom f x b\n= f b x`.",
   simps]
 def Pi.monoidHom {γ : Type w} [∀ i, MulOneClass (f i)] [MulOneClass γ] (g : ∀ i, γ →* f i) :
     γ →* ∀ i, f i :=
@@ -368,9 +368,9 @@ variable (f)
 /-- The one-preserving homomorphism including a single value
 into a dependent family of values, as functions supported at a point.
 
-This is the `one_hom` version of `pi.mulSingle`. -/
+This is the `one_hom` version of `Pi.mulSingle`. -/
 @[to_additive
-      "The zero-preserving homomorphism including a single value\ninto a dependent family of values, as functions supported at a point.\n\nThis is the `zero_hom` version of `pi.single`."]
+      "The zero-preserving homomorphism including a single value\ninto a dependent family of values, as functions supported at a point.\n\nThis is the `zero_hom` version of `Pi.single`."]
 def OneHom.single [∀ i, One <| f i] (i : I) :
     OneHom (f i) (∀ i, f i) where
   toFun := mulSingle i
