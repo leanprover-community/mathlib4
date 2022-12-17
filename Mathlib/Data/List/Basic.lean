@@ -1066,10 +1066,16 @@ a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
 def reverseRecOn {C : List α → Sort _} (l : List α) (H0 : C [])
     (H1 : ∀ (l : List α) (a : α), C l → C (l ++ [a])) : C l := by
   rw [← reverse_reverse l]
-  induction reverse l
-  · exact H0
-  · rw [reverse_cons]
+  match h:(reverse l) with
+  | [] => exact H0
+  | head :: tail =>
+    have : tail.length < l.length := by
+        rw [← length_reverse l, h, length_cons]
+        simp [Nat.lt_succ]
+    let ih := reverseRecOn (reverse tail) H0 H1
+    rw [reverse_cons]
     exact H1 _ _ ih
+termination_by _ _ l _ _ => l.length
 #align list.reverse_rec_on List.reverseRecOn
 
 /- warning: list.bidirectional_rec -> List.bidirectionalRec is a dubious translation:
