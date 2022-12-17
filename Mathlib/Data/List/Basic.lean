@@ -1121,6 +1121,8 @@ def bidirectionalRecOn {C : List α → Sort _} (l : List α) (H0 : C []) (H1 : 
 
 attribute [refl] List.Sublist.refl
 
+#align list.sublist.cons2 List.Sublist.cons₂
+
 #align list.nil_sublist List.nil_sublist
 
 #align list.sublist.refl List.Sublist.refl
@@ -3920,6 +3922,8 @@ end Filter
 
 
 section Erasep
+
+#align list.erasep List.eraseP
 
 variable {p : α → Prop} [DecidablePred p]
 
