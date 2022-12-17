@@ -1352,7 +1352,7 @@ theorem nth_eq_some {l : List α} {n a} : nth l n = some a ↔ ∃ h, nthLe l n 
 
 @[simp]
 theorem nth_eq_none_iff : ∀ {l : List α} {n}, nth l n = none ↔ length l ≤ n := by
-  intros ; constructor
+  intro l n ; constructor
   · intro h
     by_contra h'
     have h₂ : ∃ h, List.nthLe l n h = l.nthLe n (lt_of_not_ge h') := ⟨lt_of_not_ge h', rfl⟩
@@ -3968,7 +3968,7 @@ attribute [simp] List.eraseP_cons_of_neg
 --     exact Or.inl (erasep_of_forall_not h)
 #align list.exists_or_eq_self_of_erasep List.exists_or_eq_self_of_eraseP
 
-attribute [simp]List.length_eraseP_of_mem
+attribute [simp] List.length_eraseP_of_mem
 -- theorem length_eraseP_of_mem {l : List α} {a} (al : a ∈ l) (pa : p a) :
 --     length (l.eraseP p) = pred (length l) := by
 --   rcases exists_of_erasep al pa with ⟨_, l₁, l₂, _, _, e₁, e₂⟩ <;> rw [e₂] <;>
@@ -4648,7 +4648,6 @@ theorem map₂_left_eq_map₂ :
 end Map₂Left
 
 /-! ### map₂_right -/
-
 
 section Map₂Right
 
