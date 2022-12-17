@@ -1299,3 +1299,7 @@ theorem unop_zpow [DivInvMonoid M] (x : Mᵐᵒᵖ) (z : ℤ) : unop (x ^ z) = u
 #align mul_opposite.unop_zpow MulOpposite.unop_zpow
 
 end MulOpposite
+
+-- Porting note: this was added in an ad hoc port for use in `Tactic/NormNum/Basic`
+
+@[simp] theorem pow_eq {m : ℤ} {n : ℕ} : m.pow n = m ^ n := rfl
