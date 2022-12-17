@@ -4091,12 +4091,13 @@ lean 3 declaration is
 but is expected to have type
   forall {α : Type.{u_1}} [inst._@.Std.Data.List.Lemmas._hyg.20582 : DecidableEq.{succ u_1} α] {a : α} {b : α} (l : List.{u_1} α), (Ne.{succ u_1} α b a) -> (Eq.{succ u_1} (List.{u_1} α) (List.erase.{u_1} α (instBEq.{u_1} α (fun (a : α) (b : α) => inst._@.Std.Data.List.Lemmas._hyg.20582 a b)) (List.cons.{u_1} α b l) a) (List.cons.{u_1} α b (List.erase.{u_1} α (instBEq.{u_1} α (fun (a : α) (b : α) => inst._@.Std.Data.List.Lemmas._hyg.20582 a b)) l a)))
 Case conversion may be inaccurate. Consider using '#align list.erase_cons_tail List.erase_cons_tailₓ'. -/
-@[simp]
-theorem erase_cons_tail {a b : α} (l : List α) (h : b ≠ a) : (b :: l).erase a = b :: l.erase a := by
-  simp only [erase_cons, if_neg h] <;> constructor <;> rfl
+-- @[simp]
+-- theorem erase_cons_tail {a b : α} (l : List α) (h : b ≠ a) : (b :: l).erase a = b :: l.erase a := by
+--   simp only [erase_cons, if_neg h] <;> constructor <;> rfl
 #align list.erase_cons_tail List.erase_cons_tail
 
-theorem erase_eq_erasep (a : α) (l : List α) : l.erase a = l.erasep (Eq a) := by
+theorem erase_eq_eraseP (a : α) (l : List α) :
+    l.erase a = l.eraseP (Eq a) := by
   induction' l with b l
   · rfl
   by_cases a = b <;> [simp [h], simp [h, Ne.symm h, *]]
@@ -4108,9 +4109,10 @@ lean 3 declaration is
 but is expected to have type
   forall {α : Type.{u_1}} [inst._@.Std.Data.List.Lemmas._hyg.20735 : DecidableEq.{succ u_1} α] {a : α} {l : List.{u_1} α}, (Not (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a l)) -> (Eq.{succ u_1} (List.{u_1} α) (List.erase.{u_1} α (instBEq.{u_1} α (fun (a : α) (b : α) => inst._@.Std.Data.List.Lemmas._hyg.20735 a b)) l a) l)
 Case conversion may be inaccurate. Consider using '#align list.erase_of_not_mem List.erase_of_not_memₓ'. -/
-@[simp]
-theorem erase_of_not_mem {a : α} {l : List α} (h : a ∉ l) : l.erase a = l := by
-  rw [erase_eq_erasep, erasep_of_forall_not] <;> rintro b h' rfl <;> exact h h'
+-- in Std
+-- @[simp]
+-- theorem erase_of_not_mem {a : α} {l : List α} (h : a ∉ l) : l.erase a = l := by
+--   rw [erase_eq_erasep, erasep_of_forall_not] <;> rintro b h' rfl <;> exact h h'
 #align list.erase_of_not_mem List.erase_of_not_mem
 
 /- warning: list.exists_erase_eq -> List.exists_erase_eq is a dubious translation:
@@ -4131,10 +4133,11 @@ lean 3 declaration is
 but is expected to have type
   forall {α : Type.{u_1}} [inst._@.Std.Data.List.Lemmas._hyg.21072 : DecidableEq.{succ u_1} α] {a : α} {l : List.{u_1} α}, (Membership.mem.{u_1, u_1} α (List.{u_1} α) (List.instMembershipList.{u_1} α) a l) -> (Eq.{1} Nat (List.length.{u_1} α (List.erase.{u_1} α (instBEq.{u_1} α (fun (a : α) (b : α) => inst._@.Std.Data.List.Lemmas._hyg.21072 a b)) l a)) (Nat.pred (List.length.{u_1} α l)))
 Case conversion may be inaccurate. Consider using '#align list.length_erase_of_mem List.length_erase_of_memₓ'. -/
-@[simp]
-theorem length_erase_of_mem {a : α} {l : List α} (h : a ∈ l) :
-    length (l.erase a) = pred (length l) := by
-  rw [erase_eq_erasep] <;> exact length_erasep_of_mem h rfl
+-- in Std
+-- @[simp]
+-- theorem length_erase_of_mem {a : α} {l : List α} (h : a ∈ l) :
+--     length (l.erase a) = pred (length l) := by
+--   rw [erase_eq_erasep] <;> exact length_erasep_of_mem h rfl
 #align list.length_erase_of_mem List.length_erase_of_mem
 
 @[simp]
