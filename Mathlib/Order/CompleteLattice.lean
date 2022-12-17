@@ -1242,11 +1242,11 @@ theorem infᵢ_subtype' {p : ι → Prop} {f : ∀ i, p i → α} :
   (@infᵢ_subtype _ _ _ p fun x => f x.val x.property).symm
 #align infi_subtype' infᵢ_subtype'
 
-theorem supᵢ_subtype'' {ι} (s : Set ι) (f : ι → α) : (⨆ i : s, f i) = ⨆ (t : ι) (H : t ∈ s), f t :=
+theorem supᵢ_subtype'' {ι} (s : Set ι) (f : ι → α) : (⨆ i : s, f i) = ⨆ (t : ι) (_H : t ∈ s), f t :=
   supᵢ_subtype
 #align supr_subtype'' supᵢ_subtype''
 
-theorem infᵢ_subtype'' {ι} (s : Set ι) (f : ι → α) : (⨅ i : s, f i) = ⨅ (t : ι) (H : t ∈ s), f t :=
+theorem infᵢ_subtype'' {ι} (s : Set ι) (f : ι → α) : (⨅ i : s, f i) = ⨅ (t : ι) (_H : t ∈ s), f t :=
   infᵢ_subtype
 #align infi_subtype'' infᵢ_subtype''
 
@@ -1401,12 +1401,12 @@ theorem infᵢ_dite (f : ∀ i, p i → α) (g : ∀ i, ¬p i → α) :
 #align infi_dite infᵢ_dite
 
 theorem supᵢ_ite (f g : ι → α) :
-    (⨆ i, if p i then f i else g i) = (⨆ (i) (h : p i), f i) ⊔ ⨆ (i) (h : ¬p i), g i :=
+    (⨆ i, if p i then f i else g i) = (⨆ (i) (_h : p i), f i) ⊔ ⨆ (i) (_h : ¬p i), g i :=
   supᵢ_dite _ _ _
 #align supr_ite supᵢ_ite
 
 theorem infᵢ_ite (f g : ι → α) :
-    (⨅ i, if p i then f i else g i) = (⨅ (i) (h : p i), f i) ⊓ ⨅ (i) (h : ¬p i), g i :=
+    (⨅ i, if p i then f i else g i) = (⨅ (i) (_h : p i), f i) ⊓ ⨅ (i) (_h : ¬p i), g i :=
   infᵢ_dite _ _ _
 #align infi_ite infᵢ_ite
 
@@ -1452,21 +1452,21 @@ theorem infᵢ_union {f : β → α} {s t : Set β} : (⨅ x ∈ s ∪ t, f x) =
 #align infi_union infᵢ_union
 
 theorem supᵢ_split (f : β → α) (p : β → Prop) :
-    (⨆ i, f i) = (⨆ (i) (h : p i), f i) ⊔ ⨆ (i) (h : ¬p i), f i := by
+    (⨆ i, f i) = (⨆ (i) (_h : p i), f i) ⊔ ⨆ (i) (_h : ¬p i), f i := by
   simpa [Classical.em] using @supᵢ_union _ _ _ f { i | p i } { i | ¬p i }
 #align supr_split supᵢ_split
 
 theorem infᵢ_split :
-    ∀ (f : β → α) (p : β → Prop), (⨅ i, f i) = (⨅ (i) (h : p i), f i) ⊓ ⨅ (i) (h : ¬p i), f i :=
+    ∀ (f : β → α) (p : β → Prop), (⨅ i, f i) = (⨅ (i) (_h : p i), f i) ⊓ ⨅ (i) (_h : ¬p i), f i :=
   @supᵢ_split αᵒᵈ _ _
 #align infi_split infᵢ_split
 
-theorem supᵢ_split_single (f : β → α) (i₀ : β) : (⨆ i, f i) = f i₀ ⊔ ⨆ (i) (h : i ≠ i₀), f i := by
+theorem supᵢ_split_single (f : β → α) (i₀ : β) : (⨆ i, f i) = f i₀ ⊔ ⨆ (i) (_h : i ≠ i₀), f i := by
   convert supᵢ_split f (fun i => i = i₀)
   simp
 #align supr_split_single supᵢ_split_single
 
-theorem infᵢ_split_single (f : β → α) (i₀ : β) : (⨅ i, f i) = f i₀ ⊓ ⨅ (i) (h : i ≠ i₀), f i :=
+theorem infᵢ_split_single (f : β → α) (i₀ : β) : (⨅ i, f i) = f i₀ ⊓ ⨅ (i) (_h : i ≠ i₀), f i :=
   @supᵢ_split_single αᵒᵈ _ _ _ _
 #align infi_split_single infᵢ_split_single
 
