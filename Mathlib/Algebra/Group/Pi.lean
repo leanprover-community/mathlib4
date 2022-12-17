@@ -368,7 +368,7 @@ variable (f)
 /-- The one-preserving homomorphism including a single value
 into a dependent family of values, as functions supported at a point.
 
-This is the `one_hom` version of `pi.mul_single`. -/
+This is the `one_hom` version of `pi.mulSingle`. -/
 @[to_additive
       "The zero-preserving homomorphism including a single value\ninto a dependent family of values, as functions supported at a point.\n\nThis is the `zero_hom` version of `pi.single`."]
 def OneHom.single [∀ i, One <| f i] (i : I) :
@@ -386,7 +386,7 @@ theorem OneHom.single_apply [∀ i, One <| f i] (i : I) (x : f i) :
 /-- The monoid homomorphism including a single monoid into a dependent family of additive monoids,
 as functions supported at a point.
 
-This is the `monoid_hom` version of `Pi.mul_single`. -/
+This is the `monoid_hom` version of `Pi.mulSingle`. -/
 @[to_additive
       "The additive monoid homomorphism including a single additive\nmonoid into a dependent family of additive monoids, as functions supported at a point.\n\nThis is the `add_monoid_hom` version of `Pi.Single`."]
 def MonoidHom.single [∀ i, MulOneClass <| f i] (i : I) : f i →* ∀ i, f i :=
@@ -413,16 +413,16 @@ def MulHom.single [∀ i, MulZeroClass <| f i] (i : I) :
 variable {f}
 
 @[to_additive]
-theorem Pi.mul_single_mul [∀ i, MulOneClass <| f i] (i : I) (x y : f i) :
+theorem Pi.mulSingle_mul [∀ i, MulOneClass <| f i] (i : I) (x y : f i) :
     mulSingle i (x * y) = mulSingle i x * mulSingle i y :=
   (MonoidHom.single f i).map_mul x y
-#align pi.mul_single_mul Pi.mul_single_mul
+#align pi.mul_single_mul Pi.mulSingle_mul
 
 @[to_additive]
-theorem Pi.mul_single_inv [∀ i, Group <| f i] (i : I) (x : f i) :
+theorem Pi.mulSingle_inv [∀ i, Group <| f i] (i : I) (x : f i) :
     mulSingle i x⁻¹ = (mulSingle i x)⁻¹ :=
   (MonoidHom.single f i).map_inv x
-#align pi.mul_single_inv Pi.mul_single_inv
+#align pi.mul_single_inv Pi.mulSingle_inv
 
 @[to_additive]
 theorem Pi.single_div [∀ i, Group <| f i] (i : I) (x y : f i) :
@@ -440,7 +440,7 @@ theorem Pi.single_mul [∀ i, MulZeroClass <| f i] (i : I) (x y : f i) :
 For injections of commuting elements at the same index, see `commute.map` -/
 @[to_additive
       "The injection into an additive pi group at different indices commutes.\n\nFor injections of commuting elements at the same index, see `add_commute.map`"]
-theorem Pi.mul_single_commute [∀ i, MulOneClass <| f i] :
+theorem Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
     Pairwise fun i j => ∀ (x : f i) (y : f j), Commute (mulSingle i x) (mulSingle j y) := by
   intro i j hij x y; ext k
   by_cases h1 : i = k;
@@ -450,28 +450,28 @@ theorem Pi.mul_single_commute [∀ i, MulOneClass <| f i] :
   · subst h2
     simp [hij]
   simp [h1, h2]
-#align pi.mul_single_commute Pi.mul_single_commute
+#align pi.mul_single_commute Pi.mulSingle_commute
 
 /-- The injection into a pi group with the same values commutes. -/
 @[to_additive "The injection into an additive pi group with the same values commutes."]
-theorem Pi.mul_single_apply_commute [∀ i, MulOneClass <| f i] (x : ∀ i, f i) (i j : I) :
+theorem Pi.mulSingle_apply_commute [∀ i, MulOneClass <| f i] (x : ∀ i, f i) (i j : I) :
     Commute (mulSingle i (x i)) (mulSingle j (x j)) := by
   obtain rfl | hij := Decidable.eq_or_ne i j
   · rfl
-  · exact Pi.mul_single_commute hij _ _
-#align pi.mul_single_apply_commute Pi.mul_single_apply_commute
+  · exact Pi.mulSingle_commute hij _ _
+#align pi.mul_single_apply_commute Pi.mulSingle_apply_commute
 
 @[to_additive update_eq_sub_add_single]
-theorem Pi.update_eq_div_mul_single [∀ i, Group <| f i] (g : ∀ i : I, f i) (x : f i) :
+theorem Pi.update_eq_div_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i) (x : f i) :
     Function.update g i x = g / mulSingle i (g i) * mulSingle i x := by
   ext j
   rcases eq_or_ne i j with (rfl | h)
   · simp
   · simp [Function.update_noteq h.symm, h]
-#align pi.update_eq_div_mul_single Pi.update_eq_div_mul_single
+#align pi.update_eq_div_mul_single Pi.update_eq_div_mulSingle
 
 @[to_additive]
-theorem Pi.mul_single_mul_mul_single_eq_mul_single_mul_mul_single {M : Type _} [cm : CommMonoid M]
+theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type _} [cm : CommMonoid M]
     {k l m n : I} {u v : M} (hu : u ≠ 1) (hv : v ≠ 1) :
     (mulSingle k u : (a : I) → M) * mulSingle l v = mulSingle m u * mulSingle n v ↔ --!!correct?
       k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n :=
@@ -502,9 +502,9 @@ theorem Pi.mul_single_mul_mul_single_eq_mul_single_mul_mul_single {M : Type _} [
   · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl, rfl⟩ | ⟨h, rfl, rfl⟩)
     · rfl
     · apply mul_comm
-    · simp_rw [← Pi.mul_single_mul, h, mulSingle_one]
+    · simp_rw [← Pi.mulSingle_mul, h, mulSingle_one]
 #align
-  pi.mul_single_mul_mul_single_eq_mul_single_mul_mul_single Pi.mul_single_mul_mul_single_eq_mul_single_mul_mul_single
+  pi.mul_single_mul_mul_single_eq_mul_single_mul_mul_single Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle
 
 end Single
 
