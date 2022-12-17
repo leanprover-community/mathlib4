@@ -15,9 +15,7 @@ import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Hom.Basic
 
 import Mathlib.Mathport.Notation
-import Init.NotationExtra
 
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Theory of complete lattices
@@ -109,17 +107,20 @@ macro_rules
   | `(⨆ $x:ident $b:binderPred, $p) =>
     `(supᵢ fun $x:ident ↦ satisfiesBinderPred% $x $b ∧ $p) -/
 
-
+/-- Indexed supremum. -/
 notation3 "⨆ "(...)", "r:(scoped f => supᵢ f) => r
 
+/-- Unexpander for the indexed supremum notation.-/
 @[app_unexpander supᵢ]
 def supᵢ.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ $p) => `(⨆ $x:ident, $p)
   | `($_ fun $x:ident : $ty:term ↦ $p) => `(⨆ $x:ident : $ty:term, $p)
   | _ => throw ()
 
+/-- Indexed infimum. -/
 notation3 "⨅ "(...)", "r:(scoped f => infᵢ f) => r
 
+/-- Unexpander for the indexed infimum notation.-/
 @[app_unexpander infᵢ]
 def infᵢ.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ $p) => `(⨅ $x:ident, $p)
@@ -138,7 +139,9 @@ instance OrderDual.infSet (α) [SupSet α] : InfSet αᵒᵈ :=
 Nevertheless it is sometimes a useful intermediate step in constructions.
 -/
 class CompleteSemilatticeSup (α : Type _) extends PartialOrder α, SupSet α where
+  /-- Any element of a set is less than the set supremum. -/
   le_supₛ : ∀ s, ∀ a ∈ s, a ≤ supₛ s
+  /-- Any upper bound is more than the set supremum. -/
   supₛ_le : ∀ s a, (∀ b ∈ s, b ≤ a) → supₛ s ≤ a
 #align complete_semilattice_Sup CompleteSemilatticeSup
 
@@ -204,7 +207,9 @@ end
 Nevertheless it is sometimes a useful intermediate step in constructions.
 -/
 class CompleteSemilatticeInf (α : Type _) extends PartialOrder α, InfSet α where
+  /-- Any element of a set is more than the set infimum. -/
   infₛ_le : ∀ s, ∀ a ∈ s, infₛ s ≤ a
+  /-- Any lower bound is less than the set infimum. -/
   le_infₛ : ∀ s a, (∀ b ∈ s, a ≤ b) → a ≤ infₛ s
 #align complete_semilattice_Inf CompleteSemilatticeInf
 
@@ -269,7 +274,9 @@ end
 /-- A complete lattice is a bounded lattice which has supᵢema and infima for every subset. -/
 class CompleteLattice (α : Type _) extends Lattice α, CompleteSemilatticeSup α,
   CompleteSemilatticeInf α, Top α, Bot α where
+  /-- Any element is less than the top one. -/
   protected le_top : ∀ x : α, x ≤ ⊤
+  /-- Any element is more than the bottom one. -/
   protected bot_le : ∀ x : α, ⊥ ≤ x
 #align complete_lattice CompleteLattice
 
@@ -921,13 +928,12 @@ theorem le_infᵢ_iff : a ≤ infᵢ f ↔ ∀ i, a ≤ f i :=
   (le_isGLB_iff isGLB_infᵢ).trans forall_range_iff
 #align le_infi_iff le_infᵢ_iff
 
-@[simp]
 theorem supᵢ₂_le_iff {f : ∀ i, κ i → α} : (⨆ (i) (j), f i j) ≤ a ↔ ∀ i j, f i j ≤ a := by
   simp_rw [supᵢ_le_iff]
   rfl
+
 #align supr₂_le_iff supᵢ₂_le_iff
 
-@[simp]
 theorem le_infᵢ₂_iff {f : ∀ i, κ i → α} : (a ≤ ⨅ (i) (j), f i j) ↔ ∀ i j, a ≤ f i j := by
   simp_rw [le_infᵢ_iff]
   rfl
@@ -1093,15 +1099,13 @@ theorem infᵢ_eq_top : infᵢ s = ⊤ ↔ ∀ i, s i = ⊤ :=
 #align infi_eq_top infᵢ_eq_top
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-@[simp]
 theorem supᵢ₂_eq_bot {f : ∀ i, κ i → α} : (⨆ (i) (j), f i j) = ⊥ ↔ ∀ i j, f i j = ⊥ := by
-  simp_rw [supᵢ_eq_bot] ; rfl
+  simp
 #align supr₂_eq_bot supᵢ₂_eq_bot
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-@[simp]
 theorem infᵢ₂_eq_top {f : ∀ i, κ i → α} : (⨅ (i) (j), f i j) = ⊤ ↔ ∀ i j, f i j = ⊤ := by
-  simp_rw [infᵢ_eq_top] ; rfl
+  simp
 #align infi₂_eq_top infᵢ₂_eq_top
 
 @[simp]
@@ -1324,14 +1328,12 @@ theorem inf_binfᵢ {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ 
 /-! ### `supᵢ` and `infᵢ` under `Prop` -/
 
 
-@[simp]
 theorem supᵢ_false {s : False → α} : supᵢ s = ⊥ :=
-  le_antisymm (supᵢ_le fun i => False.elim i) bot_le
+  by simp
 #align supr_false supᵢ_false
 
-@[simp]
 theorem infᵢ_false {s : False → α} : infᵢ s = ⊤ :=
-  le_antisymm le_top (le_infᵢ fun i => False.elim i)
+  by simp
 #align infi_false infᵢ_false
 
 theorem supᵢ_true {s : True → α} : supᵢ s = s trivial :=
