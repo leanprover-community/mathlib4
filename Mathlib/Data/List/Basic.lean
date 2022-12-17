@@ -1322,15 +1322,15 @@ end IndexOf
 
 
 theorem nthLe_of_mem : ∀ {a} {l : List α}, a ∈ l → ∃ n h, nthLe l n h = a
-  | a, _ :: l, Or.inl rfl => ⟨0, succ_pos _, rfl⟩
-  | a, b :: l, Or.inr m =>
+  | _, _ :: _, List.Mem.head _ => ⟨0, succ_pos _, rfl⟩
+  | _, _ :: _, List.Mem.tail _ m =>
     let ⟨n, h, e⟩ := nthLe_of_mem m
     ⟨n + 1, succ_lt_succ h, e⟩
 #align list.nth_le_of_mem List.nthLe_of_mem
 
 theorem nthLe_nth : ∀ {l : List α} {n} (h), nth l n = some (nthLe l n h)
-  | a :: l, 0, h => rfl
-  | a :: l, n + 1, h => @nthLe_nth l n _
+  | _ :: _, 0, _ => rfl
+  | _ :: l, n + 1, _ => @nthLe_nth l n _
 #align list.nth_le_nth List.nthLe_nth
 
 theorem nth_len_le : ∀ {l : List α} {n}, length l ≤ n → nth l n = none
