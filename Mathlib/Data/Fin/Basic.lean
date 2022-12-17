@@ -441,7 +441,7 @@ theorem pos_iff_ne_zero (a : Fin (n + 1)) : 0 < a ↔ a ≠ 0 := by
 theorem eq_zero_or_eq_succ {n : ℕ} (i : Fin (n + 1)) : i = 0 ∨ ∃ j : Fin n, i = j.succ := by
   rcases i with ⟨_ | j, h⟩
   · left
-    sorry -- was `rfl`
+    simp only [zero_eq, mk_zero] -- was `rfl`
   · right
     exact ⟨⟨j, Nat.lt_of_succ_lt_succ h⟩, rfl⟩
 #align fin.eq_zero_or_eq_succ Fin.eq_zero_or_eq_succ
@@ -954,8 +954,9 @@ theorem succ_ne_zero {n} : ∀ k : Fin n, Fin.succ k ≠ 0
 #align fin.succ_ne_zero Fin.succ_ne_zero
 
 @[simp]
-theorem succ_zero_eq_one : Fin.succ (0 : Fin (n + 1)) = 1 :=
-  rfl
+theorem succ_zero_eq_one : Fin.succ (0 : Fin (n + 1)) = 1 := by
+  ext
+  simp only [val_succ, val_zero, zero_add, one_val] -- was `rfl`
 #align fin.succ_zero_eq_one Fin.succ_zero_eq_one
 
 @[simp]
