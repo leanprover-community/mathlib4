@@ -402,8 +402,7 @@ instance {n : ℕ} : WellFoundedRelation (Fin n) :=
 
 -- porting note: hmm, this is broken, how to fix? Should we prove `Fin.val = Nat.cast`?
 @[simp]
-theorem val_zero {n : ℕ} : ((0 : Fin (n + 1)) : ℕ) = 0 :=
-  sorry -- was `rfl`
+theorem val_zero {n : ℕ} : ((0 : Fin (n + 1)) : ℕ) = 0 := Fin.ofNat'_zero_val
 #align fin.coe_zero Fin.val_zero
 
 -- porting note: this is tagged above: `attribute [simp] val_zero`
