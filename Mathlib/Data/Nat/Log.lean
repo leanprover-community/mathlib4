@@ -172,7 +172,7 @@ theorem log_eq_one_iff {b n : ℕ} : log b n = 1 ↔ n < b * b ∧ 1 < b ∧ b �
 #align nat.log_eq_one_iff Nat.log_eq_one_iff
 
 theorem log_mul_base {b n : ℕ} (hb : 1 < b) (hn : n ≠ 0) : log b (n * b) = log b n + 1 := by
-  apply log_eq_of_pow_le_of_lt_pow <;> rw [pow_succ']
+  apply log_eq_of_pow_le_of_lt_pow <;> rw [pow_succ', mul_comm b]
   exacts [mul_le_mul_right' (pow_log_le_self _ hn) _,
     (mul_lt_mul_right (zero_lt_one.trans hb)).2 (lt_pow_succ_log_self hb _)]
 #align nat.log_mul_base Nat.log_mul_base
@@ -249,11 +249,11 @@ def clog (b : ℕ) : ℕ → ℕ
 #align nat.clog Nat.clog
 
 theorem clog_of_left_le_one {b : ℕ} (hb : b ≤ 1) (n : ℕ) : clog b n = 0 := by
-  rw [clog, if_neg fun h : 1 < b ∧ 1 < n => h.1.not_le hb]
+  rw [clog, dif_neg fun h : 1 < b ∧ 1 < n => h.1.not_le hb]
 #align nat.clog_of_left_le_one Nat.clog_of_left_le_one
 
 theorem clog_of_right_le_one {n : ℕ} (hn : n ≤ 1) (b : ℕ) : clog b n = 0 := by
-  rw [clog, if_neg fun h : 1 < b ∧ 1 < n => h.2.not_le hn]
+  rw [clog, dif_neg fun h : 1 < b ∧ 1 < n => h.2.not_le hn]
 #align nat.clog_of_right_le_one Nat.clog_of_right_le_one
 
 @[simp]
@@ -277,7 +277,7 @@ theorem clog_one_right (b : ℕ) : clog b 1 = 0 :=
 #align nat.clog_one_right Nat.clog_one_right
 
 theorem clog_of_two_le {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) :
-    clog b n = clog b ((n + b - 1) / b) + 1 := by rw [clog, if_pos (⟨hb, hn⟩ : 1 < b ∧ 1 < n)]
+    clog b n = clog b ((n + b - 1) / b) + 1 := by rw [clog, dif_pos (⟨hb, hn⟩ : 1 < b ∧ 1 < n)]
 #align nat.clog_of_two_le Nat.clog_of_two_le
 
 theorem clog_pos {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : 0 < clog b n := by
@@ -303,9 +303,9 @@ theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ 
     contrapose!
     exact clog_pos hb
   have b_pos : 0 < b := zero_lt_two.trans_le hb
-  rw [clog]; split_ifs
+  rw [clog]; split_ifs with h
   · rw [succ_eq_add_one, add_le_add_iff_right, ← ih ((x + b - 1) / b) (add_pred_div_lt hb h.2),
-      Nat.div_le_iff_le_mul_add_pred b_pos, ← pow_succ,
+      Nat.div_le_iff_le_mul_add_pred b_pos, mul_comm b, ← pow_succ,
       add_tsub_assoc_of_le (Nat.succ_le_of_lt b_pos), add_le_add_iff_right]
   · exact iff_of_true ((not_lt.1 (not_and.1 h hb)).trans <| succ_le_of_lt <| pow_pos b_pos _)
       (zero_le _)
