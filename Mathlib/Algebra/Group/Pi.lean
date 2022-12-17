@@ -24,7 +24,7 @@ This file defines instances for group, monoid, semigroup and related structures 
 
   See this Zulip discussion: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/not.20porting.20pi_instance]
 
-  * This file now includes the pi instance for `AddMonoidWithOne`
+  * This file now includes the pi instances for `AddMonoidWithOne` and `AddGroupWithOne`
   * This file relied on the `pi_instance` tactic, which was not available at the time of porting.
     The comment `--pi_instance` is inserted before all fields which were previously derived by
     `pi_instance`.
@@ -209,6 +209,12 @@ instance monoidWithZero [∀ i, MonoidWithZero <| f i] : MonoidWithZero (∀ i :
 instance commMonoidWithZero [∀ i, CommMonoidWithZero <| f i] : CommMonoidWithZero (∀ i : I, f i) :=
   { monoidWithZero, commMonoid with } --!!trim?
 #align pi.comm_monoid_with_zero Pi.commMonoidWithZero
+
+instance [∀ i, AddMonoidWithOne <| f i] : AddMonoidWithOne (∀ i : I, f i) :=
+  { addMonoid with }
+
+instance [∀ i, AddGroupWithOne <| f i] : AddGroupWithOne (∀ i : I, f i) :=
+  { addGroup with }
 
 end Pi
 
