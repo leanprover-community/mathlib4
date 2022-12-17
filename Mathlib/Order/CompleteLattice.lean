@@ -625,7 +625,7 @@ theorem supₛ_range : supₛ (range f) = supᵢ f :=
   rfl
 #align Sup_range supₛ_range
 
-theorem supₛ_eq_supᵢ' (s : Set α) : supₛ s = ⨆ a : s, a := by rw [supᵢ, Subtype.range_coe]
+theorem supₛ_eq_supᵢ' (s : Set α) : supₛ s = ⨆ a : s, (a : α) := by rw [supᵢ, Subtype.range_coe]
 #align Sup_eq_supr' supₛ_eq_supᵢ'
 
 theorem supᵢ_congr (h : ∀ i, f i = g i) : (⨆ i, f i) = ⨆ i, g i :=
@@ -633,7 +633,10 @@ theorem supᵢ_congr (h : ∀ i, f i = g i) : (⨆ i, f i) = ⨆ i, g i :=
 #align supr_congr supᵢ_congr
 
 theorem Function.Surjective.supᵢ_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
-    (⨆ x, g (f x)) = ⨆ y, g y := by simp only [supᵢ, hf.range_comp]
+    (⨆ x, g (f x)) = ⨆ y, g y := by
+  simp [supᵢ]
+  congr
+  exact hf.range_comp g
 #align function.surjective.supr_comp Function.Surjective.supᵢ_comp
 
 theorem Equiv.supᵢ_comp {g : ι' → α} (e : ι ≃ ι') : (⨆ x, g (e x)) = ⨆ y, g y :=
