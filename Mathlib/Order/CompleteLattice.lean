@@ -984,7 +984,8 @@ theorem Antitone.le_map_infₛ [CompleteLattice β] {s : Set α} {f : α → β}
 
 theorem OrderIso.map_supᵢ [CompleteLattice β] (f : α ≃o β) (x : ι → α) :
     f (⨆ i, x i) = ⨆ i, f (x i) :=
-  eq_of_forall_ge_iff <| f.surjective.forall.2 fun x => by simp only [f.le_iff_le, supᵢ_le_iff] ; rfl
+  eq_of_forall_ge_iff <| f.surjective.forall.2
+  fun x => by simp only [f.le_iff_le, supᵢ_le_iff] ; rfl
 #align order_iso.map_supr OrderIso.map_supᵢ
 
 theorem OrderIso.map_infᵢ [CompleteLattice β] (f : α ≃o β) (x : ι → α) :
@@ -992,11 +993,13 @@ theorem OrderIso.map_infᵢ [CompleteLattice β] (f : α ≃o β) (x : ι → α
   OrderIso.map_supᵢ f.dual _
 #align order_iso.map_infi OrderIso.map_infᵢ
 
-theorem OrderIso.map_supₛ [CompleteLattice β] (f : α ≃o β) (s : Set α) : f (supₛ s) = ⨆ a ∈ s, f a :=
+theorem OrderIso.map_supₛ [CompleteLattice β] (f : α ≃o β) (s : Set α) :
+    f (supₛ s) = ⨆ a ∈ s, f a :=
   by simp only [supₛ_eq_supᵢ, OrderIso.map_supᵢ]
 #align order_iso.map_Sup OrderIso.map_supₛ
 
-theorem OrderIso.map_infₛ [CompleteLattice β] (f : α ≃o β) (s : Set α) : f (infₛ s) = ⨅ a ∈ s, f a :=
+theorem OrderIso.map_infₛ [CompleteLattice β] (f : α ≃o β) (s : Set α) :
+    f (infₛ s) = ⨅ a ∈ s, f a :=
   OrderIso.map_supₛ f.dual _
 #align order_iso.map_Inf OrderIso.map_infₛ
 
@@ -1777,27 +1780,13 @@ theorem infᵢ_Prop_eq {p : ι → Prop} : (⨅ i, p i) = ∀ i, p i :=
   le_antisymm (fun h i => h _ ⟨i, rfl⟩) fun h _ ⟨i, Eq⟩ => Eq ▸ h i
 #align infi_Prop_eq infᵢ_Prop_eq
 
-/- warning: pi.has_Sup clashes with pi.has_sup -> Pi.hasSup
-warning: pi.has_Sup -> Pi.hasSup is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {β : α -> Type.{u2}} [_inst_1 : forall (i : α), SupSet.{u2} (β i)], SupSet.{max u1 u2} (forall (i : α), β i)
-but is expected to have type
-  forall {α : Type.{u1}} {β : α -> Type.{u2}} [_inst_1 : forall (i : α), HasSup.{u2} (β i)], HasSup.{max u1 u2} (forall (i : α), β i)
-Case conversion may be inaccurate. Consider using '#align pi.has_Sup Pi.hasSupₓ'. -/
-instance Pi.hasSup {α : Type _} {β : α → Type _} [∀ i, SupSet (β i)] : SupSet (∀ i, β i) :=
+instance Pi.SupSet {α : Type _} {β : α → Type _} [∀ i, SupSet (β i)] : SupSet (∀ i, β i) :=
   ⟨fun s i => ⨆ f : s, (f : ∀ i, β i) i⟩
-#align pi.has_Sup Pi.hasSup
+#align pi.has_Sup Pi.SupSet
 
-/- warning: pi.has_Inf clashes with pi.has_inf -> Pi.hasInf
-warning: pi.has_Inf -> Pi.hasInf is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {β : α -> Type.{u2}} [_inst_1 : forall (i : α), InfSet.{u2} (β i)], InfSet.{max u1 u2} (forall (i : α), β i)
-but is expected to have type
-  forall {α : Type.{u1}} {β : α -> Type.{u2}} [_inst_1 : forall (i : α), HasInf.{u2} (β i)], HasInf.{max u1 u2} (forall (i : α), β i)
-Case conversion may be inaccurate. Consider using '#align pi.has_Inf Pi.hasInfₓ'. -/
-instance Pi.hasInf {α : Type _} {β : α → Type _} [∀ i, InfSet (β i)] : InfSet (∀ i, β i) :=
+instance Pi.InfSet {α : Type _} {β : α → Type _} [∀ i, InfSet (β i)] : InfSet (∀ i, β i) :=
   ⟨fun s i => ⨅ f : s, (f : ∀ i, β i) i⟩
-#align pi.has_Inf Pi.hasInf
+#align pi.has_Inf Pi.InfSet
 
 instance Pi.completeLattice {α : Type _} {β : α → Type _} [∀ i, CompleteLattice (β i)] :
     CompleteLattice (∀ i, β i) :=

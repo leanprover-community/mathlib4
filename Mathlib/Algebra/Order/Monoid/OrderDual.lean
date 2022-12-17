@@ -104,7 +104,8 @@ instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] : OrderedCancelCom
     le_of_mul_le_mul_left := fun _ _ _ : α => le_of_mul_le_mul_left' }
 
 @[to_additive]
-instance linearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid α] : LinearOrderedCancelCommMonoid αᵒᵈ :=
+instance linearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid α] :
+    LinearOrderedCancelCommMonoid αᵒᵈ :=
   { OrderDual.linearOrder α, OrderDual.orderedCancelCommMonoid with }
 
 @[to_additive]
