@@ -990,7 +990,7 @@ theorem tail_append_singleton_of_ne_nil {a : α} {l : List α} (h : l ≠ nil) :
   rw [tail, cons_append, tail]
 #align list.tail_append_singleton_of_ne_nil List.tail_append_singleton_of_ne_nil
 
-theorem cons_head?_tail : ∀ {l : List α} {a : α} (h : a ∈ head? l), a :: tail l = l
+theorem cons_head?_tail : ∀ {l : List α} {a : α} (_ : a ∈ head? l), a :: tail l = l
   | [], a, h => by contradiction
   | b :: l, a, h => by
     simp at h
@@ -1419,7 +1419,6 @@ such a rewrite, with `rw (nth_le_of_eq h)`. -/
 theorem nth_le_of_eq {L L' : List α} (h : L = L') {i : ℕ} (hi : i < L.length) :
     nthLe L i hi = nthLe L' i (h ▸ hi) := by
   congr
-  exact h
 #align list.nth_le_of_eq List.nth_le_of_eq
 
 @[simp]
@@ -1947,16 +1946,6 @@ end InsertNth
 
 /-! ### map -/
 
-
-/- warning: list.map_nil -> List.map_nil is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} (f : α -> β), Eq.{succ v} (List.{v} β) (List.map.{u, v} α β f (List.nil.{u} α)) (List.nil.{v} β)
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} {f : α -> β}, Eq.{succ u_2} (List.{u_2} β) (List.map.{u_1, u_2} α β f (List.nil.{u_1} α)) (List.nil.{u_2} β)
-Case conversion may be inaccurate. Consider using '#align list.map_nil List.map_nilₓ'. -/
-@[simp]
-theorem map_nil (f : α → β) : map f [] = [] :=
-  rfl
 #align list.map_nil List.map_nil
 
 theorem map_eq_foldr (f : α → β) (l : List α) : map f l = foldr (fun a bs => f a :: bs) [] l := by
@@ -1973,14 +1962,12 @@ theorem map_congr {f g : α → β} : ∀ {l : List α}, (∀ x ∈ l, f x = g x
 theorem map_eq_map_iff {f g : α → β} {l : List α} : map f l = map g l ↔ ∀ x ∈ l, f x = g x := by
   refine' ⟨_, map_congr⟩; intro h x hx
   rw [mem_iff_nth_le] at hx; rcases hx with ⟨n, hn, rfl⟩
-  rw [nth_le_map_rev f, nth_le_map_rev g]; congr ; exact h
+  rw [nth_le_map_rev f, nth_le_map_rev g]; congr
 #align list.map_eq_map_iff List.map_eq_map_iff
 
 theorem map_concat (f : α → β) (a : α) (l : List α) : map f (concat l a) = concat (map f l) (f a) :=
   by
-  induction l <;> [rfl, simp only [*, concat_eq_append, cons_append, map, map_append]] <;>
-      constructor <;>
-    rfl
+  induction l <;> [rfl, simp only [*, concat_eq_append, cons_append, map, map_append]]
 #align list.map_concat List.map_concat
 
 @[simp]
@@ -2028,10 +2015,10 @@ theorem map_injective_iff {f : α → β} : Injective (map f) ↔ Injective f :=
   · suffices [x] = [y] by simpa using this
     apply h
     simp [hxy]
-  · induction y generalizing x
+  · induction' y with yh yt y_ih generalizing x
     simpa using hxy
     cases x
-    simpa using hxy
+    simp at hxy
     simp at hxy
     simp [y_ih hxy.2, h hxy.1]
 #align list.map_injective_iff List.map_injective_iff
@@ -2070,22 +2057,22 @@ theorem last_map (f : α → β) {l : List α} (hl : l ≠ []) :
 #align list.last_map List.last_map
 
 theorem map_eq_repeat_iff {l : List α} {f : α → β} {b : β} :
-    l.map f = repeat b l.length ↔ ∀ x ∈ l, f x = b := by
+    l.map f = List.repeat b l.length ↔ ∀ x ∈ l, f x = b := by
   induction' l with x l' ih
   ·
-    simp only [repeat, length, not_mem_nil, IsEmpty.forall_iff, imp_true_iff, map_nil,
+    simp only [List.repeat, length, not_mem_nil, IsEmpty.forall_iff, imp_true_iff, map_nil,
       eq_self_iff_true]
   · simp only [map, length, mem_cons_iff, forall_eq_or_imp, repeat_succ, and_congr_right_iff]
     exact fun _ => ih
 #align list.map_eq_repeat_iff List.map_eq_repeat_iff
 
 @[simp]
-theorem map_const (l : List α) (b : β) : map (Function.const α b) l = repeat b l.length :=
-  map_eq_repeat_iff.mpr fun x _ => rfl
+theorem map_const (l : List α) (b : β) : map (Function.const α b) l = List.repeat b l.length :=
+  map_eq_repeat_iff.mpr fun _ _ => rfl
 #align list.map_const List.map_const
 
 theorem eq_of_mem_map_const {b₁ b₂ : β} {l : List α} (h : b₁ ∈ map (Function.const α b₂) l) :
-    b₁ = b₂ := by rw [map_const] at h <;> exact eq_of_mem_repeat h
+    b₁ = b₂ := by rw [map_const] at h; exact eq_of_mem_repeat h
 #align list.eq_of_mem_map_const List.eq_of_mem_map_const
 
 /-! ### map₂ -/
@@ -2134,9 +2121,9 @@ theorem take_length : ∀ l : List α, take (length l) l = l
 -/
 
 theorem take_all_of_le : ∀ {n} {l : List α}, length l ≤ n → take n l = l
-  | 0, [], h => rfl
+  | 0, [], _ => rfl
   | 0, a :: l, h => absurd h (not_le_of_gt (zero_lt_succ _))
-  | n + 1, [], h => rfl
+  | n + 1, [], _ => rfl
   | n + 1, a :: l, h => by
     change a :: take n l = a :: l
     rw [take_all_of_le (le_of_succ_le_succ h)]
@@ -2144,12 +2131,12 @@ theorem take_all_of_le : ∀ {n} {l : List α}, length l ≤ n → take n l = l
 
 @[simp]
 theorem take_left : ∀ l₁ l₂ : List α, take (length l₁) (l₁ ++ l₂) = l₁
-  | [], l₂ => rfl
+  | [], _ => rfl
   | a :: l₁, l₂ => congr_arg (cons a) (take_left l₁ l₂)
 #align list.take_left List.take_left
 
 theorem take_left' {l₁ l₂ : List α} {n} (h : length l₁ = n) : take n (l₁ ++ l₂) = l₁ := by
-  rw [← h] <;> apply take_left
+  rw [← h]; apply take_left
 #align list.take_left' List.take_left'
 
 theorem take_take : ∀ (n m) (l : List α), take n (take m l) = take (min n m) l
@@ -2157,10 +2144,10 @@ theorem take_take : ∀ (n m) (l : List α), take n (take m l) = take (min n m) 
   | 0, m, l => by rw [zero_min, take_zero, take_zero]
   | succ n, succ m, nil => by simp only [take_nil]
   | succ n, succ m, a :: l => by
-    simp only [take, min_succ_succ, take_take n m l] <;> constructor <;> rfl
+    simp only [take, min_succ_succ, take_take n m l]
 #align list.take_take List.take_take
 
-theorem take_repeat (a : α) : ∀ n m : ℕ, take n (repeat a m) = repeat a (min n m)
+theorem take_repeat (a : α) : ∀ n m : ℕ, take n (List.repeat a m) = List.repeat a (min n m)
   | n, 0 => by simp
   | 0, m => by simp
   | succ n, succ m => by simp [min_succ_succ, take_repeat]
@@ -2280,7 +2267,7 @@ theorem init_take {n : ℕ} {l : List α} (h : n < l.length) : (l.take n).init =
 
 @[simp]
 theorem init_cons_of_ne_nil {α : Type _} {x : α} :
-    ∀ {l : List α} (h : l ≠ []), (x :: l).init = x :: l.init
+    ∀ {l : List α} (_ : l ≠ []), (x :: l).init = x :: l.init
   | [], h => False.elim (h rfl)
   | a :: l, _ => by simp [init]
 #align list.init_cons_of_ne_nil List.init_cons_of_ne_nil
@@ -2292,12 +2279,7 @@ theorem init_append_of_ne_nil {α : Type _} {l : List α} :
   | a :: l', h => by simp [append_ne_nil_of_ne_nil_right l' l h, init_append_of_ne_nil l' h]
 #align list.init_append_of_ne_nil List.init_append_of_ne_nil
 
-#print List.drop_eq_nil_of_le /-
-@[simp]
-theorem drop_eq_nil_of_le {l : List α} {k : ℕ} (h : l.length ≤ k) : l.drop k = [] := by
-  simpa [← length_eq_zero] using tsub_eq_zero_iff_le.mpr h
 #align list.drop_eq_nil_of_le List.drop_eq_nil_of_le
--/
 
 theorem drop_eq_nil_iff_le {l : List α} {k : ℕ} : l.drop k = [] ↔ l.length ≤ k := by
   refine' ⟨fun h => _, drop_eq_nil_of_le⟩
@@ -2321,22 +2303,19 @@ theorem tail_drop (l : List α) (n : ℕ) : (l.drop n).tail = l.drop (n + 1) := 
 theorem cons_nth_le_drop_succ {l : List α} {n : ℕ} (hn : n < l.length) :
     l.nthLe n hn :: l.drop (n + 1) = l.drop n := by
   induction' l with hd tl hl generalizing n
-  · exact absurd n.zero_le (not_le_of_lt (by simpa using hn))
+  · exact absurd n.zero_le (not_le_of_lt (by simp at hn))
   · cases n
     · simp
     · simp only [Nat.succ_lt_succ_iff, List.length] at hn
       simpa [List.nthLe, List.drop] using hl hn
 #align list.cons_nth_le_drop_succ List.cons_nth_le_drop_succ
 
-#print List.drop_nil /-
-theorem drop_nil : ∀ n, drop n [] = ([] : List α) := fun _ => drop_eq_nil_of_le (Nat.zero_le _)
 #align list.drop_nil List.drop_nil
--/
 
 @[simp]
 theorem drop_one : ∀ l : List α, drop 1 l = tail l
   | [] => rfl
-  | a :: l => rfl
+  | _ :: _ => rfl
 #align list.drop_one List.drop_one
 
 theorem drop_add : ∀ (m n) (l : List α), drop (m + n) l = drop m (drop n l)
@@ -2347,28 +2326,20 @@ theorem drop_add : ∀ (m n) (l : List α), drop (m + n) l = drop m (drop n l)
 
 @[simp]
 theorem drop_left : ∀ l₁ l₂ : List α, drop (length l₁) (l₁ ++ l₂) = l₂
-  | [], l₂ => rfl
-  | a :: l₁, l₂ => drop_left l₁ l₂
+  | [], _ => rfl
+  | _ :: l₁, l₂ => drop_left l₁ l₂
 #align list.drop_left List.drop_left
 
 theorem drop_left' {l₁ l₂ : List α} {n} (h : length l₁ = n) : drop n (l₁ ++ l₂) = l₂ := by
-  rw [← h] <;> apply drop_left
+  rw [← h]; apply drop_left
 #align list.drop_left' List.drop_left'
 
 theorem drop_eq_nth_le_cons : ∀ {n} {l : List α} (h), drop n l = nthLe l n h :: drop (n + 1) l
-  | 0, a :: l, h => rfl
-  | n + 1, a :: l, h => @drop_eq_nth_le_cons n _ _
+  | 0, _ :: _, _ => rfl
+  | n + 1, _ :: _, _ => @drop_eq_nth_le_cons n _ _
 #align list.drop_eq_nth_le_cons List.drop_eq_nth_le_cons
 
-#print List.drop_length /-
-@[simp]
-theorem drop_length (l : List α) : l.drop l.length = [] :=
-  calc
-    l.drop l.length = (l ++ []).drop l.length := by simp
-    _ = [] := drop_left _ _
-
 #align list.drop_length List.drop_length
--/
 
 theorem drop_length_cons {l : List α} (h : l ≠ []) (a : α) : (a :: l).drop l.length = [l.last h] :=
   by
@@ -2443,7 +2414,7 @@ theorem drop_drop (n : ℕ) : ∀ (m) (l : List α), drop n (drop m l) = drop (n
   | m + 1, a :: l =>
     calc
       drop n (drop (m + 1) (a :: l)) = drop n (drop m l) := rfl
-      _ = drop (n + m) l := drop_drop m l
+      _ = drop (n + m) l := drop_drop n m l
       _ = drop (n + (m + 1)) (a :: l) := rfl
 
 #align list.drop_drop List.drop_drop
@@ -2506,9 +2477,9 @@ theorem reverse_take {α} {xs : List α} (n : ℕ) (h : n ≤ xs.length) :
 #align list.reverse_take List.reverse_take
 
 @[simp]
-theorem update_nth_eq_nil (l : List α) (n : ℕ) (a : α) : l.updateNth n a = [] ↔ l = [] := by
-  cases l <;> cases n <;> simp only [update_nth]
-#align list.update_nth_eq_nil List.update_nth_eq_nil
+theorem updateNth_eq_nil (l : List α) (n : ℕ) (a : α) : l.updateNth n a = [] ↔ l = [] := by
+  cases l <;> cases n <;> simp only [updateNth]
+#align list.update_nth_eq_nil List.updateNth_eq_nil
 
 section Take'
 
@@ -2581,49 +2552,27 @@ theorem foldr_cons (f : α → β → β) (b : β) (a : α) (l : List α) :
   rfl
 #align list.foldr_cons List.foldr_cons
 
-/- warning: list.foldl_append -> List.foldl_append is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} (f : α -> β -> α) (a : α) (l₁ : List.{v} β) (l₂ : List.{v} β), Eq.{succ u} α (List.foldl.{u, v} α β f a (Append.append.{v} (List.{v} β) (List.hasAppend.{v} β) l₁ l₂)) (List.foldl.{u, v} α β f (List.foldl.{u, v} α β f a l₁) l₂)
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} (f : β -> α -> β) (b : β) (l : List.{u_1} α) (l' : List.{u_1} α), Eq.{succ u_2} β (List.foldl.{u_2, u_1} β α f b (HAppend.hAppend.{u_1, u_1, u_1} (List.{u_1} α) (List.{u_1} α) (List.{u_1} α) (instHAppend.{u_1} (List.{u_1} α) (List.instAppendList.{u_1} α)) l l')) (List.foldl.{u_2, u_1} β α f (List.foldl.{u_2, u_1} β α f b l) l')
-Case conversion may be inaccurate. Consider using '#align list.foldl_append List.foldl_appendₓ'. -/
-@[simp]
-theorem foldl_append (f : α → β → α) :
-    ∀ (a : α) (l₁ l₂ : List β), foldl f a (l₁ ++ l₂) = foldl f (foldl f a l₁) l₂
-  | a, [], l₂ => rfl
-  | a, b :: l₁, l₂ => by simp only [cons_append, foldl_cons, foldl_append (f a b) l₁ l₂]
 #align list.foldl_append List.foldl_append
 
-/- warning: list.foldr_append -> List.foldr_append is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} (f : α -> β -> β) (b : β) (l₁ : List.{u} α) (l₂ : List.{u} α), Eq.{succ v} β (List.foldr.{u, v} α β f b (Append.append.{u} (List.{u} α) (List.hasAppend.{u} α) l₁ l₂)) (List.foldr.{u, v} α β f (List.foldr.{u, v} α β f b l₂) l₁)
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} (f : α -> β -> β) (b : β) (l : List.{u_1} α) (l' : List.{u_1} α), Eq.{succ u_2} β (List.foldr.{u_1, u_2} α β f b (HAppend.hAppend.{u_1, u_1, u_1} (List.{u_1} α) (List.{u_1} α) (List.{u_1} α) (instHAppend.{u_1} (List.{u_1} α) (List.instAppendList.{u_1} α)) l l')) (List.foldr.{u_1, u_2} α β f (List.foldr.{u_1, u_2} α β f b l') l)
-Case conversion may be inaccurate. Consider using '#align list.foldr_append List.foldr_appendₓ'. -/
-@[simp]
-theorem foldr_append (f : α → β → β) :
-    ∀ (b : β) (l₁ l₂ : List α), foldr f b (l₁ ++ l₂) = foldr f (foldr f b l₂) l₁
-  | b, [], l₂ => rfl
-  | b, a :: l₁, l₂ => by simp only [cons_append, foldr_cons, foldr_append b l₁ l₂]
 #align list.foldr_append List.foldr_append
 
 theorem foldl_fixed' {f : α → β → α} {a : α} (hf : ∀ b, f a b = a) : ∀ l : List β, foldl f a l = a
   | [] => rfl
-  | b :: l => by rw [foldl_cons, hf b, foldl_fixed' l]
+  | b :: l => by rw [foldl_cons, hf b, foldl_fixed' hf l]
 #align list.foldl_fixed' List.foldl_fixed'
 
 theorem foldr_fixed' {f : α → β → β} {b : β} (hf : ∀ a, f a b = b) : ∀ l : List α, foldr f b l = b
   | [] => rfl
-  | a :: l => by rw [foldr_cons, foldr_fixed' l, hf a]
+  | a :: l => by rw [foldr_cons, foldr_fixed' hf l, hf a]
 #align list.foldr_fixed' List.foldr_fixed'
 
 @[simp]
-theorem foldl_fixed {a : α} : ∀ l : List β, foldl (fun a b => a) a l = a :=
+theorem foldl_fixed {a : α} : ∀ l : List β, foldl (fun a _ => a) a l = a :=
   foldl_fixed' fun _ => rfl
 #align list.foldl_fixed List.foldl_fixed
 
 @[simp]
-theorem foldr_fixed {b : β} : ∀ l : List α, foldr (fun a b => b) b l = b :=
+theorem foldr_fixed {b : β} : ∀ l : List α, foldr (fun _ b => b) b l = b :=
   foldr_fixed' fun _ => rfl
 #align list.foldr_fixed List.foldr_fixed
 
@@ -2641,33 +2590,14 @@ theorem foldr_join (f : α → β → β) :
   | a, l :: L => by simp only [join, foldr_append, foldr_join a L, foldr_cons]
 #align list.foldr_join List.foldr_join
 
-/- warning: list.foldl_reverse -> List.foldl_reverse is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} (f : α -> β -> α) (a : α) (l : List.{v} β), Eq.{succ u} α (List.foldl.{u, v} α β f a (List.reverse.{v} β l)) (List.foldr.{v, u} β α (fun (x : β) (y : α) => f y x) a l)
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} (l : List.{u_1} α) (f : β -> α -> β) (b : β), Eq.{succ u_2} β (List.foldl.{u_2, u_1} β α f b (List.reverse.{u_1} α l)) (List.foldr.{u_1, u_2} α β (fun (x : α) (y : β) => f y x) b l)
-Case conversion may be inaccurate. Consider using '#align list.foldl_reverse List.foldl_reverseₓ'. -/
-theorem foldl_reverse (f : α → β → α) (a : α) (l : List β) :
-    foldl f a (reverse l) = foldr (fun x y => f y x) a l := by
-  induction l <;> [rfl, simp only [*, reverse_cons, foldl_append, foldl_cons, foldl_nil, foldr]]
 #align list.foldl_reverse List.foldl_reverse
 
-/- warning: list.foldr_reverse -> List.foldr_reverse is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} (f : α -> β -> β) (a : β) (l : List.{u} α), Eq.{succ v} β (List.foldr.{u, v} α β f a (List.reverse.{u} α l)) (List.foldl.{v, u} β α (fun (x : β) (y : α) => f y x) a l)
-but is expected to have type
-  forall {α : Type.{u_1}} {β : Type.{u_2}} (l : List.{u_1} α) (f : α -> β -> β) (b : β), Eq.{succ u_2} β (List.foldr.{u_1, u_2} α β f b (List.reverse.{u_1} α l)) (List.foldl.{u_2, u_1} β α (fun (x : β) (y : α) => f y x) b l)
-Case conversion may be inaccurate. Consider using '#align list.foldr_reverse List.foldr_reverseₓ'. -/
-theorem foldr_reverse (f : α → β → β) (a : β) (l : List α) :
-    foldr f a (reverse l) = foldl (fun x y => f y x) a l := by
-  let t := foldl_reverse (fun x y => f y x) a (reverse l)
-  rw [reverse_reverse l] at t <;> rwa [t]
 #align list.foldr_reverse List.foldr_reverse
 
 @[simp]
 theorem foldr_eta : ∀ l : List α, foldr cons [] l = l
   | [] => rfl
-  | x :: l => by simp only [foldr_cons, foldr_eta l] <;> constructor <;> rfl
+  | x :: l => by simp only [foldr_cons, foldr_eta l]
 #align list.foldr_eta List.foldr_eta
 
 @[simp]
@@ -2675,28 +2605,8 @@ theorem reverse_foldl {l : List α} : reverse (foldl (fun t h => h :: t) [] l) =
   rw [← foldr_reverse] <;> simp
 #align list.reverse_foldl List.reverse_foldl
 
-/- warning: list.foldl_map -> List.foldl_map is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} {γ : Type.{w}} (g : β -> γ) (f : α -> γ -> α) (a : α) (l : List.{v} β), Eq.{succ u} α (List.foldl.{u, w} α γ f a (List.map.{v, w} β γ g l)) (List.foldl.{u, v} α β (fun (x : α) (y : β) => f x (g y)) a l)
-but is expected to have type
-  forall {β₁ : Type.{u_1}} {β₂ : Type.{u_2}} {α : Type.{u_3}} (f : β₁ -> β₂) (g : α -> β₂ -> α) (l : List.{u_1} β₁) (init : α), Eq.{succ u_3} α (List.foldl.{u_3, u_2} α β₂ g init (List.map.{u_1, u_2} β₁ β₂ f l)) (List.foldl.{u_3, u_1} α β₁ (fun (x : α) (y : β₁) => g x (f y)) init l)
-Case conversion may be inaccurate. Consider using '#align list.foldl_map List.foldl_mapₓ'. -/
-@[simp]
-theorem foldl_map (g : β → γ) (f : α → γ → α) (a : α) (l : List β) :
-    foldl f a (map g l) = foldl (fun x y => f x (g y)) a l := by
-  revert a <;> induction l <;> intros <;> [rfl, simp only [*, map, foldl]]
 #align list.foldl_map List.foldl_map
 
-/- warning: list.foldr_map -> List.foldr_map is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} {γ : Type.{w}} (g : β -> γ) (f : γ -> α -> α) (a : α) (l : List.{v} β), Eq.{succ u} α (List.foldr.{w, u} γ α f a (List.map.{v, w} β γ g l)) (List.foldr.{v, u} β α (Function.comp.{succ v, succ w, succ u} β γ (α -> α) f g) a l)
-but is expected to have type
-  forall {α₁ : Type.{u_1}} {α₂ : Type.{u_2}} {β : Type.{u_3}} (f : α₁ -> α₂) (g : α₂ -> β -> β) (l : List.{u_1} α₁) (init : β), Eq.{succ u_3} β (List.foldr.{u_2, u_3} α₂ β g init (List.map.{u_1, u_2} α₁ α₂ f l)) (List.foldr.{u_1, u_3} α₁ β (fun (x : α₁) (y : β) => g (f x) y) init l)
-Case conversion may be inaccurate. Consider using '#align list.foldr_map List.foldr_mapₓ'. -/
-@[simp]
-theorem foldr_map (g : β → γ) (f : γ → α → α) (a : α) (l : List β) :
-    foldr f a (map g l) = foldr (f ∘ g) a l := by
-  revert a <;> induction l <;> intros <;> [rfl, simp only [*, map, foldr]]
 #align list.foldr_map List.foldr_map
 
 theorem foldl_map' {α β : Type u} (g : α → β) (f : α → α → α) (f' : β → β → β) (a : α) (l : List α)
@@ -2713,29 +2623,8 @@ theorem foldr_map' {α β : Type u} (g : α → β) (f : α → α → α) (f' :
   · simp; · simp [l_ih, h]
 #align list.foldr_map' List.foldr_map'
 
-/- warning: list.foldl_hom -> List.foldl_hom is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} {γ : Type.{w}} (l : List.{w} γ) (f : α -> β) (op : α -> γ -> α) (op' : β -> γ -> β) (a : α), (forall (a : α) (x : γ), Eq.{succ v} β (f (op a x)) (op' (f a) x)) -> (Eq.{succ v} β (List.foldl.{v, w} β γ op' (f a) l) (f (List.foldl.{u, w} α γ op a l)))
-but is expected to have type
-  forall {α₁ : Type.{u_1}} {α₂ : Type.{u_2}} {β : Type.{u_3}} (f : α₁ -> α₂) (g₁ : α₁ -> β -> α₁) (g₂ : α₂ -> β -> α₂) (l : List.{u_3} β) (init : α₁), (forall (x : α₁) (y : β), Eq.{succ u_2} α₂ (g₂ (f x) y) (f (g₁ x y))) -> (Eq.{succ u_2} α₂ (List.foldl.{u_2, u_3} α₂ β g₂ (f init) l) (f (List.foldl.{u_1, u_3} α₁ β g₁ init l)))
-Case conversion may be inaccurate. Consider using '#align list.foldl_hom List.foldl_homₓ'. -/
-theorem foldl_hom (l : List γ) (f : α → β) (op : α → γ → α) (op' : β → γ → β) (a : α)
-    (h : ∀ a x, f (op a x) = op' (f a) x) : foldl op' (f a) l = f (foldl op a l) :=
-  Eq.symm <| by
-    revert a
-    induction l <;> intros <;> [rfl, simp only [*, foldl]]
 #align list.foldl_hom List.foldl_hom
 
-/- warning: list.foldr_hom -> List.foldr_hom is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u}} {β : Type.{v}} {γ : Type.{w}} (l : List.{w} γ) (f : α -> β) (op : γ -> α -> α) (op' : γ -> β -> β) (a : α), (forall (x : γ) (a : α), Eq.{succ v} β (f (op x a)) (op' x (f a))) -> (Eq.{succ v} β (List.foldr.{w, v} γ β op' (f a) l) (f (List.foldr.{w, u} γ α op a l)))
-but is expected to have type
-  forall {β₁ : Type.{u_1}} {β₂ : Type.{u_2}} {α : Type.{u_3}} (f : β₁ -> β₂) (g₁ : α -> β₁ -> β₁) (g₂ : α -> β₂ -> β₂) (l : List.{u_3} α) (init : β₁), (forall (x : α) (y : β₁), Eq.{succ u_2} β₂ (g₂ x (f y)) (f (g₁ x y))) -> (Eq.{succ u_2} β₂ (List.foldr.{u_3, u_2} α β₂ g₂ (f init) l) (f (List.foldr.{u_3, u_1} α β₁ g₁ init l)))
-Case conversion may be inaccurate. Consider using '#align list.foldr_hom List.foldr_homₓ'. -/
-theorem foldr_hom (l : List γ) (f : α → β) (op : γ → α → α) (op' : γ → β → β) (a : α)
-    (h : ∀ x a, f (op x a) = op' x (f a)) : foldr op' (f a) l = f (foldr op a l) := by
-  revert a
-  induction l <;> intros <;> [rfl, simp only [*, foldr]]
 #align list.foldr_hom List.foldr_hom
 
 theorem foldl_hom₂ (l : List ι) (f : α → β → γ) (op₁ : α → ι → α) (op₂ : β → ι → β)
@@ -2756,7 +2645,7 @@ theorem foldr_hom₂ (l : List ι) (f : α → β → γ) (op₁ : ι → α →
 theorem injective_foldl_comp {α : Type _} {l : List (α → α)} {f : α → α}
     (hl : ∀ f ∈ l, Function.Injective f) (hf : Function.Injective f) :
     Function.Injective (@List.foldl (α → α) (α → α) Function.comp f l) := by
-  induction l generalizing f
+  induction' l with lh lt l_ih generalizing f
   · exact hf
   · apply l_ih fun _ h => hl _ (List.mem_cons_of_mem _ h)
     apply Function.Injective.comp hf
@@ -2906,15 +2795,11 @@ section FoldlEqFoldr
 -- foldl and foldr coincide when f is commutative and associative
 variable {f : α → α → α} (hcomm : Commutative f) (hassoc : Associative f)
 
-include hassoc
-
 theorem foldl1_eq_foldr1 : ∀ a b l, foldl f a (l ++ [b]) = foldr f b (a :: l)
   | a, b, nil => rfl
   | a, b, c :: l => by
-    simp only [cons_append, foldl_cons, foldr_cons, foldl1_eq_foldr1 _ _ l] <;> rw [hassoc]
+    simp only [cons_append, foldl_cons, foldr_cons, foldl1_eq_foldr1 _ _ l]; rw [hassoc]
 #align list.foldl1_eq_foldr1 List.foldl1_eq_foldr1
-
-include hcomm
 
 theorem foldl_eq_of_comm_of_assoc : ∀ a b l, foldl f a (b :: l) = f b (foldl f a l)
   | a, b, nil => hcomm a b
@@ -2925,7 +2810,7 @@ theorem foldl_eq_of_comm_of_assoc : ∀ a b l, foldl f a (b :: l) = f b (foldl f
 theorem foldl_eq_foldr : ∀ a l, foldl f a l = foldr f a l
   | a, nil => rfl
   | a, b :: l => by
-    simp only [foldr_cons, foldl_eq_of_comm_of_assoc hcomm hassoc] <;> rw [foldl_eq_foldr a l]
+    simp only [foldr_cons, foldl_eq_of_comm_of_assoc hcomm hassoc]; rw [foldl_eq_foldr a l]
 #align list.foldl_eq_foldr List.foldl_eq_foldr
 
 end FoldlEqFoldr
@@ -2935,8 +2820,6 @@ section FoldlEqFoldlr'
 variable {f : α → β → α}
 
 variable (hf : ∀ a b c, f (f a b) c = f (f a c) b)
-
-include hf
 
 theorem foldl_eq_of_comm' : ∀ a b l, foldl f a (b :: l) = f (foldl f a l) b
   | a, b, [] => rfl
@@ -2955,8 +2838,6 @@ section FoldlEqFoldlr'
 variable {f : α → β → β}
 
 variable (hf : ∀ a b c, f a (f b c) = f b (f a c))
-
-include hf
 
 theorem foldr_eq_of_comm' : ∀ a b l, foldr f a (b :: l) = foldr f (f b a) l
   | a, b, [] => rfl
