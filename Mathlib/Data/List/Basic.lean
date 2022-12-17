@@ -1118,6 +1118,8 @@ def bidirectionalRecOn {C : List α → Sort _} (l : List α) (H0 : C []) (H1 : 
 
 /-! ### sublists -/
 
+attribute [refl] List.Sublist.refl
+
 #align list.nil_sublist List.nil_sublist
 
 #align list.sublist.refl List.Sublist.refl
@@ -1191,7 +1193,7 @@ theorem sublist_nil_iff_eq_nil {l : List α} : l <+ [] ↔ l = [] :=
 @[simp]
 theorem repeat_sublist_repeat (a : α) {m n} : List.repeat a m <+ List.repeat a n ↔ m ≤ n :=
   ⟨fun h => by simpa only [length_repeat] using h.length_le, fun h => by
-    induction h <;> [apply Sublist.refl, simp only [*, repeat_succ, Sublist.cons]]⟩
+    induction h <;> [rfl, simp only [*, repeat_succ, Sublist.cons]]⟩
 #align list.repeat_sublist_repeat List.repeat_sublist_repeat
 
 theorem sublist_repeat_iff {l : List α} {a : α} {n : ℕ} :
