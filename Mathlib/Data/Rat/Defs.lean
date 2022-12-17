@@ -376,7 +376,8 @@ theorem sub_def {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
 
 #align rat.mul Rat.mul
 
--- Porting note: there's already an instance for `Mul ℚ` is in Std.
+-- Porting note: there's already an instance for `Mul ℚ` in Std.
+example : (Int.natAbs n : ℤ) ∣ n := Int.natAbs_dvd.mpr (refl n)
 
 @[simp]
 theorem mul_def {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) : a /. b * (c /. d) = a * c /. (b * d) := by
@@ -385,7 +386,16 @@ theorem mul_def {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) : a /. b * (c /. d
     unfold Rat.mul
     rw [num_den', mkInt_eq]
     simp only [Nat.cast_mul, Int.ofNat_ediv]
-    · sorry
+    · rw [mul_assoc, ←mul_assoc _ (d₁ : ℤ) _,
+        ←Int.mul_div_assoc' (d₁ : ℤ)
+          (Int.ofNat_dvd_of_dvd_natAbs (Nat.gcd_dvd_right d₁ (Int.natAbs n₂))),
+        mul_left_comm,
+        ←Int.mul_div_assoc' (d₂ : ℤ)
+          (Int.ofNat_dvd_of_dvd_natAbs (Nat.gcd_dvd_left (Int.natAbs n₁) d₂)),
+        Int.mul_div_assoc n₁ (Nat.coe_nat_dvd (Nat.gcd_dvd_right _ _)),
+        Int.mul_div_assoc n₂ (Nat.coe_nat_dvd (Nat.gcd_dvd_left _ _)),
+        mul_left_comm, mul_comm ((d₂ : ℤ) / _), mul_assoc, mul_assoc]
+      rfl
     · rw [Nat.cast_mul]
       apply mul_ne_zero
       · simp only [Nat.cast_ne_zero]
