@@ -20,6 +20,7 @@ open Nat
 
 namespace Int
 
+set_option linter.deprecated false in
 @[simp]
 theorem sign_pow_bit1 (k : ℕ) : ∀ n : ℤ, n.sign ^ bit1 k = n.sign
   | (n + 1 : ℕ) => one_pow (bit1 k)
