@@ -380,11 +380,30 @@ theorem sub_def {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
 
 @[simp]
 theorem mul_def {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) : a /. b * (c /. d) = a * c /. (b * d) := by
-  apply lift_binop_eq Rat.mul <;> intros <;> try assumption
-  · apply mk_pnat_eq
-  · rename_i d₁0 d₂0
+  apply lift_binop_eq Rat.mul
+  · intros n₁ d₁ h₁ c₁ n₂ d₂ h₂ c₂
+    unfold Rat.mul
+    rw [num_den', mkInt_eq]
+    simp only [Nat.cast_mul, Int.ofNat_ediv]
+    · sorry
+    · rw [Nat.cast_mul]
+      apply mul_ne_zero
+      · simp only [Nat.cast_ne_zero]
+        intro h
+        rw [Nat.div_eq_zero_iff (Nat.gcd_pos_of_pos_right _ (Nat.pos_of_ne_zero h₂))] at h
+        exact h.not_le (Nat.gcd_le_right _ (Nat.pos_of_ne_zero h₂))
+      · simp only [Nat.cast_ne_zero]
+        intro h
+        rw [Nat.div_eq_zero_iff (Nat.gcd_pos_of_pos_left _ (Nat.pos_of_ne_zero h₁))] at h
+        exact h.not_le (Nat.gcd_le_left _ (Nat.pos_of_ne_zero h₁))
+    · exact mul_ne_zero (by simpa using h₁) (by simpa using h₂)
+  · intros
+    rename_i d₁0 d₂0
     apply mul_ne_zero d₁0 d₂0
-  sorry -- cc
+  · assumption
+  · assumption
+  · intros n₁ d₁ n₂ d₂
+    sorry -- cc
 #align rat.mul_def Rat.mul_def
 
 #align rat.inv Rat.inv
