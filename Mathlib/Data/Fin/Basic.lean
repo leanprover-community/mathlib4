@@ -1251,17 +1251,17 @@ theorem cast_cast_succ {n' : ℕ} {h : n + 1 = n' + 1} {i : Fin n} :
   simp only [coe_cast, coe_cast_succ]
 #align fin.cast_cast_succ Fin.cast_cast_succ
 
-theorem cast_succ_lt_succ (i : Fin n) : i.cast_succ < i.succ :=
-  lt_iff_coe_lt_coe.2 <| by simp only [coe_cast_succ, coe_succ, Nat.lt_succ_self]
+theorem cast_succ_lt_succ (i : Fin n) : Fin.castSucc i < i.succ :=
+  lt_iff_val_lt_val.2 <| by simp only [coe_cast_succ, val_succ, Nat.lt_succ_self]
 #align fin.cast_succ_lt_succ Fin.cast_succ_lt_succ
 
-theorem le_cast_succ_iff {i : Fin (n + 1)} {j : Fin n} : i ≤ j.cast_succ ↔ i < j.succ := by
-  simpa [lt_iff_coe_lt_coe, le_iff_coe_le_coe] using nat.succ_le_succ_iff.symm
+theorem le_cast_succ_iff {i : Fin (n + 1)} {j : Fin n} : i ≤ Fin.castSucc j ↔ i < j.succ := by
+  simpa [lt_iff_val_lt_val, le_iff_val_le_val] using Nat.succ_le_succ_iff.symm
 #align fin.le_cast_succ_iff Fin.le_cast_succ_iff
 
 theorem cast_succ_lt_iff_succ_le {n : ℕ} {i : Fin n} {j : Fin (n + 1)} :
-    i.cast_succ < j ↔ i.succ ≤ j := by
-  simpa only [Fin.lt_iff_coe_lt_coe, Fin.le_iff_coe_le_coe, Fin.coe_succ, Fin.coe_cast_succ] using
+    Fin.castSucc i < j ↔ i.succ ≤ j := by
+  simpa only [lt_iff_val_lt_val, le_iff_val_le_val, val_succ, Fin.coe_cast_succ] using
     Nat.lt_iff_add_one_le
 #align fin.cast_succ_lt_iff_succ_le Fin.cast_succ_lt_iff_succ_le
 
@@ -1282,7 +1282,7 @@ theorem cast_succ_cast_lt (i : Fin (n + 1)) (h : (i : ℕ) < n) : castSucc (cast
 
 @[simp]
 theorem cast_lt_cast_succ {n : ℕ} (a : Fin n) (h : (a : ℕ) < n) : castLt (castSucc a) h = a := by
-  cases a <;> rfl
+  cases a; rfl
 #align fin.cast_lt_cast_succ Fin.cast_lt_cast_succ
 
 @[simp]
