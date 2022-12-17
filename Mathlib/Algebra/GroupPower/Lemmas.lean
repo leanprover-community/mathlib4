@@ -794,7 +794,8 @@ end Int
 
 variable (M G A)
 
--- Porting note: dot notation was not working so a roundabout way was used. Also the components of the structure are given explicitly (maybe possible to avoid this).
+-- Porting note: dot notation was not working so a roundabout way was used.
+-- Also the components of the structure are given explicitly (maybe possible to avoid this).
 /-- Monoid homomorphisms from `multiplicative ℕ` are defined by the image
 of `multiplicative.of_add 1`. -/
 def powersHom [Monoid M] :
