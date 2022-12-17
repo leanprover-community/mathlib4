@@ -124,15 +124,18 @@ theorem mem_interval_of_ge (hb : b ≤ x) (ha : x ≤ a) : x ∈ [[a, b]] :=
   Icc_subset_interval' ⟨hb, ha⟩
 #align set.mem_interval_of_ge Set.mem_interval_of_ge
 
-theorem interval_subset_interval (h₁ : a₁ ∈ [[a₂, b₂]]) (h₂ : b₁ ∈ [[a₂, b₂]]) : [[a₁, b₁]] ⊆ [[a₂, b₂]] :=
+theorem interval_subset_interval (h₁ : a₁ ∈ [[a₂, b₂]]) (h₂ : b₁ ∈ [[a₂, b₂]]) :
+  [[a₁, b₁]] ⊆ [[a₂, b₂]] :=
   Icc_subset_Icc (le_inf h₁.1 h₂.1) (sup_le h₁.2 h₂.2)
 #align set.interval_subset_interval Set.interval_subset_interval
 
-theorem interval_subset_Icc (ha : a₁ ∈ Icc a₂ b₂) (hb : b₁ ∈ Icc a₂ b₂) : [[a₁, b₁]] ⊆ Icc a₂ b₂ :=
+theorem interval_subset_Icc (ha : a₁ ∈ Icc a₂ b₂) (hb : b₁ ∈ Icc a₂ b₂) :
+  [[a₁, b₁]] ⊆ Icc a₂ b₂ :=
   Icc_subset_Icc (le_inf ha.1 hb.1) (sup_le ha.2 hb.2)
 #align set.interval_subset_Icc Set.interval_subset_Icc
 
-theorem interval_subset_interval_iff_mem : [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ a₁ ∈ [[a₂, b₂]] ∧ b₁ ∈ [[a₂, b₂]] :=
+theorem interval_subset_interval_iff_mem :
+  [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ a₁ ∈ [[a₂, b₂]] ∧ b₁ ∈ [[a₂, b₂]] :=
   Iff.intro (fun h => ⟨h left_mem_interval, h right_mem_interval⟩) fun h =>
     interval_subset_interval h.1 h.2
 #align set.interval_subset_interval_iff_mem Set.interval_subset_interval_iff_mem
@@ -328,7 +331,8 @@ theorem interval_oc_subset_interval_oc_of_interval_subset_interval {a b c d : α
     (h : [[a, b]] ⊆ [[c, d]]) : Ι a b ⊆ Ι c d :=
   Ioc_subset_Ioc (interval_subset_interval_iff_le.1 h).1 (interval_subset_interval_iff_le.1 h).2
 #align
-  set.interval_oc_subset_interval_oc_of_interval_subset_interval Set.interval_oc_subset_interval_oc_of_interval_subset_interval
+  set.interval_oc_subset_interval_oc_of_interval_subset_interval
+  Set.interval_oc_subset_interval_oc_of_interval_subset_interval
 
 theorem interval_oc_swap (a b : α) : Ι a b = Ι b a := by
   simp only [interval_oc, min_comm a b, max_comm a b]
@@ -359,7 +363,8 @@ theorem eq_of_not_mem_interval_oc_of_not_mem_interval_oc (ha : a ≤ c) (hb : b 
     first |assumption|exact le_of_lt ‹_›|
     exact absurd hb (not_le_of_lt ‹c < b›)|exact absurd ha (not_le_of_lt ‹c < a›)
 #align
-  set.eq_of_not_mem_interval_oc_of_not_mem_interval_oc Set.eq_of_not_mem_interval_oc_of_not_mem_interval_oc
+  set.eq_of_not_mem_interval_oc_of_not_mem_interval_oc
+  Set.eq_of_not_mem_interval_oc_of_not_mem_interval_oc
 
 theorem interval_oc_injective_right (a : α) : Injective fun b => Ι b a := by
   rintro b c h
