@@ -1227,14 +1227,14 @@ instance decidableSublist [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable 
   | a :: l₁, [] => isFalse fun h => List.noConfusion <| eq_nil_of_sublist_nil h
   | a :: l₁, b :: l₂ =>
     if h : a = b then
-      decidable_of_decidable_of_iff (decidable_sublist l₁ l₂) <| by
-        rw [← h] <;> exact ⟨sublist.cons_cons _, sublist_of_cons_sublist_cons⟩
+      @decidable_of_decidable_of_iff _ _ (decidableSublist l₁ l₂) <| by
+        rw [← h]; exact ⟨Sublist.cons_cons _, sublist_of_cons_sublist_cons⟩
     else
-      decidable_of_decidable_of_iff (decidable_sublist (a :: l₁) l₂)
+      @decidable_of_decidable_of_iff _ _ (decidableSublist (a :: l₁) l₂)
         ⟨sublist_cons_of_sublist _, fun s =>
           match a, l₁, s, h with
-          | a, l₁, sublist.cons _ _ _ s', h => s'
-          | _, _, sublist.cons2 t _ _ s', h => absurd rfl h⟩
+          | _, _, Sublist.cons _ s', h => s'
+          | _, _, Sublist.cons₂ t _, h => absurd rfl h⟩
 #align list.decidable_sublist List.decidableSublist
 
 /-! ### index_of -/
