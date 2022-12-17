@@ -1104,12 +1104,12 @@ def bidirectionalRec {C : List α → Sort _} (H0 : C []) (H1 : ∀ a : α, C [a
       change _ < length l + 2
       simp
     rw [← init_append_last (cons_ne_nil b l)]
-    have : C l' := bidirectional_rec l'
+    have : C l' := bidirectionalRec H0 H1 Hn l'
     exact Hn a l' b' ‹C l'›
-termination_by' ⟨_, measure_wf List.length⟩
+termination_by' measure List.length
 #align list.bidirectional_rec List.bidirectionalRec
 
-/-- Like `bidirectional_rec`, but with the list parameter placed first. -/
+/-- Like `bidirectionalRec`, but with the list parameter placed first. -/
 @[elab_as_elim]
 def bidirectionalRecOn {C : List α → Sort _} (l : List α) (H0 : C []) (H1 : ∀ a : α, C [a])
     (Hn : ∀ (a : α) (l : List α) (b : α), C l → C (a :: (l ++ [b]))) : C l :=
