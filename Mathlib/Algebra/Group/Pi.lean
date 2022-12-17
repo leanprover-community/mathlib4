@@ -96,66 +96,60 @@ instance monoid [∀ i, Monoid <| f i] : Monoid (∀ i : I, f i) :=
 #align pi.monoid Pi.monoid
 
 @[to_additive]
-instance commMonoid [∀ i, CommMonoid <| f i] : CommMonoid (∀ i : I, f i) := by
-  refine_struct
-      { one := (1 : ∀ i, f i)
-        mul := (· * ·)
-        npow := Monoid.npow } <;>
-    pi_instance_derive_field
+instance commMonoid [∀ i, CommMonoid <| f i] : CommMonoid (∀ i : I, f i) :=
+  { monoid, commSemigroup with }
 #align pi.comm_monoid Pi.commMonoid
 
 @[to_additive Pi.subNegMonoid]
-instance [∀ i, DivInvMonoid <| f i] : DivInvMonoid (∀ i : I, f i) := by
-  refine_struct
-      { one := (1 : ∀ i, f i)
-        mul := (· * ·)
-        inv := Inv.inv
-        div := Div.div
-        npow := Monoid.npow
-        zpow := fun z x i => x i ^ z } <;>
-    pi_instance_derive_field
+instance divInvMonoid [∀ i, DivInvMonoid <| f i] : DivInvMonoid (∀ i : I, f i) :=
+  { monoid with
+    inv := Inv.inv
+    div := Div.div
+    zpow := fun z x i => x i ^ z
+    --pi_instance
+    div_eq_mul_inv := by rename_i inst _; intros; ext i; exact (inst i).div_eq_mul_inv _ _
+    zpow_zero' := by rename_i inst _; intros; ext i; exact (inst i).zpow_zero' _
+    zpow_succ' := by rename_i inst _; intros; ext i; exact (inst i).zpow_succ' _ _
+    zpow_neg' := by rename_i inst _; intros; ext i; exact (inst i).zpow_neg' _ _
+  }
 
 @[to_additive]
-instance [∀ i, InvolutiveInv <| f i] : InvolutiveInv (∀ i, f i) := by
-  refine_struct { inv := Inv.inv } <;> pi_instance_derive_field
+instance involutiveInv [∀ i, InvolutiveInv <| f i] : InvolutiveInv (∀ i, f i) :=
+  { inv := Inv.inv
+    --pi_instance
+    inv_inv := by rename_i inst; intros; ext i; exact (inst i).inv_inv _
+  }
 
 @[to_additive Pi.subtractionMonoid]
-instance [∀ i, DivisionMonoid <| f i] : DivisionMonoid (∀ i, f i) := by
-  refine_struct
-      { one := (1 : ∀ i, f i)
-        mul := (· * ·)
-        inv := Inv.inv
-        div := Div.div
-        npow := Monoid.npow
-        zpow := fun z x i => x i ^ z } <;>
-    pi_instance_derive_field
+instance divisionMonoid [∀ i, DivisionMonoid <| f i] : DivisionMonoid (∀ i, f i) :=
+  { divInvMonoid, involutiveInv with
+    --pi_instance
+    mul_inv_rev := by rename_i inst _ _; intros; ext i; exact (inst i).mul_inv_rev _ _
+    inv_eq_of_mul := by
+      rename_i inst _ _; intros; ext i; apply (inst i).inv_eq_of_mul _ _ _;
+      rename_i ab1; exact congr_fun ab1 i
+  }
 
 @[to_additive Pi.subtractionCommMonoid]
 instance [∀ i, DivisionCommMonoid <| f i] : DivisionCommMonoid (∀ i, f i) :=
-  { Pi.divisionMonoid, Pi.commSemigroup with }
+  { divisionMonoid, commSemigroup with }
 
 @[to_additive]
-instance group [∀ i, Group <| f i] : Group (∀ i : I, f i) := by
-  refine_struct
-      { one := (1 : ∀ i, f i)
-        mul := (· * ·)
-        inv := Inv.inv
-        div := Div.div
-        npow := Monoid.npow
-        zpow := DivInvMonoid.zpow } <;>
-    pi_instance_derive_field
+instance group [∀ i, Group <| f i] : Group (∀ i : I, f i) :=
+{ divInvMonoid with
+  --pi_instance
+  mul_left_inv := by rename_i inst _; intros; ext i; exact (inst i).mul_left_inv _
+  }
 #align pi.group Pi.group
 
 @[to_additive]
-instance commGroup [∀ i, CommGroup <| f i] : CommGroup (∀ i : I, f i) := by
-  refine_struct
-      { one := (1 : ∀ i, f i)
-        mul := (· * ·)
-        inv := Inv.inv
-        div := Div.div
-        npow := Monoid.npow
-        zpow := DivInvMonoid.zpow } <;>
-    pi_instance_derive_field
+instance commGroup [∀ i, CommGroup <| f i] : CommGroup (∀ i : I, f i) :=
+{ one := (1 : ∀ i, f i)
+  mul := (· * ·)
+  inv := Inv.inv
+  div := Div.div
+  npow := Monoid.npow
+  zpow := DivInvMonoid.zpow }
 #align pi.comm_group Pi.commGroup
 
 @[to_additive AddLeftCancelSemigroup]
