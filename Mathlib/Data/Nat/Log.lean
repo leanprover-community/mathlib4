@@ -322,8 +322,8 @@ theorem clog_pow (b x : ℕ) (hb : 1 < b) : clog b (b ^ x) = x :=
     exact (pow_right_strict_mono hb).le_iff_le
 #align nat.clog_pow Nat.clog_pow
 
-theorem pow_pred_clog_lt_self {b : ℕ} (hb : 1 < b) {x : ℕ} (hx : 1 < x) : b ^ (clog b x).pred < x :=
-  by
+theorem pow_pred_clog_lt_self {b : ℕ} (hb : 1 < b) {x : ℕ} (hx : 1 < x) :
+  b ^ (clog b x).pred < x := by
   rw [← not_le, le_pow_iff_clog_le hb, not_le]
   exact pred_lt (clog_pos hb hx).ne'
 #align nat.pow_pred_clog_lt_self Nat.pow_pred_clog_lt_self
@@ -363,8 +363,8 @@ theorem log_le_clog (b n : ℕ) : log b n ≤ clog b n := by
     exact zero_le _
   cases n with
   | zero =>
-      rw [log_zero_right]
-      exact zero_le _
+    rw [log_zero_right]
+    exact zero_le _
   | succ n =>
     exact (pow_right_strict_mono hb).le_iff_le.1
       ((pow_log_le_self b n.succ_ne_zero).trans <| le_pow_clog hb _)
