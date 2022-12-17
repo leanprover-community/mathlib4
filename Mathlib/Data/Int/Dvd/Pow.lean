@@ -23,9 +23,9 @@ namespace Int
 set_option linter.deprecated false in
 @[simp]
 theorem sign_pow_bit1 (k : ℕ) : ∀ n : ℤ, n.sign ^ bit1 k = n.sign
-  | (n + 1 : ℕ) => one_pow (bit1 k)
+  | (_ + 1 : ℕ) => one_pow (bit1 k)
   | 0 => zero_pow (Nat.zero_lt_bit1 k)
-  | -[n+1] => (neg_pow_bit1 1 k).trans (congr_arg (fun x => -x) (one_pow (bit1 k)))
+  | -[_+1] => (neg_pow_bit1 1 k).trans (congr_arg (fun x => -x) (one_pow (bit1 k)))
 #align int.sign_pow_bit1 Int.sign_pow_bit1
 
 theorem pow_dvd_of_le_of_pow_dvd {p m n : ℕ} {k : ℤ} (hmn : m ≤ n) (hdiv : ↑(p ^ n) ∣ k) :
