@@ -830,11 +830,11 @@ theorem le_infᵢ₂ {f : ∀ i, κ i → α} (h : ∀ i j, a ≤ f i j) : a ≤
   le_infᵢ fun i => le_infᵢ <| h i
 #align le_infi₂ le_infᵢ₂
 
-theorem supᵢ₂_le_supᵢ (κ : ι → Sort _) (f : ι → α) : (⨆ (i) (j : κ i), f i) ≤ ⨆ i, f i :=
+theorem supᵢ₂_le_supᵢ (κ : ι → Sort _) (f : ι → α) : (⨆ (i) (_j : κ i), f i) ≤ ⨆ i, f i :=
   supᵢ₂_le fun i _ => le_supᵢ f i
 #align supr₂_le_supr supᵢ₂_le_supᵢ
 
-theorem infᵢ_le_infᵢ₂ (κ : ι → Sort _) (f : ι → α) : (⨅ i, f i) ≤ ⨅ (i) (j : κ i), f i :=
+theorem infᵢ_le_infᵢ₂ (κ : ι → Sort _) (f : ι → α) : (⨅ i, f i) ≤ ⨅ (i) (_j : κ i), f i :=
   le_infᵢ₂ fun i _ => infᵢ_le f i
 #align infi_le_infi₂ infᵢ_le_infᵢ₂
 
@@ -886,11 +886,11 @@ theorem infᵢ₂_mono' {f : ∀ i, κ i → α} {g : ∀ i', κ' i' → α} (h 
     infᵢ₂_le_of_le i' j' h
 #align infi₂_mono' infᵢ₂_mono'
 
-theorem supᵢ_const_mono (h : ι → ι') : (⨆ i : ι, a) ≤ ⨆ j : ι', a :=
+theorem supᵢ_const_mono (h : ι → ι') : (⨆ _i : ι, a) ≤ ⨆ _j : ι', a :=
   supᵢ_le <| le_supᵢ _ ∘ h
 #align supr_const_mono supᵢ_const_mono
 
-theorem infᵢ_const_mono (h : ι' → ι) : (⨅ i : ι, a) ≤ ⨅ j : ι', a :=
+theorem infᵢ_const_mono (h : ι' → ι) : (⨅ _i : ι, a) ≤ ⨅ _j : ι', a :=
   le_infᵢ <| infᵢ_le _ ∘ h
 #align infi_const_mono infᵢ_const_mono
 
@@ -899,12 +899,12 @@ theorem supᵢ_infᵢ_le_infᵢ_supᵢ (f : ι → ι' → α) : (⨆ i, ⨅ j, 
 #align supr_infi_le_infi_supr supᵢ_infᵢ_le_infᵢ_supᵢ
 
 theorem bsupᵢ_mono {p q : ι → Prop} (hpq : ∀ i, p i → q i) :
-    (⨆ (i) (h : p i), f i) ≤ ⨆ (i) (h : q i), f i :=
+    (⨆ (i) (_h : p i), f i) ≤ ⨆ (i) (_h : q i), f i :=
   supᵢ_mono fun i => supᵢ_const_mono (hpq i)
 #align bsupr_mono bsupᵢ_mono
 
 theorem binfᵢ_mono {p q : ι → Prop} (hpq : ∀ i, p i → q i) :
-    (⨅ (i) (h : q i), f i) ≤ ⨅ (i) (h : p i), f i :=
+    (⨅ (i) (_h : q i), f i) ≤ ⨅ (i) (_h : p i), f i :=
   infᵢ_mono fun i => infᵢ_const_mono (hpq i)
 #align binfi_mono binfᵢ_mono
 
@@ -1050,29 +1050,29 @@ theorem Monotone.map_infₛ_le [CompleteLattice β] {s : Set α} {f : α → β}
   hf.dual_left.map_supₛ_le
 #align monotone.map_Inf_le Monotone.map_infₛ_le
 
-theorem supᵢ_const_le : (⨆ i : ι, a) ≤ a :=
+theorem supᵢ_const_le : (⨆ _i : ι, a) ≤ a :=
   supᵢ_le fun _ => le_rfl
 #align supr_const_le supᵢ_const_le
 
-theorem le_infᵢ_const : a ≤ ⨅ i : ι, a :=
+theorem le_infᵢ_const : a ≤ ⨅ _i : ι, a :=
   le_infᵢ fun _ => le_rfl
 #align le_infi_const le_infᵢ_const
 
 -- We generalize this to conditionally complete lattices in `csupᵢ_const` and `cinfᵢ_const`.
-theorem supᵢ_const [Nonempty ι] : (⨆ b : ι, a) = a := by rw [supᵢ, range_const, supₛ_singleton]
+theorem supᵢ_const [Nonempty ι] : (⨆ _b : ι, a) = a := by rw [supᵢ, range_const, supₛ_singleton]
 #align supr_const supᵢ_const
 
-theorem infᵢ_const [Nonempty ι] : (⨅ b : ι, a) = a :=
+theorem infᵢ_const [Nonempty ι] : (⨅ _b : ι, a) = a :=
   @supᵢ_const αᵒᵈ _ _ a _
 #align infi_const infᵢ_const
 
 @[simp]
-theorem supᵢ_bot : (⨆ i : ι, ⊥ : α) = ⊥ :=
+theorem supᵢ_bot : (⨆ _i : ι, ⊥ : α) = ⊥ :=
   bot_unique supᵢ_const_le
 #align supr_bot supᵢ_bot
 
 @[simp]
-theorem infᵢ_top : (⨅ i : ι, ⊤ : α) = ⊤ :=
+theorem infᵢ_top : (⨅ _i : ι, ⊤ : α) = ⊤ :=
   top_unique le_infᵢ_const
 #align infi_top infᵢ_top
 
@@ -1141,7 +1141,7 @@ theorem supᵢ_eq_dif {p : Prop} [Decidable p] (a : p → α) :
     (⨆ h : p, a h) = if h : p then a h else ⊥ := by by_cases p <;> simp [h]
 #align supr_eq_dif supᵢ_eq_dif
 
-theorem supᵢ_eq_if {p : Prop} [Decidable p] (a : α) : (⨆ h : p, a) = if p then a else ⊥ :=
+theorem supᵢ_eq_if {p : Prop} [Decidable p] (a : α) : (⨆ _h : p, a) = if p then a else ⊥ :=
   supᵢ_eq_dif fun _ => a
 #align supr_eq_if supᵢ_eq_if
 
@@ -1150,7 +1150,7 @@ theorem infᵢ_eq_dif {p : Prop} [Decidable p] (a : p → α) :
   @supᵢ_eq_dif αᵒᵈ _ _ _ _
 #align infi_eq_dif infᵢ_eq_dif
 
-theorem infᵢ_eq_if {p : Prop} [Decidable p] (a : α) : (⨅ h : p, a) = if p then a else ⊤ :=
+theorem infᵢ_eq_if {p : Prop} [Decidable p] (a : α) : (⨅ _h : p, a) = if p then a else ⊤ :=
   infᵢ_eq_dif fun _ => a
 #align infi_eq_if infᵢ_eq_if
 
@@ -1224,14 +1224,14 @@ theorem infᵢ_infᵢ_eq_right {b : β} {f : ∀ x : β, b = x → α} : (⨅ x,
 -- attribute [ematch] le_refl Porting note: removed attribute
 
 theorem supᵢ_subtype {p : ι → Prop} {f : Subtype p → α} : supᵢ f = ⨆ (i) (h : p i), f ⟨i, h⟩ :=
-  le_antisymm (supᵢ_le fun ⟨i, h⟩ => le_supᵢ₂ i h) (supᵢ₂_le fun i h => le_supᵢ _ _)
+  le_antisymm (supᵢ_le fun ⟨i, h⟩ => @le_supᵢ₂ _ _ p _ (fun i h => f ⟨i, h⟩) i h)
+    (supᵢ₂_le fun _ _ => le_supᵢ _ _)
 #align supr_subtype supᵢ_subtype
 
 theorem infᵢ_subtype : ∀ {p : ι → Prop} {f : Subtype p → α}, infᵢ f = ⨅ (i) (h : p i), f ⟨i, h⟩ :=
   @supᵢ_subtype αᵒᵈ _ _
 #align infi_subtype infᵢ_subtype
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i h) -/
 theorem supᵢ_subtype' {p : ι → Prop} {f : ∀ i, p i → α} :
     (⨆ (i) (h), f i h) = ⨆ x : Subtype p, f x x.property :=
   (@supᵢ_subtype _ _ _ p fun x => f x.val x.property).symm
@@ -1302,7 +1302,7 @@ theorem bsupᵢ_sup {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ 
 
 theorem sup_bsupᵢ {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i, p i) :
     (a ⊔ ⨆ (i) (h : p i), f i h) = ⨆ (i) (h : p i), a ⊔ f i h := by
-  simpa only [sup_comm] using bsupᵢ_sup h
+  simpa only [sup_comm] using @bsupᵢ_sup α _ _ p _ _ h
 #align sup_bsupr sup_bsupᵢ
 
 theorem binfᵢ_inf {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i, p i) :
