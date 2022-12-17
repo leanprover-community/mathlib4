@@ -314,15 +314,14 @@ theorem image_inter_subset (f : α → β) (s t : Set α) : f '' (s ∩ t) ⊆ f
 #align set.image_inter_subset Set.image_inter_subset
 
 theorem image_inter_on {f : α → β} {s t : Set α} (h : ∀ x ∈ t, ∀ y ∈ s, f x = f y → x = y) :
-    f '' s ∩ f '' t = f '' (s ∩ t) :=
-  Subset.antisymm
-    (fun b ⟨⟨a₁, ha₁, h₁⟩, ⟨a₂, ha₂, h₂⟩⟩ =>
+    f '' (s ∩ t) = f '' s ∩ f '' t :=
+  (image_inter_subset _ _ _).antisymm
+    fun b ⟨⟨a₁, ha₁, h₁⟩, ⟨a₂, ha₂, h₂⟩⟩ ↦
       have : a₂ = a₁ := h _ ha₂ _ ha₁ (by simp [*])
-      ⟨a₁, ⟨ha₁, this ▸ ha₂⟩, h₁⟩)
-    (image_inter_subset _ _ _)
+      ⟨a₁, ⟨ha₁, this ▸ ha₂⟩, h₁⟩
 #align set.image_inter_on Set.image_inter_on
 
-theorem image_inter {f : α → β} {s t : Set α} (H : Injective f) : f '' s ∩ f '' t = f '' (s ∩ t) :=
+theorem image_inter {f : α → β} {s t : Set α} (H : Injective f) : f '' (s ∩ t) = f '' s ∩ f '' t :=
   image_inter_on fun _ _ _ _ h => H h
 #align set.image_inter Set.image_inter
 
@@ -407,7 +406,7 @@ theorem mem_image_iff_of_inverse {f : α → β} {g : β → α} {b : β} {s : S
 #align set.mem_image_iff_of_inverse Set.mem_image_iff_of_inverse
 
 theorem image_compl_subset {f : α → β} {s : Set α} (H : Injective f) : f '' sᶜ ⊆ (f '' s)ᶜ :=
-  Disjoint.subset_compl_left <| by simp [disjoint_iff_inf_le, image_inter H]
+  Disjoint.subset_compl_left <| by simp [disjoint_iff_inf_le, ←image_inter H]
 #align set.image_compl_subset Set.image_compl_subset
 
 theorem subset_image_compl {f : α → β} {s : Set α} (H : Surjective f) : (f '' s)ᶜ ⊆ f '' sᶜ :=

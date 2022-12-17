@@ -497,16 +497,16 @@ def map₂Right' (f : Option α → β → γ) (as : List α) (bs : List β) : L
 #align list.map₂_right' List.map₂Right'
 
 
-/-- Left-biased version of `list.map₂`. `map₂_left f as bs` applies `f` to each pair
+/-- Left-biased version of `List.map₂`. `map₂Left f as bs` applies `f` to each pair
 `aᵢ ∈ as` and `bᵢ ‌∈ bs`. If `bs` is shorter than `as`, `f` is applied to `none`
 for the remaining `aᵢ`.
 
 ```
-map₂_left prod.mk [1, 2] ['a'] = [(1, some 'a'), (2, none)]
+map₂Left Prod.mk [1, 2] ['a'] = [(1, some 'a'), (2, none)]
 
-map₂_left prod.mk [1] ['a', 'b'] = [(1, some 'a')]
+map₂Left Prod.mk [1] ['a', 'b'] = [(1, some 'a')]
 
-map₂_left f as bs = (map₂_left' f as bs).fst
+map₂Left f as bs = (map₂Left' f as bs).fst
 ```
 -/
 @[simp]
@@ -516,16 +516,16 @@ def map₂Left (f : α → Option β → γ) : List α → List β → List γ
   | a :: as, b :: bs => f a (some b) :: map₂Left f as bs
 #align list.map₂_left List.map₂Left
 
-/-- Right-biased version of `list.map₂`. `map₂_right f as bs` applies `f` to each
+/-- Right-biased version of `List.map₂`. `map₂Right f as bs` applies `f` to each
 pair `aᵢ ∈ as` and `bᵢ ‌∈ bs`. If `as` is shorter than `bs`, `f` is applied to
 `none` for the remaining `bᵢ`.
 
 ```
-map₂_right prod.mk [1, 2] ['a'] = [(some 1, 'a')]
+map₂Right Prod.mk [1, 2] ['a'] = [(some 1, 'a')]
 
-map₂_right prod.mk [1] ['a', 'b'] = [(some 1, 'a'), (none, 'b')]
+map₂Right Prod.mk [1] ['a', 'b'] = [(some 1, 'a'), (none, 'b')]
 
-map₂_right f as bs = (map₂_right' f as bs).fst
+map₂Right f as bs = (map₂Right' f as bs).fst
 ```
 -/
 def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : List γ :=

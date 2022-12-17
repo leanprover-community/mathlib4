@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
 import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Int.Cast
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Algebra.GroupPower.Basic
 
 /-!
