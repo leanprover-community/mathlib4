@@ -243,8 +243,7 @@ def NatTrans.equivOfCompFullyFaithful :
 natural isomorphisms. -/
 @[simps]
 def NatIso.equivOfCompFullyFaithful :
-    (F ≅ G) ≃ (F ⋙ H ≅
-        G ⋙ H) where
+    (F ≅ G) ≃ (F ⋙ H ≅ G ⋙ H) where
   toFun e := NatIso.hcomp e (Iso.refl H)
   invFun := natIsoOfCompFullyFaithful H
   left_inv := fun _ => by aesop_cat
