@@ -228,11 +228,11 @@ theorem log_div_mul_self (b n : ℕ) : log b (n / b * b) = log b n := by
     tsub_add_cancel_of_le (succ_le_iff.2 <| log_pos hb h)]
 #align nat.log_div_mul_self Nat.log_div_mul_self
 
-private theorem add_pred_div_lt {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : (n + b - 1) / b < n := by
+theorem add_pred_div_lt {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : (n + b - 1) / b < n := by
   rw [div_lt_iff_lt_mul (zero_lt_one.trans hb), ← succ_le_iff, ← pred_eq_sub_one,
     succ_pred_eq_of_pos (add_pos (zero_lt_one.trans hn) (zero_lt_one.trans hb))]
   exact add_le_mul hn hb
---#align nat.add_pred_div_lt nat.add_pred_div_lt
+#align nat.add_pred_div_lt Nat.add_pred_div_lt
 
 /-! ### Ceil logarithm -/
 
