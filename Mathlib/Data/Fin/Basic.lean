@@ -142,6 +142,12 @@ lemma size_positive' [Nonempty (Fin n)] : 0 < n :=
   rw [Nat.mod_eq_of_lt]
   exact Nat.succ_lt_succ (Nat.zero_lt_succ _)
 
+-- porting note: some missing lemmas
+
+lemma lt_iff_coe_lt_coe {a b : Fin n} : a < b ↔ a.val < b.val := Iff.rfl
+
+lemma le_iff_coe_le_coe {a b : Fin n} : a ≤ b ↔ a.val ≤ b.val := Iff.rfl
+
 end from_ad_hoc
 
 protected theorem prop (a : Fin n) : a.val < n :=
@@ -956,7 +962,7 @@ theorem succ_ne_zero {n} : ∀ k : Fin n, Fin.succ k ≠ 0
 @[simp]
 theorem succ_zero_eq_one : Fin.succ (0 : Fin (n + 1)) = 1 := by
   ext
-  simp only [val_succ, val_zero, zero_add, one_val] -- was `rfl`
+  simp only [val_succ, val_zero, zero_add, one_val] -- porting note: was `rfl`
 #align fin.succ_zero_eq_one Fin.succ_zero_eq_one
 
 @[simp]
@@ -970,34 +976,34 @@ theorem succ_mk (n i : ℕ) (h : i < n) : Fin.succ ⟨i, h⟩ = ⟨i + 1, Nat.su
 #align fin.succ_mk Fin.succ_mk
 
 theorem mk_succ_pos (i : ℕ) (h : i < n) : (0 : Fin (n + 1)) < ⟨i.succ, add_lt_add_right h 1⟩ := by
-  rw [lt_iff_coe_lt_coe, coe_zero]
+  rw [lt_iff_coe_lt_coe, val_zero]
   exact Nat.succ_pos i
 #align fin.mk_succ_pos Fin.mk_succ_pos
 
 theorem one_lt_succ_succ (a : Fin n) : (1 : Fin (n + 2)) < a.succ.succ := by
   cases n
-  · exact finZeroElim a
+  · change (1 : Fin 2).val < a.succ.succ -- porting note: was `exact finZeroElim a`
+    simp only [one_val, zero_eq, val_succ, lt_add_iff_pos_left, add_pos_iff, or_true]
   · rw [← succ_zero_eq_one, succ_lt_succ_iff]
     exact succ_pos a
 #align fin.one_lt_succ_succ Fin.one_lt_succ_succ
 
 @[simp]
 theorem add_one_lt_iff {n : ℕ} {k : Fin (n + 2)} : k + 1 < k ↔ k = last _ := by
-  simp only [lt_iff_coe_lt_coe, coe_add, coe_last, ext_iff]
+  simp only [lt_iff_coe_lt_coe, val_add, val_last, ext_iff]
   cases' k with k hk
   rcases(le_of_lt_succ hk).eq_or_lt with (rfl | hk')
   · simp
   · simp [hk'.ne, mod_eq_of_lt (succ_lt_succ hk'), le_succ _]
 #align fin.add_one_lt_iff Fin.add_one_lt_iff
 
-#exit
 @[simp]
 theorem add_one_le_iff {n : ℕ} {k : Fin (n + 1)} : k + 1 ≤ k ↔ k = last _ := by
   cases n
   · simp [Subsingleton.elim (k + 1) k, Subsingleton.elim (Fin.last _) k]
   rw [← not_iff_not, ← add_one_lt_iff, lt_iff_le_and_ne, not_and']
   refine' ⟨fun h _ => h, fun h => h _⟩
-  rw [Ne.def, ext_iff, coe_add_one]
+  rw [Ne.def, ext_iff, val_add_one]
   split_ifs with hk hk <;> simp [hk, eq_comm]
 #align fin.add_one_le_iff Fin.add_one_le_iff
 
@@ -1020,6 +1026,8 @@ theorem le_zero_iff {n : ℕ} {k : Fin (n + 1)} : k ≤ 0 ↔ k = 0 :=
 theorem succ_succ_ne_one (a : Fin n) : Fin.succ (Fin.succ a) ≠ 1 :=
   ne_of_gt (one_lt_succ_succ a)
 #align fin.succ_succ_ne_one Fin.succ_succ_ne_one
+
+#exit
 
 /-- `cast_lt i h` embeds `i` into a `fin` where `h` proves it belongs into.  -/
 def castLt (i : Fin m) (h : i.1 < n) : Fin n :=
