@@ -288,7 +288,7 @@ theorem clog_pos {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : 0 < clog b n := by
 
 theorem clog_eq_one {b n : ℕ} (hn : 2 ≤ n) (h : n ≤ b) : clog b n = 1 := by
   rw [clog_of_two_le (hn.trans h) hn, clog_of_right_le_one]
-  have n_pos : 0 < n := zero_lt_two.trans_le hn
+  have n_pos : 0 < n := (zero_lt_two' ℕ).trans_le hn
   rw [← lt_succ_iff, Nat.div_lt_iff_lt_mul (n_pos.trans_le h), ← succ_le_iff, ← pred_eq_sub_one,
     succ_pred_eq_of_pos (add_pos n_pos (n_pos.trans_le h)), succ_mul, one_mul]
   exact add_le_add_right h _
@@ -303,7 +303,7 @@ theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ 
     simp_rw [← not_lt]
     contrapose!
     exact clog_pos hb
-  have b_pos : 0 < b := zero_lt_two.trans_le hb
+  have b_pos : 0 < b := (zero_lt_one' ℕ).trans hb
   rw [clog]; split_ifs with h
   · rw [succ_eq_add_one, add_le_add_iff_right, ← ih ((x + b - 1) / b) (add_pred_div_lt hb h.2),
       Nat.div_le_iff_le_mul_add_pred b_pos, mul_comm b, ← pow_succ,
