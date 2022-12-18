@@ -18,8 +18,8 @@ import Mathlib.Data.Int.Cast.Lemmas
 /-!
 # Lemmas about power operations on monoids and groups
 
-This file contains lemmas about `monoid.pow`, `group.pow`, `nsmul`, `zsmul`
-which require additional imports besides those available in `algebra.group_power.basic`.
+This file contains lemmas about `Monoid.pow`, `Group.pow`, `nsmul`, and `zsmul`
+which require additional imports besides those available in `Mathlib.Algebra.GroupPower.Basic`.
 -/
 
 
