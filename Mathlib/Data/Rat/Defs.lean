@@ -278,8 +278,7 @@ theorem divInt_neg_den (n d : ℤ) : n /. -d = -n /. d := by
 @[simp]
 theorem sub_def'' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
     a /. b - c /. d = (a * d - c * b) /. (b * d) := by
-  rw [sub_def]
-  sorry
+  rw [Rat.sub_eq_add_neg, neg_def, add_def'' b0 d0, neg_mul, ←sub_eq_add_neg]
 #align rat.sub_def Rat.sub_def''
 
 #align rat.mul Rat.mul
