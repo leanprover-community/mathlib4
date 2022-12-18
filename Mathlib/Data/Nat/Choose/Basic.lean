@@ -65,6 +65,9 @@ theorem choose_succ_succ (n k : ℕ) : choose (succ n) (succ k) = choose n k + c
   rfl
 #align nat.choose_succ_succ Nat.choose_succ_succ
 
+theorem choose_succ_succ' (n k : ℕ) : choose (n + 1) (k + 1) = choose n k + choose n (k + 1) :=
+  rfl
+
 theorem choose_eq_zero_of_lt : ∀ {n k}, n < k → choose n k = 0
   | _, 0, hk => absurd hk (Nat.not_lt_zero _)
   | 0, k + 1, _ => choose_zero_succ _
