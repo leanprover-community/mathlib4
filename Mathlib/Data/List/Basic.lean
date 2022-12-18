@@ -1519,14 +1519,13 @@ theorem nth_le_length_sub_one {l : List α} (h : l.length - 1 < l.length) :
 @[simp]
 theorem nth_concat_length : ∀ (l : List α) (a : α), (l ++ [a]).nth l.length = some a
   | [], a => rfl
-  | b :: l, a => by rw [cons_append, length_cons, nth, nth_concat_length]
+  | b :: l, a => by rw [cons_append, length_cons, nth, nth_concat_length l]
 #align list.nth_concat_length List.nth_concat_length
 
 theorem nth_le_cons_length (x : α) (xs : List α) (n : ℕ) (h : n = xs.length) :
     (x :: xs).nthLe n (by simp [h]) = (x :: xs).last (cons_ne_nil x xs) := by
   rw [last_eq_nth_le]
   congr
-  simp [h]
 #align list.nth_le_cons_length List.nth_le_cons_length
 
 theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length) :
@@ -1542,7 +1541,7 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
     have h₂ := h
     rw [length_cons, Nat.lt_succ_iff, le_iff_eq_or_lt] at h₂
     cases n
-    · simp
+    · simp [nthLe]
     rw [drop, nthLe]
     apply ih
 #align list.take_one_drop_eq_of_lt_length List.take_one_drop_eq_of_lt_length
@@ -1554,21 +1553,20 @@ but is expected to have type
   forall {α : Type.{u_1}} {l₁ : List.{u_1} α} {l₂ : List.{u_1} α}, (forall (n : Nat), Eq.{succ u_1} (Option.{u_1} α) (List.get?.{u_1} α l₁ n) (List.get?.{u_1} α l₂ n)) -> (Eq.{succ u_1} (List.{u_1} α) l₁ l₂)
 Case conversion may be inaccurate. Consider using '#align list.ext List.extₓ'. -/
 @[ext]
-theorem ext : ∀ {l₁ l₂ : List α}, (∀ n, nth l₁ n = nth l₂ n) → l₁ = l₂
-  | [], [], h => rfl
-  | a :: l₁, [], h => by have h0 := h 0 <;> contradiction
-  | [], a' :: l₂, h => by have h0 := h 0 <;> contradiction
+theorem ext_nth : ∀ {l₁ l₂ : List α}, (∀ n, nth l₁ n = nth l₂ n) → l₁ = l₂
+  | [], [], _ => rfl
+  | a :: l₁, [], h => by have h0 := h 0; contradiction
+  | [], a' :: l₂, h => by have h0 := h 0; contradiction
   | a :: l₁, a' :: l₂, h => by
-    have h0 : some a = some a' := h 0 <;> injection h0 with aa <;>
-          simp only [aa, ext fun n => h (n + 1)] <;>
-        constructor <;>
-      rfl
+    have h0 : some a = some a' := h 0
+    injection h0 with aa
+    simp only [aa, ext_nth fun n => h (n + 1)]
 #align list.ext List.ext
 
 theorem ext_le {l₁ l₂ : List α} (hl : length l₁ = length l₂)
     (h : ∀ n h₁ h₂, nthLe l₁ n h₁ = nthLe l₂ n h₂) : l₁ = l₂ :=
-  ext fun n =>
-    if h₁ : n < length l₁ then by rw [nth_le_nth, nth_le_nth, h n h₁ (by rwa [← hl])]
+  ext_nth fun n =>
+    if h₁ : n < length l₁ then by rw [nthLe_nth, nthLe_nth, h n h₁ (by rwa [← hl])]
     else by
       let h₁ := le_of_not_gt h₁
       rw [nth_len_le h₁, nth_len_le]
@@ -1579,37 +1577,37 @@ theorem ext_le {l₁ l₂ : List α} (hl : length l₁ = length l₂)
 theorem indexOf_nth_le [DecidableEq α] {a : α} : ∀ {l : List α} (h), nthLe l (indexOf a l) h = a
   | b :: l, h => by
     by_cases h' : a = b <;>
-      simp only [h', if_pos, if_false, index_of_cons, nthLe, @index_of_nth_le l]
+      simp only [h', if_pos, if_false, indexOf_cons, nthLe, @indexOf_nth_le _ _ l]
 #align list.index_of_nth_le List.indexOf_nth_le
 
 @[simp]
 theorem indexOf_nth [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
-    nth l (indexOf a l) = some a := by rw [nth_le_nth, index_of_nth_le (index_of_lt_length.2 h)]
+    nth l (indexOf a l) = some a := by rw [nthLe_nth, indexOf_nth_le (indexOf_lt_length.2 h)]
 #align list.index_of_nth List.indexOf_nth
 
 theorem nth_le_reverse_aux1 :
-    ∀ (l r : List α) (i h1 h2), nthLe (reverseCore l r) (i + length l) h1 = nthLe r i h2
-  | [], r, i => fun h1 h2 => rfl
+    ∀ (l r : List α) (i h1 h2), nthLe (reverseAux l r) (i + length l) h1 = nthLe r i h2
+  | [], r, i => fun h1 _ => rfl
   | a :: l, r, i => by
-    rw [show i + length (a :: l) = i + 1 + length l from add_right_comm i (length l) 1] <;>
+    rw [show i + length (a :: l) = i + 1 + length l from add_right_comm i (length l) 1];
       exact fun h1 h2 => nth_le_reverse_aux1 l (a :: r) (i + 1) h1 (succ_lt_succ h2)
 #align list.nth_le_reverse_aux1 List.nth_le_reverse_aux1
 
 theorem indexOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy : y ∈ l) :
     indexOf x l = indexOf y l ↔ x = y :=
   ⟨fun h => by
-    have :
-      nthLe l (indexOf x l) (index_of_lt_length.2 hx) =
-        nthLe l (indexOf y l) (index_of_lt_length.2 hy) :=
+    have x_eq_y :
+      nthLe l (indexOf x l) (indexOf_lt_length.2 hx) =
+        nthLe l (indexOf y l) (indexOf_lt_length.2 hy) :=
       by simp only [h]
-    simpa only [index_of_nth_le] , fun h => by subst h⟩
+    simp only [indexOf_nth_le] at x_eq_y; exact x_eq_y, fun h => by subst h; rfl⟩
 #align list.index_of_inj List.indexOf_inj
 
 theorem nth_le_reverse_aux2 :
     ∀ (l r : List α) (i : Nat) (h1) (h2),
-      nthLe (reverseCore l r) (length l - 1 - i) h1 = nthLe l i h2
+      nthLe (reverseAux l r) (length l - 1 - i) h1 = nthLe l i h2
   | [], r, i, h1, h2 => absurd h2 (Nat.not_lt_zero _)
-  | a :: l, r, 0, h1, h2 => by
+  | a :: l, r, 0, h1, _ => by
     have aux := nth_le_reverse_aux1 l (a :: r) 0
     rw [zero_add] at aux
     exact aux _ (zero_lt_succ _)
@@ -1617,10 +1615,9 @@ theorem nth_le_reverse_aux2 :
     have aux := nth_le_reverse_aux2 l (a :: r) i
     have heq :=
       calc
-        length (a :: l) - 1 - (i + 1) = length l - (1 + i) := by rw [add_comm] <;> rfl
+        length (a :: l) - 1 - (i + 1) = length l - (1 + i) := by rw [add_comm]; rfl
         _ = length l - 1 - i := by rw [← tsub_add_eq_tsub_tsub]
-
-    rw [← HEq] at aux
+    rw [←heq] at aux
     apply aux
 #align list.nth_le_reverse_aux2 List.nth_le_reverse_aux2
 
