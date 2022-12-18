@@ -1280,9 +1280,9 @@ theorem indexOf_cons_eq {a b : α} (l : List α) : a = b → indexOf a (b :: l) 
 @[simp]
 theorem indexOf_cons_ne {a b : α} (l : List α) : a ≠ b → indexOf a (b :: l) = succ (indexOf a l)
 | n => by
-  cases l
-  · rw [indexOf, findIdx, findIdx.go, beq_false_of_ne n, cond, ←succ_eq_add_one]; rfl
-  · rename_i head tail
+  cases l with
+  | nil => rw [indexOf, findIdx, findIdx.go, beq_false_of_ne n, cond, ←succ_eq_add_one]; rfl
+  | cons head tail =>
     by_cases a = head
     · rw [indexOf_cons_eq tail h, indexOf, findIdx, findIdx.go, beq_false_of_ne n, cond, h,
         findIdx.go, beq_self_eq_true head, cond]
@@ -1295,9 +1295,10 @@ theorem indexOf_cons_ne {a b : α} (l : List α) : a ≠ b → indexOf a (b :: l
 where
   findIdx_go_succ (p : α → Bool) (l : List α) (n : ℕ) :
       findIdx.go p l (n + 1) = succ (findIdx.go p l n) := by
-    cases l <;> unfold findIdx.go
-    · exact succ_eq_add_one n
-    · rename_i head tail
+    cases l with
+    | nil => unfold findIdx.go; exact succ_eq_add_one n
+    | cons head tail =>
+      unfold findIdx.go
       cases p head <;> simp only [cond]
       · exact findIdx_go_succ p tail (n + 1)
 #align list.index_of_cons_ne List.indexOf_cons_ne
@@ -1431,13 +1432,13 @@ theorem nth_zero (l : List α) : l.nth 0 = l.head? := by cases l <;> rfl
 --Porting note: couldn't synthesize _ in cases h x _ rfl anymore, needed to be given explicitly
 theorem nth_injective {α : Type u} {xs : List α} {i j : ℕ} (h₀ : i < xs.length) (h₁ : Nodup xs)
     (h₂ : xs.nth i = xs.nth j) : i = j := by
-  induction' xs with x xs generalizing i j
-  · cases h₀
-  · cases i <;> cases j
+  induction xs generalizing i j with
+  | nil => cases h₀
+  | cons x xs tail_ih =>
+    cases i <;> cases j
     case zero.zero => rfl
     case succ.succ =>
-      congr ; cases h₁
-      rename_i tail_ih _ _ _ _
+      congr; cases h₁
       apply tail_ih <;> solve_by_elim [lt_of_succ_lt_succ]
     all_goals ( dsimp at h₂; cases' h₁ with _ _ h h')
     · cases (h x (mem_iff_nth.mpr ⟨_, h₂.symm⟩) rfl)
