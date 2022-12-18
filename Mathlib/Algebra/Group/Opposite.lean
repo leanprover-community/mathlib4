@@ -2,6 +2,11 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
+
+! This file was ported from Lean 3 source module algebra.group.opposite
+! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Commute
