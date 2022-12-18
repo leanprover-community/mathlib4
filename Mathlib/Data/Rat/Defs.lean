@@ -333,11 +333,13 @@ theorem inv_def' {a b : ℤ} : (a /. b)⁻¹ = b /. a := by
 variable (a b c : ℚ)
 
 protected theorem add_zero : a + 0 = a :=
-  numDenCasesOn' a fun n d h => by rw [← zero_divInt d] ; simp [h, -zero_divInt]
+  numDenCasesOn' a fun n d h => by
+    rw [← zero_divInt d, add_def'', zero_mul, add_zero, divInt_mul_right] <;> simp [h]
 #align rat.add_zero Rat.add_zero
 
 protected theorem zero_add : 0 + a = a :=
-  numDenCasesOn' a fun n d h => by rw [← zero_divInt d] ; simp [h, -zero_divInt]
+  numDenCasesOn' a fun n d h => by
+    rw [← zero_divInt d, add_def'', zero_mul, zero_add, divInt_mul_right] <;> simp [h]
 #align rat.zero_add Rat.zero_add
 
 protected theorem add_comm : a + b = b + a :=
