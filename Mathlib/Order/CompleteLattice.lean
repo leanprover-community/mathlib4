@@ -1666,7 +1666,8 @@ theorem supᵢ_infᵢ_ge_nat_add (f : ℕ → α) (k : ℕ) : (⨆ n, ⨅ i ≥ 
   · simp_rw [infᵢ_ge_eq_infᵢ_nat_add, ← Nat.add_assoc]
 #align supr_infi_ge_nat_add supᵢ_infᵢ_ge_nat_add
 
-@[simp]
+-- Porting note: removing `@[simp]`, see discussion on `supᵢ_infᵢ_ge_nat_add`.
+-- @[simp]
 theorem infᵢ_supᵢ_ge_nat_add :
     ∀ (f : ℕ → α) (k : ℕ), (⨅ n, ⨆ i ≥ n, f (i + k)) = ⨅ n, ⨆ i ≥ n, f i :=
   @supᵢ_infᵢ_ge_nat_add αᵒᵈ _
@@ -1913,3 +1914,4 @@ protected def Function.Injective.completeLattice [HasSup α] [HasInf α] [SupSet
     bot := ⊥
     bot_le := fun _ => map_bot.le.trans bot_le }
 #align function.injective.complete_lattice Function.Injective.completeLattice
+#lint
