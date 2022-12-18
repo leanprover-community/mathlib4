@@ -1914,4 +1914,3 @@ protected def Function.Injective.completeLattice [HasSup α] [HasInf α] [SupSet
     bot := ⊥
     bot_le := fun _ => map_bot.le.trans bot_le }
 #align function.injective.complete_lattice Function.Injective.completeLattice
-#lint
