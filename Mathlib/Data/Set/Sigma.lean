@@ -217,7 +217,7 @@ theorem sigma_nonempty_iff : (s.Sigma t : Set _).Nonempty ↔ ∃ i ∈ s, (t i)
 theorem sigma_eq_empty_iff : s.Sigma t = ∅ ↔ ∀ i ∈ s, t i = ∅ :=
   not_nonempty_iff_eq_empty.symm.trans <|
     sigma_nonempty_iff.not.trans <| by
-      simp only [not_nonempty_iff_eq_empty, not_and, not_exists] ; rfl
+      simp only [not_nonempty_iff_eq_empty, not_and, not_exists]
 #align set.sigma_eq_empty_iff Set.sigma_eq_empty_iff
 
 theorem image_sigmaMk_subset_sigma_left {a : ∀ i, α i} (ha : ∀ i, a i ∈ t i) :
