@@ -47,7 +47,8 @@ variable [Mul α]
 /-- An element `a` of a type `α` with multiplication satisfies `is_square a` if `a = r * r`,
 for some `r : α`. -/
 @[to_additive Even
-      "An element `a` of a type `α` with addition satisfies `even a` if `a = r + r`,\nfor some `r : α`."]
+      "An element `a` of a type `α` with addition satisfies
+      `even a` if `a = r + r`,\nfor some `r : α`."]
 def IsSquare (a : α) : Prop :=
   ∃ r, a = r * r
 #align is_square IsSquare
@@ -211,6 +212,8 @@ theorem Even.tsub [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α
   · exact (tsub_add_tsub_comm h h).symm
 #align even.tsub Even.tsub
 
+
+set_option linter.deprecated false in
 theorem even_iff_exists_bit0 [Add α] {a : α} : Even a ↔ ∃ b, a = bit0 b :=
   Iff.rfl
 #align even_iff_exists_bit0 even_iff_exists_bit0
@@ -218,6 +221,8 @@ theorem even_iff_exists_bit0 [Add α] {a : α} : Even a ↔ ∃ b, a = bit0 b :=
 alias even_iff_exists_bit0 ↔ Even.exists_bit0 _
 
 section Semiring
+
+set_option linter.deprecated false
 
 variable [Semiring α] [Semiring β] {m n : α}
 
@@ -324,7 +329,10 @@ theorem odd_two_mul_add_one (m : α) : Odd (2 * m + 1) :=
 theorem Odd.map [RingHomClass F α β] (f : F) : Odd m → Odd (f m) := by
   rintro ⟨m, rfl⟩
   exact ⟨f m, by
-                simp [two_mul, map_add]
+        simp [two_mul]
+        rw [← Nat.cast_one, map_add, map_add, Nat.cast_one]
+        apply congrArg
+        rw [map_one]
                 ⟩
 #align odd.map Odd.map
 
@@ -424,6 +432,8 @@ theorem odd_abs [LinearOrder α] : Odd (abs a) ↔ Odd a := by
 end Ring
 
 section Powers
+
+set_option linter.deprecated false
 
 variable [LinearOrderedRing R] {a : R} {n : ℕ}
 
