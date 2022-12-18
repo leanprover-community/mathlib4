@@ -390,7 +390,11 @@ section Ring
 
 variable [Ring α] {a b : α} {n : ℕ}
 
-@[simp]
+/- Porting note: attribute `simp` removed based on linter report
+simp can prove this:
+  by simp only [even_neg, even_two]
+-/
+-- @[simp]
 theorem even_neg_two : Even (-2 : α) := by simp only [even_neg, even_two]
 #align even_neg_two even_neg_two
 
@@ -406,7 +410,11 @@ theorem odd_neg : Odd (-a) ↔ Odd a :=
   ⟨fun h => neg_neg a ▸ h.neg, Odd.neg⟩
 #align odd_neg odd_neg
 
-@[simp]
+/- Porting note: attribute `simp` removed based on linter report
+simp can prove this:
+  by simp only [odd_neg, odd_one]
+-/
+-- @[simp]
 theorem odd_neg_one : Odd (-1 : α) := by simp
 #align odd_neg_one odd_neg_one
 
