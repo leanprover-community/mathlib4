@@ -105,7 +105,7 @@ macro_rules
   | `(⨆ $x:ident, $p) => `(supᵢ fun $x:ident ↦ $p)
   | `(⨆ $x:ident : $t, $p) => `(supᵢ fun $x:ident : $t ↦ $p)
   | `(⨆ $x:ident $b:binderPred, $p) =>
-    `(supᵢ fun $x:ident ↦ satisfiesBinderPred% $x $b ∧ $p) -/
+    `(supᵢ fun $x:ident ↦ satisfies_binder_pred% $x $b ∧ $p) -/
 
 /-- Indexed supremum. -/
 notation3 "⨆ "(...)", "r:(scoped f => supᵢ f) => r

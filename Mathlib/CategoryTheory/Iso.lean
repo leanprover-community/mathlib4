@@ -506,28 +506,24 @@ Presumably we could write `X ↪ Y` and `X ↠ Y`.
 theorem cancel_iso_hom_left {X Y Z : C} (f : X ≅ Y) (g g' : Y ⟶ Z) :
     f.hom ≫ g = f.hom ≫ g' ↔ g = g' := by
   simp only [cancel_epi]
-  rfl
 #align category_theory.iso.cancel_iso_hom_left CategoryTheory.Iso.cancel_iso_hom_left
 
 @[simp]
 theorem cancel_iso_inv_left {X Y Z : C} (f : Y ≅ X) (g g' : Y ⟶ Z) :
     f.inv ≫ g = f.inv ≫ g' ↔ g = g' := by
   simp only [cancel_epi]
-  rfl
 #align category_theory.iso.cancel_iso_inv_left CategoryTheory.Iso.cancel_iso_inv_left
 
 @[simp]
 theorem cancel_iso_hom_right {X Y Z : C} (f f' : X ⟶ Y) (g : Y ≅ Z) :
     f ≫ g.hom = f' ≫ g.hom ↔ f = f' := by
   simp only [cancel_mono]
-  rfl
 #align category_theory.iso.cancel_iso_hom_right CategoryTheory.Iso.cancel_iso_hom_right
 
 @[simp]
 theorem cancel_iso_inv_right {X Y Z : C} (f f' : X ⟶ Y) (g : Z ≅ Y) :
     f ≫ g.inv = f' ≫ g.inv ↔ f = f' := by
   simp only [cancel_mono]
-  rfl
 #align category_theory.iso.cancel_iso_inv_right CategoryTheory.Iso.cancel_iso_inv_right
 
 /-
@@ -540,13 +536,13 @@ but then stop.
 @[simp]
 theorem cancel_iso_hom_right_assoc {W X X' Y Z : C} (f : W ⟶ X) (g : X ⟶ Y) (f' : W ⟶ X')
     (g' : X' ⟶ Y) (h : Y ≅ Z) : f ≫ g ≫ h.hom = f' ≫ g' ≫ h.hom ↔ f ≫ g = f' ≫ g' := by
-  simp only [← Category.assoc, cancel_mono]; rfl
+  simp only [← Category.assoc, cancel_mono]
 #align category_theory.iso.cancel_iso_hom_right_assoc CategoryTheory.Iso.cancel_iso_hom_right_assoc
 
 @[simp]
 theorem cancel_iso_inv_right_assoc {W X X' Y Z : C} (f : W ⟶ X) (g : X ⟶ Y) (f' : W ⟶ X')
     (g' : X' ⟶ Y) (h : Z ≅ Y) : f ≫ g ≫ h.inv = f' ≫ g' ≫ h.inv ↔ f ≫ g = f' ≫ g' := by
-  simp only [← Category.assoc, cancel_mono]; rfl
+  simp only [← Category.assoc, cancel_mono]
 #align category_theory.iso.cancel_iso_inv_right_assoc CategoryTheory.Iso.cancel_iso_inv_right_assoc
 
 end Iso
