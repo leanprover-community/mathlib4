@@ -424,76 +424,28 @@ theorem abs_add_eq_add_abs_iff (a b : α) : |a + b| = |a| + |b| ↔ 0 ≤ a ∧ 
 
 end LinearOrderedAddCommGroup
 
--- Porting note: commented out as linter reports LHS= RHS syntactically
--- @[simp]
--- theorem WithBot.coe_nsmul [AddMonoid A] (a : A) (n : ℕ) : ((n • a : A) : WithBot A) = n • a :=
---   by simp
--- #align with_bot.coe_nsmul WithBot.coe_nsmul
+@[simp]
+theorem WithBot.coe_nsmul [AddMonoid A] (a : A) (n : ℕ) : (n • a : A) = n • (a : WithBot A) :=
+  AddMonoidHom.map_nsmul
+    { toFun := fun a : A => (a : WithBot A),
+      map_zero' := WithBot.coe_zero,
+      map_add' := WithBot.coe_add }
+    a n
+#align with_bot.coe_nsmul WithBot.coe_nsmul
 
-/- warning: nsmul_eq_mul' -> nsmul_eq_mul' is a dubious translation:
-lean 3 declaration is
-  forall {R : Type.{u1}} [_inst_1 : NonAssocSemiring.{u1} R] (a : R)
-   (n : Nat), Eq.{succ u1} R (HasSmul.smul.{0, u1} Nat R
-   (AddMonoid.SMul.{u1} R (AddMonoidWithOne.toAddMonoid.{u1} R
-   (AddCommMonoidWithOne.toAddMonoidWithOne.{u1} R
-   (NonAssocSemiring.toAddCommMonoidWithOne.{u1} R _inst_1)))) n a)
-   (HMul.hMul.{u1, u1, u1} R R R (instHMul.{u1} R (Distrib.toHasMul.{u1} R
-   (NonUnitalNonAssocSemiring.toDistrib.{u1} R
-   (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u1} R _inst_1))))
-   a ((fun (a : Type) (b : Type.{u1}) [self : HasLiftT.{1, succ u1} a b] => self.0)
-   Nat R (HasLiftT.mk.{1, succ u1} Nat R (CoeTCₓ.coe.{1, succ u1} Nat R
-   (Nat.castCoe.{u1} R (AddMonoidWithOne.toNatCast.{u1} R
-   (AddCommMonoidWithOne.toAddMonoidWithOne.{u1} R
-   (NonAssocSemiring.toAddCommMonoidWithOne.{u1} R _inst_1)))))) n))
-but is expected to have type
-  forall {R : Type.{u1}} [_inst_1 : Semiring.{u1} R] (a : R) (n : Nat),
-   Eq.{succ u1} R (HSMul.hSMul.{0, u1, u1} Nat R R (instHSMul.{0, u1}
-   Nat R (AddMonoid.SMul.{u1} R (AddMonoidWithOne.toAddMonoid.{u1} R
-   (AddCommMonoidWithOne.toAddMonoidWithOne.{u1} R (NonAssocSemiring.toAddCommMonoidWithOne.{u1} R
-   (Semiring.toNonAssocSemiring.{u1} R _inst_1)))))) n a)
-   (HMul.hMul.{u1, u1, u1} R R R (instHMul.{u1} R
-   (NonUnitalNonAssocSemiring.toMul.{u1} R (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u1}
-   R (Semiring.toNonAssocSemiring.{u1} R _inst_1)))) a
-   (Nat.cast.{u1} R (Semiring.toNatCast.{u1} R _inst_1) n))
-Case conversion may be inaccurate. Consider using '#align nsmul_eq_mul' nsmul_eq_mul'ₓ'. -/
 theorem nsmul_eq_mul' [NonAssocSemiring R] (a : R) (n : ℕ) : n • a = a * n := by
   induction' n with n ih <;> [rw [zero_nsmul, Nat.cast_zero, mul_zero],
     rw [succ_nsmul', ih, Nat.cast_succ, mul_add, mul_one]]
-#align nsmul_eq_mul' nsmul_eq_mul'
+#align nsmul_eq_mul' nsmul_eq_mul'ₓ
+-- typeclasses do not match up exactly.
 
-/- warning: nsmul_eq_mul -> nsmul_eq_mul is a dubious translation:
-lean 3 declaration is
-  forall {R : Type.{u1}} [_inst_1 : NonAssocSemiring.{u1} R]
-   (n : Nat) (a : R), Eq.{succ u1} R (HasSmul.smul.{0, u1} Nat R
-   (AddMonoid.SMul.{u1} R (AddMonoidWithOne.toAddMonoid.{u1} R
-   (AddCommMonoidWithOne.toAddMonoidWithOne.{u1} R
-   (NonAssocSemiring.toAddCommMonoidWithOne.{u1} R _inst_1)))) n a)
-    (HMul.hMul.{u1, u1, u1} R R R (instHMul.{u1} R (Distrib.toHasMul.{u1} R
-    (NonUnitalNonAssocSemiring.toDistrib.{u1} R
-    (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u1} R _inst_1))))
-     ((fun (a : Type)
-    (b : Type.{u1}) [self : HasLiftT.{1, succ u1} a b] => self.0) Nat R
-    (HasLiftT.mk.{1, succ u1} Nat R (CoeTCₓ.coe.{1, succ u1} Nat R
-    (Nat.castCoe.{u1} R (AddMonoidWithOne.toNatCast.{u1} R
-    (AddCommMonoidWithOne.toAddMonoidWithOne.{u1} R
-    (NonAssocSemiring.toAddCommMonoidWithOne.{u1} R _inst_1)))))) n) a)
-but is expected to have type
-  forall {R : Type.{u1}} [_inst_1 : Semiring.{u1} R] (n : Nat) (a : R),
-   Eq.{succ u1} R (HSMul.hSMul.{0, u1, u1} Nat R R (instHSMul.{0, u1}
-    Nat R (AddMonoid.SMul.{u1} R (AddMonoidWithOne.toAddMonoid.{u1} R
-    (AddCommMonoidWithOne.toAddMonoidWithOne.{u1} R (NonAssocSemiring.toAddCommMonoidWithOne.{u1} R
-    (Semiring.toNonAssocSemiring.{u1} R _inst_1)))))) n a) (HMul.hMul.{u1, u1, u1}
-     R R R (instHMul.{u1} R (NonUnitalNonAssocSemiring.toMul.{u1} R
-     (NonAssocSemiring.toNonUnitalNonAssocSemiring.{u1} R
-     (Semiring.toNonAssocSemiring.{u1} R _inst_1))))
-     (Nat.cast.{u1} R (Semiring.toNatCast.{u1} R _inst_1) n) a)
-Case conversion may be inaccurate. Consider using '#align nsmul_eq_mul nsmul_eq_mulₓ'. -/
 @[simp]
 theorem nsmul_eq_mul [NonAssocSemiring R] (n : ℕ) (a : R) : n • a = n * a := by
   rw [nsmul_eq_mul', (n.cast_commute a).eq]
-#align nsmul_eq_mul nsmul_eq_mul
+#align nsmul_eq_mul nsmul_eq_mulₓ
+-- typeclasses do not match up exactly.
 
-/-- Note that `add_comm_monoid.nat_smul_comm_class` requires stronger assumptions on `R`. -/
+/-- Note that `AddCommMonoid.nat_smul_comm_class` requires stronger assumptions on `R`. -/
 instance NonUnitalNonAssocSemiring.nat_smul_comm_class [NonUnitalNonAssocSemiring R] :
     SMulCommClass ℕ R R :=
   ⟨fun n x y => by
@@ -503,7 +455,7 @@ instance NonUnitalNonAssocSemiring.nat_smul_comm_class [NonUnitalNonAssocSemirin
 #align
   non_unital_non_assoc_semiring.nat_smul_comm_class NonUnitalNonAssocSemiring.nat_smul_comm_class
 
-/-- Note that `add_comm_monoid.nat_is_scalar_tower` requires stronger assumptions on `R`. -/
+/-- Note that `AddCommMonoid.nat_is_scalar_tower` requires stronger assumptions on `R`. -/
 instance NonUnitalNonAssocSemiring.nat_is_scalar_tower [NonUnitalNonAssocSemiring R] :
     IsScalarTower ℕ R R :=
   ⟨fun n x y => by
@@ -525,11 +477,10 @@ theorem Nat.cast_pow [Semiring R] (n m : ℕ) : (↑(n ^ m) : R) = (↑n : R) ^ 
 simp can prove this:
   by simp only [Nat.cast_pow]
 -/
--- Porting note: commented out as linter reports LHS= RHS syntactically
 -- -- @[simp]
--- theorem Int.coe_nat_pow (n m : ℕ) : ((n ^ m : ℕ) : ℤ) = n ^ m := by
---   induction' m with m _ <;> simp
--- #align int.coe_nat_pow Int.coe_nat_pow
+theorem Int.coe_nat_pow (n m : ℕ) : ((n ^ m : ℕ) : ℤ) = (n : ℤ) ^ m := by
+  induction' m with m _ <;> simp
+#align int.coe_nat_pow Int.coe_nat_pow
 
 theorem Int.nat_abs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
   induction' k with k ih <;> [rfl, rw [pow_succ', Int.natAbs_mul, pow_succ', ih]]
@@ -597,34 +548,13 @@ theorem zsmul_int_int (a b : ℤ) : a • b = a * b := by simp
 theorem zsmul_int_one (n : ℤ) : n • (1 : ℤ) = n := by simp
 #align zsmul_int_one zsmul_int_one
 
-/- warning: int.cast_pow -> Int.cast_pow is a dubious translation:
-lean 3 declaration is
-  forall {R : Type.{u1}} [_inst_1 : Ring.{u1} R] (n : Int) (m : Nat),
-   Eq.{succ u1} R ((fun (a : Type) (b : Type.{u1}) [self : HasLiftT.{1, succ u1} a b] => self.0)
-   Int R (HasLiftT.mk.{1, succ u1} Int R (CoeTCₓ.coe.{1, succ u1}
-   Int R (Int.castCoe.{u1} R (AddGroupWithOne.toHasIntCast.{u1} R
-   (NonAssocRing.toAddGroupWithOne.{u1} R (Ring.toNonAssocRing.{u1} R _inst_1))))))
-    (HPow.hPow.{0, 0, 0} Int Nat Int (instHPow.{0, 0} Int Nat (Monoid.Pow.{0}
-     Int Int.monoid)) n m)) (HPow.hPow.{u1, 0, u1} R Nat R (instHPow.{u1, 0}
-     R Nat (Monoid.Pow.{u1} R (Ring.toMonoid.{u1} R _inst_1))) ((fun (a : Type)
-     (b : Type.{u1}) [self : HasLiftT.{1, succ u1} a b] => self.0) Int R (HasLiftT.mk.{1, succ u1}
-     Int R (CoeTCₓ.coe.{1, succ u1} Int R (Int.castCoe.{u1} R
-     (AddGroupWithOne.toHasIntCast.{u1} R (NonAssocRing.toAddGroupWithOne.{u1}
-     R (Ring.toNonAssocRing.{u1} R _inst_1)))))) n) m)
-but is expected to have type
-  forall {R : Type.{u1}} [_inst_1 : Ring.{u1} R] (n : Int) (m : Nat),
-  Eq.{succ u1} R (Int.cast.{u1} R (Ring.toIntCast.{u1} R _inst_1) (HPow.hPow.{0, 0, 0}
-  Int Nat Int Int.instHPowIntNat n m)) (HPow.hPow.{u1, 0, u1} R Nat R
-  (instHPow.{u1, 0} R Nat (Monoid.Pow.{u1} R (MonoidWithZero.toMonoid.
-  {u1} R (Semiring.toMonoidWithZero.{u1} R (Ring.toSemiring.{u1} R _inst_1)))))
-  (Int.cast.{u1} R (Ring.toIntCast.{u1} R _inst_1) n) m)
-Case conversion may be inaccurate. Consider using '#align int.cast_pow Int.cast_powₓ'. -/
 @[simp, norm_cast]
 theorem Int.cast_pow [Ring R] (n : ℤ) (m : ℕ) : (↑(n ^ m) : R) = (↑n : R) ^ m := by
   induction' m with m ih
   · rw [pow_zero, pow_zero, Int.cast_one]
   · rw [pow_succ, pow_succ, Int.cast_mul, ih]
-#align int.cast_pow Int.cast_pow
+#align int.cast_pow Int.cast_powₓ
+-- typeclasses do not align exactly
 
 theorem neg_one_pow_eq_pow_mod_two [Ring R] {n : ℕ} : (-1 : R) ^ n = (-1) ^ (n % 2) := by
   rw [← Nat.mod_add_div n 2, pow_add, pow_mul]; simp [sq]
@@ -1056,7 +986,7 @@ theorem zpowers_mul_hom_symm_apply [CommGroup G] (f : Multiplicative ℤ →* G)
 @[simp]
 theorem multiplesAddHom_apply [AddCommMonoid A] (x : A) (n : ℕ) : multiplesAddHom A x n = n • x :=
   rfl
-#align multiples_add_hom_apply multiples_add_hom_apply
+#align multiples_add_hom_apply multiplesAddHom_apply
 
 @[simp]
 theorem multiples_add_hom_symm_apply [AddCommMonoid A] (f : ℕ →+ A) :
