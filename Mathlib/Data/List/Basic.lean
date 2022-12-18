@@ -1418,13 +1418,13 @@ theorem nth_le_map (f : α → β) {l n} (H1 H2) : nthLe (map f l) n H1 = f (nth
 
 /-- A version of `nth_le_map` that can be used for rewriting. -/
 theorem nth_le_map_rev (f : α → β) {l n} (H) :
-    f (nthLe l n H) = nthLe (map f l) n ((length_map f l).symm ▸ H) :=
+    f (nthLe l n H) = nthLe (map f l) n ((l.length_map f).symm ▸ H) :=
   (nth_le_map f _ _).symm
 #align list.nth_le_map_rev List.nth_le_map_rev
 
 @[simp]
 theorem nth_le_map' (f : α → β) {l n} (H) :
-    nthLe (map f l) n H = f (nthLe l n (length_map f l ▸ H)) :=
+    nthLe (map f l) n H = f (nthLe l n (l.length_map f ▸ H)) :=
   nth_le_map f _ _
 #align list.nth_le_map' List.nth_le_map'
 
@@ -1439,20 +1439,20 @@ theorem nth_le_of_eq {L L' : List α} (h : L = L') {i : ℕ} (hi : i < L.length)
 @[simp]
 theorem nth_le_singleton (a : α) {n : ℕ} (hn : n < 1) : nthLe [a] n hn = a := by
   have hn0 : n = 0 := Nat.eq_zero_of_le_zero (le_of_lt_succ hn)
-  subst hn0 <;> rfl
+  subst hn0; rfl
 #align list.nth_le_singleton List.nth_le_singleton
 
-theorem nth_le_zero [Inhabited α] {L : List α} (h : 0 < L.length) : List.nthLe L 0 h = L.head := by
+theorem nth_le_zero [Inhabited α] {L : List α} (h : 0 < L.length) : List.nthLe L 0 h = L.head! := by
   cases L
   cases h
-  simp
+  simp [nthLe]
 #align list.nth_le_zero List.nth_le_zero
 
 theorem nth_le_append :
     ∀ {l₁ l₂ : List α} {n : ℕ} (hn₁) (hn₂), (l₁ ++ l₂).nthLe n hn₁ = l₁.nthLe n hn₂
   | [], _, n, hn₁, hn₂ => (Nat.not_lt_zero _ hn₂).elim
-  | a :: l, _, 0, hn₁, hn₂ => rfl
-  | a :: l, _, n + 1, hn₁, hn₂ => by simp only [nthLe, cons_append] <;> exact nth_le_append _ _
+  | a :: l, _, 0, hn₁, _ => rfl
+  | a :: l, _, n + 1, hn₁, hn₂ => by simp only [nthLe, cons_append]; exact nth_le_append _ _
 #align list.nth_le_append List.nth_le_append
 
 theorem nth_le_append_right_aux {l₁ l₂ : List α} {n : ℕ} (h₁ : l₁.length ≤ n)
@@ -1465,15 +1465,14 @@ theorem nth_le_append_right_aux {l₁ l₂ : List α} {n : ℕ} (h₁ : l₁.len
 theorem nth_le_append_right :
     ∀ {l₁ l₂ : List α} {n : ℕ} (h₁ : l₁.length ≤ n) (h₂),
       (l₁ ++ l₂).nthLe n h₂ = l₂.nthLe (n - l₁.length) (nth_le_append_right_aux h₁ h₂)
-  | [], _, n, h₁, h₂ => rfl
+  | [], _, n, _, h₂ => rfl
   | a :: l, _, n + 1, h₁, h₂ => by
     dsimp
     conv =>
       rhs
       congr
-      skip
-      rw [Nat.add_sub_add_right]
-    rw [nth_le_append_right (nat.lt_succ_iff.mp h₁)]
+      case n => rw [Nat.succ_eq_add_one, Nat.add_sub_add_right]
+    rw [nthLe, nth_le_append_right (Nat.lt_succ_iff.mp h₁)]
 #align list.nth_le_append_right List.nth_le_append_right
 
 @[simp]
@@ -1484,7 +1483,7 @@ theorem nth_le_repeat (a : α) {n m : ℕ} (h : m < (List.repeat a n).length) :
 
 theorem nth_append {l₁ l₂ : List α} {n : ℕ} (hn : n < l₁.length) : (l₁ ++ l₂).nth n = l₁.nth n := by
   have hn' : n < (l₁ ++ l₂).length :=
-    lt_of_lt_of_le hn (by rw [length_append] <;> exact Nat.le_add_right _ _)
+    lt_of_lt_of_le hn (by rw [length_append]; exact Nat.le_add_right _ _)
   rw [nthLe_nth hn, nthLe_nth hn', nth_le_append]
 #align list.nth_append List.nth_append
 
