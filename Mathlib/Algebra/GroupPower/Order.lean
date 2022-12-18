@@ -596,7 +596,6 @@ theorem abs_le_of_sq_le_sq' (h : x ^ 2 ≤ y ^ 2) (hy : 0 ≤ y) : -y ≤ x ∧ 
 
 theorem sq_eq_sq_iff_abs_eq_abs (x y : R) : x ^ 2 = y ^ 2 ↔ |x| = |y| := by
   simp only [le_antisymm_iff, sq_le_sq]
-  apply Iff.refl
 #align sq_eq_sq_iff_abs_eq_abs sq_eq_sq_iff_abs_eq_abs
 
 @[simp]

@@ -1156,7 +1156,7 @@ theorem preimage_invFun_of_mem [n : Nonempty α] {f : α → β} (hf : Injective
   ext x
   rcases em (x ∈ range f) with (⟨a, rfl⟩ | hx)
   · simp only [mem_preimage, mem_union, mem_compl_iff, mem_range_self, not_true, or_false,
-      leftInverse_invFun hf _, hf.mem_set_image]; rfl
+      leftInverse_invFun hf _, hf.mem_set_image]
   · simp only [mem_preimage, invFun_neg hx, h, hx, mem_union, mem_compl_iff, not_false_iff, or_true]
 #align set.preimage_inv_fun_of_mem Set.preimage_invFun_of_mem
 
