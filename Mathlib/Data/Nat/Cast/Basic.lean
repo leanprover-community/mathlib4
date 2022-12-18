@@ -2,6 +2,11 @@
 Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
+
+! This file was ported from Lean 3 source module data.nat.cast.basic
+! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.GroupWithZero.Commute

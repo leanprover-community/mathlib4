@@ -2,6 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
+
+! This file was ported from Lean 3 source module group_theory.group_action.defs
+! leanprover-community/mathlib commit dad7ecf9a1feae63e6e49f07619b7087403fb8d4
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Group.Commute
