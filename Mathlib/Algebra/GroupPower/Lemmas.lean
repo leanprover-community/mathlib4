@@ -22,7 +22,6 @@ This file contains lemmas about `Monoid.pow`, `Group.pow`, `nsmul`, and `zsmul`
 which require additional imports besides those available in `Mathlib.Algebra.GroupPower.Basic`.
 -/
 
-
 open Function Int
 
 universe u v w x y z u₁ u₂
@@ -63,6 +62,7 @@ theorem inv_of_pow (m : M) [Invertible m] (n : ℕ) [Invertible (m ^ n)] : ⅟ (
 theorem IsUnit.pow {m : M} (n : ℕ) : IsUnit m → IsUnit (m ^ n) := fun ⟨u, hu⟩ =>
   ⟨u ^ n, hu ▸ u.val_pow_eq_pow_val _⟩
 #align is_unit.pow IsUnit.pow
+#align is_add_unit.smul IsAddUnit.smul
 
 /-- If a natural power of `x` is a unit, then `x` is a unit. -/
 @[to_additive "If a natural multiple of `x` is an additive unit, then `x` is an additive unit."]
@@ -71,33 +71,41 @@ def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : M�
     (by rwa [← _root_.pow_succ, Nat.sub_add_cancel (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn)])
     (Commute.self_pow _ _)
 #align units.of_pow Units.ofPow
+#align units.of_smul AddUnits.ofSMul
 
 @[simp, to_additive]
 theorem is_unit_pow_iff {a : M} {n : ℕ} (hn : n ≠ 0) : IsUnit (a ^ n) ↔ IsUnit a :=
   ⟨fun ⟨u, hu⟩ => (u.ofPow a hn hu.symm).isUnit, fun h => h.pow n⟩
 #align is_unit_pow_iff is_unit_pow_iff
+#align is_addUnit_smul_iff is_addUnit_smul_iff
 
 @[to_additive]
 theorem is_unit_pow_succ_iff {m : M} {n : ℕ} : IsUnit (m ^ (n + 1)) ↔ IsUnit m :=
   is_unit_pow_iff n.succ_ne_zero
 #align is_unit_pow_succ_iff is_unit_pow_succ_iff
+#align is_add_unit_smul_succ_iff is_addUnit_smul_succ_iff
 
 /-- If `x ^ n = 1`, `n ≠ 0`, then `x` is a unit. -/
 @[to_additive "If `n • x = 0`, `n ≠ 0`, then `x` is an additive unit.", simps]
 def Units.ofPowEqOne (x : M) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Mˣ :=
   Units.ofPow 1 x hn hx
 #align units.of_pow_eq_one Units.ofPowEqOne
+#align add_units.of_smul_eq_zero AddUnits.ofSMulEqZero
+
 
 @[simp, to_additive]
 theorem Units.pow_of_pow_eq_one {x : M} {n : ℕ} (hx : x ^ n = 1) (hn : n ≠ 0) :
     Units.ofPowEqOne x n hx hn ^ n = 1 :=
   Units.ext <| by simp [hx]
 #align units.pow_of_pow_eq_one Units.pow_of_pow_eq_one
+#align add_units.smul_of_smul_eq_zero AddUnits.smul_of_smul_eq_zero
 
 @[to_additive]
 theorem is_unit_of_pow_eq_one {x : M} {n : ℕ} (hx : x ^ n = 1) (hn : n ≠ 0) : IsUnit x :=
   (Units.ofPowEqOne x n hx hn).isUnit
 #align is_unit_of_pow_eq_one is_unit_of_pow_eq_one
+#align is_add_unit_of_smul_eq_zero is_addUnit_of_smul_eq_zero
+
 
 /-- If `x ^ n = 1` then `x` has an inverse, `x^(n - 1)`. -/
 def invertibleOfPowEqOne (x : M) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Invertible x :=
@@ -146,10 +154,12 @@ theorem zpow_mul (a : α) : ∀ m n : ℤ, a ^ (m * n) = (a ^ m) ^ n
       zpow_ofNat]
     rfl
 #align zpow_mul zpow_mul
+#align mul_zsmul' mul_zsmul'
 
 @[to_additive mul_zsmul]
 theorem zpow_mul' (a : α) (m n : ℤ) : a ^ (m * n) = (a ^ n) ^ m := by rw [mul_comm, zpow_mul]
 #align zpow_mul' zpow_mul'
+#align mul_zsmul mul_zsmul
 
 section bit0
 
@@ -163,11 +173,13 @@ theorem zpow_bit0 (a : α) : ∀ n : ℤ, a ^ bit0 n = a ^ n * a ^ n
     rw [negSucc_eq, bit0_neg, zpow_neg]
     norm_cast
 #align zpow_bit0 zpow_bit0
+#align bit0_zsmul bit0_zsmul
 
 @[to_additive bit0_zsmul']
 theorem zpow_bit0' (a : α) (n : ℤ) : a ^ bit0 n = (a * a) ^ n :=
   (zpow_bit0 a n).trans ((Commute.refl a).mul_zpow n).symm
 #align zpow_bit0' zpow_bit0'
+#align bit0_zsmul' bit0_zsmul'
 
 @[simp]
 theorem zpow_bit0_neg [HasDistribNeg α] (x : α) (n : ℤ) : (-x) ^ bit0 n = x ^ bit0 n := by
@@ -191,6 +203,7 @@ theorem zpow_add_one (a : G) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
     rw [Int.negSucc_eq, neg_add, add_assoc, neg_add_self, add_zero]
     exact zpow_negSucc _ _
 #align zpow_add_one zpow_add_one
+#align add_one_zsmul add_one_zsmul
 
 @[to_additive zsmul_sub_one]
 theorem zpow_sub_one (a : G) (n : ℤ) : a ^ (n - 1) = a ^ n * a⁻¹ :=
@@ -199,6 +212,7 @@ theorem zpow_sub_one (a : G) (n : ℤ) : a ^ (n - 1) = a ^ n * a⁻¹ :=
     _ = a ^ n * a⁻¹ := by rw [← zpow_add_one, sub_add_cancel]
 
 #align zpow_sub_one zpow_sub_one
+#align zsmul_sub_one zsmul_sub_one
 
 @[to_additive add_zsmul]
 theorem zpow_add (a : G) (m n : ℤ) : a ^ (m + n) = a ^ m * a ^ n := by
@@ -207,6 +221,7 @@ theorem zpow_add (a : G) (m n : ℤ) : a ^ (m + n) = a ^ m * a ^ n := by
   · simp only [← add_assoc, zpow_add_one, ihn, mul_assoc]
   · rw [zpow_sub_one, ← mul_assoc, ← ihn, ← zpow_sub_one, add_sub_assoc]
 #align zpow_add zpow_add
+#align add_zsmul add_zsmul
 
 @[to_additive add_zsmul_self]
 theorem mul_self_zpow (b : G) (m : ℤ) : b * b ^ m = b ^ (m + 1) := by
@@ -215,6 +230,7 @@ theorem mul_self_zpow (b : G) (m : ℤ) : b * b ^ m = b ^ (m + 1) := by
     rw [← zpow_one b]
   rw [← zpow_add, add_comm]
 #align mul_self_zpow mul_self_zpow
+#align add_zsmul_self add_zsmul_self
 
 @[to_additive add_self_zsmul]
 theorem mul_zpow_self (b : G) (m : ℤ) : b ^ m * b = b ^ (m + 1) := by
@@ -224,20 +240,24 @@ theorem mul_zpow_self (b : G) (m : ℤ) : b ^ m * b = b ^ (m + 1) := by
     rw [← zpow_one b]
   rw [← zpow_add, add_comm]
 #align mul_zpow_self mul_zpow_self
+#align add_self_zsmul add_self_zsmul
 
 @[to_additive sub_zsmul]
 theorem zpow_sub (a : G) (m n : ℤ) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ := by
   rw [sub_eq_add_neg, zpow_add, zpow_neg]
 #align zpow_sub zpow_sub
+#align sub_zsmul sub_zsmul
 
 @[to_additive one_add_zsmul]
 theorem zpow_one_add (a : G) (i : ℤ) : a ^ (1 + i) = a * a ^ i := by rw [zpow_add, zpow_one]
 #align zpow_one_add zpow_one_add
+#align one_add_zsmul one_add_zsmul
 
 @[to_additive]
 theorem zpow_mul_comm (a : G) (i j : ℤ) : a ^ i * a ^ j = a ^ j * a ^ i :=
   (Commute.refl _).zpow_zpow _ _
 #align zpow_mul_comm zpow_mul_comm
+#align zsmul_add_comm zsmul_add_comm
 
 section bit1
 
@@ -247,6 +267,7 @@ set_option linter.deprecated false
 theorem zpow_bit1 (a : G) (n : ℤ) : a ^ bit1 n = a ^ n * a ^ n * a := by
   rw [bit1, zpow_add, zpow_bit0, zpow_one]
 #align zpow_bit1 zpow_bit1
+#align bit1_zsmul bit1_zsmul
 
 end bit1
 
@@ -255,8 +276,9 @@ end Group
 /-!
 ### `zpow`/`zsmul` and an order
 
-Those lemmas are placed here (rather than in `Mathlib.Algebra.GroupPower.Order` with their friends) because
-they require facts from `Mathlib.Data.Int.Basic`.
+Those lemmas are placed here
+(rather than in `Mathlib.Algebra.GroupPower.Order` with their friends)
+because they require facts from `Mathlib.Data.Int.Basic`.
 -/
 
 section OrderedAddCommGroup
@@ -270,6 +292,7 @@ theorem one_lt_zpow' (ha : 1 < a) {k : ℤ} (hk : (0 : ℤ) < k) : 1 < a ^ k := 
   refine' one_lt_pow' ha (coe_nat_pos.mp _).ne'
   rwa [← hn]
 #align one_lt_zpow' one_lt_zpow'
+#align zsmul_pos zsmul_pos
 
 @[to_additive zsmul_strict_mono_left]
 theorem zpow_strict_mono_right (ha : 1 < a) : StrictMono fun n : ℤ => a ^ n := fun m n h =>
@@ -279,6 +302,7 @@ theorem zpow_strict_mono_right (ha : 1 < a) : StrictMono fun n : ℤ => a ^ n :=
     _ = a ^ n := by rw [← zpow_add]; simp
 
 #align zpow_strict_mono_right zpow_strict_mono_right
+#align zsmul_strict_mono_left zsmul_strict_mono_left
 
 @[to_additive zsmul_mono_left]
 theorem zpow_mono_right (ha : 1 ≤ a) : Monotone fun n : ℤ => a ^ n := fun m n h =>
@@ -288,26 +312,31 @@ theorem zpow_mono_right (ha : 1 ≤ a) : Monotone fun n : ℤ => a ^ n := fun m 
     _ = a ^ n := by rw [← zpow_add]; simp
 
 #align zpow_mono_right zpow_mono_right
+#align zsmul_mono_left zsmul_mono_left
 
 @[to_additive]
 theorem zpow_le_zpow (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n :=
   zpow_mono_right ha h
 #align zpow_le_zpow zpow_le_zpow
+#align zsmul_le_zsmul zsmul_le_zsmul
 
 @[to_additive]
 theorem zpow_lt_zpow (ha : 1 < a) (h : m < n) : a ^ m < a ^ n :=
   zpow_strict_mono_right ha h
 #align zpow_lt_zpow zpow_lt_zpow
+#align zsmul_lt_zsmul zsmul_lt_zsmul
 
 @[to_additive]
 theorem zpow_le_zpow_iff (ha : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
   (zpow_strict_mono_right ha).le_iff_le
 #align zpow_le_zpow_iff zpow_le_zpow_iff
+#align zsmul_le_zsmul_iff zsmul_le_zsmul_iff
 
 @[to_additive]
 theorem zpow_lt_zpow_iff (ha : 1 < a) : a ^ m < a ^ n ↔ m < n :=
   (zpow_strict_mono_right ha).lt_iff_lt
 #align zpow_lt_zpow_iff zpow_lt_zpow_iff
+#align zsmul_lt_zsmul_iff zsmul_lt_zsmul_iff
 
 variable (α)
 
@@ -316,12 +345,14 @@ theorem zpow_strict_mono_left (hn : 0 < n) : StrictMono ((· ^ n) : α → α) :
   rw [← one_lt_div', ← div_zpow]
   exact one_lt_zpow' (one_lt_div'.2 hab) hn
 #align zpow_strict_mono_left zpow_strict_mono_left
+#align zsmul_strict_mono_right zsmul_strict_mono_right
 
 @[to_additive zsmul_mono_right]
 theorem zpow_mono_left (hn : 0 ≤ n) : Monotone ((· ^ n) : α → α) := fun a b hab => by
   rw [← one_le_div', ← div_zpow]
   exact one_le_zpow (one_le_div'.2 hab) hn
 #align zpow_mono_left zpow_mono_left
+#align zsmul_mono_right zsmul_mono_right
 
 variable {α}
 
@@ -329,11 +360,13 @@ variable {α}
 theorem zpow_le_zpow' (hn : 0 ≤ n) (h : a ≤ b) : a ^ n ≤ b ^ n :=
   zpow_mono_left α hn h
 #align zpow_le_zpow' zpow_le_zpow'
+#align zsmul_le_zsmul' zsmul_le_zsmul'
 
 @[to_additive]
 theorem zpow_lt_zpow' (hn : 0 < n) (h : a < b) : a ^ n < b ^ n :=
   zpow_strict_mono_left α hn h
 #align zpow_lt_zpow' zpow_lt_zpow'
+#align zsmul_lt_zsmul' zsmul_lt_zsmul'
 
 end OrderedAddCommGroup
 
@@ -345,11 +378,13 @@ variable [LinearOrderedCommGroup α] {n : ℤ} {a b : α}
 theorem zpow_le_zpow_iff' (hn : 0 < n) {a b : α} : a ^ n ≤ b ^ n ↔ a ≤ b :=
   (zpow_strict_mono_left α hn).le_iff_le
 #align zpow_le_zpow_iff' zpow_le_zpow_iff'
+#align zsmul_le_zsmul_iff' zsmul_le_zsmul_iff'
 
 @[to_additive]
 theorem zpow_lt_zpow_iff' (hn : 0 < n) {a b : α} : a ^ n < b ^ n ↔ a < b :=
   (zpow_strict_mono_left α hn).lt_iff_lt
 #align zpow_lt_zpow_iff' zpow_lt_zpow_iff'
+#align zsmul_lt_zsmul_iff' zsmul_lt_zsmul_iff'
 
 @[to_additive zsmul_right_injective
       "See also `smul_right_injective`. TODO: provide a
@@ -361,11 +396,13 @@ theorem zpow_left_injective (hn : n ≠ 0) : Function.Injective ((· ^ n) : α �
   · refine' fun a b (hab : a ^ n = b ^ n) => (zpow_strict_mono_left α (neg_pos.mpr h)).injective _
     rw [zpow_neg, zpow_neg, hab]
 #align zpow_left_injective zpow_left_injective
+#align zsmul_right_injective zsmul_right_injective
 
 @[to_additive zsmul_right_inj]
 theorem zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
   (zpow_left_injective hn).eq_iff
 #align zpow_left_inj zpow_left_inj
+#align zsmul_right_inj zsmul_right_inj
 
 /-- Alias of `zsmul_right_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'` and
 `zsmul_lt_zsmul_iff'`. -/
@@ -375,6 +412,7 @@ theorem zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
 theorem zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
   zpow_left_inj hn
 #align zpow_eq_zpow_iff' zpow_eq_zpow_iff'
+#align zsmul_eq_zsmul_iff' zsmul_eq_zsmul_iff'
 
 end LinearOrderedCommGroup
 
@@ -1046,6 +1084,7 @@ theorem units_zpow_right {a : M} {x y : Mˣ} (h : SemiconjBy a x y) :
   | (n : ℕ) => by simp only [zpow_ofNat, Units.val_pow_eq_pow_val, h, pow_right]
   | -[n+1] => by simp only [zpow_negSucc, Units.val_pow_eq_pow_val, units_inv_right, h, pow_right]
 #align semiconj_by.units_zpow_right SemiconjBy.units_zpow_right
+#align add_semiconj_by.units_zsmul_right AddSemiconjBy.addUnits_zsmul_right
 
 variable {a b x y x' y' : R}
 
@@ -1125,12 +1164,14 @@ theorem units_zpow_right {a : M} {u : Mˣ} (h : _root_.Commute a u)
     (m : ℤ) : _root_.Commute a ↑(u ^ m) :=
   SemiconjBy.units_zpow_right h m
 #align commute.units_zpow_right Commute.units_zpow_right
+#align add_commute.add_units_zsmul_right AddCommute.addUnits_zsmul_right
 
 @[simp, to_additive]
 theorem units_zpow_left {u : Mˣ} {a : M} (h : _root_.Commute (↑u) a)
   (m : ℤ) : _root_.Commute (↑(u ^ m)) a :=
   (h.symm.units_zpow_right m).symm
 #align commute.units_zpow_left Commute.units_zpow_left
+#align add_commute.add_units_zsmul_left AddCommute.addUnits_zsmul_left
 
 variable {a b : R}
 
