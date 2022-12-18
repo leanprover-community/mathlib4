@@ -1302,7 +1302,8 @@ where
 #align list.index_of_cons_ne List.indexOf_cons_ne
 
 -- rfl
-theorem indexOf_cons (a b : α) (l : List α) : indexOf a (b :: l) = if a = b then 0 else succ (indexOf a l) := by
+theorem indexOf_cons (a b : α) (l : List α) :
+    indexOf a (b :: l) = if a = b then 0 else succ (indexOf a l) := by
   cases l <;> by_cases a = b
   case pos | pos => rw [if_pos h]; exact indexOf_cons_eq _ h
   case neg | neg => rw [if_neg h]; exact indexOf_cons_ne _ h
