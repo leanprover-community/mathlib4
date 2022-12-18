@@ -8,6 +8,9 @@ notation, basic datatypes and type classes
 import Mathlib.Mathport.Rename
 import Std.Classes.SetNotation
 import Std.Classes.Dvd
+import Mathlib.Tactic.Relation.Rfl
+import Mathlib.Tactic.Relation.Symm
+import Mathlib.Tactic.Relation.Trans
 
 /-! ### alignments from lean 3 `init.core` -/
 
@@ -40,10 +43,11 @@ import Std.Classes.Dvd
 #align and.elim_right And.right
 
 -- TODO
--- attribute [refl] Eq.refl
 -- attribute [elab_as_elim, subst] Eq.subst
--- attribute [trans] Eq.trans
--- attribute [symm] Eq.symm
+
+attribute [refl] Eq.refl
+attribute [trans] Eq.trans
+attribute [symm] Eq.symm
 
 def Prod.mk.injArrow {α : Type u} {β : Type v} {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
     (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort w⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=

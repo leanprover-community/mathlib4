@@ -105,7 +105,7 @@ end Zero
 namespace NeZero
 
 theorem of_map {R M} [Zero R] [Zero M] [ZeroHomClass F R M]
-  (f : F) {r : R} [NeZero (f r)] : NeZero r :=
+  (f : F) {r : R} [neZero : NeZero (f r)] : NeZero r :=
   ⟨fun h => ne (f r) <| by rw [h]; exact ZeroHomClass.map_zero f⟩
 #align ne_zero.of_map NeZero.of_map
 
@@ -216,6 +216,10 @@ instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
 #align one_hom.one_hom_class OneHom.oneHomClass
 #align zero_hom.zero_hom_class ZeroHom.zeroHomClass
 
+/-- See Note [custom simps projection] -/
+@[to_additive "See Note custom simps projection"]
+def OneHom.Simps.apply (f : OneHom M N) : M → N := f
+
 @[simp, to_additive]
 theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
   OneHomClass.map_one f
@@ -295,6 +299,10 @@ instance MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
 #align mul_hom.mul_hom_class MulHom.mulHomClass
 #align add_hom.add_hom_class AddHom.addHomClass
 
+/-- See Note [custom simps projection] -/
+@[to_additive "See Note custom simps projection"]
+def MulHom.Simps.apply (f : M →ₙ* N) : M → N := f
+
 @[simp, to_additive]
 theorem map_mul [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
   MulHomClass.map_mul f x y
@@ -353,12 +361,16 @@ instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
     cases f
     cases g
     congr
-    apply OneHom.oneHomClass.coe_injective'
+    apply FunLike.coe_injective'
     exact h
   map_mul := MonoidHom.map_mul'
   map_one f := f.toOneHom.map_one'
 #align monoid_hom.monoid_hom_class MonoidHom.monoidHomClass
 #align add_monoid_hom.add_monoid_hom_class AddMonoidHom.addMonoidHomClass
+
+/-- See Note [custom simps projection] -/
+@[to_additive "See Note custom simps projection"]
+def MonoidHom.Simps.apply (f : M →* N) : M → N := f
 
 -- Porting note: we need to add an extra `to_additive`.
 -- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
@@ -412,7 +424,7 @@ theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
 #align map_div map_div
 #align map_sub map_sub
 
-@[simp, to_additive]
+@[simp, to_additive (reorder := 8)]
 theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
   ∀ n : ℕ, f (a ^ n) = f a ^ n
   | 0 => by rw [pow_zero, pow_zero, map_one]
@@ -420,24 +432,15 @@ theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
 #align map_pow map_pow
 #align map_smul map_smul
 
-attribute [to_additive_reorder 8] map_pow
-
--- Porting note: restore `to_additive`
--- @[to_additive]
+@[to_additive]
 theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
   (f : F) (hf : ∀ x : G, f x⁻¹ = (f x)⁻¹) (a : G) : ∀ n : ℤ, f (a ^ n) = f a ^ n
   | (n : ℕ) => by rw [zpow_ofNat, map_pow, zpow_ofNat]
   | Int.negSucc n => by rw [zpow_negSucc, hf, map_pow, ← zpow_negSucc, ← zpow_negSucc]
 #align map_zpow' map_zpow'
-theorem map_zsmul' [SubNegMonoid G] [SubNegMonoid H] [AddMonoidHomClass F G H]
-  (f : F) (hf : ∀ x : G, f (-x) = -(f x)) (a : G) : ∀ n : ℤ, f (n • a) = n • f a
-  | (n : ℕ) => by rw [ofNat_zsmul, map_smul, ofNat_zsmul]
-  | Int.negSucc n => by rw [negSucc_zsmul, hf, map_smul, ← negSucc_zsmul, ← negSucc_zsmul]
-#align map_zsmul' map_zsmul'
-attribute [to_additive] map_zpow'
 
 /-- Group homomorphisms preserve integer power. -/
-@[simp, to_additive "Additive group homomorphisms preserve integer scaling." (reorder := 8)]
+@[simp, to_additive (reorder := 8) "Additive group homomorphisms preserve integer scaling."]
 theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
   (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n
 #align map_zpow map_zpow
@@ -483,12 +486,15 @@ instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M �
     cases f
     cases g
     congr
-    apply ZeroHom.zeroHomClass.coe_injective'
+    apply FunLike.coe_injective'
     exact h
   map_mul := MonoidWithZeroHom.map_mul'
   map_one := MonoidWithZeroHom.map_one'
   map_zero f := f.map_zero'
 #align monoid_with_zero_hom.monoid_with_zero_hom_class MonoidWithZeroHom.monoidWithZeroHomClass
+
+/-- See Note [custom simps projection] -/
+def MonoidWithZeroHom.Simps.apply (f : M →*₀ N) : M → N := f
 
 /-- Any type that is a `MonoidWithZeroHomClass` can be cast into a `MonoidWithZeroHom`. -/
 instance [MonoidWithZeroHomClass F M N] : CoeTC F (M →*₀ N) :=
@@ -1193,16 +1199,11 @@ theorem MonoidWithZeroHom.id_comp [MulZeroOneClass M] [MulZeroOneClass N] (f : M
   (MonoidWithZeroHom.id N).comp f = f := MonoidWithZeroHom.ext fun _ => rfl
 #align monoid_with_zero_hom.id_comp MonoidWithZeroHom.id_comp
 
--- Porting note: restore `to_additive`
--- @[to_additive AddMonoidHom.map_nsmul]
+@[to_additive AddMonoidHom.map_nsmul]
 protected theorem MonoidHom.map_pow [Monoid M] [Monoid N] (f : M →* N) (a : M) (n : ℕ) :
   f (a ^ n) = f a ^ n := map_pow f a n
 #align monoid_hom.map_pow MonoidHom.map_pow
-protected theorem AddMonoidHom.map_nsmul [AddMonoid M] [AddMonoid N] (f : M →+ N) (a : M) (n : ℕ) :
-  f (n • a) = n • f a := map_smul f a n
 #align add_monoid_hom.map_nsmul AddMonoidHom.map_nsmul
-
-attribute [to_additive AddMonoidHom.map_nsmul] MonoidHom.map_pow
 
 @[to_additive]
 protected theorem MonoidHom.map_zpow' [DivInvMonoid M] [DivInvMonoid N] (f : M →* N)
@@ -1255,7 +1256,7 @@ protected def End := A →+ A
 
 namespace End
 
-instance : Monoid (AddMonoid.End A) where
+instance monoid : Monoid (AddMonoid.End A) where
   mul := AddMonoidHom.comp
   one := AddMonoidHom.id A
   mul_assoc _ _ _ := AddMonoidHom.comp_assoc _ _ _

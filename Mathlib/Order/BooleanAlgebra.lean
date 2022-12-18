@@ -504,7 +504,7 @@ This is a generalization of (classical) logic of propositions, or the powerset l
 Since `BoundedOrder`, `OrderBot`, and `OrderTop` are mixins that require `LE`
 to be present at define-time, the `extends` mechanism does not work with them.
 Instead, we extend using the underlying `Bot` and `Top` data typeclasses, and replicate the
-order axioms of those classes here. A "forgetful" instance back to `Bounded` is provided.
+order axioms of those classes here. A "forgetful" instance back to `BoundedOrder` is provided.
 -/
 class BooleanAlgebra (α : Type u) extends
     DistribLattice α, HasCompl α, SDiff α, HImp α, Top α, Bot α where
