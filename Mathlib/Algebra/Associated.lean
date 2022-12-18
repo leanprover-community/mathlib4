@@ -840,7 +840,10 @@ instance : Preorder (Associates α) where
 
 /-- `associates.mk` as a `monoid_hom`. -/
 protected def mkMonoidHom : α →* Associates α :=
-  ⟨Associates.mk, mk_one, fun x y => mk_mul_mk⟩
+  {
+    toFun := Associates.mk
+    map_one' := mk_one
+    map_mul' := fun _ _ => mk_mul_mk}
 #align associates.mk_monoid_hom Associates.mkMonoidHom
 
 @[simp]
@@ -893,8 +896,7 @@ theorem is_unit_iff_eq_bot {a : Associates α} : IsUnit a ↔ a = ⊥ := by
 
 theorem is_unit_mk {a : α} : IsUnit (Associates.mk a) ↔ IsUnit a :=
   calc
-    IsUnit (Associates.mk a) ↔ a ~ᵤ 1 := by
-      rw [is_unit_iff_eq_one, one_eq_mk_one, mk_eq_mk_iff_associated]
+    IsUnit (Associates.mk a) ↔ a ~ᵤ 1 := by rw [is_unit_iff_eq_one, one_eq_mk_one, mk_eq_mk_iff_associated]
     _ ↔ IsUnit a := associated_one_iff_is_unit
 
 #align associates.is_unit_mk Associates.is_unit_mk
@@ -926,7 +928,8 @@ end Order
 
 theorem dvd_of_mk_le_mk {a b : α} : Associates.mk a ≤ Associates.mk b → a ∣ b
   | ⟨c', hc'⟩ =>
-    (Quotient.inductionOn c' <| fun c hc =>
+    (Quotient.inductionOn c' <|
+      fun c hc =>
         let ⟨d, hd⟩ := (Quotient.exact hc).symm
         ⟨↑d * c,
           calc
@@ -985,8 +988,8 @@ section CommMonoidWithZero
 
 variable [CommMonoidWithZero α]
 
-instance : CommMonoidWithZero (Associates α) :=
-  { Associates.commMonoid, Associates.hasZero with
+instance : CommMonoidWithZero (Associates α) where
+    -- Associates.CommMonoid, Associates.hasZero with
     zero_mul := by
       rintro ⟨a⟩
       show Associates.mk (0 * a) = Associates.mk 0
@@ -994,18 +997,18 @@ instance : CommMonoidWithZero (Associates α) :=
     mul_zero := by
       rintro ⟨a⟩
       show Associates.mk (a * 0) = Associates.mk 0
-      rw [mul_zero] }
+      rw [mul_zero]
 
 instance : OrderTop (Associates α) where
   top := 0
   le_top a := ⟨0, (mul_zero a).symm⟩
 
-instance : BoundedOrder (Associates α) :=
-  { Associates.orderTop, Associates.orderBot with }
+instance : BoundedOrder (Associates α) where
+  -- { Associates.orderTop, Associates.orderBot with }
 
 instance [DecidableRel ((· ∣ ·) : α → α → Prop)] :
     DecidableRel ((· ∣ ·) : Associates α → Associates α → Prop) := fun a b =>
-  Quotient.recOnSubsingleton₂ a b fun a b => decidable_of_iff' _ mk_dvd_mk
+  Quotient.recOnSubsingleton₂ a b fun _ _ => decidable_of_iff' _ mk_dvd_mk
 
 theorem Prime.le_or_le {p : Associates α} (hp : Prime p) {a b : Associates α} (h : p ≤ a * b) :
     p ≤ a ∨ p ≤ b :=
@@ -1089,19 +1092,19 @@ section CancelCommMonoidWithZero
 
 variable [CancelCommMonoidWithZero α]
 
-instance : PartialOrder (Associates α) :=
-  { Associates.preorder with
+instance : PartialOrder (Associates α) where
+  -- { Associates.preorder with
     le_antisymm := fun a' b' =>
       Quotient.inductionOn₂ a' b' fun a b hab hba =>
-        Quot.sound <| associated_of_dvd_dvd (dvd_of_mk_le_mk hab) (dvd_of_mk_le_mk hba) }
+        Quot.sound <| associated_of_dvd_dvd (dvd_of_mk_le_mk hab) (dvd_of_mk_le_mk hba)
 
-instance : OrderedCommMonoid (Associates α) :=
-  { Associates.commMonoid, Associates.partialOrder with
-    mul_le_mul_left := fun a b ⟨d, hd⟩ c => hd.symm ▸ mul_assoc c a d ▸ le_mul_right }
+instance : OrderedCommMonoid (Associates α) where
+  -- { Associates.commMonoid, Associates.partialOrder with
+    mul_le_mul_left := fun a b ⟨d, hd⟩ c => hd.symm ▸ mul_assoc c a d ▸ le_mul_right
 
 instance : NoZeroDivisors (Associates α) :=
   ⟨fun x y =>
-    (Quotient.inductionOn₂ x y) fun a b h =>
+    Quotient.inductionOn₂ x y <| fun a b h =>
       have : a * b = 0 := (associated_zero_iff_eq_zero _).1 (Quotient.exact h)
       have : a = 0 ∨ b = 0 := mul_eq_zero.1 this
       this.imp (fun h => h.symm ▸ rfl) fun h => h.symm ▸ rfl⟩
