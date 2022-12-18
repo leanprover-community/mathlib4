@@ -17,6 +17,8 @@ import Std.Data.List.Lemmas
 # Basic properties of lists
 -/
 
+#align list.mem_cons_iff List.mem_cons
+
 
 open Function
 
@@ -1252,29 +1254,64 @@ theorem indexOf_nil (a : α) : indexOf a [] = 0 :=
   rfl
 #align list.index_of_nil List.indexOf_nil
 
-theorem indexOf_cons (a b : α) (l : List α) :
-    indexOf a (b :: l) = if a = b then 0 else succ (indexOf a l) :=
-  rfl
-#align list.index_of_cons List.indexOf_cons
+/-
+  Porting note: The following proofs were simpler prior to the port. These require plumbing into
+  `findIdx.go`.
+  * indexOf_cons_self
+  * indexOf_cons_eq
+  * indexOf_cons_ne
 
-theorem indexOf_cons_eq {a b : α} (l : List α) : a = b → indexOf a (b :: l) = 0 := fun e =>
-  if_pos e
-#align list.index_of_cons_eq List.indexOf_cons_eq
+  The ported versions of the earlier proofs are given in comments.
+-/
 
+-- indexOf_cons_eq _ rfl
 @[simp]
-theorem indexOf_cons_self (a : α) (l : List α) : indexOf a (a :: l) = 0 :=
-  indexOf_cons_eq _ rfl
+theorem indexOf_cons_self (a : α) (l : List α) : indexOf a (a :: l) = 0 := by
+  rw [indexOf, findIdx, findIdx.go, beq_self_eq_true, cond]
 #align list.index_of_cons_self List.indexOf_cons_self
 
+-- fun e => if_pos e
+theorem indexOf_cons_eq {a b : α} (l : List α) : a = b → indexOf a (b :: l) = 0
+| e => by rw [e]; exact indexOf_cons_self b l
+#align list.index_of_cons_eq List.indexOf_cons_eq
+
+-- fun n => if_neg n
 @[simp]
-theorem indexOf_cons_ne {a b : α} (l : List α) : a ≠ b → indexOf a (b :: l) = succ (indexOf a l) :=
-  fun n => if_neg n
+theorem indexOf_cons_ne {a b : α} (l : List α) : a ≠ b → indexOf a (b :: l) = succ (indexOf a l)
+| n => by
+  cases l
+  . rw [indexOf, findIdx, findIdx.go, beq_false_of_ne n, cond, ←succ_eq_add_one]; rfl
+  . rename_i head tail
+    by_cases a = head
+    . rw [indexOf_cons_eq tail h, indexOf, findIdx, findIdx.go, beq_false_of_ne n, cond, h,
+        findIdx.go, beq_self_eq_true head, cond]
+    . rw [indexOf, findIdx, findIdx, findIdx.go, beq_false_of_ne, cond, findIdx.go,
+        beq_false_of_ne h, cond_false]
+      change _ = succ (cond (a == head) _ _)
+      rw [beq_false_of_ne h, cond_false]
+      simp only [findIdx_go_succ (fun x ↦ a == x) tail _]
+      exact n
+where
+  findIdx_go_succ (p : α → Bool) (l : List α) (n : ℕ) :
+      findIdx.go p l (n + 1) = succ (findIdx.go p l n) := by
+    cases l <;> unfold findIdx.go
+    . exact succ_eq_add_one n
+    . rename_i head tail
+      cases p head <;> simp only [cond]
+      . exact findIdx_go_succ p tail (n + 1)
 #align list.index_of_cons_ne List.indexOf_cons_ne
+
+-- rfl
+theorem indexOf_cons (a b : α) (l : List α) : indexOf a (b :: l) = if a = b then 0 else succ (indexOf a l) := by
+  cases l <;> by_cases a = b
+  case pos | pos => rw [if_pos h]; exact indexOf_cons_eq _ h
+  case neg | neg => rw [if_neg h]; exact indexOf_cons_ne _ h
+#align list.index_of_cons List.indexOf_cons
 
 theorem indexOf_eq_length {a : α} {l : List α} : indexOf a l = length l ↔ a ∉ l := by
   induction' l with b l ih
   · exact iff_of_true rfl (not_mem_nil _)
-  simp only [length, mem_cons_iff, index_of_cons]; split_ifs
+  simp only [length, mem_cons, indexOf_cons]; split_ifs with h
   · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h
   · simp only [h, false_or_iff]
     rw [← ih]
