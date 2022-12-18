@@ -320,20 +320,31 @@ protected theorem Prime.irreducible (hp : Prime p) : Irreducible p :=
         Or.inr
           (isUnit_iff_dvd_one.2
             ⟨x,
-              mul_right_cancel₀ (show a ≠ 0 from fun h => by simp_all [Prime]) <| by
+              mul_right_cancel₀ (show a ≠ 0 from fun h => by
+                simp [Prime] at *
+                rw [h, zero_mul] at hab
+                have := hp.left
+                contradiction
+                ) <| by
                 conv =>
                     lhs
-                    rw [hx] <;>
-                  simp [mul_comm, mul_assoc, mul_left_comm]⟩))
+                    rw [hx]
+                · simp [mul_comm, mul_assoc, mul_left_comm]
+                ⟩))
       fun ⟨x, hx⟩ =>
       Or.inl
         (isUnit_iff_dvd_one.2
           ⟨x,
-            mul_right_cancel₀ (show b ≠ 0 from fun h => by simp_all [Prime]) <| by
+            mul_right_cancel₀ (show b ≠ 0 from fun h => by
+            simp [Prime] at *
+            rw [h, mul_zero] at hab
+            have := hp.left
+            contradiction
+            ) <| by
               conv =>
                   lhs
-                  rw [hx] <;>
-                simp [mul_comm, mul_assoc, mul_left_comm]⟩)⟩
+                  rw [hx]
+              · simp [mul_comm, mul_assoc, mul_left_comm]⟩)⟩
 #align prime.irreducible Prime.irreducible
 
 theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul (hp : Prime p) {a b : α} {k l : ℕ} :
@@ -792,7 +803,7 @@ instance [Monoid α] [Subsingleton α] :
     simp
 
 theorem mk_injective [Monoid α] [Unique (Units α)] : Function.Injective (@Associates.mk α _) :=
-  fun a b h => associated_iff_eq.mp (Associates.mk_eq_mk_iff_associated.mp h)
+  fun _ _ h => associated_iff_eq.mp (Associates.mk_eq_mk_iff_associated.mp h)
 #align associates.mk_injective Associates.mk_injective
 
 section CommMonoid
@@ -802,7 +813,9 @@ variable [CommMonoid α]
 instance : Mul (Associates α) :=
   ⟨fun a' b' =>
     (Quotient.liftOn₂ a' b' fun a b => ⟦a * b⟧) fun a₁ a₂ b₁ b₂ ⟨c₁, h₁⟩ ⟨c₂, h₂⟩ =>
-      Quotient.sound <| ⟨c₁ * c₂, by simp [h₁.symm, h₂.symm, mul_assoc, mul_comm, mul_left_comm]⟩⟩
+      Quotient.sound <| ⟨c₁ * c₂, by
+        simp [h₁.symm, h₂.symm, mul_assoc, mul_comm, mul_left_comm]
+        ⟩⟩
 
 theorem mk_mul_mk {x y : α} : Associates.mk x * Associates.mk y = Associates.mk (x * y) :=
   rfl
