@@ -192,7 +192,7 @@ theorem min_lt_min_left_iff : min a c < min b c ↔ a < b ∧ a < c := by
 #align min_lt_min_left_iff min_lt_min_left_iff
 
 theorem min_lt_min_right_iff : min a b < min a c ↔ b < c ∧ b < a := by
-  simp_rw [min_comm a, min_lt_min_left_iff]; rfl
+  simp_rw [min_comm a, min_lt_min_left_iff]
 #align min_lt_min_right_iff min_lt_min_right_iff
 
 theorem max_lt_max_left_iff : max a c < max b c ↔ a < b ∧ c < b :=

@@ -189,7 +189,6 @@ theorem le_iff_exists_mul : a ≤ b ↔ ∃ c, b = a * c :=
 @[to_additive]
 theorem le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by
   simp only [mul_comm _ a, le_iff_exists_mul]
-  rfl
 #align le_iff_exists_mul' le_iff_exists_mul'
 
 @[simp, to_additive zero_le]
@@ -225,7 +224,6 @@ theorem eq_one_or_one_lt : a = 1 ∨ 1 < a :=
 @[simp, to_additive add_pos_iff]
 theorem one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by
   simp only [one_lt_iff_ne_one, Ne.def, mul_eq_one_iff, not_and_or]
-  rfl -- Porting note: Should this be needed? It wasn't needed in lean3
 #align one_lt_mul_iff one_lt_mul_iff
 
 @[to_additive]

@@ -91,8 +91,6 @@ theorem one_lt_iff_ne_zero_and_ne_one : ∀ {n : ℕ}, 1 < n ↔ n ≠ 0 ∧ n �
   | n + 2 => by simp
 #align nat.one_lt_iff_ne_zero_and_ne_one Nat.one_lt_iff_ne_zero_and_ne_one
 
-protected theorem mul_ne_zero (n0 : n ≠ 0) (m0 : m ≠ 0) : n * m ≠ 0
-  | nm => (eq_zero_of_mul_eq_zero nm).elim n0 m0
 #align nat.mul_ne_zero Nat.mul_ne_zero
 
 -- Porting note: already in Std
@@ -446,7 +444,7 @@ theorem div_mul_div_le_div (m n k : ℕ) : m / k * n / m ≤ n / k :=
         Nat.div_le_div_right (by rw [mul_comm] ; exact mul_div_le_mul_div_assoc _ _ _)
       _ = n / k := by
         { rw [Nat.div_div_eq_div_mul, mul_comm n, mul_comm k,
-            Nat.mul_div_mul _ _ (Nat.pos_of_ne_zero hm0)] }
+            Nat.mul_div_mul_left _ _ (Nat.pos_of_ne_zero hm0)] }
 
 
 #align nat.div_mul_div_le_div Nat.div_mul_div_le_div
