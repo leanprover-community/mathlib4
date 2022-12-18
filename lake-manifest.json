@@ -1,29 +1,48 @@
-{"version": 3,
+{"version": 4,
+ "packagesDir": "./lake-packages",
  "packages":
  [{"git":
+   {"url": "https://github.com/xubaiw/CMark.lean",
+    "subDir?": null,
+    "rev": "2cc7cdeef67184f84db6731450e4c2b258c28fe8",
+    "name": "CMark",
+    "inputRev?": "main"}},
+  {"git":
+   {"url": "https://github.com/leanprover/lake",
+    "subDir?": null,
+    "rev": "235383015cdcb0082777b0347b84dba01843c79c",
+    "name": "lake",
+    "inputRev?": "master"}},
+  {"git":
+   {"url": "https://github.com/leanprover/doc-gen4",
+    "subDir?": null,
+    "rev": "f221bbdcffe6a17bb310f0e9ee10767812b03e13",
+    "name": "doc-gen4",
+    "inputRev?": "main"}},
+  {"git":
    {"url": "https://github.com/mhuisi/lean4-cli",
     "subDir?": null,
     "rev": "5a858c32963b6b19be0d477a30a1f4b6c120be7e",
     "name": "Cli",
     "inputRev?": "nightly"}},
   {"git":
+   {"url": "https://github.com/gebner/quote4",
+    "subDir?": null,
+    "rev": "7ac99aa3fac487bec1d5860e751b99c7418298cf",
+    "name": "Qq",
+    "inputRev?": "master"}},
+  {"git":
+   {"url": "https://github.com/JLimperg/aesop",
+    "subDir?": null,
+    "rev": "ebea1013bc12e73193c5b6148271c1360addd298",
+    "name": "aesop",
+    "inputRev?": "master"}},
+  {"git":
    {"url": "https://github.com/hargonix/LeanInk",
     "subDir?": null,
     "rev": "9f3101452135964ac9107ec8e9910bfd14022bbc",
     "name": "leanInk",
     "inputRev?": "doc-gen"}},
-  {"git":
-   {"url": "https://github.com/JLimperg/aesop",
-    "subDir?": null,
-    "rev": "09196796e08e05b3952e65f9748a42c8e8706556",
-    "name": "aesop",
-    "inputRev?": "master"}},
-  {"git":
-   {"url": "https://github.com/leanprover/doc-gen4",
-    "subDir?": null,
-    "rev": "69d48b174dbe404f37fe7e572de12f0c21992729",
-    "name": "doc-gen4",
-    "inputRev?": "main"}},
   {"git":
    {"url": "https://github.com/xubaiw/Unicode.lean",
     "subDir?": null,
@@ -33,24 +52,6 @@
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "e16d8b988464b27230d15e73b9517157e4a55b94",
+    "rev": "bf3acbb326513731ebb856717731cc1cd6a91d61",
     "name": "std",
-    "inputRev?": "main"}},
-  {"git":
-   {"url": "https://github.com/leanprover/lake",
-    "subDir?": null,
-    "rev": "86a95c342bfb85babaf41f593c73b49d5a13ca21",
-    "name": "lake",
-    "inputRev?": "master"}},
-  {"git":
-   {"url": "https://github.com/gebner/quote4",
-    "subDir?": null,
-    "rev": "7ac99aa3fac487bec1d5860e751b99c7418298cf",
-    "name": "Qq",
-    "inputRev?": "master"}},
-  {"git":
-   {"url": "https://github.com/xubaiw/CMark.lean",
-    "subDir?": null,
-    "rev": "2cc7cdeef67184f84db6731450e4c2b258c28fe8",
-    "name": "CMark",
     "inputRev?": "main"}}]}

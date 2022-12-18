@@ -97,7 +97,7 @@ class DivisionRing (K : Type u) extends Ring K, DivInvMonoid K, Nontrivial K, Ha
   protected inv_zero : (0 : K)⁻¹ = 0
   protected ratCast := Rat.castRec
   /-- However `ratCast` is defined, propositionally it must be equal to `a * b⁻¹`. -/
-  protected ratCastMk : ∀ (a : ℤ) (b : ℕ) (h1 h2), ratCast ⟨a, b, h1, h2⟩ = a * (b : K)⁻¹ := by
+  protected ratCast_mk : ∀ (a : ℤ) (b : ℕ) (h1 h2), ratCast ⟨a, b, h1, h2⟩ = a * (b : K)⁻¹ := by
     intros
     rfl
   /-- Multiplication by a rational number. -/
@@ -108,6 +108,7 @@ class DivisionRing (K : Type u) extends Ring K, DivInvMonoid K, Nontrivial K, Ha
     intros
     rfl
 #align division_ring DivisionRing
+#align division_ring.rat_cast_mk DivisionRing.ratCast_mk
 
 -- see Note [lower instance priority]
 instance (priority := 100) DivisionRing.toDivisionSemiring [DivisionRing α] : DivisionSemiring α :=
@@ -147,7 +148,7 @@ instance (priority := 900) castCoe {K : Type _} [HasRatCast K] : CoeTC ℚ K :=
 #align rat.cast_coe Rat.castCoe
 
 theorem cast_mk' (a b h1 h2) : ((⟨a, b, h1, h2⟩ : ℚ) : K) = a * (b : K)⁻¹ :=
-  DivisionRing.ratCastMk _ _ _ _
+  DivisionRing.ratCast_mk _ _ _ _
 #align rat.cast_mk' Rat.cast_mk'
 
 theorem cast_def : ∀ r : ℚ, (r : K) = r.num / r.den

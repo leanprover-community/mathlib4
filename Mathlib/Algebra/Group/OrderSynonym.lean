@@ -32,20 +32,15 @@ instance [h : Inv α] : Inv αᵒᵈ := h
 @[to_additive]
 instance [h : Div α] : Div αᵒᵈ := h
 
-@[to_additive]
-instance [h : SMul α β] : SMul α βᵒᵈ := h
-
-@[to_additive]
-instance instSMulOrderDual' [h : SMul α β] : SMul αᵒᵈ β := h
-#align order_dual.has_smul' instSMulOrderDual'
-
-@[to_additive]
+@[to_additive (reorder := 1)]
 instance [h : Pow α β] : Pow αᵒᵈ β := h
 #align order_dual.has_pow instPowOrderDual
+#align order_dual.has_smul instSMulOrderDual
 
-@[to_additive]
+@[to_additive (reorder := 1)]
 instance instPowOrderDual' [h : Pow α β] : Pow α βᵒᵈ := h
 #align order_dual.has_pow' instPowOrderDual'
+#align order_dual.has_smul' instSMulOrderDual'
 
 @[to_additive]
 instance [h : Semigroup α] : Semigroup αᵒᵈ := h
@@ -81,7 +76,7 @@ instance [h : CancelMonoid α] : CancelMonoid αᵒᵈ := h
 instance [h : CancelCommMonoid α] : CancelCommMonoid αᵒᵈ := h
 
 @[to_additive]
-instance [h : HasInvolutiveInv α] : HasInvolutiveInv αᵒᵈ := h
+instance [h : InvolutiveInv α] : InvolutiveInv αᵒᵈ := h
 
 @[to_additive]
 instance [h : DivInvMonoid α] : DivInvMonoid αᵒᵈ := h
@@ -94,6 +89,8 @@ instance [h : DivisionCommMonoid α] : DivisionCommMonoid αᵒᵈ := h
 
 @[to_additive]
 instance [h : Group α] : Group αᵒᵈ := h
+#align order_dual.group instGroupOrderDual
+#align order_dual.add_group instAddGroupOrderDual
 
 @[to_additive]
 instance [h : CommGroup α] : CommGroup αᵒᵈ := h
@@ -130,35 +127,19 @@ theorem toDual_div [Div α] (a b : α) : toDual (a / b) = toDual a / toDual b :=
 theorem ofDual_div [Div α] (a b : αᵒᵈ) : ofDual (a / b) = ofDual a / ofDual b := rfl
 #align of_dual_div ofDual_div
 
-@[simp, to_additive]
-theorem toDual_smul [SMul α β] (a : α) (b : β) : toDual (a • b) = a • toDual b := rfl
-#align to_dual_smul toDual_smul
-
-@[simp, to_additive]
-theorem ofDual_smul [SMul α β] (a : α) (b : βᵒᵈ) : ofDual (a • b) = a • ofDual b := rfl
-#align of_dual_smul ofDual_smul
-
-@[simp, to_additive]
-theorem toDual_smul' [SMul α β] (a : α) (b : β) : toDual a • b = a • b := rfl
-#align to_dual_smul' toDual_smul'
-
-@[simp, to_additive]
-theorem ofDual_smul' [SMul α β] (a : αᵒᵈ) (b : β) : ofDual a • b = a • b := rfl
-#align of_dual_smul' ofDual_smul'
-
-@[simp, to_additive, to_additive_reorder 1 4]
+@[simp, to_additive (reorder := 1 4)]
 theorem toDual_pow [Pow α β] (a : α) (b : β) : toDual (a ^ b) = toDual a ^ b := rfl
 #align to_dual_pow toDual_pow
 
-@[simp, to_additive, to_additive_reorder 1 4]
+@[simp, to_additive (reorder := 1 4)]
 theorem ofDual_pow [Pow α β] (a : αᵒᵈ) (b : β) : ofDual (a ^ b) = ofDual a ^ b := rfl
 #align of_dual_pow ofDual_pow
 
-@[simp, to_additive toDual_smul', to_additive_reorder 1 4]
+@[simp, to_additive (reorder := 1 4) toDual_smul']
 theorem pow_toDual [Pow α β] (a : α) (b : β) : a ^ toDual b = a ^ b := rfl
 #align pow_to_dual pow_toDual
 
-@[simp, to_additive ofDual_smul', to_additive_reorder 1 4]
+@[simp, to_additive (reorder := 1 4) ofDual_smul']
 theorem pow_ofDual [Pow α β] (a : α) (b : βᵒᵈ) : a ^ ofDual b = a ^ b := rfl
 #align pow_of_dual pow_ofDual
 
@@ -177,20 +158,15 @@ instance [h : Inv α] : Inv (Lex α) := h
 @[to_additive]
 instance [h : Div α] : Div (Lex α) := h
 
-@[to_additive]
-instance [h : SMul α β] : SMul α (Lex β) := h
-
-@[to_additive]
-instance instSMulLex' [h : SMul α β] : SMul (Lex α) β := h
-#align lex.has_smul' instSMulLex'
-
-@[to_additive]
+@[to_additive (reorder := 1)]
 instance [h : Pow α β] : Pow (Lex α) β := h
 #align lex.has_pow instPowLex
+#align lex.has_smul instSMulLex
 
-@[to_additive]
+@[to_additive (reorder := 1)]
 instance instPowLex' [h : Pow α β] : Pow α (Lex β) := h
 #align lex.has_pow' instPowLex'
+#align lex.has_smul' instSMulLex'
 
 @[to_additive]
 instance [h : Semigroup α] : Semigroup (Lex α) := h
@@ -226,7 +202,7 @@ instance [h : CancelMonoid α] : CancelMonoid (Lex α) := h
 instance [h : CancelCommMonoid α] : CancelCommMonoid (Lex α) := h
 
 @[to_additive]
-instance [h : HasInvolutiveInv α] : HasInvolutiveInv (Lex α) := h
+instance [h : InvolutiveInv α] : InvolutiveInv (Lex α) := h
 
 @[to_additive]
 instance [h : DivInvMonoid α] : DivInvMonoid (Lex α) := h
@@ -275,34 +251,23 @@ theorem toLex_div [Div α] (a b : α) : toLex (a / b) = toLex a / toLex b := rfl
 theorem ofLex_div [Div α] (a b : Lex α) : ofLex (a / b) = ofLex a / ofLex b := rfl
 #align of_lex_div ofLex_div
 
-@[simp, to_additive]
-theorem toLex_smul [SMul α β] (a : α) (b : β) : toLex (a • b) = a • toLex b := rfl
-#align to_lex_smul toLex_smul
-
-@[simp, to_additive]
-theorem ofLex_smul [SMul α β] (a : α) (b : Lex β) : ofLex (a • b) = a • ofLex b := rfl
-#align of_lex_smul ofLex_smul
-
-@[simp, to_additive]
-theorem toLex_smul' [SMul α β] (a : α) (b : β) : toLex a • b = a • b := rfl
-#align to_lex_smul' toLex_smul'
-
-@[simp, to_additive]
-theorem ofLex_smul' [SMul α β] (a : Lex α) (b : β) : ofLex a • b = a • b := rfl
-#align of_lex_smul' ofLex_smul'
-
-@[simp, to_additive, to_additive_reorder 1 4]
+@[simp, to_additive (reorder := 1 4)]
 theorem toLex_pow [Pow α β] (a : α) (b : β) : toLex (a ^ b) = toLex a ^ b := rfl
 #align to_lex_pow toLex_pow
 
-@[simp, to_additive, to_additive_reorder 1 4]
+@[simp, to_additive (reorder := 1 4)]
 theorem ofLex_pow [Pow α β] (a : Lex α) (b : β) : ofLex (a ^ b) = ofLex a ^ b := rfl
 #align of_lex_pow ofLex_pow
 
-@[simp, to_additive toLex_smul, to_additive_reorder 1 4]
+@[simp, to_additive (reorder := 1 4) toLex_smul']
 theorem pow_toLex [Pow α β] (a : α) (b : β) : a ^ toLex b = a ^ b := rfl
 #align pow_to_lex pow_toLex
 
-@[simp, to_additive ofLex_smul, to_additive_reorder 1 4]
+@[simp, to_additive (reorder := 1 4) ofLex_smul']
 theorem pow_ofLex [Pow α β] (a : α) (b : Lex β) : a ^ ofLex b = a ^ b := rfl
 #align pow_of_lex pow_ofLex
+
+attribute [to_additive] instSMulOrderDual instSMulOrderDual'
+  toDual_smul ofDual_smul toDual_smul' ofDual_smul'
+  instSMulLex instSMulLex'
+  toLex_smul ofLex_smul toLex_smul' ofLex_smul'

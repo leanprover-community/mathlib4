@@ -152,8 +152,8 @@ def natToInt : GlobalBranchingPreprocessor :=
 { name := "move nats to ints",
   transform := fun g l => do
     let l ← l.mapM $ fun h => do
-      let t ← inferType h
-      if (isNatProp t) then
+      let t ← instantiateMVars (← inferType h)
+      if isNatProp t then
         let (some (h', t'), _) ← Term.TermElabM.run' (run_for g (zifyProof none h t))
           | throwError "zifyProof failed on {h}"
         if filterComparisons.aux t' then
@@ -202,14 +202,14 @@ def mkNonstrictIntProof (pf : Expr) : MetaM Expr := do
   | (``LT.lt, #[_, _, a, b]) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
   | (``GT.gt, #[_, _, a, b]) =>
-    return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
+    return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[b, a]]) pf
   | (``Not, #[P]) => match P.getAppFnArgs with
     | (``LE.le, #[_, _, a, b]) =>
-      return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]])
-        (← mkAppM `le_of_not_gt #[pf])
+      return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[b, a]])
+        (← mkAppM ``lt_of_not_ge #[pf])
     | (``GE.ge, #[_, _, a, b]) =>
       return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]])
-        (← mkAppM `le_of_not_gt #[pf])
+        (← mkAppM ``lt_of_not_ge #[pf])
     | _ => throwError "mkNonstrictIntProof failed: proof is not an inequality"
   | _ => throwError "mkNonstrictIntProof failed: proof is not an inequality"
 
@@ -301,57 +301,72 @@ section cancelDenoms
 -- <|> return [pf] }
 end cancelDenoms
 
--- TODO `nlinarith` can wait for later
 section nlinarith
--- /--
--- `find_squares m e` collects all terms of the form `a ^ 2` and `a * a` that appear in `e`
--- and adds them to the set `m`.
--- A pair `(a, tt)` is added to `m` when `a^2` appears in `e`, and `(a, ff)` is added to `m`
--- when `a*a` appears in `e`.  -/
--- meta def find_squares : rb_set (expr × bool) → expr → tactic (rb_set $ expr ×ₗ bool)
--- | s `(%%a ^ 2) := do s ← find_squares s a, return (s.insert (a, tt))
--- | s e@`(%%e1 * %%e2) := if e1 = e2 then do s ← find_squares s e1, return (s.insert (e1, ff)) else
---   e.mfoldl find_squares s
--- | s e := e.mfoldl find_squares s
+/--
+`findSquares s e` collects all terms of the form `a ^ 2` and `a * a` that appear in `e`
+and adds them to the set `s`.
+A pair `(a, true)` is added to `s` when `a^2` appears in `e`,
+and `(a, false)` is added to `s` when `a*a` appears in `e`.  -/
+partial def findSquares (s : HashSet (Expr × Bool)) (e : Expr) : MetaM (HashSet (Expr × Bool)) :=
+match e.getAppFnArgs with
+| (``HPow.hPow, #[_, _, _, _, a, b]) => match b.numeral? with
+  | some 2 => do
+    let s ← findSquares s a
+    return (s.insert (a, true))
+  | _ => e.foldlM findSquares s
+| (``HMul.hMul, #[_, _, _, _, a, b]) => if a.equal b then do
+    let s ← findSquares s a
+    return (s.insert (a, false))
+  else
+    e.foldlM findSquares s
+| _ => e.foldlM findSquares s
 
--- /--
--- `nlinarith_extras` is the preprocessor corresponding to the `nlinarith` tactic.
+/--
+`nlinarithExtras` is the preprocessor corresponding to the `nlinarith` tactic.
 
--- * For every term `t` such that `t^2` or `t*t` appears in the input, adds a proof of `t^2 ≥ 0`
---   or `t*t ≥ 0`.
--- * For every pair of comparisons `t1 R1 0` and `t2 R2 0`, adds a proof of `t1*t2 R 0`.
+* For every term `t` such that `t^2` or `t*t` appears in the input, adds a proof of `t^2 ≥ 0`
+  or `t*t ≥ 0`.
+* For every pair of comparisons `t1 R1 0` and `t2 R2 0`, adds a proof of `t1*t2 R 0`.
 
--- This preprocessor is typically run last, after all inputs have been canonized.
--- -/
--- meta def nlinarith_extras : global_preprocessor :=
--- { name := "nonlinear arithmetic extras",
---   transform := λ ls,
--- do s ← ls.mfoldr (λ h s', infer_type h >>= find_squares s') mk_rb_set,
---    new_es ← s.mfold ([] : list expr) $ λ ⟨e, is_sq⟩ new_es,
---      ((do p ← mk_app (if is_sq then ``sq_nonneg else ``mul_self_nonneg) [e],
---        return $ p::new_es) <|> return new_es),
---    new_es ← compWithZero.globalize.transform new_es,
---    linarith_trace "nlinarith preprocessing found squares",
---    linarith_trace s,
---    linarith_trace_proofs "so we added proofs" new_es,
---    with_comps ← (new_es ++ ls).mmap (λ e, do
---      tp ← infer_type e,
---      return $ (parse_into_comp_and_expr tp).elim (ineq.lt, e) (λ ⟨ine, _⟩, (ine, e))),
---    products ← with_comps.mmap_upper_triangle $ λ ⟨posa, a⟩ ⟨posb, b⟩,
---      some <$> match posa, posb with
---       | ineq.eq, _ := mk_app ``zero_mul_eq [a, b]
---       | _, ineq.eq := mk_app ``mul_zero_eq [a, b]
---       | ineq.lt, ineq.lt := mk_app ``mul_pos_of_neg_of_neg [a, b]
---       | ineq.lt, ineq.le := do a ← mk_app ``le_of_lt [a],
---         mk_app ``mul_nonneg_of_nonpos_of_nonpos [a, b]
---       | ineq.le, ineq.lt := do b ← mk_app ``le_of_lt [b],
---         mk_app ``mul_nonneg_of_nonpos_of_nonpos [a, b]
---       | ineq.le, ineq.le := mk_app ``mul_nonneg_of_nonpos_of_nonpos [a, b]
---       end <|> return none,
---    products ← compWithZero.globalize.transform products.reduce_option,
---    return $ new_es ++ ls ++ products }
+This preprocessor is typically run last, after all inputs have been canonized.
+-/
+def nlinarithExtras : GlobalPreprocessor :=
+{ name := "nonlinear arithmetic extras",
+  transform := fun ls => do
+    let s ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
+      HashSet.empty
+    let new_es ← s.foldM (fun new_es (⟨e, is_sq⟩ : Expr × Bool) =>
+      ((do
+        let p ← mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
+        pure $ p::new_es) <|> pure new_es)) ([] : List Expr)
+    let new_es ← compWithZero.globalize.transform new_es
+    trace[linarith] "nlinarith preprocessing found squares"
+    trace[linarith] m!"{s.toList}"
+    linarithTraceProofs "so we added proofs" new_es
+    let with_comps ← (new_es ++ ls).mapM (fun e => do
+      let tp ← inferType e
+      try
+        let ⟨ine, _⟩ ← parseCompAndExpr tp
+        pure (ine, e)
+      catch _ => pure (Ineq.lt, e))
+    let products ← with_comps.mapDiagM $ fun (⟨posa, a⟩ : Ineq × Expr) ⟨posb, b⟩ =>
+      try
+        (some <$> match posa, posb with
+          | Ineq.eq, _ => mkAppM ``zero_mul_eq #[a, b]
+          | _, Ineq.eq => mkAppM ``mul_zero_eq #[a, b]
+          | Ineq.lt, Ineq.lt => mkAppM ``mul_pos_of_neg_of_neg #[a, b]
+          | Ineq.lt, Ineq.le => do
+              let a ← mkAppM ``le_of_lt #[a]
+              mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b]
+          | Ineq.le, Ineq.lt => do
+              let b ← mkAppM ``le_of_lt #[b]
+              mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b]
+          | Ineq.le, Ineq.le => mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b])
+      catch _ => pure none
+    let products ← compWithZero.globalize.transform products.reduceOption
+    return (new_es ++ ls ++ products) }
+
 end nlinarith
-
 
 -- TODO the `removeNe` preprocesor
 section removeNe
@@ -386,7 +401,7 @@ end removeNe
 /--
 The default list of preprocessors, in the order they should typically run.
 -/
-def default_preprocessors : List GlobalBranchingPreprocessor :=
+def defaultPreprocessors : List GlobalBranchingPreprocessor :=
 [filterComparisons, removeNegations, natToInt, strengthenStrictInt,
   compWithZero/-, cancelDenoms-/]
 

@@ -96,6 +96,41 @@ theorem mul_rotate' (a b c : G) : a * (b * c) = b * (c * a) :=
 
 end CommSemigroup
 
+section AddCommSemigroup
+set_option linter.deprecated false
+
+variable {M : Type u} [AddCommSemigroup M]
+
+theorem bit0_add (a b : M) : bit0 (a + b) = bit0 a + bit0 b :=
+  add_add_add_comm _ _ _ _
+#align bit0_add bit0_add
+
+theorem bit1_add [One M] (a b : M) : bit1 (a + b) = bit0 a + bit1 b :=
+  (congr_arg (· + (1 : M)) <| bit0_add a b : _).trans (add_assoc _ _ _)
+#align bit1_add bit1_add
+
+theorem bit1_add' [One M] (a b : M) : bit1 (a + b) = bit1 a + bit0 b := by
+  rw [add_comm, bit1_add, add_comm]
+#align bit1_add' bit1_add'
+
+end AddCommSemigroup
+
+section AddMonoid
+set_option linter.deprecated false
+
+variable {M : Type u} [AddMonoid M] {a b c : M}
+
+@[simp]
+theorem bit0_zero : bit0 (0 : M) = 0 :=
+  add_zero _
+#align bit0_zero bit0_zero
+
+@[simp]
+theorem bit1_zero [One M] : bit1 (0 : M) = 1 := by rw [bit1, bit0_zero, zero_add]
+#align bit1_zero bit1_zero
+
+end AddMonoid
+
 attribute [local simp] mul_assoc sub_eq_add_neg
 
 section CommMonoid
@@ -138,9 +173,9 @@ theorem self_eq_mul_left : b = a * b ↔ a = 1 :=
 
 end RightCancelMonoid
 
-section HasInvolutiveInv
+section InvolutiveInv
 
-variable [HasInvolutiveInv G] {a b : G}
+variable [InvolutiveInv G] {a b : G}
 
 @[simp, to_additive]
 theorem inv_involutive : Function.Involutive (Inv.inv : G → G) :=
@@ -187,7 +222,7 @@ theorem rightInverse_inv : LeftInverse (fun a : G ↦ a⁻¹) fun a ↦ a⁻¹ :
 #align right_inverse_inv rightInverse_inv
 #align right_inverse_neg rightInverse_neg
 
-end HasInvolutiveInv
+end InvolutiveInv
 
 section DivInvMonoid
 
@@ -583,7 +618,8 @@ theorem leftInverse_inv_mul_mul_right (c : G) :
 theorem exists_npow_eq_one_of_zpow_eq_one {n : ℤ} (hn : n ≠ 0) {x : G} (h : x ^ n = 1) :
     ∃ n : ℕ, 0 < n ∧ x ^ n = 1 := by
   cases' n with n n
-  · rw [zpow_ofNat] at h
+  · simp only [Int.ofNat_eq_coe] at h
+    rw [zpow_ofNat] at h
     refine' ⟨n, Nat.pos_of_ne_zero fun n0 ↦ hn ?_, h⟩
     rw [n0]
     rfl

@@ -87,7 +87,7 @@ jobs:
         run: lake build
 
       - name: test mathlib
-        run: make test
+        run: make -j 8 test
 
       - name: lint mathlib
         run: make lint

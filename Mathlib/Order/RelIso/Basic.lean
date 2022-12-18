@@ -26,9 +26,9 @@ isomorphisms.
 
 ## Notation
 
-* `→r`: `rel_hom`
-* `↪r`: `rel_embedding`
-* `≃r`: `rel_iso`
+* `→r`: `RelHom`
+* `↪r`: `RelEmbedding`
+* `≃r`: `RelIso`
 -/
 
 
@@ -54,10 +54,10 @@ infixl:25 " →r " => RelHom
 
 section
 
-/-- `rel_hom_class F r s` asserts that `F` is a type of functions such that all `f : F`
+/-- `RelHomClass F r s` asserts that `F` is a type of functions such that all `f : F`
 satisfy `r a b → s (f a) (f b)`.
 
-The relations `r` and `s` are `out_param`s since figuring them out from a goal is a higher-order
+The relations `r` and `s` are `outParam`s since figuring them out from a goal is a higher-order
 matching problem that Lean usually can't do unaided.
 -/
 class RelHomClass (F : Type _) {α β : outParam <| Type _} (r : outParam <| α → α → Prop)
@@ -105,6 +105,9 @@ instance : RelHomClass (r →r s) r s where
     cases g
     congr
   map_rel := map_rel'
+
+/-- See Note [custom simps projection] -/
+def Simps.apply (f : r →r s) : α → β := f
 
 initialize_simps_projections RelHom (toFun → apply)
 
@@ -177,7 +180,7 @@ theorem RelHom.injective_of_increasing [IsTrichotomous α r] [IsIrrefl β s] (f 
   _root_.injective_of_increasing r s f f.map_rel
 #align rel_hom.injective_of_increasing RelHom.injective_of_increasing
 
--- TODO: define a `rel_iff_class` so we don't have to do all the `convert` trickery?
+-- TODO: define a `RelIffClass` so we don't have to do all the `convert` trickery?
 theorem Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
     (o : ∀ {a b}, r a b ↔ s (f a) (f b)) :
     WellFounded r ↔ WellFounded s :=
@@ -230,7 +233,7 @@ instance : Coe (r ↪r s) (r →r s) :=
 instance : CoeFun (r ↪r s) fun _ => α → β :=
   ⟨fun o => o.toEmbedding⟩
 
--- TODO: define and instantiate a `rel_embedding_class` when `embedding_like` is defined
+-- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
 instance : RelHomClass (r ↪r s) r s where
   coe := fun x => x
   coe_injective' f g h := by
@@ -244,6 +247,8 @@ because it is a composition of multiple projections. -/
 def Simps.apply (h : r ↪r s) : α → β :=
   h
 #align rel_embedding.simps.apply RelEmbedding.Simps.apply
+
+initialize_simps_projections RelEmbedding (toEmbedding_toFun → apply, -toEmbedding)
 
 theorem injective (f : r ↪r s) : Injective f :=
   f.inj'
@@ -426,7 +431,7 @@ theorem ofMapRelIff_coe (f : α → β) [IsAntisymm α r] [IsRefl β s]
   to show it is a relation embedding. -/
 def ofMonotone [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H : ∀ a b, r a b → s (f a) (f b)) :
     r ↪r s := by
-  haveI := @IsAsymm.is_irrefl β s _
+  haveI := @IsAsymm.isIrrefl β s _
   refine' ⟨⟨f, fun a b e => _⟩, @fun a b => ⟨fun h => _, H _ _⟩⟩
   · refine' ((@trichotomous _ r _ a b).resolve_left _).resolve_right _ <;>
       exact fun h => @irrefl _ s _ _ (by simpa [e] using H _ _ h)
@@ -536,7 +541,7 @@ infixl:25 " ≃r " => RelIso
 
 namespace RelIso
 
-/-- Convert an `rel_iso` to an `rel_embedding`. This function is also available as a coercion
+/-- Convert an `RelIso` to a `RelEmbedding`. This function is also available as a coercion
 but often it is easier to write `f.toRelEmbedding` than to write explicitly `r` and `s`
 in the target type. -/
 def toRelEmbedding (f : r ≃r s) : r ↪r s :=

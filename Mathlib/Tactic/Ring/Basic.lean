@@ -632,7 +632,7 @@ mutual
 * Atoms are not (necessarily) positive
 * Sums defer to `ExSum.evalPos`
 -/
-def ExBase.evalPos (va : ExBase sℕ a) : Option Q(0 < $a) :=
+partial def ExBase.evalPos (va : ExBase sℕ a) : Option Q(0 < $a) :=
   match va with
   | .atom _ => none
   | .sum va => va.evalPos
@@ -642,7 +642,7 @@ def ExBase.evalPos (va : ExBase sℕ a) : Option Q(0 < $a) :=
 * `0 < c` (where `c` is a numeral) is true by the normalization invariant (`c` is not zero)
 * `0 < x ^ e * b` if `0 < x` and `0 < b`
 -/
-def ExProd.evalPos (va : ExProd sℕ a) : Option Q(0 < $a) :=
+partial def ExProd.evalPos (va : ExProd sℕ a) : Option Q(0 < $a) :=
   match va with
   | .const n =>
     -- it must be positive because it is a nonzero nat literal
@@ -659,7 +659,7 @@ def ExProd.evalPos (va : ExProd sℕ a) : Option Q(0 < $a) :=
 * `0 < 0` fails
 * `0 < a + b` if `0 < a` or `0 < b`
 -/
-def ExSum.evalPos (va : ExSum sℕ a) : Option Q(0 < $a) :=
+partial def ExSum.evalPos (va : ExSum sℕ a) : Option Q(0 < $a) :=
   match va with
   | .zero => none
   | .add (a := a₁) (b := a₂) va₁ va₂ => do

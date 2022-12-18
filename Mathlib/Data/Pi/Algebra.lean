@@ -93,42 +93,28 @@ instance instSMul [∀ i, SMul α <| f i] : SMul α (∀ i : I, f i) :=
 #align pi.has_smul Pi.instSMul
 #align pi.has_vadd Pi.instVAdd
 
-@[simp, to_additive]
-theorem smul_apply [∀ i, SMul α <| f i] (s : α) (x : ∀ i, f i) (i : I) : (s • x) i = s • x i :=
-  rfl
-
-@[to_additive]
-theorem smul_def [∀ i, SMul α <| f i] (s : α) (x : ∀ i, f i) : s • x = fun i => s • x i :=
-  rfl
-
-@[simp, to_additive]
-theorem smul_const [SMul α β] (a : α) (b : β) : a • const I b = const I (a • b) :=
-  rfl
-
-@[to_additive]
-theorem smul_comp [SMul α γ] (a : α) (x : β → γ) (y : I → β) : (a • x) ∘ y = a • x ∘ y :=
-  rfl
-
 @[to_additive]
 instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
   ⟨fun x b i => x i ^ b⟩
 
-@[simp, to_additive, to_additive_reorder 5]
+@[simp, to_additive (reorder := 5)]
 theorem pow_apply [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) (i : I) : (x ^ b) i = x i ^ b :=
   rfl
 
-@[to_additive, to_additive_reorder 5]
+@[to_additive (reorder := 5)]
 theorem pow_def [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) : x ^ b = fun i => x i ^ b :=
   rfl
 
 -- `to_additive` generates bad output if we take `Pow α β`.
-@[simp, to_additive smul_const, to_additive_reorder 5]
+@[simp, to_additive (reorder := 5) smul_const]
 theorem const_pow [Pow β α] (b : β) (a : α) : const I b ^ a = const I (b ^ a) :=
   rfl
 
-@[to_additive, to_additive_reorder 6]
+@[to_additive (reorder := 6)]
 theorem pow_comp [Pow γ α] (x : β → γ) (a : α) (y : I → β) : (x ^ a) ∘ y = x ∘ y ^ a :=
   rfl
+
+attribute [to_additive] smul_apply smul_def smul_const smul_comp
 
 /-!
 Porting note: `bit0` and `bit1` are deprecated. This section can be removed entirely

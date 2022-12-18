@@ -21,7 +21,7 @@ This file proves a few extra facts about `Nonempty`, which is defined in core Le
 
 variable {γ : α → Type _}
 
-instance (priority := 20) Zero.Nonempty [Zero α] : Nonempty α :=
+instance (priority := 20) Zero.nonempty [Zero α] : Nonempty α :=
   ⟨0⟩
 
 instance (priority := 20) One.nonempty [One α] : Nonempty α :=

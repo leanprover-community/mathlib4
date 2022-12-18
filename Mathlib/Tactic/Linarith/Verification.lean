@@ -138,7 +138,7 @@ def typeOfIneqProof (prf : Expr) : MetaM Expr := do
 where the numerals are natively of type `tp`.
 -/
 def mkNegOneLtZeroProof (tp : Expr) : MetaM Expr := do
-  let zero_lt_one ← mkAppOptM ``zero_lt_one #[tp, none, none]
+  let zero_lt_one ← mkAppOptM ``zero_lt_one #[tp, none, none, none, none, none]
   mkAppM `neg_neg_of_pos #[zero_lt_one]
 
 /--

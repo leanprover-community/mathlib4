@@ -40,6 +40,16 @@ example : (an : ℤ) + bn = (an + bn : ℕ) := by norm_cast
 -- example : (an : ℂ) + bq = ((an + bq) : ℚ) := by norm_cast
 -- example : (((an : ℤ) : ℚ) : ℝ) + bn = (an + (bn : ℤ)) := by norm_cast
 
+example (h : ((an + bn : ℕ) : ℤ) = (an : ℤ) + (bn : ℤ)) : True := by
+  push_cast at h
+  guard_hyp h : (an : ℤ) + (bn : ℤ) = (an : ℤ) + (bn : ℤ)
+  trivial
+
+example (h : ((an * bn : ℕ) : ℤ) = (an : ℤ) * (bn : ℤ)) : True := by
+  push_cast at h
+  guard_hyp h : (an : ℤ) * (bn : ℤ) = (an : ℤ) * (bn : ℤ)
+  trivial
+
 -- example : (((((an : ℚ) : ℝ) * bq) + (cq : ℝ) ^ dn) : ℂ) = (an : ℂ) * (bq : ℝ) + cq ^ dn :=
 -- by norm_cast
 -- example : ((an : ℤ) : ℝ) < bq ∧ (cr : ℂ) ^ 2 = dz ↔ (an : ℚ) < bq ∧ ((cr ^ 2) : ℂ) = dz :=
