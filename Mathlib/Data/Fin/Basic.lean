@@ -1966,12 +1966,12 @@ theorem coe_sub_iff_lt {n : ℕ} {a b : Fin n} : (↑(a - b) : ℕ) = n + a - b 
   cases n; · exact finZeroElim a
   rw [lt_iff_val_lt_val, Fin.coe_sub, add_comm]
   cases' le_or_lt (b : ℕ) a with h h
-  ·
-    simpa [add_tsub_assoc_of_le h, ← not_le, h] using
-      ((Nat.mod_lt _ (Nat.succ_pos _)).trans_le le_self_add).ne
-  ·
-    simp [← tsub_tsub_assoc b.is_lt.le h.le, ← tsub_add_eq_add_tsub b.is_lt.le,
-      Nat.mod_eq_of_lt (tsub_lt_self (Nat.succ_pos _) (tsub_pos_of_lt h)), h]
+  · sorry
+    --simpa [add_tsub_assoc_of_le h, ← not_le, h] using
+      --((Nat.mod_lt _ (Nat.succ_pos _)).trans_le le_self_add).ne
+  · sorry
+    --simp [← tsub_tsub_assoc b.is_lt.le h.le, ← tsub_add_eq_add_tsub b.is_lt.le,
+      --Nat.mod_eq_of_lt (tsub_lt_self (Nat.succ_pos _) (tsub_pos_of_lt h)), h]
 #align fin.coe_sub_iff_lt Fin.coe_sub_iff_lt
 
 @[simp]
@@ -2108,14 +2108,14 @@ theorem lt_succAbove_iff (p : Fin (n + 1)) (i : Fin n) : p < p.succAbove i ↔ p
 never results in `p` itself -/
 theorem succAbove_ne (p : Fin (n + 1)) (i : Fin n) : p.succAbove i ≠ p := by
   intro eq
-  by_cases H : i.cast_succ < p
+  by_cases H : castSucc i < p
   · simpa [lt_irrefl, ← succAbove_below _ _ H, Eq] using H
   · simpa [← succAbove_above _ _ (le_of_not_lt H), Eq] using cast_succ_lt_succ i
 #align fin.succ_above_ne Fin.succAbove_ne
 
 /-- Embedding a positive `fin n` results in a positive fin (n + 1)` -/
 theorem succAbove_pos (p : Fin (n + 2)) (i : Fin (n + 1)) (h : 0 < i) : 0 < p.succAbove i := by
-  by_cases H : i.cast_succ < p
+  by_cases H : castSucc i < p
   · simpa [succAbove_below _ _ H] using cast_succ_pos h
   · simp [succAbove_above _ _ (le_of_not_lt H)]
 #align fin.succ_above_pos Fin.succAbove_pos
@@ -2174,7 +2174,7 @@ theorem exists_succ_eq_iff {x : Fin (n + 1)} : (∃ y, Fin.succ y = x) ↔ x ≠
 
 /-- Given a fixed pivot `x : fin (n + 1)`, `x.succAbove` is injective -/
 theorem succAbove_right_injective {x : Fin (n + 1)} : Injective (succAbove x) :=
-  (succAbove x).Injective
+  (succAbove x).injective
 #align fin.succ_above_right_injective Fin.succAbove_right_injective
 
 /-- Given a fixed pivot `x : fin (n + 1)`, `x.succAbove` is injective -/
@@ -2194,8 +2194,9 @@ theorem succAbove_left_inj {x y : Fin (n + 1)} : x.succAbove = y.succAbove ↔ x
 #align fin.succ_above_left_inj Fin.succAbove_left_inj
 
 @[simp]
-theorem zero_succAbove {n : ℕ} (i : Fin n) : (0 : Fin (n + 1)).succAbove i = i.succ :=
-  rfl
+theorem zero_succAbove {n : ℕ} (i : Fin n) : (0 : Fin (n + 1)).succAbove i = i.succ := by
+  ext
+  simp
 #align fin.zero_succ_above Fin.zero_succAbove
 
 @[simp]
@@ -2206,13 +2207,13 @@ theorem succ_succAbove_zero {n : ℕ} (i : Fin (n + 1)) : i.succ.succAbove 0 = 0
 @[simp]
 theorem succ_succAbove_succ {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
     i.succ.succAbove j.succ = (i.succAbove j).succ :=
-  (lt_or_ge j.cast_succ i).elim
+  (lt_or_ge (castSucc j) i).elim
     (fun h => by
-      have h' : j.succ.cast_succ < i.succ := by simpa [lt_iff_coe_lt_coe] using h
+      have h' : castSucc j.succ < i.succ := by simpa [lt_iff_val_lt_val] using h
       ext
       simp [succAbove_below _ _ h, succAbove_below _ _ h'])
     fun h => by
-    have h' : i.succ ≤ j.succ.cast_succ := by simpa [le_iff_coe_le_coe] using h
+    have h' : i.succ ≤ castSucc j.succ := by simpa [le_iff_val_le_val] using h
     ext
     simp [succAbove_above _ _ h, succAbove_above _ _ h']
 #align fin.succ_succ_above_succ Fin.succ_succAbove_succ
@@ -2246,14 +2247,14 @@ section PredAbove
 
 /-- `pred_above p i` embeds `i : fin (n+1)` into `fin n` by subtracting one if `p < i`. -/
 def predAbove (p : Fin n) (i : Fin (n + 1)) : Fin n :=
-  if h : p.cast_succ < i then i.pred (ne_of_lt (lt_of_le_of_lt (zero_le p.cast_succ) h)).symm
+  if h : castSucc p < i then i.pred (ne_of_lt (lt_of_le_of_lt (zero_le p.cast_succ) h)).symm
   else i.castLt (lt_of_le_of_lt (le_of_not_lt h) p.2)
 #align fin.pred_above Fin.predAbove
 
 theorem pred_above_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H => by
-  dsimp [pred_above]
+  dsimp [predAbove]
   split_ifs with ha hb hb
-  all_goals simp only [le_iff_coe_le_coe, coe_pred]
+  all_goals simp only [le_iff_val_le_val, coe_pred]
   · exact pred_le_pred H
   ·
     calc
@@ -2267,9 +2268,9 @@ theorem pred_above_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b 
 
 theorem pred_above_left_monotone (i : Fin (n + 1)) : Monotone fun p => predAbove p i := fun a b H =>
   by
-  dsimp [pred_above]
+  dsimp [predAbove]
   split_ifs with ha hb hb
-  all_goals simp only [le_iff_coe_le_coe, coe_pred]
+  all_goals simp only [le_iff_val_le_val, coe_pred]
   · exact pred_le _
   · have : b < a := cast_succ_lt_cast_succ_iff.mpr (hb.trans_le (le_of_not_gt ha))
     exact absurd H this.not_le
@@ -2295,20 +2296,20 @@ theorem cast_pred_one : castPred (1 : Fin (n + 2)) = 1 := by
 
 @[simp]
 theorem pred_above_zero {i : Fin (n + 2)} (hi : i ≠ 0) : predAbove 0 i = i.pred hi := by
-  dsimp [pred_above]
+  dsimp [predAbove]
   rw [dif_pos]
   exact (pos_iff_ne_zero _).mpr hi
 #align fin.pred_above_zero Fin.pred_above_zero
 
 @[simp]
 theorem cast_pred_last : castPred (last (n + 1)) = last n :=
-  eq_of_veq (by simp [cast_pred, pred_above, cast_succ_lt_last])
+  eq_of_veq (by simp [cast_pred, predAbove, cast_succ_lt_last])
 #align fin.cast_pred_last Fin.cast_pred_last
 
 @[simp]
 theorem cast_pred_mk (n i : ℕ) (h : i < n + 1) : castPred ⟨i, lt_succ_of_lt h⟩ = ⟨i, h⟩ := by
   have : ¬cast_succ (last n) < ⟨i, lt_succ_of_lt h⟩ := by
-    simpa [lt_iff_coe_lt_coe] using le_of_lt_succ h
+    simpa [lt_iff_val_lt_val] using le_of_lt_succ h
   simp [cast_pred, pred_above, this]
 #align fin.cast_pred_mk Fin.cast_pred_mk
 
@@ -2372,7 +2373,7 @@ then back to `fin n` by subtracting one from anything above `p` is the identity.
 @[simp]
 theorem pred_above_succAbove (p : Fin n) (i : Fin n) : p.predAbove (p.cast_succ.succAbove i) = i :=
   by
-  dsimp [pred_above, succAbove]
+  dsimp [predAbove, succAbove]
   rcases p with ⟨p, _⟩
   rcases i with ⟨i, _⟩
   split_ifs
@@ -2410,9 +2411,9 @@ theorem pred_succAbove_pred {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ 0) (
 
 /-- `succ` commutes with `pred_above`. -/
 @[simp]
-theorem succ_pred_above_succ (a : Fin n) (b : Fin (n + 1)) :
+theorem succ_pred_above_succ {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
     a.succ.predAbove b.succ = (a.predAbove b).succ := by
-  obtain h₁ | h₂ := lt_or_le a.cast_succ b
+  obtain h₁ | h₂ := lt_or_le (castSucc a) b
   · rw [Fin.pred_above_above _ _ h₁, Fin.succ_pred, Fin.pred_above_above, Fin.pred_succ]
     simpa only [Fin.lt_iff_coe_lt_coe, Fin.coe_cast_succ, Fin.coe_succ, add_lt_add_iff_right] using
       h₁
@@ -2422,21 +2423,21 @@ theorem succ_pred_above_succ (a : Fin n) (b : Fin (n + 1)) :
     · rw [Fin.pred_above_below a b h₂,
         Fin.pred_above_below a.succ b.succ
           (by
-            simpa only [le_iff_coe_le_coe, coe_succ, coe_cast_succ, add_le_add_iff_right] using h₂)]
+            simpa only [le_iff_val_le_val, val_succ, coe_cast_succ, add_le_add_iff_right] using h₂)]
       ext
       have h₀ : (b : ℕ) < n + 1 := by
-        simp only [le_iff_coe_le_coe, coe_cast_succ] at h₂
+        simp only [le_iff_val_le_val, coe_cast_succ] at h₂
         simpa only [lt_succ_iff] using h₂.trans a.is_le
       have h₁ : (b.succ : ℕ) < n + 2 := by
         rw [← Nat.succ_lt_succ_iff] at h₀
-        simpa only [coe_succ] using h₀
+        simpa only [val_succ] using h₀
       simp only [coe_cast_pred b h₀, coe_cast_pred b.succ h₁, coe_succ]
 #align fin.succ_pred_above_succ Fin.succ_pred_above_succ
 
 @[simp]
-theorem cast_pred_cast_succ (i : Fin (n + 1)) : castPred i.cast_succ = i := by
-  simp [cast_pred, pred_above, le_last]
-#align fin.cast_pred_cast_succ Fin.cast_pred_cast_succ
+theorem cast_pred_castSucc (i : Fin (n + 1)) : castPred (castSucc i) = i := by
+  simp [cast_pred, predAbove, le_last]
+#align fin.cast_pred_cast_succ Fin.cast_pred_castSucc
 
 theorem cast_succ_cast_pred {i : Fin (n + 2)} (h : i < last _) : castSucc i.cast_pred = i := by
   rw [cast_pred, pred_above, dif_neg]
