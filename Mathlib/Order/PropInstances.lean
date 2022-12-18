@@ -89,7 +89,7 @@ theorem codisjoint_iff [∀ i, OrderTop (α' i)] {f g : ∀ i, α' i} :
 
 theorem isCompl_iff [∀ i, BoundedOrder (α' i)] {f g : ∀ i, α' i} :
     IsCompl f g ↔ ∀ i, IsCompl (f i) (g i) := by
-  simp_rw [_root_.isCompl_iff, disjoint_iff, codisjoint_iff, forall_and]; rfl
+  simp_rw [_root_.isCompl_iff, disjoint_iff, codisjoint_iff, forall_and]
 #align pi.is_compl_iff Pi.isCompl_iff
 
 end Pi
