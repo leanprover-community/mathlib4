@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Tactic.LibrarySearch
+
 /-!
 # Lemmas about subtraction in canonically ordered monoids
 -/

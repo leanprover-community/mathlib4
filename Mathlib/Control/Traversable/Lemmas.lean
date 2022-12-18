@@ -62,9 +62,9 @@ def PureTransformation :
 #align traversable.pure_transformation Traversable.PureTransformation
 
 @[simp]
-theorem pure_transformation_apply {α} (x : id α) : PureTransformation F x = pure x :=
+theorem pureTransformation_apply {α} (x : id α) : PureTransformation F x = pure x :=
   rfl
-#align traversable.pure_transformation_apply Traversable.pure_transformation_apply
+#align traversable.pure_transformation_apply Traversable.pureTransformation_apply
 
 variable {F G} (x : t β)
 

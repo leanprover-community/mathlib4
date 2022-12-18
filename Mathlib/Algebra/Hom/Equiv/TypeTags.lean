@@ -16,10 +16,7 @@ variable {G H : Type _}
 
 /-- Reinterpret `G ≃+ H` as `Multiplicative G ≃* Multiplicative H`. -/
 def AddEquiv.toMultiplicative [AddZeroClass G] [AddZeroClass H] :
-    G ≃+ H ≃
-      (Multiplicative G ≃*
-        Multiplicative
-          H) where
+    G ≃+ H ≃ (Multiplicative G ≃* Multiplicative H) where
   toFun f :=
     ⟨⟨AddMonoidHom.toMultiplicative f.toAddMonoidHom,
      AddMonoidHom.toMultiplicative f.symm.toAddMonoidHom, f.1.3, f.1.4⟩, f.2⟩
@@ -30,10 +27,7 @@ def AddEquiv.toMultiplicative [AddZeroClass G] [AddZeroClass H] :
 
 /-- Reinterpret `G ≃* H` as `Additive G ≃+ Additive H`. -/
 def MulEquiv.toAdditive [MulOneClass G] [MulOneClass H] :
-    G ≃* H ≃
-      (Additive G ≃+
-        Additive
-          H) where
+    G ≃* H ≃ (Additive G ≃+ Additive H) where
   toFun f := ⟨⟨MonoidHom.toAdditive f.toMonoidHom,
               MonoidHom.toAdditive f.symm.toMonoidHom, f.1.3, f.1.4⟩, f.2⟩
   invFun f := ⟨⟨f.toAddMonoidHom, f.symm.toAddMonoidHom, f.1.3, f.1.4⟩, f.2⟩
@@ -43,10 +37,7 @@ def MulEquiv.toAdditive [MulOneClass G] [MulOneClass H] :
 
 /-- Reinterpret `Additive G ≃+ H` as `G ≃* Multiplicative H`. -/
 def AddEquiv.toMultiplicative' [MulOneClass G] [AddZeroClass H] :
-    Additive G ≃+ H ≃
-      (G ≃*
-        Multiplicative
-          H) where
+    Additive G ≃+ H ≃ (G ≃* Multiplicative H) where
   toFun f :=
     ⟨⟨AddMonoidHom.toMultiplicative' f.toAddMonoidHom,
      AddMonoidHom.toMultiplicative'' f.symm.toAddMonoidHom, f.1.3, f.1.4⟩, f.2⟩
@@ -63,9 +54,7 @@ def MulEquiv.toAdditive' [MulOneClass G] [AddZeroClass H] :
 
 /-- Reinterpret `G ≃+ Additive H` as `Multiplicative G ≃* H`. -/
 def AddEquiv.toMultiplicative'' [AddZeroClass G] [MulOneClass H] :
-    G ≃+ Additive H ≃
-      (Multiplicative G ≃*
-        H) where
+    G ≃+ Additive H ≃ (Multiplicative G ≃* H) where
   toFun f :=
     ⟨⟨AddMonoidHom.toMultiplicative'' f.toAddMonoidHom,
      AddMonoidHom.toMultiplicative' f.symm.toAddMonoidHom, f.1.3, f.1.4⟩, f.2⟩

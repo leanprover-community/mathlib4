@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Invertible
 
 /-!
-# Lemmas about `inv_of` in ordered (semi)rings.
+# Lemmas about `invOf` in ordered (semi)rings.
 -/
 
 variable [LinearOrderedSemiring α] {a : α}

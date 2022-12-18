@@ -227,7 +227,7 @@ theorem NeZero.nat_of_injective {n : ℕ} [h : NeZero (n : R)] [RingHomClass F R
     (hf : Function.Injective f) : NeZero (n : S) :=
   ⟨fun h ↦ NeZero.natCast_ne n R <| hf <| by simpa only [map_natCast, map_zero f] ⟩
 
-theorem NeZero.nat_of_ne_zero {R S} [Semiring R] [Semiring S] {F} [RingHomClass F R S] (f : F)
+theorem NeZero.nat_of_neZero {R S} [Semiring R] [Semiring S] {F} [RingHomClass F R S] (f : F)
     {n : ℕ} [hn : NeZero (n : S)] : NeZero (n : R) :=
   .of_map (f := f) (neZero := by simp only [map_natCast, hn])
 
