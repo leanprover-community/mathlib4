@@ -1054,7 +1054,7 @@ theorem zpowers_mul_hom_symm_apply [CommGroup G] (f : Multiplicative ℤ →* G)
 #align zpowers_mul_hom_symm_apply zpowers_mul_hom_symm_apply
 
 @[simp]
-theorem multiples_add_hom_apply [AddCommMonoid A] (x : A) (n : ℕ) : multiplesAddHom A x n = n • x :=
+theorem multiplesAddHom_apply [AddCommMonoid A] (x : A) (n : ℕ) : multiplesAddHom A x n = n • x :=
   rfl
 #align multiples_add_hom_apply multiples_add_hom_apply
 
