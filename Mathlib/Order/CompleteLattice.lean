@@ -1691,7 +1691,12 @@ theorem Antitone.infᵢ_nat_add {f : ℕ → α} (hf : Antitone f) (k : ℕ) : (
   hf.dual_right.supᵢ_nat_add k
 #align antitone.infi_nat_add Antitone.infᵢ_nat_add
 
-@[simp]
+-- Porting note: the linter doesn't like this being marked as `@[simp]`,
+-- saying that it doesn't work when called on its LHS.
+-- Mysteriously, it *does* work. Nevertheless, per
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/complete_lattice.20and.20has_sup/near/316497982
+-- "the subterm ?f (i + ?k) produces an ugly higher-order unification problem."
+-- @[simp]
 theorem supᵢ_infᵢ_ge_nat_add (f : ℕ → α) (k : ℕ) : (⨆ n, ⨅ i ≥ n, f (i + k)) = ⨆ n, ⨅ i ≥ n, f i :=
   by
   have hf : Monotone fun n => ⨅ i ≥ n, f i := fun n m h => binfᵢ_mono fun i => h.trans
@@ -1935,7 +1940,7 @@ protected def Function.Injective.completeLattice [HasSup α] [HasInf α] [SupSet
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_supₛ : ∀ s, f (supₛ s) = ⨆ a ∈ s, f a) (map_infₛ : ∀ s, f (infₛ s) = ⨅ a ∈ s, f a)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : CompleteLattice α :=
-  { -- we cannot use bounded_order.lift here as the `LE` instance doesn't exist yet
+  { -- we cannot use BoundedOrder.lift here as the `LE` instance doesn't exist yet
     hf.lattice f map_sup map_inf with
     le_supₛ := fun _ a h => (le_supᵢ₂ a h).trans (map_supₛ _).ge
     supₛ_le := fun _ _ h => (map_supₛ _).trans_le <| supᵢ₂_le h
