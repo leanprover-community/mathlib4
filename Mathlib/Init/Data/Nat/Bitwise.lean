@@ -68,7 +68,6 @@ theorem bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
     induction' n with n IH
     case zero =>
       simp
-      sorry
     case succ =>
       unfold boddDiv2
       simp [IH]
