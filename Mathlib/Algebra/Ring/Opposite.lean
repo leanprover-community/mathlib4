@@ -23,8 +23,7 @@ instance [Distrib α] : Distrib αᵐᵒᵖ :=
     left_distrib := fun x y z => unop_injective <| add_mul (unop y) (unop z) (unop x),
     right_distrib := fun x y z => unop_injective <| mul_add (unop z) (unop x) (unop y) }
 
-instance [MulZeroClass α] : MulZeroClass
-      αᵐᵒᵖ where
+instance [MulZeroClass α] : MulZeroClass αᵐᵒᵖ where
   zero := 0
   mul := (· * ·)
   zero_mul x := unop_injective <| mul_zero <| unop x
@@ -107,8 +106,7 @@ instance [Distrib α] : Distrib αᵃᵒᵖ :=
     left_distrib := fun x y z => unop_injective <| @mul_add α _ _ _ x z y,
     right_distrib := fun x y z => unop_injective <| @add_mul α _ _ _ y x z }
 
-instance [MulZeroClass α] : MulZeroClass
-      αᵃᵒᵖ where
+instance [MulZeroClass α] : MulZeroClass αᵃᵒᵖ where
   zero := 0
   mul := (· * ·)
   zero_mul x := unop_injective <| zero_mul <| unop x
@@ -247,9 +245,7 @@ def RingHom.fromOpposite {R S : Type _} [Semiring R] [Semiring S] (f : R →+* S
 action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[simps]
 def RingHom.op {α β} [NonAssocSemiring α] [NonAssocSemiring β] :
-    (α →+* β) ≃
-      (αᵐᵒᵖ →+*
-        βᵐᵒᵖ) where
+    (α →+* β) ≃ (αᵐᵒᵖ →+* βᵐᵒᵖ) where
   toFun f := { AddMonoidHom.mulOp f.toAddMonoidHom, MonoidHom.op f.toMonoidHom with }
   invFun f := { AddMonoidHom.mulUnop f.toAddMonoidHom, MonoidHom.unop f.toMonoidHom with }
   left_inv _ := rfl

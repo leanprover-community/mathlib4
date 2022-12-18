@@ -45,6 +45,7 @@ import Mathlib.Algebra.Hom.Equiv.TypeTags
 import Mathlib.Algebra.Hom.Equiv.Units.Basic
 import Mathlib.Algebra.Hom.Equiv.Units.GroupWithZero
 import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.GroupInstances
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.ComplexShape
@@ -57,6 +58,7 @@ import Mathlib.Algebra.Order.Field.Canonical.Defs
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Field.InjSurj
 import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Group.Bounds
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.DenselyOrdered
 import Mathlib.Algebra.Order.Group.InjSurj
@@ -132,6 +134,7 @@ import Mathlib.Combinatorics.Quiver.ConnectedComponent
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Push
 import Mathlib.Combinatorics.Quiver.Subquiver
+import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.EquivFunctor
@@ -172,9 +175,11 @@ import Mathlib.Data.Int.Cast.Prod
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Int.Div
 import Mathlib.Data.Int.Dvd.Basic
+import Mathlib.Data.Int.Dvd.Pow
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Int.Order.Lemmas
+import Mathlib.Data.Int.Order.Units
 import Mathlib.Data.Int.Units
 import Mathlib.Data.KVMap
 import Mathlib.Data.LazyList
@@ -182,6 +187,7 @@ import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Card
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Defs
+import Mathlib.Data.List.Func
 import Mathlib.Data.List.Lex
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Pairwise
@@ -194,6 +200,9 @@ import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Nat.Cast.Prod
 import Mathlib.Data.Nat.Cast.WithTop
+import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Data.Nat.Dist
+import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Gcd.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Order.Lemmas
@@ -225,8 +234,12 @@ import Mathlib.Data.Set.Enumerate
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Data.Set.Intervals.Group
 import Mathlib.Data.Set.Intervals.Monoid
+import Mathlib.Data.Set.Intervals.OrderIso
 import Mathlib.Data.Set.Intervals.ProjIcc
+import Mathlib.Data.Set.Intervals.SurjOn
+import Mathlib.Data.Set.Intervals.WithBotTop
 import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Prod
@@ -249,6 +262,7 @@ import Mathlib.Data.Vector
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.Option
+import Mathlib.GroupTheory.GroupAction.Prod
 import Mathlib.GroupTheory.GroupAction.Sigma
 import Mathlib.GroupTheory.GroupAction.Sum
 import Mathlib.GroupTheory.GroupAction.Units
@@ -269,6 +283,7 @@ import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Init.Data.Prod
 import Mathlib.Init.Data.Quot
@@ -307,6 +322,7 @@ import Mathlib.Logic.Nontrivial
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Relator
+import Mathlib.Logic.Small.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Notation
@@ -331,10 +347,11 @@ import Mathlib.Order.Hom.Set
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.Iterate
 import Mathlib.Order.Lattice
+import Mathlib.Order.LatticeIntervals
 import Mathlib.Order.Max
 import Mathlib.Order.MinMax
 import Mathlib.Order.Monotone.Basic
-import Mathlib.Order.Monovary
+import Mathlib.Order.Monotone.Monovary
 import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic

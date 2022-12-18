@@ -6,6 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Logic.Nonempty
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Set
+import Mathlib.Tactic.LibrarySearch
+import Mathlib.Util.WhatsNew
 
 /-!
 # Miscellaneous function constructions and lemmas

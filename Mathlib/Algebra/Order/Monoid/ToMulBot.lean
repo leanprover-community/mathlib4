@@ -44,10 +44,10 @@ theorem toMulBot_symm_bot : toMulBot.symm (Multiplicative.ofAdd (⊥ : WithBot �
 #align with_zero.to_mul_bot_symm_bot WithZero.toMulBot_symm_bot
 
 @[simp]
-theorem toMulBot_coe_of_add (x : α) :
+theorem toMulBot_coe_ofAdd (x : α) :
     toMulBot.symm (Multiplicative.ofAdd (x : WithBot α)) = Multiplicative.ofAdd x :=
   rfl
-#align with_zero.to_mul_bot_coe_of_add WithZero.toMulBot_coe_of_add
+#align with_zero.to_mul_bot_coe_of_add WithZero.toMulBot_coe_ofAdd
 
 variable [Preorder α] (a b : WithZero (Multiplicative α))
 

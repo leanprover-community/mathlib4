@@ -50,9 +50,7 @@ section Semiring
 
 variable {R S : Type _} [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
 
-instance zeroHomClass :
-    ZeroHomClass (AbsoluteValue R S) R
-      S where
+instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
@@ -196,9 +194,9 @@ def toMonoidHom : R →* S :=
 #align absolute_value.to_monoid_hom AbsoluteValue.toMonoidHom
 
 @[simp]
-theorem coe_to_monoid_hom : ⇑abv.toMonoidHom = abv :=
+theorem coe_toMonoidHom : ⇑abv.toMonoidHom = abv :=
   rfl
-#align absolute_value.coe_to_monoid_hom AbsoluteValue.coe_to_monoid_hom
+#align absolute_value.coe_to_monoid_hom AbsoluteValue.coe_toMonoidHom
 
 -- Porting note: Removed since `map_zero` proves the theorem
 --@[simp]
