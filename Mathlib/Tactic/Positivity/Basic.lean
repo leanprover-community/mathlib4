@@ -9,6 +9,7 @@ import Mathlib.Tactic.Clear!
 import Mathlib.Logic.Nontrivial
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.Lemmas
@@ -38,22 +39,6 @@ class OrderedMonoidWithZero (α : Type _) extends PartialOrder α, MonoidWithZer
 
 lemma pow_zero_pos [OrderedMonoidWithZero α] [Nontrivial α] (a : α) : 0 < a ^ 0 :=
   (OrderedMonoidWithZero.zero_le_one.lt_of_ne (zero_ne_one (α := α))).trans_le (pow_zero a).ge
-
-theorem pow_bit0_nonneg [LinearOrderedRing α] (a : α) (n : ℕ) : 0 ≤ a ^ (2 * n) := by
-  have : 2 = 1 + 1 := rfl
-  have mul_nonneg_of_nonpos_of_nonpos : ∀ a b : α, a ≤ 0 → b ≤ 0 → (0 : α) ≤ a * b :=
-    fun a b ha hb => by
-      rcases ha.eq_or_lt with rfl|ha
-      · simp
-      rcases hb.eq_or_lt with rfl|hb
-      · simp
-      · rw [←Left.neg_pos_iff] at ha hb
-        simpa using (mul_pos ha hb).le
-  have mul_self_nonneg : ∀ a : α, (0 : α) ≤ a * a := fun a => (le_total 0 a).elim
-    (fun h => mul_nonneg h h)
-    (fun h => mul_nonneg_of_nonpos_of_nonpos _ _ h h)
-  rw [this, add_mul, one_mul, pow_add]
-  exact mul_self_nonneg _
 
 instance [StrictOrderedSemiring α] : OrderedMonoidWithZero α :=
   { __ := inferInstanceAs (StrictOrderedSemiring α) }

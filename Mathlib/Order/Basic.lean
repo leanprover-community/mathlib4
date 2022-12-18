@@ -428,6 +428,23 @@ theorem le_implies_le_of_le_of_le {a b c d : α} [Preorder α] (hca : c ≤ a) (
     a ≤ b → c ≤ d :=
   fun hab ↦ (hca.trans hab).trans hbd
 
+section PartialOrder
+variable [PartialOrder α]
+
+/-- To prove commutativity of a binary operation `○`, we only to check `a ○ b ≤ b ○ a` for all `a`,
+`b`. -/
+lemma commutative_of_le {f : β → β → α} (comm : ∀ a b, f a b ≤ f b a) : ∀ a b, f a b = f b a :=
+fun _ _ ↦ (comm _ _).antisymm $ comm _ _
+
+/-- To prove associativity of a commutative binary operation `○`, we only to check
+`(a ○ b) ○ c ≤ a ○ (b ○ c)` for all `a`, `b`, `c`. -/
+lemma associative_of_commutative_of_le  {f : α → α → α} (comm : Commutative f)
+  (assoc : ∀ a b c, f (f a b) c ≤ f a (f b c)) :
+  Associative f :=
+fun a b c ↦ le_antisymm (assoc _ _ _) $ by rw [comm, comm b, comm _ c, comm a]; exact assoc _ _ _
+
+end PartialOrder
+
 @[ext]
 theorem Preorder.toLE_injective {α : Type _} : Function.Injective (@Preorder.toLE α) :=
   fun A B h ↦ match A, B with
@@ -528,16 +545,16 @@ instance (α : Type _) [LE α] : LE αᵒᵈ :=
 instance (α : Type _) [LT α] : LT αᵒᵈ :=
   ⟨fun a b => @LT.lt α _ b a⟩
 
-instance (α : Type _) [Preorder α] : Preorder αᵒᵈ where
+instance preorder (α : Type _) [Preorder α] : Preorder αᵒᵈ where
   le_refl := fun _ ↦ le_refl _
   le_trans := fun _ _ _ hab hbc ↦ hbc.trans hab
   lt_iff_le_not_le := fun _ _ ↦ lt_iff_le_not_le
 
-instance (α : Type _) [PartialOrder α] : PartialOrder αᵒᵈ where
+instance partialOrder (α : Type _) [PartialOrder α] : PartialOrder αᵒᵈ where
   __ := inferInstanceAs (Preorder αᵒᵈ)
   le_antisymm := fun a b hab hba ↦ @le_antisymm α _ a b hba hab
 
-instance (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
+instance linearOrder (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
   le_total     := λ a b : α => le_total b a
   max := fun a b ↦ (min a b : α)
@@ -546,19 +563,19 @@ instance (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
   max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
   decidable_le := (inferInstance : DecidableRel (λ a b : α => b ≤ a))
   decidable_lt := (inferInstance : DecidableRel (λ a b : α => b < a))
-#align order_dual.linear_order OrderDual.instLinearOrderOrderDual
+#align order_dual.linear_order OrderDual.linearOrder
 
 instance : ∀ [Inhabited α], Inhabited αᵒᵈ := λ [x: Inhabited α] => x
 
 
-theorem Preorder.dual_dual (α : Type _) [H : Preorder α] : instPreorderOrderDual αᵒᵈ = H :=
+theorem Preorder.dual_dual (α : Type _) [H : Preorder α] : OrderDual.preorder αᵒᵈ = H :=
   Preorder.ext fun _ _ ↦ Iff.rfl
 
 theorem partialOrder.dual_dual (α : Type _) [H : PartialOrder α] :
-    instPartialOrderOrderDual αᵒᵈ = H :=
+    OrderDual.partialOrder αᵒᵈ = H :=
   PartialOrder.ext fun _ _ ↦ Iff.rfl
 
-theorem linearOrder.dual_dual (α : Type _) [H : LinearOrder α] : instLinearOrderOrderDual αᵒᵈ = H :=
+theorem linearOrder.dual_dual (α : Type _) [H : LinearOrder α] : OrderDual.linearOrder αᵒᵈ = H :=
   LinearOrder.ext fun _ _ ↦ Iff.rfl
 
 end OrderDual
