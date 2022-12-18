@@ -84,7 +84,7 @@ theorem Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α] {a b : α} {l : List
     a = b ∨ a ≠ b ∧ a ∈ l := by
   by_cases hab : a = b
   · exact Or.inl hab
-  . exact ((List.mem_cons.1 h).elim Or.inl (fun h => Or.inr ⟨hab, h⟩))
+  · exact ((List.mem_cons.1 h).elim Or.inl (fun h => Or.inr ⟨hab, h⟩))
 #align list.decidable.list.eq_or_ne_mem_of_mem List.Decidable.List.eq_or_ne_mem_of_mem
 
 alias mem_cons ↔ eq_or_mem_of_mem_cons _
@@ -1281,12 +1281,12 @@ theorem indexOf_cons_eq {a b : α} (l : List α) : a = b → indexOf a (b :: l) 
 theorem indexOf_cons_ne {a b : α} (l : List α) : a ≠ b → indexOf a (b :: l) = succ (indexOf a l)
 | n => by
   cases l
-  . rw [indexOf, findIdx, findIdx.go, beq_false_of_ne n, cond, ←succ_eq_add_one]; rfl
-  . rename_i head tail
+  · rw [indexOf, findIdx, findIdx.go, beq_false_of_ne n, cond, ←succ_eq_add_one]; rfl
+  · rename_i head tail
     by_cases a = head
-    . rw [indexOf_cons_eq tail h, indexOf, findIdx, findIdx.go, beq_false_of_ne n, cond, h,
+    · rw [indexOf_cons_eq tail h, indexOf, findIdx, findIdx.go, beq_false_of_ne n, cond, h,
         findIdx.go, beq_self_eq_true head, cond]
-    . rw [indexOf, findIdx, findIdx, findIdx.go, beq_false_of_ne, cond, findIdx.go,
+    · rw [indexOf, findIdx, findIdx, findIdx.go, beq_false_of_ne, cond, findIdx.go,
         beq_false_of_ne h, cond_false]
       change _ = succ (cond (a == head) _ _)
       rw [beq_false_of_ne h, cond_false]
@@ -1296,10 +1296,10 @@ where
   findIdx_go_succ (p : α → Bool) (l : List α) (n : ℕ) :
       findIdx.go p l (n + 1) = succ (findIdx.go p l n) := by
     cases l <;> unfold findIdx.go
-    . exact succ_eq_add_one n
-    . rename_i head tail
+    · exact succ_eq_add_one n
+    · rename_i head tail
       cases p head <;> simp only [cond]
-      . exact findIdx_go_succ p tail (n + 1)
+      · exact findIdx_go_succ p tail (n + 1)
 #align list.index_of_cons_ne List.indexOf_cons_ne
 
 -- rfl
@@ -1440,8 +1440,8 @@ theorem nth_injective {α : Type u} {xs : List α} {i j : ℕ} (h₀ : i < xs.le
       rename_i tail_ih _ _ _ _
       apply tail_ih <;> solve_by_elim [lt_of_succ_lt_succ]
     all_goals ( dsimp at h₂; cases' h₁ with _ _ h h')
-    . cases (h x (mem_iff_nth.mpr ⟨_, h₂.symm⟩) rfl)
-    . cases (h x (mem_iff_nth.mpr ⟨_, h₂⟩) rfl)
+    · cases (h x (mem_iff_nth.mpr ⟨_, h₂.symm⟩) rfl)
+    · cases (h x (mem_iff_nth.mpr ⟨_, h₂⟩) rfl)
 #align list.nth_injective List.nth_injective
 
 @[simp]
