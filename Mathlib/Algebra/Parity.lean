@@ -242,7 +242,7 @@ theorem even_bit0 (a : α) : Even (bit0 a) :=
 
 @[simp]
 theorem even_two : Even (2 : α) :=
-  ⟨1, by rfl⟩
+  ⟨1, by rw[one_add_one_eq_two]⟩
 #align even_two even_two
 
 @[simp]
@@ -308,7 +308,7 @@ theorem Odd.add_odd : Odd m → Odd n → Even (m + n) := by
   refine' ⟨n + m + 1, _⟩
   rw [← two_mul, ← add_assoc, add_comm _ (2 * n), ← add_assoc, ← mul_add, add_assoc,
     mul_add _ (n + m), mul_one]
-  rfl
+  rw [one_add_one_eq_two]
 #align odd.add_odd Odd.add_odd
 
 @[simp]
@@ -323,7 +323,9 @@ theorem odd_two_mul_add_one (m : α) : Odd (2 * m + 1) :=
 
 theorem Odd.map [RingHomClass F α β] (f : F) : Odd m → Odd (f m) := by
   rintro ⟨m, rfl⟩
-  exact ⟨f m, by simp [two_mul]⟩
+  exact ⟨f m, by
+                simp [two_mul, map_add]
+                ⟩
 #align odd.map Odd.map
 
 @[simp]
