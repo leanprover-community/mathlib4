@@ -1365,57 +1365,57 @@ theorem succ_cast_succ {n : ℕ} (i : Fin n) : i.castSucc.succ = castSucc i.succ
   Fin.ext (by simp)
 #align fin.succ_cast_succ Fin.succ_cast_succ
 
-/-- `add_nat m i` adds `m` to `i`, generalizes `fin.succ`. -/
+/-- `addNat m i` adds `m` to `i`, generalizes `fin.succ`. -/
 def addNat (m) : Fin n ↪o Fin (n + m) :=
   (OrderEmbedding.ofStrictMono fun i => ⟨(i : ℕ) + m, add_lt_add_right i.2 _⟩) fun i j h =>
     lt_iff_val_lt_val.2 <| add_lt_add_right h _
 #align fin.add_nat Fin.addNat
 
 @[simp]
-theorem coe_add_nat (m : ℕ) (i : Fin n) : (addNat m i : ℕ) = i + m :=
+theorem coe_addNat (m : ℕ) (i : Fin n) : (addNat m i : ℕ) = i + m :=
   rfl
-#align fin.coe_add_nat Fin.coe_add_nat
+#align fin.coe_add_nat Fin.coe_addNat
 
 @[simp]
-theorem add_nat_one {i : Fin n} : addNat 1 i = i.succ := by
+theorem addNat_one {i : Fin n} : addNat 1 i = i.succ := by
   ext
-  rw [coe_add_nat, val_succ]
-#align fin.add_nat_one Fin.add_nat_one
+  rw [coe_addNat, val_succ]
+#align fin.add_nat_one Fin.addNat_one
 
-theorem le_coe_add_nat (m : ℕ) (i : Fin n) : m ≤ addNat m i :=
+theorem le_coe_addNat (m : ℕ) (i : Fin n) : m ≤ addNat m i :=
   Nat.le_add_left _ _
-#align fin.le_coe_add_nat Fin.le_coe_add_nat
+#align fin.le_coe_add_nat Fin.le_coe_addNat
 
 @[simp]
-theorem add_nat_mk (n i : ℕ) (hi : i < m) : addNat n ⟨i, hi⟩ = ⟨i + n, add_lt_add_right hi n⟩ :=
+theorem addNat_mk (n i : ℕ) (hi : i < m) : addNat n ⟨i, hi⟩ = ⟨i + n, add_lt_add_right hi n⟩ :=
   rfl
-#align fin.add_nat_mk Fin.add_nat_mk
+#align fin.add_nat_mk Fin.addNat_mk
 
 @[simp]
-theorem cast_add_nat_zero {n n' : ℕ} (i : Fin n) (h : n + 0 = n') :
+theorem cast_addNat_zero {n n' : ℕ} (i : Fin n) (h : n + 0 = n') :
     cast h (addNat 0 i) = cast ((add_zero _).symm.trans h) i :=
   ext <| add_zero _
-#align fin.cast_add_nat_zero Fin.cast_add_nat_zero
+#align fin.cast_add_nat_zero Fin.cast_addNat_zero
 
-/-- For rewriting in the reverse direction, see `fin.cast_add_nat_left`. -/
-theorem add_nat_cast {n n' m : ℕ} (i : Fin n') (h : n' = n) :
+/-- For rewriting in the reverse direction, see `fin.cast_addNat_left`. -/
+theorem addNat_cast {n n' m : ℕ} (i : Fin n') (h : n' = n) :
     addNat m (cast h i) = cast (congr_arg _ h) (addNat m i) :=
   ext rfl
-#align fin.add_nat_cast Fin.add_nat_cast
+#align fin.add_nat_cast Fin.addNat_cast
 
-theorem cast_add_nat_left {n n' m : ℕ} (i : Fin n') (h : n' + m = n + m) :
+theorem cast_addNat_left {n n' m : ℕ} (i : Fin n') (h : n' + m = n + m) :
     cast h (addNat m i) = addNat m (cast (add_right_cancel h) i) := by
   ext
   simp
-#align fin.cast_add_nat_left Fin.cast_add_nat_left
+#align fin.cast_add_nat_left Fin.cast_addNat_left
 
 @[simp]
-theorem cast_add_nat_right {n m m' : ℕ} (i : Fin n) (h : n + m' = n + m) :
+theorem cast_addNat_right {n m m' : ℕ} (i : Fin n) (h : n + m' = n + m) :
     cast h (addNat m' i) = addNat m i :=
   ext <| (congr_arg ((· + ·) (i : ℕ)) (add_left_cancel h) : _)
-#align fin.cast_add_nat_right Fin.cast_add_nat_right
+#align fin.cast_add_nat_right Fin.cast_addNat_right
 
-/-- `nat_add n i` adds `n` to `i` "on the left". -/
+/-- `natAdd n i` adds `n` to `i` "on the left". -/
 def natAdd (n) {m} : Fin m ↪o Fin (n + m) :=
   (OrderEmbedding.ofStrictMono fun i => ⟨n + (i : ℕ), add_lt_add_left i.2 _⟩) fun i j h =>
     lt_iff_val_lt_val.2 <| add_lt_add_left h _
@@ -1441,11 +1441,11 @@ theorem nat_add_zero {n : ℕ} : Fin.natAdd 0 = (Fin.cast (zero_add n).symm).toR
 #align fin.nat_add_zero Fin.nat_add_zero
 
 /-- For rewriting in the reverse direction, see `fin.cast_nat_add_right`. -/
-theorem nat_add_cast {n n' : ℕ} (m : ℕ) (i : Fin n') (h : n' = n) :
+theorem natAdd_cast {n n' : ℕ} (m : ℕ) (i : Fin n') (h : n' = n) :
     natAdd m (cast h i) = cast (congr_arg _ h) (natAdd m i) := by
   ext
   simp
-#align fin.nat_add_cast Fin.nat_add_cast
+#align fin.nat_add_cast Fin.natAdd_cast
 
 theorem cast_nat_add_right {n n' m : ℕ} (i : Fin n') (h : m + n' = m + n) :
     cast h (natAdd m i) = natAdd m (cast (add_left_cancel h) i) := by
@@ -1459,47 +1459,47 @@ theorem cast_nat_add_left {n m m' : ℕ} (i : Fin n) (h : m' + n = m + n) :
   ext <| (congr_arg (· + (i : ℕ)) (add_right_cancel h) : _)
 #align fin.cast_nat_add_left Fin.cast_nat_add_left
 
-theorem cast_add_nat_add (p m : ℕ) {n : ℕ} (i : Fin n) :
+theorem castAdd_natAdd (p m : ℕ) {n : ℕ} (i : Fin n) :
     castAdd p (natAdd m i) = cast (add_assoc _ _ _).symm (natAdd m (castAdd p i)) := by
   ext
   simp
-#align fin.cast_add_nat_add Fin.cast_add_nat_add
+#align fin.cast_add_nat_add Fin.castAdd_natAdd
 
-theorem nat_add_cast_add (p m : ℕ) {n : ℕ} (i : Fin n) :
+theorem natAdd_castAdd (p m : ℕ) {n : ℕ} (i : Fin n) :
     natAdd m (castAdd p i) = cast (add_assoc _ _ _) (castAdd p (natAdd m i)) := by
   ext
   simp
-#align fin.nat_add_cast_add Fin.nat_add_cast_add
+#align fin.nat_add_cast_add Fin.natAdd_castAdd
 
-theorem nat_add_nat_add (m n : ℕ) {p : ℕ} (i : Fin p) :
+theorem natAdd_natAdd (m n : ℕ) {p : ℕ} (i : Fin p) :
     natAdd m (natAdd n i) = cast (add_assoc _ _ _) (natAdd (m + n) i) :=
   ext <| (add_assoc _ _ _).symm
-#align fin.nat_add_nat_add Fin.nat_add_nat_add
+#align fin.nat_add_nat_add Fin.natAdd_natAdd
 
 @[simp]
-theorem cast_nat_add_zero {n n' : ℕ} (i : Fin n) (h : 0 + n = n') :
+theorem cast_natAdd_zero {n n' : ℕ} (i : Fin n) (h : 0 + n = n') :
     cast h (natAdd 0 i) = cast ((zero_add _).symm.trans h) i :=
   ext <| zero_add _
-#align fin.cast_nat_add_zero Fin.cast_nat_add_zero
+#align fin.cast_nat_add_zero Fin.cast_natAdd_zero
 
 @[simp]
-theorem cast_nat_add (n : ℕ) {m : ℕ} (i : Fin m) : cast (add_comm _ _) (natAdd n i) = addNat n i :=
+theorem cast_natAdd (n : ℕ) {m : ℕ} (i : Fin m) : cast (add_comm _ _) (natAdd n i) = addNat n i :=
   ext <| add_comm _ _
-#align fin.cast_nat_add Fin.cast_nat_add
+#align fin.cast_nat_add Fin.cast_natAdd
 
 @[simp]
-theorem cast_add_nat {n : ℕ} (m : ℕ) (i : Fin n) : cast (add_comm _ _) (addNat m i) = natAdd m i :=
+theorem cast_addNat {n : ℕ} (m : ℕ) (i : Fin n) : cast (add_comm _ _) (addNat m i) = natAdd m i :=
   ext <| add_comm _ _
-#align fin.cast_add_nat Fin.cast_add_nat
+#align fin.cast_add_nat Fin.cast_addNat
 
 @[simp]
-theorem nat_add_last {m n : ℕ} : natAdd n (last m) = last (n + m) :=
+theorem natAdd_last {m n : ℕ} : natAdd n (last m) = last (n + m) :=
   rfl
-#align fin.nat_add_last Fin.nat_add_last
+#align fin.nat_add_last Fin.natAdd_last
 
-theorem nat_add_cast_succ {m n : ℕ} {i : Fin m} : natAdd n (castSucc i) = castSucc (natAdd n i) :=
+theorem natAdd_castSucc {m n : ℕ} {i : Fin m} : natAdd n (castSucc i) = castSucc (natAdd n i) :=
   rfl
-#align fin.nat_add_cast_succ Fin.nat_add_cast_succ
+#align fin.nat_add_cast_succ Fin.natAdd_castSucc
 
 end Succ
 
@@ -1509,6 +1509,19 @@ section Pred
 ### pred
 -/
 
+
+-- Porting note: taken from lean3port
+/-- Predecessor -/
+def pred {n : ℕ} : ∀ i : Fin (n + 1), i ≠ 0 → Fin n
+  | ⟨a, h₁⟩, h₂ =>
+    ⟨a.pred,
+      haveI : a ≠ 0 := by
+        have aux₁ := vne_of_ne h₂
+        dsimp at aux₁
+        rw [val_zero] at aux₁
+        exact aux₁
+      Nat.pred_lt_pred this h₁⟩
+#align fin.pred Fin.pred
 
 @[simp]
 theorem coe_pred (j : Fin (n + 1)) (h : j ≠ 0) : (j.pred h : ℕ) = j - 1 := by
@@ -1540,10 +1553,9 @@ theorem pred_mk_succ (i : ℕ) (h : i < n + 1) :
 #align fin.pred_mk_succ Fin.pred_mk_succ
 
 -- This is not a simp lemma by default, because `pred_mk_succ` is nicer when it applies.
-theorem pred_mk {n : ℕ} (i : ℕ) (h : i < n + 1) (w) :
-    Fin.pred ⟨i, h⟩ w =
-      ⟨i - 1, by
-        rwa [tsub_lt_iff_right (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero (Fin.vne_of_ne w))]⟩ :=
+theorem pred_mk {n : ℕ} (i : ℕ) (h : i < n + 1) (w) : Fin.pred ⟨i, h⟩ w =
+    ⟨i - 1, by
+      rwa [tsub_lt_iff_right (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero (Fin.vne_of_ne w))]⟩ :=
   rfl
 #align fin.pred_mk Fin.pred_mk
 
@@ -1594,26 +1606,26 @@ theorem sub_nat_mk {i : ℕ} (h₁ : i < n + m) (h₂ : m ≤ i) :
 #align fin.sub_nat_mk Fin.sub_nat_mk
 
 @[simp]
-theorem pred_cast_succ_succ (i : Fin n) :
-    pred (castSucc i.succ) (ne_of_gt (cast_succ_pos i.succ_pos)) = i.cast_succ := by
+theorem pred_castSucc_succ (i : Fin n) :
+    pred (castSucc i.succ) (ne_of_gt (castSucc_pos i.succ_pos)) = castSucc i := by
   simp [eq_iff_veq]
-#align fin.pred_cast_succ_succ Fin.pred_cast_succ_succ
+#align fin.pred_cast_succ_succ Fin.pred_castSucc_succ
 
 @[simp]
-theorem add_nat_sub_nat {i : Fin (n + m)} (h : m ≤ i) : addNat m (subNat m i h) = i :=
+theorem addNat_subNat {i : Fin (n + m)} (h : m ≤ i) : addNat m (subNat m i h) = i :=
   ext <| tsub_add_cancel_of_le h
-#align fin.add_nat_sub_nat Fin.add_nat_sub_nat
+#align fin.add_nat_sub_nat Fin.addNat_subNat
 
 @[simp]
-theorem sub_nat_add_nat (i : Fin n) (m : ℕ) (h : m ≤ addNat m i := le_coe_add_nat m i) :
+theorem subNat_addNat (i : Fin n) (m : ℕ) (h : m ≤ addNat m i := le_coe_addNat m i) :
     subNat m (addNat m i) h = i :=
   ext <| add_tsub_cancel_right i m
-#align fin.sub_nat_add_nat Fin.sub_nat_add_nat
+#align fin.sub_nat_add_nat Fin.subNat_addNat
 
 @[simp]
-theorem nat_add_sub_nat_cast {i : Fin (n + m)} (h : n ≤ i) :
-    natAdd n (subNat n (cast (add_comm _ _) i) h) = i := by simp [← cast_add_nat]
-#align fin.nat_add_sub_nat_cast Fin.nat_add_sub_nat_cast
+theorem natAdd_subNat_cast {i : Fin (n + m)} (h : n ≤ i) :
+    natAdd n (subNat n (cast (add_comm _ _) i) h) = i := by simp [← cast_addNat]
+#align fin.nat_add_sub_nat_cast Fin.natAdd_subNat_cast
 
 end Pred
 
@@ -1653,8 +1665,8 @@ This function has two arguments: `H0 n` defines `0`-th element `C (n+1) 0` of an
 and `Hs n i` defines `(i+1)`-st element of `(n+1)`-tuple based on `n`, `i`, and `i`-th element
 of `n`-tuple. -/
 @[elab_as_elim]
-def succRec {C : ∀ n, Fin n → Sort _} (H0 : ∀ n, C (succ n) 0)
-    (Hs : ∀ n i, C n i → C (succ n) i.succ) : ∀ {n : ℕ} (i : Fin n), C n i
+def succRec {C : ∀ n, Fin n → Sort _} (H0 : ∀ n, C n.succ (0 : Fin (n + 1)))
+    (Hs : ∀ n i, C n i → C n.succ i.succ) : ∀ {n : ℕ} (i : Fin n), C n i
   | 0, i => i.elim0
   | succ n, ⟨0, _⟩ => H0 _
   | succ n, ⟨succ i, h⟩ => Hs _ _ (succ_rec ⟨i, lt_of_succ_lt_succ h⟩)
