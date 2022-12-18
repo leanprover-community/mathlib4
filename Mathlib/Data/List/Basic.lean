@@ -1255,11 +1255,12 @@ theorem indexOf_nil (a : α) : indexOf a [] = 0 :=
 #align list.index_of_nil List.indexOf_nil
 
 /-
-  Porting note: The following proofs were simpler prior to the port. These require plumbing into
+  Porting note: The following proofs were simpler prior to the port. These proofs use the low-level
   `findIdx.go`.
-  * indexOf_cons_self
-  * indexOf_cons_eq
-  * indexOf_cons_ne
+  * `indexOf_cons_self`
+  * `indexOf_cons_eq`
+  * `indexOf_cons_ne`
+  * `indexOf_cons`
 
   The ported versions of the earlier proofs are given in comments.
 -/
