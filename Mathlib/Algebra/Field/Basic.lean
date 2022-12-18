@@ -134,9 +134,9 @@ theorem one_div_mul_sub_mul_one_div_eq_one_div_add_one_div (ha : a ≠ 0) (hb : 
     mul_assoc, mul_one_div_cancel hb, mul_one]
 
 -- see Note [lower instance priority]
-instance (priority := 100) DivisionRing.IsDomain : IsDomain K :=
+instance (priority := 100) DivisionRing.isDomain : IsDomain K :=
   NoZeroDivisors.toIsDomain _
-#align division_ring.is_domain DivisionRing.IsDomain
+#align division_ring.is_domain DivisionRing.isDomain
 
 end DivisionRing
 
@@ -181,9 +181,9 @@ theorem div_sub' (a b c : K) (hc : c ≠ 0) : a / c - b = (a - c * b) / c := by
   simpa using div_sub_div a b hc one_ne_zero
 
 -- see Note [lower instance priority]
-instance (priority := 100) Field.IsDomain : IsDomain K :=
-  { DivisionRing.IsDomain with }
-#align field.is_domain Field.IsDomain
+instance (priority := 100) Field.isDomain : IsDomain K :=
+  { DivisionRing.isDomain with }
+#align field.is_domain Field.isDomain
 
 end Field
 
@@ -312,11 +312,11 @@ instance [h : Field α] : Field αᵒᵈ :=
   h
 
 @[simp]
-theorem to_dual_rat_cast [HasRatCast α] (n : ℚ) : toDual (n : α) = n :=
+theorem toDual_rat_cast [HasRatCast α] (n : ℚ) : toDual (n : α) = n :=
   rfl
 
 @[simp]
-theorem of_dual_rat_cast [HasRatCast α] (n : ℚ) : (ofDual n : α) = n :=
+theorem ofDual_rat_cast [HasRatCast α] (n : ℚ) : (ofDual n : α) = n :=
   rfl
 
 /-! ### Lexicographic order -/
@@ -337,9 +337,9 @@ instance [h : Field α] : Field (Lex α) :=
   h
 
 @[simp]
-theorem to_lex_rat_cast [HasRatCast α] (n : ℚ) : toLex (n : α) = n :=
+theorem toLex_rat_cast [HasRatCast α] (n : ℚ) : toLex (n : α) = n :=
   rfl
 
 @[simp]
-theorem of_lex_rat_cast [HasRatCast α] (n : ℚ) : (ofLex n : α) = n :=
+theorem ofLex_rat_cast [HasRatCast α] (n : ℚ) : (ofLex n : α) = n :=
   rfl

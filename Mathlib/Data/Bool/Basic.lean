@@ -358,7 +358,7 @@ def ofNat (n : Nat) : Bool :=
   decide (n ≠ 0)
 #align bool.of_nat Bool.ofNat
 
-theorem of_nat_le_of_nat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
+theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
   simp only [ofNat, ne_eq, _root_.decide_not];
   cases Nat.decEq n 0 with
   | isTrue hn => rw [decide_eq_true hn]; exact false_le
@@ -367,12 +367,12 @@ theorem of_nat_le_of_nat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
     | isFalse hm => rw [decide_eq_false hm]; exact le_true
     | isTrue hm => subst hm; have h := le_antisymm h (Nat.zero_le n); contradiction
 
-theorem to_nat_le_to_nat {b₀ b₁ : Bool} (h : b₀ ≤ b₁) : toNat b₀ ≤ toNat b₁ := by
+theorem toNat_le_toNat {b₀ b₁ : Bool} (h : b₀ ≤ b₁) : toNat b₀ ≤ toNat b₁ := by
   cases h with
   | inl h => subst h; exact Nat.zero_le _
   | inr h => subst h; cases b₀ <;> simp;
 
-theorem of_nat_to_nat (b : Bool) : ofNat (toNat b) = b := by
+theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
   cases b <;> rfl
 
 @[simp]

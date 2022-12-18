@@ -107,9 +107,9 @@ theorem preimage_ite (f : α → β) (s t₁ t₂ : Set β) :
 #align set.preimage_ite Set.preimage_ite
 
 @[simp]
-theorem preimage_set_of_eq {p : α → Prop} {f : β → α} : f ⁻¹' { a | p a } = { a | p (f a) } :=
+theorem preimage_setOf_eq {p : α → Prop} {f : β → α} : f ⁻¹' { a | p a } = { a | p (f a) } :=
   rfl
-#align set.preimage_set_of_eq Set.preimage_set_of_eq
+#align set.preimage_set_of_eq Set.preimage_setOf_eq
 
 @[simp]
 theorem preimage_id_eq : preimage (id : α → α) = id :=
@@ -314,15 +314,14 @@ theorem image_inter_subset (f : α → β) (s t : Set α) : f '' (s ∩ t) ⊆ f
 #align set.image_inter_subset Set.image_inter_subset
 
 theorem image_inter_on {f : α → β} {s t : Set α} (h : ∀ x ∈ t, ∀ y ∈ s, f x = f y → x = y) :
-    f '' s ∩ f '' t = f '' (s ∩ t) :=
-  Subset.antisymm
-    (fun b ⟨⟨a₁, ha₁, h₁⟩, ⟨a₂, ha₂, h₂⟩⟩ =>
+    f '' (s ∩ t) = f '' s ∩ f '' t :=
+  (image_inter_subset _ _ _).antisymm
+    fun b ⟨⟨a₁, ha₁, h₁⟩, ⟨a₂, ha₂, h₂⟩⟩ ↦
       have : a₂ = a₁ := h _ ha₂ _ ha₁ (by simp [*])
-      ⟨a₁, ⟨ha₁, this ▸ ha₂⟩, h₁⟩)
-    (image_inter_subset _ _ _)
+      ⟨a₁, ⟨ha₁, this ▸ ha₂⟩, h₁⟩
 #align set.image_inter_on Set.image_inter_on
 
-theorem image_inter {f : α → β} {s t : Set α} (H : Injective f) : f '' s ∩ f '' t = f '' (s ∩ t) :=
+theorem image_inter {f : α → β} {s t : Set α} (H : Injective f) : f '' (s ∩ t) = f '' s ∩ f '' t :=
   image_inter_on fun _ _ _ _ h => H h
 #align set.image_inter Set.image_inter
 
@@ -407,7 +406,7 @@ theorem mem_image_iff_of_inverse {f : α → β} {g : β → α} {b : β} {s : S
 #align set.mem_image_iff_of_inverse Set.mem_image_iff_of_inverse
 
 theorem image_compl_subset {f : α → β} {s : Set α} (H : Injective f) : f '' sᶜ ⊆ (f '' s)ᶜ :=
-  Disjoint.subset_compl_left <| by simp [disjoint_iff_inf_le, image_inter H]
+  Disjoint.subset_compl_left <| by simp [disjoint_iff_inf_le, ←image_inter H]
 #align set.image_compl_subset Set.image_compl_subset
 
 theorem subset_image_compl {f : α → β} {s : Set α} (H : Surjective f) : (f '' s)ᶜ ⊆ f '' sᶜ :=
@@ -496,8 +495,7 @@ theorem preimage_eq_preimage {f : β → α} (hf : Surjective f) : f ⁻¹' s = 
 theorem image_inter_preimage (f : α → β) (s : Set α) (t : Set β) :
     f '' (s ∩ f ⁻¹' t) = f '' s ∩ t := by
   apply Subset.antisymm
-  ·
-    calc
+  · calc
       f '' (s ∩ f ⁻¹' t) ⊆ f '' s ∩ f '' (f ⁻¹' t) := image_inter_subset _ _ _
       _ ⊆ f '' s ∩ t := inter_subset_inter_right _ (image_preimage_subset f t)
 
@@ -650,7 +648,8 @@ theorem exists_subtype_range_iff {p : range f → Prop} :
     (∃ a : range f, p a) ↔ ∃ i, p ⟨f i, mem_range_self _⟩ :=
   ⟨fun ⟨⟨a, i, hi⟩, ha⟩ => by
     subst a
-    exact ⟨i, ha⟩, fun ⟨i, hi⟩ => ⟨_, hi⟩⟩
+    exact ⟨i, ha⟩,
+   fun ⟨i, hi⟩ => ⟨_, hi⟩⟩
 #align set.exists_subtype_range_iff Set.exists_subtype_range_iff
 
 theorem range_iff_surjective : range f = univ ↔ Surjective f :=
@@ -761,7 +760,8 @@ theorem image_preimage_eq_iff {f : α → β} {s : Set β} : f '' (f ⁻¹' s) =
   ⟨by
     intro h
     rw [← h]
-    apply image_subset_range, image_preimage_eq_of_subset⟩
+    apply image_subset_range,
+   image_preimage_eq_of_subset⟩
 #align set.image_preimage_eq_iff Set.image_preimage_eq_iff
 
 theorem subset_range_iff_exists_image_eq {f : α → β} {s : Set β} : s ⊆ range f ↔ ∃ t, f '' t = s :=
@@ -771,8 +771,8 @@ theorem subset_range_iff_exists_image_eq {f : α → β} {s : Set β} : s ⊆ ra
 @[simp]
 theorem exists_subset_range_and_iff {f : α → β} {p : Set β → Prop} :
     (∃ s, s ⊆ range f ∧ p s) ↔ ∃ s, p (f '' s) :=
-  ⟨fun ⟨s, hsf, hps⟩ => ⟨f ⁻¹' s, (image_preimage_eq_of_subset hsf).symm ▸ hps⟩, fun ⟨s, hs⟩ =>
-    ⟨f '' s, image_subset_range _ _, hs⟩⟩
+  ⟨fun ⟨s, hsf, hps⟩ => ⟨f ⁻¹' s, (image_preimage_eq_of_subset hsf).symm ▸ hps⟩,
+   fun ⟨s, hs⟩ => ⟨f '' s, image_subset_range _ _, hs⟩⟩
 #align set.exists_subset_range_and_iff Set.exists_subset_range_and_iff
 
 theorem exists_subset_range_iff {f : α → β} {p : Set β → Prop} :
@@ -797,8 +797,8 @@ theorem preimage_eq_preimage' {s t : Set α} {f : β → α} (hs : s ⊆ range f
   constructor
   · intro h
     apply Subset.antisymm
-    rw [← preimage_subset_preimage_iff hs, h]
-    rw [← preimage_subset_preimage_iff ht, h]
+    · rw [← preimage_subset_preimage_iff hs, h]
+    · rw [← preimage_subset_preimage_iff ht, h]
   rintro rfl; rfl
 #align set.preimage_eq_preimage' Set.preimage_eq_preimage'
 
