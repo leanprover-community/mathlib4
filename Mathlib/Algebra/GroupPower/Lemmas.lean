@@ -255,8 +255,8 @@ end Group
 /-!
 ### `zpow`/`zsmul` and an order
 
-Those lemmas are placed here (rather than in `Algebra.GroupPower.Order` with their friends) because
-they require facts from `Data.Int.Basic`.
+Those lemmas are placed here (rather than in `Mathlib.Algebra.GroupPower.Order` with their friends) because
+they require facts from `Mathlib.Data.Int.Basic`.
 -/
 
 section OrderedAddCommGroup
