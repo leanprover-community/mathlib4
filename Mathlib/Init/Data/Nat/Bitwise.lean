@@ -228,20 +228,22 @@ def testBit (m n : ℕ) : Bool :=
   bodd (shiftr m n)
 #align nat.test_bit Nat.testBit
 
-def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) : ∀ n, C n
-  | n =>
-    if n0 : n = 0 then
-      by simp [n0] <;> exact z
-    else by
-      let n' := div2 n
-      have : n' < n := by
-        change div2 n < n; rw [div2_val]
-        apply (div_lt_iff_lt_mul <| succ_pos 1).2
-        have := Nat.mul_lt_mul_of_pos_left (lt_succ_self 1) (lt_of_le_of_ne n.zero_le (Ne.symm n0))
-        rwa [Nat.mul_one] at this
-      have _ : bit (bodd n) n' = n := by
-        apply bit_decomp n
-      exact f (bodd n) n' (binaryRec z f n')
+def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) : ∀ n, C n :=
+    fun n =>
+      if n0 : n = 0 then
+        by simp [n0] <;> exact z
+      else by
+        let n' := div2 n
+        have : n' < n := by
+          change div2 n < n; rw [div2_val]
+          apply (div_lt_iff_lt_mul <| succ_pos 1).2
+          have := Nat.mul_lt_mul_of_pos_left (lt_succ_self 1) (lt_of_le_of_ne n.zero_le (Ne.symm n0))
+          rwa [Nat.mul_one] at this
+        have _x : bit (bodd n) n' = n := by
+          apply bit_decomp n
+        rw [←_x]
+        exact f (bodd n) n' (binaryRec z f n')
+
 #align nat.binaryRec Nat.binaryRec
 
 def size : ℕ → ℕ :=
@@ -290,7 +292,9 @@ theorem binary_rec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (
 
 
 theorem bodd_bit (b n) : bodd (bit b n) = b := by
-  rw [bit_val] <;> simp <;> cases b <;> cases bodd n <;> rfl
+  rw [bit_val]
+  simp
+  cases b <;> cases bodd n <;> rfl
 #align nat.bodd_bit Nat.bodd_bit
 
 theorem div2_bit (b n) : div2 (bit b n) = n := by
@@ -332,8 +336,10 @@ theorem test_bit_zero (b n) : testBit (bit b n) 0 = b :=
 
 theorem test_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   have : bodd (shiftr (shiftr (bit b n) 1) m) = bodd (shiftr n m) := by
-    dsimp [shiftr] <;> rw [div2_bit]
-  rw [← shiftr_add, Nat.add_comm] at this <;> exact this
+    dsimp [shiftr]
+    rw [div2_bit]
+  rw [← shiftr_add, Nat.add_comm] at this
+  exact this
 #align nat.test_bit_succ Nat.test_bit_succ
 
 /- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:145:2: warning: unsupported: with_cases -/
