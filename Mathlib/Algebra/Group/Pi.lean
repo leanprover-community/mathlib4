@@ -57,7 +57,7 @@ namespace Pi
 instance semigroup [∀ i, Semigroup <| f i] : Semigroup (∀ i : I, f i) :=
   { mul := (· * ·)
     --pi_instance
-    mul_assoc := by rename_i inst; intros; ext i; exact (inst i).mul_assoc _ _ _ }
+    mul_assoc := by intros; ext; exact mul_assoc _ _ _ }
 #align pi.semigroup Pi.semigroup
 #align pi.add_semigroup Pi.addSemigroup
 
@@ -65,7 +65,7 @@ instance semigroup [∀ i, Semigroup <| f i] : Semigroup (∀ i : I, f i) :=
 instance commSemigroup [∀ i, CommSemigroup <| f i] : CommSemigroup (∀ i : I, f i) :=
   { semigroup with
     --pi_instance
-    mul_comm := by rename_i inst _; intros; ext i; exact (inst i).mul_comm _ _
+    mul_comm := by intros; ext; exact mul_comm _ _
   }
 #align pi.comm_semigroup Pi.commSemigroup
 #align pi.add_comm_semigroup Pi.addCommSemigroup
@@ -75,8 +75,8 @@ instance mulOneClass [∀ i, MulOneClass <| f i] : MulOneClass (∀ i : I, f i) 
   { one := (1 : ∀ i, f i)
     mul := (· * ·)
     --pi_instance
-    one_mul := by rename_i inst; intros; ext i; exact (inst i).one_mul _
-    mul_one := by rename_i inst; intros; ext i; exact (inst i).mul_one _
+    one_mul := by intros; ext; exact one_mul _
+    mul_one := by intros; ext; exact mul_one _
   }
 #align pi.mul_one_class Pi.mulOneClass
 #align pi.add_zero_class Pi.addZeroClass
@@ -86,8 +86,8 @@ instance monoid [∀ i, Monoid <| f i] : Monoid (∀ i : I, f i) :=
   { semigroup, mulOneClass with
     npow := fun n x i => x i ^ n
     --pi_instance
-    npow_zero := by rename_i inst _ _; intros; ext i; exact (inst i).npow_zero _
-    npow_succ := by rename_i inst _ _; intros; ext i; exact (inst i).npow_succ _ _
+    npow_zero := by intros; ext; exact Monoid.npow_zero _
+    npow_succ := by intros; ext; exact Monoid.npow_succ _ _
   }
 #align pi.monoid Pi.monoid
 #align pi.add_monoid Pi.addMonoid
@@ -108,27 +108,26 @@ instance divInvMonoid [∀ i, DivInvMonoid <| f i] : DivInvMonoid (∀ i : I, f 
     div := Div.div
     zpow := fun z x i => x i ^ z
     --pi_instance
-    div_eq_mul_inv := by rename_i inst _; intros; ext i; exact (inst i).div_eq_mul_inv _ _
-    zpow_zero' := by rename_i inst _; intros; ext i; exact (inst i).zpow_zero' _
-    zpow_succ' := by rename_i inst _; intros; ext i; exact (inst i).zpow_succ' _ _
-    zpow_neg' := by rename_i inst _; intros; ext i; exact (inst i).zpow_neg' _ _
+    div_eq_mul_inv := by intros; ext; exact div_eq_mul_inv _ _
+    zpow_zero' := by intros; ext; exact DivInvMonoid.zpow_zero' _
+    zpow_succ' := by intros; ext; exact DivInvMonoid.zpow_succ' _ _
+    zpow_neg' := by intros; ext; exact DivInvMonoid.zpow_neg' _ _
   }
 
 @[to_additive]
 instance involutiveInv [∀ i, InvolutiveInv <| f i] : InvolutiveInv (∀ i, f i) :=
   { inv := Inv.inv
     --pi_instance
-    inv_inv := by rename_i inst; intros; ext i; exact (inst i).inv_inv _
+    inv_inv := by intros; ext; exact inv_inv _
   }
 
 @[to_additive Pi.subtractionMonoid]
 instance divisionMonoid [∀ i, DivisionMonoid <| f i] : DivisionMonoid (∀ i, f i) :=
   { divInvMonoid, involutiveInv with
     --pi_instance
-    mul_inv_rev := by rename_i inst _ _; intros; ext i; exact (inst i).mul_inv_rev _ _
+    mul_inv_rev := by intros; ext; exact mul_inv_rev _ _
     inv_eq_of_mul := by
-      rename_i inst _ _; intros; ext i; apply (inst i).inv_eq_of_mul _ _ _;
-      rename_i h; exact congr_fun h i
+      intros _ _ h; ext; exact DivisionMonoid.inv_eq_of_mul _ _ (congrFun h _)
   }
 
 @[to_additive Pi.subtractionCommMonoid]
@@ -139,7 +138,7 @@ instance [∀ i, DivisionCommMonoid <| f i] : DivisionCommMonoid (∀ i, f i) :=
 instance group [∀ i, Group <| f i] : Group (∀ i : I, f i) :=
   { divInvMonoid with
     --pi_instance
-    mul_left_inv := by rename_i inst _; intros; ext i; exact (inst i).mul_left_inv _
+    mul_left_inv := by intros; ext; exact mul_left_inv _
     }
 #align pi.group Pi.group
 #align pi.add_group Pi.addGroup
@@ -159,8 +158,7 @@ instance leftCancelSemigroup [∀ i, LeftCancelSemigroup <| f i] :
   { semigroup with
     --pi_instance
     mul_left_cancel := by
-      rename_i inst _; intros; ext i; apply (inst i).mul_left_cancel _ _ _;
-      rename_i h; exact congr_fun h i
+      intros _ _ _ h; ext; exact LeftCancelSemigroup.mul_left_cancel _ _ _ (congr_fun h _);
   }
 #align pi.left_cancel_semigroup Pi.leftCancelSemigroup
 #align pi.add_left_cancel_semigroup Pi.addLeftCancelSemigroup
@@ -171,8 +169,7 @@ instance rightCancelSemigroup [∀ i, RightCancelSemigroup <| f i] :
   { semigroup with
     --pi_instance
     mul_right_cancel := by
-      rename_i inst _; intros; ext i; apply (inst i).mul_right_cancel _ _ _;
-      rename_i h; exact congr_fun h i
+      intros _ _ _ h; ext; exact RightCancelSemigroup.mul_right_cancel _ _ _ (congr_fun h _)
   }
 #align pi.right_cancel_semigroup Pi.rightCancelSemigroup
 #align pi.add_right_cancel_semigroup Pi.addRightCancelSemigroup
@@ -205,8 +202,8 @@ instance mulZeroClass [∀ i, MulZeroClass <| f i] : MulZeroClass (∀ i : I, f 
   { zero := (0 : ∀ i, f i)
     mul := (· * ·)
     --pi_instance
-    zero_mul := by rename_i inst; intro; ext i; exact (inst i).zero_mul _
-    mul_zero := by rename_i inst; intro; ext i; exact (inst i).mul_zero _
+    zero_mul := by intros; ext; exact zero_mul _
+    mul_zero := by intros; ext; exact mul_zero _
 }
 #align pi.mul_zero_class Pi.mulZeroClass
 
