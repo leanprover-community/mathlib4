@@ -1336,8 +1336,8 @@ theorem nthLe_nth : ∀ {l : List α} {n} (h), nth l n = some (nthLe l n h)
 #align list.nth_le_nth List.nthLe_nth
 
 theorem nth_len_le : ∀ {l : List α} {n}, length l ≤ n → nth l n = none
-  | [], n, h => rfl
-  | a :: l, n + 1, h => nth_len_le (le_of_succ_le_succ h)
+  | [], _, _ => rfl
+  | _ :: l, n + 1, h => (nth_len_le (le_of_succ_le_succ h) : nth l n = none)
 #align list.nth_len_le List.nth_len_le
 
 @[simp]
@@ -1348,7 +1348,7 @@ theorem nth_length (l : List α) : l.nth l.length = none :=
 theorem nth_eq_some {l : List α} {n a} : nth l n = some a ↔ ∃ h, nthLe l n h = a :=
   ⟨fun e =>
     have h : n < length l := lt_of_not_ge fun hn => by rw [nth_len_le hn] at e; contradiction
-    ⟨h, by rw [nthLe_nth h] at e; injection e with e <;> apply nth_le_mem⟩,
+    ⟨h, by rw [nthLe_nth h] at e; injection e with e⟩,
     fun ⟨h, e⟩ => e ▸ nthLe_nth _⟩
 #align list.nth_eq_some List.nth_eq_some
 
@@ -1369,26 +1369,27 @@ theorem nth_of_mem {a} {l : List α} (h : a ∈ l) : ∃ n, nth l n = some a :=
 #align list.nth_of_mem List.nth_of_mem
 
 theorem nth_le_mem : ∀ (l : List α) (n h), nthLe l n h ∈ l
-  | a :: l, 0, h => mem_cons_self _ _
-  | a :: l, n + 1, h => mem_cons_of_mem _ (nth_le_mem l _ _)
+  | _ :: _, 0, _ => mem_cons_self _ _
+  | _ :: l, _ + 1, _ => mem_cons_of_mem _ (nth_le_mem l _ _)
 #align list.nth_le_mem List.nth_le_mem
 
 theorem nth_mem {l : List α} {n a} (e : nth l n = some a) : a ∈ l :=
-  let ⟨h, e⟩ := nth_eq_some.1 e
+  let ⟨_, e⟩ := nth_eq_some.1 e
   e ▸ nth_le_mem _ _ _
 #align list.nth_mem List.nth_mem
 
 theorem mem_iff_nth_le {a} {l : List α} : a ∈ l ↔ ∃ n h, nthLe l n h = a :=
-  ⟨nthLe_of_mem, fun ⟨n, h, e⟩ => e ▸ nth_le_mem _ _ _⟩
+  ⟨nthLe_of_mem, fun ⟨_, _, e⟩ => e ▸ nth_le_mem _ _ _⟩
 #align list.mem_iff_nth_le List.mem_iff_nth_le
 
 theorem mem_iff_nth {a} {l : List α} : a ∈ l ↔ ∃ n, nth l n = some a :=
-  mem_iff_nth_le.trans <| exists_congr fun n => nth_eq_some.symm
+  mem_iff_nth_le.trans <| exists_congr fun _ => nth_eq_some.symm
 #align list.mem_iff_nth List.mem_iff_nth
 
-theorem nth_zero (l : List α) : l.nth 0 = l.head' := by cases l <;> rfl
+theorem nth_zero (l : List α) : l.nth 0 = l.head? := by cases l <;> rfl
 #align list.nth_zero List.nth_zero
 
+--Porting note: couldn't synthesize _ in cases h x _ rfl anymore, needed to be given explicitly
 theorem nth_injective {α : Type u} {xs : List α} {i j : ℕ} (h₀ : i < xs.length) (h₁ : Nodup xs)
     (h₂ : xs.nth i = xs.nth j) : i = j := by
   induction' xs with x xs generalizing i j
@@ -1397,13 +1398,11 @@ theorem nth_injective {α : Type u} {xs : List α} {i j : ℕ} (h₀ : i < xs.le
     case zero.zero => rfl
     case succ.succ =>
       congr ; cases h₁
-      apply xs_ih <;> solve_by_elim [lt_of_succ_lt_succ]
-    iterate 2
-      dsimp at h₂
-      cases' h₁ with _ _ h h'
-      cases h x _ rfl
-      rw [mem_iff_nth]
-      first |exact ⟨_, h₂.symm⟩|exact ⟨_, h₂⟩
+      rename_i tail_ih _ _ _ _
+      apply tail_ih <;> solve_by_elim [lt_of_succ_lt_succ]
+    all_goals ( dsimp at h₂; cases' h₁ with _ _ h h')
+    . cases (h x (mem_iff_nth.mpr ⟨_, h₂.symm⟩) rfl)
+    . cases (h x (mem_iff_nth.mpr ⟨_, h₂⟩) rfl)
 #align list.nth_injective List.nth_injective
 
 @[simp]
@@ -1414,7 +1413,7 @@ theorem nth_map (f : α → β) : ∀ l n, nth (map f l) n = (nth l n).map f
 #align list.nth_map List.nth_map
 
 theorem nth_le_map (f : α → β) {l n} (H1 H2) : nthLe (map f l) n H1 = f (nthLe l n H2) :=
-  Option.some.inj <| by rw [← nth_le_nth, nth_map, nth_le_nth] <;> rfl
+  Option.some.inj <| by rw [←nthLe_nth, nth_map, nthLe_nth] <;> rfl
 #align list.nth_le_map List.nth_le_map
 
 /-- A version of `nth_le_map` that can be used for rewriting. -/
@@ -1486,13 +1485,13 @@ theorem nth_le_repeat (a : α) {n m : ℕ} (h : m < (List.repeat a n).length) :
 theorem nth_append {l₁ l₂ : List α} {n : ℕ} (hn : n < l₁.length) : (l₁ ++ l₂).nth n = l₁.nth n := by
   have hn' : n < (l₁ ++ l₂).length :=
     lt_of_lt_of_le hn (by rw [length_append] <;> exact Nat.le_add_right _ _)
-  rw [nth_le_nth hn, nth_le_nth hn', nth_le_append]
+  rw [nthLe_nth hn, nthLe_nth hn', nth_le_append]
 #align list.nth_append List.nth_append
 
 theorem nth_append_right {l₁ l₂ : List α} {n : ℕ} (hn : l₁.length ≤ n) :
     (l₁ ++ l₂).nth n = l₂.nth (n - l₁.length) := by
   by_cases hl : n < (l₁ ++ l₂).length
-  · rw [nth_le_nth hl, nth_le_nth, nth_le_append_right hn]
+  · rw [nthLe_nth hl, nthLe_nth, nth_le_append_right hn]
   · rw [nth_len_le (le_of_not_lt hl), nth_len_le]
     rw [not_lt, length_append] at hl
     exact le_tsub_of_add_le_left hl
