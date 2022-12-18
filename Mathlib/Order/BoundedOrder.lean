@@ -864,7 +864,7 @@ theorem max_top_right [OrderTop α] (a : α) : max a ⊤ = ⊤ :=
 
 @[simp]
 theorem min_eq_bot [OrderBot α] {a b : α} : min a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := by
-  simp only [← inf_eq_min, ← le_bot_iff, inf_le_iff]; rfl
+  simp only [← inf_eq_min, ← le_bot_iff, inf_le_iff]
 #align min_eq_bot min_eq_bot
 
 @[simp]

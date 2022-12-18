@@ -802,7 +802,7 @@ protected def congrRight {r r' : α → α → Prop} (eq : ∀ a₁ a₂, r a₁
 by a relation `ra` and the quotient space of `β` by the image of this relation under `e`. -/
 protected def congrLeft {r : α → α → Prop} (e : α ≃ β) :
     Quot r ≃ Quot fun b b' => r (e.symm b) (e.symm b') :=
-  Quot.congr e fun _ _ => by simp only [e.symm_apply_apply]; rfl
+  Quot.congr e fun _ _ => by simp only [e.symm_apply_apply]
 
 end Quot
 

@@ -214,7 +214,7 @@ theorem iterate_pos_le_iff_map_le' (h : Commute f g) (hf : StrictMono f) (hg : M
 theorem iterate_pos_eq_iff_map_eq (h : Commute f g) (hf : Monotone f) (hg : StrictMono g) {x n}
     (hn : 0 < n) : (f^[n]) x = (g^[n]) x ↔ f x = g x := by
   simp only [le_antisymm_iff, h.iterate_pos_le_iff_map_le hf hg hn,
-    h.symm.iterate_pos_le_iff_map_le' hg hf hn]; rfl
+    h.symm.iterate_pos_le_iff_map_le' hg hf hn]
 #align function.commute.iterate_pos_eq_iff_map_eq Function.Commute.iterate_pos_eq_iff_map_eq
 
 end Commute

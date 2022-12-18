@@ -129,11 +129,9 @@ theorem disjoint_assoc : Disjoint (a ⊓ b) c ↔ Disjoint a (b ⊓ c) := by
 
 theorem disjoint_left_comm : Disjoint a (b ⊓ c) ↔ Disjoint b (a ⊓ c) := by
   simp_rw [disjoint_iff_inf_le, inf_left_comm]
-  rfl
 
 theorem disjoint_right_comm : Disjoint (a ⊓ b) c ↔ Disjoint (a ⊓ c) b := by
   simp_rw [disjoint_iff_inf_le, inf_right_comm]
-  rfl
 
 variable (c)
 
@@ -172,12 +170,10 @@ variable [DistribLattice α] [OrderBot α] {a b c : α}
 @[simp]
 theorem disjoint_sup_left : Disjoint (a ⊔ b) c ↔ Disjoint a c ∧ Disjoint b c := by
   simp only [disjoint_iff, inf_sup_right, sup_eq_bot_iff]
-  rfl
 
 @[simp]
 theorem disjoint_sup_right : Disjoint a (b ⊔ c) ↔ Disjoint a b ∧ Disjoint a c := by
   simp only [disjoint_iff, inf_sup_left, sup_eq_bot_iff]
-  rfl
 
 theorem Disjoint.sup_left (ha : Disjoint a c) (hb : Disjoint b c) : Disjoint (a ⊔ b) c :=
   disjoint_sup_left.2 ⟨ha, hb⟩
@@ -348,12 +344,10 @@ variable [DistribLattice α] [OrderTop α] {a b c : α}
 @[simp]
 theorem codisjoint_inf_left : Codisjoint (a ⊓ b) c ↔ Codisjoint a c ∧ Codisjoint b c := by
   simp only [codisjoint_iff, sup_inf_right, inf_eq_top_iff]
-  rfl
 
 @[simp]
 theorem codisjoint_inf_right : Codisjoint a (b ⊓ c) ↔ Codisjoint a b ∧ Codisjoint a c := by
   simp only [codisjoint_iff, sup_inf_left, inf_eq_top_iff]
-  rfl
 
 theorem Codisjoint.inf_left (ha : Codisjoint a c) (hb : Codisjoint b c) : Codisjoint (a ⊓ b) c :=
   codisjoint_inf_left.2 ⟨ha, hb⟩
@@ -579,7 +573,6 @@ protected theorem codisjoint_iff [OrderTop α] [OrderTop β] {x y : α × β} :
 protected theorem isCompl_iff [BoundedOrder α] [BoundedOrder β] {x y : α × β} :
     IsCompl x y ↔ IsCompl x.1 y.1 ∧ IsCompl x.2 y.2 := by
   simp_rw [isCompl_iff, Prod.disjoint_iff, Prod.codisjoint_iff, and_and_and_comm]
-  rfl
 #align prod.is_compl_iff Prod.isCompl_iff
 
 end Prod

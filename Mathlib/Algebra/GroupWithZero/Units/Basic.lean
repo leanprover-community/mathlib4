@@ -227,7 +227,7 @@ theorem exists0 {p : G₀ˣ → Prop} : (∃ g : G₀ˣ, p g) ↔ ∃ (g : G₀)
 figure out `p` when using `Units.exists0` from right to left. -/
 theorem exists0' {p : ∀ g : G₀, g ≠ 0 → Prop} :
     (∃ (g : G₀)(hg : g ≠ 0), p g hg) ↔ ∃ g : G₀ˣ, p g g.ne_zero :=
-  Iff.trans (by simp_rw [val_mk0]; rfl) exists0.symm
+  Iff.trans (by simp_rw [val_mk0]) exists0.symm
   -- porting note: had to add the `rfl`
 #align units.exists0' Units.exists0'
 

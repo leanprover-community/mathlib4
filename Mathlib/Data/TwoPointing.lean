@@ -146,7 +146,7 @@ theorem bool_snd : TwoPointing.bool.snd = true := rfl
 instance : Inhabited (TwoPointing Bool) :=
   ⟨TwoPointing.bool⟩
 
-/-- The `false`, `true` two-pointing of `Prop`. -/
+/-- The `False`, `True` two-pointing of `Prop`. -/
 protected def prop : TwoPointing Prop :=
   ⟨(False, True), false_ne_true⟩
 #align two_pointing.Prop TwoPointing.prop

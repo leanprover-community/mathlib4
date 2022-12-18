@@ -172,26 +172,26 @@ theorem op_div [DivInvMonoid α] (x y : α) : op (x / y) = (op y)⁻¹ * op x :=
 #align mul_opposite.op_div MulOpposite.op_div
 
 @[simp, to_additive]
-theorem semiconj_by_op [Mul α] {a x y : α} : SemiconjBy (op a) (op y) (op x) ↔ SemiconjBy a x y :=
-  by simp only [SemiconjBy, ← op_mul, op_inj, eq_comm] ; rfl
-#align mul_opposite.semiconj_by_op MulOpposite.semiconj_by_op
+theorem semiconjBy_op [Mul α] {a x y : α} : SemiconjBy (op a) (op y) (op x) ↔ SemiconjBy a x y :=
+  by simp only [SemiconjBy, ← op_mul, op_inj, eq_comm]
+#align mul_opposite.semiconj_by_op MulOpposite.semiconjBy_op
 
 @[simp, to_additive]
-theorem semiconj_by_unop [Mul α] {a x y : αᵐᵒᵖ} :
+theorem semiconjBy_unop [Mul α] {a x y : αᵐᵒᵖ} :
     SemiconjBy (unop a) (unop y) (unop x) ↔ SemiconjBy a x y := by
-  conv_rhs => rw [← op_unop a, ← op_unop x, ← op_unop y, semiconj_by_op]
-#align mul_opposite.semiconj_by_unop MulOpposite.semiconj_by_unop
+  conv_rhs => rw [← op_unop a, ← op_unop x, ← op_unop y, semiconjBy_op]
+#align mul_opposite.semiconj_by_unop MulOpposite.semiconjBy_unop
 
 @[to_additive]
 theorem _root_.SemiconjBy.op [Mul α] {a x y : α} (h : SemiconjBy a x y) :
     SemiconjBy (op a) (op y) (op x) :=
-  semiconj_by_op.2 h
+  semiconjBy_op.2 h
 #align semiconj_by.op SemiconjBy.op
 
 @[to_additive]
 theorem _root_.SemiconjBy.unop [Mul α] {a x y : αᵐᵒᵖ} (h : SemiconjBy a x y) :
     SemiconjBy (unop a) (unop y) (unop x) :=
-  semiconj_by_unop.2 h
+  semiconjBy_unop.2 h
 #align semiconj_by.unop SemiconjBy.unop
 
 @[to_additive]
@@ -206,12 +206,12 @@ theorem Commute.unop [Mul α] {x y : αᵐᵒᵖ} (h : Commute x y) : Commute (u
 
 @[simp, to_additive]
 theorem commute_op [Mul α] {x y : α} : Commute (op x) (op y) ↔ Commute x y :=
-  semiconj_by_op
+  semiconjBy_op
 #align mul_opposite.commute_op MulOpposite.commute_op
 
 @[simp, to_additive]
 theorem commute_unop [Mul α] {x y : αᵐᵒᵖ} : Commute (unop x) (unop y) ↔ Commute x y :=
-  semiconj_by_unop
+  semiconjBy_unop
 #align mul_opposite.commute_unop MulOpposite.commute_unop
 
 /-- The function `mul_opposite.op` is an additive equivalence. -/
@@ -221,9 +221,9 @@ def opAddEquiv [Add α] : α ≃+ αᵐᵒᵖ :=
 #align mul_opposite.op_add_equiv MulOpposite.opAddEquiv
 
 @[simp]
-theorem op_add_equiv_to_equiv [Add α] : (opAddEquiv : α ≃+ αᵐᵒᵖ).toEquiv = opEquiv := rfl
+theorem opAddEquiv_toEquiv [Add α] : (opAddEquiv : α ≃+ αᵐᵒᵖ).toEquiv = opEquiv := rfl
 
-#align mul_opposite.op_add_equiv_to_equiv MulOpposite.op_add_equiv_to_equiv
+#align mul_opposite.op_add_equiv_to_equiv MulOpposite.opAddEquiv_toEquiv
 
 end MulOpposite
 
@@ -281,16 +281,16 @@ instance [CommGroup α] : CommGroup αᵃᵒᵖ :=
 
 variable {α}
 
-/-- The function `add_opposite.op` is a multiplicative equivalence. -/
+/-- The function `AddOpposite.op` is a multiplicative equivalence. -/
 @[simps (config := { fullyApplied := false, simpRhs := true })]
 def opMulEquiv [Mul α] : α ≃* αᵃᵒᵖ :=
   { opEquiv with map_mul' := fun _ _ => rfl }
 #align add_opposite.op_mul_equiv AddOpposite.opMulEquiv
 
 @[simp]
-theorem op_mul_equiv_to_equiv [Mul α] : (opMulEquiv : α ≃* αᵃᵒᵖ).toEquiv = opEquiv :=
+theorem opMulEquiv_toEquiv [Mul α] : (opMulEquiv : α ≃* αᵃᵒᵖ).toEquiv = opEquiv :=
   rfl
-#align add_opposite.op_mul_equiv_to_equiv AddOpposite.op_mul_equiv_to_equiv
+#align add_opposite.op_mul_equiv_to_equiv AddOpposite.opMulEquiv_toEquiv
 
 end AddOpposite
 
@@ -299,7 +299,7 @@ open MulOpposite
 /-- Inversion on a group is a `mul_equiv` to the opposite group. When `G` is commutative, there is
 `mul_equiv.inv`. -/
 @[to_additive
-      "Negation on an additive group is an `add_equiv` to the opposite group. When `G`\n
+      "Negation on an additive group is an `add_equiv` to the opposite group. When `G`
       is commutative, there is `add_equiv.inv`.",
   simps (config := { fullyApplied := false, simpRhs := true })]
 def MulEquiv.inv' (G : Type _) [DivisionMonoid G] : G ≃* Gᵐᵒᵖ :=
@@ -369,16 +369,16 @@ def Units.opEquiv {M} [Monoid M] : Mᵐᵒᵖˣ ≃* Mˣᵐᵒᵖ where
 #align units.op_equiv Units.opEquiv
 
 @[simp, to_additive]
-theorem Units.coe_unop_op_equiv {M} [Monoid M] (u : Mᵐᵒᵖˣ) :
+theorem Units.coe_unop_opEquiv {M} [Monoid M] (u : Mᵐᵒᵖˣ) :
     ((Units.opEquiv u).unop : M) = unop (u : Mᵐᵒᵖ) :=
   rfl
-#align units.coe_unop_op_equiv Units.coe_unop_op_equiv
+#align units.coe_unop_op_equiv Units.coe_unop_opEquiv
 
 @[simp, to_additive]
-theorem Units.coe_op_equiv_symm {M} [Monoid M] (u : Mˣᵐᵒᵖ) :
+theorem Units.coe_opEquiv_symm {M} [Monoid M] (u : Mˣᵐᵒᵖ) :
     (Units.opEquiv.symm u : Mᵐᵒᵖ) = op (u.unop : M) :=
   rfl
-#align units.coe_op_equiv_symm Units.coe_op_equiv_symm
+#align units.coe_op_equiv_symm Units.coe_opEquiv_symm
 
 /-- A semigroup homomorphism `M →ₙ* N` can equivalently be viewed as a semigroup homomorphism
 `Mᵐᵒᵖ →ₙ* Nᵐᵒᵖ`. This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/

@@ -19,11 +19,7 @@ namespace Equiv
 
 /-- Embeddings from a sum type are equivalent to two separate embeddings with disjoint ranges. -/
 def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type _} :
-    (Sum α β ↪ γ) ≃
-      { f : (α ↪ γ) × (β ↪ γ) //
-        Disjoint (Set.range f.1)
-          (Set.range
-            f.2) } where
+    (Sum α β ↪ γ) ≃ { f : (α ↪ γ) × (β ↪ γ) // Disjoint (Set.range f.1) (Set.range f.2) } where
   toFun f :=
     ⟨(inl.trans f, inr.trans f), by
       rw [Set.disjoint_left]

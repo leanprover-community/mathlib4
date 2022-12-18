@@ -8,7 +8,7 @@ import Mathlib.Data.Set.Image
 /-!
 # Indicator function valued in bool
 
-See also `set.indicator` and `set.piecewise`.
+See also `Set.indicator` and `Set.piecewise`.
 -/
 
 open Bool
@@ -25,8 +25,6 @@ noncomputable def boolIndicator (x : α) :=
 theorem mem_iff_boolIndicator (x : α) : x ∈ s ↔ s.boolIndicator x = true := by
   unfold boolIndicator
   split_ifs with h <;> simp [h]
-
-
 #align set.mem_iff_boolIndicator Set.mem_iff_boolIndicator
 
 theorem not_mem_iff_boolIndicator (x : α) : x ∉ s ↔ s.boolIndicator x = false := by
@@ -49,13 +47,11 @@ theorem preimage_boolIndicator_eq_union (t : Set Bool) :
   ext x
   simp only [boolIndicator, mem_preimage]
   split_ifs <;> simp [*]
-
 #align set.preimage_boolIndicator_eq_union Set.preimage_boolIndicator_eq_union
 
 theorem preimage_boolIndicator (t : Set Bool) :
     s.boolIndicator ⁻¹' t = univ ∨
-      s.boolIndicator ⁻¹' t = s ∨ s.boolIndicator ⁻¹' t = sᶜ ∨ s.boolIndicator ⁻¹' t = ∅ :=
-  by
+      s.boolIndicator ⁻¹' t = s ∨ s.boolIndicator ⁻¹' t = sᶜ ∨ s.boolIndicator ⁻¹' t = ∅ := by
   simp only [preimage_boolIndicator_eq_union]
   split_ifs <;> simp [s.union_compl_self]
 #align set.preimage_boolIndicator Set.preimage_boolIndicator

@@ -772,8 +772,7 @@ theorem ofDual_le_ofDual_iff {a b : WithTop αᵒᵈ} : WithTop.ofDual a ≤ Wit
 
 @[simp, norm_cast]
 theorem coe_le_coe : (a : WithTop α) ≤ b ↔ a ≤ b := by
-  simp only [← toDual_le_toDual_iff, toDual_apply_coe, WithBot.coe_le_coe, toDual_le_toDual] ;
-  exact Iff.rfl
+  simp only [← toDual_le_toDual_iff, toDual_apply_coe, WithBot.coe_le_coe, toDual_le_toDual]
 #align with_top.coe_le_coe WithTop.coe_le_coe
 
 @[simp]
@@ -1001,8 +1000,7 @@ open OrderDual
 
 @[simp, norm_cast]
 theorem coe_lt_coe : (a : WithTop α) < b ↔ a < b := by
-  simp only [← toDual_lt_toDual_iff, toDual_apply_coe, WithBot.coe_lt_coe, toDual_lt_toDual] ;
-  exact Iff.rfl
+  simp only [← toDual_lt_toDual_iff, toDual_apply_coe, WithBot.coe_lt_coe, toDual_lt_toDual]
 #align with_top.coe_lt_coe WithTop.coe_lt_coe
 
 @[simp]

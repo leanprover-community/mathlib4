@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Invertible
 
 /-!
-# Lemmas about `inv_of` in ordered (semi)rings.
+# Lemmas about `invOf` in ordered (semi)rings.
 -/
 
 variable [LinearOrderedSemiring α] {a : α}
@@ -19,7 +19,7 @@ theorem invOf_pos [Invertible a] : 0 < ⅟ a ↔ 0 < a :=
 #align inv_of_pos invOf_pos
 
 @[simp]
-theorem invOf_nonpos [Invertible a] : ⅟ a ≤ 0 ↔ a ≤ 0 := by simp only [← not_lt, invOf_pos]; rfl
+theorem invOf_nonpos [Invertible a] : ⅟ a ≤ 0 ↔ a ≤ 0 := by simp only [← not_lt, invOf_pos]
 #align inv_of_nonpos invOf_nonpos
 
 @[simp]
@@ -29,7 +29,7 @@ theorem invOf_nonneg [Invertible a] : 0 ≤ ⅟ a ↔ 0 ≤ a :=
 #align inv_of_nonneg invOf_nonneg
 
 @[simp]
-theorem invOf_lt_zero [Invertible a] : ⅟ a < 0 ↔ a < 0 := by simp only [← not_le, invOf_nonneg]; rfl
+theorem invOf_lt_zero [Invertible a] : ⅟ a < 0 ↔ a < 0 := by simp only [← not_le, invOf_nonneg]
 #align inv_of_lt_zero invOf_lt_zero
 
 @[simp]
