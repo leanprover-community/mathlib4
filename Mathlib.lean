@@ -16,6 +16,7 @@ import Mathlib.Algebra.Group.Ext
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.OrderSynonym
+import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Semiconj
 import Mathlib.Algebra.Group.TypeTags

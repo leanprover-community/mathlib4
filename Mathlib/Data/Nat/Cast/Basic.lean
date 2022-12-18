@@ -291,26 +291,6 @@ theorem Sum.elim_natCast_natCast {α β γ : Type _} [NatCast γ] (n : ℕ) :
     Sum.elim (n : α → γ) (n : β → γ) = n :=
   @Sum.elim_lam_const_lam_const α β γ n
 
-namespace Pi
-
-variable {π : α → Type _} [∀ a, AddMonoidWithOne (π a)]
-
-/-
-Porting note: was `by refine_struct { .. } <;> pi_instance_derive_field`.
-@fpvandoorn suggests this should be moved to `Algebra.Group.Pi`,
-so that we can extend the `AddMonoid` instance.
-
-See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/not.20porting.20pi_instance
--/
-instance : AddMonoidWithOne (∀ a, π a) :=
-{ add_zero := fun f => funext fun a => by simp,
-  zero_add := fun f => funext fun a => by simp,
-  add_assoc := fun f g h => funext fun a => by simp [add_assoc],
-  natCast_zero := funext fun a => by simp [natCast],
-  natCast_succ := fun n => funext fun a => by simp [natCast] }
-
-end Pi
-
 /-! ### Order dual -/
 
 

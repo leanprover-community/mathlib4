@@ -359,30 +359,6 @@ theorem Sum.elim_intCast_intCast {α β γ : Type _} [IntCast γ] (n : ℤ) :
   @Sum.elim_lam_const_lam_const α β γ n
 #align sum.elim_int_cast_int_cast Sum.elim_intCast_intCast
 
-namespace Pi
-
-variable {π : ι → Type _} [∀ i, AddGroupWithOne (π i)]
-
-/-
-Porting note: was `by refine_struct { .. } <;> pi_instance_derive_field`.
-@fpvandoorn suggests this should be moved to `Algebra.Group.Pi`,
-so that we can extend the `AddGroup` instance.
-
-See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/not.20porting.20pi_instance
--/
-instance : AddGroupWithOne (∀ i, π i) :=
-{ add_zero := fun f => funext fun a => by simp,
-  zero_add := fun f => funext fun a => by simp,
-  add_assoc := fun f g h => funext fun a => by simp [add_assoc],
-  add_left_neg := fun f => funext fun a => by simp,
-  sub_eq_add_neg := fun f g => funext fun a => by simp [sub_eq_add_neg],
-  natCast_zero := funext fun a => by simp [natCast],
-  natCast_succ := fun n => funext fun a => by simp [natCast],
-  intCast_ofNat := fun n => funext fun a => by simp [intCast],
-  intCast_negSucc := fun n => funext fun a => by simp [intCast], }
-
-end Pi
-
 namespace MulOpposite
 
 variable [AddGroupWithOne α]
