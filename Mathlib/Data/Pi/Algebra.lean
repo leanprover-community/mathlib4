@@ -191,6 +191,9 @@ variable [∀ i, One (f i)] [∀ i, One (g i)] [∀ i, One (h i)]
 def mulSingle (i : I) (x : f i) : ∀ (j : I), f j :=
   Function.update 1 i x
 
+#align pi.mul_single Pi.mulSingle
+#align pi.single Pi.single
+
 @[simp, to_additive]
 theorem mulSingle_eq_same (i : I) (x : f i) : mulSingle i x i = x :=
   Function.update_same i x _
