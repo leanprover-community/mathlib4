@@ -814,6 +814,7 @@ instance : Mul (Associates α) :=
   ⟨fun a' b' =>
     (Quotient.liftOn₂ a' b' fun a b => ⟦a * b⟧) fun a₁ a₂ b₁ b₂ ⟨c₁, h₁⟩ ⟨c₂, h₂⟩ =>
       Quotient.sound <| ⟨c₁ * c₂, by
+        rw [← h₁, ← h₂]
         simp [h₁.symm, h₂.symm, mul_assoc, mul_comm, mul_left_comm]
         ⟩⟩
 
@@ -824,13 +825,13 @@ theorem mk_mul_mk {x y : α} : Associates.mk x * Associates.mk y = Associates.mk
 instance : CommMonoid (Associates α) where
   one := 1
   mul := (· * ·)
-  mul_one a' := (Quotient.inductionOn a') fun a => show ⟦a * 1⟧ = ⟦a⟧ by simp
-  one_mul a' := (Quotient.inductionOn a') fun a => show ⟦1 * a⟧ = ⟦a⟧ by simp
+  mul_one a' := Quotient.inductionOn a' <| fun a => show ⟦a * 1⟧ = ⟦a⟧ by simp
+  one_mul a' := Quotient.inductionOn a' <| fun a => show ⟦1 * a⟧ = ⟦a⟧ by simp
   mul_assoc a' b' c' :=
-    (Quotient.inductionOn₃ a' b' c') fun a b c =>
+    Quotient.inductionOn₃ a' b' c' <| fun a b c =>
       show ⟦a * b * c⟧ = ⟦a * (b * c)⟧ by rw [mul_assoc]
   mul_comm a' b' :=
-    (Quotient.inductionOn₂ a' b') fun a b => show ⟦a * b⟧ = ⟦b * a⟧ by rw [mul_comm]
+    Quotient.inductionOn₂ a' b' <| fun a b => show ⟦a * b⟧ = ⟦b * a⟧ by rw [mul_comm]
 
 instance : Preorder (Associates α) where
   le := Dvd.dvd
@@ -862,7 +863,7 @@ theorem dvd_eq_le : ((· ∣ ·) : Associates α → Associates α → Prop) = (
 
 theorem mul_eq_one_iff {x y : Associates α} : x * y = 1 ↔ x = 1 ∧ y = 1 :=
   Iff.intro
-    ((Quotient.inductionOn₂ x y) fun a b h =>
+    (Quotient.inductionOn₂ x y <| fun a b h =>
       have : a * b ~ᵤ 1 := Quotient.exact h
       ⟨Quotient.sound <| associated_one_of_associated_mul_one this,
         Quotient.sound <| associated_one_of_associated_mul_one <| by rwa [mul_comm] at this⟩)
@@ -925,7 +926,7 @@ end Order
 
 theorem dvd_of_mk_le_mk {a b : α} : Associates.mk a ≤ Associates.mk b → a ∣ b
   | ⟨c', hc'⟩ =>
-    ((Quotient.inductionOn c') fun c hc =>
+    (Quotient.inductionOn c' <| fun c hc =>
         let ⟨d, hd⟩ := (Quotient.exact hc).symm
         ⟨↑d * c,
           calc
