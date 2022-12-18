@@ -73,9 +73,9 @@ postfix:max "ᵃᵒᵖ" => AddOpposite
 
 namespace MulOpposite
 
-@[simp, to_additive]
-theorem unop_op (x : α) : unop (op x) = x :=
-  rfl
+-- porting note: `simp` can prove this in Lean 4
+@[to_additive]
+theorem unop_op (x : α) : unop (op x) = x := rfl
 
 @[simp, to_additive]
 theorem op_unop (x : αᵐᵒᵖ) : op (unop x) = x :=
@@ -125,13 +125,15 @@ theorem unop_injective : Injective (unop : αᵐᵒᵖ → α) :=
 theorem unop_surjective : Surjective (unop : αᵐᵒᵖ → α) :=
   unop_bijective.surjective
 
-@[simp, to_additive]
-theorem op_inj {x y : α} : op x = op y ↔ x = y :=
-  op_injective.eq_iff
+-- porting note: `simp` can prove this
+@[to_additive]
+theorem op_inj {x y : α} : op x = op y ↔ x = y := by simp
 
-@[simp, to_additive]
+@[simp, nolint simpComm, to_additive]
 theorem unop_inj {x y : αᵐᵒᵖ} : unop x = unop y ↔ x = y :=
   unop_injective.eq_iff
+
+attribute [nolint simpComm] AddOpposite.unop_inj
 
 variable (α)
 
@@ -263,7 +265,7 @@ end
 
 variable {α}
 
-@[simp]
+@[simp, nolint simpComm]
 theorem unop_eq_zero_iff [Zero α] (a : αᵐᵒᵖ) : a.unop = (0 : α) ↔ a = (0 : αᵐᵒᵖ) :=
   unop_injective.eq_iff' rfl
 #align mul_opposite.unop_eq_zero_iff MulOpposite.unop_eq_zero_iff
@@ -281,9 +283,11 @@ theorem op_ne_zero_iff [Zero α] (a : α) : op a ≠ (0 : αᵐᵒᵖ) ↔ a ≠
   not_congr $ op_eq_zero_iff a
 #align mul_opposite.op_ne_zero_iff MulOpposite.op_ne_zero_iff
 
-@[simp, to_additive]
+@[simp, nolint simpComm, to_additive]
 theorem unop_eq_one_iff [One α] (a : αᵐᵒᵖ) : a.unop = 1 ↔ a = 1 :=
   unop_injective.eq_iff' rfl
+
+attribute [nolint simpComm] AddOpposite.unop_eq_zero_iff
 
 @[simp, to_additive]
 theorem op_eq_one_iff [One α] (a : α) : op a = 1 ↔ a = 1 :=
@@ -314,6 +318,8 @@ theorem op_eq_one_iff [One α] {a : α} : op a = 1 ↔ a = 1 :=
 theorem unop_eq_one_iff [One α] {a : αᵃᵒᵖ} : unop a = 1 ↔ a = 1 :=
   unop_injective.eq_iff' unop_one
 #align add_opposite.unop_eq_one_iff AddOpposite.unop_eq_one_iff
+
+attribute [nolint simpComm] unop_eq_one_iff
 
 instance [Mul α] : Mul αᵃᵒᵖ where mul a b := op (unop a * unop b)
 
@@ -357,3 +363,4 @@ theorem unop_div [Div α] (a b : αᵃᵒᵖ) : unop (a / b) = unop a / unop b :
 #align add_opposite.unop_div AddOpposite.unop_div
 
 end AddOpposite
+#lint
