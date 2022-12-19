@@ -156,9 +156,8 @@ for pr in mathlib4repo.get_pulls(state='open'):
     prs[num] = pr
     fetch_args.append(f'pull/{num}/head:port-status-pull/{num}')
 
-if False:
-    os.system("git branch -D $(git branch --list 'port-status-pull/*')")
-    subprocess.run(fetch_args)
+os.system("git branch -D $(git branch --list 'port-status-pull/*')")
+subprocess.run(fetch_args)
 
 prs_of_condensed = {}
 for num in nums:
