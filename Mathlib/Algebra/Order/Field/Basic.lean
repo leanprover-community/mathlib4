@@ -26,13 +26,13 @@ section LinearOrderedSemifield
 
 variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
 
-/-- `equiv.mul_left₀` as an order_iso. -/
+/-- `equiv.mulLeft₀` as an order_iso. -/
 @[simps (config := { simpRhs := true })]
 def OrderIso.mulLeft₀ (a : α) (ha : 0 < a) : α ≃o α :=
   { Equiv.mulLeft₀ a ha.ne' with map_rel_iff' := @fun _ _ => mul_le_mul_left ha }
 #align order_iso.mul_left₀ OrderIso.mulLeft₀
 
-/-- `equiv.mul_right₀` as an order_iso. -/
+/-- `equiv.mulRight₀` as an order_iso. -/
 @[simps (config := { simpRhs := true })]
 def OrderIso.mulRight₀ (a : α) (ha : 0 < a) : α ≃o α :=
   { Equiv.mulRight₀ a ha.ne' with map_rel_iff' := @fun _ _ => mul_le_mul_right ha }
@@ -564,8 +564,8 @@ theorem StrictMono.div_const {β : Type _} [Preorder β] {f : β → α} (hf : S
 #align strict_mono.div_const StrictMono.div_const
 
 -- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedField.to_densely_ordered :
-    DenselyOrdered α where dense a₁ a₂ h :=
+instance (priority := 100) LinearOrderedField.toDenselyOrdered : DenselyOrdered α where
+  dense a₁ a₂ h :=
     ⟨(a₁ + a₂) / 2,
       calc
         a₁ = (a₁ + a₁) / 2 := (add_self_div_two a₁).symm
@@ -575,7 +575,7 @@ instance (priority := 100) LinearOrderedField.to_densely_ordered :
         (a₁ + a₂) / 2 < (a₂ + a₂) / 2 := div_lt_div_of_lt zero_lt_two (add_lt_add_right h _)
         _ = a₂ := add_self_div_two a₂
         ⟩
-#align linear_ordered_field.to_densely_ordered LinearOrderedField.to_densely_ordered
+#align linear_ordered_field.to_densely_ordered LinearOrderedField.toDenselyOrdered
 
 theorem min_div_div_right {c : α} (hc : 0 ≤ c) (a b : α) : min (a / c) (b / c) = min a b / c :=
   Eq.symm <| Monotone.map_min fun _ _ => div_le_div_of_le hc
@@ -585,9 +585,9 @@ theorem max_div_div_right {c : α} (hc : 0 ≤ c) (a b : α) : max (a / c) (b / 
   Eq.symm <| Monotone.map_max fun _ _ => div_le_div_of_le hc
 #align max_div_div_right max_div_div_right
 
-theorem one_div_strict_anti_on : StrictAntiOn (fun x : α => 1 / x) (Set.Ioi 0) :=
+theorem one_div_strictAntiOn : StrictAntiOn (fun x : α => 1 / x) (Set.Ioi 0) :=
   fun _ x1 _ y1 xy => (one_div_lt_one_div (Set.mem_Ioi.mp y1) (Set.mem_Ioi.mp x1)).mpr xy
-#align one_div_strict_anti_on one_div_strict_anti_on
+#align one_div_strict_anti_on one_div_strictAntiOn
 
 theorem one_div_pow_le_one_div_pow_of_le (a1 : 1 ≤ a) {m n : ℕ} (mn : m ≤ n) :
     1 / a ^ n ≤ 1 / a ^ m := by
@@ -604,13 +604,13 @@ theorem one_div_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => 1 / a ^ n := f
   one_div_pow_le_one_div_pow_of_le a1
 #align one_div_pow_anti one_div_pow_anti
 
-theorem one_div_pow_strict_anti (a1 : 1 < a) : StrictAnti fun n : ℕ => 1 / a ^ n := fun _ _ =>
+theorem one_div_pow_strictAnti (a1 : 1 < a) : StrictAnti fun n : ℕ => 1 / a ^ n := fun _ _ =>
   one_div_pow_lt_one_div_pow_of_lt a1
-#align one_div_pow_strict_anti one_div_pow_strict_anti
+#align one_div_pow_strict_anti one_div_pow_strictAnti
 
-theorem inv_strict_anti_on : StrictAntiOn (fun x : α => x⁻¹) (Set.Ioi 0) := fun _ hx _ hy xy =>
+theorem inv_strictAntiOn : StrictAntiOn (fun x : α => x⁻¹) (Set.Ioi 0) := fun _ hx _ hy xy =>
   (inv_lt_inv hy hx).2 xy
-#align inv_strict_anti_on inv_strict_anti_on
+#align inv_strict_anti_on inv_strictAntiOn
 
 theorem inv_pow_le_inv_pow_of_le (a1 : 1 ≤ a) {m n : ℕ} (mn : m ≤ n) : (a ^ n)⁻¹ ≤ (a ^ m)⁻¹ := by
   convert one_div_pow_le_one_div_pow_of_le a1 mn <;> simp
@@ -624,11 +624,11 @@ theorem inv_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => (a ^ n)⁻¹ := fu
   inv_pow_le_inv_pow_of_le a1
 #align inv_pow_anti inv_pow_anti
 
-theorem inv_pow_strict_anti (a1 : 1 < a) : StrictAnti fun n : ℕ => (a ^ n)⁻¹ := fun _ _ =>
+theorem inv_pow_strictAnti (a1 : 1 < a) : StrictAnti fun n : ℕ => (a ^ n)⁻¹ := fun _ _ =>
   inv_pow_lt_inv_pow_of_lt a1
-#align inv_pow_strict_anti inv_pow_strict_anti
+#align inv_pow_strict_anti inv_pow_strictAnti
 
-/-! ### Results about `is_lub` and `is_glb` -/
+/-! ### Results about `IsGLB` -/
 
 
 theorem IsGLB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
@@ -896,18 +896,18 @@ theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 :=
   by
   -- Take inverses on both sides to obtain `2⁻¹ ≤ 1 - 1 / a`
   refine' (inv_le_inv_of_le (inv_pos.2 <| zero_lt_two' α) _).trans_eq (inv_inv (2 : α))
-  -- move `1 / a` to the left and `1 - 1 / 2 = 1 / 2` to the right to obtain `1 / a ≤ ⅟ 2`
-  refine' (le_sub_iff_add_le.2 (_ : _ + 2⁻¹ = _).le).trans ((sub_le_sub_iff_left 1).2 _)
-  · -- show 2⁻¹ + 2⁻¹ = 1
-    exact (two_mul _).symm.trans (mul_inv_cancel two_ne_zero)
-  · -- take inverses on both sides and use the assumption `2 ≤ a`.
-    exact (one_div a).le.trans (inv_le_inv_of_le zero_lt_two a2)
+  -- move `1 / a` to the left and `2⁻¹` to the right.
+  rw [le_sub_iff_add_le, add_comm, ←le_sub_iff_add_le]
+  -- take inverses on both sides and use the assumption `2 ≤ a`.
+  convert (one_div a).le.trans (inv_le_inv_of_le zero_lt_two a2)
+  -- show `1 - 1 / 2 = 1 / 2`.
+  rw [sub_eq_iff_eq_add, ←two_mul, mul_inv_cancel two_ne_zero]
 #align sub_one_div_inv_le_two sub_one_div_inv_le_two
 
-/-! ### Results about `is_lub` and `is_glb` -/
+/-! ### Results about `IsLUB` -/
 
 
--- TODO: Generalize to `linear_ordered_semifield`
+-- TODO: Generalize to `LinearOrderedSemiield`
 theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
     IsLUB ((fun b => a * b) '' s) (a * b) := by
   rcases lt_or_eq_of_le ha with (ha | rfl)
@@ -917,7 +917,7 @@ theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
     exact isLUB_singleton
 #align is_lub.mul_left IsLUB.mul_left
 
--- TODO: Generalize to `linear_ordered_semifield`
+-- TODO: Generalize to `LinearOrderedSemiield`
 theorem IsLUB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
     IsLUB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 #align is_lub.mul_right IsLUB.mul_right
@@ -946,7 +946,7 @@ theorem exists_add_lt_and_pos_of_lt (h : b < a) : ∃ c, b + c < a ∧ 0 < c :=
 
 theorem le_of_forall_sub_le (h : ∀ ε > 0, b - ε ≤ a) : b ≤ a := by
   contrapose! h
-  simpa only [and_comm' ((0 : α) < _), lt_sub_iff_add_lt, gt_iff_lt] using
+  simpa only [@and_comm ((0 : α) < _), lt_sub_iff_add_lt, gt_iff_lt] using
     exists_add_lt_and_pos_of_lt h
 #align le_of_forall_sub_le le_of_forall_sub_le
 
