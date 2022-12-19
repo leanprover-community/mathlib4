@@ -463,9 +463,13 @@ end Nat
 choice function, to give better definitional equalities when lifting order structures. Dual
 to `GaloisCoinsertion` -/
 structure GaloisInsertion {α β : Type _} [Preorder α] [Preorder β] (l : α → β) (u : β → α) where
+  /-- A contructive choice function for images of `l`. -/
   choice : ∀ x : α, u (l x) ≤ x → β
+  /-- The Galois connection associated to a Galois insertion. -/
   gc : GaloisConnection l u
+  /-- Main property of a Galois insertion. -/
   le_l_u : ∀ x, x ≤ l (u x)
+  /-- Property of the choice function. -/
   choice_eq : ∀ a h, choice a h = l a
 #align galois_insertion GaloisInsertion
 
@@ -694,9 +698,13 @@ end GaloisInsertion
 choice function, to give better definitional equalities when lifting order structures. Dual to
 `GaloisInsertion` -/
 structure GaloisCoinsertion [Preorder α] [Preorder β] (l : α → β) (u : β → α) where
+  /-- A contructive choice function for images of `u`. -/
   choice : ∀ x : β, x ≤ l (u x) → α
+  /-- The Galois connection associated to a Galois coinsertion. -/
   gc : GaloisConnection l u
+  /-- Main property of a Galois coinsertion. -/
   u_l_le : ∀ x, u (l x) ≤ x
+  /-- Property of the choice function. -/
   choice_eq : ∀ a h, choice a h = u a
 #align galois_coinsertion GaloisCoinsertion
 
