@@ -745,10 +745,10 @@ using
   simp only [Nat.cast_pow]
 Try to change the left-hand side to the simplified term!
 
-- Porting note: because of `HMul` more type annotations are needed than in the Lean 3 version.
+
 -/
 -- @[simp]
-theorem nat_abs_sq (x : ℤ) : ((x.natAbs ^ 2 : ℕ) : ℤ) = x ^ 2 := by rw [sq, Int.natAbs_mul_self, sq]
+theorem nat_abs_sq (x : ℤ) : ↑(x.natAbs ^ 2) = x ^ 2:= by rw [sq, Int.natAbs_mul_self, sq]
 #align int.nat_abs_sq Int.nat_abs_sq
 
 alias nat_abs_sq ← nat_abs_pow_two
@@ -807,11 +807,9 @@ def zpowersHom [Group G] :
         G) where
   toFun: G → Multiplicative ℤ →* G :=
   fun x => {
-    toFun := fun n : ℤ  =>
-      let n' := Multiplicative.toAdd n
-      x ^ n'
+    toFun := fun n => x ^ (Multiplicative.toAdd n)
     map_one' := zpow_zero x
-    map_mul' := fun m n => zpow_add x m n
+    map_mul' := zpow_add x
     }
   invFun f := f (Multiplicative.ofAdd 1)
   left_inv := zpow_one
