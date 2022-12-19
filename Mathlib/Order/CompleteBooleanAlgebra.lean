@@ -20,15 +20,15 @@ distributive Boolean algebras.
 
 ## Typeclasses
 
-* `order.frame`: Frame: A complete lattice whose `⊓` distributes over `⨆`.
-* `order.coframe`: Coframe: A complete lattice whose `⊔` distributes over `⨅`.
-* `complete_distrib_lattice`: Completely distributive lattices: A complete lattice whose `⊓` and `⊔`
+* `Order.Frame`: Frame: A complete lattice whose `⊓` distributes over `⨆`.
+* `Order.Coframe`: Coframe: A complete lattice whose `⊔` distributes over `⨅`.
+* `CompleteDistribLattice`: Completely distributive lattices: A complete lattice whose `⊓` and `⊔`
   distribute over `⨆` and `⨅` respectively.
-* `complete_boolean_algebra`: Completely distributive Boolean algebra: A Boolean algebra whose `⊓`
+* `CompleteBooleanAlgebra`: Completely distributive Boolean algebra: A Boolean algebra whose `⊓`
   and `⊔` distribute over `⨆` and `⨅` respectively.
 
 A set of opens gives rise to a topological space precisely if it forms a frame. Such a frame is also
-completely distributive, but not all frames are. `filter` is a coframe but not a completely
+completely distributive, but not all frames are. `Filter` is a coframe but not a completely
 distributive lattice.
 
 ## TODO
