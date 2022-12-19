@@ -34,6 +34,10 @@ namespace Rat
 
 #align rat.of_int Rat.ofInt
 
+-- Porting note:
+-- We may need to move this instance (and indeed the definition of `IntCast`) to `Std`.
+-- At present, the cast via `ofInt` is getting in the way of the cast via `Int.cast`
+-- provided by this instance, and requiring us to write `Int.cast` explicitly in some simp lemmas.
 instance : IntCast ℚ :=
   ⟨ofInt⟩
 
@@ -43,10 +47,7 @@ theorem of_int_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
 #align rat.of_int_eq_cast Rat.of_int_eq_cast
 
 -- Porting note:
--- At this point the preferred cast is still `ofInt`,
--- but it will later be `Int.cast`.
--- For now we need to explicitly write `Int.cast` so the lemmas are in terms of the
--- eventually preferred coercion.
+-- For now we need to explicitly write `Int.cast` so lemmas are in terms of the correct coercion.
 @[simp, norm_cast]
 theorem coe_int_num (n : ℤ) : (Int.cast n : ℚ).num = n :=
   rfl
@@ -68,7 +69,7 @@ instance : Inhabited ℚ :=
 
 #noalign rat.mk_pnat
 
--- Porting note: TODO Should this be namspaced?
+-- Porting note: TODO Should this be namespaced?
 #align rat.mk_nat mkRat
 
 #noalign rat.mk_pnat_eq
@@ -119,7 +120,7 @@ theorem num_den' {n d h c} : (⟨n, d, h, c⟩ : ℚ) = n /. d := num_den.symm
 #align rat.num_denom' Rat.num_den'
 
 -- Porting note: we explicitly write `Int.cast` here,
--- as that will later be the preferred coercion (but at this point is not).
+-- as unfortunately this is not the default coercion.
 theorem coe_int_eq_divInt (z : ℤ) : Int.cast z = z /. 1 := num_den'
 #align rat.coe_int_eq_mk Rat.coe_int_eq_divInt
 
@@ -181,8 +182,6 @@ theorem neg_def {a b : ℤ} : -(a /. b) = -a /. b := neg_divInt a b
 theorem divInt_neg_den (n d : ℤ) : n /. -d = -n /. d := divInt_neg' ..
 #align rat.mk_neg_denom Rat.divInt_neg_den
 
--- Porting note: since `Sub ℚ` is defined in Std, we need to prove this here.
--- Presumably we will copy the proof from `add_def`.
 @[simp]
 theorem sub_def'' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
     a /. b - c /. d = (a * d - c * b) /. (b * d) := divInt_sub_divInt _ _ b0 d0
@@ -240,7 +239,7 @@ protected theorem add_left_neg : -a + a = 0 :=
   numDenCasesOn' a fun n d h => by simp [h, mkRat_add_mkRat]
 #align rat.add_left_neg Rat.add_left_neg
 
--- Porting note: TODO casts are still a problem here.
+-- Porting note: See notes above about `Int.cast`.
 theorem divInt_zero_one : (Int.cast 0) /. 1 = 0 :=
   show divInt _ _ = _ by
     rw [divInt]
@@ -330,8 +329,6 @@ instance commRing : CommRing ℚ where
   right_distrib := Rat.add_mul
   sub_eq_add_neg := Rat.sub_eq_add_neg
   intCast := fun n => n
-  /- Important: We do not set `nat_cast := λ n, ((n : ℤ) : ℚ)` (even though it's defeq) as that
-    makes `int.cast_coe_nat` and `coe_coe` loop in `simp`. -/
   natCast n := ofInt n
   natCast_zero := rfl
   natCast_succ n := by
@@ -355,37 +352,36 @@ instance isDomain : IsDomain ℚ :=
   NoZeroDivisors.toIsDomain _
 
 -- Extra instances to short-circuit type class resolution
--- TODO(Mario): this instance slows down data.real.basic
+-- TODO(Mario): this instance slows down Mathlib.Data.Real.Basic
 instance nontrivial : Nontrivial ℚ := by infer_instance
 
---instance : ring ℚ             := by apply_instance
-instance : CommSemiring ℚ := by infer_instance
+instance commSemiring : CommSemiring ℚ := by infer_instance
 
-instance : Semiring ℚ := by infer_instance
+instance semiring : Semiring ℚ := by infer_instance
 
-instance : AddCommGroup ℚ := by infer_instance
+instance addCommGroup : AddCommGroup ℚ := by infer_instance
 
-instance : AddGroup ℚ := by infer_instance
+instance addGroup : AddGroup ℚ := by infer_instance
 
-instance : AddCommMonoid ℚ := by infer_instance
+instance addCommMonoid : AddCommMonoid ℚ := by infer_instance
 
-instance : AddMonoid ℚ := by infer_instance
+instance addMonoid : AddMonoid ℚ := by infer_instance
 
-instance : AddLeftCancelSemigroup ℚ := by infer_instance
+instance addLeftCancelSemigroup : AddLeftCancelSemigroup ℚ := by infer_instance
 
-instance : AddRightCancelSemigroup ℚ := by infer_instance
+instance addRightCancelSemigroup : AddRightCancelSemigroup ℚ := by infer_instance
 
-instance : AddCommSemigroup ℚ := by infer_instance
+instance addCommSemigroup : AddCommSemigroup ℚ := by infer_instance
 
-instance : AddSemigroup ℚ := by infer_instance
+instance addSemigroup : AddSemigroup ℚ := by infer_instance
 
-instance : CommMonoid ℚ := by infer_instance
+instance commMonoid : CommMonoid ℚ := by infer_instance
 
-instance : Monoid ℚ := by infer_instance
+instance monoid : Monoid ℚ := by infer_instance
 
-instance : CommSemigroup ℚ := by infer_instance
+instance commSemigroup : CommSemigroup ℚ := by infer_instance
 
-instance : Semigroup ℚ := by infer_instance
+instance semigroup : Semigroup ℚ := by infer_instance
 
 theorem den_ne_zero (q : ℚ) : q.den ≠ 0 :=
   ne_of_gt (Nat.pos_of_ne_zero q.den_nz)
