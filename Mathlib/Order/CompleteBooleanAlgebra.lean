@@ -389,8 +389,7 @@ instance : CompleteBooleanAlgebra PUnit := by
     { PUnit.booleanAlgebra with
       supₛ := fun _ => unit
       infₛ := fun _ => unit
-      le_supₛ := _, supₛ_le := _, infₛ_le := _, le_infₛ := _,
-      inf_supₛ_le_supᵢ_inf := _, infᵢ_sup_le_sup_infₛ := _ } <;>
+      .. } <;>
   intros <;>
   first|trivial
 
