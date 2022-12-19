@@ -16,7 +16,7 @@ import Mathlib.Logic.Function.Iterate
 /-!
 # The group of permutations (self-equivalences) of a type `α`
 
-This file defines the `group` structure on `Equiv.Perm α`.
+This file defines the `Group` structure on `Equiv.Perm α`.
 -/
 
 
@@ -121,8 +121,7 @@ theorem iterate_eq_pow (f : Perm α) : ∀ n, f^[n] = ⇑(f ^ n)
   | 0 => rfl
   | n + 1 => by
     -- Porting note: needed to pass `n` to show termination.
-    rw [Function.iterate_succ, pow_add, iterate_eq_pow f n]
-    rfl
+    rw [Function.iterate_succ, pow_succ', iterate_eq_pow f n, coe_mul]
 #align equiv.perm.iterate_eq_pow Equiv.Perm.iterate_eq_pow
 
 /-! Lemmas about mixing `Perm` with `Equiv`. Because we have multiple ways to express
@@ -426,9 +425,11 @@ theorem ofSubtype_subtypePerm {f : Perm α} (h₁ : ∀ x, p x ↔ p (f x)) (h�
   Equiv.ext fun x => by
     by_cases hx : p x
     · exact (subtypePerm f h₁).extendDomain_apply_subtype _ hx
-    · rw [ofSubtype, MonoidHom.coe_mk, Equiv.Perm.extendDomain_apply_not_subtype]
-      · exact not_not.mp fun h => hx (h₂ x (Ne.symm h))
-      · exact hx
+    · rw [ofSubtype, MonoidHom.coe_mk]
+      -- Porting note: added `dsimp`
+      dsimp only [OneHom.coe_mk]
+      rw [Equiv.Perm.extendDomain_apply_not_subtype _ _ hx]
+      exact not_not.mp fun h => hx (h₂ x (Ne.symm h))
 #align equiv.perm.of_subtype_subtype_perm Equiv.Perm.ofSubtype_subtypePerm
 
 theorem ofSubtype_apply_of_mem (f : Perm (Subtype p)) (ha : p a) : ofSubtype f a = f ⟨a, ha⟩ :=
@@ -437,7 +438,7 @@ theorem ofSubtype_apply_of_mem (f : Perm (Subtype p)) (ha : p a) : ofSubtype f a
 
 @[simp]
 theorem ofSubtype_apply_coe (f : Perm (Subtype p)) (x : Subtype p) : ofSubtype f x = f x :=
-  (Subtype.casesOn x) fun _ => of_subtype_apply_of_mem f
+  Subtype.casesOn x fun _ => ofSubtype_apply_of_mem f
 #align equiv.perm.of_subtype_apply_coe Equiv.Perm.ofSubtype_apply_coe
 
 theorem ofSubtype_apply_of_not_mem (f : Perm (Subtype p)) (ha : ¬p a) : ofSubtype f a = a :=
@@ -452,37 +453,40 @@ theorem mem_iff_ofSubtype_apply_mem (f : Perm (Subtype p)) (x : α) :
 #align equiv.perm.mem_iff_of_subtype_apply_mem Equiv.Perm.mem_iff_ofSubtype_apply_mem
 
 @[simp]
-theorem subtype_perm_of_subtype (f : Perm (Subtype p)) :
+theorem subtypePerm_ofSubtype (f : Perm (Subtype p)) :
     subtypePerm (ofSubtype f) (mem_iff_ofSubtype_apply_mem f) = f :=
   Equiv.ext fun x => Subtype.coe_injective (ofSubtype_apply_coe f x)
-#align equiv.perm.subtype_perm_of_subtype Equiv.Perm.subtype_perm_of_subtype
+#align equiv.perm.subtype_perm_of_subtype Equiv.Perm.subtypePerm_ofSubtype
 
 /-- Permutations on a subtype are equivalent to permutations on the original type that fix pointwise
 the rest. -/
 @[simps]
 protected def subtypeEquivSubtypePerm (p : α → Prop) [DecidablePred p] :
     Perm (Subtype p) ≃ { f : Perm α // ∀ a, ¬p a → f a = a } where
-  toFun f := ⟨ofSubtype f, fun a => f.ofSubtype_apply_of_not_mem⟩
+  toFun f := ⟨ofSubtype f, fun _ => f.ofSubtype_apply_of_not_mem⟩
   invFun f :=
     (f : Perm α).subtypePerm fun a =>
       ⟨Decidable.not_imp_not.1 fun hfa => f.val.injective (f.prop _ hfa) ▸ hfa,
         Decidable.not_imp_not.1 fun ha hfa => ha <| f.prop a ha ▸ hfa⟩
-  left_inv := Equiv.Perm.subtype_perm_of_subtype
+  left_inv := Equiv.Perm.subtypePerm_ofSubtype
   right_inv f :=
-    Subtype.ext ((Equiv.Perm.ofSubtype_subtypePerm _) fun a => Not.decidable_imp_symm <| f.Prop a)
+    Subtype.ext ((Equiv.Perm.ofSubtype_subtypePerm _) fun a => Not.decidable_imp_symm <| f.prop a)
 #align equiv.perm.subtype_equiv_subtype_perm Equiv.Perm.subtypeEquivSubtypePerm
 
-theorem subtype_equiv_subtype_perm_apply_of_mem (f : Perm (Subtype p)) (h : p a) :
-    Perm.subtypeEquivSubtypePerm p f a = f ⟨a, h⟩ :=
-  f.of_subtype_apply_of_mem h
+theorem subtypeEquivSubtypePerm_apply_of_mem (f : Perm (Subtype p)) (h : p a) :
+    -- Porting note: was `Perm.subtypeEquivSubtypePerm p f a`
+    ((Perm.subtypeEquivSubtypePerm p).toFun f).1 a = f ⟨a, h⟩ :=
+  f.ofSubtype_apply_of_mem h
 #align
-  equiv.perm.subtype_equiv_subtype_perm_apply_of_mem Equiv.Perm.subtype_equiv_subtype_perm_apply_of_mem
+  equiv.perm.subtype_equiv_subtype_perm_apply_of_mem Equiv.Perm.subtypeEquivSubtypePerm_apply_of_mem
 
-theorem subtype_equiv_subtype_perm_apply_of_not_mem (f : Perm (Subtype p)) (h : ¬p a) :
-    Perm.subtypeEquivSubtypePerm p f a = a :=
-  f.of_subtype_apply_of_not_mem h
+theorem subtypeEquivSubtypePerm_apply_of_not_mem (f : Perm (Subtype p)) (h : ¬p a) :
+    -- Porting note: was `Perm.subtypeEquivSubtypePerm p f a`
+    ((Perm.subtypeEquivSubtypePerm p).toFun f).1 a = a :=
+  f.ofSubtype_apply_of_not_mem h
 #align
-  equiv.perm.subtype_equiv_subtype_perm_apply_of_not_mem Equiv.Perm.subtype_equiv_subtype_perm_apply_of_not_mem
+  equiv.perm.subtype_equiv_subtype_perm_apply_of_not_mem
+  Equiv.Perm.subtypeEquivSubtypePerm_apply_of_not_mem
 
 end Subtype
 
@@ -504,13 +508,13 @@ theorem swap_mul_self (i j : α) : swap i j * swap i j = 1 :=
 
 theorem swap_mul_eq_mul_swap (f : Perm α) (x y : α) : swap x y * f = f * swap (f⁻¹ x) (f⁻¹ y) :=
   Equiv.ext fun z => by
-    simp only [perm.mul_apply, swap_apply_def]
+    simp only [Perm.mul_apply, swap_apply_def]
     split_ifs <;>
-      simp_all only [perm.apply_inv_self, perm.eq_inv_iff_eq, eq_self_iff_true, not_true]
+      simp_all only [Perm.apply_inv_self, Perm.eq_inv_iff_eq, eq_self_iff_true, not_true]
 #align equiv.swap_mul_eq_mul_swap Equiv.swap_mul_eq_mul_swap
 
 theorem mul_swap_eq_swap_mul (f : Perm α) (x y : α) : f * swap x y = swap (f x) (f y) * f := by
-  rw [swap_mul_eq_mul_swap, perm.inv_apply_self, perm.inv_apply_self]
+  rw [swap_mul_eq_mul_swap, Perm.inv_apply_self, Perm.inv_apply_self]
 #align equiv.mul_swap_eq_swap_mul Equiv.mul_swap_eq_swap_mul
 
 theorem swap_apply_apply (f : Perm α) (x y : α) : swap (f x) (f y) = f * swap x y * f⁻¹ := by
@@ -554,23 +558,28 @@ theorem swap_eq_one_iff {i j : α} : swap i j = (1 : Perm α) ↔ i = j :=
 
 theorem swap_mul_eq_iff {i j : α} {σ : Perm α} : swap i j * σ = σ ↔ i = j :=
   ⟨fun h => by
-    have swap_id : swap i j = 1 := mul_right_cancel (trans h (one_mul σ).symm)
+    -- Porting note: added `_root_.`
+    have swap_id : swap i j = 1 := mul_right_cancel (_root_.trans h (one_mul σ).symm)
     rw [← swap_apply_right i j, swap_id]
-    rfl, fun h => by erw [h, swap_self, one_mul]⟩
+    rfl,
+   fun h => by erw [h, swap_self, one_mul]⟩
 #align equiv.swap_mul_eq_iff Equiv.swap_mul_eq_iff
 
 theorem mul_swap_eq_iff {i j : α} {σ : Perm α} : σ * swap i j = σ ↔ i = j :=
   ⟨fun h => by
-    have swap_id : swap i j = 1 := mul_left_cancel (trans h (one_mul σ).symm)
+    -- Porting note: added `_root_.`
+    have swap_id : swap i j = 1 := mul_left_cancel (_root_.trans h (one_mul σ).symm)
     rw [← swap_apply_right i j, swap_id]
-    rfl, fun h => by erw [h, swap_self, mul_one]⟩
+    rfl,
+   fun h => by erw [h, swap_self, mul_one]⟩
 #align equiv.mul_swap_eq_iff Equiv.mul_swap_eq_iff
 
 theorem swap_mul_swap_mul_swap {x y z : α} (hwz : x ≠ y) (hxz : x ≠ z) :
     swap y z * swap x y * swap y z = swap z x :=
   Equiv.ext fun n => by
-    simp only [swap_apply_def, perm.mul_apply]
-    split_ifs <;> cc
+    simp only [swap_apply_def, Perm.mul_apply]
+    -- Porting note: was `cc`
+    split_ifs <;> aesop
 #align equiv.swap_mul_swap_mul_swap Equiv.swap_mul_swap_mul_swap
 
 end Swap
