@@ -137,7 +137,7 @@ section DivisionMonoid
 
 variable [DivisionMonoid α]
 
--- Note that `mul_zsmul` and `zpow_mul` have the primes swapped since their argument order,
+-- Note that `mul_zsmul` and `zpow_mul` have the primes swapped when additivised since their argument order,
 -- and therefore the more "natural" choice of lemma, is reversed.
 @[to_additive mul_zsmul']
 theorem zpow_mul (a : α) : ∀ m n : ℤ, a ^ (m * n) = (a ^ m) ^ n
