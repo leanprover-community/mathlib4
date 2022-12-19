@@ -861,6 +861,8 @@ variable [PartialOrder α]
 
 -- Porting note: In this and the following few defs, the elaborator struggled with αᵒᵈ vs α;
 -- now it compiles but much slower than in mathlib3.
+-- Possibly related to the issue discussed at
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Performance.20issue.20with.20.60CompleteBooleanAlgebra.60/near/316760798
 
 -- See note [reducible non instances]
 /-- Lift the infima along a Galois coinsertion -/
