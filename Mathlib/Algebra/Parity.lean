@@ -15,7 +15,7 @@ import Mathlib.Data.Nat.Cast.Basic
 
 This file proves some general facts about squares, even and odd elements of semirings.
 
-In the implementation, we define `is_square` and we let `even` be the notion transported by
+In the implementation, we define `IsSquare` and we let `Even` be the notion transported by
 `to_additive`.  The definition are therefore as follows:
 ```lean
 is_square a ↔ ∃ r, a = r * r
@@ -26,11 +26,11 @@ Odd elements are not unified with a multiplicative notion.
 
 ## Future work
 
-* TODO: Try to generalize further the typeclass assumptions on `is_square/even`.
-  For instance, in some cases, there are `semiring` assumptions that I (DT) am not convinced are
+* TODO: Try to generalize further the typeclass assumptions on `IsSquare/even`.
+  For instance, in some cases, there are `Semiring` assumptions that I (DT) am not convinced are
   necessary.
 * TODO: Consider moving the definition and lemmas about `odd` to a separate file.
-* TODO: The "old" definition of `even a` asked for the existence of an element `c` such that
+* TODO: The "old" definition of `Even a` asked for the existence of an element `c` such that
   `a = 2 * c`.  For this reason, several fixes introduce an extra `two_mul` or `← two_mul`.
   It might be the case that by making a careful choice of `simp` lemma, this can be avoided.
  -/
@@ -44,32 +44,35 @@ section Mul
 
 variable [Mul α]
 
-/-- An element `a` of a type `α` with multiplication satisfies `is_square a` if `a = r * r`,
+/-- An element `a` of a type `α` with multiplication satisfies `IsSquare a` if `a = r * r`,
 for some `r : α`. -/
 @[to_additive Even
       "An element `a` of a type `α` with addition satisfies
-      `even a` if `a = r + r`,\nfor some `r : α`."]
+      `Even a` if `a = r + r`,\nfor some `r : α`."]
 def IsSquare (a : α) : Prop :=
   ∃ r, a = r * r
 #align is_square IsSquare
+#align even Even
 
 @[simp, to_additive]
-theorem is_square_mul_self (m : α) : IsSquare (m * m) :=
+theorem isSquare_mul_self (m : α) : IsSquare (m * m) :=
   ⟨m, rfl⟩
-#align is_square_mul_self is_square_mul_self
+#align is_square_mul_self isSquare_mul_self
 
 -- Porting note: explicitly introduced name
-@[to_additive is_even_add_op_iff]
-theorem is_square_op_iff (a : α) : IsSquare (op a) ↔ IsSquare a :=
+@[to_additive even_add_op_iff]
+theorem isSquare_op_iff (a : α) : IsSquare (op a) ↔ IsSquare a :=
   ⟨fun ⟨c, hc⟩ => ⟨unop c, by rw [← unop_mul, ← hc, unop_op]⟩, fun ⟨c, hc⟩ => by simp [hc]⟩
-#align is_square_op_iff is_square_op_iff
+#align is_square_op_iff isSquare_op_iff
+#align even_op_iff even_add_op_iff
 
 end Mul
 
-@[simp, to_additive is_even_zero]
-theorem is_square_one [MulOneClass α] : IsSquare (1 : α) :=
+@[simp, to_additive even_zero]
+theorem isSquare_one [MulOneClass α] : IsSquare (1 : α) :=
   ⟨1, (mul_one _).symm⟩
-#align is_square_one is_square_one
+#align is_square_one isSquare_one
+#align even_zero even_zero
 
 @[to_additive]
 theorem IsSquare.map [MulOneClass α] [MulOneClass β] [MonoidHomClass F α β] {m : α} (f : F) :
@@ -77,6 +80,7 @@ theorem IsSquare.map [MulOneClass α] [MulOneClass β] [MonoidHomClass F α β] 
   rintro ⟨m, rfl⟩
   exact ⟨f m, by simp⟩
 #align is_square.map IsSquare.map
+#align even.map Even.map
 
 section Monoid
 
@@ -84,37 +88,42 @@ variable [Monoid α] {n : ℕ} {a : α}
 
 
 @[to_additive even_iff_exists_two_nsmul]
-theorem is_square_iff_exists_sq (m : α) : IsSquare m ↔ ∃ c, m = c ^ 2 := by simp [IsSquare, pow_two]
-#align is_square_iff_exists_sq is_square_iff_exists_sq
+theorem isSquare_iff_exists_sq (m : α) : IsSquare m ↔ ∃ c, m = c ^ 2 := by simp [IsSquare, pow_two]
+#align is_square_iff_exists_sq isSquare_iff_exists_sq
+#align even_iff_exists_two_nsmul even_iff_exists_two_nsmul
 
-alias is_square_iff_exists_sq ↔ IsSquare.exists_sq is_square_of_exists_sq
+alias isSquare_iff_exists_sq ↔ IsSquare.exists_sq isSquare_of_exists_sq
 
--- attribute
---   [to_additive Even.exists_two_nsmul
---       "Alias of the forwards direction of\n`even_iff_exists_two_nsmul`."]
---   IsSquare.exists_sq
+attribute
+  [to_additive Even.exists_two_nsmul
+      "Alias of the forwards direction of\n`even_iff_exists_two_nsmul`."]
+  IsSquare.exists_sq
 
--- attribute
---   [to_additive even_of_exists_two_nsmul
---       "Alias of the backwards direction of\n`even_iff_exists_two_nsmul`."]
---   is_square_of_exists_sq
-
--- @[to_additive Even.nsmul]
+@[to_additive Even.nsmul]
 theorem IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨a, rfl⟩
   exact ⟨a ^ n, (Commute.refl _).mul_pow _⟩
 #align is_square.pow IsSquare.pow
 
--- @[simp, to_additive Even.nsmul']
-theorem Even.is_square_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
+/- Porting note: `simp` attribute removed because linter reports:
+simp can prove this:
+  by simp only [even_two, Even.nsmul']
+-/
+@[to_additive Even.nsmul']
+theorem Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨n, rfl⟩ a
   exact ⟨a ^ n, pow_add _ _ _⟩
-#align even.is_square_pow Even.is_square_pow
+#align even.is_square_pow Even.isSquare_pow
 
-@[simp, to_additive even_two_nsmul]
-theorem is_square_sq (a : α) : IsSquare (a ^ 2) :=
+/- Porting note: `simp` attribute removed because linter reports:
+simp can prove this:
+  by simp only [even_two, Even.is_square_pow]
+-/
+@[to_additive even_two_nsmul]
+theorem IsSquare_sq (a : α) : IsSquare (a ^ 2) :=
   ⟨a, pow_two _⟩
-#align is_square_sq is_square_sq
+#align is_square_sq IsSquare_sq
+#align even_two_nsmul even_two_nsmul
 
 variable [HasDistribNeg α]
 
@@ -133,13 +142,14 @@ theorem IsSquare.mul [CommSemigroup α] {a b : α} : IsSquare a → IsSquare b �
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩
   exact ⟨a * b, mul_mul_mul_comm _ _ _ _⟩
 #align is_square.mul IsSquare.mul
+#align even.add Even.add
 
 variable (α)
 
 @[simp]
-theorem is_square_zero [MulZeroClass α] : IsSquare (0 : α) :=
+theorem isSquare_zero [MulZeroClass α] : IsSquare (0 : α) :=
   ⟨0, (mul_zero _).symm⟩
-#align is_square_zero is_square_zero
+#align is_square_zero isSquare_zero
 
 variable {α}
 
@@ -148,14 +158,15 @@ section DivisionMonoid
 variable [DivisionMonoid α] {a : α}
 
 @[simp, to_additive even_neg]
-theorem is_square_inv : IsSquare a⁻¹ ↔ IsSquare a := by
+theorem isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
   refine' ⟨fun h => _, fun h => _⟩
-  · rw [← is_square_op_iff, ← inv_inv a]
+  · rw [← isSquare_op_iff, ← inv_inv a]
     exact h.map (MulEquiv.inv' α)
-  · exact ((is_square_op_iff a).mpr h).map (MulEquiv.inv' α).symm
-#align is_square_inv is_square_inv
+  · exact ((isSquare_op_iff a).mpr h).map (MulEquiv.inv' α).symm
+#align is_square_inv isSquare_inv
+#align even_neg even_neg
 
-alias is_square_inv ↔ _ IsSquare.inv
+alias isSquare_inv ↔ _ IsSquare.inv
 
 attribute [to_additive] IsSquare.inv
 
@@ -164,6 +175,7 @@ theorem IsSquare.zpow (n : ℤ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨a, rfl⟩
   exact ⟨a ^ n, (Commute.refl _).mul_zpow _⟩
 #align is_square.zpow IsSquare.zpow
+#align even.zsmul Even.zsmul
 
 variable [HasDistribNeg α] {n : ℤ}
 
@@ -181,10 +193,8 @@ theorem even_abs [SubtractionMonoid α] [LinearOrder α] {a : α} : Even (|a|) �
   cases abs_choice a
   · have h : abs a = a := by assumption
     simp only [h, even_neg]
-    rfl
   · have h : abs a = -a := by assumption
     simp only [h, even_neg]
-    rfl
 #align even_abs even_abs
 
 @[to_additive]
@@ -193,12 +203,14 @@ theorem IsSquare.div [DivisionCommMonoid α] {a b : α} (ha : IsSquare a) (hb : 
   rw [div_eq_mul_inv]
   exact ha.mul hb.inv
 #align is_square.div IsSquare.div
+#align even.sub Even.sub
 
 @[simp, to_additive Even.zsmul']
-theorem Even.is_square_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
+theorem Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨n, rfl⟩ a
   exact ⟨a ^ n, zpow_add _ _ _⟩
-#align even.is_square_zpow Even.is_square_zpow
+#align even.is_square_zpow Even.isSquare_zpow
+#align even.zsmul' Even.zsmul'
 
 -- `odd.tsub` requires `canonically_linear_ordered_semiring`, which we don't have
 theorem Even.tsub [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α]
@@ -434,7 +446,7 @@ theorem Odd.sub_odd (ha : Odd a) (hb : Odd b) : Even (a - b) := by
 #align odd.sub_odd Odd.sub_odd
 
 theorem odd_abs [LinearOrder α] : Odd (abs a) ↔ Odd a := by
-  cases' abs_choice a with h h <;> simp only [h, odd_neg] <;> rfl
+  cases' abs_choice a with h h <;> simp only [h, odd_neg]
 #align odd_abs odd_abs
 
 end Ring
