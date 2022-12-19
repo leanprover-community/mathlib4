@@ -31,7 +31,7 @@ namespace Nat
 
 /-- `log b n`, is the logarithm of natural number `n` in base `b`. It returns the largest `k : ℕ`
 such that `b^k ≤ n`, so if `b^k = n`, it returns exactly `k`. -/
---@[pp_nodot] TODO porting note: unknown attribute
+--@[pp_nodot] porting note: unknown attribute
 def log (b : ℕ) : ℕ → ℕ
   | n =>
     if h : b ≤ n ∧ 1 < b then
