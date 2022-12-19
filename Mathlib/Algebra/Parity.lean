@@ -181,10 +181,8 @@ theorem even_abs [SubtractionMonoid α] [LinearOrder α] {a : α} : Even (|a|) �
   cases abs_choice a
   · have h : abs a = a := by assumption
     simp only [h, even_neg]
-    rfl
   · have h : abs a = -a := by assumption
     simp only [h, even_neg]
-    rfl
 #align even_abs even_abs
 
 @[to_additive]
@@ -434,7 +432,7 @@ theorem Odd.sub_odd (ha : Odd a) (hb : Odd b) : Even (a - b) := by
 #align odd.sub_odd Odd.sub_odd
 
 theorem odd_abs [LinearOrder α] : Odd (abs a) ↔ Odd a := by
-  cases' abs_choice a with h h <;> simp only [h, odd_neg] <;> rfl
+  cases' abs_choice a with h h <;> simp only [h, odd_neg]
 #align odd_abs odd_abs
 
 end Ring
