@@ -237,8 +237,8 @@ protected theorem add_left_neg : -a + a = 0 :=
   numDenCasesOn' a fun n d h => by simp [h, mkRat_add_mkRat]
 #align rat.add_left_neg Rat.add_left_neg
 
-@[simp]
-theorem divInt_zero_one : 0 /. 1 = 0 :=
+-- Porting note: TODO casts are still a problem here.
+theorem divInt_zero_one : (Int.cast 0) /. 1 = 0 :=
   show divInt _ _ = _ by
     rw [divInt]
     simp
