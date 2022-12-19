@@ -44,7 +44,6 @@ def log (b : ℕ) : ℕ → ℕ
 theorem log_eq_zero_iff {b n : ℕ} : log b n = 0 ↔ n < b ∨ b ≤ 1 := by
   rw [log, dite_eq_right_iff]
   simp only [Nat.succ_ne_zero, imp_false, not_and_or, not_le, not_lt]
-  rfl
 #align nat.log_eq_zero_iff Nat.log_eq_zero_iff
 
 theorem log_of_lt {b n : ℕ} (hb : n < b) : log b n = 0 :=
@@ -319,7 +318,7 @@ theorem pow_lt_iff_lt_clog {b : ℕ} (hb : 1 < b) {x y : ℕ} : b ^ y < x ↔ y 
 theorem clog_pow (b x : ℕ) (hb : 1 < b) : clog b (b ^ x) = x :=
   eq_of_forall_ge_iff fun z => by
     rw [← le_pow_iff_clog_le hb]
-    exact (pow_right_strict_mono hb).le_iff_le
+    exact (pow_right_strictMono hb).le_iff_le
 #align nat.clog_pow Nat.clog_pow
 
 theorem pow_pred_clog_lt_self {b : ℕ} (hb : 1 < b) {x : ℕ} (hx : 1 < x) :
@@ -366,7 +365,7 @@ theorem log_le_clog (b n : ℕ) : log b n ≤ clog b n := by
     rw [log_zero_right]
     exact zero_le _
   | succ n =>
-    exact (pow_right_strict_mono hb).le_iff_le.1
+    exact (pow_right_strictMono hb).le_iff_le.1
       ((pow_log_le_self b n.succ_ne_zero).trans <| le_pow_clog hb _)
 #align nat.log_le_clog Nat.log_le_clog
 
