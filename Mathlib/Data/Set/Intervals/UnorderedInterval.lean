@@ -28,7 +28,7 @@ In a product or pi type, `interval a b` is the smallest box containing `a` and `
 `interval (1, -1) (-1, 1) = Icc (-1, -1) (1, 1)` is the square of vertices `(1, -1)`, `(-1, -1)`,
 `(-1, 1)`, `(1, 1)`.
 
-In `finset α` (seen as a hypercube of dimension `fintype.card α`), `interval a b` is the smallest
+In `Finset α` (seen as a hypercube of dimension `Fintype.card α`), `interval a b` is the smallest
 subcube containing both `a` and `b`.
 
 ## Notation
@@ -58,7 +58,8 @@ def interval (a b : α) : Set α :=
   Icc (a ⊓ b) (a ⊔ b)
 #align set.interval Set.interval
 
--- Porting note: temporarily remove `scoped[Interval]` and use `[[]]` instead of `[]` before fix
+-- Porting note: temporarily remove `scoped[Interval]` and use `[[]]` instead of `[]` before a
+-- workaround is found.
 /-- `[[a, b]]` denotes the set of elements lying between `a` and `b`, inclusive. -/
 notation "[[" a ", " b "]]" => Set.interval a b
 
@@ -243,34 +244,21 @@ theorem monotone_or_antitone_iff_interval :
   · exact ⟨a, c, b, Icc_subset_interval ⟨hab, hbc⟩, fun h => h.1.not_lt <| lt_min hfba hfbc⟩
 #align set.monotone_or_antitone_iff_interval Set.monotone_or_antitone_iff_interval
 
+-- Porting note: mathport expands the syntactic sugar `∀ a b c ∈ s` differently than Lean3
 theorem monotoneOn_or_antitoneOn_iff_interval :
     MonotoneOn f s ∨ AntitoneOn f s ↔
-      ∀ (a b c) (_ : a ∈ s) (_ : b ∈ s) (_ : c ∈ s), c ∈ [[a, b]] → f c ∈ [[f a, f b]] :=
-  by
-  rw [monotoneOn_iff_monotone, antitoneOn_iff_antitone, monotone_or_antitone_iff_interval]
-  constructor
-  · intros h a' b' c' ha hb hc hc'
-    have := h ⟨a', ha⟩ ⟨b', hb⟩ ⟨c', hc⟩
-    rw [Subtype.coe_mk, Subtype.coe_mk, Subtype.coe_mk] at this
-    apply this
-    rwa [mem_interval, Subtype.mk_le_mk, Subtype.mk_le_mk, Subtype.mk_le_mk, Subtype.mk_le_mk,
-      ← mem_interval]
-  · intros h a' b' c' hc
-    have := h a' b' c' a'.2 b'.2 c'.2
-    apply this
-    rwa [mem_interval, Subtype.mk_le_mk, Subtype.mk_le_mk, Subtype.mk_le_mk, Subtype.mk_le_mk,
-      ← mem_interval] at hc
-  -- Porting note: `simp` can't `rw` under `∀`
-  -- simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, monotone_or_antitone_iff_interval,
-    -- mem_interval]
+      ∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s) (c) (_ : c ∈ s), c ∈ [[a, b]] → f c ∈ [[f a, f b]] :=
+  by simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, monotone_or_antitone_iff_interval,
+    mem_interval]
 #align set.monotone_on_or_antitone_on_iff_interval Set.monotoneOn_or_antitoneOn_iff_interval
 
--- Porting note: what should the naming scheme be here?
+-- Porting note: what should the naming scheme be here? This is a term, so should be `intervalOC`,
+-- but we also want to match the `Ioc` convention.
 /-- The open-closed interval with unordered bounds. -/
 def interval_oc : α → α → Set α := fun a b => Ioc (min a b) (max a b)
 #align set.interval_oc Set.interval_oc
 
--- Porting note: removed `scoped[Interval]` temporarily before fix
+-- Porting note: removed `scoped[Interval]` temporarily before a workaround is found
 -- Below is a capital iota
 /-- `Ι a b` denotes the open-closed interval with unordered bounds. Here, `Ι` is a capital iota,
 distinguished from a capital `i`. -/
