@@ -330,7 +330,8 @@ section lift
 protected def Function.Injective.frame [HasSup α] [HasInf α] [SupSet α] [InfSet α] [Top α] [Bot α]
     [Frame β] (f : α → β) (hf : Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
     (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_supₛ : ∀ s, f (supₛ s) = ⨆ a ∈ s, f a)
-    (map_infₛ : ∀ s, f (infₛ s) = ⨅ a ∈ s, f a) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : Frame α :=
+    (map_infₛ : ∀ s, f (infₛ s) = ⨅ a ∈ s, f a) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) :
+    Frame α :=
   { hf.completeLattice f map_sup map_inf map_supₛ map_infₛ map_top map_bot with
     inf_supₛ_le_supᵢ_inf := fun a s => by
       change f (a ⊓ supₛ s) ≤ f _
@@ -345,7 +346,8 @@ protected def Function.Injective.frame [HasSup α] [HasInf α] [SupSet α] [InfS
 protected def Function.Injective.coframe [HasSup α] [HasInf α] [SupSet α] [InfSet α] [Top α] [Bot α]
     [Coframe β] (f : α → β) (hf : Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
     (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_supₛ : ∀ s, f (supₛ s) = ⨆ a ∈ s, f a)
-    (map_infₛ : ∀ s, f (infₛ s) = ⨅ a ∈ s, f a) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : Coframe α :=
+    (map_infₛ : ∀ s, f (infₛ s) = ⨅ a ∈ s, f a) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) :
+    Coframe α :=
   { hf.completeLattice f map_sup map_inf map_supₛ map_infₛ map_top map_bot with
     infᵢ_sup_le_sup_infₛ := fun a s => by
       change f _ ≤ f (a ⊔ infₛ s)
