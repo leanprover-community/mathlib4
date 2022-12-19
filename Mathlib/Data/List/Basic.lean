@@ -1670,9 +1670,9 @@ theorem nthLe_reverse (l : List α) (i : Nat) (h1 h2) :
 theorem nth_le_reverse' (l : List α) (n : ℕ) (hn : n < l.reverse.length) (hn') :
     l.reverse.nthLe n hn = l.nthLe (l.length - 1 - n) hn' := by
   rw [eq_comm]
-  convert nthLe_reverse l.reverse _ _ _ using 1
+  convert nthLe_reverse l.reverse n (by simpa) hn using 1
   · simp
-  · simpa
+
 #align list.nth_le_reverse' List.nth_le_reverse'
 
 theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) :
@@ -1714,7 +1714,7 @@ theorem modify_nth_tail_modify_nth_tail_le {f g : List α → List α} (m n : �
 
 theorem modify_nth_tail_modify_nth_tail_same {f g : List α → List α} (n : ℕ) (l : List α) :
     (l.modifyNthTail f n).modifyNthTail g n = l.modifyNthTail (g ∘ f) n := by
-  rw [modify_nth_tail_modify_nth_tail_le n n l (le_refl n), tsub_self] <;> rfl
+  rw [modify_nth_tail_modify_nth_tail_le n n l (le_refl n), tsub_self]; rfl
 #align list.modify_nth_tail_modify_nth_tail_same List.modify_nth_tail_modify_nth_tail_same
 
 theorem modify_nth_tail_id : ∀ (n) (l : List α), l.modifyNthTail id n = l
