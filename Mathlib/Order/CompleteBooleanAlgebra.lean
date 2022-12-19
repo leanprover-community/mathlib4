@@ -53,11 +53,17 @@ class Order.Frame (α : Type _) extends CompleteLattice α where
   inf_supₛ_le_supᵢ_inf (a : α) (s : Set α) : a ⊓ supₛ s ≤ ⨆ b ∈ s, a ⊓ b
 #align order.frame Order.Frame
 
+/-- In a frame, `⊓` distributes over `⨆`. -/
+add_decl_doc Order.Frame.inf_supₛ_le_supᵢ_inf
+
 /-- A coframe, aka complete Brouwer algebra or complete co-Heyting algebra, is a complete lattice
 whose `⊔` distributes over `⨅`. -/
 class Order.Coframe (α : Type _) extends CompleteLattice α where
   infᵢ_sup_le_sup_infₛ (a : α) (s : Set α) : (⨅ b ∈ s, a ⊔ b) ≤ a ⊔ infₛ s
 #align order.coframe Order.Coframe
+
+/-- In a coframe, `⊔` distributes over `⨅`. -/
+add_decl_doc Order.Coframe.infᵢ_sup_le_sup_infₛ
 
 open Order
 
@@ -66,6 +72,9 @@ distribute over `⨅` and `⨆`. -/
 class CompleteDistribLattice (α : Type _) extends Frame α where
   infᵢ_sup_le_sup_infₛ : ∀ a s, (⨅ b ∈ s, a ⊔ b) ≤ a ⊔ infₛ s
 #align complete_distrib_lattice CompleteDistribLattice
+
+/-- In a completely distributive lattice, `⊔` distributes over `⨅`. -/
+add_decl_doc CompleteDistribLattice.infᵢ_sup_le_sup_infₛ
 
 -- See note [lower instance priority]
 instance (priority := 100) CompleteDistribLattice.toCoframe [CompleteDistribLattice α] :
@@ -97,14 +106,10 @@ theorem inf_supᵢ_eq (a : α) (f : ι → α) : (a ⊓ ⨆ i, f i) = ⨆ i, a �
   simpa only [inf_comm] using supᵢ_inf_eq f a
 #align inf_supr_eq inf_supᵢ_eq
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem supᵢ₂_inf_eq {f : ∀ i, κ i → α} (a : α) : (⨆ (i) (j), f i j) ⊓ a = ⨆ (i) (j), f i j ⊓ a :=
   by simp only [supᵢ_inf_eq]
 #align bsupr_inf_eq supᵢ₂_inf_eq
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem inf_supᵢ₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊓ ⨆ (i) (j), f i j) = ⨆ (i) (j), a ⊓ f i j :=
   by simp only [inf_supᵢ_eq]
 #align inf_bsupr_eq inf_supᵢ₂_eq
@@ -114,14 +119,12 @@ theorem supᵢ_inf_supᵢ {ι ι' : Type _} {f : ι → α} {g : ι' → α} :
   simp_rw [supᵢ_inf_eq, inf_supᵢ_eq, supᵢ_prod]
 #align supr_inf_supr supᵢ_inf_supᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem bsupᵢ_inf_bsupᵢ {ι ι' : Type _} {f : ι → α} {g : ι' → α} {s : Set ι} {t : Set ι'} :
     ((⨆ i ∈ s, f i) ⊓ ⨆ j ∈ t, g j) = ⨆ p ∈ s ×ˢ t, f (p : ι × ι').1 ⊓ g p.2 := by
   simp only [supᵢ_subtype', supᵢ_inf_supᵢ]
   exact (Equiv.surjective _).supᵢ_congr (Equiv.Set.prod s t).symm fun x => rfl
 #align bsupr_inf_bsupr bsupᵢ_inf_bsupᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem supₛ_inf_supₛ : supₛ s ⊓ supₛ t = ⨆ p ∈ s ×ˢ t, (p : α × α).1 ⊓ p.2 := by
   simp only [supₛ_eq_supᵢ, bsupᵢ_inf_bsupᵢ]
 #align Sup_inf_Sup supₛ_inf_supₛ
@@ -134,13 +137,11 @@ theorem disjoint_supᵢ_iff {f : ι → α} : Disjoint a (⨆ i, f i) ↔ ∀ i,
   simpa only [Disjoint.comm] using @supᵢ_disjoint_iff
 #align disjoint_supr_iff disjoint_supᵢ_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem supᵢ₂_disjoint_iff {f : ∀ i, κ i → α} :
     Disjoint (⨆ (i) (j), f i j) a ↔ ∀ i j, Disjoint (f i j) a := by
   simp_rw [supᵢ_disjoint_iff]; rfl
 #align supr₂_disjoint_iff supᵢ₂_disjoint_iff
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem disjoint_supᵢ₂_iff {f : ∀ i, κ i → α} :
     Disjoint a (⨆ (i) (j), f i j) ↔ ∀ i j, Disjoint a (f i j) := by
   simp_rw [disjoint_supᵢ_iff]; rfl
@@ -206,14 +207,10 @@ theorem sup_infᵢ_eq (a : α) (f : ι → α) : (a ⊔ ⨅ i, f i) = ⨅ i, a �
   @inf_supᵢ_eq αᵒᵈ _ _ _ _
 #align sup_infi_eq sup_infᵢ_eq
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem infᵢ₂_sup_eq {f : ∀ i, κ i → α} (a : α) : (⨅ (i) (j), f i j) ⊔ a = ⨅ (i) (j), f i j ⊔ a :=
   @supᵢ₂_inf_eq αᵒᵈ _ _ _ _ _
 #align binfi_sup_eq infᵢ₂_sup_eq
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem sup_infᵢ₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊔ ⨅ (i) (j), f i j) = ⨅ (i) (j), a ⊔ f i j :=
   @inf_supᵢ₂_eq αᵒᵈ _ _ _ _ _
 #align sup_binfi_eq sup_infᵢ₂_eq
@@ -223,13 +220,11 @@ theorem infᵢ_sup_infᵢ {ι ι' : Type _} {f : ι → α} {g : ι' → α} :
   @supᵢ_inf_supᵢ αᵒᵈ _ _ _ _ _
 #align infi_sup_infi infᵢ_sup_infᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem binfᵢ_sup_binfᵢ {ι ι' : Type _} {f : ι → α} {g : ι' → α} {s : Set ι} {t : Set ι'} :
     ((⨅ i ∈ s, f i) ⊔ ⨅ j ∈ t, g j) = ⨅ p ∈ s ×ˢ t, f (p : ι × ι').1 ⊔ g p.2 :=
   @bsupᵢ_inf_bsupᵢ αᵒᵈ _ _ _ _ _ _ _
 #align binfi_sup_binfi binfᵢ_sup_binfᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem infₛ_sup_infₛ : infₛ s ⊔ infₛ t = ⨅ p ∈ s ×ˢ t, (p : α × α).1 ⊔ p.2 :=
   @supₛ_inf_supₛ αᵒᵈ _ _ _
 #align Inf_sup_Inf infₛ_sup_infₛ
