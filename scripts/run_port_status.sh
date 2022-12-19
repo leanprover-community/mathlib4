@@ -4,7 +4,8 @@ set -ex
 
 [ -d port-repos ] || exit 1
 
-git pull --rebase origin master
+git fetch origin
+git rebase origin/master
 
 function clone_pull {
     git clone "$2" $1 || true
