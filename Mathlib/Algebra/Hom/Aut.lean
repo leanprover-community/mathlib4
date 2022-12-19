@@ -8,7 +8,7 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.GroupTheory.Perm.Basic
+import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # Multiplicative and additive group automorphisms
@@ -39,6 +39,8 @@ def MulAut (M : Type _) [Mul M] :=
   M ≃* M
 #align mul_aut MulAut
 
+attribute [reducible] AddAut
+
 namespace MulAut
 
 variable (M) [Mul M]
@@ -48,18 +50,18 @@ variable (M) [Mul M]
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
 instance : Group (MulAut M) := by
-  refine_struct
+  refine'
             { mul := fun g h => MulEquiv.trans h g
               one := MulEquiv.refl M
               inv := MulEquiv.symm
-              div := _
+              div := fun g h => MulEquiv.trans h.symm g
               npow := @npowRec _ ⟨MulEquiv.refl M⟩ ⟨fun g h => MulEquiv.trans h g⟩
-              zpow :=
-                @zpowRec _ ⟨MulEquiv.refl M⟩ ⟨fun g h => MulEquiv.trans h g⟩ ⟨MulEquiv.symm⟩ } <;>
-          intros <;>
-        ext <;>
-      try rfl <;>
-    apply Equiv.left_inv
+              zpow := @zpowRec _ ⟨MulEquiv.refl M⟩ ⟨fun g h => MulEquiv.trans h g⟩ ⟨MulEquiv.symm⟩
+              .. } <;>
+  intros <;>
+  ext <;>
+  try rfl
+  apply Equiv.left_inv
 
 instance : Inhabited (MulAut M) :=
   ⟨1⟩
@@ -108,7 +110,7 @@ theorem inv_apply_self (e : MulAut M) (m : M) : e⁻¹ (e m) = m :=
 
 /-- Monoid hom from the group of multiplicative automorphisms to the group of permutations. -/
 def toPerm : MulAut M →* Equiv.Perm M := by
-  refine_struct { toFun := MulEquiv.toEquiv } <;> intros <;> rfl
+  refine' { toFun := MulEquiv.toEquiv, ..} <;> intros <;> rfl
 #align mul_aut.to_perm MulAut.toPerm
 
 /-- The tautological action by `mul_aut M` on `M`.
@@ -130,7 +132,7 @@ protected theorem smul_def {M} [Monoid M] (f : MulAut M) (a : M) : f • a = f a
 
 /-- `mul_aut.apply_mul_action` is faithful. -/
 instance apply_has_faithful_smul {M} [Monoid M] : FaithfulSMul (MulAut M) M :=
-  ⟨fun _ _ => MulEquiv.ext⟩
+  ⟨ fun h => MulEquiv.ext h ⟩
 #align mul_aut.apply_has_faithful_smul MulAut.apply_has_faithful_smul
 
 /-- Group conjugation, `mul_aut.conj g h = g * h * g⁻¹`, as a monoid homomorphism
@@ -147,8 +149,14 @@ def conj [Group G] :
       left_inv := fun _ => by simp [mul_assoc]
       right_inv := fun _ => by simp [mul_assoc]
       map_mul' := by simp [mul_assoc] }
-  map_mul' _ _ := by ext <;> simp [mul_assoc]
-  map_one' := by ext <;> simp [mul_assoc]
+  map_mul' _ _ := by
+    ext
+    --simp [mul_assoc]
+    sorry
+  map_one' := by
+    ext
+    simp [mul_assoc]
+    rfl
 #align mul_aut.conj MulAut.conj
 
 @[simp]
@@ -177,18 +185,18 @@ variable (A) [Add A]
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
 instance group : Group (AddAut A) := by
-  refine_struct
+  refine'
             { mul := fun g h => AddEquiv.trans h g
               one := AddEquiv.refl A
               inv := AddEquiv.symm
-              div := _
+              div := fun g h => AddEquiv.trans h.symm g
               npow := @npowRec _ ⟨AddEquiv.refl A⟩ ⟨fun g h => AddEquiv.trans h g⟩
-              zpow :=
-                @zpowRec _ ⟨AddEquiv.refl A⟩ ⟨fun g h => AddEquiv.trans h g⟩ ⟨AddEquiv.symm⟩ } <;>
-          intros <;>
-        ext <;>
-      try rfl <;>
-    apply Equiv.left_inv
+              zpow := @zpowRec _ ⟨AddEquiv.refl A⟩ ⟨fun g h => AddEquiv.trans h g⟩ ⟨AddEquiv.symm⟩
+              .. } <;>
+  intros <;>
+  ext <;>
+  try rfl
+  apply Equiv.left_inv
 #align add_aut.group AddAut.group
 
 instance : Inhabited (AddAut A) :=
@@ -238,7 +246,7 @@ theorem inv_apply_self (e : AddAut A) (a : A) : e (e⁻¹ a) = a :=
 
 /-- Monoid hom from the group of multiplicative automorphisms to the group of permutations. -/
 def toPerm : AddAut A →* Equiv.Perm A := by
-  refine_struct { toFun := AddEquiv.toEquiv } <;> intros <;> rfl
+  refine' { toFun := AddEquiv.toEquiv, .. } <;> intros <;> rfl
 #align add_aut.to_perm AddAut.toPerm
 
 /-- The tautological action by `add_aut A` on `A`.
@@ -260,7 +268,7 @@ protected theorem smul_def {A} [AddMonoid A] (f : AddAut A) (a : A) : f • a = 
 
 /-- `add_aut.apply_distrib_mul_action` is faithful. -/
 instance apply_has_faithful_smul {A} [AddMonoid A] : FaithfulSMul (AddAut A) A :=
-  ⟨fun _ _ => AddEquiv.ext⟩
+  ⟨fun h => AddEquiv.ext h ⟩
 #align add_aut.apply_has_faithful_smul AddAut.apply_has_faithful_smul
 
 /-- Additive group conjugation, `add_aut.conj g h = g + h - g`, as an additive monoid
@@ -299,4 +307,3 @@ theorem conj_inv_apply [AddGroup G] (g h : G) : (-conj g) h = -g + h + g :=
 #align add_aut.conj_inv_apply AddAut.conj_inv_apply
 
 end AddAut
-
