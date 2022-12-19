@@ -2,6 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Bryan Gin-ge Chen
+
+! This file was ported from Lean 3 source module order.boolean_algebra
+! leanprover-community/mathlib commit 39af7d3bf61a98e928812dbc3e16f4ea8b795ca3
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.Heyting.Basic
 import Aesop

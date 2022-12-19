@@ -3,6 +3,11 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 Ported by: Winston Yin
+
+! This file was ported from Lean 3 source module data.set.image
+! leanprover-community/mathlib commit f178c0e25af359f6cbc72a96a243efd3b12423a3
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Basic
 
@@ -107,9 +112,9 @@ theorem preimage_ite (f : α → β) (s t₁ t₂ : Set β) :
 #align set.preimage_ite Set.preimage_ite
 
 @[simp]
-theorem preimage_set_of_eq {p : α → Prop} {f : β → α} : f ⁻¹' { a | p a } = { a | p (f a) } :=
+theorem preimage_setOf_eq {p : α → Prop} {f : β → α} : f ⁻¹' { a | p a } = { a | p (f a) } :=
   rfl
-#align set.preimage_set_of_eq Set.preimage_set_of_eq
+#align set.preimage_set_of_eq Set.preimage_setOf_eq
 
 @[simp]
 theorem preimage_id_eq : preimage (id : α → α) = id :=
@@ -495,8 +500,7 @@ theorem preimage_eq_preimage {f : β → α} (hf : Surjective f) : f ⁻¹' s = 
 theorem image_inter_preimage (f : α → β) (s : Set α) (t : Set β) :
     f '' (s ∩ f ⁻¹' t) = f '' s ∩ t := by
   apply Subset.antisymm
-  ·
-    calc
+  · calc
       f '' (s ∩ f ⁻¹' t) ⊆ f '' s ∩ f '' (f ⁻¹' t) := image_inter_subset _ _ _
       _ ⊆ f '' s ∩ t := inter_subset_inter_right _ (image_preimage_subset f t)
 
@@ -649,7 +653,8 @@ theorem exists_subtype_range_iff {p : range f → Prop} :
     (∃ a : range f, p a) ↔ ∃ i, p ⟨f i, mem_range_self _⟩ :=
   ⟨fun ⟨⟨a, i, hi⟩, ha⟩ => by
     subst a
-    exact ⟨i, ha⟩, fun ⟨i, hi⟩ => ⟨_, hi⟩⟩
+    exact ⟨i, ha⟩,
+   fun ⟨i, hi⟩ => ⟨_, hi⟩⟩
 #align set.exists_subtype_range_iff Set.exists_subtype_range_iff
 
 theorem range_iff_surjective : range f = univ ↔ Surjective f :=
@@ -760,7 +765,8 @@ theorem image_preimage_eq_iff {f : α → β} {s : Set β} : f '' (f ⁻¹' s) =
   ⟨by
     intro h
     rw [← h]
-    apply image_subset_range, image_preimage_eq_of_subset⟩
+    apply image_subset_range,
+   image_preimage_eq_of_subset⟩
 #align set.image_preimage_eq_iff Set.image_preimage_eq_iff
 
 theorem subset_range_iff_exists_image_eq {f : α → β} {s : Set β} : s ⊆ range f ↔ ∃ t, f '' t = s :=
@@ -770,8 +776,8 @@ theorem subset_range_iff_exists_image_eq {f : α → β} {s : Set β} : s ⊆ ra
 @[simp]
 theorem exists_subset_range_and_iff {f : α → β} {p : Set β → Prop} :
     (∃ s, s ⊆ range f ∧ p s) ↔ ∃ s, p (f '' s) :=
-  ⟨fun ⟨s, hsf, hps⟩ => ⟨f ⁻¹' s, (image_preimage_eq_of_subset hsf).symm ▸ hps⟩, fun ⟨s, hs⟩ =>
-    ⟨f '' s, image_subset_range _ _, hs⟩⟩
+  ⟨fun ⟨s, hsf, hps⟩ => ⟨f ⁻¹' s, (image_preimage_eq_of_subset hsf).symm ▸ hps⟩,
+   fun ⟨s, hs⟩ => ⟨f '' s, image_subset_range _ _, hs⟩⟩
 #align set.exists_subset_range_and_iff Set.exists_subset_range_and_iff
 
 theorem exists_subset_range_iff {f : α → β} {p : Set β → Prop} :
@@ -796,8 +802,8 @@ theorem preimage_eq_preimage' {s t : Set α} {f : β → α} (hs : s ⊆ range f
   constructor
   · intro h
     apply Subset.antisymm
-    rw [← preimage_subset_preimage_iff hs, h]
-    rw [← preimage_subset_preimage_iff ht, h]
+    · rw [← preimage_subset_preimage_iff hs, h]
+    · rw [← preimage_subset_preimage_iff ht, h]
   rintro rfl; rfl
 #align set.preimage_eq_preimage' Set.preimage_eq_preimage'
 
