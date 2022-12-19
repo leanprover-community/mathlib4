@@ -654,6 +654,23 @@ theorem update_le_update_iff {ι : Type u} {α : ι → Type v} [∀ i, Preorder
     Function.update x i a ≤ Function.update y i b ↔ a ≤ b ∧ ∀ (j) (_ : j ≠ i), x j ≤ y j := by
   simp (config := { contextual := true }) [update_le_iff]
 
+
+@[simp] lemma le_update_self_iff {ι : Type u} {α : ι → Type v} [∀ i, Preorder (α i)]
+    [DecidableEq ι] {x : ∀ i, α i} {i : ι} {a : α i} : x ≤ update x i a ↔ x i ≤ a := by
+  simp [le_update_iff]
+
+@[simp] lemma update_le_self_iff {ι : Type u} {α : ι → Type v} [∀ i, Preorder (α i)]
+    [DecidableEq ι] {x : ∀ i, α i} {i : ι} {a : α i} : update x i a ≤ x ↔ a ≤ x i := by
+  simp [update_le_iff]
+
+@[simp] lemma lt_update_self_iff {ι : Type u} {α : ι → Type v} [∀ i, Preorder (α i)]
+    [DecidableEq ι] {x : ∀ i, α i} {i : ι} {a : α i} : x < update x i a ↔ x i < a := by
+  simp [lt_iff_le_not_le]
+
+@[simp] lemma update_lt_self_iff {ι : Type u} {α : ι → Type v} [∀ i, Preorder (α i)]
+    [DecidableEq ι] {x : ∀ i, α i} {i : ι} {a : α i} : update x i a < x ↔ a < x i := by
+  simp [lt_iff_le_not_le]
+
 instance {ι : Type u} {α : ι → Type v} [∀ i, PartialOrder (α i)] :
     PartialOrder (∀ i, α i) where
   __ := inferInstanceAs (Preorder (∀ i, α i))
