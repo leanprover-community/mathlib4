@@ -2091,6 +2091,7 @@ a single `list.map` of composed functions.
 theorem map_comp_map (g : β → γ) (f : α → β) : map g ∘ map f = map (g ∘ f) := by
   ext l
   rw [comp_map]
+  rfl
 #align list.map_comp_map List.map_comp_map
 
 theorem map_filter_eq_foldr (f : α → β) (p : α → Prop) [DecidablePred p] (as : List α) :
@@ -2108,16 +2109,16 @@ theorem last_map (f : α → β) {l : List α} (hl : l ≠ []) :
   · apply (hl rfl).elim
   · cases l_tl
     · simp
-    · simpa using l_ih
+    · simpa using l_ih _
 #align list.last_map List.last_map
 
 theorem map_eq_repeat_iff {l : List α} {f : α → β} {b : β} :
     l.map f = List.repeat b l.length ↔ ∀ x ∈ l, f x = b := by
   induction' l with x l' ih
-  ·
-    simp only [List.repeat, length, not_mem_nil, IsEmpty.forall_iff, imp_true_iff, map_nil,
+  · simp only [List.repeat, length, not_mem_nil, IsEmpty.forall_iff, imp_true_iff, map_nil,
       eq_self_iff_true]
-  · simp only [map, length, mem_cons, forall_eq_or_imp, repeat_succ, and_congr_right_iff]
+  · simp only [map, List.repeat, add_eq, add_zero, cons.injEq, mem_cons,
+      forall_eq_or_imp, and_congr_right_iff]
     exact fun _ => ih
 #align list.map_eq_repeat_iff List.map_eq_repeat_iff
 
@@ -2160,20 +2161,14 @@ theorem take_zero (l : List α) : take 0 l = [] :=
 @[simp]
 theorem take_nil : ∀ n, take n [] = ([] : List α)
   | 0 => rfl
-  | n + 1 => rfl
+  | _ + 1 => rfl
 #align list.take_nil List.take_nil
 
 theorem take_cons (n) (a : α) (l : List α) : take (succ n) (a :: l) = a :: take n l :=
   rfl
 #align list.take_cons List.take_cons
 
-#print List.take_length /-
-@[simp]
-theorem take_length : ∀ l : List α, take (length l) l = l
-  | [] => rfl
-  | a :: l => by change a :: take (length l) l = a :: l; rw [take_length]
 #align list.take_length List.take_length
--/
 
 theorem take_all_of_le : ∀ {n} {l : List α}, length l ≤ n → take n l = l
   | 0, [], _ => rfl
@@ -2226,7 +2221,7 @@ of `l₁` to the first `n - l₁.length` elements of `l₂`. -/
 theorem take_append_eq_append_take {l₁ l₂ : List α} {n : ℕ} :
     take n (l₁ ++ l₂) = take n l₁ ++ take (n - l₁.length) l₂ := by
   induction l₁ generalizing n; · simp
-  cases n; · simp; simp [*]
+  cases n <;> simp [*]
 #align list.take_append_eq_append_take List.take_append_eq_append_take
 
 theorem take_append_of_le_length {l₁ l₂ : List α} {n : ℕ} (h : n ≤ l₁.length) :
@@ -2241,7 +2236,7 @@ theorem take_append {l₁ l₂ : List α} (i : ℕ) : take (l₁.length + i) (l�
 
 /-- The `i`-th element of a list coincides with the `i`-th element of any of its prefixes of
 length `> i`. Version designed to rewrite from the big list to the small list. -/
-theorem nth_le_take (L : List α) {i j : ℕ} (hi : i < L.length) (hj : i < j) :
+theorem nthLe_take (L : List α) {i j : ℕ} (hi : i < L.length) (hj : i < j) :
     nthLe L i hi =
       nthLe (L.take j) i
         (by
@@ -2250,15 +2245,15 @@ theorem nth_le_take (L : List α) {i j : ℕ} (hi : i < L.length) (hj : i < j) :
   by
   rw [nth_le_of_eq (take_append_drop j L).symm hi]
   exact nth_le_append _ _
-#align list.nth_le_take List.nth_le_take
+#align list.nth_le_take List.nthLe_take
 
 /-- The `i`-th element of a list coincides with the `i`-th element of any of its prefixes of
 length `> i`. Version designed to rewrite from the small list to the big list. -/
-theorem nth_le_take' (L : List α) {i j : ℕ} (hi : i < (L.take j).length) :
+theorem nthLe_take' (L : List α) {i j : ℕ} (hi : i < (L.take j).length) :
     nthLe (L.take j) i hi = nthLe L i (lt_of_lt_of_le hi (by simp [le_refl])) := by
   simp at hi
-  rw [nth_le_take L _ hi.1]
-#align list.nth_le_take' List.nth_le_take'
+  rw [nthLe_take L _ hi.1]
+#align list.nth_le_take' List.nthLe_take'
 
 theorem nth_take {l : List α} {n m : ℕ} (h : m < n) : (l.take n).nth m = l.nth m := by
   induction' n with n hn generalizing l m
@@ -2292,7 +2287,7 @@ theorem take_eq_nil_iff {l : List α} {k : ℕ} : l.take k = [] ↔ l = [] ∨ k
 theorem take_eq_take :
     ∀ {l : List α} {m n : ℕ}, l.take m = l.take n ↔ min m l.length = min n l.length
   | [], m, n => by simp
-  | x :: xs, 0, 0 => by simp
+  | _ :: xs, 0, 0 => by simp
   | x :: xs, m + 1, 0 => by simp
   | x :: xs, 0, n + 1 => by simp [@eq_comm ℕ 0]
   | x :: xs, m + 1, n + 1 => by simp [Nat.min_succ_succ, take_eq_take]
@@ -2333,9 +2328,12 @@ theorem init_cons_of_ne_nil {α : Type _} {x : α} :
 
 @[simp]
 theorem init_append_of_ne_nil {α : Type _} {l : List α} :
-    ∀ (l' : List α) (h : l ≠ []), (l' ++ l).init = l' ++ l.init
+    ∀ (l' : List α) (_ : l ≠ []), (l' ++ l).init = l' ++ l.init
   | [], _ => by simp only [nil_append]
-  | a :: l', h => by simp [append_ne_nil_of_ne_nil_right l' l h, init_append_of_ne_nil l' h]
+  | a :: l', h => by
+    rw [cons_append, init, init_append_of_ne_nil l' h, cons_append]
+    simp [h]
+
 #align list.init_append_of_ne_nil List.init_append_of_ne_nil
 
 #align list.drop_eq_nil_of_le List.drop_eq_nil_of_le
@@ -2359,15 +2357,15 @@ theorem tail_drop (l : List α) (n : ℕ) : (l.drop n).tail = l.drop (n + 1) := 
     · simp [hl]
 #align list.tail_drop List.tail_drop
 
-theorem cons_nth_le_drop_succ {l : List α} {n : ℕ} (hn : n < l.length) :
+theorem cons_nthLe_drop_succ {l : List α} {n : ℕ} (hn : n < l.length) :
     l.nthLe n hn :: l.drop (n + 1) = l.drop n := by
   induction' l with hd tl hl generalizing n
   · exact absurd n.zero_le (not_le_of_lt (by simp at hn))
   · cases n
-    · simp
+    · simp [nthLe]
     · simp only [Nat.succ_lt_succ_iff, List.length] at hn
       simpa [List.nthLe, List.drop] using hl hn
-#align list.cons_nth_le_drop_succ List.cons_nth_le_drop_succ
+#align list.cons_nth_le_drop_succ List.cons_nthLe_drop_succ
 
 #align list.drop_nil List.drop_nil
 
@@ -2378,9 +2376,9 @@ theorem drop_one : ∀ l : List α, drop 1 l = tail l
 #align list.drop_one List.drop_one
 
 theorem drop_add : ∀ (m n) (l : List α), drop (m + n) l = drop m (drop n l)
-  | m, 0, l => rfl
-  | m, n + 1, [] => (drop_nil _).symm
-  | m, n + 1, a :: l => drop_add m n _
+  | _, 0, _ => rfl
+  | _, _ + 1, [] => drop_nil.symm
+  | m, n + 1, _ :: _ => drop_add m n _
 #align list.drop_add List.drop_add
 
 @[simp]
@@ -2416,7 +2414,7 @@ in `l₁`, dropping the elements up to `n - l₁.length` in `l₂`, and appendin
 theorem drop_append_eq_append_drop {l₁ l₂ : List α} {n : ℕ} :
     drop n (l₁ ++ l₂) = drop n l₁ ++ drop (n - l₁.length) l₂ := by
   induction l₁ generalizing n; · simp
-  cases n; · simp; simp [*]
+  cases n <;> simp [*]
 #align list.drop_append_eq_append_drop List.drop_append_eq_append_drop
 
 theorem drop_append_of_le_length {l₁ l₂ : List α} {n : ℕ} (h : n ≤ l₁.length) :
@@ -2430,13 +2428,13 @@ theorem drop_append {l₁ l₂ : List α} (i : ℕ) : drop (l₁.length + i) (l�
   simp [drop_append_eq_append_drop, take_all_of_le le_self_add]
 #align list.drop_append List.drop_append
 
-theorem drop_sizeof_le [SizeOf α] (l : List α) : ∀ n : ℕ, (l.drop n).sizeof ≤ l.sizeof := by
+theorem drop_sizeOf_le [SizeOf α] (l : List α) : ∀ n : ℕ, sizeOf (l.drop n) ≤ sizeOf l := by
   induction' l with _ _ lih <;> intro n
   · rw [drop_nil]
-  · induction' n with n nih
+  · induction' n with n
     · rfl
-    · exact trans (lih _) le_add_self
-#align list.drop_sizeof_le List.drop_sizeof_le
+    · exact Trans.trans (lih _) le_add_self
+#align list.drop_sizeof_le List.drop_sizeOf_le
 
 /-- The `i + j`-th element of a list coincides with the `j`-th element of the list obtained by
 dropping the first `i` elements. Version designed to rewrite from the big list to the small list. -/
