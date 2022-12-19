@@ -859,6 +859,9 @@ section lift
 
 variable [PartialOrder α]
 
+-- Porting note: In this and the following few defs, the elaborator struggled with αᵒᵈ vs α;
+-- now it compiles but much slower than in mathlib3.
+
 -- See note [reducible non instances]
 /-- Lift the infima along a Galois coinsertion -/
 @[reducible]
