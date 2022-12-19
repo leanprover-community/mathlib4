@@ -217,24 +217,24 @@ theorem Lex.noMaxOrder' [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (�
 instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMaxOrder (β i)] : NoMaxOrder (Lex (∀ i, β i)) :=
   ⟨fun a =>
-    let ⟨b, hb⟩ := exists_gt (ofLex a)  -- TODO Pi.NoMaxOrder is missing in Order.Max
-    ⟨_, to_lex_strict_mono hb⟩⟩
+    let ⟨_, hb⟩ := exists_gt (ofLex a)
+    ⟨_, toLex_strictMono hb⟩⟩
 
 instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMinOrder (β i)] : NoMinOrder (Lex (∀ i, β i)) :=
   ⟨fun a =>
-    let ⟨b, hb⟩ := exists_lt (ofLex a) -- TODO Pi.NoMaxOrder is missing in Order.Max
-    ⟨_, to_lex_strict_mono hb⟩⟩
+    let ⟨_, hb⟩ := exists_lt (ofLex a) -- TODO Pi.NoMaxOrder is missing in Order.Max
+    ⟨_, toLex_strictMono hb⟩⟩
 
 --we might want the analog of `pi.ordered_cancel_comm_monoid` as well in the future
 @[to_additive]
 instance Lex.orderedCommGroup [LinearOrder ι] [∀ a, OrderedCommGroup (β a)] :
     OrderedCommGroup (Lex (∀ i, β i)) :=
-  { Pi.Lex.partialOrder, Pi.commGroup with
+  { Pi.commGroup with
     mul_le_mul_left := fun x y hxy z =>
       hxy.elim (fun hxyz => hxyz ▸ le_rfl) fun ⟨i, hi⟩ =>
-        Or.inr
-          ⟨i, fun j hji => show z j * x j = z j * y j by rw [hi.1 j hji], mul_lt_mul_left' hi.2 _⟩ }
+        Or.inr ⟨i, fun j hji =>
+          show z j * x j = z j * y j by rw [hi.1 j hji], mul_lt_mul_left' hi.2 _⟩ }
 #align pi.lex.ordered_comm_group Pi.Lex.orderedCommGroup
 
 /-- If we swap two strictly decreasing values in a function, then the result is lexicographically

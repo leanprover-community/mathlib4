@@ -9,6 +9,7 @@ Authors: Jeremy Avigad, Yury Kudryashov, Yaël Dillies
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.Synonym
+import Mathlib.Tactic.Classical
 
 /-!
 # Minimal/maximal and bottom/top elements
@@ -35,6 +36,8 @@ See also `isBot_iff_isMin` and `isTop_iff_isMax` for the equivalences in a (co)d
 
 
 open OrderDual
+
+universe u v
 
 variable {α β : Type _}
 
@@ -99,6 +102,44 @@ instance (priority := 100) [Preorder α] [NoMinOrder α] : NoBotOrder α :=
 -- See note [lower instance priority]
 instance (priority := 100) [Preorder α] [NoMaxOrder α] : NoTopOrder α :=
   ⟨fun a => (exists_gt a).imp fun _ => not_le_of_lt⟩
+
+instance no_max_order_of_left [Preorder α] [Preorder β] [NoMaxOrder α] : NoMaxOrder (α × β) :=
+  ⟨fun ⟨a, b⟩ => by
+    obtain ⟨c, h⟩ := exists_gt a
+    exact ⟨(c, b), Prod.mk_lt_mk_iff_left.2 h⟩⟩
+#align no_max_order_of_left no_max_order_of_left
+
+instance no_max_order_of_right [Preorder α] [Preorder β] [NoMaxOrder β] : NoMaxOrder (α × β) :=
+  ⟨fun ⟨a, b⟩ => by
+    obtain ⟨c, h⟩ := exists_gt b
+    exact ⟨(a, c), Prod.mk_lt_mk_iff_right.2 h⟩⟩
+#align no_max_order_of_right no_max_order_of_right
+
+instance no_min_order_of_left [Preorder α] [Preorder β] [NoMinOrder α] : NoMinOrder (α × β) :=
+  ⟨fun ⟨a, b⟩ => by
+    obtain ⟨c, h⟩ := exists_lt a
+    exact ⟨(c, b), Prod.mk_lt_mk_iff_left.2 h⟩⟩
+#align no_min_order_of_left no_min_order_of_left
+
+instance no_min_order_of_right [Preorder α] [Preorder β] [NoMinOrder β] : NoMinOrder (α × β) :=
+  ⟨fun ⟨a, b⟩ => by
+    obtain ⟨c, h⟩ := exists_lt b
+    exact ⟨(a, c), Prod.mk_lt_mk_iff_right.2 h⟩⟩
+#align no_min_order_of_right no_min_order_of_right
+
+instance {ι : Type u} {π : ι → Type _} [Nonempty ι] [∀ i, Preorder (π i)] [∀ i, NoMaxOrder (π i)] :
+    NoMaxOrder (∀ i, π i) :=
+  ⟨fun a => by
+    classical
+    obtain ⟨b, hb⟩ := exists_gt (a <| Classical.arbitrary _)
+    exact ⟨_, lt_update_self_iff.2 hb⟩⟩
+
+instance {ι : Type u} {π : ι → Type _} [Nonempty ι] [∀ i, Preorder (π i)] [∀ i, NoMinOrder (π i)] :
+    NoMinOrder (∀ i, π i) :=
+  ⟨fun a => by
+     classical
+      obtain ⟨b, hb⟩ := exists_lt (a <| Classical.arbitrary _)
+      exact ⟨_, update_lt_self_iff.2 hb⟩⟩
 
 -- Porting note: mathlib3 proof uses `convert`
 theorem NoBotOrder.to_noMinOrder (α : Type _) [LinearOrder α] [NoBotOrder α] : NoMinOrder α :=
