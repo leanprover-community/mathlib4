@@ -16,6 +16,7 @@ import Mathlib.Algebra.Group.Ext
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.OrderSynonym
+import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Semiconj
 import Mathlib.Algebra.Group.TypeTags
@@ -103,6 +104,7 @@ import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Algebra.PEmptyInstances
+import Mathlib.Algebra.Parity
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Ring.Basic
@@ -205,6 +207,7 @@ import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Gcd.Basic
+import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Nat.PSub
@@ -267,6 +270,7 @@ import Mathlib.GroupTheory.GroupAction.Prod
 import Mathlib.GroupTheory.GroupAction.Sigma
 import Mathlib.GroupTheory.GroupAction.Sum
 import Mathlib.GroupTheory.GroupAction.Units
+import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order

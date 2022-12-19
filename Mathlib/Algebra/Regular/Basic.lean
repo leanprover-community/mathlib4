@@ -2,6 +2,11 @@
 Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
+
+! This file was ported from Lean 3 source module algebra.regular.basic
+! leanprover-community/mathlib commit 5cd3c25312f210fec96ba1edb2aebfb2ccf2010f
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Order.Monoid.Lemmas
