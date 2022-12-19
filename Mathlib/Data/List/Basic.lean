@@ -1923,44 +1923,44 @@ theorem insertNth_of_length_lt (l : List α) (x : α) (n : ℕ) (h : l.length < 
 #align list.insert_nth_of_length_lt List.insertNth_of_length_lt
 
 @[simp]
-theorem insert_nth_length_self (l : List α) (x : α) : insertNth l.length x l = l ++ [x] := by
+theorem insertNth_length_self (l : List α) (x : α) : insertNth l.length x l = l ++ [x] := by
   induction' l with hd tl IH
   · simp
   · simpa using IH
-#align list.insert_nth_length_self List.insert_nth_length_self
+#align list.insert_nth_length_self List.insertNth_length_self
 
-theorem length_le_length_insert_nth (l : List α) (x : α) (n : ℕ) :
+theorem length_le_length_insertNth (l : List α) (x : α) (n : ℕ) :
     l.length ≤ (insertNth n x l).length := by
   cases' le_or_lt n l.length with hn hn
-  · rw [length_insert_nth _ _ hn]
+  · rw [length_insertNth _ _ hn]
     exact (Nat.lt_succ_self _).le
-  · rw [insert_nth_of_length_lt _ _ _ hn]
-#align list.length_le_length_insert_nth List.length_le_length_insert_nth
+  · rw [insertNth_of_length_lt _ _ _ hn]
+#align list.length_le_length_insert_nth List.length_le_length_insertNth
 
-theorem length_insert_nth_le_succ (l : List α) (x : α) (n : ℕ) :
+theorem length_insertNth_le_succ (l : List α) (x : α) (n : ℕ) :
     (insertNth n x l).length ≤ l.length + 1 := by
   cases' le_or_lt n l.length with hn hn
-  · rw [length_insert_nth _ _ hn]
-  · rw [insert_nth_of_length_lt _ _ _ hn]
+  · rw [length_insertNth _ _ hn]
+  · rw [insertNth_of_length_lt _ _ _ hn]
     exact (Nat.lt_succ_self _).le
-#align list.length_insert_nth_le_succ List.length_insert_nth_le_succ
+#align list.length_insert_nth_le_succ List.length_insertNth_le_succ
 
-theorem nth_le_insert_nth_of_lt (l : List α) (x : α) (n k : ℕ) (hn : k < n) (hk : k < l.length)
-    (hk' : k < (insertNth n x l).length := hk.trans_le (length_le_length_insert_nth _ _ _)) :
+theorem nthLe_insertNth_of_lt (l : List α) (x : α) (n k : ℕ) (hn : k < n) (hk : k < l.length)
+    (hk' : k < (insertNth n x l).length := hk.trans_le (length_le_length_insertNth _ _ _)) :
     (insertNth n x l).nthLe k hk' = l.nthLe k hk := by
   induction' n with n IH generalizing k l
-  · simpa using hn
+  · simp at hn
   · cases' l with hd tl
     · simp
     · cases k
-      · simp
+      · simp [nthLe]
       · rw [Nat.succ_lt_succ_iff] at hn
         simpa using IH _ _ hn _
-#align list.nth_le_insert_nth_of_lt List.nth_le_insert_nth_of_lt
+#align list.nth_le_insert_nth_of_lt List.nthLe_insertNth_of_lt
 
 @[simp]
-theorem nth_le_insert_nth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length)
-    (hn' : n < (insertNth n x l).length := by rwa [length_insert_nth _ _ hn, Nat.lt_succ_iff]) :
+theorem nthLe_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length)
+    (hn' : n < (insertNth n x l).length := by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff]) :
     (insertNth n x l).nthLe n hn' = x := by
   induction' l with hd tl IH generalizing n
   · simp only [length, nonpos_iff_eq_zero] at hn
@@ -1969,25 +1969,30 @@ theorem nth_le_insert_nth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.le
     · simp
     · simp only [Nat.succ_le_succ_iff, length] at hn
       simpa using IH _ hn
-#align list.nth_le_insert_nth_self List.nth_le_insert_nth_self
+#align list.nth_le_insert_nth_self List.nthLe_insertNth_self
 
-theorem nth_le_insert_nth_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
+theorem nthLe_insertNth_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (insertNth n x l).length := by
-      rwa [length_insert_nth _ _ (le_self_add.trans hk'.le), Nat.succ_lt_succ_iff]) :
+      rwa [length_insertNth _ _ (le_self_add.trans hk'.le), Nat.succ_lt_succ_iff]) :
     (insertNth n x l).nthLe (n + k + 1) hk = nthLe l (n + k) hk' := by
   induction' l with hd tl IH generalizing n k
   · simpa using hk'
   · cases n
     · simpa
     · simpa [succ_add] using IH _ _ _
-#align list.nth_le_insert_nth_add_succ List.nth_le_insert_nth_add_succ
+#align list.nth_le_insert_nth_add_succ List.nthLe_insertNth_add_succ
 
-theorem insert_nth_injective (n : ℕ) (x : α) : Function.Injective (insertNth n x) := by
+theorem insertNth_injective (n : ℕ) (x : α) : Function.Injective (insertNth n x) := by
   induction' n with n IH
-  · have : insert_nth 0 x = cons x := funext fun _ => rfl
+  · have : insertNth 0 x = cons x := funext fun _ => rfl
     simp [this]
-  · rintro (_ | ⟨a, as⟩) (_ | ⟨b, bs⟩) h <;> first |simpa [IH.eq_iff] using h|rfl
-#align list.insert_nth_injective List.insert_nth_injective
+  · rintro (_ | ⟨a, as⟩) (_ | ⟨b, bs⟩) h
+    . rfl
+    . simp at h
+    . simp at h
+    . simp only [insertNth_succ_cons, cons.injEq] at h
+      simp [h.1, IH h.2]
+#align list.insert_nth_injective List.insertNth_injective
 
 end InsertNth
 
@@ -2027,7 +2032,7 @@ theorem map_id' {f : α → α} (h : ∀ x, f x = x) (l : List α) : map f l = l
 #align list.map_id' List.map_id'
 
 theorem eq_nil_of_map_eq_nil {f : α → β} {l : List α} (h : map f l = nil) : l = nil :=
-  eq_nil_of_length_eq_zero <| by rw [← length_map f l, h] <;> rfl
+  eq_nil_of_length_eq_zero <| by rw [← length_map l f, h]; rfl
 #align list.eq_nil_of_map_eq_nil List.eq_nil_of_map_eq_nil
 
 @[simp]
