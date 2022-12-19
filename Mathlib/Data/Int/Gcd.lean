@@ -381,7 +381,7 @@ theorem pow_dvd_pow_iff {m n : ℤ} {k : ℕ} (k0 : 0 < k) : m ^ k ∣ n ^ k ↔
   apply natAbs_dvd_natAbs.mp
   apply (Nat.pow_dvd_pow_iff k0).mp
   rw [← Int.nat_abs_pow, ← Int.nat_abs_pow]
-  exact int.nat_abs_dvd_iff_dvd.mpr h
+  exact Int.natAbs_dvd_natAbs.mpr h
 #align int.pow_dvd_pow_iff Int.pow_dvd_pow_iff
 
 theorem gcd_dvd_iff {a b : ℤ} {n : ℕ} : gcd a b ∣ n ↔ ∃ x y : ℤ, ↑n = a * x + b * y := by
@@ -498,26 +498,23 @@ end Int
 
 theorem pow_gcd_eq_one {M : Type _} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 1) (hn : x ^ n = 1) :
     x ^ m.gcd n = 1 := by
-  cases m; · simp only [hn, Nat.gcd_zero_left]
-  lift x to Mˣ using is_unit_of_pow_eq_one hm m.succ_ne_zero
-  simp only [← Units.coe_pow] at *
+  rcases m with (rfl | m); · simp [hn]
+  obtain ⟨y, rfl⟩ := is_unit_of_pow_eq_one hm m.succ_ne_zero
+  simp only [← Units.val_pow_eq_pow_val] at *
   rw [← Units.val_one, ← zpow_coe_nat, ← Units.ext_iff] at *
   simp only [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, hm, hn, one_zpow, one_mul]
 #align pow_gcd_eq_one pow_gcd_eq_one
 
 theorem gcd_nsmul_eq_zero {M : Type _} [AddMonoid M] (x : M) {m n : ℕ} (hm : m • x = 0)
     (hn : n • x = 0) : m.gcd n • x = 0 := by
-  apply multiplicative.of_add.injective
-  rw [of_add_nsmul, of_add_zero, pow_gcd_eq_one] <;>
-    rwa [← of_add_nsmul, ← of_add_zero, Equiv.apply_eq_iff_eq]
+  apply Multiplicative.ofAdd.injective
+  rw [ofAdd_nsmul, ofAdd_zero, pow_gcd_eq_one] <;>
+    rwa [← ofAdd_nsmul, ← ofAdd_zero, Equiv.apply_eq_iff_eq]
 #align gcd_nsmul_eq_zero gcd_nsmul_eq_zero
 
 attribute [to_additive gcd_nsmul_eq_zero] pow_gcd_eq_one
 
 /-! ### GCD prover -/
-
-
-open NormNum
 
 namespace Tactic
 
@@ -554,9 +551,10 @@ theorem nat_gcd_helper_1 (d x y a b u v tx ty : ℕ) (hu : d * u = x) (hv : d * 
   (Nat.gcd_comm _ _).trans <| nat_gcd_helper_2 _ _ _ _ _ _ _ _ _ hv hu hy hx h
 #align tactic.norm_num.nat_gcd_helper_1 Tactic.NormNum.nat_gcd_helper_1
 
+--Porting note: the `simp only` was not necessary in Lean3.
 theorem nat_lcm_helper (x y d m n : ℕ) (hd : Nat.gcd x y = d) (d0 : 0 < d) (xy : x * y = n)
     (dm : d * m = n) : Nat.lcm x y = m :=
-  mul_right_injective₀ d0.ne' <| by rw [dm, ← xy, ← hd, Nat.gcd_mul_lcm]
+  mul_right_injective₀ d0.ne' <| by simp only; rw [dm, ← xy, ← hd, Nat.gcd_mul_lcm]
 #align tactic.norm_num.nat_lcm_helper Tactic.NormNum.nat_lcm_helper
 
 theorem nat_coprime_helper_zero_left (x : ℕ) (h : 1 < x) : ¬Nat.coprime 0 x :=
