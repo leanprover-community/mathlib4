@@ -16,6 +16,7 @@ import Mathlib.Algebra.Group.Ext
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.OrderSynonym
+import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Semiconj
 import Mathlib.Algebra.Group.TypeTags
@@ -135,6 +136,7 @@ import Mathlib.Combinatorics.Quiver.ConnectedComponent
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Push
 import Mathlib.Combinatorics.Quiver.Subquiver
+import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.EquivFunctor
@@ -175,9 +177,11 @@ import Mathlib.Data.Int.Cast.Prod
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Int.Div
 import Mathlib.Data.Int.Dvd.Basic
+import Mathlib.Data.Int.Dvd.Pow
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Int.Order.Lemmas
+import Mathlib.Data.Int.Order.Units
 import Mathlib.Data.Int.Units
 import Mathlib.Data.KVMap
 import Mathlib.Data.LazyList
@@ -185,6 +189,7 @@ import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Card
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Defs
+import Mathlib.Data.List.Func
 import Mathlib.Data.List.Lex
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Pairwise
@@ -197,6 +202,8 @@ import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Nat.Cast.Prod
 import Mathlib.Data.Nat.Cast.WithTop
+import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Gcd.Basic
 import Mathlib.Data.Nat.Order.Basic
@@ -229,10 +236,12 @@ import Mathlib.Data.Set.Enumerate
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Data.Set.Intervals.Group
 import Mathlib.Data.Set.Intervals.Monoid
 import Mathlib.Data.Set.Intervals.OrderIso
 import Mathlib.Data.Set.Intervals.ProjIcc
 import Mathlib.Data.Set.Intervals.SurjOn
+import Mathlib.Data.Set.Intervals.WithBotTop
 import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Prod
@@ -315,6 +324,7 @@ import Mathlib.Logic.Nontrivial
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Relator
+import Mathlib.Logic.Small.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Notation
@@ -328,6 +338,7 @@ import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.Compare
+import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Directed
 import Mathlib.Order.Disjoint
 import Mathlib.Order.GameAdd
@@ -342,7 +353,7 @@ import Mathlib.Order.LatticeIntervals
 import Mathlib.Order.Max
 import Mathlib.Order.MinMax
 import Mathlib.Order.Monotone.Basic
-import Mathlib.Order.Monovary
+import Mathlib.Order.Monotone.Monovary
 import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic

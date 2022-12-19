@@ -18,8 +18,8 @@ This file defines the factorial, along with the ascending and descending variant
 
 ## Main declarations
 
-* `nNat.factorial`: The factorial.
-* `at.ascFactorial`: The ascending factorial. Note that it runs from `n + 1` to `n + k`
+* `Nat.factorial`: The factorial.
+* `Nat.ascFactorial`: The ascending factorial. Note that it runs from `n + 1` to `n + k`
   and *not* from `n` to `n + k - 1`. We might want to change that in the future.
 * `Nat.descFactorial`: The descending factorial. It runs from `n - k` to `n`.
 -/
@@ -248,13 +248,12 @@ theorem ascFactorial_succ {n k : ℕ} : n.ascFactorial k.succ = (n + k + 1) * n.
 #align nat.ascFactorial_succ Nat.ascFactorial_succ
 
 -- Porting note: Explicit arguments are required to show that the recursion terminates
--- Porting note: `rw` does not automatically try to apply `rfl` at the end
 theorem succ_ascFactorial (n : ℕ) :
     ∀ k, (n + 1) * n.succ.ascFactorial k = (n + k + 1) * n.ascFactorial k
   | 0 => by rw [add_zero, ascFactorial_zero, ascFactorial_zero]
   | k + 1 => by
     rw [ascFactorial, mul_left_comm, succ_ascFactorial n k, ascFactorial,
-      succ_add, ← add_assoc]; rfl
+      succ_add, ← add_assoc, succ_eq_add_one]
 #align nat.succ_ascFactorial Nat.succ_ascFactorial
 
 /-- `n.ascFactorial k = (n + k)! / n!` but without ℕ-division. See `Nat.ascFactorial_eq_div` for

@@ -46,7 +46,6 @@ theorem range_eq_range' (n : ℕ) : range n = range' 0 n :=
 @[simp]
 theorem mem_range {m n : ℕ} : m ∈ range n ↔ m < n := by
   simp only [range_eq_range', mem_range', Nat.zero_le, true_and, Nat.zero_add]
-  rfl
 
 theorem chain_succ_range' : ∀ s n : ℕ, Chain (fun a b ↦ b = succ a) s (range' (s + 1) n)
   | _, 0 => Chain.nil

@@ -2,6 +2,11 @@
 Copyright (c) 2021 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
+
+! This file was ported from Lean 3 source module logic.equiv.embedding
+! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Embedding.Set
 
@@ -19,11 +24,7 @@ namespace Equiv
 
 /-- Embeddings from a sum type are equivalent to two separate embeddings with disjoint ranges. -/
 def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type _} :
-    (Sum α β ↪ γ) ≃
-      { f : (α ↪ γ) × (β ↪ γ) //
-        Disjoint (Set.range f.1)
-          (Set.range
-            f.2) } where
+    (Sum α β ↪ γ) ≃ { f : (α ↪ γ) × (β ↪ γ) // Disjoint (Set.range f.1) (Set.range f.2) } where
   toFun f :=
     ⟨(inl.trans f, inr.trans f), by
       rw [Set.disjoint_left]
