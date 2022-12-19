@@ -1733,25 +1733,25 @@ theorem updateNth_eq_modifyNth (a : α) :
 #align list.update_nth_eq_modify_nth List.updateNth_eq_modifyNth
 
 theorem modifyNth_eq_updateNth (f : α → α) :
-    ∀ (n) (l : List α), modifyNth f n l = ((fun a => updateNth l n (f a)) <$> nth l n).getOrElse l
+    ∀ (n) (l : List α), modifyNth f n l = ((fun a => updateNth l n (f a)) <$> nth l n).getD l
   | 0, l => by cases l <;> rfl
   | n + 1, [] => rfl
   | n + 1, b :: l =>
-    (congr_arg (cons b) (modify_nth_eq_update_nth n l)).trans <| by cases nth l n <;> rfl
+    (congr_arg (cons b) (modifyNth_eq_updateNth f n l)).trans <| by cases nth l n <;> rfl
 #align list.modify_nth_eq_update_nth List.modifyNth_eq_updateNth
 
-theorem nth_modify_nth (f : α → α) :
+theorem nth_modifyNth (f : α → α) :
     ∀ (n) (l : List α) (m),
       nth (modifyNth f n l) m = (fun a => if n = m then f a else a) <$> nth l m
   | n, l, 0 => by cases l <;> cases n <;> rfl
   | n, [], m + 1 => by cases n <;> rfl
-  | 0, a :: l, m + 1 => by cases nth l m <;> rfl
+  | 0, _ :: l, m + 1 => by cases nth l m <;> rfl
   | n + 1, a :: l, m + 1 =>
-    (nth_modify_nth n l m).trans <| by
+    (nth_modifyNth f n l m).trans <| by
       cases' nth l m with b <;> by_cases n = m <;>
         simp only [h, if_pos, if_true, if_false, Option.map_none, Option.map_some, mt succ.inj,
           not_false_iff]
-#align list.nth_modify_nth List.nth_modify_nth
+#align list.nth_modify_nth List.nth_modifyNth
 
 theorem modifyNth_tail_length (f : List α → List α) (H : ∀ l, length (f l) = length l) :
     ∀ n l, length (modifyNthTail f n l) = length l
@@ -1772,12 +1772,12 @@ theorem updateNth_length (l : List α) (n) (a : α) : length (updateNth l n a) =
 
 @[simp]
 theorem nth_modifyNth_eq (f : α → α) (n) (l : List α) : nth (modifyNth f n l) n = f <$> nth l n :=
-  by simp only [nth_modify_nth, if_pos]
+  by simp only [nth_modifyNth, if_pos]
 #align list.nth_modify_nth_eq List.nth_modifyNth_eq
 
 @[simp]
 theorem nth_modifyNth_ne (f : α → α) {m n} (l : List α) (h : m ≠ n) :
-    nth (modifyNth f m l) n = nth l n := by simp only [nth_modify_nth, if_neg h, id_map']
+    nth (modifyNth f m l) n = nth l n := by simp only [nth_modifyNth, if_neg h, id_map']
 #align list.nth_modify_nth_ne List.nth_modifyNth_ne
 
 theorem nth_updateNth_eq (a : α) (n) (l : List α) :
