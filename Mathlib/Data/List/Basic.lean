@@ -1753,69 +1753,69 @@ theorem nth_modify_nth (f : α → α) :
           not_false_iff]
 #align list.nth_modify_nth List.nth_modify_nth
 
-theorem modify_nth_tail_length (f : List α → List α) (H : ∀ l, length (f l) = length l) :
+theorem modifyNth_tail_length (f : List α → List α) (H : ∀ l, length (f l) = length l) :
     ∀ n l, length (modifyNthTail f n l) = length l
-  | 0, l => H _
-  | n + 1, [] => rfl
-  | n + 1, a :: l => @congr_arg _ _ _ _ (· + 1) (modify_nth_tail_length _ _)
-#align list.modify_nth_tail_length List.modify_nth_tail_length
+  | 0, _ => H _
+  | _ + 1, [] => rfl
+  | _ + 1, _ :: _ => @congr_arg _ _ _ _ (· + 1) (modifyNth_tail_length _ H _ _)
+#align list.modify_nth_tail_length List.modifyNth_tail_length
 
 @[simp]
-theorem modify_nth_length (f : α → α) : ∀ n l, length (modifyNth f n l) = length l :=
-  modify_nth_tail_length _ fun l => by cases l <;> rfl
-#align list.modify_nth_length List.modify_nth_length
+theorem modifyNth_length (f : α → α) : ∀ n l, length (modifyNth f n l) = length l :=
+  modifyNth_tail_length _ fun l => by cases l <;> rfl
+#align list.modify_nth_length List.modifyNth_length
 
 @[simp]
-theorem update_nth_length (l : List α) (n) (a : α) : length (updateNth l n a) = length l := by
-  simp only [update_nth_eq_modify_nth, modify_nth_length]
-#align list.update_nth_length List.update_nth_length
+theorem updateNth_length (l : List α) (n) (a : α) : length (updateNth l n a) = length l := by
+  simp only [updateNth_eq_modifyNth, modifyNth_length]
+#align list.update_nth_length List.updateNth_length
 
 @[simp]
-theorem nth_modify_nth_eq (f : α → α) (n) (l : List α) : nth (modifyNth f n l) n = f <$> nth l n :=
+theorem nth_modifyNth_eq (f : α → α) (n) (l : List α) : nth (modifyNth f n l) n = f <$> nth l n :=
   by simp only [nth_modify_nth, if_pos]
-#align list.nth_modify_nth_eq List.nth_modify_nth_eq
+#align list.nth_modify_nth_eq List.nth_modifyNth_eq
 
 @[simp]
-theorem nth_modify_nth_ne (f : α → α) {m n} (l : List α) (h : m ≠ n) :
+theorem nth_modifyNth_ne (f : α → α) {m n} (l : List α) (h : m ≠ n) :
     nth (modifyNth f m l) n = nth l n := by simp only [nth_modify_nth, if_neg h, id_map']
-#align list.nth_modify_nth_ne List.nth_modify_nth_ne
+#align list.nth_modify_nth_ne List.nth_modifyNth_ne
 
-theorem nth_update_nth_eq (a : α) (n) (l : List α) :
+theorem nth_updateNth_eq (a : α) (n) (l : List α) :
     nth (updateNth l n a) n = (fun _ => a) <$> nth l n := by
-  simp only [update_nth_eq_modify_nth, nth_modify_nth_eq]
-#align list.nth_update_nth_eq List.nth_update_nth_eq
+  simp only [updateNth_eq_modifyNth, nth_modifyNth_eq]
+#align list.nth_update_nth_eq List.nth_updateNth_eq
 
-theorem nth_update_nth_of_lt (a : α) {n} {l : List α} (h : n < length l) :
-    nth (updateNth l n a) n = some a := by rw [nth_update_nth_eq, nth_le_nth h] <;> rfl
-#align list.nth_update_nth_of_lt List.nth_update_nth_of_lt
+theorem nth_updateNth_of_lt (a : α) {n} {l : List α} (h : n < length l) :
+    nth (updateNth l n a) n = some a := by rw [nth_updateNth_eq, nthLe_nth h]; rfl
+#align list.nth_update_nth_of_lt List.nth_updateNth_of_lt
 
-theorem nth_update_nth_ne (a : α) {m n} (l : List α) (h : m ≠ n) :
+theorem nth_updateNth_ne (a : α) {m n} (l : List α) (h : m ≠ n) :
     nth (updateNth l m a) n = nth l n := by
-  simp only [update_nth_eq_modify_nth, nth_modify_nth_ne _ _ h]
-#align list.nth_update_nth_ne List.nth_update_nth_ne
+  simp only [updateNth_eq_modifyNth, nth_modifyNth_ne _ _ h]
+#align list.nth_update_nth_ne List.nth_updateNth_ne
 
 @[simp]
-theorem update_nth_nil (n : ℕ) (a : α) : [].updateNth n a = [] :=
+theorem updateNth_nil (n : ℕ) (a : α) : [].updateNth n a = [] :=
   rfl
-#align list.update_nth_nil List.update_nth_nil
+#align list.update_nth_nil List.updateNth_nil
 
 @[simp]
-theorem update_nth_succ (x : α) (xs : List α) (n : ℕ) (a : α) :
+theorem updateNth_succ (x : α) (xs : List α) (n : ℕ) (a : α) :
     (x :: xs).updateNth n.succ a = x :: xs.updateNth n a :=
   rfl
-#align list.update_nth_succ List.update_nth_succ
+#align list.update_nth_succ List.updateNth_succ
 
-theorem update_nth_comm (a b : α) :
-    ∀ {n m : ℕ} (l : List α) (h : n ≠ m),
+theorem updateNth_comm (a b : α) :
+    ∀ {n m : ℕ} (l : List α) (_ : n ≠ m),
       (l.updateNth n a).updateNth m b = (l.updateNth m b).updateNth n a
   | _, _, [], _ => by simp
   | 0, 0, x :: t, h => absurd rfl h
-  | n + 1, 0, x :: t, h => by simp [List.updateNth]
-  | 0, m + 1, x :: t, h => by simp [List.updateNth]
+  | n + 1, 0, _ :: t, _ => by simp [List.updateNth]
+  | 0, m + 1, _ :: t, _ => by simp [List.updateNth]
   | n + 1, m + 1, x :: t, h => by
-    simp only [update_nth, true_and_iff, eq_self_iff_true]
-    exact update_nth_comm t fun h' => h <| nat.succ_inj'.mpr h'
-#align list.update_nth_comm List.update_nth_comm
+    simp only [updateNth, add_eq, add_zero, cons.injEq, true_and]
+    exact updateNth_comm _ _ t (fun h' => h <| Nat.succ_inj'.2 h')
+#align list.update_nth_comm List.updateNth_comm
 
 @[simp]
 theorem nth_le_update_nth_eq (l : List α) (i : ℕ) (a : α) (h : i < (l.updateNth i a).length) :
