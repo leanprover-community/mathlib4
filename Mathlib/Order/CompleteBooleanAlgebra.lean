@@ -33,7 +33,7 @@ distributive lattice.
 
 ## TODO
 
-Add instances for `prod`
+Add instances for `Prod`
 
 ## References
 
