@@ -1264,12 +1264,12 @@ theorem min_eq : min a b = star :=
   rfl
 #align punit.min_eq PUnit.min_eq
 
-@[simp]
+-- Porting note: simp can prove this @[simp]
 protected theorem le : a ≤ b :=
   trivial
 #align punit.le PUnit.le
 
-@[simp]
+-- Porting note: simp can prove this @[simp]
 theorem not_lt : ¬a < b :=
   not_false
 #align punit.not_lt PUnit.not_lt
