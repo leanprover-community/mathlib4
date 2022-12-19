@@ -2041,10 +2041,11 @@ theorem map_join (f : α → β) (L : List (List α)) : map f (join L) = join (m
 #align list.map_join List.map_join
 
 theorem bind_ret_eq_map (f : α → β) (l : List α) : l.bind (List.ret ∘ f) = map f l := by
-  unfold List.bind <;> induction l <;>
-        simp only [map, join, List.ret, cons_append, nil_append, *] <;>
-      constructor <;>
-    rfl
+  unfold List.bind
+  induction l <;>
+  simp [map, join, List.ret, cons_append, nil_append, *] at *
+  assumption
+
 #align list.bind_ret_eq_map List.bind_ret_eq_map
 
 theorem bind_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = g x) :
@@ -2096,7 +2097,9 @@ theorem map_filter_eq_foldr (f : α → β) (p : α → Prop) [DecidablePred p] 
     map f (filter p as) = foldr (fun a bs => if p a then f a :: bs else bs) [] as := by
   induction as
   · rfl
-  · simp! [*, apply_ite (map f)]
+  · simp only [foldr]
+    split_ifs with h <;> simp [filter, *]
+
 #align list.map_filter_eq_foldr List.map_filter_eq_foldr
 
 theorem last_map (f : α → β) {l : List α} (hl : l ≠ []) :
@@ -2114,7 +2117,7 @@ theorem map_eq_repeat_iff {l : List α} {f : α → β} {b : β} :
   ·
     simp only [List.repeat, length, not_mem_nil, IsEmpty.forall_iff, imp_true_iff, map_nil,
       eq_self_iff_true]
-  · simp only [map, length, mem_cons_iff, forall_eq_or_imp, repeat_succ, and_congr_right_iff]
+  · simp only [map, length, mem_cons, forall_eq_or_imp, repeat_succ, and_congr_right_iff]
     exact fun _ => ih
 #align list.map_eq_repeat_iff List.map_eq_repeat_iff
 
