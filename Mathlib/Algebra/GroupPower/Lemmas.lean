@@ -137,7 +137,8 @@ section DivisionMonoid
 
 variable [DivisionMonoid α]
 
--- Note that `mul_zsmul` and `zpow_mul` have the primes swapped when additivised since their argument order,
+-- Note that `mul_zsmul` and `zpow_mul` have the primes swapped
+-- when additivised since their argument order,
 -- and therefore the more "natural" choice of lemma, is reversed.
 @[to_additive mul_zsmul']
 theorem zpow_mul (a : α) : ∀ m n : ℤ, a ^ (m * n) = (a ^ m) ^ n
@@ -735,7 +736,7 @@ end LinearOrderedRing
 
 namespace Int
 
-/- Porting note: removed `@[simp]` because of linter error:
+/- Porting note:  `@[simp]` gave a linter error:
 
 Left-hand side simplifies from
   ↑(Int.natAbs x ^ 2)
@@ -745,11 +746,17 @@ using
   simp only [Nat.cast_pow]
 Try to change the left-hand side to the simplified term!
 
-
+Hence a new lemma was added and
+the simp attribute was removed from the original lemma and added to this.
 -/
--- @[simp]
 theorem nat_abs_sq (x : ℤ) : ↑(x.natAbs ^ 2) = x ^ 2:= by rw [sq, Int.natAbs_mul_self, sq]
 #align int.nat_abs_sq Int.nat_abs_sq
+
+@[simp]
+theorem nat_abs_sq' (x : ℤ) : (x.natAbs: ℤ) ^ 2 = x ^ 2:= by
+  have l : (x.natAbs: ℤ) ^ 2 = ↑(x.natAbs ^ 2) := by simp
+  rw [l]
+  exact nat_abs_sq x
 
 alias nat_abs_sq ← nat_abs_pow_two
 
@@ -823,12 +830,10 @@ def multiplesHom [AddMonoid A] :
       (ℕ →+
         A) where
   toFun : A → ℕ →+ A :=
-  fun x =>
-    {
+  fun x => {
     toFun := fun n => n • x
     map_zero' := zero_nsmul x
-    map_add' := fun _ _ => add_nsmul _ _ _
-  }
+    map_add' := fun _ _ => add_nsmul _ _ _}
   invFun f := f 1
   left_inv := one_nsmul
   right_inv f := AddMonoidHom.ext_nat <| one_nsmul (f 1)
