@@ -2,6 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
+
+! This file was ported from Lean 3 source module algebra.order.monoid.to_mul_bot
+! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.Algebra.Order.Monoid.WithTop
@@ -44,10 +49,10 @@ theorem toMulBot_symm_bot : toMulBot.symm (Multiplicative.ofAdd (⊥ : WithBot �
 #align with_zero.to_mul_bot_symm_bot WithZero.toMulBot_symm_bot
 
 @[simp]
-theorem toMulBot_coe_of_add (x : α) :
+theorem toMulBot_coe_ofAdd (x : α) :
     toMulBot.symm (Multiplicative.ofAdd (x : WithBot α)) = Multiplicative.ofAdd x :=
   rfl
-#align with_zero.to_mul_bot_coe_of_add WithZero.toMulBot_coe_of_add
+#align with_zero.to_mul_bot_coe_of_add WithZero.toMulBot_coe_ofAdd
 
 variable [Preorder α] (a b : WithZero (Multiplicative α))
 

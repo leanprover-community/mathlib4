@@ -2,6 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
+
+! This file was ported from Lean 3 source module order.min_max
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.Lattice
 import Mathlib.Tactic.SimpRw
@@ -187,7 +192,7 @@ theorem min_lt_min_left_iff : min a c < min b c ↔ a < b ∧ a < c := by
 #align min_lt_min_left_iff min_lt_min_left_iff
 
 theorem min_lt_min_right_iff : min a b < min a c ↔ b < c ∧ b < a := by
-  simp_rw [min_comm a, min_lt_min_left_iff]; rfl
+  simp_rw [min_comm a, min_lt_min_left_iff]
 #align min_lt_min_right_iff min_lt_min_right_iff
 
 theorem max_lt_max_left_iff : max a c < max b c ↔ a < b ∧ c < b :=
