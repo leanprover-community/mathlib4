@@ -339,6 +339,7 @@ protected theorem GT.gt.lt [LT α] {x y : α} (h : x > y) : y < x :=
 theorem ge_of_eq [Preorder α] {a b : α} (h : a = b) : a ≥ b :=
   h.ge
 #align ge_of_eq ge_of_eq
+
 -- see Note [nolint_ge]
 -- Porting note: linter not found @[nolint ge_or_gt]
 @[simp]
@@ -562,7 +563,8 @@ theorem rel_imp_eq_of_rel_imp_le [PartialOrder β] (r : α → α → Prop) [IsS
 
 /-- monotonicity of `≤` with respect to `→` -/
 theorem le_implies_le_of_le_of_le {a b c d : α} [Preorder α] (hca : c ≤ a) (hbd : b ≤ d) :
-    a ≤ b → c ≤ d := fun hab ↦ (hca.trans hab).trans hbd
+    a ≤ b → c ≤ d :=
+  fun hab ↦ (hca.trans hab).trans hbd
 #align le_implies_le_of_le_of_le le_implies_le_of_le_of_le
 
 section PartialOrder
@@ -656,6 +658,7 @@ def Order.Preimage {α β} (f : α → β) (s : β → β → Prop) (x y : α) :
   s (f x) (f y)
 #align order.preimage Order.Preimage
 
+@[inherit_doc]
 infixl:80 " ⁻¹'o " => Order.Preimage
 
 /-- The preimage of a decidable order is decidable. -/
@@ -672,6 +675,7 @@ def OrderDual (α : Type _) : Type _ :=
   α
 #align order_dual OrderDual
 
+@[inherit_doc]
 notation:max α "ᵒᵈ" => OrderDual α
 
 namespace OrderDual
@@ -737,6 +741,7 @@ class HasCompl (α : Type _) where
 
 export HasCompl (compl)
 
+@[inherit_doc]
 postfix:999 "ᶜ" => compl
 
 instance Prop.hasCompl : HasCompl Prop :=
@@ -789,8 +794,9 @@ theorem Pi.lt_def {ι : Type u} {α : ι → Type v} [∀ i, Preorder (α i)] {x
   simp (config := { contextual := true }) [lt_iff_le_not_le, Pi.le_def]
 #align pi.lt_def Pi.lt_def
 
-instance Pi.partialOrder [∀ i, PartialOrder (π i)] : PartialOrder (∀ i, π i) :=
-  { Pi.preorder with le_antisymm := fun _ _ h1 h2 ↦ funext fun b ↦ (h1 b).antisymm (h2 b) }
+instance Pi.partialOrder [∀ i, PartialOrder (π i)] : PartialOrder (∀ i, π i) where
+  __ := Pi.preorder
+  le_antisymm := fun _ _ h1 h2 ↦ funext fun b ↦ (h1 b).antisymm (h2 b)
 #align pi.partial_order Pi.partialOrder
 
 section Pi
@@ -800,6 +806,7 @@ def StrongLt [∀ i, LT (π i)] (a b : ∀ i, π i) : Prop :=
   ∀ i, a i < b i
 #align strong_lt StrongLt
 
+@[inherit_doc]
 local infixl:50 " ≺ " => StrongLt
 
 variable [∀ i, Preorder (π i)] {a b c : ∀ i, π i}
@@ -865,9 +872,9 @@ theorem update_lt_self_iff : update x i a < x ↔ a < x i := by simp [lt_iff_le_
 
 end Function
 
-instance Pi.hasSdiff {ι : Type u} {α : ι → Type v} [∀ i, SDiff (α i)] : SDiff (∀ i, α i) :=
+instance Pi.sdiff {ι : Type u} {α : ι → Type v} [∀ i, SDiff (α i)] : SDiff (∀ i, α i) :=
   ⟨fun x y i ↦ x i \ y i⟩
-#align pi.has_sdiff Pi.hasSdiff
+#align pi.has_sdiff Pi.sdiff
 
 theorem Pi.sdiff_def {ι : Type u} {α : ι → Type v} [∀ i, SDiff (α i)] (x y : ∀ i, α i) :
     x \ y = fun i ↦ x i \ y i :=
@@ -1001,9 +1008,9 @@ def LinearOrder.lift {α β} [LinearOrder β] [HasSup α] [HasInf α] (f : α �
       exact (hsup _ _).trans (max_def _ _) }
 #align linear_order.lift LinearOrder.lift
 
-/-- Transfer a `linear_order` on `β` to a `linear_order` on `α` using an injective
-function `f : α → β`. This version autogenerates `min` and `max` fields. See `linear_order.lift`
-for a version that takes `[has_sup α]` and `[has_inf α]`, then uses them as `max` and `min`.
+/-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
+function `f : α → β`. This version autogenerates `min` and `max` fields. See `LinearOrder.lift`
+for a version that takes `[HasSup α]` and `[HasInf α]`, then uses them as `max` and `min`.
 See note [reducible non-instances]. -/
 @[reducible]
 def LinearOrder.lift' {α β} [LinearOrder β] (f : α → β) (inj : Injective f) : LinearOrder α :=
@@ -1018,10 +1025,10 @@ def LinearOrder.lift' {α β} [LinearOrder β] (f : α → β) (inj : Injective 
 
 namespace Subtype
 
-instance [LE α] {p : α → Prop} : LE (Subtype p) :=
+instance le [LE α] {p : α → Prop} : LE (Subtype p) :=
   ⟨fun x y ↦ (x : α) ≤ y⟩
 
-instance [LT α] {p : α → Prop} : LT (Subtype p) :=
+instance lt [LT α] {p : α → Prop} : LT (Subtype p) :=
   ⟨fun x y ↦ (x : α) < y⟩
 
 @[simp]
@@ -1064,7 +1071,7 @@ instance decidableLT [Preorder α] [h : @DecidableRel α (· < ·)] {p : α → 
 /-- A subtype of a linear order is a linear order. We explicitly give the proofs of decidable
 equality and decidable order in order to ensure the decidability instances are all definitionally
 equal. -/
-instance [LinearOrder α] (p : α → Prop) : LinearOrder (Subtype p) :=
+instance linearOrder [LinearOrder α] (p : α → Prop) : LinearOrder (Subtype p) :=
   @LinearOrder.lift (Subtype p) _ _ ⟨fun x y ↦ ⟨max x y, max_rec' _ x.2 y.2⟩⟩
     ⟨fun x y ↦ ⟨min x y, min_rec' _ x.2 y.2⟩⟩ (fun (a : Subtype p) ↦ (a : α))
     Subtype.coe_injective (fun _ _ ↦ rfl) fun _ _ ↦
@@ -1226,8 +1233,8 @@ theorem eq_of_le_of_forall_ge_of_dense [LinearOrder α] [DenselyOrdered α] {a�
 theorem dense_or_discrete [LinearOrder α] (a₁ a₂ : α) :
     (∃ a, a₁ < a ∧ a < a₂) ∨ (∀ a, a₁ < a → a₂ ≤ a) ∧ ∀ a < a₂, a ≤ a₁ :=
   or_iff_not_imp_left.2 fun h ↦
-    ⟨fun a ha₁ ↦ le_of_not_gt fun ha₂ ↦ h ⟨a, ha₁, ha₂⟩, fun a ha₂ ↦
-      le_of_not_gt fun ha₁ ↦ h ⟨a, ha₁, ha₂⟩⟩
+    ⟨fun a ha₁ ↦ le_of_not_gt fun ha₂ ↦ h ⟨a, ha₁, ha₂⟩,
+     fun a ha₂ ↦ le_of_not_gt fun ha₁ ↦ h ⟨a, ha₁, ha₂⟩⟩
 #align dense_or_discrete dense_or_discrete
 
 namespace PUnit
@@ -1275,9 +1282,9 @@ end PUnit
 section «Prop»
 
 /-- Propositions form a complete boolean algebra, where the `≤` relation is given by implication. -/
-instance Prop.hasLe : LE Prop :=
+instance Prop.le : LE Prop :=
   ⟨(· → ·)⟩
-#align Prop.has_le Prop.hasLe
+#align Prop.has_le Prop.le
 
 @[simp]
 theorem le_Prop_eq : ((· ≤ ·) : Prop → Prop → Prop) = (· → ·) :=
@@ -1288,11 +1295,11 @@ theorem subrelation_iff_le {r s : α → α → Prop} : Subrelation r s ↔ r �
   Iff.rfl
 #align subrelation_iff_le subrelation_iff_le
 
-instance Prop.partialOrder : PartialOrder Prop :=
-  { Prop.hasLe with
-    le_refl := fun _ ↦ id
-    le_trans := fun a b c f g ↦ g ∘ f
-    le_antisymm := fun a b Hab Hba ↦ propext ⟨Hab, Hba⟩ }
+instance Prop.partialOrder : PartialOrder Prop where
+  __ := Prop.le
+  le_refl _ := id
+  le_trans _ _ _ f g := g ∘ f
+  le_antisymm _ _ Hab Hba := propext ⟨Hab, Hba⟩
 #align Prop.partial_order Prop.partialOrder
 
 end «Prop»
