@@ -2,6 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
+
+! This file was ported from Lean 3 source module data.int.basic
+! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Convert
 import Mathlib.Init.Data.Int.Order
@@ -74,6 +79,7 @@ protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m 
 -- TODO restore @[to_additive coe_nat_zsmul]
 @[norm_cast]
 theorem _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n := zpow_ofNat ..
+@[simp]
 theorem _root_.coe_nat_zsmul [SubNegMonoid G] (a : G) (n : ℕ) : (n : ℤ) • a = n • a := ofNat_zsmul ..
 attribute [to_additive _root_.coe_nat_zsmul] _root_.zpow_coe_nat
 

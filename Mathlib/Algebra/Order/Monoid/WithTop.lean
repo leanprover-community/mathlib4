@@ -3,6 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 Ported by: Jon Eugster
+
+! This file was ported from Lean 3 source module algebra.order.monoid.with_top
+! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Order.Monoid.OrderDual
@@ -126,7 +131,6 @@ theorem add_ne_top : a + b ≠ ⊤ ↔ a ≠ ⊤ ∧ b ≠ ⊤ :=
 
 theorem add_lt_top [PartialOrder α] {a b : WithTop α} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := by
   simp_rw [lt_top_iff_ne_top, add_ne_top]
-  rfl
 #align with_top.add_lt_top WithTop.add_lt_top
 
 theorem add_eq_coe :
