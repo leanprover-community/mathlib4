@@ -2,6 +2,11 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
+
+! This file was ported from Lean 3 source module data.set.n_ary
+! leanprover-community/mathlib commit cf9386b56953fb40904843af98b7a80757bbe7f9
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Prod
 
@@ -17,7 +22,7 @@ This file is very similar to the n-ary section of `Data.Set.Basic`, to `Order.Fi
 `Data.Option.NAry`. Please keep them in sync.
 
 We do not define `Set.image3` as its only purpose would be to prove properties of `Set.image2`
-and `set.image2` already fulfills this task.
+and `Set.image2` already fulfills this task.
 -/
 
 
@@ -107,8 +112,7 @@ theorem image2_union_left : image2 f (s ∪ s') t = image2 f s t ∪ image2 f s'
   ext c
   constructor
   · rintro ⟨a, b, ha | ha, hb, rfl⟩ <;> [left, right] <;> exact ⟨_, _, ‹_›, ‹_›, rfl⟩
-  ·
-    rintro (⟨_, _, _, _, rfl⟩ | ⟨_, _, _, _, rfl⟩) <;> refine' ⟨_, _, _, ‹_›, rfl⟩ <;>
+  · rintro (⟨_, _, _, _, rfl⟩ | ⟨_, _, _, _, rfl⟩) <;> refine' ⟨_, _, _, ‹_›, rfl⟩ <;>
       simp [mem_union, *]
 #align set.image2_union_left Set.image2_union_left
 
@@ -116,8 +120,7 @@ theorem image2_union_right : image2 f s (t ∪ t') = image2 f s t ∪ image2 f s
   ext c
   constructor
   · rintro ⟨a, b, ha, h1b | h2b, rfl⟩ <;> [left, right] <;> exact ⟨_, _, ‹_›, ‹_›, rfl⟩
-  ·
-    rintro (⟨_, _, _, _, rfl⟩ | ⟨_, _, _, _, rfl⟩) <;> refine' ⟨_, _, ‹_›, _, rfl⟩ <;>
+  · rintro (⟨_, _, _, _, rfl⟩ | ⟨_, _, _, _, rfl⟩) <;> refine' ⟨_, _, ‹_›, _, rfl⟩ <;>
       simp [mem_union, *]
 #align set.image2_union_right Set.image2_union_right
 

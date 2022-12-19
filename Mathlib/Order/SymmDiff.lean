@@ -3,6 +3,11 @@ Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bryan Gin-ge Chen, Yaël Dillies
 Ported by: Frédéric Dupuis
+
+! This file was ported from Lean 3 source module order.symm_diff
+! leanprover-community/mathlib commit 6eb334bd8f3433d5b08ba156b8ec3e6af47e1904
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.BooleanAlgebra
 import Mathlib.Logic.Equiv.Basic
@@ -131,7 +136,6 @@ theorem bot_symmDiff : ⊥ ∆ a = a := by rw [symmDiff_comm, symmDiff_bot]
 @[simp]
 theorem symmDiff_eq_bot {a b : α} : a ∆ b = ⊥ ↔ a = b := by
   simp_rw [symmDiff, sup_eq_bot_iff, sdiff_eq_bot_iff, le_antisymm_iff]
-  rfl
 #align symm_diff_eq_bot symmDiff_eq_bot
 
 theorem symmDiff_of_le {a b : α} (h : a ≤ b) : a ∆ b = b \ a := by
@@ -148,7 +152,6 @@ theorem symmDiff_le {a b c : α} (ha : a ≤ b ⊔ c) (hb : b ≤ a ⊔ c) : a �
 
 theorem symmDiff_le_iff {a b c : α} : a ∆ b ≤ c ↔ a ≤ b ⊔ c ∧ b ≤ a ⊔ c := by
   simp_rw [symmDiff, sup_le_iff, sdiff_le_iff]
-  rfl
 #align symm_diff_le_iff symmDiff_le_iff
 
 @[simp]
@@ -270,7 +273,6 @@ theorem le_bihimp {a b c : α} (hb : a ⊓ b ≤ c) (hc : a ⊓ c ≤ b) : a ≤
 
 theorem le_bihimp_iff {a b c : α} : a ≤ b ⇔ c ↔ a ⊓ b ≤ c ∧ a ⊓ c ≤ b := by
   simp_rw [bihimp, le_inf_iff, le_himp_iff, and_comm]
-  rfl
 #align le_bihimp_iff le_bihimp_iff
 
 @[simp]

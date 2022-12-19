@@ -2,6 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
+
+! This file was ported from Lean 3 source module algebra.order.monoid.canonical.defs
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.BoundedOrder
 import Mathlib.Order.MinMax
@@ -184,7 +189,6 @@ theorem le_iff_exists_mul : a ≤ b ↔ ∃ c, b = a * c :=
 @[to_additive]
 theorem le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by
   simp only [mul_comm _ a, le_iff_exists_mul]
-  rfl
 #align le_iff_exists_mul' le_iff_exists_mul'
 
 @[simp, to_additive zero_le]
@@ -220,7 +224,6 @@ theorem eq_one_or_one_lt : a = 1 ∨ 1 < a :=
 @[simp, to_additive add_pos_iff]
 theorem one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by
   simp only [one_lt_iff_ne_one, Ne.def, mul_eq_one_iff, not_and_or]
-  rfl -- Porting note: Should this be needed? It wasn't needed in lean3
 #align one_lt_mul_iff one_lt_mul_iff
 
 @[to_additive]

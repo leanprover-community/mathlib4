@@ -3,6 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 Ported by: Frédéric Dupuis
+
+! This file was ported from Lean 3 source module algebra.order.hom.monoid
+! leanprover-community/mathlib commit 3342d1b2178381196f818146ff79bc0e7ccd9e2d
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Algebra.Hom.Group
@@ -243,25 +248,25 @@ theorem antitone_iff_map_nonneg : Antitone (f : α → β) ↔ ∀ a ≤ 0, 0 �
 
 variable [CovariantClass β β (· + ·) (· < ·)]
 
-theorem strict_mono_iff_map_pos : StrictMono (f : α → β) ↔ ∀ a, 0 < a → 0 < f a :=
-  ⟨fun h a => by
-    rw [← map_zero f]
-    apply h, fun h a b hl => by
-    rw [← sub_add_cancel b a, map_add f]
-    exact lt_add_of_pos_left _ (h _ <| sub_pos.2 hl)⟩
-#align strict_mono_iff_map_pos strict_mono_iff_map_pos
+theorem strictMono_iff_map_pos : StrictMono (f : α → β) ↔ ∀ a, 0 < a → 0 < f a := by
+  refine ⟨fun h a => ?_, fun h a b hl => ?_⟩
+  · rw [← map_zero f]
+    apply h
+  · rw [← sub_add_cancel b a, map_add f]
+    exact lt_add_of_pos_left _ (h _ <| sub_pos.2 hl)
+#align strict_mono_iff_map_pos strictMono_iff_map_pos
 
-theorem strict_anti_iff_map_neg : StrictAnti (f : α → β) ↔ ∀ a, 0 < a → f a < 0 :=
-  strictMono_toDual_comp_iff.symm.trans <| strict_mono_iff_map_pos _
-#align strict_anti_iff_map_neg strict_anti_iff_map_neg
+theorem strictAnti_iff_map_neg : StrictAnti (f : α → β) ↔ ∀ a, 0 < a → f a < 0 :=
+  strictMono_toDual_comp_iff.symm.trans <| strictMono_iff_map_pos _
+#align strict_anti_iff_map_neg strictAnti_iff_map_neg
 
-theorem strict_mono_iff_map_neg : StrictMono (f : α → β) ↔ ∀ a < 0, f a < 0 :=
-  strictAnti_comp_ofDual_iff.symm.trans <| strict_anti_iff_map_neg _
-#align strict_mono_iff_map_neg strict_mono_iff_map_neg
+theorem strictMono_iff_map_neg : StrictMono (f : α → β) ↔ ∀ a < 0, f a < 0 :=
+  strictAnti_comp_ofDual_iff.symm.trans <| strictAnti_iff_map_neg _
+#align strict_mono_iff_map_neg strictMono_iff_map_neg
 
-theorem strict_anti_iff_map_pos : StrictAnti (f : α → β) ↔ ∀ a < 0, 0 < f a :=
-  strictMono_comp_ofDual_iff.symm.trans <| strict_mono_iff_map_pos _
-#align strict_anti_iff_map_pos strict_anti_iff_map_pos
+theorem strictAnti_iff_map_pos : StrictAnti (f : α → β) ↔ ∀ a < 0, 0 < f a :=
+  strictMono_comp_ofDual_iff.symm.trans <| strictMono_iff_map_pos _
+#align strict_anti_iff_map_pos strictAnti_iff_map_pos
 
 end OrderedAddCommGroup
 

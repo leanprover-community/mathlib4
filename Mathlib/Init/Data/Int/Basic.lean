@@ -33,9 +33,7 @@ namespace Int
 #align int.of_nat_add Int.ofNat_add
 #align int.of_nat_mul Int.ofNat_mul
 #align int.of_nat_succ Int.ofNat_succ
-#align int.neg_of_nat_of_succ Int.neg_ofNat_of_succ
-
-theorem neg_negSucc (n : ℕ) : - -[n+1] = ofNat (succ n) := rfl
+#align int.neg_of_nat_of_succ Int.neg_ofNat_succ
 #align int.neg_neg_of_nat_succ Int.neg_negSucc
 
 #align int.of_nat_eq_coe Int.ofNat_eq_coe
