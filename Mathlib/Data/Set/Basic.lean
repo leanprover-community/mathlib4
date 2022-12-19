@@ -2910,14 +2910,14 @@ theorem disjoint_diff {a b : Set α} : Disjoint a (b \ a) :=
 @[simp] lemma disjoint_univ {s : Set α} : Disjoint s univ ↔ s = ∅ :=
   disjoint_top
 
-@[simp] lemma disjoint_singleton {a b : α} : Disjoint ({a} : Set α) {b} ↔ a ≠ b :=
-  by rw [disjoint_singleton_left, mem_singleton_iff]
-
 @[simp] theorem disjoint_singleton_left {a : α} {s : Set α} : Disjoint {a} s ↔ a ∉ s :=
   by simp [Set.disjoint_iff, subset_def]
 
 @[simp] theorem disjoint_singleton_right {a : α} {s : Set α} : Disjoint s {a} ↔ a ∉ s :=
   by rw [Disjoint.comm]; exact disjoint_singleton_left
+
+@[simp 1100] lemma disjoint_singleton {a b : α} : Disjoint ({a} : Set α) {b} ↔ a ≠ b :=
+  by rw [disjoint_singleton_left, mem_singleton_iff]
 
 lemma subset_diff {s t u : Set α} : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u :=
   ⟨fun h => ⟨fun _ hxs => (h hxs).1, disjoint_iff_inf_le.mpr <| fun _ ⟨hxs, hxu⟩ => (h hxs).2 hxu⟩,
