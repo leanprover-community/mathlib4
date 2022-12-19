@@ -2296,15 +2296,15 @@ theorem take_eq_take :
 theorem take_add (l : List α) (m n : ℕ) : l.take (m + n) = l.take m ++ (l.drop m).take n := by
   convert_to take (m + n) (take m l ++ drop m l) = take m l ++ take n (drop m l)
   · rw [take_append_drop]
-  rw [take_append_eq_append_take, take_all_of_le, append_right_inj]; swap
+  rw [take_append_eq_append_take, take_all_of_le, append_right_inj]
+  · simp only [take_eq_take, length_take, length_drop]
+    generalize l.length = k; by_cases h : m ≤ k
+    · simp [min_eq_left_iff.mpr h]
+    · push_neg  at h
+      simp [Nat.sub_eq_zero_of_le (le_of_lt h)]
   · trans m
     · apply length_take_le
     · simp
-  simp only [take_eq_take, length_take, length_drop]
-  generalize l.length = k; by_cases h : m ≤ k
-  · simp [min_eq_left_iff.mpr h]
-  · push_neg  at h
-    simp [Nat.sub_eq_zero_of_le (le_of_lt h)]
 #align list.take_add List.take_add
 
 theorem init_eq_take (l : List α) : l.init = l.take l.length.pred := by
@@ -2659,7 +2659,7 @@ theorem foldr_eta : ∀ l : List α, foldr cons [] l = l
 
 @[simp]
 theorem reverse_foldl {l : List α} : reverse (foldl (fun t h => h :: t) [] l) = l := by
-  rw [← foldr_reverse] <;> simp
+  rw [← foldr_reverse]; simp only [foldr_self_append, append_nil, reverse_reverse]
 #align list.reverse_foldl List.reverse_foldl
 
 #align list.foldl_map List.foldl_map
@@ -2670,14 +2670,16 @@ theorem foldl_map' {α β : Type u} (g : α → β) (f : α → α → α) (f' :
     (h : ∀ x y, f' (g x) (g y) = g (f x y)) :
     List.foldl f' (g a) (l.map g) = g (List.foldl f a l) := by
   induction l generalizing a
-  · simp; · simp [l_ih, h]
+  · simp
+  · simp [*, h]
 #align list.foldl_map' List.foldl_map'
 
 theorem foldr_map' {α β : Type u} (g : α → β) (f : α → α → α) (f' : β → β → β) (a : α) (l : List α)
     (h : ∀ x y, f' (g x) (g y) = g (f x y)) :
     List.foldr f' (g a) (l.map g) = g (List.foldr f a l) := by
   induction l generalizing a
-  · simp; · simp [l_ih, h]
+  · simp
+  · simp [*, h]
 #align list.foldr_map' List.foldr_map'
 
 #align list.foldl_hom List.foldl_hom
