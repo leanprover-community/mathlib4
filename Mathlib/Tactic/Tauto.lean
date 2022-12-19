@@ -153,19 +153,19 @@ that additionally apply `symm` and use a fancy union-find data structure to avoi
 duplicated work.
 -/
 def tautoCore : TacticM Unit := do
-  let _ ← tryTactic (evalTactic (← `(tactic| contradiction)))
-  let _ ← tryTactic (evalTactic (← `(tactic| assumption)))
+  _ ← tryTactic (evalTactic (← `(tactic| contradiction)))
+  _ ← tryTactic (evalTactic (← `(tactic| assumption)))
   iterateUntilFailure do
     let gs ← getUnsolvedGoals
     allGoals (
       liftMetaTactic (fun m => do let m' ← intros' m; pure [m']) <;>
       distribNot <;>
       liftMetaTactic (casesMatching · casesMatcher) <;>
-      (do let _ ← tryTactic (evalTactic (← `(tactic| contradiction)))) <;>
-      (do let _ ← tryTactic (evalTactic (←`(tactic| refine or_iff_not_imp_left.mpr ?_)))) <;>
+      (do _ ← tryTactic (evalTactic (← `(tactic| contradiction)))) <;>
+      (do _ ← tryTactic (evalTactic (←`(tactic| refine or_iff_not_imp_left.mpr ?_)))) <;>
       liftMetaTactic (fun m => do let m' ← intros' m; pure [m']) <;>
       liftMetaTactic (constructorMatching · coreConstructorMatcher) <;>
-      do let _ ← tryTactic (evalTactic (← `(tactic| assumption))))
+      do _ ← tryTactic (evalTactic (← `(tactic| assumption))))
     let gs' ← getUnsolvedGoals
     if gs == gs' then failure -- no progress
     pure ()
