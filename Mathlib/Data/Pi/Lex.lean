@@ -207,10 +207,10 @@ instance [Preorder ι] [∀ i, LT (β i)] [∀ i, DenselyOrdered (β i)] :
 
 theorem Lex.noMaxOrder' [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (β i)] :
     NoMaxOrder (Lex (∀ i, β i)) :=
-  ⟨fun a =>
+  ⟨fun a => by
     let ⟨b, hb⟩ := exists_gt (a i)
-    letI : DecidableEq ι := sorry  -- TODO should use classical
-    ⟨Function.update a i b, i, fun j hj =>
+    classical
+    exact ⟨Function.update a i b, i, fun j hj =>
       (Function.update_noteq hj.ne b a).symm, by rwa [Function.update_same i b]⟩⟩
 #align pi.lex.no_max_order' Pi.Lex.noMaxOrder'
 
