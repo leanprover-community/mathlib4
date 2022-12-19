@@ -169,7 +169,9 @@ We explicitly avoid stating that `p` is non-zero, this would require a semiring.
 monoid allows us to reuse irreducible for associated elements.
 -/
 structure Irreducible [Monoid α] (p : α) : Prop where
+  /-- `p` is not a unit -/
   not_unit : ¬IsUnit p
+  /-- if `p` factors then one factor is a unit -/
   is_unit_or_is_unit' : ∀ a b, p = a * b → IsUnit a ∨ IsUnit b
 #align irreducible Irreducible
 
@@ -380,6 +382,8 @@ def Associated [Monoid α] (x y : α) : Prop :=
 #align associated Associated
 
 -- mathport name: «expr ~ᵤ »
+/-- Notation for two elements of a monoid are associated, i.e.
+if one of them is another one multiplied by a unit on the right.-/
 local infixl:50 " ~ᵤ " => Associated
 
 namespace Associated
