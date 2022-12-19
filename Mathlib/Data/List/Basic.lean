@@ -1818,109 +1818,109 @@ theorem updateNth_comm (a b : α) :
 #align list.update_nth_comm List.updateNth_comm
 
 @[simp]
-theorem nth_le_update_nth_eq (l : List α) (i : ℕ) (a : α) (h : i < (l.updateNth i a).length) :
+theorem nthLe_update_nth_eq (l : List α) (i : ℕ) (a : α) (h : i < (l.updateNth i a).length) :
     (l.updateNth i a).nthLe i h = a := by
-  rw [← Option.some_inj, ← nth_le_nth, nth_update_nth_eq, nth_le_nth] <;> simp_all
-#align list.nth_le_update_nth_eq List.nth_le_update_nth_eq
+  rw [← Option.some_inj, ← nthLe_nth, nth_updateNth_eq, nthLe_nth] <;> simp_all
+#align list.nth_le_update_nth_eq List.nthLe_update_nth_eq
 
 @[simp]
-theorem nth_le_update_nth_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
+theorem nthLe_updateNth_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
     (hj : j < (l.updateNth i a).length) :
     (l.updateNth i a).nthLe j hj = l.nthLe j (by simpa using hj) := by
-  rw [← Option.some_inj, ← List.nth_le_nth, List.nth_update_nth_ne _ _ h, List.nth_le_nth]
-#align list.nth_le_update_nth_of_ne List.nth_le_update_nth_of_ne
+  rw [← Option.some_inj, ← List.nthLe_nth, List.nth_updateNth_ne _ _ h, List.nthLe_nth]
+#align list.nth_le_update_nth_of_ne List.nthLe_updateNth_of_ne
 
-theorem mem_or_eq_of_mem_update_nth :
-    ∀ {l : List α} {n : ℕ} {a b : α} (h : a ∈ l.updateNth n b), a ∈ l ∨ a = b
-  | [], n, a, b, h => False.elim h
-  | c :: l, 0, a, b, h => ((mem_cons_iff _ _ _).1 h).elim Or.inr (Or.inl ∘ mem_cons_of_mem _)
+theorem mem_or_eq_of_mem_updateNth :
+    ∀ {l : List α} {n : ℕ} {a b : α} (_ : a ∈ l.updateNth n b), a ∈ l ∨ a = b
+  | [], _, a, b, h => False.elim (by simp at h)
+  | c :: l, 0, a, b, h => (mem_cons.1 h).elim Or.inr (Or.inl ∘ mem_cons_of_mem _)
   | c :: l, n + 1, a, b, h =>
-    ((mem_cons_iff _ _ _).1 h).elim (fun h => h ▸ Or.inl (mem_cons_self _ _)) fun h =>
-      (mem_or_eq_of_mem_update_nth h).elim (Or.inl ∘ mem_cons_of_mem _) Or.inr
-#align list.mem_or_eq_of_mem_update_nth List.mem_or_eq_of_mem_update_nth
+    (mem_cons.1 h).elim (fun h => h ▸ Or.inl (mem_cons_self _ _)) fun h =>
+      (mem_or_eq_of_mem_updateNth h).elim (Or.inl ∘ mem_cons_of_mem _) Or.inr
+#align list.mem_or_eq_of_mem_update_nth List.mem_or_eq_of_mem_updateNth
 
 section InsertNth
 
 variable {a : α}
 
 @[simp]
-theorem insert_nth_zero (s : List α) (x : α) : insertNth 0 x s = x :: s :=
+theorem insertNth_zero (s : List α) (x : α) : insertNth 0 x s = x :: s :=
   rfl
-#align list.insert_nth_zero List.insert_nth_zero
+#align list.insert_nth_zero List.insertNth_zero
 
 @[simp]
-theorem insert_nth_succ_nil (n : ℕ) (a : α) : insertNth (n + 1) a [] = [] :=
+theorem insertNth_succ_nil (n : ℕ) (a : α) : insertNth (n + 1) a [] = [] :=
   rfl
-#align list.insert_nth_succ_nil List.insert_nth_succ_nil
+#align list.insert_nth_succ_nil List.insertNth_succ_nil
 
 @[simp]
-theorem insert_nth_succ_cons (s : List α) (hd x : α) (n : ℕ) :
+theorem insertNth_succ_cons (s : List α) (hd x : α) (n : ℕ) :
     insertNth (n + 1) x (hd :: s) = hd :: insertNth n x s :=
   rfl
-#align list.insert_nth_succ_cons List.insert_nth_succ_cons
+#align list.insert_nth_succ_cons List.insertNth_succ_cons
 
-theorem length_insert_nth : ∀ n as, n ≤ length as → length (insertNth n a as) = length as + 1
-  | 0, as, h => rfl
-  | n + 1, [], h => (Nat.not_succ_le_zero _ h).elim
-  | n + 1, a' :: as, h => congr_arg Nat.succ <| length_insert_nth n as (Nat.le_of_succ_le_succ h)
-#align list.length_insert_nth List.length_insert_nth
+theorem length_insertNth : ∀ n as, n ≤ length as → length (insertNth n a as) = length as + 1
+  | 0, _, _ => rfl
+  | _ + 1, [], h => (Nat.not_succ_le_zero _ h).elim
+  | n + 1, _ :: as, h => congr_arg Nat.succ <| length_insertNth n as (Nat.le_of_succ_le_succ h)
+#align list.length_insert_nth List.length_insertNth
 
-theorem remove_nth_insert_nth (n : ℕ) (l : List α) : (l.insertNth n a).removeNth n = l := by
-  rw [remove_nth_eq_nth_tail, insert_nth, modify_nth_tail_modify_nth_tail_same] <;>
-    exact modify_nth_tail_id _ _
-#align list.remove_nth_insert_nth List.remove_nth_insert_nth
+theorem removeNth_insertNth (n : ℕ) (l : List α) : (l.insertNth n a).removeNth n = l := by
+  rw [removeNth_eq_nth_tail, insertNth, modifyNthTail_modifyNthTail_same]
+  exact modifyNthTail_id _ _
+#align list.remove_nth_insert_nth List.removeNth_insertNth
 
-theorem insert_nth_remove_nth_of_ge :
+theorem insertNth_removeNth_of_ge :
     ∀ n m as,
       n < length as → n ≤ m → insertNth m a (as.removeNth n) = (as.insertNth (m + 1) a).removeNth n
   | 0, 0, [], has, _ => (lt_irrefl _ has).elim
-  | 0, 0, a :: as, has, hmn => by simp [remove_nth, insert_nth]
-  | 0, m + 1, a :: as, has, hmn => rfl
+  | 0, 0, _ :: as, _, _ => by simp [removeNth, insertNth]
+  | 0, m + 1, a :: as, _, _ => rfl
   | n + 1, m + 1, a :: as, has, hmn =>
     congr_arg (cons a) <|
-      insert_nth_remove_nth_of_ge n m as (Nat.lt_of_succ_lt_succ has) (Nat.le_of_succ_le_succ hmn)
-#align list.insert_nth_remove_nth_of_ge List.insert_nth_remove_nth_of_ge
+      insertNth_removeNth_of_ge n m as (Nat.lt_of_succ_lt_succ has) (Nat.le_of_succ_le_succ hmn)
+#align list.insert_nth_remove_nth_of_ge List.insertNth_removeNth_of_ge
 
-theorem insert_nth_remove_nth_of_le :
+theorem insertNth_removeNth_of_le :
     ∀ n m as,
       n < length as → m ≤ n → insertNth m a (as.removeNth n) = (as.insertNth m a).removeNth (n + 1)
-  | n, 0, a :: as, has, hmn => rfl
+  | _, 0, _ :: _, _, _ => rfl
   | n + 1, m + 1, a :: as, has, hmn =>
     congr_arg (cons a) <|
-      insert_nth_remove_nth_of_le n m as (Nat.lt_of_succ_lt_succ has) (Nat.le_of_succ_le_succ hmn)
-#align list.insert_nth_remove_nth_of_le List.insert_nth_remove_nth_of_le
+      insertNth_removeNth_of_le n m as (Nat.lt_of_succ_lt_succ has) (Nat.le_of_succ_le_succ hmn)
+#align list.insert_nth_remove_nth_of_le List.insertNth_removeNth_of_le
 
-theorem insert_nth_comm (a b : α) :
-    ∀ (i j : ℕ) (l : List α) (h : i ≤ j) (hj : j ≤ length l),
+theorem insertNth_comm (a b : α) :
+    ∀ (i j : ℕ) (l : List α) (_ : i ≤ j) (_ : j ≤ length l),
       (l.insertNth i a).insertNth (j + 1) b = (l.insertNth j b).insertNth i a
-  | 0, j, l => by simp [insert_nth]
+  | 0, j, l => by simp [insertNth]
   | i + 1, 0, l => fun h => (Nat.not_lt_zero _ h).elim
   | i + 1, j + 1, [] => by simp
   | i + 1, j + 1, c :: l => fun h₀ h₁ => by
-    simp [insert_nth] <;>
-      exact insert_nth_comm i j l (Nat.le_of_succ_le_succ h₀) (Nat.le_of_succ_le_succ h₁)
-#align list.insert_nth_comm List.insert_nth_comm
+    simp [insertNth]
+    exact insertNth_comm a b i j l (Nat.le_of_succ_le_succ h₀) (Nat.le_of_succ_le_succ h₁)
+#align list.insert_nth_comm List.insertNth_comm
 
-theorem mem_insert_nth {a b : α} :
-    ∀ {n : ℕ} {l : List α} (hi : n ≤ l.length), a ∈ l.insertNth n b ↔ a = b ∨ a ∈ l
-  | 0, as, h => Iff.rfl
+theorem mem_insertNth {a b : α} :
+    ∀ {n : ℕ} {l : List α} (_ : n ≤ l.length), a ∈ l.insertNth n b ↔ a = b ∨ a ∈ l
+  | 0, as, _ => by simp
   | n + 1, [], h => (Nat.not_succ_le_zero _ h).elim
   | n + 1, a' :: as, h => by
-    dsimp [List.insertNth]
-    erw [mem_insert_nth (Nat.le_of_succ_le_succ h), ← or_assoc, or_comm' (a = a'), or_assoc]
-#align list.mem_insert_nth List.mem_insert_nth
+    rw [List.insertNth_succ_cons, mem_cons, mem_insertNth (Nat.le_of_succ_le_succ h),
+      ← or_assoc, @or_comm (a = a'), or_assoc, mem_cons]
+#align list.mem_insert_nth List.mem_insertNth
 
-theorem insert_nth_of_length_lt (l : List α) (x : α) (n : ℕ) (h : l.length < n) :
+theorem insertNth_of_length_lt (l : List α) (x : α) (n : ℕ) (h : l.length < n) :
     insertNth n x l = l := by
   induction' l with hd tl IH generalizing n
   · cases n
-    · simpa using h
+    · simp at h
     · simp
   · cases n
-    · simpa using h
+    · simp at h
     · simp only [Nat.succ_lt_succ_iff, length] at h
       simpa using IH _ h
-#align list.insert_nth_of_length_lt List.insert_nth_of_length_lt
+#align list.insert_nth_of_length_lt List.insertNth_of_length_lt
 
 @[simp]
 theorem insert_nth_length_self (l : List α) (x : α) : insertNth l.length x l = l ++ [x] := by
