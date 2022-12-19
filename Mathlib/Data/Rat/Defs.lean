@@ -334,7 +334,7 @@ instance commRing : CommRing ℚ where
     simp only [of_int_eq_cast, coe_int_eq_divInt, add_def'' one_ne_zero one_ne_zero, ← divInt_one_one,
       Nat.cast_add, Nat.cast_one, mul_one]
 
-instance : CommGroupWithZero ℚ :=
+instance commGroupWithZero : CommGroupWithZero ℚ :=
   { Rat.commRing with
     zero := 0
     one := 1
@@ -347,12 +347,12 @@ instance : CommGroupWithZero ℚ :=
     mul_zero := mul_zero
     zero_mul := zero_mul }
 
-instance : IsDomain ℚ :=
+instance isDomain : IsDomain ℚ :=
   NoZeroDivisors.toIsDomain _
 
 -- Extra instances to short-circuit type class resolution
 -- TODO(Mario): this instance slows down data.real.basic
-instance : Nontrivial ℚ := by infer_instance
+instance nontrivial : Nontrivial ℚ := by infer_instance
 
 --instance : ring ℚ             := by apply_instance
 instance : CommSemiring ℚ := by infer_instance
