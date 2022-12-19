@@ -340,6 +340,7 @@ import Mathlib.Order.Compare
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Directed
 import Mathlib.Order.Disjoint
+import Mathlib.Order.GaloisConnection
 import Mathlib.Order.GameAdd
 import Mathlib.Order.Heyting.Basic
 import Mathlib.Order.Heyting.Boundary
