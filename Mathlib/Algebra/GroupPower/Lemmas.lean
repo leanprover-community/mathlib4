@@ -408,7 +408,7 @@ theorem zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
 `zsmul_lt_zsmul_iff'`. -/
 @[to_additive
       "Alias of `zsmul_right_inj`, for ease of discovery alongside
-      `zsmul_le_zsmul_iff'` and\n`zsmul_lt_zsmul_iff'`."]
+      `zsmul_le_zsmul_iff'` and `zsmul_lt_zsmul_iff'`."]
 theorem zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
   zpow_left_inj hn
 #align zpow_eq_zpow_iff' zpow_eq_zpow_iff'
