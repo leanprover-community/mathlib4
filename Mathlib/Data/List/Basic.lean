@@ -1643,7 +1643,7 @@ theorem indexOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy
     simp only [indexOf_nth_le] at x_eq_y; exact x_eq_y, fun h => by subst h; rfl⟩
 #align list.index_of_inj List.indexOf_inj
 
-theorem nth_le_reverse_aux2 :
+theorem nthLe_reverse_aux2 :
     ∀ (l r : List α) (i : Nat) (h1) (h2),
       nthLe (reverseAux l r) (length l - 1 - i) h1 = nthLe l i h2
   | [], r, i, h1, h2 => absurd h2 (Nat.not_lt_zero _)
@@ -1652,25 +1652,25 @@ theorem nth_le_reverse_aux2 :
     rw [zero_add] at aux
     exact aux _ (zero_lt_succ _)
   | a :: l, r, i + 1, h1, h2 => by
-    have aux := nth_le_reverse_aux2 l (a :: r) i
+    have aux := nthLe_reverse_aux2 l (a :: r) i
     have heq :=
       calc
         length (a :: l) - 1 - (i + 1) = length l - (1 + i) := by rw [add_comm]; rfl
         _ = length l - 1 - i := by rw [← tsub_add_eq_tsub_tsub]
     rw [←heq] at aux
     apply aux
-#align list.nth_le_reverse_aux2 List.nth_le_reverse_aux2
+#align list.nth_le_reverse_aux2 List.nthLe_reverse_aux2
 
 @[simp]
-theorem nth_le_reverse (l : List α) (i : Nat) (h1 h2) :
+theorem nthLe_reverse (l : List α) (i : Nat) (h1 h2) :
     nthLe (reverse l) (length l - 1 - i) h1 = nthLe l i h2 :=
-  nth_le_reverse_aux2 _ _ _ _ _
-#align list.nth_le_reverse List.nth_le_reverse
+  nthLe_reverse_aux2 _ _ _ _ _
+#align list.nth_le_reverse List.nthLe_reverse
 
 theorem nth_le_reverse' (l : List α) (n : ℕ) (hn : n < l.reverse.length) (hn') :
     l.reverse.nthLe n hn = l.nthLe (l.length - 1 - n) hn' := by
   rw [eq_comm]
-  convert nth_le_reverse l.reverse _ _ _ using 1
+  convert nthLe_reverse l.reverse _ _ _ using 1
   · simp
   · simpa
 #align list.nth_le_reverse' List.nth_le_reverse'
@@ -1680,19 +1680,19 @@ theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) :
   refine' ext_le (by convert h) fun n h₁ h₂ => _
   simp only [nth_le_singleton]
   congr
-  exact eq_bot_iff.mpr (nat.lt_succ_iff.mp h₂)
+  exact eq_bot_iff.mpr (Nat.lt_succ_iff.mp h₂)
 #align list.eq_cons_of_length_one List.eq_cons_of_length_one
 
-theorem nth_le_eq_iff {l : List α} {n : ℕ} {x : α} {h} : l.nthLe n h = x ↔ l.nth n = some x := by
+theorem nthLe_eq_iff {l : List α} {n : ℕ} {x : α} {h} : l.nthLe n h = x ↔ l.nth n = some x := by
   rw [nth_eq_some]
-  tauto
-#align list.nth_le_eq_iff List.nth_le_eq_iff
+  simp [h]
+#align list.nth_le_eq_iff List.nthLe_eq_iff
 
-theorem some_nth_le_eq {l : List α} {n : ℕ} {h} : some (l.nthLe n h) = l.nth n := by
+theorem some_nthLe_eq {l : List α} {n : ℕ} {h} : some (l.nthLe n h) = l.nth n := by
   symm
   rw [nth_eq_some]
-  tauto
-#align list.some_nth_le_eq List.some_nth_le_eq
+  simp [h]
+#align list.some_nth_le_eq List.some_nthLe_eq
 
 theorem modify_nth_tail_modify_nth_tail {f g : List α → List α} (m : ℕ) :
     ∀ (n) (l : List α),
@@ -1700,7 +1700,7 @@ theorem modify_nth_tail_modify_nth_tail {f g : List α → List α} (m : ℕ) :
         l.modifyNthTail (fun l => (f l).modifyNthTail g m) n
   | 0, l => rfl
   | n + 1, [] => rfl
-  | n + 1, a :: l => congr_arg (List.cons a) (modify_nth_tail_modify_nth_tail n l)
+  | n + 1, a :: l => congr_arg (List.cons a) (modify_nth_tail_modify_nth_tail m n l)
 #align list.modify_nth_tail_modify_nth_tail List.modify_nth_tail_modify_nth_tail
 
 theorem modify_nth_tail_modify_nth_tail_le {f g : List α → List α} (m n : ℕ) (l : List α)
