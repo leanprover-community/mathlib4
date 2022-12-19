@@ -325,7 +325,7 @@ end CompleteBooleanAlgebra
 section lift
 
 -- See note [reducible non-instances]
-/-- Pullback an `order.frame` along an injection. -/
+/-- Pullback an `Order.Frame` along an injection. -/
 @[reducible]
 protected def Function.Injective.frame [HasSup α] [HasInf α] [SupSet α] [InfSet α] [Top α] [Bot α]
     [Frame β] (f : α → β) (hf : Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
@@ -341,7 +341,7 @@ protected def Function.Injective.frame [HasSup α] [HasInf α] [SupSet α] [InfS
 #align function.injective.frame Function.Injective.frame
 
 -- See note [reducible non-instances]
-/-- Pullback an `order.coframe` along an injection. -/
+/-- Pullback an `Order.Coframe` along an injection. -/
 @[reducible]
 protected def Function.Injective.coframe [HasSup α] [HasInf α] [SupSet α] [InfSet α] [Top α] [Bot α]
     [Coframe β] (f : α → β) (hf : Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
@@ -357,7 +357,7 @@ protected def Function.Injective.coframe [HasSup α] [HasInf α] [SupSet α] [In
 #align function.injective.coframe Function.Injective.coframe
 
 -- See note [reducible non-instances]
-/-- Pullback a `complete_distrib_lattice` along an injection. -/
+/-- Pullback a `CompleteDistribLattice` along an injection. -/
 @[reducible]
 protected def Function.Injective.completeDistribLattice [HasSup α] [HasInf α] [SupSet α] [InfSet α]
     [Top α] [Bot α] [CompleteDistribLattice β] (f : α → β) (hf : Function.Injective f)
@@ -369,7 +369,7 @@ protected def Function.Injective.completeDistribLattice [HasSup α] [HasInf α] 
 #align function.injective.complete_distrib_lattice Function.Injective.completeDistribLattice
 
 -- See note [reducible non-instances]
-/-- Pullback a `complete_boolean_algebra` along an injection. -/
+/-- Pullback a `CompleteBooleanAlgebra` along an injection. -/
 @[reducible]
 protected def Function.Injective.completeBooleanAlgebra [HasSup α] [HasInf α] [SupSet α] [InfSet α]
     [Top α] [Bot α] [HasCompl α] [SDiff α] [CompleteBooleanAlgebra β] (f : α → β)
