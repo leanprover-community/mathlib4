@@ -26,13 +26,13 @@ section LinearOrderedSemifield
 
 variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
 
-/-- `equiv.mulLeft₀` as an order_iso. -/
+/-- `Equiv.mulLeft₀` as an order_iso. -/
 @[simps (config := { simpRhs := true })]
 def OrderIso.mulLeft₀ (a : α) (ha : 0 < a) : α ≃o α :=
   { Equiv.mulLeft₀ a ha.ne' with map_rel_iff' := @fun _ _ => mul_le_mul_left ha }
 #align order_iso.mul_left₀ OrderIso.mulLeft₀
 
-/-- `equiv.mulRight₀` as an order_iso. -/
+/-- `Equiv.mulRight₀` as an order_iso. -/
 @[simps (config := { simpRhs := true })]
 def OrderIso.mulRight₀ (a : α) (ha : 0 < a) : α ≃o α :=
   { Equiv.mulRight₀ a ha.ne' with map_rel_iff' := @fun _ _ => mul_le_mul_right ha }
@@ -486,7 +486,7 @@ theorem add_halves (a : α) : a / 2 + a / 2 = a := by
   rw [div_add_div_same, ← two_mul, mul_div_cancel_left a two_ne_zero]
 #align add_halves add_halves
 
--- TODO: Generalize to `division_semiring`
+-- TODO: Generalize to `DivisionSemiring`
 theorem add_self_div_two (a : α) : (a + a) / 2 = a := by
   rw [← mul_two, mul_div_cancel a two_ne_zero]
 #align add_self_div_two add_self_div_two
@@ -907,7 +907,7 @@ theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 :=
 /-! ### Results about `IsLUB` -/
 
 
--- TODO: Generalize to `LinearOrderedSemiield`
+-- TODO: Generalize to `LinearOrderedSemifield`
 theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
     IsLUB ((fun b => a * b) '' s) (a * b) := by
   rcases lt_or_eq_of_le ha with (ha | rfl)
@@ -917,7 +917,7 @@ theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
     exact isLUB_singleton
 #align is_lub.mul_left IsLUB.mul_left
 
--- TODO: Generalize to `LinearOrderedSemiield`
+-- TODO: Generalize to `LinearOrderedSemifield`
 theorem IsLUB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
     IsLUB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 #align is_lub.mul_right IsLUB.mul_right
