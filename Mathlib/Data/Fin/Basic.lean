@@ -1055,13 +1055,13 @@ theorem cast_le_zero {n m : ℕ} (h : n.succ ≤ m.succ) : castLe h 0 = 0 := by 
 #align fin.cast_le_zero Fin.cast_le_zero
 
 @[simp]
-theorem range_cast_le {n k : ℕ} (h : n ≤ k) : Set.range (castLe h) = { i | (i : ℕ) < n } :=
+theorem range_cast_le {n k : ℕ} (h : n ≤ k) : Set.range (castLe h) = { i : Fin k | (i : ℕ) < n } :=
   Set.ext fun x => ⟨fun ⟨y, hy⟩ => hy ▸ y.2, fun hx => ⟨⟨x, hx⟩, Fin.ext rfl⟩⟩
 #align fin.range_cast_le Fin.range_cast_le
 
 @[simp]
 theorem coe_of_injective_cast_le_symm {n k : ℕ} (h : n ≤ k) (i : Fin k) (hi) :
-    ((Equiv.ofInjective _ (castLe h).Injective).symm ⟨i, hi⟩ : ℕ) = i := by
+    ((Equiv.ofInjective _ (castLe h).injective).symm ⟨i, hi⟩ : ℕ) = i := by
   rw [← coe_cast_le]
   exact congr_arg Fin.val (Equiv.apply_of_injective_symm _ _)
 #align fin.coe_of_injective_cast_le_symm Fin.coe_of_injective_cast_le_symm
@@ -1085,8 +1085,8 @@ theorem cast_le_comp_cast_le {k m n} (km : k ≤ m) (mn : m ≤ n) :
 
 /-- `cast eq i` embeds `i` into a equal `fin` type, see also `equiv.fin_congr`. -/
 def cast (eq : n = m) : Fin n ≃o Fin m where
-  toEquiv := ⟨castLe Eq.le, castLe Eq.symm.le, fun a => eq_of_veq rfl, fun a => eq_of_veq rfl⟩
-  map_rel_iff' a b := Iff.rfl
+  toEquiv := ⟨castLe eq.le, castLe eq.symm.le, fun _ => eq_of_veq rfl, fun _ => eq_of_veq rfl⟩
+  map_rel_iff' := Iff.rfl
 #align fin.cast Fin.cast
 
 @[simp]
