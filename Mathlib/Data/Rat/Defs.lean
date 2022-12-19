@@ -101,97 +101,23 @@ theorem divInt_ne_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b ≠ 0 ↔ a ≠ 0 :=
   (divInt_eq_zero b0).not
 #align rat.mk_ne_zero Rat.divInt_ne_zero
 
--- Porting note: this can move to Std4
-theorem normalize_eq_normalize_iff
-    (a : Int) (b : Nat) (hb : b ≠ 0) (c : Int) (d : Nat) (hd : d ≠ 0) :
-    normalize a b hb = normalize c d hd ↔ a * ↑d = c * ↑b := by
-  simp only [normalize, maybeNormalize_eq, mk'.injEq]
-  constructor
-  · rintro ⟨h₁, h₂⟩
-    have h₂ := congrArg (fun x : Nat => (x : Int)) h₂
-    simp only [Int.ofNat_div] at h₂
-    have h₂ := congrArg (c * · * ↑(Nat.gcd (Int.natAbs a) b)) h₂
-    dsimp only at h₂
-    rw [←Int.mul_div_assoc _ (Nat.coe_nat_dvd (Nat.gcd_dvd_right _ _)),
-      Int.div_mul_cancel ((Nat.coe_nat_dvd (Nat.gcd_dvd_right _ _)).trans (Int.dvd_mul_left _ _)),
-      ←Int.mul_div_assoc _ (Nat.coe_nat_dvd (Nat.gcd_dvd_right _ _)), Int.mul_comm c ↑d,
-      Int.mul_div_assoc _ (Int.ofNat_dvd_of_dvd_natAbs (Nat.gcd_dvd_left _ _)), ←h₁, Int.mul_assoc,
-      Int.div_mul_cancel (Int.ofNat_dvd_of_dvd_natAbs (Nat.gcd_dvd_left _ _)),
-      Int.mul_comm ↑d] at h₂
-    exact h₂.symm
-  · intro h
-    have hb' : 0 < b := Nat.pos_of_ne_zero hb
-    have hd' : 0 < d := Nat.pos_of_ne_zero hd
-    suffices ∀ a c, a * d = c * b → a / a.gcd b = c / c.gcd d ∧ b / a.gcd b = d / c.gcd d by
-      cases' this a.natAbs c.natAbs (by simpa [Int.natAbs_mul] using congr_arg Int.natAbs h) with
-        h₁ h₂
-      have hs := congr_arg Int.sign h
-      simp [Int.sign_eq_one_of_pos (Int.ofNat_lt.2 hb'),
-        Int.sign_eq_one_of_pos (Int.ofNat_lt.2 hd')] at hs
-      -- Porting note:
-      -- `conv in a => rw [← Int.sign_mul_natAbs a]`
-      -- rewrites all the `a`s, not just the first one.
-      -- Fixed in https://github.com/leanprover/lean4/pull/1956
-      conv => enter [1, 1, 1]; rw [← Int.sign_mul_natAbs a]
-      conv => enter [1, 2, 1]; rw [← Int.sign_mul_natAbs c]
-      rw [Int.mul_div_assoc, Int.mul_div_assoc]
-      exact ⟨congr (congr_arg (· * ·) hs) (congr_arg (fun x : ℕ => (x : ℤ)) h₁), h₂⟩
-      all_goals exact Int.coe_nat_dvd.2 (Nat.gcd_dvd_left _ _)
-    intro a c h
-    suffices bd : b / a.gcd b = d / c.gcd d
-    · refine' ⟨_, bd⟩
-      apply Nat.eq_of_mul_eq_mul_left hb'
-      rw [← Nat.mul_div_assoc _ (Nat.gcd_dvd_left _ _), mul_comm,
-        Nat.mul_div_assoc _ (Nat.gcd_dvd_right _ _), bd, ←
-        Nat.mul_div_assoc _ (Nat.gcd_dvd_right _ _), h, mul_comm,
-        Nat.mul_div_assoc _ (Nat.gcd_dvd_left _ _)]
-    suffices ∀ {a c : ℕ}, ∀ b > 0, ∀ d > 0, a * d = c * b → b / a.gcd b ≤ d / c.gcd d by
-      exact le_antisymm (this _ hb' _ hd' h) (this _ hd' _ hb' h.symm)
-    intro a c b hb d hd h
-    have gb0 := Nat.gcd_pos_of_pos_right a hb
-    have gd0 := Nat.gcd_pos_of_pos_right c hd
-    apply Nat.le_of_dvd
-    apply (Nat.le_div_iff_mul_le gd0).2
-    change 1 * _ ≤ _
-    rw [Nat.one_mul]
-    apply Nat.le_of_dvd hd (Nat.gcd_dvd_right _ _)
-    apply (Nat.coprime_div_gcd_div_gcd gb0).symm.dvd_of_dvd_mul_left
-    refine' ⟨c / c.gcd d, _⟩
-    rw [← Nat.mul_div_assoc _ (Nat.gcd_dvd_left _ _), ← Nat.mul_div_assoc _ (Nat.gcd_dvd_right _ _)]
-    apply congr_arg (· / c.gcd d)
-    rw [mul_comm, ← Nat.mul_div_assoc _ (Nat.gcd_dvd_left _ _), mul_comm, h,
-      Nat.mul_div_assoc _ (Nat.gcd_dvd_right _ _), mul_comm]
-
-
 #align rat.mk_eq Rat.divInt_eq_iff
-
-@[simp]
-theorem div_divInt_div_cancel_left {a b c : ℤ} (c0 : c ≠ 0) : a * c /. (b * c) = a /. b := by
-  by_cases b0 : b = 0;
-  · subst b0
-    simp
-  apply (divInt_eq_iff (mul_ne_zero b0 c0) b0).2
-  rw [mul_right_comm, ←mul_assoc]
-#align rat.div_mk_div_cancel_left Rat.div_divInt_div_cancel_left
+#align rat.div_mk_div_cancel_left Rat.divInt_mul_right
 
 -- Porting note: this can move to Std4
 theorem normalize_eq_mk' (n : Int) (d : Nat) (h : d ≠ 0) (c : Nat.gcd (Int.natAbs n) d = 1) :
-    normalize n d h = mk' n d h c := by
-  simp [normalize, c, maybeNormalize]
+    normalize n d h = mk' n d h c := (mk_eq_normalize ..).symm
 
 @[simp]
-theorem num_den : ∀ {a : ℚ}, a.num /. a.den = a
-  | ⟨n, d, h, (c : _ = 1)⟩ => show mkRat n d = _ by simp [mkRat, h, c, normalize_eq_mk']
+theorem num_den : ∀ {a : ℚ}, a.num /. a.den = a := divInt_self _
 #align rat.num_denom Rat.num_den
 
-theorem num_den' {n d h c} : (⟨n, d, h, c⟩ : ℚ) = n /. d :=
-  num_den.symm
+theorem num_den' {n d h c} : (⟨n, d, h, c⟩ : ℚ) = n /. d := num_den.symm
 #align rat.num_denom' Rat.num_den'
 
 -- Porting note: we explicitly write `Int.cast` here,
 -- as that will later be the preferred coercion (but at this point is not).
-theorem coe_int_eq_divInt (z : ℤ) : Int.cast z = z /. 1 :=
-  num_den'
+theorem coe_int_eq_divInt (z : ℤ) : Int.cast z = z /. 1 := num_den'
 #align rat.coe_int_eq_mk Rat.coe_int_eq_divInt
 
 /-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with rational
@@ -234,30 +160,9 @@ theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → 
 
 @[simp]
 theorem add_def'' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
-    a /. b + c /. d = (a * d + c * b) /. (b * d) := by
-  rw [add_def, eq_comm]
-  rw [divInt_eq_iff (mul_ne_zero b0 d0)]
-  · rw [add_mul]
-    rw [add_mul]
-    congr 1
-    · rw [mul_comm _ (b*d), mul_comm a d, mul_comm b d, mul_assoc, mul_assoc]
-      congr 1
-      rw [← mul_assoc, ← mul_assoc]
-      congr 1
-      rw [mul_comm b, ← divInt_eq b0, num_den]
-      apply Nat.cast_injective.ne
-      apply Rat.den_nz
-    · rw [mul_comm, mul_comm b, ← mul_assoc, ← mul_assoc]
-      congr 1
-      rw [mul_comm (c /. d).num, mul_assoc, mul_assoc]
-      congr 1
-      rw [mul_comm, ← divInt_eq d0, num_den]
-      apply Nat.cast_injective.ne
-      apply Rat.den_nz
-  · apply Nat.cast_injective.ne
-    exact mul_ne_zero (a /. b).den_nz (c /. d).den_nz
+    a /. b + c /. d = (a * d + c * b) /. (b * d) := divInt_add_divInt _ _ b0 d0
 
-#align rat.add_def Rat.add_def
+#align rat.add_def Rat.add_def''
 
 #align rat.neg Rat.neg
 
@@ -269,24 +174,22 @@ theorem neg_def {a b : ℤ} : -(a /. b) = -a /. b := neg_divInt a b
 #align rat.neg_def Rat.neg_def
 
 @[simp]
-theorem divInt_neg_den (n d : ℤ) : n /. -d = -n /. d := by
-  by_cases hd : d = 0 <;> simp [Rat.divInt_eq_iff, hd]
+theorem divInt_neg_den (n d : ℤ) : n /. -d = -n /. d := divInt_neg' ..
 #align rat.mk_neg_denom Rat.divInt_neg_den
 
 -- Porting note: since `Sub ℚ` is defined in Std, we need to prove this here.
 -- Presumably we will copy the proof from `add_def`.
 @[simp]
 theorem sub_def'' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
-    a /. b - c /. d = (a * d - c * b) /. (b * d) := by
-  rw [Rat.sub_eq_add_neg, neg_def, add_def'' b0 d0, neg_mul, ←sub_eq_add_neg]
+    a /. b - c /. d = (a * d - c * b) /. (b * d) := divInt_sub_divInt _ _ b0 d0
 #align rat.sub_def Rat.sub_def''
 
 #align rat.mul Rat.mul
 
 -- Porting note: there's already an instance for `Mul ℚ` in Std.
 @[simp]
-theorem mul_def' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) : a /. b * (c /. d) = a * c /. (b * d) := by
-  rw [mul_def]
+theorem mul_def' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) : a /. b * (c /. d) = a * c /. (b * d) :=
+  divInt_mul_divInt _ _ b0 d0
 #align rat.mul_def Rat.mul_def'
 
 #align rat.inv Rat.inv
@@ -297,39 +200,12 @@ instance : Inv ℚ :=
 -- Porting note: there's already an instance for `Div ℚ` is in Std.
 
 @[simp]
-theorem inv_def' {a b : ℤ} : (a /. b)⁻¹ = b /. a := by
-  by_cases a0 : a = 0
-  · subst a0
-    simp
-  by_cases b0 : b = 0
-  · subst b0
-    simp
-  generalize ha : a /. b = x
-  cases' x with n d h c
-  rw [num_den'] at ha
-  refine' Eq.trans (_ : Rat.inv ⟨n, d, h, c⟩ = d /. n) _
-  · cases' n with n <;> [cases' n with n, skip]
-    · simp
-    · unfold Rat.inv
-      simp only [Int.ofNat_eq_coe, Nat.cast_succ, Int.succ_ofNat_pos, dite_true]
-      erw [dif_neg, num_den', Int.natAbs_cast]; rfl
-      exact of_decide_eq_true rfl
-    · unfold Rat.inv
-      simp only [Int.natAbs_negSucc, Int.negSucc_not_pos, dite_false]
-      rw [dif_pos (Int.negSucc_lt_zero _), num_den', ←neg_def, Int.negSucc_coe, divInt_neg_den,
-        ←neg_def]
-  have n0 : n ≠ 0 := by
-    rintro rfl
-    rw [Rat.zero_divInt, divInt_eq_zero b0] at ha
-    exact a0 ha
-  have d0 := ne_of_gt (Int.ofNat_lt.2 (Nat.pos_of_ne_zero h))
-  have ha := (divInt_eq_iff b0 d0).1 ha
-  apply (divInt_eq_iff n0 a0).2
-  -- Porting note: this was by `cc`
-  rw [mul_comm, ha, mul_comm]
+theorem inv_def' {a b : ℤ} : (a /. b)⁻¹ = b /. a := inv_divInt ..
 #align rat.inv_def Rat.inv_def'
 
 variable (a b c : ℚ)
+
+attribute [-simp] divInt_ofNat
 
 protected theorem add_zero : a + 0 = a :=
   numDenCasesOn' a fun n d h => by
@@ -357,7 +233,7 @@ protected theorem add_assoc : a + b + c = a + (b + c) :=
 #align rat.add_assoc Rat.add_assoc
 
 protected theorem add_left_neg : -a + a = 0 :=
-  numDenCasesOn' a fun n d h => by simp [h]
+  numDenCasesOn' a fun n d h => by simp [h, mkRat_add_mkRat]
 #align rat.add_left_neg Rat.add_left_neg
 
 @[simp]
@@ -399,7 +275,7 @@ protected theorem add_mul : (a + b) * c = a * c + b * c :=
     numDenCasesOn' b fun n₂ d₂ h₂ =>
       numDenCasesOn' c fun n₃ d₃ h₃ => by
         simp [h₁, h₂, h₃, mul_ne_zero]
-        rw [←  div_divInt_div_cancel_left (Int.coe_nat_ne_zero.2 h₃), add_mul, add_mul]
+        rw [←  divInt_mul_right (Int.coe_nat_ne_zero.2 h₃), add_mul, add_mul]
         ac_rfl
 #align rat.add_mul Rat.add_mul
 
@@ -414,13 +290,8 @@ protected theorem zero_ne_one : 0 ≠ (1 : ℚ) := by
 
 protected theorem mul_inv_cancel : a ≠ 0 → a * a⁻¹ = 1 :=
   numDenCasesOn' a fun n d h a0 => by
-    have n0 : n ≠ 0 :=
-      mt
-        (by
-          rintro rfl
-          simp)
-        a0
-    simpa [h, n0, mul_comm] using @div_divInt_div_cancel_left 1 1 _ n0
+    have n0 : n ≠ 0 := mt (by rintro rfl; simp) a0
+    simpa [h, n0, mul_comm] using @divInt_mul_right 1 1 (n * d) (by simp [h, n0])
 #align rat.mul_inv_cancel Rat.mul_inv_cancel
 
 protected theorem inv_mul_cancel (h : a ≠ 0) : a⁻¹ * a = 1 :=
@@ -620,7 +491,7 @@ theorem divInt_mul_divInt_cancel {x : ℤ} (hx : x ≠ 0) (n d : ℤ) : n /. x *
   by_cases hd : d = 0
   · rw [hd]
     simp
-  rw [mul_def' hx hd, mul_comm x, div_divInt_div_cancel_left hx]
+  rw [mul_def' hx hd, mul_comm x, divInt_mul_right hx]
 #align rat.mk_mul_mk_cancel Rat.divInt_mul_divInt_cancel
 
 theorem divInt_div_divInt_cancel_left {x : ℤ} (hx : x ≠ 0) (n d : ℤ) :
