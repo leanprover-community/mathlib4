@@ -89,29 +89,37 @@ theorem is_square_iff_exists_sq (m : α) : IsSquare m ↔ ∃ c, m = c ^ 2 := by
 
 alias is_square_iff_exists_sq ↔ IsSquare.exists_sq is_square_of_exists_sq
 
--- attribute
---   [to_additive Even.exists_two_nsmul
---       "Alias of the forwards direction of\n`even_iff_exists_two_nsmul`."]
---   IsSquare.exists_sq
+attribute
+  [to_additive Even.exists_two_nsmul
+      "Alias of the forwards direction of\n`even_iff_exists_two_nsmul`."]
+  IsSquare.exists_sq
 
--- attribute
---   [to_additive even_of_exists_two_nsmul
---       "Alias of the backwards direction of\n`even_iff_exists_two_nsmul`."]
---   is_square_of_exists_sq
+attribute
+  [to_additive even_of_exists_two_nsmul
+      "Alias of the backwards direction of\n`even_iff_exists_two_nsmul`."]
+  is_square_of_exists_sq
 
--- @[to_additive Even.nsmul]
+@[to_additive Even.nsmul]
 theorem IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨a, rfl⟩
   exact ⟨a ^ n, (Commute.refl _).mul_pow _⟩
 #align is_square.pow IsSquare.pow
 
--- @[simp, to_additive Even.nsmul']
+/- Porting note: `simp` attribute removed because linter reports:
+simp can prove this:
+  by simp only [even_two, Even.nsmul']
+-/
+@[to_additive Even.nsmul']
 theorem Even.is_square_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨n, rfl⟩ a
   exact ⟨a ^ n, pow_add _ _ _⟩
 #align even.is_square_pow Even.is_square_pow
 
-@[simp, to_additive even_two_nsmul]
+/- Porting note: `simp` attribute removed because linter reports:
+simp can prove this:
+  by simp only [even_two, Even.is_square_pow]
+-/
+@[to_additive even_two_nsmul]
 theorem is_square_sq (a : α) : IsSquare (a ^ 2) :=
   ⟨a, pow_two _⟩
 #align is_square_sq is_square_sq
