@@ -3,6 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Damiano Testa,
 Yuyang Zhao
+
+! This file was ported from Lean 3 source module algebra.order.monoid.lemmas
+! leanprover-community/mathlib commit 99e8971dc62f1f7ecf693d75e75fbbabd55849de
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Init.Data.Ordering.Basic
