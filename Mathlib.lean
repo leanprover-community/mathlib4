@@ -104,6 +104,7 @@ import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Algebra.PEmptyInstances
+import Mathlib.Algebra.Parity
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Ring.Basic
