@@ -1089,7 +1089,6 @@ theorem dvd_not_unit_of_lt {a b : Associates α} (hlt : a < b) : DvdNotUnit a b 
 theorem irreducible_iff_prime_iff :
     (∀ a : α, Irreducible a ↔ Prime a) ↔ ∀ a : Associates α, Irreducible a ↔ Prime a := by
   simp_rw [forall_associated, irreducible_mk, prime_mk]
-  rfl
 #align associates.irreducible_iff_prime_iff Associates.irreducible_iff_prime_iff
 
 end CommMonoidWithZero
