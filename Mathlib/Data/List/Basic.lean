@@ -1667,13 +1667,13 @@ theorem nthLe_reverse (l : List α) (i : Nat) (h1 h2) :
   nthLe_reverse_aux2 _ _ _ _ _
 #align list.nth_le_reverse List.nthLe_reverse
 
-theorem nth_le_reverse' (l : List α) (n : ℕ) (hn : n < l.reverse.length) (hn') :
+theorem nthLe_reverse' (l : List α) (n : ℕ) (hn : n < l.reverse.length) (hn') :
     l.reverse.nthLe n hn = l.nthLe (l.length - 1 - n) hn' := by
   rw [eq_comm]
   convert nthLe_reverse l.reverse n (by simpa) hn using 1
   · simp
 
-#align list.nth_le_reverse' List.nth_le_reverse'
+#align list.nth_le_reverse' List.nthLe_reverse'
 
 theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) :
     l = [l.nthLe 0 (h.symm ▸ zero_lt_one)] := by
@@ -1694,55 +1694,51 @@ theorem some_nthLe_eq {l : List α} {n : ℕ} {h} : some (l.nthLe n h) = l.nth n
   simp [h]
 #align list.some_nth_le_eq List.some_nthLe_eq
 
-theorem modify_nth_tail_modify_nth_tail {f g : List α → List α} (m : ℕ) :
+theorem modifyNthTail_modifyNthTail {f g : List α → List α} (m : ℕ) :
     ∀ (n) (l : List α),
       (l.modifyNthTail f n).modifyNthTail g (m + n) =
         l.modifyNthTail (fun l => (f l).modifyNthTail g m) n
-  | 0, l => rfl
-  | n + 1, [] => rfl
-  | n + 1, a :: l => congr_arg (List.cons a) (modify_nth_tail_modify_nth_tail m n l)
-#align list.modify_nth_tail_modify_nth_tail List.modify_nth_tail_modify_nth_tail
+  | 0, _ => rfl
+  | _ + 1, [] => rfl
+  | n + 1, a :: l => congr_arg (List.cons a) (modifyNthTail_modifyNthTail m n l)
+#align list.modify_nth_tail_modify_nth_tail List.modifyNthTail_modifyNthTail
 
-theorem modify_nth_tail_modify_nth_tail_le {f g : List α → List α} (m n : ℕ) (l : List α)
+theorem modifyNthTail_modifyNthTail_le {f g : List α → List α} (m n : ℕ) (l : List α)
     (h : n ≤ m) :
     (l.modifyNthTail f n).modifyNthTail g m =
       l.modifyNthTail (fun l => (f l).modifyNthTail g (m - n)) n :=
   by
   rcases exists_add_of_le h with ⟨m, rfl⟩
-  rw [add_tsub_cancel_left, add_comm, modify_nth_tail_modify_nth_tail]
-#align list.modify_nth_tail_modify_nth_tail_le List.modify_nth_tail_modify_nth_tail_le
+  rw [add_tsub_cancel_left, add_comm, modifyNthTail_modifyNthTail]
+#align list.modify_nth_tail_modify_nth_tail_le List.modifyNthTail_modifyNthTail_le
 
-theorem modify_nth_tail_modify_nth_tail_same {f g : List α → List α} (n : ℕ) (l : List α) :
+theorem modifyNthTail_modifyNthTail_same {f g : List α → List α} (n : ℕ) (l : List α) :
     (l.modifyNthTail f n).modifyNthTail g n = l.modifyNthTail (g ∘ f) n := by
-  rw [modify_nth_tail_modify_nth_tail_le n n l (le_refl n), tsub_self]; rfl
-#align list.modify_nth_tail_modify_nth_tail_same List.modify_nth_tail_modify_nth_tail_same
+  rw [modifyNthTail_modifyNthTail_le n n l (le_refl n), tsub_self]; rfl
+#align list.modify_nth_tail_modify_nth_tail_same List.modifyNthTail_modifyNthTail_same
 
-theorem modify_nth_tail_id : ∀ (n) (l : List α), l.modifyNthTail id n = l
-  | 0, l => rfl
-  | n + 1, [] => rfl
-  | n + 1, a :: l => congr_arg (List.cons a) (modify_nth_tail_id n l)
-#align list.modify_nth_tail_id List.modify_nth_tail_id
+#align list.modify_nth_tail_id List.modifyNthTail_id
 
-theorem remove_nth_eq_nth_tail : ∀ (n) (l : List α), removeNth l n = modifyNthTail tail n l
+theorem removeNth_eq_nthTail : ∀ (n) (l : List α), removeNth l n = modifyNthTail tail n l
   | 0, l => by cases l <;> rfl
   | n + 1, [] => rfl
-  | n + 1, a :: l => congr_arg (cons _) (remove_nth_eq_nth_tail _ _)
-#align list.remove_nth_eq_nth_tail List.remove_nth_eq_nth_tail
+  | n + 1, a :: l => congr_arg (cons _) (removeNth_eq_nthTail _ _)
+#align list.remove_nth_eq_nth_tail List.removeNth_eq_nthTail
 
-theorem update_nth_eq_modify_nth (a : α) :
+theorem updateNth_eq_modifyNth (a : α) :
     ∀ (n) (l : List α), updateNth l n a = modifyNth (fun _ => a) n l
   | 0, l => by cases l <;> rfl
   | n + 1, [] => rfl
-  | n + 1, b :: l => congr_arg (cons _) (update_nth_eq_modify_nth _ _)
-#align list.update_nth_eq_modify_nth List.update_nth_eq_modify_nth
+  | n + 1, b :: l => congr_arg (cons _) (updateNth_eq_modifyNth _ _ _)
+#align list.update_nth_eq_modify_nth List.updateNth_eq_modifyNth
 
-theorem modify_nth_eq_update_nth (f : α → α) :
+theorem modifyNth_eq_updateNth (f : α → α) :
     ∀ (n) (l : List α), modifyNth f n l = ((fun a => updateNth l n (f a)) <$> nth l n).getOrElse l
   | 0, l => by cases l <;> rfl
   | n + 1, [] => rfl
   | n + 1, b :: l =>
     (congr_arg (cons b) (modify_nth_eq_update_nth n l)).trans <| by cases nth l n <;> rfl
-#align list.modify_nth_eq_update_nth List.modify_nth_eq_update_nth
+#align list.modify_nth_eq_update_nth List.modifyNth_eq_updateNth
 
 theorem nth_modify_nth (f : α → α) :
     ∀ (n) (l : List α) (m),
