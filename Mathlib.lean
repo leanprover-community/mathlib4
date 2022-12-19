@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Abs
+import Mathlib.Algebra.Associated
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Divisibility.Basic
