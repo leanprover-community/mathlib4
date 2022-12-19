@@ -48,7 +48,6 @@ protected def Lex (x y : ∀ i, β i) : Prop :=
   ∃ i, (∀ j, r j i → x j = y j) ∧ s (x i) (y i)
 #align pi.lex Pi.Lex
 
--- mathport name: «exprΠₗ , »
 /- This unfortunately results in a type that isn't delta-reduced, so we keep the notation out of the
 basic API, just in case -/
 /-- The notation `Πₗ i, α i` refers to a pi type equipped with the lexicographic order. -/
@@ -98,8 +97,7 @@ instance [LT ι] [∀ a, LT (β a)] : LT (Lex (∀ i, β i)) :=
   ⟨Pi.Lex (· < ·) @fun _ => (· < ·)⟩
 
 instance Lex.isStrictOrder [LinearOrder ι] [∀ a, PartialOrder (β a)] :
-    IsStrictOrder (Lex (∀ i, β i))
-      (· < ·) where
+    IsStrictOrder (Lex (∀ i, β i)) (· < ·) where
   irrefl := fun a ⟨k, _, hk₂⟩ => lt_irrefl (a k) hk₂
   trans := by
     rintro a b c ⟨N₁, lt_N₁, a_lt_b⟩ ⟨N₂, lt_N₂, b_lt_c⟩
@@ -151,7 +149,7 @@ theorem lt_toLex_update_self_iff : toLex x < toLex (update x i a) ↔ x i < a :=
     by_contra H
     rw [update_noteq H] at h
     exact h.false
-  · rwa [update_same] at h
+  rwa [update_same] at h
 #align pi.lt_to_lex_update_self_iff Pi.lt_toLex_update_self_iff
 
 @[simp]
@@ -163,7 +161,7 @@ theorem toLex_update_lt_self_iff : toLex (update x i a) < toLex x ↔ a < x i :=
     by_contra H
     rw [update_noteq H] at h
     exact h.false
-  · rwa [update_same] at h
+  rwa [update_same] at h
 #align pi.to_lex_update_lt_self_iff Pi.toLex_update_lt_self_iff
 
 @[simp]
@@ -224,10 +222,10 @@ instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [Nonempty ι] [∀ i, Parti
 instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMinOrder (β i)] : NoMinOrder (Lex (∀ i, β i)) :=
   ⟨fun a =>
-    let ⟨_, hb⟩ := exists_lt (ofLex a) -- TODO Pi.NoMaxOrder is missing in Order.Max
+    let ⟨_, hb⟩ := exists_lt (ofLex a)
     ⟨_, toLex_strictMono hb⟩⟩
 
---we might want the analog of `pi.ordered_cancel_comm_monoid` as well in the future
+--We might want the analog of `Pi.orderedCancelCommMonoid` as well in the future.
 @[to_additive]
 instance Lex.orderedCommGroup [LinearOrder ι] [∀ a, OrderedCommGroup (β a)] :
     OrderedCommGroup (Lex (∀ i, β i)) :=

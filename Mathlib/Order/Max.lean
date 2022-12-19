@@ -103,29 +103,29 @@ instance (priority := 100) [Preorder α] [NoMinOrder α] : NoBotOrder α :=
 instance (priority := 100) [Preorder α] [NoMaxOrder α] : NoTopOrder α :=
   ⟨fun a => (exists_gt a).imp fun _ => not_le_of_lt⟩
 
-instance no_max_order_of_left [Preorder α] [Preorder β] [NoMaxOrder α] : NoMaxOrder (α × β) :=
+instance noMaxOrder_of_left [Preorder α] [Preorder β] [NoMaxOrder α] : NoMaxOrder (α × β) :=
   ⟨fun ⟨a, b⟩ => by
     obtain ⟨c, h⟩ := exists_gt a
     exact ⟨(c, b), Prod.mk_lt_mk_iff_left.2 h⟩⟩
-#align no_max_order_of_left no_max_order_of_left
+#align no_max_order_of_left noMaxOrder_of_left
 
-instance no_max_order_of_right [Preorder α] [Preorder β] [NoMaxOrder β] : NoMaxOrder (α × β) :=
+instance noMaxOrder_of_right [Preorder α] [Preorder β] [NoMaxOrder β] : NoMaxOrder (α × β) :=
   ⟨fun ⟨a, b⟩ => by
     obtain ⟨c, h⟩ := exists_gt b
     exact ⟨(a, c), Prod.mk_lt_mk_iff_right.2 h⟩⟩
-#align no_max_order_of_right no_max_order_of_right
+#align no_max_order_of_right noMaxOrder_of_right
 
-instance no_min_order_of_left [Preorder α] [Preorder β] [NoMinOrder α] : NoMinOrder (α × β) :=
+instance noMinOrder_of_left [Preorder α] [Preorder β] [NoMinOrder α] : NoMinOrder (α × β) :=
   ⟨fun ⟨a, b⟩ => by
     obtain ⟨c, h⟩ := exists_lt a
     exact ⟨(c, b), Prod.mk_lt_mk_iff_left.2 h⟩⟩
-#align no_min_order_of_left no_min_order_of_left
+#align no_min_order_of_left noMinOrder_of_left
 
-instance no_min_order_of_right [Preorder α] [Preorder β] [NoMinOrder β] : NoMinOrder (α × β) :=
+instance noMinOrder_of_right [Preorder α] [Preorder β] [NoMinOrder β] : NoMinOrder (α × β) :=
   ⟨fun ⟨a, b⟩ => by
     obtain ⟨c, h⟩ := exists_lt b
     exact ⟨(a, c), Prod.mk_lt_mk_iff_right.2 h⟩⟩
-#align no_min_order_of_right no_min_order_of_right
+#align no_min_order_of_right noMinOrder_of_right
 
 instance {ι : Type u} {π : ι → Type _} [Nonempty ι] [∀ i, Preorder (π i)] [∀ i, NoMaxOrder (π i)] :
     NoMaxOrder (∀ i, π i) :=
