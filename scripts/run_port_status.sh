@@ -8,7 +8,7 @@ git pull --rebase origin master
 
 function clone_pull {
     git clone "$2" $1 || true
-    cd $1 && git pull
+    (cd $1 && git pull)
 }
 
 (cd port-repos &&
