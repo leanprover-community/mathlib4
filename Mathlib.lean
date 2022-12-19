@@ -205,6 +205,7 @@ import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Gcd.Basic
+import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Nat.PSub
