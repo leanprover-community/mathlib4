@@ -207,6 +207,7 @@ import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Gcd.Basic
+import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Nat.PSub
@@ -269,6 +270,7 @@ import Mathlib.GroupTheory.GroupAction.Prod
 import Mathlib.GroupTheory.GroupAction.Sigma
 import Mathlib.GroupTheory.GroupAction.Sum
 import Mathlib.GroupTheory.GroupAction.Units
+import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
