@@ -62,26 +62,19 @@ theorem bodd_two : bodd 2 = false :=
 
 @[simp]
 theorem bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
+/-  unfold bodd boddDiv2 <;> cases boddDiv2 n <;> rename_i fst snd <;> cases fst <;>
+  simp <;>
+  cases n <;> simp [add_succ, ]
+-/
     unfold bodd
     unfold boddDiv2
-    simp
     induction' n with n IH
     case zero =>
       simp
     case succ =>
-      unfold boddDiv2
-      simp [IH]
+      simp[IH]
       sorry
-/-
-    unfold bodd boddDiv2 <;> cases boddDiv2 n with
-      | mk fst snd => cases fst with
-        | true =>
-          simp
-          cases n with
-          | zero => sorry
-          | succ m => sorry
-        | false => sorry
--/
+
 #align nat.bodd_succ Nat.bodd_succ
 
 @[simp]
@@ -193,7 +186,8 @@ theorem bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
 #align nat.bit_decomp Nat.bit_decomp
 
 def bitCasesOn {C : Nat → Sort u} (n) (h : ∀ b n, C (bit b n)) : C n := by
-  rw [← bit_decomp n] <;> apply h
+  rw [← bit_decomp n]
+  apply h
 #align nat.bit_cases_on Nat.bitCasesOn
 
 theorem bit_zero : bit false 0 = 0 :=
@@ -231,7 +225,9 @@ def testBit (m n : ℕ) : Bool :=
 def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) : ∀ n, C n :=
     fun n =>
       if n0 : n = 0 then
-        by simp [n0] <;> exact z
+        by
+          simp [n0]
+          exact z
       else by
         let n' := div2 n
         have : n' < n := by
@@ -349,23 +345,28 @@ theorem binary_rec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bi
   by_cases bit b n = 0
   case pos h' =>
     simp [dif_pos h']
-    generalize binaryRec._main._pack._proof_1 (bit b n) h' = e
+    generalize binaryRec z f (bit b n) = e
     revert e
     have bf := bodd_bit b n
     have n0 := div2_bit b n
-    rw [h'] at bf n0
+    rw [h] at bf n0
     simp at bf n0
-    rw [← bf, ← n0, binary_rec_zero]
-    intros ; exact h.symm
+    rw [← bf, ← n0]
+    rw [binary_rec_zero]
+    intros
+    rw [h']
+    rfl
   case neg h' =>
-    simp [dif_neg h']
-    generalize binaryRec._main._pack._proof_2 (bit b n) = e
+    simp [h']
+    simp [dif_neg h]
+    generalize binaryRec z f (bit b n) = e
     revert e
-    rw [bodd_bit, div2_bit]
+    rw [bodd_bit]
+    rw [div2_bit]
     intros ; rfl
 #align nat.binary_rec_eq Nat.binary_rec_eq
 
-theorem bitwise_bit_aux {f : Bool → Bool → Bool} (h : f false false = ff) :
+theorem bitwise_bit_aux {f : Bool → Bool → Bool} (h : f false false = false) :
     (@binaryRec (fun _ => ℕ) (cond (f true false) (bit false 0) 0) fun b n _ =>
         bit (f false b) (cond (f false true) n 0)) =
       fun n : ℕ => cond (f false true) n 0 :=
@@ -387,15 +388,17 @@ theorem bitwise_zero_left (f : Bool → Bool → Bool) (n) : bitwise f 0 n = con
 #align nat.bitwise_zero_left Nat.bitwise_zero_left
 
 @[simp]
-theorem bitwise_zero_right (f : Bool → Bool → Bool) (h : f false false = ff) (m) :
+theorem bitwise_zero_right (f : Bool → Bool → Bool) (h : f false false = false) (m) :
     bitwise f m 0 = cond (f true false) m 0 := by
-  unfold bitwise <;> apply bitCasesOn m <;> intros <;> rw [binary_rec_eq, binary_rec_zero] <;>
-    exact bitwise_bit_aux h
+      unfold bitwise <;> apply bitCasesOn m <;> intros
+      <;> rw [binary_rec_eq, binary_rec_zero] <;>
+      exact bitwise_bit_aux h
 #align nat.bitwise_zero_right Nat.bitwise_zero_right
 
 @[simp]
 theorem bitwise_zero (f : Bool → Bool → Bool) : bitwise f 0 0 = 0 := by
-  rw [bitwise_zero_left] <;> cases f false true <;> rfl
+  rw [bitwise_zero_left]
+  cases f false true <;> rfl
 #align nat.bitwise_zero Nat.bitwise_zero
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic tactic.swap -/
@@ -418,7 +421,7 @@ theorem bitwise_bit {f : Bool → Bool → Bool} (h : f false false = ff) (a m b
   · exact bitwise_bit_aux h
 #align nat.bitwise_bit Nat.bitwise_bit
 
-theorem bitwise_swap {f : Bool → Bool → Bool} (h : f false false = ff) :
+theorem bitwise_swap {f : Bool → Bool → Bool} (h : f false false = false) :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by
   funext m n; revert n
   dsimp [Function.swap]
