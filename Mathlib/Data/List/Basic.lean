@@ -2637,14 +2637,14 @@ theorem foldr_fixed {b : β} : ∀ l : List α, foldr (fun _ b => b) b l = b :=
 theorem foldl_join (f : α → β → α) :
     ∀ (a : α) (L : List (List β)), foldl f a (join L) = foldl (foldl f) a L
   | a, [] => rfl
-  | a, l :: L => by simp only [join, foldl_append, foldl_cons, foldl_join (foldl f a l) L]
+  | a, l :: L => by simp only [join, foldl_append, foldl_cons, foldl_join f (foldl f a l) L]
 #align list.foldl_join List.foldl_join
 
 @[simp]
 theorem foldr_join (f : α → β → β) :
     ∀ (b : β) (L : List (List α)), foldr f b (join L) = foldr (fun l b => foldr f b l) b L
   | a, [] => rfl
-  | a, l :: L => by simp only [join, foldr_append, foldr_join a L, foldr_cons]
+  | a, l :: L => by simp only [join, foldr_append, foldr_join f a L, foldr_cons]
 #align list.foldr_join List.foldr_join
 
 #align list.foldl_reverse List.foldl_reverse
@@ -2801,7 +2801,7 @@ theorem nth_succ_scanl {i : ℕ} :
   · symm
     simp only [Option.bind_eq_none', nth, forall₂_true_iff, not_false_iff, Option.map_none',
       scanl_nil, Option.not_mem_none, forall_true_iff]
-  · simp only [nth, scanl_cons, singleton_append]
+  · simp only [scanl_cons, singleton_append]
     cases i
     · simp only [Option.map_some', nth_zero_scanl, nth, Option.some_bind']
     · simp only [hl, nth]
@@ -2815,7 +2815,6 @@ theorem nth_le_succ_scanl {i : ℕ} {h : i + 1 < (scanl f b l).length} :
   induction' i with i hi generalizing b l
   · cases l
     · simp only [length, zero_add, scanl_nil] at h
-      exact absurd h (lt_irrefl 1)
     · simp only [scanl_cons, singleton_append, nth_le_zero_scanl, nthLe]
   · cases l
     · simp only [length, add_lt_iff_neg_right, scanl_nil] at h
