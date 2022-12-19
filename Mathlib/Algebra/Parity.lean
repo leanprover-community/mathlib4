@@ -104,6 +104,7 @@ theorem IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨a, rfl⟩
   exact ⟨a ^ n, (Commute.refl _).mul_pow _⟩
 #align is_square.pow IsSquare.pow
+#align even.nsmul Even.nsmul
 
 /- Porting note: `simp` attribute removed because linter reports:
 simp can prove this:
@@ -114,6 +115,7 @@ theorem Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨n, rfl⟩ a
   exact ⟨a ^ n, pow_add _ _ _⟩
 #align even.is_square_pow Even.isSquare_pow
+#align even.nsmul' Even.nsmul'
 
 /- Porting note: `simp` attribute removed because linter reports:
 simp can prove this:
