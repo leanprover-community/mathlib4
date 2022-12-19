@@ -735,8 +735,6 @@ end LinearOrderedRing
 
 namespace Int
 
-#check Nat.cast_pow
-
 /- Porting note: removed `@[simp]` because of linter error:
 
 Left-hand side simplifies from
