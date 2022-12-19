@@ -108,7 +108,10 @@ theorem divInt_ne_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b ≠ 0 ↔ a ≠ 0 :=
 theorem normalize_eq_mk' (n : Int) (d : Nat) (h : d ≠ 0) (c : Nat.gcd (Int.natAbs n) d = 1) :
     normalize n d h = mk' n d h c := (mk_eq_normalize ..).symm
 
-@[simp]
+-- Porting note: removing as a `@[simp]` lemma as
+-- theorem Rat.divInt_ofNat : ∀ (num : ℤ) (den : ℕ), num /. ↑den = mkRat num den
+-- applies to the LHS.
+-- @[simp]
 theorem num_den : ∀ {a : ℚ}, a.num /. a.den = a := divInt_self _
 #align rat.num_denom Rat.num_den
 
@@ -456,8 +459,8 @@ theorem mul_num_den (q r : ℚ) : q * r = q.num * r.num /. ↑(q.den * r.den) :=
   have hq' : (↑q.den : ℤ) ≠ 0 := by have := den_ne_zero q; simpa
   have hr' : (↑r.den : ℤ) ≠ 0 := by have := den_ne_zero r; simpa
   suffices q.num /. ↑q.den * (r.num /. ↑r.den) = q.num * r.num /. ↑(q.den * r.den) by
-    simpa using this
-  simp [mul_def' hq' hr', -num_den]
+    simpa [num_den] using this
+  simp [mul_def' hq' hr']
 #align rat.mul_num_denom Rat.mul_num_den
 
 theorem div_num_den (q r : ℚ) : q / r = q.num * r.den /. (q.den * r.num) :=
@@ -467,7 +470,7 @@ theorem div_num_den (q r : ℚ) : q / r = q.num * r.den /. (q.den * r.num) :=
   else
     calc
       q / r = q * r⁻¹ := div_eq_mul_inv q r
-      _ = q.num /. q.den * (r.num /. r.den)⁻¹ := by simp
+      _ = q.num /. q.den * (r.num /. r.den)⁻¹ := by simp [num_den]
       _ = q.num /. q.den * (r.den /. r.num) := by rw [inv_def']
       _ = q.num * r.den /. (q.den * r.num) := mul_def' (by simpa using den_ne_zero q) hr
 
