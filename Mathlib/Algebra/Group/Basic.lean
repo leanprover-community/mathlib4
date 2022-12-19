@@ -2,6 +2,11 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
+
+! This file was ported from Lean 3 source module algebra.group.basic
+! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 
@@ -355,6 +360,14 @@ theorem div_mul_eq_div_div_swap : a / (b * c) = a / c / b :=
   by simp only [mul_assoc, mul_inv_rev, div_eq_mul_inv]
 
 end DivisionMonoid
+
+section SubtractionMonoid
+
+set_option linter.deprecated false
+
+lemma bit0_neg [SubtractionMonoid α] (a : α) : bit0 (-a) = -bit0 a := (neg_add_rev _ _).symm
+
+end SubtractionMonoid
 
 section DivisionCommMonoid
 
