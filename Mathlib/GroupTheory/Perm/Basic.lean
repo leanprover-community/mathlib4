@@ -8,10 +8,10 @@ Authors: Leonardo de Moura, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Group.Pi
-import Mathbin.Algebra.GroupPower.Lemmas
-import Mathbin.Algebra.Group.Prod
-import Mathbin.Logic.Function.Iterate
+import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Algebra.Group.Prod
+import Mathlib.Logic.Function.Iterate
 
 /-!
 # The group of permutations (self-equivalences) of a type `α`
