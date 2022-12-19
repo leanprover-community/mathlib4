@@ -1320,7 +1320,7 @@ theorem castSucc_pos {i : Fin (n + 1)} (h : 0 < i) : 0 < castSucc i := by
 
 @[simp]
 theorem castSucc_eq_zero_iff (a : Fin (n + 1)) : castSucc a = 0 ↔ a = 0 :=
-  Fin.ext_iff.trans <| (Fin.ext_iff.trans <| Iff.rfl).symm
+  Fin.ext_iff.trans <| (Fin.ext_iff.trans <| by simp).symm
 #align fin.cast_succ_eq_zero_iff Fin.castSucc_eq_zero_iff
 
 theorem castSucc_ne_zero_iff (a : Fin (n + 1)) : castSucc a ≠ 0 ↔ a ≠ 0 :=
@@ -2264,7 +2264,7 @@ section PredAbove
 
 /-- `pred_above p i` embeds `i : fin (n+1)` into `fin n` by subtracting one if `p < i`. -/
 def predAbove (p : Fin n) (i : Fin (n + 1)) : Fin n :=
-  if h : castSucc p < i then i.pred (ne_of_lt (lt_of_le_of_lt (zero_le p.cast_succ) h)).symm
+  if h : castSucc p < i then i.pred (ne_of_lt (lt_of_le_of_lt (zero_le (castSucc p)) h)).symm
   else i.castLt (lt_of_le_of_lt (le_of_not_lt h) p.2)
 #align fin.pred_above Fin.predAbove
 
@@ -2317,6 +2317,7 @@ theorem cast_pred_one : castPred (1 : Fin (n + 2)) = 1 := by
 theorem pred_above_zero {i : Fin (n + 2)} (hi : i ≠ 0) : predAbove 0 i = i.pred hi := by
   dsimp [predAbove]
   rw [dif_pos]
+  simp only [castSucc_zero]
   exact (pos_iff_ne_zero _).mpr hi
 #align fin.pred_above_zero Fin.pred_above_zero
 
@@ -2364,9 +2365,9 @@ theorem cast_pred_monotone : Monotone (@castPred n) :=
 /-- Sending `fin (n+1)` to `fin n` by subtracting one from anything above `p`
 then back to `fin (n+1)` with a gap around `p` is the identity away from `p`. -/
 @[simp]
-theorem succAbove_pred_above {p : Fin n} {i : Fin (n + 1)} (h : i ≠ p.cast_succ) :
-    p.cast_succ.succAbove (p.predAbove i) = i := by
-  dsimp [pred_above, succAbove]
+theorem succAbove_pred_above {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p) :
+    p.castSucc.succAbove (p.predAbove i) = i := by
+  dsimp [predAbove, succAbove]
   rcases p with ⟨p, _⟩
   rcases i with ⟨i, _⟩
   cases' lt_or_le i p with H H
@@ -2378,13 +2379,14 @@ theorem succAbove_pred_above {p : Fin n} {i : Fin (n + 1)} (h : i ≠ p.cast_suc
     apply le_of_lt H
   · rw [dif_pos]
     rw [if_neg]
-    pick_goal 3
+    --pick_goal 3
     -- For some reason `simp` doesn't fire fully unless we discharge the third goal.
-    · exact lt_of_le_of_ne H (Ne.symm h)
+    --· exact lt_of_le_of_ne H (Ne.symm h)
     · simp
     · simp only [Fin.mk_eq_mk, Ne.def, Fin.cast_succ_mk] at h
       simp only [pred, Fin.mk_lt_mk, not_lt]
       exact Nat.le_pred_of_lt (Nat.lt_of_le_and_ne H (Ne.symm h))
+    · exact lt_of_le_of_ne H (Ne.symm h)
 #align fin.succ_above_pred_above Fin.succAbove_pred_above
 
 /-- Sending `fin n` into `fin (n + 1)` with a gap at `p`
@@ -2428,7 +2430,7 @@ theorem pred_succAbove_pred {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ 0) (
     · rwa [cast_succ_pred_eq_pred_cast_succ, Fin.pred_le_pred_iff]
 #align fin.pred_succ_above_pred Fin.pred_succAbove_pred
 
-/-- `succ` commutes with `pred_above`. -/
+/-- `succ` commutes with `predAbove`. -/
 @[simp]
 theorem succ_pred_above_succ {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
     a.succ.predAbove b.succ = (a.predAbove b).succ := by
