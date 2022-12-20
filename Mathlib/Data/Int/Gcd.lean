@@ -548,7 +548,8 @@ attribute [to_additive gcd_nsmul_eq_zero] pow_gcd_eq_one
 --     (hx : x * a = tx) (hy : y * b = ty) (h : ty + d = tx) : Nat.gcd x y = d := by
 --   rw [← Int.coe_nat_gcd];
 --   apply
---     @int_gcd_helper' _ _ _ a (-b) (Int.coe_nat_dvd.2 ⟨_, hu.symm⟩) (Int.coe_nat_dvd.2 ⟨_, hv.symm⟩)
+--     @int_gcd_helper' _ _ _ a (-b) (Int.coe_nat_dvd.2 ⟨_, hu.symm⟩) (Int.coe_nat_dvd.2
+--      ⟨_, hv.symm⟩)
 --   rw [mul_neg, ← sub_eq_add_neg, sub_eq_iff_eq_add']
 --   norm_cast; rw [hx, hy, h]
 -- #align tactic.norm_num.nat_gcd_helper_2 Tactic.NormNum.nat_gcd_helper_2
