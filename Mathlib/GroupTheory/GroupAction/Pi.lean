@@ -14,14 +14,14 @@ import Mathlib.GroupTheory.GroupAction.Defs
 /-!
 # Pi instances for multiplicative actions
 
-This file defines instances for mul_action and related structures on Pi types.
+This file defines instances for `MulAction` and related structures on `Pi` types.
 
 ## See also
 
-* `group_theory.group_action.option`
-* `group_theory.group_action.prod`
-* `group_theory.group_action.sigma`
-* `group_theory.group_action.sum`
+* `GroupTheory.GroupAction.option`
+* `GroupTheory.GroupAction.prod`
+* `GroupTheory.GroupAction.sigma`
+* `GroupTheory.GroupAction.sum`
 -/
 
 
@@ -185,11 +185,12 @@ theorem single_smul {α} [Monoid α] [∀ i, AddMonoid <| f i] [∀ i, DistribMu
   single_op (fun i : I => ((· • ·) r : f i → f i)) (fun _ => smul_zero _) _ _
 #align pi.single_smul Pi.single_smul
 
+-- Porting note: Lean4 cannot infer the non-dependent function `f := fun _ => β`
 /-- A version of `Pi.single_smul` for non-dependent functions. It is useful in cases where Lean
 fails to apply `Pi.single_smul`. -/
 theorem single_smul' {α β} [Monoid α] [AddMonoid β] [DistribMulAction α β] [DecidableEq I] (i : I)
-    (r : α) (x : β) : single i (r • x) = r • single i x :=
-  single_smul i r x
+    (r : α) (x : β) : single (f := fun _ => β) i (r • x) = r • single (f := fun _ => β) i x :=
+  single_smul (f := fun _ => β) i r x
 #align pi.single_smul' Pi.single_smul'
 
 theorem single_smul₀ {g : I → Type _} [∀ i, MonoidWithZero (f i)] [∀ i, AddMonoid (g i)]
@@ -225,10 +226,11 @@ end Pi
 
 namespace Function
 
-/-- Non-dependent version of `pi.has_smul`. Lean gets confused by the dependent instance if this
+/-- Non-dependent version of `Pi.smul`. Lean gets confused by the dependent instance if this
 is not present. -/
 @[to_additive
-      "Non-dependent version of `pi.has_vadd`. Lean gets confused by the dependent instance\nif this is not present."]
+  "Non-dependent version of `Pi.vadd`. Lean gets confused by the dependent instance
+  if this is not present."]
 instance hasSmul {ι R M : Type _} [SMul R M] : SMul R (ι → M) :=
   Pi.instSMul
 #align function.has_smul Function.hasSmul
