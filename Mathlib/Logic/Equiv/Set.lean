@@ -271,7 +271,7 @@ protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
 --Porting note: Removed attribute @[simps apply symmApply]
 /-- Equal sets are equivalent.
 
-TODO: this is the same as `equiv.setCongr`! -/
+TODO: this is the same as `Equiv.setCongr`! -/
 protected def ofEq {α : Type u} {s t : Set α} (h : s = t) : s ≃ t :=
   Equiv.setCongr h
 #align equiv.set.of_eq Equiv.Set.ofEq
@@ -416,16 +416,12 @@ protected def unionSumInter {α : Type u} (s t : Set α) [DecidablePred (· ∈ 
 
 #align equiv.set.union_sum_inter Equiv.Set.unionSumInter
 
-/-- Given an equivalence `e₀` between sets `s : set α` and `t : set β`, the set of equivalences
+/-- Given an equivalence `e₀` between sets `s : Set α` and `t : Set β`, the set of equivalences
 `e : α ≃ β` such that `e ↑x = ↑(e₀ x)` for each `x : s` is equivalent to the set of equivalences
 between `sᶜ` and `tᶜ`. -/
 protected def compl {α : Type u} {β : Type v} {s : Set α} {t : Set β} [DecidablePred (· ∈ s)]
     [DecidablePred (· ∈ t)] (e₀ : s ≃ t) :
-    { e : α ≃ β // ∀ x : s, e x = e₀ x } ≃
-      ((sᶜ : Set α) ≃
-        (tᶜ :
-          Set
-            β)) where
+    { e : α ≃ β // ∀ x : s, e x = e₀ x } ≃ ((sᶜ : Set α) ≃ (tᶜ : Set β)) where
   toFun e :=
     subtypeEquiv e fun a =>
       not_congr <|
@@ -447,11 +443,9 @@ protected def compl {α : Type u} {β : Type v} {s : Set α} {t : Set β} [Decid
   left_inv e := by
     ext x
     by_cases hx : x ∈ s
-    ·
-      simp only [Set.sumCompl_symm_apply_of_mem hx, ← e.prop ⟨x, hx⟩, Sum.map_inl, sumCongr_apply,
+    · simp only [Set.sumCompl_symm_apply_of_mem hx, ← e.prop ⟨x, hx⟩, Sum.map_inl, sumCongr_apply,
         trans_apply, Subtype.coe_mk, Set.sumCompl_apply_inl, Trans.trans]
-    ·
-      simp only [Set.sumCompl_symm_apply_of_not_mem hx, Sum.map_inr, subtypeEquiv_apply,
+    · simp only [Set.sumCompl_symm_apply_of_not_mem hx, Sum.map_inr, subtypeEquiv_apply,
         Set.sumCompl_apply_inr, trans_apply, sumCongr_apply, Subtype.coe_mk, Trans.trans]
   right_inv e :=
     Equiv.ext fun x => by
@@ -468,8 +462,7 @@ protected def prod {α β} (s : Set α) (t : Set β) : ↥(s ×ˢ t) ≃ s × t 
 /-- The set `Set.pi Set.univ s` is equivalent to `Π a, s a`. -/
 @[simps]
 protected def univPi {α : Type _} {β : α → Type _} (s : ∀ a, Set (β a)) :
-    pi univ s ≃
-      ∀ a, s a where
+    pi univ s ≃ ∀ a, s a where
   toFun f a := ⟨(f : ∀ a, β a) a, f.2 a (mem_univ a)⟩
   invFun f := ⟨fun a => f a, fun a _ => (f a).2⟩
   left_inv := fun ⟨f, hf⟩ => by

@@ -2,6 +2,11 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
+
+! This file was ported from Lean 3 source module order.monotone.basic
+! leanprover-community/mathlib commit ac5a7cec422c3909db52e13dde2e729657d19b0e
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Order.Compare
