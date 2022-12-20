@@ -2,10 +2,17 @@
 Copyright (c) 2016 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
+
+! This file was ported from Lean 3 source module logic.function.basic
+! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Nonempty
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Set
+import Mathlib.Tactic.LibrarySearch
+import Mathlib.Util.WhatsNew
 
 /-!
 # Miscellaneous function constructions and lemmas

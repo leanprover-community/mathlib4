@@ -2,6 +2,11 @@
 Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
+
+! This file was ported from Lean 3 source module data.nat.basic
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
@@ -222,7 +227,7 @@ theorem lt_add_one_iff {a b : ℕ} : a < b + 1 ↔ a ≤ b :=
 #align nat.lt_add_one_iff Nat.lt_add_one_iff
 
 -- A flipped version of `lt_add_one_iff`.
-theorem lt_one_add_iff {a b : ℕ} : a < 1 + b ↔ a ≤ b := by simp only [add_comm, lt_succ_iff]; rfl
+theorem lt_one_add_iff {a b : ℕ} : a < 1 + b ↔ a ≤ b := by simp only [add_comm, lt_succ_iff]
 #align nat.lt_one_add_iff Nat.lt_one_add_iff
 
 -- This is true reflexively, by the definition of `≤` on ℕ,
@@ -231,7 +236,7 @@ theorem add_one_le_iff {a b : ℕ} : a + 1 ≤ b ↔ a < b :=
   Iff.refl _
 #align nat.add_one_le_iff Nat.add_one_le_iff
 
-theorem one_add_le_iff {a b : ℕ} : 1 + a ≤ b ↔ a < b := by simp only [add_comm, add_one_le_iff]; rfl
+theorem one_add_le_iff {a b : ℕ} : 1 + a ≤ b ↔ a < b := by simp only [add_comm, add_one_le_iff]
 #align nat.one_add_le_iff Nat.one_add_le_iff
 
 theorem of_le_succ {n m : ℕ} (H : n ≤ m.succ) : n ≤ m ∨ n = m.succ :=
@@ -259,7 +264,7 @@ theorem two_lt_of_ne : ∀ {n}, n ≠ 0 → n ≠ 1 → n ≠ 2 → 2 < n
 #align nat.two_lt_of_ne Nat.two_lt_of_ne
 
 theorem forall_lt_succ {P : ℕ → Prop} {n : ℕ} : (∀ m < n + 1, P m) ↔ (∀ m < n, P m) ∧ P n := by
-  simp only [lt_succ_iff, Decidable.le_iff_eq_or_lt, forall_eq_or_imp, and_comm]; rfl
+  simp only [lt_succ_iff, Decidable.le_iff_eq_or_lt, forall_eq_or_imp, and_comm]
 #align nat.forall_lt_succ Nat.forall_lt_succ
 
 theorem exists_lt_succ {P : ℕ → Prop} {n : ℕ} : (∃ m < n + 1, P m) ↔ (∃ m < n, P m) ∨ P n := by
@@ -676,14 +681,7 @@ protected theorem mul_div_cancel_left' {a b : ℕ} (Hd : a ∣ b) : a * (b / a) 
   rw [mul_comm, Nat.div_mul_cancel Hd]
 #align nat.mul_div_cancel_left' Nat.mul_div_cancel_left'
 
---TODO: Update `nat.mul_div_mul` in the core?
-/-- Alias of `nat.mul_div_mul` -/
-protected theorem mul_div_mul_left (a b : ℕ) {c : ℕ} (hc : 0 < c) : c * a / (c * b) = a / b :=
-  Nat.mul_div_mul a b hc
 #align nat.mul_div_mul_left Nat.mul_div_mul_left
-
-protected theorem mul_div_mul_right (a b : ℕ) {c : ℕ} (hc : 0 < c) : a * c / (b * c) = a / b := by
-  rw [mul_comm, mul_comm b, a.mul_div_mul_left b hc]
 #align nat.mul_div_mul_right Nat.mul_div_mul_right
 
 theorem lt_div_mul_add {a b : ℕ} (hb : 0 < b) : a < a / b * b + b := by
@@ -843,17 +841,17 @@ theorem find_lt_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h < n ↔ ∃ m 
 
 @[simp]
 theorem find_le_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h ≤ n ↔ ∃ m ≤ n, p m := by
-  simp only [exists_prop, ← lt_succ_iff, find_lt_iff]; rfl
+  simp only [exists_prop, ← lt_succ_iff, find_lt_iff]
 #align nat.find_le_iff Nat.find_le_iff
 
 @[simp]
 theorem le_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n ≤ Nat.find h ↔ ∀ m < n, ¬p m := by
-  simp_rw [← not_lt, find_lt_iff, not_exists, not_and]; rfl
+  simp_rw [← not_lt, find_lt_iff, not_exists, not_and]
 #align nat.le_find_iff Nat.le_find_iff
 
 @[simp]
 theorem lt_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n < Nat.find h ↔ ∀ m ≤ n, ¬p m := by
-  simp only [← succ_le_iff, le_find_iff, succ_le_succ_iff]; rfl
+  simp only [← succ_le_iff, le_find_iff, succ_le_succ_iff]
 #align nat.lt_find_iff Nat.lt_find_iff
 
 @[simp]
