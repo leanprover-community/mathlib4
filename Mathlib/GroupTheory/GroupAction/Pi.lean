@@ -195,15 +195,15 @@ theorem single_smul' {α β} [Monoid α] [AddMonoid β] [DistribMulAction α β]
 theorem single_smul₀ {g : I → Type _} [∀ i, MonoidWithZero (f i)] [∀ i, AddMonoid (g i)]
     [∀ i, DistribMulAction (f i) (g i)] [DecidableEq I] (i : I) (r : f i) (x : g i) :
     single i (r • x) = single i r • single i x :=
-  single_op₂ (fun i : I => ((· • ·) : f i → g i → g i)) (fun j => smul_zero _) _ _ _
+  single_op₂ (fun i : I => ((· • ·) : f i → g i → g i)) (fun _ => smul_zero _) _ _ _
 #align pi.single_smul₀ Pi.single_smul₀
 
 instance mulDistribMulAction (α) {m : Monoid α} {n : ∀ i, Monoid <| f i}
     [∀ i, MulDistribMulAction α <| f i] :
     @MulDistribMulAction α (∀ i : I, f i) m (@Pi.monoid I f n) :=
   { Pi.mulAction _ with
-    smul_one := fun c => funext fun i => smul_one _
-    smul_mul := fun c f g => funext fun i => smul_mul' _ _ _ }
+    smul_one := fun _ => funext fun _ => smul_one _
+    smul_mul := fun _ _ _ => funext fun _ => smul_mul' _ _ _ }
 #align pi.mul_distrib_mul_action Pi.mulDistribMulAction
 
 instance mulDistribMulAction' {g : I → Type _} {m : ∀ i, Monoid (f i)} {n : ∀ i, Monoid <| g i}
@@ -233,14 +233,15 @@ instance hasSmul {ι R M : Type _} [SMul R M] : SMul R (ι → M) :=
   Pi.instSMul
 #align function.has_smul Function.hasSmul
 
-/-- Non-dependent version of `pi.smul_comm_class`. Lean gets confused by the dependent instance if
+/-- Non-dependent version of `Pi.smulCommClass`. Lean gets confused by the dependent instance if
 this is not present. -/
 @[to_additive
-      "Non-dependent version of `pi.vadd_comm_class`. Lean gets confused by the dependent\ninstance if this is not present."]
-instance smul_comm_class {ι α β M : Type _} [SMul α M] [SMul β M] [SMulCommClass α β M] :
+  "Non-dependent version of `Pi.vaddCommClass`. Lean gets confused by the dependent
+  instance if this is not present."]
+instance smulCommClass {ι α β M : Type _} [SMul α M] [SMul β M] [SMulCommClass α β M] :
     SMulCommClass α β (ι → M) :=
-  Pi.smul_comm_class
-#align function.smul_comm_class Function.smul_comm_class
+  Pi.smulCommClass
+#align function.smul_comm_class Function.smulCommClass
 
 @[to_additive]
 theorem update_smul {α : Type _} [∀ i, SMul α (f i)] [DecidableEq I] (c : α) (f₁ : ∀ i, f i)
