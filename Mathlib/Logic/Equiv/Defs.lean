@@ -158,8 +158,15 @@ protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
 instance : Trans Equiv Equiv Equiv where
   trans := Equiv.trans
 
--- porting note: this lemma is now useless since coercions are eagerly unfolded
--- @[simp] theorem to_fun_as_coe (e : α ≃ β) : e.toFun = e := rfl
+-- porting note: this is not a syntactic tautology any more because
+-- the coercion from `e` to a function is now `FunLike.coe` not `e.toFun`
+@[simp] theorem to_fun_as_coe (e : α ≃ β) : e.toFun = e := rfl
+
+-- porting note: `simp` should prove this using `to_fun_as_coe`, but it doesn't.
+-- This might be a bug in `simp` -- see https://github.com/leanprover/lean4/issues/1937
+-- If this issue is fixed then the simp linter probably will start complaining, and
+-- this theorem can be deleted hopefully without breaking any `simp` proofs.
+@[simp] theorem to_fun_as_coe_apply (e : α ≃ β) (x : α) : e.toFun x = e x := rfl
 
 @[simp] theorem inv_fun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
 
