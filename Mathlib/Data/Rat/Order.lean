@@ -121,13 +121,21 @@ protected theorem le_total : a ≤ b ∨ b ≤ a := by
 #align rat.le_total Rat.le_total
 
 protected theorem le_antisymm {a b : ℚ} (hab : a ≤ b) (hba : b ≤ a) : a = b := by
-  have := eq_neg_of_add_eq_zero_left (Rat.nonneg_antisymm hba <| by rwa [← sub_eq_add_neg, neg_sub])
+  rw [Rat.le_iff_le', Rat.le'] at hab hba
+  rw [sub_eq_add_neg] at hba
+  rw [←neg_sub, sub_eq_add_neg] at hab
+  have := eq_neg_of_add_eq_zero_left (Rat.nonneg_antisymm hba hab)
   rwa [neg_neg] at this
 #align rat.le_antisymm Rat.le_antisymm
 
 protected theorem le_trans {a b c : ℚ} (hab : a ≤ b) (hbc : b ≤ c) : a ≤ c := by
+  rw [Rat.le_iff_le'] at hab hbc
   have : Rat.Nonneg (b - a + (c - b)) := Rat.nonneg_add hab hbc
-  simpa [sub_eq_add_neg, add_comm, add_left_comm]
+  simp_rw [sub_eq_add_neg, add_left_comm (b + -a) c (-b), add_comm (b + -a) (-b),
+    add_left_comm (-b) b (-a), add_comm (-b) (-a), add_neg_cancel_comm_assoc,
+    ← sub_eq_add_neg] at this
+  rw [Rat.le_iff_le']
+  exact this
 #align rat.le_trans Rat.le_trans
 
 instance linearOrder : LinearOrder ℚ where
