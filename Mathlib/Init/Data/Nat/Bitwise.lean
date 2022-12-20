@@ -537,11 +537,11 @@ theorem test_bit_bitwise {f : Bool → Bool → Bool} (h : f false false = false
         simp
         try rw [test_bit_zero_zero]
         simp
-        rfl
+
       case true =>
         cases f false true <;> simp
         try rw [test_bit_zero_zero]
-        rfl
+
 
 #align nat.test_bit_bitwise Nat.test_bit_bitwise
 
