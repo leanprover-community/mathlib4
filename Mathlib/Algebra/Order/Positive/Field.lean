@@ -23,7 +23,7 @@ variable {K : Type _} [LinearOrderedField K]
 
 namespace Positive
 
-instance : Inv { x : K // 0 < x } :=
+instance Subtype.hasInv : Inv { x : K // 0 < x } :=
   ⟨fun x => ⟨x⁻¹, inv_pos.2 x.2⟩⟩
 
 @[simp]
@@ -34,14 +34,14 @@ theorem coe_inv (x : { x : K // 0 < x }) : ↑x⁻¹ = (x⁻¹ : K) :=
 instance : Pow { x : K // 0 < x } ℤ :=
   ⟨fun x n => ⟨x ^ n, zpow_pos_of_pos x.2 _⟩⟩
 
--- porting note: syntatic tautology in Lean 4
--- @[simp]
--- theorem coe_zpow (x : { x : K // 0 < x }) (n : ℤ) : ↑(x ^ n) = (x ^ n : K) :=
---   rfl
--- #align positive.coe_zpow Positive.coe_zpow
+@[simp]
+theorem coe_zpow (x : { x : K // 0 < x }) (n : ℤ) : ↑(x ^ n) = (x : K) ^ n :=
+  rfl
+#align positive.coe_zpow Positive.coe_zpow
 
+set_option maxHeartbeats 2000000
 instance : LinearOrderedCommGroup { x : K // 0 < x } :=
-  { Positive.Subtype.hasInv, Positive.Subtype.linearOrderedCancelCommMonoid with
+  { Positive.Subtype.hasInv, Positive.linearOrderedCancelCommMonoid with
     mul_left_inv := fun a => Subtype.ext <| inv_mul_cancel a.2.ne' }
 
 end Positive
