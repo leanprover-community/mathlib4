@@ -248,7 +248,7 @@ instance smulCommClass {ι α β M : Type _} [SMul α M] [SMul β M] [SMulCommCl
 @[to_additive]
 theorem update_smul {α : Type _} [∀ i, SMul α (f i)] [DecidableEq I] (c : α) (f₁ : ∀ i, f i)
     (i : I) (x₁ : f i) : update (c • f₁) i (c • x₁) = c • update f₁ i x₁ :=
-  funext fun j => (apply_update (fun i => (· • ·) c) f₁ i x₁ j).symm
+  funext fun j => (apply_update (β := f) (fun _ => (· • ·) c) f₁ i x₁ j).symm
 #align function.update_smul Function.update_smul
 
 end Function
@@ -258,7 +258,7 @@ namespace Set
 @[to_additive]
 theorem piecewise_smul {α : Type _} [∀ i, SMul α (f i)] (s : Set I) [∀ i, Decidable (i ∈ s)]
     (c : α) (f₁ g₁ : ∀ i, f i) : s.piecewise (c • f₁) (c • g₁) = c • s.piecewise f₁ g₁ :=
-  s.piecewise_op _ _ fun _ => (· • ·) c
+  s.piecewise_op (δ' := f) _ _ fun _ => (· • ·) c
 #align set.piecewise_smul Set.piecewise_smul
 
 end Set
@@ -268,7 +268,7 @@ section Extend
 @[to_additive]
 theorem Function.extend_smul {R α β γ : Type _} [SMul R γ] (r : R) (f : α → β) (g : α → γ)
     (e : β → γ) : Function.extend f (r • g) (r • e) = r • Function.extend f g e :=
-  funext fun _ => by convert (apply_dite ((· • ·) r) _ _ _).symm
+  funext fun _ => by convert (apply_dite ((· • ·) r) (∃ a : α, f a = _) _ _).symm
 #align function.extend_smul Function.extend_smul
 
 end Extend
