@@ -296,7 +296,7 @@ theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).symm h = -g + h + g :=
 #align add_aut.conj_symm_apply AddAut.conj_symm_apply
 
 -- Porting note : the exact translation of this mathlib3 lemma would be`(-conj g) h = -g + h + g`,
--- but this no longer pass the simp_nf linter, as the LHS simplifies to
+-- but this no longer pass the simp_nf linter, as the LHS simplifies by `toMul_neg` to
 -- `(Additive.toMul (conj g))⁻¹`
 @[simp]
 theorem conj_inv_apply [AddGroup G] (g h : G) : (Additive.toMul (conj g))⁻¹ h = -g + h + g :=
