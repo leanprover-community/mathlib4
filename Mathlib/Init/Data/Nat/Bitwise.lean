@@ -198,8 +198,8 @@ def shiftl' (b : Bool) (m : ℕ) : ℕ → ℕ
   | n + 1 => bit b (shiftl' b m n)
 #align nat.shiftl' Nat.shiftl'
 
-/-- `shiftl m n` produces a natural number whose binary representation is obtained by left-shifting
-the binary representation of `m` by `n` places -/
+/-- `shiftl m n` produces a natural number whose binary representation
+  is obtained by left-shifting the binary representation of `m` by `n` places -/
 def shiftl : ℕ → ℕ → ℕ :=
   shiftl' false
 #align nat.shiftl Nat.shiftl
@@ -293,9 +293,9 @@ def land' : ℕ → ℕ → ℕ :=
   bitwise' and
 #align nat.land Nat.land
 
-/--`ldiff'` performs bitwise set difference. It takes two naturals numbers say `a` and `b`, converts them into their binary representations,
-  and for each corresponding a pair of bits taken as booleans, say `aᵢ` and `bᵢ`,
-  it applies the boolean operation `aᵢ  ∧ bᵢ` to obtain the `iᵗʰ` bit of the result.-/
+/--`ldiff' a b` performs bitwise set difference. For each corresponding
+  pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
+  boolean operation `aᵢ  ∧ bᵢ` to obtain the `iᵗʰ` bit of the result.-/
 def ldiff' : ℕ → ℕ → ℕ :=
   bitwise' fun a b => a && not b
 #align nat.ldiff Nat.ldiff'
@@ -322,8 +322,9 @@ theorem bodd_bit (b n) : bodd (bit b n) = b := by
 #align nat.bodd_bit Nat.bodd_bit
 
 theorem div2_bit (b n) : div2 (bit b n) = n := by
-  rw [bit_val, div2_val, Nat.add_comm, add_mul_div_left, div_eq_of_lt, Nat.zero_add] <;> cases b <;>
-    exact by decide
+  rw [bit_val, div2_val, Nat.add_comm, add_mul_div_left, div_eq_of_lt, Nat.zero_add]
+  <;> cases b
+  <;> exact by decide
 #align nat.div2_bit Nat.div2_bit
 
 theorem shiftl'_add (b m n) : ∀ k, shiftl' b m (n + k) = shiftl' b (shiftl' b m n) k
