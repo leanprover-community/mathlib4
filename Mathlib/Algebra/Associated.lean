@@ -261,10 +261,10 @@ theorem irreducible_units_mul (a : αˣ) (b : α) : Irreducible (↑a * b) ↔ I
     rw [mul_assoc, ← HAB, Units.inv_mul_cancel_left]
 #align irreducible_units_mul irreducible_units_mul
 
-theorem irreducible_is_unit_mul {a b : α} (h : IsUnit a) : Irreducible (a * b) ↔ Irreducible b :=
+theorem irreducible_isUnit_mul {a b : α} (h : IsUnit a) : Irreducible (a * b) ↔ Irreducible b :=
   let ⟨a, ha⟩ := h
   ha ▸ irreducible_units_mul a b
-#align irreducible_is_unit_mul irreducible_is_unit_mul
+#align irreducible_is_unit_mul irreducible_isUnit_mul
 
 theorem irreducible_mul_units (a : αˣ) (b : α) : Irreducible (b * ↑a) ↔ Irreducible b := by
   simp only [irreducible_iff, Units.isUnit_mul_units, and_congr_right_iff]
