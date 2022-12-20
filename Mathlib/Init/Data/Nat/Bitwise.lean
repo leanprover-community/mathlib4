@@ -533,4 +533,3 @@ theorem test_bit_lxor' : ∀ m n k, testBit (lxor' m n) k = bxor (testBit m k) (
 #align nat.test_bit_lxor Nat.test_bit_lxor'
 
 end Nat
-#lint
