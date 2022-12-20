@@ -32,8 +32,6 @@ namespace Prime
 
 variable {p : α} (hp : Prime p)
 
--- include hp
-
 theorem ne_zero : p ≠ 0 :=
   hp.1
 #align prime.ne_zero Prime.ne_zero
