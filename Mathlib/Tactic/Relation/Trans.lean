@@ -44,7 +44,16 @@ initialize registerBuiltinAttribute {
 /-- Compose two proofs by transitivity, simplified to the homogeneous case. -/
 def _root_.Trans.simple {a b c : α} [Trans r r r] : r a b → r b c → r a c := trans
 
+def _root_.Trans.het {a : α}{b : β}{c : γ}
+  {r : α → β → Sort u} {s : β → γ → Sort v} {t : outParam (α → γ → Sort w)}
+  [Trans r s t]: r a b → s b c → t a c := trans
+
+def _root_.Trans.het' {a : α}(b : β){c : γ}
+  {r : α → β → Sort u} {s : β → γ → Sort v} {t : outParam (α → γ → Sort w)}
+  [Trans r s t]: r a b → s b c → t a c := trans
+
 open Lean.Elab.Tactic
+
 /--
 `trans` applies to a goal whose target has the form `t ~ u` where `~` is a transitive relation,
 that is, a relation which has a transitivity lemma tagged with the attribute [trans].
@@ -57,18 +66,33 @@ elab "trans" t?:(ppSpace (colGt term))? : tactic => withMainContext do
   let .app (.app rel x) z := tgt
     | throwError "transitivity lemmas only apply to binary relations, not {indentExpr tgt}"
   let ty ← inferType x
-  let t? ← t?.mapM (elabTermWithHoles · ty (← getMainTag))
+  let t'? ← t?.mapM (elabTermWithHoles · ty (← getMainTag))
   let s ← saveState
   for lem in (← (transExt.getState (← getEnv)).getUnify rel).push ``Trans.simple do
     try
       liftMetaTactic fun g ↦ do
         let lemTy ← inferType (← mkConstWithLevelParams lem)
         let arity ← withReducible <| forallTelescopeReducing lemTy fun es _ ↦ pure es.size
-        let y ← (t?.map (pure ·.1)).getD (mkFreshExprMVar ty)
+        let y ← (t'?.map (pure ·.1)).getD (mkFreshExprMVar ty)
         let g₁ ← mkFreshExprMVar (some <| .app (.app rel x) y) .synthetic
         let g₂ ← mkFreshExprMVar (some <| .app (.app rel y) z) .synthetic
         g.assign (← mkAppOptM lem (mkArray (arity - 2) none ++ #[some g₁, some g₂]))
-        pure <| [g₁.mvarId!, g₂.mvarId!] ++ if let some (_, gs') := t? then gs' else [y.mvarId!]
+        pure <| [g₁.mvarId!, g₂.mvarId!] ++ if let some (_, gs') := t'? then gs' else [y.mvarId!]
       return
     catch _ => s.restore
+  let t'? ← t?.mapM (elabTermWithHoles · none (← getMainTag))
+  let s ← saveState
+  for lem in (← (transExt.getState (← getEnv)).getUnify rel).push ``Trans.het do
+    try
+      liftMetaTactic fun g ↦ do
+        let lemTy ← inferType (← mkConstWithLevelParams lem)
+        let arity ← withReducible <| forallTelescopeReducing lemTy fun es _ ↦ pure es.size
+        let y ← (t'?.map (pure ·.1)).getD (mkFreshExprMVar none)
+        let g₁ ← mkFreshExprMVar (some <| .app (.app rel x) y) .synthetic
+        let g₂ ← mkFreshExprMVar (some <| .app (.app rel y) z) .synthetic
+        g.assign (← mkAppOptM lem (mkArray (arity - 2) none ++ #[some g₁, some g₂]))
+        pure <| [g₁.mvarId!, g₂.mvarId!] ++ if let some (_, gs') := t'? then gs' else [y.mvarId!]
+      return
+    catch _ => s.restore
+
   throwError "no applicable transitivity lemma found for {indentExpr tgt}"
