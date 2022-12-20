@@ -2244,19 +2244,23 @@ theorem one_succAbove_zero {n : ℕ} : (1 : Fin n.succ.succ).succAbove 0 = 0 := 
 /-- By moving `succ` to the outside of this expression, we create opportunities for further
 simplification using `succAbove_zero` or `succ_succAbove_zero`. -/
 @[simp]
-theorem succ_succAbove_one {n : ℕ} (i : Fin n.succ.succ) : i.succ.succAbove 1 = (i.succAbove 0).succ :=
-  succ_succAbove_succ i 0
+theorem succ_succAbove_one {n : ℕ} (i : Fin n.succ.succ) : i.succ.succAbove 1 = (i.succAbove 0).succ := by
+  rw [← succ_zero_eq_one]
+  exact succ_succAbove_succ i 0
 #align fin.succ_succ_above_one Fin.succ_succAbove_one
 
 @[simp]
 theorem one_succAbove_succ {n : ℕ} (j : Fin n) :
-    (1 : Fin (n + 2)).succAbove j.succ = j.succ.succ :=
-  succ_succAbove_succ 0 j
+    (1 : Fin (n + 2)).succAbove j.succ = j.succ.succ := by
+  have := succ_succAbove_succ 0 j
+  rwa [succ_zero_eq_one, zero_succAbove] at this
 #align fin.one_succ_above_succ Fin.one_succAbove_succ
 
 @[simp]
-theorem one_succAbove_one {n : ℕ} : (1 : Fin (n + 3)).succAbove 1 = 2 :=
-  succ_succAbove_succ 0 0
+theorem one_succAbove_one {n : ℕ} : (1 : Fin (n + 3)).succAbove 1 = 2 := by
+  have := succ_succAbove_succ (0 : Fin (n + 2)) (0 : Fin (n + 2))
+  simp only [succ_zero_eq_one, val_zero, Nat.cast_zero, zero_succAbove, succ_one_eq_two] at this
+  exact this
 #align fin.one_succ_above_one Fin.one_succAbove_one
 
 end SuccAbove
