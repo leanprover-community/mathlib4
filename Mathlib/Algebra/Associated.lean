@@ -23,7 +23,7 @@ section Prime
 
 variable [CommMonoidWithZero α]
 
-/-- prime element of a `comm_monoid_with_zero` -/
+/-- prime element of a `CommMonoidWithZero` -/
 def Prime (p : α) : Prop :=
   p ≠ 0 ∧ ¬IsUnit p ∧ ∀ a b, p ∣ a * b → p ∣ a ∨ p ∣ b
 #align prime Prime
