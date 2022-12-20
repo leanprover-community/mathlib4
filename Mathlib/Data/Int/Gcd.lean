@@ -733,7 +733,8 @@ attribute [to_additive gcd_nsmul_eq_zero] pow_gcd_eq_one
 --           let (c, eb) ← c b
 --           let (c, etx, px) ← prove_mul_nat c ex ea
 --           let (c, ety, py) ← prove_mul_nat c ey eb
---           let (c, p) ← if a ≥ 0 then prove_add_nat c ety q(1) etx else prove_add_nat c etx q(1) ety
+--           let (c, p) ← if a ≥ 0 then
+--             prove_add_nat c ety q(1) etx else prove_add_nat c etx q(1) ety
 --           let pf : expr := if a ≥ 0 then q(nat_coprime_helper_2) else q(nat_coprime_helper_1)
 --           pure (c, Sum.inl <| pf [ex, ey, ea, eb, etx, ety, px, py, p])
 --         else do
