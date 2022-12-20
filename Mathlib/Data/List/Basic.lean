@@ -2915,7 +2915,7 @@ theorem foldl_eq_of_comm' : ∀ a b l, foldl f a (b :: l) = f (foldl f a l) b
 
 theorem foldl_eq_foldr' : ∀ a l, foldl f a l = foldr (flip f) a l
   | a, [] => rfl
-  | a, b :: l => by rw [foldl_eq_of_comm' hf, foldr, foldl_eq_foldr' ..] <;> rfl
+  | a, b :: l => by rw [foldl_eq_of_comm' hf, foldr, foldl_eq_foldr' ..]; rfl
 #align list.foldl_eq_foldr' List.foldl_eq_foldr'
 
 end FoldlEqFoldlr'
@@ -2928,7 +2928,7 @@ variable (hf : ∀ a b c, f a (f b c) = f b (f a c))
 
 theorem foldr_eq_of_comm' : ∀ a b l, foldr f a (b :: l) = foldr f (f b a) l
   | a, b, [] => rfl
-  | a, b, c :: l => by rw [foldr, foldr, foldr, hf, ← foldr_eq_of_comm' ..] <;> rfl
+  | a, b, c :: l => by rw [foldr, foldr, foldr, hf, ← foldr_eq_of_comm' ..]; rfl
 #align list.foldr_eq_of_comm' List.foldr_eq_of_comm'
 
 end FoldlEqFoldlr'
@@ -2938,32 +2938,28 @@ section
 variable {op : α → α → α} [ha : IsAssociative α op] [hc : IsCommutative α op]
 
 -- mathport name: op
-local notation a " * " b => op a b
+local notation a " ⋆ " b => op a b
 
 -- mathport name: foldl
 local notation l " <*> " a => foldl op a l
 
-include ha
-
-theorem foldl_assoc : ∀ {l : List α} {a₁ a₂}, (l <*> a₁ * a₂) = a₁ * l <*> a₂
+theorem foldl_assoc : ∀ {l : List α} {a₁ a₂}, (l <*> a₁ ⋆ a₂) = a₁ ⋆ l <*> a₂
   | [], a₁, a₂ => rfl
   | a :: l, a₁, a₂ =>
     calc
-      ((a :: l) <*> a₁ * a₂) = l <*> a₁ * a₂ * a := by simp only [foldl_cons, ha.assoc]
-      _ = a₁ * (a :: l) <*> a₂ := by rw [foldl_assoc, foldl_cons]
+      ((a :: l) <*> a₁ ⋆ a₂) = l <*> a₁ ⋆ a₂ ⋆ a := by simp only [foldl_cons, ha.assoc]
+      _ = a₁ ⋆ (a :: l) <*> a₂ := by rw [foldl_assoc, foldl_cons]
 
 #align list.foldl_assoc List.foldl_assoc
 
 theorem foldl_op_eq_op_foldr_assoc :
-    ∀ {l : List α} {a₁ a₂}, ((l <*> a₁) * a₂) = a₁ * l.foldr (· * ·) a₂
+    ∀ {l : List α} {a₁ a₂}, ((l <*> a₁) ⋆ a₂) = a₁ ⋆ l.foldr (· ⋆ ·) a₂
   | [], a₁, a₂ => rfl
   | a :: l, a₁, a₂ => by
-    simp only [foldl_cons, foldr_cons, foldl_assoc, ha.assoc] <;> rw [foldl_op_eq_op_foldr_assoc]
+    simp only [foldl_cons, foldr_cons, foldl_assoc, ha.assoc]; rw [foldl_op_eq_op_foldr_assoc]
 #align list.foldl_op_eq_op_foldr_assoc List.foldl_op_eq_op_foldr_assoc
 
-include hc
-
-theorem foldl_assoc_comm_cons {l : List α} {a₁ a₂} : ((a₁ :: l) <*> a₂) = a₁ * l <*> a₂ := by
+theorem foldl_assoc_comm_cons {l : List α} {a₁ a₂} : ((a₁ :: l) <*> a₂) = a₁ ⋆ l <*> a₂ := by
   rw [foldl_cons, hc.comm, foldl_assoc]
 #align list.foldl_assoc_comm_cons List.foldl_assoc_comm_cons
 
