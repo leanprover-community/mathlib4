@@ -157,7 +157,7 @@ theorem mem_unionᵢ {x : α} {s : ι → Set α} : (x ∈ ⋃ i, s i) ↔ ∃ i
 @[simp]
 theorem mem_interᵢ {x : α} {s : ι → Set α} : (x ∈ ⋂ i, s i) ↔ ∀ i, x ∈ s i :=
   ⟨fun (h : ∀ a ∈ { a : Set α | ∃ i, s i = a }, x ∈ a) a => h (s a) ⟨a, rfl⟩,
-    fun h _ ⟨a, (Eq : s a = _)⟩ => Eq ▸ h a⟩
+    fun h _ ⟨a, (eq : s a = _)⟩ => eq ▸ h a⟩
 #align set.mem_Inter Set.mem_interᵢ
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -2050,12 +2050,12 @@ theorem mem_seq_iff {s : Set (α → β)} {t : Set α} {b : β} :
 
 theorem seq_subset {s : Set (α → β)} {t : Set α} {u : Set β} :
     seq s t ⊆ u ↔ ∀ f ∈ s, ∀ a ∈ t, (f : α → β) a ∈ u :=
-  Iff.intro (fun h f hf a ha => h ⟨f, hf, a, ha, rfl⟩) fun h _ ⟨f, hf, a, ha, Eq⟩ =>
-    Eq ▸ h f hf a ha
+  Iff.intro (fun h f hf a ha => h ⟨f, hf, a, ha, rfl⟩) fun h _ ⟨f, hf, a, ha, eq⟩ =>
+    eq ▸ h f hf a ha
 #align set.seq_subset Set.seq_subset
 
 theorem seq_mono {s₀ s₁ : Set (α → β)} {t₀ t₁ : Set α} (hs : s₀ ⊆ s₁) (ht : t₀ ⊆ t₁) :
-    seq s₀ t₀ ⊆ seq s₁ t₁ := fun _  ⟨f, hf, a, ha, Eq⟩ => ⟨f, hs hf, a, ht ha, Eq⟩
+    seq s₀ t₀ ⊆ seq s₁ t₁ := fun _  ⟨f, hf, a, ha, eq⟩ => ⟨f, hs hf, a, ht ha, eq⟩
 #align set.seq_mono Set.seq_mono
 
 theorem singleton_seq {f : α → β} {t : Set α} : Set.seq ({f} : Set (α → β)) t = f '' t :=
@@ -2446,8 +2446,8 @@ theorem sigmaToUnionᵢ_surjective : Surjective (sigmaToUnionᵢ t)
 
 theorem sigmaToUnionᵢ_injective (h : ∀ i j, i ≠ j → Disjoint (t i) (t j)) :
     Injective (sigmaToUnionᵢ t)
-  | ⟨a₁, b₁, h₁⟩, ⟨a₂, b₂, h₂⟩, Eq =>
-    have b_eq : b₁ = b₂ := congr_arg Subtype.val Eq
+  | ⟨a₁, b₁, h₁⟩, ⟨a₂, b₂, h₂⟩, eq =>
+    have b_eq : b₁ = b₂ := congr_arg Subtype.val eq
     have a_eq : a₁ = a₂ :=
       by_contradiction fun ne =>
         have : b₁ ∈ t a₁ ∩ t a₂ := ⟨h₁, b_eq.symm ▸ h₂⟩
