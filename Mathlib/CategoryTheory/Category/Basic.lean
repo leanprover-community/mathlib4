@@ -118,9 +118,13 @@ declare_aesop_rule_sets [CategoryTheory]
 
 -- See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/hygiene.20question.3F/near/313556764
 set_option hygiene false in
-/-- A thin wrapper for `aesop`, which adds the `CategoryTheory` rule set. -/
+/--
+A thin wrapper for `aesop`,
+which adds the `CategoryTheory` rule set,
+and allows `aesop` look through semireducible definitions when calling `intros`. -/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause*: tactic =>
-  `(tactic| aesop $c* (rule_sets [CategoryTheory]))
+  `(tactic|
+    aesop $c* (options := { introsTransparency? := some .default }) (rule_sets [CategoryTheory]))
 
 -- We turn on `ext` inside `aesop_cat`.
 attribute [aesop safe tactic (rule_sets [CategoryTheory])] Std.Tactic.Ext.extCore'
