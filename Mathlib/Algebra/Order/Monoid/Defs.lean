@@ -2,6 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
+
+! This file was ported from Lean 3 source module algebra.order.monoid.defs
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Order.BoundedOrder
@@ -47,7 +52,7 @@ instance OrderedCommMonoid.to_CovariantClass_left (M : Type _) [OrderedCommMonoi
 #align ordered_comm_monoid.to_covariant_class_left OrderedCommMonoid.to_CovariantClass_left
 #align ordered_add_comm_monoid.to_covariant_class_left OrderedAddCommMonoid.to_CovariantClass_left
 
-/- This instance can be proven with `by apply_instance`.  However, `with_bot ℕ` does not
+/- This instance can be proven with `by apply_instance`.  However, `WithBot ℕ` does not
 pick up a `CovariantClass M M (function.swap (*)) (≤)` instance without it (see PR mathlib#7940). -/
 @[to_additive]
 instance OrderedCommMonoid.to_CovariantClass_right (M : Type _) [OrderedCommMonoid M] :

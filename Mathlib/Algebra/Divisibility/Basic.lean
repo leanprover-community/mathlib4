@@ -4,6 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
 Ported by: Matej Penciak
+
+! This file was ported from Lean 3 source module algebra.divisibility.basic
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 
@@ -14,7 +19,7 @@ This file defines the basics of the divisibility relation in the context of `(Co
 
 ## Main definitions
 
- * `monoid.has_dvd`
+ * `semigroupDvd`
 
 ## Implementation notes
 
@@ -37,12 +42,12 @@ variable [Semigroup α] {a b c : α}
 
 /-- There are two possible conventions for divisibility, which coincide in a `CommMonoid`.
     This matches the convention for ordinals. -/
-instance (priority := 100) semigroupHasDvd : Dvd α :=
+instance (priority := 100) semigroupDvd : Dvd α :=
   Dvd.mk fun a b => ∃ c, b = a * c
-#align semigroup_has_dvd semigroupHasDvd
+#align semigroup_has_dvd semigroupDvd
 
 -- TODO: this used to not have `c` explicit, but that seems to be important
---       for use with tactics, similar to `exists.intro`
+--       for use with tactics, similar to `Exists.intro`
 theorem Dvd.intro (c : α) (h : a * c = b) : a ∣ b :=
   Exists.intro c h.symm
 #align dvd.intro Dvd.intro

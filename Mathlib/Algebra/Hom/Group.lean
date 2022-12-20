@@ -4,6 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 Ported by: Winston Yin
+
+! This file was ported from Lean 3 source module algebra.hom.group
+! leanprover-community/mathlib commit 8c53048add6ffacdda0b36c4917bfe37e209b0ba
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Init.CcLemmas
 import Mathlib.Algebra.NeZero
@@ -105,7 +110,7 @@ end Zero
 namespace NeZero
 
 theorem of_map {R M} [Zero R] [Zero M] [ZeroHomClass F R M]
-  (f : F) {r : R} [NeZero (f r)] : NeZero r :=
+  (f : F) {r : R} [neZero : NeZero (f r)] : NeZero r :=
   ⟨fun h => ne (f r) <| by rw [h]; exact ZeroHomClass.map_zero f⟩
 #align ne_zero.of_map NeZero.of_map
 
@@ -216,6 +221,10 @@ instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
 #align one_hom.one_hom_class OneHom.oneHomClass
 #align zero_hom.zero_hom_class ZeroHom.zeroHomClass
 
+/-- See Note [custom simps projection] -/
+@[to_additive "See Note custom simps projection"]
+def OneHom.Simps.apply (f : OneHom M N) : M → N := f
+
 @[simp, to_additive]
 theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
   OneHomClass.map_one f
@@ -295,6 +304,10 @@ instance MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
 #align mul_hom.mul_hom_class MulHom.mulHomClass
 #align add_hom.add_hom_class AddHom.addHomClass
 
+/-- See Note [custom simps projection] -/
+@[to_additive "See Note custom simps projection"]
+def MulHom.Simps.apply (f : M →ₙ* N) : M → N := f
+
 @[simp, to_additive]
 theorem map_mul [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
   MulHomClass.map_mul f x y
@@ -359,6 +372,10 @@ instance MonoidHom.monoidHomClass : MonoidHomClass (M →* N) M N where
   map_one f := f.toOneHom.map_one'
 #align monoid_hom.monoid_hom_class MonoidHom.monoidHomClass
 #align add_monoid_hom.add_monoid_hom_class AddMonoidHom.addMonoidHomClass
+
+/-- See Note [custom simps projection] -/
+@[to_additive "See Note custom simps projection"]
+def MonoidHom.Simps.apply (f : M →* N) : M → N := f
 
 -- Porting note: we need to add an extra `to_additive`.
 -- This is waiting on https://github.com/leanprover-community/mathlib4/issues/660
@@ -428,7 +445,7 @@ theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
 #align map_zpow' map_zpow'
 
 /-- Group homomorphisms preserve integer power. -/
-@[simp, to_additive "Additive group homomorphisms preserve integer scaling." (reorder := 8)]
+@[simp, to_additive (reorder := 8) "Additive group homomorphisms preserve integer scaling."]
 theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
   (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n
 #align map_zpow map_zpow
@@ -480,6 +497,9 @@ instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M �
   map_one := MonoidWithZeroHom.map_one'
   map_zero f := f.map_zero'
 #align monoid_with_zero_hom.monoid_with_zero_hom_class MonoidWithZeroHom.monoidWithZeroHomClass
+
+/-- See Note [custom simps projection] -/
+def MonoidWithZeroHom.Simps.apply (f : M →*₀ N) : M → N := f
 
 /-- Any type that is a `MonoidWithZeroHomClass` can be cast into a `MonoidWithZeroHom`. -/
 instance [MonoidWithZeroHomClass F M N] : CoeTC F (M →*₀ N) :=
@@ -1241,7 +1261,7 @@ protected def End := A →+ A
 
 namespace End
 
-instance : Monoid (AddMonoid.End A) where
+instance monoid : Monoid (AddMonoid.End A) where
   mul := AddMonoidHom.comp
   one := AddMonoidHom.id A
   mul_assoc _ _ _ := AddMonoidHom.comp_assoc _ _ _

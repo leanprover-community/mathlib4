@@ -3,6 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 Ported by: Winston Yin
+
+! This file was ported from Lean 3 source module algebra.hom.equiv.basic
+! leanprover-community/mathlib commit 76171581280d5b5d1e2d1f4f37e5420357bdc636
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Data.FunLike.Equiv
@@ -550,18 +555,18 @@ def toMonoidHom {M N} [MulOneClass M] [MulOneClass N] (h : M ≃* N) : M →* N 
 #align add_equiv.to_add_monoid_hom AddEquiv.toAddMonoidHom
 
 @[simp, to_additive]
-theorem coe_to_monoidHom {M N} [MulOneClass M] [MulOneClass N] (e : M ≃* N) :
+theorem coe_toMonoidHom {M N} [MulOneClass M] [MulOneClass N] (e : M ≃* N) :
   ↑e.toMonoidHom = ↑e := rfl
-#align mul_equiv.coe_to_monoid_hom MulEquiv.coe_to_monoidHom
-#align add_equiv.coe_to_add_monoid_hom AddEquiv.coe_to_addMonoidHom
+#align mul_equiv.coe_to_monoid_hom MulEquiv.coe_toMonoidHom
+#align add_equiv.coe_to_add_monoid_hom AddEquiv.coe_toAddMonoidHom
 
 set_option linter.deprecated false in
 @[to_additive]
-theorem to_monoidHom_injective {M N} [MulOneClass M] [MulOneClass N] :
+theorem toMonoidHom_injective {M N} [MulOneClass M] [MulOneClass N] :
   Function.Injective (toMonoidHom : M ≃* N → M →* N) :=
   fun _ _ h => MulEquiv.ext (MonoidHom.ext_iff.1 h)
-#align mul_equiv.to_monoid_hom_injective MulEquiv.to_monoidHom_injective
-#align add_equiv.to_add_monoid_hom_injective AddEquiv.to_addMonoidHom_injective
+#align mul_equiv.to_monoid_hom_injective MulEquiv.toMonoidHom_injective
+#align add_equiv.to_add_monoid_hom_injective AddEquiv.toAddMonoidHom_injective
 
 /-- A multiplicative analogue of `Equiv.arrowCongr`,
 where the equivalence between the targets is multiplicative.
