@@ -1284,7 +1284,7 @@ instance _root_.WithBot.isWellOrder.gt [Preorder α] [h : IsWellOrder α (· > �
 #align with_top._root_.with_bot.is_well_order.gt WithBot.isWellOrder.gt
 
 instance [LT α] [DenselyOrdered α] [NoMaxOrder α] : DenselyOrdered (WithTop α) :=
-  instDenselyOrderedOrderDualInstLTOrderDual (WithBot αᵒᵈ)
+  OrderDual.denselyOrdered (WithBot αᵒᵈ)
 
 theorem lt_iff_exists_coe_btwn [Preorder α] [DenselyOrdered α] [NoMaxOrder α] {a b : WithTop α} :
     a < b ↔ ∃ x : α, a < ↑x ∧ ↑x < b :=

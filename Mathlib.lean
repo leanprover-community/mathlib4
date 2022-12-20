@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Abs
+import Mathlib.Algebra.Associated
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Divisibility.Basic
@@ -54,6 +55,7 @@ import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Canonical.Basic
 import Mathlib.Algebra.Order.Field.Canonical.Defs
 import Mathlib.Algebra.Order.Field.Defs
@@ -104,6 +106,7 @@ import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Algebra.PEmptyInstances
+import Mathlib.Algebra.Parity
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Ring.Basic
@@ -123,6 +126,7 @@ import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.Default
+import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.Functor.Functorial
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.NatIso
@@ -205,6 +209,7 @@ import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Gcd.Basic
+import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Nat.PSub
@@ -227,6 +232,7 @@ import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Quot
+import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order
@@ -241,6 +247,7 @@ import Mathlib.Data.Set.Intervals.Monoid
 import Mathlib.Data.Set.Intervals.OrderIso
 import Mathlib.Data.Set.Intervals.ProjIcc
 import Mathlib.Data.Set.Intervals.SurjOn
+import Mathlib.Data.Set.Intervals.UnorderedInterval
 import Mathlib.Data.Set.Intervals.WithBotTop
 import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Opposite
@@ -268,6 +275,7 @@ import Mathlib.GroupTheory.GroupAction.Prod
 import Mathlib.GroupTheory.GroupAction.Sigma
 import Mathlib.GroupTheory.GroupAction.Sum
 import Mathlib.GroupTheory.GroupAction.Units
+import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
@@ -338,9 +346,11 @@ import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.Compare
+import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Directed
 import Mathlib.Order.Disjoint
+import Mathlib.Order.GaloisConnection
 import Mathlib.Order.GameAdd
 import Mathlib.Order.Heyting.Basic
 import Mathlib.Order.Heyting.Boundary
@@ -354,6 +364,7 @@ import Mathlib.Order.Max
 import Mathlib.Order.MinMax
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.Monotone.Monovary
+import Mathlib.Order.Monotone.Union
 import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic

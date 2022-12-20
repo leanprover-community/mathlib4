@@ -361,6 +361,14 @@ theorem div_mul_eq_div_div_swap : a / (b * c) = a / c / b :=
 
 end DivisionMonoid
 
+section SubtractionMonoid
+
+set_option linter.deprecated false
+
+lemma bit0_neg [SubtractionMonoid α] (a : α) : bit0 (-a) = -bit0 a := (neg_add_rev _ _).symm
+
+end SubtractionMonoid
+
 section DivisionCommMonoid
 
 variable [DivisionCommMonoid α] (a b c d : α)
