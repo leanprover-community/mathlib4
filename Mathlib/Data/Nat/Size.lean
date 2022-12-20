@@ -8,8 +8,8 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Pow
-import Mathbin.Data.Nat.Bits
+import Mathlib.Data.Nat.Pow
+import Mathlib.Data.Nat.Bits
 
 /-! Lemmas about `size`. -/
 
@@ -28,7 +28,7 @@ theorem shiftl_eq_mul_pow (m) : ∀ n, shiftl m n = m * 2 ^ n
 
 theorem shiftl'_tt_eq_mul_pow (m) : ∀ n, shiftl' true m n + 1 = (m + 1) * 2 ^ n
   | 0 => by simp [shiftl, shiftl', pow_zero, Nat.one_mul]
-  | k + 1 => by 
+  | k + 1 => by
     change bit1 (shiftl' tt m k) + 1 = (m + 1) * (2 * 2 ^ k)
     rw [bit1_val]
     change 2 * (shiftl' tt m k + 1) = _
@@ -75,7 +75,7 @@ theorem size_zero : size 0 = 0 := by simp [size]
 @[simp]
 theorem size_bit {b n} (h : bit b n ≠ 0) : size (bit b n) = succ (size n) := by
   rw [size]
-  conv => 
+  conv =>
     lhs
     rw [binary_rec]
     simp [h]
@@ -175,4 +175,3 @@ theorem size_eq_bits_len (n : ℕ) : n.bits.length = n.size := by
 #align nat.size_eq_bits_len Nat.size_eq_bits_len
 
 end Nat
-
