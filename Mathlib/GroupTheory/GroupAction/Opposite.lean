@@ -164,5 +164,3 @@ instance CancelMonoidWithZero.to_has_faithful_opposite_scalar [CancelMonoidWithZ
   ⟨fun h => unop_injective <| mul_left_cancel₀ one_ne_zero (h 1)⟩
 #align
   cancel_monoid_with_zero.to_has_faithful_opposite_scalar CancelMonoidWithZero.to_has_faithful_opposite_scalar
-
-#lint
