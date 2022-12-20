@@ -202,10 +202,7 @@ theorem bot_def : (⊥ : Setoid α).Rel = (· = ·) :=
 
 theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s.Rel x y := by
   rw [_root_.eq_top_iff, Setoid.le_def, Setoid.top_def]
-  simp [Pi.top_apply]
-  sorry
-  --simp [_root_.eq_top_iff, Setoid.le_def, Setoid.top_def, Pi.top_apply]
-  --sorry
+  simp only [Pi.top_apply, Prop.top_eq_true, forall_true_left]
 #align setoid.eq_top_iff Setoid.eq_top_iff
 
 /-- The inductively defined equivalence closure of a binary relation r is the infimum
@@ -214,7 +211,7 @@ theorem eqvGen_eq (r : α → α → Prop) :
     EqvGen.Setoid r = infₛ { s : Setoid α | ∀ ⦃x y⦄, r x y → s.Rel x y } :=
   le_antisymm
     (fun _ _ H =>
-      EqvGen.ndrec (fun _ _ h _ hs => hs h) (refl' _) (fun _ _ _ => symm' _)
+      EqvGen.rec (fun _ _ h _ hs => hs h) (refl' _) (fun _ _ _ => symm' _)
         (fun _ _ _ _ _ => trans' _) H)
     (infₛ_le fun _ _ h => EqvGen.rel _ _ h)
 #align setoid.eqv_gen_eq Setoid.eqvGen_eq
@@ -459,7 +456,7 @@ def correspondence (r : Setoid α) : { s // r ≤ s } ≃o Setoid (Quotient r) w
     ext' fun x y =>
       ⟨fun h => let ⟨a, b, hx, hy, H⟩ := h; hx ▸ hy ▸ H,
         Quotient.inductionOn₂ x y fun w z h => ⟨w, z, rfl, rfl, h⟩⟩
-  map_rel_iff' s t :=
+  map_rel_iff' := -- fun s t =>
     ⟨fun h x y hs =>
       let ⟨a, b, hx, hy, ht⟩ := h ⟨x, y, rfl, rfl, hs⟩
       t.1.trans' (t.1.symm' <| t.2 <| eq_rel.1 hx) <| t.1.trans' ht <| t.2 <| eq_rel.1 hy,
@@ -472,7 +469,7 @@ end Setoid
 
 @[simp]
 theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) ↔ s = ⊤ := by
-  simp only [subsingleton_iff, eq_top_iff, Setoid.le_def, Setoid.top_def, Pi.top_apply,
+  simp only [_root_.subsingleton_iff, eq_top_iff, Setoid.le_def, Setoid.top_def, Pi.top_apply,
     forall_const]
   refine' (surjective_quotient_mk _).forall.trans (forall_congr' fun a => _)
   refine' (surjective_quotient_mk _).forall.trans (forall_congr' fun b => _)
@@ -480,7 +477,7 @@ theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) �
 #align quotient.subsingleton_iff Quotient.subsingleton_iff
 
 theorem Quot.subsingleton_iff (r : α → α → Prop) : Subsingleton (Quot r) ↔ EqvGen r = ⊤ := by
-  simp only [subsingleton_iff, _root_.eq_top_iff, Pi.le_def, Pi.top_apply, forall_const]
+  simp only [_root_.subsingleton_iff, _root_.eq_top_iff, Pi.le_def, Pi.top_apply, forall_const]
   refine' (surjective_quot_mk _).forall.trans (forall_congr' fun a => _)
   refine' (surjective_quot_mk _).forall.trans (forall_congr' fun b => _)
   rw [Quot.eq]
