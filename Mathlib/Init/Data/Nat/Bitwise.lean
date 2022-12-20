@@ -190,14 +190,16 @@ theorem bit_zero : bit false 0 = 0 :=
   rfl
 #align nat.bit_zero Nat.bit_zero
 
-/-- Shift the digits of the binary representation of a number to the left,
-    and append `b` at the end. -/
+/--`shiftl' b m n` performs a left shift of `m` `n` times
+ and adds the bit `b` as the least significant bit each time.
+ Returns the corresponding natural number-/
 def shiftl' (b : Bool) (m : ℕ) : ℕ → ℕ
   | 0 => m
   | n + 1 => bit b (shiftl' b m n)
 #align nat.shiftl' Nat.shiftl'
 
-/-- Shift the digits of the binary representation of a number to the left. -/
+/-- `shiftl m n` produces a natural number whose binary representation is obtained by left-shifting
+the binary representation of `m` by `n` places -/
 def shiftl : ℕ → ℕ → ℕ :=
   shiftl' false
 #align nat.shiftl Nat.shiftl
@@ -212,7 +214,8 @@ theorem shiftl_succ (m n) : shiftl m (n + 1) = bit0 (shiftl m n) :=
   rfl
 #align nat.shiftl_succ Nat.shiftl_succ
 
-/-- Shift the digits of the binary representation of a number to the right. -/
+/--`shiftr n m` performs returns the `m`-step right shift operation on `n` and
+returns the resultant number. This is equivalent to performing `⌊n/2ᵐ⌋`-/
 def shiftr : ℕ → ℕ → ℕ
   | m, 0 => m
   | m, n + 1 => div2 (shiftr m n)
@@ -228,11 +231,11 @@ theorem shiftr_zero : ∀ n, shiftr 0 n = 0 := by
     rw [shiftr, div2, IH]
     rfl
 
-/-- Whether the `n`th bit from the right of
-    the binary representation of `m` is `1`. -/
+/-- `testBit m n` returns whether the `(n+1)ˢᵗ` least significant bit is `1` or `0`-/
 def testBit (m n : ℕ) : Bool :=
   bodd (shiftr m n)
 #align nat.test_bit Nat.testBit
+
 
 /-- A recursion principle for `bit` representations of natural numbers.
   For a predicate `C : Nat → Sort _`, if instances can be
@@ -259,13 +262,13 @@ def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) 
 
 #align nat.binaryRec Nat.binaryRec
 
-/-- The size of a natural number in bits. -/
+/-- `size n` : Returns the size of a natural number in
+bits i.e. the length of its binary representation -/
 def size : ℕ → ℕ :=
   binaryRec 0 fun _ _ => succ
 #align nat.size Nat.size
 
-/-- `bits n` returns a list of Bools which correspond to
-    the binary representation of n-/
+/-- `bits n` returns a list of Bools which correspond to the binary representation of n-/
 def bits : ℕ → List Bool :=
   binaryRec [] fun b _ IH => b :: IH
 #align nat.bits Nat.bits
@@ -530,3 +533,4 @@ theorem test_bit_lxor' : ∀ m n k, testBit (lxor' m n) k = bxor (testBit m k) (
 #align nat.test_bit_lxor Nat.test_bit_lxor'
 
 end Nat
+#lint
