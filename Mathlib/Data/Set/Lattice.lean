@@ -388,7 +388,7 @@ theorem subset_interᵢ_iff {s : Set α} {t : ι → Set α} : (s ⊆ ⋂ i, t i
 #align set.subset_Inter_iff Set.subset_interᵢ_iff
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-@[simp]
+--Porting note: removing `simp`. `simp` can prove it
 theorem subset_interᵢ₂_iff {s : Set α} {t : ∀ i, κ i → Set α} :
     (s ⊆ ⋂ (i) (j), t i j) ↔ ∀ i j, s ⊆ t i j := by simp_rw [subset_interᵢ_iff]
 #align set.subset_Inter₂_iff Set.subset_interᵢ₂_iff
@@ -762,7 +762,7 @@ theorem nonempty_unionᵢ : (⋃ i, s i).Nonempty ↔ ∃ i, (s i).Nonempty := b
   simp [nonempty_iff_ne_empty]
 #align set.nonempty_Union Set.nonempty_unionᵢ
 
-@[simp]
+--Porting note: removing `simp`. `simp` can prove it
 theorem nonempty_bunionᵢ {t : Set α} {s : α → Set β} :
     (⋃ i ∈ t, s i).Nonempty ↔ ∃ i ∈ t, (s i).Nonempty := by simp [nonempty_iff_ne_empty]
 #align set.nonempty_bUnion Set.nonempty_bunionᵢ
@@ -1278,7 +1278,7 @@ theorem nonempty_interᵢ {f : ι → Set α} : (⋂ i, f i).Nonempty ↔ ∃ x,
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 -- classical
-@[simp]
+--Porting note: removing `simp`. `simp` can prove it
 theorem nonempty_interᵢ₂ {s : ∀ i, κ i → Set α} :
     (⋂ (i) (j), s i j).Nonempty ↔ ∃ a, ∀ i j, a ∈ s i j := by
   simp [nonempty_iff_ne_empty, interᵢ_eq_empty_iff]
@@ -2256,14 +2256,14 @@ theorem disjoint_unionᵢ_right {ι : Sort _} {s : ι → Set α} :
 #align set.disjoint_Union_right Set.disjoint_unionᵢ_right
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-@[simp]
+--Porting note: removing `simp`. `simp` can prove it
 theorem disjoint_unionᵢ₂_left {s : ∀ i, κ i → Set α} {t : Set α} :
     Disjoint (⋃ (i) (j), s i j) t ↔ ∀ i j, Disjoint (s i j) t :=
   supᵢ₂_disjoint_iff
 #align set.disjoint_Union₂_left Set.disjoint_unionᵢ₂_left
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-@[simp]
+--Porting note: removing `simp`. `simp` can prove it
 theorem disjoint_unionᵢ₂_right {s : Set α} {t : ∀ i, κ i → Set α} :
     Disjoint s (⋃ (i) (j), t i j) ↔ ∀ i j, Disjoint s (t i j) :=
   disjoint_supᵢ₂_iff
@@ -2315,7 +2315,7 @@ theorem disjoint_singleton_right {a : α} {s : Set α} : Disjoint s {a} ↔ a �
   rw [Disjoint.comm]; exact disjoint_singleton_left
 #align set.disjoint_singleton_right Set.disjoint_singleton_right
 
-@[simp]
+--Porting note: removing `simp`. `simp [eq_comm]` can prove it
 theorem disjoint_singleton {a b : α} : Disjoint ({a} : Set α) {b} ↔ a ≠ b := by
   rw [disjoint_singleton_left, mem_singleton_iff]
 #align set.disjoint_singleton Set.disjoint_singleton
@@ -2478,7 +2478,7 @@ theorem _root_.Antitone.interᵢ_nat_add {f : ℕ → Set α} (hf : Antitone f) 
   hf.infᵢ_nat_add k
 #align antitone.Inter_nat_add Antitone.interᵢ_nat_add
 
-@[simp]
+--Porting note: removing `simp`. LHS does not simplify
 theorem unionᵢ_interᵢ_ge_nat_add (f : ℕ → Set α) (k : ℕ) :
     (⋃ n, ⋂ i ≥ n, f (i + k)) = ⋃ n, ⋂ i ≥ n, f i :=
   supᵢ_infᵢ_ge_nat_add f k
@@ -2514,3 +2514,4 @@ theorem supₛ_unionₛ (s : Set (Set β)) : supₛ (⋃₀s) = ⨆ t ∈ s, sup
 theorem infₛ_unionₛ (s : Set (Set β)) : infₛ (⋃₀s) = ⨅ t ∈ s, infₛ t :=
   @supₛ_unionₛ βᵒᵈ _ _
 #align Inf_sUnion infₛ_unionₛ
+#lint
