@@ -16,7 +16,7 @@ import Mathlib.Init.ZeroOne
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.PermuteGoals
 
-/--
+/-!
 # Lemmas about bitwise operations on natural numbers.
 
 Possibly only of archaeological significance.
