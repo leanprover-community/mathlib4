@@ -3668,13 +3668,13 @@ theorem mem_filter_map (f : α → Option β) (l : List α) {b : β} :
       rw [h]
       intro
       contradiction
-    simp only [filter_map_cons_none _ _ h, IH, mem_cons_iff, or_and_right, exists_or,
+    simp only [filter_map_cons_none _ _ h, IH, mem_cons, or_and_right, exists_or,
       exists_eq_left, this, false_or_iff]
   · have : f a = some b ↔ b = b' := by
       constructor <;> intro t
       · rw [t] at h <;> injection h
       · exact t.symm ▸ h
-    simp only [filter_map_cons_some _ _ _ h, IH, mem_cons_iff, or_and_right, exists_or, this,
+    simp only [filter_map_cons_some _ _ _ h, IH, mem_cons, or_and_right, exists_or, this,
       exists_eq_left]
 #align list.mem_filter_map List.mem_filter_map
 
@@ -3761,14 +3761,14 @@ theorem reduce_option_length_eq_iff {l : List (Option α)} :
     simp only [forall_const, reduce_option_nil, not_mem_nil, forall_prop_of_false, eq_self_iff_true,
       length, not_false_iff]
   · cases hd
-    · simp only [mem_cons_iff, forall_eq_or_imp, Bool.coe_sort_ff, false_and_iff,
+    · simp only [mem_cons, forall_eq_or_imp, Bool.coe_sort_ff, false_and_iff,
         reduce_option_cons_of_none, length, Option.isSome_none, iff_false_iff]
       intro H
       have := reduce_option_length_le tl
       rw [H] at this
       exact absurd (Nat.lt_succ_self _) (not_lt_of_le this)
     ·
-      simp only [hl, true_and_iff, mem_cons_iff, forall_eq_or_imp, add_left_inj, Bool.coe_sort_tt,
+      simp only [hl, true_and_iff, mem_cons, forall_eq_or_imp, add_left_inj, Bool.coe_sort_tt,
         length, Option.isSome_some, reduce_option_cons_of_some]
 #align list.reduce_option_length_eq_iff List.reduce_option_length_eq_iff
 
@@ -3994,7 +3994,7 @@ theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
   · simpa [takeWhile] using hx
   · simp only [takeWhile] at hx
     split_ifs  at hx
-    · rw [mem_cons_iff] at hx
+    · rw [mem_cons] at hx
       rcases hx with (rfl | hx)
       · exact h
       · exact IH hx
@@ -4391,7 +4391,7 @@ theorem cons_diff (a : α) (l₁ l₂ : List α) :
   induction' l₂ with b l₂ ih; · rfl
   rcases eq_or_ne a b with (rfl | hne)
   · simp
-  · simp only [mem_cons_iff, *, false_or_iff, diff_cons_right]
+  · simp only [mem_cons, *, false_or_iff, diff_cons_right]
     split_ifs with h₂ <;> simp [diff_erase, List.erase, hne, hne.symm]
 #align list.cons_diff List.cons_diff
 
@@ -4999,7 +4999,7 @@ theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
   induction' xs with x xs
   · simp only [not_mem_nil, map_nil]
   · cases' x with a b
-    simp only [mem_cons_iff, Prod.mk.inj_iff, map, Prod.swap_prod_mk, Prod.exists, xs_ih, and_comm']
+    simp only [mem_cons, Prod.mk.inj_iff, map, Prod.swap_prod_mk, Prod.exists, xs_ih, and_comm']
 #align list.mem_map_swap List.mem_map_swap
 
 theorem slice_eq (xs : List α) (n m : ℕ) : slice n m xs = xs.take n ++ xs.drop (n + m) := by
