@@ -9,7 +9,7 @@ Authors: Simon Hudon
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Defs
-import Mathlib.Data.List.Basic
+import Mathlib.Data.Option.Defs
 
 /-!
 # Traversable type class
