@@ -25,11 +25,15 @@ Possibly only of archaeological significance.
 universe u
 
 -- Once we're in the `Nat` namespace, `xor` will inconventiently resolve to `Nat.xor`.
+/-- `bxor` denotes the `xor` function i.e. the exclusive-or function on type `Bool`. -/
 local notation "bxor" => _root_.xor
 
 namespace Nat
 set_option linter.deprecated false
 
+/-- `boddDiv2 n` returns a 2-tuple of type `(Bool,Nat)`
+    where the `Bool` value indicates whether `n` is odd or not
+    and the `Nat` value returns `⌊n/2⌋` -/
 def boddDiv2 : ℕ → Bool × ℕ
   | 0 => (false, 0)
   | succ n =>
@@ -38,10 +42,12 @@ def boddDiv2 : ℕ → Bool × ℕ
     | (true, m) => (false, succ m)
 #align nat.bodd_div2 Nat.boddDiv2
 
+/-- `div2 n = ⌊n/2⌋` the greatest integer smaller than `n/2`-/
 def div2 (n : ℕ) : ℕ :=
   (boddDiv2 n).2
 #align nat.div2 Nat.div2
 
+/-- `bodd n` returns `true` if `n` is odd-/
 def bodd (n : ℕ) : Bool :=
   (boddDiv2 n).1
 #align nat.bodd Nat.bodd
@@ -238,10 +244,12 @@ def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) 
 
 #align nat.binaryRec Nat.binaryRec
 
+
 def size : ℕ → ℕ :=
   binaryRec 0 fun _ _ => succ
 #align nat.size Nat.size
 
+/-- `bits n` returns a list of Bools which correspond to the binary representation of n-/
 def bits : ℕ → List Bool :=
   binaryRec [] fun b _ IH => b :: IH
 #align nat.bits Nat.bits
@@ -253,18 +261,24 @@ def bitwise' (f : Bool → Bool → Bool) : ℕ → ℕ → ℕ :=
     binaryRec (cond (f true false) (bit a m) 0) fun b n _ => bit (f a b) (Ia n)
 #align nat.bitwise Nat.bitwise
 
+/--`lor'` takes two natural numbers and returns their bitwise `or`-/
 def lor' : ℕ → ℕ → ℕ :=
   bitwise' or
 #align nat.lor Nat.lor
 
+/--`land'` takes two naturals numbers and returns their `and`-/
 def land' : ℕ → ℕ → ℕ :=
   bitwise' and
 #align nat.land Nat.land
 
+/--`ldiff'` performs bitwise set difference. It takes two naturals numbers say `a` and `b`, converts them into their binary representations,
+  and for each corresponding a pair of bits taken as booleans, say `aᵢ` and `bᵢ`,
+  it applies the boolean operation `aᵢ  ∧ bᵢ` to obtain the `iᵗʰ` bit of the result.-/
 def ldiff' : ℕ → ℕ → ℕ :=
   bitwise' fun a b => a && not b
 #align nat.ldiff Nat.ldiff'
 
+/--`lxor` computes the bitwise `xor` of two natural numbers-/
 def lxor' : ℕ → ℕ → ℕ :=
   bitwise' bxor
 #align nat.lxor Nat.lxor'
@@ -377,7 +391,8 @@ theorem bitwise'_bit_aux {f : Bool → Bool → Bool} (h : f false false = false
     rfl
 #align nat.bitwise_bit_aux Nat.bitwise'_bit_aux
 
-@[simp]
+
+-- Porting Note : This was a @[simp] lemma in mathlib3
 theorem bitwise'_zero_left (f : Bool → Bool → Bool) (n) :
     bitwise' f 0 n = cond (f false true) n 0 := by
   unfold bitwise'; rw [binary_rec_zero]
@@ -496,3 +511,4 @@ theorem test_bit_lxor' : ∀ m n k, testBit (lxor' m n) k = bxor (testBit m k) (
 #align nat.test_bit_lxor Nat.test_bit_lxor'
 
 end Nat
+#lint
