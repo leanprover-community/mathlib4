@@ -64,17 +64,8 @@ example (x n p : Nat) (h₁ : n * Nat.succ p ≤ x) : n * p ≤ x := by
   · apply Nat.mul_le_mul_left; apply Nat.le_succ
   · apply h₁
 
-attribute [trans] HEq.trans
-
-#check @HEq
-#check @HEq.trans
-
--- Narrowed the bug, commented out for now
-set_option trace.Tactic.trans true in
 example (a : α)(c: γ): ∀ b: β, HEq a b → HEq b c → HEq a c := by
     intro b h₁ h₂
     trans b
-
--- Structurally a special case and deprecated, not testing
--- @[trans] example  {p q r : Prop} (h₁ : p → q) (h₂ : q → r) :
---                   p → r := fun hp ↦ h₂ (h₁ hp)
+    assumption
+    assumption
