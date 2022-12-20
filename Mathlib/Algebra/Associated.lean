@@ -1092,13 +1092,11 @@ section CancelCommMonoidWithZero
 variable [CancelCommMonoidWithZero α]
 
 instance : PartialOrder (Associates α) where
-  -- { Associates.preorder with
     le_antisymm := fun a' b' =>
       Quotient.inductionOn₂ a' b' fun _ _ hab hba =>
         Quot.sound <| associated_of_dvd_dvd (dvd_of_mk_le_mk hab) (dvd_of_mk_le_mk hba)
 
 instance : OrderedCommMonoid (Associates α) where
-  -- { Associates.commMonoid, Associates.partialOrder with
     mul_le_mul_left := fun a _ ⟨d, hd⟩ c => hd.symm ▸ mul_assoc c a d ▸ le_mul_right
 
 instance : NoZeroDivisors (Associates α) :=
