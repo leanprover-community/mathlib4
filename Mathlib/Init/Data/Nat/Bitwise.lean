@@ -356,7 +356,7 @@ theorem binary_rec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bi
     intros ; rfl
 #align nat.binary_rec_eq Nat.binary_rec_eq
 
-theorem bitwise_bit_aux {f : Bool → Bool → Bool} (h : f false false = false) :
+theorem bitwise'_bit_aux {f : Bool → Bool → Bool} (h : f false false = false) :
     (@binaryRec (fun _ => ℕ) (cond (f true false) (bit false 0) 0) fun b n _ =>
         bit (f false b) (cond (f false true) n 0)) =
       fun n : ℕ => cond (f false true) n 0 :=
@@ -375,7 +375,7 @@ theorem bitwise_bit_aux {f : Bool → Bool → Bool} (h : f false false = false)
   · rw [h, show cond (f false true) 0 0 = 0 by cases f false true <;> rfl,
         show cond (f true false) (bit false 0) 0 = 0 by cases f true false <;> rfl]
     rfl
-#align nat.bitwise_bit_aux Nat.bitwise_bit_aux
+#align nat.bitwise_bit_aux Nat.bitwise'_bit_aux
 
 @[simp]
 theorem bitwise'_zero_left (f : Bool → Bool → Bool) (n) :
@@ -388,7 +388,7 @@ theorem bitwise'_zero_left (f : Bool → Bool → Bool) (n) :
 theorem bitwise'_zero_right (f : Bool → Bool → Bool) (h : f false false = false) (m) :
     bitwise' f m 0 = cond (f true false) m 0 := by
   unfold bitwise'; apply bitCasesOn m; intros; rw [binary_rec_eq, binary_rec_zero];
-    exact bitwise_bit_aux h
+    exact bitwise'_bit_aux h
 
 #align nat.bitwise_zero_right Nat.bitwise'_zero_right
 
@@ -414,8 +414,8 @@ theorem bitwise'_bit {f : Bool → Bool → Bool} (h : f false false = false) (a
       intro a m
       rw [binary_rec_eq, binary_rec_zero]
       · rfl
-      · rw [← bitwise_bit_aux h, ftf] }
-  · exact bitwise_bit_aux h
+      · rw [← bitwise'_bit_aux h, ftf] }
+  · exact bitwise'_bit_aux h
 #align nat.bitwise_bit Nat.bitwise'_bit
 
 theorem bitwise'_swap {f : Bool → Bool → Bool} (h : f false false = false) :
