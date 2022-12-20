@@ -77,7 +77,8 @@ protected theorem nonneg_mul {a b} : Rat.Nonneg a → Rat.Nonneg b → Rat.Nonne
 protected theorem nonneg_antisymm {a} : Rat.Nonneg a → Rat.Nonneg (-a) → a = 0 :=
   numDenCasesOn' a fun n d h => by
     have d0 : 0 < (d : ℤ) := Int.coe_nat_pos.2 (Nat.pos_of_ne_zero h)
-    simp [d0, h]
+    rw [divInt_nonneg _ d0, neg_def, divInt_nonneg _ d0, Right.nonneg_neg_iff,
+      divInt_eq_zero d0.ne.symm]
     exact fun h₁ h₂ => le_antisymm h₂ h₁
 #align rat.nonneg_antisymm Rat.nonneg_antisymm
 
