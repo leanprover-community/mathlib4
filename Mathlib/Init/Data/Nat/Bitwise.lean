@@ -14,6 +14,7 @@ import Mathlib.Data.Bool.Basic
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.ZeroOne
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.PermuteGoals
 
 universe u
 
@@ -247,13 +248,12 @@ def bits : ℕ → List Bool :=
   binaryRec [] fun b _ IH => b :: IH
 #align nat.bits Nat.bits
 
---#print Nat.bitwise
-/-
-def bitwise (f : Bool → Bool → Bool) : ℕ → ℕ → ℕ :=
+-- Porting note: There is a `Nat.bitwise` in Lean 4 core,
+-- but it is different from the one in mathlib3, so we just port blindly here.
+def bitwise' (f : Bool → Bool → Bool) : ℕ → ℕ → ℕ :=
   binaryRec (fun n => cond (f false true) n 0) fun a m Ia =>
     binaryRec (cond (f true false) (bit a m) 0) fun b n _ => bit (f a b) (Ia n)
 #align nat.bitwise Nat.bitwise
--/
 
 --#print Nat.lor
 /-
@@ -365,6 +365,10 @@ theorem binary_rec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bi
     intros ; rfl
 #align nat.binary_rec_eq Nat.binary_rec_eq
 
+lemma bitwise_eq_bitwise' (f : Bool → Bool → Bool) :
+    bitwise f = bitwise' f := by
+  sorry
+
 theorem bitwise_bit_aux {f : Bool → Bool → Bool} (h : f false false = false) :
     (@binaryRec (fun _ => ℕ) (cond (f true false) (bit false 0) 0) fun b n _ =>
         bit (f false b) (cond (f false true) n 0)) =
@@ -381,8 +385,7 @@ theorem bitwise_bit_aux {f : Bool → Bool → Bool} (h : f false false = false)
     cases f false true
     case h.true.false => simp
     case h.true.true => simp
-  ·
-    rw [h, show cond (f false true) 0 0 = 0 by cases f false true <;> rfl,
+  · rw [h, show cond (f false true) 0 0 = 0 by cases f false true <;> rfl,
         show cond (f true false) (bit false 0) 0 = 0 by cases f true false <;> rfl]
     rfl
 #align nat.bitwise_bit_aux Nat.bitwise_bit_aux
@@ -428,39 +431,41 @@ theorem bitwise_zero (f : Bool → Bool → Bool) : bitwise f 0 0 = 0 := by
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic tactic.swap -/
 @[simp]
-theorem bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false) (a m b n) :
-    bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
-  unfold bitwise
-  simp only [binary_rec_eq]
-  cases bit a m <;> simp
-    case zero => simp
-    case succ => simp
-  /-· induction' ftf : f true false
-    dsimp [cond]
-    cases bit a m <;> simp-/
-    /-rw [show f a false = false by cases a <;> assumption]
+theorem bitwise'_bit {f : Bool → Bool → Bool} (h : f false false = false) (a m b n) :
+    bitwise' f (bit a m) (bit b n) = bit (f a b) (bitwise' f m n) := by
+  unfold bitwise'
+  rw [binary_rec_eq, binary_rec_eq]
+  · induction' ftf : f true false
+    rw [show f a false = false by cases a <;> assumption]
     apply @congr_arg _ _ _ 0 (bit false)
-    run_tac
-      tactic.swap
-    rw [show f a ff = a by cases a <;> assumption]
+    swap
+    rw [show f a false = a by cases a <;> assumption]
     apply congr_arg (bit a)
     all_goals
-      apply bitCasesOn m; intro a m
+    { apply bitCasesOn m
+      intro a m
       rw [binary_rec_eq, binary_rec_zero]
-      rw [← bitwise_bit_aux h, ftf]; rfl
+      · rfl
+      · rw [← bitwise_bit_aux h, ftf] }
+  · exact bitwise_bit_aux h
+#align nat.bitwise_bit Nat.bitwise'_bit
 
-  · exact bitwise_bit_aux h -/
-#align nat.bitwise_bit Nat.bitwise_bit
+@[simp]
+theorem bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false) (a m b n) :
+    bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
+  simp [bitwise_eq_bitwise', bitwise'_bit h]
 
 theorem bitwise_swap {f : Bool → Bool → Bool} (h : f false false = false) :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by
+  simp only [bitwise_eq_bitwise']
   funext m n; revert n
   dsimp [Function.swap]
-  apply binaryRec _ (fun a m' IH => _) m <;> intro n
+  apply binaryRec _ _ m <;> intro n <;> simp only [←bitwise_eq_bitwise']
   · rw [bitwise_zero_left, bitwise_zero_right]
     exact h
-  apply bitCasesOn m <;> intro b n'
-  rw [bitwise_bit, bitwise_bit, IH] <;> exact h
+  · intros a ih m'
+    apply bitCasesOn m'; intro b n'
+    rw [bitwise_bit, bitwise_bit, ih] <;> exact h
 #align nat.bitwise_swap Nat.bitwise_swap
 
 @[simp]
