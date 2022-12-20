@@ -232,9 +232,8 @@ def NatTrans.equivOfCompFullyFaithful :
     (F ⟶ G) ≃ (F ⋙ H ⟶ G ⋙ H) where
   toFun α := α ◫ 𝟙 H
   invFun := natTransOfCompFullyFaithful H
-  -- Porting note: aesop_cat doesn't find this proof without the `intros x`.
-  left_inv := fun _ => by aesop_cat
-  right_inv := fun _ => by aesop_cat
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
 #align
   category_theory.nat_trans.equiv_of_comp_fully_faithful
   CategoryTheory.NatTrans.equivOfCompFullyFaithful
@@ -246,8 +245,8 @@ def NatIso.equivOfCompFullyFaithful :
     (F ≅ G) ≃ (F ⋙ H ≅ G ⋙ H) where
   toFun e := NatIso.hcomp e (Iso.refl H)
   invFun := natIsoOfCompFullyFaithful H
-  left_inv := fun _ => by aesop_cat
-  right_inv := fun _ => by aesop_cat
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
 #align
   category_theory.nat_iso.equiv_of_comp_fully_faithful
   CategoryTheory.NatIso.equivOfCompFullyFaithful
@@ -263,8 +262,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 instance Full.id : Full (𝟭 C) where preimage f := f
 #align category_theory.full.id CategoryTheory.Full.id
 
--- Porting note: Not sure what mathlib4 tactic should solve this
-instance Faithful.id : Faithful (𝟭 C) := { map_injective := fun {X Y} h => by aesop_cat }
+instance Faithful.id : Faithful (𝟭 C) := { }
 #align category_theory.faithful.id CategoryTheory.Faithful.id
 
 variable {D : Type u₂} [Category.{v₂} D] {E : Type u₃} [Category.{v₃} E]
@@ -315,7 +313,6 @@ theorem Faithful.of_comp_eq {H : C ⥤ E} [ℋ : Faithful H] (h : F ⋙ G = H) :
 alias Faithful.of_comp_eq ← _root_.Eq.faithful_of_comp
 
 variable (F G)
-
 /-- “Divide” a functor by a faithful functor. -/
 protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [Faithful G] (obj : C → D)
     (h_obj : ∀ X, G.obj (obj X) = F.obj X) (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
@@ -324,6 +321,12 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [Faithful G] (obj : C →
     map_id := by
       intros X
       -- Porting note: The mathlib3 proof uses the `trans` tactic, which didn't work.
+      -- See https://github.com/leanprover-community/mathlib4/issues/1119
+      -- apply G.map_injective
+      -- apply eq_of_heq
+      -- trans F.map (𝟙 X)
+      -- exact h_map
+      -- rw [F.map_id, G.map_id, h_obj X]
       refine G.map_injective <| eq_of_heq <| h_map.trans ?_
       simp only [Functor.map_id]
       convert HEq.refl (𝟙 (F.obj X))
