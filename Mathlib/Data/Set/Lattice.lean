@@ -15,8 +15,8 @@ import Mathlib.Order.GaloisConnection
 /-!
 # The set lattice
 
-This file provides usual set notation for unions and intersections, a `complete_lattice` instance
-for `set α`, and some more set constructions.
+This file provides usual set notation for unions and intersections, a `CompleteLattice` instance
+for `Set α`, and some more set constructions.
 
 ## Main declarations
 
@@ -33,7 +33,7 @@ for `set α`, and some more set constructions.
   `f ⁻¹ y ⊆ s`.
 * `Set.seq`: Union of the image of a set under a **seq**uence of functions. `seq s t` is the union
   of `f '' t` over all `f ∈ s`, where `t : set α` and `s : set (α → β)`.
-* `set.unionᵢ_eq_sigma_of_disjoint`: Equivalence between `⋃ i, t i` and `Σ i, t i`, where `t` is an
+* `Set.unionᵢ_eq_sigma_of_disjoint`: Equivalence between `⋃ i, t i` and `Σ i, t i`, where `t` is an
   indexed family of disjoint sets.
 
 ## Naming convention
