@@ -32,6 +32,10 @@ The definition of the field structure on `ℚ` will be done in `Mathlib.Data.Rat
 
 namespace Rat
 
+-- Porting note: the definition of `ℚ` has changed; in mathlib3 this was a field.
+theorem pos (a : ℚ) : 0 < a.den := Nat.pos_of_ne_zero a.den_nz
+#align rat.pos Rat.pos
+
 #align rat.of_int Rat.ofInt
 
 -- Porting note:
@@ -383,9 +387,7 @@ instance commSemigroup : CommSemigroup ℚ := by infer_instance
 
 instance semigroup : Semigroup ℚ := by infer_instance
 
-theorem den_ne_zero (q : ℚ) : q.den ≠ 0 :=
-  ne_of_gt (Nat.pos_of_ne_zero q.den_nz)
-#align rat.denom_ne_zero Rat.den_ne_zero
+#align rat.denom_ne_zero Rat.den_nz
 
 theorem eq_iff_mul_eq_mul {p q : ℚ} : p = q ↔ p.num * q.den = q.num * p.den := by
   conv =>
@@ -393,7 +395,7 @@ theorem eq_iff_mul_eq_mul {p q : ℚ} : p = q ↔ p.num * q.den = q.num * p.den 
     rw [← @num_den p, ← @num_den q]
   apply Rat.divInt_eq_iff <;>
     · rw [← Nat.cast_zero, Ne, Int.ofNat_inj]
-      apply den_ne_zero
+      apply den_nz
 #align rat.eq_iff_mul_eq_mul Rat.eq_iff_mul_eq_mul
 
 @[simp]
@@ -452,8 +454,8 @@ theorem divInt_ne_zero_of_ne_zero {n d : ℤ} (h : n ≠ 0) (hd : d ≠ 0) : n /
 #align rat.mk_ne_zero_of_ne_zero Rat.divInt_ne_zero_of_ne_zero
 
 theorem mul_num_den (q r : ℚ) : q * r = q.num * r.num /. ↑(q.den * r.den) := by
-  have hq' : (↑q.den : ℤ) ≠ 0 := by have := den_ne_zero q; simpa
-  have hr' : (↑r.den : ℤ) ≠ 0 := by have := den_ne_zero r; simpa
+  have hq' : (↑q.den : ℤ) ≠ 0 := by have := den_nz q; simpa
+  have hr' : (↑r.den : ℤ) ≠ 0 := by have := den_nz r; simpa
   suffices q.num /. ↑q.den * (r.num /. ↑r.den) = q.num * r.num /. ↑(q.den * r.den) by
     simpa [num_den] using this
   simp [mul_def' hq' hr']
@@ -468,7 +470,7 @@ theorem div_num_den (q r : ℚ) : q / r = q.num * r.den /. (q.den * r.num) :=
       q / r = q * r⁻¹ := div_eq_mul_inv q r
       _ = q.num /. q.den * (r.num /. r.den)⁻¹ := by simp [num_den]
       _ = q.num /. q.den * (r.den /. r.num) := by rw [inv_def']
-      _ = q.num * r.den /. (q.den * r.num) := mul_def' (by simpa using den_ne_zero q) hr
+      _ = q.num * r.den /. (q.den * r.num) := mul_def' (by simpa using den_nz q) hr
 
 #align rat.div_num_denom Rat.div_num_den
 
