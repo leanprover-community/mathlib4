@@ -37,6 +37,7 @@ def nthLe : ∀ (l : List α) (n), n < l.length → α
   | _ :: l, n + 1, h => nthLe l n (le_of_succ_le_succ h)
 #align list.nth_le List.nthLe
 
+/-- The head of a list, or the default element of the type is the list is `nil`. -/
 @[simp] def headI [Inhabited α] : List α → α
 | []       => default
 | (a :: _) => a
