@@ -4,6 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 Ported by: Winston Yin
+
+! This file was ported from Lean 3 source module algebra.hom.group
+! leanprover-community/mathlib commit 8c53048add6ffacdda0b36c4917bfe37e209b0ba
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Init.CcLemmas
 import Mathlib.Algebra.NeZero
@@ -440,7 +445,7 @@ theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
 #align map_zpow' map_zpow'
 
 /-- Group homomorphisms preserve integer power. -/
-@[simp, to_additive "Additive group homomorphisms preserve integer scaling." (reorder := 8)]
+@[simp, to_additive (reorder := 8) "Additive group homomorphisms preserve integer scaling."]
 theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
   (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n
 #align map_zpow map_zpow
@@ -1256,7 +1261,7 @@ protected def End := A →+ A
 
 namespace End
 
-instance : Monoid (AddMonoid.End A) where
+instance monoid : Monoid (AddMonoid.End A) where
   mul := AddMonoidHom.comp
   one := AddMonoidHom.id A
   mul_assoc _ _ _ := AddMonoidHom.comp_assoc _ _ _

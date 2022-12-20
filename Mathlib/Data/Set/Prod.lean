@@ -2,6 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
+
+! This file was ported from Lean 3 source module data.set.prod
+! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Image
 
@@ -169,7 +174,7 @@ theorem prod_inter_prod : s₁ ×ˢ t₁ ∩ s₂ ×ˢ t₂ = (s₁ ∩ s₂) ×
 
 theorem disjoint_prod : Disjoint (s₁ ×ˢ t₁) (s₂ ×ˢ t₂) ↔ Disjoint s₁ s₂ ∨ Disjoint t₁ t₂ := by
   simp_rw [disjoint_left, mem_prod, not_and_or, Prod.forall, and_imp, ← @forall_or_right α, ←
-    @forall_or_left β, ← @forall_or_right (_ ∈ s₁), ← @forall_or_left (_ ∈ t₁), iff_self]
+    @forall_or_left β, ← @forall_or_right (_ ∈ s₁), ← @forall_or_left (_ ∈ t₁)]
 #align set.disjoint_prod Set.disjoint_prod
 
 theorem insert_prod : insert a s ×ˢ t = Prod.mk a '' t ∪ s ×ˢ t := by
@@ -411,7 +416,6 @@ theorem prod_eq_prod_iff :
   rw [prod_eq_prod_iff_of_nonempty h]
   rw [nonempty_iff_ne_empty, Ne.def, prod_eq_empty_iff] at h
   simp_rw [h, false_and_iff, or_false_iff]
-  rfl
 #align set.prod_eq_prod_iff Set.prod_eq_prod_iff
 
 @[simp]
@@ -492,7 +496,7 @@ theorem range_diag : (range fun x => (x, x)) = diagonal α := by
 theorem prod_subset_compl_diagonal_iff_disjoint : s ×ˢ t ⊆ diagonal αᶜ ↔ Disjoint s t :=
   subset_compl_comm.trans <| by
     simp_rw [← range_diag, range_subset_iff, disjoint_left, mem_compl_iff, prod_mk_mem_set_prod_eq,
-      not_and, iff_self]
+      not_and]
 #align set.prod_subset_compl_diagonal_iff_disjoint Set.prod_subset_compl_diagonal_iff_disjoint
 
 @[simp]
