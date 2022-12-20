@@ -55,7 +55,8 @@ def getI [Inhabited α] (l : List α) (n : Nat) : α :=
   getD l n default
 #align list.inth List.getI
 
-/-- "Inhabited" `take` function: Take `n` elements from a list `l`. If `l` has less than `n` elements, append `n - length l` elements `default`. -/
+/-- "Inhabited" `take` function: Take `n` elements from a list `l`. If `l` has less than `n`
+  elements, append `n - length l` elements `default`. -/
 def takeI [Inhabited α] (n : Nat) (l : List α): List α :=
   takeD n l default
 #align list.take' List.takeI
