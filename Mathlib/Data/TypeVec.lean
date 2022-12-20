@@ -9,6 +9,7 @@ Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Fin2
+import Mathlib.Data.TypeVec.Attr
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ScopedNS
@@ -309,13 +310,9 @@ instance subsingleton0 : Subsingleton (TypeVec 0) :=
   ⟨fun a b => funext fun a => by apply Fin2.elim0 a⟩ -- porting note: `by apply` necessary?
 #align typevec.subsingleton0 TypeVec.subsingleton0
 
-/- porting note: just omitting this `simp` attribute declaration for now
-run_cmd
-  do
-    mk_simp_attr `typevec
-    tactic.add_doc_string `simp_attr.typevec
-      "simp set for the manipulation of typevec and arrow expressions"
--/
+-- /- porting note: just omitting this `simp` attribute declaration for now
+
+-- -/
 
 
 /-- cases distinction for 0-length type vector -/
@@ -463,8 +460,7 @@ theorem const_nil {β} (x : β) (α : TypeVec 0) : TypeVec.const x α = nilFun :
   by ext i : 1; cases i
 #align typevec.const_nil TypeVec.const_nil
 
--- porting note: the `typevec` simp attribute is removed
--- @[typevec]
+@[typevec]
 theorem repeat_eq_append1 {β} {n} (α : TypeVec n) :
   repeatEq (α ::: β) = splitFun (α := (α ⊗ α) ::: _ )
                                 (α' := («repeat» n Prop) ::: _)
@@ -474,8 +470,7 @@ by
   induction n <;> rfl
 #align typevec.repeat_eq_append1 TypeVec.repeat_eq_append1
 
--- porting note: the `typevec` simp attribute is removed
--- @[typevec]
+@[typevec]
 theorem repeat_eq_nil (α : TypeVec 0) : repeatEq α = nilFun := by ext i; cases i
 #align typevec.repeat_eq_nil TypeVec.repeat_eq_nil
 
