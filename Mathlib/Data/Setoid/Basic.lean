@@ -473,7 +473,8 @@ theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) �
     forall_const]
   refine' (surjective_quotient_mk _).forall.trans (forall_congr' fun a => _)
   refine' (surjective_quotient_mk _).forall.trans (forall_congr' fun b => _)
-  exact Quotient.eq'
+  simp_rw [←Quotient.mk''_eq_mk, Prop.top_eq_true, true_implies, Quotient.eq']
+  rfl
 #align quotient.subsingleton_iff Quotient.subsingleton_iff
 
 theorem Quot.subsingleton_iff (r : α → α → Prop) : Subsingleton (Quot r) ↔ EqvGen r = ⊤ := by
@@ -481,5 +482,6 @@ theorem Quot.subsingleton_iff (r : α → α → Prop) : Subsingleton (Quot r) �
   refine' (surjective_quot_mk _).forall.trans (forall_congr' fun a => _)
   refine' (surjective_quot_mk _).forall.trans (forall_congr' fun b => _)
   rw [Quot.eq]
-  simp only [forall_const, le_Prop_eq]
+  simp only [forall_const, le_Prop_eq, OrderTop.toTop, Pi.orderTop, Pi.top_apply,
+             Prop.top_eq_true, true_implies]
 #align quot.subsingleton_iff Quot.subsingleton_iff
