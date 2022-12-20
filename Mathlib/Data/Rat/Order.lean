@@ -189,19 +189,16 @@ protected theorem le_trans {a b c : ℚ} (hab : a ≤ b) (hbc : b ≤ c) : a ≤
   exact this
 #align rat.le_trans Rat.le_trans
 
-protected theorem lt_iff_le_not_le {a b : ℚ} : a < b ↔ a ≤ b ∧ ¬b ≤ a := by
-  change a.blt b ↔ (b.blt a = false) ∧ ¬ (a.blt b = false)
-  sorry
+protected theorem not_le {a b : ℚ} : ¬a ≤ b ↔ b < a := (Bool.not_eq_false _).to_iff
 
 instance linearOrder : LinearOrder ℚ where
   le_refl := Rat.le_refl
   le_trans := @Rat.le_trans
   le_antisymm := @Rat.le_antisymm
   le_total := Rat.le_total
-  decidable_le a b := by infer_instance
-  -- Porting note: As Std provides an instance of `LT ℚ`,
-  -- we now need to check `<` and `≤` are compatible.
-  lt_iff_le_not_le := @Rat.lt_iff_le_not_le
+  decidable_le _ _ := by infer_instance
+  lt_iff_le_not_le _ _ := by
+    rw [← Rat.not_le, and_iff_right_of_imp (Rat.le_total _ _).resolve_left]
 
 -- Extra instances to short-circuit type class resolution
 instance : LT ℚ := by infer_instance
