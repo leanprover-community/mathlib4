@@ -9,6 +9,7 @@ Authors: Praneeth Kolichala
 ! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Nat.Bitwise
+import Mathlib.Init.Data.List.Basic
 import Mathlib.Data.Nat.Basic
 
 /-!
@@ -23,6 +24,9 @@ See also: `Nat.bitwise`, `Nat.pow` (for various lemmas about `size` and `shiftl`
 and `Nat.digits`.
 -/
 
+-- As this file is all about `bit0` and `bit1`,
+-- we turn off the deprecated linter for the whole file.
+set_option linter.deprecated false
 
 namespace Nat
 
@@ -164,13 +168,16 @@ theorem bit_eq_zero_iff {n : ℕ} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = fal
 theorem binary_rec_eq' {C : ℕ → Sort _} {z : C 0} {f : ∀ b n, C n → C (bit b n)} (b n)
     (h : f false 0 z = z ∨ (n = 0 → b = true)) : binaryRec z f (bit b n) = f b n (binaryRec z f n) :=
   by
-  rw [binary_rec]
+  rw [binaryRec]
   split_ifs with h'
   · rcases bit_eq_zero_iff.mp h' with ⟨rfl, rfl⟩
     rw [binary_rec_zero]
     simp only [imp_false, or_false_iff, eq_self_iff_true, not_true] at h
     exact h.symm
-  · generalize_proofs e
+  · dsimp only []
+    -- Porting note: this line was `generalize_proofs e`:
+    generalize @id (C (bit b n) = C (bit (bodd (bit b n)) (div2 (bit b n))))
+      (Eq.symm (bit_decomp (bit b n)) ▸ Eq.refl (C (bit b n))) = e
     revert e
     rw [bodd_bit, div2_bit]
     intros
@@ -230,8 +237,8 @@ theorem one_bits : Nat.bits 1 = [true] := by
 -- TODO Find somewhere this can live.
 -- example : bits 3423 = [tt, tt, tt, tt, tt, ff, tt, ff, tt, ff, tt, tt] := by norm_num
 
-theorem bodd_eq_bits_head (n : ℕ) : n.bodd = n.bits.head := by
-  induction' n using Nat.binaryRec' with b n h ih; · simp
+theorem bodd_eq_bits_head (n : ℕ) : n.bodd = n.bits.headI := by
+  induction' n using Nat.binaryRec' with b n h _; · simp
   simp [bodd_bit, bits_append_bit _ _ h]
 #align nat.bodd_eq_bits_head Nat.bodd_eq_bits_head
 
