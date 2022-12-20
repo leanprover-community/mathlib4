@@ -10,7 +10,7 @@ import Mathlib.Algebra.Group.Basic
 # Cast of integers (additional theorems)
 
 This file proves additional properties about the *canonical* homomorphism from
-the integers into an additive group with a one (`int.cast`).
+the integers into an additive group with a one (`Int.cast`).
 
 There is also `Data.Int.Cast.Lemmas`,
 which includes lemmas stated in terms of algebraic homomorphisms,

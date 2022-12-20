@@ -72,6 +72,7 @@ import Mathlib.Tactic.Use
 import Mathlib.Tactic.Zify
 import Mathlib.Util.Syntax
 import Mathlib.Util.WithWeakNamespace
+import Mathlib.Mathport.Notation
 
 -- To fix upstream:
 -- * bracketedExplicitBinders doesn't support optional types
@@ -323,6 +324,12 @@ syntax mono.side := &"left" <|> &"right" <|> &"both"
 
 /- E -/ syntax (name := pgameWFTac) "pgame_wf_tac" : tactic
 
+/- M -/ syntax (name := moveOp) "move_op " term:max rwRule,+ (location)? : tactic
+macro (name := moveMul) "move_mul " pats:rwRule,+ loc:(location)? : tactic =>
+  `(tactic| move_op (·*·) $pats,* $(loc)?)
+macro (name := moveAdd) "move_add " pats:rwRule,+ loc:(location)? : tactic =>
+  `(tactic| move_op (·+·) $pats,* $(loc)?)
+
 namespace Conv
 
 -- https://github.com/leanprover-community/mathlib/issues/2882
@@ -370,8 +377,15 @@ namespace Command
 
 /- S -/ syntax (name := «where») "#where" : command
 
-/- M -/ syntax (name := reassoc_axiom) "reassoc_axiom " ident : command
+/- M -/ syntax (name := reassocAxiom) "reassoc_axiom " ident : command
 
 /- S -/ syntax (name := sample) "#sample " term : command
+
+/- S -/ syntax (name := printSorryIn) "#print_sorry_in " ident : command
+
+/- E -/ syntax (name := assertExists) "assert_exists " ident : command
+/- E -/ syntax (name := assertNotExists) "assert_not_exists " ident : command
+/- E -/ syntax (name := assertInstance) "assert_instance " term : command
+/- E -/ syntax (name := assertNoInstance) "assert_no_instance " term : command
 
 end Command
