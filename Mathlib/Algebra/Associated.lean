@@ -379,7 +379,6 @@ def Associated [Monoid α] (x y : α) : Prop :=
   ∃ u : αˣ, x * u = y
 #align associated Associated
 
--- mathport name: «expr ~ᵤ »
 /-- Notation for two elements of a monoid are associated, i.e.
 if one of them is another one multiplied by a unit on the right.-/
 local infixl:50 " ~ᵤ " => Associated
