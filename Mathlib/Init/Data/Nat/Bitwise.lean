@@ -504,45 +504,13 @@ theorem lxor_bit : ∀ a m b n, lxor (bit a m) (bit b n) = bit (bxor a b) (lxor 
 @[simp]
 theorem test_bit_bitwise {f : Bool → Bool → Bool} (h : f false false = false) (m n k) :
     testBit (bitwise f m n) k = f (testBit m k) (testBit n k) := by
-  revert m n
-  induction' k with k IH
-  intro m n <;> apply bitCasesOn m
-  intro a m' <;>
-  apply bitCasesOn n
-  intro b n'
+  revert m n; induction' k with k IH <;>
+  intros m n <;>
+  apply bitCasesOn m <;> intros a m' <;>
+  apply bitCasesOn n <;> intros b n' <;>
   rw [bitwise_bit h]
   · simp [test_bit_zero]
-  · intros
-    rename_i m n
-    rw [bitwise]
-    cases m <;> simp
-    cases n <;> simp
-    case succ.zero.zero =>
-      rw [testBit]
-      rw [shiftr_zero]
-      rw [bodd, boddDiv2]
-      rw [h]
-    case succ.zero.succ =>
-      simp only [test_bit_succ]
-      have test_bit_zero_zero: ∀ k, testBit 0 k = false := by
-        intro k
-        unfold testBit
-        rw [shiftr_zero]
-        rw [bodd, boddDiv2]
-      rw[test_bit_zero_zero]
-      rename_i n
-      cases testBit (succ n) (succ k) <;> simp [h]
-      case false =>
-        cases f false true
-        simp
-        try rw [test_bit_zero_zero]
-        simp
-
-      case true =>
-        cases f false true <;> simp
-        try rw [test_bit_zero_zero]
-
-
+  · simp [test_bit_succ, IH]
 #align nat.test_bit_bitwise Nat.test_bit_bitwise
 
 @[simp]
