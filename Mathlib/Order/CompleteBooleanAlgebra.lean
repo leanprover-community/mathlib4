@@ -130,7 +130,7 @@ theorem supₛ_inf_supₛ : supₛ s ⊓ supₛ t = ⨆ p ∈ s ×ˢ t, (p : α 
 #align Sup_inf_Sup supₛ_inf_supₛ
 
 theorem supᵢ_disjoint_iff {f : ι → α} : Disjoint (⨆ i, f i) a ↔ ∀ i, Disjoint (f i) a := by
-  simp only [disjoint_iff, supᵢ_inf_eq, supᵢ_eq_bot]; rfl
+  simp only [disjoint_iff, supᵢ_inf_eq, supᵢ_eq_bot]
 #align supr_disjoint_iff supᵢ_disjoint_iff
 
 theorem disjoint_supᵢ_iff {f : ι → α} : Disjoint a (⨆ i, f i) ↔ ∀ i, Disjoint a (f i) := by
@@ -139,16 +139,16 @@ theorem disjoint_supᵢ_iff {f : ι → α} : Disjoint a (⨆ i, f i) ↔ ∀ i,
 
 theorem supᵢ₂_disjoint_iff {f : ∀ i, κ i → α} :
     Disjoint (⨆ (i) (j), f i j) a ↔ ∀ i j, Disjoint (f i j) a := by
-  simp_rw [supᵢ_disjoint_iff]; rfl
+  simp_rw [supᵢ_disjoint_iff]
 #align supr₂_disjoint_iff supᵢ₂_disjoint_iff
 
 theorem disjoint_supᵢ₂_iff {f : ∀ i, κ i → α} :
     Disjoint a (⨆ (i) (j), f i j) ↔ ∀ i j, Disjoint a (f i j) := by
-  simp_rw [disjoint_supᵢ_iff]; rfl
+  simp_rw [disjoint_supᵢ_iff]
 #align disjoint_supr₂_iff disjoint_supᵢ₂_iff
 
 theorem supₛ_disjoint_iff {s : Set α} : Disjoint (supₛ s) a ↔ ∀ b ∈ s, Disjoint b a := by
-  simp only [disjoint_iff, supₛ_inf_eq, supᵢ_eq_bot]; rfl
+  simp only [disjoint_iff, supₛ_inf_eq, supᵢ_eq_bot]
 #align Sup_disjoint_iff supₛ_disjoint_iff
 
 theorem disjoint_supₛ_iff {s : Set α} : Disjoint a (supₛ s) ↔ ∀ b ∈ s, Disjoint a b := by
@@ -258,6 +258,9 @@ section CompleteDistribLattice
 
 variable [CompleteDistribLattice α] {a b : α} {s t : Set α}
 
+-- Porting note: this is mysteriously slow. Minimised in
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Performance.20issue.20with.20.60CompleteBooleanAlgebra.60
+-- but not yet resolved.
 instance : CompleteDistribLattice αᵒᵈ :=
   { OrderDual.frame, OrderDual.coframe with }
 
@@ -280,10 +283,10 @@ instance Pi.completeBooleanAlgebra {ι : Type _} {π : ι → Type _}
 instance Prop.completeBooleanAlgebra : CompleteBooleanAlgebra Prop :=
   { Prop.booleanAlgebra, Prop.completeLattice with
     infᵢ_sup_le_sup_infₛ := fun p s =>
-      Iff.mp <| by simp only [forall_or_left, infᵢ_Prop_eq, infₛ_Prop_eq, sup_Prop_eq]; rfl
+      Iff.mp <| by simp only [forall_or_left, infᵢ_Prop_eq, infₛ_Prop_eq, sup_Prop_eq]
     inf_supₛ_le_supᵢ_inf := fun p s =>
       Iff.mp <| by
-        simp only [inf_Prop_eq, exists_and_left, supᵢ_Prop_eq, supₛ_Prop_eq, exists_prop]; rfl }
+        simp only [inf_Prop_eq, exists_and_left, supᵢ_Prop_eq, supₛ_Prop_eq, exists_prop] }
 #align Prop.complete_boolean_algebra Prop.completeBooleanAlgebra
 
 section CompleteBooleanAlgebra
