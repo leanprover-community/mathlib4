@@ -2265,7 +2265,7 @@ section PredAbove
 
 /-- `pred_above p i` embeds `i : fin (n+1)` into `fin n` by subtracting one if `p < i`. -/
 def predAbove (p : Fin n) (i : Fin (n + 1)) : Fin n :=
-  if h : castSucc p < i then i.pred (ne_of_lt (lt_of_le_of_lt (zero_le (castSucc p)) h)).symm
+  if h : castSucc p < i then i.pred (_root_.ne_of_lt (lt_of_le_of_lt (zero_le (castSucc p)) h)).symm
   else i.castLt (lt_of_le_of_lt (le_of_not_lt h) p.2)
 #align fin.pred_above Fin.predAbove
 
@@ -2274,25 +2274,24 @@ theorem pred_above_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b 
   split_ifs with ha hb hb
   all_goals simp only [le_iff_val_le_val, coe_pred]
   · exact pred_le_pred H
-  ·
-    calc
+  · calc
       _ ≤ _ := Nat.pred_le _
       _ ≤ _ := H
-
   · simp at ha
     exact le_pred_of_lt (lt_of_le_of_lt ha hb)
   · exact H
 #align fin.pred_above_right_monotone Fin.pred_above_right_monotone
 
-theorem pred_above_left_monotone (i : Fin (n + 1)) : Monotone fun p => predAbove p i := fun a b H =>
+theorem predAbove_left_monotone (i : Fin (n + 1)) : Monotone fun p => predAbove p i := fun a b H =>
   by
   dsimp [predAbove]
   split_ifs with ha hb hb
-  all_goals simp only [le_iff_val_le_val, coe_pred]
+  · rfl
   · exact pred_le _
   · have : b < a := castSucc_lt_castSucc_iff.mpr (hb.trans_le (le_of_not_gt ha))
     exact absurd H this.not_le
-#align fin.pred_above_left_monotone Fin.pred_above_left_monotone
+  · rfl
+#align fin.pred_above_left_monotone Fin.predAbove_left_monotone
 
 /-- `cast_pred` embeds `i : fin (n + 2)` into `fin (n + 1)`
 by lowering just `last (n + 1)` to `last n`. -/
