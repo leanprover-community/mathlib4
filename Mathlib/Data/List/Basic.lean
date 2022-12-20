@@ -2891,19 +2891,22 @@ theorem scanr_nil (f : α → β → β) (b : β) : scanr f b [] = [b] :=
   rfl
 #align list.scanr_nil List.scanr_nil
 
-@[simp]
-theorem scanr_aux_cons (f : α → β → β) (b : β) :
-    ∀ (a : α) (l : List α), scanrAux f b (a :: l) = (foldr f b (a :: l), scanr f b l)
-  | a, [] => rfl
-  | a, x :: l => by
-    let t := scanr_aux_cons x l
-    simp only [scanr, scanr_aux, t, foldr_cons]
-#align list.scanr_aux_cons List.scanr_aux_cons
+-- @[simp]
+-- theorem scanr_aux_cons (f : α → β → β) (b : β) :
+--     ∀ (a : α) (l : List α), scanrAux f b (a :: l) = (foldr f b (a :: l), scanr f b l)
+--   | a, [] => rfl
+--   | a, x :: l => by
+--     let t := scanr_aux_cons x l
+--     simp only [scanr, scanr_aux, t, foldr_cons]
+-- #align list.scanr_aux_cons List.scanr_aux_cons
 
 @[simp]
 theorem scanr_cons (f : α → β → β) (b : β) (a : α) (l : List α) :
     scanr f b (a :: l) = foldr f b (a :: l) :: scanr f b l := by
-  simp only [scanr, scanr_aux_cons, foldr_cons] <;> constructor <;> rfl
+  simp only [scanr, foldr, cons.injEq, and_true]
+  induction l generalizing a with
+  | nil => rfl
+  | cons hd tl ih => simp only [foldr, ih]
 #align list.scanr_cons List.scanr_cons
 
 section FoldlEqFoldr
