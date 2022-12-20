@@ -151,7 +151,7 @@ def conj [Group G] :
       map_mul' := by simp [mul_assoc] }
   map_mul' _ _ := by
     ext
-    --simp [mul_assoc]
+    simp only [mul_assoc, eq_self_iff_true, MulAut.mul_apply, mul_left_inj]
     sorry
   map_one' := by
     ext
