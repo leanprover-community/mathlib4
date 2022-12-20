@@ -1129,8 +1129,7 @@ theorem one_or_eq_of_le_of_prime : ∀ p m : Associates α, Prime p → m ≤ p 
     rw [r]
     match h m d dvd_rfl' with
     | Or.inl h' =>
-      -- (by_cases  m = 0 => by simp [this]) fun this : m ≠ 0 => by
-      by_cases m = 0
+      by_cases h : m = 0
       case pos =>
         simp [h, zero_mul]
       case neg =>
@@ -1250,4 +1249,5 @@ theorem dvd_prime_pow [CancelCommMonoidWithZero α] {p q : α} (hp : Prime p) (n
 
 end CancelCommMonoidWithZero
 
+-- Porting note: `assert_not_exists` has not been ported yet.
 -- assert_not_exists multiset
