@@ -1348,7 +1348,7 @@ theorem unionₛ_mono {s t : Set (Set α)} (h : s ⊆ t) : ⋃₀s ⊆ ⋃₀t :
   unionₛ_subset fun _' ht' => subset_unionₛ_of_mem <| h ht'
 #align set.sUnion_mono Set.unionₛ_mono
 
-theorem unionᵢ_subset_unionᵢ_const {s : Set α} (h : ι → ι₂) : (⋃ i : ι, s) ⊆ ⋃ j : ι₂, s :=
+theorem unionᵢ_subset_unionᵢ_const {s : Set α} (h : ι → ι₂) : (⋃ _i : ι, s) ⊆ ⋃ _j : ι₂, s :=
   @supᵢ_const_mono (Set α) ι ι₂ _ s h
 #align set.Union_subset_Union_const Set.unionᵢ_subset_unionᵢ_const
 
@@ -1556,35 +1556,31 @@ theorem restrictPreimage_injective (hf : Injective f) : Injective (s.restrictPre
 #align set.restrict_preimage_injective Set.restrictPreimage_injective
 
 theorem restrictPreimage_surjective (hf : Surjective f) : Surjective (s.restrictPreimage f) :=
-  fun x =>
-  ⟨⟨_, show f (hf x).some ∈ s from (hf x).some_spec.symm ▸ x.2⟩, Subtype.ext (hf x).some_spec⟩
-#align set.restrict_preimage_surjective Set.restrict_preimage_surjective
+  fun x => let ⟨y, hy⟩ := hf x; ⟨⟨y, mem_preimage.2 <| hy ▸ x.prop⟩,
+    Subtype.val_injective <| by conv_rhs => rw [← hy]; rfl⟩
+#align set.restrict_preimage_surjective Set.restrictPreimage_surjective
 
-theorem restrict_preimage_bijective (hf : Bijective f) : Bijective (s.restrictPreimage f) :=
-  ⟨s.restrict_preimage_injective hf.1, s.restrict_preimage_surjective hf.2⟩
-#align set.restrict_preimage_bijective Set.restrict_preimage_bijective
+theorem restrictPreimage_bijective (hf : Bijective f) : Bijective (s.restrictPreimage f) :=
+  ⟨s.restrictPreimage_injective hf.1, s.restrictPreimage_surjective hf.2⟩
+#align set.restrict_preimage_bijective Set.restrictPreimage_bijective
 
-alias Set.restrict_preimage_injective ← _root_.function.injective.restrict_preimage
+alias Set.restrictPreimage_injective ← _root_.Function.Injective.restrictPreimage
 
-alias Set.restrict_preimage_surjective ← _root_.function.surjective.restrict_preimage
+alias Set.restrictPreimage_surjective ← _root_.Function.Surjective.restrictPreimage
 
-alias Set.restrict_preimage_bijective ← _root_.function.bijective.restrict_preimage
-
-include hU
+alias Set.restrictPreimage_bijective ← _root_.Function.Bijective.restrictPreimage
 
 theorem injective_iff_injective_of_unionᵢ_eq_univ :
     Injective f ↔ ∀ i, Injective ((U i).restrictPreimage f) := by
-  refine' ⟨fun H i => (U i).restrict_preimage_injective H, fun H x y e => _⟩
-  obtain ⟨i, hi⟩ :=
-    Set.mem_unionᵢ.mp
-      (show f x ∈ Set.unionᵢ U by
-        rw [hU])
+  refine' ⟨fun H i => (U i).restrictPreimage_injective H, fun H x y e => _⟩
+  obtain ⟨i, hi⟩ := Set.mem_unionᵢ.mp
+      (show f x ∈ Set.unionᵢ U by rw [hU])
   injection @H i ⟨x, hi⟩ ⟨y, show f y ∈ U i from e ▸ hi⟩ (Subtype.ext e)
 #align set.injective_iff_injective_of_Union_eq_univ Set.injective_iff_injective_of_unionᵢ_eq_univ
 
 theorem surjective_iff_surjective_of_unionᵢ_eq_univ :
     Surjective f ↔ ∀ i, Surjective ((U i).restrictPreimage f) := by
-  refine' ⟨fun H i => (U i).restrict_preimage_surjective H, fun H x => _⟩
+  refine' ⟨fun H i => (U i).restrictPreimage_surjective H, fun H x => _⟩
   obtain ⟨i, hi⟩ :=
     Set.mem_unionᵢ.mp
       (show x ∈ Set.unionᵢ U by
@@ -1595,7 +1591,7 @@ theorem surjective_iff_surjective_of_unionᵢ_eq_univ :
 
 theorem bijective_iff_bijective_of_unionᵢ_eq_univ :
     Bijective f ↔ ∀ i, Bijective ((U i).restrictPreimage f) := by
-  simp_rw [bijective, forall_and, injective_iff_injective_of_unionᵢ_eq_univ hU,
+  simp_rw [Bijective, forall_and, injective_iff_injective_of_unionᵢ_eq_univ hU,
     surjective_iff_surjective_of_unionᵢ_eq_univ hU]
 #align set.bijective_iff_bijective_of_Union_eq_univ Set.bijective_iff_bijective_of_unionᵢ_eq_univ
 
@@ -1606,7 +1602,7 @@ end
 
 theorem InjOn.image_inter {f : α → β} {s t u : Set α} (hf : InjOn f u) (hs : s ⊆ u) (ht : t ⊆ u) :
     f '' (s ∩ t) = f '' s ∩ f '' t := by
-  apply subset.antisymm (image_inter_subset _ _ _)
+  apply Subset.antisymm (image_inter_subset _ _ _)
   rintro x ⟨⟨y, ys, hy⟩, ⟨z, zt, hz⟩⟩
   have : y = z := by
     apply hf (hs ys) (ht zt)
@@ -1618,7 +1614,7 @@ theorem InjOn.image_inter {f : α → β} {s t u : Set α} (hf : InjOn f u) (hs 
 theorem InjOn.image_interᵢ_eq [Nonempty ι] {s : ι → Set α} {f : α → β} (h : InjOn f (⋃ i, s i)) :
     (f '' ⋂ i, s i) = ⋂ i, f '' s i := by
   inhabit ι
-  refine' subset.antisymm (image_interᵢ_subset s f) fun y hy => _
+  refine' Subset.antisymm (image_interᵢ_subset s f) fun y hy => _
   simp only [mem_interᵢ, mem_image_iff_bex] at hy
   choose x hx hy using hy
   refine' ⟨x default, mem_interᵢ.2 fun i => _, hy _⟩
@@ -1633,12 +1629,12 @@ theorem InjOn.image_interᵢ_eq [Nonempty ι] {s : ι → Set α} {f : α → β
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
-theorem InjOn.image_binterᵢ_eq {p : ι → Prop} {s : ∀ (i) (hi : p i), Set α} (hp : ∃ i, p i)
+theorem InjOn.image_binterᵢ_eq {p : ι → Prop} {s : ∀ (i) (_ : p i), Set α} (hp : ∃ i, p i)
     {f : α → β} (h : InjOn f (⋃ (i) (hi), s i hi)) :
     (f '' ⋂ (i) (hi), s i hi) = ⋂ (i) (hi), f '' s i hi := by
   simp only [interᵢ, infᵢ_subtype']
   haveI : Nonempty { i // p i } := nonempty_subtype.2 hp
-  apply inj_on.image_interᵢ_eq
+  apply InjOn.image_interᵢ_eq
   simpa only [unionᵢ, supᵢ_subtype'] using h
 #align set.inj_on.image_bInter_eq Set.InjOn.image_binterᵢ_eq
 
@@ -1646,7 +1642,7 @@ theorem image_interᵢ {f : α → β} (hf : Bijective f) (s : ι → Set α) :
     (f '' ⋂ i, s i) = ⋂ i, f '' s i := by
   cases isEmpty_or_nonempty ι
   · simp_rw [interᵢ_of_empty, image_univ_of_surjective hf.surjective]
-  · exact (hf.injective.inj_on _).image_interᵢ_eq
+  · exact (hf.injective.injOn _).image_interᵢ_eq
 #align set.image_Inter Set.image_interᵢ
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -1667,68 +1663,69 @@ theorem inj_on_unionᵢ_of_directed {s : ι → Set α} (hs : Directed (· ⊆ �
 /-! ### `surj_on` -/
 
 
-theorem surj_on_unionₛ {s : Set α} {T : Set (Set β)} {f : α → β} (H : ∀ t ∈ T, SurjOn f s t) :
-    SurjOn f s (⋃₀T) := fun x ⟨t, ht, hx⟩ => H t ht hx
-#align set.surj_on_sUnion Set.surj_on_unionₛ
+theorem surjOn_unionₛ {s : Set α} {T : Set (Set β)} {f : α → β} (H : ∀ t ∈ T, SurjOn f s t) :
+    SurjOn f s (⋃₀T) := fun _ ⟨t, ht, hx⟩ => H t ht hx
+#align set.surj_on_sUnion Set.surjOn_unionₛ
 
-theorem surj_on_unionᵢ {s : Set α} {t : ι → Set β} {f : α → β} (H : ∀ i, SurjOn f s (t i)) :
+theorem surjOn_unionᵢ {s : Set α} {t : ι → Set β} {f : α → β} (H : ∀ i, SurjOn f s (t i)) :
     SurjOn f s (⋃ i, t i) :=
-  surj_on_unionₛ <| forall_range_iff.2 H
-#align set.surj_on_Union Set.surj_on_unionᵢ
+  surjOn_unionₛ <| forall_range_iff.2 H
+#align set.surj_on_Union Set.surjOn_unionᵢ
 
-theorem surj_on_unionᵢ_unionᵢ {s : ι → Set α} {t : ι → Set β} {f : α → β}
+theorem surjOn_unionᵢ_unionᵢ {s : ι → Set α} {t : ι → Set β} {f : α → β}
     (H : ∀ i, SurjOn f (s i) (t i)) : SurjOn f (⋃ i, s i) (⋃ i, t i) :=
-  surj_on_unionᵢ fun i => (H i).mono (subset_unionᵢ _ _) (Subset.refl _)
-#align set.surj_on_Union_Union Set.surj_on_unionᵢ_unionᵢ
+  surjOn_unionᵢ fun i => (H i).mono (subset_unionᵢ _ _) (Subset.refl _)
+#align set.surj_on_Union_Union Set.surjOn_unionᵢ_unionᵢ
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem surj_on_unionᵢ₂ {s : Set α} {t : ∀ i, κ i → Set β} {f : α → β}
+theorem surjOn_unionᵢ₂ {s : Set α} {t : ∀ i, κ i → Set β} {f : α → β}
     (H : ∀ i j, SurjOn f s (t i j)) : SurjOn f s (⋃ (i) (j), t i j) :=
-  surj_on_unionᵢ fun i => surj_on_unionᵢ (H i)
-#align set.surj_on_Union₂ Set.surj_on_unionᵢ₂
+  surjOn_unionᵢ fun i => surjOn_unionᵢ (H i)
+#align set.surj_on_Union₂ Set.surjOn_unionᵢ₂
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem surj_on_unionᵢ₂_unionᵢ₂ {s : ∀ i, κ i → Set α} {t : ∀ i, κ i → Set β} {f : α → β}
+theorem surjOn_unionᵢ₂_unionᵢ₂ {s : ∀ i, κ i → Set α} {t : ∀ i, κ i → Set β} {f : α → β}
     (H : ∀ i j, SurjOn f (s i j) (t i j)) : SurjOn f (⋃ (i) (j), s i j) (⋃ (i) (j), t i j) :=
-  surj_on_unionᵢ_unionᵢ fun i => surj_on_unionᵢ_unionᵢ (H i)
-#align set.surj_on_Union₂_Union₂ Set.surj_on_unionᵢ₂_unionᵢ₂
+  surjOn_unionᵢ_unionᵢ fun i => surjOn_unionᵢ_unionᵢ (H i)
+#align set.surj_on_Union₂_Union₂ Set.surjOn_unionᵢ₂_unionᵢ₂
 
-theorem surj_on_interᵢ [hi : Nonempty ι] {s : ι → Set α} {t : Set β} {f : α → β}
+theorem surjOn_interᵢ [Nonempty ι] {s : ι → Set α} {t : Set β} {f : α → β}
     (H : ∀ i, SurjOn f (s i) t) (Hinj : InjOn f (⋃ i, s i)) : SurjOn f (⋂ i, s i) t := by
   intro y hy
   rw [Hinj.image_interᵢ_eq, mem_interᵢ]
   exact fun i => H i hy
-#align set.surj_on_Inter Set.surj_on_interᵢ
+#align set.surj_on_Inter Set.surjOn_interᵢ
 
-theorem surj_on_interᵢ_interᵢ [hi : Nonempty ι] {s : ι → Set α} {t : ι → Set β} {f : α → β}
+theorem surjOn_interᵢ_interᵢ [Nonempty ι] {s : ι → Set α} {t : ι → Set β} {f : α → β}
     (H : ∀ i, SurjOn f (s i) (t i)) (Hinj : InjOn f (⋃ i, s i)) : SurjOn f (⋂ i, s i) (⋂ i, t i) :=
-  surj_on_interᵢ (fun i => (H i).mono (Subset.refl _) (interᵢ_subset _ _)) Hinj
-#align set.surj_on_Inter_Inter Set.surj_on_interᵢ_interᵢ
+  surjOn_interᵢ (fun i => (H i).mono (Subset.refl _) (interᵢ_subset _ _)) Hinj
+#align set.surj_on_Inter_Inter Set.surjOn_interᵢ_interᵢ
 
 /-! ### `bij_on` -/
 
 
-theorem bij_on_unionᵢ {s : ι → Set α} {t : ι → Set β} {f : α → β} (H : ∀ i, BijOn f (s i) (t i))
+theorem bijOn_unionᵢ {s : ι → Set α} {t : ι → Set β} {f : α → β} (H : ∀ i, BijOn f (s i) (t i))
     (Hinj : InjOn f (⋃ i, s i)) : BijOn f (⋃ i, s i) (⋃ i, t i) :=
-  ⟨maps_to_unionᵢ_unionᵢ fun i => (H i).MapsTo, Hinj, surj_on_unionᵢ_unionᵢ fun i => (H i).SurjOn⟩
-#align set.bij_on_Union Set.bij_on_unionᵢ
+  ⟨maps_to_unionᵢ_unionᵢ fun i => (H i).mapsTo, Hinj, surjOn_unionᵢ_unionᵢ fun i => (H i).surjOn⟩
+#align set.bij_on_Union Set.bijOn_unionᵢ
 
-theorem bij_on_interᵢ [hi : Nonempty ι] {s : ι → Set α} {t : ι → Set β} {f : α → β}
+theorem bijOn_interᵢ [hi : Nonempty ι] {s : ι → Set α} {t : ι → Set β} {f : α → β}
     (H : ∀ i, BijOn f (s i) (t i)) (Hinj : InjOn f (⋃ i, s i)) : BijOn f (⋂ i, s i) (⋂ i, t i) :=
-  ⟨maps_to_interᵢ_interᵢ fun i => (H i).MapsTo, hi.elim fun i => (H i).InjOn.mono (interᵢ_subset _ _),
-    surj_on_interᵢ_interᵢ (fun i => (H i).SurjOn) Hinj⟩
-#align set.bij_on_Inter Set.bij_on_interᵢ
+  ⟨maps_to_interᵢ_interᵢ fun i => (H i).mapsTo,
+    hi.elim fun i => (H i).injOn.mono (interᵢ_subset _ _),
+    surjOn_interᵢ_interᵢ (fun i => (H i).surjOn) Hinj⟩
+#align set.bij_on_Inter Set.bijOn_interᵢ
 
-theorem bij_on_unionᵢ_of_directed {s : ι → Set α} (hs : Directed (· ⊆ ·) s) {t : ι → Set β}
+theorem bijOn_unionᵢ_of_directed {s : ι → Set α} (hs : Directed (· ⊆ ·) s) {t : ι → Set β}
     {f : α → β} (H : ∀ i, BijOn f (s i) (t i)) : BijOn f (⋃ i, s i) (⋃ i, t i) :=
-  bij_on_unionᵢ H <| inj_on_unionᵢ_of_directed hs fun i => (H i).InjOn
-#align set.bij_on_Union_of_directed Set.bij_on_unionᵢ_of_directed
+  bijOn_unionᵢ H <| inj_on_unionᵢ_of_directed hs fun i => (H i).injOn
+#align set.bij_on_Union_of_directed Set.bijOn_unionᵢ_of_directed
 
-theorem bij_on_interᵢ_of_directed [Nonempty ι] {s : ι → Set α} (hs : Directed (· ⊆ ·) s)
+theorem bijOn_interᵢ_of_directed [Nonempty ι] {s : ι → Set α} (hs : Directed (· ⊆ ·) s)
     {t : ι → Set β} {f : α → β} (H : ∀ i, BijOn f (s i) (t i)) : BijOn f (⋂ i, s i) (⋂ i, t i) :=
-  bij_on_interᵢ H <| inj_on_unionᵢ_of_directed hs fun i => (H i).InjOn
-#align set.bij_on_Inter_of_directed Set.bij_on_interᵢ_of_directed
+  bijOn_interᵢ H <| inj_on_unionᵢ_of_directed hs fun i => (H i).injOn
+#align set.bij_on_Inter_of_directed Set.bijOn_interᵢ_of_directed
 
 end Function
 
@@ -1767,7 +1764,7 @@ theorem bunionᵢ_range {f : ι → α} {g : α → Set β} : (⋃ x ∈ range f
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (x y) -/
 @[simp]
 theorem unionᵢ_unionᵢ_eq' {f : ι → α} {g : α → Set β} :
-    (⋃ (x) (y) (h : f y = x), g x) = ⋃ y, g (f y) := by simpa using bunionᵢ_range
+    (⋃ (x) (y) (_h : f y = x), g x) = ⋃ y, g (f y) := by simpa using bunionᵢ_range
 #align set.Union_Union_eq' Set.unionᵢ_unionᵢ_eq'
 
 theorem binterᵢ_range {f : ι → α} {g : α → Set β} : (⋂ x ∈ range f, g x) = ⋂ y, g (f y) :=
@@ -1777,7 +1774,7 @@ theorem binterᵢ_range {f : ι → α} {g : α → Set β} : (⋂ x ∈ range f
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (x y) -/
 @[simp]
 theorem interᵢ_interᵢ_eq' {f : ι → α} {g : α → Set β} :
-    (⋂ (x) (y) (h : f y = x), g x) = ⋂ y, g (f y) := by simpa using binterᵢ_range
+    (⋂ (x) (y) (_h : f y = x), g x) = ⋂ y, g (f y) := by simpa using binterᵢ_range
 #align set.Inter_Inter_eq' Set.interᵢ_interᵢ_eq'
 
 variable {s : Set γ} {f : γ → α} {g : α → Set β}
@@ -1794,7 +1791,7 @@ end Image
 
 section Preimage
 
-theorem monotone_preimage {f : α → β} : Monotone (preimage f) := fun a b h => preimage_mono h
+theorem monotone_preimage {f : α → β} : Monotone (preimage f) := fun _ _ h => preimage_mono h
 #align set.monotone_preimage Set.monotone_preimage
 
 @[simp]
@@ -1814,7 +1811,7 @@ theorem preimage_unionₛ {f : α → β} {s : Set (Set β)} : f ⁻¹' ⋃₀s 
 #align set.preimage_sUnion Set.preimage_unionₛ
 
 theorem preimage_interᵢ {f : α → β} {s : ι → Set β} : (f ⁻¹' ⋂ i, s i) = ⋂ i, f ⁻¹' s i := by
-  ext <;> simp
+  ext; simp
 #align set.preimage_Inter Set.preimage_interᵢ
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -1908,7 +1905,7 @@ theorem unionᵢ_prod_of_monotone [SemilatticeSup α] {s : α → Set β} {t : �
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem interₛ_prod_interₛ_subset (S : Set (Set α)) (T : Set (Set β)) :
     ⋂₀ S ×ˢ ⋂₀ T ⊆ ⋂ r ∈ S ×ˢ T, r.1 ×ˢ r.2 :=
-  subset_interᵢ₂ fun x hx y hy => ⟨hy.1 x.1 hx.1, hy.2 x.2 hx.2⟩
+  subset_interᵢ₂ fun x hx _ hy => ⟨hy.1 x.1 hx.1, hy.2 x.2 hx.2⟩
 #align set.sInter_prod_sInter_subset Set.interₛ_prod_interₛ_subset
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -2044,15 +2041,15 @@ theorem mem_seq_iff {s : Set (α → β)} {t : Set α} {b : β} :
 
 theorem seq_subset {s : Set (α → β)} {t : Set α} {u : Set β} :
     seq s t ⊆ u ↔ ∀ f ∈ s, ∀ a ∈ t, (f : α → β) a ∈ u :=
-  Iff.intro (fun h f hf a ha => h ⟨f, hf, a, ha, rfl⟩) fun h b ⟨f, hf, a, ha, Eq⟩ =>
+  Iff.intro (fun h f hf a ha => h ⟨f, hf, a, ha, rfl⟩) fun h _ ⟨f, hf, a, ha, Eq⟩ =>
     Eq ▸ h f hf a ha
 #align set.seq_subset Set.seq_subset
 
 theorem seq_mono {s₀ s₁ : Set (α → β)} {t₀ t₁ : Set α} (hs : s₀ ⊆ s₁) (ht : t₀ ⊆ t₁) :
-    seq s₀ t₀ ⊆ seq s₁ t₁ := fun b ⟨f, hf, a, ha, Eq⟩ => ⟨f, hs hf, a, ht ha, Eq⟩
+    seq s₀ t₀ ⊆ seq s₁ t₁ := fun _  ⟨f, hf, a, ha, Eq⟩ => ⟨f, hs hf, a, ht ha, Eq⟩
 #align set.seq_mono Set.seq_mono
 
-theorem singleton_seq {f : α → β} {t : Set α} : Set.seq {f} t = f '' t :=
+theorem singleton_seq {f : α → β} {t : Set α} : Set.seq ({f} : Set (α → β)) t = f '' t :=
   Set.ext <| by simp
 #align set.singleton_seq Set.singleton_seq
 
@@ -2081,13 +2078,13 @@ theorem prod_eq_seq {s : Set α} {t : Set β} : s ×ˢ t = (Prod.mk '' s).seq t 
   · rintro ⟨ha, hb⟩
     exact ⟨Prod.mk a, ⟨a, ha, rfl⟩, b, hb, rfl⟩
   · rintro ⟨f, ⟨x, hx, rfl⟩, y, hy, eq⟩
-    rw [← Eq]
+    rw [← eq]
     exact ⟨hx, hy⟩
 #align set.prod_eq_seq Set.prod_eq_seq
 
 theorem prod_image_seq_comm (s : Set α) (t : Set β) :
     (Prod.mk '' s).seq t = seq ((fun b a => (a, b)) '' t) s := by
-  rw [← prod_eq_seq, ← image_swap_prod, prod_eq_seq, image_seq, ← image_comp, Prod.swap]
+  rw [← prod_eq_seq, ← image_swap_prod, prod_eq_seq, image_seq, ← image_comp]; rfl
 #align set.prod_image_seq_comm Set.prod_image_seq_comm
 
 theorem image2_eq_seq (f : α → β → γ) (s : Set α) (t : Set β) : image2 f s t = seq (f '' s) t := by
@@ -2113,8 +2110,8 @@ theorem univ_pi_eq_interᵢ (t : ∀ i, Set (π i)) : pi univ t = ⋂ i, eval i 
 theorem pi_diff_pi_subset (i : Set α) (s t : ∀ a, Set (π a)) :
     pi i s \ pi i t ⊆ ⋃ a ∈ i, eval a ⁻¹' (s a \ t a) := by
   refine' diff_subset_comm.2 fun x hx a ha => _
-  simp only [mem_diff, mem_pi, mem_unionᵢ, not_exists, mem_preimage, not_and, not_not, eval_apply] at
-    hx
+  simp only [mem_diff, mem_pi, mem_unionᵢ, not_exists, mem_preimage, not_and, not_not,
+    eval_apply] at hx
   exact hx.2 _ ha (hx.1 _ ha)
 #align set.pi_diff_pi_subset Set.pi_diff_pi_subset
 
@@ -2191,7 +2188,7 @@ theorem subset_right_of_subset_union (h : s ⊆ t ∪ u) (hab : Disjoint s t) : 
 
 theorem preimage {α β} (f : α → β) {s t : Set β} (h : Disjoint s t) :
     Disjoint (f ⁻¹' s) (f ⁻¹' t) :=
-  disjoint_iff_inf_le.mpr fun x hx => h.le_bot hx
+  disjoint_iff_inf_le.mpr fun _ hx => h.le_bot hx
 #align disjoint.preimage Disjoint.preimage
 
 end Disjoint
@@ -2199,7 +2196,7 @@ end Disjoint
 namespace Set
 
 theorem not_disjoint_iff : ¬Disjoint s t ↔ ∃ x, x ∈ s ∧ x ∈ t :=
-  Set.disjoint_iff.Not.trans <| not_forall.trans <| exists_congr fun x => not_not
+  Set.disjoint_iff.not.trans <| not_forall.trans <| exists_congr fun _ => not_not
 #align set.not_disjoint_iff Set.not_disjoint_iff
 
 theorem not_disjoint_iff_nonempty_inter : ¬Disjoint s t ↔ (s ∩ t).Nonempty :=
@@ -2216,7 +2213,7 @@ theorem disjoint_iff_forall_ne : Disjoint s t ↔ ∀ x ∈ s, ∀ y ∈ t, x �
   simp only [Ne.def, disjoint_left, @imp_not_comm _ (_ = _), forall_eq']
 #align set.disjoint_iff_forall_ne Set.disjoint_iff_forall_ne
 
-theorem Disjoint.ne_of_mem (h : Disjoint s t) {x y} (hx : x ∈ s) (hy : y ∈ t) : x ≠ y :=
+theorem _root_.Disjoint.ne_of_mem (h : Disjoint s t) {x y} (hx : x ∈ s) (hy : y ∈ t) : x ≠ y :=
   disjoint_iff_forall_ne.mp h x hx y hy
 #align disjoint.ne_of_mem Disjoint.ne_of_mem
 
@@ -2307,12 +2304,12 @@ theorem disjoint_univ {s : Set α} : Disjoint s univ ↔ s = ∅ :=
 
 @[simp]
 theorem disjoint_singleton_left {a : α} {s : Set α} : Disjoint {a} s ↔ a ∉ s := by
-  simp [Set.disjoint_iff, subset_def] <;> exact Iff.rfl
+  simp [Set.disjoint_iff, subset_def]
 #align set.disjoint_singleton_left Set.disjoint_singleton_left
 
 @[simp]
 theorem disjoint_singleton_right {a : α} {s : Set α} : Disjoint s {a} ↔ a ∉ s := by
-  rw [Disjoint.comm] <;> exact disjoint_singleton_left
+  rw [Disjoint.comm]; exact disjoint_singleton_left
 #align set.disjoint_singleton_right Set.disjoint_singleton_right
 
 @[simp]
@@ -2322,16 +2319,16 @@ theorem disjoint_singleton {a b : α} : Disjoint ({a} : Set α) {b} ↔ a ≠ b 
 
 theorem disjoint_image_image {f : β → α} {g : γ → α} {s : Set β} {t : Set γ}
     (h : ∀ b ∈ s, ∀ c ∈ t, f b ≠ g c) : Disjoint (f '' s) (g '' t) :=
-  disjoint_iff_inf_le.mpr <| by rintro a ⟨⟨b, hb, eq⟩, c, hc, rfl⟩ <;> exact h b hb c hc Eq
+  disjoint_iff_inf_le.mpr <| by rintro a ⟨⟨b, hb, eq⟩, c, hc, rfl⟩ <;> exact h b hb c hc eq
 #align set.disjoint_image_image Set.disjoint_image_image
 
 theorem disjoint_image_of_injective {f : α → β} (hf : Injective f) {s t : Set α}
     (hd : Disjoint s t) : Disjoint (f '' s) (f '' t) :=
-  disjoint_image_image fun x hx y hy => hf.Ne fun H => Set.disjoint_iff.1 hd ⟨hx, H.symm ▸ hy⟩
+  disjoint_image_image fun _ hx _ hy => hf.ne fun H => Set.disjoint_iff.1 hd ⟨hx, H.symm ▸ hy⟩
 #align set.disjoint_image_of_injective Set.disjoint_image_of_injective
 
-theorem Disjoint.of_image (h : Disjoint (f '' s) (f '' t)) : Disjoint s t :=
-  disjoint_iff_inf_le.mpr fun x hx =>
+theorem _root_.Disjoint.of_image (h : Disjoint (f '' s) (f '' t)) : Disjoint s t :=
+  disjoint_iff_inf_le.mpr fun _ hx =>
     disjoint_left.1 h (mem_image_of_mem _ hx.1) (mem_image_of_mem _ hx.2)
 #align disjoint.of_image Disjoint.of_image
 
@@ -2339,8 +2336,8 @@ theorem disjoint_image_iff (hf : Injective f) : Disjoint (f '' s) (f '' t) ↔ D
   ⟨Disjoint.of_image, disjoint_image_of_injective hf⟩
 #align set.disjoint_image_iff Set.disjoint_image_iff
 
-theorem Disjoint.of_preimage (hf : Surjective f) {s t : Set β} (h : Disjoint (f ⁻¹' s) (f ⁻¹' t)) :
-    Disjoint s t := by
+theorem _root_.Disjoint.of_preimage (hf : Surjective f) {s t : Set β}
+    (h : Disjoint (f ⁻¹' s) (f ⁻¹' t)) : Disjoint s t := by
   rw [disjoint_iff_inter_eq_empty, ← image_preimage_eq (_ ∩ _) hf, preimage_inter, h.inter_eq,
     image_empty]
 #align disjoint.of_preimage Disjoint.of_preimage
@@ -2363,8 +2360,8 @@ theorem preimage_eq_empty_iff {s : Set β} : f ⁻¹' s = ∅ ↔ Disjoint s (ra
     exact h x hy, preimage_eq_empty⟩
 #align set.preimage_eq_empty_iff Set.preimage_eq_empty_iff
 
-theorem Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t) (hf : InjOn f u) (hs : s ⊆ u)
-    (ht : t ⊆ u) : Disjoint (f '' s) (f '' t) := by
+theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t) (hf : InjOn f u)
+    (hs : s ⊆ u) (ht : t ⊆ u) : Disjoint (f '' s) (f '' t) := by
   rw [disjoint_iff_inter_eq_empty] at h⊢
   rw [← hf.image_inter hs ht, h, image_empty]
 #align disjoint.image Disjoint.image
@@ -2380,30 +2377,30 @@ namespace Set
 
 variable [CompleteLattice α]
 
-theorem Ici_supᵢ (f : ι → α) : ici (⨆ i, f i) = ⋂ i, ici (f i) :=
+theorem Ici_supᵢ (f : ι → α) : Ici (⨆ i, f i) = ⋂ i, Ici (f i) :=
   ext fun _ => by simp only [mem_Ici, supᵢ_le_iff, mem_interᵢ]
 #align set.Ici_supr Set.Ici_supᵢ
 
-theorem Iic_infᵢ (f : ι → α) : iic (⨅ i, f i) = ⋂ i, iic (f i) :=
+theorem Iic_infᵢ (f : ι → α) : Iic (⨅ i, f i) = ⋂ i, Iic (f i) :=
   ext fun _ => by simp only [mem_Iic, le_infᵢ_iff, mem_interᵢ]
 #align set.Iic_infi Set.Iic_infᵢ
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem Ici_supᵢ₂ (f : ∀ i, κ i → α) : ici (⨆ (i) (j), f i j) = ⋂ (i) (j), ici (f i j) := by
+theorem Ici_supᵢ₂ (f : ∀ i, κ i → α) : Ici (⨆ (i) (j), f i j) = ⋂ (i) (j), Ici (f i j) := by
   simp_rw [Ici_supᵢ]
 #align set.Ici_supr₂ Set.Ici_supᵢ₂
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem Iic_infᵢ₂ (f : ∀ i, κ i → α) : iic (⨅ (i) (j), f i j) = ⋂ (i) (j), iic (f i j) := by
+theorem Iic_infᵢ₂ (f : ∀ i, κ i → α) : Iic (⨅ (i) (j), f i j) = ⋂ (i) (j), Iic (f i j) := by
   simp_rw [Iic_infᵢ]
 #align set.Iic_infi₂ Set.Iic_infᵢ₂
 
-theorem Ici_supₛ (s : Set α) : Ici (supₛ s) = ⋂ a ∈ s, ici a := by rw [supₛ_eq_supᵢ, Ici_supᵢ₂]
+theorem Ici_supₛ (s : Set α) : Ici (supₛ s) = ⋂ a ∈ s, Ici a := by rw [supₛ_eq_supᵢ, Ici_supᵢ₂]
 #align set.Ici_Sup Set.Ici_supₛ
 
-theorem Iic_infₛ (s : Set α) : Iic (infₛ s) = ⋂ a ∈ s, iic a := by rw [infₛ_eq_infᵢ, Iic_infᵢ₂]
+theorem Iic_infₛ (s : Set α) : Iic (infₛ s) = ⋂ a ∈ s, Iic a := by rw [infₛ_eq_infᵢ, Iic_infᵢ₂]
 #align set.Iic_Inf Set.Iic_infₛ
 
 end Set
@@ -2413,8 +2410,8 @@ namespace Set
 variable (t : α → Set β)
 
 theorem subset_diff {s t u : Set α} : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u :=
-  ⟨fun h => ⟨fun x hxs => (h hxs).1, disjoint_iff_inf_le.mpr fun x ⟨hxs, hxu⟩ => (h hxs).2 hxu⟩,
-    fun ⟨h1, h2⟩ x hxs => ⟨h1 hxs, fun hxu => h2.le_bot ⟨hxs, hxu⟩⟩⟩
+  ⟨fun h => ⟨fun _ hxs => (h hxs).1, disjoint_iff_inf_le.mpr fun _ ⟨hxs, hxu⟩ => (h hxs).2 hxu⟩,
+    fun ⟨h1, h2⟩ _ hxs => ⟨h1 hxs, fun hxu => h2.le_bot ⟨hxs, hxu⟩⟩⟩
 #align set.subset_diff Set.subset_diff
 
 theorem bunionᵢ_diff_bunionᵢ_subset (s₁ s₂ : Set α) :
@@ -2468,12 +2465,12 @@ theorem interᵢ_ge_eq_interᵢ_nat_add (u : ℕ → Set α) (n : ℕ) : (⋂ i 
   infᵢ_ge_eq_infᵢ_nat_add u n
 #align set.Inter_ge_eq_Inter_nat_add Set.interᵢ_ge_eq_interᵢ_nat_add
 
-theorem Monotone.unionᵢ_nat_add {f : ℕ → Set α} (hf : Monotone f) (k : ℕ) :
+theorem _root_.Monotone.unionᵢ_nat_add {f : ℕ → Set α} (hf : Monotone f) (k : ℕ) :
     (⋃ n, f (n + k)) = ⋃ n, f n :=
   hf.supᵢ_nat_add k
 #align monotone.Union_nat_add Monotone.unionᵢ_nat_add
 
-theorem Antitone.interᵢ_nat_add {f : ℕ → Set α} (hf : Antitone f) (k : ℕ) :
+theorem _root_.Antitone.interᵢ_nat_add {f : ℕ → Set α} (hf : Antitone f) (k : ℕ) :
     (⋂ n, f (n + k)) = ⋂ n, f n :=
   hf.infᵢ_nat_add k
 #align antitone.Inter_nat_add Antitone.interᵢ_nat_add
