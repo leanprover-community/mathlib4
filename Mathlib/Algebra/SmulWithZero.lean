@@ -64,7 +64,7 @@ instance MulZeroClass.toSmulWithZero [MulZeroClass R] :
 instance MulZeroClass.toOppositeSmulWithZero [MulZeroClass R] :
     SmulWithZero Rᵐᵒᵖ R where
   smul := (· • ·)
-  smul_zero r := zero_mul _
+  smul_zero _ := zero_mul _
   zero_smul := mul_zero
 #align mul_zero_class.to_opposite_smul_with_zero MulZeroClass.toOppositeSmulWithZero
 
