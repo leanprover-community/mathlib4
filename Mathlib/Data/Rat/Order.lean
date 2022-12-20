@@ -97,18 +97,24 @@ instance decidableNonneg : Decidable (Rat.Nonneg a) := by
 protected def le' (a b : ℚ) := Rat.Nonneg (b - a)
 #align rat.le Rat.le'
 
-protected theorem le_iff_le' (a b : ℚ) : a ≤ b ↔ Rat.Nonneg (b - a) := sorry
+protected theorem le_iff_Nonneg (a b : ℚ) : a ≤ b ↔ Rat.Nonneg (b - a) :=
+  numDenCasesOn' a fun na da ha =>
+    numDenCasesOn' b fun nb db hb => by
+      change Rat.blt _ _ = false ↔ _
+      unfold Rat.blt
+      simp [Rat.Nonneg]
+      sorry
 
 protected theorem le_def {a b c d : ℤ} (b0 : 0 < b) (d0 : 0 < d) :
     a /. b ≤ c /. d ↔ a * d ≤ c * b := by
-  rw [Rat.le_iff_le']
+  rw [Rat.le_iff_Nonneg]
   show Rat.Nonneg _ ↔ _
   rw [← sub_nonneg]
   simp [sub_eq_add_neg, ne_of_gt b0, ne_of_gt d0, mul_pos d0 b0]
 #align rat.le_def Rat.le_def
 
 protected theorem le_refl : a ≤ a := by
-  rw [Rat.le_iff_le']
+  rw [Rat.le_iff_Nonneg]
   show Rat.Nonneg (a - a)
   rw [sub_self]
   exact le_refl (0 : ℤ)
@@ -116,12 +122,12 @@ protected theorem le_refl : a ≤ a := by
 
 protected theorem le_total : a ≤ b ∨ b ≤ a := by
   have := Rat.nonneg_total (b - a)
-  rw [Rat.le_iff_le', Rat.le_iff_le']
+  rw [Rat.le_iff_Nonneg, Rat.le_iff_Nonneg]
   rwa [neg_sub] at this
 #align rat.le_total Rat.le_total
 
 protected theorem le_antisymm {a b : ℚ} (hab : a ≤ b) (hba : b ≤ a) : a = b := by
-  rw [Rat.le_iff_le'] at hab hba
+  rw [Rat.le_iff_Nonneg] at hab hba
   rw [sub_eq_add_neg] at hba
   rw [←neg_sub, sub_eq_add_neg] at hab
   have := eq_neg_of_add_eq_zero_left (Rat.nonneg_antisymm hba hab)
@@ -129,14 +135,18 @@ protected theorem le_antisymm {a b : ℚ} (hab : a ≤ b) (hba : b ≤ a) : a = 
 #align rat.le_antisymm Rat.le_antisymm
 
 protected theorem le_trans {a b c : ℚ} (hab : a ≤ b) (hbc : b ≤ c) : a ≤ c := by
-  rw [Rat.le_iff_le'] at hab hbc
+  rw [Rat.le_iff_Nonneg] at hab hbc
   have : Rat.Nonneg (b - a + (c - b)) := Rat.nonneg_add hab hbc
   simp_rw [sub_eq_add_neg, add_left_comm (b + -a) c (-b), add_comm (b + -a) (-b),
     add_left_comm (-b) b (-a), add_comm (-b) (-a), add_neg_cancel_comm_assoc,
     ← sub_eq_add_neg] at this
-  rw [Rat.le_iff_le']
+  rw [Rat.le_iff_Nonneg]
   exact this
 #align rat.le_trans Rat.le_trans
+
+protected theorem lt_iff_le_not_le {a b : ℚ} : a < b ↔ a ≤ b ∧ ¬b ≤ a := by
+  change a.blt b ↔ (b.blt a = false) ∧ ¬ (a.blt b = false)
+  sorry
 
 instance linearOrder : LinearOrder ℚ where
   le_refl := Rat.le_refl
@@ -146,7 +156,7 @@ instance linearOrder : LinearOrder ℚ where
   decidable_le a b := by infer_instance
   -- Porting note: As Std provides an instance of `LT ℚ`,
   -- we now need to check `<` and `≤` are compatible.
-  lt_iff_le_not_le := sorry
+  lt_iff_le_not_le := @Rat.lt_iff_le_not_le
 
 -- Extra instances to short-circuit type class resolution
 instance : LT ℚ := by infer_instance
@@ -184,7 +194,7 @@ protected theorem lt_def {p q : ℚ} : p < q ↔ p.num * q.den < q.num * p.den :
 #align rat.lt_def Rat.lt_def
 
 theorem nonneg_iff_zero_le {a} : Rat.Nonneg a ↔ 0 ≤ a := by
-  rw [Rat.le_iff_le']
+  rw [Rat.le_iff_Nonneg]
   show Rat.Nonneg a ↔ Rat.Nonneg (a - 0)
   simp
 #align rat.nonneg_iff_zero_le Rat.nonneg_iff_zero_le
@@ -194,7 +204,7 @@ theorem num_nonneg_iff_zero_le : ∀ {a : ℚ}, 0 ≤ a.num ↔ 0 ≤ a
 #align rat.num_nonneg_iff_zero_le Rat.num_nonneg_iff_zero_le
 
 protected theorem add_le_add_left {a b c : ℚ} : c + a ≤ c + b ↔ a ≤ b := by
-  rw [Rat.le_iff_le', add_sub_add_left_eq_sub, Rat.le_iff_le']
+  rw [Rat.le_iff_Nonneg, add_sub_add_left_eq_sub, Rat.le_iff_Nonneg]
 #align rat.add_le_add_left Rat.add_le_add_left
 
 protected theorem mul_nonneg {a b : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b := by
