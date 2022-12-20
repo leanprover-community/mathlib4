@@ -2965,66 +2965,56 @@ theorem foldl_assoc_comm_cons {l : List α} {a₁ a₂} : ((a₁ :: l) <*> a₂)
 
 end
 
-/-! ### mfoldl, mfoldr, mmap -/
+/-! ### foldlM, foldrM, mapM -/
 
-section MfoldlMfoldr
+section FoldlMFoldrM
 
 variable {m : Type v → Type w} [Monad m]
 
 @[simp]
-theorem mfoldl_nil (f : β → α → m β) {b} : foldlM f b [] = pure b :=
+theorem foldlM_nil (f : β → α → m β) {b} : List.foldlM f b [] = pure b :=
   rfl
-#align list.mfoldl_nil List.mfoldl_nil
+#align list.mfoldl_nil List.foldlM_nil
+
+-- Porting note: now in std
+#align list.mfoldr_nil List.foldrM_nil
 
 @[simp]
-theorem mfoldr_nil (f : α → β → m β) {b} : foldrM f b [] = pure b :=
+theorem foldlM_cons {f : β → α → m β} {b a l} :
+    List.foldlM f b (a :: l) = f b a >>= fun b' => List.foldlM f b' l :=
   rfl
-#align list.mfoldr_nil List.mfoldr_nil
+#align list.mfoldl_cons List.foldlM_cons
 
-@[simp]
-theorem mfoldl_cons {f : β → α → m β} {b a l} :
-    foldlM f b (a :: l) = f b a >>= fun b' => foldlM f b' l :=
-  rfl
-#align list.mfoldl_cons List.mfoldl_cons
-
-@[simp]
-theorem mfoldr_cons {f : α → β → m β} {b a l} : foldrM f b (a :: l) = foldrM f b l >>= f a :=
-  rfl
-#align list.mfoldr_cons List.mfoldr_cons
-
-theorem mfoldr_eq_foldr (f : α → β → m β) (b l) :
-    foldrM f b l = foldr (fun a mb => mb >>= f a) (pure b) l := by induction l <;> simp [*]
-#align list.mfoldr_eq_foldr List.mfoldr_eq_foldr
-
-attribute [simp] mmap mmap'
+/- Porting note: now in std; now assumes an instance of `LawfulMonad m`, so we make everything
+  `foldrM_eq_foldr` depend on one as well. (An instance of `LawfulMonad m` was already present for
+  everything following; this just moves it a few lines up.) -/
+#align list.mfoldr_cons List.foldrM_cons
 
 variable [LawfulMonad m]
 
+theorem foldrM_eq_foldr (f : α → β → m β) (b l) :
+    foldrM f b l = foldr (fun a mb => mb >>= f a) (pure b) l := by induction l <;> simp [*]
+#align list.mfoldr_eq_foldr List.foldrM_eq_foldr
+
+attribute [simp] mapM mapM'
+
 theorem mfoldl_eq_foldl (f : β → α → m β) (b l) :
-    foldlM f b l = foldl (fun mb a => mb >>= fun b => f b a) (pure b) l := by
+    List.foldlM f b l = foldl (fun mb a => mb >>= fun b => f b a) (pure b) l := by
   suffices h :
-    ∀ mb : m β, (mb >>= fun b => mfoldl f b l) = foldl (fun mb a => mb >>= fun b => f b a) mb l
+    ∀ mb : m β, (mb >>= fun b => List.foldlM f b l) = foldl (fun mb a => mb >>= fun b => f b a) mb l
   · simp [← h (pure b)]
-  induction l <;> intro
-  · simp
-  · simp only [mfoldl, foldl, ← l_ih, functor_norm]
+  induction l with
+  | nil => intro; simp
+  | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ←l_ih, functor_norm]
 #align list.mfoldl_eq_foldl List.mfoldl_eq_foldl
 
-@[simp]
-theorem mfoldl_append {f : β → α → m β} :
-    ∀ {b l₁ l₂}, foldlM f b (l₁ ++ l₂) = foldlM f b l₁ >>= fun x => foldlM f x l₂
-  | _, [], _ => by simp only [nil_append, mfoldl_nil, pure_bind]
-  | _, _ :: _, _ => by simp only [cons_append, mfoldl_cons, mfoldl_append, LawfulMonad.bind_assoc]
-#align list.mfoldl_append List.mfoldl_append
+-- Porting note: now in std
+#align list.mfoldl_append List.foldlM_append
 
-@[simp]
-theorem mfoldr_append {f : α → β → m β} :
-    ∀ {b l₁ l₂}, foldrM f b (l₁ ++ l₂) = foldrM f b l₂ >>= fun x => foldrM f x l₁
-  | _, [], _ => by simp only [nil_append, mfoldr_nil, bind_pure]
-  | _, _ :: _, _ => by simp only [mfoldr_cons, cons_append, mfoldr_append, LawfulMonad.bind_assoc]
-#align list.mfoldr_append List.mfoldr_append
+--Porting note: now in std
+#align list.mfoldr_append List.foldrM_append
 
-end MfoldlMfoldr
+end FoldlMFoldrM
 
 /-! ### intersperse -/
 
