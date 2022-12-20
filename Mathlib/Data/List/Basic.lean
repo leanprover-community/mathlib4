@@ -3236,7 +3236,7 @@ Case conversion may be inaccurate. Consider using '#align list.pmap_eq_map List.
 @[simp]
 theorem pmap_eq_map (p : α → Prop) (f : α → β) (l : List α) (H) :
     @pmap _ _ p (fun a _ => f a) l H = map f l := by
-  induction l <;> [rfl, simp only [*, pmap, map]] <;> constructor <;> rfl
+  induction l <;> [rfl, simp only [*, pmap, map]]
 #align list.pmap_eq_map List.pmap_eq_map
 
 /- warning: list.pmap_congr -> List.pmap_congr is a dubious translation:
@@ -3260,7 +3260,7 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align list.map_pmap List.map_pmapₓ'. -/
 theorem map_pmap {p : α → Prop} (g : β → γ) (f : ∀ a, p a → β) (l H) :
     map g (pmap f l H) = pmap (fun a h => g (f a h)) l H := by
-  induction l <;> [rfl, simp only [*, pmap, map]] <;> constructor <;> rfl
+  induction l <;> [rfl, simp only [*, pmap, map]]
 #align list.map_pmap List.map_pmap
 
 /- warning: list.pmap_map -> List.pmap_map is a dubious translation:
@@ -3271,7 +3271,7 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align list.pmap_map List.pmap_mapₓ'. -/
 theorem pmap_map {p : β → Prop} (g : ∀ b, p b → γ) (f : α → β) (l H) :
     pmap g (map f l) H = pmap (fun a h => g (f a) h) l fun a h => H _ (mem_map_of_mem _ h) := by
-  induction l <;> [rfl, simp only [*, pmap, map]] <;> constructor <;> rfl
+  induction l <;> [rfl, simp only [*, pmap, map]]
 #align list.pmap_map List.pmap_map
 
 /- warning: list.pmap_eq_map_attach -> List.pmap_eq_map_attach is a dubious translation:
@@ -3320,7 +3320,7 @@ Case conversion may be inaccurate. Consider using '#align list.mem_pmap List.mem
 @[simp]
 theorem mem_pmap {p : α → Prop} {f : ∀ a, p a → β} {l H b} :
     b ∈ pmap f l H ↔ ∃ (a : _)(h : a ∈ l), f a (H a h) = b := by
-  simp only [pmap_eq_map_attach, mem_map, mem_attach, true_and_iff, Subtype.exists]
+  simp only [pmap_eq_map_attach, mem_map, mem_attach, true_and_iff, Subtype.exists, eq_comm]
 #align list.mem_pmap List.mem_pmap
 
 @[simp]
@@ -3536,7 +3536,7 @@ theorem filterMap_cons_none {f : α → Option β} (a : α) (l : List α) (h : f
 @[simp]
 theorem filterMap_cons_some (f : α → Option β) (a : α) (l : List α) {b : β} (h : f a = some b) :
     filterMap f (a :: l) = b :: filterMap f l := by
-  simp only [filterMap, h] <;> constructor <;> rfl
+  simp only [filterMap, h]
 #align list.filter_map_cons_some List.filterMap_cons_some
 
 theorem filterMap_cons (f : α → Option β) (a : α) (l : List α) :
@@ -3558,7 +3558,7 @@ theorem filterMap_append {α β : Type _} (l l' : List α) (f : α → Option β
 theorem filterMap_eq_map (f : α → β) : filterMap (some ∘ f) = map f := by
   funext l
   induction' l with a l IH; · rfl
-  simp only [filterMap_cons_some (some ∘ f) _ _ rfl, IH, map_cons]; constructor <;> rfl
+  simp only [filterMap_cons_some (some ∘ f) _ _ rfl, IH, map_cons]
 #align list.filter_map_eq_map List.filterMap_eq_map
 
 theorem filterMap_eq_filter (p : α → Prop) [DecidablePred p] :
