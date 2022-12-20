@@ -57,7 +57,6 @@ def Arrow (α β : TypeVec n) :=
   ∀ i : Fin2 n, α i → β i
 #align typevec.arrow TypeVec.Arrow
 
--- mathport name: typevec.arrow
 @[inherit_doc] scoped[MvFunctor] infixl:40 " ⟹ " => TypeVec.Arrow
 open MvFunctor
 
@@ -80,7 +79,6 @@ def id {α : TypeVec n} : α ⟹ α := fun _ x => x
 def comp {α β γ : TypeVec n} (g : β ⟹ γ) (f : α ⟹ β) : α ⟹ γ := fun i x => g i (f i x)
 #align typevec.comp TypeVec.comp
 
--- mathport name: typevec.comp
 @[inherit_doc] scoped[MvFunctor] infixr:80 " ⊚ " => TypeVec.comp
 
 -- type as \oo
@@ -105,7 +103,6 @@ def append1 (α : TypeVec n) (β : Type _) : TypeVec (n + 1)
   | Fin2.fz => β
 #align typevec.append1 TypeVec.append1
 
--- mathport name: typevec.append1
 @[inherit_doc] infixl:67 " ::: " => append1
 
 /-- retain only a `n-length` prefix of the argument -/
@@ -162,7 +159,6 @@ def appendFun {α α' : TypeVec n} {β β' : Type _} (f : α ⟹ α') (g : β �
   splitFun f g
 #align typevec.append_fun TypeVec.appendFun
 
--- mathport name: typevec.append_fun
 @[inherit_doc] infixl:0 " ::: " => appendFun
 
 /-- split off the prefix of an arrow -/
@@ -322,15 +318,12 @@ run_cmd
       "simp set for the manipulation of typevec and arrow expressions"
 -/
 
--- mathport name: «expr♯ »
--- local prefix:0 "♯" => cast (by try simp <;> congr 1 <;> try simp)
 
 /-- cases distinction for 0-length type vector -/
 protected def casesNil {β : TypeVec 0 → Sort _} (f : β Fin2.elim0) : ∀ v, β v
   := fun v => cast (by congr; funext i; cases i) f
 #align typevec.cases_nil TypeVec.casesNil
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- cases distinction for (n+1)-length type vector -/
 protected def casesCons (n : ℕ) {β : TypeVec (n + 1) → Sort _}
                         (f : ∀ (t) (v : TypeVec n), β (v ::: t)) :
@@ -430,14 +423,12 @@ def «repeat» : ∀ (n : ℕ), Sort _ → TypeVec n
   | Nat.succ i, t => append1 («repeat» i t) t
 #align typevec.repeat TypeVec.repeat
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- `prod α β` is the pointwise product of the components of `α` and `β` -/
 def prod : ∀ {n}, TypeVec.{u} n → TypeVec.{u} n → TypeVec n
   | 0,     _, _ => Fin2.elim0
   | n + 1, α, β => (@prod n (drop α) (drop β)) ::: (last α × last β)
 #align typevec.prod TypeVec.prod
 
--- mathport name: typevec.prod
 @[inherit_doc] scoped[MvFunctor] infixl:45 " ⊗ " => TypeVec.prod
 
 /- porting note: the order of universes in `const` is reversed w.r.t. mathlib3 -/
@@ -450,14 +441,12 @@ protected def const {β} (x : β) : ∀ {n} (α : TypeVec n), α ⟹ «repeat» 
 
 open Function (uncurry)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- vector of equality on a product of vectors -/
 def repeatEq : ∀ {n} (α : TypeVec n), (α ⊗ α) ⟹ «repeat» _ Prop
   | 0, _ => nilFun
   | succ _, α => repeatEq (drop α) ::: uncurry Eq
 #align typevec.repeat_eq TypeVec.repeatEq
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem const_append1 {β γ} (x : γ) {n} (α : TypeVec n) :
     TypeVec.const x (α ::: β) = appendFun (TypeVec.const x α) fun _ => x :=
   by ext i : 1; cases i <;> rfl
@@ -530,7 +519,6 @@ theorem const_iff_true {α : TypeVec n} {i x p} : ofRepeat (TypeVec.const p α i
   case fs _ ih  => erw [TypeVec.const, @ih (drop α) x]
 #align typevec.const_iff_true TypeVec.const_iff_true
 
--- variables  {F : typevec.{u} n → Type*} [MvFunctor F]
 
 section
 variable {α β γ : TypeVec.{u} n}
@@ -593,7 +581,6 @@ protected def prod.map : ∀ {n} {α α' β β' : TypeVec.{u} n}, α ⟹ β → 
 
 
 
--- mathport name: typevec.prod.map
 @[inherit_doc] scoped[MvFunctor] infixl:45 " ⊗' " => TypeVec.prod.map
 
 theorem fst_prod_mk {α α' β β' : TypeVec n} (f : α ⟹ β) (g : α' ⟹ β') :
