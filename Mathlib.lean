@@ -132,6 +132,7 @@ import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Thin
+import Mathlib.CategoryTheory.Whiskering
 import Mathlib.Combinatorics.Quiver.Arborescence
 import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Combinatorics.Quiver.Cast
@@ -162,6 +163,7 @@ import Mathlib.Data.Char
 import Mathlib.Data.Countable.Defs
 import Mathlib.Data.DList.Basic
 import Mathlib.Data.Equiv.Functor
+import Mathlib.Data.Erased
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Finite.Defs
@@ -227,6 +229,7 @@ import Mathlib.Data.PNat.Defs
 import Mathlib.Data.PSigma.Order
 import Mathlib.Data.Part
 import Mathlib.Data.Pi.Algebra
+import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
@@ -270,7 +273,9 @@ import Mathlib.Data.Vector
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.GroupTheory.GroupAction.Option
+import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.GroupTheory.GroupAction.Prod
 import Mathlib.GroupTheory.GroupAction.Sigma
 import Mathlib.GroupTheory.GroupAction.Sum
@@ -346,6 +351,7 @@ import Mathlib.Order.BoundedOrder
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.Compare
+import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Directed
 import Mathlib.Order.Disjoint
