@@ -2,6 +2,11 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
+
+! This file was ported from Lean 3 source module algebra.ring.opposite
+! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Group.Opposite
@@ -103,8 +108,8 @@ namespace AddOpposite
 
 instance [Distrib α] : Distrib αᵃᵒᵖ :=
   { AddOpposite.instAddAddOpposite α, @AddOpposite.instMulAddOpposite α _ with
-    left_distrib := fun x y z => unop_injective <| @mul_add α _ _ _ x z y,
-    right_distrib := fun x y z => unop_injective <| @add_mul α _ _ _ y x z }
+    left_distrib := fun x y z => unop_injective <| mul_add (unop x) (unop z) (unop y),
+    right_distrib := fun x y z => unop_injective <| add_mul (unop y) (unop x) (unop z) }
 
 instance [MulZeroClass α] : MulZeroClass αᵃᵒᵖ where
   zero := 0

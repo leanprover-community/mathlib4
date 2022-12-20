@@ -2,6 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
+
+! This file was ported from Lean 3 source module order.initial_seg
+! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.WellFounded
@@ -288,8 +293,7 @@ instance (r : α → α → Prop) [IsWellOrder α r] : IsEmpty (r ≺i r) :=
 def ltLe (f : r ≺i s) (g : s ≼i t) : r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g f.top, fun a => by
     simp only [g.init_iff, PrincipalSeg.down, exists_and_left.symm, exists_swap,
-        RelEmbedding.trans_apply, exists_eq_right']
-    rfl⟩
+        RelEmbedding.trans_apply, exists_eq_right']⟩
 #align principal_seg.lt_le PrincipalSeg.ltLe
 
 @[simp]
