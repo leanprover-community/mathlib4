@@ -8,7 +8,7 @@ Authors: Scott Morrison, Reid Barton
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Functor.FullyFaithful
+import Mathlib.CategoryTheory.Functor.FullyFaithful
 
 /-!
 # Induced categories and full subcategories
@@ -49,14 +49,14 @@ variable {C : Type u₁} (D : Type u₂) [Category.{v} D]
 
 variable (F : C → D)
 
-include F
+--include F
 
 /-- `induced_category D F`, where `F : C → D`, is a typeclass synonym for `C`,
 which provides a category structure so that the morphisms `X ⟶ Y` are the morphisms
 in `D` from `F X` to `F Y`.
 -/
-@[nolint has_nonempty_instance unused_arguments]
-def InducedCategory : Type u₁ :=
+--@[nolint has_nonempty_instance unused_arguments]
+def InducedCategory (_F: C → D): Type u₁ :=
   C
 #align category_theory.induced_category CategoryTheory.InducedCategory
 
@@ -64,15 +64,14 @@ variable {D}
 
 instance InducedCategory.hasCoeToSort {α : Sort _} [CoeSort D α] :
     CoeSort (InducedCategory D F) α :=
-  ⟨fun c => ↥(F c)⟩
+  ⟨fun c => F c⟩
 #align category_theory.induced_category.has_coe_to_sort CategoryTheory.InducedCategory.hasCoeToSort
 
 instance InducedCategory.category :
-    Category.{v} (InducedCategory D
-        F) where
+    Category.{v} (InducedCategory D F) where
   Hom X Y := F X ⟶ F Y
   id X := 𝟙 (F X)
-  comp _ _ _ f g := f ≫ g
+  comp f g := f ≫ g
 #align category_theory.induced_category.category CategoryTheory.InducedCategory.category
 
 /-- The forgetful functor from an induced category to the original category,
@@ -82,10 +81,10 @@ forgetting the extra data.
 def inducedFunctor : InducedCategory D F ⥤
       D where
   obj := F
-  map x y f := f
+  map f := f
 #align category_theory.induced_functor CategoryTheory.inducedFunctor
 
-instance InducedCategory.full : Full (inducedFunctor F) where preimage x y f := f
+instance InducedCategory.full : Full (inducedFunctor F) where preimage f := f
 #align category_theory.induced_category.full CategoryTheory.InducedCategory.full
 
 instance InducedCategory.faithful : Faithful (inducedFunctor F) where
@@ -107,7 +106,7 @@ subcategories.
 
 See <https://stacks.math.columbia.edu/tag/001D>. We do not define 'strictly full' subcategories.
 -/
-@[ext, nolint has_nonempty_instance]
+@[ext]
 structure FullSubcategory where
   obj : C
   property : Z obj
@@ -150,10 +149,10 @@ def FullSubcategory.map (h : ∀ ⦃X⦄, Z X → Z' X) :
     FullSubcategory Z ⥤ FullSubcategory
         Z' where
   obj X := ⟨X.1, h X.2⟩
-  map X Y f := f
+  map f := f
 #align category_theory.full_subcategory.map CategoryTheory.FullSubcategory.map
 
-instance (h : ∀ ⦃X⦄, Z X → Z' X) : Full (FullSubcategory.map h) where preimage X Y f := f
+instance (h : ∀ ⦃X⦄, Z X → Z' X) : Full (FullSubcategory.map h) where preimage f := f
 
 instance (h : ∀ ⦃X⦄, Z X → Z' X) : Faithful (FullSubcategory.map h) where
 
@@ -173,7 +172,7 @@ variable {D : Type u₂} [Category.{v₂} D] (P Q : D → Prop)
 def FullSubcategory.lift (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) :
     C ⥤ FullSubcategory P where
   obj X := ⟨F.obj X, hF X⟩
-  map X Y f := F.map f
+  map f := F.map f
 #align category_theory.full_subcategory.lift CategoryTheory.FullSubcategory.lift
 
 /-- Composing the lift of a functor through a full subcategory with the inclusion yields the
