@@ -17,13 +17,13 @@ import Mathlib.GroupTheory.GroupAction.Prod
 # Introduce `smul_with_zero`
 
 In analogy with the usual monoid action on a Type `M`, we introduce an action of a
-`monoid_with_zero` on a Type with `0`.
+`MonoidWithZero` on a Type with `0`.
 
-In particular, for Types `R` and `M`, both containing `0`, we define `smul_with_zero R M` to
+In particular, for Types `R` and `M`, both containing `0`, we define `SmulWithZero R M` to
 be the typeclass where the products `r • 0` and `0 • m` vanish for all `r : R` and all `m : M`.
 
-Moreover, in the case in which `R` is a `monoid_with_zero`, we introduce the typeclass
-`mul_action_with_zero R M`, mimicking group actions and having an absorbing `0` in `R`.
+Moreover, in the case in which `R` is a `MonoidWithZero`, we introduce the typeclass
+`MulActionWithZero R M`, mimicking group actions and having an absorbing `0` in `R`.
 Thus, the action is required to be compatible with
 
 * the unit of the monoid, acting as the identity;
@@ -32,11 +32,11 @@ Thus, the action is required to be compatible with
 
 We also add an `instance`:
 
-* any `monoid_with_zero` has a `mul_action_with_zero R R` acting on itself.
+* any `MonoidWithZero` has a `MulActionWithZero R R` acting on itself.
 
 ## Main declarations
 
-* `smul_monoid_with_zero_hom`: Scalar multiplication bundled as a morphism of monoids with zero.
+* `smulMonoidWithZeroHom`: Scalar multiplication bundled as a morphism of monoids with zero.
 -/
 
 
@@ -46,10 +46,11 @@ section Zero
 
 variable (R M)
 
-/-- `smul_with_zero` is a class consisting of a Type `R` with `0 ∈ R` and a scalar multiplication
+/-- `smulWithZero` is a class consisting of a Type `R` with `0 ∈ R` and a scalar multiplication
 of `R` on a Type `M` with `0`, such that the equality `r • m = 0` holds if at least one among `r`
 or `m` equals `0`. -/
 class SmulWithZero [Zero R] [Zero M] extends SMulZeroClass R M where
+  /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : M, (0 : R) • m = 0
 #align smul_with_zero SmulWithZero
 
@@ -60,7 +61,7 @@ instance MulZeroClass.toSmulWithZero [MulZeroClass R] :
   zero_smul := zero_mul
 #align mul_zero_class.to_smul_with_zero MulZeroClass.toSmulWithZero
 
-/-- Like `mul_zero_class.to_smul_with_zero`, but multiplies on the right. -/
+/-- Like `MulZeroClass.toSmulWithZero`, but multiplies on the right. -/
 instance MulZeroClass.toOppositeSmulWithZero [MulZeroClass R] :
     SmulWithZero Rᵐᵒᵖ R where
   smul := (· • ·)
@@ -77,7 +78,7 @@ theorem zero_smul (m : M) : (0 : R) • m = 0 :=
 
 variable {R} [Zero R'] [Zero M'] [SMul R M']
 
-/-- Pullback a `smul_with_zero` structure along an injective zero-preserving homomorphism.
+/-- Pullback a `SmulWithZero` structure along an injective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.smulWithZero (f : ZeroHom M' M) (hf : Function.Injective f)
@@ -88,7 +89,7 @@ protected def Function.Injective.smulWithZero (f : ZeroHom M' M) (hf : Function.
   smul_zero a := hf <| by simp [smul]
 #align function.injective.smul_with_zero Function.Injective.smulWithZero
 
-/-- Pushforward a `smul_with_zero` structure along a surjective zero-preserving homomorphism.
+/-- Pushforward a `SmulWithZero` structure along a surjective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Surjective.smulWithZero (f : ZeroHom M M') (hf : Function.Surjective f)
@@ -104,7 +105,7 @@ protected def Function.Surjective.smulWithZero (f : ZeroHom M M') (hf : Function
 
 variable (M)
 
-/-- Compose a `smul_with_zero` with a `zero_hom`, with action `f r' • m` -/
+/-- Compose a `SmulWithZero` with a `ZeroHom`, with action `f r' • m` -/
 def SmulWithZero.compHom (f : ZeroHom R' R) :
     SmulWithZero R' M where
   smul := (· • ·) ∘ f
@@ -133,12 +134,14 @@ variable [MonoidWithZero R] [MonoidWithZero R'] [Zero M]
 
 variable (R M)
 
-/-- An action of a monoid with zero `R` on a Type `M`, also with `0`, extends `mul_action` and
+/-- An action of a monoid with zero `R` on a Type `M`, also with `0`, extends `MulAction` and
 is compatible with `0` (both in `R` and in `M`), with `1 ∈ R`, and with associativity of
 multiplication on the monoid `M`. -/
 class MulActionWithZero extends MulAction R M where
-  -- these fields are copied from `smul_with_zero`, as `extends` behaves poorly
+  -- these fields are copied from `SmulWithZero`, as `extends` behaves poorly
+  /-- Scalar multiplication by any element send `0` to `0`. -/
   smul_zero : ∀ r : R, r • (0 : M) = 0
+  /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : M, (0 : R) • m = 0
 #align mul_action_with_zero MulActionWithZero
 
@@ -148,13 +151,13 @@ instance (priority := 100) MulActionWithZero.toSmulWithZero [m : MulActionWithZe
   { m with }
 #align mul_action_with_zero.to_smul_with_zero MulActionWithZero.toSmulWithZero
 
-/-- See also `semiring.to_module` -/
+/-- See also `Semiring.toModule` -/
 instance MonoidWithZero.toMulActionWithZero : MulActionWithZero R R :=
   { MulZeroClass.toSmulWithZero R, Monoid.toMulAction R with }
 #align monoid_with_zero.to_mul_action_with_zero MonoidWithZero.toMulActionWithZero
 
-/-- Like `monoid_with_zero.to_mul_action_with_zero`, but multiplies on the right. See also
-`semiring.to_opposite_module` -/
+/-- Like `MonoidWithZero.toMulActionWithZero`, but multiplies on the right. See also
+`semiring.toOppositeModule` -/
 instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero Rᵐᵒᵖ R :=
   { MulZeroClass.toOppositeSmulWithZero R, Monoid.toOppositeMulAction R with }
 #align monoid_with_zero.to_opposite_mul_action_with_zero MonoidWithZero.toOppositeMulActionWithZero
@@ -162,7 +165,7 @@ instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero Rᵐᵒ�
 variable {R M}
 variable [MulActionWithZero R M] [Zero M'] [SMul R M']
 
-/-- Pullback a `mul_action_with_zero` structure along an injective zero-preserving homomorphism.
+/-- Pullback a `MulActionWithZero` structure along an injective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.mulActionWithZero (f : ZeroHom M' M) (hf : Function.Injective f)
@@ -170,7 +173,7 @@ protected def Function.Injective.mulActionWithZero (f : ZeroHom M' M) (hf : Func
   { hf.mulAction f smul, hf.smulWithZero f smul with }
 #align function.injective.mul_action_with_zero Function.Injective.mulActionWithZero
 
-/-- Pushforward a `mul_action_with_zero` structure along a surjective zero-preserving homomorphism.
+/-- Pushforward a `MulActionWithZero` structure along a surjective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Surjective.mulActionWithZero (f : ZeroHom M M') (hf : Function.Surjective f)
@@ -180,7 +183,7 @@ protected def Function.Surjective.mulActionWithZero (f : ZeroHom M M') (hf : Fun
 
 variable (M)
 
-/-- Compose a `mul_action_with_zero` with a `monoid_with_zero_hom`, with action `f r' • m` -/
+/-- Compose a `MulActionWithZero` with a `MonoidWithZeroHom`, with action `f r' • m` -/
 def MulActionWithZero.compHom (f : R' →*₀ R) : MulActionWithZero R' M :=
   { SmulWithZero.compHom M f.toZeroHom with
     smul := (· • ·) ∘ f
