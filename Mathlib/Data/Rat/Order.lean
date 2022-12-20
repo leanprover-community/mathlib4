@@ -97,7 +97,7 @@ instance decidableNonneg : Decidable (Rat.Nonneg a) := by
 protected def le' (a b : ℚ) := Rat.Nonneg (b - a)
 #align rat.le Rat.le'
 
-protected theorem le_iff_le' (a b : ℚ) : a ≤ b ↔ Rat.le' a b := sorry
+protected theorem le_iff_le' (a b : ℚ) : a ≤ b ↔ Rat.Nonneg (b - a) := sorry
 
 protected theorem le_def {a b c d : ℤ} (b0 : 0 < b) (d0 : 0 < d) :
     a /. b ≤ c /. d ↔ a * d ≤ c * b := by
@@ -121,7 +121,7 @@ protected theorem le_total : a ≤ b ∨ b ≤ a := by
 #align rat.le_total Rat.le_total
 
 protected theorem le_antisymm {a b : ℚ} (hab : a ≤ b) (hba : b ≤ a) : a = b := by
-  rw [Rat.le_iff_le', Rat.le'] at hab hba
+  rw [Rat.le_iff_le'] at hab hba
   rw [sub_eq_add_neg] at hba
   rw [←neg_sub, sub_eq_add_neg] at hab
   have := eq_neg_of_add_eq_zero_left (Rat.nonneg_antisymm hba hab)
@@ -177,14 +177,16 @@ protected theorem lt_def {p q : ℚ} : p < q ↔ p.num * q.den < q.num * p.den :
   rw [lt_iff_le_and_ne, Rat.le_def']
   suffices p ≠ q ↔ p.num * q.den ≠ q.num * p.den by
     constructor <;> intro h
-    · exact lt_iff_le_and_ne.elim_right ⟨h.left, this.elim_left h.right⟩
-    · have tmp := lt_iff_le_and_ne.elim_left h
-      exact ⟨tmp.left, this.elim_right tmp.right⟩
-  exact not_iff_not.elim_right eq_iff_mul_eq_mul
+    · exact lt_iff_le_and_ne.mpr ⟨h.left, this.mp h.right⟩
+    · have tmp := lt_iff_le_and_ne.mp h
+      exact ⟨tmp.left, this.mpr tmp.right⟩
+  exact not_iff_not.mpr eq_iff_mul_eq_mul
 #align rat.lt_def Rat.lt_def
 
-theorem nonneg_iff_zero_le {a} : Rat.Nonneg a ↔ 0 ≤ a :=
-  show Rat.Nonneg a ↔ Rat.Nonneg (a - 0) by simp
+theorem nonneg_iff_zero_le {a} : Rat.Nonneg a ↔ 0 ≤ a := by
+  rw [Rat.le_iff_le']
+  show Rat.Nonneg a ↔ Rat.Nonneg (a - 0)
+  simp
 #align rat.nonneg_iff_zero_le Rat.nonneg_iff_zero_le
 
 theorem num_nonneg_iff_zero_le : ∀ {a : ℚ}, 0 ≤ a.num ↔ 0 ≤ a
@@ -192,7 +194,7 @@ theorem num_nonneg_iff_zero_le : ∀ {a : ℚ}, 0 ≤ a.num ↔ 0 ≤ a
 #align rat.num_nonneg_iff_zero_le Rat.num_nonneg_iff_zero_le
 
 protected theorem add_le_add_left {a b c : ℚ} : c + a ≤ c + b ↔ a ≤ b := by
-  unfold LE.le Rat.le <;> rw [add_sub_add_left_eq_sub]
+  rw [Rat.le_iff_le', add_sub_add_left_eq_sub, Rat.le_iff_le']
 #align rat.add_le_add_left Rat.add_le_add_left
 
 protected theorem mul_nonneg {a b : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b := by
