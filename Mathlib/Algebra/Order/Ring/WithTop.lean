@@ -10,6 +10,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Ring.Canonical
+import Std.Data.Option.Lemmas
 
 /-! # Structures involving `*` and `0` on `with_top` and `with_bot`
 The main results of this section are `with_top.canonically_ordered_comm_semiring` and
@@ -72,32 +73,50 @@ section MulZeroClass
 variable [MulZeroClass α]
 
 @[norm_cast]
-theorem coe_mul {a b : α} : (↑(a * b) : WithTop α) = a * b :=
-  (Decidable.byCases fun this : a = 0 => by simp [this]) fun ha =>
-    (Decidable.byCases fun this : b = 0 => by simp [this]) fun hb => by
-      simp [*, mul_def]
+theorem coe_mul {a b : α} : (↑(a * b) : WithTop α) = a * b := by
+  by_cases ha : a = 0
+  · simp [ha]
+  · by_cases hb : b = 0
+    · simp [hb]
+    · simp [*, mul_def]
       rfl
 #align with_top.coe_mul WithTop.coe_mul
 
-theorem mul_coe {b : α} (hb : b ≠ 0) : ∀ {a : WithTop α}, a * b = a.bind fun a : α => ↑(a * b)
+theorem mul_coe {b : α} (hb : b ≠ 0) : ∀ {a : WithTop α},
+    a * (b : WithTop α) = a.bind fun a : α => ↑(a * b)
   | none =>
     show (if (⊤ : WithTop α) = 0 ∨ (b : WithTop α) = 0 then 0 else ⊤ : WithTop α) = ⊤ by simp [hb]
-  | some a => show ↑a * ↑b = ↑(a * b) from coe_mul.symm
+  | Option.some a => by
+    rw [some_eq_coe, ← coe_mul]
+    rfl
 #align with_top.mul_coe WithTop.mul_coe
 
 @[simp]
 theorem mul_eq_top_iff {a b : WithTop α} : a * b = ⊤ ↔ a ≠ 0 ∧ b = ⊤ ∨ a = ⊤ ∧ b ≠ 0 := by
-  cases a <;> cases b <;> simp only [none_eq_top, some_eq_coe]
-  · simp [← coe_mul]
-  · by_cases hb : b = 0 <;> simp [hb]
-  · by_cases ha : a = 0 <;> simp [ha]
-  · simp [← coe_mul]
+  match a with
+  | none => match b with
+    | none => simp [none_eq_top]
+    | Option.some b => by_cases hb : b = 0 <;> simp [none_eq_top, some_eq_coe, hb]
+  | Option.some a => match b with
+    | none => by_cases ha : a = 0 <;> simp [none_eq_top, some_eq_coe, ha]
+    | Option.some b => simp [some_eq_coe, ← coe_mul]
 #align with_top.mul_eq_top_iff WithTop.mul_eq_top_iff
 
 theorem mul_lt_top [Preorder α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b < ⊤ := by
-  lift a to α using ha
+  match a with
+  | none =>
+    exfalso
+    exact ha none_eq_top
+  | Option.some a => match b with
+    | none =>
+      exfalso
+      exact hb none_eq_top
+    | Option.some b =>
+      simp only [some_eq_coe, ← coe_mul, coe_lt_top]
+  -- Porting note: use `lift` tactic:
+  /-lift a to α using ha
   lift b to α using hb
-  simp only [← coe_mul, coe_lt_top]
+  simp only [← coe_mul, coe_lt_top]-/
 #align with_top.mul_lt_top WithTop.mul_lt_top
 
 @[simp]
@@ -130,11 +149,11 @@ instance [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithTop α) :=
 protected def MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClass R] [DecidableEq R]
     [Nontrivial R] [MulZeroOneClass S] [DecidableEq S] [Nontrivial S] (f : R →*₀ S)
     (hf : Function.Injective f) : WithTop R →*₀ WithTop S :=
-  { f.toZeroHom.with_top_map, f.toMonoidHom.toOneHom.with_top_map with
+  { f.toZeroHom.withTopMap, f.toMonoidHom.toOneHom.withTopMap with
     toFun := WithTop.map f
     map_mul' := fun x y => by
       have : ∀ z, map f z = 0 ↔ z = 0 := fun z =>
-        (Option.map_injective hf).eq_iff' f.to_zero_hom.with_top_map.map_zero
+        (Option.map_injective hf).eq_iff' f.toZeroHom.withTopMap.map_zero
       rcases eq_or_ne x 0 with (rfl | hx)
       · simp
       rcases eq_or_ne y 0 with (rfl | hy)
@@ -147,7 +166,7 @@ protected def MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClass R] [D
       simp [← coe_mul] }
 #align monoid_with_zero_hom.with_top_map MonoidWithZeroHom.withTopMap
 
-instance instNoZeroDivisorsWithTop [MulZeroClass α] [NoZeroDivisors α] : NoZeroDivisors (WithTop α) :=
+instance noZeroDivisors [MulZeroClass α] [NoZeroDivisors α] : NoZeroDivisors (WithTop α) :=
   ⟨fun a b => by
     cases a <;> cases b <;> dsimp [mul_def] <;> split_ifs <;>
       simp_all [none_eq_top, some_eq_coe, mul_eq_zero]⟩
@@ -165,13 +184,16 @@ instance [SemigroupWithZero α] [NoZeroDivisors α] : SemigroupWithZero (WithTop
       induction c using WithTop.recTopCoe; · simp [ha, hb]
       simp only [← coe_mul, mul_assoc] }
 
-instance [MonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] : MonoidWithZero (WithTop α) :=
+instance monoidWithZero [MonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
+    MonoidWithZero (WithTop α) :=
   { WithTop.instMulZeroOneClassWithTop, WithTop.instSemigroupWithZeroWithTop with }
 
-instance [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
+instance commMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
     CommMonoidWithZero (WithTop α) :=
-  { WithTop.monoidWithZero with mul := (· * ·), zero := 0,
-    mul_comm := fun a b => by simp only [or_comm', mul_def, Option.bind_comm a b, mul_comm] }
+  { WithTop.monoidWithZero with
+    mul := (· * ·)
+    zero := 0,
+    mul_comm := fun a b => by simp only [or_comm, mul_def, Option.bind_comm a b, mul_comm] }
 
 variable [CanonicallyOrderedCommSemiring α]
 
@@ -188,21 +210,21 @@ private theorem distrib' (a b c : WithTop α) : (a + b) * c = a * c + b * c := b
 /-- This instance requires `canonically_ordered_comm_semiring` as it is the smallest class
 that derives from both `non_assoc_non_unital_semiring` and `canonically_ordered_add_monoid`, both
 of which are required for distributivity. -/
-instance [Nontrivial α] : CommSemiring (WithTop α) :=
-  { WithTop.addCommMonoidWithOne, WithTop.commMonoidWithZero with right_distrib := distrib',
+instance commSemiring [Nontrivial α] : CommSemiring (WithTop α) :=
+  { WithTop.addCommMonoidWithOne, WithTop.commMonoidWithZero with
+    right_distrib := distrib'
     left_distrib := fun a b c => by
-      rw [mul_comm, distrib', mul_comm b, mul_comm c]
-      rfl }
+      rw [mul_comm, distrib', mul_comm b, mul_comm c] }
 
 instance [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
-  { WithTop.instCommSemiringWithTop, WithTop.canonicallyOrderedAddMonoid, WithTop.instNoZeroDivisorsWithTop with }
+  { WithTop.commSemiring, WithTop.canonicallyOrderedAddMonoid, WithTop.noZeroDivisors with }
 
 /-- A version of `with_top.map` for `ring_hom`s. -/
 @[simps (config := { fullyApplied := false })]
 protected def RingHom.withTopMap {R S : Type _} [CanonicallyOrderedCommSemiring R] [DecidableEq R]
     [Nontrivial R] [CanonicallyOrderedCommSemiring S] [DecidableEq S] [Nontrivial S] (f : R →+* S)
     (hf : Function.Injective f) : WithTop R →+* WithTop S :=
-  { f.toMonoidWithZeroHom.with_top_map hf, f.toAddMonoidHom.with_top_map with
+  { f.toMonoidWithZeroHom.withTopMap hf, f.toAddMonoidHom.withTopMap with
     toFun := WithTop.map f }
 #align ring_hom.with_top_map RingHom.withTopMap
 
@@ -249,14 +271,18 @@ section MulZeroClass
 variable [MulZeroClass α]
 
 @[norm_cast]
-theorem coe_mul {a b : α} : (↑(a * b) : WithBot α) = a * b :=
-  (Decidable.byCases fun this : a = 0 => by simp [this]) fun ha =>
-    (Decidable.byCases fun this : b = 0 => by simp [this]) fun hb => by
-      simp [*, mul_def]
+theorem coe_mul {a b : α} : (↑(a * b) : WithBot α) = a * b := by
+  -- Porting note: Some lemmas seem to be no longer simp
+  by_cases ha : a = 0
+  · simp [coe_zero, ha]
+  · by_cases hb : b = 0
+    · simp [coe_zero, hb]
+    · simp [*, coe_eq_zero, mul_def]
       rfl
 #align with_bot.coe_mul WithBot.coe_mul
 
-theorem mul_coe {b : α} (hb : b ≠ 0) {a : WithBot α} : a * b = a.bind fun a : α => ↑(a * b) :=
+theorem mul_coe {b : α} (hb : b ≠ 0) {a : WithBot α} :
+    a * (b : WithBot α) = a.bind fun a : α => ↑(a * b) :=
   WithTop.mul_coe hb
 #align with_bot.mul_coe WithBot.mul_coe
 
@@ -278,20 +304,20 @@ instance [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithBot α) :=
   WithTop.instMulZeroOneClassWithTop
 
 instance [MulZeroClass α] [NoZeroDivisors α] : NoZeroDivisors (WithBot α) :=
-  WithTop.instNoZeroDivisorsWithTop
+  WithTop.noZeroDivisors
 
 instance [SemigroupWithZero α] [NoZeroDivisors α] : SemigroupWithZero (WithBot α) :=
   WithTop.instSemigroupWithZeroWithTop
 
 instance [MonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] : MonoidWithZero (WithBot α) :=
-  WithTop.instMonoidWithZeroWithTop
+  WithTop.monoidWithZero
 
 instance [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
     CommMonoidWithZero (WithBot α) :=
-  WithTop.instCommMonoidWithZeroWithTop
+  WithTop.commMonoidWithZero
 
 instance [CanonicallyOrderedCommSemiring α] [Nontrivial α] : CommSemiring (WithBot α) :=
-  WithTop.instCommSemiringWithTop
+  WithTop.commSemiring
 
 instance [CanonicallyOrderedCommSemiring α] [Nontrivial α] : PosMulMono (WithBot α) :=
   posMulMono_iff_covariant_pos.2
