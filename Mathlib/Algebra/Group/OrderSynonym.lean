@@ -2,6 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
+
+! This file was ported from Lean 3 source module algebra.group.order_synonym
+! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Order.Synonym
@@ -135,11 +140,11 @@ theorem toDual_pow [Pow α β] (a : α) (b : β) : toDual (a ^ b) = toDual a ^ b
 theorem ofDual_pow [Pow α β] (a : αᵒᵈ) (b : β) : ofDual (a ^ b) = ofDual a ^ b := rfl
 #align of_dual_pow ofDual_pow
 
-@[simp, to_additive toDual_smul' (reorder := 1 4)]
+@[simp, to_additive (reorder := 1 4) toDual_smul']
 theorem pow_toDual [Pow α β] (a : α) (b : β) : a ^ toDual b = a ^ b := rfl
 #align pow_to_dual pow_toDual
 
-@[simp, to_additive ofDual_smul' (reorder := 1 4)]
+@[simp, to_additive (reorder := 1 4) ofDual_smul']
 theorem pow_ofDual [Pow α β] (a : α) (b : βᵒᵈ) : a ^ ofDual b = a ^ b := rfl
 #align pow_of_dual pow_ofDual
 
@@ -259,11 +264,11 @@ theorem toLex_pow [Pow α β] (a : α) (b : β) : toLex (a ^ b) = toLex a ^ b :=
 theorem ofLex_pow [Pow α β] (a : Lex α) (b : β) : ofLex (a ^ b) = ofLex a ^ b := rfl
 #align of_lex_pow ofLex_pow
 
-@[simp, to_additive toLex_smul' (reorder := 1 4)]
+@[simp, to_additive (reorder := 1 4) toLex_smul']
 theorem pow_toLex [Pow α β] (a : α) (b : β) : a ^ toLex b = a ^ b := rfl
 #align pow_to_lex pow_toLex
 
-@[simp, to_additive ofLex_smul' (reorder := 1 4)]
+@[simp, to_additive (reorder := 1 4) ofLex_smul']
 theorem pow_ofLex [Pow α β] (a : α) (b : Lex β) : a ^ ofLex b = a ^ b := rfl
 #align pow_of_lex pow_ofLex
 

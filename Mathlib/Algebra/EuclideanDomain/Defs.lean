@@ -2,6 +2,11 @@
 Copyright (c) 2018 Louis Carlin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
+
+! This file was ported from Lean 3 source module algebra.euclidean_domain.defs
+! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Nontrivial
 import Mathlib.Algebra.Divisibility.Basic
@@ -173,7 +178,7 @@ open Classical
 
 @[elab_as_elim]
 theorem GCD.induction {P : R → R → Prop} :
-    ∀ a b : R, (∀ x, P 0 x) → (∀ a b, a ≠ 0 → P (b % a) a → P a b) → P a b
+    ∀ a b : R, (H0 : ∀ x, P 0 x) → (H1 : ∀ a b, a ≠ 0 → P (b % a) a → P a b) → P a b
   | a => fun b H0 H1 =>
     if a0 : a = 0 then by
       -- Porting note: required for hygiene, the equation compiler introduces a dummy variable `x`

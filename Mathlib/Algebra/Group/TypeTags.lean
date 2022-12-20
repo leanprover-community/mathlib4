@@ -2,6 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
+
+! This file was ported from Lean 3 source module algebra.group.type_tags
+! leanprover-community/mathlib commit 6eb334bd8f3433d5b08ba156b8ec3e6af47e1904
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Logic.Equiv.Defs
@@ -133,9 +138,11 @@ instance [h: Infinite α] : Infinite (Multiplicative α) := h
 
 instance [Nontrivial α] : Nontrivial (Additive α) :=
   ofMul.injective.nontrivial
+#align additive.nontrivial instNontrivialAdditive
 
 instance [Nontrivial α] : Nontrivial (Multiplicative α) :=
   ofAdd.injective.nontrivial
+#align multiplicative.nontrivial instNontrivialMultiplicative
 
 instance Additive.add [Mul α] : Add (Additive α) where
   add x y := ofMul (toMul x * toMul y)
@@ -171,21 +178,41 @@ instance Additive.addCommSemigroup [CommSemigroup α] : AddCommSemigroup (Additi
 instance Multiplicative.commSemigroup [AddCommSemigroup α] : CommSemigroup (Multiplicative α) :=
   { Multiplicative.semigroup with mul_comm := @add_comm α _ }
 
+instance Additive.isLeftCancelAdd [Mul α] [IsLeftCancelMul α] : IsLeftCancelAdd (Additive α) :=
+  ⟨@mul_left_cancel α _ _⟩
+
+instance Multiplicative.isLeftCancelMul [Add α] [IsLeftCancelAdd α] :
+    IsLeftCancelMul (Multiplicative α) :=
+  ⟨@add_left_cancel α _ _⟩
+
+instance Additive.isRightCancelAdd [Mul α] [IsRightCancelMul α] : IsRightCancelAdd (Additive α) :=
+  ⟨@mul_right_cancel α _ _⟩
+
+instance Multiplicative.isRightCancelMul [Add α] [IsRightCancelAdd α] :
+    IsRightCancelMul (Multiplicative α) :=
+  ⟨@add_right_cancel α _ _⟩
+
+instance Additive.isCancelAdd [Mul α] [IsCancelMul α] : IsCancelAdd (Additive α) :=
+  ⟨⟩
+
+instance Multiplicative.isCancelMul [Add α] [IsCancelAdd α] : IsCancelMul (Multiplicative α) :=
+  ⟨⟩
+
 instance Additive.addLeftCancelSemigroup [LeftCancelSemigroup α] :
     AddLeftCancelSemigroup (Additive α) :=
-  { Additive.addSemigroup with add_left_cancel := @mul_left_cancel α _ }
+  { Additive.addSemigroup, Additive.isLeftCancelAdd with }
 
 instance Multiplicative.leftCancelSemigroup [AddLeftCancelSemigroup α] :
     LeftCancelSemigroup (Multiplicative α) :=
-  { Multiplicative.semigroup with mul_left_cancel := @add_left_cancel α _ }
+  { Multiplicative.semigroup, Multiplicative.isLeftCancelMul with }
 
 instance Additive.addRightCancelSemigroup [RightCancelSemigroup α] :
     AddRightCancelSemigroup (Additive α) :=
-  { Additive.addSemigroup with add_right_cancel := @mul_right_cancel α _ }
+  { Additive.addSemigroup, Additive.isRightCancelAdd with }
 
 instance Multiplicative.rightCancelSemigroup [AddRightCancelSemigroup α] :
     RightCancelSemigroup (Multiplicative α) :=
-  { Multiplicative.semigroup with mul_right_cancel := @add_right_cancel α _ }
+  { Multiplicative.semigroup, Multiplicative.isRightCancelMul with }
 
 instance [One α] : Zero (Additive α) :=
   ⟨Additive.ofMul 1⟩

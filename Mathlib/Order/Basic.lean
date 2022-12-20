@@ -2,6 +2,11 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
+
+! This file was ported from Lean 3 source module order.basic
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
@@ -428,6 +433,23 @@ theorem le_implies_le_of_le_of_le {a b c d : α} [Preorder α] (hca : c ≤ a) (
     a ≤ b → c ≤ d :=
   fun hab ↦ (hca.trans hab).trans hbd
 
+section PartialOrder
+variable [PartialOrder α]
+
+/-- To prove commutativity of a binary operation `○`, we only to check `a ○ b ≤ b ○ a` for all `a`,
+`b`. -/
+lemma commutative_of_le {f : β → β → α} (comm : ∀ a b, f a b ≤ f b a) : ∀ a b, f a b = f b a :=
+fun _ _ ↦ (comm _ _).antisymm $ comm _ _
+
+/-- To prove associativity of a commutative binary operation `○`, we only to check
+`(a ○ b) ○ c ≤ a ○ (b ○ c)` for all `a`, `b`, `c`. -/
+lemma associative_of_commutative_of_le  {f : α → α → α} (comm : Commutative f)
+  (assoc : ∀ a b c, f (f a b) c ≤ f a (f b c)) :
+  Associative f :=
+fun a b c ↦ le_antisymm (assoc _ _ _) $ by rw [comm, comm b, comm _ c, comm a]; exact assoc _ _ _
+
+end PartialOrder
+
 @[ext]
 theorem Preorder.toLE_injective {α : Type _} : Function.Injective (@Preorder.toLE α) :=
   fun A B h ↦ match A, B with
@@ -528,16 +550,16 @@ instance (α : Type _) [LE α] : LE αᵒᵈ :=
 instance (α : Type _) [LT α] : LT αᵒᵈ :=
   ⟨fun a b => @LT.lt α _ b a⟩
 
-instance (α : Type _) [Preorder α] : Preorder αᵒᵈ where
+instance preorder (α : Type _) [Preorder α] : Preorder αᵒᵈ where
   le_refl := fun _ ↦ le_refl _
   le_trans := fun _ _ _ hab hbc ↦ hbc.trans hab
   lt_iff_le_not_le := fun _ _ ↦ lt_iff_le_not_le
 
-instance (α : Type _) [PartialOrder α] : PartialOrder αᵒᵈ where
+instance partialOrder (α : Type _) [PartialOrder α] : PartialOrder αᵒᵈ where
   __ := inferInstanceAs (Preorder αᵒᵈ)
   le_antisymm := fun a b hab hba ↦ @le_antisymm α _ a b hba hab
 
-instance (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
+instance linearOrder (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
   le_total     := λ a b : α => le_total b a
   max := fun a b ↦ (min a b : α)
@@ -546,19 +568,19 @@ instance (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
   max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
   decidable_le := (inferInstance : DecidableRel (λ a b : α => b ≤ a))
   decidable_lt := (inferInstance : DecidableRel (λ a b : α => b < a))
-#align order_dual.linear_order OrderDual.instLinearOrderOrderDual
+#align order_dual.linear_order OrderDual.linearOrder
 
 instance : ∀ [Inhabited α], Inhabited αᵒᵈ := λ [x: Inhabited α] => x
 
 
-theorem Preorder.dual_dual (α : Type _) [H : Preorder α] : instPreorderOrderDual αᵒᵈ = H :=
+theorem Preorder.dual_dual (α : Type _) [H : Preorder α] : OrderDual.preorder αᵒᵈ = H :=
   Preorder.ext fun _ _ ↦ Iff.rfl
 
 theorem partialOrder.dual_dual (α : Type _) [H : PartialOrder α] :
-    instPartialOrderOrderDual αᵒᵈ = H :=
+    OrderDual.partialOrder αᵒᵈ = H :=
   PartialOrder.ext fun _ _ ↦ Iff.rfl
 
-theorem linearOrder.dual_dual (α : Type _) [H : LinearOrder α] : instLinearOrderOrderDual αᵒᵈ = H :=
+theorem linearOrder.dual_dual (α : Type _) [H : LinearOrder α] : OrderDual.linearOrder αᵒᵈ = H :=
   LinearOrder.ext fun _ _ ↦ Iff.rfl
 
 end OrderDual
@@ -773,10 +795,10 @@ def LinearOrder.lift' {α β} [LinearOrder β] (f : α → β) (inj : Injective 
 
 namespace Subtype
 
-instance [LE α] {p : α → Prop} : LE (Subtype p) :=
+instance le [LE α] {p : α → Prop} : LE (Subtype p) :=
   ⟨fun x y ↦ (x : α) ≤ y⟩
 
-instance [LT α] {p : α → Prop} : LT (Subtype p) :=
+instance lt [LT α] {p : α → Prop} : LT (Subtype p) :=
   ⟨fun x y ↦ (x : α) < y⟩
 
 @[simp]
@@ -799,24 +821,24 @@ theorem coe_le_coe [LE α] {p : α → Prop} {x y : Subtype p} : (x : α) ≤ y 
 theorem coe_lt_coe [LT α] {p : α → Prop} {x y : Subtype p} : (x : α) < y ↔ x < y :=
   Iff.rfl
 
-instance [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
+instance preorder [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
   Preorder.lift (fun (a : Subtype p) ↦ (a : α))
 
-instance [PartialOrder α] (p : α → Prop) : PartialOrder (Subtype p) :=
+instance partialOrder [PartialOrder α] (p : α → Prop) : PartialOrder (Subtype p) :=
   PartialOrder.lift (fun (a : Subtype p) ↦ (a : α)) Subtype.coe_injective
 
-instance [Preorder α] [h : @DecidableRel α (· ≤ ·)] {p : α → Prop} :
+instance decidableLE [Preorder α] [h : @DecidableRel α (· ≤ ·)] {p : α → Prop} :
     @DecidableRel (Subtype p) (· ≤ ·) :=
   fun a b ↦ h a b
 
-instance [Preorder α] [h : @DecidableRel α (· < ·)] {p : α → Prop} :
+instance decidableLT [Preorder α] [h : @DecidableRel α (· < ·)] {p : α → Prop} :
     @DecidableRel (Subtype p) (· < ·) :=
   fun a b ↦ h a b
 
 /-- A subtype of a linear order is a linear order. We explicitly give the proofs of decidable
 equality and decidable order in order to ensure the decidability instances are all definitionally
 equal. -/
-instance [LinearOrder α] (p : α → Prop) : LinearOrder (Subtype p) :=
+instance linearOrder [LinearOrder α] (p : α → Prop) : LinearOrder (Subtype p) :=
   @LinearOrder.lift (Subtype p) _ _ ⟨fun x y ↦ ⟨max x y, max_rec' _ x.2 y.2⟩⟩
     ⟨fun x y ↦ ⟨min x y, min_rec' _ x.2 y.2⟩⟩ (fun (a : Subtype p) ↦ (a : α))
     Subtype.coe_injective (fun _ _ ↦ rfl) fun _ _ ↦ rfl

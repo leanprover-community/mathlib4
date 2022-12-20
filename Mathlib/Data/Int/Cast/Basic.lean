@@ -2,6 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
+
+! This file was ported from Lean 3 source module data.int.cast.basic
+! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Algebra.Group.Basic
@@ -10,7 +15,7 @@ import Mathlib.Algebra.Group.Basic
 # Cast of integers (additional theorems)
 
 This file proves additional properties about the *canonical* homomorphism from
-the integers into an additive group with a one (`int.cast`).
+the integers into an additive group with a one (`Int.cast`).
 
 There is also `Data.Int.Cast.Lemmas`,
 which includes lemmas stated in terms of algebraic homomorphisms,
@@ -82,7 +87,7 @@ theorem cast_neg : ∀ n, ((-n : ℤ) : R) = -n
 theorem cast_subNatNat (m n) : ((Int.subNatNat m n : ℤ) : R) = m - n := by
   unfold subNatNat
   cases e : n - m
-  · rw [cast_ofNat]
+  · simp only [ofNat_eq_coe]
     simp [e, Nat.le_of_sub_eq_zero e]
   · rw [cast_negSucc, Nat.add_one, ← e, Nat.cast_sub <| _root_.le_of_lt <| Nat.lt_of_sub_eq_succ e,
       neg_sub]

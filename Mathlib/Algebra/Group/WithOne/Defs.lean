@@ -2,6 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
+
+! This file was ported from Lean 3 source module algebra.group.with_one.defs
+! leanprover-community/mathlib commit e574b1a4e891376b0ef974b926da39e05da12a06
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.WithBot
 import Mathlib.Algebra.Ring.Defs
@@ -89,10 +94,6 @@ instance nontrivial [Nonempty α] : Nontrivial (WithOne α) :=
 @[coe, to_additive "The canonical map from `α` into `WithZero α`"]
 def coe : α → WithOne α :=
   Option.some
-
--- porting note : `@[coe, to_additive]` doesn't tag the to-additivised declaration
--- with coe, in contrast to Lean 3, so we have to do it manually.
-attribute [coe] WithZero.coe
 
 @[to_additive]
 instance coeTC : CoeTC α (WithOne α) :=
