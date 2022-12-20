@@ -79,12 +79,12 @@ theorem left_of_comp (hfg : IsFixedPt (f ∘ g) x) (hg : IsFixedPt g x) : IsFixe
 
 /-- If `x` is a fixed point of `f` and `g` is a left inverse of `f`, then `x` is a fixed
 point of `g`. -/
-theorem to_left_inverse (hf : IsFixedPt f x) (h : LeftInverse g f) : IsFixedPt g x :=
+theorem to_leftInverse (hf : IsFixedPt f x) (h : LeftInverse g f) : IsFixedPt g x :=
   calc
     g x = g (f x) := congr_arg g hf.symm
     _ = x := h x
 
-#align function.is_fixed_pt.to_left_inverse Function.IsFixedPt.to_left_inverse
+#align function.is_fixed_pt.to_left_inverse Function.IsFixedPt.to_leftInverse
 
 /-- If `g` (semi)conjugates `fa` to `fb`, then it sends fixed points of `fa` to fixed points
 of `fb`. -/
@@ -106,7 +106,7 @@ theorem preimage_iterate {s : Set α} (h : IsFixedPt (Set.preimage f) s) (n : �
 #align function.is_fixed_pt.preimage_iterate Function.IsFixedPt.preimage_iterate
 
 protected theorem equiv_symm (h : IsFixedPt e x) : IsFixedPt e.symm x :=
-  h.to_left_inverse e.left_inverse_symm
+  h.to_leftInverse e.leftInverse_symm
 #align function.is_fixed_pt.equiv_symm Function.IsFixedPt.equiv_symm
 
 protected theorem perm_inv (h : IsFixedPt e x) : IsFixedPt (⇑e⁻¹) x :=
