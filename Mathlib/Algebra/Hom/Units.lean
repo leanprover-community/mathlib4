@@ -3,6 +3,11 @@ Copyright (c) 2018 Johan Commelin All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
 Ported by: Winston Yin
+
+! This file was ported from Lean 3 source module algebra.hom.units
+! leanprover-community/mathlib commit 76171581280d5b5d1e2d1f4f37e5420357bdc636
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Group.Units

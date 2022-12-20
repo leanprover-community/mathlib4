@@ -2,6 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
+
+! This file was ported from Lean 3 source module logic.lemmas
+! leanprover-community/mathlib commit f340f229b1f461aa1c8ee11e0a172d0a3b301a4a
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.Convert

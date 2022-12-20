@@ -2,6 +2,11 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
+
+! This file was ported from Lean 3 source module logic.equiv.defs
+! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
@@ -153,8 +158,15 @@ protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
 instance : Trans Equiv Equiv Equiv where
   trans := Equiv.trans
 
--- porting note: this lemma is now useless since coercions are eagerly unfolded
--- @[simp] theorem to_fun_as_coe (e : α ≃ β) : e.toFun = e := rfl
+-- porting note: this is not a syntactic tautology any more because
+-- the coercion from `e` to a function is now `FunLike.coe` not `e.toFun`
+@[simp] theorem to_fun_as_coe (e : α ≃ β) : e.toFun = e := rfl
+
+-- porting note: `simp` should prove this using `to_fun_as_coe`, but it doesn't.
+-- This might be a bug in `simp` -- see https://github.com/leanprover/lean4/issues/1937
+-- If this issue is fixed then the simp linter probably will start complaining, and
+-- this theorem can be deleted hopefully without breaking any `simp` proofs.
+@[simp] theorem to_fun_as_coe_apply (e : α ≃ β) (x : α) : e.toFun x = e x := rfl
 
 @[simp] theorem inv_fun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
 
@@ -802,7 +814,7 @@ protected def congrRight {r r' : α → α → Prop} (eq : ∀ a₁ a₂, r a₁
 by a relation `ra` and the quotient space of `β` by the image of this relation under `e`. -/
 protected def congrLeft {r : α → α → Prop} (e : α ≃ β) :
     Quot r ≃ Quot fun b b' => r (e.symm b) (e.symm b') :=
-  Quot.congr e fun _ _ => by simp only [e.symm_apply_apply]; rfl
+  Quot.congr e fun _ _ => by simp only [e.symm_apply_apply]
 
 end Quot
 

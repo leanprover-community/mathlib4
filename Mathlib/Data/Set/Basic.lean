@@ -2,6 +2,11 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
+
+! This file was ported from Lean 3 source module data.set.basic
+! leanprover-community/mathlib commit 1b36dabc50929b36caec16306358a5cc44ab441e
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.SymmDiff
 import Mathlib.Logic.Function.Iterate
@@ -521,11 +526,11 @@ theorem inter_nonempty : (s ∩ t).Nonempty ↔ ∃ x, x ∈ s ∧ x ∈ t :=
 #align set.inter_nonempty Set.inter_nonempty
 
 theorem inter_nonempty_iff_exists_left : (s ∩ t).Nonempty ↔ ∃ x ∈ s, x ∈ t := by
-  simp_rw [inter_nonempty, exists_prop]; rfl
+  simp_rw [inter_nonempty]
 #align set.inter_nonempty_iff_exists_left Set.inter_nonempty_iff_exists_left
 
 theorem inter_nonempty_iff_exists_right : (s ∩ t).Nonempty ↔ ∃ x ∈ t, x ∈ s := by
-  simp_rw [inter_nonempty, exists_prop, and_comm]; rfl
+  simp_rw [inter_nonempty, exists_prop, and_comm]
 #align set.inter_nonempty_iff_exists_right Set.inter_nonempty_iff_exists_right
 
 theorem nonempty_iff_univ_nonempty : Nonempty α ↔ (univ : Set α).Nonempty :=
@@ -1157,7 +1162,6 @@ theorem insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ 
 theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ (a : α) (_ : a ∉ s), insert a s ⊆ t := by
   simp only [insert_subset, exists_and_right, ssubset_def, not_subset]
   simp only [exists_prop, and_comm]
-  rfl
 #align set.ssubset_iff_insert Set.ssubset_iff_insert
 
 theorem ssubset_insert {s : Set α} {a : α} (h : a ∉ s) : s ⊂ insert a s :=
@@ -1401,7 +1405,7 @@ theorem mem_sep_iff : x ∈ { x ∈ s | p x } ↔ x ∈ s ∧ p x :=
 #align set.mem_sep_iff Set.mem_sep_iff
 
 theorem sep_ext_iff : { x ∈ s | p x } = { x ∈ s | q x } ↔ ∀ x ∈ s, p x ↔ q x := by
-  simp_rw [ext_iff, mem_sep_iff, and_congr_right_iff]; rfl
+  simp_rw [ext_iff, mem_sep_iff, and_congr_right_iff]
 #align set.sep_ext_iff Set.sep_ext_iff
 
 theorem sep_eq_of_subset (h : s ⊆ t) : { x ∈ t | x ∈ s } = s :=
@@ -1414,12 +1418,12 @@ theorem sep_subset (s : Set α) (p : α → Prop) : { x ∈ s | p x } ⊆ s := f
 
 @[simp]
 theorem sep_eq_self_iff_mem_true : { x ∈ s | p x } = s ↔ ∀ x ∈ s, p x := by
-  simp_rw [ext_iff, mem_sep_iff, and_iff_left_iff_imp]; rfl
+  simp_rw [ext_iff, mem_sep_iff, and_iff_left_iff_imp]
 #align set.sep_eq_self_iff_mem_true Set.sep_eq_self_iff_mem_true
 
 @[simp]
 theorem sep_eq_empty_iff_mem_false : { x ∈ s | p x } = ∅ ↔ ∀ x ∈ s, ¬p x := by
-  simp_rw [ext_iff, mem_sep_iff, mem_empty_iff_false, iff_false_iff, not_and]; rfl
+  simp_rw [ext_iff, mem_sep_iff, mem_empty_iff_false, iff_false_iff, not_and]
 #align set.sep_eq_empty_iff_mem_false Set.sep_eq_empty_iff_mem_false
 
 --Porting note: removed `simp` attribute because `simp` can prove it
@@ -2507,7 +2511,7 @@ theorem nontrivial_mono {α : Type _} {s t : Set α} (hst : s ⊆ t) (hs : Nontr
 
 @[simp]
 theorem not_subsingleton_iff : ¬s.Subsingleton ↔ s.Nontrivial := by
-  simp_rw [Set.Subsingleton, Set.Nontrivial, not_forall]; rfl
+  simp_rw [Set.Subsingleton, Set.Nontrivial, not_forall]
 #align set.not_subsingleton_iff Set.not_subsingleton_iff
 
 @[simp]
