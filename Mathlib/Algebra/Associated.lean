@@ -161,7 +161,7 @@ theorem prime_pow_succ_dvd_mul {α : Type _} [CancelCommMonoidWithZero α] {p x 
   exact mul_dvd_mul_left p (ih ((mul_dvd_mul_iff_left h.ne_zero).mp hxy))
 #align prime_pow_succ_dvd_mul prime_pow_succ_dvd_mul
 
-/-- `irreducible p` states that `p` is non-unit and only factors into units.
+/-- `Irreducible p` states that `p` is non-unit and only factors into units.
 
 We explicitly avoid stating that `p` is non-zero, this would require a semiring. Assuming only a
 monoid allows us to reuse irreducible for associated elements.
