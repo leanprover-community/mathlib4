@@ -209,6 +209,18 @@ def shiftr : ℕ → ℕ → ℕ
   | m, n + 1 => div2 (shiftr m n)
 #align nat.shiftr Nat.shiftr
 
+theorem shiftr_zero : ∀ n, shiftr 0 n = 0 := by
+  intros
+  rename_i n
+  induction' n with n IH
+  case zero =>
+    rw [shiftr]
+  case succ =>
+    rw[shiftr]
+    rw [div2]
+    rw [IH]
+    rfl
+
 def testBit (m n : ℕ) : Bool :=
   bodd (shiftr m n)
 #align nat.test_bit Nat.testBit
@@ -439,10 +451,15 @@ theorem bitwise_zero (f : Bool → Bool → Bool) : bitwise f 0 0 = 0 := by
 theorem bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   unfold bitwise
-  rw [binary_rec_eq, binary_rec_eq]
-  · induction' ftf : f true false <;> dsimp [cond]
-    rw [show f a ff = ff by cases a <;> assumption]
-    apply @congr_arg _ _ _ 0 (bit ff)
+  simp only [binary_rec_eq]
+  cases bit a m <;> simp
+    case zero => simp
+    case succ => simp
+  /-· induction' ftf : f true false
+    dsimp [cond]
+    cases bit a m <;> simp-/
+    /-rw [show f a false = false by cases a <;> assumption]
+    apply @congr_arg _ _ _ 0 (bit false)
     run_tac
       tactic.swap
     rw [show f a ff = a by cases a <;> assumption]
@@ -451,7 +468,8 @@ theorem bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false) (a 
       apply bitCasesOn m; intro a m
       rw [binary_rec_eq, binary_rec_zero]
       rw [← bitwise_bit_aux h, ftf]; rfl
-  · exact bitwise_bit_aux h
+
+  · exact bitwise_bit_aux h -/
 #align nat.bitwise_bit Nat.bitwise_bit
 
 theorem bitwise_swap {f : Bool → Bool → Bool} (h : f false false = false) :
@@ -496,8 +514,36 @@ theorem test_bit_bitwise {f : Bool → Bool → Bool} (h : f false false = false
   intro b n'
   rw [bitwise_bit h]
   · simp [test_bit_zero]
-  · simp [test_bit_succ, IH]
-
+  · intros
+    rename_i m n
+    rw [bitwise]
+    cases m <;> simp
+    cases n <;> simp
+    case succ.zero.zero =>
+      rw [testBit]
+      rw [shiftr_zero]
+      rw [bodd, boddDiv2]
+      rw [h]
+    case succ.zero.succ =>
+      simp only [test_bit_succ]
+      have test_bit_zero_zero: ∀ k, testBit 0 k = false := by
+        intro k
+        unfold testBit
+        rw [shiftr_zero]
+        rw [bodd, boddDiv2]
+      rw[test_bit_zero_zero]
+      rename_i n
+      cases testBit (succ n) (succ k) <;> simp [h]
+      case false =>
+        cases f false true
+        simp
+        try rw [test_bit_zero_zero]
+        simp
+        rfl
+      case true =>
+        cases f false true <;> simp
+        try rw [test_bit_zero_zero]
+        rfl
 
 #align nat.test_bit_bitwise Nat.test_bit_bitwise
 
