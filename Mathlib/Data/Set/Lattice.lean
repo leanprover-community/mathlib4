@@ -1551,10 +1551,10 @@ section
 
 open Function
 
-variable (s : Set β) {f : α → β} {U : ι → Set β} (hU : union U = univ)
+variable (s : Set β) {f : α → β} {U : ι → Set β} (hU : unionᵢ U = univ)
 
 theorem restrictPreimage_injective (hf : Injective f) : Injective (s.restrictPreimage f) :=
-  fun x y e => Subtype.val_injective (hf (Subtype.ext_iff_val.1 e))
+  fun _ _ e => Subtype.val_injective (hf (Subtype.ext_iff_val.1 e))
 #align set.restrict_preimage_injective Set.restrictPreimage_injective
 
 theorem restrictPreimage_surjective (hf : Surjective f) : Surjective (s.restrictPreimage f) :=
@@ -1576,7 +1576,7 @@ theorem injective_iff_injective_of_unionᵢ_eq_univ :
     Injective f ↔ ∀ i, Injective ((U i).restrictPreimage f) := by
   refine' ⟨fun H i => (U i).restrictPreimage_injective H, fun H x y e => _⟩
   obtain ⟨i, hi⟩ := Set.mem_unionᵢ.mp
-      (show f x ∈ Set.unionᵢ U by rw [hU])
+      (show f x ∈ Set.unionᵢ U by rw [hU]; triv)
   injection @H i ⟨x, hi⟩ ⟨y, show f y ∈ U i from e ▸ hi⟩ (Subtype.ext e)
 #align set.injective_iff_injective_of_Union_eq_univ Set.injective_iff_injective_of_unionᵢ_eq_univ
 
@@ -1585,16 +1585,15 @@ theorem surjective_iff_surjective_of_unionᵢ_eq_univ :
   refine' ⟨fun H i => (U i).restrictPreimage_surjective H, fun H x => _⟩
   obtain ⟨i, hi⟩ :=
     Set.mem_unionᵢ.mp
-      (show x ∈ Set.unionᵢ U by
-        rw [hU]
-        triv)
-  exact ⟨_, congr_arg Subtype.val (H i ⟨x, hi⟩).some_spec⟩
+      (show x ∈ Set.unionᵢ U by rw [hU]; triv)
+  exact ⟨_, congr_arg Subtype.val (H i ⟨x, hi⟩).choose_spec⟩
 #align set.surjective_iff_surjective_of_Union_eq_univ Set.surjective_iff_surjective_of_unionᵢ_eq_univ
 
 theorem bijective_iff_bijective_of_unionᵢ_eq_univ :
     Bijective f ↔ ∀ i, Bijective ((U i).restrictPreimage f) := by
-  simp_rw [Bijective, forall_and, injective_iff_injective_of_unionᵢ_eq_univ hU,
+  rw [Bijective, injective_iff_injective_of_unionᵢ_eq_univ hU,
     surjective_iff_surjective_of_unionᵢ_eq_univ hU]
+  simp [Bijective, forall_and]
 #align set.bijective_iff_bijective_of_Union_eq_univ Set.bijective_iff_bijective_of_unionᵢ_eq_univ
 
 end
@@ -1738,7 +1737,9 @@ section Image
 
 theorem image_unionᵢ {f : α → β} {s : ι → Set α} : (f '' ⋃ i, s i) = ⋃ i, f '' s i := by
   ext1 x
-  simp [image, ← exists_and_right, @exists_swap α]
+  simp only [mem_image, mem_unionᵢ, ← exists_and_right, ← exists_and_left]
+  --Porting note: `exists_swap` causes a `simp` loop in Lean4 so we use `rw` instead.
+  rw [exists_swap]
 #align set.image_Union Set.image_unionᵢ
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -2321,7 +2322,7 @@ theorem disjoint_singleton {a b : α} : Disjoint ({a} : Set α) {b} ↔ a ≠ b 
 
 theorem disjoint_image_image {f : β → α} {g : γ → α} {s : Set β} {t : Set γ}
     (h : ∀ b ∈ s, ∀ c ∈ t, f b ≠ g c) : Disjoint (f '' s) (g '' t) :=
-  disjoint_iff_inf_le.mpr <| by rintro a ⟨⟨b, hb, eq⟩, c, hc, rfl⟩ <;> exact h b hb c hc eq
+  disjoint_iff_inf_le.mpr <| by rintro a ⟨⟨b, hb, eq⟩, c, hc, rfl⟩; exact h b hb c hc eq
 #align set.disjoint_image_image Set.disjoint_image_image
 
 theorem disjoint_image_of_injective {f : α → β} (hf : Injective f) {s t : Set α}
