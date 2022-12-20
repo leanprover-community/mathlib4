@@ -167,7 +167,8 @@ but that one unfortunately requires `f` to be the identity when appending `false
 Here, we allow you to explicitly say that that case is not happening,
 i.e. supplying `n = 0 → b = true`. -/
 theorem binary_rec_eq' {C : ℕ → Sort _} {z : C 0} {f : ∀ b n, C n → C (bit b n)} (b n)
-    (h : f false 0 z = z ∨ (n = 0 → b = true)) : binaryRec z f (bit b n) = f b n (binaryRec z f n) :=
+    (h : f false 0 z = z ∨ (n = 0 → b = true)) :
+    binaryRec z f (bit b n) = f b n (binaryRec z f n) :=
   by
   rw [binaryRec]
   split_ifs with h'
@@ -214,8 +215,8 @@ theorem zero_bits : bits 0 = [] := by simp [Nat.bits]
 #align nat.zero_bits Nat.zero_bits
 
 @[simp]
-theorem bits_append_bit (n : ℕ) (b : Bool) (hn : n = 0 → b = true) : (bit b n).bits = b :: n.bits :=
-  by
+theorem bits_append_bit (n : ℕ) (b : Bool) (hn : n = 0 → b = true) :
+    (bit b n).bits = b :: n.bits := by
   rw [Nat.bits, binary_rec_eq']
   simpa
 #align nat.bits_append_bit Nat.bits_append_bit

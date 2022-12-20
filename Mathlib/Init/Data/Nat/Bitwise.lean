@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Mario Carneiro
+Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module init.data.nat.bitwise
 ! leanprover-community/lean commit 53e8520d8964c7632989880372d91ba0cecbaf00
@@ -15,6 +15,12 @@ import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.ZeroOne
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.PermuteGoals
+
+/--
+# Lemmas about bitwise operations on natural numbers.
+
+Possibly only of archaeological significance.
+-/
 
 universe u
 
@@ -204,9 +210,7 @@ theorem shiftr_zero : ∀ n, shiftr 0 n = 0 := by
   case zero =>
     rw [shiftr]
   case succ =>
-    rw[shiftr]
-    rw [div2]
-    rw [IH]
+    rw [shiftr, div2, IH]
     rfl
 
 def testBit (m n : ℕ) : Bool :=
@@ -214,22 +218,23 @@ def testBit (m n : ℕ) : Bool :=
 #align nat.test_bit Nat.testBit
 
 def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) : ∀ n, C n :=
-    fun n =>
-      if n0 : n = 0 then
-        by
-          simp [n0]
-          exact z
-      else by
-        let n' := div2 n
-        have : n' < n := by
-          change div2 n < n; rw [div2_val]
-          apply (div_lt_iff_lt_mul <| succ_pos 1).2
-          have := Nat.mul_lt_mul_of_pos_left (lt_succ_self 1) (lt_of_le_of_ne n.zero_le (Ne.symm n0))
-          rwa [Nat.mul_one] at this
-        have _x : bit (bodd n) n' = n := by
-          apply bit_decomp n
-        rw [←_x]
-        exact f (bodd n) n' (binaryRec z f n')
+  fun n =>
+    if n0 : n = 0 then
+      by
+        simp [n0]
+        exact z
+    else by
+      let n' := div2 n
+      have : n' < n := by
+        change div2 n < n; rw [div2_val]
+        apply (div_lt_iff_lt_mul <| succ_pos 1).2
+        have := Nat.mul_lt_mul_of_pos_left (lt_succ_self 1)
+          (lt_of_le_of_ne n.zero_le (Ne.symm n0))
+        rwa [Nat.mul_one] at this
+      have _x : bit (bodd n) n' = n := by
+        apply bit_decomp n
+      rw [←_x]
+      exact f (bodd n) n' (binaryRec z f n')
 
 #align nat.binaryRec Nat.binaryRec
 
@@ -325,7 +330,6 @@ theorem test_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   exact this
 #align nat.test_bit_succ Nat.test_bit_succ
 
-/- ./././Mathport/Syntax/Translate/Tactic/Lean3.lean:145:2: warning: unsupported: with_cases -/
 theorem binary_rec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
     (h : f false 0 z = z) (b n) : binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
   rw [binaryRec]
@@ -393,7 +397,6 @@ theorem bitwise'_zero (f : Bool → Bool → Bool) : bitwise' f 0 0 = 0 := by
   cases f false true <;> rfl
 #align nat.bitwise_zero Nat.bitwise'_zero
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:72:18: unsupported non-interactive tactic tactic.swap -/
 @[simp]
 theorem bitwise'_bit {f : Bool → Bool → Bool} (h : f false false = false) (a m b n) :
     bitwise' f (bit a m) (bit b n) = bit (f a b) (bitwise' f m n) := by
