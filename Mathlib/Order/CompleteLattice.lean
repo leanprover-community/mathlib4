@@ -78,7 +78,7 @@ add_decl_doc SupSet.supₛ
 /-- Infimum of a set -/
 add_decl_doc InfSet.infₛ
 
-/-- Indexed supᵢemum -/
+/-- Indexed supremum -/
 def supᵢ [SupSet α] {ι} (s : ι → α) : α :=
   supₛ (range s)
 #align supr supᵢ
