@@ -2867,18 +2867,19 @@ theorem nth_succ_scanl {i : ℕ} :
 theorem nth_le_succ_scanl {i : ℕ} {h : i + 1 < (scanl f b l).length} :
     (scanl f b l).nthLe (i + 1) h =
       f ((scanl f b l).nthLe i (Nat.lt_of_succ_lt h))
-        (l.nthLe i (Nat.lt_of_succ_lt_succ (lt_of_lt_of_le h (le_of_eq (length_scanl b l))))) :=
-  by
-  induction' i with i hi generalizing b l
-  · cases l
+        (l.nthLe i (Nat.lt_of_succ_lt_succ (lt_of_lt_of_le h (le_of_eq (length_scanl b l))))) := by
+  induction i generalizing b l with
+  | zero =>
+    cases l
     · simp only [length, zero_add, scanl_nil] at h
     · simp only [scanl_cons, singleton_append, nth_le_zero_scanl, nthLe]
-  · cases l
+  | succ i hi =>
+    cases l
     · simp only [length, add_lt_iff_neg_right, scanl_nil] at h
       exact absurd h (not_lt_of_lt Nat.succ_pos')
     · simp_rw [scanl_cons]
       rw [nth_le_append_right _]
-      · simpa only [hi, length, succ_add_sub_one]
+      · simp only [length, zero_add 1, succ_add_sub_one, hi]; rfl
       · simp only [length, Nat.zero_le, le_add_iff_nonneg_left]
 #align list.nth_le_succ_scanl List.nth_le_succ_scanl
 
