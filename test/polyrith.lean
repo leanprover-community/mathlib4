@@ -447,9 +447,9 @@ example (x y : ℤ) (h1 : 3*x + 2*y = 10):
   3*x + 2*y = 10 :=
 by polyrith
 
--- example (x y : ℚ) (h1 : x*y + 2*x = 1) (h2 : x = y) :
---   x*y = -2*y + 1 :=
--- by polyrith
+example (x y : ℚ) (h1 : x*y + 2*x = 1) (h2 : x = y) :
+  x*y = -2*y + 1 :=
+by polyrith
 
 -- example (x y : ℝ) (h1 : x + 2 = -3) (h2 : y = 10) :
 --   -y + 2*x + 4 = -16 :=
@@ -465,9 +465,9 @@ by polyrith
 --   x + 2.2*y + 2*z - 5*w = -8.5 :=
 -- by polyrith
 
--- example (a b c d : ℚ) (h1 : a = 4) (h2 : 3 = b) (h3 : c*3 = d) (h4 : -d = a) :
---   2*a - 3 + 9*c + 3*d = 8 - b + 3*d - 3*a :=
--- by polyrith
+example (a b c d : ℚ) (h1 : a = 4) (h2 : 3 = b) (h3 : c*3 = d) (h4 : -d = a) :
+  2*a - 3 + 9*c + 3*d = 8 - b + 3*d - 3*a :=
+by polyrith
 
 /-! ### Case with ambiguous identifiers-/
 -- set_option trace.Meta.Tactic.polyrith true
@@ -493,12 +493,12 @@ example (a b c : ℤ) (h1 : a = b) (h2 : b = 1) :
   c * a + b = c * b + 1 :=
 by polyrith
 
--- example (x y : ℚ) (h1 : x + y = 3) (h2 : 3*x = 7) :
---   x*x*y + y*x*y + 6*x = 3*x*y + 14 :=
--- by polyrith
+example (x y : ℚ) (h1 : x + y = 3) (h2 : 3*x = 7) :
+  x*x*y + y*x*y + 6*x = 3*x*y + 14 :=
+by polyrith
 
--- example (x y z w : ℚ) (hzw : z = w) : x*z + 2*y*z = x*w + 2*y*w :=
--- by polyrith
+example (x y z w : ℚ) (hzw : z = w) : x*z + 2*y*z = x*w + 2*y*w :=
+by polyrith
 
 
 /-! ### Cases with non-hypothesis inputs/input restrictions -/
@@ -507,20 +507,21 @@ by polyrith
 --   b = 2 / 3 :=
 -- by polyrith only [ha, hab]
 
--- -- constant term : ∀ a b : ℚ, a + b = 0
+axiom term : ∀ a b : ℚ, a + b = 0
 
--- example (a b c d : ℚ) (h : a + b = 0) (h2: b + c = 0): a + b + c + d = 0 :=
--- by polyrith only [term c d, h]
+example (a b c d : ℚ) (h : a + b = 0) (h2: b + c = 0): a + b + c + d = 0 :=
+by polyrith only [term c d, h]
 
--- -- constants (qc : ℚ) (hqc : qc = 2*qc)
+axiom qc : ℚ
+axiom hqc : qc = 2*qc
 
--- example (a b : ℚ) (h : ∀ p q : ℚ, p = q) : 3*a + qc = 3*b + 2*qc :=
--- by polyrith [h a b, hqc]
+example (a b : ℚ) (h : ∀ p q : ℚ, p = q) : 3*a + qc = 3*b + 2*qc :=
+by polyrith [h a b, hqc]
 
--- -- constant bad (q : ℚ) : q = 0
+axiom bad (q : ℚ) : q = 0
 
--- example (a b : ℚ) : a + b^3 = 0 :=
--- by polyrith [bad a, bad (b^2)]
+example (a b : ℚ) : a + b^3 = 0 :=
+by polyrith [bad a, bad (b^2)]
 
 /-! ### Case over arbitrary field/ring -/
 
@@ -561,13 +562,13 @@ example (a b c : ℤ) (h1 : a = b) (h2 : b = 1) : c * a + b = c * b + 1 := by
   polyrith
   linear_combination c * h1 + h2
 
--- example (a b c d : ℚ) (h : a + b = 0) (h2: b + c = 0): a + b + c + d = 0 := by
---   polyrith only [term c d, h]
---   linear_combination term c d + h
+example (a b c d : ℚ) (h : a + b = 0) (h2: b + c = 0): a + b + c + d = 0 := by
+  polyrith only [term c d, h]
+  linear_combination term c d + h
 
--- example (a b : ℚ) (h : ∀ p q : ℚ, p = q) : 3*a + qc = 3*b + 2*qc := by
---   polyrith [h a b, hqc]
---   linear_combination 3 * h a b + hqc
+example (a b : ℚ) (h : ∀ p q : ℚ, p = q) : 3*a + qc = 3*b + 2*qc := by
+  polyrith [h a b, hqc]
+  linear_combination 3 * h a b + hqc
 -/
 
 
