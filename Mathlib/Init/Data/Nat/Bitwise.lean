@@ -371,9 +371,7 @@ theorem binary_rec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bi
       rw[div2_bit]
     have pC₁: C (bit (bodd (bit b n)) (div2 (bit b n))) = C (bit b n) := by
       rw[b₁, d₁]
-    have pf : f b n = f (bodd (bit b n)) (div2 (bit b n)) := by
-      rw[b₁,d₁]
-    simp only [pf]
+    simp only [pC₁]
     /-simp only [h']
 
     rw [Eq.mpr]
