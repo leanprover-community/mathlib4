@@ -19,10 +19,6 @@ import Mathlib.Tactic.Spread
 /-!
 # Basic definitions about `≤` and `<`
 
-> THIS FILE IS SYNCHRONIZED WITH MATHLIB4.
-> https://github.com/leanprover-community/mathlib4/pull/556
-> Any changes to this file require a corresponding PR to mathlib4.
-
 This file proves basic results about orders, provides extensive dot notation, defines useful order
 classes and allows to transfer order instances.
 
@@ -802,38 +798,38 @@ instance Pi.partialOrder [∀ i, PartialOrder (π i)] : PartialOrder (∀ i, π 
 section Pi
 
 /-- A function `a` is strongly less than a function `b`  if `a i < b i` for all `i`. -/
-def StrongLt [∀ i, LT (π i)] (a b : ∀ i, π i) : Prop :=
+def StrongLT [∀ i, LT (π i)] (a b : ∀ i, π i) : Prop :=
   ∀ i, a i < b i
-#align strong_lt StrongLt
+#align strong_lt StrongLT
 
 @[inherit_doc]
-local infixl:50 " ≺ " => StrongLt
+local infixl:50 " ≺ " => StrongLT
 
 variable [∀ i, Preorder (π i)] {a b c : ∀ i, π i}
 
-theorem le_of_strongLt (h : a ≺ b) : a ≤ b := fun _ ↦ (h _).le
-#align le_of_strong_lt le_of_strongLt
+theorem le_of_strongLT (h : a ≺ b) : a ≤ b := fun _ ↦ (h _).le
+#align le_of_strong_lt le_of_strongLT
 
-theorem lt_of_strongLt [Nonempty ι] (h : a ≺ b) : a < b := by
+theorem lt_of_strongLT [Nonempty ι] (h : a ≺ b) : a < b := by
   inhabit ι
-  exact Pi.lt_def.2 ⟨le_of_strongLt h, default, h _⟩
-#align lt_of_strong_lt lt_of_strongLt
+  exact Pi.lt_def.2 ⟨le_of_strongLT h, default, h _⟩
+#align lt_of_strong_lt lt_of_strongLT
 
-theorem strongLt_of_strongLt_of_le (hab : a ≺ b) (hbc : b ≤ c) : a ≺ c := fun _ ↦
+theorem strongLT_of_strongLT_of_le (hab : a ≺ b) (hbc : b ≤ c) : a ≺ c := fun _ ↦
   (hab _).trans_le <| hbc _
-#align strong_lt_of_strong_lt_of_le strongLt_of_strongLt_of_le
+#align strong_lt_of_strong_lt_of_le strongLT_of_strongLT_of_le
 
-theorem strongLt_of_le_of_strongLt (hab : a ≤ b) (hbc : b ≺ c) : a ≺ c := fun _ ↦
+theorem strongLT_of_le_of_strongLT (hab : a ≤ b) (hbc : b ≺ c) : a ≺ c := fun _ ↦
   (hab _).trans_lt <| hbc _
-#align strong_lt_of_le_of_strong_lt strongLt_of_le_of_strongLt
+#align strong_lt_of_le_of_strong_lt strongLT_of_le_of_strongLT
 
-alias le_of_strongLt ← StrongLt.le
+alias le_of_strongLT ← StrongLT.le
 
-alias lt_of_strongLt ← StrongLt.lt
+alias lt_of_strongLT ← StrongLT.lt
 
-alias strongLt_of_strongLt_of_le ← StrongLt.trans_le
+alias strongLT_of_strongLT_of_le ← StrongLT.trans_le
 
-alias strongLt_of_le_of_strongLt ← LE.le.trans_strong_lt
+alias strongLT_of_le_of_strongLT ← LE.le.trans_strongLT
 
 end Pi
 
