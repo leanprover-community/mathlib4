@@ -34,17 +34,17 @@ variable {n : ℕ}
 
 
 @[simp]
-theorem bodd_div2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := by
-  unfold bodd div2 <;> cases bodd_div2 n <;> rfl
-#align nat.bodd_div2_eq Nat.bodd_div2_eq
+theorem boddDiv2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := by
+  unfold bodd div2; cases boddDiv2 n; rfl
+#align nat.bodd_div2_eq Nat.boddDiv2_eq
 
 @[simp]
-theorem bodd_bit0 (n) : bodd (bit0 n) = ff :=
+theorem bodd_bit0 (n) : bodd (bit0 n) = false :=
   bodd_bit false n
 #align nat.bodd_bit0 Nat.bodd_bit0
 
 @[simp]
-theorem bodd_bit1 (n) : bodd (bit1 n) = tt :=
+theorem bodd_bit1 (n) : bodd (bit1 n) = true :=
   bodd_bit true n
 #align nat.bodd_bit1 Nat.bodd_bit1
 
@@ -87,13 +87,13 @@ theorem one_eq_bit1 {n : ℕ} : 1 = bit1 n ↔ n = 0 :=
 #align nat.one_eq_bit1 Nat.one_eq_bit1
 
 theorem bit_add : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit false n + bit b m
-  | tt => bit1_add
-  | ff => bit0_add
+  | true => bit1_add
+  | false => bit0_add
 #align nat.bit_add Nat.bit_add
 
 theorem bit_add' : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit b n + bit false m
-  | tt => bit1_add'
-  | ff => bit0_add
+  | true => bit1_add'
+  | false => bit0_add
 #align nat.bit_add' Nat.bit_add'
 
 theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
@@ -151,7 +151,7 @@ protected theorem bit0_eq_zero {n : ℕ} : bit0 n = 0 ↔ n = 0 :=
   ⟨Nat.eq_zero_of_add_eq_zero_left, fun h => by simp [h]⟩
 #align nat.bit0_eq_zero Nat.bit0_eq_zero
 
-theorem bit_eq_zero_iff {n : ℕ} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = ff := by
+theorem bit_eq_zero_iff {n : ℕ} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = false := by
   constructor
   · cases b <;> simp [Nat.bit, Nat.bit0_eq_zero]
   rintro ⟨rfl, rfl⟩
@@ -162,7 +162,7 @@ theorem bit_eq_zero_iff {n : ℕ} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = ff 
   appending `ff` to `0`. Here, we allow you to explicitly say that that case is not happening, i.e.
   supplying `n = 0 → b = tt`. -/
 theorem binary_rec_eq' {C : ℕ → Sort _} {z : C 0} {f : ∀ b n, C n → C (bit b n)} (b n)
-    (h : f false 0 z = z ∨ (n = 0 → b = tt)) : binaryRec z f (bit b n) = f b n (binaryRec z f n) :=
+    (h : f false 0 z = z ∨ (n = 0 → b = true)) : binaryRec z f (bit b n) = f b n (binaryRec z f n) :=
   by
   rw [binary_rec]
   split_ifs with h'
@@ -180,10 +180,10 @@ theorem binary_rec_eq' {C : ℕ → Sort _} {z : C 0} {f : ∀ b n, C n → C (b
 /-- The same as `binary_rec`, but the induction step can assume that if `n=0`,
   the bit being appended is `tt`-/
 @[elab_as_elim]
-def binaryRec' {C : ℕ → Sort _} (z : C 0) (f : ∀ b n, (n = 0 → b = tt) → C n → C (bit b n)) :
+def binaryRec' {C : ℕ → Sort _} (z : C 0) (f : ∀ b n, (n = 0 → b = true) → C n → C (bit b n)) :
     ∀ n, C n :=
   binaryRec z fun b n ih =>
-    if h : n = 0 → b = tt then f b n h ih
+    if h : n = 0 → b = true then f b n h ih
     else by
       convert z
       rw [bit_eq_zero_iff]
@@ -206,37 +206,37 @@ theorem zero_bits : bits 0 = [] := by simp [Nat.bits]
 #align nat.zero_bits Nat.zero_bits
 
 @[simp]
-theorem bits_append_bit (n : ℕ) (b : Bool) (hn : n = 0 → b = tt) : (bit b n).bits = b :: n.bits :=
+theorem bits_append_bit (n : ℕ) (b : Bool) (hn : n = 0 → b = true) : (bit b n).bits = b :: n.bits :=
   by
   rw [Nat.bits, binary_rec_eq']
   simpa
 #align nat.bits_append_bit Nat.bits_append_bit
 
 @[simp]
-theorem bit0_bits (n : ℕ) (hn : n ≠ 0) : (bit0 n).bits = ff :: n.bits :=
+theorem bit0_bits (n : ℕ) (hn : n ≠ 0) : (bit0 n).bits = false :: n.bits :=
   bits_append_bit n false fun hn' => absurd hn' hn
 #align nat.bit0_bits Nat.bit0_bits
 
 @[simp]
-theorem bit1_bits (n : ℕ) : (bit1 n).bits = tt :: n.bits :=
+theorem bit1_bits (n : ℕ) : (bit1 n).bits = true :: n.bits :=
   bits_append_bit n true fun _ => rfl
 #align nat.bit1_bits Nat.bit1_bits
 
 @[simp]
 theorem one_bits : Nat.bits 1 = [true] := by
   convert bit1_bits 0
-  simp
 #align nat.one_bits Nat.one_bits
 
 -- TODO Find somewhere this can live.
 -- example : bits 3423 = [tt, tt, tt, tt, tt, ff, tt, ff, tt, ff, tt, tt] := by norm_num
+
 theorem bodd_eq_bits_head (n : ℕ) : n.bodd = n.bits.head := by
   induction' n using Nat.binaryRec' with b n h ih; · simp
   simp [bodd_bit, bits_append_bit _ _ h]
 #align nat.bodd_eq_bits_head Nat.bodd_eq_bits_head
 
 theorem div2_bits_eq_tail (n : ℕ) : n.div2.bits = n.bits.tail := by
-  induction' n using Nat.binaryRec' with b n h ih; · simp
+  induction' n using Nat.binaryRec' with b n h _; · simp
   simp [div2_bit, bits_append_bit _ _ h]
 #align nat.div2_bits_eq_tail Nat.div2_bits_eq_tail
 

@@ -18,11 +18,8 @@ import Mathlib.Tactic.PermuteGoals
 
 universe u
 
--- The following line helps override the default behaviour, wherein
--- lean equates xor with Nat.xor
--- bxor points to Mathlib.Data.Bool.Basic.xor
---- Author : Shreyas Srinivas
-abbrev bxor := xor
+-- Once we're in the `Nat` namespace, `xor` will inconventiently resolve to `Nat.xor`.
+local notation "bxor" => _root_.xor
 
 namespace Nat
 set_option linter.deprecated false
@@ -58,8 +55,6 @@ theorem bodd_two : bodd 2 = false :=
 
 @[simp]
 theorem bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
-  -- Cite : Kevin Buzzard
-  -- URL: https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/help.20with.20.60unfold.60/near/316776867
   simp only [bodd, boddDiv2]
   let ⟨b,m⟩ := boddDiv2 n
   cases b <;> rfl
