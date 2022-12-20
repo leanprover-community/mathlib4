@@ -39,7 +39,7 @@ theorem coe_zpow (x : { x : K // 0 < x }) (n : ℤ) : ↑(x ^ n) = (x : K) ^ n :
   rfl
 #align positive.coe_zpow Positive.coe_zpow
 
-set_option maxHeartbeats 2000000
+set_option maxHeartbeats 304000
 instance : LinearOrderedCommGroup { x : K // 0 < x } :=
   { Positive.Subtype.hasInv, Positive.linearOrderedCancelCommMonoid with
     mul_left_inv := fun a => Subtype.ext <| inv_mul_cancel a.2.ne' }
