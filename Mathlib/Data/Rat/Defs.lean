@@ -511,8 +511,9 @@ theorem coe_int_div_eq_divInt {n d : ℤ} : (Int.cast n : ℚ) / (Int.cast d) = 
   exact divInt_div_divInt_cancel_left one_ne_zero n d
 #align rat.coe_int_div_eq_mk Rat.coe_int_div_eq_divInt
 
+-- Porting note: see porting note above about `Int.cast`.
 @[simp]
-theorem num_div_den (r : ℚ) : (r.num / r.den : ℚ) = r := by
+theorem num_div_den (r : ℚ) : (Int.cast r.num : ℚ) / (r.den : ℚ) = r := by
   rw [← Int.cast_ofNat]
   erw [← divInt_eq_div, num_den]
 #align rat.num_div_denom Rat.num_div_den
