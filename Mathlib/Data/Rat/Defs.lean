@@ -38,27 +38,20 @@ theorem pos (a : ℚ) : 0 < a.den := Nat.pos_of_ne_zero a.den_nz
 
 #align rat.of_int Rat.ofInt
 
--- Porting note:
--- We may need to move this instance (and indeed the definition of `IntCast`) to `Std`.
--- At present, the cast via `ofInt` is getting in the way of the cast via `Int.cast`
--- provided by this instance, and requiring us to write `Int.cast` explicitly in some simp lemmas.
 instance : IntCast ℚ :=
   ⟨ofInt⟩
 
-@[simp]
-theorem of_int_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
+theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
   rfl
-#align rat.of_int_eq_cast Rat.of_int_eq_cast
+#align rat.of_int_eq_cast Rat.ofInt_eq_cast
 
--- Porting note:
--- For now we need to explicitly write `Int.cast` so lemmas are in terms of the correct coercion.
 @[simp, norm_cast]
-theorem coe_int_num (n : ℤ) : (Int.cast n : ℚ).num = n :=
+theorem coe_int_num (n : ℤ) : (n : ℚ).num = n :=
   rfl
 #align rat.coe_int_num Rat.coe_int_num
 
 @[simp, norm_cast]
-theorem coe_int_den (n : ℤ) : (Int.cast n : ℚ).den = 1 :=
+theorem coe_int_den (n : ℤ) : (n : ℚ).den = 1 :=
   rfl
 #align rat.coe_int_denom Rat.coe_int_den
 
@@ -123,9 +116,7 @@ theorem num_den : ∀ {a : ℚ}, a.num /. a.den = a := divInt_self _
 theorem num_den' {n d h c} : (⟨n, d, h, c⟩ : ℚ) = n /. d := num_den.symm
 #align rat.num_denom' Rat.num_den'
 
--- Porting note: we explicitly write `Int.cast` here,
--- as unfortunately this is not the default coercion.
-theorem coe_int_eq_divInt (z : ℤ) : Int.cast z = z /. 1 := num_den'
+theorem coe_int_eq_divInt (z : ℤ) : (z : ℚ) = z /. 1 := num_den'
 #align rat.coe_int_eq_mk Rat.coe_int_eq_divInt
 
 /-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with rational
@@ -212,6 +203,7 @@ theorem inv_def' {a b : ℤ} : (a /. b)⁻¹ = b /. a := inv_divInt ..
 
 variable (a b c : ℚ)
 
+-- Porting note: TODO this is a workaround.
 attribute [-simp] divInt_ofNat
 
 protected theorem add_zero : a + 0 = a :=
@@ -243,8 +235,7 @@ protected theorem add_left_neg : -a + a = 0 :=
   numDenCasesOn' a fun n d h => by simp [h, mkRat_add_mkRat]
 #align rat.add_left_neg Rat.add_left_neg
 
--- Porting note: See notes above about `Int.cast`.
-theorem divInt_zero_one : (Int.cast 0) /. 1 = 0 :=
+theorem divInt_zero_one : 0 /. 1 = 0 :=
   show divInt _ _ = _ by
     rw [divInt]
     simp
@@ -336,7 +327,7 @@ instance commRing : CommRing ℚ where
   natCast n := ofInt n
   natCast_zero := rfl
   natCast_succ n := by
-    simp only [of_int_eq_cast, coe_int_eq_divInt, add_def'' one_ne_zero one_ne_zero,
+    simp only [coe_int_eq_divInt, add_def'' one_ne_zero one_ne_zero,
       ← divInt_one_one, Nat.cast_add, Nat.cast_one, mul_one]
 
 instance commGroupWithZero : CommGroupWithZero ℚ :=
@@ -506,19 +497,18 @@ theorem divInt_div_divInt_cancel_right {x : ℤ} (hx : x ≠ 0) (n d : ℤ) :
   rw [div_eq_mul_inv, inv_def', mul_comm, divInt_mul_divInt_cancel hx]
 #align rat.mk_div_mk_cancel_right Rat.divInt_div_divInt_cancel_right
 
-theorem coe_int_div_eq_divInt {n d : ℤ} : (Int.cast n : ℚ) / (Int.cast d) = n /. d := by
+theorem coe_int_div_eq_divInt {n d : ℤ} : (n : ℚ) / (d) = n /. d := by
   repeat' rw [coe_int_eq_divInt]
   exact divInt_div_divInt_cancel_left one_ne_zero n d
 #align rat.coe_int_div_eq_mk Rat.coe_int_div_eq_divInt
 
--- Porting note: see porting note above about `Int.cast`.
-@[simp]
-theorem num_div_den (r : ℚ) : (Int.cast r.num : ℚ) / (r.den : ℚ) = r := by
+-- Porting note: see porting note above about `Int.cast`@[simp]
+theorem num_div_den (r : ℚ) : (r.num : ℚ) / (r.den : ℚ) = r := by
   rw [← Int.cast_ofNat]
   erw [← divInt_eq_div, num_den]
 #align rat.num_div_denom Rat.num_div_den
 
-theorem coe_int_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : (Int.cast q.num : ℚ) = q := by
+theorem coe_int_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : (q.num : ℚ) = q := by
   conv_rhs => rw [← @num_den q, hq]
   rw [coe_int_eq_divInt]
   rfl
@@ -534,15 +524,18 @@ theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
 --   ⟨fun q hq => ⟨q.num, coe_int_num_of_denom_eq_one hq⟩⟩
 -- #align rat.can_lift Rat.canLift
 
-theorem coe_nat_eq_divInt (n : ℕ) : ↑n = n /. 1 := by rw [← Int.cast_ofNat, coe_int_eq_divInt]
+theorem coe_nat_eq_divInt (n : ℕ) : ↑n = n /. 1 := by
+  rw [← Int.cast_ofNat, ←ofInt_eq_cast, coe_int_eq_divInt]
 #align rat.coe_nat_eq_mk Rat.coe_nat_eq_divInt
 
 @[simp, norm_cast]
-theorem coe_nat_num (n : ℕ) : (n : ℚ).num = n := by rw [← Int.cast_ofNat, coe_int_num]
+theorem coe_nat_num (n : ℕ) : (n : ℚ).num = n := by
+  rw [← Int.cast_ofNat, ←ofInt_eq_cast, coe_int_num]
 #align rat.coe_nat_num Rat.coe_nat_num
 
 @[simp, norm_cast]
-theorem coe_nat_den (n : ℕ) : (n : ℚ).den = 1 := by rw [← Int.cast_ofNat, coe_int_den]
+theorem coe_nat_den (n : ℕ) : (n : ℚ).den = 1 := by
+  rw [← Int.cast_ofNat, ←ofInt_eq_cast, coe_int_den]
 #align rat.coe_nat_denom Rat.coe_nat_den
 
 -- Will be subsumed by `Int.coe_inj` after we have defined
