@@ -2,6 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
+
+! This file was ported from Lean 3 source module group_theory.group_action.defs
+! leanprover-community/mathlib commit dad7ecf9a1feae63e6e49f07619b7087403fb8d4
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Group.Commute
@@ -265,11 +270,8 @@ class IsCentralScalar (M α : Type _) [SMul M α] [SMul Mᵐᵒᵖ α] : Prop wh
 
 @[to_additive]
 theorem IsCentralScalar.unop_smul_eq_smul {M α : Type _} [SMul M α] [SMul Mᵐᵒᵖ α]
-    [IsCentralScalar M α] (m : Mᵐᵒᵖ) (a : α) : MulOpposite.unop m • a = m • a := by
-  -- Porting note: was one liner
-  apply MulOpposite.rec _ m
-  intro m
-  apply (IsCentralScalar.op_smul_eq_smul _ _).symm
+    [IsCentralScalar M α] (m : Mᵐᵒᵖ) (a : α) : MulOpposite.unop m • a = m • a :=
+  MulOpposite.rec (fun _ => (IsCentralScalar.op_smul_eq_smul _ _).symm) m
 #align is_central_scalar.unop_smul_eq_smul IsCentralScalar.unop_smul_eq_smul
 
 export IsCentralVAdd (op_vadd_eq_vadd unop_vadd_eq_vadd)

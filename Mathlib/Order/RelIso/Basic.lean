@@ -2,6 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
+
+! This file was ported from Lean 3 source module order.rel_iso.basic
+! leanprover-community/mathlib commit 76171581280d5b5d1e2d1f4f37e5420357bdc636
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Embedding.Basic
@@ -105,6 +110,9 @@ instance : RelHomClass (r →r s) r s where
     cases g
     congr
   map_rel := map_rel'
+
+/-- See Note [custom simps projection] -/
+def Simps.apply (f : r →r s) : α → β := f
 
 initialize_simps_projections RelHom (toFun → apply)
 
@@ -244,6 +252,8 @@ because it is a composition of multiple projections. -/
 def Simps.apply (h : r ↪r s) : α → β :=
   h
 #align rel_embedding.simps.apply RelEmbedding.Simps.apply
+
+initialize_simps_projections RelEmbedding (toEmbedding_toFun → apply, -toEmbedding)
 
 theorem injective (f : r ↪r s) : Injective f :=
   f.inj'
@@ -426,7 +436,7 @@ theorem ofMapRelIff_coe (f : α → β) [IsAntisymm α r] [IsRefl β s]
   to show it is a relation embedding. -/
 def ofMonotone [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H : ∀ a b, r a b → s (f a) (f b)) :
     r ↪r s := by
-  haveI := @IsAsymm.is_irrefl β s _
+  haveI := @IsAsymm.isIrrefl β s _
   refine' ⟨⟨f, fun a b e => _⟩, @fun a b => ⟨fun h => _, H _ _⟩⟩
   · refine' ((@trichotomous _ r _ a b).resolve_left _).resolve_right _ <;>
       exact fun h => @irrefl _ s _ _ (by simpa [e] using H _ _ h)

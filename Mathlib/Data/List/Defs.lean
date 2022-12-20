@@ -2,10 +2,14 @@
 Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
+
+! This file was ported from Lean 3 source module data.list.defs
+! leanprover-community/mathlib commit 1fc36cc9c8264e6e81253f88be7fb2cb6c92d76a
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Control.Functor
-import Mathlib.Data.List.Chain
 import Mathlib.Data.Nat.Basic
 import Mathlib.Logic.Basic
 import Std.Tactic.Lint.Basic
@@ -45,18 +49,23 @@ instance [DecidableEq α] : SDiff (List α) :=
 -- porting notes: see
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/List.2Ehead/near/313204716
 -- for the fooI naming convention.
-/-- "inhabited" `get` function: returns `default` instead of `none` in the case
+/-- "Inhabited" `get` function: returns `default` instead of `none` in the case
   that the index is out of bounds. -/
 def getI [Inhabited α] (l : List α) (n : Nat) : α :=
   getD l n default
 #align list.inth List.getI
+
+/-- "Inhabited" `take` function: Take `n` elements from a list `l`. If `l` has less than `n`
+  elements, append `n - length l` elements `default`. -/
+def takeI [Inhabited α] (n : Nat) (l : List α) : List α :=
+  takeD n l default
+#align list.take' List.takeI
 
 #align list.modify_nth_tail List.modifyNthTail
 #align list.modify_head List.modifyHead
 #align list.modify_nth List.modifyNth
 #align list.modify_last List.modifyLast
 #align list.insert_nth List.insertNth
-#align list.take' List.takeD
 #align list.take_while List.takeWhile
 #align list.scanl List.scanl
 #align list.scanr List.scanr
@@ -348,9 +357,14 @@ infixr:82 " ×ˢ " => List.product
 #align list.pw_filter List.pwFilter
 #align list.chain List.Chain
 #align list.chain' List.Chain'
-#align list.chain_cons List.chain_cons
 
 section Chain
+
+@[simp]
+theorem chain_cons {a b : α} {l : List α} : Chain R a (b :: l) ↔ R a b ∧ Chain R b l :=
+  ⟨fun p ↦ by cases p with | cons n p => exact ⟨n, p⟩,
+   fun ⟨n, p⟩ ↦ p.cons n⟩
+#align list.chain_cons List.chain_cons
 
 noncomputable instance decidableChain [DecidableRel R] (a : α) (l : List α) :
     Decidable (Chain R a l) := by
@@ -497,16 +511,16 @@ def map₂Right' (f : Option α → β → γ) (as : List α) (bs : List β) : L
 #align list.map₂_right' List.map₂Right'
 
 
-/-- Left-biased version of `list.map₂`. `map₂_left f as bs` applies `f` to each pair
+/-- Left-biased version of `List.map₂`. `map₂Left f as bs` applies `f` to each pair
 `aᵢ ∈ as` and `bᵢ ‌∈ bs`. If `bs` is shorter than `as`, `f` is applied to `none`
 for the remaining `aᵢ`.
 
 ```
-map₂_left prod.mk [1, 2] ['a'] = [(1, some 'a'), (2, none)]
+map₂Left Prod.mk [1, 2] ['a'] = [(1, some 'a'), (2, none)]
 
-map₂_left prod.mk [1] ['a', 'b'] = [(1, some 'a')]
+map₂Left Prod.mk [1] ['a', 'b'] = [(1, some 'a')]
 
-map₂_left f as bs = (map₂_left' f as bs).fst
+map₂Left f as bs = (map₂Left' f as bs).fst
 ```
 -/
 @[simp]
@@ -516,16 +530,16 @@ def map₂Left (f : α → Option β → γ) : List α → List β → List γ
   | a :: as, b :: bs => f a (some b) :: map₂Left f as bs
 #align list.map₂_left List.map₂Left
 
-/-- Right-biased version of `list.map₂`. `map₂_right f as bs` applies `f` to each
+/-- Right-biased version of `List.map₂`. `map₂Right f as bs` applies `f` to each
 pair `aᵢ ∈ as` and `bᵢ ‌∈ bs`. If `as` is shorter than `bs`, `f` is applied to
 `none` for the remaining `bᵢ`.
 
 ```
-map₂_right prod.mk [1, 2] ['a'] = [(some 1, 'a')]
+map₂Right Prod.mk [1, 2] ['a'] = [(some 1, 'a')]
 
-map₂_right prod.mk [1] ['a', 'b'] = [(some 1, 'a'), (none, 'b')]
+map₂Right Prod.mk [1] ['a', 'b'] = [(some 1, 'a'), (none, 'b')]
 
-map₂_right f as bs = (map₂_right' f as bs).fst
+map₂Right f as bs = (map₂Right' f as bs).fst
 ```
 -/
 def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : List γ :=

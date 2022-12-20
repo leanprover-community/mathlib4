@@ -3,6 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 Ported by: Winston Yin
+
+! This file was ported from Lean 3 source module algebra.hom.equiv.basic
+! leanprover-community/mathlib commit 76171581280d5b5d1e2d1f4f37e5420357bdc636
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Data.FunLike.Equiv
@@ -524,8 +529,10 @@ theorem map_ne_one_iff {M N} [MulOneClass M] [MulOneClass N] (h : M ≃* N) {x :
 #align mul_equiv.map_ne_one_iff MulEquiv.map_ne_one_iff
 #align add_equiv.map_ne_zero_iff AddEquiv.map_ne_zero_iff
 
+-- porting note: Mathlib 3 had `@[simps apply]` but right now in Lean 4 it's generating
+-- simp lemmas which don't lint.
 /-- A bijective `Semigroup` homomorphism is an isomorphism -/
-@[to_additive "A bijective `AddSemigroup` homomorphism is an isomorphism", simps apply]
+@[to_additive "A bijective `AddSemigroup` homomorphism is an isomorphism"]
 noncomputable def ofBijective {M N F} [Mul M] [Mul N] [MulHomClass F M N]
 (f : F) (hf : Function.Bijective f) :
     M ≃* N :=
@@ -533,11 +540,20 @@ noncomputable def ofBijective {M N F} [Mul M] [Mul N] [MulHomClass F M N]
 #align mul_equiv.of_bijective MulEquiv.ofBijective
 #align add_equiv.of_bijective AddEquiv.ofBijective
 
-@[simp]
+-- porting note: `@[simps apply]` should be making this lemma but it actually makes
+-- a lemma with `toFun` which isn't in simp normal form.
+@[simp, to_additive] theorem ofBijective_apply {M N F} [Mul M] [Mul N] [MulHomClass F M N]
+    (f : F) (hf : Function.Bijective f) (a : M) : (MulEquiv.ofBijective f hf).toEquiv a = f a :=
+  rfl
+#align mul_equiv.of_bijective_apply MulEquiv.ofBijective_apply
+#align add_equiv.of_bijective_apply AddEquiv.ofBijective_apply
+
+@[simp, to_additive]
 theorem ofBijective_apply_symm_apply {M N} [MulOneClass M] [MulOneClass N] {n : N} (f : M →* N)
     (hf : Function.Bijective f) : f ((Equiv.ofBijective f hf).symm n) = n :=
   (MulEquiv.ofBijective f hf).apply_symm_apply n
 #align mul_equiv.of_bijective_apply_symm_apply MulEquiv.ofBijective_apply_symm_apply
+#align add_equiv.of_bijective_apply_symm_apply AddEquiv.ofBijective_apply_symm_apply
 
 /-- Extract the forward direction of a multiplicative equivalence
 as a multiplication-preserving function.
@@ -550,18 +566,18 @@ def toMonoidHom {M N} [MulOneClass M] [MulOneClass N] (h : M ≃* N) : M →* N 
 #align add_equiv.to_add_monoid_hom AddEquiv.toAddMonoidHom
 
 @[simp, to_additive]
-theorem coe_to_monoidHom {M N} [MulOneClass M] [MulOneClass N] (e : M ≃* N) :
+theorem coe_toMonoidHom {M N} [MulOneClass M] [MulOneClass N] (e : M ≃* N) :
   ↑e.toMonoidHom = ↑e := rfl
-#align mul_equiv.coe_to_monoid_hom MulEquiv.coe_to_monoidHom
-#align add_equiv.coe_to_add_monoid_hom AddEquiv.coe_to_addMonoidHom
+#align mul_equiv.coe_to_monoid_hom MulEquiv.coe_toMonoidHom
+#align add_equiv.coe_to_add_monoid_hom AddEquiv.coe_toAddMonoidHom
 
 set_option linter.deprecated false in
 @[to_additive]
-theorem to_monoidHom_injective {M N} [MulOneClass M] [MulOneClass N] :
+theorem toMonoidHom_injective {M N} [MulOneClass M] [MulOneClass N] :
   Function.Injective (toMonoidHom : M ≃* N → M →* N) :=
   fun _ _ h => MulEquiv.ext (MonoidHom.ext_iff.1 h)
-#align mul_equiv.to_monoid_hom_injective MulEquiv.to_monoidHom_injective
-#align add_equiv.to_add_monoid_hom_injective AddEquiv.to_addMonoidHom_injective
+#align mul_equiv.to_monoid_hom_injective MulEquiv.toMonoidHom_injective
+#align add_equiv.to_add_monoid_hom_injective AddEquiv.toAddMonoidHom_injective
 
 /-- A multiplicative analogue of `Equiv.arrowCongr`,
 where the equivalence between the targets is multiplicative.
@@ -584,8 +600,9 @@ for multiplicative maps from a monoid to a commutative monoid.
 -/
 @[to_additive
   "An additive analogue of `Equiv.arrowCongr`,
-  for additive maps from an additive monoid to a commutative additive monoid.",
-  simps apply]
+  for additive maps from an additive monoid to a commutative additive monoid."]
+-- porting note: @[simps apply] removed because it was making a lemma which
+-- wasn't in simp normal form.
 def monoidHomCongr {M N P Q} [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoid Q]
   (f : M ≃* N) (g : P ≃* Q) :
   (M →* P) ≃* (N →* Q) where
@@ -596,6 +613,14 @@ def monoidHomCongr {M N P Q} [MulOneClass M] [MulOneClass N] [CommMonoid P] [Com
   map_mul' h k := by ext; simp
 #align mul_equiv.monoid_hom_congr MulEquiv.monoidHomCongr
 #align add_equiv.add_monoid_hom_congr AddEquiv.addMonoidHomCongr
+
+@[simp, to_additive] theorem monoidHomCongr_apply {M N P Q} [MulOneClass M] [MulOneClass N]
+    [CommMonoid P] [CommMonoid Q] (f : M ≃* N) (g : P ≃* Q) (h : M →* P) :
+    (MulEquiv.monoidHomCongr f g).toEquiv h = MonoidHom.comp (MulEquiv.toMonoidHom g)
+    (MonoidHom.comp h (MulEquiv.toMonoidHom (MulEquiv.symm f))) :=
+  rfl
+#align mul_equiv.monoid_hom_congr_apply MulEquiv.monoidHomCongr_apply
+#align add_equiv.add_monoid_hom_congr_apply AddEquiv.addMonoidHomCongr_apply
 
 /-- A family of multiplicative equivalences `Π j, (Ms j ≃* Ns j)` generates a
 multiplicative equivalence between `Π j, Ms j` and `Π j, Ns j`.
@@ -642,13 +667,28 @@ theorem piCongrRight_trans {η : Type _} {Ms Ns Ps : η → Type _} [∀ j, Mul 
 index. -/
 @[to_additive
   "A family indexed by a nonempty subsingleton type is
-  equivalent to the element at the single index.",
-  simps]
+  equivalent to the element at the single index."]
 def piSubsingleton {ι : Type _} (M : ι → Type _) [∀ j, Mul (M j)] [Subsingleton ι]
   (i : ι) : (∀ j, M j) ≃* M i :=
   { Equiv.piSubsingleton M i with map_mul' := fun _ _ => Pi.mul_apply _ _ _ }
 #align mul_equiv.Pi_subsingleton MulEquiv.piSubsingleton
 #align add_equiv.Pi_subsingleton AddEquiv.piSubsingleton
+
+-- porting note: the next two lemmas should be being generated by `@[to_additive, simps]`.
+-- They are added manually because `@[simps]` is currently generating lemmas with `toFun` in
+@[simp, to_additive] theorem piSubsingleton_apply {ι : Type _} (M : ι → Type _) [∀ j, Mul (M j)]
+    [Subsingleton ι] (i : ι) (f : (x : ι) → M x) : (MulEquiv.piSubsingleton M i).toEquiv f = f i :=
+  rfl
+#align mul_equiv.Pi_subsingleton_apply MulEquiv.piSubsingleton_apply
+#align add_equiv.Pi_subsingleton_apply AddEquiv.piSubsingleton_apply
+
+@[simp, to_additive] theorem piSubsingleton_symmApply {ι : Type _} (M : ι → Type _) [∀ j, Mul (M j)]
+    [Subsingleton ι] (i : ι) (x : M i) (b : ι) :
+    (MulEquiv.symm (MulEquiv.piSubsingleton M i)) x b =
+    cast (Subsingleton.elim i b ▸ rfl : M i = M b) x :=
+rfl
+#align mul_equiv.Pi_subsingleton_symmApply MulEquiv.piSubsingleton_symmApply
+#align add_equiv.Pi_subsingleton_symmApply AddEquiv.piSubsingleton_symmApply
 
 /-!
 # Groups
@@ -672,6 +712,10 @@ protected theorem map_div [Group G] [DivisionMonoid H] (h : G ≃* H) (x y : G) 
 
 end MulEquiv
 
+-- porting note: we want to add
+-- `@[simps (config := { fullyApplied := false })]`
+-- here, but it generates simp lemmas which aren't in simp normal form
+-- (they have `toFun` in)
 /-- Given a pair of multiplicative homomorphisms `f`, `g` such that `g.comp f = id` and
 `f.comp g = id`, returns an multiplicative equivalence with `toFun = f` and `invFun = g`. This
 constructor is useful if the underlying type(s) have specialized `ext` lemmas for multiplicative
@@ -680,8 +724,7 @@ homomorphisms. -/
   "Given a pair of additive homomorphisms `f`, `g` such that `g.comp f = id` and
   `f.comp g = id`, returns an additive equivalence with `toFun = f` and `invFun = g`. This
   constructor is useful if the underlying type(s) have specialized `ext` lemmas for additive
-  homomorphisms.",
-  simps (config := { fullyApplied := false })]
+  homomorphisms."]
 def MulHom.toMulEquiv [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M) (h₁ : g.comp f = MulHom.id _)
   (h₂ : f.comp g = MulHom.id _) : M ≃* N where
   toFun := f
@@ -692,6 +735,24 @@ def MulHom.toMulEquiv [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M) (h₁ 
 #align mul_hom.to_mul_equiv MulHom.toMulEquiv
 #align add_hom.to_add_equiv AddHom.toAddEquiv
 
+-- porting note: the next two lemmas were added manually because `@[simps]` is generating
+-- lemmas with `toFun` in
+@[simp, to_additive] theorem MulHom.toMulEquiv_apply [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M)
+    (h₁ : g.comp f = MulHom.id _) (h₂ : f.comp g = MulHom.id _) :
+    ((MulHom.toMulEquiv f g h₁ h₂).toEquiv : M → N) = f :=
+  rfl
+#align mul_hom.to_mul_equiv_apply MulHom.toMulEquiv_apply
+#align add_hom.to_add_equiv_apply AddHom.toAddEquiv_apply
+
+@[simp, to_additive] theorem MulHom.toMulEquiv_symmApply [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M)
+    (h₁ : g.comp f = MulHom.id _) (h₂ : f.comp g = MulHom.id _) :
+    (MulEquiv.symm (MulHom.toMulEquiv f g h₁ h₂) : N → M) = ↑g :=
+  rfl
+#align mul_hom.to_mul_equiv_symm_apply MulHom.toMulEquiv_symmApply
+#align add_hom.to_add_equiv_symm_apply AddHom.toAddEquiv_symmApply
+
+-- porting note: `@[simps (config := { fullyApplied := false })]` generates a simp lemma
+-- which is not in simp normal form, so we add them manually
 /-- Given a pair of monoid homomorphisms `f`, `g` such that `g.comp f = id` and `f.comp g = id`,
 returns an multiplicative equivalence with `toFun = f` and `invFun = g`.  This constructor is
 useful if the underlying type(s) have specialized `ext` lemmas for monoid homomorphisms. -/
@@ -699,8 +760,7 @@ useful if the underlying type(s) have specialized `ext` lemmas for monoid homomo
   "Given a pair of additive monoid homomorphisms `f`, `g` such that `g.comp f = id`
   and `f.comp g = id`, returns an additive equivalence with `toFun = f` and `invFun = g`.  This
   constructor is useful if the underlying type(s) have specialized `ext` lemmas for additive
-  monoid homomorphisms.",
-  simps (config := { fullyApplied := false })]
+  monoid homomorphisms."]
 def MonoidHom.toMulEquiv [MulOneClass M] [MulOneClass N] (f : M →* N) (g : N →* M)
   (h₁ : g.comp f = MonoidHom.id _) (h₂ : f.comp g = MonoidHom.id _) : M ≃* N where
   toFun := f
@@ -710,6 +770,23 @@ def MonoidHom.toMulEquiv [MulOneClass M] [MulOneClass N] (f : M →* N) (g : N �
   map_mul' := f.map_mul
 #align monoid_hom.to_mul_equiv MonoidHom.toMulEquiv
 #align add_monoid_hom.to_add_mul_equiv AddMonoidHom.toAddEquiv
+
+-- porting note: the next 2 lemmas should be being generated by
+-- `@[to_additive, simps (config := { fullyApplied := false })]`
+-- but right now it's generating `simp` lemmas which aren't in `simp` normal form.
+@[simp, to_additive] theorem MonoidHom.toMulEquiv_apply [MulOneClass M] [MulOneClass N] (f : M →* N)
+    (g : N →* M) (h₁ : g.comp f = MonoidHom.id _) (h₂ : f.comp g = MonoidHom.id _) :
+    ((MonoidHom.toMulEquiv f g h₁ h₂).toEquiv : M → N) = ↑f :=
+  rfl
+#align monoid_hom.to_mul_equiv_apply MonoidHom.toMulEquiv_apply
+#align add_monoid_hom.to_add_equiv_apply AddMonoidHom.toAddEquiv_apply
+
+@[simp, to_additive] theorem MonoidHom.toMulEquiv_symmApply [MulOneClass M] [MulOneClass N]
+    (f : M →* N) (g : N →* M) (h₁ : g.comp f = MonoidHom.id _) (h₂ : f.comp g = MonoidHom.id _) :
+    (MulEquiv.symm (MonoidHom.toMulEquiv f g h₁ h₂) : N → M) = g :=
+  rfl
+#align monoid_hom.to_mul_equiv_symm_apply MonoidHom.toMulEquiv_symmApply
+#align add_monoid_hom.to_add_equiv_symm_apply AddMonoidHom.toAddEquiv_symmApply
 
 namespace Equiv
 

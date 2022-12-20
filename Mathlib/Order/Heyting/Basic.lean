@@ -2,6 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
+
+! This file was ported from Lean 3 source module order.heyting.basic
+! leanprover-community/mathlib commit 4e42a9d0a79d151ee359c270e498b1a00cc6fa4e
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.PropInstances
 
@@ -375,7 +380,7 @@ theorem top_himp : ⊤ ⇨ a = a :=
 
 -- `p → q → r ↔ p ∧ q → r`
 theorem himp_himp (a b c : α) : a ⇨ b ⇨ c = a ⊓ b ⇨ c :=
-  eq_of_forall_le_iff fun d => by simp_rw [le_himp_iff, inf_assoc]; rfl
+  eq_of_forall_le_iff fun d => by simp_rw [le_himp_iff, inf_assoc]
 #align himp_himp himp_himp
 
 -- `(q → r) → (p → q) → q → r`
@@ -397,13 +402,13 @@ theorem himp_idem : b ⇨ b ⇨ a = b ⇨ a := by rw [himp_himp, inf_idem]
 #align himp_idem himp_idem
 
 theorem himp_inf_distrib (a b c : α) : a ⇨ b ⊓ c = (a ⇨ b) ⊓ (a ⇨ c) :=
-  eq_of_forall_le_iff fun d => by simp_rw [le_himp_iff, le_inf_iff, le_himp_iff]; rfl
+  eq_of_forall_le_iff fun d => by simp_rw [le_himp_iff, le_inf_iff, le_himp_iff]
 #align himp_inf_distrib himp_inf_distrib
 
 theorem sup_himp_distrib (a b c : α) : a ⊔ b ⇨ c = (a ⇨ c) ⊓ (b ⇨ c) :=
   eq_of_forall_le_iff fun d => by
     rw [le_inf_iff, le_himp_comm, sup_le_iff]
-    simp_rw [le_himp_comm]; rfl
+    simp_rw [le_himp_comm]
 #align sup_himp_distrib sup_himp_distrib
 
 theorem himp_le_himp_left (h : a ≤ b) : c ⇨ a ≤ c ⇨ b :=
@@ -605,7 +610,7 @@ theorem le_sup_sdiff_sup_sdiff : a ≤ b ⊔ (a \ c ⊔ c \ b) :=
   by simpa using @sdiff_sdiff_sdiff_le_sdiff
 
 theorem sdiff_sdiff (a b c : α) : (a \ b) \ c = a \ (b ⊔ c) :=
-  eq_of_forall_ge_iff fun d => by simp_rw [sdiff_le_iff, sup_assoc]; rfl
+  eq_of_forall_ge_iff fun d => by simp_rw [sdiff_le_iff, sup_assoc]
 #align sdiff_sdiff sdiff_sdiff
 
 theorem sdiff_sdiff_left : (a \ b) \ c = a \ (b ⊔ c) :=
@@ -629,13 +634,13 @@ theorem sdiff_sdiff_self : (a \ b) \ a = ⊥ := by rw [sdiff_sdiff_comm, sdiff_s
 #align sdiff_sdiff_self sdiff_sdiff_self
 
 theorem sup_sdiff_distrib (a b c : α) : (a ⊔ b) \ c = a \ c ⊔ b \ c :=
-  eq_of_forall_ge_iff fun d => by simp_rw [sdiff_le_iff, sup_le_iff, sdiff_le_iff]; rfl
+  eq_of_forall_ge_iff fun d => by simp_rw [sdiff_le_iff, sup_le_iff, sdiff_le_iff]
 #align sup_sdiff_distrib sup_sdiff_distrib
 
 theorem sdiff_inf_distrib (a b c : α) : a \ (b ⊓ c) = a \ b ⊔ a \ c :=
   eq_of_forall_ge_iff fun d => by
     rw [sup_le_iff, sdiff_le_comm, le_inf_iff]
-    simp_rw [sdiff_le_comm]; rfl
+    simp_rw [sdiff_le_comm]
 #align sdiff_inf_distrib sdiff_inf_distrib
 
 theorem sup_sdiff : (a ⊔ b) \ c = a \ c ⊔ b \ c :=
@@ -894,12 +899,12 @@ theorem compl_compl_compl (a : α) : aᶜᶜᶜ = aᶜ :=
 
 @[simp]
 theorem disjoint_compl_compl_left_iff : Disjoint (aᶜᶜ) b ↔ Disjoint a b := by
-  simp_rw [← le_compl_iff_disjoint_left, compl_compl_compl]; rfl
+  simp_rw [← le_compl_iff_disjoint_left, compl_compl_compl]
 #align disjoint_compl_compl_left_iff disjoint_compl_compl_left_iff
 
 @[simp]
 theorem disjoint_compl_compl_right_iff : Disjoint a (bᶜᶜ) ↔ Disjoint a b := by
-  simp_rw [← le_compl_iff_disjoint_right, compl_compl_compl]; rfl
+  simp_rw [← le_compl_iff_disjoint_right, compl_compl_compl]
 #align disjoint_compl_compl_right_iff disjoint_compl_compl_right_iff
 
 theorem compl_sup_compl_le : aᶜ ⊔ bᶜ ≤ (a ⊓ b)ᶜ :=
@@ -1074,12 +1079,12 @@ theorem hnot_hnot_hnot (a : α) : ￢￢￢a = ￢a :=
 
 @[simp]
 theorem codisjoint_hnot_hnot_left_iff : Codisjoint (￢￢a) b ↔ Codisjoint a b := by
-  simp_rw [← hnot_le_iff_codisjoint_right, hnot_hnot_hnot]; rfl
+  simp_rw [← hnot_le_iff_codisjoint_right, hnot_hnot_hnot]
 #align codisjoint_hnot_hnot_left_iff codisjoint_hnot_hnot_left_iff
 
 @[simp]
 theorem codisjoint_hnot_hnot_right_iff : Codisjoint a (￢￢b) ↔ Codisjoint a b := by
-  simp_rw [← hnot_le_iff_codisjoint_left, hnot_hnot_hnot]; rfl
+  simp_rw [← hnot_le_iff_codisjoint_left, hnot_hnot_hnot]
 #align codisjoint_hnot_hnot_right_iff codisjoint_hnot_hnot_right_iff
 
 theorem le_hnot_inf_hnot : ￢(a ⊔ b) ≤ ￢a ⊓ ￢b :=

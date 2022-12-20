@@ -2,9 +2,13 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
+
+! This file was ported from Lean 3 source module data.set.n_ary
+! leanprover-community/mathlib commit cf9386b56953fb40904843af98b7a80757bbe7f9
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
-import Mathlib.Data.Set.Basic
-import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Prod
 
 /-!
 # N-ary images of sets
@@ -18,7 +22,7 @@ This file is very similar to the n-ary section of `Data.Set.Basic`, to `Order.Fi
 `Data.Option.NAry`. Please keep them in sync.
 
 We do not define `Set.image3` as its only purpose would be to prove properties of `Set.image2`
-and `set.image2` already fulfills this task.
+and `Set.image2` already fulfills this task.
 -/
 
 
@@ -66,11 +70,11 @@ theorem image2_subset_right (hs : s ⊆ s') : image2 f s t ⊆ image2 f s' t :=
   image2_subset hs Subset.rfl
 #align set.image2_subset_right Set.image2_subset_right
 
-theorem image_subset_image2_left (hb : b ∈ t) : (fun a => f a b) ~~ s ⊆ image2 f s t :=
+theorem image_subset_image2_left (hb : b ∈ t) : (fun a => f a b) '' s ⊆ image2 f s t :=
   ball_image_of_ball fun _ ha => mem_image2_of_mem ha hb
 #align set.image_subset_image2_left Set.image_subset_image2_left
 
-theorem image_subset_image2_right (ha : a ∈ s) : f a ~~ t ⊆ image2 f s t :=
+theorem image_subset_image2_right (ha : a ∈ s) : f a '' t ⊆ image2 f s t :=
   ball_image_of_ball fun _ => mem_image2_of_mem ha
 #align set.image_subset_image2_right Set.image_subset_image2_right
 
@@ -84,12 +88,31 @@ theorem image2_subset_iff {u : Set γ} : image2 f s t ⊆ u ↔ ∀ x ∈ s, ∀
   forall_image2_iff
 #align set.image2_subset_iff Set.image2_subset_iff
 
+variable (f)
+
+-- Porting note: Removing `simp` - LHS does not simplify
+lemma image_prod : (fun x : α × β ↦ f x.1 x.2) '' s ×ˢ t = image2 f s t :=
+ext $ fun a ↦
+⟨ by rintro ⟨_, _, rfl⟩; exact ⟨_, _, (mem_prod.1 ‹_›).1, (mem_prod.1 ‹_›).2, rfl⟩,
+  by rintro ⟨_, _, _, _, rfl⟩; exact ⟨(_, _), ⟨‹_›, ‹_›⟩, rfl⟩⟩
+
+@[simp] lemma image_uncurry_prod (s : Set α) (t : Set β) : uncurry f '' s ×ˢ t = image2 f s t :=
+image_prod _
+
+@[simp] lemma image2_mk_eq_prod : image2 Prod.mk s t = s ×ˢ t := ext $ by simp
+
+-- Porting note: Removing `simp` - LHS does not simplify
+lemma image2_curry (f : α × β → γ) (s : Set α) (t : Set β) :
+  image2 (fun a b ↦ f (a, b)) s t = f '' s ×ˢ t :=
+by simp [←image_uncurry_prod, uncurry]
+
+variable {f}
+
 theorem image2_union_left : image2 f (s ∪ s') t = image2 f s t ∪ image2 f s' t := by
   ext c
   constructor
   · rintro ⟨a, b, ha | ha, hb, rfl⟩ <;> [left, right] <;> exact ⟨_, _, ‹_›, ‹_›, rfl⟩
-  ·
-    rintro (⟨_, _, _, _, rfl⟩ | ⟨_, _, _, _, rfl⟩) <;> refine' ⟨_, _, _, ‹_›, rfl⟩ <;>
+  · rintro (⟨_, _, _, _, rfl⟩ | ⟨_, _, _, _, rfl⟩) <;> refine' ⟨_, _, _, ‹_›, rfl⟩ <;>
       simp [mem_union, *]
 #align set.image2_union_left Set.image2_union_left
 
@@ -97,10 +120,15 @@ theorem image2_union_right : image2 f s (t ∪ t') = image2 f s t ∪ image2 f s
   ext c
   constructor
   · rintro ⟨a, b, ha, h1b | h2b, rfl⟩ <;> [left, right] <;> exact ⟨_, _, ‹_›, ‹_›, rfl⟩
-  ·
-    rintro (⟨_, _, _, _, rfl⟩ | ⟨_, _, _, _, rfl⟩) <;> refine' ⟨_, _, ‹_›, _, rfl⟩ <;>
+  · rintro (⟨_, _, _, _, rfl⟩ | ⟨_, _, _, _, rfl⟩) <;> refine' ⟨_, _, ‹_›, _, rfl⟩ <;>
       simp [mem_union, *]
 #align set.image2_union_right Set.image2_union_right
+
+lemma image2_inter_left (hf : Injective2 f) : image2 f (s ∩ s') t = image2 f s t ∩ image2 f s' t :=
+by simp_rw [←image_uncurry_prod, inter_prod, image_inter hf.uncurry]
+
+lemma image2_inter_right (hf : Injective2 f) : image2 f s (t ∩ t') = image2 f s t ∩ image2 f s t' :=
+by simp_rw [←image_uncurry_prod, prod_inter, image_inter hf.uncurry]
 
 @[simp]
 theorem image2_empty_left : image2 f ∅ t = ∅ :=
@@ -146,12 +174,12 @@ theorem image2_inter_subset_right : image2 f s (t ∩ t') ⊆ image2 f s t ∩ i
 #align set.image2_inter_subset_right Set.image2_inter_subset_right
 
 @[simp]
-theorem image2_singleton_left : image2 f {a} t = f a ~~ t :=
+theorem image2_singleton_left : image2 f {a} t = f a '' t :=
   ext fun x => by simp
 #align set.image2_singleton_left Set.image2_singleton_left
 
 @[simp]
-theorem image2_singleton_right : image2 f s {b} = (fun a => f a b) ~~ s :=
+theorem image2_singleton_right : image2 f s {b} = (fun a => f a b) '' s :=
   ext fun x => by simp
 #align set.image2_singleton_right Set.image2_singleton_right
 
@@ -219,7 +247,7 @@ theorem image2_image2_right (f : α → δ → ε) (g : β → γ → δ) :
 #align set.image2_image2_right Set.image2_image2_right
 
 theorem image_image2 (f : α → β → γ) (g : γ → δ) :
-    g ~~ image2 f s t = image2 (fun a b => g (f a b)) s t := by
+    g '' image2 f s t = image2 (fun a b => g (f a b)) s t := by
   ext; constructor
   · rintro ⟨_, ⟨a, b, ha, hb, rfl⟩, rfl⟩
     refine' ⟨a, b, ha, hb, rfl⟩
@@ -228,7 +256,7 @@ theorem image_image2 (f : α → β → γ) (g : γ → δ) :
 #align set.image_image2 Set.image_image2
 
 theorem image2_image_left (f : γ → β → δ) (g : α → γ) :
-    image2 f (g ~~ s) t = image2 (fun a b => f (g a) b) s t := by
+    image2 f (g '' s) t = image2 (fun a b => f (g a) b) s t := by
   ext; constructor
   · rintro ⟨_, b, ⟨a, ha, rfl⟩, hb, rfl⟩
     refine' ⟨a, b, ha, hb, rfl⟩
@@ -237,7 +265,7 @@ theorem image2_image_left (f : γ → β → δ) (g : α → γ) :
 #align set.image2_image_left Set.image2_image_left
 
 theorem image2_image_right (f : α → γ → δ) (g : β → γ) :
-    image2 f s (g ~~ t) = image2 (fun a b => f a (g b)) s t := by
+    image2 f s (g '' t) = image2 (fun a b => f a (g b)) s t := by
   ext; constructor
   · rintro ⟨a, _, ha, ⟨b, hb, rfl⟩, rfl⟩
     refine' ⟨a, b, ha, hb, rfl⟩
@@ -373,4 +401,3 @@ theorem image_image2_right_anticomm {f : α → β' → γ} {g : β → β'} {f'
 #align set.image_image2_right_anticomm Set.image_image2_right_anticomm
 
 end Set
-#lint

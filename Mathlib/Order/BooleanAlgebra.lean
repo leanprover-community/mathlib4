@@ -2,6 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Bryan Gin-ge Chen
+
+! This file was ported from Lean 3 source module order.boolean_algebra
+! leanprover-community/mathlib commit 39af7d3bf61a98e928812dbc3e16f4ea8b795ca3
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Order.Heyting.Basic
 import Aesop
@@ -504,7 +509,7 @@ This is a generalization of (classical) logic of propositions, or the powerset l
 Since `BoundedOrder`, `OrderBot`, and `OrderTop` are mixins that require `LE`
 to be present at define-time, the `extends` mechanism does not work with them.
 Instead, we extend using the underlying `Bot` and `Top` data typeclasses, and replicate the
-order axioms of those classes here. A "forgetful" instance back to `Bounded` is provided.
+order axioms of those classes here. A "forgetful" instance back to `BoundedOrder` is provided.
 -/
 class BooleanAlgebra (α : Type u) extends
     DistribLattice α, HasCompl α, SDiff α, HImp α, Top α, Bot α where

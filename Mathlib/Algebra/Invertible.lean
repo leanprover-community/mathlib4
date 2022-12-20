@@ -2,11 +2,15 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
+
+! This file was ported from Lean 3 source module algebra.invertible
+! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.NormNum
 /-!
 # Invertible elements
 
@@ -52,7 +56,7 @@ end
 
 ## Tags
 
-invertible, inverse element, inv_of, a half, one half, a third, one third, ½, ⅓
+invertible, inverse element, invOf, a half, one half, a third, one third, ½, ⅓
 
 -/
 
@@ -66,9 +70,9 @@ class Invertible [Mul α] [One α] (a : α) : Type u where
   /-- The inverse of an `Invertible` element -/
   invOf : α
   /-- `invOf a` is a left inverse of `a` -/
-  inv_of_mul_self : invOf * a = 1
+  invOf_mul_self : invOf * a = 1
   /-- `invOf a` is a right inverse of `a` -/
-  mul_inv_of_self : a * invOf = 1
+  mul_invOf_self : a * invOf = 1
 #align invertible Invertible
 
 /-- The inverse of an `Invertible` element -/
@@ -78,12 +82,12 @@ notation:1034
 
 @[simp]
 theorem invOf_mul_self [Mul α] [One α] (a : α) [Invertible a] : ⅟ a * a = 1 :=
-  Invertible.inv_of_mul_self
+  Invertible.invOf_mul_self
 #align inv_of_mul_self invOf_mul_self
 
 @[simp]
 theorem mul_invOf_self [Mul α] [One α] (a : α) [Invertible a] : a * ⅟ a = 1 :=
-  Invertible.mul_inv_of_self
+  Invertible.mul_invOf_self
 #align mul_inv_of_self mul_invOf_self
 
 @[simp]
@@ -102,9 +106,9 @@ theorem mul_invOf_mul_self_cancel [Monoid α] (a b : α) [Invertible b] : a * �
 #align mul_inv_of_mul_self_cancel mul_invOf_mul_self_cancel
 
 @[simp]
-theorem mul_mul_inv_of_self_cancel [Monoid α] (a b : α) [Invertible b] : a * b * ⅟ b = a := by
+theorem mul_mul_invOf_self_cancel [Monoid α] (a b : α) [Invertible b] : a * b * ⅟ b = a := by
   simp [mul_assoc]
-#align mul_mul_inv_of_self_cancel mul_mul_inv_of_self_cancel
+#align mul_mul_inv_of_self_cancel mul_mul_invOf_self_cancel
 
 theorem invOf_eq_right_inv [Monoid α] {a b : α} [Invertible a] (hac : a * b = 1) : ⅟ a = b :=
   left_inv_eq_right_inv (invOf_mul_self _) hac
@@ -129,8 +133,8 @@ instance [Monoid α] (a : α) : Subsingleton (Invertible a) :=
 def Invertible.copy [MulOneClass α] {r : α} (hr : Invertible r) (s : α) (hs : s = r) :
     Invertible s where
   invOf := ⅟ r
-  inv_of_mul_self := by rw [hs, inv_of_mul_self]
-  mul_inv_of_self := by rw [hs, mul_inv_of_self]
+  invOf_mul_self := by rw [hs, invOf_mul_self]
+  mul_invOf_self := by rw [hs, mul_invOf_self]
 #align invertible.copy Invertible.copy
 
 /-- An `invertible` element is a unit. -/
@@ -151,8 +155,8 @@ theorem isUnit_of_invertible [Monoid α] (a : α) [Invertible a] : IsUnit a :=
 def Units.invertible [Monoid α] (u : αˣ) :
     Invertible (u : α) where
   invOf := ↑u⁻¹
-  inv_of_mul_self := u.inv_mul
-  mul_inv_of_self := u.mul_inv
+  invOf_mul_self := u.inv_mul
+  mul_invOf_self := u.mul_inv
 #align units.invertible Units.invertible
 
 @[simp]
@@ -211,7 +215,7 @@ theorem invOf_neg [Monoid α] [HasDistribNeg α] (a : α) [Invertible a] [Invert
 @[simp]
 theorem one_sub_invOf_two [Ring α] [Invertible (2 : α)] : 1 - (⅟ 2 : α) = ⅟ 2 :=
   (isUnit_of_invertible (2 : α)).mul_right_inj.1 <| by
-    rw [mul_sub, mul_invOf_self, mul_one] ; norm_num
+    rw [mul_sub, mul_invOf_self, mul_one, ← one_add_one_eq_two, add_sub_cancel]
 #align one_sub_inv_of_two one_sub_invOf_two
 
 @[simp]
@@ -358,8 +362,8 @@ def Invertible.map {R : Type _} {S : Type _} {F : Type _} [MulOneClass R] [MulOn
     [MonoidHomClass F R S] (f : F) (r : R) [Invertible r] :
     Invertible (f r) where
   invOf := f (⅟ r)
-  inv_of_mul_self := by rw [← map_mul, inv_of_mul_self, map_one]
-  mul_inv_of_self := by rw [← map_mul, mul_inv_of_self, map_one]
+  invOf_mul_self := by rw [← map_mul, invOf_mul_self, map_one]
+  mul_invOf_self := by rw [← map_mul, mul_invOf_self, map_one]
 #align invertible.map Invertible.map
 
 /-- Note that the `invertible (f r)` argument can be satisfied by using `letI := invertible.map f r`
