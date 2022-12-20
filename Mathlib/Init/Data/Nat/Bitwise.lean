@@ -152,6 +152,8 @@ theorem div2_val (n) : div2 n = n / 2 := by
   rw [mod_two_of_bodd, bodd_add_div2]
 #align nat.div2_val Nat.div2_val
 
+/-- `bit b` appends the digit `b` to the binary representation of
+  its natural number input. -/
 def bit (b : Bool) : ℕ → ℕ :=
   cond b bit1 bit0
 #align nat.bit Nat.bit
@@ -178,6 +180,9 @@ theorem bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
   (bit_val _ _).trans <| (Nat.add_comm _ _).trans <| bodd_add_div2 _
 #align nat.bit_decomp Nat.bit_decomp
 
+/-- For a predicate `C : Nat → Sort _`, if instances can be
+  constructed for natural numbers of the form `bit b n`,
+  they can be constructed for any given natural number. -/
 def bitCasesOn {C : Nat → Sort u} (n) (h : ∀ b n, C (bit b n)) : C n := bit_decomp n ▸ h _ _
 #align nat.bit_cases_on Nat.bitCasesOn
 
@@ -185,11 +190,14 @@ theorem bit_zero : bit false 0 = 0 :=
   rfl
 #align nat.bit_zero Nat.bit_zero
 
+/-- Shift the digits of the binary representation of a number to the left,
+    and append `b` at the end. -/
 def shiftl' (b : Bool) (m : ℕ) : ℕ → ℕ
   | 0 => m
   | n + 1 => bit b (shiftl' b m n)
 #align nat.shiftl' Nat.shiftl'
 
+/-- Shift the digits of the binary representation of a number to the left. -/
 def shiftl : ℕ → ℕ → ℕ :=
   shiftl' false
 #align nat.shiftl Nat.shiftl
@@ -204,6 +212,7 @@ theorem shiftl_succ (m n) : shiftl m (n + 1) = bit0 (shiftl m n) :=
   rfl
 #align nat.shiftl_succ Nat.shiftl_succ
 
+/-- Shift the digits of the binary representation of a number to the right. -/
 def shiftr : ℕ → ℕ → ℕ
   | m, 0 => m
   | m, n + 1 => div2 (shiftr m n)
@@ -219,10 +228,16 @@ theorem shiftr_zero : ∀ n, shiftr 0 n = 0 := by
     rw [shiftr, div2, IH]
     rfl
 
+/-- Whether the `n`th bit from the right of
+    the binary representation of `m` is `1`. -/
 def testBit (m n : ℕ) : Bool :=
   bodd (shiftr m n)
 #align nat.test_bit Nat.testBit
 
+/-- A recursion principle for `bit` representations of natural numbers.
+  For a predicate `C : Nat → Sort _`, if instances can be
+  constructed for natural numbers of the form `bit b n`,
+  they can be constructed for all natural numbers. -/
 def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) : ∀ n, C n :=
   fun n =>
     if n0 : n = 0 then
@@ -244,18 +259,22 @@ def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) 
 
 #align nat.binaryRec Nat.binaryRec
 
-
+/-- The size of a natural number in bits. -/
 def size : ℕ → ℕ :=
   binaryRec 0 fun _ _ => succ
 #align nat.size Nat.size
 
-/-- `bits n` returns a list of Bools which correspond to the binary representation of n-/
+/-- `bits n` returns a list of Bools which correspond to
+    the binary representation of n-/
 def bits : ℕ → List Bool :=
   binaryRec [] fun b _ IH => b :: IH
 #align nat.bits Nat.bits
 
 -- Porting note: There is a `Nat.bitwise` in Lean 4 core,
 -- but it is different from the one in mathlib3, so we just port blindly here.
+/-- `Nat.bitwise'` (different from `Nat.bitwise` in Lean 4 core)
+  applies the function `f` to pairs of bits in the same position in
+  the binary representations of its inputs. -/
 def bitwise' (f : Bool → Bool → Bool) : ℕ → ℕ → ℕ :=
   binaryRec (fun n => cond (f false true) n 0) fun a m Ia =>
     binaryRec (cond (f true false) (bit a m) 0) fun b n _ => bit (f a b) (Ia n)
@@ -511,4 +530,3 @@ theorem test_bit_lxor' : ∀ m n k, testBit (lxor' m n) k = bxor (testBit m k) (
 #align nat.test_bit_lxor Nat.test_bit_lxor'
 
 end Nat
-#lint
