@@ -144,10 +144,9 @@ theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k *
 #align nat.choose_mul_factorial_mul_factorial Nat.choose_mul_factorial_mul_factorial
 
 theorem choose_mul {n k s : ℕ} (hkn : k ≤ n) (hsk : s ≤ k) :
-    n.choose k * k.choose s = n.choose s * (n - s).choose (k - s) := by
-  have h : 0 < (n - k)! * (k - s)! * s ! :=
-    mul_pos (mul_pos (factorial_pos _) (factorial_pos _)) (factorial_pos _)
-  refine' eq_of_mul_eq_mul_right h _
+    n.choose k * k.choose s = n.choose s * (n - s).choose (k - s) :=
+  have h : (n - k)! * (k - s)! * s ! ≠ 0:= by apply_rules [factorial_ne_zero, mul_ne_zero]
+  mul_right_cancel₀ h <|
   calc
     n.choose k * k.choose s * ((n - k)! * (k - s)! * s !) =
         n.choose k * (k.choose s * s ! * (k - s)!) * (n - k)! :=
