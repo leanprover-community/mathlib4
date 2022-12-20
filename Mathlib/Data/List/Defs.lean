@@ -10,7 +10,6 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Control.Functor
-import Mathlib.Data.List.Chain
 import Mathlib.Data.Nat.Basic
 import Mathlib.Logic.Basic
 import Std.Tactic.Lint.Basic
@@ -50,18 +49,23 @@ instance [DecidableEq α] : SDiff (List α) :=
 -- porting notes: see
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/List.2Ehead/near/313204716
 -- for the fooI naming convention.
-/-- "inhabited" `get` function: returns `default` instead of `none` in the case
+/-- "Inhabited" `get` function: returns `default` instead of `none` in the case
   that the index is out of bounds. -/
 def getI [Inhabited α] (l : List α) (n : Nat) : α :=
   getD l n default
 #align list.inth List.getI
+
+/-- "Inhabited" `take` function: Take `n` elements from a list `l`. If `l` has less than `n`
+  elements, append `n - length l` elements `default`. -/
+def takeI [Inhabited α] (n : Nat) (l : List α) : List α :=
+  takeD n l default
+#align list.take' List.takeI
 
 #align list.modify_nth_tail List.modifyNthTail
 #align list.modify_head List.modifyHead
 #align list.modify_nth List.modifyNth
 #align list.modify_last List.modifyLast
 #align list.insert_nth List.insertNth
-#align list.take' List.takeD
 #align list.take_while List.takeWhile
 #align list.scanl List.scanl
 #align list.scanr List.scanr
@@ -353,9 +357,14 @@ infixr:82 " ×ˢ " => List.product
 #align list.pw_filter List.pwFilter
 #align list.chain List.Chain
 #align list.chain' List.Chain'
-#align list.chain_cons List.chain_cons
 
 section Chain
+
+@[simp]
+theorem chain_cons {a b : α} {l : List α} : Chain R a (b :: l) ↔ R a b ∧ Chain R b l :=
+  ⟨fun p ↦ by cases p with | cons n p => exact ⟨n, p⟩,
+   fun ⟨n, p⟩ ↦ p.cons n⟩
+#align list.chain_cons List.chain_cons
 
 noncomputable instance decidableChain [DecidableRel R] (a : α) (l : List α) :
     Decidable (Chain R a l) := by
