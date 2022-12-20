@@ -8,9 +8,9 @@ Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.CompleteBooleanAlgebra
-import Mathbin.Order.Directed
-import Mathbin.Order.GaloisConnection
+import Mathlib.Order.CompleteBooleanAlgebra
+import Mathlib.Order.Directed
+import Mathlib.Order.GaloisConnection
 
 /-!
 # The set lattice
@@ -20,18 +20,18 @@ for `set α`, and some more set constructions.
 
 ## Main declarations
 
-* `set.Union`: Union of an indexed family of sets.
-* `set.Inter`: Intersection of an indexed family of sets.
-* `set.sInter`: **s**et **Inter**. Intersection of sets belonging to a set of sets.
-* `set.sUnion`: **s**et **Union**. Union of sets belonging to a set of sets. This is actually
+* `Set.Union`: Union of an indexed family of sets.
+* `Set.Inter`: Intersection of an indexed family of sets.
+* `Set.sInter`: **s**et **Inter**. Intersection of sets belonging to a set of sets.
+* `Set.sUnion`: **s**et **Union**. Union of sets belonging to a set of sets. This is actually
   defined in core Lean.
-* `set.sInter_eq_bInter`, `set.sUnion_eq_bInter`: Shows that `⋂₀ s = ⋂ x ∈ s, x` and
+* `Set.sInter_eq_bInter`, `set.sUnion_eq_bInter`: Shows that `⋂₀ s = ⋂ x ∈ s, x` and
   `⋃₀ s = ⋃ x ∈ s, x`.
-* `set.complete_boolean_algebra`: `set α` is a `complete_boolean_algebra` with `≤ = ⊆`, `< = ⊂`,
-  `⊓ = ∩`, `⊔ = ∪`, `⨅ = ⋂`, `⨆ = ⋃` and `\` as the set difference. See `set.boolean_algebra`.
-* `set.kern_image`: For a function `f : α → β`, `s.kern_image f` is the set of `y` such that
+* `Set.complete_boolean_algebra`: `set α` is a `CompleteBooleanAlgebra` with `≤ = ⊆`, `< = ⊂`,
+  `⊓ = ∩`, `⊔ = ∪`, `⨅ = ⋂`, `⨆ = ⋃` and `\` as the set difference. See `Set.BooleanAlgebra`.
+* `Set.kern_image`: For a function `f : α → β`, `s.kern_image f` is the set of `y` such that
   `f ⁻¹ y ⊆ s`.
-* `set.seq`: Union of the image of a set under a **seq**uence of functions. `seq s t` is the union
+* `Set.seq`: Union of the image of a set under a **seq**uence of functions. `seq s t` is the union
   of `f '' t` over all `f ∈ s`, where `t : set α` and `s : set (α → β)`.
 * `set.Union_eq_sigma_of_disjoint`: Equivalence between `⋃ i, t i` and `Σ i, t i`, where `t` is an
   indexed family of disjoint sets.
@@ -50,10 +50,10 @@ In lemma names,
 
 ## Notation
 
-* `⋃`: `set.Union`
-* `⋂`: `set.Inter`
-* `⋃₀`: `set.sUnion`
-* `⋂₀`: `set.sInter`
+* `⋃`: `Set.Union`
+* `⋂`: `Set.Inter`
+* `⋃₀`: `Set.sUnion`
+* `⋂₀`: `Set.sInter`
 -/
 
 
@@ -68,36 +68,37 @@ namespace Set
 /-! ### Complete lattice and complete Boolean algebra instances -/
 
 
-instance : HasInf (Set α) :=
+instance : InfSet (Set α) :=
   ⟨fun s => { a | ∀ t ∈ s, a ∈ t }⟩
 
-instance : HasSup (Set α) :=
+instance : SupSet (Set α) :=
   ⟨fun s => { a | ∃ t ∈ s, a ∈ t }⟩
 
 /-- Intersection of a set of sets. -/
-def sInter (S : Set (Set α)) : Set α :=
-  inf S
-#align set.sInter Set.sInter
+def interₛ (S : Set (Set α)) : Set α :=
+  infₛ S
+#align set.sInter Set.interₛ
 
-#print Set.sUnion /-
-/-- Union of a set of sets. -/
-def sUnion (S : Set (Set α)) : Set α :=
-  sup S
-#align set.sUnion Set.sUnion
--/
+/-- Notation for `Set.interₛ` Intersection of a set of sets. -/
+prefix:110 "⋂₀ " => interₛ
 
--- mathport name: «expr⋂₀ »
-prefix:110 "⋂₀ " => sInter
+/-- Intersection of a set of sets. -/
+def unionₛ (S : Set (Set α)) : Set α :=
+  supₛ S
+#align set.sUnion Set.unionₛ
 
-@[simp]
-theorem mem_sInter {x : α} {S : Set (Set α)} : x ∈ ⋂₀ S ↔ ∀ t ∈ S, x ∈ t :=
-  Iff.rfl
-#align set.mem_sInter Set.mem_sInter
+/-- Notation for Set.unionₛ`. Union of a set of sets. -/
+prefix:110 "⋃₀" => unionₛ
 
 @[simp]
-theorem mem_sUnion {x : α} {S : Set (Set α)} : x ∈ ⋃₀S ↔ ∃ t ∈ S, x ∈ t :=
+theorem mem_interₛ {x : α} {S : Set (Set α)} : x ∈ ⋂₀ S ↔ ∀ t ∈ S, x ∈ t :=
   Iff.rfl
-#align set.mem_sUnion Set.mem_sUnion
+#align set.mem_sInter Set.mem_interₛ
+
+@[simp]
+theorem mem_unionₛ {x : α} {S : Set (Set α)} : x ∈ ⋃₀S ↔ ∃ t ∈ S, x ∈ t :=
+  Iff.rfl
+#align set.mem_sUnion Set.mem_unionₛ
 
 /- warning: set.Union -> Set.union is a dubious translation:
 lean 3 declaration is
@@ -106,9 +107,9 @@ but is expected to have type
   forall {β : Type.{u_1}}, (Set.{u_1} β) -> (Set.{u_1} β) -> (Set.{u_1} β)
 Case conversion may be inaccurate. Consider using '#align set.Union Set.unionₓ'. -/
 /-- Indexed union of a family of sets -/
-def union (s : ι → Set β) : Set β :=
-  supr s
-#align set.Union Set.union
+def unionᵢ (s : ι → Set β) : Set β :=
+  supᵢ s
+#align set.Union Set.unionᵢ
 
 /- warning: set.Inter -> Set.inter is a dubious translation:
 lean 3 declaration is
@@ -117,25 +118,25 @@ but is expected to have type
   forall {β : Type.{u_1}}, (Set.{u_1} β) -> (Set.{u_1} β) -> (Set.{u_1} β)
 Case conversion may be inaccurate. Consider using '#align set.Inter Set.interₓ'. -/
 /-- Indexed intersection of a family of sets -/
-def inter (s : ι → Set β) : Set β :=
-  infi s
-#align set.Inter Set.inter
+def interᵢ (s : ι → Set β) : Set β :=
+  infᵢ s
+#align set.Inter Set.interᵢ
 
--- mathport name: «expr⋃ , »
+/-- Notation for `Set.unionᵢ`. Indexed union of a family of sets -/
 notation3"⋃ "(...)", "r:(scoped f => union f) => r
 
--- mathport name: «expr⋂ , »
+/-- Notation for `Set.interᵢ`. Indexed intersection of a family of sets -/
 notation3"⋂ "(...)", "r:(scoped f => inter f) => r
 
 @[simp]
-theorem Sup_eq_sUnion (S : Set (Set α)) : sup S = ⋃₀S :=
+theorem supₛ_eq_unionₛ (S : Set (Set α)) : supₛ S = ⋃₀S :=
   rfl
-#align set.Sup_eq_sUnion Set.Sup_eq_sUnion
+#align set.Sup_eq_sUnion Set.supₛ_eq_unionₛ
 
 @[simp]
-theorem Inf_eq_sInter (S : Set (Set α)) : inf S = ⋂₀ S :=
+theorem infₛ_eq_interₛ (S : Set (Set α)) : infₛ S = ⋂₀ S :=
   rfl
-#align set.Inf_eq_sInter Set.Inf_eq_sInter
+#align set.Inf_eq_sInter Set.infₛ_eq_interₛ
 
 @[simp]
 theorem supr_eq_Union (s : ι → Set α) : supr s = union s :=

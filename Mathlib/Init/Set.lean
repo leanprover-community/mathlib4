@@ -118,11 +118,6 @@ def powerset (s : Set α) : Set (Set α) :=
 
 prefix:100 "𝒫" => powerset
 
-@[reducible]
-def sUnion (s : Set (Set α)) : Set α := {t | ∃ a ∈ s, t ∈ a}
-
-prefix:110 "⋃₀" => sUnion
-
 def image (f : α → β) (s : Set α) : Set β :=
   { f a | a ∈ s }
 
