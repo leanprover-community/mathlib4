@@ -409,8 +409,10 @@ def destutter (R : α → α → Prop) [DecidableRel R] : List α → List α
 
 #align list.range' List.range'
 #align list.reduce_option List.reduceOption
+-- Porting note: replace ilast' by getLastD
 #align list.ilast' List.ilast'
-#align list.last' List.last'
+-- Porting note: remove last' from Std
+#align list.last' List.getLast?
 #align list.rotate List.rotate
 #align list.rotate' List.rotate'
 
