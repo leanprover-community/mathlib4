@@ -70,10 +70,10 @@ attribute [trans] HEq.trans
 #check @HEq.trans
 
 -- Narrowed the bug, commented out for now
--- set_option trace.Tactic.trans true in
--- example (a : α)(c: γ): ∀ b: β, HEq a b → HEq b c → HEq a c := by
---     intro b h₁ h₂
---     trans b
+set_option trace.Tactic.trans true in
+example (a : α)(c: γ): ∀ b: β, HEq a b → HEq b c → HEq a c := by
+    intro b h₁ h₂
+    trans b
 
 -- Structurally a special case and deprecated, not testing
 -- @[trans] example  {p q r : Prop} (h₁ : p → q) (h₂ : q → r) :

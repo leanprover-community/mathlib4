@@ -56,20 +56,46 @@ def _root_.Trans.het' {a : α}(b : β){c : γ}
 
 open Lean.Elab.Tactic
 
-/--
-Auxiliary meta definition for `trans` tactic for the homogeneous case.
--/
-def applyTrans(lem: Name)
-    (rel x z : Expr)(t'? : Option (Expr × List MVarId))(g: MVarId) : MetaM <| List MVarId := do
-      let lemTy ← inferType (← mkConstWithLevelParams lem)
-      let ty ← inferType x
-      let arity ← withReducible <| forallTelescopeReducing lemTy fun es _ ↦ pure es.size
-      let y ← (t'?.map (pure ·.1)).getD (mkFreshExprMVar ty)
-      let g₁ ← mkFreshExprMVar (some <| ← mkAppM' rel #[x, y]) .synthetic
-      let g₂ ← mkFreshExprMVar (some <| ← mkAppM' rel #[y, z]) .synthetic
-      g.assign (← mkAppOptM lem (mkArray (arity - 2) none ++ #[some g₁, some g₂]))
-      pure <| [g₁.mvarId!, g₂.mvarId!] ++ if let some (_, gs') := t'? then gs' else [y.mvarId!]
 
+def getExplicitFuncArg? (e: Expr) : MetaM (Option <| Expr × Expr) := do
+  match e with
+  | Expr.app f a => do
+    if ← isDefEq (← mkAppM' f #[a]) e then
+      return some (f, a)
+    else
+      getExplicitFuncArg? f
+  | _ => return none
+
+
+def getExplicitRelArg? (tgt f z: Expr) : MetaM (Option <| Expr × Expr) := do
+  match f  with
+  | Expr.app rel x => do
+    let check: Bool ← do
+      try
+        let folded ← mkAppM' rel #[x, z]
+        isDefEq folded tgt
+      catch _ =>
+        pure false
+    if check then
+      return some (rel, x)
+    else
+      getExplicitRelArg? tgt rel z
+  | _ => return none
+
+def showExplicitRelArg (tgt f z: Expr) : MetaM Unit := do
+  logInfo m!"tgt: {tgt}"
+  logInfo m!"f: {f}"
+  logInfo m!"z: {z}"
+  match f  with
+  | Expr.app rel x => do
+    logInfo m!"rel: {rel}"
+    logInfo m!"x: {x}"
+    if ← isDefEq (← mkAppM' rel #[x, z]) tgt then
+      logInfo "matched"
+      return ()
+    else
+      showExplicitRelArg tgt rel z
+  | _ => return ()
 
 /--
 `trans` applies to a goal whose target has the form `t ~ u` where `~` is a transitive relation,
@@ -80,8 +106,16 @@ that is, a relation which has a transitivity lemma tagged with the attribute [tr
 -/
 elab "trans" t?:(ppSpace (colGt term))? : tactic => withMainContext do
   let tgt ← getMainTarget
-  let .app (.app rel x) z := tgt
-    | throwError "transitivity lemmas only apply to binary relations, not {indentExpr tgt}"
+  let (rel, x, z) ←
+    match tgt with
+    | Expr.app f z =>
+      match (← getExplicitRelArg? tgt f z) with
+      | some (rel, x) =>
+        pure (rel, x, z)
+      | none => throwError "transitivity lemmas only apply to binary relations, not {indentExpr tgt}"
+    | _ => throwError "transitivity lemmas only apply to binary relations, not {indentExpr tgt}"
+  -- let .app (.app rel x) z := tgt
+  --   | throwError "transitivity lemmas only apply to binary relations, not {indentExpr tgt}"
   trace[Tactic.trans]"goal decomposed"
   trace[Tactic.trans]"rel: {indentExpr rel}"
   trace[Tactic.trans]"x:{indentExpr x}"
