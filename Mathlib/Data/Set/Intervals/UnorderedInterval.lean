@@ -255,36 +255,36 @@ theorem monotoneOn_or_antitoneOn_iff_interval :
 -- Porting note: what should the naming scheme be here? This is a term, so should be `intervalOC`,
 -- but we also want to match the `Ioc` convention.
 /-- The open-closed interval with unordered bounds. -/
-def interval_oc : α → α → Set α := fun a b => Ioc (min a b) (max a b)
-#align set.interval_oc Set.interval_oc
+def intervalOC : α → α → Set α := fun a b => Ioc (min a b) (max a b)
+#align set.interval_oc Set.intervalOC
 
 -- Porting note: removed `scoped[Interval]` temporarily before a workaround is found
 -- Below is a capital iota
 /-- `Ι a b` denotes the open-closed interval with unordered bounds. Here, `Ι` is a capital iota,
 distinguished from a capital `i`. -/
-notation "Ι" => Set.interval_oc
+notation "Ι" => Set.intervalOC
 
 @[simp]
-theorem interval_oc_of_le (h : a ≤ b) : Ι a b = Ioc a b := by simp [interval_oc, h]
-#align set.interval_oc_of_le Set.interval_oc_of_le
+theorem intervalOC_of_le (h : a ≤ b) : Ι a b = Ioc a b := by simp [intervalOC, h]
+#align set.interval_oc_of_le Set.intervalOC_of_le
 
 @[simp]
-theorem interval_oc_of_lt (h : b < a) : Ι a b = Ioc b a := by simp [interval_oc, le_of_lt h]
-#align set.interval_oc_of_lt Set.interval_oc_of_lt
+theorem intervalOC_of_lt (h : b < a) : Ι a b = Ioc b a := by simp [intervalOC, le_of_lt h]
+#align set.interval_oc_of_lt Set.intervalOC_of_lt
 
-theorem interval_oc_eq_union : Ι a b = Ioc a b ∪ Ioc b a := by
-  cases le_total a b <;> simp [interval_oc, *]
-#align set.interval_oc_eq_union Set.interval_oc_eq_union
+theorem intervalOC_eq_union : Ι a b = Ioc a b ∪ Ioc b a := by
+  cases le_total a b <;> simp [intervalOC, *]
+#align set.interval_oc_eq_union Set.intervalOC_eq_union
 
-theorem mem_interval_oc : a ∈ Ι b c ↔ b < a ∧ a ≤ c ∨ c < a ∧ a ≤ b := by
-  rw [interval_oc_eq_union, mem_union, mem_Ioc, mem_Ioc]
-#align set.mem_interval_oc Set.mem_interval_oc
+theorem mem_intervalOC : a ∈ Ι b c ↔ b < a ∧ a ≤ c ∨ c < a ∧ a ≤ b := by
+  rw [intervalOC_eq_union, mem_union, mem_Ioc, mem_Ioc]
+#align set.mem_interval_oc Set.mem_intervalOC
 
-theorem not_mem_interval_oc : a ∉ Ι b c ↔ a ≤ b ∧ a ≤ c ∨ c < a ∧ b < a := by
+theorem not_mem_intervalOC : a ∉ Ι b c ↔ a ≤ b ∧ a ≤ c ∨ c < a ∧ b < a := by
   -- Porting note: restore `tauto` once it's ported
   -- simp only [interval_oc_eq_union, mem_union, mem_Ioc, not_lt, ← not_le]
   -- tauto
-  rw [interval_oc_eq_union, mem_union, mem_Ioc, mem_Ioc]
+  rw [intervalOC_eq_union, mem_union, mem_Ioc, mem_Ioc]
   push_neg
   constructor
   · rintro ⟨h1, h2⟩
@@ -300,78 +300,78 @@ theorem not_mem_interval_oc : a ∉ Ι b c ↔ a ≤ b ∧ a ≤ c ∨ c < a ∧
   · intro h
     rw [← iff_def, iff_iff_and_or_not_and_not, and_comm]
     rwa [← not_lt, ← not_lt, or_comm] at h
-#align set.not_mem_interval_oc Set.not_mem_interval_oc
+#align set.not_mem_interval_oc Set.not_mem_intervalOC
 
 @[simp]
-theorem left_mem_interval_oc : a ∈ Ι a b ↔ b < a := by simp [mem_interval_oc]
-#align set.left_mem_interval_oc Set.left_mem_interval_oc
+theorem left_mem_intervalOC : a ∈ Ι a b ↔ b < a := by simp [mem_intervalOC]
+#align set.left_mem_interval_oc Set.left_mem_intervalOC
 
 @[simp]
-theorem right_mem_interval_oc : b ∈ Ι a b ↔ a < b := by simp [mem_interval_oc]
-#align set.right_mem_interval_oc Set.right_mem_interval_oc
+theorem right_mem_intervalOC : b ∈ Ι a b ↔ a < b := by simp [mem_intervalOC]
+#align set.right_mem_interval_oc Set.right_mem_intervalOC
 
-theorem forall_interval_oc_iff {P : α → Prop} :
+theorem forall_intervalOC_iff {P : α → Prop} :
     (∀ x ∈ Ι a b, P x) ↔ (∀ x ∈ Ioc a b, P x) ∧ ∀ x ∈ Ioc b a, P x := by
-  simp only [interval_oc_eq_union, mem_union, or_imp, forall_and, iff_self]
-#align set.forall_interval_oc_iff Set.forall_interval_oc_iff
+  simp only [intervalOC_eq_union, mem_union, or_imp, forall_and, iff_self]
+#align set.forall_interval_oc_iff Set.forall_intervalOC_iff
 
-theorem interval_oc_subset_interval_oc_of_interval_subset_interval {a b c d : α}
+theorem intervalOC_subset_intervalOC_of_interval_subset_interval {a b c d : α}
     (h : [[a, b]] ⊆ [[c, d]]) : Ι a b ⊆ Ι c d :=
   Ioc_subset_Ioc (interval_subset_interval_iff_le.1 h).1 (interval_subset_interval_iff_le.1 h).2
 #align
   set.interval_oc_subset_interval_oc_of_interval_subset_interval
-  Set.interval_oc_subset_interval_oc_of_interval_subset_interval
+  Set.intervalOC_subset_intervalOC_of_interval_subset_interval
 
-theorem interval_oc_swap (a b : α) : Ι a b = Ι b a := by
-  simp only [interval_oc, min_comm a b, max_comm a b]
-#align set.interval_oc_swap Set.interval_oc_swap
+theorem intervalOC_swap (a b : α) : Ι a b = Ι b a := by
+  simp only [intervalOC, min_comm a b, max_comm a b]
+#align set.interval_oc_swap Set.intervalOC_swap
 
-theorem Ioc_subset_interval_oc : Ioc a b ⊆ Ι a b :=
+theorem Ioc_subset_intervalOC : Ioc a b ⊆ Ι a b :=
   Ioc_subset_Ioc (min_le_left _ _) (le_max_right _ _)
-#align set.Ioc_subset_interval_oc Set.Ioc_subset_interval_oc
+#align set.Ioc_subset_interval_oc Set.Ioc_subset_intervalOC
 
-theorem Ioc_subset_interval_oc' : Ioc a b ⊆ Ι b a :=
+theorem Ioc_subset_intervalOC' : Ioc a b ⊆ Ι b a :=
   Ioc_subset_Ioc (min_le_right _ _) (le_max_left _ _)
-#align set.Ioc_subset_interval_oc' Set.Ioc_subset_interval_oc'
+#align set.Ioc_subset_interval_oc' Set.Ioc_subset_intervalOC'
 
-theorem eq_of_mem_interval_oc_of_mem_interval_oc : a ∈ Ι b c → b ∈ Ι a c → a = b := by
-  simp_rw [mem_interval_oc]; rintro (⟨_, _⟩ | ⟨_, _⟩) (⟨_, _⟩ | ⟨_, _⟩) <;> apply le_antisymm <;>
+theorem eq_of_mem_intervalOC_of_mem_intervalOC : a ∈ Ι b c → b ∈ Ι a c → a = b := by
+  simp_rw [mem_intervalOC]; rintro (⟨_, _⟩ | ⟨_, _⟩) (⟨_, _⟩ | ⟨_, _⟩) <;> apply le_antisymm <;>
     first |assumption|exact le_of_lt ‹_›|exact le_trans ‹_› (le_of_lt ‹_›)
-#align set.eq_of_mem_interval_oc_of_mem_interval_oc Set.eq_of_mem_interval_oc_of_mem_interval_oc
+#align set.eq_of_mem_interval_oc_of_mem_interval_oc Set.eq_of_mem_intervalOC_of_mem_intervalOC
 
-theorem eq_of_mem_interval_oc_of_mem_interval_oc' : b ∈ Ι a c → c ∈ Ι a b → b = c := by
-  simpa only [interval_oc_swap a] using eq_of_mem_interval_oc_of_mem_interval_oc
-#align set.eq_of_mem_interval_oc_of_mem_interval_oc' Set.eq_of_mem_interval_oc_of_mem_interval_oc'
+theorem eq_of_mem_intervalOC_of_mem_intervalOC' : b ∈ Ι a c → c ∈ Ι a b → b = c := by
+  simpa only [intervalOC_swap a] using eq_of_mem_intervalOC_of_mem_intervalOC
+#align set.eq_of_mem_interval_oc_of_mem_interval_oc' Set.eq_of_mem_intervalOC_of_mem_intervalOC'
 
-theorem eq_of_not_mem_interval_oc_of_not_mem_interval_oc (ha : a ≤ c) (hb : b ≤ c) :
+theorem eq_of_not_mem_intervalOC_of_not_mem_intervalOC (ha : a ≤ c) (hb : b ≤ c) :
     a ∉ Ι b c → b ∉ Ι a c → a = b := by
-  simp_rw [not_mem_interval_oc]
+  simp_rw [not_mem_intervalOC]
   rintro (⟨_, _⟩ | ⟨_, _⟩) (⟨_, _⟩ | ⟨_, _⟩) <;>
       apply le_antisymm <;>
     first |assumption|exact le_of_lt ‹_›|
     exact absurd hb (not_le_of_lt ‹c < b›)|exact absurd ha (not_le_of_lt ‹c < a›)
 #align
   set.eq_of_not_mem_interval_oc_of_not_mem_interval_oc
-  Set.eq_of_not_mem_interval_oc_of_not_mem_interval_oc
+  Set.eq_of_not_mem_intervalOC_of_not_mem_intervalOC
 
-theorem interval_oc_injective_right (a : α) : Injective fun b => Ι b a := by
+theorem intervalOC_injective_right (a : α) : Injective fun b => Ι b a := by
   rintro b c h
   rw [ext_iff] at h
   obtain ha | ha := le_or_lt b a
   · have hb := (h b).not
-    simp only [ha, left_mem_interval_oc, not_lt, true_iff_iff, not_mem_interval_oc, ← not_le,
+    simp only [ha, left_mem_intervalOC, not_lt, true_iff_iff, not_mem_intervalOC, ← not_le,
       and_true_iff, not_true, false_and_iff, not_false_iff, true_iff_iff, or_false_iff] at hb
     refine' hb.eq_of_not_lt fun hc => _
     simpa [ha, and_iff_right hc, ← @not_le _ _ _ a, iff_not_self, -not_le] using h c
   · refine'
-      eq_of_mem_interval_oc_of_mem_interval_oc ((h _).1 <| left_mem_interval_oc.2 ha)
-        ((h _).2 <| left_mem_interval_oc.2 <| ha.trans_le _)
-    simpa [ha, ha.not_le, mem_interval_oc] using h b
-#align set.interval_oc_injective_right Set.interval_oc_injective_right
+      eq_of_mem_intervalOC_of_mem_intervalOC ((h _).1 <| left_mem_intervalOC.2 ha)
+        ((h _).2 <| left_mem_intervalOC.2 <| ha.trans_le _)
+    simpa [ha, ha.not_le, mem_intervalOC] using h b
+#align set.interval_oc_injective_right Set.intervalOC_injective_right
 
-theorem interval_oc_injective_left (a : α) : Injective (Ι a) := by
-  simpa only [interval_oc_swap] using interval_oc_injective_right a
-#align set.interval_oc_injective_left Set.interval_oc_injective_left
+theorem intervalOC_injective_left (a : α) : Injective (Ι a) := by
+  simpa only [intervalOC_swap] using intervalOC_injective_right a
+#align set.interval_oc_injective_left Set.intervalOC_injective_left
 
 end LinearOrder
 
