@@ -97,13 +97,58 @@ instance decidableNonneg : Decidable (Rat.Nonneg a) := by
 protected def le' (a b : ℚ) := Rat.Nonneg (b - a)
 #align rat.le Rat.le'
 
+/-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with rational
+numbers of the form `mk' n d` with `d ≠ 0`. -/
+-- Porting note: TODO move
+@[elab_as_elim]
+def numDenCasesOn''.{u} {C : ℚ → Sort u} (a : ℚ)
+    (H : ∀ (n : ℤ) (d : ℕ) (nz red), C (mk' n d nz red)) :
+    C a :=
+  numDenCasesOn a fun n d h h' => by
+    rw [←mk_eq_divInt _ _ h.ne' h']
+    exact H n d h.ne' _
+
+-- Porting note: TODO can this be shortened?
 protected theorem le_iff_Nonneg (a b : ℚ) : a ≤ b ↔ Rat.Nonneg (b - a) :=
-  numDenCasesOn' a fun na da ha =>
-    numDenCasesOn' b fun nb db hb => by
+  numDenCasesOn'' a fun na da ha hared =>
+    numDenCasesOn'' b fun nb db hb hbred => by
       change Rat.blt _ _ = false ↔ _
       unfold Rat.blt
-      simp [Rat.Nonneg]
-      sorry
+      simp [-divInt_ofNat, mkRat_eq]
+      split_ifs with h h'
+      · rw [Rat.sub_def]
+        simp [Rat.Nonneg]
+        simp [normalize_eq]
+        apply Int.ediv_neg'
+        · rw [sub_neg]
+          apply lt_of_lt_of_le
+          · apply mul_neg_of_neg_of_pos h.1
+            rwa [Nat.cast_pos, pos_iff_ne_zero]
+          · apply mul_nonneg h.2 (Nat.cast_nonneg _)
+        · simp only [Nat.cast_pos]
+          apply Nat.gcd_pos_of_pos_right
+          apply mul_pos <;> rwa [pos_iff_ne_zero]
+      · simp only [divInt_ofNat, ←zero_iff_num_zero, mkRat_eq_zero hb] at h'
+        simp [h', Rat.Nonneg]
+      · simp [Rat.Nonneg, Rat.sub_def, normalize_eq]
+        refine ⟨fun H => ?_, fun H _ => ?_⟩
+        · refine Int.ediv_nonneg ?_ (Nat.cast_nonneg _)
+          rw [sub_nonneg]
+          push_neg at h
+          obtain hb|hb := Ne.lt_or_lt h'
+          · apply H
+            intro H'
+            exact (hb.trans H').false.elim
+          · obtain ha|ha := le_or_lt na 0
+            · apply le_trans <| mul_nonpos_of_nonpos_of_nonneg ha (Nat.cast_nonneg _)
+              exact mul_nonneg hb.le (Nat.cast_nonneg _)
+            · exact H (fun _ => ha)
+        · rw [←sub_nonneg]
+          contrapose! H
+          apply Int.ediv_neg' H
+          simp only [Nat.cast_pos]
+          apply Nat.gcd_pos_of_pos_right
+          apply mul_pos <;> rwa [pos_iff_ne_zero]
 
 protected theorem le_def {a b c d : ℤ} (b0 : 0 < b) (d0 : 0 < d) :
     a /. b ≤ c /. d ↔ a * d ≤ c * b := by
