@@ -2,6 +2,11 @@
 Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
+
+! This file was ported from Lean 3 source module lean_core.data.vector
+! leanprover-community/mathlib commit e574b1a4e891376b0ef974b926da39e05da12a06
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Mathport.Rename
 import Std.Data.List.Basic

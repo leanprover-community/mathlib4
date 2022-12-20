@@ -78,7 +78,7 @@ add_decl_doc SupSet.supₛ
 /-- Infimum of a set -/
 add_decl_doc InfSet.infₛ
 
-/-- Indexed supᵢemum -/
+/-- Indexed supremum -/
 def supᵢ [SupSet α] {ι} (s : ι → α) : α :=
   supₛ (range s)
 #align supr supᵢ
@@ -105,7 +105,7 @@ macro_rules
   | `(⨆ $x:ident, $p) => `(supᵢ fun $x:ident ↦ $p)
   | `(⨆ $x:ident : $t, $p) => `(supᵢ fun $x:ident : $t ↦ $p)
   | `(⨆ $x:ident $b:binderPred, $p) =>
-    `(supᵢ fun $x:ident ↦ satisfiesBinderPred% $x $b ∧ $p) -/
+    `(supᵢ fun $x:ident ↦ satisfies_binder_pred% $x $b ∧ $p) -/
 
 /-- Indexed supremum. -/
 notation3 "⨆ "(...)", "r:(scoped f => supᵢ f) => r
@@ -916,13 +916,11 @@ theorem le_infᵢ_iff : a ≤ infᵢ f ↔ ∀ i, a ≤ f i :=
 
 theorem supᵢ₂_le_iff {f : ∀ i, κ i → α} : (⨆ (i) (j), f i j) ≤ a ↔ ∀ i j, f i j ≤ a := by
   simp_rw [supᵢ_le_iff]
-  rfl
 
 #align supr₂_le_iff supᵢ₂_le_iff
 
 theorem le_infᵢ₂_iff {f : ∀ i, κ i → α} : (a ≤ ⨅ (i) (j), f i j) ↔ ∀ i j, a ≤ f i j := by
   simp_rw [le_infᵢ_iff]
-  rfl
 #align le_infi₂_iff le_infᵢ₂_iff
 
 theorem supᵢ_lt_iff : supᵢ f < a ↔ ∃ b, b < a ∧ ∀ i, f i ≤ b :=
@@ -973,7 +971,7 @@ theorem Antitone.le_map_infₛ [CompleteLattice β] {s : Set α} {f : α → β}
 theorem OrderIso.map_supᵢ [CompleteLattice β] (f : α ≃o β) (x : ι → α) :
     f (⨆ i, x i) = ⨆ i, f (x i) :=
   eq_of_forall_ge_iff <| f.surjective.forall.2
-  fun x => by simp only [f.le_iff_le, supᵢ_le_iff] ; rfl
+  fun x => by simp only [f.le_iff_le, supᵢ_le_iff]
 #align order_iso.map_supr OrderIso.map_supᵢ
 
 theorem OrderIso.map_infᵢ [CompleteLattice β] (f : α ≃o β) (x : ι → α) :
@@ -1546,7 +1544,7 @@ theorem isLUB_bsupᵢ {s : Set β} {f : β → α} : IsLUB (f '' s) (⨆ x ∈ s
 #align isLUB_bsupr isLUB_bsupᵢ
 
 theorem supᵢ_sigma {p : β → Type _} {f : Sigma p → α} : (⨆ x, f x) = ⨆ (i) (j), f ⟨i, j⟩ :=
-  eq_of_forall_ge_iff fun c => by simp only [supᵢ_le_iff, Sigma.forall] ; rfl
+  eq_of_forall_ge_iff fun c => by simp only [supᵢ_le_iff, Sigma.forall]
 #align supr_sigma supᵢ_sigma
 
 theorem infᵢ_sigma {p : β → Type _} {f : Sigma p → α} : (⨅ x, f x) = ⨅ (i) (j), f ⟨i, j⟩ :=
@@ -1554,7 +1552,7 @@ theorem infᵢ_sigma {p : β → Type _} {f : Sigma p → α} : (⨅ x, f x) = �
 #align infi_sigma infᵢ_sigma
 
 theorem supᵢ_prod {f : β × γ → α} : (⨆ x, f x) = ⨆ (i) (j), f (i, j) :=
-  eq_of_forall_ge_iff fun c => by simp only [supᵢ_le_iff, Prod.forall] ; rfl
+  eq_of_forall_ge_iff fun c => by simp only [supᵢ_le_iff, Prod.forall]
 #align supr_prod supᵢ_prod
 
 theorem infᵢ_prod {f : β × γ → α} : (⨅ x, f x) = ⨅ (i) (j), f (i, j) :=
@@ -1573,7 +1571,7 @@ theorem binfᵢ_prod {f : β × γ → α} {s : Set β} {t : Set γ} :
 #align binfi_prod binfᵢ_prod
 
 theorem supᵢ_sum {f : Sum β γ → α} : (⨆ x, f x) = (⨆ i, f (Sum.inl i)) ⊔ ⨆ j, f (Sum.inr j) :=
-  eq_of_forall_ge_iff fun c => by simp only [sup_le_iff, supᵢ_le_iff, Sum.forall] ; rfl
+  eq_of_forall_ge_iff fun c => by simp only [sup_le_iff, supᵢ_le_iff, Sum.forall]
 #align supr_sum supᵢ_sum
 
 theorem infᵢ_sum {f : Sum β γ → α} : (⨅ x, f x) = (⨅ i, f (Sum.inl i)) ⊓ ⨅ j, f (Sum.inr j) :=
@@ -1581,7 +1579,7 @@ theorem infᵢ_sum {f : Sum β γ → α} : (⨅ x, f x) = (⨅ i, f (Sum.inl i)
 #align infi_sum infᵢ_sum
 
 theorem supᵢ_option (f : Option β → α) : (⨆ o, f o) = f none ⊔ ⨆ b, f (Option.some b) :=
-  eq_of_forall_ge_iff fun c => by simp only [supᵢ_le_iff, sup_le_iff, Option.forall] ; rfl
+  eq_of_forall_ge_iff fun c => by simp only [supᵢ_le_iff, sup_le_iff, Option.forall]
 #align supr_option supᵢ_option
 
 theorem infᵢ_option (f : Option β → α) : (⨅ o, f o) = f none ⊓ ⨅ b, f (Option.some b) :=
@@ -1701,11 +1699,11 @@ section CompleteLinearOrder
 variable [CompleteLinearOrder α]
 
 theorem supᵢ_eq_top (f : ι → α) : supᵢ f = ⊤ ↔ ∀ b < ⊤, ∃ i, b < f i := by
-  simp only [← supₛ_range, supₛ_eq_top, Set.exists_range_iff] ; rfl
+  simp only [← supₛ_range, supₛ_eq_top, Set.exists_range_iff]
 #align supr_eq_top supᵢ_eq_top
 
 theorem infᵢ_eq_bot (f : ι → α) : infᵢ f = ⊥ ↔ ∀ b > ⊥, ∃ i, f i < b := by
-  simp only [← infₛ_range, infₛ_eq_bot, Set.exists_range_iff] ; rfl
+  simp only [← infₛ_range, infₛ_eq_bot, Set.exists_range_iff]
 #align infi_eq_bot infᵢ_eq_bot
 
 end CompleteLinearOrder

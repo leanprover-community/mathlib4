@@ -901,7 +901,7 @@ theorem nonempty_of_not_bddBelow [Nonempty α] (h : ¬BddBelow s) : s.Nonempty :
 @[simp]
 theorem bddAbove_insert [SemilatticeSup γ] (a : γ) {s : Set γ} :
     BddAbove (insert a s) ↔ BddAbove s := by
-  simp_rw [insert_eq, bddAbove_union, bddAbove_singleton, true_and, iff_self]
+  simp_rw [insert_eq, bddAbove_union, bddAbove_singleton, true_and]
   -- Porting note: can't `simp` a proposition to `true` given its proof
   -- simp only [insert_eq, bddAbove_union, bddAbove_singleton, true_and_iff]
 #align bdd_above_insert bddAbove_insert
@@ -915,7 +915,7 @@ theorem BddAbove.insert [SemilatticeSup γ] (a : γ) {s : Set γ} (hs : BddAbove
 @[simp]
 theorem bddBelow_insert [SemilatticeInf γ] (a : γ) {s : Set γ} :
     BddBelow (insert a s) ↔ BddBelow s := by
-  simp_rw [insert_eq, bddBelow_union, bddBelow_singleton, true_and, iff_self]
+  simp_rw [insert_eq, bddBelow_union, bddBelow_singleton, true_and]
   -- Porting note: can't `simp` a proposition to `true` given its proof
   -- simp only [insert_eq, bddBelow_union, bddBelow_singleton, true_and_iff]
 #align bdd_below_insert bddBelow_insert
@@ -1095,7 +1095,7 @@ section LinearOrder
 variable [LinearOrder α] {s : Set α} {a b : α}
 
 theorem lt_isLUB_iff (h : IsLUB s a) : b < a ↔ ∃ c ∈ s, b < c := by
-  simp_rw [← not_le, isLUB_le_iff h, mem_upperBounds, not_forall, not_le, exists_prop, iff_self]
+  simp_rw [← not_le, isLUB_le_iff h, mem_upperBounds, not_forall, not_le, exists_prop]
 #align lt_is_lub_iff lt_isLUB_iff
 
 theorem isGLB_lt_iff (h : IsGLB s a) : a < b ↔ ∃ c ∈ s, c < b :=
