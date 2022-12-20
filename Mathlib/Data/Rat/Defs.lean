@@ -212,6 +212,7 @@ theorem inv_def' {a b : ℤ} : (a /. b)⁻¹ = b /. a := inv_divInt ..
 
 variable (a b c : ℚ)
 
+-- Porting note: TODO this is a workaround.
 attribute [-simp] divInt_ofNat
 
 protected theorem add_zero : a + 0 = a :=
@@ -243,8 +244,7 @@ protected theorem add_left_neg : -a + a = 0 :=
   numDenCasesOn' a fun n d h => by simp [h, mkRat_add_mkRat]
 #align rat.add_left_neg Rat.add_left_neg
 
--- Porting note: See notes above about `Int.cast`.
-theorem divInt_zero_one : (Int.cast 0) /. 1 = 0 :=
+theorem divInt_zero_one : 0 /. 1 = 0 :=
   show divInt _ _ = _ by
     rw [divInt]
     simp
@@ -558,3 +558,4 @@ end Rat
 -- Porting note: `assert_not_exists` is not implemented yet.
 -- Guard against import creep.
 -- assert_not_exists field
+#lint
