@@ -378,8 +378,9 @@ theorem bitwise_bit_aux {f : Bool → Bool → Bool} (h : f false false = false)
 #align nat.bitwise_bit_aux Nat.bitwise_bit_aux
 
 @[simp]
-theorem bitwise'_zero_left (f : Bool → Bool → Bool) (n) : bitwise' f 0 n = cond (f false true) n 0 :=
-  by unfold bitwise'; rw [binary_rec_zero]
+theorem bitwise'_zero_left (f : Bool → Bool → Bool) (n) :
+    bitwise' f 0 n = cond (f false true) n 0 := by
+  unfold bitwise'; rw [binary_rec_zero]
 
 #align nat.bitwise_zero_left Nat.bitwise'_zero_left
 
