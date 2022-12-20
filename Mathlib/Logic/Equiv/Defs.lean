@@ -293,9 +293,9 @@ theorem eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x :
 theorem trans_assoc {δ} (ab : α ≃ β) (bc : β ≃ γ) (cd : γ ≃ δ) :
     (ab.trans bc).trans cd = ab.trans (bc.trans cd) := Equiv.ext fun _ => rfl
 
-theorem left_inverse_symm (f : Equiv α β) : LeftInverse f.symm f := f.left_inv
+theorem leftInverse_symm (f : Equiv α β) : LeftInverse f.symm f := f.left_inv
 
-theorem right_inverse_symm (f : Equiv α β) : Function.RightInverse f.symm f := f.right_inv
+theorem rightInverse_symm (f : Equiv α β) : Function.RightInverse f.symm f := f.right_inv
 
 theorem injective_comp (e : α ≃ β) (f : β → γ) : Injective (f ∘ e) ↔ Injective f :=
   EquivLike.injective_comp e f
