@@ -419,7 +419,8 @@ theorem subset_unionᵢ_of_subset {s : Set α} {t : ι → Set α} (i : ι) (h :
 
 /-- This rather trivial consequence of `interᵢ_subset`is convenient with `apply`, and has `i`
 explicit for this purpose. -/
-theorem interᵢ_subset_of_subset {s : ι → Set α} {t : Set α} (i : ι) (h : s i ⊆ t) : (⋂ i, s i) ⊆ t :=
+theorem interᵢ_subset_of_subset {s : ι → Set α} {t : Set α} (i : ι) (h : s i ⊆ t) :
+    (⋂ i, s i) ⊆ t :=
   @infᵢ_le_of_le (Set α) _ _ _ _ i h
 #align set.Inter_subset_of_subset Set.interᵢ_subset_of_subset
 
@@ -896,7 +897,8 @@ theorem mem_bunionᵢ {s : Set α} {t : α → Set β} {x : α} {y : β} (xs : x
 #align set.mem_bUnion Set.mem_bunionᵢ
 
 /-- A specialization of `mem_interᵢ₂`. -/
-theorem mem_binterᵢ {s : Set α} {t : α → Set β} {y : β} (h : ∀ x ∈ s, y ∈ t x) : y ∈ ⋂ x ∈ s, t x :=
+theorem mem_binterᵢ {s : Set α} {t : α → Set β} {y : β} (h : ∀ x ∈ s, y ∈ t x) :
+    y ∈ ⋂ x ∈ s, t x :=
   mem_interᵢ₂_of_mem h
 #align set.mem_bInter Set.mem_binterᵢ
 
@@ -905,7 +907,6 @@ theorem subset_bunionᵢ_of_mem {s : Set α} {u : α → Set β} {x : α} (xs : 
     u x ⊆ ⋃ x ∈ s, u x :=
 --Porting note: Why is this not just `subset_unionᵢ₂ x xs`?
   @subset_unionᵢ₂ β α (. ∈ s) (fun i _ => u i) x xs
-
 #align set.subset_bUnion_of_mem Set.subset_bunionᵢ_of_mem
 
 /-- A specialization of `interᵢ₂_subset`. -/
@@ -956,11 +957,13 @@ theorem interᵢ₂_congr {s t : ∀ i, κ i → Set α} (h : ∀ i j, s i j = t
   interᵢ_congr fun i => interᵢ_congr <| h i
 #align set.Inter₂_congr Set.interᵢ₂_congr
 
-theorem bunionᵢ_eq_unionᵢ (s : Set α) (t : ∀ x ∈ s, Set β) : (⋃ x ∈ s, t x ‹_›) = ⋃ x : s, t x x.2 :=
+theorem bunionᵢ_eq_unionᵢ (s : Set α) (t : ∀ x ∈ s, Set β) :
+    (⋃ x ∈ s, t x ‹_›) = ⋃ x : s, t x x.2 :=
   supᵢ_subtype'
 #align set.bUnion_eq_Union Set.bunionᵢ_eq_unionᵢ
 
-theorem binterᵢ_eq_interᵢ (s : Set α) (t : ∀ x ∈ s, Set β) : (⋂ x ∈ s, t x ‹_›) = ⋂ x : s, t x x.2 :=
+theorem binterᵢ_eq_interᵢ (s : Set α) (t : ∀ x ∈ s, Set β) :
+    (⋂ x ∈ s, t x ‹_›) = ⋂ x : s, t x x.2 :=
   infᵢ_subtype'
 #align set.bInter_eq_Inter Set.binterᵢ_eq_interᵢ
 
@@ -1063,7 +1066,8 @@ theorem bunionᵢ_insert (a : α) (s : Set α) (t : α → Set β) :
     (⋃ x ∈ insert a s, t x) = t a ∪ ⋃ x ∈ s, t x := by simp
 #align set.bUnion_insert Set.bunionᵢ_insert
 
-theorem bunionᵢ_pair (a b : α) (s : α → Set β) : (⋃ x ∈ ({a, b} : Set α), s x) = s a ∪ s b := by simp
+theorem bunionᵢ_pair (a b : α) (s : α → Set β) : (⋃ x ∈ ({a, b} : Set α), s x) = s a ∪ s b :=
+  by simp
 #align set.bUnion_pair Set.bunionᵢ_pair
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -1587,7 +1591,8 @@ theorem surjective_iff_surjective_of_unionᵢ_eq_univ :
     Set.mem_unionᵢ.mp
       (show x ∈ Set.unionᵢ U by rw [hU]; triv)
   exact ⟨_, congr_arg Subtype.val (H i ⟨x, hi⟩).choose_spec⟩
-#align set.surjective_iff_surjective_of_Union_eq_univ Set.surjective_iff_surjective_of_unionᵢ_eq_univ
+#align set.surjective_iff_surjective_of_Union_eq_univ
+  Set.surjective_iff_surjective_of_unionᵢ_eq_univ
 
 theorem bijective_iff_bijective_of_unionᵢ_eq_univ :
     Bijective f ↔ ∀ i, Bijective ((U i).restrictPreimage f) := by
@@ -1976,7 +1981,8 @@ theorem image2_unionᵢ₂_left (s : ∀ i, κ i → Set α) (t : Set β) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem image2_unionᵢ₂_right (s : Set α) (t : ∀ i, κ i → Set β) :
-    image2 f s (⋃ (i) (j), t i j) = ⋃ (i) (j), image2 f s (t i j) := by simp_rw [image2_unionᵢ_right]
+    image2 f s (⋃ (i) (j), t i j) = ⋃ (i) (j), image2 f s (t i j) :=
+  by simp_rw [image2_unionᵢ_right]
 #align set.image2_Union₂_right Set.image2_unionᵢ₂_right
 
 theorem image2_interᵢ_subset_left (s : ι → Set α) (t : Set β) :
@@ -2514,4 +2520,3 @@ theorem supₛ_unionₛ (s : Set (Set β)) : supₛ (⋃₀s) = ⨆ t ∈ s, sup
 theorem infₛ_unionₛ (s : Set (Set β)) : infₛ (⋃₀s) = ⨅ t ∈ s, infₛ t :=
   @supₛ_unionₛ βᵒᵈ _ _
 #align Inf_sUnion infₛ_unionₛ
-#lint
