@@ -2178,8 +2178,9 @@ theorem range_succAbove (p : Fin (n + 1)) : Set.range p.succAbove = {p}ᶜ :=
 #align fin.range_succ_above Fin.range_succAbove
 
 @[simp]
-theorem range_succ (n : ℕ) : Set.range (Fin.succ : Fin n → Fin (n + 1)) = {0}ᶜ :=
-  range_succAbove 0
+theorem range_succ (n : ℕ) : Set.range (Fin.succ : Fin n → Fin (n + 1)) = {0}ᶜ := by
+  rw [← succAbove_zero]
+  exact range_succAbove (0 : Fin (n + 1))
 #align fin.range_succ Fin.range_succ
 
 @[simp]
@@ -2289,7 +2290,7 @@ theorem pred_above_left_monotone (i : Fin (n + 1)) : Monotone fun p => predAbove
   split_ifs with ha hb hb
   all_goals simp only [le_iff_val_le_val, coe_pred]
   · exact pred_le _
-  · have : b < a := cast_succ_lt_cast_succ_iff.mpr (hb.trans_le (le_of_not_gt ha))
+  · have : b < a := castSucc_lt_castSucc_iff.mpr (hb.trans_le (le_of_not_gt ha))
     exact absurd H this.not_le
 #align fin.pred_above_left_monotone Fin.pred_above_left_monotone
 
@@ -2365,7 +2366,7 @@ theorem cast_pred_monotone : Monotone (@castPred n) :=
 /-- Sending `fin (n+1)` to `fin n` by subtracting one from anything above `p`
 then back to `fin (n+1)` with a gap around `p` is the identity away from `p`. -/
 @[simp]
-theorem succAbove_pred_above {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p) :
+theorem succAbove_predAbove {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p) :
     p.castSucc.succAbove (p.predAbove i) = i := by
   dsimp [predAbove, succAbove]
   rcases p with ⟨p, _⟩
@@ -2379,15 +2380,11 @@ theorem succAbove_pred_above {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p
     apply le_of_lt H
   · rw [dif_pos]
     rw [if_neg]
-    --pick_goal 3
-    -- For some reason `simp` doesn't fire fully unless we discharge the third goal.
-    --· exact lt_of_le_of_ne H (Ne.symm h)
     · simp
-    · simp only [Fin.mk_eq_mk, Ne.def, Fin.cast_succ_mk] at h
-      simp only [pred, Fin.mk_lt_mk, not_lt]
-      exact Nat.le_pred_of_lt (Nat.lt_of_le_and_ne H (Ne.symm h))
-    · exact lt_of_le_of_ne H (Ne.symm h)
-#align fin.succ_above_pred_above Fin.succAbove_pred_above
+    · simp only [pred, Fin.mk_lt_mk, not_lt]
+      exact Nat.le_pred_of_lt (h.symm.lt_of_le H)
+    · exact lt_of_le_of_ne H h.symm
+#align fin.succ_above_pred_above Fin.succAbove_predAbove
 
 /-- Sending `fin n` into `fin (n + 1)` with a gap at `p`
 then back to `fin n` by subtracting one from anything above `p` is the identity. -/
@@ -2477,7 +2474,7 @@ theorem coe_cast_pred_le_self (i : Fin (n + 2)) : (i.castPred : ℕ) ≤ i := by
 theorem coe_cast_pred_lt_iff {i : Fin (n + 2)} : (i.castPred : ℕ) < i ↔ i = Fin.last _ := by
   rcases i.le_last.eq_or_lt with (rfl | H)
   · simp
-  · simp only [ne_of_lt H]
+  · simp only [_root_.ne_of_lt H]
     rw [← cast_succ_cast_pred H]
     simp
 #align fin.coe_cast_pred_lt_iff Fin.coe_cast_pred_lt_iff
