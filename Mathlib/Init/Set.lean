@@ -104,7 +104,7 @@ protected def inter (s₁ s₂ : Set α) : Set α :=
 instance : Inter (Set α) :=
 ⟨Set.inter⟩
 
-def compl (s : Set α) : Set α :=
+protected def compl (s : Set α) : Set α :=
 {a | a ∉ s}
 
 protected def diff (s t : Set α) : Set α :=
