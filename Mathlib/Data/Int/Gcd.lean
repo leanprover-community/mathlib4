@@ -592,24 +592,24 @@ attribute [to_additive gcd_nsmul_eq_zero] pow_gcd_eq_one
 --     (h : Nat.gcd nx ny = d) : Int.gcd x y = d := by rwa [← hx, ← hy, Int.coe_nat_gcd]
 -- #align tactic.norm_num.int_gcd_helper Tactic.NormNum.int_gcd_helper
 
--- theorem int_gcd_helper_neg_left (x y : ℤ) (d : ℕ) (h : Int.gcd x y = d) : Int.gcd (-x) y = d := by
---   rw [Int.gcd] at h⊢; rwa [Int.natAbs_neg]
+-- theorem int_gcd_helper_neg_left (x y : ℤ) (d : ℕ) (h : Int.gcd x y = d) : Int.gcd (-x) y = d :=
+--  by rw [Int.gcd] at h⊢; rwa [Int.natAbs_neg]
 -- #align tactic.norm_num.int_gcd_helper_neg_left Tactic.NormNum.int_gcd_helper_neg_left
 
--- theorem int_gcd_helper_neg_right (x y : ℤ) (d : ℕ) (h : Int.gcd x y = d) : Int.gcd x (-y) = d := by
---   rw [Int.gcd] at h⊢; rwa [Int.natAbs_neg]
+-- theorem int_gcd_helper_neg_right (x y : ℤ) (d : ℕ) (h : Int.gcd x y = d) : Int.gcd x (-y) = d :=
+--  by rw [Int.gcd] at h⊢; rwa [Int.natAbs_neg]
 -- #align tactic.norm_num.int_gcd_helper_neg_right Tactic.NormNum.int_gcd_helper_neg_right
 
 -- theorem int_lcm_helper (x y : ℤ) (nx ny d : ℕ) (hx : (nx : ℤ) = x) (hy : (ny : ℤ) = y)
 --     (h : Nat.lcm nx ny = d) : Int.lcm x y = d := by rwa [← hx, ← hy, Int.coe_nat_lcm]
 -- #align tactic.norm_num.int_lcm_helper Tactic.NormNum.int_lcm_helper
 
--- theorem int_lcm_helper_neg_left (x y : ℤ) (d : ℕ) (h : Int.lcm x y = d) : Int.lcm (-x) y = d := by
---   rw [Int.lcm] at h⊢; rwa [Int.natAbs_neg]
+-- theorem int_lcm_helper_neg_left (x y : ℤ) (d : ℕ) (h : Int.lcm x y = d) : Int.lcm (-x) y = d :=
+--  by rw [Int.lcm] at h⊢; rwa [Int.natAbs_neg]
 -- #align tactic.norm_num.int_lcm_helper_neg_left Tactic.NormNum.int_lcm_helper_neg_left
 
--- theorem int_lcm_helper_neg_right (x y : ℤ) (d : ℕ) (h : Int.lcm x y = d) : Int.lcm x (-y) = d := by
---   rw [Int.lcm] at h⊢; rwa [Int.natAbs_neg]
+-- theorem int_lcm_helper_neg_right (x y : ℤ) (d : ℕ) (h : Int.lcm x y = d) : Int.lcm x (-y) = d :=
+--  by rw [Int.lcm] at h⊢; rwa [Int.natAbs_neg]
 -- #align tactic.norm_num.int_lcm_helper_neg_right Tactic.NormNum.int_lcm_helper_neg_right
 
 -- /-- Evaluates the `nat.gcd` function. -/
