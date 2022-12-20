@@ -464,6 +464,7 @@ theorem const_nil {β} (x : β) (α : TypeVec 0) : TypeVec.const x α = nilFun :
   by ext i : 1; cases i
 #align typevec.const_nil TypeVec.const_nil
 
+-- porting note: the `typevec` simp attribute is removed
 -- @[typevec]
 theorem repeat_eq_append1 {β} {n} (α : TypeVec n) :
   repeatEq (α ::: β) = splitFun (α := (α ⊗ α) ::: _ )
@@ -474,6 +475,7 @@ by
   induction n <;> rfl
 #align typevec.repeat_eq_append1 TypeVec.repeat_eq_append1
 
+-- porting note: the `typevec` simp attribute is removed
 -- @[typevec]
 theorem repeat_eq_nil (α : TypeVec 0) : repeatEq α = nilFun := by ext i; cases i
 #align typevec.repeat_eq_nil TypeVec.repeat_eq_nil
