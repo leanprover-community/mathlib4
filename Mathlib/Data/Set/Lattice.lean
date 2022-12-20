@@ -402,7 +402,7 @@ theorem interᵢ_subset : ∀ (s : ι → Set β) (i : ι), (⋂ i, s i) ⊆ s i
 #align set.Inter_subset Set.interᵢ_subset
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem subset_unionᵢ₂ {s : ∀ i, κ i → Set α} (i : ι) (j : κ i) : s i j ⊆ ⋃ (i) (j), s i j :=
+theorem subset_unionᵢ₂ {s : ∀ i, κ i → Set α} (i : ι) (j : κ i) : s i j ⊆ ⋃ (i') (j'), s i' j' :=
   @le_supᵢ₂ (Set α) _ _ _ _ i j
 #align set.subset_Union₂ Set.subset_unionᵢ₂
 
@@ -903,7 +903,9 @@ theorem mem_binterᵢ {s : Set α} {t : α → Set β} {y : β} (h : ∀ x ∈ s
 /-- A specialization of `subset_unionᵢ₂`. -/
 theorem subset_bunionᵢ_of_mem {s : Set α} {u : α → Set β} {x : α} (xs : x ∈ s) :
     u x ⊆ ⋃ x ∈ s, u x :=
-  subset_unionᵢ₂ x xs
+--Porting note: Why is this not just `subset_unionᵢ₂ x xs`?
+  @subset_unionᵢ₂ β α (. ∈ s) (fun i _ => u i) x xs
+
 #align set.subset_bUnion_of_mem Set.subset_bunionᵢ_of_mem
 
 /-- A specialization of `interᵢ₂_subset`. -/
@@ -1300,7 +1302,7 @@ theorem unionₛ_eq_compl_interₛ_compl (S : Set (Set α)) : ⋃₀S = (⋂₀ 
 
 -- classical
 theorem compl_interₛ (S : Set (Set α)) : (⋂₀ S)ᶜ = ⋃₀(compl '' S) := by
-  erw [unionₛ_eq_compl_interₛ_compl, compl_compl_image]
+  rw [unionₛ_eq_compl_interₛ_compl, compl_compl_image]
 #align set.compl_sInter Set.compl_interₛ
 
 -- classical
@@ -1358,7 +1360,7 @@ theorem unionᵢ_singleton_eq_range {α β : Type _} (f : α → β) : (⋃ x : 
   simp [@eq_comm _ x]
 #align set.Union_singleton_eq_range Set.unionᵢ_singleton_eq_range
 
-theorem unionᵢ_of_singleton (α : Type _) : (⋃ x, {x} : Set α) = univ := by simp
+theorem unionᵢ_of_singleton (α : Type _) : (⋃ x, {x} : Set α) = univ := by simp [Set.ext_iff]
 #align set.Union_of_singleton Set.unionᵢ_of_singleton
 
 theorem unionᵢ_of_singleton_coe (s : Set α) : (⋃ i : s, ({(i : α)} : Set α)) = s := by simp
