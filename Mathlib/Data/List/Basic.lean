@@ -10,6 +10,7 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Data.List.Defs
 import Mathlib.Init.Core
 import Std.Data.List.Lemmas
 
@@ -2538,34 +2539,59 @@ theorem updateNth_eq_nil (l : List α) (n : ℕ) (a : α) : l.updateNth n a = []
   cases l <;> cases n <;> simp only [updateNth]
 #align list.update_nth_eq_nil List.updateNth_eq_nil
 
-section TakeD
+section TakeI
 
-/- Porting note: `take'` used to require that we have `[Inhabited α]`. The new `takeD` instead
-requires the specification of an explicit default value to use. In keeping with that, these
-theorems now require corresponding explicit default values. -/
+variable [Inhabited α]
+
+@[simp]
+theorem takeI_length : ∀ n l, length (@takeI α _ n l) = n
+  | 0, _ => rfl
+  | _ + 1, _ => congr_arg succ (takeI_length _ _)
+#align list.take'_length List.takeI_length
+
+@[simp]
+theorem takeI_nil : ∀ n, takeI n (@nil α) = replicate n default
+  | 0 => rfl
+  | _ + 1 => congr_arg (cons _) (takeI_nil _)
+#align list.take'_nil List.takeI_nil
+
+theorem takeI_eq_take : ∀ {n} {l : List α}, n ≤ length l → takeI n l = take n l
+  | 0, _, _ => rfl
+  | _ + 1, _ :: _, h => congr_arg (cons _) <| takeI_eq_take <| le_of_succ_le_succ h
+#align list.take'_eq_take List.takeI_eq_take
+
+@[simp]
+theorem takeI_left (l₁ l₂ : List α) : takeI (length l₁) (l₁ ++ l₂) = l₁ :=
+  (takeI_eq_take (by simp only [length_append, Nat.le_add_right])).trans (take_left _ _)
+#align list.take'_left List.takeI_left
+
+theorem takeI_left' {l₁ l₂ : List α} {n} (h : length l₁ = n) : takeI n (l₁ ++ l₂) = l₁ := by
+  rw [← h]; apply takeI_left
+#align list.take'_left' List.takeI_left'
+
+end TakeI
+
+/- Porting note: in mathlib3 we just had `take` and `take'`. Now we have `take`, `takeI`, and
+  `takeD`. The following section replicates the theorems above but for `takeD`. -/
+section TakeD
 
 @[simp]
 theorem takeD_length : ∀ n l a, length (@takeD α n l a) = n
   | 0, _, _ => rfl
   | _ + 1, _, _ => congr_arg succ (takeD_length _ _ _)
-#align list.take'_length List.takeD_length
 
--- Porting note: moved to std
-#align list.take'_nil List.takeD_nil
+-- Porting note: `takeD_nil` is already in std
 
 theorem takeD_eq_take : ∀ {n} {l : List α} a, n ≤ length l → takeD n l a = take n l
   | 0, _, _, _ => rfl
   | _ + 1, _ :: _, a, h => congr_arg (cons _) <| takeD_eq_take a <| le_of_succ_le_succ h
-#align list.take'_eq_take List.takeD_eq_take
 
 @[simp]
 theorem takeD_left (l₁ l₂ : List α) (a : α) : takeD (length l₁) (l₁ ++ l₂) a = l₁ :=
   (takeD_eq_take a (by simp only [length_append, Nat.le_add_right])).trans (take_left _ _)
-#align list.take'_left List.takeD_left
 
-theorem takeD_left' {l₁ l₂ : List α} {n} (a : α) (h : length l₁ = n) : takeD n (l₁ ++ l₂) a = l₁ :=
+theorem takeD_left' {l₁ l₂ : List α} {n} {a} (h : length l₁ = n) : takeD n (l₁ ++ l₂) a = l₁ :=
   by rw [← h]; apply takeD_left
-#align list.take'_left' List.takeD_left'
 
 end TakeD
 
