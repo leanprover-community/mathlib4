@@ -8,8 +8,8 @@ Authors: Jeremy Avigad
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.CompleteLattice
-import Mathbin.Order.GaloisConnection
+import Mathlib.Order.CompleteLattice
+import Mathlib.Order.GaloisConnection
 
 /-!
 # Relations
@@ -39,12 +39,19 @@ variable {α β γ : Type _}
 
 /-- A relation on `α` and `β`, aka a set-valued function, aka a partial multifunction -/
 def Rel (α β : Type _) :=
-  α → β → Prop deriving CompleteLattice, Inhabited
+  α → β → Prop -- deriving CompleteLattice, Inhabited
 #align rel Rel
+
+-- Porting note: `deriving` above doesn't work.
+instance : CompleteLattice (Rel α β) := show CompleteLattice (α → β → Prop) from inferInstance
+instance : Inhabited (Rel α β) := show Inhabited (α → β → Prop) from inferInstance
 
 namespace Rel
 
-variable {δ : Type _} (r : Rel α β)
+variable (r : Rel α β)
+
+-- Porting note: required for later theorems.
+@[ext] theorem ext {r s : Rel α β} : (∀ a, r a = s a) → r = s := funext
 
 /-- The inverse relation : `r.inv x y ↔ r y x`. Note that this is *not* a groupoid inverse. -/
 def inv : Rel β α :=
@@ -83,14 +90,15 @@ theorem dom_inv : r.inv.dom = r.codom := by
   rfl
 #align rel.dom_inv Rel.dom_inv
 
-/-- Composition of relation; note that it follows the `category_theory/` order of arguments. -/
+/-- Composition of relation; note that it follows the `CategoryTheory/` order of arguments. -/
 def comp (r : Rel α β) (s : Rel β γ) : Rel α γ := fun x z => ∃ y, r x y ∧ s y z
 #align rel.comp Rel.comp
 
--- mathport name: rel.comp
-local infixr:0 " ∘ " => Rel.comp
+-- Porting note: the original `∘` syntax can't be overloaded here, lean considers it ambiguous.
+-- TODO: Change this syntax to something nicer?
+local infixr:0 " • " => Rel.comp
 
-theorem comp_assoc (r : Rel α β) (s : Rel β γ) (t : Rel γ δ) : ((r ∘ s) ∘ t) = (r ∘ s ∘ t) := by
+theorem comp_assoc (r : Rel α β) (s : Rel β γ) (t : Rel γ δ) : ((r • s) • t) = (r • s • t) := by
   unfold comp; ext (x w); constructor
   · rintro ⟨z, ⟨y, rxy, syz⟩, tzw⟩
     exact ⟨y, rxy, z, syz, tzw⟩
@@ -98,14 +106,14 @@ theorem comp_assoc (r : Rel α β) (s : Rel β γ) (t : Rel γ δ) : ((r ∘ s) 
 #align rel.comp_assoc Rel.comp_assoc
 
 @[simp]
-theorem comp_right_id (r : Rel α β) : (r ∘ @Eq β) = r := by
+theorem comp_right_id (r : Rel α β) : (r • @Eq β) = r := by
   unfold comp
   ext y
   simp
 #align rel.comp_right_id Rel.comp_right_id
 
 @[simp]
-theorem comp_left_id (r : Rel α β) : (@Eq α ∘ r) = r := by
+theorem comp_left_id (r : Rel α β) : (@Eq α • r) = r := by
   unfold comp
   ext x
   simp
@@ -116,7 +124,7 @@ theorem inv_id : inv (@Eq α) = @Eq α := by
   constructor <;> apply Eq.symm
 #align rel.inv_id Rel.inv_id
 
-theorem inv_comp (r : Rel α β) (s : Rel β γ) : inv (r ∘ s) = (inv s ∘ inv r) := by
+theorem inv_comp (r : Rel α β) (s : Rel β γ) : inv (r • s) = (inv s • inv r) := by
   ext (x z)
   simp [comp, inv, flip, and_comm]
 #align rel.inv_comp Rel.inv_comp
@@ -155,7 +163,7 @@ theorem image_id (s : Set α) : image (@Eq α) s = s := by
   simp [mem_image]
 #align rel.image_id Rel.image_id
 
-theorem image_comp (s : Rel β γ) (t : Set α) : image (r ∘ s) t = image s (image r t) := by
+theorem image_comp (s : Rel β γ) (t : Set α) : image (r • s) t = image s (image r t) := by
   ext z; simp only [mem_image]; constructor
   · rintro ⟨x, xt, y, rxy, syz⟩
     exact ⟨y, ⟨x, xt, rxy⟩, syz⟩
@@ -172,7 +180,7 @@ def preimage (s : Set β) : Set α :=
   r.inv.image s
 #align rel.preimage Rel.preimage
 
-theorem mem_preimage (x : α) (s : Set β) : x ∈ r.Preimage s ↔ ∃ y ∈ s, r x y :=
+theorem mem_preimage (x : α) (s : Set β) : x ∈ r.preimage s ↔ ∃ y ∈ s, r x y :=
   Iff.rfl
 #align rel.mem_preimage Rel.mem_preimage
 
@@ -180,15 +188,15 @@ theorem preimage_def (s : Set β) : preimage r s = { x | ∃ y ∈ s, r x y } :=
   Set.ext fun x => mem_preimage _ _ _
 #align rel.preimage_def Rel.preimage_def
 
-theorem preimage_mono {s t : Set β} (h : s ⊆ t) : r.Preimage s ⊆ r.Preimage t :=
+theorem preimage_mono {s t : Set β} (h : s ⊆ t) : r.preimage s ⊆ r.preimage t :=
   image_mono _ h
 #align rel.preimage_mono Rel.preimage_mono
 
-theorem preimage_inter (s t : Set β) : r.Preimage (s ∩ t) ⊆ r.Preimage s ∩ r.Preimage t :=
+theorem preimage_inter (s t : Set β) : r.preimage (s ∩ t) ⊆ r.preimage s ∩ r.preimage t :=
   image_inter _ s t
 #align rel.preimage_inter Rel.preimage_inter
 
-theorem preimage_union (s t : Set β) : r.Preimage (s ∪ t) = r.Preimage s ∪ r.Preimage t :=
+theorem preimage_union (s t : Set β) : r.preimage (s ∪ t) = r.preimage s ∪ r.preimage t :=
   image_union _ s t
 #align rel.preimage_union Rel.preimage_union
 
@@ -196,11 +204,11 @@ theorem preimage_id (s : Set α) : preimage (@Eq α) s = s := by
   simp only [preimage, inv_id, image_id]
 #align rel.preimage_id Rel.preimage_id
 
-theorem preimage_comp (s : Rel β γ) (t : Set γ) : preimage (r ∘ s) t = preimage r (preimage s t) :=
+theorem preimage_comp (s : Rel β γ) (t : Set γ) : preimage (r • s) t = preimage r (preimage s t) :=
   by simp only [preimage, inv_comp, image_comp]
 #align rel.preimage_comp Rel.preimage_comp
 
-theorem preimage_univ : r.Preimage Set.univ = r.dom := by rw [preimage, image_univ, codom_inv]
+theorem preimage_univ : r.preimage Set.univ = r.dom := by rw [preimage, image_univ, codom_inv]
 #align rel.preimage_univ Rel.preimage_univ
 
 /-- Core of a set `s : set β` w.r.t `r : rel α β` is the set of `x : α` that are related *only*
@@ -236,7 +244,7 @@ theorem core_univ : r.core Set.univ = Set.univ :=
 theorem core_id (s : Set α) : core (@Eq α) s = s := by simp [core]
 #align rel.core_id Rel.core_id
 
-theorem core_comp (s : Rel β γ) (t : Set γ) : core (r ∘ s) t = core r (core s t) := by
+theorem core_comp (s : Rel β γ) (t : Set γ) : core (r • s) t = core r (core s t) := by
   ext x; simp [core, comp]; constructor
   · exact fun h y rxy z => h z y rxy
   · exact fun h z y rzy => h y rzy z
@@ -272,7 +280,7 @@ theorem image_eq (f : α → β) (s : Set α) : f '' s = (Function.graph f).imag
   simp [Set.image, Function.graph, Rel.image]
 #align set.image_eq Set.image_eq
 
-theorem preimage_eq (f : α → β) (s : Set β) : f ⁻¹' s = (Function.graph f).Preimage s := by
+theorem preimage_eq (f : α → β) (s : Set β) : f ⁻¹' s = (Function.graph f).preimage s := by
   simp [Set.preimage, Function.graph, Rel.preimage, Rel.inv, flip, Rel.image]
 #align set.preimage_eq Set.preimage_eq
 
@@ -281,4 +289,3 @@ theorem preimage_eq_core (f : α → β) (s : Set β) : f ⁻¹' s = (Function.g
 #align set.preimage_eq_core Set.preimage_eq_core
 
 end Set
-
