@@ -10,15 +10,9 @@ Author: Mario Carneiro
 -/
 import Mathlib.Init.Data.Nat.Lemmas
 import Init.WFTactics
-
--- Imported for Boolean `xor`
 import Mathlib.Data.Bool.Basic
 import Mathlib.Init.Data.Bool.Lemmas
-
--- Imported for `bit0` and `bit1`
 import Mathlib.Init.ZeroOne
-
--- Imported for cases'
 import Mathlib.Tactic.Cases
 
 universe u
@@ -363,24 +357,12 @@ theorem binary_rec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bi
     rw [h']
     rfl
   case neg h' =>
-    simp only [h']
-    simp only [dif_neg h]
-    have b₁: bodd (bit b n) = b := by
-      rw[bodd_bit]
-    have d₁ : div2 (bit b n) = n := by
-      rw[div2_bit]
-    have pC₁: C (bit (bodd (bit b n)) (div2 (bit b n))) = C (bit b n) := by
-      rw[b₁, d₁]
-    simp only [pC₁]
-    /-simp only [h']
-
-    rw [Eq.mpr]
-    have b₁: bodd (bit b n) = b := by
-      rw[bodd_bit]
-    have d₁ : div2 (bit b n) = n := by
-      rw[div2_bit]
-
-    rw [b₁, d₁]-/
+    simp [dif_neg h]
+    generalize @id (C (bit b n) = C (bit (bodd (bit b n)) (div2 (bit b n))))
+      (Eq.symm (bit_decomp (bit b n)) ▸ Eq.refl (C (bit b n))) = e
+    revert e
+    rw [bodd_bit, div2_bit]
+    intros ; rfl
 #align nat.binary_rec_eq Nat.binary_rec_eq
 
 theorem bitwise_bit_aux {f : Bool → Bool → Bool} (h : f false false = false) :

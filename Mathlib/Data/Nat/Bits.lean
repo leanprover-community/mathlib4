@@ -8,18 +8,19 @@ Authors: Praneeth Kolichala
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Basic
 
 /-!
-# Additional properties of binary recursion on `nat`
+# Additional properties of binary recursion on `Nat`
 
 This file documents additional properties of binary recursion,
 which allows us to more easily work with operations which do depend
 on the number of leading zeros in the binary representation of `n`.
-For example, we can more easily work with `nat.bits` and `nat.size`.
+For example, we can more easily work with `Nat.bits` and `Nat.size`.
 
-See also: `nat.bitwise`, `nat.pow` (for various lemmas about `size` and `shiftl`/`shiftr`),
-and `nat.digits`.
+See also: `Nat.bitwise`, `Nat.pow` (for various lemmas about `size` and `shiftl`/`shiftr`),
+and `Nat.digits`.
 -/
 
 
