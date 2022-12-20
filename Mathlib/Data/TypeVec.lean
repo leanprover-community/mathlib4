@@ -79,9 +79,8 @@ def id {α : TypeVec n} : α ⟹ α := fun _ x => x
 def comp {α β γ : TypeVec n} (g : β ⟹ γ) (f : α ⟹ β) : α ⟹ γ := fun i x => g i (f i x)
 #align typevec.comp TypeVec.comp
 
-@[inherit_doc] scoped[MvFunctor] infixr:80 " ⊚ " => TypeVec.comp
+@[inherit_doc] scoped[MvFunctor] infixr:80 " ⊚ " => TypeVec.comp -- type as \oo
 
--- type as \oo
 @[simp]
 theorem id_comp {α β : TypeVec n} (f : α ⟹ β) : id ⊚ f = f :=
   rfl
