@@ -2822,7 +2822,9 @@ variable {f : β → α → β} {b : β} {a : α} {l : List α}
 
 theorem length_scanl : ∀ a l, length (scanl f a l) = l.length + 1
   | a, [] => rfl
-  | a, x :: l => by erw [length_cons, length_cons, length_scanl]
+  | a, x :: l => by
+    rw [scanl, length_cons, length_cons, ←succ_eq_add_one, congr_arg succ]
+    exact length_scanl _ _
 #align list.length_scanl List.length_scanl
 
 @[simp]
