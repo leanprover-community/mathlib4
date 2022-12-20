@@ -2494,7 +2494,7 @@ end PredAbove
 
 /-- `min n m` as an element of `fin (m + 1)` -/
 def clamp (n m : ℕ) : Fin (m + 1) :=
-  of_nat <| min n m
+  OfNat.ofNat <| min n m
 #align fin.clamp Fin.clamp
 
 @[simp]
@@ -2502,13 +2502,17 @@ theorem coe_clamp (n m : ℕ) : (clamp n m : ℕ) = min n m :=
   Nat.mod_eq_of_lt <| Nat.lt_succ_iff.mpr <| min_le_right _ _
 #align fin.coe_clamp Fin.coe_clamp
 
-@[simp]
+-- Porting note: this is probably not needed anymore
+/-@[simp]
 theorem coe_of_nat_eq_mod (m n : ℕ) : ((n : Fin (succ m)) : ℕ) = n % succ m := by
   rw [← of_nat_eq_coe] <;> rfl
-#align fin.coe_of_nat_eq_mod Fin.coe_of_nat_eq_mod
+#align fin.coe_of_nat_eq_mod Fin.coe_of_nat_eq_mod-/
+#noalign fin.coe_of_nat_eq_mod
 
 @[simp]
-theorem coe_of_nat_eq_mod' (m n : ℕ) [I : NeZero m] : (@Fin.ofNat' _ I n : ℕ) = n % m :=
+theorem coe_of_nat_eq_mod' (m n : ℕ) [NeZero m] :
+    (@Fin.ofNat' m n (Nat.pos_of_ne_zero (NeZero.ne m)) : ℕ) = n % m :=
+    -- Porting note: this looks horrible
   rfl
 #align fin.coe_of_nat_eq_mod' Fin.coe_of_nat_eq_mod'
 
