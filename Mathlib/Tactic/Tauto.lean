@@ -204,3 +204,8 @@ syntax (name := tauto) "tauto" (config)? : tactic
 elab_rules : tactic | `(tactic| tauto $[$cfg:config]?) => do
   let _cfg ← elabConfig (mkOptionalNode cfg)
   tautology
+
+/-- Syntax for the old Lean 3 `tauto!` tactic. In Lean 4, this got rolled into
+plain `tauto`. We retain the syntax declaration to allow Mathport still recognize
+the syntax. -/
+syntax (name := tauto!) "tauto!" (config)? : tactic
