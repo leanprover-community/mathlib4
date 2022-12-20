@@ -156,9 +156,9 @@ protected theorem bit0_eq_zero {n : ℕ} : bit0 n = 0 ↔ n = 0 :=
 
 theorem bit_eq_zero_iff {n : ℕ} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = false := by
   constructor
-  · cases b <;> simp [Nat.bit, Nat.bit0_eq_zero]
-  rintro ⟨rfl, rfl⟩
-  rfl
+  · cases b <;> simp [Nat.bit, Nat.bit0_eq_zero, Nat.bit1_ne_zero]
+  · rintro ⟨rfl, rfl⟩
+    rfl
 #align nat.bit_eq_zero_iff Nat.bit_eq_zero_iff
 
 /--
