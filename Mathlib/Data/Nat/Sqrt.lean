@@ -128,11 +128,12 @@ private theorem sqrtAux_is_sqrt (n) :
               repeat' rw [@Nat.mul_div_cancel_left _ 2 (by decide)]) <;>
       intro h
     · have := sqrtAux_is_sqrt _ m r h₁ h
-      simpa [pow_succ, mul_comm, mul_assoc]
-    · rw [pow_succ', mul_two, ← add_assoc] at h₂
-      have := sqrtAux_is_sqrt m (r + 2 ^ (m + 1)) h h₂
-      rwa [show (r + 2 ^ (m + 1)) * 2 ^ (m + 1) = 2 * (r + 2 ^ (m + 1)) * 2 ^ m by
-          simp [pow_succ, mul_comm, mul_left_comm]]
+      rw [mul_comm 2, mul_assoc, mul_comm 2] at this
+      exact this
+    · rw [pow_succ, mul_two, ← add_assoc] at h₂
+      have := sqrtAux_is_sqrt _ m (r + 2 ^ (m + 1)) h h₂
+      rw [mul_comm 2, mul_assoc, mul_comm 2] at this
+      exact this
 #align nat.sqrt_aux_is_sqrt nat.sqrtAux_is_sqrt
 
 private theorem sqrt_is_sqrt (n : ℕ) : IsSqrt n (sqrt n) := by
@@ -293,8 +294,8 @@ theorem succ_le_succ_sqrt' (n : ℕ) : n + 1 ≤ (sqrt n + 1) ^ 2 :=
 theorem not_exists_sq {n m : ℕ} (hl : m * m < n) (hr : n < (m + 1) * (m + 1)) : ¬∃ t, t * t = n :=
   by
   rintro ⟨t, rfl⟩
-  have h1 : m < t := nat.mul_self_lt_mul_self_iff.mpr hl
-  have h2 : t < m + 1 := nat.mul_self_lt_mul_self_iff.mpr hr
+  have h1 : m < t := Nat.mul_self_lt_mul_self_iff.mpr hl
+  have h2 : t < m + 1 := Nat.mul_self_lt_mul_self_iff.mpr hr
   exact (not_lt_of_ge <| le_of_lt_succ h2) h1
 #align nat.not_exists_sq Nat.not_exists_sq
 
