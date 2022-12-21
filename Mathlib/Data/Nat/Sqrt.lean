@@ -80,7 +80,7 @@ theorem sqrtAux_2 {r n b} (h : b ≠ 0) (h₂ : n < r + b) :
 
 private def IsSqrt (n q : ℕ) : Prop :=
   q * q ≤ n ∧ n < (q + 1) * (q + 1)
-#align nat.is_sqrt Nat.IsSqrt
+-- #align nat.is_sqrt Nat.IsSqrt
 
 attribute [-simp] mul_eq_mul_left_iff mul_eq_mul_right_iff
 
@@ -110,7 +110,7 @@ private theorem sqrtAux_IsSqrt_lemma (m r n : ℕ) (h₁ : r * r ≤ n) (m')
     rw [← add_assoc, (_ : r * r + _ = _)]
     exact (add_tsub_cancel_of_le hl).symm
     simp [left_distrib, right_distrib, two_mul, mul_comm, mul_assoc, add_assoc]
-#align nat.sqrt_aux_is_sqrt_lemma Nat.sqrtAux_IsSqrt_lemma
+-- #align nat.sqrt_aux_is_sqrt_lemma Nat.sqrtAux_IsSqrt_lemma
 
 private theorem sqrtAux_IsSqrt (n) :
     ∀ m r,
@@ -134,25 +134,37 @@ private theorem sqrtAux_IsSqrt (n) :
       have := sqrtAux_IsSqrt _ m (r + 2 ^ (m + 1)) h h₂
       rw [mul_comm 2, mul_assoc, mul_comm 2] at this
       exact this
-#align nat.sqrt_aux_is_sqrt nat.sqrtAux_IsSqrt
+-- #align nat.sqrt_aux_is_sqrt nat.sqrtAux_IsSqrt
 
 private theorem sqrt_IsSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
-  generalize e : size n = s; cases' s with s <;> simp [e, sqrt]
-  · rw [size_eq_zero.1 e, IsSqrt]
-    exact by decide
-  · have := sqrtAux_IsSqrt n (div2 s) 0 (zero_le _)
-    simp [show 2 ^ div2 s * 2 ^ div2 s = shiftl 1 (bit0 (div2 s)) by
-        generalize div2 s = x
-        show _ = shiftl 1 (x + x)
-        rw [one_shiftl, pow_add]] at this
+  by_cases n ≤ 1
+  case pos =>
+    match n with
+    | 0 => simp [IsSqrt]
+    | 1 => simp [IsSqrt]
+    | m + 2 => contradiction
+  case neg =>
+    simp [IsSqrt, h]
+    have l : sqrt n = sqrt.iter n (n/2) :=
+      by unfold sqrt; apply if_neg h
+    rw [l]
+    sorry
+  -- generalize e : size n = s; cases' s with s <;> simp [e, sqrt]
+  -- · rw [size_eq_zero.1 e, IsSqrt]
+  --   exact by decide
+  -- · have := sqrtAux_IsSqrt n (div2 s) 0 (zero_le _)
+  --   simp [show 2 ^ div2 s * 2 ^ div2 s = shiftl 1 (bit0 (div2 s)) by
+  --       generalize div2 s = x
+  --       show _ = shiftl 1 (x + x)
+  --       rw [one_shiftl, pow_add]] at this
 
-    apply this
-    rw [← pow_add, ← mul_two]
-    apply size_le.1
-    rw [e]
-    apply (@div_lt_iff_lt_mul _ _ 2 (by decide)).1
-    rw [div2_val]
-    apply lt_succ_self
+  --   apply this
+  --   rw [← pow_add, ← mul_two]
+  --   apply size_le.1
+  --   rw [e]
+  --   apply (@div_lt_iff_lt_mul _ _ 2 (by decide)).1
+  --   rw [div2_val]
+  --   apply lt_succ_self
 #align nat.sqrt_is_sqrt Nat.sqrt_IsSqrt
 
 theorem sqrt_le (n : ℕ) : sqrt n * sqrt n ≤ n :=
