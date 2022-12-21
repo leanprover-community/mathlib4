@@ -182,7 +182,7 @@ def FullSubcategory.lift (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) :
 /-- Composing the lift of a functor through a full subcategory with the inclusion yields the
     original functor. Unfortunately, this is not true by definition, so we only get a natural
     isomorphism, but it is pointwise definitionally true, see
-    `full_subcategory.inclusion_obj_lift_obj` and `full_subcategory.inclusion_map_lift_map`. -/
+    `FullSubcategory.inclusion_obj_lift_obj` and `FullSubcategory.inclusion_map_lift_map`. -/
 def FullSubcategory.liftCompInclusion (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) :
     FullSubcategory.lift P F hF ⋙ fullSubcategoryInclusion P ≅ F :=
   NatIso.ofComponents (fun X => Iso.refl _) (by simp)
