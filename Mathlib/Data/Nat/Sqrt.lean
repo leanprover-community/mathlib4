@@ -84,7 +84,7 @@ private def IsSqrt (n q : ℕ) : Prop :=
 
 attribute [-simp] mul_eq_mul_left_iff mul_eq_mul_right_iff
 
-private theorem sqrtAux_is_sqrt_lemma (m r n : ℕ) (h₁ : r * r ≤ n) (m')
+private theorem sqrtAux_IsSqrt_lemma (m r n : ℕ) (h₁ : r * r ≤ n) (m')
     (hm : shiftr (2 ^ m * 2 ^ m) 2 = m')
     (H1 : n < (r + 2 ^ m) * (r + 2 ^ m) → IsSqrt n (sqrtAux m' (r * 2 ^ m) (n - r * r)))
     (H2 :
@@ -110,7 +110,7 @@ private theorem sqrtAux_is_sqrt_lemma (m r n : ℕ) (h₁ : r * r ≤ n) (m')
     rw [← add_assoc, (_ : r * r + _ = _)]
     exact (add_tsub_cancel_of_le hl).symm
     simp [left_distrib, right_distrib, two_mul, mul_comm, mul_assoc, add_assoc]
-#align nat.sqrt_aux_is_sqrt_lemma Nat.sqrtAux_is_sqrt_lemma
+#align nat.sqrt_aux_is_sqrt_lemma Nat.sqrtAux_IsSqrt_lemma
 
 private theorem sqrtAux_is_sqrt (n) :
     ∀ m r,
@@ -118,16 +118,16 @@ private theorem sqrtAux_is_sqrt (n) :
         n < (r + 2 ^ (m + 1)) * (r + 2 ^ (m + 1)) →
           IsSqrt n (sqrtAux (2 ^ m * 2 ^ m) (2 * r * 2 ^ m) (n - r * r))
   | 0, r, h₁, h₂ => by
-    apply sqrtAux_is_sqrt_lemma 0 r n h₁ 0 rfl <;> intro h <;> simp <;> [exact ⟨h₁, h⟩,
+    apply sqrtAux_IsSqrt_lemma 0 r n h₁ 0 rfl <;> intro h <;> simp <;> [exact ⟨h₁, h⟩,
       exact ⟨h, h₂⟩]
   | m + 1, r, h₁, h₂ => by
     apply
-        sqrtAux_is_sqrt_lemma (m + 1) r n h₁ (2 ^ m * 2 ^ m)
+        sqrtAux_IsSqrt_lemma (m + 1) r n h₁ (2 ^ m * 2 ^ m)
           (by
             simp [shiftr, pow_succ, div2_val, mul_comm, mul_left_comm] <;>
               repeat' rw [@Nat.mul_div_cancel_left _ 2 (by decide)]) <;>
       intro h
-    · have := sqrtAux_is_sqrt m r h₁ h
+    · have := sqrtAux_is_sqrt _ m r h₁ h
       simpa [pow_succ, mul_comm, mul_assoc]
     · rw [pow_succ', mul_two, ← add_assoc] at h₂
       have := sqrtAux_is_sqrt m (r + 2 ^ (m + 1)) h h₂
@@ -137,12 +137,12 @@ private theorem sqrtAux_is_sqrt (n) :
 
 private theorem sqrt_is_sqrt (n : ℕ) : IsSqrt n (sqrt n) := by
   generalize e : size n = s; cases' s with s <;> simp [e, sqrt]
-  · rw [size_eq_zero.1 e, is_sqrt]
+  · rw [size_eq_zero.1 e, IsSqrt]
     exact by decide
   · have := sqrtAux_is_sqrt n (div2 s) 0 (zero_le _)
     simp [show 2 ^ div2 s * 2 ^ div2 s = shiftl 1 (bit0 (div2 s)) by
         generalize div2 s = x
-        change bit0 x with x + x
+        show _ = shiftl 1 (x + x)
         rw [one_shiftl, pow_add]] at this
     apply this
     rw [← pow_add, ← mul_two]
@@ -198,7 +198,7 @@ theorem sqrt_le_sqrt {m n : ℕ} (h : m ≤ n) : sqrt m ≤ sqrt n :=
 #align nat.sqrt_le_sqrt Nat.sqrt_le_sqrt
 
 @[simp]
-theorem sqrt_zero : sqrt 0 = 0 := by rw [sqrt, size_zero, sqrt._match_1]
+theorem sqrt_zero : sqrt 0 = 0 := rfl
 #align nat.sqrt_zero Nat.sqrt_zero
 
 theorem sqrt_eq_zero {n : ℕ} : sqrt n = 0 ↔ n = 0 :=
