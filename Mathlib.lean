@@ -270,7 +270,7 @@ import Mathlib.Data.UInt
 import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
 import Mathlib.Data.Vector
-import Mathlib.Dynamics.Basic
+import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.Opposite
