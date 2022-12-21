@@ -362,7 +362,7 @@ theorem unionᵢ₂_subset {s : ∀ i, κ i → Set α} {t : Set α} (h : ∀ i 
 #align set.Union₂_subset Set.unionᵢ₂_subset
 
 theorem subset_interᵢ {t : Set β} {s : ι → Set β} (h : ∀ i, t ⊆ s i) : t ⊆ ⋂ i, s i :=
-  @le_infᵢ (Set β) _ _ _ _ h
+  le_infᵢ h
 #align set.subset_Inter Set.subset_interᵢ
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -383,7 +383,7 @@ theorem unionᵢ₂_subset_iff {s : ∀ i, κ i → Set α} {t : Set α} :
 
 @[simp]
 theorem subset_interᵢ_iff {s : Set α} {t : ι → Set α} : (s ⊆ ⋂ i, t i) ↔ ∀ i, s ⊆ t i :=
-  @le_infᵢ_iff (Set α) _ _ _ _
+  le_infᵢ_iff
 #align set.subset_Inter_iff Set.subset_interᵢ_iff
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -402,25 +402,25 @@ theorem interᵢ_subset : ∀ (s : ι → Set β) (i : ι), (⋂ i, s i) ⊆ s i
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem subset_unionᵢ₂ {s : ∀ i, κ i → Set α} (i : ι) (j : κ i) : s i j ⊆ ⋃ (i') (j'), s i' j' :=
-  @le_supᵢ₂ (Set α) _ _ _ _ i j
+  le_supᵢ₂ i j
 #align set.subset_Union₂ Set.subset_unionᵢ₂
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem interᵢ₂_subset {s : ∀ i, κ i → Set α} (i : ι) (j : κ i) : (⋂ (i) (j), s i j) ⊆ s i j :=
-  @infᵢ₂_le (Set α) _ _ _ _ i j
+  infᵢ₂_le i j
 #align set.Inter₂_subset Set.interᵢ₂_subset
 
 /-- This rather trivial consequence of `subset_unionᵢ`is convenient with `apply`, and has `i`
 explicit for this purpose. -/
 theorem subset_unionᵢ_of_subset {s : Set α} {t : ι → Set α} (i : ι) (h : s ⊆ t i) : s ⊆ ⋃ i, t i :=
-  @le_supᵢ_of_le (Set α) _ _ _ _ i h
+  le_supᵢ_of_le i h
 #align set.subset_Union_of_subset Set.subset_unionᵢ_of_subset
 
 /-- This rather trivial consequence of `interᵢ_subset`is convenient with `apply`, and has `i`
 explicit for this purpose. -/
 theorem interᵢ_subset_of_subset {s : ι → Set α} {t : Set α} (i : ι) (h : s i ⊆ t) :
     (⋂ i, s i) ⊆ t :=
-  @infᵢ_le_of_le (Set α) _ _ _ _ i h
+  infᵢ_le_of_le i h
 #align set.Inter_subset_of_subset Set.interᵢ_subset_of_subset
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -428,7 +428,7 @@ theorem interᵢ_subset_of_subset {s : ι → Set α} {t : Set α} (i : ι) (h :
 `j` explicit for this purpose. -/
 theorem subset_unionᵢ₂_of_subset {s : Set α} {t : ∀ i, κ i → Set α} (i : ι) (j : κ i)
     (h : s ⊆ t i j) : s ⊆ ⋃ (i) (j), t i j :=
-  @le_supᵢ₂_of_le (Set α) _ _ _ _ _ i j h
+  le_supᵢ₂_of_le i j h
 #align set.subset_Union₂_of_subset Set.subset_unionᵢ₂_of_subset
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -436,41 +436,41 @@ theorem subset_unionᵢ₂_of_subset {s : Set α} {t : ∀ i, κ i → Set α} (
 `j` explicit for this purpose. -/
 theorem interᵢ₂_subset_of_subset {s : ∀ i, κ i → Set α} {t : Set α} (i : ι) (j : κ i)
     (h : s i j ⊆ t) : (⋂ (i) (j), s i j) ⊆ t :=
-  @infᵢ₂_le_of_le (Set α) _ _ _ _ _ i j h
+  infᵢ₂_le_of_le i j h
 #align set.Inter₂_subset_of_subset Set.interᵢ₂_subset_of_subset
 
 theorem unionᵢ_mono {s t : ι → Set α} (h : ∀ i, s i ⊆ t i) : (⋃ i, s i) ⊆ ⋃ i, t i :=
-  @supᵢ_mono (Set α) _ _ s t h
+  supᵢ_mono h
 #align set.Union_mono Set.unionᵢ_mono
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem unionᵢ₂_mono {s t : ∀ i, κ i → Set α} (h : ∀ i j, s i j ⊆ t i j) :
     (⋃ (i) (j), s i j) ⊆ ⋃ (i) (j), t i j :=
-  @supᵢ₂_mono (Set α) _ _ _ s t h
+  supᵢ₂_mono h
 #align set.Union₂_mono Set.unionᵢ₂_mono
 
 theorem interᵢ_mono {s t : ι → Set α} (h : ∀ i, s i ⊆ t i) : (⋂ i, s i) ⊆ ⋂ i, t i :=
-  @infᵢ_mono (Set α) _ _ s t h
+  infᵢ_mono h
 #align set.Inter_mono Set.interᵢ_mono
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem interᵢ₂_mono {s t : ∀ i, κ i → Set α} (h : ∀ i j, s i j ⊆ t i j) :
     (⋂ (i) (j), s i j) ⊆ ⋂ (i) (j), t i j :=
-  @infᵢ₂_mono (Set α) _ _ _ s t h
+  infᵢ₂_mono h
 #align set.Inter₂_mono Set.interᵢ₂_mono
 
 theorem unionᵢ_mono' {s : ι → Set α} {t : ι₂ → Set α} (h : ∀ i, ∃ j, s i ⊆ t j) :
     (⋃ i, s i) ⊆ ⋃ i, t i :=
-  @supᵢ_mono' (Set α) _ _ _ s t h
+  supᵢ_mono' h
 #align set.Union_mono' Set.unionᵢ_mono'
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i' j') -/
 theorem unionᵢ₂_mono' {s : ∀ i, κ i → Set α} {t : ∀ i', κ' i' → Set α}
     (h : ∀ i j, ∃ i' j', s i j ⊆ t i' j') : (⋃ (i) (j), s i j) ⊆ ⋃ (i') (j'), t i' j' :=
-  @supᵢ₂_mono' (Set α) _ _ _ _ _ s t h
+  supᵢ₂_mono' h
 #align set.Union₂_mono' Set.unionᵢ₂_mono'
 
 theorem interᵢ_mono' {s : ι → Set α} {t : ι' → Set α} (h : ∀ j, ∃ i, s i ⊆ t j) :
