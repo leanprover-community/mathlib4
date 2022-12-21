@@ -194,15 +194,29 @@ lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess �
     · exact le_of_not_lt h
     · decide
 
+lemma aux_lemma_one {a b : ℕ} : 4 * a * b ≤ (a + b) * (a + b) := sorry
+lemma aux_lemma_five {a : ℕ} : a / 2 + 1 = (a + 2) / 2 := sorry
+lemma aux_lemma_six {a : ℕ} : a ≤ 2 * ((a + 1) / 2) := sorry
+
 lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) :
   n < (sqrt.iter n guess + 1) * (sqrt.iter n guess + 1) := by
   unfold sqrt.iter
-  let next := (guess + n / guess) / 2
-  by_cases h : next < guess
+  -- m was `next`
+  let m := (guess + n / guess) / 2
+  by_cases h : m < guess
   case pos =>
-    have : n < (next + 1) * (next + 1) := by
-      sorry
-    simpa only [dif_pos h] using sqrt.lt_iter_succ_sq n next this
+    have : n < (m + 1) * (m + 1) := by
+      refine lt_of_mul_lt_mul_left ?_ (4 * (guess * guess)).zero_le
+      apply lt_of_le_of_lt aux_lemma_one
+      rw [show (4 : ℕ) = 2 * 2 from rfl]
+      rw [mul_mul_mul_comm 2, mul_mul_mul_comm (2 * guess)]
+      refine mul_self_lt_mul_self ?_
+      rw [aux_lemma_five, mul_comm 2, mul_assoc,
+        show guess + n / guess + 2 = (guess + n / guess + 1) + 1 from rfl]
+      refine lt_of_lt_of_le ?_ (act_rel_act_of_rel _ aux_lemma_six)
+      rw [add_assoc, mul_add]
+      exact add_lt_add_left (lt_mul_div_succ _ (lt_of_le_of_lt (Nat.zero_le m) h)) _
+    simpa only [dif_pos h] using sqrt.lt_iter_succ_sq n m this
   case neg =>
     simpa only [dif_neg h] using hn
 
