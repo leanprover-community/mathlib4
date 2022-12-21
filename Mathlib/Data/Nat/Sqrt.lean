@@ -147,21 +147,26 @@ private lemma iter_fp_bound (n k : ℕ):
 
 lemma am_gm_lemma (a b: ℤ) : 4 * a * b ≤ (a + b)^2 := by
   linarith [sq_nonneg (a - b)]
+-- TODO: move this to Std??
+protected lemma mul_le_of_le_div (k x y : ℕ) (h : x ≤ y / k) : x * k ≤ y := by
+  by_cases hk : k = 0
+  case pos => rw [hk, mul_zero]; exact zero_le _
+  case neg => rwa [← le_div_iff_mul_le (pos_iff_ne_zero.2 hk)]
 
 lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess ≤ n := by
   unfold sqrt.iter
   let next := (guess + n / guess) / 2
-  by_cases ((guess + n / guess) / 2 ) < guess
+  by_cases next < guess
   case pos =>
-    simp [if_pos h]
-    exact sqrt.iter_sq_le n ( (guess + n / guess) / 2 )
+    simp only [dif_pos h]
+    exact sqrt.iter_sq_le n next
   case neg =>
-    simp [if_neg h]
-    -- should follow from `h`
-    have : guess ≤ (guess + n / guess) / 2 := sorry
-    -- follows from the above by algebraic manipulations
-    have : guess * guess ≤ n := sorry
-    exact ‹guess * guess ≤ n›
+    simp only [dif_neg h]
+    have : guess ≤ next := le_of_not_lt h
+    apply Nat.mul_le_of_le_div
+    apply le_of_add_le_add_left (a := guess)
+    rwa [← mul_two, ← le_div_iff_mul_le]
+    decide
 
 -- Porting note: as the definition of square root has changed,
 -- the proof of `sqrt_IsSqrt` is attempted from scratch.
@@ -183,7 +188,8 @@ private theorem sqrt_IsSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
     | m + 2 => contradiction
   case neg =>
     simp only [IsSqrt, sqrt, h, ite_false]
-    apply And.intro <;>
+    refine ⟨sqrt.iter_sq_le _ _, ?_⟩
+
     sorry
   -- generalize e : size n = s; cases' s with s <;> simp [e, sqrt]
   -- · rw [size_eq_zero.1 e, IsSqrt]
