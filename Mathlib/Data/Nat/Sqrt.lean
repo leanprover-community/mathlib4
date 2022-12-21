@@ -198,7 +198,7 @@ private theorem sqrt_IsSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
     | m + 2 => contradiction
   case neg =>
     simp only [IsSqrt, sqrt, h, ite_false]
-
+    refine ⟨sqrt.iter_sq_le _ _, ?_⟩
 
     sorry
   -- generalize e : size n = s; cases' s with s <;> simp [e, sqrt]
