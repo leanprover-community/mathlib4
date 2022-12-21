@@ -2465,7 +2465,8 @@ theorem _root_.Antitone.interᵢ_nat_add {f : ℕ → Set α} (hf : Antitone f) 
 #align antitone.Inter_nat_add Antitone.interᵢ_nat_add
 
 /-Porting note: removing `simp`. LHS does not simplify. Possible linter bug. Zulip discussion:
-https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/complete_lattice.20and.20has_sup/near/316497982-/
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/complete_lattice.20and.20has_sup/near/316497982
+-/
 theorem unionᵢ_interᵢ_ge_nat_add (f : ℕ → Set α) (k : ℕ) :
     (⋃ n, ⋂ i ≥ n, f (i + k)) = ⋃ n, ⋂ i ≥ n, f i :=
   supᵢ_infᵢ_ge_nat_add f k
