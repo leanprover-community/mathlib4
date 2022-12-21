@@ -53,11 +53,13 @@ variable [MulOneClass M] [MulOneClass N]
 theorem iterate_map_one (f : M →* M) (n : ℕ) : (f^[n]) 1 = 1 :=
   iterate_fixed f.map_one n
 #align monoid_hom.iterate_map_one MonoidHom.iterate_map_one
+#align add_monoid_hom.iterate_map_zero AddMonoidHom.iterate_map_zero
 
 @[simp, to_additive]
 theorem iterate_map_mul (f : M →* M) (n : ℕ) (x y) : (f^[n]) (x * y) = (f^[n]) x * (f^[n]) y :=
   Semiconj₂.iterate f.map_mul n x y
 #align monoid_hom.iterate_map_mul MonoidHom.iterate_map_mul
+#align add_monoid_hom.iterate_map_add AddMonoidHom.iterate_map_add
 
 end
 
@@ -67,11 +69,13 @@ variable [Monoid M] [Monoid N] [Group G] [Group H]
 theorem iterate_map_inv (f : G →* G) (n : ℕ) (x) : (f^[n]) x⁻¹ = ((f^[n]) x)⁻¹ :=
   Commute.iterate_left f.map_inv n x
 #align monoid_hom.iterate_map_inv MonoidHom.iterate_map_inv
+#align add_monoid_hom.iterate_map_neg AddMonoidHom.iterate_map_neg
 
 @[simp, to_additive]
 theorem iterate_map_div (f : G →* G) (n : ℕ) (x y) : (f^[n]) (x / y) = (f^[n]) x / (f^[n]) y :=
   Semiconj₂.iterate f.map_div n x y
 #align monoid_hom.iterate_map_div MonoidHom.iterate_map_div
+#align add_monoid_hom.iterate_map_sub AddMonoidHom.iterate_map_sub
 
 theorem iterate_map_pow (f : M →* M) (n : ℕ) (a) (m : ℕ) : (f^[n]) (a ^ m) = (f^[n]) a ^ m :=
   Commute.iterate_left (fun x => f.map_pow x m) n a
@@ -181,20 +185,24 @@ theorem smul_iterate [MulAction G H] : (a • · : H → H)^[n] = (a ^ n • ·)
     Nat.recOn n (by rw [iterate_zero, id.def, pow_zero, one_smul])
     fun n ih => by rw [iterate_succ', comp_apply, ih, pow_succ, mul_smul]
 #align smul_iterate smul_iterate
+#align vadd_iterate vadd_iterate
 
 @[simp, to_additive]
 theorem mul_left_iterate : (a * ·)^[n] = (a ^ n * ·) :=
   smul_iterate a n
 #align mul_left_iterate mul_left_iterate
+#align add_left_iterate add_left_iterate
 
 @[simp, to_additive]
 theorem mul_right_iterate : (· * a)^[n] = (· * a ^ n) :=
   smul_iterate (MulOpposite.op a) n
 #align mul_right_iterate mul_right_iterate
+#align add_right_iterate add_right_iterate
 
 @[to_additive]
 theorem mul_right_iterate_apply_one : ((· * a)^[n]) 1 = a ^ n := by simp [mul_right_iterate]
 #align mul_right_iterate_apply_one mul_right_iterate_apply_one
+#align add_right_iterate_apply_zero add_right_iterate_apply_zero
 
 @[simp, to_additive]
 theorem pow_iterate (n : ℕ) (j : ℕ) : (fun x : G => x ^ n)^[j] = fun x : G => x ^ n ^ j :=
@@ -219,6 +227,7 @@ theorem zpow_iterate (n : ℤ) (j : ℕ) : (fun x : G => x ^ n)^[j] = fun x => x
       mul_smul := fun m n g => zpow_mul' g m n }
   smul_iterate n j
 #align zpow_iterate zpow_iterate
+#align zsmul_iterate zsmul_iterate
 
 end Group
 
@@ -233,22 +242,26 @@ theorem SemiconjBy.function_semiconj_mul_left (h : SemiconjBy a b c) :
     Function.Semiconj (a * ·) (b * ·) (c * ·) := fun j => by
   dsimp only; rw [← mul_assoc, h.eq, mul_assoc]
 #align semiconj_by.function_semiconj_mul_left SemiconjBy.function_semiconj_mul_left
+#align add_semiconj_by.function_semiconj_add_left AddSemiconjBy.function_semiconj_add_left
 
 @[to_additive]
 theorem Commute.function_commute_mul_left (h : _root_.Commute a b) :
     Function.Commute (a * ·) (b * ·) :=
   SemiconjBy.function_semiconj_mul_left h
 #align commute.function_commute_mul_left Commute.function_commute_mul_left
+#align add_commute.function_commute_add_left AddCommute.function_commute_add_left
 
 @[to_additive]
 theorem SemiconjBy.function_semiconj_mul_right_swap (h : SemiconjBy a b c) :
     Function.Semiconj (· * a) (· * c) (· * b) := fun j => by simp_rw [mul_assoc, ← h.eq]
 #align semiconj_by.function_semiconj_mul_right_swap SemiconjBy.function_semiconj_mul_right_swap
+#align add_semiconj_by.function_semiconj_add_right_swap  SemiconjBy.function_semiconj_mul_right_swap
 
 @[to_additive]
 theorem Commute.function_commute_mul_right (h : _root_.Commute a b) :
   Function.Commute (· * a) (· * b) :=
   SemiconjBy.function_semiconj_mul_right_swap h
 #align commute.function_commute_mul_right Commute.function_commute_mul_right
+#align add_commute.function_commute_add_right  AddCommute.function_commute_add_right
 
 end Semigroup
