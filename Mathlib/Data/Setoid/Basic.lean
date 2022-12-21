@@ -456,13 +456,24 @@ def correspondence (r : Setoid α) : { s // r ≤ s } ≃o Setoid (Quotient r) w
     ext' fun x y =>
       ⟨fun h => let ⟨a, b, hx, hy, H⟩ := h; hx ▸ hy ▸ H,
         Quotient.inductionOn₂ x y fun w z h => ⟨w, z, rfl, rfl, h⟩⟩
-  map_rel_iff' := -- fun s t =>
-    ⟨fun h x y hs =>
-      let ⟨a, b, hx, hy, ht⟩ := h ⟨x, y, rfl, rfl, hs⟩
-      t.1.trans' (t.1.symm' <| t.2 <| eq_rel.1 hx) <| t.1.trans' ht <| t.2 <| eq_rel.1 hy,
-      fun h x y hs =>
-      let ⟨a, b, hx, hy, Hs⟩ := hs
-      ⟨a, b, hx, hy, h Hs⟩⟩
+  map_rel_iff' := by -- fun s t =>
+    --⟨fun h x y hs =>
+    --  let ⟨a, b, hx, hy, ht⟩ := h ⟨x, y, rfl, rfl, hs⟩
+    --  t.1.trans' (t.1.symm' <| t.2 <| eq_rel.1 hx) <| t.1.trans' ht <| t.2 <| eq_rel.1 hy,
+    --  fun h x y hs =>
+    --  let ⟨a, b, hx, hy, Hs⟩ := hs
+    --  ⟨a, b, hx, hy, h Hs⟩⟩
+    intro s' t
+    refine ⟨?_, ?_⟩
+    · intro h x y hs'
+      let ⟨a, b, hx, hy, ht⟩ := h ⟨x, y, rfl, rfl, hs'⟩
+      exact t.1.trans' (t.1.symm' <| t.2 <| eq_rel.1 hx) <| t.1.trans' ht <| t.2 <| eq_rel.1 hy
+    · intro h x y hs'
+      let ⟨a, b, hx, hy, Hs⟩ := hs'
+      exact ⟨a, b, hx, hy, h Hs⟩
+
+
+
 #align setoid.correspondence Setoid.correspondence
 
 end Setoid
