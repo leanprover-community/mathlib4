@@ -3227,7 +3227,7 @@ end SplitAtOn
   to apply `f`. -/
 @[simp]
 def pmap {p : α → Prop} (f : ∀ a, p a → β) : ∀ l : List α, (∀ a ∈ l, p a) → List β
-  | [], H => []
+  | [], _ => []
   | a :: l, H => f a (forall_mem_cons.1 H).1 :: pmap f l (forall_mem_cons.1 H).2
 #align list.pmap List.pmap
 
@@ -3239,10 +3239,10 @@ def attach (l : List α) : List { x // x ∈ l } :=
 
 theorem sizeof_lt_sizeof_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l) :
     SizeOf.sizeOf x < SizeOf.sizeOf l := by
-  induction' l with h t ih <;> cases hx
-  · rw [hx]
-    exact lt_add_of_lt_of_nonneg (lt_one_add _) (Nat.zero_le _)
-  · exact lt_add_of_pos_of_le (zero_lt_one_add _) (le_of_lt (ih hx))
+  induction' l with h t ih <;> cases hx <;> rw [cons.sizeOf_spec]
+  · exact lt_add_of_lt_of_nonneg (lt_one_add _) (Nat.zero_le _)
+  · refine lt_add_of_pos_of_le ?_ (le_of_lt (ih ‹_›))
+    rw [add_comm]; exact succ_pos _
 #align list.sizeof_lt_sizeof_of_mem List.sizeof_lt_sizeof_of_mem
 
 /- warning: list.pmap_eq_map -> List.pmap_eq_map is a dubious translation:
@@ -3300,7 +3300,7 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align list.pmap_eq_map_attach List.pmap_eq_map_attachₓ'. -/
 theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (l H) :
     pmap f l H = l.attach.map fun x => f x.1 (H _ x.2) := by
-  rw [attach, map_pmap] <;> exact pmap_congr l fun _ _ _ _ => rfl
+  rw [attach, map_pmap]; exact pmap_congr l fun _ _ _ _ => rfl
 #align list.pmap_eq_map_attach List.pmap_eq_map_attach
 
 @[simp]
