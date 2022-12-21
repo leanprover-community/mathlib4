@@ -20,9 +20,10 @@ The new hypothesis is given the same user name as the original,
 it attempts to avoid reordering hypotheses, and the original is cleared if possible.
 -/
 -- adapted from Lean.Meta.replaceLocalDeclCore
-def replace (g : MVarId) (hyp : FVarId) (typeNew proof : Expr) :
+def replace (g : MVarId) (hyp : FVarId) (proof : Expr) (typeNew : Option Expr := none) :
     MetaM AssertAfterResult :=
   g.withContext do
+    let typeNew := typeNew.getD (← inferType proof)
     let ldecl ← hyp.getDecl
     -- `typeNew` may contain variables that occur after `hyp`.
     -- Thus, we use the auxiliary function `findMaxFVar` to ensure `typeNew` is well-formed

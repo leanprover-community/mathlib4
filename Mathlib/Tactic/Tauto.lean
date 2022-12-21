@@ -25,25 +25,17 @@ open Qq
 
 initialize registerTraceClass `tauto
 
-/-- Like `replace`, but infers the type of the proof. -/
-private def replace' (g : MVarId) (hyp : FVarId) (proof : Expr) :
-    MetaM AssertAfterResult :=
-  do let t ← inferType proof
-     g.replace hyp t proof
+variable [Monad m] [MonadExceptOf Exception m]
 
 /-- Repeats a tactic at most `n` times, stopping sooner if the
-tactic fails. Always returns success. -/
-private def iterateAtMost : Nat → TacticM Unit → TacticM Unit
+tactic fails. Always succeeds. -/
+private def iterateAtMost : Nat → m Unit → m Unit
 | 0, _ => pure ()
-| n + 1, tac => do
-      if ← tryTactic tac
-      then iterateAtMost n tac
-      else pure ()
+| n + 1, tac => try tac; iterateAtMost n tac catch _ => pure ()
 
-/-- Repeats a tactic until it fails. Always returns success. -/
-partial def iterateUntilFailure (tac : TacticM Unit) : TacticM Unit :=
-  try do tac; iterateUntilFailure tac
-  catch _ => pure ()
+/-- Repeats a tactic until it fails. Always succeeds. -/
+partial def iterateUntilFailure (tac : m Unit) : m Unit :=
+  try tac; iterateUntilFailure tac catch _ => pure ()
 
 /-- Tries to apply de-Morgan-like rules on all hypotheses. Always succeeds,
 regardless of whether any progress was actually made.
@@ -51,61 +43,51 @@ regardless of whether any progress was actually made.
 def distribNot : TacticM Unit := withMainContext do
 for h in ← getLCtx do
  iterateAtMost 3 $
-  liftMetaTactic fun mvarId =>  do
-    let e : Q(Prop) ← (do let htt ← inferType h.type
-                          guard htt.isProp
-                          pure h.type)
-    match e with
+  liftMetaTactic fun g => do
+    let e : Q(Prop) ← (do guard (← inferType h.type).isProp; pure h.type)
+    let replace (p : Expr) := g.replace h.fvarId p
+    let result ← match e with
     | ~q(¬ ($a : Prop) = $b) => do
-      let h' : Q(¬$a = $b) := mkFVar h.fvarId
-      let result ← replace' mvarId h.fvarId (q(mt Iff.to_eq $h'))
-      pure [result.mvarId]
+      let h' : Q(¬$a = $b) := h.toExpr
+      replace q(mt Iff.to_eq $h')
     | ~q(($a : Prop) = $b) => do
-      let h' : Q($a = $b) := mkFVar h.fvarId
-      let result ← replace' mvarId h.fvarId (q(Eq.to_iff $h'))
-      pure [result.mvarId]
+      let h' : Q($a = $b) := h.toExpr
+      replace q(Eq.to_iff $h')
     | ~q(¬ (($a : Prop) ∧ $b)) => do
-      let h' : Q(¬($a ∧ $b)) := mkFVar h.fvarId
+      let h' : Q(¬($a ∧ $b)) := h.toExpr
       let _inst ← synthInstanceQ (q(Decidable $b) : Q(Type))
-      let result ← replace' mvarId h.fvarId (q(Decidable.not_and'.mp $h'))
-      pure [result.mvarId]
+      replace q(Decidable.not_and'.mp $h')
     | ~q(¬ (($a : Prop) ∨ $b)) => do
-      let h' : Q(¬($a ∨ $b)) := mkFVar h.fvarId
-      let result ← replace' mvarId h.fvarId (q(not_or.mp $h'))
-      pure [result.mvarId]
+      let h' : Q(¬($a ∨ $b)) := h.toExpr
+      replace q(not_or.mp $h')
     | ~q(¬ (($a : Prop) ≠ $b)) => do
-      let h' : Q(¬($a ≠ $b)) := mkFVar h.fvarId
+      let h' : Q(¬($a ≠ $b)) := h.toExpr
       let _inst ← synthInstanceQ (q(Decidable ($a = $b)) : Q(Type))
-      let result ← replace' mvarId h.fvarId (q(Decidable.of_not_not $h'))
-      pure [result.mvarId]
+      replace q(Decidable.of_not_not $h')
     | ~q(¬¬ ($a : Prop)) => do
-      let h' : Q(¬¬$a) := mkFVar h.fvarId
+      let h' : Q(¬¬$a) := h.toExpr
       let _inst ← synthInstanceQ (q(Decidable $a) : Q(Type))
-      let result ← replace' mvarId h.fvarId (q(Decidable.of_not_not $h'))
-      pure [result.mvarId]
+      replace q(Decidable.of_not_not $h')
     | ~q(¬ ((($a : Prop)) → $b)) => do
-      let h' : Q(¬($a → $b)) := mkFVar h.fvarId
+      let h' : Q(¬($a → $b)) := h.toExpr
       let _inst ← synthInstanceQ (q(Decidable $a) : Q(Type))
-      let result ← replace' mvarId h.fvarId (q(Decidable.not_imp.mp $h'))
-      pure [result.mvarId]
+      replace q(Decidable.not_imp.mp $h')
     | ~q(¬ (($a : Prop) ↔ $b)) => do
-      let h' : Q(¬($a ↔ $b)) := mkFVar h.fvarId
+      let h' : Q(¬($a ↔ $b)) := h.toExpr
       let _inst ← synthInstanceQ (q(Decidable $b) : Q(Type))
-      let result ← replace' mvarId h.fvarId (q(Decidable.not_iff.mp $h'))
-      pure [result.mvarId]
+      replace q(Decidable.not_iff.mp $h')
     | ~q(($a : Prop) ↔ $b) => do
-      let h' : Q($a ↔ $b) := mkFVar h.fvarId
+      let h' : Q($a ↔ $b) := h.toExpr
       let _inst ← synthInstanceQ (q(Decidable $b) : Q(Type))
-      let result ← replace' mvarId h.fvarId (q(Decidable.iff_iff_and_or_not_and_not.mp $h'))
-      pure [result.mvarId]
+      replace q(Decidable.iff_iff_and_or_not_and_not.mp $h')
     | ~q((((($a : Prop)) → False) : Prop)) =>
       throwError "distribNot found nothing to work on with negation"
     | ~q((((($a : Prop)) → $b) : Prop)) => do
-      let h' : Q($a → $b) := mkFVar h.fvarId
+      let h' : Q($a → $b) := h.toExpr
       let _inst ← synthInstanceQ (q(Decidable $a) : Q(Type))
-      let result ← replace' mvarId h.fvarId (q(Decidable.not_or_of_imp $h'))
-      pure [result.mvarId]
+      replace q(Decidable.not_or_of_imp $h')
     | _ => throwError "distribNot found nothing to work on"
+    pure [result.mvarId]
 
 /-- Config for the `tauto` tactic. Currently empty. TODO: add `closer` option. -/
 structure Config
