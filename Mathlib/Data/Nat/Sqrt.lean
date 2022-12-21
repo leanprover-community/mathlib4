@@ -123,9 +123,7 @@ private theorem sqrtAux_IsSqrt (n) :
   | m + 1, r, h₁, h₂ => by
     apply
         sqrtAux_IsSqrt_lemma (m + 1) r n h₁ (2 ^ m * 2 ^ m)
-          (by
-            simp [shiftr, pow_succ, div2_val, mul_comm, mul_left_comm] <;>
-              repeat' rw [@Nat.mul_div_cancel_left _ 2 (by decide)]) <;>
+          (by simp [shiftr, pow_succ, div2_val, mul_comm, mul_left_comm]) <;>
       intro h
     · have := sqrtAux_IsSqrt _ m r h₁ h
       rw [mul_comm 2, mul_assoc, mul_comm 2] at this
@@ -180,7 +178,7 @@ theorem lt_succ_sqrt (n : ℕ) : n < succ (sqrt n) * succ (sqrt n) :=
 #align nat.lt_succ_sqrt Nat.lt_succ_sqrt
 
 theorem lt_succ_sqrt' (n : ℕ) : n < succ (sqrt n) ^ 2 :=
-  trans_rel_left (fun i j => i < j) (lt_succ_sqrt n) (sq (succ (sqrt n))).symm
+  (sq (succ (sqrt n))).symm ▸ (lt_succ_sqrt n)
 #align nat.lt_succ_sqrt' Nat.lt_succ_sqrt'
 
 theorem sqrt_le_add (n : ℕ) : n ≤ sqrt n * sqrt n + sqrt n + sqrt n := by
