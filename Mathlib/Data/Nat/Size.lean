@@ -20,6 +20,10 @@ namespace Nat
 
 /-! ### `shiftl` and `shiftr` -/
 
+section
+
+set_option linter.deprecated false
+
 -- Porting note: `show ... by` has not been implemented yet.
 theorem shiftl_eq_mul_pow (m) : ∀ n, shiftl m n = m * 2 ^ n
   | 0 => (Nat.mul_one _).symm
@@ -140,7 +144,7 @@ theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
   ⟨fun h => lt_of_lt_of_le (lt_size_self _) (pow_le_pow_of_le_right (by decide) h), by
     rw [← one_shiftl]; revert n
     apply binaryRec _ _ m
-    · intro n h
+    · intro n
       simp
     · intro b m IH n h
       by_cases e : bit b m = 0
@@ -178,5 +182,7 @@ theorem size_eq_bits_len (n : ℕ) : n.bits.length = n.size := by
   · simp [ih]
   · simpa [bit_eq_zero_iff]
 #align nat.size_eq_bits_len Nat.size_eq_bits_len
+
+end
 
 end Nat
