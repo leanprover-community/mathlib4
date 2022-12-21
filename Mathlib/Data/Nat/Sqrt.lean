@@ -134,6 +134,16 @@ private theorem sqrtAux_IsSqrt (n) :
       exact this
 -- #align nat.sqrt_aux_is_sqrt nat.sqrtAux_IsSqrt
 
+-- Porting note: as the definition of square root has changed, the proof of `sqrt_IsSqrt` is attempted from scratch.
+/-
+Sketch of proof:
+Up to rounding, in terms of the definition of `sqrt.iter`,
+
+* By AM-GM inequality, `next² ≥ n` giving one of the bounds.
+* When we terminated, we have `guess ≥ next` from which we deduce the other bound `n ≥ next²`.
+
+To turn this into a lean proof we need to manipulate, use properties of natural number division etc.
+-/
 private theorem sqrt_IsSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
   by_cases n ≤ 1
   case pos =>
@@ -163,7 +173,7 @@ private theorem sqrt_IsSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
   --   apply (@div_lt_iff_lt_mul _ _ 2 (by decide)).1
   --   rw [div2_val]
   --   apply lt_succ_self
-#align nat.sqrt_is_sqrt Nat.sqrt_IsSqrt
+-- #align nat.sqrt_is_sqrt Nat.sqrt_IsSqrt
 
 theorem sqrt_le (n : ℕ) : sqrt n * sqrt n ≤ n :=
   (sqrt_IsSqrt n).left
