@@ -3498,7 +3498,7 @@ theorem lookmap_cons_some {a b : α} (l : List α) (h : f a = some b) : (a :: l)
 
 theorem lookmap_some : ∀ l : List α, l.lookmap some = l
   | [] => rfl
-  | a :: l => rfl
+  | _ :: _ => rfl
 #align list.lookmap_some List.lookmap_some
 
 theorem lookmap_none : ∀ l : List α, (l.lookmap fun _ => none) = l
@@ -3634,7 +3634,7 @@ theorem filterMap_some (l : List α) : filterMap some l = l := by
 theorem map_filterMap_some_eq_filter_map_is_some (f : α → Option β) (l : List α) :
     (l.filterMap f).map some = (l.map f).filter fun b => b.isSome := by
   induction' l with x xs ih
-  · simp
+  · rfl
   · cases h : f x <;> rw [List.filterMap_cons, h] <;> simp [h, ih]
 #align list.map_filter_map_some_eq_filter_map_is_some List.map_filterMap_some_eq_filter_map_is_some
 
