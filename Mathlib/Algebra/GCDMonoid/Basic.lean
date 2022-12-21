@@ -303,7 +303,7 @@ theorem gcd_mul_lcm [GCDMonoid α] : ∀ a b : α, Associated (gcd a b * lcm a b
   GCDMonoid.gcd_mul_lcm
 #align gcd_mul_lcm gcd_mul_lcm
 
-section Gcd
+section GCD
 
 theorem dvd_gcd_iff [GCDMonoid α] (a b c : α) : a ∣ gcd b c ↔ a ∣ b ∧ a ∣ c :=
   Iff.intro (fun h => ⟨h.trans (gcd_dvd_left _ _), h.trans (gcd_dvd_right _ _)⟩) fun ⟨hab, hac⟩ =>
@@ -608,7 +608,7 @@ theorem exists_associated_pow_of_mul_eq_pow [GCDMonoid α] {a b c : α} (hab : I
   by_cases hb : b = 0
   · use 1
     rw [one_pow]
-    apply (associated_one_iff_is_unit.mpr hab).symm.trans
+    apply (associated_one_iff_isUnit.mpr hab).symm.trans
     rw [hb]
     exact gcd_zero_right' a
   obtain rfl | hk := k.eq_zero_or_pos
@@ -623,7 +623,7 @@ theorem exists_associated_pow_of_mul_eq_pow [GCDMonoid α] {a b c : α} (hab : I
   use d₁
   obtain ⟨h0₁, ⟨a', ha'⟩⟩ := pow_dvd_of_mul_eq_pow ha hab h hc hd₁
   rw [mul_comm] at h hc
-  rw [(gcd_comm' a b).is_unit_iff] at hab
+  rw [(gcd_comm' a b).isUnit_iff] at hab
   obtain ⟨h0₂, ⟨b', hb'⟩⟩ := pow_dvd_of_mul_eq_pow hb hab h hc hd₂
   rw [ha', hb', hc, mul_pow] at h
   have h' : a' * b' = 1 := by
@@ -656,27 +656,27 @@ theorem gcd_greatest_associated {α : Type _} [CancelCommMonoidWithZero α] [GCD
   associated_of_dvd_dvd (GCDMonoid.dvd_gcd hda hdb) h
 #align gcd_greatest_associated gcd_greatest_associated
 
-theorem is_unit_gcd_of_eq_mul_gcd {α : Type _} [CancelCommMonoidWithZero α] [GCDMonoid α]
+theorem isUnit_gcd_of_eq_mul_gcd {α : Type _} [CancelCommMonoidWithZero α] [GCDMonoid α]
     {x y x' y' : α} (ex : x = gcd x y * x') (ey : y = gcd x y * y') (h : gcd x y ≠ 0) :
     IsUnit (gcd x' y') := by
-  rw [← associated_one_iff_is_unit]
+  rw [← associated_one_iff_isUnit]
   refine' Associated.of_mul_left _ (Associated.refl <| gcd x y) h
   convert (gcd_mul_left' _ _ _).symm using 1
   rw [← ex, ← ey, mul_one]
-#align is_unit_gcd_of_eq_mul_gcd is_unit_gcd_of_eq_mul_gcd
+#align is_unit_gcd_of_eq_mul_gcd isUnit_gcd_of_eq_mul_gcd
 
 theorem extract_gcd {α : Type _} [CancelCommMonoidWithZero α] [GCDMonoid α] (x y : α) :
     ∃ x' y', x = gcd x y * x' ∧ y = gcd x y * y' ∧ IsUnit (gcd x' y') := by
   by_cases h : gcd x y = 0
   · obtain ⟨rfl, rfl⟩ := (gcd_eq_zero_iff x y).1 h
-    simp_rw [← associated_one_iff_is_unit]
+    simp_rw [← associated_one_iff_isUnit]
     exact ⟨1, 1, by rw [h, zero_mul], by rw [h, zero_mul], gcd_one_left' 1⟩
   obtain ⟨x', ex⟩ := gcd_dvd_left x y
   obtain ⟨y', ey⟩ := gcd_dvd_right x y
-  exact ⟨x', y', ex, ey, is_unit_gcd_of_eq_mul_gcd ex ey h⟩
+  exact ⟨x', y', ex, ey, isUnit_gcd_of_eq_mul_gcd ex ey h⟩
 #align extract_gcd extract_gcd
 
-end Gcd
+end GCD
 
 section Lcm
 
@@ -1022,7 +1022,7 @@ def normalizationMonoidOfMonoidHomRightInverse [DecidableEq α] (f : Associates 
 #align normalization_monoid_of_monoid_hom_right_inverse normalizationMonoidOfMonoidHomRightInverse
 
 /-- Define `gcd_monoid` on a structure just from the `gcd` and its properties. -/
-noncomputable def gcdMonoidOfGcd [DecidableEq α] (gcd : α → α → α)
+noncomputable def gcdMonoidOfGCD [DecidableEq α] (gcd : α → α → α)
     (gcd_dvd_left : ∀ a b, gcd a b ∣ a) (gcd_dvd_right : ∀ a b, gcd a b ∣ b)
     (dvd_gcd : ∀ {a b c}, a ∣ c → a ∣ b → a ∣ gcd c b) : GCDMonoid α :=
   { gcd
@@ -1046,10 +1046,10 @@ noncomputable def gcdMonoidOfGcd [DecidableEq α] (gcd : α → α → α)
         exact associated_of_dvd_dvd (dvd_gcd (dvd_refl a) (dvd_zero a)) (gcd_dvd_left _ _)
       apply Or.resolve_left (mul_eq_zero.1 _) a0'
       rw [h, mul_zero] }
-#align gcd_monoid_of_gcd gcdMonoidOfGcd
+#align gcd_monoid_of_gcd gcdMonoidOfGCD
 
 /-- Define `normalized_gcd_monoid` on a structure just from the `gcd` and its properties. -/
-noncomputable def normalizedGCDMonoidOfGcd [NormalizationMonoid α] [DecidableEq α] (gcd : α → α → α)
+noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq α] (gcd : α → α → α)
     (gcd_dvd_left : ∀ a b, gcd a b ∣ a) (gcd_dvd_right : ∀ a b, gcd a b ∣ b)
     (dvd_gcd : ∀ {a b c}, a ∣ c → a ∣ b → a ∣ gcd c b)
     (normalize_gcd : ∀ a b, normalize (gcd a b) = gcd a b) : NormalizedGCDMonoid α :=
@@ -1104,7 +1104,7 @@ noncomputable def normalizedGCDMonoidOfGcd [NormalizationMonoid α] [DecidableEq
       rw [← gcd0] at a0
       apply Or.resolve_left (mul_eq_zero.1 _) a0
       rw [h, mul_zero, normalize_zero] }
-#align normalized_gcd_monoid_of_gcd normalizedGCDMonoidOfGcd
+#align normalized_gcd_monoid_of_gcd normalizedGCDMonoidOfGCD
 
 /-- Define `gcd_monoid` on a structure just from the `lcm` and its properties. -/
 noncomputable def gcdMonoidOfLcm [DecidableEq α] (lcm : α → α → α)
@@ -1250,25 +1250,25 @@ noncomputable def normalizedGCDMonoidOfLcm [NormalizationMonoid α] [DecidableEq
 #align normalized_gcd_monoid_of_lcm normalizedGCDMonoidOfLcm
 
 /-- Define a `gcd_monoid` structure on a monoid just from the existence of a `gcd`. -/
-noncomputable def gcdMonoidOfExistsGcd [DecidableEq α]
+noncomputable def gcdMonoidOfExistsGCD [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, d ∣ a ∧ d ∣ b ↔ d ∣ c) : GCDMonoid α :=
-  gcdMonoidOfGcd (fun a b => Classical.choose (h a b))
+  gcdMonoidOfGCD (fun a b => Classical.choose (h a b))
     (fun a b => ((Classical.choose_spec (h a b) (Classical.choose (h a b))).2 dvd_rfl).1)
     (fun a b => ((Classical.choose_spec (h a b) (Classical.choose (h a b))).2 dvd_rfl).2)
     fun a b c ac ab => (Classical.choose_spec (h c b) a).1 ⟨ac, ab⟩
-#align gcd_monoid_of_exists_gcd gcdMonoidOfExistsGcd
+#align gcd_monoid_of_exists_gcd gcdMonoidOfExistsGCD
 
 /-- Define a `normalized_gcd_monoid` structure on a monoid just from the existence of a `gcd`. -/
-noncomputable def normalizedGCDMonoidOfExistsGcd [NormalizationMonoid α] [DecidableEq α]
+noncomputable def normalizedGCDMonoidOfExistsGCD [NormalizationMonoid α] [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, d ∣ a ∧ d ∣ b ↔ d ∣ c) : NormalizedGCDMonoid α :=
-  normalizedGCDMonoidOfGcd (fun a b => normalize (Classical.choose (h a b)))
+  normalizedGCDMonoidOfGCD (fun a b => normalize (Classical.choose (h a b)))
     (fun a b =>
       normalize_dvd_iff.2 ((Classical.choose_spec (h a b) (Classical.choose (h a b))).2 dvd_rfl).1)
     (fun a b =>
       normalize_dvd_iff.2 ((Classical.choose_spec (h a b) (Classical.choose (h a b))).2 dvd_rfl).2)
     (fun a b c ac ab => dvd_normalize_iff.2 ((Classical.choose_spec (h c b) a).1 ⟨ac, ab⟩))
     fun a b => normalize_idem _
-#align normalized_gcd_monoid_of_exists_gcd normalizedGCDMonoidOfExistsGcd
+#align normalized_gcd_monoid_of_exists_gcd normalizedGCDMonoidOfExistsGCD
 
 /-- Define a `gcd_monoid` structure on a monoid just from the existence of an `lcm`. -/
 noncomputable def gcdMonoidOfExistsLcm [DecidableEq α]
