@@ -738,7 +738,8 @@ theorem bit_lt_bit (a b) (h : m < n) : bit a m < bit b n :=
 @[simp]
 theorem bit0_le_bit1_iff : bit0 m ≤ bit1 n ↔ m ≤ n :=
   ⟨fun h => by
-    rwa [← Nat.lt_succ_iff, n.bit1_eq_succ_bit0, ← n.bit0_succ_eq, bit0_lt_bit0, Nat.lt_succ_iff] at h,
+    rwa [← Nat.lt_succ_iff, n.bit1_eq_succ_bit0,
+    ← n.bit0_succ_eq, bit0_lt_bit0, Nat.lt_succ_iff] at h,
     fun h => le_of_lt (Nat.bit0_lt_bit1 h)⟩
 #align nat.bit0_le_bit1_iff Nat.bit0_le_bit1_iff
 
