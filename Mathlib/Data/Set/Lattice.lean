@@ -23,8 +23,7 @@ for `Set α`, and some more set constructions.
 * `Set.unionᵢ`: **i**ndexed **union**. Union of an indexed family of sets.
 * `Set.interᵢ`: **i**ndexed **inter**section. Intersection of an indexed family of sets.
 * `Set.interₛ`: **s**et **inter**section. Intersection of sets belonging to a set of sets.
-* `Set.unionₛ`: **s**et **union**. Union of sets belonging to a set of sets. This is actually
-  defined in core Lean.
+* `Set.unionₛ`: **s**et **union**. Union of sets belonging to a set of sets.
 * `Set.interₛ_eq_binterᵢ`, `set.unionₛ_eq_binterᵢ`: Shows that `⋂₀ s = ⋂ x ∈ s, x` and
   `⋃₀ s = ⋃ x ∈ s, x`.
 * `Set.complete_boolean_algebra`: `set α` is a `CompleteBooleanAlgebra` with `≤ = ⊆`, `< = ⊂`,
@@ -43,9 +42,9 @@ In lemma names,
 * `⋂ i, s i` is called `interᵢ`
 * `⋃ i j, s i j` is called `unionᵢ₂`. This is a `unionᵢ` inside a `unionᵢ`.
 * `⋂ i j, s i j` is called `interᵢ₂`. This is an `interᵢ` inside an `interᵢ`.
-* `⋃ i ∈ s, t i` is called `bunionᵢ` for "bounded `Union`". This is the special case of `unionᵢ₂`
+* `⋃ i ∈ s, t i` is called `bunionᵢ` for "bounded `unionᵢ`". This is the special case of `unionᵢ₂`
   where `j : i ∈ s`.
-* `⋂ i ∈ s, t i` is called `binterᵢ` for "bounded `Inter`". This is the special case of `interᵢ₂`
+* `⋂ i ∈ s, t i` is called `binterᵢ` for "bounded `interᵢ`". This is the special case of `interᵢ₂`
   where `j : i ∈ s`.
 
 ## Notation
@@ -100,24 +99,10 @@ theorem mem_unionₛ {x : α} {S : Set (Set α)} : x ∈ ⋃₀S ↔ ∃ t ∈ S
   Iff.rfl
 #align set.mem_sUnion Set.mem_unionₛ
 
-/- warning: set.Union -> Set.union is a dubious translation:
-lean 3 declaration is
-  forall {β : Type.{u_2}} {ι : Sort.{u_4}}, (ι -> (Set.{u_2} β)) -> (Set.{u_2} β)
-but is expected to have type
-  forall {β : Type.{u_1}}, (Set.{u_1} β) -> (Set.{u_1} β) -> (Set.{u_1} β)
-Case conversion may be inaccurate. Consider using '#align set.Union Set.unionₓ'. -/
-/-- Indexed union of a family of sets -/
 def unionᵢ (s : ι → Set β) : Set β :=
   supᵢ s
 #align set.Union Set.unionᵢ
 
-/- warning: set.Inter -> Set.inter is a dubious translation:
-lean 3 declaration is
-  forall {β : Type.{u_2}} {ι : Sort.{u_4}}, (ι -> (Set.{u_2} β)) -> (Set.{u_2} β)
-but is expected to have type
-  forall {β : Type.{u_1}}, (Set.{u_1} β) -> (Set.{u_1} β) -> (Set.{u_1} β)
-Case conversion may be inaccurate. Consider using '#align set.Inter Set.interₓ'. -/
-/-- Indexed intersection of a family of sets -/
 def interᵢ (s : ι → Set β) : Set β :=
   infᵢ s
 #align set.Inter Set.interᵢ
@@ -198,7 +183,7 @@ instance : CompleteBooleanAlgebra (Set α) :=
     infᵢ_sup_le_sup_infₛ := fun s S x => Iff.mp <| by simp [forall_or_left]
     inf_supₛ_le_supᵢ_inf := fun s S x => Iff.mp <| by simp [exists_and_left] }
 
-/-- `set.image` is monotone. See `set.image_image` for the statement in terms of `⊆`. -/
+/-- `Set.image` is monotone. See `Set.image_image` for the statement in terms of `⊆`. -/
 theorem monotone_image {f : α → β} : Monotone (image f) := fun _ _ => image_subset _
 #align set.monotone_image Set.monotone_image
 
