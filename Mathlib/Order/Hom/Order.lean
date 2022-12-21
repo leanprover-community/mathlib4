@@ -67,8 +67,7 @@ instance orderBot [Preorder β] [OrderBot β] : OrderBot (α →o β) where
   bot_le _ _ := bot_le
 
 @[simps]
-instance
-         [Preorder β] [OrderTop β] : Top (α →o β) where
+instance [Preorder β] [OrderTop β] : Top (α →o β) where
   top := const α ⊤
 
 instance orderTop [Preorder β] [OrderTop β] : OrderTop (α →o β) where
@@ -90,7 +89,7 @@ theorem infᵢ_apply {ι : Sort _} [CompleteLattice β] (f : ι → α →o β) 
 #align order_hom.infᵢ_apply OrderHom.infᵢ_apply
 
 -- Porting note: This is a `syntactical tautology`, removed it for now.
--- Can somebody confirm its unecessary and remove it for good?
+-- Can somebody confirm it's unecessary and remove it for good?
 
 -- -- Porting note: used to have these attributes
 -- -- @[simp, norm_cast]
@@ -98,12 +97,31 @@ theorem infᵢ_apply {ι : Sort _} [CompleteLattice β] (f : ι → α →o β) 
 --     ((⨅ i, f i : α →o β) : α → β) = ⨅ i, f i := by
 --   rfl
 -- -- Porting note: mathlib3port proof did not work:
--- -- funext fun x => (infᵢ_apply f x).trans (@infᵢ_apply _ _ _ _ (fun i => f i) _).symm
+-- -- funext fun x => (infᵢ_apply f x).trans (@_root_.infᵢ_apply _ _ _ _ (fun i => f i) _).symm
 -- #align order_hom.coe_infᵢ OrderHom.coe_infᵢ
 #noalign order_hom.coe_infᵢ
 
 instance [CompleteLattice β] : SupSet (α →o β) where
   supₛ s := ⟨fun x => ⨆ f ∈ s, (f : _) x, fun _ _ h => supᵢ₂_mono fun f _ => f.mono h⟩
+
+@[simp]
+theorem supₛ_apply [CompleteLattice β] (s : Set (α →o β)) (x : α) :
+    supₛ s x = ⨆ f ∈ s, (f : _) x :=
+  rfl
+#align order_hom.Sup_apply OrderHom.supₛ_apply
+
+theorem supᵢ_apply {ι : Sort _} [CompleteLattice β] (f : ι → α →o β) (x : α) :
+    (⨆ i, f i) x = ⨆ i, f i x :=
+  (supₛ_apply _ _).trans supᵢ_range
+#align order_hom.supr_apply OrderHom.supᵢ_apply
+
+-- Porting note: as above, syntactical tautology.
+-- --@[simp, norm_cast]
+-- theorem coe_supᵢ {ι : Sort _} [CompleteLattice β] (f : ι → α →o β) :
+--     ((⨆ i, f i : α →o β) : α → β) = ⨆ i, f i :=
+--   rfl
+--   --funext fun x => (supᵢ_apply f x).trans (@_root_.supᵢ_apply _ _ _ _ (fun i => f i) _).symm
+-- #align order_hom.coe_supr OrderHom.coe_supᵢ
 
 instance [CompleteLattice β] : CompleteLattice (α →o β) :=
   { (_ : Lattice (α →o β)), OrderHom.orderTop, OrderHom.orderBot with
