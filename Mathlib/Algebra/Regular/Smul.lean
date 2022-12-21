@@ -76,7 +76,7 @@ theorem smul (ra : IsSMulRegular M a) (rs : IsSMulRegular M s) : IsSMulRegular M
 element, then `b` is `M`-regular. -/
 theorem of_smul (a : R) (ab : IsSMulRegular M (a • s)) : IsSMulRegular M s :=
   @Function.Injective.of_comp _ _ _ (fun m : M => a • m) _ fun c d cd => by
-  simp [Function.comp] at cd
+  dsimp only [Function.comp] at cd
   rw [←smul_assoc, ←smul_assoc] at cd
   exact ab cd
   -- porting notes: was
@@ -138,7 +138,8 @@ variable (M)
 /-- One is `M`-regular always. -/
 @[simp]
 theorem one : IsSMulRegular M (1 : R) := fun a b ab => by
-  simp [Function.comp] at ab
+  dsimp only [Function.comp] at ab
+  simp [one_mul] at ab
   assumption
 #align is_smul_regular.one IsSMulRegular.one
 
