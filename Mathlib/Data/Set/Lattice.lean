@@ -616,11 +616,11 @@ theorem diff_interᵢ (s : Set β) (t : ι → Set β) : (s \ ⋂ i, t i) = ⋃ 
 
 theorem directed_on_unionᵢ {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
     (h : ∀ x, DirectedOn r (f x)) : DirectedOn r (⋃ x, f x) := by
-  simp only [DirectedOn, exists_prop, mem_unionᵢ, exists_imp];
-    exact fun a₁ b₁ fb₁ a₂ b₂ fb₂ =>
-      let ⟨z, zb₁, zb₂⟩ := hd b₁ b₂
-      let ⟨x, xf, xa₁, xa₂⟩ := h z a₁ (zb₁ fb₁) a₂ (zb₂ fb₂)
-      ⟨x, ⟨z, xf⟩, xa₁, xa₂⟩
+  simp only [DirectedOn, exists_prop, mem_unionᵢ, exists_imp]
+  exact fun a₁ b₁ fb₁ a₂ b₂ fb₂ =>
+    let ⟨z, zb₁, zb₂⟩ := hd b₁ b₂
+    let ⟨x, xf, xa₁, xa₂⟩ := h z a₁ (zb₁ fb₁) a₂ (zb₂ fb₂)
+    ⟨x, ⟨z, xf⟩, xa₁, xa₂⟩
 #align set.directed_on_Union Set.directed_on_unionᵢ
 
 theorem unionᵢ_inter_subset {ι α} {s t : ι → Set α} : (⋃ i, s i ∩ t i) ⊆ (⋃ i, s i) ∩ ⋃ i, t i :=
