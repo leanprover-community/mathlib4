@@ -320,8 +320,6 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [Faithful G] (obj : C →
   { obj, map := @map,
     map_id := by
       intros X
-      -- Porting note: The mathlib3 proof uses the `trans` tactic, which didn't work.
-      -- See https://github.com/leanprover-community/mathlib4/issues/1119
       apply G.map_injective
       apply eq_of_heq
       trans F.map (𝟙 X)
