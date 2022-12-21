@@ -145,8 +145,11 @@ private lemma iter_fp_bound (n k : ℕ):
       case pos => simp [if_pos h]; apply iter_fp_bound
       case neg => simp [if_neg h, Nat.le_of_not_lt h]
 
-lemma am_gm_lemma (a b: ℤ) : 4 * a * b ≤ (a + b)^2 := by
+lemma am_gm_lemma (a b: ℤ) : 0 ≤ (a + b) * (a + b) - 4 * a * b := by
   linarith [sq_nonneg (a - b)]
+
+lemma nat_am_gm (a b : ℕ) : 0 ≤ (a + b) * (a + b) - 4 * a * b := by
+  apply cast_nonneg
 
 -- TODO: move this to Std??
 protected lemma mul_le_of_le_div (k x y : ℕ) (h : x ≤ y / k) : x * k ≤ y := by
@@ -213,8 +216,9 @@ private theorem sqrt_IsSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
   | n + 4 =>
     have h : ¬ (n + 4) ≤ 1 := by simp
     simp only [IsSqrt, sqrt, h, ite_false]
-    refine ⟨sqrt.iter_sq_le _ _, sqrt.lt_iter_succ_sq _ _ ?_⟩
-    sorry
+    apply And.intro
+    · apply sqrt.iter_sq_le
+    · sorry
 -- #align nat.sqrt_is_sqrt Nat.sqrt_IsSqrt
 
 theorem sqrt_le (n : ℕ) : sqrt n * sqrt n ≤ n :=
