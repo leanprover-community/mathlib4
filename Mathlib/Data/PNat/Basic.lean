@@ -158,9 +158,9 @@ def _root_.OrderIso.pnatIsoNat : ℕ+ ≃o ℕ where
 #align order_iso.pnat_iso_nat OrderIso.pnatIsoNat
 
 @[simp]
-theorem _root_.OrderIso.pnat_iso_nat_symm_apply : ⇑OrderIso.pnatIsoNat.symm = Nat.succPNat :=
+theorem _root_.OrderIso.pnatIsoNat_symm_apply : OrderIso.pnatIsoNat.symm = Nat.succPNat :=
   rfl
-#align order_iso.pnat_iso_nat_symm_apply OrderIso.pnat_iso_nat_symm_apply
+#align order_iso.pnat_iso_nat_symm_apply OrderIso.pnatIsoNat_symm_apply
 
 theorem lt_add_one_iff : ∀ {a b : ℕ+}, a < b + 1 ↔ a ≤ b := Nat.lt_add_one_iff
 #align pnat.lt_add_one_iff PNat.lt_add_one_iff
@@ -235,9 +235,9 @@ def coeMonoidHom : ℕ+ →* ℕ where
 #align pnat.coe_monoid_hom PNat.coeMonoidHom
 
 @[simp]
-theorem coe_coe_monoid_hom : (coeMonoidHom : ℕ+ → ℕ) = Coe.coe :=
+theorem coe_coeMonoidHom : (coeMonoidHom : ℕ+ → ℕ) = Coe.coe :=
   rfl
-#align pnat.coe_coe_monoid_hom PNat.coe_coe_monoid_hom
+#align pnat.coe_coe_monoid_hom PNat.coe_coeMonoidHom
 
 @[simp]
 theorem le_one_iff {n : ℕ+} : n ≤ 1 ↔ n = 1 :=
@@ -334,16 +334,16 @@ def recOn (n : ℕ+) {p : ℕ+ → Sort _} (p1 : p 1) (hp : ∀ n, p n → p (n 
 #align pnat.rec_on PNat.recOn
 
 @[simp]
-theorem rec_on_one {p} (p1 hp) : @PNat.recOn 1 p p1 hp = p1 :=
+theorem recOn_one {p} (p1 hp) : @PNat.recOn 1 p p1 hp = p1 :=
   rfl
-#align pnat.rec_on_one PNat.rec_on_one
+#align pnat.rec_on_one PNat.recOn_one
 
 @[simp]
-theorem rec_on_succ (n : ℕ+) {p : ℕ+ → Sort _} (p1 hp) :
+theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort _} (p1 hp) :
     @PNat.recOn (n + 1) p p1 hp = hp n (@PNat.recOn n p p1 hp) := by
   cases' n with n h
   cases n <;> [exact absurd h (by decide), rfl]
-#align pnat.rec_on_succ PNat.rec_on_succ
+#align pnat.rec_on_succ PNat.recOn_succ
 
 theorem mod_div_aux_spec :
     ∀ (k : ℕ+) (r q : ℕ) (_ : ¬(r = 0 ∧ q = 0)),
