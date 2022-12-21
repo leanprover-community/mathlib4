@@ -79,8 +79,6 @@ theorem of_smul (a : R) (ab : IsSMulRegular M (a • s)) : IsSMulRegular M s :=
   dsimp only [Function.comp] at cd
   rw [←smul_assoc, ←smul_assoc] at cd
   exact ab cd
-  -- porting notes: was
-  -- ab (by rwa [smul_assoc, smul_assoc])
 #align is_smul_regular.of_smul IsSMulRegular.of_smul
 
 /-- An element is `M`-regular if and only if multiplying it on the left by an `M`-regular element
