@@ -159,13 +159,13 @@ variable [Top β] [Top γ] [Top δ]
 instance : TopHomClass (TopHom α β) α
       β where
   coe := TopHom.toFun
-  coe_injective' f g h := by cases f <;> cases g <;> congr
+  coe_injective' f g h := by cases f; cases g; congr
   map_top := TopHom.map_top'
 
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
 directly. -/
 instance : CoeFun (TopHom α β) fun _ => α → β :=
-  FunLike.hasCoeToFun
+  ⟨fun f => f⟩
 
 @[simp]
 theorem to_fun_eq_coe {f : TopHom α β} : f.toFun = (f : α → β) :=
@@ -244,12 +244,12 @@ theorem comp_assoc (f : TopHom γ δ) (g : TopHom β γ) (h : TopHom α β) :
 
 @[simp]
 theorem comp_id (f : TopHom α β) : f.comp (TopHom.id α) = f :=
-  TopHom.ext fun a => rfl
+  TopHom.ext fun _ => rfl
 #align top_hom.comp_id TopHom.comp_id
 
 @[simp]
 theorem id_comp (f : TopHom α β) : (TopHom.id β).comp f = f :=
-  TopHom.ext fun a => rfl
+  TopHom.ext fun _ => rfl
 #align top_hom.id_comp TopHom.id_comp
 
 theorem cancel_right {g₁ g₂ : TopHom β γ} {f : TopHom α β} (hf : Surjective f) :
@@ -356,13 +356,13 @@ variable [Bot β] [Bot γ] [Bot δ]
 instance : BotHomClass (BotHom α β) α
       β where
   coe := BotHom.toFun
-  coe_injective' f g h := by cases f <;> cases g <;> congr
+  coe_injective' f g h := by cases f; cases g; congr
   map_bot := BotHom.map_bot'
 
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
 directly. -/
 instance : CoeFun (BotHom α β) fun _ => α → β :=
-  FunLike.hasCoeToFun
+  ⟨fun f => f⟩
 
 @[simp]
 theorem to_fun_eq_coe {f : BotHom α β} : f.toFun = (f : α → β) :=
@@ -441,17 +441,17 @@ theorem comp_assoc (f : BotHom γ δ) (g : BotHom β γ) (h : BotHom α β) :
 
 @[simp]
 theorem comp_id (f : BotHom α β) : f.comp (BotHom.id α) = f :=
-  BotHom.ext fun a => rfl
+  BotHom.ext fun _ => rfl
 #align bot_hom.comp_id BotHom.comp_id
 
 @[simp]
 theorem id_comp (f : BotHom α β) : (BotHom.id β).comp f = f :=
-  BotHom.ext fun a => rfl
+  BotHom.ext fun _ => rfl
 #align bot_hom.id_comp BotHom.id_comp
 
 theorem cancel_right {g₁ g₂ : BotHom β γ} {f : BotHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => BotHom.ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg _⟩
+  ⟨fun h => BotHom.ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (comp · f)⟩
 #align bot_hom.cancel_right BotHom.cancel_right
 
 theorem cancel_left {g : BotHom β γ} {f₁ f₂ : BotHom α β} (hg : Injective g) :
@@ -495,7 +495,7 @@ instance : HasInf (BotHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_bot, map_bot, inf_bot_eq]⟩⟩
 
 instance : SemilatticeInf (BotHom α β) :=
-  (FunLike.coe_injective.SemilatticeInf _) fun _ _ => rfl
+  (FunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
 
 @[simp]
 theorem coe_inf : ⇑(f ⊓ g) = f ⊓ g :=
@@ -568,7 +568,7 @@ instance : BoundedOrderHomClass (BoundedOrderHom α β) α
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
 directly. -/
 instance : CoeFun (BoundedOrderHom α β) fun _ => α → β :=
-  FunLike.hasCoeToFun
+  ⟨fun f => f⟩
 
 @[simp]
 theorem to_fun_eq_coe {f : BoundedOrderHom α β} : f.toFun = (f : α → β) :=
@@ -659,12 +659,12 @@ theorem comp_assoc (f : BoundedOrderHom γ δ) (g : BoundedOrderHom β γ) (h : 
 
 @[simp]
 theorem comp_id (f : BoundedOrderHom α β) : f.comp (BoundedOrderHom.id α) = f :=
-  BoundedOrderHom.ext fun a => rfl
+  BoundedOrderHom.ext fun _ => rfl
 #align bounded_order_hom.comp_id BoundedOrderHom.comp_id
 
 @[simp]
 theorem id_comp (f : BoundedOrderHom α β) : (BoundedOrderHom.id β).comp f = f :=
-  BoundedOrderHom.ext fun a => rfl
+  BoundedOrderHom.ext fun _ => rfl
 #align bounded_order_hom.id_comp BoundedOrderHom.id_comp
 
 theorem cancel_right {g₁ g₂ : BoundedOrderHom β γ} {f : BoundedOrderHom α β} (hf : Surjective f) :
@@ -695,8 +695,8 @@ protected def dual :
     TopHom α β ≃ BotHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨f, f.map_top'⟩
   invFun f := ⟨f, f.map_bot'⟩
-  left_inv f := TopHom.ext fun _ => rfl
-  right_inv f := BotHom.ext fun _ => rfl
+  left_inv _ := TopHom.ext fun _ => rfl
+  right_inv _ := BotHom.ext fun _ => rfl
 #align top_hom.dual TopHom.dual
 
 @[simp]
@@ -732,8 +732,8 @@ protected def dual :
     BotHom α β ≃ TopHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨f, f.map_bot'⟩
   invFun f := ⟨f, f.map_top'⟩
-  left_inv f := BotHom.ext fun _ => rfl
-  right_inv f := TopHom.ext fun _ => rfl
+  left_inv _ := BotHom.ext fun _ => rfl
+  right_inv _ := TopHom.ext fun _ => rfl
 #align bot_hom.dual BotHom.dual
 
 @[simp]
