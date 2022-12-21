@@ -194,6 +194,7 @@ lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess �
     · exact le_of_not_lt h
     · decide
 
+set_option warningAsError false in
 lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) :
   n < (sqrt.iter n guess + 1) * (sqrt.iter n guess + 1) := by
   unfold sqrt.iter
