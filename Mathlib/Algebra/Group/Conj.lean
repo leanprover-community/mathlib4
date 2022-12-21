@@ -8,15 +8,15 @@ Authors: Patrick Massot, Chris Hughes, Michael Howes
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Group.Semiconj
-import Mathbin.Algebra.GroupWithZero.Basic
-import Mathbin.Algebra.Hom.Aut
-import Mathbin.Algebra.Hom.Group
+import Mathlib.Algebra.Group.Semiconj
+import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.Hom.Aut
+import Mathlib.Algebra.Hom.Group
 
 /-!
 # Conjugacy of group elements
 
-See also `mul_aut.conj` and `quandle.conj`.
+See also `MulAut.conj` and `quandle.conj`.
 -/
 
 
@@ -69,8 +69,8 @@ section CancelMonoid
 
 variable [CancelMonoid α]
 
--- These lemmas hold for `right_cancel_monoid` with the current proofs, but for the sake of
--- not duplicating code (these lemmas also hold for `left_cancel_monoids`) we leave these
+-- These lemmas hold for `RightCancelMonoid` with the current proofs, but for the sake of
+-- not duplicating code (these lemmas also hold for `LeftCancelMonoids`) we leave these
 -- not generalised.
 @[simp]
 theorem is_conj_one_right {a : α} : IsConj 1 a ↔ a = 1 :=
@@ -144,10 +144,10 @@ namespace IsConj
 
 /- This small quotient API is largely copied from the API of `associates`;
 where possible, try to keep them in sync -/
-/-- The setoid of the relation `is_conj` iff there is a unit `u` such that `u * x = y * u` -/
+/-- The setoid of the relation `IsConj` iff there is a unit `u` such that `u * x = y * u` -/
 protected def setoid (α : Type _) [Monoid α] :
     Setoid α where
-  R := IsConj
+  r := IsConj
   iseqv := ⟨IsConj.refl, fun a b => IsConj.symm, fun a b c => IsConj.trans⟩
 #align is_conj.setoid IsConj.setoid
 
@@ -166,7 +166,7 @@ section Monoid
 
 variable [Monoid α] [Monoid β]
 
-/-- The canonical quotient map from a monoid `α` into the `conj_classes` of `α` -/
+/-- The canonical quotient map from a monoid `α` into the `ConjClasses` of `α` -/
 protected def mk {α : Type _} [Monoid α] (a : α) : ConjClasses α :=
   ⟦a⟧
 #align conj_classes.mk ConjClasses.mk
@@ -187,7 +187,7 @@ theorem quot_mk_eq_mk (a : α) : Quot.mk Setoid.r a = ConjClasses.mk a :=
 #align conj_classes.quot_mk_eq_mk ConjClasses.quot_mk_eq_mk
 
 theorem forall_is_conj {p : ConjClasses α → Prop} : (∀ a, p a) ↔ ∀ a, p (ConjClasses.mk a) :=
-  Iff.intro (fun h a => h _) fun h a => Quotient.induction_on a h
+  Iff.intro (fun h _ => h _) fun h a => Quotient.inductionOn a h
 #align conj_classes.forall_is_conj ConjClasses.forall_is_conj
 
 theorem mk_surjective : Function.Surjective (@ConjClasses.mk α _) :=
@@ -207,7 +207,7 @@ theorem exists_rep (a : ConjClasses α) : ∃ a0 : α, ConjClasses.mk a0 = a :=
 
 /-- A `monoid_hom` maps conjugacy classes of one group to conjugacy classes of another. -/
 def map (f : α →* β) : ConjClasses α → ConjClasses β :=
-  Quotient.lift (ConjClasses.mk ∘ f) fun a b ab => mk_eq_mk_iff_is_conj.2 (f.map_is_conj ab)
+  Quotient.lift (ConjClasses.mk ∘ f) fun _ _ ab => mk_eq_mk_iff_is_conj.2 (f.map_is_conj ab)
 #align conj_classes.map ConjClasses.map
 
 theorem map_surjective {f : α →* β} (hf : Function.Surjective f) :
@@ -229,7 +229,7 @@ The conditions for this rule are as follows:
    instead they have to be found by instance search
 If those conditions hold, the instance `instT` should be assigned lower priority.
 
-For example, suppose the search for an instance of `decidable_eq (multiset α)` tries the
+For example, suppose the search for an instance of `DecidableEq (multiset α)` tries the
 candidate instance `con.quotient.decidable_eq (c : con M) : decidable_eq c.quotient`.
 Since `multiset` and `con.quotient` are both quotient types, unification will check
 that the relations `list.perm` and `c.to_setoid.r` unify. However, `c.to_setoid` depends on
@@ -266,7 +266,7 @@ theorem mk_bijective : Function.Bijective (@ConjClasses.mk α _) :=
   ⟨mk_injective, mk_surjective⟩
 #align conj_classes.mk_bijective ConjClasses.mk_bijective
 
-/-- The bijection between a `comm_group` and its `conj_classes`. -/
+/-- The bijection between a `CommGroup` and its `ConjClasses`. -/
 def mkEquiv : α ≃ ConjClasses α :=
   ⟨ConjClasses.mk, Quotient.lift id fun (a : α) b => is_conj_iff_eq.1, Quotient.lift_mk _ _, by
     rw [Function.RightInverse, Function.LeftInverse, forall_is_conj]
@@ -282,24 +282,24 @@ section Monoid
 
 variable [Monoid α]
 
-/-- Given an element `a`, `conjugates a` is the set of conjugates. -/
+/-- Given an element `a`, `conjugatesOf a` is the set of conjugates. -/
 def conjugatesOf (a : α) : Set α :=
   { b | IsConj a b }
 #align conjugates_of conjugatesOf
 
-theorem mem_conjugates_of_self {a : α} : a ∈ conjugatesOf a :=
+theorem mem_conjugatesOf_self {a : α} : a ∈ conjugatesOf a :=
   IsConj.refl _
-#align mem_conjugates_of_self mem_conjugates_of_self
+#align mem_conjugates_of_self mem_conjugatesOf_self
 
-theorem IsConj.conjugates_of_eq {a b : α} (ab : IsConj a b) : conjugatesOf a = conjugatesOf b :=
-  Set.ext fun g => ⟨fun ag => ab.symm.trans ag, fun bg => ab.trans bg⟩
-#align is_conj.conjugates_of_eq IsConj.conjugates_of_eq
+theorem IsConj.conjugatesOf_eq {a b : α} (ab : IsConj a b) : conjugatesOf a = conjugatesOf b :=
+  Set.ext fun _ => ⟨fun ag => ab.symm.trans ag, fun bg => ab.trans bg⟩
+#align is_conj.conjugates_of_eq IsConj.conjugatesOf_eq
 
-theorem is_conj_iff_conjugates_of_eq {a b : α} : IsConj a b ↔ conjugatesOf a = conjugatesOf b :=
-  ⟨IsConj.conjugates_of_eq, fun h => by
-    have ha := mem_conjugates_of_self
+theorem is_conj_iff_conjugatesOf_eq {a b : α} : IsConj a b ↔ conjugatesOf a = conjugatesOf b :=
+  ⟨IsConj.conjugatesOf_eq, fun h => by
+    have ha := mem_conjugatesOf_self
     rwa [← h] at ha⟩
-#align is_conj_iff_conjugates_of_eq is_conj_iff_conjugates_of_eq
+#align is_conj_iff_conjugates_of_eq is_conj_iff_conjugatesOf_eq
 
 end Monoid
 
@@ -311,7 +311,7 @@ attribute [local instance] IsConj.setoid
 
 /-- Given a conjugacy class `a`, `carrier a` is the set it represents. -/
 def carrier : ConjClasses α → Set α :=
-  Quotient.lift conjugatesOf fun (a : α) b ab => IsConj.conjugates_of_eq ab
+  Quotient.lift conjugatesOf fun (_ : α) _ ab => IsConj.conjugatesOf_eq ab
 #align conj_classes.carrier ConjClasses.carrier
 
 theorem mem_carrier_mk {a : α} : a ∈ carrier (ConjClasses.mk a) :=
@@ -328,9 +328,10 @@ theorem mem_carrier_iff_mk_eq {a : α} {b : ConjClasses α} : a ∈ carrier b �
 #align conj_classes.mem_carrier_iff_mk_eq ConjClasses.mem_carrier_iff_mk_eq
 
 theorem carrier_eq_preimage_mk {a : ConjClasses α} : a.carrier = ConjClasses.mk ⁻¹' {a} :=
-  Set.ext fun x => mem_carrier_iff_mk_eq
+  Set.ext fun _ => mem_carrier_iff_mk_eq
 #align conj_classes.carrier_eq_preimage_mk ConjClasses.carrier_eq_preimage_mk
 
 end ConjClasses
 
-assert_not_exists multiset
+-- porting notes
+--assert_not_exists multiset
