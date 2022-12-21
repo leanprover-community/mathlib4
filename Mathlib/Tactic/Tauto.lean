@@ -25,18 +25,6 @@ open Qq
 
 initialize registerTraceClass `tauto
 
-variable [Monad m] [MonadExceptOf Exception m]
-
-/-- Repeats a tactic at most `n` times, stopping sooner if the
-tactic fails. Always succeeds. -/
-private def iterateAtMost : Nat → m Unit → m Unit
-| 0, _ => pure ()
-| n + 1, tac => try tac; iterateAtMost n tac catch _ => pure ()
-
-/-- Repeats a tactic until it fails. Always succeeds. -/
-partial def iterateUntilFailure (tac : m Unit) : m Unit :=
-  try tac; iterateUntilFailure tac catch _ => pure ()
-
 /-- Tries to apply de-Morgan-like rules on all hypotheses. Always succeeds,
 regardless of whether any progress was actually made.
 -/
@@ -112,16 +100,6 @@ def casesMatcher (e : Q(Prop)) : MetaM Bool := match e with
   | ~q(False) => pure true
   | _ => pure false
 
-/-- Applies `intro` repeatedly until it fails. We use this instead of plain
-`MVarId.intros` because we want it to propositions like `¬p`. The `¬` needs
-to be unfolded into `→ False`, and `intros` does not do such unfolding. -/
-partial def intros' (mvarId : MVarId) : MetaM MVarId :=
-  try
-    let ⟨_, m1⟩ ← mvarId.intro1
-    intros' m1
-  catch _ =>
-    pure mvarId
-
 @[inherit_doc]
 local infixl: 50 " <;> " => andThenOnSubgoals
 
@@ -140,12 +118,12 @@ def tautoCore : TacticM Unit := do
   iterateUntilFailure do
     let gs ← getUnsolvedGoals
     allGoals (
-      liftMetaTactic (fun m => do let m' ← intros' m; pure [m']) <;>
+      liftMetaTactic (fun m => do pure [(← m.intros!).2]) <;>
       distribNot <;>
       liftMetaTactic (casesMatching · casesMatcher) <;>
       (do _ ← tryTactic (evalTactic (← `(tactic| contradiction)))) <;>
       (do _ ← tryTactic (evalTactic (←`(tactic| refine or_iff_not_imp_left.mpr ?_)))) <;>
-      liftMetaTactic (fun m => do let m' ← intros' m; pure [m']) <;>
+      liftMetaTactic (fun m => do pure [(← m.intros!).2]) <;>
       liftMetaTactic (constructorMatching · coreConstructorMatcher) <;>
       do _ ← tryTactic (evalTactic (← `(tactic| assumption))))
     let gs' ← getUnsolvedGoals
