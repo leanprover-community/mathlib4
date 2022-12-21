@@ -1,4 +1,5 @@
 import Lean.Data.HashMap
+import Lean.Elab.ParseImportsFast
 
 open System
 
@@ -19,16 +20,10 @@ partial def getLeanFilePaths (fp : FilePath) (acc : Array FilePath := #[]) :
     | some "lean" => return acc.push fp
     | _ => return acc
 
-/-- Extracts the relevant imports of a Lean source code -/
-def getFileImports (content : String) : List FilePath :=
-  let importLines := content.splitOn "\n" |>.filter (·.startsWith "import Mathlib.")
-  let imports := importLines.map fun line =>
-    let line := (line.splitOn "import ").get! 1
-      |>.replace "." "/"
-      |>.splitOn " "
-      |>.head!
-    line ++ ".lean"
-  imports.map FilePath.mk
+def getFileImports (content : String) : Array FilePath :=
+  let s := Lean.ParseImports.main content (Lean.ParseImports.whitespace content {})
+  let imps := s.imports.map (·.module.toString) |>.filter (·.startsWith "Mathlib.")
+  imps.map fun imp => (FilePath.mk $ imp.replace "." "/").withExtension "lean"
 
 def getRootHash : IO UInt64 :=
   return hash [
@@ -46,7 +41,7 @@ partial def getFileHash (filePath : FilePath) : HashM UInt64 := do
   | none =>
     let content ← IO.FS.readFile filePath
     let importHashes ← (getFileImports content).mapM getFileHash
-    let fileHash := hash $ (← read) :: content.hash :: importHashes
+    let fileHash := hash $ (← read) :: content.hash :: importHashes.toList
     modifyGet (fileHash, ·.insert filePath fileHash)
 
 def cacheHashes : HashM Unit := do
