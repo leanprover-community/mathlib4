@@ -28,12 +28,12 @@ See [Wikipedia, *Methods of computing square roots*]
 
 namespace Nat
 
-theorem sqrt_aux_dec {b} (h : b ≠ 0) : shiftr b 2 < b := by
+theorem sqrtAux_dec {b} (h : b ≠ 0) : shiftr b 2 < b := by
   simp only [shiftr_eq_div_pow]
   apply (Nat.div_lt_iff_lt_mul' (by decide : 0 < 4)).2
   have := Nat.mul_lt_mul_of_pos_left (by decide : 1 < 4) (Nat.pos_of_ne_zero h)
   rwa [mul_one] at this
-#align nat.sqrt_aux_dec Nat.sqrt_aux_dec
+#align nat.sqrt_aux_dec Nat.sqrtAux_dec
 
 /-- Auxiliary function for `nat.sqrt`. See e.g.
 <https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Binary_numeral_system_(base_2)> -/
@@ -42,13 +42,13 @@ def sqrtAux : ℕ → ℕ → ℕ → ℕ
     if b0 : b = 0 then r
     else
       let b' := shiftr b 2
-      have : b' < b := sqrt_aux_dec b0
+      have : b' < b := sqrtAux_dec b0
       match (n - (r + b : ℕ) : ℤ) with
-      | (n' : ℕ) => sqrt_aux b' (div2 r + b) n'
-      | _ => sqrt_aux b' (div2 r) n
+      | (n' : ℕ) => sqrtAux b' (div2 r + b) n'
+      | _ => sqrtAux b' (div2 r) n
 #align nat.sqrt_aux Nat.sqrtAux
 
-#print Nat.sqrt /-
+/-
 /-- `sqrt n` is the square root of a natural number `n`. If `n` is not a
   perfect square, it returns the largest `k:ℕ` such that `k*k ≤ n`. -/
 @[pp_nodot]
@@ -59,23 +59,23 @@ def sqrt (n : ℕ) : ℕ :=
 #align nat.sqrt Nat.sqrt
 -/
 
-theorem sqrt_aux_0 (r n) : sqrtAux 0 r n = r := by rw [sqrt_aux] <;> simp
-#align nat.sqrt_aux_0 Nat.sqrt_aux_0
+theorem sqrtAux_0 (r n) : sqrtAux 0 r n = r := by rw [sqrtAux]; simp
+#align nat.sqrt_aux_0 Nat.sqrtAux_0
 
-attribute [local simp] sqrt_aux_0
+attribute [local simp] sqrtAux_0
 
-theorem sqrt_aux_1 {r n b} (h : b ≠ 0) {n'} (h₂ : r + b + n' = n) :
+theorem sqrtAux_1 {r n b} (h : b ≠ 0) {n'} (h₂ : r + b + n' = n) :
     sqrtAux b r n = sqrtAux (shiftr b 2) (div2 r + b) n' := by
-  rw [sqrt_aux] <;> simp only [h, h₂.symm, Int.ofNat_add, if_false] <;>
-    rw [add_comm _ (n' : ℤ), add_sub_cancel, sqrt_aux._match_1]
-#align nat.sqrt_aux_1 Nat.sqrt_aux_1
+  rw [sqrtAux] <;> simp only [h, h₂.symm, Int.ofNat_add, if_false] <;>
+    rw [add_comm _ (n' : ℤ), add_sub_cancel, sqrtAux._match_1]
+#align nat.sqrt_aux_1 Nat.sqrtAux_1
 
-theorem sqrt_aux_2 {r n b} (h : b ≠ 0) (h₂ : n < r + b) :
+theorem sqrtAux_2 {r n b} (h : b ≠ 0) (h₂ : n < r + b) :
     sqrtAux b r n = sqrtAux (shiftr b 2) (div2 r) n := by
-  rw [sqrt_aux] <;> simp only [h, h₂, if_false]
+  rw [sqrtAux] <;> simp only [h, h₂, if_false]
   cases' Int.eq_negSucc_of_lt_zero (sub_lt_zero.2 (Int.ofNat_lt_ofNat_of_lt h₂)) with k e
-  rw [e, sqrt_aux._match_1]
-#align nat.sqrt_aux_2 Nat.sqrt_aux_2
+  rw [e, sqrtAux._match_1]
+#align nat.sqrt_aux_2 Nat.sqrtAux_2
 
 private def is_sqrt (n q : ℕ) : Prop :=
   q * q ≤ n ∧ n < (q + 1) * (q + 1)
@@ -83,7 +83,7 @@ private def is_sqrt (n q : ℕ) : Prop :=
 
 attribute [-simp] mul_eq_mul_left_iff mul_eq_mul_right_iff
 
-private theorem sqrt_aux_is_sqrt_lemma (m r n : ℕ) (h₁ : r * r ≤ n) (m')
+private theorem sqrtAux_is_sqrt_lemma (m r n : ℕ) (h₁ : r * r ≤ n) (m')
     (hm : shiftr (2 ^ m * 2 ^ m) 2 = m')
     (H1 : n < (r + 2 ^ m) * (r + 2 ^ m) → IsSqrt n (sqrtAux m' (r * 2 ^ m) (n - r * r)))
     (H2 :
@@ -98,10 +98,10 @@ private theorem sqrt_aux_is_sqrt_lemma (m r n : ℕ) (h₁ : r * r ≤ n) (m')
   have re : div2 (2 * r * 2 ^ m) = r * 2 ^ m := by
     rw [div2_val, mul_assoc, Nat.mul_div_cancel_left _ (by decide : 2 > 0)]
   cases' lt_or_ge n ((r + 2 ^ m) * (r + 2 ^ m)) with hl hl
-  · rw [sqrt_aux_2 b0 (lb.2 hl), hm, re]
+  · rw [sqrtAux_2 b0 (lb.2 hl), hm, re]
     apply H1 hl
   · cases' le.dest hl with n' e
-    rw [@sqrt_aux_1 (2 * r * 2 ^ m) (n - r * r) (2 ^ m * 2 ^ m) b0 (n - (r + 2 ^ m) * (r + 2 ^ m)),
+    rw [@sqrtAux_1 (2 * r * 2 ^ m) (n - r * r) (2 ^ m * 2 ^ m) b0 (n - (r + 2 ^ m) * (r + 2 ^ m)),
       hm, re, ← right_distrib]
     · apply H2 hl
     apply Eq.symm
@@ -109,36 +109,36 @@ private theorem sqrt_aux_is_sqrt_lemma (m r n : ℕ) (h₁ : r * r ≤ n) (m')
     rw [← add_assoc, (_ : r * r + _ = _)]
     exact (add_tsub_cancel_of_le hl).symm
     simp [left_distrib, right_distrib, two_mul, mul_comm, mul_assoc, add_assoc]
-#align nat.sqrt_aux_is_sqrt_lemma nat.sqrt_aux_is_sqrt_lemma
+#align nat.sqrt_aux_is_sqrt_lemma nat.sqrtAux_is_sqrt_lemma
 
-private theorem sqrt_aux_is_sqrt (n) :
+private theorem sqrtAux_is_sqrt (n) :
     ∀ m r,
       r * r ≤ n →
         n < (r + 2 ^ (m + 1)) * (r + 2 ^ (m + 1)) →
           IsSqrt n (sqrtAux (2 ^ m * 2 ^ m) (2 * r * 2 ^ m) (n - r * r))
   | 0, r, h₁, h₂ => by
-    apply sqrt_aux_is_sqrt_lemma 0 r n h₁ 0 rfl <;> intro h <;> simp <;> [exact ⟨h₁, h⟩,
+    apply sqrtAux_is_sqrt_lemma 0 r n h₁ 0 rfl <;> intro h <;> simp <;> [exact ⟨h₁, h⟩,
       exact ⟨h, h₂⟩]
   | m + 1, r, h₁, h₂ => by
     apply
-        sqrt_aux_is_sqrt_lemma (m + 1) r n h₁ (2 ^ m * 2 ^ m)
+        sqrtAux_is_sqrt_lemma (m + 1) r n h₁ (2 ^ m * 2 ^ m)
           (by
             simp [shiftr, pow_succ, div2_val, mul_comm, mul_left_comm] <;>
               repeat' rw [@Nat.mul_div_cancel_left _ 2 (by decide)]) <;>
       intro h
-    · have := sqrt_aux_is_sqrt m r h₁ h
+    · have := sqrtAux_is_sqrt m r h₁ h
       simpa [pow_succ, mul_comm, mul_assoc]
     · rw [pow_succ', mul_two, ← add_assoc] at h₂
-      have := sqrt_aux_is_sqrt m (r + 2 ^ (m + 1)) h h₂
+      have := sqrtAux_is_sqrt m (r + 2 ^ (m + 1)) h h₂
       rwa [show (r + 2 ^ (m + 1)) * 2 ^ (m + 1) = 2 * (r + 2 ^ (m + 1)) * 2 ^ m by
           simp [pow_succ, mul_comm, mul_left_comm]]
-#align nat.sqrt_aux_is_sqrt nat.sqrt_aux_is_sqrt
+#align nat.sqrt_aux_is_sqrt nat.sqrtAux_is_sqrt
 
 private theorem sqrt_is_sqrt (n : ℕ) : IsSqrt n (sqrt n) := by
   generalize e : size n = s; cases' s with s <;> simp [e, sqrt]
   · rw [size_eq_zero.1 e, is_sqrt]
     exact by decide
-  · have := sqrt_aux_is_sqrt n (div2 s) 0 (zero_le _)
+  · have := sqrtAux_is_sqrt n (div2 s) 0 (zero_le _)
     simp [show 2 ^ div2 s * 2 ^ div2 s = shiftl 1 (bit0 (div2 s)) by
         generalize div2 s = x
         change bit0 x with x + x
