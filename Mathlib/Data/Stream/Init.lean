@@ -35,7 +35,6 @@ variable {α : Type u} {β : Type v} {δ : Type w}
 instance {α} [Inhabited α] : Inhabited (Stream' α) :=
   ⟨Stream'.const default⟩
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 protected theorem eta (s : Stream' α) : (head s::tail s) = s :=
   funext fun i => by cases i <;> rfl
 #align stream.eta Stream'.eta
