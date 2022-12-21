@@ -5,7 +5,7 @@ Authors: David Wärn, Antoine Labelle, Rémi Bottinelli
 Ported by: Joël Riou, Rémi Bottinelli
 
 ! This file was ported from Lean 3 source module combinatorics.quiver.connected_component
-! leanprover-community/mathlib commit 32618bfa7cbb01291852c272388d23efdd3a94e9
+! leanprover-community/mathlib commit 706d88f2b8fdfeb0b22796433d7a6c1a010af9f2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
