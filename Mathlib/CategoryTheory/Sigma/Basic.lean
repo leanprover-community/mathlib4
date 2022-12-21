@@ -55,11 +55,13 @@ instance : CategoryStruct (Σi, C i) where
   comp f g := comp f g
 
 @[simp]
-theorem comp_def (i : I) (X Y Z : C i) (f : X ⟶ Y) (g : Y ⟶ Z) : comp (mk f) (mk g) = mk (f ≫ g) :=
-  rfl
+theorem comp_def (i : I) (X Y Z : C i) (f : X ⟶ Y) (g : Y ⟶ Z)
+  : comp (mk f) (mk g) = mk (f ≫ g)
+  := rfl
 #align category_theory.sigma.sigma_hom.comp_def CategoryTheory.Sigma.SigmaHom.comp_def
 
-theorem assoc : ∀ {X Y Z W : Σi, C i} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ W), (f ≫ g) ≫ h = f ≫ g ≫ h
+theorem assoc
+  : ∀ {X Y Z W : Σi, C i} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ W), (f ≫ g) ≫ h = f ≫ g ≫ h
   | _, _, _, _, mk _, mk _, mk _ => congr_arg mk (Category.assoc _ _ _)
 #align category_theory.sigma.sigma_hom.assoc CategoryTheory.Sigma.SigmaHom.assoc
 
@@ -123,12 +125,6 @@ theorem nat_trans_app {F G : (Σi, C i) ⥤ D} (h : ∀ i : I, incl i ⋙ F ⟶ 
   rfl
 #align category_theory.sigma.nat_trans_app CategoryTheory.Sigma.nat_trans_app
 
-/- warning: category_theory.sigma.desc_map -> CategoryTheory.Sigma.descMap is a dubious translation:
-lean 3 declaration is
-  forall {I : Type.{u1}} {C : I -> Type.{u4}} [_inst_1 : forall (i : I), CategoryTheory.Category.{u2, u4} (C i)] {D : Type.{u5}} [_inst_2 : CategoryTheory.Category.{u3, u5} D] (F : forall (i : I), CategoryTheory.Functor.{u2, u3, u4, u5} (C i) (_inst_1 i) D _inst_2) (X : Sigma.{u1, u4} I (fun (i : I) => C i)) (Y : Sigma.{u1, u4} I (fun (i : I) => C i)), (Quiver.Hom.{succ (max u1 u2 u4), max u1 u4} (Sigma.{u1, u4} I (fun (i : I) => C i)) (CategoryTheory.CategoryStruct.toQuiver.{max u1 u2 u4, max u1 u4} (Sigma.{u1, u4} I (fun (i : I) => C i)) (CategoryTheory.Sigma.SigmaHom.Sigma.CategoryTheory.categoryStruct.{u1, u2, u4} I (fun (i : I) => C i) (fun (i : I) => _inst_1 i))) X Y) -> (Quiver.Hom.{succ u3, u5} D (CategoryTheory.CategoryStruct.toQuiver.{u3, u5} D (CategoryTheory.Category.toCategoryStruct.{u3, u5} D _inst_2)) (CategoryTheory.Functor.obj.{u2, u3, u4, u5} (C (Sigma.fst.{u1, u4} I (fun (i : I) => C i) X)) (_inst_1 (Sigma.fst.{u1, u4} I (fun (i : I) => C i) X)) D _inst_2 (F (Sigma.fst.{u1, u4} I (fun (i : I) => C i) X)) (Sigma.snd.{u1, u4} I (fun (i : I) => C i) X)) (CategoryTheory.Functor.obj.{u2, u3, u4, u5} (C (Sigma.fst.{u1, u4} I (fun (i : I) => C i) Y)) (_inst_1 (Sigma.fst.{u1, u4} I (fun (i : I) => C i) Y)) D _inst_2 (F (Sigma.fst.{u1, u4} I (fun (i : I) => C i) Y)) (Sigma.snd.{u1, u4} I (fun (i : I) => C i) Y)))
-but is expected to have type
-  forall {I : Type.{u5}} {C : I -> Type.{u1}} [_inst_1 : forall (i : I), CategoryTheory.Category.{u3, u1} (C i)] {D : Type.{u2}} [_inst_2 : CategoryTheory.Category.{u4, u2} D] (F : forall (i : I), CategoryTheory.Functor.{u3, u4, u1, u2} (C i) (_inst_1 i) D _inst_2) (X : Sigma.{u5, u1} I (fun (i : I) => C i)) (Y : Sigma.{u5, u1} I (fun (i : I) => C i)), (Quiver.Hom.{succ (max u5 u3 u1), max u5 u1} (Sigma.{u5, u1} I (fun (i : I) => C i)) (CategoryTheory.CategoryStruct.toQuiver.{max u5 u3 u1, max u5 u1} (Sigma.{u5, u1} I (fun (i : I) => C i)) (CategoryTheory.Sigma.SigmaHom.Sigma.CategoryTheory.categoryStruct.{u5, u3, u1} I (fun (i : I) => C i) (fun (i : I) => _inst_1 i))) X Y) -> (Quiver.Hom.{succ u4, u2} D (CategoryTheory.CategoryStruct.toQuiver.{u4, u2} D (CategoryTheory.Category.toCategoryStruct.{u4, u2} D _inst_2)) (CategoryTheory.Functor.obj.{u3, u4, u1, u2} (C (Sigma.fst.{u5, u1} I (fun (i : I) => C i) X)) (_inst_1 (Sigma.fst.{u5, u1} I (fun (i : I) => C i) X)) D _inst_2 (F (Sigma.fst.{u5, u1} I (fun (i : I) => C i) X)) (Sigma.snd.{u5, u1} I (fun (i : I) => C i) X)) (CategoryTheory.Functor.obj.{u3, u4, u1, u2} (C (Sigma.fst.{u5, u1} I (fun (i : I) => C i) Y)) (_inst_1 (Sigma.fst.{u5, u1} I (fun (i : I) => C i) Y)) D _inst_2 (F (Sigma.fst.{u5, u1} I (fun (i : I) => C i) Y)) (Sigma.snd.{u5, u1} I (fun (i : I) => C i) Y)))
-Case conversion may be inaccurate. Consider using '#align category_theory.sigma.desc_map CategoryTheory.Sigma.descMapₓ'. -/
 /-- (Implementation). An auxiliary definition to build the functor `desc`. -/
 def descMap : ∀ X Y : Σi, C i, (X ⟶ Y) → ((F X.1).obj X.2 ⟶ (F Y.1).obj Y.2)
   | _, _, SigmaHom.mk g => (F _).map g
