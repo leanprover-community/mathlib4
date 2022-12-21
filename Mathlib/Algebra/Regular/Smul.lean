@@ -69,7 +69,7 @@ variable [SMul R M] [SMul R S] [SMul S M] [IsScalarTower R S M]
 
 /-- The product of `M`-regular elements is `M`-regular. -/
 theorem smul (ra : IsSMulRegular M a) (rs : IsSMulRegular M s) : IsSMulRegular M (a • s) :=
-  fun a b ab => rs (ra ((smul_assoc _ _ _).symm.trans (ab.trans (smul_assoc _ _ _))))
+  fun _ _ ab => rs (ra ((smul_assoc _ _ _).symm.trans (ab.trans (smul_assoc _ _ _))))
 #align is_smul_regular.smul IsSmulRegular.smul
 
 /-- If an element `b` becomes `M`-regular after multiplying it on the left by an `M`-regular
