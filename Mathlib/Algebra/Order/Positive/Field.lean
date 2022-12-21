@@ -23,7 +23,7 @@ variable {K : Type _} [LinearOrderedField K]
 
 namespace Positive
 
-instance Subtype.instInv : Inv { x : K // 0 < x } :=
+instance Subtype.inv : Inv { x : K // 0 < x } :=
   ⟨fun x => ⟨x⁻¹, inv_pos.2 x.2⟩⟩
 
 @[simp]
@@ -39,9 +39,10 @@ theorem coe_zpow (x : { x : K // 0 < x }) (n : ℤ) : ↑(x ^ n) = (x : K) ^ n :
   rfl
 #align positive.coe_zpow Positive.coe_zpow
 
+-- porting notes: required to create the instance below
 set_option maxHeartbeats 304000
 instance : LinearOrderedCommGroup { x : K // 0 < x } :=
-  { Positive.Subtype.instInv, Positive.linearOrderedCancelCommMonoid with
+  { Positive.Subtype.inv, Positive.linearOrderedCancelCommMonoid with
     mul_left_inv := fun a => Subtype.ext <| inv_mul_cancel a.2.ne' }
 
 end Positive
