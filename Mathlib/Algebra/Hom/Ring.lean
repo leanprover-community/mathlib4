@@ -87,8 +87,12 @@ class NonUnitalRingHomClass (F : Type _) (α β : outParam (Type _)) [NonUnitalN
 
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [NonUnitalRingHomClass F α β]
 
+@[coe]
+def NonUnitalRingHomClass.toNonUnitalRingHom (f : F) : α →ₙ+* β :=
+{ (f : α →ₙ* β), (f : α →+ β) with }
+
 instance : CoeTC F (α →ₙ+* β) :=
-  ⟨fun f => { toFun := f, map_zero' := map_zero f, map_mul' := map_mul f, map_add' := map_add f }⟩
+  ⟨NonUnitalRingHomClass.toNonUnitalRingHom⟩
 
 end NonUnitalRingHomClass
 
@@ -384,10 +388,12 @@ class RingHomClass (F : Type _) (α β : outParam (Type _)) [NonAssocSemiring α
 -- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]
 
+@[coe]
+def RingHomClass.toRingHom (f : F) : α →+* β :=
+{ (f : α →* β), (f : α →+ β) with }
+
 instance : CoeTC F (α →+* β) :=
-  ⟨fun f =>
-    { toFun := f, map_zero' := map_zero f, map_one' := map_one f, map_mul' := map_mul f,
-      map_add' := map_add f }⟩
+  ⟨RingHomClass.toRingHom⟩
 
 instance (priority := 100) RingHomClass.toNonUnitalRingHomClass : NonUnitalRingHomClass F α β :=
   { ‹RingHomClass F α β› with }

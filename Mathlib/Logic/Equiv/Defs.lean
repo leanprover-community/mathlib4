@@ -76,12 +76,15 @@ structure Equiv (α : Sort _) (β : Sort _) where
 
 infixl:25 " ≃ " => Equiv
 
+@[coe]
+def EquivLike.toEquiv {F} [EquivLike F α β] (f :F) : α ≃ β where
+  toFun := f
+  invFun := EquivLike.inv f
+  left_inv := EquivLike.left_inv f
+  right_inv := EquivLike.right_inv f
+
 instance {F} [EquivLike F α β] : CoeTC F (α ≃ β) :=
-  ⟨fun f =>
-    { toFun := f,
-      invFun := EquivLike.inv f,
-      left_inv := EquivLike.left_inv f,
-      right_inv := EquivLike.right_inv f }⟩
+  ⟨EquivLike.toEquiv⟩
 
 /-- `Perm α` is the type of bijections from `α` to itself. -/
 @[reducible]
