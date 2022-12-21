@@ -183,18 +183,17 @@ lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess �
     · exact le_of_not_lt h
     · decide
 
-lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n ≤ guess * guess) :
+lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) :
   n < (sqrt.iter n guess + 1) * (sqrt.iter n guess + 1) := by
   unfold sqrt.iter
   let next := (guess + n / guess) / 2
   by_cases h : next < guess
   case pos =>
-    have : n ≤ next * next := by sorry
+    have : n < (next + 1) * (next + 1) := by
+      sorry
     simpa only [dif_pos h] using sqrt.lt_iter_succ_sq n next this
   case neg =>
-    simp only [dif_neg h, add_mul, mul_add, one_mul, mul_one, ← add_assoc]
-    rw [lt_add_one_iff, add_assoc]
-    refine hn.trans (le_add_right _ _)
+    simpa only [dif_neg h] using hn
 
 -- Porting note: as the definition of square root has changed,
 -- the proof of `sqrt_IsSqrt` is attempted from scratch.
@@ -211,14 +210,18 @@ private theorem sqrt_IsSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
   match n with
   | 0 => simp [IsSqrt]
   | 1 => simp [IsSqrt]
-  | 2 => simp [IsSqrt]
-  | 3 => simp [IsSqrt]
-  | n + 4 =>
-    have h : ¬ (n + 4) ≤ 1 := by simp
+  | n + 2 =>
+    have h : ¬ (n + 2) ≤ 1 := by simp
     simp only [IsSqrt, sqrt, h, ite_false]
-    apply And.intro
-    · apply sqrt.iter_sq_le
-    · sorry
+    refine ⟨sqrt.iter_sq_le _ _, sqrt.lt_iter_succ_sq _ _ ?_⟩
+    simp only [mul_add, add_mul, one_mul, mul_one, ← add_assoc]
+    rw [lt_add_one_iff, add_assoc, ← mul_two]
+    refine le_trans (div_add_mod' (n + 2) 2).ge ?_
+    rw [add_comm, add_le_add_iff_right, add_mod_right]
+    simp only [zero_lt_two, add_div_right, succ_mul_succ_eq]
+    refine le_trans (b := 1) ?_ ?_
+    · exact (lt_succ.1 $ mod_lt n zero_lt_two)
+    · simp only [le_add_iff_nonneg_left]; exact zero_le _
 -- #align nat.sqrt_is_sqrt Nat.sqrt_IsSqrt
 
 theorem sqrt_le (n : ℕ) : sqrt n * sqrt n ≤ n :=
