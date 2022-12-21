@@ -137,7 +137,6 @@ example (w x y z : ℤ) (h1 : 4*x + (-3)*y + 6*w ≤ 0) (h2 : (-1)*x < 0) (h3 : 
   linarith
 
 section term_arguments
-axiom Rat.num_pos_iff_pos {x : Rat} : 0 < x.num ↔ 0 < x
 
 example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
   linarith [Rat.num_pos_iff_pos.mpr hx, h]
