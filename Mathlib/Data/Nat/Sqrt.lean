@@ -136,7 +136,7 @@ private theorem sqrtAux_IsSqrt (n) :
       exact this
 #align nat.sqrt_aux_is_sqrt nat.sqrtAux_IsSqrt
 
-private theorem sqrt_is_sqrt (n : ℕ) : IsSqrt n (sqrt n) := by
+private theorem sqrt_IsSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
   generalize e : size n = s; cases' s with s <;> simp [e, sqrt]
   · rw [size_eq_zero.1 e, IsSqrt]
     exact by decide
@@ -145,6 +145,7 @@ private theorem sqrt_is_sqrt (n : ℕ) : IsSqrt n (sqrt n) := by
         generalize div2 s = x
         show _ = shiftl 1 (x + x)
         rw [one_shiftl, pow_add]] at this
+
     apply this
     rw [← pow_add, ← mul_two]
     apply size_le.1
@@ -152,10 +153,10 @@ private theorem sqrt_is_sqrt (n : ℕ) : IsSqrt n (sqrt n) := by
     apply (@div_lt_iff_lt_mul _ _ 2 (by decide)).1
     rw [div2_val]
     apply lt_succ_self
-#align nat.sqrt_is_sqrt nat.sqrt_is_sqrt
+#align nat.sqrt_is_sqrt Nat.sqrt_IsSqrt
 
 theorem sqrt_le (n : ℕ) : sqrt n * sqrt n ≤ n :=
-  (sqrt_is_sqrt n).left
+  (sqrt_IsSqrt n).left
 #align nat.sqrt_le Nat.sqrt_le
 
 theorem sqrt_le' (n : ℕ) : sqrt n ^ 2 ≤ n :=
@@ -163,7 +164,7 @@ theorem sqrt_le' (n : ℕ) : sqrt n ^ 2 ≤ n :=
 #align nat.sqrt_le' Nat.sqrt_le'
 
 theorem lt_succ_sqrt (n : ℕ) : n < succ (sqrt n) * succ (sqrt n) :=
-  (sqrt_is_sqrt n).right
+  (sqrt_IsSqrt n).right
 #align nat.lt_succ_sqrt Nat.lt_succ_sqrt
 
 theorem lt_succ_sqrt' (n : ℕ) : n < succ (sqrt n) ^ 2 :=
@@ -210,7 +211,7 @@ theorem sqrt_eq_zero {n : ℕ} : sqrt n = 0 ↔ n = 0 :=
 #align nat.sqrt_eq_zero Nat.sqrt_eq_zero
 
 theorem eq_sqrt {n q} : q = sqrt n ↔ q * q ≤ n ∧ n < (q + 1) * (q + 1) :=
-  ⟨fun e => e.symm ▸ sqrt_is_sqrt n, fun ⟨h₁, h₂⟩ =>
+  ⟨fun e => e.symm ▸ sqrt_IsSqrt n, fun ⟨h₁, h₂⟩ =>
     le_antisymm (le_sqrt.2 h₁) (le_of_lt_succ <| sqrt_lt.2 h₂)⟩
 #align nat.eq_sqrt Nat.eq_sqrt
 
