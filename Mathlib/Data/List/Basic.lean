@@ -3430,21 +3430,21 @@ theorem pmap_append' {α β : Type _} {p : α → Prop} (f : ∀ a : α, p a →
 
 section find?
 
-variable {p : α → Prop} [DecidablePred p] {l : List α} {a : α}
+variable {p : α → Bool} {l : List α} {a : α}
 
 @[simp]
-theorem find?_nil (p : α → Prop) [DecidablePred p] : find? p [] = none :=
+theorem find?_nil (p : α → Bool) : find? p [] = none :=
   rfl
 #align list.find_nil List.find?_nil
 
 @[simp]
 theorem find?_cons_of_pos (l) (h : p a) : find? p (a :: l) = some a :=
-  if_pos h
+  by simp [find?, h]
 #align list.find_cons_of_pos List.find?_cons_of_pos
 
 @[simp]
 theorem find?_cons_of_neg (l) (h : ¬p a) : find? p (a :: l) = find? p l :=
-  if_neg h
+  by simp [find?, h]
 #align list.find_cons_of_neg List.find?_cons_of_neg
 
 @[simp]
@@ -3452,8 +3452,8 @@ theorem find?_eq_none : find? p l = none ↔ ∀ x ∈ l, ¬p x := by
   induction' l with a l IH
   · exact iff_of_true rfl (forall_mem_nil _)
   rw [forall_mem_cons]; by_cases h : p a
-  · simp only [find_cons_of_pos _ h, h, not_true, false_and_iff]
-  · rwa [find_cons_of_neg _ h, iff_true_intro h, true_and_iff]
+  · simp only [find?_cons_of_pos _ h, h, not_true, false_and_iff]
+  · rwa [find?_cons_of_neg _ h, iff_true_intro h, true_and_iff]
 #align list.find_eq_none List.find?_eq_none
 
 theorem find?_some (H : find? p l = some a) : p a := by
