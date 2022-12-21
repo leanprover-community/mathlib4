@@ -122,6 +122,7 @@ theorem size_shiftl {m} (h : m ≠ 0) (n) : size (shiftl m n) = size m + n :=
   size_shiftl' (shiftl'_ne_zero_left _ h _)
 #align nat.size_shiftl Nat.size_shiftl
 
+-- porting note: `bit_lt_bit0` does not appear to be in any of the files in `Mathlib`
 theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   rw [← one_shiftl]
   have : ∀ {n}, n = 0 → n < shiftl 1 (size n) := by simp
@@ -134,6 +135,7 @@ theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   exact bit_lt_bit0 _ IH
 #align nat.lt_size_self Nat.lt_size_self
 
+-- porting note: `bit0_le_bit` does not appear to be in any of the files in `Mathlib`
 theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
   ⟨fun h => lt_of_lt_of_le (lt_size_self _) (pow_le_pow_of_le_right (by decide) h), by
     rw [← one_shiftl]; revert n
