@@ -192,7 +192,7 @@ variable [MonoidWithZero R] [MonoidWithZero S] [Zero M] [MulActionWithZero R M]
 
 /-- The element `0` is `M`-regular if and only if `M` is trivial. -/
 protected theorem subsingleton (h : IsSMulRegular M (0 : R)) : Subsingleton M :=
-  ⟨fun a b => h (by repeat' rw [MulActionWithZero.zero_smul])⟩
+  ⟨fun a b => h (by dsimp only [Function.comp]; repeat' rw [MulActionWithZero.zero_smul])⟩
 #align is_smul_regular.subsingleton IsSMulRegular.subsingleton
 
 /-- The element `0` is `M`-regular if and only if `M` is trivial. -/
