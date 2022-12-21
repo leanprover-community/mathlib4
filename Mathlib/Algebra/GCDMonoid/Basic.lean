@@ -661,7 +661,7 @@ theorem isUnit_gcd_of_eq_mul_gcd {α : Type _} [CancelCommMonoidWithZero α] [GC
     IsUnit (gcd x' y') := by
   rw [← associated_one_iff_isUnit]
   refine' Associated.of_mul_left _ (Associated.refl <| gcd x y) h
-  convert (gcd_mul_left' _ _ _).symm using 1
+  convert (gcd_mul_left' (gcd x y) x' y').symm using 1
   rw [← ex, ← ey, mul_one]
 #align is_unit_gcd_of_eq_mul_gcd isUnit_gcd_of_eq_mul_gcd
 
@@ -681,16 +681,16 @@ end GCD
 section Lcm
 
 theorem lcm_dvd_iff [GCDMonoid α] {a b c : α} : lcm a b ∣ c ↔ a ∣ c ∧ b ∣ c := by
-  by_cases this : a = 0 ∨ b = 0
+  by_cases a = 0 ∨ b = 0
   ·
-    rcases this with (rfl | rfl) <;>
+    rcases h with (rfl | rfl) <;>
       simp (config := { contextual := true }) only [iff_def, lcm_zero_left, lcm_zero_right,
         zero_dvd_iff, dvd_zero, eq_self_iff_true, and_true_iff, imp_true_iff]
-  · obtain ⟨h1, h2⟩ := not_or.1 this
+  · obtain ⟨h1, h2⟩ := not_or.1 h
     have h : gcd a b ≠ 0 := fun H => h1 ((gcd_eq_zero_iff _ _).1 H).1
     rw [← mul_dvd_mul_iff_left h, (gcd_mul_lcm a b).dvd_iff_dvd_left, ←
       (gcd_mul_right' c a b).dvd_iff_dvd_right, dvd_gcd_iff, mul_comm b c, mul_dvd_mul_iff_left h1,
-      mul_dvd_mul_iff_right h2, and_comm']
+      mul_dvd_mul_iff_right h2, and_comm]
 #align lcm_dvd_iff lcm_dvd_iff
 
 theorem dvd_lcm_left [GCDMonoid α] (a b : α) : a ∣ lcm a b :=
@@ -710,7 +710,7 @@ theorem lcm_eq_zero_iff [GCDMonoid α] (a b : α) : lcm a b = 0 ↔ a = 0 ∨ b 
   Iff.intro
     (fun h : lcm a b = 0 => by
       have : Associated (a * b) 0 := (gcd_mul_lcm a b).symm.trans <| by rw [h, mul_zero]
-      simpa only [associated_zero_iff_eq_zero, mul_eq_zero] )
+      rwa [← mul_eq_zero, ← associated_zero_iff_eq_zero])
     (by rintro (rfl | rfl) <;> [apply lcm_zero_left, apply lcm_zero_right])
 #align lcm_eq_zero_iff lcm_eq_zero_iff
 
