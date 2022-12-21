@@ -3538,7 +3538,7 @@ theorem lookmap_id' (h : ∀ (a), ∀ b ∈ f a, a = b) (l : List α) : l.lookma
 #align list.lookmap_id' List.lookmap_id'
 
 theorem length_lookmap (l : List α) : length (l.lookmap f) = length l := by
-  rw [← length_map, lookmap_map_eq _ fun _ => (), length_map] <;> simp
+  rw [← length_map, lookmap_map_eq _ fun _ => (), length_map]; simp
 #align list.length_lookmap List.length_lookmap
 
 end Lookmap
@@ -3612,7 +3612,7 @@ theorem map_filterMap (f : α → Option β) (g : β → γ) (l : List α) :
 
 theorem filterMap_map (f : α → β) (g : β → Option γ) (l : List α) :
     filterMap g (map f l) = filterMap (g ∘ f) l := by
-  rw [← filterMap_eq_map, filterMap_filterMap] <;> rfl
+  rw [← filterMap_eq_map, filterMap_filterMap]; rfl
 #align list.filter_map_map List.filterMap_map
 
 theorem filter_filterMap (f : α → Option β) (p : β → Prop) [DecidablePred p] (l : List α) :
@@ -3660,7 +3660,7 @@ theorem mem_filterMap (f : α → Option β) (l : List α) {b : β} :
       exists_eq_left, this, false_or_iff]
   · have : f a = some b ↔ b = b' := by
       constructor <;> intro t
-      · rw [t] at h <;> injection h
+      · rw [t] at h; injection h
       · exact t.symm ▸ h
     simp only [filterMap_cons_some _ _ _ h, IH, mem_cons, or_and_right, exists_or, this,
       exists_eq_left]
@@ -3675,7 +3675,7 @@ theorem filterMap_join (f : α → Option β) (L : List (List α)) :
 #align list.filter_map_join List.filterMap_join
 
 theorem map_filterMap_of_inv (f : α → Option β) (g : β → α) (H : ∀ x : α, (f x).map g = some x)
-    (l : List α) : map g (filterMap f l) = l := by simp only [map_filter_map, H, filter_map_some]
+    (l : List α) : map g (filterMap f l) = l := by simp only [map_filterMap, H, filterMap_some]
 #align list.map_filter_map_of_inv List.map_filterMap_of_inv
 
 theorem length_filter_le (p : α → Prop) [DecidablePred p] (l : List α) :
@@ -3722,9 +3722,8 @@ theorem reduceOption_map {l : List (Option α)} {f : α → β} :
     reduceOption (map (Option.map f) l) = map f (reduceOption l) := by
   induction' l with hd tl hl
   · simp only [reduceOption_nil, map_nil]
-  ·
-    cases hd <;>
-      simpa only [true_and_iff, Option.map_some', map, eq_self_iff_true,
+  ·cases hd <;>
+      simpa [true_and_iff, Option.map_some', map, eq_self_iff_true,
         reduceOption_cons_of_some] using hl
 #align list.reduce_option_map List.reduceOption_map
 
