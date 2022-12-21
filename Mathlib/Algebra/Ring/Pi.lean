@@ -31,20 +31,21 @@ variable {f : I → Type v}
 -- The family of types already equipped with instances
 variable (x y : ∀ i, f i) (i : I)
 
-instance distrib [∀ i, Distrib <| f i] : Distrib (∀ i : I, f i) := by
-  refine_struct
-      { add := (· + ·)
-        mul := (· * ·).. } <;>
-    pi_instance_derive_field
+instance distrib [∀ i, Distrib <| f i] : Distrib (∀ i : I, f i) :=
+  { add := (· + ·)
+    mul := (· * ·)
+    left_distrib := by intros; ext; exact mul_add _ _ _
+    right_distrib := by intros; ext; exact add_mul _ _ _}
+  -- Porting note: used `refine_struct` and `pi_instance_derive_field`
 #align pi.distrib Pi.distrib
 
 instance nonUnitalNonAssocSemiring [∀ i, NonUnitalNonAssocSemiring <| f i] :
-    NonUnitalNonAssocSemiring (∀ i : I, f i) := by
-  refine_struct
-      { zero := (0 : ∀ i, f i)
-        add := (· + ·)
-        mul := (· * ·).. } <;>
-    pi_instance_derive_field
+    NonUnitalNonAssocSemiring (∀ i : I, f i) :=
+  { distrib with
+    zero := (0 : ∀ i, f i)
+    add := (· + ·)
+    mul := (· * ·)
+  }
 #align pi.non_unital_non_assoc_semiring Pi.nonUnitalNonAssocSemiring
 
 instance nonUnitalSemiring [∀ i, NonUnitalSemiring <| f i] : NonUnitalSemiring (∀ i : I, f i) := by
