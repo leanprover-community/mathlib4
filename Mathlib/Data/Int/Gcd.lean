@@ -47,13 +47,6 @@ def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ
     xgcdAux (r' % succ k) (s' - q * s) (t' - q * t) (succ k) s t
 #align nat.xgcd_aux Nat.xgcdAux
 
--- porting note: these are not in mathlib3; these equation lemmas are to fix
--- complaints by the Lean 4 `unusedHavesSuffices` linter obtained when `simp [xgcdAux]` is used.
-theorem xgcdAux_zero : xgcdAux 0 s t r' s' t' = (r', s', t') := rfl
-
-theorem xgcdAux_succ : xgcdAux (succ k) s t r' s' t' =
-  xgcdAux (r' % succ k) (s' - (r' / succ k) * s) (t' - (r' / succ k) * t) (succ k) s t := rfl
-
 @[simp]
 theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := by simp [xgcdAux]
 #align nat.xgcd_zero_left Nat.xgcd_zero_left
@@ -81,32 +74,32 @@ def gcdB (x y : ℕ) : ℤ :=
 #align nat.gcd_b Nat.gcdB
 
 @[simp]
-theorem gcd_a_zero_left {s : ℕ} : gcdA 0 s = 0 := by
+theorem gcdA_zero_left {s : ℕ} : gcdA 0 s = 0 := by
   unfold gcdA
   rw [xgcd, xgcd_zero_left]
-#align nat.gcd_a_zero_left Nat.gcd_a_zero_left
+#align nat.gcd_a_zero_left Nat.gcdA_zero_left
 
 @[simp]
-theorem gcd_b_zero_left {s : ℕ} : gcdB 0 s = 1 := by
+theorem gcdB_zero_left {s : ℕ} : gcdB 0 s = 1 := by
   unfold gcdB
   rw [xgcd, xgcd_zero_left]
-#align nat.gcd_b_zero_left Nat.gcd_b_zero_left
+#align nat.gcd_b_zero_left Nat.gcdB_zero_left
 
 @[simp]
-theorem gcd_a_zero_right {s : ℕ} (h : s ≠ 0) : gcdA s 0 = 1 := by
+theorem gcdA_zero_right {s : ℕ} (h : s ≠ 0) : gcdA s 0 = 1 := by
   unfold gcdA xgcd
   induction s
   · exact absurd rfl h
-  · simp [xgcdAux_succ]
-#align nat.gcd_a_zero_right Nat.gcd_a_zero_right
+  · simp [xgcdAux]
+#align nat.gcd_a_zero_right Nat.gcdA_zero_right
 
 @[simp]
-theorem gcd_b_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by
+theorem gcdB_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by
   unfold gcdB xgcd
   induction s
   · exact absurd rfl h
-  · simp [xgcdAux_succ]
-#align nat.gcd_b_zero_right Nat.gcd_b_zero_right
+  · simp [xgcdAux]
+#align nat.gcd_b_zero_right Nat.gcdB_zero_right
 
 @[simp]
 theorem xgcd_aux_fst (x y) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x y :=
