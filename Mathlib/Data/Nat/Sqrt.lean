@@ -147,6 +147,7 @@ private lemma iter_fp_bound (n k : ℕ):
 
 lemma am_gm_lemma (a b: ℤ) : 4 * a * b ≤ (a + b)^2 := by
   linarith [sq_nonneg (a - b)]
+
 -- TODO: move this to Std??
 protected lemma mul_le_of_le_div (k x y : ℕ) (h : x ≤ y / k) : x * k ≤ y := by
   by_cases hk : k = 0
