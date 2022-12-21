@@ -28,11 +28,11 @@ sequence, cauchy, abs val, absolute value
 -/
 
 
-set_option autoImplicit false
+--set_option autoImplicit false
 
 open IsAbsoluteValue
 
-variable {G α β : Type _}
+--variable {G α β : Type _}
 
 theorem exists_forall_ge_and {α} [LinearOrder α] {P Q : α → Prop} :
     (∃ i, ∀ j ≥ i, P j) → (∃ i, ∀ j ≥ i, Q j) → ∃ i, ∀ j ≥ i, P j ∧ Q j
@@ -348,9 +348,9 @@ section SMul
 variable [SMul G β] [IsScalarTower G β β]
 
 instance : SMul G (CauSeq β abv) :=
-  ⟨fun a f => (ofEq (const (a • (1 : β)) * f) (a • f)) fun i => smul_one_mul _ _⟩
+  ⟨fun a f => (ofEq (const (a • (1 : β)) * f) (a • (f : ℕ → β))) fun _ => smul_one_mul _ _⟩
 
-@[simp, norm_cast]
+@[simp] -- Porting note: Removed `norm_cast` attribute
 theorem coe_smul (a : G) (f : CauSeq β abv) : ⇑(a • f) = a • f :=
   rfl
 #align cau_seq.coe_smul CauSeq.coe_smul
@@ -367,17 +367,26 @@ theorem const_smul (a : G) (x : β) : const (a • x) = a • const x :=
 end SMul
 
 instance addGroup : AddGroup (CauSeq β abv) := by
-  refine_struct
-            { add := (· + ·)
-              neg := Neg.neg
-              zero := (0 : CauSeq β abv)
-              sub := Sub.sub
-              zsmul := (· • ·)
-              nsmul := (· • ·) } <;>
+  refine {
+    add := (· + ·)
+    neg := Neg.neg
+    zero := (0 : CauSeq β abv)
+    sub := Sub.sub
+    zsmul := (· • ·)
+    nsmul := (· • ·)
+    add_assoc := fun _ _ _ => ext $ by simp [add_assoc]
+    zero_add := fun _ => ext $ by simp
+    add_zero := fun _ => ext $ by simp
+    add_left_neg := by
+      intros
+      apply ext
+      sorry }
+      --simp [add_comm, add_left_comm, sub_eq_add_neg, add_mul] }
+              /-<;>
           intros <;>
         try rfl <;>
       apply ext <;>
-    simp [add_comm, add_left_comm, sub_eq_add_neg, add_mul]
+    simp [add_comm, add_left_comm, sub_eq_add_neg, add_mul]-/
 
 instance : AddGroupWithOne (CauSeq β abv) :=
   { CauSeq.addGroup with
@@ -386,14 +395,14 @@ instance : AddGroupWithOne (CauSeq β abv) :=
     natCast_zero := congr_arg const Nat.cast_zero
     natCast_succ := fun n => congr_arg const (Nat.cast_succ n)
     intCast := fun n => const n
-    intCast_ofNat := fun n => congr_arg const (Int.cast_of_nat n)
+    intCast_ofNat := fun n => congr_arg const (Int.cast_ofNat n)
     intCast_negSucc := fun n => congr_arg const (Int.cast_negSucc n) }
 
 instance : Pow (CauSeq β abv) ℕ :=
   ⟨fun f n =>
     (ofEq (npowRec n f) fun i => f i ^ n) <| by induction n <;> simp [*, npowRec, pow_succ]⟩
 
-@[simp, norm_cast]
+@[simp] -- Porting note: removed `norm_cast` attribute
 theorem coe_pow (f : CauSeq β abv) (n : ℕ) : ⇑(f ^ n) = f ^ n :=
   rfl
 #align cau_seq.coe_pow CauSeq.coe_pow
@@ -421,9 +430,12 @@ instance ring : Ring (CauSeq β abv) := by
     simp [mul_add, mul_assoc, add_mul, add_comm, add_left_comm, sub_eq_add_neg, pow_succ]
 
 instance {β : Type _} [CommRing β] {abv : β → α} [IsAbsoluteValue abv] : CommRing (CauSeq β abv) :=
-  { CauSeq.ring with mul_comm := by intros <;> apply ext <;> simp [mul_left_comm, mul_comm] }
+  { CauSeq.ring with
+    mul_comm := fun a b => ext $ fun n => by
+      rw [mul_apply a b n]
+      simp [mul_left_comm, mul_comm] }
 
-/-- `lim_zero f` holds when `f` approaches 0. -/
+/-- `LimZero f` holds when `f` approaches 0. -/
 def LimZero {abv : β → α} (f : CauSeq β abv) : Prop :=
   ∀ ε > 0, ∃ i, ∀ j ≥ i, abv (f j) < ε
 #align cau_seq.lim_zero CauSeq.LimZero
@@ -452,8 +464,11 @@ theorem mul_lim_zero_left {f} (g : CauSeq β abv) (hg : LimZero f) : LimZero (f 
 #align cau_seq.mul_lim_zero_left CauSeq.mul_lim_zero_left
 
 theorem neg_lim_zero {f : CauSeq β abv} (hf : LimZero f) : LimZero (-f) := by
-  rw [← neg_one_mul] <;> exact mul_lim_zero_right _ hf
+  rw [← neg_one_mul f]
+  exact mul_lim_zero_right _ hf
 #align cau_seq.neg_lim_zero CauSeq.neg_lim_zero
+
+#exit
 
 theorem sub_lim_zero {f g : CauSeq β abv} (hf : LimZero f) (hg : LimZero g) : LimZero (f - g) := by
   simpa only [sub_eq_add_neg] using add_lim_zero hf (neg_lim_zero hg)
