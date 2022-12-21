@@ -160,7 +160,7 @@ theorem mem_interᵢ {x : α} {s : ι → Set α} : (x ∈ ⋂ i, s i) ↔ ∀ i
     fun h _ ⟨a, (eq : s a = _)⟩ => eq ▸ h a⟩
 #align set.mem_Inter Set.mem_interᵢ
 
-theorem mem_unionᵢ₂ {x : γ} {s : ∀ i, κ i → Set γ} : (x ∈ ⋃ (i j), s i j) ↔ ∃ i j, x ∈ s i j := by
+theorem mem_unionᵢ₂ {x : γ} {s : ∀ i, κ i → Set γ} : (x ∈ ⋃ (i) (j), s i j) ↔ ∃ i j, x ∈ s i j := by
   simp_rw [mem_unionᵢ]
 #align set.mem_Union₂ Set.mem_unionᵢ₂
 
@@ -1480,66 +1480,66 @@ section Function
 
 theorem mapsTo_unionₛ {S : Set (Set α)} {t : Set β} {f : α → β} (H : ∀ s ∈ S, MapsTo f s t) :
     MapsTo f (⋃₀S) t := fun _ ⟨s, hs, hx⟩ => H s hs hx
-#align set.maps_to_sUnion Set.maps_to_unionₛ
+#align set.maps_to_sUnion Set.mapsTo_unionₛ
 
-theorem maps_to_unionᵢ {s : ι → Set α} {t : Set β} {f : α → β} (H : ∀ i, MapsTo f (s i) t) :
+theorem mapsTo_unionᵢ {s : ι → Set α} {t : Set β} {f : α → β} (H : ∀ i, MapsTo f (s i) t) :
     MapsTo f (⋃ i, s i) t :=
-  maps_to_unionₛ <| forall_range_iff.2 H
-#align set.maps_to_Union Set.maps_to_unionᵢ
+  mapsTo_unionₛ <| forall_range_iff.2 H
+#align set.maps_to_Union Set.mapsTo_unionᵢ
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem maps_to_unionᵢ₂ {s : ∀ i, κ i → Set α} {t : Set β} {f : α → β}
+theorem mapsTo_unionᵢ₂ {s : ∀ i, κ i → Set α} {t : Set β} {f : α → β}
     (H : ∀ i j, MapsTo f (s i j) t) : MapsTo f (⋃ (i) (j), s i j) t :=
-  maps_to_unionᵢ fun i => maps_to_unionᵢ (H i)
-#align set.maps_to_Union₂ Set.maps_to_unionᵢ₂
+  mapsTo_unionᵢ fun i => mapsTo_unionᵢ (H i)
+#align set.maps_to_Union₂ Set.mapsTo_unionᵢ₂
 
-theorem maps_to_unionᵢ_unionᵢ {s : ι → Set α} {t : ι → Set β} {f : α → β}
+theorem mapsTo_unionᵢ_unionᵢ {s : ι → Set α} {t : ι → Set β} {f : α → β}
     (H : ∀ i, MapsTo f (s i) (t i)) : MapsTo f (⋃ i, s i) (⋃ i, t i) :=
-  maps_to_unionᵢ fun i => (H i).mono (Subset.refl _) (subset_unionᵢ t i)
-#align set.maps_to_Union_Union Set.maps_to_unionᵢ_unionᵢ
+  mapsTo_unionᵢ fun i => (H i).mono (Subset.refl _) (subset_unionᵢ t i)
+#align set.maps_to_Union_Union Set.mapsTo_unionᵢ_unionᵢ
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem maps_to_unionᵢ₂_unionᵢ₂ {s : ∀ i, κ i → Set α} {t : ∀ i, κ i → Set β} {f : α → β}
+theorem mapsTo_unionᵢ₂_unionᵢ₂ {s : ∀ i, κ i → Set α} {t : ∀ i, κ i → Set β} {f : α → β}
     (H : ∀ i j, MapsTo f (s i j) (t i j)) : MapsTo f (⋃ (i) (j), s i j) (⋃ (i) (j), t i j) :=
-  maps_to_unionᵢ_unionᵢ fun i => maps_to_unionᵢ_unionᵢ (H i)
-#align set.maps_to_Union₂_Union₂ Set.maps_to_unionᵢ₂_unionᵢ₂
+  mapsTo_unionᵢ_unionᵢ fun i => mapsTo_unionᵢ_unionᵢ (H i)
+#align set.maps_to_Union₂_Union₂ Set.mapsTo_unionᵢ₂_unionᵢ₂
 
-theorem maps_to_interₛ {s : Set α} {T : Set (Set β)} {f : α → β} (H : ∀ t ∈ T, MapsTo f s t) :
+theorem mapsTo_interₛ {s : Set α} {T : Set (Set β)} {f : α → β} (H : ∀ t ∈ T, MapsTo f s t) :
     MapsTo f s (⋂₀ T) := fun _ hx t ht => H t ht hx
-#align set.maps_to_sInter Set.maps_to_interₛ
+#align set.maps_to_sInter Set.mapsTo_interₛ
 
-theorem maps_to_interᵢ {s : Set α} {t : ι → Set β} {f : α → β} (H : ∀ i, MapsTo f s (t i)) :
+theorem mapsTo_interᵢ {s : Set α} {t : ι → Set β} {f : α → β} (H : ∀ i, MapsTo f s (t i)) :
     MapsTo f s (⋂ i, t i) := fun _ hx => mem_interᵢ.2 fun i => H i hx
-#align set.maps_to_Inter Set.maps_to_interᵢ
+#align set.maps_to_Inter Set.mapsTo_interᵢ
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem maps_to_interᵢ₂ {s : Set α} {t : ∀ i, κ i → Set β} {f : α → β}
+theorem mapsTo_interᵢ₂ {s : Set α} {t : ∀ i, κ i → Set β} {f : α → β}
     (H : ∀ i j, MapsTo f s (t i j)) : MapsTo f s (⋂ (i) (j), t i j) :=
-  maps_to_interᵢ fun i => maps_to_interᵢ (H i)
-#align set.maps_to_Inter₂ Set.maps_to_interᵢ₂
+  mapsTo_interᵢ fun i => mapsTo_interᵢ (H i)
+#align set.maps_to_Inter₂ Set.mapsTo_interᵢ₂
 
-theorem maps_to_interᵢ_interᵢ {s : ι → Set α} {t : ι → Set β} {f : α → β}
+theorem mapsTo_interᵢ_interᵢ {s : ι → Set α} {t : ι → Set β} {f : α → β}
     (H : ∀ i, MapsTo f (s i) (t i)) : MapsTo f (⋂ i, s i) (⋂ i, t i) :=
-  maps_to_interᵢ fun i => (H i).mono (interᵢ_subset s i) (Subset.refl _)
-#align set.maps_to_Inter_Inter Set.maps_to_interᵢ_interᵢ
+  mapsTo_interᵢ fun i => (H i).mono (interᵢ_subset s i) (Subset.refl _)
+#align set.maps_to_Inter_Inter Set.mapsTo_interᵢ_interᵢ
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem maps_to_interᵢ₂_interᵢ₂ {s : ∀ i, κ i → Set α} {t : ∀ i, κ i → Set β} {f : α → β}
+theorem mapsTo_interᵢ₂_interᵢ₂ {s : ∀ i, κ i → Set α} {t : ∀ i, κ i → Set β} {f : α → β}
     (H : ∀ i j, MapsTo f (s i j) (t i j)) : MapsTo f (⋂ (i) (j), s i j) (⋂ (i) (j), t i j) :=
-  maps_to_interᵢ_interᵢ fun i => maps_to_interᵢ_interᵢ (H i)
-#align set.maps_to_Inter₂_Inter₂ Set.maps_to_interᵢ₂_interᵢ₂
+  mapsTo_interᵢ_interᵢ fun i => mapsTo_interᵢ_interᵢ (H i)
+#align set.maps_to_Inter₂_Inter₂ Set.mapsTo_interᵢ₂_interᵢ₂
 
 theorem image_interᵢ_subset (s : ι → Set α) (f : α → β) : (f '' ⋂ i, s i) ⊆ ⋂ i, f '' s i :=
-  (maps_to_interᵢ_interᵢ fun i => mapsTo_image f (s i)).image_subset
+  (mapsTo_interᵢ_interᵢ fun i => mapsTo_image f (s i)).image_subset
 #align set.image_Inter_subset Set.image_interᵢ_subset
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem image_interᵢ₂_subset (s : ∀ i, κ i → Set α) (f : α → β) :
     (f '' ⋂ (i) (j), s i j) ⊆ ⋂ (i) (j), f '' s i j :=
-  (maps_to_interᵢ₂_interᵢ₂ fun i hi => mapsTo_image f (s i hi)).image_subset
+  (mapsTo_interᵢ₂_interᵢ₂ fun i hi => mapsTo_image f (s i hi)).image_subset
 #align set.image_Inter₂_subset Set.image_interᵢ₂_subset
 
 theorem image_interₛ_subset (S : Set (Set α)) (f : α → β) : f '' ⋂₀ S ⊆ ⋂ s ∈ S, f '' s := by
@@ -1712,12 +1712,12 @@ theorem surjOn_interᵢ_interᵢ [Nonempty ι] {s : ι → Set α} {t : ι → S
 
 theorem bijOn_unionᵢ {s : ι → Set α} {t : ι → Set β} {f : α → β} (H : ∀ i, BijOn f (s i) (t i))
     (Hinj : InjOn f (⋃ i, s i)) : BijOn f (⋃ i, s i) (⋃ i, t i) :=
-  ⟨maps_to_unionᵢ_unionᵢ fun i => (H i).mapsTo, Hinj, surjOn_unionᵢ_unionᵢ fun i => (H i).surjOn⟩
+  ⟨mapsTo_unionᵢ_unionᵢ fun i => (H i).mapsTo, Hinj, surjOn_unionᵢ_unionᵢ fun i => (H i).surjOn⟩
 #align set.bij_on_Union Set.bijOn_unionᵢ
 
 theorem bijOn_interᵢ [hi : Nonempty ι] {s : ι → Set α} {t : ι → Set β} {f : α → β}
     (H : ∀ i, BijOn f (s i) (t i)) (Hinj : InjOn f (⋃ i, s i)) : BijOn f (⋂ i, s i) (⋂ i, t i) :=
-  ⟨maps_to_interᵢ_interᵢ fun i => (H i).mapsTo,
+  ⟨mapsTo_interᵢ_interᵢ fun i => (H i).mapsTo,
     hi.elim fun i => (H i).injOn.mono (interᵢ_subset _ _),
     surjOn_interᵢ_interᵢ (fun i => (H i).surjOn) Hinj⟩
 #align set.bij_on_Inter Set.bijOn_interᵢ
