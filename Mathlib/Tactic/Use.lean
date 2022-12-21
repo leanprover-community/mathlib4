@@ -18,8 +18,7 @@ open Lean.Elab.Tactic
 namespace Mathlib.Tactic
 
 /--
-`use e₁, e₂, ⋯` applies the tactic `refine ⟨e₁, e₂, ⋯, ?_⟩` and then tries
-to close the goal with `trivial` (which may or may not close it). It's
+`use e₁, e₂, ⋯` applies the tactic `refine ⟨e₁, e₂, ⋯, ?_⟩`. It's
 useful, for example, to advance on existential goals, for which terms as
 well as proofs of some claims about them are expected.
 
