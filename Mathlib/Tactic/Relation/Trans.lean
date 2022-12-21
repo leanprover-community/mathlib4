@@ -116,8 +116,6 @@ elab "trans" t?:(ppSpace (colGt term))? : tactic => withMainContext do
       | none => throwError "transitivity lemmas only apply to
         binary relations, not {indentExpr tgt}"
     | _ => throwError "transitivity lemmas only apply to binary relations, not {indentExpr tgt}"
-  -- let .app (.app rel x) z := tgt
-  --   | throwError "transitivity lemmas only apply to binary relations, not {indentExpr tgt}"
   trace[Tactic.trans]"goal decomposed"
   trace[Tactic.trans]"rel: {indentExpr rel}"
   trace[Tactic.trans]"x:{indentExpr x}"
