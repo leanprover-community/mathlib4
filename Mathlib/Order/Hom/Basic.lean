@@ -131,8 +131,12 @@ export OrderIsoClass (map_le_map_iff)
 
 attribute [simp] map_le_map_iff
 
+@[coe]
+def OrderIsoClass.toOrderIso {_ : LE α} {_ : LE β} [OrderIsoClass F α β] (f : F) : α ≃o β :=
+{ EquivLike.toEquiv f with map_rel_iff' := map_le_map_iff f }
+
 instance {_ : LE α} {_ : LE β} [OrderIsoClass F α β] : CoeTC F (α ≃o β) :=
-  ⟨fun f => ⟨f, map_le_map_iff f⟩⟩
+  ⟨OrderIsoClass.toOrderIso⟩
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toOrderHomClass {_ : LE α} {_ : LE β}
@@ -151,8 +155,13 @@ protected theorem monotone (f : F) : Monotone f := fun _ _ => map_rel f
 protected theorem mono (f : F) : Monotone f := fun _ _ => map_rel f
 #align order_hom_class.mono OrderHomClass.mono
 
+@[coe]
+def toOrderHom (f : F) : α →o β where
+  toFun := f
+  monotone' := OrderHomClass.monotone f
+
 instance : CoeTC F (α →o β) :=
-  ⟨fun f => { toFun := f, monotone' := OrderHomClass.mono _ }⟩
+  ⟨toOrderHom⟩
 
 end OrderHomClass
 
