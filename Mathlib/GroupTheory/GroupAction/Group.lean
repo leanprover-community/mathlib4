@@ -52,7 +52,7 @@ def MulAction.toPerm (a : α) : Equiv.Perm β :=
 /-- Given an action of an additive group `α` on `β`, each `g : α` defines a permutation of `β`. -/
 add_decl_doc AddAction.toPerm
 
-/-- `mul_action.to_perm` is injective on faithful actions. -/
+/-- `MulAction.toPerm` is injective on faithful actions. -/
 @[to_additive "`AddAction.toPerm` is injective on faithful actions."]
 theorem MulAction.to_perm_injective [FaithfulSMul α β] :
     Function.Injective (MulAction.toPerm : α → Equiv.Perm β) :=
@@ -81,9 +81,9 @@ def AddAction.toPermHom (α : Type _) [AddGroup α] [AddAction α β] :
   map_add' a₁ a₂ := Equiv.ext <| add_vadd a₁ a₂
 #align add_action.to_perm_hom AddAction.toPermHom
 
-/-- The tautological action by `equiv.perm α` on `α`.
+/-- The tautological action by `Equiv.Perm α` on `α`.
 
-This generalizes `function.End.apply_mul_action`.-/
+This generalizes `function.End.applyMulAction`.-/
 instance Equiv.Perm.applyMulAction (α : Type _) :
     MulAction (Equiv.Perm α) α where
   smul f a := f a
@@ -96,7 +96,7 @@ protected theorem Equiv.Perm.smul_def {α : Type _} (f : Equiv.Perm α) (a : α)
   rfl
 #align equiv.perm.smul_def Equiv.Perm.smul_def
 
-/-- `Equiv.Perm.apply_mulAction` is faithful. -/
+/-- `Equiv.Perm.applyMulAction` is faithful. -/
 instance Equiv.Perm.apply_faithfulSMul (α : Type _) : FaithfulSMul (Equiv.Perm α) α :=
   ⟨Equiv.ext⟩
 #align equiv.perm.apply_has_faithful_smul Equiv.Perm.apply_faithfulSMul
