@@ -66,20 +66,21 @@ attribute [local simp] sqrtAux_0
 
 theorem sqrtAux_1 {r n b} (h : b ≠ 0) {n'} (h₂ : r + b + n' = n) :
     sqrtAux b r n = sqrtAux (shiftr b 2) (div2 r + b) n' := by
-  rw [sqrtAux] <;> simp only [h, h₂.symm, Int.ofNat_add, if_false] <;>
-    rw [add_comm _ (n' : ℤ), add_sub_cancel, sqrtAux._match_1]
+  rw [sqrtAux]; simp only [h, h₂.symm, Int.ofNat_add, if_false] <;>
+    (rw [add_comm _ (n' : ℤ), add_sub_cancel, sqrtAux]; rfl)
 #align nat.sqrt_aux_1 Nat.sqrtAux_1
 
 theorem sqrtAux_2 {r n b} (h : b ≠ 0) (h₂ : n < r + b) :
     sqrtAux b r n = sqrtAux (shiftr b 2) (div2 r) n := by
-  rw [sqrtAux] <;> simp only [h, h₂, if_false]
+  rw [sqrtAux]; simp only [h, h₂, if_false]
   cases' Int.eq_negSucc_of_lt_zero (sub_lt_zero.2 (Int.ofNat_lt_ofNat_of_lt h₂)) with k e
-  rw [e, sqrtAux._match_1]
+  rw [e, sqrtAux]
+  rfl
 #align nat.sqrt_aux_2 Nat.sqrtAux_2
 
 private def is_sqrt (n q : ℕ) : Prop :=
   q * q ≤ n ∧ n < (q + 1) * (q + 1)
-#align nat.is_sqrt nat.is_sqrt
+#align nat.is_sqrt Nat.is_sqrt
 
 attribute [-simp] mul_eq_mul_left_iff mul_eq_mul_right_iff
 
@@ -142,8 +143,7 @@ private theorem sqrt_is_sqrt (n : ℕ) : IsSqrt n (sqrt n) := by
     simp [show 2 ^ div2 s * 2 ^ div2 s = shiftl 1 (bit0 (div2 s)) by
         generalize div2 s = x
         change bit0 x with x + x
-        rw [one_shiftl, pow_add]] at
-      this
+        rw [one_shiftl, pow_add]] at this
     apply this
     rw [← pow_add, ← mul_two]
     apply size_le.1
