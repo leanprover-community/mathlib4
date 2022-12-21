@@ -36,7 +36,7 @@ variable {R S : Type _} (M : Type _) {a b : R} {s : S}
 /-- An `M`-regular element is an element `c` such that multiplication on the left by `c` is an
 injective map `M → M`. -/
 def IsSMulRegular [SMul R M] (c : R) :=
-  Function.Injective ((· • ·) c : M → M)
+  Function.Injective ((c • ·) : M → M)
 #align is_smul_regular IsSMulRegular
 
 theorem IsLeftRegular.is_smul_regular [Mul R] {c : R} (h : IsLeftRegular c) : IsSMulRegular R c :=
