@@ -6,7 +6,9 @@ Authors: Simon Hudon
 ! This file was ported from Lean 3 source category_theory.category.kleisli
 ! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
 ! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.-/
+! if you have ported upstream changes.
+-/
+
 import Mathlib.CategoryTheory.Category.Basic
 
 /-!
