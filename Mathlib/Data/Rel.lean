@@ -96,6 +96,7 @@ def comp (r : Rel α β) (s : Rel β γ) : Rel α γ := fun x z => ∃ y, r x y 
 
 -- Porting note: the original `∘` syntax can't be overloaded here, lean considers it ambiguous.
 -- TODO: Change this syntax to something nicer?
+/-- Local syntax for composition of relations. -/
 local infixr:0 " • " => Rel.comp
 
 theorem comp_assoc (r : Rel α β) (s : Rel β γ) (t : Rel γ δ) : ((r • s) • t) = (r • s • t) := by
@@ -138,7 +139,7 @@ theorem mem_image (y : β) (s : Set α) : y ∈ image r s ↔ ∃ x ∈ s, r x y
   Iff.rfl
 #align rel.mem_image Rel.mem_image
 
-theorem image_subset : ((· ⊆ ·) ⇒ (· ⊆ ·)) r.image r.image := fun s t h y ⟨x, xs, rxy⟩ =>
+theorem image_subset : ((· ⊆ ·) ⇒ (· ⊆ ·)) r.image r.image := fun _s _t h _y ⟨x, xs, rxy⟩ =>
   ⟨x, h xs, rxy⟩
 #align rel.image_subset Rel.image_subset
 
@@ -152,7 +153,7 @@ theorem image_inter (s t : Set α) : r.image (s ∩ t) ⊆ r.image s ∩ r.image
 
 theorem image_union (s t : Set α) : r.image (s ∪ t) = r.image s ∪ r.image t :=
   le_antisymm
-    (fun y ⟨x, xst, rxy⟩ =>
+    (fun _y ⟨x, xst, rxy⟩ =>
       xst.elim (fun xs => Or.inl ⟨x, ⟨xs, rxy⟩⟩) fun xt => Or.inr ⟨x, ⟨xt, rxy⟩⟩)
     (r.image_mono.le_map_sup s t)
 #align rel.image_union Rel.image_union
@@ -185,7 +186,7 @@ theorem mem_preimage (x : α) (s : Set β) : x ∈ r.preimage s ↔ ∃ y ∈ s,
 #align rel.mem_preimage Rel.mem_preimage
 
 theorem preimage_def (s : Set β) : preimage r s = { x | ∃ y ∈ s, r x y } :=
-  Set.ext fun x => mem_preimage _ _ _
+  Set.ext fun _ => mem_preimage _ _ _
 #align rel.preimage_def Rel.preimage_def
 
 theorem preimage_mono {s t : Set β} (h : s ⊆ t) : r.preimage s ⊆ r.preimage t :=
@@ -221,7 +222,7 @@ theorem mem_core (x : α) (s : Set β) : x ∈ r.core s ↔ ∀ y, r x y → y �
   Iff.rfl
 #align rel.mem_core Rel.mem_core
 
-theorem core_subset : ((· ⊆ ·) ⇒ (· ⊆ ·)) r.core r.core := fun s t h x h' y rxy => h (h' y rxy)
+theorem core_subset : ((· ⊆ ·) ⇒ (· ⊆ ·)) r.core r.core := fun _s _t h _x h' y rxy => h (h' y rxy)
 #align rel.core_subset Rel.core_subset
 
 theorem core_mono : Monotone r.core :=
@@ -255,7 +256,7 @@ def restrictDomain (s : Set α) : Rel { x // x ∈ s } β := fun x y => r x.val 
 #align rel.restrict_domain Rel.restrictDomain
 
 theorem image_subset_iff (s : Set α) (t : Set β) : image r s ⊆ t ↔ s ⊆ core r t :=
-  Iff.intro (fun h x xs y rxy => h ⟨x, xs, rxy⟩) fun h y ⟨x, xs, rxy⟩ => h xs y rxy
+  Iff.intro (fun h x xs _y rxy => h ⟨x, xs, rxy⟩) fun h y ⟨_x, xs, rxy⟩ => h xs y rxy
 #align rel.image_subset_iff Rel.image_subset_iff
 
 theorem image_core_gc : GaloisConnection r.image r.core :=
