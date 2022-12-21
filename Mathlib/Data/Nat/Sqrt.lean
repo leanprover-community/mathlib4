@@ -145,8 +145,11 @@ private lemma iter_fp_bound (n k : ℕ):
       case neg => simp [if_neg h, Nat.le_of_not_lt h]
 
 lemma am_gm_lemma (a b: ℤ) : 0 ≤ (a + b) * (a + b) - 4 * a * b := by
-  sorry
-  -- linarith [sq_nonneg (a - b)]
+  convert sq_nonneg (a - b)
+  simp only [sq, add_mul, mul_add, sub_mul, mul_sub, add_assoc, mul_comm b a, sub_eq_add_neg,
+    neg_mul, mul_neg, neg_neg, add_right_inj, neg_add_rev, neg_neg, add_left_comm _ (b*b)]
+  simp only [← two_mul, ← add_assoc, mul_neg, eq_neg_iff_add_eq_zero, mul_assoc]
+  simp only [← neg_mul, ← add_mul, _root_.mul_eq_zero, true_or]
 
 lemma nat_am_gm (a b : ℕ) : 0 ≤ (a + b) * (a + b) - 4 * a * b := by
   apply cast_nonneg
