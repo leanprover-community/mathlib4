@@ -327,10 +327,6 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [Faithful G] (obj : C →
       trans F.map (𝟙 X)
       exact h_map
       rw [F.map_id, G.map_id, h_obj X]
-      -- refine G.map_injective <| eq_of_heq <| h_map.trans ?_
-      -- simp only [Functor.map_id]
-      -- convert HEq.refl (𝟙 (F.obj X))
-      -- all_goals { apply h_obj }
     map_comp := by
       intros X Y Z f g
       refine G.map_injective <| eq_of_heq <| h_map.trans ?_
