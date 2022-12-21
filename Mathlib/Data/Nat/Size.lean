@@ -10,29 +10,36 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Bits
-
+import Mathlib.Data.Nat.Order.Basic
 /-! Lemmas about `size`. -/
+-- porting note: The import `Mathlib.Data.Nat.Order.Basic` is to
+-- bring `bit_le_bit0` and other declarations into scope.
 
 
 namespace Nat
 
 /-! ### `shiftl` and `shiftr` -/
 
+section
+
+set_option linter.deprecated false
+
 -- Porting note: `show ... by` has not been implemented yet.
 theorem shiftl_eq_mul_pow (m) : ∀ n, shiftl m n = m * 2 ^ n
   | 0 => (Nat.mul_one _).symm
-  | k + 1 =>
-    show bit0 (shiftl m k) = m * (2 * 2 ^ k) by
-      rw [bit0_val, shiftl_eq_mul_pow, mul_left_comm, mul_comm 2]
+  | k + 1 => by
+    show bit0 (shiftl m k) = m * (2 ^ k * 2)
+    rw [bit0_val, shiftl_eq_mul_pow m k, mul_comm 2, mul_assoc]
 #align nat.shiftl_eq_mul_pow Nat.shiftl_eq_mul_pow
 
+-- porting note: `(a ^ (b + 1))` is now definitionally equal to `a ^ b * a`.
 theorem shiftl'_tt_eq_mul_pow (m) : ∀ n, shiftl' true m n + 1 = (m + 1) * 2 ^ n
   | 0 => by simp [shiftl, shiftl', pow_zero, Nat.one_mul]
   | k + 1 => by
-    change bit1 (shiftl' true m k) + 1 = (m + 1) * (2 * 2 ^ k)
+    change bit1 (shiftl' true m k) + 1 = (m + 1) * (2 ^ k * 2)
     rw [bit1_val]
     change 2 * (shiftl' true m k + 1) = _
-    rw [shiftl'_tt_eq_mul_pow, mul_left_comm, mul_comm 2]
+    rw [shiftl'_tt_eq_mul_pow m k, mul_left_comm, mul_comm 2]
 #align nat.shiftl'_tt_eq_mul_pow Nat.shiftl'_tt_eq_mul_pow
 
 theorem one_shiftl (n) : shiftl 1 n = 2 ^ n :=
@@ -47,8 +54,8 @@ theorem zero_shiftl (n) : shiftl 0 n = 0 :=
 theorem shiftr_eq_div_pow (m) : ∀ n, shiftr m n = m / 2 ^ n
   | 0 => (Nat.div_one _).symm
   | k + 1 =>
-    (congr_arg div2 (shiftr_eq_div_pow k)).trans <| by
-      rw [div2_val, Nat.div_div_eq_div_mul, mul_comm] <;> rfl
+    (congr_arg div2 (shiftr_eq_div_pow m k)).trans <| by
+      rw [div2_val, Nat.div_div_eq_div_mul, Nat.pow_succ]
 #align nat.shiftr_eq_div_pow Nat.shiftr_eq_div_pow
 
 @[simp]
@@ -60,9 +67,9 @@ theorem shiftl'_ne_zero_left (b) {m} (h : m ≠ 0) (n) : shiftl' b m n ≠ 0 := 
   induction n <;> simp [bit_ne_zero, shiftl', *]
 #align nat.shiftl'_ne_zero_left Nat.shiftl'_ne_zero_left
 
-theorem shiftl'_tt_ne_zero (m) : ∀ {n} (h : n ≠ 0), shiftl' true m n ≠ 0
+theorem shiftl'_tt_ne_zero (m) : ∀ {n}, (n ≠ 0) → shiftl' true m n ≠ 0
   | 0, h => absurd rfl h
-  | succ n, _ => Nat.bit1_ne_zero _
+  | succ _, _ => Nat.bit1_ne_zero _
 #align nat.shiftl'_tt_ne_zero Nat.shiftl'_tt_ne_zero
 
 /-! ### `size` -/
@@ -77,7 +84,7 @@ theorem size_bit {b n} (h : bit b n ≠ 0) : size (bit b n) = succ (size n) := b
   rw [size]
   conv =>
     lhs
-    rw [binary_rec]
+    rw [binaryRec]
     simp [h]
   rw [div2_bit]
 #align nat.size_bit Nat.size_bit
@@ -107,7 +114,7 @@ theorem size_shiftl' {b m n} (h : shiftl' b m n ≠ 0) : size (shiftl' b m n) = 
   have : shiftl' true m n + 1 = 1 := congr_arg (· + 1) s0
   rw [shiftl'_tt_eq_mul_pow] at this
   obtain rfl := succ.inj (eq_one_of_dvd_one ⟨_, this.symm⟩)
-  rw [one_mul] at this
+  simp only [zero_add, one_mul] at this
   obtain rfl : n = 0 :=
     Nat.eq_zero_of_le_zero
       (le_of_not_gt fun hn => ne_of_gt (pow_lt_pow_of_lt_right (by decide) hn) this)
@@ -119,6 +126,7 @@ theorem size_shiftl {m} (h : m ≠ 0) (n) : size (shiftl m n) = size m + n :=
   size_shiftl' (shiftl'_ne_zero_left _ h _)
 #align nat.size_shiftl Nat.size_shiftl
 
+-- porting note: `bit_lt_bit0` does not appear to be in any of the files in `Mathlib`
 theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   rw [← one_shiftl]
   have : ∀ {n}, n = 0 → n < shiftl 1 (size n) := by simp
@@ -131,11 +139,12 @@ theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   exact bit_lt_bit0 _ IH
 #align nat.lt_size_self Nat.lt_size_self
 
+-- porting note: `bit0_le_bit` does not appear to be in any of the files in `Mathlib`
 theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
   ⟨fun h => lt_of_lt_of_le (lt_size_self _) (pow_le_pow_of_le_right (by decide) h), by
     rw [← one_shiftl]; revert n
     apply binaryRec _ _ m
-    · intro n h
+    · intro n
       simp
     · intro b m IH n h
       by_cases e : bit b m = 0
@@ -151,11 +160,11 @@ theorem lt_size {m n : ℕ} : m < size n ↔ 2 ^ m ≤ n := by
   rw [← not_lt, Decidable.iff_not_comm, not_lt, size_le]
 #align nat.lt_size Nat.lt_size
 
-theorem size_pos {n : ℕ} : 0 < size n ↔ 0 < n := by rw [lt_size] <;> rfl
+theorem size_pos {n : ℕ} : 0 < size n ↔ 0 < n := by rw [lt_size]; rfl
 #align nat.size_pos Nat.size_pos
 
 theorem size_eq_zero {n : ℕ} : size n = 0 ↔ n = 0 := by
-  have := @size_pos n <;> simp [pos_iff_ne_zero] at this <;> exact Decidable.not_iff_not.1 this
+  have := @size_pos n; simp [pos_iff_ne_zero] at this; exact Decidable.not_iff_not.1 this
 #align nat.size_eq_zero Nat.size_eq_zero
 
 theorem size_pow {n : ℕ} : size (2 ^ n) = n + 1 :=
@@ -173,5 +182,7 @@ theorem size_eq_bits_len (n : ℕ) : n.bits.length = n.size := by
   · simp [ih]
   · simpa [bit_eq_zero_iff]
 #align nat.size_eq_bits_len Nat.size_eq_bits_len
+
+end
 
 end Nat
