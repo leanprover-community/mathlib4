@@ -160,8 +160,7 @@ theorem mem_interᵢ {x : α} {s : ι → Set α} : (x ∈ ⋂ i, s i) ↔ ∀ i
     fun h _ ⟨a, (eq : s a = _)⟩ => eq ▸ h a⟩
 #align set.mem_Inter Set.mem_interᵢ
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem mem_unionᵢ₂ {x : γ} {s : ∀ i, κ i → Set γ} : (x ∈ ⋃ (i) (j), s i j) ↔ ∃ i j, x ∈ s i j := by
+theorem mem_unionᵢ₂ {x : γ} {s : ∀ i, κ i → Set γ} : (x ∈ ⋃ (i j), s i j) ↔ ∃ i j, x ∈ s i j := by
   simp_rw [mem_unionᵢ]
 #align set.mem_Union₂ Set.mem_unionᵢ₂
 
@@ -192,7 +191,7 @@ theorem mem_interᵢ₂_of_mem {s : ∀ i, κ i → Set α} {a : α} (h : ∀ i 
 
 instance : CompleteBooleanAlgebra (Set α) :=
   { instBooleanAlgebraSet with
-    le_supₛ := fun s t t_in a a_in => ⟨t, ⟨t_in, a_in⟩⟩
+    le_supₛ := fun s t t_in a a_in => ⟨t, t_in, a_in⟩
     supₛ_le := fun s t h a ⟨t', ⟨t'_in, a_in⟩⟩ => h t' t'_in a_in
     le_infₛ := fun s t h a a_in t' t'_in => h t' t'_in a_in
     infₛ_le := fun s t t_in a h => h _ t_in
@@ -264,17 +263,17 @@ protected theorem image_preimage : GaloisConnection (image f) (preimage f) := fu
   image_subset_iff
 #align set.image_preimage Set.image_preimage
 
-/-- `kern_image f s` is the set of `y` such that `f ⁻¹ y ⊆ s`. -/
+/-- `kernImage f s` is the set of `y` such that `f ⁻¹ y ⊆ s`. -/
 def kernImage (f : α → β) (s : Set α) : Set β :=
   { y | ∀ ⦃x⦄, f x = y → x ∈ s }
 #align set.kern_image Set.kernImage
 
-protected theorem preimage_kern_image : GaloisConnection (preimage f) (kernImage f) := fun a _ =>
+protected theorem preimage_kernImage : GaloisConnection (preimage f) (kernImage f) := fun a _ =>
   ⟨fun h _ hx y hy =>
     have : f y ∈ a := hy.symm ▸ hx
     h this,
     fun h x (hx : f x ∈ a) => h hx rfl⟩
-#align set.preimage_kern_image Set.preimage_kern_image
+#align set.preimage_kern_image Set.preimage_kernImage
 
 end GaloisConnection
 
@@ -353,7 +352,7 @@ theorem setOf_forall (p : ι → β → Prop) : { x | ∀ i, p i x } = ⋂ i, { 
 #align set.set_of_forall Set.setOf_forall
 
 theorem unionᵢ_subset {s : ι → Set α} {t : Set α} (h : ∀ i, s i ⊆ t) : (⋃ i, s i) ⊆ t :=
-  @supᵢ_le (Set α) _ _ _ _ h
+  supᵢ_le h
 #align set.Union_subset Set.unionᵢ_subset
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
