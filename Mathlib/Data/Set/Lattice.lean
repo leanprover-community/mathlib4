@@ -979,9 +979,6 @@ theorem unionᵢ_nonempty_self (s : Set α) : (⋃ _h : s.Nonempty, s) = s := by
   rw [unionᵢ_nonempty_index, bunionᵢ_self]
 #align set.Union_nonempty_self Set.unionᵢ_nonempty_self
 
--- TODO(Jeremy): here is an artifact of the encoding of bounded intersection:
--- without dsimp, the next theorem fails to type check, because there is a lambda
--- in a type that needs to be contracted. Using simp [eq_of_mem_singleton xa] also works.
 theorem binterᵢ_singleton (a : α) (s : α → Set β) : (⋂ x ∈ ({a} : Set α), s x) = s a :=
   infᵢ_singleton
 #align set.bInter_singleton Set.binterᵢ_singleton
@@ -995,7 +992,6 @@ theorem binterᵢ_insert (a : α) (s : Set α) (t : α → Set β) :
     (⋂ x ∈ insert a s, t x) = t a ∩ ⋂ x ∈ s, t x := by simp
 #align set.bInter_insert Set.binterᵢ_insert
 
--- TODO(Jeremy): another example of where an annotation is needed
 theorem binterᵢ_pair (a b : α) (s : α → Set β) : (⋂ x ∈ ({a, b} : Set α), s x) = s a ∩ s b := by
   rw [binterᵢ_insert, binterᵢ_singleton]
 #align set.bInter_pair Set.binterᵢ_pair
