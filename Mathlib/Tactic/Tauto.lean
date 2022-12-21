@@ -25,57 +25,60 @@ open Qq
 
 initialize registerTraceClass `tauto
 
-/-- Tries to apply de-Morgan-like rules on all hypotheses. Always succeeds,
-regardless of whether any progress was actually made.
+/-- Tries to apply de-Morgan-like rules on a hypothesis. -/
+def distribNotAt (h : LocalDecl) (g : MVarId) : MetaM MVarId := do
+  let e : Q(Prop) ← (do guard (← inferType h.type).isProp; pure h.type)
+  let replace (p : Expr) := g.replace h.fvarId p
+  let result ← match e with
+  | ~q(¬ ($a : Prop) = $b) => do
+    let h' : Q(¬$a = $b) := h.toExpr
+    replace q(mt Iff.to_eq $h')
+  | ~q(($a : Prop) = $b) => do
+    let h' : Q($a = $b) := h.toExpr
+    replace q(Eq.to_iff $h')
+  | ~q(¬ (($a : Prop) ∧ $b)) => do
+    let h' : Q(¬($a ∧ $b)) := h.toExpr
+    let _inst ← synthInstanceQ (q(Decidable $b) : Q(Type))
+    replace q(Decidable.not_and'.mp $h')
+  | ~q(¬ (($a : Prop) ∨ $b)) => do
+    let h' : Q(¬($a ∨ $b)) := h.toExpr
+    replace q(not_or.mp $h')
+  | ~q(¬ (($a : Prop) ≠ $b)) => do
+    let h' : Q(¬($a ≠ $b)) := h.toExpr
+    let _inst ← synthInstanceQ (q(Decidable ($a = $b)) : Q(Type))
+    replace q(Decidable.of_not_not $h')
+  | ~q(¬¬ ($a : Prop)) => do
+    let h' : Q(¬¬$a) := h.toExpr
+    let _inst ← synthInstanceQ (q(Decidable $a) : Q(Type))
+    replace q(Decidable.of_not_not $h')
+  | ~q(¬ ((($a : Prop)) → $b)) => do
+    let h' : Q(¬($a → $b)) := h.toExpr
+    let _inst ← synthInstanceQ (q(Decidable $a) : Q(Type))
+    replace q(Decidable.not_imp.mp $h')
+  | ~q(¬ (($a : Prop) ↔ $b)) => do
+    let h' : Q(¬($a ↔ $b)) := h.toExpr
+    let _inst ← synthInstanceQ (q(Decidable $b) : Q(Type))
+    replace q(Decidable.not_iff.mp $h')
+  | ~q(($a : Prop) ↔ $b) => do
+    let h' : Q($a ↔ $b) := h.toExpr
+    let _inst ← synthInstanceQ (q(Decidable $b) : Q(Type))
+    replace q(Decidable.iff_iff_and_or_not_and_not.mp $h')
+  | ~q((((($a : Prop)) → False) : Prop)) =>
+    throwError "distribNot found nothing to work on with negation"
+  | ~q((((($a : Prop)) → $b) : Prop)) => do
+    let h' : Q($a → $b) := h.toExpr
+    let _inst ← synthInstanceQ (q(Decidable $a) : Q(Type))
+    replace q(Decidable.not_or_of_imp $h')
+  | _ => throwError "distribNot found nothing to work on"
+  pure result.mvarId
+
+/--
+Tries to apply de-Morgan-like rules on all hypotheses.
+Always succeeds, regardless of whether any progress was actually made.
 -/
 def distribNot : TacticM Unit := withMainContext do
-for h in ← getLCtx do
- iterateAtMost 3 $
-  liftMetaTactic fun g => do
-    let e : Q(Prop) ← (do guard (← inferType h.type).isProp; pure h.type)
-    let replace (p : Expr) := g.replace h.fvarId p
-    let result ← match e with
-    | ~q(¬ ($a : Prop) = $b) => do
-      let h' : Q(¬$a = $b) := h.toExpr
-      replace q(mt Iff.to_eq $h')
-    | ~q(($a : Prop) = $b) => do
-      let h' : Q($a = $b) := h.toExpr
-      replace q(Eq.to_iff $h')
-    | ~q(¬ (($a : Prop) ∧ $b)) => do
-      let h' : Q(¬($a ∧ $b)) := h.toExpr
-      let _inst ← synthInstanceQ (q(Decidable $b) : Q(Type))
-      replace q(Decidable.not_and'.mp $h')
-    | ~q(¬ (($a : Prop) ∨ $b)) => do
-      let h' : Q(¬($a ∨ $b)) := h.toExpr
-      replace q(not_or.mp $h')
-    | ~q(¬ (($a : Prop) ≠ $b)) => do
-      let h' : Q(¬($a ≠ $b)) := h.toExpr
-      let _inst ← synthInstanceQ (q(Decidable ($a = $b)) : Q(Type))
-      replace q(Decidable.of_not_not $h')
-    | ~q(¬¬ ($a : Prop)) => do
-      let h' : Q(¬¬$a) := h.toExpr
-      let _inst ← synthInstanceQ (q(Decidable $a) : Q(Type))
-      replace q(Decidable.of_not_not $h')
-    | ~q(¬ ((($a : Prop)) → $b)) => do
-      let h' : Q(¬($a → $b)) := h.toExpr
-      let _inst ← synthInstanceQ (q(Decidable $a) : Q(Type))
-      replace q(Decidable.not_imp.mp $h')
-    | ~q(¬ (($a : Prop) ↔ $b)) => do
-      let h' : Q(¬($a ↔ $b)) := h.toExpr
-      let _inst ← synthInstanceQ (q(Decidable $b) : Q(Type))
-      replace q(Decidable.not_iff.mp $h')
-    | ~q(($a : Prop) ↔ $b) => do
-      let h' : Q($a ↔ $b) := h.toExpr
-      let _inst ← synthInstanceQ (q(Decidable $b) : Q(Type))
-      replace q(Decidable.iff_iff_and_or_not_and_not.mp $h')
-    | ~q((((($a : Prop)) → False) : Prop)) =>
-      throwError "distribNot found nothing to work on with negation"
-    | ~q((((($a : Prop)) → $b) : Prop)) => do
-      let h' : Q($a → $b) := h.toExpr
-      let _inst ← synthInstanceQ (q(Decidable $a) : Q(Type))
-      replace q(Decidable.not_or_of_imp $h')
-    | _ => throwError "distribNot found nothing to work on"
-    pure [result.mvarId]
+  for h in ← getLCtx do
+    iterateAtMost 3 $ liftMetaTactic' (distribNotAt h)
 
 /-- Config for the `tauto` tactic. Currently empty. TODO: add `closer` option. -/
 structure Config

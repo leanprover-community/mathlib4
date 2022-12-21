@@ -93,6 +93,12 @@ end Lean.Meta
 
 namespace Lean.Elab.Tactic
 
+/-- Analogue of `liftMetaTactic` for tactics that return a single goal. -/
+-- I'd prefer to call that `liftMetaTactic1`,
+-- but that is taken in core by a function that lifts a `tac : MVarId → MetaM (Option MVarId)`.
+def liftMetaTactic' (tac : MVarId → MetaM MVarId) : TacticM Unit :=
+  liftMetaTactic fun g => do pure [← tac g]
+
 /-- Analogue of `liftMetaTactic` for tactics that do not return any goals. -/
 def liftMetaFinishingTactic (tac : MVarId → MetaM Unit) : TacticM Unit :=
   liftMetaTactic fun g => do tac g; pure []
