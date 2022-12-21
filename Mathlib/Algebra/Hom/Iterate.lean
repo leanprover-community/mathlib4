@@ -176,14 +176,14 @@ section Monoid
 variable [Monoid G] (a : G) (n : ℕ)
 
 @[simp, to_additive]
-theorem smul_iterate [MulAction G H] : ((· • ·) a : H → H)^[n] = (· • ·) (a ^ n) :=
+theorem smul_iterate [MulAction G H] : (a • · : H → H)^[n] = (a ^ n • ·) :=
   funext fun b =>
-    Nat.recOn n (by dsimp only; rw [iterate_zero, id.def, pow_zero, one_smul G b])
-    fun n ih => by dsimp only; rw [iterate_succ', comp_apply, ih, pow_succ, mul_smul]
+    Nat.recOn n (by rw [iterate_zero, id.def, pow_zero, one_smul])
+    fun n ih => by rw [iterate_succ', comp_apply, ih, pow_succ, mul_smul]
 #align smul_iterate smul_iterate
 
 @[simp, to_additive]
-theorem mul_left_iterate : (· * ·) a^[n] = (· * ·) (a ^ n) :=
+theorem mul_left_iterate : (a * ·)^[n] = (a ^ n * ·) :=
   smul_iterate a n
 #align mul_left_iterate mul_left_iterate
 
@@ -228,13 +228,13 @@ variable [Semigroup G] {a b c : G}
 
 @[to_additive]
 theorem SemiconjBy.function_semiconj_mul_left (h : SemiconjBy a b c) :
-    Function.Semiconj ((· * ·) a) ((· * ·) b) ((· * ·) c) := fun j => by
+    Function.Semiconj (a * ·) (b * ·) (c * ·) := fun j => by
   dsimp only; rw [← mul_assoc, h.eq, mul_assoc]
 #align semiconj_by.function_semiconj_mul_left SemiconjBy.function_semiconj_mul_left
 
 @[to_additive]
 theorem Commute.function_commute_mul_left (h : _root_.Commute a b) :
-    Function.Commute ((· * ·) a) ((· * ·) b) :=
+    Function.Commute (a * ·) (b * ·) :=
   SemiconjBy.function_semiconj_mul_left h
 #align commute.function_commute_mul_left Commute.function_commute_mul_left
 
