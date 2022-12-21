@@ -18,7 +18,7 @@ namespace Nat
 
 /-! ### `shiftl` and `shiftr` -/
 
-
+-- Porting note: `show ... by` has not been implemented yet.
 theorem shiftl_eq_mul_pow (m) : ∀ n, shiftl m n = m * 2 ^ n
   | 0 => (Nat.mul_one _).symm
   | k + 1 =>
@@ -29,9 +29,9 @@ theorem shiftl_eq_mul_pow (m) : ∀ n, shiftl m n = m * 2 ^ n
 theorem shiftl'_tt_eq_mul_pow (m) : ∀ n, shiftl' true m n + 1 = (m + 1) * 2 ^ n
   | 0 => by simp [shiftl, shiftl', pow_zero, Nat.one_mul]
   | k + 1 => by
-    change bit1 (shiftl' tt m k) + 1 = (m + 1) * (2 * 2 ^ k)
+    change bit1 (shiftl' true m k) + 1 = (m + 1) * (2 * 2 ^ k)
     rw [bit1_val]
-    change 2 * (shiftl' tt m k + 1) = _
+    change 2 * (shiftl' true m k + 1) = _
     rw [shiftl'_tt_eq_mul_pow, mul_left_comm, mul_comm 2]
 #align nat.shiftl'_tt_eq_mul_pow Nat.shiftl'_tt_eq_mul_pow
 
@@ -104,7 +104,7 @@ theorem size_shiftl' {b m n} (h : shiftl' b m n ≠ 0) : size (shiftl' b m n) = 
   by_cases s0 : shiftl' b m n = 0 <;> [skip, rw [IH s0]]
   rw [s0] at h⊢
   cases b; · exact absurd rfl h
-  have : shiftl' tt m n + 1 = 1 := congr_arg (· + 1) s0
+  have : shiftl' true m n + 1 = 1 := congr_arg (· + 1) s0
   rw [shiftl'_tt_eq_mul_pow] at this
   obtain rfl := succ.inj (eq_one_of_dvd_one ⟨_, this.symm⟩)
   rw [one_mul] at this
@@ -122,7 +122,7 @@ theorem size_shiftl {m} (h : m ≠ 0) (n) : size (shiftl m n) = size m + n :=
 theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   rw [← one_shiftl]
   have : ∀ {n}, n = 0 → n < shiftl 1 (size n) := by simp
-  apply binary_rec _ _ n
+  apply binaryRec _ _ n
   · apply this rfl
   intro b n IH
   by_cases bit b n = 0
@@ -134,7 +134,7 @@ theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
 theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
   ⟨fun h => lt_of_lt_of_le (lt_size_self _) (pow_le_pow_of_le_right (by decide) h), by
     rw [← one_shiftl]; revert n
-    apply binary_rec _ _ m
+    apply binaryRec _ _ m
     · intro n h
       simp
     · intro b m IH n h
