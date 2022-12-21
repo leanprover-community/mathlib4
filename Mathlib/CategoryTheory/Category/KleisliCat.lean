@@ -30,8 +30,7 @@ namespace CategoryTheory
 
 /-- The Kleisli category on the (type-)monad `m`. Note that the monad is not assumed to be lawful
 yet. -/
--- Porting note: Should this be kept?
--- @[nolint unused_arguments]
+@[nolint unusedArguments]
 def KleisliCat (_ : Type u → Type v) :=
   Type u
 #align category_theory.Kleisli CategoryTheory.KleisliCat
