@@ -8,9 +8,9 @@ Authors: Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Whiskering
-import Mathbin.CategoryTheory.Functor.FullyFaithful
-import Mathbin.CategoryTheory.NaturalIsomorphism
+import Mathlib.CategoryTheory.Whiskering
+import Mathlib.CategoryTheory.Functor.FullyFaithful
+import Mathlib.CategoryTheory.NatIso
 
 /-!
 # Disjoint union of categories
@@ -31,7 +31,7 @@ variable {I : Type w₁} {C : I → Type u₁} [∀ i, Category.{v₁} (C i)]
 `(i, X) ⟶ (j, Y)` if `i = j` is just a morphism `X ⟶ Y`, and if `i ≠ j` there are no such morphisms.
 -/
 inductive SigmaHom : (Σi, C i) → (Σi, C i) → Type max w₁ v₁ u₁
-  | mk : ∀ {i : I} {X Y : C i}, (X ⟶ Y) → sigma_hom ⟨i, X⟩ ⟨i, Y⟩
+  | mk : ∀ {i : I} {X Y : C i}, (X ⟶ Y) → SigmaHom ⟨i, X⟩ ⟨i, Y⟩
 #align category_theory.sigma.sigma_hom CategoryTheory.Sigma.SigmaHom
 
 namespace SigmaHom
@@ -61,10 +61,10 @@ def comp : ∀ {X Y Z : Σi, C i}, SigmaHom X Y → SigmaHom Y Z → SigmaHom X 
   | _, _, _, mk f, mk g => mk (f ≫ g)
 #align category_theory.sigma.sigma_hom.comp CategoryTheory.Sigma.SigmaHom.comp
 
-instance : CategoryStruct (Σi, C i) where 
+instance : CategoryStruct (Σi, C i) where
   Hom := SigmaHom
   id := id
-  comp X Y Z f g := comp f g
+  comp f g := comp f g
 
 @[simp]
 theorem comp_def (i : I) (X Y Z : C i) (f : X ⟶ Y) (g : Y ⟶ Z) : comp (mk f) (mk g) = mk (f ≫ g) :=
@@ -72,21 +72,21 @@ theorem comp_def (i : I) (X Y Z : C i) (f : X ⟶ Y) (g : Y ⟶ Z) : comp (mk f)
 #align category_theory.sigma.sigma_hom.comp_def CategoryTheory.Sigma.SigmaHom.comp_def
 
 theorem assoc : ∀ (X Y Z W : Σi, C i) (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ W), (f ≫ g) ≫ h = f ≫ g ≫ h
-  | _, _, _, _, mk f, mk g, mk h => congr_arg mk (Category.assoc _ _ _)
+  | _, _, _, _, mk _, mk _, mk _ => congr_arg mk (Category.assoc _ _ _)
 #align category_theory.sigma.sigma_hom.assoc CategoryTheory.Sigma.SigmaHom.assoc
 
 theorem id_comp : ∀ (X Y : Σi, C i) (f : X ⟶ Y), 𝟙 X ≫ f = f
-  | _, _, mk f => congr_arg mk (Category.id_comp _)
+  | _, _, mk _ => congr_arg mk (Category.id_comp _)
 #align category_theory.sigma.sigma_hom.id_comp CategoryTheory.Sigma.SigmaHom.id_comp
 
 theorem comp_id : ∀ (X Y : Σi, C i) (f : X ⟶ Y), f ≫ 𝟙 Y = f
-  | _, _, mk f => congr_arg mk (Category.comp_id _)
+  | _, _, mk _ => congr_arg mk (Category.comp_id _)
 #align category_theory.sigma.sigma_hom.comp_id CategoryTheory.Sigma.SigmaHom.comp_id
 
 end SigmaHom
 
 instance sigma : Category (Σi,
-        C i) where 
+        C i) where
   id_comp' := SigmaHom.id_comp
   comp_id' := SigmaHom.comp_id
   assoc' := SigmaHom.assoc
@@ -94,7 +94,7 @@ instance sigma : Category (Σi,
 
 /-- The inclusion functor into the disjoint union of categories. -/
 @[simps map]
-def incl (i : I) : C i ⥤ Σi, C i where 
+def incl (i : I) : C i ⥤ Σi, C i where
   obj X := ⟨i, X⟩
   map X Y := SigmaHom.mk
 #align category_theory.sigma.incl CategoryTheory.Sigma.incl
@@ -106,9 +106,9 @@ theorem incl_obj {i : I} (X : C i) : (incl i).obj X = ⟨i, X⟩ :=
 
 instance (i : I) :
     Full (incl i : C i ⥤ Σi,
-            C i) where 
-  preimage := fun X Y ⟨f⟩ => f
-  witness' := fun X Y ⟨f⟩ => rfl
+            C i) where
+  preimage' := fun ⟨f⟩ => f
+  witness := fun f => rfl
 
 instance (i : I) : Faithful (incl i : C i ⥤ Σi, C i) where
 
@@ -121,9 +121,9 @@ To build a natural transformation over the sigma category, it suffices to specif
 each subcategory.
 -/
 def natTrans {F G : (Σi, C i) ⥤ D} (h : ∀ i : I, incl i ⋙ F ⟶ incl i ⋙ G) :
-    F ⟶ G where 
+    F ⟶ G where
   app := fun ⟨j, X⟩ => (h j).app X
-  naturality' := by 
+  naturality' := by
     rintro ⟨j, X⟩ ⟨_, _⟩ ⟨f⟩
     apply (h j).naturality
 #align category_theory.sigma.nat_trans CategoryTheory.Sigma.natTrans
@@ -142,7 +142,7 @@ but is expected to have type
 Case conversion may be inaccurate. Consider using '#align category_theory.sigma.desc_map CategoryTheory.Sigma.descMapₓ'. -/
 /-- (Implementation). An auxiliary definition to build the functor `desc`. -/
 def descMap : ∀ X Y : Σi, C i, (X ⟶ Y) → ((F X.1).obj X.2 ⟶ (F Y.1).obj Y.2)
-  | _, _, sigma_hom.mk g => (F _).map g
+  | _, _, SigmaHom.mk g => (F _).map g
 #align category_theory.sigma.desc_map CategoryTheory.Sigma.descMap
 
 /-- Given a collection of functors `F i : C i ⥤ D`, we can produce a functor `(Σ i, C i) ⥤ D`.
@@ -154,13 +154,13 @@ this property.
 This witnesses that the sigma-type is the coproduct in Cat.
 -/
 @[simps obj]
-def desc : (Σi, C i) ⥤ D where 
+def desc : (Σi, C i) ⥤ D where
   obj X := (F X.1).obj X.2
   map X Y g := descMap F X Y g
-  map_id' := by 
+  map_id' := by
     rintro ⟨i, X⟩
     apply (F i).map_id
-  map_comp' := by 
+  map_comp' := by
     rintro ⟨i, X⟩ ⟨_, Y⟩ ⟨_, Z⟩ ⟨f⟩ ⟨g⟩
     apply (F i).map_comp
 #align category_theory.sigma.desc CategoryTheory.Sigma.desc
@@ -214,7 +214,7 @@ If `q₁` and `q₂` when restricted to each subcategory `C i` agree, then `q₁
 -/
 @[simps]
 def natIso {q₁ q₂ : (Σi, C i) ⥤ D} (h : ∀ i, incl i ⋙ q₁ ≅ incl i ⋙ q₂) :
-    q₁ ≅ q₂ where 
+    q₁ ≅ q₂ where
   Hom := natTrans fun i => (h i).Hom
   inv := natTrans fun i => (h i).inv
 #align category_theory.sigma.nat_iso CategoryTheory.Sigma.natIso
@@ -269,7 +269,7 @@ end
 
 namespace Functor
 
-variable {C}
+--variable {C}
 
 variable {D : I → Type u₁} [∀ i, Category.{v₁} (D i)]
 
@@ -283,7 +283,7 @@ end Functor
 
 namespace NatTrans
 
-variable {C}
+--variable {C}
 
 variable {D : I → Type u₁} [∀ i, Category.{v₁} (D i)]
 
@@ -293,17 +293,16 @@ variable {F G : ∀ i, C i ⥤ D i}
 -/
 def sigma (α : ∀ i, F i ⟶ G i) :
     Functor.sigma F ⟶
-      Functor.sigma G where 
+      Functor.sigma G where
   app f := SigmaHom.mk ((α f.1).app _)
-  naturality' := by 
+  naturality' := by
     rintro ⟨i, X⟩ ⟨_, _⟩ ⟨f⟩
     change sigma_hom.mk _ = sigma_hom.mk _
     rw [(α i).naturality]
-#align category_theory.sigma.nat_trans.sigma CategoryTheory.Sigma.natTrans.sigma
+#align category_theory.sigma.nat_trans.sigma CategoryTheory.Sigma.NatTrans.sigma
 
 end NatTrans
 
 end Sigma
 
 end CategoryTheory
-
