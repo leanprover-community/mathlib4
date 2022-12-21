@@ -3359,22 +3359,27 @@ theorem attach_eq_nil (l : List α) : l.attach = [] ↔ l = [] :=
   pmap_eq_nil
 #align list.attach_eq_nil List.attach_eq_nil
 
-theorem last_pmap {α β : Type _} (p : α → Prop) (f : ∀ a, p a → β) (l : List α) (hl₁ : ∀ a ∈ l, p a)
+theorem getLast_pmap {α β : Type _} (p : α → Prop) (f : ∀ a, p a → β) (l : List α) (hl₁ : ∀ a ∈ l, p a)
     (hl₂ : l ≠ []) :
-    (l.pmap f hl₁).last (mt List.pmap_eq_nil.1 hl₂) = f (l.last hl₂) (hl₁ _ (List.last_mem hl₂)) :=
+    (l.pmap f hl₁).getLast (mt List.pmap_eq_nil.1 hl₂) =
+      f (l.getLast hl₂) (hl₁ _ (List.getLast_mem hl₂)) :=
   by
   induction' l with l_hd l_tl l_ih
   · apply (hl₂ rfl).elim
-  · cases l_tl
-    · simp
-    · apply l_ih
-#align list.last_pmap List.last_pmap
+  · by_cases hl_tl : l_tl = []
+    · simp [hl_tl]
+    · simp only [pmap]
+      rw [getLast_cons, l_ih _ hl_tl]
+      simp only [getLast_cons hl_tl]
+#align list.last_pmap List.getLast_pmap
 
 theorem nth_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : ∀ a ∈ l, p a) (n : ℕ) :
-    nth (pmap f l h) n = Option.pmap f (nth l n) fun x H => h x (nth_mem H) := by
+    get? (pmap f l h) n = Option.pmap f (get? l n) fun x H => h x (get?_mem H) := by
   induction' l with hd tl hl generalizing n
   · simp
-  · cases n <;> simp [hl]
+  · cases' n with n
+    . simp
+    . simp only [hl]
 #align list.nth_pmap List.nth_pmap
 
 theorem get_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : ∀ a ∈ l, p a) {n : ℕ}
