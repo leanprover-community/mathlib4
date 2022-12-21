@@ -214,6 +214,7 @@ import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Nat.Cast.Prod
 import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Data.Nat.Choose.Bounds
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Gcd.Basic
