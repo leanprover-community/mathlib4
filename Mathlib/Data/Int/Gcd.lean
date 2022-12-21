@@ -97,7 +97,7 @@ theorem gcdA_zero_right {s : ℕ} (h : s ≠ 0) : gcdA s 0 = 1 := by
   unfold gcdA xgcd
   induction s
   · exact absurd rfl h
-  · simp [xgcdAux]
+  · simp [xgcdAux_succ]
 #align nat.gcd_a_zero_right Nat.gcdA_zero_right
 
 @[simp]
@@ -105,7 +105,7 @@ theorem gcdB_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by
   unfold gcdB xgcd
   induction s
   · exact absurd rfl h
-  · simp [xgcdAux]
+  · simp [xgcdAux_succ]
 #align nat.gcd_b_zero_right Nat.gcdB_zero_right
 
 @[simp]
