@@ -8,7 +8,6 @@ Authors: Simon Hudon, Patrick Massot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
---import Mathlib.Tactic.PiInstances
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Hom.Ring
 
@@ -18,6 +17,7 @@ import Mathlib.Algebra.Hom.Ring
 This file defines instances for ring, semiring and related structures on Pi Types
 -/
 
+-- Porting notes: used to import `tactic.pi_instances`
 
 namespace Pi
 
@@ -63,6 +63,11 @@ instance semiring [∀ i, Semiring <| f i] : Semiring (∀ i : I, f i) :=
 instance nonUnitalCommSemiring [∀ i, NonUnitalCommSemiring <| f i] :
     NonUnitalCommSemiring (∀ i : I, f i) :=
   { Pi.nonUnitalSemiring, Pi.commSemigroup with }
+-- Porting note: used `refine_struct` and `p Ring α, CommMonoidi_instance_derive_field`
+#align pi.non_unital_comm_semiring Pi.nonUnitalCommSemiring
+
+instance commSemiring [∀ i, CommSemiring <| f i] : CommSemiring (∀ i : I, f i) :=
+  { Pi.semiring, Pi.commMonoid with }
 -- Porting note: used `refine_struct` and `p Ring α, CommMonoidi_instance_derive_field`
 #align pi.comm_semiring Pi.commSemiring
 
