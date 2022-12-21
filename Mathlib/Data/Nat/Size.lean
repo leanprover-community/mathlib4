@@ -10,6 +10,8 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Bits
+-- porting note: This is to bring `bit_le_bit0` and other declarations into scope.
+import Mathlib.Data.Nat.Order.Basic
 
 /-! Lemmas about `size`. -/
 
