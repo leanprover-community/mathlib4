@@ -31,42 +31,42 @@ namespace PNat
 @[simp]
 theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
   rw [natPred, add_tsub_cancel_iff_le.mpr <| show 1 ≤ (n : ℕ) from n.2]
-#align pnat.one_add_natPred PNat.one_add_natPred
+#align pnat.one_add_nat_pred PNat.one_add_natPred
 
 @[simp]
 theorem natPred_add_one (n : ℕ+) : n.natPred + 1 = n :=
   (add_comm _ _).trans n.one_add_natPred
-#align pnat.natPred_add_one PNat.natPred_add_one
+#align pnat.nat_pred_add_one PNat.natPred_add_one
 
 -- Porting note: not implemented yet.
 -- @[mono]
 theorem natPred_strictMono : StrictMono natPred := fun m _ h => Nat.pred_lt_pred m.2.ne' h
-#align pnat.natPred_strictMono PNat.natPred_strictMono
+#align pnat.nat_pred_strictMono PNat.natPred_strictMono
 
  -- Porting note: not implemented yet.
 -- @[mono]
 theorem natPred_monotone : Monotone natPred :=
   natPred_strictMono.monotone
-#align pnat.natPred_monotone PNat.natPred_monotone
+#align pnat.nat_pred_monotone PNat.natPred_monotone
 
 theorem natPred_injective : Function.Injective natPred :=
   natPred_strictMono.injective
-#align pnat.natPred_injective PNat.natPred_injective
+#align pnat.nat_pred_injective PNat.natPred_injective
 
 @[simp]
 theorem natPred_lt_natPred {m n : ℕ+} : m.natPred < n.natPred ↔ m < n :=
   natPred_strictMono.lt_iff_lt
-#align pnat.natPred_lt_natPred PNat.natPred_lt_natPred
+#align pnat.nat_pred_lt_nat_pred PNat.natPred_lt_natPred
 
 @[simp]
 theorem natPred_le_natPred {m n : ℕ+} : m.natPred ≤ n.natPred ↔ m ≤ n :=
   natPred_strictMono.le_iff_le
-#align pnat.natPred_le_natPred PNat.natPred_le_natPred
+#align pnat.nat_pred_le_nat_pred PNat.natPred_le_natPred
 
 @[simp]
 theorem natPred_inj {m n : ℕ+} : m.natPred = n.natPred ↔ m = n :=
   natPred_injective.eq_iff
-#align pnat.natPred_inj PNat.natPred_inj
+#align pnat.nat_pred_inj PNat.natPred_inj
 
 end PNat
 
@@ -75,32 +75,32 @@ namespace Nat
 -- Porting note: not implemented yet.
 -- @[mono]
 theorem succPNat_strictMono : StrictMono succPNat := fun _ _ => Nat.succ_lt_succ
-#align nat.succPNat_strictMono Nat.succPNat_strictMono
+#align nat.succ_pnat_strict_mono Nat.succPNat_strictMono
 
 -- Porting note: not implemented yet.
 -- @[mono]
 theorem succPNat_mono : Monotone succPNat :=
   succPNat_strictMono.monotone
-#align nat.succPNat_mono Nat.succPNat_mono
+#align nat.succ_pnat_mono Nat.succPNat_mono
 
 @[simp]
 theorem succPNat_lt_succPNat {m n : ℕ} : m.succPNat < n.succPNat ↔ m < n :=
   succPNat_strictMono.lt_iff_lt
-#align nat.succPNat_lt_succPNat Nat.succPNat_lt_succPNat
+#align nat.succ_pnat_lt_succ_pnat Nat.succPNat_lt_succPNat
 
 @[simp]
 theorem succPNat_le_succPNat {m n : ℕ} : m.succPNat ≤ n.succPNat ↔ m ≤ n :=
   succPNat_strictMono.le_iff_le
-#align nat.succPNat_le_succPNat Nat.succPNat_le_succPNat
+#align nat.succ_pnat_le_succ_pnat Nat.succPNat_le_succPNat
 
 theorem succPNat_injective : Function.Injective succPNat :=
   succPNat_strictMono.injective
-#align nat.succPNat_injective Nat.succPNat_injective
+#align nat.succ_pnat_injective Nat.succPNat_injective
 
 @[simp]
 theorem succPNat_inj {n m : ℕ} : succPNat n = succPNat m ↔ n = m :=
   succPNat_injective.eq_iff
-#align nat.succPNat_inj Nat.succPNat_inj
+#align nat.succ_pnat_inj Nat.succPNat_inj
 
 end Nat
 
