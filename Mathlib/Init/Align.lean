@@ -102,7 +102,6 @@ set_option align.precheck false in #align mk_array mkArray'
 #align list.erase List.eraseₓ
 #align list.bag_inter List.bagInterₓ
 #align list.diff List.diffₓ
-#align list.head List.headₓ
 #align list.filter List.filterₓ
 #align list.partition List.partitionₓ
 #align list.drop_while List.dropWhileₓ
