@@ -391,7 +391,7 @@ theorem pow_dvd_pow_iff {m n : ℤ} {k : ℕ} (k0 : 0 < k) : m ^ k ∣ n ^ k ↔
   refine' ⟨fun h => _, fun h => pow_dvd_pow_of_dvd h _⟩
   apply natAbs_dvd_natAbs.mp
   apply (Nat.pow_dvd_pow_iff k0).mp
-  rw [← Int.nat_abs_pow, ← Int.nat_abs_pow]
+  rw [← Int.natAbs_pow, ← Int.natAbs_pow]
   exact Int.natAbs_dvd_natAbs.mpr h
 #align int.pow_dvd_pow_iff Int.pow_dvd_pow_iff
 
@@ -510,7 +510,7 @@ end Int
 theorem pow_gcd_eq_one {M : Type _} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 1) (hn : x ^ n = 1) :
     x ^ m.gcd n = 1 := by
   rcases m with (rfl | m); · simp [hn]
-  obtain ⟨y, rfl⟩ := is_unit_of_pow_eq_one hm m.succ_ne_zero
+  obtain ⟨y, rfl⟩ := isUnit_ofPowEqOne hm m.succ_ne_zero
   simp only [← Units.val_pow_eq_pow_val] at *
   rw [← Units.val_one, ← zpow_coe_nat, ← Units.ext_iff] at *
   simp only [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, hm, hn, one_zpow, one_mul]
