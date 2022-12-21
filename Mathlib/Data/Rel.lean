@@ -19,19 +19,19 @@ Relations are also known as set-valued functions, or partial multifunctions.
 
 ## Main declarations
 
-* `rel α β`: Relation between `α` and `β`.
-* `rel.inv`: `r.inv` is the `rel β α` obtained by swapping the arguments of `r`.
-* `rel.dom`: Domain of a relation. `x ∈ r.dom` iff there exists `y` such that `r x y`.
-* `rel.codom`: Codomain, aka range, of a relation. `y ∈ r.codom` iff there exists `x` such that
+* `Rel α β`: Relation between `α` and `β`.
+* `Rel.inv`: `r.inv` is the `rel β α` obtained by swapping the arguments of `r`.
+* `Rel.dom`: Domain of a relation. `x ∈ r.dom` iff there exists `y` such that `r x y`.
+* `Rel.codom`: Codomain, aka range, of a relation. `y ∈ r.codom` iff there exists `x` such that
   `r x y`.
-* `rel.comp`: Relation composition. Note that the arguments order follows the `category_theory/`
+* `Rel.comp`: Relation composition. Note that the arguments order follows the `category_theory/`
   one, so `r.comp s x z ↔ ∃ y, r x y ∧ s y z`.
-* `rel.image`: Image of a set under a relation. `r.image s` is the set of `f x` over all `x ∈ s`.
-* `rel.preimage`: Preimage of a set under a relation. Note that `r.preimage = r.inv.image`.
-* `rel.core`: Core of a set. For `s : set β`, `r.core s` is the set of `x : α` such that all `y`
+* `Rel.image`: Image of a set under a relation. `r.image s` is the set of `f x` over all `x ∈ s`.
+* `Rel.preimage`: Preimage of a set under a relation. Note that `r.preimage = r.inv.image`.
+* `Rel.core`: Core of a set. For `s : set β`, `r.core s` is the set of `x : α` such that all `y`
   related to `x` are in `s`.
-* `rel.restrict_domain`: Domain-restriction of a relation to a subtype.
-* `function.graph`: Graph of a function as a relation.
+* `Rel.restrict_domain`: Domain-restriction of a relation to a subtype.
+* `Function.graph`: Graph of a function as a relation.
 -/
 
 
@@ -101,9 +101,8 @@ local infixr:0 " • " => Rel.comp
 
 theorem comp_assoc (r : Rel α β) (s : Rel β γ) (t : Rel γ δ) : ((r • s) • t) = (r • s • t) := by
   unfold comp; ext (x w); constructor
-  · rintro ⟨z, ⟨y, rxy, syz⟩, tzw⟩
-    exact ⟨y, rxy, z, syz, tzw⟩
-  rintro ⟨y, rxy, z, syz, tzw⟩; exact ⟨z, ⟨y, rxy, syz⟩, tzw⟩
+  · rintro ⟨z, ⟨y, rxy, syz⟩, tzw⟩; exact ⟨y, rxy, z, syz, tzw⟩
+  · rintro ⟨y, rxy, z, syz, tzw⟩; exact ⟨z, ⟨y, rxy, syz⟩, tzw⟩
 #align rel.comp_assoc Rel.comp_assoc
 
 @[simp]
@@ -166,9 +165,8 @@ theorem image_id (s : Set α) : image (@Eq α) s = s := by
 
 theorem image_comp (s : Rel β γ) (t : Set α) : image (r • s) t = image s (image r t) := by
   ext z; simp only [mem_image]; constructor
-  · rintro ⟨x, xt, y, rxy, syz⟩
-    exact ⟨y, ⟨x, xt, rxy⟩, syz⟩
-  rintro ⟨y, ⟨x, xt, rxy⟩, syz⟩; exact ⟨x, xt, y, rxy, syz⟩
+  · rintro ⟨x, xt, y, rxy, syz⟩; exact ⟨y, ⟨x, xt, rxy⟩, syz⟩
+  · rintro ⟨y, ⟨x, xt, rxy⟩, syz⟩; exact ⟨x, xt, y, rxy, syz⟩
 #align rel.image_comp Rel.image_comp
 
 theorem image_univ : r.image Set.univ = r.codom := by
