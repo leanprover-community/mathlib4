@@ -10,7 +10,6 @@ Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Size
-import Mathlib.Tactic.Linarith
 
 /-!
 # Square root of natural numbers
@@ -146,7 +145,8 @@ private lemma iter_fp_bound (n k : ℕ):
       case neg => simp [if_neg h, Nat.le_of_not_lt h]
 
 lemma am_gm_lemma (a b: ℤ) : 0 ≤ (a + b) * (a + b) - 4 * a * b := by
-  linarith [sq_nonneg (a - b)]
+  sorry
+  -- linarith [sq_nonneg (a - b)]
 
 lemma nat_am_gm (a b : ℕ) : 0 ≤ (a + b) * (a + b) - 4 * a * b := by
   apply cast_nonneg
@@ -167,7 +167,7 @@ protected lemma div_mul_div_le (a b c d : ℕ) :
   have hbd : b * d ≠ 0 := mul_ne_zero hb hd
   rw [le_div_iff_mul_le (pos_iff_ne_zero.2 hbd)]
   transitivity ((a / b) * b) * ((c / d) * d)
-  · apply le_of_eq; ring
+  · apply le_of_eq; simp only [mul_assoc, mul_left_comm]
   · apply Nat.mul_le_mul <;> apply div_mul_le_self
 
 lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess ≤ n := by
