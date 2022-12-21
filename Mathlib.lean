@@ -271,7 +271,7 @@ import Mathlib.Data.UInt
 import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
 import Mathlib.Data.Vector
-import Mathlib.Dynamics.Basic
+import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.Opposite
@@ -437,6 +437,7 @@ import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.PermuteGoals
+import Mathlib.Tactic.Polyrith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Positivity.Core
