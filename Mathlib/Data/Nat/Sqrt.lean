@@ -10,6 +10,7 @@ Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Size
+import Mathlib.Tactic.Linarith
 
 /-!
 # Square root of natural numbers
@@ -150,6 +151,14 @@ private lemma iter_fp_bound (n k : ℕ):
         simp [if_neg h]
         simp [Nat.not_le_of_gt] at h
         assumption
+
+lemma am_gm_lemma (a b: ℤ) : 4 * a * b ≤ (a + b)^2 := by
+  let h := sq_nonneg (a - b)
+  simp [sq, mul_add, add_mul]
+  simp [sq, mul_sub, sub_mul] at h
+  linarith
+
+
 lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess ≤ n := by
   unfold sqrt.iter
   let next := (guess + n / guess) / 2
