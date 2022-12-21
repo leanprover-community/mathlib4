@@ -2,6 +2,11 @@ import Lean.Data.HashMap
 
 open System
 
+def LIBDIR : FilePath :=
+  "build" / "lib"
+
+def URL : String := "https://foo"
+
 partial def getLeanFilePaths (fp : FilePath) (acc : Array FilePath := #[]) :
     IO $ Array FilePath := do
   if ← fp.isDir then
@@ -25,6 +30,13 @@ def getFileImports (content : String) : List FilePath :=
     line ++ ".lean"
   imports.map FilePath.mk
 
+def getRootHash : IO UInt64 :=
+  return hash [
+    ← IO.FS.readFile ⟨"lakefile.lean"⟩,
+    ← IO.FS.readFile ⟨"lean-toolchain"⟩,
+    ← IO.FS.readFile ⟨"lake-manifest.json"⟩
+  ]
+
 /-- We store the root hash as a reader and cache the hash of each file for faster lookup -/
 abbrev HashM := ReaderT UInt64 $ StateT (Lean.HashMap FilePath UInt64) IO
 
@@ -33,27 +45,30 @@ partial def getFileHash (filePath : FilePath) : HashM UInt64 := do
   | some hash => pure hash
   | none =>
     let content ← IO.FS.readFile filePath
-    let imports := getFileImports content
-    let importHashes ← imports.mapM getFileHash
+    let importHashes ← (getFileImports content).mapM getFileHash
     let fileHash := hash $ (← read) :: content.hash :: importHashes
-    modifyGet fun hashMap => (fileHash, hashMap.insert filePath fileHash)
+    modifyGet (fileHash, ·.insert filePath fileHash)
 
 def cacheHashes : HashM Unit := do
   let leanFilePaths ← getLeanFilePaths ⟨"Mathlib"⟩
   leanFilePaths.forM (discard $ getFileHash ·)
 
-def getRootHash : IO UInt64 :=
-  return hash [
-    ← IO.FS.readFile ⟨"lakefile.lean"⟩,
-    ← IO.FS.readFile ⟨"lean-toolchain"⟩,
-    ← IO.FS.readFile ⟨"lake-manifest.json"⟩
-  ]
-
 def getHashes : IO $ Lean.HashMap FilePath UInt64 :=
   return (← StateT.run (ReaderT.run cacheHashes (← getRootHash)) default).2
 
-def libDir : FilePath :=
-  "build" / "lib"
+inductive BuiltFileKind
+  | olean | ilean | trace
 
-def oLeanFilePath (leanFilePath : FilePath) : FilePath :=
-  libDir / leanFilePath.withExtension "olean"
+def BuiltFileKind.extension : BuiltFileKind → String
+  | .olean => "olean"
+  | .ilean => "ilean"
+  | .trace => "trace"
+
+def builtFilePath (leanFilePath : FilePath) (kind : BuiltFileKind) : FilePath :=
+  LIBDIR / leanFilePath.withExtension kind.extension
+
+def builtFileKinds : List BuiltFileKind :=
+  [.olean, .ilean, .trace]
+
+def cachedBuiltFileURL (hash : UInt64) (kind : BuiltFileKind) : String :=
+  s!"{URL}/{hash}.{kind.extension}"
