@@ -39,25 +39,25 @@ def IsSMulRegular [SMul R M] (c : R) :=
   Function.Injective ((c • ·) : M → M)
 #align is_smul_regular IsSMulRegular
 
-theorem IsLeftRegular.is_smul_regular [Mul R] {c : R} (h : IsLeftRegular c) : IsSMulRegular R c :=
+theorem IsLeftRegular.isSMulRegular [Mul R] {c : R} (h : IsLeftRegular c) : IsSMulRegular R c :=
   h
-#align is_left_regular.is_smul_regular IsLeftRegular.is_smul_regular
+#align is_left_regular.is_smul_regular IsLeftRegular.isSMulRegular
 
 /-- Left-regular multiplication on `R` is equivalent to `R`-regularity of `R` itself. -/
-theorem is_left_regular_iff [Mul R] {a : R} : IsLeftRegular a ↔ IsSMulRegular R a :=
+theorem isLeftRegular_iff [Mul R] {a : R} : IsLeftRegular a ↔ IsSMulRegular R a :=
   Iff.rfl
-#align is_left_regular_iff is_left_regular_iff
+#align is_left_regular_iff isLeftRegular_iff
 
-theorem IsRightRegular.is_smul_regular [Mul R] {c : R} (h : IsRightRegular c) :
+theorem IsRightRegular.isSMulRegular [Mul R] {c : R} (h : IsRightRegular c) :
     IsSMulRegular R (MulOpposite.op c) :=
   h
-#align is_right_regular.is_smul_regular IsRightRegular.is_smul_regular
+#align is_right_regular.is_smul_regular IsRightRegular.isSMulRegular
 
 /-- Right-regular multiplication on `R` is equivalent to `Rᵐᵒᵖ`-regularity of `R` itself. -/
-theorem is_right_regular_iff [Mul R] {a : R} :
+theorem isRightRegular_iff [Mul R] {a : R} :
     IsRightRegular a ↔ IsSMulRegular R (MulOpposite.op a) :=
   Iff.rfl
-#align is_right_regular_iff is_right_regular_iff
+#align is_right_regular_iff isRightRegular_iff
 
 namespace IsSMulRegular
 
@@ -90,14 +90,14 @@ theorem smul_iff (b : S) (ha : IsSMulRegular M a) : IsSMulRegular M (a • b) �
   ⟨of_smul _, ha.smul⟩
 #align is_smul_regular.smul_iff IsSMulRegular.smul_iff
 
-theorem is_left_regular [Mul R] {a : R} (h : IsSMulRegular R a) : IsLeftRegular a :=
+theorem isLeftRegular [Mul R] {a : R} (h : IsSMulRegular R a) : IsLeftRegular a :=
   h
-#align is_smul_regular.is_left_regular IsSMulRegular.is_left_regular
+#align is_smul_regular.is_left_regular IsSMulRegular.isLeftRegular
 
-theorem is_right_regular [Mul R] {a : R} (h : IsSMulRegular R (MulOpposite.op a)) :
+theorem isRightRegular [Mul R] {a : R} (h : IsSMulRegular R (MulOpposite.op a)) :
     IsRightRegular a :=
   h
-#align is_smul_regular.is_right_regular IsSMulRegular.is_right_regular
+#align is_smul_regular.is_right_regular IsSMulRegular.isRightRegular
 
 theorem mul [Mul R] [IsScalarTower R R M] (ra : IsSMulRegular M a) (rb : IsSMulRegular M b) :
     IsSMulRegular M (a * b) :=
@@ -239,10 +239,10 @@ variable {G : Type _} [Group G]
 
 /-- An element of a group acting on a Type is regular. This relies on the availability
 of the inverse given by groups, since there is no `left_cancel_smul` typeclass. -/
-theorem is_smul_regular_of_group [MulAction G R] (g : G) : IsSMulRegular R g := by
+theorem isSMulRegular_of_group [MulAction G R] (g : G) : IsSMulRegular R g := by
   intro x y h
   convert congr_arg ((· • ·) g⁻¹) h using 1 <;> simp [← smul_assoc]
-#align is_smul_regular_of_group is_smul_regular_of_group
+#align is_smul_regular_of_group isSMulRegular_of_group
 
 end Group
 
@@ -251,14 +251,14 @@ section Units
 variable [Monoid R] [MulAction R M]
 
 /-- Any element in `Rˣ` is `M`-regular. -/
-theorem Units.is_smul_regular (a : Rˣ) : IsSMulRegular M (a : R) :=
+theorem Units.isSMulRegular (a : Rˣ) : IsSMulRegular M (a : R) :=
   IsSMulRegular.of_mul_eq_one a.inv_val
-#align units.is_smul_regular Units.is_smul_regular
+#align units.is_smul_regular Units.isSMulRegular
 
 /-- A unit is `M`-regular. -/
-theorem IsUnit.is_smul_regular (ua : IsUnit a) : IsSMulRegular M a := by
+theorem IsUnit.isSMulRegular (ua : IsUnit a) : IsSMulRegular M a := by
   rcases ua with ⟨a, rfl⟩
-  exact a.is_smul_regular M
-#align is_unit.is_smul_regular IsUnit.is_smul_regular
+  exact a.isSMulRegular M
+#align is_unit.is_smul_regular IsUnit.isSMulRegular
 
 end Units
