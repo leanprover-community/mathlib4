@@ -461,9 +461,6 @@ def correspondence (r : Setoid α) : { s // r ≤ s } ≃o Setoid (Quotient r) w
     · intro h x y hs
       let ⟨a, b, hx, hy, Hs⟩ := hs
       exact ⟨a, b, hx, hy, h Hs⟩
-
-
-
 #align setoid.correspondence Setoid.correspondence
 
 end Setoid
