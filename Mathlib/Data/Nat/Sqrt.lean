@@ -8,8 +8,8 @@ Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Int.Order.Basic
-import Mathbin.Data.Nat.Size
+import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Nat.Size
 
 /-!
 # Square root of natural numbers
@@ -291,7 +291,7 @@ theorem succ_le_succ_sqrt' (n : ℕ) : n + 1 ≤ (sqrt n + 1) ^ 2 :=
 
 /-- There are no perfect squares strictly between m² and (m+1)² -/
 theorem not_exists_sq {n m : ℕ} (hl : m * m < n) (hr : n < (m + 1) * (m + 1)) : ¬∃ t, t * t = n :=
-  by 
+  by
   rintro ⟨t, rfl⟩
   have h1 : m < t := nat.mul_self_lt_mul_self_iff.mpr hl
   have h2 : t < m + 1 := nat.mul_self_lt_mul_self_iff.mpr hr
@@ -304,4 +304,3 @@ theorem not_exists_sq' {n m : ℕ} (hl : m ^ 2 < n) (hr : n < (m + 1) ^ 2) : ¬�
 #align nat.not_exists_sq' Nat.not_exists_sq'
 
 end Nat
-
