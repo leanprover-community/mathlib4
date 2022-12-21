@@ -68,8 +68,9 @@ theorem rat_mul_continuous_lemma {ε K₁ K₂ : α} (ε0 : 0 < ε) :
     add_lt_add (mul_lt_mul' (le_of_lt h₁) hb₂ (abv_nonneg _) εK)
       (mul_lt_mul' (le_of_lt h₂) ha₁ (abv_nonneg _) εK)
   rw [← abv_mul, mul_comm, div_mul_cancel _ (ne_of_gt K0), ← abv_mul, add_halves] at this
-  simpa [mul_add, add_mul, sub_eq_add_neg, add_comm, add_left_comm] using
-    lt_of_le_of_lt (abv_add _ _) this
+  sorry
+  /-simpa [mul_add, add_mul, sub_eq_add_neg, add_comm, add_left_comm] using
+    lt_of_le_of_lt (abv_add _ _) this-/
 #align rat_mul_continuous_lemma rat_mul_continuous_lemma
 
 theorem rat_inv_continuous_lemma {β : Type _} [DivisionRing β] (abv : β → α) [IsAbsoluteValue abv]
@@ -78,12 +79,13 @@ theorem rat_inv_continuous_lemma {β : Type _} [DivisionRing β] (abv : β → �
   refine' ⟨K * ε * K, mul_pos (mul_pos K0 ε0) K0, @fun a b ha hb h => _⟩
   have a0 := K0.trans_le ha
   have b0 := K0.trans_le hb
-  rw [inv_sub_inv' ((abv_pos abv).1 a0) ((abv_pos abv).1 b0), abv_mul abv, abv_mul abv, abv_inv abv,
+  sorry
+  /-rw [inv_sub_inv' ((abv_pos abv).1 a0) ((abv_pos abv).1 b0), abv_mul abv, abv_mul abv, abv_inv abv,
     abv_inv abv, abv_sub abv]
   refine' lt_of_mul_lt_mul_left (lt_of_mul_lt_mul_right _ b0.le) a0.le
   rw [mul_assoc, inv_mul_cancel_right₀ b0.ne', ← mul_assoc, mul_inv_cancel a0.ne', one_mul]
   refine' h.trans_le _
-  exact mul_le_mul (mul_le_mul ha le_rfl ε0.le a0.le) hb K0.le (mul_nonneg a0.le ε0.le)
+  exact mul_le_mul (mul_le_mul ha le_rfl ε0.le a0.le) hb K0.le (mul_nonneg a0.le ε0.le)-/
 #align rat_inv_continuous_lemma rat_inv_continuous_lemma
 
 end
@@ -366,7 +368,8 @@ theorem const_smul (a : G) (x : β) : const (a • x) = a • const x :=
 
 end SMul
 
-instance addGroup : AddGroup (CauSeq β abv) := by
+instance addGroup : AddGroup (CauSeq β abv) := by sorry
+/- instance addGroup : AddGroup (CauSeq β abv) := by
   refine {
     add := (· + ·)
     neg := Neg.neg
@@ -380,7 +383,7 @@ instance addGroup : AddGroup (CauSeq β abv) := by
     add_left_neg := by
       intros
       apply ext
-      sorry }
+      sorry } -/
       --simp [add_comm, add_left_comm, sub_eq_add_neg, add_mul] }
               /-<;>
           intros <;>
@@ -392,11 +395,11 @@ instance : AddGroupWithOne (CauSeq β abv) :=
   { CauSeq.addGroup with
     one := 1
     natCast := fun n => const n
-    natCast_zero := congr_arg const Nat.cast_zero
-    natCast_succ := fun n => congr_arg const (Nat.cast_succ n)
+    natCast_zero := sorry -- congr_arg const Nat.cast_zero
+    natCast_succ := fun n => sorry --congr_arg const (Nat.cast_succ n)
     intCast := fun n => const n
     intCast_ofNat := fun n => congr_arg const (Int.cast_ofNat n)
-    intCast_negSucc := fun n => congr_arg const (Int.cast_negSucc n) }
+    intCast_negSucc := fun n => sorry } --congr_arg const (Int.cast_negSucc n) }
 
 instance : Pow (CauSeq β abv) ℕ :=
   ⟨fun f n =>
@@ -416,8 +419,8 @@ theorem const_pow (x : β) (n : ℕ) : const (x ^ n) = const x ^ n :=
   rfl
 #align cau_seq.const_pow CauSeq.const_pow
 
-instance ring : Ring (CauSeq β abv) := by
-  refine_struct
+instance ring : Ring (CauSeq β abv) := by sorry
+  /-refine_struct
             { CauSeq.addGroupWithOne with
               add := (· + ·)
               zero := (0 : CauSeq β abv)
@@ -427,12 +430,12 @@ instance ring : Ring (CauSeq β abv) := by
           intros <;>
         try rfl <;>
       apply ext <;>
-    simp [mul_add, mul_assoc, add_mul, add_comm, add_left_comm, sub_eq_add_neg, pow_succ]
+    simp [mul_add, mul_assoc, add_mul, add_comm, add_left_comm, sub_eq_add_neg, pow_succ]-/
 
-instance {β : Type _} [CommRing β] {abv : β → α} [IsAbsoluteValue abv] : CommRing (CauSeq β abv) :=
+instance {β : Type _} [CommRing β] {abv : β → α} [i : IsAbsoluteValue abv] : CommRing (CauSeq β abv) :=
   { CauSeq.ring with
     mul_comm := fun a b => ext $ fun n => by
-      rw [mul_apply a b n]
+      rw [@mul_apply α β _ _ abv i a b n]
       simp [mul_left_comm, mul_comm] }
 
 /-- `LimZero f` holds when `f` approaches 0. -/
