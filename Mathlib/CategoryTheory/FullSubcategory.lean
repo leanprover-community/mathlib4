@@ -27,15 +27,15 @@ image of `F`.
 
 ## Implementation notes
 
-It looks odd to make `D` an explicit argument of `induced_category`,
+It looks odd to make `D` an explicit argument of `InducedCategory`,
 when it is determined by the argument `F` anyways. The reason to make `D`
 explicit is in order to control its syntactic form, so that instances
-like `induced_category.has_forget₂` (elsewhere) refer to the correct
-form of D. This is used to set up several algebraic categories like
+like `InducedCategory.has_forget₂` (elsewhere) refer to the correct
+form of `D`. This is used to set up several algebraic categories like
 
-  def CommMon : Type (u+1) := induced_category Mon (bundled.map @comm_monoid.to_monoid)
-  -- not `induced_category (bundled monoid) (bundled.map @comm_monoid.to_monoid)`,
-  -- even though `Mon = bundled monoid`!
+  def CommMon : Type (u+1) := InducedCategory Mon (Bundled.map @CommMonoid.toMonoid)
+  -- not `InducedCategory (Bundled Monoid) (Bundled.map @CommMonoid.toMonoid)`,
+  -- even though `Mon = Bundled Monoid`!
 -/
 
 
@@ -52,7 +52,7 @@ variable (F : C → D)
 
 --include F
 
-/-- `induced_category D F`, where `F : C → D`, is a typeclass synonym for `C`,
+/-- `InducedCategory D F`, where `F : C → D`, is a typeclass synonym for `C`,
 which provides a category structure so that the morphisms `X ⟶ Y` are the morphisms
 in `D` from `F X` to `F Y`.
 -/
@@ -60,21 +60,21 @@ in `D` from `F X` to `F Y`.
 @[nolint unusedArguments]
 def InducedCategory (_F: C → D): Type u₁ :=
   C
-#align category_theory.induced_category CategoryTheory.InducedCategory
+#align category_theory.InducedCategory CategoryTheory.InducedCategory
 
 variable {D}
 
 instance InducedCategory.hasCoeToSort {α : Sort _} [CoeSort D α] :
     CoeSort (InducedCategory D F) α :=
   ⟨fun c => F c⟩
-#align category_theory.induced_category.has_coe_to_sort CategoryTheory.InducedCategory.hasCoeToSort
+#align category_theory.InducedCategory.has_coe_to_sort CategoryTheory.InducedCategory.hasCoeToSort
 
 instance InducedCategory.category :
     Category.{v} (InducedCategory D F) where
   Hom X Y := F X ⟶ F Y
   id X := 𝟙 (F X)
   comp f g := f ≫ g
-#align category_theory.induced_category.category CategoryTheory.InducedCategory.category
+#align category_theory.InducedCategory.category CategoryTheory.InducedCategory.category
 
 /-- The forgetful functor from an induced category to the original category,
 forgetting the extra data.
@@ -87,10 +87,10 @@ def inducedFunctor : InducedCategory D F ⥤
 #align category_theory.induced_functor CategoryTheory.inducedFunctor
 
 instance InducedCategory.full : Full (inducedFunctor F) where preimage f := f
-#align category_theory.induced_category.full CategoryTheory.InducedCategory.full
+#align category_theory.InducedCategory.full CategoryTheory.InducedCategory.full
 
 instance InducedCategory.faithful : Faithful (inducedFunctor F) where
-#align category_theory.induced_category.faithful CategoryTheory.InducedCategory.faithful
+#align category_theory.InducedCategory.faithful CategoryTheory.InducedCategory.faithful
 
 end Induced
 
