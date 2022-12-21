@@ -98,7 +98,8 @@ theorem isConj_iff {a b : α} : IsConj a b ↔ ∃ c : α, c * a * c⁻¹ = b :=
     ⟨⟨c, c⁻¹, mul_inv_self c, inv_mul_self c⟩, mul_inv_eq_iff_eq_mul.1 hc⟩⟩
 #align is_conj_iff isConj_iff
 
-@[simp]
+-- Porting note: not in simp NF.
+-- @[simp]
 theorem conj_inv {a b : α} : (b * a * b⁻¹)⁻¹ = b * a⁻¹ * b⁻¹ :=
   ((MulAut.conj b).map_inv a).symm
 #align conj_inv conj_inv
@@ -117,9 +118,12 @@ theorem conj_pow {i : ℕ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻�
 
 @[simp]
 theorem conj_zpow {i : ℤ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
-  induction i
-  · simp
+  induction' i
+  · change (a * b * a⁻¹) ^ (_ : ℤ) = a * b ^ (_ : ℤ) * a⁻¹
+    simp [zpow_ofNat]
   · simp [zpow_negSucc, conj_pow]
+    rw [mul_assoc]
+-- Porting note: Added `change`, `zpow_ofNat`, and `rw`.
 #align conj_zpow conj_zpow
 
 theorem conj_injective {x : α} : Function.Injective fun g : α => x * g * x⁻¹ :=
@@ -148,7 +152,7 @@ where possible, try to keep them in sync -/
 protected def setoid (α : Type _) [Monoid α] :
     Setoid α where
   r := IsConj
-  iseqv := ⟨IsConj.refl, fun a b => IsConj.symm, fun a b c => IsConj.trans⟩
+  iseqv := ⟨IsConj.refl, IsConj.symm, IsConj.trans⟩
 #align is_conj.setoid IsConj.setoid
 
 end IsConj
@@ -332,5 +336,5 @@ theorem carrier_eq_preimage_mk {a : ConjClasses α} : a.carrier = ConjClasses.mk
 
 end ConjClasses
 
--- porting notes
---assert_not_exists multiset
+-- porting notes: not implemented
+-- assert_not_exists multiset
